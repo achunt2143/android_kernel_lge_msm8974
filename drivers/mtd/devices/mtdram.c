@@ -13,48 +13,27 @@
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-=======
 #include <linux/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/mtdram.h>
 
 static unsigned long total_size = CONFIG_MTDRAM_TOTAL_SIZE;
 static unsigned long erase_size = CONFIG_MTDRAM_ERASE_SIZE;
-<<<<<<< HEAD
-#define MTDRAM_TOTAL_SIZE (total_size * 1024)
-#define MTDRAM_ERASE_SIZE (erase_size * 1024)
-
-#ifdef MODULE
-=======
 static unsigned long writebuf_size = 64;
 #define MTDRAM_TOTAL_SIZE (total_size * 1024)
 #define MTDRAM_ERASE_SIZE (erase_size * 1024)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(total_size, ulong, 0);
 MODULE_PARM_DESC(total_size, "Total device size in KiB");
 module_param(erase_size, ulong, 0);
 MODULE_PARM_DESC(erase_size, "Device erase block size in KiB");
-<<<<<<< HEAD
-#endif
-=======
 module_param(writebuf_size, ulong, 0);
 MODULE_PARM_DESC(writebuf_size, "Device write buf size in Bytes (Default: 64)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 // We could store these in the mtd structure, but we only support 1 device..
 static struct mtd_info *mtd_info;
 
-<<<<<<< HEAD
-static int ram_erase(struct mtd_info *mtd, struct erase_info *instr)
-{
-	memset((char *)mtd->priv + instr->addr, 0xff, instr->len);
-	instr->state = MTD_ERASE_DONE;
-	mtd_erase_callback(instr);
-=======
 static int check_offs_len(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 {
 	int ret = 0;
@@ -80,7 +59,6 @@ static int ram_erase(struct mtd_info *mtd, struct erase_info *instr)
 		return -EINVAL;
 	memset((char *)mtd->priv + instr->addr, 0xff, instr->len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -89,8 +67,6 @@ static int ram_point(struct mtd_info *mtd, loff_t from, size_t len,
 {
 	*virt = mtd->priv + from;
 	*retlen = len;
-<<<<<<< HEAD
-=======
 
 	if (phys) {
 		/* limit retlen to the number of contiguous physical pages */
@@ -112,7 +88,6 @@ static int ram_point(struct mtd_info *mtd, loff_t from, size_t len,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -121,22 +96,6 @@ static int ram_unpoint(struct mtd_info *mtd, loff_t from, size_t len)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Allow NOMMU mmap() to directly map the device (if not NULL)
- * - return the address to which the offset maps
- * - return -ENOSYS to indicate refusal to do the mapping
- */
-static unsigned long ram_get_unmapped_area(struct mtd_info *mtd,
-					   unsigned long len,
-					   unsigned long offset,
-					   unsigned long flags)
-{
-	return (unsigned long) mtd->priv + offset;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ram_read(struct mtd_info *mtd, loff_t from, size_t len,
 		size_t *retlen, u_char *buf)
 {
@@ -163,11 +122,7 @@ static void __exit cleanup_mtdram(void)
 }
 
 int mtdram_init_device(struct mtd_info *mtd, void *mapped_address,
-<<<<<<< HEAD
-		unsigned long size, char *name)
-=======
 		unsigned long size, const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memset(mtd, 0, sizeof(*mtd));
 
@@ -177,11 +132,7 @@ int mtdram_init_device(struct mtd_info *mtd, void *mapped_address,
 	mtd->flags = MTD_CAP_RAM;
 	mtd->size = size;
 	mtd->writesize = 1;
-<<<<<<< HEAD
-	mtd->writebufsize = 64; /* Mimic CFI NOR flashes */
-=======
 	mtd->writebufsize = writebuf_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtd->erasesize = MTDRAM_ERASE_SIZE;
 	mtd->priv = mapped_address;
 
@@ -189,10 +140,6 @@ int mtdram_init_device(struct mtd_info *mtd, void *mapped_address,
 	mtd->_erase = ram_erase;
 	mtd->_point = ram_point;
 	mtd->_unpoint = ram_unpoint;
-<<<<<<< HEAD
-	mtd->_get_unmapped_area = ram_get_unmapped_area;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtd->_read = ram_read;
 	mtd->_write = ram_write;
 

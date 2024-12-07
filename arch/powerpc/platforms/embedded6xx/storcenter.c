@@ -17,21 +17,13 @@
 #include <linux/of_platform.h>
 
 #include <asm/time.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mpic.h>
 #include <asm/pci-bridge.h>
 
 #include "mpc10x.h"
 
 
-<<<<<<< HEAD
-static __initdata struct of_device_id storcenter_of_bus[] = {
-=======
 static const struct of_device_id storcenter_of_bus[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "soc", },
 	{},
 };
@@ -51,11 +43,7 @@ static int __init storcenter_add_bridge(struct device_node *dev)
 	struct pci_controller *hose;
 	const int *bus_range;
 
-<<<<<<< HEAD
-	printk("Adding PCI host bridge %s\n", dev->full_name);
-=======
 	printk("Adding PCI host bridge %pOF\n", dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hose = pcibios_alloc_controller(dev);
 	if (hose == NULL)
@@ -77,24 +65,16 @@ static int __init storcenter_add_bridge(struct device_node *dev)
 
 static void __init storcenter_setup_arch(void)
 {
-<<<<<<< HEAD
-=======
 	printk(KERN_INFO "IOMEGA StorCenter\n");
 }
 
 static void __init storcenter_setup_pci(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *np;
 
 	/* Lookup PCI host bridges */
 	for_each_compatible_node(np, "pci", "mpc10x-pci")
 		storcenter_add_bridge(np);
-<<<<<<< HEAD
-
-	printk(KERN_INFO "IOMEGA StorCenter\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -118,43 +98,18 @@ static void __init storcenter_init_IRQ(void)
 	mpic_init(mpic);
 }
 
-<<<<<<< HEAD
-static void storcenter_restart(char *cmd)
-=======
 static void __noreturn storcenter_restart(char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	local_irq_disable();
 
 	/* Set exception prefix high - to the firmware */
-<<<<<<< HEAD
-	_nmask_and_or_msr(0, MSR_IP);
-=======
 	mtmsr(mfmsr() | MSR_IP);
 	isync();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for reset to happen */
 	for (;;) ;
 }
 
-<<<<<<< HEAD
-static int __init storcenter_probe(void)
-{
-	unsigned long root = of_get_flat_dt_root();
-
-	return of_flat_dt_is_compatible(root, "iomega,storcenter");
-}
-
-define_machine(storcenter){
-	.name 			= "IOMEGA StorCenter",
-	.probe 			= storcenter_probe,
-	.setup_arch 		= storcenter_setup_arch,
-	.init_IRQ 		= storcenter_init_IRQ,
-	.get_irq 		= mpic_get_irq,
-	.restart 		= storcenter_restart,
-	.calibrate_decr 	= generic_calibrate_decr,
-=======
 define_machine(storcenter){
 	.name 			= "IOMEGA StorCenter",
 	.compatible		= "iomega,storcenter",
@@ -163,5 +118,4 @@ define_machine(storcenter){
 	.init_IRQ 		= storcenter_init_IRQ,
 	.get_irq 		= mpic_get_irq,
 	.restart 		= storcenter_restart,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

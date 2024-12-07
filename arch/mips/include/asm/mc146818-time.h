@@ -26,11 +26,7 @@
  * MC146818A or Dallas DS12887 data sheet for details.
  *
  * BUG: This routine does not handle hour overflow properly; it just
-<<<<<<< HEAD
- *      sets the minutes. Usually you'll only notice that after reboot!
-=======
  *	sets the minutes. Usually you'll only notice that after reboot!
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int mc146818_set_rtc_mmss(unsigned long nowtime)
 {
@@ -81,11 +77,7 @@ static inline int mc146818_set_rtc_mmss(unsigned long nowtime)
 	 * battery and quartz) will not reset the oscillator and will not
 	 * update precisely 500 ms later. You won't find this mentioned in
 	 * the Dallas Semiconductor data sheets, but who believes data
-<<<<<<< HEAD
-	 * sheets anyway ...                           -- Markus Kuhn
-=======
 	 * sheets anyway ...			       -- Markus Kuhn
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	CMOS_WRITE(save_control, RTC_CONTROL);
 	CMOS_WRITE(save_freq_select, RTC_FREQ_SELECT);
@@ -94,11 +86,7 @@ static inline int mc146818_set_rtc_mmss(unsigned long nowtime)
 	return retval;
 }
 
-<<<<<<< HEAD
-static inline unsigned long mc146818_get_cmos_time(void)
-=======
 static inline time64_t mc146818_get_cmos_time(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int year, mon, day, hour, min, sec;
 	unsigned long flags;
@@ -125,11 +113,7 @@ static inline time64_t mc146818_get_cmos_time(void)
 	spin_unlock_irqrestore(&rtc_lock, flags);
 	year = mc146818_decode_year(year);
 
-<<<<<<< HEAD
-	return mktime(year, mon, day, hour, min, sec);
-=======
 	return mktime64(year, mon, day, hour, min, sec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* __ASM_MC146818_TIME_H */

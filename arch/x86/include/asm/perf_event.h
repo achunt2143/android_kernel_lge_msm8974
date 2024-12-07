@@ -1,31 +1,17 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_PERF_EVENT_H
-#define _ASM_X86_PERF_EVENT_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_PERF_EVENT_H
 #define _ASM_X86_PERF_EVENT_H
 
 #include <linux/static_call.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance event hw details:
  */
 
-<<<<<<< HEAD
-#define X86_PMC_MAX_GENERIC				       32
-#define X86_PMC_MAX_FIXED					3
-
-#define X86_PMC_IDX_GENERIC				        0
-#define X86_PMC_IDX_FIXED				       32
-=======
 #define INTEL_PMC_MAX_GENERIC				       32
 #define INTEL_PMC_MAX_FIXED				       16
 #define INTEL_PMC_IDX_FIXED				       32
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define X86_PMC_IDX_MAX					       64
 
 #define MSR_ARCH_PERFMON_PERFCTR0			      0xc1
@@ -45,11 +31,6 @@
 #define ARCH_PERFMON_EVENTSEL_ENABLE			(1ULL << 22)
 #define ARCH_PERFMON_EVENTSEL_INV			(1ULL << 23)
 #define ARCH_PERFMON_EVENTSEL_CMASK			0xFF000000ULL
-<<<<<<< HEAD
-
-#define AMD_PERFMON_EVENTSEL_GUESTONLY			(1ULL << 40)
-#define AMD_PERFMON_EVENTSEL_HOSTONLY			(1ULL << 41)
-=======
 #define ARCH_PERFMON_EVENTSEL_BR_CNTR			(1ULL << 35)
 
 #define INTEL_FIXED_BITS_MASK				0xFULL
@@ -74,15 +55,12 @@
 #define AMD64_EVENTSEL_INT_CORE_SEL_SHIFT		37
 #define AMD64_EVENTSEL_INT_CORE_SEL_MASK		\
 	(0xFULL << AMD64_EVENTSEL_INT_CORE_SEL_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AMD64_EVENTSEL_EVENT	\
 	(ARCH_PERFMON_EVENTSEL_EVENT | (0x0FULL << 32))
 #define INTEL_ARCH_EVENT_MASK	\
 	(ARCH_PERFMON_EVENTSEL_UMASK | ARCH_PERFMON_EVENTSEL_EVENT)
 
-<<<<<<< HEAD
-=======
 #define AMD64_L3_SLICE_SHIFT				48
 #define AMD64_L3_SLICE_MASK				\
 	(0xFULL << AMD64_L3_SLICE_SHIFT)
@@ -102,21 +80,12 @@
 #define AMD64_L3_COREID_MASK				\
 	(0x7ULL << AMD64_L3_COREID_SHIFT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define X86_RAW_EVENT_MASK		\
 	(ARCH_PERFMON_EVENTSEL_EVENT |	\
 	 ARCH_PERFMON_EVENTSEL_UMASK |	\
 	 ARCH_PERFMON_EVENTSEL_EDGE  |	\
 	 ARCH_PERFMON_EVENTSEL_INV   |	\
 	 ARCH_PERFMON_EVENTSEL_CMASK)
-<<<<<<< HEAD
-#define AMD64_RAW_EVENT_MASK		\
-	(X86_RAW_EVENT_MASK          |  \
-	 AMD64_EVENTSEL_EVENT)
-#define AMD64_NUM_COUNTERS				4
-#define AMD64_NUM_COUNTERS_F15H				6
-#define AMD64_NUM_COUNTERS_MAX				AMD64_NUM_COUNTERS_F15H
-=======
 #define X86_ALL_EVENT_FLAGS  			\
 	(ARCH_PERFMON_EVENTSEL_EDGE |  		\
 	 ARCH_PERFMON_EVENTSEL_INV | 		\
@@ -154,7 +123,6 @@
 #define AMD64_NUM_COUNTERS				4
 #define AMD64_NUM_COUNTERS_CORE				6
 #define AMD64_NUM_COUNTERS_NB				4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ARCH_PERFMON_UNHALTED_CORE_CYCLES_SEL		0x3c
 #define ARCH_PERFMON_UNHALTED_CORE_CYCLES_UMASK		(0x00 << 8)
@@ -165,8 +133,6 @@
 #define ARCH_PERFMON_BRANCH_MISSES_RETIRED		6
 #define ARCH_PERFMON_EVENTS_COUNT			7
 
-<<<<<<< HEAD
-=======
 #define PEBS_DATACFG_MEMINFO	BIT_ULL(0)
 #define PEBS_DATACFG_GP	BIT_ULL(1)
 #define PEBS_DATACFG_XMMS	BIT_ULL(2)
@@ -176,7 +142,6 @@
 /* Steal the highest bit of pebs_data_cfg for SW usage */
 #define PEBS_UPDATE_DS_SW	BIT_ULL(63)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel "Architectural Performance Monitoring" CPUID
  * detection/enumeration details:
@@ -208,19 +173,13 @@ union cpuid10_edx {
 	struct {
 		unsigned int num_counters_fixed:5;
 		unsigned int bit_width_fixed:8;
-<<<<<<< HEAD
-		unsigned int reserved:19;
-=======
 		unsigned int reserved1:2;
 		unsigned int anythread_deprecated:1;
 		unsigned int reserved2:16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} split;
 	unsigned int full;
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Intel "Architectural Performance Monitoring extension" CPUID
  * detection/enumeration details:
@@ -290,7 +249,6 @@ union cpuid_0x80000022_ebx {
 	unsigned int		full;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct x86_pmu_capability {
 	int		version;
 	int		num_counters_gp;
@@ -299,34 +257,23 @@ struct x86_pmu_capability {
 	int		bit_width_fixed;
 	unsigned int	events_mask;
 	int		events_mask_len;
-<<<<<<< HEAD
-=======
 	unsigned int	pebs_ept	:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Fixed-purpose performance events:
  */
 
-<<<<<<< HEAD
-/*
- * All 3 fixed-mode PMCs are configured via this single MSR:
-=======
 /* RDPMC offset for Fixed PMCs */
 #define INTEL_PMC_FIXED_RDPMC_BASE		(1 << 30)
 #define INTEL_PMC_FIXED_RDPMC_METRICS		(1 << 29)
 
 /*
  * All the fixed-mode PMCs are configured via this single MSR:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define MSR_ARCH_PERFMON_FIXED_CTR_CTRL	0x38d
 
 /*
-<<<<<<< HEAD
- * The counts are available in three separate MSRs:
-=======
  * There is no event-code assigned to the fixed-mode PMCs.
  *
  * For a fixed-mode PMC, which has an equivalent event on a general-purpose
@@ -340,23 +287,10 @@ struct x86_pmu_capability {
  * counter + 1, e.g., the fixed counter 2 has the pseudo-encoding 0x0300.
  *
  * The counts are available in separate MSRs:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Instr_Retired.Any: */
 #define MSR_ARCH_PERFMON_FIXED_CTR0	0x309
-<<<<<<< HEAD
-#define X86_PMC_IDX_FIXED_INSTRUCTIONS	(X86_PMC_IDX_FIXED + 0)
-
-/* CPU_CLK_Unhalted.Core: */
-#define MSR_ARCH_PERFMON_FIXED_CTR1	0x30a
-#define X86_PMC_IDX_FIXED_CPU_CYCLES	(X86_PMC_IDX_FIXED + 1)
-
-/* CPU_CLK_Unhalted.Ref: */
-#define MSR_ARCH_PERFMON_FIXED_CTR2	0x30b
-#define X86_PMC_IDX_FIXED_REF_CYCLES	(X86_PMC_IDX_FIXED + 2)
-#define X86_PMC_MSK_FIXED_REF_CYCLES	(1ULL << X86_PMC_IDX_FIXED_REF_CYCLES)
-=======
 #define INTEL_PMC_IDX_FIXED_INSTRUCTIONS	(INTEL_PMC_IDX_FIXED + 0)
 
 /* CPU_CLK_Unhalted.Core: */
@@ -377,18 +311,10 @@ static inline bool use_fixed_pseudo_encoding(u64 code)
 {
 	return !(code & 0xff);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We model BTS tracing as another fixed-mode PMC.
  *
-<<<<<<< HEAD
- * We choose a value in the middle of the fixed event range, since lower
- * values are used by actual fixed events and higher values are used
- * to indicate other overflow conditions in the PERF_GLOBAL_STATUS msr.
- */
-#define X86_PMC_IDX_FIXED_BTS				(X86_PMC_IDX_FIXED + 16)
-=======
  * We choose the value 47 for the fixed index of BTS, since lower
  * values are used by actual fixed events and higher values are used
  * to indicate other overflow conditions in the PERF_GLOBAL_STATUS msr.
@@ -514,7 +440,6 @@ struct pebs_xmm {
  * AMD Extended Performance Monitoring and Debug cpuid feature detection
  */
 #define EXT_PERFMON_DEBUG_FEATURES		0x80000022
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IBS cpuid feature detection
@@ -533,14 +458,11 @@ struct pebs_xmm {
 #define IBS_CAPS_OPCNT			(1U<<4)
 #define IBS_CAPS_BRNTRGT		(1U<<5)
 #define IBS_CAPS_OPCNTEXT		(1U<<6)
-<<<<<<< HEAD
-=======
 #define IBS_CAPS_RIPINVALIDCHK		(1U<<7)
 #define IBS_CAPS_OPBRNFUSE		(1U<<8)
 #define IBS_CAPS_FETCHCTLEXTD		(1U<<9)
 #define IBS_CAPS_OPDATA4		(1U<<10)
 #define IBS_CAPS_ZEN4			(1U<<11)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IBS_CAPS_DEFAULT		(IBS_CAPS_AVAIL		\
 					 | IBS_CAPS_FETCHSAM	\
@@ -553,28 +475,14 @@ struct pebs_xmm {
 #define IBSCTL_LVT_OFFSET_VALID		(1ULL<<8)
 #define IBSCTL_LVT_OFFSET_MASK		0x0F
 
-<<<<<<< HEAD
-/* IbsFetchCtl bits/masks */
-=======
 /* IBS fetch bits/masks */
 #define IBS_FETCH_L3MISSONLY	(1ULL<<59)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IBS_FETCH_RAND_EN	(1ULL<<57)
 #define IBS_FETCH_VAL		(1ULL<<49)
 #define IBS_FETCH_ENABLE	(1ULL<<48)
 #define IBS_FETCH_CNT		0xFFFF0000ULL
 #define IBS_FETCH_MAX_CNT	0x0000FFFFULL
 
-<<<<<<< HEAD
-/* IbsOpCtl bits */
-#define IBS_OP_CNT_CTL		(1ULL<<19)
-#define IBS_OP_VAL		(1ULL<<18)
-#define IBS_OP_ENABLE		(1ULL<<17)
-#define IBS_OP_MAX_CNT		0x0000FFFFULL
-#define IBS_OP_MAX_CNT_EXT	0x007FFFFFULL	/* not a register bit mask */
-
-extern u32 get_ibs_caps(void);
-=======
 /*
  * IBS op bits/masks
  * The lower 7 bits of the current count are random bits
@@ -598,21 +506,11 @@ extern int forward_event_to_ibs(struct perf_event *event);
 static inline u32 get_ibs_caps(void) { return 0; }
 static inline int forward_event_to_ibs(struct perf_event *event) { return -ENOENT; }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PERF_EVENTS
 extern void perf_events_lapic_init(void);
 
 /*
-<<<<<<< HEAD
- * Abuse bit 3 of the cpu eflags register to indicate proper PEBS IP fixups.
- * This flag is otherwise unused and ABI specified to be 0, so nobody should
- * care what we do with it.
- */
-#define PERF_EFLAGS_EXACT	(1UL << 3)
-
-struct pt_regs;
-=======
  * Abuse bits {3,5} of the cpu eflags register. These flags are otherwise
  * unused and ABI specified to be 0, so nobody should care what we do with
  * them.
@@ -630,7 +528,6 @@ struct x86_perf_regs {
 	u64		*xmm_regs;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned long perf_instruction_pointer(struct pt_regs *regs);
 extern unsigned long perf_misc_flags(struct pt_regs *regs);
 #define perf_misc_flags(regs)	perf_misc_flags(regs)
@@ -643,20 +540,9 @@ extern unsigned long perf_misc_flags(struct pt_regs *regs);
  */
 #define perf_arch_fetch_caller_regs(regs, __ip)		{	\
 	(regs)->ip = (__ip);					\
-<<<<<<< HEAD
-	(regs)->bp = caller_frame_pointer();			\
-	(regs)->cs = __KERNEL_CS;				\
-	regs->flags = 0;					\
-	asm volatile(						\
-		_ASM_MOV "%%"_ASM_SP ", %0\n"			\
-		: "=m" ((regs)->sp)				\
-		:: "memory"					\
-	);							\
-=======
 	(regs)->sp = (unsigned long)__builtin_frame_address(0);	\
 	(regs)->cs = __KERNEL_CS;				\
 	regs->flags = 0;					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct perf_guest_switch_msr {
@@ -664,17 +550,6 @@ struct perf_guest_switch_msr {
 	u64 host, guest;
 };
 
-<<<<<<< HEAD
-extern struct perf_guest_switch_msr *perf_guest_get_msrs(int *nr);
-extern void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap);
-#else
-static inline perf_guest_switch_msr *perf_guest_get_msrs(int *nr)
-{
-	*nr = 0;
-	return NULL;
-}
-
-=======
 struct x86_pmu_lbr {
 	unsigned int	nr;
 	unsigned int	from;
@@ -689,15 +564,11 @@ extern void perf_check_microcode(void);
 extern void perf_clear_dirty_counters(void);
 extern int x86_perf_rdpmc_index(struct perf_event *event);
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void perf_get_x86_pmu_capability(struct x86_pmu_capability *cap)
 {
 	memset(cap, 0, sizeof(*cap));
 }
 
-<<<<<<< HEAD
-static inline void perf_events_lapic_init(void)	{ }
-=======
 static inline u64 perf_get_hw_event_config(int hw_event)
 {
 	return 0;
@@ -725,14 +596,11 @@ static inline void intel_pt_handle_vmx(int on)
 {
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD)
  extern void amd_pmu_enable_virt(void);
  extern void amd_pmu_disable_virt(void);
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_PERF_EVENTS_AMD_BRS)
 
@@ -754,15 +622,11 @@ static __always_inline void perf_lopwr_cb(bool lopwr_in)
 
 #endif /* PERF_NEEDS_LOPWR_CB */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
  static inline void amd_pmu_enable_virt(void) { }
  static inline void amd_pmu_disable_virt(void) { }
 #endif
 
-<<<<<<< HEAD
-=======
 #define arch_perf_out_copy_user copy_from_user_nmi
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_PERF_EVENT_H */

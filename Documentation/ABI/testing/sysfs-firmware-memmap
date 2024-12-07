@@ -20,11 +20,7 @@ Description:
 		the raw memory map to userspace.
 
 		The structure is as follows: Under /sys/firmware/memmap there
-<<<<<<< HEAD
-		are subdirectories with the number of the entry as their name:
-=======
 		are subdirectories with the number of the entry as their name::
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/sys/firmware/memmap/0
 			/sys/firmware/memmap/1
@@ -38,16 +34,6 @@ Description:
 
 		Each directory contains three files:
 
-<<<<<<< HEAD
-		start	: The start address (as hexadecimal number with the
-			  '0x' prefix).
-		end	: The end address, inclusive (regardless whether the
-			  firmware provides inclusive or exclusive ranges).
-		type	: Type of the entry as string. See below for a list of
-			  valid types.
-
-		So, for example:
-=======
 		========  =====================================================
 		start	  The start address (as hexadecimal number with the
 			  '0x' prefix).
@@ -58,7 +44,6 @@ Description:
 		========  =====================================================
 
 		So, for example::
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/sys/firmware/memmap/0/start
 			/sys/firmware/memmap/0/end
@@ -71,14 +56,6 @@ Description:
 		  - System RAM
 		  - ACPI Tables
 		  - ACPI Non-volatile Storage
-<<<<<<< HEAD
-		  - reserved
-
-		Following shell snippet can be used to display that memory
-		map in a human-readable format:
-
-		-------------------- 8< ----------------------------------------
-=======
 		  - Unusable memory
 		  - Persistent Memory (legacy)
 		  - Persistent Memory
@@ -88,7 +65,6 @@ Description:
 		Following shell snippet can be used to display that memory
 		map in a human-readable format::
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  #!/bin/bash
 		  cd /sys/firmware/memmap
 		  for dir in * ; do
@@ -97,7 +73,3 @@ Description:
 		      type=$(cat $dir/type)
 		      printf "%016x-%016x (%s)\n" $start $[ $end +1] "$type"
 		  done
-<<<<<<< HEAD
-		-------------------- >8 ----------------------------------------
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

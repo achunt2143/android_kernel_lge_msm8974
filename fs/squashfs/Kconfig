@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SQUASHFS
 	tristate "SquashFS 4.0 - Squashed file system support"
 	depends on BLOCK
@@ -29,8 +26,6 @@ config SQUASHFS
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 choice
 	prompt "File decompression options"
 	depends on SQUASHFS
@@ -144,7 +139,6 @@ config SQUASHFS_MOUNT_DECOMP_THREADS
 	      threads=<2|3|...>
 	  The upper limit is num_online_cpus() * 2.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SQUASHFS_XATTR
 	bool "Squashfs XATTR support"
 	depends on SQUASHFS
@@ -168,8 +162,6 @@ config SQUASHFS_ZLIB
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-=======
 config SQUASHFS_LZ4
 	bool "Include support for LZ4 compressed file systems"
 	depends on SQUASHFS
@@ -185,7 +177,6 @@ config SQUASHFS_LZ4
 
 	  If unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SQUASHFS_LZO
 	bool "Include support for LZO compressed file systems"
 	depends on SQUASHFS
@@ -216,8 +207,6 @@ config SQUASHFS_XZ
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config SQUASHFS_ZSTD
 	bool "Include support for ZSTD compressed file systems"
 	depends on SQUASHFS
@@ -232,7 +221,6 @@ config SQUASHFS_ZSTD
 
 	  If unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SQUASHFS_4K_DEVBLK_SIZE
 	bool "Use 4K device block size?"
 	depends on SQUASHFS

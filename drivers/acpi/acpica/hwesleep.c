@@ -1,58 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: hwesleep.c - ACPI Hardware Sleep/Wake Support functions for the
  *                    extended FADT-V5 sleep registers.
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
@@ -101,10 +56,6 @@ void acpi_hw_execute_sleep_method(char *method_pathname, u32 integer_argument)
  * FUNCTION:    acpi_hw_extended_sleep
  *
  * PARAMETERS:  sleep_state         - Which sleep state to enter
-<<<<<<< HEAD
- *              Flags               - ACPI_EXECUTE_GTS to run optional method
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -114,17 +65,10 @@ void acpi_hw_execute_sleep_method(char *method_pathname, u32 integer_argument)
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-acpi_status acpi_hw_extended_sleep(u8 sleep_state, u8 flags)
-{
-	acpi_status status;
-	u8 sleep_type_value;
-=======
 acpi_status acpi_hw_extended_sleep(u8 sleep_state)
 {
 	acpi_status status;
 	u8 sleep_control;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 sleep_status;
 
 	ACPI_FUNCTION_TRACE(hw_extended_sleep);
@@ -138,31 +82,14 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
 
 	/* Clear wake status (WAK_STS) */
 
-<<<<<<< HEAD
-	status = acpi_write(ACPI_X_WAKE_STATUS, &acpi_gbl_FADT.sleep_status);
-=======
 	status = acpi_write((u64)ACPI_X_WAKE_STATUS,
 			    &acpi_gbl_FADT.sleep_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
 	acpi_gbl_system_awake_and_running = FALSE;
 
-<<<<<<< HEAD
-	/* Optionally execute _GTS (Going To Sleep) */
-
-	if (flags & ACPI_EXECUTE_GTS) {
-		acpi_hw_execute_sleep_method(METHOD_PATHNAME__GTS, sleep_state);
-	}
-
-	/* Flush caches, as per ACPI specification */
-
-	ACPI_FLUSH_CPU_CACHE();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Set the SLP_TYP and SLP_EN bits.
 	 *
@@ -172,14 +99,6 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
 	ACPI_DEBUG_PRINT((ACPI_DB_INIT,
 			  "Entering sleep state [S%u]\n", sleep_state));
 
-<<<<<<< HEAD
-	sleep_type_value =
-	    ((acpi_gbl_sleep_type_a << ACPI_X_SLEEP_TYPE_POSITION) &
-	     ACPI_X_SLEEP_TYPE_MASK);
-
-	status = acpi_write((sleep_type_value | ACPI_X_SLEEP_ENABLE),
-			    &acpi_gbl_FADT.sleep_control);
-=======
 	sleep_control = ((acpi_gbl_sleep_type_a << ACPI_X_SLEEP_TYPE_POSITION) &
 			 ACPI_X_SLEEP_TYPE_MASK) | ACPI_X_SLEEP_ENABLE;
 
@@ -198,7 +117,6 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
 	}
 
 	status = acpi_write((u64)sleep_control, &acpi_gbl_FADT.sleep_control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -221,10 +139,6 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
  * FUNCTION:    acpi_hw_extended_wake_prep
  *
  * PARAMETERS:  sleep_state         - Which sleep state we just exited
-<<<<<<< HEAD
- *              Flags               - ACPI_EXECUTE_BFS to run optional method
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -233,37 +147,12 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-acpi_status acpi_hw_extended_wake_prep(u8 sleep_state, u8 flags)
-{
-	acpi_status status;
-=======
 acpi_status acpi_hw_extended_wake_prep(u8 sleep_state)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 sleep_type_value;
 
 	ACPI_FUNCTION_TRACE(hw_extended_wake_prep);
 
-<<<<<<< HEAD
-	status = acpi_get_sleep_type_data(ACPI_STATE_S0,
-					  &acpi_gbl_sleep_type_a,
-					  &acpi_gbl_sleep_type_b);
-	if (ACPI_SUCCESS(status)) {
-		sleep_type_value =
-		    ((acpi_gbl_sleep_type_a << ACPI_X_SLEEP_TYPE_POSITION) &
-		     ACPI_X_SLEEP_TYPE_MASK);
-
-		(void)acpi_write((sleep_type_value | ACPI_X_SLEEP_ENABLE),
-				 &acpi_gbl_FADT.sleep_control);
-	}
-
-	/* Optionally execute _BFS (Back From Sleep) */
-
-	if (flags & ACPI_EXECUTE_BFS) {
-		acpi_hw_execute_sleep_method(METHOD_PATHNAME__BFS, sleep_state);
-	}
-=======
 	if (acpi_gbl_sleep_type_a_s0 != ACPI_SLEEP_TYPE_INVALID) {
 		sleep_type_value =
 		    ((acpi_gbl_sleep_type_a_s0 << ACPI_X_SLEEP_TYPE_POSITION) &
@@ -273,7 +162,6 @@ acpi_status acpi_hw_extended_wake_prep(u8 sleep_state)
 				 &acpi_gbl_FADT.sleep_control);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(AE_OK);
 }
 
@@ -282,10 +170,6 @@ acpi_status acpi_hw_extended_wake_prep(u8 sleep_state)
  * FUNCTION:    acpi_hw_extended_wake
  *
  * PARAMETERS:  sleep_state         - Which sleep state we just exited
-<<<<<<< HEAD
- *              Flags               - Reserved, set to zero
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -294,11 +178,7 @@ acpi_status acpi_hw_extended_wake_prep(u8 sleep_state)
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-acpi_status acpi_hw_extended_wake(u8 sleep_state, u8 flags)
-=======
 acpi_status acpi_hw_extended_wake(u8 sleep_state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ACPI_FUNCTION_TRACE(hw_extended_wake);
 
@@ -316,11 +196,7 @@ acpi_status acpi_hw_extended_wake(u8 sleep_state)
 	 * and use it to determine whether the system is rebooting or
 	 * resuming. Clear WAK_STS for compatibility.
 	 */
-<<<<<<< HEAD
-	(void)acpi_write(ACPI_X_WAKE_STATUS, &acpi_gbl_FADT.sleep_status);
-=======
 	(void)acpi_write((u64)ACPI_X_WAKE_STATUS, &acpi_gbl_FADT.sleep_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_gbl_system_awake_and_running = TRUE;
 
 	acpi_hw_execute_sleep_method(METHOD_PATHNAME__SST, ACPI_SST_WORKING);

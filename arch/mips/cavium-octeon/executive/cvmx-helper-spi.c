@@ -4,11 +4,7 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
-<<<<<<< HEAD
- * Copyright (c) 2003-2008 Cavium Networks
-=======
  * Copyright (C) 2003-2018 Cavium, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -29,13 +25,6 @@
  * Contact Cavium Networks for more information
  ***********************license end**************************************/
 
-<<<<<<< HEAD
-void __cvmx_interrupt_gmxx_enable(int interface);
-void __cvmx_interrupt_spxx_int_msk_enable(int index);
-void __cvmx_interrupt_stxx_int_msk_enable(int index);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions for SPI initialization, configuration,
  * and monitoring.
@@ -48,11 +37,8 @@ void __cvmx_interrupt_stxx_int_msk_enable(int index);
 
 #include <asm/octeon/cvmx-pip-defs.h>
 #include <asm/octeon/cvmx-pko-defs.h>
-<<<<<<< HEAD
-=======
 #include <asm/octeon/cvmx-spxx-defs.h>
 #include <asm/octeon/cvmx-stxx-defs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CVMX_HELPER_SPI_TIMEOUT is used to determine how long the SPI
@@ -154,15 +140,9 @@ int __cvmx_helper_spi_enable(int interface)
  *
  * Returns Link state
  */
-<<<<<<< HEAD
-cvmx_helper_link_info_t __cvmx_helper_spi_link_get(int ipd_port)
-{
-	cvmx_helper_link_info_t result;
-=======
 union cvmx_helper_link_info __cvmx_helper_spi_link_get(int ipd_port)
 {
 	union cvmx_helper_link_info result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int interface = cvmx_helper_get_interface_num(ipd_port);
 	int index = cvmx_helper_get_interface_index_num(ipd_port);
 	result.u64 = 0;
@@ -178,18 +158,6 @@ union cvmx_helper_link_info __cvmx_helper_spi_link_get(int ipd_port)
 		result.s.link_up = inband.s.status;
 		result.s.full_duplex = inband.s.duplex;
 		switch (inband.s.speed) {
-<<<<<<< HEAD
-		case 0:	/* 10 Mbps */
-			result.s.speed = 10;
-			break;
-		case 1:	/* 100 Mbps */
-			result.s.speed = 100;
-			break;
-		case 2:	/* 1 Gbps */
-			result.s.speed = 1000;
-			break;
-		case 3:	/* Illegal */
-=======
 		case 0: /* 10 Mbps */
 			result.s.speed = 10;
 			break;
@@ -200,7 +168,6 @@ union cvmx_helper_link_info __cvmx_helper_spi_link_get(int ipd_port)
 			result.s.speed = 1000;
 			break;
 		case 3: /* Illegal */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result.s.speed = 0;
 			result.s.link_up = 0;
 			break;
@@ -219,23 +186,14 @@ union cvmx_helper_link_info __cvmx_helper_spi_link_get(int ipd_port)
  * Configure an IPD/PKO port for the specified link state. This
  * function does not influence auto negotiation at the PHY level.
  * The passed link state must always match the link state returned
-<<<<<<< HEAD
- * by cvmx_helper_link_get(). It is normally best to use
- * cvmx_helper_link_autoconf() instead.
-=======
  * by cvmx_helper_link_get().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @ipd_port:  IPD/PKO port to configure
  * @link_info: The new link state
  *
  * Returns Zero on success, negative on failure
  */
-<<<<<<< HEAD
-int __cvmx_helper_spi_link_set(int ipd_port, cvmx_helper_link_info_t link_info)
-=======
 int __cvmx_helper_spi_link_set(int ipd_port, union cvmx_helper_link_info link_info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Nothing to do. If we have a SPI4000 then the setup was already performed
 	   by cvmx_spi4000_check_speed(). If not then there isn't any link

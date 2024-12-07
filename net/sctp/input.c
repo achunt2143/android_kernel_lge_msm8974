@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * Copyright (c) 1999-2000 Cisco, Inc.
  * Copyright (c) 1999-2001 Motorola, Inc.
@@ -14,35 +11,9 @@
  *
  * These functions handle all input from the IP layer into SCTP.
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -53,12 +24,6 @@
  *    Daisy Chang <daisyc@us.ibm.com>
  *    Sridhar Samudrala <sri@us.ibm.com>
  *    Ardelle Fan <ardelle.fan@intel.com>
-<<<<<<< HEAD
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -76,20 +41,6 @@
 #include <net/sctp/sm.h>
 #include <net/sctp/checksum.h>
 #include <net/net_namespace.h>
-<<<<<<< HEAD
-
-/* Forward declarations for internal helpers. */
-static int sctp_rcv_ootb(struct sk_buff *);
-static struct sctp_association *__sctp_rcv_lookup(struct sk_buff *skb,
-				      const union sctp_addr *laddr,
-				      const union sctp_addr *paddr,
-				      struct sctp_transport **transportp);
-static struct sctp_endpoint *__sctp_rcv_lookup_endpoint(const union sctp_addr *laddr);
-static struct sctp_association *__sctp_lookup_association(
-					const union sctp_addr *local,
-					const union sctp_addr *peer,
-					struct sctp_transport **pt);
-=======
 #include <linux/rhashtable.h>
 #include <net/sock_reuseport.h>
 
@@ -112,31 +63,11 @@ static struct sctp_association *__sctp_lookup_association(
 					const union sctp_addr *peer,
 					struct sctp_transport **pt,
 					int dif, int sdif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb);
 
 
 /* Calculate the SCTP checksum of an SCTP packet.  */
-<<<<<<< HEAD
-static inline int sctp_rcv_checksum(struct sk_buff *skb)
-{
-	struct sctphdr *sh = sctp_hdr(skb);
-	__le32 cmp = sh->checksum;
-	struct sk_buff *list;
-	__le32 val;
-	__u32 tmp = sctp_start_cksum((__u8 *)sh, skb_headlen(skb));
-
-	skb_walk_frags(skb, list)
-		tmp = sctp_update_cksum((__u8 *)list->data, skb_headlen(list),
-					tmp);
-
-	val = sctp_end_cksum(tmp);
-
-	if (val != cmp) {
-		/* CRC failure, dump it. */
-		SCTP_INC_STATS_BH(SCTP_MIB_CHECKSUMERRORS);
-=======
 static inline int sctp_rcv_checksum(struct net *net, struct sk_buff *skb)
 {
 	struct sctphdr *sh = sctp_hdr(skb);
@@ -146,26 +77,11 @@ static inline int sctp_rcv_checksum(struct net *net, struct sk_buff *skb)
 	if (val != cmp) {
 		/* CRC failure, dump it. */
 		__SCTP_INC_STATS(net, SCTP_MIB_CHECKSUMERRORS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-struct sctp_input_cb {
-	union {
-		struct inet_skb_parm	h4;
-#if IS_ENABLED(CONFIG_IPV6)
-		struct inet6_skb_parm	h6;
-#endif
-	} header;
-	struct sctp_chunk *chunk;
-};
-#define SCTP_INPUT_CB(__skb)	((struct sctp_input_cb *)&((__skb)->cb[0]))
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the routine which IP calls when receiving an SCTP packet.
  */
@@ -177,40 +93,10 @@ int sctp_rcv(struct sk_buff *skb)
 	struct sctp_ep_common *rcvr;
 	struct sctp_transport *transport = NULL;
 	struct sctp_chunk *chunk;
-<<<<<<< HEAD
-	struct sctphdr *sh;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union sctp_addr src;
 	union sctp_addr dest;
 	int family;
 	struct sctp_af *af;
-<<<<<<< HEAD
-
-	if (skb->pkt_type!=PACKET_HOST)
-		goto discard_it;
-
-	SCTP_INC_STATS_BH(SCTP_MIB_INSCTPPACKS);
-
-	if (skb_linearize(skb))
-		goto discard_it;
-
-	sh = sctp_hdr(skb);
-
-	/* Pull up the IP and SCTP headers. */
-	__skb_pull(skb, skb_transport_offset(skb));
-	if (skb->len < sizeof(struct sctphdr))
-		goto discard_it;
-	if (!sctp_checksum_disable && !skb_csum_unnecessary(skb) &&
-		  sctp_rcv_checksum(skb) < 0)
-		goto discard_it;
-
-	skb_pull(skb, sizeof(struct sctphdr));
-
-	/* Make sure we at least have chunk headers worth of data left. */
-	if (skb->len < sizeof(struct sctp_chunkhdr))
-		goto discard_it;
-=======
 	struct net *net = dev_net(skb->dev);
 	bool is_gso = skb_is_gso(skb) && skb_is_gso_sctp(skb);
 	int dif, sdif;
@@ -248,25 +134,18 @@ int sctp_rcv(struct sk_buff *skb)
 	skb->csum_valid = 1;
 
 	__skb_pull(skb, sizeof(struct sctphdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	family = ipver2af(ip_hdr(skb)->version);
 	af = sctp_get_af_specific(family);
 	if (unlikely(!af))
 		goto discard_it;
-<<<<<<< HEAD
-=======
 	SCTP_INPUT_CB(skb)->af = af;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize local addresses for lookups. */
 	af->from_skb(&src, skb, 1);
 	af->from_skb(&dest, skb, 0);
-<<<<<<< HEAD
-=======
 	dif = af->skb_iif(skb);
 	sdif = af->skb_sdif(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the packet is to or from a non-unicast address,
 	 * silently discard the packet.
@@ -283,45 +162,16 @@ int sctp_rcv(struct sk_buff *skb)
 	    !af->addr_valid(&dest, NULL, skb))
 		goto discard_it;
 
-<<<<<<< HEAD
-	asoc = __sctp_rcv_lookup(skb, &src, &dest, &transport);
-
-	if (!asoc)
-		ep = __sctp_rcv_lookup_endpoint(&dest);
-=======
 	asoc = __sctp_rcv_lookup(net, skb, &src, &dest, &transport, dif, sdif);
 
 	if (!asoc)
 		ep = __sctp_rcv_lookup_endpoint(net, skb, &dest, &src, dif, sdif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Retrieve the common input handling substructure. */
 	rcvr = asoc ? &asoc->base : &ep->base;
 	sk = rcvr->sk;
 
 	/*
-<<<<<<< HEAD
-	 * If a frame arrives on an interface and the receiving socket is
-	 * bound to another interface, via SO_BINDTODEVICE, treat it as OOTB
-	 */
-	if (sk->sk_bound_dev_if && (sk->sk_bound_dev_if != af->skb_iif(skb)))
-	{
-		if (asoc) {
-			sctp_association_put(asoc);
-			asoc = NULL;
-		} else {
-			sctp_endpoint_put(ep);
-			ep = NULL;
-		}
-		sk = sctp_get_ctl_sock();
-		ep = sctp_sk(sk)->ep;
-		sctp_endpoint_hold(ep);
-		rcvr = &ep->base;
-	}
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * RFC 2960, 8.4 - Handle "Out of the blue" Packets.
 	 * An SCTP packet is called an "out of the blue" (OOTB)
 	 * packet if it is correctly formed, i.e., passed the
@@ -331,32 +181,20 @@ int sctp_rcv(struct sk_buff *skb)
 	 */
 	if (!asoc) {
 		if (sctp_rcv_ootb(skb)) {
-<<<<<<< HEAD
-			SCTP_INC_STATS_BH(SCTP_MIB_OUTOFBLUES);
-=======
 			__SCTP_INC_STATS(net, SCTP_MIB_OUTOFBLUES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto discard_release;
 		}
 	}
 
 	if (!xfrm_policy_check(sk, XFRM_POLICY_IN, skb, family))
 		goto discard_release;
-<<<<<<< HEAD
-	nf_reset(skb);
-=======
 	nf_reset_ct(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sk_filter(sk, skb))
 		goto discard_release;
 
 	/* Create an SCTP packet structure. */
-<<<<<<< HEAD
-	chunk = sctp_chunkify(skb, asoc, sk);
-=======
 	chunk = sctp_chunkify(skb, asoc, sk, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!chunk)
 		goto discard_release;
 	SCTP_INPUT_CB(skb)->chunk = chunk;
@@ -365,11 +203,7 @@ int sctp_rcv(struct sk_buff *skb)
 	chunk->rcvr = rcvr;
 
 	/* Remember the SCTP header. */
-<<<<<<< HEAD
-	chunk->sctp_hdr = sh;
-=======
 	chunk->sctp_hdr = sctp_hdr(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the source and destination addresses of the incoming chunk.  */
 	sctp_init_addrs(chunk, &src, &dest);
@@ -381,11 +215,7 @@ int sctp_rcv(struct sk_buff *skb)
 	 * bottom halves on this lock, but a user may be in the lock too,
 	 * so check if it is busy.
 	 */
-<<<<<<< HEAD
-	sctp_bh_lock_sock(sk);
-=======
 	bh_lock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sk != rcvr->sk) {
 		/* Our cached sk is different from the rcvr->sk.  This is
@@ -395,16 +225,6 @@ int sctp_rcv(struct sk_buff *skb)
 		 * be doing something with the new socket.  Switch our veiw
 		 * of the current sk.
 		 */
-<<<<<<< HEAD
-		sctp_bh_unlock_sock(sk);
-		sk = rcvr->sk;
-		sctp_bh_lock_sock(sk);
-	}
-
-	if (sock_owned_by_user(sk)) {
-		if (sctp_add_backlog(sk, skb)) {
-			sctp_bh_unlock_sock(sk);
-=======
 		bh_unlock_sock(sk);
 		sk = rcvr->sk;
 		bh_lock_sock(sk);
@@ -413,24 +233,10 @@ int sctp_rcv(struct sk_buff *skb)
 	if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
 		if (sctp_add_backlog(sk, skb)) {
 			bh_unlock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sctp_chunk_free(chunk);
 			skb = NULL; /* sctp_chunk_free already freed the skb */
 			goto discard_release;
 		}
-<<<<<<< HEAD
-		SCTP_INC_STATS_BH(SCTP_MIB_IN_PKT_BACKLOG);
-	} else {
-		SCTP_INC_STATS_BH(SCTP_MIB_IN_PKT_SOFTIRQ);
-		sctp_inq_push(&chunk->rcvr->inqueue, chunk);
-	}
-
-	sctp_bh_unlock_sock(sk);
-
-	/* Release the asoc/ep ref we took in the lookup calls. */
-	if (asoc)
-		sctp_association_put(asoc);
-=======
 		__SCTP_INC_STATS(net, SCTP_MIB_IN_PKT_BACKLOG);
 	} else {
 		__SCTP_INC_STATS(net, SCTP_MIB_IN_PKT_SOFTIRQ);
@@ -442,30 +248,20 @@ int sctp_rcv(struct sk_buff *skb)
 	/* Release the asoc/ep ref we took in the lookup calls. */
 	if (transport)
 		sctp_transport_put(transport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		sctp_endpoint_put(ep);
 
 	return 0;
 
 discard_it:
-<<<<<<< HEAD
-	SCTP_INC_STATS_BH(SCTP_MIB_IN_PKT_DISCARDS);
-=======
 	__SCTP_INC_STATS(net, SCTP_MIB_IN_PKT_DISCARDS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree_skb(skb);
 	return 0;
 
 discard_release:
 	/* Release the asoc/ep ref we took in the lookup calls. */
-<<<<<<< HEAD
-	if (asoc)
-		sctp_association_put(asoc);
-=======
 	if (transport)
 		sctp_transport_put(transport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		sctp_endpoint_put(ep);
 
@@ -481,10 +277,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 {
 	struct sctp_chunk *chunk = SCTP_INPUT_CB(skb)->chunk;
 	struct sctp_inq *inqueue = &chunk->rcvr->inqueue;
-<<<<<<< HEAD
-=======
 	struct sctp_transport *t = chunk->transport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_ep_common *rcvr = NULL;
 	int backloged = 0;
 
@@ -512,38 +305,24 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 		 */
 
 		sk = rcvr->sk;
-<<<<<<< HEAD
-		sctp_bh_lock_sock(sk);
-
-		if (sock_owned_by_user(sk)) {
-			if (sk_add_backlog(sk, skb))
-=======
 		local_bh_disable();
 		bh_lock_sock(sk);
 
 		if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
 			if (sk_add_backlog(sk, skb, READ_ONCE(sk->sk_rcvbuf)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sctp_chunk_free(chunk);
 			else
 				backloged = 1;
 		} else
 			sctp_inq_push(inqueue, chunk);
 
-<<<<<<< HEAD
-		sctp_bh_unlock_sock(sk);
-=======
 		bh_unlock_sock(sk);
 		local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* If the chunk was backloged again, don't drop refs */
 		if (backloged)
 			return 0;
 	} else {
-<<<<<<< HEAD
-		sctp_inq_push(inqueue, chunk);
-=======
 		if (!sctp_newsk_ready(sk)) {
 			if (!sk_add_backlog(sk, skb, READ_ONCE(sk->sk_rcvbuf)))
 				return 0;
@@ -551,17 +330,12 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 		} else {
 			sctp_inq_push(inqueue, chunk);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 done:
 	/* Release the refs we took in sctp_add_backlog */
 	if (SCTP_EP_TYPE_ASSOCIATION == rcvr->type)
-<<<<<<< HEAD
-		sctp_association_put(sctp_assoc(rcvr));
-=======
 		sctp_transport_put(t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (SCTP_EP_TYPE_SOCKET == rcvr->type)
 		sctp_endpoint_put(sctp_ep(rcvr));
 	else
@@ -573,29 +347,18 @@ done:
 static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb)
 {
 	struct sctp_chunk *chunk = SCTP_INPUT_CB(skb)->chunk;
-<<<<<<< HEAD
-	struct sctp_ep_common *rcvr = chunk->rcvr;
-	int ret;
-
-	ret = sk_add_backlog(sk, skb);
-=======
 	struct sctp_transport *t = chunk->transport;
 	struct sctp_ep_common *rcvr = chunk->rcvr;
 	int ret;
 
 	ret = sk_add_backlog(sk, skb, READ_ONCE(sk->sk_rcvbuf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret) {
 		/* Hold the assoc/ep while hanging on the backlog queue.
 		 * This way, we know structures we need will not disappear
 		 * from us
 		 */
 		if (SCTP_EP_TYPE_ASSOCIATION == rcvr->type)
-<<<<<<< HEAD
-			sctp_association_hold(sctp_assoc(rcvr));
-=======
 			sctp_transport_hold(t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (SCTP_EP_TYPE_SOCKET == rcvr->type)
 			sctp_endpoint_hold(sctp_ep(rcvr));
 		else
@@ -609,12 +372,6 @@ static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb)
 void sctp_icmp_frag_needed(struct sock *sk, struct sctp_association *asoc,
 			   struct sctp_transport *t, __u32 pmtu)
 {
-<<<<<<< HEAD
-	if (!t || (t->pathmtu <= pmtu))
-		return;
-
-	if (sock_owned_by_user(sk)) {
-=======
 	if (!t ||
 	    (t->pathmtu <= pmtu &&
 	     t->pl.probe_size + sctp_transport_pl_hlen(t) <= pmtu))
@@ -622,31 +379,11 @@ void sctp_icmp_frag_needed(struct sock *sk, struct sctp_association *asoc,
 
 	if (sock_owned_by_user(sk)) {
 		atomic_set(&t->mtu_info, pmtu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asoc->pmtu_pending = 1;
 		t->pmtu_pending = 1;
 		return;
 	}
 
-<<<<<<< HEAD
-	if (t->param_flags & SPP_PMTUD_ENABLE) {
-		/* Update transports view of the MTU */
-		sctp_transport_update_pmtu(t, pmtu);
-
-		/* Update association pmtu. */
-		sctp_assoc_sync_pmtu(asoc);
-	}
-
-	/* Retransmit with the new pmtu setting.
-	 * Normally, if PMTU discovery is disabled, an ICMP Fragmentation
-	 * Needed will never be sent, but if a message was sent before
-	 * PMTU discovery was disabled that was larger than the PMTU, it
-	 * would not be fragmented, so it must be re-transmitted fragmented.
-	 */
-	sctp_retransmit(&asoc->outqueue, t, SCTP_RTXR_PMTUD);
-}
-
-=======
 	if (!(t->param_flags & SPP_PMTUD_ENABLE))
 		/* We can't allow retransmitting in such case, as the
 		 * retransmission would be sized just as before, and thus we
@@ -680,7 +417,6 @@ void sctp_icmp_redirect(struct sock *sk, struct sctp_transport *t,
 		dst->ops->redirect(dst, sk, skb);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SCTP Implementer's Guide, 2.37 ICMP handling procedures
  *
@@ -696,28 +432,12 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 			   struct sctp_association *asoc,
 			   struct sctp_transport *t)
 {
-<<<<<<< HEAD
-	SCTP_DEBUG_PRINTK("%s\n",  __func__);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sock_owned_by_user(sk)) {
 		if (timer_pending(&t->proto_unreach_timer))
 			return;
 		else {
 			if (!mod_timer(&t->proto_unreach_timer,
 						jiffies + (HZ/20)))
-<<<<<<< HEAD
-				sctp_association_hold(asoc);
-		}
-			
-	} else {
-		if (timer_pending(&t->proto_unreach_timer) &&
-		    del_timer(&t->proto_unreach_timer))
-			sctp_association_put(asoc);
-
-		sctp_do_sm(SCTP_EVENT_T_OTHER,
-=======
 				sctp_transport_hold(t);
 		}
 	} else {
@@ -730,7 +450,6 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 			sctp_transport_put(t);
 
 		sctp_do_sm(net, SCTP_EVENT_T_OTHER,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   SCTP_ST_OTHER(SCTP_EVENT_ICMP_PROTO_UNREACH),
 			   asoc->state, asoc->ep, asoc, t,
 			   GFP_ATOMIC);
@@ -738,34 +457,21 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 }
 
 /* Common lookup code for icmp/icmpv6 error handler. */
-<<<<<<< HEAD
-struct sock *sctp_err_lookup(int family, struct sk_buff *skb,
-=======
 struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct sctphdr *sctphdr,
 			     struct sctp_association **app,
 			     struct sctp_transport **tpp)
 {
-<<<<<<< HEAD
-=======
 	struct sctp_init_chunk *chunkhdr, _chunkhdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union sctp_addr saddr;
 	union sctp_addr daddr;
 	struct sctp_af *af;
 	struct sock *sk = NULL;
 	struct sctp_association *asoc;
 	struct sctp_transport *transport = NULL;
-<<<<<<< HEAD
-	struct sctp_init_chunk *chunkhdr;
-	__u32 vtag = ntohl(sctphdr->vtag);
-	int len = skb->len - ((void *)sctphdr - (void *)skb->data);
-=======
 	__u32 vtag = ntohl(sctphdr->vtag);
 	int sdif = inet_sdif(skb);
 	int dif = inet_iif(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*app = NULL; *tpp = NULL;
 
@@ -781,11 +487,7 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 	/* Look for an association that matches the incoming ICMP error
 	 * packet.
 	 */
-<<<<<<< HEAD
-	asoc = __sctp_lookup_association(&saddr, &daddr, &transport);
-=======
 	asoc = __sctp_lookup_association(net, &saddr, &daddr, &transport, dif, sdif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!asoc)
 		return NULL;
 
@@ -804,15 +506,6 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 	 * discard the packet.
 	 */
 	if (vtag == 0) {
-<<<<<<< HEAD
-		chunkhdr = (void *)sctphdr + sizeof(struct sctphdr);
-		if (len < sizeof(struct sctphdr) + sizeof(sctp_chunkhdr_t)
-			  + sizeof(__be32) ||
-		    chunkhdr->chunk_hdr.type != SCTP_CID_INIT ||
-		    ntohl(chunkhdr->init_hdr.init_tag) != asoc->c.my_vtag) {
-			goto out;
-		}
-=======
 		/* chunk header + first 4 octects of init header */
 		chunkhdr = skb_header_pointer(skb, skb_transport_offset(skb) +
 					      sizeof(struct sctphdr),
@@ -823,49 +516,28 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 		    ntohl(chunkhdr->init_hdr.init_tag) != asoc->c.my_vtag)
 			goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (vtag != asoc->c.peer_vtag) {
 		goto out;
 	}
 
-<<<<<<< HEAD
-	sctp_bh_lock_sock(sk);
-=======
 	bh_lock_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If too many ICMPs get dropped on busy
 	 * servers this needs to be solved differently.
 	 */
 	if (sock_owned_by_user(sk))
-<<<<<<< HEAD
-		NET_INC_STATS_BH(&init_net, LINUX_MIB_LOCKDROPPEDICMPS);
-=======
 		__NET_INC_STATS(net, LINUX_MIB_LOCKDROPPEDICMPS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*app = asoc;
 	*tpp = transport;
 	return sk;
 
 out:
-<<<<<<< HEAD
-	if (asoc)
-		sctp_association_put(asoc);
-=======
 	sctp_transport_put(transport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 /* Common cleanup code for icmp/icmpv6 error handler. */
-<<<<<<< HEAD
-void sctp_err_finish(struct sock *sk, struct sctp_association *asoc)
-{
-	sctp_bh_unlock_sock(sk);
-	if (asoc)
-		sctp_association_put(asoc);
-=======
 void sctp_err_finish(struct sock *sk, struct sctp_transport *t)
 	__releases(&((__sk)->sk_lock.slock))
 {
@@ -915,7 +587,6 @@ static void sctp_v4_err_handle(struct sctp_transport *t, struct sk_buff *skb,
 	} else {  /* Only an error on timeout */
 		WRITE_ONCE(sk->sk_err_soft, err);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -933,25 +604,6 @@ static void sctp_v4_err_handle(struct sctp_transport *t, struct sk_buff *skb,
  * is probably better.
  *
  */
-<<<<<<< HEAD
-void sctp_v4_err(struct sk_buff *skb, __u32 info)
-{
-	const struct iphdr *iph = (const struct iphdr *)skb->data;
-	const int ihlen = iph->ihl * 4;
-	const int type = icmp_hdr(skb)->type;
-	const int code = icmp_hdr(skb)->code;
-	struct sock *sk;
-	struct sctp_association *asoc = NULL;
-	struct sctp_transport *transport;
-	struct inet_sock *inet;
-	sk_buff_data_t saveip, savesctp;
-	int err;
-
-	if (skb->len < ihlen + 8) {
-		ICMP_INC_STATS_BH(&init_net, ICMP_MIB_INERRORS);
-		return;
-	}
-=======
 int sctp_v4_err(struct sk_buff *skb, __u32 info)
 {
 	const struct iphdr *iph = (const struct iphdr *)skb->data;
@@ -962,77 +614,17 @@ int sctp_v4_err(struct sk_buff *skb, __u32 info)
 	struct sctp_association *asoc;
 	__u16 saveip, savesctp;
 	struct sock *sk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fix up skb to look at the embedded net header. */
 	saveip = skb->network_header;
 	savesctp = skb->transport_header;
 	skb_reset_network_header(skb);
-<<<<<<< HEAD
-	skb_set_transport_header(skb, ihlen);
-	sk = sctp_err_lookup(AF_INET, skb, sctp_hdr(skb), &asoc, &transport);
-=======
 	skb_set_transport_header(skb, iph->ihl * 4);
 	sk = sctp_err_lookup(net, AF_INET, skb, sctp_hdr(skb), &asoc, &transport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Put back, the original values. */
 	skb->network_header = saveip;
 	skb->transport_header = savesctp;
 	if (!sk) {
-<<<<<<< HEAD
-		ICMP_INC_STATS_BH(&init_net, ICMP_MIB_INERRORS);
-		return;
-	}
-	/* Warning:  The sock lock is held.  Remember to call
-	 * sctp_err_finish!
-	 */
-
-	switch (type) {
-	case ICMP_PARAMETERPROB:
-		err = EPROTO;
-		break;
-	case ICMP_DEST_UNREACH:
-		if (code > NR_ICMP_UNREACH)
-			goto out_unlock;
-
-		/* PMTU discovery (RFC1191) */
-		if (ICMP_FRAG_NEEDED == code) {
-			sctp_icmp_frag_needed(sk, asoc, transport, info);
-			goto out_unlock;
-		}
-		else {
-			if (ICMP_PROT_UNREACH == code) {
-				sctp_icmp_proto_unreachable(sk, asoc,
-							    transport);
-				goto out_unlock;
-			}
-		}
-		err = icmp_err_convert[code].errno;
-		break;
-	case ICMP_TIME_EXCEEDED:
-		/* Ignore any time exceeded errors due to fragment reassembly
-		 * timeouts.
-		 */
-		if (ICMP_EXC_FRAGTIME == code)
-			goto out_unlock;
-
-		err = EHOSTUNREACH;
-		break;
-	default:
-		goto out_unlock;
-	}
-
-	inet = inet_sk(sk);
-	if (!sock_owned_by_user(sk) && inet->recverr) {
-		sk->sk_err = err;
-		sk->sk_error_report(sk);
-	} else {  /* Only an error on timeout */
-		sk->sk_err_soft = err;
-	}
-
-out_unlock:
-	sctp_err_finish(sk, asoc);
-=======
 		__ICMP_INC_STATS(net, ICMP_MIB_INERRORS);
 		return -ENOENT;
 	}
@@ -1071,7 +663,6 @@ int sctp_udp_v4_err(struct sock *sk, struct sk_buff *skb)
 
 	sctp_err_finish(sk, t);
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1088,21 +679,6 @@ int sctp_udp_v4_err(struct sock *sk, struct sk_buff *skb)
  */
 static int sctp_rcv_ootb(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	sctp_chunkhdr_t *ch;
-	__u8 *ch_end;
-
-	ch = (sctp_chunkhdr_t *) skb->data;
-
-	/* Scan through all the chunks in the packet.  */
-	do {
-		/* Break out if chunk length is less then minimal. */
-		if (ntohs(ch->length) < sizeof(sctp_chunkhdr_t))
-			break;
-
-		ch_end = ((__u8 *)ch) + WORD_ROUND(ntohs(ch->length));
-		if (ch_end > skb_tail_pointer(skb))
-=======
 	struct sctp_chunkhdr *ch, _ch;
 	int ch_end, offset = 0;
 
@@ -1120,7 +696,6 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
 
 		ch_end = offset + SCTP_PAD4(ntohs(ch->length));
 		if (ch_end > skb->len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* RFC 8.4, 2) If the OOTB packet contains an ABORT chunk, the
@@ -1145,13 +720,8 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
 		if (SCTP_CID_INIT == ch->type && (void *)ch != skb->data)
 			goto discard;
 
-<<<<<<< HEAD
-		ch = (sctp_chunkhdr_t *) ch_end;
-	} while (ch_end < skb_tail_pointer(skb));
-=======
 		offset = ch_end;
 	} while (ch_end < skb->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1160,29 +730,6 @@ discard:
 }
 
 /* Insert endpoint into the hash table.  */
-<<<<<<< HEAD
-static void __sctp_hash_endpoint(struct sctp_endpoint *ep)
-{
-	struct sctp_ep_common *epb;
-	struct sctp_hashbucket *head;
-
-	epb = &ep->base;
-
-	epb->hashent = sctp_ep_hashfn(epb->bind_addr.port);
-	head = &sctp_ep_hashtable[epb->hashent];
-
-	sctp_write_lock(&head->lock);
-	hlist_add_head(&epb->node, &head->chain);
-	sctp_write_unlock(&head->lock);
-}
-
-/* Add an endpoint to the hash. Local BH-safe. */
-void sctp_hash_endpoint(struct sctp_endpoint *ep)
-{
-	sctp_local_bh_disable();
-	__sctp_hash_endpoint(ep);
-	sctp_local_bh_enable();
-=======
 static int __sctp_hash_endpoint(struct sctp_endpoint *ep)
 {
 	struct sock *sk = ep->base.sk;
@@ -1244,26 +791,11 @@ int sctp_hash_endpoint(struct sctp_endpoint *ep)
 	local_bh_enable();
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Remove endpoint from the hash table.  */
 static void __sctp_unhash_endpoint(struct sctp_endpoint *ep)
 {
-<<<<<<< HEAD
-	struct sctp_hashbucket *head;
-	struct sctp_ep_common *epb;
-
-	epb = &ep->base;
-
-	epb->hashent = sctp_ep_hashfn(epb->bind_addr.port);
-
-	head = &sctp_ep_hashtable[epb->hashent];
-
-	sctp_write_lock(&head->lock);
-	hlist_del_init(&epb->node);
-	sctp_write_unlock(&head->lock);
-=======
 	struct sock *sk = ep->base.sk;
 	struct sctp_hashbucket *head;
 
@@ -1277,40 +809,11 @@ static void __sctp_unhash_endpoint(struct sctp_endpoint *ep)
 	write_lock(&head->lock);
 	hlist_del_init(&ep->node);
 	write_unlock(&head->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Remove endpoint from the hash.  Local BH-safe. */
 void sctp_unhash_endpoint(struct sctp_endpoint *ep)
 {
-<<<<<<< HEAD
-	sctp_local_bh_disable();
-	__sctp_unhash_endpoint(ep);
-	sctp_local_bh_enable();
-}
-
-/* Look up an endpoint. */
-static struct sctp_endpoint *__sctp_rcv_lookup_endpoint(const union sctp_addr *laddr)
-{
-	struct sctp_hashbucket *head;
-	struct sctp_ep_common *epb;
-	struct sctp_endpoint *ep;
-	struct hlist_node *node;
-	int hash;
-
-	hash = sctp_ep_hashfn(ntohs(laddr->v4.sin_port));
-	head = &sctp_ep_hashtable[hash];
-	read_lock(&head->lock);
-	sctp_for_each_hentry(epb, node, &head->chain) {
-		ep = sctp_ep(epb);
-		if (sctp_endpoint_is_match(ep, laddr))
-			goto hit;
-	}
-
-	ep = sctp_sk((sctp_get_ctl_sock()))->ep;
-
-hit:
-=======
 	local_bh_disable();
 	__sctp_unhash_endpoint(ep);
 	local_bh_enable();
@@ -1364,70 +867,11 @@ hit:
 		if (sk)
 			ep = sctp_sk(sk)->ep;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sctp_endpoint_hold(ep);
 	read_unlock(&head->lock);
 	return ep;
 }
 
-<<<<<<< HEAD
-/* Insert association into the hash table.  */
-static void __sctp_hash_established(struct sctp_association *asoc)
-{
-	struct sctp_ep_common *epb;
-	struct sctp_hashbucket *head;
-
-	epb = &asoc->base;
-
-	/* Calculate which chain this entry will belong to. */
-	epb->hashent = sctp_assoc_hashfn(epb->bind_addr.port, asoc->peer.port);
-
-	head = &sctp_assoc_hashtable[epb->hashent];
-
-	sctp_write_lock(&head->lock);
-	hlist_add_head(&epb->node, &head->chain);
-	sctp_write_unlock(&head->lock);
-}
-
-/* Add an association to the hash. Local BH-safe. */
-void sctp_hash_established(struct sctp_association *asoc)
-{
-	if (asoc->temp)
-		return;
-
-	sctp_local_bh_disable();
-	__sctp_hash_established(asoc);
-	sctp_local_bh_enable();
-}
-
-/* Remove association from the hash table.  */
-static void __sctp_unhash_established(struct sctp_association *asoc)
-{
-	struct sctp_hashbucket *head;
-	struct sctp_ep_common *epb;
-
-	epb = &asoc->base;
-
-	epb->hashent = sctp_assoc_hashfn(epb->bind_addr.port,
-					 asoc->peer.port);
-
-	head = &sctp_assoc_hashtable[epb->hashent];
-
-	sctp_write_lock(&head->lock);
-	hlist_del_init(&epb->node);
-	sctp_write_unlock(&head->lock);
-}
-
-/* Remove association from the hash table.  Local BH-safe. */
-void sctp_unhash_established(struct sctp_association *asoc)
-{
-	if (asoc->temp)
-		return;
-
-	sctp_local_bh_disable();
-	__sctp_unhash_established(asoc);
-	sctp_local_bh_enable();
-=======
 /* rhashtable for transport */
 struct sctp_hash_cmp_arg {
 	const union sctp_addr	*paddr;
@@ -1599,59 +1043,10 @@ struct sctp_transport *sctp_epaddr_lookup_transport(
 			return t;
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Look up an association. */
 static struct sctp_association *__sctp_lookup_association(
-<<<<<<< HEAD
-					const union sctp_addr *local,
-					const union sctp_addr *peer,
-					struct sctp_transport **pt)
-{
-	struct sctp_hashbucket *head;
-	struct sctp_ep_common *epb;
-	struct sctp_association *asoc;
-	struct sctp_transport *transport;
-	struct hlist_node *node;
-	int hash;
-
-	/* Optimize here for direct hit, only listening connections can
-	 * have wildcards anyways.
-	 */
-	hash = sctp_assoc_hashfn(ntohs(local->v4.sin_port), ntohs(peer->v4.sin_port));
-	head = &sctp_assoc_hashtable[hash];
-	read_lock(&head->lock);
-	sctp_for_each_hentry(epb, node, &head->chain) {
-		asoc = sctp_assoc(epb);
-		transport = sctp_assoc_is_match(asoc, local, peer);
-		if (transport)
-			goto hit;
-	}
-
-	read_unlock(&head->lock);
-
-	return NULL;
-
-hit:
-	*pt = transport;
-	sctp_association_hold(asoc);
-	read_unlock(&head->lock);
-	return asoc;
-}
-
-/* Look up an association. BH-safe. */
-SCTP_STATIC
-struct sctp_association *sctp_lookup_association(const union sctp_addr *laddr,
-						 const union sctp_addr *paddr,
-					    struct sctp_transport **transportp)
-{
-	struct sctp_association *asoc;
-
-	sctp_local_bh_disable();
-	asoc = __sctp_lookup_association(laddr, paddr, transportp);
-	sctp_local_bh_enable();
-=======
 					struct net *net,
 					const union sctp_addr *local,
 					const union sctp_addr *peer,
@@ -1685,26 +1080,11 @@ struct sctp_association *sctp_lookup_association(struct net *net,
 	rcu_read_lock();
 	asoc = __sctp_lookup_association(net, laddr, paddr, transportp, dif, sdif);
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return asoc;
 }
 
 /* Is there an association matching the given local and peer addresses? */
-<<<<<<< HEAD
-int sctp_has_association(const union sctp_addr *laddr,
-			 const union sctp_addr *paddr)
-{
-	struct sctp_association *asoc;
-	struct sctp_transport *transport;
-
-	if ((asoc = sctp_lookup_association(laddr, paddr, &transport))) {
-		sctp_association_put(asoc);
-		return 1;
-	}
-
-	return 0;
-=======
 bool sctp_has_association(struct net *net,
 			  const union sctp_addr *laddr,
 			  const union sctp_addr *paddr,
@@ -1718,7 +1098,6 @@ bool sctp_has_association(struct net *net,
 	}
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1739,27 +1118,17 @@ bool sctp_has_association(struct net *net,
  * in certain circumstances.
  *
  */
-<<<<<<< HEAD
-static struct sctp_association *__sctp_rcv_init_lookup(struct sk_buff *skb,
-	const union sctp_addr *laddr, struct sctp_transport **transportp)
-=======
 static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
 	struct sk_buff *skb,
 	const union sctp_addr *laddr, struct sctp_transport **transportp,
 	int dif, int sdif)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_association *asoc;
 	union sctp_addr addr;
 	union sctp_addr *paddr = &addr;
 	struct sctphdr *sh = sctp_hdr(skb);
 	union sctp_params params;
-<<<<<<< HEAD
-	sctp_init_chunk_t *init;
-	struct sctp_transport *transport;
-=======
 	struct sctp_init_chunk *init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_af *af;
 
 	/*
@@ -1778,33 +1147,20 @@ static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
 	/* Find the start of the TLVs and the end of the chunk.  This is
 	 * the region we search for address parameters.
 	 */
-<<<<<<< HEAD
-	init = (sctp_init_chunk_t *)skb->data;
-
-	/* Walk the parameters looking for embedded addresses. */
-	sctp_walk_params(params, init, init_hdr.params) {
-=======
 	init = (struct sctp_init_chunk *)skb->data;
 
 	/* Walk the parameters looking for embedded addresses. */
 	sctp_walk_params(params, init) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Note: Ignoring hostname addresses. */
 		af = sctp_get_af_specific(param_type2af(params.p->type));
 		if (!af)
 			continue;
 
-<<<<<<< HEAD
-		af->from_addr_param(paddr, params.addr, sh->source, 0);
-
-		asoc = __sctp_lookup_association(laddr, paddr, &transport);
-=======
 		if (!af->from_addr_param(paddr, params.addr, sh->source, 0))
 			continue;
 
 		asoc = __sctp_lookup_association(net, laddr, paddr, transportp, dif, sdif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (asoc)
 			return asoc;
 	}
@@ -1827,14 +1183,6 @@ static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
  * subsequent ASCONF Chunks. If found, proceed to rule D4.
  */
 static struct sctp_association *__sctp_rcv_asconf_lookup(
-<<<<<<< HEAD
-					sctp_chunkhdr_t *ch,
-					const union sctp_addr *laddr,
-					__be16 peer_port,
-					struct sctp_transport **transportp)
-{
-	sctp_addip_chunk_t *asconf = (struct sctp_addip_chunk *)ch;
-=======
 					struct net *net,
 					struct sctp_chunkhdr *ch,
 					const union sctp_addr *laddr,
@@ -1843,17 +1191,13 @@ static struct sctp_association *__sctp_rcv_asconf_lookup(
 					int dif, int sdif)
 {
 	struct sctp_addip_chunk *asconf = (struct sctp_addip_chunk *)ch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_af *af;
 	union sctp_addr_param *param;
 	union sctp_addr paddr;
 
-<<<<<<< HEAD
-=======
 	if (ntohs(ch->length) < sizeof(*asconf) + sizeof(struct sctp_paramhdr))
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Skip over the ADDIP header and find the Address parameter */
 	param = (union sctp_addr_param *)(asconf + 1);
 
@@ -1861,16 +1205,10 @@ static struct sctp_association *__sctp_rcv_asconf_lookup(
 	if (unlikely(!af))
 		return NULL;
 
-<<<<<<< HEAD
-	af->from_addr_param(&paddr, param, peer_port, 0);
-
-	return __sctp_lookup_association(laddr, &paddr, transportp);
-=======
 	if (!af->from_addr_param(&paddr, param, peer_port, 0))
 		return NULL;
 
 	return __sctp_lookup_association(net, laddr, &paddr, transportp, dif, sdif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1883,14 +1221,6 @@ static struct sctp_association *__sctp_rcv_asconf_lookup(
 * This means that any chunks that can help us identify the association need
 * to be looked at to find this association.
 */
-<<<<<<< HEAD
-static struct sctp_association *__sctp_rcv_walk_lookup(struct sk_buff *skb,
-				      const union sctp_addr *laddr,
-				      struct sctp_transport **transportp)
-{
-	struct sctp_association *asoc = NULL;
-	sctp_chunkhdr_t *ch;
-=======
 static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 				      struct sk_buff *skb,
 				      const union sctp_addr *laddr,
@@ -1899,7 +1229,6 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 {
 	struct sctp_association *asoc = NULL;
 	struct sctp_chunkhdr *ch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int have_auth = 0;
 	unsigned int chunk_num = 1;
 	__u8 *ch_end;
@@ -1907,42 +1236,6 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 	/* Walk through the chunks looking for AUTH or ASCONF chunks
 	 * to help us find the association.
 	 */
-<<<<<<< HEAD
-	ch = (sctp_chunkhdr_t *) skb->data;
-	do {
-		/* Break out if chunk length is less then minimal. */
-		if (ntohs(ch->length) < sizeof(sctp_chunkhdr_t))
-			break;
-
-		ch_end = ((__u8 *)ch) + WORD_ROUND(ntohs(ch->length));
-		if (ch_end > skb_tail_pointer(skb))
-			break;
-
-		switch(ch->type) {
-		    case SCTP_CID_AUTH:
-			    have_auth = chunk_num;
-			    break;
-
-		    case SCTP_CID_COOKIE_ECHO:
-			    /* If a packet arrives containing an AUTH chunk as
-			     * a first chunk, a COOKIE-ECHO chunk as the second
-			     * chunk, and possibly more chunks after them, and
-			     * the receiver does not have an STCB for that
-			     * packet, then authentication is based on
-			     * the contents of the COOKIE- ECHO chunk.
-			     */
-			    if (have_auth == 1 && chunk_num == 2)
-				    return NULL;
-			    break;
-
-		    case SCTP_CID_ASCONF:
-			    if (have_auth || sctp_addip_noauth)
-				    asoc = __sctp_rcv_asconf_lookup(ch, laddr,
-							sctp_hdr(skb)->source,
-							transportp);
-		    default:
-			    break;
-=======
 	ch = (struct sctp_chunkhdr *)skb->data;
 	do {
 		/* Break out if chunk length is less then minimal. */
@@ -1979,21 +1272,14 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 			break;
 		default:
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (asoc)
 			break;
 
-<<<<<<< HEAD
-		ch = (sctp_chunkhdr_t *) ch_end;
-		chunk_num++;
-	} while (ch_end < skb_tail_pointer(skb));
-=======
 		ch = (struct sctp_chunkhdr *)ch_end;
 		chunk_num++;
 	} while (ch_end + sizeof(*ch) < skb_tail_pointer(skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return asoc;
 }
@@ -2004,15 +1290,6 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
  * include looking inside of INIT/INIT-ACK chunks or after the AUTH
  * chunks.
  */
-<<<<<<< HEAD
-static struct sctp_association *__sctp_rcv_lookup_harder(struct sk_buff *skb,
-				      const union sctp_addr *laddr,
-				      struct sctp_transport **transportp)
-{
-	sctp_chunkhdr_t *ch;
-
-	ch = (sctp_chunkhdr_t *) skb->data;
-=======
 static struct sctp_association *__sctp_rcv_lookup_harder(struct net *net,
 				      struct sk_buff *skb,
 				      const union sctp_addr *laddr,
@@ -2030,43 +1307,12 @@ static struct sctp_association *__sctp_rcv_lookup_harder(struct net *net,
 		return NULL;
 
 	ch = (struct sctp_chunkhdr *)skb->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The code below will attempt to walk the chunk and extract
 	 * parameter information.  Before we do that, we need to verify
 	 * that the chunk length doesn't cause overflow.  Otherwise, we'll
 	 * walk off the end.
 	 */
-<<<<<<< HEAD
-	if (WORD_ROUND(ntohs(ch->length)) > skb->len)
-		return NULL;
-
-	/* If this is INIT/INIT-ACK look inside the chunk too. */
-	switch (ch->type) {
-	case SCTP_CID_INIT:
-	case SCTP_CID_INIT_ACK:
-		return __sctp_rcv_init_lookup(skb, laddr, transportp);
-		break;
-
-	default:
-		return __sctp_rcv_walk_lookup(skb, laddr, transportp);
-		break;
-	}
-
-
-	return NULL;
-}
-
-/* Lookup an association for an inbound skb. */
-static struct sctp_association *__sctp_rcv_lookup(struct sk_buff *skb,
-				      const union sctp_addr *paddr,
-				      const union sctp_addr *laddr,
-				      struct sctp_transport **transportp)
-{
-	struct sctp_association *asoc;
-
-	asoc = __sctp_lookup_association(laddr, paddr, transportp);
-=======
 	if (SCTP_PAD4(ntohs(ch->length)) > skb->len)
 		return NULL;
 
@@ -2090,17 +1336,11 @@ static struct sctp_association *__sctp_rcv_lookup(struct net *net,
 	asoc = __sctp_lookup_association(net, laddr, paddr, transportp, dif, sdif);
 	if (asoc)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Further lookup for INIT/INIT-ACK packets.
 	 * SCTP Implementors Guide, 2.18 Handling of address
 	 * parameters within the INIT or INIT-ACK.
 	 */
-<<<<<<< HEAD
-	if (!asoc)
-		asoc = __sctp_rcv_lookup_harder(skb, laddr, transportp);
-
-=======
 	asoc = __sctp_rcv_lookup_harder(net, skb, laddr, transportp, dif, sdif);
 	if (asoc)
 		goto out;
@@ -2115,6 +1355,5 @@ static struct sctp_association *__sctp_rcv_lookup(struct net *net,
 			 &paddr->v6.sin6_addr, ntohs(paddr->v6.sin6_port));
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return asoc;
 }

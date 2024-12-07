@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2008 Juergen Beisert
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation
- * 51 Franklin Street, Fifth Floor
- * Boston, MA  02110-1301, USA.
- */
-
-#include <linux/clk.h>
-#include <linux/completion.h>
-#include <linux/delay.h>
-#include <linux/err.h>
-#include <linux/gpio.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
 // Copyright (C) 2008 Juergen Beisert
@@ -37,27 +9,11 @@
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/irq.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/platform_device.h>
-#include <linux/slab.h>
-#include <linux/spi/spi.h>
-#include <linux/spi/spi_bitbang.h>
-#include <linux/types.h>
-#include <linux/of.h>
-#include <linux/of_device.h>
-#include <linux/of_gpio.h>
-
-#include <mach/spi.h>
-
-#define DRIVER_NAME "spi_imx"
-
-=======
 #include <linux/pinctrl/consumer.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
@@ -83,7 +39,6 @@ MODULE_PARM_DESC(polling_limit_us,
 
 #define MXC_RPM_TIMEOUT		2000 /* 2000ms */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MXC_CSPIRXDATA		0x00
 #define MXC_CSPITXDATA		0x04
 #define MXC_CSPICTRL		0x08
@@ -93,15 +48,6 @@ MODULE_PARM_DESC(polling_limit_us,
 /* generic defines to abstract from the different register layouts */
 #define MXC_INT_RR	(1 << 0) /* Receive data ready interrupt */
 #define MXC_INT_TE	(1 << 1) /* Transmit FIFO empty interrupt */
-<<<<<<< HEAD
-
-struct spi_imx_config {
-	unsigned int speed_hz;
-	unsigned int bpw;
-	unsigned int mode;
-	u8 cs;
-};
-=======
 #define MXC_INT_RDR	BIT(4) /* Receive date threshold interrupt */
 
 /* The maximum bytes that a sdma BD can transfer. */
@@ -109,7 +55,6 @@ struct spi_imx_config {
 #define MX51_ECSPI_CTRL_MAX_BURST	512
 /* The maximum bytes that IMX53_ECSPI can transfer in target mode.*/
 #define MX53_MAX_TRANSFER_BYTES		512
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum spi_imx_devtype {
 	IMX1_CSPI,
@@ -117,24 +62,13 @@ enum spi_imx_devtype {
 	IMX27_CSPI,
 	IMX31_CSPI,
 	IMX35_CSPI,	/* CSPI on all i.mx except above */
-<<<<<<< HEAD
-	IMX51_ECSPI,	/* ECSPI on i.mx51 and later */
-=======
 	IMX51_ECSPI,	/* ECSPI on i.mx51 */
 	IMX53_ECSPI,	/* ECSPI on i.mx53 and later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct spi_imx_data;
 
 struct spi_imx_devtype_data {
-<<<<<<< HEAD
-	void (*intctrl)(struct spi_imx_data *, int);
-	int (*config)(struct spi_imx_data *, struct spi_imx_config *);
-	void (*trigger)(struct spi_imx_data *);
-	int (*rx_available)(struct spi_imx_data *);
-	void (*reset)(struct spi_imx_data *);
-=======
 	void (*intctrl)(struct spi_imx_data *spi_imx, int enable);
 	int (*prepare_message)(struct spi_imx_data *spi_imx, struct spi_message *msg);
 	int (*prepare_transfer)(struct spi_imx_data *spi_imx, struct spi_device *spi);
@@ -152,30 +86,10 @@ struct spi_imx_devtype_data {
 	 * https://www.nxp.com/docs/en/errata/IMX6DQCE.pdf
 	 */
 	bool tx_glitch_fixed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum spi_imx_devtype devtype;
 };
 
 struct spi_imx_data {
-<<<<<<< HEAD
-	struct spi_bitbang bitbang;
-
-	struct completion xfer_done;
-	void __iomem *base;
-	int irq;
-	struct clk *clk;
-	unsigned long spi_clk;
-
-	unsigned int count;
-	void (*tx)(struct spi_imx_data *);
-	void (*rx)(struct spi_imx_data *);
-	void *rx_buf;
-	const void *tx_buf;
-	unsigned int txfifo; /* number of words pushed in tx FIFO */
-
-	struct spi_imx_devtype_data *devtype_data;
-	int chipselect[0];
-=======
 	struct spi_controller *controller;
 	struct device *dev;
 
@@ -212,7 +126,6 @@ struct spi_imx_data {
 	struct completion dma_tx_completion;
 
 	const struct spi_imx_devtype_data *devtype_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int is_imx27_cspi(struct spi_imx_data *d)
@@ -225,11 +138,6 @@ static inline int is_imx35_cspi(struct spi_imx_data *d)
 	return d->devtype_data->devtype == IMX35_CSPI;
 }
 
-<<<<<<< HEAD
-static inline unsigned spi_imx_get_fifosize(struct spi_imx_data *d)
-{
-	return (d->devtype_data->devtype == IMX51_ECSPI) ? 64 : 8;
-=======
 static inline int is_imx51_ecspi(struct spi_imx_data *d)
 {
 	return d->devtype_data->devtype == IMX51_ECSPI;
@@ -238,7 +146,6 @@ static inline int is_imx51_ecspi(struct spi_imx_data *d)
 static inline int is_imx53_ecspi(struct spi_imx_data *d)
 {
 	return d->devtype_data->devtype == IMX53_ECSPI;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MXC_SPI_BUF_RX(type)						\
@@ -250,11 +157,8 @@ static void spi_imx_buf_rx_##type(struct spi_imx_data *spi_imx)		\
 		*(type *)spi_imx->rx_buf = val;				\
 		spi_imx->rx_buf += sizeof(type);			\
 	}								\
-<<<<<<< HEAD
-=======
 									\
 	spi_imx->remainder -= sizeof(type);				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MXC_SPI_BUF_TX(type)						\
@@ -287,63 +191,26 @@ static int mxc_clkdivs[] = {0, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192,
 
 /* MX21, MX27 */
 static unsigned int spi_imx_clkdiv_1(unsigned int fin,
-<<<<<<< HEAD
-		unsigned int fspi, unsigned int max)
-=======
 		unsigned int fspi, unsigned int max, unsigned int *fres)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	for (i = 2; i < max; i++)
 		if (fspi * mxc_clkdivs[i] >= fin)
-<<<<<<< HEAD
-			return i;
-
-	return max;
-=======
 			break;
 
 	*fres = fin / mxc_clkdivs[i];
 	return i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* MX1, MX31, MX35, MX51 CSPI */
 static unsigned int spi_imx_clkdiv_2(unsigned int fin,
-<<<<<<< HEAD
-		unsigned int fspi)
-=======
 		unsigned int fspi, unsigned int *fres)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, div = 4;
 
 	for (i = 0; i < 7; i++) {
 		if (fspi * div >= fin)
-<<<<<<< HEAD
-			return i;
-		div <<= 1;
-	}
-
-	return 7;
-}
-
-#define MX51_ECSPI_CTRL		0x08
-#define MX51_ECSPI_CTRL_ENABLE		(1 <<  0)
-#define MX51_ECSPI_CTRL_XCH		(1 <<  2)
-#define MX51_ECSPI_CTRL_MODE_MASK	(0xf << 4)
-#define MX51_ECSPI_CTRL_POSTDIV_OFFSET	8
-#define MX51_ECSPI_CTRL_PREDIV_OFFSET	12
-#define MX51_ECSPI_CTRL_CS(cs)		((cs) << 18)
-#define MX51_ECSPI_CTRL_BL_OFFSET	20
-
-#define MX51_ECSPI_CONFIG	0x0c
-#define MX51_ECSPI_CONFIG_SCLKPHA(cs)	(1 << ((cs) +  0))
-#define MX51_ECSPI_CONFIG_SCLKPOL(cs)	(1 << ((cs) +  4))
-#define MX51_ECSPI_CONFIG_SBBCTRL(cs)	(1 << ((cs) +  8))
-#define MX51_ECSPI_CONFIG_SSBPOL(cs)	(1 << ((cs) + 12))
-=======
 			goto out;
 		div <<= 1;
 	}
@@ -416,13 +283,10 @@ static bool spi_imx_can_dma(struct spi_controller *controller, struct spi_device
 #define MX51_ECSPI_CONFIG_SSBPOL(cs)	(1 << ((cs & 3) + 12))
 #define MX51_ECSPI_CONFIG_DATACTL(cs)	(1 << ((cs & 3) + 16))
 #define MX51_ECSPI_CONFIG_SCLKCTL(cs)	(1 << ((cs & 3) + 20))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MX51_ECSPI_INT		0x10
 #define MX51_ECSPI_INT_TEEN		(1 <<  0)
 #define MX51_ECSPI_INT_RREN		(1 <<  3)
-<<<<<<< HEAD
-=======
 #define MX51_ECSPI_INT_RDREN		(1 <<  4)
 
 #define MX51_ECSPI_DMA		0x14
@@ -433,15 +297,10 @@ static bool spi_imx_can_dma(struct spi_controller *controller, struct spi_device
 #define MX51_ECSPI_DMA_TEDEN		(1 << 7)
 #define MX51_ECSPI_DMA_RXDEN		(1 << 23)
 #define MX51_ECSPI_DMA_RXTDEN		(1 << 31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MX51_ECSPI_STAT		0x18
 #define MX51_ECSPI_STAT_RR		(1 <<  3)
 
-<<<<<<< HEAD
-/* MX51 eCSPI */
-static unsigned int mx51_ecspi_clkdiv(unsigned int fin, unsigned int fspi)
-=======
 #define MX51_ECSPI_TESTREG	0x20
 #define MX51_ECSPI_TESTREG_LBC	BIT(31)
 
@@ -589,22 +448,15 @@ static void mx53_ecspi_tx_target(struct spi_imx_data *spi_imx)
 /* MX51 eCSPI */
 static unsigned int mx51_ecspi_clkdiv(struct spi_imx_data *spi_imx,
 				      unsigned int fspi, unsigned int *fres)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * there are two 4-bit dividers, the pre-divider divides by
 	 * $pre, the post-divider by 2^$post
 	 */
 	unsigned int pre, post;
-<<<<<<< HEAD
-
-	if (unlikely(fspi > fin))
-		return 0;
-=======
 	unsigned int fin = spi_imx->spi_clk;
 
 	fspi = min(fspi, fin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	post = fls(fin) - fls(fspi);
 	if (fin > fspi << post)
@@ -614,42 +466,26 @@ static unsigned int mx51_ecspi_clkdiv(struct spi_imx_data *spi_imx,
 
 	post = max(4U, post) - 4;
 	if (unlikely(post > 0xf)) {
-<<<<<<< HEAD
-		pr_err("%s: cannot set clock freq: %u (base freq: %u)\n",
-				__func__, fspi, fin);
-=======
 		dev_err(spi_imx->dev, "cannot set clock freq: %u (base freq: %u)\n",
 				fspi, fin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0xff;
 	}
 
 	pre = DIV_ROUND_UP(fin, fspi << post) - 1;
 
-<<<<<<< HEAD
-	pr_debug("%s: fin: %u, fspi: %u, post: %u, pre: %u\n",
-			__func__, fin, fspi, post, pre);
-=======
 	dev_dbg(spi_imx->dev, "%s: fin: %u, fspi: %u, post: %u, pre: %u\n",
 			__func__, fin, fspi, post, pre);
 
 	/* Resulting frequency for the SCLK line. */
 	*fres = (fin / (pre + 1)) >> post;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (pre << MX51_ECSPI_CTRL_PREDIV_OFFSET) |
 		(post << MX51_ECSPI_CTRL_POSTDIV_OFFSET);
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx51_ecspi_intctrl(struct spi_imx_data *spi_imx, int enable)
-{
-	unsigned val = 0;
-=======
 static void mx51_ecspi_intctrl(struct spi_imx_data *spi_imx, int enable)
 {
 	unsigned int val = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (enable & MXC_INT_TE)
 		val |= MX51_ECSPI_INT_TEEN;
@@ -657,12 +493,6 @@ static void mx51_ecspi_intctrl(struct spi_imx_data *spi_imx, int enable)
 	if (enable & MXC_INT_RR)
 		val |= MX51_ECSPI_INT_RREN;
 
-<<<<<<< HEAD
-	writel(val, spi_imx->base + MX51_ECSPI_INT);
-}
-
-static void __maybe_unused mx51_ecspi_trigger(struct spi_imx_data *spi_imx)
-=======
 	if (enable & MXC_INT_RDR)
 		val |= MX51_ECSPI_INT_RDREN;
 
@@ -670,7 +500,6 @@ static void __maybe_unused mx51_ecspi_trigger(struct spi_imx_data *spi_imx)
 }
 
 static void mx51_ecspi_trigger(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 reg;
 
@@ -679,48 +508,6 @@ static void mx51_ecspi_trigger(struct spi_imx_data *spi_imx)
 	writel(reg, spi_imx->base + MX51_ECSPI_CTRL);
 }
 
-<<<<<<< HEAD
-static int __maybe_unused mx51_ecspi_config(struct spi_imx_data *spi_imx,
-		struct spi_imx_config *config)
-{
-	u32 ctrl = MX51_ECSPI_CTRL_ENABLE, cfg = 0;
-
-	/*
-	 * The hardware seems to have a race condition when changing modes. The
-	 * current assumption is that the selection of the channel arrives
-	 * earlier in the hardware than the mode bits when they are written at
-	 * the same time.
-	 * So set master mode for all channels as we do not support slave mode.
-	 */
-	ctrl |= MX51_ECSPI_CTRL_MODE_MASK;
-
-	/* set clock speed */
-	ctrl |= mx51_ecspi_clkdiv(spi_imx->spi_clk, config->speed_hz);
-
-	/* set chip select to use */
-	ctrl |= MX51_ECSPI_CTRL_CS(config->cs);
-
-	ctrl |= (config->bpw - 1) << MX51_ECSPI_CTRL_BL_OFFSET;
-
-	cfg |= MX51_ECSPI_CONFIG_SBBCTRL(config->cs);
-
-	if (config->mode & SPI_CPHA)
-		cfg |= MX51_ECSPI_CONFIG_SCLKPHA(config->cs);
-
-	if (config->mode & SPI_CPOL)
-		cfg |= MX51_ECSPI_CONFIG_SCLKPOL(config->cs);
-
-	if (config->mode & SPI_CS_HIGH)
-		cfg |= MX51_ECSPI_CONFIG_SSBPOL(config->cs);
-
-	writel(ctrl, spi_imx->base + MX51_ECSPI_CTRL);
-	writel(cfg, spi_imx->base + MX51_ECSPI_CONFIG);
-
-	return 0;
-}
-
-static int __maybe_unused mx51_ecspi_rx_available(struct spi_imx_data *spi_imx)
-=======
 static void mx51_ecspi_disable(struct spi_imx_data *spi_imx)
 {
 	u32 ctrl;
@@ -927,16 +714,11 @@ static void mx51_setup_wml(struct spi_imx_data *spi_imx)
 }
 
 static int mx51_ecspi_rx_available(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readl(spi_imx->base + MX51_ECSPI_STAT) & MX51_ECSPI_STAT_RR;
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx51_ecspi_reset(struct spi_imx_data *spi_imx)
-=======
 static void mx51_ecspi_reset(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* drain receive buffer */
 	while (mx51_ecspi_rx_available(spi_imx))
@@ -947,14 +729,9 @@ static void mx51_ecspi_reset(struct spi_imx_data *spi_imx)
 #define MX31_INTREG_RREN	(1 << 3)
 
 #define MX31_CSPICTRL_ENABLE	(1 << 0)
-<<<<<<< HEAD
-#define MX31_CSPICTRL_MASTER	(1 << 1)
-#define MX31_CSPICTRL_XCH	(1 << 2)
-=======
 #define MX31_CSPICTRL_HOST	(1 << 1)
 #define MX31_CSPICTRL_XCH	(1 << 2)
 #define MX31_CSPICTRL_SMC	(1 << 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MX31_CSPICTRL_POL	(1 << 4)
 #define MX31_CSPICTRL_PHA	(1 << 5)
 #define MX31_CSPICTRL_SSCTL	(1 << 6)
@@ -965,11 +742,6 @@ static void mx51_ecspi_reset(struct spi_imx_data *spi_imx)
 #define MX35_CSPICTRL_CS_SHIFT	12
 #define MX31_CSPICTRL_DR_SHIFT	16
 
-<<<<<<< HEAD
-#define MX31_CSPISTATUS		0x14
-#define MX31_STATUS_RR		(1 << 3)
-
-=======
 #define MX31_CSPI_DMAREG	0x10
 #define MX31_DMAREG_RH_DEN	(1<<4)
 #define MX31_DMAREG_TH_DEN	(1<<1)
@@ -980,16 +752,11 @@ static void mx51_ecspi_reset(struct spi_imx_data *spi_imx)
 #define MX31_CSPI_TESTREG	0x1C
 #define MX31_TEST_LBC		(1 << 14)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* These functions also work for the i.MX35, but be aware that
  * the i.MX35 has a slightly different register layout for bits
  * we do not use here.
  */
-<<<<<<< HEAD
-static void __maybe_unused mx31_intctrl(struct spi_imx_data *spi_imx, int enable)
-=======
 static void mx31_intctrl(struct spi_imx_data *spi_imx, int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val = 0;
 
@@ -1001,11 +768,7 @@ static void mx31_intctrl(struct spi_imx_data *spi_imx, int enable)
 	writel(val, spi_imx->base + MXC_CSPIINT);
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx31_trigger(struct spi_imx_data *spi_imx)
-=======
 static void mx31_trigger(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int reg;
 
@@ -1014,41 +777,6 @@ static void mx31_trigger(struct spi_imx_data *spi_imx)
 	writel(reg, spi_imx->base + MXC_CSPICTRL);
 }
 
-<<<<<<< HEAD
-static int __maybe_unused mx31_config(struct spi_imx_data *spi_imx,
-		struct spi_imx_config *config)
-{
-	unsigned int reg = MX31_CSPICTRL_ENABLE | MX31_CSPICTRL_MASTER;
-	int cs = spi_imx->chipselect[config->cs];
-
-	reg |= spi_imx_clkdiv_2(spi_imx->spi_clk, config->speed_hz) <<
-		MX31_CSPICTRL_DR_SHIFT;
-
-	if (is_imx35_cspi(spi_imx)) {
-		reg |= (config->bpw - 1) << MX35_CSPICTRL_BL_SHIFT;
-		reg |= MX31_CSPICTRL_SSCTL;
-	} else {
-		reg |= (config->bpw - 1) << MX31_CSPICTRL_BC_SHIFT;
-	}
-
-	if (config->mode & SPI_CPHA)
-		reg |= MX31_CSPICTRL_PHA;
-	if (config->mode & SPI_CPOL)
-		reg |= MX31_CSPICTRL_POL;
-	if (config->mode & SPI_CS_HIGH)
-		reg |= MX31_CSPICTRL_SSPOL;
-	if (cs < 0)
-		reg |= (cs + 32) <<
-			(is_imx35_cspi(spi_imx) ? MX35_CSPICTRL_CS_SHIFT :
-						  MX31_CSPICTRL_CS_SHIFT);
-
-	writel(reg, spi_imx->base + MXC_CSPICTRL);
-
-	return 0;
-}
-
-static int __maybe_unused mx31_rx_available(struct spi_imx_data *spi_imx)
-=======
 static int mx31_prepare_message(struct spi_imx_data *spi_imx,
 				struct spi_message *msg)
 {
@@ -1108,16 +836,11 @@ static int mx31_prepare_transfer(struct spi_imx_data *spi_imx,
 }
 
 static int mx31_rx_available(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readl(spi_imx->base + MX31_CSPISTATUS) & MX31_STATUS_RR;
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx31_reset(struct spi_imx_data *spi_imx)
-=======
 static void mx31_reset(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* drain receive buffer */
 	while (readl(spi_imx->base + MX31_CSPISTATUS) & MX31_STATUS_RR)
@@ -1133,19 +856,11 @@ static void mx31_reset(struct spi_imx_data *spi_imx)
 #define MX21_CSPICTRL_SSPOL	(1 << 8)
 #define MX21_CSPICTRL_XCH	(1 << 9)
 #define MX21_CSPICTRL_ENABLE	(1 << 10)
-<<<<<<< HEAD
-#define MX21_CSPICTRL_MASTER	(1 << 11)
-#define MX21_CSPICTRL_DR_SHIFT	14
-#define MX21_CSPICTRL_CS_SHIFT	19
-
-static void __maybe_unused mx21_intctrl(struct spi_imx_data *spi_imx, int enable)
-=======
 #define MX21_CSPICTRL_HOST	(1 << 11)
 #define MX21_CSPICTRL_DR_SHIFT	14
 #define MX21_CSPICTRL_CS_SHIFT	19
 
 static void mx21_intctrl(struct spi_imx_data *spi_imx, int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val = 0;
 
@@ -1157,11 +872,7 @@ static void mx21_intctrl(struct spi_imx_data *spi_imx, int enable)
 	writel(val, spi_imx->base + MXC_CSPIINT);
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx21_trigger(struct spi_imx_data *spi_imx)
-=======
 static void mx21_trigger(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int reg;
 
@@ -1170,27 +881,6 @@ static void mx21_trigger(struct spi_imx_data *spi_imx)
 	writel(reg, spi_imx->base + MXC_CSPICTRL);
 }
 
-<<<<<<< HEAD
-static int __maybe_unused mx21_config(struct spi_imx_data *spi_imx,
-		struct spi_imx_config *config)
-{
-	unsigned int reg = MX21_CSPICTRL_ENABLE | MX21_CSPICTRL_MASTER;
-	int cs = spi_imx->chipselect[config->cs];
-	unsigned int max = is_imx27_cspi(spi_imx) ? 16 : 18;
-
-	reg |= spi_imx_clkdiv_1(spi_imx->spi_clk, config->speed_hz, max) <<
-		MX21_CSPICTRL_DR_SHIFT;
-	reg |= config->bpw - 1;
-
-	if (config->mode & SPI_CPHA)
-		reg |= MX21_CSPICTRL_PHA;
-	if (config->mode & SPI_CPOL)
-		reg |= MX21_CSPICTRL_POL;
-	if (config->mode & SPI_CS_HIGH)
-		reg |= MX21_CSPICTRL_SSPOL;
-	if (cs < 0)
-		reg |= (cs + 32) << MX21_CSPICTRL_CS_SHIFT;
-=======
 static int mx21_prepare_message(struct spi_imx_data *spi_imx,
 				struct spi_message *msg)
 {
@@ -1218,27 +908,18 @@ static int mx21_prepare_transfer(struct spi_imx_data *spi_imx,
 		reg |= MX21_CSPICTRL_SSPOL;
 	if (!spi_get_csgpiod(spi, 0))
 		reg |= spi_get_chipselect(spi, 0) << MX21_CSPICTRL_CS_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(reg, spi_imx->base + MXC_CSPICTRL);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __maybe_unused mx21_rx_available(struct spi_imx_data *spi_imx)
-=======
 static int mx21_rx_available(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readl(spi_imx->base + MXC_CSPIINT) & MX21_INTREG_RR;
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx21_reset(struct spi_imx_data *spi_imx)
-=======
 static void mx21_reset(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	writel(1, spi_imx->base + MXC_RESET);
 }
@@ -1251,17 +932,10 @@ static void mx21_reset(struct spi_imx_data *spi_imx)
 #define MX1_CSPICTRL_PHA	(1 << 5)
 #define MX1_CSPICTRL_XCH	(1 << 8)
 #define MX1_CSPICTRL_ENABLE	(1 << 9)
-<<<<<<< HEAD
-#define MX1_CSPICTRL_MASTER	(1 << 10)
-#define MX1_CSPICTRL_DR_SHIFT	13
-
-static void __maybe_unused mx1_intctrl(struct spi_imx_data *spi_imx, int enable)
-=======
 #define MX1_CSPICTRL_HOST	(1 << 10)
 #define MX1_CSPICTRL_DR_SHIFT	13
 
 static void mx1_intctrl(struct spi_imx_data *spi_imx, int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val = 0;
 
@@ -1273,11 +947,7 @@ static void mx1_intctrl(struct spi_imx_data *spi_imx, int enable)
 	writel(val, spi_imx->base + MXC_CSPIINT);
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx1_trigger(struct spi_imx_data *spi_imx)
-=======
 static void mx1_trigger(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int reg;
 
@@ -1286,20 +956,6 @@ static void mx1_trigger(struct spi_imx_data *spi_imx)
 	writel(reg, spi_imx->base + MXC_CSPICTRL);
 }
 
-<<<<<<< HEAD
-static int __maybe_unused mx1_config(struct spi_imx_data *spi_imx,
-		struct spi_imx_config *config)
-{
-	unsigned int reg = MX1_CSPICTRL_ENABLE | MX1_CSPICTRL_MASTER;
-
-	reg |= spi_imx_clkdiv_2(spi_imx->spi_clk, config->speed_hz) <<
-		MX1_CSPICTRL_DR_SHIFT;
-	reg |= config->bpw - 1;
-
-	if (config->mode & SPI_CPHA)
-		reg |= MX1_CSPICTRL_PHA;
-	if (config->mode & SPI_CPOL)
-=======
 static int mx1_prepare_message(struct spi_imx_data *spi_imx,
 			       struct spi_message *msg)
 {
@@ -1321,7 +977,6 @@ static int mx1_prepare_transfer(struct spi_imx_data *spi_imx,
 	if (spi->mode & SPI_CPHA)
 		reg |= MX1_CSPICTRL_PHA;
 	if (spi->mode & SPI_CPOL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg |= MX1_CSPICTRL_POL;
 
 	writel(reg, spi_imx->base + MXC_CSPICTRL);
@@ -1329,32 +984,18 @@ static int mx1_prepare_transfer(struct spi_imx_data *spi_imx,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __maybe_unused mx1_rx_available(struct spi_imx_data *spi_imx)
-=======
 static int mx1_rx_available(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readl(spi_imx->base + MXC_CSPIINT) & MX1_INTREG_RR;
 }
 
-<<<<<<< HEAD
-static void __maybe_unused mx1_reset(struct spi_imx_data *spi_imx)
-=======
 static void mx1_reset(struct spi_imx_data *spi_imx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	writel(1, spi_imx->base + MXC_RESET);
 }
 
 static struct spi_imx_devtype_data imx1_cspi_devtype_data = {
 	.intctrl = mx1_intctrl,
-<<<<<<< HEAD
-	.config = mx1_config,
-	.trigger = mx1_trigger,
-	.rx_available = mx1_rx_available,
-	.reset = mx1_reset,
-=======
 	.prepare_message = mx1_prepare_message,
 	.prepare_transfer = mx1_prepare_transfer,
 	.trigger = mx1_trigger,
@@ -1364,18 +1005,11 @@ static struct spi_imx_devtype_data imx1_cspi_devtype_data = {
 	.has_dmamode = false,
 	.dynamic_burst = false,
 	.has_targetmode = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.devtype = IMX1_CSPI,
 };
 
 static struct spi_imx_devtype_data imx21_cspi_devtype_data = {
 	.intctrl = mx21_intctrl,
-<<<<<<< HEAD
-	.config = mx21_config,
-	.trigger = mx21_trigger,
-	.rx_available = mx21_rx_available,
-	.reset = mx21_reset,
-=======
 	.prepare_message = mx21_prepare_message,
 	.prepare_transfer = mx21_prepare_transfer,
 	.trigger = mx21_trigger,
@@ -1385,19 +1019,12 @@ static struct spi_imx_devtype_data imx21_cspi_devtype_data = {
 	.has_dmamode = false,
 	.dynamic_burst = false,
 	.has_targetmode = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.devtype = IMX21_CSPI,
 };
 
 static struct spi_imx_devtype_data imx27_cspi_devtype_data = {
 	/* i.mx27 cspi shares the functions with i.mx21 one */
 	.intctrl = mx21_intctrl,
-<<<<<<< HEAD
-	.config = mx21_config,
-	.trigger = mx21_trigger,
-	.rx_available = mx21_rx_available,
-	.reset = mx21_reset,
-=======
 	.prepare_message = mx21_prepare_message,
 	.prepare_transfer = mx21_prepare_transfer,
 	.trigger = mx21_trigger,
@@ -1407,18 +1034,11 @@ static struct spi_imx_devtype_data imx27_cspi_devtype_data = {
 	.has_dmamode = false,
 	.dynamic_burst = false,
 	.has_targetmode = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.devtype = IMX27_CSPI,
 };
 
 static struct spi_imx_devtype_data imx31_cspi_devtype_data = {
 	.intctrl = mx31_intctrl,
-<<<<<<< HEAD
-	.config = mx31_config,
-	.trigger = mx31_trigger,
-	.rx_available = mx31_rx_available,
-	.reset = mx31_reset,
-=======
 	.prepare_message = mx31_prepare_message,
 	.prepare_transfer = mx31_prepare_transfer,
 	.trigger = mx31_trigger,
@@ -1428,19 +1048,12 @@ static struct spi_imx_devtype_data imx31_cspi_devtype_data = {
 	.has_dmamode = false,
 	.dynamic_burst = false,
 	.has_targetmode = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.devtype = IMX31_CSPI,
 };
 
 static struct spi_imx_devtype_data imx35_cspi_devtype_data = {
 	/* i.mx35 and later cspi shares the functions with i.mx31 one */
 	.intctrl = mx31_intctrl,
-<<<<<<< HEAD
-	.config = mx31_config,
-	.trigger = mx31_trigger,
-	.rx_available = mx31_rx_available,
-	.reset = mx31_reset,
-=======
 	.prepare_message = mx31_prepare_message,
 	.prepare_transfer = mx31_prepare_transfer,
 	.trigger = mx31_trigger,
@@ -1450,43 +1063,11 @@ static struct spi_imx_devtype_data imx35_cspi_devtype_data = {
 	.has_dmamode = true,
 	.dynamic_burst = false,
 	.has_targetmode = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.devtype = IMX35_CSPI,
 };
 
 static struct spi_imx_devtype_data imx51_ecspi_devtype_data = {
 	.intctrl = mx51_ecspi_intctrl,
-<<<<<<< HEAD
-	.config = mx51_ecspi_config,
-	.trigger = mx51_ecspi_trigger,
-	.rx_available = mx51_ecspi_rx_available,
-	.reset = mx51_ecspi_reset,
-	.devtype = IMX51_ECSPI,
-};
-
-static struct platform_device_id spi_imx_devtype[] = {
-	{
-		.name = "imx1-cspi",
-		.driver_data = (kernel_ulong_t) &imx1_cspi_devtype_data,
-	}, {
-		.name = "imx21-cspi",
-		.driver_data = (kernel_ulong_t) &imx21_cspi_devtype_data,
-	}, {
-		.name = "imx27-cspi",
-		.driver_data = (kernel_ulong_t) &imx27_cspi_devtype_data,
-	}, {
-		.name = "imx31-cspi",
-		.driver_data = (kernel_ulong_t) &imx31_cspi_devtype_data,
-	}, {
-		.name = "imx35-cspi",
-		.driver_data = (kernel_ulong_t) &imx35_cspi_devtype_data,
-	}, {
-		.name = "imx51-ecspi",
-		.driver_data = (kernel_ulong_t) &imx51_ecspi_devtype_data,
-	}, {
-		/* sentinel */
-	}
-=======
 	.prepare_message = mx51_ecspi_prepare_message,
 	.prepare_transfer = mx51_ecspi_prepare_transfer,
 	.trigger = mx51_ecspi_trigger,
@@ -1530,7 +1111,6 @@ static struct spi_imx_devtype_data imx6ul_ecspi_devtype_data = {
 	.tx_glitch_fixed = true,
 	.disable = mx51_ecspi_disable,
 	.devtype = IMX51_ECSPI,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct of_device_id spi_imx_dt_ids[] = {
@@ -1540,22 +1120,6 @@ static const struct of_device_id spi_imx_dt_ids[] = {
 	{ .compatible = "fsl,imx31-cspi", .data = &imx31_cspi_devtype_data, },
 	{ .compatible = "fsl,imx35-cspi", .data = &imx35_cspi_devtype_data, },
 	{ .compatible = "fsl,imx51-ecspi", .data = &imx51_ecspi_devtype_data, },
-<<<<<<< HEAD
-	{ /* sentinel */ }
-};
-
-static void spi_imx_chipselect(struct spi_device *spi, int is_active)
-{
-	struct spi_imx_data *spi_imx = spi_master_get_devdata(spi->master);
-	int gpio = spi_imx->chipselect[spi->chip_select];
-	int active = is_active != BITBANG_CS_INACTIVE;
-	int dev_is_lowactive = !(spi->mode & SPI_CS_HIGH);
-
-	if (gpio < 0)
-		return;
-
-	gpio_set_value(gpio, dev_is_lowactive ^ active);
-=======
 	{ .compatible = "fsl,imx53-ecspi", .data = &imx53_ecspi_devtype_data, },
 	{ .compatible = "fsl,imx6ul-ecspi", .data = &imx6ul_ecspi_devtype_data, },
 	{ /* sentinel */ }
@@ -1570,16 +1134,10 @@ static void spi_imx_set_burst_len(struct spi_imx_data *spi_imx, int n_bits)
 	ctrl &= ~MX51_ECSPI_CTRL_BL_MASK;
 	ctrl |= ((n_bits - 1) << MX51_ECSPI_CTRL_BL_OFFSET);
 	writel(ctrl, spi_imx->base + MX51_ECSPI_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void spi_imx_push(struct spi_imx_data *spi_imx)
 {
-<<<<<<< HEAD
-	while (spi_imx->txfifo < spi_imx_get_fifosize(spi_imx)) {
-		if (!spi_imx->count)
-			break;
-=======
 	unsigned int burst_len;
 
 	/*
@@ -1610,29 +1168,20 @@ static void spi_imx_push(struct spi_imx_data *spi_imx)
 		if (spi_imx->dynamic_burst &&
 		    spi_imx->txfifo >= DIV_ROUND_UP(spi_imx->remainder, 4))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spi_imx->tx(spi_imx);
 		spi_imx->txfifo++;
 	}
 
-<<<<<<< HEAD
-	spi_imx->devtype_data->trigger(spi_imx);
-=======
 	if (!spi_imx->target_mode)
 		spi_imx->devtype_data->trigger(spi_imx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t spi_imx_isr(int irq, void *dev_id)
 {
 	struct spi_imx_data *spi_imx = dev_id;
 
-<<<<<<< HEAD
-	while (spi_imx->devtype_data->rx_available(spi_imx)) {
-=======
 	while (spi_imx->txfifo &&
 	       spi_imx->devtype_data->rx_available(spi_imx)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spi_imx->rx(spi_imx);
 		spi_imx->txfifo--;
 	}
@@ -1657,40 +1206,6 @@ static irqreturn_t spi_imx_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int spi_imx_setupxfer(struct spi_device *spi,
-				 struct spi_transfer *t)
-{
-	struct spi_imx_data *spi_imx = spi_master_get_devdata(spi->master);
-	struct spi_imx_config config;
-
-	config.bpw = t ? t->bits_per_word : spi->bits_per_word;
-	config.speed_hz  = t ? t->speed_hz : spi->max_speed_hz;
-	config.mode = spi->mode;
-	config.cs = spi->chip_select;
-
-	if (!config.speed_hz)
-		config.speed_hz = spi->max_speed_hz;
-	if (!config.bpw)
-		config.bpw = spi->bits_per_word;
-	if (!config.speed_hz)
-		config.speed_hz = spi->max_speed_hz;
-
-	/* Initialize the functions for transfer */
-	if (config.bpw <= 8) {
-		spi_imx->rx = spi_imx_buf_rx_u8;
-		spi_imx->tx = spi_imx_buf_tx_u8;
-	} else if (config.bpw <= 16) {
-		spi_imx->rx = spi_imx_buf_rx_u16;
-		spi_imx->tx = spi_imx_buf_tx_u16;
-	} else if (config.bpw <= 32) {
-		spi_imx->rx = spi_imx_buf_rx_u32;
-		spi_imx->tx = spi_imx_buf_tx_u32;
-	} else
-		BUG();
-
-	spi_imx->devtype_data->config(spi_imx, &config);
-=======
 static int spi_imx_dma_configure(struct spi_controller *controller)
 {
 	int ret;
@@ -1731,17 +1246,10 @@ static int spi_imx_dma_configure(struct spi_controller *controller)
 		dev_err(spi_imx->dev, "RX dma configuration failed with %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int spi_imx_transfer(struct spi_device *spi,
-				struct spi_transfer *transfer)
-{
-	struct spi_imx_data *spi_imx = spi_master_get_devdata(spi->master);
-=======
 static int spi_imx_setupxfer(struct spi_device *spi,
 				 struct spi_transfer *t)
 {
@@ -1994,30 +1502,19 @@ static int spi_imx_pio_transfer(struct spi_device *spi,
 	struct spi_imx_data *spi_imx = spi_controller_get_devdata(spi->controller);
 	unsigned long transfer_timeout;
 	unsigned long timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi_imx->tx_buf = transfer->tx_buf;
 	spi_imx->rx_buf = transfer->rx_buf;
 	spi_imx->count = transfer->len;
 	spi_imx->txfifo = 0;
-<<<<<<< HEAD
-
-	init_completion(&spi_imx->xfer_done);
-=======
 	spi_imx->remainder = 0;
 
 	reinit_completion(&spi_imx->xfer_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi_imx_push(spi_imx);
 
 	spi_imx->devtype_data->intctrl(spi_imx, MXC_INT_TE);
 
-<<<<<<< HEAD
-	wait_for_completion(&spi_imx->xfer_done);
-
-	return transfer->len;
-=======
 	transfer_timeout = spi_imx_calculate_timeout(spi_imx, transfer->len);
 
 	timeout = wait_for_completion_timeout(&spi_imx->xfer_done,
@@ -2159,28 +1656,13 @@ static int spi_imx_transfer_one(struct spi_controller *controller,
 		return spi_imx_poll_transfer(spi, transfer);
 
 	return spi_imx_pio_transfer(spi, transfer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spi_imx_setup(struct spi_device *spi)
 {
-<<<<<<< HEAD
-	struct spi_imx_data *spi_imx = spi_master_get_devdata(spi->master);
-	int gpio = spi_imx->chipselect[spi->chip_select];
-
 	dev_dbg(&spi->dev, "%s: mode %d, %u bpw, %d hz\n", __func__,
 		 spi->mode, spi->bits_per_word, spi->max_speed_hz);
 
-	if (gpio >= 0)
-		gpio_direction_output(gpio, spi->mode & SPI_CS_HIGH ? 0 : 1);
-
-	spi_imx_chipselect(spi, BITBANG_CS_INACTIVE);
-
-=======
-	dev_dbg(&spi->dev, "%s: mode %d, %u bpw, %d hz\n", __func__,
-		 spi->mode, spi->bits_per_word, spi->max_speed_hz);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2188,114 +1670,6 @@ static void spi_imx_cleanup(struct spi_device *spi)
 {
 }
 
-<<<<<<< HEAD
-static int __devinit spi_imx_probe(struct platform_device *pdev)
-{
-	struct device_node *np = pdev->dev.of_node;
-	const struct of_device_id *of_id =
-			of_match_device(spi_imx_dt_ids, &pdev->dev);
-	struct spi_imx_master *mxc_platform_info =
-			dev_get_platdata(&pdev->dev);
-	struct spi_master *master;
-	struct spi_imx_data *spi_imx;
-	struct resource *res;
-	int i, ret, num_cs;
-
-	if (!np && !mxc_platform_info) {
-		dev_err(&pdev->dev, "can't get the platform data\n");
-		return -EINVAL;
-	}
-
-	ret = of_property_read_u32(np, "fsl,spi-num-chipselects", &num_cs);
-	if (ret < 0) {
-		if (mxc_platform_info)
-			num_cs = mxc_platform_info->num_chipselect;
-		else
-			return ret;
-	}
-
-	master = spi_alloc_master(&pdev->dev,
-			sizeof(struct spi_imx_data) + sizeof(int) * num_cs);
-	if (!master)
-		return -ENOMEM;
-
-	platform_set_drvdata(pdev, master);
-
-	master->bus_num = pdev->id;
-	master->num_chipselect = num_cs;
-
-	spi_imx = spi_master_get_devdata(master);
-	spi_imx->bitbang.master = spi_master_get(master);
-
-	for (i = 0; i < master->num_chipselect; i++) {
-		int cs_gpio = of_get_named_gpio(np, "cs-gpios", i);
-		if (cs_gpio < 0 && mxc_platform_info)
-			cs_gpio = mxc_platform_info->chipselect[i];
-
-		spi_imx->chipselect[i] = cs_gpio;
-		if (cs_gpio < 0)
-			continue;
-
-		ret = gpio_request(spi_imx->chipselect[i], DRIVER_NAME);
-		if (ret) {
-			dev_err(&pdev->dev, "can't get cs gpios\n");
-			goto out_gpio_free;
-		}
-	}
-
-	spi_imx->bitbang.chipselect = spi_imx_chipselect;
-	spi_imx->bitbang.setup_transfer = spi_imx_setupxfer;
-	spi_imx->bitbang.txrx_bufs = spi_imx_transfer;
-	spi_imx->bitbang.master->setup = spi_imx_setup;
-	spi_imx->bitbang.master->cleanup = spi_imx_cleanup;
-	spi_imx->bitbang.master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
-
-	init_completion(&spi_imx->xfer_done);
-
-	spi_imx->devtype_data = of_id ? of_id->data :
-		(struct spi_imx_devtype_data *) pdev->id_entry->driver_data;
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "can't get platform resource\n");
-		ret = -ENOMEM;
-		goto out_gpio_free;
-	}
-
-	if (!request_mem_region(res->start, resource_size(res), pdev->name)) {
-		dev_err(&pdev->dev, "request_mem_region failed\n");
-		ret = -EBUSY;
-		goto out_gpio_free;
-	}
-
-	spi_imx->base = ioremap(res->start, resource_size(res));
-	if (!spi_imx->base) {
-		ret = -EINVAL;
-		goto out_release_mem;
-	}
-
-	spi_imx->irq = platform_get_irq(pdev, 0);
-	if (spi_imx->irq < 0) {
-		ret = -EINVAL;
-		goto out_iounmap;
-	}
-
-	ret = request_irq(spi_imx->irq, spi_imx_isr, 0, DRIVER_NAME, spi_imx);
-	if (ret) {
-		dev_err(&pdev->dev, "can't get irq%d: %d\n", spi_imx->irq, ret);
-		goto out_iounmap;
-	}
-
-	spi_imx->clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(spi_imx->clk)) {
-		dev_err(&pdev->dev, "unable to get clock\n");
-		ret = PTR_ERR(spi_imx->clk);
-		goto out_free_irq;
-	}
-
-	clk_enable(spi_imx->clk);
-	spi_imx->spi_clk = clk_get_rate(spi_imx->clk);
-=======
 static int
 spi_imx_prepare_message(struct spi_controller *controller, struct spi_message *msg)
 {
@@ -2484,69 +1858,11 @@ static int spi_imx_probe(struct platform_device *pdev)
 			dev_dbg(&pdev->dev, "dma setup error %d, use pio\n",
 				ret);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi_imx->devtype_data->reset(spi_imx);
 
 	spi_imx->devtype_data->intctrl(spi_imx, 0);
 
-<<<<<<< HEAD
-	master->dev.of_node = pdev->dev.of_node;
-	ret = spi_bitbang_start(&spi_imx->bitbang);
-	if (ret) {
-		dev_err(&pdev->dev, "bitbang start failed with %d\n", ret);
-		goto out_clk_put;
-	}
-
-	dev_info(&pdev->dev, "probed\n");
-
-	return ret;
-
-out_clk_put:
-	clk_disable(spi_imx->clk);
-	clk_put(spi_imx->clk);
-out_free_irq:
-	free_irq(spi_imx->irq, spi_imx);
-out_iounmap:
-	iounmap(spi_imx->base);
-out_release_mem:
-	release_mem_region(res->start, resource_size(res));
-out_gpio_free:
-	while (--i >= 0) {
-		if (spi_imx->chipselect[i] >= 0)
-			gpio_free(spi_imx->chipselect[i]);
-	}
-	spi_master_put(master);
-	kfree(master);
-	platform_set_drvdata(pdev, NULL);
-	return ret;
-}
-
-static int __devexit spi_imx_remove(struct platform_device *pdev)
-{
-	struct spi_master *master = platform_get_drvdata(pdev);
-	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	struct spi_imx_data *spi_imx = spi_master_get_devdata(master);
-	int i;
-
-	spi_bitbang_stop(&spi_imx->bitbang);
-
-	writel(0, spi_imx->base + MXC_CSPICTRL);
-	clk_disable(spi_imx->clk);
-	clk_put(spi_imx->clk);
-	free_irq(spi_imx->irq, spi_imx);
-	iounmap(spi_imx->base);
-
-	for (i = 0; i < master->num_chipselect; i++)
-		if (spi_imx->chipselect[i] >= 0)
-			gpio_free(spi_imx->chipselect[i]);
-
-	spi_master_put(master);
-
-	release_mem_region(res->start, resource_size(res));
-
-	platform_set_drvdata(pdev, NULL);
-=======
 	controller->dev.of_node = pdev->dev.of_node;
 	ret = spi_register_controller(controller);
 	if (ret) {
@@ -2614,28 +1930,10 @@ static int __maybe_unused spi_imx_runtime_resume(struct device *dev)
 		clk_disable_unprepare(spi_imx->clk_per);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct platform_driver spi_imx_driver = {
-	.driver = {
-		   .name = DRIVER_NAME,
-		   .owner = THIS_MODULE,
-		   .of_match_table = spi_imx_dt_ids,
-		   },
-	.id_table = spi_imx_devtype,
-	.probe = spi_imx_probe,
-	.remove = __devexit_p(spi_imx_remove),
-};
-module_platform_driver(spi_imx_driver);
-
-MODULE_DESCRIPTION("SPI Master Controller driver");
-MODULE_AUTHOR("Sascha Hauer, Pengutronix");
-MODULE_LICENSE("GPL");
-=======
 static int __maybe_unused spi_imx_runtime_suspend(struct device *dev)
 {
 	struct spi_controller *controller = dev_get_drvdata(dev);
@@ -2682,4 +1980,3 @@ MODULE_DESCRIPTION("i.MX SPI Controller driver");
 MODULE_AUTHOR("Sascha Hauer, Pengutronix");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:" DRIVER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

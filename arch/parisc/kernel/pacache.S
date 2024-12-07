@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PARISC TLB and cache flushing support
  *  Copyright (C) 2000-2001 Hewlett-Packard (John Marvin)
  *  Copyright (C) 2001 Matthew Wilcox (willy at parisc-linux.org)
  *  Copyright (C) 2002 Richard Hirst (rhirst with parisc-linux.org)
-<<<<<<< HEAD
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2, or (at your option)
- *    any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -41,20 +21,6 @@
 
 #include <asm/psw.h>
 #include <asm/assembly.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/cache.h>
-#include <linux/linkage.h>
-
-	.text
-	.align	128
-
-ENTRY(flush_tlb_all_local)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-=======
 #include <asm/cache.h>
 #include <asm/ldcw.h>
 #include <asm/alternative.h>
@@ -66,7 +32,6 @@ ENTRY(flush_tlb_all_local)
 	.align	16
 
 ENTRY_CFI(flush_tlb_all_local)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The pitlbe and pdtlbe instructions should only be used to
 	 * flush the entire tlb. Also, there needs to be no intervening
@@ -98,11 +63,7 @@ ENTRY_CFI(flush_tlb_all_local)
 
 	/* Flush Instruction Tlb */
 
-<<<<<<< HEAD
-	LDREG		ITLB_SID_BASE(%r1), %r20
-=======
 88:	LDREG		ITLB_SID_BASE(%r1), %r20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LDREG		ITLB_SID_STRIDE(%r1), %r21
 	LDREG		ITLB_SID_COUNT(%r1), %r22
 	LDREG		ITLB_OFF_BASE(%r1), %arg0
@@ -121,11 +82,7 @@ fitmanyloop:					/* Loop if LOOP >= 2 */
 
 fitmanymiddle:					/* Loop if LOOP >= 2 */
 	addib,COND(>)		-1, %r31, fitmanymiddle	/* Adjusted inner loop decr */
-<<<<<<< HEAD
-	pitlbe		0(%sr1, %r28)
-=======
 	pitlbe		%r0(%sr1, %r28)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pitlbe,m	%arg1(%sr1, %r28)	/* Last pitlbe and addr adjust */
 	addib,COND(>)		-1, %r29, fitmanymiddle	/* Middle loop decr */
 	copy		%arg3, %r31		/* Re-init inner loop count */
@@ -146,10 +103,7 @@ fitonemiddle:					/* Loop if LOOP = 1 */
 	add		%r21, %r20, %r20		/* increment space */
 
 fitdone:
-<<<<<<< HEAD
-=======
 	ALTERNATIVE(88b, fitdone, ALT_COND_NO_SPLIT_TLB, INSN_NOP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flush Data Tlb */
 
@@ -172,11 +126,7 @@ fdtmanyloop:					/* Loop if LOOP >= 2 */
 
 fdtmanymiddle:					/* Loop if LOOP >= 2 */
 	addib,COND(>)		-1, %r31, fdtmanymiddle	/* Adjusted inner loop decr */
-<<<<<<< HEAD
-	pdtlbe		0(%sr1, %r28)
-=======
 	pdtlbe		%r0(%sr1, %r28)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdtlbe,m	%arg1(%sr1, %r28)	/* Last pdtlbe and addr adjust */
 	addib,COND(>)		-1, %r29, fdtmanymiddle	/* Middle loop decr */
 	copy		%arg3, %r31		/* Re-init inner loop count */
@@ -225,21 +175,6 @@ fdtdone:
 2:      bv		%r0(%r2)
 	nop
 
-<<<<<<< HEAD
-	.exit
-	.procend
-ENDPROC(flush_tlb_all_local)
-
-	.import cache_info,data
-
-ENTRY(flush_instruction_cache_local)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	mtsp		%r0, %sr1
-	load32		cache_info, %r1
-=======
 	/*
 	 * When running in qemu, drop whole flush_tlb_all_local function and
 	 * replace by one pdtlbe instruction, for which QEMU will drop all
@@ -254,7 +189,6 @@ ENDPROC_CFI(flush_tlb_all_local)
 
 ENTRY_CFI(flush_instruction_cache_local)
 88:	load32		cache_info, %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flush Instruction Cache */
 
@@ -262,12 +196,8 @@ ENTRY_CFI(flush_instruction_cache_local)
 	LDREG		ICACHE_STRIDE(%r1), %arg1
 	LDREG		ICACHE_COUNT(%r1), %arg2
 	LDREG		ICACHE_LOOP(%r1), %arg3
-<<<<<<< HEAD
-	rsm             PSW_SM_I, %r22		/* No mmgt ops during loop*/
-=======
 	rsm		PSW_SM_I, %r22		/* No mmgt ops during loop*/
 	mtsp		%r0, %sr1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addib,COND(=)		-1, %arg3, fioneloop	/* Preadjust and test */
 	movb,<,n	%arg3, %r31, fisync	/* If loop < 0, do sync */
 
@@ -279,9 +209,6 @@ fimanyloop:					/* Loop if LOOP >= 2 */
 	addib,COND(<=),n	-1, %arg2, fisync	/* Outer loop decr */
 
 fioneloop:					/* Loop if LOOP = 1 */
-<<<<<<< HEAD
-	addib,COND(>)		-1, %arg2, fioneloop	/* Outer loop count decr */
-=======
 	/* Some implementations may flush with a single fice instruction */
 	cmpib,COND(>>=),n	15, %arg2, fioneloop2
 
@@ -309,30 +236,11 @@ fioneloop1:
 
 fioneloop2:
 	addib,COND(>)	-1, %arg2, fioneloop2	/* Outer loop count decr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fice,m		%arg1(%sr1, %arg0)	/* Fice for one loop */
 
 fisync:
 	sync
 	mtsm		%r22			/* restore I-bit */
-<<<<<<< HEAD
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(flush_instruction_cache_local)
-
-
-	.import cache_info, data
-ENTRY(flush_data_cache_local)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	mtsp		%r0, %sr1
-	load32 		cache_info, %r1
-=======
 89:	ALTERNATIVE(88b, 89b, ALT_COND_NO_ICACHE, INSN_NOP)
 	bv		%r0(%r2)
 	nop
@@ -342,7 +250,6 @@ ENDPROC_CFI(flush_instruction_cache_local)
 	.import cache_info, data
 ENTRY_CFI(flush_data_cache_local)
 88:	load32		cache_info, %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flush Data Cache */
 
@@ -350,12 +257,8 @@ ENTRY_CFI(flush_data_cache_local)
 	LDREG		DCACHE_STRIDE(%r1), %arg1
 	LDREG		DCACHE_COUNT(%r1), %arg2
 	LDREG		DCACHE_LOOP(%r1), %arg3
-<<<<<<< HEAD
-	rsm		PSW_SM_I, %r22
-=======
 	rsm		PSW_SM_I, %r22		/* No mmgt ops during loop*/
 	mtsp		%r0, %sr1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addib,COND(=)		-1, %arg3, fdoneloop	/* Preadjust and test */
 	movb,<,n	%arg3, %r31, fdsync	/* If loop < 0, do sync */
 
@@ -367,44 +270,6 @@ fdmanyloop:					/* Loop if LOOP >= 2 */
 	addib,COND(<=),n	-1, %arg2, fdsync	/* Outer loop decr */
 
 fdoneloop:					/* Loop if LOOP = 1 */
-<<<<<<< HEAD
-	addib,COND(>)		-1, %arg2, fdoneloop	/* Outer loop count decr */
-	fdce,m		%arg1(%sr1, %arg0)	/* Fdce for one loop */
-
-fdsync:
-	syncdma
-	sync
-	mtsm		%r22			/* restore I-bit */
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(flush_data_cache_local)
-
-	.align	16
-
-ENTRY(copy_user_page_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-#ifdef CONFIG_64BIT
-	/* PA8x00 CPUs can consume 2 loads or 1 store per cycle.
-	 * Unroll the loop by hand and arrange insn appropriately.
-	 * GCC probably can do this just as well.
-	 */
-
-	ldd		0(%r25), %r19
-	ldi		(PAGE_SIZE / 128), %r1
-
-	ldw		64(%r25), %r0		/* prefetch 1 cacheline ahead */
-	ldw		128(%r25), %r0		/* prefetch 2 */
-
-1:	ldd		8(%r25), %r20
-	ldw		192(%r25), %r0		/* prefetch 3 */
-	ldw		256(%r25), %r0		/* prefetch 4 */
-=======
 	/* Some implementations may flush with a single fdce instruction */
 	cmpib,COND(>>=),n	15, %arg2, fdoneloop2
 
@@ -519,7 +384,6 @@ ENTRY_CFI(copy_page_asm)
 
 1:	ldd		0(%r25), %r19
 	ldd		8(%r25), %r20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ldd		16(%r25), %r21
 	ldd		24(%r25), %r22
@@ -553,22 +417,6 @@ ENTRY_CFI(copy_page_asm)
 
 	ldd		112(%r25), %r21
 	ldd		120(%r25), %r22
-<<<<<<< HEAD
-	std		%r19, 96(%r26)
-	std		%r20, 104(%r26)
-
-	ldo		128(%r25), %r25
-	std		%r21, 112(%r26)
-	std		%r22, 120(%r26)
-	ldo		128(%r26), %r26
-
-	/* conditional branches nullify on forward taken branch, and on
-	 * non-taken backward branch. Note that .+4 is a backwards branch.
-	 * The ldd should only get executed if the branch is taken.
-	 */
-	addib,COND(>),n	-1, %r1, 1b		/* bundle 10 */
-	ldd		0(%r25), %r19		/* start next loads */
-=======
 	ldo		128(%r25), %r25
 	std		%r19, 96(%r26)
 	std		%r20, 104(%r26)
@@ -579,7 +427,6 @@ ENTRY_CFI(copy_page_asm)
 	/* Note reverse branch hint for addib is taken.  */
 	addib,COND(>),n	-1, %r1, 1b
 	ldo		128(%r26), %r26
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -632,14 +479,7 @@ ENTRY_CFI(copy_page_asm)
 #endif
 	bv		%r0(%r2)
 	nop
-<<<<<<< HEAD
-	.exit
-
-	.procend
-ENDPROC(copy_user_page_asm)
-=======
 ENDPROC_CFI(copy_page_asm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * NOTE: Code in clear_user_page has a hard coded dependency on the
@@ -647,11 +487,8 @@ ENDPROC_CFI(copy_page_asm)
  *       parisc chip designers that there will not ever be a parisc
  *       chip with a larger alias boundary (Never say never :-) ).
  *
-<<<<<<< HEAD
-=======
  *       Yah, what about the PA8800 and PA8900 processors?
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *       Subtle: the dtlb miss handlers support the temp alias region by
  *       "knowing" that if a dtlb miss happens within the temp alias
  *       region it must have occurred while in clear_user_page. Since
@@ -663,20 +500,6 @@ ENDPROC_CFI(copy_page_asm)
  *       miss on the translation, the dtlb miss handler inserts the
  *       translation into the tlb using these values:
  *
-<<<<<<< HEAD
- *          %r26 physical page (shifted for tlb insert) of "to" translation
- *          %r23 physical page (shifted for tlb insert) of "from" translation
- */
-
-#if 0
-
-	/*
-	 * We can't do this since copy_user_page is used to bring in
-	 * file data that might have instructions. Since the data would
-	 * then need to be flushed out so the i-fetch can see it, it
-	 * makes more sense to just copy through the kernel translation
-	 * and flush it.
-=======
  *          %r26 physical address of "to" translation
  *          %r23 physical address of "from" translation
  */
@@ -693,49 +516,11 @@ ENDPROC_CFI(copy_page_asm)
 	 * copy using the kernel mapping.  It only needs the `from' page
 	 * to flushed via the user mapping.  The kunmap routines handle
 	 * the flushes needed for the kernel mapping.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * I'm still keeping this around because it may be possible to
 	 * use it if more information is passed into copy_user_page().
 	 * Have to do some measurements to see if it is worthwhile to
 	 * lobby for such a change.
-<<<<<<< HEAD
-	 */
-
-ENTRY(copy_user_page_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%(__PAGE_OFFSET), %r1
-	sub		%r26, %r1, %r26
-	sub		%r25, %r1, %r23		/* move physical addr into non shadowed reg */
-
-	ldil		L%(TMPALIAS_MAP_START), %r28
-	/* FIXME for different page sizes != 4k */
-#ifdef CONFIG_64BIT
-	extrd,u		%r26,56,32, %r26		/* convert phys addr to tlb insert format */
-	extrd,u		%r23,56,32, %r23		/* convert phys addr to tlb insert format */
-	depd		%r24,63,22, %r28		/* Form aliased virtual address 'to' */
-	depdi		0, 63,12, %r28		/* Clear any offset bits */
-	copy		%r28, %r29
-	depdi		1, 41,1, %r29		/* Form aliased virtual address 'from' */
-#else
-	extrw,u		%r26, 24,25, %r26	/* convert phys addr to tlb insert format */
-	extrw,u		%r23, 24,25, %r23	/* convert phys addr to tlb insert format */
-	depw		%r24, 31,22, %r28	/* Form aliased virtual address 'to' */
-	depwi		0, 31,12, %r28		/* Clear any offset bits */
-	copy		%r28, %r29
-	depwi		1, 9,1, %r29		/* Form aliased virtual address 'from' */
-#endif
-
-	/* Purge any old translations */
-
-	pdtlb		0(%r28)
-	pdtlb		0(%r29)
-
-	ldi		64, %r1
-=======
 	 *
 	 */
 
@@ -824,7 +609,6 @@ ENTRY_CFI(copy_user_page_asm)
 
 #else
 	ldi		(PAGE_SIZE / 64), %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This loop is optimized for PCXL/PCXL2 ldw/ldw and stw/stw
@@ -835,13 +619,7 @@ ENTRY_CFI(copy_user_page_asm)
 	 * use ldd/std on a 32 bit kernel.
 	 */
 
-<<<<<<< HEAD
-
-1:
-	ldw		0(%r29), %r19
-=======
 1:	ldw		0(%r29), %r19
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldw		4(%r29), %r20
 	ldw		8(%r29), %r21
 	ldw		12(%r29), %r22
@@ -874,44 +652,6 @@ ENTRY_CFI(copy_user_page_asm)
 	stw		%r21, 56(%r28)
 	stw		%r22, 60(%r28)
 	ldo		64(%r28), %r28
-<<<<<<< HEAD
-	addib,COND(>)		-1, %r1,1b
-	ldo		64(%r29), %r29
-
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(copy_user_page_asm)
-#endif
-
-ENTRY(__clear_user_page_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	tophys_r1	%r26
-
-	ldil		L%(TMPALIAS_MAP_START), %r28
-#ifdef CONFIG_64BIT
-#if (TMPALIAS_MAP_START >= 0x80000000)
-	depdi		0, 31,32, %r28		/* clear any sign extension */
-	/* FIXME: page size dependend */
-#endif
-	extrd,u		%r26, 56,32, %r26	/* convert phys addr to tlb insert format */
-	depd		%r25, 63,22, %r28	/* Form aliased virtual address 'to' */
-	depdi		0, 63,12, %r28		/* Clear any offset bits */
-#else
-	extrw,u		%r26, 24,25, %r26	/* convert phys addr to tlb insert format */
-	depw		%r25, 31,22, %r28	/* Form aliased virtual address 'to' */
-	depwi		0, 31,12, %r28		/* Clear any offset bits */
-#endif
-
-	/* Purge any old translation */
-
-	pdtlb		0(%r28)
-=======
 
 	addib,COND(>)		-1, %r1,1b
 	ldo		64(%r29), %r29
@@ -936,7 +676,6 @@ ENTRY_CFI(clear_user_page_asm)
 0:	pdtlb		%r0(%r28)
 	ALTERNATIVE(0b, 0b+4, ALT_COND_NO_SMP, INSN_PxTLB)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	ldi		(PAGE_SIZE / 128), %r1
@@ -966,12 +705,7 @@ ENTRY_CFI(clear_user_page_asm)
 #else	/* ! CONFIG_64BIT */
 	ldi		(PAGE_SIZE / 64), %r1
 
-<<<<<<< HEAD
-1:
-	stw		%r0, 0(%r28)
-=======
 1:	stw		%r0, 0(%r28)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stw		%r0, 4(%r28)
 	stw		%r0, 8(%r28)
 	stw		%r0, 12(%r28)
@@ -993,39 +727,6 @@ ENTRY_CFI(clear_user_page_asm)
 
 	bv		%r0(%r2)
 	nop
-<<<<<<< HEAD
-	.exit
-
-	.procend
-ENDPROC(__clear_user_page_asm)
-
-ENTRY(flush_dcache_page_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%(TMPALIAS_MAP_START), %r28
-#ifdef CONFIG_64BIT
-#if (TMPALIAS_MAP_START >= 0x80000000)
-	depdi		0, 31,32, %r28		/* clear any sign extension */
-	/* FIXME: page size dependend */
-#endif
-	extrd,u		%r26, 56,32, %r26	/* convert phys addr to tlb insert format */
-	depd		%r25, 63,22, %r28	/* Form aliased virtual address 'to' */
-	depdi		0, 63,12, %r28		/* Clear any offset bits */
-#else
-	extrw,u		%r26, 24,25, %r26	/* convert phys addr to tlb insert format */
-	depw		%r25, 31,22, %r28	/* Form aliased virtual address 'to' */
-	depwi		0, 31,12, %r28		/* Clear any offset bits */
-#endif
-
-	/* Purge any old translation */
-
-	pdtlb		0(%r28)
-
-	ldil		L%dcache_stride, %r1
-	ldw		R%dcache_stride(%r1), %r1
-=======
 ENDPROC_CFI(clear_user_page_asm)
 
 ENTRY_CFI(flush_dcache_page_asm)
@@ -1044,7 +745,6 @@ ENTRY_CFI(flush_dcache_page_asm)
 
 88:	ldil		L%dcache_stride, %r1
 	ldw		R%dcache_stride(%r1), r31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	depdi,z		1, 63-PAGE_SHIFT,1, %r25
@@ -1052,63 +752,6 @@ ENTRY_CFI(flush_dcache_page_asm)
 	depwi,z		1, 31-PAGE_SHIFT,1, %r25
 #endif
 	add		%r28, %r25, %r25
-<<<<<<< HEAD
-	sub		%r25, %r1, %r25
-
-
-1:      fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	fdc,m		%r1(%r28)
-	cmpb,COND(<<)		%r28, %r25,1b
-	fdc,m		%r1(%r28)
-
-	sync
-	bv		%r0(%r2)
-	pdtlb		(%r25)
-	.exit
-
-	.procend
-ENDPROC(flush_dcache_page_asm)
-
-ENTRY(flush_icache_page_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%(TMPALIAS_MAP_START), %r28
-#ifdef CONFIG_64BIT
-#if (TMPALIAS_MAP_START >= 0x80000000)
-	depdi		0, 31,32, %r28		/* clear any sign extension */
-	/* FIXME: page size dependend */
-#endif
-	extrd,u		%r26, 56,32, %r26	/* convert phys addr to tlb insert format */
-	depd		%r25, 63,22, %r28	/* Form aliased virtual address 'to' */
-	depdi		0, 63,12, %r28		/* Clear any offset bits */
-#else
-	extrw,u		%r26, 24,25, %r26	/* convert phys addr to tlb insert format */
-	depw		%r25, 31,22, %r28	/* Form aliased virtual address 'to' */
-	depwi		0, 31,12, %r28		/* Clear any offset bits */
-#endif
-
-	/* Purge any old translation */
-
-	pitlb		(%sr4,%r28)
-
-	ldil		L%icache_stride, %r1
-	ldw		R%icache_stride(%r1), %r1
-=======
 	sub		%r25, r31, %r25
 
 1:	fdc,m		r31(%r28)
@@ -1151,7 +794,6 @@ ENTRY_CFI(purge_dcache_page_asm)
 
 88:	ldil		L%dcache_stride, %r1
 	ldw		R%dcache_stride(%r1), r31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	depdi,z		1, 63-PAGE_SHIFT,1, %r25
@@ -1159,46 +801,6 @@ ENTRY_CFI(purge_dcache_page_asm)
 	depwi,z		1, 31-PAGE_SHIFT,1, %r25
 #endif
 	add		%r28, %r25, %r25
-<<<<<<< HEAD
-	sub		%r25, %r1, %r25
-
-
-	/* fic only has the type 26 form on PA1.1, requiring an
-	 * explicit space specification, so use %sr4 */
-1:      fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	fic,m		%r1(%sr4,%r28)
-	cmpb,COND(<<)		%r28, %r25,1b
-	fic,m		%r1(%sr4,%r28)
-
-	sync
-	bv		%r0(%r2)
-	pitlb		(%sr4,%r25)
-	.exit
-
-	.procend
-ENDPROC(flush_icache_page_asm)
-
-ENTRY(flush_kernel_dcache_page_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%dcache_stride, %r1
-	ldw		R%dcache_stride(%r1), %r23
-=======
 	sub		%r25, r31, %r25
 
 1:      pdc,m		r31(%r28)
@@ -1288,7 +890,6 @@ ENTRY_CFI(flush_kernel_dcache_page_asm)
 88:	ldil		L%dcache_stride, %r1
 	ldw		R%dcache_stride(%r1), %r23
 	depi_safe	0, 31,PAGE_SHIFT, %r26	/* Clear any offset bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	depdi,z		1, 63-PAGE_SHIFT,1, %r25
@@ -1298,10 +899,6 @@ ENTRY_CFI(flush_kernel_dcache_page_asm)
 	add		%r26, %r25, %r25
 	sub		%r25, %r23, %r25
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:      fdc,m		%r23(%r26)
 	fdc,m		%r23(%r26)
 	fdc,m		%r23(%r26)
@@ -1317,26 +914,6 @@ ENTRY_CFI(flush_kernel_dcache_page_asm)
 	fdc,m		%r23(%r26)
 	fdc,m		%r23(%r26)
 	fdc,m		%r23(%r26)
-<<<<<<< HEAD
-	cmpb,COND(<<)		%r26, %r25,1b
-	fdc,m		%r23(%r26)
-
-	sync
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(flush_kernel_dcache_page_asm)
-
-ENTRY(purge_kernel_dcache_page)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%dcache_stride, %r1
-	ldw		R%dcache_stride(%r1), %r23
-=======
 	cmpb,COND(>>)	%r25, %r26, 1b /* predict taken */
 	fdc,m		%r23(%r26)
 
@@ -1350,7 +927,6 @@ ENTRY_CFI(purge_kernel_dcache_page_asm)
 88:	ldil		L%dcache_stride, %r1
 	ldw		R%dcache_stride(%r1), %r23
 	depi_safe	0, 31,PAGE_SHIFT, %r26	/* Clear any offset bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	depdi,z		1, 63-PAGE_SHIFT,1, %r25
@@ -1375,25 +951,6 @@ ENTRY_CFI(purge_kernel_dcache_page_asm)
 	pdc,m		%r23(%r26)
 	pdc,m		%r23(%r26)
 	pdc,m		%r23(%r26)
-<<<<<<< HEAD
-	cmpb,COND(<<)		%r26, %r25, 1b
-	pdc,m		%r23(%r26)
-
-	sync
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(purge_kernel_dcache_page)
-
-ENTRY(flush_user_dcache_range_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%dcache_stride, %r1
-=======
 	cmpb,COND(>>)	%r25, %r26, 1b /* predict taken */
 	pdc,m		%r23(%r26)
 
@@ -1405,30 +962,10 @@ ENDPROC_CFI(purge_kernel_dcache_page_asm)
 
 ENTRY_CFI(flush_user_dcache_range_asm)
 88:	ldil		L%dcache_stride, %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldw		R%dcache_stride(%r1), %r23
 	ldo		-1(%r23), %r21
 	ANDCM		%r26, %r21, %r26
 
-<<<<<<< HEAD
-1:      cmpb,COND(<<),n	%r26, %r25, 1b
-	fdc,m		%r23(%sr3, %r26)
-
-	sync
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(flush_user_dcache_range_asm)
-
-ENTRY(flush_kernel_dcache_range_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%dcache_stride, %r1
-=======
 #ifdef CONFIG_64BIT
 	depd,z		%r23, 59, 60, %r21
 #else
@@ -1466,31 +1003,10 @@ ENDPROC_CFI(flush_user_dcache_range_asm)
 
 ENTRY_CFI(flush_kernel_dcache_range_asm)
 88:	ldil		L%dcache_stride, %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldw		R%dcache_stride(%r1), %r23
 	ldo		-1(%r23), %r21
 	ANDCM		%r26, %r21, %r26
 
-<<<<<<< HEAD
-1:      cmpb,COND(<<),n	%r26, %r25,1b
-	fdc,m		%r23(%r26)
-
-	sync
-	syncdma
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(flush_kernel_dcache_range_asm)
-
-ENTRY(flush_user_icache_range_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%icache_stride, %r1
-=======
 #ifdef CONFIG_64BIT
 	depd,z		%r23, 59, 60, %r21
 #else
@@ -1569,30 +1085,10 @@ ENDPROC_CFI(purge_kernel_dcache_range_asm)
 
 ENTRY_CFI(flush_user_icache_range_asm)
 88:	ldil		L%icache_stride, %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldw		R%icache_stride(%r1), %r23
 	ldo		-1(%r23), %r21
 	ANDCM		%r26, %r21, %r26
 
-<<<<<<< HEAD
-1:      cmpb,COND(<<),n	%r26, %r25,1b
-	fic,m		%r23(%sr3, %r26)
-
-	sync
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(flush_user_icache_range_asm)
-
-ENTRY(flush_kernel_icache_page)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%icache_stride, %r1
-=======
 #ifdef CONFIG_64BIT
 	depd,z		%r23, 59, 60, %r21
 #else
@@ -1630,7 +1126,6 @@ ENDPROC_CFI(flush_user_icache_range_asm)
 
 ENTRY_CFI(flush_kernel_icache_page)
 88:	ldil		L%icache_stride, %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldw		R%icache_stride(%r1), %r23
 
 #ifdef CONFIG_64BIT
@@ -1657,25 +1152,6 @@ ENTRY_CFI(flush_kernel_icache_page)
 	fic,m		%r23(%sr4, %r26)
 	fic,m		%r23(%sr4, %r26)
 	fic,m		%r23(%sr4, %r26)
-<<<<<<< HEAD
-	cmpb,COND(<<)		%r26, %r25, 1b
-	fic,m		%r23(%sr4, %r26)
-
-	sync
-	bv		%r0(%r2)
-	nop
-	.exit
-
-	.procend
-ENDPROC(flush_kernel_icache_page)
-
-ENTRY(flush_kernel_icache_range_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-	ldil		L%icache_stride, %r1
-=======
 	cmpb,COND(>>)	%r25, %r26, 1b /* predict taken */
 	fic,m		%r23(%sr4, %r26)
 
@@ -1687,22 +1163,10 @@ ENDPROC_CFI(flush_kernel_icache_page)
 
 ENTRY_CFI(flush_kernel_icache_range_asm)
 88:	ldil		L%icache_stride, %r1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldw		R%icache_stride(%r1), %r23
 	ldo		-1(%r23), %r21
 	ANDCM		%r26, %r21, %r26
 
-<<<<<<< HEAD
-1:      cmpb,COND(<<),n	%r26, %r25, 1b
-	fic,m		%r23(%sr4, %r26)
-
-	sync
-	bv		%r0(%r2)
-	nop
-	.exit
-	.procend
-ENDPROC(flush_kernel_icache_range_asm)
-=======
 #ifdef CONFIG_64BIT
 	depd,z		%r23, 59, 60, %r21
 #else
@@ -1739,21 +1203,12 @@ ENDPROC(flush_kernel_icache_range_asm)
 ENDPROC_CFI(flush_kernel_icache_range_asm)
 
 	.text
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* align should cover use of rfi in disable_sr_hashing_asm and
 	 * srdis_done.
 	 */
 	.align	256
-<<<<<<< HEAD
-ENTRY(disable_sr_hashing_asm)
-	.proc
-	.callinfo NO_CALLS
-	.entry
-
-=======
 ENTRY_CFI(disable_sr_hashing_asm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Switch to real mode
 	 */
@@ -1835,13 +1290,6 @@ srdis_done:
 
 2:      bv		%r0(%r2)
 	nop
-<<<<<<< HEAD
-	.exit
-
-	.procend
-ENDPROC(disable_sr_hashing_asm)
-=======
 ENDPROC_CFI(disable_sr_hashing_asm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.end

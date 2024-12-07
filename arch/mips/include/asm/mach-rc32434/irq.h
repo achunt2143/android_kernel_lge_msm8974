@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-#ifndef __ASM_RC32434_IRQ_H
-#define __ASM_RC32434_IRQ_H
-
-#define NR_IRQS	256
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_RC32434_IRQ_H
 #define __ASM_RC32434_IRQ_H
 
 #define NR_IRQS 256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-generic/irq.h>
 #include <asm/mach-rc32434/rb.h>
@@ -33,23 +26,12 @@
 
 #define UART0_IRQ		(GROUP3_IRQ_BASE + 0)
 
-<<<<<<< HEAD
-#define ETH0_DMA_RX_IRQ   	(GROUP1_IRQ_BASE + 0)
-#define ETH0_DMA_TX_IRQ   	(GROUP1_IRQ_BASE + 1)
-#define ETH0_RX_OVR_IRQ   	(GROUP3_IRQ_BASE + 9)
-#define ETH0_TX_UND_IRQ   	(GROUP3_IRQ_BASE + 10)
-=======
 #define ETH0_DMA_RX_IRQ		(GROUP1_IRQ_BASE + 0)
 #define ETH0_DMA_TX_IRQ		(GROUP1_IRQ_BASE + 1)
 #define ETH0_RX_OVR_IRQ		(GROUP3_IRQ_BASE + 9)
 #define ETH0_TX_UND_IRQ		(GROUP3_IRQ_BASE + 10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GPIO_MAPPED_IRQ_BASE	GROUP4_IRQ_BASE
 #define GPIO_MAPPED_IRQ_GROUP	4
 
-<<<<<<< HEAD
-#endif  /* __ASM_RC32434_IRQ_H */
-=======
 #endif	/* __ASM_RC32434_IRQ_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

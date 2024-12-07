@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -13,14 +10,6 @@
  *		Arnt Gulbrandsen, <agulbra@nvg.unit.no>
  *		Borrows very liberally from tcp.c and ip.c, see those
  *		files for more names.
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CHECKSUM_H
@@ -29,23 +18,6 @@
 #include <linux/errno.h>
 #include <asm/types.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/checksum.h>
-
-#ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
-static inline
-__wsum csum_and_copy_from_user (const void __user *src, void *dst,
-				      int len, __wsum sum, int *err_ptr)
-{
-	if (access_ok(VERIFY_READ, src, len))
-		return csum_partial_copy_from_user(src, dst, len, sum, err_ptr);
-
-	if (len)
-		*err_ptr = -EFAULT;
-
-	return sum;
-=======
 #include <asm/checksum.h>
 #if !defined(_HAVE_ARCH_COPY_AND_CSUM_FROM_USER) || !defined(HAVE_CSUM_COPY_USER)
 #include <linux/uaccess.h>
@@ -59,30 +31,10 @@ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
 	if (copy_from_user(dst, src, len))
 		return 0;
 	return csum_partial(dst, len, ~0U);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 #ifndef HAVE_CSUM_COPY_USER
-<<<<<<< HEAD
-static __inline__ __wsum csum_and_copy_to_user
-(const void *src, void __user *dst, int len, __wsum sum, int *err_ptr)
-{
-	sum = csum_partial(src, len, sum);
-
-	if (access_ok(VERIFY_WRITE, dst, len)) {
-		if (copy_to_user(dst, src, len) == 0)
-			return sum;
-	}
-	if (len)
-		*err_ptr = -EFAULT;
-
-	return (__force __wsum)-1; /* invalid checksum */
-}
-#endif
-
-static inline __wsum csum_add(__wsum csum, __wsum addend)
-=======
 static __always_inline __wsum csum_and_copy_to_user
 (const void *src, void __user *dst, int len)
 {
@@ -105,45 +57,18 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len)
 
 #ifndef HAVE_ARCH_CSUM_ADD
 static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 res = (__force u32)csum;
 	res += (__force u32)addend;
 	return (__force __wsum)(res + (res < (__force u32)addend));
 }
-<<<<<<< HEAD
-
-static inline __wsum csum_sub(__wsum csum, __wsum addend)
-=======
 #endif
 
 static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return csum_add(csum, ~addend);
 }
 
-<<<<<<< HEAD
-static inline __wsum
-csum_block_add(__wsum csum, __wsum csum2, int offset)
-{
-	u32 sum = (__force u32)csum2;
-	if (offset&1)
-		sum = ((sum&0xFF00FF)<<8)+((sum>>8)&0xFF00FF);
-	return csum_add(csum, (__force __wsum)sum);
-}
-
-static inline __wsum
-csum_block_sub(__wsum csum, __wsum csum2, int offset)
-{
-	u32 sum = (__force u32)csum2;
-	if (offset&1)
-		sum = ((sum&0xFF00FF)<<8)+((sum>>8)&0xFF00FF);
-	return csum_sub(csum, (__force __wsum)sum);
-}
-
-static inline __wsum csum_unfold(__sum16 n)
-=======
 static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
 {
 	u16 res = (__force u16)csum;
@@ -186,37 +111,10 @@ csum_block_sub(__wsum csum, __wsum csum2, int offset)
 }
 
 static __always_inline __wsum csum_unfold(__sum16 n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (__force __wsum)n;
 }
 
-<<<<<<< HEAD
-#define CSUM_MANGLED_0 ((__force __sum16)0xffff)
-
-static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-{
-	__be32 diff[] = { ~from, to };
-
-	*sum = csum_fold(csum_partial(diff, sizeof(diff), ~csum_unfold(*sum)));
-}
-
-static inline void csum_replace2(__sum16 *sum, __be16 from, __be16 to)
-{
-	csum_replace4(sum, (__force __be32)from, (__force __be32)to);
-}
-
-struct sk_buff;
-extern void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
-				     __be32 from, __be32 to, int pseudohdr);
-extern void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
-				      const __be32 *from, const __be32 *to,
-				      int pseudohdr);
-
-static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
-					    __be16 from, __be16 to,
-					    int pseudohdr)
-=======
 static __always_inline
 __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
 {
@@ -265,14 +163,11 @@ void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
 static __always_inline
 void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
 			      __be16 from, __be16 to, bool pseudohdr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	inet_proto_csum_replace4(sum, skb, (__force __be32)from,
 				 (__force __be32)to, pseudohdr);
 }
 
-<<<<<<< HEAD
-=======
 static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
 					     int start, int offset)
 {
@@ -299,5 +194,4 @@ static __always_inline __wsum wsum_negate(__wsum val)
 {
 	return (__force __wsum)-((__force u32)val);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

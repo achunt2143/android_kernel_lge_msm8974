@@ -23,8 +23,6 @@ Description:	Device-mapper device suspend state.
 		Contains the value 1 while the device is suspended.
 		Otherwise it contains 0. Read-only attribute.
 Users:		util-linux, device-mapper udev rules
-<<<<<<< HEAD
-=======
 
 What:		/sys/block/dm-<num>/dm/rq_based_seq_io_merge_deadline
 Date:		March 2015
@@ -47,4 +45,3 @@ Contact:	dm-devel@redhat.com
 Description:	Request-based Device-mapper blk-mq I/O path mode.
 		Contains the value 1 if the device is using blk-mq.
 		Otherwise it contains 0. Read-only attribute.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

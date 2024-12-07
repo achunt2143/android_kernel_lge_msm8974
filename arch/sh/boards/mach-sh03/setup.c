@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/sh03/setup.c
  *
@@ -25,17 +22,6 @@ static void __init init_sh03_IRQ(void)
 	plat_irq_setup_pins(IRQ_MODE_IRQ);
 }
 
-<<<<<<< HEAD
-/* arch/sh/boards/sh03/rtc.c */
-void sh03_time_init(void);
-
-static void __init sh03_setup(char **cmdline_p)
-{
-	board_time_init = sh03_time_init;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource cf_ide_resources[] = {
 	[0] = {
 		.start  = 0x1f0,
@@ -107,10 +93,5 @@ device_initcall(sh03_devices_setup);
 
 static struct sh_machine_vector mv_sh03 __initmv = {
 	.mv_name		= "Interface (CTP/PCI-SH03)",
-<<<<<<< HEAD
-	.mv_setup		= sh03_setup,
-	.mv_nr_irqs		= 48,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq		= init_sh03_IRQ,
 };

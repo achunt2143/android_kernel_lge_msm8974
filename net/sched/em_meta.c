@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- * net/sched/em_meta.c	Metadata ematch
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * net/sched/em_meta.c	Metadata ematch
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  *
  * ==========================================================================
@@ -55,11 +44,7 @@
  * 	be provided for non-numeric types.
  *
  * 	Additionally, type dependent modifiers such as shift operators
-<<<<<<< HEAD
- * 	or mask may be applied to extend the functionaliy. As of now,
-=======
  * 	or mask may be applied to extend the functionality. As of now,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 	the variable length type supports shifting the byte string to
  * 	the right, eating up any number of octets and thus supporting
  * 	wildcard interface name comparisons such as "ppp%" matching
@@ -74,10 +59,7 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/loadavg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/skbuff.h>
 #include <linux/random.h>
@@ -191,20 +173,12 @@ META_COLLECTOR(int_vlan_tag)
 {
 	unsigned short tag;
 
-<<<<<<< HEAD
-	tag = vlan_tx_tag_get(skb);
-	if (!tag && __vlan_get_tag(skb, &tag))
-		*err = -1;
-	else
-		dst->value = tag;
-=======
 	if (skb_vlan_tag_present(skb))
 		dst->value = skb_vlan_tag_get(skb);
 	else if (!__vlan_get_tag(skb, &tag))
 		dst->value = tag;
 	else
 		*err = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -221,11 +195,7 @@ META_COLLECTOR(int_priority)
 META_COLLECTOR(int_protocol)
 {
 	/* Let userspace take care of the byte ordering */
-<<<<<<< HEAD
-	dst->value = skb->protocol;
-=======
 	dst->value = skb_protocol(skb, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_pkttype)
@@ -250,11 +220,7 @@ META_COLLECTOR(int_maclen)
 
 META_COLLECTOR(int_rxhash)
 {
-<<<<<<< HEAD
-	dst->value = skb_get_rxhash(skb);
-=======
 	dst->value = skb_get_hash(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**************************************************************************
@@ -296,28 +262,13 @@ META_COLLECTOR(int_rtiif)
 	if (unlikely(skb_rtable(skb) == NULL))
 		*err = -1;
 	else
-<<<<<<< HEAD
-		dst->value = skb_rtable(skb)->rt_iif;
-=======
 		dst->value = inet_iif(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**************************************************************************
  * Socket Attributes
  **************************************************************************/
 
-<<<<<<< HEAD
-#define SKIP_NONLOCAL(skb)			\
-	if (unlikely(skb->sk == NULL)) {	\
-		*err = -1;			\
-		return;				\
-	}
-
-META_COLLECTOR(int_sk_family)
-{
-	SKIP_NONLOCAL(skb);
-=======
 #define skip_nonlocal(skb) \
 	(unlikely(skb->sk == NULL))
 
@@ -327,57 +278,39 @@ META_COLLECTOR(int_sk_family)
 		*err = -1;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->value = skb->sk->sk_family;
 }
 
 META_COLLECTOR(int_sk_state)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-=======
 	if (skip_nonlocal(skb)) {
 		*err = -1;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->value = skb->sk->sk_state;
 }
 
 META_COLLECTOR(int_sk_reuse)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-=======
 	if (skip_nonlocal(skb)) {
 		*err = -1;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->value = skb->sk->sk_reuse;
 }
 
 META_COLLECTOR(int_sk_bound_if)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-=======
 	if (skip_nonlocal(skb)) {
 		*err = -1;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* No error if bound_dev_if is 0, legal userspace check */
 	dst->value = skb->sk->sk_bound_dev_if;
 }
 
 META_COLLECTOR(var_sk_bound_if)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-
-	if (skb->sk->sk_bound_dev_if == 0) {
-=======
 	int bound_dev_if;
 
 	if (skip_nonlocal(skb)) {
@@ -387,7 +320,6 @@ META_COLLECTOR(var_sk_bound_if)
 
 	bound_dev_if = READ_ONCE(skb->sk->sk_bound_dev_if);
 	if (bound_dev_if == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dst->value = (unsigned long) "any";
 		dst->len = 3;
 	} else {
@@ -395,11 +327,7 @@ META_COLLECTOR(var_sk_bound_if)
 
 		rcu_read_lock();
 		dev = dev_get_by_index_rcu(sock_net(skb->sk),
-<<<<<<< HEAD
-					   skb->sk->sk_bound_dev_if);
-=======
 					   bound_dev_if);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*err = var_dev(dev, dst);
 		rcu_read_unlock();
 	}
@@ -407,24 +335,15 @@ META_COLLECTOR(var_sk_bound_if)
 
 META_COLLECTOR(int_sk_refcnt)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = atomic_read(&skb->sk->sk_refcnt);
-=======
 	if (skip_nonlocal(skb)) {
 		*err = -1;
 		return;
 	}
 	dst->value = refcount_read(&skb->sk->sk_refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_rcvbuf)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_rcvbuf;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -432,15 +351,10 @@ META_COLLECTOR(int_sk_rcvbuf)
 		return;
 	}
 	dst->value = sk->sk_rcvbuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_shutdown)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_shutdown;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -448,15 +362,10 @@ META_COLLECTOR(int_sk_shutdown)
 		return;
 	}
 	dst->value = sk->sk_shutdown;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_proto)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_protocol;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -464,15 +373,10 @@ META_COLLECTOR(int_sk_proto)
 		return;
 	}
 	dst->value = sk->sk_protocol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_type)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_type;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -480,15 +384,10 @@ META_COLLECTOR(int_sk_type)
 		return;
 	}
 	dst->value = sk->sk_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_rmem_alloc)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = sk_rmem_alloc_get(skb->sk);
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -496,15 +395,10 @@ META_COLLECTOR(int_sk_rmem_alloc)
 		return;
 	}
 	dst->value = sk_rmem_alloc_get(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_wmem_alloc)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = sk_wmem_alloc_get(skb->sk);
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -512,15 +406,10 @@ META_COLLECTOR(int_sk_wmem_alloc)
 		return;
 	}
 	dst->value = sk_wmem_alloc_get(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_omem_alloc)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = atomic_read(&skb->sk->sk_omem_alloc);
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -528,15 +417,10 @@ META_COLLECTOR(int_sk_omem_alloc)
 		return;
 	}
 	dst->value = atomic_read(&sk->sk_omem_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_rcv_qlen)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_receive_queue.qlen;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -544,15 +428,10 @@ META_COLLECTOR(int_sk_rcv_qlen)
 		return;
 	}
 	dst->value = sk->sk_receive_queue.qlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_snd_qlen)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_write_queue.qlen;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -560,15 +439,10 @@ META_COLLECTOR(int_sk_snd_qlen)
 		return;
 	}
 	dst->value = sk->sk_write_queue.qlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_wmem_queued)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_wmem_queued;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -576,15 +450,10 @@ META_COLLECTOR(int_sk_wmem_queued)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_wmem_queued);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_fwd_alloc)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_forward_alloc;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -592,15 +461,10 @@ META_COLLECTOR(int_sk_fwd_alloc)
 		return;
 	}
 	dst->value = sk_forward_alloc_get(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_sndbuf)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_sndbuf;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -608,15 +472,10 @@ META_COLLECTOR(int_sk_sndbuf)
 		return;
 	}
 	dst->value = sk->sk_sndbuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_alloc)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = (__force int) skb->sk->sk_allocation;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -624,28 +483,19 @@ META_COLLECTOR(int_sk_alloc)
 		return;
 	}
 	dst->value = (__force int) sk->sk_allocation;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_hash)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-=======
 	if (skip_nonlocal(skb)) {
 		*err = -1;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->value = skb->sk->sk_hash;
 }
 
 META_COLLECTOR(int_sk_lingertime)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_lingertime / HZ;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -653,15 +503,10 @@ META_COLLECTOR(int_sk_lingertime)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_lingertime) / HZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_err_qlen)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_error_queue.qlen;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -669,15 +514,10 @@ META_COLLECTOR(int_sk_err_qlen)
 		return;
 	}
 	dst->value = sk->sk_error_queue.qlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_ack_bl)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_ack_backlog;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -685,15 +525,10 @@ META_COLLECTOR(int_sk_ack_bl)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_ack_backlog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_max_ack_bl)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_max_ack_backlog;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -701,15 +536,10 @@ META_COLLECTOR(int_sk_max_ack_bl)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_max_ack_backlog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_prio)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_priority;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -717,15 +547,10 @@ META_COLLECTOR(int_sk_prio)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_priority);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_rcvlowat)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_rcvlowat;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -733,15 +558,10 @@ META_COLLECTOR(int_sk_rcvlowat)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_rcvlowat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_rcvtimeo)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_rcvtimeo / HZ;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -749,15 +569,10 @@ META_COLLECTOR(int_sk_rcvtimeo)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_rcvtimeo) / HZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_sndtimeo)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_sndtimeo / HZ;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -765,15 +580,10 @@ META_COLLECTOR(int_sk_sndtimeo)
 		return;
 	}
 	dst->value = READ_ONCE(sk->sk_sndtimeo) / HZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_sendmsg_off)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_sndmsg_off;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -781,15 +591,10 @@ META_COLLECTOR(int_sk_sendmsg_off)
 		return;
 	}
 	dst->value = sk->sk_frag.offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 META_COLLECTOR(int_sk_write_pend)
 {
-<<<<<<< HEAD
-	SKIP_NONLOCAL(skb);
-	dst->value = skb->sk->sk_write_pending;
-=======
 	const struct sock *sk = skb_to_full_sk(skb);
 
 	if (!sk) {
@@ -797,7 +602,6 @@ META_COLLECTOR(int_sk_write_pend)
 		return;
 	}
 	dst->value = sk->sk_write_pending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**************************************************************************
@@ -915,14 +719,9 @@ static void meta_var_apply_extras(struct meta_value *v,
 
 static int meta_var_dump(struct sk_buff *skb, struct meta_value *v, int tlv)
 {
-<<<<<<< HEAD
-	if (v->val && v->len)
-		NLA_PUT(skb, tlv, v->len, (void *) v->val);
-=======
 	if (v->val && v->len &&
 	    nla_put(skb, tlv, v->len, (void *) v->val))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
@@ -972,12 +771,6 @@ static void meta_int_apply_extras(struct meta_value *v,
 
 static int meta_int_dump(struct sk_buff *skb, struct meta_value *v, int tlv)
 {
-<<<<<<< HEAD
-	if (v->len == sizeof(unsigned long))
-		NLA_PUT(skb, tlv, sizeof(unsigned long), &v->val);
-	else if (v->len == sizeof(u32))
-		NLA_PUT_U32(skb, tlv, v->val);
-=======
 	if (v->len == sizeof(unsigned long)) {
 		if (nla_put(skb, tlv, sizeof(unsigned long), &v->val))
 			goto nla_put_failure;
@@ -985,7 +778,6 @@ static int meta_int_dump(struct sk_buff *skb, struct meta_value *v, int tlv)
 		if (nla_put_u32(skb, tlv, v->val))
 			goto nla_put_failure;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1005,11 +797,7 @@ struct meta_type_ops {
 	int	(*dump)(struct sk_buff *, struct meta_value *, int);
 };
 
-<<<<<<< HEAD
-static struct meta_type_ops __meta_type_ops[TCF_META_TYPE_MAX + 1] = {
-=======
 static const struct meta_type_ops __meta_type_ops[TCF_META_TYPE_MAX + 1] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[TCF_META_TYPE_VAR] = {
 		.destroy = meta_var_destroy,
 		.compare = meta_var_compare,
@@ -1025,11 +813,7 @@ static const struct meta_type_ops __meta_type_ops[TCF_META_TYPE_MAX + 1] = {
 	}
 };
 
-<<<<<<< HEAD
-static inline struct meta_type_ops *meta_type_ops(struct meta_value *v)
-=======
 static inline const struct meta_type_ops *meta_type_ops(struct meta_value *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return &__meta_type_ops[meta_type(v)];
 }
@@ -1087,11 +871,7 @@ static int em_meta_match(struct sk_buff *skb, struct tcf_ematch *m,
 static void meta_delete(struct meta_match *meta)
 {
 	if (meta) {
-<<<<<<< HEAD
-		struct meta_type_ops *ops = meta_type_ops(&meta->lvalue);
-=======
 		const struct meta_type_ops *ops = meta_type_ops(&meta->lvalue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ops && ops->destroy) {
 			ops->destroy(&meta->lvalue);
@@ -1123,11 +903,7 @@ static const struct nla_policy meta_policy[TCA_EM_META_MAX + 1] = {
 	[TCA_EM_META_HDR]	= { .len = sizeof(struct tcf_meta_hdr) },
 };
 
-<<<<<<< HEAD
-static int em_meta_change(struct tcf_proto *tp, void *data, int len,
-=======
 static int em_meta_change(struct net *net, void *data, int len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct tcf_ematch *m)
 {
 	int err;
@@ -1135,12 +911,8 @@ static int em_meta_change(struct net *net, void *data, int len,
 	struct tcf_meta_hdr *hdr;
 	struct meta_match *meta = NULL;
 
-<<<<<<< HEAD
-	err = nla_parse(tb, TCA_EM_META_MAX, data, len, meta_policy);
-=======
 	err = nla_parse_deprecated(tb, TCA_EM_META_MAX, data, len,
 				   meta_policy, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		goto errout;
 
@@ -1156,15 +928,10 @@ static int em_meta_change(struct net *net, void *data, int len,
 		goto errout;
 
 	meta = kzalloc(sizeof(*meta), GFP_KERNEL);
-<<<<<<< HEAD
-	if (meta == NULL)
-		goto errout;
-=======
 	if (meta == NULL) {
 		err = -ENOMEM;
 		goto errout;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&meta->lvalue.hdr, &hdr->left, sizeof(hdr->left));
 	memcpy(&meta->rvalue.hdr, &hdr->right, sizeof(hdr->right));
@@ -1189,11 +956,7 @@ errout:
 	return err;
 }
 
-<<<<<<< HEAD
-static void em_meta_destroy(struct tcf_proto *tp, struct tcf_ematch *m)
-=======
 static void em_meta_destroy(struct tcf_ematch *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (m)
 		meta_delete((struct meta_match *) m->data);
@@ -1203,22 +966,14 @@ static int em_meta_dump(struct sk_buff *skb, struct tcf_ematch *em)
 {
 	struct meta_match *meta = (struct meta_match *) em->data;
 	struct tcf_meta_hdr hdr;
-<<<<<<< HEAD
-	struct meta_type_ops *ops;
-=======
 	const struct meta_type_ops *ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&hdr, 0, sizeof(hdr));
 	memcpy(&hdr.left, &meta->lvalue.hdr, sizeof(hdr.left));
 	memcpy(&hdr.right, &meta->rvalue.hdr, sizeof(hdr.right));
 
-<<<<<<< HEAD
-	NLA_PUT(skb, TCA_EM_META_HDR, sizeof(hdr), &hdr);
-=======
 	if (nla_put(skb, TCA_EM_META_HDR, sizeof(hdr), &hdr))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ops = meta_type_ops(&meta->lvalue);
 	if (ops->dump(skb, &meta->lvalue, TCA_EM_META_LVALUE) < 0 ||
@@ -1251,10 +1006,7 @@ static void __exit exit_em_meta(void)
 	tcf_em_unregister(&em_meta_ops);
 }
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("ematch classifier for various internal kernel metadata, skb metadata and sk metadata");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 module_init(init_em_meta);

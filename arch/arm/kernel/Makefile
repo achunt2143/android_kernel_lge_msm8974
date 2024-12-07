@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
@@ -13,26 +10,13 @@ ifdef CONFIG_FUNCTION_TRACER
 CFLAGS_REMOVE_ftrace.o = -pg
 CFLAGS_REMOVE_insn.o = -pg
 CFLAGS_REMOVE_patch.o = -pg
-<<<<<<< HEAD
-=======
 CFLAGS_REMOVE_unwind.o = -pg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif
 
 CFLAGS_REMOVE_return_address.o = -pg
 
 # Object file lists.
 
-<<<<<<< HEAD
-obj-y		:= elf.o entry-armv.o entry-common.o irq.o opcodes.o \
-		   process.o ptrace.o return_address.o \
-		   setup.o signal.o stacktrace.o sys_arm.o time.o traps.o
-
-obj-$(CONFIG_DEPRECATED_PARAM_STRUCT) += compat.o
-
-obj-$(CONFIG_LEDS)		+= leds.o
-obj-$(CONFIG_OC_ETM)		+= etm.o
-=======
 obj-y		:= elf.o entry-common.o irq.o opcodes.o \
 		   process.o ptrace.o reboot.o io.o \
 		   setup.o signal.o sigreturn_codes.o \
@@ -56,42 +40,10 @@ obj-y		+= entry-armv.o
 endif
 
 obj-$(CONFIG_MMU)		+= bugs.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_CPU_IDLE)		+= cpuidle.o
 obj-$(CONFIG_ISA_DMA_API)	+= dma.o
 obj-$(CONFIG_FIQ)		+= fiq.o fiqasm.o
 obj-$(CONFIG_MODULES)		+= armksyms.o module.o
-<<<<<<< HEAD
-obj-$(CONFIG_ARTHUR)		+= arthur.o
-obj-$(CONFIG_ISA_DMA)		+= dma-isa.o
-obj-$(CONFIG_PCI)		+= bios32.o isa.o
-obj-$(CONFIG_ARM_CPU_SUSPEND)	+= sleep.o suspend.o
-obj-$(CONFIG_SMP)		+= smp.o smp_tlb.o
-obj-$(CONFIG_HAVE_ARM_SCU)	+= smp_scu.o
-obj-$(CONFIG_HAVE_ARM_TWD)	+= smp_twd.o
-obj-$(CONFIG_ARM_ARCH_TIMER)	+= arch_timer.o
-obj-$(CONFIG_DYNAMIC_FTRACE)	+= ftrace.o insn.o
-obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o insn.o
-obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o insn.o patch.o
-obj-$(CONFIG_KEXEC)		+= machine_kexec.o relocate_kernel.o
-obj-$(CONFIG_KPROBES)		+= kprobes.o kprobes-common.o patch.o
-ifdef CONFIG_THUMB2_KERNEL
-obj-$(CONFIG_KPROBES)		+= kprobes-thumb.o
-else
-obj-$(CONFIG_KPROBES)		+= kprobes-arm.o
-endif
-obj-$(CONFIG_ARM_KPROBES_TEST)	+= test-kprobes.o
-test-kprobes-objs		:= kprobes-test.o
-ifdef CONFIG_THUMB2_KERNEL
-test-kprobes-objs		+= kprobes-test-thumb.o
-else
-test-kprobes-objs		+= kprobes-test-arm.o
-endif
-obj-$(CONFIG_ATAGS_PROC)	+= atags.o
-obj-$(CONFIG_OABI_COMPAT)	+= sys_oabi-compat.o
-obj-$(CONFIG_ARM_THUMBEE)	+= thumbee.o
-obj-$(CONFIG_KGDB)		+= kgdb.o
-=======
 obj-$(CONFIG_ARM_MODULE_PLTS)	+= module-plts.o
 obj-$(CONFIG_PCI)		+= bios32.o isa.o
 obj-$(CONFIG_ARM_CPU_SUSPEND)	+= sleep.o suspend.o
@@ -114,42 +66,16 @@ obj-$(CONFIG_KPROBES)		+= patch.o insn.o
 obj-$(CONFIG_OABI_COMPAT)	+= sys_oabi-compat.o
 obj-$(CONFIG_ARM_THUMBEE)	+= thumbee.o
 obj-$(CONFIG_KGDB)		+= kgdb.o patch.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_ARM_UNWIND)	+= unwind.o
 obj-$(CONFIG_HAVE_TCM)		+= tcm.o
 obj-$(CONFIG_OF)		+= devtree.o
 obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
 obj-$(CONFIG_SWP_EMULATE)	+= swp_emulate.o
-<<<<<<< HEAD
-CFLAGS_swp_emulate.o		:= -Wa,-march=armv7-a
 obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= hw_breakpoint.o
-obj-$(CONFIG_GENERIC_TIME_VSYSCALL)	+= update_vsyscall_arm.o
-=======
-obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= hw_breakpoint.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_CPU_XSCALE)	+= xscale-cp0.o
 obj-$(CONFIG_CPU_XSC3)		+= xscale-cp0.o
 obj-$(CONFIG_CPU_MOHAWK)	+= xscale-cp0.o
-<<<<<<< HEAD
-obj-$(CONFIG_CPU_PJ4)		+= pj4-cp0.o
-obj-$(CONFIG_IWMMXT)		+= iwmmxt.o
-obj-$(CONFIG_CPU_HAS_PMU)	+= pmu.o
-obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event.o
-AFLAGS_iwmmxt.o			:= -Wa,-mcpu=iwmmxt
-obj-$(CONFIG_ARM_CPU_TOPOLOGY)  += topology.o
-obj-$(CONFIG_ARM_USE_USER_ACCESSIBLE_TIMERS)	+= user_accessible_timer.o
-
-ifneq ($(CONFIG_ARCH_EBSA110),y)
-  obj-y		+= io.o
-endif
-
-head-y			:= head$(MMUEXT).o
-obj-$(CONFIG_DEBUG_LL)	+= debug.o
-obj-$(CONFIG_EARLY_PRINTK)	+= early_printk.o
-
-extra-y := $(head-y) init_task.o vmlinux.lds
-=======
 obj-$(CONFIG_IWMMXT)		+= iwmmxt.o
 obj-$(CONFIG_PERF_EVENTS)	+= perf_regs.o perf_callchain.o
 obj-$(CONFIG_HW_PERF_EVENTS)	+= perf_event_xscale.o perf_event_v6.o \
@@ -180,4 +106,3 @@ obj-$(CONFIG_HAVE_ARM_SMCCC)	+= smccc-call.o
 obj-$(CONFIG_GENERIC_CPU_VULNERABILITIES) += spectre.o
 
 extra-y := vmlinux.lds
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

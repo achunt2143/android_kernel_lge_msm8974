@@ -1,29 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/hp6xx/setup.c
  *
  * Copyright (C) 2002 Andriy Skulysh
  * Copyright (C) 2007 Kristoffer Ericson <Kristoffer_e1@hotmail.com>
  *
-<<<<<<< HEAD
- * May be copied or modified under the terms of the GNU General Public
- * License.  See linux/COPYING for more information.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Setup code for HP620/HP660/HP680/HP690 (internal peripherials only)
  */
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/sh_intc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/sh_dac_audio.h>
 #include <asm/hd64461.h>
 #include <asm/io.h>
@@ -46,11 +34,7 @@ static struct resource cf_ide_resources[] = {
 		.flags = IORESOURCE_MEM,
 	},
 	[2] = {
-<<<<<<< HEAD
-		.start = 77,
-=======
 		.start = evt2irq(0xba0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags = IORESOURCE_IRQ,
 	},
 };
@@ -183,11 +167,6 @@ device_initcall(hp6xx_devices_setup);
 static struct sh_machine_vector mv_hp6xx __initmv = {
 	.mv_name = "hp6xx",
 	.mv_setup = hp6xx_setup,
-<<<<<<< HEAD
-	/* IRQ's : CPU(64) + CCHIP(16) + FREE_TO_USE(6) */
-	.mv_nr_irqs = HD64461_IRQBASE + HD64461_IRQ_NUM + 6,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable IRQ0 -> IRQ3 in IRQ_MODE */
 	.mv_init_irq = hp6xx_init_irq,
 };

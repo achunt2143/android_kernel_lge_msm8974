@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Library implementing the most common irq chip callback functions
  *
@@ -11,10 +8,7 @@
 #include <linux/irq.h>
 #include <linux/slab.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
 #include <linux/syscore_ops.h>
@@ -24,14 +18,6 @@
 static LIST_HEAD(gc_list);
 static DEFINE_RAW_SPINLOCK(gc_lock);
 
-<<<<<<< HEAD
-static inline struct irq_chip_regs *cur_regs(struct irq_data *d)
-{
-	return &container_of(d->chip, struct irq_chip_type, chip)->regs;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * irq_gc_noop - NOOP function
  * @d: irq_data
@@ -39,10 +25,7 @@ static inline struct irq_chip_regs *cur_regs(struct irq_data *d)
 void irq_gc_noop(struct irq_data *d)
 {
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(irq_gc_noop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * irq_gc_mask_disable_reg - Mask chip via disable register
@@ -54,18 +37,6 @@ EXPORT_SYMBOL_GPL(irq_gc_noop);
 void irq_gc_mask_disable_reg(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = 1 << (d->irq - gc->irq_base);
-
-	irq_gc_lock(gc);
-	irq_reg_writel(mask, gc->reg_base + cur_regs(d)->disable);
-	gc->mask_cache &= ~mask;
-	irq_gc_unlock(gc);
-}
-
-/**
- * irq_gc_mask_set_mask_bit - Mask chip via setting bit in mask register
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 	u32 mask = d->mask;
 
@@ -78,7 +49,6 @@ EXPORT_SYMBOL_GPL(irq_gc_mask_disable_reg);
 
 /**
  * irq_gc_mask_set_bit - Mask chip via setting bit in mask register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @d: irq_data
  *
  * Chip has a single mask register. Values of this register are cached
@@ -87,18 +57,6 @@ EXPORT_SYMBOL_GPL(irq_gc_mask_disable_reg);
 void irq_gc_mask_set_bit(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = 1 << (d->irq - gc->irq_base);
-
-	irq_gc_lock(gc);
-	gc->mask_cache |= mask;
-	irq_reg_writel(gc->mask_cache, gc->reg_base + cur_regs(d)->mask);
-	irq_gc_unlock(gc);
-}
-
-/**
- * irq_gc_mask_set_mask_bit - Mask chip via clearing bit in mask register
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 	u32 mask = d->mask;
 
@@ -111,7 +69,6 @@ EXPORT_SYMBOL_GPL(irq_gc_mask_set_bit);
 
 /**
  * irq_gc_mask_clr_bit - Mask chip via clearing bit in mask register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @d: irq_data
  *
  * Chip has a single mask register. Values of this register are cached
@@ -120,15 +77,6 @@ EXPORT_SYMBOL_GPL(irq_gc_mask_set_bit);
 void irq_gc_mask_clr_bit(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = 1 << (d->irq - gc->irq_base);
-
-	irq_gc_lock(gc);
-	gc->mask_cache &= ~mask;
-	irq_reg_writel(gc->mask_cache, gc->reg_base + cur_regs(d)->mask);
-	irq_gc_unlock(gc);
-}
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 	u32 mask = d->mask;
 
@@ -138,7 +86,6 @@ void irq_gc_mask_clr_bit(struct irq_data *d)
 	irq_gc_unlock(gc);
 }
 EXPORT_SYMBOL_GPL(irq_gc_mask_clr_bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * irq_gc_unmask_enable_reg - Unmask chip via enable register
@@ -150,15 +97,6 @@ EXPORT_SYMBOL_GPL(irq_gc_mask_clr_bit);
 void irq_gc_unmask_enable_reg(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = 1 << (d->irq - gc->irq_base);
-
-	irq_gc_lock(gc);
-	irq_reg_writel(mask, gc->reg_base + cur_regs(d)->enable);
-	gc->mask_cache |= mask;
-	irq_gc_unlock(gc);
-}
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 	u32 mask = d->mask;
 
@@ -168,7 +106,6 @@ void irq_gc_unmask_enable_reg(struct irq_data *d)
 	irq_gc_unlock(gc);
 }
 EXPORT_SYMBOL_GPL(irq_gc_unmask_enable_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * irq_gc_ack_set_bit - Ack pending interrupt via setting bit
@@ -177,14 +114,6 @@ EXPORT_SYMBOL_GPL(irq_gc_unmask_enable_reg);
 void irq_gc_ack_set_bit(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = 1 << (d->irq - gc->irq_base);
-
-	irq_gc_lock(gc);
-	irq_reg_writel(mask, gc->reg_base + cur_regs(d)->ack);
-	irq_gc_unlock(gc);
-}
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 	u32 mask = d->mask;
 
@@ -193,7 +122,6 @@ void irq_gc_ack_set_bit(struct irq_data *d)
 	irq_gc_unlock(gc);
 }
 EXPORT_SYMBOL_GPL(irq_gc_ack_set_bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * irq_gc_ack_clr_bit - Ack pending interrupt via clearing bit
@@ -202,35 +130,15 @@ EXPORT_SYMBOL_GPL(irq_gc_ack_set_bit);
 void irq_gc_ack_clr_bit(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = ~(1 << (d->irq - gc->irq_base));
-
-	irq_gc_lock(gc);
-	irq_reg_writel(mask, gc->reg_base + cur_regs(d)->ack);
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 	u32 mask = ~d->mask;
 
 	irq_gc_lock(gc);
 	irq_reg_writel(gc, mask, ct->regs.ack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_gc_unlock(gc);
 }
 
 /**
-<<<<<<< HEAD
- * irq_gc_mask_disable_reg_and_ack- Mask and ack pending interrupt
- * @d: irq_data
- */
-void irq_gc_mask_disable_reg_and_ack(struct irq_data *d)
-{
-	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-	u32 mask = 1 << (d->irq - gc->irq_base);
-
-	irq_gc_lock(gc);
-	irq_reg_writel(mask, gc->reg_base + cur_regs(d)->mask);
-	irq_reg_writel(mask, gc->reg_base + cur_regs(d)->ack);
-=======
  * irq_gc_mask_disable_and_ack_set - Mask and ack pending interrupt
  * @d: irq_data
  *
@@ -252,7 +160,6 @@ void irq_gc_mask_disable_and_ack_set(struct irq_data *d)
 	irq_reg_writel(gc, mask, ct->regs.disable);
 	*ct->mask_cache &= ~mask;
 	irq_reg_writel(gc, mask, ct->regs.ack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_gc_unlock(gc);
 }
 
@@ -263,29 +170,18 @@ void irq_gc_mask_disable_and_ack_set(struct irq_data *d)
 void irq_gc_eoi(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = 1 << (d->irq - gc->irq_base);
-
-	irq_gc_lock(gc);
-	irq_reg_writel(mask, gc->reg_base + cur_regs(d)->eoi);
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 	u32 mask = d->mask;
 
 	irq_gc_lock(gc);
 	irq_reg_writel(gc, mask, ct->regs.eoi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_gc_unlock(gc);
 }
 
 /**
  * irq_gc_set_wake - Set/clr wake bit for an interrupt
-<<<<<<< HEAD
- * @d: irq_data
-=======
  * @d:  irq_data
  * @on: Indicates whether the wake bit should be set or cleared
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For chips where the wake from suspend functionality is not
  * configured in a separate register and the wakeup active state is
@@ -294,11 +190,7 @@ void irq_gc_eoi(struct irq_data *d)
 int irq_gc_set_wake(struct irq_data *d, unsigned int on)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
-<<<<<<< HEAD
-	u32 mask = 1 << (d->irq - gc->irq_base);
-=======
 	u32 mask = d->mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(mask & gc->wake_enabled))
 		return -EINVAL;
@@ -311,8 +203,6 @@ int irq_gc_set_wake(struct irq_data *d, unsigned int on)
 	irq_gc_unlock(gc);
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(irq_gc_set_wake);
 
 static u32 irq_readl_be(void __iomem *addr)
@@ -340,7 +230,6 @@ void irq_init_generic_chip(struct irq_chip_generic *gc, const char *name,
 		ct[i].chip.name = name;
 	gc->chip_types->handler = handler;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * irq_alloc_generic_chip - Allocate a generic chip and initialize it
@@ -358,36 +247,16 @@ irq_alloc_generic_chip(const char *name, int num_ct, unsigned int irq_base,
 		       void __iomem *reg_base, irq_flow_handler_t handler)
 {
 	struct irq_chip_generic *gc;
-<<<<<<< HEAD
-	unsigned long sz = sizeof(*gc) + num_ct * sizeof(struct irq_chip_type);
-
-	gc = kzalloc(sz, GFP_KERNEL);
-	if (gc) {
-		raw_spin_lock_init(&gc->lock);
-		gc->num_ct = num_ct;
-		gc->irq_base = irq_base;
-		gc->reg_base = reg_base;
-		gc->chip_types->chip.name = name;
-		gc->chip_types->handler = handler;
-=======
 
 	gc = kzalloc(struct_size(gc, chip_types, num_ct), GFP_KERNEL);
 	if (gc) {
 		irq_init_generic_chip(gc, name, num_ct, irq_base, reg_base,
 				      handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return gc;
 }
 EXPORT_SYMBOL_GPL(irq_alloc_generic_chip);
 
-<<<<<<< HEAD
-/*
- * Separate lockdep class for interrupt chip which can nest irq_desc
- * lock.
- */
-static struct lock_class_key irq_nested_lock_class;
-=======
 static void
 irq_gc_init_mask_cache(struct irq_chip_generic *gc, enum irq_gc_flags flags)
 {
@@ -592,7 +461,6 @@ const struct irq_domain_ops irq_generic_chip_ops = {
 	.xlate	= irq_domain_xlate_onetwocell,
 };
 EXPORT_SYMBOL_GPL(irq_generic_chip_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * irq_setup_generic_chip - Setup a range of interrupts with a generic chip
@@ -611,34 +479,20 @@ void irq_setup_generic_chip(struct irq_chip_generic *gc, u32 msk,
 			    unsigned int set)
 {
 	struct irq_chip_type *ct = gc->chip_types;
-<<<<<<< HEAD
-=======
 	struct irq_chip *chip = &ct->chip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i;
 
 	raw_spin_lock(&gc_lock);
 	list_add_tail(&gc->list, &gc_list);
 	raw_spin_unlock(&gc_lock);
 
-<<<<<<< HEAD
-	/* Init mask cache ? */
-	if (flags & IRQ_GC_INIT_MASK_CACHE)
-		gc->mask_cache = irq_reg_readl(gc->reg_base + ct->regs.mask);
-=======
 	irq_gc_init_mask_cache(gc, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = gc->irq_base; msk; msk >>= 1, i++) {
 		if (!(msk & 0x01))
 			continue;
 
 		if (flags & IRQ_GC_INIT_NESTED_LOCK)
-<<<<<<< HEAD
-			irq_set_lockdep_class(i, &irq_nested_lock_class);
-
-		irq_set_chip_and_handler(i, &ct->chip, ct->handler);
-=======
 			irq_set_lockdep_class(i, &irq_nested_lock_class,
 					      &irq_nested_request_class);
 
@@ -651,7 +505,6 @@ void irq_setup_generic_chip(struct irq_chip_generic *gc, u32 msk,
 				d->mask = 1 << (i - gc->irq_base);
 		}
 		irq_set_chip_and_handler(i, chip, ct->handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_set_chip_data(i, gc);
 		irq_modify_status(i, clr, set);
 	}
@@ -662,11 +515,7 @@ EXPORT_SYMBOL_GPL(irq_setup_generic_chip);
 /**
  * irq_setup_alt_chip - Switch to alternative chip
  * @d:		irq_data for this interrupt
-<<<<<<< HEAD
- * @type	Flow type to be initialized
-=======
  * @type:	Flow type to be initialized
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Only to be called from chip->irq_set_type() callbacks.
  */
@@ -699,27 +548,12 @@ EXPORT_SYMBOL_GPL(irq_setup_alt_chip);
 void irq_remove_generic_chip(struct irq_chip_generic *gc, u32 msk,
 			     unsigned int clr, unsigned int set)
 {
-<<<<<<< HEAD
-	unsigned int i = gc->irq_base;
-=======
 	unsigned int i, virq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_spin_lock(&gc_lock);
 	list_del(&gc->list);
 	raw_spin_unlock(&gc_lock);
 
-<<<<<<< HEAD
-	for (; msk; msk >>= 1, i++) {
-		if (!(msk & 0x01))
-			continue;
-
-		/* Remove handler first. That will mask the irq line */
-		irq_set_handler(i, NULL);
-		irq_set_chip(i, &no_irq_chip);
-		irq_set_chip_data(i, NULL);
-		irq_modify_status(i, clr, set);
-=======
 	for (i = 0; msk; msk >>= 1, i++) {
 		if (!(msk & 0x01))
 			continue;
@@ -742,13 +576,10 @@ void irq_remove_generic_chip(struct irq_chip_generic *gc, u32 msk,
 		irq_set_chip(virq, &no_irq_chip);
 		irq_set_chip_data(virq, NULL);
 		irq_modify_status(virq, clr, set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(irq_remove_generic_chip);
 
-<<<<<<< HEAD
-=======
 static struct irq_data *irq_gc_get_irq_data(struct irq_chip_generic *gc)
 {
 	unsigned int virq;
@@ -767,7 +598,6 @@ static struct irq_data *irq_gc_get_irq_data(struct irq_chip_generic *gc)
 	return virq ? irq_get_irq_data(virq) : NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int irq_gc_suspend(void)
 {
@@ -776,10 +606,6 @@ static int irq_gc_suspend(void)
 	list_for_each_entry(gc, &gc_list, list) {
 		struct irq_chip_type *ct = gc->chip_types;
 
-<<<<<<< HEAD
-		if (ct->chip.irq_suspend)
-			ct->chip.irq_suspend(irq_get_irq_data(gc->irq_base));
-=======
 		if (ct->chip.irq_suspend) {
 			struct irq_data *data = irq_gc_get_irq_data(gc);
 
@@ -789,7 +615,6 @@ static int irq_gc_suspend(void)
 
 		if (gc->suspend)
 			gc->suspend(gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -801,10 +626,6 @@ static void irq_gc_resume(void)
 	list_for_each_entry(gc, &gc_list, list) {
 		struct irq_chip_type *ct = gc->chip_types;
 
-<<<<<<< HEAD
-		if (ct->chip.irq_resume)
-			ct->chip.irq_resume(irq_get_irq_data(gc->irq_base));
-=======
 		if (gc->resume)
 			gc->resume(gc);
 
@@ -814,7 +635,6 @@ static void irq_gc_resume(void)
 			if (data)
 				ct->chip.irq_resume(data);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #else
@@ -829,17 +649,12 @@ static void irq_gc_shutdown(void)
 	list_for_each_entry(gc, &gc_list, list) {
 		struct irq_chip_type *ct = gc->chip_types;
 
-<<<<<<< HEAD
-		if (ct->chip.irq_pm_shutdown)
-			ct->chip.irq_pm_shutdown(irq_get_irq_data(gc->irq_base));
-=======
 		if (ct->chip.irq_pm_shutdown) {
 			struct irq_data *data = irq_gc_get_irq_data(gc);
 
 			if (data)
 				ct->chip.irq_pm_shutdown(data);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

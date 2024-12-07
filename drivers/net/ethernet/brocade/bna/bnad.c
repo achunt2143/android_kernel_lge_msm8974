@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -25,7 +7,6 @@
  * Copyright (c) 2014-2015 QLogic Corporation
  * All rights reserved
  * www.qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/bitops.h>
 #include <linux/netdevice.h>
@@ -57,133 +38,38 @@ module_param(bnad_ioc_auto_recover, uint, 0444);
 MODULE_PARM_DESC(bnad_ioc_auto_recover, "Enable / Disable auto recovery");
 
 static uint bna_debugfs_enable = 1;
-<<<<<<< HEAD
-module_param(bna_debugfs_enable, uint, S_IRUGO | S_IWUSR);
-=======
 module_param(bna_debugfs_enable, uint, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(bna_debugfs_enable, "Enables debugfs feature, default=1,"
 		 " Range[false:0|true:1]");
 
 /*
  * Global variables
  */
-<<<<<<< HEAD
-u32 bnad_rxqs_per_cq = 2;
-static u32 bna_id;
-static struct mutex bnad_list_mutex;
-static LIST_HEAD(bnad_list);
-static const u8 bnad_bcast_addr[] =  {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-=======
 static u32 bnad_rxqs_per_cq = 2;
 static atomic_t bna_id;
 static const u8 bnad_bcast_addr[] __aligned(2) =
 	{ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Local MACROS
  */
-<<<<<<< HEAD
-#define BNAD_TX_UNMAPQ_DEPTH (bnad->txq_depth * 2)
-
-#define BNAD_RX_UNMAPQ_DEPTH (bnad->rxq_depth)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNAD_GET_MBOX_IRQ(_bnad)				\
 	(((_bnad)->cfg_flags & BNAD_CF_MSIX) ?			\
 	 ((_bnad)->msix_table[BNAD_MAILBOX_MSIX_INDEX].vector) : \
 	 ((_bnad)->pcidev->irq))
 
-<<<<<<< HEAD
-#define BNAD_FILL_UNMAPQ_MEM_REQ(_res_info, _num, _depth)	\
-=======
 #define BNAD_FILL_UNMAPQ_MEM_REQ(_res_info, _num, _size)	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do {								\
 	(_res_info)->res_type = BNA_RES_T_MEM;			\
 	(_res_info)->res_u.mem_info.mem_type = BNA_MEM_T_KVA;	\
 	(_res_info)->res_u.mem_info.num = (_num);		\
-<<<<<<< HEAD
-	(_res_info)->res_u.mem_info.len =			\
-	sizeof(struct bnad_unmap_q) +				\
-	(sizeof(struct bnad_skb_unmap) * ((_depth) - 1));	\
-} while (0)
-
-#define BNAD_TXRX_SYNC_MDELAY	250	/* 250 msecs */
-
-static void
-bnad_add_to_list(struct bnad *bnad)
-{
-	mutex_lock(&bnad_list_mutex);
-	list_add_tail(&bnad->list_entry, &bnad_list);
-	bnad->id = bna_id++;
-	mutex_unlock(&bnad_list_mutex);
-}
-
-static void
-bnad_remove_from_list(struct bnad *bnad)
-{
-	mutex_lock(&bnad_list_mutex);
-	list_del(&bnad->list_entry);
-	mutex_unlock(&bnad_list_mutex);
-}
-
-=======
 	(_res_info)->res_u.mem_info.len = (_size);		\
 } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Reinitialize completions in CQ, once Rx is taken down
  */
 static void
-<<<<<<< HEAD
-bnad_cq_cmpl_init(struct bnad *bnad, struct bna_ccb *ccb)
-{
-	struct bna_cq_entry *cmpl, *next_cmpl;
-	unsigned int wi_range, wis = 0, ccb_prod = 0;
-	int i;
-
-	BNA_CQ_QPGE_PTR_GET(ccb_prod, ccb->sw_qpt, cmpl,
-			    wi_range);
-
-	for (i = 0; i < ccb->q_depth; i++) {
-		wis++;
-		if (likely(--wi_range))
-			next_cmpl = cmpl + 1;
-		else {
-			BNA_QE_INDX_ADD(ccb_prod, wis, ccb->q_depth);
-			wis = 0;
-			BNA_CQ_QPGE_PTR_GET(ccb_prod, ccb->sw_qpt,
-						next_cmpl, wi_range);
-		}
-		cmpl->valid = 0;
-		cmpl = next_cmpl;
-	}
-}
-
-static u32
-bnad_pci_unmap_skb(struct device *pdev, struct bnad_skb_unmap *array,
-	u32 index, u32 depth, struct sk_buff *skb, u32 frag)
-{
-	int j;
-	array[index].skb = NULL;
-
-	dma_unmap_single(pdev, dma_unmap_addr(&array[index], dma_addr),
-			skb_headlen(skb), DMA_TO_DEVICE);
-	dma_unmap_addr_set(&array[index], dma_addr, 0);
-	BNA_QE_INDX_ADD(index, 1, depth);
-
-	for (j = 0; j < frag; j++) {
-		dma_unmap_page(pdev, dma_unmap_addr(&array[index], dma_addr),
-			  skb_frag_size(&skb_shinfo(skb)->frags[j]), DMA_TO_DEVICE);
-		dma_unmap_addr_set(&array[index], dma_addr, 0);
-		BNA_QE_INDX_ADD(index, 1, depth);
-	}
-
-=======
 bnad_cq_cleanup(struct bnad *bnad, struct bna_ccb *ccb)
 {
 	struct bna_cq_entry *cmpl;
@@ -239,7 +125,6 @@ bnad_tx_buff_unmap(struct bnad *bnad,
 
 	BNA_QE_INDX_INC(index, q_depth);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return index;
 }
 
@@ -249,28 +134,6 @@ bnad_tx_buff_unmap(struct bnad *bnad,
  * so DMA unmap & freeing is fine.
  */
 static void
-<<<<<<< HEAD
-bnad_free_all_txbufs(struct bnad *bnad,
-		 struct bna_tcb *tcb)
-{
-	u32		unmap_cons;
-	struct bnad_unmap_q *unmap_q = tcb->unmap_q;
-	struct bnad_skb_unmap *unmap_array;
-	struct sk_buff		*skb = NULL;
-	int			q;
-
-	unmap_array = unmap_q->unmap_array;
-
-	for (q = 0; q < unmap_q->q_depth; q++) {
-		skb = unmap_array[q].skb;
-		if (!skb)
-			continue;
-
-		unmap_cons = q;
-		unmap_cons = bnad_pci_unmap_skb(&bnad->pcidev->dev, unmap_array,
-				unmap_cons, unmap_q->q_depth, skb,
-				skb_shinfo(skb)->nr_frags);
-=======
 bnad_txq_cleanup(struct bnad *bnad, struct bna_tcb *tcb)
 {
 	struct bnad_tx_unmap *unmap_q = tcb->unmap_q;
@@ -282,64 +145,11 @@ bnad_txq_cleanup(struct bnad *bnad, struct bna_tcb *tcb)
 		if (!skb)
 			continue;
 		bnad_tx_buff_unmap(bnad, unmap_q, tcb->q_depth, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev_kfree_skb_any(skb);
 	}
 }
 
-<<<<<<< HEAD
-/* Data Path Handlers */
-
-/*
- * bnad_free_txbufs : Frees the Tx bufs on Tx completion
- * Can be called in a) Interrupt context
- *		    b) Sending context
- *		    c) Tasklet context
- */
-static u32
-bnad_free_txbufs(struct bnad *bnad,
-		 struct bna_tcb *tcb)
-{
-	u32		unmap_cons, sent_packets = 0, sent_bytes = 0;
-	u16		wis, updated_hw_cons;
-	struct bnad_unmap_q *unmap_q = tcb->unmap_q;
-	struct bnad_skb_unmap *unmap_array;
-	struct sk_buff		*skb;
-
-	/*
-	 * Just return if TX is stopped. This check is useful
-	 * when bnad_free_txbufs() runs out of a tasklet scheduled
-	 * before bnad_cb_tx_cleanup() cleared BNAD_TXQ_TX_STARTED bit
-	 * but this routine runs actually after the cleanup has been
-	 * executed.
-	 */
-	if (!test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags))
-		return 0;
-
-	updated_hw_cons = *(tcb->hw_consumer_index);
-
-	wis = BNA_Q_INDEX_CHANGE(tcb->consumer_index,
-				  updated_hw_cons, tcb->q_depth);
-
-	BUG_ON(!(wis <= BNA_QE_IN_USE_CNT(tcb, tcb->q_depth)));
-
-	unmap_array = unmap_q->unmap_array;
-	unmap_cons = unmap_q->consumer_index;
-
-	prefetch(&unmap_array[unmap_cons + 1]);
-	while (wis) {
-		skb = unmap_array[unmap_cons].skb;
-
-		sent_packets++;
-		sent_bytes += skb->len;
-		wis -= BNA_TXQ_WI_NEEDED(1 + skb_shinfo(skb)->nr_frags);
-
-		unmap_cons = bnad_pci_unmap_skb(&bnad->pcidev->dev, unmap_array,
-				unmap_cons, unmap_q->q_depth, skb,
-				skb_shinfo(skb)->nr_frags);
-
-=======
 /*
  * bnad_txcmpl_process : Frees the Tx bufs on Tx completion
  * Can be called in a) Interrupt context
@@ -378,17 +188,11 @@ bnad_txcmpl_process(struct bnad *bnad, struct bna_tcb *tcb)
 		wis -= unmap_wis;
 
 		cons = bnad_tx_buff_unmap(bnad, unmap_q, q_depth, cons);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 	}
 
 	/* Update consumer pointers. */
-<<<<<<< HEAD
-	tcb->consumer_index = updated_hw_cons;
-	unmap_q->consumer_index = unmap_cons;
-=======
 	tcb->consumer_index = hw_cons;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tcb->txq->tx_packets += sent_packets;
 	tcb->txq->tx_bytes += sent_bytes;
@@ -396,62 +200,8 @@ bnad_txcmpl_process(struct bnad *bnad, struct bna_tcb *tcb)
 	return sent_packets;
 }
 
-<<<<<<< HEAD
-/* Tx Free Tasklet function */
-/* Frees for all the tcb's in all the Tx's */
-/*
- * Scheduled from sending context, so that
- * the fat Tx lock is not held for too long
- * in the sending context.
- */
-static void
-bnad_tx_free_tasklet(unsigned long bnad_ptr)
-{
-	struct bnad *bnad = (struct bnad *)bnad_ptr;
-	struct bna_tcb *tcb;
-	u32		acked = 0;
-	int			i, j;
-
-	for (i = 0; i < bnad->num_tx; i++) {
-		for (j = 0; j < bnad->num_txq_per_tx; j++) {
-			tcb = bnad->tx_info[i].tcb[j];
-			if (!tcb)
-				continue;
-			if (((u16) (*tcb->hw_consumer_index) !=
-				tcb->consumer_index) &&
-				(!test_and_set_bit(BNAD_TXQ_FREE_SENT,
-						  &tcb->flags))) {
-				acked = bnad_free_txbufs(bnad, tcb);
-				if (likely(test_bit(BNAD_TXQ_TX_STARTED,
-					&tcb->flags)))
-					bna_ib_ack(tcb->i_dbell, acked);
-				smp_mb__before_clear_bit();
-				clear_bit(BNAD_TXQ_FREE_SENT, &tcb->flags);
-			}
-			if (unlikely(!test_bit(BNAD_TXQ_TX_STARTED,
-						&tcb->flags)))
-				continue;
-			if (netif_queue_stopped(bnad->netdev)) {
-				if (acked && netif_carrier_ok(bnad->netdev) &&
-					BNA_QE_FREE_CNT(tcb, tcb->q_depth) >=
-						BNAD_NETIF_WAKE_THRESHOLD) {
-					netif_wake_queue(bnad->netdev);
-					/* TODO */
-					/* Counters for individual TxQs? */
-					BNAD_UPDATE_CTR(bnad,
-						netif_queue_wakeup);
-				}
-			}
-		}
-	}
-}
-
-static u32
-bnad_tx(struct bnad *bnad, struct bna_tcb *tcb)
-=======
 static u32
 bnad_tx_complete(struct bnad *bnad, struct bna_tcb *tcb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = bnad->netdev;
 	u32 sent = 0;
@@ -459,11 +209,7 @@ bnad_tx_complete(struct bnad *bnad, struct bna_tcb *tcb)
 	if (test_and_set_bit(BNAD_TXQ_FREE_SENT, &tcb->flags))
 		return 0;
 
-<<<<<<< HEAD
-	sent = bnad_free_txbufs(bnad, tcb);
-=======
 	sent = bnad_txcmpl_process(bnad, tcb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sent) {
 		if (netif_queue_stopped(netdev) &&
 		    netif_carrier_ok(netdev) &&
@@ -479,11 +225,7 @@ bnad_tx_complete(struct bnad *bnad, struct bna_tcb *tcb)
 	if (likely(test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags)))
 		bna_ib_ack(tcb->i_dbell, sent);
 
-<<<<<<< HEAD
-	smp_mb__before_clear_bit();
-=======
 	smp_mb__before_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(BNAD_TXQ_FREE_SENT, &tcb->flags);
 
 	return sent;
@@ -496,80 +238,11 @@ bnad_msix_tx(int irq, void *data)
 	struct bna_tcb *tcb = (struct bna_tcb *)data;
 	struct bnad *bnad = tcb->bnad;
 
-<<<<<<< HEAD
-	bnad_tx(bnad, tcb);
-=======
 	bnad_tx_complete(bnad, tcb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static void
-bnad_reset_rcb(struct bnad *bnad, struct bna_rcb *rcb)
-{
-	struct bnad_unmap_q *unmap_q = rcb->unmap_q;
-
-	rcb->producer_index = 0;
-	rcb->consumer_index = 0;
-
-	unmap_q->producer_index = 0;
-	unmap_q->consumer_index = 0;
-}
-
-static void
-bnad_free_all_rxbufs(struct bnad *bnad, struct bna_rcb *rcb)
-{
-	struct bnad_unmap_q *unmap_q;
-	struct bnad_skb_unmap *unmap_array;
-	struct sk_buff *skb;
-	int unmap_cons;
-
-	unmap_q = rcb->unmap_q;
-	unmap_array = unmap_q->unmap_array;
-	for (unmap_cons = 0; unmap_cons < unmap_q->q_depth; unmap_cons++) {
-		skb = unmap_array[unmap_cons].skb;
-		if (!skb)
-			continue;
-		unmap_array[unmap_cons].skb = NULL;
-		dma_unmap_single(&bnad->pcidev->dev,
-				 dma_unmap_addr(&unmap_array[unmap_cons],
-						dma_addr),
-				 rcb->rxq->buffer_size,
-				 DMA_FROM_DEVICE);
-		dev_kfree_skb(skb);
-	}
-	bnad_reset_rcb(bnad, rcb);
-}
-
-static void
-bnad_alloc_n_post_rxbufs(struct bnad *bnad, struct bna_rcb *rcb)
-{
-	u16 to_alloc, alloced, unmap_prod, wi_range;
-	struct bnad_unmap_q *unmap_q = rcb->unmap_q;
-	struct bnad_skb_unmap *unmap_array;
-	struct bna_rxq_entry *rxent;
-	struct sk_buff *skb;
-	dma_addr_t dma_addr;
-
-	alloced = 0;
-	to_alloc =
-		BNA_QE_FREE_CNT(unmap_q, unmap_q->q_depth);
-
-	unmap_array = unmap_q->unmap_array;
-	unmap_prod = unmap_q->producer_index;
-
-	BNA_RXQ_QPGE_PTR_GET(unmap_prod, rcb->sw_qpt, rxent, wi_range);
-
-	while (to_alloc--) {
-		if (!wi_range)
-			BNA_RXQ_QPGE_PTR_GET(unmap_prod, rcb->sw_qpt, rxent,
-					     wi_range);
-		skb = netdev_alloc_skb_ip_align(bnad->netdev,
-						rcb->rxq->buffer_size);
-		if (unlikely(!skb)) {
-=======
 static inline void
 bnad_rxq_alloc_uninit(struct bnad *bnad, struct bna_rcb *rcb)
 {
@@ -694,24 +367,10 @@ bnad_rxq_refill_page(struct bnad *bnad, struct bna_rcb *rcb, u32 nalloc)
 		}
 
 		if (unlikely(!page)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BNAD_UPDATE_CTR(bnad, rxbuf_alloc_failed);
 			rcb->rxq->rxbuf_alloc_failed++;
 			goto finishing;
 		}
-<<<<<<< HEAD
-		unmap_array[unmap_prod].skb = skb;
-		dma_addr = dma_map_single(&bnad->pcidev->dev, skb->data,
-					  rcb->rxq->buffer_size,
-					  DMA_FROM_DEVICE);
-		dma_unmap_addr_set(&unmap_array[unmap_prod], dma_addr,
-				   dma_addr);
-		BNA_SET_DMA_ADDR(dma_addr, &rxent->host_addr);
-		BNA_QE_INDX_ADD(unmap_prod, 1, unmap_q->q_depth);
-
-		rxent++;
-		wi_range--;
-=======
 
 		dma_addr = dma_map_page(&bnad->pcidev->dev, page, page_offset,
 					unmap_q->map_size, DMA_FROM_DEVICE);
@@ -736,66 +395,16 @@ bnad_rxq_refill_page(struct bnad *bnad, struct bna_rcb *rcb, u32 nalloc)
 		rxent = &((struct bna_rxq_entry *)rcb->sw_q)[prod];
 		BNA_SET_DMA_ADDR(dma_addr, &rxent->host_addr);
 		BNA_QE_INDX_INC(prod, q_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		alloced++;
 	}
 
 finishing:
 	if (likely(alloced)) {
-<<<<<<< HEAD
-		unmap_q->producer_index = unmap_prod;
-		rcb->producer_index = unmap_prod;
-=======
 		rcb->producer_index = prod;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp_mb();
 		if (likely(test_bit(BNAD_RXQ_POST_OK, &rcb->flags)))
 			bna_rxq_prod_indx_doorbell(rcb);
 	}
-<<<<<<< HEAD
-}
-
-static inline void
-bnad_refill_rxq(struct bnad *bnad, struct bna_rcb *rcb)
-{
-	struct bnad_unmap_q *unmap_q = rcb->unmap_q;
-
-	if (!test_and_set_bit(BNAD_RXQ_REFILL, &rcb->flags)) {
-		if (BNA_QE_FREE_CNT(unmap_q, unmap_q->q_depth)
-			 >> BNAD_RXQ_REFILL_THRESHOLD_SHIFT)
-			bnad_alloc_n_post_rxbufs(bnad, rcb);
-		smp_mb__before_clear_bit();
-		clear_bit(BNAD_RXQ_REFILL, &rcb->flags);
-	}
-}
-
-static u32
-bnad_poll_cq(struct bnad *bnad, struct bna_ccb *ccb, int budget)
-{
-	struct bna_cq_entry *cmpl, *next_cmpl;
-	struct bna_rcb *rcb = NULL;
-	unsigned int wi_range, packets = 0, wis = 0;
-	struct bnad_unmap_q *unmap_q;
-	struct bnad_skb_unmap *unmap_array;
-	struct sk_buff *skb;
-	u32 flags, unmap_cons;
-	struct bna_pkt_rate *pkt_rt = &ccb->pkt_rate;
-	struct bnad_rx_ctrl *rx_ctrl = (struct bnad_rx_ctrl *)(ccb->ctrl);
-
-	set_bit(BNAD_FP_IN_RX_PATH, &rx_ctrl->flags);
-
-	if (!test_bit(BNAD_RXQ_STARTED, &ccb->rcb[0]->flags)) {
-		clear_bit(BNAD_FP_IN_RX_PATH, &rx_ctrl->flags);
-		return 0;
-	}
-
-	prefetch(bnad->netdev);
-	BNA_CQ_QPGE_PTR_GET(ccb->producer_index, ccb->sw_qpt, cmpl,
-			    wi_range);
-	BUG_ON(!(wi_range <= ccb->q_depth));
-	while (cmpl->valid && packets < budget) {
-		packets++;
-=======
 
 	return alloced;
 }
@@ -1005,7 +614,6 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 		 */
 		rmb();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNA_UPDATE_PKT_CNT(pkt_rt, ntohs(cmpl->length));
 
 		if (bna_is_small_rxq(cmpl->rxq_id))
@@ -1014,54 +622,6 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 			rcb = ccb->rcb[0];
 
 		unmap_q = rcb->unmap_q;
-<<<<<<< HEAD
-		unmap_array = unmap_q->unmap_array;
-		unmap_cons = unmap_q->consumer_index;
-
-		skb = unmap_array[unmap_cons].skb;
-		BUG_ON(!(skb));
-		unmap_array[unmap_cons].skb = NULL;
-		dma_unmap_single(&bnad->pcidev->dev,
-				 dma_unmap_addr(&unmap_array[unmap_cons],
-						dma_addr),
-				 rcb->rxq->buffer_size,
-				 DMA_FROM_DEVICE);
-		BNA_QE_INDX_ADD(unmap_q->consumer_index, 1, unmap_q->q_depth);
-
-		/* Should be more efficient ? Performance ? */
-		BNA_QE_INDX_ADD(rcb->consumer_index, 1, rcb->q_depth);
-
-		wis++;
-		if (likely(--wi_range))
-			next_cmpl = cmpl + 1;
-		else {
-			BNA_QE_INDX_ADD(ccb->producer_index, wis, ccb->q_depth);
-			wis = 0;
-			BNA_CQ_QPGE_PTR_GET(ccb->producer_index, ccb->sw_qpt,
-						next_cmpl, wi_range);
-			BUG_ON(!(wi_range <= ccb->q_depth));
-		}
-		prefetch(next_cmpl);
-
-		flags = ntohl(cmpl->flags);
-		if (unlikely
-		    (flags &
-		     (BNA_CQ_EF_MAC_ERROR | BNA_CQ_EF_FCS_ERROR |
-		      BNA_CQ_EF_TOO_LONG))) {
-			dev_kfree_skb_any(skb);
-			rcb->rxq->rx_packets_with_error++;
-			goto next;
-		}
-
-		skb_put(skb, ntohs(cmpl->length));
-		if (likely
-		    ((bnad->netdev->features & NETIF_F_RXCSUM) &&
-		     (((flags & BNA_CQ_EF_IPV4) &&
-		      (flags & BNA_CQ_EF_L3_CKSUM_OK)) ||
-		      (flags & BNA_CQ_EF_IPV6)) &&
-		      (flags & (BNA_CQ_EF_TCP | BNA_CQ_EF_UDP)) &&
-		      (flags & BNA_CQ_EF_L4_CKSUM_OK)))
-=======
 
 		/* start of packet ci */
 		sop_ci = rcb->consumer_index;
@@ -1143,41 +703,10 @@ bnad_cq_process(struct bnad *bnad, struct bna_ccb *ccb, int budget)
 		      (masked_flags == flags_udp4) ||
 		      (masked_flags == flags_tcp6) ||
 		      (masked_flags == flags_udp6))))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb->ip_summed = CHECKSUM_UNNECESSARY;
 		else
 			skb_checksum_none_assert(skb);
 
-<<<<<<< HEAD
-		rcb->rxq->rx_packets++;
-		rcb->rxq->rx_bytes += skb->len;
-		skb->protocol = eth_type_trans(skb, bnad->netdev);
-
-		if (flags & BNA_CQ_EF_VLAN)
-			__vlan_hwaccel_put_tag(skb, ntohs(cmpl->vlan_tag));
-
-		if (skb->ip_summed == CHECKSUM_UNNECESSARY)
-			napi_gro_receive(&rx_ctrl->napi, skb);
-		else {
-			netif_receive_skb(skb);
-		}
-
-next:
-		cmpl->valid = 0;
-		cmpl = next_cmpl;
-	}
-
-	BNA_QE_INDX_ADD(ccb->producer_index, wis, ccb->q_depth);
-
-	if (likely(test_bit(BNAD_RXQ_STARTED, &ccb->rcb[0]->flags)))
-		bna_ib_ack_disable_irq(ccb->i_dbell, packets);
-
-	bnad_refill_rxq(bnad, ccb->rcb[0]);
-	if (ccb->rcb[1])
-		bnad_refill_rxq(bnad, ccb->rcb[1]);
-
-	clear_bit(BNAD_FP_IN_RX_PATH, &rx_ctrl->flags);
-=======
 		if ((flags & BNA_CQ_EF_VLAN) &&
 		    (bnad->netdev->features & NETIF_F_HW_VLAN_CTAG_RX))
 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), ntohs(cmpl->vlan_tag));
@@ -1203,7 +732,6 @@ next:
 	bnad_rxq_post(bnad, ccb->rcb[0]);
 	if (ccb->rcb[1])
 		bnad_rxq_post(bnad, ccb->rcb[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return packets;
 }
@@ -1227,11 +755,7 @@ bnad_msix_rx(int irq, void *data)
 	struct bna_ccb *ccb = (struct bna_ccb *)data;
 
 	if (ccb) {
-<<<<<<< HEAD
-		((struct bnad_rx_ctrl *)(ccb->ctrl))->rx_intr_ctr++;
-=======
 		((struct bnad_rx_ctrl *)ccb->ctrl)->rx_intr_ctr++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnad_netif_rx_schedule_poll(ccb->bnad, ccb);
 	}
 
@@ -1302,11 +826,7 @@ bnad_isr(int irq, void *data)
 		for (j = 0; j < bnad->num_txq_per_tx; j++) {
 			tcb = bnad->tx_info[i].tcb[j];
 			if (tcb && test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags))
-<<<<<<< HEAD
-				bnad_tx(bnad, bnad->tx_info[i].tcb[j]);
-=======
 				bnad_tx_complete(bnad, bnad->tx_info[i].tcb[j]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	/* Rx processing */
@@ -1353,15 +873,9 @@ bnad_set_netdev_perm_addr(struct bnad *bnad)
 {
 	struct net_device *netdev = bnad->netdev;
 
-<<<<<<< HEAD
-	memcpy(netdev->perm_addr, &bnad->perm_addr, netdev->addr_len);
-	if (is_zero_ether_addr(netdev->dev_addr))
-		memcpy(netdev->dev_addr, &bnad->perm_addr, netdev->addr_len);
-=======
 	ether_addr_copy(netdev->perm_addr, bnad->perm_addr);
 	if (is_zero_ether_addr(netdev->dev_addr))
 		eth_hw_addr_set(netdev, bnad->perm_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Control Path Handlers */
@@ -1430,12 +944,7 @@ bnad_cb_ethport_link_status(struct bnad *bnad,
 	if (link_up) {
 		if (!netif_carrier_ok(bnad->netdev)) {
 			uint tx_id, tcb_id;
-<<<<<<< HEAD
-			printk(KERN_WARNING "bna: %s link up\n",
-				bnad->netdev->name);
-=======
 			netdev_info(bnad->netdev, "link up\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_carrier_on(bnad->netdev);
 			BNAD_UPDATE_CTR(bnad, link_toggle);
 			for (tx_id = 0; tx_id < bnad->num_tx; tx_id++) {
@@ -1454,13 +963,6 @@ bnad_cb_ethport_link_status(struct bnad *bnad,
 						/*
 						 * Force an immediate
 						 * Transmit Schedule */
-<<<<<<< HEAD
-						printk(KERN_INFO "bna: %s %d "
-						      "TXQ_STARTED\n",
-						       bnad->netdev->name,
-						       txq_id);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						netif_wake_subqueue(
 								bnad->netdev,
 								txq_id);
@@ -1478,12 +980,7 @@ bnad_cb_ethport_link_status(struct bnad *bnad,
 		}
 	} else {
 		if (netif_carrier_ok(bnad->netdev)) {
-<<<<<<< HEAD
-			printk(KERN_WARNING "bna: %s link down\n",
-				bnad->netdev->name);
-=======
 			netdev_info(bnad->netdev, "link down\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_carrier_off(bnad->netdev);
 			BNAD_UPDATE_CTR(bnad, link_toggle);
 		}
@@ -1503,18 +1000,9 @@ bnad_cb_tcb_setup(struct bnad *bnad, struct bna_tcb *tcb)
 {
 	struct bnad_tx_info *tx_info =
 			(struct bnad_tx_info *)tcb->txq->tx->priv;
-<<<<<<< HEAD
-	struct bnad_unmap_q *unmap_q = tcb->unmap_q;
-
-	tx_info->tcb[tcb->id] = tcb;
-	unmap_q->producer_index = 0;
-	unmap_q->consumer_index = 0;
-	unmap_q->q_depth = BNAD_TX_UNMAPQ_DEPTH;
-=======
 
 	tcb->priv = tcb;
 	tx_info->tcb[tcb->id] = tcb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1522,42 +1010,9 @@ bnad_cb_tcb_destroy(struct bnad *bnad, struct bna_tcb *tcb)
 {
 	struct bnad_tx_info *tx_info =
 			(struct bnad_tx_info *)tcb->txq->tx->priv;
-<<<<<<< HEAD
-	struct bnad_unmap_q *unmap_q = tcb->unmap_q;
-
-	while (test_and_set_bit(BNAD_TXQ_FREE_SENT, &tcb->flags))
-		cpu_relax();
-
-	bnad_free_all_txbufs(bnad, tcb);
-
-	unmap_q->producer_index = 0;
-	unmap_q->consumer_index = 0;
-
-	smp_mb__before_clear_bit();
-	clear_bit(BNAD_TXQ_FREE_SENT, &tcb->flags);
-
-	tx_info->tcb[tcb->id] = NULL;
-}
-
-static void
-bnad_cb_rcb_setup(struct bnad *bnad, struct bna_rcb *rcb)
-{
-	struct bnad_unmap_q *unmap_q = rcb->unmap_q;
-
-	unmap_q->producer_index = 0;
-	unmap_q->consumer_index = 0;
-	unmap_q->q_depth = BNAD_RX_UNMAPQ_DEPTH;
-}
-
-static void
-bnad_cb_rcb_destroy(struct bnad *bnad, struct bna_rcb *rcb)
-{
-	bnad_free_all_rxbufs(bnad, rcb);
-=======
 
 	tx_info->tcb[tcb->id] = NULL;
 	tcb->priv = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1582,12 +1037,7 @@ bnad_cb_ccb_destroy(struct bnad *bnad, struct bna_ccb *ccb)
 static void
 bnad_cb_tx_stall(struct bnad *bnad, struct bna_tx *tx)
 {
-<<<<<<< HEAD
-	struct bnad_tx_info *tx_info =
-			(struct bnad_tx_info *)tx->priv;
-=======
 	struct bnad_tx_info *tx_info = tx->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bna_tcb *tcb;
 	u32 txq_id;
 	int i;
@@ -1599,25 +1049,14 @@ bnad_cb_tx_stall(struct bnad *bnad, struct bna_tx *tx)
 		txq_id = tcb->id;
 		clear_bit(BNAD_TXQ_TX_STARTED, &tcb->flags);
 		netif_stop_subqueue(bnad->netdev, txq_id);
-<<<<<<< HEAD
-		printk(KERN_INFO "bna: %s %d TXQ_STOPPED\n",
-			bnad->netdev->name, txq_id);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void
 bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
 {
-<<<<<<< HEAD
-	struct bnad_tx_info *tx_info = (struct bnad_tx_info *)tx->priv;
-	struct bna_tcb *tcb;
-	struct bnad_unmap_q *unmap_q;
-=======
 	struct bnad_tx_info *tx_info = tx->priv;
 	struct bna_tcb *tcb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 txq_id;
 	int i;
 
@@ -1627,35 +1066,11 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
 			continue;
 		txq_id = tcb->id;
 
-<<<<<<< HEAD
-		unmap_q = tcb->unmap_q;
-
-		if (test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags))
-			continue;
-
-		while (test_and_set_bit(BNAD_TXQ_FREE_SENT, &tcb->flags))
-			cpu_relax();
-
-		bnad_free_all_txbufs(bnad, tcb);
-
-		unmap_q->producer_index = 0;
-		unmap_q->consumer_index = 0;
-
-		smp_mb__before_clear_bit();
-		clear_bit(BNAD_TXQ_FREE_SENT, &tcb->flags);
-
-		set_bit(BNAD_TXQ_TX_STARTED, &tcb->flags);
-
-		if (netif_carrier_ok(bnad->netdev)) {
-			printk(KERN_INFO "bna: %s %d TXQ_STARTED\n",
-				bnad->netdev->name, txq_id);
-=======
 		BUG_ON(test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags));
 		set_bit(BNAD_TXQ_TX_STARTED, &tcb->flags);
 		BUG_ON(*(tcb->hw_consumer_index) != 0);
 
 		if (netif_carrier_ok(bnad->netdev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_wake_subqueue(bnad->netdev, txq_id);
 			BNAD_UPDATE_CTR(bnad, netif_queue_wakeup);
 		}
@@ -1666,23 +1081,12 @@ bnad_cb_tx_resume(struct bnad *bnad, struct bna_tx *tx)
 	 * get a 0 MAC address. We try to get the MAC address
 	 * again here.
 	 */
-<<<<<<< HEAD
-	if (is_zero_ether_addr(&bnad->perm_addr.mac[0])) {
-		bna_enet_perm_mac_get(&bnad->bna.enet, &bnad->perm_addr);
-=======
 	if (is_zero_ether_addr(bnad->perm_addr)) {
 		bna_enet_perm_mac_get(&bnad->bna.enet, bnad->perm_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnad_set_netdev_perm_addr(bnad);
 	}
 }
 
-<<<<<<< HEAD
-static void
-bnad_cb_tx_cleanup(struct bnad *bnad, struct bna_tx *tx)
-{
-	struct bnad_tx_info *tx_info = (struct bnad_tx_info *)tx->priv;
-=======
 /*
  * Free all TxQs buffers and then notify TX_E_CLEANUP_DONE to Tx fsm.
  */
@@ -1729,7 +1133,6 @@ static void
 bnad_cb_tx_cleanup(struct bnad *bnad, struct bna_tx *tx)
 {
 	struct bnad_tx_info *tx_info = tx->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bna_tcb *tcb;
 	int i;
 
@@ -1739,22 +1142,13 @@ bnad_cb_tx_cleanup(struct bnad *bnad, struct bna_tx *tx)
 			continue;
 	}
 
-<<<<<<< HEAD
-	mdelay(BNAD_TXRX_SYNC_MDELAY);
-	bna_tx_cleanup_complete(tx);
-=======
 	queue_delayed_work(bnad->work_q, &tx_info->tx_cleanup_work, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 bnad_cb_rx_stall(struct bnad *bnad, struct bna_rx *rx)
 {
-<<<<<<< HEAD
-	struct bnad_rx_info *rx_info = (struct bnad_rx_info *)rx->priv;
-=======
 	struct bnad_rx_info *rx_info = rx->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bna_ccb *ccb;
 	struct bnad_rx_ctrl *rx_ctrl;
 	int i;
@@ -1772,12 +1166,6 @@ bnad_cb_rx_stall(struct bnad *bnad, struct bna_rx *rx)
 	}
 }
 
-<<<<<<< HEAD
-static void
-bnad_cb_rx_cleanup(struct bnad *bnad, struct bna_rx *rx)
-{
-	struct bnad_rx_info *rx_info = (struct bnad_rx_info *)rx->priv;
-=======
 /*
  * Free all RxQs buffers and then notify RX_E_CLEANUP_DONE to Rx fsm.
  */
@@ -1820,16 +1208,10 @@ static void
 bnad_cb_rx_cleanup(struct bnad *bnad, struct bna_rx *rx)
 {
 	struct bnad_rx_info *rx_info = rx->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bna_ccb *ccb;
 	struct bnad_rx_ctrl *rx_ctrl;
 	int i;
 
-<<<<<<< HEAD
-	mdelay(BNAD_TXRX_SYNC_MDELAY);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < BNAD_MAX_RXP_PER_RX; i++) {
 		rx_ctrl = &rx_info->rx_ctrl[i];
 		ccb = rx_ctrl->ccb;
@@ -1840,38 +1222,19 @@ bnad_cb_rx_cleanup(struct bnad *bnad, struct bna_rx *rx)
 
 		if (ccb->rcb[1])
 			clear_bit(BNAD_RXQ_STARTED, &ccb->rcb[1]->flags);
-<<<<<<< HEAD
-
-		while (test_bit(BNAD_FP_IN_RX_PATH, &rx_ctrl->flags))
-			cpu_relax();
-	}
-
-	bna_rx_cleanup_complete(rx);
-=======
 	}
 
 	queue_work(bnad->work_q, &rx_info->rx_cleanup_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 bnad_cb_rx_post(struct bnad *bnad, struct bna_rx *rx)
 {
-<<<<<<< HEAD
-	struct bnad_rx_info *rx_info = (struct bnad_rx_info *)rx->priv;
-	struct bna_ccb *ccb;
-	struct bna_rcb *rcb;
-	struct bnad_rx_ctrl *rx_ctrl;
-	struct bnad_unmap_q *unmap_q;
-	int i;
-	int j;
-=======
 	struct bnad_rx_info *rx_info = rx->priv;
 	struct bna_ccb *ccb;
 	struct bna_rcb *rcb;
 	struct bnad_rx_ctrl *rx_ctrl;
 	int i, j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < BNAD_MAX_RXP_PER_RX; i++) {
 		rx_ctrl = &rx_info->rx_ctrl[i];
@@ -1879,39 +1242,17 @@ bnad_cb_rx_post(struct bnad *bnad, struct bna_rx *rx)
 		if (!ccb)
 			continue;
 
-<<<<<<< HEAD
-		bnad_cq_cmpl_init(bnad, ccb);
-=======
 		napi_enable(&rx_ctrl->napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (j = 0; j < BNAD_MAX_RXQ_PER_RXP; j++) {
 			rcb = ccb->rcb[j];
 			if (!rcb)
 				continue;
-<<<<<<< HEAD
-			bnad_free_all_rxbufs(bnad, rcb);
-
-			set_bit(BNAD_RXQ_STARTED, &rcb->flags);
-			set_bit(BNAD_RXQ_POST_OK, &rcb->flags);
-			unmap_q = rcb->unmap_q;
-
-			/* Now allocate & post buffers for this RCB */
-			/* !!Allocation in callback context */
-			if (!test_and_set_bit(BNAD_RXQ_REFILL, &rcb->flags)) {
-				if (BNA_QE_FREE_CNT(unmap_q, unmap_q->q_depth)
-					>> BNAD_RXQ_REFILL_THRESHOLD_SHIFT)
-					bnad_alloc_n_post_rxbufs(bnad, rcb);
-					smp_mb__before_clear_bit();
-				clear_bit(BNAD_RXQ_REFILL, &rcb->flags);
-			}
-=======
 
 			bnad_rxq_alloc_init(bnad, rcb);
 			set_bit(BNAD_RXQ_STARTED, &rcb->flags);
 			set_bit(BNAD_RXQ_POST_OK, &rcb->flags);
 			bnad_rxq_post(bnad, rcb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -2013,14 +1354,8 @@ bnad_mem_alloc(struct bnad *bnad,
 			mem_info->mdl[i].len = mem_info->len;
 			mem_info->mdl[i].kva =
 				dma_alloc_coherent(&bnad->pcidev->dev,
-<<<<<<< HEAD
-						mem_info->len, &dma_pa,
-						GFP_KERNEL);
-
-=======
 						   mem_info->len, &dma_pa,
 						   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (mem_info->mdl[i].kva == NULL)
 				goto err_return;
 
@@ -2167,12 +1502,7 @@ bnad_txrx_irq_alloc(struct bnad *bnad, enum bnad_intr_source src,
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * NOTE: Should be called for MSIX only
-=======
 /* NOTE: Should be called for MSIX only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Unregisters Tx MSIX vector(s) from the kernel
  */
 static void
@@ -2191,12 +1521,7 @@ bnad_tx_msix_unregister(struct bnad *bnad, struct bnad_tx_info *tx_info,
 	}
 }
 
-<<<<<<< HEAD
-/**
- * NOTE: Should be called for MSIX only
-=======
 /* NOTE: Should be called for MSIX only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Registers Tx MSIX vector(s) and ISR(s), cookie with the kernel
  */
 static int
@@ -2227,12 +1552,7 @@ err_return:
 	return -1;
 }
 
-<<<<<<< HEAD
-/**
- * NOTE: Should be called for MSIX only
-=======
 /* NOTE: Should be called for MSIX only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Unregisters Rx MSIX vector(s) from the kernel
  */
 static void
@@ -2252,12 +1572,7 @@ bnad_rx_msix_unregister(struct bnad *bnad, struct bnad_rx_info *rx_info,
 	}
 }
 
-<<<<<<< HEAD
-/**
- * NOTE: Should be called for MSIX only
-=======
 /* NOTE: Should be called for MSIX only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Registers Tx MSIX vector(s) and ISR(s), cookie with the kernel
  */
 static int
@@ -2369,15 +1684,6 @@ err_return:
 /* Timer callbacks */
 /* a) IOC timer */
 static void
-<<<<<<< HEAD
-bnad_ioc_timeout(unsigned long data)
-{
-	struct bnad *bnad = (struct bnad *)data;
-	unsigned long flags;
-
-	spin_lock_irqsave(&bnad->bna_lock, flags);
-	bfa_nw_ioc_timeout((void *) &bnad->bna.ioceth.ioc);
-=======
 bnad_ioc_timeout(struct timer_list *t)
 {
 	struct bnad *bnad = from_timer(bnad, t, bna.ioceth.ioc.ioc_timer);
@@ -2385,20 +1691,10 @@ bnad_ioc_timeout(struct timer_list *t)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bfa_nw_ioc_timeout(&bnad->bna.ioceth.ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
 static void
-<<<<<<< HEAD
-bnad_ioc_hb_check(unsigned long data)
-{
-	struct bnad *bnad = (struct bnad *)data;
-	unsigned long flags;
-
-	spin_lock_irqsave(&bnad->bna_lock, flags);
-	bfa_nw_ioc_hb_check((void *) &bnad->bna.ioceth.ioc);
-=======
 bnad_ioc_hb_check(struct timer_list *t)
 {
 	struct bnad *bnad = from_timer(bnad, t, bna.ioceth.ioc.hb_timer);
@@ -2406,20 +1702,10 @@ bnad_ioc_hb_check(struct timer_list *t)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bfa_nw_ioc_hb_check(&bnad->bna.ioceth.ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
 static void
-<<<<<<< HEAD
-bnad_iocpf_timeout(unsigned long data)
-{
-	struct bnad *bnad = (struct bnad *)data;
-	unsigned long flags;
-
-	spin_lock_irqsave(&bnad->bna_lock, flags);
-	bfa_nw_iocpf_timeout((void *) &bnad->bna.ioceth.ioc);
-=======
 bnad_iocpf_timeout(struct timer_list *t)
 {
 	struct bnad *bnad = from_timer(bnad, t, bna.ioceth.ioc.iocpf_timer);
@@ -2427,20 +1713,10 @@ bnad_iocpf_timeout(struct timer_list *t)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bfa_nw_iocpf_timeout(&bnad->bna.ioceth.ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
 static void
-<<<<<<< HEAD
-bnad_iocpf_sem_timeout(unsigned long data)
-{
-	struct bnad *bnad = (struct bnad *)data;
-	unsigned long flags;
-
-	spin_lock_irqsave(&bnad->bna_lock, flags);
-	bfa_nw_iocpf_sem_timeout((void *) &bnad->bna.ioceth.ioc);
-=======
 bnad_iocpf_sem_timeout(struct timer_list *t)
 {
 	struct bnad *bnad = from_timer(bnad, t, bna.ioceth.ioc.sem_timer);
@@ -2448,7 +1724,6 @@ bnad_iocpf_sem_timeout(struct timer_list *t)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bfa_nw_iocpf_sem_timeout(&bnad->bna.ioceth.ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
@@ -2464,15 +1739,9 @@ bnad_iocpf_sem_timeout(struct timer_list *t)
 
 /* b) Dynamic Interrupt Moderation Timer */
 static void
-<<<<<<< HEAD
-bnad_dim_timeout(unsigned long data)
-{
-	struct bnad *bnad = (struct bnad *)data;
-=======
 bnad_dim_timeout(struct timer_list *t)
 {
 	struct bnad *bnad = from_timer(bnad, t, dim_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnad_rx_info *rx_info;
 	struct bnad_rx_ctrl *rx_ctrl;
 	int i, j;
@@ -2494,11 +1763,7 @@ bnad_dim_timeout(struct timer_list *t)
 		}
 	}
 
-<<<<<<< HEAD
-	/* Check for BNAD_CF_DIM_ENABLED, does not eleminate a race */
-=======
 	/* Check for BNAD_CF_DIM_ENABLED, does not eliminate a race */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(BNAD_RF_DIM_TIMER_RUNNING, &bnad->run_flags))
 		mod_timer(&bnad->dim_timer,
 			  jiffies + msecs_to_jiffies(BNAD_DIM_TIMER_FREQ));
@@ -2507,15 +1772,9 @@ bnad_dim_timeout(struct timer_list *t)
 
 /* c)  Statistics Timer */
 static void
-<<<<<<< HEAD
-bnad_stats_timeout(unsigned long data)
-{
-	struct bnad *bnad = (struct bnad *)data;
-=======
 bnad_stats_timeout(struct timer_list *t)
 {
 	struct bnad *bnad = from_timer(bnad, t, stats_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (!netif_running(bnad->netdev) ||
@@ -2536,12 +1795,7 @@ bnad_dim_timer_start(struct bnad *bnad)
 {
 	if (bnad->cfg_flags & BNAD_CF_DIM_ENABLED &&
 	    !test_bit(BNAD_RF_DIM_TIMER_RUNNING, &bnad->run_flags)) {
-<<<<<<< HEAD
-		setup_timer(&bnad->dim_timer, bnad_dim_timeout,
-			    (unsigned long)bnad);
-=======
 		timer_setup(&bnad->dim_timer, bnad_dim_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(BNAD_RF_DIM_TIMER_RUNNING, &bnad->run_flags);
 		mod_timer(&bnad->dim_timer,
 			  jiffies + msecs_to_jiffies(BNAD_DIM_TIMER_FREQ));
@@ -2559,12 +1813,7 @@ bnad_stats_timer_start(struct bnad *bnad)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	if (!test_and_set_bit(BNAD_RF_STATS_TIMER_RUNNING, &bnad->run_flags)) {
-<<<<<<< HEAD
-		setup_timer(&bnad->stats_timer, bnad_stats_timeout,
-			    (unsigned long)bnad);
-=======
 		timer_setup(&bnad->stats_timer, bnad_stats_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mod_timer(&bnad->stats_timer,
 			  jiffies + msecs_to_jiffies(BNAD_STATS_TIMER_FREQ));
 	}
@@ -2598,12 +1847,7 @@ bnad_netdev_mc_list_get(struct net_device *netdev, u8 *mc_list)
 	struct netdev_hw_addr *mc_addr;
 
 	netdev_for_each_mc_addr(mc_addr, netdev) {
-<<<<<<< HEAD
-		memcpy(&mc_list[i * ETH_ALEN], &mc_addr->addr[0],
-							ETH_ALEN);
-=======
 		ether_addr_copy(&mc_list[i * ETH_ALEN], &mc_addr->addr[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 }
@@ -2621,20 +1865,12 @@ bnad_napi_poll_rx(struct napi_struct *napi, int budget)
 	if (!netif_carrier_ok(bnad->netdev))
 		goto poll_exit;
 
-<<<<<<< HEAD
-	rcvd = bnad_poll_cq(bnad, rx_ctrl->ccb, budget);
-=======
 	rcvd = bnad_cq_process(bnad, rx_ctrl->ccb, budget);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rcvd >= budget)
 		return rcvd;
 
 poll_exit:
-<<<<<<< HEAD
-	napi_complete(napi);
-=======
 	napi_complete_done(napi, rcvd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rx_ctrl->rx_complete++;
 
@@ -2644,14 +1880,8 @@ poll_exit:
 	return rcvd;
 }
 
-<<<<<<< HEAD
-#define BNAD_NAPI_POLL_QUOTA		64
-static void
-bnad_napi_init(struct bnad *bnad, u32 rx_id)
-=======
 static void
 bnad_napi_add(struct bnad *bnad, u32 rx_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad_rx_ctrl *rx_ctrl;
 	int i;
@@ -2660,56 +1890,23 @@ bnad_napi_add(struct bnad *bnad, u32 rx_id)
 	for (i = 0; i <	bnad->num_rxp_per_rx; i++) {
 		rx_ctrl = &bnad->rx_info[rx_id].rx_ctrl[i];
 		netif_napi_add(bnad->netdev, &rx_ctrl->napi,
-<<<<<<< HEAD
-			       bnad_napi_poll_rx, BNAD_NAPI_POLL_QUOTA);
-=======
 			       bnad_napi_poll_rx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void
-<<<<<<< HEAD
-bnad_napi_enable(struct bnad *bnad, u32 rx_id)
-{
-	struct bnad_rx_ctrl *rx_ctrl;
-	int i;
-
-	/* Initialize & enable NAPI */
-	for (i = 0; i <	bnad->num_rxp_per_rx; i++) {
-		rx_ctrl = &bnad->rx_info[rx_id].rx_ctrl[i];
-
-		napi_enable(&rx_ctrl->napi);
-	}
-}
-
-static void
-bnad_napi_disable(struct bnad *bnad, u32 rx_id)
-=======
 bnad_napi_delete(struct bnad *bnad, u32 rx_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	/* First disable and then clean up */
-<<<<<<< HEAD
-	for (i = 0; i < bnad->num_rxp_per_rx; i++) {
-		napi_disable(&bnad->rx_info[rx_id].rx_ctrl[i].napi);
-		netif_napi_del(&bnad->rx_info[rx_id].rx_ctrl[i].napi);
-	}
-=======
 	for (i = 0; i < bnad->num_rxp_per_rx; i++)
 		netif_napi_del(&bnad->rx_info[rx_id].rx_ctrl[i].napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Should be held with conf_lock held */
 void
-<<<<<<< HEAD
-bnad_cleanup_tx(struct bnad *bnad, u32 tx_id)
-=======
 bnad_destroy_tx(struct bnad *bnad, u32 tx_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad_tx_info *tx_info = &bnad->tx_info[tx_id];
 	struct bna_res_info *res_info = &bnad->tx_res_info[tx_id].res_info[0];
@@ -2728,12 +1925,6 @@ bnad_destroy_tx(struct bnad *bnad, u32 tx_id)
 		bnad_tx_msix_unregister(bnad, tx_info,
 			bnad->num_txq_per_tx);
 
-<<<<<<< HEAD
-	if (0 == tx_id)
-		tasklet_kill(&bnad->tx_free_tasklet);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_tx_destroy(tx_info->tx);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
@@ -2780,16 +1971,9 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
 	/* Fill Unmap Q memory requirements */
-<<<<<<< HEAD
-	BNAD_FILL_UNMAPQ_MEM_REQ(
-			&res_info[BNA_TX_RES_MEM_T_UNMAPQ],
-			bnad->num_txq_per_tx,
-			BNAD_TX_UNMAPQ_DEPTH);
-=======
 	BNAD_FILL_UNMAPQ_MEM_REQ(&res_info[BNA_TX_RES_MEM_T_UNMAPQ],
 			bnad->num_txq_per_tx, (sizeof(struct bnad_tx_unmap) *
 			bnad->txq_depth));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate resources */
 	err = bnad_tx_res_alloc(bnad, res_info, tx_id);
@@ -2801,12 +1985,6 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
 	tx = bna_tx_create(&bnad->bna, bnad, tx_config, &tx_cbfn, res_info,
 			tx_info);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
-<<<<<<< HEAD
-	if (!tx)
-		goto err_return;
-	tx_info->tx = tx;
-
-=======
 	if (!tx) {
 		err = -ENOMEM;
 		goto err_return;
@@ -2815,17 +1993,12 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
 
 	INIT_DELAYED_WORK(&tx_info->tx_cleanup_work, bnad_tx_cleanup);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Register ISR for the Tx object */
 	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
 		err = bnad_tx_msix_register(bnad, tx_info,
 			tx_id, bnad->num_txq_per_tx);
 		if (err)
-<<<<<<< HEAD
-			goto err_return;
-=======
 			goto cleanup_tx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
@@ -2834,15 +2007,12 @@ bnad_setup_tx(struct bnad *bnad, u32 tx_id)
 
 	return 0;
 
-<<<<<<< HEAD
-=======
 cleanup_tx:
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_tx_destroy(tx_info->tx);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 	tx_info->tx = NULL;
 	tx_info->tx_id = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_return:
 	bnad_tx_res_free(bnad, res_info);
 	return err;
@@ -2853,10 +2023,7 @@ err_return:
 static void
 bnad_init_rx_config(struct bnad *bnad, struct bna_rx_config *rx_config)
 {
-<<<<<<< HEAD
-=======
 	memset(rx_config, 0, sizeof(*rx_config));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rx_config->rx_type = BNA_RX_T_REGULAR;
 	rx_config->num_paths = bnad->num_rxp_per_rx;
 	rx_config->coalescing_timeo = bnad->rx_coalescing_timeo;
@@ -2870,25 +2037,13 @@ bnad_init_rx_config(struct bnad *bnad, struct bna_rx_config *rx_config)
 				 BFI_ENET_RSS_IPV4_TCP);
 		rx_config->rss_config.hash_mask =
 				bnad->num_rxp_per_rx - 1;
-<<<<<<< HEAD
-		get_random_bytes(rx_config->rss_config.toeplitz_hash_key,
-=======
 		netdev_rss_key_fill(rx_config->rss_config.toeplitz_hash_key,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(rx_config->rss_config.toeplitz_hash_key));
 	} else {
 		rx_config->rss_status = BNA_STATUS_T_DISABLED;
 		memset(&rx_config->rss_config, 0,
 		       sizeof(rx_config->rss_config));
 	}
-<<<<<<< HEAD
-	rx_config->rxp_type = BNA_RXP_SLR;
-	rx_config->q_depth = bnad->rxq_depth;
-
-	rx_config->small_buff_size = BFI_SMALL_RXBUF_SIZE;
-
-	rx_config->vlan_strip_status = BNA_STATUS_T_ENABLED;
-=======
 
 	rx_config->frame_size = BNAD_FRAME_SIZE(bnad->netdev->mtu);
 	rx_config->q0_multi_buf = BNA_STATUS_T_DISABLED;
@@ -2926,7 +2081,6 @@ bnad_init_rx_config(struct bnad *bnad, struct bna_rx_config *rx_config)
 	rx_config->vlan_strip_status =
 		(bnad->netdev->features & NETIF_F_HW_VLAN_CTAG_RX) ?
 		BNA_STATUS_T_ENABLED : BNA_STATUS_T_DISABLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2940,10 +2094,6 @@ bnad_rx_ctrl_init(struct bnad *bnad, u32 rx_id)
 }
 
 /* Called with mutex_lock(&bnad->conf_mutex) held */
-<<<<<<< HEAD
-void
-bnad_cleanup_rx(struct bnad *bnad, u32 rx_id)
-=======
 static u32
 bnad_reinit_rx(struct bnad *bnad)
 {
@@ -2989,7 +2139,6 @@ bnad_reinit_rx(struct bnad *bnad)
 /* Called with bnad_conf_lock() held */
 void
 bnad_destroy_rx(struct bnad *bnad, u32 rx_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad_rx_info *rx_info = &bnad->rx_info[rx_id];
 	struct bna_rx_config *rx_config = &bnad->rx_config[rx_id];
@@ -3021,11 +2170,7 @@ bnad_destroy_rx(struct bnad *bnad, u32 rx_id)
 	if (rx_info->rx_ctrl[0].ccb->intr_type == BNA_INTR_T_MSIX)
 		bnad_rx_msix_unregister(bnad, rx_info, rx_config->num_paths);
 
-<<<<<<< HEAD
-	bnad_napi_disable(bnad, rx_id);
-=======
 	bnad_napi_delete(bnad, rx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_rx_destroy(rx_info->rx);
@@ -3048,13 +2193,8 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 			&res_info[BNA_RX_RES_T_INTR].res_u.intr_info;
 	struct bna_rx_config *rx_config = &bnad->rx_config[rx_id];
 	static const struct bna_rx_event_cbfn rx_cbfn = {
-<<<<<<< HEAD
-		.rcb_setup_cbfn = bnad_cb_rcb_setup,
-		.rcb_destroy_cbfn = bnad_cb_rcb_destroy,
-=======
 		.rcb_setup_cbfn = NULL,
 		.rcb_destroy_cbfn = NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ccb_setup_cbfn = bnad_cb_ccb_setup,
 		.ccb_destroy_cbfn = bnad_cb_ccb_destroy,
 		.rx_stall_cbfn = bnad_cb_rx_stall,
@@ -3075,14 +2215,6 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
 	/* Fill Unmap Q memory requirements */
-<<<<<<< HEAD
-	BNAD_FILL_UNMAPQ_MEM_REQ(
-			&res_info[BNA_RX_RES_MEM_T_UNMAPQ],
-			rx_config->num_paths +
-			((rx_config->rxp_type == BNA_RXP_SINGLE) ? 0 :
-				rx_config->num_paths), BNAD_RX_UNMAPQ_DEPTH);
-
-=======
 	BNAD_FILL_UNMAPQ_MEM_REQ(&res_info[BNA_RX_RES_MEM_T_UNMAPDQ],
 				 rx_config->num_paths,
 			(rx_config->q0_depth *
@@ -3096,7 +2228,6 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 				 sizeof(struct bnad_rx_unmap) +
 				 sizeof(struct bnad_rx_unmap_q)));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allocate resource */
 	err = bnad_rx_res_alloc(bnad, res_info, rx_id);
 	if (err)
@@ -3116,20 +2247,13 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 	rx_info->rx = rx;
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-<<<<<<< HEAD
-=======
 	INIT_WORK(&rx_info->rx_cleanup_work, bnad_rx_cleanup);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Init NAPI, so that state is set to NAPI_STATE_SCHED,
 	 * so that IRQ handler cannot schedule NAPI at this point.
 	 */
-<<<<<<< HEAD
-	bnad_napi_init(bnad, rx_id);
-=======
 	bnad_napi_add(bnad, rx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register ISR for the Rx object */
 	if (intr_info->intr_type == BNA_INTR_T_MSIX) {
@@ -3155,20 +2279,10 @@ bnad_setup_rx(struct bnad *bnad, u32 rx_id)
 	bna_rx_enable(rx);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
-<<<<<<< HEAD
-	/* Enable scheduling of NAPI */
-	bnad_napi_enable(bnad, rx_id);
-
-	return 0;
-
-err_return:
-	bnad_cleanup_rx(bnad, rx_id);
-=======
 	return 0;
 
 err_return:
 	bnad_destroy_rx(bnad, rx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -3205,11 +2319,7 @@ bnad_rx_coalescing_timeo_set(struct bnad *bnad)
  * Called with bnad->bna_lock held
  */
 int
-<<<<<<< HEAD
-bnad_mac_addr_set_locked(struct bnad *bnad, u8 *mac_addr)
-=======
 bnad_mac_addr_set_locked(struct bnad *bnad, const u8 *mac_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -3220,11 +2330,7 @@ bnad_mac_addr_set_locked(struct bnad *bnad, const u8 *mac_addr)
 	if (!bnad->rx_info[0].rx)
 		return 0;
 
-<<<<<<< HEAD
-	ret = bna_rx_ucast_set(bnad->rx_info[0].rx, mac_addr, NULL);
-=======
 	ret = bna_rx_ucast_set(bnad->rx_info[0].rx, mac_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != BNA_CB_SUCCESS)
 		return -EADDRNOTAVAIL;
 
@@ -3242,13 +2348,8 @@ bnad_enable_default_bcast(struct bnad *bnad)
 	init_completion(&bnad->bnad_completions.mcast_comp);
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
-<<<<<<< HEAD
-	ret = bna_rx_mcast_add(rx_info->rx, (u8 *)bnad_bcast_addr,
-				bnad_cb_rx_mcast_add);
-=======
 	ret = bna_rx_mcast_add(rx_info->rx, bnad_bcast_addr,
 			       bnad_cb_rx_mcast_add);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
 	if (ret == BNA_CB_SUCCESS)
@@ -3377,30 +2478,17 @@ bnad_tso_prepare(struct bnad *bnad, struct sk_buff *skb)
 {
 	int err;
 
-<<<<<<< HEAD
-	if (skb_header_cloned(skb)) {
-		err = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-		if (err) {
-			BNAD_UPDATE_CTR(bnad, tso_err);
-			return err;
-		}
-=======
 	err = skb_cow_head(skb, 0);
 	if (err < 0) {
 		BNAD_UPDATE_CTR(bnad, tso_err);
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * For TSO, the TCP checksum field is seeded with pseudo-header sum
 	 * excluding the length field.
 	 */
-<<<<<<< HEAD
-	if (skb->protocol == htons(ETH_P_IP)) {
-=======
 	if (vlan_get_protocol(skb) == htons(ETH_P_IP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct iphdr *iph = ip_hdr(skb);
 
 		/* Do we really need these? */
@@ -3412,16 +2500,7 @@ bnad_tso_prepare(struct bnad *bnad, struct sk_buff *skb)
 					   IPPROTO_TCP, 0);
 		BNAD_UPDATE_CTR(bnad, tso4);
 	} else {
-<<<<<<< HEAD
-		struct ipv6hdr *ipv6h = ipv6_hdr(skb);
-
-		ipv6h->payload_len = 0;
-		tcp_hdr(skb)->check =
-			~csum_ipv6_magic(&ipv6h->saddr, &ipv6h->daddr, 0,
-					 IPPROTO_TCP, 0);
-=======
 		tcp_v6_gso_csum_prep(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNAD_UPDATE_CTR(bnad, tso6);
 	}
 
@@ -3565,13 +2644,6 @@ bnad_enable_msix(struct bnad *bnad)
 	for (i = 0; i < bnad->msix_num; i++)
 		bnad->msix_table[i].entry = i;
 
-<<<<<<< HEAD
-	ret = pci_enable_msix(bnad->pcidev, bnad->msix_table, bnad->msix_num);
-	if (ret > 0) {
-		/* Not enough MSI-X vectors. */
-		pr_warn("BNA: %d MSI-X vectors allocated < %d requested\n",
-			ret, bnad->msix_num);
-=======
 	ret = pci_enable_msix_range(bnad->pcidev, bnad->msix_table,
 				    1, bnad->msix_num);
 	if (ret < 0) {
@@ -3580,7 +2652,6 @@ bnad_enable_msix(struct bnad *bnad)
 		dev_warn(&bnad->pcidev->dev,
 			 "%d MSI-X vectors allocated < %d requested\n",
 			 ret, bnad->msix_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock_irqsave(&bnad->bna_lock, flags);
 		/* ret = #of vectors that we got */
@@ -3591,38 +2662,19 @@ bnad_enable_msix(struct bnad *bnad)
 		bnad->msix_num = BNAD_NUM_TXQ + BNAD_NUM_RXP +
 			 BNAD_MAILBOX_MSIX_VECTORS;
 
-<<<<<<< HEAD
-		if (bnad->msix_num > ret)
-			goto intx_mode;
-
-		/* Try once more with adjusted numbers */
-		/* If this fails, fall back to INTx */
-		ret = pci_enable_msix(bnad->pcidev, bnad->msix_table,
-				      bnad->msix_num);
-		if (ret)
-			goto intx_mode;
-
-	} else if (ret < 0)
-		goto intx_mode;
-=======
 		if (bnad->msix_num > ret) {
 			pci_disable_msix(bnad->pcidev);
 			goto intx_mode;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_intx(bnad->pcidev, 0);
 
 	return;
 
 intx_mode:
-<<<<<<< HEAD
-	pr_warn("BNA: MSI-X enable failed - operating in INTx mode\n");
-=======
 	dev_warn(&bnad->pcidev->dev,
 		 "MSI-X enable failed - operating in INTx mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(bnad->msix_table);
 	bnad->msix_table = NULL;
@@ -3659,10 +2711,6 @@ bnad_open(struct net_device *netdev)
 	int err;
 	struct bnad *bnad = netdev_priv(netdev);
 	struct bna_pause_config pause_config;
-<<<<<<< HEAD
-	int mtu;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	mutex_lock(&bnad->conf_mutex);
@@ -3681,18 +2729,10 @@ bnad_open(struct net_device *netdev)
 	pause_config.tx_pause = 0;
 	pause_config.rx_pause = 0;
 
-<<<<<<< HEAD
-	mtu = ETH_HLEN + VLAN_HLEN + bnad->netdev->mtu + ETH_FCS_LEN;
-
-	spin_lock_irqsave(&bnad->bna_lock, flags);
-	bna_enet_mtu_set(&bnad->bna.enet, mtu, NULL);
-	bna_enet_pause_config(&bnad->bna.enet, &pause_config, NULL);
-=======
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	bna_enet_mtu_set(&bnad->bna.enet,
 			 BNAD_FRAME_SIZE(bnad->netdev->mtu), NULL);
 	bna_enet_pause_config(&bnad->bna.enet, &pause_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bna_enet_enable(&bnad->bna.enet);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
@@ -3715,11 +2755,7 @@ bnad_open(struct net_device *netdev)
 	return 0;
 
 cleanup_tx:
-<<<<<<< HEAD
-	bnad_cleanup_tx(bnad, 0);
-=======
 	bnad_destroy_tx(bnad, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_return:
 	mutex_unlock(&bnad->conf_mutex);
@@ -3746,13 +2782,8 @@ bnad_stop(struct net_device *netdev)
 
 	wait_for_completion(&bnad->bnad_completions.enet_comp);
 
-<<<<<<< HEAD
-	bnad_cleanup_tx(bnad, 0);
-	bnad_cleanup_rx(bnad, 0);
-=======
 	bnad_destroy_tx(bnad, 0);
 	bnad_destroy_rx(bnad, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Synchronize mailbox IRQ */
 	bnad_mbox_irq_sync(bnad);
@@ -3763,8 +2794,6 @@ bnad_stop(struct net_device *netdev)
 }
 
 /* TX */
-<<<<<<< HEAD
-=======
 /* Returns 0 for success */
 static int
 bnad_txq_wi_prepare(struct bnad *bnad, struct bna_tcb *tcb,
@@ -3871,7 +2900,6 @@ bnad_txq_wi_prepare(struct bnad *bnad, struct bna_tcb *tcb,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bnad_start_xmit : Netdev entry point for Transmit
  *		     Called under lock held by net_device
@@ -3881,37 +2909,6 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	struct bnad *bnad = netdev_priv(netdev);
 	u32 txq_id = 0;
-<<<<<<< HEAD
-	struct bna_tcb *tcb = bnad->tx_info[0].tcb[txq_id];
-
-	u16		txq_prod, vlan_tag = 0;
-	u32		unmap_prod, wis, wis_used, wi_range;
-	u32		vectors, vect_id, i, acked;
-	int			err;
-	unsigned int		len;
-	u32				gso_size;
-
-	struct bnad_unmap_q *unmap_q = tcb->unmap_q;
-	dma_addr_t		dma_addr;
-	struct bna_txq_entry *txqent;
-	u16	flags;
-
-	if (unlikely(skb->len <= ETH_HLEN)) {
-		dev_kfree_skb(skb);
-		BNAD_UPDATE_CTR(bnad, tx_skb_too_short);
-		return NETDEV_TX_OK;
-	}
-	if (unlikely(skb_headlen(skb) > BFI_TX_MAX_DATA_PER_VECTOR)) {
-		dev_kfree_skb(skb);
-		BNAD_UPDATE_CTR(bnad, tx_skb_headlen_too_long);
-		return NETDEV_TX_OK;
-	}
-	if (unlikely(skb_headlen(skb) == 0)) {
-		dev_kfree_skb(skb);
-		BNAD_UPDATE_CTR(bnad, tx_skb_headlen_zero);
-		return NETDEV_TX_OK;
-	}
-=======
 	struct bna_tcb *tcb = NULL;
 	struct bnad_tx_unmap *unmap_q, *unmap, *head_unmap;
 	u32		prod, q_depth, vect_id;
@@ -3941,42 +2938,17 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	}
 
 	tcb = bnad->tx_info[0].tcb[txq_id];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Takes care of the Tx that is scheduled between clearing the flag
 	 * and the netif_tx_stop_all_queues() call.
 	 */
-<<<<<<< HEAD
-	if (unlikely(!test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags))) {
-		dev_kfree_skb(skb);
-=======
 	if (unlikely(!tcb || !test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags))) {
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNAD_UPDATE_CTR(bnad, tx_skb_stopping);
 		return NETDEV_TX_OK;
 	}
 
-<<<<<<< HEAD
-	vectors = 1 + skb_shinfo(skb)->nr_frags;
-	if (unlikely(vectors > BFI_TX_MAX_VECTORS_PER_PKT)) {
-		dev_kfree_skb(skb);
-		BNAD_UPDATE_CTR(bnad, tx_skb_max_vectors);
-		return NETDEV_TX_OK;
-	}
-	wis = BNA_TXQ_WI_NEEDED(vectors);	/* 4 vectors per work item */
-	acked = 0;
-	if (unlikely(wis > BNA_QE_FREE_CNT(tcb, tcb->q_depth) ||
-			vectors > BNA_QE_FREE_CNT(unmap_q, unmap_q->q_depth))) {
-		if ((u16) (*tcb->hw_consumer_index) !=
-		    tcb->consumer_index &&
-		    !test_and_set_bit(BNAD_TXQ_FREE_SENT, &tcb->flags)) {
-			acked = bnad_free_txbufs(bnad, tcb);
-			if (likely(test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags)))
-				bna_ib_ack(tcb->i_dbell, acked);
-			smp_mb__before_clear_bit();
-=======
 	q_depth = tcb->q_depth;
 	prod = tcb->producer_index;
 	unmap_q = tcb->unmap_q;
@@ -3999,7 +2971,6 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 			if (likely(test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags)))
 				bna_ib_ack(tcb->i_dbell, sent);
 			smp_mb__before_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			clear_bit(BNAD_TXQ_FREE_SENT, &tcb->flags);
 		} else {
 			netif_stop_queue(netdev);
@@ -4012,13 +2983,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		 * netif_stop_queue here, and netif_wake_queue in
 		 * interrupt handler which is not inside netif tx lock.
 		 */
-<<<<<<< HEAD
-		if (likely
-		    (wis > BNA_QE_FREE_CNT(tcb, tcb->q_depth) ||
-		     vectors > BNA_QE_FREE_CNT(unmap_q, unmap_q->q_depth))) {
-=======
 		if (likely(wis > BNA_QE_FREE_CNT(tcb, q_depth))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BNAD_UPDATE_CTR(bnad, netif_queue_stop);
 			return NETDEV_TX_BUSY;
 		} else {
@@ -4027,148 +2992,6 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		}
 	}
 
-<<<<<<< HEAD
-	unmap_prod = unmap_q->producer_index;
-	flags = 0;
-
-	txq_prod = tcb->producer_index;
-	BNA_TXQ_QPGE_PTR_GET(txq_prod, tcb->sw_qpt, txqent, wi_range);
-	txqent->hdr.wi.reserved = 0;
-	txqent->hdr.wi.num_vectors = vectors;
-
-	if (vlan_tx_tag_present(skb)) {
-		vlan_tag = (u16) vlan_tx_tag_get(skb);
-		flags |= (BNA_TXQ_WI_CF_INS_PRIO | BNA_TXQ_WI_CF_INS_VLAN);
-	}
-	if (test_bit(BNAD_RF_CEE_RUNNING, &bnad->run_flags)) {
-		vlan_tag =
-			(tcb->priority & 0x7) << 13 | (vlan_tag & 0x1fff);
-		flags |= (BNA_TXQ_WI_CF_INS_PRIO | BNA_TXQ_WI_CF_INS_VLAN);
-	}
-
-	txqent->hdr.wi.vlan_tag = htons(vlan_tag);
-
-	if (skb_is_gso(skb)) {
-		gso_size = skb_shinfo(skb)->gso_size;
-
-		if (unlikely(gso_size > netdev->mtu)) {
-			dev_kfree_skb(skb);
-			BNAD_UPDATE_CTR(bnad, tx_skb_mss_too_long);
-			return NETDEV_TX_OK;
-		}
-		if (unlikely((gso_size + skb_transport_offset(skb) +
-			tcp_hdrlen(skb)) >= skb->len)) {
-			txqent->hdr.wi.opcode =
-				__constant_htons(BNA_TXQ_WI_SEND);
-			txqent->hdr.wi.lso_mss = 0;
-			BNAD_UPDATE_CTR(bnad, tx_skb_tso_too_short);
-		} else {
-			txqent->hdr.wi.opcode =
-				__constant_htons(BNA_TXQ_WI_SEND_LSO);
-			txqent->hdr.wi.lso_mss = htons(gso_size);
-		}
-
-		err = bnad_tso_prepare(bnad, skb);
-		if (unlikely(err)) {
-			dev_kfree_skb(skb);
-			BNAD_UPDATE_CTR(bnad, tx_skb_tso_prepare);
-			return NETDEV_TX_OK;
-		}
-		flags |= (BNA_TXQ_WI_CF_IP_CKSUM | BNA_TXQ_WI_CF_TCP_CKSUM);
-		txqent->hdr.wi.l4_hdr_size_n_offset =
-			htons(BNA_TXQ_WI_L4_HDR_N_OFFSET
-			      (tcp_hdrlen(skb) >> 2,
-			       skb_transport_offset(skb)));
-	} else {
-		txqent->hdr.wi.opcode =	__constant_htons(BNA_TXQ_WI_SEND);
-		txqent->hdr.wi.lso_mss = 0;
-
-		if (unlikely(skb->len > (netdev->mtu + ETH_HLEN))) {
-			dev_kfree_skb(skb);
-			BNAD_UPDATE_CTR(bnad, tx_skb_non_tso_too_long);
-			return NETDEV_TX_OK;
-		}
-
-		if (skb->ip_summed == CHECKSUM_PARTIAL) {
-			u8 proto = 0;
-
-			if (skb->protocol == __constant_htons(ETH_P_IP))
-				proto = ip_hdr(skb)->protocol;
-			else if (skb->protocol ==
-				 __constant_htons(ETH_P_IPV6)) {
-				/* nexthdr may not be TCP immediately. */
-				proto = ipv6_hdr(skb)->nexthdr;
-			}
-			if (proto == IPPROTO_TCP) {
-				flags |= BNA_TXQ_WI_CF_TCP_CKSUM;
-				txqent->hdr.wi.l4_hdr_size_n_offset =
-					htons(BNA_TXQ_WI_L4_HDR_N_OFFSET
-					      (0, skb_transport_offset(skb)));
-
-				BNAD_UPDATE_CTR(bnad, tcpcsum_offload);
-
-				if (unlikely(skb_headlen(skb) <
-				skb_transport_offset(skb) + tcp_hdrlen(skb))) {
-					dev_kfree_skb(skb);
-					BNAD_UPDATE_CTR(bnad, tx_skb_tcp_hdr);
-					return NETDEV_TX_OK;
-				}
-
-			} else if (proto == IPPROTO_UDP) {
-				flags |= BNA_TXQ_WI_CF_UDP_CKSUM;
-				txqent->hdr.wi.l4_hdr_size_n_offset =
-					htons(BNA_TXQ_WI_L4_HDR_N_OFFSET
-					      (0, skb_transport_offset(skb)));
-
-				BNAD_UPDATE_CTR(bnad, udpcsum_offload);
-				if (unlikely(skb_headlen(skb) <
-				    skb_transport_offset(skb) +
-				    sizeof(struct udphdr))) {
-					dev_kfree_skb(skb);
-					BNAD_UPDATE_CTR(bnad, tx_skb_udp_hdr);
-					return NETDEV_TX_OK;
-				}
-			} else {
-				dev_kfree_skb(skb);
-				BNAD_UPDATE_CTR(bnad, tx_skb_csum_err);
-				return NETDEV_TX_OK;
-			}
-		} else {
-			txqent->hdr.wi.l4_hdr_size_n_offset = 0;
-		}
-	}
-
-	txqent->hdr.wi.flags = htons(flags);
-
-	txqent->hdr.wi.frame_length = htonl(skb->len);
-
-	unmap_q->unmap_array[unmap_prod].skb = skb;
-	len = skb_headlen(skb);
-	txqent->vector[0].length = htons(len);
-	dma_addr = dma_map_single(&bnad->pcidev->dev, skb->data,
-				  skb_headlen(skb), DMA_TO_DEVICE);
-	dma_unmap_addr_set(&unmap_q->unmap_array[unmap_prod], dma_addr,
-			   dma_addr);
-
-	BNA_SET_DMA_ADDR(dma_addr, &txqent->vector[0].host_addr);
-	BNA_QE_INDX_ADD(unmap_prod, 1, unmap_q->q_depth);
-
-	vect_id = 0;
-	wis_used = 1;
-
-	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-		const struct skb_frag_struct *frag = &skb_shinfo(skb)->frags[i];
-		u16		size = skb_frag_size(frag);
-
-		if (unlikely(size == 0)) {
-			unmap_prod = unmap_q->producer_index;
-
-			unmap_prod = bnad_pci_unmap_skb(&bnad->pcidev->dev,
-					   unmap_q->unmap_array,
-					   unmap_prod, unmap_q->q_depth, skb,
-					   i);
-			dev_kfree_skb(skb);
-=======
 	txqent = &((struct bna_txq_entry *)tcb->sw_q)[prod];
 	head_unmap = &unmap_q[prod];
 
@@ -4206,49 +3029,12 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 			bnad_tx_buff_unmap(bnad, unmap_q, q_depth,
 				tcb->producer_index);
 			dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BNAD_UPDATE_CTR(bnad, tx_skb_frag_zero);
 			return NETDEV_TX_OK;
 		}
 
 		len += size;
 
-<<<<<<< HEAD
-		if (++vect_id == BFI_TX_MAX_VECTORS_PER_WI) {
-			vect_id = 0;
-			if (--wi_range)
-				txqent++;
-			else {
-				BNA_QE_INDX_ADD(txq_prod, wis_used,
-						tcb->q_depth);
-				wis_used = 0;
-				BNA_TXQ_QPGE_PTR_GET(txq_prod, tcb->sw_qpt,
-						     txqent, wi_range);
-			}
-			wis_used++;
-			txqent->hdr.wi_ext.opcode =
-				__constant_htons(BNA_TXQ_WI_EXTENSION);
-		}
-
-		BUG_ON(!(size <= BFI_TX_MAX_DATA_PER_VECTOR));
-		txqent->vector[vect_id].length = htons(size);
-		dma_addr = skb_frag_dma_map(&bnad->pcidev->dev, frag,
-					    0, size, DMA_TO_DEVICE);
-		dma_unmap_addr_set(&unmap_q->unmap_array[unmap_prod], dma_addr,
-				   dma_addr);
-		BNA_SET_DMA_ADDR(dma_addr, &txqent->vector[vect_id].host_addr);
-		BNA_QE_INDX_ADD(unmap_prod, 1, unmap_q->q_depth);
-	}
-
-	if (unlikely(len != skb->len)) {
-		unmap_prod = unmap_q->producer_index;
-
-		unmap_prod = bnad_pci_unmap_skb(&bnad->pcidev->dev,
-				unmap_q->unmap_array, unmap_prod,
-				unmap_q->q_depth, skb,
-				skb_shinfo(skb)->nr_frags);
-		dev_kfree_skb(skb);
-=======
 		vect_id++;
 		if (vect_id == BFI_TX_MAX_VECTORS_PER_WI) {
 			vect_id = 0;
@@ -4281,38 +3067,21 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		/* Undo the changes starting at tcb->producer_index */
 		bnad_tx_buff_unmap(bnad, unmap_q, q_depth, tcb->producer_index);
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNAD_UPDATE_CTR(bnad, tx_skb_len_mismatch);
 		return NETDEV_TX_OK;
 	}
 
-<<<<<<< HEAD
-	unmap_q->producer_index = unmap_prod;
-	BNA_QE_INDX_ADD(txq_prod, wis_used, tcb->q_depth);
-	tcb->producer_index = txq_prod;
-
-	smp_mb();
-=======
 	BNA_QE_INDX_INC(prod, q_depth);
 	tcb->producer_index = prod;
 
 	wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(!test_bit(BNAD_TXQ_TX_STARTED, &tcb->flags)))
 		return NETDEV_TX_OK;
 
-<<<<<<< HEAD
-	bna_txq_prod_indx_doorbell(tcb);
-	smp_mb();
-
-	if ((u16) (*tcb->hw_consumer_index) != tcb->consumer_index)
-		tasklet_schedule(&bnad->tx_free_tasklet);
-=======
 	skb_tx_timestamp(skb);
 
 	bna_txq_prod_indx_doorbell(tcb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NETDEV_TX_OK;
 }
@@ -4321,11 +3090,7 @@ bnad_start_xmit(struct sk_buff *skb, struct net_device *netdev)
  * Used spin_lock to synchronize reading of stats structures, which
  * is written by BNA under the same lock.
  */
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnad_get_stats64(struct net_device *netdev, struct rtnl_link_stats64 *stats)
 {
 	struct bnad *bnad = netdev_priv(netdev);
@@ -4337,10 +3102,6 @@ bnad_get_stats64(struct net_device *netdev, struct rtnl_link_stats64 *stats)
 	bnad_netdev_hwstats_fill(bnad, stats);
 
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
-<<<<<<< HEAD
-
-	return stats;
-=======
 }
 
 static void
@@ -4422,82 +3183,17 @@ bnad_set_rx_mcast_fltr(struct bnad *bnad)
 mode_allmulti:
 	bnad->cfg_flags |= BNAD_CF_ALLMULTI;
 	bna_rx_mcast_delall(bnad->rx_info[0].rx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
 bnad_set_rx_mode(struct net_device *netdev)
 {
 	struct bnad *bnad = netdev_priv(netdev);
-<<<<<<< HEAD
-	u32	new_mask, valid_mask;
-=======
 	enum bna_rxmode new_mode, mode_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 
-<<<<<<< HEAD
-	new_mask = valid_mask = 0;
-
-	if (netdev->flags & IFF_PROMISC) {
-		if (!(bnad->cfg_flags & BNAD_CF_PROMISC)) {
-			new_mask = BNAD_RXMODE_PROMISC_DEFAULT;
-			valid_mask = BNAD_RXMODE_PROMISC_DEFAULT;
-			bnad->cfg_flags |= BNAD_CF_PROMISC;
-		}
-	} else {
-		if (bnad->cfg_flags & BNAD_CF_PROMISC) {
-			new_mask = ~BNAD_RXMODE_PROMISC_DEFAULT;
-			valid_mask = BNAD_RXMODE_PROMISC_DEFAULT;
-			bnad->cfg_flags &= ~BNAD_CF_PROMISC;
-		}
-	}
-
-	if (netdev->flags & IFF_ALLMULTI) {
-		if (!(bnad->cfg_flags & BNAD_CF_ALLMULTI)) {
-			new_mask |= BNA_RXMODE_ALLMULTI;
-			valid_mask |= BNA_RXMODE_ALLMULTI;
-			bnad->cfg_flags |= BNAD_CF_ALLMULTI;
-		}
-	} else {
-		if (bnad->cfg_flags & BNAD_CF_ALLMULTI) {
-			new_mask &= ~BNA_RXMODE_ALLMULTI;
-			valid_mask |= BNA_RXMODE_ALLMULTI;
-			bnad->cfg_flags &= ~BNAD_CF_ALLMULTI;
-		}
-	}
-
-	if (bnad->rx_info[0].rx == NULL)
-		goto unlock;
-
-	bna_rx_mode_set(bnad->rx_info[0].rx, new_mask, valid_mask, NULL);
-
-	if (!netdev_mc_empty(netdev)) {
-		u8 *mcaddr_list;
-		int mc_count = netdev_mc_count(netdev);
-
-		/* Index 0 holds the broadcast address */
-		mcaddr_list =
-			kzalloc((mc_count + 1) * ETH_ALEN,
-				GFP_ATOMIC);
-		if (!mcaddr_list)
-			goto unlock;
-
-		memcpy(&mcaddr_list[0], &bnad_bcast_addr[0], ETH_ALEN);
-
-		/* Copy rest of the MC addresses */
-		bnad_netdev_mc_list_get(netdev, mcaddr_list);
-
-		bna_rx_mcast_listset(bnad->rx_info[0].rx, mc_count + 1,
-					mcaddr_list, NULL);
-
-		/* Should we enable BNAD_CF_ALLMULTI for err != 0 ? */
-		kfree(mcaddr_list);
-	}
-unlock:
-=======
 	if (bnad->rx_info[0].rx == NULL) {
 		spin_unlock_irqrestore(&bnad->bna_lock, flags);
 		return;
@@ -4527,7 +3223,6 @@ unlock:
 			BNA_RXMODE_ALLMULTI;
 	bna_rx_mode_set(bnad->rx_info[0].rx, new_mode, mode_mask);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 }
 
@@ -4537,32 +3232,18 @@ unlock:
  * in a non-blocking context.
  */
 static int
-<<<<<<< HEAD
-bnad_set_mac_address(struct net_device *netdev, void *mac_addr)
-{
-	int err;
-	struct bnad *bnad = netdev_priv(netdev);
-	struct sockaddr *sa = (struct sockaddr *)mac_addr;
-=======
 bnad_set_mac_address(struct net_device *netdev, void *addr)
 {
 	int err;
 	struct bnad *bnad = netdev_priv(netdev);
 	struct sockaddr *sa = (struct sockaddr *)addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 
 	err = bnad_mac_addr_set_locked(bnad, sa->sa_data);
-<<<<<<< HEAD
-
-	if (!err)
-		memcpy(netdev->dev_addr, sa->sa_data, netdev->addr_len);
-=======
 	if (!err)
 		eth_hw_addr_set(netdev, sa->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
@@ -4570,22 +3251,14 @@ bnad_set_mac_address(struct net_device *netdev, void *addr)
 }
 
 static int
-<<<<<<< HEAD
-bnad_mtu_set(struct bnad *bnad, int mtu)
-=======
 bnad_mtu_set(struct bnad *bnad, int frame_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
 	init_completion(&bnad->bnad_completions.mtu_comp);
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
-<<<<<<< HEAD
-	bna_enet_mtu_set(&bnad->bna.enet, mtu, bnad_cb_enet_mtu_set);
-=======
 	bna_enet_mtu_set(&bnad->bna.enet, frame_size, bnad_cb_enet_mtu_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
 	wait_for_completion(&bnad->bnad_completions.mtu_comp);
@@ -4596,20 +3269,6 @@ bnad_mtu_set(struct bnad *bnad, int frame_size)
 static int
 bnad_change_mtu(struct net_device *netdev, int new_mtu)
 {
-<<<<<<< HEAD
-	int err, mtu = netdev->mtu;
-	struct bnad *bnad = netdev_priv(netdev);
-
-	if (new_mtu + ETH_HLEN < ETH_ZLEN || new_mtu > BNAD_JUMBO_MTU)
-		return -EINVAL;
-
-	mutex_lock(&bnad->conf_mutex);
-
-	netdev->mtu = new_mtu;
-
-	mtu = ETH_HLEN + VLAN_HLEN + new_mtu + ETH_FCS_LEN;
-	err = bnad_mtu_set(bnad, mtu);
-=======
 	int err, mtu;
 	struct bnad *bnad = netdev_priv(netdev);
 	u32 frame, new_frame;
@@ -4632,7 +3291,6 @@ bnad_change_mtu(struct net_device *netdev, int new_mtu)
 	}
 
 	err = bnad_mtu_set(bnad, new_frame);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		err = -EBUSY;
 
@@ -4641,12 +3299,7 @@ bnad_change_mtu(struct net_device *netdev, int new_mtu)
 }
 
 static int
-<<<<<<< HEAD
-bnad_vlan_rx_add_vid(struct net_device *netdev,
-				 unsigned short vid)
-=======
 bnad_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad *bnad = netdev_priv(netdev);
 	unsigned long flags;
@@ -4667,12 +3320,7 @@ bnad_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid)
 }
 
 static int
-<<<<<<< HEAD
-bnad_vlan_rx_kill_vid(struct net_device *netdev,
-				  unsigned short vid)
-=======
 bnad_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad *bnad = netdev_priv(netdev);
 	unsigned long flags;
@@ -4692,8 +3340,6 @@ bnad_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int bnad_set_features(struct net_device *dev, netdev_features_t features)
 {
 	struct bnad *bnad = netdev_priv(dev);
@@ -4715,7 +3361,6 @@ static int bnad_set_features(struct net_device *dev, netdev_features_t features)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void
 bnad_netpoll(struct net_device *netdev)
@@ -4756,69 +3401,43 @@ static const struct net_device_ops bnad_netdev_ops = {
 	.ndo_open		= bnad_open,
 	.ndo_stop		= bnad_stop,
 	.ndo_start_xmit		= bnad_start_xmit,
-<<<<<<< HEAD
-	.ndo_get_stats64		= bnad_get_stats64,
-=======
 	.ndo_get_stats64	= bnad_get_stats64,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_rx_mode	= bnad_set_rx_mode,
 	.ndo_validate_addr      = eth_validate_addr,
 	.ndo_set_mac_address    = bnad_set_mac_address,
 	.ndo_change_mtu		= bnad_change_mtu,
 	.ndo_vlan_rx_add_vid    = bnad_vlan_rx_add_vid,
 	.ndo_vlan_rx_kill_vid   = bnad_vlan_rx_kill_vid,
-<<<<<<< HEAD
-=======
 	.ndo_set_features	= bnad_set_features,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller    = bnad_netpoll
 #endif
 };
 
 static void
-<<<<<<< HEAD
-bnad_netdev_init(struct bnad *bnad, bool using_dac)
-=======
 bnad_netdev_init(struct bnad *bnad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = bnad->netdev;
 
 	netdev->hw_features = NETIF_F_SG | NETIF_F_RXCSUM |
 		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
-<<<<<<< HEAD
-		NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_HW_VLAN_TX;
-=======
 		NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_HW_VLAN_CTAG_TX |
 		NETIF_F_HW_VLAN_CTAG_RX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->vlan_features = NETIF_F_SG | NETIF_F_HIGHDMA |
 		NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
 		NETIF_F_TSO | NETIF_F_TSO6;
 
-<<<<<<< HEAD
-	netdev->features |= netdev->hw_features |
-		NETIF_F_HW_VLAN_RX | NETIF_F_HW_VLAN_FILTER;
-
-	if (using_dac)
-		netdev->features |= NETIF_F_HIGHDMA;
-=======
 	netdev->features |= netdev->hw_features | NETIF_F_HW_VLAN_CTAG_FILTER |
 			    NETIF_F_HIGHDMA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->mem_start = bnad->mmio_start;
 	netdev->mem_end = bnad->mmio_start + bnad->mmio_len - 1;
 
-<<<<<<< HEAD
-=======
 	/* MTU range: 46 - 9000 */
 	netdev->min_mtu = ETH_ZLEN - ETH_HLEN;
 	netdev->max_mtu = BNAD_JUMBO_MTU;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev->netdev_ops = &bnad_netdev_ops;
 	bnad_set_ethtool_ops(netdev);
 }
@@ -4826,13 +3445,8 @@ bnad_netdev_init(struct bnad *bnad)
 /*
  * 1. Initialize the bnad structure
  * 2. Setup netdev pointer in pci_dev
-<<<<<<< HEAD
- * 3. Initialze Tx free tasklet
- * 4. Initialize no. of TxQ & CQs & MSIX vectors
-=======
  * 3. Initialize no. of TxQ & CQs & MSIX vectors
  * 4. Initialize work queue.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 bnad_init(struct bnad *bnad,
@@ -4847,16 +3461,6 @@ bnad_init(struct bnad *bnad,
 	bnad->pcidev = pdev;
 	bnad->mmio_start = pci_resource_start(pdev, 0);
 	bnad->mmio_len = pci_resource_len(pdev, 0);
-<<<<<<< HEAD
-	bnad->bar0 = ioremap_nocache(bnad->mmio_start, bnad->mmio_len);
-	if (!bnad->bar0) {
-		dev_err(&pdev->dev, "ioremap for bar0 failed\n");
-		pci_set_drvdata(pdev, NULL);
-		return -ENOMEM;
-	}
-	pr_info("bar0 mapped to %p, len %llu\n", bnad->bar0,
-	       (unsigned long long) bnad->mmio_len);
-=======
 	bnad->bar0 = ioremap(bnad->mmio_start, bnad->mmio_len);
 	if (!bnad->bar0) {
 		dev_err(&pdev->dev, "ioremap for bar0 failed\n");
@@ -4864,7 +3468,6 @@ bnad_init(struct bnad *bnad,
 	}
 	dev_info(&pdev->dev, "bar0 mapped to %p, len %llu\n", bnad->bar0,
 		 (unsigned long long) bnad->mmio_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	if (!bnad_msix_disable)
@@ -4885,17 +3488,12 @@ bnad_init(struct bnad *bnad,
 	bnad->tx_coalescing_timeo = BFI_TX_COALESCING_TIMEO;
 	bnad->rx_coalescing_timeo = BFI_RX_COALESCING_TIMEO;
 
-<<<<<<< HEAD
-	tasklet_init(&bnad->tx_free_tasklet, bnad_tx_free_tasklet,
-		     (unsigned long)bnad);
-=======
 	sprintf(bnad->wq_name, "%s_wq_%d", BNAD_NAME, bnad->id);
 	bnad->work_q = create_singlethread_workqueue(bnad->wq_name);
 	if (!bnad->work_q) {
 		iounmap(bnad->bar0);
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4908,11 +3506,6 @@ bnad_init(struct bnad *bnad,
 static void
 bnad_uninit(struct bnad *bnad)
 {
-<<<<<<< HEAD
-	if (bnad->bar0)
-		iounmap(bnad->bar0);
-	pci_set_drvdata(bnad->pcidev, NULL);
-=======
 	if (bnad->work_q) {
 		destroy_workqueue(bnad->work_q);
 		bnad->work_q = NULL;
@@ -4920,7 +3513,6 @@ bnad_uninit(struct bnad *bnad)
 
 	if (bnad->bar0)
 		iounmap(bnad->bar0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4934,30 +3526,17 @@ bnad_lock_init(struct bnad *bnad)
 {
 	spin_lock_init(&bnad->bna_lock);
 	mutex_init(&bnad->conf_mutex);
-<<<<<<< HEAD
-	mutex_init(&bnad_list_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 bnad_lock_uninit(struct bnad *bnad)
 {
 	mutex_destroy(&bnad->conf_mutex);
-<<<<<<< HEAD
-	mutex_destroy(&bnad_list_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* PCI Initialization */
 static int
-<<<<<<< HEAD
-bnad_pci_init(struct bnad *bnad,
-	      struct pci_dev *pdev, bool *using_dac)
-=======
 bnad_pci_init(struct bnad *bnad, struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -4967,25 +3546,9 @@ bnad_pci_init(struct bnad *bnad, struct pci_dev *pdev)
 	err = pci_request_regions(pdev, BNAD_NAME);
 	if (err)
 		goto disable_device;
-<<<<<<< HEAD
-	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)) &&
-	    !dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
-		*using_dac = true;
-	} else {
-		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
-		if (err) {
-			err = dma_set_coherent_mask(&pdev->dev,
-						    DMA_BIT_MASK(32));
-			if (err)
-				goto release_regions;
-		}
-		*using_dac = false;
-	}
-=======
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err)
 		goto release_regions;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(pdev);
 	return 0;
 
@@ -5004,18 +3567,10 @@ bnad_pci_uninit(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
-<<<<<<< HEAD
-static int __devinit
-bnad_pci_probe(struct pci_dev *pdev,
-		const struct pci_device_id *pcidev_id)
-{
-	bool	using_dac;
-=======
 static int
 bnad_pci_probe(struct pci_dev *pdev,
 		const struct pci_device_id *pcidev_id)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	err;
 	struct bnad *bnad;
 	struct bna *bna;
@@ -5023,20 +3578,10 @@ bnad_pci_probe(struct pci_dev *pdev,
 	struct bfa_pcidev pcidev_info;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	pr_info("bnad_pci_probe : (0x%p, 0x%p) PCI Func : (%d)\n",
-	       pdev, pcidev_id, PCI_FUNC(pdev->devfn));
-
-	mutex_lock(&bnad_fwimg_mutex);
-	if (!cna_get_firmware_buf(pdev)) {
-		mutex_unlock(&bnad_fwimg_mutex);
-		pr_warn("Failed to load Firmware Image!\n");
-=======
 	mutex_lock(&bnad_fwimg_mutex);
 	if (!cna_get_firmware_buf(pdev)) {
 		mutex_unlock(&bnad_fwimg_mutex);
 		dev_err(&pdev->dev, "failed to load firmware image!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	mutex_unlock(&bnad_fwimg_mutex);
@@ -5052,44 +3597,24 @@ bnad_pci_probe(struct pci_dev *pdev,
 	}
 	bnad = netdev_priv(netdev);
 	bnad_lock_init(bnad);
-<<<<<<< HEAD
-	bnad_add_to_list(bnad);
-
-	mutex_lock(&bnad->conf_mutex);
-	/*
-	 * PCI initialization
-	 *	Output : using_dac = 1 for 64 bit DMA
-	 *			   = 0 for 32 bit DMA
-	 */
-	err = bnad_pci_init(bnad, pdev, &using_dac);
-=======
 	bnad->id = atomic_inc_return(&bna_id) - 1;
 
 	mutex_lock(&bnad->conf_mutex);
 	/* PCI initialization */
 	err = bnad_pci_init(bnad, pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto unlock_mutex;
 
 	/*
 	 * Initialize bnad structure
 	 * Setup relation between pci_dev & netdev
-<<<<<<< HEAD
-	 * Init Tx free tasklet
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	err = bnad_init(bnad, pdev, netdev);
 	if (err)
 		goto pci_uninit;
 
 	/* Initialize netdev structure, set up ethtool ops */
-<<<<<<< HEAD
-	bnad_netdev_init(bnad, using_dac);
-=======
 	bnad_netdev_init(bnad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set link to down state */
 	netif_carrier_off(netdev);
@@ -5127,29 +3652,12 @@ bnad_pci_probe(struct pci_dev *pdev,
 	if (err)
 		goto res_free;
 
-<<<<<<< HEAD
-
-	/* Set up timers */
-	setup_timer(&bnad->bna.ioceth.ioc.ioc_timer, bnad_ioc_timeout,
-				((unsigned long)bnad));
-	setup_timer(&bnad->bna.ioceth.ioc.hb_timer, bnad_ioc_hb_check,
-				((unsigned long)bnad));
-	setup_timer(&bnad->bna.ioceth.ioc.iocpf_timer, bnad_iocpf_timeout,
-				((unsigned long)bnad));
-	setup_timer(&bnad->bna.ioceth.ioc.sem_timer, bnad_iocpf_sem_timeout,
-				((unsigned long)bnad));
-
-	/* Now start the timer before calling IOC */
-	mod_timer(&bnad->bna.ioceth.ioc.iocpf_timer,
-		  jiffies + msecs_to_jiffies(BNA_IOC_TIMER_FREQ));
-=======
 	/* Set up timers */
 	timer_setup(&bnad->bna.ioceth.ioc.ioc_timer, bnad_ioc_timeout, 0);
 	timer_setup(&bnad->bna.ioceth.ioc.hb_timer, bnad_ioc_hb_check, 0);
 	timer_setup(&bnad->bna.ioceth.ioc.iocpf_timer, bnad_iocpf_timeout, 0);
 	timer_setup(&bnad->bna.ioceth.ioc.sem_timer, bnad_iocpf_sem_timeout,
 		    0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Start the chip
@@ -5158,12 +3666,7 @@ bnad_pci_probe(struct pci_dev *pdev,
 	 */
 	err = bnad_ioceth_enable(bnad);
 	if (err) {
-<<<<<<< HEAD
-		pr_err("BNA: Initialization failed err=%d\n",
-		       err);
-=======
 		dev_err(&pdev->dev, "initialization failed err=%d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto probe_success;
 	}
 
@@ -5196,11 +3699,7 @@ bnad_pci_probe(struct pci_dev *pdev,
 
 	/* Get the burnt-in mac */
 	spin_lock_irqsave(&bnad->bna_lock, flags);
-<<<<<<< HEAD
-	bna_enet_perm_mac_get(&bna->enet, &bnad->perm_addr);
-=======
 	bna_enet_perm_mac_get(&bna->enet, bnad->perm_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnad_set_netdev_perm_addr(bnad);
 	spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
@@ -5209,11 +3708,7 @@ bnad_pci_probe(struct pci_dev *pdev,
 	/* Finally, reguister with net_device layer */
 	err = register_netdev(netdev);
 	if (err) {
-<<<<<<< HEAD
-		pr_err("BNA : Registering with netdev failed\n");
-=======
 		dev_err(&pdev->dev, "registering net device failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto probe_uninit;
 	}
 	set_bit(BNAD_RF_NETDEV_REGISTERED, &bnad->run_flags);
@@ -5248,20 +3743,12 @@ pci_uninit:
 	bnad_pci_uninit(pdev);
 unlock_mutex:
 	mutex_unlock(&bnad->conf_mutex);
-<<<<<<< HEAD
-	bnad_remove_from_list(bnad);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnad_lock_uninit(bnad);
 	free_netdev(netdev);
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bnad_pci_remove(struct pci_dev *pdev)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
@@ -5272,10 +3759,6 @@ bnad_pci_remove(struct pci_dev *pdev)
 	if (!netdev)
 		return;
 
-<<<<<<< HEAD
-	pr_info("%s bnad_pci_remove\n", netdev->name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnad = netdev_priv(netdev);
 	bna = &bnad->bna;
 
@@ -5297,10 +3780,6 @@ bnad_pci_remove(struct pci_dev *pdev)
 	bnad_disable_msix(bnad);
 	bnad_pci_uninit(pdev);
 	mutex_unlock(&bnad->conf_mutex);
-<<<<<<< HEAD
-	bnad_remove_from_list(bnad);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnad_lock_uninit(bnad);
 	/* Remove the debugfs node for this bnad */
 	kfree(bnad->regdata);
@@ -5309,11 +3788,7 @@ bnad_pci_remove(struct pci_dev *pdev)
 	free_netdev(netdev);
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(bnad_pci_id_table) = {
-=======
 static const struct pci_device_id bnad_pci_id_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		PCI_DEVICE(PCI_VENDOR_ID_BROCADE,
 			PCI_DEVICE_ID_BROCADE_CT),
@@ -5335,11 +3810,7 @@ static struct pci_driver bnad_pci_driver = {
 	.name = BNAD_NAME,
 	.id_table = bnad_pci_id_table,
 	.probe = bnad_pci_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(bnad_pci_remove),
-=======
 	.remove = bnad_pci_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init
@@ -5347,22 +3818,11 @@ bnad_module_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	pr_info("Brocade 10G Ethernet driver - version: %s\n",
-			BNAD_VERSION);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_nw_ioc_auto_recover(bnad_ioc_auto_recover);
 
 	err = pci_register_driver(&bnad_pci_driver);
 	if (err < 0) {
-<<<<<<< HEAD
-		pr_err("bna : PCI registration failed in module init "
-		       "(%d)\n", err);
-=======
 		pr_err("bna: PCI driver registration failed err=%d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -5373,13 +3833,7 @@ static void __exit
 bnad_module_exit(void)
 {
 	pci_unregister_driver(&bnad_pci_driver);
-<<<<<<< HEAD
-
-	if (bfi_fw)
-		release_firmware(bfi_fw);
-=======
 	release_firmware(bfi_fw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(bnad_module_init);
@@ -5387,11 +3841,6 @@ module_exit(bnad_module_exit);
 
 MODULE_AUTHOR("Brocade");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Brocade 10G PCIe Ethernet driver");
-MODULE_VERSION(BNAD_VERSION);
-=======
 MODULE_DESCRIPTION("QLogic BR-series 10G PCIe Ethernet driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE(CNA_FW_FILE_CT);
 MODULE_FIRMWARE(CNA_FW_FILE_CT2);

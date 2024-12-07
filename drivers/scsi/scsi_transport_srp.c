@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SCSI RDMA (SRP) transport class
  *
  * Copyright (C) 2007 FUJITA Tomonori <tomof@acm.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/module.h>
@@ -33,19 +12,12 @@
 #include <linux/string.h>
 
 #include <scsi/scsi.h>
-<<<<<<< HEAD
-=======
 #include <scsi/scsi_cmnd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_transport_srp.h>
-<<<<<<< HEAD
-#include "scsi_transport_srp_internal.h"
-=======
 #include "scsi_priv.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct srp_host_attrs {
 	atomic_t next_port_id;
@@ -53,11 +25,7 @@ struct srp_host_attrs {
 #define to_srp_host_attrs(host)	((struct srp_host_attrs *)(host)->shost_data)
 
 #define SRP_HOST_ATTRS 0
-<<<<<<< HEAD
-#define SRP_RPORT_ATTRS 2
-=======
 #define SRP_RPORT_ATTRS 8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct srp_internal {
 	struct scsi_transport_template t;
@@ -66,24 +34,15 @@ struct srp_internal {
 	struct device_attribute *host_attrs[SRP_HOST_ATTRS + 1];
 
 	struct device_attribute *rport_attrs[SRP_RPORT_ATTRS + 1];
-<<<<<<< HEAD
-	struct device_attribute private_rport_attrs[SRP_RPORT_ATTRS];
-	struct transport_container rport_attr_cont;
-};
-
-=======
 	struct transport_container rport_attr_cont;
 };
 
 static int scsi_is_srp_rport(const struct device *dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define to_srp_internal(tmpl) container_of(tmpl, struct srp_internal, t)
 
 #define	dev_to_rport(d)	container_of(d, struct srp_rport, dev)
 #define transport_class_to_srp_rport(dev) dev_to_rport((dev)->parent)
-<<<<<<< HEAD
-=======
 static inline struct Scsi_Host *rport_to_shost(struct srp_rport *r)
 {
 	return dev_to_shost(r->dev.parent);
@@ -141,7 +100,6 @@ int srp_tmo_valid(int reconnect_delay, int fast_io_fail_tmo, long dev_loss_tmo)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(srp_tmo_valid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int srp_host_setup(struct transport_container *tc, struct device *dev,
 			  struct device *cdev)
@@ -159,46 +117,12 @@ static DECLARE_TRANSPORT_CLASS(srp_host_class, "srp_host", srp_host_setup,
 static DECLARE_TRANSPORT_CLASS(srp_rport_class, "srp_remote_ports",
 			       NULL, NULL, NULL);
 
-<<<<<<< HEAD
-#define SETUP_TEMPLATE(attrb, field, perm, test, ro_test, ro_perm)	\
-	i->private_##attrb[count] = dev_attr_##field;		\
-	i->private_##attrb[count].attr.mode = perm;			\
-	if (ro_test) {							\
-		i->private_##attrb[count].attr.mode = ro_perm;		\
-		i->private_##attrb[count].store = NULL;			\
-	}								\
-	i->attrb[count] = &i->private_##attrb[count];			\
-	if (test)							\
-		count++
-
-#define SETUP_RPORT_ATTRIBUTE_RD(field)					\
-	SETUP_TEMPLATE(rport_attrs, field, S_IRUGO, 1, 0, 0)
-
-#define SETUP_RPORT_ATTRIBUTE_RW(field)					\
-	SETUP_TEMPLATE(rport_attrs, field, S_IRUGO | S_IWUSR,		\
-		       1, 1, S_IRUGO)
-
-#define SRP_PID(p) \
-	(p)->port_id[0], (p)->port_id[1], (p)->port_id[2], (p)->port_id[3], \
-	(p)->port_id[4], (p)->port_id[5], (p)->port_id[6], (p)->port_id[7], \
-	(p)->port_id[8], (p)->port_id[9], (p)->port_id[10], (p)->port_id[11], \
-	(p)->port_id[12], (p)->port_id[13], (p)->port_id[14], (p)->port_id[15]
-
-#define SRP_PID_FMT "%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x:" \
-	"%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 show_srp_rport_id(struct device *dev, struct device_attribute *attr,
 		  char *buf)
 {
 	struct srp_rport *rport = transport_class_to_srp_rport(dev);
-<<<<<<< HEAD
-	return sprintf(buf, SRP_PID_FMT "\n", SRP_PID(rport));
-=======
 	return sprintf(buf, "%16phC\n", rport->port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(port_id, S_IRUGO, show_srp_rport_id, NULL);
@@ -229,8 +153,6 @@ show_srp_rport_roles(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR(roles, S_IRUGO, show_srp_rport_roles, NULL);
 
-<<<<<<< HEAD
-=======
 static ssize_t store_srp_rport_delete(struct device *dev,
 				      struct device_attribute *attr,
 				      const char *buf, size_t count)
@@ -693,7 +615,6 @@ enum scsi_timeout_action srp_timed_out(struct scsi_cmnd *scmd)
 }
 EXPORT_SYMBOL(srp_timed_out);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void srp_rport_release(struct device *dev)
 {
 	struct srp_rport *rport = dev_to_rport(dev);
@@ -745,8 +666,6 @@ static int srp_host_match(struct attribute_container *cont, struct device *dev)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * srp_rport_get() - increment rport reference count
  * @rport: SRP target port.
  */
@@ -767,7 +686,6 @@ void srp_rport_put(struct srp_rport *rport)
 EXPORT_SYMBOL(srp_rport_put);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * srp_rport_add - add a SRP remote port to the device hierarchy
  * @shost:	scsi host the remote port is connected to.
  * @ids:	The port id for the remote port.
@@ -779,21 +697,15 @@ struct srp_rport *srp_rport_add(struct Scsi_Host *shost,
 {
 	struct srp_rport *rport;
 	struct device *parent = &shost->shost_gendev;
-<<<<<<< HEAD
-=======
 	struct srp_internal *i = to_srp_internal(shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int id, ret;
 
 	rport = kzalloc(sizeof(*rport), GFP_KERNEL);
 	if (!rport)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-=======
 	mutex_init(&rport->mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_initialize(&rport->dev);
 
 	rport->dev.parent = get_device(parent);
@@ -802,8 +714,6 @@ struct srp_rport *srp_rport_add(struct Scsi_Host *shost,
 	memcpy(rport->port_id, ids->port_id, sizeof(rport->port_id));
 	rport->roles = ids->roles;
 
-<<<<<<< HEAD
-=======
 	if (i->f->reconnect)
 		rport->reconnect_delay = i->f->reconnect_delay ?
 			*i->f->reconnect_delay : 10;
@@ -815,7 +725,6 @@ struct srp_rport *srp_rport_add(struct Scsi_Host *shost,
 			  rport_fast_io_fail_timedout);
 	INIT_DELAYED_WORK(&rport->dev_loss_work, rport_dev_loss_timedout);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	id = atomic_inc_return(&to_srp_host_attrs(shost)->next_port_id);
 	dev_set_name(&rport->dev, "port-%d:%d", shost->host_no, id);
 
@@ -828,21 +737,6 @@ struct srp_rport *srp_rport_add(struct Scsi_Host *shost,
 		return ERR_PTR(ret);
 	}
 
-<<<<<<< HEAD
-	if (shost->active_mode & MODE_TARGET &&
-	    ids->roles == SRP_RPORT_ROLE_INITIATOR) {
-		ret = srp_tgt_it_nexus_create(shost, (unsigned long)rport,
-					      rport->port_id);
-		if (ret) {
-			device_del(&rport->dev);
-			transport_destroy_device(&rport->dev);
-			put_device(&rport->dev);
-			return ERR_PTR(ret);
-		}
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_add_device(&rport->dev);
 	transport_configure_device(&rport->dev);
 
@@ -859,22 +753,11 @@ EXPORT_SYMBOL_GPL(srp_rport_add);
 void srp_rport_del(struct srp_rport *rport)
 {
 	struct device *dev = &rport->dev;
-<<<<<<< HEAD
-	struct Scsi_Host *shost = dev_to_shost(dev->parent);
-
-	if (shost->active_mode & MODE_TARGET &&
-	    rport->roles == SRP_RPORT_ROLE_INITIATOR)
-		srp_tgt_it_nexus_destroy(shost, (unsigned long)rport);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	transport_remove_device(dev);
 	device_del(dev);
 	transport_destroy_device(dev);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_device(dev);
 }
 EXPORT_SYMBOL_GPL(srp_rport_del);
@@ -899,20 +782,6 @@ void srp_remove_host(struct Scsi_Host *shost)
 }
 EXPORT_SYMBOL_GPL(srp_remove_host);
 
-<<<<<<< HEAD
-static int srp_tsk_mgmt_response(struct Scsi_Host *shost, u64 nexus, u64 tm_id,
-				 int result)
-{
-	struct srp_internal *i = to_srp_internal(shost->transportt);
-	return i->f->tsk_mgmt_response(shost, nexus, tm_id, result);
-}
-
-static int srp_it_nexus_response(struct Scsi_Host *shost, u64 nexus, int result)
-{
-	struct srp_internal *i = to_srp_internal(shost->transportt);
-	return i->f->it_nexus_response(shost, nexus, result);
-}
-=======
 /**
  * srp_stop_rport_timers - stop the transport layer recovery timers
  * @rport: SRP remote port for which to stop the timers.
@@ -934,7 +803,6 @@ void srp_stop_rport_timers(struct srp_rport *rport)
 	cancel_delayed_work_sync(&rport->dev_loss_work);
 }
 EXPORT_SYMBOL_GPL(srp_stop_rport_timers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * srp_attach_transport  -  instantiate SRP transport template
@@ -950,12 +818,6 @@ srp_attach_transport(struct srp_function_template *ft)
 	if (!i)
 		return NULL;
 
-<<<<<<< HEAD
-	i->t.tsk_mgmt_response = srp_tsk_mgmt_response;
-	i->t.it_nexus_response = srp_it_nexus_response;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i->t.host_size = sizeof(struct srp_host_attrs);
 	i->t.host_attrs.ac.attrs = &i->host_attrs[0];
 	i->t.host_attrs.ac.class = &srp_host_class.class;
@@ -966,14 +828,6 @@ srp_attach_transport(struct srp_function_template *ft)
 	i->rport_attr_cont.ac.attrs = &i->rport_attrs[0];
 	i->rport_attr_cont.ac.class = &srp_rport_class.class;
 	i->rport_attr_cont.ac.match = srp_rport_match;
-<<<<<<< HEAD
-	transport_container_register(&i->rport_attr_cont);
-
-	count = 0;
-	SETUP_RPORT_ATTRIBUTE_RD(port_id);
-	SETUP_RPORT_ATTRIBUTE_RD(roles);
-	i->rport_attrs[count] = NULL;
-=======
 
 	count = 0;
 	i->rport_attrs[count++] = &dev_attr_port_id;
@@ -993,7 +847,6 @@ srp_attach_transport(struct srp_function_template *ft)
 	BUG_ON(count > ARRAY_SIZE(i->rport_attrs));
 
 	transport_container_register(&i->rport_attr_cont);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i->f = ft;
 

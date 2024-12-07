@@ -1,63 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MUSB OTG driver - support for Mentor's DMA controller
  *
  * Copyright 2005 Mentor Graphics Corporation
  * Copyright (C) 2005-2007 by Texas Instruments
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
- * NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/device.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include "musb_core.h"
-<<<<<<< HEAD
-#include "musbhsdma.h"
-
-static int dma_controller_start(struct dma_controller *c)
-{
-	/* nothing to do */
-	return 0;
-}
-
-static void dma_channel_release(struct dma_channel *channel);
-
-static int dma_controller_stop(struct dma_controller *c)
-{
-	struct musb_dma_controller *controller = container_of(c,
-			struct musb_dma_controller, controller);
-=======
 #include "musb_dma.h"
 
 #define MUSB_HSDMA_CHANNEL_OFFSET(_bchannel, _offset)		\
@@ -123,7 +75,6 @@ static void dma_channel_release(struct dma_channel *channel);
 
 static void dma_controller_stop(struct musb_dma_controller *controller)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct musb *musb = controller->private_data;
 	struct dma_channel *channel;
 	u8 bit;
@@ -142,11 +93,6 @@ static void dma_controller_stop(struct musb_dma_controller *controller)
 			}
 		}
 	}
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dma_channel *dma_channel_allocate(struct dma_controller *c,
@@ -205,13 +151,8 @@ static void configure_channel(struct dma_channel *channel,
 	u8 bchannel = musb_channel->idx;
 	u16 csr = 0;
 
-<<<<<<< HEAD
-	dev_dbg(musb->controller, "%p, pkt_sz %d, addr 0x%x, len %d, mode %d\n",
-			channel, packet_sz, dma_addr, len, mode);
-=======
 	musb_dbg(musb, "%p, pkt_sz %d, addr %pad, len %d, mode %d",
 			channel, packet_sz, &dma_addr, len, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mode) {
 		csr |= 1 << MUSB_HSDMA_MODE1_SHIFT;
@@ -245,32 +186,14 @@ static int dma_channel_program(struct dma_channel *channel,
 	struct musb_dma_controller *controller = musb_channel->controller;
 	struct musb *musb = controller->private_data;
 
-<<<<<<< HEAD
-	dev_dbg(musb->controller, "ep%d-%s pkt_sz %d, dma_addr 0x%x length %d, mode %d\n",
-		musb_channel->epnum,
-		musb_channel->transmit ? "Tx" : "Rx",
-		packet_sz, dma_addr, len, mode);
-=======
 	musb_dbg(musb, "ep%d-%s pkt_sz %d, dma_addr %pad length %d, mode %d",
 		musb_channel->epnum,
 		musb_channel->transmit ? "Tx" : "Rx",
 		packet_sz, &dma_addr, len, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(channel->status == MUSB_DMA_STATUS_UNKNOWN ||
 		channel->status == MUSB_DMA_STATUS_BUSY);
 
-<<<<<<< HEAD
-	/* Let targets check/tweak the arguments */
-	if (musb->ops->adjust_channel_params) {
-		int ret = musb->ops->adjust_channel_params(channel,
-			packet_sz, &mode, &dma_addr, &len);
-		if (ret)
-			return ret;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The DMA engine in RTL1.8 and above cannot handle
 	 * DMA addresses that are not aligned to a 4 byte boundary.
@@ -298,10 +221,7 @@ static int dma_channel_abort(struct dma_channel *channel)
 {
 	struct musb_dma_channel *musb_channel = channel->private_data;
 	void __iomem *mbase = musb_channel->controller->base;
-<<<<<<< HEAD
-=======
 	struct musb *musb = musb_channel->controller->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 bchannel = musb_channel->idx;
 	int offset;
@@ -309,11 +229,7 @@ static int dma_channel_abort(struct dma_channel *channel)
 
 	if (channel->status == MUSB_DMA_STATUS_BUSY) {
 		if (musb_channel->transmit) {
-<<<<<<< HEAD
-			offset = MUSB_EP_OFFSET(musb_channel->epnum,
-=======
 			offset = musb->io.ep_offset(musb_channel->epnum,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						MUSB_TXCSR);
 
 			/*
@@ -326,11 +242,7 @@ static int dma_channel_abort(struct dma_channel *channel)
 			csr &= ~MUSB_TXCSR_DMAMODE;
 			musb_writew(mbase, offset, csr);
 		} else {
-<<<<<<< HEAD
-			offset = MUSB_EP_OFFSET(musb_channel->epnum,
-=======
 			offset = musb->io.ep_offset(musb_channel->epnum,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						MUSB_RXCSR);
 
 			csr = musb_readw(mbase, offset);
@@ -351,11 +263,7 @@ static int dma_channel_abort(struct dma_channel *channel)
 	return 0;
 }
 
-<<<<<<< HEAD
-static irqreturn_t dma_controller_irq(int irq, void *private_data)
-=======
 irqreturn_t dma_controller_irq(int irq, void *private_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct musb_dma_controller *controller = private_data;
 	struct musb *musb = controller->private_data;
@@ -376,22 +284,10 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 
 	spin_lock_irqsave(&musb->lock, flags);
 
-<<<<<<< HEAD
-	int_hsdma = musb_readb(mbase, MUSB_HSDMA_INTR);
-
-#ifdef CONFIG_BLACKFIN
-	/* Clear DMA interrupt flags */
-	musb_writeb(mbase, MUSB_HSDMA_INTR, int_hsdma);
-#endif
-
-	if (!int_hsdma) {
-		dev_dbg(musb->controller, "spurious DMA irq\n");
-=======
 	int_hsdma = musb_clearb(mbase, MUSB_HSDMA_INTR);
 
 	if (!int_hsdma) {
 		musb_dbg(musb, "spurious DMA irq");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (bchannel = 0; bchannel < MUSB_HSDMA_CHANNELS; bchannel++) {
 			musb_channel = (struct musb_dma_channel *)
@@ -405,11 +301,7 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 			}
 		}
 
-<<<<<<< HEAD
-		dev_dbg(musb->controller, "int_hsdma = 0x%x\n", int_hsdma);
-=======
 		musb_dbg(musb, "int_hsdma = 0x%x", int_hsdma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!int_hsdma)
 			goto done;
@@ -429,21 +321,12 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 				musb_channel->channel.status =
 					MUSB_DMA_STATUS_BUS_ABORT;
 			} else {
-<<<<<<< HEAD
-				u8 devctl;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				addr = musb_read_hsdma_addr(mbase,
 						bchannel);
 				channel->actual_len = addr
 					- musb_channel->start_addr;
 
-<<<<<<< HEAD
-				dev_dbg(musb->controller, "ch %p, 0x%x -> 0x%x (%zu / %d) %s\n",
-=======
 				musb_dbg(musb, "ch %p, 0x%x -> 0x%x (%zu / %d) %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					channel, musb_channel->start_addr,
 					addr, channel->actual_len,
 					musb_channel->len,
@@ -451,21 +334,6 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 						< musb_channel->len) ?
 					"=> reconfig 0" : "=> complete");
 
-<<<<<<< HEAD
-				devctl = musb_readb(mbase, MUSB_DEVCTL);
-
-				channel->status = MUSB_DMA_STATUS_FREE;
-
-				/* completed */
-				if ((devctl & MUSB_DEVCTL_HM)
-					&& (musb_channel->transmit)
-					&& ((channel->desired_mode == 0)
-					    || (channel->actual_len &
-					    (musb_channel->max_packet_sz - 1)))
-				    ) {
-					u8  epnum  = musb_channel->epnum;
-					int offset = MUSB_EP_OFFSET(epnum,
-=======
 				channel->status = MUSB_DMA_STATUS_FREE;
 
 				/* completed */
@@ -475,7 +343,6 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 					    musb_channel->max_packet_sz))) {
 					u8  epnum  = musb_channel->epnum;
 					int offset = musb->io.ep_offset(epnum,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								    MUSB_TXCSR);
 					u16 txcsr;
 
@@ -485,13 +352,6 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 					 */
 					musb_ep_select(mbase, epnum);
 					txcsr = musb_readw(mbase, offset);
-<<<<<<< HEAD
-					txcsr &= ~(MUSB_TXCSR_DMAENAB
-							| MUSB_TXCSR_AUTOSET);
-					musb_writew(mbase, offset, txcsr);
-					/* Send out the packet */
-					txcsr &= ~MUSB_TXCSR_DMAMODE;
-=======
 					if (channel->desired_mode == 1) {
 						txcsr &= ~(MUSB_TXCSR_DMAENAB
 							| MUSB_TXCSR_AUTOSET);
@@ -500,7 +360,6 @@ irqreturn_t dma_controller_irq(int irq, void *private_data)
 						txcsr &= ~MUSB_TXCSR_DMAMODE;
 						txcsr |= MUSB_TXCSR_DMAENAB;
 					}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					txcsr |=  MUSB_TXCSR_TXPKTRDY;
 					musb_writew(mbase, offset, txcsr);
 				}
@@ -515,52 +374,26 @@ done:
 	spin_unlock_irqrestore(&musb->lock, flags);
 	return retval;
 }
-<<<<<<< HEAD
-
-void dma_controller_destroy(struct dma_controller *c)
-=======
 EXPORT_SYMBOL_GPL(dma_controller_irq);
 
 void musbhs_dma_controller_destroy(struct dma_controller *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct musb_dma_controller *controller = container_of(c,
 			struct musb_dma_controller, controller);
 
-<<<<<<< HEAD
-	if (!controller)
-		return;
-=======
 	dma_controller_stop(controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (controller->irq)
 		free_irq(controller->irq, c);
 
 	kfree(controller);
 }
-<<<<<<< HEAD
-
-struct dma_controller *__init
-dma_controller_create(struct musb *musb, void __iomem *base)
-{
-	struct musb_dma_controller *controller;
-	struct device *dev = musb->controller;
-	struct platform_device *pdev = to_platform_device(dev);
-	int irq = platform_get_irq_byname(pdev, "dma");
-
-	if (irq == 0) {
-		dev_err(dev, "No DMA interrupt line!\n");
-		return NULL;
-	}
-=======
 EXPORT_SYMBOL_GPL(musbhs_dma_controller_destroy);
 
 static struct musb_dma_controller *
 dma_controller_alloc(struct musb *musb, void __iomem *base)
 {
 	struct musb_dma_controller *controller;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	controller = kzalloc(sizeof(*controller), GFP_KERNEL);
 	if (!controller)
@@ -570,22 +403,10 @@ dma_controller_alloc(struct musb *musb, void __iomem *base)
 	controller->private_data = musb;
 	controller->base = base;
 
-<<<<<<< HEAD
-	controller->controller.start = dma_controller_start;
-	controller->controller.stop = dma_controller_stop;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	controller->controller.channel_alloc = dma_channel_allocate;
 	controller->controller.channel_release = dma_channel_release;
 	controller->controller.channel_program = dma_channel_program;
 	controller->controller.channel_abort = dma_channel_abort;
-<<<<<<< HEAD
-
-	if (request_irq(irq, dma_controller_irq, 0,
-			dev_name(musb->controller), &controller->controller)) {
-		dev_err(dev, "request_irq %d failed!\n", irq);
-		dma_controller_destroy(&controller->controller);
-=======
 	return controller;
 }
 
@@ -610,7 +431,6 @@ musbhs_dma_controller_create(struct musb *musb, void __iomem *base)
 			dev_name(musb->controller), controller)) {
 		dev_err(dev, "request_irq %d failed!\n", irq);
 		musb_dma_controller_destroy(&controller->controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return NULL;
 	}
@@ -619,8 +439,6 @@ musbhs_dma_controller_create(struct musb *musb, void __iomem *base)
 
 	return &controller->controller;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(musbhs_dma_controller_create);
 
 struct dma_controller *
@@ -635,4 +453,3 @@ musbhs_dma_controller_create_noirq(struct musb *musb, void __iomem *base)
 	return &controller->controller;
 }
 EXPORT_SYMBOL_GPL(musbhs_dma_controller_create_noirq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

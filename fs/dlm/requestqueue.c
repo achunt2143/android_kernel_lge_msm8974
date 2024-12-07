@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) 2005-2007 Red Hat, Inc.  All rights reserved.
 **
-<<<<<<< HEAD
-**  This copyrighted material is made available to anyone wishing to use,
-**  modify, copy, or redistribute it subject to the terms and conditions
-**  of the GNU General Public License v.2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -23,17 +14,11 @@
 #include "dir.h"
 #include "config.h"
 #include "requestqueue.h"
-<<<<<<< HEAD
-
-struct rq_entry {
-	struct list_head list;
-=======
 #include "util.h"
 
 struct rq_entry {
 	struct list_head list;
 	uint32_t recover_seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nodeid;
 	struct dlm_message request;
 };
@@ -45,19 +30,12 @@ struct rq_entry {
  * lockspace is enabled on some while still suspended on others.
  */
 
-<<<<<<< HEAD
-void dlm_add_requestqueue(struct dlm_ls *ls, int nodeid, struct dlm_message *ms)
-{
-	struct rq_entry *e;
-	int length = ms->m_header.h_length - sizeof(struct dlm_message);
-=======
 void dlm_add_requestqueue(struct dlm_ls *ls, int nodeid,
 			  const struct dlm_message *ms)
 {
 	struct rq_entry *e;
 	int length = le16_to_cpu(ms->m_header.h_length) -
 		sizeof(struct dlm_message);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	e = kmalloc(sizeof(struct rq_entry) + length, GFP_NOFS);
 	if (!e) {
@@ -65,18 +43,12 @@ void dlm_add_requestqueue(struct dlm_ls *ls, int nodeid,
 		return;
 	}
 
-<<<<<<< HEAD
-	e->nodeid = nodeid;
-	memcpy(&e->request, ms, ms->m_header.h_length);
-
-=======
 	e->recover_seq = ls->ls_recover_seq & 0xFFFFFFFF;
 	e->nodeid = nodeid;
 	memcpy(&e->request, ms, sizeof(*ms));
 	memcpy(&e->request.m_extra, ms->m_extra, length);
 
 	atomic_inc(&ls->ls_requestqueue_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&ls->ls_requestqueue_mutex);
 	list_add_tail(&e->list, &ls->ls_requestqueue);
 	mutex_unlock(&ls->ls_requestqueue_mutex);
@@ -96,10 +68,7 @@ void dlm_add_requestqueue(struct dlm_ls *ls, int nodeid,
 int dlm_process_requestqueue(struct dlm_ls *ls)
 {
 	struct rq_entry *e;
-<<<<<<< HEAD
-=======
 	struct dlm_message *ms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 
 	mutex_lock(&ls->ls_requestqueue_mutex);
@@ -113,12 +82,6 @@ int dlm_process_requestqueue(struct dlm_ls *ls)
 		e = list_entry(ls->ls_requestqueue.next, struct rq_entry, list);
 		mutex_unlock(&ls->ls_requestqueue_mutex);
 
-<<<<<<< HEAD
-		dlm_receive_message_saved(ls, &e->request);
-
-		mutex_lock(&ls->ls_requestqueue_mutex);
-		list_del(&e->list);
-=======
 		ms = &e->request;
 
 		log_limit(ls, "dlm_process_requestqueue msg %d from %d "
@@ -135,7 +98,6 @@ int dlm_process_requestqueue(struct dlm_ls *ls)
 		list_del(&e->list);
 		if (atomic_dec_and_test(&ls->ls_requestqueue_cnt))
 			wake_up(&ls->ls_requestqueue_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(e);
 
 		if (dlm_locking_stopped(ls)) {
@@ -162,34 +124,16 @@ int dlm_process_requestqueue(struct dlm_ls *ls)
 
 void dlm_wait_requestqueue(struct dlm_ls *ls)
 {
-<<<<<<< HEAD
-	for (;;) {
-		mutex_lock(&ls->ls_requestqueue_mutex);
-		if (list_empty(&ls->ls_requestqueue))
-			break;
-		mutex_unlock(&ls->ls_requestqueue_mutex);
-		schedule();
-	}
-	mutex_unlock(&ls->ls_requestqueue_mutex);
-=======
 	wait_event(ls->ls_requestqueue_wait,
 		   atomic_read(&ls->ls_requestqueue_cnt) == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int purge_request(struct dlm_ls *ls, struct dlm_message *ms, int nodeid)
 {
-<<<<<<< HEAD
-	uint32_t type = ms->m_type;
-
-	/* the ls is being cleaned up and freed by release_lockspace */
-	if (!ls->ls_count)
-=======
 	__le32 type = ms->m_type;
 
 	/* the ls is being cleaned up and freed by release_lockspace */
 	if (!atomic_read(&ls->ls_count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	if (dlm_is_removed(ls, nodeid))
@@ -198,53 +142,15 @@ static int purge_request(struct dlm_ls *ls, struct dlm_message *ms, int nodeid)
 	/* directory operations are always purged because the directory is
 	   always rebuilt during recovery and the lookups resent */
 
-<<<<<<< HEAD
-	if (type == DLM_MSG_REMOVE ||
-	    type == DLM_MSG_LOOKUP ||
-	    type == DLM_MSG_LOOKUP_REPLY)
-=======
 	if (type == cpu_to_le32(DLM_MSG_REMOVE) ||
 	    type == cpu_to_le32(DLM_MSG_LOOKUP) ||
 	    type == cpu_to_le32(DLM_MSG_LOOKUP_REPLY))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	if (!dlm_no_directory(ls))
 		return 0;
 
-<<<<<<< HEAD
-	/* with no directory, the master is likely to change as a part of
-	   recovery; requests to/from the defunct master need to be purged */
-
-	switch (type) {
-	case DLM_MSG_REQUEST:
-	case DLM_MSG_CONVERT:
-	case DLM_MSG_UNLOCK:
-	case DLM_MSG_CANCEL:
-		/* we're no longer the master of this resource, the sender
-		   will resend to the new master (see waiter_needs_recovery) */
-
-		if (dlm_hash2nodeid(ls, ms->m_hash) != dlm_our_nodeid())
-			return 1;
-		break;
-
-	case DLM_MSG_REQUEST_REPLY:
-	case DLM_MSG_CONVERT_REPLY:
-	case DLM_MSG_UNLOCK_REPLY:
-	case DLM_MSG_CANCEL_REPLY:
-	case DLM_MSG_GRANT:
-		/* this reply is from the former master of the resource,
-		   we'll resend to the new master if needed */
-
-		if (dlm_hash2nodeid(ls, ms->m_hash) != nodeid)
-			return 1;
-		break;
-	}
-
-	return 0;
-=======
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dlm_purge_requestqueue(struct dlm_ls *ls)
@@ -258,11 +164,8 @@ void dlm_purge_requestqueue(struct dlm_ls *ls)
 
 		if (purge_request(ls, ms, e->nodeid)) {
 			list_del(&e->list);
-<<<<<<< HEAD
-=======
 			if (atomic_dec_and_test(&ls->ls_requestqueue_cnt))
 				wake_up(&ls->ls_requestqueue_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(e);
 		}
 	}

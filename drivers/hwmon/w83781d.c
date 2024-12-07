@@ -1,42 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * w83781d.c - Part of lm_sensors, Linux kernel modules for hardware
  *	       monitoring
  * Copyright (c) 1998 - 2001  Frodo Looijaard <frodol@dds.nl>,
  *			      Philip Edelbrock <phil@netroedge.com>,
  *			      and Mark Studebaker <mdsxyz123@yahoo.com>
-<<<<<<< HEAD
- * Copyright (c) 2007 - 2008  Jean Delvare <khali@linux-fr.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  * Copyright (c) 2007 - 2008  Jean Delvare <jdelvare@suse.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * Supports following chips:
  *
-<<<<<<< HEAD
- * Chip	#vin	#fanin	#pwm	#temp	wchipid	vendid	i2c	ISA
-=======
  * Chip		#vin	#fanin	#pwm	#temp	wchipid	vendid	i2c	ISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * as99127f	7	3	0	3	0x31	0x12c3	yes	no
  * as99127f rev.2 (type_name = as99127f)	0x31	0x5ca3	yes	no
  * w83781d	7	3	0	3	0x10-1	0x5ca3	yes	yes
@@ -76,13 +51,8 @@ enum chips { w83781d, w83782d, w83783s, as99127f };
 /* Insmod parameters */
 static unsigned short force_subclients[4];
 module_param_array(force_subclients, short, NULL, 0);
-<<<<<<< HEAD
-MODULE_PARM_DESC(force_subclients, "List of subclient addresses: "
-		    "{bus, clientaddr, subclientaddr1, subclientaddr2}");
-=======
 MODULE_PARM_DESC(force_subclients,
 		 "List of subclient addresses: {bus, clientaddr, subclientaddr1, subclientaddr2}");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool reset;
 module_param(reset, bool, 0);
@@ -176,11 +146,7 @@ static const u8 BIT_SCFG2[] = { 0x10, 0x20, 0x40 };
 #define W83781D_DEFAULT_BETA		3435
 
 /* Conversions */
-<<<<<<< HEAD
-#define IN_TO_REG(val)			SENSORS_LIMIT(((val) + 8) / 16, 0, 255)
-=======
 #define IN_TO_REG(val)			clamp_val(((val) + 8) / 16, 0, 255)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IN_FROM_REG(val)		((val) * 16)
 
 static inline u8
@@ -188,13 +154,8 @@ FAN_TO_REG(long rpm, int div)
 {
 	if (rpm == 0)
 		return 255;
-<<<<<<< HEAD
-	rpm = SENSORS_LIMIT(rpm, 1, 1000000);
-	return SENSORS_LIMIT((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
-=======
 	rpm = clamp_val(rpm, 1, 1000000);
 	return clamp_val((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline long
@@ -207,11 +168,7 @@ FAN_FROM_REG(u8 val, int div)
 	return 1350000 / (val * div);
 }
 
-<<<<<<< HEAD
-#define TEMP_TO_REG(val)		SENSORS_LIMIT((val) / 1000, -127, 128)
-=======
 #define TEMP_TO_REG(val)		clamp_val((val) / 1000, -127, 128)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TEMP_FROM_REG(val)		((val) * 1000)
 
 #define BEEP_MASK_FROM_REG(val, type)	((type) == as99127f ? \
@@ -225,14 +182,8 @@ static inline u8
 DIV_TO_REG(long val, enum chips type)
 {
 	int i;
-<<<<<<< HEAD
-	val = SENSORS_LIMIT(val, 1,
-			    ((type == w83781d
-			      || type == as99127f) ? 8 : 128)) >> 1;
-=======
 	val = clamp_val(val, 1,
 			((type == w83781d || type == as99127f) ? 8 : 128)) >> 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 7; i++) {
 		if (val == 0)
 			break;
@@ -252,11 +203,7 @@ struct w83781d_data {
 	int isa_addr;
 
 	struct mutex update_lock;
-<<<<<<< HEAD
-	char valid;		/* !=0 if following fields are valid */
-=======
 	bool valid;		/* true if following fields are valid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 
 	struct i2c_client *lm75[2];	/* for secondary I2C addresses */
@@ -456,40 +403,24 @@ sysfs_temp_offsets(2);
 sysfs_temp_offsets(3);
 
 static ssize_t
-<<<<<<< HEAD
-show_vid_reg(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 cpu0_vid_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83781d_data *data = w83781d_update_device(dev);
 	return sprintf(buf, "%ld\n", (long) vid_from_reg(data->vid, data->vrm));
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(cpu0_vid, S_IRUGO, show_vid_reg, NULL);
-
-static ssize_t
-show_vrm_reg(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static DEVICE_ATTR_RO(cpu0_vid);
 
 static ssize_t
 vrm_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83781d_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%ld\n", (long) data->vrm);
 }
 
 static ssize_t
-<<<<<<< HEAD
-store_vrm_reg(struct device *dev, struct device_attribute *attr,
-	      const char *buf, size_t count)
-=======
 vrm_store(struct device *dev, struct device_attribute *attr, const char *buf,
 	  size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83781d_data *data = dev_get_drvdata(dev);
 	unsigned long val;
@@ -498,36 +429,21 @@ vrm_store(struct device *dev, struct device_attribute *attr, const char *buf,
 	err = kstrtoul(buf, 10, &val);
 	if (err)
 		return err;
-<<<<<<< HEAD
-	data->vrm = SENSORS_LIMIT(val, 0, 255);
-=======
 	data->vrm = clamp_val(val, 0, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm_reg, store_vrm_reg);
-
-static ssize_t
-show_alarms_reg(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static DEVICE_ATTR_RW(vrm);
 
 static ssize_t
 alarms_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83781d_data *data = w83781d_update_device(dev);
 	return sprintf(buf, "%u\n", data->alarms);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(alarms, S_IRUGO, show_alarms_reg, NULL);
-=======
 static DEVICE_ATTR_RO(alarms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
 		char *buf)
@@ -562,11 +478,7 @@ static SENSOR_DEVICE_ATTR(temp1_alarm, S_IRUGO, show_alarm, NULL, 4);
 static SENSOR_DEVICE_ATTR(temp2_alarm, S_IRUGO, show_alarm, NULL, 5);
 static SENSOR_DEVICE_ATTR(temp3_alarm, S_IRUGO, show_temp3_alarm, NULL, 0);
 
-<<<<<<< HEAD
-static ssize_t show_beep_mask(struct device *dev,
-=======
 static ssize_t beep_mask_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr, char *buf)
 {
 	struct w83781d_data *data = w83781d_update_device(dev);
@@ -575,11 +487,7 @@ static ssize_t beep_mask_show(struct device *dev,
 }
 
 static ssize_t
-<<<<<<< HEAD
-store_beep_mask(struct device *dev, struct device_attribute *attr,
-=======
 beep_mask_store(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const char *buf, size_t count)
 {
 	struct w83781d_data *data = dev_get_drvdata(dev);
@@ -606,12 +514,7 @@ beep_mask_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(beep_mask, S_IRUGO | S_IWUSR,
-		show_beep_mask, store_beep_mask);
-=======
 static DEVICE_ATTR_RW(beep_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t show_beep(struct device *dev, struct device_attribute *attr,
 		char *buf)
@@ -791,11 +694,7 @@ show_pwm(struct device *dev, struct device_attribute *da, char *buf)
 }
 
 static ssize_t
-<<<<<<< HEAD
-show_pwm2_enable(struct device *dev, struct device_attribute *da, char *buf)
-=======
 pwm2_enable_show(struct device *dev, struct device_attribute *da, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83781d_data *data = w83781d_update_device(dev);
 	return sprintf(buf, "%d\n", (int)data->pwm2_enable);
@@ -816,22 +715,14 @@ store_pwm(struct device *dev, struct device_attribute *da, const char *buf,
 		return err;
 
 	mutex_lock(&data->update_lock);
-<<<<<<< HEAD
-	data->pwm[nr] = SENSORS_LIMIT(val, 0, 255);
-=======
 	data->pwm[nr] = clamp_val(val, 0, 255);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	w83781d_write_value(data, W83781D_REG_PWM[nr], data->pwm[nr]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
 static ssize_t
-<<<<<<< HEAD
-store_pwm2_enable(struct device *dev, struct device_attribute *da,
-=======
 pwm2_enable_store(struct device *dev, struct device_attribute *da,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const char *buf, size_t count)
 {
 	struct w83781d_data *data = dev_get_drvdata(dev);
@@ -873,12 +764,7 @@ static SENSOR_DEVICE_ATTR(pwm2, S_IRUGO | S_IWUSR, show_pwm, store_pwm, 1);
 static SENSOR_DEVICE_ATTR(pwm3, S_IRUGO | S_IWUSR, show_pwm, store_pwm, 2);
 static SENSOR_DEVICE_ATTR(pwm4, S_IRUGO | S_IWUSR, show_pwm, store_pwm, 3);
 /* only PWM2 can be enabled/disabled */
-<<<<<<< HEAD
-static DEVICE_ATTR(pwm2_enable, S_IRUGO | S_IWUSR,
-		show_pwm2_enable, store_pwm2_enable);
-=======
 static DEVICE_ATTR_RW(pwm2_enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 show_sensor(struct device *dev, struct device_attribute *da, char *buf)
@@ -925,16 +811,10 @@ store_sensor(struct device *dev, struct device_attribute *da,
 		data->sens[nr] = val;
 		break;
 	case W83781D_DEFAULT_BETA:
-<<<<<<< HEAD
-		dev_warn(dev, "Sensor type %d is deprecated, please use 4 "
-			 "instead\n", W83781D_DEFAULT_BETA);
-		/* fall through */
-=======
 		dev_warn(dev,
 			 "Sensor type %d is deprecated, please use 4 instead\n",
 			 W83781D_DEFAULT_BETA);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4:		/* thermistor */
 		tmp = w83781d_read_value(data, W83781D_REG_SCFG1);
 		w83781d_write_value(data, W83781D_REG_SCFG1,
@@ -972,10 +852,7 @@ w83781d_detect_subclients(struct i2c_client *new_client)
 	struct i2c_adapter *adapter = new_client->adapter;
 	struct w83781d_data *data = i2c_get_clientdata(new_client);
 	enum chips kind = data->type;
-<<<<<<< HEAD
-=======
 	int num_sc = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	id = i2c_adapter_id(adapter);
 
@@ -983,13 +860,8 @@ w83781d_detect_subclients(struct i2c_client *new_client)
 		for (i = 2; i <= 3; i++) {
 			if (force_subclients[i] < 0x48 ||
 			    force_subclients[i] > 0x4f) {
-<<<<<<< HEAD
-				dev_err(&new_client->dev, "Invalid subclient "
-					"address %d; must be 0x48-0x4f\n",
-=======
 				dev_err(&new_client->dev,
 					"Invalid subclient address %d; must be 0x48-0x4f\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					force_subclients[i]);
 				err = -EINVAL;
 				goto ERROR_SC_1;
@@ -1005,10 +877,7 @@ w83781d_detect_subclients(struct i2c_client *new_client)
 	}
 
 	if (kind != w83783s) {
-<<<<<<< HEAD
-=======
 		num_sc = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (force_subclients[0] == id &&
 		    force_subclients[1] == address) {
 			sc_addr[1] = force_subclients[3];
@@ -1024,15 +893,6 @@ w83781d_detect_subclients(struct i2c_client *new_client)
 		}
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i <= 1; i++) {
-		data->lm75[i] = i2c_new_dummy(adapter, sc_addr[i]);
-		if (!data->lm75[i]) {
-			dev_err(&new_client->dev, "Subclient %d "
-				"registration at address 0x%x "
-				"failed.\n", i, sc_addr[i]);
-			err = -ENOMEM;
-=======
 	for (i = 0; i < num_sc; i++) {
 		data->lm75[i] = i2c_new_dummy_device(adapter, sc_addr[i]);
 		if (IS_ERR(data->lm75[i])) {
@@ -1040,16 +900,10 @@ w83781d_detect_subclients(struct i2c_client *new_client)
 				"Subclient %d registration at address 0x%x failed.\n",
 				i, sc_addr[i]);
 			err = PTR_ERR(data->lm75[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i == 1)
 				goto ERROR_SC_3;
 			goto ERROR_SC_2;
 		}
-<<<<<<< HEAD
-		if (kind == w83783s)
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1308,25 +1162,16 @@ w83781d_detect(struct i2c_client *client, struct i2c_board_info *info)
 		goto err_nodev;
 
 	if (val1 <= 0x30 && w83781d_alias_detect(client, val1)) {
-<<<<<<< HEAD
-		dev_dbg(&adapter->dev, "Device at 0x%02x appears to "
-			"be the same as ISA device\n", address);
-=======
 		dev_dbg(&adapter->dev,
 			"Device at 0x%02x appears to be the same as ISA device\n",
 			address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_nodev;
 	}
 
 	if (isa)
 		mutex_unlock(&isa->update_lock);
 
-<<<<<<< HEAD
-	strlcpy(info->type, client_name, I2C_NAME_SIZE);
-=======
 	strscpy(info->type, client_name, I2C_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1347,50 +1192,29 @@ static void w83781d_remove_files(struct device *dev)
 	sysfs_remove_group(&dev->kobj, &w83781d_group_other);
 }
 
-<<<<<<< HEAD
-static int
-w83781d_probe(struct i2c_client *client, const struct i2c_device_id *id)
-=======
 static const struct i2c_device_id w83781d_ids[];
 
 static int w83781d_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &client->dev;
 	struct w83781d_data *data;
 	int err;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(struct w83781d_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto ERROR1;
-	}
-=======
 	data = devm_kzalloc(dev, sizeof(struct w83781d_data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2c_set_clientdata(client, data);
 	mutex_init(&data->lock);
 	mutex_init(&data->update_lock);
 
-<<<<<<< HEAD
-	data->type = id->driver_data;
-=======
 	data->type = i2c_match_id(w83781d_ids, client)->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->client = client;
 
 	/* attach secondary i2c lm75-like clients */
 	err = w83781d_detect_subclients(client);
 	if (err)
-<<<<<<< HEAD
-		goto ERROR3;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the chip */
 	w83781d_init_device(dev);
@@ -1398,39 +1222,16 @@ static int w83781d_probe(struct i2c_client *client)
 	/* Register sysfs hooks */
 	err = w83781d_create_files(dev, data->type, 0);
 	if (err)
-<<<<<<< HEAD
-		goto ERROR4;
-=======
 		goto exit_remove_files;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->hwmon_dev = hwmon_device_register(dev);
 	if (IS_ERR(data->hwmon_dev)) {
 		err = PTR_ERR(data->hwmon_dev);
-<<<<<<< HEAD
-		goto ERROR4;
-=======
 		goto exit_remove_files;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
-<<<<<<< HEAD
-ERROR4:
-	w83781d_remove_files(dev);
-	if (data->lm75[0])
-		i2c_unregister_device(data->lm75[0]);
-	if (data->lm75[1])
-		i2c_unregister_device(data->lm75[1]);
-ERROR3:
-	kfree(data);
-ERROR1:
-	return err;
-}
-
-static int
-=======
  exit_remove_files:
 	w83781d_remove_files(dev);
 	i2c_unregister_device(data->lm75[0]);
@@ -1439,7 +1240,6 @@ static int
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 w83781d_remove(struct i2c_client *client)
 {
 	struct w83781d_data *data = i2c_get_clientdata(client);
@@ -1448,19 +1248,8 @@ w83781d_remove(struct i2c_client *client)
 	hwmon_device_unregister(data->hwmon_dev);
 	w83781d_remove_files(dev);
 
-<<<<<<< HEAD
-	if (data->lm75[0])
-		i2c_unregister_device(data->lm75[0]);
-	if (data->lm75[1])
-		i2c_unregister_device(data->lm75[1]);
-
-	kfree(data);
-
-	return 0;
-=======
 	i2c_unregister_device(data->lm75[0]);
 	i2c_unregister_device(data->lm75[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1560,13 +1349,8 @@ w83781d_init_device(struct device *dev)
 		 * as I see very little reason why this would be needed at
 		 * all.
 		 */
-<<<<<<< HEAD
-		dev_info(dev, "If reset=1 solved a problem you were "
-			 "having, please report!\n");
-=======
 		dev_info(dev,
 			 "If reset=1 solved a problem you were having, please report!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* save these registers */
 		i = w83781d_read_value(data, W83781D_REG_BEEP_CONFIG);
@@ -1623,13 +1407,8 @@ w83781d_init_device(struct device *dev)
 		/* Enable temp2 */
 		tmp = w83781d_read_value(data, W83781D_REG_TEMP2_CONFIG);
 		if (tmp & 0x01) {
-<<<<<<< HEAD
-			dev_warn(dev, "Enabling temp2, readings "
-				 "might not make sense\n");
-=======
 			dev_warn(dev,
 				 "Enabling temp2, readings might not make sense\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			w83781d_write_value(data, W83781D_REG_TEMP2_CONFIG,
 				tmp & 0xfe);
 		}
@@ -1639,13 +1418,8 @@ w83781d_init_device(struct device *dev)
 			tmp = w83781d_read_value(data,
 				W83781D_REG_TEMP3_CONFIG);
 			if (tmp & 0x01) {
-<<<<<<< HEAD
-				dev_warn(dev, "Enabling temp3, "
-					 "readings might not make sense\n");
-=======
 				dev_warn(dev,
 					 "Enabling temp3, readings might not make sense\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				w83781d_write_value(data,
 					W83781D_REG_TEMP3_CONFIG, tmp & 0xfe);
 			}
@@ -1778,11 +1552,7 @@ static struct w83781d_data *w83781d_update_device(struct device *dev)
 					       W83781D_REG_BEEP_INTS3) << 16;
 		}
 		data->last_updated = jiffies;
-<<<<<<< HEAD
-		data->valid = 1;
-=======
 		data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -1799,8 +1569,6 @@ static const struct i2c_device_id w83781d_ids[] = {
 };
 MODULE_DEVICE_TABLE(i2c, w83781d_ids);
 
-<<<<<<< HEAD
-=======
 static const struct of_device_id w83781d_of_match[] = {
 	{ .compatible = "winbond,w83781d" },
 	{ .compatible = "winbond,w83781g" },
@@ -1811,15 +1579,11 @@ static const struct of_device_id w83781d_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, w83781d_of_match);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct i2c_driver w83781d_driver = {
 	.class		= I2C_CLASS_HWMON,
 	.driver = {
 		.name = "w83781d",
-<<<<<<< HEAD
-=======
 		.of_match_table = w83781d_of_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe		= w83781d_probe,
 	.remove		= w83781d_remove,
@@ -1843,20 +1607,12 @@ static unsigned short isa_address = 0x290;
  * we must create it by ourselves.
  */
 static ssize_t
-<<<<<<< HEAD
-show_name(struct device *dev, struct device_attribute *devattr, char *buf)
-=======
 name_show(struct device *dev, struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83781d_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%s\n", data->name);
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
-=======
 static DEVICE_ATTR_RO(name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct w83781d_data *w83781d_data_if_isa(void)
 {
@@ -2000,11 +1756,7 @@ w83781d_write_value(struct w83781d_data *data, u16 reg, u16 value)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 w83781d_isa_probe(struct platform_device *pdev)
 {
 	int err, reg;
@@ -2013,19 +1765,6 @@ w83781d_isa_probe(struct platform_device *pdev)
 
 	/* Reserve the ISA region */
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
-<<<<<<< HEAD
-	if (!request_region(res->start + W83781D_ADDR_REG_OFFSET, 2,
-			    "w83781d")) {
-		err = -EBUSY;
-		goto exit;
-	}
-
-	data = kzalloc(sizeof(struct w83781d_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit_release_region;
-	}
-=======
 	if (!devm_request_region(&pdev->dev,
 				 res->start + W83781D_ADDR_REG_OFFSET, 2,
 				 "w83781d"))
@@ -2036,7 +1775,6 @@ w83781d_isa_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->lock);
 	data->isa_addr = res->start;
 	platform_set_drvdata(pdev, data);
@@ -2075,51 +1813,24 @@ w83781d_isa_probe(struct platform_device *pdev)
  exit_remove_files:
 	w83781d_remove_files(&pdev->dev);
 	device_remove_file(&pdev->dev, &dev_attr_name);
-<<<<<<< HEAD
-	kfree(data);
- exit_release_region:
-	release_region(res->start + W83781D_ADDR_REG_OFFSET, 2);
- exit:
-	return err;
-}
-
-static int __devexit
-w83781d_isa_remove(struct platform_device *pdev)
-=======
 	return err;
 }
 
 static void w83781d_isa_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83781d_data *data = platform_get_drvdata(pdev);
 
 	hwmon_device_unregister(data->hwmon_dev);
 	w83781d_remove_files(&pdev->dev);
 	device_remove_file(&pdev->dev, &dev_attr_name);
-<<<<<<< HEAD
-	release_region(data->isa_addr + W83781D_ADDR_REG_OFFSET, 2);
-	kfree(data);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver w83781d_isa_driver = {
 	.driver = {
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.name = "w83781d",
-	},
-	.probe = w83781d_isa_probe,
-	.remove = __devexit_p(w83781d_isa_remove),
-=======
 		.name = "w83781d",
 	},
 	.probe = w83781d_isa_probe,
 	.remove_new = w83781d_isa_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* return 1 if a supported chip is found, 0 otherwise */

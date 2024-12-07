@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ARCS hardware/memory inventory/configuration and system ID definitions.
  */
@@ -16,11 +13,7 @@ typedef enum configclass {
 	SystemClass,
 	ProcessorClass,
 	CacheClass,
-<<<<<<< HEAD
-#ifndef	_NT_PROM
-=======
 #ifndef _NT_PROM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MemoryClass,
 	AdapterClass,
 	ControllerClass,
@@ -42,11 +35,7 @@ typedef enum configtype {
 	SecondaryICache,
 	SecondaryDCache,
 	SecondaryCache,
-<<<<<<< HEAD
-#ifndef	_NT_PROM
-=======
 #ifndef _NT_PROM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Memory,
 #endif
 	EISAAdapter,
@@ -105,11 +94,7 @@ typedef enum {
 } IDENTIFIERFLAG;
 
 #ifndef NULL			/* for GetChild(NULL); */
-<<<<<<< HEAD
-#define	NULL	0
-=======
 #define NULL	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 union key_u {
@@ -135,21 +120,13 @@ union key_u {
 #define SGI_ARCS_REV	10			/* rev .10, 3/04/92 */
 #endif
 
-<<<<<<< HEAD
-typedef struct component {
-=======
 typedef struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CONFIGCLASS	Class;
 	CONFIGTYPE	Type;
 	IDENTIFIERFLAG	Flags;
 	USHORT		Version;
 	USHORT		Revision;
-<<<<<<< HEAD
-	ULONG 		Key;
-=======
 	ULONG		Key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ULONG		AffinityMask;
 	ULONG		ConfigurationDataSize;
 	ULONG		IdentifierLength;
@@ -164,11 +141,7 @@ struct cfgdata {
 };
 
 /* System ID */
-<<<<<<< HEAD
-typedef struct systemid {
-=======
 typedef struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CHAR VendorId[8];
 	CHAR ProductId[8];
 } SYSTEMID;
@@ -177,11 +150,7 @@ typedef struct {
 typedef enum memorytype {
 	ExceptionBlock,
 	SPBPage,			/* ARCS == SystemParameterBlock */
-<<<<<<< HEAD
-#ifndef	_NT_PROM
-=======
 #ifndef _NT_PROM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FreeContiguous,
 	FreeMemory,
 	BadMemory,
@@ -198,11 +167,7 @@ typedef enum memorytype {
 #endif	/* _NT_PROM */
 } MEMORYTYPE;
 
-<<<<<<< HEAD
-typedef struct memorydescriptor {
-=======
 typedef struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MEMORYTYPE	Type;
 	LONG		BasePage;
 	LONG		PageCount;

@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-/*
- * CAIF USB handler
- * Copyright (C) ST-Ericsson AB 2011
- * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
- * License terms: GNU General Public License (GPL) version 2
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * CAIF USB handler
  * Copyright (C) ST-Ericsson AB 2011
  * Author:	Sjur Brendeland
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
@@ -22,20 +13,14 @@
 #include <linux/mii.h>
 #include <linux/usb.h>
 #include <linux/usb/usbnet.h>
-<<<<<<< HEAD
-=======
 #include <linux/etherdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netns/generic.h>
 #include <net/caif/caif_dev.h>
 #include <net/caif/caif_layer.h>
 #include <net/caif/cfpkt.h>
 #include <net/caif/cfcnfg.h>
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("ST-Ericsson CAIF modem protocol USB support");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 #define CFUSB_PAD_DESCR_SZ 1	/* Alignment descriptor length */
@@ -78,11 +63,7 @@ static int cfusbl_transmit(struct cflayer *layr, struct cfpkt *pkt)
 	hpad = (info->hdr_len + CFUSB_PAD_DESCR_SZ) & (CFUSB_ALIGNMENT - 1);
 
 	if (skb_headroom(skb) < ETH_HLEN + CFUSB_PAD_DESCR_SZ + hpad) {
-<<<<<<< HEAD
-		pr_warn("Headroom to small\n");
-=======
 		pr_warn("Headroom too small\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		return -EIO;
 	}
@@ -95,30 +76,12 @@ static int cfusbl_transmit(struct cflayer *layr, struct cfpkt *pkt)
 }
 
 static void cfusbl_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
-<<<<<<< HEAD
-					int phyid)
-=======
 			   int phyid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (layr->up && layr->up->ctrlcmd)
 		layr->up->ctrlcmd(layr->up, ctrl, layr->id);
 }
 
-<<<<<<< HEAD
-struct cflayer *cfusbl_create(int phyid, u8 ethaddr[ETH_ALEN],
-					u8 braddr[ETH_ALEN])
-{
-	struct cfusbl *this = kmalloc(sizeof(struct cfusbl), GFP_ATOMIC);
-
-	if (!this) {
-		pr_warn("Out of memory\n");
-		return NULL;
-	}
-	caif_assert(offsetof(struct cfusbl, layer) == 0);
-
-	memset(this, 0, sizeof(struct cflayer));
-=======
 static struct cflayer *cfusbl_create(int phyid, const u8 ethaddr[ETH_ALEN],
 				      u8 braddr[ETH_ALEN])
 {
@@ -130,7 +93,6 @@ static struct cflayer *cfusbl_create(int phyid, const u8 ethaddr[ETH_ALEN],
 	caif_assert(offsetof(struct cfusbl, layer) == 0);
 
 	memset(&this->layer, 0, sizeof(this->layer));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	this->layer.receive = cfusbl_receive;
 	this->layer.transmit = cfusbl_transmit;
 	this->layer.ctrlcmd = cfusbl_ctrlcmd;
@@ -143,13 +105,8 @@ static struct cflayer *cfusbl_create(int phyid, const u8 ethaddr[ETH_ALEN],
 	 *	5-11	source address
 	 *	12-13	protocol type
 	 */
-<<<<<<< HEAD
-	memcpy(&this->tx_eth_hdr[ETH_ALEN], braddr, ETH_ALEN);
-	memcpy(&this->tx_eth_hdr[ETH_ALEN], ethaddr, ETH_ALEN);
-=======
 	ether_addr_copy(&this->tx_eth_hdr[ETH_ALEN], braddr);
 	ether_addr_copy(&this->tx_eth_hdr[ETH_ALEN], ethaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	this->tx_eth_hdr[12] = cpu_to_be16(ETH_P_802_EX1) & 0xff;
 	this->tx_eth_hdr[13] = (cpu_to_be16(ETH_P_802_EX1) >> 8) & 0xff;
 	pr_debug("caif ethernet TX-header dst:%pM src:%pM type:%02x%02x\n",
@@ -159,41 +116,16 @@ static struct cflayer *cfusbl_create(int phyid, const u8 ethaddr[ETH_ALEN],
 	return (struct cflayer *) this;
 }
 
-<<<<<<< HEAD
-=======
 static void cfusbl_release(struct cflayer *layer)
 {
 	kfree(layer);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct packet_type caif_usb_type __read_mostly = {
 	.type = cpu_to_be16(ETH_P_802_EX1),
 };
 
 static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
-<<<<<<< HEAD
-			      void *arg)
-{
-	struct net_device *dev = arg;
-	struct caif_dev_common common;
-	struct cflayer *layer, *link_support;
-	struct usbnet	*usbnet = netdev_priv(dev);
-	struct usb_device	*usbdev = usbnet->udev;
-	struct ethtool_drvinfo drvinfo;
-
-	/*
-	 * Quirks: High-jack ethtool to find if we have a NCM device,
-	 * and find it's VID/PID.
-	 */
-	if (dev->ethtool_ops == NULL || dev->ethtool_ops->get_drvinfo == NULL)
-		return 0;
-
-	dev->ethtool_ops->get_drvinfo(dev, &drvinfo);
-	if (strncmp(drvinfo.driver, "cdc_ncm", 7) != 0)
-		return 0;
-
-=======
 				void *ptr)
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
@@ -214,7 +146,6 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
 	usbnet = netdev_priv(dev);
 	usbdev = usbnet->udev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("USB CDC NCM device VID:0x%4x PID:0x%4x\n",
 		le16_to_cpu(usbdev->descriptor.idVendor),
 		le16_to_cpu(usbdev->descriptor.idProduct));
@@ -248,34 +179,21 @@ static int cfusbl_device_notify(struct notifier_block *me, unsigned long what,
 	if (dev->num_tx_queues > 1)
 		pr_warn("USB device uses more than one tx queue\n");
 
-<<<<<<< HEAD
-	caif_enroll_dev(dev, &common, link_support, CFUSB_MAX_HEADLEN,
-			&layer, &caif_usb_type.func);
-=======
 	res = caif_enroll_dev(dev, &common, link_support, CFUSB_MAX_HEADLEN,
 			&layer, &caif_usb_type.func);
 	if (res)
 		goto err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pack_added)
 		dev_add_pack(&caif_usb_type);
 	pack_added = true;
 
-<<<<<<< HEAD
-	strncpy(layer->name, dev->name,
-			sizeof(layer->name) - 1);
-	layer->name[sizeof(layer->name) - 1] = 0;
-
-	return 0;
-=======
 	strscpy(layer->name, dev->name, sizeof(layer->name));
 
 	return 0;
 err:
 	cfusbl_release(link_support);
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct notifier_block caif_device_notifier = {

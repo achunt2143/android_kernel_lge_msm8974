@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm/irqflags.h
  *
@@ -19,15 +16,9 @@
 #include <linux/types.h>
 #include <asm/psr.h>
 
-<<<<<<< HEAD
-extern void arch_local_irq_restore(unsigned long);
-extern unsigned long arch_local_irq_save(void);
-extern void arch_local_irq_enable(void);
-=======
 void arch_local_irq_restore(unsigned long);
 unsigned long arch_local_irq_save(void);
 void arch_local_irq_enable(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline notrace unsigned long arch_local_save_flags(void)
 {

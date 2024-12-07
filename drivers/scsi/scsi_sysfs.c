@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * scsi_sysfs.c
  *
@@ -16,33 +13,21 @@
 #include <linux/blkdev.h>
 #include <linux/device.h>
 #include <linux/pm_runtime.h>
-<<<<<<< HEAD
-=======
 #include <linux/bsg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
-<<<<<<< HEAD
-#include <scsi/scsi_transport.h>
-#include <scsi/scsi_driver.h>
-=======
 #include <scsi/scsi_dh.h>
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_driver.h>
 #include <scsi/scsi_devinfo.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "scsi_priv.h"
 #include "scsi_logging.h"
 
-<<<<<<< HEAD
-static struct device_type scsi_dev_type;
-=======
 static const struct device_type scsi_dev_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct {
 	enum scsi_device_state	value;
@@ -54,10 +39,7 @@ static const struct {
 	{ SDEV_DEL, "deleted" },
 	{ SDEV_QUIESCE, "quiesce" },
 	{ SDEV_OFFLINE,	"offline" },
-<<<<<<< HEAD
-=======
 	{ SDEV_TRANSPORT_OFFLINE, "transport-offline" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ SDEV_BLOCK,	"blocked" },
 	{ SDEV_CREATED_BLOCK, "created-blocked" },
 };
@@ -102,13 +84,6 @@ const char *scsi_host_state_name(enum scsi_host_state state)
 	return name;
 }
 
-<<<<<<< HEAD
-static int check_set(unsigned int *val, char *src)
-{
-	char *last;
-
-	if (strncmp(src, "-", 20) == 0) {
-=======
 #ifdef CONFIG_SCSI_DH
 static const struct {
 	unsigned char	value;
@@ -143,17 +118,12 @@ static int check_set(unsigned long long *val, char *src)
 	char *last;
 
 	if (strcmp(src, "-") == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*val = SCAN_WILD_CARD;
 	} else {
 		/*
 		 * Doesn't check for int overflow
 		 */
-<<<<<<< HEAD
-		*val = simple_strtoul(src, &last, 0);
-=======
 		*val = simple_strtoull(src, &last, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*last != '\0')
 			return 1;
 	}
@@ -162,19 +132,11 @@ static int check_set(unsigned long long *val, char *src)
 
 static int scsi_scan(struct Scsi_Host *shost, const char *str)
 {
-<<<<<<< HEAD
-	char s1[15], s2[15], s3[15], junk;
-	unsigned int channel, id, lun;
-	int res;
-
-	res = sscanf(str, "%10s %10s %10s %c", s1, s2, s3, &junk);
-=======
 	char s1[15], s2[15], s3[17], junk;
 	unsigned long long channel, id, lun;
 	int res;
 
 	res = sscanf(str, "%10s %10s %16s %c", s1, s2, s3, &junk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res != 3)
 		return -EINVAL;
 	if (check_set(&channel, s1))
@@ -186,12 +148,8 @@ static int scsi_scan(struct Scsi_Host *shost, const char *str)
 	if (shost->transportt->user_scan)
 		res = shost->transportt->user_scan(shost, channel, id, lun);
 	else
-<<<<<<< HEAD
-		res = scsi_scan_host_selected(shost, channel, id, lun, 1);
-=======
 		res = scsi_scan_host_selected(shost, channel, id, lun,
 					      SCSI_SCAN_MANUAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -274,11 +232,7 @@ show_shost_state(struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 /* DEVICE_ATTR(state) clashes with dev_attr_state for sdev */
-<<<<<<< HEAD
-struct device_attribute dev_attr_hstate =
-=======
 static struct device_attribute dev_attr_hstate =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__ATTR(state, S_IRUGO | S_IWUSR, show_shost_state, store_shost_state);
 
 static ssize_t
@@ -342,11 +296,7 @@ store_host_reset(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
 {
 	struct Scsi_Host *shost = class_to_shost(dev);
-<<<<<<< HEAD
-	struct scsi_host_template *sht = shost->hostt;
-=======
 	const struct scsi_host_template *sht = shost->hostt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -EINVAL;
 	int type;
 
@@ -356,11 +306,8 @@ store_host_reset(struct device *dev, struct device_attribute *attr,
 
 	if (sht->host_reset)
 		ret = sht->host_reset(shost, type);
-<<<<<<< HEAD
-=======
 	else
 		ret = -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit_store_host_reset:
 	if (ret == 0)
@@ -370,15 +317,6 @@ exit_store_host_reset:
 
 static DEVICE_ATTR(host_reset, S_IWUSR, NULL, store_host_reset);
 
-<<<<<<< HEAD
-shost_rd_attr(unique_id, "%u\n");
-shost_rd_attr(host_busy, "%hu\n");
-shost_rd_attr(cmd_per_lun, "%hd\n");
-shost_rd_attr(can_queue, "%hd\n");
-shost_rd_attr(sg_tablesize, "%hu\n");
-shost_rd_attr(sg_prot_tablesize, "%hu\n");
-shost_rd_attr(unchecked_isa_dma, "%d\n");
-=======
 static ssize_t
 show_shost_eh_deadline(struct device *dev,
 		      struct device_attribute *attr, char *buf)
@@ -436,14 +374,10 @@ shost_rd_attr(cmd_per_lun, "%hd\n");
 shost_rd_attr(can_queue, "%d\n");
 shost_rd_attr(sg_tablesize, "%hu\n");
 shost_rd_attr(sg_prot_tablesize, "%hu\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 shost_rd_attr(prot_capabilities, "%u\n");
 shost_rd_attr(prot_guard_type, "%hd\n");
 shost_rd_attr2(proc_name, hostt->proc_name, "%s\n");
 
-<<<<<<< HEAD
-static struct attribute *scsi_sysfs_shost_attrs[] = {
-=======
 static ssize_t
 show_host_busy(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -471,17 +405,12 @@ static DEVICE_ATTR(nr_hw_queues, S_IRUGO, show_nr_hw_queues, NULL);
 
 static struct attribute *scsi_sysfs_shost_attrs[] = {
 	&dev_attr_use_blk_mq.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_unique_id.attr,
 	&dev_attr_host_busy.attr,
 	&dev_attr_cmd_per_lun.attr,
 	&dev_attr_can_queue.attr,
 	&dev_attr_sg_tablesize.attr,
 	&dev_attr_sg_prot_tablesize.attr,
-<<<<<<< HEAD
-	&dev_attr_unchecked_isa_dma.attr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_proc_name.attr,
 	&dev_attr_scan.attr,
 	&dev_attr_hstate.attr,
@@ -490,16 +419,6 @@ static struct attribute *scsi_sysfs_shost_attrs[] = {
 	&dev_attr_prot_capabilities.attr,
 	&dev_attr_prot_guard_type.attr,
 	&dev_attr_host_reset.attr,
-<<<<<<< HEAD
-	NULL
-};
-
-struct attribute_group scsi_shost_attr_group = {
-	.attrs =	scsi_sysfs_shost_attrs,
-};
-
-const struct attribute_group *scsi_sysfs_shost_attr_groups[] = {
-=======
 	&dev_attr_eh_deadline.attr,
 	&dev_attr_nr_hw_queues.attr,
 	NULL
@@ -510,7 +429,6 @@ static const struct attribute_group scsi_shost_attr_group = {
 };
 
 const struct attribute_group *scsi_shost_groups[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&scsi_shost_attr_group,
 	NULL
 };
@@ -523,23 +441,6 @@ static void scsi_device_cls_release(struct device *class_dev)
 	put_device(&sdev->sdev_gendev);
 }
 
-<<<<<<< HEAD
-static void scsi_device_dev_release_usercontext(struct work_struct *work)
-{
-	struct scsi_device *sdev;
-	struct device *parent;
-	struct scsi_target *starget;
-	struct list_head *this, *tmp;
-	unsigned long flags;
-
-	sdev = container_of(work, struct scsi_device, ew.work);
-
-	parent = sdev->sdev_gendev.parent;
-	starget = to_scsi_target(parent);
-
-	spin_lock_irqsave(sdev->host->host_lock, flags);
-	starget->reap_ref++;
-=======
 static void scsi_device_dev_release(struct device *dev)
 {
 	struct scsi_device *sdev = to_scsi_device(dev);
@@ -558,7 +459,6 @@ static void scsi_device_dev_release(struct device *dev)
 	parent = sdev->sdev_gendev.parent;
 
 	spin_lock_irqsave(sdev->host->host_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&sdev->siblings);
 	list_del(&sdev->same_target_siblings);
 	list_del(&sdev->starved_entry);
@@ -578,10 +478,6 @@ static void scsi_device_dev_release(struct device *dev)
 	/* NULL queue means the device can't be used */
 	sdev->request_queue = NULL;
 
-<<<<<<< HEAD
-	scsi_target_reap(scsi_target(sdev));
-
-=======
 	sbitmap_free(&sdev->budget_map);
 
 	mutex_lock(&sdev->inquiry_mutex);
@@ -619,7 +515,6 @@ static void scsi_device_dev_release(struct device *dev)
 		kfree_rcu(vpd_pgb2, rcu);
 	if (vpd_pgb7)
 		kfree_rcu(vpd_pgb7, rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sdev->inquiry);
 	kfree(sdev);
 
@@ -627,16 +522,6 @@ static void scsi_device_dev_release(struct device *dev)
 		put_device(parent);
 }
 
-<<<<<<< HEAD
-static void scsi_device_dev_release(struct device *dev)
-{
-	struct scsi_device *sdp = to_scsi_device(dev);
-	execute_in_process_context(scsi_device_dev_release_usercontext,
-				   &sdp->ew);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct class sdev_class = {
 	.name		= "scsi_device",
 	.dev_release	= scsi_device_cls_release,
@@ -656,15 +541,9 @@ static int scsi_bus_match(struct device *dev, struct device_driver *gendrv)
 	return (sdp->inq_periph_qual == SCSI_INQ_PQ_CON)? 1: 0;
 }
 
-<<<<<<< HEAD
-static int scsi_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	struct scsi_device *sdev;
-=======
 static int scsi_bus_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct scsi_device *sdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->type != &scsi_dev_type)
 		return 0;
@@ -675,11 +554,7 @@ static int scsi_bus_uevent(const struct device *dev, struct kobj_uevent_env *env
 	return 0;
 }
 
-<<<<<<< HEAD
-struct bus_type scsi_bus_type = {
-=======
 const struct bus_type scsi_bus_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .name		= "scsi",
         .match		= scsi_bus_match,
 	.uevent		= scsi_bus_uevent,
@@ -687,10 +562,6 @@ const struct bus_type scsi_bus_type = {
 	.pm		= &scsi_bus_pm_ops,
 #endif
 };
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(scsi_bus_type);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int scsi_sysfs_register(void)
 {
@@ -799,18 +670,11 @@ static int scsi_sdev_check_buf_bit(const char *buf)
 /*
  * Create the actual show/store functions and data structures.
  */
-<<<<<<< HEAD
-sdev_rd_attr (device_blocked, "%d\n");
-sdev_rd_attr (queue_depth, "%d\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sdev_rd_attr (type, "%d\n");
 sdev_rd_attr (scsi_level, "%d\n");
 sdev_rd_attr (vendor, "%.8s\n");
 sdev_rd_attr (model, "%.16s\n");
 sdev_rd_attr (rev, "%.4s\n");
-<<<<<<< HEAD
-=======
 sdev_rd_attr (cdl_supported, "%d\n");
 
 static ssize_t
@@ -830,7 +694,6 @@ sdev_show_device_blocked(struct device *dev, struct device_attribute *attr,
 	return snprintf(buf, 20, "%d\n", atomic_read(&sdev->device_blocked));
 }
 static DEVICE_ATTR(device_blocked, S_IRUGO, sdev_show_device_blocked, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * TODO: can we make these symlinks to the block layer ones?
@@ -857,12 +720,6 @@ sdev_store_timeout (struct device *dev, struct device_attribute *attr,
 static DEVICE_ATTR(timeout, S_IRUGO | S_IWUSR, sdev_show_timeout, sdev_store_timeout);
 
 static ssize_t
-<<<<<<< HEAD
-store_rescan_field (struct device *dev, struct device_attribute *attr,
-		    const char *buf, size_t count)
-{
-	scsi_rescan_device(dev);
-=======
 sdev_show_eh_timeout(struct device *dev, struct device_attribute *attr, char *buf)
 {
 	struct scsi_device *sdev;
@@ -896,33 +753,14 @@ store_rescan_field (struct device *dev, struct device_attribute *attr,
 		    const char *buf, size_t count)
 {
 	scsi_rescan_device(to_scsi_device(dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 static DEVICE_ATTR(rescan, S_IWUSR, NULL, store_rescan_field);
 
-<<<<<<< HEAD
-static void sdev_store_delete_callback(struct device *dev)
-{
-	scsi_remove_device(to_scsi_device(dev));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 sdev_store_delete(struct device *dev, struct device_attribute *attr,
 		  const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	int rc;
-
-	/* An attribute cannot be unregistered by one of its own methods,
-	 * so we have to use this roundabout approach.
-	 */
-	rc = device_schedule_callback(dev, sdev_store_delete_callback);
-	if (rc)
-		count = rc;
-=======
 	struct kernfs_node *kn;
 	struct scsi_device *sdev = to_scsi_device(dev);
 
@@ -950,7 +788,6 @@ sdev_store_delete(struct device *dev, struct device_attribute *attr,
 	if (kn)
 		sysfs_unbreak_active_protection(kn);
 	scsi_device_put(sdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 };
 static DEVICE_ATTR(delete, S_IWUSR, NULL, sdev_store_delete);
@@ -959,16 +796,10 @@ static ssize_t
 store_state_field(struct device *dev, struct device_attribute *attr,
 		  const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	int i;
-	struct scsi_device *sdev = to_scsi_device(dev);
-	enum scsi_device_state state = 0;
-=======
 	int i, ret;
 	struct scsi_device *sdev = to_scsi_device(dev);
 	enum scsi_device_state state = 0;
 	bool rescan_dev = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(sdev_states); i++) {
 		const int len = strlen(sdev_states[i].name);
@@ -978,14 +809,6 @@ store_state_field(struct device *dev, struct device_attribute *attr,
 			break;
 		}
 	}
-<<<<<<< HEAD
-	if (!state)
-		return -EINVAL;
-
-	if (scsi_device_set_state(sdev, state))
-		return -EINVAL;
-	return count;
-=======
 	switch (state) {
 	case SDEV_RUNNING:
 	case SDEV_OFFLINE:
@@ -1026,7 +849,6 @@ store_state_field(struct device *dev, struct device_attribute *attr,
 	}
 
 	return ret == 0 ? count : -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1050,24 +872,12 @@ show_queue_type_field(struct device *dev, struct device_attribute *attr,
 	struct scsi_device *sdev = to_scsi_device(dev);
 	const char *name = "none";
 
-<<<<<<< HEAD
-	if (sdev->ordered_tags)
-		name = "ordered";
-	else if (sdev->simple_tags)
-=======
 	if (sdev->simple_tags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		name = "simple";
 
 	return snprintf(buf, 20, "%s\n", name);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(queue_type, S_IRUGO, show_queue_type_field, NULL);
-
-static ssize_t
-show_iostat_counterbits(struct device *dev, struct device_attribute *attr, 				char *buf)
-=======
 static ssize_t
 store_queue_type_field(struct device *dev, struct device_attribute *attr,
 		       const char *buf, size_t count)
@@ -1145,7 +955,6 @@ static struct bin_attribute dev_attr_inquiry = {
 static ssize_t
 show_iostat_counterbits(struct device *dev, struct device_attribute *attr,
 			char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return snprintf(buf, 20, "%d\n", (int)sizeof(atomic_t) * 8);
 }
@@ -1166,10 +975,7 @@ static DEVICE_ATTR(field, S_IRUGO, show_iostat_##field, NULL)
 show_sdev_iostat(iorequest_cnt);
 show_sdev_iostat(iodone_cnt);
 show_sdev_iostat(ioerr_cnt);
-<<<<<<< HEAD
-=======
 show_sdev_iostat(iotmo_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 sdev_show_modalias(struct device *dev, struct device_attribute *attr, char *buf)
@@ -1214,46 +1020,6 @@ sdev_store_evt_##name(struct device *dev, struct device_attribute *attr,\
 #define REF_EVT(name) &dev_attr_evt_##name.attr
 
 DECLARE_EVT(media_change, MEDIA_CHANGE)
-<<<<<<< HEAD
-
-/* Default template for device attributes.  May NOT be modified */
-static struct attribute *scsi_sdev_attrs[] = {
-	&dev_attr_device_blocked.attr,
-	&dev_attr_type.attr,
-	&dev_attr_scsi_level.attr,
-	&dev_attr_vendor.attr,
-	&dev_attr_model.attr,
-	&dev_attr_rev.attr,
-	&dev_attr_rescan.attr,
-	&dev_attr_delete.attr,
-	&dev_attr_state.attr,
-	&dev_attr_timeout.attr,
-	&dev_attr_iocounterbits.attr,
-	&dev_attr_iorequest_cnt.attr,
-	&dev_attr_iodone_cnt.attr,
-	&dev_attr_ioerr_cnt.attr,
-	&dev_attr_modalias.attr,
-	REF_EVT(media_change),
-	NULL
-};
-
-static struct attribute_group scsi_sdev_attr_group = {
-	.attrs =	scsi_sdev_attrs,
-};
-
-static const struct attribute_group *scsi_sdev_attr_groups[] = {
-	&scsi_sdev_attr_group,
-	NULL
-};
-
-static ssize_t
-sdev_store_queue_depth_rw(struct device *dev, struct device_attribute *attr,
-			  const char *buf, size_t count)
-{
-	int depth, retval;
-	struct scsi_device *sdev = to_scsi_device(dev);
-	struct scsi_host_template *sht = sdev->host->hostt;
-=======
 DECLARE_EVT(inquiry_change_reported, INQUIRY_CHANGE_REPORTED)
 DECLARE_EVT(capacity_change_reported, CAPACITY_CHANGE_REPORTED)
 DECLARE_EVT(soft_threshold_reached, SOFT_THRESHOLD_REACHED_REPORTED)
@@ -1267,25 +1033,16 @@ sdev_store_queue_depth(struct device *dev, struct device_attribute *attr,
 	int depth, retval;
 	struct scsi_device *sdev = to_scsi_device(dev);
 	const struct scsi_host_template *sht = sdev->host->hostt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sht->change_queue_depth)
 		return -EINVAL;
 
 	depth = simple_strtoul(buf, NULL, 0);
 
-<<<<<<< HEAD
-	if (depth < 1)
-		return -EINVAL;
-
-	retval = sht->change_queue_depth(sdev, depth,
-					 SCSI_QDEPTH_DEFAULT);
-=======
 	if (depth < 1 || depth > sdev->host->can_queue)
 		return -EINVAL;
 
 	retval = sht->change_queue_depth(sdev, depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval < 0)
 		return retval;
 
@@ -1293,12 +1050,6 @@ sdev_store_queue_depth(struct device *dev, struct device_attribute *attr,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static struct device_attribute sdev_attr_queue_depth_rw =
-	__ATTR(queue_depth, S_IRUGO | S_IWUSR, sdev_show_queue_depth,
-	       sdev_store_queue_depth_rw);
-=======
 sdev_show_function(queue_depth, "%d\n");
 
 static DEVICE_ATTR(queue_depth, S_IRUGO | S_IWUSR, sdev_show_queue_depth,
@@ -1446,7 +1197,6 @@ sdev_show_preferred_path(struct device *dev,
 }
 static DEVICE_ATTR(preferred_path, S_IRUGO, sdev_show_preferred_path, NULL);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 sdev_show_queue_ramp_up_period(struct device *dev,
@@ -1465,56 +1215,15 @@ sdev_store_queue_ramp_up_period(struct device *dev,
 				const char *buf, size_t count)
 {
 	struct scsi_device *sdev = to_scsi_device(dev);
-<<<<<<< HEAD
-	unsigned long period;
-
-	if (strict_strtoul(buf, 10, &period))
-=======
 	unsigned int period;
 
 	if (kstrtouint(buf, 10, &period))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	sdev->queue_ramp_up_period = msecs_to_jiffies(period);
 	return count;
 }
 
-<<<<<<< HEAD
-static struct device_attribute sdev_attr_queue_ramp_up_period =
-	__ATTR(queue_ramp_up_period, S_IRUGO | S_IWUSR,
-	       sdev_show_queue_ramp_up_period,
-	       sdev_store_queue_ramp_up_period);
-
-static ssize_t
-sdev_store_queue_type_rw(struct device *dev, struct device_attribute *attr,
-			 const char *buf, size_t count)
-{
-	struct scsi_device *sdev = to_scsi_device(dev);
-	struct scsi_host_template *sht = sdev->host->hostt;
-	int tag_type = 0, retval;
-	int prev_tag_type = scsi_get_tag_type(sdev);
-
-	if (!sdev->tagged_supported || !sht->change_queue_type)
-		return -EINVAL;
-
-	if (strncmp(buf, "ordered", 7) == 0)
-		tag_type = MSG_ORDERED_TAG;
-	else if (strncmp(buf, "simple", 6) == 0)
-		tag_type = MSG_SIMPLE_TAG;
-	else if (strncmp(buf, "none", 4) != 0)
-		return -EINVAL;
-
-	if (tag_type == prev_tag_type)
-		return count;
-
-	retval = sht->change_queue_type(sdev, tag_type);
-	if (retval < 0)
-		return retval;
-
-	return count;
-}
-=======
 static DEVICE_ATTR(queue_ramp_up_period, S_IRUGO | S_IWUSR,
 		   sdev_show_queue_ramp_up_period,
 		   sdev_store_queue_ramp_up_period);
@@ -1662,7 +1371,6 @@ static const struct attribute_group *scsi_sdev_attr_groups[] = {
 	&scsi_sdev_attr_group,
 	NULL
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int scsi_target_add(struct scsi_target *starget)
 {
@@ -1686,13 +1394,6 @@ static int scsi_target_add(struct scsi_target *starget)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct device_attribute sdev_attr_queue_type_rw =
-	__ATTR(queue_type, S_IRUGO | S_IWUSR, show_queue_type_field,
-	       sdev_store_queue_type_rw);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_sysfs_add_sdev - add scsi device to sysfs
  * @sdev:	scsi_device to add
@@ -1702,20 +1403,9 @@ static struct device_attribute sdev_attr_queue_type_rw =
  **/
 int scsi_sysfs_add_sdev(struct scsi_device *sdev)
 {
-<<<<<<< HEAD
-	int error, i;
-	struct request_queue *rq = sdev->request_queue;
-	struct scsi_target *starget = sdev->sdev_target;
-
-	error = scsi_device_set_state(sdev, SDEV_RUNNING);
-	if (error)
-		return error;
-
-=======
 	int error;
 	struct scsi_target *starget = sdev->sdev_target;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = scsi_target_add(starget);
 	if (error)
 		return error;
@@ -1725,38 +1415,22 @@ int scsi_sysfs_add_sdev(struct scsi_device *sdev)
 	device_enable_async_suspend(&sdev->sdev_gendev);
 	scsi_autopm_get_target(starget);
 	pm_runtime_set_active(&sdev->sdev_gendev);
-<<<<<<< HEAD
-	if (!sdev->use_rpm_auto)
-=======
 	if (!sdev->rpm_autosuspend)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pm_runtime_forbid(&sdev->sdev_gendev);
 	pm_runtime_enable(&sdev->sdev_gendev);
 	scsi_autopm_put_target(starget);
 
-<<<<<<< HEAD
-	/* The following call will keep sdev active indefinitely, until
-	 * its driver does a corresponding scsi_autopm_pm_device().  Only
-	 * drivers supporting autosuspend will do this.
-	 */
-	scsi_autopm_get_device(sdev);
-
-=======
 	scsi_autopm_get_device(sdev);
 
 	scsi_dh_add_device(sdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = device_add(&sdev->sdev_gendev);
 	if (error) {
 		sdev_printk(KERN_INFO, sdev,
 				"failed to add device: %d\n", error);
 		return error;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_enable_async_suspend(&sdev->sdev_dev);
 	error = device_add(&sdev->sdev_dev);
 	if (error) {
@@ -1768,45 +1442,6 @@ int scsi_sysfs_add_sdev(struct scsi_device *sdev)
 	transport_add_device(&sdev->sdev_gendev);
 	sdev->is_visible = 1;
 
-<<<<<<< HEAD
-	/* create queue files, which may be writable, depending on the host */
-	if (sdev->host->hostt->change_queue_depth) {
-		error = device_create_file(&sdev->sdev_gendev,
-					   &sdev_attr_queue_depth_rw);
-		error = device_create_file(&sdev->sdev_gendev,
-					   &sdev_attr_queue_ramp_up_period);
-	}
-	else
-		error = device_create_file(&sdev->sdev_gendev, &dev_attr_queue_depth);
-	if (error)
-		return error;
-
-	if (sdev->host->hostt->change_queue_type)
-		error = device_create_file(&sdev->sdev_gendev, &sdev_attr_queue_type_rw);
-	else
-		error = device_create_file(&sdev->sdev_gendev, &dev_attr_queue_type);
-	if (error)
-		return error;
-
-	error = bsg_register_queue(rq, &sdev->sdev_gendev, NULL, NULL);
-
-	if (error)
-		/* we're treating error on bsg register as non-fatal,
-		 * so pretend nothing went wrong */
-		sdev_printk(KERN_INFO, sdev,
-			    "Failed to register bsg queue, errno=%d\n", error);
-
-	/* add additional host specific attributes */
-	if (sdev->host->hostt->sdev_attrs) {
-		for (i = 0; sdev->host->hostt->sdev_attrs[i]; i++) {
-			error = device_create_file(&sdev->sdev_gendev,
-					sdev->host->hostt->sdev_attrs[i]);
-			if (error)
-				return error;
-		}
-	}
-
-=======
 	if (IS_ENABLED(CONFIG_BLK_DEV_BSG)) {
 		sdev->bsg_dev = scsi_bsg_register_queue(sdev);
 		if (IS_ERR(sdev->bsg_dev)) {
@@ -1819,21 +1454,12 @@ int scsi_sysfs_add_sdev(struct scsi_device *sdev)
 	}
 
 	scsi_autopm_put_device(sdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 void __scsi_remove_device(struct scsi_device *sdev)
 {
 	struct device *dev = &sdev->sdev_gendev;
-<<<<<<< HEAD
-
-	if (sdev->is_visible) {
-		if (scsi_device_set_state(sdev, SDEV_CANCEL) != 0)
-			return;
-
-		bsg_unregister_queue(sdev->request_queue);
-=======
 	int res;
 
 	/*
@@ -1868,15 +1494,11 @@ void __scsi_remove_device(struct scsi_device *sdev)
 
 		if (IS_ENABLED(CONFIG_BLK_DEV_BSG) && sdev->bsg_dev)
 			bsg_unregister_queue(sdev->bsg_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_unregister(&sdev->sdev_dev);
 		transport_remove_device(dev);
 		device_del(dev);
 	} else
 		put_device(&sdev->sdev_dev);
-<<<<<<< HEAD
-	scsi_device_set_state(sdev, SDEV_DEL);
-=======
 
 	/*
 	 * Stop accepting new requests and wait until all queuecommand() and
@@ -1891,15 +1513,10 @@ void __scsi_remove_device(struct scsi_device *sdev)
 	kref_put(&sdev->host->tagset_refcnt, scsi_mq_free_tags);
 	cancel_work_sync(&sdev->requeue_work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sdev->host->hostt->slave_destroy)
 		sdev->host->hostt->slave_destroy(sdev);
 	transport_destroy_device(dev);
 
-<<<<<<< HEAD
-	/* Freeing the queue signals to block that we're done */
-	blk_cleanup_queue(sdev->request_queue);
-=======
 	/*
 	 * Paired with the kref_get() in scsi_sysfs_initialize().  We have
 	 * removed sysfs visibility from the device, so make the target
@@ -1907,7 +1524,6 @@ void __scsi_remove_device(struct scsi_device *sdev)
 	 */
 	scsi_target_reap(scsi_target(sdev));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_device(dev);
 }
 
@@ -1934,15 +1550,6 @@ static void __scsi_remove_target(struct scsi_target *starget)
 	spin_lock_irqsave(shost->host_lock, flags);
  restart:
 	list_for_each_entry(sdev, &shost->__devices, siblings) {
-<<<<<<< HEAD
-		if (sdev->channel != starget->channel ||
-		    sdev->id != starget->id ||
-		    scsi_device_get(sdev))
-			continue;
-		spin_unlock_irqrestore(shost->host_lock, flags);
-		scsi_remove_device(sdev);
-		scsi_device_put(sdev);
-=======
 		/*
 		 * We cannot call scsi_device_get() here, as
 		 * we might've been called from rmmod() causing
@@ -1959,7 +1566,6 @@ static void __scsi_remove_target(struct scsi_target *starget)
 		spin_unlock_irqrestore(shost->host_lock, flags);
 		scsi_remove_device(sdev);
 		put_device(&sdev->sdev_gendev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(shost->host_lock, flags);
 		goto restart;
 	}
@@ -1983,12 +1589,6 @@ void scsi_remove_target(struct device *dev)
 restart:
 	spin_lock_irqsave(shost->host_lock, flags);
 	list_for_each_entry(starget, &shost->__targets, siblings) {
-<<<<<<< HEAD
-		if (starget->state == STARGET_DEL)
-			continue;
-		if (starget->dev.parent == dev || &starget->dev == dev) {
-			starget->reap_ref++;
-=======
 		if (starget->state == STARGET_DEL ||
 		    starget->state == STARGET_REMOVE ||
 		    starget->state == STARGET_CREATED_REMOVE)
@@ -1999,7 +1599,6 @@ restart:
 				starget->state = STARGET_CREATED_REMOVE;
 			else
 				starget->state = STARGET_REMOVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(shost->host_lock, flags);
 			__scsi_remove_target(starget);
 			scsi_target_reap(starget);
@@ -2032,31 +1631,12 @@ EXPORT_SYMBOL(scsi_register_interface);
  **/
 int scsi_sysfs_add_host(struct Scsi_Host *shost)
 {
-<<<<<<< HEAD
-	int error, i;
-
-	/* add host specific attributes */
-	if (shost->hostt->shost_attrs) {
-		for (i = 0; shost->hostt->shost_attrs[i]; i++) {
-			error = device_create_file(&shost->shost_dev,
-					shost->hostt->shost_attrs[i]);
-			if (error)
-				return error;
-		}
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_register_device(&shost->shost_gendev);
 	transport_configure_device(&shost->shost_gendev);
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct device_type scsi_dev_type = {
-=======
 static const struct device_type scsi_dev_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"scsi_device",
 	.release =	scsi_device_dev_release,
 	.groups =	scsi_sdev_attr_groups,
@@ -2066,33 +1646,20 @@ void scsi_sysfs_device_initialize(struct scsi_device *sdev)
 {
 	unsigned long flags;
 	struct Scsi_Host *shost = sdev->host;
-<<<<<<< HEAD
-=======
 	const struct scsi_host_template *hostt = shost->hostt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_target  *starget = sdev->sdev_target;
 
 	device_initialize(&sdev->sdev_gendev);
 	sdev->sdev_gendev.bus = &scsi_bus_type;
 	sdev->sdev_gendev.type = &scsi_dev_type;
-<<<<<<< HEAD
-	dev_set_name(&sdev->sdev_gendev, "%d:%d:%d:%d",
-		     sdev->host->host_no, sdev->channel, sdev->id, sdev->lun);
-=======
 	scsi_enable_async_suspend(&sdev->sdev_gendev);
 	dev_set_name(&sdev->sdev_gendev, "%d:%d:%d:%llu",
 		     sdev->host->host_no, sdev->channel, sdev->id, sdev->lun);
 	sdev->sdev_gendev.groups = hostt->sdev_groups;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	device_initialize(&sdev->sdev_dev);
 	sdev->sdev_dev.parent = get_device(&sdev->sdev_gendev);
 	sdev->sdev_dev.class = &sdev_class;
-<<<<<<< HEAD
-	dev_set_name(&sdev->sdev_dev, "%d:%d:%d:%d",
-		     sdev->host->host_no, sdev->channel, sdev->id, sdev->lun);
-	sdev->scsi_level = starget->scsi_level;
-=======
 	dev_set_name(&sdev->sdev_dev, "%d:%d:%d:%llu",
 		     sdev->host->host_no, sdev->channel, sdev->id, sdev->lun);
 	/*
@@ -2108,21 +1675,17 @@ void scsi_sysfs_device_initialize(struct scsi_device *sdev)
 			!shost->no_scsi2_lun_in_cdb)
 		sdev->lun_in_cdb = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	transport_setup_device(&sdev->sdev_gendev);
 	spin_lock_irqsave(shost->host_lock, flags);
 	list_add_tail(&sdev->same_target_siblings, &starget->devices);
 	list_add_tail(&sdev->siblings, &shost->__devices);
 	spin_unlock_irqrestore(shost->host_lock, flags);
-<<<<<<< HEAD
-=======
 	/*
 	 * device can now only be removed via __scsi_remove_device() so hold
 	 * the target.  Target will be held in CREATED state until something
 	 * beneath it becomes visible (in which case it moves to RUNNING)
 	 */
 	kref_get(&starget->reap_ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int scsi_is_sdev_device(const struct device *dev)

@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdlib.h>
@@ -17,51 +11,31 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include "chan_user.h"
-<<<<<<< HEAD
-#include "os.h"
-#include "um_malloc.h"
-=======
 #include <os.h>
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void generic_close(int fd, void *unused)
 {
 	close(fd);
 }
 
-<<<<<<< HEAD
-int generic_read(int fd, char *c_out, void *unused)
-=======
 int generic_read(int fd, __u8 *c_out, void *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n;
 
 	n = read(fd, c_out, sizeof(*c_out));
 	if (n > 0)
 		return n;
-<<<<<<< HEAD
-	else if (errno == EAGAIN)
-		return 0;
-	else if (n == 0)
-		return -EIO;
-=======
 	else if (n == 0)
 		return -EIO;
 	else if (errno == EAGAIN)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -errno;
 }
 
 /* XXX Trivial wrapper around write */
 
-<<<<<<< HEAD
-int generic_write(int fd, const char *buf, int n, void *unused)
-=======
 int generic_write(int fd, const __u8 *buf, size_t n, void *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -167,11 +141,7 @@ struct winch_data {
 	int pipe_fd;
 };
 
-<<<<<<< HEAD
-static int winch_thread(void *arg)
-=======
 static __noreturn int winch_thread(void *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct winch_data *data = arg;
 	sigset_t sigs;
@@ -183,13 +153,8 @@ static __noreturn int winch_thread(void *arg)
 	pipe_fd = data->pipe_fd;
 	count = write(pipe_fd, &c, sizeof(c));
 	if (count != sizeof(c))
-<<<<<<< HEAD
-		printk(UM_KERN_ERR "winch_thread : failed to write "
-		       "synchronization byte, err = %d\n", -count);
-=======
 		os_info("winch_thread : failed to write synchronization byte, err = %d\n",
 			-count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We are not using SIG_IGN on purpose, so don't fix it as I thought to
@@ -201,37 +166,14 @@ static __noreturn int winch_thread(void *arg)
 	sigfillset(&sigs);
 	/* Block all signals possible. */
 	if (sigprocmask(SIG_SETMASK, &sigs, NULL) < 0) {
-<<<<<<< HEAD
-		printk(UM_KERN_ERR "winch_thread : sigprocmask failed, "
-		       "errno = %d\n", errno);
-		exit(1);
-=======
 		os_info("winch_thread : sigprocmask failed, errno = %d\n",
 			errno);
 		goto wait_kill;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* In sigsuspend(), block anything else than SIGWINCH. */
 	sigdelset(&sigs, SIGWINCH);
 
 	if (setsid() < 0) {
-<<<<<<< HEAD
-		printk(UM_KERN_ERR "winch_thread : setsid failed, errno = %d\n",
-		       errno);
-		exit(1);
-	}
-
-	if (ioctl(pty_fd, TIOCSCTTY, 0) < 0) {
-		printk(UM_KERN_ERR "winch_thread : TIOCSCTTY failed on "
-		       "fd %d err = %d\n", pty_fd, errno);
-		exit(1);
-	}
-
-	if (tcsetpgrp(pty_fd, os_getpid()) < 0) {
-		printk(UM_KERN_ERR "winch_thread : tcsetpgrp failed on "
-		       "fd %d err = %d\n", pty_fd, errno);
-		exit(1);
-=======
 		os_info("winch_thread : setsid failed, errno = %d\n",
 		       errno);
 		goto wait_kill;
@@ -247,7 +189,6 @@ static __noreturn int winch_thread(void *arg)
 		os_info("winch_thread : tcsetpgrp failed on fd %d err = %d\n",
 			pty_fd, errno);
 		goto wait_kill;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -258,13 +199,8 @@ static __noreturn int winch_thread(void *arg)
 	 */
 	count = read(pipe_fd, &c, sizeof(c));
 	if (count != sizeof(c))
-<<<<<<< HEAD
-		printk(UM_KERN_ERR "winch_thread : failed to read "
-		       "synchronization byte, err = %d\n", errno);
-=======
 		os_info("winch_thread : failed to read synchronization byte, err = %d\n",
 			errno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while(1) {
 		/*
@@ -275,18 +211,6 @@ static __noreturn int winch_thread(void *arg)
 
 		count = write(pipe_fd, &c, sizeof(c));
 		if (count != sizeof(c))
-<<<<<<< HEAD
-			printk(UM_KERN_ERR "winch_thread : write failed, "
-			       "err = %d\n", errno);
-	}
-}
-
-static int winch_tramp(int fd, struct tty_struct *tty, int *fd_out,
-		       unsigned long *stack_out)
-{
-	struct winch_data data;
-	int fds[2], n, err;
-=======
 			os_info("winch_thread : write failed, err = %d\n",
 				errno);
 	}
@@ -303,7 +227,6 @@ static int winch_tramp(int fd, struct tty_port *port, int *fd_out,
 {
 	struct winch_data data;
 	int fds[2], n, err, pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char c;
 
 	err = os_pipe(fds, 1, 1);
@@ -321,14 +244,9 @@ static int winch_tramp(int fd, struct tty_port *port, int *fd_out,
 	 * problem with /dev/net/tun, which if held open by this
 	 * thread, prevents the TUN/TAP device from being reused.
 	 */
-<<<<<<< HEAD
-	err = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
-	if (err < 0) {
-=======
 	pid = run_helper_thread(winch_thread, &data, CLONE_FILES, stack_out);
 	if (pid < 0) {
 		err = pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(UM_KERN_ERR "fork of winch_thread failed - errno = %d\n",
 		       -err);
 		goto out_close;
@@ -345,22 +263,14 @@ static int winch_tramp(int fd, struct tty_port *port, int *fd_out,
 		goto out_close;
 	}
 
-<<<<<<< HEAD
-	if (os_set_fd_block(*fd_out, 0)) {
-=======
 	err = os_set_fd_block(*fd_out, 0);
 	if (err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(UM_KERN_ERR "winch_tramp: failed to set thread_fd "
 		       "non-blocking.\n");
 		goto out_close;
 	}
 
-<<<<<<< HEAD
-	return err;
-=======
 	return pid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out_close:
 	close(fds[1]);
@@ -369,11 +279,7 @@ static int winch_tramp(int fd, struct tty_port *port, int *fd_out,
 	return err;
 }
 
-<<<<<<< HEAD
-void register_winch(int fd, struct tty_struct *tty)
-=======
 void register_winch(int fd, struct tty_port *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long stack;
 	int pid, thread, count, thread_fd = -1;
@@ -383,30 +289,17 @@ void register_winch(int fd, struct tty_port *port)
 		return;
 
 	pid = tcgetpgrp(fd);
-<<<<<<< HEAD
-	if (is_skas_winch(pid, fd, tty)) {
-		register_winch_irq(-1, fd, -1, tty, 0);
-=======
 	if (is_skas_winch(pid, fd, port)) {
 		register_winch_irq(-1, fd, -1, port, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (pid == -1) {
-<<<<<<< HEAD
-		thread = winch_tramp(fd, tty, &thread_fd, &stack);
-		if (thread < 0)
-			return;
-
-		register_winch_irq(thread_fd, fd, thread, tty, stack);
-=======
 		thread = winch_tramp(fd, port, &thread_fd, &stack);
 		if (thread < 0)
 			return;
 
 		register_winch_irq(thread_fd, fd, thread, port, stack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		count = write(thread_fd, &c, sizeof(c));
 		if (count != sizeof(c))

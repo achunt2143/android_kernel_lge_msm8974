@@ -8,13 +8,8 @@ perf-record - Run a command and record its profile into perf.data
 SYNOPSIS
 --------
 [verse]
-<<<<<<< HEAD
-'perf record' [-e <EVENT> | --event=EVENT] [-l] [-a] <command>
-'perf record' [-e <EVENT> | --event=EVENT] [-l] [-a] -- <command> [<options>]
-=======
 'perf record' [-e <EVENT> | --event=EVENT] [-a] <command>
 'perf record' [-e <EVENT> | --event=EVENT] [-a] \-- <command> [<options>]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DESCRIPTION
 -----------
@@ -35,27 +30,6 @@ OPTIONS
 
         - a symbolic event name	(use 'perf list' to list all events)
 
-<<<<<<< HEAD
-        - a raw PMU event (eventsel+umask) in the form of rNNN where NNN is a
-	  hexadecimal event descriptor.
-
-        - a hardware breakpoint event in the form of '\mem:addr[:access]'
-          where addr is the address in memory you want to break in.
-          Access is the memory access type (read, write, execute) it can
-          be passed as follows: '\mem:addr[:[r][w][x]]'.
-          If you want to profile read-write accesses in 0x1000, just set
-          'mem:0x1000:rw'.
-
---filter=<filter>::
-        Event filter.
-
--a::
---all-cpus::
-        System-wide collection from all CPUs.
-
--l::
-        Scale counter values.
-=======
         - a raw PMU event in the form of rN where N is a hexadecimal value
           that represents the raw register encoding with the layout of the
           event control registers as described by entries in
@@ -252,7 +226,6 @@ OPTIONS
 -a::
 --all-cpus::
         System-wide collection from all CPUs (default if no target is specified).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -p::
 --pid=::
@@ -261,11 +234,8 @@ OPTIONS
 -t::
 --tid=::
         Record events on existing thread ID (comma separated list).
-<<<<<<< HEAD
-=======
         This option also disables inheritance by default.  Enable it by adding
         --inherit.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -u::
 --uid=::
@@ -274,22 +244,9 @@ OPTIONS
 -r::
 --realtime=::
 	Collect data with this RT SCHED_FIFO priority.
-<<<<<<< HEAD
--D::
---no-delay::
-	Collect data without buffering.
--A::
---append::
-	Append to the output file to do incremental profiling.
-
--f::
---force::
-	Overwrite existing data file. (deprecated)
-=======
 
 --no-buffering::
 	Collect data without buffering.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -c::
 --count=::
@@ -302,23 +259,6 @@ OPTIONS
 -i::
 --no-inherit::
 	Child tasks do not inherit counters.
-<<<<<<< HEAD
--F::
---freq=::
-	Profile at this frequency.
-
--m::
---mmap-pages=::
-	Number of mmap data pages. Must be a power of two.
-
--g::
---call-graph::
-	Do call-graph (stack chain/backtrace) recording.
-
--q::
---quiet::
-	Don't print any message, useful for scripting.
-=======
 
 -F::
 --freq=::
@@ -379,7 +319,6 @@ OPTIONS
 -q::
 --quiet::
 	Don't print any warnings or messages, useful for scripting.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -v::
 --verbose::
@@ -387,18 +326,6 @@ OPTIONS
 
 -s::
 --stat::
-<<<<<<< HEAD
-	Per thread counts.
-
--d::
---data::
-	Sample addresses.
-
--T::
---timestamp::
-	Sample timestamps. Use it with 'perf report -D' to see the timestamps,
-	for instance.
-=======
 	Record per-thread event counts.  Use it with 'perf report -T' to see
 	the values.
 
@@ -431,7 +358,6 @@ OPTIONS
 	Record the sample identifier i.e. PERF_SAMPLE_IDENTIFIER bit set in
 	the sample_type member of the struct perf_event_attr argument to the
 	perf_event_open system call.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -n::
 --no-samples::
@@ -448,13 +374,6 @@ comma-separated list with no space: 0,1. Ranges of CPUs are specified with -: 0-
 In per-thread mode with inheritance mode on (default), samples are captured only when
 the thread executes on the designated CPUs. Default is to monitor all CPUs.
 
-<<<<<<< HEAD
--N::
---no-buildid-cache::
-Do not update the builid cache. This saves some overhead in situations
-where the information in the perf.data file (which includes buildids)
-is sufficient.
-=======
 User space tasks can migrate between CPUs, so when tracing selected CPUs,
 a dummy event is created to track sideband for all CPUs.
 
@@ -475,7 +394,6 @@ Do not update the buildid cache. This saves some overhead in situations
 where the information in the perf.data file (which includes buildids)
 is sufficient.  You can also set the "record.build-id" config variable to
 'no-cache' to have the same effect.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -G name,...::
 --cgroup name,...::
@@ -486,15 +404,11 @@ can be provided. Each cgroup is applied to the corresponding event, i.e., first 
 to first event, second cgroup to second event and so on. It is possible to provide
 an empty cgroup (monitor all the time) using, e.g., -G foo,,bar. Cgroups must have
 corresponding events, i.e., they always refer to events defined earlier on the command
-<<<<<<< HEAD
-line.
-=======
 line. If the user wants to track multiple events for a specific cgroup, the user can
 use '-e e1 -e e2 -G foo,foo' or just use '-e e1 -e e2 -G foo'.
 
 If wanting to monitor, say, 'cycles' for a cgroup and also for system wide, this
 command line can be used: 'perf stat -e cycles -G cgroup_name -a -e cycles'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -b::
 --branch-any::
@@ -512,16 +426,6 @@ following filters are defined:
         - any:  any type of branches
         - any_call: any function call or system call
         - any_ret: any function return or system call return
-<<<<<<< HEAD
-        - any_ind: any indirect branch
-        - u:  only when the branch target is at the user level
-        - k: only when the branch target is in the kernel
-        - hv: only when the target is at the hypervisor level
-
-+
-The option requires at least one branch type among any, any_call, any_ret, ind_call.
-The privilege levels may be ommitted, in which case, the privilege levels of the associated
-=======
         - ind_call: any indirect branch
         - ind_jmp: any indirect jump
         - call: direct calls, including far (to/from kernel) calls
@@ -549,18 +453,12 @@ The privilege levels may be ommitted, in which case, the privilege levels of the
 +
 The option requires at least one branch type among any, any_call, any_ret, ind_call, cond.
 The privilege levels may be omitted, in which case, the privilege levels of the associated
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 event are applied to the branch filter. Both kernel (k) and hypervisor (hv) privilege
 levels are subject to permissions.  When sampling on multiple events, branch stack sampling
 is enabled for all the sampling events. The sampled branch type is the same for all events.
 The various filters must be specified as a comma separated list: --branch-filter any_ret,u,k
 Note that this feature may not be available on all processors.
 
-<<<<<<< HEAD
-SEE ALSO
---------
-linkperf:perf-stat[1], linkperf:perf-list[1]
-=======
 -W::
 --weight::
 Enable weightened sampling. An additional weight is recorded per sample and can be
@@ -935,4 +833,3 @@ include::intel-hybrid.txt[]
 SEE ALSO
 --------
 linkperf:perf-stat[1], linkperf:perf-list[1], linkperf:perf-intel-pt[1]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

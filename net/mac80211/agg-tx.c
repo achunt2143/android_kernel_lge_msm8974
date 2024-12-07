@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * HT handling
  *
@@ -11,15 +8,8 @@
  * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007, Michael Wu <flamingice@sourmilk.net>
  * Copyright 2007-2010, Intel Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  * Copyright(c) 2015-2017 Intel Deutschland GmbH
  * Copyright (C) 2018 - 2023 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/ieee80211.h>
@@ -84,12 +74,7 @@ static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
 		return;
 
 	skb_reserve(skb, local->hw.extra_tx_headroom);
-<<<<<<< HEAD
-	mgmt = (struct ieee80211_mgmt *) skb_put(skb, 24);
-	memset(mgmt, 0, 24);
-=======
 	mgmt = skb_put_zero(skb, 24);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(mgmt->da, da, ETH_ALEN);
 	memcpy(mgmt->sa, sdata->vif.addr, ETH_ALEN);
 	if (sdata->vif.type == NL80211_IFTYPE_AP ||
@@ -97,11 +82,7 @@ static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
 	    sdata->vif.type == NL80211_IFTYPE_MESH_POINT)
 		memcpy(mgmt->bssid, sdata->vif.addr, ETH_ALEN);
 	else if (sdata->vif.type == NL80211_IFTYPE_STATION)
-<<<<<<< HEAD
-		memcpy(mgmt->bssid, sdata->u.mgd.bssid, ETH_ALEN);
-=======
 		memcpy(mgmt->bssid, sdata->vif.cfg.ap_addr, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (sdata->vif.type == NL80211_IFTYPE_ADHOC)
 		memcpy(mgmt->bssid, sdata->u.ibss.bssid, ETH_ALEN);
 
@@ -114,16 +95,10 @@ static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
 	mgmt->u.action.u.addba_req.action_code = WLAN_ACTION_ADDBA_REQ;
 
 	mgmt->u.action.u.addba_req.dialog_token = dialog_token;
-<<<<<<< HEAD
-	capab = (u16)(1 << 1);		/* bit 1 aggregation policy */
-	capab |= (u16)(tid << 2); 	/* bit 5:2 TID number */
-	capab |= (u16)(agg_size << 6);	/* bit 15:6 max size of aggergation */
-=======
 	capab = IEEE80211_ADDBA_PARAM_AMSDU_MASK;
 	capab |= IEEE80211_ADDBA_PARAM_POLICY_MASK;
 	capab |= u16_encode_bits(tid, IEEE80211_ADDBA_PARAM_TID_MASK);
 	capab |= u16_encode_bits(agg_size, IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mgmt->u.action.u.addba_req.capab = cpu_to_le16(capab);
 
@@ -131,11 +106,7 @@ static void ieee80211_send_addba_request(struct ieee80211_sub_if_data *sdata,
 	mgmt->u.action.u.addba_req.start_seq_num =
 					cpu_to_le16(start_seq_num << 4);
 
-<<<<<<< HEAD
-	ieee80211_tx_skb_tid(sdata, skb, tid);
-=======
 	ieee80211_tx_skb_tid(sdata, skb, tid, -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_send_bar(struct ieee80211_vif *vif, u8 *ra, u16 tid, u16 ssn)
@@ -151,12 +122,7 @@ void ieee80211_send_bar(struct ieee80211_vif *vif, u8 *ra, u16 tid, u16 ssn)
 		return;
 
 	skb_reserve(skb, local->hw.extra_tx_headroom);
-<<<<<<< HEAD
-	bar = (struct ieee80211_bar *)skb_put(skb, sizeof(*bar));
-	memset(bar, 0, sizeof(*bar));
-=======
 	bar = skb_put_zero(skb, sizeof(*bar));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bar->frame_control = cpu_to_le16(IEEE80211_FTYPE_CTL |
 					 IEEE80211_STYPE_BACK_REQ);
 	memcpy(bar->ra, ra, ETH_ALEN);
@@ -167,43 +133,20 @@ void ieee80211_send_bar(struct ieee80211_vif *vif, u8 *ra, u16 tid, u16 ssn)
 	bar->control = cpu_to_le16(bar_control);
 	bar->start_seq_num = cpu_to_le16(ssn);
 
-<<<<<<< HEAD
-	IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_DONT_ENCRYPT;
-	ieee80211_tx_skb_tid(sdata, skb, tid);
-=======
 	IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_DONT_ENCRYPT |
 					IEEE80211_TX_CTL_REQ_TX_STATUS;
 	ieee80211_tx_skb_tid(sdata, skb, tid, -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ieee80211_send_bar);
 
 void ieee80211_assign_tid_tx(struct sta_info *sta, int tid,
 			     struct tid_ampdu_tx *tid_tx)
 {
-<<<<<<< HEAD
-	lockdep_assert_held(&sta->ampdu_mlme.mtx);
-=======
 	lockdep_assert_wiphy(sta->local->hw.wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lockdep_assert_held(&sta->lock);
 	rcu_assign_pointer(sta->ampdu_mlme.tid_tx[tid], tid_tx);
 }
 
-<<<<<<< HEAD
-int ___ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
-				    enum ieee80211_back_parties initiator,
-				    bool tx)
-{
-	struct ieee80211_local *local = sta->local;
-	struct tid_ampdu_tx *tid_tx;
-	int ret;
-
-	lockdep_assert_held(&sta->ampdu_mlme.mtx);
-
-	spin_lock_bh(&sta->lock);
-
-=======
 /*
  * When multiple aggregation sessions on multiple stations
  * are being created/destroyed simultaneously, we need to
@@ -391,19 +334,12 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 	kfree(tid_tx);
 	sta->ampdu_mlme.tid_start_tx[tid] = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
 	if (!tid_tx) {
 		spin_unlock_bh(&sta->lock);
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	/* if we're already stopping ignore any new requests to stop */
-	if (test_bit(HT_AGG_STATE_STOPPING, &tid_tx->state)) {
-		spin_unlock_bh(&sta->lock);
-		return -EALREADY;
-=======
 	/*
 	 * if we're already stopping ignore any new requests to stop
 	 * unless we're destroying it in which case notify the driver
@@ -416,7 +352,6 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 		ret = drv_ampdu_action(local, sta->sdata, &params);
 		WARN_ON_ONCE(ret);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (test_bit(HT_AGG_STATE_WANT_START, &tid_tx->state)) {
@@ -429,21 +364,12 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 
 	set_bit(HT_AGG_STATE_STOPPING, &tid_tx->state);
 
-<<<<<<< HEAD
-	spin_unlock_bh(&sta->lock);
-
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "Tx BA session stop requested for %pM tid %u\n",
-	       sta->sta.addr, tid);
-#endif /* CONFIG_MAC80211_HT_DEBUG */
-=======
 	ieee80211_agg_stop_txq(sta, tid);
 
 	spin_unlock_bh(&sta->lock);
 
 	ht_dbg(sta->sdata, "Tx BA session stop requested for %pM tid %u\n",
 	       sta->sta.addr, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	del_timer_sync(&tid_tx->addba_resp_timer);
 	del_timer_sync(&tid_tx->session_timer);
@@ -467,16 +393,6 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 	 * telling the driver. New packets will not go through since
 	 * the aggregation session is no longer OPERATIONAL.
 	 */
-<<<<<<< HEAD
-	synchronize_net();
-
-	tid_tx->stop_initiator = initiator;
-	tid_tx->tx_stop = tx;
-
-	ret = drv_ampdu_action(local, sta->sdata,
-			       IEEE80211_AMPDU_TX_STOP,
-			       &sta->sta, tid, NULL, 0);
-=======
 	if (!local->in_reconfig)
 		synchronize_net();
 
@@ -486,7 +402,6 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 	tid_tx->tx_stop = reason == AGG_STOP_LOCAL_REQUEST;
 
 	ret = drv_ampdu_action(local, sta->sdata, &params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* HW shall not deny going back to legacy */
 	if (WARN_ON(ret)) {
@@ -496,9 +411,6 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 		 */
 	}
 
-<<<<<<< HEAD
-	return ret;
-=======
 	/*
 	 * In the case of AGG_STOP_DESTROY_STA, the driver won't
 	 * necessarily call ieee80211_stop_tx_ba_cb(), so this may
@@ -510,7 +422,6 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 	 */
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -518,111 +429,6 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
  * add Block Ack response will arrive from the recipient.
  * If this timer expires sta_addba_resp_timer_expired will be executed.
  */
-<<<<<<< HEAD
-static void sta_addba_resp_timer_expired(unsigned long data)
-{
-	/* not an elegant detour, but there is no choice as the timer passes
-	 * only one argument, and both sta_info and TID are needed, so init
-	 * flow in sta_info_create gives the TID as data, while the timer_to_id
-	 * array gives the sta through container_of */
-	u16 tid = *(u8 *)data;
-	struct sta_info *sta = container_of((void *)data,
-		struct sta_info, timer_to_tid[tid]);
-	struct tid_ampdu_tx *tid_tx;
-
-	/* check if the TID waits for addBA response */
-	rcu_read_lock();
-	tid_tx = rcu_dereference(sta->ampdu_mlme.tid_tx[tid]);
-	if (!tid_tx ||
-	    test_bit(HT_AGG_STATE_RESPONSE_RECEIVED, &tid_tx->state)) {
-		rcu_read_unlock();
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "timer expired on tid %d but we are not "
-				"(or no longer) expecting addBA response there\n",
-			tid);
-#endif
-		return;
-	}
-
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "addBA response timer expired on tid %d\n", tid);
-#endif
-
-	ieee80211_stop_tx_ba_session(&sta->sta, tid);
-	rcu_read_unlock();
-}
-
-static inline int ieee80211_ac_from_tid(int tid)
-{
-	return ieee802_1d_to_ac[tid & 7];
-}
-
-/*
- * When multiple aggregation sessions on multiple stations
- * are being created/destroyed simultaneously, we need to
- * refcount the global queue stop caused by that in order
- * to not get into a situation where one of the aggregation
- * setup or teardown re-enables queues before the other is
- * ready to handle that.
- *
- * These two functions take care of this issue by keeping
- * a global "agg_queue_stop" refcount.
- */
-static void __acquires(agg_queue)
-ieee80211_stop_queue_agg(struct ieee80211_local *local, int tid)
-{
-	int queue = ieee80211_ac_from_tid(tid);
-
-	if (atomic_inc_return(&local->agg_queue_stop[queue]) == 1)
-		ieee80211_stop_queue_by_reason(
-			&local->hw, queue,
-			IEEE80211_QUEUE_STOP_REASON_AGGREGATION);
-	__acquire(agg_queue);
-}
-
-static void __releases(agg_queue)
-ieee80211_wake_queue_agg(struct ieee80211_local *local, int tid)
-{
-	int queue = ieee80211_ac_from_tid(tid);
-
-	if (atomic_dec_return(&local->agg_queue_stop[queue]) == 0)
-		ieee80211_wake_queue_by_reason(
-			&local->hw, queue,
-			IEEE80211_QUEUE_STOP_REASON_AGGREGATION);
-	__release(agg_queue);
-}
-
-/*
- * splice packets from the STA's pending to the local pending,
- * requires a call to ieee80211_agg_splice_finish later
- */
-static void __acquires(agg_queue)
-ieee80211_agg_splice_packets(struct ieee80211_local *local,
-			     struct tid_ampdu_tx *tid_tx, u16 tid)
-{
-	int queue = ieee80211_ac_from_tid(tid);
-	unsigned long flags;
-
-	ieee80211_stop_queue_agg(local, tid);
-
-	if (WARN(!tid_tx, "TID %d gone but expected when splicing aggregates"
-			  " from the pending queue\n", tid))
-		return;
-
-	if (!skb_queue_empty(&tid_tx->pending)) {
-		spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
-		/* copy over remaining packets */
-		skb_queue_splice_tail_init(&tid_tx->pending,
-					   &local->pending[queue]);
-		spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
-	}
-}
-
-static void __releases(agg_queue)
-ieee80211_agg_splice_finish(struct ieee80211_local *local, u16 tid)
-{
-	ieee80211_wake_queue_agg(local, tid);
-=======
 static void sta_addba_resp_timer_expired(struct timer_list *t)
 {
 	struct tid_ampdu_tx *tid_tx = from_timer(tid_tx, t, addba_resp_timer);
@@ -685,7 +491,6 @@ static void ieee80211_send_addba_with_timeout(struct sta_info *sta,
 				     buf_size, tid_tx->timeout);
 
 	WARN_ON(test_and_set_bit(HT_AGG_STATE_SENT_ADDBA, &tid_tx->state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
@@ -693,9 +498,6 @@ void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
 	struct tid_ampdu_tx *tid_tx;
 	struct ieee80211_local *local = sta->local;
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
-<<<<<<< HEAD
-	u16 start_seq_num;
-=======
 	struct ieee80211_ampdu_params params = {
 		.sta = &sta->sta,
 		.action = IEEE80211_AMPDU_TX_START,
@@ -704,7 +506,6 @@ void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
 		.amsdu = false,
 		.timeout = 0,
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
@@ -724,23 +525,6 @@ void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
 	 */
 	synchronize_net();
 
-<<<<<<< HEAD
-	start_seq_num = sta->tid_seq[tid] >> 4;
-
-	ret = drv_ampdu_action(local, sdata, IEEE80211_AMPDU_TX_START,
-			       &sta->sta, tid, &start_seq_num, 0);
-	if (ret) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "BA request denied - HW unavailable for"
-					" tid %d\n", tid);
-#endif
-		spin_lock_bh(&sta->lock);
-		ieee80211_agg_splice_packets(local, tid_tx, tid);
-		ieee80211_assign_tid_tx(sta, tid, NULL);
-		ieee80211_agg_splice_finish(local, tid);
-		spin_unlock_bh(&sta->lock);
-
-=======
 	params.ssn = sta->tid_seq[tid] >> 4;
 	ret = drv_ampdu_action(local, sdata, &params);
 	tid_tx->ssn = params.ssn;
@@ -765,31 +549,10 @@ void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
 
 		ieee80211_agg_start_txq(sta, tid, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_rcu(tid_tx, rcu_head);
 		return;
 	}
 
-<<<<<<< HEAD
-	/* activate the timer for the recipient's addBA response */
-	mod_timer(&tid_tx->addba_resp_timer, jiffies + ADDBA_RESP_INTERVAL);
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "activated addBA response timer on tid %d\n", tid);
-#endif
-
-	spin_lock_bh(&sta->lock);
-	sta->ampdu_mlme.last_addba_req_time[tid] = jiffies;
-	sta->ampdu_mlme.addba_req_num[tid]++;
-	spin_unlock_bh(&sta->lock);
-
-	/* send AddBA request */
-	ieee80211_send_addba_request(sdata, sta->sta.addr, tid,
-				     tid_tx->dialog_token, start_seq_num,
-				     local->hw.max_tx_aggregation_subframes,
-				     tid_tx->timeout);
-}
-
-=======
 	ieee80211_send_addba_with_timeout(sta, tid_tx);
 }
 
@@ -810,29 +573,10 @@ void ieee80211_refresh_tx_agg_session_timer(struct ieee80211_sta *pubsta,
 }
 EXPORT_SYMBOL(ieee80211_refresh_tx_agg_session_timer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * After accepting the AddBA Response we activated a timer,
  * resetting it after each frame that we send.
  */
-<<<<<<< HEAD
-static void sta_tx_agg_session_timer_expired(unsigned long data)
-{
-	/* not an elegant detour, but there is no choice as the timer passes
-	 * only one argument, and various sta_info are needed here, so init
-	 * flow in sta_info_create gives the TID as data, while the timer_to_id
-	 * array gives the sta through container_of */
-	u8 *ptid = (u8 *)data;
-	u8 *timer_to_id = ptid - *ptid;
-	struct sta_info *sta = container_of(timer_to_id, struct sta_info,
-					 timer_to_tid[0]);
-
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "tx session timer expired on tid %d\n", (u16)*ptid);
-#endif
-
-	ieee80211_stop_tx_ba_session(&sta->sta, *ptid);
-=======
 static void sta_tx_agg_session_timer_expired(struct timer_list *t)
 {
 	struct tid_ampdu_tx *tid_tx = from_timer(tid_tx, t, session_timer);
@@ -854,7 +598,6 @@ static void sta_tx_agg_session_timer_expired(struct timer_list *t)
 	       sta->sta.addr, tid);
 
 	ieee80211_stop_tx_ba_session(&sta->sta, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
@@ -868,20 +611,6 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 
 	trace_api_start_tx_ba_session(pubsta, tid);
 
-<<<<<<< HEAD
-	if (WARN_ON(!local->ops->ampdu_action))
-		return -EINVAL;
-
-	if ((tid >= STA_TID_NUM) ||
-	    !(local->hw.flags & IEEE80211_HW_AMPDU_AGGREGATION) ||
-	    (local->hw.flags & IEEE80211_HW_TX_AMPDU_SETUP_IN_HW))
-		return -EINVAL;
-
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "Open BA session requested for %pM tid %u\n",
-	       pubsta->addr, tid);
-#endif /* CONFIG_MAC80211_HT_DEBUG */
-=======
 	if (WARN(sta->reserved_tid == tid,
 		 "Requested to start BA session on reserved tid=%d", tid))
 		return -EINVAL;
@@ -903,7 +632,6 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 
 	ht_dbg(sdata, "Open BA session requested for %pM tid %u\n",
 	       pubsta->addr, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sdata->vif.type != NL80211_IFTYPE_STATION &&
 	    sdata->vif.type != NL80211_IFTYPE_MESH_POINT &&
@@ -913,12 +641,6 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 		return -EINVAL;
 
 	if (test_sta_flag(sta, WLAN_STA_BLOCK_BA)) {
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "BA sessions blocked. "
-		       "Denying BA session request\n");
-#endif
-=======
 		ht_dbg(sdata,
 		       "BA sessions blocked - Denying BA session request %pM tid %d\n",
 		       sta->sta.addr, tid);
@@ -930,7 +652,6 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 		ht_dbg(sdata,
 		       "MFP STA not authorized - deny BA session request %pM tid %d\n",
 		       sta->sta.addr, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -947,18 +668,10 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 	 * is set when we receive a bss info from a probe response or a beacon.
 	 */
 	if (sta->sdata->vif.type == NL80211_IFTYPE_ADHOC &&
-<<<<<<< HEAD
-	    !sta->sta.ht_cap.ht_supported) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "BA request denied - IBSS STA %pM"
-		       "does not advertise HT support\n", pubsta->addr);
-#endif /* CONFIG_MAC80211_HT_DEBUG */
-=======
 	    !sta->sta.deflink.ht_cap.ht_supported) {
 		ht_dbg(sdata,
 		       "BA request denied - IBSS STA %pM does not advertise HT support\n",
 		       pubsta->addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -978,18 +691,9 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 	if (sta->ampdu_mlme.addba_req_num[tid] > HT_AGG_BURST_RETRIES &&
 	    time_before(jiffies, sta->ampdu_mlme.last_addba_req_time[tid] +
 			HT_AGG_RETRIES_PERIOD)) {
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "BA request denied - "
-		       "waiting a grace period after %d failed requests "
-		       "on tid %u\n",
-		       sta->ampdu_mlme.addba_req_num[tid], tid);
-#endif /* CONFIG_MAC80211_HT_DEBUG */
-=======
 		ht_dbg(sdata,
 		       "BA request denied - %d failed requests on %pM tid %u\n",
 		       sta->ampdu_mlme.addba_req_num[tid], sta->sta.addr, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBUSY;
 		goto err_unlock_sta;
 	}
@@ -997,16 +701,9 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
 	/* check if the TID is not in aggregation flow already */
 	if (tid_tx || sta->ampdu_mlme.tid_start_tx[tid]) {
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "BA request denied - session is not "
-				 "idle on tid %u\n", tid);
-#endif /* CONFIG_MAC80211_HT_DEBUG */
-=======
 		ht_dbg(sdata,
 		       "BA request denied - session is not idle on %pM tid %u\n",
 		       sta->sta.addr, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EAGAIN;
 		goto err_unlock_sta;
 	}
@@ -1022,18 +719,6 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 	__set_bit(HT_AGG_STATE_WANT_START, &tid_tx->state);
 
 	tid_tx->timeout = timeout;
-<<<<<<< HEAD
-
-	/* response timer */
-	tid_tx->addba_resp_timer.function = sta_addba_resp_timer_expired;
-	tid_tx->addba_resp_timer.data = (unsigned long)&sta->timer_to_tid[tid];
-	init_timer(&tid_tx->addba_resp_timer);
-
-	/* tx timer */
-	tid_tx->session_timer.function = sta_tx_agg_session_timer_expired;
-	tid_tx->session_timer.data = (unsigned long)&sta->timer_to_tid[tid];
-	init_timer(&tid_tx->session_timer);
-=======
 	tid_tx->sta = sta;
 	tid_tx->tid = tid;
 
@@ -1043,7 +728,6 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 	/* tx timer */
 	timer_setup(&tid_tx->session_timer,
 		    sta_tx_agg_session_timer_expired, TIMER_DEFERRABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* assign a dialog token */
 	sta->ampdu_mlme.dialog_token_allocator++;
@@ -1055,11 +739,7 @@ int ieee80211_start_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid,
 	 */
 	sta->ampdu_mlme.tid_start_tx[tid] = tid_tx;
 
-<<<<<<< HEAD
-	ieee80211_queue_work(&local->hw, &sta->ampdu_mlme.work);
-=======
 	wiphy_work_queue(local->hw.wiphy, &sta->ampdu_mlme.work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this flow continues off the work */
  err_unlock_sta:
@@ -1072,20 +752,6 @@ static void ieee80211_agg_tx_operational(struct ieee80211_local *local,
 					 struct sta_info *sta, u16 tid)
 {
 	struct tid_ampdu_tx *tid_tx;
-<<<<<<< HEAD
-
-	lockdep_assert_held(&sta->ampdu_mlme.mtx);
-
-	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
-
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "Aggregation is on for tid %d\n", tid);
-#endif
-
-	drv_ampdu_action(local, sta->sdata,
-			 IEEE80211_AMPDU_TX_OPERATIONAL,
-			 &sta->sta, tid, NULL, tid_tx->buf_size);
-=======
 	struct ieee80211_ampdu_params params = {
 		.sta = &sta->sta,
 		.action = IEEE80211_AMPDU_TX_OPERATIONAL,
@@ -1104,7 +770,6 @@ static void ieee80211_agg_tx_operational(struct ieee80211_local *local,
 	       sta->sta.addr, tid);
 
 	drv_ampdu_action(local, sta->sdata, &params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * synchronize with TX path, while splicing the TX path
@@ -1112,25 +777,13 @@ static void ieee80211_agg_tx_operational(struct ieee80211_local *local,
 	 */
 	spin_lock_bh(&sta->lock);
 
-<<<<<<< HEAD
-	ieee80211_agg_splice_packets(local, tid_tx, tid);
-=======
 	ieee80211_agg_splice_packets(sta->sdata, tid_tx, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Now mark as operational. This will be visible
 	 * in the TX path, and lets it go lock-free in
 	 * the common case.
 	 */
 	set_bit(HT_AGG_STATE_OPERATIONAL, &tid_tx->state);
-<<<<<<< HEAD
-	ieee80211_agg_splice_finish(local, tid);
-
-	spin_unlock_bh(&sta->lock);
-}
-
-void ieee80211_start_tx_ba_cb(struct ieee80211_vif *vif, u8 *ra, u16 tid)
-=======
 	ieee80211_agg_splice_finish(sta->sdata, tid);
 
 	spin_unlock_bh(&sta->lock);
@@ -1191,7 +844,6 @@ ieee80211_lookup_tid_tx(struct ieee80211_sub_if_data *sdata,
 
 void ieee80211_start_tx_ba_cb_irqsafe(struct ieee80211_vif *vif,
 				      const u8 *ra, u16 tid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
 	struct ieee80211_local *local = sdata->local;
@@ -1200,83 +852,6 @@ void ieee80211_start_tx_ba_cb_irqsafe(struct ieee80211_vif *vif,
 
 	trace_api_start_tx_ba_cb(sdata, ra, tid);
 
-<<<<<<< HEAD
-	if (tid >= STA_TID_NUM) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "Bad TID value: tid = %d (>= %d)\n",
-				tid, STA_TID_NUM);
-#endif
-		return;
-	}
-
-	mutex_lock(&local->sta_mtx);
-	sta = sta_info_get_bss(sdata, ra);
-	if (!sta) {
-		mutex_unlock(&local->sta_mtx);
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "Could not find station: %pM\n", ra);
-#endif
-		return;
-	}
-
-	mutex_lock(&sta->ampdu_mlme.mtx);
-	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
-
-	if (WARN_ON(!tid_tx)) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "addBA was not requested!\n");
-#endif
-		goto unlock;
-	}
-
-	if (WARN_ON(test_and_set_bit(HT_AGG_STATE_DRV_READY, &tid_tx->state)))
-		goto unlock;
-
-	if (test_bit(HT_AGG_STATE_RESPONSE_RECEIVED, &tid_tx->state))
-		ieee80211_agg_tx_operational(local, sta, tid);
-
- unlock:
-	mutex_unlock(&sta->ampdu_mlme.mtx);
-	mutex_unlock(&local->sta_mtx);
-}
-
-void ieee80211_start_tx_ba_cb_irqsafe(struct ieee80211_vif *vif,
-				      const u8 *ra, u16 tid)
-{
-	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_ra_tid *ra_tid;
-	struct sk_buff *skb = dev_alloc_skb(0);
-
-	if (unlikely(!skb))
-		return;
-
-	ra_tid = (struct ieee80211_ra_tid *) &skb->cb;
-	memcpy(&ra_tid->ra, ra, ETH_ALEN);
-	ra_tid->tid = tid;
-
-	skb->pkt_type = IEEE80211_SDATA_QUEUE_AGG_START;
-	skb_queue_tail(&sdata->skb_queue, skb);
-	ieee80211_queue_work(&local->hw, &sdata->work);
-}
-EXPORT_SYMBOL(ieee80211_start_tx_ba_cb_irqsafe);
-
-int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
-				   enum ieee80211_back_parties initiator,
-				   bool tx)
-{
-	int ret;
-
-	mutex_lock(&sta->ampdu_mlme.mtx);
-
-	ret = ___ieee80211_stop_tx_ba_session(sta, tid, initiator, tx);
-
-	mutex_unlock(&sta->ampdu_mlme.mtx);
-
-	return ret;
-}
-
-=======
 	rcu_read_lock();
 	tid_tx = ieee80211_lookup_tid_tx(sdata, ra, tid, &sta);
 	if (!tid_tx)
@@ -1289,7 +864,6 @@ int __ieee80211_stop_tx_ba_session(struct sta_info *sta, u16 tid,
 }
 EXPORT_SYMBOL(ieee80211_start_tx_ba_cb_irqsafe);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ieee80211_stop_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid)
 {
 	struct sta_info *sta = container_of(pubsta, struct sta_info, sta);
@@ -1303,11 +877,7 @@ int ieee80211_stop_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid)
 	if (!local->ops->ampdu_action)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (tid >= STA_TID_NUM)
-=======
 	if (tid >= IEEE80211_NUM_TIDS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	spin_lock_bh(&sta->lock);
@@ -1318,12 +888,9 @@ int ieee80211_stop_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid)
 		goto unlock;
 	}
 
-<<<<<<< HEAD
-=======
 	WARN(sta->reserved_tid == tid,
 	     "Requested to stop BA session on reserved tid=%d", tid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(HT_AGG_STATE_STOPPING, &tid_tx->state)) {
 		/* already in progress stopping it */
 		ret = 0;
@@ -1331,11 +898,7 @@ int ieee80211_stop_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid)
 	}
 
 	set_bit(HT_AGG_STATE_WANT_STOP, &tid_tx->state);
-<<<<<<< HEAD
-	ieee80211_queue_work(&local->hw, &sta->ampdu_mlme.work);
-=======
 	wiphy_work_queue(local->hw.wiphy, &sta->ampdu_mlme.work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  unlock:
 	spin_unlock_bh(&sta->lock);
@@ -1343,9 +906,6 @@ int ieee80211_stop_tx_ba_session(struct ieee80211_sta *pubsta, u16 tid)
 }
 EXPORT_SYMBOL(ieee80211_stop_tx_ba_session);
 
-<<<<<<< HEAD
-void ieee80211_stop_tx_ba_cb(struct ieee80211_vif *vif, u8 *ra, u8 tid)
-=======
 void ieee80211_stop_tx_ba_cb(struct sta_info *sta, int tid,
 			     struct tid_ampdu_tx *tid_tx)
 {
@@ -1384,7 +944,6 @@ void ieee80211_stop_tx_ba_cb(struct sta_info *sta, int tid,
 
 void ieee80211_stop_tx_ba_cb_irqsafe(struct ieee80211_vif *vif,
 				     const u8 *ra, u16 tid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
 	struct ieee80211_local *local = sdata->local;
@@ -1393,90 +952,6 @@ void ieee80211_stop_tx_ba_cb_irqsafe(struct ieee80211_vif *vif,
 
 	trace_api_stop_tx_ba_cb(sdata, ra, tid);
 
-<<<<<<< HEAD
-	if (tid >= STA_TID_NUM) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "Bad TID value: tid = %d (>= %d)\n",
-				tid, STA_TID_NUM);
-#endif
-		return;
-	}
-
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "Stopping Tx BA session for %pM tid %d\n",
-	       ra, tid);
-#endif /* CONFIG_MAC80211_HT_DEBUG */
-
-	mutex_lock(&local->sta_mtx);
-
-	sta = sta_info_get_bss(sdata, ra);
-	if (!sta) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "Could not find station: %pM\n", ra);
-#endif
-		goto unlock;
-	}
-
-	mutex_lock(&sta->ampdu_mlme.mtx);
-	spin_lock_bh(&sta->lock);
-	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
-
-	if (!tid_tx || !test_bit(HT_AGG_STATE_STOPPING, &tid_tx->state)) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "unexpected callback to A-MPDU stop\n");
-#endif
-		goto unlock_sta;
-	}
-
-	if (tid_tx->stop_initiator == WLAN_BACK_INITIATOR && tid_tx->tx_stop)
-		ieee80211_send_delba(sta->sdata, ra, tid,
-			WLAN_BACK_INITIATOR, WLAN_REASON_QSTA_NOT_USE);
-
-	/*
-	 * When we get here, the TX path will not be lockless any more wrt.
-	 * aggregation, since the OPERATIONAL bit has long been cleared.
-	 * Thus it will block on getting the lock, if it occurs. So if we
-	 * stop the queue now, we will not get any more packets, and any
-	 * that might be being processed will wait for us here, thereby
-	 * guaranteeing that no packets go to the tid_tx pending queue any
-	 * more.
-	 */
-
-	ieee80211_agg_splice_packets(local, tid_tx, tid);
-
-	/* future packets must not find the tid_tx struct any more */
-	ieee80211_assign_tid_tx(sta, tid, NULL);
-
-	ieee80211_agg_splice_finish(local, tid);
-
-	kfree_rcu(tid_tx, rcu_head);
-
- unlock_sta:
-	spin_unlock_bh(&sta->lock);
-	mutex_unlock(&sta->ampdu_mlme.mtx);
- unlock:
-	mutex_unlock(&local->sta_mtx);
-}
-
-void ieee80211_stop_tx_ba_cb_irqsafe(struct ieee80211_vif *vif,
-				     const u8 *ra, u16 tid)
-{
-	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_ra_tid *ra_tid;
-	struct sk_buff *skb = dev_alloc_skb(0);
-
-	if (unlikely(!skb))
-		return;
-
-	ra_tid = (struct ieee80211_ra_tid *) &skb->cb;
-	memcpy(&ra_tid->ra, ra, ETH_ALEN);
-	ra_tid->tid = tid;
-
-	skb->pkt_type = IEEE80211_SDATA_QUEUE_AGG_STOP;
-	skb_queue_tail(&sdata->skb_queue, skb);
-	ieee80211_queue_work(&local->hw, &sdata->work);
-=======
 	rcu_read_lock();
 	tid_tx = ieee80211_lookup_tid_tx(sdata, ra, tid, &sta);
 	if (!tid_tx)
@@ -1486,7 +961,6 @@ void ieee80211_stop_tx_ba_cb_irqsafe(struct ieee80211_vif *vif,
 	wiphy_work_queue(local->hw.wiphy, &sta->ampdu_mlme.work);
  out:
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ieee80211_stop_tx_ba_cb_irqsafe);
 
@@ -1497,26 +971,6 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
 				  size_t len)
 {
 	struct tid_ampdu_tx *tid_tx;
-<<<<<<< HEAD
-	u16 capab, tid;
-	u8 buf_size;
-
-	capab = le16_to_cpu(mgmt->u.action.u.addba_resp.capab);
-	tid = (capab & IEEE80211_ADDBA_PARAM_TID_MASK) >> 2;
-	buf_size = (capab & IEEE80211_ADDBA_PARAM_BUF_SIZE_MASK) >> 6;
-
-	mutex_lock(&sta->ampdu_mlme.mtx);
-
-	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
-	if (!tid_tx)
-		goto out;
-
-	if (mgmt->u.action.u.addba_resp.dialog_token != tid_tx->dialog_token) {
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG "wrong addBA response token, tid %d\n", tid);
-#endif
-		goto out;
-=======
 	struct ieee80211_txq *txq;
 	u16 capab, tid, buf_size;
 	bool amsdu;
@@ -1541,19 +995,12 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
 		ht_dbg(sta->sdata, "wrong addBA response token, %pM tid %d\n",
 		       sta->sta.addr, tid);
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	del_timer_sync(&tid_tx->addba_resp_timer);
 
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_HT_DEBUG
-	printk(KERN_DEBUG "switched off addBA timer for tid %d\n", tid);
-#endif
-=======
 	ht_dbg(sta->sdata, "switched off addBA timer for %pM tid %d\n",
 	       sta->sta.addr, tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * addba_resp_timer may have fired before we got here, and
@@ -1562,19 +1009,10 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
 	 */
 	if (test_bit(HT_AGG_STATE_WANT_STOP, &tid_tx->state) ||
 	    test_bit(HT_AGG_STATE_STOPPING, &tid_tx->state)) {
-<<<<<<< HEAD
-#ifdef CONFIG_MAC80211_HT_DEBUG
-		printk(KERN_DEBUG
-		       "got addBA resp for tid %d but we already gave up\n",
-		       tid);
-#endif
-		goto out;
-=======
 		ht_dbg(sta->sdata,
 		       "got addBA resp for %pM tid %d but we already gave up\n",
 		       sta->sta.addr, tid);
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1588,37 +1026,17 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
 		if (test_and_set_bit(HT_AGG_STATE_RESPONSE_RECEIVED,
 				     &tid_tx->state)) {
 			/* ignore duplicate response */
-<<<<<<< HEAD
-			goto out;
-		}
-
-		tid_tx->buf_size = buf_size;
-=======
 			return;
 		}
 
 		tid_tx->buf_size = buf_size;
 		tid_tx->amsdu = amsdu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (test_bit(HT_AGG_STATE_DRV_READY, &tid_tx->state))
 			ieee80211_agg_tx_operational(local, sta, tid);
 
 		sta->ampdu_mlme.addba_req_num[tid] = 0;
 
-<<<<<<< HEAD
-		if (tid_tx->timeout)
-			mod_timer(&tid_tx->session_timer,
-				  TU_TO_EXP_TIME(tid_tx->timeout));
-
-	} else {
-		___ieee80211_stop_tx_ba_session(sta, tid, WLAN_BACK_INITIATOR,
-						true);
-	}
-
- out:
-	mutex_unlock(&sta->ampdu_mlme.mtx);
-=======
 		tid_tx->timeout =
 			le16_to_cpu(mgmt->u.action.u.addba_resp.timeout);
 
@@ -1631,5 +1049,4 @@ void ieee80211_process_addba_resp(struct ieee80211_local *local,
 	} else {
 		__ieee80211_stop_tx_ba_session(sta, tid, AGG_STOP_DECLINED);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

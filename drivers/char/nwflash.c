@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Flash memory interface rev.5 driver for the Intel
  * Flash chips used on the NetWinder.
@@ -34,14 +31,8 @@
 
 #include <asm/hardware/dec21285.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/leds.h>
-#include <asm/mach-types.h>
-#include <asm/uaccess.h>
-=======
 #include <asm/mach-types.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************/
 #include <asm/nwflash.h>
@@ -177,11 +168,7 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 	if (count > gbFlashSize - p)
 		count = gbFlashSize - p;
 			
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_READ, buf, count))
-=======
 	if (!access_ok(buf, count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	/*
@@ -192,12 +179,6 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 
 	written = 0;
 
-<<<<<<< HEAD
-	leds_event(led_claim);
-	leds_event(led_green_on);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nBlock = (int) p >> 16;	//block # of 64K bytes
 
 	/*
@@ -274,14 +255,6 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 			printk(KERN_DEBUG "flash_write: written 0x%X bytes OK.\n", written);
 	}
 
-<<<<<<< HEAD
-	/*
-	 * restore reg on exit
-	 */
-	leds_event(led_release);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&nwflash_mutex);
 
 	return written;
@@ -305,40 +278,7 @@ static loff_t flash_llseek(struct file *file, loff_t offset, int orig)
 		printk(KERN_DEBUG "flash_llseek: offset=0x%X, orig=0x%X.\n",
 		       (unsigned int) offset, orig);
 
-<<<<<<< HEAD
-	switch (orig) {
-	case 0:
-		if (offset < 0) {
-			ret = -EINVAL;
-			break;
-		}
-
-		if ((unsigned int) offset > gbFlashSize) {
-			ret = -EINVAL;
-			break;
-		}
-
-		file->f_pos = (unsigned int) offset;
-		ret = file->f_pos;
-		break;
-	case 1:
-		if ((file->f_pos + offset) > gbFlashSize) {
-			ret = -EINVAL;
-			break;
-		}
-		if ((file->f_pos + offset) < 0) {
-			ret = -EINVAL;
-			break;
-		}
-		file->f_pos += offset;
-		ret = file->f_pos;
-		break;
-	default:
-		ret = -EINVAL;
-	}
-=======
 	ret = no_seek_end_llseek_size(file, offset, orig, gbFlashSize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&flash_mutex);
 	return ret;
 }
@@ -357,14 +297,6 @@ static int erase_block(int nBlock)
 	int temp, temp1;
 
 	/*
-<<<<<<< HEAD
-	 * orange LED == erase
-	 */
-	leds_event(led_amber_on);
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * reset footbridge to the correct offset 0 (...0..3)
 	 */
 	*CSR_ROMWRITEREG = 0;
@@ -472,15 +404,6 @@ static int write_block(unsigned long p, const char __user *buf, int count)
 	unsigned long timeout;
 	unsigned long timeout1;
 
-<<<<<<< HEAD
-	/*
-	 * red LED == write
-	 */
-	leds_event(led_amber_off);
-	leds_event(led_red_on);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pWritePtr = (unsigned char *) ((unsigned int) (FLASH_BASE + p));
 
 	/*
@@ -587,23 +510,9 @@ static int write_block(unsigned long p, const char __user *buf, int count)
 					       pWritePtr - FLASH_BASE);
 
 				/*
-<<<<<<< HEAD
-				 * no LED == waiting
-				 */
-				leds_event(led_amber_off);
-				/*
 				 * wait couple ms
 				 */
 				msleep(10);
-				/*
-				 * red LED == write
-				 */
-				leds_event(led_red_on);
-=======
-				 * wait couple ms
-				 */
-				msleep(10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				goto WriteRetry;
 			} else {
@@ -618,15 +527,6 @@ static int write_block(unsigned long p, const char __user *buf, int count)
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * green LED == read/verify
-	 */
-	leds_event(led_amber_off);
-	leds_event(led_green_on);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(10);
 
 	pWritePtr = (unsigned char *) ((unsigned int) (FLASH_BASE + p));
@@ -655,15 +555,9 @@ static void kick_open(void)
 	 * we want to write a bit pattern XXX1 to Xilinx to enable
 	 * the write gate, which will be open for about the next 2ms.
 	 */
-<<<<<<< HEAD
-	spin_lock_irqsave(&nw_gpio_lock, flags);
-	nw_cpld_modify(CPLD_FLASH_WR_ENABLE, CPLD_FLASH_WR_ENABLE);
-	spin_unlock_irqrestore(&nw_gpio_lock, flags);
-=======
 	raw_spin_lock_irqsave(&nw_gpio_lock, flags);
 	nw_cpld_modify(CPLD_FLASH_WR_ENABLE, CPLD_FLASH_WR_ENABLE);
 	raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * let the ISA bus to catch on...
@@ -682,11 +576,7 @@ static const struct file_operations flash_fops =
 
 static struct miscdevice flash_miscdev =
 {
-<<<<<<< HEAD
-	FLASH_MINOR,
-=======
 	NWFLASH_MINOR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"nwflash",
 	&flash_fops
 };

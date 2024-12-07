@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * OMAP2/3/4 Power/Reset Management (PRM) bitfield definitions
- *
- * Copyright (C) 2007-2009 Texas Instruments, Inc.
- * Copyright (C) 2010 Nokia Corporation
- *
- * Paul Walmsley
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * OMAP2/3/4 Power/Reset Management (PRM) bitfield definitions
@@ -19,15 +6,12 @@
  * Copyright (C) 2010 Nokia Corporation
  *
  * Paul Walmsley
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ARCH_ARM_MACH_OMAP2_PRM_H
 #define __ARCH_ARM_MACH_OMAP2_PRM_H
 
 #include "prcm-common.h"
 
-<<<<<<< HEAD
-=======
 # ifndef __ASSEMBLER__
 extern struct omap_domain_base prm_base;
 extern u16 prm_features;
@@ -61,7 +45,6 @@ int omap2_prcm_base_init(void);
  * Register bitfields
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 24XX: PM_PWSTST_CORE, PM_PWSTST_GFX, PM_PWSTST_MPU, PM_PWSTST_DSP
  *
@@ -99,8 +82,6 @@ int omap2_prcm_base_init(void);
 #define OMAP_POWERSTATE_SHIFT				0
 #define OMAP_POWERSTATE_MASK				(0x3 << 0)
 
-<<<<<<< HEAD
-=======
 /*
  * Standardized OMAP reset source bits
  *
@@ -194,6 +175,5 @@ void omap_prm_vp_clear_txdone(u8 vp_id);
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

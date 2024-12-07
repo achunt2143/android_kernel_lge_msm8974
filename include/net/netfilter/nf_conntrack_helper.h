@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * connection tracking helpers.
  *
@@ -13,22 +10,16 @@
 
 #ifndef _NF_CONNTRACK_HELPER_H
 #define _NF_CONNTRACK_HELPER_H
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_extend.h>
 #include <net/netfilter/nf_conntrack_expect.h>
 
-<<<<<<< HEAD
-=======
 #define NF_NAT_HELPER_PREFIX		"ip_nat_"
 #define NF_NAT_HELPER_NAME(name)	NF_NAT_HELPER_PREFIX name
 #define MODULE_ALIAS_NF_NAT_HELPER(name) \
 	MODULE_ALIAS(NF_NAT_HELPER_NAME(name))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct module;
 
 enum nf_ct_helper_flags {
@@ -42,19 +33,10 @@ struct nf_conntrack_helper {
 	struct hlist_node hnode;	/* Internal use. */
 
 	char name[NF_CT_HELPER_NAME_LEN]; /* name of the module */
-<<<<<<< HEAD
-	struct module *me;		/* pointer to self */
-	const struct nf_conntrack_expect_policy *expect_policy;
-
-	/* length of internal data, ie. sizeof(struct nf_ct_*_master) */
-	size_t data_len;
-
-=======
 	refcount_t refcnt;
 	struct module *me;		/* pointer to self */
 	const struct nf_conntrack_expect_policy *expect_policy;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Tuple of things we will help (compared against server response) */
 	struct nf_conntrack_tuple tuple;
 
@@ -72,26 +54,6 @@ struct nf_conntrack_helper {
 	unsigned int expect_class_max;
 
 	unsigned int flags;
-<<<<<<< HEAD
-	unsigned int queue_num;		/* For user-space helpers. */
-};
-
-extern struct nf_conntrack_helper *
-__nf_conntrack_helper_find(const char *name, u16 l3num, u8 protonum);
-
-extern struct nf_conntrack_helper *
-nf_conntrack_helper_try_module_get(const char *name, u16 l3num, u8 protonum);
-
-extern int nf_conntrack_helper_register(struct nf_conntrack_helper *);
-extern void nf_conntrack_helper_unregister(struct nf_conntrack_helper *);
-
-extern struct nf_conn_help *nf_ct_helper_ext_add(struct nf_conn *ct, struct nf_conntrack_helper *helper, gfp_t gfp);
-
-extern int __nf_ct_try_assign_helper(struct nf_conn *ct, struct nf_conn *tmpl,
-				     gfp_t flags);
-
-extern void nf_ct_helper_destroy(struct nf_conn *ct);
-=======
 
 	/* For user-space helpers: */
 	unsigned int queue_num;
@@ -159,7 +121,6 @@ int nf_ct_add_helper(struct nf_conn *ct, const char *name, u8 family,
 		     u8 proto, bool nat, struct nf_conntrack_helper **hp);
 
 void nf_ct_helper_destroy(struct nf_conn *ct);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct nf_conn_help *nfct_help(const struct nf_conn *ct)
 {
@@ -175,23 +136,12 @@ static inline void *nfct_help_data(const struct nf_conn *ct)
 	return (void *)help->data;
 }
 
-<<<<<<< HEAD
-extern int nf_conntrack_helper_init(struct net *net);
-extern void nf_conntrack_helper_fini(struct net *net);
-
-extern int nf_conntrack_broadcast_help(struct sk_buff *skb,
-				       unsigned int protoff,
-				       struct nf_conn *ct,
-				       enum ip_conntrack_info ctinfo,
-				       unsigned int timeout);
-=======
 int nf_conntrack_helper_init(void);
 void nf_conntrack_helper_fini(void);
 
 int nf_conntrack_broadcast_help(struct sk_buff *skb, struct nf_conn *ct,
 				enum ip_conntrack_info ctinfo,
 				unsigned int timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nf_ct_helper_expectfn {
 	struct list_head head;
@@ -199,13 +149,10 @@ struct nf_ct_helper_expectfn {
 	void (*expectfn)(struct nf_conn *ct, struct nf_conntrack_expect *exp);
 };
 
-<<<<<<< HEAD
-=======
 __printf(3,4)
 void nf_ct_helper_log(struct sk_buff *skb, const struct nf_conn *ct,
 		      const char *fmt, ...);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nf_ct_helper_expectfn_register(struct nf_ct_helper_expectfn *n);
 void nf_ct_helper_expectfn_unregister(struct nf_ct_helper_expectfn *n);
 struct nf_ct_helper_expectfn *
@@ -216,8 +163,6 @@ nf_ct_helper_expectfn_find_by_symbol(const void *symbol);
 extern struct hlist_head *nf_ct_helper_hash;
 extern unsigned int nf_ct_helper_hsize;
 
-<<<<<<< HEAD
-=======
 struct nf_conntrack_nat_helper {
 	struct list_head list;
 	char mod_name[NF_CT_HELPER_NAME_LEN];	/* module name */
@@ -235,5 +180,4 @@ void nf_nat_helper_unregister(struct nf_conntrack_nat_helper *nat);
 int nf_nat_helper_try_module_get(const char *name, u16 l3num,
 				 u8 protonum);
 void nf_nat_helper_put(struct nf_conntrack_helper *helper);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*_NF_CONNTRACK_HELPER_H*/

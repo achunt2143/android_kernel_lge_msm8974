@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MMC_STRPCL	0x0000
 #define STOP_CLOCK		(1 << 0)
 #define START_CLOCK		(2 << 0)

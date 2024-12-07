@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * driver/media/radio/radio-tea5764.c
  *
@@ -13,23 +10,6 @@
  *
  *  Copyright (c) 2008 Fabio Belavenuto <belavenuto@gmail.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * History:
  * 2008-12-06   Fabio Belavenuto <belavenuto@gmail.com>
  *              initial code
@@ -46,12 +26,9 @@
 #include <linux/i2c.h>			/* I2C				*/
 #include <media/v4l2-common.h>
 #include <media/v4l2-ioctl.h>
-<<<<<<< HEAD
-=======
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_VERSION	"0.0.2"
 
@@ -70,13 +47,8 @@
 
 /* Frequency limits in MHz -- these are European values.  For Japanese
 devices, that would be 76000 and 91000.  */
-<<<<<<< HEAD
-#define FREQ_MIN  87500
-#define FREQ_MAX 108000
-=======
 #define FREQ_MIN  87500U
 #define FREQ_MAX 108000U
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FREQ_MUL 16
 
 /* TEA5764 registers */
@@ -139,19 +111,11 @@ struct tea5764_regs {
 
 struct tea5764_write_regs {
 	u8 intreg;				/* INTMSK */
-<<<<<<< HEAD
-	u16 frqset;				/* FRQSETMSB & FRQSETLSB */
-	u16 tnctrl;				/* TNCTRL1 & TNCTRL2 */
-	u16 testreg;				/* TESTBITS & TESTMODE */
-	u16 rdsctrl;				/* RDSCTRL1 & RDSCTRL2 */
-	u16 rdsbbl;				/* PAUSEDET & RDSBBL */
-=======
 	__be16 frqset;				/* FRQSETMSB & FRQSETLSB */
 	__be16 tnctrl;				/* TNCTRL1 & TNCTRL2 */
 	__be16 testreg;				/* TESTBITS & TESTMODE */
 	__be16 rdsctrl;				/* RDSCTRL1 & RDSCTRL2 */
 	__be16 rdsbbl;				/* PAUSEDET & RDSBBL */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 #ifdef CONFIG_RADIO_TEA5764_XTAL
@@ -164,71 +128,45 @@ static int radio_nr = -1;
 static int use_xtal = RADIO_TEA5764_XTAL;
 
 struct tea5764_device {
-<<<<<<< HEAD
-	struct i2c_client		*i2c_client;
-	struct video_device		*videodev;
-=======
 	struct v4l2_device		v4l2_dev;
 	struct v4l2_ctrl_handler	ctrl_handler;
 	struct i2c_client		*i2c_client;
 	struct video_device		vdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tea5764_regs		regs;
 	struct mutex			mutex;
 };
 
 /* I2C code related */
-<<<<<<< HEAD
-int tea5764_i2c_read(struct tea5764_device *radio)
-=======
 static int tea5764_i2c_read(struct tea5764_device *radio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	u16 *p = (u16 *) &radio->regs;
 
 	struct i2c_msg msgs[1] = {
-<<<<<<< HEAD
-		{ radio->i2c_client->addr, I2C_M_RD, sizeof(radio->regs),
-			(void *)&radio->regs },
-=======
 		{	.addr = radio->i2c_client->addr,
 			.flags = I2C_M_RD,
 			.len = sizeof(radio->regs),
 			.buf = (void *)&radio->regs
 		},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	if (i2c_transfer(radio->i2c_client->adapter, msgs, 1) != 1)
 		return -EIO;
 	for (i = 0; i < sizeof(struct tea5764_regs) / sizeof(u16); i++)
-<<<<<<< HEAD
-		p[i] = __be16_to_cpu(p[i]);
-=======
 		p[i] = __be16_to_cpu((__force __be16)p[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int tea5764_i2c_write(struct tea5764_device *radio)
-=======
 static int tea5764_i2c_write(struct tea5764_device *radio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tea5764_write_regs wr;
 	struct tea5764_regs *r = &radio->regs;
 	struct i2c_msg msgs[1] = {
-<<<<<<< HEAD
-		{ radio->i2c_client->addr, 0, sizeof(wr), (void *) &wr },
-=======
 		{
 			.addr = radio->i2c_client->addr,
 			.len = sizeof(wr),
 			.buf = (void *)&wr
 		},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	wr.intreg  = r->intreg & 0xff;
 	wr.frqset  = __cpu_to_be16(r->frqset);
@@ -241,21 +179,6 @@ static int tea5764_i2c_write(struct tea5764_device *radio)
 	return 0;
 }
 
-<<<<<<< HEAD
-/* V4L2 code related */
-static struct v4l2_queryctrl radio_qctrl[] = {
-	{
-		.id            = V4L2_CID_AUDIO_MUTE,
-		.name          = "Mute",
-		.minimum       = 0,
-		.maximum       = 1,
-		.default_value = 1,
-		.type          = V4L2_CTRL_TYPE_BOOLEAN,
-	}
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void tea5764_power_up(struct tea5764_device *radio)
 {
 	struct tea5764_regs *r = &radio->regs;
@@ -348,35 +271,17 @@ static void tea5764_mute(struct tea5764_device *radio, int on)
 		tea5764_i2c_write(radio);
 }
 
-<<<<<<< HEAD
-static int tea5764_is_muted(struct tea5764_device *radio)
-{
-	return radio->regs.tnctrl & TEA5764_TNCTRL_MU;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* V4L2 vidioc */
 static int vidioc_querycap(struct file *file, void  *priv,
 					struct v4l2_capability *v)
 {
 	struct tea5764_device *radio = video_drvdata(file);
-<<<<<<< HEAD
-	struct video_device *dev = radio->videodev;
-
-	strlcpy(v->driver, dev->dev.driver->name, sizeof(v->driver));
-	strlcpy(v->card, dev->name, sizeof(v->card));
-	snprintf(v->bus_info, sizeof(v->bus_info),
-		 "I2C:%s", dev_name(&dev->dev));
-	v->capabilities = V4L2_CAP_TUNER | V4L2_CAP_RADIO;
-=======
 	struct video_device *dev = &radio->vdev;
 
 	strscpy(v->driver, dev->dev.driver->name, sizeof(v->driver));
 	strscpy(v->card, dev->name, sizeof(v->card));
 	snprintf(v->bus_info, sizeof(v->bus_info),
 		 "I2C:%s", dev_name(&dev->dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -389,12 +294,7 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	if (v->index > 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	memset(v, 0, sizeof(*v));
-	strcpy(v->name, "FM");
-=======
 	strscpy(v->name, "FM", sizeof(v->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v->type = V4L2_TUNER_RADIO;
 	tea5764_i2c_read(radio);
 	v->rangelow   = FREQ_MIN * FREQ_MUL;
@@ -412,11 +312,7 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 }
 
 static int vidioc_s_tuner(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_tuner *v)
-=======
 				const struct v4l2_tuner *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tea5764_device *radio = video_drvdata(file);
 
@@ -428,24 +324,6 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 }
 
 static int vidioc_s_frequency(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_frequency *f)
-{
-	struct tea5764_device *radio = video_drvdata(file);
-
-	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
-		return -EINVAL;
-	if (f->frequency == 0) {
-		/* We special case this as a power down control. */
-		tea5764_power_down(radio);
-	}
-	if (f->frequency < (FREQ_MIN * FREQ_MUL))
-		return -EINVAL;
-	if (f->frequency > (FREQ_MAX * FREQ_MUL))
-		return -EINVAL;
-	tea5764_power_up(radio);
-	tea5764_tune(radio, (f->frequency * 125) / 2);
-=======
 				const struct v4l2_frequency *f)
 {
 	struct tea5764_device *radio = video_drvdata(file);
@@ -466,7 +344,6 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 	freq = clamp(freq, FREQ_MIN * FREQ_MUL, FREQ_MAX * FREQ_MUL);
 	tea5764_power_up(radio);
 	tea5764_tune(radio, (freq * 125) / 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -479,10 +356,6 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 	if (f->tuner != 0)
 		return -EINVAL;
 	tea5764_i2c_read(radio);
-<<<<<<< HEAD
-	memset(f, 0, sizeof(*f));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	f->type = V4L2_TUNER_RADIO;
 	if (r->tnctrl & TEA5764_TNCTRL_PUPD0)
 		f->frequency = (tea5764_get_freq(radio) * 2) / 125;
@@ -492,31 +365,6 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int vidioc_queryctrl(struct file *file, void *priv,
-			    struct v4l2_queryctrl *qc)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(radio_qctrl); i++) {
-		if (qc->id && qc->id == radio_qctrl[i].id) {
-			memcpy(qc, &(radio_qctrl[i]), sizeof(*qc));
-			return 0;
-		}
-	}
-	return -EINVAL;
-}
-
-static int vidioc_g_ctrl(struct file *file, void *priv,
-			    struct v4l2_control *ctrl)
-{
-	struct tea5764_device *radio = video_drvdata(file);
-
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		tea5764_i2c_read(radio);
-		ctrl->value = tea5764_is_muted(radio) ? 1 : 0;
-=======
 static int tea5764_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct tea5764_device *radio =
@@ -525,73 +373,21 @@ static int tea5764_s_ctrl(struct v4l2_ctrl *ctrl)
 	switch (ctrl->id) {
 	case V4L2_CID_AUDIO_MUTE:
 		tea5764_mute(radio, ctrl->val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int vidioc_s_ctrl(struct file *file, void *priv,
-			    struct v4l2_control *ctrl)
-{
-	struct tea5764_device *radio = video_drvdata(file);
-
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		tea5764_mute(radio, ctrl->value);
-		return 0;
-	}
-	return -EINVAL;
-}
-
-static int vidioc_g_input(struct file *filp, void *priv, unsigned int *i)
-{
-	*i = 0;
-	return 0;
-}
-
-static int vidioc_s_input(struct file *filp, void *priv, unsigned int i)
-{
-	if (i != 0)
-		return -EINVAL;
-	return 0;
-}
-
-static int vidioc_g_audio(struct file *file, void *priv,
-			   struct v4l2_audio *a)
-{
-	if (a->index > 1)
-		return -EINVAL;
-
-	strcpy(a->name, "Radio");
-	a->capability = V4L2_AUDCAP_STEREO;
-	return 0;
-}
-
-static int vidioc_s_audio(struct file *file, void *priv,
-			   struct v4l2_audio *a)
-{
-	if (a->index != 0)
-		return -EINVAL;
-
-	return 0;
-}
-=======
 static const struct v4l2_ctrl_ops tea5764_ctrl_ops = {
 	.s_ctrl = tea5764_s_ctrl,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* File system interface */
 static const struct v4l2_file_operations tea5764_fops = {
 	.owner		= THIS_MODULE,
-<<<<<<< HEAD
-=======
 	.open		= v4l2_fh_open,
 	.release	= v4l2_fh_release,
 	.poll		= v4l2_ctrl_poll,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	= video_ioctl2,
 };
 
@@ -599,32 +395,6 @@ static const struct v4l2_ioctl_ops tea5764_ioctl_ops = {
 	.vidioc_querycap    = vidioc_querycap,
 	.vidioc_g_tuner     = vidioc_g_tuner,
 	.vidioc_s_tuner     = vidioc_s_tuner,
-<<<<<<< HEAD
-	.vidioc_g_audio     = vidioc_g_audio,
-	.vidioc_s_audio     = vidioc_s_audio,
-	.vidioc_g_input     = vidioc_g_input,
-	.vidioc_s_input     = vidioc_s_input,
-	.vidioc_g_frequency = vidioc_g_frequency,
-	.vidioc_s_frequency = vidioc_s_frequency,
-	.vidioc_queryctrl   = vidioc_queryctrl,
-	.vidioc_g_ctrl      = vidioc_g_ctrl,
-	.vidioc_s_ctrl      = vidioc_s_ctrl,
-};
-
-/* V4L2 interface */
-static struct video_device tea5764_radio_template = {
-	.name		= "TEA5764 FM-Radio",
-	.fops           = &tea5764_fops,
-	.ioctl_ops 	= &tea5764_ioctl_ops,
-	.release	= video_device_release,
-};
-
-/* I2C probe: check if the device exists and register with v4l if it is */
-static int __devinit tea5764_i2c_probe(struct i2c_client *client,
-					const struct i2c_device_id *id)
-{
-	struct tea5764_device *radio;
-=======
 	.vidioc_g_frequency = vidioc_g_frequency,
 	.vidioc_s_frequency = vidioc_s_frequency,
 	.vidioc_log_status  = v4l2_ctrl_log_status,
@@ -646,7 +416,6 @@ static int tea5764_i2c_probe(struct i2c_client *client)
 	struct tea5764_device *radio;
 	struct v4l2_device *v4l2_dev;
 	struct v4l2_ctrl_handler *hdl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tea5764_regs *r;
 	int ret;
 
@@ -655,8 +424,6 @@ static int tea5764_i2c_probe(struct i2c_client *client)
 	if (!radio)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	v4l2_dev = &radio->v4l2_dev;
 	ret = v4l2_device_register(&client->dev, v4l2_dev);
 	if (ret < 0) {
@@ -675,38 +442,17 @@ static int tea5764_i2c_probe(struct i2c_client *client)
 		goto errunreg;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&radio->mutex);
 	radio->i2c_client = client;
 	ret = tea5764_i2c_read(radio);
 	if (ret)
-<<<<<<< HEAD
-		goto errfr;
-=======
 		goto errunreg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = &radio->regs;
 	PDEBUG("chipid = %04X, manid = %04X", r->chipid, r->manid);
 	if (r->chipid != TEA5764_CHIPID ||
 		(r->manid & 0x0fff) != TEA5764_MANID) {
 		PWARN("This chip is not a TEA5764!");
 		ret = -EINVAL;
-<<<<<<< HEAD
-		goto errfr;
-	}
-
-	radio->videodev = video_device_alloc();
-	if (!(radio->videodev)) {
-		ret = -ENOMEM;
-		goto errfr;
-	}
-	memcpy(radio->videodev, &tea5764_radio_template,
-		sizeof(tea5764_radio_template));
-
-	i2c_set_clientdata(client, radio);
-	video_set_drvdata(radio->videodev, radio);
-	radio->videodev->lock = &radio->mutex;
-=======
 		goto errunreg;
 	}
 
@@ -717,7 +463,6 @@ static int tea5764_i2c_probe(struct i2c_client *client)
 	radio->vdev.lock = &radio->mutex;
 	radio->vdev.v4l2_dev = v4l2_dev;
 	radio->vdev.device_caps = V4L2_CAP_TUNER | V4L2_CAP_RADIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize and power off the chip */
 	tea5764_i2c_read(radio);
@@ -725,57 +470,34 @@ static int tea5764_i2c_probe(struct i2c_client *client)
 	tea5764_mute(radio, 1);
 	tea5764_power_down(radio);
 
-<<<<<<< HEAD
-	ret = video_register_device(radio->videodev, VFL_TYPE_RADIO, radio_nr);
-	if (ret < 0) {
-		PWARN("Could not register video device!");
-		goto errrel;
-=======
 	ret = video_register_device(&radio->vdev, VFL_TYPE_RADIO, radio_nr);
 	if (ret < 0) {
 		PWARN("Could not register video device!");
 		goto errunreg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	PINFO("registered.");
 	return 0;
-<<<<<<< HEAD
-errrel:
-	video_device_release(radio->videodev);
-=======
 errunreg:
 	v4l2_ctrl_handler_free(hdl);
 	v4l2_device_unregister(v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 errfr:
 	kfree(radio);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit tea5764_i2c_remove(struct i2c_client *client)
-=======
 static void tea5764_i2c_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tea5764_device *radio = i2c_get_clientdata(client);
 
 	PDEBUG("remove");
 	if (radio) {
 		tea5764_power_down(radio);
-<<<<<<< HEAD
-		video_unregister_device(radio->videodev);
-		kfree(radio);
-	}
-	return 0;
-=======
 		video_unregister_device(&radio->vdev);
 		v4l2_ctrl_handler_free(&radio->ctrl_handler);
 		v4l2_device_unregister(&radio->v4l2_dev);
 		kfree(radio);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* I2C subsystem interface */
@@ -788,16 +510,9 @@ MODULE_DEVICE_TABLE(i2c, tea5764_id);
 static struct i2c_driver tea5764_i2c_driver = {
 	.driver = {
 		.name = "radio-tea5764",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = tea5764_i2c_probe,
-	.remove = __devexit_p(tea5764_i2c_remove),
-=======
 	},
 	.probe = tea5764_i2c_probe,
 	.remove = tea5764_i2c_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = tea5764_id,
 };
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	IDE tuning and bus mastering support for the CS5510/CS5520
  *	chipsets
@@ -22,29 +19,12 @@
  *
  *	(c) Copyright Red Hat Inc 2002
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Documentation:
  *	Not publicly available.
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -72,10 +52,7 @@ static const struct pio_clocks cs5520_pio_clocks[]={
  *	cs5520_set_timings	-	program PIO timings
  *	@ap: ATA port
  *	@adev: ATA device
-<<<<<<< HEAD
-=======
  *	@pio: PIO ID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Program the PIO mode timings for the controller according to the pio
  *	clocking table.
@@ -117,16 +94,10 @@ static void cs5520_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	cs5520_set_timings(ap, adev, adev->pio_mode);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template cs5520_sht = {
-	ATA_BMDMA_SHT(DRV_NAME),
-	.sg_tablesize		= LIBATA_DUMB_MAX_PRD,
-=======
 static const struct scsi_host_template cs5520_sht = {
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= LIBATA_DUMB_MAX_PRD,
 	.dma_boundary		= ATA_DMA_BOUNDARY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations cs5520_port_ops = {
@@ -136,11 +107,7 @@ static struct ata_port_operations cs5520_port_ops = {
 	.set_piomode		= cs5520_set_piomode,
 };
 
-<<<<<<< HEAD
-static int __devinit cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
-=======
 static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned int cmd_port[] = { 0x1F0, 0x170 };
 	static const unsigned int ctl_port[] = { 0x3F6, 0x376 };
@@ -186,25 +153,12 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	/* Perform set up for DMA */
 	if (pci_enable_device_io(pdev)) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": unable to configure BAR2.\n");
-		return -ENODEV;
-	}
-
-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
-		printk(KERN_ERR DRV_NAME ": unable to configure DMA mask.\n");
-		return -ENODEV;
-	}
-	if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32))) {
-		printk(KERN_ERR DRV_NAME ": unable to configure consistent DMA mask.\n");
-=======
 		dev_err(&pdev->dev, "unable to configure BAR2.\n");
 		return -ENODEV;
 	}
 
 	if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))) {
 		dev_err(&pdev->dev, "unable to configure DMA mask.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -258,21 +212,13 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		if (rc)
 			return rc;
 
-<<<<<<< HEAD
-		ata_port_desc(ap, "irq %d", irq[i]);
-=======
 		ata_port_desc_misc(ap, irq[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ata_host_register(host, &cs5520_sht);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	cs5520_reinit_one	-	device resume
  *	@pdev: PCI device
@@ -283,11 +229,7 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 
 static int cs5520_reinit_one(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 pcicfg;
 	int rc;
 
@@ -306,10 +248,7 @@ static int cs5520_reinit_one(struct pci_dev *pdev)
 /**
  *	cs5520_pci_device_suspend	-	device suspend
  *	@pdev: PCI device
-<<<<<<< HEAD
-=======
  *	@mesg: PM event message
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	We have to cut and waste bits from the standard method because
  *	the 5520 is a bit odd and not just a pure ATA device. As a result
@@ -319,27 +258,14 @@ static int cs5520_reinit_one(struct pci_dev *pdev)
 
 static int cs5520_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 {
-<<<<<<< HEAD
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-	int rc = 0;
-
-	rc = ata_host_suspend(host, mesg);
-	if (rc)
-		return rc;
-=======
 	struct ata_host *host = pci_get_drvdata(pdev);
 
 	ata_host_suspend(host, mesg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_save_state(pdev);
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-=======
 #endif /* CONFIG_PM_SLEEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* For now keep DMA off. We can set it for all but A rev CS5510 once the
    core ATA code can handle it */
@@ -356,39 +282,16 @@ static struct pci_driver cs5520_pci_driver = {
 	.id_table	= pata_cs5520,
 	.probe 		= cs5520_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= cs5520_pci_device_suspend,
 	.resume		= cs5520_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init cs5520_init(void)
-{
-	return pci_register_driver(&cs5520_pci_driver);
-}
-
-static void __exit cs5520_exit(void)
-{
-	pci_unregister_driver(&cs5520_pci_driver);
-}
-=======
 module_pci_driver(cs5520_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Cyrix CS5510/5520");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, pata_cs5520);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(cs5520_init);
-module_exit(cs5520_exit);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

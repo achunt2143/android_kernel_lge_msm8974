@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RapidIO mport driver for Tsi721 PCIExpress-to-SRIO bridge
  *
  * Copyright 2011 Integrated Device Technology, Inc.
  * Alexandre Bounine <alexandre.bounine@idt.com>
  * Chul Kim <chul.kim@idt.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/io.h>
@@ -43,9 +23,6 @@
 
 #include "tsi721.h"
 
-<<<<<<< HEAD
-#define DEBUG_PW	/* Inbound Port-Write debugging */
-=======
 #ifdef DEBUG
 u32 tsi_dbg_level;
 module_param_named(dbg_level, tsi_dbg_level, uint, S_IWUSR | S_IRUGO);
@@ -62,7 +39,6 @@ MODULE_PARM_DESC(mbox_sel,
 		 "RIO Messaging MBOX Selection Mask (default: 0x0f = all)");
 
 static DEFINE_SPINLOCK(tsi721_maint_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void tsi721_omsg_handler(struct tsi721_device *priv, int ch);
 static void tsi721_imsg_handler(struct tsi721_device *priv, int ch);
@@ -75,14 +51,9 @@ static void tsi721_imsg_handler(struct tsi721_device *priv, int ch);
  * @len: Length (in bytes) of the maintenance transaction
  * @data: Value to be read into
  *
-<<<<<<< HEAD
- * Generates a local SREP space read. Returns %0 on
- * success or %-EINVAL on failure.
-=======
  * Generates a local SREP space read.
  *
  * Returns: %0 on success or %-EINVAL on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_lcread(struct rio_mport *mport, int index, u32 offset,
 			 int len, u32 *data)
@@ -105,14 +76,9 @@ static int tsi721_lcread(struct rio_mport *mport, int index, u32 offset,
  * @len: Length (in bytes) of the maintenance transaction
  * @data: Value to be written
  *
-<<<<<<< HEAD
- * Generates a local write into SREP configuration space. Returns %0 on
- * success or %-EINVAL on failure.
-=======
  * Generates a local write into SREP configuration space.
  *
  * Returns: %0 on success or %-EINVAL on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_lcwrite(struct rio_mport *mport, int index, u32 offset,
 			  int len, u32 data)
@@ -140,43 +106,27 @@ static int tsi721_lcwrite(struct rio_mport *mport, int index, u32 offset,
  * @do_wr: Operation flag (1 == MAINT_WR)
  *
  * Generates a RapidIO maintenance transaction (Read or Write).
-<<<<<<< HEAD
- * Returns %0 on success and %-EINVAL or %-EFAULT on failure.
-=======
  * Returns: %0 on success and %-EINVAL or %-EFAULT on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_maint_dma(struct tsi721_device *priv, u32 sys_size,
 			u16 destid, u8 hopcount, u32 offset, int len,
 			u32 *data, int do_wr)
 {
-<<<<<<< HEAD
-	struct tsi721_dma_desc *bd_ptr;
-	u32 rd_count, swr_ptr, ch_stat;
-=======
 	void __iomem *regs = priv->regs + TSI721_DMAC_BASE(priv->mdma.ch_id);
 	struct tsi721_dma_desc *bd_ptr;
 	u32 rd_count, swr_ptr, ch_stat;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, err = 0;
 	u32 op = do_wr ? MAINT_WR : MAINT_RD;
 
 	if (offset > (RIO_MAINT_SPACE_SZ - len) || (len != sizeof(u32)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	bd_ptr = priv->bdma[TSI721_DMACH_MAINT].bd_base;
-
-	rd_count = ioread32(
-			priv->regs + TSI721_DMAC_DRDCNT(TSI721_DMACH_MAINT));
-=======
 	spin_lock_irqsave(&tsi721_maint_lock, flags);
 
 	bd_ptr = priv->mdma.bd_base;
 
 	rd_count = ioread32(regs + TSI721_DMAC_DRDCNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize DMA descriptor */
 	bd_ptr[0].type_id = cpu_to_le32((DTYPE2 << 29) | (op << 19) | destid);
@@ -191,21 +141,6 @@ static int tsi721_maint_dma(struct tsi721_device *priv, u32 sys_size,
 	mb();
 
 	/* Start DMA operation */
-<<<<<<< HEAD
-	iowrite32(rd_count + 2,
-		priv->regs + TSI721_DMAC_DWRCNT(TSI721_DMACH_MAINT));
-	ioread32(priv->regs + TSI721_DMAC_DWRCNT(TSI721_DMACH_MAINT));
-	i = 0;
-
-	/* Wait until DMA transfer is finished */
-	while ((ch_stat = ioread32(priv->regs +
-		TSI721_DMAC_STS(TSI721_DMACH_MAINT))) & TSI721_DMAC_STS_RUN) {
-		udelay(1);
-		if (++i >= 5000000) {
-			dev_dbg(&priv->pdev->dev,
-				"%s : DMA[%d] read timeout ch_status=%x\n",
-				__func__, TSI721_DMACH_MAINT, ch_stat);
-=======
 	iowrite32(rd_count + 2,	regs + TSI721_DMAC_DWRCNT);
 	ioread32(regs + TSI721_DMAC_DWRCNT);
 	i = 0;
@@ -218,7 +153,6 @@ static int tsi721_maint_dma(struct tsi721_device *priv, u32 sys_size,
 			tsi_debug(MAINT, &priv->pdev->dev,
 				"DMA[%d] read timeout ch_status=%x",
 				priv->mdma.ch_id, ch_stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!do_wr)
 				*data = 0xffffffff;
 			err = -EIO;
@@ -230,19 +164,6 @@ static int tsi721_maint_dma(struct tsi721_device *priv, u32 sys_size,
 		/* If DMA operation aborted due to error,
 		 * reinitialize DMA channel
 		 */
-<<<<<<< HEAD
-		dev_dbg(&priv->pdev->dev, "%s : DMA ABORT ch_stat=%x\n",
-			__func__, ch_stat);
-		dev_dbg(&priv->pdev->dev, "OP=%d : destid=%x hc=%x off=%x\n",
-			do_wr ? MAINT_WR : MAINT_RD, destid, hopcount, offset);
-		iowrite32(TSI721_DMAC_INT_ALL,
-			priv->regs + TSI721_DMAC_INT(TSI721_DMACH_MAINT));
-		iowrite32(TSI721_DMAC_CTL_INIT,
-			priv->regs + TSI721_DMAC_CTL(TSI721_DMACH_MAINT));
-		udelay(10);
-		iowrite32(0, priv->regs +
-				TSI721_DMAC_DWRCNT(TSI721_DMACH_MAINT));
-=======
 		tsi_debug(MAINT, &priv->pdev->dev, "DMA ABORT ch_stat=%x",
 			  ch_stat);
 		tsi_debug(MAINT, &priv->pdev->dev,
@@ -253,7 +174,6 @@ static int tsi721_maint_dma(struct tsi721_device *priv, u32 sys_size,
 		iowrite32(TSI721_DMAC_CTL_INIT, regs + TSI721_DMAC_CTL);
 		udelay(10);
 		iowrite32(0, regs + TSI721_DMAC_DWRCNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		udelay(1);
 		if (!do_wr)
 			*data = 0xffffffff;
@@ -269,17 +189,11 @@ static int tsi721_maint_dma(struct tsi721_device *priv, u32 sys_size,
 	 * NOTE: Skipping check and clear FIFO entries because we are waiting
 	 * for transfer to be completed.
 	 */
-<<<<<<< HEAD
-	swr_ptr = ioread32(priv->regs + TSI721_DMAC_DSWP(TSI721_DMACH_MAINT));
-	iowrite32(swr_ptr, priv->regs + TSI721_DMAC_DSRP(TSI721_DMACH_MAINT));
-err_out:
-=======
 	swr_ptr = ioread32(regs + TSI721_DMAC_DSWP);
 	iowrite32(swr_ptr, regs + TSI721_DMAC_DSRP);
 
 err_out:
 	spin_unlock_irqrestore(&tsi721_maint_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -293,17 +207,10 @@ err_out:
  * @hopcount: Number of hops to target device
  * @offset: Offset into configuration space
  * @len: Length (in bytes) of the maintenance transaction
-<<<<<<< HEAD
- * @val: Location to be read into
- *
- * Generates a RapidIO maintenance read transaction.
- * Returns %0 on success and %-EINVAL or %-EFAULT on failure.
-=======
  * @data: Location to be read into
  *
  * Generates a RapidIO maintenance read transaction.
  * Returns: %0 on success and %-EINVAL or %-EFAULT on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_cread_dma(struct rio_mport *mport, int index, u16 destid,
 			u8 hopcount, u32 offset, int len, u32 *data)
@@ -323,17 +230,10 @@ static int tsi721_cread_dma(struct rio_mport *mport, int index, u16 destid,
  * @hopcount: Number of hops to target device
  * @offset: Offset into configuration space
  * @len: Length (in bytes) of the maintenance transaction
-<<<<<<< HEAD
- * @val: Value to be written
- *
- * Generates a RapidIO maintenance write transaction.
- * Returns %0 on success and %-EINVAL or %-EFAULT on failure.
-=======
  * @data: Value to be written
  *
  * Generates a RapidIO maintenance write transaction.
  * Returns: %0 on success and %-EINVAL or %-EFAULT on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_cwrite_dma(struct rio_mport *mport, int index, u16 destid,
 			 u8 hopcount, u32 offset, int len, u32 data)
@@ -347,29 +247,17 @@ static int tsi721_cwrite_dma(struct rio_mport *mport, int index, u16 destid,
 
 /**
  * tsi721_pw_handler - Tsi721 inbound port-write interrupt handler
-<<<<<<< HEAD
- * @mport: RapidIO master port structure
-=======
  * @priv:  tsi721 device private structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Handles inbound port-write interrupts. Copies PW message from an internal
  * buffer into PW message FIFO and schedules deferred routine to process
  * queued messages.
-<<<<<<< HEAD
- */
-static int
-tsi721_pw_handler(struct rio_mport *mport)
-{
-	struct tsi721_device *priv = mport->priv;
-=======
  *
  * Returns: %0
  */
 static int
 tsi721_pw_handler(struct tsi721_device *priv)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pw_stat;
 	u32 pw_buf[TSI721_RIO_PW_MSG_SIZE/sizeof(u32)];
 
@@ -407,41 +295,15 @@ static void tsi721_pw_dpc(struct work_struct *work)
 {
 	struct tsi721_device *priv = container_of(work, struct tsi721_device,
 						    pw_work);
-<<<<<<< HEAD
-	u32 msg_buffer[RIO_PW_MSG_SIZE/sizeof(u32)]; /* Use full size PW message
-							buffer for RIO layer */
-=======
 	union rio_pw_msg pwmsg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Process port-write messages
 	 */
-<<<<<<< HEAD
-	while (kfifo_out_spinlocked(&priv->pw_fifo, (unsigned char *)msg_buffer,
-			 TSI721_RIO_PW_MSG_SIZE, &priv->pw_fifo_lock)) {
-		/* Process one message */
-#ifdef DEBUG_PW
-		{
-		u32 i;
-		pr_debug("%s : Port-Write Message:", __func__);
-		for (i = 0; i < RIO_PW_MSG_SIZE/sizeof(u32); ) {
-			pr_debug("0x%02x: %08x %08x %08x %08x", i*4,
-				msg_buffer[i], msg_buffer[i + 1],
-				msg_buffer[i + 2], msg_buffer[i + 3]);
-			i += 4;
-		}
-		pr_debug("\n");
-		}
-#endif
-		/* Pass the port-write message to RIO core for processing */
-		rio_inb_pwrite_handler((union rio_pw_msg *)msg_buffer);
-=======
 	while (kfifo_out_spinlocked(&priv->pw_fifo, (unsigned char *)&pwmsg,
 			 TSI721_RIO_PW_MSG_SIZE, &priv->pw_fifo_lock)) {
 		/* Pass the port-write message to RIO core for processing */
 		rio_inb_pwrite_handler(&priv->mport, &pwmsg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -449,11 +311,8 @@ static void tsi721_pw_dpc(struct work_struct *work)
  * tsi721_pw_enable - enable/disable port-write interface init
  * @mport: Master port implementing the port write unit
  * @enable:    1=enable; 0=disable port-write message handling
-<<<<<<< HEAD
-=======
  *
  * Returns: %0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_pw_enable(struct rio_mport *mport, int enable)
 {
@@ -483,13 +342,9 @@ static int tsi721_pw_enable(struct rio_mport *mport, int enable)
  * @destid: Destination ID of target device
  * @data: 16-bit info field of RapidIO doorbell
  *
-<<<<<<< HEAD
- * Sends a RapidIO doorbell message. Always returns %0.
-=======
  * Sends a RapidIO doorbell message.
  *
  * Returns: %0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_dsend(struct rio_mport *mport, int index,
 			u16 destid, u16 data)
@@ -500,13 +355,8 @@ static int tsi721_dsend(struct rio_mport *mport, int index,
 	offset = (((mport->sys_size) ? RIO_TT_CODE_16 : RIO_TT_CODE_8) << 18) |
 		 (destid << 2);
 
-<<<<<<< HEAD
-	dev_dbg(&priv->pdev->dev,
-		"Send Doorbell 0x%04x to destID 0x%x\n", data, destid);
-=======
 	tsi_debug(DBELL, &priv->pdev->dev,
 		  "Send Doorbell 0x%04x to destID 0x%x", data, destid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite16be(data, priv->odb_base + offset);
 
 	return 0;
@@ -514,29 +364,17 @@ static int tsi721_dsend(struct rio_mport *mport, int index,
 
 /**
  * tsi721_dbell_handler - Tsi721 doorbell interrupt handler
-<<<<<<< HEAD
- * @mport: RapidIO master port structure
-=======
  * @priv: tsi721 device-specific data structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Handles inbound doorbell interrupts. Copies doorbell entry from an internal
  * buffer into DB message FIFO and schedules deferred  routine to process
  * queued DBs.
-<<<<<<< HEAD
- */
-static int
-tsi721_dbell_handler(struct rio_mport *mport)
-{
-	struct tsi721_device *priv = mport->priv;
-=======
  *
  * Returns: %0
  */
 static int
 tsi721_dbell_handler(struct tsi721_device *priv)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 regval;
 
 	/* Disable IDB interrupts */
@@ -568,11 +406,7 @@ static void tsi721_db_dpc(struct work_struct *work)
 	/*
 	 * Process queued inbound doorbells
 	 */
-<<<<<<< HEAD
-	mport = priv->mport;
-=======
 	mport = &priv->mport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wr_ptr = ioread32(priv->regs + TSI721_IDQ_WP(IDB_QUEUE)) % IDB_QSIZE;
 	rd_ptr = ioread32(priv->regs + TSI721_IDQ_RP(IDB_QUEUE)) % IDB_QSIZE;
@@ -598,17 +432,10 @@ static void tsi721_db_dpc(struct work_struct *work)
 			dbell->dinb(mport, dbell->dev_id, DBELL_SID(idb.bytes),
 				    DBELL_TID(idb.bytes), DBELL_INF(idb.bytes));
 		} else {
-<<<<<<< HEAD
-			dev_dbg(&priv->pdev->dev,
-				"spurious inb doorbell, sid %2.2x tid %2.2x"
-				" info %4.4x\n", DBELL_SID(idb.bytes),
-				DBELL_TID(idb.bytes), DBELL_INF(idb.bytes));
-=======
 			tsi_debug(DBELL, &priv->pdev->dev,
 				  "spurious IDB sid %2.2x tid %2.2x info %4.4x",
 				  DBELL_SID(idb.bytes), DBELL_TID(idb.bytes),
 				  DBELL_INF(idb.bytes));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		wr_ptr = ioread32(priv->regs +
@@ -632,17 +459,6 @@ static void tsi721_db_dpc(struct work_struct *work)
 /**
  * tsi721_irqhandler - Tsi721 interrupt handler
  * @irq: Linux interrupt number
-<<<<<<< HEAD
- * @ptr: Pointer to interrupt-specific data (mport structure)
- *
- * Handles Tsi721 interrupts signaled using MSI and INTA. Checks reported
- * interrupt events and calls an event-specific handler(s).
- */
-static irqreturn_t tsi721_irqhandler(int irq, void *ptr)
-{
-	struct rio_mport *mport = (struct rio_mport *)ptr;
-	struct tsi721_device *priv = mport->priv;
-=======
  * @ptr: Pointer to interrupt-specific data (tsi721_device structure)
  *
  * Handles Tsi721 interrupts signaled using MSI and INTA. Checks reported
@@ -653,7 +469,6 @@ static irqreturn_t tsi721_irqhandler(int irq, void *ptr)
 static irqreturn_t tsi721_irqhandler(int irq, void *ptr)
 {
 	struct tsi721_device *priv = (struct tsi721_device *)ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 dev_int;
 	u32 dev_ch_int;
 	u32 intval;
@@ -676,17 +491,10 @@ static irqreturn_t tsi721_irqhandler(int irq, void *ptr)
 			intval = ioread32(priv->regs +
 						TSI721_SR_CHINT(IDB_QUEUE));
 			if (intval & TSI721_SR_CHINT_IDBQRCV)
-<<<<<<< HEAD
-				tsi721_dbell_handler(mport);
-			else
-				dev_info(&priv->pdev->dev,
-					"Unsupported SR_CH_INT %x\n", intval);
-=======
 				tsi721_dbell_handler(priv);
 			else
 				tsi_info(&priv->pdev->dev,
 					"Unsupported SR_CH_INT %x", intval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Clear interrupts */
 			iowrite32(intval,
@@ -740,15 +548,6 @@ static irqreturn_t tsi721_irqhandler(int irq, void *ptr)
 		/* Service SRIO MAC interrupts */
 		intval = ioread32(priv->regs + TSI721_RIO_EM_INT_STAT);
 		if (intval & TSI721_RIO_EM_INT_STAT_PW_RX)
-<<<<<<< HEAD
-			tsi721_pw_handler(mport);
-	}
-
-	/* For MSI mode re-enable device-level interrupts */
-	if (priv->flags & TSI721_USING_MSI) {
-		dev_int = TSI721_DEV_INT_SR2PC_CH | TSI721_DEV_INT_SRIO |
-			TSI721_DEV_INT_SMSG_CH;
-=======
 			tsi721_pw_handler(priv);
 	}
 
@@ -773,7 +572,6 @@ static irqreturn_t tsi721_irqhandler(int irq, void *ptr)
 	if (priv->flags & TSI721_USING_MSI) {
 		dev_int = TSI721_DEV_INT_SR2PC_CH | TSI721_DEV_INT_SRIO |
 			TSI721_DEV_INT_SMSG_CH | TSI721_DEV_INT_BDMA_CH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iowrite32(dev_int, priv->regs + TSI721_DEV_INTE);
 	}
 
@@ -789,18 +587,11 @@ static void tsi721_interrupts_init(struct tsi721_device *priv)
 		priv->regs + TSI721_SR_CHINT(IDB_QUEUE));
 	iowrite32(TSI721_SR_CHINT_IDBQRCV,
 		priv->regs + TSI721_SR_CHINTE(IDB_QUEUE));
-<<<<<<< HEAD
-	iowrite32(TSI721_INT_SR2PC_CHAN(IDB_QUEUE),
-		priv->regs + TSI721_DEV_CHAN_INTE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable SRIO MAC interrupts */
 	iowrite32(TSI721_RIO_EM_DEV_INT_EN_INT,
 		priv->regs + TSI721_RIO_EM_DEV_INT_EN);
 
-<<<<<<< HEAD
-=======
 	/* Enable interrupts from channels in use */
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 	intr = TSI721_INT_SR2PC_CHAN(IDB_QUEUE) |
@@ -811,16 +602,11 @@ static void tsi721_interrupts_init(struct tsi721_device *priv)
 #endif
 	iowrite32(intr,	priv->regs + TSI721_DEV_CHAN_INTE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->flags & TSI721_USING_MSIX)
 		intr = TSI721_DEV_INT_SRIO;
 	else
 		intr = TSI721_DEV_INT_SR2PC_CH | TSI721_DEV_INT_SRIO |
-<<<<<<< HEAD
-			TSI721_DEV_INT_SMSG_CH;
-=======
 			TSI721_DEV_INT_SMSG_CH | TSI721_DEV_INT_BDMA_CH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite32(intr, priv->regs + TSI721_DEV_INTE);
 	ioread32(priv->regs + TSI721_DEV_INTE);
@@ -830,15 +616,6 @@ static void tsi721_interrupts_init(struct tsi721_device *priv)
 /**
  * tsi721_omsg_msix - MSI-X interrupt handler for outbound messaging
  * @irq: Linux interrupt number
-<<<<<<< HEAD
- * @ptr: Pointer to interrupt-specific data (mport structure)
- *
- * Handles outbound messaging interrupts signaled using MSI-X.
- */
-static irqreturn_t tsi721_omsg_msix(int irq, void *ptr)
-{
-	struct tsi721_device *priv = ((struct rio_mport *)ptr)->priv;
-=======
  * @ptr: Pointer to interrupt-specific data (tsi721_device structure)
  *
  * Handles outbound messaging interrupts signaled using MSI-X.
@@ -848,7 +625,6 @@ static irqreturn_t tsi721_omsg_msix(int irq, void *ptr)
 static irqreturn_t tsi721_omsg_msix(int irq, void *ptr)
 {
 	struct tsi721_device *priv = (struct tsi721_device *)ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mbox;
 
 	mbox = (irq - priv->msix[TSI721_VECT_OMB0_DONE].vector) % RIO_MAX_MBOX;
@@ -859,15 +635,6 @@ static irqreturn_t tsi721_omsg_msix(int irq, void *ptr)
 /**
  * tsi721_imsg_msix - MSI-X interrupt handler for inbound messaging
  * @irq: Linux interrupt number
-<<<<<<< HEAD
- * @ptr: Pointer to interrupt-specific data (mport structure)
- *
- * Handles inbound messaging interrupts signaled using MSI-X.
- */
-static irqreturn_t tsi721_imsg_msix(int irq, void *ptr)
-{
-	struct tsi721_device *priv = ((struct rio_mport *)ptr)->priv;
-=======
  * @ptr: Pointer to interrupt-specific data (tsi721_device structure)
  *
  * Handles inbound messaging interrupts signaled using MSI-X.
@@ -877,7 +644,6 @@ static irqreturn_t tsi721_imsg_msix(int irq, void *ptr)
 static irqreturn_t tsi721_imsg_msix(int irq, void *ptr)
 {
 	struct tsi721_device *priv = (struct tsi721_device *)ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mbox;
 
 	mbox = (irq - priv->msix[TSI721_VECT_IMB0_RCV].vector) % RIO_MAX_MBOX;
@@ -888,15 +654,6 @@ static irqreturn_t tsi721_imsg_msix(int irq, void *ptr)
 /**
  * tsi721_srio_msix - Tsi721 MSI-X SRIO MAC interrupt handler
  * @irq: Linux interrupt number
-<<<<<<< HEAD
- * @ptr: Pointer to interrupt-specific data (mport structure)
- *
- * Handles Tsi721 interrupts from SRIO MAC.
- */
-static irqreturn_t tsi721_srio_msix(int irq, void *ptr)
-{
-	struct tsi721_device *priv = ((struct rio_mport *)ptr)->priv;
-=======
  * @ptr: Pointer to interrupt-specific data (tsi721_device structure)
  *
  * Handles Tsi721 interrupts from SRIO MAC.
@@ -906,17 +663,12 @@ static irqreturn_t tsi721_srio_msix(int irq, void *ptr)
 static irqreturn_t tsi721_srio_msix(int irq, void *ptr)
 {
 	struct tsi721_device *priv = (struct tsi721_device *)ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 srio_int;
 
 	/* Service SRIO MAC interrupts */
 	srio_int = ioread32(priv->regs + TSI721_RIO_EM_INT_STAT);
 	if (srio_int & TSI721_RIO_EM_INT_STAT_PW_RX)
-<<<<<<< HEAD
-		tsi721_pw_handler((struct rio_mport *)ptr);
-=======
 		tsi721_pw_handler(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -924,38 +676,23 @@ static irqreturn_t tsi721_srio_msix(int irq, void *ptr)
 /**
  * tsi721_sr2pc_ch_msix - Tsi721 MSI-X SR2PC Channel interrupt handler
  * @irq: Linux interrupt number
-<<<<<<< HEAD
- * @ptr: Pointer to interrupt-specific data (mport structure)
-=======
  * @ptr: Pointer to interrupt-specific data (tsi721_device structure)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Handles Tsi721 interrupts from SR2PC Channel.
  * NOTE: At this moment services only one SR2PC channel associated with inbound
  * doorbells.
-<<<<<<< HEAD
- */
-static irqreturn_t tsi721_sr2pc_ch_msix(int irq, void *ptr)
-{
-	struct tsi721_device *priv = ((struct rio_mport *)ptr)->priv;
-=======
  *
  * Returns: %IRQ_HANDLED
  */
 static irqreturn_t tsi721_sr2pc_ch_msix(int irq, void *ptr)
 {
 	struct tsi721_device *priv = (struct tsi721_device *)ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sr_ch_int;
 
 	/* Service Inbound DB interrupt from SR2PC channel */
 	sr_ch_int = ioread32(priv->regs + TSI721_SR_CHINT(IDB_QUEUE));
 	if (sr_ch_int & TSI721_SR_CHINT_IDBQRCV)
-<<<<<<< HEAD
-		tsi721_dbell_handler((struct rio_mport *)ptr);
-=======
 		tsi721_dbell_handler(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear interrupts */
 	iowrite32(sr_ch_int, priv->regs + TSI721_SR_CHINT(IDB_QUEUE));
@@ -967,46 +704,20 @@ static irqreturn_t tsi721_sr2pc_ch_msix(int irq, void *ptr)
 
 /**
  * tsi721_request_msix - register interrupt service for MSI-X mode.
-<<<<<<< HEAD
- * @mport: RapidIO master port structure
-=======
  * @priv: tsi721 device-specific data structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Registers MSI-X interrupt service routines for interrupts that are active
  * immediately after mport initialization. Messaging interrupt service routines
  * should be registered during corresponding open requests.
-<<<<<<< HEAD
- */
-static int tsi721_request_msix(struct rio_mport *mport)
-{
-	struct tsi721_device *priv = mport->priv;
-=======
  *
  * Returns: %0 on success or -errno value on failure.
  */
 static int tsi721_request_msix(struct tsi721_device *priv)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	err = request_irq(priv->msix[TSI721_VECT_IDB].vector,
 			tsi721_sr2pc_ch_msix, 0,
-<<<<<<< HEAD
-			priv->msix[TSI721_VECT_IDB].irq_name, (void *)mport);
-	if (err)
-		goto out;
-
-	err = request_irq(priv->msix[TSI721_VECT_PWRX].vector,
-			tsi721_srio_msix, 0,
-			priv->msix[TSI721_VECT_PWRX].irq_name, (void *)mport);
-	if (err)
-		free_irq(
-			priv->msix[TSI721_VECT_IDB].vector,
-			(void *)mport);
-out:
-	return err;
-=======
 			priv->msix[TSI721_VECT_IDB].irq_name, (void *)priv);
 	if (err)
 		return err;
@@ -1020,7 +731,6 @@ out:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1029,11 +739,8 @@ out:
  *
  * Configures MSI-X support for Tsi721. Supports only an exact number
  * of requested vectors.
-<<<<<<< HEAD
-=======
  *
  * Returns: %0 on success or -errno value on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_enable_msix(struct tsi721_device *priv)
 {
@@ -1061,14 +768,6 @@ static int tsi721_enable_msix(struct tsi721_device *priv)
 					TSI721_MSIX_OMSG_INT(i);
 	}
 
-<<<<<<< HEAD
-	err = pci_enable_msix(priv->pdev, entries, ARRAY_SIZE(entries));
-	if (err) {
-		if (err > 0)
-			dev_info(&priv->pdev->dev,
-				 "Only %d MSI-X vectors available, "
-				 "not using MSI-X\n", err);
-=======
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 	/*
 	 * Initialize MSI-X entries for Block DMA Engine:
@@ -1087,7 +786,6 @@ static int tsi721_enable_msix(struct tsi721_device *priv)
 	if (err) {
 		tsi_err(&priv->pdev->dev,
 			"Failed to enable MSI-X (err=%d)", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -1127,8 +825,6 @@ static int tsi721_enable_msix(struct tsi721_device *priv)
 			 i, pci_name(priv->pdev));
 	}
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 	for (i = 0; i < TSI721_DMA_CHNUM; i++) {
 		priv->msix[TSI721_VECT_DMA0_DONE + i].vector =
@@ -1145,51 +841,30 @@ static int tsi721_enable_msix(struct tsi721_device *priv)
 	}
 #endif /* CONFIG_RAPIDIO_DMA_ENGINE */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif /* CONFIG_PCI_MSI */
 
-<<<<<<< HEAD
-static int tsi721_request_irq(struct rio_mport *mport)
-{
-	struct tsi721_device *priv = mport->priv;
-=======
 static int tsi721_request_irq(struct tsi721_device *priv)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 #ifdef CONFIG_PCI_MSI
 	if (priv->flags & TSI721_USING_MSIX)
-<<<<<<< HEAD
-		err = tsi721_request_msix(mport);
-=======
 		err = tsi721_request_msix(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 #endif
 		err = request_irq(priv->pdev->irq, tsi721_irqhandler,
 			  (priv->flags & TSI721_USING_MSI) ? 0 : IRQF_SHARED,
-<<<<<<< HEAD
-			  DRV_NAME, (void *)mport);
-
-	if (err)
-		dev_err(&priv->pdev->dev,
-			"Unable to allocate interrupt, Error: %d\n", err);
-=======
 			  DRV_NAME, (void *)priv);
 
 	if (err)
 		tsi_err(&priv->pdev->dev,
 			"Unable to allocate interrupt, err=%d", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static void tsi721_free_irq(struct tsi721_device *priv)
 {
 #ifdef CONFIG_PCI_MSI
@@ -1373,7 +1048,6 @@ static void tsi721_unmap_outb_win(struct rio_mport *mport,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * tsi721_init_pc2sr_mapping - initializes outbound (PCIe->SRIO)
  * translation regions.
@@ -1383,18 +1057,12 @@ static void tsi721_unmap_outb_win(struct rio_mport *mport,
  */
 static void tsi721_init_pc2sr_mapping(struct tsi721_device *priv)
 {
-<<<<<<< HEAD
-	int i;
-=======
 	int i, z;
 	u32 rval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable all PC2SR translation windows */
 	for (i = 0; i < TSI721_OBWIN_NUM; i++)
 		iowrite32(0, priv->regs + TSI721_OBWINLB(i));
-<<<<<<< HEAD
-=======
 
 	/* Initialize zone lookup tables to avoid ECC errors on reads */
 	iowrite32(0, priv->regs + TSI721_LUT_DATA0);
@@ -1646,7 +1314,6 @@ static void tsi721_rio_unmap_inb_mem(struct rio_mport *mport,
 	if (i == TSI721_IBWIN_NUM)
 		tsi_debug(IBW, &priv->pdev->dev,
 			"IB window mapped to %pad not found", &lstart);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1662,9 +1329,6 @@ static void tsi721_init_sr2pc_mapping(struct tsi721_device *priv)
 
 	/* Disable all SR2PC inbound windows */
 	for (i = 0; i < TSI721_IBWIN_NUM; i++)
-<<<<<<< HEAD
-		iowrite32(0, priv->regs + TSI721_IBWINLB(i));
-=======
 		iowrite32(0, priv->regs + TSI721_IBWIN_LB(i));
 	priv->ibwin_cnt = TSI721_IBWIN_NUM;
 }
@@ -1687,7 +1351,6 @@ static void tsi721_close_sr2pc_mapping(struct tsi721_device *priv)
 			ib_win->active = false;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1695,11 +1358,7 @@ static void tsi721_close_sr2pc_mapping(struct tsi721_device *priv)
  * @priv: pointer to tsi721 private data
  *
  * Initializes inbound port write handler.
-<<<<<<< HEAD
- * Returns %0 on success or %-ENOMEM on failure.
-=======
  * Returns: %0 on success or %-ENOMEM on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_port_write_init(struct tsi721_device *priv)
 {
@@ -1708,11 +1367,7 @@ static int tsi721_port_write_init(struct tsi721_device *priv)
 	spin_lock_init(&priv->pw_fifo_lock);
 	if (kfifo_alloc(&priv->pw_fifo,
 			TSI721_RIO_PW_MSG_SIZE * 32, GFP_KERNEL)) {
-<<<<<<< HEAD
-		dev_err(&priv->pdev->dev, "PW FIFO allocation failed\n");
-=======
 		tsi_err(&priv->pdev->dev, "PW FIFO allocation failed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1721,14 +1376,11 @@ static int tsi721_port_write_init(struct tsi721_device *priv)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void tsi721_port_write_free(struct tsi721_device *priv)
 {
 	kfifo_free(&priv->pw_fifo);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tsi721_doorbell_init(struct tsi721_device *priv)
 {
 	/* Outbound Doorbells do not require any setup.
@@ -1741,16 +1393,6 @@ static int tsi721_doorbell_init(struct tsi721_device *priv)
 	INIT_WORK(&priv->idb_work, tsi721_db_dpc);
 
 	/* Allocate buffer for inbound doorbells queue */
-<<<<<<< HEAD
-	priv->idb_base = dma_zalloc_coherent(&priv->pdev->dev,
-				IDB_QSIZE * TSI721_IDB_ENTRY_SIZE,
-				&priv->idb_dma, GFP_KERNEL);
-	if (!priv->idb_base)
-		return -ENOMEM;
-
-	dev_dbg(&priv->pdev->dev, "Allocated IDB buffer @ %p (phys = %llx)\n",
-		priv->idb_base, (unsigned long long)priv->idb_dma);
-=======
 	priv->idb_base = dma_alloc_coherent(&priv->pdev->dev,
 					    IDB_QSIZE * TSI721_IDB_ENTRY_SIZE,
 					    &priv->idb_dma, GFP_KERNEL);
@@ -1760,7 +1402,6 @@ static int tsi721_doorbell_init(struct tsi721_device *priv)
 	tsi_debug(DBELL, &priv->pdev->dev,
 		  "Allocated IDB buffer @ %p (phys = %pad)",
 		  priv->idb_base, &priv->idb_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite32(TSI721_IDQ_SIZE_VAL(IDB_QSIZE),
 		priv->regs + TSI721_IDQ_SIZE(IDB_QUEUE));
@@ -1789,9 +1430,6 @@ static void tsi721_doorbell_free(struct tsi721_device *priv)
 	priv->idb_base = NULL;
 }
 
-<<<<<<< HEAD
-static int tsi721_bdma_ch_init(struct tsi721_device *priv, int chnum)
-=======
 /**
  * tsi721_bdma_maint_init - Initialize maintenance request BDMA channel.
  * @priv: pointer to tsi721 private data
@@ -1802,42 +1440,21 @@ static int tsi721_bdma_ch_init(struct tsi721_device *priv, int chnum)
  * Returns: %0 on success or %-ENOMEM on failure.
  */
 static int tsi721_bdma_maint_init(struct tsi721_device *priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tsi721_dma_desc *bd_ptr;
 	u64		*sts_ptr;
 	dma_addr_t	bd_phys, sts_phys;
 	int		sts_size;
-<<<<<<< HEAD
-	int		bd_num = priv->bdma[chnum].bd_num;
-
-	dev_dbg(&priv->pdev->dev, "Init Block DMA Engine, CH%d\n", chnum);
-=======
 	int		bd_num = 2;
 	void __iomem	*regs;
 
 	tsi_debug(MAINT, &priv->pdev->dev,
 		  "Init BDMA_%d Maintenance requests", TSI721_DMACH_MAINT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initialize DMA channel for maintenance requests
 	 */
 
-<<<<<<< HEAD
-	/* Allocate space for DMA descriptors */
-	bd_ptr = dma_zalloc_coherent(&priv->pdev->dev,
-					bd_num * sizeof(struct tsi721_dma_desc),
-					&bd_phys, GFP_KERNEL);
-	if (!bd_ptr)
-		return -ENOMEM;
-
-	priv->bdma[chnum].bd_phys = bd_phys;
-	priv->bdma[chnum].bd_base = bd_ptr;
-
-	dev_dbg(&priv->pdev->dev, "DMA descriptors @ %p (phys = %llx)\n",
-		bd_ptr, (unsigned long long)bd_phys);
-=======
 	priv->mdma.ch_id = TSI721_DMACH_MAINT;
 	regs = priv->regs + TSI721_DMAC_BASE(TSI721_DMACH_MAINT);
 
@@ -1854,17 +1471,12 @@ static int tsi721_bdma_maint_init(struct tsi721_device *priv)
 
 	tsi_debug(MAINT, &priv->pdev->dev, "DMA descriptors @ %p (phys = %pad)",
 		  bd_ptr, &bd_phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate space for descriptor status FIFO */
 	sts_size = (bd_num >= TSI721_DMA_MINSTSSZ) ?
 					bd_num : TSI721_DMA_MINSTSSZ;
 	sts_size = roundup_pow_of_two(sts_size);
-<<<<<<< HEAD
-	sts_ptr = dma_zalloc_coherent(&priv->pdev->dev,
-=======
 	sts_ptr = dma_alloc_coherent(&priv->pdev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     sts_size * sizeof(struct tsi721_dma_sts),
 				     &sts_phys, GFP_KERNEL);
 	if (!sts_ptr) {
@@ -1872,19 +1484,6 @@ static int tsi721_bdma_maint_init(struct tsi721_device *priv)
 		dma_free_coherent(&priv->pdev->dev,
 				  bd_num * sizeof(struct tsi721_dma_desc),
 				  bd_ptr, bd_phys);
-<<<<<<< HEAD
-		priv->bdma[chnum].bd_base = NULL;
-		return -ENOMEM;
-	}
-
-	priv->bdma[chnum].sts_phys = sts_phys;
-	priv->bdma[chnum].sts_base = sts_ptr;
-	priv->bdma[chnum].sts_size = sts_size;
-
-	dev_dbg(&priv->pdev->dev,
-		"desc status FIFO @ %p (phys = %llx) size=0x%x\n",
-		sts_ptr, (unsigned long long)sts_phys, sts_size);
-=======
 		priv->mdma.bd_base = NULL;
 		return -ENOMEM;
 	}
@@ -1896,7 +1495,6 @@ static int tsi721_bdma_maint_init(struct tsi721_device *priv)
 	tsi_debug(MAINT, &priv->pdev->dev,
 		"desc status FIFO @ %p (phys = %pad) size=0x%x",
 		sts_ptr, &sts_phys, sts_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize DMA descriptors ring */
 	bd_ptr[bd_num - 1].type_id = cpu_to_le32(DTYPE3 << 29);
@@ -1905,30 +1503,6 @@ static int tsi721_bdma_maint_init(struct tsi721_device *priv)
 	bd_ptr[bd_num - 1].next_hi = cpu_to_le32((u64)bd_phys >> 32);
 
 	/* Setup DMA descriptor pointers */
-<<<<<<< HEAD
-	iowrite32(((u64)bd_phys >> 32),
-		priv->regs + TSI721_DMAC_DPTRH(chnum));
-	iowrite32(((u64)bd_phys & TSI721_DMAC_DPTRL_MASK),
-		priv->regs + TSI721_DMAC_DPTRL(chnum));
-
-	/* Setup descriptor status FIFO */
-	iowrite32(((u64)sts_phys >> 32),
-		priv->regs + TSI721_DMAC_DSBH(chnum));
-	iowrite32(((u64)sts_phys & TSI721_DMAC_DSBL_MASK),
-		priv->regs + TSI721_DMAC_DSBL(chnum));
-	iowrite32(TSI721_DMAC_DSSZ_SIZE(sts_size),
-		priv->regs + TSI721_DMAC_DSSZ(chnum));
-
-	/* Clear interrupt bits */
-	iowrite32(TSI721_DMAC_INT_ALL,
-		priv->regs + TSI721_DMAC_INT(chnum));
-
-	ioread32(priv->regs + TSI721_DMAC_INT(chnum));
-
-	/* Toggle DMA channel initialization */
-	iowrite32(TSI721_DMAC_CTL_INIT,	priv->regs + TSI721_DMAC_CTL(chnum));
-	ioread32(priv->regs + TSI721_DMAC_CTL(chnum));
-=======
 	iowrite32(((u64)bd_phys >> 32),	regs + TSI721_DMAC_DPTRH);
 	iowrite32(((u64)bd_phys & TSI721_DMAC_DPTRL_MASK),
 		regs + TSI721_DMAC_DPTRL);
@@ -1948,23 +1522,11 @@ static int tsi721_bdma_maint_init(struct tsi721_device *priv)
 	/* Toggle DMA channel initialization */
 	iowrite32(TSI721_DMAC_CTL_INIT,	regs + TSI721_DMAC_CTL);
 	ioread32(regs + TSI721_DMAC_CTL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(10);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int tsi721_bdma_ch_free(struct tsi721_device *priv, int chnum)
-{
-	u32 ch_stat;
-
-	if (priv->bdma[chnum].bd_base == NULL)
-		return 0;
-
-	/* Check if DMA channel still running */
-	ch_stat = ioread32(priv->regs +	TSI721_DMAC_STS(chnum));
-=======
 static int tsi721_bdma_maint_free(struct tsi721_device *priv)
 {
 	u32 ch_stat;
@@ -1976,50 +1538,10 @@ static int tsi721_bdma_maint_free(struct tsi721_device *priv)
 
 	/* Check if DMA channel still running */
 	ch_stat = ioread32(regs + TSI721_DMAC_STS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch_stat & TSI721_DMAC_STS_RUN)
 		return -EFAULT;
 
 	/* Put DMA channel into init state */
-<<<<<<< HEAD
-	iowrite32(TSI721_DMAC_CTL_INIT,
-		priv->regs + TSI721_DMAC_CTL(chnum));
-
-	/* Free space allocated for DMA descriptors */
-	dma_free_coherent(&priv->pdev->dev,
-		priv->bdma[chnum].bd_num * sizeof(struct tsi721_dma_desc),
-		priv->bdma[chnum].bd_base, priv->bdma[chnum].bd_phys);
-	priv->bdma[chnum].bd_base = NULL;
-
-	/* Free space allocated for status FIFO */
-	dma_free_coherent(&priv->pdev->dev,
-		priv->bdma[chnum].sts_size * sizeof(struct tsi721_dma_sts),
-		priv->bdma[chnum].sts_base, priv->bdma[chnum].sts_phys);
-	priv->bdma[chnum].sts_base = NULL;
-	return 0;
-}
-
-static int tsi721_bdma_init(struct tsi721_device *priv)
-{
-	/* Initialize BDMA channel allocated for RapidIO maintenance read/write
-	 * request generation
-	 */
-	priv->bdma[TSI721_DMACH_MAINT].bd_num = 2;
-	if (tsi721_bdma_ch_init(priv, TSI721_DMACH_MAINT)) {
-		dev_err(&priv->pdev->dev, "Unable to initialize maintenance DMA"
-			" channel %d, aborting\n", TSI721_DMACH_MAINT);
-		return -ENOMEM;
-	}
-
-	return 0;
-}
-
-static void tsi721_bdma_free(struct tsi721_device *priv)
-{
-	tsi721_bdma_ch_free(priv, TSI721_DMACH_MAINT);
-}
-
-=======
 	iowrite32(TSI721_DMAC_CTL_INIT,	regs + TSI721_DMAC_CTL);
 
 	/* Free space allocated for DMA descriptors */
@@ -2036,7 +1558,6 @@ static void tsi721_bdma_free(struct tsi721_device *priv)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Enable Inbound Messaging Interrupts */
 static void
 tsi721_imsg_interrupt_enable(struct tsi721_device *priv, int ch,
@@ -2166,11 +1687,8 @@ tsi721_omsg_interrupt_disable(struct tsi721_device *priv, int ch,
  * @mbox: Outbound mailbox
  * @buffer: Message to add to outbound queue
  * @len: Length of message
-<<<<<<< HEAD
-=======
  *
  * Returns: %0 on success or -errno value on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 tsi721_add_outb_message(struct rio_mport *mport, struct rio_dev *rdev, int mbox,
@@ -2179,20 +1697,14 @@ tsi721_add_outb_message(struct rio_mport *mport, struct rio_dev *rdev, int mbox,
 	struct tsi721_device *priv = mport->priv;
 	struct tsi721_omsg_desc *desc;
 	u32 tx_slot;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!priv->omsg_init[mbox] ||
 	    len > TSI721_MSG_MAX_SIZE || len < 8)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&priv->omsg_ring[mbox].lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tx_slot = priv->omsg_ring[mbox].tx_slot;
 
 	/* Copy copy message into transfer buffer */
@@ -2204,17 +1716,11 @@ tsi721_add_outb_message(struct rio_mport *mport, struct rio_dev *rdev, int mbox,
 	/* Build descriptor associated with buffer */
 	desc = priv->omsg_ring[mbox].omd_base;
 	desc[tx_slot].type_id = cpu_to_le32((DTYPE4 << 29) | rdev->destid);
-<<<<<<< HEAD
-	if (tx_slot % 4 == 0)
-		desc[tx_slot].type_id |= cpu_to_le32(TSI721_OMD_IOF);
-
-=======
 #ifdef TSI721_OMSG_DESC_INT
 	/* Request IOF_DONE interrupt generation for each N-th frame in queue */
 	if (tx_slot % 4 == 0)
 		desc[tx_slot].type_id |= cpu_to_le32(TSI721_OMD_IOF);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc[tx_slot].msg_info =
 		cpu_to_le32((mport->sys_size << 26) | (mbox << 22) |
 			    (0xe << 12) | (len & 0xff8));
@@ -2240,11 +1746,8 @@ tsi721_add_outb_message(struct rio_mport *mport, struct rio_dev *rdev, int mbox,
 		priv->regs + TSI721_OBDMAC_DWRCNT(mbox));
 	ioread32(priv->regs + TSI721_OBDMAC_DWRCNT(mbox));
 
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&priv->omsg_ring[mbox].lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2258,35 +1761,23 @@ tsi721_add_outb_message(struct rio_mport *mport, struct rio_dev *rdev, int mbox,
 static void tsi721_omsg_handler(struct tsi721_device *priv, int ch)
 {
 	u32 omsg_int;
-<<<<<<< HEAD
-=======
 	struct rio_mport *mport = &priv->mport;
 	void *dev_id = NULL;
 	u32 tx_slot = 0xffffffff;
 	int do_callback = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&priv->omsg_ring[ch].lock);
 
 	omsg_int = ioread32(priv->regs + TSI721_OBDMAC_INT(ch));
 
 	if (omsg_int & TSI721_OBDMAC_INT_ST_FULL)
-<<<<<<< HEAD
-		dev_info(&priv->pdev->dev,
-			"OB MBOX%d: Status FIFO is full\n", ch);
-=======
 		tsi_info(&priv->pdev->dev,
 			"OB MBOX%d: Status FIFO is full", ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (omsg_int & (TSI721_OBDMAC_INT_DONE | TSI721_OBDMAC_INT_IOF_DONE)) {
 		u32 srd_ptr;
 		u64 *sts_ptr, last_ptr = 0, prev_ptr = 0;
 		int i, j;
-<<<<<<< HEAD
-		u32 tx_slot;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Find last successfully processed descriptor
@@ -2314,11 +1805,7 @@ static void tsi721_omsg_handler(struct tsi721_device *priv, int ch)
 		priv->omsg_ring[ch].sts_rdptr = srd_ptr;
 		iowrite32(srd_ptr, priv->regs + TSI721_OBDMAC_DSRP(ch));
 
-<<<<<<< HEAD
-		if (!priv->mport->outb_msg[ch].mcback)
-=======
 		if (!mport->outb_msg[ch].mcback)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto no_sts_update;
 
 		/* Inform upper layer about transfer completion */
@@ -2340,29 +1827,19 @@ static void tsi721_omsg_handler(struct tsi721_device *priv, int ch)
 				goto no_sts_update;
 		}
 
-<<<<<<< HEAD
-=======
 		if (tx_slot >= priv->omsg_ring[ch].size)
 			tsi_debug(OMSG, &priv->pdev->dev,
 				  "OB_MSG tx_slot=%x > size=%x",
 				  tx_slot, priv->omsg_ring[ch].size);
 		WARN_ON(tx_slot >= priv->omsg_ring[ch].size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Move slot index to the next message to be sent */
 		++tx_slot;
 		if (tx_slot == priv->omsg_ring[ch].size)
 			tx_slot = 0;
-<<<<<<< HEAD
-		BUG_ON(tx_slot >= priv->omsg_ring[ch].size);
-		priv->mport->outb_msg[ch].mcback(priv->mport,
-				priv->omsg_ring[ch].dev_id, ch,
-				tx_slot);
-=======
 
 		dev_id = priv->omsg_ring[ch].dev_id;
 		do_callback = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 no_sts_update:
@@ -2373,36 +1850,20 @@ no_sts_update:
 		* reinitialize OB MSG channel
 		*/
 
-<<<<<<< HEAD
-		dev_dbg(&priv->pdev->dev, "OB MSG ABORT ch_stat=%x\n",
-			ioread32(priv->regs + TSI721_OBDMAC_STS(ch)));
-
-		iowrite32(TSI721_OBDMAC_INT_ERROR,
-				priv->regs + TSI721_OBDMAC_INT(ch));
-		iowrite32(TSI721_OBDMAC_CTL_INIT,
-=======
 		tsi_debug(OMSG, &priv->pdev->dev, "OB MSG ABORT ch_stat=%x",
 			  ioread32(priv->regs + TSI721_OBDMAC_STS(ch)));
 
 		iowrite32(TSI721_OBDMAC_INT_ERROR,
 				priv->regs + TSI721_OBDMAC_INT(ch));
 		iowrite32(TSI721_OBDMAC_CTL_RETRY_THR | TSI721_OBDMAC_CTL_INIT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				priv->regs + TSI721_OBDMAC_CTL(ch));
 		ioread32(priv->regs + TSI721_OBDMAC_CTL(ch));
 
 		/* Inform upper level to clear all pending tx slots */
-<<<<<<< HEAD
-		if (priv->mport->outb_msg[ch].mcback)
-			priv->mport->outb_msg[ch].mcback(priv->mport,
-					priv->omsg_ring[ch].dev_id, ch,
-					priv->omsg_ring[ch].tx_slot);
-=======
 		dev_id = priv->omsg_ring[ch].dev_id;
 		tx_slot = priv->omsg_ring[ch].tx_slot;
 		do_callback = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Synch tx_slot tracking */
 		iowrite32(priv->omsg_ring[ch].tx_slot,
 			priv->regs + TSI721_OBDMAC_DRDCNT(ch));
@@ -2424,12 +1885,9 @@ no_sts_update:
 	}
 
 	spin_unlock(&priv->omsg_ring[ch].lock);
-<<<<<<< HEAD
-=======
 
 	if (mport->outb_msg[ch].mcback && do_callback)
 		mport->outb_msg[ch].mcback(mport, dev_id, ch, tx_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2438,11 +1896,8 @@ no_sts_update:
  * @dev_id: Device specific pointer to pass on event
  * @mbox: Mailbox to open
  * @entries: Number of entries in the outbound mailbox ring
-<<<<<<< HEAD
-=======
  *
  * Returns: %0 on success or -errno value on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 				 int mbox, int entries)
@@ -2458,14 +1913,11 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	if ((mbox_sel & (1 << mbox)) == 0) {
 		rc = -ENODEV;
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->omsg_ring[mbox].dev_id = dev_id;
 	priv->omsg_ring[mbox].size = entries;
 	priv->omsg_ring[mbox].sts_rdptr = 0;
@@ -2480,14 +1932,8 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 				&priv->omsg_ring[mbox].omq_phys[i],
 				GFP_KERNEL);
 		if (priv->omsg_ring[mbox].omq_base[i] == NULL) {
-<<<<<<< HEAD
-			dev_dbg(&priv->pdev->dev,
-				"Unable to allocate OB MSG data buffer for"
-				" MBOX%d\n", mbox);
-=======
 			tsi_debug(OMSG, &priv->pdev->dev,
 				  "ENOMEM for OB_MSG_%d data buffer", mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto out_buf;
 		}
@@ -2499,14 +1945,8 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 				(entries + 1) * sizeof(struct tsi721_omsg_desc),
 				&priv->omsg_ring[mbox].omd_phys, GFP_KERNEL);
 	if (priv->omsg_ring[mbox].omd_base == NULL) {
-<<<<<<< HEAD
-		dev_dbg(&priv->pdev->dev,
-			"Unable to allocate OB MSG descriptor memory "
-			"for MBOX%d\n", mbox);
-=======
 		tsi_debug(OMSG, &priv->pdev->dev,
 			"ENOMEM for OB_MSG_%d descriptor memory", mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto out_buf;
 	}
@@ -2515,16 +1955,6 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 
 	/* Outbound message descriptor status FIFO allocation */
 	priv->omsg_ring[mbox].sts_size = roundup_pow_of_two(entries + 1);
-<<<<<<< HEAD
-	priv->omsg_ring[mbox].sts_base = dma_zalloc_coherent(&priv->pdev->dev,
-			priv->omsg_ring[mbox].sts_size *
-						sizeof(struct tsi721_dma_sts),
-			&priv->omsg_ring[mbox].sts_phys, GFP_KERNEL);
-	if (priv->omsg_ring[mbox].sts_base == NULL) {
-		dev_dbg(&priv->pdev->dev,
-			"Unable to allocate OB MSG descriptor status FIFO "
-			"for MBOX%d\n", mbox);
-=======
 	priv->omsg_ring[mbox].sts_base = dma_alloc_coherent(&priv->pdev->dev,
 							    priv->omsg_ring[mbox].sts_size * sizeof(struct tsi721_dma_sts),
 							    &priv->omsg_ring[mbox].sts_phys,
@@ -2532,7 +1962,6 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 	if (priv->omsg_ring[mbox].sts_base == NULL) {
 		tsi_debug(OMSG, &priv->pdev->dev,
 			"ENOMEM for OB_MSG_%d status FIFO", mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto out_desc;
 	}
@@ -2561,34 +1990,6 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 
 #ifdef CONFIG_PCI_MSI
 	if (priv->flags & TSI721_USING_MSIX) {
-<<<<<<< HEAD
-		/* Request interrupt service if we are in MSI-X mode */
-		rc = request_irq(
-			priv->msix[TSI721_VECT_OMB0_DONE + mbox].vector,
-			tsi721_omsg_msix, 0,
-			priv->msix[TSI721_VECT_OMB0_DONE + mbox].irq_name,
-			(void *)mport);
-
-		if (rc) {
-			dev_dbg(&priv->pdev->dev,
-				"Unable to allocate MSI-X interrupt for "
-				"OBOX%d-DONE\n", mbox);
-			goto out_stat;
-		}
-
-		rc = request_irq(priv->msix[TSI721_VECT_OMB0_INT + mbox].vector,
-			tsi721_omsg_msix, 0,
-			priv->msix[TSI721_VECT_OMB0_INT + mbox].irq_name,
-			(void *)mport);
-
-		if (rc)	{
-			dev_dbg(&priv->pdev->dev,
-				"Unable to allocate MSI-X interrupt for "
-				"MBOX%d-INT\n", mbox);
-			free_irq(
-				priv->msix[TSI721_VECT_OMB0_DONE + mbox].vector,
-				(void *)mport);
-=======
 		int idx = TSI721_VECT_OMB0_DONE + mbox;
 
 		/* Request interrupt service if we are in MSI-X mode */
@@ -2611,7 +2012,6 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 				"Unable to get MSI-X IRQ for MBOX%d-INT", mbox);
 			idx = TSI721_VECT_OMB0_DONE + mbox;
 			free_irq(priv->msix[idx].vector, (void *)priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_stat;
 		}
 	}
@@ -2632,12 +2032,8 @@ static int tsi721_open_outb_mbox(struct rio_mport *mport, void *dev_id,
 	mb();
 
 	/* Initialize Outbound Message engine */
-<<<<<<< HEAD
-	iowrite32(TSI721_OBDMAC_CTL_INIT, priv->regs + TSI721_OBDMAC_CTL(mbox));
-=======
 	iowrite32(TSI721_OBDMAC_CTL_RETRY_THR | TSI721_OBDMAC_CTL_INIT,
 		  priv->regs + TSI721_OBDMAC_CTL(mbox));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ioread32(priv->regs + TSI721_OBDMAC_DWRCNT(mbox));
 	udelay(10);
 
@@ -2700,15 +2096,9 @@ static void tsi721_close_outb_mbox(struct rio_mport *mport, int mbox)
 #ifdef CONFIG_PCI_MSI
 	if (priv->flags & TSI721_USING_MSIX) {
 		free_irq(priv->msix[TSI721_VECT_OMB0_DONE + mbox].vector,
-<<<<<<< HEAD
-			 (void *)mport);
-		free_irq(priv->msix[TSI721_VECT_OMB0_INT + mbox].vector,
-			 (void *)mport);
-=======
 			 (void *)priv);
 		free_irq(priv->msix[TSI721_VECT_OMB0_INT + mbox].vector,
 			 (void *)priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif /* CONFIG_PCI_MSI */
 
@@ -2753,28 +2143,13 @@ static void tsi721_imsg_handler(struct tsi721_device *priv, int ch)
 {
 	u32 mbox = ch - 4;
 	u32 imsg_int;
-<<<<<<< HEAD
-=======
 	struct rio_mport *mport = &priv->mport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&priv->imsg_ring[mbox].lock);
 
 	imsg_int = ioread32(priv->regs + TSI721_IBDMAC_INT(ch));
 
 	if (imsg_int & TSI721_IBDMAC_INT_SRTO)
-<<<<<<< HEAD
-		dev_info(&priv->pdev->dev, "IB MBOX%d SRIO timeout\n",
-			mbox);
-
-	if (imsg_int & TSI721_IBDMAC_INT_PC_ERROR)
-		dev_info(&priv->pdev->dev, "IB MBOX%d PCIe error\n",
-			mbox);
-
-	if (imsg_int & TSI721_IBDMAC_INT_FQ_LOW)
-		dev_info(&priv->pdev->dev,
-			"IB MBOX%d IB free queue low\n", mbox);
-=======
 		tsi_info(&priv->pdev->dev, "IB MBOX%d SRIO timeout", mbox);
 
 	if (imsg_int & TSI721_IBDMAC_INT_PC_ERROR)
@@ -2782,20 +2157,14 @@ static void tsi721_imsg_handler(struct tsi721_device *priv, int ch)
 
 	if (imsg_int & TSI721_IBDMAC_INT_FQ_LOW)
 		tsi_info(&priv->pdev->dev, "IB MBOX%d IB free queue low", mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear IB channel interrupts */
 	iowrite32(imsg_int, priv->regs + TSI721_IBDMAC_INT(ch));
 
 	/* If an IB Msg is received notify the upper layer */
 	if (imsg_int & TSI721_IBDMAC_INT_DQ_RCV &&
-<<<<<<< HEAD
-		priv->mport->inb_msg[mbox].mcback)
-		priv->mport->inb_msg[mbox].mcback(priv->mport,
-=======
 		mport->inb_msg[mbox].mcback)
 		mport->inb_msg[mbox].mcback(mport,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				priv->imsg_ring[mbox].dev_id, mbox, -1);
 
 	if (!(priv->flags & TSI721_USING_MSIX)) {
@@ -2816,11 +2185,8 @@ static void tsi721_imsg_handler(struct tsi721_device *priv, int ch)
  * @dev_id: Device specific pointer to pass on event
  * @mbox: Mailbox to open
  * @entries: Number of entries in the inbound mailbox ring
-<<<<<<< HEAD
-=======
  *
  * Returns: %0 on success or -errno value on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 				int mbox, int entries)
@@ -2838,14 +2204,11 @@ static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	if ((mbox_sel & (1 << mbox)) == 0) {
 		rc = -ENODEV;
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize IB Messaging Ring */
 	priv->imsg_ring[mbox].dev_id = dev_id;
 	priv->imsg_ring[mbox].size = entries;
@@ -2864,13 +2227,8 @@ static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 				   GFP_KERNEL);
 
 	if (priv->imsg_ring[mbox].buf_base == NULL) {
-<<<<<<< HEAD
-		dev_err(&priv->pdev->dev,
-			"Failed to allocate buffers for IB MBOX%d\n", mbox);
-=======
 		tsi_err(&priv->pdev->dev,
 			"Failed to allocate buffers for IB MBOX%d", mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto out;
 	}
@@ -2883,13 +2241,8 @@ static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 				   GFP_KERNEL);
 
 	if (priv->imsg_ring[mbox].imfq_base == NULL) {
-<<<<<<< HEAD
-		dev_err(&priv->pdev->dev,
-			"Failed to allocate free queue for IB MBOX%d\n", mbox);
-=======
 		tsi_err(&priv->pdev->dev,
 			"Failed to allocate free queue for IB MBOX%d", mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto out_buf;
 	}
@@ -2901,13 +2254,8 @@ static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 				   &priv->imsg_ring[mbox].imd_phys, GFP_KERNEL);
 
 	if (priv->imsg_ring[mbox].imd_base == NULL) {
-<<<<<<< HEAD
-		dev_err(&priv->pdev->dev,
-			"Failed to allocate descriptor memory for IB MBOX%d\n",
-=======
 		tsi_err(&priv->pdev->dev,
 			"Failed to allocate descriptor memory for IB MBOX%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mbox);
 		rc = -ENOMEM;
 		goto out_dma;
@@ -2928,11 +2276,7 @@ static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 	 * once when first inbound mailbox is requested.
 	 */
 	if (!(priv->flags & TSI721_IMSGID_SET)) {
-<<<<<<< HEAD
-		iowrite32((u32)priv->mport->host_deviceid,
-=======
 		iowrite32((u32)priv->mport.host_deviceid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->regs + TSI721_IB_DEVID);
 		priv->flags |= TSI721_IMSGID_SET;
 	}
@@ -2963,33 +2307,6 @@ static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 
 #ifdef CONFIG_PCI_MSI
 	if (priv->flags & TSI721_USING_MSIX) {
-<<<<<<< HEAD
-		/* Request interrupt service if we are in MSI-X mode */
-		rc = request_irq(priv->msix[TSI721_VECT_IMB0_RCV + mbox].vector,
-			tsi721_imsg_msix, 0,
-			priv->msix[TSI721_VECT_IMB0_RCV + mbox].irq_name,
-			(void *)mport);
-
-		if (rc) {
-			dev_dbg(&priv->pdev->dev,
-				"Unable to allocate MSI-X interrupt for "
-				"IBOX%d-DONE\n", mbox);
-			goto out_desc;
-		}
-
-		rc = request_irq(priv->msix[TSI721_VECT_IMB0_INT + mbox].vector,
-			tsi721_imsg_msix, 0,
-			priv->msix[TSI721_VECT_IMB0_INT + mbox].irq_name,
-			(void *)mport);
-
-		if (rc)	{
-			dev_dbg(&priv->pdev->dev,
-				"Unable to allocate MSI-X interrupt for "
-				"IBOX%d-INT\n", mbox);
-			free_irq(
-				priv->msix[TSI721_VECT_IMB0_RCV + mbox].vector,
-				(void *)mport);
-=======
 		int idx = TSI721_VECT_IMB0_RCV + mbox;
 
 		/* Request interrupt service if we are in MSI-X mode */
@@ -3013,7 +2330,6 @@ static int tsi721_open_inb_mbox(struct rio_mport *mport, void *dev_id,
 			free_irq(
 				priv->msix[TSI721_VECT_IMB0_RCV + mbox].vector,
 				(void *)priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_desc;
 		}
 	}
@@ -3084,15 +2400,9 @@ static void tsi721_close_inb_mbox(struct rio_mport *mport, int mbox)
 #ifdef CONFIG_PCI_MSI
 	if (priv->flags & TSI721_USING_MSIX) {
 		free_irq(priv->msix[TSI721_VECT_IMB0_RCV + mbox].vector,
-<<<<<<< HEAD
-				(void *)mport);
-		free_irq(priv->msix[TSI721_VECT_IMB0_INT + mbox].vector,
-				(void *)mport);
-=======
 				(void *)priv);
 		free_irq(priv->msix[TSI721_VECT_IMB0_INT + mbox].vector,
 				(void *)priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif /* CONFIG_PCI_MSI */
 
@@ -3130,11 +2440,8 @@ static void tsi721_close_inb_mbox(struct rio_mport *mport, int mbox)
  * @mport: Master port implementing the Inbound Messaging Engine
  * @mbox: Inbound mailbox number
  * @buf: Buffer to add to inbound queue
-<<<<<<< HEAD
-=======
  *
  * Returns: %0 on success or -errno value on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_add_inb_buffer(struct rio_mport *mport, int mbox, void *buf)
 {
@@ -3144,13 +2451,8 @@ static int tsi721_add_inb_buffer(struct rio_mport *mport, int mbox, void *buf)
 
 	rx_slot = priv->imsg_ring[mbox].rx_slot;
 	if (priv->imsg_ring[mbox].imq_base[rx_slot]) {
-<<<<<<< HEAD
-		dev_err(&priv->pdev->dev,
-			"Error adding inbound buffer %d, buffer exists\n",
-=======
 		tsi_err(&priv->pdev->dev,
 			"Error adding inbound buffer %d, buffer exists",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rx_slot);
 		rc = -EINVAL;
 		goto out;
@@ -3170,11 +2472,7 @@ out:
  * @mport: Master port implementing the Inbound Messaging Engine
  * @mbox: Inbound mailbox number
  *
-<<<<<<< HEAD
- * Returns pointer to the message on success or NULL on failure.
-=======
  * Returns: pointer to the message on success or %NULL on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void *tsi721_get_inb_message(struct rio_mport *mport, int mbox)
 {
@@ -3242,11 +2540,8 @@ out:
  * @priv: pointer to tsi721 private data
  *
  * Configures Tsi721 messaging engine.
-<<<<<<< HEAD
-=======
  *
  * Returns: %0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int tsi721_messages_init(struct tsi721_device *priv)
 {
@@ -3277,8 +2572,6 @@ static int tsi721_messages_init(struct tsi721_device *priv)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * tsi721_query_mport - Fetch inbound message from the Tsi721 MSG Queue
  * @mport: Master port implementing the Inbound Messaging Engine
  * @attr: mport device attributes
@@ -3312,7 +2605,6 @@ static int tsi721_query_mport(struct rio_mport *mport,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * tsi721_disable_ints - disables all device interrupts
  * @priv: pointer to tsi721 private data
  */
@@ -3339,12 +2631,8 @@ static void tsi721_disable_ints(struct tsi721_device *priv)
 
 	/* Disable all BDMA Channel interrupts */
 	for (ch = 0; ch < TSI721_DMA_MAXCH; ch++)
-<<<<<<< HEAD
-		iowrite32(0, priv->regs + TSI721_DMAC_INTE(ch));
-=======
 		iowrite32(0,
 			priv->regs + TSI721_DMAC_BASE(ch) + TSI721_DMAC_INTE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable all general BDMA interrupts */
 	iowrite32(0, priv->regs + TSI721_BDMA_INTE);
@@ -3367,8 +2655,6 @@ static void tsi721_disable_ints(struct tsi721_device *priv)
 	iowrite32(0, priv->regs + TSI721_RIO_EM_DEV_INT_EN);
 }
 
-<<<<<<< HEAD
-=======
 static struct rio_ops tsi721_rio_ops = {
 	.lcread			= tsi721_lcread,
 	.lcwrite		= tsi721_lcwrite,
@@ -3397,55 +2683,11 @@ static void tsi721_mport_release(struct device *dev)
 	tsi_debug(EXIT, dev, "%s id=%d", mport->name, mport->id);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * tsi721_setup_mport - Setup Tsi721 as RapidIO subsystem master port
  * @priv: pointer to tsi721 private data
  *
  * Configures Tsi721 as RapidIO master port.
-<<<<<<< HEAD
- */
-static int __devinit tsi721_setup_mport(struct tsi721_device *priv)
-{
-	struct pci_dev *pdev = priv->pdev;
-	int err = 0;
-	struct rio_ops *ops;
-
-	struct rio_mport *mport;
-
-	ops = kzalloc(sizeof(struct rio_ops), GFP_KERNEL);
-	if (!ops) {
-		dev_dbg(&pdev->dev, "Unable to allocate memory for rio_ops\n");
-		return -ENOMEM;
-	}
-
-	ops->lcread = tsi721_lcread;
-	ops->lcwrite = tsi721_lcwrite;
-	ops->cread = tsi721_cread_dma;
-	ops->cwrite = tsi721_cwrite_dma;
-	ops->dsend = tsi721_dsend;
-	ops->open_inb_mbox = tsi721_open_inb_mbox;
-	ops->close_inb_mbox = tsi721_close_inb_mbox;
-	ops->open_outb_mbox = tsi721_open_outb_mbox;
-	ops->close_outb_mbox = tsi721_close_outb_mbox;
-	ops->add_outb_message = tsi721_add_outb_message;
-	ops->add_inb_buffer = tsi721_add_inb_buffer;
-	ops->get_inb_message = tsi721_get_inb_message;
-
-	mport = kzalloc(sizeof(struct rio_mport), GFP_KERNEL);
-	if (!mport) {
-		kfree(ops);
-		dev_dbg(&pdev->dev, "Unable to allocate memory for mport\n");
-		return -ENOMEM;
-	}
-
-	mport->ops = ops;
-	mport->index = 0;
-	mport->sys_size = 0; /* small system */
-	mport->phy_type = RIO_PHY_SERIAL;
-	mport->priv = (void *)priv;
-	mport->phys_efptr = 0x100;
-=======
  *
  * Returns: %0 on success or -errno value on failure.
  */
@@ -3467,19 +2709,14 @@ static int tsi721_setup_mport(struct tsi721_device *priv)
 	mport->phys_rmap = 1;
 	mport->dev.parent = &pdev->dev;
 	mport->dev.release = tsi721_mport_release;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&mport->dbells);
 
 	rio_init_dbell_res(&mport->riores[RIO_DOORBELL_RESOURCE], 0, 0xffff);
 	rio_init_mbox_res(&mport->riores[RIO_INB_MBOX_RESOURCE], 0, 3);
 	rio_init_mbox_res(&mport->riores[RIO_OUTB_MBOX_RESOURCE], 0, 3);
-<<<<<<< HEAD
-	strcpy(mport->name, "Tsi721 mport");
-=======
 	snprintf(mport->name, RIO_MAX_MPORT_NAME, "%s(%s)",
 		 dev_driver_string(&pdev->dev), dev_name(&pdev->dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Hook up interrupt handler */
 
@@ -3489,21 +2726,6 @@ static int tsi721_setup_mport(struct tsi721_device *priv)
 	else if (!pci_enable_msi(pdev))
 		priv->flags |= TSI721_USING_MSI;
 	else
-<<<<<<< HEAD
-		dev_info(&pdev->dev,
-			 "MSI/MSI-X is not available. Using legacy INTx.\n");
-#endif /* CONFIG_PCI_MSI */
-
-	err = tsi721_request_irq(mport);
-
-	if (!err) {
-		tsi721_interrupts_init(priv);
-		ops->pwenable = tsi721_pw_enable;
-	} else
-		dev_err(&pdev->dev, "Unable to get assigned PCI IRQ "
-			"vector %02X err=0x%x\n", pdev->irq, err);
-
-=======
 		tsi_debug(MPORT, &pdev->dev,
 			 "MSI/MSI-X is not available. Using legacy INTx.");
 #endif /* CONFIG_PCI_MSI */
@@ -3521,18 +2743,11 @@ static int tsi721_setup_mport(struct tsi721_device *priv)
 	if (err)
 		goto err_exit;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable SRIO link */
 	iowrite32(ioread32(priv->regs + TSI721_DEVCTL) |
 		  TSI721_DEVCTL_SRBOOT_CMPL,
 		  priv->regs + TSI721_DEVCTL);
 
-<<<<<<< HEAD
-	rio_register_mport(mport);
-	priv->mport = mport;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mport->host_deviceid >= 0)
 		iowrite32(RIO_PORT_GEN_HOST | RIO_PORT_GEN_MASTER |
 			  RIO_PORT_GEN_DISCOVERED,
@@ -3540,22 +2755,6 @@ static int tsi721_setup_mport(struct tsi721_device *priv)
 	else
 		iowrite32(0, priv->regs + (0x100 + RIO_PORT_GEN_CTL_CSR));
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int __devinit tsi721_probe(struct pci_dev *pdev,
-				  const struct pci_device_id *id)
-{
-	struct tsi721_device *priv;
-	int cap;
-	int err;
-	u32 regval;
-
-	priv = kzalloc(sizeof(struct tsi721_device), GFP_KERNEL);
-	if (priv == NULL) {
-		dev_err(&pdev->dev, "Failed to allocate memory for device\n");
-=======
 	err = rio_register_mport(mport);
 	if (err) {
 		tsi721_unregister_dma(priv);
@@ -3577,18 +2776,13 @@ static int tsi721_probe(struct pci_dev *pdev,
 
 	priv = kzalloc(sizeof(struct tsi721_device), GFP_KERNEL);
 	if (!priv) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err_exit;
 	}
 
 	err = pci_enable_device(pdev);
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev, "Failed to enable PCI device\n");
-=======
 		tsi_err(&pdev->dev, "Failed to enable PCI device");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_clean;
 	}
 
@@ -3596,22 +2790,12 @@ static int tsi721_probe(struct pci_dev *pdev,
 
 #ifdef DEBUG
 	{
-<<<<<<< HEAD
-	int i;
-	for (i = 0; i <= PCI_STD_RESOURCE_END; i++) {
-		dev_dbg(&pdev->dev, "res[%d] @ 0x%llx (0x%lx, 0x%lx)\n",
-			i, (unsigned long long)pci_resource_start(pdev, i),
-			(unsigned long)pci_resource_len(pdev, i),
-			pci_resource_flags(pdev, i));
-	}
-=======
 		int i;
 
 		for (i = 0; i < PCI_STD_NUM_BARS; i++) {
 			tsi_debug(INIT, &pdev->dev, "res%d %pR",
 				  i, &pdev->resource[i]);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	/*
@@ -3622,12 +2806,7 @@ static int tsi721_probe(struct pci_dev *pdev,
 	if (!(pci_resource_flags(pdev, BAR_0) & IORESOURCE_MEM) ||
 	    pci_resource_flags(pdev, BAR_0) & IORESOURCE_MEM_64 ||
 	    pci_resource_len(pdev, BAR_0) < TSI721_REG_SPACE_SIZE) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev,
-			"Missing or misconfigured CSR BAR0, aborting.\n");
-=======
 		tsi_err(&pdev->dev, "Missing or misconfigured CSR BAR0");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto err_disable_pdev;
 	}
@@ -3636,12 +2815,7 @@ static int tsi721_probe(struct pci_dev *pdev,
 	if (!(pci_resource_flags(pdev, BAR_1) & IORESOURCE_MEM) ||
 	    pci_resource_flags(pdev, BAR_1) & IORESOURCE_MEM_64 ||
 	    pci_resource_len(pdev, BAR_1) < TSI721_DB_WIN_SIZE) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev,
-			"Missing or misconfigured Doorbell BAR1, aborting.\n");
-=======
 		tsi_err(&pdev->dev, "Missing or misconfigured Doorbell BAR1");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto err_disable_pdev;
 	}
@@ -3653,16 +2827,6 @@ static int tsi721_probe(struct pci_dev *pdev,
 	 * It may be a good idea to keep them disabled using HW configuration
 	 * to save PCI memory space.
 	 */
-<<<<<<< HEAD
-	if ((pci_resource_flags(pdev, BAR_2) & IORESOURCE_MEM) &&
-	    (pci_resource_flags(pdev, BAR_2) & IORESOURCE_MEM_64)) {
-		dev_info(&pdev->dev, "Outbound BAR2 is not used but enabled.\n");
-	}
-
-	if ((pci_resource_flags(pdev, BAR_4) & IORESOURCE_MEM) &&
-	    (pci_resource_flags(pdev, BAR_4) & IORESOURCE_MEM_64)) {
-		dev_info(&pdev->dev, "Outbound BAR4 is not used but enabled.\n");
-=======
 
 	priv->p2r_bar[0].size = priv->p2r_bar[1].size = 0;
 
@@ -3684,17 +2848,11 @@ static int tsi721_probe(struct pci_dev *pdev,
 			priv->p2r_bar[1].base = pci_resource_start(pdev, BAR_4);
 			priv->p2r_bar[1].size = pci_resource_len(pdev, BAR_4);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = pci_request_regions(pdev, DRV_NAME);
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev, "Cannot obtain PCI resources, "
-			"aborting.\n");
-=======
 		tsi_err(&pdev->dev, "Unable to obtain PCI resources");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_disable_pdev;
 	}
 
@@ -3702,59 +2860,19 @@ static int tsi721_probe(struct pci_dev *pdev,
 
 	priv->regs = pci_ioremap_bar(pdev, BAR_0);
 	if (!priv->regs) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev,
-			"Unable to map device registers space, aborting\n");
-=======
 		tsi_err(&pdev->dev, "Unable to map device registers space");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err_free_res;
 	}
 
 	priv->odb_base = pci_ioremap_bar(pdev, BAR_1);
 	if (!priv->odb_base) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev,
-			"Unable to map outbound doorbells space, aborting\n");
-=======
 		tsi_err(&pdev->dev, "Unable to map outbound doorbells space");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err_unmap_bars;
 	}
 
 	/* Configure DMA attributes. */
-<<<<<<< HEAD
-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-		if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
-			dev_info(&pdev->dev, "Unable to set DMA mask\n");
-			goto err_unmap_bars;
-		}
-
-		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)))
-			dev_info(&pdev->dev, "Unable to set consistent DMA mask\n");
-	} else {
-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-		if (err)
-			dev_info(&pdev->dev, "Unable to set consistent DMA mask\n");
-	}
-
-	cap = pci_pcie_cap(pdev);
-	BUG_ON(cap == 0);
-
-	/* Clear "no snoop" and "relaxed ordering" bits, use default MRRS. */
-	pci_read_config_dword(pdev, cap + PCI_EXP_DEVCTL, &regval);
-	regval &= ~(PCI_EXP_DEVCTL_READRQ | PCI_EXP_DEVCTL_RELAX_EN |
-		    PCI_EXP_DEVCTL_NOSNOOP_EN);
-	regval |= 0x2 << MAX_READ_REQUEST_SZ_SHIFT;
-	pci_write_config_dword(pdev, cap + PCI_EXP_DEVCTL, regval);
-
-	/* Adjust PCIe completion timeout. */
-	pci_read_config_dword(pdev, cap + PCI_EXP_DEVCTL2, &regval);
-	regval &= ~(0x0f);
-	pci_write_config_dword(pdev, cap + PCI_EXP_DEVCTL2, regval | 0x2);
-=======
 	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
 		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
 		if (err) {
@@ -3789,7 +2907,6 @@ static int tsi721_probe(struct pci_dev *pdev,
 	/* Set PCIe completion timeout to 1-10ms */
 	pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL2,
 					   PCI_EXP_DEVCTL2_COMP_TIMEOUT, 0x2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FIXUP: correct offsets of MSI-X tables in the MSI-X Capability Block
@@ -3807,13 +2924,8 @@ static int tsi721_probe(struct pci_dev *pdev,
 	tsi721_init_pc2sr_mapping(priv);
 	tsi721_init_sr2pc_mapping(priv);
 
-<<<<<<< HEAD
-	if (tsi721_bdma_init(priv)) {
-		dev_err(&pdev->dev, "BDMA initialization failed, aborting\n");
-=======
 	if (tsi721_bdma_maint_init(priv)) {
 		tsi_err(&pdev->dev, "BDMA initialization failed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err_unmap_bars;
 	}
@@ -3832,14 +2944,6 @@ static int tsi721_probe(struct pci_dev *pdev,
 	if (err)
 		goto err_free_consistent;
 
-<<<<<<< HEAD
-	return 0;
-
-err_free_consistent:
-	tsi721_doorbell_free(priv);
-err_free_bdma:
-	tsi721_bdma_free(priv);
-=======
 	pci_set_drvdata(pdev, priv);
 	tsi721_interrupts_init(priv);
 
@@ -3850,7 +2954,6 @@ err_free_consistent:
 	tsi721_doorbell_free(priv);
 err_free_bdma:
 	tsi721_bdma_maint_free(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_unmap_bars:
 	if (priv->regs)
 		iounmap(priv->regs);
@@ -3858,10 +2961,6 @@ err_unmap_bars:
 		iounmap(priv->odb_base);
 err_free_res:
 	pci_release_regions(pdev);
-<<<<<<< HEAD
-	pci_clear_master(pdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_disable_pdev:
 	pci_disable_device(pdev);
 err_clean:
@@ -3870,9 +2969,6 @@ err_exit:
 	return err;
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(tsi721_pci_tbl) = {
-=======
 static void tsi721_remove(struct pci_dev *pdev)
 {
 	struct tsi721_device *priv = pci_get_drvdata(pdev);
@@ -3920,7 +3016,6 @@ static void tsi721_shutdown(struct pci_dev *pdev)
 }
 
 static const struct pci_device_id tsi721_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_IDT, PCI_DEVICE_ID_TSI721) },
 	{ 0, }	/* terminate list */
 };
@@ -3931,21 +3026,6 @@ static struct pci_driver tsi721_driver = {
 	.name		= "tsi721",
 	.id_table	= tsi721_pci_tbl,
 	.probe		= tsi721_probe,
-<<<<<<< HEAD
-};
-
-static int __init tsi721_init(void)
-{
-	return pci_register_driver(&tsi721_driver);
-}
-
-static void __exit tsi721_exit(void)
-{
-	pci_unregister_driver(&tsi721_driver);
-}
-
-device_initcall(tsi721_init);
-=======
 	.remove		= tsi721_remove,
 	.shutdown	= tsi721_shutdown,
 };
@@ -3955,4 +3035,3 @@ module_pci_driver(tsi721_driver);
 MODULE_DESCRIPTION("IDT Tsi721 PCIExpress-to-SRIO bridge driver");
 MODULE_AUTHOR("Integrated Device Technology, Inc.");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

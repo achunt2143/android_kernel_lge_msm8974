@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __USBAUDIO_HELPER_H
 #define __USBAUDIO_HELPER_H
 
@@ -17,45 +14,27 @@ int snd_usb_ctl_msg(struct usb_device *dev, unsigned int pipe,
 unsigned char snd_usb_parse_datainterval(struct snd_usb_audio *chip,
 					 struct usb_host_interface *alts);
 
-<<<<<<< HEAD
-=======
 struct usb_host_interface *
 snd_usb_get_host_interface(struct snd_usb_audio *chip, int ifnum, int altsetting);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * retrieve usb_interface descriptor from the host interface
  * (conditional for compatibility with the older API)
  */
-<<<<<<< HEAD
-#ifndef get_iface_desc
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define get_iface_desc(iface)	(&(iface)->desc)
 #define get_endpoint(alt,ep)	(&(alt)->endpoint[ep].desc)
 #define get_ep_desc(ep)		(&(ep)->desc)
 #define get_cfg_desc(cfg)	(&(cfg)->desc)
-<<<<<<< HEAD
-#endif
-
-#ifndef snd_usb_get_speed
-#define snd_usb_get_speed(dev) ((dev)->speed)
-#endif
-=======
 
 #define snd_usb_get_speed(dev) ((dev)->speed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int snd_usb_ctrl_intf(struct snd_usb_audio *chip)
 {
 	return get_iface_desc(chip->ctrl_intf)->bInterfaceNumber;
 }
 
-<<<<<<< HEAD
-=======
 /* in validate.c */
 bool snd_usb_validate_audio_desc(void *p, int protocol);
 bool snd_usb_validate_midi_desc(void *p);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __USBAUDIO_HELPER_H */

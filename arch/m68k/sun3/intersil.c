@@ -14,31 +14,15 @@
 #include <linux/rtc.h>
 
 #include <asm/errno.h>
-<<<<<<< HEAD
-#include <asm/rtc.h>
-#include <asm/intersil.h>
-
-=======
 #include <asm/intersil.h>
 #include <asm/machdep.h>
 
 #include "sun3.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* bits to set for start/run of the intersil */
 #define STOP_VAL (INTERSIL_STOP | INTERSIL_INT_ENABLE | INTERSIL_24H_MODE)
 #define START_VAL (INTERSIL_RUN | INTERSIL_INT_ENABLE | INTERSIL_24H_MODE)
 
-<<<<<<< HEAD
-/* does this need to be implemented? */
-unsigned long sun3_gettimeoffset(void)
-{
-  return 1;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* get/set hwclock */
 
 int sun3_hwclk(int set, struct rtc_time *t)
@@ -58,15 +42,9 @@ int sun3_hwclk(int set, struct rtc_time *t)
 		todintersil->hour = t->tm_hour;
 		todintersil->minute = t->tm_min;
 		todintersil->second = t->tm_sec;
-<<<<<<< HEAD
-		todintersil->month = t->tm_mon;
-		todintersil->day = t->tm_mday;
-		todintersil->year = t->tm_year - 68;
-=======
 		todintersil->month = t->tm_mon + 1;
 		todintersil->day = t->tm_mday;
 		todintersil->year = (t->tm_year - 68) % 100;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		todintersil->weekday = t->tm_wday;
 	} else {
 		/* read clock */
@@ -74,19 +52,12 @@ int sun3_hwclk(int set, struct rtc_time *t)
 		t->tm_hour = todintersil->hour;
 		t->tm_min = todintersil->minute;
 		t->tm_sec = todintersil->second;
-<<<<<<< HEAD
-		t->tm_mon = todintersil->month;
-		t->tm_mday = todintersil->day;
-		t->tm_year = todintersil->year + 68;
-		t->tm_wday = todintersil->weekday;
-=======
 		t->tm_mon = todintersil->month - 1;
 		t->tm_mday = todintersil->day;
 		t->tm_year = todintersil->year + 68;
 		t->tm_wday = todintersil->weekday;
 		if (t->tm_year < 70)
 			t->tm_year += 100;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	intersil_clock->cmd_reg = START_VAL;

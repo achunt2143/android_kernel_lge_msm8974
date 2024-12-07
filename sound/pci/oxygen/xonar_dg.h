@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef XONAR_DG_H_INCLUDED
 #define XONAR_DG_H_INCLUDED
 
 #include "oxygen.h"
 
-<<<<<<< HEAD
-extern struct oxygen_model model_xonar_dg;
-=======
 #define GPIO_MAGIC		0x0008
 #define GPIO_HP_DETECT		0x0010
 #define GPIO_INPUT_ROUTE	0x0060
@@ -59,6 +53,5 @@ void dg_resume(struct oxygen *chip);
 void dg_cleanup(struct oxygen *chip);
 
 extern const struct oxygen_model model_xonar_dg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

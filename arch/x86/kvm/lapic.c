@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Local APIC virtualization
@@ -17,15 +14,8 @@
  *   Yaozu (Eddie) Dong <eddie.dong@intel.com>
  *
  * Based on Xen 3.1 code, Copyright (c) 2004, Intel Corporation.
-<<<<<<< HEAD
- *
- * This work is licensed under the terms of the GNU GPL, version 2.  See
- * the COPYING file in the top-level directory.
- */
-=======
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kvm_host.h>
 #include <linux/kvm.h>
@@ -34,30 +24,15 @@
 #include <linux/smp.h>
 #include <linux/hrtimer.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/math64.h>
-#include <linux/slab.h>
-#include <asm/processor.h>
-=======
 #include <linux/export.h>
 #include <linux/math64.h>
 #include <linux/slab.h>
 #include <asm/processor.h>
 #include <asm/mce.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/msr.h>
 #include <asm/page.h>
 #include <asm/current.h>
 #include <asm/apicdef.h>
-<<<<<<< HEAD
-#include <linux/atomic.h>
-#include "kvm_cache_regs.h"
-#include "irq.h"
-#include "trace.h"
-#include "x86.h"
-#include "cpuid.h"
-=======
 #include <asm/delay.h>
 #include <linux/atomic.h>
 #include <linux/jump_label.h>
@@ -70,7 +45,6 @@
 #include "cpuid.h"
 #include "hyperv.h"
 #include "smm.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_X86_64
 #define mod_64(x, y) ((x) - (y) * div64_u64(x, y))
@@ -78,77 +52,6 @@
 #define mod_64(x, y) ((x) % (y))
 #endif
 
-<<<<<<< HEAD
-#define PRId64 "d"
-#define PRIx64 "llx"
-#define PRIu64 "u"
-#define PRIo64 "o"
-
-#define APIC_BUS_CYCLE_NS 1
-
-/* #define apic_debug(fmt,arg...) printk(KERN_WARNING fmt,##arg) */
-#define apic_debug(fmt, arg...)
-
-#define APIC_LVT_NUM			6
-/* 14 is the version for Xeon and Pentium 8.4.8*/
-#define APIC_VERSION			(0x14UL | ((APIC_LVT_NUM - 1) << 16))
-#define LAPIC_MMIO_LENGTH		(1 << 12)
-/* followed define is not in apicdef.h */
-#define APIC_SHORT_MASK			0xc0000
-#define APIC_DEST_NOSHORT		0x0
-#define APIC_DEST_MASK			0x800
-#define MAX_APIC_VECTOR			256
-
-#define VEC_POS(v) ((v) & (32 - 1))
-#define REG_POS(v) (((v) >> 5) << 4)
-
-static unsigned int min_timer_period_us = 500;
-module_param(min_timer_period_us, uint, S_IRUGO | S_IWUSR);
-
-static inline u32 apic_get_reg(struct kvm_lapic *apic, int reg_off)
-{
-	return *((u32 *) (apic->regs + reg_off));
-}
-
-static inline void apic_set_reg(struct kvm_lapic *apic, int reg_off, u32 val)
-{
-	*((u32 *) (apic->regs + reg_off)) = val;
-}
-
-static inline int apic_test_and_set_vector(int vec, void *bitmap)
-{
-	return test_and_set_bit(VEC_POS(vec), (bitmap) + REG_POS(vec));
-}
-
-static inline int apic_test_and_clear_vector(int vec, void *bitmap)
-{
-	return test_and_clear_bit(VEC_POS(vec), (bitmap) + REG_POS(vec));
-}
-
-static inline void apic_set_vector(int vec, void *bitmap)
-{
-	set_bit(VEC_POS(vec), (bitmap) + REG_POS(vec));
-}
-
-static inline void apic_clear_vector(int vec, void *bitmap)
-{
-	clear_bit(VEC_POS(vec), (bitmap) + REG_POS(vec));
-}
-
-static inline int apic_hw_enabled(struct kvm_lapic *apic)
-{
-	return (apic)->vcpu->arch.apic_base & MSR_IA32_APICBASE_ENABLE;
-}
-
-static inline int  apic_sw_enabled(struct kvm_lapic *apic)
-{
-	return apic_get_reg(apic, APIC_SPIV) & APIC_SPIV_APIC_ENABLED;
-}
-
-static inline int apic_enabled(struct kvm_lapic *apic)
-{
-	return apic_sw_enabled(apic) &&	apic_hw_enabled(apic);
-=======
 /* 14 is the version for Xeon and Pentium 8.4.8*/
 #define APIC_VERSION			0x14UL
 #define LAPIC_MMIO_LENGTH		(1 << 12)
@@ -231,7 +134,6 @@ __read_mostly DEFINE_STATIC_KEY_DEFERRED_FALSE(apic_sw_disabled, HZ);
 static inline int apic_enabled(struct kvm_lapic *apic)
 {
 	return kvm_apic_sw_enabled(apic) &&	kvm_apic_hw_enabled(apic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define LVT_MASK	\
@@ -241,11 +143,6 @@ static inline int apic_enabled(struct kvm_lapic *apic)
 	(LVT_MASK | APIC_MODE_MASK | APIC_INPUT_POLARITY | \
 	 APIC_LVT_REMOTE_IRR | APIC_LVT_LEVEL_TRIGGER)
 
-<<<<<<< HEAD
-static inline int kvm_apic_id(struct kvm_lapic *apic)
-{
-	return (apic_get_reg(apic, APIC_ID) >> 24) & 0xff;
-=======
 static inline u32 kvm_x2apic_id(struct kvm_lapic *apic)
 {
 	return apic->vcpu->vcpu_id;
@@ -639,52 +536,26 @@ static inline void kvm_apic_set_x2apic_id(struct kvm_lapic *apic, u32 id)
 	kvm_lapic_set_reg(apic, APIC_ID, id);
 	kvm_lapic_set_reg(apic, APIC_LDR, ldr);
 	atomic_set_release(&apic->vcpu->kvm->arch.apic_map_dirty, DIRTY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int apic_lvt_enabled(struct kvm_lapic *apic, int lvt_type)
 {
-<<<<<<< HEAD
-	return !(apic_get_reg(apic, lvt_type) & APIC_LVT_MASKED);
-}
-
-static inline int apic_lvt_vector(struct kvm_lapic *apic, int lvt_type)
-{
-	return apic_get_reg(apic, lvt_type) & APIC_VECTOR_MASK;
-=======
 	return !(kvm_lapic_get_reg(apic, lvt_type) & APIC_LVT_MASKED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int apic_lvtt_oneshot(struct kvm_lapic *apic)
 {
-<<<<<<< HEAD
-	return ((apic_get_reg(apic, APIC_LVTT) &
-		apic->lapic_timer.timer_mode_mask) == APIC_LVT_TIMER_ONESHOT);
-=======
 	return apic->lapic_timer.timer_mode == APIC_LVT_TIMER_ONESHOT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int apic_lvtt_period(struct kvm_lapic *apic)
 {
-<<<<<<< HEAD
-	return ((apic_get_reg(apic, APIC_LVTT) &
-		apic->lapic_timer.timer_mode_mask) == APIC_LVT_TIMER_PERIODIC);
-=======
 	return apic->lapic_timer.timer_mode == APIC_LVT_TIMER_PERIODIC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int apic_lvtt_tscdeadline(struct kvm_lapic *apic)
 {
-<<<<<<< HEAD
-	return ((apic_get_reg(apic, APIC_LVTT) &
-		apic->lapic_timer.timer_mode_mask) ==
-			APIC_LVT_TIMER_TSCDEADLINE);
-=======
 	return apic->lapic_timer.timer_mode == APIC_LVT_TIMER_TSCDEADLINE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int apic_lvt_nmi_mode(u32 lvt_val)
@@ -692,34 +563,6 @@ static inline int apic_lvt_nmi_mode(u32 lvt_val)
 	return (lvt_val & (APIC_MODE_MASK | APIC_LVT_MASKED)) == APIC_DM_NMI;
 }
 
-<<<<<<< HEAD
-void kvm_apic_set_version(struct kvm_vcpu *vcpu)
-{
-	struct kvm_lapic *apic = vcpu->arch.apic;
-	struct kvm_cpuid_entry2 *feat;
-	u32 v = APIC_VERSION;
-
-	if (!irqchip_in_kernel(vcpu->kvm))
-		return;
-
-	feat = kvm_find_cpuid_entry(apic->vcpu, 0x1, 0);
-	if (feat && (feat->ecx & (1 << (X86_FEATURE_X2APIC & 31))))
-		v |= APIC_LVR_DIRECTED_EOI;
-	apic_set_reg(apic, APIC_LVR, v);
-}
-
-static inline int apic_x2apic_mode(struct kvm_lapic *apic)
-{
-	return apic->vcpu->arch.apic_base & X2APIC_ENABLE;
-}
-
-static unsigned int apic_lvt_mask[APIC_LVT_NUM] = {
-	LVT_MASK ,      /* part LVTT mask, timer mode mask added at runtime */
-	LVT_MASK | APIC_MODE_MASK,	/* LVTTHMR */
-	LVT_MASK | APIC_MODE_MASK,	/* LVTPC */
-	LINT_MASK, LINT_MASK,	/* LVT0-1 */
-	LVT_MASK		/* LVTERR */
-=======
 static inline bool kvm_lapic_lvt_supported(struct kvm_lapic *apic, int lvt_index)
 {
 	return apic->nr_lvt_entries > lvt_index;
@@ -780,31 +623,10 @@ static const unsigned int apic_lvt_mask[KVM_APIC_MAX_NR_LVT_ENTRIES] = {
 	[LVT_LINT1] = LINT_MASK,
 	[LVT_ERROR] = LVT_MASK,
 	[LVT_CMCI] = LVT_MASK | APIC_MODE_MASK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int find_highest_vector(void *bitmap)
 {
-<<<<<<< HEAD
-	u32 *word = bitmap;
-	int word_offset = MAX_APIC_VECTOR >> 5;
-
-	while ((word_offset != 0) && (word[(--word_offset) << 2] == 0))
-		continue;
-
-	if (likely(!word_offset && !word[0]))
-		return -1;
-	else
-		return fls(word[word_offset << 2]) - 1 + (word_offset << 5);
-}
-
-static inline int apic_test_and_set_irr(int vec, struct kvm_lapic *apic)
-{
-	apic->irr_pending = true;
-	return apic_test_and_set_vector(vec, apic->regs + APIC_IRR);
-}
-
-=======
 	int vec;
 	u32 *reg;
 
@@ -879,7 +701,6 @@ bool kvm_apic_update_irr(struct kvm_vcpu *vcpu, u32 *pir, int *max_irr)
 }
 EXPORT_SYMBOL_GPL(kvm_apic_update_irr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int apic_search_irr(struct kvm_lapic *apic)
 {
 	return find_highest_vector(apic->regs + APIC_IRR);
@@ -889,13 +710,10 @@ static inline int apic_find_highest_irr(struct kvm_lapic *apic)
 {
 	int result;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Note that irr_pending is just a hint. It will be always
 	 * true with virtual interrupt delivery enabled.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!apic->irr_pending)
 		return -1;
 
@@ -907,40 +725,6 @@ static inline int apic_find_highest_irr(struct kvm_lapic *apic)
 
 static inline void apic_clear_irr(int vec, struct kvm_lapic *apic)
 {
-<<<<<<< HEAD
-	apic->irr_pending = false;
-	apic_clear_vector(vec, apic->regs + APIC_IRR);
-	if (apic_search_irr(apic) != -1)
-		apic->irr_pending = true;
-}
-
-int kvm_lapic_find_highest_irr(struct kvm_vcpu *vcpu)
-{
-	struct kvm_lapic *apic = vcpu->arch.apic;
-	int highest_irr;
-
-	/* This may race with setting of irr in __apic_accept_irq() and
-	 * value returned may be wrong, but kvm_vcpu_kick() in __apic_accept_irq
-	 * will cause vmexit immediately and the value will be recalculated
-	 * on the next vmentry.
-	 */
-	if (!apic)
-		return 0;
-	highest_irr = apic_find_highest_irr(apic);
-
-	return highest_irr;
-}
-
-static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
-			     int vector, int level, int trig_mode);
-
-int kvm_apic_set_irq(struct kvm_vcpu *vcpu, struct kvm_lapic_irq *irq)
-{
-	struct kvm_lapic *apic = vcpu->arch.apic;
-
-	return __apic_accept_irq(apic, irq->delivery_mode, irq->vector,
-			irq->level, irq->trig_mode);
-=======
 	if (unlikely(apic->apicv_active)) {
 		/* need to update RVI */
 		kvm_lapic_clear_vector(vec, apic->regs + APIC_IRR);
@@ -982,15 +766,12 @@ static inline void apic_set_isr(int vec, struct kvm_lapic *apic)
 		 */
 		apic->highest_isr_cache = vec;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int apic_find_highest_isr(struct kvm_lapic *apic)
 {
 	int result;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Note that isr_count is always 1, and highest_isr_cache
 	 * is always -1, with APIC virtualization enabled.
@@ -1000,16 +781,12 @@ static inline int apic_find_highest_isr(struct kvm_lapic *apic)
 	if (likely(apic->highest_isr_cache != -1))
 		return apic->highest_isr_cache;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = find_highest_vector(apic->regs + APIC_ISR);
 	ASSERT(result == -1 || result >= 16);
 
 	return result;
 }
 
-<<<<<<< HEAD
-static void apic_update_ppr(struct kvm_lapic *apic)
-=======
 static inline void apic_clear_isr(int vec, struct kvm_lapic *apic)
 {
 	if (!__apic_test_and_clear_vector(vec, apic->regs + APIC_ISR))
@@ -1168,18 +945,12 @@ static int apic_has_interrupt_for_ppr(struct kvm_lapic *apic, u32 ppr)
 }
 
 static bool __apic_update_ppr(struct kvm_lapic *apic, u32 *new_ppr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tpr, isrv, ppr, old_ppr;
 	int isr;
 
-<<<<<<< HEAD
-	old_ppr = apic_get_reg(apic, APIC_PROCPRI);
-	tpr = apic_get_reg(apic, APIC_TASKPRI);
-=======
 	old_ppr = kvm_lapic_get_reg(apic, APIC_PROCPRI);
 	tpr = kvm_lapic_get_reg(apic, APIC_TASKPRI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isr = apic_find_highest_isr(apic);
 	isrv = (isr != -1) ? isr : 0;
 
@@ -1188,96 +959,6 @@ static bool __apic_update_ppr(struct kvm_lapic *apic, u32 *new_ppr)
 	else
 		ppr = isrv & 0xf0;
 
-<<<<<<< HEAD
-	apic_debug("vlapic %p, ppr 0x%x, isr 0x%x, isrv 0x%x",
-		   apic, ppr, isr, isrv);
-
-	if (old_ppr != ppr) {
-		apic_set_reg(apic, APIC_PROCPRI, ppr);
-		if (ppr < old_ppr)
-			kvm_make_request(KVM_REQ_EVENT, apic->vcpu);
-	}
-}
-
-static void apic_set_tpr(struct kvm_lapic *apic, u32 tpr)
-{
-	apic_set_reg(apic, APIC_TASKPRI, tpr);
-	apic_update_ppr(apic);
-}
-
-int kvm_apic_match_physical_addr(struct kvm_lapic *apic, u16 dest)
-{
-	return dest == 0xff || kvm_apic_id(apic) == dest;
-}
-
-int kvm_apic_match_logical_addr(struct kvm_lapic *apic, u8 mda)
-{
-	int result = 0;
-	u32 logical_id;
-
-	if (apic_x2apic_mode(apic)) {
-		logical_id = apic_get_reg(apic, APIC_LDR);
-		return logical_id & mda;
-	}
-
-	logical_id = GET_APIC_LOGICAL_ID(apic_get_reg(apic, APIC_LDR));
-
-	switch (apic_get_reg(apic, APIC_DFR)) {
-	case APIC_DFR_FLAT:
-		if (logical_id & mda)
-			result = 1;
-		break;
-	case APIC_DFR_CLUSTER:
-		if (((logical_id >> 4) == (mda >> 0x4))
-		    && (logical_id & mda & 0xf))
-			result = 1;
-		break;
-	default:
-		apic_debug("Bad DFR vcpu %d: %08x\n",
-			   apic->vcpu->vcpu_id, apic_get_reg(apic, APIC_DFR));
-		break;
-	}
-
-	return result;
-}
-
-int kvm_apic_match_dest(struct kvm_vcpu *vcpu, struct kvm_lapic *source,
-			   int short_hand, int dest, int dest_mode)
-{
-	int result = 0;
-	struct kvm_lapic *target = vcpu->arch.apic;
-
-	apic_debug("target %p, source %p, dest 0x%x, "
-		   "dest_mode 0x%x, short_hand 0x%x\n",
-		   target, source, dest, dest_mode, short_hand);
-
-	ASSERT(target);
-	switch (short_hand) {
-	case APIC_DEST_NOSHORT:
-		if (dest_mode == 0)
-			/* Physical mode. */
-			result = kvm_apic_match_physical_addr(target, dest);
-		else
-			/* Logical mode. */
-			result = kvm_apic_match_logical_addr(target, dest);
-		break;
-	case APIC_DEST_SELF:
-		result = (target == source);
-		break;
-	case APIC_DEST_ALLINC:
-		result = 1;
-		break;
-	case APIC_DEST_ALLBUT:
-		result = (target != source);
-		break;
-	default:
-		apic_debug("kvm: apic: Bad dest shorthand value %x\n",
-			   short_hand);
-		break;
-	}
-
-	return result;
-=======
 	*new_ppr = ppr;
 	if (old_ppr != ppr)
 		kvm_lapic_set_reg(apic, APIC_PROCPRI, ppr);
@@ -1604,7 +1285,6 @@ bool kvm_intr_is_single_vcpu_fast(struct kvm *kvm, struct kvm_lapic_irq *irq,
 
 	rcu_read_unlock();
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1612,22 +1292,12 @@ bool kvm_intr_is_single_vcpu_fast(struct kvm *kvm, struct kvm_lapic_irq *irq,
  * Return 1 if successfully added and 0 if discarded.
  */
 static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
-<<<<<<< HEAD
-			     int vector, int level, int trig_mode)
-=======
 			     int vector, int level, int trig_mode,
 			     struct dest_map *dest_map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 	struct kvm_vcpu *vcpu = apic->vcpu;
 
-<<<<<<< HEAD
-	switch (delivery_mode) {
-	case APIC_DM_LOWEST:
-		vcpu->arch.apic_arb_prio++;
-	case APIC_DM_FIXED:
-=======
 	trace_kvm_apic_accept_irq(vcpu->vcpu_id, delivery_mode,
 				  trig_mode, vector);
 	switch (delivery_mode) {
@@ -1638,29 +1308,10 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
 		if (unlikely(trig_mode && !level))
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* FIXME add logic for vcpu on reset */
 		if (unlikely(!apic_enabled(apic)))
 			break;
 
-<<<<<<< HEAD
-		if (trig_mode) {
-			apic_debug("level trig mode for vector %d", vector);
-			apic_set_vector(vector, apic->regs + APIC_TMR);
-		} else
-			apic_clear_vector(vector, apic->regs + APIC_TMR);
-
-		result = !apic_test_and_set_irr(vector, apic);
-		trace_kvm_apic_accept_irq(vcpu->vcpu_id, delivery_mode,
-					  trig_mode, vector, !result);
-		if (!result) {
-			if (trig_mode)
-				apic_debug("level trig mode repeatedly for "
-						"vector %d", vector);
-			break;
-		}
-
-=======
 		result = 1;
 
 		if (dest_map) {
@@ -1684,25 +1335,15 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
 	case APIC_DM_REMRD:
 		result = 1;
 		vcpu->arch.pv.pv_unhalted = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kvm_make_request(KVM_REQ_EVENT, vcpu);
 		kvm_vcpu_kick(vcpu);
 		break;
 
-<<<<<<< HEAD
-	case APIC_DM_REMRD:
-		apic_debug("Ignoring delivery mode 3\n");
-		break;
-
-	case APIC_DM_SMI:
-		apic_debug("Ignoring guest SMI\n");
-=======
 	case APIC_DM_SMI:
 		if (!kvm_inject_smi(vcpu)) {
 			kvm_vcpu_kick(vcpu);
 			result = 1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case APIC_DM_NMI:
@@ -1714,34 +1355,14 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
 	case APIC_DM_INIT:
 		if (!trig_mode || level) {
 			result = 1;
-<<<<<<< HEAD
-			vcpu->arch.mp_state = KVM_MP_STATE_INIT_RECEIVED;
-			kvm_make_request(KVM_REQ_EVENT, vcpu);
-			kvm_vcpu_kick(vcpu);
-		} else {
-			apic_debug("Ignoring de-assert INIT to vcpu %d\n",
-				   vcpu->vcpu_id);
-=======
 			/* assumes that there are only KVM_APIC_INIT/SIPI */
 			apic->pending_events = (1UL << KVM_APIC_INIT);
 			kvm_make_request(KVM_REQ_EVENT, vcpu);
 			kvm_vcpu_kick(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case APIC_DM_STARTUP:
-<<<<<<< HEAD
-		apic_debug("SIPI to vcpu %d vector 0x%02x\n",
-			   vcpu->vcpu_id, vector);
-		if (vcpu->arch.mp_state == KVM_MP_STATE_INIT_RECEIVED) {
-			result = 1;
-			vcpu->arch.sipi_vector = vector;
-			vcpu->arch.mp_state = KVM_MP_STATE_SIPI_RECEIVED;
-			kvm_make_request(KVM_REQ_EVENT, vcpu);
-			kvm_vcpu_kick(vcpu);
-		}
-=======
 		result = 1;
 		apic->sipi_vector = vector;
 		/* make sure sipi_vector is visible for the receiver */
@@ -1749,7 +1370,6 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
 		set_bit(KVM_APIC_SIPI, &apic->pending_events);
 		kvm_make_request(KVM_REQ_EVENT, vcpu);
 		kvm_vcpu_kick(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case APIC_DM_EXTINT:
@@ -1768,8 +1388,6 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
 	return result;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * This routine identifies the destination vcpus mask meant to receive the
  * IOAPIC interrupts. It either uses kvm_apic_map_get_dest_lapic() to find
@@ -1814,18 +1432,11 @@ void kvm_bitmap_or_dest_vcpus(struct kvm *kvm, struct kvm_lapic_irq *irq,
 	rcu_read_unlock();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_apic_compare_prio(struct kvm_vcpu *vcpu1, struct kvm_vcpu *vcpu2)
 {
 	return vcpu1->arch.apic_arb_prio - vcpu2->arch.apic_arb_prio;
 }
 
-<<<<<<< HEAD
-static void apic_set_eoi(struct kvm_lapic *apic)
-{
-	int vector = apic_find_highest_isr(apic);
-	int trigger_mode;
-=======
 static bool kvm_ioapic_handles_vector(struct kvm_lapic *apic, int vector)
 {
 	return test_bit(vector, apic->vcpu->arch.ioapic_handled_vectors);
@@ -1860,62 +1471,11 @@ static int apic_set_eoi(struct kvm_lapic *apic)
 
 	trace_kvm_eoi(apic, vector);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Not every write EOI will has corresponding ISR,
 	 * one example is when Kernel check timer on setup_IO_APIC
 	 */
 	if (vector == -1)
-<<<<<<< HEAD
-		return;
-
-	apic_clear_vector(vector, apic->regs + APIC_ISR);
-	apic_update_ppr(apic);
-
-	if (apic_test_and_clear_vector(vector, apic->regs + APIC_TMR))
-		trigger_mode = IOAPIC_LEVEL_TRIG;
-	else
-		trigger_mode = IOAPIC_EDGE_TRIG;
-	if (!(apic_get_reg(apic, APIC_SPIV) & APIC_SPIV_DIRECTED_EOI))
-		kvm_ioapic_update_eoi(apic->vcpu->kvm, vector, trigger_mode);
-	kvm_make_request(KVM_REQ_EVENT, apic->vcpu);
-}
-
-static void apic_send_ipi(struct kvm_lapic *apic)
-{
-	u32 icr_low = apic_get_reg(apic, APIC_ICR);
-	u32 icr_high = apic_get_reg(apic, APIC_ICR2);
-	struct kvm_lapic_irq irq;
-
-	irq.vector = icr_low & APIC_VECTOR_MASK;
-	irq.delivery_mode = icr_low & APIC_MODE_MASK;
-	irq.dest_mode = icr_low & APIC_DEST_MASK;
-	irq.level = icr_low & APIC_INT_ASSERT;
-	irq.trig_mode = icr_low & APIC_INT_LEVELTRIG;
-	irq.shorthand = icr_low & APIC_SHORT_MASK;
-	if (apic_x2apic_mode(apic))
-		irq.dest_id = icr_high;
-	else
-		irq.dest_id = GET_APIC_DEST_FIELD(icr_high);
-
-	trace_kvm_apic_ipi(icr_low, irq.dest_id);
-
-	apic_debug("icr_high 0x%x, icr_low 0x%x, "
-		   "short_hand 0x%x, dest 0x%x, trig_mode 0x%x, level 0x%x, "
-		   "dest_mode 0x%x, delivery_mode 0x%x, vector 0x%x\n",
-		   icr_high, icr_low, irq.shorthand, irq.dest_id,
-		   irq.trig_mode, irq.level, irq.dest_mode, irq.delivery_mode,
-		   irq.vector);
-
-	kvm_irq_delivery_to_apic(apic->vcpu->kvm, apic, &irq);
-}
-
-static u32 apic_get_tmcct(struct kvm_lapic *apic)
-{
-	ktime_t remaining;
-	s64 ns;
-	u32 tmcct;
-=======
 		return vector;
 
 	apic_clear_isr(vector, apic);
@@ -1973,26 +1533,10 @@ static u32 apic_get_tmcct(struct kvm_lapic *apic)
 {
 	ktime_t remaining, now;
 	s64 ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ASSERT(apic != NULL);
 
 	/* if initial count is 0, current count should also be 0 */
-<<<<<<< HEAD
-	if (apic_get_reg(apic, APIC_TMICT) == 0 ||
-		apic->lapic_timer.period == 0)
-		return 0;
-
-	remaining = hrtimer_get_remaining(&apic->lapic_timer.timer);
-	if (ktime_to_ns(remaining) < 0)
-		remaining = ktime_set(0, 0);
-
-	ns = mod_64(ktime_to_ns(remaining), apic->lapic_timer.period);
-	tmcct = div64_u64(ns,
-			 (APIC_BUS_CYCLE_NS * apic->divide_count));
-
-	return tmcct;
-=======
 	if (kvm_lapic_get_reg(apic, APIC_TMICT) == 0 ||
 		apic->lapic_timer.period == 0)
 		return 0;
@@ -2004,7 +1548,6 @@ static u32 apic_get_tmcct(struct kvm_lapic *apic)
 
 	ns = mod_64(ktime_to_ns(remaining), apic->lapic_timer.period);
 	return div64_u64(ns, (APIC_BUS_CYCLE_NS * apic->divide_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __report_tpr_access(struct kvm_lapic *apic, bool write)
@@ -2031,18 +1574,7 @@ static u32 __apic_read(struct kvm_lapic *apic, unsigned int offset)
 		return 0;
 
 	switch (offset) {
-<<<<<<< HEAD
-	case APIC_ID:
-		if (apic_x2apic_mode(apic))
-			val = kvm_apic_id(apic);
-		else
-			val = kvm_apic_id(apic) << 24;
-		break;
 	case APIC_ARBPRI:
-		apic_debug("Access APIC ARBPRI register which is for P6\n");
-=======
-	case APIC_ARBPRI:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case APIC_TMCCT:	/* Timer CCR */
@@ -2051,15 +1583,6 @@ static u32 __apic_read(struct kvm_lapic *apic, unsigned int offset)
 
 		val = apic_get_tmcct(apic);
 		break;
-<<<<<<< HEAD
-
-	case APIC_TASKPRI:
-		report_tpr_access(apic, false);
-		/* fall thru */
-	default:
-		apic_update_ppr(apic);
-		val = apic_get_reg(apic, offset);
-=======
 	case APIC_PROCPRI:
 		apic_update_ppr(apic);
 		val = kvm_lapic_get_reg(apic, offset);
@@ -2069,7 +1592,6 @@ static u32 __apic_read(struct kvm_lapic *apic, unsigned int offset)
 		fallthrough;
 	default:
 		val = kvm_lapic_get_reg(apic, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -2081,27 +1603,6 @@ static inline struct kvm_lapic *to_lapic(struct kvm_io_device *dev)
 	return container_of(dev, struct kvm_lapic, dev);
 }
 
-<<<<<<< HEAD
-static int apic_reg_read(struct kvm_lapic *apic, u32 offset, int len,
-		void *data)
-{
-	unsigned char alignment = offset & 0xf;
-	u32 result;
-	/* this bitmask has a bit cleared for each reserver register */
-	static const u64 rmask = 0x43ff01ffffffe70cULL;
-
-	if ((alignment + len) > 4) {
-		apic_debug("KVM_APIC_READ: alignment error %x %d\n",
-			   offset, len);
-		return 1;
-	}
-
-	if (offset > 0x3f0 || !(rmask & (1ULL << (offset >> 4)))) {
-		apic_debug("KVM_APIC_READ: read reserved register %x\n",
-			   offset);
-		return 1;
-	}
-=======
 #define APIC_REG_MASK(reg)	(1ull << ((reg) >> 4))
 #define APIC_REGS_MASK(first, count) \
 	(APIC_REG_MASK(first) * ((1ull << (count)) - 1))
@@ -2162,7 +1663,6 @@ static int kvm_lapic_reg_read(struct kvm_lapic *apic, u32 offset, int len,
 	if (offset > 0x3f0 ||
 	    !(kvm_lapic_readable_reg_mask(apic) & APIC_REG_MASK(offset)))
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = __apic_read(apic, offset & ~0xf);
 
@@ -2184,20 +1684,11 @@ static int kvm_lapic_reg_read(struct kvm_lapic *apic, u32 offset, int len,
 
 static int apic_mmio_in_range(struct kvm_lapic *apic, gpa_t addr)
 {
-<<<<<<< HEAD
-	return apic_hw_enabled(apic) &&
-	    addr >= apic->base_address &&
-	    addr < apic->base_address + LAPIC_MMIO_LENGTH;
-}
-
-static int apic_mmio_read(struct kvm_io_device *this,
-=======
 	return addr >= apic->base_address &&
 		addr < apic->base_address + LAPIC_MMIO_LENGTH;
 }
 
 static int apic_mmio_read(struct kvm_vcpu *vcpu, struct kvm_io_device *this,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   gpa_t address, int len, void *data)
 {
 	struct kvm_lapic *apic = to_lapic(this);
@@ -2206,9 +1697,6 @@ static int apic_mmio_read(struct kvm_vcpu *vcpu, struct kvm_io_device *this,
 	if (!apic_mmio_in_range(apic, address))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	apic_reg_read(apic, offset, len, data);
-=======
 	if (!kvm_apic_hw_enabled(apic) || apic_x2apic_mode(apic)) {
 		if (!kvm_check_has_quirk(vcpu->kvm,
 					 KVM_X86_QUIRK_LAPIC_MMIO_HOLE))
@@ -2219,7 +1707,6 @@ static int apic_mmio_read(struct kvm_vcpu *vcpu, struct kvm_io_device *this,
 	}
 
 	kvm_lapic_reg_read(apic, offset, len, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2228,15 +1715,6 @@ static void update_divide_count(struct kvm_lapic *apic)
 {
 	u32 tmp1, tmp2, tdcr;
 
-<<<<<<< HEAD
-	tdcr = apic_get_reg(apic, APIC_TDCR);
-	tmp1 = tdcr & 0xf;
-	tmp2 = ((tmp1 & 0x3) | ((tmp1 & 0x8) >> 1)) + 1;
-	apic->divide_count = 0x1 << (tmp2 & 0x7);
-
-	apic_debug("timer divide count is 0x%x\n",
-				   apic->divide_count);
-=======
 	tdcr = kvm_lapic_get_reg(apic, APIC_TDCR);
 	tmp1 = tdcr & 0xf;
 	tmp2 = ((tmp1 & 0x3) | ((tmp1 & 0x8) >> 1)) + 1;
@@ -2747,100 +2225,15 @@ static void __start_apic_timer(struct kvm_lapic *apic, u32 count_reg)
 		return;
 
 	restart_apic_timer(apic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void start_apic_timer(struct kvm_lapic *apic)
 {
-<<<<<<< HEAD
-	ktime_t now;
-	atomic_set(&apic->lapic_timer.pending, 0);
-
-	if (apic_lvtt_period(apic) || apic_lvtt_oneshot(apic)) {
-		/* lapic timer in oneshot or peroidic mode */
-		now = apic->lapic_timer.timer.base->get_time();
-		apic->lapic_timer.period = (u64)apic_get_reg(apic, APIC_TMICT)
-			    * APIC_BUS_CYCLE_NS * apic->divide_count;
-
-		if (!apic->lapic_timer.period)
-			return;
-		/*
-		 * Do not allow the guest to program periodic timers with small
-		 * interval, since the hrtimers are not throttled by the host
-		 * scheduler.
-		 */
-		if (apic_lvtt_period(apic)) {
-			s64 min_period = min_timer_period_us * 1000LL;
-
-			if (apic->lapic_timer.period < min_period) {
-				pr_info_ratelimited(
-				    "kvm: vcpu %i: requested %lld ns "
-				    "lapic timer period limited to %lld ns\n",
-				    apic->vcpu->vcpu_id,
-				    apic->lapic_timer.period, min_period);
-				apic->lapic_timer.period = min_period;
-			}
-		}
-
-		hrtimer_start(&apic->lapic_timer.timer,
-			      ktime_add_ns(now, apic->lapic_timer.period),
-			      HRTIMER_MODE_ABS);
-
-		apic_debug("%s: bus cycle is %" PRId64 "ns, now 0x%016"
-			   PRIx64 ", "
-			   "timer initial count 0x%x, period %lldns, "
-			   "expire @ 0x%016" PRIx64 ".\n", __func__,
-			   APIC_BUS_CYCLE_NS, ktime_to_ns(now),
-			   apic_get_reg(apic, APIC_TMICT),
-			   apic->lapic_timer.period,
-			   ktime_to_ns(ktime_add_ns(now,
-					apic->lapic_timer.period)));
-	} else if (apic_lvtt_tscdeadline(apic)) {
-		/* lapic timer in tsc deadline mode */
-		u64 guest_tsc, tscdeadline = apic->lapic_timer.tscdeadline;
-		u64 ns = 0;
-		struct kvm_vcpu *vcpu = apic->vcpu;
-		unsigned long this_tsc_khz = vcpu->arch.virtual_tsc_khz;
-		unsigned long flags;
-
-		if (unlikely(!tscdeadline || !this_tsc_khz))
-			return;
-
-		local_irq_save(flags);
-
-		now = apic->lapic_timer.timer.base->get_time();
-		guest_tsc = kvm_x86_ops->read_l1_tsc(vcpu);
-		if (likely(tscdeadline > guest_tsc)) {
-			ns = (tscdeadline - guest_tsc) * 1000000ULL;
-			do_div(ns, this_tsc_khz);
-		}
-		hrtimer_start(&apic->lapic_timer.timer,
-			ktime_add_ns(now, ns), HRTIMER_MODE_ABS);
-
-		local_irq_restore(flags);
-	}
-=======
 	__start_apic_timer(apic, APIC_TMICT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void apic_manage_nmi_watchdog(struct kvm_lapic *apic, u32 lvt0_val)
 {
-<<<<<<< HEAD
-	int nmi_wd_enabled = apic_lvt_nmi_mode(apic_get_reg(apic, APIC_LVT0));
-
-	if (apic_lvt_nmi_mode(lvt0_val)) {
-		if (!nmi_wd_enabled) {
-			apic_debug("Receive NMI setting on APIC_LVT0 "
-				   "for cpu %d\n", apic->vcpu->vcpu_id);
-			atomic_inc(&apic->vcpu->kvm->arch.vapics_in_nmi_mode);
-		}
-	} else if (nmi_wd_enabled)
-		atomic_dec(&apic->vcpu->kvm->arch.vapics_in_nmi_mode);
-}
-
-static int apic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
-=======
 	bool lvt0_in_nmi_mode = apic_lvt_nmi_mode(lvt0_val);
 
 	if (apic->lvt0_in_nmi_mode != lvt0_in_nmi_mode) {
@@ -2863,7 +2256,6 @@ static int get_lvt_index(u32 reg)
 }
 
 static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 
@@ -2871,18 +2263,11 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
 
 	switch (reg) {
 	case APIC_ID:		/* Local APIC ID */
-<<<<<<< HEAD
-		if (!apic_x2apic_mode(apic))
-			apic_set_reg(apic, APIC_ID, val);
-		else
-			ret = 1;
-=======
 		if (!apic_x2apic_mode(apic)) {
 			kvm_apic_set_xapic_id(apic, val >> 24);
 		} else {
 			ret = 1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case APIC_TASKPRI:
@@ -2896,43 +2281,20 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
 
 	case APIC_LDR:
 		if (!apic_x2apic_mode(apic))
-<<<<<<< HEAD
-			apic_set_reg(apic, APIC_LDR, val & APIC_LDR_MASK);
-=======
 			kvm_apic_set_ldr(apic, val & APIC_LDR_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			ret = 1;
 		break;
 
 	case APIC_DFR:
 		if (!apic_x2apic_mode(apic))
-<<<<<<< HEAD
-			apic_set_reg(apic, APIC_DFR, val | 0x0FFFFFFF);
-=======
 			kvm_apic_set_dfr(apic, val | 0x0FFFFFFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			ret = 1;
 		break;
 
 	case APIC_SPIV: {
 		u32 mask = 0x3ff;
-<<<<<<< HEAD
-		if (apic_get_reg(apic, APIC_LVR) & APIC_LVR_DIRECTED_EOI)
-			mask |= APIC_SPIV_DIRECTED_EOI;
-		apic_set_reg(apic, APIC_SPIV, val & mask);
-		if (!(val & APIC_SPIV_APIC_ENABLED)) {
-			int i;
-			u32 lvt_val;
-
-			for (i = 0; i < APIC_LVT_NUM; i++) {
-				lvt_val = apic_get_reg(apic,
-						       APIC_LVTT + 0x10 * i);
-				apic_set_reg(apic, APIC_LVTT + 0x10 * i,
-					     lvt_val | APIC_LVT_MASKED);
-			}
-=======
 		if (kvm_lapic_get_reg(apic, APIC_LVR) & APIC_LVR_DIRECTED_EOI)
 			mask |= APIC_SPIV_DIRECTED_EOI;
 		apic_set_spiv(apic, val & mask);
@@ -2944,24 +2306,12 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
 					kvm_lapic_get_reg(apic, APIC_LVTx(i)) | APIC_LVT_MASKED);
 			}
 			apic_update_lvtt(apic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_set(&apic->lapic_timer.pending, 0);
 
 		}
 		break;
 	}
 	case APIC_ICR:
-<<<<<<< HEAD
-		/* No delay here, so we always clear the pending bit */
-		apic_set_reg(apic, APIC_ICR, val & ~(1 << 12));
-		apic_send_ipi(apic);
-		break;
-
-	case APIC_ICR2:
-		if (!apic_x2apic_mode(apic))
-			val &= 0xff000000;
-		apic_set_reg(apic, APIC_ICR2, val);
-=======
 		WARN_ON_ONCE(apic_x2apic_mode(apic));
 
 		/* No delay here, so we always clear the pending bit */
@@ -2974,40 +2324,15 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
 			ret = 1;
 		else
 			kvm_lapic_set_reg(apic, APIC_ICR2, val & 0xff000000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case APIC_LVT0:
 		apic_manage_nmi_watchdog(apic, val);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case APIC_LVTTHMR:
 	case APIC_LVTPC:
 	case APIC_LVT1:
 	case APIC_LVTERR:
-<<<<<<< HEAD
-		/* TODO: Check vector */
-		if (!apic_sw_enabled(apic))
-			val |= APIC_LVT_MASKED;
-
-		val &= apic_lvt_mask[(reg - APIC_LVTT) >> 4];
-		apic_set_reg(apic, reg, val);
-
-		break;
-
-	case APIC_LVTT:
-		if ((apic_get_reg(apic, APIC_LVTT) &
-		    apic->lapic_timer.timer_mode_mask) !=
-		   (val & apic->lapic_timer.timer_mode_mask))
-			hrtimer_cancel(&apic->lapic_timer.timer);
-
-		if (!apic_sw_enabled(apic))
-			val |= APIC_LVT_MASKED;
-		val &= (apic_lvt_mask[0] | apic->lapic_timer.timer_mode_mask);
-		apic_set_reg(apic, APIC_LVTT, val);
-=======
 	case APIC_LVTCMCI: {
 		u32 index = get_lvt_index(reg);
 		if (!kvm_lapic_lvt_supported(apic, index)) {
@@ -3027,39 +2352,12 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
 		val &= (apic_lvt_mask[0] | apic->lapic_timer.timer_mode_mask);
 		kvm_lapic_set_reg(apic, APIC_LVTT, val);
 		apic_update_lvtt(apic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case APIC_TMICT:
 		if (apic_lvtt_tscdeadline(apic))
 			break;
 
-<<<<<<< HEAD
-		hrtimer_cancel(&apic->lapic_timer.timer);
-		apic_set_reg(apic, APIC_TMICT, val);
-		start_apic_timer(apic);
-		break;
-
-	case APIC_TDCR:
-		if (val & 4)
-			apic_debug("KVM_WRITE:TDCR %x\n", val);
-		apic_set_reg(apic, APIC_TDCR, val);
-		update_divide_count(apic);
-		break;
-
-	case APIC_ESR:
-		if (apic_x2apic_mode(apic) && val != 0) {
-			apic_debug("KVM_WRITE:ESR not zero %x\n", val);
-			ret = 1;
-		}
-		break;
-
-	case APIC_SELF_IPI:
-		if (apic_x2apic_mode(apic)) {
-			apic_reg_write(apic, APIC_ICR, 0x40000 | (val & 0xff));
-		} else
-			ret = 1;
-=======
 		cancel_apic_timer(apic);
 		kvm_lapic_set_reg(apic, APIC_TMICT, val);
 		start_apic_timer(apic);
@@ -3092,20 +2390,11 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
 			ret = 1;
 		else
 			kvm_apic_send_ipi(apic, APIC_DEST_SELF | val, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = 1;
 		break;
 	}
-<<<<<<< HEAD
-	if (ret)
-		apic_debug("Local APIC Write to read-only register %x\n", reg);
-	return ret;
-}
-
-static int apic_mmio_write(struct kvm_io_device *this,
-=======
 
 	/*
 	 * Recalculate APIC maps if necessary, e.g. if the software enable bit
@@ -3118,7 +2407,6 @@ static int apic_mmio_write(struct kvm_io_device *this,
 }
 
 static int apic_mmio_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    gpa_t address, int len, const void *data)
 {
 	struct kvm_lapic *apic = to_lapic(this);
@@ -3128,8 +2416,6 @@ static int apic_mmio_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this,
 	if (!apic_mmio_in_range(apic, address))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-=======
 	if (!kvm_apic_hw_enabled(apic) || apic_x2apic_mode(apic)) {
 		if (!kvm_check_has_quirk(vcpu->kvm,
 					 KVM_X86_QUIRK_LAPIC_MMIO_HOLE))
@@ -3138,61 +2424,23 @@ static int apic_mmio_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this,
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * APIC register must be aligned on 128-bits boundary.
 	 * 32/64/128 bits registers must be accessed thru 32 bits.
 	 * Refer SDM 8.4.1
 	 */
-<<<<<<< HEAD
-	if (len != 4 || (offset & 0xf)) {
-		/* Don't shout loud, $infamous_os would cause only noise. */
-		apic_debug("apic write: bad size=%d %lx\n", len, (long)address);
-		return 0;
-	}
-
-	val = *(u32*)data;
-
-	/* too common printing */
-	if (offset != APIC_EOI)
-		apic_debug("%s: offset 0x%x with length 0x%x, and value is "
-			   "0x%x\n", __func__, offset, len, val);
-
-	apic_reg_write(apic, offset & 0xff0, val);
-=======
 	if (len != 4 || (offset & 0xf))
 		return 0;
 
 	val = *(u32*)data;
 
 	kvm_lapic_reg_write(apic, offset & 0xff0, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 void kvm_lapic_set_eoi(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *apic = vcpu->arch.apic;
-
-	if (apic)
-		apic_reg_write(vcpu->arch.apic, APIC_EOI, 0);
-}
-EXPORT_SYMBOL_GPL(kvm_lapic_set_eoi);
-
-void kvm_free_lapic(struct kvm_vcpu *vcpu)
-{
-	if (!vcpu->arch.apic)
-		return;
-
-	hrtimer_cancel(&vcpu->arch.apic->lapic_timer.timer);
-
-	if (vcpu->arch.apic->regs)
-		free_page((unsigned long)vcpu->arch.apic->regs);
-
-	kfree(vcpu->arch.apic);
-=======
 	kvm_lapic_reg_write(vcpu->arch.apic, APIC_EOI, 0);
 }
 EXPORT_SYMBOL_GPL(kvm_lapic_set_eoi);
@@ -3241,7 +2489,6 @@ void kvm_free_lapic(struct kvm_vcpu *vcpu)
 		free_page((unsigned long)apic->regs);
 
 	kfree(apic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3249,22 +2496,11 @@ void kvm_free_lapic(struct kvm_vcpu *vcpu)
  * LAPIC interface
  *----------------------------------------------------------------------
  */
-<<<<<<< HEAD
-
-u64 kvm_get_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu)
-{
-	struct kvm_lapic *apic = vcpu->arch.apic;
-	if (!apic)
-		return 0;
-
-	if (apic_lvtt_oneshot(apic) || apic_lvtt_period(apic))
-=======
 u64 kvm_get_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu)
 {
 	struct kvm_lapic *apic = vcpu->arch.apic;
 
 	if (!kvm_apic_present(vcpu) || !apic_lvtt_tscdeadline(apic))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return apic->lapic_timer.tscdeadline;
@@ -3273,15 +2509,8 @@ u64 kvm_get_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu)
 void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
 {
 	struct kvm_lapic *apic = vcpu->arch.apic;
-<<<<<<< HEAD
-	if (!apic)
-		return;
-
-	if (apic_lvtt_oneshot(apic) || apic_lvtt_period(apic))
-=======
 
 	if (!kvm_apic_present(vcpu) || !apic_lvtt_tscdeadline(apic))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	hrtimer_cancel(&apic->lapic_timer.timer);
@@ -3291,76 +2520,20 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
 
 void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *apic = vcpu->arch.apic;
-
-	if (!apic)
-		return;
-	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
-		     | (apic_get_reg(apic, APIC_TASKPRI) & 4));
-=======
 	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *apic = vcpu->arch.apic;
-	u64 tpr;
-
-	if (!apic)
-		return 0;
-	tpr = (u64) apic_get_reg(apic, APIC_TASKPRI);
-=======
 	u64 tpr;
 
 	tpr = (u64) kvm_lapic_get_reg(vcpu->arch.apic, APIC_TASKPRI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (tpr & 0xf0) >> 4;
 }
 
 void kvm_lapic_set_base(struct kvm_vcpu *vcpu, u64 value)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *apic = vcpu->arch.apic;
-
-	if (!apic) {
-		value |= MSR_IA32_APICBASE_BSP;
-		vcpu->arch.apic_base = value;
-		return;
-	}
-
-	if (!kvm_vcpu_is_bsp(apic->vcpu))
-		value &= ~MSR_IA32_APICBASE_BSP;
-
-	vcpu->arch.apic_base = value;
-	if (apic_x2apic_mode(apic)) {
-		u32 id = kvm_apic_id(apic);
-		u32 ldr = ((id & ~0xf) << 16) | (1 << (id & 0xf));
-		apic_set_reg(apic, APIC_LDR, ldr);
-	}
-	apic->base_address = apic->vcpu->arch.apic_base &
-			     MSR_IA32_APICBASE_BASE;
-
-	/* with FSB delivery interrupt, we can restart APIC functionality */
-	apic_debug("apic base msr is 0x%016" PRIx64 ", and base address is "
-		   "0x%lx.\n", apic->vcpu->arch.apic_base, apic->base_address);
-
-}
-
-void kvm_lapic_reset(struct kvm_vcpu *vcpu)
-{
-	struct kvm_lapic *apic;
-	int i;
-
-	apic_debug("%s\n", __func__);
-
-	ASSERT(vcpu);
-	apic = vcpu->arch.apic;
-	ASSERT(apic != NULL);
-=======
 	u64 old_value = vcpu->arch.apic_base;
 	struct kvm_lapic *apic = vcpu->arch.apic;
 
@@ -3515,58 +2688,10 @@ void kvm_lapic_reset(struct kvm_vcpu *vcpu, bool init_event)
 
 	if (!apic)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Stop the timer in case it's a reset to an active apic */
 	hrtimer_cancel(&apic->lapic_timer.timer);
 
-<<<<<<< HEAD
-	apic_set_reg(apic, APIC_ID, vcpu->vcpu_id << 24);
-	kvm_apic_set_version(apic->vcpu);
-
-	for (i = 0; i < APIC_LVT_NUM; i++)
-		apic_set_reg(apic, APIC_LVTT + 0x10 * i, APIC_LVT_MASKED);
-	apic_set_reg(apic, APIC_LVT0,
-		     SET_APIC_DELIVERY_MODE(0, APIC_MODE_EXTINT));
-
-	apic_set_reg(apic, APIC_DFR, 0xffffffffU);
-	apic_set_reg(apic, APIC_SPIV, 0xff);
-	apic_set_reg(apic, APIC_TASKPRI, 0);
-	apic_set_reg(apic, APIC_LDR, 0);
-	apic_set_reg(apic, APIC_ESR, 0);
-	apic_set_reg(apic, APIC_ICR, 0);
-	apic_set_reg(apic, APIC_ICR2, 0);
-	apic_set_reg(apic, APIC_TDCR, 0);
-	apic_set_reg(apic, APIC_TMICT, 0);
-	for (i = 0; i < 8; i++) {
-		apic_set_reg(apic, APIC_IRR + 0x10 * i, 0);
-		apic_set_reg(apic, APIC_ISR + 0x10 * i, 0);
-		apic_set_reg(apic, APIC_TMR + 0x10 * i, 0);
-	}
-	apic->irr_pending = false;
-	update_divide_count(apic);
-	atomic_set(&apic->lapic_timer.pending, 0);
-	if (kvm_vcpu_is_bsp(vcpu))
-		vcpu->arch.apic_base |= MSR_IA32_APICBASE_BSP;
-	apic_update_ppr(apic);
-
-	vcpu->arch.apic_arb_prio = 0;
-
-	apic_debug(KERN_INFO "%s: vcpu=%p, id=%d, base_msr="
-		   "0x%016" PRIx64 ", base_address=0x%0lx.\n", __func__,
-		   vcpu, kvm_apic_id(apic),
-		   vcpu->arch.apic_base, apic->base_address);
-}
-
-bool kvm_apic_present(struct kvm_vcpu *vcpu)
-{
-	return vcpu->arch.apic && apic_hw_enabled(vcpu->arch.apic);
-}
-
-int kvm_lapic_enabled(struct kvm_vcpu *vcpu)
-{
-	return kvm_apic_present(vcpu) && apic_sw_enabled(vcpu->arch.apic);
-=======
 	/* The xAPIC ID is set at RESET even if the APIC was already enabled. */
 	if (!init_event)
 		kvm_apic_set_xapic_id(apic, vcpu->vcpu_id);
@@ -3616,7 +2741,6 @@ int kvm_lapic_enabled(struct kvm_vcpu *vcpu)
 	vcpu->arch.apic_attention = 0;
 
 	kvm_recalculate_apic_map(vcpu->kvm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3625,47 +2749,23 @@ int kvm_lapic_enabled(struct kvm_vcpu *vcpu)
  *----------------------------------------------------------------------
  */
 
-<<<<<<< HEAD
-static bool lapic_is_periodic(struct kvm_timer *ktimer)
-{
-	struct kvm_lapic *apic = container_of(ktimer, struct kvm_lapic,
-					      lapic_timer);
-=======
 static bool lapic_is_periodic(struct kvm_lapic *apic)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return apic_lvtt_period(apic);
 }
 
 int apic_has_pending_timer(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *lapic = vcpu->arch.apic;
-
-	if (lapic && apic_enabled(lapic) && apic_lvt_enabled(lapic, APIC_LVTT))
-		return atomic_read(&lapic->lapic_timer.pending);
-=======
 	struct kvm_lapic *apic = vcpu->arch.apic;
 
 	if (apic_enabled(apic) && apic_lvt_enabled(apic, APIC_LVTT))
 		return atomic_read(&apic->lapic_timer.pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 int kvm_apic_local_deliver(struct kvm_lapic *apic, int lvt_type)
 {
-<<<<<<< HEAD
-	u32 reg = apic_get_reg(apic, lvt_type);
-	int vector, mode, trig_mode;
-
-	if (apic_hw_enabled(apic) && !(reg & APIC_LVT_MASKED)) {
-		vector = reg & APIC_VECTOR_MASK;
-		mode = reg & APIC_MODE_MASK;
-		trig_mode = reg & APIC_LVT_LEVEL_TRIGGER;
-		return __apic_accept_irq(apic, mode, vector, 1, trig_mode);
-=======
 	u32 reg = kvm_lapic_get_reg(apic, lvt_type);
 	int vector, mode, trig_mode;
 	int r;
@@ -3680,7 +2780,6 @@ int kvm_apic_local_deliver(struct kvm_lapic *apic, int lvt_type)
 		    guest_cpuid_is_intel_compatible(apic->vcpu))
 			kvm_lapic_set_reg(apic, APIC_LVTPC, reg | APIC_LVT_MASKED);
 		return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -3693,21 +2792,11 @@ void kvm_apic_nmi_wd_deliver(struct kvm_vcpu *vcpu)
 		kvm_apic_local_deliver(apic, APIC_LVT0);
 }
 
-<<<<<<< HEAD
-static struct kvm_timer_ops lapic_timer_ops = {
-	.is_periodic = lapic_is_periodic,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct kvm_io_device_ops apic_mmio_ops = {
 	.read     = apic_mmio_read,
 	.write    = apic_mmio_write,
 };
 
-<<<<<<< HEAD
-int kvm_create_lapic(struct kvm_vcpu *vcpu)
-=======
 static enum hrtimer_restart apic_timer_fn(struct hrtimer *data)
 {
 	struct kvm_timer *ktimer = container_of(data, struct kvm_timer, timer);
@@ -3724,16 +2813,10 @@ static enum hrtimer_restart apic_timer_fn(struct hrtimer *data)
 }
 
 int kvm_create_lapic(struct kvm_vcpu *vcpu, int timer_advance_ns)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvm_lapic *apic;
 
 	ASSERT(vcpu != NULL);
-<<<<<<< HEAD
-	apic_debug("apic_init %d\n", vcpu->vcpu_id);
-
-	apic = kzalloc(sizeof(*apic), GFP_KERNEL);
-=======
 
 	if (!irqchip_in_kernel(vcpu->kvm)) {
 		static_branch_inc(&kvm_has_noapic_vcpu);
@@ -3741,20 +2824,15 @@ int kvm_create_lapic(struct kvm_vcpu *vcpu, int timer_advance_ns)
 	}
 
 	apic = kzalloc(sizeof(*apic), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!apic)
 		goto nomem;
 
 	vcpu->arch.apic = apic;
 
-<<<<<<< HEAD
-	apic->regs = (void *)get_zeroed_page(GFP_KERNEL);
-=======
 	if (kvm_x86_ops.alloc_apic_backing_page)
 		apic->regs = static_call(kvm_x86_alloc_apic_backing_page)(vcpu);
 	else
 		apic->regs = (void *)get_zeroed_page(GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!apic->regs) {
 		printk(KERN_ERR "malloc apic regs error for vcpu %x\n",
 		       vcpu->vcpu_id);
@@ -3762,24 +2840,6 @@ int kvm_create_lapic(struct kvm_vcpu *vcpu, int timer_advance_ns)
 	}
 	apic->vcpu = vcpu;
 
-<<<<<<< HEAD
-	hrtimer_init(&apic->lapic_timer.timer, CLOCK_MONOTONIC,
-		     HRTIMER_MODE_ABS);
-	apic->lapic_timer.timer.function = kvm_timer_fn;
-	apic->lapic_timer.t_ops = &lapic_timer_ops;
-	apic->lapic_timer.kvm = vcpu->kvm;
-	apic->lapic_timer.vcpu = vcpu;
-
-	apic->base_address = APIC_DEFAULT_PHYS_BASE;
-	vcpu->arch.apic_base = APIC_DEFAULT_PHYS_BASE;
-
-	kvm_lapic_reset(vcpu);
-	kvm_iodevice_init(&apic->dev, &apic_mmio_ops);
-
-	return 0;
-nomem_free_apic:
-	kfree(apic);
-=======
 	apic->nr_lvt_entries = kvm_apic_calc_nr_lvt_entries(vcpu);
 
 	hrtimer_init(&apic->lapic_timer.timer, CLOCK_MONOTONIC,
@@ -3820,7 +2880,6 @@ nomem_free_apic:
 nomem_free_apic:
 	kfree(apic);
 	vcpu->arch.apic = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nomem:
 	return -ENOMEM;
 }
@@ -3828,32 +2887,6 @@ nomem:
 int kvm_apic_has_interrupt(struct kvm_vcpu *vcpu)
 {
 	struct kvm_lapic *apic = vcpu->arch.apic;
-<<<<<<< HEAD
-	int highest_irr;
-
-	if (!apic || !apic_enabled(apic))
-		return -1;
-
-	apic_update_ppr(apic);
-	highest_irr = apic_find_highest_irr(apic);
-	if ((highest_irr == -1) ||
-	    ((highest_irr & 0xF0) <= apic_get_reg(apic, APIC_PROCPRI)))
-		return -1;
-	return highest_irr;
-}
-
-int kvm_apic_accept_pic_intr(struct kvm_vcpu *vcpu)
-{
-	u32 lvt0 = apic_get_reg(vcpu->arch.apic, APIC_LVT0);
-	int r = 0;
-
-	if (!apic_hw_enabled(vcpu->arch.apic))
-		r = 1;
-	if ((lvt0 & APIC_LVT_MASKED) == 0 &&
-	    GET_APIC_DELIVERY_MODE(lvt0) == APIC_MODE_EXTINT)
-		r = 1;
-	return r;
-=======
 	u32 ppr;
 
 	if (!kvm_apic_present(vcpu))
@@ -3874,22 +2907,15 @@ int kvm_apic_accept_pic_intr(struct kvm_vcpu *vcpu)
 	    GET_APIC_DELIVERY_MODE(lvt0) == APIC_MODE_EXTINT)
 		return 1;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_inject_apic_timer_irqs(struct kvm_vcpu *vcpu)
 {
 	struct kvm_lapic *apic = vcpu->arch.apic;
 
-<<<<<<< HEAD
-	if (apic && atomic_read(&apic->lapic_timer.pending) > 0) {
-		if (kvm_apic_local_deliver(apic, APIC_LVTT))
-			atomic_dec(&apic->lapic_timer.pending);
-=======
 	if (atomic_read(&apic->lapic_timer.pending) > 0) {
 		kvm_apic_inject_pending_timer_irqs(apic);
 		atomic_set(&apic->lapic_timer.pending, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3897,37 +2923,11 @@ int kvm_get_apic_interrupt(struct kvm_vcpu *vcpu)
 {
 	int vector = kvm_apic_has_interrupt(vcpu);
 	struct kvm_lapic *apic = vcpu->arch.apic;
-<<<<<<< HEAD
-=======
 	u32 ppr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vector == -1)
 		return -1;
 
-<<<<<<< HEAD
-	apic_set_vector(vector, apic->regs + APIC_ISR);
-	apic_update_ppr(apic);
-	apic_clear_irr(vector, apic);
-	return vector;
-}
-
-void kvm_apic_post_state_restore(struct kvm_vcpu *vcpu)
-{
-	struct kvm_lapic *apic = vcpu->arch.apic;
-
-	apic->base_address = vcpu->arch.apic_base &
-			     MSR_IA32_APICBASE_BASE;
-	kvm_apic_set_version(vcpu);
-
-	apic_update_ppr(apic);
-	hrtimer_cancel(&apic->lapic_timer.timer);
-	apic_manage_nmi_watchdog(apic, apic_get_reg(apic, APIC_LVT0));
-	update_divide_count(apic);
-	start_apic_timer(apic);
-	apic->irr_pending = true;
-	kvm_make_request(KVM_REQ_EVENT, vcpu);
-=======
 	/*
 	 * We get here even with APIC virtualization enabled, if doing
 	 * nested virtualization and L1 runs with the "acknowledge interrupt
@@ -4052,22 +3052,10 @@ int kvm_apic_set_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s)
 	vcpu->arch.apic_arb_prio = 0;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __kvm_migrate_apic_timer(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *apic = vcpu->arch.apic;
-	struct hrtimer *timer;
-
-	if (!apic)
-		return;
-
-	timer = &apic->lapic_timer.timer;
-	if (hrtimer_cancel(timer))
-		hrtimer_start_expires(timer, HRTIMER_MODE_ABS);
-=======
 	struct hrtimer *timer;
 
 	if (!lapic_in_kernel(vcpu) ||
@@ -4107,20 +3095,12 @@ static void apic_sync_pv_eoi_from_guest(struct kvm_vcpu *vcpu,
 		return;
 	vector = apic_set_eoi(apic);
 	trace_kvm_pv_eoi(apic, vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_lapic_sync_from_vapic(struct kvm_vcpu *vcpu)
 {
 	u32 data;
 
-<<<<<<< HEAD
-	if (!irqchip_in_kernel(vcpu->kvm) || !vcpu->arch.apic->vapic_addr)
-		return;
-
-	kvm_read_guest_cached(vcpu->kvm, &vcpu->arch.apic->vapic_cache, &data,
-			      sizeof(u32));
-=======
 	if (test_bit(KVM_APIC_PV_EOI_PENDING, &vcpu->arch.apic_attention))
 		apic_sync_pv_eoi_from_guest(vcpu, vcpu->arch.apic);
 
@@ -4130,13 +3110,10 @@ void kvm_lapic_sync_from_vapic(struct kvm_vcpu *vcpu)
 	if (kvm_read_guest_cached(vcpu->kvm, &vcpu->arch.apic->vapic_cache, &data,
 				  sizeof(u32)))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	apic_set_tpr(vcpu->arch.apic, data & 0xff);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * apic_sync_pv_eoi_to_guest - called before vmentry
  *
@@ -4163,20 +3140,10 @@ static void apic_sync_pv_eoi_to_guest(struct kvm_vcpu *vcpu,
 	pv_eoi_set_pending(apic->vcpu);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kvm_lapic_sync_to_vapic(struct kvm_vcpu *vcpu)
 {
 	u32 data, tpr;
 	int max_irr, max_isr;
-<<<<<<< HEAD
-	struct kvm_lapic *apic;
-
-	if (!irqchip_in_kernel(vcpu->kvm) || !vcpu->arch.apic->vapic_addr)
-		return;
-
-	apic = vcpu->arch.apic;
-	tpr = apic_get_reg(apic, APIC_TASKPRI) & 0xff;
-=======
 	struct kvm_lapic *apic = vcpu->arch.apic;
 
 	apic_sync_pv_eoi_to_guest(vcpu, apic);
@@ -4185,7 +3152,6 @@ void kvm_lapic_sync_to_vapic(struct kvm_vcpu *vcpu)
 		return;
 
 	tpr = kvm_lapic_get_reg(apic, APIC_TASKPRI) & 0xff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_irr = apic_find_highest_irr(apic);
 	if (max_irr < 0)
 		max_irr = 0;
@@ -4195,41 +3161,25 @@ void kvm_lapic_sync_to_vapic(struct kvm_vcpu *vcpu)
 	data = (tpr & 0xff) | ((max_isr & 0xf0) << 8) | (max_irr << 24);
 
 	kvm_write_guest_cached(vcpu->kvm, &vcpu->arch.apic->vapic_cache, &data,
-<<<<<<< HEAD
-			       sizeof(u32));
-=======
 				sizeof(u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_lapic_set_vapic_addr(struct kvm_vcpu *vcpu, gpa_t vapic_addr)
 {
-<<<<<<< HEAD
-	if (!irqchip_in_kernel(vcpu->kvm))
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vapic_addr) {
 		if (kvm_gfn_to_hva_cache_init(vcpu->kvm,
 					&vcpu->arch.apic->vapic_cache,
 					vapic_addr, sizeof(u32)))
 			return -EINVAL;
-<<<<<<< HEAD
-       }
-=======
 		__set_bit(KVM_APIC_CHECK_VAPIC, &vcpu->arch.apic_attention);
 	} else {
 		__clear_bit(KVM_APIC_CHECK_VAPIC, &vcpu->arch.apic_attention);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vcpu->arch.apic->vapic_addr = vapic_addr;
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int kvm_x2apic_icr_write(struct kvm_lapic *apic, u64 data)
 {
 	data &= ~APIC_ICR_BUSY;
@@ -4274,94 +3224,38 @@ static int kvm_lapic_msr_write(struct kvm_lapic *apic, u32 reg, u64 data)
 	return kvm_lapic_reg_write(apic, reg, (u32)data);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_x2apic_msr_write(struct kvm_vcpu *vcpu, u32 msr, u64 data)
 {
 	struct kvm_lapic *apic = vcpu->arch.apic;
 	u32 reg = (msr - APIC_BASE_MSR) << 4;
 
-<<<<<<< HEAD
-	if (!irqchip_in_kernel(vcpu->kvm) || !apic_x2apic_mode(apic))
-		return 1;
-
-	/* if this is ICR write vector before command */
-	if (msr == 0x830)
-		apic_reg_write(apic, APIC_ICR2, (u32)(data >> 32));
-	return apic_reg_write(apic, reg, (u32)data);
-=======
 	if (!lapic_in_kernel(vcpu) || !apic_x2apic_mode(apic))
 		return 1;
 
 	return kvm_lapic_msr_write(apic, reg, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_x2apic_msr_read(struct kvm_vcpu *vcpu, u32 msr, u64 *data)
 {
 	struct kvm_lapic *apic = vcpu->arch.apic;
-<<<<<<< HEAD
-	u32 reg = (msr - APIC_BASE_MSR) << 4, low, high = 0;
-
-	if (!irqchip_in_kernel(vcpu->kvm) || !apic_x2apic_mode(apic))
-		return 1;
-
-	if (apic_reg_read(apic, reg, 4, &low))
-		return 1;
-	if (msr == 0x830)
-		apic_reg_read(apic, APIC_ICR2, 4, &high);
-
-	*data = (((u64)high) << 32) | low;
-
-	return 0;
-=======
 	u32 reg = (msr - APIC_BASE_MSR) << 4;
 
 	if (!lapic_in_kernel(vcpu) || !apic_x2apic_mode(apic))
 		return 1;
 
 	return kvm_lapic_msr_read(apic, reg, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_hv_vapic_msr_write(struct kvm_vcpu *vcpu, u32 reg, u64 data)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *apic = vcpu->arch.apic;
-
-	if (!irqchip_in_kernel(vcpu->kvm))
-		return 1;
-
-	/* if this is ICR write vector before command */
-	if (reg == APIC_ICR)
-		apic_reg_write(apic, APIC_ICR2, (u32)(data >> 32));
-	return apic_reg_write(apic, reg, (u32)data);
-=======
 	if (!lapic_in_kernel(vcpu))
 		return 1;
 
 	return kvm_lapic_msr_write(vcpu->arch.apic, reg, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_hv_vapic_msr_read(struct kvm_vcpu *vcpu, u32 reg, u64 *data)
 {
-<<<<<<< HEAD
-	struct kvm_lapic *apic = vcpu->arch.apic;
-	u32 low, high = 0;
-
-	if (!irqchip_in_kernel(vcpu->kvm))
-		return 1;
-
-	if (apic_reg_read(apic, reg, 4, &low))
-		return 1;
-	if (reg == APIC_ICR)
-		apic_reg_read(apic, APIC_ICR2, 4, &high);
-
-	*data = (((u64)high) << 32) | low;
-
-	return 0;
-}
-=======
 	if (!lapic_in_kernel(vcpu))
 		return 1;
 
@@ -4451,4 +3345,3 @@ void kvm_lapic_exit(void)
 	static_key_deferred_flush(&apic_sw_disabled);
 	WARN_ON(static_branch_unlikely(&apic_sw_disabled.key));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipv6 in net namespaces
  */
@@ -11,28 +8,18 @@
 #ifndef __NETNS_IPV6_H__
 #define __NETNS_IPV6_H__
 #include <net/dst_ops.h>
-<<<<<<< HEAD
-=======
 #include <uapi/linux/icmpv6.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ctl_table_header;
 
 struct netns_sysctl_ipv6 {
 #ifdef CONFIG_SYSCTL
-<<<<<<< HEAD
-	struct ctl_table_header *table;
-	struct ctl_table_header *frags_hdr;
-#endif
-	int bindv6only;
-=======
 	struct ctl_table_header *hdr;
 	struct ctl_table_header *route_hdr;
 	struct ctl_table_header *icmp_hdr;
 	struct ctl_table_header *frags_hdr;
 	struct ctl_table_header *xfrm6_hdr;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int flush_delay;
 	int ip6_rt_max_size;
 	int ip6_rt_gc_min_interval;
@@ -41,27 +28,6 @@ struct netns_sysctl_ipv6 {
 	int ip6_rt_gc_elasticity;
 	int ip6_rt_mtu_expires;
 	int ip6_rt_min_advmss;
-<<<<<<< HEAD
-	int icmpv6_time;
-	int fwmark_reflect;
-};
-
-struct netns_ipv6 {
-	struct netns_sysctl_ipv6 sysctl;
-	struct ipv6_devconf	*devconf_all;
-	struct ipv6_devconf	*devconf_dflt;
-	struct netns_frags	frags;
-#ifdef CONFIG_NETFILTER
-	struct xt_table		*ip6table_filter;
-	struct xt_table		*ip6table_mangle;
-	struct xt_table		*ip6table_raw;
-#ifdef CONFIG_SECURITY
-	struct xt_table		*ip6table_security;
-#endif
-	struct xt_table		*ip6table_nat;
-#endif
-	struct rt6_info         *ip6_null_entry;
-=======
 	u32 multipath_hash_fields;
 	u8 multipath_hash_policy;
 	u8 bindv6only;
@@ -103,17 +69,10 @@ struct netns_ipv6 {
 	struct fqdir		*fqdir;
 	struct fib6_info	*fib6_null_entry;
 	struct rt6_info		*ip6_null_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rt6_statistics   *rt6_stats;
 	struct timer_list       ip6_fib_timer;
 	struct hlist_head       *fib_table_hash;
 	struct fib6_table       *fib6_main_tbl;
-<<<<<<< HEAD
-	struct dst_ops		ip6_dst_ops;
-	unsigned int		 ip6_rt_gc_expire;
-	unsigned long		 ip6_rt_last_gc;
-#ifdef CONFIG_IPV6_MULTIPLE_TABLES
-=======
 	struct list_head	fib6_walkers;
 	rwlock_t		fib6_walker_lock;
 	spinlock_t		fib6_gc_lock;
@@ -126,21 +85,11 @@ struct netns_ipv6 {
 #ifdef CONFIG_IPV6_SUBTREES
 	unsigned int		fib6_routes_require_src;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rt6_info         *ip6_prohibit_entry;
 	struct rt6_info         *ip6_blk_hole_entry;
 	struct fib6_table       *fib6_local_tbl;
 	struct fib_rules_ops    *fib6_rules_ops;
 #endif
-<<<<<<< HEAD
-	struct sock		**icmp_sk;
-	struct sock             *ndisc_sk;
-	struct sock             *tcp_sk;
-	struct sock             *igmp_sk;
-#ifdef CONFIG_IPV6_MROUTE
-#ifndef CONFIG_IPV6_MROUTE_MULTIPLE_TABLES
-	struct mr6_table	*mrt6;
-=======
 	struct sock             *ndisc_sk;
 	struct sock             *tcp_sk;
 	struct sock             *igmp_sk;
@@ -153,16 +102,11 @@ struct netns_ipv6 {
 #ifdef CONFIG_IPV6_MROUTE
 #ifndef CONFIG_IPV6_MROUTE_MULTIPLE_TABLES
 	struct mr_table		*mrt6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	struct list_head	mr6_tables;
 	struct fib_rules_ops	*mr6_rules_ops;
 #endif
 #endif
-<<<<<<< HEAD
-};
-#endif
-=======
 	atomic_t		dev_addr_genid;
 	atomic_t		fib6_sernum;
 	struct seg6_pernet_data *seg6_data;
@@ -184,4 +128,3 @@ struct netns_nf_frag {
 #endif
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

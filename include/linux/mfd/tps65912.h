@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/*
- * tps65912.h  --  TI TPS6591x
- *
- * Copyright 2011 Texas Instruments Inc.
- *
- * Author: Margarita Olaya <magi@slimlogic.co.uk>
- *
- *  This program is free software; you can redistribute it and/or modify it
- *  under  the terms of the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the License, or (at your
- *  option) any later version.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
@@ -19,27 +5,15 @@
  *
  * Based on the TPS65218 driver and the previous TPS65912 driver by
  * Margarita Olaya Cabrera <magi@slimlogic.co.uk>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_TPS65912_H
 #define __LINUX_MFD_TPS65912_H
 
-<<<<<<< HEAD
-/* TPS regulator type list */
-#define REGULATOR_LDO		0
-#define REGULATOR_DCDC		1
-
-/*
- * List of registers for TPS65912
- */
-
-=======
 #include <linux/device.h>
 #include <linux/regmap.h>
 
 /* List of registers for TPS65912 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TPS65912_DCDC1_CTRL		0x00
 #define TPS65912_DCDC2_CTRL		0x01
 #define TPS65912_DCDC3_CTRL		0x02
@@ -143,43 +117,6 @@
 #define TPS65912_VERNUM			0x64
 #define TPS6591X_MAX_REGISTER		0x64
 
-<<<<<<< HEAD
-/* IRQ Definitions */
-#define TPS65912_IRQ_PWRHOLD_F		0
-#define TPS65912_IRQ_VMON		1
-#define TPS65912_IRQ_PWRON		2
-#define TPS65912_IRQ_PWRON_LP		3
-#define TPS65912_IRQ_PWRHOLD_R		4
-#define TPS65912_IRQ_HOTDIE		5
-#define TPS65912_IRQ_GPIO1_R		6
-#define TPS65912_IRQ_GPIO1_F		7
-#define TPS65912_IRQ_GPIO2_R		8
-#define TPS65912_IRQ_GPIO2_F		9
-#define TPS65912_IRQ_GPIO3_R		10
-#define TPS65912_IRQ_GPIO3_F		11
-#define TPS65912_IRQ_GPIO4_R		12
-#define TPS65912_IRQ_GPIO4_F		13
-#define TPS65912_IRQ_GPIO5_R		14
-#define TPS65912_IRQ_GPIO5_F		15
-#define TPS65912_IRQ_PGOOD_DCDC1	16
-#define TPS65912_IRQ_PGOOD_DCDC2	17
-#define TPS65912_IRQ_PGOOD_DCDC3	18
-#define TPS65912_IRQ_PGOOD_DCDC4	19
-#define TPS65912_IRQ_PGOOD_LDO1		20
-#define TPS65912_IRQ_PGOOD_LDO2		21
-#define TPS65912_IRQ_PGOOD_LDO3		22
-#define TPS65912_IRQ_PGOOD_LDO4		23
-#define TPS65912_IRQ_PGOOD_LDO5		24
-#define TPS65912_IRQ_PGOOD_LDO6		25
-#define TPS65912_IRQ_PGOOD_LDO7		26
-#define TPS65912_IRQ_PGOOD_LD08		27
-#define TPS65912_IRQ_PGOOD_LDO9		28
-#define TPS65912_IRQ_PGOOD_LDO10	29
-
-#define TPS65912_NUM_IRQ		30
-
-/* GPIO 1 and 2 Register Definitions */
-=======
 /* INT_STS Register field definitions */
 #define TPS65912_INT_STS_PWRHOLD_F	BIT(0)
 #define TPS65912_INT_STS_VMON		BIT(1)
@@ -219,7 +156,6 @@
 #define TPS65912_INT_STS4_PGOOD_LDO10	BIT(5)
 
 /* GPIO 1 and 2 Register field definitions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GPIO_SLEEP_MASK			0x80
 #define GPIO_SLEEP_SHIFT		7
 #define GPIO_DEB_MASK			0x10
@@ -231,11 +167,7 @@
 #define GPIO_SET_MASK			0x01
 #define GPIO_SET_SHIFT			0
 
-<<<<<<< HEAD
-/* GPIO 3 Register Definitions */
-=======
 /* GPIO 3 Register field definitions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GPIO3_SLEEP_MASK		0x80
 #define GPIO3_SLEEP_SHIFT		7
 #define GPIO3_SEL_MASK			0x40
@@ -253,11 +185,7 @@
 #define GPIO3_SET_MASK			0x01
 #define GPIO3_SET_SHIFT			0
 
-<<<<<<< HEAD
-/* GPIO 4 Register Definitions */
-=======
 /* GPIO 4 Register field definitions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GPIO4_SLEEP_MASK		0x80
 #define GPIO4_SLEEP_SHIFT		7
 #define GPIO4_SEL_MASK			0x40
@@ -331,67 +259,6 @@
 #define DCDC_LIMIT_MAX_SEL_MASK		0x3F
 #define DCDC_LIMIT_MAX_SEL_SHIFT	0
 
-<<<<<<< HEAD
-/**
- * struct tps65912_board
- * Board platform dat may be used to initialize regulators.
- */
-struct tps65912_board {
-	int is_dcdc1_avs;
-	int is_dcdc2_avs;
-	int is_dcdc3_avs;
-	int is_dcdc4_avs;
-	int irq;
-	int irq_base;
-	int gpio_base;
-	struct regulator_init_data *tps65912_pmic_init_data;
-};
-
-/**
- * struct tps65912 - tps65912 sub-driver chip access routines
- */
-
-struct tps65912 {
-	struct device *dev;
-	/* for read/write acces */
-	struct mutex io_mutex;
-
-	/* For device IO interfaces: I2C or SPI */
-	void *control_data;
-
-	int (*read)(struct tps65912 *tps65912, u8 reg, int size, void *dest);
-	int (*write)(struct tps65912 *tps65912, u8 reg, int size, void *src);
-
-	/* Client devices */
-	struct tps65912_pmic *pmic;
-
-	/* GPIO Handling */
-	struct gpio_chip gpio;
-
-	/* IRQ Handling */
-	struct mutex irq_lock;
-	int chip_irq;
-	int irq_base;
-	int irq_num;
-	u32 irq_mask;
-};
-
-struct tps65912_platform_data {
-	int irq;
-	int irq_base;
-};
-
-unsigned int tps_chip(void);
-
-int tps65912_set_bits(struct tps65912 *tps65912, u8 reg, u8 mask);
-int tps65912_clear_bits(struct tps65912 *tps65912, u8 reg, u8 mask);
-int tps65912_reg_read(struct tps65912 *tps65912, u8 reg);
-int tps65912_reg_write(struct tps65912 *tps65912, u8 reg, u8 val);
-int tps65912_device_init(struct tps65912 *tps65912);
-void tps65912_device_exit(struct tps65912 *tps65912);
-int tps65912_irq_init(struct tps65912 *tps65912, int irq,
-			struct tps65912_platform_data *pdata);
-=======
 /* Define the TPS65912 IRQ numbers */
 enum tps65912_irqs {
 	/* INT_STS registers */
@@ -448,6 +315,5 @@ extern const struct regmap_config tps65912_regmap_config;
 
 int tps65912_device_init(struct tps65912 *tps);
 void tps65912_device_exit(struct tps65912 *tps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /*  __LINUX_MFD_TPS65912_H */

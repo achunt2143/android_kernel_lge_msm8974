@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/ctrlchar.c
- *  Unified handling of special chars.
- *
- *    Copyright (C) 2001 IBM Deutschland Entwicklung GmbH, IBM Corporation
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *  Unified handling of special chars.
  *
  *    Copyright IBM Corp. 2001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Fritz Elfert <felfert@millenux.com> <elfert@de.ibm.com>
  *
  */
@@ -23,21 +15,11 @@
 #include "ctrlchar.h"
 
 #ifdef CONFIG_MAGIC_SYSRQ
-<<<<<<< HEAD
-static int ctrlchar_sysrq_key;
-=======
 static struct sysrq_work ctrlchar_sysrq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 ctrlchar_handle_sysrq(struct work_struct *work)
 {
-<<<<<<< HEAD
-	handle_sysrq(ctrlchar_sysrq_key);
-}
-
-static DECLARE_WORK(ctrlchar_work, ctrlchar_handle_sysrq);
-=======
 	struct sysrq_work *sysrq = container_of(work, struct sysrq_work, work);
 
 	handle_sysrq(sysrq->key);
@@ -48,19 +30,10 @@ void schedule_sysrq_work(struct sysrq_work *sw)
 	INIT_WORK(&sw->work, ctrlchar_handle_sysrq);
 	schedule_work(&sw->work);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
 /**
-<<<<<<< HEAD
- * Check for special chars at start of input.
- *
- * @param buf Console input buffer.
- * @param len Length of valid data in buffer.
- * @param tty The tty struct for this console.
- * @return CTRLCHAR_NONE, if nothing matched,
-=======
  * ctrlchar_handle - check for special chars at start of input
  *
  * @buf: console input buffer
@@ -68,7 +41,6 @@ void schedule_sysrq_work(struct sysrq_work *sw)
  * @tty: the tty struct for this console
  *
  * Return: CTRLCHAR_NONE, if nothing matched,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *         CTRLCHAR_SYSRQ, if sysrq was encountered
  *         otherwise char to be inserted logically or'ed
  *         with CTRLCHAR_CTRL
@@ -87,13 +59,8 @@ ctrlchar_handle(const unsigned char *buf, int len, struct tty_struct *tty)
 #ifdef CONFIG_MAGIC_SYSRQ
 	/* racy */
 	if (len == 3 && buf[1] == '-') {
-<<<<<<< HEAD
-		ctrlchar_sysrq_key = buf[2];
-		schedule_work(&ctrlchar_work);
-=======
 		ctrlchar_sysrq.key = buf[2];
 		schedule_sysrq_work(&ctrlchar_sysrq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return CTRLCHAR_SYSRQ;
 	}
 #endif

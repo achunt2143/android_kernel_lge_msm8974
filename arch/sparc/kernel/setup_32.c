@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/sparc/kernel/setup.c
  *
@@ -20,10 +17,6 @@
 #include <linux/initrd.h>
 #include <asm/smp.h>
 #include <linux/user.h>
-<<<<<<< HEAD
-#include <linux/screen_info.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/fs.h>
 #include <linux/seq_file.h>
@@ -39,45 +32,17 @@
 #include <linux/cpu.h>
 #include <linux/kdebug.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/start_kernel.h>
 #include <uapi/linux/mount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/oplib.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/traps.h>
 #include <asm/vaddrs.h>
 #include <asm/mbus.h>
 #include <asm/idprom.h>
-<<<<<<< HEAD
-#include <asm/machines.h>
-#include <asm/cpudata.h>
-#include <asm/setup.h>
-#include <asm/cacheflush.h>
-
-#include "kernel.h"
-
-struct screen_info screen_info = {
-	0, 0,			/* orig-x, orig-y */
-	0,			/* unused */
-	0,			/* orig-video-page */
-	0,			/* orig-video-mode */
-	128,			/* orig-video-cols */
-	0,0,0,			/* ega_ax, ega_bx, ega_cx */
-	54,			/* orig-video-lines */
-	0,                      /* orig-video-isVGA */
-	16                      /* orig-video-points */
-};
-
-=======
 #include <asm/cpudata.h>
 #include <asm/setup.h>
 #include <asm/cacheflush.h>
@@ -85,18 +50,12 @@ struct screen_info screen_info = {
 
 #include "kernel.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Typing sync at the prom prompt calls the function pointed to by
  * romvec->pv_synchook which I set to the following function.
  * This should sync all filesystems and return, for now it just
  * prints out pretty messages and returns.
  */
 
-<<<<<<< HEAD
-extern unsigned long trapbase;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Pretty sick eh? */
 static void prom_sync_me(void)
 {
@@ -108,15 +67,6 @@ static void prom_sync_me(void)
 	__asm__ __volatile__("wr %0, 0x0, %%tbr\n\t"
 			     "nop\n\t"
 			     "nop\n\t"
-<<<<<<< HEAD
-			     "nop\n\t" : : "r" (&trapbase));
-
-	prom_printf("PROM SYNC COMMAND...\n");
-	show_free_areas(0);
-	if (!is_idle_task(current)) {
-		local_irq_enable();
-		sys_sync();
-=======
 			     "nop\n\t" : : "r" (&trapbase[0]));
 
 	prom_printf("PROM SYNC COMMAND...\n");
@@ -124,7 +74,6 @@ static void prom_sync_me(void)
 	if (!is_idle_task(current)) {
 		local_irq_enable();
 		ksys_sync();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_disable();
 	}
 	prom_printf("Returning to prom\n");
@@ -144,16 +93,9 @@ unsigned long cmdline_memory_size __initdata = 0;
 
 /* which CPU booted us (0xff = not set) */
 unsigned char boot_cpu_id = 0xff; /* 0xff will make it into DATA section... */
-<<<<<<< HEAD
-unsigned char boot_cpu_id4; /* boot_cpu_id << 2 */
-
-static void
-prom_console_write(struct console *con, const char *s, unsigned n)
-=======
 
 static void
 prom_console_write(struct console *con, const char *s, unsigned int n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	prom_write(s, n);
 }
@@ -194,11 +136,7 @@ static void __init boot_flags_init(char *commands)
 {
 	while (*commands) {
 		/* Move to the start of the next "argument". */
-<<<<<<< HEAD
-		while (*commands && *commands == ' ')
-=======
 		while (*commands == ' ')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			commands++;
 
 		/* Process any command switches, otherwise skip it. */
@@ -230,16 +168,6 @@ static void __init boot_flags_init(char *commands)
 	}
 }
 
-<<<<<<< HEAD
-/* This routine will in the future do all the nasty prom stuff
- * to probe for the mmu type and its parameters, etc. This will
- * also be where SMP things happen.
- */
-
-extern void sun4c_probe_vac(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned short root_flags;
 extern unsigned short root_dev;
 extern unsigned short ram_flags;
@@ -251,37 +179,6 @@ extern int root_mountflags;
 
 char reboot_command[COMMAND_LINE_SIZE];
 
-<<<<<<< HEAD
-enum sparc_cpu sparc_cpu_model;
-EXPORT_SYMBOL(sparc_cpu_model);
-
-struct tt_entry *sparc_ttable;
-
-struct pt_regs fake_swapper_regs;
-
-void __init setup_arch(char **cmdline_p)
-{
-	int i;
-	unsigned long highest_paddr;
-
-	sparc_ttable = (struct tt_entry *) &trapbase;
-
-	/* Initialize PROM console and command line. */
-	*cmdline_p = prom_getbootargs();
-	strcpy(boot_command_line, *cmdline_p);
-	parse_early_param();
-
-	boot_flags_init(*cmdline_p);
-
-	register_console(&prom_early_console);
-
-	/* Set sparc_cpu_model */
-	sparc_cpu_model = sun_unknown;
-	if (!strcmp(&cputypval[0], "sun4 "))
-		sparc_cpu_model = sun4;
-	if (!strcmp(&cputypval[0], "sun4c"))
-		sparc_cpu_model = sun4c;
-=======
 struct cpuid_patch_entry {
 	unsigned int	addr;
 	unsigned int	sun4d[3];
@@ -366,7 +263,6 @@ void __init sparc32_start_kernel(struct linux_romvec *rp)
 
 	/* Set sparc_cpu_model */
 	sparc_cpu_model = sun_unknown;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcmp(&cputypval[0], "sun4m"))
 		sparc_cpu_model = sun4m;
 	if (!strcmp(&cputypval[0], "sun4s"))
@@ -380,43 +276,6 @@ void __init sparc32_start_kernel(struct linux_romvec *rp)
 	if (!strncmp(&cputypval[0], "leon" , 4))
 		sparc_cpu_model = sparc_leon;
 
-<<<<<<< HEAD
-	printk("ARCH: ");
-	switch(sparc_cpu_model) {
-	case sun4:
-		printk("SUN4\n");
-		break;
-	case sun4c:
-		printk("SUN4C\n");
-		break;
-	case sun4m:
-		printk("SUN4M\n");
-		break;
-	case sun4d:
-		printk("SUN4D\n");
-		break;
-	case sun4e:
-		printk("SUN4E\n");
-		break;
-	case sun4u:
-		printk("SUN4U\n");
-		break;
-	case sparc_leon:
-		printk("LEON\n");
-		break;
-	default:
-		printk("UNKNOWN!\n");
-		break;
-	}
-
-#ifdef CONFIG_DUMMY_CONSOLE
-	conswitchp = &dummy_con;
-#endif
-
-	idprom_init();
-	if (ARCH_SUN4C)
-		sun4c_probe_vac();
-=======
 	leon_patch();
 	start_kernel();
 }
@@ -459,7 +318,6 @@ void __init setup_arch(char **cmdline_p)
 	}
 
 	idprom_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	load_mmu();
 
 	phys_base = 0xffffffffUL;
@@ -481,32 +339,18 @@ void __init setup_arch(char **cmdline_p)
 	ROOT_DEV = old_decode_dev(root_dev);
 #ifdef CONFIG_BLK_DEV_RAM
 	rd_image_start = ram_flags & RAMDISK_IMAGE_START_MASK;
-<<<<<<< HEAD
-	rd_prompt = ((ram_flags & RAMDISK_PROMPT_FLAG) != 0);
-	rd_doload = ((ram_flags & RAMDISK_LOAD_FLAG) != 0);	
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	prom_setsync(prom_sync_me);
 
-<<<<<<< HEAD
-	if((boot_flags&BOOTME_DEBUG) && (linux_dbvec!=0) && 
-=======
 	if((boot_flags & BOOTME_DEBUG) && (linux_dbvec != NULL) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   ((*(short *)linux_dbvec) != -1)) {
 		printk("Booted under KADB. Syncing trap table.\n");
 		(*(linux_dbvec->teach_debugger))();
 	}
 
-<<<<<<< HEAD
-	init_mm.context = (unsigned long) NO_CONTEXT;
-	init_task.thread.kregs = &fake_swapper_regs;
-=======
 	/* Run-time patch instructions to match the cpu model */
 	per_cpu_patch();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	paging_init();
 
@@ -555,8 +399,6 @@ static int __init topology_init(void)
 }
 
 subsys_initcall(topology_init);
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_SPARC32) && !defined(CONFIG_SMP)
 void __init arch_cpu_finalize_init(void)
@@ -564,4 +406,3 @@ void __init arch_cpu_finalize_init(void)
 	cpu_data(0).udelay_val = loops_per_jiffy;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

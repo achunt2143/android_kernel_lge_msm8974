@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver access RC5T583 power management chip.
  *
@@ -10,30 +7,10 @@
  *
  * Based on code
  *	Copyright (C) 2011 RICOH COMPANY,LTD
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -84,12 +61,8 @@ static struct deepsleep_control_data deepsleep_data[] = {
 #define EXT_PWR_REQ		\
 	(RC5T583_EXT_PWRREQ1_CONTROL | RC5T583_EXT_PWRREQ2_CONTROL)
 
-<<<<<<< HEAD
-static struct mfd_cell rc5t583_subdevs[] = {
-=======
 static const struct mfd_cell rc5t583_subdevs[] = {
 	{.name = "rc5t583-gpio",},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{.name = "rc5t583-regulator",},
 	{.name = "rc5t583-rtc",      },
 	{.name = "rc5t583-key",      }
@@ -99,11 +72,7 @@ static int __rc5t583_set_ext_pwrreq1_control(struct device *dev,
 	int id, int ext_pwr, int slots)
 {
 	int ret;
-<<<<<<< HEAD
-	uint8_t sleepseq_val;
-=======
 	uint8_t sleepseq_val = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int en_bit;
 	unsigned int slot_bit;
 
@@ -259,20 +228,6 @@ static const struct regmap_config rc5t583_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
 	.volatile_reg = volatile_reg,
-<<<<<<< HEAD
-	.max_register = RC5T583_MAX_REGS,
-	.num_reg_defaults_raw = RC5T583_MAX_REGS,
-	.cache_type = REGCACHE_RBTREE,
-};
-
-static int __devinit rc5t583_i2c_probe(struct i2c_client *i2c,
-			      const struct i2c_device_id *id)
-{
-	struct rc5t583 *rc5t583;
-	struct rc5t583_platform_data *pdata = i2c->dev.platform_data;
-	int ret;
-	bool irq_init_success = false;
-=======
 	.max_register = RC5T583_MAX_REG,
 	.num_reg_defaults_raw = RC5T583_NUM_REGS,
 	.cache_type = REGCACHE_MAPLE,
@@ -283,33 +238,20 @@ static int rc5t583_i2c_probe(struct i2c_client *i2c)
 	struct rc5t583 *rc5t583;
 	struct rc5t583_platform_data *pdata = dev_get_platdata(&i2c->dev);
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pdata) {
 		dev_err(&i2c->dev, "Err: Platform data not found\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	rc5t583 = devm_kzalloc(&i2c->dev, sizeof(struct rc5t583), GFP_KERNEL);
-	if (!rc5t583) {
-		dev_err(&i2c->dev, "Memory allocation failed\n");
-		return -ENOMEM;
-	}
-=======
 	rc5t583 = devm_kzalloc(&i2c->dev, sizeof(*rc5t583), GFP_KERNEL);
 	if (!rc5t583)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc5t583->dev = &i2c->dev;
 	i2c_set_clientdata(i2c, rc5t583);
 
-<<<<<<< HEAD
-	rc5t583->regmap = regmap_init_i2c(i2c, &rc5t583_regmap_config);
-=======
 	rc5t583->regmap = devm_regmap_init_i2c(i2c, &rc5t583_regmap_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rc5t583->regmap)) {
 		ret = PTR_ERR(rc5t583->regmap);
 		dev_err(&i2c->dev, "regmap initialization failed: %d\n", ret);
@@ -318,44 +260,6 @@ static int rc5t583_i2c_probe(struct i2c_client *i2c)
 
 	ret = rc5t583_clear_ext_power_req(rc5t583, pdata);
 	if (ret < 0)
-<<<<<<< HEAD
-		goto err_irq_init;
-
-	if (i2c->irq) {
-		ret = rc5t583_irq_init(rc5t583, i2c->irq, pdata->irq_base);
-		/* Still continue with waring if irq init fails */
-		if (ret)
-			dev_warn(&i2c->dev, "IRQ init failed: %d\n", ret);
-		else
-			irq_init_success = true;
-	}
-
-	ret = mfd_add_devices(rc5t583->dev, -1, rc5t583_subdevs,
-			ARRAY_SIZE(rc5t583_subdevs), NULL, 0);
-	if (ret) {
-		dev_err(&i2c->dev, "add mfd devices failed: %d\n", ret);
-		goto err_add_devs;
-	}
-
-	return 0;
-
-err_add_devs:
-	if (irq_init_success)
-		rc5t583_irq_exit(rc5t583);
-err_irq_init:
-	regmap_exit(rc5t583->regmap);
-	return ret;
-}
-
-static int  __devexit rc5t583_i2c_remove(struct i2c_client *i2c)
-{
-	struct rc5t583 *rc5t583 = i2c_get_clientdata(i2c);
-
-	mfd_remove_devices(rc5t583->dev);
-	rc5t583_irq_exit(rc5t583);
-	regmap_exit(rc5t583->regmap);
-	return 0;
-=======
 		return ret;
 
 	if (i2c->irq) {
@@ -373,7 +277,6 @@ static int  __devexit rc5t583_i2c_remove(struct i2c_client *i2c)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id rc5t583_i2c_id[] = {
@@ -381,23 +284,11 @@ static const struct i2c_device_id rc5t583_i2c_id[] = {
 	{}
 };
 
-<<<<<<< HEAD
-MODULE_DEVICE_TABLE(i2c, rc5t583_i2c_id);
-
-static struct i2c_driver rc5t583_i2c_driver = {
-	.driver = {
-		   .name = "rc5t583",
-		   .owner = THIS_MODULE,
-		   },
-	.probe = rc5t583_i2c_probe,
-	.remove = __devexit_p(rc5t583_i2c_remove),
-=======
 static struct i2c_driver rc5t583_i2c_driver = {
 	.driver = {
 		   .name = "rc5t583",
 		   },
 	.probe = rc5t583_i2c_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = rc5t583_i2c_id,
 };
 
@@ -406,17 +297,3 @@ static int __init rc5t583_i2c_init(void)
 	return i2c_add_driver(&rc5t583_i2c_driver);
 }
 subsys_initcall(rc5t583_i2c_init);
-<<<<<<< HEAD
-
-static void __exit rc5t583_i2c_exit(void)
-{
-	i2c_del_driver(&rc5t583_i2c_driver);
-}
-
-module_exit(rc5t583_i2c_exit);
-
-MODULE_AUTHOR("Laxman Dewangan <ldewangan@nvidia.com>");
-MODULE_DESCRIPTION("RICOH RC5T583 power management system device driver");
-MODULE_LICENSE("GPL v2");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

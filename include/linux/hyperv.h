@@ -1,220 +1,17 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Copyright (c) 2011, Microsoft Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307 USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  *   Haiyang Zhang <haiyangz@microsoft.com>
  *   Hank Janssen  <hjanssen@microsoft.com>
  *   K. Y. Srinivasan <kys@microsoft.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _HYPERV_H
 #define _HYPERV_H
 
-<<<<<<< HEAD
-#include <linux/types.h>
-
-/*
- * An implementation of HyperV key value pair (KVP) functionality for Linux.
- *
- *
- * Copyright (C) 2010, Novell, Inc.
- * Author : K. Y. Srinivasan <ksrinivasan@novell.com>
- *
- */
-
-/*
- * Maximum value size - used for both key names and value data, and includes
- * any applicable NULL terminators.
- *
- * Note:  This limit is somewhat arbitrary, but falls easily within what is
- * supported for all native guests (back to Win 2000) and what is reasonable
- * for the IC KVP exchange functionality.  Note that Windows Me/98/95 are
- * limited to 255 character key names.
- *
- * MSDN recommends not storing data values larger than 2048 bytes in the
- * registry.
- *
- * Note:  This value is used in defining the KVP exchange message - this value
- * cannot be modified without affecting the message size and compatibility.
- */
-
-/*
- * bytes, including any null terminators
- */
-#define HV_KVP_EXCHANGE_MAX_VALUE_SIZE          (2048)
-
-
-/*
- * Maximum key size - the registry limit for the length of an entry name
- * is 256 characters, including the null terminator
- */
-
-#define HV_KVP_EXCHANGE_MAX_KEY_SIZE            (512)
-
-/*
- * In Linux, we implement the KVP functionality in two components:
- * 1) The kernel component which is packaged as part of the hv_utils driver
- * is responsible for communicating with the host and responsible for
- * implementing the host/guest protocol. 2) A user level daemon that is
- * responsible for data gathering.
- *
- * Host/Guest Protocol: The host iterates over an index and expects the guest
- * to assign a key name to the index and also return the value corresponding to
- * the key. The host will have atmost one KVP transaction outstanding at any
- * given point in time. The host side iteration stops when the guest returns
- * an error. Microsoft has specified the following mapping of key names to
- * host specified index:
- *
- *	Index		Key Name
- *	0		FullyQualifiedDomainName
- *	1		IntegrationServicesVersion
- *	2		NetworkAddressIPv4
- *	3		NetworkAddressIPv6
- *	4		OSBuildNumber
- *	5		OSName
- *	6		OSMajorVersion
- *	7		OSMinorVersion
- *	8		OSVersion
- *	9		ProcessorArchitecture
- *
- * The Windows host expects the Key Name and Key Value to be encoded in utf16.
- *
- * Guest Kernel/KVP Daemon Protocol: As noted earlier, we implement all of the
- * data gathering functionality in a user mode daemon. The user level daemon
- * is also responsible for binding the key name to the index as well. The
- * kernel and user-level daemon communicate using a connector channel.
- *
- * The user mode component first registers with the
- * the kernel component. Subsequently, the kernel component requests, data
- * for the specified keys. In response to this message the user mode component
- * fills in the value corresponding to the specified key. We overload the
- * sequence field in the cn_msg header to define our KVP message types.
- *
- *
- * The kernel component simply acts as a conduit for communication between the
- * Windows host and the user-level daemon. The kernel component passes up the
- * index received from the Host to the user-level daemon. If the index is
- * valid (supported), the corresponding key as well as its
- * value (both are strings) is returned. If the index is invalid
- * (not supported), a NULL key string is returned.
- */
-
-
-/*
- * Registry value types.
- */
-
-#define REG_SZ 1
-#define REG_U32 4
-#define REG_U64 8
-
-enum hv_kvp_exchg_op {
-	KVP_OP_GET = 0,
-	KVP_OP_SET,
-	KVP_OP_DELETE,
-	KVP_OP_ENUMERATE,
-	KVP_OP_REGISTER,
-	KVP_OP_COUNT /* Number of operations, must be last. */
-};
-
-enum hv_kvp_exchg_pool {
-	KVP_POOL_EXTERNAL = 0,
-	KVP_POOL_GUEST,
-	KVP_POOL_AUTO,
-	KVP_POOL_AUTO_EXTERNAL,
-	KVP_POOL_AUTO_INTERNAL,
-	KVP_POOL_COUNT /* Number of pools, must be last. */
-};
-
-struct hv_kvp_hdr {
-	__u8 operation;
-	__u8 pool;
-	__u16 pad;
-} __attribute__((packed));
-
-struct hv_kvp_exchg_msg_value {
-	__u32 value_type;
-	__u32 key_size;
-	__u32 value_size;
-	__u8 key[HV_KVP_EXCHANGE_MAX_KEY_SIZE];
-	union {
-		__u8 value[HV_KVP_EXCHANGE_MAX_VALUE_SIZE];
-		__u32 value_u32;
-		__u64 value_u64;
-	};
-} __attribute__((packed));
-
-struct hv_kvp_msg_enumerate {
-	__u32 index;
-	struct hv_kvp_exchg_msg_value data;
-} __attribute__((packed));
-
-struct hv_kvp_msg_get {
-	struct hv_kvp_exchg_msg_value data;
-};
-
-struct hv_kvp_msg_set {
-	struct hv_kvp_exchg_msg_value data;
-};
-
-struct hv_kvp_msg_delete {
-	__u32 key_size;
-	__u8 key[HV_KVP_EXCHANGE_MAX_KEY_SIZE];
-};
-
-struct hv_kvp_register {
-	__u8 version[HV_KVP_EXCHANGE_MAX_KEY_SIZE];
-};
-
-struct hv_kvp_msg {
-	struct hv_kvp_hdr	kvp_hdr;
-	union {
-		struct hv_kvp_msg_get		kvp_get;
-		struct hv_kvp_msg_set		kvp_set;
-		struct hv_kvp_msg_delete	kvp_delete;
-		struct hv_kvp_msg_enumerate	kvp_enum_data;
-		struct hv_kvp_register		kvp_register;
-	} body;
-} __attribute__((packed));
-
-#ifdef __KERNEL__
-#include <linux/scatterlist.h>
-#include <linux/list.h>
-#include <linux/uuid.h>
-#include <linux/timer.h>
-#include <linux/workqueue.h>
-#include <linux/completion.h>
-#include <linux/device.h>
-#include <linux/mod_devicetable.h>
-
-
-#define MAX_PAGE_BUFFER_COUNT				19
-=======
 #include <uapi/linux/hyperv.h>
 
 #include <linux/mm.h>
@@ -230,13 +27,10 @@ struct hv_kvp_msg {
 #include <asm/hyperv-tlfs.h>
 
 #define MAX_PAGE_BUFFER_COUNT				32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_MULTIPAGE_BUFFER_COUNT			32 /* 128K */
 
 #pragma pack(push, 1)
 
-<<<<<<< HEAD
-=======
 /*
  * Types for GPADL, decides is how GPADL header is created.
  *
@@ -279,7 +73,6 @@ enum hv_gpadl_type {
 	HV_GPADL_RING
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Single-page buffer */
 struct hv_page_buffer {
 	u32 len;
@@ -295,8 +88,6 @@ struct hv_multipage_buffer {
 	u64 pfn_array[MAX_MULTIPAGE_BUFFER_COUNT];
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Multiple-page buffer array; the pfn array is variable size:
  * The number of entries in the PFN array is determined by
@@ -309,7 +100,6 @@ struct hv_mpb_array {
 	u64 pfn_array[];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 0x18 includes the proprietary packet header */
 #define MAX_PAGE_BUFFER_PACKET		(0x18 +			\
 					(sizeof(struct hv_page_buffer) * \
@@ -329,16 +119,6 @@ struct hv_ring_buffer {
 
 	u32 interrupt_mask;
 
-<<<<<<< HEAD
-	/* Pad it to PAGE_SIZE so that data starts on page boundary */
-	u8	reserved[4084];
-
-	/* NOTE:
-	 * The interrupt_mask field is used only for channels but since our
-	 * vmbus connection also uses this data structure and its data starts
-	 * here, we commented out this field.
-	 */
-=======
 	/*
 	 * WS2012/Win8 and later versions of Hyper-V implement interrupt
 	 * driven flow management. The feature bit feat_pending_send_sz
@@ -376,60 +156,11 @@ struct hv_ring_buffer {
 
 	/* Pad it to PAGE_SIZE so that data starts on page boundary */
 	u8	reserved2[PAGE_SIZE - 68];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ring data starts here + RingDataStartOffset
 	 * !!! DO NOT place any fields below this !!!
 	 */
-<<<<<<< HEAD
-	u8 buffer[0];
-} __packed;
-
-struct hv_ring_buffer_info {
-	struct hv_ring_buffer *ring_buffer;
-	u32 ring_size;			/* Include the shared header */
-	spinlock_t ring_lock;
-
-	u32 ring_datasize;		/* < ring_size */
-	u32 ring_data_startoffset;
-};
-
-struct hv_ring_buffer_debug_info {
-	u32 current_interrupt_mask;
-	u32 current_read_index;
-	u32 current_write_index;
-	u32 bytes_avail_toread;
-	u32 bytes_avail_towrite;
-};
-
-/*
- * We use the same version numbering for all Hyper-V modules.
- *
- * Definition of versioning is as follows;
- *
- *	Major Number	Changes for these scenarios;
- *			1.	When a new version of Windows Hyper-V
- *				is released.
- *			2.	A Major change has occurred in the
- *				Linux IC's.
- *			(For example the merge for the first time
- *			into the kernel) Every time the Major Number
- *			changes, the Revision number is reset to 0.
- *	Minor Number	Changes when new functionality is added
- *			to the Linux IC's that is not a bug fix.
- *
- * 3.1 - Added completed hv_utils driver. Shutdown/Heartbeat/Timesync
- */
-#define HV_DRV_VERSION           "3.1"
-
-
-/*
- * A revision number of vmbus that is used for ensuring both ends on a
- * partition are using compatible versions.
- */
-#define VMBUS_REVISION_NUMBER		13
-=======
 	u8 buffer[];
 } __packed;
 
@@ -544,7 +275,6 @@ static inline u32 hv_get_avail_to_write_percent(
 #define VERSION_WIN10_V5_1 ((5 << 16) | (1))
 #define VERSION_WIN10_V5_2 ((5 << 16) | (2))
 #define VERSION_WIN10_V5_3 ((5 << 16) | (3))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Make maximum size of pipe payload of 16K */
 #define MAX_PIPE_DATA_PAYLOAD		(sizeof(u8) * 16384)
@@ -564,13 +294,6 @@ static inline u32 hv_get_avail_to_write_percent(
  * struct contains the fundamental information about an offer.
  */
 struct vmbus_channel_offer {
-<<<<<<< HEAD
-	uuid_le if_type;
-	uuid_le if_instance;
-	u64 int_latency; /* in 100ns units */
-	u32 if_revision;
-	u32 server_ctx_size;	/* in bytes */
-=======
 	guid_t if_type;
 	guid_t if_instance;
 
@@ -580,7 +303,6 @@ struct vmbus_channel_offer {
 	u64 reserved1;
 	u64 reserved2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 chn_flags;
 	u16 mmio_megabytes;		/* in bytes * 1024 * 1024 */
 
@@ -592,11 +314,7 @@ struct vmbus_channel_offer {
 
 		/*
 		 * Pipes:
-<<<<<<< HEAD
-		 * The following sructure is an integrated pipe protocol, which
-=======
 		 * The following structure is an integrated pipe protocol, which
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * is implemented on top of standard user-defined data. Pipe
 		 * clients have MAX_PIPE_USER_DEFINED_BYTES left for their own
 		 * use.
@@ -606,9 +324,6 @@ struct vmbus_channel_offer {
 			unsigned char user_def[MAX_PIPE_USER_DEFINED_BYTES];
 		} pipe;
 	} u;
-<<<<<<< HEAD
-	u32 padding;
-=======
 	/*
 	 * The sub_channel_index is defined in Win8: a value of zero means a
 	 * primary channel and a value of non-zero means a sub-channel.
@@ -617,7 +332,6 @@ struct vmbus_channel_offer {
 	 */
 	u16 sub_channel_index;
 	u16 reserved3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Server Flags */
@@ -628,10 +342,7 @@ struct vmbus_channel_offer {
 #define VMBUS_CHANNEL_LOOPBACK_OFFER			0x100
 #define VMBUS_CHANNEL_PARENT_OFFER			0x200
 #define VMBUS_CHANNEL_REQUEST_MONITORED_NOTIFICATION	0x400
-<<<<<<< HEAD
-=======
 #define VMBUS_CHANNEL_TLNPI_PROVIDER_OFFER		0x2000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct vmpacket_descriptor {
 	u16 type;
@@ -654,17 +365,10 @@ struct vmtransfer_page_range {
 struct vmtransfer_page_packet_header {
 	struct vmpacket_descriptor d;
 	u16 xfer_pageset_id;
-<<<<<<< HEAD
-	bool sender_owns_set;
-	u8 reserved;
-	u32 range_cnt;
-	struct vmtransfer_page_range ranges[1];
-=======
 	u8  sender_owns_set;
 	u8 reserved;
 	u32 range_cnt;
 	struct vmtransfer_page_range ranges[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct vmgpadl_packet_header {
@@ -687,11 +391,7 @@ struct vmadd_remove_transfer_page_set {
 struct gpa_range {
 	u32 byte_count;
 	u32 byte_offset;
-<<<<<<< HEAD
-	u64 pfn_array[0];
-=======
 	u64 pfn_array[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -798,15 +498,6 @@ enum vmbus_channel_message_type {
 	CHANNELMSG_INITIATE_CONTACT		= 14,
 	CHANNELMSG_VERSION_RESPONSE		= 15,
 	CHANNELMSG_UNLOAD			= 16,
-<<<<<<< HEAD
-#ifdef VMBUS_FEATURE_PARENT_OR_PEER_MEMORY_MAPPED_INTO_A_CHILD
-	CHANNELMSG_VIEWRANGE_ADD		= 17,
-	CHANNELMSG_VIEWRANGE_REMOVE		= 18,
-#endif
-	CHANNELMSG_COUNT
-};
-
-=======
 	CHANNELMSG_UNLOAD_RESPONSE		= 17,
 	CHANNELMSG_18				= 18,
 	CHANNELMSG_19				= 19,
@@ -821,7 +512,6 @@ enum vmbus_channel_message_type {
 /* Hyper-V supports about 2048 channels, and the RELIDs start with 1. */
 #define INVALID_RELID	U32_MAX
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vmbus_channel_message_header {
 	enum vmbus_channel_message_type msgtype;
 	u32 padding;
@@ -836,11 +526,7 @@ struct vmbus_channel_query_vmbus_version {
 /* VMBus Version Supported parameters */
 struct vmbus_channel_version_supported {
 	struct vmbus_channel_message_header header;
-<<<<<<< HEAD
-	bool version_supported;
-=======
 	u8 version_supported;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Offer Channel parameters */
@@ -849,9 +535,6 @@ struct vmbus_channel_offer_channel {
 	struct vmbus_channel_offer offer;
 	u32 child_relid;
 	u8 monitorid;
-<<<<<<< HEAD
-	bool monitor_allocated;
-=======
 	/*
 	 * win7 and beyond splits this field into a bit field.
 	 */
@@ -871,7 +554,6 @@ struct vmbus_channel_offer_channel {
 	u16 is_dedicated_interrupt:1;
 	u16 reserved1:15;
 	u32 connection_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Rescind Offer parameters */
@@ -902,16 +584,6 @@ struct vmbus_channel_open_channel {
 	/* GPADL for the channel's ring buffer. */
 	u32 ringbuffer_gpadlhandle;
 
-<<<<<<< HEAD
-	/* GPADL for the channel's server context save area. */
-	u32 server_contextarea_gpadlhandle;
-
-	/*
-	* The upstream ring buffer begins at offset zero in the memory
-	* described by RingBufferGpadlHandle. The downstream ring buffer
-	* follows it at this offset (in pages).
-	*/
-=======
 	/*
 	 * Starting with win8, this field will be used to specify
 	 * the target virtual processor on which to deliver the interrupt for
@@ -927,7 +599,6 @@ struct vmbus_channel_open_channel {
 	 * described by RingBufferGpadlHandle. The downstream ring buffer
 	 * follows it at this offset (in pages).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 downstream_ringbuffer_pageoffset;
 
 	/* User-specific data to be passed along to the server endpoint. */
@@ -942,8 +613,6 @@ struct vmbus_channel_open_result {
 	u32 status;
 } __packed;
 
-<<<<<<< HEAD
-=======
 /* Modify Channel Result parameters */
 struct vmbus_channel_modifychannel_response {
 	struct vmbus_channel_message_header header;
@@ -951,7 +620,6 @@ struct vmbus_channel_modifychannel_response {
 	u32 status;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Close channel parameters; */
 struct vmbus_channel_close_channel {
 	struct vmbus_channel_message_header header;
@@ -975,11 +643,7 @@ struct vmbus_channel_gpadl_header {
 	u32 gpadl;
 	u16 range_buflen;
 	u16 rangecount;
-<<<<<<< HEAD
-	struct gpa_range range[0];
-=======
 	struct gpa_range range[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* This is the followup packet that contains more PFNs. */
@@ -987,11 +651,7 @@ struct vmbus_channel_gpadl_body {
 	struct vmbus_channel_message_header header;
 	u32 msgnumber;
 	u32 gpadl;
-<<<<<<< HEAD
-	u64 pfn[0];
-=======
 	u64 pfn[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct vmbus_channel_gpadl_created {
@@ -1012,24 +672,6 @@ struct vmbus_channel_gpadl_torndown {
 	u32 gpadl;
 } __packed;
 
-<<<<<<< HEAD
-#ifdef VMBUS_FEATURE_PARENT_OR_PEER_MEMORY_MAPPED_INTO_A_CHILD
-struct vmbus_channel_view_range_add {
-	struct vmbus_channel_message_header header;
-	PHYSICAL_ADDRESS viewrange_base;
-	u64 viewrange_length;
-	u32 child_relid;
-} __packed;
-
-struct vmbus_channel_view_range_remove {
-	struct vmbus_channel_message_header header;
-	PHYSICAL_ADDRESS viewrange_base;
-	u32 child_relid;
-} __packed;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vmbus_channel_relid_released {
 	struct vmbus_channel_message_header header;
 	u32 child_relid;
@@ -1038,10 +680,6 @@ struct vmbus_channel_relid_released {
 struct vmbus_channel_initiate_contact {
 	struct vmbus_channel_message_header header;
 	u32 vmbus_version_requested;
-<<<<<<< HEAD
-	u32 padding2;
-	u64 interrupt_page;
-=======
 	u32 target_vcpu; /* The VCPU the host should respond to */
 	union {
 		u64 interrupt_page;
@@ -1051,16 +689,10 @@ struct vmbus_channel_initiate_contact {
 			u8	reserved[6];
 		};
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 monitor_page1;
 	u64 monitor_page2;
 } __packed;
 
-<<<<<<< HEAD
-struct vmbus_channel_version_response {
-	struct vmbus_channel_message_header header;
-	bool version_supported;
-=======
 /* Hyper-V socket: guest's connect()-ing to host */
 struct vmbus_channel_tl_connect_request {
 	struct vmbus_channel_message_header header;
@@ -1091,34 +723,13 @@ struct vmbus_channel_version_response {
 	 * On old hosts, we should always use VMBUS_MESSAGE_CONNECTION_ID (1).
 	 */
 	u32 msg_conn_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 enum vmbus_channel_state {
 	CHANNEL_OFFER_STATE,
 	CHANNEL_OPENING_STATE,
 	CHANNEL_OPEN_STATE,
-<<<<<<< HEAD
-};
-
-struct vmbus_channel_debug_info {
-	u32 relid;
-	enum vmbus_channel_state state;
-	uuid_le interfacetype;
-	uuid_le interface_instance;
-	u32 monitorid;
-	u32 servermonitor_pending;
-	u32 servermonitor_latency;
-	u32 servermonitor_connectionid;
-	u32 clientmonitor_pending;
-	u32 clientmonitor_latency;
-	u32 clientmonitor_connectionid;
-
-	struct hv_ring_buffer_debug_info inbound;
-	struct hv_ring_buffer_debug_info outbound;
-=======
 	CHANNEL_OPENED_STATE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1134,20 +745,14 @@ struct vmbus_channel_msginfo {
 
 	/* Synchronize the request/response if needed */
 	struct completion  waitevent;
-<<<<<<< HEAD
-=======
 	struct vmbus_channel *waiting_channel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		struct vmbus_channel_version_supported version_supported;
 		struct vmbus_channel_open_result open_result;
 		struct vmbus_channel_gpadl_torndown gpadl_torndown;
 		struct vmbus_channel_gpadl_created gpadl_created;
 		struct vmbus_channel_version_response version_response;
-<<<<<<< HEAD
-=======
 		struct vmbus_channel_modifychannel_response modify_response;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} response;
 
 	u32 msgsize;
@@ -1155,11 +760,7 @@ struct vmbus_channel_msginfo {
 	 * The channel message that goes out on the "wire".
 	 * It will contain at minimum the VMBUS_CHANNEL_MESSAGE_HEADER header
 	 */
-<<<<<<< HEAD
-	unsigned char msg[0];
-=======
 	unsigned char msg[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct vmbus_close_msg {
@@ -1167,8 +768,6 @@ struct vmbus_close_msg {
 	struct vmbus_channel_close_channel msg;
 };
 
-<<<<<<< HEAD
-=======
 /* Define connection identifier type. */
 union hv_connection_id {
 	u32 asu32;
@@ -1236,17 +835,11 @@ struct vmbus_gpadl {
 	bool decrypted;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vmbus_channel {
 	struct list_head listentry;
 
 	struct hv_device *device_obj;
 
-<<<<<<< HEAD
-	struct work_struct work;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum vmbus_channel_state state;
 
 	struct vmbus_channel_offer_channel offermsg;
@@ -1257,31 +850,6 @@ struct vmbus_channel {
 	u8 monitor_grp;
 	u8 monitor_bit;
 
-<<<<<<< HEAD
-	u32 ringbuffer_gpadlhandle;
-
-	/* Allocated memory for ring buffer */
-	void *ringbuffer_pages;
-	u32 ringbuffer_pagecount;
-	struct hv_ring_buffer_info outbound;	/* send to parent */
-	struct hv_ring_buffer_info inbound;	/* receive from parent */
-	spinlock_t inbound_lock;
-	struct workqueue_struct *controlwq;
-
-	struct vmbus_close_msg close_msg;
-
-	/* Channel callback are invoked in this workqueue context */
-	/* HANDLE dataWorkQueue; */
-
-	void (*onchannel_callback)(void *context);
-	void *channel_callback_context;
-};
-
-void vmbus_onmessage(void *context);
-
-int vmbus_request_offers(void);
-
-=======
 	bool rescind; /* got rescind msg */
 	bool rescind_ref; /* got rescind msg, got channel reference */
 	struct completion rescind_event;
@@ -1587,7 +1155,6 @@ void vmbus_set_sc_create_callback(struct vmbus_channel *primary_channel,
 void vmbus_set_chn_rescind_callback(struct vmbus_channel *channel,
 		void (*chn_rescind_cb)(struct vmbus_channel *));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The format must be the same as struct vmdata_gpa_direct */
 struct vmbus_channel_packet_page_buffer {
 	u16 type;
@@ -1612,8 +1179,6 @@ struct vmbus_channel_packet_multipage_buffer {
 	struct hv_multipage_buffer range;
 } __packed;
 
-<<<<<<< HEAD
-=======
 /* The format must be the same as struct vmdata_gpa_direct */
 struct vmbus_packet_mpb_array {
 	u16 type;
@@ -1634,26 +1199,17 @@ int vmbus_connect_ring(struct vmbus_channel *channel,
 		       void (*onchannel_callback)(void *context),
 		       void *context);
 int vmbus_disconnect_ring(struct vmbus_channel *channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int vmbus_open(struct vmbus_channel *channel,
 			    u32 send_ringbuffersize,
 			    u32 recv_ringbuffersize,
 			    void *userdata,
 			    u32 userdatalen,
-<<<<<<< HEAD
-			    void(*onchannel_callback)(void *context),
-=======
 			    void (*onchannel_callback)(void *context),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    void *context);
 
 extern void vmbus_close(struct vmbus_channel *channel);
 
-<<<<<<< HEAD
-extern int vmbus_sendpacket(struct vmbus_channel *channel,
-				  const void *buffer,
-=======
 extern int vmbus_sendpacket_getid(struct vmbus_channel *channel,
 				  void *buffer,
 				  u32 bufferLen,
@@ -1663,7 +1219,6 @@ extern int vmbus_sendpacket_getid(struct vmbus_channel *channel,
 				  u32 flags);
 extern int vmbus_sendpacket(struct vmbus_channel *channel,
 				  void *buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  u32 bufferLen,
 				  u64 requestid,
 				  enum vmbus_packet_type type,
@@ -1676,37 +1231,22 @@ extern int vmbus_sendpacket_pagebuffer(struct vmbus_channel *channel,
 					    u32 bufferlen,
 					    u64 requestid);
 
-<<<<<<< HEAD
-extern int vmbus_sendpacket_multipagebuffer(struct vmbus_channel *channel,
-					struct hv_multipage_buffer *mpb,
-					void *buffer,
-					u32 bufferlen,
-					u64 requestid);
-=======
 extern int vmbus_sendpacket_mpb_desc(struct vmbus_channel *channel,
 				     struct vmbus_packet_mpb_array *mpb,
 				     u32 desc_size,
 				     void *buffer,
 				     u32 bufferlen,
 				     u64 requestid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int vmbus_establish_gpadl(struct vmbus_channel *channel,
 				      void *kbuffer,
 				      u32 size,
-<<<<<<< HEAD
-				      u32 *gpadl_handle);
-
-extern int vmbus_teardown_gpadl(struct vmbus_channel *channel,
-				     u32 gpadl_handle);
-=======
 				      struct vmbus_gpadl *gpadl);
 
 extern int vmbus_teardown_gpadl(struct vmbus_channel *channel,
 				     struct vmbus_gpadl *gpadl);
 
 void vmbus_reset_channel_cb(struct vmbus_channel *channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int vmbus_recvpacket(struct vmbus_channel *channel,
 				  void *buffer,
@@ -1720,31 +1260,10 @@ extern int vmbus_recvpacket_raw(struct vmbus_channel *channel,
 				     u32 *buffer_actual_len,
 				     u64 *requestid);
 
-<<<<<<< HEAD
-
-extern void vmbus_get_debug_info(struct vmbus_channel *channel,
-				     struct vmbus_channel_debug_info *debug);
-
-extern void vmbus_ontimer(unsigned long data);
-
-struct hv_dev_port_info {
-	u32 int_mask;
-	u32 read_idx;
-	u32 write_idx;
-	u32 bytes_avail_toread;
-	u32 bytes_avail_towrite;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Base driver object */
 struct hv_driver {
 	const char *name;
 
-<<<<<<< HEAD
-	/* the device type supported by this driver */
-	uuid_le dev_type;
-=======
 	/*
 	 * A hvsock offer, which has a VMBUS_CHANNEL_TLNPI_PROVIDER_OFFER
 	 * channel flag, actually doesn't mean a synthetic device because the
@@ -1761,17 +1280,10 @@ struct hv_driver {
 
 	/* the device type supported by this driver */
 	guid_t dev_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct hv_vmbus_device_id *id_table;
 
 	struct device_driver driver;
 
-<<<<<<< HEAD
-	int (*probe)(struct hv_device *, const struct hv_vmbus_device_id *);
-	int (*remove)(struct hv_device *);
-	void (*shutdown)(struct hv_device *);
-
-=======
 	/* dynamic device GUID's */
 	struct  {
 		spinlock_t lock;
@@ -1785,29 +1297,11 @@ struct hv_driver {
 	int (*suspend)(struct hv_device *);
 	int (*resume)(struct hv_device *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Base device object */
 struct hv_device {
 	/* the device type id of this device */
-<<<<<<< HEAD
-	uuid_le dev_type;
-
-	/* the device instance id of this device */
-	uuid_le dev_instance;
-
-	struct device device;
-
-	struct vmbus_channel *channel;
-};
-
-
-static inline struct hv_device *device_to_hv_device(struct device *d)
-{
-	return container_of(d, struct hv_device, device);
-}
-=======
 	guid_t dev_type;
 
 	/* the device instance id of this device */
@@ -1834,7 +1328,6 @@ static inline struct hv_device *device_to_hv_device(struct device *d)
 
 
 #define device_to_hv_device(d)	container_of_const(d, struct hv_device, device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct hv_driver *drv_to_hv_drv(struct device_driver *d)
 {
@@ -1851,8 +1344,6 @@ static inline void *hv_get_drvdata(struct hv_device *dev)
 	return dev_get_drvdata(&dev->device);
 }
 
-<<<<<<< HEAD
-=======
 struct hv_ring_buffer_debug_info {
 	u32 current_interrupt_mask;
 	u32 current_read_index;
@@ -1867,7 +1358,6 @@ int hv_ringbuffer_get_debuginfo(struct hv_ring_buffer_info *ring_info,
 
 bool hv_ringbuffer_spinlock_busy(struct vmbus_channel *channel);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Vmbus interface */
 #define vmbus_driver_register(driver)	\
 	__vmbus_driver_register(driver, THIS_MODULE, KBUILD_MODNAME)
@@ -1876,18 +1366,6 @@ int __must_check __vmbus_driver_register(struct hv_driver *hv_driver,
 					 const char *mod_name);
 void vmbus_driver_unregister(struct hv_driver *hv_driver);
 
-<<<<<<< HEAD
-/**
- * VMBUS_DEVICE - macro used to describe a specific hyperv vmbus device
- *
- * This macro is used to create a struct hv_vmbus_device_id that matches a
- * specific device.
- */
-#define VMBUS_DEVICE(g0, g1, g2, g3, g4, g5, g6, g7,	\
-		     g8, g9, ga, gb, gc, gd, ge, gf)	\
-	.guid = { g0, g1, g2, g3, g4, g5, g6, g7,	\
-		  g8, g9, ga, gb, gc, gd, ge, gf },
-=======
 void vmbus_hvsock_device_unregister(struct vmbus_channel *channel);
 
 int vmbus_allocate_mmio(struct resource **new, struct hv_device *device_obj,
@@ -2054,7 +1532,6 @@ void vmbus_free_mmio(resource_size_t start, resource_size_t size);
 #define HV_IMC_GUID \
 	.guid = GUID_INIT(0xc376c1c3, 0xd276, 0x48d2, 0x90, 0xa9, \
 			  0xc0, 0x47, 0x48, 0x07, 0x2c, 0x60)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Common header for Hyper-V ICs
@@ -2066,23 +1543,12 @@ void vmbus_free_mmio(resource_size_t start, resource_size_t size);
 #define ICMSGTYPE_SHUTDOWN		3
 #define ICMSGTYPE_TIMESYNC		4
 #define ICMSGTYPE_VSS			5
-<<<<<<< HEAD
-=======
 #define ICMSGTYPE_FCOPY			7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ICMSGHDRFLAG_TRANSACTION	1
 #define ICMSGHDRFLAG_REQUEST		2
 #define ICMSGHDRFLAG_RESPONSE		4
 
-<<<<<<< HEAD
-#define HV_S_OK				0x00000000
-#define HV_E_FAIL			0x80004005
-#define HV_S_CONT			0x80070103
-#define HV_ERROR_NOT_SUPPORTED		0x80070032
-#define HV_ERROR_MACHINE_LOCKED		0x800704F7
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * While we want to handle util services as regular devices,
@@ -2092,18 +1558,12 @@ void vmbus_free_mmio(resource_size_t start, resource_size_t size);
 
 struct hv_util_service {
 	u8 *recv_buffer;
-<<<<<<< HEAD
-	void (*util_cb)(void *);
-	int (*util_init)(struct hv_util_service *);
-	void (*util_deinit)(void);
-=======
 	void *channel;
 	void (*util_cb)(void *);
 	int (*util_init)(struct hv_util_service *);
 	void (*util_deinit)(void);
 	int (*util_pre_suspend)(void);
 	int (*util_pre_resume)(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct vmbuspipe_hdr {
@@ -2127,24 +1587,17 @@ struct icmsg_hdr {
 	u8 reserved[2];
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define IC_VERSION_NEGOTIATION_MAX_VER_COUNT 100
 #define ICMSG_HDR (sizeof(struct vmbuspipe_hdr) + sizeof(struct icmsg_hdr))
 #define ICMSG_NEGOTIATE_PKT_SIZE(icframe_vercnt, icmsg_vercnt) \
 	(ICMSG_HDR + sizeof(struct icmsg_negotiate) + \
 	 (((icframe_vercnt) + (icmsg_vercnt)) * sizeof(struct ic_version)))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct icmsg_negotiate {
 	u16 icframe_vercnt;
 	u16 icmsg_vercnt;
 	u32 reserved;
-<<<<<<< HEAD
-	struct ic_version icversion_data[1]; /* any size array */
-=======
 	struct ic_version icversion_data[]; /* any size array */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct shutdown_msg_data {
@@ -2177,24 +1630,6 @@ struct ictimesync_data {
 	u8 flags;
 } __packed;
 
-<<<<<<< HEAD
-struct hyperv_service_callback {
-	u8 msg_type;
-	char *log_msg;
-	uuid_le data;
-	struct vmbus_channel *channel;
-	void (*callback) (void *context);
-};
-
-extern void vmbus_prep_negotiate_resp(struct icmsg_hdr *,
-				      struct icmsg_negotiate *, u8 *);
-
-int hv_kvp_init(struct hv_util_service *);
-void hv_kvp_deinit(void);
-void hv_kvp_onchannelcallback(void *);
-
-#endif /* __KERNEL__ */
-=======
 struct ictimesync_ref_data {
 	u64 parenttime;
 	u64 vmreferencetime;
@@ -2370,5 +1805,4 @@ static inline unsigned long virt_to_hvpfn(void *addr)
 #define HVPFN_DOWN(x)	((x) >> HV_HYP_PAGE_SHIFT)
 #define page_to_hvpfn(page)	(page_to_pfn(page) * NR_HV_HYP_PAGES_IN_PAGE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _HYPERV_H */

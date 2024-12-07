@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-ep93xx/core.c
  * Core routines for Cirrus EP93xx chips.
@@ -11,14 +8,6 @@
  *
  * Thanks go to Michael Burian and Ray Lehtiniemi for their key
  * role in the ep93xx linux community.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "ep93xx " KBUILD_MODNAME ": " fmt
@@ -28,42 +17,17 @@
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-#include <linux/timex.h>
-=======
 #include <linux/sys_soc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <linux/gpio.h>
 #include <linux/leds.h>
-<<<<<<< HEAD
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/termios.h>
 #include <linux/amba/bus.h>
 #include <linux/amba/serial.h>
 #include <linux/mtd/physmap.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/i2c-gpio.h>
-#include <linux/spi/spi.h>
-#include <linux/export.h>
-
-#include <mach/hardware.h>
-#include <mach/fb.h>
-#include <mach/ep93xx_keypad.h>
-#include <mach/ep93xx_spi.h>
-#include <mach/gpio-ep93xx.h>
-
-#include <asm/mach/map.h>
-#include <asm/mach/time.h>
-
-#include <asm/hardware/vic.h>
-
-#include "soc.h"
-=======
 #include <linux/gpio/machine.h>
 #include <linux/spi/spi.h>
 #include <linux/export.h>
@@ -85,7 +49,6 @@
 
 #include "soc.h"
 #include "irqs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*************************************************************************
  * Static I/O mappings that are needed for all EP93xx platforms
@@ -109,125 +72,13 @@ void __init ep93xx_map_io(void)
 	iotable_init(ep93xx_io_desc, ARRAY_SIZE(ep93xx_io_desc));
 }
 
-<<<<<<< HEAD
-
-/*************************************************************************
- * Timer handling for EP93xx
- *************************************************************************
- * The ep93xx has four internal timers.  Timers 1, 2 (both 16 bit) and
- * 3 (32 bit) count down at 508 kHz, are self-reloading, and can generate
- * an interrupt on underflow.  Timer 4 (40 bit) counts down at 983.04 kHz,
- * is free-running, and can't generate interrupts.
- *
- * The 508 kHz timers are ideal for use for the timer interrupt, as the
- * most common values of HZ divide 508 kHz nicely.  We pick one of the 16
- * bit timers (timer 1) since we don't need more than 16 bits of reload
- * value as long as HZ >= 8.
- *
- * The higher clock rate of timer 4 makes it a better choice than the
- * other timers for use in gettimeoffset(), while the fact that it can't
- * generate interrupts means we don't have to worry about not being able
- * to use this timer for something else.  We also use timer 4 for keeping
- * track of lost jiffies.
- */
-#define EP93XX_TIMER_REG(x)		(EP93XX_TIMER_BASE + (x))
-#define EP93XX_TIMER1_LOAD		EP93XX_TIMER_REG(0x00)
-#define EP93XX_TIMER1_VALUE		EP93XX_TIMER_REG(0x04)
-#define EP93XX_TIMER1_CONTROL		EP93XX_TIMER_REG(0x08)
-#define EP93XX_TIMER123_CONTROL_ENABLE	(1 << 7)
-#define EP93XX_TIMER123_CONTROL_MODE	(1 << 6)
-#define EP93XX_TIMER123_CONTROL_CLKSEL	(1 << 3)
-#define EP93XX_TIMER1_CLEAR		EP93XX_TIMER_REG(0x0c)
-#define EP93XX_TIMER2_LOAD		EP93XX_TIMER_REG(0x20)
-#define EP93XX_TIMER2_VALUE		EP93XX_TIMER_REG(0x24)
-#define EP93XX_TIMER2_CONTROL		EP93XX_TIMER_REG(0x28)
-#define EP93XX_TIMER2_CLEAR		EP93XX_TIMER_REG(0x2c)
-#define EP93XX_TIMER4_VALUE_LOW		EP93XX_TIMER_REG(0x60)
-#define EP93XX_TIMER4_VALUE_HIGH	EP93XX_TIMER_REG(0x64)
-#define EP93XX_TIMER4_VALUE_HIGH_ENABLE	(1 << 8)
-#define EP93XX_TIMER3_LOAD		EP93XX_TIMER_REG(0x80)
-#define EP93XX_TIMER3_VALUE		EP93XX_TIMER_REG(0x84)
-#define EP93XX_TIMER3_CONTROL		EP93XX_TIMER_REG(0x88)
-#define EP93XX_TIMER3_CLEAR		EP93XX_TIMER_REG(0x8c)
-
-#define EP93XX_TIMER123_CLOCK		508469
-#define EP93XX_TIMER4_CLOCK		983040
-
-#define TIMER1_RELOAD			((EP93XX_TIMER123_CLOCK / HZ) - 1)
-#define TIMER4_TICKS_PER_JIFFY		DIV_ROUND_CLOSEST(CLOCK_TICK_RATE, HZ)
-
-static unsigned int last_jiffy_time;
-
-static irqreturn_t ep93xx_timer_interrupt(int irq, void *dev_id)
-{
-	/* Writing any value clears the timer interrupt */
-	__raw_writel(1, EP93XX_TIMER1_CLEAR);
-
-	/* Recover lost jiffies */
-	while ((signed long)
-		(__raw_readl(EP93XX_TIMER4_VALUE_LOW) - last_jiffy_time)
-						>= TIMER4_TICKS_PER_JIFFY) {
-		last_jiffy_time += TIMER4_TICKS_PER_JIFFY;
-		timer_tick();
-	}
-
-	return IRQ_HANDLED;
-}
-
-static struct irqaction ep93xx_timer_irq = {
-	.name		= "ep93xx timer",
-	.flags		= IRQF_DISABLED | IRQF_TIMER | IRQF_IRQPOLL,
-	.handler	= ep93xx_timer_interrupt,
-};
-
-static void __init ep93xx_timer_init(void)
-{
-	u32 tmode = EP93XX_TIMER123_CONTROL_MODE |
-		    EP93XX_TIMER123_CONTROL_CLKSEL;
-
-	/* Enable periodic HZ timer.  */
-	__raw_writel(tmode, EP93XX_TIMER1_CONTROL);
-	__raw_writel(TIMER1_RELOAD, EP93XX_TIMER1_LOAD);
-	__raw_writel(tmode | EP93XX_TIMER123_CONTROL_ENABLE,
-			EP93XX_TIMER1_CONTROL);
-
-	/* Enable lost jiffy timer.  */
-	__raw_writel(EP93XX_TIMER4_VALUE_HIGH_ENABLE,
-			EP93XX_TIMER4_VALUE_HIGH);
-
-	setup_irq(IRQ_EP93XX_TIMER1, &ep93xx_timer_irq);
-}
-
-static unsigned long ep93xx_gettimeoffset(void)
-{
-	int offset;
-
-	offset = __raw_readl(EP93XX_TIMER4_VALUE_LOW) - last_jiffy_time;
-
-	/* Calculate (1000000 / 983040) * offset.  */
-	return offset + (53 * offset / 3072);
-}
-
-struct sys_timer ep93xx_timer = {
-	.init		= ep93xx_timer_init,
-	.offset		= ep93xx_gettimeoffset,
-};
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************************************************************
  * EP93xx IRQ handling
  *************************************************************************/
 void __init ep93xx_init_irq(void)
 {
-<<<<<<< HEAD
-	vic_init(EP93XX_VIC1_BASE, 0, EP93XX_VIC1_VALID_IRQ_MASK, 0);
-	vic_init(EP93XX_VIC2_BASE, 32, EP93XX_VIC2_VALID_IRQ_MASK, 0);
-=======
 	vic_init(EP93XX_VIC1_BASE, IRQ_EP93XX_VIC0, EP93XX_VIC1_VALID_IRQ_MASK, 0);
 	vic_init(EP93XX_VIC2_BASE, IRQ_EP93XX_VIC1, EP93XX_VIC2_VALID_IRQ_MASK, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -272,11 +123,7 @@ void ep93xx_devcfg_set_clear(unsigned int set_bits, unsigned int clear_bits)
 /**
  * ep93xx_chip_revision() - returns the EP93xx chip revision
  *
-<<<<<<< HEAD
- * See <mach/platform.h> for more information.
-=======
  * See "platform.h" for more information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 unsigned int ep93xx_chip_revision(void)
 {
@@ -287,22 +134,12 @@ unsigned int ep93xx_chip_revision(void)
 	v >>= EP93XX_SYSCON_SYSCFG_REV_SHIFT;
 	return v;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(ep93xx_chip_revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*************************************************************************
  * EP93xx GPIO
  *************************************************************************/
 static struct resource ep93xx_gpio_resource[] = {
-<<<<<<< HEAD
-	{
-		.start		= EP93XX_GPIO_PHYS_BASE,
-		.end		= EP93XX_GPIO_PHYS_BASE + 0xcc - 1,
-		.flags		= IORESOURCE_MEM,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_GPIO_PHYS_BASE, 0xcc),
 	DEFINE_RES_IRQ(IRQ_EP93XX_GPIO_AB),
 	DEFINE_RES_IRQ(IRQ_EP93XX_GPIO0MUX),
@@ -313,7 +150,6 @@ static struct resource ep93xx_gpio_resource[] = {
 	DEFINE_RES_IRQ(IRQ_EP93XX_GPIO5MUX),
 	DEFINE_RES_IRQ(IRQ_EP93XX_GPIO6MUX),
 	DEFINE_RES_IRQ(IRQ_EP93XX_GPIO7MUX),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_gpio_device = {
@@ -350,25 +186,13 @@ static AMBA_APB_DEVICE(uart1, "apb:uart1", 0x00041010, EP93XX_UART1_PHYS_BASE,
 	{ IRQ_EP93XX_UART1 }, &ep93xx_uart_data);
 
 static AMBA_APB_DEVICE(uart2, "apb:uart2", 0x00041010, EP93XX_UART2_PHYS_BASE,
-<<<<<<< HEAD
-	{ IRQ_EP93XX_UART2 }, &ep93xx_uart_data);
-=======
 	{ IRQ_EP93XX_UART2 }, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static AMBA_APB_DEVICE(uart3, "apb:uart3", 0x00041010, EP93XX_UART3_PHYS_BASE,
 	{ IRQ_EP93XX_UART3 }, &ep93xx_uart_data);
 
 static struct resource ep93xx_rtc_resource[] = {
-<<<<<<< HEAD
-	{
-		.start		= EP93XX_RTC_PHYS_BASE,
-		.end		= EP93XX_RTC_PHYS_BASE + 0x10c - 1,
-		.flags		= IORESOURCE_MEM,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_RTC_PHYS_BASE, 0x10c),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_rtc_device = {
@@ -378,35 +202,6 @@ static struct platform_device ep93xx_rtc_device = {
 	.resource	= ep93xx_rtc_resource,
 };
 
-<<<<<<< HEAD
-
-static struct resource ep93xx_ohci_resources[] = {
-	[0] = {
-		.start	= EP93XX_USB_PHYS_BASE,
-		.end	= EP93XX_USB_PHYS_BASE + 0x0fff,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= IRQ_EP93XX_USB,
-		.end	= IRQ_EP93XX_USB,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-
-static struct platform_device ep93xx_ohci_device = {
-	.name		= "ep93xx-ohci",
-	.id		= -1,
-	.dev		= {
-		.dma_mask		= &ep93xx_ohci_device.dev.coherent_dma_mask,
-		.coherent_dma_mask	= DMA_BIT_MASK(32),
-	},
-	.num_resources	= ARRAY_SIZE(ep93xx_ohci_resources),
-	.resource	= ep93xx_ohci_resources,
-};
-
-
-=======
 /*************************************************************************
  * EP93xx OHCI USB Host
  *************************************************************************/
@@ -454,7 +249,6 @@ static struct platform_device ep93xx_ohci_device = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************************************************************
  * EP93xx physmap'ed flash
  *************************************************************************/
@@ -498,20 +292,8 @@ void __init ep93xx_register_flash(unsigned int width,
 static struct ep93xx_eth_data ep93xx_eth_data;
 
 static struct resource ep93xx_eth_resource[] = {
-<<<<<<< HEAD
-	{
-		.start	= EP93XX_ETHERNET_PHYS_BASE,
-		.end	= EP93XX_ETHERNET_PHYS_BASE + 0xffff,
-		.flags	= IORESOURCE_MEM,
-	}, {
-		.start	= IRQ_EP93XX_ETHERNET,
-		.end	= IRQ_EP93XX_ETHERNET,
-		.flags	= IORESOURCE_IRQ,
-	}
-=======
 	DEFINE_RES_MEM(EP93XX_ETHERNET_PHYS_BASE, 0x10000),
 	DEFINE_RES_IRQ(IRQ_EP93XX_ETHERNET),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static u64 ep93xx_eth_dma_mask = DMA_BIT_MASK(32);
@@ -547,9 +329,6 @@ void __init ep93xx_register_eth(struct ep93xx_eth_data *data, int copy_addr)
 /*************************************************************************
  * EP93xx i2c peripheral handling
  *************************************************************************/
-<<<<<<< HEAD
-static struct i2c_gpio_platform_data ep93xx_i2c_data;
-=======
 
 /* All EP93xx devices use the same two GPIO pins for I2C bit-banging */
 static struct gpiod_lookup_table ep93xx_i2c_gpiod_table = {
@@ -563,48 +342,17 @@ static struct gpiod_lookup_table ep93xx_i2c_gpiod_table = {
 		{ }
 	},
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_device ep93xx_i2c_device = {
 	.name		= "i2c-gpio",
 	.id		= 0,
 	.dev		= {
-<<<<<<< HEAD
-		.platform_data	= &ep93xx_i2c_data,
-=======
 		.platform_data	= NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 /**
  * ep93xx_register_i2c - Register the i2c platform device.
-<<<<<<< HEAD
- * @data:	platform specific i2c-gpio configuration (__initdata)
- * @devices:	platform specific i2c bus device information (__initdata)
- * @num:	the number of devices on the i2c bus
- */
-void __init ep93xx_register_i2c(struct i2c_gpio_platform_data *data,
-				struct i2c_board_info *devices, int num)
-{
-	/*
-	 * Set the EEPROM interface pin drive type control.
-	 * Defines the driver type for the EECLK and EEDAT pins as either
-	 * open drain, which will require an external pull-up, or a normal
-	 * CMOS driver.
-	 */
-	if (data->sda_is_open_drain && data->sda_pin != EP93XX_GPIO_LINE_EEDAT)
-		pr_warning("sda != EEDAT, open drain has no effect\n");
-	if (data->scl_is_open_drain && data->scl_pin != EP93XX_GPIO_LINE_EECLK)
-		pr_warning("scl != EECLK, open drain has no effect\n");
-
-	__raw_writel((data->sda_is_open_drain << 1) |
-		     (data->scl_is_open_drain << 0),
-		     EP93XX_GPIO_EEDRIVE);
-
-	ep93xx_i2c_data = *data;
-	i2c_register_board_info(0, devices, num);
-=======
  * @devices:	platform specific i2c bus device information (__initdata)
  * @num:	the number of devices on the i2c bus
  */
@@ -623,7 +371,6 @@ void __init ep93xx_register_i2c(struct i2c_board_info *devices, int num)
 
 	i2c_register_board_info(0, devices, num);
 	gpiod_add_lookup_table(&ep93xx_i2c_gpiod_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_register(&ep93xx_i2c_device);
 }
 
@@ -633,21 +380,8 @@ void __init ep93xx_register_i2c(struct i2c_board_info *devices, int num)
 static struct ep93xx_spi_info ep93xx_spi_master_data;
 
 static struct resource ep93xx_spi_resources[] = {
-<<<<<<< HEAD
-	{
-		.start	= EP93XX_SPI_PHYS_BASE,
-		.end	= EP93XX_SPI_PHYS_BASE + 0x18 - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-	{
-		.start	= IRQ_EP93XX_SSP,
-		.end	= IRQ_EP93XX_SSP,
-		.flags	= IORESOURCE_IRQ,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_SPI_PHYS_BASE, 0x18),
 	DEFINE_RES_IRQ(IRQ_EP93XX_SSP),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static u64 ep93xx_spi_dma_mask = DMA_BIT_MASK(32);
@@ -690,19 +424,6 @@ void __init ep93xx_register_spi(struct ep93xx_spi_info *info,
 /*************************************************************************
  * EP93xx LEDs
  *************************************************************************/
-<<<<<<< HEAD
-static struct gpio_led ep93xx_led_pins[] = {
-	{
-		.name	= "platform:grled",
-		.gpio	= EP93XX_GPIO_LINE_GRLED,
-	}, {
-		.name	= "platform:rdled",
-		.gpio	= EP93XX_GPIO_LINE_RDLED,
-	},
-};
-
-static struct gpio_led_platform_data ep93xx_led_data = {
-=======
 static const struct gpio_led ep93xx_led_pins[] __initconst = {
 	{
 		.name	= "platform:grled",
@@ -712,22 +433,10 @@ static const struct gpio_led ep93xx_led_pins[] __initconst = {
 };
 
 static const struct gpio_led_platform_data ep93xx_led_data __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_leds	= ARRAY_SIZE(ep93xx_led_pins),
 	.leds		= ep93xx_led_pins,
 };
 
-<<<<<<< HEAD
-static struct platform_device ep93xx_leds = {
-	.name		= "leds-gpio",
-	.id		= -1,
-	.dev		= {
-		.platform_data	= &ep93xx_led_data,
-	},
-};
-
-
-=======
 static struct gpiod_lookup_table ep93xx_leds_gpio_table = {
 	.dev_id = "leds-gpio",
 	.table = {
@@ -738,20 +447,11 @@ static struct gpiod_lookup_table ep93xx_leds_gpio_table = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************************************************************
  * EP93xx pwm peripheral handling
  *************************************************************************/
 static struct resource ep93xx_pwm0_resource[] = {
-<<<<<<< HEAD
-	{
-		.start	= EP93XX_PWM_PHYS_BASE,
-		.end	= EP93XX_PWM_PHYS_BASE + 0x10 - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_PWM_PHYS_BASE, 0x10),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_pwm0_device = {
@@ -762,15 +462,7 @@ static struct platform_device ep93xx_pwm0_device = {
 };
 
 static struct resource ep93xx_pwm1_resource[] = {
-<<<<<<< HEAD
-	{
-		.start	= EP93XX_PWM_PHYS_BASE + 0x20,
-		.end	= EP93XX_PWM_PHYS_BASE + 0x30 - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_PWM_PHYS_BASE + 0x20, 0x10),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_pwm1_device = {
@@ -838,15 +530,7 @@ EXPORT_SYMBOL(ep93xx_pwm_release_gpio);
 static struct ep93xxfb_mach_info ep93xxfb_data;
 
 static struct resource ep93xx_fb_resource[] = {
-<<<<<<< HEAD
-	{
-		.start		= EP93XX_RASTER_PHYS_BASE,
-		.end		= EP93XX_RASTER_PHYS_BASE + 0x800 - 1,
-		.flags		= IORESOURCE_MEM,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_RASTER_PHYS_BASE, 0x800),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_fb_device = {
@@ -894,20 +578,8 @@ void __init ep93xx_register_fb(struct ep93xxfb_mach_info *data)
 static struct ep93xx_keypad_platform_data ep93xx_keypad_data;
 
 static struct resource ep93xx_keypad_resource[] = {
-<<<<<<< HEAD
-	{
-		.start	= EP93XX_KEY_MATRIX_PHYS_BASE,
-		.end	= EP93XX_KEY_MATRIX_PHYS_BASE + 0x0c - 1,
-		.flags	= IORESOURCE_MEM,
-	}, {
-		.start	= IRQ_EP93XX_KEY,
-		.end	= IRQ_EP93XX_KEY,
-		.flags	= IORESOURCE_IRQ,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_KEY_MATRIX_PHYS_BASE, 0x0c),
 	DEFINE_RES_IRQ(IRQ_EP93XX_KEY),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_keypad_device = {
@@ -953,11 +625,7 @@ int ep93xx_keypad_acquire_gpio(struct platform_device *pdev)
 fail_gpio_d:
 	gpio_free(EP93XX_GPIO_LINE_C(i));
 fail_gpio_c:
-<<<<<<< HEAD
-	for ( ; i >= 0; --i) {
-=======
 	for (--i; i >= 0; --i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gpio_free(EP93XX_GPIO_LINE_C(i));
 		gpio_free(EP93XX_GPIO_LINE_D(i));
 	}
@@ -984,16 +652,8 @@ EXPORT_SYMBOL(ep93xx_keypad_release_gpio);
  * EP93xx I2S audio peripheral handling
  *************************************************************************/
 static struct resource ep93xx_i2s_resource[] = {
-<<<<<<< HEAD
-	{
-		.start	= EP93XX_I2S_PHYS_BASE,
-		.end	= EP93XX_I2S_PHYS_BASE + 0x100 - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_I2S_PHYS_BASE, 0x100),
 	DEFINE_RES_IRQ(IRQ_EP93XX_SAI),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_i2s_device = {
@@ -1052,21 +712,8 @@ EXPORT_SYMBOL(ep93xx_i2s_release);
  * EP93xx AC97 audio peripheral handling
  *************************************************************************/
 static struct resource ep93xx_ac97_resources[] = {
-<<<<<<< HEAD
-	{
-		.start	= EP93XX_AAC_PHYS_BASE,
-		.end	= EP93XX_AAC_PHYS_BASE + 0xac - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-	{
-		.start	= IRQ_EP93XX_AACINTR,
-		.end	= IRQ_EP93XX_AACINTR,
-		.flags	= IORESOURCE_IRQ,
-	},
-=======
 	DEFINE_RES_MEM(EP93XX_AAC_PHYS_BASE, 0xac),
 	DEFINE_RES_IRQ(IRQ_EP93XX_AACINTR),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ep93xx_ac97_device = {
@@ -1101,10 +748,6 @@ static struct platform_device ep93xx_wdt_device = {
 	.resource	= ep93xx_wdt_resources,
 };
 
-<<<<<<< HEAD
-void __init ep93xx_init_devices(void)
-{
-=======
 /*************************************************************************
  * EP93xx IDE
  *************************************************************************/
@@ -1333,7 +976,6 @@ struct device __init *ep93xx_init_devices(void)
 {
 	struct device *parent;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disallow access to MaverickCrunch initially */
 	ep93xx_devcfg_clear_bits(EP93XX_SYSCON_DEVCFG_CPENA);
 
@@ -1344,11 +986,8 @@ struct device __init *ep93xx_init_devices(void)
 			       EP93XX_SYSCON_DEVCFG_GONIDE |
 			       EP93XX_SYSCON_DEVCFG_HONIDE);
 
-<<<<<<< HEAD
-=======
 	parent = ep93xx_init_soc();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get the GPIO working early, other devices need it */
 	platform_device_register(&ep93xx_gpio_device);
 
@@ -1358,13 +997,6 @@ struct device __init *ep93xx_init_devices(void)
 
 	platform_device_register(&ep93xx_rtc_device);
 	platform_device_register(&ep93xx_ohci_device);
-<<<<<<< HEAD
-	platform_device_register(&ep93xx_leds);
-	platform_device_register(&ep93xx_wdt_device);
-}
-
-void ep93xx_restart(char mode, const char *cmd)
-=======
 	platform_device_register(&ep93xx_wdt_device);
 
 	gpiod_add_lookup_table(&ep93xx_leds_gpio_table);
@@ -1374,7 +1006,6 @@ void ep93xx_restart(char mode, const char *cmd)
 }
 
 void ep93xx_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Set then clear the SWRST bit to initiate a software reset

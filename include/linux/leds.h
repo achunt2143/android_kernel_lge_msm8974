@@ -1,32 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver model for leds and led triggers
  *
  * Copyright (C) 2005 John Lenz <lenz@cs.wisc.edu>
  * Copyright (C) 2005 Richard Purdie <rpurdie@openedhand.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LINUX_LEDS_H_INCLUDED
 #define __LINUX_LEDS_H_INCLUDED
 
-<<<<<<< HEAD
-#include <linux/list.h>
-#include <linux/spinlock.h>
-#include <linux/rwsem.h>
-#include <linux/timer.h>
-
-struct device;
-=======
 #include <dt-bindings/leds/common.h>
 #include <linux/device.h>
 #include <linux/mutex.h>
@@ -44,67 +25,18 @@ struct kernfs_node;
 struct led_pattern;
 struct platform_device;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LED Core
  */
 
-<<<<<<< HEAD
-enum led_brightness {
-	LED_OFF		= 0,
-=======
 /* This is obsolete/useless. We now support variable maximum brightness. */
 enum led_brightness {
 	LED_OFF		= 0,
 	LED_ON		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LED_HALF	= 127,
 	LED_FULL	= 255,
 };
 
-<<<<<<< HEAD
-#if defined(CONFIG_LEDS_WINDOW_COLOR)
-enum WINDOW_COLORS {
-	WINDOW_COLOR_BK = 0,	/* Black */
-	WINDOW_COLOR_WH,		/* White */
-	WINDOW_COLOR_SV,		/* Silver */
-	WINDOW_COLOR_TK			/* Titan */
-};
-#endif
-
-struct led_classdev {
-	const char		*name;
-	int			 brightness;
-#if defined(CONFIG_LGE_DUAL_LED)
-/* LGE_CHANGE
- * For Dual flash
- * 2014-01-14, jinw.kim@lge.com
- */
-	int			 brightness2;
-#endif
-	int			 max_brightness;
-	int			 flags;
-#if defined(CONFIG_LEDS_PM8941_EMOTIONAL)
-	int			 pattern_num;
-#endif
-	/* Lower 16 bits reflect status */
-#define LED_SUSPENDED		(1 << 0)
-	/* Upper 16 bits reflect control information */
-#define LED_CORE_SUSPENDRESUME	(1 << 16)
-
-	/* Set LED brightness level */
-	/* Must not sleep, use a workqueue if needed */
-	void		(*brightness_set)(struct led_classdev *led_cdev,
-					  enum led_brightness brightness);
-#if defined(CONFIG_LGE_DUAL_LED)
-/* LGE_CHANGE
- * For Dual flash
- * 2014-01-14, jinw.kim@lge.com
- */
-	void		(*brightness_set2)(struct led_classdev *led_cdev,
-					  enum led_brightness brightness, enum led_brightness brightness2);
-#endif
-=======
 enum led_default_state {
 	LEDS_DEFSTATE_OFF	= 0,
 	LEDS_DEFSTATE_ON	= 1,
@@ -202,7 +134,6 @@ struct led_classdev {
 	 */
 	int (*brightness_set_blocking)(struct led_classdev *led_cdev,
 				       enum led_brightness brightness);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get LED brightness level */
 	enum led_brightness (*brightness_get)(struct led_classdev *led_cdev);
 
@@ -211,25 +142,17 @@ struct led_classdev {
 	 * and if both are zero then a sensible default should be chosen.
 	 * The call should adjust the timings in that case and if it can't
 	 * match the values specified exactly.
-<<<<<<< HEAD
-	 * Deactivate blinking again when the brightness is set to a fixed
-	 * value via the brightness_set() callback.
-=======
 	 * Deactivate blinking again when the brightness is set to LED_OFF
 	 * via the brightness_set() callback.
 	 * For led_blink_set_nosleep() the LED core assumes that blink_set
 	 * implementations, of drivers which do not use brightness_set_blocking,
 	 * will not sleep. Therefor if brightness_set_blocking is not set
 	 * this function must not sleep!
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	int		(*blink_set)(struct led_classdev *led_cdev,
 				     unsigned long *delay_on,
 				     unsigned long *delay_off);
 
-<<<<<<< HEAD
-	struct device		*dev;
-=======
 	int (*pattern_set)(struct led_classdev *led_cdev,
 			   struct led_pattern *pattern, u32 len, int repeat);
 	int (*pattern_clear)(struct led_classdev *led_cdev);
@@ -237,15 +160,12 @@ struct led_classdev {
 	struct device		*dev;
 	const struct attribute_group	**groups;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	 node;			/* LED Device list */
 	const char		*default_trigger;	/* Trigger to use */
 
 	unsigned long		 blink_delay_on, blink_delay_off;
 	struct timer_list	 blink_timer;
 	int			 blink_brightness;
-<<<<<<< HEAD
-=======
 	int			 new_blink_brightness;
 	void			(*flash_resume)(struct led_classdev *led_cdev);
 
@@ -253,7 +173,6 @@ struct led_classdev {
 	int			delayed_set_value;
 	unsigned long		delayed_delay_on;
 	unsigned long		delayed_delay_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_LEDS_TRIGGERS
 	/* Protects the trigger data below */
@@ -262,19 +181,6 @@ struct led_classdev {
 	struct led_trigger	*trigger;
 	struct list_head	 trig_list;
 	void			*trigger_data;
-<<<<<<< HEAD
-#endif
-};
-
-extern int led_classdev_register(struct device *parent,
-				 struct led_classdev *led_cdev);
-extern void led_classdev_unregister(struct led_classdev *led_cdev);
-extern void led_classdev_suspend(struct led_classdev *led_cdev);
-extern void led_classdev_resume(struct led_classdev *led_cdev);
-#if defined(CONFIG_LEDS_PM8941_EMOTIONAL)
-extern int led_pattern_sysfs_register(void);
-#endif
-=======
 	/* true if activated - deactivate routine uses it to do cleanup */
 	bool			activated;
 
@@ -391,7 +297,6 @@ struct led_classdev *__must_check devm_of_led_get(struct device *dev,
 						  int index);
 struct led_classdev *__must_check devm_of_led_get_optional(struct device *dev,
 						  int index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * led_blink_set - set blinking with software fallback
@@ -404,17 +309,6 @@ struct led_classdev *__must_check devm_of_led_get_optional(struct device *dev,
  * software blinking if there is no hardware blinking or if
  * the LED refuses the passed values.
  *
-<<<<<<< HEAD
- * Note that if software blinking is active, simply calling
- * led_cdev->brightness_set() will not stop the blinking,
- * use led_classdev_brightness_set() instead.
- */
-extern void led_blink_set(struct led_classdev *led_cdev,
-			  unsigned long *delay_on,
-			  unsigned long *delay_off);
-/**
- * led_brightness_set - set LED brightness
-=======
  * This function may sleep!
  *
  * Note that if software blinking is active, simply calling
@@ -457,27 +351,11 @@ void led_blink_set_oneshot(struct led_classdev *led_cdev,
 			   int invert);
 /**
  * led_set_brightness - set LED brightness
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @led_cdev: the LED to set
  * @brightness: the brightness to set it to
  *
  * Set an LED's brightness, and, if necessary, cancel the
  * software blink timer that implements blinking when the
-<<<<<<< HEAD
- * hardware doesn't.
- */
-extern void led_brightness_set(struct led_classdev *led_cdev,
-			       enum led_brightness brightness);
-
-#if defined(CONFIG_LGE_DUAL_LED)
-/* LGE_CHANGE
- * For Dual flash
- * 2014-01-14, jinw.kim@lge.com
- */
-extern void led_brightness_set2(struct led_classdev *led_cdev,
-			       enum led_brightness brightness, enum led_brightness brightness2);
-#endif
-=======
  * hardware doesn't. This function is guaranteed not to sleep.
  */
 void led_set_brightness(struct led_classdev *led_cdev, unsigned int brightness);
@@ -559,18 +437,14 @@ static inline bool led_sysfs_is_disabled(struct led_classdev *led_cdev)
 {
 	return led_cdev->flags & LED_SYSFS_DISABLE;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LED Triggers
  */
-<<<<<<< HEAD
-=======
 /* Registration functions for simple triggers */
 #define DEFINE_LED_TRIGGER(x)		static struct led_trigger *x;
 #define DEFINE_LED_TRIGGER_GLOBAL(x)	struct led_trigger *x;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_LEDS_TRIGGERS
 
 #define TRIG_NAME_MAX 50
@@ -578,13 +452,6 @@ static inline bool led_sysfs_is_disabled(struct led_classdev *led_cdev)
 struct led_trigger {
 	/* Trigger Properties */
 	const char	 *name;
-<<<<<<< HEAD
-	void		(*activate)(struct led_classdev *led_cdev);
-	void		(*deactivate)(struct led_classdev *led_cdev);
-
-	/* LEDs under control by this trigger (for simple triggers) */
-	rwlock_t	  leddev_list_lock;
-=======
 	int		(*activate)(struct led_classdev *led_cdev);
 	void		(*deactivate)(struct led_classdev *led_cdev);
 
@@ -593,64 +460,10 @@ struct led_trigger {
 
 	/* LEDs under control by this trigger (for simple triggers) */
 	spinlock_t	  leddev_list_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head  led_cdevs;
 
 	/* Link to next registered trigger */
 	struct list_head  next_trig;
-<<<<<<< HEAD
-};
-
-/* Registration functions for complex triggers */
-extern int led_trigger_register(struct led_trigger *trigger);
-extern void led_trigger_unregister(struct led_trigger *trigger);
-
-/* Registration functions for simple triggers */
-#define DEFINE_LED_TRIGGER(x)		static struct led_trigger *x;
-#define DEFINE_LED_TRIGGER_GLOBAL(x)	struct led_trigger *x;
-extern void led_trigger_register_simple(const char *name,
-				struct led_trigger **trigger);
-extern void led_trigger_unregister_simple(struct led_trigger *trigger);
-extern void led_trigger_event(struct led_trigger *trigger,
-				enum led_brightness event);
-#if defined(CONFIG_LGE_DUAL_LED)
-/* LGE_CHANGE
- * For Dual flash
- * 2014-01-14, jinw.kim@lge.com
- */
-extern void led_trigger_event2(struct led_trigger *trigger,
-				enum led_brightness event, enum led_brightness event2);
-#endif
-
-extern void led_trigger_blink(struct led_trigger *trigger,
-			      unsigned long *delay_on,
-			      unsigned long *delay_off);
-
-#else
-
-/* Triggers aren't active - null macros */
-#define DEFINE_LED_TRIGGER(x)
-#define DEFINE_LED_TRIGGER_GLOBAL(x)
-#define led_trigger_register_simple(x, y) do {} while(0)
-#define led_trigger_unregister_simple(x) do {} while(0)
-#define led_trigger_event(x, y) do {} while(0)
-
-#if defined(CONFIG_LGE_DUAL_LED)
-/* LGE_CHANGE
- * For Dual flash
- * 2014-01-14, jinw.kim@lge.com
- */
-#define led_trigger_event2(x, y, z) do {} while(0)
-#endif
-
-#endif
-
-/* Trigger specific functions */
-#ifdef CONFIG_LEDS_TRIGGER_IDE_DISK
-extern void ledtrig_ide_activity(void);
-#else
-#define ledtrig_ide_activity() do {} while(0)
-=======
 
 	const struct attribute_group **groups;
 };
@@ -770,7 +583,6 @@ void ledtrig_torch_ctrl(bool on);
 #else
 static inline void ledtrig_flash_ctrl(bool on) {}
 static inline void ledtrig_torch_ctrl(bool on) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -787,8 +599,6 @@ struct led_platform_data {
 	struct led_info	*leds;
 };
 
-<<<<<<< HEAD
-=======
 struct led_properties {
 	u32		color;
 	bool		color_present;
@@ -802,7 +612,6 @@ typedef int (*gpio_blink_set_t)(struct gpio_desc *desc, int state,
 				unsigned long *delay_on,
 				unsigned long *delay_off);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For the leds-gpio driver */
 struct gpio_led {
 	const char *name;
@@ -810,14 +619,6 @@ struct gpio_led {
 	unsigned 	gpio;
 	unsigned	active_low : 1;
 	unsigned	retain_state_suspended : 1;
-<<<<<<< HEAD
-	unsigned	default_state : 2;
-	/* default_state should be one of LEDS_GPIO_DEFSTATE_(ON|OFF|KEEP) */
-};
-#define LEDS_GPIO_DEFSTATE_OFF		0
-#define LEDS_GPIO_DEFSTATE_ON		1
-#define LEDS_GPIO_DEFSTATE_KEEP		2
-=======
 	unsigned	panic_indicator : 1;
 	unsigned	default_state : 2;
 	unsigned	retain_state_shutdown : 1;
@@ -827,7 +628,6 @@ struct gpio_led {
 #define LEDS_GPIO_DEFSTATE_OFF		LEDS_DEFSTATE_OFF
 #define LEDS_GPIO_DEFSTATE_ON		LEDS_DEFSTATE_ON
 #define LEDS_GPIO_DEFSTATE_KEEP		LEDS_DEFSTATE_KEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gpio_led_platform_data {
 	int 		num_leds;
@@ -836,15 +636,6 @@ struct gpio_led_platform_data {
 #define GPIO_LED_NO_BLINK_LOW	0	/* No blink GPIO state low */
 #define GPIO_LED_NO_BLINK_HIGH	1	/* No blink GPIO state high */
 #define GPIO_LED_BLINK		2	/* Please, blink */
-<<<<<<< HEAD
-	int		(*gpio_blink_set)(unsigned gpio, int state,
-					unsigned long *delay_on,
-					unsigned long *delay_off);
-};
-
-struct platform_device *gpio_led_register_device(
-		int id, const struct gpio_led_platform_data *pdata);
-=======
 	gpio_blink_set_t	gpio_blink_set;
 };
 
@@ -912,6 +703,5 @@ static inline void ledtrig_audio_set(enum led_audio type,
 {
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif		/* __LINUX_LEDS_H_INCLUDED */

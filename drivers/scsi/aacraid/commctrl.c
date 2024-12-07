@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Adaptec AAC series RAID controller driver
  *	(c) Copyright 2001 Red Hat Inc.
@@ -10,35 +7,13 @@
  * Adaptec aacraid device driver for Linux.
  *
  * Copyright (c) 2000-2010 Adaptec, Inc.
-<<<<<<< HEAD
- *               2010 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
  *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Module Name:
  *  commctrl.c
  *
  * Abstract: Contains all routines for control of the AFA comm layer
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -50,26 +25,16 @@
 #include <linux/completion.h>
 #include <linux/dma-mapping.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-#include <linux/delay.h> /* ssleep prototype */
-#include <linux/kthread.h>
-#include <linux/semaphore.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/compat.h>
 #include <linux/delay.h> /* ssleep prototype */
 #include <linux/kthread.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_host.h>
 
 #include "aacraid.h"
 
-<<<<<<< HEAD
-=======
 # define AAC_DEBUG_PREAMBLE	KERN_INFO
 # define AAC_DEBUG_POSTAMBLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ioctl_send_fib	-	send a FIB from userspace
  *	@dev:	adapter is being processed
@@ -78,23 +43,13 @@
  *	This routine sends a fib to the adapter on behalf of a user level
  *	program.
  */
-<<<<<<< HEAD
-# define AAC_DEBUG_PREAMBLE	KERN_INFO
-# define AAC_DEBUG_POSTAMBLE
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ioctl_send_fib(struct aac_dev * dev, void __user *arg)
 {
 	struct hw_fib * kfib;
 	struct fib *fibptr;
 	struct hw_fib * hw_fib = (struct hw_fib *)0;
 	dma_addr_t hw_fib_pa = (dma_addr_t)0LL;
-<<<<<<< HEAD
-	unsigned size;
-=======
 	unsigned int size, osize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	if (dev->in_reset) {
@@ -118,12 +73,8 @@ static int ioctl_send_fib(struct aac_dev * dev, void __user *arg)
 	 *	will not overrun the buffer when we copy the memory. Return
 	 *	an error if we would.
 	 */
-<<<<<<< HEAD
-	size = le16_to_cpu(kfib->header.Size) + sizeof(struct aac_fibhdr);
-=======
 	osize = size = le16_to_cpu(kfib->header.Size) +
 		sizeof(struct aac_fibhdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (size < le16_to_cpu(kfib->header.SenderSize))
 		size = le16_to_cpu(kfib->header.SenderSize);
 	if (size > dev->max_fib_size) {
@@ -134,12 +85,8 @@ static int ioctl_send_fib(struct aac_dev * dev, void __user *arg)
 			goto cleanup;
 		}
 
-<<<<<<< HEAD
-		kfib = pci_alloc_consistent(dev->pdev, size, &daddr);
-=======
 		kfib = dma_alloc_coherent(&dev->pdev->dev, size, &daddr,
 					  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!kfib) {
 			retval = -ENOMEM;
 			goto cleanup;
@@ -159,8 +106,6 @@ static int ioctl_send_fib(struct aac_dev * dev, void __user *arg)
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Sanity check the second copy */
 	if ((osize != le16_to_cpu(kfib->header.Size) +
 		sizeof(struct aac_fibhdr))
@@ -169,7 +114,6 @@ static int ioctl_send_fib(struct aac_dev * dev, void __user *arg)
 		goto cleanup;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kfib->header.Command == cpu_to_le16(TakeABreakPt)) {
 		aac_adapter_interrupt(dev);
 		/*
@@ -202,12 +146,8 @@ static int ioctl_send_fib(struct aac_dev * dev, void __user *arg)
 		retval = -EFAULT;
 cleanup:
 	if (hw_fib) {
-<<<<<<< HEAD
-		pci_free_consistent(dev->pdev, size, kfib, fibptr->hw_fib_pa);
-=======
 		dma_free_coherent(&dev->pdev->dev, size, kfib,
 				  fibptr->hw_fib_pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fibptr->hw_fib_pa = hw_fib_pa;
 		fibptr->hw_fib_va = hw_fib;
 	}
@@ -218,19 +158,12 @@ cleanup:
 
 /**
  *	open_getadapter_fib	-	Get the next fib
-<<<<<<< HEAD
-=======
  *	@dev:	adapter is being processed
  *	@arg:	arguments to the open call
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This routine will get the next Fib, if available, from the AdapterFibContext
  *	passed in from the user.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int open_getadapter_fib(struct aac_dev * dev, void __user *arg)
 {
 	struct aac_fib_context * fibctx;
@@ -256,11 +189,7 @@ static int open_getadapter_fib(struct aac_dev * dev, void __user *arg)
 		/*
 		 *	Initialize the mutex used to wait for the next AIF.
 		 */
-<<<<<<< HEAD
-		sema_init(&fibctx->wait_sem, 0);
-=======
 		init_completion(&fibctx->completion);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fibctx->wait = 0;
 		/*
 		 *	Initialize the fibs and set the count of fibs on
@@ -298,15 +227,12 @@ static int open_getadapter_fib(struct aac_dev * dev, void __user *arg)
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 struct compat_fib_ioctl {
 	u32	fibctx;
 	s32	wait;
 	compat_uptr_t fib;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	next_getadapter_fib	-	get the next fib
  *	@dev: adapter to use
@@ -315,10 +241,6 @@ struct compat_fib_ioctl {
  *	This routine will get the next Fib, if available, from the AdapterFibContext
  *	passed in from the user.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int next_getadapter_fib(struct aac_dev * dev, void __user *arg)
 {
 	struct fib_ioctl f;
@@ -328,10 +250,6 @@ static int next_getadapter_fib(struct aac_dev * dev, void __user *arg)
 	struct list_head * entry;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	if(copy_from_user((void *)&f, arg, sizeof(struct fib_ioctl)))
-		return -EFAULT;
-=======
 	if (in_compat_syscall()) {
 		struct compat_fib_ioctl cf;
 
@@ -345,7 +263,6 @@ static int next_getadapter_fib(struct aac_dev * dev, void __user *arg)
 		if (copy_from_user(&f, arg, sizeof(struct fib_ioctl)))
 			return -EFAULT;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Verify that the HANDLE passed in was a valid AdapterFibContext
 	 *
@@ -415,20 +332,12 @@ return_fib:
 			kthread_stop(dev->thread);
 			ssleep(1);
 			dev->aif_thread = 0;
-<<<<<<< HEAD
-			dev->thread = kthread_run(aac_command_thread, dev, dev->name);
-			ssleep(1);
-		}
-		if (f.wait) {
-			if(down_interruptible(&fibctx->wait_sem) < 0) {
-=======
 			dev->thread = kthread_run(aac_command_thread, dev,
 						  "%s", dev->name);
 			ssleep(1);
 		}
 		if (f.wait) {
 			if (wait_for_completion_interruptible(&fibctx->completion) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status = -ERESTARTSYS;
 			} else {
 				/* Lock again and retry */
@@ -563,56 +472,33 @@ static int check_revision(struct aac_dev *dev, void __user *arg)
 
 
 /**
-<<<<<<< HEAD
- *
- * aac_send_raw_scb
- *
- */
-
-=======
  * aac_send_raw_srb()
  *	@dev:	adapter is being processed
  *	@arg:	arguments to the send call
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 {
 	struct fib* srbfib;
 	int status;
 	struct aac_srb *srbcmd = NULL;
-<<<<<<< HEAD
-	struct user_aac_srb *user_srbcmd = NULL;
-	struct user_aac_srb __user *user_srb = arg;
-	struct aac_srb_reply __user *user_reply;
-	struct aac_srb_reply* reply;
-=======
 	struct aac_hba_cmd_req *hbacmd = NULL;
 	struct user_aac_srb *user_srbcmd = NULL;
 	struct user_aac_srb __user *user_srb = arg;
 	struct aac_srb_reply __user *user_reply;
 	u32 chn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 fibsize = 0;
 	u32 flags = 0;
 	s32 rcode = 0;
 	u32 data_dir;
-<<<<<<< HEAD
-	void __user *sg_user[32];
-	void *sg_list[32];
-=======
 	void __user *sg_user[HBA_MAX_SG_EMBEDDED];
 	void *sg_list[HBA_MAX_SG_EMBEDDED];
 	u32 sg_count[HBA_MAX_SG_EMBEDDED];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sg_indx = 0;
 	u32 byte_count = 0;
 	u32 actual_fibsize64, actual_fibsize = 0;
 	int i;
-<<<<<<< HEAD
-=======
 	int is_native_device;
 	u64 address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	if (dev->in_reset) {
@@ -629,12 +515,6 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 	if (!(srbfib = aac_fib_alloc(dev))) {
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-	aac_fib_init(srbfib);
-
-	srbcmd = (struct aac_srb*) fib_data(srbfib);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(sg_list, 0, sizeof(sg_list)); /* cleanup may take issue */
 	if(copy_from_user(&fibsize, &user_srb->count,sizeof(u32))){
@@ -649,35 +529,6 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-	user_srbcmd = kmalloc(fibsize, GFP_KERNEL);
-	if (!user_srbcmd) {
-		dprintk((KERN_DEBUG"aacraid: Could not make a copy of the srb\n"));
-		rcode = -ENOMEM;
-		goto cleanup;
-	}
-	if(copy_from_user(user_srbcmd, user_srb,fibsize)){
-		dprintk((KERN_DEBUG"aacraid: Could not copy srb from user\n"));
-		rcode = -EFAULT;
-		goto cleanup;
-	}
-
-	user_reply = arg+fibsize;
-
-	flags = user_srbcmd->flags; /* from user in cpu order */
-	// Fix up srb for endian and force some values
-
-	srbcmd->function = cpu_to_le32(SRBF_ExecuteScsi);	// Force this
-	srbcmd->channel	 = cpu_to_le32(user_srbcmd->channel);
-	srbcmd->id	 = cpu_to_le32(user_srbcmd->id);
-	srbcmd->lun	 = cpu_to_le32(user_srbcmd->lun);
-	srbcmd->timeout	 = cpu_to_le32(user_srbcmd->timeout);
-	srbcmd->flags	 = cpu_to_le32(flags);
-	srbcmd->retry_limit = 0; // Obsolete parameter
-	srbcmd->cdb_size = cpu_to_le32(user_srbcmd->cdb_size);
-	memcpy(srbcmd->cdb, user_srbcmd->cdb, sizeof(srbcmd->cdb));
-
-=======
 	user_srbcmd = memdup_user(user_srb, fibsize);
 	if (IS_ERR(user_srbcmd)) {
 		rcode = PTR_ERR(user_srbcmd);
@@ -686,7 +537,6 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 	}
 
 	flags = user_srbcmd->flags; /* from user in cpu order */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (flags & (SRB_DataIn | SRB_DataOut)) {
 	case SRB_DataOut:
 		data_dir = DMA_TO_DEVICE;
@@ -702,16 +552,12 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 	}
 	if (user_srbcmd->sg.count > ARRAY_SIZE(sg_list)) {
 		dprintk((KERN_DEBUG"aacraid: too many sg entries %d\n",
-<<<<<<< HEAD
-		  le32_to_cpu(srbcmd->sg.count)));
-=======
 			user_srbcmd->sg.count));
 		rcode = -EINVAL;
 		goto cleanup;
 	}
 	if ((data_dir == DMA_NONE) && user_srbcmd->sg.count) {
 		dprintk((KERN_DEBUG"aacraid:SG with no direction specified\n"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcode = -EINVAL;
 		goto cleanup;
 	}
@@ -731,15 +577,6 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 		rcode = -EINVAL;
 		goto cleanup;
 	}
-<<<<<<< HEAD
-	if ((data_dir == DMA_NONE) && user_srbcmd->sg.count) {
-		dprintk((KERN_DEBUG"aacraid: SG with no direction specified in Raw SRB command\n"));
-		rcode = -EINVAL;
-		goto cleanup;
-	}
-	byte_count = 0;
-	if (dev->adapter_info.options & AAC_OPT_SGMAP_HOST64) {
-=======
 
 	chn = user_srbcmd->channel;
 	if (chn < AAC_MAX_BUSES && user_srbcmd->id < AAC_MAX_TARGETS &&
@@ -870,7 +707,6 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 					NULL, NULL);
 
 	} else if (dev->adapter_info.options & AAC_OPT_SGMAP_HOST64) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct user_sgmap64* upsg = (struct user_sgmap64*)&user_srbcmd->sg;
 		struct sgmap64* psg = (struct sgmap64*)&srbcmd->sg;
 
@@ -882,13 +718,9 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 			for (i = 0; i < upsg->count; i++) {
 				u64 addr;
 				void* p;
-<<<<<<< HEAD
-				if (upsg->sg[i].count >
-=======
 
 				sg_count[i] = upsg->sg[i].count;
 				if (sg_count[i] >
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ((dev->adapter_info.options &
 				     AAC_OPT_NEW_COMM) ?
 				      (dev->scsi_host_ptr->max_sectors << 9) :
@@ -896,19 +728,11 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 					rcode = -EINVAL;
 					goto cleanup;
 				}
-<<<<<<< HEAD
-				/* Does this really need to be GFP_DMA? */
-				p = kmalloc(upsg->sg[i].count,GFP_KERNEL|__GFP_DMA);
-				if(!p) {
-					dprintk((KERN_DEBUG"aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
-					  upsg->sg[i].count,i,upsg->count));
-=======
 
 				p = kmalloc(sg_count[i], GFP_KERNEL);
 				if(!p) {
 					dprintk((KERN_DEBUG"aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
 					  sg_count[i], i, upsg->count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rcode = -ENOMEM;
 					goto cleanup;
 				}
@@ -919,30 +743,13 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 				sg_indx = i;
 
 				if (flags & SRB_DataOut) {
-<<<<<<< HEAD
-					if(copy_from_user(p,sg_user[i],upsg->sg[i].count)){
-=======
 					if (copy_from_user(p, sg_user[i],
 						sg_count[i])){
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						dprintk((KERN_DEBUG"aacraid: Could not copy sg data from user\n"));
 						rcode = -EFAULT;
 						goto cleanup;
 					}
 				}
-<<<<<<< HEAD
-				addr = pci_map_single(dev->pdev, p, upsg->sg[i].count, data_dir);
-
-				psg->sg[i].addr[0] = cpu_to_le32(addr & 0xffffffff);
-				psg->sg[i].addr[1] = cpu_to_le32(addr>>32);
-				byte_count += upsg->sg[i].count;
-				psg->sg[i].count = cpu_to_le32(upsg->sg[i].count);
-			}
-		} else {
-			struct user_sgmap* usg;
-			usg = kmalloc(actual_fibsize - sizeof(struct aac_srb)
-			  + sizeof(struct sgmap), GFP_KERNEL);
-=======
 				addr = dma_map_single(&dev->pdev->dev, p,
 						      sg_count[i], data_dir);
 
@@ -956,29 +763,19 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 			usg = kmemdup(upsg,
 				      actual_fibsize - sizeof(struct aac_srb)
 				      + sizeof(struct sgmap), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!usg) {
 				dprintk((KERN_DEBUG"aacraid: Allocation error in Raw SRB command\n"));
 				rcode = -ENOMEM;
 				goto cleanup;
 			}
-<<<<<<< HEAD
-			memcpy (usg, upsg, actual_fibsize - sizeof(struct aac_srb)
-			  + sizeof(struct sgmap));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			actual_fibsize = actual_fibsize64;
 
 			for (i = 0; i < usg->count; i++) {
 				u64 addr;
 				void* p;
-<<<<<<< HEAD
-				if (usg->sg[i].count >
-=======
 
 				sg_count[i] = usg->sg[i].count;
 				if (sg_count[i] >
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ((dev->adapter_info.options &
 				     AAC_OPT_NEW_COMM) ?
 				      (dev->scsi_host_ptr->max_sectors << 9) :
@@ -987,19 +784,11 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 					rcode = -EINVAL;
 					goto cleanup;
 				}
-<<<<<<< HEAD
-				/* Does this really need to be GFP_DMA? */
-				p = kmalloc(usg->sg[i].count,GFP_KERNEL|__GFP_DMA);
-				if(!p) {
-					dprintk((KERN_DEBUG "aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
-					  usg->sg[i].count,i,usg->count));
-=======
 
 				p = kmalloc(sg_count[i], GFP_KERNEL);
 				if(!p) {
 					dprintk((KERN_DEBUG "aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
 						sg_count[i], i, usg->count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kfree(usg);
 					rcode = -ENOMEM;
 					goto cleanup;
@@ -1009,26 +798,14 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 				sg_indx = i;
 
 				if (flags & SRB_DataOut) {
-<<<<<<< HEAD
-					if(copy_from_user(p,sg_user[i],upsg->sg[i].count)){
-=======
 					if (copy_from_user(p, sg_user[i],
 						sg_count[i])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						kfree (usg);
 						dprintk((KERN_DEBUG"aacraid: Could not copy sg data from user\n"));
 						rcode = -EFAULT;
 						goto cleanup;
 					}
 				}
-<<<<<<< HEAD
-				addr = pci_map_single(dev->pdev, p, usg->sg[i].count, data_dir);
-
-				psg->sg[i].addr[0] = cpu_to_le32(addr & 0xffffffff);
-				psg->sg[i].addr[1] = cpu_to_le32(addr>>32);
-				byte_count += usg->sg[i].count;
-				psg->sg[i].count = cpu_to_le32(usg->sg[i].count);
-=======
 				addr = dma_map_single(&dev->pdev->dev, p,
 						      sg_count[i], data_dir);
 
@@ -1036,19 +813,14 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 				psg->sg[i].addr[1] = cpu_to_le32(addr>>32);
 				byte_count += sg_count[i];
 				psg->sg[i].count = cpu_to_le32(sg_count[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			kfree (usg);
 		}
 		srbcmd->count = cpu_to_le32(byte_count);
-<<<<<<< HEAD
-		psg->count = cpu_to_le32(sg_indx+1);
-=======
 		if (user_srbcmd->sg.count)
 			psg->count = cpu_to_le32(sg_indx+1);
 		else
 			psg->count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = aac_fib_send(ScsiPortCommand64, srbfib, actual_fibsize, FsaNormal, 1, 1,NULL,NULL);
 	} else {
 		struct user_sgmap* upsg = &user_srbcmd->sg;
@@ -1059,13 +831,9 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 			for (i = 0; i < upsg->count; i++) {
 				uintptr_t addr;
 				void* p;
-<<<<<<< HEAD
-				if (usg->sg[i].count >
-=======
 
 				sg_count[i] = usg->sg[i].count;
 				if (sg_count[i] >
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ((dev->adapter_info.options &
 				     AAC_OPT_NEW_COMM) ?
 				      (dev->scsi_host_ptr->max_sectors << 9) :
@@ -1073,18 +841,10 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 					rcode = -EINVAL;
 					goto cleanup;
 				}
-<<<<<<< HEAD
-				/* Does this really need to be GFP_DMA? */
-				p = kmalloc(usg->sg[i].count,GFP_KERNEL|__GFP_DMA);
-				if(!p) {
-					dprintk((KERN_DEBUG"aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
-					  usg->sg[i].count,i,usg->count));
-=======
 				p = kmalloc(sg_count[i], GFP_KERNEL);
 				if (!p) {
 					dprintk((KERN_DEBUG"aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
 						sg_count[i], i, usg->count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rcode = -ENOMEM;
 					goto cleanup;
 				}
@@ -1095,24 +855,13 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 				sg_indx = i;
 
 				if (flags & SRB_DataOut) {
-<<<<<<< HEAD
-					if(copy_from_user(p,sg_user[i],usg->sg[i].count)){
-=======
 					if (copy_from_user(p, sg_user[i],
 						sg_count[i])){
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						dprintk((KERN_DEBUG"aacraid: Could not copy sg data from user\n"));
 						rcode = -EFAULT;
 						goto cleanup;
 					}
 				}
-<<<<<<< HEAD
-				addr = pci_map_single(dev->pdev, p, usg->sg[i].count, data_dir);
-
-				psg->sg[i].addr = cpu_to_le32(addr & 0xffffffff);
-				byte_count += usg->sg[i].count;
-				psg->sg[i].count = cpu_to_le32(usg->sg[i].count);
-=======
 				addr = dma_map_single(&dev->pdev->dev, p,
 						      usg->sg[i].count,
 						      data_dir);
@@ -1120,19 +869,14 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 				psg->sg[i].addr = cpu_to_le32(addr & 0xffffffff);
 				byte_count += usg->sg[i].count;
 				psg->sg[i].count = cpu_to_le32(sg_count[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			for (i = 0; i < upsg->count; i++) {
 				dma_addr_t addr;
 				void* p;
-<<<<<<< HEAD
-				if (upsg->sg[i].count >
-=======
 
 				sg_count[i] = upsg->sg[i].count;
 				if (sg_count[i] >
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ((dev->adapter_info.options &
 				     AAC_OPT_NEW_COMM) ?
 				      (dev->scsi_host_ptr->max_sectors << 9) :
@@ -1140,17 +884,10 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 					rcode = -EINVAL;
 					goto cleanup;
 				}
-<<<<<<< HEAD
-				p = kmalloc(upsg->sg[i].count, GFP_KERNEL);
-				if (!p) {
-					dprintk((KERN_DEBUG"aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
-					  upsg->sg[i].count, i, upsg->count));
-=======
 				p = kmalloc(sg_count[i], GFP_KERNEL);
 				if (!p) {
 					dprintk((KERN_DEBUG"aacraid: Could not allocate SG buffer - size = %d buffer number %d of %d\n",
 					  sg_count[i], i, upsg->count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rcode = -ENOMEM;
 					goto cleanup;
 				}
@@ -1159,32 +896,13 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 				sg_indx = i;
 
 				if (flags & SRB_DataOut) {
-<<<<<<< HEAD
-					if(copy_from_user(p, sg_user[i],
-							upsg->sg[i].count)) {
-=======
 					if (copy_from_user(p, sg_user[i],
 						sg_count[i])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						dprintk((KERN_DEBUG"aacraid: Could not copy sg data from user\n"));
 						rcode = -EFAULT;
 						goto cleanup;
 					}
 				}
-<<<<<<< HEAD
-				addr = pci_map_single(dev->pdev, p,
-					upsg->sg[i].count, data_dir);
-
-				psg->sg[i].addr = cpu_to_le32(addr);
-				byte_count += upsg->sg[i].count;
-				psg->sg[i].count = cpu_to_le32(upsg->sg[i].count);
-			}
-		}
-		srbcmd->count = cpu_to_le32(byte_count);
-		psg->count = cpu_to_le32(sg_indx+1);
-		status = aac_fib_send(ScsiPortCommand, srbfib, actual_fibsize, FsaNormal, 1, 1, NULL, NULL);
-	}
-=======
 				addr = dma_map_single(&dev->pdev->dev, p,
 						      sg_count[i], data_dir);
 
@@ -1201,17 +919,12 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 		status = aac_fib_send(ScsiPortCommand, srbfib, actual_fibsize, FsaNormal, 1, 1, NULL, NULL);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status == -ERESTARTSYS) {
 		rcode = -ERESTARTSYS;
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-	if (status != 0){
-=======
 	if (status != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk((KERN_DEBUG"aacraid: Could not send raw srb fib to hba\n"));
 		rcode = -ENXIO;
 		goto cleanup;
@@ -1219,15 +932,7 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 
 	if (flags & SRB_DataIn) {
 		for(i = 0 ; i <= sg_indx; i++){
-<<<<<<< HEAD
-			byte_count = le32_to_cpu(
-			  (dev->adapter_info.options & AAC_OPT_SGMAP_HOST64)
-			      ? ((struct sgmap64*)&srbcmd->sg)->sg[i].count
-			      : srbcmd->sg.sg[i].count);
-			if(copy_to_user(sg_user[i], sg_list[i], byte_count)){
-=======
 			if (copy_to_user(sg_user[i], sg_list[i], sg_count[i])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dprintk((KERN_DEBUG"aacraid: Could not copy sg data to user\n"));
 				rcode = -EFAULT;
 				goto cleanup;
@@ -1236,13 +941,6 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 		}
 	}
 
-<<<<<<< HEAD
-	reply = (struct aac_srb_reply *) fib_data(srbfib);
-	if(copy_to_user(user_reply,reply,sizeof(struct aac_srb_reply))){
-		dprintk((KERN_DEBUG"aacraid: Could not copy reply to user\n"));
-		rcode = -EFAULT;
-		goto cleanup;
-=======
 	user_reply = arg + fibsize;
 	if (is_native_device) {
 		struct aac_hba_resp *err =
@@ -1283,21 +981,13 @@ static int aac_send_raw_srb(struct aac_dev* dev, void __user * arg)
 			rcode = -EFAULT;
 			goto cleanup;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 cleanup:
 	kfree(user_srbcmd);
-<<<<<<< HEAD
-	for(i=0; i <= sg_indx; i++){
-		kfree(sg_list[i]);
-	}
-	if (rcode != -ERESTARTSYS) {
-=======
 	if (rcode != -ERESTARTSYS) {
 		for (i = 0; i <= sg_indx; i++)
 			kfree(sg_list[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aac_fib_complete(srbfib);
 		aac_fib_free(srbfib);
 	}
@@ -1325,13 +1015,6 @@ static int aac_get_pci_info(struct aac_dev* dev, void __user *arg)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-int aac_do_ioctl(struct aac_dev * dev, int cmd, void __user *arg)
-{
-	int status;
-
-=======
 static int aac_get_hba_info(struct aac_dev *dev, void __user *arg)
 {
 	struct aac_hba_info hbainfo;
@@ -1387,18 +1070,13 @@ int aac_do_ioctl(struct aac_dev *dev, unsigned int cmd, void __user *arg)
 		goto cleanup;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	HBA gets first crack
 	 */
 
 	status = aac_dev_ioctl(dev, cmd, arg);
 	if (status != -ENOTTY)
-<<<<<<< HEAD
-		return status;
-=======
 		goto cleanup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case FSACTL_MINIPORT_REV_CHECK:
@@ -1423,8 +1101,6 @@ int aac_do_ioctl(struct aac_dev *dev, unsigned int cmd, void __user *arg)
 	case FSACTL_GET_PCI_INFO:
 		status = aac_get_pci_info(dev,arg);
 		break;
-<<<<<<< HEAD
-=======
 	case FSACTL_GET_HBA_INFO:
 		status = aac_get_hba_info(dev, arg);
 		break;
@@ -1432,18 +1108,14 @@ int aac_do_ioctl(struct aac_dev *dev, unsigned int cmd, void __user *arg)
 		status = aac_send_reset_adapter(dev, arg);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		status = -ENOTTY;
 		break;
 	}
-<<<<<<< HEAD
-=======
 
 cleanup:
 	mutex_unlock(&dev->ioctl_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 

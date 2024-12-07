@@ -26,11 +26,7 @@
 
 #include <linux/module.h>
 
-<<<<<<< HEAD
-#include "drm_encoder_slave.h"
-=======
 #include <drm/drm_encoder_slave.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * drm_i2c_encoder_init - Initialize an I2C slave encoder
@@ -47,11 +43,7 @@
  * &drm_encoder_slave. The @slave_funcs field will be initialized with
  * the hooks provided by the slave driver.
  *
-<<<<<<< HEAD
- * If @info->platform_data is non-NULL it will be used as the initial
-=======
  * If @info.platform_data is non-NULL it will be used as the initial
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * slave config.
  *
  * Returns 0 on success or a negative errno on failure, in particular,
@@ -62,43 +54,20 @@ int drm_i2c_encoder_init(struct drm_device *dev,
 			 struct i2c_adapter *adap,
 			 const struct i2c_board_info *info)
 {
-<<<<<<< HEAD
-	char modalias[sizeof(I2C_MODULE_PREFIX)
-		      + I2C_NAME_SIZE];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct module *module = NULL;
 	struct i2c_client *client;
 	struct drm_i2c_encoder_driver *encoder_drv;
 	int err = 0;
 
-<<<<<<< HEAD
-	snprintf(modalias, sizeof(modalias),
-		 "%s%s", I2C_MODULE_PREFIX, info->type);
-	request_module(modalias);
-
-	client = i2c_new_device(adap, info);
-	if (!client) {
-		err = -ENOMEM;
-		goto fail;
-	}
-
-	if (!client->driver) {
-=======
 	request_module("%s%s", I2C_MODULE_PREFIX, info->type);
 
 	client = i2c_new_client_device(adap, info);
 	if (!i2c_client_has_driver(client)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto fail_unregister;
 	}
 
-<<<<<<< HEAD
-	module = client->driver->driver.owner;
-=======
 	module = client->dev.driver->owner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!try_module_get(module)) {
 		err = -ENODEV;
 		goto fail_unregister;
@@ -106,19 +75,11 @@ int drm_i2c_encoder_init(struct drm_device *dev,
 
 	encoder->bus_priv = client;
 
-<<<<<<< HEAD
-	encoder_drv = to_drm_i2c_encoder_driver(client->driver);
-
-	err = encoder_drv->encoder_init(client, dev, encoder);
-	if (err)
-		goto fail_unregister;
-=======
 	encoder_drv = to_drm_i2c_encoder_driver(to_i2c_driver(client->dev.driver));
 
 	err = encoder_drv->encoder_init(client, dev, encoder);
 	if (err)
 		goto fail_module_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->platform_data)
 		encoder->slave_funcs->set_config(&encoder->base,
@@ -126,17 +87,10 @@ int drm_i2c_encoder_init(struct drm_device *dev,
 
 	return 0;
 
-<<<<<<< HEAD
-fail_unregister:
-	i2c_unregister_device(client);
-	module_put(module);
-fail:
-=======
 fail_module_put:
 	module_put(module);
 fail_unregister:
 	i2c_unregister_device(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(drm_i2c_encoder_init);
@@ -152,11 +106,7 @@ void drm_i2c_encoder_destroy(struct drm_encoder *drm_encoder)
 {
 	struct drm_encoder_slave *encoder = to_encoder_slave(drm_encoder);
 	struct i2c_client *client = drm_i2c_encoder_get_client(drm_encoder);
-<<<<<<< HEAD
-	struct module *module = client->driver->driver.owner;
-=======
 	struct module *module = client->dev.driver->owner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2c_unregister_device(client);
 	encoder->bus_priv = NULL;
@@ -164,8 +114,6 @@ void drm_i2c_encoder_destroy(struct drm_encoder *drm_encoder)
 	module_put(module);
 }
 EXPORT_SYMBOL(drm_i2c_encoder_destroy);
-<<<<<<< HEAD
-=======
 
 /*
  * Wrapper fxns which can be plugged in to drm_encoder_helper_funcs:
@@ -232,4 +180,3 @@ void drm_i2c_encoder_restore(struct drm_encoder *encoder)
 	get_slave_funcs(encoder)->restore(encoder);
 }
 EXPORT_SYMBOL(drm_i2c_encoder_restore);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

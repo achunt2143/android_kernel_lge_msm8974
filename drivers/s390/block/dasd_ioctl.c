@@ -1,48 +1,21 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_ioctl.c
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
  *		    Horst Hummel <Horst.Hummel@de.ibm.com>
  *		    Carsten Otte <Cotte@de.ibm.com>
  *		    Martin Schwidefsky <schwidefsky@de.ibm.com>
  * Bugreports.to..: <Linux390@de.ibm.com>
-<<<<<<< HEAD
- * (C) IBM Corporation, IBM Deutschland Entwicklung GmbH, 1999-2001
-=======
  * Copyright IBM Corp. 1999, 2001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * i/o controls for the dasd driver.
  */
 
-<<<<<<< HEAD
-#define KMSG_COMPONENT "dasd"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/compat.h>
 #include <linux/major.h>
 #include <linux/fs.h>
 #include <linux/blkpg.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/compat.h>
-#include <asm/ccwdev.h>
-#include <asm/cmb.h>
-#include <asm/uaccess.h>
-
-/* This is ugly... */
-#define PRINTK_HEADER "dasd_ioctl:"
-
-#include "dasd_int.h"
-
-
-=======
 #include <asm/ccwdev.h>
 #include <asm/schid.h>
 #include <asm/cmb.h>
@@ -51,7 +24,6 @@
 
 #include "dasd_int.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 dasd_ioctl_api_version(void __user *argp)
 {
@@ -76,14 +48,6 @@ dasd_ioctl_enable(struct block_device *bdev)
 		return -ENODEV;
 
 	dasd_enable_device(base);
-<<<<<<< HEAD
-	/* Formatting the dasd device can change the capacity. */
-	mutex_lock(&bdev->bd_mutex);
-	i_size_write(bdev->bd_inode,
-		     (loff_t)get_capacity(base->block->gdp) << 9);
-	mutex_unlock(&bdev->bd_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_put_device(base);
 	return 0;
 }
@@ -116,13 +80,7 @@ dasd_ioctl_disable(struct block_device *bdev)
 	 * Set i_size to zero, since read, write, etc. check against this
 	 * value.
 	 */
-<<<<<<< HEAD
-	mutex_lock(&bdev->bd_mutex);
-	i_size_write(bdev->bd_inode, 0);
-	mutex_unlock(&bdev->bd_mutex);
-=======
 	set_capacity(bdev->bd_disk, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_put_device(base);
 	return 0;
 }
@@ -167,8 +125,6 @@ static int dasd_ioctl_resume(struct dasd_block *block)
 	spin_unlock_irqrestore(get_ccwdev_lock(base->cdev), flags);
 
 	dasd_schedule_block_bh(block);
-<<<<<<< HEAD
-=======
 	dasd_schedule_device_bh(base);
 	return 0;
 }
@@ -223,28 +179,18 @@ static int dasd_ioctl_allowio(struct dasd_block *block)
 	if (test_and_clear_bit(DASD_FLAG_ABORTALL, &base->flags))
 		DBF_DEV_EVENT(DBF_NOTICE, base, "%s", "abortall flag unset");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
  * performs formatting of _device_ according to _fdata_
  * Note: The discipline's format_function is assumed to deliver formatting
-<<<<<<< HEAD
- * commands to format a single unit of the device. In terms of the ECKD
- * devices this means CCWs are generated to format a single track.
- */
-static int dasd_format(struct dasd_block *block, struct format_data_t *fdata)
-{
-	struct dasd_ccw_req *cqr;
-=======
  * commands to format multiple units of the device. In terms of the ECKD
  * devices this means CCWs are generated to format multiple tracks.
  */
 static int
 dasd_format(struct dasd_block *block, struct format_data_t *fdata)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dasd_device *base;
 	int rc;
 
@@ -253,13 +199,8 @@ dasd_format(struct dasd_block *block, struct format_data_t *fdata)
 		return -EPERM;
 
 	if (base->state != DASD_STATE_BASIC) {
-<<<<<<< HEAD
-		pr_warning("%s: The DASD cannot be formatted while it is "
-			   "enabled\n",  dev_name(&base->cdev->dev));
-=======
 		pr_warn("%s: The DASD cannot be formatted while it is enabled\n",
 			dev_name(&base->cdev->dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -274,29 +215,6 @@ dasd_format(struct dasd_block *block, struct format_data_t *fdata)
 	 * enabling the device later.
 	 */
 	if (fdata->start_unit == 0) {
-<<<<<<< HEAD
-		struct block_device *bdev = bdget_disk(block->gdp, 0);
-		bdev->bd_inode->i_blkbits = blksize_bits(fdata->blksize);
-		bdput(bdev);
-	}
-
-	while (fdata->start_unit <= fdata->stop_unit) {
-		cqr = base->discipline->format_device(base, fdata);
-		if (IS_ERR(cqr))
-			return PTR_ERR(cqr);
-		rc = dasd_sleep_on_interruptible(cqr);
-		dasd_sfree_request(cqr, cqr->memdev);
-		if (rc) {
-			if (rc != -ERESTARTSYS)
-				pr_err("%s: Formatting unit %d failed with "
-				       "rc=%d\n", dev_name(&base->cdev->dev),
-				       fdata->start_unit, rc);
-			return rc;
-		}
-		fdata->start_unit++;
-	}
-	return 0;
-=======
 		block->gdp->part0->bd_inode->i_blkbits =
 			blksize_bits(fdata->blksize);
 	}
@@ -323,7 +241,6 @@ static int dasd_check_format(struct dasd_block *block,
 		rc = base->discipline->check_device_format(base, cdata, 0);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -352,23 +269,14 @@ dasd_ioctl_format(struct block_device *bdev, void __user *argp)
 		dasd_put_device(base);
 		return -EFAULT;
 	}
-<<<<<<< HEAD
-	if (bdev != bdev->bd_contains) {
-		pr_warning("%s: The specified DASD is a partition and cannot "
-			   "be formatted\n",
-			   dev_name(&base->cdev->dev));
-=======
 	if (bdev_is_partition(bdev)) {
 		pr_warn("%s: The specified DASD is a partition and cannot be formatted\n",
 			dev_name(&base->cdev->dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dasd_put_device(base);
 		return -EINVAL;
 	}
 	rc = dasd_format(base->block, &fdata);
 	dasd_put_device(base);
-<<<<<<< HEAD
-=======
 
 	return rc;
 }
@@ -513,7 +421,6 @@ dasd_ioctl_copy_pair_swap(struct block_device *bdev, void __user *argp)
 						data.secondary);
 	dasd_put_device(device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -576,37 +483,18 @@ out:
 #else
 static int dasd_ioctl_reset_profile(struct dasd_block *block)
 {
-<<<<<<< HEAD
-	return -ENOSYS;
-=======
 	return -ENOTTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dasd_ioctl_read_profile(struct dasd_block *block, void __user *argp)
 {
-<<<<<<< HEAD
-	return -ENOSYS;
-=======
 	return -ENOTTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 /*
  * Return dasd information. Used for BIODASDINFO and BIODASDINFO2.
  */
-<<<<<<< HEAD
-static int dasd_ioctl_information(struct dasd_block *block,
-				  unsigned int cmd, void __user *argp)
-{
-	struct dasd_information2_t *dasd_info;
-	unsigned long flags;
-	int rc;
-	struct dasd_device *base;
-	struct ccw_device *cdev;
-	struct ccw_dev_id dev_id;
-=======
 static int __dasd_ioctl_information(struct dasd_block *block,
 		struct dasd_information2_t *dasd_info)
 {
@@ -617,29 +505,11 @@ static int __dasd_ioctl_information(struct dasd_block *block,
 	struct list_head *l;
 	unsigned long flags;
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base = block->base;
 	if (!base->discipline || !base->discipline->fill_info)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	dasd_info = kzalloc(sizeof(struct dasd_information2_t), GFP_KERNEL);
-	if (dasd_info == NULL)
-		return -ENOMEM;
-
-	rc = base->discipline->fill_info(base, dasd_info);
-	if (rc) {
-		kfree(dasd_info);
-		return rc;
-	}
-
-	cdev = base->cdev;
-	ccw_device_get_id(cdev, &dev_id);
-
-	dasd_info->devno = dev_id.devno;
-	dasd_info->schid = _ccw_device_get_subchannel_number(base->cdev);
-=======
 	rc = base->discipline->fill_info(base, dasd_info);
 	if (rc)
 		return rc;
@@ -650,7 +520,6 @@ static int __dasd_ioctl_information(struct dasd_block *block,
 
 	dasd_info->devno = dev_id.devno;
 	dasd_info->schid = sch_id.sch_no;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_info->cu_type = cdev->id.cu_type;
 	dasd_info->cu_model = cdev->id.cu_model;
 	dasd_info->dev_type = cdev->id.dev_type;
@@ -662,11 +531,7 @@ static int __dasd_ioctl_information(struct dasd_block *block,
 	 * This must be hidden from user-space.
 	 */
 	dasd_info->open_count = atomic_read(&block->open_count);
-<<<<<<< HEAD
-	if (!block->bdev)
-=======
 	if (!block->bdev_file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dasd_info->open_count++;
 
 	/*
@@ -682,34 +547,6 @@ static int __dasd_ioctl_information(struct dasd_block *block,
 
 	memcpy(dasd_info->type, base->discipline->name, 4);
 
-<<<<<<< HEAD
-	if (block->request_queue->request_fn) {
-		struct list_head *l;
-#ifdef DASD_EXTENDED_PROFILING
-		{
-			struct list_head *l;
-			spin_lock_irqsave(&block->lock, flags);
-			list_for_each(l, &block->request_queue->queue_head)
-				dasd_info->req_queue_len++;
-			spin_unlock_irqrestore(&block->lock, flags);
-		}
-#endif				/* DASD_EXTENDED_PROFILING */
-		spin_lock_irqsave(get_ccwdev_lock(base->cdev), flags);
-		list_for_each(l, &base->ccw_queue)
-			dasd_info->chanq_len++;
-		spin_unlock_irqrestore(get_ccwdev_lock(base->cdev),
-				       flags);
-	}
-
-	rc = 0;
-	if (copy_to_user(argp, dasd_info,
-			 ((cmd == (unsigned int) BIODASDINFO2) ?
-			  sizeof(struct dasd_information2_t) :
-			  sizeof(struct dasd_information_t))))
-		rc = -EFAULT;
-	kfree(dasd_info);
-	return rc;
-=======
 	spin_lock_irqsave(get_ccwdev_lock(base->cdev), flags);
 	list_for_each(l, &base->ccw_queue)
 		dasd_info->chanq_len++;
@@ -732,36 +569,11 @@ static int dasd_ioctl_information(struct dasd_block *block, void __user *argp,
 		error = -EFAULT;
 	kfree(dasd_info);
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Set read only
  */
-<<<<<<< HEAD
-static int
-dasd_ioctl_set_ro(struct block_device *bdev, void __user *argp)
-{
-	struct dasd_device *base;
-	int intval, rc;
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-	if (bdev != bdev->bd_contains)
-		// ro setting is not allowed for partitions
-		return -EINVAL;
-	if (get_user(intval, (int __user *)argp))
-		return -EFAULT;
-	base = dasd_device_from_gendisk(bdev->bd_disk);
-	if (!base)
-		return -ENODEV;
-	if (!intval && test_bit(DASD_FLAG_DEVICE_RO, &base->flags)) {
-		dasd_put_device(base);
-		return -EROFS;
-	}
-	set_disk_ro(bdev->bd_disk, intval);
-	rc = dasd_set_feature(base->cdev, DASD_FEATURE_READONLY, intval);
-=======
 int dasd_set_read_only(struct block_device *bdev, bool ro)
 {
 	struct dasd_device *base;
@@ -778,7 +590,6 @@ int dasd_set_read_only(struct block_device *bdev, bool ro)
 		rc = -EROFS;
 	else
 		rc = dasd_set_feature(base->cdev, DASD_FEATURE_READONLY, ro);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_put_device(base);
 	return rc;
 }
@@ -796,11 +607,7 @@ static int dasd_ioctl_readall_cmb(struct dasd_block *block, unsigned int cmd,
 	return ret;
 }
 
-<<<<<<< HEAD
-int dasd_ioctl(struct block_device *bdev, fmode_t mode,
-=======
 int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       unsigned int cmd, unsigned long arg)
 {
 	struct dasd_block *block;
@@ -813,15 +620,8 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 	else
 		argp = (void __user *)arg;
 
-<<<<<<< HEAD
-	if ((_IOC_DIR(cmd) != _IOC_NONE) && !arg) {
-		PRINT_DEBUG("empty data ptr");
-		return -EINVAL;
-	}
-=======
 	if ((_IOC_DIR(cmd) != _IOC_NONE) && !arg)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base = dasd_device_from_gendisk(bdev->bd_disk);
 	if (!base)
@@ -841,16 +641,6 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 	case BIODASDRESUME:
 		rc = dasd_ioctl_resume(block);
 		break;
-<<<<<<< HEAD
-	case BIODASDFMT:
-		rc = dasd_ioctl_format(bdev, argp);
-		break;
-	case BIODASDINFO:
-		rc = dasd_ioctl_information(block, cmd, argp);
-		break;
-	case BIODASDINFO2:
-		rc = dasd_ioctl_information(block, cmd, argp);
-=======
 	case BIODASDABORTIO:
 		rc = dasd_ioctl_abortio(block);
 		break;
@@ -870,7 +660,6 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 	case BIODASDINFO2:
 		rc = dasd_ioctl_information(block, argp,
 				sizeof(struct dasd_information2_t));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case BIODASDPRRD:
 		rc = dasd_ioctl_read_profile(block, argp);
@@ -878,12 +667,6 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 	case BIODASDPRRST:
 		rc = dasd_ioctl_reset_profile(block);
 		break;
-<<<<<<< HEAD
-	case BLKROSET:
-		rc = dasd_ioctl_set_ro(bdev, argp);
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DASDAPIVER:
 		rc = dasd_ioctl_api_version(argp);
 		break;
@@ -896,16 +679,6 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 	case BIODASDREADALLCMB:
 		rc = dasd_ioctl_readall_cmb(block, cmd, argp);
 		break;
-<<<<<<< HEAD
-	default:
-		/* if the discipline has an ioctl method try it. */
-		if (base->discipline->ioctl) {
-			rc = base->discipline->ioctl(block, cmd, argp);
-			if (rc == -ENOIOCTLCMD)
-				rc = -EINVAL;
-		} else
-			rc = -EINVAL;
-=======
 	case BIODASDRAS:
 		rc = dasd_ioctl_release_space(bdev, argp);
 		break;
@@ -917,13 +690,10 @@ int dasd_ioctl(struct block_device *bdev, blk_mode_t mode,
 		rc = -ENOTTY;
 		if (base->discipline->ioctl)
 			rc = base->discipline->ioctl(block, cmd, argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dasd_put_device(base);
 	return rc;
 }
-<<<<<<< HEAD
-=======
 
 
 /**
@@ -957,4 +727,3 @@ int dasd_biodasdinfo(struct gendisk *disk, struct dasd_information2_t *info)
 }
 /* export that symbol_get in partition detection is possible */
 EXPORT_SYMBOL_GPL(dasd_biodasdinfo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

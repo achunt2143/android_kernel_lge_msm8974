@@ -1,25 +1,14 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <errno.h>
 #include <fcntl.h>
 #include <termios.h>
 #include "chan_user.h"
-<<<<<<< HEAD
-#include "os.h"
-#include "um_malloc.h"
-=======
 #include <os.h>
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct tty_chan {
 	char *dev;

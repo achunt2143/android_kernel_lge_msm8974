@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Instituto Nokia de Tecnologia
  *
  * Authors:
  *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
  *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
@@ -34,25 +13,15 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/nfc.h>
-
-=======
 #include <linux/rfkill.h>
 #include <linux/nfc.h>
 
 #include <net/genetlink.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "nfc.h"
 
 #define VERSION "0.1"
 
-<<<<<<< HEAD
-int nfc_devlist_generation;
-DEFINE_MUTEX(nfc_devlist_mutex);
-
-=======
 #define NFC_CHECK_PRES_FREQ_MS	2000
 
 int nfc_devlist_generation;
@@ -110,7 +79,6 @@ int nfc_fw_download_done(struct nfc_dev *dev, const char *firmware_name,
 }
 EXPORT_SYMBOL(nfc_fw_download_done);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nfc_dev_up - turn on the NFC device
  *
@@ -126,17 +94,11 @@ int nfc_dev_up(struct nfc_dev *dev)
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
 
-<<<<<<< HEAD
-=======
 	if (dev->rfkill && rfkill_blocked(dev->rfkill)) {
 		rc = -ERFKILL;
 		goto error;
@@ -147,7 +109,6 @@ int nfc_dev_up(struct nfc_dev *dev)
 		goto error;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->dev_up) {
 		rc = -EALREADY;
 		goto error;
@@ -159,13 +120,10 @@ int nfc_dev_up(struct nfc_dev *dev)
 	if (!rc)
 		dev->dev_up = true;
 
-<<<<<<< HEAD
-=======
 	/* We have to enable the device before discovering SEs */
 	if (dev->ops->discover_se && dev->ops->discover_se(dev))
 		pr_err("SE discovery failed\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error:
 	device_unlock(&dev->dev);
 	return rc;
@@ -184,11 +142,7 @@ int nfc_dev_down(struct nfc_dev *dev)
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
@@ -198,11 +152,7 @@ int nfc_dev_down(struct nfc_dev *dev)
 		goto error;
 	}
 
-<<<<<<< HEAD
-	if (dev->polling || dev->remote_activated) {
-=======
 	if (dev->polling || dev->active_target) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EBUSY;
 		goto error;
 	}
@@ -217,8 +167,6 @@ error:
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static int nfc_rfkill_set_block(void *data, bool blocked)
 {
 	struct nfc_dev *dev = data;
@@ -237,31 +185,16 @@ static const struct rfkill_ops nfc_rfkill_ops = {
 	.set_block = nfc_rfkill_set_block,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nfc_start_poll - start polling for nfc targets
  *
  * @dev: The nfc device that must start polling
-<<<<<<< HEAD
- * @protocols: bitset of nfc protocols that must be used for polling
-=======
  * @im_protocols: bitset of nfc initiator protocols to be used for polling
  * @tm_protocols: bitset of nfc transport protocols to be used for polling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The device remains polling for targets until a target is found or
  * the nfc_stop_poll function is called.
  */
-<<<<<<< HEAD
-int nfc_start_poll(struct nfc_dev *dev, u32 protocols)
-{
-	int rc;
-
-	pr_debug("dev_name=%s protocols=0x%x\n",
-		 dev_name(&dev->dev), protocols);
-
-	if (!protocols)
-=======
 int nfc_start_poll(struct nfc_dev *dev, u32 im_protocols, u32 tm_protocols)
 {
 	int rc;
@@ -270,21 +203,16 @@ int nfc_start_poll(struct nfc_dev *dev, u32 im_protocols, u32 tm_protocols)
 		 dev_name(&dev->dev), im_protocols, tm_protocols);
 
 	if (!im_protocols && !tm_protocols)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
 		rc = -ENODEV;
 		goto error;
 	}
 
 	if (!dev->dev_up) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
@@ -294,17 +222,11 @@ int nfc_start_poll(struct nfc_dev *dev, u32 im_protocols, u32 tm_protocols)
 		goto error;
 	}
 
-<<<<<<< HEAD
-	rc = dev->ops->start_poll(dev, protocols);
-	if (!rc)
-		dev->polling = true;
-=======
 	rc = dev->ops->start_poll(dev, im_protocols, tm_protocols);
 	if (!rc) {
 		dev->polling = true;
 		dev->rf_mode = NFC_RF_NONE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	device_unlock(&dev->dev);
@@ -324,11 +246,7 @@ int nfc_stop_poll(struct nfc_dev *dev)
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
@@ -340,18 +258,13 @@ int nfc_stop_poll(struct nfc_dev *dev)
 
 	dev->ops->stop_poll(dev);
 	dev->polling = false;
-<<<<<<< HEAD
-=======
 	dev->rf_mode = NFC_RF_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	device_unlock(&dev->dev);
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static struct nfc_target *nfc_find_target(struct nfc_dev *dev, u32 target_idx)
 {
 	int i;
@@ -364,16 +277,12 @@ static struct nfc_target *nfc_find_target(struct nfc_dev *dev, u32 target_idx)
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int nfc_dep_link_up(struct nfc_dev *dev, int target_index, u8 comm_mode)
 {
 	int rc = 0;
 	u8 *gb;
 	size_t gb_len;
-<<<<<<< HEAD
-=======
 	struct nfc_target *target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("dev_name=%s comm %d\n", dev_name(&dev->dev), comm_mode);
 
@@ -382,11 +291,7 @@ int nfc_dep_link_up(struct nfc_dev *dev, int target_index, u8 comm_mode)
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
@@ -402,9 +307,6 @@ int nfc_dep_link_up(struct nfc_dev *dev, int target_index, u8 comm_mode)
 		goto error;
 	}
 
-<<<<<<< HEAD
-	rc = dev->ops->dep_link_up(dev, target_index, comm_mode, gb, gb_len);
-=======
 	target = nfc_find_target(dev, target_index);
 	if (target == NULL) {
 		rc = -ENOTCONN;
@@ -416,7 +318,6 @@ int nfc_dep_link_up(struct nfc_dev *dev, int target_index, u8 comm_mode)
 		dev->active_target = target;
 		dev->rf_mode = NFC_RF_INITIATOR;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	device_unlock(&dev->dev);
@@ -434,11 +335,7 @@ int nfc_dep_link_down(struct nfc_dev *dev)
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
@@ -448,32 +345,18 @@ int nfc_dep_link_down(struct nfc_dev *dev)
 		goto error;
 	}
 
-<<<<<<< HEAD
-	if (dev->dep_rf_mode == NFC_RF_TARGET) {
-		rc = -EOPNOTSUPP;
-		goto error;
-	}
-
-	rc = dev->ops->dep_link_down(dev);
-	if (!rc) {
-		dev->dep_link_up = false;
-=======
 	rc = dev->ops->dep_link_down(dev);
 	if (!rc) {
 		dev->dep_link_up = false;
 		dev->active_target = NULL;
 		dev->rf_mode = NFC_RF_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nfc_llcp_mac_is_down(dev);
 		nfc_genl_dep_link_down_event(dev);
 	}
 
 error:
 	device_unlock(&dev->dev);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -481,9 +364,6 @@ int nfc_dep_link_is_up(struct nfc_dev *dev, u32 target_idx,
 		       u8 comm_mode, u8 rf_mode)
 {
 	dev->dep_link_up = true;
-<<<<<<< HEAD
-	dev->dep_rf_mode = rf_mode;
-=======
 
 	if (!dev->active_target && rf_mode == NFC_RF_INITIATOR) {
 		struct nfc_target *target;
@@ -497,7 +377,6 @@ int nfc_dep_link_is_up(struct nfc_dev *dev, u32 target_idx,
 
 	dev->polling = false;
 	dev->rf_mode = rf_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfc_llcp_mac_is_up(dev, target_idx, comm_mode, rf_mode);
 
@@ -515,30 +394,18 @@ EXPORT_SYMBOL(nfc_dep_link_is_up);
 int nfc_activate_target(struct nfc_dev *dev, u32 target_idx, u32 protocol)
 {
 	int rc;
-<<<<<<< HEAD
-=======
 	struct nfc_target *target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("dev_name=%s target_idx=%u protocol=%u\n",
 		 dev_name(&dev->dev), target_idx, protocol);
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
 
-<<<<<<< HEAD
-	rc = dev->ops->activate_target(dev, target_idx, protocol);
-	if (!rc)
-		dev->remote_activated = true;
-=======
 	if (dev->active_target) {
 		rc = -EBUSY;
 		goto error;
@@ -559,7 +426,6 @@ int nfc_activate_target(struct nfc_dev *dev, u32 target_idx, u32 protocol)
 			mod_timer(&dev->check_pres_timer, jiffies +
 				  msecs_to_jiffies(NFC_CHECK_PRES_FREQ_MS));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	device_unlock(&dev->dev);
@@ -571,14 +437,9 @@ error:
  *
  * @dev: The nfc device that found the target
  * @target_idx: index of the target that must be deactivated
-<<<<<<< HEAD
- */
-int nfc_deactivate_target(struct nfc_dev *dev, u32 target_idx)
-=======
  * @mode: idle or sleep?
  */
 int nfc_deactivate_target(struct nfc_dev *dev, u32 target_idx, u8 mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 
@@ -587,19 +448,11 @@ int nfc_deactivate_target(struct nfc_dev *dev, u32 target_idx, u8 mode)
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto error;
 	}
 
-<<<<<<< HEAD
-	dev->ops->deactivate_target(dev, target_idx);
-	dev->remote_activated = false;
-=======
 	if (dev->active_target == NULL) {
 		rc = -ENOTCONN;
 		goto error;
@@ -615,7 +468,6 @@ int nfc_deactivate_target(struct nfc_dev *dev, u32 target_idx, u8 mode)
 
 	dev->ops->deactivate_target(dev, dev->active_target, mode);
 	dev->active_target = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	device_unlock(&dev->dev);
@@ -643,19 +495,12 @@ int nfc_data_exchange(struct nfc_dev *dev, u32 target_idx, struct sk_buff *skb,
 
 	device_lock(&dev->dev);
 
-<<<<<<< HEAD
-	if (!device_is_registered(&dev->dev)) {
-=======
 	if (dev->shutting_down) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		kfree_skb(skb);
 		goto error;
 	}
 
-<<<<<<< HEAD
-	rc = dev->ops->data_exchange(dev, target_idx, skb, cb, cb_context);
-=======
 	if (dev->rf_mode == NFC_RF_INITIATOR && dev->active_target != NULL) {
 		if (dev->active_target->idx != target_idx) {
 			rc = -EADDRNOTAVAIL;
@@ -680,22 +525,12 @@ int nfc_data_exchange(struct nfc_dev *dev, u32 target_idx, struct sk_buff *skb,
 		goto error;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error:
 	device_unlock(&dev->dev);
 	return rc;
 }
 
-<<<<<<< HEAD
-int nfc_set_remote_general_bytes(struct nfc_dev *dev, u8 *gb, u8 gb_len)
-{
-	pr_debug("dev_name=%s gb_len=%d\n", dev_name(&dev->dev), gb_len);
-
-	if (gb_len > NFC_MAX_GT_LEN)
-		return -EINVAL;
-
-=======
 struct nfc_se *nfc_find_se(struct nfc_dev *dev, u32 se_idx)
 {
 	struct nfc_se *se;
@@ -805,18 +640,10 @@ int nfc_set_remote_general_bytes(struct nfc_dev *dev, const u8 *gb, u8 gb_len)
 {
 	pr_debug("dev_name=%s gb_len=%d\n", dev_name(&dev->dev), gb_len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nfc_llcp_set_remote_gb(dev, gb, gb_len);
 }
 EXPORT_SYMBOL(nfc_set_remote_general_bytes);
 
-<<<<<<< HEAD
-/**
- * nfc_alloc_send_skb - allocate a skb for data exchange responses
- *
- * @size: size to allocate
- * @gfp: gfp flags
-=======
 u8 *nfc_get_local_general_bytes(struct nfc_dev *dev, size_t *gb_len)
 {
 	pr_debug("dev_name=%s\n", dev_name(&dev->dev));
@@ -883,7 +710,6 @@ EXPORT_SYMBOL(nfc_tm_deactivated);
  * @flags: MSG_DONTWAIT flag
  * @size: size to allocate
  * @err: pointer to memory to store the error code
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct sk_buff *nfc_alloc_send_skb(struct nfc_dev *dev, struct sock *sk,
 				   unsigned int flags, unsigned int size,
@@ -928,34 +754,20 @@ EXPORT_SYMBOL(nfc_alloc_recv_skb);
  *
  * @dev: The nfc device that found the targets
  * @targets: array of nfc targets found
-<<<<<<< HEAD
- * @ntargets: targets array size
-=======
  * @n_targets: targets array size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The device driver must call this function when one or many nfc targets
  * are found. After calling this function, the device driver must stop
  * polling for targets.
-<<<<<<< HEAD
-=======
  * NOTE: This function can be called with targets=NULL and n_targets=0 to
  * notify a driver error, meaning that the polling operation cannot complete.
  * IMPORTANT: this function must not be called from an atomic context.
  * In addition, it must also not be called from a context that would prevent
  * the NFC Core to call other nfc ops entry point concurrently.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int nfc_targets_found(struct nfc_dev *dev,
 		      struct nfc_target *targets, int n_targets)
 {
-<<<<<<< HEAD
-	pr_debug("dev_name=%s n_targets=%d\n", dev_name(&dev->dev), n_targets);
-
-	dev->polling = false;
-
-	spin_lock_bh(&dev->targets_lock);
-=======
 	int i;
 
 	pr_debug("dev_name=%s n_targets=%d\n", dev_name(&dev->dev), n_targets);
@@ -971,24 +783,10 @@ int nfc_targets_found(struct nfc_dev *dev,
 	}
 
 	dev->polling = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->targets_generation++;
 
 	kfree(dev->targets);
-<<<<<<< HEAD
-	dev->targets = kmemdup(targets, n_targets * sizeof(struct nfc_target),
-			       GFP_ATOMIC);
-
-	if (!dev->targets) {
-		dev->n_targets = 0;
-		spin_unlock_bh(&dev->targets_lock);
-		return -ENOMEM;
-	}
-
-	dev->n_targets = n_targets;
-	spin_unlock_bh(&dev->targets_lock);
-=======
 	dev->targets = NULL;
 
 	if (targets) {
@@ -1005,7 +803,6 @@ int nfc_targets_found(struct nfc_dev *dev,
 
 	dev->n_targets = n_targets;
 	device_unlock(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfc_genl_targets_found(dev);
 
@@ -1013,11 +810,6 @@ int nfc_targets_found(struct nfc_dev *dev,
 }
 EXPORT_SYMBOL(nfc_targets_found);
 
-<<<<<<< HEAD
-static void nfc_release(struct device *d)
-{
-	struct nfc_dev *dev = to_nfc_dev(d);
-=======
 /**
  * nfc_target_lost - inform that an activated target went out of field
  *
@@ -1171,18 +963,11 @@ static void nfc_release(struct device *d)
 {
 	struct nfc_dev *dev = to_nfc_dev(d);
 	struct nfc_se *se, *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("dev_name=%s\n", dev_name(&dev->dev));
 
 	nfc_genl_data_exit(&dev->genl_data);
 	kfree(dev->targets);
-<<<<<<< HEAD
-	kfree(dev);
-}
-
-struct class nfc_class = {
-=======
 
 	list_for_each_entry_safe(se, n, &dev->secure_elements, list) {
 			nfc_genl_se_removed(dev, se->idx);
@@ -1231,32 +1016,20 @@ static void nfc_check_pres_timeout(struct timer_list *t)
 }
 
 const struct class nfc_class = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "nfc",
 	.dev_release = nfc_release,
 };
 EXPORT_SYMBOL(nfc_class);
 
-<<<<<<< HEAD
-static int match_idx(struct device *d, void *data)
-{
-	struct nfc_dev *dev = to_nfc_dev(d);
-	unsigned *idx = data;
-=======
 static int match_idx(struct device *d, const void *data)
 {
 	struct nfc_dev *dev = to_nfc_dev(d);
 	const unsigned int *idx = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dev->idx == *idx;
 }
 
-<<<<<<< HEAD
-struct nfc_dev *nfc_get_device(unsigned idx)
-=======
 struct nfc_dev *nfc_get_device(unsigned int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *d;
 
@@ -1272,18 +1045,6 @@ struct nfc_dev *nfc_get_device(unsigned int idx)
  *
  * @ops: device operations
  * @supported_protocols: NFC protocols supported by the device
-<<<<<<< HEAD
- */
-struct nfc_dev *nfc_allocate_device(struct nfc_ops *ops,
-				    u32 supported_protocols,
-				    int tx_headroom, int tx_tailroom)
-{
-	static atomic_t dev_no = ATOMIC_INIT(0);
-	struct nfc_dev *dev;
-
-	if (!ops->start_poll || !ops->stop_poll || !ops->activate_target ||
-	    !ops->deactivate_target || !ops->data_exchange)
-=======
  * @tx_headroom: reserved space at beginning of skb
  * @tx_tailroom: reserved space at end of skb
  */
@@ -1296,7 +1057,6 @@ struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
 
 	if (!ops->start_poll || !ops->stop_poll || !ops->activate_target ||
 	    !ops->deactivate_target || !ops->im_transceive)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	if (!supported_protocols)
@@ -1306,17 +1066,12 @@ struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
 	if (!dev)
 		return NULL;
 
-<<<<<<< HEAD
-	dev->dev.class = &nfc_class;
-	dev->idx = atomic_inc_return(&dev_no) - 1;
-=======
 	rc = ida_alloc(&nfc_index_ida, GFP_KERNEL);
 	if (rc < 0)
 		goto err_free_dev;
 	dev->idx = rc;
 
 	dev->dev.class = &nfc_class;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_name(&dev->dev, "nfc%d", dev->idx);
 	device_initialize(&dev->dev);
 
@@ -1324,16 +1079,6 @@ struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
 	dev->supported_protocols = supported_protocols;
 	dev->tx_headroom = tx_headroom;
 	dev->tx_tailroom = tx_tailroom;
-<<<<<<< HEAD
-
-	spin_lock_init(&dev->targets_lock);
-	nfc_genl_data_init(&dev->genl_data);
-
-	/* first generation must not be 0 */
-	dev->targets_generation = 1;
-
-	return dev;
-=======
 	INIT_LIST_HEAD(&dev->secure_elements);
 
 	nfc_genl_data_init(&dev->genl_data);
@@ -1354,7 +1099,6 @@ err_free_dev:
 	kfree(dev);
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(nfc_allocate_device);
 
@@ -1381,8 +1125,6 @@ int nfc_register_device(struct nfc_dev *dev)
 	if (rc)
 		pr_err("Could not register llcp device\n");
 
-<<<<<<< HEAD
-=======
 	device_lock(&dev->dev);
 	dev->rfkill = rfkill_alloc(dev_name(&dev->dev), &dev->dev,
 				   RFKILL_TYPE_NFC, &nfc_rfkill_ops, dev);
@@ -1395,7 +1137,6 @@ int nfc_register_device(struct nfc_dev *dev)
 	dev->shutting_down = false;
 	device_unlock(&dev->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = nfc_genl_device_added(dev);
 	if (rc)
 		pr_debug("The userspace won't be notified that the device %s was added\n",
@@ -1416,26 +1157,6 @@ void nfc_unregister_device(struct nfc_dev *dev)
 
 	pr_debug("dev_name=%s\n", dev_name(&dev->dev));
 
-<<<<<<< HEAD
-	mutex_lock(&nfc_devlist_mutex);
-	nfc_devlist_generation++;
-
-	/* lock to avoid unregistering a device while an operation
-	   is in progress */
-	device_lock(&dev->dev);
-	device_del(&dev->dev);
-	device_unlock(&dev->dev);
-
-	mutex_unlock(&nfc_devlist_mutex);
-
-	nfc_llcp_unregister_device(dev);
-
-	rc = nfc_genl_device_removed(dev);
-	if (rc)
-		pr_debug("The userspace won't be notified that the device %s was removed\n",
-			 dev_name(&dev->dev));
-
-=======
 	rc = nfc_genl_device_removed(dev);
 	if (rc)
 		pr_debug("The userspace won't be notified that the device %s "
@@ -1461,7 +1182,6 @@ void nfc_unregister_device(struct nfc_dev *dev)
 	nfc_devlist_generation++;
 	device_del(&dev->dev);
 	mutex_unlock(&nfc_devlist_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(nfc_unregister_device);
 
@@ -1523,8 +1243,5 @@ MODULE_AUTHOR("Lauro Ramos Venancio <lauro.venancio@openbossa.org>");
 MODULE_DESCRIPTION("NFC Core ver " VERSION);
 MODULE_VERSION(VERSION);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_NETPROTO(PF_NFC);
 MODULE_ALIAS_GENL_FAMILY(NFC_GENL_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

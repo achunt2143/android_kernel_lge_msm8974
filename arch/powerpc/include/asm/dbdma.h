@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for using the Apple Descriptor-Based DMA controller
  * in Power Macintosh computers.
@@ -46,21 +43,12 @@ struct dbdma_regs {
  * DBDMA command structure.  These fields are all little-endian!
  */
 struct dbdma_cmd {
-<<<<<<< HEAD
-    unsigned short req_count;	/* requested byte transfer count */
-    unsigned short command;	/* command word (has bit-fields) */
-    unsigned int   phy_addr;	/* physical data address */
-    unsigned int   cmd_dep;	/* command-dependent field */
-    unsigned short res_count;	/* residual count after completion */
-    unsigned short xfer_status;	/* transfer status */
-=======
 	__le16 req_count;	/* requested byte transfer count */
 	__le16 command;		/* command word (has bit-fields) */
 	__le32 phy_addr;	/* physical data address */
 	__le32 cmd_dep;		/* command-dependent field */
 	__le16 res_count;	/* residual count after completion */
 	__le16 xfer_status;	/* transfer status */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* DBDMA command values in command field */

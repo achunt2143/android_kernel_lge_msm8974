@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ratelimit.c - Do something with rate limit.
  *
@@ -9,11 +6,6 @@
  *
  * 2008-05-01 rewrite the function and use a ratelimit_state data struct as
  * parameter. Now every user can use their own standalone ratelimit_state.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/ratelimit.h>
@@ -34,12 +26,6 @@
  */
 int ___ratelimit(struct ratelimit_state *rs, const char *func)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	int ret;
-
-	if (!rs->interval)
-=======
 	/* Paired with WRITE_ONCE() in .proc_handler().
 	 * Changing two values seperately could be inconsistent
 	 * and some message could be lost.  (See: net_ratelimit_state).
@@ -50,7 +36,6 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
 	int ret;
 
 	if (!interval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	/*
@@ -65,17 +50,6 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
 	if (!rs->begin)
 		rs->begin = jiffies;
 
-<<<<<<< HEAD
-	if (time_is_before_jiffies(rs->begin + rs->interval)) {
-		if (rs->missed)
-			printk(KERN_WARNING "%s: %d callbacks suppressed\n",
-				func, rs->missed);
-		rs->begin   = 0;
-		rs->printed = 0;
-		rs->missed  = 0;
-	}
-	if (rs->burst && rs->burst > rs->printed) {
-=======
 	if (time_is_before_jiffies(rs->begin + interval)) {
 		if (rs->missed) {
 			if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {
@@ -89,7 +63,6 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
 		rs->printed = 0;
 	}
 	if (burst && burst > rs->printed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rs->printed++;
 		ret = 1;
 	} else {

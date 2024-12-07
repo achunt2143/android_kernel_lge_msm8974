@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bootstr.c:  Boot string/argument acquisition from the PROM.
  *
@@ -18,14 +15,10 @@
  *          the .bss section or it will break things.
  */
 
-<<<<<<< HEAD
-#define BARG_LEN  256
-=======
 /* We limit BARG_LEN to 1024 because this is the size of the
  * 'barg_out' command line buffer in the SILO bootloader.
  */
 #define BARG_LEN 1024
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct {
 	int bootstr_len;
 	int bootstr_valid;

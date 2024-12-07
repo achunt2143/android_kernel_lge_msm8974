@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for s390-specific library files..
 #
 
-<<<<<<< HEAD
-lib-y += delay.o string.o uaccess_std.o uaccess_pt.o
-obj-y += usercopy.o
-obj-$(CONFIG_32BIT) += div64.o qrnnd.o ucmpdi2.o
-lib-$(CONFIG_64BIT) += uaccess_mvcos.o
-lib-$(CONFIG_SMP) += spinlock.o
-=======
 lib-y += delay.o string.o uaccess.o find.o spinlock.o tishift.o
 lib-y += csum-partial.o
 obj-y += mem.o xor.o
@@ -34,4 +24,3 @@ obj-$(CONFIG_S390_MODULES_SANITY_TEST_HELPERS) += test_modules_helpers.o
 lib-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
 
 obj-$(CONFIG_EXPOLINE_EXTERN) += expoline/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm9713.h  --  WM9713 Soc Audio driver
  */
@@ -45,13 +42,4 @@
 #define WM9713_PCMBCLK_DIV_8	(3 << 9)
 #define WM9713_PCMBCLK_DIV_16	(4 << 9)
 
-<<<<<<< HEAD
-#define WM9713_DAI_AC97_HIFI	0
-#define WM9713_DAI_AC97_AUX		1
-#define WM9713_DAI_PCM_VOICE	2
-
-int wm9713_reset(struct snd_soc_codec *codec,  int try_warm);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	DDP:	An implementation of the AppleTalk DDP protocol for
  *		Ethernet 'ELAP'.
@@ -47,15 +44,6 @@
  *						shared skb support 8)
  *		Arnaldo C. de Melo	:	Move proc stuff to atalk_proc.c,
  *						use seq_file
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/capability.h>
@@ -69,14 +57,9 @@
 #include <net/sock.h>
 #include <net/tcp_states.h>
 #include <net/route.h>
-<<<<<<< HEAD
-#include <linux/atalk.h>
-#include "../core/kmap_skb.h"
-=======
 #include <net/compat.h>
 #include <linux/atalk.h>
 #include <linux/highmem.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct datalink_proto *ddp_dl, *aarp_dl;
 static const struct proto_ops atalk_dgram_ops;
@@ -105,29 +88,17 @@ static inline void atalk_remove_socket(struct sock *sk)
 static struct sock *atalk_search_socket(struct sockaddr_at *to,
 					struct atalk_iface *atif)
 {
-<<<<<<< HEAD
-	struct sock *s;
-	struct hlist_node *node;
-
-	read_lock_bh(&atalk_sockets_lock);
-	sk_for_each(s, node, &atalk_sockets) {
-=======
 	struct sock *def_socket = NULL;
 	struct sock *s;
 
 	read_lock_bh(&atalk_sockets_lock);
 	sk_for_each(s, &atalk_sockets) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct atalk_sock *at = at_sk(s);
 
 		if (to->sat_port != at->src_port)
 			continue;
 
 		if (to->sat_addr.s_net == ATADDR_ANYNET &&
-<<<<<<< HEAD
-		    to->sat_addr.s_node == ATADDR_BCAST)
-			goto found;
-=======
 		    to->sat_addr.s_node == ATADDR_BCAST) {
 			if (atif->address.s_node == at->src_node &&
 			    atif->address.s_net == at->src_net) {
@@ -142,7 +113,6 @@ static struct sock *atalk_search_socket(struct sockaddr_at *to,
 			 */
 			def_socket = s;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (to->sat_addr.s_net == at->src_net &&
 		    (to->sat_addr.s_node == at->src_node ||
@@ -159,11 +129,7 @@ static struct sock *atalk_search_socket(struct sockaddr_at *to,
 			goto found;
 		}
 	}
-<<<<<<< HEAD
-	s = NULL;
-=======
 	s = def_socket;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 found:
 	read_unlock_bh(&atalk_sockets_lock);
 	return s;
@@ -171,13 +137,8 @@ found:
 
 /**
  * atalk_find_or_insert_socket - Try to find a socket matching ADDR
-<<<<<<< HEAD
- * @sk - socket to insert in the list if it is not there already
- * @sat - address to search for
-=======
  * @sk: socket to insert in the list if it is not there already
  * @sat: address to search for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Try to find a socket matching ADDR in the socket list, if found then return
  * it. If not, insert SK into the socket list.
@@ -188,18 +149,10 @@ static struct sock *atalk_find_or_insert_socket(struct sock *sk,
 						struct sockaddr_at *sat)
 {
 	struct sock *s;
-<<<<<<< HEAD
-	struct hlist_node *node;
-	struct atalk_sock *at;
-
-	write_lock_bh(&atalk_sockets_lock);
-	sk_for_each(s, node, &atalk_sockets) {
-=======
 	struct atalk_sock *at;
 
 	write_lock_bh(&atalk_sockets_lock);
 	sk_for_each(s, &atalk_sockets) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		at = at_sk(s);
 
 		if (at->src_net == sat->sat_addr.s_net &&
@@ -214,15 +167,9 @@ found:
 	return s;
 }
 
-<<<<<<< HEAD
-static void atalk_destroy_timer(unsigned long data)
-{
-	struct sock *sk = (struct sock *)data;
-=======
 static void atalk_destroy_timer(struct timer_list *t)
 {
 	struct sock *sk = from_timer(sk, t, sk_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sk_has_allocations(sk)) {
 		sk->sk_timer.expires = jiffies + SOCK_DESTROY_TIME;
@@ -237,12 +184,7 @@ static inline void atalk_destroy_socket(struct sock *sk)
 	skb_queue_purge(&sk->sk_receive_queue);
 
 	if (sk_has_allocations(sk)) {
-<<<<<<< HEAD
-		setup_timer(&sk->sk_timer, atalk_destroy_timer,
-				(unsigned long)sk);
-=======
 		timer_setup(&sk->sk_timer, atalk_destroy_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sk->sk_timer.expires	= jiffies + SOCK_DESTROY_TIME;
 		add_timer(&sk->sk_timer);
 	} else
@@ -359,11 +301,7 @@ static int atif_probe_device(struct atalk_iface *atif)
 
 /* Perform AARP probing for a proxy address */
 static int atif_proxy_probe_device(struct atalk_iface *atif,
-<<<<<<< HEAD
-				   struct atalk_addr* proxy_addr)
-=======
 				   struct atalk_addr *proxy_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int netrange = ntohs(atif->nets.nr_lastnet) -
 			ntohs(atif->nets.nr_firstnet) + 1;
@@ -651,11 +589,7 @@ out:
 }
 
 /* Delete a route. Find it and discard it */
-<<<<<<< HEAD
-static int atrtr_delete(struct atalk_addr * addr)
-=======
 static int atrtr_delete(struct atalk_addr *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atalk_route **r = &atalk_routes;
 	int retval = 0;
@@ -718,11 +652,7 @@ static inline void atalk_dev_down(struct net_device *dev)
 static int ddp_device_event(struct notifier_block *this, unsigned long event,
 			    void *ptr)
 {
-<<<<<<< HEAD
-	struct net_device *dev = ptr;
-=======
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
@@ -749,11 +679,7 @@ static int atif_ioctl(int cmd, void __user *arg)
 	struct rtentry rtdef;
 	int add_route;
 
-<<<<<<< HEAD
-	if (copy_from_user(&atreq, arg, sizeof(atreq)))
-=======
 	if (get_user_ifreq(&atreq, NULL, arg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	dev = __dev_get_by_name(&init_net, atreq.ifr_name);
@@ -794,11 +720,7 @@ static int atif_ioctl(int cmd, void __user *arg)
 
 		/*
 		 * Phase 1 is fine on LocalTalk but we don't do
-<<<<<<< HEAD
-		 * EtherTalk phase 1. Anyone wanting to add it go ahead.
-=======
 		 * EtherTalk phase 1. Anyone wanting to add it, go ahead.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (dev->type == ARPHRD_ETHER && nr->nr_phase != 2)
 			return -EPROTONOSUPPORT;
@@ -919,11 +841,7 @@ static int atif_ioctl(int cmd, void __user *arg)
 		nr = (struct atalk_netrange *)&(atif->nets);
 		/*
 		 * Phase 1 is fine on Localtalk but we don't do
-<<<<<<< HEAD
-		 * Ethertalk phase 1. Anyone wanting to add it go ahead.
-=======
 		 * Ethertalk phase 1. Anyone wanting to add it, go ahead.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (dev->type == ARPHRD_ETHER && nr->nr_phase != 2)
 			return -EPROTONOSUPPORT;
@@ -960,9 +878,6 @@ static int atif_ioctl(int cmd, void __user *arg)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	return copy_to_user(arg, &atreq, sizeof(atreq)) ? -EFAULT : 0;
-=======
 	return put_user_ifreq(&atreq, arg);
 }
 
@@ -982,7 +897,6 @@ static int atrtr_ioctl_addrt(struct rtentry *rt)
 			return -ENODEV;
 	}
 	return atrtr_create(rt, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Routing ioctl() calls */
@@ -1000,24 +914,8 @@ static int atrtr_ioctl(unsigned int cmd, void __user *arg)
 		return atrtr_delete(&((struct sockaddr_at *)
 				      &rt.rt_dst)->sat_addr);
 
-<<<<<<< HEAD
-	case SIOCADDRT: {
-		struct net_device *dev = NULL;
-		if (rt.rt_dev) {
-			char name[IFNAMSIZ];
-			if (copy_from_user(name, rt.rt_dev, IFNAMSIZ-1))
-				return -EFAULT;
-			name[IFNAMSIZ-1] = '\0';
-			dev = __dev_get_by_name(&init_net, name);
-			if (!dev)
-				return -ENODEV;
-		}
-		return atrtr_create(&rt, dev);
-	}
-=======
 	case SIOCADDRT:
 		return atrtr_ioctl_addrt(&rt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
@@ -1053,19 +951,11 @@ static unsigned long atalk_sum_skb(const struct sk_buff *skb, int offset,
 	int i, copy;
 
 	/* checksum stuff in header space */
-<<<<<<< HEAD
-	if ( (copy = start - offset) > 0) {
-		if (copy > len)
-			copy = len;
-		sum = atalk_sum_partial(skb->data + offset, copy, sum);
-		if ( (len -= copy) == 0)
-=======
 	if ((copy = start - offset) > 0) {
 		if (copy > len)
 			copy = len;
 		sum = atalk_sum_partial(skb->data + offset, copy, sum);
 		if ((len -= copy) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return sum;
 
 		offset += copy;
@@ -1083,17 +973,10 @@ static unsigned long atalk_sum_skb(const struct sk_buff *skb, int offset,
 
 			if (copy > len)
 				copy = len;
-<<<<<<< HEAD
-			vaddr = kmap_skb_frag(frag);
-			sum = atalk_sum_partial(vaddr + frag->page_offset +
-						  offset - start, copy, sum);
-			kunmap_skb_frag(vaddr);
-=======
 			vaddr = kmap_atomic(skb_frag_page(frag));
 			sum = atalk_sum_partial(vaddr + skb_frag_off(frag) +
 						offset - start, copy, sum);
 			kunmap_atomic(vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!(len -= copy))
 				return sum;
@@ -1161,10 +1044,6 @@ static int atalk_create(struct net *net, struct socket *sock, int protocol,
 	 */
 	if (sock->type != SOCK_RAW && sock->type != SOCK_DGRAM)
 		goto out;
-<<<<<<< HEAD
-	rc = -ENOMEM;
-	sk = sk_alloc(net, PF_APPLETALK, GFP_KERNEL, &ddp_proto);
-=======
 
 	rc = -EPERM;
 	if (sock->type == SOCK_RAW && !kern && !capable(CAP_NET_RAW))
@@ -1172,7 +1051,6 @@ static int atalk_create(struct net *net, struct socket *sock, int protocol,
 
 	rc = -ENOMEM;
 	sk = sk_alloc(net, PF_APPLETALK, GFP_KERNEL, &ddp_proto, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		goto out;
 	rc = 0;
@@ -1206,13 +1084,8 @@ static int atalk_release(struct socket *sock)
 
 /**
  * atalk_pick_and_bind_port - Pick a source port when one is not given
-<<<<<<< HEAD
- * @sk - socket to insert into the tables
- * @sat - address to search for
-=======
  * @sk: socket to insert into the tables
  * @sat: address to search for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Pick a source port when one is not given. If we can find a suitable free
  * one, we insert the socket into the tables using it.
@@ -1229,14 +1102,8 @@ static int atalk_pick_and_bind_port(struct sock *sk, struct sockaddr_at *sat)
 	     sat->sat_port < ATPORT_LAST;
 	     sat->sat_port++) {
 		struct sock *s;
-<<<<<<< HEAD
-		struct hlist_node *node;
-
-		sk_for_each(s, node, &atalk_sockets) {
-=======
 
 		sk_for_each(s, &atalk_sockets) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct atalk_sock *at = at_sk(s);
 
 			if (at->src_net == sat->sat_addr.s_net &&
@@ -1304,11 +1171,7 @@ static int atalk_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 			goto out;
 
 		at->src_net  = addr->sat_addr.s_net = ap->s_net;
-<<<<<<< HEAD
-		at->src_node = addr->sat_addr.s_node= ap->s_node;
-=======
 		at->src_node = addr->sat_addr.s_node = ap->s_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		err = -EADDRNOTAVAIL;
 		if (!atalk_find_interface(addr->sat_addr.s_net,
@@ -1362,13 +1225,7 @@ static int atalk_connect(struct socket *sock, struct sockaddr *uaddr,
 	if (addr->sat_addr.s_node == ATADDR_BCAST &&
 	    !sock_flag(sk, SOCK_BROADCAST)) {
 #if 1
-<<<<<<< HEAD
-		printk(KERN_WARNING "%s is broken and did not set "
-				    "SO_BROADCAST. It will break when 2.2 is "
-				    "released.\n",
-=======
 		pr_warn("atalk_connect: %s is broken and did not set SO_BROADCAST.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			current->comm);
 #else
 		return -EACCES;
@@ -1402,11 +1259,7 @@ out:
  * fields into the sockaddr.
  */
 static int atalk_getname(struct socket *sock, struct sockaddr *uaddr,
-<<<<<<< HEAD
-			 int *uaddr_len, int peer)
-=======
 			 int peer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sockaddr_at sat;
 	struct sock *sk = sock->sk;
@@ -1419,12 +1272,7 @@ static int atalk_getname(struct socket *sock, struct sockaddr *uaddr,
 		if (atalk_autobind(sk) < 0)
 			goto out;
 
-<<<<<<< HEAD
-	*uaddr_len = sizeof(struct sockaddr_at);
-	memset(&sat.sat_zero, 0, sizeof(sat.sat_zero));
-=======
 	memset(&sat, 0, sizeof(sat));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (peer) {
 		err = -ENOTCONN;
@@ -1440,57 +1288,15 @@ static int atalk_getname(struct socket *sock, struct sockaddr *uaddr,
 		sat.sat_port	    = at->src_port;
 	}
 
-<<<<<<< HEAD
-	err = 0;
-	sat.sat_family = AF_APPLETALK;
-	memcpy(uaddr, &sat, sizeof(sat));
-=======
 	sat.sat_family = AF_APPLETALK;
 	memcpy(uaddr, &sat, sizeof(sat));
 	err = sizeof(struct sockaddr_at);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	release_sock(sk);
 	return err;
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_IPDDP) || defined(CONFIG_IPDDP_MODULE)
-static __inline__ int is_ip_over_ddp(struct sk_buff *skb)
-{
-	return skb->data[12] == 22;
-}
-
-static int handle_ip_over_ddp(struct sk_buff *skb)
-{
-	struct net_device *dev = __dev_get_by_name(&init_net, "ipddp0");
-	struct net_device_stats *stats;
-
-	/* This needs to be able to handle ipddp"N" devices */
-	if (!dev) {
-		kfree_skb(skb);
-		return NET_RX_DROP;
-	}
-
-	skb->protocol = htons(ETH_P_IP);
-	skb_pull(skb, 13);
-	skb->dev   = dev;
-	skb_reset_transport_header(skb);
-
-	stats = netdev_priv(dev);
-	stats->rx_packets++;
-	stats->rx_bytes += skb->len + 13;
-	return netif_rx(skb);  /* Send the SKB up to a higher place. */
-}
-#else
-/* make it easy for gcc to optimize this test out, i.e. kill the code */
-#define is_ip_over_ddp(skb) 0
-#define handle_ip_over_ddp(skb) 0
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atalk_route_packet(struct sk_buff *skb, struct net_device *dev,
 			      struct ddpehdr *ddp, __u16 len_hops, int origlen)
 {
@@ -1581,16 +1387,10 @@ drop:
 
 /**
  *	atalk_rcv - Receive a packet (in skb) from device dev
-<<<<<<< HEAD
- *	@skb - packet received
- *	@dev - network device where the packet comes from
- *	@pt - packet type
-=======
  *	@skb: packet received
  *	@dev: network device where the packet comes from
  *	@pt: packet type
  *	@orig_dev: the original receive net device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Receive a packet (in skb) from device dev. This has come from the SNAP
  *	decoder, and on entry skb->transport_header is the DDP header, skb->len
@@ -1660,12 +1460,6 @@ static int atalk_rcv(struct sk_buff *skb, struct net_device *dev,
 		return atalk_route_packet(skb, dev, ddp, len_hops, origlen);
 	}
 
-<<<<<<< HEAD
-	/* if IP over DDP is not selected this code will be optimized out */
-	if (is_ip_over_ddp(skb))
-		return handle_ip_over_ddp(skb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Which socket - atalk_search_socket() looks for a *full match*
 	 * of the <net, node, port> tuple.
@@ -1719,11 +1513,7 @@ static int ltalk_rcv(struct sk_buff *skb, struct net_device *dev,
 		 * The push leaves us with a ddephdr not an shdr, and
 		 * handily the port bytes in the right place preset.
 		 */
-<<<<<<< HEAD
-		ddp = (struct ddpehdr *) skb_push(skb, sizeof(*ddp) - 4);
-=======
 		ddp = skb_push(skb, sizeof(*ddp) - 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Now fill in the long header */
 
@@ -1753,33 +1543,19 @@ freeit:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int atalk_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
-			 size_t len)
-{
-	struct sock *sk = sock->sk;
-	struct atalk_sock *at = at_sk(sk);
-	struct sockaddr_at *usat = (struct sockaddr_at *)msg->msg_name;
-=======
 static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 {
 	struct sock *sk = sock->sk;
 	struct atalk_sock *at = at_sk(sk);
 	DECLARE_SOCKADDR(struct sockaddr_at *, usat, msg->msg_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int flags = msg->msg_flags;
 	int loopback = 0;
 	struct sockaddr_at local_satalk, gsat;
 	struct sk_buff *skb;
 	struct net_device *dev;
 	struct ddpehdr *ddp;
-<<<<<<< HEAD
-	int size;
-	struct atalk_route *rt;
-=======
 	int size, hard_header_len;
 	struct atalk_route *rt, *rt_lo = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (flags & ~(MSG_DONTWAIT|MSG_CMSG_COMPAT))
@@ -1818,11 +1594,7 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	}
 
 	/* Build a packet */
-<<<<<<< HEAD
-	SOCK_DEBUG(sk, "SK %p: Got address.\n", sk);
-=======
 	net_dbg_ratelimited("SK %p: Got address.\n", sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* For headers */
 	size = sizeof(struct ddpehdr) + len + ddp_dl->header_length;
@@ -1837,22 +1609,12 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 
 		rt = atrtr_find(&at_hint);
 	}
-<<<<<<< HEAD
-	err = ENETUNREACH;
-=======
 	err = -ENETUNREACH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rt)
 		goto out;
 
 	dev = rt->dev;
 
-<<<<<<< HEAD
-	SOCK_DEBUG(sk, "SK %p: Size needed %d, device %s\n",
-			sk, size, dev->name);
-
-	size += dev->hard_header_len;
-=======
 	net_dbg_ratelimited("SK %p: Size needed %d, device %s\n",
 			sk, size, dev->name);
 
@@ -1872,7 +1634,6 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	}
 
 	size += hard_header_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 	skb = sock_alloc_send_skb(sk, size, (flags & MSG_DONTWAIT), &err);
 	lock_sock(sk);
@@ -1880,21 +1641,12 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 		goto out;
 
 	skb_reserve(skb, ddp_dl->header_length);
-<<<<<<< HEAD
-	skb_reserve(skb, dev->hard_header_len);
-	skb->dev = dev;
-
-	SOCK_DEBUG(sk, "SK %p: Begin build.\n", sk);
-
-	ddp = (struct ddpehdr *)skb_put(skb, sizeof(struct ddpehdr));
-=======
 	skb_reserve(skb, hard_header_len);
 	skb->dev = dev;
 
 	net_dbg_ratelimited("SK %p: Begin build.\n", sk);
 
 	ddp = skb_put(skb, sizeof(struct ddpehdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ddp->deh_len_hops  = htons(len + sizeof(*ddp));
 	ddp->deh_dnet  = usat->sat_addr.s_net;
 	ddp->deh_snet  = at->src_net;
@@ -1903,26 +1655,16 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	ddp->deh_dport = usat->sat_port;
 	ddp->deh_sport = at->src_port;
 
-<<<<<<< HEAD
-	SOCK_DEBUG(sk, "SK %p: Copy user data (%Zd bytes).\n", sk, len);
-
-	err = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
-=======
 	net_dbg_ratelimited("SK %p: Copy user data (%zd bytes).\n", sk, len);
 
 	err = memcpy_from_msg(skb_put(skb, len), msg, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		kfree_skb(skb);
 		err = -EFAULT;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (sk->sk_no_check == 1)
-=======
 	if (sk->sk_no_check_tx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ddp->deh_sum = 0;
 	else
 		ddp->deh_sum = atalk_checksum(skb, len + sizeof(*ddp));
@@ -1937,11 +1679,7 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 
 		if (skb2) {
 			loopback = 1;
-<<<<<<< HEAD
-			SOCK_DEBUG(sk, "SK %p: send out(copy).\n", sk);
-=======
 			net_dbg_ratelimited("SK %p: send out(copy).\n", sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If it fails it is queued/sent above in the aarp queue
 			 */
@@ -1950,43 +1688,21 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	}
 
 	if (dev->flags & IFF_LOOPBACK || loopback) {
-<<<<<<< HEAD
-		SOCK_DEBUG(sk, "SK %p: Loop back.\n", sk);
-		/* loop back */
-		skb_orphan(skb);
-		if (ddp->deh_dnode == ATADDR_BCAST) {
-			struct atalk_addr at_lo;
-
-			at_lo.s_node = 0;
-			at_lo.s_net  = 0;
-
-			rt = atrtr_find(&at_lo);
-			if (!rt) {
-=======
 		net_dbg_ratelimited("SK %p: Loop back.\n", sk);
 		/* loop back */
 		skb_orphan(skb);
 		if (ddp->deh_dnode == ATADDR_BCAST) {
 			if (!rt_lo) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree_skb(skb);
 				err = -ENETUNREACH;
 				goto out;
 			}
-<<<<<<< HEAD
-			dev = rt->dev;
-=======
 			dev = rt_lo->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb->dev = dev;
 		}
 		ddp_dl->request(ddp_dl, skb, dev->dev_addr);
 	} else {
-<<<<<<< HEAD
-		SOCK_DEBUG(sk, "SK %p: send out.\n", sk);
-=======
 		net_dbg_ratelimited("SK %p: send out.\n", sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rt->flags & RTF_GATEWAY) {
 		    gsat.sat_addr = rt->gateway;
 		    usat = &gsat;
@@ -1997,24 +1713,15 @@ static int atalk_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 		 */
 		aarp_send_ddp(dev, skb, &usat->sat_addr, NULL);
 	}
-<<<<<<< HEAD
-	SOCK_DEBUG(sk, "SK %p: Done write (%Zd).\n", sk, len);
-=======
 	net_dbg_ratelimited("SK %p: Done write (%zd).\n", sk, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	release_sock(sk);
 	return err ? : len;
 }
 
-<<<<<<< HEAD
-static int atalk_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
-			 size_t size, int flags)
-=======
 static int atalk_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 			 int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct ddpehdr *ddp;
@@ -2023,12 +1730,7 @@ static int atalk_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 	int err = 0;
 	struct sk_buff *skb;
 
-<<<<<<< HEAD
-	skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
-						flags & MSG_DONTWAIT, &err);
-=======
 	skb = skb_recv_datagram(sk, flags, &err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_sock(sk);
 
 	if (!skb)
@@ -2047,17 +1749,10 @@ static int atalk_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		copied = size;
 		msg->msg_flags |= MSG_TRUNC;
 	}
-<<<<<<< HEAD
-	err = skb_copy_datagram_iovec(skb, offset, msg->msg_iov, copied);
-
-	if (!err && msg->msg_name) {
-		struct sockaddr_at *sat = msg->msg_name;
-=======
 	err = skb_copy_datagram_msg(skb, offset, msg, copied);
 
 	if (!err && msg->msg_name) {
 		DECLARE_SOCKADDR(struct sockaddr_at *, sat, msg->msg_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sat->sat_family      = AF_APPLETALK;
 		sat->sat_port        = ddp->deh_sport;
 		sat->sat_addr.s_node = ddp->deh_snode;
@@ -2083,55 +1778,6 @@ static int atalk_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 	void __user *argp = (void __user *)arg;
 
 	switch (cmd) {
-<<<<<<< HEAD
-		/* Protocol layer */
-		case TIOCOUTQ: {
-			long amount = sk->sk_sndbuf - sk_wmem_alloc_get(sk);
-
-			if (amount < 0)
-				amount = 0;
-			rc = put_user(amount, (int __user *)argp);
-			break;
-		}
-		case TIOCINQ: {
-			/*
-			 * These two are safe on a single CPU system as only
-			 * user tasks fiddle here
-			 */
-			struct sk_buff *skb = skb_peek(&sk->sk_receive_queue);
-			long amount = 0;
-
-			if (skb)
-				amount = skb->len - sizeof(struct ddpehdr);
-			rc = put_user(amount, (int __user *)argp);
-			break;
-		}
-		case SIOCGSTAMP:
-			rc = sock_get_timestamp(sk, argp);
-			break;
-		case SIOCGSTAMPNS:
-			rc = sock_get_timestampns(sk, argp);
-			break;
-		/* Routing */
-		case SIOCADDRT:
-		case SIOCDELRT:
-			rc = -EPERM;
-			if (capable(CAP_NET_ADMIN))
-				rc = atrtr_ioctl(cmd, argp);
-			break;
-		/* Interface */
-		case SIOCGIFADDR:
-		case SIOCSIFADDR:
-		case SIOCGIFBRDADDR:
-		case SIOCATALKDIFADDR:
-		case SIOCDIFADDR:
-		case SIOCSARP:		/* proxy AARP */
-		case SIOCDARP:		/* proxy AARP */
-			rtnl_lock();
-			rc = atif_ioctl(cmd, argp);
-			rtnl_unlock();
-			break;
-=======
 	/* Protocol layer */
 	case TIOCOUTQ: {
 		long amount = sk->sk_sndbuf - sk_wmem_alloc_get(sk);
@@ -2172,7 +1818,6 @@ static int atalk_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		rc = atif_ioctl(cmd, argp);
 		rtnl_unlock();
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -2180,10 +1825,6 @@ static int atalk_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 
 
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-static int atalk_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-=======
 static int atalk_compat_routing_ioctl(struct sock *sk, unsigned int cmd,
 		struct compat_rtentry __user *ur)
 {
@@ -2223,21 +1864,12 @@ static int atalk_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned lo
 	case SIOCADDRT:
 	case SIOCDELRT:
 		return atalk_compat_routing_ioctl(sk, cmd, argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * SIOCATALKDIFADDR is a SIOCPROTOPRIVATE ioctl number, so we
 	 * cannot handle it in common code. The data we access if ifreq
 	 * here is compatible, so we can simply call the native
 	 * handler.
 	 */
-<<<<<<< HEAD
-	if (cmd == SIOCATALKDIFADDR)
-		return atalk_ioctl(sock, cmd, (unsigned long)compat_ptr(arg));
-
-	return -ENOIOCTLCMD;
-}
-#endif
-=======
 	case SIOCATALKDIFADDR:
 		return atalk_ioctl(sock, cmd, (unsigned long)argp);
 	default:
@@ -2245,7 +1877,6 @@ static int atalk_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned lo
 	}
 }
 #endif /* CONFIG_COMPAT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static const struct net_proto_family atalk_family_ops = {
@@ -2265,27 +1896,15 @@ static const struct proto_ops atalk_dgram_ops = {
 	.getname	= atalk_getname,
 	.poll		= datagram_poll,
 	.ioctl		= atalk_ioctl,
-<<<<<<< HEAD
-=======
 	.gettstamp	= sock_gettstamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= atalk_compat_ioctl,
 #endif
 	.listen		= sock_no_listen,
 	.shutdown	= sock_no_shutdown,
-<<<<<<< HEAD
-	.setsockopt	= sock_no_setsockopt,
-	.getsockopt	= sock_no_getsockopt,
 	.sendmsg	= atalk_sendmsg,
 	.recvmsg	= atalk_recvmsg,
 	.mmap		= sock_no_mmap,
-	.sendpage	= sock_no_sendpage,
-=======
-	.sendmsg	= atalk_sendmsg,
-	.recvmsg	= atalk_recvmsg,
-	.mmap		= sock_no_mmap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct notifier_block ddp_notifier = {
@@ -2308,23 +1927,6 @@ static unsigned char ddp_snap_id[] = { 0x08, 0x00, 0x07, 0x80, 0x9B };
 EXPORT_SYMBOL(atrtr_get_dev);
 EXPORT_SYMBOL(atalk_find_dev_addr);
 
-<<<<<<< HEAD
-static const char atalk_err_snap[] __initconst =
-	KERN_CRIT "Unable to register DDP with SNAP.\n";
-
-/* Called by proto.c on kernel start up */
-static int __init atalk_init(void)
-{
-	int rc = proto_register(&ddp_proto, 0);
-
-	if (rc != 0)
-		goto out;
-
-	(void)sock_register(&atalk_family_ops);
-	ddp_dl = register_snap_client(ddp_snap_id, atalk_rcv);
-	if (!ddp_dl)
-		printk(atalk_err_snap);
-=======
 /* Called by proto.c on kernel start up */
 static int __init atalk_init(void)
 {
@@ -2344,19 +1946,10 @@ static int __init atalk_init(void)
 		rc = -ENOMEM;
 		goto out_sock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_add_pack(&ltalk_packet_type);
 	dev_add_pack(&ppptalk_packet_type);
 
-<<<<<<< HEAD
-	register_netdevice_notifier(&ddp_notifier);
-	aarp_proto_init();
-	atalk_proc_init();
-	atalk_register_sysctl();
-out:
-	return rc;
-=======
 	rc = register_netdevice_notifier(&ddp_notifier);
 	if (rc)
 		goto out_snap;
@@ -2389,7 +1982,6 @@ out_sock:
 out_proto:
 	proto_unregister(&ddp_proto);
 	goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_init(atalk_init);
 
@@ -2400,11 +1992,7 @@ module_init(atalk_init);
  * by the network device layer.
  *
  * Ergo, before the AppleTalk module can be removed, all AppleTalk
-<<<<<<< HEAD
- * sockets be closed from user space.
-=======
  * sockets should be closed from user space.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void __exit atalk_exit(void)
 {

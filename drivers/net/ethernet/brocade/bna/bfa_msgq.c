@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- */
-
-/**
- * @file bfa_msgq.c MSGQ module source file.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -33,7 +10,6 @@
  */
 
 /* MSGQ module source file. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "bfi.h"
 #include "bfa_msgq.h"
@@ -82,14 +58,9 @@ cmdq_sm_stopped_entry(struct bfa_msgq_cmdq *cmdq)
 	cmdq->offset = 0;
 	cmdq->bytes_to_copy = 0;
 	while (!list_empty(&cmdq->pending_q)) {
-<<<<<<< HEAD
-		bfa_q_deq(&cmdq->pending_q, &cmdq_ent);
-		bfa_q_qe_init(&cmdq_ent->qe);
-=======
 		cmdq_ent = list_first_entry(&cmdq->pending_q,
 					    struct bfa_msgq_cmd_entry, qe);
 		list_del(&cmdq_ent->qe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		call_cmdq_ent_cbfn(cmdq_ent, BFA_STATUS_FAILED);
 	}
 }
@@ -231,10 +202,6 @@ static void
 __cmd_copy(struct bfa_msgq_cmdq *cmdq, struct bfa_msgq_cmd_entry *cmd)
 {
 	size_t len = cmd->msg_size;
-<<<<<<< HEAD
-	int num_entries = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t to_copy;
 	u8 *src, *dst;
 
@@ -251,10 +218,6 @@ __cmd_copy(struct bfa_msgq_cmdq *cmdq, struct bfa_msgq_cmd_entry *cmd)
 		BFA_MSGQ_INDX_ADD(cmdq->producer_index, 1, cmdq->depth);
 		dst = (u8 *)cmdq->addr.kva;
 		dst += (cmdq->producer_index * BFI_MSGQ_CMD_ENTRY_SIZE);
-<<<<<<< HEAD
-		num_entries++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 }
@@ -270,13 +233,8 @@ bfa_msgq_cmdq_ci_update(struct bfa_msgq_cmdq *cmdq, struct bfi_mbmsg *mb)
 
 	/* Walk through pending list to see if the command can be posted */
 	while (!list_empty(&cmdq->pending_q)) {
-<<<<<<< HEAD
-		cmd =
-		(struct bfa_msgq_cmd_entry *)bfa_q_first(&cmdq->pending_q);
-=======
 		cmd = list_first_entry(&cmdq->pending_q,
 				       struct bfa_msgq_cmd_entry, qe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ntohs(cmd->msg_hdr->num_entries) <=
 			BFA_MSGQ_FREE_CNT(cmdq)) {
 			list_del(&cmd->qe);
@@ -648,10 +606,6 @@ bfa_msgq_attach(struct bfa_msgq *msgq, struct bfa_ioc *ioc)
 	bfa_msgq_rspq_attach(&msgq->rspq, msgq);
 
 	bfa_nw_ioc_mbox_regisr(msgq->ioc, BFI_MC_MSGQ, bfa_msgq_isr, msgq);
-<<<<<<< HEAD
-	bfa_q_qe_init(&msgq->ioc_notify);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_ioc_notify_init(&msgq->ioc_notify, bfa_msgq_notify, msgq);
 	bfa_nw_ioc_notify_register(msgq->ioc, &msgq->ioc_notify);
 }

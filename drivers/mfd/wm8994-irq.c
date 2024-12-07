@@ -1,54 +1,29 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8994-irq.c  --  Interrupt controller support for Wolfson WM8994
  *
  * Copyright 2010 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/gpio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/irq.h>
 #include <linux/mfd/core.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/regmap.h>
-
-#include <linux/mfd/wm8994/core.h>
-=======
 #include <linux/irqdomain.h>
 #include <linux/regmap.h>
 
 #include <linux/mfd/wm8994/core.h>
 #include <linux/mfd/wm8994/pdata.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/wm8994/registers.h>
 
 #include <linux/delay.h>
 
-<<<<<<< HEAD
-static struct regmap_irq wm8994_irqs[] = {
-=======
 static const struct regmap_irq wm8994_irqs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[WM8994_IRQ_TEMP_SHUT] = {
 		.reg_offset = 1,
 		.mask = WM8994_TEMP_SHUT_EINT,
@@ -148,11 +123,7 @@ static const struct regmap_irq wm8994_irqs[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct regmap_irq_chip wm8994_irq_chip = {
-=======
 static const struct regmap_irq_chip wm8994_irq_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "wm8994",
 	.irqs = wm8994_irqs,
 	.num_irqs = ARRAY_SIZE(wm8994_irqs),
@@ -161,8 +132,6 @@ static const struct regmap_irq_chip wm8994_irq_chip = {
 	.status_base = WM8994_INTERRUPT_STATUS_1,
 	.mask_base = WM8994_INTERRUPT_STATUS_1_MASK,
 	.ack_base = WM8994_INTERRUPT_STATUS_1,
-<<<<<<< HEAD
-=======
 	.runtime_pm = true,
 };
 
@@ -206,17 +175,13 @@ static int wm8994_edge_irq_map(struct irq_domain *h, unsigned int virq,
 static const struct irq_domain_ops wm8994_edge_irq_ops = {
 	.map	= wm8994_edge_irq_map,
 	.xlate	= irq_domain_xlate_twocell,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int wm8994_irq_init(struct wm8994 *wm8994)
 {
 	int ret;
-<<<<<<< HEAD
-=======
 	unsigned long irqflags;
 	struct wm8994_pdata *pdata = &wm8994->pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!wm8994->irq) {
 		dev_warn(wm8994->dev,
@@ -225,18 +190,6 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	if (!wm8994->irq_base) {
-		dev_err(wm8994->dev,
-			"No interrupt base specified, no interrupts\n");
-		return 0;
-	}
-
-	ret = regmap_add_irq_chip(wm8994->regmap, wm8994->irq,
-				  IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-				  wm8994->irq_base, &wm8994_irq_chip,
-				  &wm8994->irq_data);
-=======
 	/* select user or default irq flags */
 	irqflags = IRQF_TRIGGER_HIGH | IRQF_ONESHOT;
 	if (pdata->irq_flags)
@@ -287,7 +240,6 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 					  &wm8994->irq_data);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		dev_err(wm8994->dev, "Failed to register IRQ chip: %d\n", ret);
 		return ret;
@@ -298,16 +250,10 @@ int wm8994_irq_init(struct wm8994 *wm8994)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(wm8994_irq_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void wm8994_irq_exit(struct wm8994 *wm8994)
 {
 	regmap_del_irq_chip(wm8994->irq, wm8994->irq_data);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(wm8994_irq_exit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

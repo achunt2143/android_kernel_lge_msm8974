@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NUMA emulation
  */
@@ -9,22 +6,10 @@
 #include <linux/errno.h>
 #include <linux/topology.h>
 #include <linux/memblock.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 
 #include "numa_internal.h"
 
-<<<<<<< HEAD
-static int emu_nid_to_phys[MAX_NUMNODES] __cpuinitdata;
-static char *emu_cmdline __initdata;
-
-void __init numa_emu_cmdline(char *str)
-{
-	emu_cmdline = str;
-=======
 static int emu_nid_to_phys[MAX_NUMNODES];
 static char *emu_cmdline __initdata;
 
@@ -32,7 +17,6 @@ int __init numa_emu_cmdline(char *str)
 {
 	emu_cmdline = str;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init emu_find_memblk_by_nid(int nid, const struct numa_meminfo *mi)
@@ -77,11 +61,7 @@ static int __init emu_setup_memblk(struct numa_meminfo *ei,
 	eb->nid = nid;
 
 	if (emu_nid_to_phys[nid] == NUMA_NO_NODE)
-<<<<<<< HEAD
-		emu_nid_to_phys[nid] = nid;
-=======
 		emu_nid_to_phys[nid] = pb->nid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pb->start += size;
 	if (pb->start >= pb->end) {
@@ -89,35 +69,22 @@ static int __init emu_setup_memblk(struct numa_meminfo *ei,
 		numa_remove_memblk_from(phys_blk, pi);
 	}
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Faking node %d at %016Lx-%016Lx (%LuMB)\n", nid,
-	       eb->start, eb->end, (eb->end - eb->start) >> 20);
-=======
 	printk(KERN_INFO "Faking node %d at [mem %#018Lx-%#018Lx] (%LuMB)\n",
 	       nid, eb->start, eb->end - 1, (eb->end - eb->start) >> 20);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
  * Sets up nr_nodes fake nodes interleaved over physical nodes ranging from addr
-<<<<<<< HEAD
- * to max_addr.  The return value is the number of nodes allocated.
-=======
  * to max_addr.
  *
  * Returns zero on success or negative on error.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int __init split_nodes_interleave(struct numa_meminfo *ei,
 					 struct numa_meminfo *pi,
 					 u64 addr, u64 max_addr, int nr_nodes)
 {
-<<<<<<< HEAD
-	nodemask_t physnode_mask = NODE_MASK_NONE;
-=======
 	nodemask_t physnode_mask = numa_nodes_parsed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 size;
 	int big;
 	int nid = 0;
@@ -152,21 +119,11 @@ static int __init split_nodes_interleave(struct numa_meminfo *ei,
 		return -1;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < pi->nr_blks; i++)
-		node_set(pi->blk[i].nid, physnode_mask);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Continue to fill physical nodes with fake nodes until there is no
 	 * memory left on any of them.
 	 */
-<<<<<<< HEAD
-	while (nodes_weight(physnode_mask)) {
-=======
 	while (!nodes_empty(physnode_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for_each_node_mask(i, physnode_mask) {
 			u64 dma32_end = PFN_PHYS(MAX_DMA32_PFN);
 			u64 start, limit, end;
@@ -241,34 +198,6 @@ static u64 __init find_end_of_node(u64 start, u64 max_addr, u64 size)
 	return end;
 }
 
-<<<<<<< HEAD
-/*
- * Sets up fake nodes of `size' interleaved over physical nodes ranging from
- * `addr' to `max_addr'.  The return value is the number of nodes allocated.
- */
-static int __init split_nodes_size_interleave(struct numa_meminfo *ei,
-					      struct numa_meminfo *pi,
-					      u64 addr, u64 max_addr, u64 size)
-{
-	nodemask_t physnode_mask = NODE_MASK_NONE;
-	u64 min_size;
-	int nid = 0;
-	int i, ret;
-
-	if (!size)
-		return -1;
-	/*
-	 * The limit on emulated nodes is MAX_NUMNODES, so the size per node is
-	 * increased accordingly if the requested size is too small.  This
-	 * creates a uniform distribution of node sizes across the entire
-	 * machine (but not necessarily over physical nodes).
-	 */
-	min_size = (max_addr - addr - mem_hole_size(addr, max_addr)) / MAX_NUMNODES;
-	min_size = max(min_size, FAKE_NODE_MIN_SIZE);
-	if ((min_size & FAKE_NODE_MIN_HASH_MASK) < min_size)
-		min_size = (min_size + FAKE_NODE_MIN_SIZE) &
-						FAKE_NODE_MIN_HASH_MASK;
-=======
 static u64 uniform_size(u64 max_addr, u64 base, u64 hole, int nr_nodes)
 {
 	unsigned long max_pfn = PHYS_PFN(max_addr);
@@ -330,30 +259,18 @@ static int __init split_nodes_size_interleave_uniform(struct numa_meminfo *ei,
 				mem_hole_size(addr, max_addr), nr_nodes);
 	}
 	min_size = ALIGN(max(min_size, FAKE_NODE_MIN_SIZE), FAKE_NODE_MIN_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (size < min_size) {
 		pr_err("Fake node size %LuMB too small, increasing to %LuMB\n",
 			size >> 20, min_size >> 20);
 		size = min_size;
 	}
-<<<<<<< HEAD
-	size &= FAKE_NODE_MIN_HASH_MASK;
-
-	for (i = 0; i < pi->nr_blks; i++)
-		node_set(pi->blk[i].nid, physnode_mask);
-=======
 	size = ALIGN_DOWN(size, FAKE_NODE_MIN_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fill physical nodes with fake nodes of size until there is no memory
 	 * left on any of them.
 	 */
-<<<<<<< HEAD
-	while (nodes_weight(physnode_mask)) {
-=======
 	while (!nodes_empty(physnode_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for_each_node_mask(i, physnode_mask) {
 			u64 dma32_end = PFN_PHYS(MAX_DMA32_PFN);
 			u64 start, limit, end;
@@ -364,12 +281,6 @@ static int __init split_nodes_size_interleave_uniform(struct numa_meminfo *ei,
 				node_clear(i, physnode_mask);
 				continue;
 			}
-<<<<<<< HEAD
-			start = pi->blk[phys_blk].start;
-			limit = pi->blk[phys_blk].end;
-
-			end = find_end_of_node(start, limit, size);
-=======
 
 			start = pi->blk[phys_blk].start;
 			limit = pi->blk[phys_blk].end;
@@ -378,7 +289,6 @@ static int __init split_nodes_size_interleave_uniform(struct numa_meminfo *ei,
 				end = start + size;
 			else
 				end = find_end_of_node(start, limit, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If there won't be at least FAKE_NODE_MIN_SIZE of
 			 * non-reserved memory in ZONE_DMA32 for the next node,
@@ -393,12 +303,8 @@ static int __init split_nodes_size_interleave_uniform(struct numa_meminfo *ei,
 			 * next node, this one must extend to the end of the
 			 * physical node.
 			 */
-<<<<<<< HEAD
-			if (limit - end - mem_hole_size(end, limit) < size)
-=======
 			if ((limit - end - mem_hole_size(end, limit) < size)
 					&& !uniform)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				end = limit;
 
 			ret = emu_setup_memblk(ei, pi, nid++ % MAX_NUMNODES,
@@ -408,9 +314,6 @@ static int __init split_nodes_size_interleave_uniform(struct numa_meminfo *ei,
 				return ret;
 		}
 	}
-<<<<<<< HEAD
-	return 0;
-=======
 	return nid;
 }
 
@@ -436,7 +339,6 @@ static int __init setup_emu2phys_nid(int *dfl_phys_nid)
 	}
 
 	return max_emu_nid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -490,9 +392,6 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 	 * the fixed node size.  Otherwise, if it is just a single number N,
 	 * split the system RAM into N fake nodes.
 	 */
-<<<<<<< HEAD
-	if (strchr(emu_cmdline, 'M') || strchr(emu_cmdline, 'G')) {
-=======
 	if (strchr(emu_cmdline, 'U')) {
 		nodemask_t physnode_mask = numa_nodes_parsed;
 		unsigned long n;
@@ -523,7 +422,6 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 			nid = ret;
 		}
 	} else if (strchr(emu_cmdline, 'M') || strchr(emu_cmdline, 'G')) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 size;
 
 		size = memparse(emu_cmdline, &emu_cmdline);
@@ -531,27 +429,17 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 	} else {
 		unsigned long n;
 
-<<<<<<< HEAD
-		n = simple_strtoul(emu_cmdline, NULL, 0);
-		ret = split_nodes_interleave(&ei, &pi, 0, max_addr, n);
-	}
-=======
 		n = simple_strtoul(emu_cmdline, &emu_cmdline, 0);
 		ret = split_nodes_interleave(&ei, &pi, 0, max_addr, n);
 	}
 	if (*emu_cmdline == ':')
 		emu_cmdline++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret < 0)
 		goto no_emu;
 
 	if (numa_cleanup_meminfo(&ei) < 0) {
-<<<<<<< HEAD
-		pr_warning("NUMA: Warning: constructed meminfo invalid, disabling emulation\n");
-=======
 		pr_warn("NUMA: Warning: constructed meminfo invalid, disabling emulation\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto no_emu;
 	}
 
@@ -559,22 +447,12 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 	if (numa_dist_cnt) {
 		u64 phys;
 
-<<<<<<< HEAD
-		phys = memblock_find_in_range(0, PFN_PHYS(max_pfn_mapped),
-					      phys_size, PAGE_SIZE);
-		if (!phys) {
-			pr_warning("NUMA: Warning: can't allocate copy of distance table, disabling emulation\n");
-			goto no_emu;
-		}
-		memblock_reserve(phys, phys_size);
-=======
 		phys = memblock_phys_alloc_range(phys_size, PAGE_SIZE, 0,
 						 PFN_PHYS(max_pfn_mapped));
 		if (!phys) {
 			pr_warn("NUMA: Warning: can't allocate copy of distance table, disabling emulation\n");
 			goto no_emu;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phys_dist = __va(phys);
 
 		for (i = 0; i < numa_dist_cnt; i++)
@@ -587,29 +465,11 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 	 * Determine the max emulated nid and the default phys nid to use
 	 * for unmapped nodes.
 	 */
-<<<<<<< HEAD
-	max_emu_nid = 0;
-	dfl_phys_nid = NUMA_NO_NODE;
-	for (i = 0; i < ARRAY_SIZE(emu_nid_to_phys); i++) {
-		if (emu_nid_to_phys[i] != NUMA_NO_NODE) {
-			max_emu_nid = i;
-			if (dfl_phys_nid == NUMA_NO_NODE)
-				dfl_phys_nid = emu_nid_to_phys[i];
-		}
-	}
-	if (dfl_phys_nid == NUMA_NO_NODE) {
-		pr_warning("NUMA: Warning: can't determine default physical node, disabling emulation\n");
-		goto no_emu;
-	}
-=======
 	max_emu_nid = setup_emu2phys_nid(&dfl_phys_nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* commit */
 	*numa_meminfo = ei;
 
-<<<<<<< HEAD
-=======
 	/* Make sure numa_nodes_parsed only contains emulated nodes */
 	nodes_clear(numa_nodes_parsed);
 	for (i = 0; i < ARRAY_SIZE(ei.blk); i++)
@@ -617,7 +477,6 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 		    ei.blk[i].nid != NUMA_NO_NODE)
 			node_set(ei.blk[i].nid, numa_nodes_parsed);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Transform __apicid_to_node table to use emulated nids by
 	 * reverse-mapping phys_nid.  The maps should always exist but fall
@@ -645,13 +504,9 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 			int physj = emu_nid_to_phys[j];
 			int dist;
 
-<<<<<<< HEAD
-			if (physi >= numa_dist_cnt || physj >= numa_dist_cnt)
-=======
 			if (get_option(&emu_cmdline, &dist) == 2)
 				;
 			else if (physi >= numa_dist_cnt || physj >= numa_dist_cnt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dist = physi == physj ?
 					LOCAL_DISTANCE : REMOTE_DISTANCE;
 			else
@@ -662,12 +517,7 @@ void __init numa_emulation(struct numa_meminfo *numa_meminfo, int numa_dist_cnt)
 	}
 
 	/* free the copied physical distance table */
-<<<<<<< HEAD
-	if (phys_dist)
-		memblock_free(__pa(phys_dist), phys_size);
-=======
 	memblock_free(phys_dist, phys_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 no_emu:
@@ -677,11 +527,7 @@ no_emu:
 }
 
 #ifndef CONFIG_DEBUG_PER_CPU_MAPS
-<<<<<<< HEAD
-void __cpuinit numa_add_cpu(int cpu)
-=======
 void numa_add_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int physnid, nid;
 
@@ -699,11 +545,7 @@ void numa_add_cpu(int cpu)
 			cpumask_set_cpu(cpu, node_to_cpumask_map[nid]);
 }
 
-<<<<<<< HEAD
-void __cpuinit numa_remove_cpu(int cpu)
-=======
 void numa_remove_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -711,11 +553,7 @@ void numa_remove_cpu(int cpu)
 		cpumask_clear_cpu(cpu, node_to_cpumask_map[i]);
 }
 #else	/* !CONFIG_DEBUG_PER_CPU_MAPS */
-<<<<<<< HEAD
-static void __cpuinit numa_set_cpumask(int cpu, bool enable)
-=======
 static void numa_set_cpumask(int cpu, bool enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nid, physnid;
 
@@ -735,20 +573,12 @@ static void numa_set_cpumask(int cpu, bool enable)
 	}
 }
 
-<<<<<<< HEAD
-void __cpuinit numa_add_cpu(int cpu)
-=======
 void numa_add_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	numa_set_cpumask(cpu, true);
 }
 
-<<<<<<< HEAD
-void __cpuinit numa_remove_cpu(int cpu)
-=======
 void numa_remove_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	numa_set_cpumask(cpu, false);
 }

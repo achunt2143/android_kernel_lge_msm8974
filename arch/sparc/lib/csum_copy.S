@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* csum_copy.S: Checksum+copy code for sparc64
  *
  * Copyright (C) 2005 David S. Miller <davem@davemloft.net>
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __KERNEL__
 #define GLOBAL_SPARE	%g7
 #else
@@ -72,18 +66,12 @@
 	 add		%o5, %o4, %o4
 
 	.globl		FUNC_NAME
-<<<<<<< HEAD
-FUNC_NAME:		/* %o0=src, %o1=dst, %o2=len, %o3=sum */
-	LOAD(prefetch, %o0 + 0x000, #n_reads)
-	xor		%o0, %o1, %g1
-=======
 	.type		FUNC_NAME,#function
 	EXPORT_SYMBOL(FUNC_NAME)
 FUNC_NAME:		/* %o0=src, %o1=dst, %o2=len */
 	LOAD(prefetch, %o0 + 0x000, #n_reads)
 	xor		%o0, %o1, %g1
 	mov		-1, %o3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clr		%o4
 	andcc		%g1, 0x3, %g0
 	bne,pn		%icc, 95f

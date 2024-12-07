@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 
 /*
@@ -9,31 +6,10 @@
  *
  *	Copyright (C) 1996-2000  Thomas Sailer (sailer@ife.ee.ethz.ch)
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Please note that the GPL allows you to use the driver, NOT the radio.
  *  In order to use the radio, you need a license from the communications
  *  authority of your country.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Supported modems
  *
  *  par96:  This is a modem for 9600 baud FSK compatible to the G3RUH standard.
@@ -55,19 +31,11 @@
  *          built in DCD circuitry. The driver should therefore be configured
  *          for hardware DCD.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Command line options (insmod command line)
  *
  *  mode     driver mode string. Valid choices are par96 and picpar.
  *  iobase   base address of the port; common values are 0x378, 0x278, 0x3bc
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  History:
  *   0.1  26.06.1996  Adapted from baycom.c and made network driver interface
  *        18.10.1996  Changed to new user space access routines (copy_{to,from}_user)
@@ -102,11 +70,7 @@
 #include <linux/bitops.h>
 #include <linux/jiffies.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --------------------------------------------------------------------- */
 
@@ -176,11 +140,7 @@ struct baycom_state {
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static void __inline__ baycom_int_freq(struct baycom_state *bc)
-=======
 static inline void baycom_int_freq(struct baycom_state *bc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef BAYCOM_DEBUG
 	unsigned long cur_jiffies = jiffies;
@@ -216,11 +176,7 @@ static inline void baycom_int_freq(struct baycom_state *bc)
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static __inline__ void par96_tx(struct net_device *dev, struct baycom_state *bc)
-=======
 static inline void par96_tx(struct net_device *dev, struct baycom_state *bc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned int data = hdlcdrv_getbits(&bc->hdrv);
@@ -244,11 +200,7 @@ static inline void par96_tx(struct net_device *dev, struct baycom_state *bc)
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static __inline__ void par96_rx(struct net_device *dev, struct baycom_state *bc)
-=======
 static inline void par96_rx(struct net_device *dev, struct baycom_state *bc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned int data, mask, mask2, descx;
@@ -343,13 +295,9 @@ static void par96_wakeup(void *handle)
 static int par96_open(struct net_device *dev)
 {
 	struct baycom_state *bc = netdev_priv(dev);
-<<<<<<< HEAD
-	struct parport *pp;
-=======
 	struct pardev_cb par_cb;
 	struct parport *pp;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev || !bc)
 		return -ENXIO;
@@ -370,10 +318,6 @@ static int par96_open(struct net_device *dev)
 	}
 	memset(&bc->modem, 0, sizeof(bc->modem));
 	bc->hdrv.par.bitrate = 9600;
-<<<<<<< HEAD
-	bc->pdev = parport_register_device(pp, dev->name, NULL, par96_wakeup, 
-				 par96_interrupt, PARPORT_DEV_EXCL, dev);
-=======
 	memset(&par_cb, 0, sizeof(par_cb));
 	par_cb.wakeup = par96_wakeup;
 	par_cb.irq_func = par96_interrupt;
@@ -389,7 +333,6 @@ static int par96_open(struct net_device *dev)
 		return -ENODEV;
 	}
 	bc->pdev = parport_register_dev_model(pp, dev->name, &par_cb, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parport_put_port(pp);
 	if (!bc->pdev) {
 		printk(KERN_ERR "baycom_par: cannot register parport at 0x%lx\n", dev->base_addr);
@@ -437,20 +380,12 @@ static int par96_close(struct net_device *dev)
  * ===================== hdlcdrv driver interface =========================
  */
 
-<<<<<<< HEAD
-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
-=======
 static int baycom_ioctl(struct net_device *dev, void __user *data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct hdlcdrv_ioctl *hi, int cmd);
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static struct hdlcdrv_ops par96_ops = {
-=======
 static const struct hdlcdrv_ops par96_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.drvname = bc_drvname,
 	.drvinfo = bc_drvinfo,
 	.open    = par96_open,
@@ -473,11 +408,7 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
-=======
 static int baycom_ioctl(struct net_device *dev, void __user *data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct hdlcdrv_ioctl *hi, int cmd)
 {
 	struct baycom_state *bc;
@@ -497,11 +428,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 
 	case HDLCDRVCTL_GETMODE:
 		strcpy(hi->data.modename, bc->options ? "par96" : "picpar");
-<<<<<<< HEAD
-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
-=======
 		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		return 0;
 
@@ -513,11 +440,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 
 	case HDLCDRVCTL_MODELIST:
 		strcpy(hi->data.modename, "par96,picpar");
-<<<<<<< HEAD
-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
-=======
 		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		return 0;
 
@@ -526,11 +449,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 
 	}
 
-<<<<<<< HEAD
-	if (copy_from_user(&bi, ifr->ifr_data, sizeof(bi)))
-=======
 	if (copy_from_user(&bi, data, sizeof(bi)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	switch (bi.cmd) {
 	default:
@@ -545,11 +464,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 #endif /* BAYCOM_DEBUG */
 
 	}
-<<<<<<< HEAD
-	if (copy_to_user(ifr->ifr_data, &bi, sizeof(bi)))
-=======
 	if (copy_to_user(data, &bi, sizeof(bi)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 
@@ -565,11 +480,7 @@ static int iobase[NR_PORTS] = { 0x378, };
 
 module_param_array(mode, charp, NULL, 0);
 MODULE_PARM_DESC(mode, "baycom operating mode; eg. par96 or picpar");
-<<<<<<< HEAD
-module_param_array(iobase, int, NULL, 0);
-=======
 module_param_hw_array(iobase, int, ioport, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(iobase, "baycom io base address");
 
 MODULE_AUTHOR("Thomas M. Sailer, sailer@ife.ee.ethz.ch, hb9jnx@hb9w.che.eu");
@@ -578,14 +489,6 @@ MODULE_LICENSE("GPL");
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int __init init_baycompar(void)
-{
-	int i, found = 0;
-	char set_hw = 1;
-
-	printk(bc_drvinfo);
-=======
 static int baycom_par_probe(struct pardevice *par_dev)
 {
 	struct device_driver *drv = par_dev->dev.driver;
@@ -614,7 +517,6 @@ static int __init init_baycompar(void)
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * register net devices
 	 */
@@ -643,15 +545,10 @@ static int __init init_baycompar(void)
 		baycom_device[i] = dev;
 	}
 
-<<<<<<< HEAD
-	if (!found)
-		return -ENXIO;
-=======
 	if (!found) {
 		parport_unregister_driver(&baycom_par_driver);
 		return -ENXIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -665,10 +562,7 @@ static void __exit cleanup_baycompar(void)
 		if (dev)
 			hdlcdrv_unregister(dev);
 	}
-<<<<<<< HEAD
-=======
 	parport_unregister_driver(&baycom_par_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(init_baycompar);

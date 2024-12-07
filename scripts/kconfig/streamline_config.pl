@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-#!/usr/bin/perl -w
-#
-# Copyright 2005-2009 - Steven Rostedt
-# Licensed under the terms of the GNU GPL License version 2
-=======
 #!/usr/bin/env perl
 # SPDX-License-Identifier: GPL-2.0
 #
 # Copyright 2005-2009 - Steven Rostedt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 #  It's simple enough to figure out how this works.
 #  If not, then you can ask me at stripconfig@goodmis.org
@@ -28,11 +21,7 @@
 #  1. Boot up the kernel that you want to stream line the config on.
 #  2. Change directory to the directory holding the source of the
 #       kernel that you just booted.
-<<<<<<< HEAD
-#  3. Copy the configuraton file to this directory as .config
-=======
 #  3. Copy the configuration file to this directory as .config
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  4. Have all your devices that you need modules for connected and
 #      operational (make sure that their corresponding modules are loaded)
 #  5. Run this script redirecting the output to some other file
@@ -53,12 +42,6 @@
 #    mv config_strip .config
 #    make oldconfig
 #
-<<<<<<< HEAD
-use strict;
-use Getopt::Long;
-
-my $config = ".config";
-=======
 use warnings;
 use strict;
 use Getopt::Long;
@@ -72,7 +55,6 @@ sub dprint {
     return if (!$debugprint);
     print STDERR @_;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 my $uname = `uname -r`;
 chomp $uname;
@@ -117,11 +99,7 @@ my @searchconfigs = (
 	},
 );
 
-<<<<<<< HEAD
-sub find_config {
-=======
 sub read_config {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     foreach my $conf (@searchconfigs) {
 	my $file = $conf->{"file"};
 
@@ -136,24 +114,15 @@ sub read_config {
 
 	print STDERR "using config: '$file'\n";
 
-<<<<<<< HEAD
-	open(CIN, "$exec $file |") || die "Failed to run $exec $file";
-	return;
-=======
 	open(my $infile, '-|', "$exec $file") || die "Failed to run $exec $file";
 	my @x = <$infile>;
 	close $infile;
 	return @x;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
     die "No config file found";
 }
 
-<<<<<<< HEAD
-find_config;
-=======
 my @config_file = read_config;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Parse options
 my $localmodconfig = 0;
@@ -163,11 +132,7 @@ GetOptions("localmodconfig" => \$localmodconfig,
 	   "localyesconfig" => \$localyesconfig);
 
 # Get the build source and top level Kconfig file (passed in)
-<<<<<<< HEAD
-my $ksource = $ARGV[0];
-=======
 my $ksource = ($ARGV[0] ? $ARGV[0] : '.');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $kconfig = $ARGV[1];
 my $lsmod_file = $ENV{'LSMOD'};
 
@@ -178,10 +143,7 @@ my %depends;
 my %selects;
 my %prompts;
 my %objects;
-<<<<<<< HEAD
-=======
 my %config2kfile;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $var;
 my $iflevel = 0;
 my @ifdeps;
@@ -194,10 +156,6 @@ sub read_kconfig {
 
     my $state = "NONE";
     my $config;
-<<<<<<< HEAD
-    my @kconfigs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     my $cont = 0;
     my $line;
@@ -206,16 +164,6 @@ sub read_kconfig {
     my $last_source = "";
 
     # Check for any environment variables used
-<<<<<<< HEAD
-    while ($source =~ /\$(\w+)/ && $last_source ne $source) {
-	my $env = $1;
-	$last_source = $source;
-	$source =~ s/\$$env/$ENV{$env}/;
-    }
-
-    open(KIN, "$source") || die "Can't open $kconfig";
-    while (<KIN>) {
-=======
     while ($source =~ /\$\((\w+)\)/ && $last_source ne $source) {
 	my $env = $1;
 	$last_source = $source;
@@ -224,7 +172,6 @@ sub read_kconfig {
 
     open(my $kinfile, '<', $source) || die "Can't open $source";
     while (<$kinfile>) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chomp;
 
 	# Make sure that lines ending with \ continue
@@ -241,10 +188,6 @@ sub read_kconfig {
 	$cont = 0;
 
 	# collect any Kconfig sources
-<<<<<<< HEAD
-	if (/^source\s*"(.*)"/) {
-	    $kconfigs[$#kconfigs+1] = $1;
-=======
 	if (/^source\s+"?([^"]+)/) {
 	    my $kconfig = $1;
 	    # prevent reading twice.
@@ -253,20 +196,15 @@ sub read_kconfig {
 		read_kconfig($kconfig);
 	    }
 	    next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	# configs found
 	if (/^\s*(menu)?config\s+(\S+)\s*$/) {
 	    $state = "NEW";
 	    $config = $2;
-<<<<<<< HEAD
-
-=======
 	    $config2kfile{"CONFIG_$config"} = $kconfig;
 
 	    # Add depends for 'if' nesting
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    for (my $i = 0; $i < $iflevel; $i++) {
 		if ($i) {
 		    $depends{$config} .= " " . $ifdeps[$i];
@@ -282,19 +220,6 @@ sub read_kconfig {
 	    $depends{$config} = $1;
 	} elsif ($state eq "DEP" && /^\s*depends\s+on\s+(.*)$/) {
 	    $depends{$config} .= " " . $1;
-<<<<<<< HEAD
-
-	# Get the configs that select this config
-	} elsif ($state ne "NONE" && /^\s*select\s+(\S+)/) {
-	    if (defined($selects{$1})) {
-		$selects{$1} .= " " . $config;
-	    } else {
-		$selects{$1} = $config;
-	    }
-
-	# configs without prompts must be selected
-	} elsif ($state ne "NONE" && /^\s*tristate\s\S/) {
-=======
 	} elsif ($state eq "DEP" && /^\s*def(_(bool|tristate)|ault)\s+(\S.*)$/) {
 	    my $dep = $3;
 	    if ($dep !~ /^\s*(y|m|n)\s*$/) {
@@ -314,7 +239,6 @@ sub read_kconfig {
 
 	# configs without prompts must be selected
 	} elsif ($state ne "NONE" && /^\s*(tristate\s+\S|prompt\b)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    # note if the config has a prompt
 	    $prompts{$config} = 1;
 
@@ -333,39 +257,19 @@ sub read_kconfig {
 
 	    $iflevel-- if ($iflevel);
 
-<<<<<<< HEAD
-	# stop on "help"
-	} elsif (/^\s*help\s*$/) {
-	    $state = "NONE";
-	}
-    }
-    close(KIN);
-
-    # read in any configs that were found.
-    foreach $kconfig (@kconfigs) {
-	if (!defined($read_kconfigs{$kconfig})) {
-	    $read_kconfigs{$kconfig} = 1;
-	    read_kconfig($kconfig);
-	}
-    }
-=======
 	# stop on "help" and keywords that end a menu entry
 	} elsif (/^\s*(---)?help(---)?\s*$/ || /^(comment|choice|menu)\b/) {
 	    $state = "NONE";
 	}
     }
     close($kinfile);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 if ($kconfig) {
     read_kconfig($kconfig);
 }
 
-<<<<<<< HEAD
-=======
 # Makefiles can use variables to define their dependencies
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub convert_vars {
     my ($line, %vars) = @_;
 
@@ -394,13 +298,8 @@ foreach my $makefile (@makefiles) {
     my $line = "";
     my %make_vars;
 
-<<<<<<< HEAD
-    open(MIN,$makefile) || die "Can't open $makefile";
-    while (<MIN>) {
-=======
     open(my $infile, '<', $makefile) || die "Can't open $makefile";
     while (<$infile>) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	# if this line ends with a backslash, continue
 	chomp;
 	if (/^(.*)\\$/) {
@@ -414,18 +313,11 @@ foreach my $makefile (@makefiles) {
 
 	my $objs;
 
-<<<<<<< HEAD
-	$_ = convert_vars($_, %make_vars);
-
-	# collect objects after obj-$(CONFIG_FOO_BAR)
-	if (/obj-\$\((CONFIG_[^\)]*)\)\s*[+:]?=\s*(.*)/) {
-=======
 	# Convert variables in a line (could define configs)
 	$_ = convert_vars($_, %make_vars);
 
 	# collect objects after obj-$(CONFIG_FOO_BAR)
 	if (/obj-\$[({](CONFIG_[^})]*)[)}]\s*[+:]?=\s*(.*)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    $var = $1;
 	    $objs = $2;
 
@@ -454,18 +346,11 @@ foreach my $makefile (@makefiles) {
 	    }
 	}
     }
-<<<<<<< HEAD
-    close(MIN);
-}
-
-my %modules;
-=======
     close($infile);
 }
 
 my %modules;
 my $linfile;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if (defined($lsmod_file)) {
     if ( ! -f $lsmod_file) {
@@ -475,20 +360,10 @@ if (defined($lsmod_file)) {
 		die "$lsmod_file not found";
 	}
     }
-<<<<<<< HEAD
-    if ( -x $lsmod_file) {
-	# the file is executable, run it
-	open(LIN, "$lsmod_file|");
-    } else {
-	# Just read the contents
-	open(LIN, "$lsmod_file");
-    }
-=======
 
     my $otype = ( -x $lsmod_file) ? '-|' : '<';
     open($linfile, $otype, $lsmod_file);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } else {
 
     # see what modules are loaded on this system
@@ -499,52 +374,32 @@ if (defined($lsmod_file)) {
 	    $lsmod = "$dir/lsmod";
 	    last;
 	}
-<<<<<<< HEAD
-}
-=======
     }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!defined($lsmod)) {
 	# try just the path
 	$lsmod = "lsmod";
     }
 
-<<<<<<< HEAD
-    open(LIN,"$lsmod|") || die "Can not call lsmod with $lsmod";
-}
-
-while (<LIN>) {
-=======
     open($linfile, '-|', $lsmod) || die "Can not call lsmod with $lsmod";
 }
 
 while (<$linfile>) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	next if (/^Module/);  # Skip the first line.
 	if (/^(\S+)/) {
 		$modules{$1} = 1;
 	}
 }
-<<<<<<< HEAD
-close (LIN);
-
-# add to the configs hash all configs that are needed to enable
-# a loaded module.
-=======
 close ($linfile);
 
 # add to the configs hash all configs that are needed to enable
 # a loaded module. This is a direct obj-${CONFIG_FOO} += bar.o
 # where we know we need bar.o so we add FOO to the list.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my %configs;
 foreach my $module (keys(%modules)) {
     if (defined($objects{$module})) {
 	my @arr = @{$objects{$module}};
 	foreach my $conf (@arr) {
 	    $configs{$conf} = $module;
-<<<<<<< HEAD
-=======
 	    dprint "$conf added by direct ($module)\n";
 	    if ($debugprint) {
 		my $c=$conf;
@@ -555,7 +410,6 @@ foreach my $module (keys(%modules)) {
 		    dprint " no deps\n";
 		}
 	    }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
     } else {
 	# Most likely, someone has a custom (binary?) module loaded.
@@ -563,11 +417,6 @@ foreach my $module (keys(%modules)) {
     }
 }
 
-<<<<<<< HEAD
-my $valid = "A-Za-z_0-9";
-my $repeat = 1;
-
-=======
 # Read the current config, and see what is enabled. We want to
 # ignore configs that we would not enable anyway.
 
@@ -586,7 +435,6 @@ my $repeat = 1;
 
 my $depconfig;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Note, we do not care about operands (like: &&, ||, !) we want to add any
 # config that is in the depend list of another config. This script does
@@ -595,11 +443,7 @@ my $depconfig;
 # to keep on. If A was on in the original config, B would not have been
 # and B would not be turned on by this script.
 #
-<<<<<<< HEAD
-sub parse_config_dep_select
-=======
 sub parse_config_depends
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     my ($p) = @_;
 
@@ -610,22 +454,16 @@ sub parse_config_depends
 
 	    $p =~ s/^[^$valid]*[$valid]+//;
 
-<<<<<<< HEAD
-=======
 	    # We only need to process if the depend config is a module
 	    if (!defined($orig_configs{$conf}) || $orig_configs{$conf} eq "y") {
 		next;
 	    }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    if (!defined($configs{$conf})) {
 		# We must make sure that this config has its
 		# dependencies met.
 		$repeat = 1; # do again
-<<<<<<< HEAD
-=======
 		dprint "$conf selected by depend $depconfig\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		$configs{$conf} = 1;
 	    }
 	} else {
@@ -634,33 +472,6 @@ sub parse_config_depends
     }
 }
 
-<<<<<<< HEAD
-while ($repeat) {
-    $repeat = 0;
-
-    foreach my $config (keys %configs) {
-	$config =~ s/^CONFIG_//;
-
-	if (defined($depends{$config})) {
-	    # This config has dependencies. Make sure they are also included
-	    parse_config_dep_select $depends{$config};
-	}
-
-	if (defined($prompts{$config}) || !defined($selects{$config})) {
-	    next;
-	}
-
-	# config has no prompt and must be selected.
-	parse_config_dep_select $selects{$config};
-    }
-}
-
-my %setconfigs;
-
-# Finally, read the .config file and turn off any module enabled that
-# we could not find a reason to keep enabled.
-while(<CIN>) {
-=======
 # Select is treated a bit differently than depends. We call this
 # when a config has no prompt and requires another config to be
 # selected. We use to just select all configs that selected this
@@ -804,7 +615,6 @@ sub in_preserved_kconfigs {
 # we could not find a reason to keep enabled.
 foreach my $line (@config_file) {
     $_ = $line;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     if (/CONFIG_IKCONFIG/) {
 	if (/# CONFIG_IKCONFIG is not set/) {
@@ -818,16 +628,6 @@ foreach my $line (@config_file) {
 	next;
     }
 
-<<<<<<< HEAD
-    if (/^(CONFIG.*)=(m|y)/) {
-	if (defined($configs{$1})) {
-	    if ($localyesconfig) {
-	        $setconfigs{$1} = 'y';
-		print "$1=y\n";
-		next;
-	    } else {
-	        $setconfigs{$1} = $2;
-=======
     if (/CONFIG_MODULE_SIG_KEY="(.+)"/) {
 	my $orig_cert = $1;
 	my $default_cert = "certs/signing_key.pem";
@@ -875,7 +675,6 @@ foreach my $line (@config_file) {
 		next;
 	    } else {
 		$setconfigs{$1} = $2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    }
 	} elsif ($2 eq "m") {
 	    print "# $1 is not set\n";
@@ -884,10 +683,6 @@ foreach my $line (@config_file) {
     }
     print;
 }
-<<<<<<< HEAD
-close(CIN);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Integrity check, make sure all modules that we want enabled do
 # indeed have their configs set.
@@ -907,8 +702,5 @@ foreach my $module (keys(%modules)) {
 	print STDERR "\n";
     }
 }
-<<<<<<< HEAD
-=======
 
 # vim: softtabstop=4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

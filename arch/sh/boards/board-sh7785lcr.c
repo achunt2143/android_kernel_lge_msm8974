@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas Technology Corp. R0P7785LC0011RL Support.
  *
  * Copyright (C) 2008  Yoshihiro Shimoda
  * Copyright (C) 2009  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -24,24 +14,15 @@
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/i2c-pca-platform.h>
-#include <linux/i2c-algo-pca.h>
-#include <linux/usb/r8a66597.h>
-=======
 #include <linux/platform_data/i2c-pca-platform.h>
 #include <linux/i2c-algo-pca.h>
 #include <linux/usb/r8a66597.h>
 #include <linux/sh_intc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-=======
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/sh7785lcr.h>
 #include <cpu/sh7785.h>
 #include <asm/heartbeat.h>
@@ -123,13 +104,8 @@ static struct resource r8a66597_usb_host_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 2,
-		.end	= 2,
-=======
 		.start	= evt2irq(0x240),
 		.end	= evt2irq(0x240),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ | IRQF_TRIGGER_LOW,
 	},
 };
@@ -158,11 +134,7 @@ static struct resource sm501_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[2]	= {
-<<<<<<< HEAD
-		.start	= 10,
-=======
 		.start	= evt2irq(0x340),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -250,13 +222,8 @@ static struct resource i2c_proto_resources[] = {
 		.flags	= IORESOURCE_MEM | IORESOURCE_MEM_8BIT,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 12,
-		.end	= 12,
-=======
 		.start	= evt2irq(0x380),
 		.end	= evt2irq(0x380),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -268,21 +235,12 @@ static struct resource i2c_resources[] = {
 		.flags	= IORESOURCE_MEM | IORESOURCE_MEM_8BIT,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start	= 12,
-		.end	= 12,
-=======
 		.start	= evt2irq(0x380),
 		.end	= evt2irq(0x380),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
 
-<<<<<<< HEAD
-static struct i2c_pca9564_pf_platform_data i2c_platform_data = {
-	.gpio			= 0,
-=======
 static struct gpiod_lookup_table i2c_gpio_table = {
 	.dev_id = "i2c.0",
 	.table = {
@@ -292,7 +250,6 @@ static struct gpiod_lookup_table i2c_gpio_table = {
 };
 
 static struct i2c_pca9564_pf_platform_data i2c_platform_data = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.i2c_clock_speed	= I2C_PCA_CON_330kHz,
 	.timeout		= HZ,
 };
@@ -331,10 +288,7 @@ static int __init sh7785lcr_devices_setup(void)
 		i2c_device.num_resources = ARRAY_SIZE(i2c_proto_resources);
 	}
 
-<<<<<<< HEAD
-=======
 	gpiod_add_lookup_table(&i2c_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(sh7785lcr_devices,
 				    ARRAY_SIZE(sh7785lcr_devices));
 }
@@ -387,11 +341,7 @@ static void __init sh7785lcr_setup(char **cmdline_p)
 	pm_power_off = sh7785lcr_power_off;
 
 	/* sm501 DRAM configuration */
-<<<<<<< HEAD
-	sm501_reg = ioremap_nocache(SM107_REG_ADDR, SM501_DRAM_CONTROL);
-=======
 	sm501_reg = ioremap(SM107_REG_ADDR, SM501_DRAM_CONTROL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sm501_reg) {
 		printk(KERN_ERR "%s: ioremap error.\n", __func__);
 		return;

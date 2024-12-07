@@ -1,31 +1,14 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 comment "S/390 character device drivers"
 	depends on S390
 
 config TN3270
 	def_tristate y
 	prompt "Support for locally attached 3270 terminals"
-<<<<<<< HEAD
-	depends on CCW
-	help
-	  Include support for IBM 3270 terminals.
-
-config TN3270_TTY
-	def_tristate y
-	prompt "Support for tty input/output on 3270 terminals"
-	depends on TN3270
-	help
-	  Include support for using an IBM 3270 terminal as a Linux tty.
-
-=======
 	depends on CCW && TTY
 	help
 	  Include support for IBM 3270 terminals.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config TN3270_FS
 	def_tristate m
 	prompt "Support for fullscreen applications on 3270 terminals"
@@ -36,11 +19,7 @@ config TN3270_FS
 config TN3270_CONSOLE
 	def_bool y
 	prompt "Support for console on 3270 terminal"
-<<<<<<< HEAD
-	depends on TN3270=y && TN3270_TTY=y
-=======
 	depends on TN3270=y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Include support for using an IBM 3270 terminal as a Linux system
 	  console.  Available only if 3270 support is compiled in statically.
@@ -48,11 +27,7 @@ config TN3270_CONSOLE
 config TN3215
 	def_bool y
 	prompt "Support for 3215 line mode terminal"
-<<<<<<< HEAD
-	depends on CCW
-=======
 	depends on CCW && TTY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Include support for IBM 3215 line-mode terminals.
 
@@ -70,11 +45,7 @@ config CCW_CONSOLE
 config SCLP_TTY
 	def_bool y
 	prompt "Support for SCLP line mode terminal"
-<<<<<<< HEAD
-	depends on S390
-=======
 	depends on S390 && TTY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Include support for IBM SCLP line-mode terminals.
 
@@ -89,11 +60,7 @@ config SCLP_CONSOLE
 config SCLP_VT220_TTY
 	def_bool y
 	prompt "Support for SCLP VT220-compatible terminal"
-<<<<<<< HEAD
-	depends on S390
-=======
 	depends on S390 && TTY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Include support for an IBM SCLP VT220-compatible terminal.
 
@@ -105,31 +72,6 @@ config SCLP_VT220_CONSOLE
 	  Include support for using an IBM SCLP VT220-compatible terminal as a
 	  Linux system console.
 
-<<<<<<< HEAD
-config SCLP_CPI
-	def_tristate m
-	prompt "Control-Program Identification"
-	depends on S390
-	help
-	  This option enables the hardware console interface for system
-	  identification. This is commonly used for workload management and
-	  gives you a nice name for the system on the service element.
-	  Please select this option as a module since built-in operation is
-	  completely untested.
-	  You should only select this option if you know what you are doing,
-	  need this feature and intend to run your kernel in LPAR.
-
-config SCLP_ASYNC
-	def_tristate m
-	prompt "Support for Call Home via Asynchronous SCLP Records"
-	depends on S390
-	help
-	  This option enables the call home function, which is able to inform
-	  the service element and connected organisations about a kernel panic.
-	  You should only select this option if you know what you are doing,
-	  want for inform other people about your kernel panics,
-	  need this feature and intend to run your kernel in LPAR.
-=======
 config HMC_DRV
 	def_tristate m
 	prompt "Support for file transfers from HMC drive CD/DVD-ROM"
@@ -161,7 +103,6 @@ config S390_UV_UAPI
 	  Using IOCTLs one can interact with the UV.
 	  The device is only available if the Ultravisor
 	  Facility (158) is present.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config S390_TAPE
 	def_tristate m
@@ -212,16 +153,11 @@ config VMCP
 	def_bool y
 	prompt "Support for the z/VM CP interface"
 	depends on S390
-<<<<<<< HEAD
-=======
 	select CMA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this option if you want to be able to interact with the control
 	  program on z/VM
 
-<<<<<<< HEAD
-=======
 config VMCP_CMA_SIZE
 	int "Memory in MiB reserved for z/VM CP interface"
 	default "4"
@@ -232,7 +168,6 @@ config VMCP_CMA_SIZE
 	  allocations. The default can be changed with the kernel command line
 	  parameter "vmcp_cma".
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MONREADER
 	def_tristate m
 	prompt "API for reading z/VM monitor service records"
@@ -253,7 +188,3 @@ config S390_VMUR
 	depends on S390
 	help
 	  Character device driver for z/VM reader, puncher and printer.
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

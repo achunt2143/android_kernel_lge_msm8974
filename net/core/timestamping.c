@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PTP 1588 clock support - support for timestamping in PHY devices
  *
  * Copyright (C) 2010 OMICRON electronics GmbH
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/errqueue.h>
 #include <linux/phy.h>
@@ -30,64 +10,17 @@
 #include <linux/skbuff.h>
 #include <linux/export.h>
 
-<<<<<<< HEAD
-static struct sock_filter ptp_filter[] = {
-	PTP_FILTER
-};
-
-static unsigned int classify(const struct sk_buff *skb)
-{
-	if (likely(skb->dev &&
-		   skb->dev->phydev &&
-		   skb->dev->phydev->drv))
-		return sk_run_filter(skb, ptp_filter);
-=======
 static unsigned int classify(const struct sk_buff *skb)
 {
 	if (likely(skb->dev && skb->dev->phydev &&
 		   skb->dev->phydev->mii_ts))
 		return ptp_classify_raw(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return PTP_CLASS_NONE;
 }
 
 void skb_clone_tx_timestamp(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct phy_device *phydev;
-	struct sk_buff *clone;
-	struct sock *sk = skb->sk;
-	unsigned int type;
-
-	if (!sk)
-		return;
-
-	type = classify(skb);
-
-	switch (type) {
-	case PTP_CLASS_V1_IPV4:
-	case PTP_CLASS_V1_IPV6:
-	case PTP_CLASS_V2_IPV4:
-	case PTP_CLASS_V2_IPV6:
-	case PTP_CLASS_V2_L2:
-	case PTP_CLASS_V2_VLAN:
-		phydev = skb->dev->phydev;
-		if (likely(phydev->drv->txtstamp)) {
-			if (!atomic_inc_not_zero(&sk->sk_refcnt))
-				return;
-			clone = skb_clone(skb, GFP_ATOMIC);
-			if (!clone) {
-				sock_put(sk);
-				return;
-			}
-			clone->sk = sk;
-			phydev->drv->txtstamp(phydev, clone, type);
-		}
-		break;
-	default:
-		break;
-=======
 	struct mii_timestamper *mii_ts;
 	struct sk_buff *clone;
 	unsigned int type;
@@ -105,66 +38,10 @@ void skb_clone_tx_timestamp(struct sk_buff *skb)
 		if (!clone)
 			return;
 		mii_ts->txtstamp(mii_ts, clone, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(skb_clone_tx_timestamp);
 
-<<<<<<< HEAD
-void skb_complete_tx_timestamp(struct sk_buff *skb,
-			       struct skb_shared_hwtstamps *hwtstamps)
-{
-	struct sock *sk = skb->sk;
-	struct sock_exterr_skb *serr;
-	int err;
-
-	if (!hwtstamps) {
-		sock_put(sk);
-		kfree_skb(skb);
-		return;
-	}
-
-	*skb_hwtstamps(skb) = *hwtstamps;
-	serr = SKB_EXT_ERR(skb);
-	memset(serr, 0, sizeof(*serr));
-	serr->ee.ee_errno = ENOMSG;
-	serr->ee.ee_origin = SO_EE_ORIGIN_TIMESTAMPING;
-	skb->sk = NULL;
-	err = sock_queue_err_skb(sk, skb);
-	sock_put(sk);
-	if (err)
-		kfree_skb(skb);
-}
-EXPORT_SYMBOL_GPL(skb_complete_tx_timestamp);
-
-bool skb_defer_rx_timestamp(struct sk_buff *skb)
-{
-	struct phy_device *phydev;
-	unsigned int type;
-
-	if (skb_headroom(skb) < ETH_HLEN)
-		return false;
-	__skb_push(skb, ETH_HLEN);
-
-	type = classify(skb);
-
-	__skb_pull(skb, ETH_HLEN);
-
-	switch (type) {
-	case PTP_CLASS_V1_IPV4:
-	case PTP_CLASS_V1_IPV6:
-	case PTP_CLASS_V2_IPV4:
-	case PTP_CLASS_V2_IPV6:
-	case PTP_CLASS_V2_L2:
-	case PTP_CLASS_V2_VLAN:
-		phydev = skb->dev->phydev;
-		if (likely(phydev->drv->rxtstamp))
-			return phydev->drv->rxtstamp(phydev, skb, type);
-		break;
-	default:
-		break;
-	}
-=======
 bool skb_defer_rx_timestamp(struct sk_buff *skb)
 {
 	struct mii_timestamper *mii_ts;
@@ -188,16 +65,7 @@ bool skb_defer_rx_timestamp(struct sk_buff *skb)
 	mii_ts = skb->dev->phydev->mii_ts;
 	if (likely(mii_ts->rxtstamp))
 		return mii_ts->rxtstamp(mii_ts, skb, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return false;
 }
 EXPORT_SYMBOL_GPL(skb_defer_rx_timestamp);
-<<<<<<< HEAD
-
-void __init skb_timestamping_init(void)
-{
-	BUG_ON(sk_chk_filter(ptp_filter, ARRAY_SIZE(ptp_filter)));
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

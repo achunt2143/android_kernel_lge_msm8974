@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_WAVEFRONT_H__
 #define __SOUND_WAVEFRONT_H__
 
@@ -9,55 +6,8 @@
  *  Driver for Turtle Beach Wavefront cards (Maui,Tropez,Tropez+)
  *
  *  Copyright (c) by Paul Barton-Davis <pbd@op.net>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
-#if (!defined(__GNUC__) && !defined(__GNUG__))
-
-     You will not be able to compile this file correctly without gcc, because
-     it is necessary to pack the "wavefront_alias" structure to a size
-     of 22 bytes, corresponding to 16-bit alignment (as would have been
-     the case on the original platform, MS-DOS). If this is not done,
-     then WavePatch-format files cannot be read/written correctly.
-     The method used to do this here ("__attribute__((packed)") is
-     completely compiler dependent.
-     
-     All other wavefront_* types end up aligned to 32 bit values and
-     still have the same (correct) size.
-
-#else
-
-     /* However, note that as of G++ 2.7.3.2, g++ was unable to
-	correctly parse *type* __attribute__ tags. It will do the
-	right thing if we use the "packed" attribute on each struct
-	member, which has the same semantics anyway. 
-     */
-
-#endif /* __GNUC__ */
-
-/***************************** WARNING ********************************
-  PLEASE DO NOT MODIFY THIS FILE IN ANY WAY THAT AFFECTS ITS ABILITY TO 
-  BE USED WITH EITHER C *OR* C++.
- **********************************************************************/
-
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef NUM_MIDIKEYS 
 #define NUM_MIDIKEYS 128
 #endif  /* NUM_MIDIKEYS */
@@ -66,32 +16,6 @@
 #define NUM_MIDICHANNELS 16
 #endif  /* NUM_MIDICHANNELS */
 
-<<<<<<< HEAD
-/* These are very useful/important. the original wavefront interface
-   was developed on a 16 bit system, where sizeof(int) = 2
-   bytes. Defining things like this makes the code much more portable, and
-   easier to understand without having to toggle back and forth
-   between a 16-bit view of the world and a 32-bit one. 
- */   
-
-#ifndef __KERNEL__
-/* keep them for compatibility */
-typedef short s16;
-typedef unsigned short u16;
-typedef int s32;
-typedef unsigned int u32;
-typedef char s8;
-typedef unsigned char u8;
-typedef s16 INT16;
-typedef u16 UINT16;
-typedef s32 INT32;
-typedef u32 UINT32;
-typedef s8 CHAR8;
-typedef u8 UCHAR8;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Pseudo-commands not part of the WaveFront command set.
    These are used for various driver controls and direct
    hardware control.
@@ -493,11 +417,7 @@ typedef struct wf_alias {
     */
 
     u8 sixteen_bit_padding;
-<<<<<<< HEAD
-} __attribute__((packed)) wavefront_alias;
-=======
 } __packed wavefront_alias;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct wf_drum {
     u8 PatchNumber;

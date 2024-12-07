@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend - Functions for creating a virtual configuration space for
  *               exported PCI Devices.
@@ -13,15 +10,10 @@
  * Author: Ryan Wilson <hap9@epoch.ncsc.mil>
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-=======
 #define dev_fmt(fmt) DRV_NAME ": " fmt
 
 #include <linux/kernel.h>
 #include <linux/moduleparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include "pciback.h"
 #include "conf_space.h"
@@ -135,11 +127,7 @@ static inline u32 merge_value(u32 val, u32 new_val, u32 new_val_mask,
 	return val;
 }
 
-<<<<<<< HEAD
-static int pcibios_err_to_errno(int err)
-=======
 static int xen_pcibios_err_to_errno(int err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (err) {
 	case PCIBIOS_SUCCESSFUL:
@@ -163,22 +151,12 @@ int xen_pcibk_config_read(struct pci_dev *dev, int offset, int size,
 	struct xen_pcibk_dev_data *dev_data = pci_get_drvdata(dev);
 	const struct config_field_entry *cfg_entry;
 	const struct config_field *field;
-<<<<<<< HEAD
-	int req_start, req_end, field_start, field_end;
-=======
 	int field_start, field_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if read fails for any reason, return 0
 	 * (as if device didn't respond) */
 	u32 value = 0, tmp_val;
 
-<<<<<<< HEAD
-	if (unlikely(verbose_request))
-		printk(KERN_DEBUG DRV_NAME ": %s: read %d bytes at 0x%x\n",
-		       pci_name(dev), size, offset);
-=======
 	dev_dbg(&dev->dev, "read %d bytes at 0x%x\n", size, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!valid_request(offset, size)) {
 		err = XEN_PCI_ERR_invalid_offset;
@@ -201,20 +179,10 @@ int xen_pcibk_config_read(struct pci_dev *dev, int offset, int size,
 	list_for_each_entry(cfg_entry, &dev_data->config_fields, list) {
 		field = cfg_entry->field;
 
-<<<<<<< HEAD
-		req_start = offset;
-		req_end = offset + size;
-		field_start = OFFSET(cfg_entry);
-		field_end = OFFSET(cfg_entry) + field->size;
-
-		if ((req_start >= field_start && req_start < field_end)
-		    || (req_end > field_start && req_end <= field_end)) {
-=======
 		field_start = OFFSET(cfg_entry);
 		field_end = OFFSET(cfg_entry) + field->size;
 
 		if (offset + size > field_start && field_end > offset) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = conf_space_read(dev, cfg_entry, field_start,
 					      &tmp_val);
 			if (err)
@@ -222,28 +190,15 @@ int xen_pcibk_config_read(struct pci_dev *dev, int offset, int size,
 
 			value = merge_value(value, tmp_val,
 					    get_mask(field->size),
-<<<<<<< HEAD
-					    field_start - req_start);
-=======
 					    field_start - offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 out:
-<<<<<<< HEAD
-	if (unlikely(verbose_request))
-		printk(KERN_DEBUG DRV_NAME ": %s: read %d bytes at 0x%x = %x\n",
-		       pci_name(dev), size, offset, value);
-
-	*ret_val = value;
-	return pcibios_err_to_errno(err);
-=======
 	dev_dbg(&dev->dev, "read %d bytes at 0x%x = %x\n", size, offset, value);
 
 	*ret_val = value;
 	return xen_pcibios_err_to_errno(err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
@@ -253,19 +208,10 @@ int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
 	const struct config_field_entry *cfg_entry;
 	const struct config_field *field;
 	u32 tmp_val;
-<<<<<<< HEAD
-	int req_start, req_end, field_start, field_end;
-
-	if (unlikely(verbose_request))
-		printk(KERN_DEBUG
-		       DRV_NAME ": %s: write request %d bytes at 0x%x = %x\n",
-		       pci_name(dev), size, offset, value);
-=======
 	int field_start, field_end;
 
 	dev_dbg(&dev->dev, "write request %d bytes at 0x%x = %x\n",
 		size, offset, value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!valid_request(offset, size))
 		return XEN_PCI_ERR_invalid_offset;
@@ -273,35 +219,17 @@ int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
 	list_for_each_entry(cfg_entry, &dev_data->config_fields, list) {
 		field = cfg_entry->field;
 
-<<<<<<< HEAD
-		req_start = offset;
-		req_end = offset + size;
-		field_start = OFFSET(cfg_entry);
-		field_end = OFFSET(cfg_entry) + field->size;
-
-		if ((req_start >= field_start && req_start < field_end)
-		    || (req_end > field_start && req_end <= field_end)) {
-			tmp_val = 0;
-
-			err = xen_pcibk_config_read(dev, field_start,
-						  field->size, &tmp_val);
-=======
 		field_start = OFFSET(cfg_entry);
 		field_end = OFFSET(cfg_entry) + field->size;
 
 		if (offset + size > field_start && field_end > offset) {
 			err = conf_space_read(dev, cfg_entry, field_start,
 					      &tmp_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				break;
 
 			tmp_val = merge_value(tmp_val, value, get_mask(size),
-<<<<<<< HEAD
-					      req_start - field_start);
-=======
 					      offset - field_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			err = conf_space_write(dev, cfg_entry, field_start,
 					       tmp_val);
@@ -351,9 +279,6 @@ int xen_pcibk_config_write(struct pci_dev *dev, int offset, int size, u32 value)
 		}
 	}
 
-<<<<<<< HEAD
-	return pcibios_err_to_errno(err);
-=======
 	return xen_pcibios_err_to_errno(err);
 }
 
@@ -399,7 +324,6 @@ int xen_pcibk_get_interrupt_type(struct pci_dev *dev)
 	}
 
 	return ret ?: INTERRUPT_TYPE_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void xen_pcibk_config_free_dyn_fields(struct pci_dev *dev)

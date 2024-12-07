@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_among
  *
@@ -32,11 +29,7 @@ static bool ebt_mac_wormhash_contains(const struct ebt_mac_wormhash *wh,
 	uint32_t cmp[2] = { 0, 0 };
 	int key = ((const unsigned char *)mac)[5];
 
-<<<<<<< HEAD
-	memcpy(((char *) cmp) + 2, mac, 6);
-=======
 	ether_addr_copy(((char *) cmp) + 2, mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start = wh->table[key];
 	limit = wh->table[key + 1];
 	if (ip) {
@@ -180,8 +173,6 @@ ebt_among_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	return true;
 }
 
-<<<<<<< HEAD
-=======
 static bool poolsize_invalid(const struct ebt_mac_wormhash *w)
 {
 	return w && w->poolsize >= (INT_MAX / sizeof(struct ebt_mac_wormhash_tuple));
@@ -209,35 +200,11 @@ static bool wormhash_sizes_valid(const struct ebt_mac_wormhash *wh, int a, int b
 	return ebt_mac_wormhash_size(wh) + a == b;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ebt_among_mt_check(const struct xt_mtchk_param *par)
 {
 	const struct ebt_among_info *info = par->matchinfo;
 	const struct ebt_entry_match *em =
 		container_of(par->matchinfo, const struct ebt_entry_match, data);
-<<<<<<< HEAD
-	int expected_length = sizeof(struct ebt_among_info);
-	const struct ebt_mac_wormhash *wh_dst, *wh_src;
-	int err;
-
-	wh_dst = ebt_among_wh_dst(info);
-	wh_src = ebt_among_wh_src(info);
-	expected_length += ebt_mac_wormhash_size(wh_dst);
-	expected_length += ebt_mac_wormhash_size(wh_src);
-
-	if (em->match_size != EBT_ALIGN(expected_length)) {
-		pr_info("wrong size: %d against expected %d, rounded to %Zd\n",
-			em->match_size, expected_length,
-			EBT_ALIGN(expected_length));
-		return -EINVAL;
-	}
-	if (wh_dst && (err = ebt_mac_wormhash_check_integrity(wh_dst))) {
-		pr_info("dst integrity fail: %x\n", -err);
-		return -EINVAL;
-	}
-	if (wh_src && (err = ebt_mac_wormhash_check_integrity(wh_src))) {
-		pr_info("src integrity fail: %x\n", -err);
-=======
 	unsigned int expected_length = sizeof(struct ebt_among_info);
 	const struct ebt_mac_wormhash *wh_dst, *wh_src;
 	int err;
@@ -283,7 +250,6 @@ static int ebt_among_mt_check(const struct xt_mtchk_param *par)
 	}
 	if (wh_src && (err = ebt_mac_wormhash_check_integrity(wh_src))) {
 		pr_err_ratelimited("src integrity fail: %x\n", -err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;

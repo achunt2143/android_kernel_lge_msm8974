@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for indirect PCI bridges.
  *
  * Copyright (C) 1998 Gabriel Paubert.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -23,17 +12,6 @@
 #include <linux/init.h>
 
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-#include <asm/pci-bridge.h>
-#include <asm/machdep.h>
-
-static int
-indirect_read_config(struct pci_bus *bus, unsigned int devfn, int offset,
-		     int len, u32 *val)
-{
-	struct pci_controller *hose = pci_bus_to_host(bus);
-=======
 #include <asm/pci-bridge.h>
 #include <asm/machdep.h>
 
@@ -41,34 +19,18 @@ int __indirect_read_config(struct pci_controller *hose,
 			   unsigned char bus_number, unsigned int devfn,
 			   int offset, int len, u32 *val)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	volatile void __iomem *cfg_data;
 	u8 cfg_type = 0;
 	u32 bus_no, reg;
 
 	if (hose->indirect_type & PPC_INDIRECT_TYPE_NO_PCIE_LINK) {
-<<<<<<< HEAD
-		if (bus->number != hose->first_busno)
-=======
 		if (bus_number != hose->first_busno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return PCIBIOS_DEVICE_NOT_FOUND;
 		if (devfn != 0)
 			return PCIBIOS_DEVICE_NOT_FOUND;
 	}
 
 	if (ppc_md.pci_exclude_device)
-<<<<<<< HEAD
-		if (ppc_md.pci_exclude_device(hose, bus->number, devfn))
-			return PCIBIOS_DEVICE_NOT_FOUND;
-
-	if (hose->indirect_type & PPC_INDIRECT_TYPE_SET_CFG_TYPE)
-		if (bus->number != hose->first_busno)
-			cfg_type = 1;
-
-	bus_no = (bus->number == hose->first_busno) ?
-			hose->self_busno : bus->number;
-=======
 		if (ppc_md.pci_exclude_device(hose, bus_number, devfn))
 			return PCIBIOS_DEVICE_NOT_FOUND;
 
@@ -78,7 +40,6 @@ int __indirect_read_config(struct pci_controller *hose,
 
 	bus_no = (bus_number == hose->first_busno) ?
 			hose->self_busno : bus_number;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hose->indirect_type & PPC_INDIRECT_TYPE_EXT_REG)
 		reg = ((offset & 0xf00) << 16) | (offset & 0xfc);
@@ -111,11 +72,6 @@ int __indirect_read_config(struct pci_controller *hose,
 	return PCIBIOS_SUCCESSFUL;
 }
 
-<<<<<<< HEAD
-static int
-indirect_write_config(struct pci_bus *bus, unsigned int devfn, int offset,
-		      int len, u32 val)
-=======
 int indirect_read_config(struct pci_bus *bus, unsigned int devfn,
 			 int offset, int len, u32 *val)
 {
@@ -127,7 +83,6 @@ int indirect_read_config(struct pci_bus *bus, unsigned int devfn,
 
 int indirect_write_config(struct pci_bus *bus, unsigned int devfn,
 			  int offset, int len, u32 val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_controller *hose = pci_bus_to_host(bus);
 	volatile void __iomem *cfg_data;
@@ -201,15 +156,8 @@ static struct pci_ops indirect_pci_ops =
 	.write = indirect_write_config,
 };
 
-<<<<<<< HEAD
-void __init
-setup_indirect_pci(struct pci_controller* hose,
-		   resource_size_t cfg_addr,
-		   resource_size_t cfg_data, u32 flags)
-=======
 void setup_indirect_pci(struct pci_controller *hose, resource_size_t cfg_addr,
 			resource_size_t cfg_data, u32 flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	resource_size_t base = cfg_addr & PAGE_MASK;
 	void __iomem *mbase;

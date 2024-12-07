@@ -1,45 +1,22 @@
-<<<<<<< HEAD
-#include <linux/mm_types.h>
-#include <linux/rbtree.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/mm_types.h>
 #include <linux/maple_tree.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rwsem.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
 #include <linux/cpumask.h>
-<<<<<<< HEAD
-
-#include <linux/atomic.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/mman.h>
 #include <linux/pgtable.h>
 
 #include <linux/atomic.h>
 #include <linux/user_namespace.h>
 #include <linux/iommu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu.h>
 
 #ifndef INIT_MM_CONTEXT
 #define INIT_MM_CONTEXT(name)
 #endif
 
-<<<<<<< HEAD
-struct mm_struct init_mm = {
-	.mm_rb		= RB_ROOT,
-	.pgd		= swapper_pg_dir,
-	.mm_users	= ATOMIC_INIT(2),
-	.mm_count	= ATOMIC_INIT(1),
-	.mmap_sem	= __RWSEM_INITIALIZER(init_mm.mmap_sem),
-	.page_table_lock =  __SPIN_LOCK_UNLOCKED(init_mm.page_table_lock),
-	.mmlist		= LIST_HEAD_INIT(init_mm.mmlist),
-	INIT_MM_CONTEXT(init_mm)
-};
-=======
 const struct vm_operations_struct vma_dummy_vm_ops;
 
 /*
@@ -78,4 +55,3 @@ void setup_initial_init_mm(void *start_code, void *end_code,
 	init_mm.end_data = (unsigned long)end_data;
 	init_mm.brk = (unsigned long)brk;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

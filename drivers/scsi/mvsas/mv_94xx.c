@@ -1,33 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell 88SE94xx hardware specific
  *
  * Copyright 2007 Red Hat, Inc.
  * Copyright 2008 Marvell. <kewei@marvell.com>
  * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of the
- * License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include "mv_sas.h"
@@ -55,13 +32,8 @@ static void mvs_94xx_detect_porttype(struct mvs_info *mvi, int i)
 	}
 }
 
-<<<<<<< HEAD
-void set_phy_tuning(struct mvs_info *mvi, int phy_id,
-			struct phy_tuning phy_tuning)
-=======
 static void set_phy_tuning(struct mvs_info *mvi, int phy_id,
 			   struct phy_tuning phy_tuning)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp, setting_0 = 0, setting_1 = 0;
 	u8 i;
@@ -122,13 +94,8 @@ static void set_phy_tuning(struct mvs_info *mvi, int phy_id,
 	}
 }
 
-<<<<<<< HEAD
-void set_phy_ffe_tuning(struct mvs_info *mvi, int phy_id,
-				struct ffe_control ffe)
-=======
 static void set_phy_ffe_tuning(struct mvs_info *mvi, int phy_id,
 			       struct ffe_control ffe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 
@@ -194,11 +161,7 @@ static void set_phy_ffe_tuning(struct mvs_info *mvi, int phy_id,
 }
 
 /*Notice: this function must be called when phy is disabled*/
-<<<<<<< HEAD
-void set_phy_rate(struct mvs_info *mvi, int phy_id, u8 rate)
-=======
 static void set_phy_rate(struct mvs_info *mvi, int phy_id, u8 rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union reg_phy_cfg phy_cfg, phy_cfg_tmp;
 	mvs_write_port_vsr_addr(mvi, phy_id, VSR_PHY_MODE2);
@@ -237,12 +200,7 @@ static void set_phy_rate(struct mvs_info *mvi, int phy_id, u8 rate)
 	mvs_write_port_vsr_data(mvi, phy_id, phy_cfg.v);
 }
 
-<<<<<<< HEAD
-static void __devinit
-mvs_94xx_config_reg_from_hba(struct mvs_info *mvi, int phy_id)
-=======
 static void mvs_94xx_config_reg_from_hba(struct mvs_info *mvi, int phy_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 temp;
 	temp = (u32)(*(u32 *)&mvi->hba_info_param.phy_tuning[phy_id]);
@@ -283,11 +241,7 @@ static void mvs_94xx_config_reg_from_hba(struct mvs_info *mvi, int phy_id)
 		mvi->hba_info_param.phy_rate[phy_id]);
 }
 
-<<<<<<< HEAD
-static void __devinit mvs_94xx_enable_xmt(struct mvs_info *mvi, int phy_id)
-=======
 static void mvs_94xx_enable_xmt(struct mvs_info *mvi, int phy_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *regs = mvi->regs;
 	u32 tmp;
@@ -360,9 +314,6 @@ static void mvs_94xx_phy_enable(struct mvs_info *mvi, u32 phy_id)
 	mvs_write_port_vsr_data(mvi, phy_id, tmp & 0xfd7fffff);
 }
 
-<<<<<<< HEAD
-static int __devinit mvs_94xx_init(struct mvs_info *mvi)
-=======
 static void mvs_94xx_sgpio_init(struct mvs_info *mvi)
 {
 	void __iomem *regs = mvi->regs_ex - 0x10200;
@@ -409,7 +360,6 @@ static void mvs_94xx_sgpio_init(struct mvs_info *mvi)
 }
 
 static int mvs_94xx_init(struct mvs_info *mvi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *regs = mvi->regs;
 	int i;
@@ -612,11 +562,8 @@ static int mvs_94xx_init(struct mvs_info *mvi)
 	/* Enable SRS interrupt */
 	mw32(MVS_INT_MASK_SRS_0, 0xFFFF);
 
-<<<<<<< HEAD
-=======
 	mvs_94xx_sgpio_init(mvi);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -648,11 +595,7 @@ static void mvs_94xx_interrupt_enable(struct mvs_info *mvi)
 	u32 tmp;
 
 	tmp = mr32(MVS_GBL_CTL);
-<<<<<<< HEAD
-	tmp |= (IRQ_SAS_A | IRQ_SAS_B);
-=======
 	tmp |= (MVS_IRQ_SAS_A | MVS_IRQ_SAS_B);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mw32(MVS_GBL_INT_STAT, tmp);
 	writel(tmp, regs + 0x0C);
 	writel(tmp, regs + 0x10);
@@ -668,11 +611,7 @@ static void mvs_94xx_interrupt_disable(struct mvs_info *mvi)
 
 	tmp = mr32(MVS_GBL_CTL);
 
-<<<<<<< HEAD
-	tmp &= ~(IRQ_SAS_A | IRQ_SAS_B);
-=======
 	tmp &= ~(MVS_IRQ_SAS_A | MVS_IRQ_SAS_B);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mw32(MVS_GBL_INT_STAT, tmp);
 	writel(tmp, regs + 0x0C);
 	writel(tmp, regs + 0x10);
@@ -688,11 +627,7 @@ static u32 mvs_94xx_isr_status(struct mvs_info *mvi, int irq)
 	if (!(mvi->flags & MVF_FLAG_SOC)) {
 		stat = mr32(MVS_GBL_INT_STAT);
 
-<<<<<<< HEAD
-		if (!(stat & (IRQ_SAS_A | IRQ_SAS_B)))
-=======
 		if (!(stat & (MVS_IRQ_SAS_A | MVS_IRQ_SAS_B)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 	}
 	return stat;
@@ -702,13 +637,8 @@ static irqreturn_t mvs_94xx_isr(struct mvs_info *mvi, int irq, u32 stat)
 {
 	void __iomem *regs = mvi->regs;
 
-<<<<<<< HEAD
-	if (((stat & IRQ_SAS_A) && mvi->id == 0) ||
-			((stat & IRQ_SAS_B) && mvi->id == 1)) {
-=======
 	if (((stat & MVS_IRQ_SAS_A) && mvi->id == 0) ||
 			((stat & MVS_IRQ_SAS_B) && mvi->id == 1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mw32_f(MVS_INT_STAT, CINT_DONE);
 
 		spin_lock(&mvi->lock);
@@ -722,11 +652,7 @@ static void mvs_94xx_command_active(struct mvs_info *mvi, u32 slot_idx)
 {
 	u32 tmp;
 	tmp = mvs_cr32(mvi, MVS_COMMAND_ACTIVE+(slot_idx >> 3));
-<<<<<<< HEAD
-	if (tmp && 1 << (slot_idx % 32)) {
-=======
 	if (tmp & 1 << (slot_idx % 32)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mv_printk("command active %08X,  slot [%x].\n", tmp, slot_idx);
 		mvs_cw32(mvi, MVS_COMMAND_ACTIVE + (slot_idx >> 3),
 			1 << (slot_idx % 32));
@@ -737,12 +663,8 @@ static void mvs_94xx_command_active(struct mvs_info *mvi, u32 slot_idx)
 	}
 }
 
-<<<<<<< HEAD
-void mvs_94xx_clear_srs_irq(struct mvs_info *mvi, u8 reg_set, u8 clear_all)
-=======
 static void
 mvs_94xx_clear_srs_irq(struct mvs_info *mvi, u8 reg_set, u8 clear_all)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *regs = mvi->regs;
 	u32 tmp;
@@ -969,13 +891,8 @@ static void mvs_94xx_fix_phy_info(struct mvs_info *mvi, int i,
 
 }
 
-<<<<<<< HEAD
-void mvs_94xx_phy_set_link_rate(struct mvs_info *mvi, u32 phy_id,
-			struct sas_phy_linkrates *rates)
-=======
 static void mvs_94xx_phy_set_link_rate(struct mvs_info *mvi, u32 phy_id,
 				       struct sas_phy_linkrates *rates)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 lrmax = 0;
 	u32 tmp;
@@ -1004,31 +921,12 @@ static void mvs_94xx_clear_active_cmds(struct mvs_info *mvi)
 }
 
 
-<<<<<<< HEAD
-u32 mvs_94xx_spi_read_data(struct mvs_info *mvi)
-=======
 static u32 mvs_94xx_spi_read_data(struct mvs_info *mvi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *regs = mvi->regs_ex - 0x10200;
 	return mr32(SPI_RD_DATA_REG_94XX);
 }
 
-<<<<<<< HEAD
-void mvs_94xx_spi_write_data(struct mvs_info *mvi, u32 data)
-{
-	void __iomem *regs = mvi->regs_ex - 0x10200;
-	 mw32(SPI_RD_DATA_REG_94XX, data);
-}
-
-
-int mvs_94xx_spi_buildcmd(struct mvs_info *mvi,
-				u32      *dwCmd,
-				u8       cmd,
-				u8       read,
-				u8       length,
-				u32      addr
-=======
 static void mvs_94xx_spi_write_data(struct mvs_info *mvi, u32 data)
 {
 	void __iomem *regs = mvi->regs_ex - 0x10200;
@@ -1043,7 +941,6 @@ static int mvs_94xx_spi_buildcmd(struct mvs_info *mvi,
 				 u8       read,
 				 u8       length,
 				 u32      addr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				)
 {
 	void __iomem *regs = mvi->regs_ex - 0x10200;
@@ -1063,11 +960,7 @@ static int mvs_94xx_spi_buildcmd(struct mvs_info *mvi,
 }
 
 
-<<<<<<< HEAD
-int mvs_94xx_spi_issuecmd(struct mvs_info *mvi, u32 cmd)
-=======
 static int mvs_94xx_spi_issuecmd(struct mvs_info *mvi, u32 cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *regs = mvi->regs_ex - 0x10200;
 	mw32(SPI_CTRL_REG_94XX, cmd | SPI_CTRL_SpiStart_94XX);
@@ -1075,11 +968,7 @@ static int mvs_94xx_spi_issuecmd(struct mvs_info *mvi, u32 cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int mvs_94xx_spi_waitdataready(struct mvs_info *mvi, u32 timeout)
-=======
 static int mvs_94xx_spi_waitdataready(struct mvs_info *mvi, u32 timeout)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *regs = mvi->regs_ex - 0x10200;
 	u32   i, dwTmp;
@@ -1094,13 +983,8 @@ static int mvs_94xx_spi_waitdataready(struct mvs_info *mvi, u32 timeout)
 	return -1;
 }
 
-<<<<<<< HEAD
-void mvs_94xx_fix_dma(struct mvs_info *mvi, u32 phy_mask,
-				int buf_len, int from, void *prd)
-=======
 static void mvs_94xx_fix_dma(struct mvs_info *mvi, u32 phy_mask,
 			     int buf_len, int from, void *prd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct mvs_prd *buf_prd = prd;
@@ -1154,8 +1038,6 @@ static void mvs_94xx_tune_interrupt(struct mvs_info *mvi, u32 time)
 
 }
 
-<<<<<<< HEAD
-=======
 static int mvs_94xx_gpio_write(struct mvs_prv_info *mvs_prv,
 			u8 reg_type, u8 reg_index,
 			u8 reg_count, u8 *write_data)
@@ -1243,7 +1125,6 @@ static int mvs_94xx_gpio_write(struct mvs_prv_info *mvs_prv,
 	return -ENOSYS;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct mvs_dispatch mvs_94xx_dispatch = {
 	"mv94xx",
 	mvs_94xx_init,
@@ -1296,9 +1177,6 @@ const struct mvs_dispatch mvs_94xx_dispatch = {
 	mvs_94xx_fix_dma,
 	mvs_94xx_tune_interrupt,
 	mvs_94xx_non_spec_ncq_error,
-<<<<<<< HEAD
-=======
 	mvs_94xx_gpio_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 

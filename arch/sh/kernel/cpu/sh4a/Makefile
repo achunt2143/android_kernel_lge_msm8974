@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Linux/SuperH SH-4 backends.
 #
@@ -17,10 +14,7 @@ obj-$(CONFIG_CPU_SUBTYPE_SH7343)	+= setup-sh7343.o
 obj-$(CONFIG_CPU_SUBTYPE_SH7722)	+= setup-sh7722.o serial-sh7722.o
 obj-$(CONFIG_CPU_SUBTYPE_SH7723)	+= setup-sh7723.o
 obj-$(CONFIG_CPU_SUBTYPE_SH7724)	+= setup-sh7724.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_CPU_SUBTYPE_SH7734)	+= setup-sh7734.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_CPU_SUBTYPE_SH7366)	+= setup-sh7366.o
 obj-$(CONFIG_CPU_SUBTYPE_SHX3)		+= setup-shx3.o intc-shx3.o
 
@@ -38,10 +32,7 @@ clock-$(CONFIG_CPU_SUBTYPE_SH7343)	:= clock-sh7343.o
 clock-$(CONFIG_CPU_SUBTYPE_SH7722)	:= clock-sh7722.o
 clock-$(CONFIG_CPU_SUBTYPE_SH7723)	:= clock-sh7723.o
 clock-$(CONFIG_CPU_SUBTYPE_SH7724)	:= clock-sh7724.o
-<<<<<<< HEAD
-=======
 clock-$(CONFIG_CPU_SUBTYPE_SH7734)	:= clock-sh7734.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 clock-$(CONFIG_CPU_SUBTYPE_SH7366)	:= clock-sh7366.o
 clock-$(CONFIG_CPU_SUBTYPE_SHX3)	:= clock-shx3.o
 
@@ -49,10 +40,7 @@ clock-$(CONFIG_CPU_SUBTYPE_SHX3)	:= clock-shx3.o
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7722)	:= pinmux-sh7722.o
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7723)	:= pinmux-sh7723.o
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7724)	:= pinmux-sh7724.o
-<<<<<<< HEAD
-=======
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7734)	:= pinmux-sh7734.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7757)	:= pinmux-sh7757.o
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7785)	:= pinmux-sh7785.o
 pinmux-$(CONFIG_CPU_SUBTYPE_SH7786)	:= pinmux-sh7786.o
@@ -60,10 +48,6 @@ pinmux-$(CONFIG_CPU_SUBTYPE_SHX3)	:= pinmux-shx3.o
 
 obj-y					+= $(clock-y)
 obj-$(CONFIG_SMP)			+= $(smp-y)
-<<<<<<< HEAD
-obj-$(CONFIG_GENERIC_GPIO)		+= $(pinmux-y)
-=======
 obj-$(CONFIG_GPIOLIB)			+= $(pinmux-y)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_PERF_EVENTS)		+= perf_event.o
 obj-$(CONFIG_HAVE_HW_BREAKPOINT)	+= ubc.o

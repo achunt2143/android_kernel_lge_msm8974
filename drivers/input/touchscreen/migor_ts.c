@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Touch Screen driver for Renesas MIGO-R Platform
  *
  * Copyright (c) 2008 Magnus Damm
  * Copyright (c) 2007 Ujjwal Pande <ujjwal@kenati.com>,
  *  Kenati Technologies Pvt Ltd.
-<<<<<<< HEAD
- *
- * This file is free software; you can redistribute it and/or
- * modify it under the terms of the GNU  General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This file is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -136,12 +116,7 @@ static void migor_ts_close(struct input_dev *dev)
 	enable_irq(priv->irq);
 }
 
-<<<<<<< HEAD
-static int migor_ts_probe(struct i2c_client *client,
-			  const struct i2c_device_id *idp)
-=======
 static int migor_ts_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct migor_ts_priv *priv;
 	struct input_dev *input;
@@ -200,11 +175,7 @@ static int migor_ts_probe(struct i2c_client *client)
 	return error;
 }
 
-<<<<<<< HEAD
-static int migor_ts_remove(struct i2c_client *client)
-=======
 static void migor_ts_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct migor_ts_priv *priv = i2c_get_clientdata(client);
 
@@ -213,11 +184,6 @@ static void migor_ts_remove(struct i2c_client *client)
 	kfree(priv);
 
 	dev_set_drvdata(&client->dev, NULL);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int migor_ts_suspend(struct device *dev)
@@ -242,30 +208,18 @@ static int migor_ts_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static SIMPLE_DEV_PM_OPS(migor_ts_pm, migor_ts_suspend, migor_ts_resume);
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(migor_ts_pm, migor_ts_suspend, migor_ts_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id migor_ts_id[] = {
 	{ "migor_ts", 0 },
 	{ }
 };
-<<<<<<< HEAD
-MODULE_DEVICE_TABLE(i2c, migor_ts);
-=======
 MODULE_DEVICE_TABLE(i2c, migor_ts_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver migor_ts_driver = {
 	.driver = {
 		.name = "migor_ts",
-<<<<<<< HEAD
-		.pm = &migor_ts_pm,
-=======
 		.pm = pm_sleep_ptr(&migor_ts_pm),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe = migor_ts_probe,
 	.remove = migor_ts_remove,

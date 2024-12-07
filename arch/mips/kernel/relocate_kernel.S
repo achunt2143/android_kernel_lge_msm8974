@@ -1,32 +1,16 @@
-<<<<<<< HEAD
-/*
- * relocate_kernel.S for kexec
- * Created by <nschichan@corp.free.fr> on Thu Oct 12 17:49:57 2006
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2.  See the file COPYING for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * relocate_kernel.S for kexec
  * Created by <nschichan@corp.free.fr> on Thu Oct 12 17:49:57 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/asm.h>
 #include <asm/asmmacro.h>
 #include <asm/regdef.h>
-<<<<<<< HEAD
-#include <asm/page.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mipsregs.h>
 #include <asm/stackframe.h>
 #include <asm/addrspace.h>
 
-<<<<<<< HEAD
-LEAF(relocate_new_kernel)
-=======
 #include <kernel-entry-init.h>
 
 LEAF(relocate_new_kernel)
@@ -35,15 +19,11 @@ LEAF(relocate_new_kernel)
 	PTR_L a2,	arg2
 	PTR_L a3,	arg3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PTR_L		s0, kexec_indirection_page
 	PTR_L		s1, kexec_start_address
 
 process_entry:
 	PTR_L		s2, (s0)
-<<<<<<< HEAD
-	PTR_ADD		s0, s0, SZREG
-=======
 	PTR_ADDIU	s0, s0, SZREG
 
 	/*
@@ -51,24 +31,15 @@ process_entry:
 	 * populated as the kernel is directly copied to a reserved location
 	 */
 	beqz		s2, done
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* destination page */
 	and		s3, s2, 0x1
 	beq		s3, zero, 1f
 	and		s4, s2, ~0x1	/* store destination addr in s4 */
-<<<<<<< HEAD
-	move		a0, s4
-	b		process_entry
-
-1:
-	/* indirection page, update s0  */
-=======
 	b		process_entry
 
 1:
 	/* indirection page, update s0	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and		s3, s2, 0x2
 	beq		s3, zero, 1f
 	and		s0, s2, ~0x2
@@ -84,26 +55,12 @@ process_entry:
 	and		s3, s2, 0x8
 	beq		s3, zero, process_entry
 	and		s2, s2, ~0x8
-<<<<<<< HEAD
-	li		s6, (1 << PAGE_SHIFT) / SZREG
-=======
 	li		s6, (1 << _PAGE_SHIFT) / SZREG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 copy_word:
 	/* copy page word by word */
 	REG_L		s5, (s2)
 	REG_S		s5, (s4)
-<<<<<<< HEAD
-	PTR_ADD		s4, s4, SZREG
-	PTR_ADD		s2, s2, SZREG
-	LONG_SUB	s6, s6, 1
-	beq		s6, zero, process_entry
-	b		copy_word
-	b		process_entry
-
-done:
-=======
 	PTR_ADDIU	s4, s4, SZREG
 	PTR_ADDIU	s2, s2, SZREG
 	LONG_ADDIU	s6, s6, -1
@@ -138,21 +95,10 @@ done:
 #else
 	sync
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* jump to kexec_start_address */
 	j		s1
 	END(relocate_new_kernel)
 
-<<<<<<< HEAD
-kexec_start_address:
-	EXPORT(kexec_start_address)
-	PTR		0x0
-	.size		kexec_start_address, PTRSIZE
-
-kexec_indirection_page:
-	EXPORT(kexec_indirection_page)
-	PTR		0
-=======
 #ifdef CONFIG_SMP
 /*
  * Other CPUs should wait until code is relocated and
@@ -228,17 +174,10 @@ EXPORT(kexec_start_address)
 
 EXPORT(kexec_indirection_page)
 	PTR_WD		0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		kexec_indirection_page, PTRSIZE
 
 relocate_new_kernel_end:
 
-<<<<<<< HEAD
-relocate_new_kernel_size:
-	EXPORT(relocate_new_kernel_size)
-	PTR		relocate_new_kernel_end - relocate_new_kernel
-=======
 EXPORT(relocate_new_kernel_size)
 	PTR_WD		relocate_new_kernel_end - relocate_new_kernel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		relocate_new_kernel_size, PTRSIZE

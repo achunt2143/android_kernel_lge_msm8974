@@ -1,50 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Base driver for Maxim MAX8925
  *
  * Copyright (C) 2009-2010 Marvell International Ltd.
  *	Haojian Zhuang <haojian.zhuang@marvell.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/i2c.h>
-#include <linux/irq.h>
-#include <linux/interrupt.h>
-#include <linux/platform_device.h>
-#include <linux/mfd/core.h>
-#include <linux/mfd/max8925.h>
-
-static struct resource io_parent = {
-	.start = 0,
-	.end   = 0xffffffff,
-	.flags = IORESOURCE_IO,
-};
-
-static struct resource backlight_resources[] = {
-	{
-		.name	= "max8925-backlight",
-		.start	= MAX8925_WLED_MODE_CNTL,
-		.end	= MAX8925_WLED_CNTL,
-		.flags	= IORESOURCE_IO,
-		.parent = &io_parent,
-	},
-};
-
-static struct mfd_cell backlight_devs[] = {
-	{
-		.name		= "max8925-backlight",
-		.num_resources	= 1,
-		.resources	= &backlight_resources[0],
-=======
  */
 
 #include <linux/kernel.h>
@@ -69,34 +28,20 @@ static struct mfd_cell bk_devs[] = {
 		.name		= "max8925-backlight",
 		.num_resources	= ARRAY_SIZE(bk_resources),
 		.resources	= &bk_resources[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.id		= -1,
 	},
 };
 
-<<<<<<< HEAD
-static struct resource touch_resources[] = {
-=======
 static const struct resource touch_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name	= "max8925-tsc",
 		.start	= MAX8925_TSC_IRQ,
 		.end	= MAX8925_ADC_RES_END,
-<<<<<<< HEAD
-		.flags	= IORESOURCE_IO,
-		.parent = &io_parent,
-	},
-};
-
-static struct mfd_cell touch_devs[] = {
-=======
 		.flags	= IORESOURCE_REG,
 	},
 };
 
 static const struct mfd_cell touch_devs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "max8925-touch",
 		.num_resources	= 1,
@@ -105,29 +50,16 @@ static const struct mfd_cell touch_devs[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct resource power_supply_resources[] = {
-=======
 static const struct resource power_supply_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name	= "max8925-power",
 		.start	= MAX8925_CHG_IRQ1,
 		.end	= MAX8925_CHG_IRQ1_MASK,
-<<<<<<< HEAD
-		.flags	= IORESOURCE_IO,
-		.parent = &io_parent,
-	},
-};
-
-static struct mfd_cell power_devs[] = {
-=======
 		.flags	= IORESOURCE_REG,
 	},
 };
 
 static const struct mfd_cell power_devs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "max8925-power",
 		.num_resources	= 1,
@@ -136,18 +68,6 @@ static const struct mfd_cell power_devs[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct resource rtc_resources[] = {
-	{
-		.name	= "max8925-rtc",
-		.start	= MAX8925_RTC_IRQ,
-		.end	= MAX8925_RTC_IRQ_MASK,
-		.flags	= IORESOURCE_IO,
-	},
-};
-
-static struct mfd_cell rtc_devs[] = {
-=======
 static const struct resource rtc_resources[] = {
 	{
 		.name	= "max8925-rtc",
@@ -158,7 +78,6 @@ static const struct resource rtc_resources[] = {
 };
 
 static const struct mfd_cell rtc_devs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "max8925-rtc",
 		.num_resources	= 1,
@@ -167,11 +86,7 @@ static const struct mfd_cell rtc_devs[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct resource onkey_resources[] = {
-=======
 static const struct resource onkey_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name	= "max8925-onkey",
 		.start	= MAX8925_IRQ_GPM_SW_R,
@@ -185,11 +100,7 @@ static const struct resource onkey_resources[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct mfd_cell onkey_devs[] = {
-=======
 static const struct mfd_cell onkey_devs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "max8925-onkey",
 		.num_resources	= 2,
@@ -198,74 +109,6 @@ static const struct mfd_cell onkey_devs[] = {
 	},
 };
 
-<<<<<<< HEAD
-#define MAX8925_REG_RESOURCE(_start, _end)	\
-{						\
-	.start	= MAX8925_##_start,		\
-	.end	= MAX8925_##_end,		\
-	.flags	= IORESOURCE_IO,		\
-	.parent = &io_parent,			\
-}
-
-static struct resource regulator_resources[] = {
-	MAX8925_REG_RESOURCE(SDCTL1, SDCTL1),
-	MAX8925_REG_RESOURCE(SDCTL2, SDCTL2),
-	MAX8925_REG_RESOURCE(SDCTL3, SDCTL3),
-	MAX8925_REG_RESOURCE(LDOCTL1, LDOCTL1),
-	MAX8925_REG_RESOURCE(LDOCTL2, LDOCTL2),
-	MAX8925_REG_RESOURCE(LDOCTL3, LDOCTL3),
-	MAX8925_REG_RESOURCE(LDOCTL4, LDOCTL4),
-	MAX8925_REG_RESOURCE(LDOCTL5, LDOCTL5),
-	MAX8925_REG_RESOURCE(LDOCTL6, LDOCTL6),
-	MAX8925_REG_RESOURCE(LDOCTL7, LDOCTL7),
-	MAX8925_REG_RESOURCE(LDOCTL8, LDOCTL8),
-	MAX8925_REG_RESOURCE(LDOCTL9, LDOCTL9),
-	MAX8925_REG_RESOURCE(LDOCTL10, LDOCTL10),
-	MAX8925_REG_RESOURCE(LDOCTL11, LDOCTL11),
-	MAX8925_REG_RESOURCE(LDOCTL12, LDOCTL12),
-	MAX8925_REG_RESOURCE(LDOCTL13, LDOCTL13),
-	MAX8925_REG_RESOURCE(LDOCTL14, LDOCTL14),
-	MAX8925_REG_RESOURCE(LDOCTL15, LDOCTL15),
-	MAX8925_REG_RESOURCE(LDOCTL16, LDOCTL16),
-	MAX8925_REG_RESOURCE(LDOCTL17, LDOCTL17),
-	MAX8925_REG_RESOURCE(LDOCTL18, LDOCTL18),
-	MAX8925_REG_RESOURCE(LDOCTL19, LDOCTL19),
-	MAX8925_REG_RESOURCE(LDOCTL20, LDOCTL20),
-};
-
-#define MAX8925_REG_DEVS(_id)						\
-{									\
-	.name		= "max8925-regulator",				\
-	.num_resources	= 1,						\
-	.resources	= &regulator_resources[MAX8925_ID_##_id],	\
-	.id		= MAX8925_ID_##_id,				\
-}
-
-static struct mfd_cell regulator_devs[] = {
-	MAX8925_REG_DEVS(SD1),
-	MAX8925_REG_DEVS(SD2),
-	MAX8925_REG_DEVS(SD3),
-	MAX8925_REG_DEVS(LDO1),
-	MAX8925_REG_DEVS(LDO2),
-	MAX8925_REG_DEVS(LDO3),
-	MAX8925_REG_DEVS(LDO4),
-	MAX8925_REG_DEVS(LDO5),
-	MAX8925_REG_DEVS(LDO6),
-	MAX8925_REG_DEVS(LDO7),
-	MAX8925_REG_DEVS(LDO8),
-	MAX8925_REG_DEVS(LDO9),
-	MAX8925_REG_DEVS(LDO10),
-	MAX8925_REG_DEVS(LDO11),
-	MAX8925_REG_DEVS(LDO12),
-	MAX8925_REG_DEVS(LDO13),
-	MAX8925_REG_DEVS(LDO14),
-	MAX8925_REG_DEVS(LDO15),
-	MAX8925_REG_DEVS(LDO16),
-	MAX8925_REG_DEVS(LDO17),
-	MAX8925_REG_DEVS(LDO18),
-	MAX8925_REG_DEVS(LDO19),
-	MAX8925_REG_DEVS(LDO20),
-=======
 static const struct resource sd1_resources[] = {
 	{0x06, 0x06, "sdv", IORESOURCE_REG, },
 };
@@ -475,7 +318,6 @@ static struct mfd_cell reg_devs[] = {
 		.num_resources = ARRAY_SIZE(ldo20_resources),
 		.resources = ldo20_resources,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -626,15 +468,6 @@ static struct max8925_irq_data max8925_irqs[] = {
 	},
 };
 
-<<<<<<< HEAD
-static inline struct max8925_irq_data *irq_to_max8925(struct max8925_chip *chip,
-						      int irq)
-{
-	return &max8925_irqs[irq - chip->irq_base];
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t max8925_irq(int irq, void *data)
 {
 	struct max8925_chip *chip = data;
@@ -781,10 +614,7 @@ static void max8925_irq_sync_unlock(struct irq_data *data)
 static void max8925_irq_enable(struct irq_data *data)
 {
 	struct max8925_chip *chip = irq_data_get_irq_chip_data(data);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max8925_irqs[data->irq - chip->irq_base].enable
 		= max8925_irqs[data->irq - chip->irq_base].offs;
 }
@@ -792,10 +622,7 @@ static void max8925_irq_enable(struct irq_data *data)
 static void max8925_irq_disable(struct irq_data *data)
 {
 	struct max8925_chip *chip = irq_data_get_irq_chip_data(data);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max8925_irqs[data->irq - chip->irq_base].enable = 0;
 }
 
@@ -807,8 +634,6 @@ static struct irq_chip max8925_irq_chip = {
 	.irq_disable	= max8925_irq_disable,
 };
 
-<<<<<<< HEAD
-=======
 static int max8925_irq_domain_map(struct irq_domain *d, unsigned int virq,
 				 irq_hw_number_t hw)
 {
@@ -826,24 +651,13 @@ static const struct irq_domain_ops max8925_irq_domain_ops = {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int max8925_irq_init(struct max8925_chip *chip, int irq,
 			    struct max8925_platform_data *pdata)
 {
 	unsigned long flags = IRQF_TRIGGER_FALLING | IRQF_ONESHOT;
-<<<<<<< HEAD
-	int i, ret;
-	int __irq;
-
-	if (!pdata || !pdata->irq_base) {
-		dev_warn(chip->dev, "No interrupt support on IRQ base\n");
-		return -EINVAL;
-	}
-=======
 	int ret;
 	struct device_node *node = chip->dev->of_node;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear all interrupts */
 	max8925_reg_read(chip->i2c, MAX8925_CHG_IRQ1);
 	max8925_reg_read(chip->i2c, MAX8925_CHG_IRQ2);
@@ -861,30 +675,6 @@ static int max8925_irq_init(struct max8925_chip *chip, int irq,
 	max8925_reg_write(chip->rtc, MAX8925_RTC_IRQ_MASK, 0xff);
 
 	mutex_init(&chip->irq_lock);
-<<<<<<< HEAD
-	chip->core_irq = irq;
-	chip->irq_base = pdata->irq_base;
-
-	/* register with genirq */
-	for (i = 0; i < ARRAY_SIZE(max8925_irqs); i++) {
-		__irq = i + chip->irq_base;
-		irq_set_chip_data(__irq, chip);
-		irq_set_chip_and_handler(__irq, &max8925_irq_chip,
-					 handle_edge_irq);
-		irq_set_nested_thread(__irq, 1);
-#ifdef CONFIG_ARM
-		set_irq_flags(__irq, IRQF_VALID);
-#else
-		irq_set_noprobe(__irq);
-#endif
-	}
-	if (!irq) {
-		dev_warn(chip->dev, "No interrupt support on core IRQ\n");
-		goto tsc_irq;
-	}
-
-	ret = request_threaded_irq(irq, NULL, max8925_irq, flags,
-=======
 	chip->irq_base = irq_alloc_descs(-1, 0, MAX8925_NR_IRQS, 0);
 	if (chip->irq_base < 0) {
 		dev_err(chip->dev, "Failed to allocate interrupts, ret:%d\n",
@@ -900,22 +690,15 @@ static int max8925_irq_init(struct max8925_chip *chip, int irq,
 	if (!chip->core_irq)
 		return -EBUSY;
 	ret = request_threaded_irq(irq, NULL, max8925_irq, flags | IRQF_ONESHOT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   "max8925", chip);
 	if (ret) {
 		dev_err(chip->dev, "Failed to request core IRQ: %d\n", ret);
 		chip->core_irq = 0;
-<<<<<<< HEAD
-	}
-
-tsc_irq:
-=======
 		return -EBUSY;
 	}
 
 	/* request irq handler for pmic tsc irq*/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* mask TSC interrupt */
 	max8925_reg_write(chip->adc, MAX8925_TSC_IRQ_MASK, 0x0f);
 
@@ -924,14 +707,8 @@ tsc_irq:
 		return 0;
 	}
 	chip->tsc_irq = pdata->tsc_irq;
-<<<<<<< HEAD
-
-	ret = request_threaded_irq(chip->tsc_irq, NULL, max8925_tsc_irq,
-				   flags, "max8925-tsc", chip);
-=======
 	ret = request_threaded_irq(chip->tsc_irq, NULL, max8925_tsc_irq,
 				   flags | IRQF_ONESHOT, "max8925-tsc", chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(chip->dev, "Failed to request TSC IRQ: %d\n", ret);
 		chip->tsc_irq = 0;
@@ -939,9 +716,6 @@ tsc_irq:
 	return 0;
 }
 
-<<<<<<< HEAD
-int __devinit max8925_device_init(struct max8925_chip *chip,
-=======
 static void init_regulator(struct max8925_chip *chip,
 				     struct max8925_platform_data *pdata)
 {
@@ -1050,7 +824,6 @@ static void init_regulator(struct max8925_chip *chip,
 }
 
 int max8925_device_init(struct max8925_chip *chip,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct max8925_platform_data *pdata)
 {
 	int ret;
@@ -1075,11 +848,7 @@ int max8925_device_init(struct max8925_chip *chip,
 
 	ret = mfd_add_devices(chip->dev, 0, &rtc_devs[0],
 			      ARRAY_SIZE(rtc_devs),
-<<<<<<< HEAD
-			      &rtc_resources[0], 0);
-=======
 			      NULL, chip->irq_base, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(chip->dev, "Failed to add rtc subdev\n");
 		goto out;
@@ -1087,47 +856,12 @@ int max8925_device_init(struct max8925_chip *chip,
 
 	ret = mfd_add_devices(chip->dev, 0, &onkey_devs[0],
 			      ARRAY_SIZE(onkey_devs),
-<<<<<<< HEAD
-			      &onkey_resources[0], 0);
-=======
 			      NULL, chip->irq_base, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(chip->dev, "Failed to add onkey subdev\n");
 		goto out_dev;
 	}
 
-<<<<<<< HEAD
-	if (pdata) {
-		ret = mfd_add_devices(chip->dev, 0, &regulator_devs[0],
-				      ARRAY_SIZE(regulator_devs),
-				      &regulator_resources[0], 0);
-		if (ret < 0) {
-			dev_err(chip->dev, "Failed to add regulator subdev\n");
-			goto out_dev;
-		}
-	}
-
-	if (pdata && pdata->backlight) {
-		ret = mfd_add_devices(chip->dev, 0, &backlight_devs[0],
-				      ARRAY_SIZE(backlight_devs),
-				      &backlight_resources[0], 0);
-		if (ret < 0) {
-			dev_err(chip->dev, "Failed to add backlight subdev\n");
-			goto out_dev;
-		}
-	}
-
-	if (pdata && pdata->power) {
-		ret = mfd_add_devices(chip->dev, 0, &power_devs[0],
-					ARRAY_SIZE(power_devs),
-					&power_supply_resources[0], 0);
-		if (ret < 0) {
-			dev_err(chip->dev, "Failed to add power supply "
-				"subdev\n");
-			goto out_dev;
-		}
-=======
 	init_regulator(chip, pdata);
 
 	if (pdata && pdata->backlight) {
@@ -1148,17 +882,12 @@ int max8925_device_init(struct max8925_chip *chip,
 		dev_err(chip->dev,
 			"Failed to add power supply subdev, err = %d\n", ret);
 		goto out_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pdata && pdata->touch) {
 		ret = mfd_add_devices(chip->dev, 0, &touch_devs[0],
 				      ARRAY_SIZE(touch_devs),
-<<<<<<< HEAD
-				      &touch_resources[0], 0);
-=======
 				      NULL, chip->tsc_irq, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0) {
 			dev_err(chip->dev, "Failed to add touch subdev\n");
 			goto out_dev;
@@ -1172,11 +901,7 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-void __devexit max8925_device_exit(struct max8925_chip *chip)
-=======
 void max8925_device_exit(struct max8925_chip *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (chip->core_irq)
 		free_irq(chip->core_irq, chip);
@@ -1184,11 +909,3 @@ void max8925_device_exit(struct max8925_chip *chip)
 		free_irq(chip->tsc_irq, chip);
 	mfd_remove_devices(chip->dev);
 }
-<<<<<<< HEAD
-
-
-MODULE_DESCRIPTION("PMIC Driver for Maxim MAX8925");
-MODULE_AUTHOR("Haojian Zhuang <haojian.zhuang@marvell.com");
-MODULE_LICENSE("GPL");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

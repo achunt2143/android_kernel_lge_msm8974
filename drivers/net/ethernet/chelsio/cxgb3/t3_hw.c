@@ -29,10 +29,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-<<<<<<< HEAD
-=======
 #include <linux/etherdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 #include "regs.h"
 #include "sge_defs.h"
@@ -599,87 +596,10 @@ struct t3_vpd {
 	u32 pad;		/* for multiple-of-4 sizing and alignment */
 };
 
-<<<<<<< HEAD
-#define EEPROM_MAX_POLL   40
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EEPROM_STAT_ADDR  0x4000
 #define VPD_BASE          0xc00
 
 /**
-<<<<<<< HEAD
- *	t3_seeprom_read - read a VPD EEPROM location
- *	@adapter: adapter to read
- *	@addr: EEPROM address
- *	@data: where to store the read data
- *
- *	Read a 32-bit word from a location in VPD EEPROM using the card's PCI
- *	VPD ROM capability.  A zero is written to the flag bit when the
- *	address is written to the control register.  The hardware device will
- *	set the flag to 1 when 4 bytes have been read into the data register.
- */
-int t3_seeprom_read(struct adapter *adapter, u32 addr, __le32 *data)
-{
-	u16 val;
-	int attempts = EEPROM_MAX_POLL;
-	u32 v;
-	unsigned int base = adapter->params.pci.vpd_cap_addr;
-
-	if ((addr >= EEPROMSIZE && addr != EEPROM_STAT_ADDR) || (addr & 3))
-		return -EINVAL;
-
-	pci_write_config_word(adapter->pdev, base + PCI_VPD_ADDR, addr);
-	do {
-		udelay(10);
-		pci_read_config_word(adapter->pdev, base + PCI_VPD_ADDR, &val);
-	} while (!(val & PCI_VPD_ADDR_F) && --attempts);
-
-	if (!(val & PCI_VPD_ADDR_F)) {
-		CH_ERR(adapter, "reading EEPROM address 0x%x failed\n", addr);
-		return -EIO;
-	}
-	pci_read_config_dword(adapter->pdev, base + PCI_VPD_DATA, &v);
-	*data = cpu_to_le32(v);
-	return 0;
-}
-
-/**
- *	t3_seeprom_write - write a VPD EEPROM location
- *	@adapter: adapter to write
- *	@addr: EEPROM address
- *	@data: value to write
- *
- *	Write a 32-bit word to a location in VPD EEPROM using the card's PCI
- *	VPD ROM capability.
- */
-int t3_seeprom_write(struct adapter *adapter, u32 addr, __le32 data)
-{
-	u16 val;
-	int attempts = EEPROM_MAX_POLL;
-	unsigned int base = adapter->params.pci.vpd_cap_addr;
-
-	if ((addr >= EEPROMSIZE && addr != EEPROM_STAT_ADDR) || (addr & 3))
-		return -EINVAL;
-
-	pci_write_config_dword(adapter->pdev, base + PCI_VPD_DATA,
-			       le32_to_cpu(data));
-	pci_write_config_word(adapter->pdev,base + PCI_VPD_ADDR,
-			      addr | PCI_VPD_ADDR_F);
-	do {
-		msleep(1);
-		pci_read_config_word(adapter->pdev, base + PCI_VPD_ADDR, &val);
-	} while ((val & PCI_VPD_ADDR_F) && --attempts);
-
-	if (val & PCI_VPD_ADDR_F) {
-		CH_ERR(adapter, "write to EEPROM address 0x%x failed\n", addr);
-		return -EIO;
-	}
-	return 0;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	t3_seeprom_wp - enable/disable EEPROM write protection
  *	@adapter: the adapter
  *	@enable: 1 to enable write protection, 0 to disable it
@@ -688,9 +608,6 @@ int t3_seeprom_write(struct adapter *adapter, u32 addr, __le32 data)
  */
 int t3_seeprom_wp(struct adapter *adapter, int enable)
 {
-<<<<<<< HEAD
-	return t3_seeprom_write(adapter, EEPROM_STAT_ADDR, enable ? 0xc : 0);
-=======
 	u32 data = enable ? 0xc : 0;
 	int ret;
 
@@ -717,7 +634,6 @@ static int vpdstrtou16(char *s, u8 len, unsigned int base, u16 *val)
 	memcpy(tok, s, len);
 	tok[len] = 0;
 	return kstrtou16(strim(tok), base, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -729,38 +645,14 @@ static int vpdstrtou16(char *s, u8 len, unsigned int base, u16 *val)
  */
 static int get_vpd_params(struct adapter *adapter, struct vpd_params *p)
 {
-<<<<<<< HEAD
-	int i, addr, ret;
-	struct t3_vpd vpd;
-=======
 	struct t3_vpd vpd;
 	u8 base_val = 0;
 	int addr, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Card information is normally at VPD_BASE but some early cards had
 	 * it at 0.
 	 */
-<<<<<<< HEAD
-	ret = t3_seeprom_read(adapter, VPD_BASE, (__le32 *)&vpd);
-	if (ret)
-		return ret;
-	addr = vpd.id_tag == 0x82 ? VPD_BASE : 0;
-
-	for (i = 0; i < sizeof(vpd); i += 4) {
-		ret = t3_seeprom_read(adapter, addr + i,
-				      (__le32 *)((u8 *)&vpd + i));
-		if (ret)
-			return ret;
-	}
-
-	p->cclk = simple_strtoul(vpd.cclk_data, NULL, 10);
-	p->mclk = simple_strtoul(vpd.mclk_data, NULL, 10);
-	p->uclk = simple_strtoul(vpd.uclk_data, NULL, 10);
-	p->mdc = simple_strtoul(vpd.mdc_data, NULL, 10);
-	p->mem_timing = simple_strtoul(vpd.mt_data, NULL, 10);
-=======
 	ret = pci_read_vpd(adapter->pdev, VPD_BASE, 1, &base_val);
 	if (ret < 0)
 		return ret;
@@ -785,7 +677,6 @@ static int get_vpd_params(struct adapter *adapter, struct vpd_params *p)
 	ret = vpdstrtouint(vpd.mt_data, vpd.mt_len, 10, &p->mem_timing);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(p->sn, vpd.sn_data, SERNUM_LEN);
 
 	/* Old eeproms didn't have port information */
@@ -795,15 +686,6 @@ static int get_vpd_params(struct adapter *adapter, struct vpd_params *p)
 	} else {
 		p->port_type[0] = hex_to_bin(vpd.port0_data[0]);
 		p->port_type[1] = hex_to_bin(vpd.port1_data[0]);
-<<<<<<< HEAD
-		p->xauicfg[0] = simple_strtoul(vpd.xaui0cfg_data, NULL, 16);
-		p->xauicfg[1] = simple_strtoul(vpd.xaui1cfg_data, NULL, 16);
-	}
-
-	for (i = 0; i < 6; i++)
-		p->eth_base[i] = hex_to_bin(vpd.na_data[2 * i]) * 16 +
-				 hex_to_bin(vpd.na_data[2 * i + 1]);
-=======
 		ret = vpdstrtou16(vpd.xaui0cfg_data, vpd.xaui0cfg_len, 16,
 				  &p->xauicfg[0]);
 		if (ret)
@@ -817,7 +699,6 @@ static int get_vpd_params(struct adapter *adapter, struct vpd_params *p)
 	ret = hex2bin(p->eth_base, vpd.na_data, 6);
 	if (ret < 0)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -928,11 +809,7 @@ static int flash_wait_op(struct adapter *adapter, int attempts, int delay)
  *	Read the specified number of 32-bit words from the serial flash.
  *	If @byte_oriented is set the read data is stored as a byte array
  *	(i.e., big-endian), otherwise as 32-bit words in the platform's
-<<<<<<< HEAD
- *	natural endianess.
-=======
  *	natural endianness.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int t3_read_flash(struct adapter *adapter, unsigned int addr,
 			 unsigned int nwords, u32 *data, int byte_oriented)
@@ -1140,11 +1017,7 @@ int t3_check_fw_version(struct adapter *adapter)
 		CH_WARN(adapter, "found newer FW version(%u.%u), "
 		        "driver compiled for version %u.%u\n", major, minor,
 			FW_VERSION_MAJOR, FW_VERSION_MINOR);
-<<<<<<< HEAD
-			return 0;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
@@ -1172,11 +1045,7 @@ static int t3_flash_erase_sectors(struct adapter *adapter, int start, int end)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	t3_load_fw - download firmware
  *	@adapter: the adapter
  *	@fw_data: the firmware image to write
@@ -2261,11 +2130,7 @@ static int t3_sge_write_context(struct adapter *adapter, unsigned int id,
 
 /**
  *	clear_sge_ctxt - completely clear an SGE context
-<<<<<<< HEAD
- *	@adapter: the adapter
-=======
  *	@adap: the adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@id: the context id
  *	@type: the context type
  *
@@ -2554,10 +2419,7 @@ int t3_sge_disable_cqcntxt(struct adapter *adapter, unsigned int id)
  *	@adapter: the adapter
  *	@id: the context id
  *	@op: the operation to perform
-<<<<<<< HEAD
-=======
  *	@credits: credit value to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Perform the selected operation on an SGE completion queue context.
  *	The caller is responsible for ensuring only one context operation
@@ -2959,11 +2821,7 @@ static void init_cong_ctrl(unsigned short *a, unsigned short *b)
  *	t3_load_mtus - write the MTU and congestion control HW tables
  *	@adap: the adapter
  *	@mtus: the unrestricted values for the MTU table
-<<<<<<< HEAD
- *	@alphs: the values for the congestion control alpha parameter
-=======
  *	@alpha: the values for the congestion control alpha parameter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@beta: the values for the congestion control beta parameter
  *	@mtu_cap: the maximum permitted effective MTU
  *
@@ -3044,11 +2902,7 @@ static void ulp_config(struct adapter *adap, const struct tp_params *p)
 
 /**
  *	t3_set_proto_sram - set the contents of the protocol sram
-<<<<<<< HEAD
- *	@adapter: the adapter
-=======
  *	@adap: the adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@data: the protocol image
  *
  *	Write the contents of the protocol SRAM.
@@ -3405,28 +3259,11 @@ static void config_pcie(struct adapter *adap)
 	unsigned int log2_width, pldsize;
 	unsigned int fst_trn_rx, fst_trn_tx, acklat, rpllmt;
 
-<<<<<<< HEAD
-	pci_read_config_word(adap->pdev,
-			     adap->pdev->pcie_cap + PCI_EXP_DEVCTL,
-			     &val);
-=======
 	pcie_capability_read_word(adap->pdev, PCI_EXP_DEVCTL, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pldsize = (val & PCI_EXP_DEVCTL_PAYLOAD) >> 5;
 
 	pci_read_config_word(adap->pdev, 0x2, &devid);
 	if (devid == 0x37) {
-<<<<<<< HEAD
-		pci_write_config_word(adap->pdev,
-				      adap->pdev->pcie_cap + PCI_EXP_DEVCTL,
-				      val & ~PCI_EXP_DEVCTL_READRQ &
-				      ~PCI_EXP_DEVCTL_PAYLOAD);
-		pldsize = 0;
-	}
-
-	pci_read_config_word(adap->pdev, adap->pdev->pcie_cap + PCI_EXP_LNKCTL,
-			     &val);
-=======
 		pcie_capability_write_word(adap->pdev, PCI_EXP_DEVCTL,
 					   val & ~PCI_EXP_DEVCTL_READRQ &
 					   ~PCI_EXP_DEVCTL_PAYLOAD);
@@ -3434,18 +3271,13 @@ static void config_pcie(struct adapter *adap)
 	}
 
 	pcie_capability_read_word(adap->pdev, PCI_EXP_LNKCTL, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fst_trn_tx = G_NUMFSTTRNSEQ(t3_read_reg(adap, A_PCIE_PEX_CTRL0));
 	fst_trn_rx = adap->params.rev == 0 ? fst_trn_tx :
 	    G_NUMFSTTRNSEQRX(t3_read_reg(adap, A_PCIE_MODE));
 	log2_width = fls(adap->params.pci.width) - 1;
 	acklat = ack_lat[log2_width][pldsize];
-<<<<<<< HEAD
-	if (val & 1)		/* check LOsEnable */
-=======
 	if (val & PCI_EXP_LNKCTL_ASPM_L0S)	/* check LOsEnable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acklat += fst_trn_tx * 4;
 	rpllmt = rpl_tmr[log2_width][pldsize] + fst_trn_rx * 4;
 
@@ -3559,17 +3391,6 @@ out_err:
 static void get_pci_mode(struct adapter *adapter, struct pci_params *p)
 {
 	static unsigned short speed_map[] = { 33, 66, 100, 133 };
-<<<<<<< HEAD
-	u32 pci_mode, pcie_cap;
-
-	pcie_cap = pci_pcie_cap(adapter->pdev);
-	if (pcie_cap) {
-		u16 val;
-
-		p->variant = PCI_VARIANT_PCIE;
-		pci_read_config_word(adapter->pdev, pcie_cap + PCI_EXP_LNKSTA,
-					&val);
-=======
 	u32 pci_mode;
 
 	if (pci_is_pcie(adapter->pdev)) {
@@ -3577,7 +3398,6 @@ static void get_pci_mode(struct adapter *adapter, struct pci_params *p)
 
 		p->variant = PCI_VARIANT_PCIE;
 		pcie_capability_read_word(adapter->pdev, PCI_EXP_LNKSTA, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->width = (val >> 4) & 0x3f;
 		return;
 	}
@@ -3599,11 +3419,7 @@ static void get_pci_mode(struct adapter *adapter, struct pci_params *p)
 /**
  *	init_link_config - initialize a link's SW state
  *	@lc: structure holding the link state
-<<<<<<< HEAD
- *	@ai: information about the current card
-=======
  *	@caps: information about the current card
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Initializes the SW state maintained for each link, including the link's
  *	capabilities and default speed/duplex/flow-control/autonegotiation
@@ -3739,11 +3555,7 @@ int t3_reset_adapter(struct adapter *adapter)
 
 static int init_parity(struct adapter *adap)
 {
-<<<<<<< HEAD
-		int i, err, addr;
-=======
 	int i, err, addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (t3_read_reg(adap, A_SG_CONTEXT_CMD) & F_CONTEXT_CMD_BUSY)
 		return -EBUSY;
@@ -3801,11 +3613,8 @@ int t3_prep_adapter(struct adapter *adapter, const struct adapter_info *ai,
 	    MAC_STATS_ACCUM_SECS : (MAC_STATS_ACCUM_SECS * 10);
 	adapter->params.pci.vpd_cap_addr =
 	    pci_find_capability(adapter->pdev, PCI_CAP_ID_VPD);
-<<<<<<< HEAD
-=======
 	if (!adapter->params.pci.vpd_cap_addr)
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = get_vpd_params(adapter, &adapter->params.vpd);
 	if (ret < 0)
 		return ret;
@@ -3886,14 +3695,7 @@ int t3_prep_adapter(struct adapter *adapter, const struct adapter_info *ai,
 		memcpy(hw_addr, adapter->params.vpd.eth_base, 5);
 		hw_addr[5] = adapter->params.vpd.eth_base[5] + i;
 
-<<<<<<< HEAD
-		memcpy(adapter->port[i]->dev_addr, hw_addr,
-		       ETH_ALEN);
-		memcpy(adapter->port[i]->perm_addr, hw_addr,
-		       ETH_ALEN);
-=======
 		eth_hw_addr_set(adapter->port[i], hw_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		init_link_config(&p->link_config, p->phy.caps);
 		p->phy.ops->power_down(&p->phy, 1);
 
@@ -3941,10 +3743,6 @@ int t3_replay_prep_adapter(struct adapter *adapter)
 		p->phy.ops->power_down(&p->phy, 1);
 	}
 
-<<<<<<< HEAD
-return 0;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

@@ -1,43 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 - 2009 NetXen, Inc.
  * Copyright (C) 2009 - QLogic Corporation.
  * All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution
- * in the file called "COPYING".
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/netdevice.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/if_vlan.h>
-<<<<<<< HEAD
-=======
 #include <net/checksum.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "netxen_nic.h"
 #include "netxen_nic_hw.h"
 
@@ -130,15 +102,8 @@ void netxen_release_rx_buffers(struct netxen_adapter *adapter)
 			rx_buf = &(rds_ring->rx_buf_arr[i]);
 			if (rx_buf->state == NETXEN_BUFFER_FREE)
 				continue;
-<<<<<<< HEAD
-			pci_unmap_single(adapter->pdev,
-					rx_buf->dma,
-					rds_ring->dma_size,
-					PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_single(&adapter->pdev->dev, rx_buf->dma,
 					 rds_ring->dma_size, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rx_buf->skb != NULL)
 				dev_kfree_skb_any(rx_buf->skb);
 		}
@@ -152,35 +117,21 @@ void netxen_release_tx_buffers(struct netxen_adapter *adapter)
 	int i, j;
 	struct nx_host_tx_ring *tx_ring = adapter->tx_ring;
 
-<<<<<<< HEAD
-=======
 	spin_lock_bh(&adapter->tx_clean_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd_buf = tx_ring->cmd_buf_arr;
 	for (i = 0; i < tx_ring->num_desc; i++) {
 		buffrag = cmd_buf->frag_array;
 		if (buffrag->dma) {
-<<<<<<< HEAD
-			pci_unmap_single(adapter->pdev, buffrag->dma,
-					 buffrag->length, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&adapter->pdev->dev, buffrag->dma,
 					 buffrag->length, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			buffrag->dma = 0ULL;
 		}
 		for (j = 1; j < cmd_buf->frag_count; j++) {
 			buffrag++;
 			if (buffrag->dma) {
-<<<<<<< HEAD
-				pci_unmap_page(adapter->pdev, buffrag->dma,
-					       buffrag->length,
-					       PCI_DMA_TODEVICE);
-=======
 				dma_unmap_page(&adapter->pdev->dev,
 					       buffrag->dma, buffrag->length,
 					       DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				buffrag->dma = 0ULL;
 			}
 		}
@@ -190,10 +141,7 @@ void netxen_release_tx_buffers(struct netxen_adapter *adapter)
 		}
 		cmd_buf++;
 	}
-<<<<<<< HEAD
-=======
 	spin_unlock_bh(&adapter->tx_clean_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void netxen_free_sw_resources(struct netxen_adapter *adapter)
@@ -232,21 +180,6 @@ int netxen_alloc_sw_resources(struct netxen_adapter *adapter)
 	struct nx_host_sds_ring *sds_ring;
 	struct nx_host_tx_ring *tx_ring;
 	struct netxen_rx_buffer *rx_buf;
-<<<<<<< HEAD
-	int ring, i, size;
-
-	struct netxen_cmd_buffer *cmd_buf_arr;
-	struct net_device *netdev = adapter->netdev;
-	struct pci_dev *pdev = adapter->pdev;
-
-	size = sizeof(struct nx_host_tx_ring);
-	tx_ring = kzalloc(size, GFP_KERNEL);
-	if (tx_ring == NULL) {
-		dev_err(&pdev->dev, "%s: failed to allocate tx ring struct\n",
-		       netdev->name);
-		return -ENOMEM;
-	}
-=======
 	int ring, i;
 
 	struct netxen_cmd_buffer *cmd_buf_arr;
@@ -256,43 +189,24 @@ int netxen_alloc_sw_resources(struct netxen_adapter *adapter)
 	if (tx_ring == NULL)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->tx_ring = tx_ring;
 
 	tx_ring->num_desc = adapter->num_txd;
 	tx_ring->txq = netdev_get_tx_queue(netdev, 0);
 
 	cmd_buf_arr = vzalloc(TX_BUFF_RINGSIZE(tx_ring));
-<<<<<<< HEAD
-	if (cmd_buf_arr == NULL) {
-		dev_err(&pdev->dev, "%s: failed to allocate cmd buffer ring\n",
-		       netdev->name);
-		goto err_out;
-	}
-=======
 	if (cmd_buf_arr == NULL)
 		goto err_out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tx_ring->cmd_buf_arr = cmd_buf_arr;
 
 	recv_ctx = &adapter->recv_ctx;
 
-<<<<<<< HEAD
-	size = adapter->max_rds_rings * sizeof (struct nx_host_rds_ring);
-	rds_ring = kzalloc(size, GFP_KERNEL);
-	if (rds_ring == NULL) {
-		dev_err(&pdev->dev, "%s: failed to allocate rds ring struct\n",
-		       netdev->name);
-		goto err_out;
-	}
-=======
 	rds_ring = kcalloc(adapter->max_rds_rings,
 			   sizeof(struct nx_host_rds_ring), GFP_KERNEL);
 	if (rds_ring == NULL)
 		goto err_out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	recv_ctx->rds_rings = rds_ring;
 
 	for (ring = 0; ring < adapter->max_rds_rings; ring++) {
@@ -671,11 +585,7 @@ static struct uni_table_desc *nx_get_table_desc(const u8 *unirom, int section)
 
 static int
 netxen_nic_validate_header(struct netxen_adapter *adapter)
-<<<<<<< HEAD
- {
-=======
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const u8 *unirom = adapter->fw->data;
 	struct uni_table_desc *directory = (struct uni_table_desc *) &unirom[0];
 	u32 fw_file_size = adapter->fw->size;
@@ -1196,15 +1106,9 @@ netxen_validate_firmware(struct netxen_adapter *adapter)
 		 _build(file_fw_ver));
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-
-	val = nx_get_bios_version(adapter);
-	netxen_rom_fast_read(adapter, NX_BIOS_VERSION_OFFSET, (int *)&bios);
-=======
 	val = nx_get_bios_version(adapter);
 	if (netxen_rom_fast_read(adapter, NX_BIOS_VERSION_OFFSET, (int *)&bios))
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((__force u32)val != bios) {
 		dev_err(&pdev->dev, "%s: firmware bios is incompatible\n",
 				fw_name[fw_type]);
@@ -1282,10 +1186,6 @@ static int
 netxen_p3_has_mn(struct netxen_adapter *adapter)
 {
 	u32 capability, flashed_ver;
-<<<<<<< HEAD
-	capability = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* NX2031 always had MN */
 	if (NX_IS_REVISION_P2(adapter->ahw.revision_id))
@@ -1296,10 +1196,6 @@ netxen_p3_has_mn(struct netxen_adapter *adapter)
 	flashed_ver = NETXEN_DECODE_VERSION(flashed_ver);
 
 	if (flashed_ver >= NETXEN_VERSION_CODE(4, 0, 220)) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		capability = NXRD32(adapter, NX_PEG_TUNE_CAPABILITY);
 		if (capability & NX_PEG_TUNE_MN_PRESENT)
 			return 1;
@@ -1338,12 +1234,7 @@ next:
 void
 netxen_release_firmware(struct netxen_adapter *adapter)
 {
-<<<<<<< HEAD
-	if (adapter->fw)
-		release_firmware(adapter->fw);
-=======
 	release_firmware(adapter->fw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->fw = NULL;
 }
 
@@ -1355,16 +1246,10 @@ int netxen_init_dummy_dma(struct netxen_adapter *adapter)
 	if (!NX_IS_REVISION_P2(adapter->ahw.revision_id))
 		return 0;
 
-<<<<<<< HEAD
-	adapter->dummy_dma.addr = pci_alloc_consistent(adapter->pdev,
-				 NETXEN_HOST_DUMMY_DMA_SIZE,
-				 &adapter->dummy_dma.phys_addr);
-=======
 	adapter->dummy_dma.addr = dma_alloc_coherent(&adapter->pdev->dev,
 						     NETXEN_HOST_DUMMY_DMA_SIZE,
 						     &adapter->dummy_dma.phys_addr,
 						     GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->dummy_dma.addr == NULL) {
 		dev_err(&adapter->pdev->dev,
 			"ERROR: Could not allocate dummy DMA memory\n");
@@ -1416,17 +1301,10 @@ void netxen_free_dummy_dma(struct netxen_adapter *adapter)
 	}
 
 	if (i) {
-<<<<<<< HEAD
-		pci_free_consistent(adapter->pdev,
-			    NETXEN_HOST_DUMMY_DMA_SIZE,
-			    adapter->dummy_dma.addr,
-			    adapter->dummy_dma.phys_addr);
-=======
 		dma_free_coherent(&adapter->pdev->dev,
 				  NETXEN_HOST_DUMMY_DMA_SIZE,
 				  adapter->dummy_dma.addr,
 				  adapter->dummy_dma.phys_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->dummy_dma.addr = NULL;
 	} else
 		dev_err(&adapter->pdev->dev, "dma_watchdog_shutdown failed\n");
@@ -1479,18 +1357,8 @@ netxen_receive_peg_ready(struct netxen_adapter *adapter)
 
 	} while (--retries);
 
-<<<<<<< HEAD
-	if (!retries) {
-		printk(KERN_ERR "Receive Peg initialization not "
-			      "complete, state: 0x%x.\n", val);
-		return -EIO;
-	}
-
-	return 0;
-=======
 	pr_err("Receive Peg initialization not complete, state: 0x%x.\n", val);
 	return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int netxen_init_firmware(struct netxen_adapter *adapter)
@@ -1539,11 +1407,6 @@ netxen_handle_linkevent(struct netxen_adapter *adapter, nx_fw_msg_t *msg)
 				netdev->name, cable_len);
 	}
 
-<<<<<<< HEAD
-	netxen_advert_link_change(adapter, link_status);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* update link parameters */
 	if (duplex == LINKEVENT_FULL_DUPLEX)
 		adapter->link_duplex = DUPLEX_FULL;
@@ -1552,11 +1415,8 @@ netxen_handle_linkevent(struct netxen_adapter *adapter, nx_fw_msg_t *msg)
 	adapter->module_type = module;
 	adapter->link_autoneg = autoneg;
 	adapter->link_speed = link_speed;
-<<<<<<< HEAD
-=======
 
 	netxen_advert_link_change(adapter, link_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1604,17 +1464,10 @@ netxen_alloc_rx_skb(struct netxen_adapter *adapter,
 	if (!adapter->ahw.cut_through)
 		skb_reserve(skb, 2);
 
-<<<<<<< HEAD
-	dma = pci_map_single(pdev, skb->data,
-			rds_ring->dma_size, PCI_DMA_FROMDEVICE);
-
-	if (pci_dma_mapping_error(pdev, dma)) {
-=======
 	dma = dma_map_single(&pdev->dev, skb->data, rds_ring->dma_size,
 			     DMA_FROM_DEVICE);
 
 	if (dma_mapping_error(&pdev->dev, dma)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 		buffer->skb = NULL;
 		return 1;
@@ -1635,13 +1488,8 @@ static struct sk_buff *netxen_process_rxbuf(struct netxen_adapter *adapter,
 
 	buffer = &rds_ring->rx_buf_arr[index];
 
-<<<<<<< HEAD
-	pci_unmap_single(adapter->pdev, buffer->dma, rds_ring->dma_size,
-			PCI_DMA_FROMDEVICE);
-=======
 	dma_unmap_single(&adapter->pdev->dev, buffer->dma, rds_ring->dma_size,
 			 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = buffer->skb;
 	if (!skb)
@@ -1654,11 +1502,6 @@ static struct sk_buff *netxen_process_rxbuf(struct netxen_adapter *adapter,
 	} else
 		skb->ip_summed = CHECKSUM_NONE;
 
-<<<<<<< HEAD
-	skb->dev = adapter->netdev;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buffer->skb = NULL;
 no_skb:
 	buffer->state = NETXEN_BUFFER_FREE;
@@ -1738,21 +1581,13 @@ netxen_process_lro(struct netxen_adapter *adapter,
 	u32 seq_number;
 	u8 vhdr_len = 0;
 
-<<<<<<< HEAD
-	if (unlikely(ring > adapter->max_rds_rings))
-=======
 	if (unlikely(ring >= adapter->max_rds_rings))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	rds_ring = &recv_ctx->rds_rings[ring];
 
 	index = netxen_get_lro_sts_refhandle(sts_data0);
-<<<<<<< HEAD
-	if (unlikely(index > rds_ring->num_desc))
-=======
 	if (unlikely(index >= rds_ring->num_desc))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	buffer = &rds_ring->rx_buf_arr[index];
@@ -1784,25 +1619,16 @@ netxen_process_lro(struct netxen_adapter *adapter,
 	th = (struct tcphdr *)((skb->data + vhdr_len) + (iph->ihl << 2));
 
 	length = (iph->ihl << 2) + (th->doff << 2) + lro_length;
-<<<<<<< HEAD
-	iph->tot_len = htons(length);
-	iph->check = 0;
-	iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
-=======
 	csum_replace2(&iph->check, iph->tot_len, htons(length));
 	iph->tot_len = htons(length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	th->psh = push;
 	th->seq = htonl(seq_number);
 
 	length = skb->len;
 
-<<<<<<< HEAD
-=======
 	if (adapter->flags & NETXEN_FW_MSS_CAP)
 		skb_shinfo(skb)->gso_size  =  netxen_get_lro_sts_mss(sts_data1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_receive_skb(skb);
 
 	adapter->stats.lro_pkts++;
@@ -1857,10 +1683,7 @@ netxen_process_rcv_ring(struct nx_host_sds_ring *sds_ring, int max)
 			break;
 		case NETXEN_NIC_RESPONSE_DESC:
 			netxen_handle_fw_message(desc_cnt, consumer, sds_ring);
-<<<<<<< HEAD
-=======
 			goto skip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			goto skip;
 		}
@@ -1919,11 +1742,7 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 	int done = 0;
 	struct nx_host_tx_ring *tx_ring = adapter->tx_ring;
 
-<<<<<<< HEAD
-	if (!spin_trylock(&adapter->tx_clean_lock))
-=======
 	if (!spin_trylock_bh(&adapter->tx_clean_lock))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	sw_consumer = tx_ring->sw_consumer;
@@ -1933,15 +1752,6 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 		buffer = &tx_ring->cmd_buf_arr[sw_consumer];
 		if (buffer->skb) {
 			frag = &buffer->frag_array[0];
-<<<<<<< HEAD
-			pci_unmap_single(pdev, frag->dma, frag->length,
-					 PCI_DMA_TODEVICE);
-			frag->dma = 0ULL;
-			for (i = 1; i < buffer->frag_count; i++) {
-				frag++;	/* Get the next frag */
-				pci_unmap_page(pdev, frag->dma, frag->length,
-					       PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&pdev->dev, frag->dma, frag->length,
 					 DMA_TO_DEVICE);
 			frag->dma = 0ULL;
@@ -1949,7 +1759,6 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 				frag++;	/* Get the next frag */
 				dma_unmap_page(&pdev->dev, frag->dma,
 					       frag->length, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				frag->dma = 0ULL;
 			}
 
@@ -1963,15 +1772,9 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 			break;
 	}
 
-<<<<<<< HEAD
-	if (count && netif_running(netdev)) {
-		tx_ring->sw_consumer = sw_consumer;
-
-=======
 	tx_ring->sw_consumer = sw_consumer;
 
 	if (count && netif_running(netdev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp_mb();
 
 		if (netif_queue_stopped(netdev) && netif_carrier_ok(netdev))
@@ -1994,11 +1797,7 @@ int netxen_process_cmd_ring(struct netxen_adapter *adapter)
 	 */
 	hw_consumer = le32_to_cpu(*(tx_ring->hw_consumer));
 	done = (sw_consumer == hw_consumer);
-<<<<<<< HEAD
-	spin_unlock(&adapter->tx_clean_lock);
-=======
 	spin_unlock_bh(&adapter->tx_clean_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return done;
 }

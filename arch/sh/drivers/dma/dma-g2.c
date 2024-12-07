@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/drivers/dma/dma-g2.c
  *
  * G2 bus DMA support
  *
  * Copyright (C) 2003 - 2006  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -204,8 +194,4 @@ module_exit(g2_dma_exit);
 
 MODULE_AUTHOR("Paul Mundt <lethal@linux-sh.org>");
 MODULE_DESCRIPTION("G2 bus DMA driver");
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-=======
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

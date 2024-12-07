@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -45,11 +42,6 @@ finish_urb(struct ohci_hcd *ohci, struct urb *urb, int status)
 __releases(ohci->lock)
 __acquires(ohci->lock)
 {
-<<<<<<< HEAD
-	// ASSERT (urb->hcpriv != 0);
-
-	urb_free_priv (ohci, urb->hcpriv);
-=======
 	struct device *dev = ohci_to_hcd(ohci)->self.controller;
 	struct usb_host_endpoint *ep = urb->ep;
 	struct urb_priv *urb_priv;
@@ -59,7 +51,6 @@ __acquires(ohci->lock)
  restart:
 	urb_free_priv (ohci, urb->hcpriv);
 	urb->hcpriv = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(status == -EINPROGRESS))
 		status = 0;
 
@@ -70,11 +61,7 @@ __acquires(ohci->lock)
 			if (quirk_amdiso(ohci))
 				usb_amd_quirk_pll_enable();
 			if (quirk_amdprefetch(ohci))
-<<<<<<< HEAD
-				sb800_prefetch(ohci, 0);
-=======
 				sb800_prefetch(dev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case PIPE_INTERRUPT:
@@ -82,13 +69,6 @@ __acquires(ohci->lock)
 		break;
 	}
 
-<<<<<<< HEAD
-#ifdef OHCI_VERBOSE_DEBUG
-	urb_print(urb, "RET", usb_pipeout (urb->pipe), status);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* urb->complete() can reenter this HCD */
 	usb_hcd_unlink_urb_from_ep(ohci_to_hcd(ohci), urb);
 	spin_unlock (&ohci->lock);
@@ -101,8 +81,6 @@ __acquires(ohci->lock)
 		ohci->hc_control &= ~(OHCI_CTRL_PLE|OHCI_CTRL_IE);
 		ohci_writel (ohci, ohci->hc_control, &ohci->regs->control);
 	}
-<<<<<<< HEAD
-=======
 
 	/*
 	 * An isochronous URB that is sumitted too late won't have any TDs
@@ -118,7 +96,6 @@ __acquires(ohci->lock)
 			goto restart;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -167,11 +144,7 @@ static void periodic_link (struct ohci_hcd *ohci, struct ed *ed)
 {
 	unsigned	i;
 
-<<<<<<< HEAD
-	ohci_vdbg (ohci, "link %sed %p branch %d [%dus.], interval %d\n",
-=======
 	ohci_dbg(ohci, "link %sed %p branch %d [%dus.], interval %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(ed->hwINFO & cpu_to_hc32 (ohci, ED_ISO)) ? "iso " : "",
 		ed, ed->branch, ed->load, ed->interval);
 
@@ -211,20 +184,9 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 {
 	int	branch;
 
-<<<<<<< HEAD
-	ed->state = ED_OPER;
 	ed->ed_prev = NULL;
 	ed->ed_next = NULL;
 	ed->hwNextED = 0;
-	if (quirk_zfmicro(ohci)
-			&& (ed->type == PIPE_INTERRUPT)
-			&& !(ohci->eds_scheduled++))
-		mod_timer(&ohci->unlink_watchdog, round_jiffies(jiffies + HZ));
-=======
-	ed->ed_prev = NULL;
-	ed->ed_next = NULL;
-	ed->hwNextED = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb ();
 
 	/* we care about rm_list when setting CLE/BLE in case the HC was at
@@ -297,11 +259,8 @@ static int ed_schedule (struct ohci_hcd *ohci, struct ed *ed)
 	/* the HC may not see the schedule updates yet, but if it does
 	 * then they'll be properly ordered.
 	 */
-<<<<<<< HEAD
-=======
 
 	ed->state = ED_OPER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -329,11 +288,7 @@ static void periodic_unlink (struct ohci_hcd *ohci, struct ed *ed)
 	}
 	ohci_to_hcd(ohci)->self.bandwidth_allocated -= ed->load / ed->interval;
 
-<<<<<<< HEAD
-	ohci_vdbg (ohci, "unlink %sed %p branch %d [%dus.], interval %d\n",
-=======
 	ohci_dbg(ohci, "unlink %sed %p branch %d [%dus.], interval %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(ed->hwINFO & cpu_to_hc32 (ohci, ED_ISO)) ? "iso " : "",
 		ed, ed->branch, ed->load, ed->interval);
 }
@@ -354,12 +309,7 @@ static void periodic_unlink (struct ohci_hcd *ohci, struct ed *ed)
  *  - ED_OPER: when there's any request queued, the ED gets rescheduled
  *    immediately.  HC should be working on them.
  *
-<<<<<<< HEAD
- *  - ED_IDLE:  when there's no TD queue. there's no reason for the HC
- *    to care about this ED; safe to disable the endpoint.
-=======
  *  - ED_IDLE: when there's no TD queue or the HC isn't running.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * When finish_unlinks() runs later, after SOF interrupt, it will often
  * complete one or more URB unlinks before making that state change.
@@ -459,12 +409,8 @@ static struct ed *ed_get (
 
 	spin_lock_irqsave (&ohci->lock, flags);
 
-<<<<<<< HEAD
-	if (!(ed = ep->hcpriv)) {
-=======
 	ed = ep->hcpriv;
 	if (!ed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct td	*td;
 		int		is_out;
 		u32		info;
@@ -613,10 +559,6 @@ td_fill (struct ohci_hcd *ohci, u32 info,
 		td->hwCBP = cpu_to_hc32 (ohci, data & 0xFFFFF000);
 		*ohci_hwPSWp(ohci, td, 0) = cpu_to_hc16 (ohci,
 						(data & 0x0FFF) | 0xE000);
-<<<<<<< HEAD
-		td->ed->last_iso = info & 0xffff;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		td->hwCBP = cpu_to_hc32 (ohci, data);
 	}
@@ -651,21 +593,15 @@ static void td_submit_urb (
 	struct urb	*urb
 ) {
 	struct urb_priv	*urb_priv = urb->hcpriv;
-<<<<<<< HEAD
-=======
 	struct device *dev = ohci_to_hcd(ohci)->self.controller;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t	data;
 	int		data_len = urb->transfer_buffer_length;
 	int		cnt = 0;
 	u32		info = 0;
 	int		is_out = usb_pipeout (urb->pipe);
 	int		periodic = 0;
-<<<<<<< HEAD
-=======
 	int		i, this_sg_len, n;
 	struct scatterlist	*sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OHCI handles the bulk/interrupt data toggles itself.  We just
 	 * use the device toggle bits for resetting, and rely on the fact
@@ -677,15 +613,6 @@ static void td_submit_urb (
 		urb_priv->ed->hwHeadP &= ~cpu_to_hc32 (ohci, ED_C);
 	}
 
-<<<<<<< HEAD
-	urb_priv->td_cnt = 0;
-	list_add (&urb_priv->pending, &ohci->pending);
-
-	if (data_len)
-		data = urb->transfer_dma;
-	else
-		data = 0;
-=======
 	list_add (&urb_priv->pending, &ohci->pending);
 
 	i = urb->num_mapped_sgs;
@@ -706,7 +633,6 @@ static void td_submit_urb (
 			data = 0;
 		this_sg_len = data_len;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* NOTE:  TD_CC is set so we can tell which TDs the HC processed by
 	 * using TD_CC_GET, as well as by seeing them on the done list.
@@ -721,29 +647,12 @@ static void td_submit_urb (
 		/* ... and periodic urbs have extra accounting */
 		periodic = ohci_to_hcd(ohci)->self.bandwidth_int_reqs++ == 0
 			&& ohci_to_hcd(ohci)->self.bandwidth_isoc_reqs == 0;
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PIPE_BULK:
 		info = is_out
 			? TD_T_TOGGLE | TD_CC | TD_DP_OUT
 			: TD_T_TOGGLE | TD_CC | TD_DP_IN;
 		/* TDs _could_ transfer up to 8K each */
-<<<<<<< HEAD
-		while (data_len > 4096) {
-			td_fill (ohci, info, data, 4096, urb, cnt);
-			data += 4096;
-			data_len -= 4096;
-			cnt++;
-		}
-		/* maybe avoid ED halt on final TD short read */
-		if (!(urb->transfer_flags & URB_SHORT_NOT_OK))
-			info |= TD_R;
-		td_fill (ohci, info, data, data_len, urb, cnt);
-		cnt++;
-=======
 		for (;;) {
 			n = min(this_sg_len, 4096);
 
@@ -767,7 +676,6 @@ static void td_submit_urb (
 						data_len);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((urb->transfer_flags & URB_ZERO_PACKET)
 				&& cnt < urb_priv->length) {
 			td_fill (ohci, info, 0, 0, urb, cnt);
@@ -806,12 +714,8 @@ static void td_submit_urb (
 	 * we could often reduce the number of TDs here.
 	 */
 	case PIPE_ISOCHRONOUS:
-<<<<<<< HEAD
-		for (cnt = 0; cnt < urb->number_of_packets; cnt++) {
-=======
 		for (cnt = urb_priv->td_cnt; cnt < urb->number_of_packets;
 				cnt++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int	frame = urb->start_frame;
 
 			// FIXME scheduling should handle frame counter
@@ -827,11 +731,7 @@ static void td_submit_urb (
 			if (quirk_amdiso(ohci))
 				usb_amd_quirk_pll_disable();
 			if (quirk_amdprefetch(ohci))
-<<<<<<< HEAD
-				sb800_prefetch(ohci, 1);
-=======
 				sb800_prefetch(dev, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		periodic = ohci_to_hcd(ohci)->self.bandwidth_isoc_reqs++ == 0
 			&& ohci_to_hcd(ohci)->self.bandwidth_int_reqs == 0;
@@ -887,11 +787,7 @@ static int td_done(struct ohci_hcd *ohci, struct urb *urb, struct td *td)
 		urb->iso_frame_desc [td->index].status = cc_to_error [cc];
 
 		if (cc != TD_CC_NOERROR)
-<<<<<<< HEAD
-			ohci_vdbg (ohci,
-=======
 			ohci_dbg(ohci,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"urb %p iso td %p (%d) len %d cc %d\n",
 				urb, td, 1 + td->index, dlen, cc);
 
@@ -923,11 +819,7 @@ static int td_done(struct ohci_hcd *ohci, struct urb *urb, struct td *td)
 		}
 
 		if (cc != TD_CC_NOERROR && cc < 0x0E)
-<<<<<<< HEAD
-			ohci_vdbg (ohci,
-=======
 			ohci_dbg(ohci,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"urb %p td %p (%d) cc %d, len=%d/%d\n",
 				urb, td, 1 + td->index, cc,
 				urb->actual_length,
@@ -987,19 +879,11 @@ static void ed_halted(struct ohci_hcd *ohci, struct td *td, int cc)
 	case TD_DATAUNDERRUN:
 		if ((urb->transfer_flags & URB_SHORT_NOT_OK) == 0)
 			break;
-<<<<<<< HEAD
-		/* fallthrough */
-	case TD_CC_STALL:
-		if (usb_pipecontrol (urb->pipe))
-			break;
-		/* fallthrough */
-=======
 		fallthrough;
 	case TD_CC_STALL:
 		if (usb_pipecontrol (urb->pipe))
 			break;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ohci_dbg (ohci,
 			"urb %p path %s ep%d%s %08x cc %d --> status %d\n",
@@ -1011,15 +895,6 @@ static void ed_halted(struct ohci_hcd *ohci, struct td *td, int cc)
 	}
 }
 
-<<<<<<< HEAD
-/* replies to the request have to be on a FIFO basis so
- * we unreverse the hc-reversed done-list
- */
-static struct td *dl_reverse_done_list (struct ohci_hcd *ohci)
-{
-	u32		td_dma;
-	struct td	*td_rev = NULL;
-=======
 /* Add a TD to the done list */
 static void add_to_done_list(struct ohci_hcd *ohci, struct td *td)
 {
@@ -1060,7 +935,6 @@ static void add_to_done_list(struct ohci_hcd *ohci, struct td *td)
 static void update_done_list(struct ohci_hcd *ohci)
 {
 	u32		td_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct td	*td = NULL;
 
 	td_dma = hc32_to_cpup (ohci, &ohci->hcca->done_head);
@@ -1068,11 +942,7 @@ static void update_done_list(struct ohci_hcd *ohci)
 	wmb();
 
 	/* get TD from hc's singly linked list, and
-<<<<<<< HEAD
-	 * prepend to ours.  ed->td_list changes later.
-=======
 	 * add to ours.  ed->td_list changes later.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	while (td_dma) {
 		int		cc;
@@ -1094,31 +964,17 @@ static void update_done_list(struct ohci_hcd *ohci)
 				&& (td->ed->hwHeadP & cpu_to_hc32 (ohci, ED_H)))
 			ed_halted(ohci, td, cc);
 
-<<<<<<< HEAD
-		td->next_dl_td = td_rev;
-		td_rev = td;
-		td_dma = hc32_to_cpup (ohci, &td->hwNextTD);
-	}
-	return td_rev;
-=======
 		td_dma = hc32_to_cpup (ohci, &td->hwNextTD);
 		add_to_done_list(ohci, td);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
 
 /* there are some urbs/eds to unlink; called in_irq(), with HCD locked */
-<<<<<<< HEAD
-static void
-finish_unlinks (struct ohci_hcd *ohci, u16 tick)
-{
-=======
 static void finish_unlinks(struct ohci_hcd *ohci)
 {
 	unsigned	tick = ohci_frame_no(ohci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ed	*ed, **last;
 
 rescan_all:
@@ -1130,33 +986,6 @@ rescan_all:
 		/* only take off EDs that the HC isn't using, accounting for
 		 * frame counter wraps and EDs with partially retired TDs
 		 */
-<<<<<<< HEAD
-		if (likely(ohci->rh_state == OHCI_RH_RUNNING)) {
-			if (tick_before (tick, ed->tick)) {
-skip_ed:
-				last = &ed->ed_next;
-				continue;
-			}
-
-			if (!list_empty (&ed->td_list)) {
-				struct td	*td;
-				u32		head;
-
-				td = list_entry (ed->td_list.next, struct td,
-							td_list);
-				head = hc32_to_cpu (ohci, ed->hwHeadP) &
-								TD_MASK;
-
-				/* INTR_WDH may need to clean up first */
-				if (td->td_dma != head) {
-					if (ed == ohci->ed_to_check)
-						ohci->ed_to_check = NULL;
-					else
-						goto skip_ed;
-				}
-			}
-		}
-=======
 		if (likely(ohci->rh_state == OHCI_RH_RUNNING) &&
 				tick_before(tick, ed->tick)) {
 skip_ed:
@@ -1185,7 +1014,6 @@ skip_ed:
 		ed->hwNextED = 0;
 		wmb();
 		ed->hwINFO &= ~cpu_to_hc32(ohci, ED_SKIP | ED_DEQUEUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* reentrancy:  if we drop the schedule lock, someone might
 		 * have modified this list.  normally it's just prepending
@@ -1242,11 +1070,7 @@ rescan_this:
 			urb_priv->td_cnt++;
 
 			/* if URB is done, clean up */
-<<<<<<< HEAD
-			if (urb_priv->td_cnt == urb_priv->length) {
-=======
 			if (urb_priv->td_cnt >= urb_priv->length) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				modified = completed = 1;
 				finish_urb(ohci, urb, 0);
 			}
@@ -1254,21 +1078,6 @@ rescan_this:
 		if (completed && !list_empty (&ed->td_list))
 			goto rescan_this;
 
-<<<<<<< HEAD
-		/* ED's now officially unlinked, hc doesn't see */
-		ed->state = ED_IDLE;
-		if (quirk_zfmicro(ohci) && ed->type == PIPE_INTERRUPT)
-			ohci->eds_scheduled--;
-		ed->hwHeadP &= ~cpu_to_hc32(ohci, ED_H);
-		ed->hwNextED = 0;
-		wmb ();
-		ed->hwINFO &= ~cpu_to_hc32 (ohci, ED_SKIP | ED_DEQUEUE);
-
-		/* but if there's work queued, reschedule */
-		if (!list_empty (&ed->td_list)) {
-			if (ohci->rh_state == OHCI_RH_RUNNING)
-				ed_schedule (ohci, ed);
-=======
 		/*
 		 * If no TDs are queued, ED is now idle.
 		 * Otherwise, if the HC is running, reschedule.
@@ -1286,7 +1095,6 @@ rescan_this:
 			/* Don't loop on the same ED */
 			if (last == &ohci->ed_rm_list)
 				last = &ed->ed_next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (modified)
@@ -1338,16 +1146,7 @@ rescan_this:
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-/*
- * Used to take back a TD from the host controller. This would normally be
- * called from within dl_done_list, however it may be called directly if the
- * HC no longer sees the TD and it has not appeared on the donelist (after
- * two frames).  This bug has been observed on ZF Micro systems.
- */
-=======
 /* Take back a TD from the host controller */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void takeback_td(struct ohci_hcd *ohci, struct td *td)
 {
 	struct urb	*urb = td->urb;
@@ -1360,11 +1159,7 @@ static void takeback_td(struct ohci_hcd *ohci, struct td *td)
 	urb_priv->td_cnt++;
 
 	/* If all this urb's TDs are done, call complete() */
-<<<<<<< HEAD
-	if (urb_priv->td_cnt == urb_priv->length)
-=======
 	if (urb_priv->td_cnt >= urb_priv->length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		finish_urb(ohci, urb, status);
 
 	/* clean schedule:  unlink EDs that are no longer busy */
@@ -1398,42 +1193,6 @@ static void takeback_td(struct ohci_hcd *ohci, struct td *td)
  *
  * This is the main path for handing urbs back to drivers.  The only other
  * normal path is finish_unlinks(), which unlinks URBs using ed_rm_list,
-<<<<<<< HEAD
- * instead of scanning the (re-reversed) donelist as this does.  There's
- * an abnormal path too, handling a quirk in some Compaq silicon:  URBs
- * with TDs that appear to be orphaned are directly reclaimed.
- */
-static void
-dl_done_list (struct ohci_hcd *ohci)
-{
-	struct td	*td = dl_reverse_done_list (ohci);
-
-	while (td) {
-		struct td	*td_next = td->next_dl_td;
-		struct ed	*ed = td->ed;
-
-		/*
-		 * Some OHCI controllers (NVIDIA for sure, maybe others)
-		 * occasionally forget to add TDs to the done queue.  Since
-		 * TDs for a given endpoint are always processed in order,
-		 * if we find a TD on the donelist then all of its
-		 * predecessors must be finished as well.
-		 */
-		for (;;) {
-			struct td	*td2;
-
-			td2 = list_first_entry(&ed->td_list, struct td,
-					td_list);
-			if (td2 == td)
-				break;
-			takeback_td(ohci, td2);
-		}
-
-		takeback_td(ohci, td);
-		td = td_next;
-	}
-}
-=======
  * instead of scanning the (re-reversed) donelist as this does.
  */
 static void process_done_list(struct ohci_hcd *ohci)
@@ -1474,4 +1233,3 @@ static void ohci_work(struct ohci_hcd *ohci)
 	}
 	ohci->working = 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * consumer.h -- SoC Regulator consumer support.
  *
@@ -9,13 +6,6 @@
  *
  * Author: Liam Girdwood <lrg@slimlogic.co.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Regulator Consumer Interface.
  *
  * A Power Management Regulator framework for SoC based devices.
@@ -36,21 +26,11 @@
  *   but this drops rapidly to 60% when below 100mA. Regulator r has > 90%
  *   efficiency in IDLE mode at loads < 10mA. Thus regulator r will operate
  *   in normal mode for loads > 10mA and in IDLE mode for load <= 10mA.
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_REGULATOR_CONSUMER_H_
 #define __LINUX_REGULATOR_CONSUMER_H_
 
-<<<<<<< HEAD
-#include <linux/compiler.h>
-
-struct device;
-struct notifier_block;
-=======
 #include <linux/err.h>
 #include <linux/suspend.h>
 #include <regulator/regulator.h>
@@ -59,7 +39,6 @@ struct device;
 struct notifier_block;
 struct regmap;
 struct regulator_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Regulator operating modes.
@@ -100,44 +79,20 @@ struct regulator_dev;
  * These modes can be OR'ed together to make up a mask of valid register modes.
  */
 
-<<<<<<< HEAD
-=======
 #define REGULATOR_MODE_INVALID			0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REGULATOR_MODE_FAST			0x1
 #define REGULATOR_MODE_NORMAL			0x2
 #define REGULATOR_MODE_IDLE			0x4
 #define REGULATOR_MODE_STANDBY			0x8
 
 /*
-<<<<<<< HEAD
- * Regulator notifier events.
-=======
  * Regulator errors that can be queried using regulator_get_error_flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * UNDER_VOLTAGE  Regulator output is under voltage.
  * OVER_CURRENT   Regulator output current is too high.
  * REGULATION_OUT Regulator output is out of regulation.
  * FAIL           Regulator output has failed.
  * OVER_TEMP      Regulator over temp.
-<<<<<<< HEAD
- * FORCE_DISABLE  Regulator forcibly shut down by software.
- * VOLTAGE_CHANGE Regulator voltage changed.
- * DISABLE        Regulator was disabled.
- *
- * NOTE: These events can be OR'ed together when passed into handler.
- */
-
-#define REGULATOR_EVENT_UNDER_VOLTAGE		0x01
-#define REGULATOR_EVENT_OVER_CURRENT		0x02
-#define REGULATOR_EVENT_REGULATION_OUT		0x04
-#define REGULATOR_EVENT_FAIL			0x08
-#define REGULATOR_EVENT_OVER_TEMP		0x10
-#define REGULATOR_EVENT_FORCE_DISABLE		0x20
-#define REGULATOR_EVENT_VOLTAGE_CHANGE		0x40
-#define REGULATOR_EVENT_DISABLE 		0x80
-=======
  *
  * NOTE: These errors can be OR'ed together.
  */
@@ -165,23 +120,12 @@ struct pre_voltage_change_data {
 	unsigned long min_uV;
 	unsigned long max_uV;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct regulator;
 
 /**
  * struct regulator_bulk_data - Data used for bulk regulator operations.
  *
-<<<<<<< HEAD
- * @supply:   The name of the supply.  Initialised by the user before
- *            using the bulk regulator APIs.
- * @consumer: The regulator consumer for the supply.  This will be managed
- *            by the bulk API.
- * @min_uV:   The minimum requested voltage for the regulator (in microvolts),
- *            or 0 to not set a voltage.
- * @max_uV:   The maximum requested voltage for the regulator (in microvolts),
- *            or 0 to use @min_uV.
-=======
  * @supply:       The name of the supply.  Initialised by the user before
  *                using the bulk regulator APIs.
  * @init_load_uA: After getting the regulator, regulator_set_load() will be
@@ -189,7 +133,6 @@ struct regulator;
  *                using the bulk regulator APIs.
  * @consumer:     The regulator consumer for the supply.  This will be managed
  *                by the bulk API.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The regulator APIs provide a series of regulator_bulk_() API calls as
  * a convenience to consumers which require multiple supplies.  This
@@ -197,14 +140,8 @@ struct regulator;
  */
 struct regulator_bulk_data {
 	const char *supply;
-<<<<<<< HEAD
-	struct regulator *consumer;
-	int min_uV;
-	int max_uV;
-=======
 	int init_load_uA;
 	struct regulator *consumer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* private: Internal use */
 	int ret;
@@ -219,13 +156,6 @@ struct regulator *__must_check devm_regulator_get(struct device *dev,
 					     const char *id);
 struct regulator *__must_check regulator_get_exclusive(struct device *dev,
 						       const char *id);
-<<<<<<< HEAD
-void regulator_put(struct regulator *regulator);
-void devm_regulator_put(struct regulator *regulator);
-
-/* regulator output control and status */
-int regulator_enable(struct regulator *regulator);
-=======
 struct regulator *__must_check devm_regulator_get_exclusive(struct device *dev,
 							const char *id);
 struct regulator *__must_check regulator_get_optional(struct device *dev,
@@ -262,22 +192,11 @@ int devm_regulator_bulk_register_supply_alias(struct device *dev,
 
 /* regulator output control and status */
 int __must_check regulator_enable(struct regulator *regulator);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int regulator_disable(struct regulator *regulator);
 int regulator_force_disable(struct regulator *regulator);
 int regulator_is_enabled(struct regulator *regulator);
 int regulator_disable_deferred(struct regulator *regulator, int ms);
 
-<<<<<<< HEAD
-int regulator_bulk_get(struct device *dev, int num_consumers,
-		       struct regulator_bulk_data *consumers);
-int devm_regulator_bulk_get(struct device *dev, int num_consumers,
-			    struct regulator_bulk_data *consumers);
-int regulator_bulk_enable(int num_consumers,
-			  struct regulator_bulk_data *consumers);
-int regulator_bulk_set_voltage(int num_consumers,
-			  struct regulator_bulk_data *consumers);
-=======
 int __must_check regulator_bulk_get(struct device *dev, int num_consumers,
 				    struct regulator_bulk_data *consumers);
 int __must_check of_regulator_bulk_get_all(struct device *dev, struct device_node *np,
@@ -295,7 +214,6 @@ int __must_check regulator_bulk_enable(int num_consumers,
 				       struct regulator_bulk_data *consumers);
 int devm_regulator_bulk_get_enable(struct device *dev, int num_consumers,
 				   const char * const *id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int regulator_bulk_disable(int num_consumers,
 			   struct regulator_bulk_data *consumers);
 int regulator_bulk_force_disable(int num_consumers,
@@ -307,10 +225,7 @@ int regulator_count_voltages(struct regulator *regulator);
 int regulator_list_voltage(struct regulator *regulator, unsigned selector);
 int regulator_is_supported_voltage(struct regulator *regulator,
 				   int min_uV, int max_uV);
-<<<<<<< HEAD
-=======
 unsigned int regulator_get_linear_step(struct regulator *regulator);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int regulator_set_voltage(struct regulator *regulator, int min_uV, int max_uV);
 int regulator_set_voltage_time(struct regulator *regulator,
 			       int old_uV, int new_uV);
@@ -322,9 +237,6 @@ int regulator_get_current_limit(struct regulator *regulator);
 
 int regulator_set_mode(struct regulator *regulator, unsigned int mode);
 unsigned int regulator_get_mode(struct regulator *regulator);
-<<<<<<< HEAD
-int regulator_set_optimum_mode(struct regulator *regulator, int load_uA);
-=======
 int regulator_get_error_flags(struct regulator *regulator,
 				unsigned int *flags);
 int regulator_set_load(struct regulator *regulator, int load_uA);
@@ -337,15 +249,10 @@ int regulator_get_hardware_vsel_register(struct regulator *regulator,
 					 unsigned *vsel_mask);
 int regulator_list_hardware_vsel(struct regulator *regulator,
 				 unsigned selector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* regulator notifier block */
 int regulator_register_notifier(struct regulator *regulator,
 			      struct notifier_block *nb);
-<<<<<<< HEAD
-int regulator_unregister_notifier(struct regulator *regulator,
-				struct notifier_block *nb);
-=======
 int devm_regulator_register_notifier(struct regulator *regulator,
 				     struct notifier_block *nb);
 int regulator_unregister_notifier(struct regulator *regulator,
@@ -360,14 +267,11 @@ int regulator_suspend_disable(struct regulator_dev *rdev,
 			      suspend_state_t state);
 int regulator_set_suspend_voltage(struct regulator *regulator, int min_uV,
 				  int max_uV, suspend_state_t state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* driver data - core doesn't touch */
 void *regulator_get_drvdata(struct regulator *regulator);
 void regulator_set_drvdata(struct regulator *regulator, void *data);
 
-<<<<<<< HEAD
-=======
 /* misc helpers */
 
 void regulator_bulk_set_supply_names(struct regulator_bulk_data *consumers,
@@ -376,7 +280,6 @@ void regulator_bulk_set_supply_names(struct regulator_bulk_data *consumers,
 
 bool regulator_is_equal(struct regulator *reg1, struct regulator *reg2);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 /*
@@ -403,8 +306,6 @@ devm_regulator_get(struct device *dev, const char *id)
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static inline struct regulator *__must_check
 regulator_get_exclusive(struct device *dev, const char *id)
 {
@@ -441,7 +342,6 @@ devm_regulator_get_optional(struct device *dev, const char *id)
 	return ERR_PTR(-ENODEV);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void regulator_put(struct regulator *regulator)
 {
 }
@@ -450,8 +350,6 @@ static inline void devm_regulator_put(struct regulator *regulator)
 {
 }
 
-<<<<<<< HEAD
-=======
 static inline void devm_regulator_bulk_put(struct regulator_bulk_data *consumers)
 {
 }
@@ -501,7 +399,6 @@ static inline int devm_regulator_bulk_register_supply_alias(struct device *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regulator_enable(struct regulator *regulator)
 {
 	return 0;
@@ -541,23 +438,18 @@ static inline int devm_regulator_bulk_get(struct device *dev, int num_consumers,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int of_regulator_bulk_get_all(struct device *dev, struct device_node *np,
 					    struct regulator_bulk_data **consumers)
 {
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regulator_bulk_enable(int num_consumers,
 					struct regulator_bulk_data *consumers)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int devm_regulator_bulk_get_enable(struct device *dev,
 						 int num_consumers,
 						 const char * const *id)
@@ -565,7 +457,6 @@ static inline int devm_regulator_bulk_get_enable(struct device *dev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regulator_bulk_disable(int num_consumers,
 					 struct regulator_bulk_data *consumers)
 {
@@ -583,24 +474,12 @@ static inline void regulator_bulk_free(int num_consumers,
 {
 }
 
-<<<<<<< HEAD
-static inline int regulator_count_voltages(struct regulator *regulator)
-{
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regulator_set_voltage(struct regulator *regulator,
 					int min_uV, int max_uV)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int regulator_get_voltage(struct regulator *regulator)
-{
-=======
 static inline int regulator_set_voltage_time(struct regulator *regulator,
 					     int old_uV, int new_uV)
 {
@@ -625,7 +504,6 @@ static inline int regulator_is_supported_voltage(struct regulator *regulator,
 
 static inline unsigned int regulator_get_linear_step(struct regulator *regulator)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -651,12 +529,6 @@ static inline unsigned int regulator_get_mode(struct regulator *regulator)
 	return REGULATOR_MODE_NORMAL;
 }
 
-<<<<<<< HEAD
-static inline int regulator_set_optimum_mode(struct regulator *regulator,
-					int load_uA)
-{
-	return REGULATOR_MODE_NORMAL;
-=======
 static inline int regulator_get_error_flags(struct regulator *regulator,
 					    unsigned int *flags)
 {
@@ -690,7 +562,6 @@ static inline int regulator_list_hardware_vsel(struct regulator *regulator,
 					       unsigned selector)
 {
 	return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int regulator_register_notifier(struct regulator *regulator,
@@ -699,23 +570,18 @@ static inline int regulator_register_notifier(struct regulator *regulator,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int devm_regulator_register_notifier(struct regulator *regulator,
 						   struct notifier_block *nb)
 {
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int regulator_unregister_notifier(struct regulator *regulator,
 				struct notifier_block *nb)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline int devm_regulator_unregister_notifier(struct regulator *regulator,
 						     struct notifier_block *nb)
 {
@@ -741,7 +607,6 @@ static inline int regulator_set_suspend_voltage(struct regulator *regulator,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void *regulator_get_drvdata(struct regulator *regulator)
 {
 	return NULL;
@@ -752,10 +617,6 @@ static inline void regulator_set_drvdata(struct regulator *regulator,
 {
 }
 
-<<<<<<< HEAD
-#endif
-
-=======
 static inline int regulator_count_voltages(struct regulator *regulator)
 {
 	return 0;
@@ -808,5 +669,4 @@ static inline int regulator_is_supported_voltage_tol(struct regulator *regulator
 					      target_uV + tol_uV);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

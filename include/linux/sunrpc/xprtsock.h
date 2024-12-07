@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/sunrpc/xprtsock.h
  *
@@ -11,11 +8,6 @@
 #ifndef _LINUX_SUNRPC_XPRTSOCK_H
 #define _LINUX_SUNRPC_XPRTSOCK_H
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int		init_socket_xprt(void);
 void		cleanup_socket_xprt(void);
 
@@ -24,9 +16,6 @@ void		cleanup_socket_xprt(void);
 #define RPC_DEF_MIN_RESVPORT	(665U)
 #define RPC_DEF_MAX_RESVPORT	(1023U)
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
 struct sock_xprt {
 	struct rpc_xprt		xprt;
 
@@ -104,6 +93,5 @@ struct sock_xprt {
 #define XPRT_SOCK_CONNECT_SENT	(8)
 #define XPRT_SOCK_NOSPACE	(9)
 #define XPRT_SOCK_IGNORE_RECV	(10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_SUNRPC_XPRTSOCK_H */

@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-hostprogs-y	:= modpost mk_elfconfig
-always		:= $(hostprogs-y) empty.o
-
-modpost-objs	:= modpost.o file2alias.o sumversion.o
-
-# dependencies on generated files need to be listed explicitly
-
-$(obj)/modpost.o $(obj)/file2alias.o $(obj)/sumversion.o: $(obj)/elfconfig.h
-=======
 # SPDX-License-Identifier: GPL-2.0
 OBJECT_FILES_NON_STANDARD := y
 CFLAGS_REMOVE_empty.o += $(CC_FLAGS_LTO)
@@ -28,7 +18,6 @@ targets += $(devicetable-offsets-file) devicetable-offsets.s
 
 $(obj)/modpost.o $(obj)/file2alias.o $(obj)/sumversion.o $(obj)/symsearch.o: $(obj)/elfconfig.h
 $(obj)/file2alias.o: $(obj)/$(devicetable-offsets-file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 quiet_cmd_elfconfig = MKELF   $@
       cmd_elfconfig = $(obj)/mk_elfconfig < $< > $@

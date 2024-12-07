@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_BSEARCH_H
 #define _LINUX_BSEARCH_H
 
 #include <linux/types.h>
 
-<<<<<<< HEAD
-void *bsearch(const void *key, const void *base, size_t num, size_t size,
-	      int (*cmp)(const void *key, const void *elt));
-=======
 static __always_inline
 void *__inline_bsearch(const void *key, const void *base, size_t num, size_t size, cmp_func_t cmp)
 {
@@ -35,6 +28,5 @@ void *__inline_bsearch(const void *key, const void *base, size_t num, size_t siz
 }
 
 extern void *bsearch(const void *key, const void *base, size_t num, size_t size, cmp_func_t cmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_BSEARCH_H */

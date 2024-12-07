@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef S390_DEVICE_H
 #define S390_DEVICE_H
 
 #include <asm/ccwdev.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-=======
 #include <linux/timer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/wait.h>
 #include <linux/notifier.h>
 #include <linux/kernel_stat.h>
@@ -21,10 +15,6 @@
  */
 enum dev_state {
 	DEV_STATE_NOT_OPER,
-<<<<<<< HEAD
-	DEV_STATE_SENSE_PGID,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEV_STATE_SENSE_ID,
 	DEV_STATE_OFFLINE,
 	DEV_STATE_VERIFY,
@@ -72,18 +62,10 @@ dev_fsm_event(struct ccw_device *cdev, enum dev_event dev_event)
 
 	if (dev_event == DEV_EVENT_INTERRUPT) {
 		if (state == DEV_STATE_ONLINE)
-<<<<<<< HEAD
-			kstat_cpu(smp_processor_id()).
-				irqs[cdev->private->int_class]++;
-		else if (state != DEV_STATE_CMFCHANGE &&
-			 state != DEV_STATE_CMFUPDATE)
-			kstat_cpu(smp_processor_id()).irqs[IOINT_CIO]++;
-=======
 			inc_irq_stat(cdev->private->int_class);
 		else if (state != DEV_STATE_CMFCHANGE &&
 			 state != DEV_STATE_CMFUPDATE)
 			inc_irq_stat(IRQIO_CIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dev_jumptable[state][dev_event](cdev, dev_event);
 }
@@ -100,11 +82,6 @@ dev_fsm_final_state(struct ccw_device *cdev)
 		cdev->private->state == DEV_STATE_BOXED);
 }
 
-<<<<<<< HEAD
-extern wait_queue_head_t ccw_device_init_wq;
-extern atomic_t ccw_device_init_count;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init io_subchannel_init(void);
 
 void io_subchannel_recog_done(struct ccw_device *cdev);
@@ -119,15 +96,9 @@ int ccw_device_online(struct ccw_device *);
 int ccw_device_offline(struct ccw_device *);
 void ccw_device_update_sense_data(struct ccw_device *);
 int ccw_device_test_sense_data(struct ccw_device *);
-<<<<<<< HEAD
-void ccw_device_schedule_sch_unregister(struct ccw_device *);
-int ccw_purge_blacklisted(void);
-void ccw_device_sched_todo(struct ccw_device *cdev, enum cdev_todo todo);
-=======
 int ccw_purge_blacklisted(void);
 void ccw_device_sched_todo(struct ccw_device *cdev, enum cdev_todo todo);
 struct ccw_device *get_ccwdev_by_dev_id(struct ccw_dev_id *dev_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Function prototypes for device status and basic sense stuff. */
 void ccw_device_accumulate_irb(struct ccw_device *, struct irb *);
@@ -154,14 +125,6 @@ void ccw_device_verify_done(struct ccw_device *, int);
 void ccw_device_disband_start(struct ccw_device *);
 void ccw_device_disband_done(struct ccw_device *, int);
 
-<<<<<<< HEAD
-void ccw_device_stlck_start(struct ccw_device *, void *, void *, void *);
-void ccw_device_stlck_done(struct ccw_device *, void *, int);
-
-int ccw_device_call_handler(struct ccw_device *);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ccw_device_stlck(struct ccw_device *);
 
 /* Helper function for machine check handling. */
@@ -171,24 +134,14 @@ int ccw_device_notify(struct ccw_device *, int);
 void ccw_device_set_disconnected(struct ccw_device *cdev);
 void ccw_device_set_notoper(struct ccw_device *cdev);
 
-<<<<<<< HEAD
-/* qdio needs this. */
-void ccw_device_set_timeout(struct ccw_device *, int);
-extern struct subchannel_id ccw_device_get_subchannel_id(struct ccw_device *);
-=======
 void ccw_device_timeout(struct timer_list *t);
 void ccw_device_set_timeout(struct ccw_device *, int);
 void ccw_device_schedule_recovery(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Channel measurement facility related */
 void retry_set_schib(struct ccw_device *cdev);
 void cmf_retry_copy_block(struct ccw_device *);
 int cmf_reenable(struct ccw_device *);
-<<<<<<< HEAD
-int ccw_set_cmf(struct ccw_device *cdev, int enable);
-=======
 void cmf_reactivate(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct device_attribute dev_attr_cmb_enable;
 #endif

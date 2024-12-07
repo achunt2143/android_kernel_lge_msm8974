@@ -31,11 +31,7 @@ For correctness consider that:
       - only minimum number of quadwords may be accessed
       - the third argument is an unsigned long
 */
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .set noreorder
         .set noat
 
@@ -166,7 +162,4 @@ $not_found:
 	ret			# .. e1 :
 
         .end memchr
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(memchr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

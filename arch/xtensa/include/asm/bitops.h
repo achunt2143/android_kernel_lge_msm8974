@@ -13,31 +13,14 @@
 #ifndef _XTENSA_BITOPS_H
 #define _XTENSA_BITOPS_H
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_BITOPS_H
 #error only <linux/bitops.h> can be included directly
 #endif
 
 #include <asm/processor.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-
-#ifdef CONFIG_SMP
-# error SMP not supported on this architecture
-#endif
-
-#define smp_mb__before_clear_bit()	barrier()
-#define smp_mb__after_clear_bit()	barrier()
-
-#include <asm-generic/bitops/atomic.h>
-=======
 #include <asm/barrier.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/non-atomic.h>
 
 #if XCHAL_HAVE_NSA
@@ -63,11 +46,7 @@ static inline int ffz(unsigned long x)
  * __ffs: Find first bit set in word. Return 0 for bit 0
  */
 
-<<<<<<< HEAD
-static inline int __ffs(unsigned long x)
-=======
 static inline unsigned long __ffs(unsigned long x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 31 - __cntlz(x & -x);
 }
@@ -116,9 +95,6 @@ static inline unsigned long __fls(unsigned long word)
 #endif
 
 #include <asm-generic/bitops/fls64.h>
-<<<<<<< HEAD
-#include <asm-generic/bitops/find.h>
-=======
 
 #if XCHAL_HAVE_EXCLUSIVE
 
@@ -231,7 +207,6 @@ BIT_OPS(change, "xor", )
 
 #include <asm-generic/bitops/instrumented-atomic.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/le.h>
 
 #include <asm-generic/bitops/ext2-atomic-setbit.h>
@@ -240,9 +215,4 @@ BIT_OPS(change, "xor", )
 #include <asm-generic/bitops/lock.h>
 #include <asm-generic/bitops/sched.h>
 
-<<<<<<< HEAD
-#endif	/* __KERNEL__ */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _XTENSA_BITOPS_H */

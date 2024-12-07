@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright  IBM Corp. 2002, 2009
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright IBM Corp. 2002, 2009
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author(s): Arnd Bergmann <arndb@de.ibm.com>
  *
@@ -16,16 +11,11 @@
 
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
-<<<<<<< HEAD
-#include <asm/fcx.h>
-#include <asm/irq.h>
-=======
 #include <asm/chsc.h>
 #include <asm/fcx.h>
 #include <asm/irq.h>
 #include <asm/schid.h>
 #include <linux/mutex.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* structs from asm/cio.h */
 struct irb;
@@ -98,10 +88,7 @@ struct ccw_device {
 	spinlock_t *ccwlock;
 /* private: */
 	struct ccw_device_private *private;	/* cio private information */
-<<<<<<< HEAD
-=======
 	struct mutex reg_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* public: */
 	struct ccw_device_id id;
 	struct ccw_driver *drv;
@@ -119,11 +106,8 @@ struct ccw_device {
 					       was successfully verified. */
 #define PE_PATHGROUP_ESTABLISHED	0x4 /* A pathgroup was reset and had
 					       to be established again. */
-<<<<<<< HEAD
-=======
 #define PE_PATH_FCES_EVENT		0x8 /* The FCES Status of a path has
 					     * changed. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Possible CIO actions triggered by the unit check handler.
@@ -135,11 +119,7 @@ enum uc_todo {
 };
 
 /**
-<<<<<<< HEAD
- * struct ccw driver - device driver for channel attached devices
-=======
  * struct ccw_driver - device driver for channel attached devices
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ids: ids supported by this driver
  * @probe: function called on probe
  * @remove: function called on remove
@@ -148,14 +128,6 @@ enum uc_todo {
  * @notify: notify driver of device state changes
  * @path_event: notify driver of channel path events
  * @shutdown: called at device shutdown
-<<<<<<< HEAD
- * @prepare: prepare for pm state transition
- * @complete: undo work done in @prepare
- * @freeze: callback for freezing during hibernation snapshotting
- * @thaw: undo work done in @freeze
- * @restore: callback for restoring after hibernation
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @uc_handler: callback for unit check handler
  * @driver: embedded device driver structure
  * @int_class: interruption class to use for accounting interrupts
@@ -169,14 +141,6 @@ struct ccw_driver {
 	int (*notify) (struct ccw_device *, int);
 	void (*path_event) (struct ccw_device *, int *);
 	void (*shutdown) (struct ccw_device *);
-<<<<<<< HEAD
-	int (*prepare) (struct ccw_device *);
-	void (*complete) (struct ccw_device *);
-	int (*freeze)(struct ccw_device *);
-	int (*thaw) (struct ccw_device *);
-	int (*restore)(struct ccw_device *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum uc_todo (*uc_handler) (struct ccw_device *, struct irb *);
 	struct device_driver driver;
 	enum interruption_class int_class;
@@ -190,12 +154,6 @@ extern struct ccw_device *get_ccwdev_by_busid(struct ccw_driver *cdrv,
  * when new devices for its type pop up */
 extern int  ccw_driver_register   (struct ccw_driver *driver);
 extern void ccw_driver_unregister (struct ccw_driver *driver);
-<<<<<<< HEAD
-
-struct ccw1;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ccw_device_set_options_mask(struct ccw_device *, unsigned long);
 extern int ccw_device_set_options(struct ccw_device *, unsigned long);
 extern void ccw_device_clear_options(struct ccw_device *, unsigned long);
@@ -254,17 +212,6 @@ extern void ccw_device_get_id(struct ccw_device *, struct ccw_dev_id *);
 #define to_ccwdev(n) container_of(n, struct ccw_device, dev)
 #define to_ccwdrv(n) container_of(n, struct ccw_driver, driver)
 
-<<<<<<< HEAD
-extern struct ccw_device *ccw_device_probe_console(void);
-extern int ccw_device_force_console(void);
-
-int ccw_device_siosl(struct ccw_device *);
-
-// FIXME: these have to go
-extern int _ccw_device_get_subchannel_number(struct ccw_device *);
-
-extern void *ccw_device_get_chp_desc(struct ccw_device *, int);
-=======
 extern struct ccw_device *ccw_device_create_console(struct ccw_driver *);
 extern void ccw_device_destroy_console(struct ccw_device *);
 extern int ccw_device_enable_console(struct ccw_device *);
@@ -288,5 +235,4 @@ int ccw_device_get_cssid(struct ccw_device *cdev, u8 *cssid);
 int ccw_device_get_iid(struct ccw_device *cdev, u8 *iid);
 int ccw_device_get_chpid(struct ccw_device *cdev, int chp_idx, u8 *chpid);
 int ccw_device_get_chid(struct ccw_device *cdev, int chp_idx, u16 *chid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _S390_CCWDEV_H_ */

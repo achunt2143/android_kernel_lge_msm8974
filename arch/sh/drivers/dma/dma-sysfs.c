@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/drivers/dma/dma-sysfs.c
  *
  * sysfs interface for SH DMA API
  *
  * Copyright (C) 2004 - 2006  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -25,11 +15,7 @@
 #include <linux/string.h>
 #include <asm/dma.h>
 
-<<<<<<< HEAD
-static struct bus_type dma_subsys = {
-=======
 static const struct bus_type dma_subsys = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "dma",
 	.dev_name = "dma",
 };
@@ -40,11 +26,7 @@ static ssize_t dma_show_devices(struct device *dev,
 	ssize_t len = 0;
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < MAX_DMA_CHANNELS; i++) {
-=======
 	for (i = 0; i < 16; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct dma_info *info = get_dma_info(i);
 		struct dma_channel *channel = get_dma_channel(i);
 
@@ -63,26 +45,19 @@ static DEVICE_ATTR(devices, S_IRUGO, dma_show_devices, NULL);
 
 static int __init dma_subsys_init(void)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev_root;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = subsys_system_register(&dma_subsys, NULL);
 	if (unlikely(ret))
 		return ret;
 
-<<<<<<< HEAD
-	return device_create_file(dma_subsys.dev_root, &dev_attr_devices);
-=======
 	dev_root = bus_get_dev_root(&dma_subsys);
 	if (dev_root) {
 		ret = device_create_file(dev_root, &dev_attr_devices);
 		put_device(dev_root);
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 postcore_initcall(dma_subsys_init);
 

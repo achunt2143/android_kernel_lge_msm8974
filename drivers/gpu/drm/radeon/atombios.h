@@ -74,11 +74,8 @@
 #define ATOM_PPLL2            1
 #define ATOM_DCPLL            2
 #define ATOM_PPLL0            2
-<<<<<<< HEAD
-=======
 #define ATOM_PPLL3            3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATOM_EXT_PLL1         8
 #define ATOM_EXT_PLL2         9
 #define ATOM_EXT_CLOCK        10
@@ -184,11 +181,7 @@
 #define HW_ASSISTED_I2C_STATUS_FAILURE          2
 #define HW_ASSISTED_I2C_STATUS_SUCCESS          1
 
-<<<<<<< HEAD
-#pragma pack(1)                                       /* BIOS data must use byte aligment */
-=======
 #pragma pack(1)                                       /* BIOS data must use byte alignment */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  Define offset to location of ROM header. */
 
@@ -268,11 +261,7 @@ typedef struct _ATOM_MASTER_LIST_OF_COMMAND_TABLES{
   USHORT AdjustDisplayPll;											 //Atomic Table,  used by various SW componentes. 
   USHORT AdjustMemoryController;                 //Atomic Table,  indirectly used by various SW components,called from SetMemoryClock                
   USHORT EnableASIC_StaticPwrMgt;                //Atomic Table,  only used by Bios
-<<<<<<< HEAD
-  USHORT ASIC_StaticPwrMgtStatusChange;          //Obsolete ,     only used by Bios   
-=======
   USHORT SetUniphyInstance;                      //Atomic Table,  only used by Bios   
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   USHORT DAC_LoadDetection;                      //Atomic Table,  directly used by various SW components,latest version 1.2  
   USHORT LVTMAEncoderControl;                    //Atomic Table,directly used by various SW components,latest version 1.3
   USHORT HW_Misc_Operation;                      //Atomic Table,  directly used by various SW components,latest version 1.1 
@@ -284,11 +273,7 @@ typedef struct _ATOM_MASTER_LIST_OF_COMMAND_TABLES{
   USHORT TVEncoderControl;                       //Function Table,directly used by various SW components,latest version 1.1
   USHORT PatchMCSetting;                         //only used by BIOS
   USHORT MC_SEQ_Control;                         //only used by BIOS
-<<<<<<< HEAD
-  USHORT TV1OutputControl;                       //Atomic Table,  Obsolete from Ry6xx, use DAC2 Output instead
-=======
   USHORT Gfx_Harvesting;                         //Atomic Table,  Obsolete from Ry6xx, Now only used by BIOS for GFX harvesting
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   USHORT EnableScaler;                           //Atomic Table,  used only by Bios
   USHORT BlankCRTC;                              //Atomic Table,  directly used by various SW components,latest version 1.1 
   USHORT EnableCRTC;                             //Atomic Table,  directly used by various SW components,latest version 1.1 
@@ -345,11 +330,7 @@ typedef struct _ATOM_MASTER_LIST_OF_COMMAND_TABLES{
 #define UNIPHYTransmitterControl			     DIG1TransmitterControl
 #define LVTMATransmitterControl				     DIG2TransmitterControl
 #define SetCRTC_DPM_State                        GetConditionalGoldenSetting
-<<<<<<< HEAD
-#define SetUniphyInstance                        ASIC_StaticPwrMgtStatusChange
-=======
 #define ASIC_StaticPwrMgtStatusChange            SetUniphyInstance 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPDInterruptService                      ReadHWAssistedI2CStatus
 #define EnableVGA_Access                         GetSCLKOverMCLKRatio
 #define EnableYUV                                GetDispObjectInfo                         
@@ -359,11 +340,7 @@ typedef struct _ATOM_MASTER_LIST_OF_COMMAND_TABLES{
 #define TMDSAEncoderControl                      PatchMCSetting
 #define LVDSEncoderControl                       MC_SEQ_Control
 #define LCD1OutputControl                        HW_Misc_Operation
-<<<<<<< HEAD
-
-=======
 #define TV1OutputControl                         Gfx_Harvesting
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _ATOM_MASTER_COMMAND_TABLE
 {
@@ -483,10 +460,7 @@ typedef struct _COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V3
   union
   {
     ATOM_COMPUTE_CLOCK_FREQ  ulClock;         //Input Parameter
-<<<<<<< HEAD
-=======
     ULONG ulClockParams;                      //ULONG access for BE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     ATOM_S_MPLL_FB_DIVIDER   ulFbDiv;         //Output Parameter
   };
   UCHAR   ucRefDiv;                           //Output Parameter      
@@ -506,19 +480,11 @@ typedef struct _COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V3
 typedef struct _COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V4
 {
 #if ATOM_BIG_ENDIAN
-<<<<<<< HEAD
-  ULONG  ucPostDiv;          //return parameter: post divider which is used to program to register directly
-  ULONG  ulClock:24;         //Input= target clock, output = actual clock 
-#else
-  ULONG  ulClock:24;         //Input= target clock, output = actual clock 
-  ULONG  ucPostDiv;          //return parameter: post divider which is used to program to register directly
-=======
   ULONG  ucPostDiv:8;        //return parameter: post divider which is used to program to register directly
   ULONG  ulClock:24;         //Input= target clock, output = actual clock 
 #else
   ULONG  ulClock:24;         //Input= target clock, output = actual clock 
   ULONG  ucPostDiv:8;        //return parameter: post divider which is used to program to register directly
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V4;
 
@@ -527,10 +493,7 @@ typedef struct _COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V5
   union
   {
     ATOM_COMPUTE_CLOCK_FREQ  ulClock;         //Input Parameter
-<<<<<<< HEAD
-=======
     ULONG ulClockParams;                      //ULONG access for BE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     ATOM_S_MPLL_FB_DIVIDER   ulFbDiv;         //Output Parameter
   };
   UCHAR   ucRefDiv;                           //Output Parameter      
@@ -543,8 +506,6 @@ typedef struct _COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V5
   UCHAR   ucReserved;                       
 }COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V5;
 
-<<<<<<< HEAD
-=======
 
 typedef struct _COMPUTE_GPU_CLOCK_INPUT_PARAMETERS_V1_6
 {
@@ -571,7 +532,6 @@ typedef struct _COMPUTE_GPU_CLOCK_OUTPUT_PARAMETERS_V1_6
 #define SPLL_CNTL_FLAG_VCO_MODE_MASK            0x03 
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 // ucInputFlag
 #define ATOM_PLL_INPUT_FLAG_PLL_STROBE_MODE_EN  1   // 1-StrobeMode, 0-PerformanceMode
 
@@ -1751,18 +1711,12 @@ typedef struct _PIXEL_CLOCK_PARAMETERS_V6
 #define PIXEL_CLOCK_V6_MISC_HDMI_BPP_MASK           0x0c
 #define PIXEL_CLOCK_V6_MISC_HDMI_24BPP              0x00
 #define PIXEL_CLOCK_V6_MISC_HDMI_36BPP              0x04
-<<<<<<< HEAD
-#define PIXEL_CLOCK_V6_MISC_HDMI_30BPP              0x08
-#define PIXEL_CLOCK_V6_MISC_HDMI_48BPP              0x0c
-#define PIXEL_CLOCK_V6_MISC_REF_DIV_SRC             0x10
-=======
 #define PIXEL_CLOCK_V6_MISC_HDMI_36BPP_V6           0x08    //for V6, the correct defintion for 36bpp should be 2 for 36bpp(2:1)
 #define PIXEL_CLOCK_V6_MISC_HDMI_30BPP              0x08
 #define PIXEL_CLOCK_V6_MISC_HDMI_30BPP_V6           0x04    //for V6, the correct defintion for 30bpp should be 1 for 36bpp(5:4)
 #define PIXEL_CLOCK_V6_MISC_HDMI_48BPP              0x0c
 #define PIXEL_CLOCK_V6_MISC_REF_DIV_SRC             0x10
 #define PIXEL_CLOCK_V6_MISC_GEN_DPREFCLK            0x40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _GET_DISP_PLL_STATUS_INPUT_PARAMETERS_V2
 {
@@ -2179,8 +2133,6 @@ typedef struct _DVO_ENCODER_CONTROL_PARAMETERS_V3
 }DVO_ENCODER_CONTROL_PARAMETERS_V3;
 #define DVO_ENCODER_CONTROL_PS_ALLOCATION_V3	DVO_ENCODER_CONTROL_PARAMETERS_V3
 
-<<<<<<< HEAD
-=======
 typedef struct _DVO_ENCODER_CONTROL_PARAMETERS_V1_4
 {
   USHORT usPixelClock; 
@@ -2192,7 +2144,6 @@ typedef struct _DVO_ENCODER_CONTROL_PARAMETERS_V1_4
 #define DVO_ENCODER_CONTROL_PS_ALLOCATION_V1_4	DVO_ENCODER_CONTROL_PARAMETERS_V1_4
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 //ucTableFormatRevision=1
 //ucTableContentRevision=3 structure is not changed but usMisc add bit 1 as another input for 
 // bit1=0: non-coherent mode
@@ -2256,11 +2207,7 @@ typedef struct _DVO_ENCODER_CONTROL_PARAMETERS_V1_4
 #define SET_ASIC_VOLTAGE_MODE_SOURCE_B         0x4
 
 #define	SET_ASIC_VOLTAGE_MODE_SET_VOLTAGE      0x0
-<<<<<<< HEAD
-#define	SET_ASIC_VOLTAGE_MODE_GET_GPIOVAL      0x1	
-=======
 #define	SET_ASIC_VOLTAGE_MODE_GET_GPIOVAL      0x1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	SET_ASIC_VOLTAGE_MODE_GET_GPIOMASK     0x2
 
 typedef struct	_SET_VOLTAGE_PARAMETERS
@@ -2278,11 +2225,7 @@ typedef struct	_SET_VOLTAGE_PARAMETERS_V2
   USHORT   usVoltageLevel;              // real voltage level
 }SET_VOLTAGE_PARAMETERS_V2;
 
-<<<<<<< HEAD
-
-=======
 // used by both SetVoltageTable v1.3 and v1.4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct	_SET_VOLTAGE_PARAMETERS_V1_3
 {
   UCHAR    ucVoltageType;               // To tell which voltage to set up, VDDC/MVDDC/MVDDQ/VDDCI
@@ -2299,29 +2242,20 @@ typedef struct	_SET_VOLTAGE_PARAMETERS_V1_3
 //SET_VOLTAGE_PARAMETERS_V3.ucVoltageMode
 #define ATOM_SET_VOLTAGE                     0        //Set voltage Level
 #define ATOM_INIT_VOLTAGE_REGULATOR          3        //Init Regulator
-<<<<<<< HEAD
-#define ATOM_SET_VOLTAGE_PHASE               4        //Set Vregulator Phase
-#define ATOM_GET_MAX_VOLTAGE                 6        //Get Max Voltage, not used in SetVoltageTable v1.3
-#define ATOM_GET_VOLTAGE_LEVEL               6        //Get Voltage level from vitual voltage ID
-=======
 #define ATOM_SET_VOLTAGE_PHASE               4        //Set Vregulator Phase, only for SVID/PVID regulator
 #define ATOM_GET_MAX_VOLTAGE                 6        //Get Max Voltage, not used from SetVoltageTable v1.3
 #define ATOM_GET_VOLTAGE_LEVEL               6        //Get Voltage level from vitual voltage ID, not used for SetVoltage v1.4
 #define ATOM_GET_LEAKAGE_ID                  8        //Get Leakage Voltage Id ( starting from SMU7x IP ), SetVoltage v1.4 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 // define vitual voltage id in usVoltageLevel
 #define ATOM_VIRTUAL_VOLTAGE_ID0             0xff01
 #define ATOM_VIRTUAL_VOLTAGE_ID1             0xff02
 #define ATOM_VIRTUAL_VOLTAGE_ID2             0xff03
 #define ATOM_VIRTUAL_VOLTAGE_ID3             0xff04
-<<<<<<< HEAD
-=======
 #define ATOM_VIRTUAL_VOLTAGE_ID4             0xff05
 #define ATOM_VIRTUAL_VOLTAGE_ID5             0xff06
 #define ATOM_VIRTUAL_VOLTAGE_ID6             0xff07
 #define ATOM_VIRTUAL_VOLTAGE_ID7             0xff08
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _SET_VOLTAGE_PS_ALLOCATION
 {
@@ -2358,17 +2292,6 @@ typedef struct  _GET_LEAKAGE_VOLTAGE_INFO_OUTPUT_PARAMETER_V1_1
 #define	ATOM_GET_VOLTAGE_VID                0x00
 #define ATOM_GET_VOTLAGE_INIT_SEQ           0x03
 #define ATOM_GET_VOLTTAGE_PHASE_PHASE_VID   0x04
-<<<<<<< HEAD
-// for SI, this state map to 0xff02 voltage state in Power Play table, which is power boost state
-#define	ATOM_GET_VOLTAGE_STATE0_LEAKAGE_VID 0x10
-
-// for SI, this state map to 0xff01 voltage state in Power Play table, which is performance state
-#define	ATOM_GET_VOLTAGE_STATE1_LEAKAGE_VID 0x11
-// undefined power state
-#define	ATOM_GET_VOLTAGE_STATE2_LEAKAGE_VID 0x12
-#define	ATOM_GET_VOLTAGE_STATE3_LEAKAGE_VID 0x13
-
-=======
 #define ATOM_GET_VOLTAGE_SVID2              0x07        //Get SVI2 Regulator Info
 
 // for SI, this state map to 0xff02 voltage state in Power Play table, which is power boost state
@@ -2399,7 +2322,6 @@ typedef struct  _GET_EVV_VOLTAGE_INFO_OUTPUT_PARAMETER_V1_2
   ULONG    ulReseved;
 }GET_EVV_VOLTAGE_INFO_OUTPUT_PARAMETER_V1_2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/	
 // Structures used by TVEncoderControlTable
 /****************************************************************************/	
@@ -2774,12 +2696,8 @@ typedef struct _ATOM_FIRMWARE_INFO_V2_2
   ULONG                           ulFirmwareRevision;
   ULONG                           ulDefaultEngineClock;       //In 10Khz unit
   ULONG                           ulDefaultMemoryClock;       //In 10Khz unit
-<<<<<<< HEAD
-  ULONG                           ulReserved[2];
-=======
   ULONG                           ulSPLL_OutputFreq;          //In 10Khz unit  
   ULONG                           ulGPUPLL_OutputFreq;        //In 10Khz unit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ULONG                           ulReserved1;                //Was ulMaxEngineClockPLL_Output; //In 10Khz unit*
   ULONG                           ulReserved2;                //Was ulMaxMemoryClockPLL_Output; //In 10Khz unit*
   ULONG                           ulMaxPixelClockPLL_Output;  //In 10Khz unit
@@ -2884,13 +2802,8 @@ ucMaxNBVoltageHigh:     Voltage regulator dependent PWM value. High 8 bits of  t
 ucMinNBVoltageHigh:     Voltage regulator dependent PWM value. High 8 bits of the value for the min voltage.Set this one to 0x00 if VC without PWM or no VC at all.
 
 
-<<<<<<< HEAD
-usInterNBVoltageLow:    Voltage regulator dependent PWM value. The value makes the the voltage >=Min NB voltage but <=InterNBVoltageHigh. Set this to 0x0000 if VC without PWM or no VC at all.
-usInterNBVoltageHigh:   Voltage regulator dependent PWM value. The value makes the the voltage >=InterNBVoltageLow but <=Max NB voltage.Set this to 0x0000 if VC without PWM or no VC at all.
-=======
 usInterNBVoltageLow:    Voltage regulator dependent PWM value. The value makes the voltage >=Min NB voltage but <=InterNBVoltageHigh. Set this to 0x0000 if VC without PWM or no VC at all.
 usInterNBVoltageHigh:   Voltage regulator dependent PWM value. The value makes the voltage >=InterNBVoltageLow but <=Max NB voltage.Set this to 0x0000 if VC without PWM or no VC at all.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 
@@ -3686,11 +3599,7 @@ typedef struct  _ATOM_LCD_RTS_RECORD
   UCHAR     ucRTSValue;
 }ATOM_LCD_RTS_RECORD;
 
-<<<<<<< HEAD
-//!! If the record below exits, it shoud always be the first record for easy use in command table!!! 
-=======
 //!! If the record below exists, it should always be the first record for easy use in command table!!!
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 // The record below is only used when LVDS_Info is present. From ATOM_LVDS_INFO_V12, use ucLCDPanel_SpecialHandlingCap instead.
 typedef struct  _ATOM_LCD_MODE_CONTROL_CAP
 {
@@ -3706,11 +3615,7 @@ typedef struct _ATOM_FAKE_EDID_PATCH_RECORD
 {
   UCHAR ucRecordType;
   UCHAR ucFakeEDIDLength;
-<<<<<<< HEAD
-  UCHAR ucFakeEDIDString[1];    // This actually has ucFakeEdidLength elements.
-=======
   UCHAR ucFakeEDIDString[];    // This actually has ucFakeEdidLength elements.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ATOM_FAKE_EDID_PATCH_RECORD;
 
 typedef struct  _ATOM_PANEL_RESOLUTION_PATCH_RECORD
@@ -3918,11 +3823,7 @@ typedef struct _ATOM_DPCD_INFO
 // Note1: This table is filled by SetBiosReservationStartInFB in CoreCommSubs.asm
 //        at running time.   
 // note2: From RV770, the memory is more than 32bit addressable, so we will change 
-<<<<<<< HEAD
-//        ucTableFormatRevision=1,ucTableContentRevision=4, the strcuture remains 
-=======
 //        ucTableFormatRevision=1,ucTableContentRevision=4, the structure remains
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 //        exactly same as 1.1 and 1.2 (1.3 is never in use), but ulStartAddrUsedByFirmware 
 //        (in offset to start of memory address) is KB aligned instead of byte aligend.
 /***********************************************************************************/	
@@ -3957,11 +3858,7 @@ typedef struct _ATOM_VRAM_USAGE_BY_FIRMWARE
   ATOM_FIRMWARE_VRAM_RESERVE_INFO	asFirmwareVramReserveInfo[ATOM_MAX_FIRMWARE_VRAM_USAGE_INFO];
 }ATOM_VRAM_USAGE_BY_FIRMWARE;
 
-<<<<<<< HEAD
-// change verion to 1.5, when allow driver to allocate the vram area for command table access. 
-=======
 // change version to 1.5, when allow driver to allocate the vram area for command table access.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct _ATOM_FIRMWARE_VRAM_RESERVE_INFO_V1_5
 {
   ULONG   ulStartAddrUsedByFirmware;
@@ -3985,12 +3882,6 @@ typedef struct _ATOM_GPIO_PIN_ASSIGNMENT
   UCHAR                    ucGPIO_ID;
 }ATOM_GPIO_PIN_ASSIGNMENT;
 
-<<<<<<< HEAD
-typedef struct _ATOM_GPIO_PIN_LUT
-{
-  ATOM_COMMON_TABLE_HEADER  sHeader;
-  ATOM_GPIO_PIN_ASSIGNMENT	asGPIO_Pin[1];
-=======
 //ucGPIO_ID pre-define id for multiple usage
 //from SMU7.x, if ucGPIO_ID=PP_AC_DC_SWITCH_GPIO_PINID in GPIO_LUTTable, AC/DC switching feature is enable
 #define PP_AC_DC_SWITCH_GPIO_PINID          60
@@ -4003,7 +3894,6 @@ typedef struct _ATOM_GPIO_PIN_LUT
 {
   ATOM_COMMON_TABLE_HEADER  sHeader;
   ATOM_GPIO_PIN_ASSIGNMENT	asGPIO_Pin[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_GPIO_PIN_LUT;
 
 /****************************************************************************/	
@@ -4130,11 +4020,7 @@ typedef struct  _ATOM_DISPLAY_OBJECT_PATH
   USHORT    usSize;                                        //the size of ATOM_DISPLAY_OBJECT_PATH
   USHORT    usConnObjectId;                                //Connector Object ID 
   USHORT    usGPUObjectId;                                 //GPU ID 
-<<<<<<< HEAD
-  USHORT    usGraphicObjIds[1];                             //1st Encoder Obj source from GPU to last Graphic Obj destinate to connector.
-=======
   USHORT    usGraphicObjIds[];                             //1st Encoder Obj source from GPU to last Graphic Obj destinate to connector.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_DISPLAY_OBJECT_PATH;
 
 typedef struct  _ATOM_DISPLAY_EXTERNAL_OBJECT_PATH
@@ -4151,11 +4037,7 @@ typedef struct _ATOM_DISPLAY_OBJECT_PATH_TABLE
   UCHAR                           ucNumOfDispPath;
   UCHAR                           ucVersion;
   UCHAR                           ucPadding[2];
-<<<<<<< HEAD
-  ATOM_DISPLAY_OBJECT_PATH        asDispPath[1];
-=======
   ATOM_DISPLAY_OBJECT_PATH        asDispPath[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_DISPLAY_OBJECT_PATH_TABLE;
 
 
@@ -4171,11 +4053,7 @@ typedef struct _ATOM_OBJECT_TABLE                         //Above 4 object table
 {
   UCHAR               ucNumberOfObjects;
   UCHAR               ucPadding[3];
-<<<<<<< HEAD
-  ATOM_OBJECT         asObjects[1];
-=======
   ATOM_OBJECT         asObjects[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_OBJECT_TABLE;
 
 typedef struct _ATOM_SRC_DST_TABLE_FOR_ONE_OBJECT         //usSrcDstTableOffset pointing to this structure
@@ -4183,11 +4061,7 @@ typedef struct _ATOM_SRC_DST_TABLE_FOR_ONE_OBJECT         //usSrcDstTableOffset 
   UCHAR               ucNumberOfSrc;
   USHORT              usSrcObjectID[1];
   UCHAR               ucNumberOfDst;
-<<<<<<< HEAD
-  USHORT              usDstObjectID[1];
-=======
   USHORT              usDstObjectID[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_SRC_DST_TABLE_FOR_ONE_OBJECT;
 
 
@@ -4277,30 +4151,19 @@ typedef struct _EXT_DISPLAY_PATH
 
 //usCaps
 #define  EXT_DISPLAY_PATH_CAPS__HBR2_DISABLE          0x01
-<<<<<<< HEAD
-=======
 #define  EXT_DISPLAY_PATH_CAPS__DP_FIXED_VS_EN        0x02
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef  struct _ATOM_EXTERNAL_DISPLAY_CONNECTION_INFO
 {
   ATOM_COMMON_TABLE_HEADER sHeader;
   UCHAR                    ucGuid [NUMBER_OF_UCHAR_FOR_GUID];     // a GUID is a 16 byte long string
   EXT_DISPLAY_PATH         sPath[MAX_NUMBER_OF_EXT_DISPLAY_PATH]; // total of fixed 7 entries.
-<<<<<<< HEAD
-  UCHAR                    ucChecksum;                            // a  simple Checksum of the sum of whole structure equal to 0x0. 
-  UCHAR                    uc3DStereoPinId;                       // use for eDP panel
-  UCHAR                    ucRemoteDisplayConfig;
-  UCHAR                    uceDPToLVDSRxId;
-  UCHAR                    Reserved[4];                           // for potential expansion
-=======
   UCHAR                    ucChecksum;                            // a simple Checksum of the sum of whole structure equal to 0x0. 
   UCHAR                    uc3DStereoPinId;                       // use for eDP panel
   UCHAR                    ucRemoteDisplayConfig;
   UCHAR                    uceDPToLVDSRxId;
   UCHAR                    ucFixDPVoltageSwing;                   // usCaps[1]=1, this indicate DP_LANE_SET value
   UCHAR                    Reserved[3];                           // for potential expansion
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_EXTERNAL_DISPLAY_CONNECTION_INFO;
 
 //Related definitions, all records are different but they have a commond header
@@ -4331,17 +4194,10 @@ typedef struct _ATOM_COMMON_RECORD_HEADER
 #define ATOM_OBJECT_LINK_RECORD_TYPE                   18 //Once this record is present under one object, it indicats the oobject is linked to another obj described by the record
 #define ATOM_CONNECTOR_REMOTE_CAP_RECORD_TYPE          19
 #define ATOM_ENCODER_CAP_RECORD_TYPE                   20
-<<<<<<< HEAD
-
-
-//Must be updated when new record type is added,equal to that record definition!
-#define ATOM_MAX_OBJECT_RECORD_NUMBER             ATOM_ENCODER_CAP_RECORD_TYPE
-=======
 #define ATOM_BRACKET_LAYOUT_RECORD_TYPE                21
 
 //Must be updated when new record type is added,equal to that record definition!
 #define ATOM_MAX_OBJECT_RECORD_NUMBER             ATOM_BRACKET_LAYOUT_RECORD_TYPE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct  _ATOM_I2C_RECORD
 {
@@ -4377,11 +4233,7 @@ typedef struct  _ATOM_CONNECTOR_DEVICE_TAG_RECORD
   ATOM_COMMON_RECORD_HEADER   sheader;
   UCHAR                       ucNumberOfDevice;
   UCHAR                       ucReserved;
-<<<<<<< HEAD
-  ATOM_CONNECTOR_DEVICE_TAG   asDeviceTag[1];         //This Id is same as "ATOM_DEVICE_XXX_SUPPORT", 1 is only for allocation
-=======
   ATOM_CONNECTOR_DEVICE_TAG   asDeviceTag[];          //This Id is same as "ATOM_DEVICE_XXX_SUPPORT", 1 is only for allocation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_CONNECTOR_DEVICE_TAG_RECORD;
 
 
@@ -4441,11 +4293,7 @@ typedef struct  _ATOM_OBJECT_GPIO_CNTL_RECORD
   ATOM_COMMON_RECORD_HEADER   sheader;
   UCHAR                       ucFlags;                // Future expnadibility
   UCHAR                       ucNumberOfPins;         // Number of GPIO pins used to control the object
-<<<<<<< HEAD
-  ATOM_GPIO_PIN_CONTROL_PAIR  asGpio[1];              // the real gpio pin pair determined by number of pins ucNumberOfPins
-=======
   ATOM_GPIO_PIN_CONTROL_PAIR  asGpio[];               // the real gpio pin pair determined by number of pins ucNumberOfPins
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_OBJECT_GPIO_CNTL_RECORD;
 
 //Definitions for GPIO pin state 
@@ -4574,8 +4422,6 @@ typedef struct _ATOM_CONNECTOR_REMOTE_CAP_RECORD
   USHORT                      usReserved;
 }ATOM_CONNECTOR_REMOTE_CAP_RECORD;
 
-<<<<<<< HEAD
-=======
 typedef struct  _ATOM_CONNECTOR_LAYOUT_INFO
 {
    USHORT usConnectorObjectId;
@@ -4601,7 +4447,6 @@ typedef struct  _ATOM_BRACKET_LAYOUT_RECORD
   ATOM_CONNECTOR_LAYOUT_INFO  asConnInfo[];
 }ATOM_BRACKET_LAYOUT_RECORD;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/	
 // ASIC voltage data table
 /****************************************************************************/	
@@ -4675,8 +4520,6 @@ typedef struct _ATOM_VOLTAGE_CONTROL
 #define	VOLTAGE_CONTROL_ID_CHL822x						0x08									
 #define	VOLTAGE_CONTROL_ID_VT1586M						0x09
 #define VOLTAGE_CONTROL_ID_UP1637 						0x0A
-<<<<<<< HEAD
-=======
 #define	VOLTAGE_CONTROL_ID_CHL8214            0x0B
 #define	VOLTAGE_CONTROL_ID_UP1801             0x0C
 #define	VOLTAGE_CONTROL_ID_ST6788A            0x0D
@@ -4684,7 +4527,6 @@ typedef struct _ATOM_VOLTAGE_CONTROL
 #define VOLTAGE_CONTROL_ID_AD527x      	      0x0F
 #define VOLTAGE_CONTROL_ID_NCP81022    	      0x10
 #define VOLTAGE_CONTROL_ID_LTC2635			  0x11
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct  _ATOM_VOLTAGE_OBJECT
 {
@@ -4727,8 +4569,6 @@ typedef struct _ATOM_VOLTAGE_OBJECT_HEADER_V3{
 	 USHORT		usSize;													//Size of Object	
 }ATOM_VOLTAGE_OBJECT_HEADER_V3;
 
-<<<<<<< HEAD
-=======
 // ATOM_VOLTAGE_OBJECT_HEADER_V3.ucVoltageMode
 #define VOLTAGE_OBJ_GPIO_LUT                 0        //VOLTAGE and GPIO Lookup table ->ATOM_GPIO_VOLTAGE_OBJECT_V3
 #define VOLTAGE_OBJ_VR_I2C_INIT_SEQ          3        //VOLTAGE REGULATOR INIT sequece through I2C -> ATOM_I2C_VOLTAGE_OBJECT_V3
@@ -4739,7 +4579,6 @@ typedef struct _ATOM_VOLTAGE_OBJECT_HEADER_V3{
 #define VOLTAGE_OBJ_HIGH_STATE_LEAKAGE_LUT   0x11     //High voltage state Voltage and LeakageId lookup table->ATOM_LEAKAGE_VOLTAGE_OBJECT_V3
 #define VOLTAGE_OBJ_HIGH1_STATE_LEAKAGE_LUT  0x12     //High1 voltage state Voltage and LeakageId lookup table->ATOM_LEAKAGE_VOLTAGE_OBJECT_V3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct  _VOLTAGE_LUT_ENTRY_V2
 {
 	 ULONG		ulVoltageId;									  // The Voltage ID which is used to program GPIO register
@@ -4755,24 +4594,12 @@ typedef struct  _LEAKAGE_VOLTAGE_LUT_ENTRY_V2
 
 typedef struct  _ATOM_I2C_VOLTAGE_OBJECT_V3
 {
-<<<<<<< HEAD
-   ATOM_VOLTAGE_OBJECT_HEADER_V3 sHeader;
-=======
    ATOM_VOLTAGE_OBJECT_HEADER_V3 sHeader;    // voltage mode = VOLTAGE_OBJ_VR_I2C_INIT_SEQ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    UCHAR	ucVoltageRegulatorId;					  //Indicate Voltage Regulator Id
    UCHAR    ucVoltageControlI2cLine;
    UCHAR    ucVoltageControlAddress;
    UCHAR    ucVoltageControlOffset;	 	
    ULONG    ulReserved;
-<<<<<<< HEAD
-   VOLTAGE_LUT_ENTRY asVolI2cLut[1];        // end with 0xff
-}ATOM_I2C_VOLTAGE_OBJECT_V3;
-
-typedef struct  _ATOM_GPIO_VOLTAGE_OBJECT_V3
-{
-   ATOM_VOLTAGE_OBJECT_HEADER_V3 sHeader;   
-=======
    VOLTAGE_LUT_ENTRY asVolI2cLut[];         // end with 0xff
 }ATOM_I2C_VOLTAGE_OBJECT_V3;
 
@@ -4783,35 +4610,21 @@ typedef struct  _ATOM_GPIO_VOLTAGE_OBJECT_V3
 typedef struct  _ATOM_GPIO_VOLTAGE_OBJECT_V3
 {
    ATOM_VOLTAGE_OBJECT_HEADER_V3 sHeader;   // voltage mode = VOLTAGE_OBJ_GPIO_LUT or VOLTAGE_OBJ_PHASE_LUT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    UCHAR    ucVoltageGpioCntlId;         // default is 0 which indicate control through CG VID mode 
    UCHAR    ucGpioEntryNum;              // indiate the entry numbers of Votlage/Gpio value Look up table
    UCHAR    ucPhaseDelay;                // phase delay in unit of micro second
    UCHAR    ucReserved;   
    ULONG    ulGpioMaskVal;               // GPIO Mask value
-<<<<<<< HEAD
-   VOLTAGE_LUT_ENTRY_V2 asVolGpioLut[1];   
-=======
    VOLTAGE_LUT_ENTRY_V2 asVolGpioLut[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_GPIO_VOLTAGE_OBJECT_V3;
 
 typedef struct  _ATOM_LEAKAGE_VOLTAGE_OBJECT_V3
 {
-<<<<<<< HEAD
-   ATOM_VOLTAGE_OBJECT_HEADER_V3 sHeader;
-=======
    ATOM_VOLTAGE_OBJECT_HEADER_V3 sHeader;    // voltage mode = 0x10/0x11/0x12
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    UCHAR    ucLeakageCntlId;             // default is 0
    UCHAR    ucLeakageEntryNum;           // indicate the entry number of LeakageId/Voltage Lut table
    UCHAR    ucReserved[2];               
    ULONG    ulMaxVoltageLevel;
-<<<<<<< HEAD
-   LEAKAGE_VOLTAGE_LUT_ENTRY_V2 asLeakageIdLut[1];   
-}ATOM_LEAKAGE_VOLTAGE_OBJECT_V3;
-
-=======
    LEAKAGE_VOLTAGE_LUT_ENTRY_V2 asLeakageIdLut[];
 }ATOM_LEAKAGE_VOLTAGE_OBJECT_V3;
 
@@ -4831,15 +4644,11 @@ typedef struct  _ATOM_SVID2_VOLTAGE_OBJECT_V3
    ULONG    ulReserved;
 }ATOM_SVID2_VOLTAGE_OBJECT_V3;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef union _ATOM_VOLTAGE_OBJECT_V3{
   ATOM_GPIO_VOLTAGE_OBJECT_V3 asGpioVoltageObj;
   ATOM_I2C_VOLTAGE_OBJECT_V3 asI2cVoltageObj;
   ATOM_LEAKAGE_VOLTAGE_OBJECT_V3 asLeakageObj;
-<<<<<<< HEAD
-=======
   ATOM_SVID2_VOLTAGE_OBJECT_V3 asSVID2Obj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_VOLTAGE_OBJECT_V3;
 
 typedef struct  _ATOM_VOLTAGE_OBJECT_INFO_V3_1
@@ -4869,8 +4678,6 @@ typedef struct  _ATOM_ASIC_PROFILING_INFO
 	ATOM_ASIC_PROFILE_VOLTAGE			asVoltage;
 }ATOM_ASIC_PROFILING_INFO;
 
-<<<<<<< HEAD
-=======
 typedef struct  _ATOM_ASIC_PROFILING_INFO_V2_1
 {
   ATOM_COMMON_TABLE_HEADER			asHeader; 
@@ -4929,7 +4736,6 @@ typedef struct  _ATOM_ASIC_PROFILING_INFO_V3_1
 }ATOM_ASIC_PROFILING_INFO_V3_1;
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct _ATOM_POWER_SOURCE_OBJECT
 {
 	UCHAR	ucPwrSrcId;													// Power source
@@ -4947,11 +4753,7 @@ typedef struct _ATOM_POWER_SOURCE_INFO
 {
 		ATOM_COMMON_TABLE_HEADER		asHeader;
 		UCHAR												asPwrbehave[16];
-<<<<<<< HEAD
-		ATOM_POWER_SOURCE_OBJECT		asPwrObj[1];
-=======
 		ATOM_POWER_SOURCE_OBJECT		asPwrObj[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_POWER_SOURCE_INFO;
 
 
@@ -5050,11 +4852,8 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V6
 #define SYS_INFO_LVDSMISC__888_BPC                                                   0x04
 #define SYS_INFO_LVDSMISC__OVERRIDE_EN                                               0x08
 #define SYS_INFO_LVDSMISC__BLON_ACTIVE_LOW                                           0x10
-<<<<<<< HEAD
-=======
 // new since Trinity
 #define SYS_INFO_LVDSMISC__TRAVIS_LVDS_VOL_OVERRIDE_EN                               0x20
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 // not used any more
 #define SYS_INFO_LVDSMISC__VSYNC_ACTIVE_LOW                                          0x04
@@ -5155,8 +4954,6 @@ typedef struct _ATOM_FUSION_SYSTEM_INFO_V1
   ATOM_INTEGRATED_SYSTEM_INFO_V6    sIntegratedSysInfo;   
   ULONG  ulPowerplayTable[128];  
 }ATOM_FUSION_SYSTEM_INFO_V1; 
-<<<<<<< HEAD
-=======
 
 
 typedef struct _ATOM_TDP_CONFIG_BITS
@@ -5180,7 +4977,6 @@ typedef union _ATOM_TDP_CONFIG
   ULONG            TDP_config_all;
 }ATOM_TDP_CONFIG;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**********************************************************************************************************************
   ATOM_FUSION_SYSTEM_INFO_V1 Description
 sIntegratedSysInfo:               refer to ATOM_INTEGRATED_SYSTEM_INFO_V6 definition.
@@ -5213,12 +5009,8 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V1_7
   UCHAR  ucMemoryType;  
   UCHAR  ucUMAChannelNumber;
   UCHAR  strVBIOSMsg[40];
-<<<<<<< HEAD
-  ULONG  ulReserved[20];
-=======
   ATOM_TDP_CONFIG  asTdpConfig;
   ULONG  ulReserved[19];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ATOM_AVAILABLE_SCLK_LIST   sAvail_SCLK[5];
   ULONG  ulGMCRestoreResetTime;
   ULONG  ulMinimumNClk;
@@ -5243,11 +5035,7 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V1_7
   USHORT GnbTdpLimit;
   USHORT usMaxLVDSPclkFreqInSingleLink;
   UCHAR  ucLvdsMisc;
-<<<<<<< HEAD
-  UCHAR  ucLVDSReserved;
-=======
   UCHAR  ucTravisLVDSVolAdjust;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   UCHAR  ucLVDSPwrOnSeqDIGONtoDE_in4Ms;
   UCHAR  ucLVDSPwrOnSeqDEtoVARY_BL_in4Ms;
   UCHAR  ucLVDSPwrOffSeqVARY_BLtoDE_in4Ms;
@@ -5255,11 +5043,7 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V1_7
   UCHAR  ucLVDSOffToOnDelay_in4Ms;
   UCHAR  ucLVDSPwrOnSeqVARY_BLtoBLON_in4Ms;
   UCHAR  ucLVDSPwrOffSeqBLONtoVARY_BL_in4Ms;
-<<<<<<< HEAD
-  UCHAR  ucLVDSReserved1;
-=======
   UCHAR  ucMinAllowedBL_Level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ULONG  ulLCDBitDepthControlVal;
   ULONG  ulNbpStateMemclkFreq[4];
   USHORT usNBP2Voltage;               
@@ -5288,10 +5072,7 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V1_7
 #define SYS_INFO_GPUCAPS__TMDSHDMI_COHERENT_SINGLEPLL_MODE                0x01
 #define SYS_INFO_GPUCAPS__DP_SINGLEPLL_MODE                               0x02
 #define SYS_INFO_GPUCAPS__DISABLE_AUX_MODE_DETECT                         0x08
-<<<<<<< HEAD
-=======
 #define SYS_INFO_GPUCAPS__ENABEL_DFS_BYPASS                               0x10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************************************************************
   ATOM_INTEGRATED_SYSTEM_INFO_V1_7 Description
@@ -5391,12 +5172,9 @@ ucLVDSMisc:                       [bit0] LVDS 888bit panel mode =0: LVDS 888 pan
                                   [bit2] LVDS 888bit per color mode  =0: 666 bit per color =1:888 bit per color
                                   [bit3] LVDS parameter override enable  =0: ucLvdsMisc parameter are not used =1: ucLvdsMisc parameter should be used
                                   [bit4] Polarity of signal sent to digital BLON output pin. =0: not inverted(active high) =1: inverted ( active low )
-<<<<<<< HEAD
-=======
                                   [bit5] Travid LVDS output voltage override enable, when =1, use ucTravisLVDSVolAdjust value to overwrite Traivs register LVDS_CTRL_4
 ucTravisLVDSVolAdjust             When ucLVDSMisc[5]=1,it means platform SBIOS want to overwrite TravisLVDSVoltage. Then VBIOS will use ucTravisLVDSVolAdjust 
                                   value to program Travis register LVDS_CTRL_4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ucLVDSPwrOnSeqDIGONtoDE_in4Ms:    LVDS power up sequence time in unit of 4ms, time delay from DIGON signal active to data enable signal active( DE ).
                                   =0 mean use VBIOS default which is 8 ( 32ms ). The LVDS power up sequence is as following: DIGON->DE->VARY_BL->BLON. 
                                   This parameter is used by VBIOS only. VBIOS will patch LVDS_InfoTable.
@@ -5416,16 +5194,6 @@ ucLVDSOffToOnDelay_in4Ms:         LVDS power down sequence time in unit of 4ms. 
                                   =0 means to use VBIOS default delay which is 125 ( 500ms ).
                                   This parameter is used by VBIOS only. VBIOS will patch LVDS_InfoTable.
 
-<<<<<<< HEAD
-ucLVDSPwrOnVARY_BLtoBLON_in4Ms:   LVDS power up sequence time in unit of 4ms. Time delay from VARY_BL signal on to DLON signal active. 
-                                  =0 means to use VBIOS default delay which is 0 ( 0ms ).
-                                  This parameter is used by VBIOS only. VBIOS will patch LVDS_InfoTable.
-
-ucLVDSPwrOffBLONtoVARY_BL_in4Ms:  LVDS power down sequence time in unit of 4ms. Time delay from BLON signal off to VARY_BL signal off. 
-                                  =0 means to use VBIOS default delay which is 0 ( 0ms ).
-                                  This parameter is used by VBIOS only. VBIOS will patch LVDS_InfoTable.
-
-=======
 ucLVDSPwrOnSeqVARY_BLtoBLON_in4Ms:
                                   LVDS power up sequence time in unit of 4ms. Time delay from VARY_BL signal on to DLON signal active. 
                                   =0 means to use VBIOS default delay which is 0 ( 0ms ).
@@ -5438,13 +5206,10 @@ ucLVDSPwrOffSeqBLONtoVARY_BL_in4Ms:
 
 ucMinAllowedBL_Level:             Lowest LCD backlight PWM level. This is customer platform specific parameters. By default it is 0. 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ulNbpStateMemclkFreq[4]:          system memory clock frequncey in unit of 10Khz in different NB pstate. 
 
 **********************************************************************************************************************/
 
-<<<<<<< HEAD
-=======
 // this IntegrateSystemInfoTable is used for Kaveri & Kabini APU
 typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V1_8
 {
@@ -5664,7 +5429,6 @@ typedef struct _ATOM_FUSION_SYSTEM_INFO_V2
 }ATOM_FUSION_SYSTEM_INFO_V2; 
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************/
 // This portion is only used when ext thermal chip or engine/memory clock SS chip is populated on a design
 //Memory SS Info Table
@@ -5676,11 +5440,7 @@ typedef struct _ATOM_FUSION_SYSTEM_INFO_V2
 typedef struct _ATOM_I2C_DATA_RECORD
 {
   UCHAR         ucNunberOfBytes;                                              //Indicates how many bytes SW needs to write to the external ASIC for one block, besides to "Start" and "Stop"
-<<<<<<< HEAD
-  UCHAR         ucI2CData[1];                                                 //I2C data in bytes, should be less than 16 bytes usually
-=======
   UCHAR         ucI2CData[];                                                  //I2C data in bytes, should be less than 16 bytes usually
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_I2C_DATA_RECORD;
 
 
@@ -5691,22 +5451,14 @@ typedef struct _ATOM_I2C_DEVICE_SETUP_INFO
   UCHAR		                        ucSSChipID;             //SS chip being used
   UCHAR		                        ucSSChipSlaveAddr;      //Slave Address to set up this SS chip
   UCHAR                           ucNumOfI2CDataRecords;  //number of data block
-<<<<<<< HEAD
-  ATOM_I2C_DATA_RECORD            asI2CData[1];  
-=======
   ATOM_I2C_DATA_RECORD            asI2CData[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_I2C_DEVICE_SETUP_INFO;
 
 //==========================================================================================
 typedef struct  _ATOM_ASIC_MVDD_INFO
 {
   ATOM_COMMON_TABLE_HEADER	      sHeader; 
-<<<<<<< HEAD
-  ATOM_I2C_DEVICE_SETUP_INFO      asI2CSetup[1];
-=======
   ATOM_I2C_DEVICE_SETUP_INFO      asI2CSetup[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_ASIC_MVDD_INFO;
 
 //==========================================================================================
@@ -5727,18 +5479,6 @@ typedef struct _ATOM_ASIC_SS_ASSIGNMENT
 
 //Define ucClockIndication, SW uses the IDs below to search if the SS is required/enabled on a clock branch/signal type.
 //SS is not required or enabled if a match is not found.
-<<<<<<< HEAD
-#define ASIC_INTERNAL_MEMORY_SS			1
-#define ASIC_INTERNAL_ENGINE_SS			2
-#define ASIC_INTERNAL_UVD_SS        3
-#define ASIC_INTERNAL_SS_ON_TMDS    4
-#define ASIC_INTERNAL_SS_ON_HDMI    5
-#define ASIC_INTERNAL_SS_ON_LVDS    6
-#define ASIC_INTERNAL_SS_ON_DP      7
-#define ASIC_INTERNAL_SS_ON_DCPLL   8
-#define ASIC_EXTERNAL_SS_ON_DP_CLOCK 9
-#define ASIC_INTERNAL_VCE_SS        10
-=======
 #define ASIC_INTERNAL_MEMORY_SS	         1
 #define ASIC_INTERNAL_ENGINE_SS	         2
 #define ASIC_INTERNAL_UVD_SS             3
@@ -5751,17 +5491,12 @@ typedef struct _ATOM_ASIC_SS_ASSIGNMENT
 #define ASIC_INTERNAL_VCE_SS             10
 #define ASIC_INTERNAL_GPUPLL_SS          11
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _ATOM_ASIC_SS_ASSIGNMENT_V2
 {
 	ULONG								ulTargetClockRange;						//For mem/engine/uvd, Clock Out frequence (VCO ), in unit of 10Khz
                                                     //For TMDS/HDMI/LVDS, it is pixel clock , for DP, it is link clock ( 27000 or 16200 )
-<<<<<<< HEAD
-  USHORT              usSpreadSpectrumPercentage;		//in unit of 0.01%
-=======
   USHORT              usSpreadSpectrumPercentage;		//in unit of 0.01% or 0.001%, decided by ucSpreadSpectrumMode bit4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USHORT							usSpreadRateIn10Hz;						//in unit of 10Hz, modulation freq
   UCHAR               ucClockIndication;					  //Indicate which clock source needs SS
 	UCHAR								ucSpreadSpectrumMode;					//Bit0=0 Down Spread,=1 Center Spread, bit1=0: internal SS bit1=1: external SS
@@ -5785,11 +5520,7 @@ typedef struct _ATOM_ASIC_INTERNAL_SS_INFO
 typedef struct _ATOM_ASIC_INTERNAL_SS_INFO_V2
 {
   ATOM_COMMON_TABLE_HEADER	      sHeader; 
-<<<<<<< HEAD
-  ATOM_ASIC_SS_ASSIGNMENT_V2		  asSpreadSpectrum[1];      //this is point only. 
-=======
   ATOM_ASIC_SS_ASSIGNMENT_V2		  asSpreadSpectrum[];       //this is point only.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_ASIC_INTERNAL_SS_INFO_V2;
 
 typedef struct _ATOM_ASIC_SS_ASSIGNMENT_V3
@@ -5803,12 +5534,6 @@ typedef struct _ATOM_ASIC_SS_ASSIGNMENT_V3
 	UCHAR								ucReserved[2];
 }ATOM_ASIC_SS_ASSIGNMENT_V3;
 
-<<<<<<< HEAD
-typedef struct _ATOM_ASIC_INTERNAL_SS_INFO_V3
-{
-  ATOM_COMMON_TABLE_HEADER	      sHeader; 
-  ATOM_ASIC_SS_ASSIGNMENT_V3		  asSpreadSpectrum[1];      //this is pointer only. 
-=======
 //ATOM_ASIC_SS_ASSIGNMENT_V3.ucSpreadSpectrumMode
 #define SS_MODE_V3_CENTRE_SPREAD_MASK             0x01
 #define SS_MODE_V3_EXTERNAL_SS_MASK               0x02
@@ -5818,7 +5543,6 @@ typedef struct _ATOM_ASIC_INTERNAL_SS_INFO_V3
 {
   ATOM_COMMON_TABLE_HEADER	      sHeader; 
   ATOM_ASIC_SS_ASSIGNMENT_V3		  asSpreadSpectrum[];       //this is pointer only.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_ASIC_INTERNAL_SS_INFO_V3;
 
 
@@ -6183,11 +5907,8 @@ typedef struct _ATOM_ASIC_INTERNAL_SS_INFO_V3
 #define ATOM_S7_DOS_MODE_PIXEL_DEPTHb0      0x0C
 #define ATOM_S7_DOS_MODE_PIXEL_FORMATb0     0xF0
 #define ATOM_S7_DOS_8BIT_DAC_ENb1           0x01
-<<<<<<< HEAD
-=======
 #define ATOM_S7_ASIC_INIT_COMPLETEb1        0x02
 #define ATOM_S7_ASIC_INIT_COMPLETE_MASK     0x00000200
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATOM_S7_DOS_MODE_NUMBERw1           0x0FFFF
 
 #define ATOM_S7_DOS_8BIT_DAC_EN_SHIFT       8
@@ -6252,11 +5973,7 @@ typedef struct _ATOM_ASIC_INTERNAL_SS_INFO_V3
 #define CLEAR_ATOM_S7_DOS_8BIT_DAC_EN         ((ATOM_DOS_MODE_INFO_DEF << 8 )|ATOM_S7_DOS_8BIT_DAC_EN_SHIFT | ATOM_FLAG_CLEAR )
 
 /****************************************************************************/	
-<<<<<<< HEAD
-//Portion II: Definitinos only used in Driver
-=======
 //Portion II: Definitions only used in Driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 // Macros used by driver
@@ -6266,11 +5983,7 @@ typedef struct _ATOM_ASIC_INTERNAL_SS_INFO_V3
 #define GET_COMMAND_TABLE_COMMANDSET_REVISION(TABLE_HEADER_OFFSET) (((static_cast<ATOM_COMMON_TABLE_HEADER*>(TABLE_HEADER_OFFSET))->ucTableFormatRevision )&0x3F)
 #define GET_COMMAND_TABLE_PARAMETER_REVISION(TABLE_HEADER_OFFSET)  (((static_cast<ATOM_COMMON_TABLE_HEADER*>(TABLE_HEADER_OFFSET))->ucTableContentRevision)&0x3F)
 #else // not __cplusplus
-<<<<<<< HEAD
-#define	GetIndexIntoMasterTable(MasterOrData, FieldName) (((char*)(&((ATOM_MASTER_LIST_OF_##MasterOrData##_TABLES*)0)->FieldName)-(char*)0)/sizeof(USHORT))
-=======
 #define	GetIndexIntoMasterTable(MasterOrData, FieldName) (offsetof(ATOM_MASTER_LIST_OF_##MasterOrData##_TABLES, FieldName)/sizeof(USHORT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GET_COMMAND_TABLE_COMMANDSET_REVISION(TABLE_HEADER_OFFSET) ((((ATOM_COMMON_TABLE_HEADER*)TABLE_HEADER_OFFSET)->ucTableFormatRevision)&0x3F)
 #define GET_COMMAND_TABLE_PARAMETER_REVISION(TABLE_HEADER_OFFSET)  ((((ATOM_COMMON_TABLE_HEADER*)TABLE_HEADER_OFFSET)->ucTableContentRevision)&0x3F)
@@ -6468,10 +6181,7 @@ typedef struct _INDIRECT_IO_ACCESS
 #define INDIRECT_IO_PCIE           3
 #define INDIRECT_IO_PCIEP          4
 #define INDIRECT_IO_NBMISC         5
-<<<<<<< HEAD
-=======
 #define INDIRECT_IO_SMU            5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INDIRECT_IO_PLL_READ       INDIRECT_IO_PLL   | INDIRECT_READ
 #define INDIRECT_IO_PLL_WRITE      INDIRECT_IO_PLL   | INDIRECT_WRITE
@@ -6483,11 +6193,8 @@ typedef struct _INDIRECT_IO_ACCESS
 #define INDIRECT_IO_PCIEP_WRITE    INDIRECT_IO_PCIEP | INDIRECT_WRITE
 #define INDIRECT_IO_NBMISC_READ    INDIRECT_IO_NBMISC | INDIRECT_READ
 #define INDIRECT_IO_NBMISC_WRITE   INDIRECT_IO_NBMISC | INDIRECT_WRITE
-<<<<<<< HEAD
-=======
 #define INDIRECT_IO_SMU_READ       INDIRECT_IO_SMU | INDIRECT_READ
 #define INDIRECT_IO_SMU_WRITE      INDIRECT_IO_SMU | INDIRECT_WRITE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct _ATOM_OEM_INFO
 { 
@@ -6575,11 +6282,7 @@ typedef union _ATOM_MEMORY_SETTING_ID_CONFIG_ACCESS
 
 typedef struct _ATOM_MEMORY_SETTING_DATA_BLOCK{
 	ATOM_MEMORY_SETTING_ID_CONFIG_ACCESS			ulMemoryID;
-<<<<<<< HEAD
-	ULONG															        aulMemData[1];
-=======
 	ULONG															        aulMemData[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }ATOM_MEMORY_SETTING_DATA_BLOCK;
 
 
@@ -6637,15 +6340,10 @@ typedef struct _ATOM_MC_INIT_PARAM_TABLE
 #define _64Mx32             0x43
 #define _128Mx8             0x51
 #define _128Mx16            0x52
-<<<<<<< HEAD
-#define _256Mx8             0x61
-#define _256Mx16            0x62
-=======
 #define _128Mx32            0x53
 #define _256Mx8             0x61
 #define _256Mx16            0x62
 #define _512Mx8             0x71
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SAMSUNG             0x1
 #define INFINEON            0x2
@@ -6662,11 +6360,8 @@ typedef struct _ATOM_MC_INIT_PARAM_TABLE
 #define PROMOS              MOSEL
 #define KRETON              INFINEON
 #define ELIXIR              NANYA
-<<<<<<< HEAD
-=======
 #define MEZZA               ELPIDA
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /////////////Support for GDDR5 MC uCode to reside in upper 64K of ROM/////////////
 
@@ -7394,13 +7089,6 @@ typedef struct _ATOM_DISP_OUT_INFO_V3
   UCHAR  ucMaxDispEngineNum;
   UCHAR  ucMaxActiveDispEngineNum;
   UCHAR  ucMaxPPLLNum;
-<<<<<<< HEAD
-  UCHAR  ucCoreRefClkSource;                          // value of CORE_REF_CLK_SOURCE
-  UCHAR  ucReserved[3];
-	ASIC_TRANSMITTER_INFO_V2  asTransmitterInfo[1];     // for alligment only
-}ATOM_DISP_OUT_INFO_V3;
-
-=======
   UCHAR  ucCoreRefClkSource;                    // value of CORE_REF_CLK_SOURCE
   UCHAR  ucDispCaps;
   UCHAR  ucReserved[2];
@@ -7411,7 +7099,6 @@ typedef struct _ATOM_DISP_OUT_INFO_V3
 #define DISPLAY_CAPS__DP_PCLK_FROM_PPLL        0x01
 #define DISPLAY_CAPS__FORCE_DISPDEV_CONNECTED  0x02
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef enum CORE_REF_CLK_SOURCE{
   CLOCK_SRC_XTALIN=0,
   CLOCK_SRC_XO_IN=1,
@@ -7475,11 +7162,7 @@ typedef struct _DP_ENCODER_SERVICE_PARAMETERS
 
 // ucAction
 #define ATOM_DP_ACTION_GET_SINK_TYPE							0x01
-<<<<<<< HEAD
-/* obselete */
-=======
 /* obsolete */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATOM_DP_ACTION_TRAINING_START							0x02
 #define ATOM_DP_ACTION_TRAINING_COMPLETE					0x03
 #define ATOM_DP_ACTION_TRAINING_PATTERN_SEL				0x04
@@ -7620,8 +7303,6 @@ typedef struct _DIG_TRANSMITTER_INFO_HEADER_V3_1{
   USHORT usPhyPllSettingOffset;          // offset of CLOCK_CONDITION_SETTING_ENTRY* with Phy Pll Settings
 }DIG_TRANSMITTER_INFO_HEADER_V3_1;
 
-<<<<<<< HEAD
-=======
 typedef struct _DIG_TRANSMITTER_INFO_HEADER_V3_2{  
   ATOM_COMMON_TABLE_HEADER sHeader;  
   USHORT usDPVsPreEmphSettingOffset;     // offset of PHY_ANALOG_SETTING_INFO * with DP Voltage Swing and Pre-Emphasis for each Link clock 
@@ -7633,7 +7314,6 @@ typedef struct _DIG_TRANSMITTER_INFO_HEADER_V3_2{
   USHORT usDPSSSettingOffset;            // offset of CLOCK_CONDITION_SETTING_ENTRY* with Phy SS Pll Settings
 }DIG_TRANSMITTER_INFO_HEADER_V3_2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct _CLOCK_CONDITION_REGESTER_INFO{
   USHORT usRegisterIndex;
   UCHAR  ucStartBit;
@@ -7644,20 +7324,12 @@ typedef struct _CLOCK_CONDITION_SETTING_ENTRY{
   USHORT usMaxClockFreq;
   UCHAR  ucEncodeMode;
   UCHAR  ucPhySel;
-<<<<<<< HEAD
-  ULONG  ulAnalogSetting[1];
-=======
   ULONG  ulAnalogSetting[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }CLOCK_CONDITION_SETTING_ENTRY;
 
 typedef struct _CLOCK_CONDITION_SETTING_INFO{
   USHORT usEntrySize;
-<<<<<<< HEAD
-  CLOCK_CONDITION_SETTING_ENTRY asClkCondSettingEntry[1];
-=======
   CLOCK_CONDITION_SETTING_ENTRY asClkCondSettingEntry[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }CLOCK_CONDITION_SETTING_INFO;
 
 typedef struct _PHY_CONDITION_REG_VAL{
@@ -7665,14 +7337,6 @@ typedef struct _PHY_CONDITION_REG_VAL{
   ULONG  ulRegVal;
 }PHY_CONDITION_REG_VAL;
 
-<<<<<<< HEAD
-typedef struct _PHY_CONDITION_REG_INFO{
-  USHORT usRegIndex;
-  USHORT usSize;
-  PHY_CONDITION_REG_VAL asRegVal[1];
-}PHY_CONDITION_REG_INFO;
-
-=======
 typedef struct _PHY_CONDITION_REG_VAL_V2{
   ULONG  ulCondition;
   UCHAR  ucCondition2;
@@ -7691,16 +7355,10 @@ typedef struct _PHY_CONDITION_REG_INFO_V2{
   PHY_CONDITION_REG_VAL_V2 asRegVal[];
 }PHY_CONDITION_REG_INFO_V2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct _PHY_ANALOG_SETTING_INFO{
   UCHAR  ucEncodeMode;
   UCHAR  ucPhySel;
   USHORT usSize;
-<<<<<<< HEAD
-  PHY_CONDITION_REG_INFO  asAnalogSetting[1];
-}PHY_ANALOG_SETTING_INFO;
-
-=======
   PHY_CONDITION_REG_INFO  asAnalogSetting[];
 }PHY_ANALOG_SETTING_INFO;
 
@@ -7723,7 +7381,6 @@ typedef struct _GFX_HAVESTING_PARAMETERS {
 #define GFX_HARVESTING_RB_ID               1
 #define GFX_HARVESTING_PRIM_ID             2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/	
 //Portion VI: Definitinos for vbios MC scratch registers that driver used
 /****************************************************************************/
@@ -7734,10 +7391,6 @@ typedef struct _GFX_HAVESTING_PARAMETERS {
 #define MC_MISC0__MEMORY_TYPE__GDDR3  0x30000000
 #define MC_MISC0__MEMORY_TYPE__GDDR4  0x40000000
 #define MC_MISC0__MEMORY_TYPE__GDDR5  0x50000000
-<<<<<<< HEAD
-#define MC_MISC0__MEMORY_TYPE__DDR3   0xB0000000
-
-=======
 #define MC_MISC0__MEMORY_TYPE__HBM    0x60000000
 #define MC_MISC0__MEMORY_TYPE__DDR3   0xB0000000
 
@@ -7749,7 +7402,6 @@ typedef struct _GFX_HAVESTING_PARAMETERS {
 #define ATOM_MEM_TYPE_HBM_STRING      "HBM"
 #define ATOM_MEM_TYPE_DDR3_STRING     "DDR3"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/	
 //Portion VI: Definitinos being oboselete
 /****************************************************************************/
@@ -8112,568 +7764,6 @@ typedef struct  _ATOM_POWERPLAY_INFO_V3
   ATOM_POWERMODE_INFO_V3 asPowerPlayInfo[ATOM_MAX_NUMBEROF_POWER_BLOCK];
 }ATOM_POWERPLAY_INFO_V3;
 
-<<<<<<< HEAD
-/* New PPlib */
-/**************************************************************************/
-typedef struct _ATOM_PPLIB_THERMALCONTROLLER
-
-{
-    UCHAR ucType;           // one of ATOM_PP_THERMALCONTROLLER_*
-    UCHAR ucI2cLine;        // as interpreted by DAL I2C
-    UCHAR ucI2cAddress;
-    UCHAR ucFanParameters;  // Fan Control Parameters.
-    UCHAR ucFanMinRPM;      // Fan Minimum RPM (hundreds) -- for display purposes only.
-    UCHAR ucFanMaxRPM;      // Fan Maximum RPM (hundreds) -- for display purposes only.
-    UCHAR ucReserved;       // ----
-    UCHAR ucFlags;          // to be defined
-} ATOM_PPLIB_THERMALCONTROLLER;
-
-#define ATOM_PP_FANPARAMETERS_TACHOMETER_PULSES_PER_REVOLUTION_MASK 0x0f
-#define ATOM_PP_FANPARAMETERS_NOFAN                                 0x80    // No fan is connected to this controller.
-
-#define ATOM_PP_THERMALCONTROLLER_NONE      0
-#define ATOM_PP_THERMALCONTROLLER_LM63      1  // Not used by PPLib
-#define ATOM_PP_THERMALCONTROLLER_ADM1032   2  // Not used by PPLib
-#define ATOM_PP_THERMALCONTROLLER_ADM1030   3  // Not used by PPLib
-#define ATOM_PP_THERMALCONTROLLER_MUA6649   4  // Not used by PPLib
-#define ATOM_PP_THERMALCONTROLLER_LM64      5
-#define ATOM_PP_THERMALCONTROLLER_F75375    6  // Not used by PPLib
-#define ATOM_PP_THERMALCONTROLLER_RV6xx     7
-#define ATOM_PP_THERMALCONTROLLER_RV770     8
-#define ATOM_PP_THERMALCONTROLLER_ADT7473   9
-#define ATOM_PP_THERMALCONTROLLER_EXTERNAL_GPIO     11
-#define ATOM_PP_THERMALCONTROLLER_EVERGREEN 12
-#define ATOM_PP_THERMALCONTROLLER_EMC2103   13  /* 0x0D */ // Only fan control will be implemented, do NOT show this in PPGen.
-#define ATOM_PP_THERMALCONTROLLER_SUMO      14  /* 0x0E */ // Sumo type, used internally
-#define ATOM_PP_THERMALCONTROLLER_NISLANDS  15
-#define ATOM_PP_THERMALCONTROLLER_SISLANDS  16
-#define ATOM_PP_THERMALCONTROLLER_LM96163   17
-
-// Thermal controller 'combo type' to use an external controller for Fan control and an internal controller for thermal.
-// We probably should reserve the bit 0x80 for this use.
-// To keep the number of these types low we should also use the same code for all ASICs (i.e. do not distinguish RV6xx and RV7xx Internal here).
-// The driver can pick the correct internal controller based on the ASIC.
-
-#define ATOM_PP_THERMALCONTROLLER_ADT7473_WITH_INTERNAL   0x89    // ADT7473 Fan Control + Internal Thermal Controller
-#define ATOM_PP_THERMALCONTROLLER_EMC2103_WITH_INTERNAL   0x8D    // EMC2103 Fan Control + Internal Thermal Controller
-
-typedef struct _ATOM_PPLIB_STATE
-{
-    UCHAR ucNonClockStateIndex;
-    UCHAR ucClockStateIndices[1]; // variable-sized
-} ATOM_PPLIB_STATE;
-
-
-typedef struct _ATOM_PPLIB_FANTABLE
-{
-    UCHAR   ucFanTableFormat;                // Change this if the table format changes or version changes so that the other fields are not the same.
-    UCHAR   ucTHyst;                         // Temperature hysteresis. Integer.
-    USHORT  usTMin;                          // The temperature, in 0.01 centigrades, below which we just run at a minimal PWM.
-    USHORT  usTMed;                          // The middle temperature where we change slopes.
-    USHORT  usTHigh;                         // The high point above TMed for adjusting the second slope.
-    USHORT  usPWMMin;                        // The minimum PWM value in percent (0.01% increments).
-    USHORT  usPWMMed;                        // The PWM value (in percent) at TMed.
-    USHORT  usPWMHigh;                       // The PWM value at THigh.
-} ATOM_PPLIB_FANTABLE;
-
-typedef struct _ATOM_PPLIB_FANTABLE2
-{
-    ATOM_PPLIB_FANTABLE basicTable;
-    USHORT  usTMax;                          // The max temperature
-} ATOM_PPLIB_FANTABLE2;
-
-typedef struct _ATOM_PPLIB_EXTENDEDHEADER
-{
-    USHORT  usSize;
-    ULONG   ulMaxEngineClock;   // For Overdrive.
-    ULONG   ulMaxMemoryClock;   // For Overdrive.
-    // Add extra system parameters here, always adjust size to include all fields.
-    USHORT  usVCETableOffset; //points to ATOM_PPLIB_VCE_Table
-    USHORT  usUVDTableOffset;   //points to ATOM_PPLIB_UVD_Table
-} ATOM_PPLIB_EXTENDEDHEADER;
-
-//// ATOM_PPLIB_POWERPLAYTABLE::ulPlatformCaps
-#define ATOM_PP_PLATFORM_CAP_BACKBIAS 1
-#define ATOM_PP_PLATFORM_CAP_POWERPLAY 2
-#define ATOM_PP_PLATFORM_CAP_SBIOSPOWERSOURCE 4
-#define ATOM_PP_PLATFORM_CAP_ASPM_L0s 8
-#define ATOM_PP_PLATFORM_CAP_ASPM_L1 16
-#define ATOM_PP_PLATFORM_CAP_HARDWAREDC 32
-#define ATOM_PP_PLATFORM_CAP_GEMINIPRIMARY 64
-#define ATOM_PP_PLATFORM_CAP_STEPVDDC 128
-#define ATOM_PP_PLATFORM_CAP_VOLTAGECONTROL 256
-#define ATOM_PP_PLATFORM_CAP_SIDEPORTCONTROL 512
-#define ATOM_PP_PLATFORM_CAP_TURNOFFPLL_ASPML1 1024
-#define ATOM_PP_PLATFORM_CAP_HTLINKCONTROL 2048
-#define ATOM_PP_PLATFORM_CAP_MVDDCONTROL 4096
-#define ATOM_PP_PLATFORM_CAP_GOTO_BOOT_ON_ALERT 0x2000              // Go to boot state on alerts, e.g. on an AC->DC transition.
-#define ATOM_PP_PLATFORM_CAP_DONT_WAIT_FOR_VBLANK_ON_ALERT 0x4000   // Do NOT wait for VBLANK during an alert (e.g. AC->DC transition).
-#define ATOM_PP_PLATFORM_CAP_VDDCI_CONTROL 0x8000                   // Does the driver control VDDCI independently from VDDC.
-#define ATOM_PP_PLATFORM_CAP_REGULATOR_HOT 0x00010000               // Enable the 'regulator hot' feature.
-#define ATOM_PP_PLATFORM_CAP_BACO          0x00020000               // Does the driver supports BACO state.
-
-
-typedef struct _ATOM_PPLIB_POWERPLAYTABLE
-{
-      ATOM_COMMON_TABLE_HEADER sHeader;
-
-      UCHAR ucDataRevision;
-
-      UCHAR ucNumStates;
-      UCHAR ucStateEntrySize;
-      UCHAR ucClockInfoSize;
-      UCHAR ucNonClockSize;
-
-      // offset from start of this table to array of ucNumStates ATOM_PPLIB_STATE structures
-      USHORT usStateArrayOffset;
-
-      // offset from start of this table to array of ASIC-specific structures,
-      // currently ATOM_PPLIB_CLOCK_INFO.
-      USHORT usClockInfoArrayOffset;
-
-      // offset from start of this table to array of ATOM_PPLIB_NONCLOCK_INFO
-      USHORT usNonClockInfoArrayOffset;
-
-      USHORT usBackbiasTime;    // in microseconds
-      USHORT usVoltageTime;     // in microseconds
-      USHORT usTableSize;       //the size of this structure, or the extended structure
-
-      ULONG ulPlatformCaps;            // See ATOM_PPLIB_CAPS_*
-
-      ATOM_PPLIB_THERMALCONTROLLER    sThermalController;
-
-      USHORT usBootClockInfoOffset;
-      USHORT usBootNonClockInfoOffset;
-
-} ATOM_PPLIB_POWERPLAYTABLE;
-
-typedef struct _ATOM_PPLIB_POWERPLAYTABLE2
-{
-    ATOM_PPLIB_POWERPLAYTABLE basicTable;
-    UCHAR   ucNumCustomThermalPolicy;
-    USHORT  usCustomThermalPolicyArrayOffset;
-}ATOM_PPLIB_POWERPLAYTABLE2, *LPATOM_PPLIB_POWERPLAYTABLE2;
-
-typedef struct _ATOM_PPLIB_POWERPLAYTABLE3
-{
-    ATOM_PPLIB_POWERPLAYTABLE2 basicTable2;
-    USHORT                     usFormatID;                      // To be used ONLY by PPGen.
-    USHORT                     usFanTableOffset;
-    USHORT                     usExtendendedHeaderOffset;
-} ATOM_PPLIB_POWERPLAYTABLE3, *LPATOM_PPLIB_POWERPLAYTABLE3;
-
-typedef struct _ATOM_PPLIB_POWERPLAYTABLE4
-{
-    ATOM_PPLIB_POWERPLAYTABLE3 basicTable3;
-    ULONG                      ulGoldenPPID;                    // PPGen use only     
-    ULONG                      ulGoldenRevision;                // PPGen use only
-    USHORT                     usVddcDependencyOnSCLKOffset;
-    USHORT                     usVddciDependencyOnMCLKOffset;
-    USHORT                     usVddcDependencyOnMCLKOffset;
-    USHORT                     usMaxClockVoltageOnDCOffset;
-    USHORT                     usVddcPhaseShedLimitsTableOffset;    // Points to ATOM_PPLIB_PhaseSheddingLimits_Table
-    USHORT                     usReserved;  
-} ATOM_PPLIB_POWERPLAYTABLE4, *LPATOM_PPLIB_POWERPLAYTABLE4;
-
-typedef struct _ATOM_PPLIB_POWERPLAYTABLE5
-{
-    ATOM_PPLIB_POWERPLAYTABLE4 basicTable4;
-    ULONG                      ulTDPLimit;
-    ULONG                      ulNearTDPLimit;
-    ULONG                      ulSQRampingThreshold;
-    USHORT                     usCACLeakageTableOffset;         // Points to ATOM_PPLIB_CAC_Leakage_Table
-    ULONG                      ulCACLeakage;                    // The iLeakage for driver calculated CAC leakage table
-    USHORT                     usTDPODLimit;
-    USHORT                     usLoadLineSlope;                 // in milliOhms * 100
-} ATOM_PPLIB_POWERPLAYTABLE5, *LPATOM_PPLIB_POWERPLAYTABLE5;
-
-//// ATOM_PPLIB_NONCLOCK_INFO::usClassification
-#define ATOM_PPLIB_CLASSIFICATION_UI_MASK          0x0007
-#define ATOM_PPLIB_CLASSIFICATION_UI_SHIFT         0
-#define ATOM_PPLIB_CLASSIFICATION_UI_NONE          0
-#define ATOM_PPLIB_CLASSIFICATION_UI_BATTERY       1
-#define ATOM_PPLIB_CLASSIFICATION_UI_BALANCED      3
-#define ATOM_PPLIB_CLASSIFICATION_UI_PERFORMANCE   5
-// 2, 4, 6, 7 are reserved
-
-#define ATOM_PPLIB_CLASSIFICATION_BOOT                   0x0008
-#define ATOM_PPLIB_CLASSIFICATION_THERMAL                0x0010
-#define ATOM_PPLIB_CLASSIFICATION_LIMITEDPOWERSOURCE     0x0020
-#define ATOM_PPLIB_CLASSIFICATION_REST                   0x0040
-#define ATOM_PPLIB_CLASSIFICATION_FORCED                 0x0080
-#define ATOM_PPLIB_CLASSIFICATION_3DPERFORMANCE          0x0100
-#define ATOM_PPLIB_CLASSIFICATION_OVERDRIVETEMPLATE      0x0200
-#define ATOM_PPLIB_CLASSIFICATION_UVDSTATE               0x0400
-#define ATOM_PPLIB_CLASSIFICATION_3DLOW                  0x0800
-#define ATOM_PPLIB_CLASSIFICATION_ACPI                   0x1000
-#define ATOM_PPLIB_CLASSIFICATION_HD2STATE               0x2000
-#define ATOM_PPLIB_CLASSIFICATION_HDSTATE                0x4000
-#define ATOM_PPLIB_CLASSIFICATION_SDSTATE                0x8000
-
-//// ATOM_PPLIB_NONCLOCK_INFO::usClassification2
-#define ATOM_PPLIB_CLASSIFICATION2_LIMITEDPOWERSOURCE_2     0x0001
-#define ATOM_PPLIB_CLASSIFICATION2_ULV                      0x0002
-#define ATOM_PPLIB_CLASSIFICATION2_MVC                      0x0004   //Multi-View Codec (BD-3D)
-
-//// ATOM_PPLIB_NONCLOCK_INFO::ulCapsAndSettings
-#define ATOM_PPLIB_SINGLE_DISPLAY_ONLY           0x00000001
-#define ATOM_PPLIB_SUPPORTS_VIDEO_PLAYBACK         0x00000002
-
-// 0 is 2.5Gb/s, 1 is 5Gb/s
-#define ATOM_PPLIB_PCIE_LINK_SPEED_MASK            0x00000004
-#define ATOM_PPLIB_PCIE_LINK_SPEED_SHIFT           2
-
-// lanes - 1: 1, 2, 4, 8, 12, 16 permitted by PCIE spec
-#define ATOM_PPLIB_PCIE_LINK_WIDTH_MASK            0x000000F8
-#define ATOM_PPLIB_PCIE_LINK_WIDTH_SHIFT           3
-
-// lookup into reduced refresh-rate table
-#define ATOM_PPLIB_LIMITED_REFRESHRATE_VALUE_MASK  0x00000F00
-#define ATOM_PPLIB_LIMITED_REFRESHRATE_VALUE_SHIFT 8
-
-#define ATOM_PPLIB_LIMITED_REFRESHRATE_UNLIMITED    0
-#define ATOM_PPLIB_LIMITED_REFRESHRATE_50HZ         1
-// 2-15 TBD as needed.
-
-#define ATOM_PPLIB_SOFTWARE_DISABLE_LOADBALANCING        0x00001000
-#define ATOM_PPLIB_SOFTWARE_ENABLE_SLEEP_FOR_TIMESTAMPS  0x00002000
-
-#define ATOM_PPLIB_DISALLOW_ON_DC                       0x00004000
-
-#define ATOM_PPLIB_ENABLE_VARIBRIGHT                     0x00008000
-
-//memory related flags
-#define ATOM_PPLIB_SWSTATE_MEMORY_DLL_OFF               0x000010000
-
-//M3 Arb    //2bits, current 3 sets of parameters in total
-#define ATOM_PPLIB_M3ARB_MASK                       0x00060000
-#define ATOM_PPLIB_M3ARB_SHIFT                      17
-
-#define ATOM_PPLIB_ENABLE_DRR                       0x00080000
-
-// remaining 16 bits are reserved
-typedef struct _ATOM_PPLIB_THERMAL_STATE
-{
-    UCHAR   ucMinTemperature;
-    UCHAR   ucMaxTemperature;
-    UCHAR   ucThermalAction;
-}ATOM_PPLIB_THERMAL_STATE, *LPATOM_PPLIB_THERMAL_STATE;
-
-// Contained in an array starting at the offset
-// in ATOM_PPLIB_POWERPLAYTABLE::usNonClockInfoArrayOffset.
-// referenced from ATOM_PPLIB_STATE_INFO::ucNonClockStateIndex
-#define ATOM_PPLIB_NONCLOCKINFO_VER1      12
-#define ATOM_PPLIB_NONCLOCKINFO_VER2      24
-typedef struct _ATOM_PPLIB_NONCLOCK_INFO
-{
-      USHORT usClassification;
-      UCHAR  ucMinTemperature;
-      UCHAR  ucMaxTemperature;
-      ULONG  ulCapsAndSettings;
-      UCHAR  ucRequiredPower;
-      USHORT usClassification2;
-      ULONG  ulVCLK;
-      ULONG  ulDCLK;
-      UCHAR  ucUnused[5];
-} ATOM_PPLIB_NONCLOCK_INFO;
-
-// Contained in an array starting at the offset
-// in ATOM_PPLIB_POWERPLAYTABLE::usClockInfoArrayOffset.
-// referenced from ATOM_PPLIB_STATE::ucClockStateIndices
-typedef struct _ATOM_PPLIB_R600_CLOCK_INFO
-{
-      USHORT usEngineClockLow;
-      UCHAR ucEngineClockHigh;
-
-      USHORT usMemoryClockLow;
-      UCHAR ucMemoryClockHigh;
-
-      USHORT usVDDC;
-      USHORT usUnused1;
-      USHORT usUnused2;
-
-      ULONG ulFlags; // ATOM_PPLIB_R600_FLAGS_*
-
-} ATOM_PPLIB_R600_CLOCK_INFO;
-
-// ulFlags in ATOM_PPLIB_R600_CLOCK_INFO
-#define ATOM_PPLIB_R600_FLAGS_PCIEGEN2          1
-#define ATOM_PPLIB_R600_FLAGS_UVDSAFE           2
-#define ATOM_PPLIB_R600_FLAGS_BACKBIASENABLE    4
-#define ATOM_PPLIB_R600_FLAGS_MEMORY_ODT_OFF    8
-#define ATOM_PPLIB_R600_FLAGS_MEMORY_DLL_OFF   16
-#define ATOM_PPLIB_R600_FLAGS_LOWPOWER         32   // On the RV770 use 'low power' setting (sequencer S0).
-
-typedef struct _ATOM_PPLIB_EVERGREEN_CLOCK_INFO
-{
-      USHORT usEngineClockLow;
-      UCHAR  ucEngineClockHigh;
-
-      USHORT usMemoryClockLow;
-      UCHAR  ucMemoryClockHigh;
-
-      USHORT usVDDC;
-      USHORT usVDDCI;
-      USHORT usUnused;
-
-      ULONG ulFlags; // ATOM_PPLIB_R600_FLAGS_*
-
-} ATOM_PPLIB_EVERGREEN_CLOCK_INFO;
-
-typedef struct _ATOM_PPLIB_SI_CLOCK_INFO
-{
-      USHORT usEngineClockLow;
-      UCHAR  ucEngineClockHigh;
-
-      USHORT usMemoryClockLow;
-      UCHAR  ucMemoryClockHigh;
-
-      USHORT usVDDC;
-      USHORT usVDDCI;
-      UCHAR  ucPCIEGen;
-      UCHAR  ucUnused1;
-
-      ULONG ulFlags; // ATOM_PPLIB_SI_FLAGS_*, no flag is necessary for now
-
-} ATOM_PPLIB_SI_CLOCK_INFO;
-
-
-typedef struct _ATOM_PPLIB_RS780_CLOCK_INFO
-
-{
-      USHORT usLowEngineClockLow;         // Low Engine clock in MHz (the same way as on the R600).
-      UCHAR  ucLowEngineClockHigh;
-      USHORT usHighEngineClockLow;        // High Engine clock in MHz.
-      UCHAR  ucHighEngineClockHigh;
-      USHORT usMemoryClockLow;            // For now one of the ATOM_PPLIB_RS780_SPMCLK_XXXX constants.
-      UCHAR  ucMemoryClockHigh;           // Currentyl unused.
-      UCHAR  ucPadding;                   // For proper alignment and size.
-      USHORT usVDDC;                      // For the 780, use: None, Low, High, Variable
-      UCHAR  ucMaxHTLinkWidth;            // From SBIOS - {2, 4, 8, 16}
-      UCHAR  ucMinHTLinkWidth;            // From SBIOS - {2, 4, 8, 16}. Effective only if CDLW enabled. Minimum down stream width could be bigger as display BW requriement.
-      USHORT usHTLinkFreq;                // See definition ATOM_PPLIB_RS780_HTLINKFREQ_xxx or in MHz(>=200).
-      ULONG  ulFlags; 
-} ATOM_PPLIB_RS780_CLOCK_INFO;
-
-#define ATOM_PPLIB_RS780_VOLTAGE_NONE       0 
-#define ATOM_PPLIB_RS780_VOLTAGE_LOW        1 
-#define ATOM_PPLIB_RS780_VOLTAGE_HIGH       2 
-#define ATOM_PPLIB_RS780_VOLTAGE_VARIABLE   3 
-
-#define ATOM_PPLIB_RS780_SPMCLK_NONE        0   // We cannot change the side port memory clock, leave it as it is.
-#define ATOM_PPLIB_RS780_SPMCLK_LOW         1
-#define ATOM_PPLIB_RS780_SPMCLK_HIGH        2
-
-#define ATOM_PPLIB_RS780_HTLINKFREQ_NONE       0 
-#define ATOM_PPLIB_RS780_HTLINKFREQ_LOW        1 
-#define ATOM_PPLIB_RS780_HTLINKFREQ_HIGH       2 
-
-typedef struct _ATOM_PPLIB_SUMO_CLOCK_INFO{
-      USHORT usEngineClockLow;  //clockfrequency & 0xFFFF. The unit is in 10khz
-      UCHAR  ucEngineClockHigh; //clockfrequency >> 16. 
-      UCHAR  vddcIndex;         //2-bit vddc index;
-      USHORT tdpLimit;
-      //please initalize to 0
-      USHORT rsv1;
-      //please initialize to 0s
-      ULONG rsv2[2];
-}ATOM_PPLIB_SUMO_CLOCK_INFO;
-
-
-
-typedef struct _ATOM_PPLIB_STATE_V2
-{
-      //number of valid dpm levels in this state; Driver uses it to calculate the whole 
-      //size of the state: sizeof(ATOM_PPLIB_STATE_V2) + (ucNumDPMLevels - 1) * sizeof(UCHAR)
-      UCHAR ucNumDPMLevels;
-      
-      //a index to the array of nonClockInfos
-      UCHAR nonClockInfoIndex;
-      /**
-      * Driver will read the first ucNumDPMLevels in this array
-      */
-      UCHAR clockInfoIndex[1];
-} ATOM_PPLIB_STATE_V2;
-
-typedef struct _StateArray{
-    //how many states we have 
-    UCHAR ucNumEntries;
-    
-    ATOM_PPLIB_STATE_V2 states[1];
-}StateArray;
-
-
-typedef struct _ClockInfoArray{
-    //how many clock levels we have
-    UCHAR ucNumEntries;
-    
-    //sizeof(ATOM_PPLIB_CLOCK_INFO)
-    UCHAR ucEntrySize;
-    
-    UCHAR clockInfo[1];
-}ClockInfoArray;
-
-typedef struct _NonClockInfoArray{
-
-    //how many non-clock levels we have. normally should be same as number of states
-    UCHAR ucNumEntries;
-    //sizeof(ATOM_PPLIB_NONCLOCK_INFO)
-    UCHAR ucEntrySize;
-    
-    ATOM_PPLIB_NONCLOCK_INFO nonClockInfo[1];
-}NonClockInfoArray;
-
-typedef struct _ATOM_PPLIB_Clock_Voltage_Dependency_Record
-{
-    USHORT usClockLow;
-    UCHAR  ucClockHigh;
-    USHORT usVoltage;
-}ATOM_PPLIB_Clock_Voltage_Dependency_Record;
-
-typedef struct _ATOM_PPLIB_Clock_Voltage_Dependency_Table
-{
-    UCHAR ucNumEntries;                                                // Number of entries.
-    ATOM_PPLIB_Clock_Voltage_Dependency_Record entries[1];             // Dynamically allocate entries.
-}ATOM_PPLIB_Clock_Voltage_Dependency_Table;
-
-typedef struct _ATOM_PPLIB_Clock_Voltage_Limit_Record
-{
-    USHORT usSclkLow;
-    UCHAR  ucSclkHigh;
-    USHORT usMclkLow;
-    UCHAR  ucMclkHigh;
-    USHORT usVddc;
-    USHORT usVddci;
-}ATOM_PPLIB_Clock_Voltage_Limit_Record;
-
-typedef struct _ATOM_PPLIB_Clock_Voltage_Limit_Table
-{
-    UCHAR ucNumEntries;                                                // Number of entries.
-    ATOM_PPLIB_Clock_Voltage_Limit_Record entries[1];                  // Dynamically allocate entries.
-}ATOM_PPLIB_Clock_Voltage_Limit_Table;
-
-typedef struct _ATOM_PPLIB_CAC_Leakage_Record
-{
-    USHORT usVddc;  // We use this field for the "fake" standardized VDDC for power calculations                                                  
-    ULONG  ulLeakageValue;
-}ATOM_PPLIB_CAC_Leakage_Record;
-
-typedef struct _ATOM_PPLIB_CAC_Leakage_Table
-{
-    UCHAR ucNumEntries;                                                 // Number of entries.
-    ATOM_PPLIB_CAC_Leakage_Record entries[1];                           // Dynamically allocate entries.
-}ATOM_PPLIB_CAC_Leakage_Table;
-
-typedef struct _ATOM_PPLIB_PhaseSheddingLimits_Record
-{
-    USHORT usVoltage;
-    USHORT usSclkLow;
-    UCHAR  ucSclkHigh;
-    USHORT usMclkLow;
-    UCHAR  ucMclkHigh;
-}ATOM_PPLIB_PhaseSheddingLimits_Record;
-
-typedef struct _ATOM_PPLIB_PhaseSheddingLimits_Table
-{
-    UCHAR ucNumEntries;                                                 // Number of entries.
-    ATOM_PPLIB_PhaseSheddingLimits_Record entries[1];                   // Dynamically allocate entries.
-}ATOM_PPLIB_PhaseSheddingLimits_Table;
-
-typedef struct _VCEClockInfo{
-    USHORT usEVClkLow;
-    UCHAR  ucEVClkHigh;
-    USHORT usECClkLow;
-    UCHAR  ucECClkHigh;
-}VCEClockInfo;
-
-typedef struct _VCEClockInfoArray{
-    UCHAR ucNumEntries;
-    VCEClockInfo entries[1];
-}VCEClockInfoArray;
-
-typedef struct _ATOM_PPLIB_VCE_Clock_Voltage_Limit_Record
-{
-    USHORT usVoltage;
-    UCHAR  ucVCEClockInfoIndex;
-}ATOM_PPLIB_VCE_Clock_Voltage_Limit_Record;
-
-typedef struct _ATOM_PPLIB_VCE_Clock_Voltage_Limit_Table
-{
-    UCHAR numEntries;
-    ATOM_PPLIB_VCE_Clock_Voltage_Limit_Record entries[1];
-}ATOM_PPLIB_VCE_Clock_Voltage_Limit_Table;
-
-typedef struct _ATOM_PPLIB_VCE_State_Record
-{
-    UCHAR  ucVCEClockInfoIndex;
-    UCHAR  ucClockInfoIndex; //highest 2 bits indicates memory p-states, lower 6bits indicates index to ClockInfoArrary
-}ATOM_PPLIB_VCE_State_Record;
-
-typedef struct _ATOM_PPLIB_VCE_State_Table
-{
-    UCHAR numEntries;
-    ATOM_PPLIB_VCE_State_Record entries[1];
-}ATOM_PPLIB_VCE_State_Table;
-
-
-typedef struct _ATOM_PPLIB_VCE_Table
-{
-      UCHAR revid;
-//    VCEClockInfoArray array;
-//    ATOM_PPLIB_VCE_Clock_Voltage_Limit_Table limits;
-//    ATOM_PPLIB_VCE_State_Table states;
-}ATOM_PPLIB_VCE_Table;
-
-
-typedef struct _UVDClockInfo{
-    USHORT usVClkLow;
-    UCHAR  ucVClkHigh;
-    USHORT usDClkLow;
-    UCHAR  ucDClkHigh;
-}UVDClockInfo;
-
-typedef struct _UVDClockInfoArray{
-    UCHAR ucNumEntries;
-    UVDClockInfo entries[1];
-}UVDClockInfoArray;
-
-typedef struct _ATOM_PPLIB_UVD_Clock_Voltage_Limit_Record
-{
-    USHORT usVoltage;
-    UCHAR  ucUVDClockInfoIndex;
-}ATOM_PPLIB_UVD_Clock_Voltage_Limit_Record;
-
-typedef struct _ATOM_PPLIB_UVD_Clock_Voltage_Limit_Table
-{
-    UCHAR numEntries;
-    ATOM_PPLIB_UVD_Clock_Voltage_Limit_Record entries[1];
-}ATOM_PPLIB_UVD_Clock_Voltage_Limit_Table;
-
-typedef struct _ATOM_PPLIB_UVD_State_Record
-{
-    UCHAR  ucUVDClockInfoIndex;
-    UCHAR  ucClockInfoIndex; //highest 2 bits indicates memory p-states, lower 6bits indicates index to ClockInfoArrary
-}ATOM_PPLIB_UVD_State_Record;
-
-typedef struct _ATOM_PPLIB_UVD_State_Table
-{
-    UCHAR numEntries;
-    ATOM_PPLIB_UVD_State_Record entries[1];
-}ATOM_PPLIB_UVD_State_Table;
-
-
-typedef struct _ATOM_PPLIB_UVD_Table
-{
-      UCHAR revid;
-//    UVDClockInfoArray array;
-//    ATOM_PPLIB_UVD_Clock_Voltage_Limit_Table limits;
-//    ATOM_PPLIB_UVD_State_Table states;
-}ATOM_PPLIB_UVD_Table;
-
-/**************************************************************************/
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 // Following definitions are for compatibility issue in different SW components. 
 #define ATOM_MASTER_DATA_TABLE_REVISION   0x01
@@ -8819,11 +7909,7 @@ typedef struct _ATOM_PPLIB_UVD_Table
 
 /*********************************************************************************/
 
-<<<<<<< HEAD
-#pragma pack() // BIOS data must use byte aligment
-=======
 #pragma pack() // BIOS data must use byte alignment
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 //
 // AMD ACPI Table
@@ -8858,13 +7944,8 @@ typedef struct {
 typedef struct {
   AMD_ACPI_DESCRIPTION_HEADER SHeader;
   UCHAR TableUUID[16];    //0x24
-<<<<<<< HEAD
-  ULONG VBIOSImageOffset; //0x34. Offset to the first GOP_VBIOS_CONTENT block from the beginning of the stucture.
-  ULONG Lib1ImageOffset;  //0x38. Offset to the first GOP_LIB1_CONTENT block from the beginning of the stucture.
-=======
   ULONG VBIOSImageOffset; //0x34. Offset to the first GOP_VBIOS_CONTENT block from the beginning of the structure.
   ULONG Lib1ImageOffset;  //0x38. Offset to the first GOP_LIB1_CONTENT block from the beginning of the structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ULONG Reserved[4];      //0x3C
 }UEFI_ACPI_VFCT;
 
@@ -8883,11 +7964,7 @@ typedef struct {
 
 typedef struct {
   VFCT_IMAGE_HEADER	VbiosHeader;
-<<<<<<< HEAD
-  UCHAR	VbiosContent[1];
-=======
   UCHAR	VbiosContent[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }GOP_VBIOS_CONTENT;
 
 typedef struct {
@@ -8899,9 +7976,6 @@ typedef struct {
 
 
 #endif /* _ATOMBIOS_H */
-<<<<<<< HEAD
-=======
 
 #include "pptable.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -27,11 +27,7 @@ static inline void CMOS_WRITE(unsigned char data, unsigned long addr)
 	outb_p(data, RTC_PORT(1));
 }
 
-<<<<<<< HEAD
-#define RTC_ALWAYS_BCD	1
-=======
 #define RTC_ALWAYS_BCD	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef mc146818_decode_year
 #define mc146818_decode_year(year) ((year) < 70 ? (year) + 2000 : (year) + 1900)

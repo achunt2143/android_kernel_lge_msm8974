@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2007 - 2008 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright(c) 2007 - 2008 Intel Corporation. All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -43,11 +24,8 @@
 #include <linux/slab.h>
 #include <linux/err.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/list.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 
 #include <scsi/fc/fc_gs.h>
@@ -69,23 +47,6 @@ static void fc_disc_restart(struct fc_disc *);
 /**
  * fc_disc_stop_rports() - Delete all the remote ports associated with the lport
  * @disc: The discovery job to stop remote ports on
-<<<<<<< HEAD
- *
- * Locking Note: This function expects that the lport mutex is locked before
- * calling it.
- */
-static void fc_disc_stop_rports(struct fc_disc *disc)
-{
-	struct fc_lport *lport;
-	struct fc_rport_priv *rdata;
-
-	lport = fc_disc_lport(disc);
-
-	mutex_lock(&disc->disc_mutex);
-	list_for_each_entry_rcu(rdata, &disc->rports, peers)
-		lport->tt.rport_logoff(rdata);
-	mutex_unlock(&disc->disc_mutex);
-=======
  */
 static void fc_disc_stop_rports(struct fc_disc *disc)
 {
@@ -99,19 +60,12 @@ static void fc_disc_stop_rports(struct fc_disc *disc)
 			kref_put(&rdata->kref, fc_rport_destroy);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_disc_recv_rscn_req() - Handle Registered State Change Notification (RSCN)
  * @disc:  The discovery object to which the RSCN applies
  * @fp:	   The RSCN frame
-<<<<<<< HEAD
- *
- * Locking Note: This function expects that the disc_mutex is locked
- *		 before it is called.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_disc_recv_rscn_req(struct fc_disc *disc, struct fc_frame *fp)
 {
@@ -121,19 +75,12 @@ static void fc_disc_recv_rscn_req(struct fc_disc *disc, struct fc_frame *fp)
 	struct fc_seq_els_data rjt_data;
 	unsigned int len;
 	int redisc = 0;
-<<<<<<< HEAD
-	enum fc_els_rscn_ev_qual ev_qual;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum fc_els_rscn_addr_fmt fmt;
 	LIST_HEAD(disc_ports);
 	struct fc_disc_port *dp, *next;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&disc->disc_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lport = fc_disc_lport(disc);
 
 	FC_DISC_DBG(disc, "Received an RSCN event\n");
@@ -159,11 +106,6 @@ static void fc_disc_recv_rscn_req(struct fc_disc *disc, struct fc_frame *fp)
 		goto reject;
 
 	for (pp = (void *)(rp + 1); len > 0; len -= sizeof(*pp), pp++) {
-<<<<<<< HEAD
-		ev_qual = pp->rscn_page_flags >> ELS_RSCN_EV_QUAL_BIT;
-		ev_qual &= ELS_RSCN_EV_QUAL_MASK;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fmt = pp->rscn_page_flags >> ELS_RSCN_ADDR_FMT_BIT;
 		fmt &= ELS_RSCN_ADDR_FMT_MASK;
 		/*
@@ -192,11 +134,7 @@ static void fc_disc_recv_rscn_req(struct fc_disc *disc, struct fc_frame *fp)
 			break;
 		}
 	}
-<<<<<<< HEAD
-	lport->tt.seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
-=======
 	fc_seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If not doing a complete rediscovery, do GPN_ID on
@@ -224,11 +162,7 @@ reject:
 	FC_DISC_DBG(disc, "Received a bad RSCN frame\n");
 	rjt_data.reason = ELS_RJT_LOGIC;
 	rjt_data.explan = ELS_EXPL_NONE;
-<<<<<<< HEAD
-	lport->tt.seq_els_rsp_send(fp, ELS_LS_RJT, &rjt_data);
-=======
 	fc_seq_els_rsp_send(fp, ELS_LS_RJT, &rjt_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_frame_free(fp);
 }
 
@@ -264,20 +198,11 @@ static void fc_disc_recv_req(struct fc_lport *lport, struct fc_frame *fp)
 /**
  * fc_disc_restart() - Restart discovery
  * @disc: The discovery object to be restarted
-<<<<<<< HEAD
- *
- * Locking Note: This function expects that the disc mutex
- *		 is already locked.
- */
-static void fc_disc_restart(struct fc_disc *disc)
-{
-=======
  */
 static void fc_disc_restart(struct fc_disc *disc)
 {
 	lockdep_assert_held(&disc->disc_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!disc->disc_callback)
 		return;
 
@@ -323,23 +248,13 @@ static void fc_disc_start(void (*disc_callback)(struct fc_lport *,
  * fc_disc_done() - Discovery has been completed
  * @disc:  The discovery context
  * @event: The discovery completion status
-<<<<<<< HEAD
- *
- * Locking Note: This function expects that the disc mutex is locked before
- * it is called. The discovery callback is then made with the lock released,
- * and the lock is re-taken before returning from this function
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_disc_done(struct fc_disc *disc, enum fc_disc_event event)
 {
 	struct fc_lport *lport = fc_disc_lport(disc);
 	struct fc_rport_priv *rdata;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&disc->disc_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_DISC_DBG(disc, "Discovery complete\n");
 
 	disc->pending = 0;
@@ -353,18 +268,6 @@ static void fc_disc_done(struct fc_disc *disc, enum fc_disc_event event)
 	 * discovery, reverify or log them in.	Otherwise, log them out.
 	 * Skip ports which were never discovered.  These are the dNS port
 	 * and ports which were created by PLOGI.
-<<<<<<< HEAD
-	 */
-	list_for_each_entry_rcu(rdata, &disc->rports, peers) {
-		if (!rdata->disc_id)
-			continue;
-		if (rdata->disc_id == disc->disc_id)
-			lport->tt.rport_login(rdata);
-		else
-			lport->tt.rport_logoff(rdata);
-	}
-
-=======
 	 *
 	 * We don't need to use the _rcu variant here as the rport list
 	 * is protected by the disc mutex which is already held on entry.
@@ -380,7 +283,6 @@ static void fc_disc_done(struct fc_disc *disc, enum fc_disc_event event)
 		}
 		kref_put(&rdata->kref, fc_rport_destroy);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&disc->disc_mutex);
 	disc->disc_callback(lport, event);
 	mutex_lock(&disc->disc_mutex);
@@ -396,13 +298,8 @@ static void fc_disc_error(struct fc_disc *disc, struct fc_frame *fp)
 	struct fc_lport *lport = fc_disc_lport(disc);
 	unsigned long delay = 0;
 
-<<<<<<< HEAD
-	FC_DISC_DBG(disc, "Error %ld, retries %d/%d\n",
-		    PTR_ERR(fp), disc->retry_count,
-=======
 	FC_DISC_DBG(disc, "Error %d, retries %d/%d\n",
 		    PTR_ERR_OR_ZERO(fp), disc->retry_count,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    FC_DISC_RETRY_LIMIT);
 
 	if (!fp || PTR_ERR(fp) == -FC_EX_TIMEOUT) {
@@ -437,25 +334,15 @@ static void fc_disc_error(struct fc_disc *disc, struct fc_frame *fp)
 
 /**
  * fc_disc_gpn_ft_req() - Send Get Port Names by FC-4 type (GPN_FT) request
-<<<<<<< HEAD
- * @lport: The discovery context
- *
- * Locking Note: This function expects that the disc_mutex is locked
- *		 before it is called.
-=======
  * @disc: The discovery context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_disc_gpn_ft_req(struct fc_disc *disc)
 {
 	struct fc_frame *fp;
 	struct fc_lport *lport = fc_disc_lport(disc);
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&disc->disc_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(!fc_lport_test_ready(lport));
 
 	disc->pending = 1;
@@ -480,11 +367,7 @@ err:
 
 /**
  * fc_disc_gpn_ft_parse() - Parse the body of the dNS GPN_FT response.
-<<<<<<< HEAD
- * @lport: The local port the GPN_FT was received on
-=======
  * @disc:  The discovery context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:   The GPN_FT response buffer
  * @len:   The size of response buffer
  *
@@ -547,11 +430,7 @@ static int fc_disc_gpn_ft_parse(struct fc_disc *disc, void *buf, size_t len)
 
 		if (ids.port_id != lport->port_id &&
 		    ids.port_name != lport->wwpn) {
-<<<<<<< HEAD
-			rdata = lport->tt.rport_create(lport, ids.port_id);
-=======
 			rdata = fc_rport_create(lport, ids.port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rdata) {
 				rdata->ids.port_name = ids.port_name;
 				rdata->disc_id = disc->disc_id;
@@ -606,11 +485,7 @@ static void fc_disc_timeout(struct work_struct *work)
  * fc_disc_gpn_ft_resp() - Handle a response frame from Get Port Names (GPN_FT)
  * @sp:	    The sequence that the GPN_FT response was received on
  * @fp:	    The GPN_FT response frame
-<<<<<<< HEAD
- * @lp_arg: The discovery context
-=======
  * @disc_arg: The discovery context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Locking Note: This function is called without disc mutex held, and
  *		 should do all its processing with the mutex held
@@ -672,11 +547,7 @@ static void fc_disc_gpn_ft_resp(struct fc_seq *sp, struct fc_frame *fp,
 		event = DISC_EV_FAILED;
 	}
 	if (error)
-<<<<<<< HEAD
-		fc_disc_error(disc, fp);
-=======
 		fc_disc_error(disc, ERR_PTR(error));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (event != DISC_EV_NONE)
 		fc_disc_done(disc, event);
 	fc_frame_free(fp);
@@ -705,13 +576,6 @@ static void fc_disc_gpn_id_resp(struct fc_seq *sp, struct fc_frame *fp,
 	lport = rdata->local_port;
 	disc = &lport->disc;
 
-<<<<<<< HEAD
-	mutex_lock(&disc->disc_mutex);
-	if (PTR_ERR(fp) == -FC_EX_CLOSED)
-		goto out;
-	if (IS_ERR(fp))
-		goto redisc;
-=======
 	if (PTR_ERR(fp) == -FC_EX_CLOSED)
 		goto out;
 	if (IS_ERR(fp)) {
@@ -720,7 +584,6 @@ static void fc_disc_gpn_id_resp(struct fc_seq *sp, struct fc_frame *fp,
 		mutex_unlock(&disc->disc_mutex);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cp = fc_frame_payload_get(fp, sizeof(*cp));
 	if (!cp)
@@ -731,34 +594,13 @@ static void fc_disc_gpn_id_resp(struct fc_seq *sp, struct fc_frame *fp,
 			goto redisc;
 		pn = (struct fc_ns_gid_pn *)(cp + 1);
 		port_name = get_unaligned_be64(&pn->fn_wwpn);
-<<<<<<< HEAD
-=======
 		mutex_lock(&rdata->rp_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rdata->ids.port_name == -1)
 			rdata->ids.port_name = port_name;
 		else if (rdata->ids.port_name != port_name) {
 			FC_DISC_DBG(disc, "GPN_ID accepted.  WWPN changed. "
 				    "Port-id %6.6x wwpn %16.16llx\n",
 				    rdata->ids.port_id, port_name);
-<<<<<<< HEAD
-			lport->tt.rport_logoff(rdata);
-
-			new_rdata = lport->tt.rport_create(lport,
-							   rdata->ids.port_id);
-			if (new_rdata) {
-				new_rdata->disc_id = disc->disc_id;
-				lport->tt.rport_login(new_rdata);
-			}
-			goto out;
-		}
-		rdata->disc_id = disc->disc_id;
-		lport->tt.rport_login(rdata);
-	} else if (ntohs(cp->ct_cmd) == FC_FS_RJT) {
-		FC_DISC_DBG(disc, "GPN_ID rejected reason %x exp %x\n",
-			    cp->ct_reason, cp->ct_explan);
-		lport->tt.rport_logoff(rdata);
-=======
 			mutex_unlock(&rdata->rp_mutex);
 			fc_rport_logoff(rdata);
 			mutex_lock(&lport->disc.disc_mutex);
@@ -777,18 +619,10 @@ static void fc_disc_gpn_id_resp(struct fc_seq *sp, struct fc_frame *fp,
 		FC_DISC_DBG(disc, "GPN_ID rejected reason %x exp %x\n",
 			    cp->ct_reason, cp->ct_explan);
 		fc_rport_logoff(rdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		FC_DISC_DBG(disc, "GPN_ID unexpected response code %x\n",
 			    ntohs(cp->ct_cmd));
 redisc:
-<<<<<<< HEAD
-		fc_disc_restart(disc);
-	}
-out:
-	mutex_unlock(&disc->disc_mutex);
-	kref_put(&rdata->kref, lport->tt.rport_destroy);
-=======
 		mutex_lock(&disc->disc_mutex);
 		fc_disc_restart(disc);
 		mutex_unlock(&disc->disc_mutex);
@@ -797,7 +631,6 @@ free_fp:
 	fc_frame_free(fp);
 out:
 	kref_put(&rdata->kref, fc_rport_destroy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -805,11 +638,6 @@ out:
  * @lport: The local port to initiate discovery on
  * @rdata: remote port private data
  *
-<<<<<<< HEAD
- * Locking Note: This function expects that the disc_mutex is locked
- *		 before it is called.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * On failure, an error code is returned.
  */
 static int fc_disc_gpn_id_req(struct fc_lport *lport,
@@ -817,10 +645,7 @@ static int fc_disc_gpn_id_req(struct fc_lport *lport,
 {
 	struct fc_frame *fp;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->disc.disc_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fp = fc_frame_alloc(lport, sizeof(struct fc_ct_hdr) +
 			    sizeof(struct fc_ns_fid));
 	if (!fp)
@@ -837,24 +662,14 @@ static int fc_disc_gpn_id_req(struct fc_lport *lport,
  * fc_disc_single() - Discover the directory information for a single target
  * @lport: The local port the remote port is associated with
  * @dp:	   The port to rediscover
-<<<<<<< HEAD
- *
- * Locking Note: This function expects that the disc_mutex is locked
- *		 before it is called.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int fc_disc_single(struct fc_lport *lport, struct fc_disc_port *dp)
 {
 	struct fc_rport_priv *rdata;
 
-<<<<<<< HEAD
-	rdata = lport->tt.rport_create(lport, dp->port_id);
-=======
 	lockdep_assert_held(&lport->disc.disc_mutex);
 
 	rdata = fc_rport_create(lport, dp->port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdata)
 		return -ENOMEM;
 	rdata->disc_id = 0;
@@ -871,13 +686,9 @@ static void fc_disc_stop(struct fc_lport *lport)
 
 	if (disc->pending)
 		cancel_delayed_work_sync(&disc->disc_work);
-<<<<<<< HEAD
-	fc_disc_stop_rports(disc);
-=======
 	mutex_lock(&disc->disc_mutex);
 	fc_disc_stop_rports(disc);
 	mutex_unlock(&disc->disc_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -890,16 +701,6 @@ static void fc_disc_stop(struct fc_lport *lport)
 static void fc_disc_stop_final(struct fc_lport *lport)
 {
 	fc_disc_stop(lport);
-<<<<<<< HEAD
-	lport->tt.rport_flush_queue();
-}
-
-/**
- * fc_disc_init() - Initialize the discovery layer for a local port
- * @lport: The local port that needs the discovery layer to be initialized
- */
-int fc_disc_init(struct fc_lport *lport)
-=======
 	fc_rport_flush_queue();
 }
 
@@ -909,7 +710,6 @@ int fc_disc_init(struct fc_lport *lport)
  * @priv: Private data structre for users of the discovery layer
  */
 void fc_disc_config(struct fc_lport *lport, void *priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_disc *disc;
 
@@ -926,15 +726,6 @@ void fc_disc_config(struct fc_lport *lport, void *priv)
 		lport->tt.disc_recv_req = fc_disc_recv_req;
 
 	disc = &lport->disc;
-<<<<<<< HEAD
-	INIT_DELAYED_WORK(&disc->disc_work, fc_disc_timeout);
-	mutex_init(&disc->disc_mutex);
-	INIT_LIST_HEAD(&disc->rports);
-
-	disc->priv = lport;
-
-	return 0;
-=======
 
 	disc->priv = priv;
 }
@@ -951,6 +742,5 @@ void fc_disc_init(struct fc_lport *lport)
 	INIT_DELAYED_WORK(&disc->disc_work, fc_disc_timeout);
 	mutex_init(&disc->disc_mutex);
 	INIT_LIST_HEAD(&disc->rports);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(fc_disc_init);

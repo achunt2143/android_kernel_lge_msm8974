@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Internet Control Message Protocol (ICMPv6)
  *	Linux INET6 implementation
@@ -12,14 +9,6 @@
  *	Based on net/ipv4/icmp.c
  *
  *	RFC 1885
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -36,11 +25,8 @@
  *	Kazunori MIYAZAWA @USAGI:       change output process to use ip6_append_data
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "IPv6: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -71,34 +57,13 @@
 #include <net/protocol.h>
 #include <net/raw.h>
 #include <net/rawv6.h>
-<<<<<<< HEAD
-=======
 #include <net/seg6.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/transp_v6.h>
 #include <net/ip6_route.h>
 #include <net/addrconf.h>
 #include <net/icmp.h>
 #include <net/xfrm.h>
 #include <net/inet_common.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-
-/*
- *	The ICMP socket(s). This is the most convenient way to flow control
- *	our ICMP output as well as maintain a clean interface throughout
- *	all layers. All Socketless IP sends will soon be gone.
- *
- *	On SMP we have one ICMP socket per-cpu.
- */
-static inline struct sock *icmpv6_sk(struct net *net)
-{
-	return net->ipv6.icmp_sk[smp_processor_id()];
-}
-
-static void icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
-=======
 #include <net/dsfield.h>
 #include <net/l3mdev.h>
 
@@ -107,17 +72,10 @@ static void icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 static DEFINE_PER_CPU(struct sock *, ipv6_icmp_sk);
 
 static int icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       u8 type, u8 code, int offset, __be32 info)
 {
 	/* icmpv6_notify checks 8 bytes can be pulled, icmp6hdr is 8 bytes */
 	struct icmp6hdr *icmp6 = (struct icmp6hdr *) (skb->data + offset);
-<<<<<<< HEAD
-
-	if (!(type & ICMPV6_INFOMSG_MASK))
-		if (icmp6->icmp6_type == ICMPV6_ECHO_REQUEST)
-			ping_err(skb, offset, info);
-=======
 	struct net *net = dev_net(skb->dev);
 
 	if (type == ICMPV6_PKT_TOOBIG)
@@ -131,7 +89,6 @@ static int icmpv6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 			ping_err(skb, offset, ntohl(info));
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int icmpv6_rcv(struct sk_buff *skb);
@@ -142,47 +99,17 @@ static const struct inet6_protocol icmpv6_protocol = {
 	.flags		=	INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
 };
 
-<<<<<<< HEAD
-static __inline__ struct sock *icmpv6_xmit_lock(struct net *net)
-{
-	struct sock *sk;
-
-	local_bh_disable();
-
-	sk = icmpv6_sk(net);
-=======
 /* Called with BH disabled */
 static struct sock *icmpv6_xmit_lock(struct net *net)
 {
 	struct sock *sk;
 
 	sk = this_cpu_read(ipv6_icmp_sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!spin_trylock(&sk->sk_lock.slock))) {
 		/* This can happen if the output path (f.e. SIT or
 		 * ip6ip6 tunnel) signals dst_link_failure() for an
 		 * outgoing ICMP6 packet.
 		 */
-<<<<<<< HEAD
-		local_bh_enable();
-		return NULL;
-	}
-	return sk;
-}
-
-static __inline__ void icmpv6_xmit_unlock(struct sock *sk)
-{
-	spin_unlock_bh(&sk->sk_lock.slock);
-}
-
-/*
- * Slightly more convenient version of icmpv6_send.
- */
-void icmpv6_param_prob(struct sk_buff *skb, u8 code, int pos)
-{
-	icmpv6_send(skb, ICMPV6_PARAMPROB, code, pos);
-	kfree_skb(skb);
-=======
 		return NULL;
 	}
 	sock_net_set(sk, net);
@@ -193,7 +120,6 @@ static void icmpv6_xmit_unlock(struct sock *sk)
 {
 	sock_net_set(sk, &init_net);
 	spin_unlock(&sk->sk_lock.slock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -207,11 +133,7 @@ static void icmpv6_xmit_unlock(struct sock *sk)
  *	--ANK (980726)
  */
 
-<<<<<<< HEAD
-static int is_ineligible(struct sk_buff *skb)
-=======
 static bool is_ineligible(const struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ptr = (u8 *)(ipv6_hdr(skb) + 1) - skb->data;
 	int len = skb->len - ptr;
@@ -219,31 +141,16 @@ static bool is_ineligible(const struct sk_buff *skb)
 	__be16 frag_off;
 
 	if (len < 0)
-<<<<<<< HEAD
-		return 1;
-
-	ptr = ipv6_skip_exthdr(skb, ptr, &nexthdr, &frag_off);
-	if (ptr < 0)
-		return 0;
-=======
 		return true;
 
 	ptr = ipv6_skip_exthdr(skb, ptr, &nexthdr, &frag_off);
 	if (ptr < 0)
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nexthdr == IPPROTO_ICMPV6) {
 		u8 _type, *tp;
 		tp = skb_header_pointer(skb,
 			ptr+offsetof(struct icmp6hdr, icmp6_type),
 			sizeof(_type), &_type);
-<<<<<<< HEAD
-		if (tp == NULL ||
-		    !(*tp & ICMPV6_INFOMSG_MASK))
-			return 1;
-	}
-	return 0;
-=======
 
 		/* Based on RFC 8200, Section 4.5 Fragment Header, return
 		 * false if this is a fragment packet with no icmp header info.
@@ -278,27 +185,11 @@ static bool icmpv6_global_allow(struct net *net, int type)
 
 	__ICMP_INC_STATS(net, ICMP_MIB_RATELIMITGLOBAL);
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Check the ICMP output rate limit
  */
-<<<<<<< HEAD
-static inline bool icmpv6_xrlim_allow(struct sock *sk, u8 type,
-				      struct flowi6 *fl6)
-{
-	struct dst_entry *dst;
-	struct net *net = sock_net(sk);
-	bool res = false;
-
-	/* Informational messages are not limited. */
-	if (type & ICMPV6_INFOMSG_MASK)
-		return true;
-
-	/* Do not limit pmtu discovery, it would break it. */
-	if (type == ICMPV6_PKT_TOOBIG)
-=======
 static bool icmpv6_xrlim_allow(struct sock *sk, u8 type,
 			       struct flowi6 *fl6)
 {
@@ -307,7 +198,6 @@ static bool icmpv6_xrlim_allow(struct sock *sk, u8 type,
 	bool res = false;
 
 	if (icmpv6_mask_allow(net, type))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return true;
 
 	/*
@@ -324,20 +214,12 @@ static bool icmpv6_xrlim_allow(struct sock *sk, u8 type,
 	} else {
 		struct rt6_info *rt = (struct rt6_info *)dst;
 		int tmo = net->ipv6.sysctl.icmpv6_time;
-<<<<<<< HEAD
-=======
 		struct inet_peer *peer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Give more bandwidth to wider prefixes. */
 		if (rt->rt6i_dst.plen < 128)
 			tmo >>= ((128 - rt->rt6i_dst.plen)>>5);
 
-<<<<<<< HEAD
-		if (!rt->rt6i_peer)
-			rt6_bind_peer(rt, 1);
-		res = inet_peer_xrlim_allow(rt->rt6i_peer, tmo);
-=======
 		peer = inet_getpeer_v6(net->ipv6.peers, &fl6->daddr, 1);
 		res = inet_peer_xrlim_allow(peer, tmo);
 		if (peer)
@@ -364,7 +246,6 @@ static bool icmpv6_rt_has_prefsrc(struct sock *sk, u8 type,
 
 		rt6_get_prefsrc(rt, &prefsrc);
 		res = !ipv6_addr_any(&prefsrc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dst_release(dst);
 	return res;
@@ -377,32 +258,12 @@ static bool icmpv6_rt_has_prefsrc(struct sock *sk, u8 type,
  *	highest-order two bits set to 10
  */
 
-<<<<<<< HEAD
-static __inline__ int opt_unrec(struct sk_buff *skb, __u32 offset)
-=======
 static bool opt_unrec(struct sk_buff *skb, __u32 offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 _optval, *op;
 
 	offset += skb_network_offset(skb);
 	op = skb_header_pointer(skb, offset, sizeof(_optval), &_optval);
-<<<<<<< HEAD
-	if (op == NULL)
-		return 1;
-	return (*op & 0xC0) == 0x80;
-}
-
-int icmpv6_push_pending_frames(struct sock *sk, struct flowi6 *fl6,
-			       struct icmp6hdr *thdr, int len)
-{
-	struct sk_buff *skb;
-	struct icmp6hdr *icmp6h;
-	int err = 0;
-
-	if ((skb = skb_peek(&sk->sk_write_queue)) == NULL)
-		goto out;
-=======
 	if (!op)
 		return true;
 	return (*op & 0xC0) == 0x80;
@@ -417,7 +278,6 @@ void icmpv6_push_pending_frames(struct sock *sk, struct flowi6 *fl6,
 	skb = skb_peek(&sk->sk_write_queue);
 	if (!skb)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	icmp6h = icmp6_hdr(skb);
 	memcpy(icmp6h, thdr, sizeof(struct icmp6hdr));
@@ -445,11 +305,6 @@ void icmpv6_push_pending_frames(struct sock *sk, struct flowi6 *fl6,
 						      tmp_csum);
 	}
 	ip6_push_pending_frames(sk);
-<<<<<<< HEAD
-out:
-	return err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct icmpv6_msg {
@@ -462,38 +317,21 @@ static int icmpv6_getfrag(void *from, char *to, int offset, int len, int odd, st
 {
 	struct icmpv6_msg *msg = (struct icmpv6_msg *) from;
 	struct sk_buff *org_skb = msg->skb;
-<<<<<<< HEAD
-	__wsum csum = 0;
-
-	csum = skb_copy_and_csum_bits(org_skb, msg->offset + offset,
-				      to, len, csum);
-=======
 	__wsum csum;
 
 	csum = skb_copy_and_csum_bits(org_skb, msg->offset + offset,
 				      to, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->csum = csum_block_add(skb->csum, csum, odd);
 	if (!(msg->type & ICMPV6_INFOMSG_MASK))
 		nf_ct_attach(skb, org_skb);
 	return 0;
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_IPV6_MIP6) || defined(CONFIG_IPV6_MIP6_MODULE)
-static void mip6_addr_swap(struct sk_buff *skb)
-{
-	struct ipv6hdr *iph = ipv6_hdr(skb);
-	struct inet6_skb_parm *opt = IP6CB(skb);
-	struct ipv6_destopt_hao *hao;
-	struct in6_addr tmp;
-=======
 #if IS_ENABLED(CONFIG_IPV6_MIP6)
 static void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt)
 {
 	struct ipv6hdr *iph = ipv6_hdr(skb);
 	struct ipv6_destopt_hao *hao;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int off;
 
 	if (opt->dsthao) {
@@ -501,24 +339,11 @@ static void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt
 		if (likely(off >= 0)) {
 			hao = (struct ipv6_destopt_hao *)
 					(skb_network_header(skb) + off);
-<<<<<<< HEAD
-			tmp = iph->saddr;
-			iph->saddr = hao->addr;
-			hao->addr = tmp;
-=======
 			swap(iph->saddr, hao->addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 #else
-<<<<<<< HEAD
-static inline void mip6_addr_swap(struct sk_buff *skb) {}
-#endif
-
-struct dst_entry *icmpv6_route_lookup(struct net *net, struct sk_buff *skb,
-				      struct sock *sk, struct flowi6 *fl6)
-=======
 static inline void mip6_addr_swap(struct sk_buff *skb, const struct inet6_skb_parm *opt) {}
 #endif
 
@@ -526,34 +351,22 @@ static struct dst_entry *icmpv6_route_lookup(struct net *net,
 					     struct sk_buff *skb,
 					     struct sock *sk,
 					     struct flowi6 *fl6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dst_entry *dst, *dst2;
 	struct flowi6 fl2;
 	int err;
 
-<<<<<<< HEAD
-	err = ip6_dst_lookup(sk, &dst, fl6);
-=======
 	err = ip6_dst_lookup(net, sk, &dst, fl6);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return ERR_PTR(err);
 
 	/*
 	 * We won't send icmp if the destination is known
-<<<<<<< HEAD
-	 * anycast.
-	 */
-	if (((struct rt6_info *)dst)->rt6i_flags & RTF_ANYCAST) {
-		LIMIT_NETDEBUG(KERN_DEBUG "icmpv6_send: acast source\n");
-=======
 	 * anycast unless we need to treat anycast as unicast.
 	 */
 	if (!READ_ONCE(net->ipv6.sysctl.icmpv6_error_anycast_as_unicast) &&
 	    ipv6_anycast_destination(dst, &fl6->daddr)) {
 		net_dbg_ratelimited("icmp6_send: acast source\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dst_release(dst);
 		return ERR_PTR(-EINVAL);
 	}
@@ -572,19 +385,11 @@ static struct dst_entry *icmpv6_route_lookup(struct net *net,
 			return dst;
 	}
 
-<<<<<<< HEAD
-	err = xfrm_decode_session_reverse(skb, flowi6_to_flowi(&fl2), AF_INET6);
-	if (err)
-		goto relookup_failed;
-
-	err = ip6_dst_lookup(sk, &dst2, &fl2);
-=======
 	err = xfrm_decode_session_reverse(net, skb, flowi6_to_flowi(&fl2), AF_INET6);
 	if (err)
 		goto relookup_failed;
 
 	err = ip6_dst_lookup(net, sk, &dst2, &fl2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto relookup_failed;
 
@@ -607,17 +412,6 @@ relookup_failed:
 	return ERR_PTR(err);
 }
 
-<<<<<<< HEAD
-/*
- *	Send an ICMP message in response to a packet in error
- */
-void icmpv6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info)
-{
-	struct net *net = dev_net(skb->dev);
-	struct inet6_dev *idev = NULL;
-	struct ipv6hdr *hdr = ipv6_hdr(skb);
-	struct sock *sk;
-=======
 static struct net_device *icmp6_dev(const struct sk_buff *skb)
 {
 	struct net_device *dev = skb->dev;
@@ -656,30 +450,12 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	struct ipv6hdr *hdr = ipv6_hdr(skb);
 	struct sock *sk;
 	struct net *net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipv6_pinfo *np;
 	const struct in6_addr *saddr = NULL;
 	struct dst_entry *dst;
 	struct icmp6hdr tmp_hdr;
 	struct flowi6 fl6;
 	struct icmpv6_msg msg;
-<<<<<<< HEAD
-	int iif = 0;
-	int addr_type = 0;
-	int len;
-	int hlimit;
-	int err = 0;
-	u32 mark = IP6_REPLY_MARK(net, skb->mark);
-
-	if ((u8 *)hdr < skb->head ||
-	    (skb->network_header + sizeof(*hdr)) > skb->tail)
-		return;
-
-	/*
-	 *	Make sure we respect the rules
-	 *	i.e. RFC 1885 2.4(e)
-	 *	Rule (e.1) is enforced by not using icmpv6_send
-=======
 	struct ipcm6_cookie ipc6;
 	int iif = 0;
 	int addr_type = 0;
@@ -698,28 +474,19 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	 *	Make sure we respect the rules
 	 *	i.e. RFC 1885 2.4(e)
 	 *	Rule (e.1) is enforced by not using icmp6_send
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *	in any code that processes icmp errors.
 	 */
 	addr_type = ipv6_addr_type(&hdr->daddr);
 
-<<<<<<< HEAD
-	if (ipv6_chk_addr(net, &hdr->daddr, skb->dev, 0))
-=======
 	if (ipv6_chk_addr(net, &hdr->daddr, skb->dev, 0) ||
 	    ipv6_chk_acast_addr_src(net, skb->dev, &hdr->daddr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		saddr = &hdr->daddr;
 
 	/*
 	 *	Dest addr check
 	 */
 
-<<<<<<< HEAD
-	if ((addr_type & IPV6_ADDR_MULTICAST || skb->pkt_type != PACKET_HOST)) {
-=======
 	if (addr_type & IPV6_ADDR_MULTICAST || skb->pkt_type != PACKET_HOST) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (type != ICMPV6_PKT_TOOBIG &&
 		    !(type == ICMPV6_PARAMPROB &&
 		      code == ICMPV6_UNK_OPTION &&
@@ -735,10 +502,6 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	 *	Source addr check
 	 */
 
-<<<<<<< HEAD
-	if (addr_type & IPV6_ADDR_LINKLOCAL)
-		iif = skb->dev->ifindex;
-=======
 	if (__ipv6_addr_needs_scope_id(addr_type)) {
 		iif = icmp6_iif(skb);
 	} else {
@@ -748,7 +511,6 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 		 */
 		iif = l3mdev_master_ifindex(skb->dev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Must not send error if the source does not uniquely
@@ -757,12 +519,8 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	 *	and anycast addresses will be checked later.
 	 */
 	if ((addr_type == IPV6_ADDR_ANY) || (addr_type & IPV6_ADDR_MULTICAST)) {
-<<<<<<< HEAD
-		LIMIT_NETDEBUG(KERN_DEBUG "icmpv6_send: addr_any/mcast source\n");
-=======
 		net_dbg_ratelimited("icmp6_send: addr_any/mcast source [%pI6c > %pI6c]\n",
 				    &hdr->saddr, &hdr->daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -770,13 +528,6 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	 *	Never answer to a ICMP packet.
 	 */
 	if (is_ineligible(skb)) {
-<<<<<<< HEAD
-		LIMIT_NETDEBUG(KERN_DEBUG "icmpv6_send: no reply to icmp error\n");
-		return;
-	}
-
-	mip6_addr_swap(skb);
-=======
 		net_dbg_ratelimited("icmp6_send: no reply to icmp error [%pI6c > %pI6c]\n",
 				    &hdr->saddr, &hdr->daddr);
 		return;
@@ -794,15 +545,10 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	sk = icmpv6_xmit_lock(net);
 	if (!sk)
 		goto out_bh_enable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&fl6, 0, sizeof(fl6));
 	fl6.flowi6_proto = IPPROTO_ICMPV6;
 	fl6.daddr = hdr->saddr;
-<<<<<<< HEAD
-	if (saddr)
-		fl6.saddr = *saddr;
-=======
 	if (force_saddr)
 		saddr = force_saddr;
 	if (saddr) {
@@ -819,24 +565,14 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 			dev_put(in_netdev);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fl6.flowi6_mark = mark;
 	fl6.flowi6_oif = iif;
 	fl6.fl6_icmp_type = type;
 	fl6.fl6_icmp_code = code;
 	fl6.flowi6_uid = sock_net_uid(net, NULL);
-<<<<<<< HEAD
-	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
-
-	sk = icmpv6_xmit_lock(net);
-	if (sk == NULL)
-		return;
-	sk->sk_mark = mark;
-=======
 	fl6.mp_hash = rt6_multipath_hash(net, &fl6, skb, NULL);
 	security_skb_classify_flow(skb, flowi6_to_flowi_common(&fl6));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np = inet6_sk(sk);
 
 	if (!icmpv6_xrlim_allow(sk, type, &fl6))
@@ -848,11 +584,6 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	tmp_hdr.icmp6_pointer = htonl(info);
 
 	if (!fl6.flowi6_oif && ipv6_addr_is_multicast(&fl6.daddr))
-<<<<<<< HEAD
-		fl6.flowi6_oif = np->mcast_oif;
-	else if (!fl6.flowi6_oif)
-		fl6.flowi6_oif = np->ucast_oif;
-=======
 		fl6.flowi6_oif = READ_ONCE(np->mcast_oif);
 	else if (!fl6.flowi6_oif)
 		fl6.flowi6_oif = READ_ONCE(np->ucast_oif);
@@ -860,57 +591,28 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	ipcm6_init_sk(&ipc6, sk);
 	ipc6.sockc.mark = mark;
 	fl6.flowlabel = ip6_make_flowinfo(ipc6.tclass, fl6.flowlabel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dst = icmpv6_route_lookup(net, skb, sk, &fl6);
 	if (IS_ERR(dst))
 		goto out;
 
-<<<<<<< HEAD
-	if (ipv6_addr_is_multicast(&fl6.daddr))
-		hlimit = np->mcast_hops;
-	else
-		hlimit = np->hop_limit;
-	if (hlimit < 0)
-		hlimit = ip6_dst_hoplimit(dst);
-=======
 	ipc6.hlimit = ip6_sk_dst_hoplimit(np, &fl6, dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msg.skb = skb;
 	msg.offset = skb_network_offset(skb);
 	msg.type = type;
 
 	len = skb->len - msg.offset;
-<<<<<<< HEAD
-	len = min_t(unsigned int, len, IPV6_MIN_MTU - sizeof(struct ipv6hdr) -sizeof(struct icmp6hdr));
-	if (len < 0) {
-		LIMIT_NETDEBUG(KERN_DEBUG "icmp: len problem\n");
-=======
 	len = min_t(unsigned int, len, IPV6_MIN_MTU - sizeof(struct ipv6hdr) - sizeof(struct icmp6hdr));
 	if (len < 0) {
 		net_dbg_ratelimited("icmp: len problem [%pI6c > %pI6c]\n",
 				    &hdr->saddr, &hdr->daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_dst_release;
 	}
 
 	rcu_read_lock();
 	idev = __in6_dev_get(skb->dev);
 
-<<<<<<< HEAD
-	err = ip6_append_data(sk, icmpv6_getfrag, &msg,
-			      len + sizeof(struct icmp6hdr),
-			      sizeof(struct icmp6hdr), hlimit,
-			      np->tclass, NULL, &fl6, (struct rt6_info*)dst,
-			      MSG_DONTWAIT, np->dontfrag);
-	if (err) {
-		ICMP6_INC_STATS(net, idev, ICMP6_MIB_OUTERRORS);
-		ip6_flush_pending_frames(sk);
-	} else {
-		err = icmpv6_push_pending_frames(sk, &fl6, &tmp_hdr,
-						 len + sizeof(struct icmp6hdr));
-=======
 	if (ip6_append_data(sk, icmpv6_getfrag, &msg,
 			    len + sizeof(struct icmp6hdr),
 			    sizeof(struct icmp6hdr),
@@ -921,19 +623,12 @@ void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
 	} else {
 		icmpv6_push_pending_frames(sk, &fl6, &tmp_hdr,
 					   len + sizeof(struct icmp6hdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rcu_read_unlock();
 out_dst_release:
 	dst_release(dst);
 out:
 	icmpv6_xmit_unlock(sk);
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL(icmpv6_send);
-
-static void icmpv6_echo_reply(struct sk_buff *skb)
-=======
 out_bh_enable:
 	local_bh_enable();
 }
@@ -1015,7 +710,6 @@ int ip6_err_gen_icmpv6_unreach(struct sk_buff *skb, int nhs, int type,
 EXPORT_SYMBOL(ip6_err_gen_icmpv6_unreach);
 
 static enum skb_drop_reason icmpv6_echo_reply(struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = dev_net(skb->dev);
 	struct sock *sk;
@@ -1027,21 +721,6 @@ static enum skb_drop_reason icmpv6_echo_reply(struct sk_buff *skb)
 	struct flowi6 fl6;
 	struct icmpv6_msg msg;
 	struct dst_entry *dst;
-<<<<<<< HEAD
-	int err = 0;
-	int hlimit;
-	u32 mark = IP6_REPLY_MARK(net, skb->mark);
-
-	saddr = &ipv6_hdr(skb)->daddr;
-
-	if (!ipv6_unicast_destination(skb))
-		saddr = NULL;
-
-	memcpy(&tmp_hdr, icmph, sizeof(tmp_hdr));
-	tmp_hdr.icmp6_type = ICMPV6_ECHO_REPLY;
-
-	memset(&fl6, 0, sizeof(fl6));
-=======
 	struct ipcm6_cookie ipc6;
 	u32 mark = IP6_REPLY_MARK(net, skb->mark);
 	SKB_DR(reason);
@@ -1074,32 +753,10 @@ static enum skb_drop_reason icmpv6_echo_reply(struct sk_buff *skb)
 	if (net->ipv6.sysctl.flowlabel_reflect & FLOWLABEL_REFLECT_ICMPV6_ECHO_REPLIES)
 		fl6.flowlabel = ip6_flowlabel(ipv6_hdr(skb));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fl6.flowi6_proto = IPPROTO_ICMPV6;
 	fl6.daddr = ipv6_hdr(skb)->saddr;
 	if (saddr)
 		fl6.saddr = *saddr;
-<<<<<<< HEAD
-	fl6.flowi6_oif = skb->dev->ifindex;
-	fl6.fl6_icmp_type = ICMPV6_ECHO_REPLY;
-	fl6.flowi6_mark = mark;
-	fl6.flowi6_uid = sock_net_uid(net, NULL);
-	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
-
-	sk = icmpv6_xmit_lock(net);
-	if (sk == NULL)
-		return;
-	sk->sk_mark = mark;
-	np = inet6_sk(sk);
-
-	if (!fl6.flowi6_oif && ipv6_addr_is_multicast(&fl6.daddr))
-		fl6.flowi6_oif = np->mcast_oif;
-	else if (!fl6.flowi6_oif)
-		fl6.flowi6_oif = np->ucast_oif;
-
-	err = ip6_dst_lookup(sk, &dst, &fl6);
-	if (err)
-=======
 	fl6.flowi6_oif = icmp6_iif(skb);
 	fl6.fl6_icmp_type = type;
 	fl6.flowi6_mark = mark;
@@ -1118,61 +775,20 @@ static enum skb_drop_reason icmpv6_echo_reply(struct sk_buff *skb)
 		fl6.flowi6_oif = READ_ONCE(np->ucast_oif);
 
 	if (ip6_dst_lookup(net, sk, &dst, &fl6))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	dst = xfrm_lookup(net, dst, flowi6_to_flowi(&fl6), sk, 0);
 	if (IS_ERR(dst))
 		goto out;
 
-<<<<<<< HEAD
-	if (ipv6_addr_is_multicast(&fl6.daddr))
-		hlimit = np->mcast_hops;
-	else
-		hlimit = np->hop_limit;
-	if (hlimit < 0)
-		hlimit = ip6_dst_hoplimit(dst);
-=======
 	/* Check the ratelimit */
 	if ((!(skb->dev->flags & IFF_LOOPBACK) && !icmpv6_global_allow(net, ICMPV6_ECHO_REPLY)) ||
 	    !icmpv6_xrlim_allow(sk, ICMPV6_ECHO_REPLY, &fl6))
 		goto out_dst_release;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	idev = __in6_dev_get(skb->dev);
 
 	msg.skb = skb;
 	msg.offset = 0;
-<<<<<<< HEAD
-	msg.type = ICMPV6_ECHO_REPLY;
-
-	err = ip6_append_data(sk, icmpv6_getfrag, &msg, skb->len + sizeof(struct icmp6hdr),
-				sizeof(struct icmp6hdr), hlimit, np->tclass, NULL, &fl6,
-				(struct rt6_info*)dst, MSG_DONTWAIT,
-				np->dontfrag);
-
-	if (err) {
-		ICMP6_INC_STATS_BH(net, idev, ICMP6_MIB_OUTERRORS);
-		ip6_flush_pending_frames(sk);
-	} else {
-		err = icmpv6_push_pending_frames(sk, &fl6, &tmp_hdr,
-						 skb->len + sizeof(struct icmp6hdr));
-	}
-	dst_release(dst);
-out:
-	icmpv6_xmit_unlock(sk);
-}
-
-void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info)
-{
-	const struct inet6_protocol *ipprot;
-	int inner_offset;
-	int hash;
-	u8 nexthdr;
-	__be16 frag_off;
-
-	if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
-		return;
-=======
 	msg.type = type;
 
 	ipcm6_init_sk(&ipc6, sk);
@@ -1220,35 +836,24 @@ enum skb_drop_reason icmpv6_notify(struct sk_buff *skb, u8 type,
 		goto out;
 
 	seg6_icmp_srh(skb, opt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nexthdr = ((struct ipv6hdr *)skb->data)->nexthdr;
 	if (ipv6_ext_hdr(nexthdr)) {
 		/* now skip over extension headers */
 		inner_offset = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr),
 						&nexthdr, &frag_off);
-<<<<<<< HEAD
-		if (inner_offset<0)
-			return;
-=======
 		if (inner_offset < 0) {
 			SKB_DR_SET(reason, IPV6_BAD_EXTHDR);
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		inner_offset = sizeof(struct ipv6hdr);
 	}
 
 	/* Checkin header including 8 bytes of inner protocol header. */
-<<<<<<< HEAD
-	if (!pskb_may_pull(skb, inner_offset+8))
-		return;
-=======
 	reason = pskb_may_pull_reason(skb, inner_offset + 8);
 	if (reason != SKB_NOT_DROPPED_YET)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* BUGGG_FUTURE: we should try to parse exthdrs in this packet.
 	   Without this we will not able f.e. to make source routed
@@ -1257,17 +862,6 @@ enum skb_drop_reason icmpv6_notify(struct sk_buff *skb, u8 type,
 	   --ANK (980726)
 	 */
 
-<<<<<<< HEAD
-	hash = nexthdr & (MAX_INET_PROTOS - 1);
-
-	rcu_read_lock();
-	ipprot = rcu_dereference(inet6_protos[hash]);
-	if (ipprot && ipprot->err_handler)
-		ipprot->err_handler(skb, NULL, type, code, inner_offset, info);
-	rcu_read_unlock();
-
-	raw6_icmp_error(skb, nexthdr, type, code, inner_offset, info);
-=======
 	ipprot = rcu_dereference(inet6_protos[nexthdr]);
 	if (ipprot && ipprot->err_handler)
 		ipprot->err_handler(skb, opt, type, code, inner_offset, info);
@@ -1278,7 +872,6 @@ enum skb_drop_reason icmpv6_notify(struct sk_buff *skb, u8 type,
 out:
 	__ICMP6_INC_STATS(net, __in6_dev_get(skb->dev), ICMP6_MIB_INERRORS);
 	return reason;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1287,13 +880,9 @@ out:
 
 static int icmpv6_rcv(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct net_device *dev = skb->dev;
-=======
 	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
 	struct net *net = dev_net(skb->dev);
 	struct net_device *dev = icmp6_dev(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inet6_dev *idev = __in6_dev_get(dev);
 	const struct in6_addr *saddr, *daddr;
 	struct icmp6hdr *hdr;
@@ -1304,15 +893,10 @@ static int icmpv6_rcv(struct sk_buff *skb)
 		int nh;
 
 		if (!(sp && sp->xvec[sp->len - 1]->props.flags &
-<<<<<<< HEAD
-				 XFRM_STATE_ICMP))
-			goto drop_no_count;
-=======
 				 XFRM_STATE_ICMP)) {
 			reason = SKB_DROP_REASON_XFRM_POLICY;
 			goto drop_no_count;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!pskb_may_pull(skb, sizeof(*hdr) + sizeof(struct ipv6hdr)))
 			goto drop_no_count;
@@ -1320,52 +904,24 @@ static int icmpv6_rcv(struct sk_buff *skb)
 		nh = skb_network_offset(skb);
 		skb_set_network_header(skb, sizeof(*hdr));
 
-<<<<<<< HEAD
-		if (!xfrm6_policy_check_reverse(NULL, XFRM_POLICY_IN, skb))
-			goto drop_no_count;
-=======
 		if (!xfrm6_policy_check_reverse(NULL, XFRM_POLICY_IN,
 						skb)) {
 			reason = SKB_DROP_REASON_XFRM_POLICY;
 			goto drop_no_count;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb_set_network_header(skb, nh);
 	}
 
-<<<<<<< HEAD
-	ICMP6_INC_STATS_BH(dev_net(dev), idev, ICMP6_MIB_INMSGS);
-=======
 	__ICMP6_INC_STATS(dev_net(dev), idev, ICMP6_MIB_INMSGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	saddr = &ipv6_hdr(skb)->saddr;
 	daddr = &ipv6_hdr(skb)->daddr;
 
-<<<<<<< HEAD
-	/* Perform checksum. */
-	switch (skb->ip_summed) {
-	case CHECKSUM_COMPLETE:
-		if (!csum_ipv6_magic(saddr, daddr, skb->len, IPPROTO_ICMPV6,
-				     skb->csum))
-			break;
-		/* fall through */
-	case CHECKSUM_NONE:
-		skb->csum = ~csum_unfold(csum_ipv6_magic(saddr, daddr, skb->len,
-					     IPPROTO_ICMPV6, 0));
-		if (__skb_checksum_complete(skb)) {
-			LIMIT_NETDEBUG(KERN_DEBUG
-				       "ICMPv6 checksum failed [%pI6c > %pI6c]\n",
-				       saddr, daddr);
-			goto discard_it;
-		}
-=======
 	if (skb_checksum_validate(skb, IPPROTO_ICMPV6, ip6_compute_pseudo)) {
 		net_dbg_ratelimited("ICMPv6 checksum failed [%pI6c > %pI6c]\n",
 				    saddr, daddr);
 		goto csum_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!pskb_pull(skb, sizeof(*hdr)))
@@ -1375,17 +931,6 @@ static int icmpv6_rcv(struct sk_buff *skb)
 
 	type = hdr->icmp6_type;
 
-<<<<<<< HEAD
-	ICMP6MSGIN_INC_STATS_BH(dev_net(dev), idev, type);
-
-	switch (type) {
-	case ICMPV6_ECHO_REQUEST:
-		icmpv6_echo_reply(skb);
-		break;
-
-	case ICMPV6_ECHO_REPLY:
-		ping_rcv(skb);
-=======
 	ICMP6MSGIN_INC_STATS(dev_net(dev), idev, type);
 
 	switch (type) {
@@ -1405,7 +950,6 @@ static int icmpv6_rcv(struct sk_buff *skb)
 
 	case ICMPV6_EXT_ECHO_REPLY:
 		reason = ping_rcv(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ICMPV6_PKT_TOOBIG:
@@ -1418,16 +962,6 @@ static int icmpv6_rcv(struct sk_buff *skb)
 			goto discard_it;
 		hdr = icmp6_hdr(skb);
 
-<<<<<<< HEAD
-		/*
-		 *	Drop through to notify
-		 */
-
-	case ICMPV6_DEST_UNREACH:
-	case ICMPV6_TIME_EXCEED:
-	case ICMPV6_PARAMPROB:
-		icmpv6_notify(skb, type, hdr->icmp6_code, hdr->icmp6_mtu);
-=======
 		/* to notify */
 		fallthrough;
 	case ICMPV6_DEST_UNREACH:
@@ -1435,7 +969,6 @@ static int icmpv6_rcv(struct sk_buff *skb)
 	case ICMPV6_PARAMPROB:
 		reason = icmpv6_notify(skb, type, hdr->icmp6_code,
 				       hdr->icmp6_mtu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case NDISC_ROUTER_SOLICITATION:
@@ -1443,28 +976,16 @@ static int icmpv6_rcv(struct sk_buff *skb)
 	case NDISC_NEIGHBOUR_SOLICITATION:
 	case NDISC_NEIGHBOUR_ADVERTISEMENT:
 	case NDISC_REDIRECT:
-<<<<<<< HEAD
-		ndisc_rcv(skb);
-=======
 		reason = ndisc_rcv(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ICMPV6_MGM_QUERY:
 		igmp6_event_query(skb);
-<<<<<<< HEAD
-		break;
-
-	case ICMPV6_MGM_REPORT:
-		igmp6_event_report(skb);
-		break;
-=======
 		return 0;
 
 	case ICMPV6_MGM_REPORT:
 		igmp6_event_report(skb);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case ICMPV6_MGM_REDUCTION:
 	case ICMPV6_NI_QUERY:
@@ -1477,46 +998,18 @@ static int icmpv6_rcv(struct sk_buff *skb)
 		break;
 
 	default:
-<<<<<<< HEAD
-		LIMIT_NETDEBUG(KERN_DEBUG "icmpv6: msg of unknown type\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* informational */
 		if (type & ICMPV6_INFOMSG_MASK)
 			break;
 
-<<<<<<< HEAD
-=======
 		net_dbg_ratelimited("icmpv6: msg of unknown type [%pI6c > %pI6c]\n",
 				    saddr, daddr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * error of unknown type.
 		 * must pass to upper level
 		 */
 
-<<<<<<< HEAD
-		icmpv6_notify(skb, type, hdr->icmp6_code, hdr->icmp6_mtu);
-	}
-
-	kfree_skb(skb);
-	return 0;
-
-discard_it:
-	ICMP6_INC_STATS_BH(dev_net(dev), idev, ICMP6_MIB_INERRORS);
-drop_no_count:
-	kfree_skb(skb);
-	return 0;
-}
-
-void icmpv6_flow_init(struct sock *sk, struct flowi6 *fl6,
-		      u8 type,
-		      const struct in6_addr *saddr,
-		      const struct in6_addr *daddr,
-		      int oif)
-=======
 		reason = icmpv6_notify(skb, type, hdr->icmp6_code,
 				       hdr->icmp6_mtu);
 	}
@@ -1544,56 +1037,10 @@ drop_no_count:
 void icmpv6_flow_init(const struct sock *sk, struct flowi6 *fl6, u8 type,
 		      const struct in6_addr *saddr,
 		      const struct in6_addr *daddr, int oif)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memset(fl6, 0, sizeof(*fl6));
 	fl6->saddr = *saddr;
 	fl6->daddr = *daddr;
-<<<<<<< HEAD
-	fl6->flowi6_proto 	= IPPROTO_ICMPV6;
-	fl6->fl6_icmp_type	= type;
-	fl6->fl6_icmp_code	= 0;
-	fl6->flowi6_oif		= oif;
-	security_sk_classify_flow(sk, flowi6_to_flowi(fl6));
-}
-
-/*
- * Special lock-class for __icmpv6_sk:
- */
-static struct lock_class_key icmpv6_socket_sk_dst_lock_key;
-
-static int __net_init icmpv6_sk_init(struct net *net)
-{
-	struct sock *sk;
-	int err, i, j;
-
-	net->ipv6.icmp_sk =
-		kzalloc(nr_cpu_ids * sizeof(struct sock *), GFP_KERNEL);
-	if (net->ipv6.icmp_sk == NULL)
-		return -ENOMEM;
-
-	for_each_possible_cpu(i) {
-		err = inet_ctl_sock_create(&sk, PF_INET6,
-					   SOCK_RAW, IPPROTO_ICMPV6, net);
-		if (err < 0) {
-			printk(KERN_ERR
-			       "Failed to initialize the ICMP6 control socket "
-			       "(err %d).\n",
-			       err);
-			goto fail;
-		}
-
-		net->ipv6.icmp_sk[i] = sk;
-
-		/*
-		 * Split off their lock-class, because sk->sk_dst_lock
-		 * gets used from softirqs, which is safe for
-		 * __icmpv6_sk (because those never get directly used
-		 * via userspace syscalls), but unsafe for normal sockets.
-		 */
-		lockdep_set_class(&sk->sk_dst_lock,
-				  &icmpv6_socket_sk_dst_lock_key);
-=======
 	fl6->flowi6_proto	= IPPROTO_ICMPV6;
 	fl6->fl6_icmp_type	= type;
 	fl6->fl6_icmp_code	= 0;
@@ -1616,58 +1063,16 @@ int __init icmpv6_init(void)
 		}
 
 		per_cpu(ipv6_icmp_sk, i) = sk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Enough space for 2 64K ICMP packets, including
 		 * sk_buff struct overhead.
 		 */
 		sk->sk_sndbuf = 2 * SKB_TRUESIZE(64 * 1024);
 	}
-<<<<<<< HEAD
-	return 0;
-
- fail:
-	for (j = 0; j < i; j++)
-		inet_ctl_sock_destroy(net->ipv6.icmp_sk[j]);
-	kfree(net->ipv6.icmp_sk);
-	return err;
-}
-
-static void __net_exit icmpv6_sk_exit(struct net *net)
-{
-	int i;
-
-	for_each_possible_cpu(i) {
-		inet_ctl_sock_destroy(net->ipv6.icmp_sk[i]);
-	}
-	kfree(net->ipv6.icmp_sk);
-}
-
-static struct pernet_operations icmpv6_sk_ops = {
-       .init = icmpv6_sk_init,
-       .exit = icmpv6_sk_exit,
-};
-
-int __init icmpv6_init(void)
-{
-	int err;
-
-	err = register_pernet_subsys(&icmpv6_sk_ops);
-	if (err < 0)
-		return err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -EAGAIN;
 	if (inet6_add_protocol(&icmpv6_protocol, IPPROTO_ICMPV6) < 0)
 		goto fail;
-<<<<<<< HEAD
-	return 0;
-
-fail:
-	printk(KERN_ERR "Failed to register ICMP6 protocol\n");
-	unregister_pernet_subsys(&icmpv6_sk_ops);
-=======
 
 	err = inet6_register_icmp_sender(icmp6_send);
 	if (err)
@@ -1678,17 +1083,12 @@ sender_reg_err:
 	inet6_del_protocol(&icmpv6_protocol, IPPROTO_ICMPV6);
 fail:
 	pr_err("Failed to register ICMP6 protocol\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 void icmpv6_cleanup(void)
 {
-<<<<<<< HEAD
-	unregister_pernet_subsys(&icmpv6_sk_ops);
-=======
 	inet6_unregister_icmp_sender(icmp6_send);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inet6_del_protocol(&icmpv6_protocol, IPPROTO_ICMPV6);
 }
 
@@ -1758,18 +1158,10 @@ int icmpv6_err_convert(u8 type, u8 code, int *err)
 
 	return fatal;
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(icmpv6_err_convert);
-
-#ifdef CONFIG_SYSCTL
-ctl_table ipv6_icmp_table_template[] = {
-=======
 EXPORT_SYMBOL(icmpv6_err_convert);
 
 #ifdef CONFIG_SYSCTL
 static struct ctl_table ipv6_icmp_table_template[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "ratelimit",
 		.data		= &init_net.ipv6.sysctl.icmpv6_time,
@@ -1777,8 +1169,6 @@ static struct ctl_table ipv6_icmp_table_template[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_ms_jiffies,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.procname	= "echo_ignore_all",
 		.data		= &init_net.ipv6.sysctl.icmpv6_echo_ignore_all,
@@ -1816,7 +1206,6 @@ static struct ctl_table ipv6_icmp_table_template[] = {
 		.extra1		= SYSCTL_ZERO,
 		.extra2		= SYSCTL_ONE,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 
@@ -1828,15 +1217,6 @@ struct ctl_table * __net_init ipv6_icmp_sysctl_init(struct net *net)
 			sizeof(ipv6_icmp_table_template),
 			GFP_KERNEL);
 
-<<<<<<< HEAD
-	if (table)
-		table[0].data = &net->ipv6.sysctl.icmpv6_time;
-
-	return table;
-}
-#endif
-
-=======
 	if (table) {
 		table[0].data = &net->ipv6.sysctl.icmpv6_time;
 		table[1].data = &net->ipv6.sysctl.icmpv6_echo_ignore_all;
@@ -1853,4 +1233,3 @@ size_t ipv6_icmp_sysctl_table_size(void)
 	return ARRAY_SIZE(ipv6_icmp_table_template);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

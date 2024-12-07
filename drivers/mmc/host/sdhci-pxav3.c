@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010 Marvell International Ltd.
  *		Zhangfei Gao <zhangfei.gao@marvell.com>
@@ -9,40 +6,18 @@
  *		Mingwei Wang <mwwang@marvell.com>
  *		Philip Rakity <prakity@marvell.com>
  *		Mark Brown <markb@marvell.com>
-<<<<<<< HEAD
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
 #include <linux/platform_data/pxa_sdhci.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include "sdhci.h"
-#include "sdhci-pltfm.h"
-
-=======
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/pm.h>
@@ -54,7 +29,6 @@
 
 #define PXAV3_RPM_DELAY_MS     50
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SD_CLOCK_BURST_SIZE_SETUP		0x10A
 #define SDCLK_SEL	0x100
 #define SDCLK_DELAY_SHIFT	9
@@ -72,9 +46,6 @@
 #define SDCE_MISC_INT		(1<<2)
 #define SDCE_MISC_INT_EN	(1<<1)
 
-<<<<<<< HEAD
-static void pxav3_set_private_registers(struct sdhci_host *host, u8 mask)
-=======
 struct sdhci_pxa {
 	struct clk *clk_core;
 	struct clk *clk_io;
@@ -191,16 +162,12 @@ static int armada_38x_quirks(struct platform_device *pdev,
 }
 
 static void pxav3_reset(struct sdhci_host *host, u8 mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *pdev = to_platform_device(mmc_dev(host->mmc));
 	struct sdhci_pxa_platdata *pdata = pdev->dev.platform_data;
 
-<<<<<<< HEAD
-=======
 	sdhci_reset(host, mask);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mask == SDHCI_RESET_ALL) {
 		/*
 		 * tune timing of read data/command when crc error happen
@@ -222,11 +189,7 @@ static void pxav3_reset(struct sdhci_host *host, u8 mask)
 static void pxav3_gen_init_74_clocks(struct sdhci_host *host, u8 power_mode)
 {
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-<<<<<<< HEAD
-	struct sdhci_pxa *pxa = pltfm_host->priv;
-=======
 	struct sdhci_pxa *pxa = sdhci_pltfm_priv(pltfm_host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 tmp;
 	int count;
 
@@ -272,15 +235,10 @@ static void pxav3_gen_init_74_clocks(struct sdhci_host *host, u8 power_mode)
 	pxa->power_mode = power_mode;
 }
 
-<<<<<<< HEAD
-static int pxav3_set_uhs_signaling(struct sdhci_host *host, unsigned int uhs)
-{
-=======
 static void pxav3_set_uhs_signaling(struct sdhci_host *host, unsigned int uhs)
 {
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
 	struct sdhci_pxa *pxa = sdhci_pltfm_priv(pltfm_host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 ctrl_2;
 
 	/*
@@ -304,17 +262,12 @@ static void pxav3_set_uhs_signaling(struct sdhci_host *host, unsigned int uhs)
 	case MMC_TIMING_UHS_SDR104:
 		ctrl_2 |= SDHCI_CTRL_UHS_SDR104 | SDHCI_CTRL_VDD_180;
 		break;
-<<<<<<< HEAD
-=======
 	case MMC_TIMING_MMC_DDR52:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MMC_TIMING_UHS_DDR50:
 		ctrl_2 |= SDHCI_CTRL_UHS_DDR50 | SDHCI_CTRL_VDD_180;
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Update SDIO3 Configuration register according to erratum
 	 * FE-2946959
@@ -336,24 +289,10 @@ static void pxav3_set_uhs_signaling(struct sdhci_host *host, unsigned int uhs)
 		writeb(reg_val, pxa->sdio3_conf_reg);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdhci_writew(host, ctrl_2, SDHCI_HOST_CONTROL2);
 	dev_dbg(mmc_dev(host->mmc),
 		"%s uhs = %d, ctrl_2 = %04X\n",
 		__func__, uhs, ctrl_2);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static struct sdhci_ops pxav3_sdhci_ops = {
-	.platform_reset_exit = pxav3_set_private_registers,
-	.set_uhs_signaling = pxav3_set_uhs_signaling,
-	.platform_send_init_74_clocks = pxav3_gen_init_74_clocks,
-};
-
-static int __devinit sdhci_pxav3_probe(struct platform_device *pdev)
-=======
 }
 
 static void pxav3_set_power(struct sdhci_host *host, unsigned char mode,
@@ -428,42 +367,10 @@ static inline struct sdhci_pxa_platdata *pxav3_get_mmc_pdata(struct device *dev)
 #endif
 
 static int sdhci_pxav3_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sdhci_pltfm_host *pltfm_host;
 	struct sdhci_pxa_platdata *pdata = pdev->dev.platform_data;
 	struct device *dev = &pdev->dev;
-<<<<<<< HEAD
-	struct sdhci_host *host = NULL;
-	struct sdhci_pxa *pxa = NULL;
-	int ret;
-	struct clk *clk;
-
-	pxa = kzalloc(sizeof(struct sdhci_pxa), GFP_KERNEL);
-	if (!pxa)
-		return -ENOMEM;
-
-	host = sdhci_pltfm_init(pdev, NULL);
-	if (IS_ERR(host)) {
-		kfree(pxa);
-		return PTR_ERR(host);
-	}
-	pltfm_host = sdhci_priv(host);
-	pltfm_host->priv = pxa;
-
-	clk = clk_get(dev, "PXA-SDHCLK");
-	if (IS_ERR(clk)) {
-		dev_err(dev, "failed to get io clock\n");
-		ret = PTR_ERR(clk);
-		goto err_clk_get;
-	}
-	pltfm_host->clk = clk;
-	clk_enable(clk);
-
-	host->quirks = SDHCI_QUIRK_BROKEN_TIMEOUT_VAL
-		| SDHCI_QUIRK_NO_ENDATTR_IN_NOPDESC
-		| SDHCI_QUIRK_32BIT_ADMA_SIZE;
-=======
 	struct device_node *np = pdev->dev.of_node;
 	struct sdhci_host *host = NULL;
 	struct sdhci_pxa *pxa = NULL;
@@ -491,19 +398,10 @@ static int sdhci_pxav3_probe(struct platform_device *pdev)
 	pxa->clk_core = devm_clk_get(dev, "core");
 	if (!IS_ERR(pxa->clk_core))
 		clk_prepare_enable(pxa->clk_core);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable 1/8V DDR capable */
 	host->mmc->caps |= MMC_CAP_1_8V_DDR;
 
-<<<<<<< HEAD
-	if (pdata) {
-		if (pdata->flags & PXA_FLAG_CARD_PERMANENT) {
-			/* on-chip device */
-			host->quirks |= SDHCI_QUIRK_BROKEN_CARD_DETECTION;
-			host->mmc->caps |= MMC_CAP_NONREMOVABLE;
-		}
-=======
 	if (of_device_is_compatible(np, "marvell,armada-380-sdhci")) {
 		ret = armada_38x_quirks(pdev, host);
 		if (ret < 0)
@@ -525,7 +423,6 @@ static int sdhci_pxav3_probe(struct platform_device *pdev)
 		/* on-chip device */
 		if (pdata->flags & PXA_FLAG_CARD_PERMANENT)
 			host->mmc->caps |= MMC_CAP_NONREMOVABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* If slot design supports 8 bit data, indicate this to MMC. */
 		if (pdata->flags & PXA_FLAG_SD_8_BIT_CAPABLE_SLOT)
@@ -533,32 +430,16 @@ static int sdhci_pxav3_probe(struct platform_device *pdev)
 
 		if (pdata->quirks)
 			host->quirks |= pdata->quirks;
-<<<<<<< HEAD
-		if (pdata->host_caps)
-			host->mmc->caps |= pdata->host_caps;
-=======
 		if (pdata->quirks2)
 			host->quirks2 |= pdata->quirks2;
 		if (pdata->host_caps)
 			host->mmc->caps |= pdata->host_caps;
 		if (pdata->host_caps2)
 			host->mmc->caps2 |= pdata->host_caps2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pdata->pm_caps)
 			host->mmc->pm_caps |= pdata->pm_caps;
 	}
 
-<<<<<<< HEAD
-	host->ops = &pxav3_sdhci_ops;
-
-	ret = sdhci_add_host(host);
-	if (ret) {
-		dev_err(&pdev->dev, "failed to add host\n");
-		goto err_add_host;
-	}
-
-	platform_set_drvdata(pdev, host);
-=======
 	pm_runtime_get_noresume(&pdev->dev);
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_set_autosuspend_delay(&pdev->dev, PXAV3_RPM_DELAY_MS);
@@ -574,35 +455,10 @@ static int sdhci_pxav3_probe(struct platform_device *pdev)
 		device_init_wakeup(&pdev->dev, 1);
 
 	pm_runtime_put_autosuspend(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_add_host:
-<<<<<<< HEAD
-	clk_disable(clk);
-	clk_put(clk);
-err_clk_get:
-	sdhci_pltfm_free(pdev);
-	kfree(pxa);
-	return ret;
-}
-
-static int __devexit sdhci_pxav3_remove(struct platform_device *pdev)
-{
-	struct sdhci_host *host = platform_get_drvdata(pdev);
-	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-	struct sdhci_pxa *pxa = pltfm_host->priv;
-
-	sdhci_remove_host(host, 1);
-
-	clk_disable(pltfm_host->clk);
-	clk_put(pltfm_host->clk);
-	sdhci_pltfm_free(pdev);
-	kfree(pxa);
-
-	platform_set_drvdata(pdev, NULL);
-=======
 	pm_runtime_disable(&pdev->dev);
 	pm_runtime_put_noidle(&pdev->dev);
 err_of_parse:
@@ -680,21 +536,10 @@ static int sdhci_pxav3_runtime_suspend(struct device *dev)
 	clk_disable_unprepare(pxa->clk_io);
 	if (!IS_ERR(pxa->clk_core))
 		clk_disable_unprepare(pxa->clk_core);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct platform_driver sdhci_pxav3_driver = {
-	.driver		= {
-		.name	= "sdhci-pxav3",
-		.owner	= THIS_MODULE,
-		.pm	= SDHCI_PLTFM_PMOPS,
-	},
-	.probe		= sdhci_pxav3_probe,
-	.remove		= __devexit_p(sdhci_pxav3_remove),
-=======
 static int sdhci_pxav3_runtime_resume(struct device *dev)
 {
 	struct sdhci_host *host = dev_get_drvdata(dev);
@@ -724,7 +569,6 @@ static struct platform_driver sdhci_pxav3_driver = {
 	},
 	.probe		= sdhci_pxav3_probe,
 	.remove_new	= sdhci_pxav3_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sdhci_pxav3_driver);

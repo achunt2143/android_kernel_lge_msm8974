@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACPI_NUMA_H
 #define __ACPI_NUMA_H
 
 #ifdef CONFIG_ACPI_NUMA
-<<<<<<< HEAD
-#include <linux/kernel.h>
-=======
 #include <linux/numa.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Proximity bitmap length */
 #if MAX_NUMNODES > 256
@@ -21,14 +14,6 @@
 
 extern int pxm_to_node(int);
 extern int node_to_pxm(int);
-<<<<<<< HEAD
-extern void __acpi_map_pxm_to_node(int, int);
-extern int acpi_map_pxm_to_node(int);
-extern unsigned char acpi_srat_revision;
-
-#endif				/* CONFIG_ACPI_NUMA */
-#endif				/* __ACP_NUMA_H */
-=======
 extern int acpi_map_pxm_to_node(int);
 extern unsigned char acpi_srat_revision;
 extern void disable_srat(void);
@@ -58,4 +43,3 @@ static inline void disable_hmat(void)
 }
 #endif				/* CONFIG_ACPI_HMAT */
 #endif				/* __ACPI_NUMA_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

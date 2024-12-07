@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Definitions for mount interface. This describes the in the kernel build 
@@ -14,18 +11,6 @@
 #define _LINUX_MOUNT_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/list.h>
-#include <linux/nodemask.h>
-#include <linux/spinlock.h>
-#include <linux/seqlock.h>
-#include <linux/atomic.h>
-
-struct super_block;
-struct vfsmount;
-struct dentry;
-struct mnt_namespace;
-=======
 #include <asm/barrier.h>
 
 struct super_block;
@@ -36,7 +21,6 @@ struct file_system_type;
 struct fs_context;
 struct file;
 struct path;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MNT_NOSUID	0x01
 #define MNT_NODEV	0x02
@@ -45,10 +29,7 @@ struct path;
 #define MNT_NODIRATIME	0x10
 #define MNT_RELATIME	0x20
 #define MNT_READONLY	0x40	/* does the user want this to be r/o? */
-<<<<<<< HEAD
-=======
 #define MNT_NOSYMFOLLOW	0x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MNT_SHRINKABLE	0x100
 #define MNT_WRITE_HOLD	0x200
@@ -65,16 +46,6 @@ struct path;
 #define MNT_SHARED_MASK	(MNT_UNBINDABLE)
 #define MNT_USER_SETTABLE_MASK  (MNT_NOSUID | MNT_NODEV | MNT_NOEXEC \
 				 | MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME \
-<<<<<<< HEAD
-				 | MNT_READONLY)
-
-#define MNT_INTERNAL_FLAGS (MNT_SHARED | MNT_WRITE_HOLD | MNT_INTERNAL | \
-			    MNT_MARKED)
-
-#define MNT_INTERNAL	0x4000
-
-#define MNT_MARKED		0x4000000
-=======
 				 | MNT_READONLY | MNT_NOSYMFOLLOW)
 #define MNT_ATIME_MASK (MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME )
 
@@ -94,22 +65,11 @@ struct path;
 #define MNT_MARKED		0x4000000
 #define MNT_UMOUNT		0x8000000
 #define MNT_ONRB		0x10000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct vfsmount {
 	struct dentry *mnt_root;	/* root of the mounted tree */
 	struct super_block *mnt_sb;	/* pointer to superblock */
 	int mnt_flags;
-<<<<<<< HEAD
-	void *data;
-};
-
-struct file; /* forward dec */
-
-extern int mnt_want_write(struct vfsmount *mnt);
-extern int mnt_want_write_file(struct file *file);
-extern int mnt_clone_write(struct vfsmount *mnt);
-=======
 	struct mnt_idmap *mnt_idmap;
 } __randomize_layout;
 
@@ -121,21 +81,10 @@ static inline struct mnt_idmap *mnt_idmap(const struct vfsmount *mnt)
 
 extern int mnt_want_write(struct vfsmount *mnt);
 extern int mnt_want_write_file(struct file *file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void mnt_drop_write(struct vfsmount *mnt);
 extern void mnt_drop_write_file(struct file *file);
 extern void mntput(struct vfsmount *mnt);
 extern struct vfsmount *mntget(struct vfsmount *mnt);
-<<<<<<< HEAD
-extern void mnt_pin(struct vfsmount *mnt);
-extern void mnt_unpin(struct vfsmount *mnt);
-extern int __mnt_is_readonly(struct vfsmount *mnt);
-
-struct file_system_type;
-extern struct vfsmount *vfs_kern_mount(struct file_system_type *type,
-				      int flags, const char *name,
-				      void *data);
-=======
 extern void mnt_make_shortterm(struct vfsmount *mnt);
 extern struct vfsmount *mnt_clone_internal(const struct path *path);
 extern bool __mnt_is_readonly(struct vfsmount *mnt);
@@ -153,14 +102,10 @@ extern struct vfsmount *vfs_kern_mount(struct file_system_type *type,
 extern struct vfsmount *vfs_submount(const struct dentry *mountpoint,
 				     struct file_system_type *type,
 				     const char *name, void *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void mnt_set_expiry(struct vfsmount *mnt, struct list_head *expiry_list);
 extern void mark_mounts_for_expiry(struct list_head *mounts);
 
-<<<<<<< HEAD
-extern dev_t name_to_dev_t(char *name);
-=======
 extern bool path_is_mountpoint(const struct path *path);
 
 extern bool our_mnt(struct vfsmount *mnt);
@@ -178,6 +123,5 @@ extern int iterate_mounts(int (*)(struct vfsmount *, void *), void *,
 extern void kern_unmount_array(struct vfsmount *mnt[], unsigned int num);
 
 extern int cifs_root_data(char **dev, char **opts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_MOUNT_H */

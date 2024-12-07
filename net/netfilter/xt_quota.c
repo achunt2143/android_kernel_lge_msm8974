@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * netfilter module to enforce network quotas
  *
@@ -77,10 +74,7 @@ static struct xt_match quota_mt_reg __read_mostly = {
 	.checkentry = quota_mt_check,
 	.destroy    = quota_mt_destroy,
 	.matchsize  = sizeof(struct xt_quota_info),
-<<<<<<< HEAD
-=======
 	.usersize   = offsetof(struct xt_quota_info, master),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.me         = THIS_MODULE,
 };
 

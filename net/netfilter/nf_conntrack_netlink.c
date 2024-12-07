@@ -4,11 +4,7 @@
  * (C) 2001 by Jay Schulist <jschlst@samba.org>
  * (C) 2002-2006 by Harald Welte <laforge@gnumonks.org>
  * (C) 2003 by Patrick Mchardy <kaber@trash.net>
-<<<<<<< HEAD
- * (C) 2005-2011 by Pablo Neira Ayuso <pablo@netfilter.org>
-=======
  * (C) 2005-2012 by Pablo Neira Ayuso <pablo@netfilter.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Initial connection tracking via netlink development funded and
  * generally made possible by Network Robots, Inc. (www.networkrobots.com)
@@ -33,10 +29,7 @@
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/siphash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netfilter.h>
 #include <net/netlink.h>
@@ -45,42 +38,22 @@
 #include <net/netfilter/nf_conntrack_core.h>
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <net/netfilter/nf_conntrack_helper.h>
-<<<<<<< HEAD
-#include <net/netfilter/nf_conntrack_l3proto.h>
-=======
 #include <net/netfilter/nf_conntrack_seqadj.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack_l4proto.h>
 #include <net/netfilter/nf_conntrack_tuple.h>
 #include <net/netfilter/nf_conntrack_acct.h>
 #include <net/netfilter/nf_conntrack_zones.h>
 #include <net/netfilter/nf_conntrack_timestamp.h>
 #include <net/netfilter/nf_conntrack_labels.h>
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-#include <net/netfilter/nf_nat_core.h>
-#include <net/netfilter/nf_nat_l4proto.h>
-=======
 #include <net/netfilter/nf_conntrack_synproxy.h>
 #if IS_ENABLED(CONFIG_NF_NAT)
 #include <net/netfilter/nf_nat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_nat_helper.h>
 #endif
 
 #include <linux/netfilter/nfnetlink.h>
 #include <linux/netfilter/nfnetlink_conntrack.h>
 
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-
-static char __initdata version[] = "0.93";
-
-static inline int
-ctnetlink_dump_tuples_proto(struct sk_buff *skb,
-			    const struct nf_conntrack_tuple *tuple,
-			    struct nf_conntrack_l4proto *l4proto)
-=======
 #include "nf_internals.h"
 
 MODULE_LICENSE("GPL");
@@ -95,23 +68,15 @@ struct ctnetlink_list_dump_ctx {
 static int ctnetlink_dump_tuples_proto(struct sk_buff *skb,
 				const struct nf_conntrack_tuple *tuple,
 				const struct nf_conntrack_l4proto *l4proto)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct nlattr *nest_parms;
 
-<<<<<<< HEAD
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_PROTO | NLA_F_NESTED);
-	if (!nest_parms)
-		goto nla_put_failure;
-	NLA_PUT_U8(skb, CTA_PROTO_NUM, tuple->dst.protonum);
-=======
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_PROTO);
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (nla_put_u8(skb, CTA_PROTO_NUM, tuple->dst.protonum))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (likely(l4proto->tuple_to_nlattr))
 		ret = l4proto->tuple_to_nlattr(skb, tuple);
@@ -124,12 +89,6 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_tuples_ip(struct sk_buff *skb,
-			 const struct nf_conntrack_tuple *tuple,
-			 struct nf_conntrack_l3proto *l3proto)
-=======
 static int ipv4_tuple_to_nlattr(struct sk_buff *skb,
 				const struct nf_conntrack_tuple *tuple)
 {
@@ -150,19 +109,10 @@ static int ipv6_tuple_to_nlattr(struct sk_buff *skb,
 
 static int ctnetlink_dump_tuples_ip(struct sk_buff *skb,
 				    const struct nf_conntrack_tuple *tuple)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct nlattr *nest_parms;
 
-<<<<<<< HEAD
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_IP | NLA_F_NESTED);
-	if (!nest_parms)
-		goto nla_put_failure;
-
-	if (likely(l3proto->tuple_to_nlattr))
-		ret = l3proto->tuple_to_nlattr(skb, tuple);
-=======
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_IP);
 	if (!nest_parms)
 		goto nla_put_failure;
@@ -175,7 +125,6 @@ static int ctnetlink_dump_tuples_ip(struct sk_buff *skb,
 		ret = ipv6_tuple_to_nlattr(skb, tuple);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nla_nest_end(skb, nest_parms);
 
@@ -185,23 +134,6 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static int
-ctnetlink_dump_tuples(struct sk_buff *skb,
-		      const struct nf_conntrack_tuple *tuple)
-{
-	int ret;
-	struct nf_conntrack_l3proto *l3proto;
-	struct nf_conntrack_l4proto *l4proto;
-
-	rcu_read_lock();
-	l3proto = __nf_ct_l3proto_find(tuple->src.l3num);
-	ret = ctnetlink_dump_tuples_ip(skb, tuple, l3proto);
-
-	if (ret >= 0) {
-		l4proto = __nf_ct_l4proto_find(tuple->src.l3num,
-					       tuple->dst.protonum);
-=======
 static int ctnetlink_dump_tuples(struct sk_buff *skb,
 				 const struct nf_conntrack_tuple *tuple)
 {
@@ -213,19 +145,12 @@ static int ctnetlink_dump_tuples(struct sk_buff *skb,
 
 	if (ret >= 0) {
 		l4proto = nf_ct_l4proto_find(tuple->dst.protonum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ctnetlink_dump_tuples_proto(skb, tuple, l4proto);
 	}
 	rcu_read_unlock();
 	return ret;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_status(struct sk_buff *skb, const struct nf_conn *ct)
-{
-	NLA_PUT_BE32(skb, CTA_STATUS, htonl(ct->status));
-=======
 static int ctnetlink_dump_zone_id(struct sk_buff *skb, int attrtype,
 				  const struct nf_conntrack_zone *zone, int dir)
 {
@@ -233,53 +158,22 @@ static int ctnetlink_dump_zone_id(struct sk_buff *skb, int attrtype,
 		return 0;
 	if (nla_put_be16(skb, attrtype, htons(zone->id)))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_timeout(struct sk_buff *skb, const struct nf_conn *ct)
-{
-	long timeout = ((long)ct->timeout.expires - (long)jiffies) / HZ;
-
-	if (timeout < 0)
-		timeout = 0;
-
-	NLA_PUT_BE32(skb, CTA_TIMEOUT, htonl(timeout));
-=======
 static int ctnetlink_dump_status(struct sk_buff *skb, const struct nf_conn *ct)
 {
 	if (nla_put_be32(skb, CTA_STATUS, htonl(ct->status)))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_protoinfo(struct sk_buff *skb, struct nf_conn *ct)
-{
-	struct nf_conntrack_l4proto *l4proto;
-	struct nlattr *nest_proto;
-	int ret;
-
-	l4proto = __nf_ct_l4proto_find(nf_ct_l3num(ct), nf_ct_protonum(ct));
-	if (!l4proto->to_nlattr)
-		return 0;
-
-	nest_proto = nla_nest_start(skb, CTA_PROTOINFO | NLA_F_NESTED);
-	if (!nest_proto)
-		goto nla_put_failure;
-
-	ret = l4proto->to_nlattr(skb, nest_proto, ct);
-=======
 static int ctnetlink_dump_timeout(struct sk_buff *skb, const struct nf_conn *ct,
 				  bool skip_zero)
 {
@@ -317,7 +211,6 @@ static int ctnetlink_dump_protoinfo(struct sk_buff *skb, struct nf_conn *ct,
 		goto nla_put_failure;
 
 	ret = l4proto->to_nlattr(skb, nest_proto, ct, destroy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nla_nest_end(skb, nest_proto);
 
@@ -327,13 +220,8 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_helpinfo(struct sk_buff *skb, const struct nf_conn *ct)
-=======
 static int ctnetlink_dump_helpinfo(struct sk_buff *skb,
 				   const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *nest_helper;
 	const struct nf_conn_help *help = nfct_help(ct);
@@ -342,61 +230,31 @@ static int ctnetlink_dump_helpinfo(struct sk_buff *skb,
 	if (!help)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	helper = rcu_dereference(help->helper);
 	if (!helper)
 		goto out;
 
-<<<<<<< HEAD
-	nest_helper = nla_nest_start(skb, CTA_HELP | NLA_F_NESTED);
-	if (!nest_helper)
-		goto nla_put_failure;
-	NLA_PUT_STRING(skb, CTA_HELP_NAME, helper->name);
-=======
 	nest_helper = nla_nest_start(skb, CTA_HELP);
 	if (!nest_helper)
 		goto nla_put_failure;
 	if (nla_put_string(skb, CTA_HELP_NAME, helper->name))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (helper->to_nlattr)
 		helper->to_nlattr(skb, ct);
 
 	nla_nest_end(skb, nest_helper);
 out:
-<<<<<<< HEAD
-	return 0;
-
-nla_put_failure:
-=======
 	rcu_read_unlock();
 	return 0;
 
 nla_put_failure:
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
 static int
-<<<<<<< HEAD
-dump_counters(struct sk_buff *skb, u64 pkts, u64 bytes,
-	      enum ip_conntrack_dir dir)
-{
-	enum ctattr_type type = dir ? CTA_COUNTERS_REPLY: CTA_COUNTERS_ORIG;
-	struct nlattr *nest_count;
-
-	nest_count = nla_nest_start(skb, type | NLA_F_NESTED);
-	if (!nest_count)
-		goto nla_put_failure;
-
-	NLA_PUT_BE64(skb, CTA_COUNTERS_PACKETS, cpu_to_be64(pkts));
-	NLA_PUT_BE64(skb, CTA_COUNTERS_BYTES, cpu_to_be64(bytes));
-=======
 dump_counters(struct sk_buff *skb, struct nf_conn_acct *acct,
 	      enum ip_conntrack_dir dir, int type)
 {
@@ -422,7 +280,6 @@ dump_counters(struct sk_buff *skb, struct nf_conn_acct *acct,
 	    nla_put_be64(skb, CTA_COUNTERS_BYTES, cpu_to_be64(bytes),
 			 CTA_COUNTERS_PAD))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nla_nest_end(skb, nest_count);
 
@@ -433,26 +290,6 @@ nla_put_failure:
 }
 
 static int
-<<<<<<< HEAD
-ctnetlink_dump_counters(struct sk_buff *skb, const struct nf_conn *ct,
-			enum ip_conntrack_dir dir, int type)
-{
-	struct nf_conn_counter *acct;
-	u64 pkts, bytes;
-
-	acct = nf_conn_acct_find(ct);
-	if (!acct)
-		return 0;
-
-	if (type == IPCTNL_MSG_CT_GET_CTRZERO) {
-		pkts = atomic64_xchg(&acct[dir].packets, 0);
-		bytes = atomic64_xchg(&acct[dir].bytes, 0);
-	} else {
-		pkts = atomic64_read(&acct[dir].packets);
-		bytes = atomic64_read(&acct[dir].bytes);
-	}
-	return dump_counters(skb, pkts, bytes, dir);
-=======
 ctnetlink_dump_acct(struct sk_buff *skb, const struct nf_conn *ct, int type)
 {
 	struct nf_conn_acct *acct = nf_conn_acct_find(ct);
@@ -466,7 +303,6 @@ ctnetlink_dump_acct(struct sk_buff *skb, const struct nf_conn *ct, int type)
 		return -1;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -479,17 +315,6 @@ ctnetlink_dump_timestamp(struct sk_buff *skb, const struct nf_conn *ct)
 	if (!tstamp)
 		return 0;
 
-<<<<<<< HEAD
-	nest_count = nla_nest_start(skb, CTA_TIMESTAMP | NLA_F_NESTED);
-	if (!nest_count)
-		goto nla_put_failure;
-
-	NLA_PUT_BE64(skb, CTA_TIMESTAMP_START, cpu_to_be64(tstamp->start));
-	if (tstamp->stop != 0) {
-		NLA_PUT_BE64(skb, CTA_TIMESTAMP_STOP,
-			     cpu_to_be64(tstamp->stop));
-	}
-=======
 	nest_count = nla_nest_start(skb, CTA_TIMESTAMP);
 	if (!nest_count)
 		goto nla_put_failure;
@@ -500,7 +325,6 @@ ctnetlink_dump_timestamp(struct sk_buff *skb, const struct nf_conn *ct)
 					       cpu_to_be64(tstamp->stop),
 					       CTA_TIMESTAMP_PAD)))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nla_nest_end(skb, nest_count);
 
 	return 0;
@@ -510,12 +334,6 @@ nla_put_failure:
 }
 
 #ifdef CONFIG_NF_CONNTRACK_MARK
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_mark(struct sk_buff *skb, const struct nf_conn *ct)
-{
-	NLA_PUT_BE32(skb, CTA_MARK, htonl(ct->mark));
-=======
 static int ctnetlink_dump_mark(struct sk_buff *skb, const struct nf_conn *ct,
 			       bool dump)
 {
@@ -526,27 +344,17 @@ static int ctnetlink_dump_mark(struct sk_buff *skb, const struct nf_conn *ct,
 
 	if (nla_put_be32(skb, CTA_MARK, htonl(mark)))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
 	return -1;
 }
 #else
-<<<<<<< HEAD
-#define ctnetlink_dump_mark(a, b) (0)
-#endif
-
-#ifdef CONFIG_NF_CONNTRACK_SECMARK
-static inline int
-ctnetlink_dump_secctx(struct sk_buff *skb, const struct nf_conn *ct)
-=======
 #define ctnetlink_dump_mark(a, b, c) (0)
 #endif
 
 #ifdef CONFIG_NF_CONNTRACK_SECMARK
 static int ctnetlink_dump_secctx(struct sk_buff *skb, const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *nest_secctx;
 	int len, ret;
@@ -557,20 +365,12 @@ static int ctnetlink_dump_secctx(struct sk_buff *skb, const struct nf_conn *ct)
 		return 0;
 
 	ret = -1;
-<<<<<<< HEAD
-	nest_secctx = nla_nest_start(skb, CTA_SECCTX | NLA_F_NESTED);
-	if (!nest_secctx)
-		goto nla_put_failure;
-
-	NLA_PUT_STRING(skb, CTA_SECCTX_NAME, secctx);
-=======
 	nest_secctx = nla_nest_start(skb, CTA_SECCTX);
 	if (!nest_secctx)
 		goto nla_put_failure;
 
 	if (nla_put_string(skb, CTA_SECCTX_NAME, secctx))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nla_nest_end(skb, nest_secctx);
 
 	ret = 0;
@@ -582,12 +382,6 @@ nla_put_failure:
 #define ctnetlink_dump_secctx(a, b) (0)
 #endif
 
-<<<<<<< HEAD
-#define master_tuple(ct) &(ct->master->tuplehash[IP_CT_DIR_ORIGINAL].tuple)
-
-static inline int
-ctnetlink_dump_master(struct sk_buff *skb, const struct nf_conn *ct)
-=======
 #ifdef CONFIG_NF_CONNTRACK_LABELS
 static inline int ctnetlink_label_size(const struct nf_conn *ct)
 {
@@ -625,18 +419,13 @@ ctnetlink_dump_labels(struct sk_buff *skb, const struct nf_conn *ct)
 #define master_tuple(ct) &(ct->master->tuplehash[IP_CT_DIR_ORIGINAL].tuple)
 
 static int ctnetlink_dump_master(struct sk_buff *skb, const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *nest_parms;
 
 	if (!(ct->status & IPS_EXPECTED))
 		return 0;
 
-<<<<<<< HEAD
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_MASTER | NLA_F_NESTED);
-=======
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_MASTER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, master_tuple(ct)) < 0)
@@ -649,24 +438,6 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-static int
-dump_nat_seq_adj(struct sk_buff *skb, const struct nf_nat_seq *natseq, int type)
-{
-	struct nlattr *nest_parms;
-
-	nest_parms = nla_nest_start(skb, type | NLA_F_NESTED);
-	if (!nest_parms)
-		goto nla_put_failure;
-
-	NLA_PUT_BE32(skb, CTA_NAT_SEQ_CORRECTION_POS,
-		     htonl(natseq->correction_pos));
-	NLA_PUT_BE32(skb, CTA_NAT_SEQ_OFFSET_BEFORE,
-		     htonl(natseq->offset_before));
-	NLA_PUT_BE32(skb, CTA_NAT_SEQ_OFFSET_AFTER,
-		     htonl(natseq->offset_after));
-=======
 static int
 dump_ct_seq_adj(struct sk_buff *skb, const struct nf_ct_seqadj *seq, int type)
 {
@@ -683,7 +454,6 @@ dump_ct_seq_adj(struct sk_buff *skb, const struct nf_ct_seqadj *seq, int type)
 	    nla_put_be32(skb, CTA_SEQADJ_OFFSET_AFTER,
 			 htonl(seq->offset_after)))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nla_nest_end(skb, nest_parms);
 
@@ -693,35 +463,6 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_nat_seq_adj(struct sk_buff *skb, const struct nf_conn *ct)
-{
-	struct nf_nat_seq *natseq;
-	struct nf_conn_nat *nat = nfct_nat(ct);
-
-	if (!(ct->status & IPS_SEQ_ADJUST) || !nat)
-		return 0;
-
-	natseq = &nat->seq[IP_CT_DIR_ORIGINAL];
-	if (dump_nat_seq_adj(skb, natseq, CTA_NAT_SEQ_ADJ_ORIG) == -1)
-		return -1;
-
-	natseq = &nat->seq[IP_CT_DIR_REPLY];
-	if (dump_nat_seq_adj(skb, natseq, CTA_NAT_SEQ_ADJ_REPLY) == -1)
-		return -1;
-
-	return 0;
-}
-#else
-#define ctnetlink_dump_nat_seq_adj(a, b) (0)
-#endif
-
-static inline int
-ctnetlink_dump_id(struct sk_buff *skb, const struct nf_conn *ct)
-{
-	NLA_PUT_BE32(skb, CTA_ID, htonl((unsigned long)ct));
-=======
 static int ctnetlink_dump_ct_seq_adj(struct sk_buff *skb, struct nf_conn *ct)
 {
 	struct nf_conn_seqadj *seqadj = nfct_seqadj(ct);
@@ -765,54 +506,24 @@ static int ctnetlink_dump_ct_synproxy(struct sk_buff *skb, struct nf_conn *ct)
 
 	nla_nest_end(skb, nest_parms);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_dump_use(struct sk_buff *skb, const struct nf_conn *ct)
-{
-	NLA_PUT_BE32(skb, CTA_USE, htonl(atomic_read(&ct->ct_general.use)));
-=======
 static int ctnetlink_dump_id(struct sk_buff *skb, const struct nf_conn *ct)
 {
 	__be32 id = (__force __be32)nf_ct_get_id(ct);
 
 	if (nla_put_be32(skb, CTA_ID, id))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static int
-ctnetlink_fill_info(struct sk_buff *skb, u32 pid, u32 seq, u32 type,
-		    struct nf_conn *ct)
-{
-	struct nlmsghdr *nlh;
-	struct nfgenmsg *nfmsg;
-	struct nlattr *nest_parms;
-	unsigned int flags = pid ? NLM_F_MULTI : 0, event;
-
-	event = (NFNL_SUBSYS_CTNETLINK << 8 | IPCTNL_MSG_CT_NEW);
-	nlh = nlmsg_put(skb, pid, seq, event, sizeof(*nfmsg), flags);
-	if (nlh == NULL)
-		goto nlmsg_failure;
-
-	nfmsg = nlmsg_data(nlh);
-	nfmsg->nfgen_family = nf_ct_l3num(ct);
-	nfmsg->version      = NFNETLINK_V0;
-	nfmsg->res_id	    = 0;
-
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_ORIG | NLA_F_NESTED);
-=======
 static int ctnetlink_dump_use(struct sk_buff *skb, const struct nf_conn *ct)
 {
 	if (nla_put_be32(skb, CTA_USE, htonl(refcount_read(&ct->ct_general.use))))
@@ -879,47 +590,20 @@ ctnetlink_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
 	zone = nf_ct_zone(ct);
 
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_ORIG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, nf_ct_tuple(ct, IP_CT_DIR_ORIGINAL)) < 0)
 		goto nla_put_failure;
-<<<<<<< HEAD
-	nla_nest_end(skb, nest_parms);
-
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_REPLY | NLA_F_NESTED);
-=======
 	if (ctnetlink_dump_zone_id(skb, CTA_TUPLE_ZONE, zone,
 				   NF_CT_ZONE_DIR_ORIG) < 0)
 		goto nla_put_failure;
 	nla_nest_end(skb, nest_parms);
 
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_REPLY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, nf_ct_tuple(ct, IP_CT_DIR_REPLY)) < 0)
 		goto nla_put_failure;
-<<<<<<< HEAD
-	nla_nest_end(skb, nest_parms);
-
-	if (nf_ct_zone(ct))
-		NLA_PUT_BE16(skb, CTA_ZONE, htons(nf_ct_zone(ct)));
-
-	if (ctnetlink_dump_status(skb, ct) < 0 ||
-	    ctnetlink_dump_timeout(skb, ct) < 0 ||
-	    ctnetlink_dump_counters(skb, ct, IP_CT_DIR_ORIGINAL, type) < 0 ||
-	    ctnetlink_dump_counters(skb, ct, IP_CT_DIR_REPLY, type) < 0 ||
-	    ctnetlink_dump_timestamp(skb, ct) < 0 ||
-	    ctnetlink_dump_protoinfo(skb, ct) < 0 ||
-	    ctnetlink_dump_helpinfo(skb, ct) < 0 ||
-	    ctnetlink_dump_mark(skb, ct) < 0 ||
-	    ctnetlink_dump_secctx(skb, ct) < 0 ||
-	    ctnetlink_dump_id(skb, ct) < 0 ||
-	    ctnetlink_dump_use(skb, ct) < 0 ||
-	    ctnetlink_dump_master(skb, ct) < 0 ||
-	    ctnetlink_dump_nat_seq_adj(skb, ct) < 0)
-=======
 	if (ctnetlink_dump_zone_id(skb, CTA_TUPLE_ZONE, zone,
 				   NF_CT_ZONE_DIR_REPL) < 0)
 		goto nla_put_failure;
@@ -932,7 +616,6 @@ ctnetlink_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
 	if (ctnetlink_dump_info(skb, ct) < 0)
 		goto nla_put_failure;
 	if (extinfo && ctnetlink_dump_extinfo(skb, ct, type) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto nla_put_failure;
 
 	nlmsg_end(skb, nlh);
@@ -944,28 +627,6 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline size_t
-ctnetlink_proto_size(const struct nf_conn *ct)
-{
-	struct nf_conntrack_l3proto *l3proto;
-	struct nf_conntrack_l4proto *l4proto;
-	size_t len = 0;
-
-	rcu_read_lock();
-	l3proto = __nf_ct_l3proto_find(nf_ct_l3num(ct));
-	len += l3proto->nla_size;
-
-	l4proto = __nf_ct_l4proto_find(nf_ct_l3num(ct), nf_ct_protonum(ct));
-	len += l4proto->nla_size;
-	rcu_read_unlock();
-
-	return len;
-}
-
-static inline size_t
-ctnetlink_counters_size(const struct nf_conn *ct)
-=======
 static const struct nla_policy cta_ip_nla_policy[CTA_IP_MAX + 1] = {
 	[CTA_IP_V4_SRC]	= { .type = NLA_U32 },
 	[CTA_IP_V4_DST]	= { .type = NLA_U32 },
@@ -994,27 +655,16 @@ static size_t ctnetlink_proto_size(const struct nf_conn *ct)
 #endif
 
 static inline size_t ctnetlink_acct_size(const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!nf_ct_ext_exist(ct, NF_CT_EXT_ACCT))
 		return 0;
 	return 2 * nla_total_size(0) /* CTA_COUNTERS_ORIG|REPL */
-<<<<<<< HEAD
-	       + 2 * nla_total_size(sizeof(uint64_t)) /* CTA_COUNTERS_PACKETS */
-	       + 2 * nla_total_size(sizeof(uint64_t)) /* CTA_COUNTERS_BYTES */
-	       ;
-}
-
-static inline int
-ctnetlink_secctx_size(const struct nf_conn *ct)
-=======
 	       + 2 * nla_total_size_64bit(sizeof(uint64_t)) /* CTA_COUNTERS_PACKETS */
 	       + 2 * nla_total_size_64bit(sizeof(uint64_t)) /* CTA_COUNTERS_BYTES */
 	       ;
 }
 
 static inline int ctnetlink_secctx_size(const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_NF_CONNTRACK_SECMARK
 	int len, ret;
@@ -1030,33 +680,19 @@ static inline int ctnetlink_secctx_size(const struct nf_conn *ct)
 #endif
 }
 
-<<<<<<< HEAD
-static inline size_t
-ctnetlink_timestamp_size(const struct nf_conn *ct)
-=======
 static inline size_t ctnetlink_timestamp_size(const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_NF_CONNTRACK_TIMESTAMP
 	if (!nf_ct_ext_exist(ct, NF_CT_EXT_TSTAMP))
 		return 0;
-<<<<<<< HEAD
-	return nla_total_size(0) + 2 * nla_total_size(sizeof(uint64_t));
-=======
 	return nla_total_size(0) + 2 * nla_total_size_64bit(sizeof(uint64_t));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	return 0;
 #endif
 }
 
-<<<<<<< HEAD
-static inline size_t
-ctnetlink_nlmsg_size(const struct nf_conn *ct)
-=======
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 static size_t ctnetlink_nlmsg_size(const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NLMSG_ALIGN(sizeof(struct nfgenmsg))
 	       + 3 * nla_total_size(0) /* CTA_TUPLE_ORIG|REPL|MASTER */
@@ -1065,41 +701,20 @@ static size_t ctnetlink_nlmsg_size(const struct nf_conn *ct)
 	       + 3 * nla_total_size(sizeof(u_int8_t)) /* CTA_PROTO_NUM */
 	       + nla_total_size(sizeof(u_int32_t)) /* CTA_ID */
 	       + nla_total_size(sizeof(u_int32_t)) /* CTA_STATUS */
-<<<<<<< HEAD
-	       + ctnetlink_counters_size(ct)
-=======
 	       + ctnetlink_acct_size(ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       + ctnetlink_timestamp_size(ct)
 	       + nla_total_size(sizeof(u_int32_t)) /* CTA_TIMEOUT */
 	       + nla_total_size(0) /* CTA_PROTOINFO */
 	       + nla_total_size(0) /* CTA_HELP */
 	       + nla_total_size(NF_CT_HELPER_NAME_LEN) /* CTA_HELP_NAME */
 	       + ctnetlink_secctx_size(ct)
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       + 2 * nla_total_size(0) /* CTA_NAT_SEQ_ADJ_ORIG|REPL */
 	       + 6 * nla_total_size(sizeof(u_int32_t)) /* CTA_NAT_SEQ_OFFSET */
 #endif
 #ifdef CONFIG_NF_CONNTRACK_MARK
 	       + nla_total_size(sizeof(u_int32_t)) /* CTA_MARK */
 #endif
-<<<<<<< HEAD
-	       + ctnetlink_proto_size(ct)
-	       ;
-}
-
-#ifdef CONFIG_NF_CONNTRACK_EVENTS
-static int
-ctnetlink_conntrack_event(unsigned int events, struct nf_ct_event *item)
-{
-	struct net *net;
-	struct nlmsghdr *nlh;
-	struct nfgenmsg *nfmsg;
-=======
 #ifdef CONFIG_NF_CONNTRACK_ZONES
 	       + nla_total_size(sizeof(u_int16_t)) /* CTA_ZONE|CTA_TUPLE_ZONE */
 #endif
@@ -1114,7 +729,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 	const struct nf_conntrack_zone *zone;
 	struct net *net;
 	struct nlmsghdr *nlh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *nest_parms;
 	struct nf_conn *ct = item->ct;
 	struct sk_buff *skb;
@@ -1122,20 +736,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 	unsigned int flags = 0, group;
 	int err;
 
-<<<<<<< HEAD
-	/* ignore our fake conntrack entry */
-	if (nf_ct_is_untracked(ct))
-		return 0;
-
-	if (events & (1 << IPCT_DESTROY)) {
-		type = IPCTNL_MSG_CT_DELETE;
-		group = NFNLGRP_CONNTRACK_DESTROY;
-	} else  if (events & ((1 << IPCT_NEW) | (1 << IPCT_RELATED))) {
-		type = IPCTNL_MSG_CT_NEW;
-		flags = NLM_F_CREATE|NLM_F_EXCL;
-		group = NFNLGRP_CONNTRACK_NEW;
-	} else  if (events) {
-=======
 	if (events & (1 << IPCT_DESTROY)) {
 		type = IPCTNL_MSG_CT_DELETE;
 		group = NFNLGRP_CONNTRACK_DESTROY;
@@ -1144,7 +744,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 		flags = NLM_F_CREATE|NLM_F_EXCL;
 		group = NFNLGRP_CONNTRACK_NEW;
 	} else if (events) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = IPCTNL_MSG_CT_NEW;
 		group = NFNLGRP_CONNTRACK_UPDATE;
 	} else
@@ -1158,20 +757,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 	if (skb == NULL)
 		goto errout;
 
-<<<<<<< HEAD
-	type |= NFNL_SUBSYS_CTNETLINK << 8;
-	nlh = nlmsg_put(skb, item->pid, 0, type, sizeof(*nfmsg), flags);
-	if (nlh == NULL)
-		goto nlmsg_failure;
-
-	nfmsg = nlmsg_data(nlh);
-	nfmsg->nfgen_family = nf_ct_l3num(ct);
-	nfmsg->version	= NFNETLINK_V0;
-	nfmsg->res_id	= 0;
-
-	rcu_read_lock();
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_ORIG | NLA_F_NESTED);
-=======
 	type = nfnl_msg_type(NFNL_SUBSYS_CTNETLINK, type);
 	nlh = nfnl_msg_put(skb, item->portid, 0, type, flags, nf_ct_l3num(ct),
 			   NFNETLINK_V0, 0);
@@ -1181,33 +766,20 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 	zone = nf_ct_zone(ct);
 
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_ORIG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, nf_ct_tuple(ct, IP_CT_DIR_ORIGINAL)) < 0)
 		goto nla_put_failure;
-<<<<<<< HEAD
-	nla_nest_end(skb, nest_parms);
-
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_REPLY | NLA_F_NESTED);
-=======
 	if (ctnetlink_dump_zone_id(skb, CTA_TUPLE_ZONE, zone,
 				   NF_CT_ZONE_DIR_ORIG) < 0)
 		goto nla_put_failure;
 	nla_nest_end(skb, nest_parms);
 
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_REPLY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, nf_ct_tuple(ct, IP_CT_DIR_REPLY)) < 0)
 		goto nla_put_failure;
-<<<<<<< HEAD
-	nla_nest_end(skb, nest_parms);
-
-	if (nf_ct_zone(ct))
-		NLA_PUT_BE16(skb, CTA_ZONE, htons(nf_ct_zone(ct)));
-=======
 	if (ctnetlink_dump_zone_id(skb, CTA_TUPLE_ZONE, zone,
 				   NF_CT_ZONE_DIR_REPL) < 0)
 		goto nla_put_failure;
@@ -1216,7 +788,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 	if (ctnetlink_dump_zone_id(skb, CTA_ZONE, zone,
 				   NF_CT_DEFAULT_ZONE_DIR) < 0)
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ctnetlink_dump_id(skb, ct) < 0)
 		goto nla_put_failure;
@@ -1225,20 +796,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 		goto nla_put_failure;
 
 	if (events & (1 << IPCT_DESTROY)) {
-<<<<<<< HEAD
-		if (ctnetlink_dump_counters(skb, ct,
-					    IP_CT_DIR_ORIGINAL, type) < 0 ||
-		    ctnetlink_dump_counters(skb, ct,
-					    IP_CT_DIR_REPLY, type) < 0 ||
-		    ctnetlink_dump_timestamp(skb, ct) < 0)
-			goto nla_put_failure;
-	} else {
-		if (ctnetlink_dump_timeout(skb, ct) < 0)
-			goto nla_put_failure;
-
-		if (events & (1 << IPCT_PROTOINFO)
-		    && ctnetlink_dump_protoinfo(skb, ct) < 0)
-=======
 		if (ctnetlink_dump_timeout(skb, ct, true) < 0)
 			goto nla_put_failure;
 
@@ -1252,7 +809,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 
 		if (events & (1 << IPCT_PROTOINFO) &&
 		    ctnetlink_dump_protoinfo(skb, ct, false) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto nla_put_failure;
 
 		if ((events & (1 << IPCT_HELPER) || nfct_help(ct))
@@ -1264,48 +820,29 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 		    && ctnetlink_dump_secctx(skb, ct) < 0)
 			goto nla_put_failure;
 #endif
-<<<<<<< HEAD
-=======
 		if (events & (1 << IPCT_LABEL) &&
 		     ctnetlink_dump_labels(skb, ct) < 0)
 			goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (events & (1 << IPCT_RELATED) &&
 		    ctnetlink_dump_master(skb, ct) < 0)
 			goto nla_put_failure;
 
-<<<<<<< HEAD
-		if (events & (1 << IPCT_NATSEQADJ) &&
-		    ctnetlink_dump_nat_seq_adj(skb, ct) < 0)
-=======
 		if (events & (1 << IPCT_SEQADJ) &&
 		    ctnetlink_dump_ct_seq_adj(skb, ct) < 0)
 			goto nla_put_failure;
 
 		if (events & (1 << IPCT_SYNPROXY) &&
 		    ctnetlink_dump_ct_synproxy(skb, ct) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto nla_put_failure;
 	}
 
 #ifdef CONFIG_NF_CONNTRACK_MARK
-<<<<<<< HEAD
-	if ((events & (1 << IPCT_MARK) || ct->mark)
-	    && ctnetlink_dump_mark(skb, ct) < 0)
-		goto nla_put_failure;
-#endif
-	rcu_read_unlock();
-
-	nlmsg_end(skb, nlh);
-	err = nfnetlink_send(skb, net, item->pid, group, item->report,
-=======
 	if (ctnetlink_dump_mark(skb, ct, events & (1 << IPCT_MARK)))
 		goto nla_put_failure;
 #endif
 	nlmsg_end(skb, nlh);
 	err = nfnetlink_send(skb, net, item->portid, group, item->report,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     GFP_ATOMIC);
 	if (err == -ENOBUFS || err == -EAGAIN)
 		return -ENOBUFS;
@@ -1313,10 +850,6 @@ ctnetlink_conntrack_event(unsigned int events, const struct nf_ct_event *item)
 	return 0;
 
 nla_put_failure:
-<<<<<<< HEAD
-	rcu_read_unlock();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsg_cancel(skb, nlh);
 nlmsg_failure:
 	kfree_skb(skb);
@@ -1332,23 +865,6 @@ static int ctnetlink_done(struct netlink_callback *cb)
 {
 	if (cb->args[1])
 		nf_ct_put((struct nf_conn *)cb->args[1]);
-<<<<<<< HEAD
-	if (cb->data)
-		kfree(cb->data);
-	return 0;
-}
-
-struct ctnetlink_dump_filter {
-	struct {
-		u_int32_t val;
-		u_int32_t mask;
-	} mark;
-};
-
-static int
-ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
-{
-=======
 	kfree(cb->data);
 	return 0;
 }
@@ -1675,34 +1191,10 @@ static int
 ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
 {
 	unsigned int flags = cb->data ? NLM_F_DUMP_FILTERED : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net = sock_net(skb->sk);
 	struct nf_conn *ct, *last;
 	struct nf_conntrack_tuple_hash *h;
 	struct hlist_nulls_node *n;
-<<<<<<< HEAD
-	struct nfgenmsg *nfmsg = nlmsg_data(cb->nlh);
-	u_int8_t l3proto = nfmsg->nfgen_family;
-	int res;
-#ifdef CONFIG_NF_CONNTRACK_MARK
-	const struct ctnetlink_dump_filter *filter = cb->data;
-#endif
-
-	spin_lock_bh(&nf_conntrack_lock);
-	last = (struct nf_conn *)cb->args[1];
-	for (; cb->args[0] < net->ct.htable_size; cb->args[0]++) {
-restart:
-		hlist_nulls_for_each_entry(h, n, &net->ct.hash[cb->args[0]],
-					 hnnode) {
-			if (NF_CT_DIRECTION(h) != IP_CT_DIR_ORIGINAL)
-				continue;
-			ct = nf_ct_tuplehash_to_ctrack(h);
-			/* Dump entries of a given L3 protocol number.
-			 * If it is not specified, ie. l3proto == 0,
-			 * then dump everything. */
-			if (l3proto && nf_ct_l3num(ct) != l3proto)
-				continue;
-=======
 	struct nf_conn *nf_ct_evict[8];
 	int res, i;
 	spinlock_t *lockp;
@@ -1743,33 +1235,11 @@ restart:
 			if (NF_CT_DIRECTION(h) != IP_CT_DIR_ORIGINAL)
 				continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cb->args[1]) {
 				if (ct != last)
 					continue;
 				cb->args[1] = 0;
 			}
-<<<<<<< HEAD
-#ifdef CONFIG_NF_CONNTRACK_MARK
-			if (filter && !((ct->mark & filter->mark.mask) ==
-					filter->mark.val)) {
-				continue;
-			}
-#endif
-			rcu_read_lock();
-			res =
-			ctnetlink_fill_info(skb, NETLINK_CB(cb->skb).pid,
-					    cb->nlh->nlmsg_seq,
-					    NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
-					    ct);
-			rcu_read_unlock();
-			if (res < 0) {
-				nf_conntrack_get(&ct->ct_general);
-				cb->args[1] = (unsigned long)ct;
-				goto out;
-			}
-		}
-=======
 			if (!ctnetlink_filter_match(ct, cb->data))
 				continue;
 
@@ -1786,18 +1256,12 @@ restart:
 			}
 		}
 		spin_unlock(lockp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cb->args[1]) {
 			cb->args[1] = 0;
 			goto restart;
 		}
 	}
 out:
-<<<<<<< HEAD
-	spin_unlock_bh(&nf_conntrack_lock);
-	if (last)
-		nf_ct_put(last);
-=======
 	local_bh_enable();
 	if (last) {
 		/* nf ct hash resize happened, now clear the leftover. */
@@ -1813,33 +1277,10 @@ out:
 			nf_ct_kill(nf_ct_evict[i]);
 		nf_ct_put(nf_ct_evict[i]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return skb->len;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_parse_tuple_ip(struct nlattr *attr, struct nf_conntrack_tuple *tuple)
-{
-	struct nlattr *tb[CTA_IP_MAX+1];
-	struct nf_conntrack_l3proto *l3proto;
-	int ret = 0;
-
-	nla_parse_nested(tb, CTA_IP_MAX, attr, NULL);
-
-	rcu_read_lock();
-	l3proto = __nf_ct_l3proto_find(tuple->src.l3num);
-
-	if (likely(l3proto->nlattr_to_tuple)) {
-		ret = nla_validate_nested(attr, CTA_IP_MAX,
-					  l3proto->nla_policy);
-		if (ret == 0)
-			ret = l3proto->nlattr_to_tuple(tb, tuple);
-	}
-
-	rcu_read_unlock();
-=======
 static int ipv4_nlattr_to_tuple(struct nlattr *tb[],
 				struct nf_conntrack_tuple *t,
 				u_int32_t flags)
@@ -1902,7 +1343,6 @@ static int ctnetlink_parse_tuple_ip(struct nlattr *attr,
 		ret = ipv6_nlattr_to_tuple(tb, tuple, flags);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1911,32 +1351,6 @@ static const struct nla_policy proto_nla_policy[CTA_PROTO_MAX+1] = {
 	[CTA_PROTO_NUM]	= { .type = NLA_U8 },
 };
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_parse_tuple_proto(struct nlattr *attr,
-			    struct nf_conntrack_tuple *tuple)
-{
-	struct nlattr *tb[CTA_PROTO_MAX+1];
-	struct nf_conntrack_l4proto *l4proto;
-	int ret = 0;
-
-	ret = nla_parse_nested(tb, CTA_PROTO_MAX, attr, proto_nla_policy);
-	if (ret < 0)
-		return ret;
-
-	if (!tb[CTA_PROTO_NUM])
-		return -EINVAL;
-	tuple->dst.protonum = nla_get_u8(tb[CTA_PROTO_NUM]);
-
-	rcu_read_lock();
-	l4proto = __nf_ct_l4proto_find(tuple->src.l3num, tuple->dst.protonum);
-
-	if (likely(l4proto->nlattr_to_tuple)) {
-		ret = nla_validate_nested(attr, CTA_PROTO_MAX,
-					  l4proto->nla_policy);
-		if (ret == 0)
-			ret = l4proto->nlattr_to_tuple(tb, tuple);
-=======
 static int ctnetlink_parse_tuple_proto(struct nlattr *attr,
 				       struct nf_conntrack_tuple *tuple,
 				       u_int32_t flags)
@@ -1967,7 +1381,6 @@ static int ctnetlink_parse_tuple_proto(struct nlattr *attr,
 						     NULL);
 		if (ret == 0)
 			ret = l4proto->nlattr_to_tuple(tb, tuple, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rcu_read_unlock();
@@ -1975,17 +1388,6 @@ static int ctnetlink_parse_tuple_proto(struct nlattr *attr,
 	return ret;
 }
 
-<<<<<<< HEAD
-static const struct nla_policy tuple_nla_policy[CTA_TUPLE_MAX+1] = {
-	[CTA_TUPLE_IP]		= { .type = NLA_NESTED },
-	[CTA_TUPLE_PROTO]	= { .type = NLA_NESTED },
-};
-
-static int
-ctnetlink_parse_tuple(const struct nlattr * const cda[],
-		      struct nf_conntrack_tuple *tuple,
-		      enum ctattr_type type, u_int8_t l3num)
-=======
 static int
 ctnetlink_parse_zone(const struct nlattr *attr,
 		     struct nf_conntrack_zone *zone)
@@ -2044,32 +1446,12 @@ ctnetlink_parse_tuple_filter(const struct nlattr * const cda[],
 			      struct nf_conntrack_tuple *tuple, u32 type,
 			      u_int8_t l3num, struct nf_conntrack_zone *zone,
 			      u_int32_t flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *tb[CTA_TUPLE_MAX+1];
 	int err;
 
 	memset(tuple, 0, sizeof(*tuple));
 
-<<<<<<< HEAD
-	nla_parse_nested(tb, CTA_TUPLE_MAX, cda[type], tuple_nla_policy);
-
-	if (!tb[CTA_TUPLE_IP])
-		return -EINVAL;
-
-	tuple->src.l3num = l3num;
-
-	err = ctnetlink_parse_tuple_ip(tb[CTA_TUPLE_IP], tuple);
-	if (err < 0)
-		return err;
-
-	if (!tb[CTA_TUPLE_PROTO])
-		return -EINVAL;
-
-	err = ctnetlink_parse_tuple_proto(tb[CTA_TUPLE_PROTO], tuple);
-	if (err < 0)
-		return err;
-=======
 	err = nla_parse_nested_deprecated(tb, CTA_TUPLE_MAX, cda[type],
 					  tuple_nla_policy, NULL);
 	if (err < 0)
@@ -2110,7 +1492,6 @@ ctnetlink_parse_tuple_filter(const struct nlattr * const cda[],
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* orig and expect tuples get DIR_ORIGINAL */
 	if (type == CTA_TUPLE_REPLY)
@@ -2122,33 +1503,6 @@ ctnetlink_parse_tuple_filter(const struct nlattr * const cda[],
 }
 
 static int
-<<<<<<< HEAD
-ctnetlink_parse_zone(const struct nlattr *attr, u16 *zone)
-{
-	if (attr)
-#ifdef CONFIG_NF_CONNTRACK_ZONES
-		*zone = ntohs(nla_get_be16(attr));
-#else
-		return -EOPNOTSUPP;
-#endif
-	else
-		*zone = 0;
-
-	return 0;
-}
-
-static const struct nla_policy help_nla_policy[CTA_HELP_MAX+1] = {
-	[CTA_HELP_NAME]		= { .type = NLA_NUL_STRING },
-};
-
-static inline int
-ctnetlink_parse_help(const struct nlattr *attr, char **helper_name,
-		     struct nlattr **helpinfo)
-{
-	struct nlattr *tb[CTA_HELP_MAX+1];
-
-	nla_parse_nested(tb, CTA_HELP_MAX, attr, help_nla_policy);
-=======
 ctnetlink_parse_tuple(const struct nlattr * const cda[],
 		      struct nf_conntrack_tuple *tuple, u32 type,
 		      u_int8_t l3num, struct nf_conntrack_zone *zone)
@@ -2172,7 +1526,6 @@ static int ctnetlink_parse_help(const struct nlattr *attr, char **helper_name,
 					  help_nla_policy, NULL);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tb[CTA_HELP_NAME])
 		return -EINVAL;
@@ -2197,24 +1550,6 @@ static const struct nla_policy ct_nla_policy[CTA_MAX+1] = {
 	[CTA_ID]		= { .type = NLA_U32 },
 	[CTA_NAT_DST]		= { .type = NLA_NESTED },
 	[CTA_TUPLE_MASTER]	= { .type = NLA_NESTED },
-<<<<<<< HEAD
-	[CTA_ZONE]		= { .type = NLA_U16 },
-	[CTA_MARK_MASK]		= { .type = NLA_U32 },
-};
-
-static int
-ctnetlink_del_conntrack(struct sock *ctnl, struct sk_buff *skb,
-			const struct nlmsghdr *nlh,
-			const struct nlattr * const cda[])
-{
-	struct net *net = sock_net(ctnl);
-	struct nf_conntrack_tuple_hash *h;
-	struct nf_conntrack_tuple tuple;
-	struct nf_conn *ct;
-	struct nfgenmsg *nfmsg = nlmsg_data(nlh);
-	u_int8_t u3 = nfmsg->nfgen_family;
-	u16 zone;
-=======
 	[CTA_NAT_SEQ_ADJ_ORIG]  = { .type = NLA_NESTED },
 	[CTA_NAT_SEQ_ADJ_REPLY] = { .type = NLA_NESTED },
 	[CTA_ZONE]		= { .type = NLA_U16 },
@@ -2269,7 +1604,6 @@ static int ctnetlink_del_conntrack(struct sk_buff *skb,
 	struct nf_conntrack_tuple tuple;
 	struct nf_conntrack_zone zone;
 	struct nf_conn *ct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = ctnetlink_parse_zone(cda[CTA_ZONE], &zone);
@@ -2277,17 +1611,6 @@ static int ctnetlink_del_conntrack(struct sk_buff *skb,
 		return err;
 
 	if (cda[CTA_TUPLE_ORIG])
-<<<<<<< HEAD
-		err = ctnetlink_parse_tuple(cda, &tuple, CTA_TUPLE_ORIG, u3);
-	else if (cda[CTA_TUPLE_REPLY])
-		err = ctnetlink_parse_tuple(cda, &tuple, CTA_TUPLE_REPLY, u3);
-	else {
-		/* Flush the whole table */
-		nf_conntrack_flush_report(net,
-					 NETLINK_CB(skb).pid,
-					 nlmsg_report(nlh));
-		return 0;
-=======
 		err = ctnetlink_parse_tuple(cda, &tuple, CTA_TUPLE_ORIG,
 					    family, &zone);
 	else if (cda[CTA_TUPLE_REPLY])
@@ -2299,98 +1622,32 @@ static int ctnetlink_del_conntrack(struct sk_buff *skb,
 		return ctnetlink_flush_conntrack(info->net, cda,
 						 NETLINK_CB(skb).portid,
 						 nlmsg_report(info->nlh), u3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	h = nf_conntrack_find_get(net, zone, &tuple);
-=======
 	h = nf_conntrack_find_get(info->net, &zone, &tuple);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!h)
 		return -ENOENT;
 
 	ct = nf_ct_tuplehash_to_ctrack(h);
 
 	if (cda[CTA_ID]) {
-<<<<<<< HEAD
-		u_int32_t id = ntohl(nla_get_be32(cda[CTA_ID]));
-		if (id != (u32)(unsigned long)ct) {
-=======
 		__be32 id = nla_get_be32(cda[CTA_ID]);
 
 		if (id != (__force __be32)nf_ct_get_id(ct)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nf_ct_put(ct);
 			return -ENOENT;
 		}
 	}
 
-<<<<<<< HEAD
-	if (del_timer(&ct->timeout)) {
-		if (nf_conntrack_event_report(IPCT_DESTROY, ct,
-					      NETLINK_CB(skb).pid,
-					      nlmsg_report(nlh)) < 0) {
-			nf_ct_delete_from_lists(ct);
-			/* we failed to report the event, try later */
-			nf_ct_insert_dying_list(ct);
-			nf_ct_put(ct);
-			return 0;
-		}
-		/* death_by_timeout would report the event again */
-		set_bit(IPS_DYING_BIT, &ct->status);
-		nf_ct_delete_from_lists(ct);
-		nf_ct_put(ct);
-	}
-=======
 	nf_ct_delete(ct, NETLINK_CB(skb).portid, nlmsg_report(info->nlh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nf_ct_put(ct);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-ctnetlink_get_conntrack(struct sock *ctnl, struct sk_buff *skb,
-			const struct nlmsghdr *nlh,
-			const struct nlattr * const cda[])
-{
-	struct net *net = sock_net(ctnl);
-	struct nf_conntrack_tuple_hash *h;
-	struct nf_conntrack_tuple tuple;
-	struct nf_conn *ct;
-	struct sk_buff *skb2 = NULL;
-	struct nfgenmsg *nfmsg = nlmsg_data(nlh);
-	u_int8_t u3 = nfmsg->nfgen_family;
-	u16 zone;
-	int err;
-
-	if (nlh->nlmsg_flags & NLM_F_DUMP) {
-		struct netlink_dump_control c = {
-			.dump = ctnetlink_dump_table,
-			.done = ctnetlink_done,
-		};
-#ifdef CONFIG_NF_CONNTRACK_MARK
-		if (cda[CTA_MARK] && cda[CTA_MARK_MASK]) {
-			struct ctnetlink_dump_filter *filter;
-
-			filter = kzalloc(sizeof(struct ctnetlink_dump_filter),
-					 GFP_ATOMIC);
-			if (filter == NULL)
-				return -ENOMEM;
-
-			filter->mark.val = ntohl(nla_get_be32(cda[CTA_MARK]));
-			filter->mark.mask =
-				ntohl(nla_get_be32(cda[CTA_MARK_MASK]));
-			c.data = filter;
-		}
-#endif
-		return netlink_dump_start(ctnl, skb, nlh, &c);
-=======
 static int ctnetlink_get_conntrack(struct sk_buff *skb,
 				   const struct nfnl_info *info,
 				   const struct nlattr * const cda[])
@@ -2412,7 +1669,6 @@ static int ctnetlink_get_conntrack(struct sk_buff *skb,
 		};
 
 		return netlink_dump_start(info->sk, skb, info->nlh, &c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = ctnetlink_parse_zone(cda[CTA_ZONE], &zone);
@@ -2420,69 +1676,29 @@ static int ctnetlink_get_conntrack(struct sk_buff *skb,
 		return err;
 
 	if (cda[CTA_TUPLE_ORIG])
-<<<<<<< HEAD
-		err = ctnetlink_parse_tuple(cda, &tuple, CTA_TUPLE_ORIG, u3);
-	else if (cda[CTA_TUPLE_REPLY])
-		err = ctnetlink_parse_tuple(cda, &tuple, CTA_TUPLE_REPLY, u3);
-=======
 		err = ctnetlink_parse_tuple(cda, &tuple, CTA_TUPLE_ORIG,
 					    u3, &zone);
 	else if (cda[CTA_TUPLE_REPLY])
 		err = ctnetlink_parse_tuple(cda, &tuple, CTA_TUPLE_REPLY,
 					    u3, &zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return -EINVAL;
 
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	h = nf_conntrack_find_get(net, zone, &tuple);
-=======
 	h = nf_conntrack_find_get(info->net, &zone, &tuple);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!h)
 		return -ENOENT;
 
 	ct = nf_ct_tuplehash_to_ctrack(h);
 
-<<<<<<< HEAD
-	err = -ENOMEM;
-	skb2 = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-	if (skb2 == NULL) {
-=======
 	skb2 = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!skb2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nf_ct_put(ct);
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	rcu_read_lock();
-	err = ctnetlink_fill_info(skb2, NETLINK_CB(skb).pid, nlh->nlmsg_seq,
-				  NFNL_MSG_TYPE(nlh->nlmsg_type), ct);
-	rcu_read_unlock();
-	nf_ct_put(ct);
-	if (err <= 0)
-		goto free;
-
-	err = netlink_unicast(ctnl, skb2, NETLINK_CB(skb).pid, MSG_DONTWAIT);
-	if (err < 0)
-		goto out;
-
-	return 0;
-
-free:
-	kfree_skb(skb2);
-out:
-	/* this avoids a loop in nfnetlink. */
-	return err == -EAGAIN ? -ENOBUFS : err;
-}
-
-#ifdef CONFIG_NF_NAT_NEEDED
-=======
 	err = ctnetlink_fill_info(skb2, NETLINK_CB(skb).portid,
 				  info->nlh->nlmsg_seq,
 				  NFNL_MSG_TYPE(info->nlh->nlmsg_type), ct,
@@ -2634,30 +1850,10 @@ static int ctnetlink_get_ct_unconfirmed(struct sk_buff *skb,
 }
 
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 ctnetlink_parse_nat_setup(struct nf_conn *ct,
 			  enum nf_nat_manip_type manip,
 			  const struct nlattr *attr)
-<<<<<<< HEAD
-{
-	typeof(nfnetlink_parse_nat_setup_hook) parse_nat_setup;
-	int err;
-
-	parse_nat_setup = rcu_dereference(nfnetlink_parse_nat_setup_hook);
-	if (!parse_nat_setup) {
-#ifdef CONFIG_MODULES
-		rcu_read_unlock();
-		nfnl_unlock();
-		if (request_module("nf-nat") < 0) {
-			nfnl_lock();
-			rcu_read_lock();
-			return -EOPNOTSUPP;
-		}
-		nfnl_lock();
-		rcu_read_lock();
-		if (nfnetlink_parse_nat_setup_hook)
-=======
 	__must_hold(RCU)
 {
 	const struct nf_nat_hook *nat_hook;
@@ -2677,25 +1873,11 @@ ctnetlink_parse_nat_setup(struct nf_conn *ct,
 		rcu_read_lock();
 		nat_hook = rcu_dereference(nf_nat_hook);
 		if (nat_hook)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EAGAIN;
 #endif
 		return -EOPNOTSUPP;
 	}
 
-<<<<<<< HEAD
-	err = parse_nat_setup(ct, manip, attr);
-	if (err == -EAGAIN) {
-#ifdef CONFIG_MODULES
-		rcu_read_unlock();
-		nfnl_unlock();
-		if (request_module("nf-nat-%u", nf_ct_l3num(ct)) < 0) {
-			nfnl_lock();
-			rcu_read_lock();
-			return -EOPNOTSUPP;
-		}
-		nfnl_lock();
-=======
 	err = nat_hook->parse_nat_setup(ct, manip, attr);
 	if (err == -EAGAIN) {
 #ifdef CONFIG_MODULES
@@ -2707,7 +1889,6 @@ ctnetlink_parse_nat_setup(struct nf_conn *ct,
 			return -EOPNOTSUPP;
 		}
 		nfnl_lock(NFNL_SUBSYS_CTNETLINK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_lock();
 #else
 		err = -EOPNOTSUPP;
@@ -2720,53 +1901,6 @@ ctnetlink_parse_nat_setup(struct nf_conn *ct,
 static int
 ctnetlink_change_status(struct nf_conn *ct, const struct nlattr * const cda[])
 {
-<<<<<<< HEAD
-	unsigned long d;
-	unsigned int status = ntohl(nla_get_be32(cda[CTA_STATUS]));
-	d = ct->status ^ status;
-
-	if (d & (IPS_EXPECTED|IPS_CONFIRMED|IPS_DYING))
-		/* unchangeable */
-		return -EBUSY;
-
-	if (d & IPS_SEEN_REPLY && !(status & IPS_SEEN_REPLY))
-		/* SEEN_REPLY bit can only be set */
-		return -EBUSY;
-
-	if (d & IPS_ASSURED && !(status & IPS_ASSURED))
-		/* ASSURED bit can only be set */
-		return -EBUSY;
-
-	/* Be careful here, modifying NAT bits can screw up things,
-	 * so don't let users modify them directly if they don't pass
-	 * nf_nat_range. */
-	ct->status |= status & ~(IPS_NAT_DONE_MASK | IPS_NAT_MASK);
-	return 0;
-}
-
-static int
-ctnetlink_change_nat(struct nf_conn *ct, const struct nlattr * const cda[])
-{
-#ifdef CONFIG_NF_NAT_NEEDED
-	int ret;
-
-	if (cda[CTA_NAT_DST]) {
-		ret = ctnetlink_parse_nat_setup(ct,
-						NF_NAT_MANIP_DST,
-						cda[CTA_NAT_DST]);
-		if (ret < 0)
-			return ret;
-	}
-	if (cda[CTA_NAT_SRC]) {
-		ret = ctnetlink_parse_nat_setup(ct,
-						NF_NAT_MANIP_SRC,
-						cda[CTA_NAT_SRC]);
-		if (ret < 0)
-			return ret;
-	}
-	return 0;
-#else
-=======
 	return nf_ct_change_status_common(ct, ntohl(nla_get_be32(cda[CTA_STATUS])));
 }
 
@@ -2789,18 +1923,12 @@ ctnetlink_setup_nat(struct nf_conn *ct, const struct nlattr * const cda[])
 #else
 	if (!cda[CTA_NAT_DST] && !cda[CTA_NAT_SRC])
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EOPNOTSUPP;
 #endif
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_change_helper(struct nf_conn *ct, const struct nlattr * const cda[])
-=======
 static int ctnetlink_change_helper(struct nf_conn *ct,
 				   const struct nlattr * const cda[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nf_conntrack_helper *helper;
 	struct nf_conn_help *help = nfct_help(ct);
@@ -2808,19 +1936,10 @@ static int ctnetlink_change_helper(struct nf_conn *ct,
 	struct nlattr *helpinfo = NULL;
 	int err;
 
-<<<<<<< HEAD
-	/* don't change helper of sibling connections */
-	if (ct->master)
-		return -EBUSY;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ctnetlink_parse_help(cda[CTA_HELP], &helpname, &helpinfo);
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-=======
 	/* don't change helper of sibling connections */
 	if (ct->master) {
 		/* If we try to change the helper to the same thing twice,
@@ -2839,7 +1958,6 @@ static int ctnetlink_change_helper(struct nf_conn *ct,
 		return err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcmp(helpname, "")) {
 		if (help && help->helper) {
 			/* we had a helper before ... */
@@ -2850,69 +1968,15 @@ static int ctnetlink_change_helper(struct nf_conn *ct,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	helper = __nf_conntrack_helper_find(helpname, nf_ct_l3num(ct),
-					    nf_ct_protonum(ct));
-	if (helper == NULL) {
-#ifdef CONFIG_MODULES
-		spin_unlock_bh(&nf_conntrack_lock);
-
-		if (request_module("nfct-helper-%s", helpname) < 0) {
-			spin_lock_bh(&nf_conntrack_lock);
-			return -EOPNOTSUPP;
-		}
-
-		spin_lock_bh(&nf_conntrack_lock);
-		helper = __nf_conntrack_helper_find(helpname, nf_ct_l3num(ct),
-						    nf_ct_protonum(ct));
-		if (helper)
-			return -EAGAIN;
-#endif
-=======
 	rcu_read_lock();
 	helper = __nf_conntrack_helper_find(helpname, nf_ct_l3num(ct),
 					    nf_ct_protonum(ct));
 	if (helper == NULL) {
 		rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EOPNOTSUPP;
 	}
 
 	if (help) {
-<<<<<<< HEAD
-		if (help->helper == helper) {
-			/* update private helper data if allowed. */
-			if (helper->from_nlattr)
-				helper->from_nlattr(helpinfo, ct);
-			return 0;
-		} else
-			return -EBUSY;
-	}
-
-	/* we cannot set a helper for an existing conntrack */
-	return -EOPNOTSUPP;
-}
-
-static inline int
-ctnetlink_change_timeout(struct nf_conn *ct, const struct nlattr * const cda[])
-{
-	u_int32_t timeout = ntohl(nla_get_be32(cda[CTA_TIMEOUT]));
-
-	if (!del_timer(&ct->timeout))
-		return -ETIME;
-
-	ct->timeout.expires = jiffies + timeout * HZ;
-	add_timer(&ct->timeout);
-
-/* Refresh the NAT type entry. */
-#if defined(CONFIG_IP_NF_TARGET_NATTYPE_MODULE)
-	(void)nattype_refresh_timer(ct->nattype_entry, ct->timeout.expires);
-#endif
-
-	return 0;
-}
-
-=======
 		if (rcu_access_pointer(help->helper) == helper) {
 			/* update private helper data if allowed. */
 			if (helper->from_nlattr)
@@ -2951,30 +2015,12 @@ static void ctnetlink_change_mark(struct nf_conn *ct,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct nla_policy protoinfo_policy[CTA_PROTOINFO_MAX+1] = {
 	[CTA_PROTOINFO_TCP]	= { .type = NLA_NESTED },
 	[CTA_PROTOINFO_DCCP]	= { .type = NLA_NESTED },
 	[CTA_PROTOINFO_SCTP]	= { .type = NLA_NESTED },
 };
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_change_protoinfo(struct nf_conn *ct, const struct nlattr * const cda[])
-{
-	const struct nlattr *attr = cda[CTA_PROTOINFO];
-	struct nlattr *tb[CTA_PROTOINFO_MAX+1];
-	struct nf_conntrack_l4proto *l4proto;
-	int err = 0;
-
-	nla_parse_nested(tb, CTA_PROTOINFO_MAX, attr, protoinfo_policy);
-
-	rcu_read_lock();
-	l4proto = __nf_ct_l4proto_find(nf_ct_l3num(ct), nf_ct_protonum(ct));
-	if (l4proto->from_nlattr)
-		err = l4proto->from_nlattr(tb, ct);
-	rcu_read_unlock();
-=======
 static int ctnetlink_change_protoinfo(struct nf_conn *ct,
 				      const struct nlattr * const cda[])
 {
@@ -2991,44 +2037,10 @@ static int ctnetlink_change_protoinfo(struct nf_conn *ct,
 	l4proto = nf_ct_l4proto_find(nf_ct_protonum(ct));
 	if (l4proto->from_nlattr)
 		err = l4proto->from_nlattr(tb, ct);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-static const struct nla_policy nat_seq_policy[CTA_NAT_SEQ_MAX+1] = {
-	[CTA_NAT_SEQ_CORRECTION_POS]	= { .type = NLA_U32 },
-	[CTA_NAT_SEQ_OFFSET_BEFORE]	= { .type = NLA_U32 },
-	[CTA_NAT_SEQ_OFFSET_AFTER]	= { .type = NLA_U32 },
-};
-
-static inline int
-change_nat_seq_adj(struct nf_nat_seq *natseq, const struct nlattr * const attr)
-{
-	struct nlattr *cda[CTA_NAT_SEQ_MAX+1];
-
-	nla_parse_nested(cda, CTA_NAT_SEQ_MAX, attr, nat_seq_policy);
-
-	if (!cda[CTA_NAT_SEQ_CORRECTION_POS])
-		return -EINVAL;
-
-	natseq->correction_pos =
-		ntohl(nla_get_be32(cda[CTA_NAT_SEQ_CORRECTION_POS]));
-
-	if (!cda[CTA_NAT_SEQ_OFFSET_BEFORE])
-		return -EINVAL;
-
-	natseq->offset_before =
-		ntohl(nla_get_be32(cda[CTA_NAT_SEQ_OFFSET_BEFORE]));
-
-	if (!cda[CTA_NAT_SEQ_OFFSET_AFTER])
-		return -EINVAL;
-
-	natseq->offset_after =
-		ntohl(nla_get_be32(cda[CTA_NAT_SEQ_OFFSET_AFTER]));
-=======
 static const struct nla_policy seqadj_policy[CTA_SEQADJ_MAX+1] = {
 	[CTA_SEQADJ_CORRECTION_POS]	= { .type = NLA_U32 },
 	[CTA_SEQADJ_OFFSET_BEFORE]	= { .type = NLA_U32 },
@@ -3063,44 +2075,11 @@ static int change_seq_adj(struct nf_ct_seqadj *seq,
 
 	seq->offset_after =
 		ntohl(nla_get_be32(cda[CTA_SEQADJ_OFFSET_AFTER]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-ctnetlink_change_nat_seq_adj(struct nf_conn *ct,
-			     const struct nlattr * const cda[])
-{
-	int ret = 0;
-	struct nf_conn_nat *nat = nfct_nat(ct);
-
-	if (!nat)
-		return 0;
-
-	if (cda[CTA_NAT_SEQ_ADJ_ORIG]) {
-		ret = change_nat_seq_adj(&nat->seq[IP_CT_DIR_ORIGINAL],
-					 cda[CTA_NAT_SEQ_ADJ_ORIG]);
-		if (ret < 0)
-			return ret;
-
-		ct->status |= IPS_SEQ_ADJUST;
-	}
-
-	if (cda[CTA_NAT_SEQ_ADJ_REPLY]) {
-		ret = change_nat_seq_adj(&nat->seq[IP_CT_DIR_REPLY],
-					 cda[CTA_NAT_SEQ_ADJ_REPLY]);
-		if (ret < 0)
-			return ret;
-
-		ct->status |= IPS_SEQ_ADJUST;
-	}
-
-	return 0;
-}
-#endif
-=======
 ctnetlink_change_seq_adj(struct nf_conn *ct,
 			 const struct nlattr * const cda[])
 {
@@ -3194,7 +2173,6 @@ ctnetlink_attach_labels(struct nf_conn *ct, const struct nlattr * const cda[])
 	return -EOPNOTSUPP;
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 ctnetlink_change_conntrack(struct nf_conn *ct,
@@ -3232,18 +2210,6 @@ ctnetlink_change_conntrack(struct nf_conn *ct,
 
 #if defined(CONFIG_NF_CONNTRACK_MARK)
 	if (cda[CTA_MARK])
-<<<<<<< HEAD
-		ct->mark = ntohl(nla_get_be32(cda[CTA_MARK]));
-#endif
-
-#ifdef CONFIG_NF_NAT_NEEDED
-	if (cda[CTA_NAT_SEQ_ADJ_ORIG] || cda[CTA_NAT_SEQ_ADJ_REPLY]) {
-		err = ctnetlink_change_nat_seq_adj(ct, cda);
-		if (err < 0)
-			return err;
-	}
-#endif
-=======
 		ctnetlink_change_mark(ct, cda);
 #endif
 
@@ -3264,18 +2230,13 @@ ctnetlink_change_conntrack(struct nf_conn *ct,
 		if (err < 0)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static struct nf_conn *
-<<<<<<< HEAD
-ctnetlink_create_conntrack(struct net *net, u16 zone,
-=======
 ctnetlink_create_conntrack(struct net *net,
 			   const struct nf_conntrack_zone *zone,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   const struct nlattr * const cda[],
 			   struct nf_conntrack_tuple *otuple,
 			   struct nf_conntrack_tuple *rtuple,
@@ -3285,10 +2246,7 @@ ctnetlink_create_conntrack(struct net *net,
 	int err = -EINVAL;
 	struct nf_conntrack_helper *helper;
 	struct nf_conn_tstamp *tstamp;
-<<<<<<< HEAD
-=======
 	u64 timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ct = nf_conntrack_alloc(net, zone, otuple, rtuple, GFP_ATOMIC);
 	if (IS_ERR(ct))
@@ -3296,12 +2254,6 @@ ctnetlink_create_conntrack(struct net *net,
 
 	if (!cda[CTA_TIMEOUT])
 		goto err1;
-<<<<<<< HEAD
-	ct->timeout.expires = ntohl(nla_get_be32(cda[CTA_TIMEOUT]));
-
-	ct->timeout.expires = jiffies + ct->timeout.expires * HZ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
  	if (cda[CTA_HELP]) {
@@ -3337,11 +2289,7 @@ ctnetlink_create_conntrack(struct net *net,
 		} else {
 			struct nf_conn_help *help;
 
-<<<<<<< HEAD
-			help = nf_ct_helper_ext_add(ct, helper, GFP_ATOMIC);
-=======
 			help = nf_ct_helper_ext_add(ct, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (help == NULL) {
 				err = -ENOMEM;
 				goto err2;
@@ -3350,23 +2298,6 @@ ctnetlink_create_conntrack(struct net *net,
 			if (helper->from_nlattr)
 				helper->from_nlattr(helpinfo, ct);
 
-<<<<<<< HEAD
-			/* not in hash table yet so not strictly necessary */
-			RCU_INIT_POINTER(help->helper, helper);
-		}
-	} else {
-		/* try an implicit helper assignation */
-		err = __nf_ct_try_assign_helper(ct, NULL, GFP_ATOMIC);
-		if (err < 0)
-			goto err2;
-	}
-
-	if (cda[CTA_NAT_SRC] || cda[CTA_NAT_DST]) {
-		err = ctnetlink_change_nat(ct, cda);
-		if (err < 0)
-			goto err2;
-	}
-=======
 			/* disable helper auto-assignment for this entry */
 			ct->status |= IPS_HELPER;
 			RCU_INIT_POINTER(help->helper, helper);
@@ -3376,48 +2307,31 @@ ctnetlink_create_conntrack(struct net *net,
 	err = ctnetlink_setup_nat(ct, cda);
 	if (err < 0)
 		goto err2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nf_ct_acct_ext_add(ct, GFP_ATOMIC);
 	nf_ct_tstamp_ext_add(ct, GFP_ATOMIC);
 	nf_ct_ecache_ext_add(ct, 0, 0, GFP_ATOMIC);
 	nf_ct_labels_ext_add(ct);
-<<<<<<< HEAD
-=======
 	nfct_seqadj_ext_add(ct);
 	nfct_synproxy_ext_add(ct);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we must add conntrack extensions before confirmation. */
 	ct->status |= IPS_CONFIRMED;
 
-<<<<<<< HEAD
-=======
 	timeout = (u64)ntohl(nla_get_be32(cda[CTA_TIMEOUT])) * HZ;
 	__nf_ct_set_timeout(ct, timeout);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cda[CTA_STATUS]) {
 		err = ctnetlink_change_status(ct, cda);
 		if (err < 0)
 			goto err2;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-	if (cda[CTA_NAT_SEQ_ADJ_ORIG] || cda[CTA_NAT_SEQ_ADJ_REPLY]) {
-		err = ctnetlink_change_nat_seq_adj(ct, cda);
-		if (err < 0)
-			goto err2;
-	}
-#endif
-=======
 	if (cda[CTA_SEQ_ADJ_ORIG] || cda[CTA_SEQ_ADJ_REPLY]) {
 		err = ctnetlink_change_seq_adj(ct, cda);
 		if (err < 0)
 			goto err2;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&ct->proto, 0, sizeof(ct->proto));
 	if (cda[CTA_PROTOINFO]) {
@@ -3426,11 +2340,6 @@ ctnetlink_create_conntrack(struct net *net,
 			goto err2;
 	}
 
-<<<<<<< HEAD
-#if defined(CONFIG_NF_CONNTRACK_MARK)
-	if (cda[CTA_MARK])
-		ct->mark = ntohl(nla_get_be32(cda[CTA_MARK]));
-=======
 	if (cda[CTA_SYNPROXY]) {
 		err = ctnetlink_change_synproxy(ct, cda);
 		if (err < 0)
@@ -3440,7 +2349,6 @@ ctnetlink_create_conntrack(struct net *net,
 #if defined(CONFIG_NF_CONNTRACK_MARK)
 	if (cda[CTA_MARK])
 		ctnetlink_change_mark(ct, cda);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* setup master conntrack: this is a confirmed expectation */
@@ -3449,12 +2357,8 @@ ctnetlink_create_conntrack(struct net *net,
 		struct nf_conntrack_tuple_hash *master_h;
 		struct nf_conn *master_ct;
 
-<<<<<<< HEAD
-		err = ctnetlink_parse_tuple(cda, &master, CTA_TUPLE_MASTER, u3);
-=======
 		err = ctnetlink_parse_tuple(cda, &master, CTA_TUPLE_MASTER,
 					    u3, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			goto err2;
 
@@ -3469,30 +2373,19 @@ ctnetlink_create_conntrack(struct net *net,
 	}
 	tstamp = nf_conn_tstamp_find(ct);
 	if (tstamp)
-<<<<<<< HEAD
-		tstamp->start = ktime_to_ns(ktime_get_real());
-
-	err = nf_conntrack_hash_check_insert(ct);
-	if (err < 0)
-		goto err2;
-=======
 		tstamp->start = ktime_get_real_ns();
 
 	err = nf_conntrack_hash_check_insert(ct);
 	if (err < 0)
 		goto err3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_unlock();
 
 	return ct;
 
-<<<<<<< HEAD
-=======
 err3:
 	if (ct->master)
 		nf_ct_put(ct->master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err2:
 	rcu_read_unlock();
 err1:
@@ -3500,20 +2393,6 @@ err1:
 	return ERR_PTR(err);
 }
 
-<<<<<<< HEAD
-static int
-ctnetlink_new_conntrack(struct sock *ctnl, struct sk_buff *skb,
-			const struct nlmsghdr *nlh,
-			const struct nlattr * const cda[])
-{
-	struct net *net = sock_net(ctnl);
-	struct nf_conntrack_tuple otuple, rtuple;
-	struct nf_conntrack_tuple_hash *h = NULL;
-	struct nfgenmsg *nfmsg = nlmsg_data(nlh);
-	struct nf_conn *ct;
-	u_int8_t u3 = nfmsg->nfgen_family;
-	u16 zone;
-=======
 static int ctnetlink_new_conntrack(struct sk_buff *skb,
 				   const struct nfnl_info *info,
 				   const struct nlattr * const cda[])
@@ -3523,7 +2402,6 @@ static int ctnetlink_new_conntrack(struct sk_buff *skb,
 	u_int8_t u3 = info->nfmsg->nfgen_family;
 	struct nf_conntrack_zone zone;
 	struct nf_conn *ct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = ctnetlink_parse_zone(cda[CTA_ZONE], &zone);
@@ -3531,41 +2409,20 @@ static int ctnetlink_new_conntrack(struct sk_buff *skb,
 		return err;
 
 	if (cda[CTA_TUPLE_ORIG]) {
-<<<<<<< HEAD
-		err = ctnetlink_parse_tuple(cda, &otuple, CTA_TUPLE_ORIG, u3);
-=======
 		err = ctnetlink_parse_tuple(cda, &otuple, CTA_TUPLE_ORIG,
 					    u3, &zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
 
 	if (cda[CTA_TUPLE_REPLY]) {
-<<<<<<< HEAD
-		err = ctnetlink_parse_tuple(cda, &rtuple, CTA_TUPLE_REPLY, u3);
-=======
 		err = ctnetlink_parse_tuple(cda, &rtuple, CTA_TUPLE_REPLY,
 					    u3, &zone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
 
 	if (cda[CTA_TUPLE_ORIG])
-<<<<<<< HEAD
-		h = nf_conntrack_find_get(net, zone, &otuple);
-	else if (cda[CTA_TUPLE_REPLY])
-		h = nf_conntrack_find_get(net, zone, &rtuple);
-
-	if (h == NULL) {
-		err = -ENOENT;
-		if (nlh->nlmsg_flags & NLM_F_CREATE) {
-			enum ip_conntrack_events events;
-
-			ct = ctnetlink_create_conntrack(net, zone, cda, &otuple,
-							&rtuple, u3);
-=======
 		h = nf_conntrack_find_get(info->net, &zone, &otuple);
 	else if (cda[CTA_TUPLE_REPLY])
 		h = nf_conntrack_find_get(info->net, &zone, &rtuple);
@@ -3582,17 +2439,11 @@ static int ctnetlink_new_conntrack(struct sk_buff *skb,
 
 			ct = ctnetlink_create_conntrack(info->net, &zone, cda,
 							&otuple, &rtuple, u3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(ct))
 				return PTR_ERR(ct);
 
 			err = 0;
 			if (test_bit(IPS_EXPECTED_BIT, &ct->status))
-<<<<<<< HEAD
-				events = IPCT_RELATED;
-			else
-				events = IPCT_NEW;
-=======
 				events = 1 << IPCT_RELATED;
 			else
 				events = 1 << IPCT_NEW;
@@ -3600,25 +2451,17 @@ static int ctnetlink_new_conntrack(struct sk_buff *skb,
 			if (cda[CTA_LABELS] &&
 			    ctnetlink_attach_labels(ct, cda) == 0)
 				events |= (1 << IPCT_LABEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			nf_conntrack_eventmask_report((1 << IPCT_REPLY) |
 						      (1 << IPCT_ASSURED) |
 						      (1 << IPCT_HELPER) |
 						      (1 << IPCT_PROTOINFO) |
-<<<<<<< HEAD
-						      (1 << IPCT_NATSEQADJ) |
-						      (1 << IPCT_MARK) | events,
-						      ct, NETLINK_CB(skb).pid,
-						      nlmsg_report(nlh));
-=======
 						      (1 << IPCT_SEQADJ) |
 						      (1 << IPCT_MARK) |
 						      (1 << IPCT_SYNPROXY) |
 						      events,
 						      ct, NETLINK_CB(skb).portid,
 						      nlmsg_report(info->nlh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nf_ct_put(ct);
 		}
 
@@ -3628,26 +2471,12 @@ static int ctnetlink_new_conntrack(struct sk_buff *skb,
 
 	err = -EEXIST;
 	ct = nf_ct_tuplehash_to_ctrack(h);
-<<<<<<< HEAD
-	if (!(nlh->nlmsg_flags & NLM_F_EXCL)) {
-		spin_lock_bh(&nf_conntrack_lock);
-		err = ctnetlink_change_conntrack(ct, cda);
-		spin_unlock_bh(&nf_conntrack_lock);
-=======
 	if (!(info->nlh->nlmsg_flags & NLM_F_EXCL)) {
 		err = ctnetlink_change_conntrack(ct, cda);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err == 0) {
 			nf_conntrack_eventmask_report((1 << IPCT_REPLY) |
 						      (1 << IPCT_ASSURED) |
 						      (1 << IPCT_HELPER) |
-<<<<<<< HEAD
-						      (1 << IPCT_PROTOINFO) |
-						      (1 << IPCT_NATSEQADJ) |
-						      (1 << IPCT_MARK),
-						      ct, NETLINK_CB(skb).pid,
-						      nlmsg_report(nlh));
-=======
 						      (1 << IPCT_LABEL) |
 						      (1 << IPCT_PROTOINFO) |
 						      (1 << IPCT_SEQADJ) |
@@ -3655,7 +2484,6 @@ static int ctnetlink_new_conntrack(struct sk_buff *skb,
 						      (1 << IPCT_SYNPROXY),
 						      ct, NETLINK_CB(skb).portid,
 						      nlmsg_report(info->nlh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -3663,11 +2491,6 @@ static int ctnetlink_new_conntrack(struct sk_buff *skb,
 	return err;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NETFILTER_NETLINK_QUEUE_CT
-static size_t
-ctnetlink_nfqueue_build_size(const struct nf_conn *ct)
-=======
 static int
 ctnetlink_ct_stat_cpu_fill_info(struct sk_buff *skb, u32 portid, u32 seq,
 				__u16 cpu, const struct ip_conntrack_stat *st)
@@ -3824,7 +2647,6 @@ ctnetlink_alloc_expect(const struct nlattr *const cda[], struct nf_conn *ct,
 #ifdef CONFIG_NETFILTER_NETLINK_GLUE_CT
 static size_t
 ctnetlink_glue_build_size(const struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 3 * nla_total_size(0) /* CTA_TUPLE_ORIG|REPL|MASTER */
 	       + 3 * nla_total_size(0) /* CTA_TUPLE_IP */
@@ -3837,38 +2659,22 @@ ctnetlink_glue_build_size(const struct nf_conn *ct)
 	       + nla_total_size(0) /* CTA_HELP */
 	       + nla_total_size(NF_CT_HELPER_NAME_LEN) /* CTA_HELP_NAME */
 	       + ctnetlink_secctx_size(ct)
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-=======
 	       + ctnetlink_acct_size(ct)
 	       + ctnetlink_timestamp_size(ct)
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       + 2 * nla_total_size(0) /* CTA_NAT_SEQ_ADJ_ORIG|REPL */
 	       + 6 * nla_total_size(sizeof(u_int32_t)) /* CTA_NAT_SEQ_OFFSET */
 #endif
 #ifdef CONFIG_NF_CONNTRACK_MARK
 	       + nla_total_size(sizeof(u_int32_t)) /* CTA_MARK */
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_NF_CONNTRACK_ZONES
 	       + nla_total_size(sizeof(u_int16_t)) /* CTA_ZONE|CTA_TUPLE_ZONE */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       + ctnetlink_proto_size(ct)
 	       ;
 }
 
-<<<<<<< HEAD
-static int
-ctnetlink_nfqueue_build(struct sk_buff *skb, struct nf_conn *ct)
-{
-	struct nlattr *nest_parms;
-
-	rcu_read_lock();
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_ORIG | NLA_F_NESTED);
-=======
 static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
 {
 	const struct nf_conntrack_zone *zone;
@@ -3877,35 +2683,20 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
 	zone = nf_ct_zone(ct);
 
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_ORIG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, nf_ct_tuple(ct, IP_CT_DIR_ORIGINAL)) < 0)
 		goto nla_put_failure;
-<<<<<<< HEAD
-	nla_nest_end(skb, nest_parms);
-
-	nest_parms = nla_nest_start(skb, CTA_TUPLE_REPLY | NLA_F_NESTED);
-=======
 	if (ctnetlink_dump_zone_id(skb, CTA_TUPLE_ZONE, zone,
 				   NF_CT_ZONE_DIR_ORIG) < 0)
 		goto nla_put_failure;
 	nla_nest_end(skb, nest_parms);
 
 	nest_parms = nla_nest_start(skb, CTA_TUPLE_REPLY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, nf_ct_tuple(ct, IP_CT_DIR_REPLY)) < 0)
 		goto nla_put_failure;
-<<<<<<< HEAD
-	nla_nest_end(skb, nest_parms);
-
-	if (nf_ct_zone(ct)) {
-		if (nla_put_be16(skb, CTA_ZONE, htons(nf_ct_zone(ct))))
-			goto nla_put_failure;
-	}
-=======
 	if (ctnetlink_dump_zone_id(skb, CTA_TUPLE_ZONE, zone,
 				   NF_CT_ZONE_DIR_REPL) < 0)
 		goto nla_put_failure;
@@ -3914,7 +2705,6 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
 	if (ctnetlink_dump_zone_id(skb, CTA_ZONE, zone,
 				   NF_CT_DEFAULT_ZONE_DIR) < 0)
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ctnetlink_dump_id(skb, ct) < 0)
 		goto nla_put_failure;
@@ -3922,12 +2712,6 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
 	if (ctnetlink_dump_status(skb, ct) < 0)
 		goto nla_put_failure;
 
-<<<<<<< HEAD
-	if (ctnetlink_dump_timeout(skb, ct) < 0)
-		goto nla_put_failure;
-
-	if (ctnetlink_dump_protoinfo(skb, ct) < 0)
-=======
 	if (ctnetlink_dump_timeout(skb, ct, false) < 0)
 		goto nla_put_failure;
 
@@ -3936,7 +2720,6 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
 
 	if (ctnetlink_dump_acct(skb, ct, IPCTNL_MSG_CT_GET) < 0 ||
 	    ctnetlink_dump_timestamp(skb, ct) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto nla_put_failure;
 
 	if (ctnetlink_dump_helpinfo(skb, ct) < 0)
@@ -3950,20 +2733,6 @@ static int __ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct)
 		goto nla_put_failure;
 
 	if ((ct->status & IPS_SEQ_ADJUST) &&
-<<<<<<< HEAD
-	    ctnetlink_dump_nat_seq_adj(skb, ct) < 0)
-		goto nla_put_failure;
-
-#ifdef CONFIG_NF_CONNTRACK_MARK
-	if (ct->mark && ctnetlink_dump_mark(skb, ct) < 0)
-		goto nla_put_failure;
-#endif
-	rcu_read_unlock();
-	return 0;
-
-nla_put_failure:
-	rcu_read_unlock();
-=======
 	    ctnetlink_dump_ct_seq_adj(skb, ct) < 0)
 		goto nla_put_failure;
 
@@ -3979,14 +2748,10 @@ nla_put_failure:
 	return 0;
 
 nla_put_failure:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOSPC;
 }
 
 static int
-<<<<<<< HEAD
-ctnetlink_nfqueue_parse_ct(const struct nlattr *cda[], struct nf_conn *ct)
-=======
 ctnetlink_glue_build(struct sk_buff *skb, struct nf_conn *ct,
 		     enum ip_conntrack_info ctinfo,
 		     u_int16_t ct_attr, u_int16_t ct_info_attr)
@@ -4037,7 +2802,6 @@ ctnetlink_update_status(struct nf_conn *ct, const struct nlattr * const cda[])
 
 static int
 ctnetlink_glue_parse_ct(const struct nlattr *cda[], struct nf_conn *ct)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -4047,11 +2811,7 @@ ctnetlink_glue_parse_ct(const struct nlattr *cda[], struct nf_conn *ct)
 			return err;
 	}
 	if (cda[CTA_STATUS]) {
-<<<<<<< HEAD
-		err = ctnetlink_change_status(ct, cda);
-=======
 		err = ctnetlink_update_status(ct, cda);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
@@ -4060,11 +2820,6 @@ ctnetlink_glue_parse_ct(const struct nlattr *cda[], struct nf_conn *ct)
 		if (err < 0)
 			return err;
 	}
-<<<<<<< HEAD
-#if defined(CONFIG_NF_CONNTRACK_MARK)
-	if (cda[CTA_MARK])
-		ct->mark = ntohl(nla_get_be32(cda[CTA_MARK]));
-=======
 	if (cda[CTA_LABELS]) {
 		err = ctnetlink_attach_labels(ct, cda);
 		if (err < 0)
@@ -4074,29 +2829,11 @@ ctnetlink_glue_parse_ct(const struct nlattr *cda[], struct nf_conn *ct)
 	if (cda[CTA_MARK]) {
 		ctnetlink_change_mark(ct, cda);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-ctnetlink_nfqueue_parse(const struct nlattr *attr, struct nf_conn *ct)
-{
-	struct nlattr *cda[CTA_MAX+1];
-
-	nla_parse_nested(cda, CTA_MAX, attr, ct_nla_policy);
-
-	return ctnetlink_nfqueue_parse_ct((const struct nlattr **)cda, ct);
-}
-
-static struct nfq_ct_hook ctnetlink_nfqueue_hook = {
-	.build_size	= ctnetlink_nfqueue_build_size,
-	.build		= ctnetlink_nfqueue_build,
-	.parse		= ctnetlink_nfqueue_parse,
-};
-#endif /* CONFIG_NETFILTER_NETLINK_QUEUE_CT */
-=======
 ctnetlink_glue_parse(const struct nlattr *attr, struct nf_conn *ct)
 {
 	struct nlattr *cda[CTA_MAX+1];
@@ -4182,22 +2919,11 @@ static const struct nfnl_ct_hook ctnetlink_glue_hook = {
 	.seq_adjust	= ctnetlink_glue_seqadj,
 };
 #endif /* CONFIG_NETFILTER_NETLINK_GLUE_CT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /***********************************************************************
  * EXPECT
  ***********************************************************************/
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_exp_dump_tuple(struct sk_buff *skb,
-			 const struct nf_conntrack_tuple *tuple,
-			 enum ctattr_expect type)
-{
-	struct nlattr *nest_parms;
-
-	nest_parms = nla_nest_start(skb, type | NLA_F_NESTED);
-=======
 static int ctnetlink_exp_dump_tuple(struct sk_buff *skb,
 				    const struct nf_conntrack_tuple *tuple,
 				    u32 type)
@@ -4205,7 +2931,6 @@ static int ctnetlink_exp_dump_tuple(struct sk_buff *skb,
 	struct nlattr *nest_parms;
 
 	nest_parms = nla_nest_start(skb, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 	if (ctnetlink_dump_tuples(skb, tuple) < 0)
@@ -4218,18 +2943,6 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static inline int
-ctnetlink_exp_dump_mask(struct sk_buff *skb,
-			const struct nf_conntrack_tuple *tuple,
-			const struct nf_conntrack_tuple_mask *mask)
-{
-	int ret;
-	struct nf_conntrack_l3proto *l3proto;
-	struct nf_conntrack_l4proto *l4proto;
-	struct nf_conntrack_tuple m;
-	struct nlattr *nest_parms;
-=======
 static int ctnetlink_exp_dump_mask(struct sk_buff *skb,
 				   const struct nf_conntrack_tuple *tuple,
 				   const struct nf_conntrack_tuple_mask *mask)
@@ -4238,38 +2951,22 @@ static int ctnetlink_exp_dump_mask(struct sk_buff *skb,
 	struct nf_conntrack_tuple m;
 	struct nlattr *nest_parms;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&m, 0xFF, sizeof(m));
 	memcpy(&m.src.u3, &mask->src.u3, sizeof(m.src.u3));
 	m.src.u.all = mask->src.u.all;
-<<<<<<< HEAD
-	m.dst.protonum = tuple->dst.protonum;
-
-	nest_parms = nla_nest_start(skb, CTA_EXPECT_MASK | NLA_F_NESTED);
-=======
 	m.src.l3num = tuple->src.l3num;
 	m.dst.protonum = tuple->dst.protonum;
 
 	nest_parms = nla_nest_start(skb, CTA_EXPECT_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nest_parms)
 		goto nla_put_failure;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	l3proto = __nf_ct_l3proto_find(tuple->src.l3num);
-	ret = ctnetlink_dump_tuples_ip(skb, &m, l3proto);
-	if (ret >= 0) {
-		l4proto = __nf_ct_l4proto_find(tuple->src.l3num,
-					       tuple->dst.protonum);
-	ret = ctnetlink_dump_tuples_proto(skb, &m, l4proto);
-=======
 	ret = ctnetlink_dump_tuples_ip(skb, &m);
 	if (ret >= 0) {
 		l4proto = nf_ct_l4proto_find(tuple->dst.protonum);
 		ret = ctnetlink_dump_tuples_proto(skb, &m, l4proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rcu_read_unlock();
 
@@ -4284,9 +2981,6 @@ nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-static const union nf_inet_addr any_addr;
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
 static const union nf_inet_addr any_addr;
 #endif
@@ -4309,7 +3003,6 @@ static __be32 nf_expect_get_id(const struct nf_conntrack_expect *exp)
 	return (__force __be32)siphash_4u32((u32)a, (u32)b, (u32)c, (u32)d, &exp_id_seed);
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 ctnetlink_exp_dump_expect(struct sk_buff *skb,
@@ -4318,11 +3011,7 @@ ctnetlink_exp_dump_expect(struct sk_buff *skb,
 	struct nf_conn *master = exp->master;
 	long timeout = ((long)exp->timeout.expires - (long)jiffies) / HZ;
 	struct nf_conn_help *help;
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *nest_parms;
 	struct nf_conntrack_tuple nat_tuple = {};
 #endif
@@ -4340,16 +3029,6 @@ ctnetlink_exp_dump_expect(struct sk_buff *skb,
 				 CTA_EXPECT_MASTER) < 0)
 		goto nla_put_failure;
 
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-	if (!nf_inet_addr_cmp(&exp->saved_addr, &any_addr) ||
-	    exp->saved_proto.all) {
-		nest_parms = nla_nest_start(skb, CTA_EXPECT_NAT | NLA_F_NESTED);
-		if (!nest_parms)
-			goto nla_put_failure;
-
-		NLA_PUT_BE32(skb, CTA_EXPECT_NAT_DIR, htonl(exp->dir));
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
 	if (!nf_inet_addr_cmp(&exp->saved_addr, &any_addr) ||
 	    exp->saved_proto.all) {
@@ -4359,7 +3038,6 @@ ctnetlink_exp_dump_expect(struct sk_buff *skb,
 
 		if (nla_put_be32(skb, CTA_EXPECT_NAT_DIR, htonl(exp->dir)))
 			goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nat_tuple.src.l3num = nf_ct_l3num(master);
 		nat_tuple.src.u3 = exp->saved_addr;
@@ -4372,31 +3050,16 @@ ctnetlink_exp_dump_expect(struct sk_buff *skb,
 	        nla_nest_end(skb, nest_parms);
 	}
 #endif
-<<<<<<< HEAD
-	NLA_PUT_BE32(skb, CTA_EXPECT_TIMEOUT, htonl(timeout));
-	NLA_PUT_BE32(skb, CTA_EXPECT_ID, htonl((unsigned long)exp));
-	NLA_PUT_BE32(skb, CTA_EXPECT_FLAGS, htonl(exp->flags));
-	NLA_PUT_BE32(skb, CTA_EXPECT_CLASS, htonl(exp->class));
-=======
 	if (nla_put_be32(skb, CTA_EXPECT_TIMEOUT, htonl(timeout)) ||
 	    nla_put_be32(skb, CTA_EXPECT_ID, nf_expect_get_id(exp)) ||
 	    nla_put_be32(skb, CTA_EXPECT_FLAGS, htonl(exp->flags)) ||
 	    nla_put_be32(skb, CTA_EXPECT_CLASS, htonl(exp->class)))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help = nfct_help(master);
 	if (help) {
 		struct nf_conntrack_helper *helper;
 
 		helper = rcu_dereference(help->helper);
-<<<<<<< HEAD
-		if (helper)
-			NLA_PUT_STRING(skb, CTA_EXPECT_HELP_NAME, helper->name);
-	}
-	expfn = nf_ct_helper_expectfn_find_by_symbol(exp->expectfn);
-	if (expfn != NULL)
-		NLA_PUT_STRING(skb, CTA_EXPECT_FN, expfn->name);
-=======
 		if (helper &&
 		    nla_put_string(skb, CTA_EXPECT_HELP_NAME, helper->name))
 			goto nla_put_failure;
@@ -4405,7 +3068,6 @@ ctnetlink_exp_dump_expect(struct sk_buff *skb,
 	if (expfn != NULL &&
 	    nla_put_string(skb, CTA_EXPECT_FN, expfn->name))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -4414,25 +3076,6 @@ nla_put_failure:
 }
 
 static int
-<<<<<<< HEAD
-ctnetlink_exp_fill_info(struct sk_buff *skb, u32 pid, u32 seq,
-			int event, const struct nf_conntrack_expect *exp)
-{
-	struct nlmsghdr *nlh;
-	struct nfgenmsg *nfmsg;
-	unsigned int flags = pid ? NLM_F_MULTI : 0;
-
-	event |= NFNL_SUBSYS_CTNETLINK_EXP << 8;
-	nlh = nlmsg_put(skb, pid, seq, event, sizeof(*nfmsg), flags);
-	if (nlh == NULL)
-		goto nlmsg_failure;
-
-	nfmsg = nlmsg_data(nlh);
-	nfmsg->nfgen_family = exp->tuple.src.l3num;
-	nfmsg->version	    = NFNETLINK_V0;
-	nfmsg->res_id	    = 0;
-
-=======
 ctnetlink_exp_fill_info(struct sk_buff *skb, u32 portid, u32 seq,
 			int event, const struct nf_conntrack_expect *exp)
 {
@@ -4445,7 +3088,6 @@ ctnetlink_exp_fill_info(struct sk_buff *skb, u32 portid, u32 seq,
 	if (!nlh)
 		goto nlmsg_failure;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ctnetlink_exp_dump_expect(skb, exp) < 0)
 		goto nla_put_failure;
 
@@ -4460,19 +3102,11 @@ nla_put_failure:
 
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 static int
-<<<<<<< HEAD
-ctnetlink_expect_event(unsigned int events, struct nf_exp_event *item)
-=======
 ctnetlink_expect_event(unsigned int events, const struct nf_exp_event *item)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nf_conntrack_expect *exp = item->exp;
 	struct net *net = nf_ct_exp_net(exp);
 	struct nlmsghdr *nlh;
-<<<<<<< HEAD
-	struct nfgenmsg *nfmsg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	unsigned int type, group;
 	int flags = 0;
@@ -4494,29 +3128,6 @@ ctnetlink_expect_event(unsigned int events, const struct nf_exp_event *item)
 	if (skb == NULL)
 		goto errout;
 
-<<<<<<< HEAD
-	type |= NFNL_SUBSYS_CTNETLINK_EXP << 8;
-	nlh = nlmsg_put(skb, item->pid, 0, type, sizeof(*nfmsg), flags);
-	if (nlh == NULL)
-		goto nlmsg_failure;
-
-	nfmsg = nlmsg_data(nlh);
-	nfmsg->nfgen_family = exp->tuple.src.l3num;
-	nfmsg->version	    = NFNETLINK_V0;
-	nfmsg->res_id	    = 0;
-
-	rcu_read_lock();
-	if (ctnetlink_exp_dump_expect(skb, exp) < 0)
-		goto nla_put_failure;
-	rcu_read_unlock();
-
-	nlmsg_end(skb, nlh);
-	nfnetlink_send(skb, net, item->pid, group, item->report, GFP_ATOMIC);
-	return 0;
-
-nla_put_failure:
-	rcu_read_unlock();
-=======
 	type = nfnl_msg_type(NFNL_SUBSYS_CTNETLINK_EXP, type);
 	nlh = nfnl_msg_put(skb, item->portid, 0, type, flags,
 			   exp->tuple.src.l3num, NFNETLINK_V0, 0);
@@ -4531,7 +3142,6 @@ nla_put_failure:
 	return 0;
 
 nla_put_failure:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsg_cancel(skb, nlh);
 nlmsg_failure:
 	kfree_skb(skb);
@@ -4553,22 +3163,12 @@ ctnetlink_exp_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
 	struct net *net = sock_net(skb->sk);
 	struct nf_conntrack_expect *exp, *last;
 	struct nfgenmsg *nfmsg = nlmsg_data(cb->nlh);
-<<<<<<< HEAD
-	struct hlist_node *n;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_int8_t l3proto = nfmsg->nfgen_family;
 
 	rcu_read_lock();
 	last = (struct nf_conntrack_expect *)cb->args[1];
 	for (; cb->args[0] < nf_ct_expect_hsize; cb->args[0]++) {
 restart:
-<<<<<<< HEAD
-		hlist_for_each_entry(exp, n, &net->ct.expect_hash[cb->args[0]],
-				     hnode) {
-			if (l3proto && exp->tuple.src.l3num != l3proto)
-				continue;
-=======
 		hlist_for_each_entry_rcu(exp, &nf_ct_expect_hash[cb->args[0]],
 					 hnode) {
 			if (l3proto && exp->tuple.src.l3num != l3proto)
@@ -4577,26 +3177,17 @@ restart:
 			if (!net_eq(nf_ct_net(exp->master), net))
 				continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cb->args[1]) {
 				if (exp != last)
 					continue;
 				cb->args[1] = 0;
 			}
 			if (ctnetlink_exp_fill_info(skb,
-<<<<<<< HEAD
-						    NETLINK_CB(cb->skb).pid,
-						    cb->nlh->nlmsg_seq,
-						    IPCTNL_MSG_EXP_NEW,
-						    exp) < 0) {
-				if (!atomic_inc_not_zero(&exp->use))
-=======
 						    NETLINK_CB(cb->skb).portid,
 						    cb->nlh->nlmsg_seq,
 						    IPCTNL_MSG_EXP_NEW,
 						    exp) < 0) {
 				if (!refcount_inc_not_zero(&exp->use))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					continue;
 				cb->args[1] = (unsigned long)exp;
 				goto out;
@@ -4615,42 +3206,6 @@ out:
 	return skb->len;
 }
 
-<<<<<<< HEAD
-static const struct nla_policy exp_nla_policy[CTA_EXPECT_MAX+1] = {
-	[CTA_EXPECT_MASTER]	= { .type = NLA_NESTED },
-	[CTA_EXPECT_TUPLE]	= { .type = NLA_NESTED },
-	[CTA_EXPECT_MASK]	= { .type = NLA_NESTED },
-	[CTA_EXPECT_TIMEOUT]	= { .type = NLA_U32 },
-	[CTA_EXPECT_ID]		= { .type = NLA_U32 },
-	[CTA_EXPECT_HELP_NAME]	= { .type = NLA_NUL_STRING },
-	[CTA_EXPECT_ZONE]	= { .type = NLA_U16 },
-	[CTA_EXPECT_FLAGS]	= { .type = NLA_U32 },
-	[CTA_EXPECT_CLASS]	= { .type = NLA_U32 },
-	[CTA_EXPECT_NAT]	= { .type = NLA_NESTED },
-	[CTA_EXPECT_FN]		= { .type = NLA_NUL_STRING },
-};
-
-static int
-ctnetlink_get_expect(struct sock *ctnl, struct sk_buff *skb,
-		     const struct nlmsghdr *nlh,
-		     const struct nlattr * const cda[])
-{
-	struct net *net = sock_net(ctnl);
-	struct nf_conntrack_tuple tuple;
-	struct nf_conntrack_expect *exp;
-	struct sk_buff *skb2;
-	struct nfgenmsg *nfmsg = nlmsg_data(nlh);
-	u_int8_t u3 = nfmsg->nfgen_family;
-	u16 zone;
-	int err;
-
-	if (nlh->nlmsg_flags & NLM_F_DUMP) {
-		struct netlink_dump_control c = {
-			.dump = ctnetlink_exp_dump_table,
-			.done = ctnetlink_exp_done,
-		};
-		return netlink_dump_start(ctnl, skb, nlh, &c);
-=======
 static int
 ctnetlink_exp_ct_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
 {
@@ -4766,7 +3321,6 @@ static int ctnetlink_get_expect(struct sk_buff *skb,
 			};
 			return netlink_dump_start(info->sk, skb, info->nlh, &c);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = ctnetlink_parse_zone(cda[CTA_EXPECT_ZONE], &zone);
@@ -4774,87 +3328,30 @@ static int ctnetlink_get_expect(struct sk_buff *skb,
 		return err;
 
 	if (cda[CTA_EXPECT_TUPLE])
-<<<<<<< HEAD
-		err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_TUPLE, u3);
-	else if (cda[CTA_EXPECT_MASTER])
-		err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_MASTER, u3);
-=======
 		err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_TUPLE,
 					    u3, NULL);
 	else if (cda[CTA_EXPECT_MASTER])
 		err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_MASTER,
 					    u3, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return -EINVAL;
 
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	exp = nf_ct_expect_find_get(net, zone, &tuple);
-=======
 	exp = nf_ct_expect_find_get(info->net, &zone, &tuple);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!exp)
 		return -ENOENT;
 
 	if (cda[CTA_EXPECT_ID]) {
 		__be32 id = nla_get_be32(cda[CTA_EXPECT_ID]);
-<<<<<<< HEAD
-		if (ntohl(id) != (u32)(unsigned long)exp) {
-=======
 
 		if (id != nf_expect_get_id(exp)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nf_ct_expect_put(exp);
 			return -ENOENT;
 		}
 	}
 
-<<<<<<< HEAD
-	err = -ENOMEM;
-	skb2 = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-	if (skb2 == NULL) {
-		nf_ct_expect_put(exp);
-		goto out;
-	}
-
-	rcu_read_lock();
-	err = ctnetlink_exp_fill_info(skb2, NETLINK_CB(skb).pid,
-				      nlh->nlmsg_seq, IPCTNL_MSG_EXP_NEW, exp);
-	rcu_read_unlock();
-	nf_ct_expect_put(exp);
-	if (err <= 0)
-		goto free;
-
-	err = netlink_unicast(ctnl, skb2, NETLINK_CB(skb).pid, MSG_DONTWAIT);
-	if (err < 0)
-		goto out;
-
-	return 0;
-
-free:
-	kfree_skb(skb2);
-out:
-	/* this avoids a loop in nfnetlink. */
-	return err == -EAGAIN ? -ENOBUFS : err;
-}
-
-static int
-ctnetlink_del_expect(struct sock *ctnl, struct sk_buff *skb,
-		     const struct nlmsghdr *nlh,
-		     const struct nlattr * const cda[])
-{
-	struct net *net = sock_net(ctnl);
-	struct nf_conntrack_expect *exp;
-	struct nf_conntrack_tuple tuple;
-	struct nfgenmsg *nfmsg = nlmsg_data(nlh);
-	struct hlist_node *n, *next;
-	u_int8_t u3 = nfmsg->nfgen_family;
-	unsigned int i;
-	u16 zone;
-=======
 	skb2 = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!skb2) {
 		nf_ct_expect_put(exp);
@@ -4903,7 +3400,6 @@ static int ctnetlink_del_expect(struct sk_buff *skb,
 	struct nf_conntrack_expect *exp;
 	struct nf_conntrack_tuple tuple;
 	struct nf_conntrack_zone zone;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (cda[CTA_EXPECT_TUPLE]) {
@@ -4912,21 +3408,13 @@ static int ctnetlink_del_expect(struct sk_buff *skb,
 		if (err < 0)
 			return err;
 
-<<<<<<< HEAD
-		err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_TUPLE, u3);
-=======
 		err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_TUPLE,
 					    u3, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 
 		/* bump usage count to 2 */
-<<<<<<< HEAD
-		exp = nf_ct_expect_find_get(net, zone, &tuple);
-=======
 		exp = nf_ct_expect_find_get(info->net, &zone, &tuple);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!exp)
 			return -ENOENT;
 
@@ -4939,15 +3427,6 @@ static int ctnetlink_del_expect(struct sk_buff *skb,
 		}
 
 		/* after list removal, usage count == 1 */
-<<<<<<< HEAD
-		spin_lock_bh(&nf_conntrack_lock);
-		if (del_timer(&exp->timeout)) {
-			nf_ct_unlink_expect_report(exp, NETLINK_CB(skb).pid,
-						   nlmsg_report(nlh));
-			nf_ct_expect_put(exp);
-		}
-		spin_unlock_bh(&nf_conntrack_lock);
-=======
 		spin_lock_bh(&nf_conntrack_expect_lock);
 		if (del_timer(&exp->timeout)) {
 			nf_ct_unlink_expect_report(exp, NETLINK_CB(skb).portid,
@@ -4955,49 +3434,11 @@ static int ctnetlink_del_expect(struct sk_buff *skb,
 			nf_ct_expect_put(exp);
 		}
 		spin_unlock_bh(&nf_conntrack_expect_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* have to put what we 'get' above.
 		 * after this line usage count == 0 */
 		nf_ct_expect_put(exp);
 	} else if (cda[CTA_EXPECT_HELP_NAME]) {
 		char *name = nla_data(cda[CTA_EXPECT_HELP_NAME]);
-<<<<<<< HEAD
-		struct nf_conn_help *m_help;
-
-		/* delete all expectations for this helper */
-		spin_lock_bh(&nf_conntrack_lock);
-		for (i = 0; i < nf_ct_expect_hsize; i++) {
-			hlist_for_each_entry_safe(exp, n, next,
-						  &net->ct.expect_hash[i],
-						  hnode) {
-				m_help = nfct_help(exp->master);
-				if (!strcmp(m_help->helper->name, name) &&
-				    del_timer(&exp->timeout)) {
-					nf_ct_unlink_expect_report(exp,
-							NETLINK_CB(skb).pid,
-							nlmsg_report(nlh));
-					nf_ct_expect_put(exp);
-				}
-			}
-		}
-		spin_unlock_bh(&nf_conntrack_lock);
-	} else {
-		/* This basically means we have to flush everything*/
-		spin_lock_bh(&nf_conntrack_lock);
-		for (i = 0; i < nf_ct_expect_hsize; i++) {
-			hlist_for_each_entry_safe(exp, n, next,
-						  &net->ct.expect_hash[i],
-						  hnode) {
-				if (del_timer(&exp->timeout)) {
-					nf_ct_unlink_expect_report(exp,
-							NETLINK_CB(skb).pid,
-							nlmsg_report(nlh));
-					nf_ct_expect_put(exp);
-				}
-			}
-		}
-		spin_unlock_bh(&nf_conntrack_lock);
-=======
 
 		nf_ct_expect_iterate_net(info->net, expect_iter_name, name,
 					 NETLINK_CB(skb).portid,
@@ -5007,7 +3448,6 @@ static int ctnetlink_del_expect(struct sk_buff *skb,
 		nf_ct_expect_iterate_net(info->net, expect_iter_all, NULL,
 					 NETLINK_CB(skb).portid,
 					 nlmsg_report(info->nlh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -5027,52 +3467,34 @@ ctnetlink_change_expect(struct nf_conntrack_expect *x,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct nla_policy exp_nat_nla_policy[CTA_EXPECT_NAT_MAX+1] = {
 	[CTA_EXPECT_NAT_DIR]	= { .type = NLA_U32 },
 	[CTA_EXPECT_NAT_TUPLE]	= { .type = NLA_NESTED },
 };
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 ctnetlink_parse_expect_nat(const struct nlattr *attr,
 			   struct nf_conntrack_expect *exp,
 			   u_int8_t u3)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlattr *tb[CTA_EXPECT_NAT_MAX+1];
 	struct nf_conntrack_tuple nat_tuple = {};
 	int err;
 
-<<<<<<< HEAD
-	nla_parse_nested(tb, CTA_EXPECT_NAT_MAX, attr, exp_nat_nla_policy);
-=======
 	err = nla_parse_nested_deprecated(tb, CTA_EXPECT_NAT_MAX, attr,
 					  exp_nat_nla_policy, NULL);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tb[CTA_EXPECT_NAT_DIR] || !tb[CTA_EXPECT_NAT_TUPLE])
 		return -EINVAL;
 
 	err = ctnetlink_parse_tuple((const struct nlattr * const *)tb,
-<<<<<<< HEAD
-					&nat_tuple, CTA_EXPECT_NAT_TUPLE, u3);
-=======
 				    &nat_tuple, CTA_EXPECT_NAT_TUPLE,
 				    u3, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -5086,98 +3508,6 @@ ctnetlink_parse_expect_nat(const struct nlattr *attr,
 #endif
 }
 
-<<<<<<< HEAD
-static int
-ctnetlink_create_expect(struct net *net, u16 zone,
-			const struct nlattr * const cda[],
-			u_int8_t u3,
-			u32 pid, int report)
-{
-	struct nf_conntrack_tuple tuple, mask, master_tuple;
-	struct nf_conntrack_tuple_hash *h = NULL;
-	struct nf_conntrack_expect *exp;
-	struct nf_conn *ct;
-	struct nf_conn_help *help;
-	struct nf_conntrack_helper *helper = NULL;
-	u_int32_t class = 0;
-	int err = 0;
-
-	/* caller guarantees that those three CTA_EXPECT_* exist */
-	err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_TUPLE, u3);
-	if (err < 0)
-		return err;
-	err = ctnetlink_parse_tuple(cda, &mask, CTA_EXPECT_MASK, u3);
-	if (err < 0)
-		return err;
-	err = ctnetlink_parse_tuple(cda, &master_tuple, CTA_EXPECT_MASTER, u3);
-	if (err < 0)
-		return err;
-
-	/* Look for master conntrack of this expectation */
-	h = nf_conntrack_find_get(net, zone, &master_tuple);
-	if (!h)
-		return -ENOENT;
-	ct = nf_ct_tuplehash_to_ctrack(h);
-
-	/* Look for helper of this expectation */
-	if (cda[CTA_EXPECT_HELP_NAME]) {
-		const char *helpname = nla_data(cda[CTA_EXPECT_HELP_NAME]);
-
-		helper = __nf_conntrack_helper_find(helpname, nf_ct_l3num(ct),
-						    nf_ct_protonum(ct));
-		if (helper == NULL) {
-#ifdef CONFIG_MODULES
-			if (request_module("nfct-helper-%s", helpname) < 0) {
-				err = -EOPNOTSUPP;
-				goto out;
-			}
-
-			helper = __nf_conntrack_helper_find(helpname,
-							    nf_ct_l3num(ct),
-							    nf_ct_protonum(ct));
-			if (helper) {
-				err = -EAGAIN;
-				goto out;
-			}
-#endif
-			err = -EOPNOTSUPP;
-			goto out;
-		}
-	}
-
-	if (cda[CTA_EXPECT_CLASS] && helper) {
-		class = ntohl(nla_get_be32(cda[CTA_EXPECT_CLASS]));
-		if (class > helper->expect_class_max) {
-			err = -EINVAL;
-			goto out;
-		}
-	}
-	exp = nf_ct_expect_alloc(ct);
-	if (!exp) {
-		err = -ENOMEM;
-		goto out;
-	}
-	help = nfct_help(ct);
-	if (!help) {
-		if (!cda[CTA_EXPECT_TIMEOUT]) {
-			err = -EINVAL;
-			goto out;
-		}
-		exp->timeout.expires =
-		  jiffies + ntohl(nla_get_be32(cda[CTA_EXPECT_TIMEOUT])) * HZ;
-
-		exp->flags = NF_CT_EXPECT_USERSPACE;
-		if (cda[CTA_EXPECT_FLAGS]) {
-			exp->flags |=
-				ntohl(nla_get_be32(cda[CTA_EXPECT_FLAGS]));
-		}
-	} else {
-		if (cda[CTA_EXPECT_FLAGS]) {
-			exp->flags = ntohl(nla_get_be32(cda[CTA_EXPECT_FLAGS]));
-			exp->flags &= ~NF_CT_EXPECT_USERSPACE;
-		} else
-			exp->flags = 0;
-=======
 static struct nf_conntrack_expect *
 ctnetlink_alloc_expect(const struct nlattr * const cda[], struct nf_conn *ct,
 		       struct nf_conntrack_helper *helper,
@@ -5207,7 +3537,6 @@ ctnetlink_alloc_expect(const struct nlattr * const cda[], struct nf_conn *ct,
 		exp->flags &= ~NF_CT_EXPECT_USERSPACE;
 	} else {
 		exp->flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (cda[CTA_EXPECT_FN]) {
 		const char *name = nla_data(cda[CTA_EXPECT_FN]);
@@ -5225,37 +3554,6 @@ ctnetlink_alloc_expect(const struct nlattr * const cda[], struct nf_conn *ct,
 	exp->class = class;
 	exp->master = ct;
 	exp->helper = helper;
-<<<<<<< HEAD
-	memcpy(&exp->tuple, &tuple, sizeof(struct nf_conntrack_tuple));
-	memcpy(&exp->mask.src.u3, &mask.src.u3, sizeof(exp->mask.src.u3));
-	exp->mask.src.u.all = mask.src.u.all;
-
-	if (cda[CTA_EXPECT_NAT]) {
-		err = ctnetlink_parse_expect_nat(cda[CTA_EXPECT_NAT],
-						 exp, u3);
-		if (err < 0)
-			goto err_out;
-	}
-	err = nf_ct_expect_related_report(exp, pid, report);
-err_out:
-	nf_ct_expect_put(exp);
-out:
-	nf_ct_put(nf_ct_tuplehash_to_ctrack(h));
-	return err;
-}
-
-static int
-ctnetlink_new_expect(struct sock *ctnl, struct sk_buff *skb,
-		     const struct nlmsghdr *nlh,
-		     const struct nlattr * const cda[])
-{
-	struct net *net = sock_net(ctnl);
-	struct nf_conntrack_tuple tuple;
-	struct nf_conntrack_expect *exp;
-	struct nfgenmsg *nfmsg = nlmsg_data(nlh);
-	u_int8_t u3 = nfmsg->nfgen_family;
-	u16 zone;
-=======
 	exp->tuple = *tuple;
 	exp->mask.src.u3 = mask->src.u3;
 	exp->mask.src.u.all = mask->src.u.all;
@@ -5355,7 +3653,6 @@ static int ctnetlink_new_expect(struct sk_buff *skb,
 	struct nf_conntrack_tuple tuple;
 	struct nf_conntrack_expect *exp;
 	struct nf_conntrack_zone zone;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!cda[CTA_EXPECT_TUPLE]
@@ -5367,23 +3664,6 @@ static int ctnetlink_new_expect(struct sk_buff *skb,
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_TUPLE, u3);
-	if (err < 0)
-		return err;
-
-	spin_lock_bh(&nf_conntrack_lock);
-	exp = __nf_ct_expect_find(net, zone, &tuple);
-
-	if (!exp) {
-		spin_unlock_bh(&nf_conntrack_lock);
-		err = -ENOENT;
-		if (nlh->nlmsg_flags & NLM_F_CREATE) {
-			err = ctnetlink_create_expect(net, zone, cda,
-						      u3,
-						      NETLINK_CB(skb).pid,
-						      nlmsg_report(nlh));
-=======
 	err = ctnetlink_parse_tuple(cda, &tuple, CTA_EXPECT_TUPLE,
 				    u3, NULL);
 	if (err < 0)
@@ -5398,34 +3678,18 @@ static int ctnetlink_new_expect(struct sk_buff *skb,
 			err = ctnetlink_create_expect(info->net, &zone, cda, u3,
 						      NETLINK_CB(skb).portid,
 						      nlmsg_report(info->nlh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return err;
 	}
 
 	err = -EEXIST;
-<<<<<<< HEAD
-	if (!(nlh->nlmsg_flags & NLM_F_EXCL))
-		err = ctnetlink_change_expect(exp, cda);
-	spin_unlock_bh(&nf_conntrack_lock);
-=======
 	if (!(info->nlh->nlmsg_flags & NLM_F_EXCL))
 		err = ctnetlink_change_expect(exp, cda);
 	spin_unlock_bh(&nf_conntrack_expect_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_NF_CONNTRACK_EVENTS
-static struct nf_ct_event_notifier ctnl_notifier = {
-	.fcn = ctnetlink_conntrack_event,
-};
-
-static struct nf_exp_event_notifier ctnl_notifier_exp = {
-	.fcn = ctnetlink_expect_event,
-=======
 static int
 ctnetlink_exp_stat_fill_info(struct sk_buff *skb, u32 portid, u32 seq, int cpu,
 			     const struct ip_conntrack_stat *st)
@@ -5498,37 +3762,10 @@ static int ctnetlink_stat_exp_cpu(struct sk_buff *skb,
 static struct nf_ct_event_notifier ctnl_notifier = {
 	.ct_event = ctnetlink_conntrack_event,
 	.exp_event = ctnetlink_expect_event,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 
 static const struct nfnl_callback ctnl_cb[IPCTNL_MSG_MAX] = {
-<<<<<<< HEAD
-	[IPCTNL_MSG_CT_NEW]		= { .call = ctnetlink_new_conntrack,
-					    .attr_count = CTA_MAX,
-					    .policy = ct_nla_policy },
-	[IPCTNL_MSG_CT_GET] 		= { .call = ctnetlink_get_conntrack,
-					    .attr_count = CTA_MAX,
-					    .policy = ct_nla_policy },
-	[IPCTNL_MSG_CT_DELETE]  	= { .call = ctnetlink_del_conntrack,
-					    .attr_count = CTA_MAX,
-					    .policy = ct_nla_policy },
-	[IPCTNL_MSG_CT_GET_CTRZERO] 	= { .call = ctnetlink_get_conntrack,
-					    .attr_count = CTA_MAX,
-					    .policy = ct_nla_policy },
-};
-
-static const struct nfnl_callback ctnl_exp_cb[IPCTNL_MSG_EXP_MAX] = {
-	[IPCTNL_MSG_EXP_GET]		= { .call = ctnetlink_get_expect,
-					    .attr_count = CTA_EXPECT_MAX,
-					    .policy = exp_nla_policy },
-	[IPCTNL_MSG_EXP_NEW]		= { .call = ctnetlink_new_expect,
-					    .attr_count = CTA_EXPECT_MAX,
-					    .policy = exp_nla_policy },
-	[IPCTNL_MSG_EXP_DELETE]		= { .call = ctnetlink_del_expect,
-					    .attr_count = CTA_EXPECT_MAX,
-					    .policy = exp_nla_policy },
-=======
 	[IPCTNL_MSG_CT_NEW]	= {
 		.call		= ctnetlink_new_conntrack,
 		.type		= NFNL_CB_MUTEX,
@@ -5594,7 +3831,6 @@ static const struct nfnl_callback ctnl_exp_cb[IPCTNL_MSG_EXP_MAX] = {
 		.call		= ctnetlink_stat_exp_cpu,
 		.type		= NFNL_CB_MUTEX,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct nfnetlink_subsystem ctnl_subsys = {
@@ -5618,51 +3854,6 @@ MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_CTNETLINK_EXP);
 static int __net_init ctnetlink_net_init(struct net *net)
 {
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
-<<<<<<< HEAD
-	int ret;
-
-	ret = nf_conntrack_register_notifier(net, &ctnl_notifier);
-	if (ret < 0) {
-		pr_err("ctnetlink_init: cannot register notifier.\n");
-		goto err_out;
-	}
-
-	ret = nf_ct_expect_register_notifier(net, &ctnl_notifier_exp);
-	if (ret < 0) {
-		pr_err("ctnetlink_init: cannot expect register notifier.\n");
-		goto err_unreg_notifier;
-	}
-#endif
-	return 0;
-
-#ifdef CONFIG_NF_CONNTRACK_EVENTS
-err_unreg_notifier:
-	nf_conntrack_unregister_notifier(net, &ctnl_notifier);
-err_out:
-	return ret;
-#endif
-}
-
-static void ctnetlink_net_exit(struct net *net)
-{
-#ifdef CONFIG_NF_CONNTRACK_EVENTS
-	nf_ct_expect_unregister_notifier(net, &ctnl_notifier_exp);
-	nf_conntrack_unregister_notifier(net, &ctnl_notifier);
-#endif
-}
-
-static void __net_exit ctnetlink_net_exit_batch(struct list_head *net_exit_list)
-{
-	struct net *net;
-
-	list_for_each_entry(net, net_exit_list, exit_list)
-		ctnetlink_net_exit(net);
-}
-
-static struct pernet_operations ctnetlink_net_ops = {
-	.init		= ctnetlink_net_init,
-	.exit_batch	= ctnetlink_net_exit_batch,
-=======
 	nf_conntrack_register_notifier(net, &ctnl_notifier);
 #endif
 	return 0;
@@ -5678,19 +3869,14 @@ static void ctnetlink_net_pre_exit(struct net *net)
 static struct pernet_operations ctnetlink_net_ops = {
 	.init		= ctnetlink_net_init,
 	.pre_exit	= ctnetlink_net_pre_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ctnetlink_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	pr_info("ctnetlink v%s: registering with nfnetlink.\n", version);
-=======
 	NL_ASSERT_DUMP_CTX_FITS(struct ctnetlink_list_dump_ctx);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = nfnetlink_subsys_register(&ctnl_subsys);
 	if (ret < 0) {
 		pr_err("ctnetlink_init: cannot register with nfnetlink.\n");
@@ -5703,15 +3889,6 @@ static int __init ctnetlink_init(void)
 		goto err_unreg_subsys;
 	}
 
-<<<<<<< HEAD
-	if (register_pernet_subsys(&ctnetlink_net_ops)) {
-		pr_err("ctnetlink_init: cannot register pernet operations\n");
-		goto err_unreg_exp_subsys;
-	}
-#ifdef CONFIG_NETFILTER_NETLINK_QUEUE_CT
-	/* setup interaction between nf_queue and nf_conntrack_netlink. */
-	RCU_INIT_POINTER(nfq_ct_hook, &ctnetlink_nfqueue_hook);
-=======
 	ret = register_pernet_subsys(&ctnetlink_net_ops);
 	if (ret < 0) {
 		pr_err("ctnetlink_init: cannot register pernet operations\n");
@@ -5720,7 +3897,6 @@ static int __init ctnetlink_init(void)
 #ifdef CONFIG_NETFILTER_NETLINK_GLUE_CT
 	/* setup interaction between nf_queue and nf_conntrack_netlink. */
 	RCU_INIT_POINTER(nfnl_ct_hook, &ctnetlink_glue_hook);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 
@@ -5734,16 +3910,6 @@ err_out:
 
 static void __exit ctnetlink_exit(void)
 {
-<<<<<<< HEAD
-	pr_info("ctnetlink: unregistering from nfnetlink.\n");
-
-	unregister_pernet_subsys(&ctnetlink_net_ops);
-	nfnetlink_subsys_unregister(&ctnl_exp_subsys);
-	nfnetlink_subsys_unregister(&ctnl_subsys);
-#ifdef CONFIG_NETFILTER_NETLINK_QUEUE_CT
-	RCU_INIT_POINTER(nfq_ct_hook, NULL);
-#endif
-=======
 	unregister_pernet_subsys(&ctnetlink_net_ops);
 	nfnetlink_subsys_unregister(&ctnl_exp_subsys);
 	nfnetlink_subsys_unregister(&ctnl_subsys);
@@ -5751,7 +3917,6 @@ static void __exit ctnetlink_exit(void)
 	RCU_INIT_POINTER(nfnl_ct_hook, NULL);
 #endif
 	synchronize_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ctnetlink_init);

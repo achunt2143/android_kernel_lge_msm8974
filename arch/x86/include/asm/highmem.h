@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * highmem.h: virtual kernel memory mappings for high memory
  *
@@ -26,17 +23,10 @@
 
 #include <linux/interrupt.h>
 #include <linux/threads.h>
-<<<<<<< HEAD
-#include <asm/kmap_types.h>
-#include <asm/tlbflush.h>
-#include <asm/paravirt.h>
-#include <asm/fixmap.h>
-=======
 #include <asm/tlbflush.h>
 #include <asm/paravirt.h>
 #include <asm/fixmap.h>
 #include <asm/pgtable_areas.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* declarations for highmem.c */
 extern unsigned long highstart_pfn, highend_pfn;
@@ -49,19 +39,6 @@ extern unsigned long highstart_pfn, highend_pfn;
 /*
  * Ordering is:
  *
-<<<<<<< HEAD
- * FIXADDR_TOP
- * 			fixed_addresses
- * FIXADDR_START
- * 			temp fixed addresses
- * FIXADDR_BOOT_START
- * 			Persistent kmap area
- * PKMAP_BASE
- * VMALLOC_END
- * 			Vmalloc area
- * VMALLOC_START
- * high_memory
-=======
  * high memory on:			              high_memory off:
  *    FIXADDR_TOP                                        FIXADDR_TOP
  *        fixed addresses                                    fixed addresses
@@ -76,29 +53,11 @@ extern unsigned long highstart_pfn, highend_pfn;
  * The temp fixed area is only used during boot for early_ioremap(), and
  * it is unused when the ioremap() is functional. vmalloc/pkmap area become
  * available after early boot so the temp fixed area is available for re-use.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define LAST_PKMAP_MASK (LAST_PKMAP-1)
 #define PKMAP_NR(virt)  ((virt-PKMAP_BASE) >> PAGE_SHIFT)
 #define PKMAP_ADDR(nr)  (PKMAP_BASE + ((nr) << PAGE_SHIFT))
 
-<<<<<<< HEAD
-extern void *kmap_high(struct page *page);
-extern void kunmap_high(struct page *page);
-
-void *kmap(struct page *page);
-void kunmap(struct page *page);
-
-void *kmap_atomic_prot(struct page *page, pgprot_t prot);
-void *kmap_atomic(struct page *page);
-void __kunmap_atomic(void *kvaddr);
-void *kmap_atomic_pfn(unsigned long pfn);
-void *kmap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot);
-struct page *kmap_atomic_to_page(void *ptr);
-
-#define flush_cache_kmaps()	do { } while (0)
-
-=======
 #define flush_cache_kmaps()	do { } while (0)
 
 #define	arch_kmap_local_post_map(vaddr, pteval)		\
@@ -110,7 +69,6 @@ struct page *kmap_atomic_to_page(void *ptr);
 		arch_flush_lazy_mmu_mode();		\
 	} while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void add_highpages_with_active_regions(int nid, unsigned long start_pfn,
 					unsigned long end_pfn);
 

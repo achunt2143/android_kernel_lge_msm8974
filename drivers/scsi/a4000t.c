@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Detection routine for the NCR53c710 based Amiga SCSI Controllers for Linux.
  *		Amiga Technologies A4000T SCSI controller.
@@ -60,11 +57,7 @@ static int __init amiga_a4000t_scsi_probe(struct platform_device *pdev)
 	scsi_addr = res->start + A4000T_SCSI_OFFSET;
 
 	/* Fill in the required pieces of hostdata */
-<<<<<<< HEAD
-	hostdata->base = (void __iomem *)ZTWO_VADDR(scsi_addr);
-=======
 	hostdata->base = ZTWO_VADDR(scsi_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hostdata->clock = 50;
 	hostdata->chip710 = 1;
 	hostdata->dmode_extra = DMODE_FC2;
@@ -102,11 +95,7 @@ static int __init amiga_a4000t_scsi_probe(struct platform_device *pdev)
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __exit amiga_a4000t_scsi_remove(struct platform_device *pdev)
-=======
 static void __exit amiga_a4000t_scsi_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = platform_get_drvdata(pdev);
 	struct NCR_700_Host_Parameters *hostdata = shost_priv(host);
@@ -117,33 +106,6 @@ static void __exit amiga_a4000t_scsi_remove(struct platform_device *pdev)
 	kfree(hostdata);
 	free_irq(host->irq, host);
 	release_mem_region(res->start, resource_size(res));
-<<<<<<< HEAD
-	return 0;
-}
-
-static struct platform_driver amiga_a4000t_scsi_driver = {
-	.remove = __exit_p(amiga_a4000t_scsi_remove),
-	.driver   = {
-		.name	= "amiga-a4000t-scsi",
-		.owner	= THIS_MODULE,
-	},
-};
-
-static int __init amiga_a4000t_scsi_init(void)
-{
-	return platform_driver_probe(&amiga_a4000t_scsi_driver,
-				     amiga_a4000t_scsi_probe);
-}
-
-module_init(amiga_a4000t_scsi_init);
-
-static void __exit amiga_a4000t_scsi_exit(void)
-{
-	platform_driver_unregister(&amiga_a4000t_scsi_driver);
-}
-
-module_exit(amiga_a4000t_scsi_exit);
-=======
 }
 
 static struct platform_driver amiga_a4000t_scsi_driver = {
@@ -154,7 +116,6 @@ static struct platform_driver amiga_a4000t_scsi_driver = {
 };
 
 module_platform_driver_probe(amiga_a4000t_scsi_driver, amiga_a4000t_scsi_probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Hourihane <alanh@fairlite.demon.co.uk> / "
 	      "Kars de Jong <jongk@linux-m68k.org>");

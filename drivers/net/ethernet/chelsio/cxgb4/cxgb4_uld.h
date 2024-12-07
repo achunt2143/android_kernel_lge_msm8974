@@ -1,11 +1,7 @@
 /*
  * This file is part of the Chelsio T4 Ethernet driver for Linux.
  *
-<<<<<<< HEAD
- * Copyright (c) 2003-2010 Chelsio Communications, Inc. All rights reserved.
-=======
  * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -36,20 +32,12 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-#ifndef __CXGB4_OFLD_H
-#define __CXGB4_OFLD_H
-=======
 #ifndef __CXGB4_ULD_H
 #define __CXGB4_ULD_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/cache.h>
 #include <linux/spinlock.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/atomic.h>
-=======
 #include <linux/inetdevice.h>
 #include <linux/atomic.h>
 #include <net/tls.h>
@@ -60,7 +48,6 @@
 
 /* ulp_mem_io + ulptx_idata + payload + padding */
 #define MAX_IMM_ULPTX_WR_LEN (32 + 8 + 256 + 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CPL message priority levels */
 enum {
@@ -73,17 +60,10 @@ enum {
 };
 
 #define INIT_TP_WR(w, tid) do { \
-<<<<<<< HEAD
-	(w)->wr.wr_hi = htonl(FW_WR_OP(FW_TP_WR) | \
-			      FW_WR_IMMDLEN(sizeof(*w) - sizeof(w->wr))); \
-	(w)->wr.wr_mid = htonl(FW_WR_LEN16(DIV_ROUND_UP(sizeof(*w), 16)) | \
-			       FW_WR_FLOWID(tid)); \
-=======
 	(w)->wr.wr_hi = htonl(FW_WR_OP_V(FW_TP_WR) | \
 			      FW_WR_IMMDLEN_V(sizeof(*w) - sizeof(w->wr))); \
 	(w)->wr.wr_mid = htonl(FW_WR_LEN16_V(DIV_ROUND_UP(sizeof(*w), 16)) | \
 			       FW_WR_FLOWID_V(tid)); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(w)->wr.wr_lo = cpu_to_be64(0); \
 } while (0)
 
@@ -93,26 +73,17 @@ enum {
 } while (0)
 
 #define INIT_ULPTX_WR(w, wrlen, atomic, tid) do { \
-<<<<<<< HEAD
-	(w)->wr.wr_hi = htonl(FW_WR_OP(FW_ULPTX_WR) | FW_WR_ATOMIC(atomic)); \
-	(w)->wr.wr_mid = htonl(FW_WR_LEN16(DIV_ROUND_UP(wrlen, 16)) | \
-			       FW_WR_FLOWID(tid)); \
-=======
 	(w)->wr.wr_hi = htonl(FW_WR_OP_V(FW_ULPTX_WR) | \
 			      FW_WR_ATOMIC_V(atomic)); \
 	(w)->wr.wr_mid = htonl(FW_WR_LEN16_V(DIV_ROUND_UP(wrlen, 16)) | \
 			       FW_WR_FLOWID_V(tid)); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(w)->wr.wr_lo = cpu_to_be64(0); \
 } while (0)
 
 /* Special asynchronous notification message */
 #define CXGB4_MSG_AN ((void *)1)
-<<<<<<< HEAD
-=======
 #define TX_ULD(uld)(((uld) != CXGB4_ULD_CRYPTO) ? CXGB4_TX_OFLD :\
 		      CXGB4_TX_CRYPTO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct serv_entry {
 	void *data;
@@ -123,23 +94,17 @@ union aopen_entry {
 	union aopen_entry *next;
 };
 
-<<<<<<< HEAD
-=======
 struct eotid_entry {
 	void *data;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Holds the size, base address, free list start, etc of the TID, server TID,
  * and active-open TID tables.  The tables themselves are allocated dynamically.
  */
 struct tid_info {
 	void **tid_tab;
-<<<<<<< HEAD
-=======
 	unsigned int tid_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ntids;
 
 	struct serv_entry *stid_tab;
@@ -147,13 +112,6 @@ struct tid_info {
 	unsigned int nstids;
 	unsigned int stid_base;
 
-<<<<<<< HEAD
-	union aopen_entry *atid_tab;
-	unsigned int natids;
-
-	unsigned int nftids;
-	unsigned int ftid_base;
-=======
 	unsigned int nhash;
 	unsigned int hash_base;
 
@@ -175,7 +133,6 @@ struct tid_info {
 	/* Server filter region */
 	unsigned int sftid_base;
 	unsigned int nsftids;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t atid_lock ____cacheline_aligned_in_smp;
 	union aopen_entry *afree;
@@ -183,10 +140,6 @@ struct tid_info {
 
 	spinlock_t stid_lock;
 	unsigned int stids_in_use;
-<<<<<<< HEAD
-
-	atomic_t tids_in_use;
-=======
 	unsigned int v6_stids_in_use;
 	unsigned int sftids_in_use;
 
@@ -208,16 +161,10 @@ struct tid_info {
 	spinlock_t ftid_lock;
 
 	unsigned int tc_hash_tids_max_prio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void *lookup_tid(const struct tid_info *t, unsigned int tid)
 {
-<<<<<<< HEAD
-	return tid < t->ntids ? t->tid_tab[tid] : NULL;
-}
-
-=======
 	tid -= t->tid_base;
 	return tid < t->ntids ? t->tid_tab[tid] : NULL;
 }
@@ -227,7 +174,6 @@ static inline bool tid_out_of_range(const struct tid_info *t, unsigned int tid)
 	return ((tid - t->tid_base) >= t->ntids);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void *lookup_atid(const struct tid_info *t, unsigned int atid)
 {
 	return atid < t->natids ? t->atid_tab[atid].data : NULL;
@@ -235,17 +181,6 @@ static inline void *lookup_atid(const struct tid_info *t, unsigned int atid)
 
 static inline void *lookup_stid(const struct tid_info *t, unsigned int stid)
 {
-<<<<<<< HEAD
-	stid -= t->stid_base;
-	return stid < t->nstids ? t->stid_tab[stid].data : NULL;
-}
-
-static inline void cxgb4_insert_tid(struct tid_info *t, void *data,
-				    unsigned int tid)
-{
-	t->tid_tab[tid] = data;
-	atomic_inc(&t->tids_in_use);
-=======
 	/* Is it a server filter TID? */
 	if (t->nsftids && (stid >= t->sftid_base)) {
 		stid -= t->sftid_base;
@@ -304,21 +239,10 @@ static inline void cxgb4_free_eotid(struct tid_info *t, u32 eotid)
 	clear_bit(eotid, t->eotid_bmap);
 	t->eotid_tab[eotid].data = NULL;
 	atomic_dec(&t->eotids_in_use);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int cxgb4_alloc_atid(struct tid_info *t, void *data);
 int cxgb4_alloc_stid(struct tid_info *t, int family, void *data);
-<<<<<<< HEAD
-void cxgb4_free_atid(struct tid_info *t, unsigned int atid);
-void cxgb4_free_stid(struct tid_info *t, unsigned int stid, int family);
-void cxgb4_remove_tid(struct tid_info *t, unsigned int qid, unsigned int tid);
-
-struct in6_addr;
-
-int cxgb4_create_server(const struct net_device *dev, unsigned int stid,
-			__be32 sip, __be16 sport, unsigned int queue);
-=======
 int cxgb4_alloc_sftid(struct tid_info *t, int family, void *data);
 void cxgb4_free_atid(struct tid_info *t, unsigned int atid);
 void cxgb4_free_stid(struct tid_info *t, unsigned int stid, int family);
@@ -371,7 +295,6 @@ int cxgb4_del_filter(struct net_device *dev, int filter_id,
 		     struct ch_filter_specification *fs);
 int cxgb4_get_filter_counters(struct net_device *dev, unsigned int fidx,
 			      u64 *hitcnt, u64 *bytecnt, bool hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void set_wr_txq(struct sk_buff *skb, int prio, int queue)
 {
@@ -379,13 +302,6 @@ static inline void set_wr_txq(struct sk_buff *skb, int prio, int queue)
 }
 
 enum cxgb4_uld {
-<<<<<<< HEAD
-	CXGB4_ULD_RDMA,
-	CXGB4_ULD_ISCSI,
-	CXGB4_ULD_MAX
-};
-
-=======
 	CXGB4_ULD_INIT,
 	CXGB4_ULD_RDMA,
 	CXGB4_ULD_ISCSI,
@@ -410,16 +326,10 @@ enum cxgb4_txq_type {
 	CXGB4_TXQ_MAX
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum cxgb4_state {
 	CXGB4_STATE_UP,
 	CXGB4_STATE_START_RECOVERY,
 	CXGB4_STATE_DOWN,
-<<<<<<< HEAD
-	CXGB4_STATE_DETACH
-};
-
-=======
 	CXGB4_STATE_DETACH,
 	CXGB4_STATE_FATAL_ERROR
 };
@@ -431,16 +341,12 @@ enum cxgb4_control {
 };
 
 struct adapter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_dev;
 struct l2t_data;
 struct net_device;
 struct pkt_gl;
 struct tp_tcp_stats;
-<<<<<<< HEAD
-=======
 struct t4_lro_mgr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cxgb4_range {
 	unsigned int start;
@@ -452,18 +358,11 @@ struct cxgb4_virt_res {                      /* virtualized HW resources */
 	struct cxgb4_range iscsi;
 	struct cxgb4_range stag;
 	struct cxgb4_range rq;
-<<<<<<< HEAD
-=======
 	struct cxgb4_range srq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cxgb4_range pbl;
 	struct cxgb4_range qp;
 	struct cxgb4_range cq;
 	struct cxgb4_range ocq;
-<<<<<<< HEAD
-};
-
-=======
 	struct cxgb4_range key;
 	unsigned int ncrypto_fc;
 	struct cxgb4_range ppod_edram;
@@ -514,7 +413,6 @@ struct ch_ipsec_stats_debug {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OCQ_WIN_OFFSET(pdev, vres) \
 	(pci_resource_len((pdev), 2) - roundup_pow_of_two((vres)->ocq.size))
 
@@ -529,32 +427,15 @@ struct cxgb4_lld_info {
 	const struct cxgb4_virt_res *vr;     /* assorted HW resources */
 	const unsigned short *mtus;          /* MTU table */
 	const unsigned short *rxq_ids;       /* the ULD's Rx queue ids */
-<<<<<<< HEAD
-	unsigned short nrxq;                 /* # of Rx queues */
-	unsigned short ntxq;                 /* # of Tx queues */
-=======
 	const unsigned short *ciq_ids;       /* the ULD's concentrator IQ ids */
 	unsigned short nrxq;                 /* # of Rx queues */
 	unsigned short ntxq;                 /* # of Tx queues */
 	unsigned short nciq;		     /* # of concentrator IQ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char nchan:4;               /* # of channels */
 	unsigned char nports:4;              /* # of ports */
 	unsigned char wr_cred;               /* WR 16-byte credits */
 	unsigned char adapter_type;          /* type of adapter */
 	unsigned char fw_api_ver;            /* FW API version */
-<<<<<<< HEAD
-	unsigned int fw_vers;                /* FW version */
-	unsigned int iscsi_iolen;            /* iSCSI max I/O length */
-	unsigned short udb_density;          /* # of user DB/page */
-	unsigned short ucq_density;          /* # of user CQs/page */
-	void __iomem *gts_reg;               /* address of GTS register */
-	void __iomem *db_reg;                /* address of kernel doorbell */
-};
-
-struct cxgb4_uld_info {
-	const char *name;
-=======
 	unsigned char crypto;                /* crypto support */
 	unsigned int fw_vers;                /* FW version */
 	unsigned int iscsi_iolen;            /* iSCSI max I/O length */
@@ -597,23 +478,10 @@ struct cxgb4_uld_info {
 	unsigned int ntxq;
 	bool ciq;
 	bool lro;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *(*add)(const struct cxgb4_lld_info *p);
 	int (*rx_handler)(void *handle, const __be64 *rsp,
 			  const struct pkt_gl *gl);
 	int (*state_change)(void *handle, enum cxgb4_state new_state);
-<<<<<<< HEAD
-};
-
-int cxgb4_register_uld(enum cxgb4_uld type, const struct cxgb4_uld_info *p);
-int cxgb4_unregister_uld(enum cxgb4_uld type);
-int cxgb4_ofld_send(struct net_device *dev, struct sk_buff *skb);
-unsigned int cxgb4_port_chan(const struct net_device *dev);
-unsigned int cxgb4_port_viid(const struct net_device *dev);
-unsigned int cxgb4_port_idx(const struct net_device *dev);
-unsigned int cxgb4_best_mtu(const unsigned short *mtus, unsigned short mtu,
-			    unsigned int *idx);
-=======
 	int (*control)(void *handle, enum cxgb4_control control, ...);
 	int (*lro_rx_handler)(void *handle, const __be64 *rsp,
 			      const struct pkt_gl *gl,
@@ -649,16 +517,12 @@ unsigned int cxgb4_best_aligned_mtu(const unsigned short *mtus,
 				    unsigned short data_size_max,
 				    unsigned short data_size_align,
 				    unsigned int *mtu_idxp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void cxgb4_get_tcp_stats(struct pci_dev *pdev, struct tp_tcp_stats *v4,
 			 struct tp_tcp_stats *v6);
 void cxgb4_iscsi_init(struct net_device *dev, unsigned int tag_mask,
 		      const unsigned int *pgsz_order);
 struct sk_buff *cxgb4_pktgl_to_skb(const struct pkt_gl *gl,
 				   unsigned int skb_len, unsigned int pull_len);
-<<<<<<< HEAD
-#endif  /* !__CXGB4_OFLD_H */
-=======
 int cxgb4_sync_txq_pidx(struct net_device *dev, u16 qid, u16 pidx, u16 size);
 int cxgb4_flush_eq_cache(struct net_device *dev);
 int cxgb4_read_tpte(struct net_device *dev, u32 stag, __be32 *tpte);
@@ -673,4 +537,3 @@ int cxgb4_bar2_sge_qregs(struct net_device *dev,
 			 unsigned int *pbar2_qid);
 
 #endif  /* !__CXGB4_ULD_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -291,10 +291,6 @@
 	};
 
 	chosen {
-<<<<<<< HEAD
-		linux,stdout-path = &UART0;
-=======
 		stdout-path = &UART0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

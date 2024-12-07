@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-/*
- * smdk_spdif.c  --  S/PDIF audio for SMDK
- *
- * Copyright 2010 Samsung Electronics Co. Ltd.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // smdk_spdif.c - S/PDIF audio for SMDK
 //
 // Copyright (C) 2010 Samsung Electronics Co., Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -114,13 +100,8 @@ static int set_audio_clock_rate(unsigned long epll_rate,
 static int smdk_hw_params(struct snd_pcm_substream *substream,
 		struct snd_pcm_hw_params *params)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
-=======
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct snd_soc_dai *cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long pll_out, rclk_rate;
 	int ret, ratio;
 
@@ -157,20 +138,6 @@ static int smdk_hw_params(struct snd_pcm_substream *substream,
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct snd_soc_ops smdk_spdif_ops = {
-	.hw_params = smdk_hw_params,
-};
-
-static struct snd_soc_dai_link smdk_dai = {
-	.name = "S/PDIF",
-	.stream_name = "S/PDIF PCM Playback",
-	.platform_name = "samsung-audio",
-	.cpu_dai_name = "samsung-spdif",
-	.codec_dai_name = "dit-hifi",
-	.codec_name = "spdif-dit",
-	.ops = &smdk_spdif_ops,
-=======
 static const struct snd_soc_ops smdk_spdif_ops = {
 	.hw_params = smdk_hw_params,
 };
@@ -185,7 +152,6 @@ static struct snd_soc_dai_link smdk_dai = {
 	.stream_name = "S/PDIF PCM Playback",
 	.ops = &smdk_spdif_ops,
 	SND_SOC_DAILINK_REG(spdif),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_card smdk = {

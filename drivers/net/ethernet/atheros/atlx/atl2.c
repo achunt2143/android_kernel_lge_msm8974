@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2006 - 2007 Atheros Corporation. All rights reserved.
  * Copyright(c) 2007 - 2008 Chris Snook <csnook@redhat.com>
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/atomic.h>
@@ -56,51 +36,26 @@
 
 #include "atl2.h"
 
-<<<<<<< HEAD
-#define ATL2_DRV_VERSION "2.2.3"
-
-static const char atl2_driver_name[] = "atl2";
-static const char atl2_driver_string[] = "Atheros(R) L2 Ethernet Driver";
-static const char atl2_copyright[] = "Copyright (c) 2007 Atheros Corporation.";
-static const char atl2_driver_version[] = ATL2_DRV_VERSION;
-=======
 static const char atl2_driver_name[] = "atl2";
 static const struct ethtool_ops atl2_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Atheros Corporation <xiong.huang@atheros.com>, Chris Snook <csnook@redhat.com>");
 MODULE_DESCRIPTION("Atheros Fast Ethernet Network Driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(ATL2_DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * atl2_pci_tbl - PCI Device ID Table
  */
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(atl2_pci_tbl) = {
-=======
 static const struct pci_device_id atl2_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATTANSIC_L2)},
 	/* required last entry */
 	{0,}
 };
 MODULE_DEVICE_TABLE(pci, atl2_pci_tbl);
 
-<<<<<<< HEAD
-static void atl2_set_ethtool_ops(struct net_device *netdev);
-
-static void atl2_check_options(struct atl2_adapter *adapter);
-
-/*
-=======
 static void atl2_check_options(struct atl2_adapter *adapter);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_sw_init - Initialize general software structures (struct atl2_adapter)
  * @adapter: board private structure to initialize
  *
@@ -108,11 +63,7 @@ static void atl2_check_options(struct atl2_adapter *adapter);
  * Fields are initialized based on PCI device information and
  * OS network device settings (MTU size).
  */
-<<<<<<< HEAD
-static int __devinit atl2_sw_init(struct atl2_adapter *adapter)
-=======
 static int atl2_sw_init(struct atl2_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atl2_hw *hw = &adapter->hw;
 	struct pci_dev *pdev = adapter->pdev;
@@ -152,11 +103,7 @@ static int atl2_sw_init(struct atl2_adapter *adapter)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_set_multi - Multicast and Promiscuous mode set
  * @netdev: network interface device structure
  *
@@ -210,11 +157,7 @@ static void init_ring_ptrs(struct atl2_adapter *adapter)
 	adapter->txs_next_clear = 0;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_configure - Configure Transmit&Receive Unit after Reset
  * @adapter: board private structure
  *
@@ -291,11 +234,7 @@ static int atl2_configure(struct atl2_adapter *adapter)
 
 	/* set MTU */
 	ATL2_WRITE_REG(hw, REG_MTU, adapter->netdev->mtu +
-<<<<<<< HEAD
-		ENET_HEADER_SIZE + VLAN_SIZE + ETHERNET_FCS_SIZE);
-=======
 		ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 1590 */
 	ATL2_WRITE_REG(hw, REG_TX_CUT_THRESH, 0x177);
@@ -324,11 +263,7 @@ static int atl2_configure(struct atl2_adapter *adapter)
 	return value;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_setup_ring_resources - allocate Tx / RX descriptor resources
  * @adapter: board private structure
  *
@@ -346,18 +281,10 @@ static s32 atl2_setup_ring_resources(struct atl2_adapter *adapter)
 		adapter->txs_ring_size * 4 + 7 +	/* dword align */
 		adapter->rxd_ring_size * 1536 + 127;	/* 128bytes align */
 
-<<<<<<< HEAD
-	adapter->ring_vir_addr = pci_alloc_consistent(pdev, size,
-		&adapter->ring_dma);
-	if (!adapter->ring_vir_addr)
-		return -ENOMEM;
-	memset(adapter->ring_vir_addr, 0, adapter->ring_size);
-=======
 	adapter->ring_vir_addr = dma_alloc_coherent(&pdev->dev, size,
 						    &adapter->ring_dma, GFP_KERNEL);
 	if (!adapter->ring_vir_addr)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init TXD Ring */
 	adapter->txd_dma = adapter->ring_dma ;
@@ -392,11 +319,7 @@ static s32 atl2_setup_ring_resources(struct atl2_adapter *adapter)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_irq_enable - Enable default interrupt generation settings
  * @adapter: board private structure
  */
@@ -406,11 +329,7 @@ static inline void atl2_irq_enable(struct atl2_adapter *adapter)
 	ATL2_WRITE_FLUSH(&adapter->hw);
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_irq_disable - Mask off interrupt generation on the NIC
  * @adapter: board private structure
  */
@@ -423,11 +342,7 @@ static inline void atl2_irq_disable(struct atl2_adapter *adapter)
 
 static void __atl2_vlan_mode(netdev_features_t features, u32 *ctrl)
 {
-<<<<<<< HEAD
-	if (features & NETIF_F_HW_VLAN_RX) {
-=======
 	if (features & NETIF_F_HW_VLAN_CTAG_RX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable VLAN tag insert/strip */
 		*ctrl |= MAC_CTRL_RMV_VLAN;
 	} else {
@@ -463,17 +378,10 @@ static netdev_features_t atl2_fix_features(struct net_device *netdev,
 	 * Since there is no support for separate rx/tx vlan accel
 	 * enable/disable make sure tx flag is always in same state as rx.
 	 */
-<<<<<<< HEAD
-	if (features & NETIF_F_HW_VLAN_RX)
-		features |= NETIF_F_HW_VLAN_TX;
-	else
-		features &= ~NETIF_F_HW_VLAN_TX;
-=======
 	if (features & NETIF_F_HW_VLAN_CTAG_RX)
 		features |= NETIF_F_HW_VLAN_CTAG_TX;
 	else
 		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -483,11 +391,7 @@ static int atl2_set_features(struct net_device *netdev,
 {
 	netdev_features_t changed = netdev->features ^ features;
 
-<<<<<<< HEAD
-	if (changed & NETIF_F_HW_VLAN_RX)
-=======
 	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atl2_vlan_mode(netdev, features);
 
 	return 0;
@@ -512,12 +416,6 @@ static void atl2_intr_rx(struct atl2_adapter *adapter)
 			/* alloc new buffer */
 			skb = netdev_alloc_skb_ip_align(netdev, rx_size);
 			if (NULL == skb) {
-<<<<<<< HEAD
-				printk(KERN_WARNING
-					"%s: Mem squeeze, deferring packet.\n",
-					netdev->name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Check that some rx space is free. If not,
 				 * free one and mark stats->rx_dropped++.
@@ -533,11 +431,7 @@ static void atl2_intr_rx(struct atl2_adapter *adapter)
 					((rxd->status.vtag&7) << 13) |
 					((rxd->status.vtag&8) << 9);
 
-<<<<<<< HEAD
-				__vlan_hwaccel_put_tag(skb, vlan_tag);
-=======
 				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan_tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			netif_rx(skb);
 			netdev->stats.rx_bytes += rx_size;
@@ -639,11 +533,7 @@ static void atl2_intr_tx(struct atl2_adapter *adapter)
 			netdev->stats.tx_aborted_errors++;
 		if (txs->late_col)
 			netdev->stats.tx_window_errors++;
-<<<<<<< HEAD
-		if (txs->underun)
-=======
 		if (txs->underrun)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netdev->stats.tx_fifo_errors++;
 	} while (1);
 
@@ -685,18 +575,10 @@ static inline void atl2_clear_phy_int(struct atl2_adapter *adapter)
 	spin_unlock(&adapter->stats_lock);
 }
 
-<<<<<<< HEAD
-/*
- * atl2_intr - Interrupt Handler
- * @irq: interrupt number
- * @data: pointer to a network interface device structure
- * @pt_regs: CPU registers structure
-=======
 /**
  * atl2_intr - Interrupt Handler
  * @irq: interrupt number
  * @data: pointer to a network interface device structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static irqreturn_t atl2_intr(int irq, void *data)
 {
@@ -772,11 +654,7 @@ static int atl2_request_irq(struct atl2_adapter *adapter)
 		netdev);
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_free_ring_resources - Free Tx / RX descriptor Resources
  * @adapter: board private structure
  *
@@ -785,19 +663,11 @@ static int atl2_request_irq(struct atl2_adapter *adapter)
 static void atl2_free_ring_resources(struct atl2_adapter *adapter)
 {
 	struct pci_dev *pdev = adapter->pdev;
-<<<<<<< HEAD
-	pci_free_consistent(pdev, adapter->ring_size, adapter->ring_vir_addr,
-		adapter->ring_dma);
-}
-
-/*
-=======
 	dma_free_coherent(&pdev->dev, adapter->ring_size,
 			  adapter->ring_vir_addr, adapter->ring_dma);
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_open - Called when a network interface is made active
  * @netdev: network interface device structure
  *
@@ -903,11 +773,7 @@ static void atl2_free_irq(struct atl2_adapter *adapter)
 #endif
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_close - Disables a network interface
  * @netdev: network interface device structure
  *
@@ -1000,15 +866,9 @@ static netdev_tx_t atl2_xmit_frame(struct sk_buff *skb,
 			skb->len-copy_len);
 		offset = ((u32)(skb->len-copy_len + 3) & ~3);
 	}
-<<<<<<< HEAD
-#ifdef NETIF_F_HW_VLAN_TX
-	if (vlan_tx_tag_present(skb)) {
-		u16 vlan_tag = vlan_tx_tag_get(skb);
-=======
 #ifdef NETIF_F_HW_VLAN_CTAG_TX
 	if (skb_vlan_tag_present(skb)) {
 		u16 vlan_tag = skb_vlan_tag_get(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vlan_tag = (vlan_tag << 4) |
 			(vlan_tag >> 13) |
 			((vlan_tag >> 9) & 0x8);
@@ -1028,20 +888,11 @@ static netdev_tx_t atl2_xmit_frame(struct sk_buff *skb,
 	ATL2_WRITE_REGW(&adapter->hw, REG_MB_TXD_WR_IDX,
 		(adapter->txd_write_ptr >> 2));
 
-<<<<<<< HEAD
-	mmiowb();
-	dev_kfree_skb_any(skb);
-	return NETDEV_TX_OK;
-}
-
-/*
-=======
 	dev_consume_skb_any(skb);
 	return NETDEV_TX_OK;
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_change_mtu - Change the Maximum Transfer Unit
  * @netdev: network interface device structure
  * @new_mtu: new value for maximum frame size
@@ -1053,32 +904,16 @@ static int atl2_change_mtu(struct net_device *netdev, int new_mtu)
 	struct atl2_adapter *adapter = netdev_priv(netdev);
 	struct atl2_hw *hw = &adapter->hw;
 
-<<<<<<< HEAD
-	if ((new_mtu < 40) || (new_mtu > (ETH_DATA_LEN + VLAN_SIZE)))
-		return -EINVAL;
-
-	/* set MTU */
-	if (hw->max_frame_size != new_mtu) {
-		netdev->mtu = new_mtu;
-		ATL2_WRITE_REG(hw, REG_MTU, new_mtu + ENET_HEADER_SIZE +
-			VLAN_SIZE + ETHERNET_FCS_SIZE);
-	}
-=======
 	/* set MTU */
 	netdev->mtu = new_mtu;
 	hw->max_frame_size = new_mtu;
 	ATL2_WRITE_REG(hw, REG_MTU, new_mtu + ETH_HLEN +
 		       VLAN_HLEN + ETH_FCS_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_set_mac - Change the Ethernet Address of the NIC
  * @netdev: network interface device structure
  * @p: pointer to an address structure
@@ -1096,11 +931,7 @@ static int atl2_set_mac(struct net_device *netdev, void *p)
 	if (netif_running(netdev))
 		return -EBUSY;
 
-<<<<<<< HEAD
-	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
-=======
 	eth_hw_addr_set(netdev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(adapter->hw.mac_addr, addr->sa_data, netdev->addr_len);
 
 	atl2_set_mac_addr(&adapter->hw);
@@ -1108,15 +939,6 @@ static int atl2_set_mac(struct net_device *netdev, void *p)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * atl2_mii_ioctl -
- * @netdev:
- * @ifreq:
- * @cmd:
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atl2_mii_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 {
 	struct atl2_adapter *adapter = netdev_priv(netdev);
@@ -1153,15 +975,6 @@ static int atl2_mii_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * atl2_ioctl -
- * @netdev:
- * @ifreq:
- * @cmd:
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atl2_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 {
 	switch (cmd) {
@@ -1178,20 +991,12 @@ static int atl2_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * atl2_tx_timeout - Respond to a Tx Hang
- * @netdev: network interface device structure
- */
-static void atl2_tx_timeout(struct net_device *netdev)
-=======
 /**
  * atl2_tx_timeout - Respond to a Tx Hang
  * @netdev: network interface device structure
  * @txqueue: index of the hanging transmit queue
  */
 static void atl2_tx_timeout(struct net_device *netdev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atl2_adapter *adapter = netdev_priv(netdev);
 
@@ -1199,15 +1004,6 @@ static void atl2_tx_timeout(struct net_device *netdev, unsigned int txqueue)
 	schedule_work(&adapter->reset_task);
 }
 
-<<<<<<< HEAD
-/*
- * atl2_watchdog - Timer Call-back
- * @data: pointer to netdev cast into an unsigned long
- */
-static void atl2_watchdog(unsigned long data)
-{
-	struct atl2_adapter *adapter = (struct atl2_adapter *) data;
-=======
 /**
  * atl2_watchdog - Timer Call-back
  * @t: timer list containing a pointer to netdev cast into an unsigned long
@@ -1215,7 +1011,6 @@ static void atl2_watchdog(unsigned long data)
 static void atl2_watchdog(struct timer_list *t)
 {
 	struct atl2_adapter *adapter = from_timer(adapter, t, watchdog_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(__ATL2_DOWN, &adapter->flags)) {
 		u32 drop_rxd, drop_rxs;
@@ -1234,15 +1029,6 @@ static void atl2_watchdog(struct timer_list *t)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * atl2_phy_config - Timer Call-back
- * @data: pointer to netdev cast into an unsigned long
- */
-static void atl2_phy_config(unsigned long data)
-{
-	struct atl2_adapter *adapter = (struct atl2_adapter *) data;
-=======
 /**
  * atl2_phy_config - Timer Call-back
  * @t: timer list containing a pointer to netdev cast into an unsigned long
@@ -1251,7 +1037,6 @@ static void atl2_phy_config(struct timer_list *t)
 {
 	struct atl2_adapter *adapter = from_timer(adapter, t,
 						  phy_config_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atl2_hw *hw = &adapter->hw;
 	unsigned long flags;
 
@@ -1301,10 +1086,6 @@ err_up:
 
 static void atl2_reinit_locked(struct atl2_adapter *adapter)
 {
-<<<<<<< HEAD
-	WARN_ON(in_interrupt());
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (test_and_set_bit(__ATL2_RESETTING, &adapter->flags))
 		msleep(1);
 	atl2_down(adapter);
@@ -1452,15 +1233,9 @@ static int atl2_check_link(struct atl2_adapter *adapter)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * atl2_link_chg_task - deal with link change event Out of interrupt context
- * @netdev: network interface device structure
-=======
 /**
  * atl2_link_chg_task - deal with link change event Out of interrupt context
  * @work: pointer to work struct with private info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void atl2_link_chg_task(struct work_struct *work)
 {
@@ -1518,22 +1293,14 @@ static const struct net_device_ops atl2_netdev_ops = {
 	.ndo_change_mtu		= atl2_change_mtu,
 	.ndo_fix_features	= atl2_fix_features,
 	.ndo_set_features	= atl2_set_features,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= atl2_ioctl,
-=======
 	.ndo_eth_ioctl		= atl2_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= atl2_tx_timeout,
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= atl2_poll_controller,
 #endif
 };
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_probe - Device Initialization Routine
  * @pdev: PCI device information struct
  * @ent: entry in atl2_pci_tbl
@@ -1544,29 +1311,15 @@ static const struct net_device_ops atl2_netdev_ops = {
  * The OS initialization, configuring of the adapter private structure,
  * and a hardware reset occur.
  */
-<<<<<<< HEAD
-static int __devinit atl2_probe(struct pci_dev *pdev,
-	const struct pci_device_id *ent)
-{
-	struct net_device *netdev;
-	struct atl2_adapter *adapter;
-	static int cards_found;
-=======
 static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct net_device *netdev;
 	struct atl2_adapter *adapter;
 	static int cards_found = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long mmio_start;
 	int mmio_len;
 	int err;
 
-<<<<<<< HEAD
-	cards_found = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pci_enable_device(pdev);
 	if (err)
 		return err;
@@ -1576,16 +1329,10 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 * until the kernel has the proper infrastructure to support 64-bit DMA
 	 * on these devices.
 	 */
-<<<<<<< HEAD
-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) &&
-		pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32))) {
-		printk(KERN_ERR "atl2: No usable DMA configuration, aborting\n");
-=======
 	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)) &&
 	    dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32))) {
 		printk(KERN_ERR "atl2: No usable DMA configuration, aborting\n");
 		err = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_dma;
 	}
 
@@ -1599,18 +1346,11 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 * pcibios_set_master to do the needed arch specific settings */
 	pci_set_master(pdev);
 
-<<<<<<< HEAD
-	err = -ENOMEM;
-	netdev = alloc_etherdev(sizeof(struct atl2_adapter));
-	if (!netdev)
-		goto err_alloc_etherdev;
-=======
 	netdev = alloc_etherdev(sizeof(struct atl2_adapter));
 	if (!netdev) {
 		err = -ENOMEM;
 		goto err_alloc_etherdev;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SET_NETDEV_DEV(netdev, &pdev->dev);
 
@@ -1633,17 +1373,11 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	atl2_setup_pcicmd(pdev);
 
 	netdev->netdev_ops = &atl2_netdev_ops;
-<<<<<<< HEAD
-	atl2_set_ethtool_ops(netdev);
-	netdev->watchdog_timeo = 5 * HZ;
-	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-=======
 	netdev->ethtool_ops = &atl2_ethtool_ops;
 	netdev->watchdog_timeo = 5 * HZ;
 	netdev->min_mtu = 40;
 	netdev->max_mtu = ETH_DATA_LEN + VLAN_HLEN;
 	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->mem_start = mmio_start;
 	netdev->mem_end = mmio_start + mmio_len;
@@ -1655,15 +1389,8 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err)
 		goto err_sw_init;
 
-<<<<<<< HEAD
-	err = -EIO;
-
-	netdev->hw_features = NETIF_F_SG | NETIF_F_HW_VLAN_RX;
-	netdev->features |= (NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_RX);
-=======
 	netdev->hw_features = NETIF_F_HW_VLAN_CTAG_RX;
 	netdev->features |= (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init PHY as early as possible due to power saving issue  */
 	atl2_phy_init(&adapter->hw);
@@ -1678,39 +1405,17 @@ static int atl2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* copy the MAC address out of the EEPROM */
 	atl2_read_mac_addr(&adapter->hw);
-<<<<<<< HEAD
-	memcpy(netdev->dev_addr, adapter->hw.mac_addr, netdev->addr_len);
-/* FIXME: do we still need this? */
-#ifdef ETHTOOL_GPERMADDR
-	memcpy(netdev->perm_addr, adapter->hw.mac_addr, netdev->addr_len);
-
-	if (!is_valid_ether_addr(netdev->perm_addr)) {
-#else
-	if (!is_valid_ether_addr(netdev->dev_addr)) {
-#endif
-=======
 	eth_hw_addr_set(netdev, adapter->hw.mac_addr);
 	if (!is_valid_ether_addr(netdev->dev_addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EIO;
 		goto err_eeprom;
 	}
 
 	atl2_check_options(adapter);
 
-<<<<<<< HEAD
-	init_timer(&adapter->watchdog_timer);
-	adapter->watchdog_timer.function = atl2_watchdog;
-	adapter->watchdog_timer.data = (unsigned long) adapter;
-
-	init_timer(&adapter->phy_config_timer);
-	adapter->phy_config_timer.function = atl2_phy_config;
-	adapter->phy_config_timer.data = (unsigned long) adapter;
-=======
 	timer_setup(&adapter->watchdog_timer, atl2_watchdog, 0);
 
 	timer_setup(&adapter->phy_config_timer, atl2_phy_config, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_WORK(&adapter->reset_task, atl2_reset_task);
 	INIT_WORK(&adapter->link_chg_task, atl2_link_chg_task);
@@ -1743,11 +1448,7 @@ err_dma:
 	return err;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_remove - Device Removal Routine
  * @pdev: PCI device information struct
  *
@@ -1758,11 +1459,7 @@ err_dma:
  */
 /* FIXME: write the original MAC address back in case it was changed from a
  * BIOS-set value, as in atl1 -- CHS */
-<<<<<<< HEAD
-static void __devexit atl2_remove(struct pci_dev *pdev)
-=======
 static void atl2_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct atl2_adapter *adapter = netdev_priv(netdev);
@@ -1969,11 +1666,7 @@ static struct pci_driver atl2_driver = {
 	.name     = atl2_driver_name,
 	.id_table = atl2_pci_tbl,
 	.probe    = atl2_probe,
-<<<<<<< HEAD
-	.remove   = __devexit_p(atl2_remove),
-=======
 	.remove   = atl2_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Power Management Hooks */
 	.suspend  = atl2_suspend,
 #ifdef CONFIG_PM
@@ -1982,36 +1675,7 @@ static struct pci_driver atl2_driver = {
 	.shutdown = atl2_shutdown,
 };
 
-<<<<<<< HEAD
-/*
- * atl2_init_module - Driver Registration Routine
- *
- * atl2_init_module is the first routine called when the driver is
- * loaded. All it does is register with the PCI subsystem.
- */
-static int __init atl2_init_module(void)
-{
-	printk(KERN_INFO "%s - version %s\n", atl2_driver_string,
-		atl2_driver_version);
-	printk(KERN_INFO "%s\n", atl2_copyright);
-	return pci_register_driver(&atl2_driver);
-}
-module_init(atl2_init_module);
-
-/*
- * atl2_exit_module - Driver Exit Cleanup Routine
- *
- * atl2_exit_module is called just before the driver is removed
- * from memory.
- */
-static void __exit atl2_exit_module(void)
-{
-	pci_unregister_driver(&atl2_driver);
-}
-module_exit(atl2_exit_module);
-=======
 module_pci_driver(atl2_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void atl2_read_pci_cfg(struct atl2_hw *hw, u32 reg, u16 *value)
 {
@@ -2025,15 +1689,6 @@ static void atl2_write_pci_cfg(struct atl2_hw *hw, u32 reg, u16 *value)
 	pci_write_config_word(adapter->pdev, reg, *value);
 }
 
-<<<<<<< HEAD
-static int atl2_get_settings(struct net_device *netdev,
-	struct ethtool_cmd *ecmd)
-{
-	struct atl2_adapter *adapter = netdev_priv(netdev);
-	struct atl2_hw *hw = &adapter->hw;
-
-	ecmd->supported = (SUPPORTED_10baseT_Half |
-=======
 static int atl2_get_link_ksettings(struct net_device *netdev,
 				   struct ethtool_link_ksettings *cmd)
 {
@@ -2042,43 +1697,11 @@ static int atl2_get_link_ksettings(struct net_device *netdev,
 	u32 supported, advertising;
 
 	supported = (SUPPORTED_10baseT_Half |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SUPPORTED_10baseT_Full |
 		SUPPORTED_100baseT_Half |
 		SUPPORTED_100baseT_Full |
 		SUPPORTED_Autoneg |
 		SUPPORTED_TP);
-<<<<<<< HEAD
-	ecmd->advertising = ADVERTISED_TP;
-
-	ecmd->advertising |= ADVERTISED_Autoneg;
-	ecmd->advertising |= hw->autoneg_advertised;
-
-	ecmd->port = PORT_TP;
-	ecmd->phy_address = 0;
-	ecmd->transceiver = XCVR_INTERNAL;
-
-	if (adapter->link_speed != SPEED_0) {
-		ethtool_cmd_speed_set(ecmd, adapter->link_speed);
-		if (adapter->link_duplex == FULL_DUPLEX)
-			ecmd->duplex = DUPLEX_FULL;
-		else
-			ecmd->duplex = DUPLEX_HALF;
-	} else {
-		ethtool_cmd_speed_set(ecmd, -1);
-		ecmd->duplex = -1;
-	}
-
-	ecmd->autoneg = AUTONEG_ENABLE;
-	return 0;
-}
-
-static int atl2_set_settings(struct net_device *netdev,
-	struct ethtool_cmd *ecmd)
-{
-	struct atl2_adapter *adapter = netdev_priv(netdev);
-	struct atl2_hw *hw = &adapter->hw;
-=======
 	advertising = ADVERTISED_TP;
 
 	advertising |= ADVERTISED_Autoneg;
@@ -2117,40 +1740,16 @@ static int atl2_set_link_ksettings(struct net_device *netdev,
 
 	ethtool_convert_link_mode_to_legacy_u32(&advertising,
 						cmd->link_modes.advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (test_and_set_bit(__ATL2_RESETTING, &adapter->flags))
 		msleep(1);
 
-<<<<<<< HEAD
-	if (ecmd->autoneg == AUTONEG_ENABLE) {
-=======
 	if (cmd->base.autoneg == AUTONEG_ENABLE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MY_ADV_MASK	(ADVERTISE_10_HALF | \
 			 ADVERTISE_10_FULL | \
 			 ADVERTISE_100_HALF| \
 			 ADVERTISE_100_FULL)
 
-<<<<<<< HEAD
-		if ((ecmd->advertising & MY_ADV_MASK) == MY_ADV_MASK) {
-			hw->MediaType = MEDIA_TYPE_AUTO_SENSOR;
-			hw->autoneg_advertised =  MY_ADV_MASK;
-		} else if ((ecmd->advertising & MY_ADV_MASK) ==
-				ADVERTISE_100_FULL) {
-			hw->MediaType = MEDIA_TYPE_100M_FULL;
-			hw->autoneg_advertised = ADVERTISE_100_FULL;
-		} else if ((ecmd->advertising & MY_ADV_MASK) ==
-				ADVERTISE_100_HALF) {
-			hw->MediaType = MEDIA_TYPE_100M_HALF;
-			hw->autoneg_advertised = ADVERTISE_100_HALF;
-		} else if ((ecmd->advertising & MY_ADV_MASK) ==
-				ADVERTISE_10_FULL) {
-			hw->MediaType = MEDIA_TYPE_10M_FULL;
-			hw->autoneg_advertised = ADVERTISE_10_FULL;
-		}  else if ((ecmd->advertising & MY_ADV_MASK) ==
-				ADVERTISE_10_HALF) {
-=======
 		if ((advertising & MY_ADV_MASK) == MY_ADV_MASK) {
 			hw->MediaType = MEDIA_TYPE_AUTO_SENSOR;
 			hw->autoneg_advertised =  MY_ADV_MASK;
@@ -2164,18 +1763,13 @@ static int atl2_set_link_ksettings(struct net_device *netdev,
 			hw->MediaType = MEDIA_TYPE_10M_FULL;
 			hw->autoneg_advertised = ADVERTISE_10_FULL;
 		}  else if ((advertising & MY_ADV_MASK) == ADVERTISE_10_HALF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hw->MediaType = MEDIA_TYPE_10M_HALF;
 			hw->autoneg_advertised = ADVERTISE_10_HALF;
 		} else {
 			clear_bit(__ATL2_RESETTING, &adapter->flags);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ecmd->advertising = hw->autoneg_advertised |
-=======
 		advertising = hw->autoneg_advertised |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ADVERTISED_TP | ADVERTISED_Autoneg;
 	} else {
 		clear_bit(__ATL2_RESETTING, &adapter->flags);
@@ -2300,13 +1894,8 @@ static int atl2_get_eeprom(struct net_device *netdev,
 	first_dword = eeprom->offset >> 2;
 	last_dword = (eeprom->offset + eeprom->len - 1) >> 2;
 
-<<<<<<< HEAD
-	eeprom_buff = kmalloc(sizeof(u32) * (last_dword - first_dword + 1),
-		GFP_KERNEL);
-=======
 	eeprom_buff = kmalloc_array(last_dword - first_dword + 1, sizeof(u32),
 				    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!eeprom_buff)
 		return -ENOMEM;
 
@@ -2391,23 +1980,10 @@ static void atl2_get_drvinfo(struct net_device *netdev,
 {
 	struct atl2_adapter *adapter = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	strlcpy(drvinfo->driver,  atl2_driver_name, sizeof(drvinfo->driver));
-	strlcpy(drvinfo->version, atl2_driver_version,
-		sizeof(drvinfo->version));
-	strlcpy(drvinfo->fw_version, "L2", sizeof(drvinfo->fw_version));
-	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
-		sizeof(drvinfo->bus_info));
-	drvinfo->n_stats = 0;
-	drvinfo->testinfo_len = 0;
-	drvinfo->regdump_len = atl2_get_regs_len(netdev);
-	drvinfo->eedump_len = atl2_get_eeprom_len(netdev);
-=======
 	strscpy(drvinfo->driver,  atl2_driver_name, sizeof(drvinfo->driver));
 	strscpy(drvinfo->fw_version, "L2", sizeof(drvinfo->fw_version));
 	strscpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void atl2_get_wol(struct net_device *netdev,
@@ -2460,11 +2036,6 @@ static int atl2_nway_reset(struct net_device *netdev)
 }
 
 static const struct ethtool_ops atl2_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings		= atl2_get_settings,
-	.set_settings		= atl2_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= atl2_get_drvinfo,
 	.get_regs_len		= atl2_get_regs_len,
 	.get_regs		= atl2_get_regs,
@@ -2477,20 +2048,10 @@ static const struct ethtool_ops atl2_ethtool_ops = {
 	.get_eeprom_len		= atl2_get_eeprom_len,
 	.get_eeprom		= atl2_get_eeprom,
 	.set_eeprom		= atl2_set_eeprom,
-<<<<<<< HEAD
-};
-
-static void atl2_set_ethtool_ops(struct net_device *netdev)
-{
-	SET_ETHTOOL_OPS(netdev, &atl2_ethtool_ops);
-}
-
-=======
 	.get_link_ksettings	= atl2_get_link_ksettings,
 	.set_link_ksettings	= atl2_set_link_ksettings,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LBYTESWAP(a)  ((((a) & 0x00ff00ff) << 8) | \
 	(((a) & 0xff00ff00) >> 8))
 #define LONGSWAP(a)   ((LBYTESWAP(a) << 16) | (LBYTESWAP(a) >> 16))
@@ -2716,11 +2277,7 @@ static s32 atl2_read_mac_addr(struct atl2_hw *hw)
 {
 	if (get_permanent_address(hw)) {
 		/* for test */
-<<<<<<< HEAD
-		/* FIXME: shouldn't we use random_ether_addr() here? */
-=======
 		/* FIXME: shouldn't we use eth_random_addr() here? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->perm_mac_addr[0] = 0x00;
 		hw->perm_mac_addr[1] = 0x13;
 		hw->perm_mac_addr[2] = 0x74;
@@ -2884,10 +2441,6 @@ static s32 atl2_get_speed_and_duplex(struct atl2_hw *hw, u16 *speed,
 		break;
 	default:
 		return ATLX_ERR_PHY_SPEED;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (phy_data & MII_ATLX_PSSR_DPLX)
@@ -2974,10 +2527,6 @@ static s32 atl2_write_phy_reg(struct atl2_hw *hw, u32 reg_addr, u16 phy_data)
  */
 static s32 atl2_phy_setup_autoneg_adv(struct atl2_hw *hw)
 {
-<<<<<<< HEAD
-	s32 ret_val;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s16 mii_autoneg_adv_reg;
 
 	/* Read the MII Auto-Neg Advertisement Register (Address 4). */
@@ -3033,16 +2582,7 @@ static s32 atl2_phy_setup_autoneg_adv(struct atl2_hw *hw)
 
 	hw->mii_autoneg_adv_reg = mii_autoneg_adv_reg;
 
-<<<<<<< HEAD
-	ret_val = atl2_write_phy_reg(hw, MII_ADVERTISE, mii_autoneg_adv_reg);
-
-	if (ret_val)
-		return ret_val;
-
-	return 0;
-=======
 	return atl2_write_phy_reg(hw, MII_ADVERTISE, mii_autoneg_adv_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3229,20 +2769,12 @@ static void atl2_force_ps(struct atl2_hw *hw)
  */
 
 #define ATL2_PARAM(X, desc) \
-<<<<<<< HEAD
-    static const int __devinitdata X[ATL2_MAX_NIC + 1] = ATL2_PARAM_INIT; \
-=======
     static const int X[ATL2_MAX_NIC + 1] = ATL2_PARAM_INIT; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     MODULE_PARM(X, "1-" __MODULE_STRING(ATL2_MAX_NIC) "i"); \
     MODULE_PARM_DESC(X, desc);
 #else
 #define ATL2_PARAM(X, desc) \
-<<<<<<< HEAD
-    static int __devinitdata X[ATL2_MAX_NIC+1] = ATL2_PARAM_INIT; \
-=======
     static int X[ATL2_MAX_NIC+1] = ATL2_PARAM_INIT; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     static unsigned int num_##X; \
     module_param_array_named(X, X, int, &num_##X, 0); \
     MODULE_PARM_DESC(X, desc);
@@ -3326,11 +2858,7 @@ struct atl2_option {
 	} arg;
 };
 
-<<<<<<< HEAD
-static int __devinit atl2_validate_option(int *value, struct atl2_option *opt)
-=======
 static int atl2_validate_option(int *value, struct atl2_option *opt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct atl2_opt_list *ent;
@@ -3346,17 +2874,9 @@ static int atl2_validate_option(int *value, struct atl2_option *opt)
 		case OPTION_ENABLED:
 			printk(KERN_INFO "%s Enabled\n", opt->name);
 			return 0;
-<<<<<<< HEAD
-			break;
 		case OPTION_DISABLED:
 			printk(KERN_INFO "%s Disabled\n", opt->name);
 			return 0;
-			break;
-=======
-		case OPTION_DISABLED:
-			printk(KERN_INFO "%s Disabled\n", opt->name);
-			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case range_option:
@@ -3371,11 +2891,7 @@ static int atl2_validate_option(int *value, struct atl2_option *opt)
 			if (*value == ent->i) {
 				if (ent->str[0] != '\0')
 					printk(KERN_INFO "%s\n", ent->str);
-<<<<<<< HEAD
-			return 0;
-=======
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		break;
@@ -3389,11 +2905,7 @@ static int atl2_validate_option(int *value, struct atl2_option *opt)
 	return -1;
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl2_check_options - Range Checking for Command Line Parameters
  * @adapter: board private structure
  *
@@ -3402,11 +2914,7 @@ static int atl2_validate_option(int *value, struct atl2_option *opt)
  * value exists, a default value is used.  The final value is stored
  * in a variable in the adapter structure.
  */
-<<<<<<< HEAD
-static void __devinit atl2_check_options(struct atl2_adapter *adapter)
-=======
 static void atl2_check_options(struct atl2_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int val;
 	struct atl2_option opt;

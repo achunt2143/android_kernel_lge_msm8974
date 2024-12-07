@@ -1,11 +1,6 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 QLogic Corporation.
- * All rights reserved.
-=======
  * Copyright (c) 2012, 2013 Intel Corporation.  All rights reserved.
  * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2003, 2004, 2005, 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -41,13 +36,6 @@
 #include <linux/netdevice.h>
 #include <linux/vmalloc.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/idr.h>
-#include <linux/module.h>
-
-#include "qib.h"
-#include "qib_common.h"
-=======
 #include <linux/module.h>
 #include <linux/printk.h>
 #ifdef CONFIG_INFINIBAND_QIB_DCA
@@ -65,7 +53,6 @@
 
 #undef pr_fmt
 #define pr_fmt(fmt) QIB_DRV_NAME ": " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * min buffers we want to have per context, after driver
@@ -84,14 +71,11 @@ ushort qib_cfgctxts;
 module_param_named(cfgctxts, qib_cfgctxts, ushort, S_IRUGO);
 MODULE_PARM_DESC(cfgctxts, "Set max number of contexts to use");
 
-<<<<<<< HEAD
-=======
 unsigned qib_numa_aware;
 module_param_named(numa_aware, qib_numa_aware, uint, S_IRUGO);
 MODULE_PARM_DESC(numa_aware,
 	"0 -> PSM allocation close to HCA, 1 -> PSM allocation local to process");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If set, do not write to any regs if avoidable, hack to allow
  * check for deranged default register values.
@@ -104,23 +88,6 @@ unsigned qib_n_krcv_queues;
 module_param_named(krcvqs, qib_n_krcv_queues, uint, S_IRUGO);
 MODULE_PARM_DESC(krcvqs, "number of kernel receive queues per IB port");
 
-<<<<<<< HEAD
-/*
- * qib_wc_pat parameter:
- *      0 is WC via MTRR
- *      1 is WC via PAT
- *      If PAT initialization fails, code reverts back to MTRR
- */
-unsigned qib_wc_pat = 1; /* default (1) is to use PAT, not MTRR */
-module_param_named(wc_pat, qib_wc_pat, uint, S_IRUGO);
-MODULE_PARM_DESC(wc_pat, "enable write-combining via PAT mechanism");
-
-struct workqueue_struct *qib_cq_wq;
-
-static void verify_interrupt(unsigned long);
-
-static struct idr qib_unit_table;
-=======
 unsigned qib_cc_table_size;
 module_param_named(cc_table_size, qib_cc_table_size, uint, S_IRUGO);
 MODULE_PARM_DESC(cc_table_size, "Congestion control table entries 0 (CCA disabled - default), min = 128, max = 1984");
@@ -128,7 +95,6 @@ MODULE_PARM_DESC(cc_table_size, "Congestion control table entries 0 (CCA disable
 static void verify_interrupt(struct timer_list *);
 
 DEFINE_XARRAY_FLAGS(qib_dev_table, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_IRQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u32 qib_cpulist_count;
 unsigned long *qib_cpulist;
 
@@ -145,11 +111,8 @@ void qib_set_ctxtcnt(struct qib_devdata *dd)
 		dd->cfgctxts = qib_cfgctxts;
 	else
 		dd->cfgctxts = dd->ctxtcnt;
-<<<<<<< HEAD
-=======
 	dd->freectxts = (dd->first_user_ctxt > dd->cfgctxts) ? 0 :
 		dd->cfgctxts - dd->first_user_ctxt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -158,33 +121,19 @@ void qib_set_ctxtcnt(struct qib_devdata *dd)
 int qib_create_ctxts(struct qib_devdata *dd)
 {
 	unsigned i;
-<<<<<<< HEAD
-	int ret;
-=======
 	int local_node_id = pcibus_to_node(dd->pcidev->bus);
 
 	if (local_node_id < 0)
 		local_node_id = numa_node_id();
 	dd->assigned_node_id = local_node_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate full ctxtcnt array, rather than just cfgctxts, because
 	 * cleanup iterates across all possible ctxts.
 	 */
-<<<<<<< HEAD
-	dd->rcd = kzalloc(sizeof(*dd->rcd) * dd->ctxtcnt, GFP_KERNEL);
-	if (!dd->rcd) {
-		qib_dev_err(dd, "Unable to allocate ctxtdata array, "
-			    "failing\n");
-		ret = -ENOMEM;
-		goto done;
-	}
-=======
 	dd->rcd = kcalloc(dd->ctxtcnt, sizeof(*dd->rcd), GFP_KERNEL);
 	if (!dd->rcd)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create (one or more) kctxt */
 	for (i = 0; i < dd->first_user_ctxt; ++i) {
@@ -195,14 +144,6 @@ int qib_create_ctxts(struct qib_devdata *dd)
 			continue;
 
 		ppd = dd->pport + (i % dd->num_pports);
-<<<<<<< HEAD
-		rcd = qib_create_ctxtdata(ppd, i);
-		if (!rcd) {
-			qib_dev_err(dd, "Unable to allocate ctxtdata"
-				    " for Kernel ctxt, failing\n");
-			ret = -ENOMEM;
-			goto done;
-=======
 
 		rcd = qib_create_ctxtdata(ppd, i, dd->assigned_node_id);
 		if (!rcd) {
@@ -211,51 +152,31 @@ int qib_create_ctxts(struct qib_devdata *dd)
 			kfree(dd->rcd);
 			dd->rcd = NULL;
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		rcd->pkeys[0] = QIB_DEFAULT_P_KEY;
 		rcd->seq_cnt = 1;
 	}
-<<<<<<< HEAD
-	ret = 0;
-done:
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Common code for user and kernel context setup.
  */
-<<<<<<< HEAD
-struct qib_ctxtdata *qib_create_ctxtdata(struct qib_pportdata *ppd, u32 ctxt)
-=======
 struct qib_ctxtdata *qib_create_ctxtdata(struct qib_pportdata *ppd, u32 ctxt,
 	int node_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qib_devdata *dd = ppd->dd;
 	struct qib_ctxtdata *rcd;
 
-<<<<<<< HEAD
-	rcd = kzalloc(sizeof(*rcd), GFP_KERNEL);
-	if (rcd) {
-		INIT_LIST_HEAD(&rcd->qp_wait_list);
-=======
 	rcd = kzalloc_node(sizeof(*rcd), GFP_KERNEL, node_id);
 	if (rcd) {
 		INIT_LIST_HEAD(&rcd->qp_wait_list);
 		rcd->node_id = node_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcd->ppd = ppd;
 		rcd->dd = dd;
 		rcd->cnt = 1;
 		rcd->ctxt = ctxt;
 		dd->rcd[ctxt] = rcd;
-<<<<<<< HEAD
-
-=======
 #ifdef CONFIG_DEBUG_FS
 		if (ctxt < dd->first_user_ctxt) { /* N/A for PSM contexts */
 			rcd->opstats = kzalloc_node(sizeof(*rcd->opstats),
@@ -268,7 +189,6 @@ struct qib_ctxtdata *qib_create_ctxtdata(struct qib_pportdata *ppd, u32 ctxt,
 			}
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dd->f_init_ctxt(rcd);
 
 		/*
@@ -288,10 +208,6 @@ struct qib_ctxtdata *qib_create_ctxtdata(struct qib_pportdata *ppd, u32 ctxt,
 		rcd->rcvegrbuf_chunks = (rcd->rcvegrcnt +
 			rcd->rcvegrbufs_perchunk - 1) /
 			rcd->rcvegrbufs_perchunk;
-<<<<<<< HEAD
-		BUG_ON(!is_power_of_2(rcd->rcvegrbufs_perchunk));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcd->rcvegrbufs_perchunk_shift =
 			ilog2(rcd->rcvegrbufs_perchunk);
 	}
@@ -301,30 +217,17 @@ struct qib_ctxtdata *qib_create_ctxtdata(struct qib_pportdata *ppd, u32 ctxt,
 /*
  * Common code for initializing the physical port structure.
  */
-<<<<<<< HEAD
-void qib_init_pportdata(struct qib_pportdata *ppd, struct qib_devdata *dd,
-			u8 hw_pidx, u8 port)
-{
-=======
 int qib_init_pportdata(struct qib_pportdata *ppd, struct qib_devdata *dd,
 			u8 hw_pidx, u8 port)
 {
 	int size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ppd->dd = dd;
 	ppd->hw_pidx = hw_pidx;
 	ppd->port = port; /* IB port number, not index */
 
 	spin_lock_init(&ppd->sdma_lock);
 	spin_lock_init(&ppd->lflags_lock);
-<<<<<<< HEAD
-	init_waitqueue_head(&ppd->state_wait);
-
-	init_timer(&ppd->symerr_clear_timer);
-	ppd->symerr_clear_timer.function = qib_clear_symerror_on_linkup;
-	ppd->symerr_clear_timer.data = (unsigned long)ppd;
-=======
 	spin_lock_init(&ppd->cc_shadow_lock);
 	init_waitqueue_head(&ppd->state_wait);
 
@@ -399,7 +302,6 @@ bail:
 	qib_dev_err(dd, "Congestion Control Agent disabled for port %d\n",
 		port);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int init_pioavailregs(struct qib_devdata *dd)
@@ -411,13 +313,8 @@ static int init_pioavailregs(struct qib_devdata *dd)
 		&dd->pcidev->dev, PAGE_SIZE, &dd->pioavailregs_phys,
 		GFP_KERNEL);
 	if (!dd->pioavailregs_dma) {
-<<<<<<< HEAD
-		qib_dev_err(dd, "failed to allocate PIOavail reg area "
-			    "in memory\n");
-=======
 		qib_dev_err(dd,
 			"failed to allocate PIOavail reg area in memory\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto done;
 	}
@@ -470,21 +367,6 @@ static void init_shadow_tids(struct qib_devdata *dd)
 	struct page **pages;
 	dma_addr_t *addrs;
 
-<<<<<<< HEAD
-	pages = vzalloc(dd->cfgctxts * dd->rcvtidcnt * sizeof(struct page *));
-	if (!pages) {
-		qib_dev_err(dd, "failed to allocate shadow page * "
-			    "array, no expected sends!\n");
-		goto bail;
-	}
-
-	addrs = vzalloc(dd->cfgctxts * dd->rcvtidcnt * sizeof(dma_addr_t));
-	if (!addrs) {
-		qib_dev_err(dd, "failed to allocate shadow dma handle "
-			    "array, no expected sends!\n");
-		goto bail_free;
-	}
-=======
 	pages = vzalloc(array_size(sizeof(struct page *),
 				   dd->cfgctxts * dd->rcvtidcnt));
 	if (!pages)
@@ -494,7 +376,6 @@ static void init_shadow_tids(struct qib_devdata *dd)
 				   dd->cfgctxts * dd->rcvtidcnt));
 	if (!addrs)
 		goto bail_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dd->pageshadow = pages;
 	dd->physshadow = addrs;
@@ -516,15 +397,6 @@ static int loadtime_init(struct qib_devdata *dd)
 
 	if (((dd->revision >> QLOGIC_IB_R_SOFTWARE_SHIFT) &
 	     QLOGIC_IB_R_SOFTWARE_MASK) != QIB_CHIP_SWVERSION) {
-<<<<<<< HEAD
-		qib_dev_err(dd, "Driver only handles version %d, "
-			    "chip swversion is %d (%llx), failng\n",
-			    QIB_CHIP_SWVERSION,
-			    (int)(dd->revision >>
-				QLOGIC_IB_R_SOFTWARE_SHIFT) &
-			    QLOGIC_IB_R_SOFTWARE_MASK,
-			    (unsigned long long) dd->revision);
-=======
 		qib_dev_err(dd,
 			"Driver only handles version %d, chip swversion is %d (%llx), failing\n",
 			QIB_CHIP_SWVERSION,
@@ -532,7 +404,6 @@ static int loadtime_init(struct qib_devdata *dd)
 				QLOGIC_IB_R_SOFTWARE_SHIFT) &
 				QLOGIC_IB_R_SOFTWARE_MASK,
 			(unsigned long long) dd->revision);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOSYS;
 		goto done;
 	}
@@ -556,14 +427,7 @@ static int loadtime_init(struct qib_devdata *dd)
 	qib_get_eeprom_info(dd);
 
 	/* setup time (don't start yet) to verify we got interrupt */
-<<<<<<< HEAD
-	init_timer(&dd->intrchk_timer);
-	dd->intrchk_timer.function = verify_interrupt;
-	dd->intrchk_timer.data = (unsigned long) dd;
-
-=======
 	timer_setup(&dd->intrchk_timer, verify_interrupt, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	return ret;
 }
@@ -625,21 +489,12 @@ static void enable_chip(struct qib_devdata *dd)
 		if (rcd)
 			dd->f_rcvctrl(rcd->ppd, rcvmask, i);
 	}
-<<<<<<< HEAD
-	dd->freectxts = dd->cfgctxts - dd->first_user_ctxt;
-}
-
-static void verify_interrupt(unsigned long opaque)
-{
-	struct qib_devdata *dd = (struct qib_devdata *) opaque;
-=======
 }
 
 static void verify_interrupt(struct timer_list *t)
 {
 	struct qib_devdata *dd = from_timer(dd, t, intrchk_timer);
 	u64 int_counter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dd)
 		return; /* being torn down */
@@ -648,18 +503,11 @@ static void verify_interrupt(struct timer_list *t)
 	 * If we don't have a lid or any interrupts, let the user know and
 	 * don't bother checking again.
 	 */
-<<<<<<< HEAD
-	if (dd->int_counter == 0) {
-		if (!dd->f_intr_fallback(dd))
-			dev_err(&dd->pcidev->dev, "No interrupts detected, "
-				"not usable.\n");
-=======
 	int_counter = qib_int_counter(dd) - dd->z_int_counter;
 	if (int_counter == 0) {
 		if (!dd->f_intr_fallback(dd))
 			dev_err(&dd->pcidev->dev,
 				"No interrupts detected, not usable.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else /* re-arm the timer to see if fallback works */
 			mod_timer(&dd->intrchk_timer, jiffies + HZ/2);
 	}
@@ -722,8 +570,6 @@ static void init_piobuf_state(struct qib_devdata *dd)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * qib_create_workqueues - create per port workqueues
  * @dd: the qlogic_ib device
  */
@@ -769,7 +615,6 @@ static void qib_free_pportdata(struct qib_pportdata *ppd)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * qib_init - do the actual initialization sequence on the chip
  * @dd: the qlogic_ib device
  * @reinit: reinitializing, so don't allocate new memory
@@ -833,25 +678,14 @@ int qib_init(struct qib_devdata *dd, int reinit)
 		lastfail = qib_create_rcvhdrq(dd, rcd);
 		if (!lastfail)
 			lastfail = qib_setup_eagerbufs(rcd);
-<<<<<<< HEAD
-		if (lastfail) {
-			qib_dev_err(dd, "failed to allocate kernel ctxt's "
-				    "rcvhdrq and/or egr bufs\n");
-			continue;
-		}
-=======
 		if (lastfail)
 			qib_dev_err(dd,
 				"failed to allocate kernel ctxt's rcvhdrq and/or egr bufs\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (pidx = 0; pidx < dd->num_pports; ++pidx) {
 		int mtu;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lastfail)
 			ret = lastfail;
 		ppd = dd->pport + pidx;
@@ -915,13 +749,7 @@ done:
 				continue;
 			if (dd->flags & QIB_HAS_SEND_DMA)
 				ret = qib_setup_sdma(ppd);
-<<<<<<< HEAD
-			init_timer(&ppd->hol_timer);
-			ppd->hol_timer.function = qib_hol_event;
-			ppd->hol_timer.data = (unsigned long)ppd;
-=======
 			timer_setup(&ppd->hol_timer, qib_hol_event, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ppd->hol_state = QIB_HOL_UP;
 		}
 
@@ -956,27 +784,9 @@ void __attribute__((weak)) qib_disable_wc(struct qib_devdata *dd)
 {
 }
 
-<<<<<<< HEAD
-static inline struct qib_devdata *__qib_lookup(int unit)
-{
-	return idr_find(&qib_unit_table, unit);
-}
-
-struct qib_devdata *qib_lookup(int unit)
-{
-	struct qib_devdata *dd;
-	unsigned long flags;
-
-	spin_lock_irqsave(&qib_devs_lock, flags);
-	dd = __qib_lookup(unit);
-	spin_unlock_irqrestore(&qib_devs_lock, flags);
-
-	return dd;
-=======
 struct qib_devdata *qib_lookup(int unit)
 {
 	return xa_load(&qib_dev_table, unit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -988,25 +798,6 @@ static void qib_stop_timers(struct qib_devdata *dd)
 	struct qib_pportdata *ppd;
 	int pidx;
 
-<<<<<<< HEAD
-	if (dd->stats_timer.data) {
-		del_timer_sync(&dd->stats_timer);
-		dd->stats_timer.data = 0;
-	}
-	if (dd->intrchk_timer.data) {
-		del_timer_sync(&dd->intrchk_timer);
-		dd->intrchk_timer.data = 0;
-	}
-	for (pidx = 0; pidx < dd->num_pports; ++pidx) {
-		ppd = dd->pport + pidx;
-		if (ppd->hol_timer.data)
-			del_timer_sync(&ppd->hol_timer);
-		if (ppd->led_override_timer.data) {
-			del_timer_sync(&ppd->led_override_timer);
-			atomic_set(&ppd->led_override_timer_active, 0);
-		}
-		if (ppd->symerr_clear_timer.data)
-=======
 	if (dd->stats_timer.function)
 		del_timer_sync(&dd->stats_timer);
 	if (dd->intrchk_timer.function)
@@ -1020,7 +811,6 @@ static void qib_stop_timers(struct qib_devdata *dd)
 			atomic_set(&ppd->led_override_timer_active, 0);
 		}
 		if (ppd->symerr_clear_timer.function)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			del_timer_sync(&ppd->symerr_clear_timer);
 	}
 }
@@ -1039,13 +829,10 @@ static void qib_shutdown_device(struct qib_devdata *dd)
 	struct qib_pportdata *ppd;
 	unsigned pidx;
 
-<<<<<<< HEAD
-=======
 	if (dd->flags & QIB_SHUTDOWN)
 		return;
 	dd->flags |= QIB_SHUTDOWN;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (pidx = 0; pidx < dd->num_pports; ++pidx) {
 		ppd = dd->pport + pidx;
 
@@ -1094,15 +881,12 @@ static void qib_shutdown_device(struct qib_devdata *dd)
 		 * We can't count on interrupts since we are stopping.
 		 */
 		dd->f_quiet_serdes(ppd);
-<<<<<<< HEAD
-=======
 
 		if (ppd->qib_wq) {
 			destroy_workqueue(ppd->qib_wq);
 			ppd->qib_wq = NULL;
 		}
 		qib_free_pportdata(ppd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 }
@@ -1156,13 +940,10 @@ void qib_free_ctxtdata(struct qib_devdata *dd, struct qib_ctxtdata *rcd)
 	vfree(rcd->subctxt_uregbase);
 	vfree(rcd->subctxt_rcvegrbuf);
 	vfree(rcd->subctxt_rcvhdr_base);
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DEBUG_FS
 	kfree(rcd->opstats);
 	rcd->opstats = NULL;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rcd);
 }
 
@@ -1200,17 +981,8 @@ static void qib_verify_pioperf(struct qib_devdata *dd)
 	cnt = 1024;
 
 	addr = vmalloc(cnt);
-<<<<<<< HEAD
-	if (!addr) {
-		qib_devinfo(dd->pcidev,
-			 "Couldn't get memory for checking PIO perf,"
-			 " skipping\n");
-		goto done;
-	}
-=======
 	if (!addr)
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	preempt_disable();  /* we want reasonably accurate elapsed time */
 	msecs = 1 + jiffies_to_msecs(jiffies);
@@ -1243,12 +1015,7 @@ static void qib_verify_pioperf(struct qib_devdata *dd)
 	/* 1 GiB/sec, slightly over IB SDR line rate */
 	if (lcnt < (emsecs * 1024U))
 		qib_dev_err(dd,
-<<<<<<< HEAD
-			    "Performance problem: bandwidth to PIO buffers is "
-			    "only %u MiB/sec\n",
-=======
 			    "Performance problem: bandwidth to PIO buffers is only %u MiB/sec\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    lcnt / (u32) emsecs);
 
 	preempt_enable();
@@ -1262,22 +1029,10 @@ done:
 	dd->f_set_armlaunch(dd, 1);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void qib_free_devdata(struct qib_devdata *dd)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&qib_devs_lock, flags);
-	idr_remove(&qib_unit_table, dd->unit);
-	list_del(&dd->list);
-	spin_unlock_irqrestore(&qib_devs_lock, flags);
-
-	ib_dealloc_device(&dd->verbs_dev.ibdev);
-=======
 	xa_lock_irqsave(&qib_dev_table, flags);
 	__xa_erase(&qib_dev_table, dd->unit);
 	xa_unlock_irqrestore(&qib_dev_table, flags);
@@ -1311,7 +1066,6 @@ u64 qib_sps_ints(void)
 	}
 	xa_unlock_irqrestore(&qib_dev_table, flags);
 	return sps_ints;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1319,39 +1073,6 @@ u64 qib_sps_ints(void)
  * allocator, because the verbs cleanup process both does cleanup and
  * free of the data structure.
  * "extra" is for chip-specific data.
-<<<<<<< HEAD
- *
- * Use the idr mechanism to get a unit number for this unit.
- */
-struct qib_devdata *qib_alloc_devdata(struct pci_dev *pdev, size_t extra)
-{
-	unsigned long flags;
-	struct qib_devdata *dd;
-	int ret;
-
-	if (!idr_pre_get(&qib_unit_table, GFP_KERNEL)) {
-		dd = ERR_PTR(-ENOMEM);
-		goto bail;
-	}
-
-	dd = (struct qib_devdata *) ib_alloc_device(sizeof(*dd) + extra);
-	if (!dd) {
-		dd = ERR_PTR(-ENOMEM);
-		goto bail;
-	}
-
-	spin_lock_irqsave(&qib_devs_lock, flags);
-	ret = idr_get_new(&qib_unit_table, dd, &dd->unit);
-	if (ret >= 0)
-		list_add(&dd->list, &qib_dev_list);
-	spin_unlock_irqrestore(&qib_devs_lock, flags);
-
-	if (ret < 0) {
-		qib_early_err(&pdev->dev,
-			      "Could not allocate unit ID: error %d\n", -ret);
-		ib_dealloc_device(&dd->verbs_dev.ibdev);
-		dd = ERR_PTR(ret);
-=======
  */
 struct qib_devdata *qib_alloc_devdata(struct pci_dev *pdev, size_t extra)
 {
@@ -1379,25 +1100,11 @@ struct qib_devdata *qib_alloc_devdata(struct pci_dev *pdev, size_t extra)
 		ret = -ENOMEM;
 		qib_early_err(&pdev->dev,
 			      "Could not allocate per-cpu int_counter\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
 	if (!qib_cpulist_count) {
 		u32 count = num_online_cpus();
-<<<<<<< HEAD
-		qib_cpulist = kzalloc(BITS_TO_LONGS(count) *
-				      sizeof(long), GFP_KERNEL);
-		if (qib_cpulist)
-			qib_cpulist_count = count;
-		else
-			qib_early_err(&pdev->dev, "Could not alloc cpulist "
-				      "info, cpu affinity might be wrong\n");
-	}
-
-bail:
-	return dd;
-=======
 
 		qib_cpulist = bitmap_zalloc(count, GFP_KERNEL);
 		if (qib_cpulist)
@@ -1412,7 +1119,6 @@ bail:
 		list_del_init(&dd->list);
 	rvt_dealloc_device(&dd->verbs_dev.rdi);
 	return ERR_PTR(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1449,16 +1155,6 @@ void qib_disable_after_error(struct qib_devdata *dd)
 		*dd->devstatusp |= QIB_STATUS_HWERROR;
 }
 
-<<<<<<< HEAD
-static void __devexit qib_remove_one(struct pci_dev *);
-static int __devinit qib_init_one(struct pci_dev *,
-				  const struct pci_device_id *);
-
-#define DRIVER_LOAD_MSG "QLogic " QIB_DRV_NAME " loaded: "
-#define PFX QIB_DRV_NAME ": "
-
-static DEFINE_PCI_DEVICE_TABLE(qib_pci_tbl) = {
-=======
 static void qib_remove_one(struct pci_dev *);
 static int qib_init_one(struct pci_dev *, const struct pci_device_id *);
 static void qib_shutdown_one(struct pci_dev *);
@@ -1467,7 +1163,6 @@ static void qib_shutdown_one(struct pci_dev *);
 #define PFX QIB_DRV_NAME ": "
 
 static const struct pci_device_id qib_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_PATHSCALE, PCI_DEVICE_ID_QLOGIC_IB_6120) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_IB_7220) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_IB_7322) },
@@ -1476,24 +1171,15 @@ static const struct pci_device_id qib_pci_tbl[] = {
 
 MODULE_DEVICE_TABLE(pci, qib_pci_tbl);
 
-<<<<<<< HEAD
-struct pci_driver qib_driver = {
-	.name = QIB_DRV_NAME,
-	.probe = qib_init_one,
-	.remove = __devexit_p(qib_remove_one),
-=======
 static struct pci_driver qib_driver = {
 	.name = QIB_DRV_NAME,
 	.probe = qib_init_one,
 	.remove = qib_remove_one,
 	.shutdown = qib_shutdown_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = qib_pci_tbl,
 	.err_handler = &qib_pci_err_handler,
 };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 
 static int qib_notify_dca(struct notifier_block *, unsigned long, void *);
@@ -1523,16 +1209,11 @@ static int qib_notify_dca(struct notifier_block *nb, unsigned long event,
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Do all the generic driver unit- and chip-independent memory
  * allocation and initialization.
  */
-<<<<<<< HEAD
-static int __init qlogic_ib_init(void)
-=======
 static int __init qib_ib_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -1540,33 +1221,10 @@ static int __init qib_ib_init(void)
 	if (ret)
 		goto bail;
 
-<<<<<<< HEAD
-	qib_cq_wq = create_singlethread_workqueue("qib_cq");
-	if (!qib_cq_wq) {
-		ret = -ENOMEM;
-		goto bail_dev;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * These must be called before the driver is registered with
 	 * the PCI subsystem.
 	 */
-<<<<<<< HEAD
-	idr_init(&qib_unit_table);
-	if (!idr_pre_get(&qib_unit_table, GFP_KERNEL)) {
-		printk(KERN_ERR QIB_DRV_NAME ": idr_pre_get() failed\n");
-		ret = -ENOMEM;
-		goto bail_cq_wq;
-	}
-
-	ret = pci_register_driver(&qib_driver);
-	if (ret < 0) {
-		printk(KERN_ERR QIB_DRV_NAME
-		       ": Unable to register driver: error %d\n", -ret);
-		goto bail_unit;
-=======
 #ifdef CONFIG_INFINIBAND_QIB_DCA
 	dca_register_notify(&dca_notifier);
 #endif
@@ -1577,21 +1235,10 @@ static int __init qib_ib_init(void)
 	if (ret < 0) {
 		pr_err("Unable to register driver: error %d\n", -ret);
 		goto bail_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* not fatal if it doesn't work */
 	if (qib_init_qibfs())
-<<<<<<< HEAD
-		printk(KERN_ERR QIB_DRV_NAME ": Unable to register ipathfs\n");
-	goto bail; /* all OK */
-
-bail_unit:
-	idr_destroy(&qib_unit_table);
-bail_cq_wq:
-	destroy_workqueue(qib_cq_wq);
-bail_dev:
-=======
 		pr_err("Unable to register ipathfs\n");
 	goto bail; /* all OK */
 
@@ -1602,49 +1249,22 @@ bail_dev:
 #ifdef CONFIG_DEBUG_FS
 	qib_dbg_exit();
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qib_dev_cleanup();
 bail:
 	return ret;
 }
 
-<<<<<<< HEAD
-module_init(qlogic_ib_init);
-=======
 module_init(qib_ib_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Do the non-unit driver cleanup, memory free, etc. at unload.
  */
-<<<<<<< HEAD
-static void __exit qlogic_ib_cleanup(void)
-=======
 static void __exit qib_ib_cleanup(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	ret = qib_exit_qibfs();
 	if (ret)
-<<<<<<< HEAD
-		printk(KERN_ERR QIB_DRV_NAME ": "
-			"Unable to cleanup counter filesystem: "
-			"error %d\n", -ret);
-
-	pci_unregister_driver(&qib_driver);
-
-	destroy_workqueue(qib_cq_wq);
-
-	qib_cpulist_count = 0;
-	kfree(qib_cpulist);
-
-	idr_destroy(&qib_unit_table);
-	qib_dev_cleanup();
-}
-
-module_exit(qlogic_ib_cleanup);
-=======
 		pr_err(
 			"Unable to cleanup counter filesystem: error %d\n",
 			-ret);
@@ -1665,7 +1285,6 @@ module_exit(qlogic_ib_cleanup);
 }
 
 module_exit(qib_ib_cleanup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* this can only be called after a successful initialization */
 static void cleanup_device_data(struct qib_devdata *dd)
@@ -1676,14 +1295,6 @@ static void cleanup_device_data(struct qib_devdata *dd)
 	unsigned long flags;
 
 	/* users can't do anything more with chip */
-<<<<<<< HEAD
-	for (pidx = 0; pidx < dd->num_pports; ++pidx)
-		if (dd->pport[pidx].statusp)
-			*dd->pport[pidx].statusp &= ~QIB_STATUS_CHIP_PRESENT;
-
-	if (!qib_wc_pat)
-		qib_disable_wc(dd);
-=======
 	for (pidx = 0; pidx < dd->num_pports; ++pidx) {
 		if (dd->pport[pidx].statusp)
 			*dd->pport[pidx].statusp &= ~QIB_STATUS_CHIP_PRESENT;
@@ -1703,7 +1314,6 @@ static void cleanup_device_data(struct qib_devdata *dd)
 	}
 
 	qib_disable_wc(dd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dd->pioavailregs_dma) {
 		dma_free_coherent(&dd->pcidev->dev, PAGE_SIZE,
@@ -1715,11 +1325,7 @@ static void cleanup_device_data(struct qib_devdata *dd)
 	if (dd->pageshadow) {
 		struct page **tmpp = dd->pageshadow;
 		dma_addr_t *tmpd = dd->physshadow;
-<<<<<<< HEAD
-		int i, cnt = 0;
-=======
 		int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (ctxt = 0; ctxt < dd->cfgctxts; ctxt++) {
 			int ctxt_tidbase = ctxt * dd->rcvtidcnt;
@@ -1728,19 +1334,6 @@ static void cleanup_device_data(struct qib_devdata *dd)
 			for (i = ctxt_tidbase; i < maxtid; i++) {
 				if (!tmpp[i])
 					continue;
-<<<<<<< HEAD
-				pci_unmap_page(dd->pcidev, tmpd[i],
-					       PAGE_SIZE, PCI_DMA_FROMDEVICE);
-				qib_release_user_pages(&tmpp[i], 1);
-				tmpp[i] = NULL;
-				cnt++;
-			}
-		}
-
-		tmpp = dd->pageshadow;
-		dd->pageshadow = NULL;
-		vfree(tmpp);
-=======
 				dma_unmap_page(&dd->pcidev->dev, tmpd[i],
 					       PAGE_SIZE, DMA_FROM_DEVICE);
 				qib_release_user_pages(&tmpp[i], 1);
@@ -1752,7 +1345,6 @@ static void cleanup_device_data(struct qib_devdata *dd)
 		vfree(tmpp);
 		dd->physshadow = NULL;
 		vfree(tmpd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1773,10 +1365,6 @@ static void cleanup_device_data(struct qib_devdata *dd)
 		qib_free_ctxtdata(dd, rcd);
 	}
 	kfree(tmp);
-<<<<<<< HEAD
-	kfree(dd->boardname);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1802,12 +1390,7 @@ static void qib_postinit_cleanup(struct qib_devdata *dd)
 	qib_free_devdata(dd);
 }
 
-<<<<<<< HEAD
-static int __devinit qib_init_one(struct pci_dev *pdev,
-				  const struct pci_device_id *ent)
-=======
 static int qib_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret, j, pidx, initfail;
 	struct qib_devdata *dd = NULL;
@@ -1825,15 +1408,9 @@ static int qib_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 #ifdef CONFIG_PCI_MSI
 		dd = qib_init_iba6120_funcs(pdev, ent);
 #else
-<<<<<<< HEAD
-		qib_early_err(&pdev->dev, "QLogic PCIE device 0x%x cannot "
-		      "work if CONFIG_PCI_MSI is not enabled\n",
-		      ent->device);
-=======
 		qib_early_err(&pdev->dev,
 			"Intel PCIE device 0x%x cannot work if CONFIG_PCI_MSI is not enabled\n",
 			ent->device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dd = ERR_PTR(-ENODEV);
 #endif
 		break;
@@ -1847,14 +1424,9 @@ static int qib_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		break;
 
 	default:
-<<<<<<< HEAD
-		qib_early_err(&pdev->dev, "Failing on unknown QLogic "
-			      "deviceid 0x%x\n", ent->device);
-=======
 		qib_early_err(&pdev->dev,
 			"Failing on unknown Intel deviceid 0x%x\n",
 			ent->device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 	}
 
@@ -1863,13 +1435,10 @@ static int qib_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (ret)
 		goto bail; /* error already printed */
 
-<<<<<<< HEAD
-=======
 	ret = qib_create_workqueues(dd);
 	if (ret)
 		goto bail;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* do the generic initialization */
 	initfail = qib_init(dd, 0);
 
@@ -1911,23 +1480,12 @@ static int qib_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	if (!qib_wc_pat) {
-		ret = qib_enable_wc(dd);
-		if (ret) {
-			qib_dev_err(dd, "Write combining not enabled "
-				    "(err %d): performance may be poor\n",
-				    -ret);
-			ret = 0;
-		}
-=======
 	ret = qib_enable_wc(dd);
 	if (ret) {
 		qib_dev_err(dd,
 			"Write combining not enabled (err %d): performance may be poor\n",
 			-ret);
 		ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	qib_verify_pioperf(dd);
@@ -1935,11 +1493,7 @@ bail:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit qib_remove_one(struct pci_dev *pdev)
-=======
 static void qib_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qib_devdata *dd = pci_get_drvdata(pdev);
 	int ret;
@@ -1969,8 +1523,6 @@ static void qib_remove_one(struct pci_dev *pdev)
 	qib_postinit_cleanup(dd);
 }
 
-<<<<<<< HEAD
-=======
 static void qib_shutdown_one(struct pci_dev *pdev)
 {
 	struct qib_devdata *dd = pci_get_drvdata(pdev);
@@ -1978,7 +1530,6 @@ static void qib_shutdown_one(struct pci_dev *pdev)
 	qib_shutdown_device(dd);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * qib_create_rcvhdrq - create a receive header queue
  * @dd: the qlogic_ib device
@@ -1991,25 +1542,6 @@ static void qib_shutdown_one(struct pci_dev *pdev)
 int qib_create_rcvhdrq(struct qib_devdata *dd, struct qib_ctxtdata *rcd)
 {
 	unsigned amt;
-<<<<<<< HEAD
-
-	if (!rcd->rcvhdrq) {
-		dma_addr_t phys_hdrqtail;
-		gfp_t gfp_flags;
-
-		amt = ALIGN(dd->rcvhdrcnt * dd->rcvhdrentsize *
-			    sizeof(u32), PAGE_SIZE);
-		gfp_flags = (rcd->ctxt >= dd->first_user_ctxt) ?
-			GFP_USER : GFP_KERNEL;
-		rcd->rcvhdrq = dma_alloc_coherent(
-			&dd->pcidev->dev, amt, &rcd->rcvhdrq_phys,
-			gfp_flags | __GFP_COMP);
-
-		if (!rcd->rcvhdrq) {
-			qib_dev_err(dd, "attempt to allocate %d bytes "
-				    "for ctxt %u rcvhdrq failed\n",
-				    amt, rcd->ctxt);
-=======
 	int old_node_id;
 
 	if (!rcd->rcvhdrq) {
@@ -2028,7 +1560,6 @@ int qib_create_rcvhdrq(struct qib_devdata *dd, struct qib_ctxtdata *rcd)
 			qib_dev_err(dd,
 				"attempt to allocate %d bytes for ctxt %u rcvhdrq failed\n",
 				amt, rcd->ctxt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bail;
 		}
 
@@ -2039,17 +1570,11 @@ int qib_create_rcvhdrq(struct qib_devdata *dd, struct qib_ctxtdata *rcd)
 		}
 
 		if (!(dd->flags & QIB_NODMA_RTAIL)) {
-<<<<<<< HEAD
-			rcd->rcvhdrtail_kvaddr = dma_alloc_coherent(
-				&dd->pcidev->dev, PAGE_SIZE, &phys_hdrqtail,
-				gfp_flags);
-=======
 			set_dev_node(&dd->pcidev->dev, rcd->node_id);
 			rcd->rcvhdrtail_kvaddr = dma_alloc_coherent(
 				&dd->pcidev->dev, PAGE_SIZE, &phys_hdrqtail,
 				GFP_KERNEL);
 			set_dev_node(&dd->pcidev->dev, old_node_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!rcd->rcvhdrtail_kvaddr)
 				goto bail_free;
 			rcd->rcvhdrqtailaddr_phys = phys_hdrqtail;
@@ -2065,14 +1590,9 @@ int qib_create_rcvhdrq(struct qib_devdata *dd, struct qib_ctxtdata *rcd)
 	return 0;
 
 bail_free:
-<<<<<<< HEAD
-	qib_dev_err(dd, "attempt to allocate 1 page for ctxt %u "
-		    "rcvhdrqtailaddr failed\n", rcd->ctxt);
-=======
 	qib_dev_err(dd,
 		"attempt to allocate 1 page for ctxt %u rcvhdrqtailaddr failed\n",
 		rcd->ctxt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vfree(rcd->user_event_mask);
 	rcd->user_event_mask = NULL;
 bail_free_hdrq:
@@ -2084,11 +1604,7 @@ bail:
 }
 
 /**
-<<<<<<< HEAD
- * allocate eager buffers, both kernel and user contexts.
-=======
  * qib_setup_eagerbufs - allocate eager buffers, both kernel and user contexts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rcd: the context we are setting up.
  *
  * Allocate the eager TID buffers and program them into hip.
@@ -2101,19 +1617,7 @@ int qib_setup_eagerbufs(struct qib_ctxtdata *rcd)
 	struct qib_devdata *dd = rcd->dd;
 	unsigned e, egrcnt, egrperchunk, chunk, egrsize, egroff;
 	size_t size;
-<<<<<<< HEAD
-	gfp_t gfp_flags;
-
-	/*
-	 * GFP_USER, but without GFP_FS, so buffer cache can be
-	 * coalesced (we hope); otherwise, even at order 4,
-	 * heavy filesystem activity makes these fail, and we can
-	 * use compound pages.
-	 */
-	gfp_flags = __GFP_WAIT | __GFP_IO | __GFP_COMP;
-=======
 	int old_node_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	egrcnt = rcd->rcvegrcnt;
 	egroff = rcd->rcvegr_tid_base;
@@ -2124,38 +1628,22 @@ int qib_setup_eagerbufs(struct qib_ctxtdata *rcd)
 	size = rcd->rcvegrbuf_size;
 	if (!rcd->rcvegrbuf) {
 		rcd->rcvegrbuf =
-<<<<<<< HEAD
-			kzalloc(chunk * sizeof(rcd->rcvegrbuf[0]),
-				GFP_KERNEL);
-=======
 			kcalloc_node(chunk, sizeof(rcd->rcvegrbuf[0]),
 				     GFP_KERNEL, rcd->node_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rcd->rcvegrbuf)
 			goto bail;
 	}
 	if (!rcd->rcvegrbuf_phys) {
 		rcd->rcvegrbuf_phys =
-<<<<<<< HEAD
-			kmalloc(chunk * sizeof(rcd->rcvegrbuf_phys[0]),
-				GFP_KERNEL);
-=======
 			kmalloc_array_node(chunk,
 					   sizeof(rcd->rcvegrbuf_phys[0]),
 					   GFP_KERNEL, rcd->node_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rcd->rcvegrbuf_phys)
 			goto bail_rcvegrbuf;
 	}
 	for (e = 0; e < rcd->rcvegrbuf_chunks; e++) {
 		if (rcd->rcvegrbuf[e])
 			continue;
-<<<<<<< HEAD
-		rcd->rcvegrbuf[e] =
-			dma_alloc_coherent(&dd->pcidev->dev, size,
-					   &rcd->rcvegrbuf_phys[e],
-					   gfp_flags);
-=======
 
 		old_node_id = dev_to_node(&dd->pcidev->dev);
 		set_dev_node(&dd->pcidev->dev, rcd->node_id);
@@ -2164,7 +1652,6 @@ int qib_setup_eagerbufs(struct qib_ctxtdata *rcd)
 					   &rcd->rcvegrbuf_phys[e],
 					   GFP_KERNEL);
 		set_dev_node(&dd->pcidev->dev, old_node_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rcd->rcvegrbuf[e])
 			goto bail_rcvegrbuf_phys;
 	}
@@ -2258,11 +1745,7 @@ int init_chip_wc_pat(struct qib_devdata *dd, u32 vl15buflen)
 		qib_userlen = dd->ureg_align * dd->cfgctxts;
 
 	/* Sanity checks passed, now create the new mappings */
-<<<<<<< HEAD
-	qib_kregbase = ioremap_nocache(qib_physaddr, qib_kreglen);
-=======
 	qib_kregbase = ioremap(qib_physaddr, qib_kreglen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!qib_kregbase)
 		goto bail;
 
@@ -2271,11 +1754,7 @@ int init_chip_wc_pat(struct qib_devdata *dd, u32 vl15buflen)
 		goto bail_kregbase;
 
 	if (qib_userlen) {
-<<<<<<< HEAD
-		qib_userbase = ioremap_nocache(qib_physaddr + dd->uregbase,
-=======
 		qib_userbase = ioremap(qib_physaddr + dd->uregbase,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       qib_userlen);
 		if (!qib_userbase)
 			goto bail_piobase;

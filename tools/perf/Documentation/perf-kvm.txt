@@ -10,16 +10,10 @@ SYNOPSIS
 [verse]
 'perf kvm' [--host] [--guest] [--guestmount=<path>
 	[--guestkallsyms=<path> --guestmodules=<path> | --guestvmlinux=<path>]]
-<<<<<<< HEAD
-	{top|record|report|diff|buildid-list}
-'perf kvm' [--host] [--guest] [--guestkallsyms=<path> --guestmodules=<path>
-	| --guestvmlinux=<path>] {top|record|report|diff|buildid-list}
-=======
 	{top|record|report|diff|buildid-list} [<options>]
 'perf kvm' [--host] [--guest] [--guestkallsyms=<path> --guestmodules=<path>
 	| --guestvmlinux=<path>] {top|record|report|diff|buildid-list|stat} [<options>]
 'perf kvm stat [record|report|live] [<options>]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DESCRIPTION
 -----------
@@ -30,12 +24,6 @@ There are a couple of variants of perf kvm:
   of an arbitrary workload.
 
   'perf kvm record <command>' to record the performance counter profile
-<<<<<<< HEAD
-  of an arbitrary workload and save it into a perf data file. If both
-  --host and --guest are input, the perf data file name is perf.data.kvm.
-  If there is  no --host but --guest, the file name is perf.data.guest.
-  If there is no --guest but --host, the file name is perf.data.host.
-=======
   of an arbitrary workload and save it into a perf data file. We set the
   default behavior of perf kvm as --guest, so if neither --host nor --guest
   is input, the perf data file name is perf.data.guest. If --host is input,
@@ -47,7 +35,6 @@ There are a couple of variants of perf kvm:
     --guest             ->  perf.data.guest
     --host --guest      ->  perf.data.kvm
     --host --no-guest   ->  perf.data.host
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   'perf kvm report' to display the performance counter profile information
   recorded via perf kvm record.
@@ -57,9 +44,6 @@ There are a couple of variants of perf kvm:
 
   'perf kvm buildid-list' to  display the buildids found in a perf data file,
   so that other tools can be used to fetch packages with matching symbol tables
-<<<<<<< HEAD
-  for use by perf report.
-=======
   for use by perf report. As buildid is read from /sys/kernel/notes in os, then
   if you want to list the buildid for guest, please make sure your perf data file
   was captured with --guestmount in perf kvm record.
@@ -79,39 +63,10 @@ There are a couple of variants of perf kvm:
   'perf kvm stat live' reports statistical data in a live mode (similar to
   record + report but with statistical data updated live at a given display
   rate).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 OPTIONS
 -------
 -i::
-<<<<<<< HEAD
---input=::
-        Input file name.
--o::
---output::
-        Output file name.
---host=::
-        Collect host side performance profile.
---guest=::
-        Collect guest side performance profile.
---guestmount=<path>::
-	Guest os root file system mount directory. Users mounts guest os
-        root directories under <path> by a specific filesystem access method,
-	typically, sshfs. For example, start 2 guest os. The one's pid is 8888
-	and the other's is 9999.
-        #mkdir ~/guestmount; cd ~/guestmount
-        #sshfs -o allow_other,direct_io -p 5551 localhost:/ 8888/
-        #sshfs -o allow_other,direct_io -p 5552 localhost:/ 9999/
-        #perf kvm --host --guest --guestmount=~/guestmount top
---guestkallsyms=<path>::
-        Guest os /proc/kallsyms file copy. 'perf' kvm' reads it to get guest
-	kernel symbols. Users copy it out from guest os.
---guestmodules=<path>::
-	Guest os /proc/modules file copy. 'perf' kvm' reads it to get guest
-	kernel module information. Users copy it out from guest os.
---guestvmlinux=<path>::
-	Guest os kernel vmlinux.
-=======
 --input=<path>::
         Input file name, for the 'report', 'diff' and 'buildid-list' subcommands.
 -o::
@@ -195,14 +150,9 @@ STAT LIVE OPTIONS
 	a long time, because the file may be huge. A time out is needed
 	in such cases.
 	This option sets the time out limit. The default value is 500 ms.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SEE ALSO
 --------
 linkperf:perf-top[1], linkperf:perf-record[1], linkperf:perf-report[1],
-<<<<<<< HEAD
-linkperf:perf-diff[1], linkperf:perf-buildid-list[1]
-=======
 linkperf:perf-diff[1], linkperf:perf-buildid-list[1],
 linkperf:perf-stat[1]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

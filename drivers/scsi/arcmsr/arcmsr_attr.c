@@ -41,11 +41,7 @@
 ** THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *******************************************************************************
 ** For history of changes, see Documentation/scsi/ChangeLog.arcmsr
-<<<<<<< HEAD
-**     Firmware Specification, see Documentation/scsi/arcmsr_spec.txt
-=======
 **     Firmware Specification, see Documentation/scsi/arcmsr_spec.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *******************************************************************************
 */
 #include <linux/module.h>
@@ -54,10 +50,7 @@
 #include <linux/errno.h>
 #include <linux/delay.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-=======
 #include <linux/circ_buf.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
@@ -65,11 +58,6 @@
 #include <scsi/scsi_transport.h>
 #include "arcmsr.h"
 
-<<<<<<< HEAD
-struct device_attribute *arcmsr_host_attrs[];
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t arcmsr_sysfs_iop_message_read(struct file *filp,
 					     struct kobject *kobj,
 					     struct bin_attribute *bin,
@@ -79,50 +67,15 @@ static ssize_t arcmsr_sysfs_iop_message_read(struct file *filp,
 	struct device *dev = container_of(kobj,struct device,kobj);
 	struct Scsi_Host *host = class_to_shost(dev);
 	struct AdapterControlBlock *acb = (struct AdapterControlBlock *) host->hostdata;
-<<<<<<< HEAD
-	uint8_t *pQbuffer,*ptmpQbuffer;
-	int32_t allxfer_len = 0;
-=======
 	uint8_t *ptmpQbuffer;
 	int32_t allxfer_len = 0;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
 	/* do message unit read. */
 	ptmpQbuffer = (uint8_t *)buf;
-<<<<<<< HEAD
-	while ((acb->rqbuf_firstindex != acb->rqbuf_lastindex)
-		&& (allxfer_len < 1031)) {
-		pQbuffer = &acb->rqbuffer[acb->rqbuf_firstindex];
-		memcpy(ptmpQbuffer, pQbuffer, 1);
-		acb->rqbuf_firstindex++;
-		acb->rqbuf_firstindex %= ARCMSR_MAX_QBUFFER;
-		ptmpQbuffer++;
-		allxfer_len++;
-	}
-	if (acb->acb_flags & ACB_F_IOPDATA_OVERFLOW) {
-		struct QBUFFER __iomem *prbuffer;
-		uint8_t __iomem *iop_data;
-		int32_t iop_len;
-
-		acb->acb_flags &= ~ACB_F_IOPDATA_OVERFLOW;
-		prbuffer = arcmsr_get_iop_rqbuffer(acb);
-		iop_data = prbuffer->data;
-		iop_len = readl(&prbuffer->data_len);
-		while (iop_len > 0) {
-			acb->rqbuffer[acb->rqbuf_lastindex] = readb(iop_data);
-			acb->rqbuf_lastindex++;
-			acb->rqbuf_lastindex %= ARCMSR_MAX_QBUFFER;
-			iop_data++;
-			iop_len--;
-		}
-		arcmsr_iop_message_read(acb);
-	}
-	return (allxfer_len);
-=======
 	spin_lock_irqsave(&acb->rqbuffer_lock, flags);
 	if (acb->rqbuf_getIndex != acb->rqbuf_putIndex) {
 		unsigned int tail = acb->rqbuf_getIndex;
@@ -150,7 +103,6 @@ static ssize_t arcmsr_sysfs_iop_message_read(struct file *filp,
 	}
 	spin_unlock_irqrestore(&acb->rqbuffer_lock, flags);
 	return allxfer_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t arcmsr_sysfs_iop_message_write(struct file *filp,
@@ -162,14 +114,6 @@ static ssize_t arcmsr_sysfs_iop_message_write(struct file *filp,
 	struct device *dev = container_of(kobj,struct device,kobj);
 	struct Scsi_Host *host = class_to_shost(dev);
 	struct AdapterControlBlock *acb = (struct AdapterControlBlock *) host->hostdata;
-<<<<<<< HEAD
-	int32_t my_empty_len, user_len, wqbuf_firstindex, wqbuf_lastindex;
-	uint8_t *pQbuffer, *ptmpuserbuffer;
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-	if (count > 1032)
-=======
 	int32_t user_len, cnt2end;
 	uint8_t *pQbuffer, *ptmpuserbuffer;
 	unsigned long flags;
@@ -177,40 +121,10 @@ static ssize_t arcmsr_sysfs_iop_message_write(struct file *filp,
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 	if (count > ARCMSR_API_DATA_BUFLEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	/* do message unit write. */
 	ptmpuserbuffer = (uint8_t *)buf;
 	user_len = (int32_t)count;
-<<<<<<< HEAD
-	wqbuf_lastindex = acb->wqbuf_lastindex;
-	wqbuf_firstindex = acb->wqbuf_firstindex;
-	if (wqbuf_lastindex != wqbuf_firstindex) {
-		arcmsr_post_ioctldata2iop(acb);
-		return 0;	/*need retry*/
-	} else {
-		my_empty_len = (wqbuf_firstindex-wqbuf_lastindex - 1)
-				&(ARCMSR_MAX_QBUFFER - 1);
-		if (my_empty_len >= user_len) {
-			while (user_len > 0) {
-				pQbuffer =
-				&acb->wqbuffer[acb->wqbuf_lastindex];
-				memcpy(pQbuffer, ptmpuserbuffer, 1);
-				acb->wqbuf_lastindex++;
-				acb->wqbuf_lastindex %= ARCMSR_MAX_QBUFFER;
-				ptmpuserbuffer++;
-				user_len--;
-			}
-			if (acb->acb_flags & ACB_F_MESSAGE_WQBUFFER_CLEARED) {
-				acb->acb_flags &=
-					~ACB_F_MESSAGE_WQBUFFER_CLEARED;
-				arcmsr_post_ioctldata2iop(acb);
-			}
-			return count;
-		} else {
-			return 0;	/*need retry*/
-		}
-=======
 	spin_lock_irqsave(&acb->wqbuffer_lock, flags);
 	if (acb->wqbuf_putIndex != acb->wqbuf_getIndex) {
 		arcmsr_write_ioctldata2iop(acb);
@@ -236,7 +150,6 @@ static ssize_t arcmsr_sysfs_iop_message_write(struct file *filp,
 		}
 		spin_unlock_irqrestore(&acb->wqbuffer_lock, flags);
 		return count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -250,32 +163,16 @@ static ssize_t arcmsr_sysfs_iop_message_clear(struct file *filp,
 	struct Scsi_Host *host = class_to_shost(dev);
 	struct AdapterControlBlock *acb = (struct AdapterControlBlock *) host->hostdata;
 	uint8_t *pQbuffer;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
-<<<<<<< HEAD
-	if (acb->acb_flags & ACB_F_IOPDATA_OVERFLOW) {
-		acb->acb_flags &= ~ACB_F_IOPDATA_OVERFLOW;
-		arcmsr_iop_message_read(acb);
-	}
-=======
 	arcmsr_clear_iop2drv_rqueue_buffer(acb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acb->acb_flags |=
 		(ACB_F_MESSAGE_WQBUFFER_CLEARED
 		| ACB_F_MESSAGE_RQBUFFER_CLEARED
 		| ACB_F_MESSAGE_WQBUFFER_READED);
-<<<<<<< HEAD
-	acb->rqbuf_firstindex = 0;
-	acb->rqbuf_lastindex = 0;
-	acb->wqbuf_firstindex = 0;
-	acb->wqbuf_lastindex = 0;
-=======
 	spin_lock_irqsave(&acb->rqbuffer_lock, flags);
 	acb->rqbuf_getIndex = 0;
 	acb->rqbuf_putIndex = 0;
@@ -284,7 +181,6 @@ static ssize_t arcmsr_sysfs_iop_message_clear(struct file *filp,
 	acb->wqbuf_getIndex = 0;
 	acb->wqbuf_putIndex = 0;
 	spin_unlock_irqrestore(&acb->wqbuffer_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pQbuffer = acb->rqbuffer;
 	memset(pQbuffer, 0, sizeof (struct QBUFFER));
 	pQbuffer = acb->wqbuffer;
@@ -292,45 +188,25 @@ static ssize_t arcmsr_sysfs_iop_message_clear(struct file *filp,
 	return 1;
 }
 
-<<<<<<< HEAD
-static struct bin_attribute arcmsr_sysfs_message_read_attr = {
-=======
 static const struct bin_attribute arcmsr_sysfs_message_read_attr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr = {
 		.name = "mu_read",
 		.mode = S_IRUSR ,
 	},
-<<<<<<< HEAD
-	.size = 1032,
-	.read = arcmsr_sysfs_iop_message_read,
-};
-
-static struct bin_attribute arcmsr_sysfs_message_write_attr = {
-=======
 	.size = ARCMSR_API_DATA_BUFLEN,
 	.read = arcmsr_sysfs_iop_message_read,
 };
 
 static const struct bin_attribute arcmsr_sysfs_message_write_attr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr = {
 		.name = "mu_write",
 		.mode = S_IWUSR,
 	},
-<<<<<<< HEAD
-	.size = 1032,
-	.write = arcmsr_sysfs_iop_message_write,
-};
-
-static struct bin_attribute arcmsr_sysfs_message_clear_attr = {
-=======
 	.size = ARCMSR_API_DATA_BUFLEN,
 	.write = arcmsr_sysfs_iop_message_write,
 };
 
 static const struct bin_attribute arcmsr_sysfs_message_clear_attr = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr = {
 		.name = "mu_clear",
 		.mode = S_IWUSR,
@@ -511,21 +387,6 @@ static DEVICE_ATTR(host_fw_numbers_queue, S_IRUGO, arcmsr_attr_host_fw_numbers_q
 static DEVICE_ATTR(host_fw_sdram_size, S_IRUGO, arcmsr_attr_host_fw_sdram_size, NULL);
 static DEVICE_ATTR(host_fw_hd_channels, S_IRUGO, arcmsr_attr_host_fw_hd_channels, NULL);
 
-<<<<<<< HEAD
-struct device_attribute *arcmsr_host_attrs[] = {
-	&dev_attr_host_driver_version,
-	&dev_attr_host_driver_posted_cmd,
-	&dev_attr_host_driver_reset,
-	&dev_attr_host_driver_abort,
-	&dev_attr_host_fw_model,
-	&dev_attr_host_fw_version,
-	&dev_attr_host_fw_request_len,
-	&dev_attr_host_fw_numbers_queue,
-	&dev_attr_host_fw_sdram_size,
-	&dev_attr_host_fw_hd_channels,
-	NULL,
-};
-=======
 static struct attribute *arcmsr_host_attrs[] = {
 	&dev_attr_host_driver_version.attr,
 	&dev_attr_host_driver_posted_cmd.attr,
@@ -548,4 +409,3 @@ const struct attribute_group *arcmsr_host_groups[] = {
 	&arcmsr_host_attr_group,
 	NULL
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,32 +1,9 @@
-<<<<<<< HEAD
-/*
- * Host Side support for RNDIS Networking Links
- * Copyright (C) 2005 by David Brownell
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-#include <linux/module.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Host Side support for RNDIS Networking Links
  * Copyright (C) 2005 by David Brownell
  */
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -86,13 +63,9 @@ static void rndis_msg_indicate(struct usbnet *dev, struct rndis_indicate *msg,
 	if (dev->driver_info->indication) {
 		dev->driver_info->indication(dev, msg, buflen);
 	} else {
-<<<<<<< HEAD
-		switch (msg->status) {
-=======
 		u32 status = le32_to_cpu(msg->status);
 
 		switch (status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case RNDIS_STATUS_MEDIA_CONNECT:
 			dev_info(udev, "rndis media connect\n");
 			break;
@@ -100,12 +73,7 @@ static void rndis_msg_indicate(struct usbnet *dev, struct rndis_indicate *msg,
 			dev_info(udev, "rndis media disconnect\n");
 			break;
 		default:
-<<<<<<< HEAD
-			dev_info(udev, "rndis indication: 0x%08x\n",
-					le32_to_cpu(msg->status));
-=======
 			dev_info(udev, "rndis indication: 0x%08x\n", status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -128,28 +96,17 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 	int			retval;
 	int			partial;
 	unsigned		count;
-<<<<<<< HEAD
-	__le32			rsp;
-	u32			xid = 0, msg_len, request_id;
-=======
 	u32			xid = 0, msg_len, request_id, msg_type, rsp,
 				status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* REVISIT when this gets called from contexts other than probe() or
 	 * disconnect(): either serialize, or dispatch responses on xid
 	 */
 
-<<<<<<< HEAD
-	/* Issue the request; xid is unique, don't bother byteswapping it */
-	if (likely(buf->msg_type != RNDIS_MSG_HALT &&
-		   buf->msg_type != RNDIS_MSG_RESET)) {
-=======
 	msg_type = le32_to_cpu(buf->msg_type);
 
 	/* Issue the request; xid is unique, don't bother byteswapping it */
 	if (likely(msg_type != RNDIS_MSG_HALT && msg_type != RNDIS_MSG_RESET)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xid = dev->xid++;
 		if (!xid)
 			xid = dev->xid++;
@@ -180,11 +137,7 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 	}
 
 	/* Poll the control channel; the request probably completed immediately */
-<<<<<<< HEAD
-	rsp = buf->msg_type | RNDIS_MSG_COMPLETION;
-=======
 	rsp = le32_to_cpu(buf->msg_type) | RNDIS_MSG_COMPLETION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (count = 0; count < 10; count++) {
 		memset(buf, 0, CONTROL_BUFFER_SIZE);
 		retval = usb_control_msg(dev->udev,
@@ -195,20 +148,6 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 			buf, buflen,
 			RNDIS_CONTROL_TIMEOUT_MS);
 		if (likely(retval >= 8)) {
-<<<<<<< HEAD
-			msg_len = le32_to_cpu(buf->msg_len);
-			request_id = (__force u32) buf->request_id;
-			if (likely(buf->msg_type == rsp)) {
-				if (likely(request_id == xid)) {
-					if (unlikely(rsp == RNDIS_MSG_RESET_C))
-						return 0;
-					if (likely(RNDIS_STATUS_SUCCESS
-							== buf->status))
-						return 0;
-					dev_dbg(&info->control->dev,
-						"rndis reply status %08x\n",
-						le32_to_cpu(buf->status));
-=======
 			msg_type = le32_to_cpu(buf->msg_type);
 			msg_len = le32_to_cpu(buf->msg_len);
 			status = le32_to_cpu(buf->status);
@@ -223,26 +162,12 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 					dev_dbg(&info->control->dev,
 						"rndis reply status %08x\n",
 						status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return -EL3RST;
 				}
 				dev_dbg(&info->control->dev,
 					"rndis reply id %d expected %d\n",
 					request_id, xid);
 				/* then likely retry */
-<<<<<<< HEAD
-			} else switch (buf->msg_type) {
-			case RNDIS_MSG_INDICATE:	/* fault/event */
-				rndis_msg_indicate(dev, (void *)buf, buflen);
-
-				break;
-			case RNDIS_MSG_KEEPALIVE: {	/* ping */
-				struct rndis_keepalive_c *msg = (void *)buf;
-
-				msg->msg_type = RNDIS_MSG_KEEPALIVE_C;
-				msg->msg_len = cpu_to_le32(sizeof *msg);
-				msg->status = RNDIS_STATUS_SUCCESS;
-=======
 			} else switch (msg_type) {
 			case RNDIS_MSG_INDICATE: /* fault/event */
 				rndis_msg_indicate(dev, (void *)buf, buflen);
@@ -253,7 +178,6 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 				msg->msg_type = cpu_to_le32(RNDIS_MSG_KEEPALIVE_C);
 				msg->msg_len = cpu_to_le32(sizeof *msg);
 				msg->status = cpu_to_le32(RNDIS_STATUS_SUCCESS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				retval = usb_control_msg(dev->udev,
 					usb_sndctrlpipe(dev->udev, 0),
 					USB_CDC_SEND_ENCAPSULATED_COMMAND,
@@ -277,11 +201,7 @@ int rndis_command(struct usbnet *dev, struct rndis_msg_hdr *buf, int buflen)
 			dev_dbg(&info->control->dev,
 				"rndis response error, code %d\n", retval);
 		}
-<<<<<<< HEAD
-		msleep(20);
-=======
 		msleep(40);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dev_dbg(&info->control->dev, "rndis response timeout\n");
 	return -ETIMEDOUT;
@@ -305,11 +225,7 @@ EXPORT_SYMBOL_GPL(rndis_command);
  * ActiveSync 4.1 Windows driver.
  */
 static int rndis_query(struct usbnet *dev, struct usb_interface *intf,
-<<<<<<< HEAD
-		void *buf, __le32 oid, u32 in_len,
-=======
 		void *buf, u32 oid, u32 in_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void **reply, int *reply_len)
 {
 	int retval;
@@ -324,15 +240,9 @@ static int rndis_query(struct usbnet *dev, struct usb_interface *intf,
 	u.buf = buf;
 
 	memset(u.get, 0, sizeof *u.get + in_len);
-<<<<<<< HEAD
-	u.get->msg_type = RNDIS_MSG_QUERY;
-	u.get->msg_len = cpu_to_le32(sizeof *u.get + in_len);
-	u.get->oid = oid;
-=======
 	u.get->msg_type = cpu_to_le32(RNDIS_MSG_QUERY);
 	u.get->msg_len = cpu_to_le32(sizeof *u.get + in_len);
 	u.get->oid = cpu_to_le32(oid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u.get->len = cpu_to_le32(in_len);
 	u.get->offset = cpu_to_le32(20);
 
@@ -345,12 +255,8 @@ static int rndis_query(struct usbnet *dev, struct usb_interface *intf,
 
 	off = le32_to_cpu(u.get_c->offset);
 	len = le32_to_cpu(u.get_c->len);
-<<<<<<< HEAD
-	if (unlikely((8 + off + len) > CONTROL_BUFFER_SIZE))
-=======
 	if (unlikely((off > CONTROL_BUFFER_SIZE - 8) ||
 		     (len > CONTROL_BUFFER_SIZE - 8 - off)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto response_error;
 
 	if (*reply_len != -1 && len != *reply_len)
@@ -374,10 +280,7 @@ static const struct net_device_ops rndis_netdev_ops = {
 	.ndo_stop		= usbnet_stop,
 	.ndo_start_xmit		= usbnet_start_xmit,
 	.ndo_tx_timeout		= usbnet_tx_timeout,
-<<<<<<< HEAD
-=======
 	.ndo_get_stats64	= dev_get_tstats64,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
@@ -412,11 +315,7 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 	if (retval < 0)
 		goto fail;
 
-<<<<<<< HEAD
-	u.init->msg_type = RNDIS_MSG_INIT;
-=======
 	u.init->msg_type = cpu_to_le32(RNDIS_MSG_INIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u.init->msg_len = cpu_to_le32(sizeof *u.init);
 	u.init->major_version = cpu_to_le32(1);
 	u.init->minor_version = cpu_to_le32(0);
@@ -426,11 +325,7 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 	 * For RX we handle drivers that zero-pad to end-of-packet.
 	 * Don't let userspace change these settings.
 	 *
-<<<<<<< HEAD
-	 * NOTE: there still seems to be wierdness here, as if we need
-=======
 	 * NOTE: there still seems to be weirdness here, as if we need
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to do some more things to make sure WinCE targets accept this.
 	 * They default to jumbograms of 8KB or 16KB, which is absurd
 	 * for such low data rates and which is also more than Linux
@@ -439,11 +334,7 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 	net->hard_header_len += sizeof (struct rndis_data_hdr);
 	dev->hard_mtu = net->mtu + net->hard_header_len;
 
-<<<<<<< HEAD
-	dev->maxpacket = usb_maxpacket(dev->udev, dev->out, 1);
-=======
 	dev->maxpacket = usb_maxpacket(dev->udev, dev->out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->maxpacket == 0) {
 		netif_dbg(dev, probe, dev->net,
 			  "dev->maxpacket can't be 0\n");
@@ -482,11 +373,7 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 
 	/* REVISIT:  peripheral "alignment" request is ignored ... */
 	dev_dbg(&intf->dev,
-<<<<<<< HEAD
-		"hard mtu %u (%u from dev), rx buflen %Zu, align %d\n",
-=======
 		"hard mtu %u (%u from dev), rx buflen %zu, align %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->hard_mtu, tmp, dev->rx_urb_size,
 		1 << le32_to_cpu(u.init_c->packet_alignment));
 
@@ -499,17 +386,6 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 	/* Check physical medium */
 	phym = NULL;
 	reply_len = sizeof *phym;
-<<<<<<< HEAD
-	retval = rndis_query(dev, intf, u.buf, OID_GEN_PHYSICAL_MEDIUM,
-			0, (void **) &phym, &reply_len);
-	if (retval != 0 || !phym) {
-		/* OID is optional so don't fail here. */
-		phym_unspec = RNDIS_PHYSICAL_MEDIUM_UNSPECIFIED;
-		phym = &phym_unspec;
-	}
-	if ((flags & FLAG_RNDIS_PHYM_WIRELESS) &&
-			*phym != RNDIS_PHYSICAL_MEDIUM_WIRELESS_LAN) {
-=======
 	retval = rndis_query(dev, intf, u.buf,
 			     RNDIS_OID_GEN_PHYSICAL_MEDIUM,
 			     reply_len, (void **)&phym, &reply_len);
@@ -520,18 +396,13 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 	}
 	if ((flags & FLAG_RNDIS_PHYM_WIRELESS) &&
 	    le32_to_cpup(phym) != RNDIS_PHYSICAL_MEDIUM_WIRELESS_LAN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_dbg(dev, probe, dev->net,
 			  "driver requires wireless physical medium, but device is not\n");
 		retval = -ENODEV;
 		goto halt_fail_and_release;
 	}
 	if ((flags & FLAG_RNDIS_PHYM_NOT_WIRELESS) &&
-<<<<<<< HEAD
-			*phym == RNDIS_PHYSICAL_MEDIUM_WIRELESS_LAN) {
-=======
 	    le32_to_cpup(phym) == RNDIS_PHYSICAL_MEDIUM_WIRELESS_LAN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_dbg(dev, probe, dev->net,
 			  "driver requires non-wireless physical medium, but device is wireless.\n");
 		retval = -ENODEV;
@@ -540,31 +411,13 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 
 	/* Get designated host ethernet address */
 	reply_len = ETH_ALEN;
-<<<<<<< HEAD
-	retval = rndis_query(dev, intf, u.buf, OID_802_3_PERMANENT_ADDRESS,
-			48, (void **) &bp, &reply_len);
-=======
 	retval = rndis_query(dev, intf, u.buf,
 			     RNDIS_OID_802_3_PERMANENT_ADDRESS,
 			     48, (void **) &bp, &reply_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(retval< 0)) {
 		dev_err(&intf->dev, "rndis get ethaddr, %d\n", retval);
 		goto halt_fail_and_release;
 	}
-<<<<<<< HEAD
-	memcpy(net->dev_addr, bp, ETH_ALEN);
-	memcpy(net->perm_addr, bp, ETH_ALEN);
-
-	/* set a nonzero filter to enable data transfers */
-	memset(u.set, 0, sizeof *u.set);
-	u.set->msg_type = RNDIS_MSG_SET;
-	u.set->msg_len = cpu_to_le32(4 + sizeof *u.set);
-	u.set->oid = OID_GEN_CURRENT_PACKET_FILTER;
-	u.set->len = cpu_to_le32(4);
-	u.set->offset = cpu_to_le32((sizeof *u.set) - 8);
-	*(__le32 *)(u.buf + sizeof *u.set) = RNDIS_DEFAULT_FILTER;
-=======
 
 	eth_hw_addr_set(net, bp);
 
@@ -576,7 +429,6 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 	u.set->len = cpu_to_le32(4);
 	u.set->offset = cpu_to_le32((sizeof *u.set) - 8);
 	*(__le32 *)(u.buf + sizeof *u.set) = cpu_to_le32(RNDIS_DEFAULT_FILTER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = rndis_command(dev, u.header, CONTROL_BUFFER_SIZE);
 	if (unlikely(retval < 0)) {
@@ -591,11 +443,7 @@ generic_rndis_bind(struct usbnet *dev, struct usb_interface *intf, int flags)
 
 halt_fail_and_release:
 	memset(u.halt, 0, sizeof *u.halt);
-<<<<<<< HEAD
-	u.halt->msg_type = RNDIS_MSG_HALT;
-=======
 	u.halt->msg_type = cpu_to_le32(RNDIS_MSG_HALT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u.halt->msg_len = cpu_to_le32(sizeof *u.halt);
 	(void) rndis_command(dev, (void *)u.halt, CONTROL_BUFFER_SIZE);
 fail_and_release:
@@ -613,8 +461,6 @@ static int rndis_bind(struct usbnet *dev, struct usb_interface *intf)
 	return generic_rndis_bind(dev, intf, FLAG_RNDIS_PHYM_NOT_WIRELESS);
 }
 
-<<<<<<< HEAD
-=======
 static int zte_rndis_bind(struct usbnet *dev, struct usb_interface *intf)
 {
 	int status = rndis_bind(dev, intf);
@@ -625,7 +471,6 @@ static int zte_rndis_bind(struct usbnet *dev, struct usb_interface *intf)
 	return status;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rndis_unbind(struct usbnet *dev, struct usb_interface *intf)
 {
 	struct rndis_halt	*halt;
@@ -633,11 +478,7 @@ void rndis_unbind(struct usbnet *dev, struct usb_interface *intf)
 	/* try to clear any rndis state/activity (no i/o from stack!) */
 	halt = kzalloc(CONTROL_BUFFER_SIZE, GFP_KERNEL);
 	if (halt) {
-<<<<<<< HEAD
-		halt->msg_type = RNDIS_MSG_HALT;
-=======
 		halt->msg_type = cpu_to_le32(RNDIS_MSG_HALT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		halt->msg_len = cpu_to_le32(sizeof *halt);
 		(void) rndis_command(dev, (void *)halt, CONTROL_BUFFER_SIZE);
 		kfree(halt);
@@ -652,45 +493,28 @@ EXPORT_SYMBOL_GPL(rndis_unbind);
  */
 int rndis_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-=======
 	bool dst_mac_fixup;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This check is no longer done by usbnet */
 	if (skb->len < dev->net->hard_header_len)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	dst_mac_fixup = !!(dev->driver_info->data & RNDIS_DRIVER_DATA_DST_MAC_FIXUP);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* peripheral may have batched packets to us... */
 	while (likely(skb->len)) {
 		struct rndis_data_hdr	*hdr = (void *)skb->data;
 		struct sk_buff		*skb2;
-<<<<<<< HEAD
-		u32			msg_len, data_offset, data_len;
-
-=======
 		u32			msg_type, msg_len, data_offset, data_len;
 
 		msg_type = le32_to_cpu(hdr->msg_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg_len = le32_to_cpu(hdr->msg_len);
 		data_offset = le32_to_cpu(hdr->data_offset);
 		data_len = le32_to_cpu(hdr->data_len);
 
 		/* don't choke if we see oob, per-packet data, etc */
-<<<<<<< HEAD
-		if (unlikely(hdr->msg_type != RNDIS_MSG_PACKET ||
-			     skb->len < msg_len ||
-			     (data_offset + data_len + 8) > msg_len)) {
-=======
 		if (unlikely(msg_type != RNDIS_MSG_PACKET || skb->len < msg_len
 				|| (data_offset + data_len + 8) > msg_len)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->net->stats.rx_frame_errors++;
 			netdev_dbg(dev->net, "bad rndis message %d/%d/%d/%d, len %d\n",
 				   le32_to_cpu(hdr->msg_type),
@@ -711,23 +535,17 @@ int rndis_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			break;
 		skb_pull(skb, msg_len - sizeof *hdr);
 		skb_trim(skb2, data_len);
-<<<<<<< HEAD
-=======
 
 		if (unlikely(dst_mac_fixup))
 			usbnet_cdc_zte_rx_fixup(dev, skb2);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usbnet_skb_return(dev, skb2);
 	}
 
 	/* caller will usbnet_skb_return the remaining packet */
-<<<<<<< HEAD
-=======
 	if (unlikely(dst_mac_fixup))
 		usbnet_cdc_zte_rx_fixup(dev, skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 EXPORT_SYMBOL_GPL(rndis_rx_fixup);
@@ -767,15 +585,9 @@ rndis_tx_fixup(struct usbnet *dev, struct sk_buff *skb, gfp_t flags)
 	 * packets; Linux minimizes wasted bandwidth through tx queues.
 	 */
 fill:
-<<<<<<< HEAD
-	hdr = (void *) __skb_push(skb, sizeof *hdr);
-	memset(hdr, 0, sizeof *hdr);
-	hdr->msg_type = RNDIS_MSG_PACKET;
-=======
 	hdr = __skb_push(skb, sizeof *hdr);
 	memset(hdr, 0, sizeof *hdr);
 	hdr->msg_type = cpu_to_le32(RNDIS_MSG_PACKET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr->msg_len = cpu_to_le32(skb->len);
 	hdr->data_offset = cpu_to_le32(sizeof(*hdr) - 8);
 	hdr->data_len = cpu_to_le32(len);
@@ -807,8 +619,6 @@ static const struct driver_info	rndis_poll_status_info = {
 	.tx_fixup =	rndis_tx_fixup,
 };
 
-<<<<<<< HEAD
-=======
 static const struct driver_info	zte_rndis_info = {
 	.description =	"ZTE RNDIS device",
 	.flags =	FLAG_ETHER | FLAG_POINTTOPOINT | FLAG_FRAMING_RN | FLAG_NO_SETINT,
@@ -820,7 +630,6 @@ static const struct driver_info	zte_rndis_info = {
 	.tx_fixup =	rndis_tx_fixup,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 static const struct usb_device_id	products [] = {
@@ -830,8 +639,6 @@ static const struct usb_device_id	products [] = {
 				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
 	.driver_info = (unsigned long) &rndis_poll_status_info,
 }, {
-<<<<<<< HEAD
-=======
 	/* Hytera Communications DMR radios' "Radio to PC Network" */
 	USB_VENDOR_AND_INTERFACE_INFO(0x238b,
 				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
@@ -847,7 +654,6 @@ static const struct usb_device_id	products [] = {
 				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
 	.driver_info = (unsigned long)&zte_rndis_info,
 }, {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* RNDIS is MSFT's un-official variant of CDC ACM */
 	USB_INTERFACE_INFO(USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
 	.driver_info = (unsigned long) &rndis_info,
@@ -859,13 +665,10 @@ static const struct usb_device_id	products [] = {
 	/* RNDIS for tethering */
 	USB_INTERFACE_INFO(USB_CLASS_WIRELESS_CONTROLLER, 1, 3),
 	.driver_info = (unsigned long) &rndis_info,
-<<<<<<< HEAD
-=======
 }, {
 	/* Novatel Verizon USB730L */
 	USB_INTERFACE_INFO(USB_CLASS_MISC, 4, 1),
 	.driver_info = (unsigned long) &rndis_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 },
 	{ },		// END
 };
@@ -878,10 +681,7 @@ static struct usb_driver rndis_driver = {
 	.disconnect =	usbnet_disconnect,
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(rndis_driver);

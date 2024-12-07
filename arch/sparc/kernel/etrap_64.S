@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * etrap.S: Preparing for entry into the kernel on Sparc V9.
  *
@@ -42,15 +39,11 @@ etrap_syscall:	TRAP_LOAD_THREAD_REG(%g6, %g1)
 		or	%g1, %g3, %g1
 		bne,pn	%xcc, 1f
 		 sub	%sp, STACKFRAME_SZ+TRACEREG_SZ-STACK_BIAS, %g2
-<<<<<<< HEAD
-		wrpr	%g0, 7, %cleanwin
-=======
 661:		wrpr	%g0, 7, %cleanwin
 		.section .fast_win_ctrl_1insn_patch, "ax"
 		.word	661b
 		.word	0x85880000	! allclean
 		.previous
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sethi	%hi(TASK_REGOFF), %g2
 		sethi	%hi(TSTATE_PEF), %g3
@@ -100,16 +93,6 @@ etrap_save:	save	%g2, -STACK_BIAS, %sp
 
 		bne,pn	%xcc, 3f
 		 mov	PRIMARY_CONTEXT, %l4
-<<<<<<< HEAD
-		rdpr	%canrestore, %g3
-		rdpr	%wstate, %g2
-		wrpr	%g0, 0, %canrestore
-		sll	%g2, 3, %g2
-		mov	1, %l5
-		stb	%l5, [%l6 + TI_FPDEPTH]
-
-		wrpr	%g3, 0, %otherwin
-=======
 661:		rdpr	%canrestore, %g3
 		.section .fast_win_ctrl_1insn_patch, "ax"
 		.word	661b
@@ -134,7 +117,6 @@ etrap_save:	save	%g2, -STACK_BIAS, %sp
 		.word	0x87880000	! otherw
 		.previous
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wrpr	%g2, 0, %wstate
 		sethi	%hi(sparc64_kern_pri_context), %g2
 		ldx	[%g2 + %lo(sparc64_kern_pri_context)], %g3
@@ -169,9 +151,6 @@ etrap_save:	save	%g2, -STACK_BIAS, %sp
 		stx	%g6, [%sp + PTREGS_OFF + PT_V9_G6]
 		stx	%g7, [%sp + PTREGS_OFF + PT_V9_G7]
 		or	%l7, %l0, %l7
-<<<<<<< HEAD
-		sethi	%hi(TSTATE_TSO | TSTATE_PEF), %l0
-=======
 661:		sethi	%hi(TSTATE_TSO | TSTATE_PEF), %l0
 		/* If userspace is using ADI, it could potentially pass
 		 * a pointer with version tag embedded in it. To maintain
@@ -198,7 +177,6 @@ etrap_save:	save	%g2, -STACK_BIAS, %sp
 		.word	661b
 		.word 0xaf902001	/* wrpr %g0, 1, %pmcdper */
 		.previous
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		or	%l7, %l0, %l7
 		wrpr	%l2, %tnpc
 		wrpr	%l7, (TSTATE_PRIV | TSTATE_IE), %tstate
@@ -220,13 +198,9 @@ etrap_save:	save	%g2, -STACK_BIAS, %sp
 		add	%l6, TI_FPSAVED + 1, %l4
 		srl	%l5, 1, %l3
 		add	%l5, 2, %l5
-<<<<<<< HEAD
-		stb	%l5, [%l6 + TI_FPDEPTH]
-=======
 
 		/* Set TI_SYS_FPDEPTH to %l5 and clear TI_SYS_NOERROR.  */
 		sth	%l5, [%l6 + TI_SYS_NOERROR]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ba,pt	%xcc, 2b
 		 stb	%g0, [%l4 + %l3]
 		nop

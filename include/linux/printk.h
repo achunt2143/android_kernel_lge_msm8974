@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ifndef __KERNEL_PRINTK__
-#define __KERNEL_PRINTK__
-
-#include <linux/init.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __KERNEL_PRINTK__
 #define __KERNEL_PRINTK__
@@ -14,30 +8,10 @@
 #include <linux/linkage.h>
 #include <linux/ratelimit_types.h>
 #include <linux/once_lite.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const char linux_banner[];
 extern const char linux_proc_banner[];
 
-<<<<<<< HEAD
-#define KERN_EMERG	"<0>"	/* system is unusable			*/
-#define KERN_ALERT	"<1>"	/* action must be taken immediately	*/
-#define KERN_CRIT	"<2>"	/* critical conditions			*/
-#define KERN_ERR	"<3>"	/* error conditions			*/
-#define KERN_WARNING	"<4>"	/* warning conditions			*/
-#define KERN_NOTICE	"<5>"	/* normal but significant condition	*/
-#define KERN_INFO	"<6>"	/* informational			*/
-#define KERN_DEBUG	"<7>"	/* debug-level messages			*/
-
-/* Use the default kernel loglevel */
-#define KERN_DEFAULT	"<d>"
-/*
- * Annotation for a "continued" line of log printout (only done after a
- * line that had no enclosing \n). Only to be used by core/arch code
- * during early bootup (a continued line is not SMP-safe otherwise).
- */
-#define KERN_CONT	"<c>"
-=======
 extern int oops_in_progress;	/* If set, an oops, panic(), BUG() or die() is in progress */
 
 #define PRINTK_MAX_SINGLE_HEADER_LEN 2
@@ -85,7 +59,6 @@ static inline const char *printk_skip_headers(const char *buffer)
  */
 #define CONSOLE_LOGLEVEL_DEFAULT CONFIG_CONSOLE_LOGLEVEL_DEFAULT
 #define CONSOLE_LOGLEVEL_QUIET	 CONFIG_CONSOLE_LOGLEVEL_QUIET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int console_printk[];
 
@@ -94,18 +67,6 @@ extern int console_printk[];
 #define minimum_console_loglevel (console_printk[2])
 #define default_console_loglevel (console_printk[3])
 
-<<<<<<< HEAD
-static inline void console_silent(void)
-{
-	console_loglevel = 0;
-}
-
-static inline void console_verbose(void)
-{
-	if (console_loglevel)
-		console_loglevel = 15;
-}
-=======
 extern void console_verbose(void);
 
 /* strlen("ratelimit") + 1 */
@@ -114,7 +75,6 @@ extern char devkmsg_log_str[];
 struct ctl_table;
 
 extern int suppress_printk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct va_format {
 	const char *fmt;
@@ -153,28 +113,6 @@ struct va_format {
 #define HW_ERR		"[Hardware Error]: "
 
 /*
-<<<<<<< HEAD
- * Dummy printk for disabled debugging statements to use whilst maintaining
- * gcc's format and side-effect checking.
- */
-static inline __printf(1, 2)
-int no_printk(const char *fmt, ...)
-{
-	return 0;
-}
-
-extern asmlinkage __printf(1, 2)
-void early_printk(const char *fmt, ...);
-
-extern int printk_needs_cpu(int cpu);
-extern void printk_tick(void);
-
-#ifdef CONFIG_PRINTK
-asmlinkage __printf(5, 0)
-int vprintk_emit(int facility, int level,
-		const char *dict, size_t dictlen,
-		const char *fmt, va_list args);
-=======
  * DEPRECATED
  * Add this to a message whenever you want to warn user space about the use
  * of a deprecated aspect of an API so they can stop using it
@@ -207,30 +145,16 @@ asmlinkage __printf(4, 0)
 int vprintk_emit(int facility, int level,
 		 const struct dev_printk_info *dev_info,
 		 const char *fmt, va_list args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 asmlinkage __printf(1, 0)
 int vprintk(const char *fmt, va_list args);
 
-<<<<<<< HEAD
-asmlinkage __printf(5, 6) __cold
-asmlinkage int printk_emit(int facility, int level,
-				const char *dict, size_t dictlen,
-				const char *fmt, ...);
-
-asmlinkage __printf(1, 2) __cold
-int printk(const char *fmt, ...);
-=======
 asmlinkage __printf(1, 2) __cold
 int _printk(const char *fmt, ...);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Special printk facility for scheduler/timekeeping use only, _DO_NOT_USE_ !
  */
-<<<<<<< HEAD
-__printf(1, 2) __cold int printk_deferred(const char *fmt, ...);
-=======
 __printf(1, 2) __cold int _printk_deferred(const char *fmt, ...);
 
 extern void __printk_safe_enter(void);
@@ -242,7 +166,6 @@ extern void __printk_safe_exit(void);
  */
 #define printk_deferred_enter __printk_safe_enter
 #define printk_deferred_exit __printk_safe_exit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Please don't use printk_ratelimit(), because it shares ratelimiting state
@@ -256,12 +179,6 @@ extern bool printk_timed_ratelimit(unsigned long *caller_jiffies,
 
 extern int printk_delay_msec;
 extern int dmesg_restrict;
-<<<<<<< HEAD
-extern int kptr_restrict;
-
-void log_buf_kexec_setup(void);
-void __init setup_log_buf(int early);
-=======
 
 extern void wake_up_klogd(void);
 
@@ -275,7 +192,6 @@ void show_regs_print_info(const char *log_lvl);
 extern asmlinkage void dump_stack_lvl(const char *log_lvl) __cold;
 extern asmlinkage void dump_stack(void) __cold;
 void printk_trigger_flush(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline __printf(1, 0)
 int vprintk(const char *s, va_list args)
@@ -283,21 +199,11 @@ int vprintk(const char *s, va_list args)
 	return 0;
 }
 static inline __printf(1, 2) __cold
-<<<<<<< HEAD
-int printk(const char *s, ...)
-=======
 int _printk(const char *s, ...)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 static inline __printf(1, 2) __cold
-<<<<<<< HEAD
-int printk_deferred(const char *s, ...)
-{
-	return 0;
-}
-=======
 int _printk_deferred(const char *s, ...)
 {
 	return 0;
@@ -311,7 +217,6 @@ static inline void printk_deferred_exit(void)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int printk_ratelimit(void)
 {
 	return 0;
@@ -322,9 +227,6 @@ static inline bool printk_timed_ratelimit(unsigned long *caller_jiffies,
 	return false;
 }
 
-<<<<<<< HEAD
-static inline void log_buf_kexec_setup(void)
-=======
 static inline void wake_up_klogd(void)
 {
 }
@@ -340,19 +242,12 @@ static inline u32 log_buf_len_get(void)
 }
 
 static inline void log_buf_vmcoreinfo_setup(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 static inline void setup_log_buf(int early)
 {
 }
-<<<<<<< HEAD
-#endif
-
-extern void dump_stack(void) __cold;
-
-=======
 
 static inline __printf(1, 2) void dump_stack_set_arch_desc(const char *fmt, ...)
 {
@@ -448,32 +343,10 @@ extern int kptr_restrict;
  * would prefix all pr_info, pr_emerg... messages in the file with the module
  * name.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef pr_fmt
 #define pr_fmt(fmt) fmt
 #endif
 
-<<<<<<< HEAD
-#define pr_emerg(fmt, ...) \
-	printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_alert(fmt, ...) \
-	printk(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_crit(fmt, ...) \
-	printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_err(fmt, ...) \
-	printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_warning(fmt, ...) \
-	printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_warn pr_warning
-#define pr_notice(fmt, ...) \
-	printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_info(fmt, ...) \
-	printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_cont(fmt, ...) \
-	printk(KERN_CONT fmt, ##__VA_ARGS__)
-
-/* pr_devel() should produce zero code unless DEBUG is defined */
-=======
 struct module;
 
 #ifdef CONFIG_PRINTK_INDEX
@@ -678,7 +551,6 @@ struct pi_entry {
  *
  * It uses pr_fmt() to generate the format string.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 #define pr_devel(fmt, ...) \
 	printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
@@ -687,14 +559,6 @@ struct pi_entry {
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 #endif
 
-<<<<<<< HEAD
-extern const struct file_operations kmsg_fops;
-
-/* If you are writing a driver, please use dev_dbg instead */
-#if defined(CONFIG_DYNAMIC_DEBUG)
-/* dynamic_pr_debug() uses pr_fmt() internally so we don't need it here */
-#define pr_debug(fmt, ...) \
-=======
 
 /* If you are writing a driver, please use dev_dbg instead */
 #if defined(CONFIG_DYNAMIC_DEBUG) || \
@@ -714,7 +578,6 @@ extern const struct file_operations kmsg_fops;
  * pr_fmt() internally).
  */
 #define pr_debug(fmt, ...)			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dynamic_pr_debug(fmt, ##__VA_ARGS__)
 #elif defined(DEBUG)
 #define pr_debug(fmt, ...) \
@@ -729,19 +592,6 @@ extern const struct file_operations kmsg_fops;
  */
 
 #ifdef CONFIG_PRINTK
-<<<<<<< HEAD
-#define printk_once(fmt, ...)			\
-({						\
-	static bool __print_once;		\
-						\
-	if (!__print_once) {			\
-		__print_once = true;		\
-		printk(fmt, ##__VA_ARGS__);	\
-	}					\
-})
-#else
-#define printk_once(fmt, ...)			\
-=======
 #define printk_once(fmt, ...)					\
 	DO_ONCE_LITE(printk, fmt, ##__VA_ARGS__)
 #define printk_deferred_once(fmt, ...)				\
@@ -750,7 +600,6 @@ extern const struct file_operations kmsg_fops;
 #define printk_once(fmt, ...)					\
 	no_printk(fmt, ##__VA_ARGS__)
 #define printk_deferred_once(fmt, ...)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	no_printk(fmt, ##__VA_ARGS__)
 #endif
 
@@ -768,10 +617,6 @@ extern const struct file_operations kmsg_fops;
 	printk_once(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_info_once(fmt, ...)					\
 	printk_once(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-<<<<<<< HEAD
-#define pr_cont_once(fmt, ...)					\
-	printk_once(KERN_CONT pr_fmt(fmt), ##__VA_ARGS__)
-=======
 /* no pr_cont_once, don't do that... */
 
 #if defined(DEBUG)
@@ -782,7 +627,6 @@ extern const struct file_operations kmsg_fops;
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* If you are writing a driver, please use dev_dbg instead */
 #if defined(DEBUG)
 #define pr_debug_once(fmt, ...)					\
@@ -826,10 +670,6 @@ extern const struct file_operations kmsg_fops;
 #define pr_info_ratelimited(fmt, ...)					\
 	printk_ratelimited(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
 /* no pr_cont_ratelimited, don't do that... */
-<<<<<<< HEAD
-/* If you are writing a driver, please use dev_dbg instead */
-#if defined(DEBUG)
-=======
 
 #if defined(DEBUG)
 #define pr_devel_ratelimited(fmt, ...)					\
@@ -854,7 +694,6 @@ do {									\
 		__dynamic_pr_debug(&descriptor, pr_fmt(fmt), ##__VA_ARGS__);	\
 } while (0)
 #elif defined(DEBUG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pr_debug_ratelimited(fmt, ...)					\
 	printk_ratelimited(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 #else
@@ -862,34 +701,20 @@ do {									\
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
 #endif
 
-<<<<<<< HEAD
-=======
 extern const struct file_operations kmsg_fops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	DUMP_PREFIX_NONE,
 	DUMP_PREFIX_ADDRESS,
 	DUMP_PREFIX_OFFSET
 };
-<<<<<<< HEAD
-extern void hex_dump_to_buffer(const void *buf, size_t len,
-			       int rowsize, int groupsize,
-			       char *linebuf, size_t linebuflen, bool ascii);
-=======
 extern int hex_dump_to_buffer(const void *buf, size_t len, int rowsize,
 			      int groupsize, char *linebuf, size_t linebuflen,
 			      bool ascii);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PRINTK
 extern void print_hex_dump(const char *level, const char *prefix_str,
 			   int prefix_type, int rowsize, int groupsize,
 			   const void *buf, size_t len, bool ascii);
-<<<<<<< HEAD
-extern void print_hex_dump_bytes(const char *prefix_str, int prefix_type,
-				 const void *buf, size_t len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void print_hex_dump(const char *level, const char *prefix_str,
 				  int prefix_type, int rowsize, int groupsize,
@@ -903,8 +728,6 @@ static inline void print_hex_dump_bytes(const char *prefix_str, int prefix_type,
 
 #endif
 
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_DYNAMIC_DEBUG) || \
 	(defined(CONFIG_DYNAMIC_DEBUG_CORE) && defined(DYNAMIC_DEBUG_MODULE))
 #define print_hex_dump_debug(prefix_str, prefix_type, rowsize,	\
@@ -939,5 +762,4 @@ static inline void print_hex_dump_debug(const char *prefix_str, int prefix_type,
 #define print_hex_dump_bytes(prefix_str, prefix_type, buf, len)	\
 	print_hex_dump_debug(prefix_str, prefix_type, 16, 1, buf, len, true)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

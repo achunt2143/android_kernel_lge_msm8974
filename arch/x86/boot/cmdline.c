@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -34,11 +25,7 @@ static inline int myisspace(u8 c)
  * Returns the length of the argument (regardless of if it was
  * truncated to fit in the buffer), or -1 on not found.
  */
-<<<<<<< HEAD
-int __cmdline_find_option(u32 cmdline_ptr, const char *option, char *buffer, int bufsize)
-=======
 int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *buffer, int bufsize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	addr_t cptr;
 	char c;
@@ -52,13 +39,8 @@ int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *b
 		st_bufcpy	/* Copying this to buffer */
 	} state = st_wordstart;
 
-<<<<<<< HEAD
-	if (!cmdline_ptr || cmdline_ptr >= 0x100000)
-		return -1;	/* No command line, or inaccessible */
-=======
 	if (!cmdline_ptr)
 		return -1;      /* No command line */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cptr = cmdline_ptr & 0xf;
 	set_fs(cmdline_ptr >> 4);
@@ -72,11 +54,7 @@ int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *b
 			/* else */
 			state = st_wordcmp;
 			opptr = option;
-<<<<<<< HEAD
-			/* fall through */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case st_wordcmp:
 			if (c == '=' && !*opptr) {
@@ -119,11 +97,7 @@ int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *b
  * Returns the position of that option (starts counting with 1)
  * or 0 on not found
  */
-<<<<<<< HEAD
-int __cmdline_find_option_bool(u32 cmdline_ptr, const char *option)
-=======
 int __cmdline_find_option_bool(unsigned long cmdline_ptr, const char *option)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	addr_t cptr;
 	char c;
@@ -135,13 +109,8 @@ int __cmdline_find_option_bool(unsigned long cmdline_ptr, const char *option)
 		st_wordskip,	/* Miscompare, skip */
 	} state = st_wordstart;
 
-<<<<<<< HEAD
-	if (!cmdline_ptr || cmdline_ptr >= 0x100000)
-		return -1;	/* No command line, or inaccessible */
-=======
 	if (!cmdline_ptr)
 		return -1;      /* No command line */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cptr = cmdline_ptr & 0xf;
 	set_fs(cmdline_ptr >> 4);
@@ -160,11 +129,7 @@ int __cmdline_find_option_bool(unsigned long cmdline_ptr, const char *option)
 			state = st_wordcmp;
 			opptr = option;
 			wstart = pos;
-<<<<<<< HEAD
-			/* fall through */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case st_wordcmp:
 			if (!*opptr)

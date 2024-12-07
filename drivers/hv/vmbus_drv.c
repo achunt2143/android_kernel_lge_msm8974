@@ -1,86 +1,22 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2009, Microsoft Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2009, Microsoft Corporation.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  *   Haiyang Zhang <haiyangz@microsoft.com>
  *   Hank Janssen  <hjanssen@microsoft.com>
  *   K. Y. Srinivasan <kys@microsoft.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/irq.h>
-=======
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/sysctl.h>
 #include <linux/slab.h>
 #include <linux/acpi.h>
-<<<<<<< HEAD
-#include <acpi/acpi_bus.h>
-#include <linux/completion.h>
-#include <linux/hyperv.h>
-#include <asm/hyperv.h>
-#include "hyperv_vmbus.h"
-
-
-static struct acpi_device  *hv_acpi_dev;
-
-static struct tasklet_struct msg_dpc;
-static struct tasklet_struct event_dpc;
-static struct completion probe_event;
-static int irq;
-
-struct hv_device_info {
-	u32 chn_id;
-	u32 chn_state;
-	uuid_le chn_type;
-	uuid_le chn_instance;
-
-	u32 monitor_id;
-	u32 server_monitor_pending;
-	u32 server_monitor_latency;
-	u32 server_monitor_conn_id;
-	u32 client_monitor_pending;
-	u32 client_monitor_latency;
-	u32 client_monitor_conn_id;
-
-	struct hv_dev_port_info inbound;
-	struct hv_dev_port_info outbound;
-};
-
-static int vmbus_exists(void)
-{
-	if (hv_acpi_dev == NULL)
-=======
 #include <linux/completion.h>
 #include <linux/hyperv.h>
 #include <linux/kernel_stat.h>
@@ -147,211 +83,11 @@ static DEFINE_MUTEX(hyperv_mmio_lock);
 static int vmbus_exists(void)
 {
 	if (hv_dev == NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-
-static void get_channel_info(struct hv_device *device,
-			     struct hv_device_info *info)
-{
-	struct vmbus_channel_debug_info debug_info;
-
-	if (!device->channel)
-		return;
-
-	vmbus_get_debug_info(device->channel, &debug_info);
-
-	info->chn_id = debug_info.relid;
-	info->chn_state = debug_info.state;
-	memcpy(&info->chn_type, &debug_info.interfacetype,
-	       sizeof(uuid_le));
-	memcpy(&info->chn_instance, &debug_info.interface_instance,
-	       sizeof(uuid_le));
-
-	info->monitor_id = debug_info.monitorid;
-
-	info->server_monitor_pending = debug_info.servermonitor_pending;
-	info->server_monitor_latency = debug_info.servermonitor_latency;
-	info->server_monitor_conn_id = debug_info.servermonitor_connectionid;
-
-	info->client_monitor_pending = debug_info.clientmonitor_pending;
-	info->client_monitor_latency = debug_info.clientmonitor_latency;
-	info->client_monitor_conn_id = debug_info.clientmonitor_connectionid;
-
-	info->inbound.int_mask = debug_info.inbound.current_interrupt_mask;
-	info->inbound.read_idx = debug_info.inbound.current_read_index;
-	info->inbound.write_idx = debug_info.inbound.current_write_index;
-	info->inbound.bytes_avail_toread =
-		debug_info.inbound.bytes_avail_toread;
-	info->inbound.bytes_avail_towrite =
-		debug_info.inbound.bytes_avail_towrite;
-
-	info->outbound.int_mask =
-		debug_info.outbound.current_interrupt_mask;
-	info->outbound.read_idx = debug_info.outbound.current_read_index;
-	info->outbound.write_idx = debug_info.outbound.current_write_index;
-	info->outbound.bytes_avail_toread =
-		debug_info.outbound.bytes_avail_toread;
-	info->outbound.bytes_avail_towrite =
-		debug_info.outbound.bytes_avail_towrite;
-}
-
-#define VMBUS_ALIAS_LEN ((sizeof((struct hv_vmbus_device_id *)0)->guid) * 2)
-static void print_alias_name(struct hv_device *hv_dev, char *alias_name)
-{
-	int i;
-	for (i = 0; i < VMBUS_ALIAS_LEN; i += 2)
-		sprintf(&alias_name[i], "%02x", hv_dev->dev_type.b[i/2]);
-}
-
-/*
- * vmbus_show_device_attr - Show the device attribute in sysfs.
- *
- * This is invoked when user does a
- * "cat /sys/bus/vmbus/devices/<busdevice>/<attr name>"
- */
-static ssize_t vmbus_show_device_attr(struct device *dev,
-				      struct device_attribute *dev_attr,
-				      char *buf)
-{
-	struct hv_device *hv_dev = device_to_hv_device(dev);
-	struct hv_device_info *device_info;
-	char alias_name[VMBUS_ALIAS_LEN + 1];
-	int ret = 0;
-
-	device_info = kzalloc(sizeof(struct hv_device_info), GFP_KERNEL);
-	if (!device_info)
-		return ret;
-
-	get_channel_info(hv_dev, device_info);
-
-	if (!strcmp(dev_attr->attr.name, "class_id")) {
-		ret = sprintf(buf, "{%02x%02x%02x%02x-%02x%02x-%02x%02x-"
-			       "%02x%02x%02x%02x%02x%02x%02x%02x}\n",
-			       device_info->chn_type.b[3],
-			       device_info->chn_type.b[2],
-			       device_info->chn_type.b[1],
-			       device_info->chn_type.b[0],
-			       device_info->chn_type.b[5],
-			       device_info->chn_type.b[4],
-			       device_info->chn_type.b[7],
-			       device_info->chn_type.b[6],
-			       device_info->chn_type.b[8],
-			       device_info->chn_type.b[9],
-			       device_info->chn_type.b[10],
-			       device_info->chn_type.b[11],
-			       device_info->chn_type.b[12],
-			       device_info->chn_type.b[13],
-			       device_info->chn_type.b[14],
-			       device_info->chn_type.b[15]);
-	} else if (!strcmp(dev_attr->attr.name, "device_id")) {
-		ret = sprintf(buf, "{%02x%02x%02x%02x-%02x%02x-%02x%02x-"
-			       "%02x%02x%02x%02x%02x%02x%02x%02x}\n",
-			       device_info->chn_instance.b[3],
-			       device_info->chn_instance.b[2],
-			       device_info->chn_instance.b[1],
-			       device_info->chn_instance.b[0],
-			       device_info->chn_instance.b[5],
-			       device_info->chn_instance.b[4],
-			       device_info->chn_instance.b[7],
-			       device_info->chn_instance.b[6],
-			       device_info->chn_instance.b[8],
-			       device_info->chn_instance.b[9],
-			       device_info->chn_instance.b[10],
-			       device_info->chn_instance.b[11],
-			       device_info->chn_instance.b[12],
-			       device_info->chn_instance.b[13],
-			       device_info->chn_instance.b[14],
-			       device_info->chn_instance.b[15]);
-	} else if (!strcmp(dev_attr->attr.name, "modalias")) {
-		print_alias_name(hv_dev, alias_name);
-		ret = sprintf(buf, "vmbus:%s\n", alias_name);
-	} else if (!strcmp(dev_attr->attr.name, "state")) {
-		ret = sprintf(buf, "%d\n", device_info->chn_state);
-	} else if (!strcmp(dev_attr->attr.name, "id")) {
-		ret = sprintf(buf, "%d\n", device_info->chn_id);
-	} else if (!strcmp(dev_attr->attr.name, "out_intr_mask")) {
-		ret = sprintf(buf, "%d\n", device_info->outbound.int_mask);
-	} else if (!strcmp(dev_attr->attr.name, "out_read_index")) {
-		ret = sprintf(buf, "%d\n", device_info->outbound.read_idx);
-	} else if (!strcmp(dev_attr->attr.name, "out_write_index")) {
-		ret = sprintf(buf, "%d\n", device_info->outbound.write_idx);
-	} else if (!strcmp(dev_attr->attr.name, "out_read_bytes_avail")) {
-		ret = sprintf(buf, "%d\n",
-			       device_info->outbound.bytes_avail_toread);
-	} else if (!strcmp(dev_attr->attr.name, "out_write_bytes_avail")) {
-		ret = sprintf(buf, "%d\n",
-			       device_info->outbound.bytes_avail_towrite);
-	} else if (!strcmp(dev_attr->attr.name, "in_intr_mask")) {
-		ret = sprintf(buf, "%d\n", device_info->inbound.int_mask);
-	} else if (!strcmp(dev_attr->attr.name, "in_read_index")) {
-		ret = sprintf(buf, "%d\n", device_info->inbound.read_idx);
-	} else if (!strcmp(dev_attr->attr.name, "in_write_index")) {
-		ret = sprintf(buf, "%d\n", device_info->inbound.write_idx);
-	} else if (!strcmp(dev_attr->attr.name, "in_read_bytes_avail")) {
-		ret = sprintf(buf, "%d\n",
-			       device_info->inbound.bytes_avail_toread);
-	} else if (!strcmp(dev_attr->attr.name, "in_write_bytes_avail")) {
-		ret = sprintf(buf, "%d\n",
-			       device_info->inbound.bytes_avail_towrite);
-	} else if (!strcmp(dev_attr->attr.name, "monitor_id")) {
-		ret = sprintf(buf, "%d\n", device_info->monitor_id);
-	} else if (!strcmp(dev_attr->attr.name, "server_monitor_pending")) {
-		ret = sprintf(buf, "%d\n", device_info->server_monitor_pending);
-	} else if (!strcmp(dev_attr->attr.name, "server_monitor_latency")) {
-		ret = sprintf(buf, "%d\n", device_info->server_monitor_latency);
-	} else if (!strcmp(dev_attr->attr.name, "server_monitor_conn_id")) {
-		ret = sprintf(buf, "%d\n",
-			       device_info->server_monitor_conn_id);
-	} else if (!strcmp(dev_attr->attr.name, "client_monitor_pending")) {
-		ret = sprintf(buf, "%d\n", device_info->client_monitor_pending);
-	} else if (!strcmp(dev_attr->attr.name, "client_monitor_latency")) {
-		ret = sprintf(buf, "%d\n", device_info->client_monitor_latency);
-	} else if (!strcmp(dev_attr->attr.name, "client_monitor_conn_id")) {
-		ret = sprintf(buf, "%d\n",
-			       device_info->client_monitor_conn_id);
-	}
-
-	kfree(device_info);
-	return ret;
-}
-
-/* Set up per device attributes in /sys/bus/vmbus/devices/<bus device> */
-static struct device_attribute vmbus_device_attrs[] = {
-	__ATTR(id, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(state, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(class_id, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(device_id, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(monitor_id, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(modalias, S_IRUGO, vmbus_show_device_attr, NULL),
-
-	__ATTR(server_monitor_pending, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(server_monitor_latency, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(server_monitor_conn_id, S_IRUGO, vmbus_show_device_attr, NULL),
-
-	__ATTR(client_monitor_pending, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(client_monitor_latency, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(client_monitor_conn_id, S_IRUGO, vmbus_show_device_attr, NULL),
-
-	__ATTR(out_intr_mask, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(out_read_index, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(out_write_index, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(out_read_bytes_avail, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(out_write_bytes_avail, S_IRUGO, vmbus_show_device_attr, NULL),
-
-	__ATTR(in_intr_mask, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(in_read_index, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(in_write_index, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(in_read_bytes_avail, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR(in_write_bytes_avail, S_IRUGO, vmbus_show_device_attr, NULL),
-	__ATTR_NULL
-};
-
-=======
 static u8 channel_monitor_group(const struct vmbus_channel *channel)
 {
 	return (u8)channel->offermsg.monitorid / 32;
@@ -892,7 +628,6 @@ static const struct attribute_group vmbus_bus_group = {
 	.attrs = vmbus_bus_attrs,
 };
 __ATTRIBUTE_GROUPS(vmbus_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * vmbus_uevent - add uevent for our device
@@ -905,38 +640,6 @@ __ATTRIBUTE_GROUPS(vmbus_bus);
  * representation of the device guid (each byte of the guid will be
  * represented with two hex characters.
  */
-<<<<<<< HEAD
-static int vmbus_uevent(struct device *device, struct kobj_uevent_env *env)
-{
-	struct hv_device *dev = device_to_hv_device(device);
-	int ret;
-	char alias_name[VMBUS_ALIAS_LEN + 1];
-
-	print_alias_name(dev, alias_name);
-	ret = add_uevent_var(env, "MODALIAS=vmbus:%s", alias_name);
-	return ret;
-}
-
-static uuid_le null_guid;
-
-static inline bool is_null_guid(const __u8 *guid)
-{
-	if (memcmp(guid, &null_guid, sizeof(uuid_le)))
-		return false;
-	return true;
-}
-
-/*
- * Return a matching hv_vmbus_device_id pointer.
- * If there is no match, return NULL.
- */
-static const struct hv_vmbus_device_id *hv_vmbus_get_id(
-					const struct hv_vmbus_device_id *id,
-					__u8 *guid)
-{
-	for (; !is_null_guid(id->guid); id++)
-		if (!memcmp(&id->guid, guid, sizeof(uuid_le)))
-=======
 static int vmbus_uevent(const struct device *device, struct kobj_uevent_env *env)
 {
 	const struct hv_device *dev = device_to_hv_device(device);
@@ -953,14 +656,11 @@ hv_vmbus_dev_match(const struct hv_vmbus_device_id *id, const guid_t *guid)
 
 	for (; !guid_is_null(&id->guid); id++)
 		if (guid_equal(&id->guid, guid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return id;
 
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static const struct hv_vmbus_device_id *
 hv_vmbus_dynid_match(struct hv_driver *drv, const guid_t *guid)
 {
@@ -1104,7 +804,6 @@ static struct attribute *vmbus_drv_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(vmbus_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -1115,15 +814,11 @@ static int vmbus_match(struct device *device, struct device_driver *driver)
 	struct hv_driver *drv = drv_to_hv_drv(driver);
 	struct hv_device *hv_dev = device_to_hv_device(device);
 
-<<<<<<< HEAD
-	if (hv_vmbus_get_id(drv->id_table, hv_dev->dev_type.b))
-=======
 	/* The hv_sock driver handles all hv_sock offers. */
 	if (is_hvsock_channel(hv_dev->channel))
 		return drv->hvsock;
 
 	if (hv_vmbus_get_id(drv, hv_dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
@@ -1140,11 +835,7 @@ static int vmbus_probe(struct device *child_device)
 	struct hv_device *dev = device_to_hv_device(child_device);
 	const struct hv_vmbus_device_id *dev_id;
 
-<<<<<<< HEAD
-	dev_id = hv_vmbus_get_id(drv->id_table, dev->dev_type.b);
-=======
 	dev_id = hv_vmbus_get_id(drv, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (drv->probe) {
 		ret = drv->probe(dev, dev_id);
 		if (ret != 0)
@@ -1160,24 +851,6 @@ static int vmbus_probe(struct device *child_device)
 }
 
 /*
-<<<<<<< HEAD
- * vmbus_remove - Remove a vmbus device
- */
-static int vmbus_remove(struct device *child_device)
-{
-	struct hv_driver *drv = drv_to_hv_drv(child_device->driver);
-	struct hv_device *dev = device_to_hv_device(child_device);
-
-	if (drv->remove)
-		drv->remove(dev);
-	else
-		pr_err("remove not set for driver %s\n",
-			dev_name(child_device));
-
-	return 0;
-}
-
-=======
  * vmbus_dma_configure -- Configure DMA coherence for VMbus device
  */
 static int vmbus_dma_configure(struct device *child_device)
@@ -1206,7 +879,6 @@ static void vmbus_remove(struct device *child_device)
 			drv->remove(dev);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * vmbus_shutdown - Shutdown a vmbus device
@@ -1225,12 +897,6 @@ static void vmbus_shutdown(struct device *child_device)
 
 	if (drv->shutdown)
 		drv->shutdown(dev);
-<<<<<<< HEAD
-
-	return;
-}
-
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -1275,7 +941,6 @@ static int vmbus_resume(struct device *child_device)
 #define vmbus_suspend NULL
 #define vmbus_resume NULL
 #endif /* CONFIG_PM_SLEEP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * vmbus_device_release - Final callback release of the vmbus child device
@@ -1283,15 +948,6 @@ static int vmbus_resume(struct device *child_device)
 static void vmbus_device_release(struct device *device)
 {
 	struct hv_device *hv_dev = device_to_hv_device(device);
-<<<<<<< HEAD
-
-	kfree(hv_dev);
-
-}
-
-/* The one and only one */
-static struct bus_type  hv_bus = {
-=======
 	struct vmbus_channel *channel = hv_dev->channel;
 
 	hv_debug_rm_dev_dir(hv_dev);
@@ -1323,24 +979,12 @@ static const struct dev_pm_ops vmbus_pm = {
 
 /* The one and only one */
 static const struct bus_type  hv_bus = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"vmbus",
 	.match =		vmbus_match,
 	.shutdown =		vmbus_shutdown,
 	.remove =		vmbus_remove,
 	.probe =		vmbus_probe,
 	.uevent =		vmbus_uevent,
-<<<<<<< HEAD
-	.dev_attrs =	vmbus_device_attrs,
-};
-
-static const char *driver_name = "hyperv";
-
-
-struct onmessage_work_context {
-	struct work_struct work;
-	struct hv_message msg;
-=======
 	.dma_configure =	vmbus_dma_configure,
 	.dev_groups =		vmbus_dev_groups,
 	.drv_groups =		vmbus_drv_groups,
@@ -1354,88 +998,12 @@ struct onmessage_work_context {
 		struct hv_message_header header;
 		u8 payload[];
 	} msg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void vmbus_onmessage_work(struct work_struct *work)
 {
 	struct onmessage_work_context *ctx;
 
-<<<<<<< HEAD
-	ctx = container_of(work, struct onmessage_work_context,
-			   work);
-	vmbus_onmessage(&ctx->msg);
-	kfree(ctx);
-}
-
-static void vmbus_on_msg_dpc(unsigned long data)
-{
-	int cpu = smp_processor_id();
-	void *page_addr = hv_context.synic_message_page[cpu];
-	struct hv_message *msg = (struct hv_message *)page_addr +
-				  VMBUS_MESSAGE_SINT;
-	struct onmessage_work_context *ctx;
-
-	while (1) {
-		if (msg->header.message_type == HVMSG_NONE) {
-			/* no msg */
-			break;
-		} else {
-			ctx = kmalloc(sizeof(*ctx), GFP_ATOMIC);
-			if (ctx == NULL)
-				continue;
-			INIT_WORK(&ctx->work, vmbus_onmessage_work);
-			memcpy(&ctx->msg, msg, sizeof(*msg));
-			queue_work(vmbus_connection.work_queue, &ctx->work);
-		}
-
-		msg->header.message_type = HVMSG_NONE;
-
-		/*
-		 * Make sure the write to MessageType (ie set to
-		 * HVMSG_NONE) happens before we read the
-		 * MessagePending and EOMing. Otherwise, the EOMing
-		 * will not deliver any more messages since there is
-		 * no empty slot
-		 */
-		mb();
-
-		if (msg->header.message_flags.msg_pending) {
-			/*
-			 * This will cause message queue rescan to
-			 * possibly deliver another msg from the
-			 * hypervisor
-			 */
-			wrmsrl(HV_X64_MSR_EOM, 0);
-		}
-	}
-}
-
-static irqreturn_t vmbus_isr(int irq, void *dev_id)
-{
-	int cpu = smp_processor_id();
-	void *page_addr;
-	struct hv_message *msg;
-	union hv_synic_event_flags *event;
-	bool handled = false;
-
-	/*
-	 * Check for events before checking for messages. This is the order
-	 * in which events and messages are checked in Windows guests on
-	 * Hyper-V, and the Windows team suggested we do the same.
-	 */
-
-	page_addr = hv_context.synic_event_page[cpu];
-	event = (union hv_synic_event_flags *)page_addr + VMBUS_MESSAGE_SINT;
-
-	/* Since we are a child, we only need to check bit 0 */
-	if (sync_test_and_clear_bit(0, (unsigned long *) &event->flags32[0])) {
-		handled = true;
-		tasklet_schedule(&event_dpc);
-	}
-
-	page_addr = hv_context.synic_message_page[cpu];
-=======
 	/* Do not process messages if we're in DISCONNECTED state */
 	if (vmbus_connection.conn_state == DISCONNECTED)
 		return;
@@ -1718,21 +1286,10 @@ static void vmbus_isr(void)
 	vmbus_chan_sched(hv_cpu);
 
 	page_addr = hv_cpu->synic_message_page;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg = (struct hv_message *)page_addr + VMBUS_MESSAGE_SINT;
 
 	/* Check if there are actual msgs to be processed */
 	if (msg->header.message_type != HVMSG_NONE) {
-<<<<<<< HEAD
-		handled = true;
-		tasklet_schedule(&msg_dpc);
-	}
-
-	if (handled)
-		return IRQ_HANDLED;
-	else
-		return IRQ_NONE;
-=======
 		if (msg->header.message_type == HVMSG_TIMER_EXPIRED) {
 			hv_stimer0_isr();
 			vmbus_signal_eom(msg, HVMSG_TIMER_EXPIRED);
@@ -1747,7 +1304,6 @@ static irqreturn_t vmbus_percpu_isr(int irq, void *dev_id)
 {
 	vmbus_isr();
 	return IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1756,58 +1312,18 @@ static irqreturn_t vmbus_percpu_isr(int irq, void *dev_id)
  * Here, we
  *	- initialize the vmbus driver context
  *	- invoke the vmbus hv main init routine
-<<<<<<< HEAD
- *	- get the irq resource
- *	- retrieve the channel offers
- */
-static int vmbus_bus_init(int irq)
-{
-	int ret;
-	unsigned int vector;
-
-	/* Hypervisor initialization...setup hypercall page..etc */
-=======
  *	- retrieve the channel offers
  */
 static int vmbus_bus_init(void)
 {
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = hv_init();
 	if (ret != 0) {
 		pr_err("Unable to initialize the hypervisor - 0x%x\n", ret);
 		return ret;
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&msg_dpc, vmbus_on_msg_dpc, 0);
-	tasklet_init(&event_dpc, vmbus_on_event, 0);
-
-	ret = bus_register(&hv_bus);
-	if (ret)
-		goto err_cleanup;
-
-	ret = request_irq(irq, vmbus_isr, IRQF_SAMPLE_RANDOM,
-			driver_name, hv_acpi_dev);
-
-	if (ret != 0) {
-		pr_err("Unable to request IRQ %d\n",
-			   irq);
-		goto err_unregister;
-	}
-
-	vector = IRQ0_VECTOR + irq;
-
-	/*
-	 * Notify the hypervisor of our irq and
-	 * connect to the host.
-	 */
-	on_each_cpu(hv_synic_init, (void *)&vector, 1);
-	ret = vmbus_connect();
-	if (ret)
-		goto err_irq;
-=======
 	ret = bus_register(&hv_bus);
 	if (ret)
 		return ret;
@@ -1859,23 +1375,11 @@ static int vmbus_bus_init(void)
 	 */
 	atomic_notifier_chain_register(&panic_notifier_list,
 			       &hyperv_panic_vmbus_unload_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vmbus_request_offers();
 
 	return 0;
 
-<<<<<<< HEAD
-err_irq:
-	free_irq(irq, hv_acpi_dev);
-
-err_unregister:
-	bus_unregister(&hv_bus);
-
-err_cleanup:
-	hv_cleanup();
-
-=======
 err_connect:
 	cpuhp_remove_state(hyperv_cpuhp_online);
 err_alloc:
@@ -1888,18 +1392,12 @@ err_alloc:
 	}
 err_setup:
 	bus_unregister(&hv_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
- * __vmbus_child_driver_register - Register a vmbus's driver
- * @drv: Pointer to driver structure you want to register
-=======
  * __vmbus_driver_register() - Register a vmbus's driver
  * @hv_driver: Pointer to driver structure you want to register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @owner: owner module of the drv
  * @mod_name: module name string
  *
@@ -1923,16 +1421,10 @@ int __vmbus_driver_register(struct hv_driver *hv_driver, struct module *owner, c
 	hv_driver->driver.mod_name = mod_name;
 	hv_driver->driver.bus = &hv_bus;
 
-<<<<<<< HEAD
-	ret = driver_register(&hv_driver->driver);
-
-	vmbus_request_offers();
-=======
 	spin_lock_init(&hv_driver->dynids.lock);
 	INIT_LIST_HEAD(&hv_driver->dynids.list);
 
 	ret = driver_register(&hv_driver->driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1940,12 +1432,8 @@ EXPORT_SYMBOL_GPL(__vmbus_driver_register);
 
 /**
  * vmbus_driver_unregister() - Unregister a vmbus's driver
-<<<<<<< HEAD
- * @drv: Pointer to driver structure you want to un-register
-=======
  * @hv_driver: Pointer to driver structure you want to
  *             un-register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Un-register the given driver that was previous registered with a call to
  * vmbus_driver_register()
@@ -1954,13 +1442,6 @@ void vmbus_driver_unregister(struct hv_driver *hv_driver)
 {
 	pr_info("unregistering driver %s\n", hv_driver->name);
 
-<<<<<<< HEAD
-	if (!vmbus_exists())
-		driver_unregister(&hv_driver->driver);
-}
-EXPORT_SYMBOL_GPL(vmbus_driver_unregister);
-
-=======
 	if (!vmbus_exists()) {
 		driver_unregister(&hv_driver->driver);
 		vmbus_free_dynids(hv_driver);
@@ -2375,20 +1856,13 @@ void vmbus_remove_channel_attr_group(struct vmbus_channel *channel)
 	sysfs_remove_group(&channel->kobj, &vmbus_chan_group);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vmbus_device_create - Creates and registers a new child device
  * on the vmbus.
  */
-<<<<<<< HEAD
-struct hv_device *vmbus_device_create(uuid_le *type,
-					    uuid_le *instance,
-					    struct vmbus_channel *channel)
-=======
 struct hv_device *vmbus_device_create(const guid_t *type,
 				      const guid_t *instance,
 				      struct vmbus_channel *channel)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hv_device *child_device_obj;
 
@@ -2399,16 +1873,9 @@ struct hv_device *vmbus_device_create(const guid_t *type,
 	}
 
 	child_device_obj->channel = channel;
-<<<<<<< HEAD
-	memcpy(&child_device_obj->dev_type, type, sizeof(uuid_le));
-	memcpy(&child_device_obj->dev_instance, instance,
-	       sizeof(uuid_le));
-
-=======
 	guid_copy(&child_device_obj->dev_type, type);
 	guid_copy(&child_device_obj->dev_instance, instance);
 	child_device_obj->vendor_id = PCI_VENDOR_ID_MICROSOFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return child_device_obj;
 }
@@ -2418,19 +1885,6 @@ struct hv_device *vmbus_device_create(const guid_t *type,
  */
 int vmbus_device_register(struct hv_device *child_device_obj)
 {
-<<<<<<< HEAD
-	int ret = 0;
-
-	static atomic_t device_num = ATOMIC_INIT(0);
-
-	dev_set_name(&child_device_obj->device, "vmbus_0_%d",
-		     atomic_inc_return(&device_num));
-
-	child_device_obj->device.bus = &hv_bus;
-	child_device_obj->device.parent = &hv_acpi_dev->dev;
-	child_device_obj->device.release = vmbus_device_release;
-
-=======
 	struct kobject *kobj = &child_device_obj->device.kobj;
 	int ret;
 
@@ -2445,21 +1899,11 @@ int vmbus_device_register(struct hv_device *child_device_obj)
 	child_device_obj->device.dma_mask = &child_device_obj->dma_mask;
 	dma_set_mask(&child_device_obj->device, DMA_BIT_MASK(64));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Register with the LDM. This will kick off the driver/device
 	 * binding...which will eventually call vmbus_match() and vmbus_probe()
 	 */
 	ret = device_register(&child_device_obj->device);
-<<<<<<< HEAD
-
-	if (ret)
-		pr_err("Unable to register child device\n");
-	else
-		pr_debug("child device %s registered\n",
-			dev_name(&child_device_obj->device));
-
-=======
 	if (ret) {
 		pr_err("Unable to register child device\n");
 		put_device(&child_device_obj->device);
@@ -2488,7 +1932,6 @@ err_kset_unregister:
 
 err_dev_unregister:
 	device_unregister(&child_device_obj->device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -2501,11 +1944,8 @@ void vmbus_device_unregister(struct hv_device *device_obj)
 	pr_debug("child device %s unregistered\n",
 		dev_name(&device_obj->device));
 
-<<<<<<< HEAD
-=======
 	kset_unregister(device_obj->channels_kset);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Kick off the process of unregistering the device.
 	 * This will call vmbus_remove() and eventually vmbus_device_release()
@@ -2513,45 +1953,6 @@ void vmbus_device_unregister(struct hv_device *device_obj)
 	device_unregister(&device_obj->device);
 }
 
-<<<<<<< HEAD
-
-/*
- * VMBUS is an acpi enumerated device. Get the the IRQ information
- * from DSDT.
- */
-
-static acpi_status vmbus_walk_resources(struct acpi_resource *res, void *irq)
-{
-
-	if (res->type == ACPI_RESOURCE_TYPE_IRQ) {
-		struct acpi_resource_irq *irqp;
-		irqp = &res->data.irq;
-
-		*((unsigned int *)irq) = irqp->interrupts[0];
-	}
-
-	return AE_OK;
-}
-
-static int vmbus_acpi_add(struct acpi_device *device)
-{
-	acpi_status result;
-
-	hv_acpi_dev = device;
-
-	result = acpi_walk_resources(device->handle, METHOD_NAME__CRS,
-					vmbus_walk_resources, &irq);
-
-	if (ACPI_FAILURE(result)) {
-		complete(&probe_event);
-		return -ENODEV;
-	}
-	complete(&probe_event);
-	return 0;
-}
-
-static const struct acpi_device_id vmbus_acpi_device_ids[] = {
-=======
 #ifdef CONFIG_ACPI
 /*
  * VMBUS is an acpi enumerated device. Get the information we
@@ -3101,21 +2502,12 @@ static const __maybe_unused struct of_device_id vmbus_of_match[] = {
 MODULE_DEVICE_TABLE(of, vmbus_of_match);
 
 static const __maybe_unused struct acpi_device_id vmbus_acpi_device_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"VMBUS", 0},
 	{"VMBus", 0},
 	{"", 0},
 };
 MODULE_DEVICE_TABLE(acpi, vmbus_acpi_device_ids);
 
-<<<<<<< HEAD
-static struct acpi_driver vmbus_acpi_driver = {
-	.name = "vmbus",
-	.ids = vmbus_acpi_device_ids,
-	.ops = {
-		.add = vmbus_acpi_add,
-	},
-=======
 /*
  * Note: we must use the "no_irq" ops, otherwise hibernation can not work with
  * PCI device assignment, because "pci_dev_pm_ops" uses the "noirq" ops: in
@@ -3215,33 +2607,10 @@ static void hv_synic_resume(void)
 static struct syscore_ops hv_synic_syscore_ops = {
 	.suspend = hv_synic_suspend,
 	.resume = hv_synic_resume,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init hv_acpi_init(void)
 {
-<<<<<<< HEAD
-	int ret, t;
-
-	init_completion(&probe_event);
-
-	/*
-	 * Get irq resources first.
-	 */
-
-	ret = acpi_bus_register_driver(&vmbus_acpi_driver);
-
-	if (ret)
-		return ret;
-
-	t = wait_for_completion_timeout(&probe_event, 5*HZ);
-	if (t == 0) {
-		ret = -ETIMEDOUT;
-		goto cleanup;
-	}
-
-	if (irq <= 0) {
-=======
 	int ret;
 
 	if (!hv_is_hyperv_initialized())
@@ -3258,22 +2627,10 @@ static int __init hv_acpi_init(void)
 		return ret;
 
 	if (!hv_dev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-	ret = vmbus_bus_init(irq);
-	if (ret)
-		goto cleanup;
-
-	return 0;
-
-cleanup:
-	acpi_bus_unregister_driver(&vmbus_acpi_driver);
-	hv_acpi_dev = NULL;
-=======
 	/*
 	 * If we're on an architecture with a hardcoded hypervisor
 	 * vector (i.e. x86/x64), override the VMbus interrupt found
@@ -3301,20 +2658,11 @@ cleanup:
 cleanup:
 	platform_driver_unregister(&vmbus_platform_driver);
 	hv_dev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void __exit vmbus_exit(void)
 {
-<<<<<<< HEAD
-
-	free_irq(irq, hv_acpi_dev);
-	vmbus_free_channels();
-	bus_unregister(&hv_bus);
-	hv_cleanup();
-	acpi_bus_unregister_driver(&vmbus_acpi_driver);
-=======
 	int cpu;
 
 	unregister_syscore_ops(&hv_synic_syscore_ops);
@@ -3353,16 +2701,11 @@ static void __exit vmbus_exit(void)
 	cpuhp_remove_state(hyperv_cpuhp_online);
 	hv_synic_free();
 	platform_driver_unregister(&vmbus_platform_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(HV_DRV_VERSION);
-=======
 MODULE_DESCRIPTION("Microsoft Hyper-V VMBus Driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 subsys_initcall(hv_acpi_init);
 module_exit(vmbus_exit);

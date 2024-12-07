@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-config PSTORE
-	bool "Persistent store support"
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config PSTORE
 	tristate "Persistent store support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	   This option enables generic access to platform level
@@ -17,8 +12,6 @@ config PSTORE
 	   (e.g. ACPI_APEI on X86) which will select this for you.
 	   If you don't have a platform persistent store driver,
 	   say N.
-<<<<<<< HEAD
-=======
 
 config PSTORE_DEFAULT_KMSG_BYTES
 	int "Default kernel log storage space" if EXPERT
@@ -196,4 +189,3 @@ config PSTORE_BLK_FTRACE_SIZE
 
 	  NOTE that, both Kconfig and module parameters can configure
 	  pstore/blk, but module parameters have priority over Kconfig.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

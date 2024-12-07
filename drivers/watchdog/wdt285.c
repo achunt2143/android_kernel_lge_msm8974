@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Intel 21285 watchdog driver
  *	Copyright (c) Phil Blundell <pb@nexus.co.uk>, 1998
@@ -12,15 +9,6 @@
  *
  *	(c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>,
  *						All Rights Reserved.
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -108,11 +96,7 @@ static int watchdog_open(struct inode *inode, struct file *file)
 
 	ret = 0;
 #endif
-<<<<<<< HEAD
-	nonseekable_open(inode, file);
-=======
 	stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -150,14 +134,8 @@ static const struct watchdog_info ident = {
 static long watchdog_ioctl(struct file *file, unsigned int cmd,
 			   unsigned long arg)
 {
-<<<<<<< HEAD
-	unsigned int new_margin;
-	int __user *int_arg = (int __user *)arg;
-	int ret = -ENOTTY;
-=======
 	int __user *int_arg = (int __user *)arg;
 	int new_margin, ret = -ENOTTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case WDIOC_GETSUPPORT:
@@ -190,11 +168,7 @@ static long watchdog_ioctl(struct file *file, unsigned int cmd,
 		soft_margin = new_margin;
 		reload = soft_margin * (mem_fclk_21285 / 256);
 		watchdog_ping();
-<<<<<<< HEAD
-		/* Fall */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		ret = put_user(soft_margin, int_arg);
 		break;
@@ -207,10 +181,7 @@ static const struct file_operations watchdog_fops = {
 	.llseek		= no_llseek,
 	.write		= watchdog_write,
 	.unlocked_ioctl	= watchdog_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= watchdog_open,
 	.release	= watchdog_release,
 };
@@ -235,11 +206,6 @@ static int __init footbridge_watchdog_init(void)
 	pr_info("Footbridge Watchdog Timer: 0.01, timer margin: %d sec\n",
 		soft_margin);
 
-<<<<<<< HEAD
-	if (machine_is_cats())
-		pr_warn("Warning: Watchdog reset may not work on this machine\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -251,10 +217,6 @@ static void __exit footbridge_watchdog_exit(void)
 MODULE_AUTHOR("Phil Blundell <pb@nexus.co.uk>");
 MODULE_DESCRIPTION("Footbridge watchdog driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(soft_margin, int, 0);
 MODULE_PARM_DESC(soft_margin, "Watchdog timeout in seconds");

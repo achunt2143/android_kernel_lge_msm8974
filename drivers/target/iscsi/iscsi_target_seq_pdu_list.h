@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef ISCSI_SEQ_AND_PDU_LIST_H
-#define ISCSI_SEQ_AND_PDU_LIST_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ISCSI_SEQ_AND_PDU_LIST_H
 #define ISCSI_SEQ_AND_PDU_LIST_H
@@ -10,7 +5,6 @@
 #include <linux/types.h>
 #include <linux/cache.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* struct iscsi_pdu->status */
 #define DATAOUT_PDU_SENT			1
 
@@ -88,18 +82,11 @@ struct iscsi_seq {
 	u32		xfer_len;
 } ____cacheline_aligned;
 
-<<<<<<< HEAD
-extern int iscsit_do_build_list(struct iscsi_cmd *, struct iscsi_build_list *);
-extern struct iscsi_pdu *iscsit_get_pdu_holder(struct iscsi_cmd *, u32, u32);
-extern struct iscsi_pdu *iscsit_get_pdu_holder_for_seq(struct iscsi_cmd *, struct iscsi_seq *);
-extern struct iscsi_seq *iscsit_get_seq_holder(struct iscsi_cmd *, u32, u32);
-=======
 struct iscsit_cmd;
 
 extern int iscsit_build_pdu_and_seq_lists(struct iscsit_cmd *, u32);
 extern struct iscsi_pdu *iscsit_get_pdu_holder(struct iscsit_cmd *, u32, u32);
 extern struct iscsi_pdu *iscsit_get_pdu_holder_for_seq(struct iscsit_cmd *, struct iscsi_seq *);
 extern struct iscsi_seq *iscsit_get_seq_holder(struct iscsit_cmd *, u32, u32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* ISCSI_SEQ_AND_PDU_LIST_H */

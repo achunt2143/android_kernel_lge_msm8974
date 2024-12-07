@@ -16,14 +16,7 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_CONTROL_H
 #define __ARCH_ARM_MACH_OMAP2_CONTROL_H
 
-<<<<<<< HEAD
-#include <mach/ctrl_module_core_44xx.h>
-#include <mach/ctrl_module_wkup_44xx.h>
-#include <mach/ctrl_module_pad_core_44xx.h>
-#include <mach/ctrl_module_pad_wkup_44xx.h>
-=======
 #include "am33xx.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 #define OMAP242X_CTRL_REGADDR(reg)					\
@@ -32,11 +25,8 @@
 		OMAP2_L4_IO_ADDRESS(OMAP243X_CTRL_BASE + (reg))
 #define OMAP343X_CTRL_REGADDR(reg)					\
 		OMAP2_L4_IO_ADDRESS(OMAP343X_CTRL_BASE + (reg))
-<<<<<<< HEAD
-=======
 #define AM33XX_CTRL_REGADDR(reg)					\
 		AM33XX_L4_WK_IO_ADDRESS(AM33XX_SCM_BASE + (reg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define OMAP242X_CTRL_REGADDR(reg)					\
 		OMAP2_L4_IO_ADDRESS(OMAP242X_CTRL_BASE + (reg))
@@ -44,11 +34,8 @@
 		OMAP2_L4_IO_ADDRESS(OMAP243X_CTRL_BASE + (reg))
 #define OMAP343X_CTRL_REGADDR(reg)					\
 		OMAP2_L4_IO_ADDRESS(OMAP343X_CTRL_BASE + (reg))
-<<<<<<< HEAD
-=======
 #define AM33XX_CTRL_REGADDR(reg)					\
 		AM33XX_L4_WK_IO_ADDRESS(AM33XX_SCM_BASE + (reg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 
 /*
@@ -66,10 +53,7 @@
 #define OMAP343X_CONTROL_GENERAL_WKUP	0xa60
 
 /* TI81XX spefic control submodules */
-<<<<<<< HEAD
-=======
 #define TI81XX_CONTROL_DEVBOOT		0x040
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TI81XX_CONTROL_DEVCONF		0x600
 
 /* Control register offsets - read/write with omap_ctrl_{read,write}{bwl}() */
@@ -200,10 +184,7 @@
 #define OMAP3630_CONTROL_FUSE_OPP120_VDD1       (OMAP2_CONTROL_GENERAL + 0x0120)
 #define OMAP3630_CONTROL_FUSE_OPP50_VDD2        (OMAP2_CONTROL_GENERAL + 0x0128)
 #define OMAP3630_CONTROL_FUSE_OPP100_VDD2       (OMAP2_CONTROL_GENERAL + 0x012C)
-<<<<<<< HEAD
-=======
 #define OMAP3630_CONTROL_CAMERA_PHY_CTRL	(OMAP2_CONTROL_GENERAL + 0x02f0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* OMAP44xx control efuse offsets */
 #define OMAP44XX_CONTROL_FUSE_IVA_OPP50		0x22C
@@ -214,15 +195,10 @@
 #define OMAP44XX_CONTROL_FUSE_MPU_OPP100	0x243
 #define OMAP44XX_CONTROL_FUSE_MPU_OPPTURBO	0x246
 #define OMAP44XX_CONTROL_FUSE_MPU_OPPNITRO	0x249
-<<<<<<< HEAD
-#define OMAP44XX_CONTROL_FUSE_CORE_OPP50	0x254
-#define OMAP44XX_CONTROL_FUSE_CORE_OPP100	0x257
-=======
 #define OMAP44XX_CONTROL_FUSE_MPU_OPPNITROSB	0x24C
 #define OMAP44XX_CONTROL_FUSE_CORE_OPP50	0x254
 #define OMAP44XX_CONTROL_FUSE_CORE_OPP100	0x257
 #define OMAP44XX_CONTROL_FUSE_CORE_OPP100OV	0x25A
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AM35XX only CONTROL_GENERAL register offsets */
 #define AM35XX_CONTROL_MSUSPENDMUX_6    (OMAP2_CONTROL_GENERAL + 0x0038)
@@ -255,14 +231,10 @@
 #define OMAP343X_PADCONF_ETK_D14	OMAP343X_PADCONF_ETK(16)
 #define OMAP343X_PADCONF_ETK_D15	OMAP343X_PADCONF_ETK(17)
 
-<<<<<<< HEAD
-/* 34xx GENERAL_WKUP regist offsets */
-=======
 /* 34xx GENERAL_WKUP register offsets */
 #define OMAP34XX_CONTROL_WKUP_CTRL	(OMAP343X_CONTROL_GENERAL_WKUP - 0x4)
 #define OMAP36XX_GPIO_IO_PWRDNZ		BIT(6)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP343X_CONTROL_WKUP_DEBOBSMUX(i) (OMAP343X_CONTROL_GENERAL_WKUP + \
 						0x008 + (i))
 #define OMAP343X_CONTROL_WKUP_DEBOBS0 (OMAP343X_CONTROL_GENERAL_WKUP + 0x008)
@@ -279,11 +251,6 @@
 #define OMAP3_PADCONF_SAD2D_MSTANDBY   0x250
 #define OMAP3_PADCONF_SAD2D_IDLEACK    0x254
 
-<<<<<<< HEAD
-/* TI81XX CONTROL_DEVCONF register offsets */
-#define TI81XX_CONTROL_DEVICE_ID	(TI81XX_CONTROL_DEVCONF + 0x000)
-
-=======
 /* TI81XX CONTROL_DEVBOOT register offsets */
 #define TI81XX_CONTROL_STATUS		(TI81XX_CONTROL_DEVBOOT + 0x000)
 
@@ -331,7 +298,6 @@
 #define DRA7_CTRL_CORE_BOOTSTRAP	0x6c4
 #define DRA7_SPEEDSELECT_MASK		(0x3 << 8)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * REVISIT: This list of registers is not comprehensive - there are more
  * that should be added.
@@ -398,17 +364,6 @@
 						OMAP343X_SCRATCHPAD + reg)
 
 /* AM35XX_CONTROL_IPSS_CLK_CTRL bits */
-<<<<<<< HEAD
-#define AM35XX_USBOTG_VBUSP_CLK_SHIFT   0
-#define AM35XX_CPGMAC_VBUSP_CLK_SHIFT   1
-#define AM35XX_VPFE_VBUSP_CLK_SHIFT     2
-#define AM35XX_HECC_VBUSP_CLK_SHIFT     3
-#define AM35XX_USBOTG_FCLK_SHIFT        8
-#define AM35XX_CPGMAC_FCLK_SHIFT        9
-#define AM35XX_VPFE_FCLK_SHIFT          10
-
-/*AM35XX CONTROL_LVL_INTR_CLEAR bits*/
-=======
 #define AM35XX_USBOTG_VBUSP_CLK_SHIFT	0
 #define AM35XX_CPGMAC_VBUSP_CLK_SHIFT	1
 #define AM35XX_VPFE_VBUSP_CLK_SHIFT	2
@@ -418,7 +373,6 @@
 #define AM35XX_VPFE_FCLK_SHIFT		10
 
 /* AM35XX CONTROL_LVL_INTR_CLEAR bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AM35XX_CPGMAC_C0_MISC_PULSE_CLR	BIT(0)
 #define AM35XX_CPGMAC_C0_RX_PULSE_CLR	BIT(1)
 #define AM35XX_CPGMAC_C0_RX_THRESH_CLR	BIT(2)
@@ -428,27 +382,13 @@
 #define AM35XX_VPFE_CCDC_VD1_INT_CLR	BIT(6)
 #define AM35XX_VPFE_CCDC_VD2_INT_CLR	BIT(7)
 
-<<<<<<< HEAD
-/*AM35XX CONTROL_IP_SW_RESET bits*/
-=======
 /* AM35XX CONTROL_IP_SW_RESET bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AM35XX_USBOTGSS_SW_RST		BIT(0)
 #define AM35XX_CPGMACSS_SW_RST		BIT(1)
 #define AM35XX_VPFE_VBUSP_SW_RST	BIT(2)
 #define AM35XX_HECC_SW_RST		BIT(3)
 #define AM35XX_VPFE_PCLK_SW_RST		BIT(4)
 
-<<<<<<< HEAD
-/*
- * CONTROL AM33XX STATUS register
- */
-#define AM33XX_CONTROL_STATUS		0x040
-
-/*
- * CONTROL OMAP STATUS register to identify OMAP3 features
- */
-=======
 /* AM33XX CONTROL_STATUS register */
 #define AM33XX_CONTROL_STATUS		0x040
 #define AM33XX_CONTROL_SEC_CLK_CTRL	0x1bc
@@ -532,7 +472,6 @@
 #define AM33XX_CONTROL_RESET_ISO_OFFSET			0x1000
 
 /* CONTROL OMAP STATUS register to identify OMAP3 features */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP3_CONTROL_OMAP_STATUS	0x044c
 
 #define OMAP3_SGX_SHIFT			13
@@ -566,20 +505,6 @@
 
 #ifndef __ASSEMBLY__
 #ifdef CONFIG_ARCH_OMAP2PLUS
-<<<<<<< HEAD
-extern void __iomem *omap_ctrl_base_get(void);
-extern u8 omap_ctrl_readb(u16 offset);
-extern u16 omap_ctrl_readw(u16 offset);
-extern u32 omap_ctrl_readl(u16 offset);
-extern u32 omap4_ctrl_pad_readl(u16 offset);
-extern void omap_ctrl_writeb(u8 val, u16 offset);
-extern void omap_ctrl_writew(u16 val, u16 offset);
-extern void omap_ctrl_writel(u32 val, u16 offset);
-extern void omap4_ctrl_pad_writel(u32 val, u16 offset);
-
-extern void omap3_save_scratchpad_contents(void);
-extern void omap3_clear_scratchpad_contents(void);
-=======
 extern u8 omap_ctrl_readb(u16 offset);
 extern u16 omap_ctrl_readw(u16 offset);
 extern u32 omap_ctrl_readl(u16 offset);
@@ -587,7 +512,6 @@ extern void omap_ctrl_writeb(u8 val, u16 offset);
 extern void omap_ctrl_writew(u16 val, u16 offset);
 extern void omap_ctrl_writel(u32 val, u16 offset);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void omap3_restore(void);
 extern void omap3_restore_es3(void);
 extern void omap3_restore_3630(void);
@@ -597,15 +521,10 @@ extern void omap3_control_restore_context(void);
 extern void omap3_ctrl_write_boot_mode(u8 bootmode);
 extern void omap3630_ctrl_disable_rta(void);
 extern int omap3_ctrl_save_padconf(void);
-<<<<<<< HEAD
-#else
-#define omap_ctrl_base_get()		0
-=======
 void omap3_ctrl_init(void);
 int omap2_control_base_init(void);
 int omap_control_init(void);
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define omap_ctrl_readb(x)		0
 #define omap_ctrl_readw(x)		0
 #define omap_ctrl_readl(x)		0

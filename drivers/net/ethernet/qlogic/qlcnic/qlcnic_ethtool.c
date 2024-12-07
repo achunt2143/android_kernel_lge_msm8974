@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c)  2009-2010 QLogic Corporation
- *
- * See LICENSE.qlcnic for copyright and licensing details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic qlcnic NIC Driver
  * Copyright (c) 2009-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -27,57 +19,6 @@ struct qlcnic_stats {
 	int stat_offset;
 };
 
-<<<<<<< HEAD
-#define QLC_SIZEOF(m) FIELD_SIZEOF(struct qlcnic_adapter, m)
-#define QLC_OFF(m) offsetof(struct qlcnic_adapter, m)
-
-static const struct qlcnic_stats qlcnic_gstrings_stats[] = {
-	{"xmit_called",
-		QLC_SIZEOF(stats.xmitcalled), QLC_OFF(stats.xmitcalled)},
-	{"xmit_finished",
-		QLC_SIZEOF(stats.xmitfinished), QLC_OFF(stats.xmitfinished)},
-	{"rx_dropped",
-		QLC_SIZEOF(stats.rxdropped), QLC_OFF(stats.rxdropped)},
-	{"tx_dropped",
-		QLC_SIZEOF(stats.txdropped), QLC_OFF(stats.txdropped)},
-	{"csummed",
-		QLC_SIZEOF(stats.csummed), QLC_OFF(stats.csummed)},
-	{"rx_pkts",
-		QLC_SIZEOF(stats.rx_pkts), QLC_OFF(stats.rx_pkts)},
-	{"lro_pkts",
-		QLC_SIZEOF(stats.lro_pkts), QLC_OFF(stats.lro_pkts)},
-	{"rx_bytes",
-		QLC_SIZEOF(stats.rxbytes), QLC_OFF(stats.rxbytes)},
-	{"tx_bytes",
-		QLC_SIZEOF(stats.txbytes), QLC_OFF(stats.txbytes)},
-	{"lrobytes",
-		QLC_SIZEOF(stats.lrobytes), QLC_OFF(stats.lrobytes)},
-	{"lso_frames",
-		QLC_SIZEOF(stats.lso_frames), QLC_OFF(stats.lso_frames)},
-	{"xmit_on",
-		QLC_SIZEOF(stats.xmit_on), QLC_OFF(stats.xmit_on)},
-	{"xmit_off",
-		QLC_SIZEOF(stats.xmit_off), QLC_OFF(stats.xmit_off)},
-	{"skb_alloc_failure", QLC_SIZEOF(stats.skb_alloc_failure),
-		QLC_OFF(stats.skb_alloc_failure)},
-	{"null rxbuf",
-		QLC_SIZEOF(stats.null_rxbuf), QLC_OFF(stats.null_rxbuf)},
-	{"rx dma map error", QLC_SIZEOF(stats.rx_dma_map_error),
-					 QLC_OFF(stats.rx_dma_map_error)},
-	{"tx dma map error", QLC_SIZEOF(stats.tx_dma_map_error),
-					 QLC_OFF(stats.tx_dma_map_error)},
-
-};
-
-static const char qlcnic_device_gstrings_stats[][ETH_GSTRING_LEN] = {
-	"rx unicast frames",
-	"rx multicast frames",
-	"rx broadcast frames",
-	"rx dropped frames",
-	"rx errors",
-	"rx local frames",
-	"rx numbytes",
-=======
 #define QLC_SIZEOF(m) sizeof_field(struct qlcnic_adapter, m)
 #define QLC_OFF(m) offsetof(struct qlcnic_adapter, m)
 static const u32 qlcnic_fw_dump_level[] = {
@@ -122,7 +63,6 @@ static const struct qlcnic_stats qlcnic_gstrings_stats[] = {
 };
 
 static const char qlcnic_device_gstrings_stats[][ETH_GSTRING_LEN] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"tx unicast frames",
 	"tx multicast frames",
 	"tx broadcast frames",
@@ -130,12 +70,6 @@ static const char qlcnic_device_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"tx errors",
 	"tx local frames",
 	"tx numbytes",
-<<<<<<< HEAD
-};
-
-#define QLCNIC_STATS_LEN	ARRAY_SIZE(qlcnic_gstrings_stats)
-#define QLCNIC_DEVICE_STATS_LEN	ARRAY_SIZE(qlcnic_device_gstrings_stats)
-=======
 	"rx unicast frames",
 	"rx multicast frames",
 	"rx broadcast frames",
@@ -227,35 +161,18 @@ static const char qlcnic_83xx_rx_stats_strings[][ETH_GSTRING_LEN] = {
 	"ctx_num_lro_flows_active",
 	"ctx_pkts_dropped_unknown",
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char qlcnic_gstrings_test[][ETH_GSTRING_LEN] = {
 	"Register_Test_on_offline",
 	"Link_Test_on_offline",
 	"Interrupt_Test_offline",
 	"Internal_Loopback_offline",
-<<<<<<< HEAD
-	"External_Loopback_offline"
-=======
 	"External_Loopback_offline",
 	"EEPROM_Test_offline"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define QLCNIC_TEST_LEN	ARRAY_SIZE(qlcnic_gstrings_test)
 
-<<<<<<< HEAD
-#define QLCNIC_RING_REGS_COUNT	20
-#define QLCNIC_RING_REGS_LEN	(QLCNIC_RING_REGS_COUNT * sizeof(u32))
-#define QLCNIC_MAX_EEPROM_LEN   1024
-
-static const u32 diag_registers[] = {
-	CRB_CMDPEG_STATE,
-	CRB_RCVPEG_STATE,
-	CRB_XG_STATE_P3P,
-	CRB_FW_CAPABILITIES_1,
-	ISR_INT_STATE_REG,
-=======
 static inline int qlcnic_82xx_statistics(struct qlcnic_adapter *adapter)
 {
 	return ARRAY_SIZE(qlcnic_gstrings_stats) +
@@ -295,7 +212,6 @@ static const u32 diag_registers[] = {
 	QLCNIC_CMDPEG_STATE,
 	QLCNIC_RCVPEG_STATE,
 	QLCNIC_FW_CAPABILITIES,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	QLCNIC_CRB_DRV_ACTIVE,
 	QLCNIC_CRB_DEV_STATE,
 	QLCNIC_CRB_DRV_STATE,
@@ -305,8 +221,6 @@ static const u32 diag_registers[] = {
 	QLCNIC_PEG_ALIVE_COUNTER,
 	QLCNIC_PEG_HALT_STATUS1,
 	QLCNIC_PEG_HALT_STATUS2,
-<<<<<<< HEAD
-=======
 	-1
 };
 
@@ -314,7 +228,6 @@ static const u32 diag_registers[] = {
 static const u32 ext_diag_registers[] = {
 	CRB_XG_STATE_P3P,
 	ISR_INT_STATE_REG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	QLCNIC_CRB_PEG_NET_0+0x3c,
 	QLCNIC_CRB_PEG_NET_1+0x3c,
 	QLCNIC_CRB_PEG_NET_2+0x3c,
@@ -322,15 +235,6 @@ static const u32 ext_diag_registers[] = {
 	-1
 };
 
-<<<<<<< HEAD
-#define QLCNIC_MGMT_API_VERSION	2
-#define QLCNIC_DEV_INFO_SIZE	1
-#define QLCNIC_ETHTOOL_REGS_VER	2
-static int qlcnic_get_regs_len(struct net_device *dev)
-{
-	return sizeof(diag_registers) + QLCNIC_RING_REGS_LEN +
-				QLCNIC_DEV_INFO_SIZE + 1;
-=======
 #define QLCNIC_MGMT_API_VERSION	3
 #define QLCNIC_ETHTOOL_REGS_VER	4
 
@@ -355,7 +259,6 @@ static int qlcnic_get_regs_len(struct net_device *dev)
 	len += ((QLCNIC_DEV_INFO_SIZE + 2) * sizeof(u32));
 	len += qlcnic_get_ring_regs_len(adapter);
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int qlcnic_get_eeprom_len(struct net_device *dev)
@@ -368,31 +271,6 @@ qlcnic_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *drvinfo)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	u32 fw_major, fw_minor, fw_build;
-<<<<<<< HEAD
-
-	fw_major = QLCRD32(adapter, QLCNIC_FW_VERSION_MAJOR);
-	fw_minor = QLCRD32(adapter, QLCNIC_FW_VERSION_MINOR);
-	fw_build = QLCRD32(adapter, QLCNIC_FW_VERSION_SUB);
-	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
-		"%d.%d.%d", fw_major, fw_minor, fw_build);
-
-	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
-		sizeof(drvinfo->bus_info));
-	strlcpy(drvinfo->driver, qlcnic_driver_name, sizeof(drvinfo->driver));
-	strlcpy(drvinfo->version, QLCNIC_LINUX_VERSIONID,
-		sizeof(drvinfo->version));
-}
-
-static int
-qlcnic_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
-{
-	struct qlcnic_adapter *adapter = netdev_priv(dev);
-	int check_sfp_module = 0;
-
-	/* read which mode */
-	if (adapter->ahw->port_type == QLCNIC_GBE) {
-		ecmd->supported = (SUPPORTED_10baseT_Half |
-=======
 	fw_major = QLC_SHARED_REG_RD32(adapter, QLCNIC_FW_VERSION_MAJOR);
 	fw_minor = QLC_SHARED_REG_RD32(adapter, QLCNIC_FW_VERSION_MINOR);
 	fw_build = QLC_SHARED_REG_RD32(adapter, QLCNIC_FW_VERSION_SUB);
@@ -418,50 +296,17 @@ static int qlcnic_82xx_get_link_ksettings(struct qlcnic_adapter *adapter,
 	/* read which mode */
 	if (adapter->ahw->port_type == QLCNIC_GBE) {
 		supported = (SUPPORTED_10baseT_Half |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   SUPPORTED_10baseT_Full |
 				   SUPPORTED_100baseT_Half |
 				   SUPPORTED_100baseT_Full |
 				   SUPPORTED_1000baseT_Half |
 				   SUPPORTED_1000baseT_Full);
 
-<<<<<<< HEAD
-		ecmd->advertising = (ADVERTISED_100baseT_Half |
-=======
 		advertising = (ADVERTISED_100baseT_Half |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ADVERTISED_100baseT_Full |
 				     ADVERTISED_1000baseT_Half |
 				     ADVERTISED_1000baseT_Full);
 
-<<<<<<< HEAD
-		ethtool_cmd_speed_set(ecmd, adapter->link_speed);
-		ecmd->duplex = adapter->link_duplex;
-		ecmd->autoneg = adapter->link_autoneg;
-
-	} else if (adapter->ahw->port_type == QLCNIC_XGBE) {
-		u32 val;
-
-		val = QLCRD32(adapter, QLCNIC_PORT_MODE_ADDR);
-		if (val == QLCNIC_PORT_MODE_802_3_AP) {
-			ecmd->supported = SUPPORTED_1000baseT_Full;
-			ecmd->advertising = ADVERTISED_1000baseT_Full;
-		} else {
-			ecmd->supported = SUPPORTED_10000baseT_Full;
-			ecmd->advertising = ADVERTISED_10000baseT_Full;
-		}
-
-		if (netif_running(dev) && adapter->has_link_events) {
-			ethtool_cmd_speed_set(ecmd, adapter->link_speed);
-			ecmd->autoneg = adapter->link_autoneg;
-			ecmd->duplex = adapter->link_duplex;
-			goto skip;
-		}
-
-		ethtool_cmd_speed_set(ecmd, SPEED_UNKNOWN);
-		ecmd->duplex = DUPLEX_UNKNOWN;
-		ecmd->autoneg = AUTONEG_DISABLE;
-=======
 		ecmd->base.speed = adapter->ahw->link_speed;
 		ecmd->base.duplex = adapter->ahw->link_duplex;
 		ecmd->base.autoneg = adapter->ahw->link_autoneg;
@@ -495,34 +340,16 @@ static int qlcnic_82xx_get_link_ksettings(struct qlcnic_adapter *adapter,
 		ecmd->base.speed = SPEED_UNKNOWN;
 		ecmd->base.duplex = DUPLEX_UNKNOWN;
 		ecmd->base.autoneg = AUTONEG_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		return -EIO;
 
 skip:
-<<<<<<< HEAD
-	ecmd->phy_address = adapter->physical_port;
-	ecmd->transceiver = XCVR_EXTERNAL;
-=======
 	ecmd->base.phy_address = adapter->ahw->physical_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (adapter->ahw->board_type) {
 	case QLCNIC_BRDTYPE_P3P_REF_QG:
 	case QLCNIC_BRDTYPE_P3P_4_GB:
 	case QLCNIC_BRDTYPE_P3P_4_GB_MM:
-<<<<<<< HEAD
-
-		ecmd->supported |= SUPPORTED_Autoneg;
-		ecmd->advertising |= ADVERTISED_Autoneg;
-	case QLCNIC_BRDTYPE_P3P_10G_CX4:
-	case QLCNIC_BRDTYPE_P3P_10G_CX4_LP:
-	case QLCNIC_BRDTYPE_P3P_10000_BASE_T:
-		ecmd->supported |= SUPPORTED_TP;
-		ecmd->advertising |= ADVERTISED_TP;
-		ecmd->port = PORT_TP;
-		ecmd->autoneg =  adapter->link_autoneg;
-=======
 		supported |= SUPPORTED_Autoneg;
 		advertising |= ADVERTISED_Autoneg;
 		fallthrough;
@@ -533,53 +360,18 @@ skip:
 		advertising |= ADVERTISED_TP;
 		ecmd->base.port = PORT_TP;
 		ecmd->base.autoneg =  adapter->ahw->link_autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case QLCNIC_BRDTYPE_P3P_IMEZ:
 	case QLCNIC_BRDTYPE_P3P_XG_LOM:
 	case QLCNIC_BRDTYPE_P3P_HMEZ:
-<<<<<<< HEAD
-		ecmd->supported |= SUPPORTED_MII;
-		ecmd->advertising |= ADVERTISED_MII;
-		ecmd->port = PORT_MII;
-		ecmd->autoneg = AUTONEG_DISABLE;
-=======
 		supported |= SUPPORTED_MII;
 		advertising |= ADVERTISED_MII;
 		ecmd->base.port = PORT_MII;
 		ecmd->base.autoneg = AUTONEG_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case QLCNIC_BRDTYPE_P3P_10G_SFP_PLUS:
 	case QLCNIC_BRDTYPE_P3P_10G_SFP_CT:
 	case QLCNIC_BRDTYPE_P3P_10G_SFP_QT:
-<<<<<<< HEAD
-		ecmd->advertising |= ADVERTISED_TP;
-		ecmd->supported |= SUPPORTED_TP;
-		check_sfp_module = netif_running(dev) &&
-			adapter->has_link_events;
-	case QLCNIC_BRDTYPE_P3P_10G_XFP:
-		ecmd->supported |= SUPPORTED_FIBRE;
-		ecmd->advertising |= ADVERTISED_FIBRE;
-		ecmd->port = PORT_FIBRE;
-		ecmd->autoneg = AUTONEG_DISABLE;
-		break;
-	case QLCNIC_BRDTYPE_P3P_10G_TP:
-		if (adapter->ahw->port_type == QLCNIC_XGBE) {
-			ecmd->autoneg = AUTONEG_DISABLE;
-			ecmd->supported |= (SUPPORTED_FIBRE | SUPPORTED_TP);
-			ecmd->advertising |=
-				(ADVERTISED_FIBRE | ADVERTISED_TP);
-			ecmd->port = PORT_FIBRE;
-			check_sfp_module = netif_running(dev) &&
-				adapter->has_link_events;
-		} else {
-			ecmd->autoneg = AUTONEG_ENABLE;
-			ecmd->supported |= (SUPPORTED_TP | SUPPORTED_Autoneg);
-			ecmd->advertising |=
-				(ADVERTISED_TP | ADVERTISED_Autoneg);
-			ecmd->port = PORT_TP;
-=======
 		advertising |= ADVERTISED_TP;
 		supported |= SUPPORTED_TP;
 		check_sfp_module = netif_running(adapter->netdev) &&
@@ -606,7 +398,6 @@ skip:
 			advertising |=
 				(ADVERTISED_TP | ADVERTISED_Autoneg);
 			ecmd->base.port = PORT_TP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -616,54 +407,16 @@ skip:
 	}
 
 	if (check_sfp_module) {
-<<<<<<< HEAD
-		switch (adapter->module_type) {
-=======
 		switch (adapter->ahw->module_type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case LINKEVENT_MODULE_OPTICAL_UNKNOWN:
 		case LINKEVENT_MODULE_OPTICAL_SRLR:
 		case LINKEVENT_MODULE_OPTICAL_LRM:
 		case LINKEVENT_MODULE_OPTICAL_SFP_1G:
-<<<<<<< HEAD
-			ecmd->port = PORT_FIBRE;
-=======
 			ecmd->base.port = PORT_FIBRE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case LINKEVENT_MODULE_TWINAX_UNSUPPORTED_CABLE:
 		case LINKEVENT_MODULE_TWINAX_UNSUPPORTED_CABLELEN:
 		case LINKEVENT_MODULE_TWINAX:
-<<<<<<< HEAD
-			ecmd->port = PORT_TP;
-			break;
-		default:
-			ecmd->port = PORT_OTHER;
-		}
-	}
-
-	return 0;
-}
-
-static int
-qlcnic_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
-{
-	u32 config = 0;
-	u32 ret = 0;
-	struct qlcnic_adapter *adapter = netdev_priv(dev);
-
-	if (adapter->ahw->port_type != QLCNIC_GBE)
-		return -EOPNOTSUPP;
-
-	/* read which mode */
-	if (ecmd->duplex)
-		config |= 0x1;
-
-	if (ecmd->autoneg)
-		config |= 0x2;
-
-	switch (ethtool_cmd_speed(ecmd)) {
-=======
 			ecmd->base.port = PORT_TP;
 			break;
 		default:
@@ -705,7 +458,6 @@ static int qlcnic_set_port_config(struct qlcnic_adapter *adapter,
 		config |= 0x2;
 
 	switch (ecmd->base.speed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPEED_10:
 		config |= (0 << 8);
 		break;
@@ -725,12 +477,6 @@ static int qlcnic_set_port_config(struct qlcnic_adapter *adapter,
 		return -EOPNOTSUPP;
 	else if (ret)
 		return -EIO;
-<<<<<<< HEAD
-
-	adapter->link_speed = ethtool_cmd_speed(ecmd);
-	adapter->link_duplex = ecmd->duplex;
-	adapter->link_autoneg = ecmd->autoneg;
-=======
 	return ret;
 }
 
@@ -757,7 +503,6 @@ static int qlcnic_set_link_ksettings(struct net_device *dev,
 	adapter->ahw->link_speed = ecmd->base.speed;
 	adapter->ahw->link_duplex = ecmd->base.duplex;
 	adapter->ahw->link_autoneg = ecmd->base.autoneg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netif_running(dev))
 		return 0;
@@ -766,8 +511,6 @@ static int qlcnic_set_link_ksettings(struct net_device *dev,
 	return dev->netdev_ops->ndo_open(dev);
 }
 
-<<<<<<< HEAD
-=======
 static int qlcnic_82xx_get_registers(struct qlcnic_adapter *adapter,
 				     u32 *regs_buff)
 {
@@ -782,19 +525,12 @@ static int qlcnic_82xx_get_registers(struct qlcnic_adapter *adapter,
 	return i;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 qlcnic_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	struct qlcnic_recv_context *recv_ctx = adapter->recv_ctx;
 	struct qlcnic_host_sds_ring *sds_ring;
-<<<<<<< HEAD
-	u32 *regs_buff = p;
-	int ring, i = 0, j = 0;
-
-	memset(p, 0, qlcnic_get_regs_len(dev));
-=======
 	struct qlcnic_host_rds_ring *rds_rings;
 	struct qlcnic_host_tx_ring *tx_ring;
 	u32 *regs_buff = p;
@@ -802,17 +538,12 @@ qlcnic_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
 
 	memset(p, 0, qlcnic_get_regs_len(dev));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->version = (QLCNIC_ETHTOOL_REGS_VER << 24) |
 		(adapter->ahw->revision_id << 16) | (adapter->pdev)->device;
 
 	regs_buff[0] = (0xcafe0000 | (QLCNIC_DEV_INFO_SIZE & 0xffff));
 	regs_buff[1] = QLCNIC_MGMT_API_VERSION;
 
-<<<<<<< HEAD
-	for (i = QLCNIC_DEV_INFO_SIZE + 1; diag_registers[j] != -1; j++, i++)
-		regs_buff[i] = QLCRD32(adapter, diag_registers[j]);
-=======
 	if (adapter->ahw->capabilities & QLC_83XX_ESWITCH_CAPABILITY)
 		regs_buff[2] = adapter->ahw->max_vnic_func;
 
@@ -820,28 +551,10 @@ qlcnic_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
 		i = qlcnic_82xx_get_registers(adapter, regs_buff);
 	else
 		i = qlcnic_83xx_get_registers(adapter, regs_buff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(__QLCNIC_DEV_UP, &adapter->state))
 		return;
 
-<<<<<<< HEAD
-	regs_buff[i++] = 0xFFEFCDAB; /* Marker btw regs and ring count*/
-
-	regs_buff[i++] = 1; /* No. of tx ring */
-	regs_buff[i++] = le32_to_cpu(*(adapter->tx_ring->hw_consumer));
-	regs_buff[i++] = readl(adapter->tx_ring->crb_cmd_producer);
-
-	regs_buff[i++] = 2; /* No. of rx ring */
-	regs_buff[i++] = readl(recv_ctx->rds_rings[0].crb_rcv_producer);
-	regs_buff[i++] = readl(recv_ctx->rds_rings[1].crb_rcv_producer);
-
-	regs_buff[i++] = adapter->max_sds_rings;
-
-	for (ring = 0; ring < adapter->max_sds_rings; ring++) {
-		sds_ring = &(recv_ctx->sds_rings[ring]);
-		regs_buff[i++] = readl(sds_ring->crb_sts_consumer);
-=======
 	/* Marker btw regs and TX ring count */
 	regs_buff[i++] = 0xFFEFCDAB;
 
@@ -871,18 +584,12 @@ qlcnic_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
 		regs_buff[i++] = readl(sds_ring->crb_sts_consumer);
 		regs_buff[i++] = sds_ring->consumer;
 		regs_buff[i++] = readl(sds_ring->crb_intr_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static u32 qlcnic_test_link(struct net_device *dev)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
-<<<<<<< HEAD
-	u32 val;
-
-	val = QLCRD32(adapter, CRB_XG_STATE_P3P);
-=======
 	int err = 0;
 	u32 val;
 
@@ -893,7 +600,6 @@ static u32 qlcnic_test_link(struct net_device *dev)
 	val = QLCRD32(adapter, CRB_XG_STATE_P3P, &err);
 	if (err == -EIO)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = XG_LINK_STATE_P3P(adapter->ahw->pci_func, val);
 	return (val == XG_LINK_UP_P3P) ? 0 : 1;
 }
@@ -904,15 +610,10 @@ qlcnic_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	int offset;
-<<<<<<< HEAD
-	int ret;
-
-=======
 	int ret = -1;
 
 	if (qlcnic_83xx_check(adapter))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (eeprom->len == 0)
 		return -EINVAL;
 
@@ -920,14 +621,9 @@ qlcnic_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 			((adapter->pdev)->device << 16);
 	offset = eeprom->offset;
 
-<<<<<<< HEAD
-	ret = qlcnic_rom_fast_read_words(adapter, offset, bytes,
-						eeprom->len);
-=======
 	if (qlcnic_82xx_check(adapter))
 		ret = qlcnic_rom_fast_read_words(adapter, offset, bytes,
 						 eeprom->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -936,13 +632,9 @@ qlcnic_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 
 static void
 qlcnic_get_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-		struct ethtool_ringparam *ring)
-=======
 		     struct ethtool_ringparam *ring,
 		     struct kernel_ethtool_ringparam *kernel_ring,
 		     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 
@@ -973,13 +665,9 @@ qlcnic_validate_ringparam(u32 val, u32 min, u32 max, char *r_name)
 
 static int
 qlcnic_set_ringparam(struct net_device *dev,
-<<<<<<< HEAD
-		struct ethtool_ringparam *ring)
-=======
 		     struct ethtool_ringparam *ring,
 		     struct kernel_ethtool_ringparam *kernel_ring,
 		     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	u16 num_rxd, num_jumbo_rxd, num_txd;
@@ -1008,8 +696,6 @@ qlcnic_set_ringparam(struct net_device *dev,
 	return qlcnic_reset_context(adapter);
 }
 
-<<<<<<< HEAD
-=======
 static int qlcnic_validate_ring_count(struct qlcnic_adapter *adapter,
 				      u8 rx_ring, u8 tx_ring)
 {
@@ -1037,24 +723,11 @@ static int qlcnic_validate_ring_count(struct qlcnic_adapter *adapter,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void qlcnic_get_channels(struct net_device *dev,
 		struct ethtool_channels *channel)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 
-<<<<<<< HEAD
-	channel->max_rx = rounddown_pow_of_two(min_t(int,
-			adapter->max_rx_ques, num_online_cpus()));
-	channel->max_tx = adapter->max_tx_ques;
-
-	channel->rx_count = adapter->max_sds_rings;
-	channel->tx_count = adapter->max_tx_ques;
-}
-
-static int qlcnic_set_channels(struct net_device *dev,
-		struct ethtool_channels *channel)
-=======
 	channel->max_rx = adapter->max_sds_rings;
 	channel->max_tx = adapter->max_tx_rings;
 	channel->rx_count = adapter->drv_sds_rings;
@@ -1063,24 +736,10 @@ static int qlcnic_set_channels(struct net_device *dev,
 
 static int qlcnic_set_channels(struct net_device *dev,
 			       struct ethtool_channels *channel)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	int err;
 
-<<<<<<< HEAD
-	if (channel->other_count || channel->combined_count ||
-	    channel->tx_count != channel->max_tx)
-		return -EINVAL;
-
-	err = qlcnic_validate_max_rss(dev, channel->max_rx, channel->rx_count);
-	if (err)
-		return err;
-
-	err = qlcnic_set_max_rss(adapter, channel->rx_count);
-	netdev_info(dev, "allocated 0x%x sds rings\n",
-				 adapter->max_sds_rings);
-=======
 	if (!(adapter->flags & QLCNIC_MSIX_ENABLED)) {
 		netdev_err(dev, "No RSS/TSS support in non MSI-X mode\n");
 		return -EINVAL;
@@ -1122,7 +781,6 @@ static int qlcnic_set_channels(struct net_device *dev,
 	netdev_info(dev, "Allocated %d SDS rings and %d Tx rings\n",
 		    adapter->drv_sds_rings, adapter->drv_tx_rings);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1131,11 +789,6 @@ qlcnic_get_pauseparam(struct net_device *netdev,
 			  struct ethtool_pauseparam *pause)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	int port = adapter->physical_port;
-	__u32 val;
-
-=======
 	int port = adapter->ahw->physical_port;
 	int err = 0;
 	__u32 val;
@@ -1144,16 +797,10 @@ qlcnic_get_pauseparam(struct net_device *netdev,
 		qlcnic_83xx_get_pauseparam(adapter, pause);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->ahw->port_type == QLCNIC_GBE) {
 		if ((port < 0) || (port > QLCNIC_NIU_MAX_GBE_PORTS))
 			return;
 		/* get flow control settings */
-<<<<<<< HEAD
-		val = QLCRD32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port));
-		pause->rx_pause = qlcnic_gb_get_rx_flowctl(val);
-		val = QLCRD32(adapter, QLCNIC_NIU_GB_PAUSE_CTL);
-=======
 		val = QLCRD32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port), &err);
 		if (err == -EIO)
 			return;
@@ -1161,7 +808,6 @@ qlcnic_get_pauseparam(struct net_device *netdev,
 		val = QLCRD32(adapter, QLCNIC_NIU_GB_PAUSE_CTL, &err);
 		if (err == -EIO)
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (port) {
 		case 0:
 			pause->tx_pause = !(qlcnic_gb_get_gb0_mask(val));
@@ -1181,13 +827,9 @@ qlcnic_get_pauseparam(struct net_device *netdev,
 		if ((port < 0) || (port > QLCNIC_NIU_MAX_XG_PORTS))
 			return;
 		pause->rx_pause = 1;
-<<<<<<< HEAD
-		val = QLCRD32(adapter, QLCNIC_NIU_XG_PAUSE_CTL);
-=======
 		val = QLCRD32(adapter, QLCNIC_NIU_XG_PAUSE_CTL, &err);
 		if (err == -EIO)
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (port == 0)
 			pause->tx_pause = !(qlcnic_xg_get_xg0_mask(val));
 		else
@@ -1203,11 +845,6 @@ qlcnic_set_pauseparam(struct net_device *netdev,
 			  struct ethtool_pauseparam *pause)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	int port = adapter->physical_port;
-	__u32 val;
-
-=======
 	int port = adapter->ahw->physical_port;
 	int err = 0;
 	__u32 val;
@@ -1215,19 +852,14 @@ qlcnic_set_pauseparam(struct net_device *netdev,
 	if (qlcnic_83xx_check(adapter))
 		return qlcnic_83xx_set_pauseparam(adapter, pause);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read mode */
 	if (adapter->ahw->port_type == QLCNIC_GBE) {
 		if ((port < 0) || (port > QLCNIC_NIU_MAX_GBE_PORTS))
 			return -EIO;
 		/* set flow control */
-<<<<<<< HEAD
-		val = QLCRD32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port));
-=======
 		val = QLCRD32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port), &err);
 		if (err == -EIO)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pause->rx_pause)
 			qlcnic_gb_rx_flowctl(val);
@@ -1236,16 +868,11 @@ qlcnic_set_pauseparam(struct net_device *netdev,
 
 		QLCWR32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port),
 				val);
-<<<<<<< HEAD
-		/* set autoneg */
-		val = QLCRD32(adapter, QLCNIC_NIU_GB_PAUSE_CTL);
-=======
 		QLCWR32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port), val);
 		/* set autoneg */
 		val = QLCRD32(adapter, QLCNIC_NIU_GB_PAUSE_CTL, &err);
 		if (err == -EIO)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (port) {
 		case 0:
 			if (pause->tx_pause)
@@ -1281,13 +908,9 @@ qlcnic_set_pauseparam(struct net_device *netdev,
 		if ((port < 0) || (port > QLCNIC_NIU_MAX_XG_PORTS))
 			return -EIO;
 
-<<<<<<< HEAD
-		val = QLCRD32(adapter, QLCNIC_NIU_XG_PAUSE_CTL);
-=======
 		val = QLCRD32(adapter, QLCNIC_NIU_XG_PAUSE_CTL, &err);
 		if (err == -EIO)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (port == 0) {
 			if (pause->tx_pause)
 				qlcnic_xg_unset_xg0_mask(val);
@@ -1311,10 +934,6 @@ static int qlcnic_reg_test(struct net_device *dev)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	u32 data_read;
-<<<<<<< HEAD
-
-	data_read = QLCRD32(adapter, QLCNIC_PCIX_PH_REG(0));
-=======
 	int err = 0;
 
 	if (qlcnic_83xx_check(adapter))
@@ -1323,17 +942,12 @@ static int qlcnic_reg_test(struct net_device *dev)
 	data_read = QLCRD32(adapter, QLCNIC_PCIX_PH_REG(0), &err);
 	if (err == -EIO)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((data_read & 0xffff) != adapter->pdev->vendor)
 		return 1;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int qlcnic_get_sset_count(struct net_device *dev, int sset)
-{
-=======
 static int qlcnic_eeprom_test(struct net_device *dev)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
@@ -1347,19 +961,12 @@ static int qlcnic_eeprom_test(struct net_device *dev)
 static int qlcnic_get_sset_count(struct net_device *dev, int sset)
 {
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	switch (sset) {
 	case ETH_SS_TEST:
 		return QLCNIC_TEST_LEN;
 	case ETH_SS_STATS:
-<<<<<<< HEAD
-		if (adapter->flags & QLCNIC_ESWITCH_ENABLED)
-			return QLCNIC_STATS_LEN + QLCNIC_DEVICE_STATS_LEN;
-		return QLCNIC_STATS_LEN;
-=======
 		return qlcnic_dev_statistics_len(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EOPNOTSUPP;
 	}
@@ -1368,11 +975,6 @@ static int qlcnic_get_sset_count(struct net_device *dev, int sset)
 static int qlcnic_irq_test(struct net_device *netdev)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	int max_sds_rings = adapter->max_sds_rings;
-	int ret;
-	struct qlcnic_cmd_args cmd;
-=======
 	struct qlcnic_hardware_context *ahw = adapter->ahw;
 	struct qlcnic_cmd_args cmd;
 	int ret, drv_sds_rings = adapter->drv_sds_rings;
@@ -1380,47 +982,12 @@ static int qlcnic_irq_test(struct net_device *netdev)
 
 	if (qlcnic_83xx_check(adapter))
 		return qlcnic_83xx_interrupt_test(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_and_set_bit(__QLCNIC_RESETTING, &adapter->state))
 		return -EIO;
 
 	ret = qlcnic_diag_alloc_res(netdev, QLCNIC_INTERRUPT_TEST);
 	if (ret)
-<<<<<<< HEAD
-		goto clear_it;
-
-	adapter->diag_cnt = 0;
-	memset(&cmd, 0, sizeof(cmd));
-	cmd.req.cmd = QLCNIC_CDRP_CMD_INTRPT_TEST;
-	cmd.req.arg1 = adapter->ahw->pci_func;
-	qlcnic_issue_cmd(adapter, &cmd);
-	ret = cmd.rsp.cmd;
-
-	if (ret)
-		goto done;
-
-	msleep(10);
-
-	ret = !adapter->diag_cnt;
-
-done:
-	qlcnic_diag_free_res(netdev, max_sds_rings);
-
-clear_it:
-	adapter->max_sds_rings = max_sds_rings;
-	clear_bit(__QLCNIC_RESETTING, &adapter->state);
-	return ret;
-}
-
-#define QLCNIC_ILB_PKT_SIZE 64
-#define QLCNIC_NUM_ILB_PKT	16
-#define QLCNIC_ILB_MAX_RCV_LOOP 10
-
-static void qlcnic_create_loopback_buff(unsigned char *data, u8 mac[])
-{
-	unsigned char random_data[] = {0xa8, 0x06, 0x45, 0x00};
-=======
 		goto clear_diag_irq;
 
 	ahw->diag_cnt = 0;
@@ -1459,7 +1026,6 @@ clear_diag_irq:
 static void qlcnic_create_loopback_buff(unsigned char *data, u8 mac[])
 {
 	static const unsigned char random_data[] = {0xa8, 0x06, 0x45, 0x00};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(data, 0x4e, QLCNIC_ILB_PKT_SIZE);
 
@@ -1476,11 +1042,7 @@ int qlcnic_check_loopback_buff(unsigned char *data, u8 mac[])
 	return memcmp(data, buff, QLCNIC_ILB_PKT_SIZE);
 }
 
-<<<<<<< HEAD
-static int qlcnic_do_lb_test(struct qlcnic_adapter *adapter, u8 mode)
-=======
 int qlcnic_do_lb_test(struct qlcnic_adapter *adapter, u8 mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qlcnic_recv_context *recv_ctx = adapter->recv_ctx;
 	struct qlcnic_host_sds_ring *sds_ring = &recv_ctx->sds_rings[0];
@@ -1489,27 +1051,6 @@ int qlcnic_do_lb_test(struct qlcnic_adapter *adapter, u8 mode)
 
 	for (i = 0; i < QLCNIC_NUM_ILB_PKT; i++) {
 		skb = netdev_alloc_skb(adapter->netdev, QLCNIC_ILB_PKT_SIZE);
-<<<<<<< HEAD
-		qlcnic_create_loopback_buff(skb->data, adapter->mac_addr);
-		skb_put(skb, QLCNIC_ILB_PKT_SIZE);
-
-		adapter->diag_cnt = 0;
-		qlcnic_xmit_frame(skb, adapter->netdev);
-
-		loop = 0;
-		do {
-			msleep(1);
-			qlcnic_process_rcv_ring_diag(sds_ring);
-			if (loop++ > QLCNIC_ILB_MAX_RCV_LOOP)
-				break;
-		} while (!adapter->diag_cnt);
-
-		dev_kfree_skb_any(skb);
-
-		if (!adapter->diag_cnt)
-			QLCDB(adapter, DRV,
-			"LB Test: packet #%d was not received\n", i + 1);
-=======
 		if (!skb)
 			goto error;
 		qlcnic_create_loopback_buff(skb->data, adapter->mac_addr);
@@ -1531,26 +1072,16 @@ int qlcnic_do_lb_test(struct qlcnic_adapter *adapter, u8 mode)
 			dev_warn(&adapter->pdev->dev,
 				 "LB Test: packet #%d was not received\n",
 				 i + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			cnt++;
 	}
 	if (cnt != i) {
-<<<<<<< HEAD
-		dev_warn(&adapter->pdev->dev, "LB Test failed\n");
-		if (mode != QLCNIC_ILB_MODE) {
-			dev_warn(&adapter->pdev->dev,
-				"WARNING: Please make sure external"
-				"loopback connector is plugged in\n");
-		}
-=======
 error:
 		dev_err(&adapter->pdev->dev,
 			"LB Test: failed, TX[%d], RX[%d]\n", i, cnt);
 		if (mode != QLCNIC_ILB_MODE)
 			dev_warn(&adapter->pdev->dev,
 				 "WARNING: Please check loopback cable\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 	return 0;
@@ -1559,23 +1090,6 @@ error:
 static int qlcnic_loopback_test(struct net_device *netdev, u8 mode)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	int max_sds_rings = adapter->max_sds_rings;
-	struct qlcnic_host_sds_ring *sds_ring;
-	int loop = 0;
-	int ret;
-
-	if (!(adapter->capabilities & QLCNIC_FW_CAPABILITY_MULTI_LOOPBACK)) {
-		netdev_info(netdev, "Firmware is not loopback test capable\n");
-		return -EOPNOTSUPP;
-	}
-
-	QLCDB(adapter, DRV, "%s loopback test in progress\n",
-		   mode == QLCNIC_ILB_MODE ? "internal" : "external");
-	if (adapter->op_mode == QLCNIC_NON_PRIV_FUNC) {
-		netdev_warn(netdev, "Loopback test not supported for non "
-				"privilege function\n");
-=======
 	int drv_tx_rings = adapter->drv_tx_rings;
 	int drv_sds_rings = adapter->drv_sds_rings;
 	struct qlcnic_host_sds_ring *sds_ring;
@@ -1597,7 +1111,6 @@ static int qlcnic_loopback_test(struct net_device *netdev, u8 mode)
 	if (ahw->op_mode == QLCNIC_NON_PRIV_FUNC) {
 		dev_warn(&adapter->pdev->dev,
 			 "Loopback test not supported in nonprivileged mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1609,44 +1122,15 @@ static int qlcnic_loopback_test(struct net_device *netdev, u8 mode)
 		goto clear_it;
 
 	sds_ring = &adapter->recv_ctx->sds_rings[0];
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = qlcnic_set_lb_mode(adapter, mode);
 	if (ret)
 		goto free_res;
 
-<<<<<<< HEAD
-	adapter->diag_cnt = 0;
-=======
 	ahw->diag_cnt = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		msleep(500);
 		qlcnic_process_rcv_ring_diag(sds_ring);
 		if (loop++ > QLCNIC_ILB_MAX_RCV_LOOP) {
-<<<<<<< HEAD
-			netdev_info(netdev, "firmware didnt respond to loopback"
-				" configure request\n");
-			ret = -QLCNIC_FW_NOT_RESPOND;
-			goto free_res;
-		} else if (adapter->diag_cnt) {
-			ret = adapter->diag_cnt;
-			goto free_res;
-		}
-	} while (!QLCNIC_IS_LB_CONFIGURED(adapter->ahw->loopback_state));
-
-	ret = qlcnic_do_lb_test(adapter, mode);
-
-	qlcnic_clear_lb_mode(adapter);
-
- free_res:
-	qlcnic_diag_free_res(netdev, max_sds_rings);
-
- clear_it:
-	adapter->max_sds_rings = max_sds_rings;
-=======
 			netdev_info(netdev,
 				    "Firmware didn't sent link up event to loopback request\n");
 			ret = -ETIMEDOUT;
@@ -1667,7 +1151,6 @@ static int qlcnic_loopback_test(struct net_device *netdev, u8 mode)
  clear_it:
 	adapter->drv_sds_rings = drv_sds_rings;
 	adapter->drv_tx_rings = drv_tx_rings;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(__QLCNIC_RESETTING, &adapter->state);
 	return ret;
 }
@@ -1694,38 +1177,25 @@ qlcnic_diag_test(struct net_device *dev, struct ethtool_test *eth_test,
 		data[3] = qlcnic_loopback_test(dev, QLCNIC_ILB_MODE);
 		if (data[3])
 			eth_test->flags |= ETH_TEST_FL_FAILED;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (eth_test->flags & ETH_TEST_FL_EXTERNAL_LB) {
 			data[4] = qlcnic_loopback_test(dev, QLCNIC_ELB_MODE);
 			if (data[4])
 				eth_test->flags |= ETH_TEST_FL_FAILED;
 			eth_test->flags |= ETH_TEST_FL_EXTERNAL_LB_DONE;
 		}
-<<<<<<< HEAD
-=======
 
 		data[5] = qlcnic_eeprom_test(dev);
 		if (data[5])
 			eth_test->flags |= ETH_TEST_FL_FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void
-<<<<<<< HEAD
-qlcnic_get_strings(struct net_device *dev, u32 stringset, u8 * data)
-{
-	struct qlcnic_adapter *adapter = netdev_priv(dev);
-	int index, i;
-=======
 qlcnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	int index, i, num_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (stringset) {
 	case ETH_SS_TEST:
@@ -1733,8 +1203,6 @@ qlcnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 		       QLCNIC_TEST_LEN * ETH_GSTRING_LEN);
 		break;
 	case ETH_SS_STATS:
-<<<<<<< HEAD
-=======
 		num_stats = ARRAY_SIZE(qlcnic_tx_queue_stats_strings);
 		for (i = 0; i < adapter->drv_tx_rings; i++) {
 			for (index = 0; index < num_stats; index++) {
@@ -1744,17 +1212,11 @@ qlcnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (index = 0; index < QLCNIC_STATS_LEN; index++) {
 			memcpy(data + index * ETH_GSTRING_LEN,
 			       qlcnic_gstrings_stats[index].stat_string,
 			       ETH_GSTRING_LEN);
 		}
-<<<<<<< HEAD
-		if (!(adapter->flags & QLCNIC_ESWITCH_ENABLED))
-			return;
-		for (i = 0; i < QLCNIC_DEVICE_STATS_LEN; index++, i++) {
-=======
 
 		if (qlcnic_83xx_check(adapter)) {
 			num_stats = ARRAY_SIZE(qlcnic_83xx_tx_stats_strings);
@@ -1784,7 +1246,6 @@ qlcnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 			return;
 		num_stats = ARRAY_SIZE(qlcnic_device_gstrings_stats);
 		for (i = 0; i < num_stats; index++, i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(data + index * ETH_GSTRING_LEN,
 			       qlcnic_device_gstrings_stats[i],
 			       ETH_GSTRING_LEN);
@@ -1792,43 +1253,6 @@ qlcnic_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 	}
 }
 
-<<<<<<< HEAD
-#define QLCNIC_FILL_ESWITCH_STATS(VAL1) \
-	(((VAL1) == QLCNIC_ESW_STATS_NOT_AVAIL) ? 0 : VAL1)
-
-static void
-qlcnic_fill_device_stats(int *index, u64 *data,
-		struct __qlcnic_esw_statistics *stats)
-{
-	int ind = *index;
-
-	data[ind++] = QLCNIC_FILL_ESWITCH_STATS(stats->unicast_frames);
-	data[ind++] = QLCNIC_FILL_ESWITCH_STATS(stats->multicast_frames);
-	data[ind++] = QLCNIC_FILL_ESWITCH_STATS(stats->broadcast_frames);
-	data[ind++] = QLCNIC_FILL_ESWITCH_STATS(stats->dropped_frames);
-	data[ind++] = QLCNIC_FILL_ESWITCH_STATS(stats->errors);
-	data[ind++] = QLCNIC_FILL_ESWITCH_STATS(stats->local_frames);
-	data[ind++] = QLCNIC_FILL_ESWITCH_STATS(stats->numbytes);
-
-	*index = ind;
-}
-
-static void
-qlcnic_get_ethtool_stats(struct net_device *dev,
-			     struct ethtool_stats *stats, u64 * data)
-{
-	struct qlcnic_adapter *adapter = netdev_priv(dev);
-	struct qlcnic_esw_statistics port_stats;
-	int index, ret;
-
-	for (index = 0; index < QLCNIC_STATS_LEN; index++) {
-		char *p =
-		    (char *)adapter +
-		    qlcnic_gstrings_stats[index].stat_offset;
-		data[index] =
-		    (qlcnic_gstrings_stats[index].sizeof_stat ==
-		     sizeof(u64)) ? *(u64 *)p:(*(u32 *)p);
-=======
 static u64 *qlcnic_fill_stats(u64 *data, void *stats, int type)
 {
 	if (type == QLCNIC_MAC_STATS) {
@@ -1957,7 +1381,6 @@ static void qlcnic_get_ethtool_stats(struct net_device *dev,
 		memset(&mac_stats, 0, sizeof(struct qlcnic_mac_statistics));
 		qlcnic_get_mac_stats(adapter, &mac_stats);
 		data = qlcnic_fill_stats(data, &mac_stats, QLCNIC_MAC_STATS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!(adapter->flags & QLCNIC_ESWITCH_ENABLED))
@@ -1969,34 +1392,19 @@ static void qlcnic_get_ethtool_stats(struct net_device *dev,
 	if (ret)
 		return;
 
-<<<<<<< HEAD
-	qlcnic_fill_device_stats(&index, data, &port_stats.rx);
-
-=======
 	data = qlcnic_fill_stats(data, &port_stats.rx, QLCNIC_ESW_STATS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = qlcnic_get_port_stats(adapter, adapter->ahw->pci_func,
 			QLCNIC_QUERY_TX_COUNTER, &port_stats.tx);
 	if (ret)
 		return;
 
-<<<<<<< HEAD
-	qlcnic_fill_device_stats(&index, data, &port_stats.tx);
-=======
 	qlcnic_fill_stats(data, &port_stats.tx, QLCNIC_ESW_STATS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int qlcnic_set_led(struct net_device *dev,
 			  enum ethtool_phys_id_state state)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
-<<<<<<< HEAD
-	int max_sds_rings = adapter->max_sds_rings;
-	int err = -EIO, active = 1;
-
-	if (adapter->op_mode == QLCNIC_NON_PRIV_FUNC) {
-=======
 	int drv_sds_rings = adapter->drv_sds_rings;
 	int err = -EIO, active = 1;
 
@@ -2004,7 +1412,6 @@ static int qlcnic_set_led(struct net_device *dev,
 		return qlcnic_83xx_set_led(dev, state);
 
 	if (adapter->ahw->op_mode == QLCNIC_NON_PRIV_FUNC) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev_warn(dev, "LED test not supported for non "
 				"privilege function\n");
 		return -EOPNOTSUPP;
@@ -2056,11 +1463,7 @@ static int qlcnic_set_led(struct net_device *dev,
 	}
 
 	if (test_and_clear_bit(__QLCNIC_DIAG_RES_ALLOC, &adapter->state))
-<<<<<<< HEAD
-		qlcnic_diag_free_res(dev, max_sds_rings);
-=======
 		qlcnic_diag_free_res(dev, drv_sds_rings);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!active || err)
 		clear_bit(__QLCNIC_LED_ENABLE, &adapter->state);
@@ -2073,17 +1476,6 @@ qlcnic_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	u32 wol_cfg;
-<<<<<<< HEAD
-
-	wol->supported = 0;
-	wol->wolopts = 0;
-
-	wol_cfg = QLCRD32(adapter, QLCNIC_WOL_CONFIG_NV);
-	if (wol_cfg & (1UL << adapter->portnum))
-		wol->supported |= WAKE_MAGIC;
-
-	wol_cfg = QLCRD32(adapter, QLCNIC_WOL_CONFIG);
-=======
 	int err = 0;
 
 	if (qlcnic_83xx_check(adapter))
@@ -2098,7 +1490,6 @@ qlcnic_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 		wol->supported |= WAKE_MAGIC;
 
 	wol_cfg = QLCRD32(adapter, QLCNIC_WOL_CONFIG, &err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wol_cfg & (1UL << adapter->portnum))
 		wol->wolopts |= WAKE_MAGIC;
 }
@@ -2108,17 +1499,6 @@ qlcnic_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(dev);
 	u32 wol_cfg;
-<<<<<<< HEAD
-
-	if (wol->wolopts & ~WAKE_MAGIC)
-		return -EOPNOTSUPP;
-
-	wol_cfg = QLCRD32(adapter, QLCNIC_WOL_CONFIG_NV);
-	if (!(wol_cfg & (1 << adapter->portnum)))
-		return -EOPNOTSUPP;
-
-	wol_cfg = QLCRD32(adapter, QLCNIC_WOL_CONFIG);
-=======
 	int err = 0;
 
 	if (qlcnic_83xx_check(adapter))
@@ -2135,7 +1515,6 @@ qlcnic_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	wol_cfg = QLCRD32(adapter, QLCNIC_WOL_CONFIG, &err);
 	if (err == -EIO)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wol->wolopts & WAKE_MAGIC)
 		wol_cfg |= 1UL << adapter->portnum;
 	else
@@ -2152,18 +1531,12 @@ qlcnic_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
  * firmware coalescing to default.
  */
 static int qlcnic_set_intr_coalesce(struct net_device *netdev,
-<<<<<<< HEAD
-			struct ethtool_coalesce *ethcoal)
-{
-	struct qlcnic_adapter *adapter = netdev_priv(netdev);
-=======
 				    struct ethtool_coalesce *ethcoal,
 				    struct kernel_ethtool_coalesce *kernel_coal,
 				    struct netlink_ext_ack *extack)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(__QLCNIC_DEV_UP, &adapter->state))
 		return -EINVAL;
@@ -2173,51 +1546,6 @@ static int qlcnic_set_intr_coalesce(struct net_device *netdev,
 	* unsupported parameters are set.
 	*/
 	if (ethcoal->rx_coalesce_usecs > 0xffff ||
-<<<<<<< HEAD
-		ethcoal->rx_max_coalesced_frames > 0xffff ||
-		ethcoal->tx_coalesce_usecs ||
-		ethcoal->tx_max_coalesced_frames ||
-		ethcoal->rx_coalesce_usecs_irq ||
-		ethcoal->rx_max_coalesced_frames_irq ||
-		ethcoal->tx_coalesce_usecs_irq ||
-		ethcoal->tx_max_coalesced_frames_irq ||
-		ethcoal->stats_block_coalesce_usecs ||
-		ethcoal->use_adaptive_rx_coalesce ||
-		ethcoal->use_adaptive_tx_coalesce ||
-		ethcoal->pkt_rate_low ||
-		ethcoal->rx_coalesce_usecs_low ||
-		ethcoal->rx_max_coalesced_frames_low ||
-		ethcoal->tx_coalesce_usecs_low ||
-		ethcoal->tx_max_coalesced_frames_low ||
-		ethcoal->pkt_rate_high ||
-		ethcoal->rx_coalesce_usecs_high ||
-		ethcoal->rx_max_coalesced_frames_high ||
-		ethcoal->tx_coalesce_usecs_high ||
-		ethcoal->tx_max_coalesced_frames_high)
-		return -EINVAL;
-
-	if (!ethcoal->rx_coalesce_usecs ||
-		!ethcoal->rx_max_coalesced_frames) {
-		adapter->ahw->coal.flag = QLCNIC_INTR_DEFAULT;
-		adapter->ahw->coal.rx_time_us =
-			QLCNIC_DEFAULT_INTR_COALESCE_RX_TIME_US;
-		adapter->ahw->coal.rx_packets =
-			QLCNIC_DEFAULT_INTR_COALESCE_RX_PACKETS;
-	} else {
-		adapter->ahw->coal.flag = 0;
-		adapter->ahw->coal.rx_time_us = ethcoal->rx_coalesce_usecs;
-		adapter->ahw->coal.rx_packets =
-			ethcoal->rx_max_coalesced_frames;
-	}
-
-	qlcnic_config_intr_coalesce(adapter);
-
-	return 0;
-}
-
-static int qlcnic_get_intr_coalesce(struct net_device *netdev,
-			struct ethtool_coalesce *ethcoal)
-=======
 	    ethcoal->rx_max_coalesced_frames > 0xffff ||
 	    ethcoal->tx_coalesce_usecs > 0xffff ||
 	    ethcoal->tx_max_coalesced_frames > 0xffff)
@@ -2232,7 +1560,6 @@ static int qlcnic_get_intr_coalesce(struct net_device *netdev,
 				    struct ethtool_coalesce *ethcoal,
 				    struct kernel_ethtool_coalesce *kernel_coal,
 				    struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 
@@ -2241,11 +1568,8 @@ static int qlcnic_get_intr_coalesce(struct net_device *netdev,
 
 	ethcoal->rx_coalesce_usecs = adapter->ahw->coal.rx_time_us;
 	ethcoal->rx_max_coalesced_frames = adapter->ahw->coal.rx_packets;
-<<<<<<< HEAD
-=======
 	ethcoal->tx_coalesce_usecs = adapter->ahw->coal.tx_time_us;
 	ethcoal->tx_max_coalesced_frames = adapter->ahw->coal.tx_packets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2254,20 +1578,13 @@ static u32 qlcnic_get_msglevel(struct net_device *netdev)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	return adapter->msg_enable;
-=======
 	return adapter->ahw->msg_enable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void qlcnic_set_msglevel(struct net_device *netdev, u32 msglvl)
 {
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	adapter->msg_enable = msglvl;
-=======
 	adapter->ahw->msg_enable = msglvl;
 }
 
@@ -2331,7 +1648,6 @@ bool qlcnic_check_fw_dump_state(struct qlcnic_adapter *adapter)
 	}
 
 	return state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -2340,13 +1656,6 @@ qlcnic_get_dump_flag(struct net_device *netdev, struct ethtool_dump *dump)
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
 	struct qlcnic_fw_dump *fw_dump = &adapter->ahw->fw_dump;
 
-<<<<<<< HEAD
-	if (fw_dump->clr)
-		dump->len = fw_dump->tmpl_hdr->size + fw_dump->size;
-	else
-		dump->len = 0;
-	dump->flag = fw_dump->tmpl_hdr->drv_cap_mask;
-=======
 	if (!fw_dump->tmpl_hdr) {
 		netdev_err(adapter->netdev, "FW Dump not supported\n");
 		return -ENOTSUPP;
@@ -2362,7 +1671,6 @@ qlcnic_get_dump_flag(struct net_device *netdev, struct ethtool_dump *dump)
 	else
 		dump->flag = fw_dump->cap_mask;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dump->version = adapter->fw_version;
 	return 0;
 }
@@ -2372,12 +1680,6 @@ qlcnic_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
 			void *buffer)
 {
 	int i, copy_sz;
-<<<<<<< HEAD
-	u32 *hdr_ptr, *data;
-	struct qlcnic_adapter *adapter = netdev_priv(netdev);
-	struct qlcnic_fw_dump *fw_dump = &adapter->ahw->fw_dump;
-
-=======
 	u32 *hdr_ptr;
 	__le32 *data;
 	struct qlcnic_adapter *adapter = netdev_priv(netdev);
@@ -2388,21 +1690,14 @@ qlcnic_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
 		return -ENOTSUPP;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fw_dump->clr) {
 		netdev_info(netdev, "Dump not available\n");
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	/* Copy template header first */
-	copy_sz = fw_dump->tmpl_hdr->size;
-	hdr_ptr = (u32 *) fw_dump->tmpl_hdr;
-=======
 
 	/* Copy template header first */
 	copy_sz = fw_dump->tmpl_hdr_size;
 	hdr_ptr = (u32 *)fw_dump->tmpl_hdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = buffer;
 	for (i = 0; i < copy_sz/sizeof(u32); i++)
 		*data++ = cpu_to_le32(*hdr_ptr++);
@@ -2410,11 +1705,7 @@ qlcnic_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
 	/* Copy captured dump data */
 	memcpy(buffer + copy_sz, fw_dump->data, fw_dump->size);
 	dump->len = copy_sz + fw_dump->size;
-<<<<<<< HEAD
-	dump->flag = fw_dump->tmpl_hdr->drv_cap_mask;
-=======
 	dump->flag = fw_dump->cap_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Free dump area once data has been captured */
 	vfree(fw_dump->data);
@@ -2424,59 +1715,6 @@ qlcnic_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-qlcnic_set_dump(struct net_device *netdev, struct ethtool_dump *val)
-{
-	int ret = 0;
-	struct qlcnic_adapter *adapter = netdev_priv(netdev);
-	struct qlcnic_fw_dump *fw_dump = &adapter->ahw->fw_dump;
-
-	switch (val->flag) {
-	case QLCNIC_FORCE_FW_DUMP_KEY:
-		if (!fw_dump->enable) {
-			netdev_info(netdev, "FW dump not enabled\n");
-			return ret;
-		}
-		if (fw_dump->clr) {
-			netdev_info(netdev,
-			"Previous dump not cleared, not forcing dump\n");
-			return ret;
-		}
-		netdev_info(netdev, "Forcing a FW dump\n");
-		qlcnic_dev_request_reset(adapter);
-		break;
-	case QLCNIC_DISABLE_FW_DUMP:
-		if (fw_dump->enable) {
-			netdev_info(netdev, "Disabling FW dump\n");
-			fw_dump->enable = 0;
-		}
-		break;
-	case QLCNIC_ENABLE_FW_DUMP:
-		if (!fw_dump->enable && fw_dump->tmpl_hdr) {
-			netdev_info(netdev, "Enabling FW dump\n");
-			fw_dump->enable = 1;
-		}
-		break;
-	case QLCNIC_FORCE_FW_RESET:
-		netdev_info(netdev, "Forcing a FW reset\n");
-		qlcnic_dev_request_reset(adapter);
-		adapter->flags &= ~QLCNIC_FW_RESET_OWNER;
-		break;
-	default:
-		if (val->flag > QLCNIC_DUMP_MASK_MAX ||
-			val->flag < QLCNIC_DUMP_MASK_MIN) {
-				netdev_info(netdev,
-				"Invalid dump level: 0x%x\n", val->flag);
-				ret = -EINVAL;
-				goto out;
-		}
-		fw_dump->tmpl_hdr->drv_cap_mask = val->flag & 0xff;
-		netdev_info(netdev, "Driver mask changed to: 0x%x\n",
-			fw_dump->tmpl_hdr->drv_cap_mask);
-	}
-out:
-=======
 static int qlcnic_set_dump_mask(struct qlcnic_adapter *adapter, u32 mask)
 {
 	struct qlcnic_fw_dump *fw_dump = &adapter->ahw->fw_dump;
@@ -2583,18 +1821,12 @@ qlcnic_set_dump(struct net_device *netdev, struct ethtool_dump *val)
 			ret = -EINVAL;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 const struct ethtool_ops qlcnic_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings = qlcnic_get_settings,
-	.set_settings = qlcnic_set_settings,
-=======
 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
 				     ETHTOOL_COALESCE_MAX_FRAMES,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = qlcnic_get_drvinfo,
 	.get_regs_len = qlcnic_get_regs_len,
 	.get_regs = qlcnic_get_regs,
@@ -2621,8 +1853,6 @@ const struct ethtool_ops qlcnic_ethtool_ops = {
 	.get_dump_flag = qlcnic_get_dump_flag,
 	.get_dump_data = qlcnic_get_dump_data,
 	.set_dump = qlcnic_set_dump,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings = qlcnic_get_link_ksettings,
 	.set_link_ksettings = qlcnic_set_link_ksettings,
 };
@@ -2657,5 +1887,4 @@ const struct ethtool_ops qlcnic_ethtool_failed_ops = {
 	.get_msglevel		= qlcnic_get_msglevel,
 	.set_dump		= qlcnic_set_dump,
 	.get_link_ksettings	= qlcnic_get_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

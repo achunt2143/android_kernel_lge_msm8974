@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copyright (C) 1989, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
 
 This file is part of GNU CC.
 
-<<<<<<< HEAD
-GNU CC is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
-
-GNU CC is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.  */
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.text
 	.align 4
@@ -68,14 +48,9 @@ __udivdi3:
 	bne .LL77
 	mov %i0,%o2
 	mov 1,%o0
-<<<<<<< HEAD
-	call .udiv,0
-	mov 0,%o1
-=======
 	mov 0,%o1
 	wr %g0, 0, %y
 	udiv %o0, %o1, %o0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov %o0,%o3
 	mov %i0,%o2
 .LL77:

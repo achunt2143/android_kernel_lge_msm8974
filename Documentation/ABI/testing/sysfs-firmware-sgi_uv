@@ -1,32 +1,4 @@
 What:		/sys/firmware/sgi_uv/
-<<<<<<< HEAD
-Date:		August 2008
-Contact:	Russ Anderson <rja@sgi.com>
-Description:
-		The /sys/firmware/sgi_uv directory contains information
-		about the SGI UV platform.
-
-		Under that directory are a number of files:
-
-			partition_id
-			coherence_id
-
-		The partition_id entry contains the partition id.
-		SGI UV systems can be partitioned into multiple physical
-		machines, which each partition running a unique copy
-		of the operating system.  Each partition will have a unique
-		partition id.  To display the partition id, use the command:
-
-			cat /sys/firmware/sgi_uv/partition_id
-
-		The coherence_id entry contains the coherence id.
-		A partitioned SGI UV system can have one or more coherence
-		domain.  The coherence id indicates which coherence domain
-		this partition is in.  To display the coherence id, use the
-		command:
-
-			cat /sys/firmware/sgi_uv/coherence_id
-=======
 Date:		September 2020
 Contact:	Justin Ernst <justin.ernst@hpe.com>
 Description:
@@ -185,4 +157,3 @@ Description:
 
 		The iio_stack entry contains a value describing the IIO stack
 		number that the corresponding PCI bus object is connected to.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

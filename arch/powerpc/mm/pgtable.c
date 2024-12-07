@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains common routines for dealing with free of page tables
  * Along with common page table handling code
@@ -18,30 +15,11 @@
  *
  *  Dave Engebretsen <engebret@us.ibm.com>
  *      Rework for PPC64 port.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/gfp.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/percpu.h>
-#include <linux/hardirq.h>
-#include <linux/hugetlb.h>
-#include <asm/pgalloc.h>
-#include <asm/tlbflush.h>
-#include <asm/tlb.h>
-
-#include "mmu_decl.h"
-=======
 #include <linux/percpu.h>
 #include <linux/hardirq.h>
 #include <linux/hugetlb.h>
@@ -57,7 +35,6 @@
 #endif
 
 pgd_t swapper_pg_dir[MAX_PTRS_PER_PGD] __section(".bss..page_aligned") __aligned(PGD_ALIGN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int is_exec_fault(void)
 {
@@ -66,19 +43,6 @@ static inline int is_exec_fault(void)
 
 /* We only try to do i/d cache coherency on stuff that looks like
  * reasonably "normal" PTEs. We currently require a PTE to be present
-<<<<<<< HEAD
- * and we avoid _PAGE_SPECIAL and _PAGE_NO_CACHE. We also only do that
- * on userspace PTEs
- */
-static inline int pte_looks_normal(pte_t pte)
-{
-	return (pte_val(pte) &
-	    (_PAGE_PRESENT | _PAGE_SPECIAL | _PAGE_NO_CACHE | _PAGE_USER)) ==
-	    (_PAGE_PRESENT | _PAGE_USER);
-}
-
-struct page * maybe_pte_to_page(pte_t pte)
-=======
  * and we avoid _PAGE_SPECIAL and cache inhibited pte. We also only do that
  * on userspace PTEs
  */
@@ -95,7 +59,6 @@ static inline int pte_looks_normal(pte_t pte, unsigned long addr)
 }
 
 static struct folio *maybe_pte_to_folio(pte_t pte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pfn = pte_pfn(pte);
 	struct page *page;
@@ -105,17 +68,10 @@ static struct folio *maybe_pte_to_folio(pte_t pte)
 	page = pfn_to_page(pfn);
 	if (PageReserved(page))
 		return NULL;
-<<<<<<< HEAD
-	return page;
-}
-
-#if defined(CONFIG_PPC_STD_MMU) || _PAGE_EXEC == 0
-=======
 	return page_folio(page);
 }
 
 #ifdef CONFIG_PPC_BOOK3S
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Server-style MMU handles coherency when hashing if HW exec permission
  * is supposed per page (currently 64-bit only). If not, then, we always
@@ -123,30 +79,6 @@ static struct folio *maybe_pte_to_folio(pte_t pte)
  * support falls into the same category.
  */
 
-<<<<<<< HEAD
-static pte_t set_pte_filter(pte_t pte, unsigned long addr)
-{
-	pte = __pte(pte_val(pte) & ~_PAGE_HPTEFLAGS);
-	if (pte_looks_normal(pte) && !(cpu_has_feature(CPU_FTR_COHERENT_ICACHE) ||
-				       cpu_has_feature(CPU_FTR_NOEXECUTE))) {
-		struct page *pg = maybe_pte_to_page(pte);
-		if (!pg)
-			return pte;
-		if (!test_bit(PG_arch_1, &pg->flags)) {
-#ifdef CONFIG_8xx
-			/* On 8xx, cache control instructions (particularly
-			 * "dcbst" from flush_dcache_icache) fault as write
-			 * operation if there is an unpopulated TLB entry
-			 * for the address in question. To workaround that,
-			 * we invalidate the TLB here, thus avoiding dcbst
-			 * misbehaviour.
-			 */
-			/* 8xx doesn't care about PID, size or ind args */
-			_tlbil_va(addr, 0, 0, 0);
-#endif /* CONFIG_8xx */
-			flush_dcache_icache_page(pg);
-			set_bit(PG_arch_1, &pg->flags);
-=======
 static pte_t set_pte_filter_hash(pte_t pte, unsigned long addr)
 {
 	pte = __pte(pte_val(pte) & ~_PAGE_HPTEFLAGS);
@@ -158,49 +90,20 @@ static pte_t set_pte_filter_hash(pte_t pte, unsigned long addr)
 		if (!test_bit(PG_dcache_clean, &folio->flags)) {
 			flush_dcache_icache_folio(folio);
 			set_bit(PG_dcache_clean, &folio->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return pte;
 }
 
-<<<<<<< HEAD
-static pte_t set_access_flags_filter(pte_t pte, struct vm_area_struct *vma,
-				     int dirty)
-{
-	return pte;
-}
-
-#else /* defined(CONFIG_PPC_STD_MMU) || _PAGE_EXEC == 0 */
-=======
 #else /* CONFIG_PPC_BOOK3S */
 
 static pte_t set_pte_filter_hash(pte_t pte, unsigned long addr) { return pte; }
 
 #endif /* CONFIG_PPC_BOOK3S */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Embedded type MMU with HW exec support. This is a bit more complicated
  * as we don't have two bits to spare for _PAGE_EXEC and _PAGE_HWEXEC so
  * instead we "filter out" the exec permission for non clean pages.
-<<<<<<< HEAD
- */
-static pte_t set_pte_filter(pte_t pte, unsigned long addr)
-{
-	struct page *pg;
-
-	/* No exec permission in the first place, move on */
-	if (!(pte_val(pte) & _PAGE_EXEC) || !pte_looks_normal(pte))
-		return pte;
-
-	/* If you set _PAGE_EXEC on weird pages you're on your own */
-	pg = maybe_pte_to_page(pte);
-	if (unlikely(!pg))
-		return pte;
-
-	/* If the page clean, we move on */
-	if (test_bit(PG_arch_1, &pg->flags))
-=======
  *
  * This is also called once for the folio. So only work with folio->flags here.
  */
@@ -225,35 +128,22 @@ static inline pte_t set_pte_filter(pte_t pte, unsigned long addr)
 
 	/* If the page clean, we move on */
 	if (test_bit(PG_dcache_clean, &folio->flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return pte;
 
 	/* If it's an exec fault, we flush the cache and make it clean */
 	if (is_exec_fault()) {
-<<<<<<< HEAD
-		flush_dcache_icache_page(pg);
-		set_bit(PG_arch_1, &pg->flags);
-=======
 		flush_dcache_icache_folio(folio);
 		set_bit(PG_dcache_clean, &folio->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return pte;
 	}
 
 	/* Else, we filter out _PAGE_EXEC */
-<<<<<<< HEAD
-	return __pte(pte_val(pte) & ~_PAGE_EXEC);
-=======
 	return pte_exprotect(pte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static pte_t set_access_flags_filter(pte_t pte, struct vm_area_struct *vma,
 				     int dirty)
 {
-<<<<<<< HEAD
-	struct page *pg;
-=======
 	struct folio *folio;
 
 	if (IS_ENABLED(CONFIG_PPC_BOOK3S_64))
@@ -261,18 +151,13 @@ static pte_t set_access_flags_filter(pte_t pte, struct vm_area_struct *vma,
 
 	if (mmu_has_feature(MMU_FTR_HPTE_TABLE))
 		return pte;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* So here, we only care about exec faults, as we use them
 	 * to recover lost _PAGE_EXEC and perform I$/D$ coherency
 	 * if necessary. Also if _PAGE_EXEC is already set, same deal,
 	 * we just bail out
 	 */
-<<<<<<< HEAD
-	if (dirty || (pte_val(pte) & _PAGE_EXEC) || !is_exec_fault())
-=======
 	if (dirty || pte_exec(pte) || !is_exec_fault())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return pte;
 
 #ifdef CONFIG_DEBUG_VM
@@ -285,43 +170,6 @@ static pte_t set_access_flags_filter(pte_t pte, struct vm_area_struct *vma,
 #endif /* CONFIG_DEBUG_VM */
 
 	/* If you set _PAGE_EXEC on weird pages you're on your own */
-<<<<<<< HEAD
-	pg = maybe_pte_to_page(pte);
-	if (unlikely(!pg))
-		goto bail;
-
-	/* If the page is already clean, we move on */
-	if (test_bit(PG_arch_1, &pg->flags))
-		goto bail;
-
-	/* Clean the page and set PG_arch_1 */
-	flush_dcache_icache_page(pg);
-	set_bit(PG_arch_1, &pg->flags);
-
- bail:
-	return __pte(pte_val(pte) | _PAGE_EXEC);
-}
-
-#endif /* !(defined(CONFIG_PPC_STD_MMU) || _PAGE_EXEC == 0) */
-
-/*
- * set_pte stores a linux PTE into the linux page table.
- */
-void set_pte_at(struct mm_struct *mm, unsigned long addr, pte_t *ptep,
-		pte_t pte)
-{
-#ifdef CONFIG_DEBUG_VM
-	WARN_ON(pte_present(*ptep));
-#endif
-	/* Note: mm->context.id might not yet have been assigned as
-	 * this context might not have been activated yet when this
-	 * is called.
-	 */
-	pte = set_pte_filter(pte, addr);
-
-	/* Perform the setting of the PTE */
-	__set_pte_at(mm, addr, ptep, pte, 0);
-=======
 	folio = maybe_pte_to_folio(pte);
 	if (unlikely(!folio))
 		goto bail;
@@ -383,7 +231,6 @@ void unmap_kernel_page(unsigned long va)
 
 	pte_clear(&init_mm, va, ptep);
 	flush_tlb_kernel_range(va, va + PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -400,22 +247,13 @@ int ptep_set_access_flags(struct vm_area_struct *vma, unsigned long address,
 	entry = set_access_flags_filter(entry, vma, dirty);
 	changed = !pte_same(*(ptep), entry);
 	if (changed) {
-<<<<<<< HEAD
-		if (!is_vm_hugetlb_page(vma))
-			assert_pte_locked(vma->vm_mm, address);
-		__ptep_set_access_flags(ptep, entry);
-		flush_tlb_page_nohash(vma, address);
-=======
 		assert_pte_locked(vma->vm_mm, address);
 		__ptep_set_access_flags(vma, ptep, entry,
 					address, mmu_virtual_psize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return changed;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HUGETLB_PAGE
 int huge_ptep_set_access_flags(struct vm_area_struct *vma,
 			       unsigned long addr, pte_t *ptep,
@@ -485,36 +323,20 @@ void set_huge_pte_at(struct mm_struct *mm, unsigned long addr, pte_t *ptep,
 #endif
 #endif /* CONFIG_HUGETLB_PAGE */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_VM
 void assert_pte_locked(struct mm_struct *mm, unsigned long addr)
 {
 	pgd_t *pgd;
-<<<<<<< HEAD
-	pud_t *pud;
-	pmd_t *pmd;
-=======
 	p4d_t *p4d;
 	pud_t *pud;
 	pmd_t *pmd;
 	pte_t *pte;
 	spinlock_t *ptl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mm == &init_mm)
 		return;
 	pgd = mm->pgd + pgd_index(addr);
 	BUG_ON(pgd_none(*pgd));
-<<<<<<< HEAD
-	pud = pud_offset(pgd, addr);
-	BUG_ON(pud_none(*pud));
-	pmd = pmd_offset(pud, addr);
-	BUG_ON(!pmd_present(*pmd));
-	assert_spin_locked(pte_lockptr(mm, pmd));
-}
-#endif /* CONFIG_DEBUG_VM */
-
-=======
 	p4d = p4d_offset(pgd, addr);
 	BUG_ON(p4d_none(*p4d));
 	pud = pud_offset(p4d, addr);
@@ -697,4 +519,3 @@ const pgprot_t protection_map[16] = {
 #ifndef CONFIG_PPC_BOOK3S_64
 DECLARE_VM_GET_PAGE_PROT
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

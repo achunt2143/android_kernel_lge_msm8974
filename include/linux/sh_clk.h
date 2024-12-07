@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SH_CLOCK_H
 #define __SH_CLOCK_H
 
@@ -22,10 +19,6 @@ struct clk_mapping {
 	struct kref		ref;
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sh_clk_ops {
 #ifdef CONFIG_SH_CLK_CPG_LEGACY
 	void (*init)(struct clk *clk);
@@ -38,13 +31,10 @@ struct sh_clk_ops {
 	long (*round_rate)(struct clk *clk, unsigned long rate);
 };
 
-<<<<<<< HEAD
-=======
 #define SH_CLK_DIV_MSK(div)	((1 << (div)) - 1)
 #define SH_CLK_DIV4_MSK		SH_CLK_DIV_MSK(4)
 #define SH_CLK_DIV6_MSK		SH_CLK_DIV_MSK(6)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct clk {
 	struct list_head	node;
 	struct clk		*parent;
@@ -63,17 +53,11 @@ struct clk {
 	unsigned long		flags;
 
 	void __iomem		*enable_reg;
-<<<<<<< HEAD
-	unsigned int		enable_bit;
-	void __iomem		*mapped_reg;
-
-=======
 	void __iomem		*status_reg;
 	unsigned int		enable_bit;
 	void __iomem		*mapped_reg;
 
 	unsigned int		div_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		arch_flags;
 	void			*priv;
 	struct clk_mapping	*mapping;
@@ -81,9 +65,6 @@ struct clk {
 	unsigned int		nr_freqs;
 };
 
-<<<<<<< HEAD
-#define CLK_ENABLE_ON_INIT	(1 << 0)
-=======
 #define CLK_ENABLE_ON_INIT	BIT(0)
 
 #define CLK_ENABLE_REG_32BIT	BIT(1)	/* default access size */
@@ -95,7 +76,6 @@ struct clk {
 #define CLK_ENABLE_REG_MASK	(CLK_ENABLE_REG_32BIT | \
 				 CLK_ENABLE_REG_16BIT | \
 				 CLK_ENABLE_REG_8BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* drivers/sh/clk.c */
 unsigned long followparent_recalc(struct clk *);
@@ -134,25 +114,11 @@ long clk_rate_div_range_round(struct clk *clk, unsigned int div_min,
 long clk_rate_mult_range_round(struct clk *clk, unsigned int mult_min,
 			       unsigned int mult_max, unsigned long rate);
 
-<<<<<<< HEAD
-long clk_round_parent(struct clk *clk, unsigned long target,
-		      unsigned long *best_freq, unsigned long *parent_freq,
-		      unsigned int div_min, unsigned int div_max);
-
-#define SH_CLK_MSTP32(_parent, _enable_reg, _enable_bit, _flags)	\
-=======
 #define SH_CLK_MSTP(_parent, _enable_reg, _enable_bit, _status_reg, _flags) \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	.parent		= _parent,					\
 	.enable_reg	= (void __iomem *)_enable_reg,			\
 	.enable_bit	= _enable_bit,					\
-<<<<<<< HEAD
-	.flags		= _flags,					\
-}
-
-int sh_clk_mstp32_register(struct clk *clks, int nr);
-=======
 	.status_reg	= _status_reg,					\
 	.flags		= _flags,					\
 }
@@ -181,7 +147,6 @@ static inline int __deprecated sh_clk_mstp32_register(struct clk *clks, int nr)
 {
 	return sh_clk_mstp_register(clks, nr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SH_CLK_DIV4(_parent, _reg, _shift, _div_bitmap, _flags)	\
 {								\
@@ -189,27 +154,17 @@ static inline int __deprecated sh_clk_mstp32_register(struct clk *clks, int nr)
 	.enable_reg = (void __iomem *)_reg,			\
 	.enable_bit = _shift,					\
 	.arch_flags = _div_bitmap,				\
-<<<<<<< HEAD
-	.flags = _flags,					\
-}
-
-struct clk_div4_table {
-=======
 	.div_mask = SH_CLK_DIV4_MSK,				\
 	.flags = _flags,					\
 }
 
 struct clk_div_table {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct clk_div_mult_table *div_mult_table;
 	void (*kick)(struct clk *clk);
 };
 
-<<<<<<< HEAD
-=======
 #define clk_div4_table clk_div_table
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sh_clk_div4_register(struct clk *clks, int nr,
 			 struct clk_div4_table *table);
 int sh_clk_div4_enable_register(struct clk *clks, int nr,
@@ -221,13 +176,9 @@ int sh_clk_div4_reparent_register(struct clk *clks, int nr,
 			_num_parents, _src_shift, _src_width)	\
 {								\
 	.enable_reg = (void __iomem *)_reg,			\
-<<<<<<< HEAD
-	.flags = _flags,					\
-=======
 	.enable_bit = 0, /* unused */				\
 	.flags = _flags | CLK_MASK_DIV_ON_DISABLE,		\
 	.div_mask = SH_CLK_DIV6_MSK,				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.parent_table = _parents,				\
 	.parent_num = _num_parents,				\
 	.src_shift = _src_shift,				\
@@ -238,13 +189,9 @@ int sh_clk_div4_reparent_register(struct clk *clks, int nr,
 {								\
 	.parent		= _parent,				\
 	.enable_reg	= (void __iomem *)_reg,			\
-<<<<<<< HEAD
-	.flags		= _flags,				\
-=======
 	.enable_bit	= 0,	/* unused */			\
 	.div_mask	= SH_CLK_DIV6_MSK,			\
 	.flags		= _flags | CLK_MASK_DIV_ON_DISABLE,	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sh_clk_div6_register(struct clk *clks, int nr);
@@ -254,8 +201,6 @@ int sh_clk_div6_reparent_register(struct clk *clks, int nr);
 #define CLKDEV_DEV_ID(_id, _clk) { .dev_id = _id, .clk = _clk }
 #define CLKDEV_ICK_ID(_cid, _did, _clk) { .con_id = _cid, .dev_id = _did, .clk = _clk }
 
-<<<<<<< HEAD
-=======
 /* .enable_reg will be updated to .mapping on sh_clk_fsidiv_register() */
 #define SH_CLK_FSIDIV(_reg, _parent)		\
 {						\
@@ -265,5 +210,4 @@ int sh_clk_div6_reparent_register(struct clk *clks, int nr);
 
 int sh_clk_fsidiv_register(struct clk *clks, int nr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SH_CLOCK_H */

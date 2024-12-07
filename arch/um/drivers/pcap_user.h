@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-/* 
- * Copyright (C) 2002 Jeff Dike (jdike@karaya.com)
- * Licensed under the GPL
- */
-
-#include "net_user.h"
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* 
  * Copyright (C) 2002 Jeff Dike (jdike@karaya.com)
  */
 
 #include <net_user.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pcap_data {
 	char *host_if;

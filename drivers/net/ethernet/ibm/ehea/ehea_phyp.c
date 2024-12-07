@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/net/ethernet/ibm/ehea/ehea_phyp.c
  *
@@ -13,24 +10,6 @@
  *	 Christoph Raisch <raisch@de.ibm.com>
  *	 Jan-Bernd Themann <themann@de.ibm.com>
  *	 Thomas Klein <tklein@de.ibm.com>
-<<<<<<< HEAD
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -148,11 +127,7 @@ u64 ehea_h_query_ehea_qp(const u64 adapter_handle, const u8 qp_category,
 				       qp_category,		/* R5 */
 				       qp_handle,		/* R6 */
 				       sel_mask,		/* R7 */
-<<<<<<< HEAD
-				       virt_to_abs(cb_addr),	/* R8 */
-=======
 				       __pa(cb_addr),		/* R8 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       0, 0);
 }
 
@@ -426,11 +401,7 @@ u64 ehea_h_modify_ehea_qp(const u64 adapter_handle, const u8 cat,
 				 (u64) cat,			/* R5 */
 				 qp_handle,			/* R6 */
 				 sel_mask,			/* R7 */
-<<<<<<< HEAD
-				 virt_to_abs(cb_addr),		/* R8 */
-=======
 				 __pa(cb_addr),			/* R8 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 0, 0, 0, 0);			/* R9-R12 */
 
 	*inv_attr_id = outs[0];
@@ -543,11 +514,7 @@ u64 ehea_h_query_ehea(const u64 adapter_handle, void *cb_addr)
 {
 	u64 hret, cb_logaddr;
 
-<<<<<<< HEAD
-	cb_logaddr = virt_to_abs(cb_addr);
-=======
 	cb_logaddr = __pa(cb_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hret = ehea_plpar_hcall_norets(H_QUERY_HEA,
 				       adapter_handle,		/* R4 */
@@ -564,11 +531,7 @@ u64 ehea_h_query_ehea_port(const u64 adapter_handle, const u16 port_num,
 			   void *cb_addr)
 {
 	u64 port_info;
-<<<<<<< HEAD
-	u64 cb_logaddr = virt_to_abs(cb_addr);
-=======
 	u64 cb_logaddr = __pa(cb_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 arr_index = 0;
 
 	port_info = EHEA_BMASK_SET(H_MEHEAPORT_CAT, cb_cat)
@@ -590,11 +553,7 @@ u64 ehea_h_modify_ehea_port(const u64 adapter_handle, const u16 port_num,
 	unsigned long outs[PLPAR_HCALL9_BUFSIZE];
 	u64 port_info;
 	u64 arr_index = 0;
-<<<<<<< HEAD
-	u64 cb_logaddr = virt_to_abs(cb_addr);
-=======
 	u64 cb_logaddr = __pa(cb_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port_info = EHEA_BMASK_SET(H_MEHEAPORT_CAT, cb_cat)
 		  | EHEA_BMASK_SET(H_MEHEAPORT_PN, port_num);
@@ -648,10 +607,6 @@ u64 ehea_h_error_data(const u64 adapter_handle, const u64 ressource_handle,
 	return ehea_plpar_hcall_norets(H_ERROR_DATA,
 				       adapter_handle,		/* R4 */
 				       ressource_handle,	/* R5 */
-<<<<<<< HEAD
-				       virt_to_abs(rblock),	/* R6 */
-=======
 				       __pa(rblock),		/* R6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       0, 0, 0, 0);		/* R7-R12 */
 }

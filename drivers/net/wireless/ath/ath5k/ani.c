@@ -14,11 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ath5k.h"
 #include "reg.h"
 #include "debug.h"
@@ -226,11 +223,7 @@ static void
 ath5k_ani_raise_immunity(struct ath5k_hw *ah, struct ath5k_ani_state *as,
 			 bool ofdm_trigger)
 {
-<<<<<<< HEAD
-	int rssi = ewma_read(&ah->ah_beacon_rssi_avg);
-=======
 	int rssi = ewma_beacon_rssi_read(&ah->ah_beacon_rssi_avg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ATH5K_DBG_UNLIMIT(ah, ATH5K_DEBUG_ANI, "raise immunity (%s)",
 		ofdm_trigger ? "ODFM" : "CCK");
@@ -286,11 +279,7 @@ ath5k_ani_raise_immunity(struct ath5k_hw *ah, struct ath5k_ani_state *as,
 		if (as->firstep_level < ATH5K_ANI_MAX_FIRSTEP_LVL)
 			ath5k_ani_set_firstep_level(ah, as->firstep_level + 1);
 		return;
-<<<<<<< HEAD
-	} else if (ah->ah_current_channel->band == IEEE80211_BAND_2GHZ) {
-=======
 	} else if (ah->ah_current_channel->band == NL80211_BAND_2GHZ) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* beacon RSSI is low. in B/G mode turn of OFDM weak signal
 		 * detect and zero firstep level to maximize CCK sensitivity */
 		ATH5K_DBG_UNLIMIT(ah, ATH5K_DEBUG_ANI,
@@ -320,11 +309,7 @@ ath5k_ani_raise_immunity(struct ath5k_hw *ah, struct ath5k_ani_state *as,
 static void
 ath5k_ani_lower_immunity(struct ath5k_hw *ah, struct ath5k_ani_state *as)
 {
-<<<<<<< HEAD
-	int rssi = ewma_read(&ah->ah_beacon_rssi_avg);
-=======
 	int rssi = ewma_beacon_rssi_read(&ah->ah_beacon_rssi_avg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ATH5K_DBG_UNLIMIT(ah, ATH5K_DEBUG_ANI, "lower immunity");
 
@@ -516,11 +501,7 @@ ath5k_ani_calibration(struct ath5k_hw *ah)
 
 	if (as->ofdm_errors > ofdm_high || as->cck_errors > cck_high) {
 		/* too many PHY errors - we have to raise immunity */
-<<<<<<< HEAD
-		bool ofdm_flag = as->ofdm_errors > ofdm_high ? true : false;
-=======
 		bool ofdm_flag = as->ofdm_errors > ofdm_high;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath5k_ani_raise_immunity(ah, as, ofdm_flag);
 		ath5k_ani_period_restart(as);
 
@@ -749,35 +730,6 @@ void
 ath5k_ani_print_counters(struct ath5k_hw *ah)
 {
 	/* clears too */
-<<<<<<< HEAD
-	printk(KERN_NOTICE "ACK fail\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_ACK_FAIL));
-	printk(KERN_NOTICE "RTS fail\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_RTS_FAIL));
-	printk(KERN_NOTICE "RTS success\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_RTS_OK));
-	printk(KERN_NOTICE "FCS error\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_FCS_FAIL));
-
-	/* no clear */
-	printk(KERN_NOTICE "tx\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_PROFCNT_TX));
-	printk(KERN_NOTICE "rx\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_PROFCNT_RX));
-	printk(KERN_NOTICE "busy\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_PROFCNT_RXCLR));
-	printk(KERN_NOTICE "cycles\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_PROFCNT_CYCLE));
-
-	printk(KERN_NOTICE "AR5K_PHYERR_CNT1\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_PHYERR_CNT1));
-	printk(KERN_NOTICE "AR5K_PHYERR_CNT2\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_PHYERR_CNT2));
-	printk(KERN_NOTICE "AR5K_OFDM_FIL_CNT\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_OFDM_FIL_CNT));
-	printk(KERN_NOTICE "AR5K_CCK_FIL_CNT\t%d\n",
-		ath5k_hw_reg_read(ah, AR5K_CCK_FIL_CNT));
-=======
 	pr_notice("ACK fail\t%d\n", ath5k_hw_reg_read(ah, AR5K_ACK_FAIL));
 	pr_notice("RTS fail\t%d\n", ath5k_hw_reg_read(ah, AR5K_RTS_FAIL));
 	pr_notice("RTS success\t%d\n", ath5k_hw_reg_read(ah, AR5K_RTS_OK));
@@ -797,7 +749,6 @@ ath5k_ani_print_counters(struct ath5k_hw *ah)
 		  ath5k_hw_reg_read(ah, AR5K_OFDM_FIL_CNT));
 	pr_notice("AR5K_CCK_FIL_CNT\t%d\n",
 		  ath5k_hw_reg_read(ah, AR5K_CCK_FIL_CNT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif

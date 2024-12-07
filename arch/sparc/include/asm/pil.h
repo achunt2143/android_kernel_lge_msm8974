@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_PIL_H
 #define _SPARC64_PIL_H
 
@@ -24,10 +21,6 @@
 #define PIL_SMP_CALL_FUNC	1
 #define PIL_SMP_RECEIVE_SIGNAL	2
 #define PIL_SMP_CAPTURE		3
-<<<<<<< HEAD
-#define PIL_SMP_CTX_NEW_VERSION	4
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PIL_DEVICE_IRQ		5
 #define PIL_SMP_CALL_FUNC_SNGL	6
 #define PIL_DEFERRED_PCR_WORK	7

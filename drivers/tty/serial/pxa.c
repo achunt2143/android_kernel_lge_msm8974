@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Based on drivers/serial/8250.c by Russell King.
  *
@@ -9,14 +6,6 @@
  *  Created:	Feb 20, 2003
  *  Copyright:	(C) 2003 Monta Vista Software, Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Note 1: This driver is made separate from the already too overloaded
  * 8250.c because it needs some kirks of its own and that'll make it
  * easier to add DMA support.
@@ -30,22 +19,11 @@
  */
 
 
-<<<<<<< HEAD
-#if defined(CONFIG_SERIAL_PXA_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/console.h>
 #include <linux/sysrq.h>
-<<<<<<< HEAD
-=======
 #include <linux/serial.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_reg.h>
 #include <linux/circ_buf.h>
 #include <linux/delay.h>
@@ -112,12 +90,7 @@ static void serial_pxa_stop_rx(struct uart_port *port)
 
 static inline void receive_chars(struct uart_pxa_port *up, int *status)
 {
-<<<<<<< HEAD
-	struct tty_struct *tty = up->port.state->port.tty;
-	unsigned int ch, flag;
-=======
 	u8 ch, flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int max_count = 256;
 
 	do {
@@ -178,11 +151,7 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
 				flag = TTY_FRAME;
 		}
 
-<<<<<<< HEAD
-		if (uart_handle_sysrq_char(&up->port, ch))
-=======
 		if (uart_prepare_sysrq_char(&up->port, ch))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto ignore_char;
 
 		uart_insert_char(&up->port, *status, UART_LSR_OE, ch, flag);
@@ -190,11 +159,7 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
 	ignore_char:
 		*status = serial_in(up, UART_LSR);
 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
-<<<<<<< HEAD
-	tty_flip_buffer_push(tty);
-=======
 	tty_flip_buffer_push(&up->port.state->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* work around Errata #20 according to
 	 * Intel(R) PXA27x Processor Family
@@ -209,44 +174,12 @@ static inline void receive_chars(struct uart_pxa_port *up, int *status)
 
 static void transmit_chars(struct uart_pxa_port *up)
 {
-<<<<<<< HEAD
-	struct circ_buf *xmit = &up->port.state->xmit;
-	int count;
-
-	if (up->port.x_char) {
-		serial_out(up, UART_TX, up->port.x_char);
-		up->port.icount.tx++;
-		up->port.x_char = 0;
-		return;
-	}
-	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
-		serial_pxa_stop_tx(&up->port);
-		return;
-	}
-
-	count = up->port.fifosize / 2;
-	do {
-		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		up->port.icount.tx++;
-		if (uart_circ_empty(xmit))
-			break;
-	} while (--count > 0);
-
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-		uart_write_wakeup(&up->port);
-
-
-	if (uart_circ_empty(xmit))
-		serial_pxa_stop_tx(&up->port);
-=======
 	u8 ch;
 
 	uart_port_tx_limited(&up->port, ch, up->port.fifosize / 2,
 		true,
 		serial_out(up, UART_TX, ch),
 		({}));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void serial_pxa_start_tx(struct uart_port *port)
@@ -259,10 +192,7 @@ static void serial_pxa_start_tx(struct uart_port *port)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /* should hold up->port.lock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void check_modem_status(struct uart_pxa_port *up)
 {
 	int status;
@@ -295,20 +225,14 @@ static inline irqreturn_t serial_pxa_irq(int irq, void *dev_id)
 	iir = serial_in(up, UART_IIR);
 	if (iir & UART_IIR_NO_INT)
 		return IRQ_NONE;
-<<<<<<< HEAD
-=======
 	uart_port_lock(&up->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lsr = serial_in(up, UART_LSR);
 	if (lsr & UART_LSR_DR)
 		receive_chars(up, &lsr);
 	check_modem_status(up);
 	if (lsr & UART_LSR_THRE)
 		transmit_chars(up);
-<<<<<<< HEAD
-=======
 	uart_unlock_and_check_sysrq(&up->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -318,15 +242,9 @@ static unsigned int serial_pxa_tx_empty(struct uart_port *port)
 	unsigned long flags;
 	unsigned int ret;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
 	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -377,50 +295,15 @@ static void serial_pxa_break_ctl(struct uart_port *port, int break_state)
 	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (break_state == -1)
 		up->lcr |= UART_LCR_SBC;
 	else
 		up->lcr &= ~UART_LCR_SBC;
 	serial_out(up, UART_LCR, up->lcr);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-}
-
-#if 0
-static void serial_pxa_dma_init(struct pxa_uart *up)
-{
-	up->rxdma =
-		pxa_request_dma(up->name, DMA_PRIO_LOW, pxa_receive_dma, up);
-	if (up->rxdma < 0)
-		goto out;
-	up->txdma =
-		pxa_request_dma(up->name, DMA_PRIO_LOW, pxa_transmit_dma, up);
-	if (up->txdma < 0)
-		goto err_txdma;
-	up->dmadesc = kmalloc(4 * sizeof(pxa_dma_desc), GFP_KERNEL);
-	if (!up->dmadesc)
-		goto err_alloc;
-
-	/* ... */
-err_alloc:
-	pxa_free_dma(up->txdma);
-err_rxdma:
-	pxa_free_dma(up->rxdma);
-out:
-	return;
-}
-#endif
-
-=======
 	uart_port_unlock_irqrestore(&up->port, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int serial_pxa_startup(struct uart_port *port)
 {
 	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
@@ -463,17 +346,10 @@ static int serial_pxa_startup(struct uart_port *port)
 	 */
 	serial_out(up, UART_LCR, UART_LCR_WLEN8);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-	up->port.mctrl |= TIOCM_OUT2;
-	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
 	up->port.mctrl |= TIOCM_OUT2;
 	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Finally, enable interrupts.  Note: Modem status interrupts
@@ -507,17 +383,10 @@ static void serial_pxa_shutdown(struct uart_port *port)
 	up->ier = 0;
 	serial_out(up, UART_IER, 0);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-	up->port.mctrl &= ~TIOCM_OUT2;
-	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
 	up->port.mctrl &= ~TIOCM_OUT2;
 	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Disable break condition and FIFOs
@@ -531,11 +400,7 @@ static void serial_pxa_shutdown(struct uart_port *port)
 
 static void
 serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
-<<<<<<< HEAD
-		       struct ktermios *old)
-=======
 		       const struct ktermios *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
 	unsigned char cval, fcr = 0;
@@ -543,25 +408,7 @@ serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
 	unsigned int baud, quot;
 	unsigned int dll;
 
-<<<<<<< HEAD
-	switch (termios->c_cflag & CSIZE) {
-	case CS5:
-		cval = UART_LCR_WLEN5;
-		break;
-	case CS6:
-		cval = UART_LCR_WLEN6;
-		break;
-	case CS7:
-		cval = UART_LCR_WLEN7;
-		break;
-	default:
-	case CS8:
-		cval = UART_LCR_WLEN8;
-		break;
-	}
-=======
 	cval = UART_LCR_WLEN(tty_get_char_size(termios->c_cflag));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (termios->c_cflag & CSTOPB)
 		cval |= UART_LCR_STOP;
@@ -587,11 +434,7 @@ serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
 	 * Ok, we're now changing the port state.  Do it with
 	 * interrupts disabled.
 	 */
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ensure the port will be enabled.
@@ -607,11 +450,7 @@ serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
 	up->port.read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
 	if (termios->c_iflag & INPCK)
 		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
-<<<<<<< HEAD
-	if (termios->c_iflag & (BRKINT | PARMRK))
-=======
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up->port.read_status_mask |= UART_LSR_BI;
 
 	/*
@@ -665,11 +504,7 @@ serial_pxa_set_termios(struct uart_port *port, struct ktermios *termios,
 	up->lcr = cval;					/* Save LCR */
 	serial_pxa_set_mctrl(&up->port, up->port.mctrl);
 	serial_out(up, UART_FCR, fcr);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -718,19 +553,10 @@ static struct uart_driver serial_pxa_reg;
 
 #ifdef CONFIG_SERIAL_PXA_CONSOLE
 
-<<<<<<< HEAD
-#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
-
-/*
- *	Wait for transmitter & holding register to empty
- */
-static inline void wait_for_xmitr(struct uart_pxa_port *up)
-=======
 /*
  *	Wait for transmitter & holding register to empty
  */
 static void wait_for_xmitr(struct uart_pxa_port *up)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int status, tmout = 10000;
 
@@ -744,11 +570,7 @@ static void wait_for_xmitr(struct uart_pxa_port *up)
 		if (--tmout == 0)
 			break;
 		udelay(1);
-<<<<<<< HEAD
-	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
-=======
 	} while (!uart_lsr_tx_empty(status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait up to 1s for flow control if necessary */
 	if (up->port.flags & UPF_CONS_FLOW) {
@@ -759,11 +581,7 @@ static void wait_for_xmitr(struct uart_pxa_port *up)
 	}
 }
 
-<<<<<<< HEAD
-static void serial_pxa_console_putchar(struct uart_port *port, int ch)
-=======
 static void serial_pxa_console_putchar(struct uart_port *port, unsigned char ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_pxa_port *up = (struct uart_pxa_port *)port;
 
@@ -782,10 +600,6 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
 {
 	struct uart_pxa_port *up = serial_pxa_ports[co->index];
 	unsigned int ier;
-<<<<<<< HEAD
-
-	clk_prepare_enable(up->clk);
-=======
 	unsigned long flags;
 	int locked = 1;
 
@@ -794,7 +608,6 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
 		locked = uart_port_trylock_irqsave(&up->port, &flags);
 	else
 		uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	First save the IER then disable the interrupts
@@ -811,11 +624,6 @@ serial_pxa_console_write(struct console *co, const char *s, unsigned int count)
 	wait_for_xmitr(up);
 	serial_out(up, UART_IER, ier);
 
-<<<<<<< HEAD
-	clk_disable_unprepare(up->clk);
-}
-
-=======
 	if (locked)
 		uart_port_unlock_irqrestore(&up->port, flags);
 	clk_disable(up->clk);
@@ -867,7 +675,6 @@ static void serial_pxa_put_poll_char(struct uart_port *port,
 
 #endif /* CONFIG_CONSOLE_POLL */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init
 serial_pxa_console_setup(struct console *co, char *options)
 {
@@ -904,11 +711,7 @@ static struct console serial_pxa_console = {
 #define PXA_CONSOLE	NULL
 #endif
 
-<<<<<<< HEAD
-struct uart_ops serial_pxa_pops = {
-=======
 static const struct uart_ops serial_pxa_pops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= serial_pxa_tx_empty,
 	.set_mctrl	= serial_pxa_set_mctrl,
 	.get_mctrl	= serial_pxa_get_mctrl,
@@ -926,13 +729,10 @@ static const struct uart_ops serial_pxa_pops = {
 	.request_port	= serial_pxa_request_port,
 	.config_port	= serial_pxa_config_port,
 	.verify_port	= serial_pxa_verify_port,
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_CONSOLE_POLL) && defined(CONFIG_SERIAL_PXA_CONSOLE)
 	.poll_get_char = serial_pxa_get_poll_char,
 	.poll_put_char = serial_pxa_put_poll_char,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct uart_driver serial_pxa_reg = {
@@ -972,19 +772,11 @@ static const struct dev_pm_ops serial_pxa_pm_ops = {
 };
 #endif
 
-<<<<<<< HEAD
-static struct of_device_id serial_pxa_dt_ids[] = {
-=======
 static const struct of_device_id serial_pxa_dt_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "mrvl,pxa-uart", },
 	{ .compatible = "mrvl,mmp-uart", },
 	{}
 };
-<<<<<<< HEAD
-MODULE_DEVICE_TABLE(of, serial_pxa_dt_ids);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int serial_pxa_probe_dt(struct platform_device *pdev,
 			       struct uart_pxa_port *sport)
@@ -1007,16 +799,6 @@ static int serial_pxa_probe_dt(struct platform_device *pdev,
 static int serial_pxa_probe(struct platform_device *dev)
 {
 	struct uart_pxa_port *sport;
-<<<<<<< HEAD
-	struct resource *mmres, *irqres;
-	int ret;
-
-	mmres = platform_get_resource(dev, IORESOURCE_MEM, 0);
-	irqres = platform_get_resource(dev, IORESOURCE_IRQ, 0);
-	if (!mmres || !irqres)
-		return -ENODEV;
-
-=======
 	struct resource *mmres;
 	int ret;
 	int irq;
@@ -1029,7 +811,6 @@ static int serial_pxa_probe(struct platform_device *dev)
 	if (irq < 0)
 		return irq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sport = kzalloc(sizeof(struct uart_pxa_port), GFP_KERNEL);
 	if (!sport)
 		return -ENOMEM;
@@ -1040,12 +821,6 @@ static int serial_pxa_probe(struct platform_device *dev)
 		goto err_free;
 	}
 
-<<<<<<< HEAD
-	sport->port.type = PORT_PXA;
-	sport->port.iotype = UPIO_MEM;
-	sport->port.mapbase = mmres->start;
-	sport->port.irq = irqres->start;
-=======
 	ret = clk_prepare(sport->clk);
 	if (ret) {
 		clk_put(sport->clk);
@@ -1056,30 +831,23 @@ static int serial_pxa_probe(struct platform_device *dev)
 	sport->port.iotype = UPIO_MEM;
 	sport->port.mapbase = mmres->start;
 	sport->port.irq = irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sport->port.fifosize = 64;
 	sport->port.ops = &serial_pxa_pops;
 	sport->port.dev = &dev->dev;
 	sport->port.flags = UPF_IOREMAP | UPF_BOOT_AUTOCONF;
 	sport->port.uartclk = clk_get_rate(sport->clk);
-<<<<<<< HEAD
-=======
 	sport->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_PXA_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = serial_pxa_probe_dt(dev, sport);
 	if (ret > 0)
 		sport->port.line = dev->id;
 	else if (ret < 0)
 		goto err_clk;
-<<<<<<< HEAD
-=======
 	if (sport->port.line >= ARRAY_SIZE(serial_pxa_ports)) {
 		dev_err(&dev->dev, "serial%d out of range\n", sport->port.line);
 		ret = -EINVAL;
 		goto err_clk;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(sport->name, PXA_NAME_LEN - 1, "UART%d", sport->port.line + 1);
 
 	sport->port.membase = ioremap(mmres->start, resource_size(mmres));
@@ -1096,41 +864,13 @@ static int serial_pxa_probe(struct platform_device *dev)
 	return 0;
 
  err_clk:
-<<<<<<< HEAD
-=======
 	clk_unprepare(sport->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clk_put(sport->clk);
  err_free:
 	kfree(sport);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int serial_pxa_remove(struct platform_device *dev)
-{
-	struct uart_pxa_port *sport = platform_get_drvdata(dev);
-
-	platform_set_drvdata(dev, NULL);
-
-	uart_remove_one_port(&serial_pxa_reg, &sport->port);
-	clk_put(sport->clk);
-	kfree(sport);
-
-	return 0;
-}
-
-static struct platform_driver serial_pxa_driver = {
-        .probe          = serial_pxa_probe,
-        .remove         = serial_pxa_remove,
-
-	.driver		= {
-	        .name	= "pxa2xx-uart",
-		.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-		.pm	= &serial_pxa_pm_ops,
-#endif
-=======
 static struct platform_driver serial_pxa_driver = {
         .probe          = serial_pxa_probe,
 
@@ -1140,18 +880,13 @@ static struct platform_driver serial_pxa_driver = {
 		.pm	= &serial_pxa_pm_ops,
 #endif
 		.suppress_bind_attrs = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = serial_pxa_dt_ids,
 	},
 };
 
-<<<<<<< HEAD
-int __init serial_pxa_init(void)
-=======
 
 /* 8250 driver for PXA serial ports should be used */
 static int __init serial_pxa_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -1165,19 +900,4 @@ static int __init serial_pxa_init(void)
 
 	return ret;
 }
-<<<<<<< HEAD
-
-void __exit serial_pxa_exit(void)
-{
-	platform_driver_unregister(&serial_pxa_driver);
-	uart_unregister_driver(&serial_pxa_reg);
-}
-
-module_init(serial_pxa_init);
-module_exit(serial_pxa_exit);
-
-MODULE_LICENSE("GPL");
-MODULE_ALIAS("platform:pxa2xx-uart");
-=======
 device_initcall(serial_pxa_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

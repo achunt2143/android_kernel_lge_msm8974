@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Cyrix MediaGX and NatSemi Geode Suspend Modulation
  *	(C) 2002 Zwane Mwaikambo <zwane@commfireservices.com>
  *	(C) 2002 Hiroshi Miura   <miura@da-cha.org>
  *	All Rights Reserved
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      version 2 as published by the Free Software Foundation
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      The author(s) of this software shall not be held liable for damages
  *      of any nature resulting due to the use of this software. This
  *      software is provided AS-IS with no warranties.
@@ -55,10 +45,6 @@
  *      off_duration  =  (freq * DURATION) / stock_freq
  *      on_duration = DURATION - off_duration
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *---------------------------------------------------------------------------
  *
  * ChangeLog:
@@ -154,11 +140,7 @@ module_param(max_duration, int, 0444);
 
 
 /**
-<<<<<<< HEAD
- * we can detect a core multipiler from dir0_lsb
-=======
  * we can detect a core multiplier from dir0_lsb
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * from GX1 datasheet p.56,
  *	MULT[3:0]:
  *	0000 = SYSCLK multiplied by 4 (test only)
@@ -197,11 +179,7 @@ static void gx_write_byte(int reg, int value)
  * gx_detect_chipset:
  *
  **/
-<<<<<<< HEAD
-static __init struct pci_dev *gx_detect_chipset(void)
-=======
 static struct pci_dev * __init gx_detect_chipset(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *gx_pci = NULL;
 
@@ -269,21 +247,13 @@ static unsigned int gx_validate_speed(unsigned int khz, u8 *on_duration,
  * set cpu speed in khz.
  **/
 
-<<<<<<< HEAD
-static void gx_set_cpuspeed(unsigned int khz)
-=======
 static void gx_set_cpuspeed(struct cpufreq_policy *policy, unsigned int khz)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 suscfg, pmer1;
 	unsigned int new_khz;
 	unsigned long flags;
 	struct cpufreq_freqs freqs;
 
-<<<<<<< HEAD
-	freqs.cpu = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	freqs.old = gx_get_cpuspeed(0);
 
 	new_khz = gx_validate_speed(khz, &gx_params->on_duration,
@@ -291,17 +261,9 @@ static void gx_set_cpuspeed(struct cpufreq_policy *policy, unsigned int khz)
 
 	freqs.new = new_khz;
 
-<<<<<<< HEAD
-	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
-	local_irq_save(flags);
-
-
-
-=======
 	cpufreq_freq_transition_begin(policy, &freqs);
 	local_irq_save(flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_khz != stock_freq) {
 		/* if new khz == 100% of CPU speed, it is special case */
 		switch (gx_params->cs55x0->device) {
@@ -348,11 +310,7 @@ static void gx_set_cpuspeed(struct cpufreq_policy *policy, unsigned int khz)
 
 	gx_params->pci_suscfg = suscfg;
 
-<<<<<<< HEAD
-	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
-=======
 	cpufreq_freq_transition_end(policy, &freqs, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("suspend modulation w/ duration of ON:%d us, OFF:%d us\n",
 		gx_params->on_duration * 32, gx_params->off_duration * 32);
@@ -370,11 +328,7 @@ static void gx_set_cpuspeed(struct cpufreq_policy *policy, unsigned int khz)
  *      for the hardware supported by the driver.
  */
 
-<<<<<<< HEAD
-static int cpufreq_gx_verify(struct cpufreq_policy *policy)
-=======
 static int cpufreq_gx_verify(struct cpufreq_policy_data *policy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int tmp_freq = 0;
 	u8 tmp1, tmp2;
@@ -388,11 +342,7 @@ static int cpufreq_gx_verify(struct cpufreq_policy_data *policy)
 
 	/* it needs to be assured that at least one supported frequency is
 	 * within policy->min and policy->max. If it is not, policy->max
-<<<<<<< HEAD
-	 * needs to be increased until one freuqency is supported.
-=======
 	 * needs to be increased until one frequency is supported.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * policy->min may not be decreased, though. This way we guarantee a
 	 * specific processing capacity.
 	 */
@@ -440,22 +390,14 @@ static int cpufreq_gx_target(struct cpufreq_policy *policy,
 		tmp_freq = gx_validate_speed(tmp_freq, &tmp1, &tmp2);
 	}
 
-<<<<<<< HEAD
-	gx_set_cpuspeed(tmp_freq);
-=======
 	gx_set_cpuspeed(policy, tmp_freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int cpufreq_gx_cpu_init(struct cpufreq_policy *policy)
 {
-<<<<<<< HEAD
-	unsigned int maxfreq, curfreq;
-=======
 	unsigned int maxfreq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!policy || policy->cpu != 0)
 		return -ENODEV;
@@ -469,15 +411,8 @@ static int cpufreq_gx_cpu_init(struct cpufreq_policy *policy)
 		maxfreq = 30000 * gx_freq_mult[getCx86(CX86_DIR1) & 0x0f];
 
 	stock_freq = maxfreq;
-<<<<<<< HEAD
-	curfreq = gx_get_cpuspeed(0);
 
 	pr_debug("cpu max frequency is %d.\n", maxfreq);
-	pr_debug("cpu current frequency is %dkHz.\n", curfreq);
-=======
-
-	pr_debug("cpu max frequency is %d.\n", maxfreq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup basic struct for cpufreq API */
 	policy->cpu = 0;
@@ -487,15 +422,8 @@ static int cpufreq_gx_cpu_init(struct cpufreq_policy *policy)
 	else
 		policy->min = maxfreq / POLICY_MIN_DIV;
 	policy->max = maxfreq;
-<<<<<<< HEAD
-	policy->cur = curfreq;
 	policy->cpuinfo.min_freq = maxfreq / max_duration;
 	policy->cpuinfo.max_freq = maxfreq;
-	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
-=======
-	policy->cpuinfo.min_freq = maxfreq / max_duration;
-	policy->cpuinfo.max_freq = maxfreq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -505,19 +433,12 @@ static int cpufreq_gx_cpu_init(struct cpufreq_policy *policy)
  *   MediaGX/Geode GX initialize cpufreq driver
  */
 static struct cpufreq_driver gx_suspmod_driver = {
-<<<<<<< HEAD
-=======
 	.flags		= CPUFREQ_NO_AUTO_DYNAMIC_SWITCHING,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get		= gx_get_cpuspeed,
 	.verify		= cpufreq_gx_verify,
 	.target		= cpufreq_gx_target,
 	.init		= cpufreq_gx_cpu_init,
 	.name		= "gx-suspmod",
-<<<<<<< HEAD
-	.owner		= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init cpufreq_gx_init(void)
@@ -537,11 +458,7 @@ static int __init cpufreq_gx_init(void)
 
 	pr_debug("geode suspend modulation available.\n");
 
-<<<<<<< HEAD
-	params = kzalloc(sizeof(struct gxfreq_params), GFP_KERNEL);
-=======
 	params = kzalloc(sizeof(*params), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (params == NULL)
 		return -ENOMEM;
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 
 /*
@@ -10,31 +7,9 @@
  *	Copyright (C) 1998 Frederic Rible F1OAT (frible@teaser.fr)
  *	Adapted from baycom.c driver written by Thomas Sailer (sailer@ife.ee.ethz.ch)
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
  *  Please note that the GPL allows you to use the driver, NOT the radio.
  *  In order to use the radio, you need a license from the communications
  *  authority of your country.
- *
- *
-=======
- *  Please note that the GPL allows you to use the driver, NOT the radio.
- *  In order to use the radio, you need a license from the communications
- *  authority of your country.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*****************************************************************************/
@@ -87,10 +62,6 @@ struct yamdrv_ioctl_cfg {
 
 struct yamdrv_ioctl_mcs {
 	int cmd;
-<<<<<<< HEAD
-	int bitrate;
-=======
 	unsigned int bitrate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char bits[YAM_FPGA_SIZE];
 };

@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * linux/kernel/irq/resend.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 1992, 1998-2006 Linus Torvalds, Ingo Molnar
  * Copyright (C) 2005-2006, Thomas Gleixner
  *
@@ -27,40 +21,13 @@
 
 #ifdef CONFIG_HARDIRQS_SW_RESEND
 
-<<<<<<< HEAD
-/* Bitmap to handle software resend of interrupts: */
-static DECLARE_BITMAP(irqs_resend, IRQ_BITMAP_BITS);
-=======
 /* hlist_head to handle software resend of interrupts: */
 static HLIST_HEAD(irq_resend_list);
 static DEFINE_RAW_SPINLOCK(irq_resend_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Run software resends of IRQ's
  */
-<<<<<<< HEAD
-static void resend_irqs(unsigned long arg)
-{
-	struct irq_desc *desc;
-	int irq;
-
-	while (!bitmap_empty(irqs_resend, nr_irqs)) {
-		irq = find_first_bit(irqs_resend, nr_irqs);
-		clear_bit(irq, irqs_resend);
-		desc = irq_to_desc(irq);
-		local_irq_disable();
-		desc->handle_irq(irq, desc);
-		local_irq_enable();
-	}
-}
-
-/* Tasklet to handle resend: */
-static DECLARE_TASKLET(resend_tasklet, resend_irqs, 0);
-
-#endif
-
-=======
 static void resend_irqs(struct tasklet_struct *unused)
 {
 	struct irq_desc *desc;
@@ -149,39 +116,11 @@ static int try_retrigger(struct irq_desc *desc)
 #endif
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IRQ resend
  *
  * Is called with interrupts disabled and desc->lock held.
  */
-<<<<<<< HEAD
-void check_irq_resend(struct irq_desc *desc, unsigned int irq)
-{
-	/*
-	 * We do not resend level type interrupts. Level type
-	 * interrupts are resent by hardware when they are still
-	 * active.
-	 */
-	if (irq_settings_is_level(desc))
-		return;
-	if (desc->istate & IRQS_REPLAY)
-		return;
-	if (desc->istate & IRQS_PENDING) {
-		desc->istate &= ~IRQS_PENDING;
-		desc->istate |= IRQS_REPLAY;
-
-		if (!desc->irq_data.chip->irq_retrigger ||
-		    !desc->irq_data.chip->irq_retrigger(&desc->irq_data)) {
-#ifdef CONFIG_HARDIRQS_SW_RESEND
-			/* Set it pending and activate the softirq: */
-			set_bit(irq, irqs_resend);
-			tasklet_schedule(&resend_tasklet);
-#endif
-		}
-	}
-}
-=======
 int check_irq_resend(struct irq_desc *desc, bool inject)
 {
 	int err = 0;
@@ -261,4 +200,3 @@ int irq_inject_interrupt(unsigned int irq)
 }
 EXPORT_SYMBOL_GPL(irq_inject_interrupt);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

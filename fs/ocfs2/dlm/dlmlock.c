@@ -1,35 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmlock.c
  *
  * underlying calls for lock creation
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -48,15 +23,9 @@
 #include <linux/delay.h>
 
 
-<<<<<<< HEAD
-#include "cluster/heartbeat.h"
-#include "cluster/nodemanager.h"
-#include "cluster/tcp.h"
-=======
 #include "../cluster/heartbeat.h"
 #include "../cluster/nodemanager.h"
 #include "../cluster/tcp.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dlmapi.h"
 #include "dlmcommon.h"
@@ -64,15 +33,9 @@
 #include "dlmconvert.h"
 
 #define MLOG_MASK_PREFIX ML_DLM
-<<<<<<< HEAD
-#include "cluster/masklog.h"
-
-static struct kmem_cache *dlm_lock_cache = NULL;
-=======
 #include "../cluster/masklog.h"
 
 static struct kmem_cache *dlm_lock_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(dlm_cookie_lock);
 static u64 dlm_next_cookie = 1;
@@ -97,12 +60,7 @@ int dlm_init_lock_cache(void)
 
 void dlm_destroy_lock_cache(void)
 {
-<<<<<<< HEAD
-	if (dlm_lock_cache)
-		kmem_cache_destroy(dlm_lock_cache);
-=======
 	kmem_cache_destroy(dlm_lock_cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Tell us whether we can grant a new lock request.
@@ -115,29 +73,14 @@ void dlm_destroy_lock_cache(void)
 static int dlm_can_grant_new_lock(struct dlm_lock_resource *res,
 				  struct dlm_lock *lock)
 {
-<<<<<<< HEAD
-	struct list_head *iter;
-	struct dlm_lock *tmplock;
-
-	list_for_each(iter, &res->granted) {
-		tmplock = list_entry(iter, struct dlm_lock, list);
-
-=======
 	struct dlm_lock *tmplock;
 
 	list_for_each_entry(tmplock, &res->granted, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dlm_lock_compatible(tmplock->ml.type, lock->ml.type))
 			return 0;
 	}
 
-<<<<<<< HEAD
-	list_for_each(iter, &res->converting) {
-		tmplock = list_entry(iter, struct dlm_lock, list);
-
-=======
 	list_for_each_entry(tmplock, &res->converting, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dlm_lock_compatible(tmplock->ml.type, lock->ml.type))
 			return 0;
 		if (!dlm_lock_compatible(tmplock->ml.convert_type,
@@ -212,10 +155,7 @@ static enum dlm_status dlmlock_master(struct dlm_ctxt *dlm,
 				     lock->ml.node);
 			}
 		} else {
-<<<<<<< HEAD
-=======
 			status = DLM_NORMAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dlm_lock_get(lock);
 			list_add_tail(&lock->list, &res->blocked);
 			kick_thread = 1;

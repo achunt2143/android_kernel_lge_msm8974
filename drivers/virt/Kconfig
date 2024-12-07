@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Virtualization support drivers
 #
 
 menuconfig VIRT_DRIVERS
 	bool "Virtualization drivers"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to get to see options for device drivers that support
 	  virtualization environments.
 
@@ -20,11 +13,6 @@ menuconfig VIRT_DRIVERS
 
 if VIRT_DRIVERS
 
-<<<<<<< HEAD
-config FSL_HV_MANAGER
-	tristate "Freescale hypervisor management driver"
-	depends on FSL_SOC
-=======
 config VMGENID
 	tristate "Virtual Machine Generation ID driver"
 	default y
@@ -40,7 +28,6 @@ config FSL_HV_MANAGER
 	tristate "Freescale hypervisor management driver"
 	depends on FSL_SOC
 	select EPAPR_PARAVIRT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
           The Freescale hypervisor management driver provides several services
 	  to drivers and applications related to the Freescale hypervisor:
@@ -55,8 +42,6 @@ config FSL_HV_MANAGER
           4) A kernel interface for receiving callbacks when a managed
 	     partition shuts down.
 
-<<<<<<< HEAD
-=======
 source "drivers/virt/vboxguest/Kconfig"
 
 source "drivers/virt/nitro_enclaves/Kconfig"
@@ -65,5 +50,4 @@ source "drivers/virt/acrn/Kconfig"
 
 source "drivers/virt/coco/Kconfig"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

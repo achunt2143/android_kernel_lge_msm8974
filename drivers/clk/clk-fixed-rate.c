@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010-2011 Canonical Ltd <jeremy.kerr@canonical.com>
  * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Fixed rate clock implementation
  */
 
@@ -21,11 +11,8 @@
 #include <linux/slab.h>
 #include <linux/io.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DOC: basic fixed-rate clock that cannot gate
@@ -44,15 +31,6 @@ static unsigned long clk_fixed_rate_recalc_rate(struct clk_hw *hw,
 {
 	return to_clk_fixed_rate(hw)->fixed_rate;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(clk_fixed_rate_recalc_rate);
-
-struct clk_ops clk_fixed_rate_ops = {
-	.recalc_rate = clk_fixed_rate_recalc_rate,
-};
-EXPORT_SYMBOL_GPL(clk_fixed_rate_ops);
-
-=======
 
 static unsigned long clk_fixed_rate_recalc_accuracy(struct clk_hw *hw,
 		unsigned long parent_accuracy)
@@ -140,50 +118,10 @@ struct clk_hw *__clk_hw_register_fixed_rate(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(__clk_hw_register_fixed_rate);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct clk *clk_register_fixed_rate(struct device *dev, const char *name,
 		const char *parent_name, unsigned long flags,
 		unsigned long fixed_rate)
 {
-<<<<<<< HEAD
-	struct clk_fixed_rate *fixed;
-	char **parent_names = NULL;
-	u8 len;
-
-	fixed = kzalloc(sizeof(struct clk_fixed_rate), GFP_KERNEL);
-
-	if (!fixed) {
-		pr_err("%s: could not allocate fixed clk\n", __func__);
-		return ERR_PTR(-ENOMEM);
-	}
-
-	/* struct clk_fixed_rate assignments */
-	fixed->fixed_rate = fixed_rate;
-
-	if (parent_name) {
-		parent_names = kmalloc(sizeof(char *), GFP_KERNEL);
-
-		if (! parent_names)
-			goto out;
-
-		len = sizeof(char) * strlen(parent_name);
-
-		parent_names[0] = kmalloc(len, GFP_KERNEL);
-
-		if (!parent_names[0])
-			goto out;
-
-		strncpy(parent_names[0], parent_name, len);
-	}
-
-out:
-	return clk_register(dev, name,
-			&clk_fixed_rate_ops, &fixed->hw,
-			parent_names,
-			(parent_name ? 1 : 0),
-			flags);
-}
-=======
 	struct clk_hw *hw;
 
 	hw = clk_hw_register_fixed_rate_with_accuracy(dev, name, parent_name,
@@ -298,4 +236,3 @@ static struct platform_driver of_fixed_clk_driver = {
 };
 builtin_platform_driver(of_fixed_clk_driver);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*  KVM paravirtual clock driver. A clocksource implementation
-    Copyright (C) 2008 Glauber de Oliveira Costa, Red Hat Inc.
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*  KVM paravirtual clock driver. A clocksource implementation
     Copyright (C) 2008 Glauber de Oliveira Costa, Red Hat Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/clocksource.h>
@@ -28,17 +9,6 @@
 #include <asm/msr.h>
 #include <asm/apic.h>
 #include <linux/percpu.h>
-<<<<<<< HEAD
-
-#include <asm/x86_init.h>
-#include <asm/reboot.h>
-
-static int kvmclock = 1;
-static int msr_kvm_system_time = MSR_KVM_SYSTEM_TIME;
-static int msr_kvm_wall_clock = MSR_KVM_WALL_CLOCK;
-
-static int parse_no_kvmclock(char *arg)
-=======
 #include <linux/hardirq.h>
 #include <linux/cpuhotplug.h>
 #include <linux/sched.h>
@@ -59,18 +29,12 @@ static int msr_kvm_wall_clock __ro_after_init;
 static u64 kvm_sched_clock_offset __ro_after_init;
 
 static int __init parse_no_kvmclock(char *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kvmclock = 0;
 	return 0;
 }
 early_param("no-kvmclock", parse_no_kvmclock);
 
-<<<<<<< HEAD
-/* The hypervisor will put information about time periodically here */
-static DEFINE_PER_CPU_SHARED_ALIGNED(struct pvclock_vcpu_time_info, hv_clock);
-static struct pvclock_wall_clock wall_clock;
-=======
 static int __init parse_no_kvmclock_vsyscall(char *arg)
 {
 	kvmclock_vsyscall = 0;
@@ -88,46 +52,12 @@ static struct pvclock_wall_clock wall_clock __bss_decrypted;
 static struct pvclock_vsyscall_time_info *hvclock_mem;
 DEFINE_PER_CPU(struct pvclock_vsyscall_time_info *, hv_clock_per_cpu);
 EXPORT_PER_CPU_SYMBOL_GPL(hv_clock_per_cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The wallclock is the time of day when we booted. Since then, some time may
  * have elapsed since the hypervisor wrote the data. So we try to account for
  * that with system time
  */
-<<<<<<< HEAD
-static unsigned long kvm_get_wallclock(void)
-{
-	struct pvclock_vcpu_time_info *vcpu_time;
-	struct timespec ts;
-	int low, high;
-
-	low = (int)__pa_symbol(&wall_clock);
-	high = ((u64)__pa_symbol(&wall_clock) >> 32);
-
-	native_write_msr(msr_kvm_wall_clock, low, high);
-
-	vcpu_time = &get_cpu_var(hv_clock);
-	pvclock_read_wallclock(&wall_clock, vcpu_time, &ts);
-	put_cpu_var(hv_clock);
-
-	return ts.tv_sec;
-}
-
-static int kvm_set_wallclock(unsigned long now)
-{
-	return -1;
-}
-
-static cycle_t kvm_clock_read(void)
-{
-	struct pvclock_vcpu_time_info *src;
-	cycle_t ret;
-
-	preempt_disable_notrace();
-	src = &__get_cpu_var(hv_clock);
-	ret = pvclock_clocksource_read(src);
-=======
 static void kvm_get_wallclock(struct timespec64 *now)
 {
 	wrmsrl(msr_kvm_wall_clock, slow_virt_to_phys(&wall_clock));
@@ -147,22 +77,15 @@ static u64 kvm_clock_read(void)
 
 	preempt_disable_notrace();
 	ret = pvclock_clocksource_read_nowd(this_cpu_pvti());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_enable_notrace();
 	return ret;
 }
 
-<<<<<<< HEAD
-static cycle_t kvm_clock_get_cycles(struct clocksource *cs)
-=======
 static u64 kvm_clock_get_cycles(struct clocksource *cs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kvm_clock_read();
 }
 
-<<<<<<< HEAD
-=======
 static noinstr u64 kvm_sched_clock_read(void)
 {
 	return pvclock_clocksource_read_nowd(this_cpu_pvti()) - kvm_sched_clock_offset;
@@ -182,7 +105,6 @@ static inline void kvm_sched_clock_init(bool stable)
 		sizeof(((struct pvclock_vcpu_time_info *)NULL)->system_time));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If we don't do that, there is the possibility that the guest
  * will calibrate under heavy load - thus, getting a lower lpj -
@@ -194,20 +116,11 @@ static inline void kvm_sched_clock_init(bool stable)
  */
 static unsigned long kvm_get_tsc_khz(void)
 {
-<<<<<<< HEAD
-	struct pvclock_vcpu_time_info *src;
-	src = &per_cpu(hv_clock, 0);
-	return pvclock_tsc_khz(src);
-}
-
-static void kvm_get_preset_lpj(void)
-=======
 	setup_force_cpu_cap(X86_FEATURE_TSC_KNOWN_FREQ);
 	return pvclock_tsc_khz(this_cpu_pvti());
 }
 
 static void __init kvm_get_preset_lpj(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long khz;
 	u64 lpj;
@@ -219,28 +132,6 @@ static void __init kvm_get_preset_lpj(void)
 	preset_lpj = lpj;
 }
 
-<<<<<<< HEAD
-static struct clocksource kvm_clock = {
-	.name = "kvm-clock",
-	.read = kvm_clock_get_cycles,
-	.rating = 400,
-	.mask = CLOCKSOURCE_MASK(64),
-	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
-};
-
-int kvm_register_clock(char *txt)
-{
-	int cpu = smp_processor_id();
-	int low, high, ret;
-
-	low = (int)__pa(&per_cpu(hv_clock, cpu)) | 1;
-	high = ((u64)__pa(&per_cpu(hv_clock, cpu)) >> 32);
-	ret = native_write_msr_safe(msr_kvm_system_time, low, high);
-	printk(KERN_INFO "kvm-clock: cpu %d, msr %x:%x, %s\n",
-	       cpu, high, low, txt);
-
-	return ret;
-=======
 bool kvm_check_and_clear_guest_paused(void)
 {
 	struct pvclock_vsyscall_time_info *src = this_cpu_hvclock();
@@ -284,7 +175,6 @@ static void kvm_register_clock(char *txt)
 	pa = slow_virt_to_phys(&src->pvti) | 0x01ULL;
 	wrmsrl(msr_kvm_system_time, pa);
 	pr_debug("kvm-clock: cpu %d, msr %llx, %s", smp_processor_id(), pa, txt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kvm_save_sched_clock_state(void)
@@ -297,40 +187,6 @@ static void kvm_restore_sched_clock_state(void)
 }
 
 #ifdef CONFIG_X86_LOCAL_APIC
-<<<<<<< HEAD
-static void __cpuinit kvm_setup_secondary_clock(void)
-{
-	/*
-	 * Now that the first cpu already had this clocksource initialized,
-	 * we shouldn't fail.
-	 */
-	WARN_ON(kvm_register_clock("secondary cpu clock"));
-}
-#endif
-
-/*
- * After the clock is registered, the host will keep writing to the
- * registered memory location. If the guest happens to shutdown, this memory
- * won't be valid. In cases like kexec, in which you install a new kernel, this
- * means a random memory location will be kept being written. So before any
- * kind of shutdown from our side, we unregister the clock by writting anything
- * that does not have the 'enable' bit set in the msr
- */
-#ifdef CONFIG_KEXEC
-static void kvm_crash_shutdown(struct pt_regs *regs)
-{
-	native_write_msr(msr_kvm_system_time, 0, 0);
-	kvm_disable_steal_time();
-	native_machine_crash_shutdown(regs);
-}
-#endif
-
-static void kvm_shutdown(void)
-{
-	native_write_msr(msr_kvm_system_time, 0, 0);
-	kvm_disable_steal_time();
-	native_machine_shutdown();
-=======
 static void kvm_setup_secondary_clock(void)
 {
 	kvm_register_clock("secondary cpu clock");
@@ -427,47 +283,10 @@ static int kvmclock_setup_percpu(unsigned int cpu)
 
 	per_cpu(hv_clock_per_cpu, cpu) = p;
 	return p ? 0 : -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init kvmclock_init(void)
 {
-<<<<<<< HEAD
-	if (!kvm_para_available())
-		return;
-
-	if (kvmclock && kvm_para_has_feature(KVM_FEATURE_CLOCKSOURCE2)) {
-		msr_kvm_system_time = MSR_KVM_SYSTEM_TIME_NEW;
-		msr_kvm_wall_clock = MSR_KVM_WALL_CLOCK_NEW;
-	} else if (!(kvmclock && kvm_para_has_feature(KVM_FEATURE_CLOCKSOURCE)))
-		return;
-
-	printk(KERN_INFO "kvm-clock: Using msrs %x and %x",
-		msr_kvm_system_time, msr_kvm_wall_clock);
-
-	if (kvm_register_clock("boot clock"))
-		return;
-	pv_time_ops.sched_clock = kvm_clock_read;
-	x86_platform.calibrate_tsc = kvm_get_tsc_khz;
-	x86_platform.get_wallclock = kvm_get_wallclock;
-	x86_platform.set_wallclock = kvm_set_wallclock;
-#ifdef CONFIG_X86_LOCAL_APIC
-	x86_cpuinit.early_percpu_clock_init =
-		kvm_setup_secondary_clock;
-#endif
-	x86_platform.save_sched_clock_state = kvm_save_sched_clock_state;
-	x86_platform.restore_sched_clock_state = kvm_restore_sched_clock_state;
-	machine_ops.shutdown  = kvm_shutdown;
-#ifdef CONFIG_KEXEC
-	machine_ops.crash_shutdown  = kvm_crash_shutdown;
-#endif
-	kvm_get_preset_lpj();
-	clocksource_register_hz(&kvm_clock, NSEC_PER_SEC);
-	pv_info.name = "KVM";
-
-	if (kvm_para_has_feature(KVM_FEATURE_CLOCKSOURCE_STABLE_BIT))
-		pvclock_set_flags(PVCLOCK_TSC_STABLE_BIT);
-=======
 	u8 flags;
 
 	if (!kvm_para_available() || !kvmclock)
@@ -527,5 +346,4 @@ void __init kvmclock_init(void)
 
 	clocksource_register_hz(&kvm_clock, NSEC_PER_SEC);
 	pv_info.name = "KVM";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

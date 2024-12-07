@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ppp_deflate.c - interface the zlib procedures for Deflate compression
  * and decompression (as used by gzip) to the PPP code.
  *
  * Copyright 1994-1998 Paul Mackerras.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  version 2 as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -253,11 +243,7 @@ static int z_compress(void *arg, unsigned char *rptr, unsigned char *obuf,
 	/*
 	 * See if we managed to reduce the size of the packet.
 	 */
-<<<<<<< HEAD
-	if (olen < isize) {
-=======
 	if (olen < isize && olen <= osize) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state->stats.comp_bytes += olen;
 		state->stats.comp_packets++;
 	} else {
@@ -293,10 +279,6 @@ static void z_decomp_free(void *arg)
 	struct ppp_deflate_state *state = (struct ppp_deflate_state *) arg;
 
 	if (state) {
-<<<<<<< HEAD
-		zlib_inflateEnd(&state->strm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfree(state->strm.workspace);
 		kfree(state);
 	}
@@ -624,14 +606,6 @@ static struct compressor ppp_deflate_draft = {
 
 static int __init deflate_init(void)
 {
-<<<<<<< HEAD
-        int answer = ppp_register_compressor(&ppp_deflate);
-        if (answer == 0)
-                printk(KERN_INFO
-		       "PPP Deflate Compression module registered\n");
-	ppp_register_compressor(&ppp_deflate_draft);
-        return answer;
-=======
 	int rc;
 
 	rc = ppp_register_compressor(&ppp_deflate);
@@ -646,7 +620,6 @@ static int __init deflate_init(void)
 
 	pr_info("PPP Deflate Compression module registered\n");
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit deflate_cleanup(void)
@@ -657,10 +630,7 @@ static void __exit deflate_cleanup(void)
 
 module_init(deflate_init);
 module_exit(deflate_cleanup);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("PPP Deflate compression module");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_ALIAS("ppp-compress-" __stringify(CI_DEFLATE));
 MODULE_ALIAS("ppp-compress-" __stringify(CI_DEFLATE_DRAFT));

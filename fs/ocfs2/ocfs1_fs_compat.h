@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ocfs1_fs_compat.h
  *
  * OCFS1 volume header definitions.  OCFS2 creates valid but unmountable
@@ -14,23 +8,6 @@
  * mount it.
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License, version 2,  as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _OCFS1_FS_COMPAT_H

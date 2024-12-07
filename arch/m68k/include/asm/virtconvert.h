@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __VIRT_CONVERT__
 #define __VIRT_CONVERT__
 
@@ -19,43 +16,19 @@
 /*
  * Change virtual addresses to physical addresses and vv.
  */
-<<<<<<< HEAD
-=======
 #define virt_to_phys virt_to_phys
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long virt_to_phys(void *address)
 {
 	return __pa(address);
 }
 
-<<<<<<< HEAD
-=======
 #define phys_to_virt phys_to_virt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void *phys_to_virt(unsigned long address)
 {
 	return __va(address);
 }
 
 /* Permanent address of a page. */
-<<<<<<< HEAD
-#ifdef CONFIG_MMU
-#ifdef CONFIG_SINGLE_MEMORY_CHUNK
-#define page_to_phys(page) \
-	__pa(PAGE_OFFSET + (((page) - pg_data_map[0].node_mem_map) << PAGE_SHIFT))
-#else
-#define page_to_phys(page)	(page_to_pfn(page) << PAGE_SHIFT)
-#endif
-#else
-#define page_to_phys(page)	(((page) - mem_map) << PAGE_SHIFT)
-#endif
-
-/*
- * IO bus memory addresses are 1:1 with the physical address,
- */
-#define virt_to_bus virt_to_phys
-#define bus_to_virt phys_to_virt
-=======
 #define page_to_phys(page)	(page_to_pfn(page) << PAGE_SHIFT)
 
 /*
@@ -65,7 +38,6 @@ static inline void *phys_to_virt(unsigned long address)
 #if defined(CONFIG_AMIGA) || defined(CONFIG_VME)
 #define virt_to_bus virt_to_phys
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 #endif

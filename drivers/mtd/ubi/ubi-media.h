@@ -1,38 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) International Business Machines Corp., 2006
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
 /* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
 /*
  * Copyright (C) International Business Machines Corp., 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Thomas Gleixner
  *          Frank Haverkamp
  *          Oliver Lohmann
  *          Andreas Arnez
-<<<<<<< HEAD
- */
-
-/*
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file defines the layout of UBI headers and all the other UBI on-flash
  * data structures.
  */
@@ -71,14 +45,11 @@ enum {
  * Volume flags used in the volume table record.
  *
  * @UBI_VTBL_AUTORESIZE_FLG: auto-resize this volume
-<<<<<<< HEAD
-=======
  * @UBI_VTBL_SKIP_CRC_CHECK_FLG: skip the CRC check done on a static volume at
  *				 open time. Should only be set on volumes that
  *				 are used by upper layers doing this kind of
  *				 check. Main use-case for this flag is
  *				 boot-time reduction
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * %UBI_VTBL_AUTORESIZE_FLG flag can be set only for one volume in the volume
  * table. UBI automatically re-sizes the volume which has this flag and makes
@@ -110,10 +81,7 @@ enum {
  */
 enum {
 	UBI_VTBL_AUTORESIZE_FLG = 0x01,
-<<<<<<< HEAD
-=======
 	UBI_VTBL_SKIP_CRC_CHECK_FLG = 0x02,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -163,11 +131,7 @@ enum {
  * is changed radically. This field is duplicated in the volume identifier
  * header.
  *
-<<<<<<< HEAD
- * The @vid_hdr_offset and @data_offset fields contain the offset of the the
-=======
  * The @vid_hdr_offset and @data_offset fields contain the offset of the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * volume identifier header and user data, relative to the beginning of the
  * physical eraseblock. These values have to be the same for all physical
  * eraseblocks.
@@ -175,17 +139,10 @@ enum {
  * The @image_seq field is used to validate a UBI image that has been prepared
  * for a UBI device. The @image_seq value can be any value, but it must be the
  * same on all eraseblocks. UBI will ensure that all new erase counter headers
-<<<<<<< HEAD
- * also contain this value, and will check the value when scanning at start-up.
- * One way to make use of @image_seq is to increase its value by one every time
- * an image is flashed over an existing image, then, if the flashing does not
- * complete, UBI will detect the error when scanning.
-=======
  * also contain this value, and will check the value when attaching the flash.
  * One way to make use of @image_seq is to increase its value by one every time
  * an image is flashed over an existing image, then, if the flashing does not
  * complete, UBI will detect the error when attaching the media.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubi_ec_hdr {
 	__be32  magic;
@@ -262,11 +219,7 @@ struct ubi_ec_hdr {
  * copy. UBI also calculates data CRC when the data is moved and stores it at
  * the @data_crc field of the copy (P1). So when UBI needs to pick one physical
  * eraseblock of two (P or P1), the @copy_flag of the newer one (P1) is
-<<<<<<< HEAD
- * examined. If it is cleared, the situation* is simple and the newer one is
-=======
  * examined. If it is cleared, the situation is simple and the newer one is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * picked. If it is set, the data CRC of the copy (P1) is examined. If the CRC
  * checksum is correct, this physical eraseblock is selected (P1). Otherwise
  * the older one (P) is selected.
@@ -335,13 +288,8 @@ struct ubi_vid_hdr {
 #define UBI_INT_VOL_COUNT 1
 
 /*
-<<<<<<< HEAD
- * Starting ID of internal volumes. There is reserved room for 4096 internal
- * volumes.
-=======
  * Starting ID of internal volumes: 0x7fffefff.
  * There is reserved room for 4096 internal volumes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define UBI_INTERNAL_VOL_START (0x7FFFFFFF - 4096)
 
@@ -417,8 +365,6 @@ struct ubi_vtbl_record {
 	__be32  crc;
 } __packed;
 
-<<<<<<< HEAD
-=======
 /* UBI fastmap on-flash data structures */
 
 #define UBI_FM_SB_VOLUME_ID	(UBI_LAYOUT_VOLUME_ID + 1)
@@ -554,5 +500,4 @@ struct ubi_fm_eba {
 	__be32 reserved_pebs;
 	__be32 pnum[];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !__UBI_MEDIA_H__ */

@@ -6,37 +6,6 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
- * Copyright (C) 2002 - 2005 Tensilica Inc.
- */
-
-#include <variant/core.h>
-
-	.macro	src_b	r, w0, w1
-#ifdef __XTENSA_EB__
-	src	\r, \w0, \w1
-#else
-	src	\r, \w1, \w0
-#endif
-	.endm
-
-	.macro	ssa8	r
-#ifdef __XTENSA_EB__
-	ssa8b	\r
-#else
-	ssa8l	\r
-#endif
-	.endm
-
-
-/*
- * void *memcpy(void *dst, const void *src, size_t len);
- * void *memmove(void *dst, const void *src, size_t len);
- * void *bcopy(const void *src, void *dst, size_t len);
- *
- * This function is intended to do the same thing as the standard
- * library function memcpy() (or bcopy()) for most cases.
-=======
  * Copyright (C) 2002 - 2012 Tensilica Inc.
  */
 
@@ -49,7 +18,6 @@
  *
  * This function is intended to do the same thing as the standard
  * library function memcpy() for most cases.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * However, where the source and/or destination references
  * an instruction RAM or ROM or a data RAM or ROM, that
  * source and/or destination will always be accessed with
@@ -60,12 +28,6 @@
  * !!!!!!!  Handling of IRAM/IROM has not yet
  * !!!!!!!  been implemented.
  *
-<<<<<<< HEAD
- * The bcopy version is provided here to avoid the overhead
- * of an extra call, for callers that require this convention.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The (general case) algorithm is as follows:
  *   If destination is unaligned, align it by conditionally
  *     copying 1 and 2 bytes.
@@ -94,20 +56,6 @@
  */
 
 	.text
-<<<<<<< HEAD
-	.align	4
-	.global	bcopy
-	.type   bcopy,@function
-bcopy:
-	entry	sp, 16		# minimal stack frame
-	# a2=src, a3=dst, a4=len
-	mov	a5, a3		# copy dst so that a2 is return value
-	mov	a3, a2
-	mov	a2, a5
-	j	.Lcommon	# go to common code for memcpy+bcopy
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Byte by byte copy
@@ -128,17 +76,10 @@ bcopy:
 	s8i	a6, a5, 0
 	addi	a5, a5, 1
 #if !XCHAL_HAVE_LOOPS
-<<<<<<< HEAD
-	blt	a3, a7, .Lnextbyte
-#endif /* !XCHAL_HAVE_LOOPS */
-.Lbytecopydone:
-	retw
-=======
 	bne	a3, a7, .Lnextbyte # continue loop if $a3:src != $a7:src_end
 #endif /* !XCHAL_HAVE_LOOPS */
 .Lbytecopydone:
 	abi_ret_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Destination is unaligned
@@ -168,22 +109,10 @@ bcopy:
 	addi	a5, a5,  2
 	j	.Ldstaligned	# dst is now aligned, return to main algorithm
 
-<<<<<<< HEAD
-	.align	4
-	.global	memcpy
-	.type   memcpy,@function
-memcpy:
-	.global	memmove
-	.type   memmove,@function
-memmove:
-
-	entry	sp, 16		# minimal stack frame
-=======
 ENTRY(__memcpy)
 WEAK(memcpy)
 
 	abi_entry_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	# a2/ dst, a3/ src, a4/ len
 	mov	a5, a2		# copy dst so that a2 is return value
 .Lcommon:
@@ -217,11 +146,7 @@ WEAK(memcpy)
 	s32i	a7, a5, 12
 	addi	a5, a5, 16
 #if !XCHAL_HAVE_LOOPS
-<<<<<<< HEAD
-	blt	a3, a8, .Loop1
-=======
 	bne	a3, a8, .Loop1  # continue loop if a3:src != a8:src_end
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !XCHAL_HAVE_LOOPS */
 .Loop1done:
 	bbci.l	a4, 3, .L2
@@ -236,11 +161,7 @@ WEAK(memcpy)
 	bbsi.l	a4, 2, .L3
 	bbsi.l	a4, 1, .L4
 	bbsi.l	a4, 0, .L5
-<<<<<<< HEAD
-	retw
-=======
 	abi_ret_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .L3:
 	# copy 4 bytes
 	l32i	a6, a3,  0
@@ -249,11 +170,7 @@ WEAK(memcpy)
 	addi	a5, a5,  4
 	bbsi.l	a4, 1, .L4
 	bbsi.l	a4, 0, .L5
-<<<<<<< HEAD
-	retw
-=======
 	abi_ret_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .L4:
 	# copy 2 bytes
 	l16ui	a6, a3,  0
@@ -261,20 +178,12 @@ WEAK(memcpy)
 	s16i	a6, a5,  0
 	addi	a5, a5,  2
 	bbsi.l	a4, 0, .L5
-<<<<<<< HEAD
-	retw
-=======
 	abi_ret_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .L5:
 	# copy 1 byte
 	l8ui	a6, a3,  0
 	s8i	a6, a5,  0
-<<<<<<< HEAD
-	retw
-=======
 	abi_ret_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Destination is aligned, Source is unaligned
@@ -284,17 +193,11 @@ WEAK(memcpy)
 .Lsrcunaligned:
 	_beqz	a4, .Ldone	# avoid loading anything for zero-length copies
 	# copy 16 bytes per iteration for word-aligned dst and unaligned src
-<<<<<<< HEAD
-	ssa8	a3		# set shift amount from byte offset
-#define SIM_CHECKS_ALIGNMENT	1	/* set to 1 when running on ISS (simulator) with the
-					   lint or ferret client, or 0 to save a few cycles */
-=======
 	__ssa8	a3		# set shift amount from byte offset
 
 /* set to 1 when running on ISS (simulator) with the
    lint or ferret client, or 0 to save a few cycles */
 #define SIM_CHECKS_ALIGNMENT	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if XCHAL_UNALIGNED_LOAD_EXCEPTION || SIM_CHECKS_ALIGNMENT
 	and	a11, a3, a8	# save unalignment offset for below
 	sub	a3, a3, a11	# align a3
@@ -310,22 +213,6 @@ WEAK(memcpy)
 .Loop2:
 	l32i	a7, a3,  4
 	l32i	a8, a3,  8
-<<<<<<< HEAD
-	src_b	a6, a6, a7
-	s32i	a6, a5,  0
-	l32i	a9, a3, 12
-	src_b	a7, a7, a8
-	s32i	a7, a5,  4
-	l32i	a6, a3, 16
-	src_b	a8, a8, a9
-	s32i	a8, a5,  8
-	addi	a3, a3, 16
-	src_b	a9, a9, a6
-	s32i	a9, a5, 12
-	addi	a5, a5, 16
-#if !XCHAL_HAVE_LOOPS
-	blt	a3, a10, .Loop2
-=======
 	__src_b	a6, a6, a7
 	s32i	a6, a5,  0
 	l32i	a9, a3, 12
@@ -340,24 +227,16 @@ WEAK(memcpy)
 	addi	a5, a5, 16
 #if !XCHAL_HAVE_LOOPS
 	bne	a3, a10, .Loop2 # continue loop if a3:src != a10:src_end
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !XCHAL_HAVE_LOOPS */
 .Loop2done:
 	bbci.l	a4, 3, .L12
 	# copy 8 bytes
 	l32i	a7, a3,  4
 	l32i	a8, a3,  8
-<<<<<<< HEAD
-	src_b	a6, a6, a7
-	s32i	a6, a5,  0
-	addi	a3, a3,  8
-	src_b	a7, a7, a8
-=======
 	__src_b	a6, a6, a7
 	s32i	a6, a5,  0
 	addi	a3, a3,  8
 	__src_b	a7, a7, a8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a7, a5,  4
 	addi	a5, a5,  8
 	mov	a6, a8
@@ -366,11 +245,7 @@ WEAK(memcpy)
 	# copy 4 bytes
 	l32i	a7, a3,  4
 	addi	a3, a3,  4
-<<<<<<< HEAD
-	src_b	a6, a6, a7
-=======
 	__src_b	a6, a6, a7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a6, a5,  0
 	addi	a5, a5,  4
 	mov	a6, a7
@@ -380,11 +255,7 @@ WEAK(memcpy)
 #endif
 	bbsi.l	a4, 1, .L14
 	bbsi.l	a4, 0, .L15
-<<<<<<< HEAD
-.Ldone:	retw
-=======
 .Ldone:	abi_ret_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .L14:
 	# copy 2 bytes
 	l8ui	a6, a3,  0
@@ -394,26 +265,11 @@ WEAK(memcpy)
 	s8i	a7, a5,  1
 	addi	a5, a5,  2
 	bbsi.l	a4, 0, .L15
-<<<<<<< HEAD
-	retw
-=======
 	abi_ret_default
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .L15:
 	# copy 1 byte
 	l8ui	a6, a3,  0
 	s8i	a6, a5,  0
-<<<<<<< HEAD
-	retw
-
-/*
- * Local Variables:
- * mode:fundamental
- * comment-start: "# "
- * comment-start-skip: "# *"
- * End:
- */
-=======
 	abi_ret_default
 
 ENDPROC(__memcpy)
@@ -684,4 +540,3 @@ WEAK(memmove)
 ENDPROC(__memmove)
 EXPORT_SYMBOL(__memmove)
 EXPORT_SYMBOL(memmove)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

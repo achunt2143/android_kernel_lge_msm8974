@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap1/board-ams-delta.c
  *
@@ -10,30 +7,17 @@
  * Board specific inits for the Amstrad E3 (codename Delta) videophone
  *
  * Copyright (C) 2006 Jonathan McDowell <noodles@earth.li>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/basic_mmio_gpio.h>
-#include <linux/gpio.h>
-=======
  */
 #include <linux/gpio/driver.h>
 #include <linux/gpio/machine.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/leds.h>
-<<<<<<< HEAD
-=======
 #include <linux/mtd/nand-gpio.h>
 #include <linux/mtd/partitions.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/fixed.h>
@@ -42,38 +26,20 @@
 #include <linux/export.h>
 #include <linux/omapfb.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <media/soc_camera.h>
-=======
 #include <linux/platform_data/gpio-omap.h>
 #include <linux/soc/ti/omap1-mux.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/serial.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-<<<<<<< HEAD
-#include <plat/board-ams-delta.h>
-#include <plat/keypad.h>
-#include <plat/mux.h>
-#include <plat/usb.h>
-#include <plat/board.h>
-
-#include <mach/hardware.h>
-#include <mach/ams-delta-fiq.h>
-#include <mach/camera.h>
-
-=======
 #include <linux/platform_data/keypad-omap.h>
 
 #include "hardware.h"
 #include "usb.h"
 #include "ams-delta-fiq.h"
 #include "board-ams-delta.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iomap.h"
 #include "common.h"
 
@@ -186,28 +152,16 @@ static struct map_desc ams_delta_io_desc[] __initdata = {
 	}
 };
 
-<<<<<<< HEAD
-static struct omap_lcd_config ams_delta_lcd_config __initdata = {
-	.ctrl_name	= "internal",
-};
-
-static struct omap_usb_config ams_delta_usb_config = {
-=======
 static const struct omap_lcd_config ams_delta_lcd_config __initconst = {
 	.ctrl_name	= "internal",
 };
 
 static struct omap_usb_config ams_delta_usb_config __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.register_host	= 1,
 	.hmc_mode	= 16,
 	.pins[0]	= 2,
 };
 
-<<<<<<< HEAD
-#define LATCH1_GPIO_BASE	232
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LATCH1_NGPIO		8
 
 static struct resource latch1_resources[] = {
@@ -219,16 +173,11 @@ static struct resource latch1_resources[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct bgpio_pdata latch1_pdata = {
-	.base	= LATCH1_GPIO_BASE,
-=======
 #define LATCH1_LABEL	"latch1"
 
 static struct bgpio_pdata latch1_pdata = {
 	.label	= LATCH1_LABEL,
 	.base	= -1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ngpio	= LATCH1_NGPIO,
 };
 
@@ -242,8 +191,6 @@ static struct platform_device latch1_gpio_device = {
 	},
 };
 
-<<<<<<< HEAD
-=======
 #define LATCH1_PIN_LED_CAMERA		0
 #define LATCH1_PIN_LED_ADVERT		1
 #define LATCH1_PIN_LED_MAIL		2
@@ -255,32 +202,21 @@ static struct platform_device latch1_gpio_device = {
 
 #define LATCH2_NGPIO			16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource latch2_resources[] = {
 	[0] = {
 		.name	= "dat",
 		.start	= LATCH2_PHYS,
-<<<<<<< HEAD
-		.end	= LATCH2_PHYS + (AMS_DELTA_LATCH2_NGPIO - 1) / 8,
-=======
 		.end	= LATCH2_PHYS + (LATCH2_NGPIO - 1) / 8,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_MEM,
 	},
 };
 
-<<<<<<< HEAD
-static struct bgpio_pdata latch2_pdata = {
-	.base	= AMS_DELTA_LATCH2_GPIO_BASE,
-	.ngpio	= AMS_DELTA_LATCH2_NGPIO,
-=======
 #define LATCH2_LABEL	"latch2"
 
 static struct bgpio_pdata latch2_pdata = {
 	.label	= LATCH2_LABEL,
 	.base	= -1,
 	.ngpio	= LATCH2_NGPIO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device latch2_gpio_device = {
@@ -293,45 +229,6 @@ static struct platform_device latch2_gpio_device = {
 	},
 };
 
-<<<<<<< HEAD
-static const struct gpio latch_gpios[] __initconst = {
-	{
-		.gpio	= LATCH1_GPIO_BASE + 6,
-		.flags	= GPIOF_OUT_INIT_LOW,
-		.label	= "dockit1",
-	},
-	{
-		.gpio	= LATCH1_GPIO_BASE + 7,
-		.flags	= GPIOF_OUT_INIT_LOW,
-		.label	= "dockit2",
-	},
-	{
-		.gpio	= AMS_DELTA_GPIO_PIN_SCARD_RSTIN,
-		.flags	= GPIOF_OUT_INIT_LOW,
-		.label	= "scard_rstin",
-	},
-	{
-		.gpio	= AMS_DELTA_GPIO_PIN_SCARD_CMDVCC,
-		.flags	= GPIOF_OUT_INIT_LOW,
-		.label	= "scard_cmdvcc",
-	},
-	{
-		.gpio	= AMS_DELTA_GPIO_PIN_MODEM_CODEC,
-		.flags	= GPIOF_OUT_INIT_LOW,
-		.label	= "modem_codec",
-	},
-	{
-		.gpio	= AMS_DELTA_LATCH2_GPIO_BASE + 14,
-		.flags	= GPIOF_OUT_INIT_LOW,
-		.label	= "hookflash1",
-	},
-	{
-		.gpio	= AMS_DELTA_LATCH2_GPIO_BASE + 15,
-		.flags	= GPIOF_OUT_INIT_LOW,
-		.label	= "hookflash2",
-	},
-};
-=======
 #define LATCH2_PIN_LCD_VBLEN		0
 #define LATCH2_PIN_LCD_NDISP		1
 #define LATCH2_PIN_NAND_NCE		2
@@ -348,7 +245,6 @@ static const struct gpio latch_gpios[] __initconst = {
 #define LATCH2_PIN_MODEM_CODEC		13
 #define LATCH2_PIN_HANDSFREE_MUTE	14
 #define LATCH2_PIN_HANDSET_MUTE		15
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct regulator_consumer_supply modem_nreset_consumers[] = {
 	REGULATOR_SUPPLY("RESET#", "serial8250.1"),
@@ -367,13 +263,7 @@ static struct regulator_init_data modem_nreset_data = {
 static struct fixed_voltage_config modem_nreset_config = {
 	.supply_name		= "modem_nreset",
 	.microvolts		= 3300000,
-<<<<<<< HEAD
-	.gpio			= AMS_DELTA_GPIO_PIN_MODEM_NRESET,
 	.startup_delay		= 25000,
-	.enable_high		= 1,
-=======
-	.startup_delay		= 25000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enabled_at_boot	= 1,
 	.init_data		= &modem_nreset_data,
 };
@@ -386,8 +276,6 @@ static struct platform_device modem_nreset_device = {
 	},
 };
 
-<<<<<<< HEAD
-=======
 static struct gpiod_lookup_table ams_delta_nreset_gpiod_table = {
 	.dev_id = "reg-fixed-voltage",
 	.table = {
@@ -397,36 +285,12 @@ static struct gpiod_lookup_table ams_delta_nreset_gpiod_table = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct modem_private_data {
 	struct regulator *regulator;
 };
 
 static struct modem_private_data modem_priv;
 
-<<<<<<< HEAD
-void ams_delta_latch_write(int base, int ngpio, u16 mask, u16 value)
-{
-	int bit = 0;
-	u16 bitpos = 1 << bit;
-
-	for (; bit < ngpio; bit++, bitpos = bitpos << 1) {
-		if (!(mask & bitpos))
-			continue;
-		else
-			gpio_set_value(base + bit, (value & bitpos) != 0);
-	}
-}
-EXPORT_SYMBOL(ams_delta_latch_write);
-
-static struct resource ams_delta_nand_resources[] = {
-	[0] = {
-		.start	= OMAP1_MPUIO_BASE,
-		.end	= OMAP1_MPUIO_BASE +
-				OMAP_MPUIO_IO_CNTL + sizeof(u32) - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-=======
 /*
  * Define partitions for flash device
  */
@@ -455,16 +319,11 @@ static struct mtd_partition partition_info[] = {
 static struct gpio_nand_platdata nand_platdata = {
 	.parts		= partition_info,
 	.num_parts	= ARRAY_SIZE(partition_info),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device ams_delta_nand_device = {
 	.name	= "ams-delta-nand",
 	.id	= -1,
-<<<<<<< HEAD
-	.num_resources	= ARRAY_SIZE(ams_delta_nand_resources),
-	.resource	= ams_delta_nand_resources,
-=======
 	.dev	= {
 		.platform_data = &nand_platdata,
 	},
@@ -497,7 +356,6 @@ static struct gpiod_lookup_table ams_delta_nand_gpio_table = {
 		GPIO_LOOKUP_IDX(OMAP_MPUIO_LABEL, 7, "data", 7, 0),
 		{ },
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource ams_delta_kp_resources[] = {
@@ -535,40 +393,6 @@ static struct platform_device ams_delta_lcd_device = {
 	.id	= -1,
 };
 
-<<<<<<< HEAD
-static const struct gpio_led gpio_leds[] __initconst = {
-	{
-		.name		 = "camera",
-		.gpio		 = LATCH1_GPIO_BASE + 0,
-		.default_state	 = LEDS_GPIO_DEFSTATE_OFF,
-#ifdef CONFIG_LEDS_TRIGGERS
-		.default_trigger = "ams_delta_camera",
-#endif
-	},
-	{
-		.name		 = "advert",
-		.gpio		 = LATCH1_GPIO_BASE + 1,
-		.default_state	 = LEDS_GPIO_DEFSTATE_OFF,
-	},
-	{
-		.name		 = "email",
-		.gpio		 = LATCH1_GPIO_BASE + 2,
-		.default_state	 = LEDS_GPIO_DEFSTATE_OFF,
-	},
-	{
-		.name		 = "handsfree",
-		.gpio		 = LATCH1_GPIO_BASE + 3,
-		.default_state	 = LEDS_GPIO_DEFSTATE_OFF,
-	},
-	{
-		.name		 = "voicemail",
-		.gpio		 = LATCH1_GPIO_BASE + 4,
-		.default_state	 = LEDS_GPIO_DEFSTATE_OFF,
-	},
-	{
-		.name		 = "voice",
-		.gpio		 = LATCH1_GPIO_BASE + 5,
-=======
 static struct gpiod_lookup_table ams_delta_lcd_gpio_table = {
 	.table = {
 		GPIO_LOOKUP(LATCH2_LABEL, LATCH2_PIN_LCD_VBLEN, "vblen", 0),
@@ -600,7 +424,6 @@ static struct gpio_led gpio_leds[] __initdata = {
 	},
 	[LATCH1_PIN_LED_VOICE] = {
 		.name		 = "voice",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.default_state	 = LEDS_GPIO_DEFSTATE_OFF,
 	},
 };
@@ -610,51 +433,6 @@ static const struct gpio_led_platform_data leds_pdata __initconst = {
 	.num_leds	= ARRAY_SIZE(gpio_leds),
 };
 
-<<<<<<< HEAD
-static struct i2c_board_info ams_delta_camera_board_info[] = {
-	{
-		I2C_BOARD_INFO("ov6650", 0x60),
-	},
-};
-
-#ifdef CONFIG_LEDS_TRIGGERS
-DEFINE_LED_TRIGGER(ams_delta_camera_led_trigger);
-
-static int ams_delta_camera_power(struct device *dev, int power)
-{
-	/*
-	 * turn on camera LED
-	 */
-	if (power)
-		led_trigger_event(ams_delta_camera_led_trigger, LED_FULL);
-	else
-		led_trigger_event(ams_delta_camera_led_trigger, LED_OFF);
-	return 0;
-}
-#else
-#define ams_delta_camera_power	NULL
-#endif
-
-static struct soc_camera_link ams_delta_iclink = {
-	.bus_id         = 0,	/* OMAP1 SoC camera bus */
-	.i2c_adapter_id = 1,
-	.board_info     = &ams_delta_camera_board_info[0],
-	.module_name    = "ov6650",
-	.power		= ams_delta_camera_power,
-};
-
-static struct platform_device ams_delta_camera_device = {
-	.name   = "soc-camera-pdrv",
-	.id     = 0,
-	.dev    = {
-		.platform_data = &ams_delta_iclink,
-	},
-};
-
-static struct omap1_cam_platform_data ams_delta_camera_platform_data = {
-	.camexclk_khz	= 12000,	/* default 12MHz clock, no extra DPLL */
-	.lclk_khz_max	= 1334,		/* results in 5fps CIF, 10fps QCIF */
-=======
 static struct gpiod_lookup_table leds_gpio_table = {
 	.table = {
 		GPIO_LOOKUP_IDX(LATCH1_LABEL, LATCH1_PIN_LED_CAMERA, NULL,
@@ -761,25 +539,12 @@ static struct gpiod_lookup_table keybrd_pwr_gpio_table = {
 			    GPIO_ACTIVE_HIGH),
 		{ },
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device *ams_delta_devices[] __initdata = {
 	&latch1_gpio_device,
 	&latch2_gpio_device,
 	&ams_delta_kp_device,
-<<<<<<< HEAD
-	&ams_delta_camera_device,
-};
-
-static struct platform_device *late_devices[] __initdata = {
-	&ams_delta_nand_device,
-	&ams_delta_lcd_device,
-};
-
-static void __init ams_delta_init(void)
-{
-=======
 	&ams_delta_audio_device,
 	&ams_delta_serio_device,
 	&ams_delta_nand_device,
@@ -904,7 +669,6 @@ static void __init ams_delta_init(void)
 {
 	struct platform_device *leds_pdev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* mux pins for uarts */
 	omap_cfg_reg(UART1_TX);
 	omap_cfg_reg(UART1_RTS);
@@ -923,28 +687,14 @@ static void __init ams_delta_init(void)
 	omap_cfg_reg(J19_1610_CAM_D6);
 	omap_cfg_reg(J18_1610_CAM_D7);
 
-<<<<<<< HEAD
-=======
 	omap_gpio_deps_init();
 	ams_delta_latch2_init();
 	gpiod_add_hogs(ams_delta_gpio_hogs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap_serial_init();
 	omap_register_i2c_bus(1, 100, NULL, 0);
 
 	omap1_usb_init(&ams_delta_usb_config);
-<<<<<<< HEAD
-	omap1_set_camera_info(&ams_delta_camera_platform_data);
-#ifdef CONFIG_LEDS_TRIGGERS
-	led_trigger_register_simple("ams_delta_camera",
-			&ams_delta_camera_led_trigger);
-#endif
-	gpio_led_register_device(-1, &leds_pdata);
-	platform_add_devices(ams_delta_devices, ARRAY_SIZE(ams_delta_devices));
-
-	ams_delta_init_fiq();
-=======
 	platform_add_devices(ams_delta_devices, ARRAY_SIZE(ams_delta_devices));
 
 	/*
@@ -982,7 +732,6 @@ static void __init ams_delta_init(void)
 		leds_gpio_table.dev_id = dev_name(&leds_pdev->dev);
 		gpiod_add_lookup_table(&leds_gpio_table);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	omap_writew(omap_readw(ARM_RSTCT1) | 0x0004, ARM_RSTCT1);
 
@@ -992,13 +741,10 @@ static void __init ams_delta_init(void)
 static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
 {
 	struct modem_private_data *priv = port->private_data;
-<<<<<<< HEAD
-=======
 	int ret;
 
 	if (!priv)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(priv->regulator))
 		return;
@@ -1007,11 +753,6 @@ static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
 		return;
 
 	if (state == 0)
-<<<<<<< HEAD
-		regulator_enable(priv->regulator);
-	else if (old == 0)
-		regulator_disable(priv->regulator);
-=======
 		ret = regulator_enable(priv->regulator);
 	else if (old == 0)
 		ret = regulator_disable(priv->regulator);
@@ -1022,18 +763,13 @@ static void modem_pm(struct uart_port *port, unsigned int state, unsigned old)
 		dev_warn(port->dev,
 			 "ams_delta modem_pm: failed to %sable regulator: %d\n",
 			 state ? "dis" : "en", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct plat_serial8250_port ams_delta_modem_ports[] = {
 	{
 		.membase	= IOMEM(MODEM_VIRT),
 		.mapbase	= MODEM_PHYS,
-<<<<<<< HEAD
-		.irq		= -EINVAL, /* changed later */
-=======
 		.irq		= IRQ_NOTCONNECTED, /* changed later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= UPF_BOOT_AUTOCONF,
 		.irqflags	= IRQF_TRIGGER_RISING,
 		.iotype		= UPIO_MEM,
@@ -1045,8 +781,6 @@ static struct plat_serial8250_port ams_delta_modem_ports[] = {
 	{ },
 };
 
-<<<<<<< HEAD
-=======
 static int ams_delta_modem_pm_activate(struct device *dev)
 {
 	modem_priv.regulator = regulator_get(dev, "RESET#");
@@ -1060,48 +794,11 @@ static struct dev_pm_domain ams_delta_modem_pm_domain = {
 	.activate	= ams_delta_modem_pm_activate,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device ams_delta_modem_device = {
 	.name	= "serial8250",
 	.id	= PLAT8250_DEV_PLATFORM1,
 	.dev		= {
 		.platform_data = ams_delta_modem_ports,
-<<<<<<< HEAD
-	},
-};
-
-static int __init late_init(void)
-{
-	int err;
-
-	if (!machine_is_ams_delta())
-		return -ENODEV;
-
-	err = gpio_request_array(latch_gpios, ARRAY_SIZE(latch_gpios));
-	if (err) {
-		pr_err("Couldn't take over latch1/latch2 GPIO pins\n");
-		return err;
-	}
-
-	platform_add_devices(late_devices, ARRAY_SIZE(late_devices));
-
-	err = platform_device_register(&modem_nreset_device);
-	if (err) {
-		pr_err("Couldn't register the modem regulator device\n");
-		return err;
-	}
-
-	omap_cfg_reg(M14_1510_GPIO2);
-	ams_delta_modem_ports[0].irq =
-			gpio_to_irq(AMS_DELTA_GPIO_PIN_MODEM_IRQ);
-
-	err = gpio_request(AMS_DELTA_GPIO_PIN_MODEM_IRQ, "modem");
-	if (err) {
-		pr_err("Couldn't request gpio pin for modem\n");
-		return err;
-	}
-	gpio_direction_input(AMS_DELTA_GPIO_PIN_MODEM_IRQ);
-=======
 		.pm_domain = &ams_delta_modem_pm_domain,
 	},
 };
@@ -1129,43 +826,10 @@ static int __init ams_delta_modem_init(void)
 		return -ENODEV;
 
 	omap_cfg_reg(M14_1510_GPIO2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the modem_nreset regulator consumer before use */
 	modem_priv.regulator = ERR_PTR(-ENODEV);
 
-<<<<<<< HEAD
-	ams_delta_latch2_write(AMS_DELTA_LATCH2_MODEM_CODEC,
-			AMS_DELTA_LATCH2_MODEM_CODEC);
-
-	err = platform_device_register(&ams_delta_modem_device);
-	if (err)
-		goto gpio_free;
-
-	/*
-	 * Once the modem device is registered, the modem_nreset
-	 * regulator can be requested on behalf of that device.
-	 */
-	modem_priv.regulator = regulator_get(&ams_delta_modem_device.dev,
-			"RESET#");
-	if (IS_ERR(modem_priv.regulator)) {
-		err = PTR_ERR(modem_priv.regulator);
-		goto unregister;
-	}
-	return 0;
-
-unregister:
-	platform_device_unregister(&ams_delta_modem_device);
-gpio_free:
-	gpio_free(AMS_DELTA_GPIO_PIN_MODEM_IRQ);
-	return err;
-}
-late_initcall(late_init);
-
-static void __init ams_delta_map_io(void)
-{
-	omap15xx_map_io();
-=======
 	return platform_device_register(&ams_delta_modem_device);
 }
 arch_initcall_sync(ams_delta_modem_init);
@@ -1173,7 +837,6 @@ arch_initcall_sync(ams_delta_modem_init);
 static void __init ams_delta_map_io(void)
 {
 	omap1_map_io();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iotable_init(ams_delta_io_desc, ARRAY_SIZE(ams_delta_io_desc));
 }
 
@@ -1182,16 +845,9 @@ MACHINE_START(AMS_DELTA, "Amstrad E3 (Delta)")
 	.atag_offset	= 0x100,
 	.map_io		= ams_delta_map_io,
 	.init_early	= omap1_init_early,
-<<<<<<< HEAD
-	.reserve	= omap_reserve,
-	.init_irq	= omap1_init_irq,
-	.init_machine	= ams_delta_init,
-	.timer		= &omap1_timer,
-=======
 	.init_irq	= omap1_init_irq,
 	.init_machine	= ams_delta_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= omap1_restart,
 MACHINE_END

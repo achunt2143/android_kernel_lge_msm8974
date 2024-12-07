@@ -8,11 +8,7 @@ perf-lock - Analyze lock events
 SYNOPSIS
 --------
 [verse]
-<<<<<<< HEAD
-'perf lock' {record|report|script|info}
-=======
 'perf lock' {record|report|script|info|contention}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DESCRIPTION
 -----------
@@ -31,11 +27,8 @@ and statistics with this 'perf lock' command.
   'perf lock info' shows metadata like threads or addresses
   of lock instances.
 
-<<<<<<< HEAD
-=======
   'perf lock contention' shows contention statistics.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 COMMON OPTIONS
 --------------
 
@@ -43,29 +36,21 @@ COMMON OPTIONS
 --input=<file>::
         Input file name. (default: perf.data unless stdin is a fifo)
 
-<<<<<<< HEAD
-=======
 --output=<file>::
         Output file name for perf lock contention and report.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -v::
 --verbose::
         Be more verbose (show symbol address, etc).
 
-<<<<<<< HEAD
-=======
 -q::
 --quiet::
 	Do not show any warnings or messages. (Suppress -v)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -D::
 --dump-raw-trace::
         Dump raw trace in ASCII.
 
-<<<<<<< HEAD
-=======
 -f::
 --force::
 	Don't complain, do it.
@@ -77,16 +62,12 @@ COMMON OPTIONS
         kallsyms pathname
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 REPORT OPTIONS
 --------------
 
 -k::
 --key=<value>::
         Sorting key. Possible values: acquired (default), contended,
-<<<<<<< HEAD
-        wait_total, wait_max, wait_min.
-=======
 	avg_wait, wait_total, wait_max, wait_min.
 
 -F::
@@ -124,7 +105,6 @@ REPORT OPTIONS
 --entries=<value>::
 	Display this many entries.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 INFO OPTIONS
 ------------
@@ -137,8 +117,6 @@ INFO OPTIONS
 --map::
 	dump map of lock instances (address:name table)
 
-<<<<<<< HEAD
-=======
 
 CONTENTION OPTIONS
 ------------------
@@ -238,7 +216,6 @@ CONTENTION OPTIONS
 	Show lock contention only in the given cgroups (comma separated list).
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SEE ALSO
 --------
 linkperf:perf[1]

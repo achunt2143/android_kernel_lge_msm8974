@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Creative Labs, Inc.
- *  Routines for control of EMU10K1 chips
- *
- *  BUGS:
- *    --
- *
- *  TODO:
- *    --
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -34,7 +7,6 @@
  *                   Creative Labs, Inc.
  *
  *  Routines for control of EMU10K1 chips
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/time.h>
@@ -44,8 +16,6 @@
 #include <linux/export.h>
 #include "p17v.h"
 
-<<<<<<< HEAD
-=======
 static inline bool check_ptr_reg(struct snd_emu10k1 *emu, unsigned int reg)
 {
 	if (snd_BUG_ON(!emu))
@@ -58,17 +28,12 @@ static inline bool check_ptr_reg(struct snd_emu10k1 *emu, unsigned int reg)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int snd_emu10k1_ptr_read(struct snd_emu10k1 * emu, unsigned int reg, unsigned int chn)
 {
 	unsigned long flags;
 	unsigned int regptr, val;
 	unsigned int mask;
 
-<<<<<<< HEAD
-	mask = emu->audigy ? A_PTR_ADDRESS_MASK : PTR_ADDRESS_MASK;
-	regptr = ((reg << 16) & mask) | (chn & PTR_CHANNELNUM_MASK);
-=======
 	regptr = (reg << 16) | chn;
 	if (!check_ptr_reg(emu, regptr))
 		return 0;
@@ -77,33 +42,16 @@ unsigned int snd_emu10k1_ptr_read(struct snd_emu10k1 * emu, unsigned int reg, un
 	outl(regptr, emu->port + PTR);
 	val = inl(emu->port + DATA);
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reg & 0xff000000) {
 		unsigned char size, offset;
 		
 		size = (reg >> 24) & 0x3f;
 		offset = (reg >> 16) & 0x1f;
-<<<<<<< HEAD
-		mask = ((1 << size) - 1) << offset;
-		
-		spin_lock_irqsave(&emu->emu_lock, flags);
-		outl(regptr, emu->port + PTR);
-		val = inl(emu->port + DATA);
-		spin_unlock_irqrestore(&emu->emu_lock, flags);
-		
-		return (val & mask) >> offset;
-	} else {
-		spin_lock_irqsave(&emu->emu_lock, flags);
-		outl(regptr, emu->port + PTR);
-		val = inl(emu->port + DATA);
-		spin_unlock_irqrestore(&emu->emu_lock, flags);
-=======
 		mask = (1 << size) - 1;
 		
 		return (val >> offset) & mask;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return val;
 	}
 }
@@ -116,62 +64,34 @@ void snd_emu10k1_ptr_write(struct snd_emu10k1 *emu, unsigned int reg, unsigned i
 	unsigned long flags;
 	unsigned int mask;
 
-<<<<<<< HEAD
-	if (!emu) {
-		snd_printk(KERN_ERR "ptr_write: emu is null!\n");
-		dump_stack();
-		return;
-	}
-	mask = emu->audigy ? A_PTR_ADDRESS_MASK : PTR_ADDRESS_MASK;
-	regptr = ((reg << 16) & mask) | (chn & PTR_CHANNELNUM_MASK);
-=======
 	regptr = (reg << 16) | chn;
 	if (!check_ptr_reg(emu, regptr))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reg & 0xff000000) {
 		unsigned char size, offset;
 
 		size = (reg >> 24) & 0x3f;
 		offset = (reg >> 16) & 0x1f;
-<<<<<<< HEAD
-		mask = ((1 << size) - 1) << offset;
-		data = (data << offset) & mask;
-=======
 		mask = (1 << size) - 1;
 		if (snd_BUG_ON(data & ~mask))
 			return;
 		mask <<= offset;
 		data <<= offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock_irqsave(&emu->emu_lock, flags);
 		outl(regptr, emu->port + PTR);
 		data |= inl(emu->port + DATA) & ~mask;
-<<<<<<< HEAD
-		outl(data, emu->port + DATA);
-		spin_unlock_irqrestore(&emu->emu_lock, flags);		
-	} else {
-		spin_lock_irqsave(&emu->emu_lock, flags);
-		outl(regptr, emu->port + PTR);
-		outl(data, emu->port + DATA);
-		spin_unlock_irqrestore(&emu->emu_lock, flags);
-	}
-=======
 	} else {
 		spin_lock_irqsave(&emu->emu_lock, flags);
 		outl(regptr, emu->port + PTR);
 	}
 	outl(data, emu->port + DATA);
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(snd_emu10k1_ptr_write);
 
-<<<<<<< HEAD
-=======
 void snd_emu10k1_ptr_write_multiple(struct snd_emu10k1 *emu, unsigned int chn, ...)
 {
 	va_list va;
@@ -203,7 +123,6 @@ void snd_emu10k1_ptr_write_multiple(struct snd_emu10k1 *emu, unsigned int chn, .
 
 EXPORT_SYMBOL(snd_emu10k1_ptr_write_multiple);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int snd_emu10k1_ptr20_read(struct snd_emu10k1 * emu, 
 					  unsigned int reg, 
 					  unsigned int chn)
@@ -214,13 +133,8 @@ unsigned int snd_emu10k1_ptr20_read(struct snd_emu10k1 * emu,
 	regptr = (reg << 16) | chn;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	outl(regptr, emu->port + 0x20 + PTR);
-	val = inl(emu->port + 0x20 + DATA);
-=======
 	outl(regptr, emu->port + PTR2);
 	val = inl(emu->port + DATA2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
 	return val;
 }
@@ -236,13 +150,8 @@ void snd_emu10k1_ptr20_write(struct snd_emu10k1 *emu,
 	regptr = (reg << 16) | chn;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	outl(regptr, emu->port + 0x20 + PTR);
-	outl(data, emu->port + 0x20 + DATA);
-=======
 	outl(regptr, emu->port + PTR2);
 	outl(data, emu->port + DATA2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
 }
 
@@ -257,11 +166,7 @@ int snd_emu10k1_spi_write(struct snd_emu10k1 * emu,
 	/* This function is not re-entrant, so protect against it. */
 	spin_lock(&emu->spi_lock);
 	if (emu->card_capabilities->ca0108_chip)
-<<<<<<< HEAD
-		reg = 0x3c; /* PTR20, reg 0x3c */
-=======
 		reg = P17V_SPI;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		/* For other chip types the SPI register
 		 * is currently unknown. */
@@ -315,11 +220,7 @@ int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 	int err = 0;
 
 	if ((reg > 0x7f) || (value > 0x1ff)) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "i2c_write: invalid values.\n");
-=======
 		dev_err(emu->card->dev, "i2c_write: invalid values.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -347,11 +248,7 @@ int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 				break;
 
 			if (timeout > 1000) {
-<<<<<<< HEAD
-                		snd_printk(KERN_WARNING
-=======
 				dev_warn(emu->card->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   "emu10k1:I2C:timeout status=0x%x\n",
 					   status);
 				break;
@@ -363,13 +260,8 @@ int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 	}
 
 	if (retry == 10) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "Writing to ADC failed!\n");
-		snd_printk(KERN_ERR "status=0x%x, reg=%d, value=%d\n",
-=======
 		dev_err(emu->card->dev, "Writing to ADC failed!\n");
 		dev_err(emu->card->dev, "status=0x%x, reg=%d, value=%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status, reg, value);
 		/* dump_stack(); */
 		err = -EINVAL;
@@ -379,45 +271,6 @@ int snd_emu10k1_i2c_write(struct snd_emu10k1 *emu,
 	return err;
 }
 
-<<<<<<< HEAD
-int snd_emu1010_fpga_write(struct snd_emu10k1 * emu, u32 reg, u32 value)
-{
-	unsigned long flags;
-
-	if (reg > 0x3f)
-		return 1;
-	reg += 0x40; /* 0x40 upwards are registers. */
-	if (value > 0x3f) /* 0 to 0x3f are values */
-		return 1;
-	spin_lock_irqsave(&emu->emu_lock, flags);
-	outl(reg, emu->port + A_IOCFG);
-	udelay(10);
-	outl(reg | 0x80, emu->port + A_IOCFG);  /* High bit clocks the value into the fpga. */
-	udelay(10);
-	outl(value, emu->port + A_IOCFG);
-	udelay(10);
-	outl(value | 0x80 , emu->port + A_IOCFG);  /* High bit clocks the value into the fpga. */
-	spin_unlock_irqrestore(&emu->emu_lock, flags);
-
-	return 0;
-}
-
-int snd_emu1010_fpga_read(struct snd_emu10k1 * emu, u32 reg, u32 *value)
-{
-	unsigned long flags;
-	if (reg > 0x3f)
-		return 1;
-	reg += 0x40; /* 0x40 upwards are registers. */
-	spin_lock_irqsave(&emu->emu_lock, flags);
-	outl(reg, emu->port + A_IOCFG);
-	udelay(10);
-	outl(reg | 0x80, emu->port + A_IOCFG);  /* High bit clocks the value into the fpga. */
-	udelay(10);
-	*value = ((inl(emu->port + A_IOCFG) >> 8) & 0x7f);
-	spin_unlock_irqrestore(&emu->emu_lock, flags);
-
-	return 0;
-=======
 static void snd_emu1010_fpga_write_locked(struct snd_emu10k1 *emu, u32 reg, u32 value)
 {
 	if (snd_BUG_ON(reg > 0x3f))
@@ -467,22 +320,11 @@ void snd_emu1010_fpga_read(struct snd_emu10k1 *emu, u32 reg, u32 *value)
 	outw(reg | 0x80, emu->port + A_GPIO);  /* High bit clocks the value into the fpga. */
 	udelay(10);
 	*value = ((inw(emu->port + A_GPIO) >> 8) & mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Each Destination has one and only one Source,
  * but one Source can feed any number of Destinations simultaneously.
  */
-<<<<<<< HEAD
-int snd_emu1010_fpga_link_dst_src_write(struct snd_emu10k1 * emu, u32 dst, u32 src)
-{
-	snd_emu1010_fpga_write(emu, 0x00, ((dst >> 8) & 0x3f) );
-	snd_emu1010_fpga_write(emu, 0x01, (dst & 0x3f) );
-	snd_emu1010_fpga_write(emu, 0x02, ((src >> 8) & 0x3f) );
-	snd_emu1010_fpga_write(emu, 0x03, (src & 0x3f) );
-
-	return 0;
-=======
 void snd_emu1010_fpga_link_dst_src_write(struct snd_emu10k1 *emu, u32 dst, u32 src)
 {
 	if (snd_BUG_ON(dst & ~0x71f))
@@ -578,7 +420,6 @@ void snd_emu1010_update_clock(struct snd_emu10k1 *emu)
 	leds |= EMU_HANA_DOCK_LEDS_2_LOCK;
 
 	snd_emu1010_fpga_write(emu, EMU_HANA_DOCK_LEDS_2, leds);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void snd_emu10k1_intr_enable(struct snd_emu10k1 *emu, unsigned int intrenb)
@@ -609,10 +450,6 @@ void snd_emu10k1_voice_intr_enable(struct snd_emu10k1 *emu, unsigned int voicenu
 	unsigned int val;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(CLIEH << 16, emu->port + PTR);
 		val = inl(emu->port + DATA);
@@ -632,10 +469,6 @@ void snd_emu10k1_voice_intr_disable(struct snd_emu10k1 *emu, unsigned int voicen
 	unsigned int val;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(CLIEH << 16, emu->port + PTR);
 		val = inl(emu->port + DATA);
@@ -654,10 +487,6 @@ void snd_emu10k1_voice_intr_ack(struct snd_emu10k1 *emu, unsigned int voicenum)
 	unsigned long flags;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(CLIPH << 16, emu->port + PTR);
 		voicenum = 1 << (voicenum - 32);
@@ -675,10 +504,6 @@ void snd_emu10k1_voice_half_loop_intr_enable(struct snd_emu10k1 *emu, unsigned i
 	unsigned int val;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(HLIEH << 16, emu->port + PTR);
 		val = inl(emu->port + DATA);
@@ -698,10 +523,6 @@ void snd_emu10k1_voice_half_loop_intr_disable(struct snd_emu10k1 *emu, unsigned 
 	unsigned int val;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(HLIEH << 16, emu->port + PTR);
 		val = inl(emu->port + DATA);
@@ -720,10 +541,6 @@ void snd_emu10k1_voice_half_loop_intr_ack(struct snd_emu10k1 *emu, unsigned int 
 	unsigned long flags;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(HLIPH << 16, emu->port + PTR);
 		voicenum = 1 << (voicenum - 32);
@@ -735,20 +552,13 @@ void snd_emu10k1_voice_half_loop_intr_ack(struct snd_emu10k1 *emu, unsigned int 
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
 }
 
-<<<<<<< HEAD
-=======
 #if 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void snd_emu10k1_voice_set_loop_stop(struct snd_emu10k1 *emu, unsigned int voicenum)
 {
 	unsigned long flags;
 	unsigned int sol;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(SOLEH << 16, emu->port + PTR);
 		sol = inl(emu->port + DATA);
@@ -768,10 +578,6 @@ void snd_emu10k1_voice_clear_loop_stop(struct snd_emu10k1 *emu, unsigned int voi
 	unsigned int sol;
 
 	spin_lock_irqsave(&emu->emu_lock, flags);
-<<<<<<< HEAD
-	/* voice interrupt */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voicenum >= 32) {
 		outl(SOLEH << 16, emu->port + PTR);
 		sol = inl(emu->port + DATA);
@@ -784,8 +590,6 @@ void snd_emu10k1_voice_clear_loop_stop(struct snd_emu10k1 *emu, unsigned int voi
 	outl(sol, emu->port + DATA);
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
 }
-<<<<<<< HEAD
-=======
 #endif
 
 void snd_emu10k1_voice_set_loop_stop_multiple(struct snd_emu10k1 *emu, u64 voices)
@@ -869,7 +673,6 @@ int snd_emu10k1_voice_clear_loop_stop_multiple_atomic(struct snd_emu10k1 *emu, u
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void snd_emu10k1_wait(struct snd_emu10k1 *emu, unsigned int wait)
 {
@@ -913,67 +716,3 @@ void snd_emu10k1_ac97_write(struct snd_ac97 *ac97, unsigned short reg, unsigned 
 	outw(data, emu->port + AC97DATA);
 	spin_unlock_irqrestore(&emu->emu_lock, flags);
 }
-<<<<<<< HEAD
-
-/*
- *  convert rate to pitch
- */
-
-unsigned int snd_emu10k1_rate_to_pitch(unsigned int rate)
-{
-	static u32 logMagTable[128] = {
-		0x00000, 0x02dfc, 0x05b9e, 0x088e6, 0x0b5d6, 0x0e26f, 0x10eb3, 0x13aa2,
-		0x1663f, 0x1918a, 0x1bc84, 0x1e72e, 0x2118b, 0x23b9a, 0x2655d, 0x28ed5,
-		0x2b803, 0x2e0e8, 0x30985, 0x331db, 0x359eb, 0x381b6, 0x3a93d, 0x3d081,
-		0x3f782, 0x41e42, 0x444c1, 0x46b01, 0x49101, 0x4b6c4, 0x4dc49, 0x50191,
-		0x5269e, 0x54b6f, 0x57006, 0x59463, 0x5b888, 0x5dc74, 0x60029, 0x623a7,
-		0x646ee, 0x66a00, 0x68cdd, 0x6af86, 0x6d1fa, 0x6f43c, 0x7164b, 0x73829,
-		0x759d4, 0x77b4f, 0x79c9a, 0x7bdb5, 0x7dea1, 0x7ff5e, 0x81fed, 0x8404e,
-		0x86082, 0x88089, 0x8a064, 0x8c014, 0x8df98, 0x8fef1, 0x91e20, 0x93d26,
-		0x95c01, 0x97ab4, 0x9993e, 0x9b79f, 0x9d5d9, 0x9f3ec, 0xa11d8, 0xa2f9d,
-		0xa4d3c, 0xa6ab5, 0xa8808, 0xaa537, 0xac241, 0xadf26, 0xafbe7, 0xb1885,
-		0xb3500, 0xb5157, 0xb6d8c, 0xb899f, 0xba58f, 0xbc15e, 0xbdd0c, 0xbf899,
-		0xc1404, 0xc2f50, 0xc4a7b, 0xc6587, 0xc8073, 0xc9b3f, 0xcb5ed, 0xcd07c,
-		0xceaec, 0xd053f, 0xd1f73, 0xd398a, 0xd5384, 0xd6d60, 0xd8720, 0xda0c3,
-		0xdba4a, 0xdd3b4, 0xded03, 0xe0636, 0xe1f4e, 0xe384a, 0xe512c, 0xe69f3,
-		0xe829f, 0xe9b31, 0xeb3a9, 0xecc08, 0xee44c, 0xefc78, 0xf148a, 0xf2c83,
-		0xf4463, 0xf5c2a, 0xf73da, 0xf8b71, 0xfa2f0, 0xfba57, 0xfd1a7, 0xfe8df
-	};
-	static char logSlopeTable[128] = {
-		0x5c, 0x5c, 0x5b, 0x5a, 0x5a, 0x59, 0x58, 0x58,
-		0x57, 0x56, 0x56, 0x55, 0x55, 0x54, 0x53, 0x53,
-		0x52, 0x52, 0x51, 0x51, 0x50, 0x50, 0x4f, 0x4f,
-		0x4e, 0x4d, 0x4d, 0x4d, 0x4c, 0x4c, 0x4b, 0x4b,
-		0x4a, 0x4a, 0x49, 0x49, 0x48, 0x48, 0x47, 0x47,
-		0x47, 0x46, 0x46, 0x45, 0x45, 0x45, 0x44, 0x44,
-		0x43, 0x43, 0x43, 0x42, 0x42, 0x42, 0x41, 0x41,
-		0x41, 0x40, 0x40, 0x40, 0x3f, 0x3f, 0x3f, 0x3e,
-		0x3e, 0x3e, 0x3d, 0x3d, 0x3d, 0x3c, 0x3c, 0x3c,
-		0x3b, 0x3b, 0x3b, 0x3b, 0x3a, 0x3a, 0x3a, 0x39,
-		0x39, 0x39, 0x39, 0x38, 0x38, 0x38, 0x38, 0x37,
-		0x37, 0x37, 0x37, 0x36, 0x36, 0x36, 0x36, 0x35,
-		0x35, 0x35, 0x35, 0x34, 0x34, 0x34, 0x34, 0x34,
-		0x33, 0x33, 0x33, 0x33, 0x32, 0x32, 0x32, 0x32,
-		0x32, 0x31, 0x31, 0x31, 0x31, 0x31, 0x30, 0x30,
-		0x30, 0x30, 0x30, 0x2f, 0x2f, 0x2f, 0x2f, 0x2f
-	};
-	int i;
-
-	if (rate == 0)
-		return 0;	/* Bail out if no leading "1" */
-	rate *= 11185;		/* Scale 48000 to 0x20002380 */
-	for (i = 31; i > 0; i--) {
-		if (rate & 0x80000000) {	/* Detect leading "1" */
-			return (((unsigned int) (i - 15) << 20) +
-			       logMagTable[0x7f & (rate >> 24)] +
-					(0x7f & (rate >> 17)) *
-					logSlopeTable[0x7f & (rate >> 24)]);
-		}
-		rate <<= 1;
-	}
-
-	return 0;		/* Should never reach this point */
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -27,12 +27,6 @@ struct faultinfo {
 /* This is Page Fault */
 #define SEGV_IS_FIXABLE(fi)	((fi)->trap_no == 14)
 
-<<<<<<< HEAD
-/* No broken SKAS API, which doesn't pass trap_no, here. */
-#define SEGV_MAYBE_FIXABLE(fi)	0
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PTRACE_FULL_FAULTINFO 1
 
 #endif

@@ -1,56 +1,19 @@
-<<<<<<< HEAD
-/*
- *  libahci.c - Common AHCI SATA low-level routines
- *
- *  Maintained by:  Jeff Garzik <jgarzik@pobox.com>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  libahci.c - Common AHCI SATA low-level routines
  *
  *  Maintained by:  Tejun Heo <tj@kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    		    Please ALWAYS copy linux-ide@vger.kernel.org
  *		    on emails.
  *
  *  Copyright 2004-2005 Red Hat, Inc.
  *
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- * libata documentation is available via 'make {ps|pdf}docs',
- * as Documentation/DocBook/libata.*
-=======
  * libata documentation is available via 'make {ps|pdf}docs',
  * as Documentation/driver-api/libata.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * AHCI hardware documentation:
  * http://www.intel.com/technology/serialata/pdf/rev1_0.pdf
  * http://www.intel.com/technology/serialata/pdf/rev1_1.pdf
-<<<<<<< HEAD
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/gfp.h>
-#include <linux/module.h>
-#include <linux/init.h>
-=======
  */
 
 #include <linux/bitops.h>
@@ -58,7 +21,6 @@
 #include <linux/gfp.h>
 #include <linux/module.h>
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -67,13 +29,9 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
 #include <linux/libata.h>
-<<<<<<< HEAD
-#include "ahci.h"
-=======
 #include <linux/pci.h>
 #include "ahci.h"
 #include "libata.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ahci_skip_host_reset;
 int ahci_ignore_sss;
@@ -97,16 +55,6 @@ static ssize_t ahci_transmit_led_message(struct ata_port *ap, u32 state,
 
 static int ahci_scr_read(struct ata_link *link, unsigned int sc_reg, u32 *val);
 static int ahci_scr_write(struct ata_link *link, unsigned int sc_reg, u32 val);
-<<<<<<< HEAD
-static unsigned int ahci_qc_issue(struct ata_queued_cmd *qc);
-static bool ahci_qc_fill_rtf(struct ata_queued_cmd *qc);
-static int ahci_port_start(struct ata_port *ap);
-static void ahci_port_stop(struct ata_port *ap);
-static void ahci_qc_prep(struct ata_queued_cmd *qc);
-static int ahci_pmp_qc_defer(struct ata_queued_cmd *qc);
-static void ahci_freeze(struct ata_port *ap);
-static void ahci_thaw(struct ata_port *ap);
-=======
 static void ahci_qc_fill_rtf(struct ata_queued_cmd *qc);
 static void ahci_qc_ncq_fill_rtf(struct ata_port *ap, u64 done_mask);
 static int ahci_port_start(struct ata_port *ap);
@@ -116,7 +64,6 @@ static int ahci_pmp_qc_defer(struct ata_queued_cmd *qc);
 static void ahci_freeze(struct ata_port *ap);
 static void ahci_thaw(struct ata_port *ap);
 static void ahci_set_aggressive_devslp(struct ata_port *ap, bool sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ahci_enable_fbs(struct ata_port *ap);
 static void ahci_disable_fbs(struct ata_port *ap);
 static void ahci_pmp_attach(struct ata_port *ap);
@@ -128,10 +75,6 @@ static int ahci_pmp_retry_softreset(struct ata_link *link, unsigned int *class,
 static int ahci_hardreset(struct ata_link *link, unsigned int *class,
 			  unsigned long deadline);
 static void ahci_postreset(struct ata_link *link, unsigned int *class);
-<<<<<<< HEAD
-static void ahci_error_handler(struct ata_port *ap);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ahci_post_internal_cmd(struct ata_queued_cmd *qc);
 static void ahci_dev_config(struct ata_device *dev);
 #ifdef CONFIG_PM
@@ -157,10 +100,7 @@ static ssize_t ahci_store_em_buffer(struct device *dev,
 				    const char *buf, size_t size);
 static ssize_t ahci_show_em_supported(struct device *dev,
 				      struct device_attribute *attr, char *buf);
-<<<<<<< HEAD
-=======
 static irqreturn_t ahci_single_level_irq_intr(int irq, void *dev_instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEVICE_ATTR(ahci_host_caps, S_IRUGO, ahci_show_host_caps, NULL);
 static DEVICE_ATTR(ahci_host_cap2, S_IRUGO, ahci_show_host_cap2, NULL);
@@ -170,28 +110,6 @@ static DEVICE_ATTR(em_buffer, S_IWUSR | S_IRUGO,
 		   ahci_read_em_buffer, ahci_store_em_buffer);
 static DEVICE_ATTR(em_message_supported, S_IRUGO, ahci_show_em_supported, NULL);
 
-<<<<<<< HEAD
-struct device_attribute *ahci_shost_attrs[] = {
-	&dev_attr_link_power_management_policy,
-	&dev_attr_em_message_type,
-	&dev_attr_em_message,
-	&dev_attr_ahci_host_caps,
-	&dev_attr_ahci_host_cap2,
-	&dev_attr_ahci_host_version,
-	&dev_attr_ahci_port_cmd,
-	&dev_attr_em_buffer,
-	&dev_attr_em_message_supported,
-	NULL
-};
-EXPORT_SYMBOL_GPL(ahci_shost_attrs);
-
-struct device_attribute *ahci_sdev_attrs[] = {
-	&dev_attr_sw_activity,
-	&dev_attr_unload_heads,
-	NULL
-};
-EXPORT_SYMBOL_GPL(ahci_sdev_attrs);
-=======
 static struct attribute *ahci_shost_attrs[] = {
 	&dev_attr_link_power_management_policy.attr,
 	&dev_attr_em_message_type.attr,
@@ -232,7 +150,6 @@ const struct attribute_group *ahci_sdev_groups[] = {
 	NULL
 };
 EXPORT_SYMBOL_GPL(ahci_sdev_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ata_port_operations ahci_ops = {
 	.inherits		= &sata_pmp_port_ops,
@@ -241,10 +158,7 @@ struct ata_port_operations ahci_ops = {
 	.qc_prep		= ahci_qc_prep,
 	.qc_issue		= ahci_qc_issue,
 	.qc_fill_rtf		= ahci_qc_fill_rtf,
-<<<<<<< HEAD
-=======
 	.qc_ncq_fill_rtf	= ahci_qc_ncq_fill_rtf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.freeze			= ahci_freeze,
 	.thaw			= ahci_thaw,
@@ -266,10 +180,7 @@ struct ata_port_operations ahci_ops = {
 	.em_store		= ahci_led_store,
 	.sw_activity_show	= ahci_activity_show,
 	.sw_activity_store	= ahci_activity_store,
-<<<<<<< HEAD
-=======
 	.transmit_led_message	= ahci_transmit_led_message,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.port_suspend		= ahci_port_suspend,
 	.port_resume		= ahci_port_resume,
@@ -285,26 +196,17 @@ struct ata_port_operations ahci_pmp_retry_srst_ops = {
 };
 EXPORT_SYMBOL_GPL(ahci_pmp_retry_srst_ops);
 
-<<<<<<< HEAD
-int ahci_em_messages = 1;
-EXPORT_SYMBOL_GPL(ahci_em_messages);
-module_param(ahci_em_messages, int, 0444);
-=======
 static bool ahci_em_messages __read_mostly = true;
 module_param(ahci_em_messages, bool, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* add other LED protocol types when they become supported */
 MODULE_PARM_DESC(ahci_em_messages,
 	"AHCI Enclosure Management Message control (0 = off, 1 = on)");
 
-<<<<<<< HEAD
-=======
 /* device sleep idle timeout in ms */
 static int devslp_idle_timeout __read_mostly = 1000;
 module_param(devslp_idle_timeout, int, 0644);
 MODULE_PARM_DESC(devslp_idle_timeout, "device sleep idle timeout");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ahci_enable_ahci(void __iomem *mmio)
 {
 	int i;
@@ -330,8 +232,6 @@ static void ahci_enable_ahci(void __iomem *mmio)
 	WARN_ON(1);
 }
 
-<<<<<<< HEAD
-=======
 /**
  *	ahci_rpm_get_port - Make sure the port is powered on
  *	@ap: Port to power on
@@ -357,7 +257,6 @@ static void ahci_rpm_put_port(struct ata_port *ap)
 	pm_runtime_put(ap->dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t ahci_show_host_caps(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -384,14 +283,8 @@ static ssize_t ahci_show_host_version(struct device *dev,
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct ata_port *ap = ata_shost_to_port(shost);
 	struct ahci_host_priv *hpriv = ap->host->private_data;
-<<<<<<< HEAD
-	void __iomem *mmio = hpriv->mmio;
-
-	return sprintf(buf, "%x\n", readl(mmio + HOST_VERSION));
-=======
 
 	return sprintf(buf, "%x\n", hpriv->version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t ahci_show_port_cmd(struct device *dev,
@@ -400,10 +293,6 @@ static ssize_t ahci_show_port_cmd(struct device *dev,
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct ata_port *ap = ata_shost_to_port(shost);
 	void __iomem *port_mmio = ahci_port_base(ap);
-<<<<<<< HEAD
-
-	return sprintf(buf, "%x\n", readl(port_mmio + PORT_CMD));
-=======
 	ssize_t ret;
 
 	ahci_rpm_get_port(ap);
@@ -411,7 +300,6 @@ static ssize_t ahci_show_port_cmd(struct device *dev,
 	ahci_rpm_put_port(ap);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t ahci_read_em_buffer(struct device *dev,
@@ -427,29 +315,20 @@ static ssize_t ahci_read_em_buffer(struct device *dev,
 	size_t count;
 	int i;
 
-<<<<<<< HEAD
-=======
 	ahci_rpm_get_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(ap->lock, flags);
 
 	em_ctl = readl(mmio + HOST_EM_CTL);
 	if (!(ap->flags & ATA_FLAG_EM) || em_ctl & EM_CTL_XMT ||
 	    !(hpriv->em_msg_type & EM_MSG_TYPE_SGPIO)) {
 		spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-=======
 		ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (!(em_ctl & EM_CTL_MR)) {
 		spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-=======
 		ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 	}
 
@@ -477,10 +356,7 @@ static ssize_t ahci_read_em_buffer(struct device *dev,
 	}
 
 	spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-=======
 	ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return i;
 }
@@ -505,19 +381,13 @@ static ssize_t ahci_store_em_buffer(struct device *dev,
 	    size % 4 || size > hpriv->em_buf_sz)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	ahci_rpm_get_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(ap->lock, flags);
 
 	em_ctl = readl(mmio + HOST_EM_CTL);
 	if (em_ctl & EM_CTL_TM) {
 		spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-=======
 		ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -530,10 +400,7 @@ static ssize_t ahci_store_em_buffer(struct device *dev,
 	writel(em_ctl | EM_CTL_TM, mmio + HOST_EM_CTL);
 
 	spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-=======
 	ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return size;
 }
@@ -547,13 +414,9 @@ static ssize_t ahci_show_em_supported(struct device *dev,
 	void __iomem *mmio = hpriv->mmio;
 	u32 em_ctl;
 
-<<<<<<< HEAD
-	em_ctl = readl(mmio + HOST_EM_CTL);
-=======
 	ahci_rpm_get_port(ap);
 	em_ctl = readl(mmio + HOST_EM_CTL);
 	ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sprintf(buf, "%s%s%s%s\n",
 		       em_ctl & EM_CTL_LED ? "led " : "",
@@ -566,11 +429,6 @@ static ssize_t ahci_show_em_supported(struct device *dev,
  *	ahci_save_initial_config - Save and fixup initial config values
  *	@dev: target AHCI device
  *	@hpriv: host private area to store config values
-<<<<<<< HEAD
- *	@force_port_map: force port map to a specified value
- *	@mask_port_map: mask out particular bits from port map
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Some registers containing configuration info might be setup by
  *	BIOS and might be cleared on reset.  This function saves the
@@ -579,18 +437,6 @@ static ssize_t ahci_show_em_supported(struct device *dev,
  *
  *	If inconsistent, config values are fixed up by this function.
  *
-<<<<<<< HEAD
- *	LOCKING:
- *	None.
- */
-void ahci_save_initial_config(struct device *dev,
-			      struct ahci_host_priv *hpriv,
-			      unsigned int force_port_map,
-			      unsigned int mask_port_map)
-{
-	void __iomem *mmio = hpriv->mmio;
-	u32 cap, cap2, vers, port_map;
-=======
  *	If it is not set already this function sets hpriv->start_engine to
  *	ahci_start_engine.
  *
@@ -603,19 +449,11 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
 	void __iomem *port_mmio;
 	unsigned long port_map;
 	u32 cap, cap2, vers;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* make sure AHCI mode is enabled before accessing CAP */
 	ahci_enable_ahci(mmio);
 
-<<<<<<< HEAD
-	/* Values prefixed with saved_ are written back to host after
-	 * reset.  Values without are used for driver operation.
-	 */
-	hpriv->saved_cap = cap = readl(mmio + HOST_CAP);
-	hpriv->saved_port_map = port_map = readl(mmio + HOST_PORTS_IMPL);
-=======
 	/*
 	 * Values prefixed with saved_ are written back to the HBA and ports
 	 * registers after reset. Values without are used for driver operation.
@@ -630,7 +468,6 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
 	if (hpriv->saved_cap)
 		cap = (cap & ~(HOST_CAP_SSS | HOST_CAP_MPS)) | hpriv->saved_cap;
 	hpriv->saved_cap = cap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* CAP2 register is only defined for AHCI 1.2 and later */
 	vers = readl(mmio + HOST_VERSION);
@@ -667,8 +504,6 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
 		cap &= ~HOST_CAP_SNTF;
 	}
 
-<<<<<<< HEAD
-=======
 	if ((cap2 & HOST_CAP2_SDS) && (hpriv->flags & AHCI_HFLAG_NO_DEVSLP)) {
 		dev_info(dev,
 			 "controller can't do DEVSLP, turning off\n");
@@ -676,25 +511,11 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
 		cap2 &= ~HOST_CAP2_SADM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(cap & HOST_CAP_FBS) && (hpriv->flags & AHCI_HFLAG_YES_FBS)) {
 		dev_info(dev, "controller can do FBS, turning on CAP_FBS\n");
 		cap |= HOST_CAP_FBS;
 	}
 
-<<<<<<< HEAD
-	if (force_port_map && port_map != force_port_map) {
-		dev_info(dev, "forcing port_map 0x%x -> 0x%x\n",
-			 port_map, force_port_map);
-		port_map = force_port_map;
-	}
-
-	if (mask_port_map) {
-		dev_warn(dev, "masking port_map 0x%x -> 0x%x\n",
-			port_map,
-			port_map & mask_port_map);
-		port_map &= mask_port_map;
-=======
 	if ((cap & HOST_CAP_FBS) && (hpriv->flags & AHCI_HFLAG_NO_FBS)) {
 		dev_info(dev, "controller can't do FBS, turning off CAP_FBS\n");
 		cap &= ~HOST_CAP_FBS;
@@ -725,7 +546,6 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
 			port_map,
 			port_map & hpriv->mask_port_map);
 		port_map &= hpriv->mask_port_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* cross check port_map and cap.n_ports */
@@ -741,38 +561,21 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
 		 */
 		if (map_ports > ahci_nr_ports(cap)) {
 			dev_warn(dev,
-<<<<<<< HEAD
-				 "implemented port map (0x%x) contains more ports than nr_ports (%u), using nr_ports\n",
-=======
 				 "implemented port map (0x%lx) contains more ports than nr_ports (%u), using nr_ports\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 port_map, ahci_nr_ports(cap));
 			port_map = 0;
 		}
 	}
 
-<<<<<<< HEAD
-	/* fabricate port_map from cap.nr_ports */
-	if (!port_map) {
-		port_map = (1 << ahci_nr_ports(cap)) - 1;
-		dev_warn(dev, "forcing PORTS_IMPL to 0x%x\n", port_map);
-=======
 	/* fabricate port_map from cap.nr_ports for < AHCI 1.3 */
 	if (!port_map && vers < 0x10300) {
 		port_map = (1 << ahci_nr_ports(cap)) - 1;
 		dev_warn(dev, "forcing PORTS_IMPL to 0x%lx\n", port_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* write the fixed up value to the PI register */
 		hpriv->saved_port_map = port_map;
 	}
 
-<<<<<<< HEAD
-	/* record values to use during operation */
-	hpriv->cap = cap;
-	hpriv->cap2 = cap2;
-	hpriv->port_map = port_map;
-=======
 	/*
 	 * Preserve the ports capabilities defined by the platform. Note there
 	 * is no need in storing the rest of the P#.CMD fields since they are
@@ -801,7 +604,6 @@ void ahci_save_initial_config(struct device *dev, struct ahci_host_priv *hpriv)
 
 	if (!hpriv->irq_handler)
 		hpriv->irq_handler = ahci_single_level_irq_intr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ahci_save_initial_config);
 
@@ -817,28 +619,21 @@ EXPORT_SYMBOL_GPL(ahci_save_initial_config);
 static void ahci_restore_initial_config(struct ata_host *host)
 {
 	struct ahci_host_priv *hpriv = host->private_data;
-<<<<<<< HEAD
-	void __iomem *mmio = hpriv->mmio;
-=======
 	unsigned long port_map = hpriv->port_map;
 	void __iomem *mmio = hpriv->mmio;
 	void __iomem *port_mmio;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(hpriv->saved_cap, mmio + HOST_CAP);
 	if (hpriv->saved_cap2)
 		writel(hpriv->saved_cap2, mmio + HOST_CAP2);
 	writel(hpriv->saved_port_map, mmio + HOST_PORTS_IMPL);
 	(void) readl(mmio + HOST_PORTS_IMPL);	/* flush */
-<<<<<<< HEAD
-=======
 
 	for_each_set_bit(i, &port_map, AHCI_MAX_PORTS) {
 		port_mmio = __ahci_port_base(hpriv, i);
 		writel(hpriv->saved_port_cap[i], port_mmio + PORT_CMD);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned ahci_scr_offset(struct ata_port *ap, unsigned int sc_reg)
@@ -898,10 +693,6 @@ EXPORT_SYMBOL_GPL(ahci_start_engine);
 int ahci_stop_engine(struct ata_port *ap)
 {
 	void __iomem *port_mmio = ahci_port_base(ap);
-<<<<<<< HEAD
-	u32 tmp;
-
-=======
 	struct ahci_host_priv *hpriv = ap->host->private_data;
 	u32 tmp;
 
@@ -918,15 +709,12 @@ int ahci_stop_engine(struct ata_port *ap)
 		return -EIO;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp = readl(port_mmio + PORT_CMD);
 
 	/* check if the HBA is idle */
 	if ((tmp & (PORT_CMD_START | PORT_CMD_LIST_ON)) == 0)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Don't try to issue commands but return with ENODEV if the
 	 * AHCI controller not available anymore (e.g. due to PCIe hot
@@ -937,7 +725,6 @@ int ahci_stop_engine(struct ata_port *ap)
 		return -ENODEV;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* setting HBA to idle */
 	tmp &= ~PORT_CMD_START;
 	writel(tmp, port_mmio + PORT_CMD);
@@ -952,11 +739,7 @@ int ahci_stop_engine(struct ata_port *ap)
 }
 EXPORT_SYMBOL_GPL(ahci_stop_engine);
 
-<<<<<<< HEAD
-static void ahci_start_fis_rx(struct ata_port *ap)
-=======
 void ahci_start_fis_rx(struct ata_port *ap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *port_mmio = ahci_port_base(ap);
 	struct ahci_host_priv *hpriv = ap->host->private_data;
@@ -982,10 +765,7 @@ void ahci_start_fis_rx(struct ata_port *ap)
 	/* flush */
 	readl(port_mmio + PORT_CMD);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(ahci_start_fis_rx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ahci_stop_fis_rx(struct ata_port *ap)
 {
@@ -1033,12 +813,9 @@ static int ahci_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
 	void __iomem *port_mmio = ahci_port_base(ap);
 
 	if (policy != ATA_LPM_MAX_POWER) {
-<<<<<<< HEAD
-=======
 		/* wakeup flag only applies to the max power policy */
 		hints &= ~ATA_LPM_WAKE_ONLY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Disable interrupts on Phy Ready. This keeps us from
 		 * getting woken up due to spurious phy ready
@@ -1054,12 +831,8 @@ static int ahci_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
 		u32 cmd = readl(port_mmio + PORT_CMD);
 
 		if (policy == ATA_LPM_MAX_POWER || !(hints & ATA_LPM_HIPM)) {
-<<<<<<< HEAD
-			cmd &= ~(PORT_CMD_ASP | PORT_CMD_ALPE);
-=======
 			if (!(hints & ATA_LPM_WAKE_ONLY))
 				cmd &= ~(PORT_CMD_ASP | PORT_CMD_ALPE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd |= PORT_CMD_ICC_ACTIVE;
 
 			writel(cmd, port_mmio + PORT_CMD);
@@ -1067,29 +840,21 @@ static int ahci_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
 
 			/* wait 10ms to be sure we've come out of LPM state */
 			ata_msleep(ap, 10);
-<<<<<<< HEAD
-=======
 
 			if (hints & ATA_LPM_WAKE_ONLY)
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			cmd |= PORT_CMD_ALPE;
 			if (policy == ATA_LPM_MIN_POWER)
 				cmd |= PORT_CMD_ASP;
-<<<<<<< HEAD
-=======
 			else if (policy == ATA_LPM_MIN_POWER_WITH_PARTIAL)
 				cmd &= ~PORT_CMD_ASP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* write out new cmd value */
 			writel(cmd, port_mmio + PORT_CMD);
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/* set aggressive device sleep */
 	if ((hpriv->cap2 & HOST_CAP2_SDS) &&
 	    (hpriv->cap2 & HOST_CAP2_SADM) &&
@@ -1101,7 +866,6 @@ static int ahci_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
 			ahci_set_aggressive_devslp(ap, false);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (policy == ATA_LPM_MAX_POWER) {
 		sata_link_scr_lpm(link, policy, false);
 
@@ -1149,11 +913,7 @@ static void ahci_start_port(struct ata_port *ap)
 
 	/* enable DMA */
 	if (!(hpriv->flags & AHCI_HFLAG_DELAY_ENGINE))
-<<<<<<< HEAD
-		ahci_start_engine(ap);
-=======
 		hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* turn on LEDs */
 	if (ap->flags & ATA_FLAG_EM) {
@@ -1162,13 +922,6 @@ static void ahci_start_port(struct ata_port *ap)
 
 			/* EM Transmit bit maybe busy during init */
 			for (i = 0; i < EM_MAX_RETRY; i++) {
-<<<<<<< HEAD
-				rc = ahci_transmit_led_message(ap,
-							       emp->led_state,
-							       4);
-				if (rc == -EBUSY)
-					ata_msleep(ap, 1);
-=======
 				rc = ap->ops->transmit_led_message(ap,
 							       emp->led_state,
 							       4);
@@ -1182,7 +935,6 @@ static void ahci_start_port(struct ata_port *ap)
 				 */
 				if (rc == -EBUSY)
 					msleep(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				else
 					break;
 			}
@@ -1198,16 +950,10 @@ static void ahci_start_port(struct ata_port *ap)
 static int ahci_deinit_port(struct ata_port *ap, const char **emsg)
 {
 	int rc;
-<<<<<<< HEAD
-
-	/* disable DMA */
-	rc = ahci_stop_engine(ap);
-=======
 	struct ahci_host_priv *hpriv = ap->host->private_data;
 
 	/* disable DMA */
 	rc = hpriv->stop_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		*emsg = "failed to stop engine";
 		return rc;
@@ -1229,45 +975,6 @@ int ahci_reset_controller(struct ata_host *host)
 	void __iomem *mmio = hpriv->mmio;
 	u32 tmp;
 
-<<<<<<< HEAD
-	/* we must be in AHCI mode, before using anything
-	 * AHCI-specific, such as HOST_RESET.
-	 */
-	ahci_enable_ahci(mmio);
-
-	/* global controller reset */
-	if (!ahci_skip_host_reset) {
-		tmp = readl(mmio + HOST_CTL);
-		if ((tmp & HOST_RESET) == 0) {
-			writel(tmp | HOST_RESET, mmio + HOST_CTL);
-			readl(mmio + HOST_CTL); /* flush */
-		}
-
-		/*
-		 * to perform host reset, OS should set HOST_RESET
-		 * and poll until this bit is read to be "0".
-		 * reset must complete within 1 second, or
-		 * the hardware should be considered fried.
-		 */
-		tmp = ata_wait_register(NULL, mmio + HOST_CTL, HOST_RESET,
-					HOST_RESET, 10, 1000);
-
-		if (tmp & HOST_RESET) {
-			dev_err(host->dev, "controller reset failed (0x%x)\n",
-				tmp);
-			return -EIO;
-		}
-
-		/* turn on AHCI mode */
-		ahci_enable_ahci(mmio);
-
-		/* Some registers might be cleared on reset.  Restore
-		 * initial values.
-		 */
-		ahci_restore_initial_config(host);
-	} else
-		dev_info(host->dev, "skipping global host reset\n");
-=======
 	/*
 	 * We must be in AHCI mode, before using anything AHCI-specific, such
 	 * as HOST_RESET.
@@ -1305,7 +1012,6 @@ int ahci_reset_controller(struct ata_host *host)
 	/* Some registers might be cleared on reset. Restore initial values. */
 	if (!(hpriv->flags & AHCI_HFLAG_NO_WRITE_TO_RO))
 		ahci_restore_initial_config(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1325,21 +1031,12 @@ static void ahci_sw_activity(struct ata_link *link)
 		mod_timer(&emp->timer, jiffies + msecs_to_jiffies(10));
 }
 
-<<<<<<< HEAD
-static void ahci_sw_activity_blink(unsigned long arg)
-{
-	struct ata_link *link = (struct ata_link *)arg;
-	struct ata_port *ap = link->ap;
-	struct ahci_port_priv *pp = ap->private_data;
-	struct ahci_em_priv *emp = &pp->em_priv[link->pmp];
-=======
 static void ahci_sw_activity_blink(struct timer_list *t)
 {
 	struct ahci_em_priv *emp = from_timer(emp, t, timer);
 	struct ata_link *link = emp->link;
 	struct ata_port *ap = link->ap;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long led_message = emp->led_state;
 	u32 activity_led_state;
 	unsigned long flags;
@@ -1375,11 +1072,7 @@ static void ahci_sw_activity_blink(struct timer_list *t)
 			led_message |= (1 << 16);
 	}
 	spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-	ahci_transmit_led_message(ap, led_message, 4);
-=======
 	ap->ops->transmit_led_message(ap, led_message, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ahci_init_sw_activity(struct ata_link *link)
@@ -1390,12 +1083,8 @@ static void ahci_init_sw_activity(struct ata_link *link)
 
 	/* init activity stats, setup timer */
 	emp->saved_activity = emp->activity = 0;
-<<<<<<< HEAD
-	setup_timer(&emp->timer, ahci_sw_activity_blink, (unsigned long)link);
-=======
 	emp->link = link;
 	timer_setup(&emp->timer, ahci_sw_activity_blink, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check our blink policy and set flag for link if it's enabled */
 	if (emp->blink_policy)
@@ -1436,10 +1125,7 @@ static ssize_t ahci_transmit_led_message(struct ata_port *ap, u32 state,
 	else
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	ahci_rpm_get_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(ap->lock, flags);
 
 	/*
@@ -1449,10 +1135,7 @@ static ssize_t ahci_transmit_led_message(struct ata_port *ap, u32 state,
 	em_ctl = readl(mmio + HOST_EM_CTL);
 	if (em_ctl & EM_CTL_TM) {
 		spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-=======
 		ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -1480,11 +1163,8 @@ static ssize_t ahci_transmit_led_message(struct ata_port *ap, u32 state,
 	emp->led_state = state;
 
 	spin_unlock_irqrestore(ap->lock, flags);
-<<<<<<< HEAD
-=======
 	ahci_rpm_put_port(ap);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return size;
 }
 
@@ -1505,25 +1185,11 @@ static ssize_t ahci_led_show(struct ata_port *ap, char *buf)
 static ssize_t ahci_led_store(struct ata_port *ap, const char *buf,
 				size_t size)
 {
-<<<<<<< HEAD
-	int state;
-=======
 	unsigned int state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pmp;
 	struct ahci_port_priv *pp = ap->private_data;
 	struct ahci_em_priv *emp;
 
-<<<<<<< HEAD
-	state = simple_strtoul(buf, NULL, 0);
-
-	/* get the slot number from the message */
-	pmp = (state & EM_MSG_LED_PMP_SLOT) >> 8;
-	if (pmp < EM_MAX_SLOTS)
-		emp = &pp->em_priv[pmp];
-	else
-		return -EINVAL;
-=======
 	if (kstrtouint(buf, 0, &state) < 0)
 		return -EINVAL;
 
@@ -1535,7 +1201,6 @@ static ssize_t ahci_led_store(struct ata_port *ap, const char *buf,
 	} else {
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mask off the activity bits if we are in sw_activity
 	 * mode, user should turn off sw_activity before setting
@@ -1544,11 +1209,7 @@ static ssize_t ahci_led_store(struct ata_port *ap, const char *buf,
 	if (emp->blink_policy)
 		state &= ~EM_MSG_LED_VALUE_ACTIVITY;
 
-<<<<<<< HEAD
-	return ahci_transmit_led_message(ap, state, size);
-=======
 	return ap->ops->transmit_led_message(ap, state, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t ahci_activity_store(struct ata_device *dev, enum sw_activity val)
@@ -1567,11 +1228,7 @@ static ssize_t ahci_activity_store(struct ata_device *dev, enum sw_activity val)
 		/* set the LED to OFF */
 		port_led_state &= EM_MSG_LED_VALUE_OFF;
 		port_led_state |= (ap->port_no | (link->pmp << 8));
-<<<<<<< HEAD
-		ahci_transmit_led_message(ap, port_led_state, 4);
-=======
 		ap->ops->transmit_led_message(ap, port_led_state, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		link->flags |= ATA_LFLAG_SW_ACTIVITY;
 		if (val == BLINK_OFF) {
@@ -1579,11 +1236,7 @@ static ssize_t ahci_activity_store(struct ata_device *dev, enum sw_activity val)
 			port_led_state &= EM_MSG_LED_VALUE_OFF;
 			port_led_state |= (ap->port_no | (link->pmp << 8));
 			port_led_state |= EM_MSG_LED_VALUE_ON; /* check this */
-<<<<<<< HEAD
-			ahci_transmit_led_message(ap, port_led_state, 4);
-=======
 			ap->ops->transmit_led_message(ap, port_led_state, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	emp->blink_policy = val;
@@ -1603,8 +1256,6 @@ static ssize_t ahci_activity_show(struct ata_device *dev, char *buf)
 	return sprintf(buf, "%d\n", emp->blink_policy);
 }
 
-<<<<<<< HEAD
-=======
 static void ahci_port_clear_pending_irq(struct ata_port *ap)
 {
 	struct ahci_host_priv *hpriv = ap->host->private_data;
@@ -1625,39 +1276,19 @@ static void ahci_port_clear_pending_irq(struct ata_port *ap)
 	writel(1 << ap->port_no, hpriv->mmio + HOST_IRQ_STAT);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ahci_port_init(struct device *dev, struct ata_port *ap,
 			   int port_no, void __iomem *mmio,
 			   void __iomem *port_mmio)
 {
 	const char *emsg = NULL;
 	int rc;
-<<<<<<< HEAD
-	u32 tmp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make sure port is not active */
 	rc = ahci_deinit_port(ap, &emsg);
 	if (rc)
 		dev_warn(dev, "%s (%d)\n", emsg, rc);
 
-<<<<<<< HEAD
-	/* clear SError */
-	tmp = readl(port_mmio + PORT_SCR_ERR);
-	VPRINTK("PORT_SCR_ERR 0x%x\n", tmp);
-	writel(tmp, port_mmio + PORT_SCR_ERR);
-
-	/* clear port IRQ */
-	tmp = readl(port_mmio + PORT_IRQ_STAT);
-	VPRINTK("PORT_IRQ_STAT 0x%x\n", tmp);
-	if (tmp)
-		writel(tmp, port_mmio + PORT_IRQ_STAT);
-
-	writel(1 << port_no, mmio + HOST_IRQ_STAT);
-=======
 	ahci_port_clear_pending_irq(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ahci_init_controller(struct ata_host *host)
@@ -1679,17 +1310,10 @@ void ahci_init_controller(struct ata_host *host)
 	}
 
 	tmp = readl(mmio + HOST_CTL);
-<<<<<<< HEAD
-	VPRINTK("HOST_CTL 0x%x\n", tmp);
-	writel(tmp | HOST_IRQ_EN, mmio + HOST_CTL);
-	tmp = readl(mmio + HOST_CTL);
-	VPRINTK("HOST_CTL 0x%x\n", tmp);
-=======
 	dev_dbg(host->dev, "HOST_CTL 0x%x\n", tmp);
 	writel(tmp | HOST_IRQ_EN, mmio + HOST_CTL);
 	tmp = readl(mmio + HOST_CTL);
 	dev_dbg(host->dev, "HOST_CTL 0x%x\n", tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ahci_init_controller);
 
@@ -1716,11 +1340,7 @@ unsigned int ahci_dev_classify(struct ata_port *ap)
 	tf.lbal		= (tmp >> 8)	& 0xff;
 	tf.nsect	= (tmp)		& 0xff;
 
-<<<<<<< HEAD
-	return ata_dev_classify(&tf);
-=======
 	return ata_port_classify(ap, &tf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ahci_dev_classify);
 
@@ -1747,11 +1367,7 @@ int ahci_kick_engine(struct ata_port *ap)
 	int busy, rc;
 
 	/* stop engine */
-<<<<<<< HEAD
-	rc = ahci_stop_engine(ap);
-=======
 	rc = hpriv->stop_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto out_restart;
 
@@ -1782,22 +1398,14 @@ int ahci_kick_engine(struct ata_port *ap)
 
 	/* restart engine */
  out_restart:
-<<<<<<< HEAD
-	ahci_start_engine(ap);
-=======
 	hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 EXPORT_SYMBOL_GPL(ahci_kick_engine);
 
 static int ahci_exec_polled_cmd(struct ata_port *ap, int pmp,
 				struct ata_taskfile *tf, int is_cmd, u16 flags,
-<<<<<<< HEAD
-				unsigned long timeout_msec)
-=======
 				unsigned int timeout_msec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u32 cmd_fis_len = 5; /* five dwords */
 	struct ahci_port_priv *pp = ap->private_data;
@@ -1842,21 +1450,12 @@ int ahci_do_softreset(struct ata_link *link, unsigned int *class,
 	struct ahci_host_priv *hpriv = ap->host->private_data;
 	struct ahci_port_priv *pp = ap->private_data;
 	const char *reason = NULL;
-<<<<<<< HEAD
-	unsigned long now, msecs;
-=======
 	unsigned long now;
 	unsigned int msecs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_taskfile tf;
 	bool fbs_disabled = false;
 	int rc;
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* prepare for SRST (AHCI-1.1 10.4.1) */
 	rc = ahci_kick_engine(ap);
 	if (rc && rc != -EOPNOTSUPP)
@@ -1874,11 +1473,7 @@ int ahci_do_softreset(struct ata_link *link, unsigned int *class,
 
 	ata_tf_init(link->device, &tf);
 
-<<<<<<< HEAD
-	/* issue the first D2H Register FIS */
-=======
 	/* issue the first H2D Register FIS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msecs = 0;
 	now = jiffies;
 	if (time_after(deadline, now))
@@ -1895,11 +1490,7 @@ int ahci_do_softreset(struct ata_link *link, unsigned int *class,
 	/* spec says at least 5us, but be generous and sleep for 1ms */
 	ata_msleep(ap, 1);
 
-<<<<<<< HEAD
-	/* issue the second D2H Register FIS */
-=======
 	/* issue the second H2D Register FIS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf.ctl &= ~ATA_SRST;
 	ahci_exec_polled_cmd(ap, pmp, &tf, 0, 0, 0);
 
@@ -1924,10 +1515,6 @@ int ahci_do_softreset(struct ata_link *link, unsigned int *class,
 	if (fbs_disabled)
 		ahci_enable_fbs(ap);
 
-<<<<<<< HEAD
-	DPRINTK("EXIT, class=%u\n", *class);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  fail:
@@ -1949,11 +1536,6 @@ static int ahci_softreset(struct ata_link *link, unsigned int *class,
 {
 	int pmp = sata_srst_pmp(link);
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ahci_do_softreset(link, class, pmp, deadline, ahci_check_ready);
 }
 EXPORT_SYMBOL_GPL(ahci_do_softreset);
@@ -1974,13 +1556,8 @@ static int ahci_bad_pmp_check_ready(struct ata_link *link)
 	return ata_check_ready(status);
 }
 
-<<<<<<< HEAD
-int ahci_pmp_retry_softreset(struct ata_link *link, unsigned int *class,
-				unsigned long deadline)
-=======
 static int ahci_pmp_retry_softreset(struct ata_link *link, unsigned int *class,
 				    unsigned long deadline)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = link->ap;
 	void __iomem *port_mmio = ahci_port_base(ap);
@@ -1988,11 +1565,6 @@ static int ahci_pmp_retry_softreset(struct ata_link *link, unsigned int *class,
 	int rc;
 	u32 irq_sts;
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ahci_do_softreset(link, class, pmp, deadline,
 			       ahci_bad_pmp_check_ready);
 
@@ -2004,11 +1576,7 @@ static int ahci_pmp_retry_softreset(struct ata_link *link, unsigned int *class,
 	if (rc == -EIO) {
 		irq_sts = readl(port_mmio + PORT_IRQ_STAT);
 		if (irq_sts & PORT_IRQ_BAD_PMP) {
-<<<<<<< HEAD
-			ata_link_printk(link, KERN_WARNING,
-=======
 			ata_link_warn(link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"applying PMP SRST workaround "
 					"and retrying\n");
 			rc = ahci_do_softreset(link, class, 0, deadline,
@@ -2019,39 +1587,6 @@ static int ahci_pmp_retry_softreset(struct ata_link *link, unsigned int *class,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int ahci_hardreset(struct ata_link *link, unsigned int *class,
-			  unsigned long deadline)
-{
-	const unsigned long *timing = sata_ehc_deb_timing(&link->eh_context);
-	struct ata_port *ap = link->ap;
-	struct ahci_port_priv *pp = ap->private_data;
-	u8 *d2h_fis = pp->rx_fis + RX_FIS_D2H_REG;
-	struct ata_taskfile tf;
-	bool online;
-	int rc;
-
-	DPRINTK("ENTER\n");
-
-	ahci_stop_engine(ap);
-
-	/* clear D2H reception area to properly wait for D2H FIS */
-	ata_tf_init(link->device, &tf);
-	tf.command = 0x80;
-	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
-
-	rc = sata_link_hardreset(link, timing, deadline, &online,
-				 ahci_check_ready);
-
-	ahci_start_engine(ap);
-
-	if (online)
-		*class = ahci_dev_classify(ap);
-
-	DPRINTK("EXIT, rc=%d, class=%u\n", rc, *class);
-	return rc;
-}
-=======
 int ahci_do_hardreset(struct ata_link *link, unsigned int *class,
 		      unsigned long deadline, bool *online)
 {
@@ -2091,7 +1626,6 @@ static int ahci_hardreset(struct ata_link *link, unsigned int *class,
 
 	return ahci_do_hardreset(link, class, deadline, &online);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ahci_postreset(struct ata_link *link, unsigned int *class)
 {
@@ -2119,11 +1653,6 @@ static unsigned int ahci_fill_sg(struct ata_queued_cmd *qc, void *cmd_tbl)
 	struct ahci_sg *ahci_sg = cmd_tbl + AHCI_CMD_TBL_HDR_SZ;
 	unsigned int si;
 
-<<<<<<< HEAD
-	VPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Next, the S/G list.
 	 */
@@ -2150,11 +1679,7 @@ static int ahci_pmp_qc_defer(struct ata_queued_cmd *qc)
 		return sata_pmp_qc_defer_cmd_switch(qc);
 }
 
-<<<<<<< HEAD
-static void ahci_qc_prep(struct ata_queued_cmd *qc)
-=======
 static enum ata_completion_errors ahci_qc_prep(struct ata_queued_cmd *qc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = qc->ap;
 	struct ahci_port_priv *pp = ap->private_data;
@@ -2168,11 +1693,7 @@ static enum ata_completion_errors ahci_qc_prep(struct ata_queued_cmd *qc)
 	 * Fill in command table information.  First, the header,
 	 * a SATA Register - Host to Device command FIS.
 	 */
-<<<<<<< HEAD
-	cmd_tbl = pp->cmd_tbl + qc->tag * AHCI_CMD_TBL_SZ;
-=======
 	cmd_tbl = pp->cmd_tbl + qc->hw_tag * AHCI_CMD_TBL_SZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_tf_to_fis(&qc->tf, qc->dev->link->pmp, 1, cmd_tbl);
 	if (is_atapi) {
@@ -2193,13 +1714,9 @@ static enum ata_completion_errors ahci_qc_prep(struct ata_queued_cmd *qc)
 	if (is_atapi)
 		opts |= AHCI_CMD_ATAPI | AHCI_CMD_PREFETCH;
 
-<<<<<<< HEAD
-	ahci_fill_cmd_slot(pp, qc->tag, opts);
-=======
 	ahci_fill_cmd_slot(pp, qc->hw_tag, opts);
 
 	return AC_ERR_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ahci_fbs_dec_intr(struct ata_port *ap)
@@ -2209,10 +1726,6 @@ static void ahci_fbs_dec_intr(struct ata_port *ap)
 	u32 fbs = readl(port_mmio + PORT_FBS);
 	int retries = 3;
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!pp->fbs_enabled);
 
 	/* time to wait for DEC is not specified by AHCI spec,
@@ -2290,11 +1803,7 @@ static void ahci_error_intr(struct ata_port *ap, u32 irq_stat)
 	}
 
 	if (irq_stat & PORT_IRQ_UNK_FIS) {
-<<<<<<< HEAD
-		u32 *unk = (u32 *)(pp->rx_fis + RX_FIS_UNK);
-=======
 		u32 *unk = pp->rx_fis + RX_FIS_UNK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		active_ehi->err_mask |= AC_ERR_HSM;
 		active_ehi->action |= ATA_EH_RESET;
@@ -2344,23 +1853,6 @@ static void ahci_error_intr(struct ata_port *ap, u32 irq_stat)
 		ata_port_abort(ap);
 }
 
-<<<<<<< HEAD
-static void ahci_port_intr(struct ata_port *ap)
-{
-	void __iomem *port_mmio = ahci_port_base(ap);
-	struct ata_eh_info *ehi = &ap->link.eh_info;
-	struct ahci_port_priv *pp = ap->private_data;
-	struct ahci_host_priv *hpriv = ap->host->private_data;
-	int resetting = !!(ap->pflags & ATA_PFLAG_RESETTING);
-	u32 status, qc_active = 0;
-	int rc;
-
-	status = readl(port_mmio + PORT_IRQ_STAT);
-	writel(status, port_mmio + PORT_IRQ_STAT);
-
-	/* ignore BAD_PMP while resetting */
-	if (unlikely(resetting))
-=======
 static void ahci_qc_complete(struct ata_port *ap, void __iomem *port_mmio)
 {
 	struct ata_eh_info *ehi = &ap->link.eh_info;
@@ -2402,7 +1894,6 @@ static void ahci_handle_port_interrupt(struct ata_port *ap,
 
 	/* ignore BAD_PMP while resetting */
 	if (unlikely(ap->pflags & ATA_PFLAG_RESETTING))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status &= ~PORT_IRQ_BAD_PMP;
 
 	if (sata_lpm_ignore_phy_events(&ap->link)) {
@@ -2411,15 +1902,12 @@ static void ahci_handle_port_interrupt(struct ata_port *ap,
 	}
 
 	if (unlikely(status & PORT_IRQ_ERROR)) {
-<<<<<<< HEAD
-=======
 		/*
 		 * Before getting the error notification, we may have
 		 * received SDB FISes notifying successful completions.
 		 * Handle these first and then handle the error.
 		 */
 		ahci_qc_complete(ap, port_mmio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahci_error_intr(ap, status);
 		return;
 	}
@@ -2456,46 +1944,6 @@ static void ahci_handle_port_interrupt(struct ata_port *ap,
 		}
 	}
 
-<<<<<<< HEAD
-	/* pp->active_link is not reliable once FBS is enabled, both
-	 * PORT_SCR_ACT and PORT_CMD_ISSUE should be checked because
-	 * NCQ and non-NCQ commands may be in flight at the same time.
-	 */
-	if (pp->fbs_enabled) {
-		if (ap->qc_active) {
-			qc_active = readl(port_mmio + PORT_SCR_ACT);
-			qc_active |= readl(port_mmio + PORT_CMD_ISSUE);
-		}
-	} else {
-		/* pp->active_link is valid iff any command is in flight */
-		if (ap->qc_active && pp->active_link->sactive)
-			qc_active = readl(port_mmio + PORT_SCR_ACT);
-		else
-			qc_active = readl(port_mmio + PORT_CMD_ISSUE);
-	}
-
-
-	rc = ata_qc_complete_multiple(ap, qc_active);
-
-	/* while resetting, invalid completions are expected */
-	if (unlikely(rc < 0 && !resetting)) {
-		ehi->err_mask |= AC_ERR_HSM;
-		ehi->action |= ATA_EH_RESET;
-		ata_port_freeze(ap);
-	}
-}
-
-irqreturn_t ahci_interrupt(int irq, void *dev_instance)
-{
-	struct ata_host *host = dev_instance;
-	struct ahci_host_priv *hpriv;
-	unsigned int i, handled = 0;
-	void __iomem *mmio;
-	u32 irq_stat, irq_masked;
-
-	VPRINTK("ENTER\n");
-
-=======
 	/* Handle completed commands */
 	ahci_qc_complete(ap, port_mmio);
 }
@@ -2561,7 +2009,6 @@ static irqreturn_t ahci_single_level_irq_intr(int irq, void *dev_instance)
 	void __iomem *mmio;
 	u32 irq_stat, irq_masked;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpriv = host->private_data;
 	mmio = hpriv->mmio;
 
@@ -2574,29 +2021,7 @@ static irqreturn_t ahci_single_level_irq_intr(int irq, void *dev_instance)
 
 	spin_lock(&host->lock);
 
-<<<<<<< HEAD
-	for (i = 0; i < host->n_ports; i++) {
-		struct ata_port *ap;
-
-		if (!(irq_masked & (1 << i)))
-			continue;
-
-		ap = host->ports[i];
-		if (ap) {
-			ahci_port_intr(ap);
-			VPRINTK("port %u\n", i);
-		} else {
-			VPRINTK("port %u (no irq)\n", i);
-			if (ata_ratelimit())
-				dev_warn(host->dev,
-					 "interrupt on disabled port %u\n", i);
-		}
-
-		handled = 1;
-	}
-=======
 	rc = ahci_handle_port_intr(host, irq_masked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* HOST_IRQ_STAT behaves as level triggered latch meaning that
 	 * it should be cleared after all the port events are cleared;
@@ -2611,20 +2036,10 @@ static irqreturn_t ahci_single_level_irq_intr(int irq, void *dev_instance)
 
 	spin_unlock(&host->lock);
 
-<<<<<<< HEAD
-	VPRINTK("EXIT\n");
-
-	return IRQ_RETVAL(handled);
-}
-EXPORT_SYMBOL_GPL(ahci_interrupt);
-
-static unsigned int ahci_qc_issue(struct ata_queued_cmd *qc)
-=======
 	return IRQ_RETVAL(rc);
 }
 
 unsigned int ahci_qc_issue(struct ata_queued_cmd *qc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = qc->ap;
 	void __iomem *port_mmio = ahci_port_base(ap);
@@ -2636,13 +2051,8 @@ unsigned int ahci_qc_issue(struct ata_queued_cmd *qc)
 	 */
 	pp->active_link = qc->dev->link;
 
-<<<<<<< HEAD
-	if (qc->tf.protocol == ATA_PROT_NCQ)
-		writel(1 << qc->tag, port_mmio + PORT_SCR_ACT);
-=======
 	if (ata_is_ncq(qc->tf.protocol))
 		writel(1 << qc->hw_tag, port_mmio + PORT_SCR_ACT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pp->fbs_enabled && pp->fbs_last_dev != qc->dev->link->pmp) {
 		u32 fbs = readl(port_mmio + PORT_FBS);
@@ -2652,30 +2062,19 @@ unsigned int ahci_qc_issue(struct ata_queued_cmd *qc)
 		pp->fbs_last_dev = qc->dev->link->pmp;
 	}
 
-<<<<<<< HEAD
-	writel(1 << qc->tag, port_mmio + PORT_CMD_ISSUE);
-=======
 	writel(1 << qc->hw_tag, port_mmio + PORT_CMD_ISSUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ahci_sw_activity(qc->dev->link);
 
 	return 0;
 }
-<<<<<<< HEAD
-
-static bool ahci_qc_fill_rtf(struct ata_queued_cmd *qc)
-=======
 EXPORT_SYMBOL_GPL(ahci_qc_issue);
 
 static void ahci_qc_fill_rtf(struct ata_queued_cmd *qc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ahci_port_priv *pp = qc->ap->private_data;
 	u8 *rx_fis = pp->rx_fis;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * rtf may already be filled (e.g. for successful NCQ commands).
 	 * If that is the case, we have nothing to do.
@@ -2683,7 +2082,6 @@ static void ahci_qc_fill_rtf(struct ata_queued_cmd *qc)
 	if (qc->flags & ATA_QCFLAG_RTF_FILLED)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pp->fbs_enabled)
 		rx_fis += qc->dev->link->pmp * AHCI_RX_FIS_SZ;
 
@@ -2694,15 +2092,6 @@ static void ahci_qc_fill_rtf(struct ata_queued_cmd *qc)
 	 * Setup FIS.
 	 */
 	if (qc->tf.protocol == ATA_PROT_PIO && qc->dma_dir == DMA_FROM_DEVICE &&
-<<<<<<< HEAD
-	    !(qc->flags & ATA_QCFLAG_FAILED)) {
-		ata_tf_from_fis(rx_fis + RX_FIS_PIO_SETUP, &qc->result_tf);
-		qc->result_tf.command = (rx_fis + RX_FIS_PIO_SETUP)[15];
-	} else
-		ata_tf_from_fis(rx_fis + RX_FIS_D2H_REG, &qc->result_tf);
-
-	return true;
-=======
 	    !(qc->flags & ATA_QCFLAG_EH)) {
 		ata_tf_from_fis(rx_fis + RX_FIS_PIO_SETUP, &qc->result_tf);
 		qc->result_tf.status = (rx_fis + RX_FIS_PIO_SETUP)[15];
@@ -2797,7 +2186,6 @@ static void ahci_qc_ncq_fill_rtf(struct ata_port *ap, u64 done_mask)
 		}
 		done_mask &= ~(1ULL << tag);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ahci_freeze(struct ata_port *ap)
@@ -2825,14 +2213,6 @@ static void ahci_thaw(struct ata_port *ap)
 	writel(pp->intr_mask, port_mmio + PORT_IRQ_MASK);
 }
 
-<<<<<<< HEAD
-static void ahci_error_handler(struct ata_port *ap)
-{
-	if (!(ap->pflags & ATA_PFLAG_FROZEN)) {
-		/* restart engine */
-		ahci_stop_engine(ap);
-		ahci_start_engine(ap);
-=======
 void ahci_error_handler(struct ata_port *ap)
 {
 	struct ahci_host_priv *hpriv = ap->host->private_data;
@@ -2841,34 +2221,20 @@ void ahci_error_handler(struct ata_port *ap)
 		/* restart engine */
 		hpriv->stop_engine(ap);
 		hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sata_pmp_error_handler(ap);
 
 	if (!ata_dev_enabled(ap->link.device))
-<<<<<<< HEAD
-		ahci_stop_engine(ap);
-}
-=======
 		hpriv->stop_engine(ap);
 }
 EXPORT_SYMBOL_GPL(ahci_error_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ahci_post_internal_cmd(struct ata_queued_cmd *qc)
 {
 	struct ata_port *ap = qc->ap;
 
 	/* make DMA engine forget about the failed command */
-<<<<<<< HEAD
-	if (qc->flags & ATA_QCFLAG_FAILED)
-		ahci_kick_engine(ap);
-}
-
-static void ahci_enable_fbs(struct ata_port *ap)
-{
-=======
 	if (qc->flags & ATA_QCFLAG_EH)
 		ahci_kick_engine(ap);
 }
@@ -2956,7 +2322,6 @@ static void ahci_set_aggressive_devslp(struct ata_port *ap, bool sleep)
 static void ahci_enable_fbs(struct ata_port *ap)
 {
 	struct ahci_host_priv *hpriv = ap->host->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ahci_port_priv *pp = ap->private_data;
 	void __iomem *port_mmio = ahci_port_base(ap);
 	u32 fbs;
@@ -2972,11 +2337,7 @@ static void ahci_enable_fbs(struct ata_port *ap)
 		return;
 	}
 
-<<<<<<< HEAD
-	rc = ahci_stop_engine(ap);
-=======
 	rc = hpriv->stop_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return;
 
@@ -2989,19 +2350,12 @@ static void ahci_enable_fbs(struct ata_port *ap)
 	} else
 		dev_err(ap->host->dev, "Failed to enable FBS\n");
 
-<<<<<<< HEAD
-	ahci_start_engine(ap);
-=======
 	hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ahci_disable_fbs(struct ata_port *ap)
 {
-<<<<<<< HEAD
-=======
 	struct ahci_host_priv *hpriv = ap->host->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ahci_port_priv *pp = ap->private_data;
 	void __iomem *port_mmio = ahci_port_base(ap);
 	u32 fbs;
@@ -3016,11 +2370,7 @@ static void ahci_disable_fbs(struct ata_port *ap)
 		return;
 	}
 
-<<<<<<< HEAD
-	rc = ahci_stop_engine(ap);
-=======
 	rc = hpriv->stop_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return;
 
@@ -3033,11 +2383,7 @@ static void ahci_disable_fbs(struct ata_port *ap)
 		pp->fbs_enabled = false;
 	}
 
-<<<<<<< HEAD
-	ahci_start_engine(ap);
-=======
 	hpriv->start_engine(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ahci_pmp_attach(struct ata_port *ap)
@@ -3062,11 +2408,7 @@ static void ahci_pmp_attach(struct ata_port *ap)
 	 * Note that during initialization, the port is marked as
 	 * frozen since the irq handler is not yet registered.
 	 */
-<<<<<<< HEAD
-	if (!(ap->pflags & ATA_PFLAG_FROZEN))
-=======
 	if (!ata_port_is_frozen(ap))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(pp->intr_mask, port_mmio + PORT_IRQ_MASK);
 }
 
@@ -3085,21 +2427,14 @@ static void ahci_pmp_detach(struct ata_port *ap)
 	pp->intr_mask &= ~PORT_IRQ_BAD_PMP;
 
 	/* see comment above in ahci_pmp_attach() */
-<<<<<<< HEAD
-	if (!(ap->pflags & ATA_PFLAG_FROZEN))
-=======
 	if (!ata_port_is_frozen(ap))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(pp->intr_mask, port_mmio + PORT_IRQ_MASK);
 }
 
 int ahci_port_resume(struct ata_port *ap)
 {
-<<<<<<< HEAD
-=======
 	ahci_rpm_get_port(ap);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahci_power_up(ap);
 	ahci_start_port(ap);
 
@@ -3113,8 +2448,6 @@ int ahci_port_resume(struct ata_port *ap)
 EXPORT_SYMBOL_GPL(ahci_port_resume);
 
 #ifdef CONFIG_PM
-<<<<<<< HEAD
-=======
 static void ahci_handle_s2idle(struct ata_port *ap)
 {
 	void __iomem *port_mmio = ahci_port_base(ap);
@@ -3127,7 +2460,6 @@ static void ahci_handle_s2idle(struct ata_port *ap)
 		ata_msleep(ap, devslp_idle_timeout);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ahci_port_suspend(struct ata_port *ap, pm_message_t mesg)
 {
 	const char *emsg = NULL;
@@ -3141,13 +2473,10 @@ static int ahci_port_suspend(struct ata_port *ap, pm_message_t mesg)
 		ata_port_freeze(ap);
 	}
 
-<<<<<<< HEAD
-=======
 	if (acpi_storage_d3(ap->host->dev))
 		ahci_handle_s2idle(ap);
 
 	ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 #endif
@@ -3165,8 +2494,6 @@ static int ahci_port_start(struct ata_port *ap)
 	if (!pp)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	if (ap->host->n_ports > 1) {
 		pp->irq_desc = devm_kzalloc(dev, 8, GFP_KERNEL);
 		if (!pp->irq_desc) {
@@ -3177,7 +2504,6 @@ static int ahci_port_start(struct ata_port *ap)
 			 "%s%d", dev_driver_string(dev), ap->port_no);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check FBS capability */
 	if ((hpriv->cap & HOST_CAP_FBS) && sata_pmp_supported(ap)) {
 		void __iomem *port_mmio = ahci_port_base(ap);
@@ -3204,10 +2530,6 @@ static int ahci_port_start(struct ata_port *ap)
 	mem = dmam_alloc_coherent(dev, dma_sz, &mem_dma, GFP_KERNEL);
 	if (!mem)
 		return -ENOMEM;
-<<<<<<< HEAD
-	memset(mem, 0, dma_sz);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First item in chunk of DMA memory: 32-slot command table,
@@ -3241,8 +2563,6 @@ static int ahci_port_start(struct ata_port *ap)
 	 */
 	pp->intr_mask = DEF_PORT_IRQ;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Switch to per-port locking in case each port has its own MSI vector.
 	 */
@@ -3251,7 +2571,6 @@ static int ahci_port_start(struct ata_port *ap)
 		ap->lock = &pp->lock;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap->private_data = pp;
 
 	/* engage engines, captain */
@@ -3261,19 +2580,14 @@ static int ahci_port_start(struct ata_port *ap)
 static void ahci_port_stop(struct ata_port *ap)
 {
 	const char *emsg = NULL;
-<<<<<<< HEAD
-=======
 	struct ahci_host_priv *hpriv = ap->host->private_data;
 	void __iomem *host_mmio = hpriv->mmio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/* de-initialize port */
 	rc = ahci_deinit_port(ap, &emsg);
 	if (rc)
 		ata_port_warn(ap, "%s (%d)\n", emsg, rc);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Clear GHC.IS to prevent stuck INTx after disabling MSI and
@@ -3282,24 +2596,15 @@ static void ahci_port_stop(struct ata_port *ap)
 	writel(1 << ap->port_no, host_mmio + HOST_IRQ_STAT);
 
 	ahci_rpm_put_port(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ahci_print_info(struct ata_host *host, const char *scc_s)
 {
 	struct ahci_host_priv *hpriv = host->private_data;
-<<<<<<< HEAD
-	void __iomem *mmio = hpriv->mmio;
-	u32 vers, cap, cap2, impl, speed;
-	const char *speed_s;
-
-	vers = readl(mmio + HOST_VERSION);
-=======
 	u32 vers, cap, cap2, impl, speed;
 	const char *speed_s;
 
 	vers = hpriv->version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cap = hpriv->cap;
 	cap2 = hpriv->cap2;
 	impl = hpriv->port_map;
@@ -3315,13 +2620,8 @@ void ahci_print_info(struct ata_host *host, const char *scc_s)
 		speed_s = "?";
 
 	dev_info(host->dev,
-<<<<<<< HEAD
-		"AHCI %02x%02x.%02x%02x "
-		"%u slots %u ports %s Gbps 0x%x impl %s mode\n"
-=======
 		"AHCI vers %02x%02x.%02x%02x, "
 		"%u command slots, %s Gbps, %s mode\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		,
 
 		(vers >> 24) & 0xff,
@@ -3330,18 +2630,6 @@ void ahci_print_info(struct ata_host *host, const char *scc_s)
 		vers & 0xff,
 
 		((cap >> 8) & 0x1f) + 1,
-<<<<<<< HEAD
-		(cap & 0x1f) + 1,
-		speed_s,
-		impl,
-		scc_s);
-
-	dev_info(host->dev,
-		"flags: "
-		"%s%s%s%s%s%s%s"
-		"%s%s%s%s%s%s%s"
-		"%s%s%s%s%s%s\n"
-=======
 		speed_s,
 		scc_s);
 
@@ -3359,7 +2647,6 @@ void ahci_print_info(struct ata_host *host, const char *scc_s)
 		"%s%s%s%s%s%s%s"
 		"%s%s%s%s%s%s%s"
 		"%s%s\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		,
 
 		cap & HOST_CAP_64 ? "64bit " : "",
@@ -3379,12 +2666,9 @@ void ahci_print_info(struct ata_host *host, const char *scc_s)
 		cap & HOST_CAP_CCC ? "ccc " : "",
 		cap & HOST_CAP_EMS ? "ems " : "",
 		cap & HOST_CAP_SXS ? "sxs " : "",
-<<<<<<< HEAD
-=======
 		cap2 & HOST_CAP2_DESO ? "deso " : "",
 		cap2 & HOST_CAP2_SADM ? "sadm " : "",
 		cap2 & HOST_CAP2_SDS ? "sds " : "",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cap2 & HOST_CAP2_APST ? "apst " : "",
 		cap2 & HOST_CAP2_NVMHCI ? "nvmp " : "",
 		cap2 & HOST_CAP2_BOH ? "boh " : ""
@@ -3417,8 +2701,6 @@ void ahci_set_em_messages(struct ahci_host_priv *hpriv,
 }
 EXPORT_SYMBOL_GPL(ahci_set_em_messages);
 
-<<<<<<< HEAD
-=======
 static int ahci_host_activate_multi_irqs(struct ata_host *host,
 					 const struct scsi_host_template *sht)
 {
@@ -3492,7 +2774,6 @@ int ahci_host_activate(struct ata_host *host, const struct scsi_host_template *s
 }
 EXPORT_SYMBOL_GPL(ahci_host_activate);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Jeff Garzik");
 MODULE_DESCRIPTION("Common AHCI SATA low-level routines");
 MODULE_LICENSE("GPL");

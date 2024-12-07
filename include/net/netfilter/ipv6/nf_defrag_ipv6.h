@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-#ifndef _NF_DEFRAG_IPV6_H
-#define _NF_DEFRAG_IPV6_H
-
-extern void nf_defrag_ipv6_enable(void);
-
-extern int nf_ct_frag6_init(void);
-extern void nf_ct_frag6_cleanup(void);
-extern struct sk_buff *nf_ct_frag6_gather(struct sk_buff *skb, u32 user);
-extern void nf_ct_frag6_output(unsigned int hooknum, struct sk_buff *skb,
-			       struct net_device *in,
-			       struct net_device *out,
-			       int (*okfn)(struct sk_buff *));
-
-struct inet_frags_ctl;
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _NF_DEFRAG_IPV6_H
 #define _NF_DEFRAG_IPV6_H
@@ -36,5 +19,4 @@ struct nft_ct_frag6_pernet {
 	struct fqdir	*fqdir;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NF_DEFRAG_IPV6_H */

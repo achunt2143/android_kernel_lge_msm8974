@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/vfp/vfpmodule.c
  *
  *  Copyright (C) 2004 ARM Limited.
  *  Written by Deep Blue Solutions Limited.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/cpu.h>
@@ -22,65 +12,37 @@
 #include <linux/kernel.h>
 #include <linux/notifier.h>
 #include <linux/signal.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smp.h>
 #include <linux/init.h>
 #include <linux/uaccess.h>
 #include <linux/user.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <linux/proc_fs.h>
-#include <linux/seq_file.h>
-=======
 #include <linux/perf_event.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cp15.h>
 #include <asm/cputype.h>
 #include <asm/system_info.h>
 #include <asm/thread_notify.h>
-<<<<<<< HEAD
-#include <asm/vfp.h>
-=======
 #include <asm/traps.h>
 #include <asm/vfp.h>
 #include <asm/neon.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "vfpinstr.h"
 #include "vfp.h"
 
-<<<<<<< HEAD
-/*
- * Our undef handlers (in entry.S)
- */
-void vfp_testing_entry(void);
-void vfp_support_entry(void);
-void vfp_null_entry(void);
-
-void (*vfp_vector)(void) = vfp_null_entry;
-=======
 static bool have_vfp __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Dual-use variable.
  * Used in startup: set to non-zero if VFP checks fail
  * After startup, holds VFP architecture
  */
-<<<<<<< HEAD
-unsigned int VFP_arch;
-=======
 static unsigned int VFP_arch;
 
 #ifdef CONFIG_CPU_FEROCEON
 extern unsigned int VFP_arch_feroceon __alias(VFP_arch);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The pointer to the vfpstate structure of the thread which currently
@@ -119,22 +81,10 @@ static void vfp_force_reload(unsigned int cpu, struct thread_info *thread)
 	}
 #ifdef CONFIG_SMP
 	thread->vfpstate.hard.cpu = NR_CPUS;
-<<<<<<< HEAD
-	vfp_current_hw_state[cpu] = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
 /*
-<<<<<<< HEAD
- * Used for reporting emulation statistics via /proc
- */
-static atomic64_t vfp_bounce_count = ATOMIC64_INIT(0);
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Per-thread VFP initialization.
  */
 static void vfp_thread_flush(struct thread_info *thread)
@@ -203,13 +153,6 @@ static void vfp_thread_copy(struct thread_info *thread)
  *   - we could be preempted if tree preempt rcu is enabled, so
  *	it is unsafe to use thread->cpu.
  *  THREAD_NOTIFY_EXIT
-<<<<<<< HEAD
- *   - the thread (v) will be running on the local CPU, so
- *	v === current_thread_info()
- *   - thread->cpu is the local CPU number at the time it is accessed,
- *	but may change at any time.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   - we could be preempted if tree preempt rcu is enabled, so
  *	it is unsafe to use thread->cpu.
  */
@@ -270,17 +213,6 @@ static struct notifier_block vfp_notifier_block = {
  */
 static void vfp_raise_sigfpe(unsigned int sicode, struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	memset(&info, 0, sizeof(info));
-
-	info.si_signo = SIGFPE;
-	info.si_code = sicode;
-	info.si_addr = (void __user *)(instruction_pointer(regs) - 4);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This is the same as NWFPE, because it's not clear what
 	 * this is used for
@@ -288,32 +220,20 @@ static void vfp_raise_sigfpe(unsigned int sicode, struct pt_regs *regs)
 	current->thread.error_code = 0;
 	current->thread.trap_no = 6;
 
-<<<<<<< HEAD
-	send_sig_info(SIGFPE, &info, current);
-=======
 	send_sig_fault(SIGFPE, sicode,
 		       (void __user *)(instruction_pointer(regs) - 4),
 		       current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vfp_panic(char *reason, u32 inst)
 {
 	int i;
 
-<<<<<<< HEAD
-	printk(KERN_ERR "VFP: Error: %s\n", reason);
-	printk(KERN_ERR "VFP: EXC 0x%08x SCR 0x%08x INST 0x%08x\n",
-		fmrx(FPEXC), fmrx(FPSCR), inst);
-	for (i = 0; i < 32; i += 2)
-		printk(KERN_ERR "VFP: s%2u: 0x%08x s%2u: 0x%08x\n",
-=======
 	pr_err("VFP: Error: %s\n", reason);
 	pr_err("VFP: EXC 0x%08x SCR 0x%08x INST 0x%08x\n",
 		fmrx(FPEXC), fmrx(FPSCR), inst);
 	for (i = 0; i < 32; i += 2)
 		pr_err("VFP: s%2u: 0x%08x s%2u: 0x%08x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       i, vfp_get_float(i), i+1, vfp_get_float(i+1));
 }
 
@@ -328,11 +248,7 @@ static void vfp_raise_exceptions(u32 exceptions, u32 inst, u32 fpscr, struct pt_
 
 	if (exceptions == VFP_EXCEPTION_ERROR) {
 		vfp_panic("unhandled bounce", inst);
-<<<<<<< HEAD
-		vfp_raise_sigfpe(0, regs);
-=======
 		vfp_raise_sigfpe(FPE_FLTINV, regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -398,29 +314,18 @@ static u32 vfp_emulate_instruction(u32 inst, u32 fpscr, struct pt_regs *regs)
 		 * emulate it.
 		 */
 	}
-<<<<<<< HEAD
-=======
 	perf_sw_event(PERF_COUNT_SW_EMULATION_FAULTS, 1, regs, regs->ARM_pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return exceptions & ~VFP_NAN_FLAG;
 }
 
 /*
  * Package up a bounce condition.
  */
-<<<<<<< HEAD
-void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
-=======
 static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 fpscr, orig_fpscr, fpsid, exceptions;
 
 	pr_debug("VFP: bounce: trigger %08x fpexc %08x\n", trigger, fpexc);
-<<<<<<< HEAD
-	atomic64_inc(&vfp_bounce_count);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point, FPEXC can have the following configuration:
@@ -452,20 +357,12 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
 	}
 
 	if (fpexc & FPEXC_EX) {
-<<<<<<< HEAD
-#ifndef CONFIG_CPU_FEROCEON
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Asynchronous exception. The instruction is read from FPINST
 		 * and the interrupted instruction has to be restarted.
 		 */
 		trigger = fmrx(FPINST);
 		regs->ARM_pc -= 4;
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!(fpexc & FPEXC_DEX)) {
 		/*
 		 * Illegal combination of bits. It can be caused by an
@@ -473,11 +370,7 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
 		 * on VFP subarch 1.
 		 */
 		 vfp_raise_exceptions(VFP_EXCEPTION_ERROR, trigger, fpscr, regs);
-<<<<<<< HEAD
-		goto exit;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -508,11 +401,7 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
 	 * the FPEXC.FP2V bit is valid only if FPEXC.EX is 1.
 	 */
 	if ((fpexc & (FPEXC_EX | FPEXC_FP2V)) != (FPEXC_EX | FPEXC_FP2V))
-<<<<<<< HEAD
-		goto exit;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The barrier() here prevents fpinst2 being read
@@ -525,11 +414,6 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs)
 	exceptions = vfp_emulate_instruction(trigger, orig_fpscr, regs);
 	if (exceptions)
 		vfp_raise_exceptions(exceptions, trigger, orig_fpscr, regs);
-<<<<<<< HEAD
- exit:
-	preempt_enable();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vfp_enable(void *unused)
@@ -545,10 +429,6 @@ static void vfp_enable(void *unused)
 	set_copro_access(access | CPACC_FULL(10) | CPACC_FULL(11));
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_PM
-int vfp_pm_suspend(void)
-=======
 /* Called by platforms on which we want to disable VFP because it may not be
  * present on all CPUs within a SMP complex. Needs to be called prior to
  * vfp_init().
@@ -564,18 +444,13 @@ void __init vfp_disable(void)
 
 #ifdef CONFIG_CPU_PM
 static int vfp_pm_suspend(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct thread_info *ti = current_thread_info();
 	u32 fpexc = fmrx(FPEXC);
 
 	/* if vfp is on, then save state for resumption */
 	if (fpexc & FPEXC_EN) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "%s: saving vfp state\n", __func__);
-=======
 		pr_debug("%s: saving vfp state\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfp_save_state(&ti->vfpstate, fpexc);
 
 		/* disable, just in case */
@@ -594,11 +469,7 @@ static int vfp_pm_suspend(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-void vfp_pm_resume(void)
-=======
 static void vfp_pm_resume(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* ensure we have access to the vfp */
 	vfp_enable(NULL);
@@ -643,11 +514,8 @@ void vfp_sync_hwstate(struct thread_info *thread)
 {
 	unsigned int cpu = get_cpu();
 
-<<<<<<< HEAD
-=======
 	local_bh_disable();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vfp_state_in_hw(cpu, thread)) {
 		u32 fpexc = fmrx(FPEXC);
 
@@ -659,10 +527,7 @@ void vfp_sync_hwstate(struct thread_info *thread)
 		fmxr(FPEXC, fpexc);
 	}
 
-<<<<<<< HEAD
-=======
 	local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_cpu();
 }
 
@@ -680,20 +545,11 @@ void vfp_flush_hwstate(struct thread_info *thread)
  * Save the current VFP state into the provided structures and prepare
  * for entry into a new function (signal handler).
  */
-<<<<<<< HEAD
-int vfp_preserve_user_clear_hwstate(struct user_vfp __user *ufp,
-				    struct user_vfp_exc __user *ufp_exc)
-{
-	struct thread_info *thread = current_thread_info();
-	struct vfp_hard_struct *hwstate = &thread->vfpstate.hard;
-	int err = 0;
-=======
 int vfp_preserve_user_clear_hwstate(struct user_vfp *ufp,
 				    struct user_vfp_exc *ufp_exc)
 {
 	struct thread_info *thread = current_thread_info();
 	struct vfp_hard_struct *hwstate = &thread->vfpstate.hard;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ensure that the saved hwstate is up-to-date. */
 	vfp_sync_hwstate(thread);
@@ -702,37 +558,19 @@ int vfp_preserve_user_clear_hwstate(struct user_vfp *ufp,
 	 * Copy the floating point registers. There can be unused
 	 * registers see asm/hwcap.h for details.
 	 */
-<<<<<<< HEAD
-	err |= __copy_to_user(&ufp->fpregs, &hwstate->fpregs,
-			      sizeof(hwstate->fpregs));
-	/*
-	 * Copy the status and control register.
-	 */
-	__put_user_error(hwstate->fpscr, &ufp->fpscr, err);
-=======
 	memcpy(&ufp->fpregs, &hwstate->fpregs, sizeof(hwstate->fpregs));
 
 	/*
 	 * Copy the status and control register.
 	 */
 	ufp->fpscr = hwstate->fpscr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Copy the exception registers.
 	 */
-<<<<<<< HEAD
-	__put_user_error(hwstate->fpexc, &ufp_exc->fpexc, err);
-	__put_user_error(hwstate->fpinst, &ufp_exc->fpinst, err);
-	__put_user_error(hwstate->fpinst2, &ufp_exc->fpinst2, err);
-
-	if (err)
-		return -EFAULT;
-=======
 	ufp_exc->fpexc = hwstate->fpexc;
 	ufp_exc->fpinst = hwstate->fpinst;
 	ufp_exc->fpinst2 = hwstate->fpinst2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ensure that VFP is disabled. */
 	vfp_flush_hwstate(thread);
@@ -746,20 +584,11 @@ int vfp_preserve_user_clear_hwstate(struct user_vfp *ufp,
 }
 
 /* Sanitise and restore the current VFP state from the provided structures. */
-<<<<<<< HEAD
-int vfp_restore_user_hwstate(struct user_vfp __user *ufp,
-			     struct user_vfp_exc __user *ufp_exc)
-=======
 int vfp_restore_user_hwstate(struct user_vfp *ufp, struct user_vfp_exc *ufp_exc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct thread_info *thread = current_thread_info();
 	struct vfp_hard_struct *hwstate = &thread->vfpstate.hard;
 	unsigned long fpexc;
-<<<<<<< HEAD
-	int err = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable VFP to avoid corrupting the new thread state. */
 	vfp_flush_hwstate(thread);
@@ -768,29 +597,16 @@ int vfp_restore_user_hwstate(struct user_vfp *ufp, struct user_vfp_exc *ufp_exc)
 	 * Copy the floating point registers. There can be unused
 	 * registers see asm/hwcap.h for details.
 	 */
-<<<<<<< HEAD
-	err |= __copy_from_user(&hwstate->fpregs, &ufp->fpregs,
-				sizeof(hwstate->fpregs));
-	/*
-	 * Copy the status and control register.
-	 */
-	__get_user_error(hwstate->fpscr, &ufp->fpscr, err);
-=======
 	memcpy(&hwstate->fpregs, &ufp->fpregs, sizeof(hwstate->fpregs));
 	/*
 	 * Copy the status and control register.
 	 */
 	hwstate->fpscr = ufp->fpscr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Sanitise and restore the exception registers.
 	 */
-<<<<<<< HEAD
-	__get_user_error(fpexc, &ufp_exc->fpexc, err);
-=======
 	fpexc = ufp_exc->fpexc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ensure the VFP is enabled. */
 	fpexc |= FPEXC_EN;
@@ -799,17 +615,10 @@ int vfp_restore_user_hwstate(struct user_vfp *ufp, struct user_vfp_exc *ufp_exc)
 	fpexc &= ~(FPEXC_EX | FPEXC_FP2V);
 	hwstate->fpexc = fpexc;
 
-<<<<<<< HEAD
-	__get_user_error(hwstate->fpinst, &ufp_exc->fpinst, err);
-	__get_user_error(hwstate->fpinst2, &ufp_exc->fpinst2, err);
-
-	return err ? -EFAULT : 0;
-=======
 	hwstate->fpinst = ufp_exc->fpinst;
 	hwstate->fpinst2 = ufp_exc->fpinst2;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -818,42 +627,6 @@ int vfp_restore_user_hwstate(struct user_vfp *ufp, struct user_vfp_exc *ufp_exc)
  * hardware state at every thread switch.  We clear our held state when
  * a CPU has been killed, indicating that the VFP hardware doesn't contain
  * a threads VFP state.  When a CPU starts up, we re-enable access to the
-<<<<<<< HEAD
- * VFP hardware.
- *
- * Both CPU_DYING and CPU_STARTING are called on the CPU which
- * is being offlined/onlined.
- */
-static int vfp_hotplug(struct notifier_block *b, unsigned long action,
-	void *hcpu)
-{
-	if (action == CPU_DYING || action == CPU_DYING_FROZEN) {
-		vfp_force_reload((long)hcpu, current_thread_info());
-	} else if (action == CPU_STARTING || action == CPU_STARTING_FROZEN)
-		vfp_enable(NULL);
-	return NOTIFY_OK;
-}
-
-#ifdef CONFIG_PROC_FS
-static int vfp_bounce_show(struct seq_file *m, void *v)
-{
-	seq_printf(m, "%llu\n", atomic64_read(&vfp_bounce_count));
-	return 0;
-}
-
-static int vfp_bounce_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, vfp_bounce_show, NULL);
-}
-
-static const struct file_operations vfp_bounce_fops = {
-	.open		= vfp_bounce_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-#endif
-=======
  * VFP hardware. The callbacks below are called on the CPU which
  * is being offlined/onlined.
  */
@@ -1052,7 +825,6 @@ static struct undef_hook vfp_support_hook = {
 	.instr_val	= 0x0c000a00,
 	.fn		= vfp_support_entry,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_KERNEL_MODE_NEON
 
@@ -1065,15 +837,6 @@ void kernel_neon_begin(void)
 	unsigned int cpu;
 	u32 fpexc;
 
-<<<<<<< HEAD
-	/*
-	 * Kernel mode NEON is only allowed outside of interrupt context
-	 * with preemption disabled. This will make sure that the kernel
-	 * mode NEON register contents never need to be preserved.
-	 */
-	BUG_ON(in_interrupt());
-	cpu = get_cpu();
-=======
 	local_bh_disable();
 
 	/*
@@ -1083,7 +846,6 @@ void kernel_neon_begin(void)
 	 */
 	BUG_ON(in_hardirq());
 	cpu = __smp_processor_id();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fpexc = fmrx(FPEXC) | FPEXC_EN;
 	fmxr(FPEXC, fpexc);
@@ -1106,18 +868,12 @@ void kernel_neon_end(void)
 {
 	/* Disable the NEON/VFP unit. */
 	fmxr(FPEXC, fmrx(FPEXC) & ~FPEXC_EN);
-<<<<<<< HEAD
-	put_cpu();
-=======
 	local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(kernel_neon_end);
 
 #endif /* CONFIG_KERNEL_MODE_NEON */
 
-<<<<<<< HEAD
-=======
 static int __init vfp_detect(struct pt_regs *regs, unsigned int instr)
 {
 	VFP_arch = UINT_MAX;	/* mark as not present */
@@ -1133,7 +889,6 @@ static struct undef_hook vfp_detect_hook __initdata = {
 	.fn		= vfp_detect,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * VFP support code initialisation.
  */
@@ -1141,16 +896,12 @@ static int __init vfp_init(void)
 {
 	unsigned int vfpsid;
 	unsigned int cpu_arch = cpu_architecture();
-<<<<<<< HEAD
-
-=======
 	unsigned int isar6;
 
 	/*
 	 * Enable the access to the VFP on all online CPUs so the
 	 * following test on FPSID will succeed.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_arch >= CPU_ARCH_ARMv6)
 		on_each_cpu(vfp_enable, NULL, 1);
 
@@ -1159,55 +910,6 @@ static int __init vfp_init(void)
 	 * The handler is already setup to just log calls, so
 	 * we just need to read the VFPSID register.
 	 */
-<<<<<<< HEAD
-	vfp_vector = vfp_testing_entry;
-	barrier();
-	vfpsid = fmrx(FPSID);
-	barrier();
-	vfp_vector = vfp_null_entry;
-
-	printk(KERN_INFO "VFP support v0.3: ");
-	if (VFP_arch)
-		printk("not present\n");
-	else if (vfpsid & FPSID_NODOUBLE) {
-		printk("no double precision support\n");
-	} else {
-		hotcpu_notifier(vfp_hotplug, 0);
-
-		VFP_arch = (vfpsid & FPSID_ARCH_MASK) >> FPSID_ARCH_BIT;  /* Extract the architecture version */
-		printk("implementor %02x architecture %d part %02x variant %x rev %x\n",
-			(vfpsid & FPSID_IMPLEMENTER_MASK) >> FPSID_IMPLEMENTER_BIT,
-			(vfpsid & FPSID_ARCH_MASK) >> FPSID_ARCH_BIT,
-			(vfpsid & FPSID_PART_MASK) >> FPSID_PART_BIT,
-			(vfpsid & FPSID_VARIANT_MASK) >> FPSID_VARIANT_BIT,
-			(vfpsid & FPSID_REV_MASK) >> FPSID_REV_BIT);
-
-		vfp_vector = vfp_support_entry;
-
-		thread_register_notifier(&vfp_notifier_block);
-		vfp_pm_init();
-
-		/*
-		 * We detected VFP, and the support code is
-		 * in place; report VFP support to userspace.
-		 */
-		elf_hwcap |= HWCAP_VFP;
-#ifdef CONFIG_VFPv3
-		if (VFP_arch >= 2) {
-			elf_hwcap |= HWCAP_VFPv3;
-
-			/*
-			 * Check for VFPv3 D16 and VFPv4 D16.  CPUs in
-			 * this configuration only have 16 x 64bit
-			 * registers.
-			 */
-			if (((fmrx(MVFR0) & MVFR0_A_SIMD_MASK)) == 1)
-				elf_hwcap |= HWCAP_VFPv3D16; /* also v4-D16 */
-			else
-				elf_hwcap |= HWCAP_VFPD32;
-		}
-#endif
-=======
 	register_undef_hook(&vfp_detect_hook);
 	barrier();
 	vfpsid = fmrx(FPSID);
@@ -1222,40 +924,12 @@ static int __init vfp_init(void)
 	} else if ((read_cpuid_id() & 0x000f0000) == 0x000f0000) {
 		VFP_arch = vfpsid & FPSID_CPUID_ARCH_MASK;
 		VFP_arch >>= FPSID_ARCH_BIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Check for the presence of the Advanced SIMD
 		 * load/store instructions, integer and single
 		 * precision floating point operations. Only check
 		 * for NEON if the hardware has the MVFR registers.
 		 */
-<<<<<<< HEAD
-		if ((read_cpuid_id() & 0x000f0000) == 0x000f0000) {
-#ifdef CONFIG_NEON
-			if ((fmrx(MVFR1) & 0x000fff00) == 0x00011100)
-				elf_hwcap |= HWCAP_NEON;
-#endif
-#ifdef CONFIG_VFPv3
-			if ((fmrx(MVFR1) & 0xf0000000) == 0x10000000 ||
-			    (read_cpuid_id() & 0xff00fc00) == 0x51000400)
-				elf_hwcap |= HWCAP_VFPv4;
-#endif
-		}
-	}
-	return 0;
-}
-
-static int __init vfp_rootfs_init(void)
-{
-#ifdef CONFIG_PROC_FS
-	static struct proc_dir_entry *procfs_entry;
-
-	procfs_entry = proc_create("cpu/vfp_bounce", S_IRUGO, NULL,
-			&vfp_bounce_fops);
-	if (!procfs_entry)
-		pr_err("Failed to create procfs node for VFP bounce reporting\n");
-#endif
-=======
 		if (IS_ENABLED(CONFIG_NEON) &&
 		    (fmrx(MVFR1) & 0x000fff00) == 0x00011100) {
 			elf_hwcap |= HWCAP_NEON;
@@ -1347,12 +1021,7 @@ static int __init vfp_rootfs_init(void)
 		(vfpsid & FPSID_VARIANT_MASK) >> FPSID_VARIANT_BIT,
 		(vfpsid & FPSID_REV_MASK) >> FPSID_REV_BIT);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 core_initcall(vfp_init);
-<<<<<<< HEAD
-rootfs_initcall(vfp_rootfs_init);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

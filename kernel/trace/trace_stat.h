@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __TRACE_STAT_H
 #define __TRACE_STAT_H
 
@@ -19,11 +16,7 @@ struct tracer_stat {
 	void			*(*stat_start)(struct tracer_stat *trace);
 	void			*(*stat_next)(void *prev, int idx);
 	/* Compare two entries for stats sorting */
-<<<<<<< HEAD
-	int			(*stat_cmp)(void *p1, void *p2);
-=======
 	cmp_func_t		stat_cmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Print a stat entry */
 	int			(*stat_show)(struct seq_file *s, void *p);
 	/* Release an entry */

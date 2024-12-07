@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-# List of files in the vdso, has to be asm only for now
-
-obj-vdso64 = gettimeofday.o clock_getres.o clock_gettime.o note.o
-
-# Build rules
-
-targets := $(obj-vdso64) vdso64.so vdso64.so.dbg
-obj-vdso64 := $(addprefix $(obj)/, $(obj-vdso64))
-
-KBUILD_AFLAGS_64 := $(filter-out -m64,$(KBUILD_AFLAGS))
-KBUILD_AFLAGS_64 += -m64 -s
-
-KBUILD_CFLAGS_64 := $(filter-out -m64,$(KBUILD_CFLAGS))
-KBUILD_CFLAGS_64 += -m64 -fPIC -shared -fno-common -fno-builtin
-KBUILD_CFLAGS_64 += -nostdlib -Wl,-soname=linux-vdso64.so.1 \
-			$(call cc-ldoption, -Wl$(comma)--hash-style=sysv)
-=======
 # SPDX-License-Identifier: GPL-2.0
 # List of files in the vdso
 
@@ -47,19 +29,11 @@ KBUILD_CFLAGS_64 := $(filter-out -munaligned-symbols,$(KBUILD_CFLAGS_64))
 KBUILD_CFLAGS_64 += -m64 -fPIC -fno-common -fno-builtin
 ldflags-y := -shared -soname=linux-vdso64.so.1 \
 	     --hash-style=both --build-id=sha1 -T
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(targets:%=$(obj)/%.dbg): KBUILD_CFLAGS = $(KBUILD_CFLAGS_64)
 $(targets:%=$(obj)/%.dbg): KBUILD_AFLAGS = $(KBUILD_AFLAGS_64)
 
 obj-y += vdso64_wrapper.o
-<<<<<<< HEAD
-extra-y += vdso64.lds
-CPPFLAGS_vdso64.lds += -P -C -U$(ARCH)
-
-# Disable gcov profiling for VDSO code
-GCOV_PROFILE := n
-=======
 targets += vdso64.lds
 CPPFLAGS_vdso64.lds += -P -C -U$(ARCH)
 
@@ -68,23 +42,16 @@ GCOV_PROFILE := n
 UBSAN_SANITIZE := n
 KASAN_SANITIZE := n
 KCSAN_SANITIZE := n
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Force dependency (incbin is bad)
 $(obj)/vdso64_wrapper.o : $(obj)/vdso64.so
 
-<<<<<<< HEAD
-# link rule for the .so file, .lds has to be first
-$(obj)/vdso64.so.dbg: $(src)/vdso64.lds $(obj-vdso64)
-	$(call if_changed,vdso64ld)
-=======
 quiet_cmd_vdso_and_check = VDSO    $@
       cmd_vdso_and_check = $(cmd_ld); $(cmd_vdso_check)
 
 # link rule for the .so file, .lds has to be first
 $(obj)/vdso64.so.dbg: $(src)/vdso64.lds $(obj-vdso64) $(obj-cvdso64) FORCE
 	$(call if_changed,vdso_and_check)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # strip rule for the .so file
 $(obj)/%.so: OBJCOPYFLAGS := -S
@@ -92,26 +59,6 @@ $(obj)/%.so: $(obj)/%.so.dbg FORCE
 	$(call if_changed,objcopy)
 
 # assembly rules for the .S files
-<<<<<<< HEAD
-$(obj-vdso64): %.o: %.S
-	$(call if_changed_dep,vdso64as)
-
-# actual build commands
-quiet_cmd_vdso64ld = VDSO64L $@
-      cmd_vdso64ld = $(CC) $(c_flags) -Wl,-T $^ -o $@
-quiet_cmd_vdso64as = VDSO64A $@
-      cmd_vdso64as = $(CC) $(a_flags) -c -o $@ $<
-
-# install commands for the unstripped file
-quiet_cmd_vdso_install = INSTALL $@
-      cmd_vdso_install = cp $(obj)/$@.dbg $(MODLIB)/vdso/$@
-
-vdso64.so: $(obj)/vdso64.so.dbg
-	@mkdir -p $(MODLIB)/vdso
-	$(call cmd,vdso_install)
-
-vdso_install: vdso64.so
-=======
 $(obj-vdso64): %.o: %.S FORCE
 	$(call if_changed_dep,vdso64as)
 
@@ -131,4 +78,3 @@ quiet_cmd_vdsosym = VDSOSYM $@
 
 include/generated/vdso64-offsets.h: $(obj)/vdso64.so.dbg FORCE
 	$(call if_changed,vdsosym)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,11 +1,7 @@
 #ifndef __LINUX_SPINLOCK_API_UP_H
 #define __LINUX_SPINLOCK_API_UP_H
 
-<<<<<<< HEAD
-#ifndef __LINUX_SPINLOCK_H
-=======
 #ifndef __LINUX_INSIDE_SPINLOCK_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # error "please don't include this file directly"
 #endif
 
@@ -28,13 +24,6 @@
  * flags straight, to suppress compiler warnings of unused lock
  * variables, and to add the proper checker annotations:
  */
-<<<<<<< HEAD
-#define __LOCK(lock) \
-  do { preempt_disable(); __acquire(lock); (void)(lock); } while (0)
-
-#define __LOCK_BH(lock) \
-  do { local_bh_disable(); __LOCK(lock); } while (0)
-=======
 #define ___LOCK(lock) \
   do { __acquire(lock); (void)(lock); } while (0)
 
@@ -43,7 +32,6 @@
 
 #define __LOCK_BH(lock) \
   do { __local_bh_disable_ip(_THIS_IP_, SOFTIRQ_LOCK_OFFSET); ___LOCK(lock); } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __LOCK_IRQ(lock) \
   do { local_irq_disable(); __LOCK(lock); } while (0)
@@ -51,14 +39,6 @@
 #define __LOCK_IRQSAVE(lock, flags) \
   do { local_irq_save(flags); __LOCK(lock); } while (0)
 
-<<<<<<< HEAD
-#define __UNLOCK(lock) \
-  do { preempt_enable(); __release(lock); (void)(lock); } while (0)
-
-#define __UNLOCK_BH(lock) \
-  do { preempt_enable_no_resched(); local_bh_enable(); \
-	  __release(lock); (void)(lock); } while (0)
-=======
 #define ___UNLOCK(lock) \
   do { __release(lock); (void)(lock); } while (0)
 
@@ -68,7 +48,6 @@
 #define __UNLOCK_BH(lock) \
   do { __local_bh_enable_ip(_THIS_IP_, SOFTIRQ_LOCK_OFFSET); \
        ___UNLOCK(lock); } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __UNLOCK_IRQ(lock) \
   do { local_irq_enable(); __UNLOCK(lock); } while (0)
@@ -80,10 +59,7 @@
 #define _raw_spin_lock_nested(lock, subclass)	__LOCK(lock)
 #define _raw_read_lock(lock)			__LOCK(lock)
 #define _raw_write_lock(lock)			__LOCK(lock)
-<<<<<<< HEAD
-=======
 #define _raw_write_lock_nested(lock, subclass)	__LOCK(lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _raw_spin_lock_bh(lock)			__LOCK_BH(lock)
 #define _raw_read_lock_bh(lock)			__LOCK_BH(lock)
 #define _raw_write_lock_bh(lock)		__LOCK_BH(lock)

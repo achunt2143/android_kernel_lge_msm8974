@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Intel Multiprocessor Specification 1.1 and 1.4
  *	compliant MP-table parsing routines.
@@ -14,29 +11,11 @@
 #include <linux/mm.h>
 #include <linux/init.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/memblock.h>
 #include <linux/kernel_stat.h>
 #include <linux/mc146818rtc.h>
 #include <linux/bitops.h>
 #include <linux/acpi.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/smp.h>
-#include <linux/pci.h>
-
-#include <asm/mtrr.h>
-#include <asm/mpspec.h>
-#include <asm/pgalloc.h>
-#include <asm/io_apic.h>
-#include <asm/proto.h>
-#include <asm/bios_ebda.h>
-#include <asm/e820.h>
-#include <asm/trampoline.h>
-=======
 #include <linux/smp.h>
 #include <linux/pci.h>
 
@@ -49,7 +28,6 @@
 #include <asm/proto.h>
 #include <asm/bios_ebda.h>
 #include <asm/e820/api.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 #include <asm/smp.h>
 
@@ -58,11 +36,8 @@
  * Checksum an MP configuration block.
  */
 
-<<<<<<< HEAD
-=======
 static unsigned int num_procs __initdata;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init mpf_checksum(unsigned char *mp, int len)
 {
 	int sum = 0;
@@ -73,36 +48,6 @@ static int __init mpf_checksum(unsigned char *mp, int len)
 	return sum & 0xFF;
 }
 
-<<<<<<< HEAD
-int __init default_mpc_apic_id(struct mpc_cpu *m)
-{
-	return m->apicid;
-}
-
-static void __init MP_processor_info(struct mpc_cpu *m)
-{
-	int apicid;
-	char *bootup_cpu = "";
-
-	if (!(m->cpuflag & CPU_ENABLED)) {
-		disabled_cpus++;
-		return;
-	}
-
-	apicid = x86_init.mpparse.mpc_apic_id(m);
-
-	if (m->cpuflag & CPU_BOOTPROCESSOR) {
-		bootup_cpu = " (Bootup-CPU)";
-		boot_cpu_physical_apicid = m->apicid;
-	}
-
-	printk(KERN_INFO "Processor #%d%s\n", m->apicid, bootup_cpu);
-	generic_processor_info(apicid, m->apicver);
-}
-
-#ifdef CONFIG_X86_IO_APIC
-void __init default_mpc_oem_bus_info(struct mpc_bus *m, char *str)
-=======
 static void __init MP_processor_info(struct mpc_cpu *m)
 {
 	char *bootup_cpu = "";
@@ -120,7 +65,6 @@ static void __init MP_processor_info(struct mpc_cpu *m)
 
 #ifdef CONFIG_X86_IO_APIC
 static void __init mpc_oem_bus_info(struct mpc_bus *m, char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memcpy(str, m->bustype, 6);
 	str[6] = 0;
@@ -131,47 +75,18 @@ static void __init MP_bus_info(struct mpc_bus *m)
 {
 	char str[7];
 
-<<<<<<< HEAD
-	x86_init.mpparse.mpc_oem_bus_info(m, str);
-
-#if MAX_MP_BUSSES < 256
-	if (m->busid >= MAX_MP_BUSSES) {
-		printk(KERN_WARNING "MP table busid value (%d) for bustype %s "
-		       " is too large, max. supported is %d\n",
-		       m->busid, str, MAX_MP_BUSSES - 1);
-=======
 	mpc_oem_bus_info(m, str);
 
 #if MAX_MP_BUSSES < 256
 	if (m->busid >= MAX_MP_BUSSES) {
 		pr_warn("MP table busid value (%d) for bustype %s is too large, max. supported is %d\n",
 			m->busid, str, MAX_MP_BUSSES - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 #endif
 
 	set_bit(m->busid, mp_bus_not_pci);
 	if (strncmp(str, BUSTYPE_ISA, sizeof(BUSTYPE_ISA) - 1) == 0) {
-<<<<<<< HEAD
-#if defined(CONFIG_EISA) || defined(CONFIG_MCA)
-		mp_bus_id_to_type[m->busid] = MP_BUS_ISA;
-#endif
-	} else if (strncmp(str, BUSTYPE_PCI, sizeof(BUSTYPE_PCI) - 1) == 0) {
-		if (x86_init.mpparse.mpc_oem_pci_bus)
-			x86_init.mpparse.mpc_oem_pci_bus(m);
-
-		clear_bit(m->busid, mp_bus_not_pci);
-#if defined(CONFIG_EISA) || defined(CONFIG_MCA)
-		mp_bus_id_to_type[m->busid] = MP_BUS_PCI;
-	} else if (strncmp(str, BUSTYPE_EISA, sizeof(BUSTYPE_EISA) - 1) == 0) {
-		mp_bus_id_to_type[m->busid] = MP_BUS_EISA;
-	} else if (strncmp(str, BUSTYPE_MCA, sizeof(BUSTYPE_MCA) - 1) == 0) {
-		mp_bus_id_to_type[m->busid] = MP_BUS_MCA;
-#endif
-	} else
-		printk(KERN_WARNING "Unknown bustype %s - ignoring\n", str);
-=======
 #ifdef CONFIG_EISA
 		mp_bus_id_to_type[m->busid] = MP_BUS_ISA;
 #endif
@@ -184,15 +99,10 @@ static void __init MP_bus_info(struct mpc_bus *m)
 #endif
 	} else
 		pr_warn("Unknown bustype %s - ignoring\n", str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init MP_ioapic_info(struct mpc_ioapic *m)
 {
-<<<<<<< HEAD
-	if (m->flags & MPC_APIC_USABLE)
-		mp_register_ioapic(m->apicid, m->apicaddr, gsi_top);
-=======
 	struct ioapic_domain_cfg cfg = {
 		.type = IOAPIC_DOMAIN_LEGACY,
 		.ops = &mp_ioapic_irqdomain_ops,
@@ -200,18 +110,12 @@ static void __init MP_ioapic_info(struct mpc_ioapic *m)
 
 	if (m->flags & MPC_APIC_USABLE)
 		mp_register_ioapic(m->apicid, m->apicaddr, gsi_top, &cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init print_mp_irq_info(struct mpc_intsrc *mp_irq)
 {
-<<<<<<< HEAD
-	apic_printk(APIC_VERBOSE, "Int: type %d, pol %d, trig %d, bus %02x,"
-		" IRQ %02x, APIC ID %x, APIC INT %02x\n",
-=======
 	apic_printk(APIC_VERBOSE,
 		"Int: type %d, pol %d, trig %d, bus %02x, IRQ %02x, APIC ID %x, APIC INT %02x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mp_irq->irqtype, mp_irq->irqflag & 3,
 		(mp_irq->irqflag >> 2) & 3, mp_irq->srcbus,
 		mp_irq->srcbusirq, mp_irq->dstapic, mp_irq->dstirq);
@@ -224,13 +128,8 @@ static inline void __init MP_ioapic_info(struct mpc_ioapic *m) {}
 
 static void __init MP_lintsrc_info(struct mpc_lintsrc *m)
 {
-<<<<<<< HEAD
-	apic_printk(APIC_VERBOSE, "Lint: type %d, pol %d, trig %d, bus %02x,"
-		" IRQ %02x, APIC ID %x, APIC LINT %02x\n",
-=======
 	apic_printk(APIC_VERBOSE,
 		"Lint: type %d, pol %d, trig %d, bus %02x, IRQ %02x, APIC ID %x, APIC LINT %02x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		m->irqtype, m->irqflag & 3, (m->irqflag >> 2) & 3, m->srcbusid,
 		m->srcbusirq, m->destapic, m->destapiclint);
 }
@@ -242,28 +141,12 @@ static int __init smp_check_mpc(struct mpc_table *mpc, char *oem, char *str)
 {
 
 	if (memcmp(mpc->signature, MPC_SIGNATURE, 4)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "MPTABLE: bad signature [%c%c%c%c]!\n",
-=======
 		pr_err("MPTABLE: bad signature [%c%c%c%c]!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       mpc->signature[0], mpc->signature[1],
 		       mpc->signature[2], mpc->signature[3]);
 		return 0;
 	}
 	if (mpf_checksum((unsigned char *)mpc, mpc->length)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "MPTABLE: checksum error!\n");
-		return 0;
-	}
-	if (mpc->spec != 0x01 && mpc->spec != 0x04) {
-		printk(KERN_ERR "MPTABLE: bad table version (%d)!!\n",
-		       mpc->spec);
-		return 0;
-	}
-	if (!mpc->lapic) {
-		printk(KERN_ERR "MPTABLE: null local APIC address!\n");
-=======
 		pr_err("MPTABLE: checksum error!\n");
 		return 0;
 	}
@@ -273,29 +156,18 @@ static int __init smp_check_mpc(struct mpc_table *mpc, char *oem, char *str)
 	}
 	if (!mpc->lapic) {
 		pr_err("MPTABLE: null local APIC address!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	memcpy(oem, mpc->oem, 8);
 	oem[8] = 0;
-<<<<<<< HEAD
-	printk(KERN_INFO "MPTABLE: OEM ID: %s\n", oem);
-=======
 	pr_info("MPTABLE: OEM ID: %s\n", oem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(str, mpc->productid, 12);
 	str[12] = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "MPTABLE: Product ID: %s\n", str);
-
-	printk(KERN_INFO "MPTABLE: APIC at: 0x%X\n", mpc->lapic);
-=======
 	pr_info("MPTABLE: Product ID: %s\n", str);
 
 	pr_info("MPTABLE: APIC at: 0x%X\n", mpc->lapic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -308,22 +180,12 @@ static void skip_entry(unsigned char **ptr, int *count, int size)
 
 static void __init smp_dump_mptable(struct mpc_table *mpc, unsigned char *mpt)
 {
-<<<<<<< HEAD
-	printk(KERN_ERR "Your mptable is wrong, contact your HW vendor!\n"
-		"type %x\n", *mpt);
-=======
 	pr_err("Your mptable is wrong, contact your HW vendor!\n");
 	pr_cont("type %x\n", *mpt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	print_hex_dump(KERN_ERR, "  ", DUMP_PREFIX_ADDRESS, 16,
 			1, mpc, mpc->length, 1);
 }
 
-<<<<<<< HEAD
-void __init default_smp_read_mpc_oem(struct mpc_table *mpc) { }
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init smp_read_mpc(struct mpc_table *mpc, unsigned early)
 {
 	char str[16];
@@ -335,26 +197,6 @@ static int __init smp_read_mpc(struct mpc_table *mpc, unsigned early)
 	if (!smp_check_mpc(mpc, oem, str))
 		return 0;
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-	generic_mps_oem_check(mpc, oem, str);
-#endif
-	/* Initialize the lapic mapping */
-	if (!acpi_lapic)
-		register_lapic_address(mpc->lapic);
-
-	if (early)
-		return 1;
-
-	if (mpc->oemptr)
-		x86_init.mpparse.smp_read_mpc_oem(mpc);
-
-	/*
-	 *      Now process the configuration blocks.
-	 */
-	x86_init.mpparse.mpc_record(0);
-
-=======
 	if (early) {
 		/* Initialize the lapic mapping */
 		if (!acpi_lapic)
@@ -363,7 +205,6 @@ static int __init smp_read_mpc(struct mpc_table *mpc, unsigned early)
 	}
 
 	/* Now process the configuration blocks. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (count < mpc->length) {
 		switch (*mpt) {
 		case MP_PROCESSOR:
@@ -394,20 +235,11 @@ static int __init smp_read_mpc(struct mpc_table *mpc, unsigned early)
 			count = mpc->length;
 			break;
 		}
-<<<<<<< HEAD
-		x86_init.mpparse.mpc_record(1);
-	}
-
-	if (!num_processors)
-		printk(KERN_ERR "MPTABLE: no processors registered!\n");
-	return num_processors;
-=======
 	}
 
 	if (!num_procs && !acpi_lapic)
 		pr_err("MPTABLE: no processors registered!\n");
 	return num_procs || acpi_lapic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_X86_IO_APIC
@@ -416,11 +248,7 @@ static int __init ELCR_trigger(unsigned int irq)
 {
 	unsigned int port;
 
-<<<<<<< HEAD
-	port = 0x4d0 + (irq >> 3);
-=======
 	port = PIC_ELCR1 + (irq >> 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (inb(port) >> (irq & 7)) & 1;
 }
 
@@ -431,11 +259,7 @@ static void __init construct_default_ioirq_mptable(int mpc_default_type)
 	int ELCR_fallback = 0;
 
 	intsrc.type = MP_INTSRC;
-<<<<<<< HEAD
-	intsrc.irqflag = 0;	/* conforming */
-=======
 	intsrc.irqflag = MP_IRQTRIG_DEFAULT | MP_IRQPOL_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	intsrc.srcbus = 0;
 	intsrc.dstapic = mpc_ioapic_id(0);
 
@@ -450,18 +274,6 @@ static void __init construct_default_ioirq_mptable(int mpc_default_type)
 	 *  If it does, we assume it's valid.
 	 */
 	if (mpc_default_type == 5) {
-<<<<<<< HEAD
-		printk(KERN_INFO "ISA/PCI bus type with no IRQ information... "
-		       "falling back to ELCR\n");
-
-		if (ELCR_trigger(0) || ELCR_trigger(1) || ELCR_trigger(2) ||
-		    ELCR_trigger(13))
-			printk(KERN_ERR "ELCR contains invalid data... "
-			       "not using ELCR\n");
-		else {
-			printk(KERN_INFO
-			       "Using ELCR to identify PCI interrupts\n");
-=======
 		pr_info("ISA/PCI bus type with no IRQ information... falling back to ELCR\n");
 
 		if (ELCR_trigger(0) || ELCR_trigger(1) || ELCR_trigger(2) ||
@@ -469,7 +281,6 @@ static void __init construct_default_ioirq_mptable(int mpc_default_type)
 			pr_err("ELCR contains invalid data... not using ELCR\n");
 		else {
 			pr_info("Using ELCR to identify PCI interrupts\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ELCR_fallback = 1;
 		}
 	}
@@ -479,11 +290,7 @@ static void __init construct_default_ioirq_mptable(int mpc_default_type)
 		case 2:
 			if (i == 0 || i == 13)
 				continue;	/* IRQ0 & IRQ13 not connected */
-<<<<<<< HEAD
-			/* fall through */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			if (i == 2)
 				continue;	/* IRQ2 is never connected */
@@ -495,12 +302,6 @@ static void __init construct_default_ioirq_mptable(int mpc_default_type)
 			 *  copy that information over to the MP table in the
 			 *  irqflag field (level sensitive, active high polarity).
 			 */
-<<<<<<< HEAD
-			if (ELCR_trigger(i))
-				intsrc.irqflag = 13;
-			else
-				intsrc.irqflag = 0;
-=======
 			if (ELCR_trigger(i)) {
 				intsrc.irqflag = MP_IRQTRIG_LEVEL |
 						 MP_IRQPOL_ACTIVE_HIGH;
@@ -508,7 +309,6 @@ static void __init construct_default_ioirq_mptable(int mpc_default_type)
 				intsrc.irqflag = MP_IRQTRIG_DEFAULT |
 						 MP_IRQPOL_DEFAULT;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		intsrc.srcbusirq = i;
@@ -532,15 +332,9 @@ static void __init construct_ioapic_table(int mpc_default_type)
 	bus.busid = 0;
 	switch (mpc_default_type) {
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "???\nUnknown standard configuration %d\n",
-		       mpc_default_type);
-		/* fall through */
-=======
 		pr_err("???\nUnknown standard configuration %d\n",
 		       mpc_default_type);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 	case 5:
 		memcpy(bus.bustype, "ISA   ", 6);
@@ -550,12 +344,6 @@ static void __init construct_ioapic_table(int mpc_default_type)
 	case 3:
 		memcpy(bus.bustype, "EISA  ", 6);
 		break;
-<<<<<<< HEAD
-	case 4:
-	case 7:
-		memcpy(bus.bustype, "MCA   ", 6);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	MP_bus_info(&bus);
 	if (mpc_default_type > 4) {
@@ -588,14 +376,6 @@ static inline void __init construct_default_ISA_mptable(int mpc_default_type)
 	int i;
 
 	/*
-<<<<<<< HEAD
-	 * local APIC has default address
-	 */
-	mp_lapic_addr = APIC_DEFAULT_PHYS_BASE;
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 2 CPUs, numbered 0 & 1.
 	 */
 	processor.type = MP_PROCESSOR;
@@ -603,13 +383,8 @@ static inline void __init construct_default_ISA_mptable(int mpc_default_type)
 	processor.apicver = mpc_default_type > 4 ? 0x10 : 0x01;
 	processor.cpuflag = CPU_ENABLED;
 	processor.cpufeature = (boot_cpu_data.x86 << 8) |
-<<<<<<< HEAD
-	    (boot_cpu_data.x86_model << 4) | boot_cpu_data.x86_mask;
-	processor.featureflag = boot_cpu_data.x86_capability[0];
-=======
 	    (boot_cpu_data.x86_model << 4) | boot_cpu_data.x86_stepping;
 	processor.featureflag = boot_cpu_data.x86_capability[CPUID_1_EDX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	processor.reserved[0] = 0;
 	processor.reserved[1] = 0;
 	for (i = 0; i < 2; i++) {
@@ -620,11 +395,7 @@ static inline void __init construct_default_ISA_mptable(int mpc_default_type)
 	construct_ioapic_table(mpc_default_type);
 
 	lintsrc.type = MP_LINTSRC;
-<<<<<<< HEAD
-	lintsrc.irqflag = 0;		/* conforming */
-=======
 	lintsrc.irqflag = MP_IRQTRIG_DEFAULT | MP_IRQPOL_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lintsrc.srcbusid = 0;
 	lintsrc.srcbusirq = 0;
 	lintsrc.destapic = MP_APIC_ALL;
@@ -635,27 +406,17 @@ static inline void __init construct_default_ISA_mptable(int mpc_default_type)
 	}
 }
 
-<<<<<<< HEAD
-static struct mpf_intel *mpf_found;
-=======
 static unsigned long mpf_base;
 static bool mpf_found;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long __init get_mpc_size(unsigned long physptr)
 {
 	struct mpc_table *mpc;
 	unsigned long size;
 
-<<<<<<< HEAD
-	mpc = early_ioremap(physptr, PAGE_SIZE);
-	size = mpc->length;
-	early_iounmap(mpc, PAGE_SIZE);
-=======
 	mpc = early_memremap(physptr, PAGE_SIZE);
 	size = mpc->length;
 	early_memunmap(mpc, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	apic_printk(APIC_VERBOSE, "  mpc: %lx-%lx\n", physptr, physptr + size);
 
 	return size;
@@ -667,12 +428,8 @@ static int __init check_physptr(struct mpf_intel *mpf, unsigned int early)
 	unsigned long size;
 
 	size = get_mpc_size(mpf->physptr);
-<<<<<<< HEAD
-	mpc = early_ioremap(mpf->physptr, size);
-=======
 	mpc = early_memremap(mpf->physptr, size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Read the physical hardware table.  Anything here will
 	 * override the defaults.
@@ -681,21 +438,12 @@ static int __init check_physptr(struct mpf_intel *mpf, unsigned int early)
 #ifdef CONFIG_X86_LOCAL_APIC
 		smp_found_config = 0;
 #endif
-<<<<<<< HEAD
-		printk(KERN_ERR "BIOS bug, MP table errors detected!...\n"
-			"... disabling SMP support. (tell your hw vendor)\n");
-		early_iounmap(mpc, size);
-		return -1;
-	}
-	early_iounmap(mpc, size);
-=======
 		pr_err("BIOS bug, MP table errors detected!...\n");
 		pr_cont("... disabling SMP support. (tell your hw vendor)\n");
 		early_memunmap(mpc, size);
 		return -1;
 	}
 	early_memunmap(mpc, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (early)
 		return -1;
@@ -709,12 +457,7 @@ static int __init check_physptr(struct mpf_intel *mpf, unsigned int early)
 	if (!mp_irq_entries) {
 		struct mpc_bus bus;
 
-<<<<<<< HEAD
-		printk(KERN_ERR "BIOS bug, no explicit IRQ entries, "
-		       "using default mptable. (tell your hw vendor)\n");
-=======
 		pr_err("BIOS bug, no explicit IRQ entries, using default mptable. (tell your hw vendor)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		bus.type = MP_BUS;
 		bus.busid = 0;
@@ -731,13 +474,6 @@ static int __init check_physptr(struct mpf_intel *mpf, unsigned int early)
 /*
  * Scan the memory blocks for an SMP configuration block.
  */
-<<<<<<< HEAD
-void __init default_get_smp_config(unsigned int early)
-{
-	struct mpf_intel *mpf = mpf_found;
-
-	if (!mpf)
-=======
 static __init void mpparse_get_smp_config(unsigned int early)
 {
 	struct mpf_intel *mpf;
@@ -746,7 +482,6 @@ static __init void mpparse_get_smp_config(unsigned int early)
 		return;
 
 	if (!mpf_found)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (acpi_lapic && early)
@@ -759,16 +494,6 @@ static __init void mpparse_get_smp_config(unsigned int early)
 	if (acpi_lapic && acpi_ioapic)
 		return;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Intel MultiProcessor Specification v1.%d\n",
-	       mpf->specification);
-#if defined(CONFIG_X86_LOCAL_APIC) && defined(CONFIG_X86_32)
-	if (mpf->feature2 & (1 << 7)) {
-		printk(KERN_INFO "    IMCR and PIC compatibility mode.\n");
-		pic_mode = 1;
-	} else {
-		printk(KERN_INFO "    Virtual Wire compatibility mode.\n");
-=======
 	mpf = early_memremap(mpf_base, sizeof(*mpf));
 	if (!mpf) {
 		pr_err("MPTABLE: error mapping MP table\n");
@@ -783,26 +508,12 @@ static __init void mpparse_get_smp_config(unsigned int early)
 		pic_mode = 1;
 	} else {
 		pr_info("    Virtual Wire compatibility mode.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pic_mode = 0;
 	}
 #endif
 	/*
 	 * Now see if we need to read further.
 	 */
-<<<<<<< HEAD
-	if (mpf->feature1 != 0) {
-		if (early) {
-			/*
-			 * local APIC has default address
-			 */
-			mp_lapic_addr = APIC_DEFAULT_PHYS_BASE;
-			return;
-		}
-
-		printk(KERN_INFO "Default MP configuration #%d\n",
-		       mpf->feature1);
-=======
 	if (mpf->feature1) {
 		if (early) {
 			/* Local APIC has default address */
@@ -811,22 +522,10 @@ static __init void mpparse_get_smp_config(unsigned int early)
 		}
 
 		pr_info("Default MP configuration #%d\n", mpf->feature1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		construct_default_ISA_mptable(mpf->feature1);
 
 	} else if (mpf->physptr) {
 		if (check_physptr(mpf, early))
-<<<<<<< HEAD
-			return;
-	} else
-		BUG();
-
-	if (!early)
-		printk(KERN_INFO "Processors: %d\n", num_processors);
-	/*
-	 * Only use the first configuration found.
-	 */
-=======
 			goto out;
 	} else
 		BUG();
@@ -848,7 +547,6 @@ void __init mpparse_parse_early_smp_config(void)
 void __init mpparse_parse_smp_config(void)
 {
 	mpparse_get_smp_config(false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init smp_reserve_memory(struct mpf_intel *mpf)
@@ -858,17 +556,6 @@ static void __init smp_reserve_memory(struct mpf_intel *mpf)
 
 static int __init smp_scan_config(unsigned long base, unsigned long length)
 {
-<<<<<<< HEAD
-	unsigned int *bp = phys_to_virt(base);
-	struct mpf_intel *mpf;
-	unsigned long mem;
-
-	apic_printk(APIC_VERBOSE, "Scan SMP from %p for %ld bytes.\n",
-			bp, length);
-	BUILD_BUG_ON(sizeof(*mpf) != 16);
-
-	while (length > 0) {
-=======
 	unsigned int *bp;
 	struct mpf_intel *mpf;
 	int ret = 0;
@@ -879,7 +566,6 @@ static int __init smp_scan_config(unsigned long base, unsigned long length)
 
 	while (length > 0) {
 		bp = early_memremap(base, length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mpf = (struct mpf_intel *)bp;
 		if ((*bp == SMP_MAGIC_IDENT) &&
 		    (mpf->length == 1) &&
@@ -889,27 +575,6 @@ static int __init smp_scan_config(unsigned long base, unsigned long length)
 #ifdef CONFIG_X86_LOCAL_APIC
 			smp_found_config = 1;
 #endif
-<<<<<<< HEAD
-			mpf_found = mpf;
-
-			printk(KERN_INFO "found SMP MP-table at [%p] %llx\n",
-			       mpf, (u64)virt_to_phys(mpf));
-
-			mem = virt_to_phys(mpf);
-			memblock_reserve(mem, sizeof(*mpf));
-			if (mpf->physptr)
-				smp_reserve_memory(mpf);
-
-			return 1;
-		}
-		bp += 4;
-		length -= 16;
-	}
-	return 0;
-}
-
-void __init default_find_smp_config(void)
-=======
 			mpf_base = base;
 			mpf_found = true;
 
@@ -934,7 +599,6 @@ void __init default_find_smp_config(void)
 }
 
 void __init mpparse_find_mptable(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int address;
 
@@ -952,11 +616,7 @@ void __init mpparse_find_mptable(void)
 		return;
 	/*
 	 * If it is an SMP machine we should know now, unless the
-<<<<<<< HEAD
-	 * configuration is in an EISA/MCA bus machine with an
-=======
 	 * configuration is in an EISA bus machine with an
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * extended bios data area.
 	 *
 	 * there is a real-mode segmented pointer pointing to the
@@ -986,11 +646,7 @@ static int  __init get_MP_intsrc_index(struct mpc_intsrc *m)
 	if (m->irqtype != mp_INT)
 		return 0;
 
-<<<<<<< HEAD
-	if (m->irqflag != 0x0f)
-=======
 	if (m->irqflag != (MP_IRQTRIG_LEVEL | MP_IRQPOL_ACTIVE_LOW))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* not legacy */
@@ -999,12 +655,8 @@ static int  __init get_MP_intsrc_index(struct mpc_intsrc *m)
 		if (mp_irqs[i].irqtype != mp_INT)
 			continue;
 
-<<<<<<< HEAD
-		if (mp_irqs[i].irqflag != 0x0f)
-=======
 		if (mp_irqs[i].irqflag != (MP_IRQTRIG_LEVEL |
 					   MP_IRQPOL_ACTIVE_LOW))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (mp_irqs[i].srcbus != m->srcbus)
@@ -1081,11 +733,7 @@ static int  __init replace_intsrc_all(struct mpc_table *mpc,
 	int nr_m_spare = 0;
 	unsigned char *mpt = ((unsigned char *)mpc) + count;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "mpc_length %x\n", mpc->length);
-=======
 	pr_info("mpc_length %x\n", mpc->length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (count < mpc->length) {
 		switch (*mpt) {
 		case MP_PROCESSOR:
@@ -1119,12 +767,8 @@ static int  __init replace_intsrc_all(struct mpc_table *mpc,
 		if (mp_irqs[i].irqtype != mp_INT)
 			continue;
 
-<<<<<<< HEAD
-		if (mp_irqs[i].irqflag != 0x0f)
-=======
 		if (mp_irqs[i].irqflag != (MP_IRQTRIG_LEVEL |
 					   MP_IRQPOL_ACTIVE_LOW))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (nr_m_spare > 0) {
@@ -1183,17 +827,10 @@ static int __init parse_alloc_mptable_opt(char *p)
 }
 early_param("alloc_mptable", parse_alloc_mptable_opt);
 
-<<<<<<< HEAD
-void __init early_reserve_e820_mpc_new(void)
-{
-	if (enable_update_mptable && alloc_mptable)
-		mpc_new_phys = early_reserve_e820(mpc_new_length, 4);
-=======
 void __init e820__memblock_alloc_reserved_mpc_new(void)
 {
 	if (enable_update_mptable && alloc_mptable)
 		mpc_new_phys = e820__memblock_alloc_reserved(mpc_new_length, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init update_mp_table(void)
@@ -1202,41 +839,11 @@ static int __init update_mp_table(void)
 	char oem[10];
 	struct mpf_intel *mpf;
 	struct mpc_table *mpc, *mpc_new;
-<<<<<<< HEAD
-=======
 	unsigned long size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!enable_update_mptable)
 		return 0;
 
-<<<<<<< HEAD
-	mpf = mpf_found;
-	if (!mpf)
-		return 0;
-
-	/*
-	 * Now see if we need to go further.
-	 */
-	if (mpf->feature1 != 0)
-		return 0;
-
-	if (!mpf->physptr)
-		return 0;
-
-	mpc = phys_to_virt(mpf->physptr);
-
-	if (!smp_check_mpc(mpc, oem, str))
-		return 0;
-
-	printk(KERN_INFO "mpf: %llx\n", (u64)virt_to_phys(mpf));
-	printk(KERN_INFO "physptr: %x\n", mpf->physptr);
-
-	if (mpc_new_phys && mpc->length > mpc_new_length) {
-		mpc_new_phys = 0;
-		printk(KERN_INFO "mpc_new_length is %ld, please use alloc_mptable=8k\n",
-			 mpc_new_length);
-=======
 	if (!mpf_found)
 		return 0;
 
@@ -1272,7 +879,6 @@ static int __init update_mp_table(void)
 		mpc_new_phys = 0;
 		pr_info("mpc_new_length is %ld, please use alloc_mptable=8k\n",
 			mpc_new_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!mpc_new_phys) {
@@ -1283,17 +889,6 @@ static int __init update_mp_table(void)
 		mpc->checksum = 0xff;
 		new = mpf_checksum((unsigned char *)mpc, mpc->length);
 		if (old == new) {
-<<<<<<< HEAD
-			printk(KERN_INFO "mpc is readonly, please try alloc_mptable instead\n");
-			return 0;
-		}
-		printk(KERN_INFO "use in-position replacing\n");
-	} else {
-		mpf->physptr = mpc_new_phys;
-		mpc_new = phys_to_virt(mpc_new_phys);
-		memcpy(mpc_new, mpc, mpc->length);
-		mpc = mpc_new;
-=======
 			pr_info("mpc is readonly, please try alloc_mptable instead\n");
 			goto do_unmap_mpc;
 		}
@@ -1309,16 +904,10 @@ static int __init update_mp_table(void)
 		early_memunmap(mpc, size);
 		mpc = mpc_new;
 		size = mpc_new_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* check if we can modify that */
 		if (mpc_new_phys - mpf->physptr) {
 			struct mpf_intel *mpf_new;
 			/* steal 16 bytes from [0, 1k) */
-<<<<<<< HEAD
-			printk(KERN_INFO "mpf new: %x\n", 0x400 - 16);
-			mpf_new = phys_to_virt(0x400 - 16);
-			memcpy(mpf_new, mpf, 16);
-=======
 			mpf_new = early_memremap(0x400 - 16, sizeof(*mpf_new));
 			if (!mpf_new) {
 				pr_err("MPTABLE: new mpf early_memremap() failed\n");
@@ -1327,17 +916,12 @@ static int __init update_mp_table(void)
 			pr_info("mpf new: %x\n", 0x400 - 16);
 			memcpy(mpf_new, mpf, 16);
 			early_memunmap(mpf, sizeof(*mpf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mpf = mpf_new;
 			mpf->physptr = mpc_new_phys;
 		}
 		mpf->checksum = 0;
 		mpf->checksum -= mpf_checksum((unsigned char *)mpf, 16);
-<<<<<<< HEAD
-		printk(KERN_INFO "physptr new: %x\n", mpf->physptr);
-=======
 		pr_info("physptr new: %x\n", mpf->physptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1348,15 +932,12 @@ static int __init update_mp_table(void)
 	 */
 	replace_intsrc_all(mpc, mpc_new_phys, mpc_new_length);
 
-<<<<<<< HEAD
-=======
 do_unmap_mpc:
 	early_memunmap(mpc, size);
 
 do_unmap_mpf:
 	early_memunmap(mpf, sizeof(*mpf));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

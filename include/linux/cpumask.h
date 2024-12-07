@@ -1,22 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_CPUMASK_H
 #define __LINUX_CPUMASK_H
 
 /*
  * Cpumasks provide a bitmap suitable for representing the
-<<<<<<< HEAD
- * set of CPU's in a system, one bit position per CPU number.  In general,
- * only nr_cpu_ids (<= NR_CPUS) bits are valid.
- */
-#include <linux/kernel.h>
-#include <linux/threads.h>
-#include <linux/bitmap.h>
-#include <linux/bug.h>
-
-=======
  * set of CPUs in a system, one bit position per CPU number.  In general,
  * only nr_cpu_ids (<= NR_CPUS) bits are valid.
  */
@@ -30,7 +17,6 @@
 #include <linux/numa.h>
 
 /* Don't assign or return these: may not be this big! */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
 
 /**
@@ -42,21 +28,6 @@ typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
  */
 #define cpumask_bits(maskp) ((maskp)->bits)
 
-<<<<<<< HEAD
-#if NR_CPUS == 1
-#define nr_cpu_ids		1
-#else
-extern int nr_cpu_ids;
-#endif
-
-#ifdef CONFIG_CPUMASK_OFFSTACK
-/* Assuming NR_CPUS is huge, a runtime limit is more efficient.  Also,
- * not all bits may be allocated. */
-#define nr_cpumask_bits	nr_cpu_ids
-#else
-#define nr_cpumask_bits	NR_CPUS
-#endif
-=======
 /**
  * cpumask_pr_args - printf args to output a cpumask
  * @maskp: cpumask to be printed
@@ -115,7 +86,6 @@ static inline void set_nr_cpu_ids(unsigned int nr)
   #define large_cpumask_bits nr_cpu_ids
 #endif
 #define nr_cpumask_bits nr_cpu_ids
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following particular system cpumasks and operations manage
@@ -128,24 +98,13 @@ static inline void set_nr_cpu_ids(unsigned int nr)
  *
  *  If !CONFIG_HOTPLUG_CPU, present == possible, and active == online.
  *
-<<<<<<< HEAD
- *  The cpu_possible_mask is fixed at boot time, as the set of CPU id's
-=======
  *  The cpu_possible_mask is fixed at boot time, as the set of CPU IDs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  that it is possible might ever be plugged in at anytime during the
  *  life of that system boot.  The cpu_present_mask is dynamic(*),
  *  representing which CPUs are currently plugged in.  And
  *  cpu_online_mask is the dynamic subset of cpu_present_mask,
  *  indicating those CPUs available for scheduling.
  *
-<<<<<<< HEAD
- *  If HOTPLUG is enabled, then cpu_possible_mask is forced to have
- *  all NR_CPUS bits set, otherwise it is just the set of CPUs that
- *  ACPI reports present at boot.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  If HOTPLUG is enabled, then cpu_present_mask varies dynamically,
  *  depending on what ACPI reports as currently plugged in, otherwise
  *  cpu_present_mask is just a copy of cpu_possible_mask.
@@ -154,11 +113,7 @@ static inline void set_nr_cpu_ids(unsigned int nr)
  *      hotplug, it's a copy of cpu_possible_mask, hence fixed at boot.
  *
  * Subtleties:
-<<<<<<< HEAD
- * 1) UP arch's (NR_CPUS == 1, CONFIG_SMP not defined) hardcode
-=======
  * 1) UP ARCHes (NR_CPUS == 1, CONFIG_SMP not defined) hardcode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    assumption that their single CPU is online.  The UP
  *    cpu_{online,possible,present}_masks are placebos.  Changing them
  *    will have no useful affect on the following num_*_cpus()
@@ -168,81 +123,6 @@ static inline void set_nr_cpu_ids(unsigned int nr)
  *    only one CPU.
  */
 
-<<<<<<< HEAD
-extern const struct cpumask *const cpu_possible_mask;
-extern const struct cpumask *const cpu_online_mask;
-extern const struct cpumask *const cpu_present_mask;
-extern const struct cpumask *const cpu_active_mask;
-
-#if NR_CPUS > 1
-#define num_online_cpus()	cpumask_weight(cpu_online_mask)
-#define num_possible_cpus()	cpumask_weight(cpu_possible_mask)
-#define num_present_cpus()	cpumask_weight(cpu_present_mask)
-#define num_active_cpus()	cpumask_weight(cpu_active_mask)
-#define cpu_online(cpu)		cpumask_test_cpu((cpu), cpu_online_mask)
-#define cpu_possible(cpu)	cpumask_test_cpu((cpu), cpu_possible_mask)
-#define cpu_present(cpu)	cpumask_test_cpu((cpu), cpu_present_mask)
-#define cpu_active(cpu)		cpumask_test_cpu((cpu), cpu_active_mask)
-#else
-#define num_online_cpus()	1U
-#define num_possible_cpus()	1U
-#define num_present_cpus()	1U
-#define num_active_cpus()	1U
-#define cpu_online(cpu)		((cpu) == 0)
-#define cpu_possible(cpu)	((cpu) == 0)
-#define cpu_present(cpu)	((cpu) == 0)
-#define cpu_active(cpu)		((cpu) == 0)
-#endif
-
-/* verify cpu argument to cpumask_* operators */
-static inline unsigned int cpumask_check(unsigned int cpu)
-{
-#ifdef CONFIG_DEBUG_PER_CPU_MAPS
-	WARN_ON_ONCE(cpu >= nr_cpumask_bits);
-#endif /* CONFIG_DEBUG_PER_CPU_MAPS */
-	return cpu;
-}
-
-#if NR_CPUS == 1
-/* Uniprocessor.  Assume all masks are "1". */
-static inline unsigned int cpumask_first(const struct cpumask *srcp)
-{
-	return 0;
-}
-
-/* Valid inputs for n are -1 and 0. */
-static inline unsigned int cpumask_next(int n, const struct cpumask *srcp)
-{
-	return n+1;
-}
-
-static inline unsigned int cpumask_next_zero(int n, const struct cpumask *srcp)
-{
-	return n+1;
-}
-
-static inline unsigned int cpumask_next_and(int n,
-					    const struct cpumask *srcp,
-					    const struct cpumask *andp)
-{
-	return n+1;
-}
-
-/* cpu must be a valid cpu, ie 0, so there's no other choice. */
-static inline unsigned int cpumask_any_but(const struct cpumask *mask,
-					   unsigned int cpu)
-{
-	return 1;
-}
-
-#define for_each_cpu(cpu, mask)			\
-	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask)
-#define for_each_cpu_not(cpu, mask)		\
-	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask)
-#define for_each_cpu_and(cpu, mask, and)	\
-	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask, (void)and)
-#else
-=======
 extern struct cpumask __cpu_possible_mask;
 extern struct cpumask __cpu_online_mask;
 extern struct cpumask __cpu_present_mask;
@@ -272,18 +152,10 @@ static __always_inline unsigned int cpumask_check(unsigned int cpu)
 	return cpu;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cpumask_first - get the first cpu in a cpumask
  * @srcp: the cpumask pointer
  *
-<<<<<<< HEAD
- * Returns >= nr_cpu_ids if no cpus set.
- */
-static inline unsigned int cpumask_first(const struct cpumask *srcp)
-{
-	return find_first_bit(cpumask_bits(srcp), nr_cpumask_bits);
-=======
  * Return: >= nr_cpu_ids if no cpus set.
  */
 static inline unsigned int cpumask_first(const struct cpumask *srcp)
@@ -324,19 +196,10 @@ unsigned int cpumask_first_and(const struct cpumask *srcp1, const struct cpumask
 static inline unsigned int cpumask_last(const struct cpumask *srcp)
 {
 	return find_last_bit(cpumask_bits(srcp), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_next - get the next cpu in a cpumask
-<<<<<<< HEAD
- * @n: the cpu prior to the place to search (ie. return will be > @n)
- * @srcp: the cpumask pointer
- *
- * Returns >= nr_cpu_ids if no further cpus set.
- */
-static inline unsigned int cpumask_next(int n, const struct cpumask *srcp)
-=======
  * @n: the cpu prior to the place to search (i.e. return will be > @n)
  * @srcp: the cpumask pointer
  *
@@ -344,44 +207,25 @@ static inline unsigned int cpumask_next(int n, const struct cpumask *srcp)
  */
 static inline
 unsigned int cpumask_next(int n, const struct cpumask *srcp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* -1 is a legal arg here. */
 	if (n != -1)
 		cpumask_check(n);
-<<<<<<< HEAD
-	return find_next_bit(cpumask_bits(srcp), nr_cpumask_bits, n+1);
-=======
 	return find_next_bit(cpumask_bits(srcp), small_cpumask_bits, n + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_next_zero - get the next unset cpu in a cpumask
-<<<<<<< HEAD
- * @n: the cpu prior to the place to search (ie. return will be > @n)
- * @srcp: the cpumask pointer
- *
- * Returns >= nr_cpu_ids if no further cpus unset.
-=======
  * @n: the cpu prior to the place to search (i.e. return will be > @n)
  * @srcp: the cpumask pointer
  *
  * Return: >= nr_cpu_ids if no further cpus unset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline unsigned int cpumask_next_zero(int n, const struct cpumask *srcp)
 {
 	/* -1 is a legal arg here. */
 	if (n != -1)
 		cpumask_check(n);
-<<<<<<< HEAD
-	return find_next_zero_bit(cpumask_bits(srcp), nr_cpumask_bits, n+1);
-}
-
-int cpumask_next_and(int n, const struct cpumask *, const struct cpumask *);
-int cpumask_any_but(const struct cpumask *mask, unsigned int cpu);
-=======
 	return find_next_zero_bit(cpumask_bits(srcp), small_cpumask_bits, n+1);
 }
 
@@ -427,7 +271,6 @@ unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
 	return find_next_and_bit(cpumask_bits(src1p), cpumask_bits(src2p),
 		small_cpumask_bits, n + 1);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * for_each_cpu - iterate over every cpu in a mask
@@ -437,23 +280,6 @@ unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
  * After the loop, cpu is >= nr_cpu_ids.
  */
 #define for_each_cpu(cpu, mask)				\
-<<<<<<< HEAD
-	for ((cpu) = -1;				\
-		(cpu) = cpumask_next((cpu), (mask)),	\
-		(cpu) < nr_cpu_ids;)
-
-/**
- * for_each_cpu_not - iterate over every cpu in a complemented mask
- * @cpu: the (optionally unsigned) integer iterator
- * @mask: the cpumask pointer
- *
- * After the loop, cpu is >= nr_cpu_ids.
- */
-#define for_each_cpu_not(cpu, mask)				\
-	for ((cpu) = -1;					\
-		(cpu) = cpumask_next_zero((cpu), (mask)),	\
-		(cpu) < nr_cpu_ids;)
-=======
 	for_each_set_bit(cpu, cpumask_bits(mask), small_cpumask_bits)
 
 #if NR_CPUS == 1
@@ -489,38 +315,21 @@ unsigned int __pure cpumask_next_wrap(int n, const struct cpumask *mask, int sta
  */
 #define for_each_cpu_wrap(cpu, mask, start)				\
 	for_each_set_bit_wrap(cpu, cpumask_bits(mask), small_cpumask_bits, start)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * for_each_cpu_and - iterate over every cpu in both masks
  * @cpu: the (optionally unsigned) integer iterator
-<<<<<<< HEAD
- * @mask: the first cpumask pointer
- * @and: the second cpumask pointer
- *
- * This saves a temporary CPU mask in many places.  It is equivalent to:
- *	struct cpumask tmp;
- *	cpumask_and(&tmp, &mask, &and);
-=======
  * @mask1: the first cpumask pointer
  * @mask2: the second cpumask pointer
  *
  * This saves a temporary CPU mask in many places.  It is equivalent to:
  *	struct cpumask tmp;
  *	cpumask_and(&tmp, &mask1, &mask2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	for_each_cpu(cpu, &tmp)
  *		...
  *
  * After the loop, cpu is >= nr_cpu_ids.
  */
-<<<<<<< HEAD
-#define for_each_cpu_and(cpu, mask, and)				\
-	for ((cpu) = -1;						\
-		(cpu) = cpumask_next_and((cpu), (mask), (and)),		\
-		(cpu) < nr_cpu_ids;)
-#endif /* SMP */
-=======
 #define for_each_cpu_and(cpu, mask1, mask2)				\
 	for_each_and_bit(cpu, cpumask_bits(mask1), cpumask_bits(mask2), small_cpumask_bits)
 
@@ -642,7 +451,6 @@ unsigned int cpumask_nth_and_andnot(unsigned int cpu, const struct cpumask *srcp
 					cpumask_bits(srcp3),
 					small_cpumask_bits, cpumask_check(cpu));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CPU_BITS_NONE						\
 {								\
@@ -659,64 +467,43 @@ unsigned int cpumask_nth_and_andnot(unsigned int cpu, const struct cpumask *srcp
  * @cpu: cpu number (< nr_cpu_ids)
  * @dstp: the cpumask pointer
  */
-<<<<<<< HEAD
-static inline void cpumask_set_cpu(unsigned int cpu, struct cpumask *dstp)
-=======
 static __always_inline void cpumask_set_cpu(unsigned int cpu, struct cpumask *dstp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	set_bit(cpumask_check(cpu), cpumask_bits(dstp));
 }
 
-<<<<<<< HEAD
-=======
 static __always_inline void __cpumask_set_cpu(unsigned int cpu, struct cpumask *dstp)
 {
 	__set_bit(cpumask_check(cpu), cpumask_bits(dstp));
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cpumask_clear_cpu - clear a cpu in a cpumask
  * @cpu: cpu number (< nr_cpu_ids)
  * @dstp: the cpumask pointer
  */
-<<<<<<< HEAD
-static inline void cpumask_clear_cpu(int cpu, struct cpumask *dstp)
-=======
 static __always_inline void cpumask_clear_cpu(int cpu, struct cpumask *dstp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	clear_bit(cpumask_check(cpu), cpumask_bits(dstp));
 }
 
-<<<<<<< HEAD
-=======
 static __always_inline void __cpumask_clear_cpu(int cpu, struct cpumask *dstp)
 {
 	__clear_bit(cpumask_check(cpu), cpumask_bits(dstp));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cpumask_test_cpu - test for a cpu in a cpumask
  * @cpu: cpu number (< nr_cpu_ids)
  * @cpumask: the cpumask pointer
  *
-<<<<<<< HEAD
- * No static inline type checking - see Subtlety (1) above.
- */
-#define cpumask_test_cpu(cpu, cpumask) \
-	test_bit(cpumask_check(cpu), cpumask_bits((cpumask)))
-=======
  * Return: true if @cpu is set in @cpumask, else returns false
  */
 static __always_inline bool cpumask_test_cpu(int cpu, const struct cpumask *cpumask)
 {
 	return test_bit(cpumask_check(cpu), cpumask_bits((cpumask)));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * cpumask_test_and_set_cpu - atomically test and set a cpu in a cpumask
@@ -724,15 +511,10 @@ static __always_inline bool cpumask_test_cpu(int cpu, const struct cpumask *cpum
  * @cpumask: the cpumask pointer
  *
  * test_and_set_bit wrapper for cpumasks.
-<<<<<<< HEAD
- */
-static inline int cpumask_test_and_set_cpu(int cpu, struct cpumask *cpumask)
-=======
  *
  * Return: true if @cpu is set in old bitmap of @cpumask, else returns false
  */
 static __always_inline bool cpumask_test_and_set_cpu(int cpu, struct cpumask *cpumask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return test_and_set_bit(cpumask_check(cpu), cpumask_bits(cpumask));
 }
@@ -743,15 +525,10 @@ static __always_inline bool cpumask_test_and_set_cpu(int cpu, struct cpumask *cp
  * @cpumask: the cpumask pointer
  *
  * test_and_clear_bit wrapper for cpumasks.
-<<<<<<< HEAD
- */
-static inline int cpumask_test_and_clear_cpu(int cpu, struct cpumask *cpumask)
-=======
  *
  * Return: true if @cpu is set in old bitmap of @cpumask, else returns false
  */
 static __always_inline bool cpumask_test_and_clear_cpu(int cpu, struct cpumask *cpumask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return test_and_clear_bit(cpumask_check(cpu), cpumask_bits(cpumask));
 }
@@ -762,13 +539,10 @@ static __always_inline bool cpumask_test_and_clear_cpu(int cpu, struct cpumask *
  */
 static inline void cpumask_setall(struct cpumask *dstp)
 {
-<<<<<<< HEAD
-=======
 	if (small_const_nbits(small_cpumask_bits)) {
 		cpumask_bits(dstp)[0] = BITMAP_LAST_WORD_MASK(nr_cpumask_bits);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bitmap_fill(cpumask_bits(dstp), nr_cpumask_bits);
 }
 
@@ -778,11 +552,7 @@ static inline void cpumask_setall(struct cpumask *dstp)
  */
 static inline void cpumask_clear(struct cpumask *dstp)
 {
-<<<<<<< HEAD
-	bitmap_zero(cpumask_bits(dstp), nr_cpumask_bits);
-=======
 	bitmap_zero(cpumask_bits(dstp), large_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -790,24 +560,15 @@ static inline void cpumask_clear(struct cpumask *dstp)
  * @dstp: the cpumask result
  * @src1p: the first input
  * @src2p: the second input
-<<<<<<< HEAD
- */
-static inline int cpumask_and(struct cpumask *dstp,
-=======
  *
  * Return: false if *@dstp is empty, else returns true
  */
 static inline bool cpumask_and(struct cpumask *dstp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       const struct cpumask *src1p,
 			       const struct cpumask *src2p)
 {
 	return bitmap_and(cpumask_bits(dstp), cpumask_bits(src1p),
-<<<<<<< HEAD
-				       cpumask_bits(src2p), nr_cpumask_bits);
-=======
 				       cpumask_bits(src2p), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -820,11 +581,7 @@ static inline void cpumask_or(struct cpumask *dstp, const struct cpumask *src1p,
 			      const struct cpumask *src2p)
 {
 	bitmap_or(cpumask_bits(dstp), cpumask_bits(src1p),
-<<<<<<< HEAD
-				      cpumask_bits(src2p), nr_cpumask_bits);
-=======
 				      cpumask_bits(src2p), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -838,11 +595,7 @@ static inline void cpumask_xor(struct cpumask *dstp,
 			       const struct cpumask *src2p)
 {
 	bitmap_xor(cpumask_bits(dstp), cpumask_bits(src1p),
-<<<<<<< HEAD
-				       cpumask_bits(src2p), nr_cpumask_bits);
-=======
 				       cpumask_bits(src2p), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -850,55 +603,28 @@ static inline void cpumask_xor(struct cpumask *dstp,
  * @dstp: the cpumask result
  * @src1p: the first input
  * @src2p: the second input
-<<<<<<< HEAD
- */
-static inline int cpumask_andnot(struct cpumask *dstp,
-=======
  *
  * Return: false if *@dstp is empty, else returns true
  */
 static inline bool cpumask_andnot(struct cpumask *dstp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  const struct cpumask *src1p,
 				  const struct cpumask *src2p)
 {
 	return bitmap_andnot(cpumask_bits(dstp), cpumask_bits(src1p),
-<<<<<<< HEAD
-					  cpumask_bits(src2p), nr_cpumask_bits);
-}
-
-/**
- * cpumask_complement - *dstp = ~*srcp
- * @dstp: the cpumask result
- * @srcp: the input to invert
- */
-static inline void cpumask_complement(struct cpumask *dstp,
-				      const struct cpumask *srcp)
-{
-	bitmap_complement(cpumask_bits(dstp), cpumask_bits(srcp),
-					      nr_cpumask_bits);
-=======
 					  cpumask_bits(src2p), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_equal - *src1p == *src2p
  * @src1p: the first input
  * @src2p: the second input
-<<<<<<< HEAD
-=======
  *
  * Return: true if the cpumasks are equal, false if not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline bool cpumask_equal(const struct cpumask *src1p,
 				const struct cpumask *src2p)
 {
 	return bitmap_equal(cpumask_bits(src1p), cpumask_bits(src2p),
-<<<<<<< HEAD
-						 nr_cpumask_bits);
-=======
 						 small_cpumask_bits);
 }
 
@@ -917,43 +643,27 @@ static inline bool cpumask_or_equal(const struct cpumask *src1p,
 {
 	return bitmap_or_equal(cpumask_bits(src1p), cpumask_bits(src2p),
 			       cpumask_bits(src3p), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_intersects - (*src1p & *src2p) != 0
  * @src1p: the first input
  * @src2p: the second input
-<<<<<<< HEAD
-=======
  *
  * Return: true if first cpumask ANDed with second cpumask is non-empty,
  *	   otherwise false
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline bool cpumask_intersects(const struct cpumask *src1p,
 				     const struct cpumask *src2p)
 {
 	return bitmap_intersects(cpumask_bits(src1p), cpumask_bits(src2p),
-<<<<<<< HEAD
-						      nr_cpumask_bits);
-=======
 						      small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_subset - (*src1p & ~*src2p) == 0
  * @src1p: the first input
  * @src2p: the second input
-<<<<<<< HEAD
- */
-static inline int cpumask_subset(const struct cpumask *src1p,
-				 const struct cpumask *src2p)
-{
-	return bitmap_subset(cpumask_bits(src1p), cpumask_bits(src2p),
-						  nr_cpumask_bits);
-=======
  *
  * Return: true if *@src1p is a subset of *@src2p, else returns false
  */
@@ -962,35 +672,24 @@ static inline bool cpumask_subset(const struct cpumask *src1p,
 {
 	return bitmap_subset(cpumask_bits(src1p), cpumask_bits(src2p),
 						  small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_empty - *srcp == 0
  * @srcp: the cpumask to that all cpus < nr_cpu_ids are clear.
-<<<<<<< HEAD
- */
-static inline bool cpumask_empty(const struct cpumask *srcp)
-{
-	return bitmap_empty(cpumask_bits(srcp), nr_cpumask_bits);
-=======
  *
  * Return: true if srcp is empty (has no bits set), else false
  */
 static inline bool cpumask_empty(const struct cpumask *srcp)
 {
 	return bitmap_empty(cpumask_bits(srcp), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_full - *srcp == 0xFFFFFFFF...
  * @srcp: the cpumask to that all cpus < nr_cpu_ids are set.
-<<<<<<< HEAD
-=======
  *
  * Return: true if srcp is full (has all bits set), else false
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline bool cpumask_full(const struct cpumask *srcp)
 {
@@ -1000,12 +699,6 @@ static inline bool cpumask_full(const struct cpumask *srcp)
 /**
  * cpumask_weight - Count of bits in *srcp
  * @srcp: the cpumask to count bits (< nr_cpu_ids) in.
-<<<<<<< HEAD
- */
-static inline unsigned int cpumask_weight(const struct cpumask *srcp)
-{
-	return bitmap_weight(cpumask_bits(srcp), nr_cpumask_bits);
-=======
  *
  * Return: count of bits set in *srcp
  */
@@ -1038,7 +731,6 @@ static inline unsigned int cpumask_weight_andnot(const struct cpumask *srcp1,
 						const struct cpumask *srcp2)
 {
 	return bitmap_weight_andnot(cpumask_bits(srcp1), cpumask_bits(srcp2), small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1051,11 +743,7 @@ static inline void cpumask_shift_right(struct cpumask *dstp,
 				       const struct cpumask *srcp, int n)
 {
 	bitmap_shift_right(cpumask_bits(dstp), cpumask_bits(srcp), n,
-<<<<<<< HEAD
-					       nr_cpumask_bits);
-=======
 					       small_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1079,47 +767,23 @@ static inline void cpumask_shift_left(struct cpumask *dstp,
 static inline void cpumask_copy(struct cpumask *dstp,
 				const struct cpumask *srcp)
 {
-<<<<<<< HEAD
-	bitmap_copy(cpumask_bits(dstp), cpumask_bits(srcp), nr_cpumask_bits);
-=======
 	bitmap_copy(cpumask_bits(dstp), cpumask_bits(srcp), large_cpumask_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpumask_any - pick a "random" cpu from *srcp
  * @srcp: the input cpumask
  *
-<<<<<<< HEAD
- * Returns >= nr_cpu_ids if no cpus set.
-=======
  * Return: >= nr_cpu_ids if no cpus set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define cpumask_any(srcp) cpumask_first(srcp)
 
 /**
-<<<<<<< HEAD
- * cpumask_first_and - return the first cpu from *srcp1 & *srcp2
- * @src1p: the first input
- * @src2p: the second input
- *
- * Returns >= nr_cpu_ids if no cpus set in both.  See also cpumask_next_and().
- */
-#define cpumask_first_and(src1p, src2p) cpumask_next_and(-1, (src1p), (src2p))
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * cpumask_any_and - pick a "random" cpu from *mask1 & *mask2
  * @mask1: the first input cpumask
  * @mask2: the second input cpumask
  *
-<<<<<<< HEAD
- * Returns >= nr_cpu_ids if no cpus set.
-=======
  * Return: >= nr_cpu_ids if no cpus set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define cpumask_any_and(mask1, mask2) cpumask_first_and((mask1), (mask2))
 
@@ -1130,34 +794,12 @@ static inline void cpumask_copy(struct cpumask *dstp,
 #define cpumask_of(cpu) (get_cpu_mask(cpu))
 
 /**
-<<<<<<< HEAD
- * cpumask_scnprintf - print a cpumask into a string as comma-separated hex
- * @buf: the buffer to sprintf into
- * @len: the length of the buffer
- * @srcp: the cpumask to print
- *
- * If len is zero, returns zero.  Otherwise returns the length of the
- * (nul-terminated) @buf string.
- */
-static inline int cpumask_scnprintf(char *buf, int len,
-				    const struct cpumask *srcp)
-{
-	return bitmap_scnprintf(buf, len, cpumask_bits(srcp), nr_cpumask_bits);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * cpumask_parse_user - extract a cpumask from a user string
  * @buf: the buffer to extract from
  * @len: the length of the buffer
  * @dstp: the cpumask to set.
  *
-<<<<<<< HEAD
- * Returns -errno, or 0 for success.
-=======
  * Return: -errno, or 0 for success.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int cpumask_parse_user(const char __user *buf, int len,
 				     struct cpumask *dstp)
@@ -1171,44 +813,12 @@ static inline int cpumask_parse_user(const char __user *buf, int len,
  * @len: the length of the buffer
  * @dstp: the cpumask to set.
  *
-<<<<<<< HEAD
- * Returns -errno, or 0 for success.
-=======
  * Return: -errno, or 0 for success.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int cpumask_parselist_user(const char __user *buf, int len,
 				     struct cpumask *dstp)
 {
 	return bitmap_parselist_user(buf, len, cpumask_bits(dstp),
-<<<<<<< HEAD
-							nr_cpumask_bits);
-}
-
-/**
- * cpulist_scnprintf - print a cpumask into a string as comma-separated list
- * @buf: the buffer to sprintf into
- * @len: the length of the buffer
- * @srcp: the cpumask to print
- *
- * If len is zero, returns zero.  Otherwise returns the length of the
- * (nul-terminated) @buf string.
- */
-static inline int cpulist_scnprintf(char *buf, int len,
-				    const struct cpumask *srcp)
-{
-	return bitmap_scnlistprintf(buf, len, cpumask_bits(srcp),
-				    nr_cpumask_bits);
-}
-
-/**
- * cpulist_parse_user - extract a cpumask from a user string of ranges
- * @buf: the buffer to extract from
- * @len: the length of the buffer
- * @dstp: the cpumask to set.
- *
- * Returns -errno, or 0 for success.
-=======
 				     nr_cpumask_bits);
 }
 
@@ -1230,7 +840,6 @@ static inline int cpumask_parse(const char *buf, struct cpumask *dstp)
  * @dstp: the cpumask to set.
  *
  * Return: -errno, or 0 for success.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int cpulist_parse(const char *buf, struct cpumask *dstp)
 {
@@ -1238,17 +847,6 @@ static inline int cpulist_parse(const char *buf, struct cpumask *dstp)
 }
 
 /**
-<<<<<<< HEAD
- * cpumask_size - size to allocate for a 'struct cpumask' in bytes
- *
- * This will eventually be a runtime variable, depending on nr_cpu_ids.
- */
-static inline size_t cpumask_size(void)
-{
-	/* FIXME: Once all cpumask assignments are eliminated, this
-	 * can be nr_cpumask_bits */
-	return BITS_TO_LONGS(NR_CPUS) * sizeof(long);
-=======
  * cpumask_size - calculate size to allocate for a 'struct cpumask' in bytes
  *
  * Return: size to allocate for a &struct cpumask in bytes
@@ -1256,7 +854,6 @@ static inline size_t cpumask_size(void)
 static inline unsigned int cpumask_size(void)
 {
 	return BITS_TO_LONGS(large_cpumask_bits) * sizeof(long);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1266,11 +863,7 @@ static inline unsigned int cpumask_size(void)
  * little more difficult, we typedef cpumask_var_t to an array or a
  * pointer: doing &mask on an array is a noop, so it still works.
  *
-<<<<<<< HEAD
- * ie.
-=======
  * i.e.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	cpumask_var_t tmpmask;
  *	if (!alloc_cpumask_var(&tmpmask, GFP_KERNEL))
  *		return -ENOMEM;
@@ -1292,8 +885,6 @@ static inline unsigned int cpumask_size(void)
  *
  * This code makes NR_CPUS length memcopy and brings to a memory corruption.
  * cpumask_copy() provide safe copy functionality.
-<<<<<<< HEAD
-=======
  *
  * Note that there is another evil here: If you define a cpumask_var_t
  * as a percpu variable then the way to obtain the address of the cpumask
@@ -1304,17 +895,10 @@ static inline unsigned int cpumask_size(void)
  *
  * Please also note that __cpumask_var_read_mostly can be used to declare
  * a cpumask_var_t variable itself (not its content) as read mostly.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifdef CONFIG_CPUMASK_OFFSTACK
 typedef struct cpumask *cpumask_var_t;
 
-<<<<<<< HEAD
-bool alloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node);
-bool alloc_cpumask_var(cpumask_var_t *mask, gfp_t flags);
-bool zalloc_cpumask_var_node(cpumask_var_t *mask, gfp_t flags, int node);
-bool zalloc_cpumask_var(cpumask_var_t *mask, gfp_t flags);
-=======
 #define this_cpu_cpumask_var_ptr(x)	this_cpu_read(x)
 #define __cpumask_var_read_mostly	__read_mostly
 
@@ -1350,16 +934,10 @@ bool zalloc_cpumask_var(cpumask_var_t *mask, gfp_t flags)
 	return alloc_cpumask_var(mask, flags | __GFP_ZERO);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void alloc_bootmem_cpumask_var(cpumask_var_t *mask);
 void free_cpumask_var(cpumask_var_t mask);
 void free_bootmem_cpumask_var(cpumask_var_t mask);
 
-<<<<<<< HEAD
-#else
-typedef struct cpumask cpumask_var_t[1];
-
-=======
 static inline bool cpumask_available(cpumask_var_t mask)
 {
 	return mask != NULL;
@@ -1371,7 +949,6 @@ typedef struct cpumask cpumask_var_t[1];
 #define this_cpu_cpumask_var_ptr(x) this_cpu_ptr(x)
 #define __cpumask_var_read_mostly
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool alloc_cpumask_var(cpumask_var_t *mask, gfp_t flags)
 {
 	return true;
@@ -1407,10 +984,6 @@ static inline void free_cpumask_var(cpumask_var_t mask)
 static inline void free_bootmem_cpumask_var(cpumask_var_t mask)
 {
 }
-<<<<<<< HEAD
-#endif /* CONFIG_CPUMASK_OFFSTACK */
-
-=======
 
 static inline bool cpumask_available(cpumask_var_t mask)
 {
@@ -1420,7 +993,6 @@ static inline bool cpumask_available(cpumask_var_t mask)
 
 DEFINE_FREE(free_cpumask_var, struct cpumask *, if (_T) free_cpumask_var(_T));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* It's common to want to use cpu_all_mask in struct member initializers,
  * so it has to refer to an address rather than a pointer. */
 extern const DECLARE_BITMAP(cpu_all_bits, NR_CPUS);
@@ -1429,17 +1001,6 @@ extern const DECLARE_BITMAP(cpu_all_bits, NR_CPUS);
 /* First bits of cpu_bit_bitmap are in fact unset. */
 #define cpu_none_mask to_cpumask(cpu_bit_bitmap[0])
 
-<<<<<<< HEAD
-#define for_each_possible_cpu(cpu) for_each_cpu((cpu), cpu_possible_mask)
-#define for_each_online_cpu(cpu)   for_each_cpu((cpu), cpu_online_mask)
-#define for_each_present_cpu(cpu)  for_each_cpu((cpu), cpu_present_mask)
-
-/* Wrappers for arch boot code to manipulate normally-constant masks */
-void set_cpu_possible(unsigned int cpu, bool possible);
-void set_cpu_present(unsigned int cpu, bool present);
-void set_cpu_online(unsigned int cpu, bool online);
-void set_cpu_active(unsigned int cpu, bool active);
-=======
 #if NR_CPUS == 1
 /* Uniprocessor: the possible/online/present masks are always "1" */
 #define for_each_possible_cpu(cpu)	for ((cpu) = 0; (cpu) < 1; (cpu)++)
@@ -1452,15 +1013,10 @@ void set_cpu_active(unsigned int cpu, bool active);
 #endif
 
 /* Wrappers for arch boot code to manipulate normally-constant masks */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void init_cpu_present(const struct cpumask *src);
 void init_cpu_possible(const struct cpumask *src);
 void init_cpu_online(const struct cpumask *src);
 
-<<<<<<< HEAD
-/**
- * to_cpumask - convert an NR_CPUS bitmap to a struct cpumask *
-=======
 static inline void reset_cpu_possible_mask(void)
 {
 	bitmap_zero(cpumask_bits(&__cpu_possible_mask), NR_CPUS);
@@ -1506,7 +1062,6 @@ set_cpu_dying(unsigned int cpu, bool dying)
 
 /**
  * to_cpumask - convert a NR_CPUS bitmap to a struct cpumask *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bitmap: the bitmap
  *
  * There are a few places where cpumask_var_t isn't appropriate and
@@ -1541,8 +1096,6 @@ static inline const struct cpumask *get_cpu_mask(unsigned int cpu)
 	return to_cpumask(p);
 }
 
-<<<<<<< HEAD
-=======
 #if NR_CPUS > 1
 /**
  * num_online_cpus() - Read the number of online CPUs
@@ -1621,17 +1174,12 @@ static inline bool cpu_dying(unsigned int cpu)
 
 #endif /* NR_CPUS > 1 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cpu_is_offline(cpu)	unlikely(!cpu_online(cpu))
 
 #if NR_CPUS <= BITS_PER_LONG
 #define CPU_BITS_ALL						\
 {								\
-<<<<<<< HEAD
-	[BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD	\
-=======
 	[BITS_TO_LONGS(NR_CPUS)-1] = BITMAP_LAST_WORD_MASK(NR_CPUS)	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else /* NR_CPUS > BITS_PER_LONG */
@@ -1639,38 +1187,6 @@ static inline bool cpu_dying(unsigned int cpu)
 #define CPU_BITS_ALL						\
 {								\
 	[0 ... BITS_TO_LONGS(NR_CPUS)-2] = ~0UL,		\
-<<<<<<< HEAD
-	[BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD		\
-}
-#endif /* NR_CPUS > BITS_PER_LONG */
-
-/*
- *
- * From here down, all obsolete.  Use cpumask_ variants!
- *
- */
-#ifndef CONFIG_DISABLE_OBSOLETE_CPUMASK_FUNCTIONS
-#define cpumask_of_cpu(cpu) (*get_cpu_mask(cpu))
-
-#define CPU_MASK_LAST_WORD BITMAP_LAST_WORD_MASK(NR_CPUS)
-
-#if NR_CPUS <= BITS_PER_LONG
-
-#define CPU_MASK_ALL							\
-(cpumask_t) { {								\
-	[BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD			\
-} }
-
-#else
-
-#define CPU_MASK_ALL							\
-(cpumask_t) { {								\
-	[0 ... BITS_TO_LONGS(NR_CPUS)-2] = ~0UL,			\
-	[BITS_TO_LONGS(NR_CPUS)-1] = CPU_MASK_LAST_WORD			\
-} }
-
-#endif
-=======
 	[BITS_TO_LONGS(NR_CPUS)-1] = BITMAP_LAST_WORD_MASK(NR_CPUS)	\
 }
 #endif /* NR_CPUS > BITS_PER_LONG */
@@ -1750,7 +1266,6 @@ cpumap_print_list_to_buf(char *buf, const struct cpumask *mask,
 	[BITS_TO_LONGS(NR_CPUS)-1] = BITMAP_LAST_WORD_MASK(NR_CPUS)	\
 } }
 #endif /* NR_CPUS > BITS_PER_LONG */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CPU_MASK_NONE							\
 (cpumask_t) { {								\
@@ -1762,146 +1277,6 @@ cpumap_print_list_to_buf(char *buf, const struct cpumask *mask,
 	[0] =  1UL							\
 } }
 
-<<<<<<< HEAD
-#if NR_CPUS == 1
-#define first_cpu(src)		({ (void)(src); 0; })
-#define next_cpu(n, src)	({ (void)(src); 1; })
-#define any_online_cpu(mask)	0
-#define for_each_cpu_mask(cpu, mask)	\
-	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask)
-#else /* NR_CPUS > 1 */
-int __first_cpu(const cpumask_t *srcp);
-int __next_cpu(int n, const cpumask_t *srcp);
-
-#define first_cpu(src)		__first_cpu(&(src))
-#define next_cpu(n, src)	__next_cpu((n), &(src))
-#define any_online_cpu(mask) cpumask_any_and(&mask, cpu_online_mask)
-#define for_each_cpu_mask(cpu, mask)			\
-	for ((cpu) = -1;				\
-		(cpu) = next_cpu((cpu), (mask)),	\
-		(cpu) < NR_CPUS; )
-#endif /* SMP */
-
-#if NR_CPUS <= 64
-
-#define for_each_cpu_mask_nr(cpu, mask)	for_each_cpu_mask(cpu, mask)
-
-#else /* NR_CPUS > 64 */
-
-int __next_cpu_nr(int n, const cpumask_t *srcp);
-#define for_each_cpu_mask_nr(cpu, mask)			\
-	for ((cpu) = -1;				\
-		(cpu) = __next_cpu_nr((cpu), &(mask)),	\
-		(cpu) < nr_cpu_ids; )
-
-#endif /* NR_CPUS > 64 */
-
-#define cpus_addr(src) ((src).bits)
-
-#define cpu_set(cpu, dst) __cpu_set((cpu), &(dst))
-static inline void __cpu_set(int cpu, volatile cpumask_t *dstp)
-{
-	set_bit(cpu, dstp->bits);
-}
-
-#define cpu_clear(cpu, dst) __cpu_clear((cpu), &(dst))
-static inline void __cpu_clear(int cpu, volatile cpumask_t *dstp)
-{
-	clear_bit(cpu, dstp->bits);
-}
-
-#define cpus_setall(dst) __cpus_setall(&(dst), NR_CPUS)
-static inline void __cpus_setall(cpumask_t *dstp, int nbits)
-{
-	bitmap_fill(dstp->bits, nbits);
-}
-
-#define cpus_clear(dst) __cpus_clear(&(dst), NR_CPUS)
-static inline void __cpus_clear(cpumask_t *dstp, int nbits)
-{
-	bitmap_zero(dstp->bits, nbits);
-}
-
-/* No static inline type checking - see Subtlety (1) above. */
-#define cpu_isset(cpu, cpumask) test_bit((cpu), (cpumask).bits)
-
-#define cpu_test_and_set(cpu, cpumask) __cpu_test_and_set((cpu), &(cpumask))
-static inline int __cpu_test_and_set(int cpu, cpumask_t *addr)
-{
-	return test_and_set_bit(cpu, addr->bits);
-}
-
-#define cpus_and(dst, src1, src2) __cpus_and(&(dst), &(src1), &(src2), NR_CPUS)
-static inline int __cpus_and(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
-{
-	return bitmap_and(dstp->bits, src1p->bits, src2p->bits, nbits);
-}
-
-#define cpus_or(dst, src1, src2) __cpus_or(&(dst), &(src1), &(src2), NR_CPUS)
-static inline void __cpus_or(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
-{
-	bitmap_or(dstp->bits, src1p->bits, src2p->bits, nbits);
-}
-
-#define cpus_xor(dst, src1, src2) __cpus_xor(&(dst), &(src1), &(src2), NR_CPUS)
-static inline void __cpus_xor(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
-{
-	bitmap_xor(dstp->bits, src1p->bits, src2p->bits, nbits);
-}
-
-#define cpus_andnot(dst, src1, src2) \
-				__cpus_andnot(&(dst), &(src1), &(src2), NR_CPUS)
-static inline int __cpus_andnot(cpumask_t *dstp, const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
-{
-	return bitmap_andnot(dstp->bits, src1p->bits, src2p->bits, nbits);
-}
-
-#define cpus_equal(src1, src2) __cpus_equal(&(src1), &(src2), NR_CPUS)
-static inline int __cpus_equal(const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
-{
-	return bitmap_equal(src1p->bits, src2p->bits, nbits);
-}
-
-#define cpus_intersects(src1, src2) __cpus_intersects(&(src1), &(src2), NR_CPUS)
-static inline int __cpus_intersects(const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
-{
-	return bitmap_intersects(src1p->bits, src2p->bits, nbits);
-}
-
-#define cpus_subset(src1, src2) __cpus_subset(&(src1), &(src2), NR_CPUS)
-static inline int __cpus_subset(const cpumask_t *src1p,
-					const cpumask_t *src2p, int nbits)
-{
-	return bitmap_subset(src1p->bits, src2p->bits, nbits);
-}
-
-#define cpus_empty(src) __cpus_empty(&(src), NR_CPUS)
-static inline int __cpus_empty(const cpumask_t *srcp, int nbits)
-{
-	return bitmap_empty(srcp->bits, nbits);
-}
-
-#define cpus_weight(cpumask) __cpus_weight(&(cpumask), NR_CPUS)
-static inline int __cpus_weight(const cpumask_t *srcp, int nbits)
-{
-	return bitmap_weight(srcp->bits, nbits);
-}
-
-#define cpus_shift_left(dst, src, n) \
-			__cpus_shift_left(&(dst), &(src), (n), NR_CPUS)
-static inline void __cpus_shift_left(cpumask_t *dstp,
-					const cpumask_t *srcp, int n, int nbits)
-{
-	bitmap_shift_left(dstp->bits, srcp->bits, n, nbits);
-}
-#endif /* !CONFIG_DISABLE_OBSOLETE_CPUMASK_FUNCTIONS */
-=======
 /*
  * Provide a valid theoretical max size for cpumap and cpulist sysfs files
  * to avoid breaking userspace which may allocate a buffer based on the size
@@ -1920,6 +1295,5 @@ static inline void __cpus_shift_left(cpumask_t *dstp,
 #define CPUMAP_FILE_MAX_BYTES  (((NR_CPUS * 9)/32 > PAGE_SIZE) \
 					? (NR_CPUS * 9)/32 - 1 : PAGE_SIZE)
 #define CPULIST_FILE_MAX_BYTES  (((NR_CPUS * 7)/2 > PAGE_SIZE) ? (NR_CPUS * 7)/2 : PAGE_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_CPUMASK_H */

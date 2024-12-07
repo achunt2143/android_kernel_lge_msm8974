@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ld script for the x86 kernel
  *
@@ -24,49 +21,25 @@
 #define LOAD_OFFSET __START_KERNEL_map
 #endif
 
-<<<<<<< HEAD
-=======
 #define RUNTIME_DISCARD_EXIT
 #define EMITS_PT_NOTE
 #define RO_EXCEPTION_TABLE_ALIGN	16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/vmlinux.lds.h>
 #include <asm/asm-offsets.h>
 #include <asm/thread_info.h>
 #include <asm/page_types.h>
-<<<<<<< HEAD
-=======
 #include <asm/orc_lookup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cache.h>
 #include <asm/boot.h>
 
 #undef i386     /* in case the preprocessor is a 32bit one */
 
-<<<<<<< HEAD
-OUTPUT_FORMAT(CONFIG_OUTPUT_FORMAT, CONFIG_OUTPUT_FORMAT, CONFIG_OUTPUT_FORMAT)
-=======
 OUTPUT_FORMAT(CONFIG_OUTPUT_FORMAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_32
 OUTPUT_ARCH(i386)
 ENTRY(phys_startup_32)
-<<<<<<< HEAD
-jiffies = jiffies_64;
-#else
-OUTPUT_ARCH(i386:x86-64)
-ENTRY(phys_startup_64)
-jiffies_64 = jiffies;
-#endif
-
-#if defined(CONFIG_X86_64) && defined(CONFIG_DEBUG_RODATA)
-/*
- * On 64-bit, align RODATA to 2MB so that even with CONFIG_DEBUG_RODATA
- * we retain large page mappings for boundaries spanning kernel text, rodata
- * and data sections.
-=======
 #else
 OUTPUT_ARCH(i386:x86-64)
 ENTRY(phys_startup_64)
@@ -79,27 +52,11 @@ const_pcpu_hot = pcpu_hot;
 /*
  * On 64-bit, align RODATA to 2MB so we retain large page mappings for
  * boundaries spanning kernel text, rodata and data sections.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * However, kernel identity mappings will have different RWX permissions
  * to the pages mapping to text and to the pages padding (which are freed) the
  * text section. Hence kernel identity mappings will be broken to smaller
  * pages. For 64-bit, kernel text and kernel identity mappings are different,
-<<<<<<< HEAD
- * so we can enable protection checks that come with CONFIG_DEBUG_RODATA,
- * as well as retain 2MB large page mappings for kernel text.
- */
-#define X64_ALIGN_DEBUG_RODATA_BEGIN	. = ALIGN(HPAGE_SIZE);
-
-#define X64_ALIGN_DEBUG_RODATA_END				\
-		. = ALIGN(HPAGE_SIZE);				\
-		__end_rodata_hpage_align = .;
-
-#else
-
-#define X64_ALIGN_DEBUG_RODATA_BEGIN
-#define X64_ALIGN_DEBUG_RODATA_END
-=======
  * so we can enable protection checks as well as retain 2MB large page
  * mappings for kernel text.
  */
@@ -140,7 +97,6 @@ const_pcpu_hot = pcpu_hot;
 #define ALIGN_ENTRY_TEXT_BEGIN
 #define ALIGN_ENTRY_TEXT_END
 #define BSS_DECRYPTED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -159,63 +115,23 @@ PHDRS {
 SECTIONS
 {
 #ifdef CONFIG_X86_32
-<<<<<<< HEAD
-        . = LOAD_OFFSET + LOAD_PHYSICAL_ADDR;
-        phys_startup_32 = startup_32 - LOAD_OFFSET;
-#else
-        . = __START_KERNEL;
-        phys_startup_64 = startup_64 - LOAD_OFFSET;
-=======
 	. = LOAD_OFFSET + LOAD_PHYSICAL_ADDR;
 	phys_startup_32 = ABSOLUTE(startup_32 - LOAD_OFFSET);
 #else
 	. = __START_KERNEL;
 	phys_startup_64 = ABSOLUTE(startup_64 - LOAD_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Text and read-only data */
 	.text :  AT(ADDR(.text) - LOAD_OFFSET) {
 		_text = .;
-<<<<<<< HEAD
-		/* bootstrapping code */
-		HEAD_TEXT
-#ifdef CONFIG_X86_32
-		. = ALIGN(PAGE_SIZE);
-		*(.text..page_aligned)
-#endif
-		. = ALIGN(8);
-		_stext = .;
-=======
 		_stext = .;
 		/* bootstrapping code */
 		HEAD_TEXT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		TEXT_TEXT
 		SCHED_TEXT
 		LOCK_TEXT
 		KPROBES_TEXT
-<<<<<<< HEAD
-		ENTRY_TEXT
-		IRQENTRY_TEXT
-		*(.fixup)
-		*(.gnu.warning)
-		/* End of text section */
-		_etext = .;
-	} :text = 0x9090
-
-	NOTES :text :note
-
-	EXCEPTION_TABLE(16) :text = 0x9090
-
-#if defined(CONFIG_DEBUG_RODATA)
-	/* .text should occupy whole number of pages */
-	. = ALIGN(PAGE_SIZE);
-#endif
-	X64_ALIGN_DEBUG_RODATA_BEGIN
-	RO_DATA(PAGE_SIZE)
-	X64_ALIGN_DEBUG_RODATA_END
-=======
 		SOFTIRQENTRY_TEXT
 #ifdef CONFIG_MITIGATION_RETPOLINE
 		*(.text..__x86.indirect_thunk)
@@ -247,7 +163,6 @@ SECTIONS
 	X86_ALIGN_RODATA_BEGIN
 	RO_DATA(PAGE_SIZE)
 	X86_ALIGN_RODATA_END
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Data */
 	.data : AT(ADDR(.data) - LOAD_OFFSET) {
@@ -276,13 +191,9 @@ SECTIONS
 		_edata = .;
 	} :data
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_64
-=======
 	BUG_TABLE
 
 	ORC_UNWIND_TABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	. = ALIGN(PAGE_SIZE);
 	__vvar_page = .;
@@ -292,21 +203,6 @@ SECTIONS
 		__vvar_beginning_hack = .;
 
 		/* Place all vvars at the offsets in asm/vvar.h. */
-<<<<<<< HEAD
-#define EMIT_VVAR(name, offset) 			\
-		. = __vvar_beginning_hack + offset;	\
-		*(.vvar_ ## name)
-#define __VVAR_KERNEL_LDS
-#include <asm/vvar.h>
-#undef __VVAR_KERNEL_LDS
-#undef EMIT_VVAR
-
-	} :data
-
-       . = ALIGN(__vvar_page + PAGE_SIZE, PAGE_SIZE);
-
-#endif /* CONFIG_X86_64 */
-=======
 #define EMIT_VVAR(name, offset)				\
 		. = __vvar_beginning_hack + offset;	\
 		*(.vvar_ ## name)
@@ -321,7 +217,6 @@ SECTIONS
 	} :data
 
 	. = ALIGN(__vvar_page + PAGE_SIZE, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init code and data - will be freed after init */
 	. = ALIGN(PAGE_SIZE);
@@ -336,11 +231,8 @@ SECTIONS
 	 * start another segment - init.
 	 */
 	PERCPU_VADDR(INTERNODE_CACHE_BYTES, 0, :percpu)
-<<<<<<< HEAD
-=======
 	ASSERT(SIZEOF(.data..percpu) < CONFIG_PHYSICAL_START,
 	       "per-CPU data too large - increase CONFIG_PHYSICAL_START")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	INIT_TEXT_SECTION(PAGE_SIZE)
@@ -348,22 +240,6 @@ SECTIONS
 	:init
 #endif
 
-<<<<<<< HEAD
-	INIT_DATA_SECTION(16)
-
-	/*
-	 * Code and data for a variety of lowlevel trampolines, to be
-	 * copied into base memory (< 1 MiB) during initialization.
-	 * Since it is copied early, the main copy can be discarded
-	 * afterwards.
-	 */
-	 .x86_trampoline : AT(ADDR(.x86_trampoline) - LOAD_OFFSET) {
-		x86_trampoline_start = .;
-		*(.x86_trampoline)
-		x86_trampoline_end = .;
-	}
-
-=======
 	/*
 	 * Section for code used exclusively before alternatives are run. All
 	 * references to such code must be patched out by alternatives, normally
@@ -377,28 +253,12 @@ SECTIONS
 
 	INIT_DATA_SECTION(16)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.x86_cpu_dev.init : AT(ADDR(.x86_cpu_dev.init) - LOAD_OFFSET) {
 		__x86_cpu_dev_start = .;
 		*(.x86_cpu_dev.init)
 		__x86_cpu_dev_end = .;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * start address and size of operations which during runtime
-	 * can be patched with virtualization friendly instructions or
-	 * baremetal native ones. Think page table operations.
-	 * Details in paravirt_types.h
-	 */
-	. = ALIGN(8);
-	.parainstructions : AT(ADDR(.parainstructions) - LOAD_OFFSET) {
-		__parainstructions = .;
-		*(.parainstructions)
-		__parainstructions_end = .;
-	}
-
-=======
 #ifdef CONFIG_X86_INTEL_MID
 	.x86_intel_mid_dev.init : AT(ADDR(.x86_intel_mid_dev.init) - \
 								LOAD_OFFSET) {
@@ -454,7 +314,6 @@ SECTIONS
 	}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * struct alt_inst entries. From the header (alternative.h):
 	 * "Alternative instructions for different CPU types or capabilities"
@@ -476,21 +335,6 @@ SECTIONS
 		*(.altinstr_replacement)
 	}
 
-<<<<<<< HEAD
-	/*
-	 * struct iommu_table_entry entries are injected in this section.
-	 * It is an array of IOMMUs which during run time gets sorted depending
-	 * on its dependency order. After rootfs_initcall is complete
-	 * this section can be safely removed.
-	 */
-	.iommu_table : AT(ADDR(.iommu_table) - LOAD_OFFSET) {
-		__iommu_table = .;
-		*(.iommu_table)
-		__iommu_table_end = .;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	. = ALIGN(8);
 	.apicdrivers : AT(ADDR(.apicdrivers) - LOAD_OFFSET) {
 		__apicdrivers = .;
@@ -500,13 +344,8 @@ SECTIONS
 
 	. = ALIGN(8);
 	/*
-<<<<<<< HEAD
-	 * .exit.text is discard at runtime, not link time, to deal with
-	 *  references from .altinstructions and .eh_frame
-=======
 	 * .exit.text is discarded at runtime, not link time, to deal with
 	 *  references from .altinstructions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	.exit.text : AT(ADDR(.exit.text) - LOAD_OFFSET) {
 		EXIT_TEXT
@@ -550,19 +389,13 @@ SECTIONS
 	.bss : AT(ADDR(.bss) - LOAD_OFFSET) {
 		__bss_start = .;
 		*(.bss..page_aligned)
-<<<<<<< HEAD
-		*(.bss)
-=======
 		. = ALIGN(PAGE_SIZE);
 		*(BSS_MAIN)
 		BSS_DECRYPTED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		. = ALIGN(PAGE_SIZE);
 		__bss_stop = .;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * The memory occupied from _text to here, __end_of_kernel_reserve, is
 	 * automatically reserved in setup_arch(). Anything after here must be
@@ -571,29 +404,10 @@ SECTIONS
 	 */
 	__end_of_kernel_reserve = .;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	. = ALIGN(PAGE_SIZE);
 	.brk : AT(ADDR(.brk) - LOAD_OFFSET) {
 		__brk_base = .;
 		. += 64 * 1024;		/* 64k alignment slop space */
-<<<<<<< HEAD
-		*(.brk_reservation)	/* areas brk users have reserved */
-		__brk_limit = .;
-	}
-
-	_end = .;
-
-        STABS_DEBUG
-        DWARF_DEBUG
-
-	/* Sections to be discarded */
-	DISCARDS
-	/DISCARD/ : { *(.eh_frame) }
-}
-
-
-#ifdef CONFIG_X86_32
-=======
 		*(.bss..brk)		/* areas brk users have reserved */
 		__brk_limit = .;
 	}
@@ -670,48 +484,17 @@ SECTIONS
 	ASSERT(SIZEOF(.rela.dyn) == 0, "Unexpected run-time relocations (.rela) detected!")
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The ASSERT() sink to . is intentional, for binutils 2.14 compatibility:
  */
 . = ASSERT((_end - LOAD_OFFSET <= KERNEL_IMAGE_SIZE),
 	   "kernel image bigger than KERNEL_IMAGE_SIZE");
-<<<<<<< HEAD
-#else
-=======
 
 #ifdef CONFIG_X86_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Per-cpu symbols which need to be offset from __per_cpu_load
  * for the boot processor.
  */
-<<<<<<< HEAD
-#define INIT_PER_CPU(x) init_per_cpu__##x = x + __per_cpu_load
-INIT_PER_CPU(gdt_page);
-INIT_PER_CPU(irq_stack_union);
-
-/*
- * Build-time check on the image size:
- */
-. = ASSERT((_end - _text <= KERNEL_IMAGE_SIZE),
-	   "kernel image bigger than KERNEL_IMAGE_SIZE");
-
-#ifdef CONFIG_SMP
-. = ASSERT((irq_stack_union == 0),
-           "irq_stack_union is not at start of per-cpu area");
-#endif
-
-#endif /* CONFIG_X86_32 */
-
-#ifdef CONFIG_KEXEC
-#include <asm/kexec.h>
-
-. = ASSERT(kexec_control_code_size <= KEXEC_CONTROL_CODE_MAX_SIZE,
-           "kexec control code size is too big");
-#endif
-
-=======
 #define INIT_PER_CPU(x) init_per_cpu__##x = ABSOLUTE(x) + __per_cpu_load
 INIT_PER_CPU(gdt_page);
 INIT_PER_CPU(fixed_percpu_data);
@@ -744,4 +527,3 @@ INIT_PER_CPU(irq_stack_backing_store);
 #endif
 
 #endif /* CONFIG_X86_64 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

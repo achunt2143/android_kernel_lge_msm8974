@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	LASI Device Driver
  *
@@ -9,14 +6,6 @@
  *	Portions (c) Copyright 1999 The Puffin Group Inc.
  *	Portions (c) Copyright 1999 Hewlett-Packard
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *      the Free Software Foundation; either version 2 of the License, or
- *      (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	by Alan Cox <alan@redhat.com> and 
  * 	   Alex deVries <alex@onefishtwo.ca>
  */
@@ -28,10 +17,7 @@
 #include <linux/module.h>
 #include <linux/pm.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/reboot.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/hardware.h>
@@ -160,20 +146,6 @@ static void __init lasi_led_init(unsigned long lasi_hpa)
  * 1 to PWR_ON_L in the Power Control Register
  * 
  */
-<<<<<<< HEAD
-
-static unsigned long lasi_power_off_hpa __read_mostly;
-
-static void lasi_power_off(void)
-{
-	unsigned long datareg;
-
-	/* calculate addr of the Power Control Register */
-	datareg = lasi_power_off_hpa + 0x0000C000;
-
-	/* Power down the machine */
-	gsc_writel(0x02, datareg);
-=======
 static int lasi_power_off(struct sys_off_data *data)
 {
 	struct gsc_asic *lasi = data->cb_data;
@@ -183,18 +155,11 @@ static int lasi_power_off(struct sys_off_data *data)
 
 	/* might not be reached: */
 	return NOTIFY_DONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init lasi_init_chip(struct parisc_device *dev)
 {
-<<<<<<< HEAD
-	extern void (*chassis_power_off)(void);
 	struct gsc_asic *lasi;
-	struct gsc_irq gsc_irq;
-=======
-	struct gsc_asic *lasi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	lasi = kzalloc(sizeof(*lasi), GFP_KERNEL);
@@ -216,11 +181,7 @@ static int __init lasi_init_chip(struct parisc_device *dev)
 	lasi_init_irq(lasi);
 
 	/* the IRQ lasi should use */
-<<<<<<< HEAD
-	dev->irq = gsc_alloc_irq(&gsc_irq);
-=======
 	dev->irq = gsc_alloc_irq(&lasi->gsc_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->irq < 0) {
 		printk(KERN_ERR "%s(): cannot get GSC irq\n",
 				__func__);
@@ -228,15 +189,9 @@ static int __init lasi_init_chip(struct parisc_device *dev)
 		return -EBUSY;
 	}
 
-<<<<<<< HEAD
-	lasi->eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
-
-	ret = request_irq(gsc_irq.irq, gsc_asic_intr, 0, "lasi", lasi);
-=======
 	lasi->eim = ((u32) lasi->gsc_irq.txn_addr) | lasi->gsc_irq.txn_data;
 
 	ret = request_irq(lasi->gsc_irq.irq, gsc_asic_intr, 0, "lasi", lasi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		kfree(lasi);
 		return ret;
@@ -254,24 +209,6 @@ static int __init lasi_init_chip(struct parisc_device *dev)
 
 	gsc_fixup_irqs(dev, lasi, lasi_choose_irq);
 
-<<<<<<< HEAD
-	/* initialize the power off function */
-	/* FIXME: Record the LASI HPA for the power off function.  This should
-	 * ensure that only the first LASI (the one controlling the power off)
-	 * should set the HPA here */
-	lasi_power_off_hpa = lasi->hpa;
-	chassis_power_off = lasi_power_off;
-	
-	return ret;
-}
-
-static struct parisc_device_id lasi_tbl[] = {
-	{ HPHW_BA, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x00081 },
-	{ 0, }
-};
-
-struct parisc_driver lasi_driver = {
-=======
 	/* register the LASI power off function */
 	register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
 		SYS_OFF_PRIO_DEFAULT, lasi_power_off, lasi);
@@ -286,17 +223,13 @@ static struct parisc_device_id lasi_tbl[] __initdata = {
 MODULE_DEVICE_TABLE(parisc, lasi_tbl);
 
 static struct parisc_driver lasi_driver __refdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"lasi",
 	.id_table =	lasi_tbl,
 	.probe =	lasi_init_chip,
 };
-<<<<<<< HEAD
-=======
 
 static int __init lasi_init(void)
 {
 	return register_parisc_driver(&lasi_driver);
 }
 arch_initcall(lasi_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

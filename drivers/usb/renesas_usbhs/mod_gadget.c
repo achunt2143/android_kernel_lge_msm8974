@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas USB driver
  *
  * Copyright (C) 2011 Renesas Solutions Corp.
-<<<<<<< HEAD
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
-=======
  * Copyright (C) 2019 Renesas Electronics Corporation
  * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -30,10 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
-<<<<<<< HEAD
-=======
 #include <linux/usb/otg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 
 /*
@@ -49,10 +29,7 @@ struct usbhsg_gpriv;
 struct usbhsg_uep {
 	struct usb_ep		 ep;
 	struct usbhs_pipe	*pipe;
-<<<<<<< HEAD
-=======
 	spinlock_t		lock;	/* protect the pipe */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	char ep_name[EP_NAME_SIZE];
 
@@ -67,21 +44,15 @@ struct usbhsg_gpriv {
 	int			 uep_size;
 
 	struct usb_gadget_driver	*driver;
-<<<<<<< HEAD
-=======
 	struct usb_phy		*transceiver;
 	bool			 vbus_active;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32	status;
 #define USBHSG_STATUS_STARTED		(1 << 0)
 #define USBHSG_STATUS_REGISTERD		(1 << 1)
 #define USBHSG_STATUS_WEDGE		(1 << 2)
-<<<<<<< HEAD
-=======
 #define USBHSG_STATUS_SELF_POWERED	(1 << 3)
 #define USBHSG_STATUS_SOFT_CONNECT	(1 << 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct usbhsg_recip_handle {
@@ -103,15 +74,9 @@ struct usbhsg_recip_handle {
 		struct usbhsg_gpriv, mod)
 
 #define __usbhsg_for_each_uep(start, pos, g, i)	\
-<<<<<<< HEAD
-	for (i = start, pos = (g)->uep + i;	\
-	     i < (g)->uep_size;			\
-	     i++, pos = (g)->uep + i)
-=======
 	for ((i) = start;					\
 	     ((i) < (g)->uep_size) && ((pos) = (g)->uep + (i));	\
 	     (i)++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define usbhsg_for_each_uep(pos, gpriv, i)	\
 	__usbhsg_for_each_uep(1, pos, gpriv, i)
@@ -150,8 +115,6 @@ struct usbhsg_recip_handle {
 /*
  *		queue push/pop
  */
-<<<<<<< HEAD
-=======
 static void __usbhsg_queue_pop(struct usbhsg_uep *uep,
 			       struct usbhsg_request *ureq,
 			       int status)
@@ -170,28 +133,17 @@ static void __usbhsg_queue_pop(struct usbhsg_uep *uep,
 	spin_lock(usbhs_priv_to_lock(priv));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void usbhsg_queue_pop(struct usbhsg_uep *uep,
 			     struct usbhsg_request *ureq,
 			     int status)
 {
 	struct usbhsg_gpriv *gpriv = usbhsg_uep_to_gpriv(uep);
-<<<<<<< HEAD
-	struct usbhs_pipe *pipe = usbhsg_uep_to_pipe(uep);
-	struct device *dev = usbhsg_gpriv_to_dev(gpriv);
-
-	dev_dbg(dev, "pipe %d : queue pop\n", usbhs_pipe_number(pipe));
-
-	ureq->req.status = status;
-	ureq->req.complete(&uep->ep, &ureq->req);
-=======
 	struct usbhs_priv *priv = usbhsg_gpriv_to_priv(gpriv);
 	unsigned long flags;
 
 	usbhs_lock(priv, flags);
 	__usbhsg_queue_pop(uep, ureq, status);
 	usbhs_unlock(priv, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void usbhsg_queue_done(struct usbhs_priv *priv, struct usbhs_pkt *pkt)
@@ -199,12 +151,6 @@ static void usbhsg_queue_done(struct usbhs_priv *priv, struct usbhs_pkt *pkt)
 	struct usbhs_pipe *pipe = pkt->pipe;
 	struct usbhsg_uep *uep = usbhsg_pipe_to_uep(pipe);
 	struct usbhsg_request *ureq = usbhsg_pkt_to_ureq(pkt);
-<<<<<<< HEAD
-
-	ureq->req.actual = pkt->actual;
-
-	usbhsg_queue_pop(uep, ureq, 0);
-=======
 	unsigned long flags;
 
 	ureq->req.actual = pkt->actual;
@@ -213,7 +159,6 @@ static void usbhsg_queue_done(struct usbhs_priv *priv, struct usbhs_pkt *pkt)
 	if (uep)
 		__usbhsg_queue_pop(uep, ureq, 0);
 	usbhs_unlock(priv, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void usbhsg_queue_push(struct usbhsg_uep *uep,
@@ -239,21 +184,12 @@ static void usbhsg_queue_push(struct usbhsg_uep *uep,
 /*
  *		dma map/unmap
  */
-<<<<<<< HEAD
-static int usbhsg_dma_map_ctrl(struct usbhs_pkt *pkt, int map)
-=======
 static int usbhsg_dma_map_ctrl(struct device *dma_dev, struct usbhs_pkt *pkt,
 			       int map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhsg_request *ureq = usbhsg_pkt_to_ureq(pkt);
 	struct usb_request *req = &ureq->req;
 	struct usbhs_pipe *pipe = pkt->pipe;
-<<<<<<< HEAD
-	struct usbhsg_uep *uep = usbhsg_pipe_to_uep(pipe);
-	struct usbhsg_gpriv *gpriv = usbhsg_uep_to_gpriv(uep);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum dma_data_direction dir;
 	int ret = 0;
 
@@ -263,21 +199,13 @@ static int usbhsg_dma_map_ctrl(struct device *dma_dev, struct usbhs_pkt *pkt,
 		/* it can not use scatter/gather */
 		WARN_ON(req->num_sgs);
 
-<<<<<<< HEAD
-		ret = usb_gadget_map_request(&gpriv->gadget, req, dir);
-=======
 		ret = usb_gadget_map_request_by_dev(dma_dev, req, dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return ret;
 
 		pkt->dma = req->dma;
 	} else {
-<<<<<<< HEAD
-		usb_gadget_unmap_request(&gpriv->gadget, req, dir);
-=======
 		usb_gadget_unmap_request_by_dev(dma_dev, req, dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -319,11 +247,7 @@ static int usbhsg_recip_handler_std_clear_endpoint(struct usbhs_priv *priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-struct usbhsg_recip_handle req_clear_feature = {
-=======
 static struct usbhsg_recip_handle req_clear_feature = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "clear feature",
 	.device		= usbhsg_recip_handler_std_control_done,
 	.interface	= usbhsg_recip_handler_std_control_done,
@@ -341,11 +265,7 @@ static int usbhsg_recip_handler_std_set_device(struct usbhs_priv *priv,
 	case USB_DEVICE_TEST_MODE:
 		usbhsg_recip_handler_std_control_done(priv, uep, ctrl);
 		udelay(100);
-<<<<<<< HEAD
-		usbhs_sys_set_test_mode(priv, le16_to_cpu(ctrl->wIndex >> 8));
-=======
 		usbhs_sys_set_test_mode(priv, le16_to_cpu(ctrl->wIndex) >> 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		usbhsg_recip_handler_std_control_done(priv, uep, ctrl);
@@ -368,11 +288,7 @@ static int usbhsg_recip_handler_std_set_endpoint(struct usbhs_priv *priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-struct usbhsg_recip_handle req_set_feature = {
-=======
 static struct usbhsg_recip_handle req_set_feature = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "set feature",
 	.device		= usbhsg_recip_handler_std_set_device,
 	.interface	= usbhsg_recip_handler_std_control_done,
@@ -399,11 +315,7 @@ static void __usbhsg_recip_send_status(struct usbhsg_gpriv *gpriv,
 	struct usbhs_pipe *pipe = usbhsg_uep_to_pipe(dcp);
 	struct device *dev = usbhsg_gpriv_to_dev(gpriv);
 	struct usb_request *req;
-<<<<<<< HEAD
-	unsigned short *buf;
-=======
 	__le16 *buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* alloc new usb_request for recip */
 	req = usb_ep_alloc_request(&dcp->ep, GFP_ATOMIC);
@@ -416,10 +328,6 @@ static void __usbhsg_recip_send_status(struct usbhsg_gpriv *gpriv,
 	buf = kmalloc(sizeof(*buf), GFP_ATOMIC);
 	if (!buf) {
 		usb_ep_free_request(&dcp->ep, req);
-<<<<<<< HEAD
-		dev_err(dev, "recip data allocation fail\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -442,14 +350,10 @@ static int usbhsg_recip_handler_std_get_device(struct usbhs_priv *priv,
 					       struct usb_ctrlrequest *ctrl)
 {
 	struct usbhsg_gpriv *gpriv = usbhsg_uep_to_gpriv(uep);
-<<<<<<< HEAD
-	unsigned short status = 1 << USB_DEVICE_SELF_POWERED;
-=======
 	unsigned short status = 0;
 
 	if (usbhsg_status_has(gpriv, USBHSG_STATUS_SELF_POWERED))
 		status = 1 << USB_DEVICE_SELF_POWERED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__usbhsg_recip_send_status(gpriv, status);
 
@@ -484,11 +388,7 @@ static int usbhsg_recip_handler_std_get_endpoint(struct usbhs_priv *priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-struct usbhsg_recip_handle req_get_status = {
-=======
 static struct usbhsg_recip_handle req_get_status = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "get status",
 	.device		= usbhsg_recip_handler_std_get_device,
 	.interface	= usbhsg_recip_handler_std_get_interface,
@@ -557,14 +457,6 @@ static int usbhsg_irq_dev_state(struct usbhs_priv *priv,
 {
 	struct usbhsg_gpriv *gpriv = usbhsg_priv_to_gpriv(priv);
 	struct device *dev = usbhsg_gpriv_to_dev(gpriv);
-<<<<<<< HEAD
-
-	gpriv->gadget.speed = usbhs_bus_get_speed(priv);
-
-	dev_dbg(dev, "state = %x : speed : %d\n",
-		usbhs_status_get_device_state(irq_state),
-		gpriv->gadget.speed);
-=======
 	int state = usbhs_status_get_device_state(irq_state);
 
 	gpriv->gadget.speed = usbhs_bus_get_speed(priv);
@@ -577,7 +469,6 @@ static int usbhsg_irq_dev_state(struct usbhs_priv *priv,
 			gpriv->driver->suspend(&gpriv->gadget);
 		usb_gadget_set_state(&gpriv->gadget, USB_STATE_SUSPENDED);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -615,13 +506,10 @@ static int usbhsg_irq_ctrl_stage(struct usbhs_priv *priv,
 	case NODATA_STATUS_STAGE:
 		pipe->handler = &usbhs_ctrl_stage_end_handler;
 		break;
-<<<<<<< HEAD
-=======
 	case READ_STATUS_STAGE:
 	case WRITE_STATUS_STAGE:
 		usbhs_dcp_control_transfer_done(pipe);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return ret;
 	}
@@ -675,11 +563,7 @@ static int usbhsg_pipe_disable(struct usbhsg_uep *uep)
 		if (!pkt)
 			break;
 
-<<<<<<< HEAD
-		usbhsg_queue_pop(uep, usbhsg_pkt_to_ureq(pkt), -ECONNRESET);
-=======
 		usbhsg_queue_pop(uep, usbhsg_pkt_to_ureq(pkt), -ESHUTDOWN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	usbhs_pipe_disable(pipe);
@@ -687,18 +571,6 @@ static int usbhsg_pipe_disable(struct usbhsg_uep *uep)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void usbhsg_uep_init(struct usbhsg_gpriv *gpriv)
-{
-	int i;
-	struct usbhsg_uep *uep;
-
-	usbhsg_for_each_uep_with_dcp(uep, gpriv, i)
-		uep->pipe = NULL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *		usb_ep_ops
@@ -712,12 +584,9 @@ static int usbhsg_ep_enable(struct usb_ep *ep,
 	struct usbhs_priv *priv = usbhsg_gpriv_to_priv(gpriv);
 	struct usbhs_pipe *pipe;
 	int ret = -EIO;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
 
 	usbhs_lock(priv, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if it already have pipe,
@@ -726,12 +595,8 @@ static int usbhsg_ep_enable(struct usb_ep *ep,
 	if (uep->pipe) {
 		usbhs_pipe_clear(uep->pipe);
 		usbhs_pipe_sequence_data0(uep->pipe);
-<<<<<<< HEAD
-		return 0;
-=======
 		ret = 0;
 		goto usbhsg_ep_enable_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pipe = usbhs_pipe_malloc(priv,
@@ -751,12 +616,6 @@ static int usbhsg_ep_enable(struct usb_ep *ep,
 		 * use dmaengine if possible.
 		 * It will use pio handler if impossible.
 		 */
-<<<<<<< HEAD
-		if (usb_endpoint_dir_in(desc))
-			pipe->handler = &usbhs_fifo_dma_push_handler;
-		else
-			pipe->handler = &usbhs_fifo_dma_pop_handler;
-=======
 		if (usb_endpoint_dir_in(desc)) {
 			pipe->handler = &usbhs_fifo_dma_push_handler;
 		} else {
@@ -764,27 +623,19 @@ static int usbhsg_ep_enable(struct usb_ep *ep,
 			usbhs_xxxsts_clear(priv, BRDYSTS,
 					   usbhs_pipe_number(pipe));
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = 0;
 	}
 
-<<<<<<< HEAD
-=======
 usbhsg_ep_enable_end:
 	usbhs_unlock(priv, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int usbhsg_ep_disable(struct usb_ep *ep)
 {
 	struct usbhsg_uep *uep = usbhsg_ep_to_uep(ep);
-<<<<<<< HEAD
-
-	return usbhsg_pipe_disable(uep);
-=======
 	struct usbhs_pipe *pipe;
 	unsigned long flags;
 
@@ -803,7 +654,6 @@ out:
 	spin_unlock_irqrestore(&uep->lock, flags);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct usb_request *usbhsg_ep_alloc_request(struct usb_ep *ep,
@@ -852,12 +702,6 @@ static int usbhsg_ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 {
 	struct usbhsg_uep *uep = usbhsg_ep_to_uep(ep);
 	struct usbhsg_request *ureq = usbhsg_req_to_ureq(req);
-<<<<<<< HEAD
-	struct usbhs_pipe *pipe = usbhsg_uep_to_pipe(uep);
-
-	usbhs_pkt_pop(pipe, usbhsg_ureq_to_pkt(ureq));
-	usbhsg_queue_pop(uep, ureq, -ECONNRESET);
-=======
 	struct usbhs_pipe *pipe;
 	unsigned long flags;
 
@@ -872,7 +716,6 @@ static int usbhsg_ep_dequeue(struct usb_ep *ep, struct usb_request *req)
 	 */
 	usbhsg_queue_pop(uep, ureq, -ECONNRESET);
 	spin_unlock_irqrestore(&uep->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -885,15 +728,7 @@ static int __usbhsg_ep_set_halt_wedge(struct usb_ep *ep, int halt, int wedge)
 	struct usbhs_priv *priv = usbhsg_gpriv_to_priv(gpriv);
 	struct device *dev = usbhsg_gpriv_to_dev(gpriv);
 	unsigned long flags;
-<<<<<<< HEAD
-
-	if (!pipe)
-		return -EINVAL;
-
-	usbhsg_pipe_disable(uep);
-=======
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(dev, "set halt %d (pipe %d)\n",
 		halt, usbhs_pipe_number(pipe));
@@ -901,8 +736,6 @@ static int __usbhsg_ep_set_halt_wedge(struct usb_ep *ep, int halt, int wedge)
 	/********************  spin lock ********************/
 	usbhs_lock(priv, flags);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * According to usb_ep_set_halt()'s description, this function should
 	 * return -EAGAIN if the IN endpoint has any queue or data. Note
@@ -915,7 +748,6 @@ static int __usbhsg_ep_set_halt_wedge(struct usb_ep *ep, int halt, int wedge)
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (halt)
 		usbhs_pipe_stall(pipe);
 	else
@@ -926,18 +758,11 @@ static int __usbhsg_ep_set_halt_wedge(struct usb_ep *ep, int halt, int wedge)
 	else
 		usbhsg_status_clr(gpriv, USBHSG_STATUS_WEDGE);
 
-<<<<<<< HEAD
-	usbhs_unlock(priv, flags);
-	/********************  spin unlock ******************/
-
-	return 0;
-=======
 out:
 	usbhs_unlock(priv, flags);
 	/********************  spin unlock ******************/
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usbhsg_ep_set_halt(struct usb_ep *ep, int value)
@@ -950,11 +775,7 @@ static int usbhsg_ep_set_wedge(struct usb_ep *ep)
 	return __usbhsg_ep_set_halt_wedge(ep, 1, 1);
 }
 
-<<<<<<< HEAD
-static struct usb_ep_ops usbhsg_ep_ops = {
-=======
 static const struct usb_ep_ops usbhsg_ep_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable		= usbhsg_ep_enable,
 	.disable	= usbhsg_ep_disable,
 
@@ -969,8 +790,6 @@ static const struct usb_ep_ops usbhsg_ep_ops = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  *		pullup control
  */
 static int usbhsg_can_pullup(struct usbhs_priv *priv)
@@ -990,7 +809,6 @@ static void usbhsg_update_pullup(struct usbhs_priv *priv)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		usb module start/end
  */
 static int usbhsg_try_start(struct usbhs_priv *priv, u32 status)
@@ -1024,20 +842,11 @@ static int usbhsg_try_start(struct usbhs_priv *priv, u32 status)
 	/*
 	 * pipe initialize and enable DCP
 	 */
-<<<<<<< HEAD
-	usbhs_pipe_init(priv,
-			usbhsg_dma_map_ctrl);
-	usbhs_fifo_init(priv);
-	usbhsg_uep_init(gpriv);
-
-	/* dcp init */
-=======
 	usbhs_fifo_init(priv);
 	usbhs_pipe_init(priv,
 			usbhsg_dma_map_ctrl);
 
 	/* dcp init instead of usbhsg_ep_enable() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcp->pipe		= usbhs_dcp_malloc(priv);
 	dcp->pipe->mod_private	= dcp;
 	usbhs_pipe_config_update(dcp->pipe, 0, 0, 64);
@@ -1049,10 +858,7 @@ static int usbhsg_try_start(struct usbhs_priv *priv, u32 status)
 	 * - usb module
 	 */
 	usbhs_sys_function_ctrl(priv, 1);
-<<<<<<< HEAD
-=======
 	usbhsg_update_pullup(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * enable irq callback
@@ -1068,17 +874,10 @@ static int usbhsg_try_stop(struct usbhs_priv *priv, u32 status)
 {
 	struct usbhsg_gpriv *gpriv = usbhsg_priv_to_gpriv(priv);
 	struct usbhs_mod *mod = usbhs_mod_get_current(priv);
-<<<<<<< HEAD
-	struct usbhsg_uep *dcp = usbhsg_gpriv_to_dcp(gpriv);
-	struct device *dev = usbhs_priv_to_dev(priv);
-	unsigned long flags;
-	int ret = 0;
-=======
 	struct usbhsg_uep *uep;
 	struct device *dev = usbhs_priv_to_dev(priv);
 	unsigned long flags;
 	int ret = 0, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/********************  spin lock ********************/
 	usbhs_lock(priv, flags);
@@ -1110,13 +909,9 @@ static int usbhsg_try_stop(struct usbhs_priv *priv, u32 status)
 	usbhs_sys_set_test_mode(priv, 0);
 	usbhs_sys_function_ctrl(priv, 0);
 
-<<<<<<< HEAD
-	usbhsg_pipe_disable(dcp);
-=======
 	/* disable all eps */
 	usbhsg_for_each_uep_with_dcp(uep, gpriv, i)
 		usbhsg_ep_disable(&uep->ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(dev, "stop gadget\n");
 
@@ -1124,8 +919,6 @@ static int usbhsg_try_stop(struct usbhs_priv *priv, u32 status)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * VBUS provided by the PHY
  */
 static int usbhsm_phy_get_vbus(struct platform_device *pdev)
@@ -1147,7 +940,6 @@ static void usbhs_mod_phy_mode(struct usbhs_priv *priv)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *		linux usb function
  *
@@ -1157,22 +949,14 @@ static int usbhsg_gadget_start(struct usb_gadget *gadget,
 {
 	struct usbhsg_gpriv *gpriv = usbhsg_gadget_to_gpriv(gadget);
 	struct usbhs_priv *priv = usbhsg_gpriv_to_priv(gpriv);
-<<<<<<< HEAD
-=======
 	struct device *dev = usbhs_priv_to_dev(priv);
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!driver		||
 	    !driver->setup	||
 	    driver->max_speed < USB_SPEED_FULL)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	/* first hook up the driver ... */
-	gpriv->driver = driver;
-	gpriv->gadget.dev.driver = &driver->driver;
-=======
 	/* connect to bus through transceiver */
 	if (!IS_ERR_OR_NULL(gpriv->transceiver)) {
 		ret = otg_set_peripheral(gpriv->transceiver->otg,
@@ -1189,35 +973,20 @@ static int usbhsg_gadget_start(struct usb_gadget *gadget,
 
 	/* first hook up the driver ... */
 	gpriv->driver = driver;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return usbhsg_try_start(priv, USBHSG_STATUS_REGISTERD);
 }
 
-<<<<<<< HEAD
-static int usbhsg_gadget_stop(struct usb_gadget *gadget,
-		struct usb_gadget_driver *driver)
-=======
 static int usbhsg_gadget_stop(struct usb_gadget *gadget)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhsg_gpriv *gpriv = usbhsg_gadget_to_gpriv(gadget);
 	struct usbhs_priv *priv = usbhsg_gpriv_to_priv(gpriv);
 
-<<<<<<< HEAD
-	if (!driver		||
-	    !driver->unbind)
-		return -EINVAL;
-
-	usbhsg_try_stop(priv, USBHSG_STATUS_REGISTERD);
-	gpriv->gadget.dev.driver = NULL;
-=======
 	usbhsg_try_stop(priv, USBHSG_STATUS_REGISTERD);
 
 	if (!IS_ERR_OR_NULL(gpriv->transceiver))
 		otg_set_peripheral(gpriv->transceiver->otg, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpriv->driver = NULL;
 
 	return 0;
@@ -1234,12 +1003,6 @@ static int usbhsg_get_frame(struct usb_gadget *gadget)
 	return usbhs_frame_get_num(priv);
 }
 
-<<<<<<< HEAD
-static struct usb_gadget_ops usbhsg_gadget_ops = {
-	.get_frame		= usbhsg_get_frame,
-	.udc_start		= usbhsg_gadget_start,
-	.udc_stop		= usbhsg_gadget_stop,
-=======
 static int usbhsg_pullup(struct usb_gadget *gadget, int is_on)
 {
 	struct usbhsg_gpriv *gpriv = usbhsg_gadget_to_gpriv(gadget);
@@ -1291,7 +1054,6 @@ static const struct usb_gadget_ops usbhsg_gadget_ops = {
 	.udc_stop		= usbhsg_gadget_stop,
 	.pullup			= usbhsg_pullup,
 	.vbus_session		= usbhsg_vbus_session,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int usbhsg_start(struct usbhs_priv *priv)
@@ -1311,56 +1073,31 @@ static int usbhsg_stop(struct usbhs_priv *priv)
 	return usbhsg_try_stop(priv, USBHSG_STATUS_STARTED);
 }
 
-<<<<<<< HEAD
-static void usbhs_mod_gadget_release(struct device *pdev)
-{
-	/* do nothing */
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int usbhs_mod_gadget_probe(struct usbhs_priv *priv)
 {
 	struct usbhsg_gpriv *gpriv;
 	struct usbhsg_uep *uep;
 	struct device *dev = usbhs_priv_to_dev(priv);
-<<<<<<< HEAD
-=======
 	struct renesas_usbhs_driver_pipe_config *pipe_configs =
 					usbhs_get_dparam(priv, pipe_configs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pipe_size = usbhs_get_dparam(priv, pipe_size);
 	int i;
 	int ret;
 
 	gpriv = kzalloc(sizeof(struct usbhsg_gpriv), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!gpriv) {
-		dev_err(dev, "Could not allocate gadget priv\n");
-		return -ENOMEM;
-	}
-
-	uep = kzalloc(sizeof(struct usbhsg_uep) * pipe_size, GFP_KERNEL);
-	if (!uep) {
-		dev_err(dev, "Could not allocate ep\n");
-=======
 	if (!gpriv)
 		return -ENOMEM;
 
 	uep = kcalloc(pipe_size, sizeof(struct usbhsg_uep), GFP_KERNEL);
 	if (!uep) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto usbhs_mod_gadget_probe_err_gpriv;
 	}
 
-<<<<<<< HEAD
-=======
 	gpriv->transceiver = usb_get_phy(USB_PHY_TYPE_UNDEFINED);
 	dev_info(dev, "%stransceiver found\n",
 		 !IS_ERR(gpriv->transceiver) ? "" : "no ");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * CAUTION
 	 *
@@ -1385,24 +1122,12 @@ int usbhs_mod_gadget_probe(struct usbhs_priv *priv)
 	/*
 	 * init gadget
 	 */
-<<<<<<< HEAD
-	dev_set_name(&gpriv->gadget.dev, "gadget");
-	gpriv->gadget.dev.parent	= dev;
-	gpriv->gadget.dev.release	= usbhs_mod_gadget_release;
-	gpriv->gadget.name		= "renesas_usbhs_udc";
-	gpriv->gadget.ops		= &usbhsg_gadget_ops;
-	gpriv->gadget.max_speed		= USB_SPEED_HIGH;
-	ret = device_register(&gpriv->gadget.dev);
-	if (ret < 0)
-		goto err_add_udc;
-=======
 	gpriv->gadget.dev.parent	= dev;
 	gpriv->gadget.name		= "renesas_usbhs_udc";
 	gpriv->gadget.ops		= &usbhsg_gadget_ops;
 	gpriv->gadget.max_speed		= USB_SPEED_HIGH;
 	gpriv->gadget.quirk_avoids_skb_reserve = usbhs_get_dparam(priv,
 								has_usb_dmac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&gpriv->gadget.ep_list);
 
@@ -1411,32 +1136,17 @@ int usbhs_mod_gadget_probe(struct usbhs_priv *priv)
 	 */
 	usbhsg_for_each_uep_with_dcp(uep, gpriv, i) {
 		uep->gpriv	= gpriv;
-<<<<<<< HEAD
-=======
 		uep->pipe	= NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(uep->ep_name, EP_NAME_SIZE, "ep%d", i);
 
 		uep->ep.name		= uep->ep_name;
 		uep->ep.ops		= &usbhsg_ep_ops;
 		INIT_LIST_HEAD(&uep->ep.ep_list);
-<<<<<<< HEAD
-=======
 		spin_lock_init(&uep->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* init DCP */
 		if (usbhsg_is_dcp(uep)) {
 			gpriv->gadget.ep0 = &uep->ep;
-<<<<<<< HEAD
-			uep->ep.maxpacket = 64;
-		}
-		/* init normal pipe */
-		else {
-			uep->ep.maxpacket = 512;
-			list_add_tail(&uep->ep.ep_list, &gpriv->gadget.ep_list);
-		}
-=======
 			usb_ep_set_maxpacket_limit(&uep->ep, 64);
 			uep->ep.caps.type_control = true;
 		} else {
@@ -1453,27 +1163,17 @@ int usbhs_mod_gadget_probe(struct usbhs_priv *priv)
 		}
 		uep->ep.caps.dir_in = true;
 		uep->ep.caps.dir_out = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = usb_add_gadget_udc(dev, &gpriv->gadget);
 	if (ret)
-<<<<<<< HEAD
-		goto err_register;
-=======
 		goto err_add_udc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	dev_info(dev, "gadget probed\n");
 
 	return 0;
 
-<<<<<<< HEAD
-err_register:
-	device_unregister(&gpriv->gadget.dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_add_udc:
 	kfree(gpriv->uep);
 
@@ -1489,11 +1189,6 @@ void usbhs_mod_gadget_remove(struct usbhs_priv *priv)
 
 	usb_del_gadget_udc(&gpriv->gadget);
 
-<<<<<<< HEAD
-	device_unregister(&gpriv->gadget.dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(gpriv->uep);
 	kfree(gpriv);
 }

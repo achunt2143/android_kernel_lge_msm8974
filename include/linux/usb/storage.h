@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_USB_STORAGE_H
 #define __LINUX_USB_STORAGE_H
 
@@ -12,11 +9,6 @@
  *
  * This file contains definitions taken from the
  * USB Mass Storage Class Specification Overview
-<<<<<<< HEAD
- *
- * Distributed under the terms of the GNU GPL, version two.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Storage subclass codes */
@@ -52,15 +44,9 @@
 
 #define USB_PR_DEVICE	0xff		/* Use device's value */
 
-<<<<<<< HEAD
- /*
-  * Bulk only data structures
-  */
-=======
 /*
  * Bulk only data structures
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* command block wrapper */
 struct bulk_cb_wrap {
@@ -69,30 +55,18 @@ struct bulk_cb_wrap {
 	__le32	DataTransferLength;	/* size of data */
 	__u8	Flags;			/* direction in bit 0 */
 	__u8	Lun;			/* LUN normally 0 */
-<<<<<<< HEAD
-	__u8	Length;			/* of of the CDB */
-=======
 	__u8	Length;			/* length of the CDB */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8	CDB[16];		/* max command */
 };
 
 #define US_BULK_CB_WRAP_LEN	31
-<<<<<<< HEAD
-#define US_BULK_CB_SIGN		0x43425355	/*spells out USBC */
-=======
 #define US_BULK_CB_SIGN		0x43425355	/* spells out 'USBC' */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define US_BULK_FLAG_IN		(1 << 7)
 #define US_BULK_FLAG_OUT	0
 
 /* command status wrapper */
 struct bulk_cs_wrap {
-<<<<<<< HEAD
-	__le32	Signature;	/* should = 'USBS' */
-=======
 	__le32	Signature;	/* contains 'USBS' */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u32	Tag;		/* same as original command */
 	__le32	Residue;	/* amount not transferred */
 	__u8	Status;		/* see below */

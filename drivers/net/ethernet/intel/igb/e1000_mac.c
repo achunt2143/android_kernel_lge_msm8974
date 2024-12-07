@@ -1,37 +1,7 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel(R) Gigabit Ethernet Linux driver
-  Copyright(c) 2007-2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 2007 - 2018 Intel Corporation. */
 
 #include <linux/bitfield.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/if_ether.h>
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -43,11 +13,7 @@
 #include "igb.h"
 
 static s32 igb_set_default_fc(struct e1000_hw *hw);
-<<<<<<< HEAD
-static s32 igb_set_fc_watermarks(struct e1000_hw *hw);
-=======
 static void igb_set_fc_watermarks(struct e1000_hw *hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *  igb_get_bus_info_pcie - Get PCIe bus information
@@ -85,22 +51,12 @@ s32 igb_get_bus_info_pcie(struct e1000_hw *hw)
 			break;
 		}
 
-<<<<<<< HEAD
-		bus->width = (enum e1000_bus_width)((pcie_link_status &
-						     PCI_EXP_LNKSTA_NLW) >>
-						     PCI_EXP_LNKSTA_NLW_SHIFT);
-	}
-
-	reg = rd32(E1000_STATUS);
-	bus->func = (reg & E1000_STATUS_FUNC_MASK) >> E1000_STATUS_FUNC_SHIFT;
-=======
 		bus->width = (enum e1000_bus_width)FIELD_GET(PCI_EXP_LNKSTA_NLW,
 							     pcie_link_status);
 	}
 
 	reg = rd32(E1000_STATUS);
 	bus->func = FIELD_GET(E1000_STATUS_FUNC_MASK, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -116,15 +72,8 @@ void igb_clear_vfta(struct e1000_hw *hw)
 {
 	u32 offset;
 
-<<<<<<< HEAD
-	for (offset = 0; offset < E1000_VLAN_FILTER_TBL_SIZE; offset++) {
-		array_wr32(E1000_VFTA, offset, 0);
-		wrfl();
-	}
-=======
 	for (offset = E1000_VLAN_FILTER_TBL_SIZE; offset--;)
 		hw->mac.ops.write_vfta(hw, offset, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -136,56 +85,6 @@ void igb_clear_vfta(struct e1000_hw *hw)
  *  Writes value at the given offset in the register array which stores
  *  the VLAN filter table.
  **/
-<<<<<<< HEAD
-static void igb_write_vfta(struct e1000_hw *hw, u32 offset, u32 value)
-{
-	array_wr32(E1000_VFTA, offset, value);
-	wrfl();
-}
-
-/* Due to a hw errata, if the host tries to  configure the VFTA register
- * while performing queries from the BMC or DMA, then the VFTA in some
- * cases won't be written.
- */
-
-/**
- *  igb_clear_vfta_i350 - Clear VLAN filter table
- *  @hw: pointer to the HW structure
- *
- *  Clears the register array which contains the VLAN filter table by
- *  setting all the values to 0.
- **/
-void igb_clear_vfta_i350(struct e1000_hw *hw)
-{
-	u32 offset;
-	int i;
-
-	for (offset = 0; offset < E1000_VLAN_FILTER_TBL_SIZE; offset++) {
-		for (i = 0; i < 10; i++)
-			array_wr32(E1000_VFTA, offset, 0);
-
-		wrfl();
-	}
-}
-
-/**
- *  igb_write_vfta_i350 - Write value to VLAN filter table
- *  @hw: pointer to the HW structure
- *  @offset: register offset in VLAN filter table
- *  @value: register value written to VLAN filter table
- *
- *  Writes value at the given offset in the register array which stores
- *  the VLAN filter table.
- **/
-static void igb_write_vfta_i350(struct e1000_hw *hw, u32 offset, u32 value)
-{
-	int i;
-
-	for (i = 0; i < 10; i++)
-		array_wr32(E1000_VFTA, offset, value);
-
-	wrfl();
-=======
 void igb_write_vfta(struct e1000_hw *hw, u32 offset, u32 value)
 {
 	struct igb_adapter *adapter = hw->back;
@@ -194,7 +93,6 @@ void igb_write_vfta(struct e1000_hw *hw, u32 offset, u32 value)
 	wrfl();
 
 	adapter->shadow_vfta[offset] = value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -223,12 +121,6 @@ void igb_init_rx_addrs(struct e1000_hw *hw, u16 rar_count)
 }
 
 /**
-<<<<<<< HEAD
- *  igb_vfta_set - enable or disable vlan in VLAN filter table
- *  @hw: pointer to the HW structure
- *  @vid: VLAN id to add or remove
- *  @add: if true add filter, if false remove
-=======
  *  igb_find_vlvf_slot - find the VLAN id or the first empty slot
  *  @hw: pointer to hardware structure
  *  @vlan: VLAN id to write to VLAN filter
@@ -275,39 +167,10 @@ static s32 igb_find_vlvf_slot(struct e1000_hw *hw, u32 vlan, bool vlvf_bypass)
  *  @vind: VMDq output index that maps queue to VLAN id
  *  @vlan_on: if true add filter, if false remove
  *  @vlvf_bypass: skip VLVF if no match is found
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Sets or clears a bit in the VLAN filter table array based on VLAN id
  *  and if we are adding or removing the filter
  **/
-<<<<<<< HEAD
-s32 igb_vfta_set(struct e1000_hw *hw, u32 vid, bool add)
-{
-	u32 index = (vid >> E1000_VFTA_ENTRY_SHIFT) & E1000_VFTA_ENTRY_MASK;
-	u32 mask = 1 << (vid & E1000_VFTA_ENTRY_BIT_SHIFT_MASK);
-	u32 vfta;
-	struct igb_adapter *adapter = hw->back;
-	s32 ret_val = 0;
-
-	vfta = adapter->shadow_vfta[index];
-
-	/* bit was set/cleared before we started */
-	if ((!!(vfta & mask)) == add) {
-		ret_val = -E1000_ERR_CONFIG;
-	} else {
-		if (add)
-			vfta |= mask;
-		else
-			vfta &= ~mask;
-	}
-	if (hw->mac.type == e1000_i350)
-		igb_write_vfta_i350(hw, index, vfta);
-	else
-		igb_write_vfta(hw, index, vfta);
-	adapter->shadow_vfta[index] = vfta;
-
-	return ret_val;
-=======
 s32 igb_vfta_set(struct e1000_hw *hw, u32 vlan, u32 vind,
 		 bool vlan_on, bool vlvf_bypass)
 {
@@ -408,7 +271,6 @@ vfta_update:
 		hw->mac.ops.write_vfta(hw, regidx, vfta);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -418,13 +280,8 @@ vfta_update:
  *  Checks the nvm for an alternate MAC address.  An alternate MAC address
  *  can be setup by pre-boot software and must be treated like a permanent
  *  address and must override the actual permanent MAC address.  If an
-<<<<<<< HEAD
- *  alternate MAC address is fopund it is saved in the hw struct and
- *  prgrammed into RAR0 and the cuntion returns success, otherwise the
-=======
  *  alternate MAC address is found it is saved in the hw struct and
  *  programmed into RAR0 and the function returns success, otherwise the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  function returns an error.
  **/
 s32 igb_check_alt_mac_addr(struct e1000_hw *hw)
@@ -434,12 +291,7 @@ s32 igb_check_alt_mac_addr(struct e1000_hw *hw)
 	u16 offset, nvm_alt_mac_addr_offset, nvm_data;
 	u8 alt_mac_addr[ETH_ALEN];
 
-<<<<<<< HEAD
-	/*
-	 * Alternate MAC address is handled by the option ROM for 82580
-=======
 	/* Alternate MAC address is handled by the option ROM for 82580
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and newer. SW support not required.
 	 */
 	if (hw->mac.type >= e1000_82580)
@@ -482,12 +334,7 @@ s32 igb_check_alt_mac_addr(struct e1000_hw *hw)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * We have a valid alternate MAC address, and we want to treat it the
-=======
 	/* We have a valid alternate MAC address, and we want to treat it the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * same as the normal permanent MAC address stored by the HW into the
 	 * RAR. Do this by mapping this address into RAR0.
 	 */
@@ -510,12 +357,7 @@ void igb_rar_set(struct e1000_hw *hw, u8 *addr, u32 index)
 {
 	u32 rar_low, rar_high;
 
-<<<<<<< HEAD
-	/*
-	 * HW expects these in little endian so we reverse the byte order
-=======
 	/* HW expects these in little endian so we reverse the byte order
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * from network order (big endian) to little endian
 	 */
 	rar_low = ((u32) addr[0] |
@@ -528,12 +370,7 @@ void igb_rar_set(struct e1000_hw *hw, u8 *addr, u32 index)
 	if (rar_low || rar_high)
 		rar_high |= E1000_RAH_AV;
 
-<<<<<<< HEAD
-	/*
-	 * Some bridges will combine consecutive 32-bit writes into
-=======
 	/* Some bridges will combine consecutive 32-bit writes into
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * a single burst write, which will malfunction on some parts.
 	 * The flushes avoid this.
 	 */
@@ -557,12 +394,7 @@ void igb_mta_set(struct e1000_hw *hw, u32 hash_value)
 {
 	u32 hash_bit, hash_reg, mta;
 
-<<<<<<< HEAD
-	/*
-	 * The MTA is a register array of 32-bit registers. It is
-=======
 	/* The MTA is a register array of 32-bit registers. It is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * treated like an array of (32*mta_reg_count) bits.  We want to
 	 * set bit BitArray[hash_value]. So we figure out what register
 	 * the bit is in, read it, OR in the new bit, then write
@@ -576,11 +408,7 @@ void igb_mta_set(struct e1000_hw *hw, u32 hash_value)
 
 	mta = array_rd32(E1000_MTA, hash_reg);
 
-<<<<<<< HEAD
-	mta |= (1 << hash_bit);
-=======
 	mta |= BIT(hash_bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	array_wr32(E1000_MTA, hash_reg, mta);
 	wrfl();
@@ -598,26 +426,11 @@ void igb_mta_set(struct e1000_hw *hw, u32 hash_value)
 static u32 igb_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
 {
 	u32 hash_value, hash_mask;
-<<<<<<< HEAD
-	u8 bit_shift = 0;
-=======
 	u8 bit_shift = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register count multiplied by bits per register */
 	hash_mask = (hw->mac.mta_reg_count * 32) - 1;
 
-<<<<<<< HEAD
-	/*
-	 * For a mc_filter_type of 0, bit_shift is the number of left-shifts
-	 * where 0xFF would still fall within the hash mask.
-	 */
-	while (hash_mask >> bit_shift != 0xFF)
-		bit_shift++;
-
-	/*
-	 * The portion of the address that is used for the hash table
-=======
 	/* For a mc_filter_type of 0, bit_shift is the number of left-shifts
 	 * where 0xFF would still fall within the hash mask.
 	 */
@@ -625,7 +438,6 @@ static u32 igb_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
 		bit_shift++;
 
 	/* The portion of the address that is used for the hash table
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * is determined by the mc_filter_type setting.
 	 * The algorithm is such that there is a total of 8 bits of shifting.
 	 * The bit_shift for a mc_filter_type of 0 represents the number of
@@ -672,8 +484,6 @@ static u32 igb_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * igb_i21x_hw_doublecheck - double checks potential HW issue in i21X
  * @hw: pointer to the HW structure
  *
@@ -703,7 +513,6 @@ static void igb_i21x_hw_doublecheck(struct e1000_hw *hw)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  igb_update_mc_addr_list - Update Multicast addresses
  *  @hw: pointer to the HW structure
  *  @mc_addr_list: array of multicast addresses to program
@@ -713,11 +522,7 @@ static void igb_i21x_hw_doublecheck(struct e1000_hw *hw)
  *  The caller must have a packed mc_addr_list of multicast addresses.
  **/
 void igb_update_mc_addr_list(struct e1000_hw *hw,
-<<<<<<< HEAD
-                             u8 *mc_addr_list, u32 mc_addr_count)
-=======
 			     u8 *mc_addr_list, u32 mc_addr_count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 hash_value, hash_bit, hash_reg;
 	int i;
@@ -732,11 +537,7 @@ void igb_update_mc_addr_list(struct e1000_hw *hw,
 		hash_reg = (hash_value >> 5) & (hw->mac.mta_reg_count - 1);
 		hash_bit = hash_value & 0x1F;
 
-<<<<<<< HEAD
-		hw->mac.mta_shadow[hash_reg] |= (1 << hash_bit);
-=======
 		hw->mac.mta_shadow[hash_reg] |= BIT(hash_bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mc_addr_list += (ETH_ALEN);
 	}
 
@@ -744,11 +545,8 @@ void igb_update_mc_addr_list(struct e1000_hw *hw,
 	for (i = hw->mac.mta_reg_count - 1; i >= 0; i--)
 		array_wr32(E1000_MTA, i, hw->mac.mta_shadow[i]);
 	wrfl();
-<<<<<<< HEAD
-=======
 	if (hw->mac.type == e1000_i210 || hw->mac.type == e1000_i211)
 		igb_i21x_hw_doublecheck(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -812,12 +610,7 @@ s32 igb_check_for_copper_link(struct e1000_hw *hw)
 	s32 ret_val;
 	bool link;
 
-<<<<<<< HEAD
-	/*
-	 * We only want to go out to the PHY registers to see if Auto-Neg
-=======
 	/* We only want to go out to the PHY registers to see if Auto-Neg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * has completed and/or if our link status has changed.  The
 	 * get_link_status flag is set upon receiving a Link Status
 	 * Change or Rx Sequence Error interrupt.
@@ -827,12 +620,7 @@ s32 igb_check_for_copper_link(struct e1000_hw *hw)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * First we want to see if the MII Status Register reports
-=======
 	/* First we want to see if the MII Status Register reports
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * link.  If so, then we want to get the current speed/duplex
 	 * of the PHY.
 	 */
@@ -845,22 +633,12 @@ s32 igb_check_for_copper_link(struct e1000_hw *hw)
 
 	mac->get_link_status = false;
 
-<<<<<<< HEAD
-	/*
-	 * Check if there was DownShift, must be checked
-=======
 	/* Check if there was DownShift, must be checked
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * immediately after link-up
 	 */
 	igb_check_downshift(hw);
 
-<<<<<<< HEAD
-	/*
-	 * If we are forcing speed/duplex, then we simply return since
-=======
 	/* If we are forcing speed/duplex, then we simply return since
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we have already determined whether we have link or not.
 	 */
 	if (!mac->autoneg) {
@@ -868,23 +646,13 @@ s32 igb_check_for_copper_link(struct e1000_hw *hw)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Auto-Neg is enabled.  Auto Speed Detection takes care
-=======
 	/* Auto-Neg is enabled.  Auto Speed Detection takes care
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * of MAC speed/duplex configuration.  So we only need to
 	 * configure Collision Distance in the MAC.
 	 */
 	igb_config_collision_dist(hw);
 
-<<<<<<< HEAD
-	/*
-	 * Configure Flow Control now that Auto-Neg has completed.
-=======
 	/* Configure Flow Control now that Auto-Neg has completed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * First, we need to restore the desired flow control
 	 * settings because we may have had to re-autoneg with a
 	 * different link partner.
@@ -911,23 +679,13 @@ s32 igb_setup_link(struct e1000_hw *hw)
 {
 	s32 ret_val = 0;
 
-<<<<<<< HEAD
-	/*
-	 * In the case of the phy reset being blocked, we already have a link.
-=======
 	/* In the case of the phy reset being blocked, we already have a link.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We do not need to set it up again.
 	 */
 	if (igb_check_reset_block(hw))
 		goto out;
 
-<<<<<<< HEAD
-	/*
-	 * If requested flow control is set to default, set flow control
-=======
 	/* If requested flow control is set to default, set flow control
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * based on the EEPROM flow control settings.
 	 */
 	if (hw->fc.requested_mode == e1000_fc_default) {
@@ -936,12 +694,7 @@ s32 igb_setup_link(struct e1000_hw *hw)
 			goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * We want to save off the original Flow Control configuration just
-=======
 	/* We want to save off the original Flow Control configuration just
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in case we get disconnected and then reconnected into a different
 	 * hub or switch with different Flow Control capabilities.
 	 */
@@ -954,12 +707,7 @@ s32 igb_setup_link(struct e1000_hw *hw)
 	if (ret_val)
 		goto out;
 
-<<<<<<< HEAD
-	/*
-	 * Initialize the flow control address, type, and PAUSE timer
-=======
 	/* Initialize the flow control address, type, and PAUSE timer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * registers to their default values.  This is done even if flow
 	 * control is disabled, because it does not hurt anything to
 	 * initialize these registers.
@@ -971,16 +719,10 @@ s32 igb_setup_link(struct e1000_hw *hw)
 
 	wr32(E1000_FCTTV, hw->fc.pause_time);
 
-<<<<<<< HEAD
-	ret_val = igb_set_fc_watermarks(hw);
-
-out:
-=======
 	igb_set_fc_watermarks(hw);
 
 out:
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_val;
 }
 
@@ -1013,33 +755,18 @@ void igb_config_collision_dist(struct e1000_hw *hw)
  *  flow control XON frame transmission is enabled, then set XON frame
  *  tansmission as well.
  **/
-<<<<<<< HEAD
-static s32 igb_set_fc_watermarks(struct e1000_hw *hw)
-{
-	s32 ret_val = 0;
-	u32 fcrtl = 0, fcrth = 0;
-
-	/*
-	 * Set the flow control receive threshold registers.  Normally,
-=======
 static void igb_set_fc_watermarks(struct e1000_hw *hw)
 {
 	u32 fcrtl = 0, fcrth = 0;
 
 	/* Set the flow control receive threshold registers.  Normally,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * these registers will be set to a default threshold that may be
 	 * adjusted later by the driver's runtime code.  However, if the
 	 * ability to transmit pause frames is not enabled, then these
 	 * registers will be set to 0.
 	 */
 	if (hw->fc.current_mode & e1000_fc_tx_pause) {
-<<<<<<< HEAD
-		/*
-		 * We need to set up the Receive Threshold high and low water
-=======
 		/* We need to set up the Receive Threshold high and low water
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * marks as well as (optionally) enabling the transmission of
 		 * XON frames.
 		 */
@@ -1051,11 +778,6 @@ static void igb_set_fc_watermarks(struct e1000_hw *hw)
 	}
 	wr32(E1000_FCRTL, fcrtl);
 	wr32(E1000_FCRTH, fcrth);
-<<<<<<< HEAD
-
-	return ret_val;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1068,17 +790,10 @@ static void igb_set_fc_watermarks(struct e1000_hw *hw)
 static s32 igb_set_default_fc(struct e1000_hw *hw)
 {
 	s32 ret_val = 0;
-<<<<<<< HEAD
-	u16 nvm_data;
-
-	/*
-	 * Read and store word 0x0F of the EEPROM. This word contains bits
-=======
 	u16 lan_offset;
 	u16 nvm_data;
 
 	/* Read and store word 0x0F of the EEPROM. This word contains bits
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * that determine the hardware's default PAUSE (flow control) mode,
 	 * a bit that determines whether the HW defaults to enabling or
 	 * disabling auto-negotiation, and the direction of the
@@ -1086,10 +801,6 @@ static s32 igb_set_default_fc(struct e1000_hw *hw)
 	 * control setting, then the variable hw->fc will
 	 * be initialized based on a value in the EEPROM.
 	 */
-<<<<<<< HEAD
-	ret_val = hw->nvm.ops.read(hw, NVM_INIT_CONTROL2_REG, 1, &nvm_data);
-
-=======
 	if (hw->mac.type == e1000_i350)
 		lan_offset = NVM_82580_LAN_FUNC_OFFSET(hw->bus.func);
 	else
@@ -1097,7 +808,6 @@ static s32 igb_set_default_fc(struct e1000_hw *hw)
 
 	ret_val = hw->nvm.ops.read(hw, NVM_INIT_CONTROL2_REG + lan_offset,
 				   1, &nvm_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val) {
 		hw_dbg("NVM Read Error\n");
 		goto out;
@@ -1105,12 +815,7 @@ static s32 igb_set_default_fc(struct e1000_hw *hw)
 
 	if ((nvm_data & NVM_WORD0F_PAUSE_MASK) == 0)
 		hw->fc.requested_mode = e1000_fc_none;
-<<<<<<< HEAD
-	else if ((nvm_data & NVM_WORD0F_PAUSE_MASK) ==
-		 NVM_WORD0F_ASM_DIR)
-=======
 	else if ((nvm_data & NVM_WORD0F_PAUSE_MASK) == NVM_WORD0F_ASM_DIR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->fc.requested_mode = e1000_fc_tx_pause;
 	else
 		hw->fc.requested_mode = e1000_fc_full;
@@ -1136,12 +841,7 @@ s32 igb_force_mac_fc(struct e1000_hw *hw)
 
 	ctrl = rd32(E1000_CTRL);
 
-<<<<<<< HEAD
-	/*
-	 * Because we didn't get link via the internal auto-negotiation
-=======
 	/* Because we didn't get link via the internal auto-negotiation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * mechanism (we either forced link or we got link via PHY
 	 * auto-neg), we have to manually enable/disable transmit an
 	 * receive flow control.
@@ -1154,11 +854,7 @@ s32 igb_force_mac_fc(struct e1000_hw *hw)
 	 *      1:  Rx flow control is enabled (we can receive pause
 	 *          frames but not send pause frames).
 	 *      2:  Tx flow control is enabled (we can send pause frames
-<<<<<<< HEAD
-	 *          frames but we do not receive pause frames).
-=======
 	 *          but we do not receive pause frames).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *      3:  Both Rx and TX flow control (symmetric) is enabled.
 	 *  other:  No other values should be possible at this point.
 	 */
@@ -1205,19 +901,11 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 {
 	struct e1000_mac_info *mac = &hw->mac;
 	s32 ret_val = 0;
-<<<<<<< HEAD
-	u16 mii_status_reg, mii_nway_adv_reg, mii_nway_lp_ability_reg;
-	u16 speed, duplex;
-
-	/*
-	 * Check for the case where we have fiber media and auto-neg failed
-=======
 	u32 pcs_status_reg, pcs_adv_reg, pcs_lp_ability_reg, pcs_ctrl_reg;
 	u16 mii_status_reg, mii_nway_adv_reg, mii_nway_lp_ability_reg;
 	u16 speed, duplex;
 
 	/* Check for the case where we have fiber media and auto-neg failed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * so we had to force link.  In this case, we need to force the
 	 * configuration of the MAC to match the "fc" parameter.
 	 */
@@ -1234,23 +922,13 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Check for the case where we have copper media and auto-neg is
-=======
 	/* Check for the case where we have copper media and auto-neg is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * enabled.  In this case, we need to check and see if Auto-Neg
 	 * has completed, and if so, how the PHY and link partner has
 	 * flow control configured.
 	 */
 	if ((hw->phy.media_type == e1000_media_type_copper) && mac->autoneg) {
-<<<<<<< HEAD
-		/*
-		 * Read the MII Status Register and check to see if AutoNeg
-=======
 		/* Read the MII Status Register and check to see if AutoNeg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * has completed.  We read this twice because this reg has
 		 * some "sticky" (latched) bits.
 		 */
@@ -1264,21 +942,11 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 			goto out;
 
 		if (!(mii_status_reg & MII_SR_AUTONEG_COMPLETE)) {
-<<<<<<< HEAD
-			hw_dbg("Copper PHY and Auto Neg "
-				 "has not completed.\n");
-			goto out;
-		}
-
-		/*
-		 * The AutoNeg process has completed, so we now need to
-=======
 			hw_dbg("Copper PHY and Auto Neg has not completed.\n");
 			goto out;
 		}
 
 		/* The AutoNeg process has completed, so we now need to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * read both the Auto Negotiation Advertisement
 		 * Register (Address 4) and the Auto_Negotiation Base
 		 * Page Ability Register (Address 5) to determine how
@@ -1293,12 +961,7 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 		if (ret_val)
 			goto out;
 
-<<<<<<< HEAD
-		/*
-		 * Two bits in the Auto Negotiation Advertisement Register
-=======
 		/* Two bits in the Auto Negotiation Advertisement Register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * (Address 4) and two bits in the Auto Negotiation Base
 		 * Page Ability Register (Address 5) determine flow control
 		 * for both the PHY and the link partner.  The following
@@ -1333,12 +996,7 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 		 */
 		if ((mii_nway_adv_reg & NWAY_AR_PAUSE) &&
 		    (mii_nway_lp_ability_reg & NWAY_LPAR_PAUSE)) {
-<<<<<<< HEAD
-			/*
-			 * Now we need to check if the user selected RX ONLY
-=======
 			/* Now we need to check if the user selected RX ONLY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * of pause frames.  In this case, we had to advertise
 			 * FULL flow control because we could not advertise RX
 			 * ONLY. Hence, we must now check to see if we need to
@@ -1346,17 +1004,6 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 			 */
 			if (hw->fc.requested_mode == e1000_fc_full) {
 				hw->fc.current_mode = e1000_fc_full;
-<<<<<<< HEAD
-				hw_dbg("Flow Control = FULL.\r\n");
-			} else {
-				hw->fc.current_mode = e1000_fc_rx_pause;
-				hw_dbg("Flow Control = "
-				       "RX PAUSE frames only.\r\n");
-			}
-		}
-		/*
-		 * For receiving PAUSE frames ONLY.
-=======
 				hw_dbg("Flow Control = FULL.\n");
 			} else {
 				hw->fc.current_mode = e1000_fc_rx_pause;
@@ -1364,7 +1011,6 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 			}
 		}
 		/* For receiving PAUSE frames ONLY.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *
 		 *   LOCAL DEVICE  |   LINK PARTNER
 		 * PAUSE | ASM_DIR | PAUSE | ASM_DIR | Result
@@ -1376,16 +1022,9 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 			  (mii_nway_lp_ability_reg & NWAY_LPAR_PAUSE) &&
 			  (mii_nway_lp_ability_reg & NWAY_LPAR_ASM_DIR)) {
 			hw->fc.current_mode = e1000_fc_tx_pause;
-<<<<<<< HEAD
-			hw_dbg("Flow Control = TX PAUSE frames only.\r\n");
-		}
-		/*
-		 * For transmitting PAUSE frames ONLY.
-=======
 			hw_dbg("Flow Control = TX PAUSE frames only.\n");
 		}
 		/* For transmitting PAUSE frames ONLY.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *
 		 *   LOCAL DEVICE  |   LINK PARTNER
 		 * PAUSE | ASM_DIR | PAUSE | ASM_DIR | Result
@@ -1397,16 +1036,9 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 			 !(mii_nway_lp_ability_reg & NWAY_LPAR_PAUSE) &&
 			 (mii_nway_lp_ability_reg & NWAY_LPAR_ASM_DIR)) {
 			hw->fc.current_mode = e1000_fc_rx_pause;
-<<<<<<< HEAD
-			hw_dbg("Flow Control = RX PAUSE frames only.\r\n");
-		}
-		/*
-		 * Per the IEEE spec, at this point flow control should be
-=======
 			hw_dbg("Flow Control = RX PAUSE frames only.\n");
 		}
 		/* Per the IEEE spec, at this point flow control should be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * disabled.  However, we want to consider that we could
 		 * be connected to a legacy switch that doesn't advertise
 		 * desired flow control, but can be forced on the link
@@ -1426,20 +1058,6 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 		 * be asked to delay transmission of packets than asking
 		 * our link partner to pause transmission of frames.
 		 */
-<<<<<<< HEAD
-		else if ((hw->fc.requested_mode == e1000_fc_none ||
-			  hw->fc.requested_mode == e1000_fc_tx_pause) ||
-			 hw->fc.strict_ieee) {
-			hw->fc.current_mode = e1000_fc_none;
-			hw_dbg("Flow Control = NONE.\r\n");
-		} else {
-			hw->fc.current_mode = e1000_fc_rx_pause;
-			hw_dbg("Flow Control = RX PAUSE frames only.\r\n");
-		}
-
-		/*
-		 * Now we need to do one last check...  If we auto-
-=======
 		else if ((hw->fc.requested_mode == e1000_fc_none) ||
 			 (hw->fc.requested_mode == e1000_fc_tx_pause) ||
 			 (hw->fc.strict_ieee)) {
@@ -1451,7 +1069,6 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 		}
 
 		/* Now we need to do one last check...  If we auto-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * negotiated to HALF DUPLEX, flow control should not be
 		 * enabled per IEEE 802.3 spec.
 		 */
@@ -1464,12 +1081,7 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 		if (duplex == HALF_DUPLEX)
 			hw->fc.current_mode = e1000_fc_none;
 
-<<<<<<< HEAD
-		/*
-		 * Now we call a subroutine to actually force the MAC
-=======
 		/* Now we call a subroutine to actually force the MAC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * controller to use the correct flow control settings.
 		 */
 		ret_val = igb_force_mac_fc(hw);
@@ -1478,8 +1090,6 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 			goto out;
 		}
 	}
-<<<<<<< HEAD
-=======
 	/* Check for the case where we have SerDes media and auto-neg is
 	 * enabled.  In this case, we need to check and see if Auto-Neg
 	 * has completed, and if so, how the PHY and link partner has
@@ -1603,7 +1213,6 @@ s32 igb_config_fc_after_link_up(struct e1000_hw *hw)
 			return ret_val;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return ret_val;
@@ -1731,11 +1340,7 @@ s32 igb_get_auto_rd_done(struct e1000_hw *hw)
 	while (i < AUTO_READ_DONE_TIMEOUT) {
 		if (rd32(E1000_EECD) & E1000_EECD_AUTO_RD)
 			break;
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 
@@ -1768,11 +1373,7 @@ static s32 igb_valid_led_default(struct e1000_hw *hw, u16 *data)
 	}
 
 	if (*data == ID_LED_RESERVED_0000 || *data == ID_LED_RESERVED_FFFF) {
-<<<<<<< HEAD
-		switch(hw->phy.media_type) {
-=======
 		switch (hw->phy.media_type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case e1000_media_type_internal_serdes:
 			*data = ID_LED_DEFAULT_82575_SERDES;
 			break;
@@ -1801,9 +1402,6 @@ s32 igb_id_led_init(struct e1000_hw *hw)
 	u16 data, i, temp;
 	const u16 led_mask = 0x0F;
 
-<<<<<<< HEAD
-	ret_val = igb_valid_led_default(hw, &data);
-=======
 	/* i210 and i211 devices have different LED mechanism */
 	if ((hw->mac.type == e1000_i210) ||
 	    (hw->mac.type == e1000_i211))
@@ -1811,7 +1409,6 @@ s32 igb_id_led_init(struct e1000_hw *hw)
 	else
 		ret_val = igb_valid_led_default(hw, &data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret_val)
 		goto out;
 
@@ -1885,18 +1482,6 @@ s32 igb_blink_led(struct e1000_hw *hw)
 	u32 ledctl_blink = 0;
 	u32 i;
 
-<<<<<<< HEAD
-	/*
-	 * set the blink bit for each LED that's "on" (0x0E)
-	 * in ledctl_mode2
-	 */
-	ledctl_blink = hw->mac.ledctl_mode2;
-	for (i = 0; i < 4; i++)
-		if (((hw->mac.ledctl_mode2 >> (i * 8)) & 0xFF) ==
-		    E1000_LEDCTL_MODE_LED_ON)
-			ledctl_blink |= (E1000_LEDCTL_LED0_BLINK <<
-					 (i * 8));
-=======
 	if (hw->phy.media_type == e1000_media_type_fiber) {
 		/* always blink LED0 for PCI-E fiber */
 		ledctl_blink = E1000_LEDCTL_LED0_BLINK |
@@ -1925,7 +1510,6 @@ s32 igb_blink_led(struct e1000_hw *hw)
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wr32(E1000_LEDCTL, ledctl_blink);
 
@@ -1956,11 +1540,7 @@ s32 igb_led_off(struct e1000_hw *hw)
  *  @hw: pointer to the HW structure
  *
  *  Returns 0 (0) if successful, else returns -10
-<<<<<<< HEAD
- *  (-E1000_ERR_MASTER_REQUESTS_PENDING) if master disable bit has not casued
-=======
  *  (-E1000_ERR_MASTER_REQUESTS_PENDING) if master disable bit has not caused
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  the master requests to be disabled.
  *
  *  Disables PCI-Express master access and verifies there are no pending
@@ -2008,13 +1588,10 @@ s32 igb_validate_mdi_setting(struct e1000_hw *hw)
 {
 	s32 ret_val = 0;
 
-<<<<<<< HEAD
-=======
 	/* All MDI settings are supported on 82580 and newer. */
 	if (hw->mac.type >= e1000_82580)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hw->mac.autoneg && (hw->phy.mdix == 0 || hw->phy.mdix == 3)) {
 		hw_dbg("Invalid MDI setting detected\n");
 		hw->phy.mdix = 1;

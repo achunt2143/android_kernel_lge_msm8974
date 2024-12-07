@@ -6,10 +6,7 @@
  * This software may be used and distributed according to the terms of
  * the GNU General Public License (GPL), incorporated herein by reference.
  */
-<<<<<<< HEAD
-=======
 #include <linux/compiler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _NATFEAT_H
 #define _NATFEAT_H
@@ -21,10 +18,6 @@ void nf_init(void);
 void nf_shutdown(void);
 
 void nfprint(const char *fmt, ...)
-<<<<<<< HEAD
-	__attribute__ ((format (printf, 1, 2)));
-=======
 	__printf(1, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # endif /* _NATFEAT_H */

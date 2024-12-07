@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/clk/clkdev.c
  *
  *  Copyright (C) 2008 Russell King.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Helper for the clk API to assist looking up a struct clk.
  */
 #include <linux/module.h>
@@ -26,13 +16,10 @@
 #include <linux/mutex.h>
 #include <linux/clk.h>
 #include <linux/clkdev.h>
-<<<<<<< HEAD
-=======
 #include <linux/clk-provider.h>
 #include <linux/of.h>
 
 #include "clk.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(clocks);
 static DEFINE_MUTEX(clocks_mutex);
@@ -49,9 +36,6 @@ static DEFINE_MUTEX(clocks_mutex);
 static struct clk_lookup *clk_find(const char *dev_id, const char *con_id)
 {
 	struct clk_lookup *p, *cl = NULL;
-<<<<<<< HEAD
-	int match, best = 0;
-=======
 	int match, best_found = 0, best_possible = 0;
 
 	if (dev_id)
@@ -60,7 +44,6 @@ static struct clk_lookup *clk_find(const char *dev_id, const char *con_id)
 		best_possible += 1;
 
 	lockdep_assert_held(&clocks_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(p, &clocks, node) {
 		match = 0;
@@ -75,17 +58,10 @@ static struct clk_lookup *clk_find(const char *dev_id, const char *con_id)
 			match += 1;
 		}
 
-<<<<<<< HEAD
-		if (match > best) {
-			cl = p;
-			if (match != 3)
-				best = match;
-=======
 		if (match > best_found) {
 			cl = p;
 			if (match != best_possible)
 				best_found = match;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				break;
 		}
@@ -93,19 +69,6 @@ static struct clk_lookup *clk_find(const char *dev_id, const char *con_id)
 	return cl;
 }
 
-<<<<<<< HEAD
-struct clk *clk_get_sys(const char *dev_id, const char *con_id)
-{
-	struct clk_lookup *cl;
-
-	mutex_lock(&clocks_mutex);
-	cl = clk_find(dev_id, con_id);
-	if (cl && !__clk_get(cl->clk))
-		cl = NULL;
-	mutex_unlock(&clocks_mutex);
-
-	return cl ? cl->clk : ERR_PTR(-ENOENT);
-=======
 struct clk_hw *clk_find_hw(const char *dev_id, const char *con_id)
 {
 	struct clk_lookup *cl;
@@ -131,44 +94,12 @@ static struct clk *__clk_get_sys(struct device *dev, const char *dev_id,
 struct clk *clk_get_sys(const char *dev_id, const char *con_id)
 {
 	return __clk_get_sys(NULL, dev_id, con_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(clk_get_sys);
 
 struct clk *clk_get(struct device *dev, const char *con_id)
 {
 	const char *dev_id = dev ? dev_name(dev) : NULL;
-<<<<<<< HEAD
-
-	return clk_get_sys(dev_id, con_id);
-}
-EXPORT_SYMBOL(clk_get);
-
-static void devm_clk_release(struct device *dev, void *res)
-{
-	clk_put(*(struct clk **)res);
-}
-
-struct clk *devm_clk_get(struct device *dev, const char *id)
-{
-	struct clk **ptr, *clk;
-
-	ptr = devres_alloc(devm_clk_release, sizeof(*ptr), GFP_KERNEL);
-	if (!ptr)
-		return ERR_PTR(-ENOMEM);
-
-	clk = clk_get(dev, id);
-	if (!IS_ERR(clk)) {
-		*ptr = clk;
-		devres_add(dev, ptr);
-	} else {
-		devres_free(ptr);
-	}
-
-	return clk;
-}
-EXPORT_SYMBOL(devm_clk_get);
-=======
 	struct clk_hw *hw;
 
 	if (dev && dev->of_node) {
@@ -180,7 +111,6 @@ EXPORT_SYMBOL(devm_clk_get);
 	return __clk_get_sys(dev, dev_id, con_id);
 }
 EXPORT_SYMBOL(clk_get);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void clk_put(struct clk *clk)
 {
@@ -188,18 +118,12 @@ void clk_put(struct clk *clk)
 }
 EXPORT_SYMBOL(clk_put);
 
-<<<<<<< HEAD
-void clkdev_add(struct clk_lookup *cl)
-=======
 static void __clkdev_add(struct clk_lookup *cl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&clocks_mutex);
 	list_add_tail(&cl->node, &clocks);
 	mutex_unlock(&clocks_mutex);
 }
-<<<<<<< HEAD
-=======
 
 void clkdev_add(struct clk_lookup *cl)
 {
@@ -207,28 +131,20 @@ void clkdev_add(struct clk_lookup *cl)
 		cl->clk_hw = __clk_get_hw(cl->clk);
 	__clkdev_add(cl);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(clkdev_add);
 
 void clkdev_add_table(struct clk_lookup *cl, size_t num)
 {
 	mutex_lock(&clocks_mutex);
 	while (num--) {
-<<<<<<< HEAD
-=======
 		cl->clk_hw = __clk_get_hw(cl->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&cl->node, &clocks);
 		cl++;
 	}
 	mutex_unlock(&clocks_mutex);
 }
 
-<<<<<<< HEAD
-#define MAX_DEV_ID	20
-=======
 #define MAX_DEV_ID	24
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_CON_ID	16
 
 struct clk_lookup_alloc {
@@ -237,20 +153,6 @@ struct clk_lookup_alloc {
 	char	con_id[MAX_CON_ID];
 };
 
-<<<<<<< HEAD
-struct clk_lookup * __init_refok
-clkdev_alloc(struct clk *clk, const char *con_id, const char *dev_fmt, ...)
-{
-	struct clk_lookup_alloc *cla;
-
-	cla = __clkdev_alloc(sizeof(*cla));
-	if (!cla)
-		return NULL;
-
-	cla->cl.clk = clk;
-	if (con_id) {
-		strlcpy(cla->con_id, con_id, sizeof(cla->con_id));
-=======
 static struct clk_lookup * __ref
 vclkdev_alloc(struct clk_hw *hw, const char *con_id, const char *dev_fmt,
 	va_list ap)
@@ -264,34 +166,16 @@ vclkdev_alloc(struct clk_hw *hw, const char *con_id, const char *dev_fmt,
 	cla->cl.clk_hw = hw;
 	if (con_id) {
 		strscpy(cla->con_id, con_id, sizeof(cla->con_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cla->cl.con_id = cla->con_id;
 	}
 
 	if (dev_fmt) {
-<<<<<<< HEAD
-		va_list ap;
-
-		va_start(ap, dev_fmt);
 		vscnprintf(cla->dev_id, sizeof(cla->dev_id), dev_fmt, ap);
 		cla->cl.dev_id = cla->dev_id;
-		va_end(ap);
-=======
-		vscnprintf(cla->dev_id, sizeof(cla->dev_id), dev_fmt, ap);
-		cla->cl.dev_id = cla->dev_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return &cla->cl;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(clkdev_alloc);
-
-int clk_add_alias(const char *alias, const char *alias_dev_name, char *id,
-	struct device *dev)
-{
-	struct clk *r = clk_get(dev, id);
-=======
 
 static struct clk_lookup *
 vclkdev_create(struct clk_hw *hw, const char *con_id, const char *dev_fmt,
@@ -356,26 +240,16 @@ int clk_add_alias(const char *alias, const char *alias_dev_name,
 	const char *con_id, struct device *dev)
 {
 	struct clk *r = clk_get(dev, con_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct clk_lookup *l;
 
 	if (IS_ERR(r))
 		return PTR_ERR(r);
 
-<<<<<<< HEAD
-	l = clkdev_alloc(r, alias, alias_dev_name);
-	clk_put(r);
-	if (!l)
-		return -ENODEV;
-	clkdev_add(l);
-	return 0;
-=======
 	l = clkdev_create(r, alias, alias_dev_name ? "%s" : NULL,
 			  alias_dev_name);
 	clk_put(r);
 
 	return l ? 0 : -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(clk_add_alias);
 
@@ -390,8 +264,6 @@ void clkdev_drop(struct clk_lookup *cl)
 	kfree(cl);
 }
 EXPORT_SYMBOL(clkdev_drop);
-<<<<<<< HEAD
-=======
 
 static struct clk_lookup *__clk_register_clkdev(struct clk_hw *hw,
 						const char *con_id,
@@ -507,4 +379,3 @@ int devm_clk_hw_register_clkdev(struct device *dev, struct clk_hw *hw,
 	return devm_add_action_or_reset(dev, devm_clkdev_release, cl);
 }
 EXPORT_SYMBOL(devm_clk_hw_register_clkdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

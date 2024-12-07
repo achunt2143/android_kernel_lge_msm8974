@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1995-2004 Russell King
  *
@@ -10,14 +7,6 @@
 #ifndef __ASM_ARM_DELAY_H
 #define __ASM_ARM_DELAY_H
 
-<<<<<<< HEAD
-#include <asm/memory.h>
-#include <asm/param.h>	/* HZ */
-
-#define MAX_UDELAY_MS	2
-#define UDELAY_MULT	((UL(2199023) * HZ) >> 11)
-#define UDELAY_SHIFT	30
-=======
 #include <asm/page.h>
 #include <asm/param.h>	/* HZ */
 
@@ -51,7 +40,6 @@
 #define MAX_UDELAY_MS	2
 #define UDELAY_MULT	UL(2147 * HZ + 483648 * HZ / 1000000)
 #define UDELAY_SHIFT	31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 
@@ -64,10 +52,7 @@ extern struct arm_delay_ops {
 	void (*delay)(unsigned long);
 	void (*const_udelay)(unsigned long);
 	void (*udelay)(unsigned long);
-<<<<<<< HEAD
-=======
 	unsigned long ticks_per_jiffy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } arm_delay_ops;
 
 #define __delay(n)		arm_delay_ops.delay(n)
@@ -77,11 +62,7 @@ extern struct arm_delay_ops {
  * it, it means that you're calling udelay() with an out of range value.
  *
  * With currently imposed limits, this means that we support a max delay
-<<<<<<< HEAD
- * of 2000us. Further limits: HZ<=1000 and bogomips<=3355
-=======
  * of 2000us. Further limits: HZ<=1000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 extern void __bad_udelay(void);
 

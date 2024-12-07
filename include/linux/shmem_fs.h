@@ -1,37 +1,12 @@
-<<<<<<< HEAD
-#ifndef __SHMEM_FS_H
-#define __SHMEM_FS_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SHMEM_FS_H
 #define __SHMEM_FS_H
 
 #include <linux/file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/swap.h>
 #include <linux/mempolicy.h>
 #include <linux/pagemap.h>
 #include <linux/percpu_counter.h>
-<<<<<<< HEAD
-
-/* inode in-kernel data */
-
-struct shmem_inode_info {
-	spinlock_t		lock;
-	unsigned long		flags;
-	unsigned long		alloced;	/* data pages alloced to file */
-	union {
-		unsigned long	swapped;	/* subtotal assigned to swap */
-		char		*symlink;	/* unswappable short symlink */
-	};
-	struct shared_policy	policy;		/* NUMA memory alloc policy */
-	struct list_head	swaplist;	/* chain of maybes on swap */
-	struct list_head	xattr_list;	/* list of shmem_xattr */
-	struct inode		vfs_inode;
-};
-
-=======
 #include <linux/xattr.h>
 #include <linux/fs_parser.h>
 #include <linux/userfaultfd_k.h>
@@ -79,19 +54,10 @@ struct shmem_quota_limits {
 	qsize_t grpquota_ihardlimit; /* Default group quota inode hard limit */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct shmem_sb_info {
 	unsigned long max_blocks;   /* How many blocks are allowed */
 	struct percpu_counter used_blocks;  /* How many are allocated */
 	unsigned long max_inodes;   /* How many inodes are allowed */
-<<<<<<< HEAD
-	unsigned long free_inodes;  /* How many are left for allocation */
-	spinlock_t stat_lock;	    /* Serialize shmem_sb_info changes */
-	uid_t uid;		    /* Mount uid for root directory */
-	gid_t gid;		    /* Mount gid for root directory */
-	umode_t mode;		    /* Mount mode for root directory */
-	struct mempolicy *mpol;     /* default memory policy for mappings */
-=======
 	unsigned long free_ispace;  /* How much ispace left for allocation */
 	raw_spinlock_t stat_lock;   /* Serialize shmem_sb_info changes */
 	umode_t mode;		    /* Mount mode for root directory */
@@ -107,7 +73,6 @@ struct shmem_sb_info {
 	struct list_head shrinklist;  /* List of shinkable inodes */
 	unsigned long shrinklist_len; /* Length of shrinklist */
 	struct shmem_quota_limits qlimits; /* Default quota limits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct shmem_inode_info *SHMEM_I(struct inode *inode)
@@ -118,14 +83,6 @@ static inline struct shmem_inode_info *SHMEM_I(struct inode *inode)
 /*
  * Functions in mm/shmem.c called directly from elsewhere:
  */
-<<<<<<< HEAD
-extern int shmem_init(void);
-extern int shmem_fill_super(struct super_block *sb, void *data, int silent);
-extern struct file *shmem_file_setup(const char *name,
-					loff_t size, unsigned long flags);
-extern int shmem_zero_setup(struct vm_area_struct *);
-extern int shmem_lock(struct file *file, int lock, struct user_struct *user);
-=======
 extern const struct fs_parameter_spec shmem_fs_parameters[];
 extern void shmem_init(void);
 extern int shmem_init_fs_context(struct fs_context *fc);
@@ -147,14 +104,10 @@ static inline bool shmem_mapping(struct address_space *mapping)
 	return false;
 }
 #endif /* CONFIG_SHMEM */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void shmem_unlock_mapping(struct address_space *mapping);
 extern struct page *shmem_read_mapping_page_gfp(struct address_space *mapping,
 					pgoff_t index, gfp_t gfp_mask);
 extern void shmem_truncate_range(struct inode *inode, loff_t start, loff_t end);
-<<<<<<< HEAD
-extern int shmem_unuse(swp_entry_t entry, struct page *page);
-=======
 int shmem_unuse(unsigned int type);
 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
@@ -198,7 +151,6 @@ static inline struct folio *shmem_read_folio(struct address_space *mapping,
 {
 	return shmem_read_folio_gfp(mapping, index, mapping_gfp_mask(mapping));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct page *shmem_read_mapping_page(
 				struct address_space *mapping, pgoff_t index)
@@ -207,8 +159,6 @@ static inline struct page *shmem_read_mapping_page(
 					mapping_gfp_mask(mapping));
 }
 
-<<<<<<< HEAD
-=======
 static inline bool shmem_file(struct file *file)
 {
 	if (!IS_ENABLED(CONFIG_SHMEM))
@@ -260,5 +210,4 @@ extern const struct dquot_operations shmem_quota_operations;
 extern struct quota_format_type shmem_quota_format;
 #endif /* CONFIG_TMPFS_QUOTA */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

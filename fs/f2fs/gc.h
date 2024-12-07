@@ -1,36 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/f2fs/gc.h
  *
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
  *             http://www.samsung.com/
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define GC_THREAD_MIN_WB_PAGES		1	/*
 						 * a threshold to determine
 						 * whether IO subsystem is idle
 						 * or not
 						 */
-<<<<<<< HEAD
-#define DEF_GC_THREAD_MIN_SLEEP_TIME	30000	/* milliseconds */
-#define DEF_GC_THREAD_MAX_SLEEP_TIME	60000
-#define DEF_GC_THREAD_NOGC_SLEEP_TIME	300000	/* wait 5 min */
-#define LIMIT_INVALID_BLOCK	40 /* percentage over total user space */
-#define LIMIT_FREE_BLOCK	40 /* percentage over invalid + free space */
-
-/* Search max. number of dirty segments to select a victim segment */
-#define DEF_MAX_VICTIM_SEARCH 4096 /* covers 8GB */
-
-=======
 #define DEF_GC_THREAD_URGENT_SLEEP_TIME	500	/* 500 ms */
 #define DEF_GC_THREAD_MIN_SLEEP_TIME	30000	/* milliseconds */
 #define DEF_GC_THREAD_MAX_SLEEP_TIME	60000
@@ -53,24 +32,17 @@
 
 #define NR_GC_CHECKPOINT_SECS (3)	/* data/node/dentry sections */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct f2fs_gc_kthread {
 	struct task_struct *f2fs_gc_task;
 	wait_queue_head_t gc_wait_queue_head;
 
 	/* for gc sleep time */
-<<<<<<< HEAD
-=======
 	unsigned int urgent_sleep_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int min_sleep_time;
 	unsigned int max_sleep_time;
 	unsigned int no_gc_sleep_time;
 
 	/* for changing gc mode */
-<<<<<<< HEAD
-	unsigned int gc_idle;
-=======
 	bool gc_wake;
 
 	/* for GC_MERGE mount option */
@@ -78,7 +50,6 @@ struct f2fs_gc_kthread {
 						 * caller of f2fs_balance_fs()
 						 * will wait on this wait queue.
 						 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct gc_inode_list {
@@ -86,29 +57,6 @@ struct gc_inode_list {
 	struct radix_tree_root iroot;
 };
 
-<<<<<<< HEAD
-/*
- * inline functions
- */
-static inline block_t free_user_blocks(struct f2fs_sb_info *sbi)
-{
-	if (free_segments(sbi) < overprovision_segments(sbi))
-		return 0;
-	else
-		return (free_segments(sbi) - overprovision_segments(sbi))
-			<< sbi->log_blocks_per_seg;
-}
-
-static inline block_t limit_invalid_user_blocks(struct f2fs_sb_info *sbi)
-{
-	return (long)(sbi->user_block_count * LIMIT_INVALID_BLOCK) / 100;
-}
-
-static inline block_t limit_free_user_blocks(struct f2fs_sb_info *sbi)
-{
-	block_t reclaimable_user_blocks = sbi->user_block_count -
-		written_block_count(sbi);
-=======
 struct victim_entry {
 	struct rb_node rb_node;		/* rb node located in rb-tree */
 	unsigned long long mtime;	/* mtime of section */
@@ -171,32 +119,10 @@ static inline block_t limit_invalid_user_blocks(block_t user_block_count)
 
 static inline block_t limit_free_user_blocks(block_t reclaimable_user_blocks)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (long)(reclaimable_user_blocks * LIMIT_FREE_BLOCK) / 100;
 }
 
 static inline void increase_sleep_time(struct f2fs_gc_kthread *gc_th,
-<<<<<<< HEAD
-								long *wait)
-{
-	if (*wait == gc_th->no_gc_sleep_time)
-		return;
-
-	*wait += gc_th->min_sleep_time;
-	if (*wait > gc_th->max_sleep_time)
-		*wait = gc_th->max_sleep_time;
-}
-
-static inline void decrease_sleep_time(struct f2fs_gc_kthread *gc_th,
-								long *wait)
-{
-	if (*wait == gc_th->no_gc_sleep_time)
-		*wait = gc_th->max_sleep_time;
-
-	*wait -= gc_th->min_sleep_time;
-	if (*wait <= gc_th->min_sleep_time)
-		*wait = gc_th->min_sleep_time;
-=======
 							unsigned int *wait)
 {
 	unsigned int min_time = gc_th->min_sleep_time;
@@ -223,33 +149,20 @@ static inline void decrease_sleep_time(struct f2fs_gc_kthread *gc_th,
 		*wait = min_time;
 	else
 		*wait -= min_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool has_enough_invalid_blocks(struct f2fs_sb_info *sbi)
 {
-<<<<<<< HEAD
-	block_t invalid_user_blocks = sbi->user_block_count -
-					written_block_count(sbi);
-=======
 	block_t user_block_count = sbi->user_block_count;
 	block_t invalid_user_blocks = user_block_count -
 		written_block_count(sbi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Background GC is triggered with the following conditions.
 	 * 1. There are a number of invalid blocks.
 	 * 2. There is not enough free space.
 	 */
-<<<<<<< HEAD
-	if (invalid_user_blocks > limit_invalid_user_blocks(sbi) &&
-			free_user_blocks(sbi) < limit_free_user_blocks(sbi))
-		return true;
-	return false;
-=======
 	return (invalid_user_blocks >
 			limit_invalid_user_blocks(user_block_count) &&
 		free_user_blocks(sbi) <
 			limit_free_user_blocks(invalid_user_blocks));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

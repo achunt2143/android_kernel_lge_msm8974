@@ -1,53 +1,21 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  FiberChannel transport specific attributes exported to sysfs.
  *
  *  Copyright (c) 2003 Silicon Graphics, Inc.  All rights reserved.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *  ========
- *
  *  Copyright (C) 2004-2007   James Smart, Emulex Corporation
  *    Rewrite for host, target, device, and remote port attributes,
  *    statistics, and service functions...
- *
-=======
- *  Copyright (C) 2004-2007   James Smart, Emulex Corporation
- *    Rewrite for host, target, device, and remote port attributes,
- *    statistics, and service functions...
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef SCSI_TRANSPORT_FC_H
 #define SCSI_TRANSPORT_FC_H
 
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <scsi/scsi.h>
-#include <scsi/scsi_netlink.h>
-=======
 #include <linux/bsg-lib.h>
 #include <asm/unaligned.h>
 #include <scsi/scsi.h>
 #include <scsi/scsi_netlink.h>
 #include <scsi/scsi_host.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct scsi_transport_template;
 
@@ -99,10 +67,7 @@ enum fc_port_state {
 	FC_PORTSTATE_ERROR,
 	FC_PORTSTATE_LOOPBACK,
 	FC_PORTSTATE_DELETED,
-<<<<<<< HEAD
-=======
 	FC_PORTSTATE_MARGINAL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -152,8 +117,6 @@ enum fc_vport_state {
 #define FC_PORTSPEED_4GBIT		8
 #define FC_PORTSPEED_8GBIT		0x10
 #define FC_PORTSPEED_16GBIT		0x20
-<<<<<<< HEAD
-=======
 #define FC_PORTSPEED_32GBIT		0x40
 #define FC_PORTSPEED_20GBIT		0x80
 #define FC_PORTSPEED_40GBIT		0x100
@@ -163,7 +126,6 @@ enum fc_vport_state {
 #define FC_PORTSPEED_64GBIT		0x1000
 #define FC_PORTSPEED_128GBIT		0x2000
 #define FC_PORTSPEED_256GBIT		0x4000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FC_PORTSPEED_NOT_NEGOTIATED	(1 << 15) /* Speed not established */
 
 /*
@@ -187,13 +149,10 @@ enum fc_tgtid_binding_type  {
 #define FC_PORT_ROLE_FCP_TARGET			0x01
 #define FC_PORT_ROLE_FCP_INITIATOR		0x02
 #define FC_PORT_ROLE_IP_PORT			0x04
-<<<<<<< HEAD
-=======
 #define FC_PORT_ROLE_FCP_DUMMY_INITIATOR	0x08
 #define FC_PORT_ROLE_NVME_INITIATOR		0x10
 #define FC_PORT_ROLE_NVME_TARGET		0x20
 #define FC_PORT_ROLE_NVME_DISCOVERY		0x40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The following are for compatibility */
 #define FC_RPORT_ROLE_UNKNOWN			FC_PORT_ROLE_UNKNOWN
@@ -327,8 +286,6 @@ struct fc_rport_identifiers {
 	u32 roles;
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Fabric Performance Impact Notification Statistics
  */
@@ -359,7 +316,6 @@ struct fc_fpin_stats {
 	u64 cn_oversubscription;
 	u64 cn_device_specific;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Macro for use in defining Remote Port attributes */
 #define FC_RPORT_ATTR(_name,_mode,_show,_store)				\
@@ -401,10 +357,7 @@ struct fc_rport {	/* aka fc_starget_attrs */
 
 	/* Dynamic Attributes */
 	u32 dev_loss_tmo;	/* Remote Port loss timeout in seconds. */
-<<<<<<< HEAD
-=======
 	struct fc_fpin_stats fpin_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Private (Transport-managed) Attributes */
 	u64 node_name;
@@ -504,8 +457,6 @@ struct fc_host_statistics {
 	u64 fcp_control_requests;
 	u64 fcp_input_megabytes;
 	u64 fcp_output_megabytes;
-<<<<<<< HEAD
-=======
 	u64 fcp_packet_alloc_failures;	/* fcp packet allocation failures */
 	u64 fcp_packet_aborts;		/* fcp packet aborted */
 	u64 fcp_frame_alloc_failures;	/* fcp frame allocation failures */
@@ -521,7 +472,6 @@ struct fc_host_statistics {
 	/* Host Congestion Signals */
 	u64 cn_sig_warn;
 	u64 cn_sig_alarm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -545,11 +495,8 @@ enum fc_host_event_code  {
 	FCH_EVT_PORT_ONLINE		= 0x202,
 	FCH_EVT_PORT_FABRIC		= 0x204,
 	FCH_EVT_LINK_UNKNOWN		= 0x500,
-<<<<<<< HEAD
-=======
 	FCH_EVT_LINK_FPIN		= 0x501,
 	FCH_EVT_LINK_FPIN_ACK		= 0x502,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FCH_EVT_VENDOR_UNIQUE		= 0xffff,
 };
 
@@ -571,18 +518,11 @@ enum fc_host_event_code  {
  * managed by the transport w/o driver interaction.
  */
 
-<<<<<<< HEAD
-#define FC_FC4_LIST_SIZE		32
-#define FC_SYMBOLIC_NAME_SIZE		256
-#define FC_VERSION_STRING_SIZE		64
-#define FC_SERIAL_NUMBER_SIZE		80
-=======
 #define FC_VENDOR_IDENTIFIER		8
 #define FC_FC4_LIST_SIZE		32
 #define FC_SYMBOLIC_NAME_SIZE		256
 #define FC_VERSION_STRING_SIZE		64
 #define FC_SERIAL_NUMBER_SIZE		64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fc_host_attrs {
 	/* Fixed Attributes */
@@ -594,13 +534,10 @@ struct fc_host_attrs {
 	u32 supported_speeds;
 	u32 maxframe_size;
 	u16 max_npiv_vports;
-<<<<<<< HEAD
-=======
 	u32 max_ct_payload;
 	u32 num_ports;
 	u32 num_discovered_ports;
 	u32 bootbios_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char serial_number[FC_SERIAL_NUMBER_SIZE];
 	char manufacturer[FC_SERIAL_NUMBER_SIZE];
 	char model[FC_SYMBOLIC_NAME_SIZE];
@@ -609,12 +546,9 @@ struct fc_host_attrs {
 	char driver_version[FC_VERSION_STRING_SIZE];
 	char firmware_version[FC_VERSION_STRING_SIZE];
 	char optionrom_version[FC_VERSION_STRING_SIZE];
-<<<<<<< HEAD
-=======
 	char vendor_identifier[FC_VENDOR_IDENTIFIER];
 	char bootbios_version[FC_SYMBOLIC_NAME_SIZE];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Dynamic Attributes */
 	u32 port_id;
@@ -626,10 +560,7 @@ struct fc_host_attrs {
 	char symbolic_name[FC_SYMBOLIC_NAME_SIZE];
 	char system_hostname[FC_SYMBOLIC_NAME_SIZE];
 	u32 dev_loss_tmo;
-<<<<<<< HEAD
-=======
 	struct fc_fpin_stats fpin_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Private (Transport-managed) Attributes */
 	enum fc_tgtid_binding_type  tgtid_bind_type;
@@ -651,12 +582,9 @@ struct fc_host_attrs {
 
 	/* bsg support */
 	struct request_queue *rqst_q;
-<<<<<<< HEAD
-=======
 
 	/* FDMI support version*/
 	u8 fdmi_version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define shost_to_fc_host(x) \
@@ -736,50 +664,6 @@ struct fc_host_attrs {
 	(((struct fc_host_attrs *)(x)->shost_data)->devloss_work_q)
 #define fc_host_dev_loss_tmo(x) \
 	(((struct fc_host_attrs *)(x)->shost_data)->dev_loss_tmo)
-<<<<<<< HEAD
-
-
-struct fc_bsg_buffer {
-	unsigned int payload_len;
-	int sg_cnt;
-	struct scatterlist *sg_list;
-};
-
-/* Values for fc_bsg_job->state_flags (bitflags) */
-#define FC_RQST_STATE_INPROGRESS	0
-#define FC_RQST_STATE_DONE		1
-
-struct fc_bsg_job {
-	struct Scsi_Host *shost;
-	struct fc_rport *rport;
-	struct device *dev;
-	struct request *req;
-	spinlock_t job_lock;
-	unsigned int state_flags;
-	unsigned int ref_cnt;
-	void (*job_done)(struct fc_bsg_job *);
-
-	struct fc_bsg_request *request;
-	struct fc_bsg_reply *reply;
-	unsigned int request_len;
-	unsigned int reply_len;
-	/*
-	 * On entry : reply_len indicates the buffer size allocated for
-	 * the reply.
-	 *
-	 * Upon completion : the message handler must set reply_len
-	 *  to indicates the size of the reply to be returned to the
-	 *  caller.
-	 */
-
-	/* DMA payloads for the request/response */
-	struct fc_bsg_buffer request_payload;
-	struct fc_bsg_buffer reply_payload;
-
-	void *dd_data;			/* Used for driver-specific storage */
-};
-
-=======
 #define fc_host_max_ct_payload(x)  \
 	(((struct fc_host_attrs *)(x)->shost_data)->max_ct_payload)
 #define fc_host_vendor_identifier(x)  \
@@ -792,7 +676,6 @@ struct fc_bsg_job {
 	(((struct fc_host_attrs *)(x)->shost_data)->bootbios_version)
 #define fc_host_bootbios_state(x)  \
 	(((struct fc_host_attrs *)(x)->shost_data)->bootbios_state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The functions by which the transport class and the driver communicate */
 struct fc_function_template {
@@ -825,19 +708,9 @@ struct fc_function_template {
 	int	(*vport_disable)(struct fc_vport *, bool);
 	int  	(*vport_delete)(struct fc_vport *);
 
-<<<<<<< HEAD
-	/* target-mode drivers' functions */
-	int     (* tsk_mgmt_response)(struct Scsi_Host *, u64, u64, int);
-	int     (* it_nexus_response)(struct Scsi_Host *, u64, int);
-
-	/* bsg support */
-	int	(*bsg_request)(struct fc_bsg_job *);
-	int	(*bsg_timeout)(struct fc_bsg_job *);
-=======
 	/* bsg support */
 	int	(*bsg_request)(struct bsg_job *);
 	int	(*bsg_timeout)(struct bsg_job *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocation lengths for host-specific data */
 	u32	 			dd_fcrport_size;
@@ -894,10 +767,6 @@ struct fc_function_template {
 	unsigned long	disable_target_scan:1;
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * fc_remote_port_chkready - called to validate the remote port state
  *   prior to initiating io to the port.
@@ -913,10 +782,7 @@ fc_remote_port_chkready(struct fc_rport *rport)
 
 	switch (rport->port_state) {
 	case FC_PORTSTATE_ONLINE:
-<<<<<<< HEAD
-=======
 	case FC_PORTSTATE_MARGINAL:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rport->roles & FC_PORT_ROLE_FCP_TARGET)
 			result = 0;
 		else if (rport->flags & FC_RPORT_DEVLOSS_PENDING)
@@ -937,34 +803,14 @@ fc_remote_port_chkready(struct fc_rport *rport)
 	return result;
 }
 
-<<<<<<< HEAD
-static inline u64 wwn_to_u64(u8 *wwn)
-{
-	return (u64)wwn[0] << 56 | (u64)wwn[1] << 48 |
-	    (u64)wwn[2] << 40 | (u64)wwn[3] << 32 |
-	    (u64)wwn[4] << 24 | (u64)wwn[5] << 16 |
-	    (u64)wwn[6] <<  8 | (u64)wwn[7];
-=======
 static inline u64 wwn_to_u64(const u8 *wwn)
 {
 	return get_unaligned_be64(wwn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void u64_to_wwn(u64 inm, u8 *wwn)
 {
-<<<<<<< HEAD
-	wwn[0] = (inm >> 56) & 0xff;
-	wwn[1] = (inm >> 48) & 0xff;
-	wwn[2] = (inm >> 40) & 0xff;
-	wwn[3] = (inm >> 32) & 0xff;
-	wwn[4] = (inm >> 24) & 0xff;
-	wwn[5] = (inm >> 16) & 0xff;
-	wwn[6] = (inm >> 8) & 0xff;
-	wwn[7] = inm & 0xff;
-=======
 	put_unaligned_be64(inm, wwn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1000,17 +846,6 @@ u32 fc_get_event_number(void);
 void fc_host_post_event(struct Scsi_Host *shost, u32 event_number,
 		enum fc_host_event_code event_code, u32 event_data);
 void fc_host_post_vendor_event(struct Scsi_Host *shost, u32 event_number,
-<<<<<<< HEAD
-		u32 data_len, char * data_buf, u64 vendor_id);
-	/* Note: when specifying vendor_id to fc_host_post_vendor_event()
-	 *   be sure to read the Vendor Type and ID formatting requirements
-	 *   specified in scsi_netlink.h
-	 */
-struct fc_vport *fc_vport_create(struct Scsi_Host *shost, int channel,
-		struct fc_vport_identifiers *);
-int fc_vport_terminate(struct fc_vport *vport);
-int fc_block_scsi_eh(struct scsi_cmnd *cmnd);
-=======
 		u32 data_len, char *data_buf, u64 vendor_id);
 struct fc_rport *fc_find_rport_by_wwpn(struct Scsi_Host *shost, u64 wwpn);
 void fc_host_post_fc_event(struct Scsi_Host *shost, u32 event_number,
@@ -1045,6 +880,5 @@ static inline struct fc_rport *fc_bsg_to_rport(struct bsg_job *job)
 		return dev_to_rport(job->dev);
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* SCSI_TRANSPORT_FC_H */

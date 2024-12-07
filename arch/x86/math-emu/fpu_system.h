@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  fpu_system.h                                                             |
  |                                                                           |
@@ -31,32 +28,13 @@ static inline struct desc_struct FPU_get_ldt_descriptor(unsigned seg)
 #ifdef CONFIG_MODIFY_LDT_SYSCALL
 	seg >>= 3;
 	mutex_lock(&current->mm->context.lock);
-<<<<<<< HEAD
-	if (current->mm->context.ldt && seg < current->mm->context.ldt->size)
-=======
 	if (current->mm->context.ldt && seg < current->mm->context.ldt->nr_entries)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = current->mm->context.ldt->entries[seg];
 	mutex_unlock(&current->mm->context.lock);
 #endif
 	return ret;
 }
 
-<<<<<<< HEAD
-#define SEG_D_SIZE(x)		((x).b & (3 << 21))
-#define SEG_G_BIT(x)		((x).b & (1 << 23))
-#define SEG_GRANULARITY(x)	(((x).b & (1 << 23)) ? 4096 : 1)
-#define SEG_286_MODE(x)		((x).b & ( 0xff000000 | 0xf0000 | (1 << 23)))
-#define SEG_BASE_ADDR(s)	(((s).b & 0xff000000) \
-				 | (((s).b & 0xff) << 16) | ((s).a >> 16))
-#define SEG_LIMIT(s)		(((s).b & 0xff0000) | ((s).a & 0xffff))
-#define SEG_EXECUTE_ONLY(s)	(((s).b & ((1 << 11) | (1 << 9))) == (1 << 11))
-#define SEG_WRITE_PERM(s)	(((s).b & ((1 << 11) | (1 << 9))) == (1 << 9))
-#define SEG_EXPAND_DOWN(s)	(((s).b & ((1 << 11) | (1 << 10))) \
-				 == (1 << 10))
-
-#define I387			(current->thread.fpu.state)
-=======
 #define SEG_TYPE_WRITABLE	(1U << 1)
 #define SEG_TYPE_EXPANDS_DOWN	(1U << 2)
 #define SEG_TYPE_EXECUTE	(1U << 3)
@@ -96,7 +74,6 @@ static inline bool seg_writable(struct desc_struct *d)
 }
 
 #define I387			(&current->thread.fpu.fpstate->regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FPU_info		(I387->soft.info)
 
 #define FPU_CS			(*(unsigned short *) &(FPU_info->regs->cs))
@@ -127,17 +104,11 @@ static inline bool seg_writable(struct desc_struct *d)
 #define instruction_address	(*(struct address *)&I387->soft.fip)
 #define operand_address		(*(struct address *)&I387->soft.foo)
 
-<<<<<<< HEAD
-#define FPU_access_ok(x,y,z)	if ( !access_ok(x,y,z) ) \
-				math_abort(FPU_info,SIGSEGV)
-#define FPU_abort		math_abort(FPU_info, SIGSEGV)
-=======
 #define FPU_access_ok(y,z)	if ( !access_ok(y,z) ) \
 				math_abort(FPU_info,SIGSEGV)
 #define FPU_abort		math_abort(FPU_info, SIGSEGV)
 #define FPU_copy_from_user(to, from, n)	\
 		do { if (copy_from_user(to, from, n)) FPU_abort; } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef FPU_IGNORE_CODE_SEGV
 #ifdef FPU_IGNORE_CODE_SEGV
@@ -150,18 +121,10 @@ static inline bool seg_writable(struct desc_struct *d)
 /* A simpler test than access_ok() can probably be done for
    FPU_code_access_ok() because the only possible error is to step
    past the upper boundary of a legal code area. */
-<<<<<<< HEAD
-#define	FPU_code_access_ok(z) FPU_access_ok(VERIFY_READ,(void __user *)FPU_EIP,z)
-#endif
-
-#define FPU_get_user(x,y)       get_user((x),(y))
-#define FPU_put_user(x,y)       put_user((x),(y))
-=======
 #define	FPU_code_access_ok(z) FPU_access_ok((void __user *)FPU_EIP,z)
 #endif
 
 #define FPU_get_user(x,y) do { if (get_user((x),(y))) FPU_abort; } while (0)
 #define FPU_put_user(x,y) do { if (put_user((x),(y))) FPU_abort; } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

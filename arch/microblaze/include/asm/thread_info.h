@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2006 Atmark Techno, Inc.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2006 Atmark Techno, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MICROBLAZE_THREAD_INFO_H
@@ -65,27 +56,12 @@ struct cpu_context {
 	__u32	fsr;
 };
 
-<<<<<<< HEAD
-typedef struct {
-	unsigned long seg;
-} mm_segment_t;
-
 struct thread_info {
 	struct task_struct	*task; /* main task structure */
-	struct exec_domain	*exec_domain; /* execution domain */
-=======
-struct thread_info {
-	struct task_struct	*task; /* main task structure */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		flags; /* low level flags */
 	unsigned long		status; /* thread-synchronous flags */
 	__u32			cpu; /* current CPU */
 	__s32			preempt_count; /* 0 => preemptable,< 0 => BUG*/
-<<<<<<< HEAD
-	mm_segment_t		addr_limit; /* thread address space */
-	struct restart_block	restart_block;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct cpu_context	cpu_context;
 };
@@ -96,27 +72,11 @@ struct thread_info {
 #define INIT_THREAD_INFO(tsk)			\
 {						\
 	.task		= &tsk,			\
-<<<<<<< HEAD
-	.exec_domain	= &default_exec_domain,	\
-	.flags		= 0,			\
-	.cpu		= 0,			\
-	.preempt_count	= INIT_PREEMPT_COUNT,	\
-	.addr_limit	= KERNEL_DS,		\
-	.restart_block = {			\
-		.fn = do_no_restart_syscall,	\
-	},					\
-}
-
-#define init_thread_info	(init_thread_union.thread_info)
-#define init_stack		(init_thread_union.stack)
-
-=======
 	.flags		= 0,			\
 	.cpu		= 0,			\
 	.preempt_count	= INIT_PREEMPT_COUNT,	\
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* how to get the thread information struct from C */
 static inline struct thread_info *current_thread_info(void)
 {
@@ -128,11 +88,6 @@ static inline struct thread_info *current_thread_info(void)
 /* thread information allocation */
 #endif /* __ASSEMBLY__ */
 
-<<<<<<< HEAD
-#define PREEMPT_ACTIVE		0x10000000
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * thread information flags
  * - these are process state flags that various assembly files may
@@ -146,11 +101,7 @@ static inline struct thread_info *current_thread_info(void)
 #define TIF_NEED_RESCHED	3 /* rescheduling necessary */
 /* restore singlestep on return to user mode */
 #define TIF_SINGLESTEP		4
-<<<<<<< HEAD
-#define TIF_IRET		5 /* return with iret */
-=======
 #define TIF_NOTIFY_SIGNAL	5	/* signal notifications exist */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TIF_MEMDIE		6	/* is terminating due to OOM killer */
 #define TIF_SYSCALL_AUDIT	9       /* syscall auditing active */
 #define TIF_SECCOMP		10      /* secure computing */
@@ -163,11 +114,7 @@ static inline struct thread_info *current_thread_info(void)
 #define _TIF_SIGPENDING		(1 << TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED	(1 << TIF_NEED_RESCHED)
 #define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
-<<<<<<< HEAD
-#define _TIF_IRET		(1 << TIF_IRET)
-=======
 #define _TIF_NOTIFY_SIGNAL	(1 << TIF_NOTIFY_SIGNAL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _TIF_POLLING_NRFLAG	(1 << TIF_POLLING_NRFLAG)
 #define _TIF_SYSCALL_AUDIT	(1 << TIF_SYSCALL_AUDIT)
 #define _TIF_SECCOMP		(1 << TIF_SECCOMP)
@@ -191,20 +138,6 @@ static inline struct thread_info *current_thread_info(void)
  */
 /* FPU was used by this task this quantum (SMP) */
 #define TS_USEDFPU		0x0001
-<<<<<<< HEAD
-#define TS_RESTORE_SIGMASK	0x0002
-
-#ifndef __ASSEMBLY__
-#define HAVE_SET_RESTORE_SIGMASK 1
-static inline void set_restore_sigmask(void)
-{
-	struct thread_info *ti = current_thread_info();
-	ti->status |= TS_RESTORE_SIGMASK;
-	set_bit(TIF_SIGPENDING, (unsigned long *)&ti->flags);
-}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 #endif /* _ASM_MICROBLAZE_THREAD_INFO_H */

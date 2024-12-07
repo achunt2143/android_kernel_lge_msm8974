@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: achware.h -- hardware specific interfaces
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACHWARE_H__
 #define __ACHWARE_H__
 
@@ -77,15 +32,9 @@ acpi_status
 acpi_hw_validate_register(struct acpi_generic_address *reg,
 			  u8 max_bit_width, u64 *address);
 
-<<<<<<< HEAD
-acpi_status acpi_hw_read(u32 *value, struct acpi_generic_address *reg);
-
-acpi_status acpi_hw_write(u32 value, struct acpi_generic_address *reg);
-=======
 acpi_status acpi_hw_read(u64 *value, struct acpi_generic_address *reg);
 
 acpi_status acpi_hw_write(u64 value, struct acpi_generic_address *reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct acpi_bit_register_info *acpi_hw_get_bit_register_info(u32 register_id);
 
@@ -100,38 +49,22 @@ acpi_status acpi_hw_clear_acpi_status(void);
 /*
  * hwsleep - sleep/wake support (Legacy sleep registers)
  */
-<<<<<<< HEAD
-acpi_status acpi_hw_legacy_sleep(u8 sleep_state, u8 flags);
-
-acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state, u8 flags);
-
-acpi_status acpi_hw_legacy_wake(u8 sleep_state, u8 flags);
-=======
 acpi_status acpi_hw_legacy_sleep(u8 sleep_state);
 
 acpi_status acpi_hw_legacy_wake_prep(u8 sleep_state);
 
 acpi_status acpi_hw_legacy_wake(u8 sleep_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * hwesleep - sleep/wake support (Extended FADT-V5 sleep registers)
  */
 void acpi_hw_execute_sleep_method(char *method_name, u32 integer_argument);
 
-<<<<<<< HEAD
-acpi_status acpi_hw_extended_sleep(u8 sleep_state, u8 flags);
-
-acpi_status acpi_hw_extended_wake_prep(u8 sleep_state, u8 flags);
-
-acpi_status acpi_hw_extended_wake(u8 sleep_state, u8 flags);
-=======
 acpi_status acpi_hw_extended_sleep(u8 sleep_state);
 
 acpi_status acpi_hw_extended_wake_prep(u8 sleep_state);
 
 acpi_status acpi_hw_extended_wake(u8 sleep_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * hwvalid - Port I/O with validation
@@ -140,13 +73,6 @@ acpi_status acpi_hw_read_port(acpi_io_address address, u32 *value, u32 width);
 
 acpi_status acpi_hw_write_port(acpi_io_address address, u32 value, u32 width);
 
-<<<<<<< HEAD
-/*
- * hwgpe - GPE support
- */
-u32 acpi_hw_get_gpe_register_bit(struct acpi_gpe_event_info *gpe_event_info,
-			     struct acpi_gpe_register_info *gpe_register_info);
-=======
 acpi_status acpi_hw_validate_io_block(u64 address, u32 bit_width, u32 count);
 
 /*
@@ -157,7 +83,6 @@ acpi_status acpi_hw_gpe_read(u64 *value, struct acpi_gpe_address *reg);
 acpi_status acpi_hw_gpe_write(u64 value, struct acpi_gpe_address *reg);
 
 u32 acpi_hw_get_gpe_register_bit(struct acpi_gpe_event_info *gpe_event_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 acpi_status
 acpi_hw_low_set_gpe(struct acpi_gpe_event_info *gpe_event_info, u32 action);
@@ -174,40 +99,26 @@ acpi_hw_clear_gpe_block(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 
 acpi_status
 acpi_hw_get_gpe_status(struct acpi_gpe_event_info *gpe_event_info,
-<<<<<<< HEAD
-		       acpi_event_status * event_status);
-
-acpi_status acpi_hw_disable_all_gpes(void);
-=======
 		       acpi_event_status *event_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 acpi_status acpi_hw_enable_all_runtime_gpes(void);
 
 acpi_status acpi_hw_enable_all_wakeup_gpes(void);
 
-<<<<<<< HEAD
-=======
 u8 acpi_hw_check_all_gpes(acpi_handle gpe_skip_device, u32 gpe_skip_number);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status
 acpi_hw_enable_runtime_gpe_block(struct acpi_gpe_xrupt_info *gpe_xrupt_info,
 				 struct acpi_gpe_block_info *gpe_block,
 				 void *context);
 
-<<<<<<< HEAD
-=======
 #ifdef ACPI_PCI_CONFIGURED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hwpci - PCI configuration support
  */
 acpi_status
 acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id,
 		      acpi_handle root_pci_device, acpi_handle pci_region);
-<<<<<<< HEAD
-=======
 #else
 static inline acpi_status
 acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id, acpi_handle root_pci_device,
@@ -216,6 +127,5 @@ acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id, acpi_handle root_pci_device,
 	return AE_SUPPORT;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* __ACHWARE_H__ */

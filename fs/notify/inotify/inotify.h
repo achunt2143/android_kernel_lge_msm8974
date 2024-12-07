@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fsnotify_backend.h>
 #include <linux/inotify.h>
 #include <linux/slab.h> /* struct kmem_cache */
 
-<<<<<<< HEAD
-extern struct kmem_cache *event_priv_cachep;
-
-struct inotify_event_private_data {
-	struct fsnotify_event_private_data fsnotify_event_priv_data;
-	int wd;
-=======
 struct inotify_event_info {
 	struct fsnotify_event fse;
 	u32 mask;
@@ -20,7 +10,6 @@ struct inotify_event_info {
 	u32 sync_cookie;
 	int name_len;
 	char name[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct inotify_inode_mark {
@@ -28,13 +17,6 @@ struct inotify_inode_mark {
 	int wd;
 };
 
-<<<<<<< HEAD
-extern void inotify_ignored_and_remove_idr(struct fsnotify_mark *fsn_mark,
-					   struct fsnotify_group *group);
-extern void inotify_free_event_priv(struct fsnotify_event_private_data *event_priv);
-
-extern const struct fsnotify_ops inotify_fsnotify_ops;
-=======
 static inline struct inotify_event_info *INOTIFY_E(struct fsnotify_event *fse)
 {
 	return container_of(fse, struct inotify_event_info, fse);
@@ -85,4 +67,3 @@ static inline void dec_inotify_watches(struct ucounts *ucounts)
 	dec_ucount(ucounts, UCOUNT_INOTIFY_WATCHES);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -151,13 +151,8 @@ MODULE_LICENSE("GPL");
 
 module_param(max_interrupt_work, int, 0);
 module_param(debug, int, 0);
-<<<<<<< HEAD
-module_param_array(io, int, NULL, 0);
-module_param_array(irq, int, NULL, 0);
-=======
 module_param_hw_array(io, int, ioport, NULL, 0);
 module_param_hw_array(irq, int, irq, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_array(xcvr, int, NULL, 0);
 MODULE_PARM_DESC(max_interrupt_work, "ATP maximum events handled per interrupt");
 MODULE_PARM_DESC(debug, "ATP debug level (0-7)");
@@ -175,22 +170,13 @@ struct net_local {
     spinlock_t lock;
     struct net_device *next_module;
     struct timer_list timer;	/* Media selection timer. */
-<<<<<<< HEAD
-    long last_rx_time;		/* Last Rx, in jiffies, to handle Rx hang. */
-=======
     struct net_device *dev;	/* Timer dev. */
     unsigned long last_rx_time;	/* Last Rx, in jiffies, to handle Rx hang. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int saved_tx_size;
     unsigned int tx_unit_busy:1;
     unsigned char re_tx,	/* Number of packet retransmissions. */
 		addr_mode,		/* Current Rx filter e.g. promiscuous, etc. */
-<<<<<<< HEAD
-		pac_cnt_in_tx_buf,
-		chip_type;
-=======
 		pac_cnt_in_tx_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* This code, written by wwc@super.org, resets the adapter every
@@ -199,11 +185,7 @@ struct net_local {
 #define TIMED_CHECKER (HZ/4)
 #ifdef TIMED_CHECKER
 #include <linux/timer.h>
-<<<<<<< HEAD
-static void atp_timed_checker(unsigned long ignored);
-=======
 static void atp_timed_checker(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Index to functions, as function prototypes. */
@@ -222,11 +204,7 @@ static void net_rx(struct net_device *dev);
 static void read_block(long ioaddr, int length, unsigned char *buffer, int data_mode);
 static int net_close(struct net_device *dev);
 static void set_rx_mode(struct net_device *dev);
-<<<<<<< HEAD
-static void tx_timeout(struct net_device *dev);
-=======
 static void tx_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* A list of all installed ATP devices, for removing the driver module. */
@@ -268,10 +246,6 @@ static const struct net_device_ops atp_netdev_ops = {
 	.ndo_start_xmit		= atp_send_packet,
 	.ndo_set_rx_mode	= set_rx_mode,
 	.ndo_tx_timeout		= tx_timeout,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
@@ -364,10 +338,6 @@ static int __init atp_probe1(long ioaddr)
 	write_reg_high(ioaddr, CMR1, CMR1h_RESET | CMR1h_MUX);
 
 	lp = netdev_priv(dev);
-<<<<<<< HEAD
-	lp->chip_type = RTL8002;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->addr_mode = CMR2h_Normal;
 	spin_lock_init(&lp->lock);
 
@@ -398,10 +368,7 @@ static int __init atp_probe1(long ioaddr)
 static void __init get_node_ID(struct net_device *dev)
 {
 	long ioaddr = dev->base_addr;
-<<<<<<< HEAD
-=======
 	__be16 addr[ETH_ALEN / 2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sa_offset = 0;
 	int i;
 
@@ -413,14 +380,9 @@ static void __init get_node_ID(struct net_device *dev)
 		sa_offset = 15;
 
 	for (i = 0; i < 3; i++)
-<<<<<<< HEAD
-		((__be16 *)dev->dev_addr)[i] =
-			cpu_to_be16(eeprom_op(ioaddr, EE_READ(sa_offset + i)));
-=======
 		addr[i] =
 			cpu_to_be16(eeprom_op(ioaddr, EE_READ(sa_offset + i)));
 	eth_hw_addr_set(dev, (u8 *)addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_reg(ioaddr, CMR2, CMR2_NULL);
 }
@@ -479,16 +441,9 @@ static int net_open(struct net_device *dev)
 
 	hardware_init(dev);
 
-<<<<<<< HEAD
-	init_timer(&lp->timer);
-	lp->timer.expires = jiffies + TIMED_CHECKER;
-	lp->timer.data = (unsigned long)dev;
-	lp->timer.function = atp_timed_checker;    /* timer handler */
-=======
 	lp->dev = dev;
 	timer_setup(&lp->timer, atp_timed_checker, 0);
 	lp->timer.expires = jiffies + TIMED_CHECKER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&lp->timer);
 
 	netif_start_queue(dev);
@@ -501,22 +456,14 @@ static void hardware_init(struct net_device *dev)
 {
 	struct net_local *lp = netdev_priv(dev);
 	long ioaddr = dev->base_addr;
-<<<<<<< HEAD
-    int i;
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn off the printer multiplexer on the 8012. */
 	for (i = 0; i < 8; i++)
 		outb(mux_8012[i], ioaddr + PAR_DATA);
 	write_reg_high(ioaddr, CMR1, CMR1h_RESET);
 
-<<<<<<< HEAD
-    for (i = 0; i < 6; i++)
-=======
 	for (i = 0; i < 6; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_reg_byte(ioaddr, PAR0 + i, dev->dev_addr[i]);
 
 	write_reg_high(ioaddr, CMR2, lp->addr_mode);
@@ -526,31 +473,18 @@ static void hardware_init(struct net_device *dev)
 			   (read_nibble(ioaddr, CMR2_h) >> 3) & 0x0f);
 	}
 
-<<<<<<< HEAD
-    write_reg(ioaddr, CMR2, CMR2_IRQOUT);
-    write_reg_high(ioaddr, CMR1, CMR1h_RxENABLE | CMR1h_TxENABLE);
-=======
 	write_reg(ioaddr, CMR2, CMR2_IRQOUT);
 	write_reg_high(ioaddr, CMR1, CMR1h_RxENABLE | CMR1h_TxENABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable the interrupt line from the serial port. */
 	outb(Ctrl_SelData + Ctrl_IRQEN, ioaddr + PAR_CONTROL);
 
 	/* Unmask the interesting interrupts. */
-<<<<<<< HEAD
-    write_reg(ioaddr, IMR, ISR_RxOK | ISR_TxErr | ISR_TxOK);
-    write_reg_high(ioaddr, IMR, ISRh_RxErr);
-
-	lp->tx_unit_busy = 0;
-    lp->pac_cnt_in_tx_buf = 0;
-=======
 	write_reg(ioaddr, IMR, ISR_RxOK | ISR_TxErr | ISR_TxOK);
 	write_reg_high(ioaddr, IMR, ISRh_RxErr);
 
 	lp->tx_unit_busy = 0;
 	lp->pac_cnt_in_tx_buf = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->saved_tx_size = 0;
 }
 
@@ -565,13 +499,8 @@ static void write_packet(long ioaddr, int length, unsigned char *packet, int pad
 {
     if (length & 1)
     {
-<<<<<<< HEAD
-    	length++;
-    	pad_len++;
-=======
 	length++;
 	pad_len++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 
     outb(EOC+MAR, ioaddr + PAR_DATA);
@@ -606,11 +535,7 @@ static void write_packet(long ioaddr, int length, unsigned char *packet, int pad
     outb(Ctrl_HNibWrite | Ctrl_SelData | Ctrl_IRQEN, ioaddr + PAR_CONTROL);
 }
 
-<<<<<<< HEAD
-static void tx_timeout(struct net_device *dev)
-=======
 static void tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long ioaddr = dev->base_addr;
 
@@ -620,11 +545,7 @@ static void tx_timeout(struct net_device *dev, unsigned int txqueue)
 	dev->stats.tx_errors++;
 	/* Try to restart the adapter. */
 	hardware_init(dev);
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev);
 	dev->stats.tx_errors++;
 }
@@ -691,19 +612,12 @@ static irqreturn_t atp_interrupt(int irq, void *dev_instance)
 	write_reg(ioaddr, CMR2, CMR2_NULL);
 	write_reg(ioaddr, IMR, 0);
 
-<<<<<<< HEAD
-	if (net_debug > 5) printk(KERN_DEBUG "%s: In interrupt ", dev->name);
-    while (--boguscount > 0) {
-		int status = read_nibble(ioaddr, ISR);
-		if (net_debug > 5) printk("loop status %02x..", status);
-=======
 	if (net_debug > 5)
 		printk(KERN_DEBUG "%s: In interrupt ", dev->name);
 	while (--boguscount > 0) {
 		int status = read_nibble(ioaddr, ISR);
 		if (net_debug > 5)
 			printk("loop status %02x..", status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (status & (ISR_RxOK<<3)) {
 			handled = 1;
@@ -730,12 +644,8 @@ static irqreturn_t atp_interrupt(int irq, void *dev_instance)
 			} while (--boguscount > 0);
 		} else if (status & ((ISR_TxErr + ISR_TxOK)<<3)) {
 			handled = 1;
-<<<<<<< HEAD
-			if (net_debug > 6)  printk("handling Tx done..");
-=======
 			if (net_debug > 6)
 				printk("handling Tx done..");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Clear the Tx interrupt.  We should check for too many failures
 			   and reinitialize the adapter. */
 			write_reg(ioaddr, ISR, ISR_TxErr + ISR_TxOK);
@@ -763,19 +673,11 @@ static irqreturn_t atp_interrupt(int irq, void *dev_instance)
 			}
 			num_tx_since_rx++;
 		} else if (num_tx_since_rx > 8 &&
-<<<<<<< HEAD
-			   time_after(jiffies, dev->last_rx + HZ)) {
-			if (net_debug > 2)
-				printk(KERN_DEBUG "%s: Missed packet? No Rx after %d Tx and "
-					   "%ld jiffies status %02x  CMR1 %02x.\n", dev->name,
-					   num_tx_since_rx, jiffies - dev->last_rx, status,
-=======
 			   time_after(jiffies, lp->last_rx_time + HZ)) {
 			if (net_debug > 2)
 				printk(KERN_DEBUG "%s: Missed packet? No Rx after %d Tx and "
 					   "%ld jiffies status %02x  CMR1 %02x.\n", dev->name,
 					   num_tx_since_rx, jiffies - lp->last_rx_time, status,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   (read_nibble(ioaddr, CMR1) >> 3) & 15);
 			dev->stats.rx_missed_errors++;
 			hardware_init(dev);
@@ -783,11 +685,7 @@ static irqreturn_t atp_interrupt(int irq, void *dev_instance)
 			break;
 		} else
 			break;
-<<<<<<< HEAD
-    }
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This following code fixes a rare (and very difficult to track down)
 	   problem where the adapter forgets its ethernet address. */
@@ -801,11 +699,7 @@ static irqreturn_t atp_interrupt(int irq, void *dev_instance)
 	}
 
 	/* Tell the adapter that it can go back to using the output line as IRQ. */
-<<<<<<< HEAD
-    write_reg(ioaddr, CMR2, CMR2_IRQOUT);
-=======
 	write_reg(ioaddr, CMR2, CMR2_IRQOUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable the physical interrupt line, which is sure to be low until.. */
 	outb(Ctrl_SelData + Ctrl_IRQEN, ioaddr + PAR_CONTROL);
 	/* .. we enable the interrupt sources. */
@@ -821,19 +715,11 @@ static irqreturn_t atp_interrupt(int irq, void *dev_instance)
 #ifdef TIMED_CHECKER
 /* This following code fixes a rare (and very difficult to track down)
    problem where the adapter forgets its ethernet address. */
-<<<<<<< HEAD
-static void atp_timed_checker(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *)data;
-	long ioaddr = dev->base_addr;
-	struct net_local *lp = netdev_priv(dev);
-=======
 static void atp_timed_checker(struct timer_list *t)
 {
 	struct net_local *lp = from_timer(lp, t, timer);
 	struct net_device *dev = lp->dev;
 	long ioaddr = dev->base_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tickssofar = jiffies - lp->last_rx_time;
 	int i;
 
@@ -900,11 +786,6 @@ static void net_rx(struct net_device *dev)
 
 		skb = netdev_alloc_skb(dev, pkt_len + 2);
 		if (skb == NULL) {
-<<<<<<< HEAD
-			printk(KERN_ERR "%s: Memory squeeze, dropping packet.\n",
-				   dev->name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.rx_dropped++;
 			goto done;
 		}
@@ -913,10 +794,6 @@ static void net_rx(struct net_device *dev)
 		read_block(ioaddr, pkt_len, skb_put(skb,pkt_len), dev->if_port);
 		skb->protocol = eth_type_trans(skb, dev);
 		netif_rx(skb);
-<<<<<<< HEAD
-		dev->last_rx = jiffies;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->stats.rx_packets++;
 		dev->stats.rx_bytes += pkt_len;
 	}
@@ -974,11 +851,7 @@ net_close(struct net_device *dev)
  *	Set or clear the multicast filter for this adapter.
  */
 
-<<<<<<< HEAD
-static void set_rx_mode_8002(struct net_device *dev)
-=======
 static void set_rx_mode(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_local *lp = netdev_priv(dev);
 	long ioaddr = dev->base_addr;
@@ -990,61 +863,6 @@ static void set_rx_mode(struct net_device *dev)
 	write_reg_high(ioaddr, CMR2, lp->addr_mode);
 }
 
-<<<<<<< HEAD
-static void set_rx_mode_8012(struct net_device *dev)
-{
-	struct net_local *lp = netdev_priv(dev);
-	long ioaddr = dev->base_addr;
-	unsigned char new_mode, mc_filter[8]; /* Multicast hash filter */
-	int i;
-
-	if (dev->flags & IFF_PROMISC) {			/* Set promiscuous. */
-		new_mode = CMR2h_PROMISC;
-	} else if ((netdev_mc_count(dev) > 1000) ||
-		   (dev->flags & IFF_ALLMULTI)) {
-		/* Too many to filter perfectly -- accept all multicasts. */
-		memset(mc_filter, 0xff, sizeof(mc_filter));
-		new_mode = CMR2h_Normal;
-	} else {
-		struct netdev_hw_addr *ha;
-
-		memset(mc_filter, 0, sizeof(mc_filter));
-		netdev_for_each_mc_addr(ha, dev) {
-			int filterbit = ether_crc_le(ETH_ALEN, ha->addr) & 0x3f;
-			mc_filter[filterbit >> 5] |= 1 << (filterbit & 31);
-		}
-		new_mode = CMR2h_Normal;
-	}
-	lp->addr_mode = new_mode;
-    write_reg(ioaddr, CMR2, CMR2_IRQOUT | 0x04); /* Switch to page 1. */
-    for (i = 0; i < 8; i++)
-		write_reg_byte(ioaddr, i, mc_filter[i]);
-	if (net_debug > 2 || 1) {
-		lp->addr_mode = 1;
-		printk(KERN_DEBUG "%s: Mode %d, setting multicast filter to",
-			   dev->name, lp->addr_mode);
-		for (i = 0; i < 8; i++)
-			printk(" %2.2x", mc_filter[i]);
-		printk(".\n");
-	}
-
-	write_reg_high(ioaddr, CMR2, lp->addr_mode);
-    write_reg(ioaddr, CMR2, CMR2_IRQOUT); /* Switch back to page 0 */
-}
-
-static void set_rx_mode(struct net_device *dev)
-{
-	struct net_local *lp = netdev_priv(dev);
-
-	if (lp->chip_type == RTL8002)
-		return set_rx_mode_8002(dev);
-	else
-		return set_rx_mode_8012(dev);
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init atp_init_module(void) {
 	if (debug)					/* Emit version even if no cards detected. */
 		printk(KERN_INFO "%s", version);

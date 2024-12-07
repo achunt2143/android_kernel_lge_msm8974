@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-
-ccflags-y += -Ivirt/kvm -Iarch/x86/kvm
-
-CFLAGS_x86.o := -I.
-CFLAGS_svm.o := -I.
-CFLAGS_vmx.o := -I.
-
-kvm-y			+= $(addprefix ../../../virt/kvm/, kvm_main.o ioapic.o \
-				coalesced_mmio.o irq_comm.o eventfd.o \
-				assigned-dev.o)
-kvm-$(CONFIG_IOMMU_API)	+= $(addprefix ../../../virt/kvm/, iommu.o)
-kvm-$(CONFIG_KVM_ASYNC_PF)	+= $(addprefix ../../../virt/kvm/, async_pf.o)
-
-kvm-y			+= x86.o mmu.o emulate.o i8259.o irq.o lapic.o \
-			   i8254.o timer.o cpuid.o pmu.o
-kvm-intel-y		+= vmx.o
-kvm-amd-y		+= svm.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 ccflags-y += -I $(srctree)/arch/x86/kvm
@@ -49,13 +30,10 @@ kvm-y			+= kvm_onhyperv.o
 kvm-intel-y		+= vmx/vmx_onhyperv.o vmx/hyperv_evmcs.o
 kvm-amd-y		+= svm/svm_onhyperv.o
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_KVM)	+= kvm.o
 obj-$(CONFIG_KVM_INTEL)	+= kvm-intel.o
 obj-$(CONFIG_KVM_AMD)	+= kvm-amd.o
-<<<<<<< HEAD
-=======
 
 AFLAGS_svm/vmenter.o    := -iquote $(obj)
 $(obj)/svm/vmenter.o: $(obj)/kvm-asm-offsets.h
@@ -68,4 +46,3 @@ $(obj)/kvm-asm-offsets.h: $(obj)/kvm-asm-offsets.s FORCE
 
 targets += kvm-asm-offsets.s
 clean-files += kvm-asm-offsets.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

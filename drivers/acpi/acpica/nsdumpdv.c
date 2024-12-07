@@ -1,60 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-#include <acpi/acpi.h>
-#include "accommon.h"
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
 #include <acpi/acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* TBD: This entire module is apparently obsolete and should be removed */
 
@@ -67,15 +20,9 @@ ACPI_MODULE_NAME("nsdumpdv")
  *
  * FUNCTION:    acpi_ns_dump_one_device
  *
-<<<<<<< HEAD
- * PARAMETERS:  Handle              - Node to be dumped
- *              Level               - Nesting level of the handle
- *              Context             - Passed into walk_namespace
-=======
  * PARAMETERS:  handle              - Node to be dumped
  *              level               - Nesting level of the handle
  *              context             - Passed into walk_namespace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_value        - Not used
  *
  * RETURN:      Status
@@ -88,10 +35,7 @@ static acpi_status
 acpi_ns_dump_one_device(acpi_handle obj_handle,
 			u32 level, void *context, void **return_value)
 {
-<<<<<<< HEAD
-=======
 	struct acpi_buffer buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_device_info *info;
 	acpi_status status;
 	u32 i;
@@ -101,30 +45,18 @@ acpi_ns_dump_one_device(acpi_handle obj_handle,
 	status =
 	    acpi_ns_dump_one_object(obj_handle, level, context, return_value);
 
-<<<<<<< HEAD
-	status = acpi_get_object_info(obj_handle, &info);
-	if (ACPI_SUCCESS(status)) {
-=======
 	buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
 	status = acpi_get_object_info(obj_handle, &buffer);
 	if (ACPI_SUCCESS(status)) {
 		info = buffer.pointer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < level; i++) {
 			ACPI_DEBUG_PRINT_RAW((ACPI_DB_TABLES, " "));
 		}
 
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_TABLES,
-<<<<<<< HEAD
-				      "    HID: %s, ADR: %8.8X%8.8X, Status: %X\n",
-				      info->hardware_id.string,
-				      ACPI_FORMAT_UINT64(info->address),
-				      info->current_status));
-=======
 				      "    HID: %s, ADR: %8.8X%8.8X\n",
 				      info->hardware_id.value,
 				      ACPI_FORMAT_UINT64(info->address)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_FREE(info);
 	}
 

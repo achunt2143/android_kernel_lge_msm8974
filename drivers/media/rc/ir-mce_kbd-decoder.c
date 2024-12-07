@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ir-mce_kbd-decoder.c - A decoder for the RC6-ish keyboard/mouse IR protocol
  * used by the Microsoft Remote Keyboard for Windows Media Center Edition,
  * referred to by Microsoft's Windows Media Center remote specification docs
  * as "an internal protocol called MCIR-2".
  *
  * Copyright (C) 2011 by Jarod Wilson <jarod@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 
@@ -30,21 +15,13 @@
  * - MCIR-2 29-bit IR signals used for mouse movement and buttons
  * - MCIR-2 32-bit IR signals used for standard keyboard keys
  *
-<<<<<<< HEAD
- * The media keys on the keyboard send RC-6 signals that are inditinguishable
-=======
  * The media keys on the keyboard send RC-6 signals that are indistinguishable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * from the keys of the same name on the stock MCE remote, and will be handled
  * by the standard RC-6 decoder, and be made available to the system via the
  * input device for the remote, rather than the keyboard/mouse one.
  */
 
-<<<<<<< HEAD
-#define MCIR2_UNIT		333333	/* ns */
-=======
 #define MCIR2_UNIT		333	/* us */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MCIR2_HEADER_NBITS	5
 #define MCIR2_MOUSE_NBITS	29
 #define MCIR2_KEYBOARD_NBITS	32
@@ -86,11 +63,7 @@ static unsigned char kbd_keycodes[256] = {
 	KEY_6,		KEY_7,		KEY_8,		KEY_9,		KEY_0,
 	KEY_ENTER,	KEY_ESC,	KEY_BACKSPACE,	KEY_TAB,	KEY_SPACE,
 	KEY_MINUS,	KEY_EQUAL,	KEY_LEFTBRACE,	KEY_RIGHTBRACE,	KEY_BACKSLASH,
-<<<<<<< HEAD
-	KEY_RESERVED,	KEY_SEMICOLON,	KEY_APOSTROPHE,	KEY_GRAVE,	KEY_COMMA,
-=======
 	KEY_BACKSLASH,	KEY_SEMICOLON,	KEY_APOSTROPHE,	KEY_GRAVE,	KEY_COMMA,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KEY_DOT,	KEY_SLASH,	KEY_CAPSLOCK,	KEY_F1,		KEY_F2,
 	KEY_F3,		KEY_F4,		KEY_F5,		KEY_F6,		KEY_F7,
 	KEY_F8,		KEY_F9,		KEY_F10,	KEY_F11,	KEY_F12,
@@ -134,23 +107,6 @@ static unsigned char kbd_keycodes[256] = {
 	KEY_RESERVED
 };
 
-<<<<<<< HEAD
-static void mce_kbd_rx_timeout(unsigned long data)
-{
-	struct mce_kbd_dec *mce_kbd = (struct mce_kbd_dec *)data;
-	int i;
-	unsigned char maskcode;
-
-	IR_dprintk(2, "timer callback clearing all keys\n");
-
-	for (i = 0; i < 7; i++) {
-		maskcode = kbd_keycodes[MCIR2_MASK_KEYS_START + i];
-		input_report_key(mce_kbd->idev, maskcode, 0);
-	}
-
-	for (i = 0; i < MCIR2_MASK_KEYS_START; i++)
-		input_report_key(mce_kbd->idev, kbd_keycodes[i], 0);
-=======
 static void mce_kbd_rx_timeout(struct timer_list *t)
 {
 	struct ir_raw_event_ctrl *raw = from_timer(raw, t, mce_kbd.rx_timeout);
@@ -175,7 +131,6 @@ static void mce_kbd_rx_timeout(struct timer_list *t)
 		input_sync(raw->dev->input_dev);
 	}
 	spin_unlock_irqrestore(&raw->mce_kbd.keylock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum mce_kbd_mode mce_kbd_mode(struct mce_kbd_dec *data)
@@ -190,18 +145,6 @@ static enum mce_kbd_mode mce_kbd_mode(struct mce_kbd_dec *data)
 	}
 }
 
-<<<<<<< HEAD
-static void ir_mce_kbd_process_keyboard_data(struct input_dev *idev,
-					     u32 scancode)
-{
-	u8 keydata   = (scancode >> 8) & 0xff;
-	u8 shiftmask = scancode & 0xff;
-	unsigned char keycode, maskcode;
-	int i, keystate;
-
-	IR_dprintk(1, "keyboard: keydata = 0x%02x, shiftmask = 0x%02x\n",
-		   keydata, shiftmask);
-=======
 static void ir_mce_kbd_process_keyboard_data(struct rc_dev *dev, u32 scancode)
 {
 	u8 keydata1  = (scancode >> 8) & 0xff;
@@ -212,7 +155,6 @@ static void ir_mce_kbd_process_keyboard_data(struct rc_dev *dev, u32 scancode)
 
 	dev_dbg(&dev->dev, "keyboard: keydata2 = 0x%02x, keydata1 = 0x%02x, shiftmask = 0x%02x\n",
 		keydata2, keydata1, shiftmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 7; i++) {
 		maskcode = kbd_keycodes[MCIR2_MASK_KEYS_START + i];
@@ -220,21 +162,6 @@ static void ir_mce_kbd_process_keyboard_data(struct rc_dev *dev, u32 scancode)
 			keystate = 1;
 		else
 			keystate = 0;
-<<<<<<< HEAD
-		input_report_key(idev, maskcode, keystate);
-	}
-
-	if (keydata) {
-		keycode = kbd_keycodes[keydata];
-		input_report_key(idev, keycode, 1);
-	} else {
-		for (i = 0; i < MCIR2_MASK_KEYS_START; i++)
-			input_report_key(idev, kbd_keycodes[i], 0);
-	}
-}
-
-static void ir_mce_kbd_process_mouse_data(struct input_dev *idev, u32 scancode)
-=======
 		input_report_key(dev->input_dev, maskcode, keystate);
 	}
 
@@ -250,7 +177,6 @@ static void ir_mce_kbd_process_mouse_data(struct input_dev *idev, u32 scancode)
 }
 
 static void ir_mce_kbd_process_mouse_data(struct rc_dev *dev, u32 scancode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* raw mouse coordinates */
 	u8 xdata = (scancode >> 7) & 0x7f;
@@ -270,16 +196,6 @@ static void ir_mce_kbd_process_mouse_data(struct rc_dev *dev, u32 scancode)
 	else
 		y = ydata;
 
-<<<<<<< HEAD
-	IR_dprintk(1, "mouse: x = %d, y = %d, btns = %s%s\n",
-		   x, y, left ? "L" : "", right ? "R" : "");
-
-	input_report_rel(idev, REL_X, x);
-	input_report_rel(idev, REL_Y, y);
-
-	input_report_key(idev, BTN_LEFT, left);
-	input_report_key(idev, BTN_RIGHT, right);
-=======
 	dev_dbg(&dev->dev, "mouse: x = %d, y = %d, btns = %s%s\n",
 		x, y, left ? "L" : "", right ? "R" : "");
 
@@ -288,7 +204,6 @@ static void ir_mce_kbd_process_mouse_data(struct rc_dev *dev, u32 scancode)
 
 	input_report_key(dev->input_dev, BTN_LEFT, left);
 	input_report_key(dev->input_dev, BTN_RIGHT, right);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -303,19 +218,10 @@ static int ir_mce_kbd_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	struct mce_kbd_dec *data = &dev->raw->mce_kbd;
 	u32 scancode;
 	unsigned long delay;
-<<<<<<< HEAD
-
-	if (!(dev->raw->enabled_protocols & RC_TYPE_MCE_KBD))
-		return 0;
-
-	if (!is_timing_event(ev)) {
-		if (ev.reset)
-=======
 	struct lirc_scancode lsc = {};
 
 	if (!is_timing_event(ev)) {
 		if (ev.overflow)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data->state = STATE_INACTIVE;
 		return 0;
 	}
@@ -324,13 +230,8 @@ static int ir_mce_kbd_decode(struct rc_dev *dev, struct ir_raw_event ev)
 		goto out;
 
 again:
-<<<<<<< HEAD
-	IR_dprintk(2, "started at state %i (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-=======
 	dev_dbg(&dev->dev, "started at state %i (%uus %s)\n",
 		data->state, ev.duration, TO_STR(ev.pulse));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!geq_margin(ev.duration, MCIR2_UNIT, MCIR2_UNIT / 2))
 		return 0;
@@ -364,12 +265,6 @@ again:
 		return 0;
 
 	case STATE_HEADER_BIT_END:
-<<<<<<< HEAD
-		if (!is_transition(&ev, &dev->raw->prev_ev))
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		decrease_duration(&ev, MCIR2_BIT_END);
 
 		if (data->count != MCIR2_HEADER_NBITS) {
@@ -385,11 +280,7 @@ again:
 			data->wanted_bits = MCIR2_MOUSE_NBITS;
 			break;
 		default:
-<<<<<<< HEAD
-			IR_dprintk(1, "not keyboard or mouse data\n");
-=======
 			dev_dbg(&dev->dev, "not keyboard or mouse data\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -410,12 +301,6 @@ again:
 		return 0;
 
 	case STATE_BODY_BIT_END:
-<<<<<<< HEAD
-		if (!is_transition(&ev, &dev->raw->prev_ev))
-			break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (data->count == data->wanted_bits)
 			data->state = STATE_FINISHED;
 		else
@@ -430,31 +315,6 @@ again:
 
 		switch (data->wanted_bits) {
 		case MCIR2_KEYBOARD_NBITS:
-<<<<<<< HEAD
-			scancode = data->body & 0xffff;
-			IR_dprintk(1, "keyboard data 0x%08x\n", data->body);
-			if (dev->timeout)
-				delay = usecs_to_jiffies(dev->timeout / 1000);
-			else
-				delay = msecs_to_jiffies(100);
-			mod_timer(&data->rx_timeout, jiffies + delay);
-			/* Pass data to keyboard buffer parser */
-			ir_mce_kbd_process_keyboard_data(data->idev, scancode);
-			break;
-		case MCIR2_MOUSE_NBITS:
-			scancode = data->body & 0x1fffff;
-			IR_dprintk(1, "mouse data 0x%06x\n", scancode);
-			/* Pass data to mouse buffer parser */
-			ir_mce_kbd_process_mouse_data(data->idev, scancode);
-			break;
-		default:
-			IR_dprintk(1, "not keyboard or mouse data\n");
-			goto out;
-		}
-
-		data->state = STATE_INACTIVE;
-		input_sync(data->idev);
-=======
 			scancode = data->body & 0xffffff;
 			dev_dbg(&dev->dev, "keyboard data 0x%08x\n",
 				data->body);
@@ -488,82 +348,22 @@ again:
 		data->state = STATE_INACTIVE;
 		input_event(dev->input_dev, EV_MSC, MSC_SCAN, scancode);
 		input_sync(dev->input_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 out:
-<<<<<<< HEAD
-	IR_dprintk(1, "failed at state %i (%uus %s)\n",
-		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
-	data->state = STATE_INACTIVE;
-	input_sync(data->idev);
-=======
 	dev_dbg(&dev->dev, "failed at state %i (%uus %s)\n",
 		data->state, ev.duration, TO_STR(ev.pulse));
 	data->state = STATE_INACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 static int ir_mce_kbd_register(struct rc_dev *dev)
 {
 	struct mce_kbd_dec *mce_kbd = &dev->raw->mce_kbd;
-<<<<<<< HEAD
-	struct input_dev *idev;
-	int i, ret;
-
-	idev = input_allocate_device();
-	if (!idev)
-		return -ENOMEM;
-
-	snprintf(mce_kbd->name, sizeof(mce_kbd->name),
-		 "MCE IR Keyboard/Mouse (%s)", dev->driver_name);
-	strlcat(mce_kbd->phys, "/input0", sizeof(mce_kbd->phys));
-
-	idev->name = mce_kbd->name;
-	idev->phys = mce_kbd->phys;
-
-	/* Keyboard bits */
-	set_bit(EV_KEY, idev->evbit);
-	set_bit(EV_REP, idev->evbit);
-	for (i = 0; i < sizeof(kbd_keycodes); i++)
-		set_bit(kbd_keycodes[i], idev->keybit);
-
-	/* Mouse bits */
-	set_bit(EV_REL, idev->evbit);
-	set_bit(REL_X, idev->relbit);
-	set_bit(REL_Y, idev->relbit);
-	set_bit(BTN_LEFT, idev->keybit);
-	set_bit(BTN_RIGHT, idev->keybit);
-
-	/* Report scancodes too */
-	set_bit(EV_MSC, idev->evbit);
-	set_bit(MSC_SCAN, idev->mscbit);
-
-	setup_timer(&mce_kbd->rx_timeout, mce_kbd_rx_timeout,
-		    (unsigned long)mce_kbd);
-
-	input_set_drvdata(idev, mce_kbd);
-
-#if 0
-	/* Adding this reference means two input devices are associated with
-	 * this rc-core device, which ir-keytable doesn't cope with yet */
-	idev->dev.parent = &dev->dev;
-#endif
-
-	ret = input_register_device(idev);
-	if (ret < 0) {
-		input_free_device(idev);
-		return -EIO;
-	}
-
-	mce_kbd->idev = idev;
-=======
 
 	timer_setup(&mce_kbd->rx_timeout, mce_kbd_rx_timeout, 0);
 	spin_lock_init(&mce_kbd->keylock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -571,26 +371,12 @@ static int ir_mce_kbd_register(struct rc_dev *dev)
 static int ir_mce_kbd_unregister(struct rc_dev *dev)
 {
 	struct mce_kbd_dec *mce_kbd = &dev->raw->mce_kbd;
-<<<<<<< HEAD
-	struct input_dev *idev = mce_kbd->idev;
 
 	del_timer_sync(&mce_kbd->rx_timeout);
-	input_unregister_device(idev);
-=======
-
-	del_timer_sync(&mce_kbd->rx_timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct ir_raw_handler mce_kbd_handler = {
-	.protocols	= RC_TYPE_MCE_KBD,
-	.decode		= ir_mce_kbd_decode,
-	.raw_register	= ir_mce_kbd_register,
-	.raw_unregister	= ir_mce_kbd_unregister,
-=======
 static const struct ir_raw_timings_manchester ir_mce_kbd_timings = {
 	.leader_pulse	= MCIR2_PREFIX_PULSE,
 	.invert		= 1,
@@ -642,7 +428,6 @@ static struct ir_raw_handler mce_kbd_handler = {
 	.raw_unregister	= ir_mce_kbd_unregister,
 	.carrier	= 36000,
 	.min_timeout	= MCIR2_MAX_LEN + MCIR2_UNIT / 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ir_mce_kbd_decode_init(void)

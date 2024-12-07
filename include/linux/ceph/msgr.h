@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CEPH_MSGR_H
 #define CEPH_MSGR_H
 
@@ -12,33 +9,16 @@
 #define CEPH_MON_PORT    6789  /* default monitor port */
 
 /*
-<<<<<<< HEAD
- * client-side processes will try to bind to ports in this
- * range, simply for the benefit of tools like nmap or wireshark
- * that would like to identify the protocol.
- */
-#define CEPH_PORT_FIRST  6789
-#define CEPH_PORT_START  6800  /* non-monitors start here */
-#define CEPH_PORT_LAST   6900
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * tcp connection banner.  include a protocol version. and adjust
  * whenever the wire protocol changes.  try to keep this string length
  * constant.
  */
 #define CEPH_BANNER "ceph v027"
-<<<<<<< HEAD
-=======
 #define CEPH_BANNER_LEN 9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CEPH_BANNER_MAX_LEN 30
 
 
 /*
-<<<<<<< HEAD
-=======
  * messenger V2 connection banner prefix.
  * The full banner string should have the form: "ceph v2\n<le16>"
  * the 2 bytes are the length of the remaining banner.
@@ -68,7 +48,6 @@ DEFINE_MSGR2_FEATURE( 0, 1, REVISION_1)   // msgr2.1
 
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Rollover-safe type and comparator for 32-bit sequence numbers.
  * Comparator returns -1, 0, or 1.
  */
@@ -103,17 +82,11 @@ extern const char *ceph_entity_type_name(int type);
  * entity_addr -- network address
  */
 struct ceph_entity_addr {
-<<<<<<< HEAD
-	__le32 type;
-=======
 	__le32 type;  /* CEPH_ENTITY_ADDR_TYPE_* */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32 nonce;  /* unique id for process (e.g. pid) */
 	struct sockaddr_storage in_addr;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-=======
 static inline bool ceph_addr_equal_no_type(const struct ceph_entity_addr *lhs,
 					   const struct ceph_entity_addr *rhs)
 {
@@ -121,7 +94,6 @@ static inline bool ceph_addr_equal_no_type(const struct ceph_entity_addr *lhs,
 	       lhs->nonce == rhs->nonce;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ceph_entity_inst {
 	struct ceph_entity_name name;
 	struct ceph_entity_addr addr;
@@ -141,12 +113,6 @@ struct ceph_entity_inst {
 #define CEPH_MSGR_TAG_MSG           7  /* message */
 #define CEPH_MSGR_TAG_ACK           8  /* message ack */
 #define CEPH_MSGR_TAG_KEEPALIVE     9  /* just a keepalive byte! */
-<<<<<<< HEAD
-#define CEPH_MSGR_TAG_BADPROTOVER  10  /* bad protocol version */
-#define CEPH_MSGR_TAG_BADAUTHORIZER 11 /* bad authorizer */
-#define CEPH_MSGR_TAG_FEATURES      12 /* insufficient features */
-
-=======
 #define CEPH_MSGR_TAG_BADPROTOVER   10 /* bad protocol version */
 #define CEPH_MSGR_TAG_BADAUTHORIZER 11 /* bad authorizer */
 #define CEPH_MSGR_TAG_FEATURES      12 /* insufficient features */
@@ -154,7 +120,6 @@ struct ceph_entity_inst {
 #define CEPH_MSGR_TAG_KEEPALIVE2    14 /* keepalive2 byte + ceph_timespec */
 #define CEPH_MSGR_TAG_KEEPALIVE2_ACK 15 /* keepalive2 reply */
 #define CEPH_MSGR_TAG_CHALLENGE_AUTHORIZER 16  /* cephx v2 doing server challenge */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * connection negotiation
@@ -218,12 +183,6 @@ struct ceph_msg_header {
 			     receiver: mask against ~PAGE_MASK */
 
 	struct ceph_entity_name src;
-<<<<<<< HEAD
-	__le32 reserved;
-	__le32 crc;       /* header crc32c */
-} __attribute__ ((packed));
-
-=======
 	__le16 compat_version;
 	__le16 reserved;
 	__le32 crc;       /* header crc32c */
@@ -247,7 +206,6 @@ struct ceph_msg_header2 {
 	__le16 reserved;
 } __attribute__ ((packed));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CEPH_MSG_PRIO_LOW     64
 #define CEPH_MSG_PRIO_DEFAULT 127
 #define CEPH_MSG_PRIO_HIGH    196
@@ -256,10 +214,6 @@ struct ceph_msg_header2 {
 /*
  * follows data payload
  */
-<<<<<<< HEAD
-struct ceph_msg_footer {
-	__le32 front_crc, middle_crc, data_crc;
-=======
 struct ceph_msg_footer_old {
 	__le32 front_crc, middle_crc, data_crc;
 	__u8 flags;
@@ -269,16 +223,12 @@ struct ceph_msg_footer {
 	__le32 front_crc, middle_crc, data_crc;
 	// sig holds the 64 bits of the digital signature for the message PLR
 	__le64  sig;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 flags;
 } __attribute__ ((packed));
 
 #define CEPH_MSG_FOOTER_COMPLETE  (1<<0)   /* msg wasn't aborted */
 #define CEPH_MSG_FOOTER_NOCRC     (1<<1)   /* no data crc */
-<<<<<<< HEAD
-=======
 #define CEPH_MSG_FOOTER_SIGNED	  (1<<2)   /* msg was signed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #endif

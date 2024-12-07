@@ -1,42 +1,17 @@
-<<<<<<< HEAD
-/*
- * max8997.h - Voltage regulator driver for the Maxim 8997
- *
- *  Copyright (C) 2010 Samsung Electrnoics
- *  MyungJoo Ham <myungjoo.ham@samsung.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * max8997-private.h - Voltage regulator driver for the Maxim 8997
  *
  *  Copyright (C) 2010 Samsung Electrnoics
  *  MyungJoo Ham <myungjoo.ham@samsung.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_MAX8997_PRIV_H
 #define __LINUX_MFD_MAX8997_PRIV_H
 
 #include <linux/i2c.h>
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
 #include <linux/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX8997_REG_INVALID	(0xff)
 
@@ -206,8 +181,6 @@ enum max8997_muic_reg {
 	MAX8997_MUIC_REG_END		= 0xf,
 };
 
-<<<<<<< HEAD
-=======
 /* MAX8997-MUIC STATUS1 register */
 #define STATUS1_ADC_SHIFT		0
 #define STATUS1_ADCLOW_SHIFT		5
@@ -272,7 +245,6 @@ enum max8997_muic_reg {
 #define CONTROL3_BTLDSET_MASK		(0x3 << CONTROL3_BTLDSET_SHIFT)
 #define CONTROL3_ADCDBSET_MASK		(0x3 << CONTROL3_ADCDBSET_SHIFT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum max8997_haptic_reg {
 	MAX8997_HAPTIC_REG_GENERAL	= 0x00,
 	MAX8997_HAPTIC_REG_CONF1	= 0x01,
@@ -395,30 +367,19 @@ enum max8997_irq {
 #define MAX8997_NUM_GPIO	12
 struct max8997_dev {
 	struct device *dev;
-<<<<<<< HEAD
-=======
 	struct max8997_platform_data *pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct i2c_client *i2c; /* 0xcc / PMIC, Battery Control, and FLASH */
 	struct i2c_client *rtc; /* slave addr 0x0c */
 	struct i2c_client *haptic; /* slave addr 0x90 */
 	struct i2c_client *muic; /* slave addr 0x4a */
 	struct mutex iolock;
 
-<<<<<<< HEAD
-	int type;
-=======
 	unsigned long type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct platform_device *battery; /* battery control (not fuel gauge) */
 
 	int irq;
 	int ono;
-<<<<<<< HEAD
-	int irq_base;
-=======
 	struct irq_domain *irq_domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex irqlock;
 	int irq_masks_cur[MAX8997_IRQ_GROUP_NR];
 	int irq_masks_cache[MAX8997_IRQ_GROUP_NR];

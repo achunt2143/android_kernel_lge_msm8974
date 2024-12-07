@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-    AudioScience HPI driver
-    Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of version 2 of the GNU General Public License as
-    published by the Free Software Foundation;
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-Common Linux HPI ioctl and module probe/remove functions
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*******************************************************************************
     AudioScience HPI driver
@@ -27,7 +6,6 @@ Common Linux HPI ioctl and module probe/remove functions
     Copyright (C) 1997-2014  AudioScience Inc. <support@audioscience.com>
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *******************************************************************************/
 #define SOURCEFILE_NAME "hpioctl.c"
 
@@ -40,14 +18,6 @@ Common Linux HPI ioctl and module probe/remove functions
 #include "hpicmn.h"
 
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/moduleparam.h>
-#include <asm/uaccess.h>
-#include <linux/pci.h>
-#include <linux/stringify.h>
-#include <linux/module.h>
-=======
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/moduleparam.h>
@@ -57,7 +27,6 @@ Common Linux HPI ioctl and module probe/remove functions
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef MODULE_FIRMWARE
 MODULE_FIRMWARE("asihpi/dsp5000.bin");
@@ -70,22 +39,14 @@ MODULE_FIRMWARE("asihpi/dsp8900.bin");
 #endif
 
 static int prealloc_stream_buf;
-<<<<<<< HEAD
-module_param(prealloc_stream_buf, int, S_IRUGO);
-=======
 module_param(prealloc_stream_buf, int, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(prealloc_stream_buf,
 	"Preallocate size for per-adapter stream buffer");
 
 /* Allow the debug level to be changed after module load.
  E.g.   echo 2 > /sys/module/asihpi/parameters/hpiDebugLevel
 */
-<<<<<<< HEAD
-module_param(hpi_debug_level, int, S_IRUGO | S_IWUSR);
-=======
 module_param(hpi_debug_level, int, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(hpi_debug_level, "debug verbosity 0..5");
 
 /* List of adapters found */
@@ -136,10 +97,7 @@ long asihpi_hpi_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	void __user *puhr;
 	union hpi_message_buffer_v1 *hm;
 	union hpi_response_buffer_v1 *hr;
-<<<<<<< HEAD
-=======
 	u16 msg_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 res_max_size;
 	u32 uncopied_bytes;
 	int err = 0;
@@ -148,11 +106,7 @@ long asihpi_hpi_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return -EINVAL;
 
 	hm = kmalloc(sizeof(*hm), GFP_KERNEL);
-<<<<<<< HEAD
-	hr = kmalloc(sizeof(*hr), GFP_KERNEL);
-=======
 	hr = kzalloc(sizeof(*hr), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hm || !hr) {
 		err = -ENOMEM;
 		goto out;
@@ -168,18 +122,6 @@ long asihpi_hpi_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	}
 
 	/* Now read the message size and data from user space.  */
-<<<<<<< HEAD
-	if (get_user(hm->h.size, (u16 __user *)puhm)) {
-		err = -EFAULT;
-		goto out;
-	}
-	if (hm->h.size > sizeof(*hm))
-		hm->h.size = sizeof(*hm);
-
-	/* printk(KERN_INFO "message size %d\n", hm->h.wSize); */
-
-	uncopied_bytes = copy_from_user(hm, puhm, hm->h.size);
-=======
 	if (get_user(msg_size, (u16 __user *)puhm)) {
 		err = -EFAULT;
 		goto out;
@@ -190,19 +132,15 @@ long asihpi_hpi_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	/* printk(KERN_INFO "message size %d\n", hm->h.wSize); */
 
 	uncopied_bytes = copy_from_user(hm, puhm, msg_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (uncopied_bytes) {
 		HPI_DEBUG_LOG(ERROR, "uncopied bytes %d\n", uncopied_bytes);
 		err = -EFAULT;
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Override h.size in case it is changed between two userspace fetches */
 	hm->h.size = msg_size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (get_user(res_max_size, (u16 __user *)puhr)) {
 		err = -EFAULT;
 		goto out;
@@ -214,11 +152,8 @@ long asihpi_hpi_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	res_max_size = min_t(size_t, res_max_size, sizeof(*hr));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hm->h.function) {
 	case HPI_SUBSYS_CREATE_ADAPTER:
 	case HPI_ADAPTER_DELETE:
@@ -245,12 +180,8 @@ long asihpi_hpi_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		struct hpi_adapter *pa = NULL;
 
 		if (hm->h.adapter_index < ARRAY_SIZE(adapters))
-<<<<<<< HEAD
-			pa = &adapters[hm->h.adapter_index];
-=======
 			pa = &adapters[array_index_nospec(hm->h.adapter_index,
 							  ARRAY_SIZE(adapters))];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!pa || !pa->adapter || !pa->adapter->type) {
 			hpi_init_response(&hr->r0, hm->h.object,
@@ -375,12 +306,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-int __devinit asihpi_adapter_probe(struct pci_dev *pci_dev,
-	const struct pci_device_id *pci_id)
-{
-	int idx, nm;
-=======
 static int asihpi_irq_count;
 
 static irqreturn_t asihpi_isr(int irq, void *dev_id)
@@ -422,17 +347,12 @@ int asihpi_adapter_probe(struct pci_dev *pci_dev,
 			 const struct pci_device_id *pci_id)
 {
 	int idx, nm, low_latency_mode = 0, irq_supported = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int adapter_index;
 	unsigned int memlen;
 	struct hpi_message hm;
 	struct hpi_response hr;
 	struct hpi_adapter adapter;
-<<<<<<< HEAD
-	struct hpi_pci pci;
-=======
 	struct hpi_pci pci = { 0 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&adapter, 0, sizeof(adapter));
 
@@ -441,13 +361,8 @@ int asihpi_adapter_probe(struct pci_dev *pci_dev,
 		pci_dev->device, pci_dev->subsystem_vendor,
 		pci_dev->subsystem_device, pci_dev->devfn);
 
-<<<<<<< HEAD
-	if (pci_enable_device(pci_dev) < 0) {
-		dev_printk(KERN_ERR, &pci_dev->dev,
-=======
 	if (pcim_enable_device(pci_dev) < 0) {
 		dev_err(&pci_dev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"pci_enable_device failed, disabling device\n");
 		return -EIO;
 	}
@@ -509,10 +424,6 @@ int asihpi_adapter_probe(struct pci_dev *pci_dev,
 	hm.adapter_index = adapter.adapter->index;
 	hpi_send_recv_ex(&hm, &hr, HOWNER_KERNEL);
 
-<<<<<<< HEAD
-	if (hr.error)
-		goto err;
-=======
 	if (hr.error) {
 		HPI_DEBUG_LOG(ERROR, "HPI_ADAPTER_OPEN failed, aborting\n");
 		goto err;
@@ -545,7 +456,6 @@ int asihpi_adapter_probe(struct pci_dev *pci_dev,
 	} else {
 		irq_supported = 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* WARNING can't init mutex in 'adapter'
 	 * and then copy it to adapters[] ?!?!
@@ -554,11 +464,6 @@ int asihpi_adapter_probe(struct pci_dev *pci_dev,
 	mutex_init(&adapters[adapter_index].mutex);
 	pci_set_drvdata(pci_dev, &adapters[adapter_index]);
 
-<<<<<<< HEAD
-	dev_printk(KERN_INFO, &pci_dev->dev,
-		"probe succeeded for ASI%04X HPI index %d\n",
-		adapter.adapter->type, adapter_index);
-=======
 	if (low_latency_mode && irq_supported) {
 		if (!adapter.adapter->irq_query_and_clear) {
 			dev_err(&pci_dev->dev,
@@ -600,16 +505,11 @@ int asihpi_adapter_probe(struct pci_dev *pci_dev,
 
 	dev_info(&pci_dev->dev, "probe succeeded for ASI%04X HPI index %d\n",
 		 adapter.adapter->type, adapter_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err:
-<<<<<<< HEAD
-	for (idx = 0; idx < HPI_MAX_ADAPTER_MEM_SPACES; idx++) {
-=======
 	while (--idx >= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pci.ap_mem_base[idx]) {
 			iounmap(pci.ap_mem_base[idx]);
 			pci.ap_mem_base[idx] = NULL;
@@ -625,11 +525,7 @@ err:
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-void __devexit asihpi_adapter_remove(struct pci_dev *pci_dev)
-=======
 void asihpi_adapter_remove(struct pci_dev *pci_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx;
 	struct hpi_message hm;
@@ -640,8 +536,6 @@ void asihpi_adapter_remove(struct pci_dev *pci_dev)
 	pa = pci_get_drvdata(pci_dev);
 	pci = pa->adapter->pci;
 
-<<<<<<< HEAD
-=======
 	/* Disable IRQ generation on DSP side */
 	hpi_init_message_response(&hm, &hr, HPI_OBJ_ADAPTER,
 		HPI_ADAPTER_SET_PROPERTY);
@@ -651,30 +545,12 @@ void asihpi_adapter_remove(struct pci_dev *pci_dev)
 	hm.u.ax.property_set.parameter2 = 0;
 	hpi_send_recv_ex(&hm, &hr, HOWNER_KERNEL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpi_init_message_response(&hm, &hr, HPI_OBJ_ADAPTER,
 		HPI_ADAPTER_DELETE);
 	hm.adapter_index = pa->adapter->index;
 	hpi_send_recv_ex(&hm, &hr, HOWNER_KERNEL);
 
 	/* unmap PCI memory space, mapped during device init. */
-<<<<<<< HEAD
-	for (idx = 0; idx < HPI_MAX_ADAPTER_MEM_SPACES; idx++) {
-		if (pci.ap_mem_base[idx])
-			iounmap(pci.ap_mem_base[idx]);
-	}
-
-	if (pa->p_buffer)
-		vfree(pa->p_buffer);
-
-	pci_set_drvdata(pci_dev, NULL);
-	if (1)
-		dev_printk(KERN_INFO, &pci_dev->dev,
-			"remove %04x:%04x,%04x:%04x,%04x," " HPI index %d.\n",
-			pci_dev->vendor, pci_dev->device,
-			pci_dev->subsystem_vendor, pci_dev->subsystem_device,
-			pci_dev->devfn, pa->adapter->index);
-=======
 	for (idx = 0; idx < HPI_MAX_ADAPTER_MEM_SPACES; ++idx)
 		iounmap(pci.ap_mem_base[idx]);
 
@@ -689,7 +565,6 @@ void asihpi_adapter_remove(struct pci_dev *pci_dev)
 			 pci_dev->vendor, pci_dev->device,
 			 pci_dev->subsystem_vendor, pci_dev->subsystem_device,
 			 pci_dev->devfn, pa->adapter->index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(pa, 0, sizeof(*pa));
 }

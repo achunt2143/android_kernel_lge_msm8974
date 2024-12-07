@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * strlen.S (c) 1995 David Mosberger (davidm@cs.arizona.edu)
  *
@@ -15,11 +12,7 @@
  *	  do this instead of the 9 instructions that
  *	  binary search needs).
  */
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set noreorder
 	.set noat
 
@@ -63,7 +56,4 @@ done:	subq	$0, $16, $0
 	ret	$31, ($26)
 
 	.end	strlen
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(strlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

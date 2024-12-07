@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_INIT_H
-#define _LINUX_INIT_H
-
-#include <linux/compiler.h>
-#include <linux/types.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_INIT_H
 #define _LINUX_INIT_H
@@ -22,7 +14,6 @@
 #define __noinitretpoline
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* These macros are used to mark some functions or 
  * initialized data (doesn't apply to uninitialized data)
  * as `initialization' functions. The kernel can take this
@@ -45,13 +36,8 @@
  * extern int initialize_foobar_device(int, int, int) __init;
  *
  * For initialized data:
-<<<<<<< HEAD
- * You should insert __initdata between the variable name and equal
- * sign followed by value, e.g.:
-=======
  * You should insert __initdata or __initconst between the variable name
  * and equal sign followed by value, e.g.:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * static int init_variable __initdata = 0;
  * static const char linux_logo[] __initconst = { 0x32, 0x36, ... };
@@ -59,28 +45,15 @@
  * Don't forget to initialize data not at file scope, i.e. within a function,
  * as gcc otherwise puts the data into the bss section and not into the init
  * section.
-<<<<<<< HEAD
- * 
- * Also note, that this data cannot be "const".
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* These are for everybody (although not all archs will actually
    discard it in modules) */
-<<<<<<< HEAD
-#define __init		__section(.init.text) __cold notrace
-#define __initdata	__section(.init.data)
-#define __initconst	__section(.init.rodata)
-#define __exitdata	__section(.exit.data)
-#define __exit_call	__used __section(.exitcall.exit)
-=======
 #define __init		__section(".init.text") __cold  __latent_entropy __noinitretpoline
 #define __initdata	__section(".init.data")
 #define __initconst	__section(".init.rodata")
 #define __exitdata	__section(".exit.data")
 #define __exit_call	__used __section(".exitcall.exit")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * modpost check for section mismatches during the kernel build.
@@ -99,21 +72,9 @@
  *
  * The markers follow same syntax rules as __init / __initdata.
  */
-<<<<<<< HEAD
-#define __ref            __section(.ref.text) noinline
-#define __refdata        __section(.ref.data)
-#define __refconst       __section(.ref.rodata)
-
-/* compatibility defines */
-#define __init_refok     __ref
-#define __initdata_refok __refdata
-#define __exit_refok     __ref
-
-=======
 #define __ref            __section(".ref.text") noinline
 #define __refdata        __section(".ref.data")
 #define __refconst       __section(".ref.rodata")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef MODULE
 #define __exitused
@@ -121,33 +82,6 @@
 #define __exitused  __used
 #endif
 
-<<<<<<< HEAD
-#define __exit          __section(.exit.text) __exitused __cold notrace
-
-/* Used for HOTPLUG */
-#define __devinit        __section(.devinit.text) __cold notrace
-#define __devinitdata    __section(.devinit.data)
-#define __devinitconst   __section(.devinit.rodata)
-#define __devexit        __section(.devexit.text) __exitused __cold notrace
-#define __devexitdata    __section(.devexit.data)
-#define __devexitconst   __section(.devexit.rodata)
-
-/* Used for HOTPLUG_CPU */
-#define __cpuinit        __section(.cpuinit.text) __cold notrace
-#define __cpuinitdata    __section(.cpuinit.data)
-#define __cpuinitconst   __section(.cpuinit.rodata)
-#define __cpuexit        __section(.cpuexit.text) __exitused __cold notrace
-#define __cpuexitdata    __section(.cpuexit.data)
-#define __cpuexitconst   __section(.cpuexit.rodata)
-
-/* Used for MEMORY_HOTPLUG */
-#define __meminit        __section(.meminit.text) __cold notrace
-#define __meminitdata    __section(.meminit.data)
-#define __meminitconst   __section(.meminit.rodata)
-#define __memexit        __section(.memexit.text) __exitused __cold notrace
-#define __memexitdata    __section(.memexit.data)
-#define __memexitconst   __section(.memexit.rodata)
-=======
 #define __exit          __section(".exit.text") __exitused __cold notrace
 
 /* Used for MEMORY_HOTPLUG */
@@ -155,7 +89,6 @@
 						  __latent_entropy
 #define __meminitdata    __section(".meminit.data")
 #define __meminitconst   __section(".meminit.rodata")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* For assembly routines */
 #define __HEAD		.section	".head.text","ax"
@@ -166,17 +99,6 @@
 #define __INITRODATA	.section	".init.rodata","a",%progbits
 #define __FINITDATA	.previous
 
-<<<<<<< HEAD
-#define __DEVINIT        .section	".devinit.text", "ax"
-#define __DEVINITDATA    .section	".devinit.data", "aw"
-#define __DEVINITRODATA  .section	".devinit.rodata", "a"
-
-#define __CPUINIT        .section	".cpuinit.text", "ax"
-#define __CPUINITDATA    .section	".cpuinit.data", "aw"
-#define __CPUINITRODATA  .section	".cpuinit.rodata", "a"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __MEMINIT        .section	".meminit.text", "ax"
 #define __MEMINITDATA    .section	".meminit.data", "aw"
 #define __MEMINITRODATA  .section	".meminit.rodata", "a"
@@ -193,14 +115,6 @@
 typedef int (*initcall_t)(void);
 typedef void (*exitcall_t)(void);
 
-<<<<<<< HEAD
-extern initcall_t __con_initcall_start[], __con_initcall_end[];
-extern initcall_t __security_initcall_start[], __security_initcall_end[];
-
-/* Used for contructor calls. */
-typedef void (*ctor_fn_t)(void);
-
-=======
 #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
 typedef int initcall_entry_t;
 
@@ -224,22 +138,16 @@ typedef void (*ctor_fn_t)(void);
 
 struct file_system_type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Defined in init/main.c */
 extern int do_one_initcall(initcall_t fn);
 extern char __initdata boot_command_line[];
 extern char *saved_command_line;
-<<<<<<< HEAD
-=======
 extern unsigned int saved_command_line_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned int reset_devices;
 
 /* used by init/main.c */
 void setup_arch(char **);
 void prepare_namespace(void);
-<<<<<<< HEAD
-=======
 void __init init_rootfs(void);
 
 void init_IRQ(void);
@@ -262,14 +170,11 @@ extern struct file_system_type rootfs_fs_type;
 
 extern bool rodata_enabled;
 void mark_rodata_ro(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void (*late_time_init)(void);
 
 extern bool initcall_debug;
 
-<<<<<<< HEAD
-=======
 #ifdef MODULE
 extern struct module __this_module;
 #define THIS_MODULE (&__this_module)
@@ -277,19 +182,14 @@ extern struct module __this_module;
 #define THIS_MODULE ((struct module *)0)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
   
 #ifndef MODULE
 
 #ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-/* initcalls are now grouped by functionality into separate 
-=======
 /*
  * initcalls are now grouped by functionality into separate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * subsections. Ordering inside the subsections is determined
  * by link order. 
  * For backwards compatibility, initcall() puts the call in 
@@ -297,13 +197,6 @@ extern struct module __this_module;
  *
  * The `id' arg to __define_initcall() is needed so that multiple initcalls
  * can point at the same handler without causing duplicate-symbol build errors.
-<<<<<<< HEAD
- */
-
-#define __define_initcall(level,fn,id) \
-	static initcall_t __initcall_##fn##id __used \
-	__attribute__((__section__(".initcall" level ".init"))) = fn
-=======
  *
  * Initcalls are run by placing pointers in initcall sections that the
  * kernel iterates at runtime. The linker can do dead code / data elimination
@@ -387,57 +280,19 @@ extern struct module __this_module;
 	__unique_initcall(fn, id, __sec, __initcall_id(fn))
 
 #define __define_initcall(fn, id) ___define_initcall(fn, id, .initcall##id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Early initcalls run before initializing SMP.
  *
  * Only for built-in code, not modules.
  */
-<<<<<<< HEAD
-#define early_initcall(fn)		__define_initcall("early",fn,early)
-=======
 #define early_initcall(fn)		__define_initcall(fn, early)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * A "pure" initcall has no dependencies on anything else, and purely
  * initializes variables that couldn't be statically initialized.
  *
  * This only exists for built-in code, not for modules.
-<<<<<<< HEAD
- */
-#define pure_initcall(fn)		__define_initcall("0",fn,0)
-
-#define core_initcall(fn)		__define_initcall("1",fn,1)
-#define core_initcall_sync(fn)		__define_initcall("1s",fn,1s)
-#define postcore_initcall(fn)		__define_initcall("2",fn,2)
-#define postcore_initcall_sync(fn)	__define_initcall("2s",fn,2s)
-#define arch_initcall(fn)		__define_initcall("3",fn,3)
-#define arch_initcall_sync(fn)		__define_initcall("3s",fn,3s)
-#define subsys_initcall(fn)		__define_initcall("4",fn,4)
-#define subsys_initcall_sync(fn)	__define_initcall("4s",fn,4s)
-#define fs_initcall(fn)			__define_initcall("5",fn,5)
-#define fs_initcall_sync(fn)		__define_initcall("5s",fn,5s)
-#define rootfs_initcall(fn)		__define_initcall("rootfs",fn,rootfs)
-#define device_initcall(fn)		__define_initcall("6",fn,6)
-#define device_initcall_sync(fn)	__define_initcall("6s",fn,6s)
-#define late_initcall(fn)		__define_initcall("7",fn,7)
-#define late_initcall_sync(fn)		__define_initcall("7s",fn,7s)
-
-#define __initcall(fn) device_initcall(fn)
-
-#define __exitcall(fn) \
-	static exitcall_t __exitcall_##fn __exit_call = fn
-
-#define console_initcall(fn) \
-	static initcall_t __initcall_##fn \
-	__used __section(.con_initcall.init) = fn
-
-#define security_initcall(fn) \
-	static initcall_t __initcall_##fn \
-	__used __section(.security_initcall.init) = fn
-=======
  * Keep main.c:initcall_level_names[] in sync.
  */
 #define pure_initcall(fn)		__define_initcall(fn, 0)
@@ -464,7 +319,6 @@ extern struct module __this_module;
 	static exitcall_t __exitcall_##fn __exit_call = fn
 
 #define console_initcall(fn)	___define_initcall(fn, con, .con_initcall)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct obs_kernel_param {
 	const char *str;
@@ -472,11 +326,8 @@ struct obs_kernel_param {
 	int early;
 };
 
-<<<<<<< HEAD
-=======
 extern const struct obs_kernel_param __setup_start[], __setup_end[];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Only for really core code.  See moduleparam.h for the normal way.
  *
@@ -484,23 +335,6 @@ extern const struct obs_kernel_param __setup_start[], __setup_end[];
  * obs_kernel_param "array" too far apart in .init.setup.
  */
 #define __setup_param(str, unique_id, fn, early)			\
-<<<<<<< HEAD
-	static const char __setup_str_##unique_id[] __initconst	\
-		__aligned(1) = str; \
-	static struct obs_kernel_param __setup_##unique_id	\
-		__used __section(.init.setup)			\
-		__attribute__((aligned((sizeof(long)))))	\
-		= { __setup_str_##unique_id, fn, early }
-
-#define __setup(str, fn)					\
-	__setup_param(str, fn, fn, 0)
-
-/* NOTE: fn is as per module_param, not __setup!  Emits warning if fn
- * returns non-zero. */
-#define early_param(str, fn)					\
-	__setup_param(str, fn, fn, 1)
-
-=======
 	static const char __setup_str_##unique_id[] __initconst		\
 		__aligned(1) = str; 					\
 	static struct obs_kernel_param __setup_##unique_id		\
@@ -543,105 +377,19 @@ extern const struct obs_kernel_param __setup_start[], __setup_end[];
 	}								\
 	early_param(str_off, parse_##var##_off)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Relies on boot_command_line being set */
 void __init parse_early_param(void);
 void __init parse_early_options(char *cmdline);
 #endif /* __ASSEMBLY__ */
 
-<<<<<<< HEAD
-/**
- * module_init() - driver initialization entry point
- * @x: function to be run at kernel boot time or module insertion
- * 
- * module_init() will either be called during do_initcalls() (if
- * builtin) or at module insertion time (if a module).  There can only
- * be one per module.
- */
-#define module_init(x)	__initcall(x);
-
-/**
- * module_exit() - driver exit entry point
- * @x: function to be run when driver is removed
- * 
- * module_exit() will wrap the driver clean-up code
- * with cleanup_module() when used with rmmod when
- * the driver is a module.  If the driver is statically
- * compiled into the kernel, module_exit() has no effect.
- * There can only be one per module.
- */
-#define module_exit(x)	__exitcall(x);
-
 #else /* MODULE */
 
-/* Don't use these in modules, but some people do... */
-#define early_initcall(fn)		module_init(fn)
-#define core_initcall(fn)		module_init(fn)
-#define postcore_initcall(fn)		module_init(fn)
-#define arch_initcall(fn)		module_init(fn)
-#define subsys_initcall(fn)		module_init(fn)
-#define fs_initcall(fn)			module_init(fn)
-#define device_initcall(fn)		module_init(fn)
-#define late_initcall(fn)		module_init(fn)
-
-#define security_initcall(fn)		module_init(fn)
-
-/* Each module must use one module_init(). */
-#define module_init(initfn)					\
-	static inline initcall_t __inittest(void)		\
-	{ return initfn; }					\
-	int init_module(void) __attribute__((alias(#initfn)));
-
-/* This is only required if you want to be unloadable. */
-#define module_exit(exitfn)					\
-	static inline exitcall_t __exittest(void)		\
-	{ return exitfn; }					\
-	void cleanup_module(void) __attribute__((alias(#exitfn)));
-
-=======
-#else /* MODULE */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __setup_param(str, unique_id, fn)	/* nothing */
 #define __setup(str, func) 			/* nothing */
 #endif
 
 /* Data marked not to be saved by software suspend */
-<<<<<<< HEAD
-#define __nosavedata __section(.data..nosave)
-
-/* This means "can be init if no module support, otherwise module load
-   may call it." */
-#ifdef CONFIG_MODULES
-#define __init_or_module
-#define __initdata_or_module
-#define __initconst_or_module
-#define __INIT_OR_MODULE	.text
-#define __INITDATA_OR_MODULE	.data
-#define __INITRODATA_OR_MODULE	.section ".rodata","a",%progbits
-#else
-#define __init_or_module __init
-#define __initdata_or_module __initdata
-#define __initconst_or_module __initconst
-#define __INIT_OR_MODULE __INIT
-#define __INITDATA_OR_MODULE __INITDATA
-#define __INITRODATA_OR_MODULE __INITRODATA
-#endif /*CONFIG_MODULES*/
-
-/* Functions marked as __devexit may be discarded at kernel link time, depending
-   on config options.  Newer versions of binutils detect references from
-   retained sections to discarded sections and flag an error.  Pointers to
-   __devexit functions must use __devexit_p(function_name), the wrapper will
-   insert either the function_name or NULL, depending on the config options.
- */
-#if defined(MODULE) || defined(CONFIG_HOTPLUG)
-#define __devexit_p(x) x
-#else
-#define __devexit_p(x) NULL
-#endif
-=======
 #define __nosavedata __section(".data..nosave")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef MODULE
 #define __exit_p(x) x

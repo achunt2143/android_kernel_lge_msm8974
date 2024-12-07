@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * posix-clock.h - support for dynamic clock devices
  *
  * Copyright (C) 2010 OMICRON electronics GmbH
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_POSIX_CLOCK_H_
 #define _LINUX_POSIX_CLOCK_H_
@@ -34,10 +14,7 @@
 #include <linux/rwsem.h>
 
 struct posix_clock;
-<<<<<<< HEAD
-=======
 struct posix_clock_context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct posix_clock_operations - functional interface to the clock
@@ -53,15 +30,6 @@ struct posix_clock_context;
  * @clock_gettime:  Read the current time
  * @clock_getres:   Get the clock resolution
  * @clock_settime:  Set the current time value
-<<<<<<< HEAD
- * @timer_create:   Create a new timer
- * @timer_delete:   Remove a previously created timer
- * @timer_gettime:  Get remaining time and interval of a timer
- * @timer_settime: Set a timer's initial expiration and interval
- * @fasync:         Optional character device fasync method
- * @mmap:           Optional character device mmap method
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @open:           Optional character device open method
  * @release:        Optional character device release method
  * @ioctl:          Optional character device ioctl method
@@ -71,48 +39,6 @@ struct posix_clock_context;
 struct posix_clock_operations {
 	struct module *owner;
 
-<<<<<<< HEAD
-	int  (*clock_adjtime)(struct posix_clock *pc, struct timex *tx);
-
-	int  (*clock_gettime)(struct posix_clock *pc, struct timespec *ts);
-
-	int  (*clock_getres) (struct posix_clock *pc, struct timespec *ts);
-
-	int  (*clock_settime)(struct posix_clock *pc,
-			      const struct timespec *ts);
-
-	int  (*timer_create) (struct posix_clock *pc, struct k_itimer *kit);
-
-	int  (*timer_delete) (struct posix_clock *pc, struct k_itimer *kit);
-
-	void (*timer_gettime)(struct posix_clock *pc,
-			      struct k_itimer *kit, struct itimerspec *tsp);
-
-	int  (*timer_settime)(struct posix_clock *pc,
-			      struct k_itimer *kit, int flags,
-			      struct itimerspec *tsp, struct itimerspec *old);
-	/*
-	 * Optional character device methods:
-	 */
-	int     (*fasync)  (struct posix_clock *pc,
-			    int fd, struct file *file, int on);
-
-	long    (*ioctl)   (struct posix_clock *pc,
-			    unsigned int cmd, unsigned long arg);
-
-	int     (*mmap)    (struct posix_clock *pc,
-			    struct vm_area_struct *vma);
-
-	int     (*open)    (struct posix_clock *pc, fmode_t f_mode);
-
-	uint    (*poll)    (struct posix_clock *pc,
-			    struct file *file, poll_table *wait);
-
-	int     (*release) (struct posix_clock *pc);
-
-	ssize_t (*read)    (struct posix_clock *pc,
-			    uint flags, char __user *buf, size_t cnt);
-=======
 	int  (*clock_adjtime)(struct posix_clock *pc, struct __kernel_timex *tx);
 
 	int  (*clock_gettime)(struct posix_clock *pc, struct timespec64 *ts);
@@ -137,7 +63,6 @@ struct posix_clock_operations {
 
 	ssize_t (*read)(struct posix_clock_context *pccontext, uint flags,
 			char __user *buf, size_t cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -145,39 +70,22 @@ struct posix_clock_operations {
  *
  * @ops:     Functional interface to the clock
  * @cdev:    Character device instance for this clock
-<<<<<<< HEAD
- * @kref:    Reference count.
- * @rwsem:   Protects the 'zombie' field from concurrent access.
- * @zombie:  If 'zombie' is true, then the hardware has disappeared.
- * @release: A function to free the structure when the reference count reaches
- *           zero. May be NULL if structure is statically allocated.
-=======
  * @dev:     Pointer to the clock's device.
  * @rwsem:   Protects the 'zombie' field from concurrent access.
  * @zombie:  If 'zombie' is true, then the hardware has disappeared.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Drivers should embed their struct posix_clock within a private
  * structure, obtaining a reference to it during callbacks using
  * container_of().
-<<<<<<< HEAD
-=======
  *
  * Drivers should supply an initialized but not exposed struct device
  * to posix_clock_register(). It is used to manage lifetime of the
  * driver's private structure. It's 'release' field should be set to
  * a release function for this private structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct posix_clock {
 	struct posix_clock_operations ops;
 	struct cdev cdev;
-<<<<<<< HEAD
-	struct kref kref;
-	struct rw_semaphore rwsem;
-	bool zombie;
-	void (*release)(struct posix_clock *clk);
-=======
 	struct device *dev;
 	struct rw_semaphore rwsem;
 	bool zombie;
@@ -199,19 +107,13 @@ struct posix_clock {
 struct posix_clock_context {
 	struct posix_clock *clk;
 	void *private_clkdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * posix_clock_register() - register a new clock
-<<<<<<< HEAD
- * @clk:   Pointer to the clock. Caller must provide 'ops' and 'release'
- * @devid: Allocated device id
-=======
  * @clk:   Pointer to the clock. Caller must provide 'ops' field
  * @dev:   Pointer to the initialized device. Caller must provide
  *         'release' field
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * A clock driver calls this function to register itself with the
  * clock device subsystem. If 'clk' points to dynamically allocated
@@ -220,11 +122,7 @@ struct posix_clock_context {
  *
  * Returns zero on success, non-zero otherwise.
  */
-<<<<<<< HEAD
-int posix_clock_register(struct posix_clock *clk, dev_t devid);
-=======
 int posix_clock_register(struct posix_clock *clk, struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * posix_clock_unregister() - unregister a clock

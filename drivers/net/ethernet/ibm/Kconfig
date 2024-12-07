@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # IBM device configuration.
 #
@@ -9,18 +6,9 @@
 config NET_VENDOR_IBM
 	bool "IBM devices"
 	default y
-<<<<<<< HEAD
-	depends on MCA || PPC_PSERIES || PPC_PSERIES || PPC_DCR || \
-		   (IBMEBUS && INET && SPARSEMEM)
-	---help---
-	  If you have a network (Ethernet) card belonging to this class, say Y
-	  and read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 	depends on PPC_PSERIES || PPC_DCR || (IBMEBUS && SPARSEMEM)
 	help
 	  If you have a network (Ethernet) card belonging to this class, say Y.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -32,11 +20,7 @@ if NET_VENDOR_IBM
 config IBMVETH
 	tristate "IBM LAN Virtual Ethernet support"
 	depends on PPC_PSERIES
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports virtual ethernet adapters on newer IBM iSeries
 	  and pSeries systems.
 
@@ -47,21 +31,13 @@ source "drivers/net/ethernet/ibm/emac/Kconfig"
 
 config EHEA
 	tristate "eHEA Ethernet support"
-<<<<<<< HEAD
-	depends on IBMEBUS && INET && SPARSEMEM
-	select INET_LRO
-	---help---
-=======
 	depends on IBMEBUS && SPARSEMEM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports the IBM pSeries eHEA ethernet adapter.
 
 	  To compile the driver as a module, choose M here. The module
 	  will be called ehea.
 
-<<<<<<< HEAD
-=======
 config IBMVNIC
 	tristate "IBM Virtual NIC support"
 	depends on PPC_PSERIES
@@ -72,5 +48,4 @@ config IBMVNIC
 	  To compile this driver as a module, choose M here. The module will
 	  be called ibmvnic.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NET_VENDOR_IBM

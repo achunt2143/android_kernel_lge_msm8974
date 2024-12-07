@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale LBC and UPM routines.
  *
@@ -11,14 +8,6 @@
  * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
  * Author: Jack Lan <Jack.Lan@freescale.com>
  * Author: Roy Zang <tie-fei.zang@freescale.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -29,27 +18,17 @@
 #include <linux/types.h>
 #include <linux/io.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/sched.h>
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/mod_devicetable.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-#include <asm/fsl_lbc.h>
-
-static spinlock_t fsl_lbc_lock = __SPIN_LOCK_UNLOCKED(fsl_lbc_lock);
-=======
 #include <linux/syscore_ops.h>
 #include <asm/fsl_lbc.h>
 
 static DEFINE_SPINLOCK(fsl_lbc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fsl_lbc_ctrl *fsl_lbc_ctrl_dev;
 EXPORT_SYMBOL(fsl_lbc_ctrl_dev);
 
@@ -59,11 +38,7 @@ EXPORT_SYMBOL(fsl_lbc_ctrl_dev);
  *
  * This function converts a base address of lbc into the right format for the
  * BR register. If the SOC has eLBC then it returns 32bit physical address
-<<<<<<< HEAD
- * else it convers a 34bit local bus physical address to correct format of
-=======
  * else it converts a 34bit local bus physical address to correct format of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 32bit address for BR register (Example: MPC8641).
  */
 u32 fsl_lbc_addr(phys_addr_t addr_base)
@@ -97,13 +72,8 @@ int fsl_lbc_find(phys_addr_t addr_base)
 
 	lbc = fsl_lbc_ctrl_dev->regs;
 	for (i = 0; i < ARRAY_SIZE(lbc->bank); i++) {
-<<<<<<< HEAD
-		__be32 br = in_be32(&lbc->bank[i].br);
-		__be32 or = in_be32(&lbc->bank[i].or);
-=======
 		u32 br = in_be32(&lbc->bank[i].br);
 		u32 or = in_be32(&lbc->bank[i].or);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (br & BR_V && (br & or & BR_BA) == fsl_lbc_addr(addr_base))
 			return i;
@@ -125,11 +95,7 @@ EXPORT_SYMBOL(fsl_lbc_find);
 int fsl_upm_find(phys_addr_t addr_base, struct fsl_upm *upm)
 {
 	int bank;
-<<<<<<< HEAD
-	__be32 br;
-=======
 	u32 br;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fsl_lbc_regs __iomem *lbc;
 
 	bank = fsl_lbc_find(addr_base);
@@ -217,13 +183,8 @@ int fsl_upm_run_pattern(struct fsl_upm *upm, void __iomem *io_base, u32 mar)
 }
 EXPORT_SYMBOL(fsl_upm_run_pattern);
 
-<<<<<<< HEAD
-static int __devinit fsl_lbc_ctrl_init(struct fsl_lbc_ctrl *ctrl,
-				       struct device_node *node)
-=======
 static int fsl_lbc_ctrl_init(struct fsl_lbc_ctrl *ctrl,
 			     struct device_node *node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
 
@@ -251,12 +212,6 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 	struct fsl_lbc_ctrl *ctrl = data;
 	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
 	u32 status;
-<<<<<<< HEAD
-
-	status = in_be32(&lbc->ltesr);
-	if (!status)
-		return IRQ_NONE;
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&fsl_lbc_lock, flags);
@@ -265,7 +220,6 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 		spin_unlock_irqrestore(&fsl_lbc_lock, flags);
 		return IRQ_NONE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	out_be32(&lbc->ltesr, LTESR_CLEAR);
 	out_be32(&lbc->lteatr, 0);
@@ -287,11 +241,6 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 	if (status & LTESR_CS)
 		dev_err(ctrl->dev, "Chip select error: "
 			"LTESR 0x%08X\n", status);
-<<<<<<< HEAD
-	if (status & LTESR_UPM)
-		;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status & LTESR_FCT) {
 		dev_err(ctrl->dev, "FCM command time-out: "
 			"LTESR 0x%08X\n", status);
@@ -311,10 +260,7 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
 	if (status & ~LTESR_MASK)
 		dev_err(ctrl->dev, "Unknown error: "
 			"LTESR 0x%08X\n", status);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&fsl_lbc_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -328,11 +274,7 @@ static irqreturn_t fsl_lbc_ctrl_irq(int irqno, void *data)
  * in the chip probe function.
 */
 
-<<<<<<< HEAD
-static int __devinit fsl_lbc_ctrl_probe(struct platform_device *dev)
-=======
 static int fsl_lbc_ctrl_probe(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -357,13 +299,8 @@ static int fsl_lbc_ctrl_probe(struct platform_device *dev)
 		goto err;
 	}
 
-<<<<<<< HEAD
-	fsl_lbc_ctrl_dev->irq = irq_of_parse_and_map(dev->dev.of_node, 0);
-	if (fsl_lbc_ctrl_dev->irq == NO_IRQ) {
-=======
 	fsl_lbc_ctrl_dev->irq[0] = irq_of_parse_and_map(dev->dev.of_node, 0);
 	if (!fsl_lbc_ctrl_dev->irq[0]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev, "failed to get irq resource\n");
 		ret = -ENODEV;
 		goto err;
@@ -375,17 +312,6 @@ static int fsl_lbc_ctrl_probe(struct platform_device *dev)
 	if (ret < 0)
 		goto err;
 
-<<<<<<< HEAD
-	ret = request_irq(fsl_lbc_ctrl_dev->irq, fsl_lbc_ctrl_irq, 0,
-				"fsl-lbc", fsl_lbc_ctrl_dev);
-	if (ret != 0) {
-		dev_err(&dev->dev, "failed to install irq (%d)\n",
-			fsl_lbc_ctrl_dev->irq);
-		ret = fsl_lbc_ctrl_dev->irq;
-		goto err;
-	}
-
-=======
 	ret = request_irq(fsl_lbc_ctrl_dev->irq[0], fsl_lbc_ctrl_irq, 0,
 				"fsl-lbc", fsl_lbc_ctrl_dev);
 	if (ret != 0) {
@@ -407,17 +333,13 @@ static int fsl_lbc_ctrl_probe(struct platform_device *dev)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable interrupts for any detected events */
 	out_be32(&fsl_lbc_ctrl_dev->regs->lteir, LTEIR_ENABLE);
 
 	return 0;
 
-<<<<<<< HEAD
-=======
 err1:
 	free_irq(fsl_lbc_ctrl_dev->irq[0], fsl_lbc_ctrl_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	iounmap(fsl_lbc_ctrl_dev->regs);
 	kfree(fsl_lbc_ctrl_dev);
@@ -428,12 +350,6 @@ err:
 #ifdef CONFIG_SUSPEND
 
 /* save lbc registers */
-<<<<<<< HEAD
-static int fsl_lbc_suspend(struct platform_device *pdev, pm_message_t state)
-{
-	struct fsl_lbc_ctrl *ctrl = dev_get_drvdata(&pdev->dev);
-	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
-=======
 static int fsl_lbc_syscore_suspend(void)
 {
 	struct fsl_lbc_ctrl *ctrl;
@@ -446,28 +362,18 @@ static int fsl_lbc_syscore_suspend(void)
 	lbc = ctrl->regs;
 	if (!lbc)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl->saved_regs = kmalloc(sizeof(struct fsl_lbc_regs), GFP_KERNEL);
 	if (!ctrl->saved_regs)
 		return -ENOMEM;
 
 	_memcpy_fromio(ctrl->saved_regs, lbc, sizeof(struct fsl_lbc_regs));
-<<<<<<< HEAD
-=======
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* restore lbc registers */
-<<<<<<< HEAD
-static int fsl_lbc_resume(struct platform_device *pdev)
-{
-	struct fsl_lbc_ctrl *ctrl = dev_get_drvdata(&pdev->dev);
-	struct fsl_lbc_regs __iomem *lbc = ctrl->regs;
-=======
 static void fsl_lbc_syscore_resume(void)
 {
 	struct fsl_lbc_ctrl *ctrl;
@@ -480,7 +386,6 @@ static void fsl_lbc_syscore_resume(void)
 	lbc = ctrl->regs;
 	if (!lbc)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ctrl->saved_regs) {
 		_memcpy_toio(lbc, ctrl->saved_regs,
@@ -488,13 +393,9 @@ static void fsl_lbc_syscore_resume(void)
 		kfree(ctrl->saved_regs);
 		ctrl->saved_regs = NULL;
 	}
-<<<<<<< HEAD
-	return 0;
-=======
 
 out:
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_SUSPEND */
 
@@ -506,8 +407,6 @@ static const struct of_device_id fsl_lbc_match[] = {
 	{},
 };
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SUSPEND
 static struct syscore_ops lbc_syscore_pm_ops = {
 	.suspend = fsl_lbc_syscore_suspend,
@@ -515,33 +414,19 @@ static struct syscore_ops lbc_syscore_pm_ops = {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_driver fsl_lbc_ctrl_driver = {
 	.driver = {
 		.name = "fsl-lbc",
 		.of_match_table = fsl_lbc_match,
 	},
 	.probe = fsl_lbc_ctrl_probe,
-<<<<<<< HEAD
-#ifdef CONFIG_SUSPEND
-	.suspend     = fsl_lbc_suspend,
-	.resume      = fsl_lbc_resume,
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init fsl_lbc_init(void)
 {
-<<<<<<< HEAD
-	return platform_driver_register(&fsl_lbc_ctrl_driver);
-}
-module_init(fsl_lbc_init);
-=======
 #ifdef CONFIG_SUSPEND
 	register_syscore_ops(&lbc_syscore_pm_ops);
 #endif
 	return platform_driver_register(&fsl_lbc_ctrl_driver);
 }
 subsys_initcall(fsl_lbc_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

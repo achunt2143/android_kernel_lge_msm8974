@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * truncate.c
  *
@@ -9,14 +6,6 @@
  *	Truncate handling routines for the OSTA-UDF(tm) filesystem.
  *
  * COPYRIGHT
-<<<<<<< HEAD
- *	This file is distributed under the terms of the GNU General Public
- *	License (GPL). Copies of the GPL can be obtained from:
- *		ftp://prep.ai.mit.edu/pub/gnu/GPL
- *	Each contributing author retains all rights to their own work.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  (C) 1999-2004 Ben Fennema
  *  (C) 1999 Stelias Computing Inc
  *
@@ -29,10 +18,6 @@
 #include "udfdecl.h"
 #include <linux/fs.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/buffer_head.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "udf_i.h"
 #include "udf_sb.h"
@@ -59,11 +44,7 @@ static void extent_trunc(struct inode *inode, struct extent_position *epos,
 
 	if (elen != nelen) {
 		udf_write_aext(inode, epos, &neloc, nelen, 0);
-<<<<<<< HEAD
-		if (last_block - first_block > 0) {
-=======
 		if (last_block > first_block) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (etype == (EXT_RECORDED_ALLOCATED >> 30))
 				mark_inode_dirty(inode);
 
@@ -135,57 +116,6 @@ void udf_truncate_tail_extent(struct inode *inode)
 
 void udf_discard_prealloc(struct inode *inode)
 {
-<<<<<<< HEAD
-	struct extent_position epos = { NULL, 0, {0, 0} };
-	struct kernel_lb_addr eloc;
-	uint32_t elen;
-	uint64_t lbcount = 0;
-	int8_t etype = -1, netype;
-	int adsize;
-	struct udf_inode_info *iinfo = UDF_I(inode);
-
-	if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB ||
-	    inode->i_size == iinfo->i_lenExtents)
-		return;
-
-	if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_SHORT)
-		adsize = sizeof(struct short_ad);
-	else if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_LONG)
-		adsize = sizeof(struct long_ad);
-	else
-		adsize = 0;
-
-	epos.block = iinfo->i_location;
-
-	/* Find the last extent in the file */
-	while ((netype = udf_next_aext(inode, &epos, &eloc, &elen, 1)) != -1) {
-		etype = netype;
-		lbcount += elen;
-	}
-	if (etype == (EXT_NOT_RECORDED_ALLOCATED >> 30)) {
-		epos.offset -= adsize;
-		lbcount -= elen;
-		extent_trunc(inode, &epos, &eloc, etype, elen, 0);
-		if (!epos.bh) {
-			iinfo->i_lenAlloc =
-				epos.offset -
-				udf_file_entry_alloc_offset(inode);
-			mark_inode_dirty(inode);
-		} else {
-			struct allocExtDesc *aed =
-				(struct allocExtDesc *)(epos.bh->b_data);
-			aed->lengthAllocDescs =
-				cpu_to_le32(epos.offset -
-					    sizeof(struct allocExtDesc));
-			if (!UDF_QUERY_FLAG(inode->i_sb, UDF_FLAG_STRICT) ||
-			    UDF_SB(inode->i_sb)->s_udfrev >= 0x0201)
-				udf_update_tag(epos.bh->b_data, epos.offset);
-			else
-				udf_update_tag(epos.bh->b_data,
-					       sizeof(struct allocExtDesc));
-			mark_buffer_dirty_inode(epos.bh, inode);
-		}
-=======
 	struct extent_position epos = {};
 	struct extent_position prev_epos = {};
 	struct kernel_lb_addr eloc;
@@ -216,16 +146,12 @@ void udf_discard_prealloc(struct inode *inode)
 		udf_delete_aext(inode, prev_epos);
 		udf_free_blocks(inode->i_sb, inode, &eloc, 0,
 				DIV_ROUND_UP(elen, bsize));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* This inode entry is in-memory only and thus we don't have to mark
 	 * the inode dirty */
 	iinfo->i_lenExtents = lbcount;
 	brelse(epos.bh);
-<<<<<<< HEAD
-=======
 	brelse(prev_epos.bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void udf_update_alloc_ext_desc(struct inode *inode,
@@ -251,11 +177,7 @@ static void udf_update_alloc_ext_desc(struct inode *inode,
  * for making file shorter. For making file longer, udf_extend_file() has to
  * be used.
  */
-<<<<<<< HEAD
-void udf_truncate_extents(struct inode *inode)
-=======
 int udf_truncate_extents(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct extent_position epos;
 	struct kernel_lb_addr eloc, neloc = {};
@@ -280,11 +202,7 @@ int udf_truncate_extents(struct inode *inode)
 	if (etype == -1) {
 		/* We should extend the file? */
 		WARN_ON(byte_offset);
-<<<<<<< HEAD
-		return;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	epos.offset -= adsize;
 	extent_trunc(inode, &epos, &eloc, etype, elen, byte_offset);
@@ -301,21 +219,13 @@ int udf_truncate_extents(struct inode *inode)
 
 	while ((etype = udf_current_aext(inode, &epos, &eloc,
 					 &elen, 0)) != -1) {
-<<<<<<< HEAD
-		if (etype == (EXT_NEXT_EXTENT_ALLOCDECS >> 30)) {
-=======
 		if (etype == (EXT_NEXT_EXTENT_ALLOCDESCS >> 30)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udf_write_aext(inode, &epos, &neloc, nelen, 0);
 			if (indirect_ext_len) {
 				/* We managed to free all extents in the
 				 * indirect extent - free it too */
 				BUG_ON(!epos.bh);
-<<<<<<< HEAD
-				udf_free_blocks(sb, inode, &epos.block,
-=======
 				udf_free_blocks(sb, NULL, &epos.block,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						0, indirect_ext_len);
 			} else if (!epos.bh) {
 				iinfo->i_lenAlloc = lenalloc;
@@ -326,16 +236,11 @@ int udf_truncate_extents(struct inode *inode)
 			brelse(epos.bh);
 			epos.offset = sizeof(struct allocExtDesc);
 			epos.block = eloc;
-<<<<<<< HEAD
-			epos.bh = udf_tread(sb,
-					udf_get_lb_pblock(sb, &eloc, 0));
-=======
 			epos.bh = sb_bread(sb,
 					udf_get_lb_pblock(sb, &eloc, 0));
 			/* Error reading indirect block? */
 			if (!epos.bh)
 				return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (elen)
 				indirect_ext_len =
 					(elen + sb->s_blocksize - 1) >>
@@ -350,11 +255,7 @@ int udf_truncate_extents(struct inode *inode)
 
 	if (indirect_ext_len) {
 		BUG_ON(!epos.bh);
-<<<<<<< HEAD
-		udf_free_blocks(sb, inode, &epos.block, 0, indirect_ext_len);
-=======
 		udf_free_blocks(sb, NULL, &epos.block, 0, indirect_ext_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!epos.bh) {
 		iinfo->i_lenAlloc = lenalloc;
 		mark_inode_dirty(inode);
@@ -363,8 +264,5 @@ int udf_truncate_extents(struct inode *inode)
 	iinfo->i_lenExtents = inode->i_size;
 
 	brelse(epos.bh);
-<<<<<<< HEAD
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

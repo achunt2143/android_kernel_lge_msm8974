@@ -1,54 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/cpufreq/freq_table.c
  *
  * Copyright (C) 2002 - 2003 Dominik Brodowski
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/cpufreq.h>
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/cpufreq.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*********************************************************************
  *                     FREQUENCY TABLE HELPERS                       *
  *********************************************************************/
 
-<<<<<<< HEAD
-int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
-				    struct cpufreq_frequency_table *table)
-{
-	unsigned int min_freq = ~0;
-	unsigned int max_freq = 0;
-	unsigned int i;
-
-	for (i = 0; (table[i].frequency != CPUFREQ_TABLE_END); i++) {
-		unsigned int freq = table[i].frequency;
-		if (freq == CPUFREQ_ENTRY_INVALID) {
-			pr_debug("table entry %u is invalid, skipping\n", i);
-
-			continue;
-		}
-		pr_debug("table entry %u: %u kHz, %u index\n",
-					i, freq, table[i].index);
-=======
 bool policy_has_boost_freq(struct cpufreq_policy *policy)
 {
 	struct cpufreq_frequency_table *pos, *table = policy->freq_table;
@@ -80,7 +45,6 @@ int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 			continue;
 
 		pr_debug("table entry %u: %u kHz\n", (int)(pos - table), freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (freq < min_freq)
 			min_freq = freq;
 		if (freq > max_freq)
@@ -88,9 +52,6 @@ int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 	}
 
 	policy->min = policy->cpuinfo.min_freq = min_freq;
-<<<<<<< HEAD
-	policy->max = policy->cpuinfo.max_freq = max_freq;
-=======
 	policy->max = max_freq;
 	/*
 	 * If the driver has set its own cpuinfo.max_freq above max_freq, leave
@@ -98,24 +59,12 @@ int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 	 */
 	if (policy->cpuinfo.max_freq < max_freq)
 		policy->max = policy->cpuinfo.max_freq = max_freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (policy->min == ~0)
 		return -EINVAL;
 	else
 		return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(cpufreq_frequency_table_cpuinfo);
-
-
-int cpufreq_frequency_table_verify(struct cpufreq_policy *policy,
-				   struct cpufreq_frequency_table *table)
-{
-	unsigned int next_larger = ~0;
-	unsigned int i;
-	unsigned int count = 0;
-=======
 
 int cpufreq_frequency_table_verify(struct cpufreq_policy_data *policy,
 				   struct cpufreq_frequency_table *table)
@@ -123,34 +72,10 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy_data *policy,
 	struct cpufreq_frequency_table *pos;
 	unsigned int freq, next_larger = ~0;
 	bool found = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("request for verification of policy (%u - %u kHz) for cpu %u\n",
 					policy->min, policy->max, policy->cpu);
 
-<<<<<<< HEAD
-	if (!cpu_online(policy->cpu))
-		return -EINVAL;
-
-	cpufreq_verify_within_limits(policy, policy->cpuinfo.min_freq,
-				     policy->cpuinfo.max_freq);
-
-	for (i = 0; (table[i].frequency != CPUFREQ_TABLE_END); i++) {
-		unsigned int freq = table[i].frequency;
-		if (freq == CPUFREQ_ENTRY_INVALID)
-			continue;
-		if ((freq >= policy->min) && (freq <= policy->max))
-			count++;
-		else if ((next_larger > freq) && (freq > policy->max))
-			next_larger = freq;
-	}
-
-	if (!count)
-		policy->max = next_larger;
-
-	cpufreq_verify_within_limits(policy, policy->cpuinfo.min_freq,
-				     policy->cpuinfo.max_freq);
-=======
 	cpufreq_verify_within_cpu_limits(policy);
 
 	cpufreq_for_each_valid_entry(pos, table) {
@@ -169,7 +94,6 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy_data *policy,
 		policy->max = next_larger;
 		cpufreq_verify_within_cpu_limits(policy);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("verification lead to (%u - %u kHz) for cpu %u\n",
 				policy->min, policy->max, policy->cpu);
@@ -178,24 +102,6 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy_data *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_frequency_table_verify);
 
-<<<<<<< HEAD
-
-int cpufreq_frequency_table_target(struct cpufreq_policy *policy,
-				   struct cpufreq_frequency_table *table,
-				   unsigned int target_freq,
-				   unsigned int relation,
-				   unsigned int *index)
-{
-	struct cpufreq_frequency_table optimal = {
-		.index = ~0,
-		.frequency = 0,
-	};
-	struct cpufreq_frequency_table suboptimal = {
-		.index = ~0,
-		.frequency = 0,
-	};
-	unsigned int i;
-=======
 /*
  * Generic routine to verify policy & frequency table, requires driver to set
  * policy->freq_table prior to it.
@@ -225,7 +131,6 @@ int cpufreq_table_index_unsorted(struct cpufreq_policy *policy,
 	struct cpufreq_frequency_table *table = policy->freq_table;
 	unsigned int freq, diff, i = 0;
 	int index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("request for target %u kHz (relation: %u) for cpu %u\n",
 					target_freq, relation, policy->cpu);
@@ -235,27 +140,11 @@ int cpufreq_table_index_unsorted(struct cpufreq_policy *policy,
 		suboptimal.frequency = ~0;
 		break;
 	case CPUFREQ_RELATION_L:
-<<<<<<< HEAD
-=======
 	case CPUFREQ_RELATION_C:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		optimal.frequency = ~0;
 		break;
 	}
 
-<<<<<<< HEAD
-	if (!cpu_online(policy->cpu))
-		return -EINVAL;
-
-	for (i = 0; (table[i].frequency != CPUFREQ_TABLE_END); i++) {
-		unsigned int freq = table[i].frequency;
-		if (freq == CPUFREQ_ENTRY_INVALID)
-			continue;
-		if ((freq < policy->min) || (freq > policy->max))
-			continue;
-		if (freq == target_freq) {
-			optimal.index = i;
-=======
 	cpufreq_for_each_valid_entry_idx(pos, table, i) {
 		freq = pos->frequency;
 
@@ -263,7 +152,6 @@ int cpufreq_table_index_unsorted(struct cpufreq_policy *policy,
 			continue;
 		if (freq == target_freq) {
 			optimal.driver_data = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		switch (relation) {
@@ -271,20 +159,12 @@ int cpufreq_table_index_unsorted(struct cpufreq_policy *policy,
 			if (freq < target_freq) {
 				if (freq >= optimal.frequency) {
 					optimal.frequency = freq;
-<<<<<<< HEAD
-					optimal.index = i;
-=======
 					optimal.driver_data = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			} else {
 				if (freq <= suboptimal.frequency) {
 					suboptimal.frequency = freq;
-<<<<<<< HEAD
-					suboptimal.index = i;
-=======
 					suboptimal.driver_data = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 			break;
@@ -292,57 +172,11 @@ int cpufreq_table_index_unsorted(struct cpufreq_policy *policy,
 			if (freq > target_freq) {
 				if (freq <= optimal.frequency) {
 					optimal.frequency = freq;
-<<<<<<< HEAD
-					optimal.index = i;
-=======
 					optimal.driver_data = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			} else {
 				if (freq >= suboptimal.frequency) {
 					suboptimal.frequency = freq;
-<<<<<<< HEAD
-					suboptimal.index = i;
-				}
-			}
-			break;
-		}
-	}
-	if (optimal.index > i) {
-		if (suboptimal.index > i)
-			return -EINVAL;
-		*index = suboptimal.index;
-	} else
-		*index = optimal.index;
-
-	pr_debug("target is %u (%u kHz, %u)\n", *index, table[*index].frequency,
-		table[*index].index);
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(cpufreq_frequency_table_target);
-
-static DEFINE_PER_CPU(struct cpufreq_frequency_table *, cpufreq_show_table);
-/**
- * show_available_freqs - show available frequencies for the specified CPU
- */
-static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf)
-{
-	unsigned int i = 0;
-	unsigned int cpu = policy->cpu;
-	ssize_t count = 0;
-	struct cpufreq_frequency_table *table;
-
-	if (!per_cpu(cpufreq_show_table, cpu))
-		return -ENODEV;
-
-	table = per_cpu(cpufreq_show_table, cpu);
-
-	for (i = 0; (table[i].frequency != CPUFREQ_TABLE_END); i++) {
-		if (table[i].frequency == CPUFREQ_ENTRY_INVALID)
-			continue;
-		count += sprintf(&buf[count], "%d ", table[i].frequency);
-=======
 					suboptimal.driver_data = i;
 				}
 			}
@@ -421,7 +255,6 @@ static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf,
 			continue;
 
 		count += sprintf(&buf[count], "%d ", pos->frequency);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	count += sprintf(&buf[count], "\n");
 
@@ -429,44 +262,6 @@ static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf,
 
 }
 
-<<<<<<< HEAD
-struct freq_attr cpufreq_freq_attr_scaling_available_freqs = {
-	.attr = { .name = "scaling_available_frequencies",
-		  .mode = 0444,
-		},
-	.show = show_available_freqs,
-};
-EXPORT_SYMBOL_GPL(cpufreq_freq_attr_scaling_available_freqs);
-
-/*
- * if you use these, you must assure that the frequency table is valid
- * all the time between get_attr and put_attr!
- */
-void cpufreq_frequency_table_get_attr(struct cpufreq_frequency_table *table,
-				      unsigned int cpu)
-{
-	pr_debug("setting show_table for cpu %u to %p\n", cpu, table);
-	per_cpu(cpufreq_show_table, cpu) = table;
-}
-EXPORT_SYMBOL_GPL(cpufreq_frequency_table_get_attr);
-
-void cpufreq_frequency_table_put_attr(unsigned int cpu)
-{
-	pr_debug("clearing show_table for cpu %u\n", cpu);
-	per_cpu(cpufreq_show_table, cpu) = NULL;
-}
-EXPORT_SYMBOL_GPL(cpufreq_frequency_table_put_attr);
-
-struct cpufreq_frequency_table *cpufreq_frequency_get_table(unsigned int cpu)
-{
-	return per_cpu(cpufreq_show_table, cpu);
-}
-EXPORT_SYMBOL_GPL(cpufreq_frequency_get_table);
-
-MODULE_AUTHOR("Dominik Brodowski <linux@brodo.de>");
-MODULE_DESCRIPTION("CPUfreq frequency table helpers");
-MODULE_LICENSE("GPL");
-=======
 #define cpufreq_attr_available_freq(_name)	  \
 struct freq_attr cpufreq_freq_attr_##_name##_freqs =     \
 __ATTR_RO(_name##_frequencies)
@@ -577,4 +372,3 @@ int cpufreq_table_validate_and_sort(struct cpufreq_policy *policy)
 
 MODULE_AUTHOR("Dominik Brodowski <linux@brodo.de>");
 MODULE_DESCRIPTION("CPUfreq frequency table helpers");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Force feedback support for hid-compliant for some of the devices from
  * Logitech, namely:
@@ -13,22 +10,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should you need to contact me, the author, you can do so by
  * e-mail - mail your message to <johann.deneux@it.uu.se>
@@ -37,15 +18,8 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/input.h>
-<<<<<<< HEAD
-#include <linux/usb.h>
 #include <linux/hid.h>
 
-#include "usbhid/usbhid.h"
-=======
-#include <linux/hid.h>
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hid-lg.h"
 
 struct dev_type {
@@ -101,11 +75,7 @@ static int hid_lgff_play(struct input_dev *dev, void *data, struct ff_effect *ef
 		report->field[0]->value[2] = x;
 		report->field[0]->value[3] = y;
 		dbg_hid("(x, y)=(%04x, %04x)\n", x, y);
-<<<<<<< HEAD
-		usbhid_submit_report(hid, report, USB_DIR_OUT);
-=======
 		hid_hw_request(hid, report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case FF_RUMBLE:
@@ -120,11 +90,7 @@ static int hid_lgff_play(struct input_dev *dev, void *data, struct ff_effect *ef
 		report->field[0]->value[2] = left;
 		report->field[0]->value[3] = right;
 		dbg_hid("(left, right)=(%04x, %04x)\n", left, right);
-<<<<<<< HEAD
-		usbhid_submit_report(hid, report, USB_DIR_OUT);
-=======
 		hid_hw_request(hid, report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return 0;
@@ -144,28 +110,17 @@ static void hid_lgff_set_autocenter(struct input_dev *dev, u16 magnitude)
 	*value++ = 0x80;
 	*value++ = 0x00;
 	*value = 0x00;
-<<<<<<< HEAD
-	usbhid_submit_report(hid, report, USB_DIR_OUT);
-=======
 	hid_hw_request(hid, report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int lgff_init(struct hid_device* hid)
 {
-<<<<<<< HEAD
-	struct hid_input *hidinput = list_entry(hid->inputs.next, struct hid_input, list);
-	struct input_dev *dev = hidinput->input;
-=======
 	struct hid_input *hidinput;
 	struct input_dev *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const signed short *ff_bits = ff_joystick;
 	int error;
 	int i;
 
-<<<<<<< HEAD
-=======
 	if (list_empty(&hid->inputs)) {
 		hid_err(hid, "no inputs found\n");
 		return -ENODEV;
@@ -173,7 +128,6 @@ int lgff_init(struct hid_device* hid)
 	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
 	dev = hidinput->input;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check that the report looks ok */
 	if (!hid_validate_values(hid, HID_OUTPUT_REPORT, 0, 0, 7))
 		return -ENODEV;

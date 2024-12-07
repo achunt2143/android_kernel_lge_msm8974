@@ -1,43 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2007-2011, Intel Corporation.
  * All Rights Reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
- **************************************************************************/
-
-/* MID device specific descriptors */
-
-struct oaktrail_vbt {
-	s8 signature[4];	/*4 bytes,"$GCT" */
-	u8 revision;
-	u8 size;
-	u8 checksum;
-	void *oaktrail_gct;
-} __packed;
-=======
  **************************************************************************/
 
 struct psb_intel_mode_device;
 
 /* MID device specific descriptors */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct oaktrail_timing_info {
 	u16 pixel_clock;
@@ -173,11 +143,7 @@ union oaktrail_panel_rx {
 	u16 panel_receiver;
 } __packed;
 
-<<<<<<< HEAD
-struct oaktrail_gct_v1 {
-=======
 struct gct_r0 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union { /*8 bits,Defined as follows: */
 		struct {
 			u8 PanelType:4; /*4 bits, Bit field for panels*/
@@ -194,11 +160,7 @@ struct gct_r0 {
 	union oaktrail_panel_rx panelrx[4]; /* panel receivers*/
 } __packed;
 
-<<<<<<< HEAD
-struct oaktrail_gct_v2 {
-=======
 struct gct_r1 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union { /*8 bits,Defined as follows: */
 		struct {
 			u8 PanelType:4; /*4 bits, Bit field for panels*/
@@ -215,8 +177,6 @@ struct gct_r1 {
 	union oaktrail_panel_rx panelrx[4]; /* panel receivers*/
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct gct_r10 {
 	struct gct_r10_timing_info DTD;
 	u16 Panel_MIPI_Display_Descriptor;
@@ -227,7 +187,6 @@ struct gct_r10 {
 	u32 MIPI_Panel_Init_ptr;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct oaktrail_gct_data {
 	u8 bpi; /* boot panel index, number of panel used during boot */
 	u8 pt; /* panel type, 4 bit field, 0=lvds, 1=mipi */
@@ -246,12 +205,6 @@ struct oaktrail_gct_data {
 #define MODE_SETTING_IN_DSR		0x4
 #define MODE_SETTING_ENCODER_DONE	0x8
 
-<<<<<<< HEAD
-#define GCT_R10_HEADER_SIZE		16
-#define GCT_R10_DISPLAY_DESC_SIZE	28
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Moorestown HDMI interfaces
  */
@@ -286,12 +239,9 @@ extern void oaktrail_hdmi_i2c_exit(struct pci_dev *dev);
 extern void oaktrail_hdmi_save(struct drm_device *dev);
 extern void oaktrail_hdmi_restore(struct drm_device *dev);
 extern void oaktrail_hdmi_init(struct drm_device *dev, struct psb_intel_mode_device *mode_dev);
-<<<<<<< HEAD
-=======
 extern int oaktrail_crtc_hdmi_mode_set(struct drm_crtc *crtc, struct drm_display_mode *mode,
 						struct drm_display_mode *adjusted_mode, int x, int y,
 						struct drm_framebuffer *old_fb);
 extern void oaktrail_crtc_hdmi_dpms(struct drm_crtc *crtc, int mode);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

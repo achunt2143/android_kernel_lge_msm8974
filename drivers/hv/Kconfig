@@ -1,33 +1,18 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menu "Microsoft Hyper-V guest support"
 
 config HYPERV
 	tristate "Microsoft Hyper-V client drivers"
-<<<<<<< HEAD
-	depends on X86 && ACPI && PCI
-=======
 	depends on (X86 && X86_LOCAL_APIC && HYPERVISOR_GUEST) \
 		|| (ACPI && ARM64 && !CPU_BIG_ENDIAN)
 	select PARAVIRT
 	select X86_HV_CALLBACK_VECTOR if X86
 	select OF_EARLY_FLATTREE if OF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this option to run Linux as a Hyper-V client operating
 	  system.
 
-<<<<<<< HEAD
-config HYPERV_UTILS
-	tristate "Microsoft Hyper-V Utilities driver"
-	depends on HYPERV && CONNECTOR && NLS
-	help
-	  Select this option to enable the Hyper-V Utilities.
-
-=======
 config HYPERV_VTL_MODE
 	bool "Enable Linux to boot in VTL context"
 	depends on X86_64 && HYPERV
@@ -70,5 +55,4 @@ config HYPERV_BALLOON
 	help
 	  Select this option to enable Hyper-V Balloon driver.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu

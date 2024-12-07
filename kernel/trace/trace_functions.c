@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ring buffer based function tracer
  *
@@ -11,42 +8,17 @@
  * Based on code from the latency_tracer, that is:
  *
  *  Copyright (C) 2004-2006 Ingo Molnar
-<<<<<<< HEAD
- *  Copyright (C) 2004 William Lee Irwin III
-=======
  *  Copyright (C) 2004 Nadia Yvette Chambers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/ring_buffer.h>
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
 #include <linux/ftrace.h>
-<<<<<<< HEAD
-=======
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 
 #include "trace.h"
 
-<<<<<<< HEAD
-/* function tracing enabled */
-static int			ftrace_function_enabled;
-
-static struct trace_array	*func_trace;
-
-static void tracing_start_function_trace(void);
-static void tracing_stop_function_trace(void);
-
-static int function_trace_init(struct trace_array *tr)
-{
-	func_trace = tr;
-	tr->cpu = get_cpu();
-	put_cpu();
-
-	tracing_start_cmdline_record();
-	tracing_start_function_trace();
-=======
 static void tracing_start_function_trace(struct trace_array *tr);
 static void tracing_stop_function_trace(struct trace_array *tr);
 static void
@@ -181,33 +153,18 @@ static int function_trace_init(struct trace_array *tr)
 
 	tracing_start_cmdline_record();
 	tracing_start_function_trace(tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void function_trace_reset(struct trace_array *tr)
 {
-<<<<<<< HEAD
-	tracing_stop_function_trace();
-	tracing_stop_cmdline_record();
-=======
 	tracing_stop_function_trace(tr);
 	tracing_stop_cmdline_record();
 	ftrace_reset_array_ops(tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void function_trace_start(struct trace_array *tr)
 {
-<<<<<<< HEAD
-	tracing_reset_online_cpus(tr);
-}
-
-static void
-function_trace_call_preempt_only(unsigned long ip, unsigned long parent_ip)
-{
-	struct trace_array *tr = func_trace;
-=======
 	tracing_reset_online_cpus(&tr->array_buffer);
 }
 
@@ -261,36 +218,10 @@ function_stack_trace_call(unsigned long ip, unsigned long parent_ip,
 			  struct ftrace_ops *op, struct ftrace_regs *fregs)
 {
 	struct trace_array *tr = op->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct trace_array_cpu *data;
 	unsigned long flags;
 	long disabled;
 	int cpu;
-<<<<<<< HEAD
-	int pc;
-
-	if (unlikely(!ftrace_function_enabled))
-		return;
-
-	pc = preempt_count();
-	preempt_disable_notrace();
-	local_save_flags(flags);
-	cpu = raw_smp_processor_id();
-	data = tr->data[cpu];
-	disabled = atomic_inc_return(&data->disabled);
-
-	if (likely(disabled == 1))
-		trace_function(tr, ip, parent_ip, flags, pc);
-
-	atomic_dec(&data->disabled);
-	preempt_enable_notrace();
-}
-
-static void
-function_trace_call(unsigned long ip, unsigned long parent_ip)
-{
-	struct trace_array *tr = func_trace;
-=======
 	unsigned int trace_ctx;
 
 	if (unlikely(!tr->function_enabled))
@@ -398,20 +329,13 @@ function_stack_no_repeats_trace_call(unsigned long ip, unsigned long parent_ip,
 {
 	struct trace_func_repeats *last_info;
 	struct trace_array *tr = op->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct trace_array_cpu *data;
 	unsigned long flags;
 	long disabled;
 	int cpu;
-<<<<<<< HEAD
-	int pc;
-
-	if (unlikely(!ftrace_function_enabled))
-=======
 	unsigned int trace_ctx;
 
 	if (unlikely(!tr->function_enabled))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/*
@@ -420,16 +344,6 @@ function_stack_no_repeats_trace_call(unsigned long ip, unsigned long parent_ip,
 	 */
 	local_irq_save(flags);
 	cpu = raw_smp_processor_id();
-<<<<<<< HEAD
-	data = tr->data[cpu];
-	disabled = atomic_inc_return(&data->disabled);
-
-	if (likely(disabled == 1)) {
-		pc = preempt_count();
-		trace_function(tr, ip, parent_ip, flags, pc);
-	}
-
-=======
 	data = per_cpu_ptr(tr->array_buffer.data, cpu);
 	disabled = atomic_inc_return(&data->disabled);
 
@@ -446,139 +360,19 @@ function_stack_no_repeats_trace_call(unsigned long ip, unsigned long parent_ip,
 	}
 
  out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&data->disabled);
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-static void
-function_stack_trace_call(unsigned long ip, unsigned long parent_ip)
-{
-	struct trace_array *tr = func_trace;
-	struct trace_array_cpu *data;
-	unsigned long flags;
-	long disabled;
-	int cpu;
-	int pc;
-
-	if (unlikely(!ftrace_function_enabled))
-		return;
-
-	/*
-	 * Need to use raw, since this must be called before the
-	 * recursive protection is performed.
-	 */
-	local_irq_save(flags);
-	cpu = raw_smp_processor_id();
-	data = tr->data[cpu];
-	disabled = atomic_inc_return(&data->disabled);
-
-	if (likely(disabled == 1)) {
-		pc = preempt_count();
-		trace_function(tr, ip, parent_ip, flags, pc);
-		/*
-		 * skip over 5 funcs:
-		 *    __ftrace_trace_stack,
-		 *    __trace_stack,
-		 *    function_stack_trace_call
-		 *    ftrace_list_func
-		 *    ftrace_call
-		 */
-		__trace_stack(tr, flags, 5, pc);
-	}
-
-	atomic_dec(&data->disabled);
-	local_irq_restore(flags);
-}
-
-
-static struct ftrace_ops trace_ops __read_mostly =
-{
-	.func = function_trace_call,
-	.flags = FTRACE_OPS_FL_GLOBAL,
-};
-
-static struct ftrace_ops trace_stack_ops __read_mostly =
-{
-	.func = function_stack_trace_call,
-	.flags = FTRACE_OPS_FL_GLOBAL,
-};
-
-/* Our two options */
-enum {
-	TRACE_FUNC_OPT_STACK = 0x1,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct tracer_opt func_opts[] = {
 #ifdef CONFIG_STACKTRACE
 	{ TRACER_OPT(func_stack_trace, TRACE_FUNC_OPT_STACK) },
 #endif
-<<<<<<< HEAD
-=======
 	{ TRACER_OPT(func-no-repeats, TRACE_FUNC_OPT_NO_REPEATS) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ } /* Always set a last empty entry */
 };
 
 static struct tracer_flags func_flags = {
-<<<<<<< HEAD
-	.val = 0, /* By default: all flags disabled */
-	.opts = func_opts
-};
-
-static void tracing_start_function_trace(void)
-{
-	ftrace_function_enabled = 0;
-
-	if (trace_flags & TRACE_ITER_PREEMPTONLY)
-		trace_ops.func = function_trace_call_preempt_only;
-	else
-		trace_ops.func = function_trace_call;
-
-	if (func_flags.val & TRACE_FUNC_OPT_STACK)
-		register_ftrace_function(&trace_stack_ops);
-	else
-		register_ftrace_function(&trace_ops);
-
-	ftrace_function_enabled = 1;
-}
-
-static void tracing_stop_function_trace(void)
-{
-	ftrace_function_enabled = 0;
-
-	if (func_flags.val & TRACE_FUNC_OPT_STACK)
-		unregister_ftrace_function(&trace_stack_ops);
-	else
-		unregister_ftrace_function(&trace_ops);
-}
-
-static int func_set_flag(u32 old_flags, u32 bit, int set)
-{
-	if (bit == TRACE_FUNC_OPT_STACK) {
-		/* do nothing if already set */
-		if (!!set == !!(func_flags.val & TRACE_FUNC_OPT_STACK))
-			return 0;
-
-		if (set) {
-			unregister_ftrace_function(&trace_ops);
-			register_ftrace_function(&trace_stack_ops);
-		} else {
-			unregister_ftrace_function(&trace_stack_ops);
-			register_ftrace_function(&trace_ops);
-		}
-
-		return 0;
-	}
-
-	return -EINVAL;
-}
-
-static struct tracer function_trace __read_mostly =
-=======
 	.val = TRACE_FUNC_NO_OPTS, /* By default: all flags disabled */
 	.opts = func_opts
 };
@@ -632,50 +426,20 @@ func_set_flag(struct trace_array *tr, u32 old_flags, u32 bit, int set)
 }
 
 static struct tracer function_trace __tracer_data =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.name		= "function",
 	.init		= function_trace_init,
 	.reset		= function_trace_reset,
 	.start		= function_trace_start,
-<<<<<<< HEAD
-	.wait_pipe	= poll_wait_pipe,
-	.flags		= &func_flags,
-	.set_flag	= func_set_flag,
-=======
 	.flags		= &func_flags,
 	.set_flag	= func_set_flag,
 	.allow_instances = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_FTRACE_SELFTEST
 	.selftest	= trace_selftest_startup_function,
 #endif
 };
 
 #ifdef CONFIG_DYNAMIC_FTRACE
-<<<<<<< HEAD
-static void
-ftrace_traceon(unsigned long ip, unsigned long parent_ip, void **data)
-{
-	long *count = (long *)data;
-
-	if (tracing_is_on())
-		return;
-
-	if (!*count)
-		return;
-
-	if (*count != -1)
-		(*count)--;
-
-	tracing_on();
-}
-
-static void
-ftrace_traceoff(unsigned long ip, unsigned long parent_ip, void **data)
-{
-	long *count = (long *)data;
-=======
 static void update_traceon_count(struct ftrace_probe_ops *ops,
 				 unsigned long ip,
 				 struct trace_array *tr, bool on,
@@ -823,29 +587,10 @@ ftrace_stacktrace_count(unsigned long ip, unsigned long parent_ip,
 	long *count;
 	long old_count;
 	long new_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tracing_is_on())
 		return;
 
-<<<<<<< HEAD
-	if (!*count)
-		return;
-
-	if (*count != -1)
-		(*count)--;
-
-	tracing_off();
-}
-
-static int
-ftrace_trace_onoff_print(struct seq_file *m, unsigned long ip,
-			 struct ftrace_probe_ops *ops, void *data);
-
-static struct ftrace_probe_ops traceon_probe_ops = {
-	.func			= ftrace_traceon,
-	.print			= ftrace_trace_onoff_print,
-=======
 	/* unlimited? */
 	if (!mapper) {
 		trace_stack(tr);
@@ -1036,58 +781,10 @@ static struct ftrace_probe_ops cpudump_probe_ops = {
 static struct ftrace_probe_ops traceon_probe_ops = {
 	.func			= ftrace_traceon,
 	.print			= ftrace_traceon_print,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ftrace_probe_ops traceoff_probe_ops = {
 	.func			= ftrace_traceoff,
-<<<<<<< HEAD
-	.print			= ftrace_trace_onoff_print,
-};
-
-static int
-ftrace_trace_onoff_print(struct seq_file *m, unsigned long ip,
-			 struct ftrace_probe_ops *ops, void *data)
-{
-	long count = (long)data;
-
-	seq_printf(m, "%ps:", (void *)ip);
-
-	if (ops == &traceon_probe_ops)
-		seq_printf(m, "traceon");
-	else
-		seq_printf(m, "traceoff");
-
-	if (count == -1)
-		seq_printf(m, ":unlimited\n");
-	else
-		seq_printf(m, ":count=%ld\n", count);
-
-	return 0;
-}
-
-static int
-ftrace_trace_onoff_unreg(char *glob, char *cmd, char *param)
-{
-	struct ftrace_probe_ops *ops;
-
-	/* we register both traceon and traceoff to this callback */
-	if (strcmp(cmd, "traceon") == 0)
-		ops = &traceon_probe_ops;
-	else
-		ops = &traceoff_probe_ops;
-
-	unregister_ftrace_function_probe_func(glob, ops);
-
-	return 0;
-}
-
-static int
-ftrace_trace_onoff_callback(struct ftrace_hash *hash,
-			    char *glob, char *cmd, char *param, int enable)
-{
-	struct ftrace_probe_ops *ops;
-=======
 	.print			= ftrace_traceoff_print,
 };
 
@@ -1102,7 +799,6 @@ ftrace_trace_probe_callback(struct trace_array *tr,
 			    struct ftrace_hash *hash, char *glob,
 			    char *cmd, char *param, int enable)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *count = (void *)-1;
 	char *number;
 	int ret;
@@ -1112,17 +808,7 @@ ftrace_trace_probe_callback(struct trace_array *tr,
 		return -EINVAL;
 
 	if (glob[0] == '!')
-<<<<<<< HEAD
-		return ftrace_trace_onoff_unreg(glob+1, cmd, param);
-
-	/* we register both traceon and traceoff to this callback */
-	if (strcmp(cmd, "traceon") == 0)
-		ops = &traceon_probe_ops;
-	else
-		ops = &traceoff_probe_ops;
-=======
 		return unregister_ftrace_function_probe_func(glob+1, tr, ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!param)
 		goto out_reg;
@@ -1136,26 +822,16 @@ ftrace_trace_probe_callback(struct trace_array *tr,
 	 * We use the callback data field (which is a pointer)
 	 * as our counter.
 	 */
-<<<<<<< HEAD
-	ret = strict_strtoul(number, 0, (unsigned long *)&count);
-=======
 	ret = kstrtoul(number, 0, (unsigned long *)&count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
  out_reg:
-<<<<<<< HEAD
-	ret = register_ftrace_function_probe(glob, ops, count);
-=======
 	ret = register_ftrace_function_probe(glob, tr, ops, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret < 0 ? ret : 0;
 }
 
-<<<<<<< HEAD
-=======
 static int
 ftrace_trace_onoff_callback(struct trace_array *tr, struct ftrace_hash *hash,
 			    char *glob, char *cmd, char *param, int enable)
@@ -1222,7 +898,6 @@ ftrace_cpudump_callback(struct trace_array *tr, struct ftrace_hash *hash,
 					   "1", enable);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ftrace_func_command ftrace_traceon_cmd = {
 	.name			= "traceon",
 	.func			= ftrace_trace_onoff_callback,
@@ -1233,8 +908,6 @@ static struct ftrace_func_command ftrace_traceoff_cmd = {
 	.func			= ftrace_trace_onoff_callback,
 };
 
-<<<<<<< HEAD
-=======
 static struct ftrace_func_command ftrace_stacktrace_cmd = {
 	.name			= "stacktrace",
 	.func			= ftrace_stacktrace_callback,
@@ -1250,7 +923,6 @@ static struct ftrace_func_command ftrace_cpudump_cmd = {
 	.func			= ftrace_cpudump_callback,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_func_cmd_traceon(void)
 {
 	int ret;
@@ -1261,9 +933,6 @@ static int __init init_func_cmd_traceon(void)
 
 	ret = register_ftrace_command(&ftrace_traceon_cmd);
 	if (ret)
-<<<<<<< HEAD
-		unregister_ftrace_command(&ftrace_traceoff_cmd);
-=======
 		goto out_free_traceoff;
 
 	ret = register_ftrace_command(&ftrace_stacktrace_cmd);
@@ -1289,7 +958,6 @@ static int __init init_func_cmd_traceon(void)
  out_free_traceoff:
 	unregister_ftrace_command(&ftrace_traceoff_cmd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 #else
@@ -1299,17 +967,8 @@ static inline int init_func_cmd_traceon(void)
 }
 #endif /* CONFIG_DYNAMIC_FTRACE */
 
-<<<<<<< HEAD
-static __init int init_function_trace(void)
-=======
 __init int init_function_trace(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	init_func_cmd_traceon();
 	return register_tracer(&function_trace);
 }
-<<<<<<< HEAD
-device_initcall(init_function_trace);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

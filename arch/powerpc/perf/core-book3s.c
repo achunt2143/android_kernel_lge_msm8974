@@ -1,24 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance event support - powerpc architecture code
  *
  * Copyright 2008-2009 Paul Mackerras, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-#include <linux/kernel.h>
-#include <linux/sched.h>
-#include <linux/perf_event.h>
-#include <linux/percpu.h>
-#include <linux/hardirq.h>
-=======
  */
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -27,14 +11,11 @@
 #include <linux/percpu.h>
 #include <linux/hardirq.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/reg.h>
 #include <asm/pmc.h>
 #include <asm/machdep.h>
 #include <asm/firmware.h>
 #include <asm/ptrace.h>
-<<<<<<< HEAD
-=======
 #include <asm/code-patching.h>
 #include <asm/hw_irq.h>
 #include <asm/interrupt.h>
@@ -47,7 +28,6 @@
 #define BHRB_TARGET		0x0000000000000002
 #define BHRB_PREDICTION		0x0000000000000001
 #define BHRB_EA			0xFFFFFFFFFFFFFFFCUL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpu_hw_events {
 	int n_events;
@@ -59,25 +39,13 @@ struct cpu_hw_events {
 	struct perf_event *event[MAX_HWEVENTS];
 	u64 events[MAX_HWEVENTS];
 	unsigned int flags[MAX_HWEVENTS];
-<<<<<<< HEAD
-	unsigned long mmcr[3];
-=======
 	struct mmcr_regs mmcr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct perf_event *limited_counter[MAX_LIMITED_HWCOUNTERS];
 	u8  limited_hwidx[MAX_LIMITED_HWCOUNTERS];
 	u64 alternatives[MAX_HWEVENTS][MAX_EVENT_ALTERNATIVES];
 	unsigned long amasks[MAX_HWEVENTS][MAX_EVENT_ALTERNATIVES];
 	unsigned long avalues[MAX_HWEVENTS][MAX_EVENT_ALTERNATIVES];
 
-<<<<<<< HEAD
-	unsigned int group_flag;
-	int n_txn_start;
-};
-DEFINE_PER_CPU(struct cpu_hw_events, cpu_hw_events);
-
-struct power_pmu *ppmu;
-=======
 	unsigned int txn_flags;
 	int n_txn_start;
 
@@ -96,7 +64,6 @@ struct power_pmu *ppmu;
 static DEFINE_PER_CPU(struct cpu_hw_events, cpu_hw_events);
 
 static struct power_pmu *ppmu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Normally, to ignore kernel events we set the FCS (freeze counters
@@ -110,24 +77,16 @@ static unsigned int freeze_events_kernel = MMCR0_FCS;
 /*
  * 32-bit doesn't have MMCRA but does have an MMCR2,
  * and a few other names are different.
-<<<<<<< HEAD
-=======
  * Also 32-bit doesn't have MMCR3, SIER2 and SIER3.
  * Define them as zero knowing that any code path accessing
  * these registers (via mtspr/mfspr) are done under ppmu flag
  * check for PPMU_ARCH_31 and we will not enter that code path
  * for 32-bit.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifdef CONFIG_PPC32
 
 #define MMCR0_FCHV		0
 #define MMCR0_PMCjCE		MMCR0_PMCnCE
-<<<<<<< HEAD
-
-#define SPRN_MMCRA		SPRN_MMCR2
-#define MMCRA_SAMPLE_ENABLE	0
-=======
 #define MMCR0_FC56		0
 #define MMCR0_PMAO		0
 #define MMCR0_EBE		0
@@ -142,31 +101,16 @@ static unsigned int freeze_events_kernel = MMCR0_FCS;
 #define MMCRA_SAMPLE_ENABLE	0
 #define MMCRA_BHRB_DISABLE     0
 #define MMCR0_PMCCEXT		0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long perf_ip_adjust(struct pt_regs *regs)
 {
 	return 0;
 }
-<<<<<<< HEAD
-static inline void perf_get_data_addr(struct pt_regs *regs, u64 *addrp) { }
-=======
 static inline void perf_get_data_addr(struct perf_event *event, struct pt_regs *regs, u64 *addrp) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 perf_get_misc_flags(struct pt_regs *regs)
 {
 	return 0;
 }
-<<<<<<< HEAD
-static inline void perf_read_regs(struct pt_regs *regs) { }
-static inline int perf_intr_is_nmi(struct pt_regs *regs)
-{
-	return 0;
-}
-
-#endif /* CONFIG_PPC32 */
-
-=======
 static inline void perf_read_regs(struct pt_regs *regs)
 {
 	regs->result = 0;
@@ -229,7 +173,6 @@ static bool regs_use_siar(struct pt_regs *regs)
 	return ((TRAP(regs) == INTERRUPT_PERFMON) && regs->result);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Things that are specific to 64-bit implementations.
  */
@@ -239,19 +182,12 @@ static inline unsigned long perf_ip_adjust(struct pt_regs *regs)
 {
 	unsigned long mmcra = regs->dsisr;
 
-<<<<<<< HEAD
-	if ((mmcra & MMCRA_SAMPLE_ENABLE) && !(ppmu->flags & PPMU_ALT_SIPR)) {
-=======
 	if ((ppmu->flags & PPMU_HAS_SSLOT) && (mmcra & MMCRA_SAMPLE_ENABLE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long slot = (mmcra & MMCRA_SLOT) >> MMCRA_SLOT_SHIFT;
 		if (slot > 1)
 			return 4 * (slot - 1);
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -260,19 +196,6 @@ static inline unsigned long perf_ip_adjust(struct pt_regs *regs)
  * If we're not doing instruction sampling, give them the SDAR
  * (sampled data address).  If we are doing instruction sampling, then
  * only give them the SDAR if it corresponds to the instruction
-<<<<<<< HEAD
- * pointed to by SIAR; this is indicated by the [POWER6_]MMCRA_SDSYNC
- * bit in MMCRA.
- */
-static inline void perf_get_data_addr(struct pt_regs *regs, u64 *addrp)
-{
-	unsigned long mmcra = regs->dsisr;
-	unsigned long sdsync = (ppmu->flags & PPMU_ALT_SIPR) ?
-		POWER6_MMCRA_SDSYNC : MMCRA_SDSYNC;
-
-	if (!(mmcra & MMCRA_SAMPLE_ENABLE) || (mmcra & sdsync))
-		*addrp = mfspr(SPRN_SDAR);
-=======
  * pointed to by SIAR; this is indicated by the [POWER6_]MMCRA_SDSYNC, the
  * [POWER7P_]MMCRA_SDAR_VALID bit in MMCRA, or the SDAR_VALID bit in SIER.
  */
@@ -329,16 +252,11 @@ static bool regs_sipr(struct pt_regs *regs)
 		sipr = POWER6_MMCRA_SIPR;
 
 	return !!(regs->dsisr & sipr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 perf_flags_from_msr(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	if (regs->msr & MSR_PR)
-=======
 	if (user_mode(regs))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PERF_RECORD_MISC_USER;
 	if ((regs->msr & MSR_HV) && freeze_events_kernel != MMCR0_FCHV)
 		return PERF_RECORD_MISC_HYPERVISOR;
@@ -347,23 +265,6 @@ static inline u32 perf_flags_from_msr(struct pt_regs *regs)
 
 static inline u32 perf_get_misc_flags(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	unsigned long mmcra = regs->dsisr;
-	unsigned long sihv = MMCRA_SIHV;
-	unsigned long sipr = MMCRA_SIPR;
-
-	/* Not a PMU interrupt: Make up flags from regs->msr */
-	if (TRAP(regs) != 0xf00)
-		return perf_flags_from_msr(regs);
-
-	/*
-	 * If we don't support continuous sampling and this
-	 * is not a marked event, same deal
-	 */
-	if ((ppmu->flags & PPMU_NO_CONT_SAMPLING) &&
-	    !(mmcra & MMCRA_SAMPLE_ENABLE))
-		return perf_flags_from_msr(regs);
-=======
 	bool use_siar = regs_use_siar(regs);
 	unsigned long mmcra = regs->dsisr;
 	int marked = mmcra & MMCRA_SAMPLE_ENABLE;
@@ -389,7 +290,6 @@ static inline u32 perf_get_misc_flags(struct pt_regs *regs)
 			return PERF_RECORD_MISC_USER;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we don't have flags in MMCRA, rather than using
@@ -399,27 +299,11 @@ static inline u32 perf_get_misc_flags(struct pt_regs *regs)
 	 */
 	if (ppmu->flags & PPMU_NO_SIPR) {
 		unsigned long siar = mfspr(SPRN_SIAR);
-<<<<<<< HEAD
-		if (siar >= PAGE_OFFSET)
-=======
 		if (is_kernel_addr(siar))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return PERF_RECORD_MISC_KERNEL;
 		return PERF_RECORD_MISC_USER;
 	}
 
-<<<<<<< HEAD
-	if (ppmu->flags & PPMU_ALT_SIPR) {
-		sihv = POWER6_MMCRA_SIHV;
-		sipr = POWER6_MMCRA_SIPR;
-	}
-
-	/* PR has priority over HV, so order below is important */
-	if (mmcra & sipr)
-		return PERF_RECORD_MISC_USER;
-	if ((mmcra & sihv) && (freeze_events_kernel != MMCR0_FCHV))
-		return PERF_RECORD_MISC_HYPERVISOR;
-=======
 	/* PR has priority over HV, so order below is important */
 	if (regs_sipr(regs))
 		return PERF_RECORD_MISC_USER;
@@ -427,30 +311,12 @@ static inline u32 perf_get_misc_flags(struct pt_regs *regs)
 	if (regs_sihv(regs) && (freeze_events_kernel != MMCR0_FCHV))
 		return PERF_RECORD_MISC_HYPERVISOR;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return PERF_RECORD_MISC_KERNEL;
 }
 
 /*
  * Overload regs->dsisr to store MMCRA so we only need to read it once
  * on each interrupt.
-<<<<<<< HEAD
- */
-static inline void perf_read_regs(struct pt_regs *regs)
-{
-	regs->dsisr = mfspr(SPRN_MMCRA);
-}
-
-/*
- * If interrupts were soft-disabled when a PMU interrupt occurs, treat
- * it as an NMI.
- */
-static inline int perf_intr_is_nmi(struct pt_regs *regs)
-{
-	return !regs->softe;
-}
-
-=======
  * Overload regs->dar to store SIER if we have it.
  * Overload regs->result to specify whether we should use the MSR (result
  * is zero) or the SIAR (result is non zero).
@@ -938,18 +804,10 @@ bool power_pmu_wants_prompt_pmi(void)
 	cpuhw = this_cpu_ptr(&cpu_hw_events);
 	return cpuhw->n_events;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PPC64 */
 
 static void perf_event_interrupt(struct pt_regs *regs);
 
-<<<<<<< HEAD
-void perf_event_print_debug(void)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read one performance monitor counter (PMC).
  */
@@ -1028,8 +886,6 @@ static void write_pmc(int idx, unsigned long val)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int any_pmc_overflown(struct cpu_hw_events *cpuhw)
 {
 	int i, idx;
@@ -1104,7 +960,6 @@ void perf_event_print_debug(void)
 	local_irq_restore(flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Check if a set of events can all go on the PMU at once.
  * If they can't, this will look at alternative codes for the events
@@ -1113,11 +968,7 @@ void perf_event_print_debug(void)
  */
 static int power_check_constraints(struct cpu_hw_events *cpuhw,
 				   u64 event_id[], unsigned int cflags[],
-<<<<<<< HEAD
-				   int n_ev)
-=======
 				   int n_ev, struct perf_event **event)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long mask, value, nv;
 	unsigned long smasks[MAX_HWEVENTS], svalues[MAX_HWEVENTS];
@@ -1125,11 +976,8 @@ static int power_check_constraints(struct cpu_hw_events *cpuhw,
 	int i, j;
 	unsigned long addf = ppmu->add_fields;
 	unsigned long tadd = ppmu->test_adder;
-<<<<<<< HEAD
-=======
 	unsigned long grp_mask = ppmu->group_constraint_mask;
 	unsigned long grp_val = ppmu->group_constraint_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (n_ev > ppmu->n_counter)
 		return -1;
@@ -1143,28 +991,13 @@ static int power_check_constraints(struct cpu_hw_events *cpuhw,
 			event_id[i] = cpuhw->alternatives[i][0];
 		}
 		if (ppmu->get_constraint(event_id[i], &cpuhw->amasks[i][0],
-<<<<<<< HEAD
-					 &cpuhw->avalues[i][0]))
-=======
 					 &cpuhw->avalues[i][0], event[i]->attr.config1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 	}
 	value = mask = 0;
 	for (i = 0; i < n_ev; ++i) {
 		nv = (value | cpuhw->avalues[i][0]) +
 			(value & cpuhw->avalues[i][0] & addf);
-<<<<<<< HEAD
-		if ((((nv + tadd) ^ value) & mask) != 0 ||
-		    (((nv + tadd) ^ cpuhw->avalues[i][0]) &
-		     cpuhw->amasks[i][0]) != 0)
-			break;
-		value = nv;
-		mask |= cpuhw->amasks[i][0];
-	}
-	if (i == n_ev)
-		return 0;	/* all OK */
-=======
 
 		if (((((nv + tadd) ^ value) & mask) & (~grp_mask)) != 0)
 			break;
@@ -1182,7 +1015,6 @@ static int power_check_constraints(struct cpu_hw_events *cpuhw,
 		else
 			return 0;	/* all OK */
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* doesn't work, gather alternatives... */
 	if (!ppmu->get_alternatives)
@@ -1194,12 +1026,8 @@ static int power_check_constraints(struct cpu_hw_events *cpuhw,
 		for (j = 1; j < n_alt[i]; ++j)
 			ppmu->get_constraint(cpuhw->alternatives[i][j],
 					     &cpuhw->amasks[i][j],
-<<<<<<< HEAD
-					     &cpuhw->avalues[i][j]);
-=======
 					     &cpuhw->avalues[i][j],
 					     event[i]->attr.config1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* enumerate all possibilities and see if any will work */
@@ -1268,8 +1096,6 @@ static int check_excludes(struct perf_event **ctrs, unsigned int cflags[],
 	int i, n, first;
 	struct perf_event *event;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * If the PMU we're on supports per event exclude settings then we
 	 * don't need to do any of this logic. NB. This assumes no PMU has both
@@ -1278,7 +1104,6 @@ static int check_excludes(struct perf_event **ctrs, unsigned int cflags[],
 	if (ppmu->flags & PPMU_ARCH_207S)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n = n_prev + n_new;
 	if (n <= 1)
 		return 0;
@@ -1317,15 +1142,9 @@ static u64 check_and_compute_delta(u64 prev, u64 val)
 	/*
 	 * POWER7 can roll back counter values, if the new value is smaller
 	 * than the previous value it will cause the delta and the counter to
-<<<<<<< HEAD
-	 * have bogus values unless we rolled a counter over.  If a coutner is
-	 * rolled back, it will be smaller, but within 256, which is the maximum
-	 * number of events to rollback at once.  If we dectect a rollback
-=======
 	 * have bogus values unless we rolled a counter over.  If a counter is
 	 * rolled back, it will be smaller, but within 256, which is the maximum
 	 * number of events to rollback at once.  If we detect a rollback
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * return 0.  This can lead to a small lack of precision in the
 	 * counters.
 	 */
@@ -1344,8 +1163,6 @@ static void power_pmu_read(struct perf_event *event)
 
 	if (!event->hw.idx)
 		return;
-<<<<<<< HEAD
-=======
 
 	if (is_ebb_event(event)) {
 		val = read_pmc(event->hw.idx);
@@ -1353,7 +1170,6 @@ static void power_pmu_read(struct perf_event *event)
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Performance monitor interrupts come even when interrupts
 	 * are soft-disabled, as long as interrupts are hard-enabled.
@@ -1489,27 +1305,14 @@ static void write_mmcr0(struct cpu_hw_events *cpuhw, unsigned long mmcr0)
 static void power_pmu_disable(struct pmu *pmu)
 {
 	struct cpu_hw_events *cpuhw;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
 	unsigned long flags, mmcr0, val, mmcra;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ppmu)
 		return;
 	local_irq_save(flags);
-<<<<<<< HEAD
-	cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	if (!cpuhw->disabled) {
-		cpuhw->disabled = 1;
-		cpuhw->n_added = 0;
-
-=======
 	cpuhw = this_cpu_ptr(&cpu_hw_events);
 
 	if (!cpuhw->disabled) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Check if we ever enabled the PMU on this cpu.
 		 */
@@ -1519,25 +1322,6 @@ static void power_pmu_disable(struct pmu *pmu)
 		}
 
 		/*
-<<<<<<< HEAD
-		 * Disable instruction sampling if it was enabled
-		 */
-		if (cpuhw->mmcr[2] & MMCRA_SAMPLE_ENABLE) {
-			mtspr(SPRN_MMCRA,
-			      cpuhw->mmcr[2] & ~MMCRA_SAMPLE_ENABLE);
-			mb();
-		}
-
-		/*
-		 * Set the 'freeze counters' bit.
-		 * The barrier is to make sure the mtspr has been
-		 * executed and the PMU has frozen the events
-		 * before we return.
-		 */
-		write_mmcr0(cpuhw, mfspr(SPRN_MMCR0) | MMCR0_FC);
-		mb();
-	}
-=======
 		 * Set the 'freeze counters' bit, clear EBE/BHRBA/PMCC/PMAO/FC56
 		 * Also clear PMXE to disable PMI's getting triggered in some
 		 * corner cases during PMU disable.
@@ -1622,7 +1406,6 @@ static void power_pmu_disable(struct pmu *pmu)
 #endif
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 }
 
@@ -1637,33 +1420,16 @@ static void power_pmu_enable(struct pmu *pmu)
 	struct cpu_hw_events *cpuhw;
 	unsigned long flags;
 	long i;
-<<<<<<< HEAD
-	unsigned long val;
-=======
 	unsigned long val, mmcr0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s64 left;
 	unsigned int hwc_index[MAX_HWEVENTS];
 	int n_lim;
 	int idx;
-<<<<<<< HEAD
-=======
 	bool ebb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ppmu)
 		return;
 	local_irq_save(flags);
-<<<<<<< HEAD
-	cpuhw = &__get_cpu_var(cpu_hw_events);
-	if (!cpuhw->disabled) {
-		local_irq_restore(flags);
-		return;
-	}
-	cpuhw->disabled = 0;
-
-	/*
-=======
 
 	cpuhw = this_cpu_ptr(&cpu_hw_events);
 	if (!cpuhw->disabled)
@@ -1684,19 +1450,12 @@ static void power_pmu_enable(struct pmu *pmu)
 	ebb = is_ebb_event(cpuhw->event[0]);
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If we didn't change anything, or only removed events,
 	 * no need to recalculate MMCR* settings and reset the PMCs.
 	 * Just reenable the PMU with the current MMCR* settings
 	 * (possibly updated for removal of events).
 	 */
 	if (!cpuhw->n_added) {
-<<<<<<< HEAD
-		mtspr(SPRN_MMCRA, cpuhw->mmcr[2] & ~MMCRA_SAMPLE_ENABLE);
-		mtspr(SPRN_MMCR1, cpuhw->mmcr[1]);
-		if (cpuhw->n_events == 0)
-			ppc_set_pmu_inuse(0);
-=======
 		/*
 		 * If there is any active event with an overflown PMC
 		 * value, set back PACA_IRQ_PMI which would have been
@@ -1710,44 +1469,21 @@ static void power_pmu_enable(struct pmu *pmu)
 		mtspr(SPRN_MMCR1, cpuhw->mmcr.mmcr1);
 		if (ppmu->flags & PPMU_ARCH_31)
 			mtspr(SPRN_MMCR3, cpuhw->mmcr.mmcr3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_enable;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Compute MMCR* values for the new set of events
-	 */
-	if (ppmu->compute_mmcr(cpuhw->events, cpuhw->n_events, hwc_index,
-			       cpuhw->mmcr)) {
-=======
 	 * Clear all MMCR settings and recompute them for the new set of events.
 	 */
 	memset(&cpuhw->mmcr, 0, sizeof(cpuhw->mmcr));
 
 	if (ppmu->compute_mmcr(cpuhw->events, cpuhw->n_events, hwc_index,
 			       &cpuhw->mmcr, cpuhw->event, ppmu->flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* shouldn't ever get here */
 		printk(KERN_ERR "oops compute_mmcr failed\n");
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Add in MMCR0 freeze bits corresponding to the
-	 * attr.exclude_* bits for the first event.
-	 * We have already checked that all events have the
-	 * same values for these bits as the first event.
-	 */
-	event = cpuhw->event[0];
-	if (event->attr.exclude_user)
-		cpuhw->mmcr[0] |= MMCR0_FCP;
-	if (event->attr.exclude_kernel)
-		cpuhw->mmcr[0] |= freeze_events_kernel;
-	if (event->attr.exclude_hv)
-		cpuhw->mmcr[0] |= MMCR0_FCHV;
-=======
 	if (!(ppmu->flags & PPMU_ARCH_207S)) {
 		/*
 		 * Add in MMCR0 freeze bits corresponding to the attr.exclude_*
@@ -1762,7 +1498,6 @@ static void power_pmu_enable(struct pmu *pmu)
 		if (event->attr.exclude_hv)
 			cpuhw->mmcr.mmcr0 |= MMCR0_FCHV;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Write the new configuration to MMCR* with the freeze
@@ -1770,12 +1505,6 @@ static void power_pmu_enable(struct pmu *pmu)
 	 * Then unfreeze the events.
 	 */
 	ppc_set_pmu_inuse(1);
-<<<<<<< HEAD
-	mtspr(SPRN_MMCRA, cpuhw->mmcr[2] & ~MMCRA_SAMPLE_ENABLE);
-	mtspr(SPRN_MMCR1, cpuhw->mmcr[1]);
-	mtspr(SPRN_MMCR0, (cpuhw->mmcr[0] & ~(MMCR0_PMC1CE | MMCR0_PMCjCE))
-				| MMCR0_FC);
-=======
 	mtspr(SPRN_MMCRA, cpuhw->mmcr.mmcra & ~MMCRA_SAMPLE_ENABLE);
 	mtspr(SPRN_MMCR1, cpuhw->mmcr.mmcr1);
 	mtspr(SPRN_MMCR0, (cpuhw->mmcr.mmcr0 & ~(MMCR0_PMC1CE | MMCR0_PMCjCE))
@@ -1785,7 +1514,6 @@ static void power_pmu_enable(struct pmu *pmu)
 
 	if (ppmu->flags & PPMU_ARCH_31)
 		mtspr(SPRN_MMCR3, cpuhw->mmcr.mmcr3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Read off any pre-existing events that need to move
@@ -1815,15 +1543,6 @@ static void power_pmu_enable(struct pmu *pmu)
 			++n_lim;
 			continue;
 		}
-<<<<<<< HEAD
-		val = 0;
-		if (event->hw.sample_period) {
-			left = local64_read(&event->hw.period_left);
-			if (left < 0x80000000L)
-				val = 0x80000000L - left;
-		}
-		local64_set(&event->hw.prev_count, val);
-=======
 
 		if (ebb)
 			val = local64_read(&event->hw.prev_count);
@@ -1837,21 +1556,10 @@ static void power_pmu_enable(struct pmu *pmu)
 			local64_set(&event->hw.prev_count, val);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event->hw.idx = idx;
 		if (event->hw.state & PERF_HES_STOPPED)
 			val = 0;
 		write_pmc(idx, val);
-<<<<<<< HEAD
-		perf_event_update_userpage(event);
-	}
-	cpuhw->n_limited = n_lim;
-	cpuhw->mmcr[0] |= MMCR0_PMXE | MMCR0_FCECE;
-
- out_enable:
-	mb();
-	write_mmcr0(cpuhw, cpuhw->mmcr[0]);
-=======
 
 		perf_event_update_userpage(event);
 	}
@@ -1868,19 +1576,10 @@ static void power_pmu_enable(struct pmu *pmu)
 		ppmu->config_bhrb(cpuhw->bhrb_filter);
 
 	write_mmcr0(cpuhw, mmcr0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Enable instruction sampling if necessary
 	 */
-<<<<<<< HEAD
-	if (cpuhw->mmcr[2] & MMCRA_SAMPLE_ENABLE) {
-		mb();
-		mtspr(SPRN_MMCRA, cpuhw->mmcr[2]);
-	}
-
- out:
-=======
 	if (cpuhw->mmcr.mmcra & MMCRA_SAMPLE_ENABLE) {
 		mb();
 		mtspr(SPRN_MMCRA, cpuhw->mmcr.mmcra);
@@ -1888,7 +1587,6 @@ static void power_pmu_enable(struct pmu *pmu)
 
  out:
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 }
 
@@ -1899,24 +1597,15 @@ static int collect_events(struct perf_event *group, int max_count,
 	int n = 0;
 	struct perf_event *event;
 
-<<<<<<< HEAD
-	if (!is_software_event(group)) {
-=======
 	if (group->pmu->task_ctx_nr == perf_hw_context) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (n >= max_count)
 			return -1;
 		ctrs[n] = group;
 		flags[n] = group->hw.event_base;
 		events[n++] = group->hw.config;
 	}
-<<<<<<< HEAD
-	list_for_each_entry(event, &group->sibling_list, group_entry) {
-		if (!is_software_event(event) &&
-=======
 	for_each_sibling_event(event, group) {
 		if (event->pmu->task_ctx_nr == perf_hw_context &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    event->state != PERF_EVENT_STATE_OFF) {
 			if (n >= max_count)
 				return -1;
@@ -1929,11 +1618,7 @@ static int collect_events(struct perf_event *group, int max_count,
 }
 
 /*
-<<<<<<< HEAD
- * Add a event to the PMU.
-=======
  * Add an event to the PMU.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If all events are not already frozen, then we disable and
  * re-enable the PMU in order to get hw_perf_enable to do the
  * actual work of reconfiguring the PMU.
@@ -1952,11 +1637,7 @@ static int power_pmu_add(struct perf_event *event, int ef_flags)
 	 * Add the event to the list (if there is room)
 	 * and check whether the total set is still feasible.
 	 */
-<<<<<<< HEAD
-	cpuhw = &__get_cpu_var(cpu_hw_events);
-=======
 	cpuhw = this_cpu_ptr(&cpu_hw_events);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n0 = cpuhw->n_events;
 	if (n0 >= ppmu->n_counter)
 		goto out;
@@ -1964,10 +1645,6 @@ static int power_pmu_add(struct perf_event *event, int ef_flags)
 	cpuhw->events[n0] = event->hw.config;
 	cpuhw->flags[n0] = event->hw.event_base;
 
-<<<<<<< HEAD
-	if (!(ef_flags & PERF_EF_START))
-		event->hw.state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
-=======
 	/*
 	 * This event may have been disabled/stopped in record_and_restart()
 	 * because we exceeded the ->event_limit. If re-starting the event,
@@ -1978,43 +1655,29 @@ static int power_pmu_add(struct perf_event *event, int ef_flags)
 		event->hw.state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
 	else
 		event->hw.state = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If group events scheduling transaction was started,
 	 * skip the schedulability test here, it will be performed
 	 * at commit time(->commit_txn) as a whole
 	 */
-<<<<<<< HEAD
-	if (cpuhw->group_flag & PERF_EVENT_TXN)
-=======
 	if (cpuhw->txn_flags & PERF_PMU_TXN_ADD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto nocheck;
 
 	if (check_excludes(cpuhw->event, cpuhw->flags, n0, 1))
 		goto out;
-<<<<<<< HEAD
-	if (power_check_constraints(cpuhw, cpuhw->events, cpuhw->flags, n0 + 1))
-=======
 	if (power_check_constraints(cpuhw, cpuhw->events, cpuhw->flags, n0 + 1, cpuhw->event))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	event->hw.config = cpuhw->events[n0];
 
 nocheck:
-<<<<<<< HEAD
-=======
 	ebb_event_add(event);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	++cpuhw->n_events;
 	++cpuhw->n_added;
 
 	ret = 0;
  out:
-<<<<<<< HEAD
-=======
 	if (has_branch_stack(event)) {
 		u64 bhrb_filter = -1;
 
@@ -2028,18 +1691,13 @@ nocheck:
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	perf_pmu_enable(event->pmu);
 	local_irq_restore(flags);
 	return ret;
 }
 
 /*
-<<<<<<< HEAD
- * Remove a event from the PMU.
-=======
  * Remove an event from the PMU.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void power_pmu_del(struct perf_event *event, int ef_flags)
 {
@@ -2052,11 +1710,7 @@ static void power_pmu_del(struct perf_event *event, int ef_flags)
 
 	power_pmu_read(event);
 
-<<<<<<< HEAD
-	cpuhw = &__get_cpu_var(cpu_hw_events);
-=======
 	cpuhw = this_cpu_ptr(&cpu_hw_events);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < cpuhw->n_events; ++i) {
 		if (event == cpuhw->event[i]) {
 			while (++i < cpuhw->n_events) {
@@ -2065,11 +1719,7 @@ static void power_pmu_del(struct perf_event *event, int ef_flags)
 				cpuhw->flags[i-1] = cpuhw->flags[i];
 			}
 			--cpuhw->n_events;
-<<<<<<< HEAD
-			ppmu->disable_pmc(event->hw.idx - 1, cpuhw->mmcr);
-=======
 			ppmu->disable_pmc(event->hw.idx - 1, &cpuhw->mmcr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (event->hw.idx) {
 				write_pmc(event->hw.idx, 0);
 				event->hw.idx = 0;
@@ -2090,18 +1740,12 @@ static void power_pmu_del(struct perf_event *event, int ef_flags)
 	}
 	if (cpuhw->n_events == 0) {
 		/* disable exceptions if no events are running */
-<<<<<<< HEAD
-		cpuhw->mmcr[0] &= ~(MMCR0_PMXE | MMCR0_FCECE);
-	}
-
-=======
 		cpuhw->mmcr.mmcr0 &= ~(MMCR0_PMXE | MMCR0_FCECE);
 	}
 
 	if (has_branch_stack(event))
 		power_pmu_bhrb_disable(event);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	perf_pmu_enable(event->pmu);
 	local_irq_restore(flags);
 }
@@ -2169,15 +1813,6 @@ static void power_pmu_stop(struct perf_event *event, int ef_flags)
  * Start group events scheduling transaction
  * Set the flag to make pmu::enable() not perform the
  * schedulability test, it will be performed at commit time
-<<<<<<< HEAD
- */
-void power_pmu_start_txn(struct pmu *pmu)
-{
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	perf_pmu_disable(pmu);
-	cpuhw->group_flag |= PERF_EVENT_TXN;
-=======
  *
  * We only support PERF_PMU_TXN_ADD transactions. Save the
  * transaction flags but otherwise ignore non-PERF_PMU_TXN_ADD
@@ -2194,7 +1829,6 @@ static void power_pmu_start_txn(struct pmu *pmu, unsigned int txn_flags)
 		return;
 
 	perf_pmu_disable(pmu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpuhw->n_txn_start = cpuhw->n_events;
 }
 
@@ -2203,13 +1837,6 @@ static void power_pmu_start_txn(struct pmu *pmu, unsigned int txn_flags)
  * Clear the flag and pmu::enable() will perform the
  * schedulability test.
  */
-<<<<<<< HEAD
-void power_pmu_cancel_txn(struct pmu *pmu)
-{
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-
-	cpuhw->group_flag &= ~PERF_EVENT_TXN;
-=======
 static void power_pmu_cancel_txn(struct pmu *pmu)
 {
 	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
@@ -2222,7 +1849,6 @@ static void power_pmu_cancel_txn(struct pmu *pmu)
 	if (txn_flags & ~PERF_PMU_TXN_ADD)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	perf_pmu_enable(pmu);
 }
 
@@ -2231,24 +1857,13 @@ static void power_pmu_cancel_txn(struct pmu *pmu)
  * Perform the group schedulability test as a whole
  * Return 0 if success
  */
-<<<<<<< HEAD
-int power_pmu_commit_txn(struct pmu *pmu)
-=======
 static int power_pmu_commit_txn(struct pmu *pmu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpu_hw_events *cpuhw;
 	long i, n;
 
 	if (!ppmu)
 		return -EAGAIN;
-<<<<<<< HEAD
-	cpuhw = &__get_cpu_var(cpu_hw_events);
-	n = cpuhw->n_events;
-	if (check_excludes(cpuhw->event, cpuhw->flags, 0, n))
-		return -EAGAIN;
-	i = power_check_constraints(cpuhw, cpuhw->events, cpuhw->flags, n);
-=======
 
 	cpuhw = this_cpu_ptr(&cpu_hw_events);
 	WARN_ON_ONCE(!cpuhw->txn_flags);	/* no txn in flight */
@@ -2262,18 +1877,13 @@ static int power_pmu_commit_txn(struct pmu *pmu)
 	if (check_excludes(cpuhw->event, cpuhw->flags, 0, n))
 		return -EAGAIN;
 	i = power_check_constraints(cpuhw, cpuhw->events, cpuhw->flags, n, cpuhw->event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (i < 0)
 		return -EAGAIN;
 
 	for (i = cpuhw->n_txn_start; i < n; ++i)
 		cpuhw->event[i]->hw.config = cpuhw->events[i];
 
-<<<<<<< HEAD
-	cpuhw->group_flag &= ~PERF_EVENT_TXN;
-=======
 	cpuhw->txn_flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	perf_pmu_enable(pmu);
 	return 0;
 }
@@ -2281,11 +1891,7 @@ static int power_pmu_commit_txn(struct pmu *pmu)
 /*
  * Return 1 if we might be able to put event on a limited PMC,
  * or 0 if not.
-<<<<<<< HEAD
- * A event can only go on a limited PMC if it counts something
-=======
  * An event can only go on a limited PMC if it counts something
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * that a limited PMC can count, doesn't require interrupts, and
  * doesn't exclude any processor mode.
  */
@@ -2358,11 +1964,7 @@ static void hw_perf_event_destroy(struct perf_event *event)
 static int hw_perf_cache_event(u64 config, u64 *eventp)
 {
 	unsigned long type, op, result;
-<<<<<<< HEAD
-	int ev;
-=======
 	u64 ev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ppmu->cache_events)
 		return -EINVAL;
@@ -2386,12 +1988,6 @@ static int hw_perf_cache_event(u64 config, u64 *eventp)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int power_pmu_event_init(struct perf_event *event)
-{
-	u64 ev;
-	unsigned long flags;
-=======
 static bool is_event_blacklisted(u64 ev)
 {
 	int i;
@@ -2408,7 +2004,6 @@ static int power_pmu_event_init(struct perf_event *event)
 {
 	u64 ev;
 	unsigned long flags, irq_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct perf_event *ctrs[MAX_HWEVENTS];
 	u64 events[MAX_HWEVENTS];
 	unsigned int cflags[MAX_HWEVENTS];
@@ -2419,40 +2014,26 @@ static int power_pmu_event_init(struct perf_event *event)
 	if (!ppmu)
 		return -ENOENT;
 
-<<<<<<< HEAD
-	/* does not support taken branch sampling */
-	if (has_branch_stack(event))
-		return -EOPNOTSUPP;
-=======
 	if (has_branch_stack(event)) {
 	        /* PMU has BHRB enabled */
 		if (!(ppmu->flags & PPMU_ARCH_207S))
 			return -EOPNOTSUPP;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event->attr.type) {
 	case PERF_TYPE_HARDWARE:
 		ev = event->attr.config;
 		if (ev >= ppmu->n_generic || ppmu->generic_events[ev] == 0)
 			return -EOPNOTSUPP;
-<<<<<<< HEAD
-=======
 
 		if (ppmu->blacklist_ev && is_event_blacklisted(ev))
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ev = ppmu->generic_events[ev];
 		break;
 	case PERF_TYPE_HW_CACHE:
 		err = hw_perf_cache_event(event->attr.config, &ev);
 		if (err)
 			return err;
-<<<<<<< HEAD
-		break;
-	case PERF_TYPE_RAW:
-		ev = event->attr.config;
-=======
 
 		if (ppmu->blacklist_ev && is_event_blacklisted(ev))
 			return -EINVAL;
@@ -2462,14 +2043,11 @@ static int power_pmu_event_init(struct perf_event *event)
 
 		if (ppmu->blacklist_ev && is_event_blacklisted(ev))
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * PMU config registers have fields that are
 	 * reserved and some specific values for bit fields are reserved.
@@ -2481,7 +2059,6 @@ static int power_pmu_event_init(struct perf_event *event)
 	    ppmu->check_attr_config(event))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	event->hw.config_base = ev;
 	event->hw.idx = 0;
 
@@ -2522,14 +2099,11 @@ static int power_pmu_event_init(struct perf_event *event)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/* Extra checks for EBB */
 	err = ebb_event_check(event);
 	if (err)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If this is in a group, check if it can go on with all the
 	 * other hardware events in the group.  We assume the event
@@ -2548,11 +2122,6 @@ static int power_pmu_event_init(struct perf_event *event)
 	if (check_excludes(ctrs, cflags, n, 1))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	cpuhw = &get_cpu_var(cpu_hw_events);
-	err = power_check_constraints(cpuhw, events, cflags, n + 1);
-	put_cpu_var(cpu_hw_events);
-=======
 	local_irq_save(irq_flags);
 	cpuhw = this_cpu_ptr(&cpu_hw_events);
 
@@ -2590,7 +2159,6 @@ static int power_pmu_event_init(struct perf_event *event)
 	}
 
 	local_irq_restore(irq_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return -EINVAL;
 
@@ -2600,8 +2168,6 @@ static int power_pmu_event_init(struct perf_event *event)
 	local64_set(&event->hw.period_left, event->hw.last_period);
 
 	/*
-<<<<<<< HEAD
-=======
 	 * For EBB events we just context switch the PMC value, we don't do any
 	 * of the sample_period logic. We use hw.prev_count for this.
 	 */
@@ -2609,7 +2175,6 @@ static int power_pmu_event_init(struct perf_event *event)
 		local64_set(&event->hw.prev_count, 0);
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * See if we need to reserve the PMU.
 	 * If no events are currently in use, then we have to take a
 	 * mutex to ensure that we don't race with another task doing
@@ -2635,9 +2200,6 @@ static int power_pmu_event_idx(struct perf_event *event)
 	return event->hw.idx;
 }
 
-<<<<<<< HEAD
-struct pmu power_pmu = {
-=======
 ssize_t power_events_sysfs_show(struct device *dev,
 				struct device_attribute *attr, char *page)
 {
@@ -2649,7 +2211,6 @@ ssize_t power_events_sysfs_show(struct device *dev,
 }
 
 static struct pmu power_pmu = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pmu_enable	= power_pmu_enable,
 	.pmu_disable	= power_pmu_disable,
 	.event_init	= power_pmu_event_init,
@@ -2662,17 +2223,12 @@ static struct pmu power_pmu = {
 	.cancel_txn	= power_pmu_cancel_txn,
 	.commit_txn	= power_pmu_commit_txn,
 	.event_idx	= power_pmu_event_idx,
-<<<<<<< HEAD
-};
-
-=======
 	.sched_task	= power_pmu_sched_task,
 };
 
 #define PERF_SAMPLE_ADDR_TYPE  (PERF_SAMPLE_ADDR |		\
 				PERF_SAMPLE_PHYS_ADDR |		\
 				PERF_SAMPLE_DATA_PAGE_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A counter has overflowed; update its count and record
  * things if requested.  Note that interrupts are hard-disabled
@@ -2701,19 +2257,13 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
 	 */
 	val = 0;
 	left = local64_read(&event->hw.period_left) - delta;
-<<<<<<< HEAD
-=======
 	if (delta == 0)
 		left++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (period) {
 		if (left <= 0) {
 			left += period;
 			if (left <= 0)
 				left = period;
-<<<<<<< HEAD
-			record = 1;
-=======
 
 			/*
 			 * If address is not requested in the sample via
@@ -2725,7 +2275,6 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
 			else
 				record = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			event->hw.last_period = event->hw.sample_period;
 		}
 		if (left < 0x80000000LL)
@@ -2738,8 +2287,6 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
 	perf_event_update_userpage(event);
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Due to hardware limitation, sometimes SIAR could sample a kernel
 	 * address even when freeze on supervisor state (kernel) is set in
 	 * MMCR2. Check attr.exclude_kernel and address to drop the sample in
@@ -2751,22 +2298,11 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
 		record = 0;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Finally record data if requested.
 	 */
 	if (record) {
 		struct perf_sample_data data;
 
-<<<<<<< HEAD
-		perf_sample_data_init(&data, ~0ULL);
-		data.period = event->hw.last_period;
-
-		if (event->attr.sample_type & PERF_SAMPLE_ADDR)
-			perf_get_data_addr(regs, &data.addr);
-
-		if (perf_event_overflow(event, &data, regs))
-			power_pmu_stop(event, 0);
-=======
 		perf_sample_data_init(&data, ~0ULL, event->hw.last_period);
 
 		if (event->attr.sample_type & PERF_SAMPLE_ADDR_TYPE)
@@ -2796,7 +2332,6 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
 		/* Account for interrupt in case of invalid SIAR */
 		if (perf_event_account_interrupt(event))
 			power_pmu_stop(event, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2820,27 +2355,6 @@ unsigned long perf_misc_flags(struct pt_regs *regs)
  */
 unsigned long perf_instruction_pointer(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	unsigned long mmcra = regs->dsisr;
-
-	/* Not a PMU interrupt */
-	if (TRAP(regs) != 0xf00)
-		return regs->nip;
-
-	/* Processor doesn't support sampling non marked events */
-	if ((ppmu->flags & PPMU_NO_CONT_SAMPLING) &&
-	    !(mmcra & MMCRA_SAMPLE_ENABLE))
-		return regs->nip;
-
-	return mfspr(SPRN_SIAR) + perf_ip_adjust(regs);
-}
-
-static bool pmc_overflow(unsigned long val)
-{
-	if ((int)val < 0)
-		return true;
-
-=======
 	unsigned long siar = mfspr(SPRN_SIAR);
 
 	if (regs_use_siar(regs) && siar_valid(regs) && siar)
@@ -2851,7 +2365,6 @@ static bool pmc_overflow(unsigned long val)
 
 static bool pmc_overflow_power7(unsigned long val)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Events on POWER7 can roll back if a speculative event doesn't
 	 * eventually complete. Unfortunately in some rare cases they will
@@ -2863,9 +2376,6 @@ static bool pmc_overflow_power7(unsigned long val)
 	 * PMCs because a user might set a period of less than 256 and we
 	 * don't want to mistakenly reset them.
 	 */
-<<<<<<< HEAD
-	if (__is_processor(PV_POWER7) && ((0x80000000 - val) <= 256))
-=======
 	if ((0x80000000 - val) <= 256)
 		return true;
 
@@ -2875,7 +2385,6 @@ static bool pmc_overflow_power7(unsigned long val)
 static bool pmc_overflow(unsigned long val)
 {
 	if ((int)val < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return true;
 
 	return false;
@@ -2884,23 +2393,12 @@ static bool pmc_overflow(unsigned long val)
 /*
  * Performance monitor interrupt stuff
  */
-<<<<<<< HEAD
-static void perf_event_interrupt(struct pt_regs *regs)
-{
-	int i;
-	struct cpu_hw_events *cpuhw = &__get_cpu_var(cpu_hw_events);
-	struct perf_event *event;
-	unsigned long val;
-	int found = 0;
-	int nmi;
-=======
 static void __perf_event_interrupt(struct pt_regs *regs)
 {
 	int i, j;
 	struct cpu_hw_events *cpuhw = this_cpu_ptr(&cpu_hw_events);
 	struct perf_event *event;
 	int found, active;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cpuhw->n_limited)
 		freeze_limited_counters(cpuhw, mfspr(SPRN_PMC5),
@@ -2908,23 +2406,6 @@ static void __perf_event_interrupt(struct pt_regs *regs)
 
 	perf_read_regs(regs);
 
-<<<<<<< HEAD
-	nmi = perf_intr_is_nmi(regs);
-	if (nmi)
-		nmi_enter();
-	else
-		irq_enter();
-
-	for (i = 0; i < cpuhw->n_events; ++i) {
-		event = cpuhw->event[i];
-		if (!event->hw.idx || is_limited_pmc(event->hw.idx))
-			continue;
-		val = read_pmc(event->hw.idx);
-		if ((int)val < 0) {
-			/* event has overflowed */
-			found = 1;
-			record_and_restart(event, val, regs);
-=======
 	/* Read all the PMCs since we'll need them a bunch of times */
 	for (i = 0; i < ppmu->n_counter; ++i)
 		cpuhw->pmcs[i] = read_pmc(i + 1);
@@ -2976,27 +2457,10 @@ static void __perf_event_interrupt(struct pt_regs *regs)
 						   cpuhw->pmcs[event->hw.idx - 1],
 						   regs);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/*
-<<<<<<< HEAD
-	 * In case we didn't find and reset the event that caused
-	 * the interrupt, scan all events and reset any that are
-	 * negative, to avoid getting continual interrupts.
-	 * Any that we processed in the previous loop will not be negative.
-	 */
-	if (!found) {
-		for (i = 0; i < ppmu->n_counter; ++i) {
-			if (is_limited_pmc(i + 1))
-				continue;
-			val = read_pmc(i + 1);
-			if (pmc_overflow(val))
-				write_pmc(i + 1, 0);
-		}
-	}
-=======
 	 * During system wide profiling or while specific CPU is monitored for an
 	 * event, some corner cases could cause PMC to overflow in idle path. This
 	 * will trigger a PMI after waking up from idle. Since counter values are _not_
@@ -3004,7 +2468,6 @@ static void __perf_event_interrupt(struct pt_regs *regs)
 	 */
 	if (unlikely(!found) && !arch_irq_disabled_regs(regs))
 		printk_ratelimited(KERN_WARNING "Can't find PMC that caused IRQ\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Reset MMCR0 to its normal value.  This will set PMXE and
@@ -3013,44 +2476,6 @@ static void __perf_event_interrupt(struct pt_regs *regs)
 	 * XXX might want to use MSR.PM to keep the events frozen until
 	 * we get back out of this interrupt.
 	 */
-<<<<<<< HEAD
-	write_mmcr0(cpuhw, cpuhw->mmcr[0]);
-
-	if (nmi)
-		nmi_exit();
-	else
-		irq_exit();
-}
-
-static void power_pmu_setup(int cpu)
-{
-	struct cpu_hw_events *cpuhw = &per_cpu(cpu_hw_events, cpu);
-
-	if (!ppmu)
-		return;
-	memset(cpuhw, 0, sizeof(*cpuhw));
-	cpuhw->mmcr[0] = MMCR0_FC;
-}
-
-static int __cpuinit
-power_pmu_notifier(struct notifier_block *self, unsigned long action, void *hcpu)
-{
-	unsigned int cpu = (long)hcpu;
-
-	switch (action & ~CPU_TASKS_FROZEN) {
-	case CPU_UP_PREPARE:
-		power_pmu_setup(cpu);
-		break;
-
-	default:
-		break;
-	}
-
-	return NOTIFY_OK;
-}
-
-int __cpuinit register_power_pmu(struct power_pmu *pmu)
-=======
 	write_mmcr0(cpuhw, cpuhw->mmcr.mmcr0);
 
 	/* Clear the cpuhw->pmcs */
@@ -3105,7 +2530,6 @@ static const struct attribute_group *pmu_caps_groups[] = {
 };
 
 int __init register_power_pmu(struct power_pmu *pmu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ppmu)
 		return -EBUSY;		/* something's already registered */
@@ -3114,8 +2538,6 @@ int __init register_power_pmu(struct power_pmu *pmu)
 	pr_info("%s performance monitor hardware support registered\n",
 		pmu->name);
 
-<<<<<<< HEAD
-=======
 	power_pmu.attr_groups = ppmu->attr_groups;
 
 	if (ppmu->flags & PPMU_ARCH_207S)
@@ -3123,7 +2545,6 @@ int __init register_power_pmu(struct power_pmu *pmu)
 
 	power_pmu.capabilities |= (ppmu->capabilities & PERF_PMU_CAP_EXTENDED_REGS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MSR_HV
 	/*
 	 * Use FCHV to ignore kernel events if MSR.HV is set.
@@ -3133,12 +2554,6 @@ int __init register_power_pmu(struct power_pmu *pmu)
 #endif /* CONFIG_PPC64 */
 
 	perf_pmu_register(&power_pmu, "cpu", PERF_TYPE_RAW);
-<<<<<<< HEAD
-	perf_cpu_notifier(power_pmu_notifier);
-
-	return 0;
-}
-=======
 	cpuhp_setup_state(CPUHP_PERF_POWER, "perf/powerpc:prepare",
 			  power_pmu_prepare_cpu, NULL);
 	return 0;
@@ -3206,4 +2621,3 @@ static int __init pmu_setup(char *str)
 __setup("pmu_override=", pmu_setup);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

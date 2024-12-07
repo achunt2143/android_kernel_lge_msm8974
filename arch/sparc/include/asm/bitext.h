@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bitext.h: Bit string operations on the sparc, specific to architecture.
  *
@@ -24,14 +21,8 @@ struct bit_map {
 	int num_colors;
 };
 
-<<<<<<< HEAD
-extern int bit_map_string_get(struct bit_map *t, int len, int align);
-extern void bit_map_clear(struct bit_map *t, int offset, int len);
-extern void bit_map_init(struct bit_map *t, unsigned long *map, int size);
-=======
 int bit_map_string_get(struct bit_map *t, int len, int align);
 void bit_map_clear(struct bit_map *t, int offset, int len);
 void bit_map_init(struct bit_map *t, unsigned long *map, int size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* defined(_SPARC_BITEXT_H) */

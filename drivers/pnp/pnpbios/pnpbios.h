@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pnpbios.h - contains local definitions
  */
@@ -12,23 +9,6 @@
  * Original BIOS code (C) 1998 Christian Schmidt (chr.schmidt@tu-bs.de)
  * PnP handler parts (c) 1998 Tom Lees <tom@lpsg.demon.co.uk>
  * Minor reorganizations by David Hinds <dahinds@users.sourceforge.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -127,11 +107,7 @@ struct pnp_bios_node {
 	__u32 eisa_id;
 	__u8 type_code[3];
 	__u16 flags;
-<<<<<<< HEAD
-	__u8 data[0];
-=======
 	__u8 data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #pragma pack()
 
@@ -177,10 +153,6 @@ extern int  pnpbios_dont_use_current_config;
 extern int pnpbios_parse_data_stream(struct pnp_dev *dev, struct pnp_bios_node * node);
 extern int pnpbios_read_resources_from_node(struct pnp_dev *dev, struct pnp_bios_node *node);
 extern int pnpbios_write_resources_to_node(struct pnp_dev *dev, struct pnp_bios_node *node);
-<<<<<<< HEAD
-extern void pnpid32_to_pnpid(u32 id, char *str);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void pnpbios_print_status(const char * module, u16 status);
 extern void pnpbios_calls_init(union pnp_bios_install_struct * header);

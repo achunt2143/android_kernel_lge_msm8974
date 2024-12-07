@@ -1,39 +1,3 @@
-<<<<<<< HEAD
-snd-soc-88pm860x-objs := 88pm860x-codec.o
-snd-soc-ac97-objs := ac97.o
-snd-soc-ad1836-objs := ad1836.o
-snd-soc-ad193x-objs := ad193x.o
-snd-soc-ad1980-objs := ad1980.o
-snd-soc-ad73311-objs := ad73311.o
-snd-soc-adau1701-objs := adau1701.o
-snd-soc-adau1373-objs := adau1373.o
-snd-soc-adav80x-objs := adav80x.o
-snd-soc-ads117x-objs := ads117x.o
-snd-soc-ak4104-objs := ak4104.o
-snd-soc-ak4535-objs := ak4535.o
-snd-soc-ak4641-objs := ak4641.o
-snd-soc-ak4642-objs := ak4642.o
-snd-soc-ak4671-objs := ak4671.o
-snd-soc-arizona-objs := arizona.o
-snd-soc-cq93vc-objs := cq93vc.o
-snd-soc-cs35l32-objs := cs35l32.o
-snd-soc-cs42l51-objs := cs42l51.o
-snd-soc-cs42l73-objs := cs42l73.o
-snd-soc-cs4270-objs := cs4270.o
-snd-soc-cs4271-objs := cs4271.o
-snd-soc-cx20442-objs := cx20442.o
-snd-soc-da7210-objs := da7210.o
-snd-soc-dfbmcs320-objs := dfbmcs320.o
-snd-soc-dmic-objs := dmic.o
-snd-soc-jz4740-codec-objs := jz4740.o
-snd-soc-l3-objs := l3.o
-snd-soc-lm4857-objs := lm4857.o
-snd-soc-max98088-objs := max98088.o
-snd-soc-max98095-objs := max98095.o
-snd-soc-max9850-objs := max9850.o
-snd-soc-pcm3008-objs := pcm3008.o
-snd-soc-rt5631-objs := rt5631.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 snd-soc-88pm860x-objs := 88pm860x-codec.o
 snd-soc-ab8500-codec-objs := ab8500-codec.o
@@ -289,38 +253,10 @@ snd-soc-rt722-sdca-objs := rt722-sdca.o rt722-sdca-sdw.o
 snd-soc-rt9120-objs := rt9120.o
 snd-soc-rtq9128-objs := rtq9128.o
 snd-soc-sdw-mockup-objs := sdw-mockup.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd-soc-sgtl5000-objs := sgtl5000.o
 snd-soc-alc5623-objs := alc5623.o
 snd-soc-alc5632-objs := alc5632.o
 snd-soc-sigmadsp-objs := sigmadsp.o
-<<<<<<< HEAD
-snd-soc-sn95031-objs := sn95031.o
-snd-soc-spdif-objs := spdif_transciever.o
-snd-soc-ssm2602-objs := ssm2602.o
-snd-soc-sta32x-objs := sta32x.o
-snd-soc-stac9766-objs := stac9766.o
-snd-soc-tlv320aic23-objs := tlv320aic23.o
-snd-soc-tlv320aic26-objs := tlv320aic26.o
-snd-soc-tlv320aic3x-objs := tlv320aic3x.o
-snd-soc-tlv320aic32x4-objs := tlv320aic32x4.o
-snd-soc-tlv320dac33-objs := tlv320dac33.o
-snd-soc-twl4030-objs := twl4030.o
-snd-soc-twl6040-objs := twl6040.o
-snd-soc-uda134x-objs := uda134x.o
-snd-soc-uda1380-objs := uda1380.o
-snd-soc-wcd9304-objs := wcd9304.o wcd9304-tables.o
-snd-soc-wcd9310-objs := wcd9310.o wcd9310-tables.o
-snd-soc-cs8427-objs := cs8427.o
-snd-soc-wcd9320-objs := wcd9xxx-resmgr.o wcd9320.o wcd9320-tables.o wcd9xxx-mbhc.o wcd9xxx-common.o wcdcal-hwdep.o
-snd-soc-wcd9306-objs := wcd9306.o wcd9306-tables.o wcd9xxx-common.o wcdcal-hwdep.o
-snd-soc-msm8x10-wcd-objs := msm8x10-wcd.o msm8x10-wcd-tables.o wcd9xxx-common.o
-snd-soc-wl1273-objs := wl1273.o
-snd-soc-wm1250-ev1-objs := wm1250-ev1.o
-snd-soc-wm2000-objs := wm2000.o
-snd-soc-wm5100-objs := wm5100.o wm5100-tables.o
-snd-soc-wm-adsp-objs := wm_adsp.o
-=======
 snd-soc-sigmadsp-i2c-objs := sigmadsp-i2c.o
 snd-soc-sigmadsp-regmap-objs := sigmadsp-regmap.o
 snd-soc-si476x-objs := si476x.o
@@ -389,27 +325,20 @@ snd-soc-wm1250-ev1-objs := wm1250-ev1.o
 snd-soc-wm2000-objs := wm2000.o
 snd-soc-wm2200-objs := wm2200.o
 snd-soc-wm5100-objs := wm5100.o wm5100-tables.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd-soc-wm5102-objs := wm5102.o
 snd-soc-wm5110-objs := wm5110.o
 snd-soc-wm8350-objs := wm8350.o
 snd-soc-wm8400-objs := wm8400.o
 snd-soc-wm8510-objs := wm8510.o
 snd-soc-wm8523-objs := wm8523.o
-<<<<<<< HEAD
-=======
 snd-soc-wm8524-objs := wm8524.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd-soc-wm8580-objs := wm8580.o
 snd-soc-wm8711-objs := wm8711.o
 snd-soc-wm8727-objs := wm8727.o
 snd-soc-wm8728-objs := wm8728.o
 snd-soc-wm8731-objs := wm8731.o
-<<<<<<< HEAD
-=======
 snd-soc-wm8731-i2c-objs := wm8731-i2c.o
 snd-soc-wm8731-spi-objs := wm8731-spi.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd-soc-wm8737-objs := wm8737.o
 snd-soc-wm8741-objs := wm8741.o
 snd-soc-wm8750-objs := wm8750.o
@@ -418,11 +347,8 @@ snd-soc-wm8770-objs := wm8770.o
 snd-soc-wm8776-objs := wm8776.o
 snd-soc-wm8782-objs := wm8782.o
 snd-soc-wm8804-objs := wm8804.o
-<<<<<<< HEAD
-=======
 snd-soc-wm8804-i2c-objs := wm8804-i2c.o
 snd-soc-wm8804-spi-objs := wm8804-spi.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd-soc-wm8900-objs := wm8900.o
 snd-soc-wm8903-objs := wm8903.o
 snd-soc-wm8904-objs := wm8904.o
@@ -443,94 +369,14 @@ snd-soc-wm8991-objs := wm8991.o
 snd-soc-wm8993-objs := wm8993.o
 snd-soc-wm8994-objs := wm8994.o wm8958-dsp2.o
 snd-soc-wm8995-objs := wm8995.o
-<<<<<<< HEAD
-=======
 snd-soc-wm8997-objs := wm8997.o
 snd-soc-wm8998-objs := wm8998.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd-soc-wm9081-objs := wm9081.o
 snd-soc-wm9090-objs := wm9090.o
 snd-soc-wm9705-objs := wm9705.o
 snd-soc-wm9712-objs := wm9712.o
 snd-soc-wm9713-objs := wm9713.o
 snd-soc-wm-hubs-objs := wm_hubs.o
-<<<<<<< HEAD
-
-snd-soc-timpani-objs := timpani.o
-snd-soc-msm-stub-objs := msm_stub.o
-obj-$(CONFIG_SND_SOC_MSM_HDMI_CODEC_RX) := msm_hdmi_codec_rx.o
-
-# Amp
-snd-soc-max9877-objs := max9877.o
-snd-soc-tpa6130a2-objs := tpa6130a2.o
-snd-soc-tpa2015d1-objs := tpa2015d1.o
-
-obj-$(CONFIG_SND_SOC_88PM860X)	+= snd-soc-88pm860x.o
-obj-$(CONFIG_SND_SOC_AC97_CODEC)	+= snd-soc-ac97.o
-obj-$(CONFIG_SND_SOC_AD1836)	+= snd-soc-ad1836.o
-obj-$(CONFIG_SND_SOC_AD193X)	+= snd-soc-ad193x.o
-obj-$(CONFIG_SND_SOC_AD1980)	+= snd-soc-ad1980.o
-obj-$(CONFIG_SND_SOC_AD73311) += snd-soc-ad73311.o
-obj-$(CONFIG_SND_SOC_ADAU1373)	+= snd-soc-adau1373.o
-obj-$(CONFIG_SND_SOC_ADAU1701)  += snd-soc-adau1701.o
-obj-$(CONFIG_SND_SOC_ADAV80X)  += snd-soc-adav80x.o
-obj-$(CONFIG_SND_SOC_ADS117X)	+= snd-soc-ads117x.o
-obj-$(CONFIG_SND_SOC_AK4104)	+= snd-soc-ak4104.o
-obj-$(CONFIG_SND_SOC_AK4535)	+= snd-soc-ak4535.o
-obj-$(CONFIG_SND_SOC_AK4641)	+= snd-soc-ak4641.o
-obj-$(CONFIG_SND_SOC_AK4642)	+= snd-soc-ak4642.o
-obj-$(CONFIG_SND_SOC_AK4671)	+= snd-soc-ak4671.o
-obj-$(CONFIG_SND_SOC_ALC5623)    += snd-soc-alc5623.o
-obj-$(CONFIG_SND_SOC_ALC5632)	+= snd-soc-alc5632.o
-obj-$(CONFIG_SND_SOC_ARIZONA)	+= snd-soc-arizona.o
-obj-$(CONFIG_SND_SOC_CQ0093VC) += snd-soc-cq93vc.o
-obj-$(CONFIG_SND_SOC_CS35L32)	+= snd-soc-cs35l32.o
-obj-$(CONFIG_SND_SOC_CS42L51)	+= snd-soc-cs42l51.o
-obj-$(CONFIG_SND_SOC_CS42L73)	+= snd-soc-cs42l73.o
-obj-$(CONFIG_SND_SOC_CS4270)	+= snd-soc-cs4270.o
-obj-$(CONFIG_SND_SOC_CS4271)	+= snd-soc-cs4271.o
-obj-$(CONFIG_SND_SOC_CX20442)	+= snd-soc-cx20442.o
-obj-$(CONFIG_SND_SOC_DA7210)	+= snd-soc-da7210.o
-obj-$(CONFIG_SND_SOC_DFBMCS320)	+= snd-soc-dfbmcs320.o
-obj-$(CONFIG_SND_SOC_DMIC)	+= snd-soc-dmic.o
-obj-$(CONFIG_SND_SOC_L3)	+= snd-soc-l3.o
-obj-$(CONFIG_SND_SOC_LM4857)	+= snd-soc-lm4857.o
-obj-$(CONFIG_SND_SOC_JZ4740_CODEC)	+= snd-soc-jz4740-codec.o
-obj-$(CONFIG_SND_SOC_MAX98088)	+= snd-soc-max98088.o
-obj-$(CONFIG_SND_SOC_MAX98095)	+= snd-soc-max98095.o
-obj-$(CONFIG_SND_SOC_MAX9850)	+= snd-soc-max9850.o
-obj-$(CONFIG_SND_SOC_PCM3008)	+= snd-soc-pcm3008.o
-obj-$(CONFIG_SND_SOC_RT5631)	+= snd-soc-rt5631.o
-obj-$(CONFIG_SND_SOC_SGTL5000)  += snd-soc-sgtl5000.o
-obj-$(CONFIG_SND_SOC_SIGMADSP)	+= snd-soc-sigmadsp.o
-obj-$(CONFIG_SND_SOC_SN95031)	+=snd-soc-sn95031.o
-obj-$(CONFIG_SND_SOC_SPDIF)	+= snd-soc-spdif.o
-obj-$(CONFIG_SND_SOC_SSM2602)	+= snd-soc-ssm2602.o
-obj-$(CONFIG_SND_SOC_STA32X)   += snd-soc-sta32x.o
-obj-$(CONFIG_SND_SOC_STAC9766)	+= snd-soc-stac9766.o
-obj-$(CONFIG_SND_SOC_TLV320AIC23)	+= snd-soc-tlv320aic23.o
-obj-$(CONFIG_SND_SOC_TLV320AIC26)	+= snd-soc-tlv320aic26.o
-obj-$(CONFIG_SND_SOC_TLV320AIC3X)	+= snd-soc-tlv320aic3x.o
-obj-$(CONFIG_SND_SOC_TLV320AIC32X4)     += snd-soc-tlv320aic32x4.o
-obj-$(CONFIG_SND_SOC_TLV320DAC33)	+= snd-soc-tlv320dac33.o
-obj-$(CONFIG_SND_SOC_TWL4030)	+= snd-soc-twl4030.o
-obj-$(CONFIG_SND_SOC_TWL6040)	+= snd-soc-twl6040.o
-obj-$(CONFIG_SND_SOC_UDA134X)	+= snd-soc-uda134x.o
-obj-$(CONFIG_SND_SOC_UDA1380)	+= snd-soc-uda1380.o
-obj-$(CONFIG_SND_SOC_WCD9304)	+= snd-soc-wcd9304.o
-obj-$(CONFIG_SND_SOC_WCD9310)	+= snd-soc-wcd9310.o
-obj-$(CONFIG_SND_SOC_CS8427)	+= snd-soc-cs8427.o
-obj-$(CONFIG_SND_SOC_WCD9320)	+= snd-soc-wcd9320.o
-obj-$(CONFIG_SND_SOC_WCD9306)	+= snd-soc-wcd9306.o wcd9xxx-resmgr.o wcd9xxx-mbhc.o
-obj-$(CONFIG_SND_SOC_MSM8X10_WCD) += snd-soc-msm8x10-wcd.o wcd9xxx-resmgr.o wcd9xxx-mbhc.o
-obj-$(CONFIG_SND_SOC_WL1273)	+= snd-soc-wl1273.o
-obj-$(CONFIG_SND_SOC_WM1250_EV1) += snd-soc-wm1250-ev1.o
-obj-$(CONFIG_SND_SOC_WM2000)	+= snd-soc-wm2000.o
-obj-$(CONFIG_SND_SOC_WM5100)	+= snd-soc-wm5100.o
-obj-$(CONFIG_SND_SOC_WM5102)	+= snd-soc-wm5102.o
-obj-$(CONFIG_SND_SOC_WM5110)	+= snd-soc-wm5110.o
-obj-$(CONFIG_SND_SOC_WM_ADSP)	+= snd-soc-wm-adsp.o
-=======
 snd-soc-wsa881x-objs := wsa881x.o
 snd-soc-wsa883x-objs := wsa883x.o
 snd-soc-wsa884x-objs := wsa884x.o
@@ -878,25 +724,18 @@ obj-$(CONFIG_SND_SOC_WM2200)	+= snd-soc-wm2200.o
 obj-$(CONFIG_SND_SOC_WM5100)	+= snd-soc-wm5100.o
 obj-$(CONFIG_SND_SOC_WM5102)	+= snd-soc-wm5102.o
 obj-$(CONFIG_SND_SOC_WM5110)	+= snd-soc-wm5110.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SND_SOC_WM8350)	+= snd-soc-wm8350.o
 obj-$(CONFIG_SND_SOC_WM8400)	+= snd-soc-wm8400.o
 obj-$(CONFIG_SND_SOC_WM8510)	+= snd-soc-wm8510.o
 obj-$(CONFIG_SND_SOC_WM8523)	+= snd-soc-wm8523.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_SND_SOC_WM8524)	+= snd-soc-wm8524.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SND_SOC_WM8580)	+= snd-soc-wm8580.o
 obj-$(CONFIG_SND_SOC_WM8711)	+= snd-soc-wm8711.o
 obj-$(CONFIG_SND_SOC_WM8727)	+= snd-soc-wm8727.o
 obj-$(CONFIG_SND_SOC_WM8728)	+= snd-soc-wm8728.o
 obj-$(CONFIG_SND_SOC_WM8731)	+= snd-soc-wm8731.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_SND_SOC_WM8731_I2C)	+= snd-soc-wm8731-i2c.o
 obj-$(CONFIG_SND_SOC_WM8731_SPI)	+= snd-soc-wm8731-spi.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SND_SOC_WM8737)	+= snd-soc-wm8737.o
 obj-$(CONFIG_SND_SOC_WM8741)	+= snd-soc-wm8741.o
 obj-$(CONFIG_SND_SOC_WM8750)	+= snd-soc-wm8750.o
@@ -905,11 +744,8 @@ obj-$(CONFIG_SND_SOC_WM8770)	+= snd-soc-wm8770.o
 obj-$(CONFIG_SND_SOC_WM8776)	+= snd-soc-wm8776.o
 obj-$(CONFIG_SND_SOC_WM8782)	+= snd-soc-wm8782.o
 obj-$(CONFIG_SND_SOC_WM8804)	+= snd-soc-wm8804.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_SND_SOC_WM8804_I2C) += snd-soc-wm8804-i2c.o
 obj-$(CONFIG_SND_SOC_WM8804_SPI) += snd-soc-wm8804-spi.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SND_SOC_WM8900)	+= snd-soc-wm8900.o
 obj-$(CONFIG_SND_SOC_WM8903)	+= snd-soc-wm8903.o
 obj-$(CONFIG_SND_SOC_WM8904)	+= snd-soc-wm8904.o
@@ -930,29 +766,13 @@ obj-$(CONFIG_SND_SOC_WM8991)	+= snd-soc-wm8991.o
 obj-$(CONFIG_SND_SOC_WM8993)	+= snd-soc-wm8993.o
 obj-$(CONFIG_SND_SOC_WM8994)	+= snd-soc-wm8994.o
 obj-$(CONFIG_SND_SOC_WM8995)	+= snd-soc-wm8995.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_SND_SOC_WM8997)	+= snd-soc-wm8997.o
 obj-$(CONFIG_SND_SOC_WM8998)	+= snd-soc-wm8998.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SND_SOC_WM9081)	+= snd-soc-wm9081.o
 obj-$(CONFIG_SND_SOC_WM9090)	+= snd-soc-wm9090.o
 obj-$(CONFIG_SND_SOC_WM9705)	+= snd-soc-wm9705.o
 obj-$(CONFIG_SND_SOC_WM9712)	+= snd-soc-wm9712.o
 obj-$(CONFIG_SND_SOC_WM9713)	+= snd-soc-wm9713.o
-<<<<<<< HEAD
-obj-$(CONFIG_SND_SOC_WM_HUBS)	+= snd-soc-wm-hubs.o
-obj-$(CONFIG_SND_SOC_MSM_STUB)  += snd-soc-msm-stub.o
-
-# Amp
-obj-$(CONFIG_SND_SOC_MAX9877)	+= snd-soc-max9877.o
-obj-$(CONFIG_SND_SOC_TPA6130A2)	+= snd-soc-tpa6130a2.o
-obj-$(CONFIG_SND_SOC_TPA2015D) 	+= snd-soc-tpa2015d1.o
-# LGE_BSP_AUDIO, jeremy.pi@lge.com, 2012-11-17, Audience es325 ALSA SoC Audio driver
-ifeq ($(CONFIG_SND_SOC_ES325_SLIM),y)
-obj-$(CONFIG_SND_SOC_ES325_SLIM) += es325.o
-endif
-=======
 obj-$(CONFIG_SND_SOC_WM_ADSP)	+= snd-soc-wm-adsp.o
 obj-$(CONFIG_SND_SOC_WM_HUBS)	+= snd-soc-wm-hubs.o
 obj-$(CONFIG_SND_SOC_WSA881X)	+= snd-soc-wsa881x.o
@@ -973,4 +793,3 @@ obj-$(CONFIG_SND_SOC_LPASS_TX_MACRO)	+= snd-soc-lpass-tx-macro.o
 
 # Mux
 obj-$(CONFIG_SND_SOC_SIMPLE_MUX)	+= snd-soc-simple-mux.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

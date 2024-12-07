@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-#ifndef _PROBE_EVENT_H
-#define _PROBE_EVENT_H
-
-#include <stdbool.h>
-#include "strlist.h"
-#include "strfilter.h"
-
-extern bool probe_event_dry_run;
-
-/* kprobe-tracer tracing point */
-struct probe_trace_point {
-	char		*symbol;	/* Base symbol */
-	char		*module;	/* Module name */
-	unsigned long	offset;		/* Offset from symbol */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PROBE_EVENT_H
 #define _PROBE_EVENT_H
@@ -50,7 +34,6 @@ struct probe_trace_point {
 	unsigned long	offset;		/* Offset from symbol */
 	unsigned long	ref_ctr_offset;	/* SDT reference counter offset */
 	u64		address;	/* Actual address of the trace point */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool		retprobe;	/* Return probe flag */
 };
 
@@ -58,16 +41,10 @@ struct probe_trace_point {
 struct probe_trace_arg_ref {
 	struct probe_trace_arg_ref	*next;	/* Next reference */
 	long				offset;	/* Offset value */
-<<<<<<< HEAD
-};
-
-/* kprobe-tracer tracing argument */
-=======
 	bool				user_access;	/* User-memory access */
 };
 
 /* kprobe-tracer and uprobe-tracer tracing argument */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct probe_trace_arg {
 	char				*name;	/* Argument name */
 	char				*value;	/* Base value */
@@ -75,20 +52,13 @@ struct probe_trace_arg {
 	struct probe_trace_arg_ref	*ref;	/* Referencing offset */
 };
 
-<<<<<<< HEAD
-/* kprobe-tracer tracing event (point + arg) */
-=======
 /* kprobe-tracer and uprobe-tracer tracing event (point + arg) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct probe_trace_event {
 	char				*event;	/* Event name */
 	char				*group;	/* Group name */
 	struct probe_trace_point	point;	/* Trace point */
 	int				nargs;	/* Number of args */
-<<<<<<< HEAD
-=======
 	bool				uprobes;	/* uprobes only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct probe_trace_arg		*args;	/* Arguments */
 };
 
@@ -100,10 +70,7 @@ struct perf_probe_point {
 	bool		retprobe;	/* Return probe flag */
 	char		*lazy_line;	/* Lazy matching pattern */
 	unsigned long	offset;		/* Offset from function entry */
-<<<<<<< HEAD
-=======
 	u64		abs_address;	/* Absolute address of the point */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Perf probe probing argument field chain */
@@ -120,10 +87,7 @@ struct perf_probe_arg {
 	char				*var;	/* Variable name */
 	char				*type;	/* Type name */
 	struct perf_probe_arg_field	*field;	/* Structure fields */
-<<<<<<< HEAD
-=======
 	bool				user_access;	/* User-memory access */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Perf probe probing event (point + arg) */
@@ -132,16 +96,6 @@ struct perf_probe_event {
 	char			*group;	/* Group name */
 	struct perf_probe_point	point;	/* Probe point */
 	int			nargs;	/* Number of arguments */
-<<<<<<< HEAD
-	struct perf_probe_arg	*args;	/* Arguments */
-};
-
-
-/* Line number container */
-struct line_node {
-	struct list_head	list;
-	int			line;
-=======
 	bool			sdt;	/* SDT/cached event flag */
 	bool			uprobes;	/* Uprobe event flag */
 	char			*target;	/* Target binary */
@@ -149,7 +103,6 @@ struct line_node {
 	struct probe_trace_event *tevs;
 	int			ntevs;
 	struct nsinfo		*nsi;	/* Target namespace */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Line range */
@@ -161,58 +114,17 @@ struct line_range {
 	int			offset;		/* Start line offset */
 	char			*path;		/* Real path name */
 	char			*comp_dir;	/* Compile directory */
-<<<<<<< HEAD
-	struct list_head	line_list;	/* Visible lines */
-};
-
-=======
 	struct intlist		*line_list;	/* Visible lines */
 };
 
 struct strlist;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* List of variables */
 struct variable_list {
 	struct probe_trace_point	point;	/* Actual probepoint */
 	struct strlist			*vars;	/* Available variables */
 };
 
-<<<<<<< HEAD
-/* Command string to events */
-extern int parse_perf_probe_command(const char *cmd,
-				    struct perf_probe_event *pev);
-
-/* Events to command string */
-extern char *synthesize_perf_probe_command(struct perf_probe_event *pev);
-extern char *synthesize_probe_trace_command(struct probe_trace_event *tev);
-extern int synthesize_perf_probe_arg(struct perf_probe_arg *pa, char *buf,
-				     size_t len);
-
-/* Check the perf_probe_event needs debuginfo */
-extern bool perf_probe_event_need_dwarf(struct perf_probe_event *pev);
-
-/* Release event contents */
-extern void clear_perf_probe_event(struct perf_probe_event *pev);
-
-/* Command string to line-range */
-extern int parse_line_range_desc(const char *cmd, struct line_range *lr);
-
-/* Internal use: Return kernel/module path */
-extern const char *kernel_get_module_path(const char *module);
-
-extern int add_perf_probe_events(struct perf_probe_event *pevs, int npevs,
-				 int max_probe_points, const char *module,
-				 bool force_add);
-extern int del_perf_probe_events(struct strlist *dellist);
-extern int show_perf_probe_events(void);
-extern int show_line_range(struct line_range *lr, const char *module);
-extern int show_available_vars(struct perf_probe_event *pevs, int npevs,
-			       int max_probe_points, const char *module,
-			       struct strfilter *filter, bool externs);
-extern int show_available_funcs(const char *module, struct strfilter *filter);
-
-=======
 struct map;
 int init_probe_symbol_maps(bool user_only);
 void exit_probe_symbol_maps(void);
@@ -274,13 +186,10 @@ void arch__fix_tev_from_maps(struct perf_probe_event *pev,
 
 /* If there is no space to write, returns -E2BIG. */
 int e_snprintf(char *str, size_t size, const char *format, ...) __printf(3, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maximum index number of event-name postfix */
 #define MAX_EVENT_INDEX	1024
 
-<<<<<<< HEAD
-=======
 int copy_to_probe_trace_arg(struct probe_trace_arg *tvar,
 			    struct perf_probe_arg *pvar);
 
@@ -289,5 +198,4 @@ struct map *get_target_map(const char *target, struct nsinfo *nsi, bool user);
 void arch__post_process_probe_trace_events(struct perf_probe_event *pev,
 					   int ntevs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*_PROBE_EVENT_H */

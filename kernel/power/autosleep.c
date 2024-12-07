@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kernel/power/autosleep.c
  *
@@ -36,12 +33,8 @@ static void try_to_suspend(struct work_struct *work)
 
 	mutex_lock(&autosleep_lock);
 
-<<<<<<< HEAD
-	if (!pm_save_wakeup_count(initial_count)) {
-=======
 	if (!pm_save_wakeup_count(initial_count) ||
 		system_state != SYSTEM_RUNNING) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&autosleep_lock);
 		goto out;
 	}
@@ -61,11 +54,7 @@ static void try_to_suspend(struct work_struct *work)
 		goto out;
 
 	/*
-<<<<<<< HEAD
-	 * If the wakeup occured for an unknown reason, wait to prevent the
-=======
 	 * If the wakeup occurred for an unknown reason, wait to prevent the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * system from trying to suspend and waking up in a tight loop.
 	 */
 	if (final_count == initial_count)
@@ -79,11 +68,7 @@ static DECLARE_WORK(suspend_work, try_to_suspend);
 
 void queue_up_suspend_work(void)
 {
-<<<<<<< HEAD
-	if (!work_pending(&suspend_work) && autosleep_state > PM_SUSPEND_ON)
-=======
 	if (autosleep_state > PM_SUSPEND_ON)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_work(autosleep_wq, &suspend_work);
 }
 
@@ -131,11 +116,7 @@ int pm_autosleep_set_state(suspend_state_t state)
 
 int __init pm_autosleep_init(void)
 {
-<<<<<<< HEAD
-	autosleep_ws = wakeup_source_register("autosleep");
-=======
 	autosleep_ws = wakeup_source_register(NULL, "autosleep");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!autosleep_ws)
 		return -ENOMEM;
 

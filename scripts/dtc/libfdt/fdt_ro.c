@@ -1,59 +1,7 @@
-<<<<<<< HEAD
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- *
- * libfdt is dual licensed: you can use it either under the terms of
- * the GPL, or the BSD license, at your option.
- *
- *  a) This library is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the
- *     License, or (at your option) any later version.
- *
- *     This library is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public
- *     License along with this library; if not, write to the Free
- *     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- *     MA 02110-1301 USA
- *
- * Alternatively,
- *
- *  b) Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *     1. Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *     2. Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- *     CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- *     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- *     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- *     CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *     SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- *     NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- *     HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=======
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
 /*
  * libfdt - Flat Device Tree manipulation
  * Copyright (C) 2006 David Gibson, IBM Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "libfdt_env.h"
 
@@ -62,14 +10,6 @@
 
 #include "libfdt_internal.h"
 
-<<<<<<< HEAD
-static int _fdt_nodename_eq(const void *fdt, int offset,
-			    const char *s, int len)
-{
-	const char *p = fdt_offset_ptr(fdt, offset + FDT_TAGSIZE, len+1);
-
-	if (! p)
-=======
 static int fdt_nodename_eq_(const void *fdt, int offset,
 			    const char *s, int len)
 {
@@ -77,7 +17,6 @@ static int fdt_nodename_eq_(const void *fdt, int offset,
 	const char *p = fdt_get_name(fdt, offset, &olen);
 
 	if (!p || olen < len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* short match */
 		return 0;
 
@@ -92,19 +31,6 @@ static int fdt_nodename_eq_(const void *fdt, int offset,
 		return 0;
 }
 
-<<<<<<< HEAD
-const char *fdt_string(const void *fdt, int stroffset)
-{
-	return (const char *)fdt + fdt_off_dt_strings(fdt) + stroffset;
-}
-
-static int _fdt_string_eq(const void *fdt, int stroffset,
-			  const char *s, int len)
-{
-	const char *p = fdt_string(fdt, stroffset);
-
-	return (strlen(p) == len) && (memcmp(p, s, len) == 0);
-=======
 const char *fdt_get_string(const void *fdt, int stroffset, int *lenp)
 {
 	int32_t totalsize;
@@ -244,16 +170,10 @@ static const struct fdt_reserve_entry *fdt_mem_rsv(const void *fdt, int n)
 			return NULL;
 	}
 	return fdt_mem_rsv_(fdt, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size)
 {
-<<<<<<< HEAD
-	FDT_CHECK_HEADER(fdt);
-	*address = fdt64_to_cpu(_fdt_mem_rsv(fdt, n)->address);
-	*size = fdt64_to_cpu(_fdt_mem_rsv(fdt, n)->size);
-=======
 	const struct fdt_reserve_entry *re;
 
 	FDT_RO_PROBE(fdt);
@@ -263,22 +183,11 @@ int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size)
 
 	*address = fdt64_ld_(&re->address);
 	*size = fdt64_ld_(&re->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int fdt_num_mem_rsv(const void *fdt)
 {
-<<<<<<< HEAD
-	int i = 0;
-
-	while (fdt64_to_cpu(_fdt_mem_rsv(fdt, i)->size) != 0)
-		i++;
-	return i;
-}
-
-static int _nextprop(const void *fdt, int offset)
-=======
 	int i;
 	const struct fdt_reserve_entry *re;
 
@@ -290,7 +199,6 @@ static int _nextprop(const void *fdt, int offset)
 }
 
 static int nextprop_(const void *fdt, int offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t tag;
 	int nextoffset;
@@ -319,21 +227,13 @@ int fdt_subnode_offset_namelen(const void *fdt, int offset,
 {
 	int depth;
 
-<<<<<<< HEAD
-	FDT_CHECK_HEADER(fdt);
-=======
 	FDT_RO_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (depth = 0;
 	     (offset >= 0) && (depth >= 0);
 	     offset = fdt_next_node(fdt, offset, &depth))
 		if ((depth == 1)
-<<<<<<< HEAD
-		    && _fdt_nodename_eq(fdt, offset, name, namelen))
-=======
 		    && fdt_nodename_eq_(fdt, offset, name, namelen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return offset;
 
 	if (depth < 0)
@@ -347,19 +247,6 @@ int fdt_subnode_offset(const void *fdt, int parentoffset,
 	return fdt_subnode_offset_namelen(fdt, parentoffset, name, strlen(name));
 }
 
-<<<<<<< HEAD
-int fdt_path_offset(const void *fdt, const char *path)
-{
-	const char *end = path + strlen(path);
-	const char *p = path;
-	int offset = 0;
-
-	FDT_CHECK_HEADER(fdt);
-
-	/* see if we have an alias */
-	if (*path != '/') {
-		const char *q = strchr(path, '/');
-=======
 int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen)
 {
 	const char *end = path + namelen;
@@ -371,7 +258,6 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen)
 	/* see if we have an alias */
 	if (*path != '/') {
 		const char *q = memchr(path, '/', end - p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!q)
 			q = end;
@@ -384,16 +270,6 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen)
 		p = q;
 	}
 
-<<<<<<< HEAD
-	while (*p) {
-		const char *q;
-
-		while (*p == '/')
-			p++;
-		if (! *p)
-			return offset;
-		q = strchr(p, '/');
-=======
 	while (p < end) {
 		const char *q;
 
@@ -403,7 +279,6 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen)
 				return offset;
 		}
 		q = memchr(p, '/', end - p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! q)
 			q = end;
 
@@ -417,21 +292,6 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen)
 	return offset;
 }
 
-<<<<<<< HEAD
-const char *fdt_get_name(const void *fdt, int nodeoffset, int *len)
-{
-	const struct fdt_node_header *nh = _fdt_offset_ptr(fdt, nodeoffset);
-	int err;
-
-	if (((err = fdt_check_header(fdt)) != 0)
-	    || ((err = _fdt_check_node_offset(fdt, nodeoffset)) < 0))
-			goto fail;
-
-	if (len)
-		*len = strlen(nh->name);
-
-	return nh->name;
-=======
 int fdt_path_offset(const void *fdt, const char *path)
 {
 	return fdt_path_offset_namelen(fdt, path, strlen(path));
@@ -468,7 +328,6 @@ const char *fdt_get_name(const void *fdt, int nodeoffset, int *len)
 		*len = strlen(nameptr);
 
 	return nameptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  fail:
 	if (len)
@@ -480,27 +339,14 @@ int fdt_first_property_offset(const void *fdt, int nodeoffset)
 {
 	int offset;
 
-<<<<<<< HEAD
-	if ((offset = _fdt_check_node_offset(fdt, nodeoffset)) < 0)
-		return offset;
-
-	return _nextprop(fdt, offset);
-=======
 	if ((offset = fdt_check_node_offset_(fdt, nodeoffset)) < 0)
 		return offset;
 
 	return nextprop_(fdt, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fdt_next_property_offset(const void *fdt, int offset)
 {
-<<<<<<< HEAD
-	if ((offset = _fdt_check_prop_offset(fdt, offset)) < 0)
-		return offset;
-
-	return _nextprop(fdt, offset);
-=======
 	if ((offset = fdt_check_prop_offset_(fdt, offset)) < 0)
 		return offset;
 
@@ -527,36 +373,12 @@ static const struct fdt_property *fdt_get_property_by_offset_(const void *fdt,
 		*lenp = fdt32_ld_(&prop->len);
 
 	return prop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct fdt_property *fdt_get_property_by_offset(const void *fdt,
 						      int offset,
 						      int *lenp)
 {
-<<<<<<< HEAD
-	int err;
-	const struct fdt_property *prop;
-
-	if ((err = _fdt_check_prop_offset(fdt, offset)) < 0) {
-		if (lenp)
-			*lenp = err;
-		return NULL;
-	}
-
-	prop = _fdt_offset_ptr(fdt, offset);
-
-	if (lenp)
-		*lenp = fdt32_to_cpu(prop->len);
-
-	return prop;
-}
-
-const struct fdt_property *fdt_get_property_namelen(const void *fdt,
-						    int offset,
-						    const char *name,
-						    int namelen, int *lenp)
-=======
 	/* Prior to version 16, properties may need realignment
 	 * and this API does not work. fdt_getprop_*() will, however. */
 
@@ -575,22 +397,12 @@ static const struct fdt_property *fdt_get_property_namelen_(const void *fdt,
 						            int namelen,
 							    int *lenp,
 							    int *poffset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	for (offset = fdt_first_property_offset(fdt, offset);
 	     (offset >= 0);
 	     (offset = fdt_next_property_offset(fdt, offset))) {
 		const struct fdt_property *prop;
 
-<<<<<<< HEAD
-		if (!(prop = fdt_get_property_by_offset(fdt, offset, lenp))) {
-			offset = -FDT_ERR_INTERNAL;
-			break;
-		}
-		if (_fdt_string_eq(fdt, fdt32_to_cpu(prop->nameoff),
-				   name, namelen))
-			return prop;
-=======
 		prop = fdt_get_property_by_offset_(fdt, offset, lenp);
 		if (!can_assume(LIBFDT_FLAWLESS) && !prop) {
 			offset = -FDT_ERR_INTERNAL;
@@ -602,7 +414,6 @@ static const struct fdt_property *fdt_get_property_namelen_(const void *fdt,
 				*poffset = offset;
 			return prop;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (lenp)
@@ -610,8 +421,6 @@ static const struct fdt_property *fdt_get_property_namelen_(const void *fdt,
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 
 const struct fdt_property *fdt_get_property_namelen(const void *fdt,
 						    int offset,
@@ -631,7 +440,6 @@ const struct fdt_property *fdt_get_property_namelen(const void *fdt,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct fdt_property *fdt_get_property(const void *fdt,
 					    int nodeoffset,
 					    const char *name, int *lenp)
@@ -643,14 +451,6 @@ const struct fdt_property *fdt_get_property(const void *fdt,
 const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
 				const char *name, int namelen, int *lenp)
 {
-<<<<<<< HEAD
-	const struct fdt_property *prop;
-
-	prop = fdt_get_property_namelen(fdt, nodeoffset, name, namelen, lenp);
-	if (! prop)
-		return NULL;
-
-=======
 	int poffset;
 	const struct fdt_property *prop;
 
@@ -663,7 +463,6 @@ const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
 	if (!can_assume(LATEST) && fdt_version(fdt) < 0x10 &&
 	    (poffset + sizeof(*prop)) % 8 && fdt32_ld_(&prop->len) >= 8)
 		return prop->data + 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return prop->data;
 }
 
@@ -672,13 +471,6 @@ const void *fdt_getprop_by_offset(const void *fdt, int offset,
 {
 	const struct fdt_property *prop;
 
-<<<<<<< HEAD
-	prop = fdt_get_property_by_offset(fdt, offset, lenp);
-	if (!prop)
-		return NULL;
-	if (namep)
-		*namep = fdt_string(fdt, fdt32_to_cpu(prop->nameoff));
-=======
 	prop = fdt_get_property_by_offset_(fdt, offset, lenp);
 	if (!prop)
 		return NULL;
@@ -704,7 +496,6 @@ const void *fdt_getprop_by_offset(const void *fdt, int offset,
 	if (!can_assume(LATEST) && fdt_version(fdt) < 0x10 &&
 	    (offset + sizeof(*prop)) % 8 && fdt32_ld_(&prop->len) >= 8)
 		return prop->data + 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return prop->data;
 }
 
@@ -716,11 +507,7 @@ const void *fdt_getprop(const void *fdt, int nodeoffset,
 
 uint32_t fdt_get_phandle(const void *fdt, int nodeoffset)
 {
-<<<<<<< HEAD
-	const uint32_t *php;
-=======
 	const fdt32_t *php;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int len;
 
 	/* FIXME: This is a bit sub-optimal, since we potentially scan
@@ -732,11 +519,7 @@ uint32_t fdt_get_phandle(const void *fdt, int nodeoffset)
 			return 0;
 	}
 
-<<<<<<< HEAD
-	return fdt32_to_cpu(*php);
-=======
 	return fdt32_ld_(php);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const char *fdt_get_alias_namelen(const void *fdt,
@@ -762,11 +545,7 @@ int fdt_get_path(const void *fdt, int nodeoffset, char *buf, int buflen)
 	int offset, depth, namelen;
 	const char *name;
 
-<<<<<<< HEAD
-	FDT_CHECK_HEADER(fdt);
-=======
 	FDT_RO_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (buflen < 2)
 		return -FDT_ERR_NOSPACE;
@@ -818,11 +597,7 @@ int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset,
 	int offset, depth;
 	int supernodeoffset = -FDT_ERR_INTERNAL;
 
-<<<<<<< HEAD
-	FDT_CHECK_HEADER(fdt);
-=======
 	FDT_RO_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (supernodedepth < 0)
 		return -FDT_ERR_NOTFOUND;
@@ -844,19 +619,12 @@ int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset,
 		}
 	}
 
-<<<<<<< HEAD
-	if ((offset == -FDT_ERR_NOTFOUND) || (offset >= 0))
-		return -FDT_ERR_BADOFFSET;
-	else if (offset == -FDT_ERR_BADOFFSET)
-		return -FDT_ERR_BADSTRUCTURE;
-=======
 	if (!can_assume(VALID_INPUT)) {
 		if ((offset == -FDT_ERR_NOTFOUND) || (offset >= 0))
 			return -FDT_ERR_BADOFFSET;
 		else if (offset == -FDT_ERR_BADOFFSET)
 			return -FDT_ERR_BADSTRUCTURE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return offset; /* error from fdt_next_node() */
 }
@@ -868,12 +636,8 @@ int fdt_node_depth(const void *fdt, int nodeoffset)
 
 	err = fdt_supernode_atdepth_offset(fdt, nodeoffset, 0, &nodedepth);
 	if (err)
-<<<<<<< HEAD
-		return (err < 0) ? err : -FDT_ERR_INTERNAL;
-=======
 		return (can_assume(LIBFDT_FLAWLESS) || err < 0) ? err :
 			-FDT_ERR_INTERNAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nodedepth;
 }
 
@@ -895,11 +659,7 @@ int fdt_node_offset_by_prop_value(const void *fdt, int startoffset,
 	const void *val;
 	int len;
 
-<<<<<<< HEAD
-	FDT_CHECK_HEADER(fdt);
-=======
 	FDT_RO_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: The algorithm here is pretty horrible: we scan each
 	 * property of a node in fdt_getprop(), then if that didn't
@@ -922,17 +682,10 @@ int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle)
 {
 	int offset;
 
-<<<<<<< HEAD
-	if ((phandle == 0) || (phandle == -1))
-		return -FDT_ERR_BADPHANDLE;
-
-	FDT_CHECK_HEADER(fdt);
-=======
 	if ((phandle == 0) || (phandle == ~0U))
 		return -FDT_ERR_BADPHANDLE;
 
 	FDT_RO_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: The algorithm here is pretty horrible: we
 	 * potentially scan each property of a node in
@@ -950,12 +703,7 @@ int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle)
 	return offset; /* error from fdt_next_node() */
 }
 
-<<<<<<< HEAD
-static int _fdt_stringlist_contains(const char *strlist, int listlen,
-				    const char *str)
-=======
 int fdt_stringlist_contains(const char *strlist, int listlen, const char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len = strlen(str);
 	const char *p;
@@ -972,8 +720,6 @@ int fdt_stringlist_contains(const char *strlist, int listlen, const char *str)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int fdt_stringlist_count(const void *fdt, int nodeoffset, const char *property)
 {
 	const char *list, *end;
@@ -1074,7 +820,6 @@ const char *fdt_stringlist_get(const void *fdt, int nodeoffset,
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fdt_node_check_compatible(const void *fdt, int nodeoffset,
 			      const char *compatible)
 {
@@ -1084,15 +829,8 @@ int fdt_node_check_compatible(const void *fdt, int nodeoffset,
 	prop = fdt_getprop(fdt, nodeoffset, "compatible", &len);
 	if (!prop)
 		return len;
-<<<<<<< HEAD
-	if (_fdt_stringlist_contains(prop, len, compatible))
-		return 0;
-	else
-		return 1;
-=======
 
 	return !fdt_stringlist_contains(prop, len, compatible);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
@@ -1100,11 +838,7 @@ int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
 {
 	int offset, err;
 
-<<<<<<< HEAD
-	FDT_CHECK_HEADER(fdt);
-=======
 	FDT_RO_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: The algorithm here is pretty horrible: we scan each
 	 * property of a node in fdt_node_check_compatible(), then if

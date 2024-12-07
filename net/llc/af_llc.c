@@ -26,11 +26,8 @@
 #include <linux/rtnetlink.h>
 #include <linux/init.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/signal.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/llc.h>
 #include <net/llc_sap.h>
 #include <net/llc_pdu.h>
@@ -43,22 +40,14 @@ static u16 llc_ui_sap_link_no_max[256];
 static struct sockaddr_llc llc_ui_addrnull;
 static const struct proto_ops llc_ui_ops;
 
-<<<<<<< HEAD
-static int llc_ui_wait_for_conn(struct sock *sk, long timeout);
-=======
 static bool llc_ui_wait_for_conn(struct sock *sk, long timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int llc_ui_wait_for_disc(struct sock *sk, long timeout);
 static int llc_ui_wait_for_busy_core(struct sock *sk, long timeout);
 
 #if 0
 #define dprintk(args...) printk(KERN_DEBUG args)
 #else
-<<<<<<< HEAD
-#define dprintk(args...)
-=======
 #define dprintk(args...) do {} while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Maybe we'll add some more in the future. */
@@ -84,12 +73,7 @@ static inline u16 llc_ui_next_link_no(int sap)
  */
 static inline __be16 llc_proto_type(u16 arphrd)
 {
-<<<<<<< HEAD
-	return arphrd == ARPHRD_IEEE802_TR ?
-			 htons(ETH_P_TR_802_2) : htons(ETH_P_802_2);
-=======
 	return htons(ETH_P_802_2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -114,10 +98,6 @@ static inline u8 llc_ui_header_len(struct sock *sk, struct sockaddr_llc *addr)
 {
 	u8 rc = LLC_PDU_LEN_U;
 
-<<<<<<< HEAD
-	if (addr->sllc_test || addr->sllc_xid)
-		rc = LLC_PDU_LEN_U;
-=======
 	if (addr->sllc_test)
 		rc = LLC_PDU_LEN_U;
 	else if (addr->sllc_xid)
@@ -128,7 +108,6 @@ static inline u8 llc_ui_header_len(struct sock *sk, struct sockaddr_llc *addr)
 		 * bytes, llc_pdu_init_as_xid_cmd() will overwrite user data
 		 */
 		rc = LLC_PDU_LEN_U_XID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (sk->sk_type == SOCK_STREAM)
 		rc = LLC_PDU_LEN_I;
 	return rc;
@@ -142,32 +121,17 @@ static inline u8 llc_ui_header_len(struct sock *sk, struct sockaddr_llc *addr)
  *
  *	Send data via reliable llc2 connection.
  *	Returns 0 upon success, non-zero if action did not succeed.
-<<<<<<< HEAD
-=======
  *
  *	This function always consumes a reference to the skb.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int llc_ui_send_data(struct sock* sk, struct sk_buff *skb, int noblock)
 {
 	struct llc_sock* llc = llc_sk(sk);
-<<<<<<< HEAD
-	int rc = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(llc_data_accept_state(llc->state) ||
 		     llc->remote_busy_flag ||
 		     llc->p_flag)) {
 		long timeout = sock_sndtimeo(sk, noblock);
-<<<<<<< HEAD
-
-		rc = llc_ui_wait_for_busy_core(sk, timeout);
-	}
-	if (unlikely(!rc))
-		rc = llc_build_and_send_pkt(sk, skb);
-	return rc;
-=======
 		int rc;
 
 		rc = llc_ui_wait_for_busy_core(sk, timeout);
@@ -177,7 +141,6 @@ static int llc_ui_send_data(struct sock* sk, struct sk_buff *skb, int noblock)
 		}
 	}
 	return llc_build_and_send_pkt(sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void llc_ui_sk_init(struct socket *sock, struct sock *sk)
@@ -191,11 +154,7 @@ static struct proto llc_proto = {
 	.name	  = "LLC",
 	.owner	  = THIS_MODULE,
 	.obj_size = sizeof(struct llc_sock),
-<<<<<<< HEAD
-	.slab_flags = SLAB_DESTROY_BY_RCU,
-=======
 	.slab_flags = SLAB_TYPESAFE_BY_RCU,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -215,11 +174,7 @@ static int llc_ui_create(struct net *net, struct socket *sock, int protocol,
 	struct sock *sk;
 	int rc = -ESOCKTNOSUPPORT;
 
-<<<<<<< HEAD
-	if (!capable(CAP_NET_RAW))
-=======
 	if (!ns_capable(net->user_ns, CAP_NET_RAW))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 
 	if (!net_eq(net, &init_net))
@@ -227,11 +182,7 @@ static int llc_ui_create(struct net *net, struct socket *sock, int protocol,
 
 	if (likely(sock->type == SOCK_DGRAM || sock->type == SOCK_STREAM)) {
 		rc = -ENOMEM;
-<<<<<<< HEAD
-		sk = llc_sk_alloc(net, PF_LLC, GFP_KERNEL, &llc_proto);
-=======
 		sk = llc_sk_alloc(net, PF_LLC, GFP_KERNEL, &llc_proto, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sk) {
 			rc = 0;
 			llc_ui_sk_init(sock, sk);
@@ -260,14 +211,6 @@ static int llc_ui_release(struct socket *sock)
 		llc->laddr.lsap, llc->daddr.lsap);
 	if (!llc_send_disc(sk))
 		llc_ui_wait_for_disc(sk, sk->sk_rcvtimeo);
-<<<<<<< HEAD
-	if (!sock_flag(sk, SOCK_ZAPPED))
-		llc_sap_remove_socket(llc->sap, sk);
-	release_sock(sk);
-	if (llc->dev)
-		dev_put(llc->dev);
-	sock_put(sk);
-=======
 	if (!sock_flag(sk, SOCK_ZAPPED)) {
 		struct llc_sap *sap = llc->sap;
 
@@ -285,7 +228,6 @@ static int llc_ui_release(struct socket *sock)
 	sock_put(sk);
 	sock_orphan(sk);
 	sock->sk = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	llc_sk_free(sk);
 out:
 	return 0;
@@ -335,27 +277,12 @@ static int llc_ui_autobind(struct socket *sock, struct sockaddr_llc *addr)
 {
 	struct sock *sk = sock->sk;
 	struct llc_sock *llc = llc_sk(sk);
-<<<<<<< HEAD
-=======
 	struct net_device *dev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct llc_sap *sap;
 	int rc = -EINVAL;
 
 	if (!sock_flag(sk, SOCK_ZAPPED))
 		goto out;
-<<<<<<< HEAD
-	rc = -ENODEV;
-	if (sk->sk_bound_dev_if) {
-		llc->dev = dev_get_by_index(&init_net, sk->sk_bound_dev_if);
-		if (llc->dev && addr->sllc_arphrd != llc->dev->type) {
-			dev_put(llc->dev);
-			llc->dev = NULL;
-		}
-	} else
-		llc->dev = dev_getfirstbyhwtype(&init_net, addr->sllc_arphrd);
-	if (!llc->dev)
-=======
 	if (!addr->sllc_arphrd)
 		addr->sllc_arphrd = ARPHRD_ETHER;
 	if (addr->sllc_arphrd != ARPHRD_ETHER)
@@ -370,7 +297,6 @@ static int llc_ui_autobind(struct socket *sock, struct sockaddr_llc *addr)
 	} else
 		dev = dev_getfirstbyhwtype(&init_net, addr->sllc_arphrd);
 	if (!dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	rc = -EUSERS;
 	llc->laddr.lsap = llc_ui_autoport();
@@ -380,15 +306,12 @@ static int llc_ui_autobind(struct socket *sock, struct sockaddr_llc *addr)
 	sap = llc_sap_open(llc->laddr.lsap, NULL);
 	if (!sap)
 		goto out;
-<<<<<<< HEAD
-=======
 
 	/* Note: We do not expect errors from this point. */
 	llc->dev = dev;
 	netdev_tracker_alloc(llc->dev, &llc->dev_tracker, GFP_KERNEL);
 	dev = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(llc->laddr.mac, llc->dev->dev_addr, IFHWADDRLEN);
 	memcpy(&llc->addr, addr, sizeof(llc->addr));
 	/* assign new connection to its SAP */
@@ -396,10 +319,7 @@ static int llc_ui_autobind(struct socket *sock, struct sockaddr_llc *addr)
 	sock_reset_flag(sk, SOCK_ZAPPED);
 	rc = 0;
 out:
-<<<<<<< HEAD
-=======
 	dev_put(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -422,42 +342,6 @@ static int llc_ui_bind(struct socket *sock, struct sockaddr *uaddr, int addrlen)
 	struct sockaddr_llc *addr = (struct sockaddr_llc *)uaddr;
 	struct sock *sk = sock->sk;
 	struct llc_sock *llc = llc_sk(sk);
-<<<<<<< HEAD
-	struct llc_sap *sap;
-	int rc = -EINVAL;
-
-	dprintk("%s: binding %02X\n", __func__, addr->sllc_sap);
-	if (unlikely(!sock_flag(sk, SOCK_ZAPPED) || addrlen != sizeof(*addr)))
-		goto out;
-	rc = -EAFNOSUPPORT;
-	if (unlikely(addr->sllc_family != AF_LLC))
-		goto out;
-	rc = -ENODEV;
-	rcu_read_lock();
-	if (sk->sk_bound_dev_if) {
-		llc->dev = dev_get_by_index_rcu(&init_net, sk->sk_bound_dev_if);
-		if (llc->dev) {
-			if (!addr->sllc_arphrd)
-				addr->sllc_arphrd = llc->dev->type;
-			if (llc_mac_null(addr->sllc_mac))
-				memcpy(addr->sllc_mac, llc->dev->dev_addr,
-				       IFHWADDRLEN);
-			if (addr->sllc_arphrd != llc->dev->type ||
-			    !llc_mac_match(addr->sllc_mac,
-					   llc->dev->dev_addr)) {
-				rc = -EINVAL;
-				llc->dev = NULL;
-			}
-		}
-	} else
-		llc->dev = dev_getbyhwaddr_rcu(&init_net, addr->sllc_arphrd,
-					   addr->sllc_mac);
-	if (llc->dev)
-		dev_hold(llc->dev);
-	rcu_read_unlock();
-	if (!llc->dev)
-		goto out;
-=======
 	struct net_device *dev = NULL;
 	struct llc_sap *sap;
 	int rc = -EINVAL;
@@ -495,7 +379,6 @@ static int llc_ui_bind(struct socket *sock, struct sockaddr *uaddr, int addrlen)
 	if (!dev)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!addr->sllc_sap) {
 		rc = -EUSERS;
 		addr->sllc_sap = llc_ui_autoport();
@@ -521,25 +404,18 @@ static int llc_ui_bind(struct socket *sock, struct sockaddr *uaddr, int addrlen)
 		memcpy(laddr.mac, addr->sllc_mac, IFHWADDRLEN);
 		laddr.lsap = addr->sllc_sap;
 		rc = -EADDRINUSE; /* mac + sap clash. */
-<<<<<<< HEAD
-		ask = llc_lookup_established(sap, &daddr, &laddr);
-=======
 		ask = llc_lookup_established(sap, &daddr, &laddr, &init_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ask) {
 			sock_put(ask);
 			goto out_put;
 		}
 	}
-<<<<<<< HEAD
-=======
 
 	/* Note: We do not expect errors from this point. */
 	llc->dev = dev;
 	netdev_tracker_alloc(llc->dev, &llc->dev_tracker, GFP_KERNEL);
 	dev = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	llc->laddr.lsap = addr->sllc_sap;
 	memcpy(llc->laddr.mac, addr->sllc_mac, IFHWADDRLEN);
 	memcpy(&llc->addr, addr, sizeof(llc->addr));
@@ -550,11 +426,8 @@ static int llc_ui_bind(struct socket *sock, struct sockaddr *uaddr, int addrlen)
 out_put:
 	llc_sap_put(sap);
 out:
-<<<<<<< HEAD
-=======
 	dev_put(dev);
 	release_sock(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -692,11 +565,7 @@ static int llc_ui_listen(struct socket *sock, int backlog)
 	if (sock_flag(sk, SOCK_ZAPPED))
 		goto out;
 	rc = 0;
-<<<<<<< HEAD
-	if (!(unsigned)backlog)	/* BSDism */
-=======
 	if (!(unsigned int)backlog)	/* BSDism */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		backlog = 1;
 	sk->sk_max_ack_backlog = backlog;
 	if (sk->sk_state != TCP_LISTEN) {
@@ -711,14 +580,6 @@ out:
 
 static int llc_ui_wait_for_disc(struct sock *sk, long timeout)
 {
-<<<<<<< HEAD
-	DEFINE_WAIT(wait);
-	int rc = 0;
-
-	while (1) {
-		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-		if (sk_wait_event(sk, &timeout, sk->sk_state == TCP_CLOSE))
-=======
 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
 	int rc = 0;
 
@@ -726,7 +587,6 @@ static int llc_ui_wait_for_disc(struct sock *sk, long timeout)
 	while (1) {
 		if (sk_wait_event(sk, &timeout,
 				  READ_ONCE(sk->sk_state) == TCP_CLOSE, &wait))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		rc = -ERESTARTSYS;
 		if (signal_pending(current))
@@ -736,19 +596,6 @@ static int llc_ui_wait_for_disc(struct sock *sk, long timeout)
 			break;
 		rc = 0;
 	}
-<<<<<<< HEAD
-	finish_wait(sk_sleep(sk), &wait);
-	return rc;
-}
-
-static int llc_ui_wait_for_conn(struct sock *sk, long timeout)
-{
-	DEFINE_WAIT(wait);
-
-	while (1) {
-		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-		if (sk_wait_event(sk, &timeout, sk->sk_state != TCP_SYN_SENT))
-=======
 	remove_wait_queue(sk_sleep(sk), &wait);
 	return rc;
 }
@@ -761,35 +608,16 @@ static bool llc_ui_wait_for_conn(struct sock *sk, long timeout)
 	while (1) {
 		if (sk_wait_event(sk, &timeout,
 				  READ_ONCE(sk->sk_state) != TCP_SYN_SENT, &wait))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		if (signal_pending(current) || !timeout)
 			break;
 	}
-<<<<<<< HEAD
-	finish_wait(sk_sleep(sk), &wait);
-=======
 	remove_wait_queue(sk_sleep(sk), &wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return timeout;
 }
 
 static int llc_ui_wait_for_busy_core(struct sock *sk, long timeout)
 {
-<<<<<<< HEAD
-	DEFINE_WAIT(wait);
-	struct llc_sock *llc = llc_sk(sk);
-	int rc;
-
-	while (1) {
-		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-		rc = 0;
-		if (sk_wait_event(sk, &timeout,
-				  (sk->sk_shutdown & RCV_SHUTDOWN) ||
-				  (!llc_data_accept_state(llc->state) &&
-				   !llc->remote_busy_flag &&
-				   !llc->p_flag)))
-=======
 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
 	struct llc_sock *llc = llc_sk(sk);
 	int rc;
@@ -802,7 +630,6 @@ static int llc_ui_wait_for_busy_core(struct sock *sk, long timeout)
 				  (!llc_data_accept_state(llc->state) &&
 				   !llc->remote_busy_flag &&
 				   !llc->p_flag), &wait))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		rc = -ERESTARTSYS;
 		if (signal_pending(current))
@@ -811,11 +638,7 @@ static int llc_ui_wait_for_busy_core(struct sock *sk, long timeout)
 		if (!timeout)
 			break;
 	}
-<<<<<<< HEAD
-	finish_wait(sk_sleep(sk), &wait);
-=======
 	remove_wait_queue(sk_sleep(sk), &wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -840,11 +663,7 @@ static int llc_wait_data(struct sock *sk, long timeo)
 		if (signal_pending(current))
 			break;
 		rc = 0;
-<<<<<<< HEAD
-		if (sk_wait_data(sk, &timeo))
-=======
 		if (sk_wait_data(sk, &timeo, NULL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	return rc;
@@ -857,10 +676,7 @@ static void llc_cmsg_rcv(struct msghdr *msg, struct sk_buff *skb)
 	if (llc->cmsg_flags & LLC_CMSG_PKTINFO) {
 		struct llc_pktinfo info;
 
-<<<<<<< HEAD
-=======
 		memset(&info, 0, sizeof(info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info.lpi_ifindex = llc_sk(skb->sk)->dev->ifindex;
 		llc_pdu_decode_dsap(skb, &info.lpi_sap);
 		llc_pdu_decode_da(skb, info.lpi_mac);
@@ -873,20 +689,13 @@ static void llc_cmsg_rcv(struct msghdr *msg, struct sk_buff *skb)
  *	@sock: Socket which connections arrive on.
  *	@newsock: Socket to move incoming connection to.
  *	@flags: User specified operational flags.
-<<<<<<< HEAD
-=======
  *	@kern: If the socket is kernel internal
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Accept a new incoming connection.
  *	Returns 0 upon success, negative otherwise.
  */
-<<<<<<< HEAD
-static int llc_ui_accept(struct socket *sock, struct socket *newsock, int flags)
-=======
 static int llc_ui_accept(struct socket *sock, struct socket *newsock, int flags,
 			 bool kern)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk, *newsk;
 	struct llc_sock *llc, *newllc;
@@ -928,11 +737,7 @@ static int llc_ui_accept(struct socket *sock, struct socket *newsock, int flags,
 
 	/* put original socket back into a clean listen state. */
 	sk->sk_state = TCP_LISTEN;
-<<<<<<< HEAD
-	sk->sk_ack_backlog--;
-=======
 	sk_acceptq_removed(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("%s: ok success on %02X, client on %02X\n", __func__,
 		llc_sk(sk)->addr.sllc_sap, newllc->daddr.lsap);
 frees:
@@ -952,25 +757,14 @@ out:
  *	Copy received data to the socket user.
  *	Returns non-negative upon success, negative otherwise.
  */
-<<<<<<< HEAD
-static int llc_ui_recvmsg(struct kiocb *iocb, struct socket *sock,
-			  struct msghdr *msg, size_t len, int flags)
-{
-	struct sockaddr_llc *uaddr = (struct sockaddr_llc *)msg->msg_name;
-=======
 static int llc_ui_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 			  int flags)
 {
 	DECLARE_SOCKADDR(struct sockaddr_llc *, uaddr, msg->msg_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const int nonblock = flags & MSG_DONTWAIT;
 	struct sk_buff *skb = NULL;
 	struct sock *sk = sock->sk;
 	struct llc_sock *llc = llc_sk(sk);
-<<<<<<< HEAD
-	unsigned long cpu_flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t copied = 0;
 	u32 peek_seq = 0;
 	u32 *seq, skb_len;
@@ -1018,11 +812,7 @@ static int llc_ui_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 		}
 		/* Well, if we have backlog, try to process it now yet. */
 
-<<<<<<< HEAD
-		if (copied >= target && !sk->sk_backlog.tail)
-=======
 		if (copied >= target && !READ_ONCE(sk->sk_backlog.tail))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		if (copied) {
@@ -1064,22 +854,12 @@ static int llc_ui_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 			release_sock(sk);
 			lock_sock(sk);
 		} else
-<<<<<<< HEAD
-			sk_wait_data(sk, &timeo);
-
-		if ((flags & MSG_PEEK) && peek_seq != llc->copied_seq) {
-			if (net_ratelimit())
-				printk(KERN_DEBUG "LLC(%s:%d): Application "
-						  "bug, race in MSG_PEEK.\n",
-				       current->comm, task_pid_nr(current));
-=======
 			sk_wait_data(sk, &timeo, NULL);
 
 		if ((flags & MSG_PEEK) && peek_seq != llc->copied_seq) {
 			net_dbg_ratelimited("LLC(%s:%d): Application bug, race in MSG_PEEK\n",
 					    current->comm,
 					    task_pid_nr(current));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			peek_seq = llc->copied_seq;
 		}
 		continue;
@@ -1091,12 +871,7 @@ static int llc_ui_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 			used = len;
 
 		if (!(flags & MSG_TRUNC)) {
-<<<<<<< HEAD
-			int rc = skb_copy_datagram_iovec(skb, offset,
-							 msg->msg_iov, used);
-=======
 			int rc = skb_copy_datagram_msg(skb, offset, msg, used);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc) {
 				/* Exception. Bailout! */
 				if (!copied)
@@ -1114,14 +889,8 @@ static int llc_ui_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
 			goto copy_uaddr;
 
 		if (!(flags & MSG_PEEK)) {
-<<<<<<< HEAD
-			spin_lock_irqsave(&sk->sk_receive_queue.lock, cpu_flags);
-			sk_eat_skb(sk, skb, 0);
-			spin_unlock_irqrestore(&sk->sk_receive_queue.lock, cpu_flags);
-=======
 			skb_unlink(skb, &sk->sk_receive_queue);
 			kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*seq = 0;
 		}
 
@@ -1142,16 +911,9 @@ copy_uaddr:
 		llc_cmsg_rcv(msg, skb);
 
 	if (!(flags & MSG_PEEK)) {
-<<<<<<< HEAD
-			spin_lock_irqsave(&sk->sk_receive_queue.lock, cpu_flags);
-			sk_eat_skb(sk, skb, 0);
-			spin_unlock_irqrestore(&sk->sk_receive_queue.lock, cpu_flags);
-			*seq = 0;
-=======
 		skb_unlink(skb, &sk->sk_receive_queue);
 		kfree_skb(skb);
 		*seq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	goto out;
@@ -1166,19 +928,6 @@ copy_uaddr:
  *	Transmit data provided by the socket user.
  *	Returns non-negative upon success, negative otherwise.
  */
-<<<<<<< HEAD
-static int llc_ui_sendmsg(struct kiocb *iocb, struct socket *sock,
-			  struct msghdr *msg, size_t len)
-{
-	struct sock *sk = sock->sk;
-	struct llc_sock *llc = llc_sk(sk);
-	struct sockaddr_llc *addr = (struct sockaddr_llc *)msg->msg_name;
-	int flags = msg->msg_flags;
-	int noblock = flags & MSG_DONTWAIT;
-	struct sk_buff *skb;
-	size_t size = 0;
-	int rc = -EINVAL, copied = 0, hdrlen;
-=======
 static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 {
 	DECLARE_SOCKADDR(struct sockaddr_llc *, addr, msg->msg_name);
@@ -1190,24 +939,16 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	struct sk_buff *skb = NULL;
 	struct net_device *dev;
 	size_t size = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("%s: sending from %02X to %02X\n", __func__,
 		llc->laddr.lsap, llc->daddr.lsap);
 	lock_sock(sk);
 	if (addr) {
 		if (msg->msg_namelen < sizeof(*addr))
-<<<<<<< HEAD
-			goto release;
-	} else {
-		if (llc_ui_addr_null(&llc->addr))
-			goto release;
-=======
 			goto out;
 	} else {
 		if (llc_ui_addr_null(&llc->addr))
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addr = &llc->addr;
 	}
 	/* must bind connection to sap if user hasn't done it. */
@@ -1215,24 +956,6 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 		/* bind to sap with null dev, exclusive. */
 		rc = llc_ui_autobind(sock, addr);
 		if (rc)
-<<<<<<< HEAD
-			goto release;
-	}
-	hdrlen = llc->dev->hard_header_len + llc_ui_header_len(sk, addr);
-	size = hdrlen + len;
-	if (size > llc->dev->mtu)
-		size = llc->dev->mtu;
-	copied = size - hdrlen;
-	release_sock(sk);
-	skb = sock_alloc_send_skb(sk, size, noblock, &rc);
-	lock_sock(sk);
-	if (!skb)
-		goto release;
-	skb->dev      = llc->dev;
-	skb->protocol = llc_proto_type(addr->sllc_arphrd);
-	skb_reserve(skb, hdrlen);
-	rc = memcpy_fromiovec(skb_put(skb, copied), msg->msg_iov, copied);
-=======
 			goto out;
 	}
 	dev = llc->dev;
@@ -1259,56 +982,36 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	skb->protocol = llc_proto_type(addr->sllc_arphrd);
 	skb_reserve(skb, hh_len + hdrlen);
 	rc = memcpy_from_msg(skb_put(skb, copied), msg, copied);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto out;
 	if (sk->sk_type == SOCK_DGRAM || addr->sllc_ua) {
 		llc_build_and_send_ui_pkt(llc->sap, skb, addr->sllc_mac,
 					  addr->sllc_sap);
-<<<<<<< HEAD
-=======
 		skb = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	if (addr->sllc_test) {
 		llc_build_and_send_test_pkt(llc->sap, skb, addr->sllc_mac,
 					    addr->sllc_sap);
-<<<<<<< HEAD
-=======
 		skb = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	if (addr->sllc_xid) {
 		llc_build_and_send_xid_pkt(llc->sap, skb, addr->sllc_mac,
 					   addr->sllc_sap);
-<<<<<<< HEAD
-=======
 		skb = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = -ENOPROTOOPT;
 	if (!(sk->sk_type == SOCK_STREAM && !addr->sllc_ua))
 		goto out;
 	rc = llc_ui_send_data(sk, skb, noblock);
-<<<<<<< HEAD
-out:
-	if (rc) {
-		kfree_skb(skb);
-release:
-		dprintk("%s: failed sending from %02X to %02X: %d\n",
-			__func__, llc->laddr.lsap, llc->daddr.lsap, rc);
-	}
-=======
 	skb = NULL;
 out:
 	kfree_skb(skb);
 	if (rc)
 		dprintk("%s: failed sending from %02X to %02X: %d\n",
 			__func__, llc->laddr.lsap, llc->daddr.lsap, rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 	return rc ? : copied;
 }
@@ -1317,20 +1020,12 @@ out:
  *	llc_ui_getname - return the address info of a socket
  *	@sock: Socket to get address of.
  *	@uaddr: Address structure to return information.
-<<<<<<< HEAD
- *	@uaddrlen: Length of address structure.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@peer: Does user want local or remote address information.
  *
  *	Return the address information of a socket.
  */
 static int llc_ui_getname(struct socket *sock, struct sockaddr *uaddr,
-<<<<<<< HEAD
-			  int *uaddrlen, int peer)
-=======
 			  int peer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sockaddr_llc sllc;
 	struct sock *sk = sock->sk;
@@ -1341,10 +1036,6 @@ static int llc_ui_getname(struct socket *sock, struct sockaddr *uaddr,
 	lock_sock(sk);
 	if (sock_flag(sk, SOCK_ZAPPED))
 		goto out;
-<<<<<<< HEAD
-	*uaddrlen = sizeof(sllc);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (peer) {
 		rc = -ENOTCONN;
 		if (sk->sk_state != TCP_ESTABLISHED)
@@ -1365,15 +1056,9 @@ static int llc_ui_getname(struct socket *sock, struct sockaddr *uaddr,
 			       IFHWADDRLEN);
 		}
 	}
-<<<<<<< HEAD
-	rc = 0;
-	sllc.sllc_family = AF_LLC;
-	memcpy(uaddr, &sllc, sizeof(sllc));
-=======
 	sllc.sllc_family = AF_LLC;
 	memcpy(uaddr, &sllc, sizeof(sllc));
 	rc = sizeof(sllc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	release_sock(sk);
 	return rc;
@@ -1398,21 +1083,13 @@ static int llc_ui_ioctl(struct socket *sock, unsigned int cmd,
  *	@sock: Socket to set options on.
  *	@level: Socket level user is requesting operations on.
  *	@optname: Operation name.
-<<<<<<< HEAD
- *	@optval User provided operation data.
-=======
  *	@optval: User provided operation data.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@optlen: Length of optval.
  *
  *	Set various connection specific parameters.
  */
 static int llc_ui_setsockopt(struct socket *sock, int level, int optname,
-<<<<<<< HEAD
-			     char __user *optval, unsigned int optlen)
-=======
 			     sockptr_t optval, unsigned int optlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct llc_sock *llc = llc_sk(sk);
@@ -1422,11 +1099,7 @@ static int llc_ui_setsockopt(struct socket *sock, int level, int optname,
 	lock_sock(sk);
 	if (unlikely(level != SOL_LLC || optlen != sizeof(int)))
 		goto out;
-<<<<<<< HEAD
-	rc = get_user(opt, (int __user *)optval);
-=======
 	rc = copy_from_sockptr(&opt, optval, sizeof(opt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto out;
 	rc = -EINVAL;
@@ -1569,10 +1242,6 @@ static const struct proto_ops llc_ui_ops = {
 	.sendmsg     = llc_ui_sendmsg,
 	.recvmsg     = llc_ui_recvmsg,
 	.mmap	     = sock_no_mmap,
-<<<<<<< HEAD
-	.sendpage    = sock_no_sendpage,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char llc_proc_err_msg[] __initconst =
@@ -1595,11 +1264,7 @@ static int __init llc2_init(void)
 	rc = llc_proc_init();
 	if (rc != 0) {
 		printk(llc_proc_err_msg);
-<<<<<<< HEAD
-		goto out_unregister_llc_proto;
-=======
 		goto out_station;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rc = llc_sysctl_init();
 	if (rc) {
@@ -1619,12 +1284,8 @@ out_sysctl:
 	llc_sysctl_exit();
 out_proc:
 	llc_proc_exit();
-<<<<<<< HEAD
-out_unregister_llc_proto:
-=======
 out_station:
 	llc_station_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&llc_proto);
 	goto out;
 }

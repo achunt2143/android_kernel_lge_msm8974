@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- * linux/sound/soc-dai.h -- ALSA SoC Layer
- *
- * Copyright:	2005-2008 Wolfson Microelectronics. PLC.
- * Copyright (c) 2012, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
  * linux/sound/soc-dai.h -- ALSA SoC Layer
  *
  * Copyright:	2005-2008 Wolfson Microelectronics. PLC.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Digital Audio Interface (DAI) API.
  */
@@ -24,10 +12,7 @@
 
 
 #include <linux/list.h>
-<<<<<<< HEAD
-=======
 #include <sound/asoc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_pcm_substream;
 struct snd_soc_dapm_widget;
@@ -39,15 +24,6 @@ struct snd_compr_stream;
  * Describes the physical PCM data formating and clocking. Add new formats
  * to the end.
  */
-<<<<<<< HEAD
-#define SND_SOC_DAIFMT_I2S		1 /* I2S mode */
-#define SND_SOC_DAIFMT_RIGHT_J		2 /* Right Justified mode */
-#define SND_SOC_DAIFMT_LEFT_J		3 /* Left Justified mode */
-#define SND_SOC_DAIFMT_DSP_A		4 /* L data MSB after FRM LRC */
-#define SND_SOC_DAIFMT_DSP_B		5 /* L data MSB during FRM LRC */
-#define SND_SOC_DAIFMT_AC97		6 /* AC97 */
-#define SND_SOC_DAIFMT_PDM		7 /* Pulse density modulation */
-=======
 #define SND_SOC_DAIFMT_I2S		SND_SOC_DAI_FORMAT_I2S
 #define SND_SOC_DAIFMT_RIGHT_J		SND_SOC_DAI_FORMAT_RIGHT_J
 #define SND_SOC_DAIFMT_LEFT_J		SND_SOC_DAI_FORMAT_LEFT_J
@@ -55,30 +31,11 @@ struct snd_compr_stream;
 #define SND_SOC_DAIFMT_DSP_B		SND_SOC_DAI_FORMAT_DSP_B
 #define SND_SOC_DAIFMT_AC97		SND_SOC_DAI_FORMAT_AC97
 #define SND_SOC_DAIFMT_PDM		SND_SOC_DAI_FORMAT_PDM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* left and right justified also known as MSB and LSB respectively */
 #define SND_SOC_DAIFMT_MSB		SND_SOC_DAIFMT_LEFT_J
 #define SND_SOC_DAIFMT_LSB		SND_SOC_DAIFMT_RIGHT_J
 
-<<<<<<< HEAD
-/*
- * DAI Clock gating.
- *
- * DAI bit clocks can be be gated (disabled) when the DAI is not
- * sending or receiving PCM data in a frame. This can be used to save power.
- */
-#define SND_SOC_DAIFMT_CONT		(1 << 4) /* continuous clock */
-#define SND_SOC_DAIFMT_GATED		(2 << 4) /* clock is gated */
-
-/*
- * DAI hardware signal inversions.
- *
- * Specifies whether the DAI can also support inverted clocks for the specified
- * format.
- */
-#define SND_SOC_DAIFMT_NB_NF		(1 << 8) /* normal bit clock + frame */
-=======
 /* Describes the possible PCM format */
 /*
  * use SND_SOC_DAI_FORMAT_xx as eash shift.
@@ -137,29 +94,10 @@ struct snd_compr_stream;
  * "Negative" FSYNC polarity is the one opposite of "normal" polarity.
  */
 #define SND_SOC_DAIFMT_NB_NF		(0 << 8) /* normal bit clock + frame */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SND_SOC_DAIFMT_NB_IF		(2 << 8) /* normal BCLK + inv FRM */
 #define SND_SOC_DAIFMT_IB_NF		(3 << 8) /* invert BCLK + nor FRM */
 #define SND_SOC_DAIFMT_IB_IF		(4 << 8) /* invert BCLK + FRM */
 
-<<<<<<< HEAD
-/*
- * DAI hardware clock masters.
- *
- * This is wrt the codec, the inverse is true for the interface
- * i.e. if the codec is clk and FRM master then the interface is
- * clk and frame slave.
- */
-#define SND_SOC_DAIFMT_CBM_CFM		(1 << 12) /* codec clk & FRM master */
-#define SND_SOC_DAIFMT_CBS_CFM		(2 << 12) /* codec clk slave & FRM master */
-#define SND_SOC_DAIFMT_CBM_CFS		(3 << 12) /* codec clk master & frame slave */
-#define SND_SOC_DAIFMT_CBS_CFS		(4 << 12) /* codec clk & FRM slave */
-
-#define SND_SOC_DAIFMT_FORMAT_MASK	0x000f
-#define SND_SOC_DAIFMT_CLOCK_MASK	0x00f0
-#define SND_SOC_DAIFMT_INV_MASK		0x0f00
-#define SND_SOC_DAIFMT_MASTER_MASK	0xf000
-=======
 /* Describes the possible PCM format */
 #define SND_SOC_POSSIBLE_DAIFMT_INV_SHIFT	32
 #define SND_SOC_POSSIBLE_DAIFMT_INV_MASK	(0xFFFFULL << SND_SOC_POSSIBLE_DAIFMT_INV_SHIFT)
@@ -206,7 +144,6 @@ struct snd_compr_stream;
 #define SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK	0xf000
 
 #define SND_SOC_DAIFMT_MASTER_MASK	SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Master Clock Directions
@@ -219,11 +156,8 @@ struct snd_compr_stream;
 			       SNDRV_PCM_FMTBIT_S16_BE |\
 			       SNDRV_PCM_FMTBIT_S20_3LE |\
 			       SNDRV_PCM_FMTBIT_S20_3BE |\
-<<<<<<< HEAD
-=======
 			       SNDRV_PCM_FMTBIT_S20_LE |\
 			       SNDRV_PCM_FMTBIT_S20_BE |\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       SNDRV_PCM_FMTBIT_S24_3LE |\
 			       SNDRV_PCM_FMTBIT_S24_3BE |\
                                SNDRV_PCM_FMTBIT_S32_LE |\
@@ -233,17 +167,6 @@ struct snd_soc_dai_driver;
 struct snd_soc_dai;
 struct snd_ac97_bus_ops;
 
-<<<<<<< HEAD
-/* Digital Audio Interface registration */
-int snd_soc_register_dai(struct device *dev,
-		struct snd_soc_dai_driver *dai_drv);
-void snd_soc_unregister_dai(struct device *dev);
-int snd_soc_register_dais(struct device *dev,
-		struct snd_soc_dai_driver *dai_drv, size_t count);
-void snd_soc_unregister_dais(struct device *dev, size_t count);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Digital Audio Interface clocking API.*/
 int snd_soc_dai_set_sysclk(struct snd_soc_dai *dai, int clk_id,
 	unsigned int freq, int dir);
@@ -254,15 +177,11 @@ int snd_soc_dai_set_clkdiv(struct snd_soc_dai *dai,
 int snd_soc_dai_set_pll(struct snd_soc_dai *dai,
 	int pll_id, int source, unsigned int freq_in, unsigned int freq_out);
 
-<<<<<<< HEAD
-/* Digital Audio interface formatting */
-=======
 int snd_soc_dai_set_bclk_ratio(struct snd_soc_dai *dai, unsigned int ratio);
 
 /* Digital Audio interface formatting */
 int snd_soc_dai_get_fmt_max_priority(struct snd_soc_pcm_runtime *rtd);
 u64 snd_soc_dai_get_fmt(struct snd_soc_dai *dai, int priority);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_soc_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt);
 
 int snd_soc_dai_set_tdm_slot(struct snd_soc_dai *dai,
@@ -272,18 +191,6 @@ int snd_soc_dai_set_channel_map(struct snd_soc_dai *dai,
 	unsigned int tx_num, unsigned int *tx_slot,
 	unsigned int rx_num, unsigned int *rx_slot);
 
-<<<<<<< HEAD
-int snd_soc_dai_get_channel_map(struct snd_soc_dai *dai,
-	unsigned int *tx_num, unsigned int *tx_slot,
-	unsigned int *rx_num, unsigned int *rx_slot);
-
-int snd_soc_dai_set_tristate(struct snd_soc_dai *dai, int tristate);
-
-/* Digital Audio Interface mute */
-int snd_soc_dai_digital_mute(struct snd_soc_dai *dai, int mute);
-
-struct snd_soc_dai_ops {
-=======
 int snd_soc_dai_set_tristate(struct snd_soc_dai *dai, int tristate);
 
 /* Digital Audio Interface mute */
@@ -376,7 +283,6 @@ struct snd_soc_dai_ops {
 	int (*pcm_new)(struct snd_soc_pcm_runtime *rtd,
 		       struct snd_soc_dai *dai);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * DAI clocking configuration, all optional.
 	 * Called by soc_card drivers, normally in their hw_params.
@@ -386,34 +292,21 @@ struct snd_soc_dai_ops {
 	int (*set_pll)(struct snd_soc_dai *dai, int pll_id, int source,
 		unsigned int freq_in, unsigned int freq_out);
 	int (*set_clkdiv)(struct snd_soc_dai *dai, int div_id, int div);
-<<<<<<< HEAD
-=======
 	int (*set_bclk_ratio)(struct snd_soc_dai *dai, unsigned int ratio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * DAI format configuration
 	 * Called by soc_card drivers, normally in their hw_params.
 	 */
 	int (*set_fmt)(struct snd_soc_dai *dai, unsigned int fmt);
-<<<<<<< HEAD
-=======
 	int (*xlate_tdm_slot_mask)(unsigned int slots,
 		unsigned int *tx_mask, unsigned int *rx_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*set_tdm_slot)(struct snd_soc_dai *dai,
 		unsigned int tx_mask, unsigned int rx_mask,
 		int slots, int slot_width);
 	int (*set_channel_map)(struct snd_soc_dai *dai,
 		unsigned int tx_num, unsigned int *tx_slot,
 		unsigned int rx_num, unsigned int *rx_slot);
-<<<<<<< HEAD
-	int (*set_tristate)(struct snd_soc_dai *dai, int tristate);
-
-	int (*get_channel_map)(struct snd_soc_dai *dai,
-		unsigned int *tx_num, unsigned int *tx_slot,
-		unsigned int *rx_num, unsigned int *rx_slot);
-=======
 	int (*get_channel_map)(struct snd_soc_dai *dai,
 			unsigned int *tx_num, unsigned int *tx_slot,
 			unsigned int *rx_num, unsigned int *rx_slot);
@@ -423,16 +316,11 @@ struct snd_soc_dai_ops {
 			  void *stream, int direction);
 	void *(*get_stream)(struct snd_soc_dai *dai, int direction);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * DAI digital mute - optional.
 	 * Called by soc-core to minimise any pops.
 	 */
-<<<<<<< HEAD
-	int (*digital_mute)(struct snd_soc_dai *dai, int mute);
-=======
 	int (*mute_stream)(struct snd_soc_dai *dai, int mute, int stream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ALSA PCM audio operations - all optional.
@@ -448,8 +336,6 @@ struct snd_soc_dai_ops {
 		struct snd_soc_dai *);
 	int (*prepare)(struct snd_pcm_substream *,
 		struct snd_soc_dai *);
-<<<<<<< HEAD
-=======
 	/*
 	 * NOTE: Commands passed to the trigger function are not necessarily
 	 * compatible with the current state of the dai. For example this
@@ -457,7 +343,6 @@ struct snd_soc_dai_ops {
 	 * So do not unconditionally use refcounting functions in the trigger
 	 * function, e.g. clk_enable/disable.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*trigger)(struct snd_pcm_substream *, int,
 		struct snd_soc_dai *);
 	int (*bespoke_trigger)(struct snd_pcm_substream *, int,
@@ -468,8 +353,6 @@ struct snd_soc_dai_ops {
 	 */
 	snd_pcm_sframes_t (*delay)(struct snd_pcm_substream *,
 		struct snd_soc_dai *);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Format list for auto selection.
@@ -512,7 +395,6 @@ struct snd_soc_cdai_ops {
 			struct snd_compr_tstamp *, struct snd_soc_dai *);
 	int (*ack)(struct snd_compr_stream *, size_t,
 			struct snd_soc_dai *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -529,23 +411,6 @@ struct snd_soc_dai_driver {
 	/* DAI description */
 	const char *name;
 	unsigned int id;
-<<<<<<< HEAD
-	int ac97_control;
-#ifdef CONFIG_SND_SOC_WM5110
-	/* LGE_CHANGE, yeri.lee@lge.com, 2013-10-31, wm5110 Bring up */
-	unsigned int base;
-#endif
-	/* DAI driver callbacks */
-	int (*probe)(struct snd_soc_dai *dai);
-	int (*remove)(struct snd_soc_dai *dai);
-	int (*suspend)(struct snd_soc_dai *dai);
-	int (*resume)(struct snd_soc_dai *dai);
-	/* compress dai */
-	bool compress_dai;
-
-	/* ops */
-	const struct snd_soc_dai_ops *ops;
-=======
 	unsigned int base;
 	struct snd_soc_dobj dobj;
 	struct of_phandle_args *dai_args;
@@ -553,18 +418,10 @@ struct snd_soc_dai_driver {
 	/* ops */
 	const struct snd_soc_dai_ops *ops;
 	const struct snd_soc_cdai_ops *cops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DAI capabilities */
 	struct snd_soc_pcm_stream capture;
 	struct snd_soc_pcm_stream playback;
-<<<<<<< HEAD
-	unsigned int symmetric_rates:1;
-
-	/* probe ordering - for components with runtime dependencies */
-	int probe_order;
-	int remove_order;
-=======
 	unsigned int symmetric_rate:1;
 	unsigned int symmetric_channels:1;
 	unsigned int symmetric_sample_bits:1;
@@ -578,7 +435,6 @@ struct snd_soc_dai_stream {
 	unsigned int tdm_mask;	/* CODEC TDM slot masks and params (for fixup) */
 
 	void *dma_data;		/* DAI DMA data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -590,67 +446,11 @@ struct snd_soc_dai {
 	const char *name;
 	int id;
 	struct device *dev;
-<<<<<<< HEAD
-	void *ac97_pdata;	/* platform_data for the ac97 codec */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* driver ops */
 	struct snd_soc_dai_driver *driver;
 
 	/* DAI runtime info */
-<<<<<<< HEAD
-	unsigned int capture_active;		/* stream is in use */
-	unsigned int playback_active:1;		/* stream is in use */
-	unsigned int symmetric_rates:1;
-	struct snd_pcm_runtime *runtime;
-	unsigned int active;
-	unsigned char pop_wait:1;
-	unsigned char probed:1;
-
-	struct snd_soc_dapm_widget *playback_widget;
-	struct snd_soc_dapm_widget *capture_widget;
-
-	/* DAI DMA data */
-	void *playback_dma_data;
-	void *capture_dma_data;
-
-	/* Symmetry data - only valid if symmetry is being enforced */
-	unsigned int rate;
-
-	/* parent platform/codec */
-	struct snd_soc_platform *platform;
-	struct snd_soc_codec *codec;
-
-	struct snd_soc_card *card;
-
-	struct list_head list;
-	struct list_head card_list;
-
-	/* runtime AIF widget and channel mmap updates */
-	u64 playback_channel_map;
-	u64 capture_channel_map;
-	struct snd_soc_dapm_widget *playback_aif;
-	struct snd_soc_dapm_widget *capture_aif;
-	bool channel_map_instanciated;
-};
-
-static inline void *snd_soc_dai_get_dma_data(const struct snd_soc_dai *dai,
-					     const struct snd_pcm_substream *ss)
-{
-	return (ss->stream == SNDRV_PCM_STREAM_PLAYBACK) ?
-		dai->playback_dma_data : dai->capture_dma_data;
-}
-
-static inline void snd_soc_dai_set_dma_data(struct snd_soc_dai *dai,
-					    const struct snd_pcm_substream *ss,
-					    void *data)
-{
-	if (ss->stream == SNDRV_PCM_STREAM_PLAYBACK)
-		dai->playback_dma_data = data;
-	else
-		dai->capture_dma_data = data;
-=======
 	struct snd_soc_dai_stream stream[SNDRV_PCM_STREAM_LAST + 1];
 
 	/* Symmetry data - only valid if symmetry is being enforced */
@@ -733,7 +533,6 @@ static inline unsigned int snd_soc_dai_stream_active(struct snd_soc_dai *dai, in
 {
 	/* see snd_soc_dai_action() for setup */
 	return dai->stream[stream].active;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void snd_soc_dai_set_drvdata(struct snd_soc_dai *dai,
@@ -747,102 +546,6 @@ static inline void *snd_soc_dai_get_drvdata(struct snd_soc_dai *dai)
 	return dev_get_drvdata(dai->dev);
 }
 
-<<<<<<< HEAD
-/* Backend DAI PCM ops */
-static inline int snd_soc_dai_startup(struct snd_pcm_substream *substream,
-	struct snd_soc_dai *dai)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	int ret = 0;
-
-	mutex_lock(&rtd->pcm_mutex);
-
-	if (dai->driver->ops->startup)
-		ret = dai->driver->ops->startup(substream, dai);
-
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-		dai->playback_active++;
-	else
-		dai->capture_active++;
-
-	dai->active++;
-
-	mutex_unlock(&rtd->pcm_mutex);
-	return ret;
-}
-
-static inline void snd_soc_dai_shutdown(struct snd_pcm_substream *substream,
-	struct snd_soc_dai *dai)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-
-	mutex_lock(&rtd->pcm_mutex);
-
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-		dai->playback_active--;
-	else
-		dai->capture_active--;
-
-	dai->active--;
-
-	if (dai->driver->ops->shutdown)
-		dai->driver->ops->shutdown(substream, dai);
-	mutex_unlock(&rtd->pcm_mutex);
-}
-
-static inline int snd_soc_dai_hw_params(struct snd_pcm_substream * substream,
-		struct snd_pcm_hw_params *hw_params, struct snd_soc_dai *dai)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	int ret = 0;
-
-	mutex_lock(&rtd->pcm_mutex);
-
-	if (dai->driver->ops->hw_params)
-		ret = dai->driver->ops->hw_params(substream, hw_params, dai);
-
-	mutex_unlock(&rtd->pcm_mutex);
-	return ret;
-}
-
-static inline int snd_soc_dai_hw_free(struct snd_pcm_substream *substream,
-	struct snd_soc_dai *dai)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	int ret = 0;
-
-	mutex_lock(&rtd->pcm_mutex);
-
-	if (dai->driver->ops->hw_free)
-		ret = dai->driver->ops->hw_free(substream, dai);
-
-	mutex_unlock(&rtd->pcm_mutex);
-	return ret;
-}
-
-static inline int snd_soc_dai_prepare(struct snd_pcm_substream *substream,
-	struct snd_soc_dai *dai)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	int ret = 0;
-
-	mutex_lock(&rtd->pcm_mutex);
-
-	if (dai->driver->ops->prepare)
-		ret = dai->driver->ops->prepare(substream, dai);
-
-	mutex_unlock(&rtd->pcm_mutex);
-	return ret;
-}
-
-static inline int snd_soc_dai_trigger(struct snd_pcm_substream *substream,
-	int cmd, struct snd_soc_dai *dai)
-{
-	if (dai->driver->ops->trigger)
-		return dai->driver->ops->trigger(substream, cmd, dai);
-	return 0;
-}
-=======
 /**
  * snd_soc_dai_set_stream() - Configures a DAI for stream operation
  * @dai: DAI
@@ -884,5 +587,4 @@ static inline void *snd_soc_dai_get_stream(struct snd_soc_dai *dai,
 		return ERR_PTR(-ENOTSUPP);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

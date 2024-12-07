@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev67-strncat.S
  * 21264 version contributed by Rick Gorton <rick.gorton@api-networks.com>
@@ -24,11 +21,7 @@
  * Try not to change the actual algorithm if possible for consistency.
  */
 
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text
 
 	.align 4
@@ -100,7 +93,4 @@ $zerocount:
 	ret			# L0 :
 
 	.end strncat
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(strncat)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

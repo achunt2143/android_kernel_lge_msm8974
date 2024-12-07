@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-sa1100/include/mach/collie.h
  *
@@ -19,11 +16,6 @@
 
 #include "hardware.h" /* Gives GPIO_MAX */
 
-<<<<<<< HEAD
-extern void locomolcd_power(int on);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define COLLIE_SCOOP_GPIO_BASE	(GPIO_MAX + 1)
 #define COLLIE_GPIO_CHARGE_ON	(COLLIE_SCOOP_GPIO_BASE + 0)
 #define COLLIE_SCP_DIAG_BOOT1	SCOOP_GPCR_PA12
@@ -87,11 +79,7 @@ extern void locomolcd_power(int on);
 #define COLLIE_TC35143_GPIO_VERSION0    UCB_IO_0
 #define COLLIE_TC35143_GPIO_TBL_CHK     UCB_IO_1
 #define COLLIE_TC35143_GPIO_VPEN_ON     UCB_IO_2
-<<<<<<< HEAD
-#define COLLIE_TC35143_GPIO_IR_ON       UCB_IO_3
-=======
 #define COLLIE_GPIO_IR_ON		(COLLIE_TC35143_GPIO_BASE + 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define COLLIE_TC35143_GPIO_AMP_ON      UCB_IO_4
 #define COLLIE_TC35143_GPIO_VERSION1    UCB_IO_5
 #define COLLIE_TC35143_GPIO_FS8KLPF     UCB_IO_5

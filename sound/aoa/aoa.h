@@ -1,24 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Onboard Audio definitions
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- *
- * GPL v2, can be found in COPYING.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __AOA_H
 #define __AOA_H
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <sound/core.h>
 #include <sound/asound.h>
@@ -126,13 +114,8 @@ struct aoa_card {
 	struct snd_card *alsa_card;
 };
         
-<<<<<<< HEAD
-extern int aoa_snd_device_new(snd_device_type_t type,
-	void * device_data, struct snd_device_ops * ops);
-=======
 extern int aoa_snd_device_new(enum snd_device_type type,
 	void *device_data, const struct snd_device_ops *ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct snd_card *aoa_get_card(void);
 extern int aoa_snd_ctl_add(struct snd_kcontrol* control);
 

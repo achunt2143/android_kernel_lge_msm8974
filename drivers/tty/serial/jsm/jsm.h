@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************************
  * Copyright 2003 Digi International (www.digi.com)
  *
  * Copyright (C) 2004 IBM Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 * Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contact Information:
  * Scott H Kilau <Scott_Kilau@digi.com>
  * Wendy Xiong   <wendyx@us.ibm.com>
@@ -64,24 +43,16 @@ enum {
 	DBG_CARR	= 0x10000,
 };
 
-<<<<<<< HEAD
-#define jsm_printk(nlevel, klevel, pdev, fmt, args...)	\
-	if ((DBG_##nlevel & jsm_debug))			\
-	dev_printk(KERN_##klevel, pdev->dev, fmt, ## args)
-=======
 #define jsm_dbg(nlevel, pdev, fmt, ...)				\
 do {								\
 	if (DBG_##nlevel & jsm_debug)				\
 		dev_dbg(pdev->dev, fmt, ##__VA_ARGS__);		\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	MAXLINES	256
 #define MAXPORTS	8
 #define MAX_STOPS_SENT	5
 
-<<<<<<< HEAD
-=======
 /* Board ids */
 #define PCI_DEVICE_ID_CLASSIC_4		0x0028
 #define PCI_DEVICE_ID_CLASSIC_8		0x0029
@@ -96,7 +67,6 @@ do {								\
 #define PCIE_DEVICE_ID_NEO_4RJ45        0x00F2
 #define PCIE_DEVICE_ID_NEO_8RJ45        0x00F3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Board type definitions */
 
 #define T_NEO		0000
@@ -132,23 +102,6 @@ struct jsm_channel;
  ************************************************************************/
 struct board_ops {
 	irq_handler_t intr;
-<<<<<<< HEAD
-	void (*uart_init) (struct jsm_channel *ch);
-	void (*uart_off) (struct jsm_channel *ch);
-	void (*param) (struct jsm_channel *ch);
-	void (*assert_modem_signals) (struct jsm_channel *ch);
-	void (*flush_uart_write) (struct jsm_channel *ch);
-	void (*flush_uart_read) (struct jsm_channel *ch);
-	void (*disable_receiver) (struct jsm_channel *ch);
-	void (*enable_receiver) (struct jsm_channel *ch);
-	void (*send_break) (struct jsm_channel *ch);
-	void (*clear_break) (struct jsm_channel *ch, int);
-	void (*send_start_character) (struct jsm_channel *ch);
-	void (*send_stop_character) (struct jsm_channel *ch);
-	void (*copy_data_from_queue_to_uart) (struct jsm_channel *ch);
-	u32 (*get_uart_bytes_left) (struct jsm_channel *ch);
-	void (*send_immediate_char) (struct jsm_channel *ch, unsigned char);
-=======
 	void (*uart_init)(struct jsm_channel *ch);
 	void (*uart_off)(struct jsm_channel *ch);
 	void (*param)(struct jsm_channel *ch);
@@ -162,7 +115,6 @@ struct board_ops {
 	void (*send_start_character)(struct jsm_channel *ch);
 	void (*send_stop_character)(struct jsm_channel *ch);
 	void (*copy_data_from_queue_to_uart)(struct jsm_channel *ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -173,10 +125,6 @@ struct jsm_board
 {
 	int		boardnum;	/* Board number: 0-32 */
 
-<<<<<<< HEAD
-	int		type;		/* Type of board */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		rev;		/* PCI revision ID */
 	struct pci_dev	*pci_dev;
 	u32		maxports;	/* MAX ports this board can handle */
@@ -204,11 +152,6 @@ struct jsm_board
 	u32		bd_dividend;	/* Board/UARTs specific dividend */
 
 	struct board_ops *bd_ops;
-<<<<<<< HEAD
-
-	struct list_head jsm_board_entry;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /************************************************************************
@@ -231,11 +174,7 @@ struct jsm_board
 #define CH_LOOPBACK 0x2000		/* Channel is in lookback mode	*/
 #define CH_BAUD0	0x08000		/* Used for checking B0 transitions */
 
-<<<<<<< HEAD
-/* Our Read/Error/Write queue sizes */
-=======
 /* Our Read/Error queue sizes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RQUEUEMASK	0x1FFF		/* 8 K - 1 */
 #define EQUEUEMASK	0x1FFF		/* 8 K - 1 */
 #define RQUEUESIZE	(RQUEUEMASK + 1)
@@ -268,14 +207,10 @@ struct jsm_channel {
 	u8		ch_mostat;	/* FEP output modem status	*/
 	u8		ch_mistat;	/* FEP input modem status	*/
 
-<<<<<<< HEAD
-	struct neo_uart_struct __iomem *ch_neo_uart;	/* Pointer to the "mapped" UART struct */
-=======
 	/* Pointers to the "mapped" UART structs */
 	struct neo_uart_struct __iomem *ch_neo_uart; /* NEO card */
 	struct cls_uart_struct __iomem *ch_cls_uart; /* Classic card */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		ch_cached_lsr;	/* Cached value of the LSR register */
 
 	u8		*ch_rqueue;	/* Our read queue buffer - malloc'ed */
@@ -307,8 +242,6 @@ struct jsm_channel {
 	u64		ch_xoff_sends;	/* Count of xoffs transmitted */
 };
 
-<<<<<<< HEAD
-=======
 /************************************************************************
  * Per channel/port Classic UART structures				*
  ************************************************************************
@@ -363,7 +296,6 @@ struct cls_uart_struct {
 #define UART_EXAR654_IER_XOFF     0x20    /* Xoff Interrupt Enable */
 #define UART_EXAR654_IER_RTSDTR   0x40    /* Output Interrupt Enable */
 #define UART_EXAR654_IER_CTSDSR   0x80    /* Input Interrupt Enable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /************************************************************************
  * Per channel/port NEO UART structure					*
@@ -484,10 +416,7 @@ struct neo_uart_struct {
  */
 extern struct	uart_driver jsm_uart_driver;
 extern struct	board_ops jsm_neo_ops;
-<<<<<<< HEAD
-=======
 extern struct	board_ops jsm_cls_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int	jsm_debug;
 
 /*************************************************************************

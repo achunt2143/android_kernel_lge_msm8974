@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/linux/uio_driver.h
  *
@@ -11,20 +8,12 @@
  * Copyright(C) 2006, Greg Kroah-Hartman <greg@kroah.com>
  *
  * Userspace IO driver.
-<<<<<<< HEAD
- *
- * Licensed under the GPLv2 only.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _UIO_DRIVER_H_
 #define _UIO_DRIVER_H_
 
-<<<<<<< HEAD
-=======
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/interrupt.h>
 
@@ -34,15 +23,6 @@ struct uio_map;
 /**
  * struct uio_mem - description of a UIO memory region
  * @name:		name of the memory region for identification
-<<<<<<< HEAD
- * @addr:		address of the device's memory (phys_addr is used since
- * 			addr can be logical, virtual, or physical & phys_addr_t
- * 			should always be large enough to handle any of the
- * 			address types)
- * @size:		size of IO
- * @memtype:		type of memory addr points to
- * @internal_addr:	ioremap-ped version of addr, for driver internal use
-=======
  * @addr:               address of the device's memory rounded to page
  *			size (phys_addr is used since addr can be
  *			logical, virtual, or physical & phys_addr_t
@@ -57,24 +37,17 @@ struct uio_map;
  * @internal_addr:	ioremap-ped version of addr, for driver internal use
  * @dma_device:		device struct that was passed to dma_alloc_coherent,
  *			used with UIO_MEM_DMA_COHERENT only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @map:		for use by the UIO core only.
  */
 struct uio_mem {
 	const char		*name;
 	phys_addr_t		addr;
-<<<<<<< HEAD
-	unsigned long		size;
-	int			memtype;
-	void __iomem		*internal_addr;
-=======
 	dma_addr_t		dma_addr;
 	unsigned long		offs;
 	resource_size_t		size;
 	int			memtype;
 	void __iomem		*internal_addr;
 	struct device		*dma_device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uio_map		*map;
 };
 
@@ -100,9 +73,6 @@ struct uio_port {
 
 #define MAX_UIO_PORT_REGIONS	5
 
-<<<<<<< HEAD
-struct uio_device;
-=======
 struct uio_device {
 	struct module           *owner;
 	struct device		dev;
@@ -115,7 +85,6 @@ struct uio_device {
 	struct kobject          *map_dir;
 	struct kobject          *portio_dir;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct uio_info - UIO device capabilities
@@ -155,8 +124,6 @@ extern int __must_check
 			      struct uio_info *info);
 
 /* use a define to avoid include chaining to get THIS_MODULE */
-<<<<<<< HEAD
-=======
 
 /**
  * uio_register_device - register a new userspace IO device
@@ -165,15 +132,12 @@ extern int __must_check
  *
  * returns zero on success or a negative error code.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define uio_register_device(parent, info) \
 	__uio_register_device(THIS_MODULE, parent, info)
 
 extern void uio_unregister_device(struct uio_info *info);
 extern void uio_event_notify(struct uio_info *info);
 
-<<<<<<< HEAD
-=======
 extern int __must_check
 	__devm_uio_register_device(struct module *owner,
 				   struct device *parent,
@@ -191,7 +155,6 @@ extern int __must_check
 #define devm_uio_register_device(parent, info) \
 	__devm_uio_register_device(THIS_MODULE, parent, info)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* defines for uio_info->irq */
 #define UIO_IRQ_CUSTOM	-1
 #define UIO_IRQ_NONE	0
@@ -201,8 +164,6 @@ extern int __must_check
 #define UIO_MEM_PHYS	1
 #define UIO_MEM_LOGICAL	2
 #define UIO_MEM_VIRTUAL 3
-<<<<<<< HEAD
-=======
 #define UIO_MEM_IOVA	4
 /*
  * UIO_MEM_DMA_COHERENT exists for legacy drivers that had been getting by with
@@ -210,7 +171,6 @@ extern int __must_check
  * Do not use in new drivers.
  */
 #define UIO_MEM_DMA_COHERENT	5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* defines for uio_port->porttype */
 #define UIO_PORT_NONE	0

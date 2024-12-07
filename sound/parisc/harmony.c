@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Hewlett-Packard Harmony audio driver
  *
  *   This is a driver for the Harmony audio chipset found
@@ -17,32 +14,12 @@
  *       Copyright 2003 (c) Laurent Canet
  *       Copyright 2004 (c) Stuart Brady
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License, version 2, as
- *   published by the Free Software Foundation.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Notes:
  *   - graveyard and silence buffers last for lifetime of
  *     the driver. playback and capture buffers are allocated
  *     per _open()/_close().
  * 
  * TODO:
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -54,10 +31,7 @@
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -66,10 +40,6 @@
 #include <sound/initval.h>
 #include <sound/info.h>
 
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hardware.h>
 #include <asm/parisc-device.h>
 
@@ -83,11 +53,7 @@ module_param(id, charp, 0444);
 MODULE_PARM_DESC(id, "ID string for Harmony driver.");
 
 
-<<<<<<< HEAD
-static struct parisc_device_id snd_harmony_devtable[] = {
-=======
 static const struct parisc_device_id snd_harmony_devtable[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* bushmaster / flounder */
 	{ HPHW_FIO, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x0007A }, 
 	/* 712 / 715 */
@@ -104,22 +70,14 @@ MODULE_DEVICE_TABLE(parisc, snd_harmony_devtable);
 #define NAME "harmony"
 #define PFX  NAME ": "
 
-<<<<<<< HEAD
-static unsigned int snd_harmony_rates[] = {
-=======
 static const unsigned int snd_harmony_rates[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	5512, 6615, 8000, 9600,
 	11025, 16000, 18900, 22050,
 	27428, 32000, 33075, 37800,
 	44100, 48000
 };
 
-<<<<<<< HEAD
-static unsigned int rate_bits[14] = {
-=======
 static const unsigned int rate_bits[14] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HARMONY_SR_5KHZ, HARMONY_SR_6KHZ, HARMONY_SR_8KHZ,
 	HARMONY_SR_9KHZ, HARMONY_SR_11KHZ, HARMONY_SR_16KHZ,
 	HARMONY_SR_18KHZ, HARMONY_SR_22KHZ, HARMONY_SR_27KHZ,
@@ -127,11 +85,7 @@ static const unsigned int rate_bits[14] = {
 	HARMONY_SR_44KHZ, HARMONY_SR_48KHZ
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hw_constraint_list hw_constraint_rates = {
-=======
 static const struct snd_pcm_hw_constraint_list hw_constraint_rates = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(snd_harmony_rates),
 	.list = snd_harmony_rates,
 	.mask = 0,
@@ -293,11 +247,7 @@ snd_harmony_rate_bits(int rate)
 	return HARMONY_SR_44KHZ;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_harmony_playback =
-=======
 static const struct snd_pcm_hardware snd_harmony_playback =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =	(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED | 
 		 SNDRV_PCM_INFO_JOINT_DUPLEX | SNDRV_PCM_INFO_MMAP_VALID |
@@ -318,11 +268,7 @@ static const struct snd_pcm_hardware snd_harmony_playback =
 	.fifo_size = 0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_harmony_capture =
-=======
 static const struct snd_pcm_hardware snd_harmony_capture =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         .info = (SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
                  SNDRV_PCM_INFO_JOINT_DUPLEX | SNDRV_PCM_INFO_MMAP_VALID |
@@ -617,55 +563,17 @@ snd_harmony_capture_close(struct snd_pcm_substream *ss)
         return 0;
 }
 
-<<<<<<< HEAD
-static int 
-snd_harmony_hw_params(struct snd_pcm_substream *ss,
-		      struct snd_pcm_hw_params *hw)
-{
-	int err;
-	struct snd_harmony *h = snd_pcm_substream_chip(ss);
-	
-	err = snd_pcm_lib_malloc_pages(ss, params_buffer_bytes(hw));
-	if (err > 0 && h->dma.type == SNDRV_DMA_TYPE_CONTINUOUS)
-		ss->runtime->dma_addr = __pa(ss->runtime->dma_area);
-	
-	return err;
-}
-
-static int 
-snd_harmony_hw_free(struct snd_pcm_substream *ss) 
-{
-	return snd_pcm_lib_free_pages(ss);
-}
-
-static struct snd_pcm_ops snd_harmony_playback_ops = {
-	.open =	snd_harmony_playback_open,
-	.close = snd_harmony_playback_close,
-	.ioctl = snd_pcm_lib_ioctl,
-	.hw_params = snd_harmony_hw_params,
-	.hw_free = snd_harmony_hw_free,
-=======
 static const struct snd_pcm_ops snd_harmony_playback_ops = {
 	.open =	snd_harmony_playback_open,
 	.close = snd_harmony_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare = snd_harmony_playback_prepare,
 	.trigger = snd_harmony_playback_trigger,
  	.pointer = snd_harmony_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_harmony_capture_ops = {
-        .open = snd_harmony_capture_open,
-        .close = snd_harmony_capture_close,
-        .ioctl = snd_pcm_lib_ioctl,
-        .hw_params = snd_harmony_hw_params,
-        .hw_free = snd_harmony_hw_free,
-=======
 static const struct snd_pcm_ops snd_harmony_capture_ops = {
         .open = snd_harmony_capture_open,
         .close = snd_harmony_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .prepare = snd_harmony_capture_prepare,
         .trigger = snd_harmony_capture_trigger,
         .pointer = snd_harmony_capture_pointer,
@@ -722,19 +630,8 @@ snd_harmony_pcm_init(struct snd_harmony *h)
 	}
 
 	/* pre-allocate space for DMA */
-<<<<<<< HEAD
-	err = snd_pcm_lib_preallocate_pages_for_all(pcm, h->dma.type,
-						    h->dma.dev,
-						    MAX_BUF_SIZE, 
-						    MAX_BUF_SIZE);
-	if (err < 0) {
-		printk(KERN_ERR PFX "buffer allocation error: %d\n", err);
-		return err;
-	}
-=======
 	snd_pcm_set_managed_buffer_all(pcm, h->dma.type, h->dma.dev,
 				       MAX_BUF_SIZE, MAX_BUF_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	h->st.format = snd_harmony_set_data_format(h,
 		SNDRV_PCM_FORMAT_S16_BE, 1);
@@ -834,21 +731,9 @@ static int
 snd_harmony_captureroute_info(struct snd_kcontrol *kc, 
 			      struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[2] = { "Line", "Mic" };
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 2;
-	if (uinfo->value.enumerated.item > 1)
-		uinfo->value.enumerated.item = 1;
-	strcpy(uinfo->value.enumerated.name,
-	       texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[2] = { "Line", "Mic" };
 
 	return snd_ctl_enum_info(uinfo, 1, 2, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int 
@@ -898,11 +783,7 @@ snd_harmony_captureroute_put(struct snd_kcontrol *kc,
   .private_value = ((left_shift) | ((right_shift) << 8) |            \
                    ((mask) << 16) | ((invert) << 24)) }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_harmony_controls[] = {
-=======
 static const struct snd_kcontrol_new snd_harmony_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HARMONY_VOLUME("Master Playback Volume", HARMONY_GAIN_LO_SHIFT, 
 		       HARMONY_GAIN_RO_SHIFT, HARMONY_GAIN_OUT, 1),
 	HARMONY_VOLUME("Capture Volume", HARMONY_GAIN_LI_SHIFT,
@@ -924,11 +805,7 @@ static const struct snd_kcontrol_new snd_harmony_controls[] = {
 		       HARMONY_GAIN_HE_SHIFT, 1, 0),
 };
 
-<<<<<<< HEAD
-static void __devinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_harmony_mixer_reset(struct snd_harmony *h)
 {
 	harmony_mute(h);
@@ -937,11 +814,7 @@ snd_harmony_mixer_reset(struct snd_harmony *h)
 	harmony_unmute(h);
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_harmony_mixer_init(struct snd_harmony *h)
 {
 	struct snd_card *card;
@@ -975,15 +848,7 @@ snd_harmony_free(struct snd_harmony *h)
 	if (h->irq >= 0)
 		free_irq(h->irq, h);
 
-<<<<<<< HEAD
-	if (h->iobase)
-		iounmap(h->iobase);
-
-	parisc_set_drvdata(h->dev, NULL);
-
-=======
 	iounmap(h->iobase);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(h);
 	return 0;
 }
@@ -995,22 +860,14 @@ snd_harmony_dev_free(struct snd_device *dev)
 	return snd_harmony_free(h);
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_harmony_create(struct snd_card *card, 
 		   struct parisc_device *padev, 
 		   struct snd_harmony **rchip)
 {
 	int err;
 	struct snd_harmony *h;
-<<<<<<< HEAD
-	static struct snd_device_ops ops = {
-=======
 	static const struct snd_device_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free = snd_harmony_dev_free,
 	};
 
@@ -1024,11 +881,7 @@ snd_harmony_create(struct snd_card *card,
 	h->card = card;
 	h->dev = padev;
 	h->irq = -1;
-<<<<<<< HEAD
-	h->iobase = ioremap_nocache(padev->hpa.start, HARMONY_SIZE);
-=======
 	h->iobase = ioremap(padev->hpa.start, HARMONY_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (h->iobase == NULL) {
 		printk(KERN_ERR PFX "unable to remap hpa 0x%lx\n",
 		       (unsigned long)padev->hpa.start);
@@ -1048,18 +901,9 @@ snd_harmony_create(struct snd_card *card,
 	spin_lock_init(&h->mixer_lock);
 	spin_lock_init(&h->lock);
 
-<<<<<<< HEAD
-        if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL,
-                                  h, &ops)) < 0) {
-                goto free_and_ret;
-        }
-
-	snd_card_set_dev(card, &padev->dev);
-=======
 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, h, &ops);
 	if (err < 0)
 		goto free_and_ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*rchip = h;
 
@@ -1070,22 +914,14 @@ free_and_ret:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int __init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_harmony_probe(struct parisc_device *padev)
 {
 	int err;
 	struct snd_card *card;
 	struct snd_harmony *h;
 
-<<<<<<< HEAD
-	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
-=======
 	err = snd_card_new(&padev->dev, index, id, THIS_MODULE, 0, &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -1118,21 +954,6 @@ free_and_ret:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit
-snd_harmony_remove(struct parisc_device *padev)
-{
-	snd_card_free(parisc_get_drvdata(padev));
-	parisc_set_drvdata(padev, NULL);
-	return 0;
-}
-
-static struct parisc_driver snd_harmony_driver = {
-	.name = "harmony",
-	.id_table = snd_harmony_devtable,
-	.probe = snd_harmony_probe,
-	.remove = __devexit_p(snd_harmony_remove),
-=======
 static void __exit
 snd_harmony_remove(struct parisc_device *padev)
 {
@@ -1144,7 +965,6 @@ static struct parisc_driver snd_harmony_driver __refdata = {
 	.id_table = snd_harmony_devtable,
 	.probe = snd_harmony_probe,
 	.remove = __exit_p(snd_harmony_remove),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init 

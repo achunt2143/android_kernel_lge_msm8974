@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel Network Address Lists
  *
@@ -11,32 +8,10 @@
  * as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2008
-<<<<<<< HEAD
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NETLABEL_ADDRLIST_H
@@ -98,11 +73,7 @@ static inline struct netlbl_af4list *__af4list_valid_rcu(struct list_head *s,
 	struct list_head *i = s;
 	struct netlbl_af4list *n = __af4list_entry(s);
 	while (i != h && !n->valid) {
-<<<<<<< HEAD
-		i = rcu_dereference(i->next);
-=======
 		i = rcu_dereference(list_next_rcu(i));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		n = __af4list_entry(i);
 	}
 	return n;
@@ -169,11 +140,7 @@ static inline struct netlbl_af6list *__af6list_valid_rcu(struct list_head *s,
 	struct list_head *i = s;
 	struct netlbl_af6list *n = __af6list_entry(s);
 	while (i != h && !n->valid) {
-<<<<<<< HEAD
-		i = rcu_dereference(i->next);
-=======
 		i = rcu_dereference(list_next_rcu(i));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		n = __af6list_entry(i);
 	}
 	return n;

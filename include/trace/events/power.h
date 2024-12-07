@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM power
 
 #if !defined(_TRACE_POWER_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_POWER_H
 
-<<<<<<< HEAD
-#include <linux/ktime.h>
-#include <linux/tracepoint.h>
-=======
 #include <linux/cpufreq.h>
 #include <linux/ktime.h>
 #include <linux/pm_qos.h>
@@ -19,7 +12,6 @@
 #include <linux/trace_events.h>
 
 #define TPS(x)  tracepoint_string(x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(cpu,
 
@@ -48,8 +40,6 @@ DEFINE_EVENT(cpu, cpu_idle,
 	TP_ARGS(state, cpu_id)
 );
 
-<<<<<<< HEAD
-=======
 TRACE_EVENT(cpu_idle_miss,
 
 	TP_PROTO(unsigned int cpu_id, unsigned int state, bool below),
@@ -156,7 +146,6 @@ TRACE_EVENT(pstate_sample,
 
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This file can get included multiple times, TRACE_HEADER_MULTI_READ at top */
 #ifndef _PWR_EVENT_AVOID_DOUBLE_DEFINING
 #define _PWR_EVENT_AVOID_DOUBLE_DEFINING
@@ -164,8 +153,6 @@ TRACE_EVENT(pstate_sample,
 #define PWR_EVENT_EXIT -1
 #endif
 
-<<<<<<< HEAD
-=======
 #define pm_verb_symbolic(event) \
 	__print_symbolic(event, \
 		{ PM_EVENT_SUSPEND, "suspend" }, \
@@ -177,7 +164,6 @@ TRACE_EVENT(pstate_sample,
 		{ PM_EVENT_RESTORE, "restore" }, \
 		{ PM_EVENT_RECOVER, "recover" })
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_EVENT(cpu, cpu_frequency,
 
 	TP_PROTO(unsigned int frequency, unsigned int cpu_id),
@@ -185,65 +171,6 @@ DEFINE_EVENT(cpu, cpu_frequency,
 	TP_ARGS(frequency, cpu_id)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(cpu_frequency_switch_start,
-
-	TP_PROTO(unsigned int start_freq, unsigned int end_freq,
-		 unsigned int cpu_id),
-
-	TP_ARGS(start_freq, end_freq, cpu_id),
-
-	TP_STRUCT__entry(
-		__field(	u32,		start_freq	)
-		__field(	u32,		end_freq	)
-		__field(	u32,		cpu_id		)
-	),
-
-	TP_fast_assign(
-		__entry->start_freq = start_freq;
-		__entry->end_freq = end_freq;
-		__entry->cpu_id = cpu_id;
-	),
-
-	TP_printk("start=%lu end=%lu cpu_id=%lu",
-		  (unsigned long)__entry->start_freq,
-		  (unsigned long)__entry->end_freq,
-		  (unsigned long)__entry->cpu_id)
-);
-
-TRACE_EVENT(cpu_frequency_switch_end,
-
-	TP_PROTO(unsigned int cpu_id),
-
-	TP_ARGS(cpu_id),
-
-	TP_STRUCT__entry(
-		__field(	u32,		cpu_id		)
-	),
-
-	TP_fast_assign(
-		__entry->cpu_id = cpu_id;
-	),
-
-	TP_printk("cpu_id=%lu", (unsigned long)__entry->cpu_id)
-);
-
-TRACE_EVENT(machine_suspend,
-
-	TP_PROTO(unsigned int state),
-
-	TP_ARGS(state),
-
-	TP_STRUCT__entry(
-		__field(	u32,		state		)
-	),
-
-	TP_fast_assign(
-		__entry->state = state;
-	),
-
-	TP_printk("state=%lu", (unsigned long)__entry->state)
-=======
 TRACE_EVENT(cpu_frequency_limits,
 
 	TP_PROTO(struct cpufreq_policy *policy),
@@ -338,7 +265,6 @@ TRACE_EVENT(suspend_resume,
 
 	TP_printk("%s[%u] %s", __entry->action, (unsigned int)__entry->val,
 		(__entry->start)?"begin":"end")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(wakeup_source,
@@ -375,101 +301,6 @@ DEFINE_EVENT(wakeup_source, wakeup_source_deactivate,
 	TP_ARGS(name, state)
 );
 
-<<<<<<< HEAD
-#ifdef CONFIG_EVENT_POWER_TRACING_DEPRECATED
-
-/*
- * The power events are used for cpuidle & suspend (power_start, power_end)
- *  and for cpufreq (power_frequency)
- */
-DECLARE_EVENT_CLASS(power,
-
-	TP_PROTO(unsigned int type, unsigned int state, unsigned int cpu_id),
-
-	TP_ARGS(type, state, cpu_id),
-
-	TP_STRUCT__entry(
-		__field(	u64,		type		)
-		__field(	u64,		state		)
-		__field(	u64,		cpu_id		)
-	),
-
-	TP_fast_assign(
-		__entry->type = type;
-		__entry->state = state;
-		__entry->cpu_id = cpu_id;
-	),
-
-	TP_printk("type=%lu state=%lu cpu_id=%lu", (unsigned long)__entry->type,
-		(unsigned long)__entry->state, (unsigned long)__entry->cpu_id)
-);
-
-DEFINE_EVENT(power, power_start,
-
-	TP_PROTO(unsigned int type, unsigned int state, unsigned int cpu_id),
-
-	TP_ARGS(type, state, cpu_id)
-);
-
-DEFINE_EVENT(power, power_frequency,
-
-	TP_PROTO(unsigned int type, unsigned int state, unsigned int cpu_id),
-
-	TP_ARGS(type, state, cpu_id)
-);
-
-TRACE_EVENT(power_end,
-
-	TP_PROTO(unsigned int cpu_id),
-
-	TP_ARGS(cpu_id),
-
-	TP_STRUCT__entry(
-		__field(	u64,		cpu_id		)
-	),
-
-	TP_fast_assign(
-		__entry->cpu_id = cpu_id;
-	),
-
-	TP_printk("cpu_id=%lu", (unsigned long)__entry->cpu_id)
-
-);
-
-/* Deprecated dummy functions must be protected against multi-declartion */
-#ifndef _PWR_EVENT_AVOID_DOUBLE_DEFINING_DEPRECATED
-#define _PWR_EVENT_AVOID_DOUBLE_DEFINING_DEPRECATED
-
-enum {
-	POWER_NONE = 0,
-	POWER_CSTATE = 1,
-	POWER_PSTATE = 2,
-};
-#endif /* _PWR_EVENT_AVOID_DOUBLE_DEFINING_DEPRECATED */
-
-#else /* CONFIG_EVENT_POWER_TRACING_DEPRECATED */
-
-#ifndef _PWR_EVENT_AVOID_DOUBLE_DEFINING_DEPRECATED
-#define _PWR_EVENT_AVOID_DOUBLE_DEFINING_DEPRECATED
-enum {
-       POWER_NONE = 0,
-       POWER_CSTATE = 1,
-       POWER_PSTATE = 2,
-};
-
-/* These dummy declaration have to be ripped out when the deprecated
-   events get removed */
-static inline void trace_power_start(u64 type, u64 state, u64 cpuid) {};
-static inline void trace_power_end(u64 cpuid) {};
-static inline void trace_power_start_rcuidle(u64 type, u64 state, u64 cpuid) {};
-static inline void trace_power_end_rcuidle(u64 cpuid) {};
-static inline void trace_power_frequency(u64 type, u64 state, u64 cpuid) {};
-#endif /* _PWR_EVENT_AVOID_DOUBLE_DEFINING_DEPRECATED */
-
-#endif /* CONFIG_EVENT_POWER_TRACING_DEPRECATED */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The clock events are used for clock enable/disable and for
  *  clock rate change
@@ -517,28 +348,6 @@ DEFINE_EVENT(clock, clock_set_rate,
 	TP_ARGS(name, state, cpu_id)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(clock_set_parent,
-
-	TP_PROTO(const char *name, const char *parent_name),
-
-	TP_ARGS(name, parent_name),
-
-	TP_STRUCT__entry(
-		__string(       name,           name            )
-		__string(       parent_name,    parent_name     )
-	),
-
-	TP_fast_assign(
-		__assign_str(name, name);
-		__assign_str(parent_name, parent_name);
-	),
-
-	TP_printk("%s parent=%s", __get_str(name), __get_str(parent_name))
-);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The power domain events are used for power domains transitions
  */
@@ -570,8 +379,6 @@ DEFINE_EVENT(power_domain, power_domain_target,
 
 	TP_ARGS(name, state, cpu_id)
 );
-<<<<<<< HEAD
-=======
 
 /*
  * CPU latency QoS events used for global CPU latency QoS list updates
@@ -744,7 +551,6 @@ TRACE_EVENT(guest_halt_poll_ns,
 	trace_guest_halt_poll_ns(true, new, old)
 #define trace_guest_halt_poll_ns_shrink(new, old) \
 	trace_guest_halt_poll_ns(false, new, old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_POWER_H */
 
 /* This part must be outside protection */

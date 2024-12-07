@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Netlink message type permission tables, for user generated messages.
  *
  * Author: James Morris <jmorris@redhat.com>
  *
  * Copyright (C) 2004 Red Hat, Inc., James Morris <jmorris@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2,
- * as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -35,12 +25,7 @@ struct nlmsg_perm {
 	u32	perm;
 };
 
-<<<<<<< HEAD
-static struct nlmsg_perm nlmsg_route_perms[] =
-{
-=======
 static const struct nlmsg_perm nlmsg_route_perms[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ RTM_NEWLINK,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
 	{ RTM_DELLINK,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
 	{ RTM_GETLINK,		NETLINK_ROUTE_SOCKET__NLMSG_READ  },
@@ -79,20 +64,6 @@ static const struct nlmsg_perm nlmsg_route_perms[] = {
 	{ RTM_GETADDRLABEL,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
 	{ RTM_GETDCB,		NETLINK_ROUTE_SOCKET__NLMSG_READ  },
 	{ RTM_SETDCB,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
-<<<<<<< HEAD
-};
-
-static struct nlmsg_perm nlmsg_tcpdiag_perms[] =
-{
-	{ TCPDIAG_GETSOCK,		NETLINK_TCPDIAG_SOCKET__NLMSG_READ },
-	{ DCCPDIAG_GETSOCK,		NETLINK_TCPDIAG_SOCKET__NLMSG_READ },
-	{ SOCK_DIAG_BY_FAMILY,		NETLINK_TCPDIAG_SOCKET__NLMSG_READ },
-	{ SOCK_DESTROY_BACKPORT,	NETLINK_TCPDIAG_SOCKET__NLMSG_WRITE },
-};
-
-static struct nlmsg_perm nlmsg_xfrm_perms[] =
-{
-=======
 	{ RTM_NEWNETCONF,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
 	{ RTM_DELNETCONF,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
 	{ RTM_GETNETCONF,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
@@ -133,7 +104,6 @@ static const struct nlmsg_perm nlmsg_tcpdiag_perms[] = {
 };
 
 static const struct nlmsg_perm nlmsg_xfrm_perms[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ XFRM_MSG_NEWSA,	NETLINK_XFRM_SOCKET__NLMSG_WRITE },
 	{ XFRM_MSG_DELSA,	NETLINK_XFRM_SOCKET__NLMSG_WRITE },
 	{ XFRM_MSG_GETSA,	NETLINK_XFRM_SOCKET__NLMSG_READ  },
@@ -157,18 +127,11 @@ static const struct nlmsg_perm nlmsg_xfrm_perms[] = {
 	{ XFRM_MSG_NEWSPDINFO,	NETLINK_XFRM_SOCKET__NLMSG_WRITE },
 	{ XFRM_MSG_GETSPDINFO,	NETLINK_XFRM_SOCKET__NLMSG_READ  },
 	{ XFRM_MSG_MAPPING,	NETLINK_XFRM_SOCKET__NLMSG_READ  },
-<<<<<<< HEAD
-};
-
-static struct nlmsg_perm nlmsg_audit_perms[] =
-{
-=======
 	{ XFRM_MSG_SETDEFAULT,	NETLINK_XFRM_SOCKET__NLMSG_WRITE },
 	{ XFRM_MSG_GETDEFAULT,	NETLINK_XFRM_SOCKET__NLMSG_READ  },
 };
 
 static const struct nlmsg_perm nlmsg_audit_perms[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ AUDIT_GET,		NETLINK_AUDIT_SOCKET__NLMSG_READ     },
 	{ AUDIT_SET,		NETLINK_AUDIT_SOCKET__NLMSG_WRITE    },
 	{ AUDIT_LIST,		NETLINK_AUDIT_SOCKET__NLMSG_READPRIV },
@@ -183,14 +146,6 @@ static const struct nlmsg_perm nlmsg_audit_perms[] = {
 	{ AUDIT_MAKE_EQUIV,	NETLINK_AUDIT_SOCKET__NLMSG_WRITE    },
 	{ AUDIT_TTY_GET,	NETLINK_AUDIT_SOCKET__NLMSG_READ     },
 	{ AUDIT_TTY_SET,	NETLINK_AUDIT_SOCKET__NLMSG_TTY_AUDIT	},
-<<<<<<< HEAD
-};
-
-
-static int nlmsg_perm(u16 nlmsg_type, u32 *perm, struct nlmsg_perm *tab, size_t tabsize)
-{
-	int i, err = -EINVAL;
-=======
 	{ AUDIT_GET_FEATURE,	NETLINK_AUDIT_SOCKET__NLMSG_READ     },
 	{ AUDIT_SET_FEATURE,	NETLINK_AUDIT_SOCKET__NLMSG_WRITE    },
 };
@@ -200,7 +155,6 @@ static int nlmsg_perm(u16 nlmsg_type, u32 *perm, const struct nlmsg_perm *tab, s
 {
 	unsigned int i;
 	int err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < tabsize/sizeof(struct nlmsg_perm); i++)
 		if (nlmsg_type == tab[i].nlmsg_type) {
@@ -218,15 +172,12 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
 
 	switch (sclass) {
 	case SECCLASS_NETLINK_ROUTE_SOCKET:
-<<<<<<< HEAD
-=======
 		/* RTM_MAX always points to RTM_SETxxxx, ie RTM_NEWxxx + 3.
 		 * If the BUILD_BUG_ON() below fails you must update the
 		 * structures at the top of this file with the new mappings
 		 * before updating the BUILD_BUG_ON() macro!
 		 */
 		BUILD_BUG_ON(RTM_MAX != (RTM_NEWTUNNEL + 3));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_route_perms,
 				 sizeof(nlmsg_route_perms));
 		break;
@@ -237,14 +188,11 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
 		break;
 
 	case SECCLASS_NETLINK_XFRM_SOCKET:
-<<<<<<< HEAD
-=======
 		/* If the BUILD_BUG_ON() below fails you must update the
 		 * structures at the top of this file with the new mappings
 		 * before updating the BUILD_BUG_ON() macro!
 		 */
 		BUILD_BUG_ON(XFRM_MSG_MAX != XFRM_MSG_GETDEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_xfrm_perms,
 				 sizeof(nlmsg_xfrm_perms));
 		break;

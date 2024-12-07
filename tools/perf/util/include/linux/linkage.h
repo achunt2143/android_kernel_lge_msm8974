@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef PERF_LINUX_LINKAGE_H_
 #define PERF_LINUX_LINKAGE_H_
 
 /* linkage.h ... for including arch/x86/lib/memcpy_64.S */
 
-<<<<<<< HEAD
-#define ENTRY(name)				\
-	.globl name;				\
-	name:
-
-#define ENDPROC(name)
-=======
 /* Some toolchains use other characters (e.g. '`') to mark new line in macro */
 #ifndef ASM_NL
 #define ASM_NL		 ;
@@ -141,6 +131,5 @@
 #define SYM_TYPED_FUNC_START(name)                      \
         SYM_TYPED_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* PERF_LINUX_LINKAGE_H_ */

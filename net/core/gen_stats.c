@@ -1,27 +1,12 @@
-<<<<<<< HEAD
-/*
- * net/core/gen_stats.c
- *
- *             This program is free software; you can redistribute it and/or
- *             modify it under the terms of the GNU General Public License
- *             as published by the Free Software Foundation; either version
- *             2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * net/core/gen_stats.c
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:  Thomas Graf <tgraf@suug.ch>
  *           Jamal Hadi Salim
  *           Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  *
-<<<<<<< HEAD
- * See Documentation/networking/gen_stats.txt
-=======
  * See Documentation/networking/gen_stats.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -33,18 +18,6 @@
 #include <linux/gen_stats.h>
 #include <net/netlink.h>
 #include <net/gen_stats.h>
-<<<<<<< HEAD
-
-
-static inline int
-gnet_stats_copy(struct gnet_dump *d, int type, void *buf, int size)
-{
-	NLA_PUT(d->skb, type, size, buf);
-	return 0;
-
-nla_put_failure:
-	spin_unlock_bh(d->lock);
-=======
 #include <net/sch_generic.h>
 
 static inline int
@@ -60,7 +33,6 @@ nla_put_failure:
 	kfree(d->xstats);
 	d->xstats = NULL;
 	d->xstats_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -72,10 +44,7 @@ nla_put_failure:
  * @xstats_type: TLV type for backward compatibility xstats TLV
  * @lock: statistics lock
  * @d: dumping handle
-<<<<<<< HEAD
-=======
  * @padattr: padding attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Initializes the dumping handle, grabs the statistic lock and appends
  * an empty TLV header to the socket buffer for use a container for all
@@ -88,31 +57,17 @@ nla_put_failure:
  */
 int
 gnet_stats_start_copy_compat(struct sk_buff *skb, int type, int tc_stats_type,
-<<<<<<< HEAD
-	int xstats_type, spinlock_t *lock, struct gnet_dump *d)
-=======
 			     int xstats_type, spinlock_t *lock,
 			     struct gnet_dump *d, int padattr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__acquires(lock)
 {
 	memset(d, 0, sizeof(*d));
 
-<<<<<<< HEAD
-	spin_lock_bh(lock);
-	d->lock = lock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (type)
 		d->tail = (struct nlattr *)skb_tail_pointer(skb);
 	d->skb = skb;
 	d->compat_tc_stats = tc_stats_type;
 	d->compat_xstats = xstats_type;
-<<<<<<< HEAD
-
-	if (d->tail)
-		return gnet_stats_copy(d, type, NULL, 0);
-=======
 	d->padattr = padattr;
 	if (lock) {
 		d->lock = lock;
@@ -132,26 +87,18 @@ gnet_stats_start_copy_compat(struct sk_buff *skb, int type, int tc_stats_type,
 						    NLA_ALIGN(d->tail->nla_len));
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL(gnet_stats_start_copy_compat);
 
 /**
-<<<<<<< HEAD
- * gnet_stats_start_copy_compat - start dumping procedure in compatibility mode
-=======
  * gnet_stats_start_copy - start dumping procedure in compatibility mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @skb: socket buffer to put statistics TLVs into
  * @type: TLV type for top level statistic TLV
  * @lock: statistics lock
  * @d: dumping handle
-<<<<<<< HEAD
-=======
  * @padattr: padding attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Initializes the dumping handle, grabs the statistic lock and appends
  * an empty TLV header to the socket buffer for use a container for all
@@ -161,18 +108,6 @@ EXPORT_SYMBOL(gnet_stats_start_copy_compat);
  */
 int
 gnet_stats_start_copy(struct sk_buff *skb, int type, spinlock_t *lock,
-<<<<<<< HEAD
-	struct gnet_dump *d)
-{
-	return gnet_stats_start_copy_compat(skb, type, 0, 0, lock, d);
-}
-EXPORT_SYMBOL(gnet_stats_start_copy);
-
-/**
- * gnet_stats_copy_basic - copy basic statistics into statistic TLV
- * @d: dumping handle
- * @b: basic statistics
-=======
 		      struct gnet_dump *d, int padattr)
 {
 	return gnet_stats_start_copy_compat(skb, type, 0, 0, lock, d, padattr);
@@ -314,7 +249,6 @@ ___gnet_stats_copy_basic(struct gnet_dump *d,
  *           Only used if @cpu is NULL
  *
  * Context: task; must not be run from IRQ or BH contexts
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Appends the basic statistics to the top level TLV created by
  * gnet_stats_start_copy().
@@ -323,41 +257,16 @@ ___gnet_stats_copy_basic(struct gnet_dump *d,
  * if the room in the socket buffer was not sufficient.
  */
 int
-<<<<<<< HEAD
-gnet_stats_copy_basic(struct gnet_dump *d, struct gnet_stats_basic_packed *b)
-{
-	if (d->compat_tc_stats) {
-		d->tc_stats.bytes = b->bytes;
-		d->tc_stats.packets = b->packets;
-	}
-
-	if (d->tail) {
-		struct gnet_stats_basic sb;
-
-		memset(&sb, 0, sizeof(sb));
-		sb.bytes = b->bytes;
-		sb.packets = b->packets;
-		return gnet_stats_copy(d, TCA_STATS_BASIC, &sb, sizeof(sb));
-	}
-	return 0;
-=======
 gnet_stats_copy_basic(struct gnet_dump *d,
 		      struct gnet_stats_basic_sync __percpu *cpu,
 		      struct gnet_stats_basic_sync *b,
 		      bool running)
 {
 	return ___gnet_stats_copy_basic(d, cpu, b, TCA_STATS_BASIC, running);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(gnet_stats_copy_basic);
 
 /**
-<<<<<<< HEAD
- * gnet_stats_copy_rate_est - copy rate estimator statistics into statistics TLV
- * @d: dumping handle
- * @b: basic statistics
- * @r: rate estimator statistics
-=======
  * gnet_stats_copy_basic_hw - copy basic hw statistics into statistic TLV
  * @d: dumping handle
  * @cpu: copy statistic per cpu
@@ -388,7 +297,6 @@ EXPORT_SYMBOL(gnet_stats_copy_basic_hw);
  * gnet_stats_copy_rate_est - copy rate estimator statistics into statistics TLV
  * @d: dumping handle
  * @rate_est: rate estimator
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Appends the rate estimator statistics to the top level TLV created by
  * gnet_stats_start_copy().
@@ -398,21 +306,6 @@ EXPORT_SYMBOL(gnet_stats_copy_basic_hw);
  */
 int
 gnet_stats_copy_rate_est(struct gnet_dump *d,
-<<<<<<< HEAD
-			 const struct gnet_stats_basic_packed *b,
-			 struct gnet_stats_rate_est *r)
-{
-	if (b && !gen_estimator_active(b, r))
-		return 0;
-
-	if (d->compat_tc_stats) {
-		d->tc_stats.bps = r->bps;
-		d->tc_stats.pps = r->pps;
-	}
-
-	if (d->tail)
-		return gnet_stats_copy(d, TCA_STATS_RATE_EST, r, sizeof(*r));
-=======
 			 struct net_rate_estimator __rcu **rate_est)
 {
 	struct gnet_stats_rate_est64 sample;
@@ -439,21 +332,11 @@ gnet_stats_copy_rate_est(struct gnet_dump *d,
 		return gnet_stats_copy(d, TCA_STATS_RATE_EST64, &sample,
 				       sizeof(sample), TCA_STATS_PAD);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL(gnet_stats_copy_rate_est);
 
-<<<<<<< HEAD
-/**
- * gnet_stats_copy_queue - copy queue statistics into statistics TLV
- * @d: dumping handle
- * @q: queue statistics
- *
- * Appends the queue statistics to the top level TLV created by
- * gnet_stats_start_copy().
-=======
 static void gnet_stats_add_queue_cpu(struct gnet_stats_queue *qstats,
 				     const struct gnet_stats_queue __percpu *q)
 {
@@ -496,25 +379,11 @@ EXPORT_SYMBOL(gnet_stats_add_queue);
  * Appends the queue statistics to the top level TLV created by
  * gnet_stats_start_copy(). Using per cpu queue statistics if
  * they are available.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success or -1 with the statistic lock released
  * if the room in the socket buffer was not sufficient.
  */
 int
-<<<<<<< HEAD
-gnet_stats_copy_queue(struct gnet_dump *d, struct gnet_stats_queue *q)
-{
-	if (d->compat_tc_stats) {
-		d->tc_stats.drops = q->drops;
-		d->tc_stats.qlen = q->qlen;
-		d->tc_stats.backlog = q->backlog;
-		d->tc_stats.overlimits = q->overlimits;
-	}
-
-	if (d->tail)
-		return gnet_stats_copy(d, TCA_STATS_QUEUE, q, sizeof(*q));
-=======
 gnet_stats_copy_queue(struct gnet_dump *d,
 		      struct gnet_stats_queue __percpu *cpu_q,
 		      struct gnet_stats_queue *q, __u32 qlen)
@@ -535,7 +404,6 @@ gnet_stats_copy_queue(struct gnet_dump *d,
 		return gnet_stats_copy(d, TCA_STATS_QUEUE,
 				       &qstats, sizeof(qstats),
 				       TCA_STATS_PAD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -547,11 +415,7 @@ EXPORT_SYMBOL(gnet_stats_copy_queue);
  * @st: application specific statistics data
  * @len: length of data
  *
-<<<<<<< HEAD
- * Appends the application sepecific statistics to the top level TLV created by
-=======
  * Appends the application specific statistics to the top level TLV created by
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gnet_stats_start_copy() and remembers the data for XSTATS if the dumping
  * handle is in backward compatibility mode.
  *
@@ -562,22 +426,13 @@ int
 gnet_stats_copy_app(struct gnet_dump *d, void *st, int len)
 {
 	if (d->compat_xstats) {
-<<<<<<< HEAD
-		d->xstats = st;
-=======
 		d->xstats = kmemdup(st, len, GFP_ATOMIC);
 		if (!d->xstats)
 			goto err_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		d->xstats_len = len;
 	}
 
 	if (d->tail)
-<<<<<<< HEAD
-		return gnet_stats_copy(d, TCA_STATS_APP, st, len);
-
-	return 0;
-=======
 		return gnet_stats_copy(d, TCA_STATS_APP, st, len,
 				       TCA_STATS_PAD);
 
@@ -588,7 +443,6 @@ err_out:
 		spin_unlock_bh(d->lock);
 	d->xstats_len = 0;
 	return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(gnet_stats_copy_app);
 
@@ -612,22 +466,11 @@ gnet_stats_finish_copy(struct gnet_dump *d)
 
 	if (d->compat_tc_stats)
 		if (gnet_stats_copy(d, d->compat_tc_stats, &d->tc_stats,
-<<<<<<< HEAD
-			sizeof(d->tc_stats)) < 0)
-=======
 				    sizeof(d->tc_stats), d->padattr) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 
 	if (d->compat_xstats && d->xstats) {
 		if (gnet_stats_copy(d, d->compat_xstats, d->xstats,
-<<<<<<< HEAD
-			d->xstats_len) < 0)
-			return -1;
-	}
-
-	spin_unlock_bh(d->lock);
-=======
 				    d->xstats_len, d->padattr) < 0)
 			return -1;
 	}
@@ -637,7 +480,6 @@ gnet_stats_finish_copy(struct gnet_dump *d)
 	kfree(d->xstats);
 	d->xstats = NULL;
 	d->xstats_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(gnet_stats_finish_copy);

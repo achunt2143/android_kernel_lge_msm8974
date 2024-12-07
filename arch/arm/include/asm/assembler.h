@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/assembler.h
  *
  *  Copyright (C) 1996-2000 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This file contains arm architecture specific defines
  *  for the different processors.
  *
@@ -28,15 +18,11 @@
 #endif
 
 #include <asm/ptrace.h>
-<<<<<<< HEAD
-#include <asm/domain.h>
-=======
 #include <asm/opcodes-virt.h>
 #include <asm/asm-offsets.h>
 #include <asm/page.h>
 #include <asm/thread_info.h>
 #include <asm/uaccess-asm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IOMEM(x)	(x)
 
@@ -44,13 +30,8 @@
  * Endian independent macros for shifting bytes within registers.
  */
 #ifndef __ARMEB__
-<<<<<<< HEAD
-#define pull            lsr
-#define push            lsl
-=======
 #define lspull          lsr
 #define lspush          lsl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define get_byte_0      lsl #0
 #define get_byte_1	lsr #8
 #define get_byte_2	lsr #16
@@ -60,13 +41,8 @@
 #define put_byte_2	lsl #16
 #define put_byte_3	lsl #24
 #else
-<<<<<<< HEAD
-#define pull            lsl
-#define push            lsr
-=======
 #define lspull          lsl
 #define lspush          lsr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define get_byte_0	lsr #24
 #define get_byte_1	lsr #16
 #define get_byte_2	lsr #8
@@ -77,8 +53,6 @@
 #define put_byte_3      lsl #0
 #endif
 
-<<<<<<< HEAD
-=======
 /* Select code for any configuration running in BE8 mode */
 #ifdef CONFIG_CPU_ENDIAN_BE8
 #define ARM_BE8(code...) code
@@ -86,7 +60,6 @@
 #define ARM_BE8(code...)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Data preload for architectures that support it
  */
@@ -111,15 +84,12 @@
 #define CALGN(code...)
 #endif
 
-<<<<<<< HEAD
-=======
 #define IMM12_MASK 0xfff
 
 /* the frame pointer used for stack unwinding */
 ARM(	fpreg	.req	r11	)
 THUMB(	fpreg	.req	r7	)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Enable and disable interrupts
  */
@@ -141,17 +111,6 @@ THUMB(	fpreg	.req	r7	)
 	.endm
 #endif
 
-<<<<<<< HEAD
-	.macro asm_trace_hardirqs_off
-#if defined(CONFIG_TRACE_IRQFLAGS)
-	stmdb   sp!, {r0-r3, ip, lr}
-	bl	trace_hardirqs_off
-	ldmia	sp!, {r0-r3, ip, lr}
-#endif
-	.endm
-
-	.macro asm_trace_hardirqs_on_cond, cond
-=======
 #if __LINUX_ARM_ARCH__ < 7
 	.macro	dsb, args
 	mcr	p15, 0, r0, c7, c10, 4
@@ -175,27 +134,11 @@ THUMB(	fpreg	.req	r7	)
 	.endm
 
 	.macro asm_trace_hardirqs_on, cond=al, save=1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_TRACE_IRQFLAGS)
 	/*
 	 * actually the registers should be pushed and pop'd conditionally, but
 	 * after bl the flags are certainly clobbered
 	 */
-<<<<<<< HEAD
-	stmdb   sp!, {r0-r3, ip, lr}
-	bl\cond	trace_hardirqs_on
-	ldmia	sp!, {r0-r3, ip, lr}
-#endif
-	.endm
-
-	.macro asm_trace_hardirqs_on
-	asm_trace_hardirqs_on_cond al
-	.endm
-
-	.macro disable_irq
-	disable_irq_notrace
-	asm_trace_hardirqs_off
-=======
 	.if \save
 	stmdb   sp!, {r0-r3, ip, lr}
 	.endif
@@ -209,7 +152,6 @@ THUMB(	fpreg	.req	r7	)
 	.macro disable_irq, save=1
 	disable_irq_notrace
 	asm_trace_hardirqs_off \save
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro enable_irq
@@ -221,28 +163,20 @@ THUMB(	fpreg	.req	r7	)
  * assumes FIQs are enabled, and that the processor is in SVC mode.
  */
 	.macro	save_and_disable_irqs, oldcpsr
-<<<<<<< HEAD
-	mrs	\oldcpsr, cpsr
-=======
 #ifdef CONFIG_CPU_V7M
 	mrs	\oldcpsr, primask
 #else
 	mrs	\oldcpsr, cpsr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	disable_irq
 	.endm
 
 	.macro	save_and_disable_irqs_notrace, oldcpsr
-<<<<<<< HEAD
-	mrs	\oldcpsr, cpsr
-=======
 #ifdef CONFIG_CPU_V7M
 	mrs	\oldcpsr, primask
 #else
 	mrs	\oldcpsr, cpsr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	disable_irq_notrace
 	.endm
 
@@ -251,32 +185,15 @@ THUMB(	fpreg	.req	r7	)
  * guarantee that this will preserve the flags.
  */
 	.macro	restore_irqs_notrace, oldcpsr
-<<<<<<< HEAD
-	msr	cpsr_c, \oldcpsr
-=======
 #ifdef CONFIG_CPU_V7M
 	msr	primask, \oldcpsr
 #else
 	msr	cpsr_c, \oldcpsr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro restore_irqs, oldcpsr
 	tst	\oldcpsr, #PSR_I_BIT
-<<<<<<< HEAD
-	asm_trace_hardirqs_on_cond eq
-	restore_irqs_notrace \oldcpsr
-	.endm
-
-#define USER(x...)				\
-9999:	x;					\
-	.pushsection __ex_table,"a";		\
-	.align	3;				\
-	.long	9999b,9001f;			\
-	.popsection
-
-=======
 	asm_trace_hardirqs_on cond=eq
 	restore_irqs_notrace \oldcpsr
 	.endm
@@ -336,7 +253,6 @@ THUMB(	fpreg	.req	r7	)
 
 #define USER(x...)	USERL(9001f, x)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 #define ALT_SMP(instr...)					\
 9998:	instr
@@ -347,33 +263,21 @@ THUMB(	fpreg	.req	r7	)
  */
 #define ALT_UP(instr...)					\
 	.pushsection ".alt.smp.init", "a"			;\
-<<<<<<< HEAD
-	.long	9998b						;\
-9997:	instr							;\
-=======
 	.align	2						;\
 	.long	9998b - .					;\
 9997:	instr							;\
 	.if . - 9997b == 2					;\
 		nop						;\
 	.endif							;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.if . - 9997b != 4					;\
 		.error "ALT_UP() content must assemble to exactly 4 bytes";\
 	.endif							;\
 	.popsection
 #define ALT_UP_B(label)					\
-<<<<<<< HEAD
-	.equ	up_b_offset, label - 9998b			;\
-	.pushsection ".alt.smp.init", "a"			;\
-	.long	9998b						;\
-	W(b)	. + up_b_offset					;\
-=======
 	.pushsection ".alt.smp.init", "a"			;\
 	.align	2						;\
 	.long	9998b - .					;\
 	W(b)	. + (label - 9998b)					;\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.popsection
 #else
 #define ALT_SMP(instr...)
@@ -381,8 +285,6 @@ THUMB(	fpreg	.req	r7	)
 #define ALT_UP_B(label) b label
 #endif
 
-<<<<<<< HEAD
-=======
 	/*
 	 * this_cpu_offset - load the per-CPU offset of this CPU into
 	 * 		     register 'rd'
@@ -457,7 +359,6 @@ ALT_UP_B(.L0_\@)
 #endif
 	.endm
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Instruction barrier
  */
@@ -476,15 +377,9 @@ ALT_UP_B(.L0_\@)
 #ifdef CONFIG_SMP
 #if __LINUX_ARM_ARCH__ >= 7
 	.ifeqs "\mode","arm"
-<<<<<<< HEAD
-	ALT_SMP(dmb)
-	.else
-	ALT_SMP(W(dmb))
-=======
 	ALT_SMP(dmb	ish)
 	.else
 	ALT_SMP(W(dmb)	ish)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endif
 #elif __LINUX_ARM_ARCH__ == 6
 	ALT_SMP(mcr	p15, 0, r0, c7, c10, 5)	@ dmb
@@ -499,9 +394,6 @@ ALT_UP_B(.L0_\@)
 #endif
 	.endm
 
-<<<<<<< HEAD
-#ifdef CONFIG_THUMB2_KERNEL
-=======
 /*
  * Raw SMP data memory barrier
  */
@@ -527,7 +419,6 @@ ALT_UP_B(.L0_\@)
 	.macro	setmode, mode, reg
 	.endm
 #elif defined(CONFIG_THUMB2_KERNEL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.macro	setmode, mode, reg
 	mov	\reg, #\mode
 	msr	cpsr_c, \reg
@@ -539,8 +430,6 @@ ALT_UP_B(.L0_\@)
 #endif
 
 /*
-<<<<<<< HEAD
-=======
  * Helper macro to enter SVC mode cleanly and mask interrupts. reg is
  * a scratch register for the macro to overwrite.
  *
@@ -573,7 +462,6 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 .endm
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * STRT/LDRT access macros with ARM and Thumb-2 variants
  */
 #ifdef CONFIG_THUMB2_KERNEL
@@ -581,15 +469,9 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 	.macro	usraccoff, instr, reg, ptr, inc, off, cond, abort, t=TUSER()
 9999:
 	.if	\inc == 1
-<<<<<<< HEAD
-	\instr\cond\()b\()\t\().w \reg, [\ptr, #\off]
-	.elseif	\inc == 4
-	\instr\cond\()\t\().w \reg, [\ptr, #\off]
-=======
 	\instr\()b\t\cond\().w \reg, [\ptr, #\off]
 	.elseif	\inc == 4
 	\instr\t\cond\().w \reg, [\ptr, #\off]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.else
 	.error	"Unsupported inc macro argument"
 	.endif
@@ -628,15 +510,9 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 	.rept	\rept
 9999:
 	.if	\inc == 1
-<<<<<<< HEAD
-	\instr\cond\()b\()\t \reg, [\ptr], #\inc
-	.elseif	\inc == 4
-	\instr\cond\()\t \reg, [\ptr], #\inc
-=======
 	\instr\()b\t\cond \reg, [\ptr], #\inc
 	.elseif	\inc == 4
 	\instr\t\cond \reg, [\ptr], #\inc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.else
 	.error	"Unsupported inc macro argument"
 	.endif
@@ -666,16 +542,6 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 	.size \name , . - \name
 	.endm
 
-<<<<<<< HEAD
-	.macro check_uaccess, addr:req, size:req, limit:req, tmp:req, bad:req
-#ifndef CONFIG_CPU_USE_DOMAINS
-	adds	\tmp, \addr, #\size - 1
-	sbcccs	\tmp, \tmp, \limit
-	bcs	\bad
-#endif
-	.endm
-
-=======
 	.irp	c,,eq,ne,cs,cc,mi,pl,vs,vc,hi,ls,ge,lt,gt,le,hs,lo
 	.macro	ret\c, reg
 #if __LINUX_ARM_ARCH__ < 6
@@ -925,5 +791,4 @@ THUMB(	orr	\reg , \reg , #PSR_T_BIT	)
 	.endif
 	.endm
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_ASSEMBLER_H__ */

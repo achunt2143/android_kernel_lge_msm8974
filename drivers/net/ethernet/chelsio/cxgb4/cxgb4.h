@@ -1,11 +1,7 @@
 /*
  * This file is part of the Chelsio T4 Ethernet driver for Linux.
  *
-<<<<<<< HEAD
- * Copyright (c) 2003-2010 Chelsio Communications, Inc. All rights reserved.
-=======
  * Copyright (c) 2003-2016 Chelsio Communications, Inc. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -39,37 +35,17 @@
 #ifndef __CXGB4_H__
 #define __CXGB4_H__
 
-<<<<<<< HEAD
-#include <linux/bitops.h>
-#include <linux/cache.h>
-=======
 #include "t4_hw.h"
 
 #include <linux/bitops.h>
 #include <linux/cache.h>
 #include <linux/ethtool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/list.h>
 #include <linux/netdevice.h>
 #include <linux/pci.h>
 #include <linux/spinlock.h>
 #include <linux/timer.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#include "cxgb4_uld.h"
-#include "t4_hw.h"
-
-#define FW_VERSION_MAJOR 1
-#define FW_VERSION_MINOR 1
-#define FW_VERSION_MICRO 0
-
-enum {
-	MAX_NPORTS = 4,     /* max # of ports */
-	SERNUM_LEN = 24,    /* Serial # length */
-	EC_LEN     = 16,    /* E/C length */
-	ID_LEN     = 16,    /* ID length */
-=======
 #include <linux/vmalloc.h>
 #include <linux/rhashtable.h>
 #include <linux/etherdevice.h>
@@ -116,15 +92,11 @@ enum {
 enum {
 	T4_REGMAP_SIZE = (160 * 1024),
 	T5_REGMAP_SIZE = (332 * 1024),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
 	MEM_EDC0,
 	MEM_EDC1,
-<<<<<<< HEAD
-	MEM_MC
-=======
 	MEM_MC,
 	MEM_MC0 = MEM_MC,
 	MEM_MC1,
@@ -141,7 +113,6 @@ enum {
 	MEMWIN2_BASE     = 0x30000,
 	MEMWIN2_APERTURE_T5 = 131072,
 	MEMWIN2_BASE_T5  = 0x60000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum dev_master {
@@ -156,18 +127,12 @@ enum dev_state {
 	DEV_STATE_ERR
 };
 
-<<<<<<< HEAD
-enum {
-=======
 enum cc_pause {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PAUSE_RX      = 1 << 0,
 	PAUSE_TX      = 1 << 1,
 	PAUSE_AUTONEG = 1 << 2
 };
 
-<<<<<<< HEAD
-=======
 enum cc_fec {
 	FEC_AUTO      = 1 << 0,	 /* IEEE 802.3 "automatic" */
 	FEC_RS        = 1 << 1,  /* Reed-Solomon */
@@ -237,7 +202,6 @@ enum {
 	PCIR_SIGNATURE = 0x52494350
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct port_stats {
 	u64 tx_octets;            /* total # of octets in good frames */
 	u64 tx_frames;            /* all good frames */
@@ -334,30 +298,6 @@ struct lb_port_stats {
 };
 
 struct tp_tcp_stats {
-<<<<<<< HEAD
-	u32 tcpOutRsts;
-	u64 tcpInSegs;
-	u64 tcpOutSegs;
-	u64 tcpRetransSegs;
-};
-
-struct tp_err_stats {
-	u32 macInErrs[4];
-	u32 hdrInErrs[4];
-	u32 tcpInErrs[4];
-	u32 tnlCongDrops[4];
-	u32 ofldChanDrops[4];
-	u32 tnlTxDrops[4];
-	u32 ofldVlanDrops[4];
-	u32 tcp6InErrs[4];
-	u32 ofldNoNeigh;
-	u32 ofldCongDefer;
-};
-
-struct tp_params {
-	unsigned int ntxchan;        /* # of Tx channels */
-	unsigned int tre;            /* log2 of core clocks per TP tick */
-=======
 	u32 tcp_out_rsts;
 	u64 tcp_in_segs;
 	u64 tcp_out_segs;
@@ -446,16 +386,10 @@ struct tp_params {
 	int frag_shift;
 
 	u64 hash_filter_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct vpd_params {
 	unsigned int cclk;
-<<<<<<< HEAD
-	u8 ec[EC_LEN + 1];
-	u8 sn[SERNUM_LEN + 1];
-	u8 id[ID_LEN + 1];
-=======
 	u8 sn[SERNUM_LEN + 1];
 	u8 id[ID_LEN + 1];
 	u8 pn[PN_LEN + 1];
@@ -475,7 +409,6 @@ struct pf_resources {
 	unsigned int nexactf;		/* N exact MPS filters */
 	unsigned int r_caps;		/* read capabilities */
 	unsigned int wx_caps;		/* write/execute capabilities */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pci_params {
@@ -483,19 +416,6 @@ struct pci_params {
 	unsigned char width;
 };
 
-<<<<<<< HEAD
-struct adapter_params {
-	struct tp_params  tp;
-	struct vpd_params vpd;
-	struct pci_params pci;
-
-	unsigned int sf_size;             /* serial flash size in bytes */
-	unsigned int sf_nsec;             /* # of flash sectors */
-	unsigned int sf_fw_start;         /* start of FW image in flash */
-
-	unsigned int fw_vers;
-	unsigned int tp_vers;
-=======
 struct devlog_params {
 	u32 memtype;                    /* which memory (EDC0, EDC1, MC) */
 	u32 start;                      /* start of log in firmware memory */
@@ -533,7 +453,6 @@ struct adapter_params {
 	unsigned int er_vers;		  /* expansion ROM version */
 	unsigned int scfg_vers;		  /* Serial Configuration version */
 	unsigned int vpd_vers;		  /* VPD Version */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 api_vers[7];
 
 	unsigned short mtus[NMTUS];
@@ -542,12 +461,6 @@ struct adapter_params {
 
 	unsigned char nports;             /* # of ethernet ports */
 	unsigned char portvec;
-<<<<<<< HEAD
-	unsigned char rev;                /* chip revision */
-	unsigned char offload;
-
-	unsigned int ofldq_wr_cred;
-=======
 	enum chip_type chip;               /* chip code */
 	struct arch_specific_params arch;  /* chip specific params */
 	unsigned char offload;
@@ -633,7 +546,6 @@ struct fw_info {
 	char *fs_name;
 	char *fw_mod_name;
 	struct fw_hdr fw_hdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct trace_params {
@@ -647,43 +559,6 @@ struct trace_params {
 	unsigned char port;
 };
 
-<<<<<<< HEAD
-struct link_config {
-	unsigned short supported;        /* link capabilities */
-	unsigned short advertising;      /* advertised capabilities */
-	unsigned short requested_speed;  /* speed user has requested */
-	unsigned short speed;            /* actual link speed */
-	unsigned char  requested_fc;     /* flow control user has requested */
-	unsigned char  fc;               /* actual link flow control */
-	unsigned char  autoneg;          /* autonegotiating? */
-	unsigned char  link_ok;          /* link up? */
-};
-
-#define FW_LEN16(fw_struct) FW_CMD_LEN16(sizeof(fw_struct) / 16)
-
-enum {
-	MAX_ETH_QSETS = 32,           /* # of Ethernet Tx/Rx queue sets */
-	MAX_OFLD_QSETS = 16,          /* # of offload Tx/Rx queue sets */
-	MAX_CTRL_QUEUES = NCHAN,      /* # of control Tx queues */
-	MAX_RDMA_QUEUES = NCHAN,      /* # of streaming RDMA Rx queues */
-};
-
-enum {
-	MAX_EGRQ = 128,         /* max # of egress queues, including FLs */
-	MAX_INGQ = 64           /* max # of interrupt-capable ingress queues */
-};
-
-struct adapter;
-struct sge_rspq;
-
-struct port_info {
-	struct adapter *adapter;
-	u16    viid;
-	s16    xact_addr_filt;        /* index of exact MAC address filter */
-	u16    rss_size;              /* size of VI's RSS table slice */
-	s8     mdio_addr;
-	u8     port_type;
-=======
 struct cxgb4_fw_data {
 	__be32 signature;
 	__u8 reserved[4];
@@ -782,7 +657,6 @@ struct port_info {
 	u16    rss_size;              /* size of VI's RSS table slice */
 	s8     mdio_addr;
 	enum fw_port_type port_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8     mod_type;
 	u8     port_id;
 	u8     tx_chan;
@@ -792,8 +666,6 @@ struct port_info {
 	u8     rss_mode;
 	struct link_config link_cfg;
 	u16   *rss;
-<<<<<<< HEAD
-=======
 	struct port_stats stats_base;
 #ifdef CONFIG_CHELSIO_T4_DCB
 	struct port_dcb_info dcb;     /* Data Center Bridging support */
@@ -823,21 +695,12 @@ struct port_info {
 	u32 vi_mirror_count;
 	struct mutex vi_mirror_mutex; /* Sync access to Mirror VI info */
 	struct cxgb4_ethtool_lb_test ethtool_lb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dentry;
 struct work_struct;
 
 enum {                                 /* adapter flags */
-<<<<<<< HEAD
-	FULL_INIT_DONE     = (1 << 0),
-	USING_MSI          = (1 << 1),
-	USING_MSIX         = (1 << 2),
-	FW_OK              = (1 << 4),
-};
-
-=======
 	CXGB4_FULL_INIT_DONE		= (1 << 0),
 	CXGB4_DEV_ENABLED		= (1 << 1),
 	CXGB4_USING_MSI			= (1 << 2),
@@ -865,7 +728,6 @@ enum {
 
 #define CXGB4_MIRROR_FLQ_DEFAULT_DESC_NUM 72
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rx_sw_desc;
 
 struct sge_fl {                     /* SGE free-buffer queue state */
@@ -875,11 +737,8 @@ struct sge_fl {                     /* SGE free-buffer queue state */
 	unsigned int pidx;          /* producer index */
 	unsigned long alloc_failed; /* # of times buffer allocation failed */
 	unsigned long large_alloc_failed;
-<<<<<<< HEAD
-=======
 	unsigned long mapping_err;  /* # of RX Buffer DMA Mapping failures */
 	unsigned long low;          /* # of times momentarily starving */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long starving;
 	/* RO fields */
 	unsigned int cntxt_id;      /* SGE context id for the free list */
@@ -887,19 +746,13 @@ struct sge_fl {                     /* SGE free-buffer queue state */
 	struct rx_sw_desc *sdesc;   /* address of SW Rx descriptor ring */
 	__be64 *desc;               /* address of HW Rx descriptor ring */
 	dma_addr_t addr;            /* bus address of HW ring start */
-<<<<<<< HEAD
-=======
 	void __iomem *bar2_addr;    /* address of BAR2 Queue registers */
 	unsigned int bar2_qid;      /* Queue ID for BAR2 Queue registers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* A packet gather list */
 struct pkt_gl {
-<<<<<<< HEAD
-=======
 	u64 sgetstamp;		    /* SGE Time Stamp for Ingress Packet */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page_frag frags[MAX_SKB_FRAGS];
 	void *va;                         /* virtual address of first byte */
 	unsigned int nfrags;              /* # of fragments */
@@ -908,8 +761,6 @@ struct pkt_gl {
 
 typedef int (*rspq_handler_t)(struct sge_rspq *q, const __be64 *rsp,
 			      const struct pkt_gl *gl);
-<<<<<<< HEAD
-=======
 typedef void (*rspq_flush_handler_t)(struct sge_rspq *q);
 /* LRO related declarations for ULD */
 struct t4_lro_mgr {
@@ -919,7 +770,6 @@ struct t4_lro_mgr {
 	unsigned long lro_merged;   /* # of wire packets merged by LRO */
 	struct sk_buff_head lroq;   /* list of aggregated sessions */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sge_rspq {                   /* state for an SGE response queue */
 	struct napi_struct napi;
@@ -928,10 +778,7 @@ struct sge_rspq {                   /* state for an SGE response queue */
 	u8 gen;                     /* current generation bit */
 	u8 intr_params;             /* interrupt holdoff parameters */
 	u8 next_intr_params;        /* holdoff params for next interrupt */
-<<<<<<< HEAD
-=======
 	u8 adaptive_rx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 pktcnt_idx;              /* interrupt packet threshold */
 	u8 uld;                     /* ULD handling this queue */
 	u8 idx;                     /* queue index within its group */
@@ -940,21 +787,15 @@ struct sge_rspq {                   /* state for an SGE response queue */
 	u16 abs_id;                 /* absolute SGE id for the response q */
 	__be64 *desc;               /* address of HW response ring */
 	dma_addr_t phys_addr;       /* physical address of the ring */
-<<<<<<< HEAD
-=======
 	void __iomem *bar2_addr;    /* address of BAR2 Queue registers */
 	unsigned int bar2_qid;      /* Queue ID for BAR2 Queue registers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int iqe_len;       /* entry size */
 	unsigned int size;          /* capacity of response queue */
 	struct adapter *adap;
 	struct net_device *netdev;  /* associated net device */
 	rspq_handler_t handler;
-<<<<<<< HEAD
-=======
 	rspq_flush_handler_t flush_handler;
 	struct t4_lro_mgr lro_mgr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sge_eth_stats {              /* Ethernet queue statistics */
@@ -964,20 +805,14 @@ struct sge_eth_stats {              /* Ethernet queue statistics */
 	unsigned long rx_cso;       /* # of Rx checksum offloads */
 	unsigned long vlan_ex;      /* # of Rx VLAN extractions */
 	unsigned long rx_drops;     /* # of packets dropped due to no mem */
-<<<<<<< HEAD
-=======
 	unsigned long bad_rx_pkts;  /* # of packets with err_vec!=0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sge_eth_rxq {                /* SW Ethernet Rx queue */
 	struct sge_rspq rspq;
 	struct sge_fl fl;
 	struct sge_eth_stats stats;
-<<<<<<< HEAD
-=======
 	struct msix_info *msix;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ____cacheline_aligned_in_smp;
 
 struct sge_ofld_stats {             /* offload queue statistics */
@@ -991,22 +826,13 @@ struct sge_ofld_rxq {               /* SW offload Rx queue */
 	struct sge_rspq rspq;
 	struct sge_fl fl;
 	struct sge_ofld_stats stats;
-<<<<<<< HEAD
-=======
 	struct msix_info *msix;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ____cacheline_aligned_in_smp;
 
 struct tx_desc {
 	__be64 flit[8];
 };
 
-<<<<<<< HEAD
-struct tx_sw_desc;
-
-struct sge_txq {
-	unsigned int  in_use;       /* # of in-use Tx descriptors */
-=======
 struct ulptx_sgl;
 
 struct tx_sw_desc {
@@ -1017,7 +843,6 @@ struct tx_sw_desc {
 struct sge_txq {
 	unsigned int  in_use;       /* # of in-use Tx descriptors */
 	unsigned int  q_type;	    /* Q type Eth/Ctrl/Ofld */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int  size;         /* # of descriptors */
 	unsigned int  cidx;         /* SW consumer index */
 	unsigned int  pidx;         /* producer index */
@@ -1028,23 +853,17 @@ struct sge_txq {
 	struct tx_sw_desc *sdesc;   /* address of SW Tx descriptor ring */
 	struct sge_qstat *stat;     /* queue status entry */
 	dma_addr_t    phys_addr;    /* physical address of the ring */
-<<<<<<< HEAD
-=======
 	spinlock_t db_lock;
 	int db_disabled;
 	unsigned short db_pidx;
 	unsigned short db_pidx_inc;
 	void __iomem *bar2_addr;    /* address of BAR2 Queue registers */
 	unsigned int bar2_qid;      /* Queue ID for BAR2 Queue registers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sge_eth_txq {                /* state for an SGE Ethernet Tx queue */
 	struct sge_txq q;
 	struct netdev_queue *txq;   /* associated netdev TX queue */
-<<<<<<< HEAD
-	unsigned long tso;          /* # of TSO requests */
-=======
 #ifdef CONFIG_CHELSIO_T4_DCB
 	u8 dcb_prio;		    /* DCB Priority bound to queue */
 #endif
@@ -1052,25 +871,17 @@ struct sge_eth_txq {                /* state for an SGE Ethernet Tx queue */
 	unsigned int dbqtimerix;    /* SGE Doorbell Queue Timer Index */
 	unsigned long tso;          /* # of TSO requests */
 	unsigned long uso;          /* # of USO requests */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long tx_cso;       /* # of Tx checksum offloads */
 	unsigned long vlan_ins;     /* # of Tx VLAN insertions */
 	unsigned long mapping_err;  /* # of I/O MMU packet mapping errors */
 } ____cacheline_aligned_in_smp;
 
-<<<<<<< HEAD
-struct sge_ofld_txq {               /* state for an SGE offload Tx queue */
-=======
 struct sge_uld_txq {               /* state for an SGE offload Tx queue */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sge_txq q;
 	struct adapter *adap;
 	struct sk_buff_head sendq;  /* list of backpressured packets */
 	struct tasklet_struct qresume_tsk; /* restarts the queue */
-<<<<<<< HEAD
-=======
 	bool service_ofldq_running; /* service_ofldq() is processing sendq */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 full;                    /* the Tx ring is full */
 	unsigned long mapping_err;  /* # of I/O MMU packet mapping errors */
 } ____cacheline_aligned_in_smp;
@@ -1083,17 +894,6 @@ struct sge_ctrl_txq {               /* state for an SGE control Tx queue */
 	u8 full;                    /* the Tx ring is full */
 } ____cacheline_aligned_in_smp;
 
-<<<<<<< HEAD
-struct sge {
-	struct sge_eth_txq ethtxq[MAX_ETH_QSETS];
-	struct sge_ofld_txq ofldtxq[MAX_OFLD_QSETS];
-	struct sge_ctrl_txq ctrlq[MAX_CTRL_QUEUES];
-
-	struct sge_eth_rxq ethrxq[MAX_ETH_QSETS];
-	struct sge_ofld_rxq ofldrxq[MAX_OFLD_QSETS];
-	struct sge_ofld_rxq rdmarxq[MAX_RDMA_QUEUES];
-	struct sge_rspq fw_evtq ____cacheline_aligned_in_smp;
-=======
 struct sge_uld_rxq_info {
 	char name[IFNAMSIZ];	/* name of ULD driver */
 	struct sge_ofld_rxq *uldrxq; /* Rxq's for ULD */
@@ -1170,48 +970,10 @@ struct sge {
 	struct sge_rspq fw_evtq ____cacheline_aligned_in_smp;
 	struct sge_uld_rxq_info **uld_rxq_info;
 	struct sge_uld_txq_info **uld_txq_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct sge_rspq intrq ____cacheline_aligned_in_smp;
 	spinlock_t intrq_lock;
 
-<<<<<<< HEAD
-	u16 max_ethqsets;           /* # of available Ethernet queue sets */
-	u16 ethqsets;               /* # of active Ethernet queue sets */
-	u16 ethtxq_rover;           /* Tx queue to clean up next */
-	u16 ofldqsets;              /* # of active offload queue sets */
-	u16 rdmaqs;                 /* # of available RDMA Rx queues */
-	u16 ofld_rxq[MAX_OFLD_QSETS];
-	u16 rdma_rxq[NCHAN];
-	u16 timer_val[SGE_NTIMERS];
-	u8 counter_val[SGE_NCOUNTERS];
-	unsigned int starve_thres;
-	u8 idma_state[2];
-	unsigned int egr_start;
-	unsigned int ingr_start;
-	void *egr_map[MAX_EGRQ];    /* qid->queue egress queue map */
-	struct sge_rspq *ingr_map[MAX_INGQ]; /* qid->queue ingress queue map */
-	DECLARE_BITMAP(starving_fl, MAX_EGRQ);
-	DECLARE_BITMAP(txq_maperr, MAX_EGRQ);
-	struct timer_list rx_timer; /* refills starving FLs */
-	struct timer_list tx_timer; /* checks Tx queues */
-};
-
-#define for_each_ethrxq(sge, i) for (i = 0; i < (sge)->ethqsets; i++)
-#define for_each_ofldrxq(sge, i) for (i = 0; i < (sge)->ofldqsets; i++)
-#define for_each_rdmarxq(sge, i) for (i = 0; i < (sge)->rdmaqs; i++)
-
-struct l2t_data;
-
-struct adapter {
-	void __iomem *regs;
-	struct pci_dev *pdev;
-	struct device *pdev_dev;
-	unsigned int fn;
-	unsigned int flags;
-
-	int msg_enable;
-=======
 	struct sge_eohw_txq *eohw_txq;
 	struct sge_ofld_rxq *eohw_rxq;
 
@@ -1356,37 +1118,21 @@ struct adapter {
 	int msg_enable;
 	__be16 vxlan_port;
 	__be16 geneve_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct adapter_params params;
 	struct cxgb4_virt_res vres;
 	unsigned int swintr;
 
-<<<<<<< HEAD
-	unsigned int wol;
-
-	struct {
-		unsigned short vec;
-		char desc[IFNAMSIZ + 10];
-	} msix_info[MAX_INGQ + 1];
-
-=======
 	/* MSI-X Info for NIC and OFLD queues */
 	struct msix_info *msix_info;
 	struct msix_bmap msix_bmap;
 
 	struct doorbell_stats db_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sge sge;
 
 	struct net_device *port[MAX_NPORTS];
 	u8 chan_map[NCHAN];                   /* channel -> port map */
 
-<<<<<<< HEAD
-	struct l2t_data *l2t;
-	void *uld_handle[CXGB4_ULD_MAX];
-	struct list_head list_node;
-=======
 	struct vf_info *vfinfo;
 	u8 num_vfs;
 
@@ -1411,21 +1157,10 @@ struct adapter {
 	spinlock_t mps_ref_lock; /* lock for syncing mps ref/def activities */
 
 	void *iscsi_ppm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct tid_info tids;
 	void **tid_release_head;
 	spinlock_t tid_release_lock;
-<<<<<<< HEAD
-	struct work_struct tid_release_task;
-	bool tid_release_task_busy;
-
-	struct dentry *debugfs_root;
-
-	spinlock_t stats_lock;
-};
-
-=======
 	struct workqueue_struct *workq;
 	struct work_struct tid_release_task;
 	struct work_struct db_full_task;
@@ -1763,7 +1498,6 @@ static inline int is_ethofld(const struct adapter *adap)
 	return adap->params.ethofld;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 t4_read_reg(struct adapter *adap, u32 reg_addr)
 {
 	return readl(adap->regs + reg_addr);
@@ -1798,8 +1532,6 @@ static inline void t4_write_reg64(struct adapter *adap, u32 reg_addr, u64 val)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * t4_set_hw_addr - store a port's MAC address in SW
  * @adapter: the adapter
  * @port_idx: the port index
@@ -1816,7 +1548,6 @@ static inline void t4_set_hw_addr(struct adapter *adapter, int port_idx,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * netdev2pinfo - return the port_info structure associated with a net_device
  * @dev: the netdev
  *
@@ -1850,16 +1581,6 @@ static inline struct adapter *netdev2adap(const struct net_device *dev)
 	return netdev2pinfo(dev)->adapter;
 }
 
-<<<<<<< HEAD
-void t4_os_portmod_changed(const struct adapter *adap, int port_id);
-void t4_os_link_changed(struct adapter *adap, int port_id, int link_stat);
-
-void *t4_alloc_mem(size_t size);
-
-void t4_free_sge_resources(struct adapter *adap);
-irq_handler_t t4_intr_handler(struct adapter *adap);
-netdev_tx_t t4_eth_xmit(struct sk_buff *skb, struct net_device *dev);
-=======
 /* Return a version number to identify the type of adapter.  The scheme is:
  * - bits 0..9: chip version
  * - bits 10..15: chip revision
@@ -1891,28 +1612,12 @@ void t4_free_ofld_rxqs(struct adapter *adap, int n, struct sge_ofld_rxq *q);
 irq_handler_t t4_intr_handler(struct adapter *adap);
 netdev_tx_t t4_start_xmit(struct sk_buff *skb, struct net_device *dev);
 int cxgb4_selftest_lb_pkt(struct net_device *netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4_ethrx_handler(struct sge_rspq *q, const __be64 *rsp,
 		     const struct pkt_gl *gl);
 int t4_mgmt_tx(struct adapter *adap, struct sk_buff *skb);
 int t4_ofld_send(struct adapter *adap, struct sk_buff *skb);
 int t4_sge_alloc_rxq(struct adapter *adap, struct sge_rspq *iq, bool fwevtq,
 		     struct net_device *dev, int intr_idx,
-<<<<<<< HEAD
-		     struct sge_fl *fl, rspq_handler_t hnd);
-int t4_sge_alloc_eth_txq(struct adapter *adap, struct sge_eth_txq *txq,
-			 struct net_device *dev, struct netdev_queue *netdevq,
-			 unsigned int iqid);
-int t4_sge_alloc_ctrl_txq(struct adapter *adap, struct sge_ctrl_txq *txq,
-			  struct net_device *dev, unsigned int iqid,
-			  unsigned int cmplqid);
-int t4_sge_alloc_ofld_txq(struct adapter *adap, struct sge_ofld_txq *txq,
-			  struct net_device *dev, unsigned int iqid);
-irqreturn_t t4_sge_intr_msix(int irq, void *cookie);
-void t4_sge_init(struct adapter *adap);
-void t4_sge_start(struct adapter *adap);
-void t4_sge_stop(struct adapter *adap);
-=======
 		     struct sge_fl *fl, rspq_handler_t hnd,
 		     rspq_flush_handler_t flush_handler, int cong);
 int t4_sge_alloc_eth_txq(struct adapter *adap, struct sge_eth_txq *txq,
@@ -1939,13 +1644,10 @@ void cxgb4_set_ethtool_ops(struct net_device *netdev);
 int cxgb4_write_rss(const struct port_info *pi, const u16 *queues);
 enum cpl_tx_tnl_lso_type cxgb_encap_offload_supported(struct sk_buff *skb);
 extern int dbfifo_int_thresh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define for_each_port(adapter, iter) \
 	for (iter = 0; iter < (adapter)->params.nports; ++iter)
 
-<<<<<<< HEAD
-=======
 static inline int is_bypass(struct adapter *adap)
 {
 	return adap->params.bypass;
@@ -1976,7 +1678,6 @@ static inline int is_10gbt_device(int device)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int core_ticks_per_usec(const struct adapter *adap)
 {
 	return adap->params.vpd.cclk / 1000;
@@ -1988,14 +1689,6 @@ static inline unsigned int us_to_core_ticks(const struct adapter *adap,
 	return (us * adap->params.vpd.cclk) / 1000;
 }
 
-<<<<<<< HEAD
-void t4_set_reg_field(struct adapter *adap, unsigned int addr, u32 mask,
-		      u32 val);
-
-int t4_wr_mbox_meat(struct adapter *adap, int mbox, const void *cmd, int size,
-		    void *rpl, bool sleep_ok);
-
-=======
 static inline unsigned int core_ticks_to_us(const struct adapter *adapter,
 					    unsigned int ticks)
 {
@@ -2026,7 +1719,6 @@ static inline int t4_wr_mbox_timeout(struct adapter *adap, int mbox,
 				       timeout);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int t4_wr_mbox(struct adapter *adap, int mbox, const void *cmd,
 			     int size, void *rpl)
 {
@@ -2039,8 +1731,6 @@ static inline int t4_wr_mbox_ns(struct adapter *adap, int mbox, const void *cmd,
 	return t4_wr_mbox_meat(adap, mbox, cmd, size, rpl, false);
 }
 
-<<<<<<< HEAD
-=======
 /**
  *	hash_mac_addr - return the hash value of a MAC address
  *	@addr: the 48-bit Ethernet MAC address
@@ -2096,23 +1786,10 @@ void t4_hw_pci_read_cfg4(struct adapter *adapter, int reg, u32 *val);
 
 struct fw_filter_wr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void t4_intr_enable(struct adapter *adapter);
 void t4_intr_disable(struct adapter *adapter);
 int t4_slow_intr_handler(struct adapter *adapter);
 
-<<<<<<< HEAD
-int t4_wait_dev_ready(struct adapter *adap);
-int t4_link_start(struct adapter *adap, unsigned int mbox, unsigned int port,
-		  struct link_config *lc);
-int t4_restart_aneg(struct adapter *adap, unsigned int mbox, unsigned int port);
-int t4_seeprom_wp(struct adapter *adapter, bool enable);
-int t4_load_fw(struct adapter *adapter, const u8 *fw_data, unsigned int size);
-int t4_check_fw_version(struct adapter *adapter);
-int t4_prep_adapter(struct adapter *adapter);
-int t4_port_init(struct adapter *adap, int mbox, int pf, int vf);
-void t4_fatal_err(struct adapter *adapter);
-=======
 int t4_wait_dev_ready(void __iomem *regs);
 
 fw_port_cap32_t t4_link_acaps(struct adapter *adapter, unsigned int port,
@@ -2215,24 +1892,10 @@ int t4_init_port_mirror(struct port_info *pi, u8 mbox, u8 port, u8 pf, u8 vf,
 			u16 *mirror_viid);
 void t4_fatal_err(struct adapter *adapter);
 unsigned int t4_chip_rss_size(struct adapter *adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4_config_rss_range(struct adapter *adapter, int mbox, unsigned int viid,
 			int start, int n, const u16 *rspq, unsigned int nrspq);
 int t4_config_glbl_rss(struct adapter *adapter, int mbox, unsigned int mode,
 		       unsigned int flags);
-<<<<<<< HEAD
-int t4_mc_read(struct adapter *adap, u32 addr, __be32 *data, u64 *parity);
-int t4_edc_read(struct adapter *adap, int idx, u32 addr, __be32 *data,
-		u64 *parity);
-
-void t4_get_port_stats(struct adapter *adap, int idx, struct port_stats *p);
-void t4_read_mtu_tbl(struct adapter *adap, u16 *mtus, u8 *mtu_log);
-void t4_tp_get_tcp_stats(struct adapter *adap, struct tp_tcp_stats *v4,
-			 struct tp_tcp_stats *v6);
-void t4_load_mtus(struct adapter *adap, const unsigned short *mtus,
-		  const unsigned short *alpha, const unsigned short *beta);
-
-=======
 int t4_config_vi_rss(struct adapter *adapter, int mbox, unsigned int viid,
 		     unsigned int flags, unsigned int defq);
 int t4_read_rss(struct adapter *adapter, u16 *entries);
@@ -2295,7 +1958,6 @@ void t4_ulprx_read_la(struct adapter *adap, u32 *la_buf);
 void t4_get_chan_txrate(struct adapter *adap, u64 *nic_rate, u64 *ofld_rate);
 void t4_mk_filtdelwr(unsigned int ftid, struct fw_filter_wr *wr, int qid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void t4_wol_magic_enable(struct adapter *adap, unsigned int port,
 			 const u8 *addr);
 int t4_wol_pat_enable(struct adapter *adap, unsigned int port, unsigned int map,
@@ -2306,11 +1968,6 @@ int t4_fw_hello(struct adapter *adap, unsigned int mbox, unsigned int evt_mbox,
 int t4_fw_bye(struct adapter *adap, unsigned int mbox);
 int t4_early_init(struct adapter *adap, unsigned int mbox);
 int t4_fw_reset(struct adapter *adap, unsigned int mbox, int reset);
-<<<<<<< HEAD
-int t4_query_params(struct adapter *adap, unsigned int mbox, unsigned int pf,
-		    unsigned int vf, unsigned int nparams, const u32 *params,
-		    u32 *val);
-=======
 int t4_fixup_host_params(struct adapter *adap, unsigned int page_size,
 			  unsigned int cache_line_size);
 int t4_fw_initialize(struct adapter *adap, unsigned int mbox);
@@ -2327,7 +1984,6 @@ int t4_set_params_timeout(struct adapter *adap, unsigned int mbox,
 			  unsigned int pf, unsigned int vf,
 			  unsigned int nparams, const u32 *params,
 			  const u32 *val, int timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4_set_params(struct adapter *adap, unsigned int mbox, unsigned int pf,
 		  unsigned int vf, unsigned int nparams, const u32 *params,
 		  const u32 *val);
@@ -2338,19 +1994,6 @@ int t4_cfg_pfvf(struct adapter *adap, unsigned int mbox, unsigned int pf,
 		unsigned int nexact, unsigned int rcaps, unsigned int wxcaps);
 int t4_alloc_vi(struct adapter *adap, unsigned int mbox, unsigned int port,
 		unsigned int pf, unsigned int vf, unsigned int nmac, u8 *mac,
-<<<<<<< HEAD
-		unsigned int *rss_size);
-int t4_set_rxmode(struct adapter *adap, unsigned int mbox, unsigned int viid,
-		int mtu, int promisc, int all_multi, int bcast, int vlanex,
-		bool sleep_ok);
-int t4_alloc_mac_filt(struct adapter *adap, unsigned int mbox,
-		      unsigned int viid, bool free, unsigned int naddr,
-		      const u8 **addr, u16 *idx, u64 *hash, bool sleep_ok);
-int t4_change_mac(struct adapter *adap, unsigned int mbox, unsigned int viid,
-		  int idx, const u8 *addr, bool persist, bool add_smt);
-int t4_set_addr_hash(struct adapter *adap, unsigned int mbox, unsigned int viid,
-		     bool ucast, u64 vec, bool sleep_ok);
-=======
 		unsigned int *rss_size, u8 *vivld, u8 *vin);
 int t4_free_vi(struct adapter *adap, unsigned int mbox,
 	       unsigned int pf, unsigned int vf,
@@ -2385,7 +2028,6 @@ int t4_enable_vi_params(struct adapter *adap, unsigned int mbox,
 int t4_enable_pi_params(struct adapter *adap, unsigned int mbox,
 			struct port_info *pi,
 			bool rx_en, bool tx_en, bool dcb_en);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4_enable_vi(struct adapter *adap, unsigned int mbox, unsigned int viid,
 		 bool rx_en, bool tx_en);
 int t4_identify_port(struct adapter *adap, unsigned int mbox, unsigned int viid,
@@ -2394,12 +2036,9 @@ int t4_mdio_rd(struct adapter *adap, unsigned int mbox, unsigned int phy_addr,
 	       unsigned int mmd, unsigned int reg, u16 *valp);
 int t4_mdio_wr(struct adapter *adap, unsigned int mbox, unsigned int phy_addr,
 	       unsigned int mmd, unsigned int reg, u16 val);
-<<<<<<< HEAD
-=======
 int t4_iq_stop(struct adapter *adap, unsigned int mbox, unsigned int pf,
 	       unsigned int vf, unsigned int iqtype, unsigned int iqid,
 	       unsigned int fl0id, unsigned int fl1id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4_iq_free(struct adapter *adap, unsigned int mbox, unsigned int pf,
 	       unsigned int vf, unsigned int iqtype, unsigned int iqid,
 	       unsigned int fl0id, unsigned int fl1id);
@@ -2409,9 +2048,6 @@ int t4_ctrl_eq_free(struct adapter *adap, unsigned int mbox, unsigned int pf,
 		    unsigned int vf, unsigned int eqid);
 int t4_ofld_eq_free(struct adapter *adap, unsigned int mbox, unsigned int pf,
 		    unsigned int vf, unsigned int eqid);
-<<<<<<< HEAD
-int t4_handle_fw_rpl(struct adapter *adap, const __be64 *rpl);
-=======
 int t4_sge_ctxt_flush(struct adapter *adap, unsigned int mbox, int ctxt_type);
 int t4_read_sge_dbqtimers(struct adapter *adap, unsigned int ndbqtimers,
 			  u16 *dbqtimers);
@@ -2544,5 +2180,4 @@ void cxgb4_port_mirror_free(struct net_device *dev);
 #if IS_ENABLED(CONFIG_CHELSIO_TLS_DEVICE)
 int cxgb4_set_ktls_feature(struct adapter *adap, bool enable);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __CXGB4_H__ */

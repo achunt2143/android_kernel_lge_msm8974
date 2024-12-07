@@ -18,8 +18,6 @@
 
 #include <linux/types.h>
 
-<<<<<<< HEAD
-=======
 #define CORDIC_ANGLE_GEN	39797
 #define CORDIC_PRECISION_SHIFT	16
 #define CORDIC_NUM_ITER	(CORDIC_PRECISION_SHIFT + 2)
@@ -29,7 +27,6 @@
 		? ((((X) >> (CORDIC_PRECISION_SHIFT - 1)) + 1) >> 1) \
 		: -((((-(X)) >> (CORDIC_PRECISION_SHIFT - 1)) + 1) >> 1))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct cordic_iq - i/q coordinate.
  *

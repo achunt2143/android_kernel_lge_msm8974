@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Module for modifying the secmark field of the skb, for use by
  * security subsystems.
@@ -10,14 +7,6 @@
  * (C) 1999-2001 Marc Boucher <marc@mbsi.ca>
  *
  * (C) 2006,2008 Red Hat, Inc., James Morris <jmorris@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -32,26 +21,12 @@ MODULE_DESCRIPTION("Xtables: packet security mark modification");
 MODULE_ALIAS("ipt_SECMARK");
 MODULE_ALIAS("ip6t_SECMARK");
 
-<<<<<<< HEAD
-#define PFX "SECMARK: "
-
-static u8 mode;
-
-static unsigned int
-secmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
-{
-	u32 secmark = 0;
-	const struct xt_secmark_target_info *info = par->targinfo;
-
-	BUG_ON(info->mode != mode);
-=======
 static u8 mode;
 
 static unsigned int
 secmark_tg(struct sk_buff *skb, const struct xt_secmark_target_info_v1 *info)
 {
 	u32 secmark = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (mode) {
 	case SECMARK_MODE_SEL:
@@ -65,11 +40,7 @@ secmark_tg(struct sk_buff *skb, const struct xt_secmark_target_info_v1 *info)
 	return XT_CONTINUE;
 }
 
-<<<<<<< HEAD
-static int checkentry_lsm(struct xt_secmark_target_info *info)
-=======
 static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -80,32 +51,20 @@ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
 				       &info->secid);
 	if (err) {
 		if (err == -EINVAL)
-<<<<<<< HEAD
-			pr_info("invalid security context \'%s\'\n", info->secctx);
-=======
 			pr_info_ratelimited("invalid security context \'%s\'\n",
 					    info->secctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	if (!info->secid) {
-<<<<<<< HEAD
-		pr_info("unable to map security context \'%s\'\n", info->secctx);
-=======
 		pr_info_ratelimited("unable to map security context \'%s\'\n",
 				    info->secctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
 	err = security_secmark_relabel_packet(info->secid);
 	if (err) {
-<<<<<<< HEAD
-		pr_info("unable to obtain relabeling permission\n");
-=======
 		pr_info_ratelimited("unable to obtain relabeling permission\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -113,17 +72,6 @@ static int checkentry_lsm(struct xt_secmark_target_info_v1 *info)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int secmark_tg_check(const struct xt_tgchk_param *par)
-{
-	struct xt_secmark_target_info *info = par->targinfo;
-	int err;
-
-	if (strcmp(par->table, "mangle") != 0 &&
-	    strcmp(par->table, "security") != 0) {
-		pr_info("target only valid in the \'mangle\' "
-			"or \'security\' tables, not \'%s\'.\n", par->table);
-=======
 static int
 secmark_tg_check(const char *table, struct xt_secmark_target_info_v1 *info)
 {
@@ -133,18 +81,12 @@ secmark_tg_check(const char *table, struct xt_secmark_target_info_v1 *info)
 	    strcmp(table, "security") != 0) {
 		pr_info_ratelimited("only valid in \'mangle\' or \'security\' table, not \'%s\'\n",
 				    table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (mode && mode != info->mode) {
-<<<<<<< HEAD
-		pr_info("mode already set to %hu cannot mix with "
-			"rules for mode %hu\n", mode, info->mode);
-=======
 		pr_info_ratelimited("mode already set to %hu cannot mix with rules for mode %hu\n",
 				    mode, info->mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -152,11 +94,7 @@ secmark_tg_check(const char *table, struct xt_secmark_target_info_v1 *info)
 	case SECMARK_MODE_SEL:
 		break;
 	default:
-<<<<<<< HEAD
-		pr_info("invalid mode: %hu\n", info->mode);
-=======
 		pr_info_ratelimited("invalid mode: %hu\n", info->mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -177,17 +115,6 @@ static void secmark_tg_destroy(const struct xt_tgdtor_param *par)
 	}
 }
 
-<<<<<<< HEAD
-static struct xt_target secmark_tg_reg __read_mostly = {
-	.name       = "SECMARK",
-	.revision   = 0,
-	.family     = NFPROTO_UNSPEC,
-	.checkentry = secmark_tg_check,
-	.destroy    = secmark_tg_destroy,
-	.target     = secmark_tg,
-	.targetsize = sizeof(struct xt_secmark_target_info),
-	.me         = THIS_MODULE,
-=======
 static int secmark_tg_check_v0(const struct xt_tgchk_param *par)
 {
 	struct xt_secmark_target_info *info = par->targinfo;
@@ -248,25 +175,16 @@ static struct xt_target secmark_tg_reg[] __read_mostly = {
 		.usersize	= offsetof(struct xt_secmark_target_info_v1, secid),
 		.me		= THIS_MODULE,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init secmark_tg_init(void)
 {
-<<<<<<< HEAD
-	return xt_register_target(&secmark_tg_reg);
-=======
 	return xt_register_targets(secmark_tg_reg, ARRAY_SIZE(secmark_tg_reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit secmark_tg_exit(void)
 {
-<<<<<<< HEAD
-	xt_unregister_target(&secmark_tg_reg);
-=======
 	xt_unregister_targets(secmark_tg_reg, ARRAY_SIZE(secmark_tg_reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(secmark_tg_init);

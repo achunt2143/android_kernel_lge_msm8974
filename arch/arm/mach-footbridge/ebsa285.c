@@ -1,21 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-footbridge/ebsa285.c
  *
  * EBSA285 machine fixup
  */
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-=======
 #include <linux/io.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/leds.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/hardware/dec21285.h>
 #include <asm/mach-types.h>
@@ -24,8 +17,6 @@
 
 #include "common.h"
 
-<<<<<<< HEAD
-=======
 /* LEDs */
 #if defined(CONFIG_NEW_LEDS) && defined(CONFIG_LEDS_CLASS)
 #define XBUS_AMBER_L	BIT(0)
@@ -119,21 +110,15 @@ static int __init ebsa285_leds_init(void)
 fs_initcall(ebsa285_leds_init);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MACHINE_START(EBSA285, "EBSA285")
 	/* Maintainer: Russell King */
 	.atag_offset	= 0x100,
 	.video_start	= 0x000a0000,
 	.video_end	= 0x000bffff,
 	.map_io		= footbridge_map_io,
-<<<<<<< HEAD
-	.init_irq	= footbridge_init_irq,
-	.timer		= &footbridge_timer,
-=======
 	.init_early	= footbridge_sched_clock,
 	.init_irq	= footbridge_init_irq,
 	.init_time	= footbridge_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= footbridge_restart,
 MACHINE_END
 

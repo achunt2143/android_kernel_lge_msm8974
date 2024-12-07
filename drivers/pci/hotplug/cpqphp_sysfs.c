@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Compaq Hot Plug Controller Driver
  *
@@ -11,24 +8,6 @@
  *
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <greg@kroah.com>
  *
  */
@@ -46,11 +25,7 @@
 #include "cpqphp.h"
 
 static DEFINE_MUTEX(cpqphp_mutex);
-<<<<<<< HEAD
-static int show_ctrl (struct controller *ctrl, char *buf)
-=======
 static int show_ctrl(struct controller *ctrl, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *out = buf;
 	int index;
@@ -88,15 +63,9 @@ static int show_ctrl(struct controller *ctrl, char *buf)
 	return out - buf;
 }
 
-<<<<<<< HEAD
-static int show_dev (struct controller *ctrl, char *buf)
-{
-	char * out = buf;
-=======
 static int show_dev(struct controller *ctrl, char *buf)
 {
 	char *out = buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int index;
 	struct pci_resource *res;
 	struct pci_func *new_slot;
@@ -136,11 +105,7 @@ static int show_dev(struct controller *ctrl, char *buf)
 			out += sprintf(out, "start = %8.8x, length = %8.8x\n", res->base, res->length);
 			res = res->next;
 		}
-<<<<<<< HEAD
-		slot=slot->next;
-=======
 		slot = slot->next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return out - buf;
@@ -188,31 +153,8 @@ exit:
 
 static loff_t lseek(struct file *file, loff_t off, int whence)
 {
-<<<<<<< HEAD
-	struct ctrl_dbg *dbg;
-	loff_t new = -1;
-
-	mutex_lock(&cpqphp_mutex);
-	dbg = file->private_data;
-
-	switch (whence) {
-	case 0:
-		new = off;
-		break;
-	case 1:
-		new = file->f_pos + off;
-		break;
-	}
-	if (new < 0 || new > dbg->size) {
-		mutex_unlock(&cpqphp_mutex);
-		return -EINVAL;
-	}
-	mutex_unlock(&cpqphp_mutex);
-	return (file->f_pos = new);
-=======
 	struct ctrl_dbg *dbg = file->private_data;
 	return fixed_size_llseek(file, off, whence, dbg->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t read(struct file *file, char __user *buf,
@@ -260,12 +202,7 @@ void cpqhp_create_debugfs_files(struct controller *ctrl)
 
 void cpqhp_remove_debugfs_files(struct controller *ctrl)
 {
-<<<<<<< HEAD
-	if (ctrl->dentry)
-		debugfs_remove(ctrl->dentry);
-=======
 	debugfs_remove(ctrl->dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl->dentry = NULL;
 }
 

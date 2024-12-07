@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Universal Host Controller Interface driver for USB.
  *
@@ -46,11 +43,7 @@
 #include <linux/bitops.h>
 #include <linux/dmi.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/irq.h>
 
@@ -77,20 +70,6 @@ MODULE_PARM_DESC(ignore_oc, "ignore hardware overcurrent indications");
  *            show all queues in /sys/kernel/debug/uhci/[pci_addr]
  * debug = 3, show all TDs in URBs when dumping
  */
-<<<<<<< HEAD
-#ifdef DEBUG
-#define DEBUG_CONFIGURED	1
-static int debug = 1;
-module_param(debug, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(debug, "Debug level");
-
-#else
-#define DEBUG_CONFIGURED	0
-#define debug			0
-#endif
-
-static char *errbuf;
-=======
 #ifdef CONFIG_DYNAMIC_DEBUG
 
 static int debug = 1;
@@ -106,7 +85,6 @@ static char *errbuf;
 #endif
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ERRBUF_LEN    (32 * 1024)
 
 static struct kmem_cache *uhci_up_cachep;	/* urb_priv */
@@ -288,11 +266,6 @@ static void configure_hc(struct uhci_hcd *uhci)
 
 static int resume_detect_interrupts_are_broken(struct uhci_hcd *uhci)
 {
-<<<<<<< HEAD
-	/* If we have to ignore overcurrent events then almost by definition
-	 * we can't depend on resume-detect interrupts. */
-	if (ignore_oc)
-=======
 	/*
 	 * If we have to ignore overcurrent events then almost by definition
 	 * we can't depend on resume-detect interrupts.
@@ -300,7 +273,6 @@ static int resume_detect_interrupts_are_broken(struct uhci_hcd *uhci)
 	 * Those interrupts also don't seem to work on ASpeed SoCs.
 	 */
 	if (ignore_oc || uhci_is_aspeed(uhci))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return uhci->resume_detect_interrupts_are_broken ?
@@ -417,8 +389,6 @@ static void start_rh(struct uhci_hcd *uhci)
 {
 	uhci->is_stopped = 0;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Clear stale status bits on Aspeed as we get a stale HCH
 	 * which causes problems later on
@@ -426,7 +396,6 @@ static void start_rh(struct uhci_hcd *uhci)
 	if (uhci_is_aspeed(uhci))
 		uhci_writew(uhci, uhci_readw(uhci, USBSTS), USBSTS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Mark it configured and running with a 64-byte max packet.
 	 * All interrupts are enabled, even though RESUME won't do anything.
 	 */
@@ -499,22 +468,6 @@ static irqreturn_t uhci_irq(struct usb_hcd *hcd)
 
 	if (status & ~(USBSTS_USBINT | USBSTS_ERROR | USBSTS_RD)) {
 		if (status & USBSTS_HSE)
-<<<<<<< HEAD
-			dev_err(uhci_dev(uhci), "host system error, "
-					"PCI problems?\n");
-		if (status & USBSTS_HCPE)
-			dev_err(uhci_dev(uhci), "host controller process "
-					"error, something bad happened!\n");
-		if (status & USBSTS_HCH) {
-			if (uhci->rh_state >= UHCI_RH_RUNNING) {
-				dev_err(uhci_dev(uhci),
-					"host controller halted, "
-					"very bad!\n");
-				if (debug > 1 && errbuf) {
-					/* Print the schedule for debugging */
-					uhci_sprint_schedule(uhci,
-							errbuf, ERRBUF_LEN);
-=======
 			dev_err(uhci_dev(uhci),
 				"host system error, PCI problems?\n");
 		if (status & USBSTS_HCPE)
@@ -528,7 +481,6 @@ static irqreturn_t uhci_irq(struct usb_hcd *hcd)
 					/* Print the schedule for debugging */
 					uhci_sprint_schedule(uhci, errbuf,
 						ERRBUF_LEN - EXTRA_SPACE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					lprintk(errbuf);
 				}
 				uhci_hc_died(uhci);
@@ -579,15 +531,6 @@ static void release_uhci(struct uhci_hcd *uhci)
 {
 	int i;
 
-<<<<<<< HEAD
-	if (DEBUG_CONFIGURED) {
-		spin_lock_irq(&uhci->lock);
-		uhci->is_initialized = 0;
-		spin_unlock_irq(&uhci->lock);
-
-		debugfs_remove(uhci->dentry);
-	}
-=======
 
 	spin_lock_irq(&uhci->lock);
 	uhci->is_initialized = 0;
@@ -595,7 +538,6 @@ static void release_uhci(struct uhci_hcd *uhci)
 
 	debugfs_lookup_and_remove(uhci_to_hcd(uhci)->self.bus_name,
 				  uhci_debugfs_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < UHCI_NUM_SKELQH; i++)
 		uhci_free_qh(uhci, uhci->skelqh[i]);
@@ -636,18 +578,6 @@ static int uhci_start(struct usb_hcd *hcd)
 	struct uhci_hcd *uhci = hcd_to_uhci(hcd);
 	int retval = -EBUSY;
 	int i;
-<<<<<<< HEAD
-	struct dentry __maybe_unused *dentry;
-
-	hcd->uses_new_polling = 1;
-	/* Accept arbitrarily long scatter-gather lists */
-	if (!(hcd->driver->flags & HCD_LOCAL_MEM))
-		hcd->self.sg_tablesize = ~0;
-
-	spin_lock_init(&uhci->lock);
-	setup_timer(&uhci->fsbr_timer, uhci_fsbr_timeout,
-			(unsigned long) uhci);
-=======
 
 	hcd->uses_new_polling = 1;
 	/* Accept arbitrarily long scatter-gather lists */
@@ -656,40 +586,10 @@ static int uhci_start(struct usb_hcd *hcd)
 
 	spin_lock_init(&uhci->lock);
 	timer_setup(&uhci->fsbr_timer, uhci_fsbr_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&uhci->idle_qh_list);
 	init_waitqueue_head(&uhci->waitqh);
 
 #ifdef UHCI_DEBUG_OPS
-<<<<<<< HEAD
-	dentry = debugfs_create_file(hcd->self.bus_name,
-			S_IFREG|S_IRUGO|S_IWUSR, uhci_debugfs_root,
-			uhci, &uhci_debug_operations);
-	if (!dentry) {
-		dev_err(uhci_dev(uhci), "couldn't create uhci debugfs entry\n");
-		return -ENOMEM;
-	}
-	uhci->dentry = dentry;
-#endif
-
-	uhci->frame = dma_alloc_coherent(uhci_dev(uhci),
-			UHCI_NUMFRAMES * sizeof(*uhci->frame),
-			&uhci->frame_dma_handle, 0);
-	if (!uhci->frame) {
-		dev_err(uhci_dev(uhci), "unable to allocate "
-				"consistent memory for frame list\n");
-		goto err_alloc_frame;
-	}
-	memset(uhci->frame, 0, UHCI_NUMFRAMES * sizeof(*uhci->frame));
-
-	uhci->frame_cpu = kcalloc(UHCI_NUMFRAMES, sizeof(*uhci->frame_cpu),
-			GFP_KERNEL);
-	if (!uhci->frame_cpu) {
-		dev_err(uhci_dev(uhci), "unable to allocate "
-				"memory for frame pointers\n");
-		goto err_alloc_frame_cpu;
-	}
-=======
 	debugfs_create_file(hcd->self.bus_name, S_IFREG|S_IRUGO|S_IWUSR,
 			    uhci_debugfs_root, uhci, &uhci_debug_operations);
 #endif
@@ -707,7 +607,6 @@ static int uhci_start(struct usb_hcd *hcd)
 			GFP_KERNEL);
 	if (!uhci->frame_cpu)
 		goto err_alloc_frame_cpu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uhci->td_pool = dma_pool_create("uhci_td", uhci_dev(uhci),
 			sizeof(struct uhci_td), 16, 0);
@@ -801,11 +700,7 @@ err_alloc_frame_cpu:
 			uhci->frame, uhci->frame_dma_handle);
 
 err_alloc_frame:
-<<<<<<< HEAD
-	debugfs_remove(uhci->dentry);
-=======
 	debugfs_lookup_and_remove(hcd->self.bus_name, uhci_debugfs_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -844,13 +739,8 @@ static int uhci_rh_suspend(struct usb_hcd *hcd)
 	 */
 	else if (hcd->self.root_hub->do_remote_wakeup &&
 			uhci->resuming_ports) {
-<<<<<<< HEAD
-		dev_dbg(uhci_dev(uhci), "suspend failed because a port "
-				"is resuming\n");
-=======
 		dev_dbg(uhci_dev(uhci),
 			"suspend failed because a port is resuming\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EBUSY;
 	} else
 		suspend_rh(uhci, UHCI_RH_SUSPENDED);
@@ -941,13 +831,8 @@ static int uhci_count_ports(struct usb_hcd *hcd)
 
 	/* Anything greater than 7 is weird so we'll ignore it. */
 	if (port > UHCI_RH_MAXCHILD) {
-<<<<<<< HEAD
-		dev_info(uhci_dev(uhci), "port count misdetected? "
-				"forcing to 2 ports\n");
-=======
 		dev_info(uhci_dev(uhci),
 			"port count misdetected? forcing to 2 ports\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port = 2;
 	}
 
@@ -956,11 +841,7 @@ static int uhci_count_ports(struct usb_hcd *hcd)
 
 static const char hcd_name[] = "uhci_hcd";
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-=======
 #if defined(CONFIG_USB_PCI) && defined(CONFIG_HAS_IOPORT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "uhci-pci.c"
 #define	PCI_DRIVER		uhci_pci_driver
 #endif
@@ -970,14 +851,11 @@ static const char hcd_name[] = "uhci_hcd";
 #define PLATFORM_DRIVER		uhci_grlib_driver
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_USB_UHCI_PLATFORM
 #include "uhci-platform.c"
 #define PLATFORM_DRIVER		uhci_platform_driver
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(PCI_DRIVER) && !defined(PLATFORM_DRIVER)
 #error "missing bus glue for uhci-hcd"
 #endif
@@ -989,20 +867,6 @@ static int __init uhci_hcd_init(void)
 	if (usb_disabled())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "uhci_hcd: " DRIVER_DESC "%s\n",
-			ignore_oc ? ", overcurrent ignored" : "");
-	set_bit(USB_UHCI_LOADED, &usb_hcds_loaded);
-
-	if (DEBUG_CONFIGURED) {
-		errbuf = kmalloc(ERRBUF_LEN, GFP_KERNEL);
-		if (!errbuf)
-			goto errbuf_failed;
-		uhci_debugfs_root = debugfs_create_dir("uhci", usb_debug_root);
-		if (!uhci_debugfs_root)
-			goto debug_failed;
-	}
-=======
 	set_bit(USB_UHCI_LOADED, &usb_hcds_loaded);
 
 #ifdef CONFIG_DYNAMIC_DEBUG
@@ -1011,7 +875,6 @@ static int __init uhci_hcd_init(void)
 		goto errbuf_failed;
 	uhci_debugfs_root = debugfs_create_dir("uhci", usb_debug_root);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uhci_up_cachep = kmem_cache_create("uhci_urb_priv",
 		sizeof(struct urb_priv), 0, 0, NULL);
@@ -1042,14 +905,6 @@ clean0:
 	kmem_cache_destroy(uhci_up_cachep);
 
 up_failed:
-<<<<<<< HEAD
-	debugfs_remove(uhci_debugfs_root);
-
-debug_failed:
-	kfree(errbuf);
-
-errbuf_failed:
-=======
 #if defined(DEBUG) || defined(CONFIG_DYNAMIC_DEBUG)
 	debugfs_remove(uhci_debugfs_root);
 
@@ -1057,7 +912,6 @@ errbuf_failed:
 
 errbuf_failed:
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(USB_UHCI_LOADED, &usb_hcds_loaded);
 	return retval;
@@ -1073,13 +927,9 @@ static void __exit uhci_hcd_cleanup(void)
 #endif
 	kmem_cache_destroy(uhci_up_cachep);
 	debugfs_remove(uhci_debugfs_root);
-<<<<<<< HEAD
-	kfree(errbuf);
-=======
 #ifdef CONFIG_DYNAMIC_DEBUG
 	kfree(errbuf);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(USB_UHCI_LOADED, &usb_hcds_loaded);
 }
 

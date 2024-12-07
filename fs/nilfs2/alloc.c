@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/*
- * alloc.c - NILFS dat/inode allocator
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Original code was written by Koji Sato <koji@osrg.net>.
- * Two allocators were unified by Ryusuke Konishi <ryusuke@osrg.net>,
- *                                Amagai Yoshiji <amagai@osrg.net>.
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * NILFS dat/inode allocator
@@ -30,7 +6,6 @@
  *
  * Originally written by Koji Sato.
  * Two allocators were unified by Ryusuke Konishi and Amagai Yoshiji.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -50,11 +25,7 @@
 static inline unsigned long
 nilfs_palloc_groups_per_desc_block(const struct inode *inode)
 {
-<<<<<<< HEAD
-	return (1UL << inode->i_blkbits) /
-=======
 	return i_blocksize(inode) /
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(struct nilfs_palloc_group_desc);
 }
 
@@ -73,11 +44,7 @@ nilfs_palloc_groups_count(const struct inode *inode)
  * @inode: inode of metadata file using this allocator
  * @entry_size: size of the persistent object
  */
-<<<<<<< HEAD
-int nilfs_palloc_init_blockgroup(struct inode *inode, unsigned entry_size)
-=======
 int nilfs_palloc_init_blockgroup(struct inode *inode, unsigned int entry_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nilfs_mdt_info *mi = NILFS_MDT(inode);
 
@@ -92,15 +59,6 @@ int nilfs_palloc_init_blockgroup(struct inode *inode, unsigned int entry_size)
 	mi->mi_blocks_per_group =
 		DIV_ROUND_UP(nilfs_palloc_entries_per_group(inode),
 			     mi->mi_entries_per_block) + 1;
-<<<<<<< HEAD
-		/* Number of blocks in a group including entry blocks and
-		   a bitmap block */
-	mi->mi_blocks_per_desc_block =
-		nilfs_palloc_groups_per_desc_block(inode) *
-		mi->mi_blocks_per_group + 1;
-		/* Number of blocks per descriptor including the
-		   descriptor block */
-=======
 		/*
 		 * Number of blocks in a group including entry blocks
 		 * and a bitmap block
@@ -112,7 +70,6 @@ int nilfs_palloc_init_blockgroup(struct inode *inode, unsigned int entry_size)
 		 * Number of blocks per descriptor including the
 		 * descriptor block
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -166,21 +123,6 @@ nilfs_palloc_bitmap_blkoff(const struct inode *inode, unsigned long group)
 
 /**
  * nilfs_palloc_group_desc_nfrees - get the number of free entries in a group
-<<<<<<< HEAD
- * @inode: inode of metadata file using this allocator
- * @group: group number
- * @desc: pointer to descriptor structure for the group
- */
-static unsigned long
-nilfs_palloc_group_desc_nfrees(struct inode *inode, unsigned long group,
-			       const struct nilfs_palloc_group_desc *desc)
-{
-	unsigned long nfree;
-
-	spin_lock(nilfs_mdt_bgl_lock(inode, group));
-	nfree = le32_to_cpu(desc->pg_nfrees);
-	spin_unlock(nilfs_mdt_bgl_lock(inode, group));
-=======
  * @desc: pointer to descriptor structure for the group
  * @lock: spin lock protecting @desc
  */
@@ -193,28 +135,11 @@ nilfs_palloc_group_desc_nfrees(const struct nilfs_palloc_group_desc *desc,
 	spin_lock(lock);
 	nfree = le32_to_cpu(desc->pg_nfrees);
 	spin_unlock(lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nfree;
 }
 
 /**
  * nilfs_palloc_group_desc_add_entries - adjust count of free entries
-<<<<<<< HEAD
- * @inode: inode of metadata file using this allocator
- * @group: group number
- * @desc: pointer to descriptor structure for the group
- * @n: delta to be added
- */
-static void
-nilfs_palloc_group_desc_add_entries(struct inode *inode,
-				    unsigned long group,
-				    struct nilfs_palloc_group_desc *desc,
-				    u32 n)
-{
-	spin_lock(nilfs_mdt_bgl_lock(inode, group));
-	le32_add_cpu(&desc->pg_nfrees, n);
-	spin_unlock(nilfs_mdt_bgl_lock(inode, group));
-=======
  * @desc: pointer to descriptor structure for the group
  * @lock: spin lock protecting @desc
  * @n: delta to be added
@@ -230,7 +155,6 @@ nilfs_palloc_group_desc_add_entries(struct nilfs_palloc_group_desc *desc,
 	nfree = le32_to_cpu(desc->pg_nfrees);
 	spin_unlock(lock);
 	return nfree;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -281,12 +205,8 @@ static int nilfs_palloc_get_block(struct inode *inode, unsigned long blkoff,
 	int ret;
 
 	spin_lock(lock);
-<<<<<<< HEAD
-	if (prev->bh && blkoff == prev->blkoff) {
-=======
 	if (prev->bh && blkoff == prev->blkoff &&
 	    likely(buffer_uptodate(prev->bh))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		get_bh(prev->bh);
 		*bhp = prev->bh;
 		spin_unlock(lock);
@@ -311,8 +231,6 @@ static int nilfs_palloc_get_block(struct inode *inode, unsigned long blkoff,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * nilfs_palloc_delete_block - delete a block on the persistent allocator file
  * @inode: inode of metadata file using this allocator
  * @blkoff: block offset
@@ -333,7 +251,6 @@ static int nilfs_palloc_delete_block(struct inode *inode, unsigned long blkoff,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nilfs_palloc_get_desc_block - get buffer head of a group descriptor block
  * @inode: inode of metadata file using this allocator
  * @group: group number
@@ -372,8 +289,6 @@ static int nilfs_palloc_get_bitmap_block(struct inode *inode,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * nilfs_palloc_delete_bitmap_block - delete a bitmap block
  * @inode: inode of metadata file using this allocator
  * @group: group number
@@ -390,7 +305,6 @@ static int nilfs_palloc_delete_bitmap_block(struct inode *inode,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nilfs_palloc_get_entry_block - get buffer head of an entry block
  * @inode: inode of metadata file using this allocator
  * @nr: serial number of the entry (e.g. inode number)
@@ -409,8 +323,6 @@ int nilfs_palloc_get_entry_block(struct inode *inode, __u64 nr,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * nilfs_palloc_delete_entry_block - delete an entry block
  * @inode: inode of metadata file using this allocator
  * @nr: serial number of the entry
@@ -425,7 +337,6 @@ static int nilfs_palloc_delete_entry_block(struct inode *inode, __u64 nr)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nilfs_palloc_block_get_group_desc - get kernel address of a group descriptor
  * @inode: inode of metadata file using this allocator
  * @group: group number
@@ -462,53 +373,6 @@ void *nilfs_palloc_block_get_entry(const struct inode *inode, __u64 nr,
 
 /**
  * nilfs_palloc_find_available_slot - find available slot in a group
-<<<<<<< HEAD
- * @inode: inode of metadata file using this allocator
- * @group: group number
- * @target: offset number of an entry in the group (start point)
- * @bitmap: bitmap of the group
- * @bsize: size in bits
- */
-static int nilfs_palloc_find_available_slot(struct inode *inode,
-					    unsigned long group,
-					    unsigned long target,
-					    unsigned char *bitmap,
-					    int bsize)
-{
-	int curr, pos, end, i;
-
-	if (target > 0) {
-		end = (target + BITS_PER_LONG - 1) & ~(BITS_PER_LONG - 1);
-		if (end > bsize)
-			end = bsize;
-		pos = nilfs_find_next_zero_bit(bitmap, end, target);
-		if (pos < end &&
-		    !nilfs_set_bit_atomic(
-			    nilfs_mdt_bgl_lock(inode, group), pos, bitmap))
-			return pos;
-	} else
-		end = 0;
-
-	for (i = 0, curr = end;
-	     i < bsize;
-	     i += BITS_PER_LONG, curr += BITS_PER_LONG) {
-		/* wrap around */
-		if (curr >= bsize)
-			curr = 0;
-		while (*((unsigned long *)bitmap + curr / BITS_PER_LONG)
-		       != ~0UL) {
-			end = curr + BITS_PER_LONG;
-			if (end > bsize)
-				end = bsize;
-			pos = nilfs_find_next_zero_bit(bitmap, end, curr);
-			if ((pos < end) &&
-			    !nilfs_set_bit_atomic(
-				    nilfs_mdt_bgl_lock(inode, group), pos,
-				    bitmap))
-				return pos;
-		}
-	}
-=======
  * @bitmap: bitmap of the group
  * @target: offset number of an entry in the group (start point)
  * @bsize: size in bits
@@ -543,7 +407,6 @@ static int nilfs_palloc_find_available_slot(unsigned char *bitmap,
 			return pos;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOSPC;
 }
 
@@ -565,8 +428,6 @@ nilfs_palloc_rest_groups_in_desc_block(const struct inode *inode,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * nilfs_palloc_count_desc_blocks - count descriptor blocks number
  * @inode: inode of metadata file using this allocator
  * @desc_blocks: descriptor blocks number [out]
@@ -631,7 +492,6 @@ int nilfs_palloc_count_max_entries(struct inode *inode, u64 nused, u64 *nmaxp)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nilfs_palloc_prepare_alloc_entry - prepare to allocate a persistent object
  * @inode: inode of metadata file using this allocator
  * @req: nilfs_palloc_req structure exchanged for the allocation
@@ -645,24 +505,15 @@ int nilfs_palloc_prepare_alloc_entry(struct inode *inode,
 	void *desc_kaddr, *bitmap_kaddr;
 	unsigned long group, maxgroup, ngroups;
 	unsigned long group_offset, maxgroup_offset;
-<<<<<<< HEAD
-	unsigned long n, entries_per_group, groups_per_desc_block;
-	unsigned long i, j;
-=======
 	unsigned long n, entries_per_group;
 	unsigned long i, j;
 	spinlock_t *lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pos, ret;
 
 	ngroups = nilfs_palloc_groups_count(inode);
 	maxgroup = ngroups - 1;
 	group = nilfs_palloc_group(inode, req->pr_entry_nr, &group_offset);
 	entries_per_group = nilfs_palloc_entries_per_group(inode);
-<<<<<<< HEAD
-	groups_per_desc_block = nilfs_palloc_groups_per_desc_block(inode);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ngroups; i += n) {
 		if (group >= ngroups) {
@@ -674,50 +525,11 @@ int nilfs_palloc_prepare_alloc_entry(struct inode *inode,
 		ret = nilfs_palloc_get_desc_block(inode, group, 1, &desc_bh);
 		if (ret < 0)
 			return ret;
-<<<<<<< HEAD
-		desc_kaddr = kmap(desc_bh->b_page);
-=======
 		desc_kaddr = kmap_local_page(desc_bh->b_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc = nilfs_palloc_block_get_group_desc(
 			inode, group, desc_bh, desc_kaddr);
 		n = nilfs_palloc_rest_groups_in_desc_block(inode, group,
 							   maxgroup);
-<<<<<<< HEAD
-		for (j = 0; j < n; j++, desc++, group++) {
-			if (nilfs_palloc_group_desc_nfrees(inode, group, desc)
-			    > 0) {
-				ret = nilfs_palloc_get_bitmap_block(
-					inode, group, 1, &bitmap_bh);
-				if (ret < 0)
-					goto out_desc;
-				bitmap_kaddr = kmap(bitmap_bh->b_page);
-				bitmap = bitmap_kaddr + bh_offset(bitmap_bh);
-				pos = nilfs_palloc_find_available_slot(
-					inode, group, group_offset, bitmap,
-					entries_per_group);
-				if (pos >= 0) {
-					/* found a free entry */
-					nilfs_palloc_group_desc_add_entries(
-						inode, group, desc, -1);
-					req->pr_entry_nr =
-						entries_per_group * group + pos;
-					kunmap(desc_bh->b_page);
-					kunmap(bitmap_bh->b_page);
-
-					req->pr_desc_bh = desc_bh;
-					req->pr_bitmap_bh = bitmap_bh;
-					return 0;
-				}
-				kunmap(bitmap_bh->b_page);
-				brelse(bitmap_bh);
-			}
-
-			group_offset = 0;
-		}
-
-		kunmap(desc_bh->b_page);
-=======
 		for (j = 0; j < n; j++, desc++, group++, group_offset = 0) {
 			lock = nilfs_mdt_bgl_lock(inode, group);
 			if (nilfs_palloc_group_desc_nfrees(desc, lock) == 0)
@@ -747,19 +559,12 @@ int nilfs_palloc_prepare_alloc_entry(struct inode *inode,
 		}
 
 		kunmap_local(desc_kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(desc_bh);
 	}
 
 	/* no entries left */
 	return -ENOSPC;
 
-<<<<<<< HEAD
- out_desc:
-	kunmap(desc_bh->b_page);
-	brelse(desc_bh);
-	return ret;
-=======
 found:
 	/* found a free entry */
 	nilfs_palloc_group_desc_add_entries(desc, lock, -1);
@@ -769,7 +574,6 @@ found:
 	req->pr_desc_bh = desc_bh;
 	req->pr_bitmap_bh = bitmap_bh;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -800,25 +604,6 @@ void nilfs_palloc_commit_free_entry(struct inode *inode,
 	unsigned long group, group_offset;
 	unsigned char *bitmap;
 	void *desc_kaddr, *bitmap_kaddr;
-<<<<<<< HEAD
-
-	group = nilfs_palloc_group(inode, req->pr_entry_nr, &group_offset);
-	desc_kaddr = kmap(req->pr_desc_bh->b_page);
-	desc = nilfs_palloc_block_get_group_desc(inode, group,
-						 req->pr_desc_bh, desc_kaddr);
-	bitmap_kaddr = kmap(req->pr_bitmap_bh->b_page);
-	bitmap = bitmap_kaddr + bh_offset(req->pr_bitmap_bh);
-
-	if (!nilfs_clear_bit_atomic(nilfs_mdt_bgl_lock(inode, group),
-				    group_offset, bitmap))
-		printk(KERN_WARNING "%s: entry number %llu already freed\n",
-		       __func__, (unsigned long long)req->pr_entry_nr);
-	else
-		nilfs_palloc_group_desc_add_entries(inode, group, desc, 1);
-
-	kunmap(req->pr_bitmap_bh->b_page);
-	kunmap(req->pr_desc_bh->b_page);
-=======
 	spinlock_t *lock;
 
 	group = nilfs_palloc_group(inode, req->pr_entry_nr, &group_offset);
@@ -839,7 +624,6 @@ void nilfs_palloc_commit_free_entry(struct inode *inode,
 
 	kunmap_local(bitmap_kaddr);
 	kunmap_local(desc_kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mark_buffer_dirty(req->pr_desc_bh);
 	mark_buffer_dirty(req->pr_bitmap_bh);
@@ -861,24 +645,6 @@ void nilfs_palloc_abort_alloc_entry(struct inode *inode,
 	void *desc_kaddr, *bitmap_kaddr;
 	unsigned char *bitmap;
 	unsigned long group, group_offset;
-<<<<<<< HEAD
-
-	group = nilfs_palloc_group(inode, req->pr_entry_nr, &group_offset);
-	desc_kaddr = kmap(req->pr_desc_bh->b_page);
-	desc = nilfs_palloc_block_get_group_desc(inode, group,
-						 req->pr_desc_bh, desc_kaddr);
-	bitmap_kaddr = kmap(req->pr_bitmap_bh->b_page);
-	bitmap = bitmap_kaddr + bh_offset(req->pr_bitmap_bh);
-	if (!nilfs_clear_bit_atomic(nilfs_mdt_bgl_lock(inode, group),
-				    group_offset, bitmap))
-		printk(KERN_WARNING "%s: entry number %llu already freed\n",
-		       __func__, (unsigned long long)req->pr_entry_nr);
-	else
-		nilfs_palloc_group_desc_add_entries(inode, group, desc, 1);
-
-	kunmap(req->pr_bitmap_bh->b_page);
-	kunmap(req->pr_desc_bh->b_page);
-=======
 	spinlock_t *lock;
 
 	group = nilfs_palloc_group(inode, req->pr_entry_nr, &group_offset);
@@ -899,7 +665,6 @@ void nilfs_palloc_abort_alloc_entry(struct inode *inode,
 
 	kunmap_local(bitmap_kaddr);
 	kunmap_local(desc_kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brelse(req->pr_bitmap_bh);
 	brelse(req->pr_desc_bh);
@@ -953,25 +718,6 @@ void nilfs_palloc_abort_free_entry(struct inode *inode,
 }
 
 /**
-<<<<<<< HEAD
- * nilfs_palloc_group_is_in - judge if an entry is in a group
- * @inode: inode of metadata file using this allocator
- * @group: group number
- * @nr: serial number of the entry (e.g. inode number)
- */
-static int
-nilfs_palloc_group_is_in(struct inode *inode, unsigned long group, __u64 nr)
-{
-	__u64 first, last;
-
-	first = group * nilfs_palloc_entries_per_group(inode);
-	last = first + nilfs_palloc_entries_per_group(inode) - 1;
-	return (nr >= first) && (nr <= last);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nilfs_palloc_freev - deallocate a set of persistent objects
  * @inode: inode of metadata file using this allocator
  * @entry_nrs: array of entry numbers to be deallocated
@@ -984,11 +730,6 @@ int nilfs_palloc_freev(struct inode *inode, __u64 *entry_nrs, size_t nitems)
 	unsigned char *bitmap;
 	void *desc_kaddr, *bitmap_kaddr;
 	unsigned long group, group_offset;
-<<<<<<< HEAD
-	int i, j, n, ret;
-
-	for (i = 0; i < nitems; i = j) {
-=======
 	__u64 group_min_nr, last_nrs[8];
 	const unsigned long epg = nilfs_palloc_entries_per_group(inode);
 	const unsigned int epb = NILFS_MDT(inode)->mi_entries_per_block;
@@ -1001,7 +742,6 @@ int nilfs_palloc_freev(struct inode *inode, __u64 *entry_nrs, size_t nitems)
 		int change_group = false;
 		int nempties = 0, n = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		group = nilfs_palloc_group(inode, entry_nrs[i], &group_offset);
 		ret = nilfs_palloc_get_desc_block(inode, group, 0, &desc_bh);
 		if (ret < 0)
@@ -1012,40 +752,6 @@ int nilfs_palloc_freev(struct inode *inode, __u64 *entry_nrs, size_t nitems)
 			brelse(desc_bh);
 			return ret;
 		}
-<<<<<<< HEAD
-		desc_kaddr = kmap(desc_bh->b_page);
-		desc = nilfs_palloc_block_get_group_desc(
-			inode, group, desc_bh, desc_kaddr);
-		bitmap_kaddr = kmap(bitmap_bh->b_page);
-		bitmap = bitmap_kaddr + bh_offset(bitmap_bh);
-		for (j = i, n = 0;
-		     (j < nitems) && nilfs_palloc_group_is_in(inode, group,
-							      entry_nrs[j]);
-		     j++) {
-			nilfs_palloc_group(inode, entry_nrs[j], &group_offset);
-			if (!nilfs_clear_bit_atomic(
-				    nilfs_mdt_bgl_lock(inode, group),
-				    group_offset, bitmap)) {
-				printk(KERN_WARNING
-				       "%s: entry number %llu already freed\n",
-				       __func__,
-				       (unsigned long long)entry_nrs[j]);
-			} else {
-				n++;
-			}
-		}
-		nilfs_palloc_group_desc_add_entries(inode, group, desc, n);
-
-		kunmap(bitmap_bh->b_page);
-		kunmap(desc_bh->b_page);
-
-		mark_buffer_dirty(desc_bh);
-		mark_buffer_dirty(bitmap_bh);
-		nilfs_mdt_mark_dirty(inode);
-
-		brelse(bitmap_bh);
-		brelse(desc_bh);
-=======
 
 		/* Get the first entry number of the group */
 		group_min_nr = (__u64)group * epg;
@@ -1126,7 +832,6 @@ int nilfs_palloc_freev(struct inode *inode, __u64 *entry_nrs, size_t nitems)
 					   "error %d deleting bitmap block of group=%lu, ino=%lu",
 					   ret, group, inode->i_ino);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }

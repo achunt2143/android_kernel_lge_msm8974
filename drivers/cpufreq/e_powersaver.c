@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Based on documentation provided by Dave Jones. Thanks!
- *
- *  Licensed under the terms of the GNU GPL License version 2.
- *
- *  BIG FAT DISCLAIMER: Work in progress code. Possibly *dangerous*
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  Based on documentation provided by Dave Jones. Thanks!
@@ -17,7 +7,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,11 +21,7 @@
 #include <asm/msr.h>
 #include <asm/tsc.h>
 
-<<<<<<< HEAD
-#if defined CONFIG_ACPI_PROCESSOR || defined CONFIG_ACPI_PROCESSOR_MODULE
-=======
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/acpi.h>
 #include <acpi/processor.h>
 #endif
@@ -49,11 +34,7 @@
 
 struct eps_cpu_data {
 	u32 fsb;
-<<<<<<< HEAD
-#if defined CONFIG_ACPI_PROCESSOR || defined CONFIG_ACPI_PROCESSOR_MODULE
-=======
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 bios_limit;
 #endif
 	struct cpufreq_frequency_table freq_table[];
@@ -66,11 +47,7 @@ static int freq_failsafe_off;
 static int voltage_failsafe_off;
 static int set_max_voltage;
 
-<<<<<<< HEAD
-#if defined CONFIG_ACPI_PROCESSOR || defined CONFIG_ACPI_PROCESSOR_MODULE
-=======
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ignore_acpi_limit;
 
 static struct acpi_processor_performance *eps_acpi_cpu_perf;
@@ -78,11 +55,7 @@ static struct acpi_processor_performance *eps_acpi_cpu_perf;
 /* Minimum necessary to get acpi_processor_get_bios_limit() working */
 static int eps_acpi_init(void)
 {
-<<<<<<< HEAD
-	eps_acpi_cpu_perf = kzalloc(sizeof(struct acpi_processor_performance),
-=======
 	eps_acpi_cpu_perf = kzalloc(sizeof(*eps_acpi_cpu_perf),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      GFP_KERNEL);
 	if (!eps_acpi_cpu_perf)
 		return -ENOMEM;
@@ -106,11 +79,7 @@ static int eps_acpi_init(void)
 static int eps_acpi_exit(struct cpufreq_policy *policy)
 {
 	if (eps_acpi_cpu_perf) {
-<<<<<<< HEAD
-		acpi_processor_unregister_performance(eps_acpi_cpu_perf, 0);
-=======
 		acpi_processor_unregister_performance(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_cpumask_var(eps_acpi_cpu_perf->shared_cpu_map);
 		kfree(eps_acpi_cpu_perf);
 		eps_acpi_cpu_perf = NULL;
@@ -136,28 +105,12 @@ static unsigned int eps_get(unsigned int cpu)
 }
 
 static int eps_set_state(struct eps_cpu_data *centaur,
-<<<<<<< HEAD
-			 unsigned int cpu,
-			 u32 dest_state)
-{
-	struct cpufreq_freqs freqs;
-	u32 lo, hi;
-	int err = 0;
-	int i;
-
-	freqs.old = eps_get(cpu);
-	freqs.new = centaur->fsb * ((dest_state >> 8) & 0xff);
-	freqs.cpu = cpu;
-	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
-
-=======
 			 struct cpufreq_policy *policy,
 			 u32 dest_state)
 {
 	u32 lo, hi;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Wait while CPU is busy */
 	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 	i = 0;
@@ -166,12 +119,7 @@ static int eps_set_state(struct eps_cpu_data *centaur,
 		rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 		i++;
 		if (unlikely(i > 64)) {
-<<<<<<< HEAD
-			err = -ENODEV;
-			goto postchange;
-=======
 			return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	/* Set new multiplier and voltage */
@@ -183,23 +131,10 @@ static int eps_set_state(struct eps_cpu_data *centaur,
 		rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 		i++;
 		if (unlikely(i > 64)) {
-<<<<<<< HEAD
-			err = -ENODEV;
-			goto postchange;
-		}
-	} while (lo & ((1 << 16) | (1 << 17)));
-
-	/* Return current frequency */
-postchange:
-	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
-	freqs.new = centaur->fsb * ((lo >> 8) & 0xff);
-
-=======
 			return -ENODEV;
 		}
 	} while (lo & ((1 << 16) | (1 << 17)));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 	{
 	u8 current_multiplier, current_voltage;
@@ -207,25 +142,6 @@ postchange:
 	/* Print voltage and multiplier */
 	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 	current_voltage = lo & 0xff;
-<<<<<<< HEAD
-	printk(KERN_INFO "eps: Current voltage = %dmV\n",
-		current_voltage * 16 + 700);
-	current_multiplier = (lo >> 8) & 0xff;
-	printk(KERN_INFO "eps: Current multiplier = %d\n",
-		current_multiplier);
-	}
-#endif
-	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
-	return err;
-}
-
-static int eps_target(struct cpufreq_policy *policy,
-			       unsigned int target_freq,
-			       unsigned int relation)
-{
-	struct eps_cpu_data *centaur;
-	unsigned int newstate = 0;
-=======
 	pr_info("Current voltage = %dmV\n", current_voltage * 16 + 700);
 	current_multiplier = (lo >> 8) & 0xff;
 	pr_info("Current multiplier = %d\n", current_multiplier);
@@ -237,7 +153,6 @@ static int eps_target(struct cpufreq_policy *policy,
 static int eps_target(struct cpufreq_policy *policy, unsigned int index)
 {
 	struct eps_cpu_data *centaur;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cpu = policy->cpu;
 	unsigned int dest_state;
 	int ret;
@@ -246,30 +161,6 @@ static int eps_target(struct cpufreq_policy *policy, unsigned int index)
 		return -ENODEV;
 	centaur = eps_cpu[cpu];
 
-<<<<<<< HEAD
-	if (unlikely(cpufreq_frequency_table_target(policy,
-			&eps_cpu[cpu]->freq_table[0],
-			target_freq,
-			relation,
-			&newstate))) {
-		return -EINVAL;
-	}
-
-	/* Make frequency transition */
-	dest_state = centaur->freq_table[newstate].index & 0xffff;
-	ret = eps_set_state(centaur, cpu, dest_state);
-	if (ret)
-		printk(KERN_ERR "eps: Timeout!\n");
-	return ret;
-}
-
-static int eps_verify(struct cpufreq_policy *policy)
-{
-	return cpufreq_frequency_table_verify(policy,
-			&eps_cpu[policy->cpu]->freq_table[0]);
-}
-
-=======
 	/* Make frequency transition */
 	dest_state = centaur->freq_table[index].driver_data & 0xffff;
 	ret = eps_set_state(centaur, policy, dest_state);
@@ -278,7 +169,6 @@ static int eps_verify(struct cpufreq_policy *policy)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int eps_cpu_init(struct cpufreq_policy *policy)
 {
 	unsigned int i;
@@ -293,14 +183,8 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	struct cpuinfo_x86 *c = &cpu_data(0);
 	struct cpufreq_frequency_table *f_table;
 	int k, step, voltage;
-<<<<<<< HEAD
-	int ret;
-	int states;
-#if defined CONFIG_ACPI_PROCESSOR || defined CONFIG_ACPI_PROCESSOR_MODULE
-=======
 	int states;
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int limit;
 #endif
 
@@ -308,52 +192,23 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		return -ENODEV;
 
 	/* Check brand */
-<<<<<<< HEAD
-	printk(KERN_INFO "eps: Detected VIA ");
-=======
 	pr_info("Detected VIA ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (c->x86_model) {
 	case 10:
 		rdmsr(0x1153, lo, hi);
 		brand = (((lo >> 2) ^ lo) >> 18) & 3;
-<<<<<<< HEAD
-		printk(KERN_CONT "Model A ");
-=======
 		pr_cont("Model A ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 13:
 		rdmsr(0x1154, lo, hi);
 		brand = (((lo >> 4) ^ (lo >> 2))) & 0x000000ff;
-<<<<<<< HEAD
-		printk(KERN_CONT "Model D ");
-=======
 		pr_cont("Model D ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	switch (brand) {
 	case EPS_BRAND_C7M:
-<<<<<<< HEAD
-		printk(KERN_CONT "C7-M\n");
-		break;
-	case EPS_BRAND_C7:
-		printk(KERN_CONT "C7\n");
-		break;
-	case EPS_BRAND_EDEN:
-		printk(KERN_CONT "Eden\n");
-		break;
-	case EPS_BRAND_C7D:
-		printk(KERN_CONT "C7-D\n");
-		break;
-	case EPS_BRAND_C3:
-		printk(KERN_CONT "C3\n");
-		return -ENODEV;
-		break;
-=======
 		pr_cont("C7-M\n");
 		break;
 	case EPS_BRAND_C7:
@@ -368,7 +223,6 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	case EPS_BRAND_C3:
 		pr_cont("C3\n");
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Enable Enhanced PowerSaver */
 	rdmsrl(MSR_IA32_MISC_ENABLE, val);
@@ -378,11 +232,7 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		/* Can be locked at 0 */
 		rdmsrl(MSR_IA32_MISC_ENABLE, val);
 		if (!(val & MSR_IA32_MISC_ENABLE_ENHANCED_SPEEDSTEP)) {
-<<<<<<< HEAD
-			printk(KERN_INFO "eps: Can't enable Enhanced PowerSaver\n");
-=======
 			pr_info("Can't enable Enhanced PowerSaver\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 	}
@@ -390,24 +240,6 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	/* Print voltage and multiplier */
 	rdmsr(MSR_IA32_PERF_STATUS, lo, hi);
 	current_voltage = lo & 0xff;
-<<<<<<< HEAD
-	printk(KERN_INFO "eps: Current voltage = %dmV\n",
-			current_voltage * 16 + 700);
-	current_multiplier = (lo >> 8) & 0xff;
-	printk(KERN_INFO "eps: Current multiplier = %d\n", current_multiplier);
-
-	/* Print limits */
-	max_voltage = hi & 0xff;
-	printk(KERN_INFO "eps: Highest voltage = %dmV\n",
-			max_voltage * 16 + 700);
-	max_multiplier = (hi >> 8) & 0xff;
-	printk(KERN_INFO "eps: Highest multiplier = %d\n", max_multiplier);
-	min_voltage = (hi >> 16) & 0xff;
-	printk(KERN_INFO "eps: Lowest voltage = %dmV\n",
-			min_voltage * 16 + 700);
-	min_multiplier = (hi >> 24) & 0xff;
-	printk(KERN_INFO "eps: Lowest multiplier = %d\n", min_multiplier);
-=======
 	pr_info("Current voltage = %dmV\n", current_voltage * 16 + 700);
 	current_multiplier = (lo >> 8) & 0xff;
 	pr_info("Current multiplier = %d\n", current_multiplier);
@@ -421,7 +253,6 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	pr_info("Lowest voltage = %dmV\n", min_voltage * 16 + 700);
 	min_multiplier = (hi >> 24) & 0xff;
 	pr_info("Lowest multiplier = %d\n", min_multiplier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Sanity checks */
 	if (current_multiplier == 0 || max_multiplier == 0
@@ -439,19 +270,6 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 
 	/* Check for systems using underclocked CPU */
 	if (!freq_failsafe_off && max_multiplier != current_multiplier) {
-<<<<<<< HEAD
-		printk(KERN_INFO "eps: Your processor is running at different "
-			"frequency then its maximum. Aborting.\n");
-		printk(KERN_INFO "eps: You can use freq_failsafe_off option "
-			"to disable this check.\n");
-		return -EINVAL;
-	}
-	if (!voltage_failsafe_off && max_voltage != current_voltage) {
-		printk(KERN_INFO "eps: Your processor is running at different "
-			"voltage then its maximum. Aborting.\n");
-		printk(KERN_INFO "eps: You can use voltage_failsafe_off "
-			"option to disable this check.\n");
-=======
 		pr_info("Your processor is running at different frequency then its maximum. Aborting.\n");
 		pr_info("You can use freq_failsafe_off option to disable this check.\n");
 		return -EINVAL;
@@ -459,36 +277,23 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	if (!voltage_failsafe_off && max_voltage != current_voltage) {
 		pr_info("Your processor is running at different voltage then its maximum. Aborting.\n");
 		pr_info("You can use voltage_failsafe_off option to disable this check.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* Calc FSB speed */
 	fsb = cpu_khz / current_multiplier;
 
-<<<<<<< HEAD
-#if defined CONFIG_ACPI_PROCESSOR || defined CONFIG_ACPI_PROCESSOR_MODULE
-	/* Check for ACPI processor speed limit */
-	if (!ignore_acpi_limit && !eps_acpi_init()) {
-		if (!acpi_processor_get_bios_limit(policy->cpu, &limit)) {
-			printk(KERN_INFO "eps: ACPI limit %u.%uGHz\n",
-=======
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
 	/* Check for ACPI processor speed limit */
 	if (!ignore_acpi_limit && !eps_acpi_init()) {
 		if (!acpi_processor_get_bios_limit(policy->cpu, &limit)) {
 			pr_info("ACPI limit %u.%uGHz\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				limit/1000000,
 				(limit%1000000)/10000);
 			eps_acpi_exit(policy);
 			/* Check if max_multiplier is in BIOS limits */
 			if (limit && max_multiplier * fsb > limit) {
-<<<<<<< HEAD
-				printk(KERN_INFO "eps: Aborting.\n");
-=======
 				pr_info("Aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			}
 		}
@@ -504,12 +309,7 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		v = (set_max_voltage - 700) / 16;
 		/* Check if voltage is within limits */
 		if (v >= min_voltage && v <= max_voltage) {
-<<<<<<< HEAD
-			printk(KERN_INFO "eps: Setting %dmV as maximum.\n",
-				v * 16 + 700);
-=======
 			pr_info("Setting %dmV as maximum\n", v * 16 + 700);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			max_voltage = v;
 		}
 	}
@@ -521,25 +321,15 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		states = 2;
 
 	/* Allocate private data and frequency table for current cpu */
-<<<<<<< HEAD
-	centaur = kzalloc(sizeof(struct eps_cpu_data)
-		    + (states + 1) * sizeof(struct cpufreq_frequency_table),
-		    GFP_KERNEL);
-=======
 	centaur = kzalloc(struct_size(centaur, freq_table, states + 1),
 			  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!centaur)
 		return -ENOMEM;
 	eps_cpu[0] = centaur;
 
 	/* Copy basic values */
 	centaur->fsb = fsb;
-<<<<<<< HEAD
-#if defined CONFIG_ACPI_PROCESSOR || defined CONFIG_ACPI_PROCESSOR_MODULE
-=======
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	centaur->bios_limit = limit;
 #endif
 
@@ -547,15 +337,9 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 	f_table = &centaur->freq_table[0];
 	if (brand != EPS_BRAND_C7M) {
 		f_table[0].frequency = fsb * min_multiplier;
-<<<<<<< HEAD
-		f_table[0].index = (min_multiplier << 8) | min_voltage;
-		f_table[1].frequency = fsb * max_multiplier;
-		f_table[1].index = (max_multiplier << 8) | max_voltage;
-=======
 		f_table[0].driver_data = (min_multiplier << 8) | min_voltage;
 		f_table[1].frequency = fsb * max_multiplier;
 		f_table[1].driver_data = (max_multiplier << 8) | max_voltage;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f_table[2].frequency = CPUFREQ_TABLE_END;
 	} else {
 		k = 0;
@@ -564,31 +348,15 @@ static int eps_cpu_init(struct cpufreq_policy *policy)
 		for (i = min_multiplier; i <= max_multiplier; i++) {
 			voltage = (k * step) / 256 + min_voltage;
 			f_table[k].frequency = fsb * i;
-<<<<<<< HEAD
-			f_table[k].index = (i << 8) | voltage;
-=======
 			f_table[k].driver_data = (i << 8) | voltage;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			k++;
 		}
 		f_table[k].frequency = CPUFREQ_TABLE_END;
 	}
 
 	policy->cpuinfo.transition_latency = 140000; /* 844mV -> 700mV in ns */
-<<<<<<< HEAD
-	policy->cur = fsb * current_multiplier;
-
-	ret = cpufreq_frequency_table_cpuinfo(policy, &centaur->freq_table[0]);
-	if (ret) {
-		kfree(centaur);
-		return ret;
-	}
-
-	cpufreq_frequency_table_get_attr(&centaur->freq_table[0], policy->cpu);
-=======
 	policy->freq_table = &centaur->freq_table[0];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -597,50 +365,26 @@ static int eps_cpu_exit(struct cpufreq_policy *policy)
 	unsigned int cpu = policy->cpu;
 
 	/* Bye */
-<<<<<<< HEAD
-	cpufreq_frequency_table_put_attr(policy->cpu);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(eps_cpu[cpu]);
 	eps_cpu[cpu] = NULL;
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct freq_attr *eps_attr[] = {
-	&cpufreq_freq_attr_scaling_available_freqs,
-	NULL,
-};
-
-static struct cpufreq_driver eps_driver = {
-	.verify		= eps_verify,
-	.target		= eps_target,
-=======
 static struct cpufreq_driver eps_driver = {
 	.verify		= cpufreq_generic_frequency_table_verify,
 	.target_index	= eps_target,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		= eps_cpu_init,
 	.exit		= eps_cpu_exit,
 	.get		= eps_get,
 	.name		= "e_powersaver",
-<<<<<<< HEAD
-	.owner		= THIS_MODULE,
-	.attr		= eps_attr,
-=======
 	.attr		= cpufreq_generic_attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 /* This driver will work only on Centaur C7 processors with
  * Enhanced SpeedStep/PowerSaver registers */
 static const struct x86_cpu_id eps_cpu_id[] = {
-<<<<<<< HEAD
-	{ X86_VENDOR_CENTAUR, 6, X86_MODEL_ANY, X86_FEATURE_EST },
-=======
 	X86_MATCH_VENDOR_FAM_FEATURE(CENTAUR, 6, X86_FEATURE_EST, NULL),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, eps_cpu_id);
@@ -665,11 +409,7 @@ module_param(freq_failsafe_off, int, 0644);
 MODULE_PARM_DESC(freq_failsafe_off, "Disable current vs max frequency check");
 module_param(voltage_failsafe_off, int, 0644);
 MODULE_PARM_DESC(voltage_failsafe_off, "Disable current vs max voltage check");
-<<<<<<< HEAD
-#if defined CONFIG_ACPI_PROCESSOR || defined CONFIG_ACPI_PROCESSOR_MODULE
-=======
 #if IS_ENABLED(CONFIG_ACPI_PROCESSOR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(ignore_acpi_limit, int, 0644);
 MODULE_PARM_DESC(ignore_acpi_limit, "Don't check ACPI's processor speed limit");
 #endif

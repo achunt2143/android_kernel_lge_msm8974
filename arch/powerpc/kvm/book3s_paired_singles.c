@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright Novell Inc 2010
  *
@@ -165,31 +149,11 @@
 
 static inline void kvmppc_sync_qpr(struct kvm_vcpu *vcpu, int rt)
 {
-<<<<<<< HEAD
-	kvm_cvt_df(&vcpu->arch.fpr[rt], &vcpu->arch.qpr[rt]);
-=======
 	kvm_cvt_df(&VCPU_FPR(vcpu, rt), &vcpu->arch.qpr[rt]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kvmppc_inject_pf(struct kvm_vcpu *vcpu, ulong eaddr, bool is_store)
 {
-<<<<<<< HEAD
-	u64 dsisr;
-	struct kvm_vcpu_arch_shared *shared = vcpu->arch.shared;
-
-	shared->msr = kvmppc_set_field(shared->msr, 33, 36, 0);
-	shared->msr = kvmppc_set_field(shared->msr, 42, 47, 0);
-	shared->dar = eaddr;
-	/* Page Fault */
-	dsisr = kvmppc_set_field(0, 33, 33, 1);
-	if (is_store)
-		shared->dsisr = kvmppc_set_field(dsisr, 38, 38, 1);
-	kvmppc_book3s_queue_irqprio(vcpu, BOOK3S_INTERRUPT_DATA_STORAGE);
-}
-
-static int kvmppc_emulate_fpr_load(struct kvm_run *run, struct kvm_vcpu *vcpu,
-=======
 	u32 dsisr;
 	u64 msr = kvmppc_get_msr(vcpu);
 
@@ -206,7 +170,6 @@ static int kvmppc_emulate_fpr_load(struct kvm_run *run, struct kvm_vcpu *vcpu,
 }
 
 static int kvmppc_emulate_fpr_load(struct kvm_vcpu *vcpu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   int rs, ulong addr, int ls_type)
 {
 	int emulated = EMULATE_FAIL;
@@ -225,11 +188,7 @@ static int kvmppc_emulate_fpr_load(struct kvm_vcpu *vcpu,
 		kvmppc_inject_pf(vcpu, addr, false);
 		goto done_load;
 	} else if (r == EMULATE_DO_MMIO) {
-<<<<<<< HEAD
-		emulated = kvmppc_handle_load(run, vcpu, KVM_MMIO_REG_FPR | rs,
-=======
 		emulated = kvmppc_handle_load(vcpu, KVM_MMIO_REG_FPR | rs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      len, 1);
 		goto done_load;
 	}
@@ -239,19 +198,11 @@ static int kvmppc_emulate_fpr_load(struct kvm_vcpu *vcpu,
 	/* put in registers */
 	switch (ls_type) {
 	case FPU_LS_SINGLE:
-<<<<<<< HEAD
-		kvm_cvt_fd((u32*)tmp, &vcpu->arch.fpr[rs]);
-		vcpu->arch.qpr[rs] = *((u32*)tmp);
-		break;
-	case FPU_LS_DOUBLE:
-		vcpu->arch.fpr[rs] = *((u64*)tmp);
-=======
 		kvm_cvt_fd((u32*)tmp, &VCPU_FPR(vcpu, rs));
 		vcpu->arch.qpr[rs] = *((u32*)tmp);
 		break;
 	case FPU_LS_DOUBLE:
 		VCPU_FPR(vcpu, rs) = *((u64*)tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -262,11 +213,7 @@ done_load:
 	return emulated;
 }
 
-<<<<<<< HEAD
-static int kvmppc_emulate_fpr_store(struct kvm_run *run, struct kvm_vcpu *vcpu,
-=======
 static int kvmppc_emulate_fpr_store(struct kvm_vcpu *vcpu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    int rs, ulong addr, int ls_type)
 {
 	int emulated = EMULATE_FAIL;
@@ -277,24 +224,11 @@ static int kvmppc_emulate_fpr_store(struct kvm_vcpu *vcpu,
 
 	switch (ls_type) {
 	case FPU_LS_SINGLE:
-<<<<<<< HEAD
-		kvm_cvt_df(&vcpu->arch.fpr[rs], (u32*)tmp);
-=======
 		kvm_cvt_df(&VCPU_FPR(vcpu, rs), (u32*)tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = *((u32*)tmp);
 		len = sizeof(u32);
 		break;
 	case FPU_LS_SINGLE_LOW:
-<<<<<<< HEAD
-		*((u32*)tmp) = vcpu->arch.fpr[rs];
-		val = vcpu->arch.fpr[rs] & 0xffffffff;
-		len = sizeof(u32);
-		break;
-	case FPU_LS_DOUBLE:
-		*((u64*)tmp) = vcpu->arch.fpr[rs];
-		val = vcpu->arch.fpr[rs];
-=======
 		*((u32*)tmp) = VCPU_FPR(vcpu, rs);
 		val = VCPU_FPR(vcpu, rs) & 0xffffffff;
 		len = sizeof(u32);
@@ -302,7 +236,6 @@ static int kvmppc_emulate_fpr_store(struct kvm_vcpu *vcpu,
 	case FPU_LS_DOUBLE:
 		*((u64*)tmp) = VCPU_FPR(vcpu, rs);
 		val = VCPU_FPR(vcpu, rs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = sizeof(u64);
 		break;
 	default:
@@ -315,11 +248,7 @@ static int kvmppc_emulate_fpr_store(struct kvm_vcpu *vcpu,
 	if (r < 0) {
 		kvmppc_inject_pf(vcpu, addr, true);
 	} else if (r == EMULATE_DO_MMIO) {
-<<<<<<< HEAD
-		emulated = kvmppc_handle_store(run, vcpu, val, len, 1);
-=======
 		emulated = kvmppc_handle_store(vcpu, val, len, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		emulated = EMULATE_DONE;
 	}
@@ -330,11 +259,7 @@ static int kvmppc_emulate_fpr_store(struct kvm_vcpu *vcpu,
 	return emulated;
 }
 
-<<<<<<< HEAD
-static int kvmppc_emulate_psq_load(struct kvm_run *run, struct kvm_vcpu *vcpu,
-=======
 static int kvmppc_emulate_psq_load(struct kvm_vcpu *vcpu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   int rs, ulong addr, bool w, int i)
 {
 	int emulated = EMULATE_FAIL;
@@ -354,20 +279,12 @@ static int kvmppc_emulate_psq_load(struct kvm_vcpu *vcpu,
 		kvmppc_inject_pf(vcpu, addr, false);
 		goto done_load;
 	} else if ((r == EMULATE_DO_MMIO) && w) {
-<<<<<<< HEAD
-		emulated = kvmppc_handle_load(run, vcpu, KVM_MMIO_REG_FPR | rs,
-=======
 		emulated = kvmppc_handle_load(vcpu, KVM_MMIO_REG_FPR | rs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      4, 1);
 		vcpu->arch.qpr[rs] = tmp[1];
 		goto done_load;
 	} else if (r == EMULATE_DO_MMIO) {
-<<<<<<< HEAD
-		emulated = kvmppc_handle_load(run, vcpu, KVM_MMIO_REG_FQPR | rs,
-=======
 		emulated = kvmppc_handle_load(vcpu, KVM_MMIO_REG_FQPR | rs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      8, 1);
 		goto done_load;
 	}
@@ -375,11 +292,7 @@ static int kvmppc_emulate_psq_load(struct kvm_vcpu *vcpu,
 	emulated = EMULATE_DONE;
 
 	/* put in registers */
-<<<<<<< HEAD
-	kvm_cvt_fd(&tmp[0], &vcpu->arch.fpr[rs]);
-=======
 	kvm_cvt_fd(&tmp[0], &VCPU_FPR(vcpu, rs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vcpu->arch.qpr[rs] = tmp[1];
 
 	dprintk(KERN_INFO "KVM: PSQ_LD [0x%x, 0x%x] at 0x%lx (%d)\n", tmp[0],
@@ -389,11 +302,7 @@ done_load:
 	return emulated;
 }
 
-<<<<<<< HEAD
-static int kvmppc_emulate_psq_store(struct kvm_run *run, struct kvm_vcpu *vcpu,
-=======
 static int kvmppc_emulate_psq_store(struct kvm_vcpu *vcpu,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    int rs, ulong addr, bool w, int i)
 {
 	int emulated = EMULATE_FAIL;
@@ -401,11 +310,7 @@ static int kvmppc_emulate_psq_store(struct kvm_vcpu *vcpu,
 	u32 tmp[2];
 	int len = w ? sizeof(u32) : sizeof(u64);
 
-<<<<<<< HEAD
-	kvm_cvt_df(&vcpu->arch.fpr[rs], &tmp[0]);
-=======
 	kvm_cvt_df(&VCPU_FPR(vcpu, rs), &tmp[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp[1] = vcpu->arch.qpr[rs];
 
 	r = kvmppc_st(vcpu, &addr, len, tmp, true);
@@ -413,17 +318,10 @@ static int kvmppc_emulate_psq_store(struct kvm_vcpu *vcpu,
 	if (r < 0) {
 		kvmppc_inject_pf(vcpu, addr, true);
 	} else if ((r == EMULATE_DO_MMIO) && w) {
-<<<<<<< HEAD
-		emulated = kvmppc_handle_store(run, vcpu, tmp[0], 4, 1);
-	} else if (r == EMULATE_DO_MMIO) {
-		u64 val = ((u64)tmp[0] << 32) | tmp[1];
-		emulated = kvmppc_handle_store(run, vcpu, val, 8, 1);
-=======
 		emulated = kvmppc_handle_store(vcpu, tmp[0], 4, 1);
 	} else if (r == EMULATE_DO_MMIO) {
 		u64 val = ((u64)tmp[0] << 32) | tmp[1];
 		emulated = kvmppc_handle_store(vcpu, val, 8, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		emulated = EMULATE_DONE;
 	}
@@ -443,19 +341,7 @@ static inline u32 inst_get_field(u32 inst, int msb, int lsb)
 	return kvmppc_get_field(inst, msb + 32, lsb + 32);
 }
 
-<<<<<<< HEAD
-/*
- * Replaces inst bits with ordering according to spec.
- */
-static inline u32 inst_set_field(u32 inst, int msb, int lsb, int value)
-{
-	return kvmppc_set_field(inst, msb + 32, lsb + 32, value);
-}
-
-bool kvmppc_inst_is_paired_single(struct kvm_vcpu *vcpu, u32 inst)
-=======
 static bool kvmppc_inst_is_paired_single(struct kvm_vcpu *vcpu, u32 inst)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!(vcpu->arch.hflags & BOOK3S_HFLAG_PAIRED_SINGLE))
 		return false;
@@ -609,10 +495,6 @@ static int kvmppc_ps_three_in(struct kvm_vcpu *vcpu, bool rc,
 						 u32 *src2, u32 *src3))
 {
 	u32 *qpr = vcpu->arch.qpr;
-<<<<<<< HEAD
-	u64 *fpr = vcpu->arch.fpr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ps0_out;
 	u32 ps0_in1, ps0_in2, ps0_in3;
 	u32 ps1_in1, ps1_in2, ps1_in3;
@@ -621,34 +503,20 @@ static int kvmppc_ps_three_in(struct kvm_vcpu *vcpu, bool rc,
 	WARN_ON(rc);
 
 	/* PS0 */
-<<<<<<< HEAD
-	kvm_cvt_df(&fpr[reg_in1], &ps0_in1);
-	kvm_cvt_df(&fpr[reg_in2], &ps0_in2);
-	kvm_cvt_df(&fpr[reg_in3], &ps0_in3);
-=======
 	kvm_cvt_df(&VCPU_FPR(vcpu, reg_in1), &ps0_in1);
 	kvm_cvt_df(&VCPU_FPR(vcpu, reg_in2), &ps0_in2);
 	kvm_cvt_df(&VCPU_FPR(vcpu, reg_in3), &ps0_in3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (scalar & SCALAR_LOW)
 		ps0_in2 = qpr[reg_in2];
 
-<<<<<<< HEAD
-	func(&vcpu->arch.fpscr, &ps0_out, &ps0_in1, &ps0_in2, &ps0_in3);
-=======
 	func(&vcpu->arch.fp.fpscr, &ps0_out, &ps0_in1, &ps0_in2, &ps0_in3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk(KERN_INFO "PS3 ps0 -> f(0x%x, 0x%x, 0x%x) = 0x%x\n",
 			  ps0_in1, ps0_in2, ps0_in3, ps0_out);
 
 	if (!(scalar & SCALAR_NO_PS0))
-<<<<<<< HEAD
-		kvm_cvt_fd(&ps0_out, &fpr[reg_out]);
-=======
 		kvm_cvt_fd(&ps0_out, &VCPU_FPR(vcpu, reg_out));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PS1 */
 	ps1_in1 = qpr[reg_in1];
@@ -659,11 +527,7 @@ static int kvmppc_ps_three_in(struct kvm_vcpu *vcpu, bool rc,
 		ps1_in2 = ps0_in2;
 
 	if (!(scalar & SCALAR_NO_PS1))
-<<<<<<< HEAD
-		func(&vcpu->arch.fpscr, &qpr[reg_out], &ps1_in1, &ps1_in2, &ps1_in3);
-=======
 		func(&vcpu->arch.fp.fpscr, &qpr[reg_out], &ps1_in1, &ps1_in2, &ps1_in3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk(KERN_INFO "PS3 ps1 -> f(0x%x, 0x%x, 0x%x) = 0x%x\n",
 			  ps1_in1, ps1_in2, ps1_in3, qpr[reg_out]);
@@ -679,10 +543,6 @@ static int kvmppc_ps_two_in(struct kvm_vcpu *vcpu, bool rc,
 						 u32 *src2))
 {
 	u32 *qpr = vcpu->arch.qpr;
-<<<<<<< HEAD
-	u64 *fpr = vcpu->arch.fpr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ps0_out;
 	u32 ps0_in1, ps0_in2;
 	u32 ps1_out;
@@ -692,34 +552,20 @@ static int kvmppc_ps_two_in(struct kvm_vcpu *vcpu, bool rc,
 	WARN_ON(rc);
 
 	/* PS0 */
-<<<<<<< HEAD
-	kvm_cvt_df(&fpr[reg_in1], &ps0_in1);
-=======
 	kvm_cvt_df(&VCPU_FPR(vcpu, reg_in1), &ps0_in1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (scalar & SCALAR_LOW)
 		ps0_in2 = qpr[reg_in2];
 	else
-<<<<<<< HEAD
-		kvm_cvt_df(&fpr[reg_in2], &ps0_in2);
-
-	func(&vcpu->arch.fpscr, &ps0_out, &ps0_in1, &ps0_in2);
-=======
 		kvm_cvt_df(&VCPU_FPR(vcpu, reg_in2), &ps0_in2);
 
 	func(&vcpu->arch.fp.fpscr, &ps0_out, &ps0_in1, &ps0_in2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(scalar & SCALAR_NO_PS0)) {
 		dprintk(KERN_INFO "PS2 ps0 -> f(0x%x, 0x%x) = 0x%x\n",
 				  ps0_in1, ps0_in2, ps0_out);
 
-<<<<<<< HEAD
-		kvm_cvt_fd(&ps0_out, &fpr[reg_out]);
-=======
 		kvm_cvt_fd(&ps0_out, &VCPU_FPR(vcpu, reg_out));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* PS1 */
@@ -729,11 +575,7 @@ static int kvmppc_ps_two_in(struct kvm_vcpu *vcpu, bool rc,
 	if (scalar & SCALAR_HIGH)
 		ps1_in2 = ps0_in2;
 
-<<<<<<< HEAD
-	func(&vcpu->arch.fpscr, &ps1_out, &ps1_in1, &ps1_in2);
-=======
 	func(&vcpu->arch.fp.fpscr, &ps1_out, &ps1_in1, &ps1_in2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(scalar & SCALAR_NO_PS1)) {
 		qpr[reg_out] = ps1_out;
@@ -751,10 +593,6 @@ static int kvmppc_ps_one_in(struct kvm_vcpu *vcpu, bool rc,
 						 u32 *dst, u32 *src1))
 {
 	u32 *qpr = vcpu->arch.qpr;
-<<<<<<< HEAD
-	u64 *fpr = vcpu->arch.fpr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ps0_out, ps0_in;
 	u32 ps1_in;
 
@@ -762,30 +600,17 @@ static int kvmppc_ps_one_in(struct kvm_vcpu *vcpu, bool rc,
 	WARN_ON(rc);
 
 	/* PS0 */
-<<<<<<< HEAD
-	kvm_cvt_df(&fpr[reg_in], &ps0_in);
-	func(&vcpu->arch.fpscr, &ps0_out, &ps0_in);
-=======
 	kvm_cvt_df(&VCPU_FPR(vcpu, reg_in), &ps0_in);
 	func(&vcpu->arch.fp.fpscr, &ps0_out, &ps0_in);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk(KERN_INFO "PS1 ps0 -> f(0x%x) = 0x%x\n",
 			  ps0_in, ps0_out);
 
-<<<<<<< HEAD
-	kvm_cvt_fd(&ps0_out, &fpr[reg_out]);
-
-	/* PS1 */
-	ps1_in = qpr[reg_in];
-	func(&vcpu->arch.fpscr, &qpr[reg_out], &ps1_in);
-=======
 	kvm_cvt_fd(&ps0_out, &VCPU_FPR(vcpu, reg_out));
 
 	/* PS1 */
 	ps1_in = qpr[reg_in];
 	func(&vcpu->arch.fp.fpscr, &qpr[reg_out], &ps1_in);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk(KERN_INFO "PS1 ps1 -> f(0x%x) = 0x%x\n",
 			  ps1_in, qpr[reg_out]);
@@ -793,26 +618,6 @@ static int kvmppc_ps_one_in(struct kvm_vcpu *vcpu, bool rc,
 	return EMULATE_DONE;
 }
 
-<<<<<<< HEAD
-int kvmppc_emulate_paired_single(struct kvm_run *run, struct kvm_vcpu *vcpu)
-{
-	u32 inst = kvmppc_get_last_inst(vcpu);
-	enum emulation_result emulated = EMULATE_DONE;
-
-	int ax_rd = inst_get_field(inst, 6, 10);
-	int ax_ra = inst_get_field(inst, 11, 15);
-	int ax_rb = inst_get_field(inst, 16, 20);
-	int ax_rc = inst_get_field(inst, 21, 25);
-	short full_d = inst_get_field(inst, 16, 31);
-
-	u64 *fpr_d = &vcpu->arch.fpr[ax_rd];
-	u64 *fpr_a = &vcpu->arch.fpr[ax_ra];
-	u64 *fpr_b = &vcpu->arch.fpr[ax_rb];
-	u64 *fpr_c = &vcpu->arch.fpr[ax_rc];
-
-	bool rcomp = (inst & 1) ? true : false;
-	u32 cr = kvmppc_get_cr(vcpu);
-=======
 int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 {
 	u32 inst;
@@ -824,17 +629,10 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 
 	bool rcomp;
 	u32 cr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG
 	int i;
 #endif
 
-<<<<<<< HEAD
-	if (!kvmppc_inst_is_paired_single(vcpu, inst))
-		return EMULATE_FAIL;
-
-	if (!(vcpu->arch.shared->msr & MSR_FP)) {
-=======
 	emulated = kvmppc_get_last_inst(vcpu, INST_GENERIC, &pinst);
 	inst = ppc_inst_val(pinst);
 	if (emulated != EMULATE_DONE)
@@ -858,7 +656,6 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 		return EMULATE_FAIL;
 
 	if (!(kvmppc_get_msr(vcpu) & MSR_FP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kvmppc_book3s_queue_irqprio(vcpu, BOOK3S_INTERRUPT_FP_UNAVAIL);
 		return EMULATE_AGAIN;
 	}
@@ -869,19 +666,11 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	/* Do we need to clear FE0 / FE1 here? Don't think so. */
 
 #ifdef DEBUG
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(vcpu->arch.fpr); i++) {
-		u32 f;
-		kvm_cvt_df(&vcpu->arch.fpr[i], &f);
-		dprintk(KERN_INFO "FPR[%d] = 0x%x / 0x%llx    QPR[%d] = 0x%x\n",
-			i, f, vcpu->arch.fpr[i], i, vcpu->arch.qpr[i]);
-=======
 	for (i = 0; i < ARRAY_SIZE(vcpu->arch.fp.fpr); i++) {
 		u32 f;
 		kvm_cvt_df(&VCPU_FPR(vcpu, i), &f);
 		dprintk(KERN_INFO "FPR[%d] = 0x%x / 0x%llx    QPR[%d] = 0x%x\n",
 			i, f, VCPU_FPR(vcpu, i), i, vcpu->arch.qpr[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -893,11 +682,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 		int i = inst_get_field(inst, 17, 19);
 
 		addr += get_d_signext(inst);
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_psq_load(run, vcpu, ax_rd, addr, w, i);
-=======
 		emulated = kvmppc_emulate_psq_load(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case OP_PSQ_LU:
@@ -907,11 +692,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 		int i = inst_get_field(inst, 17, 19);
 
 		addr += get_d_signext(inst);
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_psq_load(run, vcpu, ax_rd, addr, w, i);
-=======
 		emulated = kvmppc_emulate_psq_load(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (emulated == EMULATE_DONE)
 			kvmppc_set_gpr(vcpu, ax_ra, addr);
@@ -924,11 +705,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 		int i = inst_get_field(inst, 17, 19);
 
 		addr += get_d_signext(inst);
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_psq_store(run, vcpu, ax_rd, addr, w, i);
-=======
 		emulated = kvmppc_emulate_psq_store(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case OP_PSQ_STU:
@@ -938,11 +715,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 		int i = inst_get_field(inst, 17, 19);
 
 		addr += get_d_signext(inst);
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_psq_store(run, vcpu, ax_rd, addr, w, i);
-=======
 		emulated = kvmppc_emulate_psq_store(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (emulated == EMULATE_DONE)
 			kvmppc_set_gpr(vcpu, ax_ra, addr);
@@ -962,11 +735,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			int i = inst_get_field(inst, 22, 24);
 
 			addr += kvmppc_get_gpr(vcpu, ax_rb);
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_psq_load(run, vcpu, ax_rd, addr, w, i);
-=======
 			emulated = kvmppc_emulate_psq_load(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		case OP_4X_PS_CMPO0:
@@ -980,24 +749,15 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			int i = inst_get_field(inst, 22, 24);
 
 			addr += kvmppc_get_gpr(vcpu, ax_rb);
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_psq_load(run, vcpu, ax_rd, addr, w, i);
-=======
 			emulated = kvmppc_emulate_psq_load(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (emulated == EMULATE_DONE)
 				kvmppc_set_gpr(vcpu, ax_ra, addr);
 			break;
 		}
 		case OP_4X_PS_NEG:
-<<<<<<< HEAD
-			vcpu->arch.fpr[ax_rd] = vcpu->arch.fpr[ax_rb];
-			vcpu->arch.fpr[ax_rd] ^= 0x8000000000000000ULL;
-=======
 			VCPU_FPR(vcpu, ax_rd) = VCPU_FPR(vcpu, ax_rb);
 			VCPU_FPR(vcpu, ax_rd) ^= 0x8000000000000000ULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vcpu->arch.qpr[ax_rd] = vcpu->arch.qpr[ax_rb];
 			vcpu->arch.qpr[ax_rd] ^= 0x80000000;
 			break;
@@ -1007,11 +767,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			break;
 		case OP_4X_PS_MR:
 			WARN_ON(rcomp);
-<<<<<<< HEAD
-			vcpu->arch.fpr[ax_rd] = vcpu->arch.fpr[ax_rb];
-=======
 			VCPU_FPR(vcpu, ax_rd) = VCPU_FPR(vcpu, ax_rb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vcpu->arch.qpr[ax_rd] = vcpu->arch.qpr[ax_rb];
 			break;
 		case OP_4X_PS_CMPO1:
@@ -1020,78 +776,44 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			break;
 		case OP_4X_PS_NABS:
 			WARN_ON(rcomp);
-<<<<<<< HEAD
-			vcpu->arch.fpr[ax_rd] = vcpu->arch.fpr[ax_rb];
-			vcpu->arch.fpr[ax_rd] |= 0x8000000000000000ULL;
-=======
 			VCPU_FPR(vcpu, ax_rd) = VCPU_FPR(vcpu, ax_rb);
 			VCPU_FPR(vcpu, ax_rd) |= 0x8000000000000000ULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vcpu->arch.qpr[ax_rd] = vcpu->arch.qpr[ax_rb];
 			vcpu->arch.qpr[ax_rd] |= 0x80000000;
 			break;
 		case OP_4X_PS_ABS:
 			WARN_ON(rcomp);
-<<<<<<< HEAD
-			vcpu->arch.fpr[ax_rd] = vcpu->arch.fpr[ax_rb];
-			vcpu->arch.fpr[ax_rd] &= ~0x8000000000000000ULL;
-=======
 			VCPU_FPR(vcpu, ax_rd) = VCPU_FPR(vcpu, ax_rb);
 			VCPU_FPR(vcpu, ax_rd) &= ~0x8000000000000000ULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vcpu->arch.qpr[ax_rd] = vcpu->arch.qpr[ax_rb];
 			vcpu->arch.qpr[ax_rd] &= ~0x80000000;
 			break;
 		case OP_4X_PS_MERGE00:
 			WARN_ON(rcomp);
-<<<<<<< HEAD
-			vcpu->arch.fpr[ax_rd] = vcpu->arch.fpr[ax_ra];
-			/* vcpu->arch.qpr[ax_rd] = vcpu->arch.fpr[ax_rb]; */
-			kvm_cvt_df(&vcpu->arch.fpr[ax_rb],
-=======
 			VCPU_FPR(vcpu, ax_rd) = VCPU_FPR(vcpu, ax_ra);
 			/* vcpu->arch.qpr[ax_rd] = VCPU_FPR(vcpu, ax_rb); */
 			kvm_cvt_df(&VCPU_FPR(vcpu, ax_rb),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   &vcpu->arch.qpr[ax_rd]);
 			break;
 		case OP_4X_PS_MERGE01:
 			WARN_ON(rcomp);
-<<<<<<< HEAD
-			vcpu->arch.fpr[ax_rd] = vcpu->arch.fpr[ax_ra];
-=======
 			VCPU_FPR(vcpu, ax_rd) = VCPU_FPR(vcpu, ax_ra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vcpu->arch.qpr[ax_rd] = vcpu->arch.qpr[ax_rb];
 			break;
 		case OP_4X_PS_MERGE10:
 			WARN_ON(rcomp);
-<<<<<<< HEAD
-			/* vcpu->arch.fpr[ax_rd] = vcpu->arch.qpr[ax_ra]; */
-			kvm_cvt_fd(&vcpu->arch.qpr[ax_ra],
-				   &vcpu->arch.fpr[ax_rd]);
-			/* vcpu->arch.qpr[ax_rd] = vcpu->arch.fpr[ax_rb]; */
-			kvm_cvt_df(&vcpu->arch.fpr[ax_rb],
-=======
 			/* VCPU_FPR(vcpu, ax_rd) = vcpu->arch.qpr[ax_ra]; */
 			kvm_cvt_fd(&vcpu->arch.qpr[ax_ra],
 				   &VCPU_FPR(vcpu, ax_rd));
 			/* vcpu->arch.qpr[ax_rd] = VCPU_FPR(vcpu, ax_rb); */
 			kvm_cvt_df(&VCPU_FPR(vcpu, ax_rb),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   &vcpu->arch.qpr[ax_rd]);
 			break;
 		case OP_4X_PS_MERGE11:
 			WARN_ON(rcomp);
-<<<<<<< HEAD
-			/* vcpu->arch.fpr[ax_rd] = vcpu->arch.qpr[ax_ra]; */
-			kvm_cvt_fd(&vcpu->arch.qpr[ax_ra],
-				   &vcpu->arch.fpr[ax_rd]);
-=======
 			/* VCPU_FPR(vcpu, ax_rd) = vcpu->arch.qpr[ax_ra]; */
 			kvm_cvt_fd(&vcpu->arch.qpr[ax_ra],
 				   &VCPU_FPR(vcpu, ax_rd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vcpu->arch.qpr[ax_rd] = vcpu->arch.qpr[ax_rb];
 			break;
 		}
@@ -1104,11 +826,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			int i = inst_get_field(inst, 22, 24);
 
 			addr += kvmppc_get_gpr(vcpu, ax_rb);
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_psq_store(run, vcpu, ax_rd, addr, w, i);
-=======
 			emulated = kvmppc_emulate_psq_store(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		case OP_4XW_PSQ_STUX:
@@ -1118,11 +836,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			int i = inst_get_field(inst, 22, 24);
 
 			addr += kvmppc_get_gpr(vcpu, ax_rb);
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_psq_store(run, vcpu, ax_rd, addr, w, i);
-=======
 			emulated = kvmppc_emulate_psq_store(vcpu, ax_rd, addr, w, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (emulated == EMULATE_DONE)
 				kvmppc_set_gpr(vcpu, ax_ra, addr);
@@ -1134,11 +848,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 		case OP_4A_PS_SUM1:
 			emulated = kvmppc_ps_two_in(vcpu, rcomp, ax_rd,
 					ax_rb, ax_ra, SCALAR_NO_PS0 | SCALAR_HIGH, fps_fadds);
-<<<<<<< HEAD
-			vcpu->arch.fpr[ax_rd] = vcpu->arch.fpr[ax_rc];
-=======
 			VCPU_FPR(vcpu, ax_rd) = VCPU_FPR(vcpu, ax_rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_4A_PS_SUM0:
 			emulated = kvmppc_ps_two_in(vcpu, rcomp, ax_rd,
@@ -1214,11 +924,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   FPU_LS_SINGLE);
 		break;
 	}
@@ -1226,11 +932,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = kvmppc_get_gpr(vcpu, ax_ra) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   FPU_LS_SINGLE);
 
 		if (emulated == EMULATE_DONE)
@@ -1241,11 +943,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   FPU_LS_DOUBLE);
 		break;
 	}
@@ -1253,11 +951,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = kvmppc_get_gpr(vcpu, ax_ra) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   FPU_LS_DOUBLE);
 
 		if (emulated == EMULATE_DONE)
@@ -1268,11 +962,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    FPU_LS_SINGLE);
 		break;
 	}
@@ -1280,11 +970,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = kvmppc_get_gpr(vcpu, ax_ra) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    FPU_LS_SINGLE);
 
 		if (emulated == EMULATE_DONE)
@@ -1295,11 +981,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    FPU_LS_DOUBLE);
 		break;
 	}
@@ -1307,11 +989,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	{
 		ulong addr = kvmppc_get_gpr(vcpu, ax_ra) + full_d;
 
-<<<<<<< HEAD
-		emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd, addr,
-=======
 		emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd, addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    FPU_LS_DOUBLE);
 
 		if (emulated == EMULATE_DONE)
@@ -1325,11 +1003,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0;
 
 			addr += kvmppc_get_gpr(vcpu, ax_rb);
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   addr, FPU_LS_SINGLE);
 			break;
 		}
@@ -1338,11 +1012,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = kvmppc_get_gpr(vcpu, ax_ra) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   addr, FPU_LS_SINGLE);
 
 			if (emulated == EMULATE_DONE)
@@ -1354,11 +1024,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   addr, FPU_LS_DOUBLE);
 			break;
 		}
@@ -1367,11 +1033,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = kvmppc_get_gpr(vcpu, ax_ra) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_load(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_load(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   addr, FPU_LS_DOUBLE);
 
 			if (emulated == EMULATE_DONE)
@@ -1383,11 +1045,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    addr, FPU_LS_SINGLE);
 			break;
 		}
@@ -1396,11 +1054,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = kvmppc_get_gpr(vcpu, ax_ra) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    addr, FPU_LS_SINGLE);
 
 			if (emulated == EMULATE_DONE)
@@ -1412,11 +1066,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    addr, FPU_LS_DOUBLE);
 			break;
 		}
@@ -1425,11 +1075,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = kvmppc_get_gpr(vcpu, ax_ra) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    addr, FPU_LS_DOUBLE);
 
 			if (emulated == EMULATE_DONE)
@@ -1441,11 +1087,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			ulong addr = (ax_ra ? kvmppc_get_gpr(vcpu, ax_ra) : 0) +
 				     kvmppc_get_gpr(vcpu, ax_rb);
 
-<<<<<<< HEAD
-			emulated = kvmppc_emulate_fpr_store(run, vcpu, ax_rd,
-=======
 			emulated = kvmppc_emulate_fpr_store(vcpu, ax_rd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    addr,
 							    FPU_LS_SINGLE_LOW);
 			break;
@@ -1456,25 +1098,6 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	case 59:
 		switch (inst_get_field(inst, 21, 30)) {
 		case OP_59_FADDS:
-<<<<<<< HEAD
-			fpd_fadds(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_b);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FSUBS:
-			fpd_fsubs(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_b);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FDIVS:
-			fpd_fdivs(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_b);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FRES:
-			fpd_fres(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FRSQRTES:
-			fpd_frsqrtes(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-=======
 			fpd_fadds(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_a, fpr_b);
 			kvmppc_sync_qpr(vcpu, ax_rd);
 			break;
@@ -1492,31 +1115,11 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			break;
 		case OP_59_FRSQRTES:
 			fpd_frsqrtes(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kvmppc_sync_qpr(vcpu, ax_rd);
 			break;
 		}
 		switch (inst_get_field(inst, 26, 30)) {
 		case OP_59_FMULS:
-<<<<<<< HEAD
-			fpd_fmuls(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FMSUBS:
-			fpd_fmsubs(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FMADDS:
-			fpd_fmadds(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FNMSUBS:
-			fpd_fnmsubs(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-			kvmppc_sync_qpr(vcpu, ax_rd);
-			break;
-		case OP_59_FNMADDS:
-			fpd_fnmadds(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-=======
 			fpd_fmuls(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_a, fpr_c);
 			kvmppc_sync_qpr(vcpu, ax_rd);
 			break;
@@ -1534,7 +1137,6 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			break;
 		case OP_59_FNMADDS:
 			fpd_fnmadds(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kvmppc_sync_qpr(vcpu, ax_rd);
 			break;
 		}
@@ -1549,20 +1151,12 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			break;
 		case OP_63_MFFS:
 			/* XXX missing CR */
-<<<<<<< HEAD
-			*fpr_d = vcpu->arch.fpscr;
-=======
 			*fpr_d = vcpu->arch.fp.fpscr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_63_MTFSF:
 			/* XXX missing fm bits */
 			/* XXX missing CR */
-<<<<<<< HEAD
-			vcpu->arch.fpscr = *fpr_b;
-=======
 			vcpu->arch.fp.fpscr = *fpr_b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_63_FCMPU:
 		{
@@ -1570,11 +1164,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			u32 cr0_mask = 0xf0000000;
 			u32 cr_shift = inst_get_field(inst, 6, 8) * 4;
 
-<<<<<<< HEAD
-			fpd_fcmpu(&vcpu->arch.fpscr, &tmp_cr, fpr_a, fpr_b);
-=======
 			fpd_fcmpu(&vcpu->arch.fp.fpscr, &tmp_cr, fpr_a, fpr_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cr &= ~(cr0_mask >> cr_shift);
 			cr |= (cr & cr0_mask) >> cr_shift;
 			break;
@@ -1585,50 +1175,18 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			u32 cr0_mask = 0xf0000000;
 			u32 cr_shift = inst_get_field(inst, 6, 8) * 4;
 
-<<<<<<< HEAD
-			fpd_fcmpo(&vcpu->arch.fpscr, &tmp_cr, fpr_a, fpr_b);
-=======
 			fpd_fcmpo(&vcpu->arch.fp.fpscr, &tmp_cr, fpr_a, fpr_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cr &= ~(cr0_mask >> cr_shift);
 			cr |= (cr & cr0_mask) >> cr_shift;
 			break;
 		}
 		case OP_63_FNEG:
-<<<<<<< HEAD
-			fpd_fneg(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-=======
 			fpd_fneg(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case OP_63_FMR:
 			*fpr_d = *fpr_b;
 			break;
 		case OP_63_FABS:
-<<<<<<< HEAD
-			fpd_fabs(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-			break;
-		case OP_63_FCPSGN:
-			fpd_fcpsgn(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_b);
-			break;
-		case OP_63_FDIV:
-			fpd_fdiv(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_b);
-			break;
-		case OP_63_FADD:
-			fpd_fadd(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_b);
-			break;
-		case OP_63_FSUB:
-			fpd_fsub(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_b);
-			break;
-		case OP_63_FCTIW:
-			fpd_fctiw(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-			break;
-		case OP_63_FCTIWZ:
-			fpd_fctiwz(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-			break;
-		case OP_63_FRSP:
-			fpd_frsp(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-=======
 			fpd_fabs(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_b);
 			break;
 		case OP_63_FCPSGN:
@@ -1651,7 +1209,6 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			break;
 		case OP_63_FRSP:
 			fpd_frsp(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kvmppc_sync_qpr(vcpu, ax_rd);
 			break;
 		case OP_63_FRSQRTE:
@@ -1659,38 +1216,14 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			double one = 1.0f;
 
 			/* fD = sqrt(fB) */
-<<<<<<< HEAD
-			fpd_fsqrt(&vcpu->arch.fpscr, &cr, fpr_d, fpr_b);
-			/* fD = 1.0f / fD */
-			fpd_fdiv(&vcpu->arch.fpscr, &cr, fpr_d, (u64*)&one, fpr_d);
-=======
 			fpd_fsqrt(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_b);
 			/* fD = 1.0f / fD */
 			fpd_fdiv(&vcpu->arch.fp.fpscr, &cr, fpr_d, (u64*)&one, fpr_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		}
 		switch (inst_get_field(inst, 26, 30)) {
 		case OP_63_FMUL:
-<<<<<<< HEAD
-			fpd_fmul(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c);
-			break;
-		case OP_63_FSEL:
-			fpd_fsel(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-			break;
-		case OP_63_FMSUB:
-			fpd_fmsub(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-			break;
-		case OP_63_FMADD:
-			fpd_fmadd(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-			break;
-		case OP_63_FNMSUB:
-			fpd_fnmsub(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-			break;
-		case OP_63_FNMADD:
-			fpd_fnmadd(&vcpu->arch.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
-=======
 			fpd_fmul(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_a, fpr_c);
 			break;
 		case OP_63_FSEL:
@@ -1707,22 +1240,15 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 			break;
 		case OP_63_FNMADD:
 			fpd_fnmadd(&vcpu->arch.fp.fpscr, &cr, fpr_d, fpr_a, fpr_c, fpr_b);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		break;
 	}
 
 #ifdef DEBUG
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(vcpu->arch.fpr); i++) {
-		u32 f;
-		kvm_cvt_df(&vcpu->arch.fpr[i], &f);
-=======
 	for (i = 0; i < ARRAY_SIZE(vcpu->arch.fp.fpr); i++) {
 		u32 f;
 		kvm_cvt_df(&VCPU_FPR(vcpu, i), &f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk(KERN_INFO "FPR[%d] = 0x%x\n", i, f);
 	}
 #endif
@@ -1730,10 +1256,7 @@ int kvmppc_emulate_paired_single(struct kvm_vcpu *vcpu)
 	if (rcomp)
 		kvmppc_set_cr(vcpu, cr);
 
-<<<<<<< HEAD
-=======
 	disable_kernel_fp();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_enable();
 
 	return emulated;

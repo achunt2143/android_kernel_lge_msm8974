@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2009-2010 Chelsio, Inc. All rights reserved.
-=======
  * Copyright (c) 2009-2014 Chelsio, Inc. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -42,18 +38,11 @@
 #include <linux/inetdevice.h>
 #include <linux/ip.h>
 #include <linux/tcp.h>
-<<<<<<< HEAD
-=======
 #include <linux/if_vlan.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/neighbour.h>
 #include <net/netevent.h>
 #include <net/route.h>
-<<<<<<< HEAD
-
-#include "iw_cxgb4.h"
-=======
 #include <net/tcp.h>
 #include <net/ip6_route.h>
 #include <net/addrconf.h>
@@ -63,7 +52,6 @@
 #include <libcxgb_cm.h>
 #include "iw_cxgb4.h"
 #include "clip_tbl.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *states[] = {
 	"idle",
@@ -81,15 +69,6 @@ static char *states[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static int dack_mode = 1;
-module_param(dack_mode, int, 0644);
-MODULE_PARM_DESC(dack_mode, "Delayed ack mode (default=1)");
-
-int c4iw_max_read_depth = 8;
-module_param(c4iw_max_read_depth, int, 0644);
-MODULE_PARM_DESC(c4iw_max_read_depth, "Per-connection max ORD/IRD (default=8)");
-=======
 static int nocong;
 module_param(nocong, int, 0644);
 MODULE_PARM_DESC(nocong, "Turn of congestion control (default=0)");
@@ -106,7 +85,6 @@ uint c4iw_max_read_depth = 32;
 module_param(c4iw_max_read_depth, int, 0644);
 MODULE_PARM_DESC(c4iw_max_read_depth,
 		 "Per-connection max ORD/IRD (default=32)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int enable_tcp_timestamps;
 module_param(enable_tcp_timestamps, int, 0644);
@@ -121,19 +99,9 @@ module_param(enable_tcp_window_scaling, int, 0644);
 MODULE_PARM_DESC(enable_tcp_window_scaling,
 		 "Enable tcp window scaling (default=1)");
 
-<<<<<<< HEAD
-int c4iw_debug;
-module_param(c4iw_debug, int, 0644);
-MODULE_PARM_DESC(c4iw_debug, "Enable debug logging (default=0)");
-
-static int peer2peer;
-module_param(peer2peer, int, 0644);
-MODULE_PARM_DESC(peer2peer, "Support peer2peer ULPs (default=0)");
-=======
 static int peer2peer = 1;
 module_param(peer2peer, int, 0644);
 MODULE_PARM_DESC(peer2peer, "Support peer2peer ULPs (default=1)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int p2p_type = FW_RI_INIT_P2PTYPE_READ_REQ;
 module_param(p2p_type, int, 0644);
@@ -145,19 +113,11 @@ module_param(ep_timeout_secs, int, 0644);
 MODULE_PARM_DESC(ep_timeout_secs, "CM Endpoint operation timeout "
 				   "in seconds (default=60)");
 
-<<<<<<< HEAD
-static int mpa_rev = 1;
-module_param(mpa_rev, int, 0644);
-MODULE_PARM_DESC(mpa_rev, "MPA Revision, 0 supports amso1100, "
-		"1 is RFC0544 spec compliant, 2 is IETF MPA Peer Connect Draft"
-		" compliant (default=1)");
-=======
 static int mpa_rev = 2;
 module_param(mpa_rev, int, 0644);
 MODULE_PARM_DESC(mpa_rev, "MPA Revision, 0 supports amso1100, "
 		"1 is RFC5044 spec compliant, 2 is IETF MPA Peer Connect Draft"
 		" compliant (default=2)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int markers_enabled;
 module_param(markers_enabled, int, 0644);
@@ -180,39 +140,6 @@ static struct workqueue_struct *workq;
 static struct sk_buff_head rxq;
 
 static struct sk_buff *get_skb(struct sk_buff *skb, int len, gfp_t gfp);
-<<<<<<< HEAD
-static void ep_timeout(unsigned long arg);
-static void connect_reply_upcall(struct c4iw_ep *ep, int status);
-
-static LIST_HEAD(timeout_list);
-static spinlock_t timeout_lock;
-
-static void start_ep_timer(struct c4iw_ep *ep)
-{
-	PDBG("%s ep %p\n", __func__, ep);
-	if (timer_pending(&ep->timer)) {
-		PDBG("%s stopped / restarted timer ep %p\n", __func__, ep);
-		del_timer_sync(&ep->timer);
-	} else
-		c4iw_get_ep(&ep->com);
-	ep->timer.expires = jiffies + ep_timeout_secs * HZ;
-	ep->timer.data = (unsigned long)ep;
-	ep->timer.function = ep_timeout;
-	add_timer(&ep->timer);
-}
-
-static void stop_ep_timer(struct c4iw_ep *ep)
-{
-	PDBG("%s ep %p\n", __func__, ep);
-	if (!timer_pending(&ep->timer)) {
-		printk(KERN_ERR "%s timer stopped when its not running! "
-		       "ep %p state %u\n", __func__, ep, ep->com.state);
-		WARN_ON(1);
-		return;
-	}
-	del_timer_sync(&ep->timer);
-	c4iw_put_ep(&ep->com);
-=======
 static void ep_timeout(struct timer_list *t);
 static void connect_reply_upcall(struct c4iw_ep *ep, int status);
 static int sched(struct c4iw_dev *dev, struct sk_buff *skb);
@@ -270,7 +197,6 @@ static int stop_ep_timer(struct c4iw_ep *ep)
 		return 0;
 	}
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int c4iw_l2t_send(struct c4iw_rdev *rdev, struct sk_buff *skb,
@@ -280,21 +206,14 @@ static int c4iw_l2t_send(struct c4iw_rdev *rdev, struct sk_buff *skb,
 
 	if (c4iw_fatal_error(rdev)) {
 		kfree_skb(skb);
-<<<<<<< HEAD
-		PDBG("%s - device in error state - dropping\n", __func__);
-=======
 		pr_err("%s - device in error state - dropping\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	error = cxgb4_l2t_send(rdev->lldi.ports[0], skb, l2e);
 	if (error < 0)
 		kfree_skb(skb);
-<<<<<<< HEAD
-=======
 	else if (error == NET_XMIT_DROP)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error < 0 ? error : 0;
 }
 
@@ -304,11 +223,7 @@ int c4iw_ofld_send(struct c4iw_rdev *rdev, struct sk_buff *skb)
 
 	if (c4iw_fatal_error(rdev)) {
 		kfree_skb(skb);
-<<<<<<< HEAD
-		PDBG("%s - device in error state - dropping\n", __func__);
-=======
 		pr_err("%s - device in error state - dropping\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	error = cxgb4_ofld_send(rdev->lldi.ports[0], skb);
@@ -319,17 +234,6 @@ int c4iw_ofld_send(struct c4iw_rdev *rdev, struct sk_buff *skb)
 
 static void release_tid(struct c4iw_rdev *rdev, u32 hwtid, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct cpl_tid_release *req;
-
-	skb = get_skb(skb, sizeof *req, GFP_KERNEL);
-	if (!skb)
-		return;
-	req = (struct cpl_tid_release *) skb_put(skb, sizeof(*req));
-	INIT_TP_WR(req, hwtid);
-	OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_TID_RELEASE, hwtid));
-	set_wr_txq(skb, CPL_PRIORITY_SETUP, 0);
-=======
 	u32 len = roundup(sizeof(struct cpl_tid_release), 16);
 
 	skb = get_skb(skb, len, GFP_KERNEL);
@@ -337,23 +241,12 @@ static void release_tid(struct c4iw_rdev *rdev, u32 hwtid, struct sk_buff *skb)
 		return;
 
 	cxgb_mk_tid_release(skb, len, hwtid, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_ofld_send(rdev, skb);
 	return;
 }
 
 static void set_emss(struct c4iw_ep *ep, u16 opt)
 {
-<<<<<<< HEAD
-	ep->emss = ep->com.dev->rdev.lldi.mtus[GET_TCPOPT_MSS(opt)] - 40;
-	ep->mss = ep->emss;
-	if (GET_TCPOPT_TSTAMP(opt))
-		ep->emss -= 12;
-	if (ep->emss < 128)
-		ep->emss = 128;
-	PDBG("%s mss_idx %u mss %u emss=%u\n", __func__, GET_TCPOPT_MSS(opt),
-	     ep->mss, ep->emss);
-=======
 	ep->emss = ep->com.dev->rdev.lldi.mtus[TCPOPT_MSS_G(opt)] -
 		   ((AF_INET == ep->com.remote_addr.ss_family) ?
 		    sizeof(struct iphdr) : sizeof(struct ipv6hdr)) -
@@ -368,7 +261,6 @@ static void set_emss(struct c4iw_ep *ep, u16 opt)
 			 TCPOPT_MSS_G(opt), ep->mss, ep->emss);
 	pr_debug("mss_idx %u mss %u emss=%u\n", TCPOPT_MSS_G(opt), ep->mss,
 		 ep->emss);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum c4iw_ep_state state_read(struct c4iw_ep_common *epc)
@@ -389,18 +281,12 @@ static void __state_set(struct c4iw_ep_common *epc, enum c4iw_ep_state new)
 static void state_set(struct c4iw_ep_common *epc, enum c4iw_ep_state new)
 {
 	mutex_lock(&epc->mutex);
-<<<<<<< HEAD
-	PDBG("%s - %s -> %s\n", __func__, states[epc->state], states[new]);
-=======
 	pr_debug("%s -> %s\n", states[epc->state], states[new]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__state_set(epc, new);
 	mutex_unlock(&epc->mutex);
 	return;
 }
 
-<<<<<<< HEAD
-=======
 static int alloc_ep_skb_list(struct sk_buff_head *ep_skb_list, int size)
 {
 	struct sk_buff *skb;
@@ -420,23 +306,12 @@ fail:
 	return -ENOMEM;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *alloc_ep(int size, gfp_t gfp)
 {
 	struct c4iw_ep_common *epc;
 
 	epc = kzalloc(size, gfp);
 	if (epc) {
-<<<<<<< HEAD
-		kref_init(&epc->kref);
-		mutex_init(&epc->mutex);
-		c4iw_init_wr_wait(&epc->wr_wait);
-	}
-	PDBG("%s alloc ep %p\n", __func__, epc);
-	return epc;
-}
-
-=======
 		epc->wr_waitp = c4iw_alloc_wr_wait(gfp);
 		if (!epc->wr_waitp) {
 			kfree(epc);
@@ -508,20 +383,11 @@ static struct c4iw_listen_ep *get_ep_from_stid(struct c4iw_dev *dev,
 	return ep;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void _c4iw_free_ep(struct kref *kref)
 {
 	struct c4iw_ep *ep;
 
 	ep = container_of(kref, struct c4iw_ep, com.kref);
-<<<<<<< HEAD
-	PDBG("%s ep %p state %s\n", __func__, ep, states[state_read(&ep->com)]);
-	if (test_bit(RELEASE_RESOURCES, &ep->com.flags)) {
-		cxgb4_remove_tid(ep->com.dev->rdev.lldi.tids, 0, ep->hwtid);
-		dst_release(ep->dst);
-		cxgb4_l2t_release(ep->l2t);
-	}
-=======
 	pr_debug("ep %p state %s\n", ep, states[ep->com.state]);
 	if (test_bit(QP_REFERENCED, &ep->com.flags))
 		deref_qp(ep);
@@ -545,15 +411,12 @@ void _c4iw_free_ep(struct kref *kref)
 	if (!skb_queue_empty(&ep->com.ep_skb_list))
 		skb_queue_purge(&ep->com.ep_skb_list);
 	c4iw_put_wr_wait(ep->com.wr_waitp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ep);
 }
 
 static void release_ep_resources(struct c4iw_ep *ep)
 {
 	set_bit(RELEASE_RESOURCES, &ep->com.flags);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * If we have a hwtid, then remove it from the idr table
@@ -563,7 +426,6 @@ static void release_ep_resources(struct c4iw_ep *ep)
 	 */
 	if (ep->hwtid != -1)
 		remove_ep_tid(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_put_ep(&ep->com);
 }
 
@@ -598,25 +460,6 @@ static struct sk_buff *get_skb(struct sk_buff *skb, int len, gfp_t gfp)
 		skb_reset_transport_header(skb);
 	} else {
 		skb = alloc_skb(len, gfp);
-<<<<<<< HEAD
-	}
-	return skb;
-}
-
-static struct rtable *find_route(struct c4iw_dev *dev, __be32 local_ip,
-				 __be32 peer_ip, __be16 local_port,
-				 __be16 peer_port, u8 tos)
-{
-	struct rtable *rt;
-	struct flowi4 fl4;
-
-	rt = ip_route_output_ports(&init_net, &fl4, NULL, peer_ip, local_ip,
-				   peer_port, local_port, IPPROTO_TCP,
-				   tos, 0);
-	if (IS_ERR(rt))
-		return NULL;
-	return rt;
-=======
 		if (!skb)
 			return NULL;
 	}
@@ -627,17 +470,10 @@ static struct rtable *find_route(struct c4iw_dev *dev, __be32 local_ip,
 static struct net_device *get_real_dev(struct net_device *egress_dev)
 {
 	return rdma_vlan_dev_real_dev(egress_dev) ? : egress_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void arp_failure_discard(void *handle, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	PDBG("%s c4iw_dev %p\n", __func__, handle);
-	kfree_skb(skb);
-}
-
-=======
 	pr_err("ARP failure\n");
 	kfree_skb(skb);
 }
@@ -706,16 +542,11 @@ static void pass_accept_rpl_arp_failure(void *handle, struct sk_buff *skb)
 	queue_arp_failure_cpl(ep, skb, FAKE_CPL_PASS_PUT_EP_SAFE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Handle an ARP failure for an active open.
  */
 static void act_open_req_arp_failure(void *handle, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	printk(KERN_ERR MOD "ARP failure duing connect\n");
-	kfree_skb(skb);
-=======
 	struct c4iw_ep *ep = handle;
 
 	pr_err("ARP failure during connect\n");
@@ -730,7 +561,6 @@ static void act_open_req_arp_failure(void *handle, struct sk_buff *skb)
 	xa_erase_irq(&ep->com.dev->atids, ep->atid);
 	cxgb4_free_atid(ep->com.dev->rdev.lldi.tids, ep->atid);
 	queue_arp_failure_cpl(ep, skb, FAKE_CPL_PUT_EP_SAFE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -739,32 +569,6 @@ static void act_open_req_arp_failure(void *handle, struct sk_buff *skb)
  */
 static void abort_arp_failure(void *handle, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct c4iw_rdev *rdev = handle;
-	struct cpl_abort_req *req = cplhdr(skb);
-
-	PDBG("%s rdev %p\n", __func__, rdev);
-	req->cmd = CPL_ABORT_NO_RST;
-	c4iw_ofld_send(rdev, skb);
-}
-
-static void send_flowc(struct c4iw_ep *ep, struct sk_buff *skb)
-{
-	unsigned int flowclen = 80;
-	struct fw_flowc_wr *flowc;
-	int i;
-
-	skb = get_skb(skb, flowclen, GFP_KERNEL);
-	flowc = (struct fw_flowc_wr *)__skb_put(skb, flowclen);
-
-	flowc->op_to_nparams = cpu_to_be32(FW_WR_OP(FW_FLOWC_WR) |
-					   FW_FLOWC_WR_NPARAMS(8));
-	flowc->flowid_len16 = cpu_to_be32(FW_WR_LEN16(DIV_ROUND_UP(flowclen,
-					  16)) | FW_WR_FLOWID(ep->hwtid));
-
-	flowc->mnemval[0].mnemonic = FW_FLOWC_MNEM_PFNVFN;
-	flowc->mnemval[0].val = cpu_to_be32(PCI_FUNC(ep->com.dev->rdev.lldi.pdev->devfn) << 8);
-=======
 	int ret;
 	struct c4iw_ep *ep = handle;
 	struct c4iw_rdev *rdev = &ep->com.dev->rdev;
@@ -812,7 +616,6 @@ static int send_flowc(struct c4iw_ep *ep)
 	flowc->mnemval[0].mnemonic = FW_FLOWC_MNEM_PFNVFN;
 	flowc->mnemval[0].val = cpu_to_be32(FW_PFVF_CMD_PFN_V
 					    (ep->com.dev->rdev.lldi.pf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flowc->mnemval[1].mnemonic = FW_FLOWC_MNEM_CH;
 	flowc->mnemval[1].val = cpu_to_be32(ep->tx_chan);
 	flowc->mnemval[2].mnemonic = FW_FLOWC_MNEM_PORT;
@@ -824,66 +627,6 @@ static int send_flowc(struct c4iw_ep *ep)
 	flowc->mnemval[5].mnemonic = FW_FLOWC_MNEM_RCVNXT;
 	flowc->mnemval[5].val = cpu_to_be32(ep->rcv_seq);
 	flowc->mnemval[6].mnemonic = FW_FLOWC_MNEM_SNDBUF;
-<<<<<<< HEAD
-	flowc->mnemval[6].val = cpu_to_be32(snd_win);
-	flowc->mnemval[7].mnemonic = FW_FLOWC_MNEM_MSS;
-	flowc->mnemval[7].val = cpu_to_be32(ep->emss);
-	/* Pad WR to 16 byte boundary */
-	flowc->mnemval[8].mnemonic = 0;
-	flowc->mnemval[8].val = 0;
-	for (i = 0; i < 9; i++) {
-		flowc->mnemval[i].r4[0] = 0;
-		flowc->mnemval[i].r4[1] = 0;
-		flowc->mnemval[i].r4[2] = 0;
-	}
-
-	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
-	c4iw_ofld_send(&ep->com.dev->rdev, skb);
-}
-
-static int send_halfclose(struct c4iw_ep *ep, gfp_t gfp)
-{
-	struct cpl_close_con_req *req;
-	struct sk_buff *skb;
-	int wrlen = roundup(sizeof *req, 16);
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	skb = get_skb(NULL, wrlen, gfp);
-	if (!skb) {
-		printk(KERN_ERR MOD "%s - failed to alloc skb\n", __func__);
-		return -ENOMEM;
-	}
-	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
-	t4_set_arp_err_handler(skb, NULL, arp_failure_discard);
-	req = (struct cpl_close_con_req *) skb_put(skb, wrlen);
-	memset(req, 0, wrlen);
-	INIT_TP_WR(req, ep->hwtid);
-	OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_CLOSE_CON_REQ,
-						    ep->hwtid));
-	return c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
-}
-
-static int send_abort(struct c4iw_ep *ep, struct sk_buff *skb, gfp_t gfp)
-{
-	struct cpl_abort_req *req;
-	int wrlen = roundup(sizeof *req, 16);
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	skb = get_skb(skb, wrlen, gfp);
-	if (!skb) {
-		printk(KERN_ERR MOD "%s - failed to alloc skb.\n",
-		       __func__);
-		return -ENOMEM;
-	}
-	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
-	t4_set_arp_err_handler(skb, &ep->com.dev->rdev, abort_arp_failure);
-	req = (struct cpl_abort_req *) skb_put(skb, wrlen);
-	memset(req, 0, wrlen);
-	INIT_TP_WR(req, ep->hwtid);
-	OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_ABORT_REQ, ep->hwtid));
-	req->cmd = CPL_ABORT_SEND_RST;
-	return c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
-=======
 	flowc->mnemval[6].val = cpu_to_be32(ep->snd_win);
 	flowc->mnemval[7].mnemonic = FW_FLOWC_MNEM_MSS;
 	flowc->mnemval[7].val = cpu_to_be32(ep->emss);
@@ -965,36 +708,20 @@ static int send_abort(struct c4iw_ep *ep)
 	set_bit(ABORT_REQ_IN_PROGRESS, &ep->com.flags);
 	read_tcb(ep);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int send_connect(struct c4iw_ep *ep)
 {
-<<<<<<< HEAD
-	struct cpl_act_open_req *req;
-=======
 	struct cpl_act_open_req *req = NULL;
 	struct cpl_t5_act_open_req *t5req = NULL;
 	struct cpl_t6_act_open_req *t6req = NULL;
 	struct cpl_act_open_req6 *req6 = NULL;
 	struct cpl_t5_act_open_req6 *t5req6 = NULL;
 	struct cpl_t6_act_open_req6 *t6req6 = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	u64 opt0;
 	u32 opt2;
 	unsigned int mtu_idx;
-<<<<<<< HEAD
-	int wscale;
-	int wrlen = roundup(sizeof *req, 16);
-
-	PDBG("%s ep %p atid %u\n", __func__, ep, ep->atid);
-
-	skb = get_skb(NULL, wrlen, GFP_KERNEL);
-	if (!skb) {
-		printk(KERN_ERR MOD "%s - failed to alloc skb.\n",
-		       __func__);
-=======
 	u32 wscale;
 	int win, sizev4, sizev6, wrlen;
 	struct sockaddr_in *la = (struct sockaddr_in *)
@@ -1041,53 +768,10 @@ static int send_connect(struct c4iw_ep *ep)
 	skb = get_skb(NULL, wrlen, GFP_KERNEL);
 	if (!skb) {
 		pr_err("%s - failed to alloc skb\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	set_wr_txq(skb, CPL_PRIORITY_SETUP, ep->ctrlq_idx);
 
-<<<<<<< HEAD
-	cxgb4_best_mtu(ep->com.dev->rdev.lldi.mtus, ep->mtu, &mtu_idx);
-	wscale = compute_wscale(rcv_win);
-	opt0 = KEEP_ALIVE(1) |
-	       DELACK(1) |
-	       WND_SCALE(wscale) |
-	       MSS_IDX(mtu_idx) |
-	       L2T_IDX(ep->l2t->idx) |
-	       TX_CHAN(ep->tx_chan) |
-	       SMAC_SEL(ep->smac_idx) |
-	       DSCP(ep->tos) |
-	       ULP_MODE(ULP_MODE_TCPDDP) |
-	       RCV_BUFSIZ(rcv_win>>10);
-	opt2 = RX_CHANNEL(0) |
-	       RSS_QUEUE_VALID | RSS_QUEUE(ep->rss_qid);
-	if (enable_tcp_timestamps)
-		opt2 |= TSTAMPS_EN(1);
-	if (enable_tcp_sack)
-		opt2 |= SACK_EN(1);
-	if (wscale && enable_tcp_window_scaling)
-		opt2 |= WND_SCALE_EN(1);
-	t4_set_arp_err_handler(skb, NULL, act_open_req_arp_failure);
-
-	req = (struct cpl_act_open_req *) skb_put(skb, wrlen);
-	INIT_TP_WR(req, 0);
-	OPCODE_TID(req) = cpu_to_be32(
-		MK_OPCODE_TID(CPL_ACT_OPEN_REQ, ((ep->rss_qid<<14)|ep->atid)));
-	req->local_port = ep->com.local_addr.sin_port;
-	req->peer_port = ep->com.remote_addr.sin_port;
-	req->local_ip = ep->com.local_addr.sin_addr.s_addr;
-	req->peer_ip = ep->com.remote_addr.sin_addr.s_addr;
-	req->opt0 = cpu_to_be64(opt0);
-	req->params = 0;
-	req->opt2 = cpu_to_be32(opt2);
-	return c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
-}
-
-static void send_mpa_req(struct c4iw_ep *ep, struct sk_buff *skb,
-		u8 mpa_rev_to_use)
-{
-	int mpalen, wrlen;
-=======
 	cxgb_best_mtu(ep->com.dev->rdev.lldi.mtus, ep->mtu, &mtu_idx,
 		      enable_tcp_timestamps,
 		      (ep->com.remote_addr.ss_family == AF_INET) ? 0 : 1);
@@ -1257,52 +941,16 @@ static int send_mpa_req(struct c4iw_ep *ep, struct sk_buff *skb,
 			u8 mpa_rev_to_use)
 {
 	int mpalen, wrlen, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fw_ofld_tx_data_wr *req;
 	struct mpa_message *mpa;
 	struct mpa_v2_conn_params mpa_v2_params;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u pd_len %d\n", __func__, ep, ep->hwtid, ep->plen);
-
-	BUG_ON(skb_cloned(skb));
-=======
 	pr_debug("ep %p tid %u pd_len %d\n",
 		 ep, ep->hwtid, ep->plen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpalen = sizeof(*mpa) + ep->plen;
 	if (mpa_rev_to_use == 2)
 		mpalen += sizeof(struct mpa_v2_conn_params);
-<<<<<<< HEAD
-	wrlen = roundup(mpalen + sizeof *req, 16);
-	skb = get_skb(skb, wrlen, GFP_KERNEL);
-	if (!skb) {
-		connect_reply_upcall(ep, -ENOMEM);
-		return;
-	}
-	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
-
-	req = (struct fw_ofld_tx_data_wr *)skb_put(skb, wrlen);
-	memset(req, 0, wrlen);
-	req->op_to_immdlen = cpu_to_be32(
-		FW_WR_OP(FW_OFLD_TX_DATA_WR) |
-		FW_WR_COMPL(1) |
-		FW_WR_IMMDLEN(mpalen));
-	req->flowid_len16 = cpu_to_be32(
-		FW_WR_FLOWID(ep->hwtid) |
-		FW_WR_LEN16(wrlen >> 4));
-	req->plen = cpu_to_be32(mpalen);
-	req->tunnel_to_proxy = cpu_to_be32(
-		FW_OFLD_TX_DATA_WR_FLUSH(1) |
-		FW_OFLD_TX_DATA_WR_SHOVE(1));
-
-	mpa = (struct mpa_message *)(req + 1);
-	memcpy(mpa->key, MPA_KEY_REQ, sizeof(mpa->key));
-	mpa->flags = (crc_enabled ? MPA_CRC : 0) |
-		     (markers_enabled ? MPA_MARKERS : 0) |
-		     (mpa_rev_to_use == 2 ? MPA_ENHANCED_RDMA_CONN : 0);
-=======
 	wrlen = roundup(mpalen + sizeof(*req), 16);
 	skb = get_skb(skb, wrlen, GFP_KERNEL);
 	if (!skb) {
@@ -1339,7 +987,6 @@ static int send_mpa_req(struct c4iw_ep *ep, struct sk_buff *skb,
 	if (mpa_rev_to_use == 2)
 		mpa->flags |= MPA_ENHANCED_RDMA_CONN;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpa->private_data_size = htons(ep->plen);
 	mpa->revision = mpa_rev_to_use;
 	if (mpa_rev_to_use == 1) {
@@ -1348,16 +995,11 @@ static int send_mpa_req(struct c4iw_ep *ep, struct sk_buff *skb,
 	}
 
 	if (mpa_rev_to_use == 2) {
-<<<<<<< HEAD
-		mpa->private_data_size +=
-			htons(sizeof(struct mpa_v2_conn_params));
-=======
 		mpa->private_data_size =
 			htons(ntohs(mpa->private_data_size) +
 			      sizeof(struct mpa_v2_conn_params));
 		pr_debug("initiator ird %u ord %u\n", ep->ird,
 			 ep->ord);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mpa_v2_params.ird = htons((u16)ep->ird);
 		mpa_v2_params.ord = htons((u16)ep->ord);
 
@@ -1389,15 +1031,6 @@ static int send_mpa_req(struct c4iw_ep *ep, struct sk_buff *skb,
 	 */
 	skb_get(skb);
 	t4_set_arp_err_handler(skb, NULL, arp_failure_discard);
-<<<<<<< HEAD
-	BUG_ON(ep->mpa_skb);
-	ep->mpa_skb = skb;
-	c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
-	start_ep_timer(ep);
-	state_set(&ep->com, MPA_REQ_SENT);
-	ep->mpa_attr.initiator = 1;
-	return;
-=======
 	ep->mpa_skb = skb;
 	ret = c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
 	if (ret)
@@ -1407,7 +1040,6 @@ static int send_mpa_req(struct c4iw_ep *ep, struct sk_buff *skb,
 	ep->mpa_attr.initiator = 1;
 	ep->snd_seq += mpalen;
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int send_mpa_reject(struct c4iw_ep *ep, const void *pdata, u8 plen)
@@ -1418,48 +1050,21 @@ static int send_mpa_reject(struct c4iw_ep *ep, const void *pdata, u8 plen)
 	struct sk_buff *skb;
 	struct mpa_v2_conn_params mpa_v2_params;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u pd_len %d\n", __func__, ep, ep->hwtid, ep->plen);
-=======
 	pr_debug("ep %p tid %u pd_len %d\n",
 		 ep, ep->hwtid, ep->plen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpalen = sizeof(*mpa) + plen;
 	if (ep->mpa_attr.version == 2 && ep->mpa_attr.enhanced_rdma_conn)
 		mpalen += sizeof(struct mpa_v2_conn_params);
-<<<<<<< HEAD
-	wrlen = roundup(mpalen + sizeof *req, 16);
-
-	skb = get_skb(NULL, wrlen, GFP_KERNEL);
-	if (!skb) {
-		printk(KERN_ERR MOD "%s - cannot alloc skb!\n", __func__);
-=======
 	wrlen = roundup(mpalen + sizeof(*req), 16);
 
 	skb = get_skb(NULL, wrlen, GFP_KERNEL);
 	if (!skb) {
 		pr_err("%s - cannot alloc skb!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
 
-<<<<<<< HEAD
-	req = (struct fw_ofld_tx_data_wr *)skb_put(skb, wrlen);
-	memset(req, 0, wrlen);
-	req->op_to_immdlen = cpu_to_be32(
-		FW_WR_OP(FW_OFLD_TX_DATA_WR) |
-		FW_WR_COMPL(1) |
-		FW_WR_IMMDLEN(mpalen));
-	req->flowid_len16 = cpu_to_be32(
-		FW_WR_FLOWID(ep->hwtid) |
-		FW_WR_LEN16(wrlen >> 4));
-	req->plen = cpu_to_be32(mpalen);
-	req->tunnel_to_proxy = cpu_to_be32(
-		FW_OFLD_TX_DATA_WR_FLUSH(1) |
-		FW_OFLD_TX_DATA_WR_SHOVE(1));
-=======
 	req = skb_put_zero(skb, wrlen);
 	req->op_to_immdlen = cpu_to_be32(
 		FW_WR_OP_V(FW_OFLD_TX_DATA_WR) |
@@ -1472,29 +1077,19 @@ static int send_mpa_reject(struct c4iw_ep *ep, const void *pdata, u8 plen)
 	req->tunnel_to_proxy = cpu_to_be32(
 		FW_OFLD_TX_DATA_WR_FLUSH_F |
 		FW_OFLD_TX_DATA_WR_SHOVE_F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpa = (struct mpa_message *)(req + 1);
 	memset(mpa, 0, sizeof(*mpa));
 	memcpy(mpa->key, MPA_KEY_REP, sizeof(mpa->key));
 	mpa->flags = MPA_REJECT;
-<<<<<<< HEAD
-	mpa->revision = mpa_rev;
-=======
 	mpa->revision = ep->mpa_attr.version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpa->private_data_size = htons(plen);
 
 	if (ep->mpa_attr.version == 2 && ep->mpa_attr.enhanced_rdma_conn) {
 		mpa->flags |= MPA_ENHANCED_RDMA_CONN;
-<<<<<<< HEAD
-		mpa->private_data_size +=
-			htons(sizeof(struct mpa_v2_conn_params));
-=======
 		mpa->private_data_size =
 			htons(ntohs(mpa->private_data_size) +
 			      sizeof(struct mpa_v2_conn_params));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mpa_v2_params.ird = htons(((u16)ep->ird) |
 					  (peer2peer ? MPA_V2_PEER2PEER_MODEL :
 					   0));
@@ -1521,15 +1116,9 @@ static int send_mpa_reject(struct c4iw_ep *ep, const void *pdata, u8 plen)
 	 */
 	skb_get(skb);
 	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
-<<<<<<< HEAD
-	t4_set_arp_err_handler(skb, NULL, arp_failure_discard);
-	BUG_ON(ep->mpa_skb);
-	ep->mpa_skb = skb;
-=======
 	t4_set_arp_err_handler(skb, NULL, mpa_start_arp_failure);
 	ep->mpa_skb = skb;
 	ep->snd_seq += mpalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
 }
 
@@ -1541,48 +1130,21 @@ static int send_mpa_reply(struct c4iw_ep *ep, const void *pdata, u8 plen)
 	struct sk_buff *skb;
 	struct mpa_v2_conn_params mpa_v2_params;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u pd_len %d\n", __func__, ep, ep->hwtid, ep->plen);
-=======
 	pr_debug("ep %p tid %u pd_len %d\n",
 		 ep, ep->hwtid, ep->plen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpalen = sizeof(*mpa) + plen;
 	if (ep->mpa_attr.version == 2 && ep->mpa_attr.enhanced_rdma_conn)
 		mpalen += sizeof(struct mpa_v2_conn_params);
-<<<<<<< HEAD
-	wrlen = roundup(mpalen + sizeof *req, 16);
-
-	skb = get_skb(NULL, wrlen, GFP_KERNEL);
-	if (!skb) {
-		printk(KERN_ERR MOD "%s - cannot alloc skb!\n", __func__);
-=======
 	wrlen = roundup(mpalen + sizeof(*req), 16);
 
 	skb = get_skb(NULL, wrlen, GFP_KERNEL);
 	if (!skb) {
 		pr_err("%s - cannot alloc skb!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
 
-<<<<<<< HEAD
-	req = (struct fw_ofld_tx_data_wr *) skb_put(skb, wrlen);
-	memset(req, 0, wrlen);
-	req->op_to_immdlen = cpu_to_be32(
-		FW_WR_OP(FW_OFLD_TX_DATA_WR) |
-		FW_WR_COMPL(1) |
-		FW_WR_IMMDLEN(mpalen));
-	req->flowid_len16 = cpu_to_be32(
-		FW_WR_FLOWID(ep->hwtid) |
-		FW_WR_LEN16(wrlen >> 4));
-	req->plen = cpu_to_be32(mpalen);
-	req->tunnel_to_proxy = cpu_to_be32(
-		FW_OFLD_TX_DATA_WR_FLUSH(1) |
-		FW_OFLD_TX_DATA_WR_SHOVE(1));
-=======
 	req = skb_put_zero(skb, wrlen);
 	req->op_to_immdlen = cpu_to_be32(
 		FW_WR_OP_V(FW_OFLD_TX_DATA_WR) |
@@ -1595,34 +1157,23 @@ static int send_mpa_reply(struct c4iw_ep *ep, const void *pdata, u8 plen)
 	req->tunnel_to_proxy = cpu_to_be32(
 		FW_OFLD_TX_DATA_WR_FLUSH_F |
 		FW_OFLD_TX_DATA_WR_SHOVE_F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpa = (struct mpa_message *)(req + 1);
 	memset(mpa, 0, sizeof(*mpa));
 	memcpy(mpa->key, MPA_KEY_REP, sizeof(mpa->key));
-<<<<<<< HEAD
-	mpa->flags = (ep->mpa_attr.crc_enabled ? MPA_CRC : 0) |
-		     (markers_enabled ? MPA_MARKERS : 0);
-=======
 	mpa->flags = 0;
 	if (ep->mpa_attr.crc_enabled)
 		mpa->flags |= MPA_CRC;
 	if (ep->mpa_attr.recv_marker_enabled)
 		mpa->flags |= MPA_MARKERS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpa->revision = ep->mpa_attr.version;
 	mpa->private_data_size = htons(plen);
 
 	if (ep->mpa_attr.version == 2 && ep->mpa_attr.enhanced_rdma_conn) {
 		mpa->flags |= MPA_ENHANCED_RDMA_CONN;
-<<<<<<< HEAD
-		mpa->private_data_size +=
-			htons(sizeof(struct mpa_v2_conn_params));
-=======
 		mpa->private_data_size =
 			htons(ntohs(mpa->private_data_size) +
 			      sizeof(struct mpa_v2_conn_params));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mpa_v2_params.ird = htons((u16)ep->ird);
 		mpa_v2_params.ord = htons((u16)ep->ord);
 		if (peer2peer && (ep->mpa_attr.p2p_type !=
@@ -1653,16 +1204,10 @@ static int send_mpa_reply(struct c4iw_ep *ep, const void *pdata, u8 plen)
 	 * Function fw4_ack() will deref it.
 	 */
 	skb_get(skb);
-<<<<<<< HEAD
-	t4_set_arp_err_handler(skb, NULL, arp_failure_discard);
-	ep->mpa_skb = skb;
-	state_set(&ep->com, MPA_REP_SENT);
-=======
 	t4_set_arp_err_handler(skb, NULL, mpa_start_arp_failure);
 	ep->mpa_skb = skb;
 	__state_set(&ep->com, MPA_REP_SENT);
 	ep->snd_seq += mpalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
 }
 
@@ -1670,17 +1215,6 @@ static int act_establish(struct c4iw_dev *dev, struct sk_buff *skb)
 {
 	struct c4iw_ep *ep;
 	struct cpl_act_establish *req = cplhdr(skb);
-<<<<<<< HEAD
-	unsigned int tid = GET_TID(req);
-	unsigned int atid = GET_TID_TID(ntohl(req->tos_atid));
-	struct tid_info *t = dev->rdev.lldi.tids;
-
-	ep = lookup_atid(t, atid);
-
-	PDBG("%s ep %p tid %u snd_isn %u rcv_isn %u\n", __func__, ep, tid,
-	     be32_to_cpu(req->snd_isn), be32_to_cpu(req->rcv_isn));
-
-=======
 	unsigned short tcp_opt = ntohs(req->tcp_opt);
 	unsigned int tid = GET_TID(req);
 	unsigned int atid = TID_TID_G(ntohl(req->tos_atid));
@@ -1693,58 +1227,10 @@ static int act_establish(struct c4iw_dev *dev, struct sk_buff *skb)
 		 be32_to_cpu(req->snd_isn), be32_to_cpu(req->rcv_isn));
 
 	mutex_lock(&ep->com.mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst_confirm(ep->dst);
 
 	/* setup the hwtid for this connection */
 	ep->hwtid = tid;
-<<<<<<< HEAD
-	cxgb4_insert_tid(t, ep, tid);
-
-	ep->snd_seq = be32_to_cpu(req->snd_isn);
-	ep->rcv_seq = be32_to_cpu(req->rcv_isn);
-
-	set_emss(ep, ntohs(req->tcp_opt));
-
-	/* dealloc the atid */
-	cxgb4_free_atid(t, atid);
-
-	/* start MPA negotiation */
-	send_flowc(ep, NULL);
-	if (ep->retry_with_mpa_v1)
-		send_mpa_req(ep, skb, 1);
-	else
-		send_mpa_req(ep, skb, mpa_rev);
-
-	return 0;
-}
-
-static void close_complete_upcall(struct c4iw_ep *ep)
-{
-	struct iw_cm_event event;
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	memset(&event, 0, sizeof(event));
-	event.event = IW_CM_EVENT_CLOSE;
-	if (ep->com.cm_id) {
-		PDBG("close complete delivered ep %p cm_id %p tid %u\n",
-		     ep, ep->com.cm_id, ep->hwtid);
-		ep->com.cm_id->event_handler(ep->com.cm_id, &event);
-		ep->com.cm_id->rem_ref(ep->com.cm_id);
-		ep->com.cm_id = NULL;
-		ep->com.qp = NULL;
-	}
-}
-
-static int abort_connection(struct c4iw_ep *ep, struct sk_buff *skb, gfp_t gfp)
-{
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	close_complete_upcall(ep);
-	state_set(&ep->com, ABORTING);
-	return send_abort(ep, skb, gfp);
-}
-
-=======
 	cxgb4_insert_tid(t, ep, tid, ep->com.local_addr.ss_family);
 	insert_ep_tid(ep);
 
@@ -1795,20 +1281,10 @@ static void close_complete_upcall(struct c4iw_ep *ep, int status)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void peer_close_upcall(struct c4iw_ep *ep)
 {
 	struct iw_cm_event event;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	memset(&event, 0, sizeof(event));
-	event.event = IW_CM_EVENT_DISCONNECT;
-	if (ep->com.cm_id) {
-		PDBG("peer close delivered ep %p cm_id %p tid %u\n",
-		     ep, ep->com.cm_id, ep->hwtid);
-		ep->com.cm_id->event_handler(ep->com.cm_id, &event);
-=======
 	pr_debug("ep %p tid %u\n", ep, ep->hwtid);
 	memset(&event, 0, sizeof(event));
 	event.event = IW_CM_EVENT_DISCONNECT;
@@ -1817,7 +1293,6 @@ static void peer_close_upcall(struct c4iw_ep *ep)
 			 ep, ep->com.cm_id, ep->hwtid);
 		ep->com.cm_id->event_handler(ep->com.cm_id, &event);
 		set_bit(DISCONN_UPCALL, &ep->com.history);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1825,29 +1300,16 @@ static void peer_abort_upcall(struct c4iw_ep *ep)
 {
 	struct iw_cm_event event;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-=======
 	pr_debug("ep %p tid %u\n", ep, ep->hwtid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&event, 0, sizeof(event));
 	event.event = IW_CM_EVENT_CLOSE;
 	event.status = -ECONNRESET;
 	if (ep->com.cm_id) {
-<<<<<<< HEAD
-		PDBG("abort delivered ep %p cm_id %p tid %u\n", ep,
-		     ep->com.cm_id, ep->hwtid);
-		ep->com.cm_id->event_handler(ep->com.cm_id, &event);
-		ep->com.cm_id->rem_ref(ep->com.cm_id);
-		ep->com.cm_id = NULL;
-		ep->com.qp = NULL;
-=======
 		pr_debug("abort delivered ep %p cm_id %p tid %u\n", ep,
 			 ep->com.cm_id, ep->hwtid);
 		ep->com.cm_id->event_handler(ep->com.cm_id, &event);
 		deref_cm_id(&ep->com);
 		set_bit(ABORT_UPCALL, &ep->com.history);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1855,14 +1317,6 @@ static void connect_reply_upcall(struct c4iw_ep *ep, int status)
 {
 	struct iw_cm_event event;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u status %d\n", __func__, ep, ep->hwtid, status);
-	memset(&event, 0, sizeof(event));
-	event.event = IW_CM_EVENT_CONNECT_REPLY;
-	event.status = status;
-	event.local_addr = ep->com.local_addr;
-	event.remote_addr = ep->com.remote_addr;
-=======
 	pr_debug("ep %p tid %u status %d\n",
 		 ep, ep->hwtid, status);
 	memset(&event, 0, sizeof(event));
@@ -1872,16 +1326,12 @@ static void connect_reply_upcall(struct c4iw_ep *ep, int status)
 	       sizeof(ep->com.local_addr));
 	memcpy(&event.remote_addr, &ep->com.remote_addr,
 	       sizeof(ep->com.remote_addr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((status == 0) || (status == -ECONNREFUSED)) {
 		if (!ep->tried_with_mpa_v1) {
 			/* this means MPA_v2 is used */
-<<<<<<< HEAD
-=======
 			event.ord = ep->ird;
 			event.ird = ep->ord;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			event.private_data_len = ep->plen -
 				sizeof(struct mpa_v2_conn_params);
 			event.private_data = ep->mpa_pkt +
@@ -1889,39 +1339,14 @@ static void connect_reply_upcall(struct c4iw_ep *ep, int status)
 				sizeof(struct mpa_v2_conn_params);
 		} else {
 			/* this means MPA_v1 is used */
-<<<<<<< HEAD
-=======
 			event.ord = cur_max_read_depth(ep->com.dev);
 			event.ird = cur_max_read_depth(ep->com.dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			event.private_data_len = ep->plen;
 			event.private_data = ep->mpa_pkt +
 				sizeof(struct mpa_message);
 		}
 	}
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u status %d\n", __func__, ep,
-	     ep->hwtid, status);
-	ep->com.cm_id->event_handler(ep->com.cm_id, &event);
-
-	if (status < 0) {
-		ep->com.cm_id->rem_ref(ep->com.cm_id);
-		ep->com.cm_id = NULL;
-		ep->com.qp = NULL;
-	}
-}
-
-static void connect_request_upcall(struct c4iw_ep *ep)
-{
-	struct iw_cm_event event;
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	memset(&event, 0, sizeof(event));
-	event.event = IW_CM_EVENT_CONNECT_REQUEST;
-	event.local_addr = ep->com.local_addr;
-	event.remote_addr = ep->com.remote_addr;
-=======
 	pr_debug("ep %p tid %u status %d\n", ep,
 		 ep->hwtid, status);
 	set_bit(CONN_RPL_UPCALL, &ep->com.history);
@@ -1943,7 +1368,6 @@ static int connect_request_upcall(struct c4iw_ep *ep)
 	       sizeof(ep->com.local_addr));
 	memcpy(&event.remote_addr, &ep->com.remote_addr,
 	       sizeof(ep->com.remote_addr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	event.provider_data = ep;
 	if (!ep->tried_with_mpa_v1) {
 		/* this means MPA_v2 is used */
@@ -1955,21 +1379,6 @@ static int connect_request_upcall(struct c4iw_ep *ep)
 			sizeof(struct mpa_v2_conn_params);
 	} else {
 		/* this means MPA_v1 is used. Send max supported */
-<<<<<<< HEAD
-		event.ord = c4iw_max_read_depth;
-		event.ird = c4iw_max_read_depth;
-		event.private_data_len = ep->plen;
-		event.private_data = ep->mpa_pkt + sizeof(struct mpa_message);
-	}
-	if (state_read(&ep->parent_ep->com) != DEAD) {
-		c4iw_get_ep(&ep->com);
-		ep->parent_ep->com.cm_id->event_handler(
-						ep->parent_ep->com.cm_id,
-						&event);
-	}
-	c4iw_put_ep(&ep->parent_ep->com);
-	ep->parent_ep = NULL;
-=======
 		event.ord = cur_max_read_depth(ep->com.dev);
 		event.ird = cur_max_read_depth(ep->com.dev);
 		event.private_data_len = ep->plen;
@@ -1983,23 +1392,12 @@ static int connect_request_upcall(struct c4iw_ep *ep)
 	set_bit(CONNREQ_UPCALL, &ep->com.history);
 	c4iw_put_ep(&ep->parent_ep->com);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void established_upcall(struct c4iw_ep *ep)
 {
 	struct iw_cm_event event;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	memset(&event, 0, sizeof(event));
-	event.event = IW_CM_EVENT_ESTABLISHED;
-	event.ird = ep->ird;
-	event.ord = ep->ord;
-	if (ep->com.cm_id) {
-		PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-		ep->com.cm_id->event_handler(ep->com.cm_id, &event);
-=======
 	pr_debug("ep %p tid %u\n", ep, ep->hwtid);
 	memset(&event, 0, sizeof(event));
 	event.event = IW_CM_EVENT_ESTABLISHED;
@@ -2009,34 +1407,11 @@ static void established_upcall(struct c4iw_ep *ep)
 		pr_debug("ep %p tid %u\n", ep, ep->hwtid);
 		ep->com.cm_id->event_handler(ep->com.cm_id, &event);
 		set_bit(ESTAB_UPCALL, &ep->com.history);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int update_rx_credits(struct c4iw_ep *ep, u32 credits)
 {
-<<<<<<< HEAD
-	struct cpl_rx_data_ack *req;
-	struct sk_buff *skb;
-	int wrlen = roundup(sizeof *req, 16);
-
-	PDBG("%s ep %p tid %u credits %u\n", __func__, ep, ep->hwtid, credits);
-	skb = get_skb(NULL, wrlen, GFP_KERNEL);
-	if (!skb) {
-		printk(KERN_ERR MOD "update_rx_credits - cannot alloc skb!\n");
-		return 0;
-	}
-
-	req = (struct cpl_rx_data_ack *) skb_put(skb, wrlen);
-	memset(req, 0, wrlen);
-	INIT_TP_WR(req, ep->hwtid);
-	OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_RX_DATA_ACK,
-						    ep->hwtid));
-	req->credit_dack = cpu_to_be32(credits | RX_FORCE_ACK(1) |
-				       F_RX_DACK_CHANGE |
-				       V_RX_DACK_MODE(dack_mode));
-	set_wr_txq(skb, CPL_PRIORITY_ACK, ep->ctrlq_idx);
-=======
 	struct sk_buff *skb;
 	u32 wrlen = roundup(sizeof(struct cpl_rx_data_ack), 16);
 	u32 credit_dack;
@@ -2063,14 +1438,10 @@ static int update_rx_credits(struct c4iw_ep *ep, u32 credits)
 	cxgb_mk_rx_data_ack(skb, wrlen, ep->hwtid, ep->ctrlq_idx,
 			    credit_dack);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_ofld_send(&ep->com.dev->rdev, skb);
 	return credits;
 }
 
-<<<<<<< HEAD
-static void process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
-=======
 #define RELAXED_IRD_NEGOTIATION 1
 
 /*
@@ -2086,7 +1457,6 @@ static void process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
  * 2 if a failure requires the caller to abort the connection.
  */
 static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpa_message *mpa;
 	struct mpa_v2_conn_params *mpa_v2_params;
@@ -2096,23 +1466,9 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	struct c4iw_qp_attributes attrs;
 	enum c4iw_qp_attr_mask mask;
 	int err;
-<<<<<<< HEAD
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-
-	/*
-	 * Stop mpa timer.  If it expired, then the state has
-	 * changed and we bail since ep_timeout already aborted
-	 * the connection.
-	 */
-	stop_ep_timer(ep);
-	if (state_read(&ep->com) != MPA_REQ_SENT)
-		return;
-=======
 	int disconnect = 0;
 
 	pr_debug("ep %p tid %u\n", ep, ep->hwtid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we get more than the supported amount of private data
@@ -2120,11 +1476,7 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	 */
 	if (ep->mpa_pkt_len + skb->len > sizeof(ep->mpa_pkt)) {
 		err = -EINVAL;
-<<<<<<< HEAD
-		goto err;
-=======
 		goto err_stop_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2138,25 +1490,11 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	 * if we don't even have the mpa message, then bail.
 	 */
 	if (ep->mpa_pkt_len < sizeof(*mpa))
-<<<<<<< HEAD
-		return;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpa = (struct mpa_message *) ep->mpa_pkt;
 
 	/* Validate MPA header. */
 	if (mpa->revision > mpa_rev) {
-<<<<<<< HEAD
-		printk(KERN_ERR MOD "%s MPA version mismatch. Local = %d,"
-		       " Received = %d\n", __func__, mpa_rev, mpa->revision);
-		err = -EPROTO;
-		goto err;
-	}
-	if (memcmp(mpa->key, MPA_KEY_REP, sizeof(mpa->key))) {
-		err = -EPROTO;
-		goto err;
-=======
 		pr_err("%s MPA version mismatch. Local = %d, Received = %d\n",
 		       __func__, mpa_rev, mpa->revision);
 		err = -EPROTO;
@@ -2165,7 +1503,6 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	if (memcmp(mpa->key, MPA_KEY_REP, sizeof(mpa->key))) {
 		err = -EPROTO;
 		goto err_stop_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	plen = ntohs(mpa->private_data_size);
@@ -2175,11 +1512,7 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	 */
 	if (plen > MPA_MAX_PRIVATE_DATA) {
 		err = -EPROTO;
-<<<<<<< HEAD
-		goto err;
-=======
 		goto err_stop_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2187,11 +1520,7 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	 */
 	if (ep->mpa_pkt_len > (sizeof(*mpa) + plen)) {
 		err = -EPROTO;
-<<<<<<< HEAD
-		goto err;
-=======
 		goto err_stop_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ep->plen = (u8) plen;
@@ -2201,16 +1530,6 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	 * We'll continue process when more data arrives.
 	 */
 	if (ep->mpa_pkt_len < (sizeof(*mpa) + plen))
-<<<<<<< HEAD
-		return;
-
-	if (mpa->flags & MPA_REJECT) {
-		err = -ECONNREFUSED;
-		goto err;
-	}
-
-	/*
-=======
 		return 0;
 
 	if (mpa->flags & MPA_REJECT) {
@@ -2227,19 +1546,12 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 		return 0;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If we get here we have accumulated the entire mpa
 	 * start reply message including private data. And
 	 * the MPA header is valid.
 	 */
-<<<<<<< HEAD
-	state_set(&ep->com, FPDU_MODE);
-	ep->mpa_attr.crc_enabled = (mpa->flags & MPA_CRC) | crc_enabled ? 1 : 0;
-	ep->mpa_attr.recv_marker_enabled = markers_enabled;
-=======
 	__state_set(&ep->com, FPDU_MODE);
 	ep->mpa_attr.crc_enabled = (mpa->flags & MPA_CRC) | crc_enabled ? 1 : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->mpa_attr.xmit_marker_enabled = mpa->flags & MPA_MARKERS ? 1 : 0;
 	ep->mpa_attr.version = mpa->revision;
 	ep->mpa_attr.p2p_type = FW_RI_INIT_P2PTYPE_DISABLED;
@@ -2254,24 +1566,14 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 				MPA_V2_IRD_ORD_MASK;
 			resp_ord = ntohs(mpa_v2_params->ord) &
 				MPA_V2_IRD_ORD_MASK;
-<<<<<<< HEAD
-=======
 			pr_debug("responder ird %u ord %u ep ird %u ord %u\n",
 				 resp_ird, resp_ord, ep->ird, ep->ord);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * This is a double-check. Ideally, below checks are
 			 * not required since ird/ord stuff has been taken
 			 * care of in c4iw_accept_cr
 			 */
-<<<<<<< HEAD
-			if ((ep->ird < resp_ord) || (ep->ord > resp_ird)) {
-				err = -ENOMEM;
-				ep->ird = resp_ord;
-				ep->ord = resp_ird;
-				insuff_ird = 1;
-=======
 			if (ep->ird < resp_ord) {
 				if (RELAXED_IRD_NEGOTIATION && resp_ord <=
 				    ep->com.dev->rdev.lldi.max_ordird_qp)
@@ -2291,7 +1593,6 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 				err = -ENOMEM;
 				ep->ird = resp_ord;
 				ep->ord = resp_ird;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			if (ntohs(mpa_v2_params->ird) &
@@ -2310,20 +1611,11 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 		if (peer2peer)
 			ep->mpa_attr.p2p_type = p2p_type;
 
-<<<<<<< HEAD
-	PDBG("%s - crc_enabled=%d, recv_marker_enabled=%d, "
-	     "xmit_marker_enabled=%d, version=%d p2p_type=%d local-p2p_type = "
-	     "%d\n", __func__, ep->mpa_attr.crc_enabled,
-	     ep->mpa_attr.recv_marker_enabled,
-	     ep->mpa_attr.xmit_marker_enabled, ep->mpa_attr.version,
-	     ep->mpa_attr.p2p_type, p2p_type);
-=======
 	pr_debug("crc_enabled=%d, recv_marker_enabled=%d, xmit_marker_enabled=%d, version=%d p2p_type=%d local-p2p_type = %d\n",
 		 ep->mpa_attr.crc_enabled,
 		 ep->mpa_attr.recv_marker_enabled,
 		 ep->mpa_attr.xmit_marker_enabled, ep->mpa_attr.version,
 		 ep->mpa_attr.p2p_type, p2p_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If responder's RTR does not match with that of initiator, assign
@@ -2358,15 +1650,6 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	 * supports, generate TERM message
 	 */
 	if (rtr_mismatch) {
-<<<<<<< HEAD
-		printk(KERN_ERR "%s: RTR mismatch, sending TERM\n", __func__);
-		attrs.layer_etype = LAYER_MPA | DDP_LLP;
-		attrs.ecode = MPA_NOMATCH_RTR;
-		attrs.next_state = C4IW_QP_STATE_TERMINATE;
-		err = c4iw_modify_qp(ep->com.qp->rhp, ep->com.qp,
-				C4IW_QP_ATTR_NEXT_STATE, &attrs, 0);
-		err = -ENOMEM;
-=======
 		pr_err("%s: RTR mismatch, sending TERM\n", __func__);
 		attrs.layer_etype = LAYER_MPA | DDP_LLP;
 		attrs.ecode = MPA_NOMATCH_RTR;
@@ -2376,7 +1659,6 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 				C4IW_QP_ATTR_NEXT_STATE, &attrs, 1);
 		err = -ENOMEM;
 		disconnect = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2387,28 +1669,6 @@ static int process_mpa_reply(struct c4iw_ep *ep, struct sk_buff *skb)
 	 * initiator ORD.
 	 */
 	if (insuff_ird) {
-<<<<<<< HEAD
-		printk(KERN_ERR "%s: Insufficient IRD, sending TERM\n",
-				__func__);
-		attrs.layer_etype = LAYER_MPA | DDP_LLP;
-		attrs.ecode = MPA_INSUFF_IRD;
-		attrs.next_state = C4IW_QP_STATE_TERMINATE;
-		err = c4iw_modify_qp(ep->com.qp->rhp, ep->com.qp,
-				C4IW_QP_ATTR_NEXT_STATE, &attrs, 0);
-		err = -ENOMEM;
-		goto out;
-	}
-	goto out;
-err:
-	state_set(&ep->com, ABORTING);
-	send_abort(ep, skb, GFP_KERNEL);
-out:
-	connect_reply_upcall(ep, err);
-	return;
-}
-
-static void process_mpa_request(struct c4iw_ep *ep, struct sk_buff *skb)
-=======
 		pr_err("%s: Insufficient IRD, sending TERM\n", __func__);
 		attrs.layer_etype = LAYER_MPA | DDP_LLP;
 		attrs.ecode = MPA_INSUFF_IRD;
@@ -2443,39 +1703,21 @@ out:
  * 2 if a failure requires the caller to abort the connection.
  */
 static int process_mpa_request(struct c4iw_ep *ep, struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpa_message *mpa;
 	struct mpa_v2_conn_params *mpa_v2_params;
 	u16 plen;
 
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-
-	if (state_read(&ep->com) != MPA_REQ_WAIT)
-		return;
-=======
 	pr_debug("ep %p tid %u\n", ep, ep->hwtid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we get more than the supported amount of private data
 	 * then we must fail this connection.
 	 */
-<<<<<<< HEAD
-	if (ep->mpa_pkt_len + skb->len > sizeof(ep->mpa_pkt)) {
-		stop_ep_timer(ep);
-		abort_connection(ep, skb, GFP_KERNEL);
-		return;
-	}
-
-	PDBG("%s enter (%s line %u)\n", __func__, __FILE__, __LINE__);
-=======
 	if (ep->mpa_pkt_len + skb->len > sizeof(ep->mpa_pkt))
 		goto err_stop_timer;
 
 	pr_debug("enter (%s line %u)\n", __FILE__, __LINE__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Copy the new data into our accumulation buffer.
@@ -2489,34 +1731,15 @@ static int process_mpa_request(struct c4iw_ep *ep, struct sk_buff *skb)
 	 * We'll continue process when more data arrives.
 	 */
 	if (ep->mpa_pkt_len < sizeof(*mpa))
-<<<<<<< HEAD
-		return;
-
-	PDBG("%s enter (%s line %u)\n", __func__, __FILE__, __LINE__);
-	stop_ep_timer(ep);
-=======
 		return 0;
 
 	pr_debug("enter (%s line %u)\n", __FILE__, __LINE__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpa = (struct mpa_message *) ep->mpa_pkt;
 
 	/*
 	 * Validate MPA Header.
 	 */
 	if (mpa->revision > mpa_rev) {
-<<<<<<< HEAD
-		printk(KERN_ERR MOD "%s MPA version mismatch. Local = %d,"
-		       " Received = %d\n", __func__, mpa_rev, mpa->revision);
-		abort_connection(ep, skb, GFP_KERNEL);
-		return;
-	}
-
-	if (memcmp(mpa->key, MPA_KEY_REQ, sizeof(mpa->key))) {
-		abort_connection(ep, skb, GFP_KERNEL);
-		return;
-	}
-=======
 		pr_err("%s MPA version mismatch. Local = %d, Received = %d\n",
 		       __func__, mpa_rev, mpa->revision);
 		goto err_stop_timer;
@@ -2524,46 +1747,27 @@ static int process_mpa_request(struct c4iw_ep *ep, struct sk_buff *skb)
 
 	if (memcmp(mpa->key, MPA_KEY_REQ, sizeof(mpa->key)))
 		goto err_stop_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	plen = ntohs(mpa->private_data_size);
 
 	/*
 	 * Fail if there's too much private data.
 	 */
-<<<<<<< HEAD
-	if (plen > MPA_MAX_PRIVATE_DATA) {
-		abort_connection(ep, skb, GFP_KERNEL);
-		return;
-	}
-=======
 	if (plen > MPA_MAX_PRIVATE_DATA)
 		goto err_stop_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If plen does not account for pkt size
 	 */
-<<<<<<< HEAD
-	if (ep->mpa_pkt_len > (sizeof(*mpa) + plen)) {
-		abort_connection(ep, skb, GFP_KERNEL);
-		return;
-	}
-=======
 	if (ep->mpa_pkt_len > (sizeof(*mpa) + plen))
 		goto err_stop_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->plen = (u8) plen;
 
 	/*
 	 * If we don't have all the pdata yet, then bail.
 	 */
 	if (ep->mpa_pkt_len < (sizeof(*mpa) + plen))
-<<<<<<< HEAD
-		return;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we get here we have accumulated the entire mpa
@@ -2586,10 +1790,6 @@ static int process_mpa_request(struct c4iw_ep *ep, struct sk_buff *skb)
 				(ep->mpa_pkt + sizeof(*mpa));
 			ep->ird = ntohs(mpa_v2_params->ird) &
 				MPA_V2_IRD_ORD_MASK;
-<<<<<<< HEAD
-			ep->ord = ntohs(mpa_v2_params->ord) &
-				MPA_V2_IRD_ORD_MASK;
-=======
 			ep->ird = min_t(u32, ep->ird,
 					cur_max_read_depth(ep->com.dev));
 			ep->ord = ntohs(mpa_v2_params->ord) &
@@ -2598,7 +1798,6 @@ static int process_mpa_request(struct c4iw_ep *ep, struct sk_buff *skb)
 					cur_max_read_depth(ep->com.dev));
 			pr_debug("initiator ird %u ord %u\n",
 				 ep->ird, ep->ord);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ntohs(mpa_v2_params->ird) & MPA_V2_PEER2PEER_MODEL)
 				if (peer2peer) {
 					if (ntohs(mpa_v2_params->ord) &
@@ -2615,19 +1814,6 @@ static int process_mpa_request(struct c4iw_ep *ep, struct sk_buff *skb)
 		if (peer2peer)
 			ep->mpa_attr.p2p_type = p2p_type;
 
-<<<<<<< HEAD
-	PDBG("%s - crc_enabled=%d, recv_marker_enabled=%d, "
-	     "xmit_marker_enabled=%d, version=%d p2p_type=%d\n", __func__,
-	     ep->mpa_attr.crc_enabled, ep->mpa_attr.recv_marker_enabled,
-	     ep->mpa_attr.xmit_marker_enabled, ep->mpa_attr.version,
-	     ep->mpa_attr.p2p_type);
-
-	state_set(&ep->com, MPA_REQ_RCVD);
-
-	/* drive upcall */
-	connect_request_upcall(ep);
-	return;
-=======
 	pr_debug("crc_enabled=%d, recv_marker_enabled=%d, xmit_marker_enabled=%d, version=%d p2p_type=%d\n",
 		 ep->mpa_attr.crc_enabled, ep->mpa_attr.recv_marker_enabled,
 		 ep->mpa_attr.xmit_marker_enabled, ep->mpa_attr.version,
@@ -2653,7 +1839,6 @@ err_stop_timer:
 	(void)stop_ep_timer(ep);
 err_out:
 	return 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rx_data(struct c4iw_dev *dev, struct sk_buff *skb)
@@ -2662,58 +1847,6 @@ static int rx_data(struct c4iw_dev *dev, struct sk_buff *skb)
 	struct cpl_rx_data *hdr = cplhdr(skb);
 	unsigned int dlen = ntohs(hdr->len);
 	unsigned int tid = GET_TID(hdr);
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-
-	ep = lookup_tid(t, tid);
-	PDBG("%s ep %p tid %u dlen %u\n", __func__, ep, ep->hwtid, dlen);
-	skb_pull(skb, sizeof(*hdr));
-	skb_trim(skb, dlen);
-
-	ep->rcv_seq += dlen;
-	BUG_ON(ep->rcv_seq != (ntohl(hdr->seq) + dlen));
-
-	/* update RX credits */
-	update_rx_credits(ep, dlen);
-
-	switch (state_read(&ep->com)) {
-	case MPA_REQ_SENT:
-		process_mpa_reply(ep, skb);
-		break;
-	case MPA_REQ_WAIT:
-		process_mpa_request(ep, skb);
-		break;
-	case MPA_REP_SENT:
-		break;
-	default:
-		printk(KERN_ERR MOD "%s Unexpected streaming data."
-		       " ep %p state %d tid %u\n",
-		       __func__, ep, state_read(&ep->com), ep->hwtid);
-
-		/*
-		 * The ep will timeout and inform the ULP of the failure.
-		 * See ep_timeout().
-		 */
-		break;
-	}
-	return 0;
-}
-
-static int abort_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
-{
-	struct c4iw_ep *ep;
-	struct cpl_abort_rpl_rss *rpl = cplhdr(skb);
-	int release = 0;
-	unsigned int tid = GET_TID(rpl);
-	struct tid_info *t = dev->rdev.lldi.tids;
-
-	ep = lookup_tid(t, tid);
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	BUG_ON(!ep);
-	mutex_lock(&ep->com.mutex);
-	switch (ep->com.state) {
-	case ABORTING:
-=======
 	__u8 status = hdr->status;
 	int disconnect = 0;
 
@@ -2805,210 +1938,15 @@ static int abort_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
 	switch (ep->com.state) {
 	case ABORTING:
 		c4iw_wake_up_noref(ep->com.wr_waitp, -ECONNRESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__state_set(&ep->com, DEAD);
 		release = 1;
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "%s ep %p state %d\n",
-		     __func__, ep, ep->com.state);
-=======
 		pr_err("%s ep %p state %d\n", __func__, ep, ep->com.state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	mutex_unlock(&ep->com.mutex);
 
-<<<<<<< HEAD
-	if (release)
-		release_ep_resources(ep);
-	return 0;
-}
-
-/*
- * Return whether a failed active open has allocated a TID
- */
-static inline int act_open_has_tid(int status)
-{
-	return status != CPL_ERR_TCAM_FULL && status != CPL_ERR_CONN_EXIST &&
-	       status != CPL_ERR_ARP_MISS;
-}
-
-static int act_open_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
-{
-	struct c4iw_ep *ep;
-	struct cpl_act_open_rpl *rpl = cplhdr(skb);
-	unsigned int atid = GET_TID_TID(GET_AOPEN_ATID(
-					ntohl(rpl->atid_status)));
-	struct tid_info *t = dev->rdev.lldi.tids;
-	int status = GET_AOPEN_STATUS(ntohl(rpl->atid_status));
-
-	ep = lookup_atid(t, atid);
-
-	PDBG("%s ep %p atid %u status %u errno %d\n", __func__, ep, atid,
-	     status, status2errno(status));
-
-	if (status == CPL_ERR_RTX_NEG_ADVICE) {
-		printk(KERN_WARNING MOD "Connection problems for atid %u\n",
-			atid);
-		return 0;
-	}
-
-	connect_reply_upcall(ep, status2errno(status));
-	state_set(&ep->com, DEAD);
-
-	if (status && act_open_has_tid(status))
-		cxgb4_remove_tid(ep->com.dev->rdev.lldi.tids, 0, GET_TID(rpl));
-
-	cxgb4_free_atid(t, atid);
-	dst_release(ep->dst);
-	cxgb4_l2t_release(ep->l2t);
-	c4iw_put_ep(&ep->com);
-
-	return 0;
-}
-
-static int pass_open_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
-{
-	struct cpl_pass_open_rpl *rpl = cplhdr(skb);
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int stid = GET_TID(rpl);
-	struct c4iw_listen_ep *ep = lookup_stid(t, stid);
-
-	if (!ep) {
-		printk(KERN_ERR MOD "stid %d lookup failure!\n", stid);
-		return 0;
-	}
-	PDBG("%s ep %p status %d error %d\n", __func__, ep,
-	     rpl->status, status2errno(rpl->status));
-	c4iw_wake_up(&ep->com.wr_wait, status2errno(rpl->status));
-
-	return 0;
-}
-
-static int listen_stop(struct c4iw_listen_ep *ep)
-{
-	struct sk_buff *skb;
-	struct cpl_close_listsvr_req *req;
-
-	PDBG("%s ep %p\n", __func__, ep);
-	skb = get_skb(NULL, sizeof(*req), GFP_KERNEL);
-	if (!skb) {
-		printk(KERN_ERR MOD "%s - failed to alloc skb\n", __func__);
-		return -ENOMEM;
-	}
-	req = (struct cpl_close_listsvr_req *) skb_put(skb, sizeof(*req));
-	INIT_TP_WR(req, 0);
-	OPCODE_TID(req) = cpu_to_be32(MK_OPCODE_TID(CPL_CLOSE_LISTSRV_REQ,
-						    ep->stid));
-	req->reply_ctrl = cpu_to_be16(
-			  QUEUENO(ep->com.dev->rdev.lldi.rxq_ids[0]));
-	set_wr_txq(skb, CPL_PRIORITY_SETUP, 0);
-	return c4iw_ofld_send(&ep->com.dev->rdev, skb);
-}
-
-static int close_listsrv_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
-{
-	struct cpl_close_listsvr_rpl *rpl = cplhdr(skb);
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int stid = GET_TID(rpl);
-	struct c4iw_listen_ep *ep = lookup_stid(t, stid);
-
-	PDBG("%s ep %p\n", __func__, ep);
-	c4iw_wake_up(&ep->com.wr_wait, status2errno(rpl->status));
-	return 0;
-}
-
-static void accept_cr(struct c4iw_ep *ep, __be32 peer_ip, struct sk_buff *skb,
-		      struct cpl_pass_accept_req *req)
-{
-	struct cpl_pass_accept_rpl *rpl;
-	unsigned int mtu_idx;
-	u64 opt0;
-	u32 opt2;
-	int wscale;
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	BUG_ON(skb_cloned(skb));
-	skb_trim(skb, sizeof(*rpl));
-	skb_get(skb);
-	cxgb4_best_mtu(ep->com.dev->rdev.lldi.mtus, ep->mtu, &mtu_idx);
-	wscale = compute_wscale(rcv_win);
-	opt0 = KEEP_ALIVE(1) |
-	       DELACK(1) |
-	       WND_SCALE(wscale) |
-	       MSS_IDX(mtu_idx) |
-	       L2T_IDX(ep->l2t->idx) |
-	       TX_CHAN(ep->tx_chan) |
-	       SMAC_SEL(ep->smac_idx) |
-	       DSCP(ep->tos) |
-	       ULP_MODE(ULP_MODE_TCPDDP) |
-	       RCV_BUFSIZ(rcv_win>>10);
-	opt2 = RX_CHANNEL(0) |
-	       RSS_QUEUE_VALID | RSS_QUEUE(ep->rss_qid);
-
-	if (enable_tcp_timestamps && req->tcpopt.tstamp)
-		opt2 |= TSTAMPS_EN(1);
-	if (enable_tcp_sack && req->tcpopt.sack)
-		opt2 |= SACK_EN(1);
-	if (wscale && enable_tcp_window_scaling)
-		opt2 |= WND_SCALE_EN(1);
-
-	rpl = cplhdr(skb);
-	INIT_TP_WR(rpl, ep->hwtid);
-	OPCODE_TID(rpl) = cpu_to_be32(MK_OPCODE_TID(CPL_PASS_ACCEPT_RPL,
-				      ep->hwtid));
-	rpl->opt0 = cpu_to_be64(opt0);
-	rpl->opt2 = cpu_to_be32(opt2);
-	set_wr_txq(skb, CPL_PRIORITY_SETUP, ep->ctrlq_idx);
-	c4iw_l2t_send(&ep->com.dev->rdev, skb, ep->l2t);
-
-	return;
-}
-
-static void reject_cr(struct c4iw_dev *dev, u32 hwtid, __be32 peer_ip,
-		      struct sk_buff *skb)
-{
-	PDBG("%s c4iw_dev %p tid %u peer_ip %x\n", __func__, dev, hwtid,
-	     peer_ip);
-	BUG_ON(skb_cloned(skb));
-	skb_trim(skb, sizeof(struct cpl_tid_release));
-	skb_get(skb);
-	release_tid(&dev->rdev, hwtid, skb);
-	return;
-}
-
-static void get_4tuple(struct cpl_pass_accept_req *req,
-		       __be32 *local_ip, __be32 *peer_ip,
-		       __be16 *local_port, __be16 *peer_port)
-{
-	int eth_len = G_ETH_HDR_LEN(be32_to_cpu(req->hdr_len));
-	int ip_len = G_IP_HDR_LEN(be32_to_cpu(req->hdr_len));
-	struct iphdr *ip = (struct iphdr *)((u8 *)(req + 1) + eth_len);
-	struct tcphdr *tcp = (struct tcphdr *)
-			     ((u8 *)(req + 1) + eth_len + ip_len);
-
-	PDBG("%s saddr 0x%x daddr 0x%x sport %u dport %u\n", __func__,
-	     ntohl(ip->saddr), ntohl(ip->daddr), ntohs(tcp->source),
-	     ntohs(tcp->dest));
-
-	*peer_ip = ip->saddr;
-	*local_ip = ip->daddr;
-	*peer_port = tcp->source;
-	*local_port = tcp->dest;
-
-	return;
-}
-
-static int import_ep(struct c4iw_ep *ep, __be32 peer_ip, struct dst_entry *dst,
-		     struct c4iw_dev *cdev, bool clear_mpa_v1)
-{
-	struct neighbour *n;
-	int err, step;
-
-	n = dst_neigh_lookup(dst, &peer_ip);
-=======
 	if (release) {
 		close_complete_upcall(ep, -ECONNRESET);
 		release_ep_resources(ep);
@@ -3139,25 +2077,12 @@ static int import_ep(struct c4iw_ep *ep, int iptype, __u8 *peer_ip,
 	struct net_device *pdev;
 
 	n = dst_neigh_lookup(dst, peer_ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!n)
 		return -ENODEV;
 
 	rcu_read_lock();
 	err = -ENOMEM;
 	if (n->dev->flags & IFF_LOOPBACK) {
-<<<<<<< HEAD
-		struct net_device *pdev;
-
-		pdev = ip_dev_find(&init_net, peer_ip);
-		ep->l2t = cxgb4_l2t_get(cdev->rdev.lldi.l2t,
-					n, pdev, 0);
-		if (!ep->l2t)
-			goto out;
-		ep->mtu = pdev->mtu;
-		ep->tx_chan = cxgb4_port_chan(pdev);
-		ep->smac_idx = (cxgb4_port_viid(pdev) & 0x7F) << 1;
-=======
 		if (iptype == 4)
 			pdev = ip_dev_find(&init_net, *(__be32 *)peer_ip);
 		else if (IS_ENABLED(CONFIG_IPV6))
@@ -3183,7 +2108,6 @@ static int import_ep(struct c4iw_ep *ep, int iptype, __u8 *peer_ip,
 		ep->mtu = pdev->mtu;
 		ep->tx_chan = cxgb4_port_chan(pdev);
 		ep->smac_idx = ((struct port_info *)netdev_priv(pdev))->smt_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		step = cdev->rdev.lldi.ntxq /
 			cdev->rdev.lldi.nchan;
 		ep->txq_idx = cxgb4_port_idx(pdev) * step;
@@ -3192,25 +2116,6 @@ static int import_ep(struct c4iw_ep *ep, int iptype, __u8 *peer_ip,
 		ep->ctrlq_idx = cxgb4_port_idx(pdev);
 		ep->rss_qid = cdev->rdev.lldi.rxq_ids[
 			cxgb4_port_idx(pdev) * step];
-<<<<<<< HEAD
-		dev_put(pdev);
-	} else {
-		ep->l2t = cxgb4_l2t_get(cdev->rdev.lldi.l2t,
-					n, n->dev, 0);
-		if (!ep->l2t)
-			goto out;
-		ep->mtu = dst_mtu(dst);
-		ep->tx_chan = cxgb4_port_chan(n->dev);
-		ep->smac_idx = (cxgb4_port_viid(n->dev) & 0x7F) << 1;
-		step = cdev->rdev.lldi.ntxq /
-			cdev->rdev.lldi.nchan;
-		ep->txq_idx = cxgb4_port_idx(n->dev) * step;
-		ep->ctrlq_idx = cxgb4_port_idx(n->dev);
-		step = cdev->rdev.lldi.nrxq /
-			cdev->rdev.lldi.nchan;
-		ep->rss_qid = cdev->rdev.lldi.rxq_ids[
-			cxgb4_port_idx(n->dev) * step];
-=======
 		set_tcp_window(ep, (struct port_info *)netdev_priv(pdev));
 		dev_put(pdev);
 	} else {
@@ -3231,7 +2136,6 @@ static int import_ep(struct c4iw_ep *ep, int iptype, __u8 *peer_ip,
 		ep->rss_qid = cdev->rdev.lldi.rxq_ids[
 			cxgb4_port_idx(pdev) * step];
 		set_tcp_window(ep, (struct port_info *)netdev_priv(pdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (clear_mpa_v1) {
 			ep->retry_with_mpa_v1 = 0;
@@ -3247,46 +2151,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int pass_accept_req(struct c4iw_dev *dev, struct sk_buff *skb)
-{
-	struct c4iw_ep *child_ep, *parent_ep;
-	struct cpl_pass_accept_req *req = cplhdr(skb);
-	unsigned int stid = GET_POPEN_TID(ntohl(req->tos_stid));
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int hwtid = GET_TID(req);
-	struct dst_entry *dst;
-	struct rtable *rt;
-	__be32 local_ip, peer_ip;
-	__be16 local_port, peer_port;
-	int err;
-
-	parent_ep = lookup_stid(t, stid);
-	PDBG("%s parent ep %p tid %u\n", __func__, parent_ep, hwtid);
-
-	get_4tuple(req, &local_ip, &peer_ip, &local_port, &peer_port);
-
-	if (state_read(&parent_ep->com) != LISTEN) {
-		printk(KERN_ERR "%s - listening ep not in LISTEN\n",
-		       __func__);
-		goto reject;
-	}
-
-	/* Find output route */
-	rt = find_route(dev, local_ip, peer_ip, local_port, peer_port,
-			GET_POPEN_TOS(ntohl(req->tos_stid)));
-	if (!rt) {
-		printk(KERN_ERR MOD "%s - failed to find dst entry!\n",
-		       __func__);
-		goto reject;
-	}
-	dst = &rt->dst;
-
-	child_ep = alloc_ep(sizeof(*child_ep), GFP_KERNEL);
-	if (!child_ep) {
-		printk(KERN_ERR MOD "%s - failed to allocate ep entry!\n",
-		       __func__);
-=======
 static int c4iw_reconnect(struct c4iw_ep *ep)
 {
 	int err = 0;
@@ -3708,54 +2572,19 @@ static int pass_accept_req(struct c4iw_dev *dev, struct sk_buff *skb)
 	child_ep = alloc_ep(sizeof(*child_ep), GFP_KERNEL);
 	if (!child_ep) {
 		pr_err("%s - failed to allocate ep entry!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dst_release(dst);
 		goto reject;
 	}
 
-<<<<<<< HEAD
-	err = import_ep(child_ep, peer_ip, dst, dev, false);
-	if (err) {
-		printk(KERN_ERR MOD "%s - failed to allocate l2t entry!\n",
-		       __func__);
-=======
 	err = import_ep(child_ep, iptype, peer_ip, dst, dev, false,
 			parent_ep->com.dev->rdev.lldi.adapter_type, tos);
 	if (err) {
 		pr_err("%s - failed to allocate l2t entry!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dst_release(dst);
 		kfree(child_ep);
 		goto reject;
 	}
 
-<<<<<<< HEAD
-	state_set(&child_ep->com, CONNECTING);
-	child_ep->com.dev = dev;
-	child_ep->com.cm_id = NULL;
-	child_ep->com.local_addr.sin_family = PF_INET;
-	child_ep->com.local_addr.sin_port = local_port;
-	child_ep->com.local_addr.sin_addr.s_addr = local_ip;
-	child_ep->com.remote_addr.sin_family = PF_INET;
-	child_ep->com.remote_addr.sin_port = peer_port;
-	child_ep->com.remote_addr.sin_addr.s_addr = peer_ip;
-	c4iw_get_ep(&parent_ep->com);
-	child_ep->parent_ep = parent_ep;
-	child_ep->tos = GET_POPEN_TOS(ntohl(req->tos_stid));
-	child_ep->dst = dst;
-	child_ep->hwtid = hwtid;
-
-	PDBG("%s tx_chan %u smac_idx %u rss_qid %u\n", __func__,
-	     child_ep->tx_chan, child_ep->smac_idx, child_ep->rss_qid);
-
-	init_timer(&child_ep->timer);
-	cxgb4_insert_tid(t, child_ep, hwtid);
-	accept_cr(child_ep, peer_ip, skb, req);
-	goto out;
-reject:
-	reject_cr(dev, hwtid, peer_ip, skb);
-out:
-=======
 	hdrs = ((iptype == 4) ? sizeof(struct iphdr) : sizeof(struct ipv6hdr)) +
 	       sizeof(struct tcphdr) +
 	       ((enable_tcp_timestamps && req->tcpopt.tstamp) ? 12 : 0);
@@ -3838,7 +2667,6 @@ reject:
 out:
 	if (parent_ep)
 		c4iw_put_ep(&parent_ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3846,22 +2674,6 @@ static int pass_establish(struct c4iw_dev *dev, struct sk_buff *skb)
 {
 	struct c4iw_ep *ep;
 	struct cpl_pass_establish *req = cplhdr(skb);
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int tid = GET_TID(req);
-
-	ep = lookup_tid(t, tid);
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	ep->snd_seq = be32_to_cpu(req->snd_isn);
-	ep->rcv_seq = be32_to_cpu(req->rcv_isn);
-
-	set_emss(ep, ntohs(req->tcp_opt));
-
-	dst_confirm(ep->dst);
-	state_set(&ep->com, MPA_REQ_WAIT);
-	start_ep_timer(ep);
-	send_flowc(ep, skb);
-=======
 	unsigned int tid = GET_TID(req);
 	int ret;
 	u16 tcp_opt = ntohs(req->tcp_opt);
@@ -3889,7 +2701,6 @@ static int pass_establish(struct c4iw_dev *dev, struct sk_buff *skb)
 	if (ret)
 		c4iw_ep_disconnect(ep, 1, GFP_KERNEL);
 	c4iw_put_ep(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3901,16 +2712,6 @@ static int peer_close(struct c4iw_dev *dev, struct sk_buff *skb)
 	struct c4iw_qp_attributes attrs;
 	int disconnect = 1;
 	int release = 0;
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int tid = GET_TID(hdr);
-	int ret;
-
-	ep = lookup_tid(t, tid);
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	dst_confirm(ep->dst);
-
-=======
 	unsigned int tid = GET_TID(hdr);
 	int ret;
 
@@ -3922,7 +2723,6 @@ static int peer_close(struct c4iw_dev *dev, struct sk_buff *skb)
 	dst_confirm(ep->dst);
 
 	set_bit(PEER_CLOSE, &ep->com.history);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&ep->com.mutex);
 	switch (ep->com.state) {
 	case MPA_REQ_WAIT:
@@ -3941,15 +2741,6 @@ static int peer_close(struct c4iw_dev *dev, struct sk_buff *skb)
 		 * in rdma connection migration (see c4iw_accept_cr()).
 		 */
 		__state_set(&ep->com, CLOSING);
-<<<<<<< HEAD
-		PDBG("waking up ep %p tid %u\n", ep, ep->hwtid);
-		c4iw_wake_up(&ep->com.wr_wait, -ECONNRESET);
-		break;
-	case MPA_REP_SENT:
-		__state_set(&ep->com, CLOSING);
-		PDBG("waking up ep %p tid %u\n", ep, ep->hwtid);
-		c4iw_wake_up(&ep->com.wr_wait, -ECONNRESET);
-=======
 		pr_debug("waking up ep %p tid %u\n", ep, ep->hwtid);
 		c4iw_wake_up_noref(ep->com.wr_waitp, -ECONNRESET);
 		break;
@@ -3957,7 +2748,6 @@ static int peer_close(struct c4iw_dev *dev, struct sk_buff *skb)
 		__state_set(&ep->com, CLOSING);
 		pr_debug("waking up ep %p tid %u\n", ep, ep->hwtid);
 		c4iw_wake_up_noref(ep->com.wr_waitp, -ECONNRESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case FPDU_MODE:
 		start_ep_timer(ep);
@@ -3978,21 +2768,13 @@ static int peer_close(struct c4iw_dev *dev, struct sk_buff *skb)
 		disconnect = 0;
 		break;
 	case MORIBUND:
-<<<<<<< HEAD
-		stop_ep_timer(ep);
-=======
 		(void)stop_ep_timer(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ep->com.cm_id && ep->com.qp) {
 			attrs.next_state = C4IW_QP_STATE_IDLE;
 			c4iw_modify_qp(ep->com.qp->rhp, ep->com.qp,
 				       C4IW_QP_ATTR_NEXT_STATE, &attrs, 1);
 		}
-<<<<<<< HEAD
-		close_complete_upcall(ep);
-=======
 		close_complete_upcall(ep, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__state_set(&ep->com, DEAD);
 		release = 1;
 		disconnect = 0;
@@ -4001,97 +2783,13 @@ static int peer_close(struct c4iw_dev *dev, struct sk_buff *skb)
 		disconnect = 0;
 		break;
 	default:
-<<<<<<< HEAD
-		BUG_ON(1);
-=======
 		WARN_ONCE(1, "Bad endpoint state %u\n", ep->com.state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&ep->com.mutex);
 	if (disconnect)
 		c4iw_ep_disconnect(ep, 0, GFP_KERNEL);
 	if (release)
 		release_ep_resources(ep);
-<<<<<<< HEAD
-	return 0;
-}
-
-/*
- * Returns whether an ABORT_REQ_RSS message is a negative advice.
- */
-static int is_neg_adv_abort(unsigned int status)
-{
-	return status == CPL_ERR_RTX_NEG_ADVICE ||
-	       status == CPL_ERR_PERSIST_NEG_ADVICE;
-}
-
-static int c4iw_reconnect(struct c4iw_ep *ep)
-{
-	struct rtable *rt;
-	int err = 0;
-
-	PDBG("%s qp %p cm_id %p\n", __func__, ep->com.qp, ep->com.cm_id);
-	init_timer(&ep->timer);
-
-	/*
-	 * Allocate an active TID to initiate a TCP connection.
-	 */
-	ep->atid = cxgb4_alloc_atid(ep->com.dev->rdev.lldi.tids, ep);
-	if (ep->atid == -1) {
-		printk(KERN_ERR MOD "%s - cannot alloc atid.\n", __func__);
-		err = -ENOMEM;
-		goto fail2;
-	}
-
-	/* find a route */
-	rt = find_route(ep->com.dev,
-			ep->com.cm_id->local_addr.sin_addr.s_addr,
-			ep->com.cm_id->remote_addr.sin_addr.s_addr,
-			ep->com.cm_id->local_addr.sin_port,
-			ep->com.cm_id->remote_addr.sin_port, 0);
-	if (!rt) {
-		printk(KERN_ERR MOD "%s - cannot find route.\n", __func__);
-		err = -EHOSTUNREACH;
-		goto fail3;
-	}
-	ep->dst = &rt->dst;
-
-	err = import_ep(ep, ep->com.cm_id->remote_addr.sin_addr.s_addr,
-			ep->dst, ep->com.dev, false);
-	if (err) {
-		printk(KERN_ERR MOD "%s - cannot alloc l2e.\n", __func__);
-		goto fail4;
-	}
-
-	PDBG("%s txq_idx %u tx_chan %u smac_idx %u rss_qid %u l2t_idx %u\n",
-	     __func__, ep->txq_idx, ep->tx_chan, ep->smac_idx, ep->rss_qid,
-	     ep->l2t->idx);
-
-	state_set(&ep->com, CONNECTING);
-	ep->tos = 0;
-
-	/* send connect request to rnic */
-	err = send_connect(ep);
-	if (!err)
-		goto out;
-
-	cxgb4_l2t_release(ep->l2t);
-fail4:
-	dst_release(ep->dst);
-fail3:
-	cxgb4_free_atid(ep->com.dev->rdev.lldi.tids, ep->atid);
-fail2:
-	/*
-	 * remember to send notification to upper layer.
-	 * We are in here so the upper layer is not aware that this is
-	 * re-connect attempt and so, upper layer is still waiting for
-	 * response of 1st connect request.
-	 */
-	connect_reply_upcall(ep, -ECONNRESET);
-	c4iw_put_ep(&ep->com);
-out:
-	return err;
-=======
 	c4iw_put_ep(&ep->com);
 	return 0;
 }
@@ -4109,36 +2807,16 @@ static void finish_peer_abort(struct c4iw_dev *dev, struct c4iw_ep *ep)
 	peer_abort_upcall(ep);
 	release_ep_resources(ep);
 	c4iw_put_ep(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct cpl_abort_req_rss *req = cplhdr(skb);
-	struct c4iw_ep *ep;
-	struct cpl_abort_rpl *rpl;
-=======
 	struct cpl_abort_req_rss6 *req = cplhdr(skb);
 	struct c4iw_ep *ep;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *rpl_skb;
 	struct c4iw_qp_attributes attrs;
 	int ret;
 	int release = 0;
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int tid = GET_TID(req);
-
-	ep = lookup_tid(t, tid);
-	if (is_neg_adv_abort(req->status)) {
-		PDBG("%s neg_adv_abort ep %p tid %u\n", __func__, ep,
-		     ep->hwtid);
-		return 0;
-	}
-	PDBG("%s ep %p tid %u state %u\n", __func__, ep, ep->hwtid,
-	     ep->com.state);
-=======
 	unsigned int tid = GET_TID(req);
 	u8 status;
 	u32 srqidx;
@@ -4164,7 +2842,6 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 	pr_debug("ep %p tid %u state %u\n", ep, ep->hwtid,
 		 ep->com.state);
 	set_bit(PEER_ABORT, &ep->com.history);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Wake up any threads in rdma_init() or rdma_fini().
@@ -4172,24 +2849,11 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 	 * MPA_REQ_SENT
 	 */
 	if (ep->com.state != MPA_REQ_SENT)
-<<<<<<< HEAD
-		c4iw_wake_up(&ep->com.wr_wait, -ECONNRESET);
-=======
 		c4iw_wake_up_noref(ep->com.wr_waitp, -ECONNRESET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ep->com.mutex);
 	switch (ep->com.state) {
 	case CONNECTING:
-<<<<<<< HEAD
-		break;
-	case MPA_REQ_WAIT:
-		stop_ep_timer(ep);
-		break;
-	case MPA_REQ_SENT:
-		stop_ep_timer(ep);
-		if (mpa_rev == 2 && ep->tried_with_mpa_v1)
-=======
 		c4iw_put_ep(&ep->parent_ep->com);
 		break;
 	case MPA_REQ_WAIT:
@@ -4199,7 +2863,6 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 		(void)stop_ep_timer(ep);
 		if (status != CPL_ERR_CONN_RESET || mpa_rev == 1 ||
 		    (mpa_rev == 2 && ep->tried_with_mpa_v1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			connect_reply_upcall(ep, -ECONNRESET);
 		else {
 			/*
@@ -4210,13 +2873,8 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 			 * do some housekeeping so as to re-initiate the
 			 * connection
 			 */
-<<<<<<< HEAD
-			PDBG("%s: mpa_rev=%d. Retrying with mpav1\n", __func__,
-			     mpa_rev);
-=======
 			pr_info("%s: mpa_rev=%d. Retrying with mpav1\n",
 				__func__, mpa_rev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ep->retry_with_mpa_v1 = 1;
 		}
 		break;
@@ -4227,10 +2885,6 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 	case MORIBUND:
 	case CLOSING:
 		stop_ep_timer(ep);
-<<<<<<< HEAD
-		/*FALLTHROUGH*/
-	case FPDU_MODE:
-=======
 		fallthrough;
 	case FPDU_MODE:
 		if (ep->com.qp && ep->com.qp->srq) {
@@ -4249,39 +2903,24 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ep->com.cm_id && ep->com.qp) {
 			attrs.next_state = C4IW_QP_STATE_ERROR;
 			ret = c4iw_modify_qp(ep->com.qp->rhp,
 				     ep->com.qp, C4IW_QP_ATTR_NEXT_STATE,
 				     &attrs, 1);
 			if (ret)
-<<<<<<< HEAD
-				printk(KERN_ERR MOD
-				       "%s - qp <- error failed!\n",
-				       __func__);
-=======
 				pr_err("%s - qp <- error failed!\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		peer_abort_upcall(ep);
 		break;
 	case ABORTING:
 		break;
 	case DEAD:
-<<<<<<< HEAD
-		PDBG("%s PEER_ABORT IN DEAD STATE!!!!\n", __func__);
-		mutex_unlock(&ep->com.mutex);
-		return 0;
-	default:
-		BUG_ON(1);
-=======
 		pr_warn("%s PEER_ABORT IN DEAD STATE!!!!\n", __func__);
 		mutex_unlock(&ep->com.mutex);
 		goto deref_ep;
 	default:
 		WARN_ONCE(1, "Bad endpoint state %u\n", ep->com.state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	dst_confirm(ep->dst);
@@ -4293,20 +2932,6 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 	}
 	mutex_unlock(&ep->com.mutex);
 
-<<<<<<< HEAD
-	rpl_skb = get_skb(skb, sizeof(*rpl), GFP_KERNEL);
-	if (!rpl_skb) {
-		printk(KERN_ERR MOD "%s - cannot allocate skb!\n",
-		       __func__);
-		release = 1;
-		goto out;
-	}
-	set_wr_txq(skb, CPL_PRIORITY_DATA, ep->txq_idx);
-	rpl = (struct cpl_abort_rpl *) skb_put(rpl_skb, sizeof(*rpl));
-	INIT_TP_WR(rpl, ep->hwtid);
-	OPCODE_TID(rpl) = cpu_to_be32(MK_OPCODE_TID(CPL_ABORT_RPL, ep->hwtid));
-	rpl->cmd = CPL_ABORT_NO_RST;
-=======
 	rpl_skb = skb_dequeue(&ep->com.ep_skb_list);
 	if (WARN_ON(!rpl_skb)) {
 		release = 1;
@@ -4315,17 +2940,10 @@ static int peer_abort(struct c4iw_dev *dev, struct sk_buff *skb)
 
 	cxgb_mk_abort_rpl(rpl_skb, len, ep->hwtid, ep->txq_idx);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_ofld_send(&ep->com.dev->rdev, rpl_skb);
 out:
 	if (release)
 		release_ep_resources(ep);
-<<<<<<< HEAD
-
-	/* retry with mpa-v1 */
-	if (ep && ep->retry_with_mpa_v1) {
-		cxgb4_remove_tid(ep->com.dev->rdev.lldi.tids, 0, ep->hwtid);
-=======
 	else if (ep->retry_with_mpa_v1) {
 		if (ep->com.remote_addr.ss_family == AF_INET6) {
 			struct sockaddr_in6 *sin6 =
@@ -4339,19 +2957,15 @@ out:
 		xa_erase_irq(&ep->com.dev->hwtids, ep->hwtid);
 		cxgb4_remove_tid(ep->com.dev->rdev.lldi.tids, 0, ep->hwtid,
 				 ep->com.local_addr.ss_family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dst_release(ep->dst);
 		cxgb4_l2t_release(ep->l2t);
 		c4iw_reconnect(ep);
 	}
 
-<<<<<<< HEAD
-=======
 deref_ep:
 	c4iw_put_ep(&ep->com);
 	/* Dereferencing ep, referenced in peer_abort_intr() */
 	c4iw_put_ep(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4361,18 +2975,6 @@ static int close_con_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
 	struct c4iw_qp_attributes attrs;
 	struct cpl_close_con_rpl *rpl = cplhdr(skb);
 	int release = 0;
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int tid = GET_TID(rpl);
-
-	ep = lookup_tid(t, tid);
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	BUG_ON(!ep);
-
-	/* The cm_id may be null if we failed to connect */
-	mutex_lock(&ep->com.mutex);
-=======
 	unsigned int tid = GET_TID(rpl);
 
 	ep = get_ep_from_tid(dev, tid);
@@ -4384,17 +2986,12 @@ static int close_con_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
 	/* The cm_id may be null if we failed to connect */
 	mutex_lock(&ep->com.mutex);
 	set_bit(CLOSE_CON_RPL, &ep->com.history);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ep->com.state) {
 	case CLOSING:
 		__state_set(&ep->com, MORIBUND);
 		break;
 	case MORIBUND:
-<<<<<<< HEAD
-		stop_ep_timer(ep);
-=======
 		(void)stop_ep_timer(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((ep->com.cm_id) && (ep->com.qp)) {
 			attrs.next_state = C4IW_QP_STATE_IDLE;
 			c4iw_modify_qp(ep->com.qp->rhp,
@@ -4402,11 +2999,7 @@ static int close_con_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
 					     C4IW_QP_ATTR_NEXT_STATE,
 					     &attrs, 1);
 		}
-<<<<<<< HEAD
-		close_complete_upcall(ep);
-=======
 		close_complete_upcall(ep, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__state_set(&ep->com, DEAD);
 		release = 1;
 		break;
@@ -4414,47 +3007,23 @@ static int close_con_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
 	case DEAD:
 		break;
 	default:
-<<<<<<< HEAD
-		BUG_ON(1);
-=======
 		WARN_ONCE(1, "Bad endpoint state %u\n", ep->com.state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	mutex_unlock(&ep->com.mutex);
 	if (release)
 		release_ep_resources(ep);
-<<<<<<< HEAD
-=======
 	c4iw_put_ep(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int terminate(struct c4iw_dev *dev, struct sk_buff *skb)
 {
 	struct cpl_rdma_terminate *rpl = cplhdr(skb);
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int tid = GET_TID(rpl);
 	struct c4iw_ep *ep;
 	struct c4iw_qp_attributes attrs;
 
-<<<<<<< HEAD
-	ep = lookup_tid(t, tid);
-	BUG_ON(!ep);
-
-	if (ep && ep->com.qp) {
-		printk(KERN_WARNING MOD "TERM received tid %u qpid %u\n", tid,
-		       ep->com.qp->wq.sq.qid);
-		attrs.next_state = C4IW_QP_STATE_TERMINATE;
-		c4iw_modify_qp(ep->com.qp->rhp, ep->com.qp,
-			       C4IW_QP_ATTR_NEXT_STATE, &attrs, 1);
-	} else
-		printk(KERN_WARNING MOD "TERM received tid %u no ep/qp\n", tid);
-=======
 	ep = get_ep_from_tid(dev, tid);
 
 	if (ep) {
@@ -4473,7 +3042,6 @@ static int terminate(struct c4iw_dev *dev, struct sk_buff *skb)
 		c4iw_put_ep(&ep->com);
 	} else
 		pr_warn("TERM received tid %u no ep/qp\n", tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4489,17 +3057,6 @@ static int fw4_ack(struct c4iw_dev *dev, struct sk_buff *skb)
 	struct cpl_fw4_ack *hdr = cplhdr(skb);
 	u8 credits = hdr->credits;
 	unsigned int tid = GET_TID(hdr);
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-
-
-	ep = lookup_tid(t, tid);
-	PDBG("%s ep %p tid %u credits %u\n", __func__, ep, ep->hwtid, credits);
-	if (credits == 0) {
-		PDBG("%s 0 credit ack ep %p tid %u state %u\n",
-		     __func__, ep, ep->hwtid, state_read(&ep->com));
-		return 0;
-=======
 
 
 	ep = get_ep_from_tid(dev, tid);
@@ -4511,19 +3068,10 @@ static int fw4_ack(struct c4iw_dev *dev, struct sk_buff *skb)
 		pr_debug("0 credit ack ep %p tid %u state %u\n",
 			 ep, ep->hwtid, state_read(&ep->com));
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dst_confirm(ep->dst);
 	if (ep->mpa_skb) {
-<<<<<<< HEAD
-		PDBG("%s last streaming msg ack ep %p tid %u state %u "
-		     "initiator %u freeing skb\n", __func__, ep, ep->hwtid,
-		     state_read(&ep->com), ep->mpa_attr.initiator ? 1 : 0);
-		kfree_skb(ep->mpa_skb);
-		ep->mpa_skb = NULL;
-	}
-=======
 		pr_debug("last streaming msg ack ep %p tid %u state %u initiator %u freeing skb\n",
 			 ep, ep->hwtid, state_read(&ep->com),
 			 ep->mpa_attr.initiator ? 1 : 0);
@@ -4536,29 +3084,11 @@ static int fw4_ack(struct c4iw_dev *dev, struct sk_buff *skb)
 	}
 out:
 	c4iw_put_ep(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int c4iw_reject_cr(struct iw_cm_id *cm_id, const void *pdata, u8 pdata_len)
 {
-<<<<<<< HEAD
-	int err;
-	struct c4iw_ep *ep = to_ep(cm_id);
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-
-	if (state_read(&ep->com) == DEAD) {
-		c4iw_put_ep(&ep->com);
-		return -ECONNRESET;
-	}
-	BUG_ON(state_read(&ep->com) != MPA_REQ_RCVD);
-	if (mpa_rev == 0)
-		abort_connection(ep, NULL, GFP_KERNEL);
-	else {
-		err = send_mpa_reject(ep, pdata, pdata_len);
-		err = c4iw_ep_disconnect(ep, 0, GFP_KERNEL);
-	}
-=======
 	int abort;
 	struct c4iw_ep *ep = to_ep(cm_id);
 
@@ -4579,7 +3109,6 @@ int c4iw_reject_cr(struct iw_cm_id *cm_id, const void *pdata, u8 pdata_len)
 
 	stop_ep_timer(ep);
 	c4iw_ep_disconnect(ep, abort != 0, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_put_ep(&ep->com);
 	return 0;
 }
@@ -4592,23 +3121,6 @@ int c4iw_accept_cr(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	struct c4iw_ep *ep = to_ep(cm_id);
 	struct c4iw_dev *h = to_c4iw_dev(cm_id->device);
 	struct c4iw_qp *qp = get_qhp(h, conn_param->qpn);
-<<<<<<< HEAD
-
-	PDBG("%s ep %p tid %u\n", __func__, ep, ep->hwtid);
-	if (state_read(&ep->com) == DEAD) {
-		err = -ECONNRESET;
-		goto err;
-	}
-
-	BUG_ON(state_read(&ep->com) != MPA_REQ_RCVD);
-	BUG_ON(!qp);
-
-	if ((conn_param->ord > c4iw_max_read_depth) ||
-	    (conn_param->ird > c4iw_max_read_depth)) {
-		abort_connection(ep, NULL, GFP_KERNEL);
-		err = -EINVAL;
-		goto err;
-=======
 	int abort = 0;
 
 	pr_debug("ep %p tid %u\n", ep, ep->hwtid);
@@ -4629,31 +3141,10 @@ int c4iw_accept_cr(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	    (conn_param->ird > cur_max_read_depth(ep->com.dev))) {
 		err = -EINVAL;
 		goto err_abort;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ep->mpa_attr.version == 2 && ep->mpa_attr.enhanced_rdma_conn) {
 		if (conn_param->ord > ep->ird) {
-<<<<<<< HEAD
-			ep->ird = conn_param->ird;
-			ep->ord = conn_param->ord;
-			send_mpa_reject(ep, conn_param->private_data,
-					conn_param->private_data_len);
-			abort_connection(ep, NULL, GFP_KERNEL);
-			err = -ENOMEM;
-			goto err;
-		}
-		if (conn_param->ird > ep->ord) {
-			if (!ep->ord)
-				conn_param->ird = 1;
-			else {
-				abort_connection(ep, NULL, GFP_KERNEL);
-				err = -ENOMEM;
-				goto err;
-			}
-		}
-
-=======
 			if (RELAXED_IRD_NEGOTIATION) {
 				conn_param->ord = ep->ird;
 			} else {
@@ -4674,22 +3165,10 @@ int c4iw_accept_cr(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 				goto err_abort;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ep->ird = conn_param->ird;
 	ep->ord = conn_param->ord;
 
-<<<<<<< HEAD
-	if (ep->mpa_attr.version != 2)
-		if (peer2peer && ep->ird == 0)
-			ep->ird = 1;
-
-	PDBG("%s %d ird %d ord %d\n", __func__, __LINE__, ep->ird, ep->ord);
-
-	cm_id->add_ref(cm_id);
-	ep->com.cm_id = cm_id;
-	ep->com.qp = qp;
-=======
 	if (ep->mpa_attr.version == 1) {
 		if (peer2peer && ep->ird == 0)
 			ep->ird = 1;
@@ -4706,7 +3185,6 @@ int c4iw_accept_cr(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	ref_cm_id(&ep->com);
 	ep->com.qp = qp;
 	ref_qp(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* bind QP to EP and move to RTS */
 	attrs.mpa_attr = ep->mpa_attr;
@@ -4725,23 +3203,6 @@ int c4iw_accept_cr(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	err = c4iw_modify_qp(ep->com.qp->rhp,
 			     ep->com.qp, mask, &attrs, 1);
 	if (err)
-<<<<<<< HEAD
-		goto err1;
-	err = send_mpa_reply(ep, conn_param->private_data,
-			     conn_param->private_data_len);
-	if (err)
-		goto err1;
-
-	state_set(&ep->com, FPDU_MODE);
-	established_upcall(ep);
-	c4iw_put_ep(&ep->com);
-	return 0;
-err1:
-	ep->com.cm_id = NULL;
-	ep->com.qp = NULL;
-	cm_id->rem_ref(cm_id);
-err:
-=======
 		goto err_deref_cm_id;
 
 	set_bit(STOP_MPA_TIMER, &ep->com.flags);
@@ -4763,13 +3224,10 @@ err_out:
 	mutex_unlock(&ep->com.mutex);
 	if (abort)
 		c4iw_ep_disconnect(ep, 1, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_put_ep(&ep->com);
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int pick_local_ipaddrs(struct c4iw_dev *dev, struct iw_cm_id *cm_id)
 {
 	struct in_device *ind;
@@ -4836,18 +3294,10 @@ static int pick_local_ip6addrs(struct c4iw_dev *dev, struct iw_cm_id *cm_id)
 	return -EADDRNOTAVAIL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int c4iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 {
 	struct c4iw_dev *dev = to_c4iw_dev(cm_id->device);
 	struct c4iw_ep *ep;
-<<<<<<< HEAD
-	struct rtable *rt;
-	int err = 0;
-
-	if ((conn_param->ord > c4iw_max_read_depth) ||
-	    (conn_param->ird > c4iw_max_read_depth)) {
-=======
 	int err = 0;
 	struct sockaddr_in *laddr;
 	struct sockaddr_in *raddr;
@@ -4858,19 +3308,11 @@ int c4iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 
 	if ((conn_param->ord > cur_max_read_depth(dev)) ||
 	    (conn_param->ird > cur_max_read_depth(dev))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto out;
 	}
 	ep = alloc_ep(sizeof(*ep), GFP_KERNEL);
 	if (!ep) {
-<<<<<<< HEAD
-		printk(KERN_ERR MOD "%s - cannot alloc ep.\n", __func__);
-		err = -ENOMEM;
-		goto out;
-	}
-	init_timer(&ep->timer);
-=======
 		pr_err("%s - cannot alloc ep\n", __func__);
 		err = -ENOMEM;
 		goto out;
@@ -4883,7 +3325,6 @@ int c4iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	}
 
 	timer_setup(&ep->timer, ep_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->plen = conn_param->private_data_len;
 	if (ep->plen)
 		memcpy(ep->mpa_pkt + sizeof(struct mpa_message),
@@ -4894,15 +3335,6 @@ int c4iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	if (peer2peer && ep->ord == 0)
 		ep->ord = 1;
 
-<<<<<<< HEAD
-	cm_id->add_ref(cm_id);
-	ep->com.dev = dev;
-	ep->com.cm_id = cm_id;
-	ep->com.qp = get_qhp(dev, conn_param->qpn);
-	BUG_ON(!ep->com.qp);
-	PDBG("%s qpn 0x%x qp %p cm_id %p\n", __func__, conn_param->qpn,
-	     ep->com.qp, cm_id);
-=======
 	ep->com.cm_id = cm_id;
 	ref_cm_id(&ep->com);
 	cm_id->provider_data = ep;
@@ -4916,54 +3348,12 @@ int c4iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 	ref_qp(ep);
 	pr_debug("qpn 0x%x qp %p cm_id %p\n", conn_param->qpn,
 		 ep->com.qp, cm_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate an active TID to initiate a TCP connection.
 	 */
 	ep->atid = cxgb4_alloc_atid(dev->rdev.lldi.tids, ep);
 	if (ep->atid == -1) {
-<<<<<<< HEAD
-		printk(KERN_ERR MOD "%s - cannot alloc atid.\n", __func__);
-		err = -ENOMEM;
-		goto fail2;
-	}
-
-	PDBG("%s saddr 0x%x sport 0x%x raddr 0x%x rport 0x%x\n", __func__,
-	     ntohl(cm_id->local_addr.sin_addr.s_addr),
-	     ntohs(cm_id->local_addr.sin_port),
-	     ntohl(cm_id->remote_addr.sin_addr.s_addr),
-	     ntohs(cm_id->remote_addr.sin_port));
-
-	/* find a route */
-	rt = find_route(dev,
-			cm_id->local_addr.sin_addr.s_addr,
-			cm_id->remote_addr.sin_addr.s_addr,
-			cm_id->local_addr.sin_port,
-			cm_id->remote_addr.sin_port, 0);
-	if (!rt) {
-		printk(KERN_ERR MOD "%s - cannot find route.\n", __func__);
-		err = -EHOSTUNREACH;
-		goto fail3;
-	}
-	ep->dst = &rt->dst;
-
-	err = import_ep(ep, cm_id->remote_addr.sin_addr.s_addr,
-			ep->dst, ep->com.dev, true);
-	if (err) {
-		printk(KERN_ERR MOD "%s - cannot alloc l2e.\n", __func__);
-		goto fail4;
-	}
-
-	PDBG("%s txq_idx %u tx_chan %u smac_idx %u rss_qid %u l2t_idx %u\n",
-		__func__, ep->txq_idx, ep->tx_chan, ep->smac_idx, ep->rss_qid,
-		ep->l2t->idx);
-
-	state_set(&ep->com, CONNECTING);
-	ep->tos = 0;
-	ep->com.local_addr = cm_id->local_addr;
-	ep->com.remote_addr = cm_id->remote_addr;
-=======
 		pr_err("%s - cannot alloc atid\n", __func__);
 		err = -ENOMEM;
 		goto fail2;
@@ -5048,7 +3438,6 @@ int c4iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 
 	state_set(&ep->com, CONNECTING);
 	ep->tos = cm_id->tos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* send connect request to rnic */
 	err = send_connect(ep);
@@ -5059,11 +3448,6 @@ int c4iw_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param)
 fail4:
 	dst_release(ep->dst);
 fail3:
-<<<<<<< HEAD
-	cxgb4_free_atid(ep->com.dev->rdev.lldi.tids, ep->atid);
-fail2:
-	cm_id->rem_ref(cm_id);
-=======
 	xa_erase_irq(&ep->com.dev->atids, ep->atid);
 fail5:
 	cxgb4_free_atid(ep->com.dev->rdev.lldi.tids, ep->atid);
@@ -5071,14 +3455,11 @@ fail2:
 	skb_queue_purge(&ep->com.ep_skb_list);
 	deref_cm_id(&ep->com);
 fail1:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_put_ep(&ep->com);
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int create_server6(struct c4iw_dev *dev, struct c4iw_listen_ep *ep)
 {
 	int err;
@@ -5152,33 +3533,16 @@ static int create_server4(struct c4iw_dev *dev, struct c4iw_listen_ep *ep)
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int c4iw_create_listen(struct iw_cm_id *cm_id, int backlog)
 {
 	int err = 0;
 	struct c4iw_dev *dev = to_c4iw_dev(cm_id->device);
 	struct c4iw_listen_ep *ep;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	might_sleep();
 
 	ep = alloc_ep(sizeof(*ep), GFP_KERNEL);
 	if (!ep) {
-<<<<<<< HEAD
-		printk(KERN_ERR MOD "%s - cannot alloc ep.\n", __func__);
-		err = -ENOMEM;
-		goto fail1;
-	}
-	PDBG("%s ep %p\n", __func__, ep);
-	cm_id->add_ref(cm_id);
-	ep->com.cm_id = cm_id;
-	ep->com.dev = dev;
-	ep->backlog = backlog;
-	ep->com.local_addr = cm_id->local_addr;
-=======
 		pr_err("%s - cannot alloc ep\n", __func__);
 		err = -ENOMEM;
 		goto fail1;
@@ -5191,32 +3555,10 @@ int c4iw_create_listen(struct iw_cm_id *cm_id, int backlog)
 	ep->backlog = backlog;
 	memcpy(&ep->com.local_addr, &cm_id->m_local_addr,
 	       sizeof(ep->com.local_addr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate a server TID.
 	 */
-<<<<<<< HEAD
-	ep->stid = cxgb4_alloc_stid(dev->rdev.lldi.tids, PF_INET, ep);
-	if (ep->stid == -1) {
-		printk(KERN_ERR MOD "%s - cannot alloc stid.\n", __func__);
-		err = -ENOMEM;
-		goto fail2;
-	}
-
-	state_set(&ep->com, LISTEN);
-	c4iw_init_wr_wait(&ep->com.wr_wait);
-	err = cxgb4_create_server(ep->com.dev->rdev.lldi.ports[0], ep->stid,
-				  ep->com.local_addr.sin_addr.s_addr,
-				  ep->com.local_addr.sin_port,
-				  ep->com.dev->rdev.lldi.rxq_ids[0]);
-	if (err)
-		goto fail3;
-
-	/* wait for pass_open_rpl */
-	err = c4iw_wait_for_reply(&ep->com.dev->rdev, &ep->com.wr_wait, 0, 0,
-				  __func__);
-=======
 	if (dev->rdev.lldi.enable_fw_ofld_conn &&
 	    ep->com.local_addr.ss_family == AF_INET)
 		ep->stid = cxgb4_alloc_sftid(dev->rdev.lldi.tids,
@@ -5239,24 +3581,16 @@ int c4iw_create_listen(struct iw_cm_id *cm_id, int backlog)
 		err = create_server4(dev, ep);
 	else
 		err = create_server6(dev, ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err) {
 		cm_id->provider_data = ep;
 		goto out;
 	}
-<<<<<<< HEAD
-fail3:
-	cxgb4_free_stid(ep->com.dev->rdev.lldi.tids, ep->stid, PF_INET);
-fail2:
-	cm_id->rem_ref(cm_id);
-=======
 	xa_erase_irq(&ep->com.dev->stids, ep->stid);
 fail3:
 	cxgb4_free_stid(ep->com.dev->rdev.lldi.tids, ep->stid,
 			ep->com.local_addr.ss_family);
 fail2:
 	deref_cm_id(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_put_ep(&ep->com);
 fail1:
 out:
@@ -5268,21 +3602,6 @@ int c4iw_destroy_listen(struct iw_cm_id *cm_id)
 	int err;
 	struct c4iw_listen_ep *ep = to_listen_ep(cm_id);
 
-<<<<<<< HEAD
-	PDBG("%s ep %p\n", __func__, ep);
-
-	might_sleep();
-	state_set(&ep->com, DEAD);
-	c4iw_init_wr_wait(&ep->com.wr_wait);
-	err = listen_stop(ep);
-	if (err)
-		goto done;
-	err = c4iw_wait_for_reply(&ep->com.dev->rdev, &ep->com.wr_wait, 0, 0,
-				  __func__);
-	cxgb4_free_stid(ep->com.dev->rdev.lldi.tids, ep->stid, PF_INET);
-done:
-	cm_id->rem_ref(cm_id);
-=======
 	pr_debug("ep %p\n", ep);
 
 	might_sleep();
@@ -5312,7 +3631,6 @@ done:
 			ep->com.local_addr.ss_family);
 done:
 	deref_cm_id(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_put_ep(&ep->com);
 	return err;
 }
@@ -5326,10 +3644,6 @@ int c4iw_ep_disconnect(struct c4iw_ep *ep, int abrupt, gfp_t gfp)
 
 	mutex_lock(&ep->com.mutex);
 
-<<<<<<< HEAD
-	PDBG("%s ep %p state %s, abrupt %d\n", __func__, ep,
-	     states[ep->com.state], abrupt);
-=======
 	pr_debug("ep %p state %s, abrupt %d\n", ep,
 		 states[ep->com.state], abrupt);
 
@@ -5338,16 +3652,11 @@ int c4iw_ep_disconnect(struct c4iw_ep *ep, int abrupt, gfp_t gfp)
 	 * ep to be released and freed.
 	 */
 	c4iw_get_ep(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev = &ep->com.dev->rdev;
 	if (c4iw_fatal_error(rdev)) {
 		fatal = 1;
-<<<<<<< HEAD
-		close_complete_upcall(ep);
-=======
 		close_complete_upcall(ep, -EIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ep->com.state = DEAD;
 	}
 	switch (ep->com.state) {
@@ -5356,17 +3665,12 @@ int c4iw_ep_disconnect(struct c4iw_ep *ep, int abrupt, gfp_t gfp)
 	case MPA_REQ_RCVD:
 	case MPA_REP_SENT:
 	case FPDU_MODE:
-<<<<<<< HEAD
-=======
 	case CONNECTING:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		close = 1;
 		if (abrupt)
 			ep->com.state = ABORTING;
 		else {
 			ep->com.state = CLOSING;
-<<<<<<< HEAD
-=======
 
 			/*
 			 * if we close before we see the fw4_ack() then we fix
@@ -5377,7 +3681,6 @@ int c4iw_ep_disconnect(struct c4iw_ep *ep, int abrupt, gfp_t gfp)
 				clear_bit(STOP_MPA_TIMER, &ep->com.flags);
 				stop_ep_timer(ep);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_ep_timer(ep);
 		}
 		set_bit(CLOSE_SENT, &ep->com.flags);
@@ -5386,11 +3689,7 @@ int c4iw_ep_disconnect(struct c4iw_ep *ep, int abrupt, gfp_t gfp)
 		if (!test_and_set_bit(CLOSE_SENT, &ep->com.flags)) {
 			close = 1;
 			if (abrupt) {
-<<<<<<< HEAD
-				stop_ep_timer(ep);
-=======
 				(void)stop_ep_timer(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ep->com.state = ABORTING;
 			} else
 				ep->com.state = MORIBUND;
@@ -5399,34 +3698,16 @@ int c4iw_ep_disconnect(struct c4iw_ep *ep, int abrupt, gfp_t gfp)
 	case MORIBUND:
 	case ABORTING:
 	case DEAD:
-<<<<<<< HEAD
-		PDBG("%s ignoring disconnect ep %p state %u\n",
-		     __func__, ep, ep->com.state);
-		break;
-	default:
-		BUG();
-=======
 		pr_debug("ignoring disconnect ep %p state %u\n",
 			 ep, ep->com.state);
 		break;
 	default:
 		WARN_ONCE(1, "Bad endpoint state %u\n", ep->com.state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	if (close) {
 		if (abrupt) {
-<<<<<<< HEAD
-			close_complete_upcall(ep);
-			ret = send_abort(ep, NULL, gfp);
-		} else
-			ret = send_halfclose(ep, gfp);
-		if (ret)
-			fatal = 1;
-	}
-	mutex_unlock(&ep->com.mutex);
-=======
 			set_bit(EP_DISC_ABORT, &ep->com.history);
 			ret = send_abort(ep);
 		} else {
@@ -5456,18 +3737,11 @@ int c4iw_ep_disconnect(struct c4iw_ep *ep, int abrupt, gfp_t gfp)
 	}
 	mutex_unlock(&ep->com.mutex);
 	c4iw_put_ep(&ep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fatal)
 		release_ep_resources(ep);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int async_event(struct c4iw_dev *dev, struct sk_buff *skb)
-{
-	struct cpl_fw6_msg *rpl = cplhdr(skb);
-	c4iw_ev_dispatch(dev, (struct t4_cqe *)&rpl->data[0]);
-=======
 static void active_ofld_conn_reply(struct c4iw_dev *dev, struct sk_buff *skb,
 			struct cpl_fw6_msg_ofld_connection_wr_rpl *req)
 {
@@ -5921,7 +4195,6 @@ free_dst:
 reject:
 	if (lep)
 		c4iw_put_ep(&lep->com);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5929,11 +4202,7 @@ reject:
  * These are the real handlers that are called from a
  * work queue.
  */
-<<<<<<< HEAD
-static c4iw_handler_func work_handlers[NUM_CPL_CMDS] = {
-=======
 static c4iw_handler_func work_handlers[NUM_CPL_CMDS + NUM_FAKE_CPLS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[CPL_ACT_ESTABLISH] = act_establish,
 	[CPL_ACT_OPEN_RPL] = act_open_rpl,
 	[CPL_RX_DATA] = rx_data,
@@ -5948,15 +4217,11 @@ static c4iw_handler_func work_handlers[NUM_CPL_CMDS + NUM_FAKE_CPLS] = {
 	[CPL_CLOSE_CON_RPL] = close_con_rpl,
 	[CPL_RDMA_TERMINATE] = terminate,
 	[CPL_FW4_ACK] = fw4_ack,
-<<<<<<< HEAD
-	[CPL_FW6_MSG] = async_event
-=======
 	[CPL_GET_TCB_RPL] = read_tcb_rpl,
 	[CPL_FW6_MSG] = deferred_fw6_msg,
 	[CPL_RX_PKT] = rx_pkt,
 	[FAKE_CPL_PUT_EP_SAFE] = _put_ep_safe,
 	[FAKE_CPL_PASS_PUT_EP_SAFE] = _put_pass_ep_safe
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void process_timeout(struct c4iw_ep *ep)
@@ -5965,17 +4230,6 @@ static void process_timeout(struct c4iw_ep *ep)
 	int abort = 1;
 
 	mutex_lock(&ep->com.mutex);
-<<<<<<< HEAD
-	PDBG("%s ep %p tid %u state %d\n", __func__, ep, ep->hwtid,
-	     ep->com.state);
-	switch (ep->com.state) {
-	case MPA_REQ_SENT:
-		__state_set(&ep->com, ABORTING);
-		connect_reply_upcall(ep, -ETIMEDOUT);
-		break;
-	case MPA_REQ_WAIT:
-		__state_set(&ep->com, ABORTING);
-=======
 	pr_debug("ep %p tid %u state %d\n", ep, ep->hwtid, ep->com.state);
 	set_bit(TIMEDOUT, &ep->com.history);
 	switch (ep->com.state) {
@@ -5986,7 +4240,6 @@ static void process_timeout(struct c4iw_ep *ep)
 	case MPA_REQ_RCVD:
 	case MPA_REP_SENT:
 	case FPDU_MODE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CLOSING:
 	case MORIBUND:
@@ -5996,14 +4249,6 @@ static void process_timeout(struct c4iw_ep *ep)
 				     ep->com.qp, C4IW_QP_ATTR_NEXT_STATE,
 				     &attrs, 1);
 		}
-<<<<<<< HEAD
-		__state_set(&ep->com, ABORTING);
-		break;
-	default:
-		printk(KERN_ERR "%s unexpected state ep %p tid %u state %u\n",
-			__func__, ep, ep->hwtid, ep->com.state);
-		WARN_ON(1);
-=======
 		close_complete_upcall(ep, -ETIMEDOUT);
 		break;
 	case ABORTING:
@@ -6019,16 +4264,11 @@ static void process_timeout(struct c4iw_ep *ep)
 	default:
 		WARN(1, "%s unexpected state ep %p tid %u state %u\n",
 			__func__, ep, ep->hwtid, ep->com.state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		abort = 0;
 	}
 	mutex_unlock(&ep->com.mutex);
 	if (abort)
-<<<<<<< HEAD
-		abort_connection(ep, NULL, GFP_KERNEL);
-=======
 		c4iw_ep_disconnect(ep, 1, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_put_ep(&ep->com);
 }
 
@@ -6042,11 +4282,8 @@ static void process_timedout_eps(void)
 
 		tmp = timeout_list.next;
 		list_del(tmp);
-<<<<<<< HEAD
-=======
 		tmp->next = NULL;
 		tmp->prev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&timeout_lock);
 		ep = list_entry(tmp, struct c4iw_ep, entry);
 		process_timeout(ep);
@@ -6063,23 +4300,12 @@ static void process_work(struct work_struct *work)
 	unsigned int opcode;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	process_timedout_eps();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((skb = skb_dequeue(&rxq))) {
 		rpl = cplhdr(skb);
 		dev = *((struct c4iw_dev **) (skb->cb + sizeof(void *)));
 		opcode = rpl->ot.opcode;
 
-<<<<<<< HEAD
-		BUG_ON(!work_handlers[opcode]);
-		ret = work_handlers[opcode](dev, skb);
-		if (!ret)
-			kfree_skb(skb);
-	}
-	process_timedout_eps();
-=======
 		if (opcode >= ARRAY_SIZE(work_handlers) ||
 		    !work_handlers[opcode]) {
 			pr_err("No handler for opcode 0x%x.\n", opcode);
@@ -6091,21 +4317,10 @@ static void process_work(struct work_struct *work)
 		}
 		process_timedout_eps();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DECLARE_WORK(skb_work, process_work);
 
-<<<<<<< HEAD
-static void ep_timeout(unsigned long arg)
-{
-	struct c4iw_ep *ep = (struct c4iw_ep *)arg;
-
-	spin_lock(&timeout_lock);
-	list_add_tail(&ep->entry, &timeout_list);
-	spin_unlock(&timeout_lock);
-	queue_work(workq, &skb_work);
-=======
 static void ep_timeout(struct timer_list *t)
 {
 	struct c4iw_ep *ep = from_timer(ep, t, timer);
@@ -6124,7 +4339,6 @@ static void ep_timeout(struct timer_list *t)
 	spin_unlock(&timeout_lock);
 	if (kickit)
 		queue_work(workq, &skb_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6151,13 +4365,8 @@ static int set_tcb_rpl(struct c4iw_dev *dev, struct sk_buff *skb)
 	struct cpl_set_tcb_rpl *rpl = cplhdr(skb);
 
 	if (rpl->status != CPL_ERR_NONE) {
-<<<<<<< HEAD
-		printk(KERN_ERR MOD "Unexpected SET_TCB_RPL status %u "
-		       "for tid %u\n", rpl->status, GET_TID(rpl));
-=======
 		pr_err("Unexpected SET_TCB_RPL status %u for tid %u\n",
 		       rpl->status, GET_TID(rpl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree_skb(skb);
 	return 0;
@@ -6169,25 +4378,6 @@ static int fw6_msg(struct c4iw_dev *dev, struct sk_buff *skb)
 	struct c4iw_wr_wait *wr_waitp;
 	int ret;
 
-<<<<<<< HEAD
-	PDBG("%s type %u\n", __func__, rpl->type);
-
-	switch (rpl->type) {
-	case 1:
-		ret = (int)((be64_to_cpu(rpl->data[0]) >> 8) & 0xff);
-		wr_waitp = (struct c4iw_wr_wait *)(__force unsigned long) rpl->data[1];
-		PDBG("%s wr_waitp %p ret %u\n", __func__, wr_waitp, ret);
-		if (wr_waitp)
-			c4iw_wake_up(wr_waitp, ret ? -ret : 0);
-		kfree_skb(skb);
-		break;
-	case 2:
-		sched(dev, skb);
-		break;
-	default:
-		printk(KERN_ERR MOD "%s unexpected fw6 msg type %u\n", __func__,
-		       rpl->type);
-=======
 	pr_debug("type %u\n", rpl->type);
 
 	switch (rpl->type) {
@@ -6206,7 +4396,6 @@ static int fw6_msg(struct c4iw_dev *dev, struct sk_buff *skb)
 	default:
 		pr_err("%s unexpected fw6 msg type %u\n",
 		       __func__, rpl->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		break;
 	}
@@ -6217,31 +4406,6 @@ static int peer_abort_intr(struct c4iw_dev *dev, struct sk_buff *skb)
 {
 	struct cpl_abort_req_rss *req = cplhdr(skb);
 	struct c4iw_ep *ep;
-<<<<<<< HEAD
-	struct tid_info *t = dev->rdev.lldi.tids;
-	unsigned int tid = GET_TID(req);
-
-	ep = lookup_tid(t, tid);
-	if (!ep) {
-		printk(KERN_WARNING MOD
-		       "Abort on non-existent endpoint, tid %d\n", tid);
-		kfree_skb(skb);
-		return 0;
-	}
-	if (is_neg_adv_abort(req->status)) {
-		PDBG("%s neg_adv_abort ep %p tid %u\n", __func__, ep,
-		     ep->hwtid);
-		kfree_skb(skb);
-		return 0;
-	}
-	PDBG("%s ep %p tid %u state %u\n", __func__, ep, ep->hwtid,
-	     ep->com.state);
-
-	/*
-	 * Wake up any threads in rdma_init() or rdma_fini().
-	 */
-	c4iw_wake_up(&ep->com.wr_wait, -ECONNRESET);
-=======
 	unsigned int tid = GET_TID(req);
 
 	ep = get_ep_from_tid(dev, tid);
@@ -6261,7 +4425,6 @@ static int peer_abort_intr(struct c4iw_dev *dev, struct sk_buff *skb)
 
 	c4iw_wake_up_noref(ep->com.wr_waitp, -ECONNRESET);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sched(dev, skb);
 	return 0;
 }
@@ -6286,42 +4449,24 @@ c4iw_handler_func c4iw_handlers[NUM_CPL_CMDS] = {
 	[CPL_RDMA_TERMINATE] = sched,
 	[CPL_FW4_ACK] = sched,
 	[CPL_SET_TCB_RPL] = set_tcb_rpl,
-<<<<<<< HEAD
-	[CPL_FW6_MSG] = fw6_msg
-=======
 	[CPL_GET_TCB_RPL] = sched,
 	[CPL_FW6_MSG] = fw6_msg,
 	[CPL_RX_PKT] = sched
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init c4iw_cm_init(void)
 {
-<<<<<<< HEAD
-	spin_lock_init(&timeout_lock);
-	skb_queue_head_init(&rxq);
-
-	workq = create_singlethread_workqueue("iw_cxgb4");
-=======
 	skb_queue_head_init(&rxq);
 
 	workq = alloc_ordered_workqueue("iw_cxgb4", WQ_MEM_RECLAIM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!workq)
 		return -ENOMEM;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-void __exit c4iw_cm_term(void)
-{
-	WARN_ON(!list_empty(&timeout_list));
-	flush_workqueue(workq);
-=======
 void c4iw_cm_term(void)
 {
 	WARN_ON(!list_empty(&timeout_list));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(workq);
 }

@@ -10,39 +10,6 @@
 #
 # Copyright (C) 1995-2002 Russell King
 #
-<<<<<<< HEAD
-
-ifneq ($(MACHINE),)
-include $(srctree)/$(MACHINE)/Makefile.boot
-endif
-
-# Note: the following conditions must always be true:
-#   ZRELADDR == virt_to_phys(PAGE_OFFSET + TEXT_OFFSET)
-#   PARAMS_PHYS must be within 4MB of ZRELADDR
-#   INITRD_PHYS must be in RAM
-ZRELADDR    := $(zreladdr-y)
-PARAMS_PHYS := $(params_phys-y)
-INITRD_PHYS := $(initrd_phys-y)
-
-export ZRELADDR INITRD_PHYS PARAMS_PHYS
-
-targets := Image zImage xipImage bootpImage uImage
-
-DTB_NAMES := $(subst $\",,$(CONFIG_BUILD_ARM_APPENDED_DTB_IMAGE_NAMES))
-ifneq ($(DTB_NAMES),)
-DTB_LIST := $(addsuffix .dtb,$(DTB_NAMES))
-else
-DTB_LIST := $(dtb-y)
-endif
-DTB_OBJS := $(addprefix $(obj)/,$(DTB_LIST))
-DTS_TARGET := $(patsubst "%",%,$(call CONFIG_DTS_TARGET,$(1)))
-
-ifeq ($(CONFIG_XIP_KERNEL),y)
-
-$(obj)/xipImage: vmlinux FORCE
-	$(call if_changed,objcopy)
-	@echo '  Kernel: $@ is ready (physical address: $(CONFIG_XIP_PHYS_ADDR))'
-=======
 OBJCOPYFLAGS	:=-O binary -R .comment -S
 
 #   ZRELADDR == virt_to_phys(PAGE_OFFSET + TEXT_OFFSET)
@@ -72,7 +39,6 @@ endif
 $(obj)/xipImage: vmlinux FORCE
 	$(call if_changed,mkxip)
 	@$(kecho) '  Physical Address of xipImage: $(CONFIG_XIP_PHYS_ADDR)'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(obj)/Image $(obj)/zImage: FORCE
 	@echo 'Kernel configured for XIP (CONFIG_XIP_KERNEL=y)'
@@ -87,40 +53,15 @@ $(obj)/xipImage: FORCE
 
 $(obj)/Image: vmlinux FORCE
 	$(call if_changed,objcopy)
-<<<<<<< HEAD
-	@echo '  Kernel: $@ is ready'
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(obj)/compressed/vmlinux: $(obj)/Image FORCE
 	$(Q)$(MAKE) $(build)=$(obj)/compressed $@
 
 $(obj)/zImage:	$(obj)/compressed/vmlinux FORCE
 	$(call if_changed,objcopy)
-<<<<<<< HEAD
-	@echo '  Kernel: $@ is ready'
-
-$(obj)/zImage-dtb:	$(obj)/zImage $(DTB_OBJS) FORCE
-	$(call if_changed,cat)
-	@echo '  Kernel: $@ is ready'
 
 endif
 
-targets += $(DTB_LIST)
-
-# Rule to build device tree blobs
-$(obj)/%.dtb: $(src)/dts/$(DTS_TARGET)/%.dts FORCE
-	$(call if_changed_dep,dtc)
-
-$(obj)/dtbs: $(DTB_OBJS)
-
-clean-files := *.dtb
-
-=======
-
-endif
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ifneq ($(LOADADDR),)
   UIMAGE_LOADADDR=$(LOADADDR)
 else
@@ -132,13 +73,8 @@ else
 endif
 
 check_for_multiple_loadaddr = \
-<<<<<<< HEAD
-if [ $(words $(UIMAGE_LOADADDR)) -gt 1 ]; then \
-	echo 'multiple load addresses: $(UIMAGE_LOADADDR)'; \
-=======
 if [ $(words $(UIMAGE_LOADADDR)) -ne 1 ]; then \
 	echo 'multiple (or no) load addresses: $(UIMAGE_LOADADDR)'; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	echo 'This is incompatible with uImages'; \
 	echo 'Specify LOADADDR on the commandline to build an uImage'; \
 	false; \
@@ -147,46 +83,6 @@ fi
 $(obj)/uImage:	$(obj)/zImage FORCE
 	@$(check_for_multiple_loadaddr)
 	$(call if_changed,uimage)
-<<<<<<< HEAD
-	@echo '  Image $@ is ready'
-
-$(obj)/bootp/bootp: $(obj)/zImage initrd FORCE
-	$(Q)$(MAKE) $(build)=$(obj)/bootp $@
-	@:
-
-$(obj)/bootpImage: $(obj)/bootp/bootp FORCE
-	$(call if_changed,objcopy)
-	@echo '  Kernel: $@ is ready'
-
-PHONY += initrd FORCE
-initrd:
-	@test "$(INITRD_PHYS)" != "" || \
-	(echo This machine does not support INITRD; exit -1)
-	@test "$(INITRD)" != "" || \
-	(echo You must specify INITRD; exit -1)
-
-install: $(obj)/Image
-	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \
-	$(obj)/Image System.map "$(INSTALL_PATH)"
-
-zinstall: $(obj)/zImage
-	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \
-	$(obj)/zImage System.map "$(INSTALL_PATH)"
-
-uinstall: $(obj)/uImage
-	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \
-	$(obj)/uImage System.map "$(INSTALL_PATH)"
-
-zi:
-	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \
-	$(obj)/zImage System.map "$(INSTALL_PATH)"
-
-i:
-	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \
-	$(obj)/Image System.map "$(INSTALL_PATH)"
-
-subdir-	    := bootp compressed
-=======
 
 $(obj)/bootp/bootp: $(obj)/zImage FORCE
 	$(Q)$(MAKE) $(build)=$(obj)/bootp $@
@@ -195,4 +91,3 @@ $(obj)/bootpImage: $(obj)/bootp/bootp FORCE
 	$(call if_changed,objcopy)
 
 subdir-	    := bootp compressed dts
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

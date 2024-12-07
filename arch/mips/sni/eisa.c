@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Virtual EISA root driver.
  * Acts as a placeholder if we don't have a proper EISA bridge.
  *
  * (C) 2003 Marc Zyngier <maz@wild-wind.fr.eu.org>
  * modified for SNI usage by Thomas Bogendoerfer
-<<<<<<< HEAD
- *
- * This code is released under the GPL version 2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -29,11 +21,7 @@ static struct platform_device eisa_root_dev = {
 };
 
 static struct eisa_root_device eisa_bus_root = {
-<<<<<<< HEAD
-	.dev           = &eisa_root_dev.dev,
-=======
 	.dev	       = &eisa_root_dev.dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bus_base_addr = 0,
 	.res	       = &ioport_resource,
 	.slots	       = EISA_MAX_SLOTS,

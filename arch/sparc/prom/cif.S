@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* cif.S: PROM entry/exit assembler trampolines.
  *
  * Copyright (C) 1996, 1997 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
@@ -15,18 +12,10 @@
 	.text
 	.globl	prom_cif_direct
 prom_cif_direct:
-<<<<<<< HEAD
-	sethi	%hi(p1275buf), %o1
-	or	%o1, %lo(p1275buf), %o1
-	ldx	[%o1 + 0x0010], %o2	! prom_cif_stack
-	save	%o2, -192, %sp
-	ldx	[%i1 + 0x0008], %l2	! prom_cif_handler
-=======
 	save	%sp, -192, %sp
 	sethi	%hi(p1275buf), %o1
 	or	%o1, %lo(p1275buf), %o1
 	ldx	[%o1 + 0x0008], %l2	! prom_cif_handler
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	%g4, %l0
 	mov	%g5, %l1
 	mov	%g6, %l3

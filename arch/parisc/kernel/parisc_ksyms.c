@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    Architecture-specific kernel symbols
  *
@@ -12,32 +9,12 @@
  *    Copyright (C) 2002-2003 Matthew Wilcox <willy at parisc-linux.org>
  *    Copyright (C) 2002 Randolph Chung <tausq at parisc-linux.org>
  *    Copyright (C) 2002-2007 Helge Deller <deller with parisc-linux.org>
-<<<<<<< HEAD
- * 
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/syscalls.h>
-<<<<<<< HEAD
-=======
 #include <linux/libgcc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/string.h>
 EXPORT_SYMBOL(memset);
@@ -46,39 +23,16 @@ EXPORT_SYMBOL(memset);
 EXPORT_SYMBOL(__xchg8);
 EXPORT_SYMBOL(__xchg32);
 EXPORT_SYMBOL(__cmpxchg_u32);
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__cmpxchg_u64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 EXPORT_SYMBOL(__atomic_hash);
 #endif
 #ifdef CONFIG_64BIT
 EXPORT_SYMBOL(__xchg64);
-<<<<<<< HEAD
-EXPORT_SYMBOL(__cmpxchg_u64);
-#endif
-
-#include <asm/uaccess.h>
-EXPORT_SYMBOL(lstrncpy_from_user);
-EXPORT_SYMBOL(lclear_user);
-EXPORT_SYMBOL(lstrnlen_user);
-
-/* Global fixups */
-extern void fixup_get_user_skip_1(void);
-extern void fixup_get_user_skip_2(void);
-extern void fixup_put_user_skip_1(void);
-extern void fixup_put_user_skip_2(void);
-EXPORT_SYMBOL(fixup_get_user_skip_1);
-EXPORT_SYMBOL(fixup_get_user_skip_2);
-EXPORT_SYMBOL(fixup_put_user_skip_1);
-EXPORT_SYMBOL(fixup_put_user_skip_2);
-=======
 #endif
 
 #include <linux/uaccess.h>
 EXPORT_SYMBOL(lclear_user);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_64BIT
 /* Needed so insmod can set dp value */
@@ -139,22 +93,11 @@ EXPORT_SYMBOL($$divI_12);
 EXPORT_SYMBOL($$divI_14);
 EXPORT_SYMBOL($$divI_15);
 
-<<<<<<< HEAD
-extern void __ashrdi3(void);
-extern void __ashldi3(void);
-extern void __lshrdi3(void);
-extern void __muldi3(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(__ashrdi3);
 EXPORT_SYMBOL(__ashldi3);
 EXPORT_SYMBOL(__lshrdi3);
 EXPORT_SYMBOL(__muldi3);
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__ucmpdi2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 asmlinkage void * __canonicalize_funcptr_for_compare(void *);
 EXPORT_SYMBOL(__canonicalize_funcptr_for_compare);
@@ -176,25 +119,11 @@ extern void $$dyncall(void);
 EXPORT_SYMBOL($$dyncall);
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_DISCONTIGMEM
-#include <asm/mmzone.h>
-EXPORT_SYMBOL(node_data);
-EXPORT_SYMBOL(pfnnid_map);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_FUNCTION_TRACER
 extern void _mcount(void);
 EXPORT_SYMBOL(_mcount);
 #endif
 
-<<<<<<< HEAD
-/* from pacache.S -- needed for copy_page */
-EXPORT_SYMBOL(copy_user_page_asm);
-=======
 /* from pacache.S -- needed for clear/copy_page */
 EXPORT_SYMBOL(clear_page_asm);
 EXPORT_SYMBOL(copy_page_asm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

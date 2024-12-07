@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  LZO1X Decompressor from LZO
  *
@@ -35,11 +32,7 @@
  * depending on the base count. Since the base count is taken from a u8
  * and a few bits, it is safe to assume that it will always be lower than
  * or equal to 2*255, thus we can always prevent any overflow by accepting
-<<<<<<< HEAD
- * two less 255 steps. See Documentation/lzo.txt for more information.
-=======
  * two less 255 steps. See Documentation/staging/lzo.rst for more information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define MAX_255_COUNT      ((((size_t)~0) / 255) - 2)
 
@@ -54,18 +47,13 @@ int lzo1x_decompress_safe(const unsigned char *in, size_t in_len,
 	const unsigned char * const ip_end = in + in_len;
 	unsigned char * const op_end = out + *out_len;
 
-<<<<<<< HEAD
-=======
 	unsigned char bitstream_version;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	op = out;
 	ip = in;
 
 	if (unlikely(in_len < 3))
 		goto input_overrun;
-<<<<<<< HEAD
-=======
 
 	if (likely(in_len >= 5) && likely(*ip == 17)) {
 		bitstream_version = ip[1];
@@ -74,7 +62,6 @@ int lzo1x_decompress_safe(const unsigned char *in, size_t in_len,
 		bitstream_version = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*ip > 17) {
 		t = *ip++ - 17;
 		if (t < 4) {
@@ -178,34 +165,6 @@ copy_literal_run:
 			m_pos -= next >> 2;
 			next &= 3;
 		} else {
-<<<<<<< HEAD
-			m_pos = op;
-			m_pos -= (t & 8) << 11;
-			t = (t & 7) + (3 - 1);
-			if (unlikely(t == 2)) {
-				size_t offset;
-				const unsigned char *ip_last = ip;
-
-				while (unlikely(*ip == 0)) {
-					ip++;
-					NEED_IP(1);
-				}
-				offset = ip - ip_last;
-				if (unlikely(offset > MAX_255_COUNT))
-					return LZO_E_ERROR;
-
-				offset = (offset << 8) - offset;
-				t += offset + 7 + *ip++;
-				NEED_IP(2);
-			}
-			next = get_unaligned_le16(ip);
-			ip += 2;
-			m_pos -= next >> 2;
-			next &= 3;
-			if (m_pos == op)
-				goto eof_found;
-			m_pos -= 0x4000;
-=======
 			NEED_IP(2);
 			next = get_unaligned_le16(ip);
 			if (((next & 0xfffc) == 0xfffc) &&
@@ -249,7 +208,6 @@ copy_literal_run:
 					goto eof_found;
 				m_pos -= 0x4000;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		TEST_LB(m_pos);
 #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)

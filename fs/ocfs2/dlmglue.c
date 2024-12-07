@@ -1,34 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmglue.c
  *
  * Code which implements an OCFS2 specific interface to our DLM.
  *
  * Copyright (C) 2003, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -40,13 +16,9 @@
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/time.h>
-<<<<<<< HEAD
-#include <linux/quotaops.h>
-=======
 #include <linux/delay.h>
 #include <linux/quotaops.h>
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MLOG_MASK_PREFIX ML_DLM_GLUE
 #include <cluster/masklog.h>
@@ -68,10 +40,7 @@
 #include "uptodate.h"
 #include "quota.h"
 #include "refcounttree.h"
-<<<<<<< HEAD
-=======
 #include "acl.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "buffer_head_io.h"
 
@@ -112,13 +81,9 @@ struct ocfs2_unblock_ctl {
 };
 
 /* Lockdep class keys */
-<<<<<<< HEAD
-struct lock_class_key lockdep_keys[OCFS2_NUM_LOCK_TYPES];
-=======
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 static struct lock_class_key lockdep_keys[OCFS2_NUM_LOCK_TYPES];
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ocfs2_check_meta_downconvert(struct ocfs2_lock_res *lockres,
 					int new_level);
@@ -281,13 +246,10 @@ static struct ocfs2_lock_res_ops ocfs2_nfs_sync_lops = {
 	.flags		= 0,
 };
 
-<<<<<<< HEAD
-=======
 static struct ocfs2_lock_res_ops ocfs2_trim_fs_lops = {
 	.flags		= LOCK_TYPE_REQUIRES_REFRESH|LOCK_TYPE_USES_LVB,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ocfs2_lock_res_ops ocfs2_orphan_scan_lops = {
 	.flags		= LOCK_TYPE_REQUIRES_REFRESH|LOCK_TYPE_USES_LVB,
 };
@@ -463,10 +425,7 @@ static void ocfs2_remove_lockres_tracking(struct ocfs2_lock_res *res)
 static void ocfs2_init_lock_stats(struct ocfs2_lock_res *res)
 {
 	res->l_lock_refresh = 0;
-<<<<<<< HEAD
-=======
 	res->l_lock_wait = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&res->l_lock_prmode, 0, sizeof(struct ocfs2_lock_stats));
 	memset(&res->l_lock_exmode, 0, sizeof(struct ocfs2_lock_stats));
 }
@@ -491,11 +450,7 @@ static void ocfs2_update_lock_stats(struct ocfs2_lock_res *res, int level,
 	stats->ls_gets++;
 	stats->ls_total += ktime_to_ns(kt);
 	/* overflow */
-<<<<<<< HEAD
-	if (unlikely(stats->ls_gets) == 0) {
-=======
 	if (unlikely(stats->ls_gets == 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stats->ls_gets++;
 		stats->ls_total = ktime_to_ns(kt);
 	}
@@ -505,11 +460,8 @@ static void ocfs2_update_lock_stats(struct ocfs2_lock_res *res, int level,
 
 	if (ret)
 		stats->ls_fail++;
-<<<<<<< HEAD
-=======
 
 	stats->ls_last = ktime_to_us(ktime_get_real());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ocfs2_track_lock_refresh(struct ocfs2_lock_res *lockres)
@@ -517,8 +469,6 @@ static inline void ocfs2_track_lock_refresh(struct ocfs2_lock_res *lockres)
 	lockres->l_lock_refresh++;
 }
 
-<<<<<<< HEAD
-=======
 static inline void ocfs2_track_lock_wait(struct ocfs2_lock_res *lockres)
 {
 	struct ocfs2_mask_waiter *mw;
@@ -534,7 +484,6 @@ static inline void ocfs2_track_lock_wait(struct ocfs2_lock_res *lockres)
 			ktime_to_us(ktime_mono_to_real(mw->mw_lock_start));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ocfs2_init_start_time(struct ocfs2_mask_waiter *mw)
 {
 	mw->mw_lock_start = ktime_get();
@@ -550,12 +499,9 @@ static inline void ocfs2_update_lock_stats(struct ocfs2_lock_res *res,
 static inline void ocfs2_track_lock_refresh(struct ocfs2_lock_res *lockres)
 {
 }
-<<<<<<< HEAD
-=======
 static inline void ocfs2_track_lock_wait(struct ocfs2_lock_res *lockres)
 {
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ocfs2_init_start_time(struct ocfs2_mask_waiter *mw)
 {
 }
@@ -599,10 +545,7 @@ void ocfs2_lock_res_init_once(struct ocfs2_lock_res *res)
 	init_waitqueue_head(&res->l_event);
 	INIT_LIST_HEAD(&res->l_blocked_list);
 	INIT_LIST_HEAD(&res->l_mask_waiters);
-<<<<<<< HEAD
-=======
 	INIT_LIST_HEAD(&res->l_holders);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ocfs2_inode_lock_res_init(struct ocfs2_lock_res *res,
@@ -626,11 +569,7 @@ void ocfs2_inode_lock_res_init(struct ocfs2_lock_res *res,
 			mlog_bug_on_msg(1, "type: %d\n", type);
 			ops = NULL; /* thanks, gcc */
 			break;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_build_lock_name(type, OCFS2_I(inode)->ip_blkno,
 			      generation, res->l_name);
@@ -749,8 +688,6 @@ static void ocfs2_nfs_sync_lock_res_init(struct ocfs2_lock_res *res,
 				   &ocfs2_nfs_sync_lops, osb);
 }
 
-<<<<<<< HEAD
-=======
 static void ocfs2_nfs_sync_lock_init(struct ocfs2_super *osb)
 {
 	ocfs2_nfs_sync_lock_res_init(&osb->osb_nfs_sync_lockres, osb);
@@ -780,7 +717,6 @@ void ocfs2_trim_fs_lock_res_uninit(struct ocfs2_super *osb)
 	mutex_unlock(&osb->obs_trim_fs_mutex);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ocfs2_orphan_scan_lock_res_init(struct ocfs2_lock_res *res,
 					    struct ocfs2_super *osb)
 {
@@ -856,8 +792,6 @@ void ocfs2_lock_res_free(struct ocfs2_lock_res *res)
 	res->l_flags = 0UL;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Keep a list of processes who have interest in a lockres.
  * Note: this is now only uesed for check recursive cluster locking.
@@ -901,7 +835,6 @@ static inline void ocfs2_remove_holder(struct ocfs2_lock_res *lockres,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ocfs2_inc_holders(struct ocfs2_lock_res *lockres,
 				     int level)
 {
@@ -968,10 +901,7 @@ static void lockres_set_flags(struct ocfs2_lock_res *lockres,
 		list_del_init(&mw->mw_item);
 		mw->mw_status = 0;
 		complete(&mw->mw_complete);
-<<<<<<< HEAD
-=======
 		ocfs2_track_lock_wait(lockres);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 static void lockres_or_flags(struct ocfs2_lock_res *lockres, unsigned long or)
@@ -1019,10 +949,6 @@ static inline void ocfs2_generic_handle_convert_action(struct ocfs2_lock_res *lo
 	 * We set the OCFS2_LOCK_UPCONVERT_FINISHING flag before clearing
 	 * the OCFS2_LOCK_BUSY flag to prevent the dc thread from
 	 * downconverting the lock before the upconvert has fully completed.
-<<<<<<< HEAD
-	 */
-	lockres_or_flags(lockres, OCFS2_LOCK_UPCONVERT_FINISHING);
-=======
 	 * Do not prevent the dc thread from downconverting if NONBLOCK lock
 	 * had already returned.
 	 */
@@ -1030,7 +956,6 @@ static inline void ocfs2_generic_handle_convert_action(struct ocfs2_lock_res *lo
 		lockres_or_flags(lockres, OCFS2_LOCK_UPCONVERT_FINISHING);
 	else
 		lockres_clear_flags(lockres, OCFS2_LOCK_NONBLOCK_FINISHED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lockres_clear_flags(lockres, OCFS2_LOCK_BUSY);
 }
@@ -1472,11 +1397,7 @@ static int ocfs2_wait_for_mask(struct ocfs2_mask_waiter *mw)
 {
 	wait_for_completion(&mw->mw_complete);
 	/* Re-arm the completion in case we want to wait on it again */
-<<<<<<< HEAD
-	INIT_COMPLETION(mw->mw_complete);
-=======
 	reinit_completion(&mw->mw_complete);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mw->mw_status;
 }
 
@@ -1492,16 +1413,11 @@ static void lockres_add_mask_waiter(struct ocfs2_lock_res *lockres,
 	list_add_tail(&mw->mw_item, &lockres->l_mask_waiters);
 	mw->mw_mask = mask;
 	mw->mw_goal = goal;
-<<<<<<< HEAD
-=======
 	ocfs2_track_lock_wait(lockres);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* returns 0 if the mw that was removed was already satisfied, -EBUSY
  * if the mask still hadn't reached its goal */
-<<<<<<< HEAD
-=======
 static int __lockres_remove_mask_waiter(struct ocfs2_lock_res *lockres,
 				      struct ocfs2_mask_waiter *mw)
 {
@@ -1520,7 +1436,6 @@ static int __lockres_remove_mask_waiter(struct ocfs2_lock_res *lockres,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int lockres_remove_mask_waiter(struct ocfs2_lock_res *lockres,
 				      struct ocfs2_mask_waiter *mw)
 {
@@ -1528,17 +1443,7 @@ static int lockres_remove_mask_waiter(struct ocfs2_lock_res *lockres,
 	int ret = 0;
 
 	spin_lock_irqsave(&lockres->l_lock, flags);
-<<<<<<< HEAD
-	if (!list_empty(&mw->mw_item)) {
-		if ((lockres->l_flags & mw->mw_mask) != mw->mw_goal)
-			ret = -EBUSY;
-
-		list_del_init(&mw->mw_item);
-		init_completion(&mw->mw_complete);
-	}
-=======
 	ret = __lockres_remove_mask_waiter(lockres, mw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&lockres->l_lock, flags);
 
 	return ret;
@@ -1556,11 +1461,7 @@ static int ocfs2_wait_for_mask_interruptible(struct ocfs2_mask_waiter *mw,
 	else
 		ret = mw->mw_status;
 	/* Re-arm the completion in case we want to wait on it again */
-<<<<<<< HEAD
-	INIT_COMPLETION(mw->mw_complete);
-=======
 	reinit_completion(&mw->mw_complete);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1578,8 +1479,6 @@ static int __ocfs2_cluster_lock(struct ocfs2_super *osb,
 	unsigned long flags;
 	unsigned int gen;
 	int noqueue_attempted = 0;
-<<<<<<< HEAD
-=======
 	int dlm_locked = 0;
 	int kick_dc = 0;
 
@@ -1587,7 +1486,6 @@ static int __ocfs2_cluster_lock(struct ocfs2_super *osb,
 		mlog_errno(-EINVAL);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_init_mask_waiter(&mw);
 
@@ -1696,10 +1594,7 @@ again:
 			ocfs2_recover_from_dlm_error(lockres, 1);
 			goto out;
 		}
-<<<<<<< HEAD
-=======
 		dlm_locked = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mlog(0, "lock %s, successful return from ocfs2_dlm_lock\n",
 		     lockres->l_name);
@@ -1720,16 +1615,12 @@ update_holders:
 unlock:
 	lockres_clear_flags(lockres, OCFS2_LOCK_UPCONVERT_FINISHING);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&lockres->l_lock, flags);
-=======
 	/* ocfs2_unblock_lock request on seeing OCFS2_LOCK_UPCONVERT_FINISHING */
 	kick_dc = (lockres->l_flags & OCFS2_LOCK_BLOCKED);
 
 	spin_unlock_irqrestore(&lockres->l_lock, flags);
 	if (kick_dc)
 		ocfs2_wake_downconvert_thread(osb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	/*
 	 * This is helping work around a lock inversion between the page lock
@@ -1742,12 +1633,6 @@ out:
 	if (wait && arg_flags & OCFS2_LOCK_NONBLOCK &&
 	    mw.mw_mask & (OCFS2_LOCK_BUSY|OCFS2_LOCK_BLOCKED)) {
 		wait = 0;
-<<<<<<< HEAD
-		if (lockres_remove_mask_waiter(lockres, &mw))
-			ret = -EAGAIN;
-		else
-			goto again;
-=======
 		spin_lock_irqsave(&lockres->l_lock, flags);
 		if (__lockres_remove_mask_waiter(lockres, &mw)) {
 			if (dlm_locked)
@@ -1759,7 +1644,6 @@ out:
 			spin_unlock_irqrestore(&lockres->l_lock, flags);
 			goto again;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (wait) {
 		ret = ocfs2_wait_for_mask(&mw);
@@ -1808,11 +1692,7 @@ static void __ocfs2_cluster_unlock(struct ocfs2_super *osb,
 	spin_unlock_irqrestore(&lockres->l_lock, flags);
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 	if (lockres->l_lockdep_map.key != NULL)
-<<<<<<< HEAD
-		rwsem_release(&lockres->l_lockdep_map, 1, caller_ip);
-=======
 		rwsem_release(&lockres->l_lockdep_map, caller_ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -1844,10 +1724,6 @@ int ocfs2_create_new_inode_locks(struct inode *inode)
 	int ret;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	BUG_ON(!inode);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!ocfs2_inode_is_new(inode));
 
 	mlog(0, "Inode %llu\n", (unsigned long long)OCFS2_I(inode)->ip_blkno);
@@ -1877,15 +1753,8 @@ int ocfs2_create_new_inode_locks(struct inode *inode)
 	}
 
 	ret = ocfs2_create_new_lock(osb, &OCFS2_I(inode)->ip_open_lockres, 0, 0);
-<<<<<<< HEAD
-	if (ret) {
-		mlog_errno(ret);
-		goto bail;
-	}
-=======
 	if (ret)
 		mlog_errno(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bail:
 	return ret;
@@ -1897,11 +1766,6 @@ int ocfs2_rw_lock(struct inode *inode, int write)
 	struct ocfs2_lock_res *lockres;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	BUG_ON(!inode);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlog(0, "inode %llu take %s RW lock\n",
 	     (unsigned long long)OCFS2_I(inode)->ip_blkno,
 	     write ? "EXMODE" : "PRMODE");
@@ -1913,20 +1777,13 @@ int ocfs2_rw_lock(struct inode *inode, int write)
 
 	level = write ? DLM_LOCK_EX : DLM_LOCK_PR;
 
-<<<<<<< HEAD
-	status = ocfs2_cluster_lock(OCFS2_SB(inode->i_sb), lockres, level, 0,
-				    0);
-=======
 	status = ocfs2_cluster_lock(osb, lockres, level, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		mlog_errno(status);
 
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 int ocfs2_try_rw_lock(struct inode *inode, int write)
 {
 	int status, level;
@@ -1948,7 +1805,6 @@ int ocfs2_try_rw_lock(struct inode *inode, int write)
 	return status;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ocfs2_rw_unlock(struct inode *inode, int write)
 {
 	int level = write ? DLM_LOCK_EX : DLM_LOCK_PR;
@@ -1960,11 +1816,7 @@ void ocfs2_rw_unlock(struct inode *inode, int write)
 	     write ? "EXMODE" : "PRMODE");
 
 	if (!ocfs2_mount_local(osb))
-<<<<<<< HEAD
-		ocfs2_cluster_unlock(OCFS2_SB(inode->i_sb), lockres, level);
-=======
 		ocfs2_cluster_unlock(osb, lockres, level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1976,11 +1828,6 @@ int ocfs2_open_lock(struct inode *inode)
 	struct ocfs2_lock_res *lockres;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	BUG_ON(!inode);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlog(0, "inode %llu take PRMODE open lock\n",
 	     (unsigned long long)OCFS2_I(inode)->ip_blkno);
 
@@ -1989,12 +1836,7 @@ int ocfs2_open_lock(struct inode *inode)
 
 	lockres = &OCFS2_I(inode)->ip_open_lockres;
 
-<<<<<<< HEAD
-	status = ocfs2_cluster_lock(OCFS2_SB(inode->i_sb), lockres,
-				    DLM_LOCK_PR, 0, 0);
-=======
 	status = ocfs2_cluster_lock(osb, lockres, DLM_LOCK_PR, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		mlog_errno(status);
 
@@ -2008,11 +1850,6 @@ int ocfs2_try_open_lock(struct inode *inode, int write)
 	struct ocfs2_lock_res *lockres;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	BUG_ON(!inode);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlog(0, "inode %llu try to take %s open lock\n",
 	     (unsigned long long)OCFS2_I(inode)->ip_blkno,
 	     write ? "EXMODE" : "PRMODE");
@@ -2036,12 +1873,7 @@ int ocfs2_try_open_lock(struct inode *inode, int write)
 	 * other nodes and the -EAGAIN will indicate to the caller that
 	 * this inode is still in use.
 	 */
-<<<<<<< HEAD
-	status = ocfs2_cluster_lock(OCFS2_SB(inode->i_sb), lockres,
-				    level, DLM_LKF_NOQUEUE, 0);
-=======
 	status = ocfs2_cluster_lock(osb, lockres, level, DLM_LKF_NOQUEUE, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return status;
@@ -2062,17 +1894,9 @@ void ocfs2_open_unlock(struct inode *inode)
 		goto out;
 
 	if(lockres->l_ro_holders)
-<<<<<<< HEAD
-		ocfs2_cluster_unlock(OCFS2_SB(inode->i_sb), lockres,
-				     DLM_LOCK_PR);
-	if(lockres->l_ex_holders)
-		ocfs2_cluster_unlock(OCFS2_SB(inode->i_sb), lockres,
-				     DLM_LOCK_EX);
-=======
 		ocfs2_cluster_unlock(osb, lockres, DLM_LOCK_PR);
 	if(lockres->l_ex_holders)
 		ocfs2_cluster_unlock(osb, lockres, DLM_LOCK_EX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return;
@@ -2314,26 +2138,15 @@ static void ocfs2_downconvert_on_unlock(struct ocfs2_super *osb,
 }
 
 #define OCFS2_SEC_BITS   34
-<<<<<<< HEAD
-#define OCFS2_SEC_SHIFT  (64 - 34)
-=======
 #define OCFS2_SEC_SHIFT  (64 - OCFS2_SEC_BITS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OCFS2_NSEC_MASK  ((1ULL << OCFS2_SEC_SHIFT) - 1)
 
 /* LVB only has room for 64 bits of time here so we pack it for
  * now. */
-<<<<<<< HEAD
-static u64 ocfs2_pack_timespec(struct timespec *spec)
-{
-	u64 res;
-	u64 sec = spec->tv_sec;
-=======
 static u64 ocfs2_pack_timespec(struct timespec64 *spec)
 {
 	u64 res;
 	u64 sec = clamp_t(time64_t, spec->tv_sec, 0, 0x3ffffffffull);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 nsec = spec->tv_nsec;
 
 	res = (sec << OCFS2_SEC_SHIFT) | (nsec & OCFS2_NSEC_MASK);
@@ -2349,10 +2162,7 @@ static void __ocfs2_stuff_meta_lvb(struct inode *inode)
 	struct ocfs2_inode_info *oi = OCFS2_I(inode);
 	struct ocfs2_lock_res *lockres = &oi->ip_inode_lockres;
 	struct ocfs2_meta_lvb *lvb;
-<<<<<<< HEAD
-=======
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lvb = ocfs2_dlm_lvb(&lockres->l_lksb);
 
@@ -2369,18 +2179,6 @@ static void __ocfs2_stuff_meta_lvb(struct inode *inode)
 	lvb->lvb_version   = OCFS2_LVB_VERSION;
 	lvb->lvb_isize	   = cpu_to_be64(i_size_read(inode));
 	lvb->lvb_iclusters = cpu_to_be32(oi->ip_clusters);
-<<<<<<< HEAD
-	lvb->lvb_iuid      = cpu_to_be32(inode->i_uid);
-	lvb->lvb_igid      = cpu_to_be32(inode->i_gid);
-	lvb->lvb_imode     = cpu_to_be16(inode->i_mode);
-	lvb->lvb_inlink    = cpu_to_be16(inode->i_nlink);
-	lvb->lvb_iatime_packed  =
-		cpu_to_be64(ocfs2_pack_timespec(&inode->i_atime));
-	lvb->lvb_ictime_packed =
-		cpu_to_be64(ocfs2_pack_timespec(&inode->i_ctime));
-	lvb->lvb_imtime_packed =
-		cpu_to_be64(ocfs2_pack_timespec(&inode->i_mtime));
-=======
 	lvb->lvb_iuid      = cpu_to_be32(i_uid_read(inode));
 	lvb->lvb_igid      = cpu_to_be32(i_gid_read(inode));
 	lvb->lvb_imode     = cpu_to_be16(inode->i_mode);
@@ -2391,7 +2189,6 @@ static void __ocfs2_stuff_meta_lvb(struct inode *inode)
 	lvb->lvb_ictime_packed = cpu_to_be64(ocfs2_pack_timespec(&ts));
 	ts = inode_get_mtime(inode);
 	lvb->lvb_imtime_packed = cpu_to_be64(ocfs2_pack_timespec(&ts));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lvb->lvb_iattr    = cpu_to_be32(oi->ip_attr);
 	lvb->lvb_idynfeatures = cpu_to_be16(oi->ip_dyn_features);
 	lvb->lvb_igeneration = cpu_to_be32(inode->i_generation);
@@ -2400,39 +2197,25 @@ out:
 	mlog_meta_lvb(0, lockres);
 }
 
-<<<<<<< HEAD
-static void ocfs2_unpack_timespec(struct timespec *spec,
-=======
 static void ocfs2_unpack_timespec(struct timespec64 *spec,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  u64 packed_time)
 {
 	spec->tv_sec = packed_time >> OCFS2_SEC_SHIFT;
 	spec->tv_nsec = packed_time & OCFS2_NSEC_MASK;
 }
 
-<<<<<<< HEAD
-static void ocfs2_refresh_inode_from_lvb(struct inode *inode)
-=======
 static int ocfs2_refresh_inode_from_lvb(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_inode_info *oi = OCFS2_I(inode);
 	struct ocfs2_lock_res *lockres = &oi->ip_inode_lockres;
 	struct ocfs2_meta_lvb *lvb;
-<<<<<<< HEAD
-=======
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog_meta_lvb(0, lockres);
 
 	lvb = ocfs2_dlm_lvb(&lockres->l_lksb);
-<<<<<<< HEAD
-=======
 	if (inode_wrong_type(inode, be16_to_cpu(lvb->lvb_imode)))
 		return -ESTALE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We're safe here without the lockres lock... */
 	spin_lock(&oi->ip_lock);
@@ -2449,19 +2232,6 @@ static int ocfs2_refresh_inode_from_lvb(struct inode *inode)
 	else
 		inode->i_blocks = ocfs2_inode_sector_count(inode);
 
-<<<<<<< HEAD
-	inode->i_uid     = be32_to_cpu(lvb->lvb_iuid);
-	inode->i_gid     = be32_to_cpu(lvb->lvb_igid);
-	inode->i_mode    = be16_to_cpu(lvb->lvb_imode);
-	set_nlink(inode, be16_to_cpu(lvb->lvb_inlink));
-	ocfs2_unpack_timespec(&inode->i_atime,
-			      be64_to_cpu(lvb->lvb_iatime_packed));
-	ocfs2_unpack_timespec(&inode->i_mtime,
-			      be64_to_cpu(lvb->lvb_imtime_packed));
-	ocfs2_unpack_timespec(&inode->i_ctime,
-			      be64_to_cpu(lvb->lvb_ictime_packed));
-	spin_unlock(&oi->ip_lock);
-=======
 	i_uid_write(inode, be32_to_cpu(lvb->lvb_iuid));
 	i_gid_write(inode, be32_to_cpu(lvb->lvb_igid));
 	inode->i_mode    = be16_to_cpu(lvb->lvb_imode);
@@ -2474,7 +2244,6 @@ static int ocfs2_refresh_inode_from_lvb(struct inode *inode)
 	inode_set_ctime_to_ts(inode, ts);
 	spin_unlock(&oi->ip_lock);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ocfs2_meta_lvb_is_trustable(struct inode *inode,
@@ -2577,12 +2346,8 @@ static int ocfs2_inode_lock_update(struct inode *inode,
 	if (ocfs2_meta_lvb_is_trustable(inode, lockres)) {
 		mlog(0, "Trusting LVB on inode %llu\n",
 		     (unsigned long long)oi->ip_blkno);
-<<<<<<< HEAD
-		ocfs2_refresh_inode_from_lvb(inode);
-=======
 		status = ocfs2_refresh_inode_from_lvb(inode);
 		goto bail_refresh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Boo, we have to go to disk. */
 		/* read bh, cast, ocfs2_refresh_inode */
@@ -2592,13 +2357,10 @@ static int ocfs2_inode_lock_update(struct inode *inode,
 			goto bail_refresh;
 		}
 		fe = (struct ocfs2_dinode *) (*bh)->b_data;
-<<<<<<< HEAD
-=======
 		if (inode_wrong_type(inode, le16_to_cpu(fe->i_mode))) {
 			status = -ESTALE;
 			goto bail_refresh;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* This is a good chance to make sure we're not
 		 * locking an invalid object.  ocfs2_read_inode_block()
@@ -2672,11 +2434,6 @@ int ocfs2_inode_lock_full_nested(struct inode *inode,
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct buffer_head *local_bh = NULL;
 
-<<<<<<< HEAD
-	BUG_ON(!inode);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlog(0, "inode %llu, take %s META lock\n",
 	     (unsigned long long)OCFS2_I(inode)->ip_blkno,
 	     ex ? "EXMODE" : "PRMODE");
@@ -2691,14 +2448,9 @@ int ocfs2_inode_lock_full_nested(struct inode *inode,
 		goto getbh;
 	}
 
-<<<<<<< HEAD
-	if (ocfs2_mount_local(osb))
-		goto local;
-=======
 	if ((arg_flags & OCFS2_META_LOCK_GETBH) ||
 	    ocfs2_mount_local(osb))
 		goto update;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(arg_flags & OCFS2_META_LOCK_RECOVERY))
 		ocfs2_wait_for_recovery(osb);
@@ -2712,11 +2464,7 @@ int ocfs2_inode_lock_full_nested(struct inode *inode,
 	status = __ocfs2_cluster_lock(osb, lockres, level, dlm_flags,
 				      arg_flags, subclass, _RET_IP_);
 	if (status < 0) {
-<<<<<<< HEAD
-		if (status != -EAGAIN && status != -EIOCBRETRY)
-=======
 		if (status != -EAGAIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlog_errno(status);
 		goto bail;
 	}
@@ -2731,11 +2479,7 @@ int ocfs2_inode_lock_full_nested(struct inode *inode,
 	if (!(arg_flags & OCFS2_META_LOCK_RECOVERY))
 		ocfs2_wait_for_recovery(osb);
 
-<<<<<<< HEAD
-local:
-=======
 update:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We only see this flag if we're being called from
 	 * ocfs2_read_locked_inode(). It means we're locking an inode
@@ -2779,13 +2523,7 @@ bail:
 			ocfs2_inode_unlock(inode, ex);
 	}
 
-<<<<<<< HEAD
-	if (local_bh)
-		brelse(local_bh);
-
-=======
 	brelse(local_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2804,15 +2542,6 @@ bail:
  * done this we have to return AOP_TRUNCATED_PAGE so the aop method
  * that called us can bubble that back up into the VFS who will then
  * immediately retry the aop call.
-<<<<<<< HEAD
- *
- * We do a blocking lock and immediate unlock before returning, though, so that
- * the lock has a great chance of being cached on this node by the time the VFS
- * calls back to retry the aop.    This has a potential to livelock as nodes
- * ping locks back and forth, but that's a risk we're willing to take to avoid
- * the lock inversion simply.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ocfs2_inode_lock_with_page(struct inode *inode,
 			      struct buffer_head **ret_bh,
@@ -2824,8 +2553,6 @@ int ocfs2_inode_lock_with_page(struct inode *inode,
 	ret = ocfs2_inode_lock_full(inode, ret_bh, ex, OCFS2_LOCK_NONBLOCK);
 	if (ret == -EAGAIN) {
 		unlock_page(page);
-<<<<<<< HEAD
-=======
 		/*
 		 * If we can't get inode lock immediately, we should not return
 		 * directly here, since this will lead to a softlockup problem.
@@ -2833,7 +2560,6 @@ int ocfs2_inode_lock_with_page(struct inode *inode,
 		 * before returning, this can avoid CPU resource waste due to
 		 * lots of retries, and benefits fairness in getting lock.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ocfs2_inode_lock(inode, ret_bh, ex) == 0)
 			ocfs2_inode_unlock(inode, ex);
 		ret = AOP_TRUNCATED_PAGE;
@@ -2844,15 +2570,6 @@ int ocfs2_inode_lock_with_page(struct inode *inode,
 
 int ocfs2_inode_lock_atime(struct inode *inode,
 			  struct vfsmount *vfsmnt,
-<<<<<<< HEAD
-			  int *level)
-{
-	int ret;
-
-	ret = ocfs2_inode_lock(inode, NULL, 0);
-	if (ret < 0) {
-		mlog_errno(ret);
-=======
 			  int *level, int wait)
 {
 	int ret;
@@ -2865,7 +2582,6 @@ int ocfs2_inode_lock_atime(struct inode *inode,
 	if (ret < 0) {
 		if (ret != -EAGAIN)
 			mlog_errno(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -2877,11 +2593,6 @@ int ocfs2_inode_lock_atime(struct inode *inode,
 		struct buffer_head *bh = NULL;
 
 		ocfs2_inode_unlock(inode, 0);
-<<<<<<< HEAD
-		ret = ocfs2_inode_lock(inode, &bh, 1);
-		if (ret < 0) {
-			mlog_errno(ret);
-=======
 		if (wait)
 			ret = ocfs2_inode_lock(inode, &bh, 1);
 		else
@@ -2890,18 +2601,12 @@ int ocfs2_inode_lock_atime(struct inode *inode,
 		if (ret < 0) {
 			if (ret != -EAGAIN)
 				mlog_errno(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 		*level = 1;
 		if (ocfs2_should_update_atime(inode, vfsmnt))
 			ocfs2_update_inode_atime(inode, bh);
-<<<<<<< HEAD
-		if (bh)
-			brelse(bh);
-=======
 		brelse(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		*level = 0;
 
@@ -2919,11 +2624,6 @@ void ocfs2_inode_unlock(struct inode *inode,
 	     (unsigned long long)OCFS2_I(inode)->ip_blkno,
 	     ex ? "EXMODE" : "PRMODE");
 
-<<<<<<< HEAD
-	if (!ocfs2_is_hard_readonly(OCFS2_SB(inode->i_sb)) &&
-	    !ocfs2_mount_local(osb))
-		ocfs2_cluster_unlock(OCFS2_SB(inode->i_sb), lockres, level);
-=======
 	if (!ocfs2_is_hard_readonly(osb) &&
 	    !ocfs2_mount_local(osb))
 		ocfs2_cluster_unlock(osb, lockres, level);
@@ -3044,7 +2744,6 @@ void ocfs2_inode_unlock_tracker(struct inode *inode,
 		ocfs2_inode_unlock(inode, oh->oh_ex);
 		ocfs2_remove_holder(lockres, oh);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ocfs2_orphan_scan_lock(struct ocfs2_super *osb, u32 *seqno)
@@ -3112,14 +2811,6 @@ int ocfs2_super_lock(struct ocfs2_super *osb,
 	 * refreshed, so we do it here. Of course, making sense of
 	 * everything is up to the caller :) */
 	status = ocfs2_should_refresh_lock_res(lockres);
-<<<<<<< HEAD
-	if (status < 0) {
-		ocfs2_cluster_unlock(osb, lockres, level);
-		mlog_errno(status);
-		goto bail;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status) {
 		status = ocfs2_refresh_slot_info(osb);
 
@@ -3179,24 +2870,16 @@ int ocfs2_nfs_sync_lock(struct ocfs2_super *osb, int ex)
 	if (ocfs2_is_hard_readonly(osb))
 		return -EROFS;
 
-<<<<<<< HEAD
-=======
 	if (ex)
 		down_write(&osb->nfs_sync_rwlock);
 	else
 		down_read(&osb->nfs_sync_rwlock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ocfs2_mount_local(osb))
 		return 0;
 
 	status = ocfs2_cluster_lock(osb, lockres, ex ? LKM_EXMODE : LKM_PRMODE,
 				    0, 0);
-<<<<<<< HEAD
-	if (status < 0)
-		mlog(ML_ERROR, "lock on nfs sync lock failed %d\n", status);
-
-=======
 	if (status < 0) {
 		mlog(ML_ERROR, "lock on nfs sync lock failed %d\n", status);
 
@@ -3206,7 +2889,6 @@ int ocfs2_nfs_sync_lock(struct ocfs2_super *osb, int ex)
 			up_read(&osb->nfs_sync_rwlock);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -3217,8 +2899,6 @@ void ocfs2_nfs_sync_unlock(struct ocfs2_super *osb, int ex)
 	if (!ocfs2_mount_local(osb))
 		ocfs2_cluster_unlock(osb, lockres,
 				     ex ? LKM_EXMODE : LKM_PRMODE);
-<<<<<<< HEAD
-=======
 	if (ex)
 		up_write(&osb->nfs_sync_rwlock);
 	else
@@ -3287,7 +2967,6 @@ void ocfs2_trim_fs_unlock(struct ocfs2_super *osb,
 	}
 
 	ocfs2_cluster_unlock(osb, lockres, DLM_LOCK_EX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ocfs2_dentry_lock(struct dentry *dentry, int ex)
@@ -3360,11 +3039,7 @@ struct ocfs2_dlm_debug *ocfs2_new_dlm_debug(void)
 
 	kref_init(&dlm_debug->d_refcnt);
 	INIT_LIST_HEAD(&dlm_debug->d_lockres_tracking);
-<<<<<<< HEAD
-	dlm_debug->d_locking_state = NULL;
-=======
 	dlm_debug->d_filter_secs = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return dlm_debug;
 }
@@ -3455,34 +3130,24 @@ static void *ocfs2_dlm_seq_next(struct seq_file *m, void *v, loff_t *pos)
  *	- Lock stats printed
  * New in version 3
  *	- Max time in lock stats is in usecs (instead of nsecs)
-<<<<<<< HEAD
- */
-#define OCFS2_DLM_DEBUG_STR_VERSION 3
-=======
  * New in version 4
  *	- Add last pr/ex unlock times and first lock wait time in usecs
  */
 #define OCFS2_DLM_DEBUG_STR_VERSION 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_dlm_seq_show(struct seq_file *m, void *v)
 {
 	int i;
 	char *lvb;
 	struct ocfs2_lock_res *lockres = v;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_OCFS2_FS_STATS
 	u64 now, last;
 	struct ocfs2_dlm_debug *dlm_debug =
 			((struct ocfs2_dlm_seq_priv *)m->private)->p_dlm_debug;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!lockres)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_OCFS2_FS_STATS
 	if (!lockres->l_lock_wait && dlm_debug->d_filter_secs) {
 		now = ktime_to_us(ktime_get_real());
@@ -3502,7 +3167,6 @@ static int ocfs2_dlm_seq_show(struct seq_file *m, void *v)
 	}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(m, "0x%x\t", OCFS2_DLM_DEBUG_STR_VERSION);
 
 	if (lockres->l_type == OCFS2_LOCK_TYPE_DENTRY)
@@ -3544,12 +3208,9 @@ static int ocfs2_dlm_seq_show(struct seq_file *m, void *v)
 # define lock_max_prmode(_l)		((_l)->l_lock_prmode.ls_max)
 # define lock_max_exmode(_l)		((_l)->l_lock_exmode.ls_max)
 # define lock_refresh(_l)		((_l)->l_lock_refresh)
-<<<<<<< HEAD
-=======
 # define lock_last_prmode(_l)		((_l)->l_lock_prmode.ls_last)
 # define lock_last_exmode(_l)		((_l)->l_lock_exmode.ls_last)
 # define lock_wait(_l)			((_l)->l_lock_wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 # define lock_num_prmode(_l)		(0)
 # define lock_num_exmode(_l)		(0)
@@ -3560,12 +3221,9 @@ static int ocfs2_dlm_seq_show(struct seq_file *m, void *v)
 # define lock_max_prmode(_l)		(0)
 # define lock_max_exmode(_l)		(0)
 # define lock_refresh(_l)		(0)
-<<<<<<< HEAD
-=======
 # define lock_last_prmode(_l)		(0ULL)
 # define lock_last_exmode(_l)		(0ULL)
 # define lock_wait(_l)			(0ULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	/* The following seq_print was added in version 2 of this output */
 	seq_printf(m, "%u\t"
@@ -3576,14 +3234,10 @@ static int ocfs2_dlm_seq_show(struct seq_file *m, void *v)
 		   "%llu\t"
 		   "%u\t"
 		   "%u\t"
-<<<<<<< HEAD
-		   "%u\t",
-=======
 		   "%u\t"
 		   "%llu\t"
 		   "%llu\t"
 		   "%llu\t",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   lock_num_prmode(lockres),
 		   lock_num_exmode(lockres),
 		   lock_num_prmode_failed(lockres),
@@ -3592,14 +3246,10 @@ static int ocfs2_dlm_seq_show(struct seq_file *m, void *v)
 		   lock_total_exmode(lockres),
 		   lock_max_prmode(lockres),
 		   lock_max_exmode(lockres),
-<<<<<<< HEAD
-		   lock_refresh(lockres));
-=======
 		   lock_refresh(lockres),
 		   lock_last_prmode(lockres),
 		   lock_last_exmode(lockres),
 		   lock_wait(lockres));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* End the line */
 	seq_printf(m, "\n");
@@ -3626,19 +3276,6 @@ static int ocfs2_dlm_debug_release(struct inode *inode, struct file *file)
 
 static int ocfs2_dlm_debug_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	int ret;
-	struct ocfs2_dlm_seq_priv *priv;
-	struct seq_file *seq;
-	struct ocfs2_super *osb;
-
-	priv = kzalloc(sizeof(struct ocfs2_dlm_seq_priv), GFP_KERNEL);
-	if (!priv) {
-		ret = -ENOMEM;
-		mlog_errno(ret);
-		goto out;
-	}
-=======
 	struct ocfs2_dlm_seq_priv *priv;
 	struct ocfs2_super *osb;
 
@@ -3648,34 +3285,15 @@ static int ocfs2_dlm_debug_open(struct inode *inode, struct file *file)
 		return -ENOMEM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	osb = inode->i_private;
 	ocfs2_get_dlm_debug(osb->osb_dlm_debug);
 	priv->p_dlm_debug = osb->osb_dlm_debug;
 	INIT_LIST_HEAD(&priv->p_iter_res.l_debug_list);
 
-<<<<<<< HEAD
-	ret = seq_open(file, &ocfs2_dlm_seq_ops);
-	if (ret) {
-		kfree(priv);
-		mlog_errno(ret);
-		goto out;
-	}
-
-	seq = file->private_data;
-	seq->private = priv;
-
-	ocfs2_add_lockres_tracking(&priv->p_iter_res,
-				   priv->p_dlm_debug);
-
-out:
-	return ret;
-=======
 	ocfs2_add_lockres_tracking(&priv->p_iter_res,
 				   priv->p_dlm_debug);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations ocfs2_dlm_debug_fops = {
@@ -3685,28 +3303,6 @@ static const struct file_operations ocfs2_dlm_debug_fops = {
 	.llseek =	seq_lseek,
 };
 
-<<<<<<< HEAD
-static int ocfs2_dlm_init_debug(struct ocfs2_super *osb)
-{
-	int ret = 0;
-	struct ocfs2_dlm_debug *dlm_debug = osb->osb_dlm_debug;
-
-	dlm_debug->d_locking_state = debugfs_create_file("locking_state",
-							 S_IFREG|S_IRUSR,
-							 osb->osb_debug_root,
-							 osb,
-							 &ocfs2_dlm_debug_fops);
-	if (!dlm_debug->d_locking_state) {
-		ret = -EINVAL;
-		mlog(ML_ERROR,
-		     "Unable to create locking state debugfs file.\n");
-		goto out;
-	}
-
-	ocfs2_get_dlm_debug(dlm_debug);
-out:
-	return ret;
-=======
 static void ocfs2_dlm_init_debug(struct ocfs2_super *osb)
 {
 	struct ocfs2_dlm_debug *dlm_debug = osb->osb_dlm_debug;
@@ -3717,22 +3313,14 @@ static void ocfs2_dlm_init_debug(struct ocfs2_super *osb)
 	debugfs_create_u32("locking_filter", 0600, osb->osb_debug_root,
 			   &dlm_debug->d_filter_secs);
 	ocfs2_get_dlm_debug(dlm_debug);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ocfs2_dlm_shutdown_debug(struct ocfs2_super *osb)
 {
 	struct ocfs2_dlm_debug *dlm_debug = osb->osb_dlm_debug;
 
-<<<<<<< HEAD
-	if (dlm_debug) {
-		debugfs_remove(dlm_debug->d_locking_state);
-		ocfs2_put_dlm_debug(dlm_debug);
-	}
-=======
 	if (dlm_debug)
 		ocfs2_put_dlm_debug(dlm_debug);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ocfs2_dlm_init(struct ocfs2_super *osb)
@@ -3745,22 +3333,11 @@ int ocfs2_dlm_init(struct ocfs2_super *osb)
 		goto local;
 	}
 
-<<<<<<< HEAD
-	status = ocfs2_dlm_init_debug(osb);
-	if (status < 0) {
-		mlog_errno(status);
-		goto bail;
-	}
-
-	/* launch downconvert thread */
-	osb->dc_task = kthread_run(ocfs2_downconvert_thread, osb, "ocfs2dc");
-=======
 	ocfs2_dlm_init_debug(osb);
 
 	/* launch downconvert thread */
 	osb->dc_task = kthread_run(ocfs2_downconvert_thread, osb, "ocfs2dc-%s",
 			osb->uuid_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(osb->dc_task)) {
 		status = PTR_ERR(osb->dc_task);
 		osb->dc_task = NULL;
@@ -3770,11 +3347,8 @@ int ocfs2_dlm_init(struct ocfs2_super *osb)
 
 	/* for now, uuid == domain */
 	status = ocfs2_cluster_connect(osb->osb_cluster_stack,
-<<<<<<< HEAD
-=======
 				       osb->osb_cluster_name,
 				       strlen(osb->osb_cluster_name),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       osb->uuid_str,
 				       strlen(osb->uuid_str),
 				       &lproto, ocfs2_do_node_down, osb,
@@ -3784,11 +3358,7 @@ int ocfs2_dlm_init(struct ocfs2_super *osb)
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	status = ocfs2_cluster_this_node(&osb->node_num);
-=======
 	status = ocfs2_cluster_this_node(conn, &osb->node_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		mlog(ML_ERROR,
@@ -3800,19 +3370,10 @@ int ocfs2_dlm_init(struct ocfs2_super *osb)
 local:
 	ocfs2_super_lock_res_init(&osb->osb_super_lockres, osb);
 	ocfs2_rename_lock_res_init(&osb->osb_rename_lockres, osb);
-<<<<<<< HEAD
-	ocfs2_nfs_sync_lock_res_init(&osb->osb_nfs_sync_lockres, osb);
-	ocfs2_orphan_scan_lock_res_init(&osb->osb_orphan_scan.os_lockres, osb);
-
-	osb->cconn = conn;
-
-	status = 0;
-=======
 	ocfs2_nfs_sync_lock_init(osb);
 	ocfs2_orphan_scan_lock_res_init(&osb->osb_orphan_scan.os_lockres, osb);
 
 	osb->cconn = conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bail:
 	if (status < 0) {
 		ocfs2_dlm_shutdown_debug(osb);
@@ -3844,19 +3405,12 @@ void ocfs2_dlm_shutdown(struct ocfs2_super *osb,
 	ocfs2_lock_res_free(&osb->osb_nfs_sync_lockres);
 	ocfs2_lock_res_free(&osb->osb_orphan_scan.os_lockres);
 
-<<<<<<< HEAD
-	ocfs2_cluster_disconnect(osb->cconn, hangup_pending);
-	osb->cconn = NULL;
-
-	ocfs2_dlm_shutdown_debug(osb);
-=======
 	if (osb->cconn) {
 		ocfs2_cluster_disconnect(osb->cconn, hangup_pending);
 		osb->cconn = NULL;
 
 		ocfs2_dlm_shutdown_debug(osb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ocfs2_drop_lock(struct ocfs2_super *osb,
@@ -3941,39 +3495,26 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void ocfs2_process_blocked_lock(struct ocfs2_super *osb,
 				       struct ocfs2_lock_res *lockres);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Mark the lockres as being dropped. It will no longer be
  * queued if blocking, but we still may have to wait on it
  * being dequeued from the downconvert thread before we can consider
  * it safe to drop.
  *
  * You can *not* attempt to call cluster_lock on this lockres anymore. */
-<<<<<<< HEAD
-void ocfs2_mark_lockres_freeing(struct ocfs2_lock_res *lockres)
-{
-	int status;
-	struct ocfs2_mask_waiter mw;
-	unsigned long flags;
-=======
 void ocfs2_mark_lockres_freeing(struct ocfs2_super *osb,
 				struct ocfs2_lock_res *lockres)
 {
 	int status;
 	struct ocfs2_mask_waiter mw;
 	unsigned long flags, flags2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_init_mask_waiter(&mw);
 
 	spin_lock_irqsave(&lockres->l_lock, flags);
 	lockres->l_flags |= OCFS2_LOCK_FREEING;
-<<<<<<< HEAD
-=======
 	if (lockres->l_flags & OCFS2_LOCK_QUEUED && current == osb->dc_task) {
 		/*
 		 * We know the downconvert is queued but not in progress
@@ -4008,7 +3549,6 @@ void ocfs2_mark_lockres_freeing(struct ocfs2_super *osb,
 		ocfs2_process_blocked_lock(osb, lockres);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (lockres->l_flags & OCFS2_LOCK_QUEUED) {
 		lockres_add_mask_waiter(lockres, &mw, OCFS2_LOCK_QUEUED, 0);
 		spin_unlock_irqrestore(&lockres->l_lock, flags);
@@ -4029,11 +3569,7 @@ void ocfs2_simple_drop_lockres(struct ocfs2_super *osb,
 {
 	int ret;
 
-<<<<<<< HEAD
-	ocfs2_mark_lockres_freeing(lockres);
-=======
 	ocfs2_mark_lockres_freeing(osb, lockres);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ocfs2_drop_lock(osb, lockres);
 	if (ret)
 		mlog_errno(ret);
@@ -4119,8 +3655,6 @@ static int ocfs2_downconvert_lock(struct ocfs2_super *osb,
 	mlog(ML_BASTS, "lockres %s, level %d => %d\n", lockres->l_name,
 	     lockres->l_level, new_level);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * On DLM_LKF_VALBLK, fsdlm behaves differently with o2cb. It always
 	 * expects DLM_LKF_VALBLK being set if the LKB has LVB, so that
@@ -4131,7 +3665,6 @@ static int ocfs2_downconvert_lock(struct ocfs2_super *osb,
 	    lockres->l_ops->flags & LOCK_TYPE_USES_LVB)
 		lvb = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lvb)
 		dlm_flags |= DLM_LKF_VALBLK;
 
@@ -4384,8 +3917,6 @@ downconvert:
 	spin_unlock_irqrestore(&lockres->l_lock, flags);
 	ret = ocfs2_downconvert_lock(osb, lockres, new_level, set_lvb,
 				     gen);
-<<<<<<< HEAD
-=======
 	/* The dlm lock convert is being cancelled in background,
 	 * ocfs2_cancel_convert() is asynchronous in fs/dlm,
 	 * requeue it, try again later.
@@ -4397,7 +3928,6 @@ downconvert:
 		ret = 0;
 		msleep(20);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 leave:
 	if (ret)
@@ -4425,11 +3955,7 @@ static int ocfs2_data_convert_worker(struct ocfs2_lock_res *lockres,
 		oi = OCFS2_I(inode);
 		oi->ip_dir_lock_gen++;
 		mlog(0, "generation: %u\n", oi->ip_dir_lock_gen);
-<<<<<<< HEAD
-		goto out;
-=======
 		goto out_forget;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!S_ISREG(inode->i_mode))
@@ -4460,12 +3986,9 @@ static int ocfs2_data_convert_worker(struct ocfs2_lock_res *lockres,
 		filemap_fdatawait(mapping);
 	}
 
-<<<<<<< HEAD
-=======
 out_forget:
 	forget_all_cached_acls(inode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return UNBLOCK_CONTINUE;
 }
@@ -4595,15 +4118,10 @@ static int ocfs2_dentry_convert_worker(struct ocfs2_lock_res *lockres,
 			break;
 		spin_unlock(&dentry_attach_lock);
 
-<<<<<<< HEAD
-		mlog(0, "d_delete(%.*s);\n", dentry->d_name.len,
-		     dentry->d_name.name);
-=======
 		if (S_ISDIR(dl->dl_inode->i_mode))
 			shrink_dcache_parent(dentry);
 
 		mlog(0, "d_delete(%pd);\n", dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * The following dcache calls may do an
@@ -4834,11 +4352,8 @@ unqueue:
 static void ocfs2_schedule_blocked_lock(struct ocfs2_super *osb,
 					struct ocfs2_lock_res *lockres)
 {
-<<<<<<< HEAD
-=======
 	unsigned long flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	assert_spin_locked(&lockres->l_lock);
 
 	if (lockres->l_flags & OCFS2_LOCK_FREEING) {
@@ -4852,36 +4367,22 @@ static void ocfs2_schedule_blocked_lock(struct ocfs2_super *osb,
 
 	lockres_or_flags(lockres, OCFS2_LOCK_QUEUED);
 
-<<<<<<< HEAD
-	spin_lock(&osb->dc_task_lock);
-=======
 	spin_lock_irqsave(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(&lockres->l_blocked_list)) {
 		list_add_tail(&lockres->l_blocked_list,
 			      &osb->blocked_lock_list);
 		osb->blocked_lock_count++;
 	}
-<<<<<<< HEAD
-	spin_unlock(&osb->dc_task_lock);
-=======
 	spin_unlock_irqrestore(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ocfs2_downconvert_thread_do_work(struct ocfs2_super *osb)
 {
 	unsigned long processed;
-<<<<<<< HEAD
-	struct ocfs2_lock_res *lockres;
-
-	spin_lock(&osb->dc_task_lock);
-=======
 	unsigned long flags;
 	struct ocfs2_lock_res *lockres;
 
 	spin_lock_irqsave(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* grab this early so we know to try again if a state change and
 	 * wake happens part-way through our work  */
 	osb->dc_work_sequence = osb->dc_wake_sequence;
@@ -4898,39 +4399,21 @@ static void ocfs2_downconvert_thread_do_work(struct ocfs2_super *osb)
 				     struct ocfs2_lock_res, l_blocked_list);
 		list_del_init(&lockres->l_blocked_list);
 		osb->blocked_lock_count--;
-<<<<<<< HEAD
-		spin_unlock(&osb->dc_task_lock);
-=======
 		spin_unlock_irqrestore(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		BUG_ON(!processed);
 		processed--;
 
 		ocfs2_process_blocked_lock(osb, lockres);
 
-<<<<<<< HEAD
-		spin_lock(&osb->dc_task_lock);
-	}
-	spin_unlock(&osb->dc_task_lock);
-=======
 		spin_lock_irqsave(&osb->dc_task_lock, flags);
 	}
 	spin_unlock_irqrestore(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ocfs2_downconvert_thread_lists_empty(struct ocfs2_super *osb)
 {
 	int empty = 0;
-<<<<<<< HEAD
-
-	spin_lock(&osb->dc_task_lock);
-	if (list_empty(&osb->blocked_lock_list))
-		empty = 1;
-
-	spin_unlock(&osb->dc_task_lock);
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&osb->dc_task_lock, flags);
@@ -4938,37 +4421,24 @@ static int ocfs2_downconvert_thread_lists_empty(struct ocfs2_super *osb)
 		empty = 1;
 
 	spin_unlock_irqrestore(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return empty;
 }
 
 static int ocfs2_downconvert_thread_should_wake(struct ocfs2_super *osb)
 {
 	int should_wake = 0;
-<<<<<<< HEAD
-
-	spin_lock(&osb->dc_task_lock);
-	if (osb->dc_work_sequence != osb->dc_wake_sequence)
-		should_wake = 1;
-	spin_unlock(&osb->dc_task_lock);
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&osb->dc_task_lock, flags);
 	if (osb->dc_work_sequence != osb->dc_wake_sequence)
 		should_wake = 1;
 	spin_unlock_irqrestore(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return should_wake;
 }
 
 static int ocfs2_downconvert_thread(void *arg)
 {
-<<<<<<< HEAD
-	int status = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_super *osb = arg;
 
 	/* only quit once we've been asked to stop and there is no more
@@ -4986,22 +4456,11 @@ static int ocfs2_downconvert_thread(void *arg)
 	}
 
 	osb->dc_task = NULL;
-<<<<<<< HEAD
-	return status;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ocfs2_wake_downconvert_thread(struct ocfs2_super *osb)
 {
-<<<<<<< HEAD
-	spin_lock(&osb->dc_task_lock);
-	/* make sure the voting thread gets a swipe at whatever changes
-	 * the caller may have made to the voting state */
-	osb->dc_wake_sequence++;
-	spin_unlock(&osb->dc_task_lock);
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&osb->dc_task_lock, flags);
@@ -5009,6 +4468,5 @@ void ocfs2_wake_downconvert_thread(struct ocfs2_super *osb)
 	 * the caller may have made to the voting state */
 	osb->dc_wake_sequence++;
 	spin_unlock_irqrestore(&osb->dc_task_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&osb->dc_event);
 }

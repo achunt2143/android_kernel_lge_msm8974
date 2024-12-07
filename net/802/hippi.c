@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -17,14 +14,6 @@
  *		Florian  La Roche, <rzsfl@rz.uni-sb.de>
  *		Alan Cox, <gw4pts@gw4pts.ampr.org>
  *		Jes Sorensen, <Jes.Sorensen@cern.ch>
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -41,11 +30,7 @@
 #include <linux/errno.h>
 #include <net/arp.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Create the HIPPI MAC header for an arbitrary protocol layer
@@ -56,15 +41,9 @@
 
 static int hippi_header(struct sk_buff *skb, struct net_device *dev,
 			unsigned short type,
-<<<<<<< HEAD
-			const void *daddr, const void *saddr, unsigned len)
-{
-	struct hippi_hdr *hip = (struct hippi_hdr *)skb_push(skb, HIPPI_HLEN);
-=======
 			const void *daddr, const void *saddr, unsigned int len)
 {
 	struct hippi_hdr *hip = skb_push(skb, HIPPI_HLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hippi_cb *hcb = (struct hippi_cb *) skb->cb;
 
 	if (!len){
@@ -86,11 +65,7 @@ static int hippi_header(struct sk_buff *skb, struct net_device *dev,
 	hip->le.src_addr_type	= 2;	/* 12 bit SC address */
 
 	memcpy(hip->le.src_switch_addr, dev->dev_addr + 3, 3);
-<<<<<<< HEAD
-	memset(&hip->le.reserved, 0, 16);
-=======
 	memset_startat(&hip->le, 0, reserved);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hip->snap.dsap		= HIPPI_EXTENDED_SAP;
 	hip->snap.ssap		= HIPPI_EXTENDED_SAP;
@@ -112,36 +87,6 @@ static int hippi_header(struct sk_buff *skb, struct net_device *dev,
 
 
 /*
-<<<<<<< HEAD
- * Rebuild the HIPPI MAC header. This is called after an ARP has
- * completed on this sk_buff. We now let ARP fill in the other fields.
- */
-
-static int hippi_rebuild_header(struct sk_buff *skb)
-{
-	struct hippi_hdr *hip = (struct hippi_hdr *)skb->data;
-
-	/*
-	 * Only IP is currently supported
-	 */
-
-	if(hip->snap.ethertype != htons(ETH_P_IP))
-	{
-		printk(KERN_DEBUG "%s: unable to resolve type %X addresses.\n",skb->dev->name,ntohs(hip->snap.ethertype));
-		return 0;
-	}
-
-	/*
-	 * We don't support dynamic ARP on HIPPI, but we use the ARP
-	 * static ARP tables to hold the I-FIELDs.
-	 */
-	return arp_find(hip->le.daddr, skb);
-}
-
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Determine the packet's protocol ID.
  */
 
@@ -167,21 +112,6 @@ __be16 hippi_type_trans(struct sk_buff *skb, struct net_device *dev)
 
 EXPORT_SYMBOL(hippi_type_trans);
 
-<<<<<<< HEAD
-int hippi_change_mtu(struct net_device *dev, int new_mtu)
-{
-	/*
-	 * HIPPI's got these nice large MTUs.
-	 */
-	if ((new_mtu < 68) || (new_mtu > 65280))
-		return -EINVAL;
-	dev->mtu = new_mtu;
-	return 0;
-}
-EXPORT_SYMBOL(hippi_change_mtu);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * For HIPPI we will actually use the lower 4 bytes of the hardware
  * address as the I-FIELD rather than the actual hardware address.
@@ -191,11 +121,7 @@ int hippi_mac_addr(struct net_device *dev, void *p)
 	struct sockaddr *addr = p;
 	if (netif_running(dev))
 		return -EBUSY;
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
-=======
 	dev_addr_set(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(hippi_mac_addr);
@@ -203,32 +129,20 @@ EXPORT_SYMBOL(hippi_mac_addr);
 int hippi_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p)
 {
 	/* Never send broadcast/multicast ARP messages */
-<<<<<<< HEAD
-	p->mcast_probes = 0;
-=======
 	NEIGH_VAR_INIT(p, MCAST_PROBES, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* In IPv6 unicast probes are valid even on NBMA,
 	* because they are encapsulated in normal IPv6 protocol.
 	* Should be a generic flag.
 	*/
 	if (p->tbl->family != AF_INET6)
-<<<<<<< HEAD
-		p->ucast_probes = 0;
-=======
 		NEIGH_VAR_INIT(p, UCAST_PROBES, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(hippi_neigh_setup_dev);
 
 static const struct header_ops hippi_header_ops = {
 	.create		= hippi_header,
-<<<<<<< HEAD
-	.rebuild	= hippi_rebuild_header,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -244,11 +158,8 @@ static void hippi_setup(struct net_device *dev)
 	dev->type		= ARPHRD_HIPPI;
 	dev->hard_header_len 	= HIPPI_HLEN;
 	dev->mtu		= 65280;
-<<<<<<< HEAD
-=======
 	dev->min_mtu		= 68;
 	dev->max_mtu		= 65280;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->addr_len		= HIPPI_ALEN;
 	dev->tx_queue_len	= 25 /* 5 */;
 	memset(dev->broadcast, 0xFF, HIPPI_ALEN);
@@ -275,12 +186,8 @@ static void hippi_setup(struct net_device *dev)
 
 struct net_device *alloc_hippi_dev(int sizeof_priv)
 {
-<<<<<<< HEAD
-	return alloc_netdev(sizeof_priv, "hip%d", hippi_setup);
-=======
 	return alloc_netdev(sizeof_priv, "hip%d", NET_NAME_UNKNOWN,
 			    hippi_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(alloc_hippi_dev);

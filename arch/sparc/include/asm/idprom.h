@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * idprom.h: Macros and defines for idprom routines
  *
@@ -24,10 +21,6 @@ struct idprom {
 };
 
 extern struct idprom *idprom;
-<<<<<<< HEAD
-extern void idprom_init(void);
-=======
 void idprom_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(_SPARC_IDPROM_H) */

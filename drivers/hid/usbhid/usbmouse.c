@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  *
@@ -9,22 +6,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
@@ -49,18 +30,10 @@
 #define DRIVER_VERSION "v1.6"
 #define DRIVER_AUTHOR "Vojtech Pavlik <vojtech@ucw.cz>"
 #define DRIVER_DESC "USB HID Boot Protocol mouse driver"
-<<<<<<< HEAD
-#define DRIVER_LICENSE "GPL"
-
-MODULE_AUTHOR(DRIVER_AUTHOR);
-MODULE_DESCRIPTION(DRIVER_DESC);
-MODULE_LICENSE(DRIVER_LICENSE);
-=======
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct usb_mouse {
 	char name[128];
@@ -106,16 +79,10 @@ static void usb_mouse_irq(struct urb *urb)
 resubmit:
 	status = usb_submit_urb (urb, GFP_ATOMIC);
 	if (status)
-<<<<<<< HEAD
-		err ("can't resubmit intr, %s-%s/input0, status %d",
-				mouse->usbdev->bus->bus_name,
-				mouse->usbdev->devpath, status);
-=======
 		dev_err(&mouse->usbdev->dev,
 			"can't resubmit intr, %s-%s/input0, status %d\n",
 			mouse->usbdev->bus->bus_name,
 			mouse->usbdev->devpath, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usb_mouse_open(struct input_dev *dev)
@@ -156,22 +123,14 @@ static int usb_mouse_probe(struct usb_interface *intf, const struct usb_device_i
 		return -ENODEV;
 
 	pipe = usb_rcvintpipe(dev, endpoint->bEndpointAddress);
-<<<<<<< HEAD
-	maxp = usb_maxpacket(dev, pipe, usb_pipeout(pipe));
-=======
 	maxp = usb_maxpacket(dev, pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mouse = kzalloc(sizeof(struct usb_mouse), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!mouse || !input_dev)
 		goto fail1;
 
-<<<<<<< HEAD
-	mouse->data = usb_alloc_coherent(dev, 8, GFP_ATOMIC, &mouse->data_dma);
-=======
 	mouse->data = usb_alloc_coherent(dev, 8, GFP_KERNEL, &mouse->data_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mouse->data)
 		goto fail1;
 
@@ -183,11 +142,7 @@ static int usb_mouse_probe(struct usb_interface *intf, const struct usb_device_i
 	mouse->dev = input_dev;
 
 	if (dev->manufacturer)
-<<<<<<< HEAD
-		strlcpy(mouse->name, dev->manufacturer, sizeof(mouse->name));
-=======
 		strscpy(mouse->name, dev->manufacturer, sizeof(mouse->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->product) {
 		if (dev->manufacturer)
@@ -259,11 +214,7 @@ static void usb_mouse_disconnect(struct usb_interface *intf)
 	}
 }
 
-<<<<<<< HEAD
-static struct usb_device_id usb_mouse_id_table [] = {
-=======
 static const struct usb_device_id usb_mouse_id_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_INTERFACE_INFO(USB_INTERFACE_CLASS_HID, USB_INTERFACE_SUBCLASS_BOOT,
 		USB_INTERFACE_PROTOCOL_MOUSE) },
 	{ }	/* Terminating entry */

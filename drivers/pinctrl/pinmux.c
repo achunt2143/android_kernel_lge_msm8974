@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver for the pin muxing portions of the pin control subsystem
  *
@@ -12,27 +9,6 @@
  * Author: Linus Walleij <linus.walleij@linaro.org>
  *
  * Copyright (C) 2012 NVIDIA CORPORATION. All rights reserved.
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
- */
-#define pr_fmt(fmt) "pinmux core: " fmt
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/device.h>
-#include <linux/slab.h>
-#include <linux/radix-tree.h>
-#include <linux/err.h>
-#include <linux/list.h>
-#include <linux/string.h>
-#include <linux/sysfs.h>
-#include <linux/debugfs.h>
-#include <linux/seq_file.h>
-#include <linux/pinctrl/machine.h>
-#include <linux/pinctrl/pinmux.h>
-=======
  */
 #define pr_fmt(fmt) "pinmux core: " fmt
 
@@ -53,31 +29,21 @@
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/pinctrl/pinmux.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "core.h"
 #include "pinmux.h"
 
 int pinmux_check_ops(struct pinctrl_dev *pctldev)
 {
 	const struct pinmux_ops *ops = pctldev->desc->pmxops;
-<<<<<<< HEAD
-	unsigned nfuncs;
-	unsigned selector = 0;
-=======
 	unsigned int nfuncs;
 	unsigned int selector = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check that we implement required operations */
 	if (!ops ||
 	    !ops->get_functions_count ||
 	    !ops->get_function_name ||
 	    !ops->get_function_groups ||
-<<<<<<< HEAD
-	    !ops->enable) {
-=======
 	    !ops->set_mux) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(pctldev->dev, "pinmux ops lacks necessary functions\n");
 		return -EINVAL;
 	}
@@ -97,11 +63,7 @@ int pinmux_check_ops(struct pinctrl_dev *pctldev)
 	return 0;
 }
 
-<<<<<<< HEAD
-int pinmux_validate_map(struct pinctrl_map const *map, int i)
-=======
 int pinmux_validate_map(const struct pinctrl_map *map, int i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!map->data.mux.function) {
 		pr_err("failed to register map %s (%d): no function given\n",
@@ -113,9 +75,6 @@ int pinmux_validate_map(const struct pinctrl_map *map, int i)
 }
 
 /**
-<<<<<<< HEAD
- * pin_request() - request a single pin to be muxed in, typically for GPIO
-=======
  * pinmux_can_be_used_for_gpio() - check if a specific pin
  *	is either muxed to a different function or used as gpio.
  *
@@ -143,7 +102,6 @@ bool pinmux_can_be_used_for_gpio(struct pinctrl_dev *pctldev, unsigned int pin)
 /**
  * pin_request() - request a single pin to be muxed in, typically for GPIO
  * @pctldev: the associated pin controller device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pin: the pin number in the global pin space
  * @owner: a representation of the owner of this pin; typically the device
  *	name that controls its mux function, or the requested GPIO name
@@ -169,26 +127,6 @@ static int pin_request(struct pinctrl_dev *pctldev,
 	dev_dbg(pctldev->dev, "request pin %d (%s) for %s\n",
 		pin, desc->name, owner);
 
-<<<<<<< HEAD
-	if (gpio_range) {
-		/* There's no need to support multiple GPIO requests */
-		if (desc->gpio_owner) {
-			dev_err(pctldev->dev,
-				"pin %s already requested by %s; cannot claim for %s\n",
-				desc->name, desc->gpio_owner, owner);
-			goto out;
-		}
-
-		desc->gpio_owner = owner;
-	} else {
-		if (desc->mux_usecount && strcmp(desc->mux_owner, owner)) {
-			dev_err(pctldev->dev,
-				"pin %s already requested by %s; cannot claim for %s\n",
-				desc->name, desc->mux_owner, owner);
-			goto out;
-		}
-
-=======
 	if ((!gpio_range || ops->strict) &&
 	    desc->mux_usecount && strcmp(desc->mux_owner, owner)) {
 		dev_err(pctldev->dev,
@@ -207,7 +145,6 @@ static int pin_request(struct pinctrl_dev *pctldev,
 	if (gpio_range) {
 		desc->gpio_owner = owner;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc->mux_usecount++;
 		if (desc->mux_usecount > 1)
 			return 0;
@@ -236,15 +173,8 @@ static int pin_request(struct pinctrl_dev *pctldev,
 	else
 		status = 0;
 
-<<<<<<< HEAD
-	if (status) {
-		dev_err(pctldev->dev, "request() failed for pin %d\n", pin);
-		module_put(pctldev->owner);
-	}
-=======
 	if (status)
 		module_put(pctldev->owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_free_pin:
 	if (status) {
@@ -258,13 +188,8 @@ out_free_pin:
 	}
 out:
 	if (status)
-<<<<<<< HEAD
-		dev_err(pctldev->dev, "pin-%d (%s) status %d\n",
-			pin, owner, status);
-=======
 		dev_err_probe(pctldev->dev, status, "pin-%d (%s)\n",
 			      pin, owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -333,18 +258,11 @@ static const char *pin_free(struct pinctrl_dev *pctldev, int pin,
  * @pctldev: pin controller device affected
  * @pin: the pin to mux in for GPIO
  * @range: the applicable GPIO range
-<<<<<<< HEAD
- */
-int pinmux_request_gpio(struct pinctrl_dev *pctldev,
-			struct pinctrl_gpio_range *range,
-			unsigned pin, unsigned gpio)
-=======
  * @gpio: number of requested GPIO
  */
 int pinmux_request_gpio(struct pinctrl_dev *pctldev,
 			struct pinctrl_gpio_range *range,
 			unsigned int pin, unsigned int gpio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *owner;
 	int ret;
@@ -352,11 +270,7 @@ int pinmux_request_gpio(struct pinctrl_dev *pctldev,
 	/* Conjure some name stating what chip and pin this is taken by */
 	owner = kasprintf(GFP_KERNEL, "%s:%d", range->name, gpio);
 	if (!owner)
-<<<<<<< HEAD
-		return -EINVAL;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = pin_request(pctldev, pin, owner, range);
 	if (ret < 0)
@@ -371,11 +285,7 @@ int pinmux_request_gpio(struct pinctrl_dev *pctldev,
  * @pin: the affected currently GPIO-muxed in pin
  * @range: applicable GPIO range
  */
-<<<<<<< HEAD
-void pinmux_free_gpio(struct pinctrl_dev *pctldev, unsigned pin,
-=======
 void pinmux_free_gpio(struct pinctrl_dev *pctldev, unsigned int pin,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      struct pinctrl_gpio_range *range)
 {
 	const char *owner;
@@ -393,11 +303,7 @@ void pinmux_free_gpio(struct pinctrl_dev *pctldev, unsigned int pin,
  */
 int pinmux_gpio_direction(struct pinctrl_dev *pctldev,
 			  struct pinctrl_gpio_range *range,
-<<<<<<< HEAD
-			  unsigned pin, bool input)
-=======
 			  unsigned int pin, bool input)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct pinmux_ops *ops;
 	int ret;
@@ -416,22 +322,12 @@ static int pinmux_func_name_to_selector(struct pinctrl_dev *pctldev,
 					const char *function)
 {
 	const struct pinmux_ops *ops = pctldev->desc->pmxops;
-<<<<<<< HEAD
-	unsigned nfuncs = ops->get_functions_count(pctldev);
-	unsigned selector = 0;
-
-	/* See if this pctldev has this function */
-	while (selector < nfuncs) {
-		const char *fname = ops->get_function_name(pctldev,
-							   selector);
-=======
 	unsigned int nfuncs = ops->get_functions_count(pctldev);
 	unsigned int selector = 0;
 
 	/* See if this pctldev has this function */
 	while (selector < nfuncs) {
 		const char *fname = ops->get_function_name(pctldev, selector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!strcmp(function, fname))
 			return selector;
@@ -439,34 +335,18 @@ static int pinmux_func_name_to_selector(struct pinctrl_dev *pctldev,
 		selector++;
 	}
 
-<<<<<<< HEAD
-	pr_err("%s does not support function %s\n",
-	       pinctrl_dev_get_name(pctldev), function);
-	return -EINVAL;
-}
-
-int pinmux_map_to_setting(struct pinctrl_map const *map,
-=======
 	return -EINVAL;
 }
 
 int pinmux_map_to_setting(const struct pinctrl_map *map,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct pinctrl_setting *setting)
 {
 	struct pinctrl_dev *pctldev = setting->pctldev;
 	const struct pinmux_ops *pmxops = pctldev->desc->pmxops;
 	char const * const *groups;
-<<<<<<< HEAD
-	unsigned num_groups;
-	int ret;
-	const char *group;
-	int i;
-=======
 	unsigned int num_groups;
 	int ret;
 	const char *group;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pmxops) {
 		dev_err(pctldev->dev, "does not support mux function\n");
@@ -495,21 +375,6 @@ int pinmux_map_to_setting(const struct pinctrl_map *map,
 		return -EINVAL;
 	}
 	if (map->data.mux.group) {
-<<<<<<< HEAD
-		bool found = false;
-		group = map->data.mux.group;
-		for (i = 0; i < num_groups; i++) {
-			if (!strcmp(group, groups[i])) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			dev_err(pctldev->dev,
-				"invalid group \"%s\" for function \"%s\"\n",
-				group, map->data.mux.function);
-			return -EINVAL;
-=======
 		group = map->data.mux.group;
 		ret = match_string(groups, num_groups, group);
 		if (ret < 0) {
@@ -517,7 +382,6 @@ int pinmux_map_to_setting(const struct pinctrl_map *map,
 				"invalid group \"%s\" for function \"%s\"\n",
 				group, map->data.mux.function);
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		group = groups[0];
@@ -534,39 +398,16 @@ int pinmux_map_to_setting(const struct pinctrl_map *map,
 	return 0;
 }
 
-<<<<<<< HEAD
-void pinmux_free_setting(struct pinctrl_setting const *setting)
-=======
 void pinmux_free_setting(const struct pinctrl_setting *setting)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* This function is currently unused */
 }
 
-<<<<<<< HEAD
-int pinmux_enable_setting(struct pinctrl_setting const *setting)
-=======
 int pinmux_enable_setting(const struct pinctrl_setting *setting)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl_dev *pctldev = setting->pctldev;
 	const struct pinctrl_ops *pctlops = pctldev->desc->pctlops;
 	const struct pinmux_ops *ops = pctldev->desc->pmxops;
-<<<<<<< HEAD
-	int ret;
-	const unsigned *pins;
-	unsigned num_pins;
-	int i;
-	struct pin_desc *desc;
-
-	ret = pctlops->get_group_pins(pctldev, setting->data.mux.group,
-				      &pins, &num_pins);
-	if (ret) {
-		/* errors only affect debug data, so just warn */
-		dev_warn(pctldev->dev,
-			 "could not get pins for group selector %d\n",
-			 setting->data.mux.group);
-=======
 	int ret = 0;
 	const unsigned int *pins = NULL;
 	unsigned int num_pins = 0;
@@ -586,7 +427,6 @@ int pinmux_enable_setting(const struct pinctrl_setting *setting)
 		dev_warn(pctldev->dev,
 			 "could not get pins for group %s\n",
 			 gname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		num_pins = 0;
 	}
 
@@ -594,11 +434,6 @@ int pinmux_enable_setting(const struct pinctrl_setting *setting)
 	for (i = 0; i < num_pins; i++) {
 		ret = pin_request(pctldev, pins[i], setting->dev_name, NULL);
 		if (ret) {
-<<<<<<< HEAD
-			dev_err(pctldev->dev,
-				"could not request pin %d on device %s\n",
-				pins[i], pinctrl_dev_get_name(pctldev));
-=======
 			const char *gname;
 			const char *pname;
 
@@ -611,7 +446,6 @@ int pinmux_enable_setting(const struct pinctrl_setting *setting)
 				" on device %s\n",
 				pins[i], pname, gname,
 				pinctrl_dev_get_name(pctldev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_pin_request;
 		}
 	}
@@ -628,17 +462,6 @@ int pinmux_enable_setting(const struct pinctrl_setting *setting)
 		desc->mux_setting = &(setting->data.mux);
 	}
 
-<<<<<<< HEAD
-	ret = ops->enable(pctldev, setting->data.mux.func,
-			  setting->data.mux.group);
-
-	if (ret)
-		goto err_enable;
-
-	return 0;
-
-err_enable:
-=======
 	ret = ops->set_mux(pctldev, setting->data.mux.func,
 			   setting->data.mux.group);
 
@@ -648,7 +471,6 @@ err_enable:
 	return 0;
 
 err_set_mux:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < num_pins; i++) {
 		desc = pin_desc_get(pctldev, pins[i]);
 		if (desc)
@@ -662,26 +484,6 @@ err_pin_request:
 	return ret;
 }
 
-<<<<<<< HEAD
-void pinmux_disable_setting(struct pinctrl_setting const *setting)
-{
-	struct pinctrl_dev *pctldev = setting->pctldev;
-	const struct pinctrl_ops *pctlops = pctldev->desc->pctlops;
-	const struct pinmux_ops *ops = pctldev->desc->pmxops;
-	int ret;
-	const unsigned *pins;
-	unsigned num_pins;
-	int i;
-	struct pin_desc *desc;
-
-	ret = pctlops->get_group_pins(pctldev, setting->data.mux.group,
-				      &pins, &num_pins);
-	if (ret) {
-		/* errors only affect debug data, so just warn */
-		dev_warn(pctldev->dev,
-			 "could not get pins for group selector %d\n",
-			 setting->data.mux.group);
-=======
 void pinmux_disable_setting(const struct pinctrl_setting *setting)
 {
 	struct pinctrl_dev *pctldev = setting->pctldev;
@@ -704,7 +506,6 @@ void pinmux_disable_setting(const struct pinctrl_setting *setting)
 		dev_warn(pctldev->dev,
 			 "could not get pins for group %s\n",
 			 gname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		num_pins = 0;
 	}
 
@@ -717,17 +518,6 @@ void pinmux_disable_setting(const struct pinctrl_setting *setting)
 				 pins[i]);
 			continue;
 		}
-<<<<<<< HEAD
-		desc->mux_setting = NULL;
-	}
-
-	/* And release the pins */
-	for (i = 0; i < num_pins; i++)
-		pin_free(pctldev, pins[i], NULL);
-
-	if (ops->disable)
-		ops->disable(pctldev, setting->data.mux.func, setting->data.mux.group);
-=======
 		if (desc->mux_setting == &(setting->data.mux)) {
 			pin_free(pctldev, pins[i], NULL);
 		} else {
@@ -742,7 +532,6 @@ void pinmux_disable_setting(const struct pinctrl_setting *setting)
 				 pins[i], desc->name, gname);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_DEBUG_FS
@@ -752,44 +541,24 @@ static int pinmux_functions_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_dev *pctldev = s->private;
 	const struct pinmux_ops *pmxops = pctldev->desc->pmxops;
-<<<<<<< HEAD
-	unsigned nfuncs;
-	unsigned func_selector = 0;
-=======
 	unsigned int nfuncs;
 	unsigned int func_selector = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pmxops)
 		return 0;
 
-<<<<<<< HEAD
-	mutex_lock(&pinctrl_mutex);
-=======
 	mutex_lock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfuncs = pmxops->get_functions_count(pctldev);
 	while (func_selector < nfuncs) {
 		const char *func = pmxops->get_function_name(pctldev,
 							  func_selector);
 		const char * const *groups;
-<<<<<<< HEAD
-		unsigned num_groups;
-=======
 		unsigned int num_groups;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int ret;
 		int i;
 
 		ret = pmxops->get_function_groups(pctldev, func_selector,
 						  &groups, &num_groups);
-<<<<<<< HEAD
-		if (ret)
-			seq_printf(s, "function %s: COULD NOT GET GROUPS\n",
-				   func);
-
-		seq_printf(s, "function: %s, groups = [ ", func);
-=======
 		if (ret) {
 			seq_printf(s, "function %s: COULD NOT GET GROUPS\n",
 				   func);
@@ -798,7 +567,6 @@ static int pinmux_functions_show(struct seq_file *s, void *what)
 		}
 
 		seq_printf(s, "function %d: %s, groups = [ ", func_selector, func);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < num_groups; i++)
 			seq_printf(s, "%s ", groups[i]);
 		seq_puts(s, "]\n");
@@ -806,11 +574,7 @@ static int pinmux_functions_show(struct seq_file *s, void *what)
 		func_selector++;
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&pinctrl_mutex);
-=======
 	mutex_unlock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -820,21 +584,12 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 	struct pinctrl_dev *pctldev = s->private;
 	const struct pinctrl_ops *pctlops = pctldev->desc->pctlops;
 	const struct pinmux_ops *pmxops = pctldev->desc->pmxops;
-<<<<<<< HEAD
-	unsigned i, pin;
-=======
 	unsigned int i, pin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pmxops)
 		return 0;
 
 	seq_puts(s, "Pinmux settings per pin\n");
-<<<<<<< HEAD
-	seq_puts(s, "Format: pin (name): mux_owner gpio_owner hog?\n");
-
-	mutex_lock(&pinctrl_mutex);
-=======
 	if (pmxops->strict)
 		seq_puts(s,
 		 "Format: pin (name): mux_owner|gpio_owner (strict) hog?\n");
@@ -843,7 +598,6 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 		"Format: pin (name): mux_owner gpio_owner hog?\n");
 
 	mutex_lock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The pin number can be retrived from the pin controller descriptor */
 	for (i = 0; i < pctldev->desc->npins; i++) {
@@ -860,16 +614,6 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 		    !strcmp(desc->mux_owner, pinctrl_dev_get_name(pctldev)))
 			is_hog = true;
 
-<<<<<<< HEAD
-		seq_printf(s, "pin %d (%s): %s %s%s", pin,
-			   desc->name ? desc->name : "unnamed",
-			   desc->mux_owner ? desc->mux_owner
-				: "(MUX UNCLAIMED)",
-			   desc->gpio_owner ? desc->gpio_owner
-				: "(GPIO UNCLAIMED)",
-			   is_hog ? " (HOG)" : "");
-
-=======
 		if (pmxops->strict) {
 			if (desc->mux_owner)
 				seq_printf(s, "pin %d (%s): device %s%s",
@@ -892,7 +636,6 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 		}
 
 		/* If mux: print function+group claiming the pin */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (desc->mux_setting)
 			seq_printf(s, " function %s group %s\n",
 				   pmxops->get_function_name(pctldev,
@@ -900,26 +643,15 @@ static int pinmux_pins_show(struct seq_file *s, void *what)
 				   pctlops->get_group_name(pctldev,
 					desc->mux_setting->group));
 		else
-<<<<<<< HEAD
-			seq_printf(s, "\n");
-	}
-
-	mutex_unlock(&pinctrl_mutex);
-=======
 			seq_putc(s, '\n');
 	}
 
 	mutex_unlock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-void pinmux_show_map(struct seq_file *s, struct pinctrl_map const *map)
-=======
 void pinmux_show_map(struct seq_file *s, const struct pinctrl_map *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	seq_printf(s, "group %s\nfunction %s\n",
 		map->data.mux.group ? map->data.mux.group : "(default)",
@@ -927,11 +659,7 @@ void pinmux_show_map(struct seq_file *s, const struct pinctrl_map *map)
 }
 
 void pinmux_show_setting(struct seq_file *s,
-<<<<<<< HEAD
-			 struct pinctrl_setting const *setting)
-=======
 			 const struct pinctrl_setting *setting)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl_dev *pctldev = setting->pctldev;
 	const struct pinmux_ops *pmxops = pctldev->desc->pmxops;
@@ -944,30 +672,6 @@ void pinmux_show_setting(struct seq_file *s,
 		   setting->data.mux.func);
 }
 
-<<<<<<< HEAD
-static int pinmux_functions_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinmux_functions_show, inode->i_private);
-}
-
-static int pinmux_pins_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinmux_pins_show, inode->i_private);
-}
-
-static const struct file_operations pinmux_functions_ops = {
-	.open		= pinmux_functions_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static const struct file_operations pinmux_pins_ops = {
-	.open		= pinmux_pins_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-=======
 DEFINE_SHOW_ATTRIBUTE(pinmux_functions);
 DEFINE_SHOW_ATTRIBUTE(pinmux_pins);
 
@@ -1057,21 +761,11 @@ static const struct file_operations pinmux_select_ops = {
 	.write = pinmux_select,
 	.llseek = no_llseek,
 	.release = single_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void pinmux_init_device_debugfs(struct dentry *devroot,
 			 struct pinctrl_dev *pctldev)
 {
-<<<<<<< HEAD
-	debugfs_create_file("pinmux-functions", S_IFREG | S_IRUGO,
-			    devroot, pctldev, &pinmux_functions_ops);
-	debugfs_create_file("pinmux-pins", S_IFREG | S_IRUGO,
-			    devroot, pctldev, &pinmux_pins_ops);
-}
-
-#endif /* CONFIG_DEBUG_FS */
-=======
 	debugfs_create_file("pinmux-functions", 0444,
 			    devroot, pctldev, &pinmux_functions_fops);
 	debugfs_create_file("pinmux-pins", 0444,
@@ -1252,4 +946,3 @@ void pinmux_generic_free_functions(struct pinctrl_dev *pctldev)
 }
 
 #endif /* CONFIG_GENERIC_PINMUX_FUNCTIONS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

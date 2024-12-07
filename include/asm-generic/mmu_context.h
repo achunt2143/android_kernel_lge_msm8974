@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_GENERIC_MMU_CONTEXT_H
 #define __ASM_GENERIC_MMU_CONTEXT_H
 
 /*
-<<<<<<< HEAD
- * Generic hooks for NOMMU architectures, which do not need to do
- * anything special here.
- */
-
-#include <asm-generic/mm_hooks.h>
-
-struct task_struct;
-struct mm_struct;
-
-=======
  * Generic hooks to implement no-op functionality.
  */
 
@@ -32,14 +18,10 @@ struct mm_struct;
  * tsk->mm will be NULL
  */
 #ifndef enter_lazy_tlb
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void enter_lazy_tlb(struct mm_struct *mm,
 			struct task_struct *tsk)
 {
 }
-<<<<<<< HEAD
-
-=======
 #endif
 
 /**
@@ -49,34 +31,11 @@ static inline void enter_lazy_tlb(struct mm_struct *mm,
  * @return: 0 on success, -errno on failure
  */
 #ifndef init_new_context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int init_new_context(struct task_struct *tsk,
 			struct mm_struct *mm)
 {
 	return 0;
 }
-<<<<<<< HEAD
-
-static inline void destroy_context(struct mm_struct *mm)
-{
-}
-
-static inline void deactivate_mm(struct task_struct *task,
-			struct mm_struct *mm)
-{
-}
-
-static inline void switch_mm(struct mm_struct *prev,
-			struct mm_struct *next,
-			struct task_struct *tsk)
-{
-}
-
-static inline void activate_mm(struct mm_struct *prev_mm,
-			       struct mm_struct *next_mm)
-{
-}
-=======
 #endif
 
 /**
@@ -113,6 +72,5 @@ static inline void deactivate_mm(struct task_struct *tsk,
 {
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_GENERIC_MMU_CONTEXT_H */

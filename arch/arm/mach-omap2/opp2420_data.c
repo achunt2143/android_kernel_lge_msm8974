@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * opp2420_data.c - old-style "OPP" table for OMAP2420
  *
@@ -32,11 +29,7 @@
  *     http://repository.maemo.org/pool/diablo/free/k/kernel-source-diablo/
  */
 
-<<<<<<< HEAD
-#include <plat/hardware.h>
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "opp2xxx.h"
 #include "sdrc.h"

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/lib/string.c
  *
@@ -9,33 +6,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * stupid library routines.. The optimized versions should generally be found
- * as inline code in <asm-xx/string.h>
- *
- * These are buggy as well..
- *
- * * Fri Jun 25 1999, Ingo Oeser <ioe@informatik.tu-chemnitz.de>
- * -  Added strsep() which will replace strtok() soon (because strsep() is
- *    reentrant and should be faster). Use only strsep() in new code, please.
- *
- * * Sat Feb 09 2002, Jason Thomas <jason@topic.com.au>,
- *                    Matthew Hawkins <matt@mh.dropbear.id.au>
- * -  Kissed strtok() goodbye
- */
-
-#include <linux/types.h>
-#include <linux/string.h>
-#include <linux/ctype.h>
-#include <linux/kernel.h>
-#include <linux/export.h>
-#include <linux/bug.h>
-#include <linux/errno.h>
-
-#ifndef __HAVE_ARCH_STRNICMP
-/**
- * strnicmp - Case insensitive, length-limited string comparison
-=======
  * This file should be used only for "library" routines that may have
  * alternative implementations on specific architectures (generally
  * found in <asm-xx/string.h>), or get overloaded by FORTIFY_SOURCE.
@@ -63,16 +33,11 @@
 #ifndef __HAVE_ARCH_STRNCASECMP
 /**
  * strncasecmp - Case insensitive, length-limited string comparison
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @s1: One string
  * @s2: The other string
  * @len: the maximum number of characters to compare
  */
-<<<<<<< HEAD
-int strnicmp(const char *s1, const char *s2, size_t len)
-=======
 int strncasecmp(const char *s1, const char *s2, size_t len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Yes, Virginia, it had better be unsigned */
 	unsigned char c1, c2;
@@ -94,11 +59,7 @@ int strncasecmp(const char *s1, const char *s2, size_t len)
 	} while (--len);
 	return (int)c1 - (int)c2;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(strnicmp);
-=======
 EXPORT_SYMBOL(strncasecmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef __HAVE_ARCH_STRCASECMP
@@ -115,31 +76,7 @@ int strcasecmp(const char *s1, const char *s2)
 EXPORT_SYMBOL(strcasecmp);
 #endif
 
-<<<<<<< HEAD
-#ifndef __HAVE_ARCH_STRNCASECMP
-int strncasecmp(const char *s1, const char *s2, size_t n)
-{
-	int c1, c2;
-
-	do {
-		c1 = tolower(*s1++);
-		c2 = tolower(*s2++);
-	} while ((--n > 0) && c1 == c2 && c1 != 0);
-	return c1 - c2;
-}
-EXPORT_SYMBOL(strncasecmp);
-#endif
-
 #ifndef __HAVE_ARCH_STRCPY
-/**
- * strcpy - Copy a %NUL terminated string
- * @dest: Where to copy the string to
- * @src: Where to copy the string from
- */
-#undef strcpy
-=======
-#ifndef __HAVE_ARCH_STRCPY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *strcpy(char *dest, const char *src)
 {
 	char *tmp = dest;
@@ -152,22 +89,6 @@ EXPORT_SYMBOL(strcpy);
 #endif
 
 #ifndef __HAVE_ARCH_STRNCPY
-<<<<<<< HEAD
-/**
- * strncpy - Copy a length-limited, %NUL-terminated string
- * @dest: Where to copy the string to
- * @src: Where to copy the string from
- * @count: The maximum number of bytes to copy
- *
- * The result is not %NUL-terminated if the source exceeds
- * @count bytes.
- *
- * In the case where the length of @src is less than  that  of
- * count, the remainder of @dest will be padded with %NUL.
- *
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *strncpy(char *dest, const char *src, size_t count)
 {
 	char *tmp = dest;
@@ -183,41 +104,6 @@ char *strncpy(char *dest, const char *src, size_t count)
 EXPORT_SYMBOL(strncpy);
 #endif
 
-<<<<<<< HEAD
-#ifndef __HAVE_ARCH_STRLCPY
-/**
- * strlcpy - Copy a %NUL terminated string into a sized buffer
- * @dest: Where to copy the string to
- * @src: Where to copy the string from
- * @size: size of destination buffer
- *
- * Compatible with *BSD: the result is always a valid
- * NUL-terminated string that fits in the buffer (unless,
- * of course, the buffer size is zero). It does not pad
- * out the result like strncpy() does.
- */
-size_t strlcpy(char *dest, const char *src, size_t size)
-{
-	size_t ret = strlen(src);
-
-	if (size) {
-		size_t len = (ret >= size) ? size - 1 : ret;
-		memcpy(dest, src, len);
-		dest[len] = '\0';
-	}
-	return ret;
-}
-EXPORT_SYMBOL(strlcpy);
-#endif
-
-#ifndef __HAVE_ARCH_STRCAT
-/**
- * strcat - Append one %NUL-terminated string to another
- * @dest: The string to be appended to
- * @src: The string to append to it
- */
-#undef strcat
-=======
 ssize_t sized_strscpy(char *dest, const char *src, size_t count)
 {
 	const struct word_at_a_time constants = WORD_AT_A_TIME_CONSTANTS;
@@ -311,7 +197,6 @@ char *stpcpy(char *__restrict__ dest, const char *__restrict__ src)
 EXPORT_SYMBOL(stpcpy);
 
 #ifndef __HAVE_ARCH_STRCAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *strcat(char *dest, const char *src)
 {
 	char *tmp = dest;
@@ -326,18 +211,6 @@ EXPORT_SYMBOL(strcat);
 #endif
 
 #ifndef __HAVE_ARCH_STRNCAT
-<<<<<<< HEAD
-/**
- * strncat - Append a length-limited, %NUL-terminated string to another
- * @dest: The string to be appended to
- * @src: The string to append to it
- * @count: The maximum numbers of bytes to copy
- *
- * Note that in contrast to strncpy(), strncat() ensures the result is
- * terminated.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *strncat(char *dest, const char *src, size_t count)
 {
 	char *tmp = dest;
@@ -358,15 +231,6 @@ EXPORT_SYMBOL(strncat);
 #endif
 
 #ifndef __HAVE_ARCH_STRLCAT
-<<<<<<< HEAD
-/**
- * strlcat - Append a length-limited, %NUL-terminated string to another
- * @dest: The string to be appended to
- * @src: The string to append to it
- * @count: The size of the destination buffer.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 size_t strlcat(char *dest, const char *src, size_t count)
 {
 	size_t dsize = strlen(dest);
@@ -380,11 +244,7 @@ size_t strlcat(char *dest, const char *src, size_t count)
 	count -= dsize;
 	if (len >= count)
 		len = count-1;
-<<<<<<< HEAD
-	memcpy(dest, src, len);
-=======
 	__builtin_memcpy(dest, src, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dest[len] = 0;
 	return res;
 }
@@ -397,10 +257,6 @@ EXPORT_SYMBOL(strlcat);
  * @cs: One string
  * @ct: Another string
  */
-<<<<<<< HEAD
-#undef strcmp
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int strcmp(const char *cs, const char *ct)
 {
 	unsigned char c1, c2;
@@ -448,12 +304,9 @@ EXPORT_SYMBOL(strncmp);
  * strchr - Find the first occurrence of a character in a string
  * @s: The string to be searched
  * @c: The character to search for
-<<<<<<< HEAD
-=======
  *
  * Note that the %NUL-terminator is considered part of the string, and can
  * be searched for.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 char *strchr(const char *s, int c)
 {
@@ -465,8 +318,6 @@ char *strchr(const char *s, int c)
 EXPORT_SYMBOL(strchr);
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef __HAVE_ARCH_STRCHRNUL
 /**
  * strchrnul - Find and return a character in a string, or end of string
@@ -502,7 +353,6 @@ char *strnchrnul(const char *s, size_t count, int c)
 	return (char *)s;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HAVE_ARCH_STRRCHR
 /**
  * strrchr - Find the last occurrence of a character in a string
@@ -511,21 +361,12 @@ char *strnchrnul(const char *s, size_t count, int c)
  */
 char *strrchr(const char *s, int c)
 {
-<<<<<<< HEAD
-       const char *p = s + strlen(s);
-       do {
-           if (*p == (char)c)
-               return (char *)p;
-       } while (--p >= s);
-       return NULL;
-=======
 	const char *last = NULL;
 	do {
 		if (*s == (char)c)
 			last = s;
 	} while (*s++);
 	return (char *)last;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(strrchr);
 #endif
@@ -536,14 +377,6 @@ EXPORT_SYMBOL(strrchr);
  * @s: The string to be searched
  * @count: The number of characters to be searched
  * @c: The character to search for
-<<<<<<< HEAD
- */
-char *strnchr(const char *s, size_t count, int c)
-{
-	for (; count-- && *s != '\0'; ++s)
-		if (*s == (char)c)
-			return (char *)s;
-=======
  *
  * Note that the %NUL-terminator is considered part of the string, and can
  * be searched for.
@@ -556,61 +389,12 @@ char *strnchr(const char *s, size_t count, int c)
 		if (*s++ == '\0')
 			break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 EXPORT_SYMBOL(strnchr);
 #endif
 
-<<<<<<< HEAD
-/**
- * skip_spaces - Removes leading whitespace from @str.
- * @str: The string to be stripped.
- *
- * Returns a pointer to the first non-whitespace character in @str.
- */
-char *skip_spaces(const char *str)
-{
-	while (isspace(*str))
-		++str;
-	return (char *)str;
-}
-EXPORT_SYMBOL(skip_spaces);
-
-/**
- * strim - Removes leading and trailing whitespace from @s.
- * @s: The string to be stripped.
- *
- * Note that the first trailing whitespace is replaced with a %NUL-terminator
- * in the given string @s. Returns a pointer to the first non-whitespace
- * character in @s.
- */
-char *strim(char *s)
-{
-	size_t size;
-	char *end;
-
-	size = strlen(s);
-	if (!size)
-		return s;
-
-	end = s + size - 1;
-	while (end >= s && isspace(*end))
-		end--;
-	*(end + 1) = '\0';
-
-	return skip_spaces(s);
-}
-EXPORT_SYMBOL(strim);
-
 #ifndef __HAVE_ARCH_STRLEN
-/**
- * strlen - Find the length of a string
- * @s: The string to be sized
- */
-=======
-#ifndef __HAVE_ARCH_STRLEN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 size_t strlen(const char *s)
 {
 	const char *sc;
@@ -623,14 +407,6 @@ EXPORT_SYMBOL(strlen);
 #endif
 
 #ifndef __HAVE_ARCH_STRNLEN
-<<<<<<< HEAD
-/**
- * strnlen - Find the length of a length-limited string
- * @s: The string to be sized
- * @count: The maximum number of bytes to search
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 size_t strnlen(const char *s, size_t count)
 {
 	const char *sc;
@@ -651,23 +427,6 @@ EXPORT_SYMBOL(strnlen);
 size_t strspn(const char *s, const char *accept)
 {
 	const char *p;
-<<<<<<< HEAD
-	const char *a;
-	size_t count = 0;
-
-	for (p = s; *p != '\0'; ++p) {
-		for (a = accept; *a != '\0'; ++a) {
-			if (*p == *a)
-				break;
-		}
-		if (*a == '\0')
-			return count;
-		++count;
-	}
-	return count;
-}
-
-=======
 
 	for (p = s; *p != '\0'; ++p) {
 		if (!strchr(accept, *p))
@@ -675,7 +434,6 @@ size_t strspn(const char *s, const char *accept)
 	}
 	return p - s;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(strspn);
 #endif
 
@@ -688,26 +446,12 @@ EXPORT_SYMBOL(strspn);
 size_t strcspn(const char *s, const char *reject)
 {
 	const char *p;
-<<<<<<< HEAD
-	const char *r;
-	size_t count = 0;
-
-	for (p = s; *p != '\0'; ++p) {
-		for (r = reject; *r != '\0'; ++r) {
-			if (*p == *r)
-				return count;
-		}
-		++count;
-	}
-	return count;
-=======
 
 	for (p = s; *p != '\0'; ++p) {
 		if (strchr(reject, *p))
 			break;
 	}
 	return p - s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(strcspn);
 #endif
@@ -720,21 +464,11 @@ EXPORT_SYMBOL(strcspn);
  */
 char *strpbrk(const char *cs, const char *ct)
 {
-<<<<<<< HEAD
-	const char *sc1, *sc2;
-
-	for (sc1 = cs; *sc1 != '\0'; ++sc1) {
-		for (sc2 = ct; *sc2 != '\0'; ++sc2) {
-			if (*sc1 == *sc2)
-				return (char *)sc1;
-		}
-=======
 	const char *sc;
 
 	for (sc = cs; *sc != '\0'; ++sc) {
 		if (strchr(ct, *sc))
 			return (char *)sc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
@@ -770,65 +504,6 @@ char *strsep(char **s, const char *ct)
 EXPORT_SYMBOL(strsep);
 #endif
 
-<<<<<<< HEAD
-/**
- * sysfs_streq - return true if strings are equal, modulo trailing newline
- * @s1: one string
- * @s2: another string
- *
- * This routine returns true iff two strings are equal, treating both
- * NUL and newline-then-NUL as equivalent string terminations.  It's
- * geared for use with sysfs input strings, which generally terminate
- * with newlines but are compared against values without newlines.
- */
-bool sysfs_streq(const char *s1, const char *s2)
-{
-	while (*s1 && *s1 == *s2) {
-		s1++;
-		s2++;
-	}
-
-	if (*s1 == *s2)
-		return true;
-	if (!*s1 && *s2 == '\n' && !s2[1])
-		return true;
-	if (*s1 == '\n' && !s1[1] && !*s2)
-		return true;
-	return false;
-}
-EXPORT_SYMBOL(sysfs_streq);
-
-/**
- * strtobool - convert common user inputs into boolean values
- * @s: input string
- * @res: result
- *
- * This routine returns 0 iff the first character is one of 'Yy1Nn0'.
- * Otherwise it will return -EINVAL.  Value pointed to by res is
- * updated upon finding a match.
- */
-int strtobool(const char *s, bool *res)
-{
-	switch (s[0]) {
-	case 'y':
-	case 'Y':
-	case '1':
-		*res = true;
-		break;
-	case 'n':
-	case 'N':
-	case '0':
-		*res = false;
-		break;
-	default:
-		return -EINVAL;
-	}
-	return 0;
-}
-EXPORT_SYMBOL(strtobool);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HAVE_ARCH_MEMSET
 /**
  * memset - Fill a region of memory with the given value
@@ -849,23 +524,6 @@ void *memset(void *s, int c, size_t count)
 EXPORT_SYMBOL(memset);
 #endif
 
-<<<<<<< HEAD
-/**
- * memzero_explicit - Fill a region of memory (e.g. sensitive
- *		      keying data) with 0s.
- * @s: Pointer to the start of the area.
- * @count: The size of the area.
- *
- * memzero_explicit() doesn't need an arch-specific version as
- * it just invokes the one of memset() implicitly.
- */
-void memzero_explicit(void *s, size_t count)
-{
-	memset(s, 0, count);
-	OPTIMIZER_HIDE_VAR(s);
-}
-EXPORT_SYMBOL(memzero_explicit);
-=======
 #ifndef __HAVE_ARCH_MEMSET16
 /**
  * memset16() - Fill a memory area with a uint16_t
@@ -931,7 +589,6 @@ void *memset64(uint64_t *s, uint64_t v, size_t count)
 }
 EXPORT_SYMBOL(memset64);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __HAVE_ARCH_MEMCPY
 /**
@@ -995,17 +652,11 @@ EXPORT_SYMBOL(memmove);
  * @count: The size of the area.
  */
 #undef memcmp
-<<<<<<< HEAD
-int memcmp(const void *cs, const void *ct, size_t count)
-=======
 __visible int memcmp(const void *cs, const void *ct, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned char *su1, *su2;
 	int res = 0;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS
 	if (count >= sizeof(unsigned long)) {
 		const unsigned long *u1 = cs;
@@ -1021,7 +672,6 @@ __visible int memcmp(const void *cs, const void *ct, size_t count)
 		ct = u2;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (su1 = cs, su2 = ct; 0 < count; ++su1, ++su2, count--)
 		if ((res = *su1 - *su2) != 0)
 			break;
@@ -1030,8 +680,6 @@ __visible int memcmp(const void *cs, const void *ct, size_t count)
 EXPORT_SYMBOL(memcmp);
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef __HAVE_ARCH_BCMP
 /**
  * bcmp - returns 0 if and only if the buffers have identical contents.
@@ -1051,7 +699,6 @@ int bcmp(const void *a, const void *b, size_t len)
 EXPORT_SYMBOL(bcmp);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HAVE_ARCH_MEMSCAN
 /**
  * memscan - Find a character in an area of memory.
@@ -1067,11 +714,7 @@ void *memscan(void *addr, int c, size_t size)
 	unsigned char *p = addr;
 
 	while (size) {
-<<<<<<< HEAD
-		if (*p == c)
-=======
 		if (*p == (unsigned char)c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (void *)p;
 		p++;
 		size--;
@@ -1184,15 +827,9 @@ void *memchr_inv(const void *start, int c, size_t bytes)
 		return check_bytes8(start, value, bytes);
 
 	value64 = value;
-<<<<<<< HEAD
-#if defined(ARCH_HAS_FAST_MULTIPLIER) && BITS_PER_LONG == 64
-	value64 *= 0x0101010101010101;
-#elif defined(ARCH_HAS_FAST_MULTIPLIER)
-=======
 #if defined(CONFIG_ARCH_HAS_FAST_MULTIPLIER) && BITS_PER_LONG == 64
 	value64 *= 0x0101010101010101ULL;
 #elif defined(CONFIG_ARCH_HAS_FAST_MULTIPLIER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	value64 *= 0x01010101;
 	value64 |= value64 << 32;
 #else

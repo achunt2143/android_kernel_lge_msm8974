@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Copyright (C) International Business Machines  Corp., 2002-2004
  *   Copyright (C) Andreas Gruenbacher, 2001
  *   Copyright (C) Linus Torvalds, 1991, 1992
-<<<<<<< HEAD
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -34,29 +14,13 @@
 #include "jfs_xattr.h"
 #include "jfs_acl.h"
 
-<<<<<<< HEAD
-struct posix_acl *jfs_get_acl(struct inode *inode, int type)
-=======
 struct posix_acl *jfs_get_acl(struct inode *inode, int type, bool rcu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_acl *acl;
 	char *ea_name;
 	int size;
 	char *value = NULL;
 
-<<<<<<< HEAD
-	acl = get_cached_acl(inode, type);
-	if (acl != ACL_NOT_CACHED)
-		return acl;
-
-	switch(type) {
-		case ACL_TYPE_ACCESS:
-			ea_name = POSIX_ACL_XATTR_ACCESS;
-			break;
-		case ACL_TYPE_DEFAULT:
-			ea_name = POSIX_ACL_XATTR_DEFAULT;
-=======
 	if (rcu)
 		return ERR_PTR(-ECHILD);
 
@@ -66,7 +30,6 @@ struct posix_acl *jfs_get_acl(struct inode *inode, int type, bool rcu)
 			break;
 		case ACL_TYPE_DEFAULT:
 			ea_name = XATTR_NAME_POSIX_ACL_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			return ERR_PTR(-EINVAL);
@@ -87,17 +50,6 @@ struct posix_acl *jfs_get_acl(struct inode *inode, int type, bool rcu)
 		else
 			acl = ERR_PTR(size);
 	} else {
-<<<<<<< HEAD
-		acl = posix_acl_from_xattr(value, size);
-	}
-	kfree(value);
-	if (!IS_ERR(acl))
-		set_cached_acl(inode, type, acl);
-	return acl;
-}
-
-static int jfs_set_acl(tid_t tid, struct inode *inode, int type,
-=======
 		acl = posix_acl_from_xattr(&init_user_ns, value, size);
 	}
 	kfree(value);
@@ -105,7 +57,6 @@ static int jfs_set_acl(tid_t tid, struct inode *inode, int type,
 }
 
 static int __jfs_set_acl(tid_t tid, struct inode *inode, int type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct posix_acl *acl)
 {
 	char *ea_name;
@@ -113,23 +64,6 @@ static int __jfs_set_acl(tid_t tid, struct inode *inode, int type,
 	int size = 0;
 	char *value = NULL;
 
-<<<<<<< HEAD
-	if (S_ISLNK(inode->i_mode))
-		return -EOPNOTSUPP;
-
-	switch(type) {
-		case ACL_TYPE_ACCESS:
-			ea_name = POSIX_ACL_XATTR_ACCESS;
-			break;
-		case ACL_TYPE_DEFAULT:
-			ea_name = POSIX_ACL_XATTR_DEFAULT;
-			if (!S_ISDIR(inode->i_mode))
-				return acl ? -EACCES : 0;
-			break;
-		default:
-			return -EINVAL;
-	}
-=======
 	switch (type) {
 	case ACL_TYPE_ACCESS:
 		ea_name = XATTR_NAME_POSIX_ACL_ACCESS;
@@ -141,17 +75,12 @@ static int __jfs_set_acl(tid_t tid, struct inode *inode, int type,
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (acl) {
 		size = posix_acl_xattr_size(acl->a_count);
 		value = kmalloc(size, GFP_KERNEL);
 		if (!value)
 			return -ENOMEM;
-<<<<<<< HEAD
-		rc = posix_acl_to_xattr(acl, value, size);
-=======
 		rc = posix_acl_to_xattr(&init_user_ns, acl, value, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc < 0)
 			goto out;
 	}
@@ -165,35 +94,6 @@ out:
 	return rc;
 }
 
-<<<<<<< HEAD
-int jfs_init_acl(tid_t tid, struct inode *inode, struct inode *dir)
-{
-	struct posix_acl *acl = NULL;
-	int rc = 0;
-
-	if (S_ISLNK(inode->i_mode))
-		return 0;
-
-	acl = jfs_get_acl(dir, ACL_TYPE_DEFAULT);
-	if (IS_ERR(acl))
-		return PTR_ERR(acl);
-
-	if (acl) {
-		if (S_ISDIR(inode->i_mode)) {
-			rc = jfs_set_acl(tid, inode, ACL_TYPE_DEFAULT, acl);
-			if (rc)
-				goto cleanup;
-		}
-		rc = posix_acl_create(&acl, GFP_KERNEL, &inode->i_mode);
-		if (rc < 0)
-			goto cleanup; /* posix_acl_release(NULL) is no-op */
-		if (rc > 0)
-			rc = jfs_set_acl(tid, inode, ACL_TYPE_ACCESS, acl);
-cleanup:
-		posix_acl_release(acl);
-	} else
-		inode->i_mode &= ~current_umask();
-=======
 int jfs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 		struct posix_acl *acl, int type)
 {
@@ -250,42 +150,9 @@ int jfs_init_acl(tid_t tid, struct inode *inode, struct inode *dir)
 	} else {
 		inode->i_acl = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	JFS_IP(inode)->mode2 = (JFS_IP(inode)->mode2 & 0xffff0000) |
 			       inode->i_mode;
 
 	return rc;
 }
-<<<<<<< HEAD
-
-int jfs_acl_chmod(struct inode *inode)
-{
-	struct posix_acl *acl;
-	int rc;
-	tid_t tid;
-
-	if (S_ISLNK(inode->i_mode))
-		return -EOPNOTSUPP;
-
-	acl = jfs_get_acl(inode, ACL_TYPE_ACCESS);
-	if (IS_ERR(acl) || !acl)
-		return PTR_ERR(acl);
-
-	rc = posix_acl_chmod(&acl, GFP_KERNEL, inode->i_mode);
-	if (rc)
-		return rc;
-
-	tid = txBegin(inode->i_sb, 0);
-	mutex_lock(&JFS_IP(inode)->commit_mutex);
-	rc = jfs_set_acl(tid, inode, ACL_TYPE_ACCESS, acl);
-	if (!rc)
-		rc = txCommit(tid, 1, &inode, 0);
-	txEnd(tid);
-	mutex_unlock(&JFS_IP(inode)->commit_mutex);
-
-	posix_acl_release(acl);
-	return rc;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

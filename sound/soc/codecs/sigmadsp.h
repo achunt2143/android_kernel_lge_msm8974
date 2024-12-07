@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Load firmware files from Analog Devices SigmaStudio
  *
  * Copyright 2009-2011 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SIGMA_FIRMWARE_H__
@@ -18,14 +10,6 @@
 
 #include <linux/device.h>
 #include <linux/regmap.h>
-<<<<<<< HEAD
-
-struct i2c_client;
-
-extern int process_sigma_firmware(struct i2c_client *client, const char *name);
-extern int process_sigma_firmware_regmap(struct device *dev,
-		struct regmap *regmap, const char *name);
-=======
 #include <linux/list.h>
 
 #include <sound/pcm.h>
@@ -76,6 +60,5 @@ int sigmadsp_attach(struct sigmadsp *sigmadsp,
 	struct snd_soc_component *component);
 int sigmadsp_setup(struct sigmadsp *sigmadsp, unsigned int samplerate);
 void sigmadsp_reset(struct sigmadsp *sigmadsp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

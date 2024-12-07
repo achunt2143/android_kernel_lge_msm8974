@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_cypress.c 	- Cypress PATA for new ATA layer
  *			  (C) 2006 Red Hat Inc
@@ -15,10 +12,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -48,13 +41,10 @@ enum {
 	CY82_INDEX_TIMEOUT	= 0x32
 };
 
-<<<<<<< HEAD
-=======
 static bool enable_dma = true;
 module_param(enable_dma, bool, 0);
 MODULE_PARM_DESC(enable_dma, "Enable bus master DMA operations");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	cy82c693_set_piomode	-	set initial PIO mode data
  *	@ap: ATA interface
@@ -72,11 +62,7 @@ static void cy82c693_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	u32 addr;
 
 	if (ata_timing_compute(adev, adev->pio_mode, &t, T, 1) < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": mome computation failed.\n");
-=======
 		ata_dev_err(adev, DRV_NAME ": mome computation failed.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -129,11 +115,7 @@ static void cy82c693_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	outb(0x50, 0x23);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template cy82c693_sht = {
-=======
 static const struct scsi_host_template cy82c693_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -146,26 +128,16 @@ static struct ata_port_operations cy82c693_port_ops = {
 
 static int cy82c693_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 {
-<<<<<<< HEAD
-	static const struct ata_port_info info = {
-		.flags = ATA_FLAG_SLAVE_POSS,
-		.pio_mask = ATA_PIO4,
-		.mwdma_mask = ATA_MWDMA2,
-=======
 	static struct ata_port_info info = {
 		.flags = ATA_FLAG_SLAVE_POSS,
 		.pio_mask = ATA_PIO4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.port_ops = &cy82c693_port_ops
 	};
 	const struct ata_port_info *ppi[] = { &info, &ata_dummy_port_info };
 
-<<<<<<< HEAD
-=======
 	if (enable_dma)
 		info.mwdma_mask = ATA_MWDMA2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Devfn 1 is the ATA primary. The secondary is magic and on devfn2.
 	   For the moment we don't handle the secondary. FIXME */
 
@@ -186,40 +158,16 @@ static struct pci_driver cy82c693_pci_driver = {
 	.id_table	= cy82c693,
 	.probe 		= cy82c693_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init cy82c693_init(void)
-{
-	return pci_register_driver(&cy82c693_pci_driver);
-}
-
-
-static void __exit cy82c693_exit(void)
-{
-	pci_unregister_driver(&cy82c693_pci_driver);
-}
-
-=======
 module_pci_driver(cy82c693_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for the CY82C693 PATA controller");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, cy82c693);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(cy82c693_init);
-module_exit(cy82c693_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

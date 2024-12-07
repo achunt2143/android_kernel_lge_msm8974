@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-/*
- * linux/fs/posix_acl.c
- *
- *  Copyright (C) 2002 by Andreas Gruenbacher <a.gruenbacher@computer.org>
- *
- *  Fixes from William Schumacher incorporated on 15 March 2001.
- *     (Reported by Charles Bertsch, <CBertsch@microtest.com>).
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2002,2003 by Andreas Gruenbacher <a.gruenbacher@computer.org>
  *
  * Fixes from William Schumacher incorporated on 15 March 2001.
  *    (Reported by Charles Bertsch, <CBertsch@microtest.com>).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -26,18 +16,6 @@
 #include <linux/atomic.h>
 #include <linux/fs.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/posix_acl.h>
-#include <linux/export.h>
-
-#include <linux/errno.h>
-
-EXPORT_SYMBOL(posix_acl_init);
-EXPORT_SYMBOL(posix_acl_alloc);
-EXPORT_SYMBOL(posix_acl_valid);
-EXPORT_SYMBOL(posix_acl_equiv_mode);
-EXPORT_SYMBOL(posix_acl_from_mode);
-=======
 #include <linux/cred.h>
 #include <linux/posix_acl.h>
 #include <linux/posix_acl_xattr.h>
@@ -206,7 +184,6 @@ struct posix_acl *get_inode_acl(struct inode *inode, int type)
 	return __get_acl(&nop_mnt_idmap, NULL, inode, type);
 }
 EXPORT_SYMBOL(get_inode_acl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Init a fresh posix_acl
@@ -214,16 +191,10 @@ EXPORT_SYMBOL(get_inode_acl);
 void
 posix_acl_init(struct posix_acl *acl, int count)
 {
-<<<<<<< HEAD
-	atomic_set(&acl->a_refcount, 1);
-	acl->a_count = count;
-}
-=======
 	refcount_set(&acl->a_refcount, 1);
 	acl->a_count = count;
 }
 EXPORT_SYMBOL(posix_acl_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Allocate a new ACL with the specified number of entries.
@@ -238,19 +209,12 @@ posix_acl_alloc(int count, gfp_t flags)
 		posix_acl_init(acl, count);
 	return acl;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(posix_acl_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Clone an ACL.
  */
-<<<<<<< HEAD
-static struct posix_acl *
-=======
 struct posix_acl *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 posix_acl_clone(const struct posix_acl *acl, gfp_t flags)
 {
 	struct posix_acl *clone = NULL;
@@ -260,35 +224,20 @@ posix_acl_clone(const struct posix_acl *acl, gfp_t flags)
 		           sizeof(struct posix_acl_entry);
 		clone = kmemdup(acl, size, flags);
 		if (clone)
-<<<<<<< HEAD
-			atomic_set(&clone->a_refcount, 1);
-	}
-	return clone;
-}
-=======
 			refcount_set(&clone->a_refcount, 1);
 	}
 	return clone;
 }
 EXPORT_SYMBOL_GPL(posix_acl_clone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Check if an acl is valid. Returns 0 if it is, or -E... otherwise.
  */
 int
-<<<<<<< HEAD
-posix_acl_valid(const struct posix_acl *acl)
-{
-	const struct posix_acl_entry *pa, *pe;
-	int state = ACL_USER_OBJ;
-	unsigned int id = 0;  /* keep gcc happy */
-=======
 posix_acl_valid(struct user_namespace *user_ns, const struct posix_acl *acl)
 {
 	const struct posix_acl_entry *pa, *pe;
 	int state = ACL_USER_OBJ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int needs_mask = 0;
 
 	FOREACH_ACL_ENTRY(pa, acl, pe) {
@@ -297,10 +246,6 @@ posix_acl_valid(struct user_namespace *user_ns, const struct posix_acl *acl)
 		switch (pa->e_tag) {
 			case ACL_USER_OBJ:
 				if (state == ACL_USER_OBJ) {
-<<<<<<< HEAD
-					id = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					state = ACL_USER;
 					break;
 				}
@@ -309,24 +254,13 @@ posix_acl_valid(struct user_namespace *user_ns, const struct posix_acl *acl)
 			case ACL_USER:
 				if (state != ACL_USER)
 					return -EINVAL;
-<<<<<<< HEAD
-				if (pa->e_id == ACL_UNDEFINED_ID ||
-				    pa->e_id < id)
-					return -EINVAL;
-				id = pa->e_id + 1;
-=======
 				if (!kuid_has_mapping(user_ns, pa->e_uid))
 					return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				needs_mask = 1;
 				break;
 
 			case ACL_GROUP_OBJ:
 				if (state == ACL_USER) {
-<<<<<<< HEAD
-					id = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					state = ACL_GROUP;
 					break;
 				}
@@ -335,15 +269,8 @@ posix_acl_valid(struct user_namespace *user_ns, const struct posix_acl *acl)
 			case ACL_GROUP:
 				if (state != ACL_GROUP)
 					return -EINVAL;
-<<<<<<< HEAD
-				if (pa->e_id == ACL_UNDEFINED_ID ||
-				    pa->e_id < id)
-					return -EINVAL;
-				id = pa->e_id + 1;
-=======
 				if (!kgid_has_mapping(user_ns, pa->e_gid))
 					return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				needs_mask = 1;
 				break;
 
@@ -369,10 +296,7 @@ posix_acl_valid(struct user_namespace *user_ns, const struct posix_acl *acl)
 		return 0;
 	return -EINVAL;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(posix_acl_valid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns 0 if the acl can be exactly represented in the traditional
@@ -419,10 +343,7 @@ posix_acl_equiv_mode(const struct posix_acl *acl, umode_t *mode_p)
                 *mode_p = (*mode_p & ~S_IRWXUGO) | mode;
         return not_equiv;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(posix_acl_equiv_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Create an ACL representing the file mode permission bits of an inode.
@@ -435,20 +356,6 @@ posix_acl_from_mode(umode_t mode, gfp_t flags)
 		return ERR_PTR(-ENOMEM);
 
 	acl->a_entries[0].e_tag  = ACL_USER_OBJ;
-<<<<<<< HEAD
-	acl->a_entries[0].e_id   = ACL_UNDEFINED_ID;
-	acl->a_entries[0].e_perm = (mode & S_IRWXU) >> 6;
-
-	acl->a_entries[1].e_tag  = ACL_GROUP_OBJ;
-	acl->a_entries[1].e_id   = ACL_UNDEFINED_ID;
-	acl->a_entries[1].e_perm = (mode & S_IRWXG) >> 3;
-
-	acl->a_entries[2].e_tag  = ACL_OTHER;
-	acl->a_entries[2].e_id   = ACL_UNDEFINED_ID;
-	acl->a_entries[2].e_perm = (mode & S_IRWXO);
-	return acl;
-}
-=======
 	acl->a_entries[0].e_perm = (mode & S_IRWXU) >> 6;
 
 	acl->a_entries[1].e_tag  = ACL_GROUP_OBJ;
@@ -459,21 +366,12 @@ posix_acl_from_mode(umode_t mode, gfp_t flags)
 	return acl;
 }
 EXPORT_SYMBOL(posix_acl_from_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Return 0 if current is granted want access to the inode
  * by the acl. Returns -E... otherwise.
  */
 int
-<<<<<<< HEAD
-posix_acl_permission(struct inode *inode, const struct posix_acl *acl, int want)
-{
-	const struct posix_acl_entry *pa, *pe, *mask_obj;
-	int found = 0;
-
-	want &= MAY_READ | MAY_WRITE | MAY_EXEC | MAY_NOT_BLOCK;
-=======
 posix_acl_permission(struct mnt_idmap *idmap, struct inode *inode,
 		     const struct posix_acl *acl, int want)
 {
@@ -484,23 +382,11 @@ posix_acl_permission(struct mnt_idmap *idmap, struct inode *inode,
 	vfsgid_t vfsgid;
 
 	want &= MAY_READ | MAY_WRITE | MAY_EXEC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	FOREACH_ACL_ENTRY(pa, acl, pe) {
                 switch(pa->e_tag) {
                         case ACL_USER_OBJ:
 				/* (May have been checked already) */
-<<<<<<< HEAD
-				if (inode->i_uid == current_fsuid())
-                                        goto check_perm;
-                                break;
-                        case ACL_USER:
-				if (pa->e_id == current_fsuid())
-                                        goto mask;
-				break;
-                        case ACL_GROUP_OBJ:
-                                if (in_group_p(inode->i_gid)) {
-=======
 				vfsuid = i_uid_into_vfsuid(idmap, inode);
 				if (vfsuid_eq_kuid(vfsuid, current_fsuid()))
                                         goto check_perm;
@@ -514,20 +400,15 @@ posix_acl_permission(struct mnt_idmap *idmap, struct inode *inode,
                         case ACL_GROUP_OBJ:
 				vfsgid = i_gid_into_vfsgid(idmap, inode);
 				if (vfsgid_in_group_p(vfsgid)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					found = 1;
 					if ((pa->e_perm & want) == want)
 						goto mask;
                                 }
 				break;
                         case ACL_GROUP:
-<<<<<<< HEAD
-                                if (in_group_p(pa->e_id)) {
-=======
 				vfsgid = make_vfsgid(idmap, fs_userns,
 						     pa->e_gid);
 				if (vfsgid_in_group_p(vfsgid)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					found = 1;
 					if ((pa->e_perm & want) == want)
 						goto mask;
@@ -623,48 +504,10 @@ static int posix_acl_create_masq(struct posix_acl *acl, umode_t *mode_p)
         return not_equiv;
 }
 
-<<<<<<< HEAD
-/**
- * posix_acl_update_mode  -  update mode in set_acl
- *
- * Update the file mode when setting an ACL: compute the new file permission
- * bits based on the ACL.  In addition, if the ACL is equivalent to the new
- * file mode, set *acl to NULL to indicate that no ACL should be set.
- *
- * As with chmod, clear the setgit bit if the caller is not in the owning group
- * or capable of CAP_FSETID (see inode_change_ok).
- *
- * Called from set_acl inode operations.
- */
-int posix_acl_update_mode(struct inode *inode, umode_t *mode_p,
-			  struct posix_acl **acl)
-{
-	umode_t mode = inode->i_mode;
-	int error;
-
-	error = posix_acl_equiv_mode(*acl, &mode);
-	if (error < 0)
-		return error;
-	if (error == 0)
-		*acl = NULL;
-	if (!in_group_p(inode->i_gid) &&
-	    !capable(CAP_FSETID))
-		mode &= ~S_ISGID;
-	*mode_p = mode;
-	return 0;
-}
-EXPORT_SYMBOL(posix_acl_update_mode);
-
-/*
- * Modify the ACL for the chmod syscall.
- */
-static int posix_acl_chmod_masq(struct posix_acl *acl, umode_t mode)
-=======
 /*
  * Modify the ACL for the chmod syscall.
  */
 static int __posix_acl_chmod_masq(struct posix_acl *acl, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_acl_entry *group_obj = NULL, *mask_obj = NULL;
 	struct posix_acl_entry *pa, *pe;
@@ -710,11 +553,7 @@ static int __posix_acl_chmod_masq(struct posix_acl *acl, umode_t mode)
 }
 
 int
-<<<<<<< HEAD
-posix_acl_create(struct posix_acl **acl, gfp_t gfp, umode_t *mode_p)
-=======
 __posix_acl_create(struct posix_acl **acl, gfp_t gfp, umode_t *mode_p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_acl *clone = posix_acl_clone(*acl, gfp);
 	int err = -ENOMEM;
@@ -729,26 +568,15 @@ __posix_acl_create(struct posix_acl **acl, gfp_t gfp, umode_t *mode_p)
 	*acl = clone;
 	return err;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(posix_acl_create);
-
-int
-posix_acl_chmod(struct posix_acl **acl, gfp_t gfp, umode_t mode)
-=======
 EXPORT_SYMBOL(__posix_acl_create);
 
 int
 __posix_acl_chmod(struct posix_acl **acl, gfp_t gfp, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_acl *clone = posix_acl_clone(*acl, gfp);
 	int err = -ENOMEM;
 	if (clone) {
-<<<<<<< HEAD
-		err = posix_acl_chmod_masq(clone, mode);
-=======
 		err = __posix_acl_chmod_masq(clone, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			posix_acl_release(clone);
 			clone = NULL;
@@ -758,9 +586,6 @@ __posix_acl_chmod(struct posix_acl **acl, gfp_t gfp, umode_t mode)
 	*acl = clone;
 	return err;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(posix_acl_chmod);
-=======
 EXPORT_SYMBOL(__posix_acl_chmod);
 
 /**
@@ -1471,4 +1296,3 @@ ssize_t do_get_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 	posix_acl_release(acl);
 	return error;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-/*
- *  ec.c - ACPI Embedded Controller Driver (v2.1)
- *
- *  Copyright (C) 2006-2008 Alexey Starikovskiy <astarikovskiy@suse.de>
- *  Copyright (C) 2006 Denis Sadykov <denis.m.sadykov@intel.com>
- *  Copyright (C) 2004 Luming Yu <luming.yu@intel.com>
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  ec.c - ACPI Embedded Controller Driver (v3)
@@ -38,15 +10,11 @@
  *            2001, 2002 Andy Grover <andrew.grover@intel.com>
  *            2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
  *  Copyright (C) 2008      Alexey Starikovskiy <astarikovskiy@suse.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Uncomment next line to get verbose printout */
 /* #define DEBUG */
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "ACPI: EC: " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -57,38 +25,19 @@
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-#include <linux/dmi.h>
-=======
 #include <linux/suspend.h>
 #include <linux/acpi.h>
 #include <linux/dmi.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "internal.h"
 
 #define ACPI_EC_CLASS			"embedded_controller"
 #define ACPI_EC_DEVICE_NAME		"Embedded Controller"
-<<<<<<< HEAD
-#define ACPI_EC_FILE_INFO		"info"
-
-#undef PREFIX
-#define PREFIX				"ACPI: EC: "
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* EC status register */
 #define ACPI_EC_FLAG_OBF	0x01	/* Output buffer full */
 #define ACPI_EC_FLAG_IBF	0x02	/* Input buffer full */
-<<<<<<< HEAD
-#define ACPI_EC_FLAG_BURST	0x10	/* burst mode */
-#define ACPI_EC_FLAG_SCI	0x20	/* EC-SCI occurred */
-
-=======
 #define ACPI_EC_FLAG_CMD	0x08	/* Input buffer contains a command */
 #define ACPI_EC_FLAG_BURST	0x10	/* burst mode */
 #define ACPI_EC_FLAG_SCI	0x20	/* EC-SCI occurred */
@@ -125,7 +74,6 @@
 #define ACPI_EC_EVT_TIMING_QUERY	0x01
 #define ACPI_EC_EVT_TIMING_EVENT	0x02
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* EC commands */
 enum ec_command {
 	ACPI_EC_COMMAND_READ = 0x80,
@@ -137,18 +85,6 @@ enum ec_command {
 
 #define ACPI_EC_DELAY		500	/* Wait 500ms max. during EC ops */
 #define ACPI_EC_UDELAY_GLK	1000	/* Wait 1ms max. to get global lock */
-<<<<<<< HEAD
-#define ACPI_EC_MSI_UDELAY	550	/* Wait 550us for MSI EC */
-
-enum {
-	EC_FLAGS_QUERY_PENDING,		/* Query is pending */
-	EC_FLAGS_GPE_STORM,		/* GPE storm detected */
-	EC_FLAGS_HANDLERS_INSTALLED,	/* Handlers for GPE and
-					 * OpReg are installed */
-	EC_FLAGS_BLOCKED,		/* Transactions are blocked */
-};
-
-=======
 #define ACPI_EC_UDELAY_POLL	550	/* Wait 1ms for EC transaction polling */
 #define ACPI_EC_CLEAR_MAX	100	/* Maximum number of events to query
 					 * when trying to clear the EC */
@@ -168,14 +104,11 @@ enum {
 #define ACPI_EC_COMMAND_POLL		0x01 /* Available for command byte */
 #define ACPI_EC_COMMAND_COMPLETE	0x02 /* Completed last byte */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ec.c is compiled in acpi namespace so this shows up as acpi.ec_delay param */
 static unsigned int ec_delay __read_mostly = ACPI_EC_DELAY;
 module_param(ec_delay, uint, 0644);
 MODULE_PARM_DESC(ec_delay, "Timeout(ms) waited until an EC command completes");
 
-<<<<<<< HEAD
-=======
 static unsigned int ec_max_queries __read_mostly = ACPI_EC_MAX_QUERIES;
 module_param(ec_max_queries, uint, 0644);
 MODULE_PARM_DESC(ec_max_queries, "Maximum parallel _Qxx evaluations");
@@ -190,7 +123,6 @@ MODULE_PARM_DESC(ec_polling_guard, "Guard time(us) between EC accesses in pollin
 
 static unsigned int ec_event_clearing __read_mostly = ACPI_EC_EVT_TIMING_QUERY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If the number of false interrupts per one transaction exceeds
  * this threshold, will think there is a GPE storm happened and
@@ -200,11 +132,6 @@ static unsigned int ec_storm_threshold  __read_mostly = 8;
 module_param(ec_storm_threshold, uint, 0644);
 MODULE_PARM_DESC(ec_storm_threshold, "Maxim false GPE numbers not considered as GPE storm");
 
-<<<<<<< HEAD
-/* If we find an EC via the ECDT, we need to keep a ptr to its context */
-/* External interfaces use first EC only, so remember */
-typedef int (*acpi_ec_query_func) (void *data);
-=======
 static bool ec_freeze_events __read_mostly;
 module_param(ec_freeze_events, bool, 0644);
 MODULE_PARM_DESC(ec_freeze_events, "Disabling event handling during suspend/resume");
@@ -212,7 +139,6 @@ MODULE_PARM_DESC(ec_freeze_events, "Disabling event handling during suspend/resu
 static bool ec_no_wakeup __read_mostly;
 module_param(ec_no_wakeup, bool, 0644);
 MODULE_PARM_DESC(ec_no_wakeup, "Do not wake up from suspend-to-idle");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct acpi_ec_query_handler {
 	struct list_head node;
@@ -220,10 +146,7 @@ struct acpi_ec_query_handler {
 	acpi_handle handle;
 	void *data;
 	u8 query_bit;
-<<<<<<< HEAD
-=======
 	struct kref kref;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct transaction {
@@ -235,21 +158,6 @@ struct transaction {
 	u8 ri;
 	u8 wlen;
 	u8 rlen;
-<<<<<<< HEAD
-	bool done;
-};
-
-struct acpi_ec *boot_ec, *first_ec;
-EXPORT_SYMBOL(first_ec);
-
-static int EC_FLAGS_MSI; /* Out-of-spec MSI controller */
-static int EC_FLAGS_VALIDATE_ECDT; /* ASUStec ECDTs need to be validated */
-static int EC_FLAGS_SKIP_DSDT_SCAN; /* Not all BIOS survive early DSDT scan */
-
-/* --------------------------------------------------------------------------
-                             Transaction Management
-   -------------------------------------------------------------------------- */
-=======
 	u8 flags;
 };
 
@@ -362,14 +270,10 @@ static bool acpi_ec_flushed(struct acpi_ec *ec)
 /* --------------------------------------------------------------------------
  *                           EC Registers
  * -------------------------------------------------------------------------- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u8 acpi_ec_read_status(struct acpi_ec *ec)
 {
 	u8 x = inb(ec->command_addr);
-<<<<<<< HEAD
-	pr_debug(PREFIX "---> status = 0x%2.2x\n", x);
-=======
 
 	ec_dbg_raw("EC_SC(R) = 0x%2.2x "
 		   "SCI_EVT=%d BURST=%d CMD=%d IBF=%d OBF=%d",
@@ -379,101 +283,27 @@ static inline u8 acpi_ec_read_status(struct acpi_ec *ec)
 		   !!(x & ACPI_EC_FLAG_CMD),
 		   !!(x & ACPI_EC_FLAG_IBF),
 		   !!(x & ACPI_EC_FLAG_OBF));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return x;
 }
 
 static inline u8 acpi_ec_read_data(struct acpi_ec *ec)
 {
 	u8 x = inb(ec->data_addr);
-<<<<<<< HEAD
-	pr_debug(PREFIX "---> data = 0x%2.2x\n", x);
-=======
 
 	ec->timestamp = jiffies;
 	ec_dbg_raw("EC_DATA(R) = 0x%2.2x", x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return x;
 }
 
 static inline void acpi_ec_write_cmd(struct acpi_ec *ec, u8 command)
 {
-<<<<<<< HEAD
-	pr_debug(PREFIX "<--- command = 0x%2.2x\n", command);
-	outb(command, ec->command_addr);
-=======
 	ec_dbg_raw("EC_SC(W) = 0x%2.2x", command);
 	outb(command, ec->command_addr);
 	ec->timestamp = jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void acpi_ec_write_data(struct acpi_ec *ec, u8 data)
 {
-<<<<<<< HEAD
-	pr_debug(PREFIX "<--- data = 0x%2.2x\n", data);
-	outb(data, ec->data_addr);
-}
-
-static int ec_transaction_done(struct acpi_ec *ec)
-{
-	unsigned long flags;
-	int ret = 0;
-	spin_lock_irqsave(&ec->curr_lock, flags);
-	if (!ec->curr || ec->curr->done)
-		ret = 1;
-	spin_unlock_irqrestore(&ec->curr_lock, flags);
-	return ret;
-}
-
-static void start_transaction(struct acpi_ec *ec)
-{
-	ec->curr->irq_count = ec->curr->wi = ec->curr->ri = 0;
-	ec->curr->done = false;
-	acpi_ec_write_cmd(ec, ec->curr->command);
-}
-
-static void advance_transaction(struct acpi_ec *ec, u8 status)
-{
-	unsigned long flags;
-	spin_lock_irqsave(&ec->curr_lock, flags);
-	if (!ec->curr)
-		goto unlock;
-	if (ec->curr->wlen > ec->curr->wi) {
-		if ((status & ACPI_EC_FLAG_IBF) == 0)
-			acpi_ec_write_data(ec,
-				ec->curr->wdata[ec->curr->wi++]);
-		else
-			goto err;
-	} else if (ec->curr->rlen > ec->curr->ri) {
-		if ((status & ACPI_EC_FLAG_OBF) == 1) {
-			ec->curr->rdata[ec->curr->ri++] = acpi_ec_read_data(ec);
-			if (ec->curr->rlen == ec->curr->ri)
-				ec->curr->done = true;
-		} else
-			goto err;
-	} else if (ec->curr->wlen == ec->curr->wi &&
-		   (status & ACPI_EC_FLAG_IBF) == 0)
-		ec->curr->done = true;
-	goto unlock;
-err:
-	/* false interrupt, state didn't change */
-	if (in_interrupt())
-		++ec->curr->irq_count;
-unlock:
-	spin_unlock_irqrestore(&ec->curr_lock, flags);
-}
-
-static int acpi_ec_sync_query(struct acpi_ec *ec);
-
-static int ec_check_sci_sync(struct acpi_ec *ec, u8 state)
-{
-	if (state & ACPI_EC_FLAG_SCI) {
-		if (!test_and_set_bit(EC_FLAGS_QUERY_PENDING, &ec->flags))
-			return acpi_ec_sync_query(ec);
-	}
-	return 0;
-=======
 	ec_dbg_raw("EC_DATA(W) = 0x%2.2x", data);
 	outb(data, ec->data_addr);
 	ec->timestamp = jiffies;
@@ -922,40 +752,17 @@ static int ec_guard(struct acpi_ec *ec)
 		}
 	} while (time_before(jiffies, timeout));
 	return -ETIME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ec_poll(struct acpi_ec *ec)
 {
 	unsigned long flags;
 	int repeat = 5; /* number of command restarts */
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (repeat--) {
 		unsigned long delay = jiffies +
 			msecs_to_jiffies(ec_delay);
 		do {
-<<<<<<< HEAD
-			/* don't sleep with disabled interrupts */
-			if (EC_FLAGS_MSI || irqs_disabled()) {
-				udelay(ACPI_EC_MSI_UDELAY);
-				if (ec_transaction_done(ec))
-					return 0;
-			} else {
-				if (wait_event_timeout(ec->wait,
-						ec_transaction_done(ec),
-						msecs_to_jiffies(1)))
-					return 0;
-			}
-			advance_transaction(ec, acpi_ec_read_status(ec));
-		} while (time_before(jiffies, delay));
-		pr_debug(PREFIX "controller reset, restart transaction\n");
-		spin_lock_irqsave(&ec->curr_lock, flags);
-		start_transaction(ec);
-		spin_unlock_irqrestore(&ec->curr_lock, flags);
-=======
 			if (!ec_guard(ec))
 				return 0;
 			spin_lock_irqsave(&ec->lock, flags);
@@ -966,7 +773,6 @@ static int ec_poll(struct acpi_ec *ec)
 		spin_lock_irqsave(&ec->lock, flags);
 		start_transaction(ec);
 		spin_unlock_irqrestore(&ec->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -ETIME;
 }
@@ -976,42 +782,6 @@ static int acpi_ec_transaction_unlocked(struct acpi_ec *ec,
 {
 	unsigned long tmp;
 	int ret = 0;
-<<<<<<< HEAD
-	if (EC_FLAGS_MSI)
-		udelay(ACPI_EC_MSI_UDELAY);
-	/* start transaction */
-	spin_lock_irqsave(&ec->curr_lock, tmp);
-	/* following two actions should be kept atomic */
-	ec->curr = t;
-	start_transaction(ec);
-	if (ec->curr->command == ACPI_EC_COMMAND_QUERY)
-		clear_bit(EC_FLAGS_QUERY_PENDING, &ec->flags);
-	spin_unlock_irqrestore(&ec->curr_lock, tmp);
-	ret = ec_poll(ec);
-	spin_lock_irqsave(&ec->curr_lock, tmp);
-	ec->curr = NULL;
-	spin_unlock_irqrestore(&ec->curr_lock, tmp);
-	return ret;
-}
-
-static int ec_check_ibf0(struct acpi_ec *ec)
-{
-	u8 status = acpi_ec_read_status(ec);
-	return (status & ACPI_EC_FLAG_IBF) == 0;
-}
-
-static int ec_wait_ibf0(struct acpi_ec *ec)
-{
-	unsigned long delay = jiffies + msecs_to_jiffies(ec_delay);
-	/* interrupt wait manually if GPE mode is not active */
-	while (time_before(jiffies, delay))
-		if (wait_event_timeout(ec->wait, ec_check_ibf0(ec),
-					msecs_to_jiffies(1)))
-			return 0;
-	return -ETIME;
-}
-
-=======
 
 	/* start transaction */
 	spin_lock_irqsave(&ec->lock, tmp);
@@ -1042,29 +812,17 @@ unlock:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int acpi_ec_transaction(struct acpi_ec *ec, struct transaction *t)
 {
 	int status;
 	u32 glk;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ec || (!t) || (t->wlen && !t->wdata) || (t->rlen && !t->rdata))
 		return -EINVAL;
 	if (t->rdata)
 		memset(t->rdata, 0, t->rlen);
-<<<<<<< HEAD
-	mutex_lock(&ec->lock);
-	if (test_bit(EC_FLAGS_BLOCKED, &ec->flags)) {
-		status = -EINVAL;
-		goto unlock;
-	}
-=======
 
 	mutex_lock(&ec->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ec->global_lock) {
 		status = acpi_acquire_global_lock(ACPI_EC_UDELAY_GLK, &glk);
 		if (ACPI_FAILURE(status)) {
@@ -1072,40 +830,6 @@ static int acpi_ec_transaction(struct acpi_ec *ec, struct transaction *t)
 			goto unlock;
 		}
 	}
-<<<<<<< HEAD
-	if (ec_wait_ibf0(ec)) {
-		pr_err(PREFIX "input buffer is not empty, "
-				"aborting transaction\n");
-		status = -ETIME;
-		goto end;
-	}
-	pr_debug(PREFIX "transaction start\n");
-	/* disable GPE during transaction if storm is detected */
-	if (test_bit(EC_FLAGS_GPE_STORM, &ec->flags)) {
-		/* It has to be disabled, so that it doesn't trigger. */
-		acpi_disable_gpe(NULL, ec->gpe);
-	}
-
-	status = acpi_ec_transaction_unlocked(ec, t);
-
-	/* check if we received SCI during transaction */
-	ec_check_sci_sync(ec, acpi_ec_read_status(ec));
-	if (test_bit(EC_FLAGS_GPE_STORM, &ec->flags)) {
-		msleep(1);
-		/* It is safe to enable the GPE outside of the transaction. */
-		acpi_enable_gpe(NULL, ec->gpe);
-	} else if (t->irq_count > ec_storm_threshold) {
-		pr_info(PREFIX "GPE storm detected, "
-			"transactions will use polling mode\n");
-		set_bit(EC_FLAGS_GPE_STORM, &ec->flags);
-	}
-	pr_debug(PREFIX "transaction end\n");
-end:
-	if (ec->global_lock)
-		acpi_release_global_lock(glk);
-unlock:
-	mutex_unlock(&ec->lock);
-=======
 
 	status = acpi_ec_transaction_unlocked(ec, t);
 
@@ -1113,7 +837,6 @@ unlock:
 		acpi_release_global_lock(glk);
 unlock:
 	mutex_unlock(&ec->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -1137,11 +860,7 @@ static int acpi_ec_burst_disable(struct acpi_ec *ec)
 				acpi_ec_transaction(ec, &t) : 0;
 }
 
-<<<<<<< HEAD
-static int acpi_ec_read(struct acpi_ec *ec, u8 address, u8 * data)
-=======
 static int acpi_ec_read(struct acpi_ec *ec, u8 address, u8 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	u8 d;
@@ -1164,32 +883,7 @@ static int acpi_ec_write(struct acpi_ec *ec, u8 address, u8 data)
 	return acpi_ec_transaction(ec, &t);
 }
 
-<<<<<<< HEAD
-/*
- * Externally callable EC access functions. For now, assume 1 EC only
- */
-int ec_burst_enable(void)
-{
-	if (!first_ec)
-		return -ENODEV;
-	return acpi_ec_burst_enable(first_ec);
-}
-
-EXPORT_SYMBOL(ec_burst_enable);
-
-int ec_burst_disable(void)
-{
-	if (!first_ec)
-		return -ENODEV;
-	return acpi_ec_burst_disable(first_ec);
-}
-
-EXPORT_SYMBOL(ec_burst_disable);
-
-int ec_read(u8 addr, u8 * val)
-=======
 int ec_read(u8 addr, u8 *val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	u8 temp_data;
@@ -1202,37 +896,13 @@ int ec_read(u8 addr, u8 *val)
 	if (!err) {
 		*val = temp_data;
 		return 0;
-<<<<<<< HEAD
-	} else
-		return err;
-}
-
-=======
 	}
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(ec_read);
 
 int ec_write(u8 addr, u8 val)
 {
-<<<<<<< HEAD
-	int err;
-
-	if (!first_ec)
-		return -ENODEV;
-
-	err = acpi_ec_write(first_ec, addr, val);
-
-	return err;
-}
-
-EXPORT_SYMBOL(ec_write);
-
-int ec_transaction(u8 command,
-		   const u8 * wdata, unsigned wdata_len,
-		   u8 * rdata, unsigned rdata_len)
-=======
 	if (!first_ec)
 		return -ENODEV;
 
@@ -1243,24 +913,16 @@ EXPORT_SYMBOL(ec_write);
 int ec_transaction(u8 command,
 		   const u8 *wdata, unsigned wdata_len,
 		   u8 *rdata, unsigned rdata_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct transaction t = {.command = command,
 				.wdata = wdata, .rdata = rdata,
 				.wlen = wdata_len, .rlen = rdata_len};
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!first_ec)
 		return -ENODEV;
 
 	return acpi_ec_transaction(first_ec, &t);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(ec_transaction);
 
 /* Get the handle to the EC device */
@@ -1270,11 +932,6 @@ acpi_handle ec_get_handle(void)
 		return NULL;
 	return first_ec->handle;
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(ec_get_handle);
-
-=======
 EXPORT_SYMBOL(ec_get_handle);
 
 static void acpi_ec_start(struct acpi_ec *ec, bool resuming)
@@ -1351,7 +1008,6 @@ static void acpi_ec_leave_noirq(struct acpi_ec *ec)
 	spin_unlock_irqrestore(&ec->lock, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void acpi_ec_block_transactions(void)
 {
 	struct acpi_ec *ec = first_ec;
@@ -1359,77 +1015,25 @@ void acpi_ec_block_transactions(void)
 	if (!ec)
 		return;
 
-<<<<<<< HEAD
-	mutex_lock(&ec->lock);
-	/* Prevent transactions from being carried out */
-	set_bit(EC_FLAGS_BLOCKED, &ec->flags);
-	mutex_unlock(&ec->lock);
-=======
 	mutex_lock(&ec->mutex);
 	/* Prevent transactions from being carried out */
 	acpi_ec_stop(ec, true);
 	mutex_unlock(&ec->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void acpi_ec_unblock_transactions(void)
 {
-<<<<<<< HEAD
-	struct acpi_ec *ec = first_ec;
-
-	if (!ec)
-		return;
-
-	mutex_lock(&ec->lock);
-	/* Allow transactions to be carried out again */
-	clear_bit(EC_FLAGS_BLOCKED, &ec->flags);
-	mutex_unlock(&ec->lock);
-}
-
-void acpi_ec_unblock_transactions_early(void)
-{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Allow transactions to happen again (this function is called from
 	 * atomic context during wakeup, so we don't need to acquire the mutex).
 	 */
 	if (first_ec)
-<<<<<<< HEAD
-		clear_bit(EC_FLAGS_BLOCKED, &first_ec->flags);
-}
-
-static int acpi_ec_query_unlocked(struct acpi_ec *ec, u8 * data)
-{
-	int result;
-	u8 d;
-	struct transaction t = {.command = ACPI_EC_COMMAND_QUERY,
-				.wdata = NULL, .rdata = &d,
-				.wlen = 0, .rlen = 1};
-	if (!ec || !data)
-		return -EINVAL;
-	/*
-	 * Query the EC to find out which _Qxx method we need to evaluate.
-	 * Note that successful completion of the query causes the ACPI_EC_SCI
-	 * bit to be cleared (and thus clearing the interrupt source).
-	 */
-	result = acpi_ec_transaction_unlocked(ec, &t);
-	if (result)
-		return result;
-	if (!d)
-		return -ENODATA;
-	*data = d;
-	return 0;
-=======
 		acpi_ec_start(first_ec, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* --------------------------------------------------------------------------
                                 Event Management
    -------------------------------------------------------------------------- */
-<<<<<<< HEAD
-=======
 static struct acpi_ec_query_handler *
 acpi_ec_get_query_handler_by_value(struct acpi_ec *ec, u8 value)
 {
@@ -1460,22 +1064,16 @@ static void acpi_ec_put_query_handler(struct acpi_ec_query_handler *handler)
 	kref_put(&handler->kref, acpi_ec_query_handler_release);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int acpi_ec_add_query_handler(struct acpi_ec *ec, u8 query_bit,
 			      acpi_handle handle, acpi_ec_query_func func,
 			      void *data)
 {
-<<<<<<< HEAD
-	struct acpi_ec_query_handler *handler =
-	    kzalloc(sizeof(struct acpi_ec_query_handler), GFP_KERNEL);
-=======
 	struct acpi_ec_query_handler *handler;
 
 	if (!handle && !func)
 		return -EINVAL;
 
 	handler = kzalloc(sizeof(*handler), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!handler)
 		return -ENOMEM;
 
@@ -1483,37 +1081,6 @@ int acpi_ec_add_query_handler(struct acpi_ec *ec, u8 query_bit,
 	handler->handle = handle;
 	handler->func = func;
 	handler->data = data;
-<<<<<<< HEAD
-	mutex_lock(&ec->lock);
-	list_add(&handler->node, &ec->list);
-	mutex_unlock(&ec->lock);
-	return 0;
-}
-
-EXPORT_SYMBOL_GPL(acpi_ec_add_query_handler);
-
-void acpi_ec_remove_query_handler(struct acpi_ec *ec, u8 query_bit)
-{
-	struct acpi_ec_query_handler *handler, *tmp;
-	mutex_lock(&ec->lock);
-	list_for_each_entry_safe(handler, tmp, &ec->list, node) {
-		if (query_bit == handler->query_bit) {
-			list_del(&handler->node);
-			kfree(handler);
-		}
-	}
-	mutex_unlock(&ec->lock);
-}
-
-EXPORT_SYMBOL_GPL(acpi_ec_remove_query_handler);
-
-static void acpi_ec_run(void *cxt)
-{
-	struct acpi_ec_query_handler *handler = cxt;
-	if (!handler)
-		return;
-	pr_debug(PREFIX "start query execution\n");
-=======
 	mutex_lock(&ec->mutex);
 	kref_init(&handler->kref);
 	list_add(&handler->node, &ec->list);
@@ -1563,81 +1130,10 @@ static void acpi_ec_event_processor(struct work_struct *work)
 
 	ec_dbg_evt("Query(0x%02x) started", handler->query_bit);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (handler->func)
 		handler->func(handler->data);
 	else if (handler->handle)
 		acpi_evaluate_object(handler->handle, NULL, NULL, NULL);
-<<<<<<< HEAD
-	pr_debug(PREFIX "stop query execution\n");
-	kfree(handler);
-}
-
-static int acpi_ec_sync_query(struct acpi_ec *ec)
-{
-	u8 value = 0;
-	int status;
-	struct acpi_ec_query_handler *handler, *copy;
-	if ((status = acpi_ec_query_unlocked(ec, &value)))
-		return status;
-	list_for_each_entry(handler, &ec->list, node) {
-		if (value == handler->query_bit) {
-			/* have custom handler for this bit */
-			copy = kmalloc(sizeof(*handler), GFP_KERNEL);
-			if (!copy)
-				return -ENOMEM;
-			memcpy(copy, handler, sizeof(*copy));
-			pr_debug(PREFIX "push query execution (0x%2x) on queue\n", value);
-			return acpi_os_execute((copy->func) ?
-				OSL_NOTIFY_HANDLER : OSL_GPE_HANDLER,
-				acpi_ec_run, copy);
-		}
-	}
-	return 0;
-}
-
-static void acpi_ec_gpe_query(void *ec_cxt)
-{
-	struct acpi_ec *ec = ec_cxt;
-	if (!ec)
-		return;
-	mutex_lock(&ec->lock);
-	acpi_ec_sync_query(ec);
-	mutex_unlock(&ec->lock);
-}
-
-static int ec_check_sci(struct acpi_ec *ec, u8 state)
-{
-	if (state & ACPI_EC_FLAG_SCI) {
-		if (!test_and_set_bit(EC_FLAGS_QUERY_PENDING, &ec->flags)) {
-			pr_debug(PREFIX "push gpe query to the queue\n");
-			return acpi_os_execute(OSL_NOTIFY_HANDLER,
-				acpi_ec_gpe_query, ec);
-		}
-	}
-	return 0;
-}
-
-static u32 acpi_ec_gpe_handler(acpi_handle gpe_device,
-	u32 gpe_number, void *data)
-{
-	struct acpi_ec *ec = data;
-
-	pr_debug(PREFIX "~~~> interrupt\n");
-
-	advance_transaction(ec, acpi_ec_read_status(ec));
-	if (ec_transaction_done(ec) &&
-	    (acpi_ec_read_status(ec) & ACPI_EC_FLAG_IBF) == 0) {
-		wake_up(&ec->wait);
-		ec_check_sci(ec, acpi_ec_read_status(ec));
-	}
-	return ACPI_INTERRUPT_HANDLED | ACPI_REENABLE_GPE;
-}
-
-/* --------------------------------------------------------------------------
-                             Address Space Management
-   -------------------------------------------------------------------------- */
-=======
 
 	ec_dbg_evt("Query(0x%02x) stopped", handler->query_bit);
 
@@ -1818,7 +1314,6 @@ static irqreturn_t acpi_ec_irq_handler(int irq, void *data)
 /* --------------------------------------------------------------------------
  *                           Address Space Management
  * -------------------------------------------------------------------------- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static acpi_status
 acpi_ec_space_handler(u32 function, acpi_physical_address address,
@@ -1835,11 +1330,7 @@ acpi_ec_space_handler(u32 function, acpi_physical_address address,
 	if (function != ACPI_READ && function != ACPI_WRITE)
 		return AE_BAD_PARAMETER;
 
-<<<<<<< HEAD
-	if (EC_FLAGS_MSI || bits > 8)
-=======
 	if (ec->busy_polling || bits > 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_ec_burst_enable(ec);
 
 	for (i = 0; i < bytes; ++i, ++address, ++value)
@@ -1847,53 +1338,22 @@ acpi_ec_space_handler(u32 function, acpi_physical_address address,
 			acpi_ec_read(ec, address, value) :
 			acpi_ec_write(ec, address, *value);
 
-<<<<<<< HEAD
-	if (EC_FLAGS_MSI || bits > 8)
-=======
 	if (ec->busy_polling || bits > 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_ec_burst_disable(ec);
 
 	switch (result) {
 	case -EINVAL:
 		return AE_BAD_PARAMETER;
-<<<<<<< HEAD
-		break;
-	case -ENODEV:
-		return AE_NOT_FOUND;
-		break;
-	case -ETIME:
-		return AE_TIME;
-		break;
-=======
 	case -ENODEV:
 		return AE_NOT_FOUND;
 	case -ETIME:
 		return AE_TIME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return AE_OK;
 	}
 }
 
 /* --------------------------------------------------------------------------
-<<<<<<< HEAD
-                               Driver Interface
-   -------------------------------------------------------------------------- */
-static acpi_status
-ec_parse_io_ports(struct acpi_resource *resource, void *context);
-
-static struct acpi_ec *make_acpi_ec(void)
-{
-	struct acpi_ec *ec = kzalloc(sizeof(struct acpi_ec), GFP_KERNEL);
-	if (!ec)
-		return NULL;
-	ec->flags = 1 << EC_FLAGS_QUERY_PENDING;
-	mutex_init(&ec->lock);
-	init_waitqueue_head(&ec->wait);
-	INIT_LIST_HEAD(&ec->list);
-	spin_lock_init(&ec->curr_lock);
-=======
  *                             Driver Interface
  * -------------------------------------------------------------------------- */
 
@@ -1925,7 +1385,6 @@ static struct acpi_ec *acpi_ec_alloc(void)
 	ec->polling_guard = 0;
 	ec->gpe = -1;
 	ec->irq = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ec;
 }
 
@@ -1941,14 +1400,8 @@ acpi_ec_register_query_methods(acpi_handle handle, u32 level,
 
 	status = acpi_get_name(handle, ACPI_SINGLE_NAME, &buffer);
 
-<<<<<<< HEAD
-	if (ACPI_SUCCESS(status) && sscanf(node_name, "_Q%x", &value) == 1) {
-		acpi_ec_add_query_handler(ec, value, handle, NULL, NULL);
-	}
-=======
 	if (ACPI_SUCCESS(status) && sscanf(node_name, "_Q%x", &value) == 1)
 		acpi_ec_add_query_handler(ec, value, handle, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return AE_OK;
 }
 
@@ -1957,10 +1410,6 @@ ec_parse_device(acpi_handle handle, u32 Level, void *context, void **retval)
 {
 	acpi_status status;
 	unsigned long long tmp = 0;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_ec *ec = context;
 
 	/* clear addr values, ec_parse_io_ports depend on it */
@@ -1970,20 +1419,12 @@ ec_parse_device(acpi_handle handle, u32 Level, void *context, void **retval)
 				     ec_parse_io_ports, ec);
 	if (ACPI_FAILURE(status))
 		return status;
-<<<<<<< HEAD
-=======
 	if (ec->data_addr == 0 || ec->command_addr == 0)
 		return AE_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get GPE bit assignment (EC events). */
 	/* TODO: Add support for _GPE returning a package */
 	status = acpi_evaluate_integer(handle, "_GPE", NULL, &tmp);
-<<<<<<< HEAD
-	if (ACPI_FAILURE(status))
-		return status;
-	ec->gpe = tmp;
-=======
 	if (ACPI_SUCCESS(status))
 		ec->gpe = tmp;
 	/*
@@ -1991,7 +1432,6 @@ ec_parse_device(acpi_handle handle, u32 Level, void *context, void **retval)
 	 * platforms which use GpioInt instead of GPE.
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Use the global lock for all EC transactions? */
 	tmp = 0;
 	acpi_evaluate_integer(handle, "_GLK", NULL, &tmp);
@@ -2000,42 +1440,6 @@ ec_parse_device(acpi_handle handle, u32 Level, void *context, void **retval)
 	return AE_CTRL_TERMINATE;
 }
 
-<<<<<<< HEAD
-static int ec_install_handlers(struct acpi_ec *ec)
-{
-	acpi_status status;
-	if (test_bit(EC_FLAGS_HANDLERS_INSTALLED, &ec->flags))
-		return 0;
-	status = acpi_install_gpe_handler(NULL, ec->gpe,
-				  ACPI_GPE_EDGE_TRIGGERED,
-				  &acpi_ec_gpe_handler, ec);
-	if (ACPI_FAILURE(status))
-		return -ENODEV;
-
-	acpi_enable_gpe(NULL, ec->gpe);
-	status = acpi_install_address_space_handler(ec->handle,
-						    ACPI_ADR_SPACE_EC,
-						    &acpi_ec_space_handler,
-						    NULL, ec);
-	if (ACPI_FAILURE(status)) {
-		if (status == AE_NOT_FOUND) {
-			/*
-			 * Maybe OS fails in evaluating the _REG object.
-			 * The AE_NOT_FOUND error will be ignored and OS
-			 * continue to initialize EC.
-			 */
-			printk(KERN_ERR "Fail in evaluating the _REG object"
-				" of EC device. Broken bios is suspected.\n");
-		} else {
-			acpi_remove_gpe_handler(NULL, ec->gpe,
-				&acpi_ec_gpe_handler);
-			acpi_disable_gpe(NULL, ec->gpe);
-			return -ENODEV;
-		}
-	}
-
-	set_bit(EC_FLAGS_HANDLERS_INSTALLED, &ec->flags);
-=======
 static bool install_gpe_event_handler(struct acpi_ec *ec)
 {
 	acpi_status status;
@@ -2144,22 +1548,11 @@ static int ec_install_handlers(struct acpi_ec *ec, struct acpi_device *device,
 	/* EC is fully operational, allow queries */
 	acpi_ec_enable_event(ec);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void ec_remove_handlers(struct acpi_ec *ec)
 {
-<<<<<<< HEAD
-	acpi_disable_gpe(NULL, ec->gpe);
-	if (ACPI_FAILURE(acpi_remove_address_space_handler(ec->handle,
-				ACPI_ADR_SPACE_EC, &acpi_ec_space_handler)))
-		pr_err(PREFIX "failed to remove space handler\n");
-	if (ACPI_FAILURE(acpi_remove_gpe_handler(NULL, ec->gpe,
-				&acpi_ec_gpe_handler)))
-		pr_err(PREFIX "failed to remove gpe handler\n");
-	clear_bit(EC_FLAGS_HANDLERS_INSTALLED, &ec->flags);
-=======
 	if (test_bit(EC_FLAGS_EC_HANDLER_INSTALLED, &ec->flags)) {
 		if (ACPI_FAILURE(acpi_remove_address_space_handler(
 					ec->address_space_handler_holder,
@@ -2221,46 +1614,16 @@ static int acpi_ec_setup(struct acpi_ec *ec, struct acpi_device *device, bool ca
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int acpi_ec_add(struct acpi_device *device)
 {
-<<<<<<< HEAD
-	struct acpi_ec *ec = NULL;
-=======
 	struct acpi_ec *ec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	strcpy(acpi_device_name(device), ACPI_EC_DEVICE_NAME);
 	strcpy(acpi_device_class(device), ACPI_EC_CLASS);
 
-<<<<<<< HEAD
-	/* Check for boot EC */
-	if (boot_ec &&
-	    (boot_ec->handle == device->handle ||
-	     boot_ec->handle == ACPI_ROOT_OBJECT)) {
-		ec = boot_ec;
-		boot_ec = NULL;
-	} else {
-		ec = make_acpi_ec();
-		if (!ec)
-			return -ENOMEM;
-	}
-	if (ec_parse_device(device->handle, 0, ec, NULL) !=
-		AE_CTRL_TERMINATE) {
-			kfree(ec);
-			return -EINVAL;
-	}
-
-	/* Find and register all query methods */
-	acpi_walk_namespace(ACPI_TYPE_METHOD, ec->handle, 1,
-			    acpi_ec_register_query_methods, NULL, ec, NULL);
-
-	if (!first_ec)
-		first_ec = ec;
-=======
 	if (boot_ec && (boot_ec->handle == device->handle ||
 	    !strcmp(acpi_device_hid(device), ACPI_ECDT_HID))) {
 		/* Fast path: this device corresponds to the boot EC. */
@@ -2309,7 +1672,6 @@ static int acpi_ec_add(struct acpi_device *device)
 	acpi_handle_info(ec->handle,
 			 "EC: Used to handle transactions and events\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device->driver_data = ec;
 
 	ret = !!request_region(ec->data_addr, 1, "EC data");
@@ -2317,41 +1679,6 @@ static int acpi_ec_add(struct acpi_device *device)
 	ret = !!request_region(ec->command_addr, 1, "EC cmd");
 	WARN(!ret, "Could not request EC cmd io port 0x%lx", ec->command_addr);
 
-<<<<<<< HEAD
-	pr_info(PREFIX "GPE = 0x%lx, I/O: command/status = 0x%lx, data = 0x%lx\n",
-			  ec->gpe, ec->command_addr, ec->data_addr);
-
-	ret = ec_install_handlers(ec);
-
-	/* EC is fully operational, allow queries */
-	clear_bit(EC_FLAGS_QUERY_PENDING, &ec->flags);
-	return ret;
-}
-
-static int acpi_ec_remove(struct acpi_device *device, int type)
-{
-	struct acpi_ec *ec;
-	struct acpi_ec_query_handler *handler, *tmp;
-
-	if (!device)
-		return -EINVAL;
-
-	ec = acpi_driver_data(device);
-	ec_remove_handlers(ec);
-	mutex_lock(&ec->lock);
-	list_for_each_entry_safe(handler, tmp, &ec->list, node) {
-		list_del(&handler->node);
-		kfree(handler);
-	}
-	mutex_unlock(&ec->lock);
-	release_region(ec->data_addr, 1);
-	release_region(ec->command_addr, 1);
-	device->driver_data = NULL;
-	if (ec == first_ec)
-		first_ec = NULL;
-	kfree(ec);
-	return 0;
-=======
 	/* Reprobe devices depending on the EC */
 	acpi_dev_clear_dependencies(device);
 
@@ -2380,7 +1707,6 @@ static void acpi_ec_remove(struct acpi_device *device)
 		ec_remove_handlers(ec);
 		acpi_ec_free(ec);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static acpi_status
@@ -2406,44 +1732,6 @@ ec_parse_io_ports(struct acpi_resource *resource, void *context)
 	return AE_OK;
 }
 
-<<<<<<< HEAD
-int __init acpi_boot_ec_enable(void)
-{
-	if (!boot_ec || test_bit(EC_FLAGS_HANDLERS_INSTALLED, &boot_ec->flags))
-		return 0;
-	if (!ec_install_handlers(boot_ec)) {
-		first_ec = boot_ec;
-		return 0;
-	}
-	return -EFAULT;
-}
-
-static const struct acpi_device_id ec_device_ids[] = {
-	{"PNP0C09", 0},
-	{"", 0},
-};
-
-/* Some BIOS do not survive early DSDT scan, skip it */
-static int ec_skip_dsdt_scan(const struct dmi_system_id *id)
-{
-	EC_FLAGS_SKIP_DSDT_SCAN = 1;
-	return 0;
-}
-
-/* ASUStek often supplies us with broken ECDT, validate it */
-static int ec_validate_ecdt(const struct dmi_system_id *id)
-{
-	EC_FLAGS_VALIDATE_ECDT = 1;
-	return 0;
-}
-
-/* MSI EC needs special treatment, enable it */
-static int ec_flag_msi(const struct dmi_system_id *id)
-{
-	printk(KERN_DEBUG PREFIX "Detected MSI hardware, enabling workarounds.\n");
-	EC_FLAGS_MSI = 1;
-	EC_FLAGS_VALIDATE_ECDT = 1;
-=======
 static const struct acpi_device_id ec_device_ids[] = {
 	{"PNP0C09", 0},
 	{ACPI_ECDT_HID, 0},
@@ -2565,145 +1853,10 @@ static int ec_clear_on_resume(const struct dmi_system_id *id)
 	pr_debug("Detected system needing EC poll on resume.\n");
 	EC_FLAGS_CLEAR_ON_RESUME = 1;
 	ec_event_clearing = ACPI_EC_EVT_TIMING_STATUS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * Clevo M720 notebook actually works ok with IRQ mode, if we lifted
- * the GPE storm threshold back to 20
- */
-static int ec_enlarge_storm_threshold(const struct dmi_system_id *id)
-{
-	pr_debug("Setting the EC GPE storm threshold to 20\n");
-	ec_storm_threshold  = 20;
-	return 0;
-}
-
-static struct dmi_system_id __initdata ec_dmi_table[] = {
-	{
-	ec_skip_dsdt_scan, "Compal JFL92", {
-	DMI_MATCH(DMI_BIOS_VENDOR, "COMPAL"),
-	DMI_MATCH(DMI_BOARD_NAME, "JFL92") }, NULL},
-	{
-	ec_flag_msi, "MSI hardware", {
-	DMI_MATCH(DMI_BIOS_VENDOR, "Micro-Star")}, NULL},
-	{
-	ec_flag_msi, "MSI hardware", {
-	DMI_MATCH(DMI_SYS_VENDOR, "Micro-Star")}, NULL},
-	{
-	ec_flag_msi, "MSI hardware", {
-	DMI_MATCH(DMI_CHASSIS_VENDOR, "MICRO-Star")}, NULL},
-	{
-	ec_flag_msi, "MSI hardware", {
-	DMI_MATCH(DMI_CHASSIS_VENDOR, "MICRO-STAR")}, NULL},
-	{
-	ec_flag_msi, "Quanta hardware", {
-	DMI_MATCH(DMI_SYS_VENDOR, "Quanta"),
-	DMI_MATCH(DMI_PRODUCT_NAME, "TW8/SW8/DW8"),}, NULL},
-	{
-	ec_flag_msi, "Quanta hardware", {
-	DMI_MATCH(DMI_SYS_VENDOR, "Quanta"),
-	DMI_MATCH(DMI_PRODUCT_NAME, "TW9/SW9"),}, NULL},
-	{
-	ec_validate_ecdt, "ASUS hardware", {
-	DMI_MATCH(DMI_BIOS_VENDOR, "ASUS") }, NULL},
-	{
-	ec_validate_ecdt, "ASUS hardware", {
-	DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer Inc.") }, NULL},
-	{
-	ec_enlarge_storm_threshold, "CLEVO hardware", {
-	DMI_MATCH(DMI_SYS_VENDOR, "CLEVO Co."),
-	DMI_MATCH(DMI_PRODUCT_NAME, "M720T/M730T"),}, NULL},
-	{
-	ec_skip_dsdt_scan, "HP Folio 13", {
-	DMI_MATCH(DMI_SYS_VENDOR, "Hewlett-Packard"),
-	DMI_MATCH(DMI_PRODUCT_NAME, "HP Folio 13"),}, NULL},
-	{
-	ec_validate_ecdt, "ASUS hardware", {
-	DMI_MATCH(DMI_SYS_VENDOR, "ASUSTek Computer Inc."),
-	DMI_MATCH(DMI_PRODUCT_NAME, "L4R"),}, NULL},
-	{},
-};
-
-int __init acpi_ec_ecdt_probe(void)
-{
-	acpi_status status;
-	struct acpi_ec *saved_ec = NULL;
-	struct acpi_table_ecdt *ecdt_ptr;
-
-	boot_ec = make_acpi_ec();
-	if (!boot_ec)
-		return -ENOMEM;
-	/*
-	 * Generate a boot ec context
-	 */
-	dmi_check_system(ec_dmi_table);
-	status = acpi_get_table(ACPI_SIG_ECDT, 1,
-				(struct acpi_table_header **)&ecdt_ptr);
-	if (ACPI_SUCCESS(status)) {
-		pr_info(PREFIX "EC description table is found, configuring boot EC\n");
-		boot_ec->command_addr = ecdt_ptr->control.address;
-		boot_ec->data_addr = ecdt_ptr->data.address;
-		boot_ec->gpe = ecdt_ptr->gpe;
-		boot_ec->handle = ACPI_ROOT_OBJECT;
-		acpi_get_handle(ACPI_ROOT_OBJECT, ecdt_ptr->id, &boot_ec->handle);
-		/* Don't trust ECDT, which comes from ASUSTek */
-		if (!EC_FLAGS_VALIDATE_ECDT)
-			goto install;
-		saved_ec = kmemdup(boot_ec, sizeof(struct acpi_ec), GFP_KERNEL);
-		if (!saved_ec)
-			return -ENOMEM;
-	/* fall through */
-	}
-
-	if (EC_FLAGS_SKIP_DSDT_SCAN)
-		return -ENODEV;
-
-	/* This workaround is needed only on some broken machines,
-	 * which require early EC, but fail to provide ECDT */
-	printk(KERN_DEBUG PREFIX "Look up EC in DSDT\n");
-	status = acpi_get_devices(ec_device_ids[0].id, ec_parse_device,
-					boot_ec, NULL);
-	/* Check that acpi_get_devices actually find something */
-	if (ACPI_FAILURE(status) || !boot_ec->handle)
-		goto error;
-	if (saved_ec) {
-		/* try to find good ECDT from ASUSTek */
-		if (saved_ec->command_addr != boot_ec->command_addr ||
-		    saved_ec->data_addr != boot_ec->data_addr ||
-		    saved_ec->gpe != boot_ec->gpe ||
-		    saved_ec->handle != boot_ec->handle)
-			pr_info(PREFIX "ASUSTek keeps feeding us with broken "
-			"ECDT tables, which are very hard to workaround. "
-			"Trying to use DSDT EC info instead. Please send "
-			"output of acpidump to linux-acpi@vger.kernel.org\n");
-		kfree(saved_ec);
-		saved_ec = NULL;
-	} else {
-		/* We really need to limit this workaround, the only ASUS,
-		* which needs it, has fake EC._INI method, so use it as flag.
-		* Keep boot_ec struct as it will be needed soon.
-		*/
-		acpi_handle dummy;
-		if (!dmi_name_in_vendors("ASUS") ||
-		    ACPI_FAILURE(acpi_get_handle(boot_ec->handle, "_INI",
-							&dummy)))
-			return -ENODEV;
-	}
-install:
-	if (!ec_install_handlers(boot_ec)) {
-		first_ec = boot_ec;
-		return 0;
-	}
-error:
-	kfree(boot_ec);
-	boot_ec = NULL;
-	return -ENODEV;
-}
-
-=======
  * Some ECDTs contain wrong register addresses.
  * MSI MS-171F
  * https://bugzilla.kernel.org/show_bug.cgi?id=12461
@@ -3029,7 +2182,6 @@ module_param_call(ec_event_clearing, param_set_event_clearing, param_get_event_c
 		  NULL, 0644);
 MODULE_PARM_DESC(ec_event_clearing, "Assumed SCI_EVT clearing timing");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct acpi_driver acpi_ec_driver = {
 	.name = "ec",
 	.class = ACPI_EC_CLASS,
@@ -3038,20 +2190,6 @@ static struct acpi_driver acpi_ec_driver = {
 		.add = acpi_ec_add,
 		.remove = acpi_ec_remove,
 		},
-<<<<<<< HEAD
-};
-
-int __init acpi_ec_init(void)
-{
-	int result = 0;
-
-	/* Now register the driver for the EC */
-	result = acpi_bus_register_driver(&acpi_ec_driver);
-	if (result < 0)
-		return -ENODEV;
-
-	return result;
-=======
 	.drv.pm = &acpi_ec_pm,
 };
 
@@ -3125,7 +2263,6 @@ void __init acpi_ec_init(void)
 	acpi_bus_register_driver(&acpi_ec_driver);
 
 	acpi_ec_ecdt_start();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* EC driver currently not unloadable */
@@ -3134,10 +2271,6 @@ static void __exit acpi_ec_exit(void)
 {
 
 	acpi_bus_unregister_driver(&acpi_ec_driver);
-<<<<<<< HEAD
-	return;
-=======
 	acpi_ec_destroy_workqueues();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif	/* 0 */

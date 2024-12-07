@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-/* sound/soc/samsung/i2s.c
- *
- * ALSA SoC Audio Layer - Samsung I2S Controller driver
- *
- * Copyright (c) 2010 Samsung Electronics Co. Ltd.
- *	Jaswinder Singh <jassisinghbrar@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-#include <linux/delay.h>
-#include <linux/slab.h>
-#include <linux/clk.h>
-#include <linux/io.h>
-#include <linux/module.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // ALSA SoC Audio Layer - Samsung I2S Controller driver
@@ -32,17 +13,12 @@
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm_runtime.h>
 
 #include <sound/soc.h>
 #include <sound/pcm_params.h>
 
-<<<<<<< HEAD
-#include <plat/audio.h>
-=======
 #include <linux/platform_data/asoc-s3c.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dma.h"
 #include "idma.h"
@@ -51,30 +27,6 @@
 
 #define msecs_to_loops(t) (loops_per_jiffy / 1000 * HZ * t)
 
-<<<<<<< HEAD
-struct i2s_dai {
-	/* Platform device for this DAI */
-	struct platform_device *pdev;
-	/* IOREMAP'd SFRs */
-	void __iomem	*addr;
-	/* Physical base address of SFRs */
-	u32	base;
-	/* Rate of RCLK source clock */
-	unsigned long rclk_srcrate;
-	/* Frame Clock */
-	unsigned frmclk;
-	/*
-	 * Specifically requested RCLK,BCLK by MACHINE Driver.
-	 * 0 indicates CPU driver is free to choose any value.
-	 */
-	unsigned rfs, bfs;
-	/* I2S Controller's core clock */
-	struct clk *clk;
-	/* Clock for generating I2S signals */
-	struct clk *op_clk;
-	/* Array of clock names for op_clk */
-	const char **src_clk;
-=======
 #define SAMSUNG_I2S_ID_PRIMARY		1
 #define SAMSUNG_I2S_ID_SECONDARY	2
 
@@ -113,41 +65,10 @@ struct i2s_dai {
 	 * 0 indicates CPU driver is free to choose any value.
 	 */
 	unsigned rfs, bfs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Pointer to the Primary_Fifo if this is Sec_Fifo, NULL otherwise */
 	struct i2s_dai *pri_dai;
 	/* Pointer to the Secondary_Fifo if it has one, NULL otherwise */
 	struct i2s_dai *sec_dai;
-<<<<<<< HEAD
-#define DAI_OPENED	(1 << 0) /* Dai is opened */
-#define DAI_MANAGER	(1 << 1) /* Dai is the manager */
-	unsigned mode;
-	/* Driver for this DAI */
-	struct snd_soc_dai_driver i2s_dai_drv;
-	/* DMA parameters */
-	struct s3c_dma_params dma_playback;
-	struct s3c_dma_params dma_capture;
-	struct s3c_dma_params idma_playback;
-	u32	quirks;
-	u32	suspend_i2smod;
-	u32	suspend_i2scon;
-	u32	suspend_i2spsr;
-};
-
-/* Lock for cross i/f checks */
-static DEFINE_SPINLOCK(lock);
-
-/* If this is the 'overlay' stereo DAI */
-static inline bool is_secondary(struct i2s_dai *i2s)
-{
-	return i2s->pri_dai ? true : false;
-}
-
-/* If operating in SoC-Slave mode */
-static inline bool is_slave(struct i2s_dai *i2s)
-{
-	return (readl(i2s->addr + I2SMOD) & MOD_SLAVE) ? true : false;
-=======
 
 #define DAI_OPENED	(1 << 0) /* DAI is opened */
 #define DAI_MANAGER	(1 << 1) /* DAI is the manager */
@@ -216,7 +137,6 @@ struct samsung_i2s_priv {
 static inline bool is_secondary(struct i2s_dai *i2s)
 {
 	return i2s->drv->id == SAMSUNG_I2S_ID_SECONDARY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* If this interface of the controller is transmitting data */
@@ -227,11 +147,7 @@ static inline bool tx_active(struct i2s_dai *i2s)
 	if (!i2s)
 		return false;
 
-<<<<<<< HEAD
-	active = readl(i2s->addr + I2SCON);
-=======
 	active = readl(i2s->priv->addr + I2SCON);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_secondary(i2s))
 		active &= CON_TXSDMA_ACTIVE;
@@ -241,12 +157,6 @@ static inline bool tx_active(struct i2s_dai *i2s)
 	return active ? true : false;
 }
 
-<<<<<<< HEAD
-/* If the other interface of the controller is transmitting data */
-static inline bool other_tx_active(struct i2s_dai *i2s)
-{
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-=======
 /* Return pointer to the other DAI */
 static inline struct i2s_dai *get_other_dai(struct i2s_dai *i2s)
 {
@@ -257,7 +167,6 @@ static inline struct i2s_dai *get_other_dai(struct i2s_dai *i2s)
 static inline bool other_tx_active(struct i2s_dai *i2s)
 {
 	struct i2s_dai *other = get_other_dai(i2s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return tx_active(other);
 }
@@ -276,11 +185,7 @@ static inline bool rx_active(struct i2s_dai *i2s)
 	if (!i2s)
 		return false;
 
-<<<<<<< HEAD
-	active = readl(i2s->addr + I2SCON) & CON_RXDMA_ACTIVE;
-=======
 	active = readl(i2s->priv->addr + I2SCON) & CON_RXDMA_ACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return active ? true : false;
 }
@@ -288,11 +193,7 @@ static inline bool rx_active(struct i2s_dai *i2s)
 /* If the other interface of the controller is receiving data */
 static inline bool other_rx_active(struct i2s_dai *i2s)
 {
-<<<<<<< HEAD
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-=======
 	struct i2s_dai *other = get_other_dai(i2s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rx_active(other);
 }
@@ -323,13 +224,9 @@ static inline bool any_active(struct i2s_dai *i2s)
 
 static inline struct i2s_dai *to_info(struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	return snd_soc_dai_get_drvdata(dai);
-=======
 	struct samsung_i2s_priv *priv = snd_soc_dai_get_drvdata(dai);
 
 	return &priv->dai[dai->id - 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool is_opened(struct i2s_dai *i2s)
@@ -351,11 +248,6 @@ static inline bool is_manager(struct i2s_dai *i2s)
 /* Read RCLK of I2S (in multiples of LRCLK) */
 static inline unsigned get_rfs(struct i2s_dai *i2s)
 {
-<<<<<<< HEAD
-	u32 rfs = (readl(i2s->addr + I2SMOD) >> 3) & 0x3;
-
-	switch (rfs) {
-=======
 	struct samsung_i2s_priv *priv = i2s->priv;
 	u32 rfs;
 
@@ -367,7 +259,6 @@ static inline unsigned get_rfs(struct i2s_dai *i2s)
 	case 6: return 96;
 	case 5: return 128;
 	case 4: return 64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 3:	return 768;
 	case 2: return 384;
 	case 1:	return 512;
@@ -378,36 +269,6 @@ static inline unsigned get_rfs(struct i2s_dai *i2s)
 /* Write RCLK of I2S (in multiples of LRCLK) */
 static inline void set_rfs(struct i2s_dai *i2s, unsigned rfs)
 {
-<<<<<<< HEAD
-	u32 mod = readl(i2s->addr + I2SMOD);
-
-	mod &= ~MOD_RCLK_MASK;
-
-	switch (rfs) {
-	case 768:
-		mod |= MOD_RCLK_768FS;
-		break;
-	case 512:
-		mod |= MOD_RCLK_512FS;
-		break;
-	case 384:
-		mod |= MOD_RCLK_384FS;
-		break;
-	default:
-		mod |= MOD_RCLK_256FS;
-		break;
-	}
-
-	writel(mod, i2s->addr + I2SMOD);
-}
-
-/* Read Bit-Clock of I2S (in multiples of LRCLK) */
-static inline unsigned get_bfs(struct i2s_dai *i2s)
-{
-	u32 bfs = (readl(i2s->addr + I2SMOD) >> 1) & 0x3;
-
-	switch (bfs) {
-=======
 	struct samsung_i2s_priv *priv = i2s->priv;
 	u32 mod = readl(priv->addr + I2SMOD);
 	int rfs_shift = priv->variant_regs->rfs_off;
@@ -459,7 +320,6 @@ static inline unsigned get_bfs(struct i2s_dai *i2s)
 	case 6: return 128;
 	case 5: return 96;
 	case 4: return 64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 3: return 24;
 	case 2: return 16;
 	case 1:	return 48;
@@ -467,27 +327,6 @@ static inline unsigned get_bfs(struct i2s_dai *i2s)
 	}
 }
 
-<<<<<<< HEAD
-/* Write Bit-Clock of I2S (in multiples of LRCLK) */
-static inline void set_bfs(struct i2s_dai *i2s, unsigned bfs)
-{
-	u32 mod = readl(i2s->addr + I2SMOD);
-
-	mod &= ~MOD_BCLK_MASK;
-
-	switch (bfs) {
-	case 48:
-		mod |= MOD_BCLK_48FS;
-		break;
-	case 32:
-		mod |= MOD_BCLK_32FS;
-		break;
-	case 24:
-		mod |= MOD_BCLK_24FS;
-		break;
-	case 16:
-		mod |= MOD_BCLK_16FS;
-=======
 /* Write bit-clock of I2S (in multiples of LRCLK) */
 static inline void set_bfs(struct i2s_dai *i2s, unsigned bfs)
 {
@@ -531,22 +370,12 @@ static inline void set_bfs(struct i2s_dai *i2s, unsigned bfs)
 		break;
 	case 256:
 		mod |= (EXYNOS5420_MOD_BCLK_256FS << bfs_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&i2s->pdev->dev, "Wrong BCLK Divider!\n");
 		return;
 	}
 
-<<<<<<< HEAD
-	writel(mod, i2s->addr + I2SMOD);
-}
-
-/* Sample-Size */
-static inline int get_blc(struct i2s_dai *i2s)
-{
-	int blc = readl(i2s->addr + I2SMOD);
-=======
 	writel(mod, priv->addr + I2SMOD);
 }
 
@@ -554,7 +383,6 @@ static inline int get_blc(struct i2s_dai *i2s)
 static inline int get_blc(struct i2s_dai *i2s)
 {
 	int blc = readl(i2s->priv->addr + I2SMOD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	blc = (blc >> 13) & 0x3;
 
@@ -565,14 +393,6 @@ static inline int get_blc(struct i2s_dai *i2s)
 	}
 }
 
-<<<<<<< HEAD
-/* TX Channel Control */
-static void i2s_txctrl(struct i2s_dai *i2s, int on)
-{
-	void __iomem *addr = i2s->addr;
-	u32 con = readl(addr + I2SCON);
-	u32 mod = readl(addr + I2SMOD) & ~MOD_MASK;
-=======
 /* TX channel control */
 static void i2s_txctrl(struct i2s_dai *i2s, int on)
 {
@@ -581,7 +401,6 @@ static void i2s_txctrl(struct i2s_dai *i2s, int on)
 	int txr_off = priv->variant_regs->txr_off;
 	u32 con = readl(addr + I2SCON);
 	u32 mod = readl(addr + I2SMOD) & ~(3 << txr_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (on) {
 		con |= CON_ACTIVE;
@@ -596,15 +415,9 @@ static void i2s_txctrl(struct i2s_dai *i2s, int on)
 		}
 
 		if (any_rx_active(i2s))
-<<<<<<< HEAD
-			mod |= MOD_TXRX;
-		else
-			mod |= MOD_TXONLY;
-=======
 			mod |= 2 << txr_off;
 		else
 			mod |= 0 << txr_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (is_secondary(i2s)) {
 			con |=  CON_TXSDMA_PAUSE;
@@ -622,11 +435,7 @@ static void i2s_txctrl(struct i2s_dai *i2s, int on)
 		con |=  CON_TXCH_PAUSE;
 
 		if (any_rx_active(i2s))
-<<<<<<< HEAD
-			mod |= MOD_RXONLY;
-=======
 			mod |= 1 << txr_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			con &= ~CON_ACTIVE;
 	}
@@ -638,42 +447,26 @@ static void i2s_txctrl(struct i2s_dai *i2s, int on)
 /* RX Channel Control */
 static void i2s_rxctrl(struct i2s_dai *i2s, int on)
 {
-<<<<<<< HEAD
-	void __iomem *addr = i2s->addr;
-	u32 con = readl(addr + I2SCON);
-	u32 mod = readl(addr + I2SMOD) & ~MOD_MASK;
-=======
 	struct samsung_i2s_priv *priv = i2s->priv;
 	void __iomem *addr = priv->addr;
 	int txr_off = priv->variant_regs->txr_off;
 	u32 con = readl(addr + I2SCON);
 	u32 mod = readl(addr + I2SMOD) & ~(3 << txr_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (on) {
 		con |= CON_RXDMA_ACTIVE | CON_ACTIVE;
 		con &= ~(CON_RXDMA_PAUSE | CON_RXCH_PAUSE);
 
 		if (any_tx_active(i2s))
-<<<<<<< HEAD
-			mod |= MOD_TXRX;
-		else
-			mod |= MOD_RXONLY;
-=======
 			mod |= 2 << txr_off;
 		else
 			mod |= 1 << txr_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		con |=  CON_RXDMA_PAUSE | CON_RXCH_PAUSE;
 		con &= ~CON_RXDMA_ACTIVE;
 
 		if (any_tx_active(i2s))
-<<<<<<< HEAD
-			mod |= MOD_TXONLY;
-=======
 			mod |= 0 << txr_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			con &= ~CON_ACTIVE;
 	}
@@ -692,15 +485,9 @@ static inline void i2s_fifo(struct i2s_dai *i2s, u32 flush)
 		return;
 
 	if (is_secondary(i2s))
-<<<<<<< HEAD
-		fic = i2s->addr + I2SFICS;
-	else
-		fic = i2s->addr + I2SFIC;
-=======
 		fic = i2s->priv->addr + I2SFICS;
 	else
 		fic = i2s->priv->addr + I2SFIC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flush the FIFO */
 	writel(readl(fic) | flush, fic);
@@ -713,17 +500,6 @@ static inline void i2s_fifo(struct i2s_dai *i2s, u32 flush)
 	writel(readl(fic) & ~flush, fic);
 }
 
-<<<<<<< HEAD
-static int i2s_set_sysclk(struct snd_soc_dai *dai,
-	  int clk_id, unsigned int rfs, int dir)
-{
-	struct i2s_dai *i2s = to_info(dai);
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-	u32 mod = readl(i2s->addr + I2SMOD);
-
-	switch (clk_id) {
-	case SAMSUNG_I2S_CDCLK:
-=======
 static int i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id, unsigned int rfs,
 			  int dir)
 {
@@ -750,7 +526,6 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id, unsigned int rfs,
 		break;
 	case SAMSUNG_I2S_CDCLK:
 		mask = 1 << i2s_regs->cdclkcon_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Shouldn't matter in GATING(CLOCK_IN) mode */
 		if (dir == SND_SOC_CLOCK_IN)
 			rfs = 0;
@@ -758,20 +533,6 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id, unsigned int rfs,
 		if ((rfs && other && other->rfs && (other->rfs != rfs)) ||
 				(any_active(i2s) &&
 				(((dir == SND_SOC_CLOCK_IN)
-<<<<<<< HEAD
-					&& !(mod & MOD_CDCLKCON)) ||
-				((dir == SND_SOC_CLOCK_OUT)
-					&& (mod & MOD_CDCLKCON))))) {
-			dev_err(&i2s->pdev->dev,
-				"%s:%d Other DAI busy\n", __func__, __LINE__);
-			return -EAGAIN;
-		}
-
-		if (dir == SND_SOC_CLOCK_IN)
-			mod |= MOD_CDCLKCON;
-		else
-			mod &= ~MOD_CDCLKCON;
-=======
 					&& !(mod & cdcon_mask)) ||
 				((dir == SND_SOC_CLOCK_OUT)
 					&& (mod & cdcon_mask))))) {
@@ -783,84 +544,21 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id, unsigned int rfs,
 
 		if (dir == SND_SOC_CLOCK_IN)
 			val = 1 << i2s_regs->cdclkcon_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		i2s->rfs = rfs;
 		break;
 
 	case SAMSUNG_I2S_RCLKSRC_0: /* clock corrsponding to IISMOD[10] := 0 */
 	case SAMSUNG_I2S_RCLKSRC_1: /* clock corrsponding to IISMOD[10] := 1 */
-<<<<<<< HEAD
-		if ((i2s->quirks & QUIRK_NO_MUXPSR)
-=======
 		mask = 1 << i2s_regs->rclksrc_off;
 
 		if ((priv->quirks & QUIRK_NO_MUXPSR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				|| (clk_id == SAMSUNG_I2S_RCLKSRC_0))
 			clk_id = 0;
 		else
 			clk_id = 1;
 
 		if (!any_active(i2s)) {
-<<<<<<< HEAD
-			if (i2s->op_clk) {
-				if ((clk_id && !(mod & MOD_IMS_SYSMUX)) ||
-					(!clk_id && (mod & MOD_IMS_SYSMUX))) {
-					clk_disable(i2s->op_clk);
-					clk_put(i2s->op_clk);
-				} else {
-					i2s->rclk_srcrate =
-						clk_get_rate(i2s->op_clk);
-					return 0;
-				}
-			}
-
-			i2s->op_clk = clk_get(&i2s->pdev->dev,
-						i2s->src_clk[clk_id]);
-			clk_enable(i2s->op_clk);
-			i2s->rclk_srcrate = clk_get_rate(i2s->op_clk);
-
-			/* Over-ride the other's */
-			if (other) {
-				other->op_clk = i2s->op_clk;
-				other->rclk_srcrate = i2s->rclk_srcrate;
-			}
-		} else if ((!clk_id && (mod & MOD_IMS_SYSMUX))
-				|| (clk_id && !(mod & MOD_IMS_SYSMUX))) {
-			dev_err(&i2s->pdev->dev,
-				"%s:%d Other DAI busy\n", __func__, __LINE__);
-			return -EAGAIN;
-		} else {
-			/* Call can't be on the active DAI */
-			i2s->op_clk = other->op_clk;
-			i2s->rclk_srcrate = other->rclk_srcrate;
-			return 0;
-		}
-
-		if (clk_id == 0)
-			mod &= ~MOD_IMS_SYSMUX;
-		else
-			mod |= MOD_IMS_SYSMUX;
-		break;
-
-	default:
-		dev_err(&i2s->pdev->dev, "We don't serve that!\n");
-		return -EINVAL;
-	}
-
-	writel(mod, i2s->addr + I2SMOD);
-
-	return 0;
-}
-
-static int i2s_set_fmt(struct snd_soc_dai *dai,
-	unsigned int fmt)
-{
-	struct i2s_dai *i2s = to_info(dai);
-	u32 mod = readl(i2s->addr + I2SMOD);
-	u32 tmp = 0;
-=======
 			if (priv->op_clk && !IS_ERR(priv->op_clk)) {
 				if ((clk_id && !(mod & rsrc_mask)) ||
 					(!clk_id && (mod & rsrc_mask))) {
@@ -942,22 +640,10 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 	sdf_mask = MOD_SDF_MASK << sdf_shift;
 	lrp_rlow = MOD_LR_RLOW << lrp_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Format is priority */
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_RIGHT_J:
-<<<<<<< HEAD
-		tmp |= MOD_LR_RLOW;
-		tmp |= MOD_SDF_MSB;
-		break;
-	case SND_SOC_DAIFMT_LEFT_J:
-		tmp |= MOD_LR_RLOW;
-		tmp |= MOD_SDF_LSB;
-		break;
-	case SND_SOC_DAIFMT_I2S:
-		tmp |= MOD_SDF_IIS;
-=======
 		tmp |= lrp_rlow;
 		tmp |= (MOD_SDF_MSB << sdf_shift);
 		break;
@@ -967,7 +653,6 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		break;
 	case SND_SOC_DAIFMT_I2S:
 		tmp |= (MOD_SDF_IIS << sdf_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&i2s->pdev->dev, "Format not supported\n");
@@ -982,32 +667,16 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
-<<<<<<< HEAD
-		if (tmp & MOD_LR_RLOW)
-			tmp &= ~MOD_LR_RLOW;
-		else
-			tmp |= MOD_LR_RLOW;
-=======
 		if (tmp & lrp_rlow)
 			tmp &= ~lrp_rlow;
 		else
 			tmp |= lrp_rlow;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&i2s->pdev->dev, "Polarity not supported\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-		tmp |= MOD_SLAVE;
-		break;
-	case SND_SOC_DAIFMT_CBS_CFS:
-		/* Set default source clock in Master mode */
-		if (i2s->rclk_srcrate == 0)
-=======
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
 		tmp |= mod_slave;
@@ -1019,7 +688,6 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		 * clock configuration assigned in DT is not overwritten.
 		 */
 		if (priv->rclk_srcrate == 0 && priv->clk_data.clks == NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i2s_set_sysclk(dai, SAMSUNG_I2S_RCLKSRC_0,
 							0, SND_SOC_CLOCK_IN);
 		break;
@@ -1028,11 +696,6 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (any_active(i2s) &&
-			((mod & (MOD_SDF_MASK | MOD_LR_RLOW
-				| MOD_SLAVE)) != tmp)) {
-=======
 	pm_runtime_get_sync(dai->dev);
 	spin_lock_irqsave(&priv->lock, flags);
 	mod = readl(priv->addr + I2SMOD);
@@ -1044,24 +707,17 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		((mod & (sdf_mask | lrp_rlow | mod_slave)) != tmp)) {
 		spin_unlock_irqrestore(&priv->lock, flags);
 		pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&i2s->pdev->dev,
 				"%s:%d Other DAI busy\n", __func__, __LINE__);
 		return -EAGAIN;
 	}
 
-<<<<<<< HEAD
-	mod &= ~(MOD_SDF_MASK | MOD_LR_RLOW | MOD_SLAVE);
-	mod |= tmp;
-	writel(mod, i2s->addr + I2SMOD);
-=======
 	mod &= ~(sdf_mask | lrp_rlow | mod_slave);
 	mod |= tmp;
 	writel(mod, priv->addr + I2SMOD);
 	priv->slave_mode = (mod & mod_slave);
 	spin_unlock_irqrestore(&priv->lock, flags);
 	pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1069,31 +725,6 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 static int i2s_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct i2s_dai *i2s = to_info(dai);
-	u32 mod = readl(i2s->addr + I2SMOD);
-
-	if (!is_secondary(i2s))
-		mod &= ~(MOD_DC2_EN | MOD_DC1_EN);
-
-	switch (params_channels(params)) {
-	case 6:
-		mod |= MOD_DC2_EN;
-	case 4:
-		mod |= MOD_DC1_EN;
-		break;
-	case 2:
-		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-			i2s->dma_playback.dma_size = 4;
-		else
-			i2s->dma_capture.dma_size = 4;
-		break;
-	case 1:
-		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-			i2s->dma_playback.dma_size = 2;
-		else
-			i2s->dma_capture.dma_size = 2;
-=======
 	struct samsung_i2s_priv *priv = snd_soc_dai_get_drvdata(dai);
 	struct i2s_dai *i2s = to_info(dai);
 	u32 mod, mask = 0, val = 0;
@@ -1123,7 +754,6 @@ static int i2s_hw_params(struct snd_pcm_substream *substream,
 			i2s->dma_playback.addr_width = 2;
 		else
 			i2s->dma_capture.addr_width = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 	default:
@@ -1133,39 +763,6 @@ static int i2s_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (is_secondary(i2s))
-<<<<<<< HEAD
-		mod &= ~MOD_BLCS_MASK;
-	else
-		mod &= ~MOD_BLCP_MASK;
-
-	if (is_manager(i2s))
-		mod &= ~MOD_BLC_MASK;
-
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S8:
-		if (is_secondary(i2s))
-			mod |= MOD_BLCS_8BIT;
-		else
-			mod |= MOD_BLCP_8BIT;
-		if (is_manager(i2s))
-			mod |= MOD_BLC_8BIT;
-		break;
-	case SNDRV_PCM_FORMAT_S16_LE:
-		if (is_secondary(i2s))
-			mod |= MOD_BLCS_16BIT;
-		else
-			mod |= MOD_BLCP_16BIT;
-		if (is_manager(i2s))
-			mod |= MOD_BLC_16BIT;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		if (is_secondary(i2s))
-			mod |= MOD_BLCS_24BIT;
-		else
-			mod |= MOD_BLCP_24BIT;
-		if (is_manager(i2s))
-			mod |= MOD_BLC_24BIT;
-=======
 		mask |= MOD_BLCS_MASK;
 	else
 		mask |= MOD_BLCP_MASK;
@@ -1197,38 +794,12 @@ static int i2s_hw_params(struct snd_pcm_substream *substream,
 			val |= MOD_BLCP_24BIT;
 		if (is_manager(i2s))
 			val |= MOD_BLC_24BIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&i2s->pdev->dev, "Format(%d) not supported\n",
 				params_format(params));
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	writel(mod, i2s->addr + I2SMOD);
-
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-		snd_soc_dai_set_dma_data(dai, substream,
-			(void *)&i2s->dma_playback);
-	else
-		snd_soc_dai_set_dma_data(dai, substream,
-			(void *)&i2s->dma_capture);
-
-	i2s->frmclk = params_rate(params);
-
-	return 0;
-}
-
-/* We set constraints on the substream acc to the version of I2S */
-static int i2s_startup(struct snd_pcm_substream *substream,
-	  struct snd_soc_dai *dai)
-{
-	struct i2s_dai *i2s = to_info(dai);
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-	unsigned long flags;
-
-	spin_lock_irqsave(&lock, flags);
-=======
 
 	spin_lock_irqsave(&priv->lock, flags);
 	mod = readl(priv->addr + I2SMOD);
@@ -1259,7 +830,6 @@ static int i2s_startup(struct snd_pcm_substream *substream,
 	pm_runtime_get_sync(dai->dev);
 
 	spin_lock_irqsave(&priv->pcm_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2s->mode |= DAI_OPENED;
 
@@ -1268,17 +838,10 @@ static int i2s_startup(struct snd_pcm_substream *substream,
 	else
 		i2s->mode |= DAI_MANAGER;
 
-<<<<<<< HEAD
-	/* Enforce set_sysclk in Master mode */
-	i2s->rclk_srcrate = 0;
-
-	spin_unlock_irqrestore(&lock, flags);
-=======
 	if (!any_active(i2s) && (priv->quirks & QUIRK_NEED_RSTCLR))
 		writel(CON_RSTCLR, i2s->priv->addr + I2SCON);
 
 	spin_unlock_irqrestore(&priv->pcm_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1286,20 +849,12 @@ static int i2s_startup(struct snd_pcm_substream *substream,
 static void i2s_shutdown(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct i2s_dai *i2s = to_info(dai);
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-	unsigned long flags;
-
-	spin_lock_irqsave(&lock, flags);
-=======
 	struct samsung_i2s_priv *priv = snd_soc_dai_get_drvdata(dai);
 	struct i2s_dai *i2s = to_info(dai);
 	struct i2s_dai *other = get_other_dai(i2s);
 	unsigned long flags;
 
 	spin_lock_irqsave(&priv->pcm_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2s->mode &= ~DAI_OPENED;
 	i2s->mode &= ~DAI_MANAGER;
@@ -1311,28 +866,15 @@ static void i2s_shutdown(struct snd_pcm_substream *substream,
 	i2s->rfs = 0;
 	i2s->bfs = 0;
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&lock, flags);
-
-	/* Gate CDCLK by default */
-	if (!is_opened(other))
-		i2s_set_sysclk(dai, SAMSUNG_I2S_CDCLK,
-				0, SND_SOC_CLOCK_IN);
-=======
 	spin_unlock_irqrestore(&priv->pcm_lock, flags);
 
 	pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int config_setup(struct i2s_dai *i2s)
 {
-<<<<<<< HEAD
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-=======
 	struct samsung_i2s_priv *priv = i2s->priv;
 	struct i2s_dai *other = get_other_dai(i2s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned rfs, bfs, blc;
 	u32 psr;
 
@@ -1372,21 +914,6 @@ static int config_setup(struct i2s_dai *i2s)
 		return -EAGAIN;
 	}
 
-<<<<<<< HEAD
-	/* Don't bother RFS, BFS & PSR in Slave mode */
-	if (is_slave(i2s))
-		return 0;
-
-	set_bfs(i2s, bfs);
-	set_rfs(i2s, rfs);
-
-	if (!(i2s->quirks & QUIRK_NO_MUXPSR)) {
-		psr = i2s->rclk_srcrate / i2s->frmclk / rfs;
-		writel(((psr - 1) << 8) | PSR_PSREN, i2s->addr + I2SPSR);
-		dev_dbg(&i2s->pdev->dev,
-			"RCLK_SRC=%luHz PSR=%u, RCLK=%dfs, BCLK=%dfs\n",
-				i2s->rclk_srcrate, psr, rfs, bfs);
-=======
 	set_bfs(i2s, bfs);
 	set_rfs(i2s, rfs);
 
@@ -1400,7 +927,6 @@ static int config_setup(struct i2s_dai *i2s)
 		dev_dbg(&i2s->pdev->dev,
 			"RCLK_SRC=%luHz PSR=%u, RCLK=%dfs, BCLK=%dfs\n",
 				priv->rclk_srcrate, psr, rfs, bfs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1409,31 +935,16 @@ static int config_setup(struct i2s_dai *i2s)
 static int i2s_trigger(struct snd_pcm_substream *substream,
 	int cmd, struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	int capture = (substream->stream == SNDRV_PCM_STREAM_CAPTURE);
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct i2s_dai *i2s = to_info(rtd->cpu_dai);
-=======
 	struct samsung_i2s_priv *priv = snd_soc_dai_get_drvdata(dai);
 	int capture = (substream->stream == SNDRV_PCM_STREAM_CAPTURE);
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct i2s_dai *i2s = to_info(snd_soc_rtd_to_cpu(rtd, 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-<<<<<<< HEAD
-		local_irq_save(flags);
-
-		if (config_setup(i2s)) {
-			local_irq_restore(flags);
-			return -EINVAL;
-		}
-
-=======
 		pm_runtime_get_sync(dai->dev);
 
 		if (priv->fixup_early)
@@ -1449,26 +960,17 @@ static int i2s_trigger(struct snd_pcm_substream *substream,
 		if (priv->fixup_late)
 			priv->fixup_late(substream, dai);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (capture)
 			i2s_rxctrl(i2s, 1);
 		else
 			i2s_txctrl(i2s, 1);
 
-<<<<<<< HEAD
-		local_irq_restore(flags);
-=======
 		spin_unlock_irqrestore(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
-<<<<<<< HEAD
-		local_irq_save(flags);
-=======
 		spin_lock_irqsave(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (capture) {
 			i2s_rxctrl(i2s, 0);
@@ -1478,12 +980,8 @@ static int i2s_trigger(struct snd_pcm_substream *substream,
 			i2s_fifo(i2s, FIC_TXFLUSH);
 		}
 
-<<<<<<< HEAD
-		local_irq_restore(flags);
-=======
 		spin_unlock_irqrestore(&priv->lock, flags);
 		pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1494,14 +992,6 @@ static int i2s_set_clkdiv(struct snd_soc_dai *dai,
 	int div_id, int div)
 {
 	struct i2s_dai *i2s = to_info(dai);
-<<<<<<< HEAD
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-
-	switch (div_id) {
-	case SAMSUNG_I2S_DIV_BCLK:
-		if ((any_active(i2s) && div && (get_bfs(i2s) != div))
-			|| (other && other->bfs && (other->bfs != div))) {
-=======
 	struct i2s_dai *other = get_other_dai(i2s);
 
 	switch (div_id) {
@@ -1510,16 +1000,12 @@ static int i2s_set_clkdiv(struct snd_soc_dai *dai,
 		if ((any_active(i2s) && div && (get_bfs(i2s) != div))
 			|| (other && other->bfs && (other->bfs != div))) {
 			pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&i2s->pdev->dev,
 				"%s:%d Other DAI busy\n", __func__, __LINE__);
 			return -EAGAIN;
 		}
 		i2s->bfs = div;
-<<<<<<< HEAD
-=======
 		pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&i2s->pdev->dev,
@@ -1533,18 +1019,6 @@ static int i2s_set_clkdiv(struct snd_soc_dai *dai,
 static snd_pcm_sframes_t
 i2s_delay(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct i2s_dai *i2s = to_info(dai);
-	u32 reg = readl(i2s->addr + I2SFIC);
-	snd_pcm_sframes_t delay;
-
-	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
-		delay = FIC_RXCOUNT(reg);
-	else if (is_secondary(i2s))
-		delay = FICS_TXCOUNT(readl(i2s->addr + I2SFICS));
-	else
-		delay = FIC_TXCOUNT(reg);
-=======
 	struct samsung_i2s_priv *priv = snd_soc_dai_get_drvdata(dai);
 	struct i2s_dai *i2s = to_info(dai);
 	u32 reg = readl(priv->addr + I2SFIC);
@@ -1558,38 +1032,11 @@ i2s_delay(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 		delay = FICS_TXCOUNT(readl(priv->addr + I2SFICS));
 	else
 		delay = (reg >> priv->variant_regs->ftx0cnt_off) & 0x7f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return delay;
 }
 
 #ifdef CONFIG_PM
-<<<<<<< HEAD
-static int i2s_suspend(struct snd_soc_dai *dai)
-{
-	struct i2s_dai *i2s = to_info(dai);
-
-	if (dai->active) {
-		i2s->suspend_i2smod = readl(i2s->addr + I2SMOD);
-		i2s->suspend_i2scon = readl(i2s->addr + I2SCON);
-		i2s->suspend_i2spsr = readl(i2s->addr + I2SPSR);
-	}
-
-	return 0;
-}
-
-static int i2s_resume(struct snd_soc_dai *dai)
-{
-	struct i2s_dai *i2s = to_info(dai);
-
-	if (dai->active) {
-		writel(i2s->suspend_i2scon, i2s->addr + I2SCON);
-		writel(i2s->suspend_i2smod, i2s->addr + I2SMOD);
-		writel(i2s->suspend_i2spsr, i2s->addr + I2SPSR);
-	}
-
-	return 0;
-=======
 static int i2s_suspend(struct snd_soc_component *component)
 {
 	return pm_runtime_force_suspend(component->dev);
@@ -1598,7 +1045,6 @@ static int i2s_suspend(struct snd_soc_component *component)
 static int i2s_resume(struct snd_soc_component *component)
 {
 	return pm_runtime_force_resume(component->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 #define i2s_suspend NULL
@@ -1607,44 +1053,6 @@ static int i2s_resume(struct snd_soc_component *component)
 
 static int samsung_i2s_dai_probe(struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct i2s_dai *i2s = to_info(dai);
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-
-	if (other && other->clk) /* If this is probe on secondary */
-		goto probe_exit;
-
-	i2s->addr = ioremap(i2s->base, 0x100);
-	if (i2s->addr == NULL) {
-		dev_err(&i2s->pdev->dev, "cannot ioremap registers\n");
-		return -ENXIO;
-	}
-
-	i2s->clk = clk_get(&i2s->pdev->dev, "iis");
-	if (IS_ERR(i2s->clk)) {
-		dev_err(&i2s->pdev->dev, "failed to get i2s_clock\n");
-		iounmap(i2s->addr);
-		return -ENOENT;
-	}
-	clk_enable(i2s->clk);
-
-	if (other) {
-		other->addr = i2s->addr;
-		other->clk = i2s->clk;
-	}
-
-	if (i2s->quirks & QUIRK_NEED_RSTCLR)
-		writel(CON_RSTCLR, i2s->addr + I2SCON);
-
-	if (i2s->quirks & QUIRK_SEC_DAI)
-		idma_reg_addr_init(i2s->addr,
-					i2s->sec_dai->idma_playback.dma_addr);
-
-probe_exit:
-	/* Reset any constraint on RFS and BFS */
-	i2s->rfs = 0;
-	i2s->bfs = 0;
-=======
 	struct samsung_i2s_priv *priv = snd_soc_dai_get_drvdata(dai);
 	struct i2s_dai *i2s = to_info(dai);
 	struct i2s_dai *other = get_other_dai(i2s);
@@ -1672,48 +1080,24 @@ probe_exit:
 	i2s->bfs = 0;
 
 	spin_lock_irqsave(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2s_txctrl(i2s, 0);
 	i2s_rxctrl(i2s, 0);
 	i2s_fifo(i2s, FIC_TXFLUSH);
 	i2s_fifo(other, FIC_TXFLUSH);
 	i2s_fifo(i2s, FIC_RXFLUSH);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Gate CDCLK by default */
 	if (!is_opened(other))
 		i2s_set_sysclk(dai, SAMSUNG_I2S_CDCLK,
 				0, SND_SOC_CLOCK_IN);
-<<<<<<< HEAD
-=======
 	pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int samsung_i2s_dai_remove(struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct i2s_dai *i2s = snd_soc_dai_get_drvdata(dai);
-	struct i2s_dai *other = i2s->pri_dai ? : i2s->sec_dai;
-
-	if (!other || !other->clk) {
-
-		if (i2s->quirks & QUIRK_NEED_RSTCLR)
-			writel(0, i2s->addr + I2SCON);
-
-		clk_disable(i2s->clk);
-		clk_put(i2s->clk);
-
-		iounmap(i2s->addr);
-	}
-
-	i2s->clk = NULL;
-=======
 	struct samsung_i2s_priv *priv = snd_soc_dai_get_drvdata(dai);
 	struct i2s_dai *i2s = to_info(dai);
 	unsigned long flags;
@@ -1729,17 +1113,13 @@ static int samsung_i2s_dai_remove(struct snd_soc_dai *dai)
 	}
 
 	pm_runtime_put(dai->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static const struct snd_soc_dai_ops samsung_i2s_dai_ops = {
-<<<<<<< HEAD
-=======
 	.probe = samsung_i2s_dai_probe,
 	.remove = samsung_i2s_dai_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.trigger = i2s_trigger,
 	.hw_params = i2s_hw_params,
 	.set_fmt = i2s_set_fmt,
@@ -1750,174 +1130,6 @@ static const struct snd_soc_dai_ops samsung_i2s_dai_ops = {
 	.delay = i2s_delay,
 };
 
-<<<<<<< HEAD
-#define SAMSUNG_I2S_RATES	SNDRV_PCM_RATE_8000_96000
-
-#define SAMSUNG_I2S_FMTS	(SNDRV_PCM_FMTBIT_S8 | \
-					SNDRV_PCM_FMTBIT_S16_LE | \
-					SNDRV_PCM_FMTBIT_S24_LE)
-
-static __devinit
-struct i2s_dai *i2s_alloc_dai(struct platform_device *pdev, bool sec)
-{
-	struct i2s_dai *i2s;
-
-	i2s = devm_kzalloc(&pdev->dev, sizeof(struct i2s_dai), GFP_KERNEL);
-	if (i2s == NULL)
-		return NULL;
-
-	i2s->pdev = pdev;
-	i2s->pri_dai = NULL;
-	i2s->sec_dai = NULL;
-	i2s->i2s_dai_drv.symmetric_rates = 1;
-	i2s->i2s_dai_drv.probe = samsung_i2s_dai_probe;
-	i2s->i2s_dai_drv.remove = samsung_i2s_dai_remove;
-	i2s->i2s_dai_drv.ops = &samsung_i2s_dai_ops;
-	i2s->i2s_dai_drv.suspend = i2s_suspend;
-	i2s->i2s_dai_drv.resume = i2s_resume;
-	i2s->i2s_dai_drv.playback.channels_min = 2;
-	i2s->i2s_dai_drv.playback.channels_max = 2;
-	i2s->i2s_dai_drv.playback.rates = SAMSUNG_I2S_RATES;
-	i2s->i2s_dai_drv.playback.formats = SAMSUNG_I2S_FMTS;
-
-	if (!sec) {
-		i2s->i2s_dai_drv.capture.channels_min = 1;
-		i2s->i2s_dai_drv.capture.channels_max = 2;
-		i2s->i2s_dai_drv.capture.rates = SAMSUNG_I2S_RATES;
-		i2s->i2s_dai_drv.capture.formats = SAMSUNG_I2S_FMTS;
-	} else {	/* Create a new platform_device for Secondary */
-		i2s->pdev = platform_device_register_resndata(NULL,
-				pdev->name, pdev->id + SAMSUNG_I2S_SECOFF,
-				NULL, 0, NULL, 0);
-		if (IS_ERR(i2s->pdev))
-			return NULL;
-	}
-
-	/* Pre-assign snd_soc_dai_set_drvdata */
-	dev_set_drvdata(&i2s->pdev->dev, i2s);
-
-	return i2s;
-}
-
-static __devinit int samsung_i2s_probe(struct platform_device *pdev)
-{
-	u32 dma_pl_chan, dma_cp_chan, dma_pl_sec_chan;
-	struct i2s_dai *pri_dai, *sec_dai = NULL;
-	struct s3c_audio_pdata *i2s_pdata;
-	struct samsung_i2s *i2s_cfg;
-	struct resource *res;
-	u32 regs_base, quirks;
-	int ret = 0;
-
-	/* Call during Seconday interface registration */
-	if (pdev->id >= SAMSUNG_I2S_SECOFF) {
-		sec_dai = dev_get_drvdata(&pdev->dev);
-		snd_soc_register_dai(&sec_dai->pdev->dev,
-			&sec_dai->i2s_dai_drv);
-		return 0;
-	}
-
-	i2s_pdata = pdev->dev.platform_data;
-	if (i2s_pdata == NULL) {
-		dev_err(&pdev->dev, "Can't work without s3c_audio_pdata\n");
-		return -EINVAL;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_DMA, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "Unable to get I2S-TX dma resource\n");
-		return -ENXIO;
-	}
-	dma_pl_chan = res->start;
-
-	res = platform_get_resource(pdev, IORESOURCE_DMA, 1);
-	if (!res) {
-		dev_err(&pdev->dev, "Unable to get I2S-RX dma resource\n");
-		return -ENXIO;
-	}
-	dma_cp_chan = res->start;
-
-	res = platform_get_resource(pdev, IORESOURCE_DMA, 2);
-	if (res)
-		dma_pl_sec_chan = res->start;
-	else
-		dma_pl_sec_chan = 0;
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "Unable to get I2S SFR address\n");
-		return -ENXIO;
-	}
-
-	if (!request_mem_region(res->start, resource_size(res),
-							"samsung-i2s")) {
-		dev_err(&pdev->dev, "Unable to request SFR region\n");
-		return -EBUSY;
-	}
-	regs_base = res->start;
-
-	i2s_cfg = &i2s_pdata->type.i2s;
-	quirks = i2s_cfg->quirks;
-
-	pri_dai = i2s_alloc_dai(pdev, false);
-	if (!pri_dai) {
-		dev_err(&pdev->dev, "Unable to alloc I2S_pri\n");
-		ret = -ENOMEM;
-		goto err;
-	}
-
-	pri_dai->dma_playback.dma_addr = regs_base + I2STXD;
-	pri_dai->dma_capture.dma_addr = regs_base + I2SRXD;
-	pri_dai->dma_playback.client =
-		(struct s3c2410_dma_client *)&pri_dai->dma_playback;
-	pri_dai->dma_capture.client =
-		(struct s3c2410_dma_client *)&pri_dai->dma_capture;
-	pri_dai->dma_playback.channel = dma_pl_chan;
-	pri_dai->dma_capture.channel = dma_cp_chan;
-	pri_dai->src_clk = i2s_cfg->src_clk;
-	pri_dai->dma_playback.dma_size = 4;
-	pri_dai->dma_capture.dma_size = 4;
-	pri_dai->base = regs_base;
-	pri_dai->quirks = quirks;
-
-	if (quirks & QUIRK_PRI_6CHAN)
-		pri_dai->i2s_dai_drv.playback.channels_max = 6;
-
-	if (quirks & QUIRK_SEC_DAI) {
-		sec_dai = i2s_alloc_dai(pdev, true);
-		if (!sec_dai) {
-			dev_err(&pdev->dev, "Unable to alloc I2S_sec\n");
-			ret = -ENOMEM;
-			goto err;
-		}
-		sec_dai->dma_playback.dma_addr = regs_base + I2STXDS;
-		sec_dai->dma_playback.client =
-			(struct s3c2410_dma_client *)&sec_dai->dma_playback;
-		/* Use iDMA always if SysDMA not provided */
-		sec_dai->dma_playback.channel = dma_pl_sec_chan ? : -1;
-		sec_dai->src_clk = i2s_cfg->src_clk;
-		sec_dai->dma_playback.dma_size = 4;
-		sec_dai->base = regs_base;
-		sec_dai->quirks = quirks;
-		sec_dai->idma_playback.dma_addr = i2s_cfg->idma_addr;
-		sec_dai->pri_dai = pri_dai;
-		pri_dai->sec_dai = sec_dai;
-	}
-
-	if (i2s_pdata->cfg_gpio && i2s_pdata->cfg_gpio(pdev)) {
-		dev_err(&pdev->dev, "Unable to configure gpio\n");
-		ret = -EINVAL;
-		goto err;
-	}
-
-	snd_soc_register_dai(&pri_dai->pdev->dev, &pri_dai->i2s_dai_drv);
-
-	pm_runtime_enable(&pdev->dev);
-
-	return 0;
-err:
-	release_mem_region(regs_base, resource_size(res));
-=======
 static const struct snd_soc_dapm_widget samsung_i2s_widgets[] = {
 	/* Backend DAI  */
 	SND_SOC_DAPM_AIF_OUT("Mixer DAI TX", NULL, 0, SND_SOC_NOPM, 0, 0),
@@ -2130,35 +1342,10 @@ static int i2s_register_clock_provider(struct samsung_i2s_priv *priv)
 		dev_err(dev, "failed to add clock provider: %d\n", ret);
 		i2s_unregister_clocks(priv);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static __devexit int samsung_i2s_remove(struct platform_device *pdev)
-{
-	struct i2s_dai *i2s, *other;
-	struct resource *res;
-
-	i2s = dev_get_drvdata(&pdev->dev);
-	other = i2s->pri_dai ? : i2s->sec_dai;
-
-	if (other) {
-		other->pri_dai = NULL;
-		other->sec_dai = NULL;
-	} else {
-		pm_runtime_disable(&pdev->dev);
-		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-		if (res)
-			release_mem_region(res->start, resource_size(res));
-	}
-
-	i2s->pri_dai = NULL;
-	i2s->sec_dai = NULL;
-
-	snd_soc_unregister_dai(&pdev->dev);
-=======
 /* Create platform device for the secondary PCM */
 static int i2s_create_secondary_device(struct samsung_i2s_priv *priv)
 {
@@ -2195,19 +1382,10 @@ static int i2s_create_secondary_device(struct samsung_i2s_priv *priv)
 	}
 
 	priv->pdev_sec = pdev_sec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct platform_driver samsung_i2s_driver = {
-	.probe  = samsung_i2s_probe,
-	.remove = __devexit_p(samsung_i2s_remove),
-	.driver = {
-		.name = "samsung-i2s",
-		.owner = THIS_MODULE,
-=======
 static void i2s_delete_secondary_device(struct samsung_i2s_priv *priv)
 {
 	platform_device_unregister(priv->pdev_sec);
@@ -2569,7 +1747,6 @@ static struct platform_driver samsung_i2s_driver = {
 		.name = "samsung-i2s",
 		.of_match_table = of_match_ptr(exynos_i2s_match),
 		.pm = &samsung_i2s_pm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

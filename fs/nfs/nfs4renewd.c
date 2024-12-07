@@ -49,11 +49,7 @@
 #include "nfs4_fs.h"
 #include "delegation.h"
 
-<<<<<<< HEAD
-#define NFSDBG_FACILITY	NFSDBG_PROC
-=======
 #define NFSDBG_FACILITY		NFSDBG_STATE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void
 nfs4_renew_state(struct work_struct *work)
@@ -61,11 +57,7 @@ nfs4_renew_state(struct work_struct *work)
 	const struct nfs4_state_maintenance_ops *ops;
 	struct nfs_client *clp =
 		container_of(work, struct nfs_client, cl_renewd.work);
-<<<<<<< HEAD
-	struct rpc_cred *cred;
-=======
 	const struct cred *cred;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long lease;
 	unsigned long last, now;
 	unsigned renew_flags = 0;
@@ -76,10 +68,6 @@ nfs4_renew_state(struct work_struct *work)
 	if (test_bit(NFS_CS_STOP_RENEW, &clp->cl_res_state))
 		goto out;
 
-<<<<<<< HEAD
-	spin_lock(&clp->cl_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lease = clp->cl_lease_time;
 	last = clp->cl_last_renewal;
 	now = jiffies;
@@ -90,12 +78,7 @@ nfs4_renew_state(struct work_struct *work)
 		renew_flags |= NFS4_RENEW_DELEGATION_CB;
 
 	if (renew_flags != 0) {
-<<<<<<< HEAD
-		cred = ops->get_state_renewal_cred_locked(clp);
-		spin_unlock(&clp->cl_lock);
-=======
 		cred = ops->get_state_renewal_cred(clp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cred == NULL) {
 			if (!(renew_flags & NFS4_RENEW_DELEGATION_CB)) {
 				set_bit(NFS4CLNT_LEASE_EXPIRED, &clp->cl_state);
@@ -107,11 +90,7 @@ nfs4_renew_state(struct work_struct *work)
 
 			/* Queue an asynchronous RENEW. */
 			ret = ops->sched_state_renewal(clp, cred, renew_flags);
-<<<<<<< HEAD
-			put_rpccred(cred);
-=======
 			put_cred(cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (ret) {
 			default:
 				goto out_exp;
@@ -123,10 +102,6 @@ nfs4_renew_state(struct work_struct *work)
 	} else {
 		dprintk("%s: failed to call renewd. Reason: lease not expired \n",
 				__func__);
-<<<<<<< HEAD
-		spin_unlock(&clp->cl_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	nfs4_schedule_state_renewal(clp);
 out_exp:
@@ -147,12 +122,7 @@ nfs4_schedule_state_renewal(struct nfs_client *clp)
 		timeout = 5 * HZ;
 	dprintk("%s: requeueing work. Lease period = %ld\n",
 			__func__, (timeout + HZ - 1) / HZ);
-<<<<<<< HEAD
-	cancel_delayed_work(&clp->cl_renewd);
-	schedule_delayed_work(&clp->cl_renewd, timeout);
-=======
 	mod_delayed_work(system_wq, &clp->cl_renewd, timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(NFS_CS_RENEWD, &clp->cl_res_state);
 	spin_unlock(&clp->cl_lock);
 }
@@ -163,13 +133,6 @@ nfs4_kill_renewd(struct nfs_client *clp)
 	cancel_delayed_work_sync(&clp->cl_renewd);
 }
 
-<<<<<<< HEAD
-/*
- * Local variables:
- *   c-basic-offset: 8
- * End:
- */
-=======
 /**
  * nfs4_set_lease_period - Sets the lease period on a nfs_client
  *
@@ -186,4 +149,3 @@ void nfs4_set_lease_period(struct nfs_client *clp,
 	/* Cap maximum reconnect timeout at 1/2 lease period */
 	rpc_set_connect_timeout(clp->cl_rpcclient, lease, lease >> 1);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

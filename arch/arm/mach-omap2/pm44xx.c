@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * OMAP4 Power Management Routines
- *
- * Copyright (C) 2010-2011 Texas Instruments, Inc.
- * Rajendra Nayak <rnayak@ti.com>
- * Santosh Shilimkar <santosh.shilimkar@ti.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMAP4+ Power Management Routines
@@ -17,7 +5,6 @@
  * Copyright (C) 2010-2013 Texas Instruments, Inc.
  * Rajendra Nayak <rnayak@ti.com>
  * Santosh Shilimkar <santosh.shilimkar@ti.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pm.h>
@@ -28,27 +15,18 @@
 #include <linux/slab.h>
 #include <asm/system_misc.h>
 
-<<<<<<< HEAD
-=======
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 #include "clockdomain.h"
 #include "powerdomain.h"
 #include "pm.h"
 
-<<<<<<< HEAD
-struct power_state {
-	struct powerdomain *pwrdm;
-	u32 next_state;
-=======
 u16 pm44xx_errata;
 
 struct power_state {
 	struct powerdomain *pwrdm;
 	u32 next_state;
 	u32 next_logic_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SUSPEND
 	u32 saved_state;
 	u32 saved_logic_state;
@@ -56,8 +34,6 @@ struct power_state {
 	struct list_head node;
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct static_dep_map - Static dependency map
  * @from:	from clockdomain
@@ -70,7 +46,6 @@ struct static_dep_map {
 
 static u32 cpu_suspend_state = PWRDM_POWER_OFF;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(pwrst_list);
 
 #ifdef CONFIG_SUSPEND
@@ -89,11 +64,7 @@ static int omap4_pm_suspend(void)
 	/* Set targeted power domain states by suspend */
 	list_for_each_entry(pwrst, &pwrst_list, node) {
 		omap_set_pwrdm_state(pwrst->pwrdm, pwrst->next_state);
-<<<<<<< HEAD
-		pwrdm_set_logic_retst(pwrst->pwrdm, PWRDM_POWER_OFF);
-=======
 		pwrdm_set_logic_retst(pwrst->pwrdm, pwrst->next_logic_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -105,38 +76,19 @@ static int omap4_pm_suspend(void)
 	 * domain CSWR is not supported by hardware.
 	 * More details can be found in OMAP4430 TRM section 4.3.4.2.
 	 */
-<<<<<<< HEAD
-	omap4_enter_lowpower(cpu_id, PWRDM_POWER_OFF);
-=======
 	omap4_enter_lowpower(cpu_id, cpu_suspend_state, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore next powerdomain state */
 	list_for_each_entry(pwrst, &pwrst_list, node) {
 		state = pwrdm_read_prev_pwrst(pwrst->pwrdm);
 		if (state > pwrst->next_state) {
-<<<<<<< HEAD
-			pr_info("Powerdomain (%s) didn't enter "
-			       "target state %d\n",
-			       pwrst->pwrdm->name, pwrst->next_state);
-=======
 			pr_info("Powerdomain (%s) didn't enter target state %d\n",
 				pwrst->pwrdm->name, pwrst->next_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -1;
 		}
 		omap_set_pwrdm_state(pwrst->pwrdm, pwrst->saved_state);
 		pwrdm_set_logic_retst(pwrst->pwrdm, pwrst->saved_logic_state);
 	}
-<<<<<<< HEAD
-	if (ret)
-		pr_crit("Could not enter target state in pm_suspend\n");
-	else
-		pr_info("Successfully put all powerdomains to target state\n");
-
-	return 0;
-}
-=======
 	if (ret) {
 		pr_crit("Could not enter target state in pm_suspend\n");
 		/*
@@ -156,7 +108,6 @@ static int omap4_pm_suspend(void)
 }
 #else
 #define omap4_pm_suspend NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SUSPEND */
 
 static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
@@ -171,17 +122,6 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
 	 * through hotplug path and CPU0 explicitly programmed
 	 * further down in the code path
 	 */
-<<<<<<< HEAD
-	if (!strncmp(pwrdm->name, "cpu", 3))
-		return 0;
-
-	/*
-	 * FIXME: Remove this check when core retention is supported
-	 * Only MPUSS power domain is added in the list.
-	 */
-	if (strcmp(pwrdm->name, "mpu_pwrdm"))
-		return 0;
-=======
 	if (!strncmp(pwrdm->name, "cpu", 3)) {
 		if (IS_PM44XX_ERRATUM(PM_OMAP4_CPU_OSWR_DISABLE))
 			cpu_suspend_state = PWRDM_POWER_RET;
@@ -191,22 +131,17 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
 	if (!strncmp(pwrdm->name, "core", 4) ||
 	    !strncmp(pwrdm->name, "l4per", 5))
 		pwrdm_set_logic_retst(pwrdm, PWRDM_POWER_OFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pwrst = kmalloc(sizeof(struct power_state), GFP_ATOMIC);
 	if (!pwrst)
 		return -ENOMEM;
 
 	pwrst->pwrdm = pwrdm;
-<<<<<<< HEAD
-	pwrst->next_state = PWRDM_POWER_RET;
-=======
 	pwrst->next_state = pwrdm_get_valid_lp_state(pwrdm, false,
 						     PWRDM_POWER_RET);
 	pwrst->next_logic_state = pwrdm_get_valid_lp_state(pwrdm, true,
 							   PWRDM_POWER_OFF);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&pwrst->node, &pwrst_list);
 
 	return omap_set_pwrdm_state(pwrst->pwrdm, pwrst->next_state);
@@ -216,34 +151,6 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
  * omap_default_idle - OMAP4 default ilde routine.'
  *
  * Implements OMAP4 memory, IO ordering requirements which can't be addressed
-<<<<<<< HEAD
- * with default cpu_do_idle() hook. Used by all CPUs with !CONFIG_CPUIDLE and
- * by secondary CPU with CONFIG_CPUIDLE.
- */
-static void omap_default_idle(void)
-{
-	local_fiq_disable();
-
-	omap_do_wfi();
-
-	local_fiq_enable();
-}
-
-/**
- * omap4_pm_init - Init routine for OMAP4 PM
- *
- * Initializes all powerdomain and clockdomain target states
- * and all PRCM settings.
- */
-static int __init omap4_pm_init(void)
-{
-	int ret;
-	struct clockdomain *emif_clkdm, *mpuss_clkdm, *l3_1_clkdm, *l4wkup;
-	struct clockdomain *ducati_clkdm, *l3_2_clkdm, *l4_per_clkdm;
-
-	if (!cpu_is_omap44xx())
-		return -ENODEV;
-=======
  * with default cpu_do_idle() hook. Used by all CPUs with !CONFIG_CPU_IDLE and
  * by secondary CPU with CONFIG_CPU_IDLE.
  */
@@ -335,54 +242,12 @@ int __init omap4_pm_init_early(void)
 int __init omap4_pm_init(void)
 {
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (omap_rev() == OMAP4430_REV_ES1_0) {
 		WARN(1, "Power Management not supported on OMAP4430 ES1.0\n");
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	pr_err("Power Management for TI OMAP4.\n");
-
-	ret = pwrdm_for_each(pwrdms_setup, NULL);
-	if (ret) {
-		pr_err("Failed to setup powerdomains\n");
-		goto err2;
-	}
-
-	/*
-	 * The dynamic dependency between MPUSS -> MEMIF and
-	 * MPUSS -> L4_PER/L3_* and DUCATI -> L3_* doesn't work as
-	 * expected. The hardware recommendation is to enable static
-	 * dependencies for these to avoid system lock ups or random crashes.
-	 * The L4 wakeup depedency is added to workaround the OCP sync hardware
-	 * BUG with 32K synctimer which lead to incorrect timer value read
-	 * from the 32K counter. The BUG applies for GPTIMER1 and WDT2 which
-	 * are part of L4 wakeup clockdomain.
-	 */
-	mpuss_clkdm = clkdm_lookup("mpuss_clkdm");
-	emif_clkdm = clkdm_lookup("l3_emif_clkdm");
-	l3_1_clkdm = clkdm_lookup("l3_1_clkdm");
-	l3_2_clkdm = clkdm_lookup("l3_2_clkdm");
-	l4_per_clkdm = clkdm_lookup("l4_per_clkdm");
-	l4wkup = clkdm_lookup("l4_wkup_clkdm");
-	ducati_clkdm = clkdm_lookup("ducati_clkdm");
-	if ((!mpuss_clkdm) || (!emif_clkdm) || (!l3_1_clkdm) || (!l4wkup) ||
-		(!l3_2_clkdm) || (!ducati_clkdm) || (!l4_per_clkdm))
-		goto err2;
-
-	ret = clkdm_add_wkdep(mpuss_clkdm, emif_clkdm);
-	ret |= clkdm_add_wkdep(mpuss_clkdm, l3_1_clkdm);
-	ret |= clkdm_add_wkdep(mpuss_clkdm, l3_2_clkdm);
-	ret |= clkdm_add_wkdep(mpuss_clkdm, l4_per_clkdm);
-	ret |= clkdm_add_wkdep(mpuss_clkdm, l4wkup);
-	ret |= clkdm_add_wkdep(ducati_clkdm, l3_1_clkdm);
-	ret |= clkdm_add_wkdep(ducati_clkdm, l3_2_clkdm);
-	if (ret) {
-		pr_err("Failed to add MPUSS -> L3/EMIF/L4PER, DUCATI -> L3 "
-				"wakeup dependency\n");
-=======
 	pr_info("Power Management for TI OMAP4+ devices.\n");
 
 	/*
@@ -407,7 +272,6 @@ int __init omap4_pm_init(void)
 
 	if (ret) {
 		pr_err("Failed to initialise static dependencies.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err2;
 	}
 
@@ -419,28 +283,14 @@ int __init omap4_pm_init(void)
 
 	(void) clkdm_for_each(omap_pm_clkdms_setup, NULL);
 
-<<<<<<< HEAD
-#ifdef CONFIG_SUSPEND
-	omap_pm_suspend = omap4_pm_suspend;
-#endif
-=======
 	omap_common_suspend_init(omap4_pm_suspend);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Overwrite the default cpu_do_idle() */
 	arm_pm_idle = omap_default_idle;
 
-<<<<<<< HEAD
-	omap4_idle_init();
-=======
 	if (cpu_is_omap44xx() || soc_is_omap54xx())
 		omap4_idle_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err2:
 	return ret;
 }
-<<<<<<< HEAD
-late_initcall(omap4_pm_init);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

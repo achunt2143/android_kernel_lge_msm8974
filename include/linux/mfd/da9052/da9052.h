@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * da9052 declarations for DA9052 PMICs.
  *
  * Copyright(c) 2011 Dialog Semiconductor Ltd.
  *
  * Author: David Dajun Chen <dchen@diasemi.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MFD_DA9052_DA9052_H
@@ -40,8 +19,6 @@
 
 #include <linux/mfd/da9052/reg.h>
 
-<<<<<<< HEAD
-=======
 /* Common - HWMON Channel Definations */
 #define DA9052_ADC_VDDOUT	0
 #define DA9052_ADC_ICH		1
@@ -60,7 +37,6 @@
 #define DA9052_ADC_TSI_YP	72
 #define DA9052_ADC_TSI_YN	73
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA9052_IRQ_DCIN	0
 #define DA9052_IRQ_VBUS	1
 #define DA9052_IRQ_DCINREM	2
@@ -99,10 +75,7 @@ enum da9052_chip_id {
 	DA9053_AA,
 	DA9053_BA,
 	DA9053_BB,
-<<<<<<< HEAD
-=======
 	DA9053_BC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct da9052_pdata;
@@ -111,14 +84,6 @@ struct da9052 {
 	struct device *dev;
 	struct regmap *regmap;
 
-<<<<<<< HEAD
-	int irq_base;
-	u8 chip_id;
-
-	int chip_irq;
-};
-
-=======
 	struct mutex auxadc_lock;
 	struct completion done;
 
@@ -136,7 +101,6 @@ struct da9052 {
 int da9052_adc_manual_read(struct da9052 *da9052, unsigned char channel);
 int da9052_adc_read_temp(struct da9052 *da9052);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Device I/O API */
 static inline int da9052_reg_read(struct da9052 *da9052, unsigned char reg)
 {
@@ -145,8 +109,6 @@ static inline int da9052_reg_read(struct da9052 *da9052, unsigned char reg)
 	ret = regmap_read(da9052->regmap, reg, &val);
 	if (ret < 0)
 		return ret;
-<<<<<<< HEAD
-=======
 
 	if (da9052->fix_io) {
 		ret = da9052->fix_io(da9052, reg);
@@ -154,16 +116,12 @@ static inline int da9052_reg_read(struct da9052 *da9052, unsigned char reg)
 			return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val;
 }
 
 static inline int da9052_reg_write(struct da9052 *da9052, unsigned char reg,
 				    unsigned char val)
 {
-<<<<<<< HEAD
-	return regmap_write(da9052->regmap, reg, val);
-=======
 	int ret;
 
 	ret = regmap_write(da9052->regmap, reg, val);
@@ -177,15 +135,11 @@ static inline int da9052_reg_write(struct da9052 *da9052, unsigned char reg,
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int da9052_group_read(struct da9052 *da9052, unsigned char reg,
 				     unsigned reg_cnt, unsigned char *val)
 {
-<<<<<<< HEAD
-	return regmap_bulk_read(da9052->regmap, reg, val, reg_cnt);
-=======
 	int ret;
 	unsigned int tmp;
 	int i;
@@ -204,15 +158,11 @@ static inline int da9052_group_read(struct da9052 *da9052, unsigned char reg,
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int da9052_group_write(struct da9052 *da9052, unsigned char reg,
 				      unsigned reg_cnt, unsigned char *val)
 {
-<<<<<<< HEAD
-	return regmap_raw_write(da9052->regmap, reg, val, reg_cnt);
-=======
 	int ret = 0;
 	int i;
 
@@ -229,16 +179,12 @@ static inline int da9052_group_write(struct da9052 *da9052, unsigned char reg,
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int da9052_reg_update(struct da9052 *da9052, unsigned char reg,
 				     unsigned char bit_mask,
 				     unsigned char reg_val)
 {
-<<<<<<< HEAD
-	return regmap_update_bits(da9052->regmap, reg, bit_mask, reg_val);
-=======
 	int ret;
 
 	ret = regmap_update_bits(da9052->regmap, reg, bit_mask, reg_val);
@@ -252,15 +198,11 @@ static inline int da9052_reg_update(struct da9052 *da9052, unsigned char reg,
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int da9052_device_init(struct da9052 *da9052, u8 chip_id);
 void da9052_device_exit(struct da9052 *da9052);
 
-<<<<<<< HEAD
-extern struct regmap_config da9052_regmap_config;
-=======
 extern const struct regmap_config da9052_regmap_config;
 
 int da9052_irq_init(struct da9052 *da9052);
@@ -272,6 +214,5 @@ void da9052_free_irq(struct da9052 *da9052, int irq, void *data);
 int da9052_enable_irq(struct da9052 *da9052, int irq);
 int da9052_disable_irq(struct da9052 *da9052, int irq);
 int da9052_disable_irq_nosync(struct da9052 *da9052, int irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __MFD_DA9052_DA9052_H */

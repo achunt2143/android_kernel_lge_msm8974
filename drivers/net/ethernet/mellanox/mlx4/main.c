@@ -34,10 +34,7 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -45,14 +42,10 @@
 #include <linux/slab.h>
 #include <linux/io-mapping.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-
-=======
 #include <linux/etherdevice.h>
 #include <net/devlink.h>
 
 #include <uapi/rdma/mlx4-abi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mlx4/device.h>
 #include <linux/mlx4/doorbell.h>
 
@@ -69,11 +62,7 @@ struct workqueue_struct *mlx4_wq;
 
 #ifdef CONFIG_MLX4_DEBUG
 
-<<<<<<< HEAD
-int mlx4_debug_level = 0;
-=======
 int mlx4_debug_level; /* 0 by default */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(debug_level, mlx4_debug_level, int, 0644);
 MODULE_PARM_DESC(debug_level, "Enable debug tracing if > 0");
 
@@ -83,11 +72,7 @@ MODULE_PARM_DESC(debug_level, "Enable debug tracing if > 0");
 
 static int msi_x = 1;
 module_param(msi_x, int, 0444);
-<<<<<<< HEAD
-MODULE_PARM_DESC(msi_x, "attempt to use MSI-X if nonzero");
-=======
 MODULE_PARM_DESC(msi_x, "0 - don't use MSI-X, 1 - use MSI-X, >1 - limit number of MSI-X irqs to msi_x");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* CONFIG_PCI_MSI */
 
@@ -95,17 +80,6 @@ MODULE_PARM_DESC(msi_x, "0 - don't use MSI-X, 1 - use MSI-X, >1 - limit number o
 
 #endif /* CONFIG_PCI_MSI */
 
-<<<<<<< HEAD
-static int num_vfs;
-module_param(num_vfs, int, 0444);
-MODULE_PARM_DESC(num_vfs, "enable #num_vfs functions if num_vfs > 0");
-
-static int probe_vf;
-module_param(probe_vf, int, 0644);
-MODULE_PARM_DESC(probe_vf, "number of vfs to probe by pf driver (num_vfs > 0)");
-
-int mlx4_log_num_mgm_entry_size = 10;
-=======
 static uint8_t num_vfs[3] = {0, 0, 0};
 static int num_vfs_argc;
 module_param_array(num_vfs, byte, &num_vfs_argc, 0444);
@@ -119,24 +93,10 @@ MODULE_PARM_DESC(probe_vf, "number of vfs to probe by pf driver (num_vfs > 0)\n"
 			   "probe_vf=port1,port2,port1+2");
 
 static int mlx4_log_num_mgm_entry_size = MLX4_DEFAULT_MGM_LOG_ENTRY_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(log_num_mgm_entry_size,
 			mlx4_log_num_mgm_entry_size, int, 0444);
 MODULE_PARM_DESC(log_num_mgm_entry_size, "log mgm size, that defines the num"
 					 " of qp per mcg, for example:"
-<<<<<<< HEAD
-					 " 10 gives 248.range: 9<="
-					 " log_num_mgm_entry_size <= 12");
-
-#define HCA_GLOBAL_CAP_MASK            0
-#define PF_CONTEXT_BEHAVIOUR_MASK      0
-
-static char mlx4_version[] __devinitdata =
-	DRV_NAME ": Mellanox ConnectX core driver v"
-	DRV_VERSION " (" DRV_RELDATE ")\n";
-
-static struct mlx4_profile default_profile = {
-=======
 					 " 10 gives 248.range: 7 <="
 					 " log_num_mgm_entry_size <= 12."
 					 " To activate device managed"
@@ -163,16 +123,12 @@ static char mlx4_version[] =
 	DRV_VERSION "\n";
 
 static const struct mlx4_profile default_profile = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_qp		= 1 << 18,
 	.num_srq	= 1 << 16,
 	.rdmarc_per_qp	= 1 << 4,
 	.num_cq		= 1 << 16,
 	.num_mcg	= 1 << 13,
 	.num_mpt	= 1 << 19,
-<<<<<<< HEAD
-	.num_mtt	= 1 << 20, /* It is really num mtt segements */
-=======
 	.num_mtt	= 1 << 20, /* It is really num mtt segments */
 };
 
@@ -184,7 +140,6 @@ static const struct mlx4_profile low_mem_profile = {
 	.num_mcg	= 1 << 8,
 	.num_mpt	= 1 << 9,
 	.num_mtt	= 1 << 7,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int log_num_mac = 7;
@@ -196,17 +151,6 @@ module_param_named(log_num_vlan, log_num_vlan, int, 0444);
 MODULE_PARM_DESC(log_num_vlan, "Log2 max number of VLANs per ETH port (0-7)");
 /* Log2 max number of VLANs per ETH port (0-7) */
 #define MLX4_LOG_NUM_VLANS 7
-<<<<<<< HEAD
-
-static bool use_prio;
-module_param_named(use_prio, use_prio, bool, 0444);
-MODULE_PARM_DESC(use_prio, "Enable steering by VLAN priority on ETH ports "
-		  "(0/1, default 0)");
-
-int log_mtts_per_seg = ilog2(MLX4_MTT_ENTRY_PER_SEG);
-module_param_named(log_mtts_per_seg, log_mtts_per_seg, int, 0444);
-MODULE_PARM_DESC(log_mtts_per_seg, "Log2 number of MTT entries per segment (1-7)");
-=======
 #define MLX4_MIN_LOG_NUM_VLANS 0
 #define MLX4_MIN_LOG_NUM_MAC 1
 
@@ -218,7 +162,6 @@ int log_mtts_per_seg = ilog2(1);
 module_param_named(log_mtts_per_seg, log_mtts_per_seg, int, 0444);
 MODULE_PARM_DESC(log_mtts_per_seg, "Log2 number of MTT entries per segment "
 		 "(0-7) (default: 0)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int port_type_array[2] = {MLX4_PORT_TYPE_NONE, MLX4_PORT_TYPE_NONE};
 static int arr_argc = 2;
@@ -232,12 +175,6 @@ struct mlx4_port_config {
 	struct pci_dev *pdev;
 };
 
-<<<<<<< HEAD
-static inline int mlx4_master_get_num_eqs(struct mlx4_dev *dev)
-{
-	return dev->caps.reserved_eqs +
-		MLX4_MFUNC_EQ_NUM * (dev->num_slaves + 1);
-=======
 static atomic_t pf_loading = ATOMIC_INIT(0);
 
 static int mlx4_devlink_ierr_reset_get(struct devlink *devlink, u32 id,
@@ -364,7 +301,6 @@ static inline void mlx4_set_num_reserved_uars(struct mlx4_dev *dev,
 		      mlx4_get_num_reserved_uar(dev),
 		      dev_cap->reserved_uars /
 			(1 << (PAGE_SHIFT - dev->uar_page_shift)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mlx4_check_port_params(struct mlx4_dev *dev,
@@ -372,39 +308,20 @@ int mlx4_check_port_params(struct mlx4_dev *dev,
 {
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < dev->caps.num_ports - 1; i++) {
-		if (port_type[i] != port_type[i + 1]) {
-			if (!(dev->caps.flags & MLX4_DEV_CAP_FLAG_DPDP)) {
-				mlx4_err(dev, "Only same port types supported "
-					 "on this HCA, aborting.\n");
-				return -EINVAL;
-			}
-			if (port_type[i] == MLX4_PORT_TYPE_ETH &&
-			    port_type[i + 1] == MLX4_PORT_TYPE_IB)
-				return -EINVAL;
-=======
 	if (!(dev->caps.flags & MLX4_DEV_CAP_FLAG_DPDP)) {
 		for (i = 0; i < dev->caps.num_ports - 1; i++) {
 			if (port_type[i] != port_type[i + 1]) {
 				mlx4_err(dev, "Only same port types supported on this HCA, aborting\n");
 				return -EOPNOTSUPP;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	for (i = 0; i < dev->caps.num_ports; i++) {
 		if (!(port_type[i] & dev->caps.supported_type[i+1])) {
-<<<<<<< HEAD
-			mlx4_err(dev, "Requested port type for port %d is not "
-				      "supported on this HCA\n", i + 1);
-			return -EINVAL;
-=======
 			mlx4_err(dev, "Requested port type for port %d is not supported on this HCA\n",
 				 i + 1);
 			return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -418,8 +335,6 @@ static void mlx4_set_port_mask(struct mlx4_dev *dev)
 		dev->caps.port_mask[i] = dev->caps.port_type[i];
 }
 
-<<<<<<< HEAD
-=======
 enum {
 	MLX4_QUERY_FUNC_NUM_SYS_EQS = 1 << 0,
 };
@@ -538,7 +453,6 @@ static inline void mlx4_enable_ignore_fcs(struct mlx4_dev *dev)
 }
 
 #define MLX4_A0_STEERING_TABLE_SIZE	256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 {
 	int err;
@@ -546,15 +460,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 
 	err = mlx4_QUERY_DEV_CAP(dev, dev_cap);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "QUERY_DEV_CAP command failed, aborting.\n");
-		return err;
-	}
-
-	if (dev_cap->min_page_sz > PAGE_SIZE) {
-		mlx4_err(dev, "HCA minimum page size of %d bigger than "
-			 "kernel PAGE_SIZE of %ld, aborting.\n",
-=======
 		mlx4_err(dev, "QUERY_DEV_CAP command failed, aborting\n");
 		return err;
 	}
@@ -562,57 +467,24 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 
 	if (dev_cap->min_page_sz > PAGE_SIZE) {
 		mlx4_err(dev, "HCA minimum page size of %d bigger than kernel PAGE_SIZE of %ld, aborting\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 dev_cap->min_page_sz, PAGE_SIZE);
 		return -ENODEV;
 	}
 	if (dev_cap->num_ports > MLX4_MAX_PORTS) {
-<<<<<<< HEAD
-		mlx4_err(dev, "HCA has %d ports, but we only support %d, "
-			 "aborting.\n",
-=======
 		mlx4_err(dev, "HCA has %d ports, but we only support %d, aborting\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 dev_cap->num_ports, MLX4_MAX_PORTS);
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	if (dev_cap->uar_size > pci_resource_len(dev->pdev, 2)) {
-		mlx4_err(dev, "HCA reported UAR size of 0x%x bigger than "
-			 "PCI resource 2 size of 0x%llx, aborting.\n",
-			 dev_cap->uar_size,
-			 (unsigned long long) pci_resource_len(dev->pdev, 2));
-=======
 	if (dev_cap->uar_size > pci_resource_len(dev->persist->pdev, 2)) {
 		mlx4_err(dev, "HCA reported UAR size of 0x%x bigger than PCI resource 2 size of 0x%llx, aborting\n",
 			 dev_cap->uar_size,
 			 (unsigned long long)
 			 pci_resource_len(dev->persist->pdev, 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	dev->caps.num_ports	     = dev_cap->num_ports;
-<<<<<<< HEAD
-	for (i = 1; i <= dev->caps.num_ports; ++i) {
-		dev->caps.vl_cap[i]	    = dev_cap->max_vl[i];
-		dev->caps.ib_mtu_cap[i]	    = dev_cap->ib_mtu[i];
-		dev->caps.gid_table_len[i]  = dev_cap->max_gids[i];
-		dev->caps.pkey_table_len[i] = dev_cap->max_pkeys[i];
-		dev->caps.port_width_cap[i] = dev_cap->max_port_width[i];
-		dev->caps.eth_mtu_cap[i]    = dev_cap->eth_mtu[i];
-		dev->caps.def_mac[i]        = dev_cap->def_mac[i];
-		dev->caps.supported_type[i] = dev_cap->supported_port_types[i];
-		dev->caps.suggested_type[i] = dev_cap->suggested_type[i];
-		dev->caps.default_sense[i] = dev_cap->default_sense[i];
-		dev->caps.trans_type[i]	    = dev_cap->trans_type[i];
-		dev->caps.vendor_oui[i]     = dev_cap->vendor_oui[i];
-		dev->caps.wavelength[i]     = dev_cap->wavelength[i];
-		dev->caps.trans_code[i]     = dev_cap->trans_code[i];
-	}
-
-=======
 	dev->caps.num_sys_eqs = dev_cap->num_sys_eqs;
 	dev->phys_caps.num_phys_eqs = dev_cap->flags2 & MLX4_DEV_CAP_FLAG2_SYS_EQS ?
 				      dev->caps.num_sys_eqs :
@@ -626,7 +498,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	}
 
 	dev->caps.map_clock_to_user  = dev_cap->map_clock_to_user;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->caps.uar_page_size	     = PAGE_SIZE;
 	dev->caps.num_uars	     = dev_cap->uar_size / PAGE_SIZE;
 	dev->caps.local_ca_ack_delay = dev_cap->local_ca_ack_delay;
@@ -641,17 +512,9 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev->caps.reserved_srqs	     = dev_cap->reserved_srqs;
 	dev->caps.max_sq_desc_sz     = dev_cap->max_sq_desc_sz;
 	dev->caps.max_rq_desc_sz     = dev_cap->max_rq_desc_sz;
-<<<<<<< HEAD
-	dev->caps.num_qp_per_mgm     = mlx4_get_qp_per_mgm(dev);
-	/*
-	 * Subtract 1 from the limit because we need to allocate a
-	 * spare CQE so the HCA HW can tell the difference between an
-	 * empty CQ and a full CQ.
-=======
 	/*
 	 * Subtract 1 from the limit because we need to allocate a
 	 * spare CQE to enable resizing the CQ.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	dev->caps.max_cqes	     = dev_cap->max_cq_sz - 1;
 	dev->caps.reserved_cqs	     = dev_cap->reserved_cqs;
@@ -659,11 +522,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev->caps.reserved_mtts      = dev_cap->reserved_mtts;
 	dev->caps.reserved_mrws	     = dev_cap->reserved_mrws;
 
-<<<<<<< HEAD
-	/* The first 128 UARs are used for EQ doorbells */
-	dev->caps.reserved_uars	     = max_t(int, 128, dev_cap->reserved_uars);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->caps.reserved_pds	     = dev_cap->reserved_pds;
 	dev->caps.reserved_xrcds     = (dev->caps.flags & MLX4_DEV_CAP_FLAG_XRC) ?
 					dev_cap->reserved_xrcds : 0;
@@ -674,24 +532,11 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev->caps.max_msg_sz         = dev_cap->max_msg_sz;
 	dev->caps.page_size_cap	     = ~(u32) (dev_cap->min_page_sz - 1);
 	dev->caps.flags		     = dev_cap->flags;
-<<<<<<< HEAD
-=======
 	dev->caps.flags2	     = dev_cap->flags2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->caps.bmme_flags	     = dev_cap->bmme_flags;
 	dev->caps.reserved_lkey	     = dev_cap->reserved_lkey;
 	dev->caps.stat_rate_support  = dev_cap->stat_rate_support;
 	dev->caps.max_gso_sz	     = dev_cap->max_gso_sz;
-<<<<<<< HEAD
-
-	/* Sense port always allowed on supported devices for ConnectX1 and 2 */
-	if (dev->pdev->device != 0x1003)
-		dev->caps.flags |= MLX4_DEV_CAP_FLAG_SENSE_SUPPORT;
-
-	dev->caps.log_num_macs  = log_num_mac;
-	dev->caps.log_num_vlans = MLX4_LOG_NUM_VLANS;
-	dev->caps.log_num_prios = use_prio ? 3 : 0;
-=======
 	dev->caps.max_rss_tbl_sz     = dev_cap->max_rss_tbl_sz;
 	dev->caps.wol_port[1]          = dev_cap->wol_port[1];
 	dev->caps.wol_port[2]          = dev_cap->wol_port[2];
@@ -739,7 +584,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 		dev->caps.log_num_macs  = log_num_mac;
 		dev->caps.log_num_vlans = MLX4_LOG_NUM_VLANS;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 1; i <= dev->caps.num_ports; ++i) {
 		dev->caps.port_type[i] = MLX4_PORT_TYPE_NONE;
@@ -747,31 +591,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 			/* if only ETH is supported - assign ETH */
 			if (dev->caps.supported_type[i] == MLX4_PORT_TYPE_ETH)
 				dev->caps.port_type[i] = MLX4_PORT_TYPE_ETH;
-<<<<<<< HEAD
-			/* if only IB is supported,
-			 * assign IB only if SRIOV is off*/
-			else if (dev->caps.supported_type[i] ==
-				 MLX4_PORT_TYPE_IB) {
-				if (dev->flags & MLX4_FLAG_SRIOV)
-					dev->caps.port_type[i] =
-						MLX4_PORT_TYPE_NONE;
-				else
-					dev->caps.port_type[i] =
-						MLX4_PORT_TYPE_IB;
-			/* if IB and ETH are supported,
-			 * first of all check if SRIOV is on */
-			} else if (dev->flags & MLX4_FLAG_SRIOV)
-				dev->caps.port_type[i] = MLX4_PORT_TYPE_ETH;
-			else {
-				/* In non-SRIOV mode, we set the port type
-				 * according to user selection of port type,
-				 * if usere selected none, take the FW hint */
-				if (port_type_array[i-1] == MLX4_PORT_TYPE_NONE)
-					dev->caps.port_type[i] = dev->caps.suggested_type[i] ?
-						MLX4_PORT_TYPE_ETH : MLX4_PORT_TYPE_IB;
-				else
-					dev->caps.port_type[i] = port_type_array[i-1];
-=======
 			/* if only IB is supported, assign IB */
 			else if (dev->caps.supported_type[i] ==
 				 MLX4_PORT_TYPE_IB)
@@ -785,7 +604,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 						MLX4_PORT_TYPE_ETH : MLX4_PORT_TYPE_IB;
 				else
 					dev->caps.port_type[i] = port_type_array[i - 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		/*
@@ -814,18 +632,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 			dev->caps.possible_type[i] = dev->caps.port_type[i];
 		}
 
-<<<<<<< HEAD
-		if (dev->caps.log_num_macs > dev_cap->log_max_macs[i]) {
-			dev->caps.log_num_macs = dev_cap->log_max_macs[i];
-			mlx4_warn(dev, "Requested number of MACs is too much "
-				  "for port %d, reducing to %d.\n",
-				  i, 1 << dev->caps.log_num_macs);
-		}
-		if (dev->caps.log_num_vlans > dev_cap->log_max_vlans[i]) {
-			dev->caps.log_num_vlans = dev_cap->log_max_vlans[i];
-			mlx4_warn(dev, "Requested number of VLANs is too much "
-				  "for port %d, reducing to %d.\n",
-=======
 		if (dev->caps.log_num_macs > dev_cap->port_cap[i].log_max_macs) {
 			dev->caps.log_num_macs = dev_cap->port_cap[i].log_max_macs;
 			mlx4_warn(dev, "Requested number of MACs is too much for port %d, reducing to %d\n",
@@ -834,14 +640,10 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 		if (dev->caps.log_num_vlans > dev_cap->port_cap[i].log_max_vlans) {
 			dev->caps.log_num_vlans = dev_cap->port_cap[i].log_max_vlans;
 			mlx4_warn(dev, "Requested number of VLANs is too much for port %d, reducing to %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  i, 1 << dev->caps.log_num_vlans);
 		}
 	}
 
-<<<<<<< HEAD
-	dev->caps.max_counters = 1 << ilog2(dev_cap->max_counters);
-=======
 	if (mlx4_is_master(dev) && (dev->caps.num_ports == 2) &&
 	    (port_type_array[0] == MLX4_PORT_TYPE_IB) &&
 	    (port_type_array[1] == MLX4_PORT_TYPE_ETH)) {
@@ -851,19 +653,12 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	}
 
 	dev->caps.max_counters = dev_cap->max_counters;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW] = dev_cap->reserved_qps;
 	dev->caps.reserved_qps_cnt[MLX4_QP_REGION_ETH_ADDR] =
 		dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FC_ADDR] =
 		(1 << dev->caps.log_num_macs) *
 		(1 << dev->caps.log_num_vlans) *
-<<<<<<< HEAD
-		(1 << dev->caps.log_num_prios) *
-		dev->caps.num_ports;
-	dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FC_EXCH] = MLX4_NUM_FEXCH;
-
-=======
 		dev->caps.num_ports;
 	dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FC_EXCH] = MLX4_NUM_FEXCH;
 
@@ -891,16 +686,11 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	dev->caps.reserved_qps_cnt[MLX4_QP_REGION_RSS_RAW_ETH] =
 		dev->caps.dmfs_high_rate_qpn_range;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->caps.reserved_qps = dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW] +
 		dev->caps.reserved_qps_cnt[MLX4_QP_REGION_ETH_ADDR] +
 		dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FC_ADDR] +
 		dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FC_EXCH];
 
-<<<<<<< HEAD
-	return 0;
-}
-=======
 	dev->caps.sqp_demux = (mlx4_is_master(dev)) ? MLX4_MAX_NUM_SLAVES : 0;
 
 	if (!enable_64b_cqe_eqe && !mlx4_is_slave(dev)) {
@@ -947,7 +737,6 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*The function checks if there are live vf, return the num of them*/
 static int mlx4_how_many_lives_vf(struct mlx4_dev *dev)
 {
@@ -968,8 +757,6 @@ static int mlx4_how_many_lives_vf(struct mlx4_dev *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 int mlx4_get_parav_qkey(struct mlx4_dev *dev, u32 qpn, u32 *qkey)
 {
 	u32 qk = MLX4_RESERVED_QKEY_BASE;
@@ -1021,7 +808,6 @@ __be64 mlx4_get_slave_node_guid(struct mlx4_dev *dev, int slave)
 }
 EXPORT_SYMBOL(mlx4_get_slave_node_guid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_is_slave_active(struct mlx4_dev *dev, int slave)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -1035,8 +821,6 @@ int mlx4_is_slave_active(struct mlx4_dev *dev, int slave)
 }
 EXPORT_SYMBOL(mlx4_is_slave_active);
 
-<<<<<<< HEAD
-=======
 void mlx4_handle_eth_header_mcast_prio(struct mlx4_net_trans_rule_hw_ctrl *ctrl,
 				       struct _rule_hw *eth_header)
 {
@@ -1119,81 +903,10 @@ err_mem:
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_slave_cap(struct mlx4_dev *dev)
 {
 	int			   err;
 	u32			   page_size;
-<<<<<<< HEAD
-	struct mlx4_dev_cap	   dev_cap;
-	struct mlx4_func_cap	   func_cap;
-	struct mlx4_init_hca_param hca_param;
-	int			   i;
-
-	memset(&hca_param, 0, sizeof(hca_param));
-	err = mlx4_QUERY_HCA(dev, &hca_param);
-	if (err) {
-		mlx4_err(dev, "QUERY_HCA command failed, aborting.\n");
-		return err;
-	}
-
-	/*fail if the hca has an unknown capability */
-	if ((hca_param.global_caps | HCA_GLOBAL_CAP_MASK) !=
-	    HCA_GLOBAL_CAP_MASK) {
-		mlx4_err(dev, "Unknown hca global capabilities\n");
-		return -ENOSYS;
-	}
-
-	mlx4_log_num_mgm_entry_size = hca_param.log_mc_entry_sz;
-
-	memset(&dev_cap, 0, sizeof(dev_cap));
-	err = mlx4_dev_cap(dev, &dev_cap);
-	if (err) {
-		mlx4_err(dev, "QUERY_DEV_CAP command failed, aborting.\n");
-		return err;
-	}
-
-	page_size = ~dev->caps.page_size_cap + 1;
-	mlx4_warn(dev, "HCA minimum page size:%d\n", page_size);
-	if (page_size > PAGE_SIZE) {
-		mlx4_err(dev, "HCA minimum page size of %d bigger than "
-			 "kernel PAGE_SIZE of %ld, aborting.\n",
-			 page_size, PAGE_SIZE);
-		return -ENODEV;
-	}
-
-	/* slave gets uar page size from QUERY_HCA fw command */
-	dev->caps.uar_page_size = 1 << (hca_param.uar_page_sz + 12);
-
-	/* TODO: relax this assumption */
-	if (dev->caps.uar_page_size != PAGE_SIZE) {
-		mlx4_err(dev, "UAR size:%d != kernel PAGE_SIZE of %ld\n",
-			 dev->caps.uar_page_size, PAGE_SIZE);
-		return -ENODEV;
-	}
-
-	memset(&func_cap, 0, sizeof(func_cap));
-	err = mlx4_QUERY_FUNC_CAP(dev, &func_cap);
-	if (err) {
-		mlx4_err(dev, "QUERY_FUNC_CAP command failed, aborting.\n");
-		return err;
-	}
-
-	if ((func_cap.pf_context_behaviour | PF_CONTEXT_BEHAVIOUR_MASK) !=
-	    PF_CONTEXT_BEHAVIOUR_MASK) {
-		mlx4_err(dev, "Unknown pf context behaviour\n");
-		return -ENOSYS;
-	}
-
-	dev->caps.num_ports		= func_cap.num_ports;
-	dev->caps.num_qps		= func_cap.qp_quota;
-	dev->caps.num_srqs		= func_cap.srq_quota;
-	dev->caps.num_cqs		= func_cap.cq_quota;
-	dev->caps.num_eqs               = func_cap.max_eq;
-	dev->caps.reserved_eqs          = func_cap.reserved_eq;
-	dev->caps.num_mpts		= func_cap.mpt_quota;
-	dev->caps.num_mtts		= func_cap.mtt_quota;
-=======
 	struct mlx4_dev_cap	   *dev_cap;
 	struct mlx4_func_cap	   *func_cap;
 	struct mlx4_init_hca_param *hca_param;
@@ -1293,20 +1006,10 @@ static int mlx4_slave_cap(struct mlx4_dev *dev)
 	dev->caps.num_eqs		= func_cap->max_eq;
 	dev->caps.reserved_eqs		= func_cap->reserved_eq;
 	dev->caps.reserved_lkey		= func_cap->reserved_lkey;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->caps.num_pds               = MLX4_NUM_PDS;
 	dev->caps.num_mgms              = 0;
 	dev->caps.num_amgms             = 0;
 
-<<<<<<< HEAD
-	for (i = 1; i <= dev->caps.num_ports; ++i)
-		dev->caps.port_mask[i] = dev->caps.port_type[i];
-
-	if (dev->caps.num_ports > MLX4_MAX_PORTS) {
-		mlx4_err(dev, "HCA has %d ports, but we only support %d, "
-			 "aborting.\n", dev->caps.num_ports, MLX4_MAX_PORTS);
-		return -ENODEV;
-=======
 	if (dev->caps.num_ports > MLX4_MAX_PORTS) {
 		mlx4_err(dev, "HCA has %d ports, but we only support %d, aborting\n",
 			 dev->caps.num_ports, MLX4_MAX_PORTS);
@@ -1320,34 +1023,10 @@ static int mlx4_slave_cap(struct mlx4_dev *dev)
 	if (err) {
 		mlx4_err(dev, "Set special QP caps failed. aborting\n");
 		goto free_mem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dev->caps.uar_page_size * (dev->caps.num_uars -
 				       dev->caps.reserved_uars) >
-<<<<<<< HEAD
-				       pci_resource_len(dev->pdev, 2)) {
-		mlx4_err(dev, "HCA reported UAR region size of 0x%x bigger than "
-			 "PCI resource 2 size of 0x%llx, aborting.\n",
-			 dev->caps.uar_page_size * dev->caps.num_uars,
-			 (unsigned long long) pci_resource_len(dev->pdev, 2));
-		return -ENODEV;
-	}
-
-#if 0
-	mlx4_warn(dev, "sqp_demux:%d\n", dev->caps.sqp_demux);
-	mlx4_warn(dev, "num_uars:%d reserved_uars:%d uar region:0x%x bar2:0x%llx\n",
-		  dev->caps.num_uars, dev->caps.reserved_uars,
-		  dev->caps.uar_page_size * dev->caps.num_uars,
-		  pci_resource_len(dev->pdev, 2));
-	mlx4_warn(dev, "num_eqs:%d reserved_eqs:%d\n", dev->caps.num_eqs,
-		  dev->caps.reserved_eqs);
-	mlx4_warn(dev, "num_pds:%d reserved_pds:%d slave_pd_shift:%d pd_base:%d\n",
-		  dev->caps.num_pds, dev->caps.reserved_pds,
-		  dev->caps.slave_pd_shift, dev->caps.pd_base);
-#endif
-	return 0;
-=======
 				       pci_resource_len(dev->persist->pdev,
 							2)) {
 		mlx4_err(dev, "HCA reported UAR region size of 0x%x bigger than PCI resource 2 size of 0x%llx, aborting\n",
@@ -1409,7 +1088,6 @@ free_mem:
 	kfree(func_cap);
 	kfree(dev_cap);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1434,29 +1112,19 @@ int mlx4_change_port_types(struct mlx4_dev *dev,
 		for (port = 1; port <= dev->caps.num_ports; port++) {
 			mlx4_CLOSE_PORT(dev, port);
 			dev->caps.port_type[port] = port_types[port - 1];
-<<<<<<< HEAD
-			err = mlx4_SET_PORT(dev, port);
-			if (err) {
-				mlx4_err(dev, "Failed to set port %d, "
-					      "aborting\n", port);
-=======
 			err = mlx4_SET_PORT(dev, port, -1);
 			if (err) {
 				mlx4_err(dev, "Failed to set port %d, aborting\n",
 					 port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 		}
 		mlx4_set_port_mask(dev);
 		err = mlx4_register_device(dev);
-<<<<<<< HEAD
-=======
 		if (err) {
 			mlx4_err(dev, "Failed to register device\n");
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -1483,18 +1151,9 @@ static ssize_t show_port_type(struct device *dev,
 	return strlen(buf);
 }
 
-<<<<<<< HEAD
-static ssize_t set_port_type(struct device *dev,
-			     struct device_attribute *attr,
-			     const char *buf, size_t count)
-{
-	struct mlx4_port_info *info = container_of(attr, struct mlx4_port_info,
-						   port_attr);
-=======
 static int __set_port_type(struct mlx4_port_info *info,
 			   enum mlx4_port_type port_type)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_dev *mdev = info->dev;
 	struct mlx4_priv *priv = mlx4_priv(mdev);
 	enum mlx4_port_type types[MLX4_MAX_PORTS];
@@ -1502,32 +1161,17 @@ static int __set_port_type(struct mlx4_port_info *info,
 	int i;
 	int err = 0;
 
-<<<<<<< HEAD
-	if (!strcmp(buf, "ib\n"))
-		info->tmp_type = MLX4_PORT_TYPE_IB;
-	else if (!strcmp(buf, "eth\n"))
-		info->tmp_type = MLX4_PORT_TYPE_ETH;
-	else if (!strcmp(buf, "auto\n"))
-		info->tmp_type = MLX4_PORT_TYPE_AUTO;
-	else {
-		mlx4_err(mdev, "%s is not supported port type\n", buf);
-		return -EINVAL;
-=======
 	if ((port_type & mdev->caps.supported_type[info->port]) != port_type) {
 		mlx4_err(mdev,
 			 "Requested port type for port %d is not supported on this HCA\n",
 			 info->port);
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mlx4_stop_sense(mdev);
 	mutex_lock(&priv->port_mutex);
-<<<<<<< HEAD
-=======
 	info->tmp_type = port_type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Possible type is always the one that was delivered */
 	mdev->caps.possible_type[info->port] = info->tmp_type;
 
@@ -1543,22 +1187,12 @@ static int __set_port_type(struct mlx4_port_info *info,
 		for (i = 1; i <= mdev->caps.num_ports; i++) {
 			if (mdev->caps.possible_type[i] == MLX4_PORT_TYPE_AUTO) {
 				mdev->caps.possible_type[i] = mdev->caps.port_type[i];
-<<<<<<< HEAD
-				err = -EINVAL;
-=======
 				err = -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(mdev, "Auto sensing is not supported on this HCA. "
-			       "Set only 'eth' or 'ib' for both ports "
-			       "(should be the same)\n");
-=======
 		mlx4_err(mdev, "Auto sensing is not supported on this HCA. Set only 'eth' or 'ib' for both ports (should be the same)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1579,8 +1213,6 @@ static int __set_port_type(struct mlx4_port_info *info,
 out:
 	mlx4_start_sense(mdev);
 	mutex_unlock(&priv->port_mutex);
-<<<<<<< HEAD
-=======
 
 	return err;
 }
@@ -1615,7 +1247,6 @@ static ssize_t set_port_type(struct device *dev,
 err_out:
 	mutex_unlock(&set_port_type_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err ? err : count;
 }
 
@@ -1682,19 +1313,11 @@ static ssize_t set_port_ib_mtu(struct device *dev,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	err = sscanf(buf, "%d", &mtu);
-	if (err > 0)
-		ibta_mtu = int_to_ibta_mtu(mtu);
-
-	if (err <= 0 || ibta_mtu < 0) {
-=======
 	err = kstrtoint(buf, 0, &mtu);
 	if (!err)
 		ibta_mtu = int_to_ibta_mtu(mtu);
 
 	if (err || ibta_mtu < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlx4_err(mdev, "%s is invalid IBTA mtu\n", buf);
 		return -EINVAL;
 	}
@@ -1706,17 +1329,10 @@ static ssize_t set_port_ib_mtu(struct device *dev,
 	mlx4_unregister_device(mdev);
 	for (port = 1; port <= mdev->caps.num_ports; port++) {
 		mlx4_CLOSE_PORT(mdev, port);
-<<<<<<< HEAD
-		err = mlx4_SET_PORT(mdev, port);
-		if (err) {
-			mlx4_err(mdev, "Failed to set port %d, "
-				      "aborting\n", port);
-=======
 		err = mlx4_SET_PORT(mdev, port, -1);
 		if (err) {
 			mlx4_err(mdev, "Failed to set port %d, aborting\n",
 				 port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_set_port;
 		}
 	}
@@ -1727,8 +1343,6 @@ err_set_port:
 	return err ? err : count;
 }
 
-<<<<<<< HEAD
-=======
 /* bond for multi-function device */
 #define MAX_MF_BOND_ALLOWED_SLAVES 63
 static int mlx4_mf_bond(struct mlx4_dev *dev)
@@ -1957,7 +1571,6 @@ int mlx4_queue_bond_work(struct mlx4_dev *dev, int is_bonded, u8 v2p_p1,
 }
 EXPORT_SYMBOL(mlx4_queue_bond_work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_load_fw(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -1966,31 +1579,19 @@ static int mlx4_load_fw(struct mlx4_dev *dev)
 	priv->fw.fw_icm = mlx4_alloc_icm(dev, priv->fw.fw_pages,
 					 GFP_HIGHUSER | __GFP_NOWARN, 0);
 	if (!priv->fw.fw_icm) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Couldn't allocate FW area, aborting.\n");
-=======
 		mlx4_err(dev, "Couldn't allocate FW area, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	err = mlx4_MAP_FA(dev, priv->fw.fw_icm);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "MAP_FA command failed, aborting.\n");
-=======
 		mlx4_err(dev, "MAP_FA command failed, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 	}
 
 	err = mlx4_RUN_FW(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "RUN_FW command failed, aborting.\n");
-=======
 		mlx4_err(dev, "RUN_FW command failed, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_fa;
 	}
 
@@ -2039,13 +1640,7 @@ static int mlx4_init_cmpt_table(struct mlx4_dev *dev, u64 cmpt_base,
 	if (err)
 		goto err_srq;
 
-<<<<<<< HEAD
-	num_eqs = (mlx4_is_master(dev)) ?
-		roundup_pow_of_two(mlx4_master_get_num_eqs(dev)) :
-		dev->caps.num_eqs;
-=======
 	num_eqs = dev->phys_caps.num_phys_eqs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mlx4_init_icm_table(dev, &priv->eq_table.cmpt_table,
 				  cmpt_base +
 				  ((u64) (MLX4_CMPT_TYPE_EQ *
@@ -2079,70 +1674,40 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 
 	err = mlx4_SET_ICM_SIZE(dev, icm_size, &aux_pages);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "SET_ICM_SIZE command failed, aborting.\n");
-		return err;
-	}
-
-	mlx4_dbg(dev, "%lld KB of HCA context requires %lld KB aux memory.\n",
-=======
 		mlx4_err(dev, "SET_ICM_SIZE command failed, aborting\n");
 		return err;
 	}
 
 	mlx4_dbg(dev, "%lld KB of HCA context requires %lld KB aux memory\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 (unsigned long long) icm_size >> 10,
 		 (unsigned long long) aux_pages << 2);
 
 	priv->fw.aux_icm = mlx4_alloc_icm(dev, aux_pages,
 					  GFP_HIGHUSER | __GFP_NOWARN, 0);
 	if (!priv->fw.aux_icm) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Couldn't allocate aux memory, aborting.\n");
-=======
 		mlx4_err(dev, "Couldn't allocate aux memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	err = mlx4_MAP_ICM_AUX(dev, priv->fw.aux_icm);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "MAP_ICM_AUX command failed, aborting.\n");
-=======
 		mlx4_err(dev, "MAP_ICM_AUX command failed, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_aux;
 	}
 
 	err = mlx4_init_cmpt_table(dev, init_hca->cmpt_base, dev_cap->cmpt_entry_sz);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map cMPT context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map cMPT context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_aux;
 	}
 
 
-<<<<<<< HEAD
-	num_eqs = (mlx4_is_master(dev)) ?
-		roundup_pow_of_two(mlx4_master_get_num_eqs(dev)) :
-		dev->caps.num_eqs;
-=======
 	num_eqs = dev->phys_caps.num_phys_eqs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mlx4_init_icm_table(dev, &priv->eq_table.table,
 				  init_hca->eqc_base, dev_cap->eqc_entry_sz,
 				  num_eqs, num_eqs, 0, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map EQ context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map EQ context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_cmpt;
 	}
 
@@ -2163,11 +1728,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.num_mtts,
 				  dev->caps.reserved_mtts, 1, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map MTT context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map MTT context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_eq;
 	}
 
@@ -2177,11 +1738,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.num_mpts,
 				  dev->caps.reserved_mrws, 1, 1);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map dMPT context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map dMPT context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_mtt;
 	}
 
@@ -2192,11 +1749,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
 				  0, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map QP context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map QP context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_dmpt;
 	}
 
@@ -2207,11 +1760,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
 				  0, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map AUXC context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map AUXC context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_qp;
 	}
 
@@ -2222,11 +1771,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.reserved_qps_cnt[MLX4_QP_REGION_FW],
 				  0, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map ALTC context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map ALTC context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_auxc;
 	}
 
@@ -2247,11 +1792,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.num_cqs,
 				  dev->caps.reserved_cqs, 0, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map CQ context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map CQ context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_rdmarc;
 	}
 
@@ -2261,26 +1802,16 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.num_srqs,
 				  dev->caps.reserved_srqs, 0, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map SRQ context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map SRQ context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_cq;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * It's not strictly required, but for simplicity just map the
-	 * whole multicast group table now.  The table isn't very big
-	 * and it's a lot easier than trying to track ref counts.
-=======
 	 * For flow steering device managed mode it is required to use
 	 * mlx4_init_icm_table. For B0 steering mode it's not strictly
 	 * required, but for simplicity just map the whole multicast
 	 * group table now.  The table isn't very big and it's a lot
 	 * easier than trying to track ref counts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	err = mlx4_init_icm_table(dev, &priv->mcg_table.table,
 				  init_hca->mc_base,
@@ -2289,11 +1820,7 @@ static int mlx4_init_icm(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap,
 				  dev->caps.num_mgms + dev->caps.num_amgms,
 				  0, 0);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to map MCG context memory, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to map MCG context memory, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unmap_srq;
 	}
 
@@ -2368,18 +1895,11 @@ static void mlx4_slave_exit(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 
-<<<<<<< HEAD
-	down(&priv->cmd.slave_sem);
-	if (mlx4_comm_cmd(dev, MLX4_COMM_CMD_RESET, 0, MLX4_COMM_TIME))
-		mlx4_warn(dev, "Failed to close slave function.\n");
-	up(&priv->cmd.slave_sem);
-=======
 	mutex_lock(&priv->cmd.slave_cmd_mutex);
 	if (mlx4_comm_cmd(dev, MLX4_COMM_CMD_RESET, 0, MLX4_COMM_CMD_NA_OP,
 			  MLX4_COMM_TIME))
 		mlx4_warn(dev, "Failed to close slave function\n");
 	mutex_unlock(&priv->cmd.slave_cmd_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int map_bf_area(struct mlx4_dev *dev)
@@ -2392,15 +1912,9 @@ static int map_bf_area(struct mlx4_dev *dev)
 	if (!dev->caps.bf_reg_size)
 		return -ENXIO;
 
-<<<<<<< HEAD
-	bf_start = pci_resource_start(dev->pdev, 2) +
-			(dev->caps.num_uars << PAGE_SHIFT);
-	bf_len = pci_resource_len(dev->pdev, 2) -
-=======
 	bf_start = pci_resource_start(dev->persist->pdev, 2) +
 			(dev->caps.num_uars << PAGE_SHIFT);
 	bf_len = pci_resource_len(dev->persist->pdev, 2) -
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(dev->caps.num_uars << PAGE_SHIFT);
 	priv->bf_mapping = io_mapping_create_wc(bf_start, bf_len);
 	if (!priv->bf_mapping)
@@ -2415,10 +1929,6 @@ static void unmap_bf_area(struct mlx4_dev *dev)
 		io_mapping_free(mlx4_priv(dev)->bf_mapping);
 }
 
-<<<<<<< HEAD
-static void mlx4_close_hca(struct mlx4_dev *dev)
-{
-=======
 u64 mlx4_read_clock(struct mlx4_dev *dev)
 {
 	u32 clockhi, clocklo, clockhi1;
@@ -2491,29 +2001,23 @@ static void unmap_internal_clock(struct mlx4_dev *dev)
 static void mlx4_close_hca(struct mlx4_dev *dev)
 {
 	unmap_internal_clock(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unmap_bf_area(dev);
 	if (mlx4_is_slave(dev))
 		mlx4_slave_exit(dev);
 	else {
 		mlx4_CLOSE_HCA(dev, 0);
 		mlx4_free_icms(dev);
-<<<<<<< HEAD
-=======
 	}
 }
 
 static void mlx4_close_fw(struct mlx4_dev *dev)
 {
 	if (!mlx4_is_slave(dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlx4_UNMAP_FA(dev);
 		mlx4_free_icm(dev, mlx4_priv(dev)->fw.fw_icm, 0);
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int mlx4_comm_check_offline(struct mlx4_dev *dev)
 {
 #define COMM_CHAN_OFFLINE_OFFSET 0x09
@@ -2566,26 +2070,14 @@ static void mlx4_reset_vf_support(struct mlx4_dev *dev)
 		dev->caps.vf_caps |= MLX4_VF_CAP_FLAG_RESET;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_init_slave(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	u64 dma = (u64) priv->mfunc.vhcr_dma;
-<<<<<<< HEAD
-	int num_of_reset_retries = NUM_OF_RESET_RETRIES;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret_from_reset = 0;
 	u32 slave_read;
 	u32 cmd_channel_ver;
 
-<<<<<<< HEAD
-	down(&priv->cmd.slave_sem);
-	priv->cmd.max_cmds = 1;
-	mlx4_warn(dev, "Sending reset\n");
-	ret_from_reset = mlx4_comm_cmd(dev, MLX4_COMM_CMD_RESET, 0,
-				       MLX4_COMM_TIME);
-=======
 	if (atomic_read(&pf_loading)) {
 		mlx4_warn(dev, "PF is not ready - Deferring probe\n");
 		return -EPROBE_DEFER;
@@ -2602,29 +2094,13 @@ static int mlx4_init_slave(struct mlx4_dev *dev)
 	mlx4_warn(dev, "Sending reset\n");
 	ret_from_reset = mlx4_comm_cmd(dev, MLX4_COMM_CMD_RESET, 0,
 				       MLX4_COMM_CMD_NA_OP, MLX4_COMM_TIME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if we are in the middle of flr the slave will try
 	 * NUM_OF_RESET_RETRIES times before leaving.*/
 	if (ret_from_reset) {
 		if (MLX4_DELAY_RESET_SLAVE == ret_from_reset) {
-<<<<<<< HEAD
-			msleep(SLEEP_TIME_IN_RESET);
-			while (ret_from_reset && num_of_reset_retries) {
-				mlx4_warn(dev, "slave is currently in the"
-					  "middle of FLR. retrying..."
-					  "(try num:%d)\n",
-					  (NUM_OF_RESET_RETRIES -
-					   num_of_reset_retries  + 1));
-				ret_from_reset =
-					mlx4_comm_cmd(dev, MLX4_COMM_CMD_RESET,
-						      0, MLX4_COMM_TIME);
-				num_of_reset_retries = num_of_reset_retries - 1;
-			}
-=======
 			mlx4_warn(dev, "slave is currently in the middle of FLR - Deferring probe\n");
 			mutex_unlock(&priv->cmd.slave_cmd_mutex);
 			return -EPROBE_DEFER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			goto err;
 	}
@@ -2636,48 +2112,12 @@ static int mlx4_init_slave(struct mlx4_dev *dev)
 
 	if (MLX4_COMM_GET_IF_REV(cmd_channel_ver) !=
 		MLX4_COMM_GET_IF_REV(slave_read)) {
-<<<<<<< HEAD
-		mlx4_err(dev, "slave driver version is not supported"
-			 " by the master\n");
-=======
 		mlx4_err(dev, "slave driver version is not supported by the master\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
 	mlx4_warn(dev, "Sending vhcr0\n");
 	if (mlx4_comm_cmd(dev, MLX4_COMM_CMD_VHCR0, dma >> 48,
-<<<<<<< HEAD
-						    MLX4_COMM_TIME))
-		goto err;
-	if (mlx4_comm_cmd(dev, MLX4_COMM_CMD_VHCR1, dma >> 32,
-						    MLX4_COMM_TIME))
-		goto err;
-	if (mlx4_comm_cmd(dev, MLX4_COMM_CMD_VHCR2, dma >> 16,
-						    MLX4_COMM_TIME))
-		goto err;
-	if (mlx4_comm_cmd(dev, MLX4_COMM_CMD_VHCR_EN, dma, MLX4_COMM_TIME))
-		goto err;
-	up(&priv->cmd.slave_sem);
-	return 0;
-
-err:
-	mlx4_comm_cmd(dev, MLX4_COMM_CMD_RESET, 0, 0);
-	up(&priv->cmd.slave_sem);
-	return -EIO;
-}
-
-static int mlx4_init_hca(struct mlx4_dev *dev)
-{
-	struct mlx4_priv	  *priv = mlx4_priv(dev);
-	struct mlx4_adapter	   adapter;
-	struct mlx4_dev_cap	   dev_cap;
-	struct mlx4_mod_stat_cfg   mlx4_cfg;
-	struct mlx4_profile	   profile;
-	struct mlx4_init_hca_param init_hca;
-	u64 icm_size;
-	int err;
-=======
 			     MLX4_COMM_CMD_NA_OP, MLX4_COMM_TIME))
 		goto err;
 	if (mlx4_comm_cmd(dev, MLX4_COMM_CMD_VHCR1, dma >> 32,
@@ -2852,34 +2292,21 @@ static int mlx4_init_fw(struct mlx4_dev *dev)
 {
 	struct mlx4_mod_stat_cfg   mlx4_cfg;
 	int err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mlx4_is_slave(dev)) {
 		err = mlx4_QUERY_FW(dev);
 		if (err) {
 			if (err == -EACCES)
-<<<<<<< HEAD
-				mlx4_info(dev, "non-primary physical function, skipping.\n");
-			else
-				mlx4_err(dev, "QUERY_FW command failed, aborting.\n");
-			goto unmap_bf;
-=======
 				mlx4_info(dev, "non-primary physical function, skipping\n");
 			else
 				mlx4_err(dev, "QUERY_FW command failed, aborting\n");
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		err = mlx4_load_fw(dev);
 		if (err) {
-<<<<<<< HEAD
-			mlx4_err(dev, "Failed to start FW, aborting.\n");
-			goto unmap_bf;
-=======
 			mlx4_err(dev, "Failed to start FW, aborting\n");
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		mlx4_cfg.log_pg_sz_m = 1;
@@ -2887,43 +2314,6 @@ static int mlx4_init_fw(struct mlx4_dev *dev)
 		err = mlx4_MOD_STAT_CFG(dev, &mlx4_cfg);
 		if (err)
 			mlx4_warn(dev, "Failed to override log_pg_sz parameter\n");
-<<<<<<< HEAD
-
-		err = mlx4_dev_cap(dev, &dev_cap);
-		if (err) {
-			mlx4_err(dev, "QUERY_DEV_CAP command failed, aborting.\n");
-			goto err_stop_fw;
-		}
-
-		profile = default_profile;
-
-		icm_size = mlx4_make_profile(dev, &profile, &dev_cap,
-					     &init_hca);
-		if ((long long) icm_size < 0) {
-			err = icm_size;
-			goto err_stop_fw;
-		}
-
-		dev->caps.max_fmr_maps = (1 << (32 - ilog2(dev->caps.num_mpts))) - 1;
-
-		init_hca.log_uar_sz = ilog2(dev->caps.num_uars);
-		init_hca.uar_page_sz = PAGE_SHIFT - 12;
-
-		err = mlx4_init_icm(dev, &dev_cap, &init_hca, icm_size);
-		if (err)
-			goto err_stop_fw;
-
-		err = mlx4_INIT_HCA(dev, &init_hca);
-		if (err) {
-			mlx4_err(dev, "INIT_HCA command failed, aborting.\n");
-			goto err_free_icm;
-		}
-	} else {
-		err = mlx4_init_slave(dev);
-		if (err) {
-			mlx4_err(dev, "Failed to initialize slave\n");
-			goto unmap_bf;
-=======
 	}
 
 	return err;
@@ -3076,7 +2466,6 @@ static int mlx4_init_hca(struct mlx4_dev *dev)
 			if (err != -EPROBE_DEFER)
 				mlx4_err(dev, "Failed to initialize slave\n");
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		err = mlx4_slave_cap(dev);
@@ -3095,19 +2484,6 @@ static int mlx4_init_hca(struct mlx4_dev *dev)
 
 	err = mlx4_QUERY_ADAPTER(dev, &adapter);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "QUERY_ADAPTER command failed, aborting.\n");
-		goto err_close;
-	}
-
-	priv->eq_table.inta_pin = adapter.inta_pin;
-	memcpy(dev->board_id, adapter.board_id, sizeof dev->board_id);
-
-	return 0;
-
-err_close:
-	mlx4_close_hca(dev);
-=======
 		mlx4_err(dev, "QUERY_ADAPTER command failed, aborting\n");
 		goto unmap_bf;
 	}
@@ -3138,45 +2514,26 @@ err_close:
 		mlx4_slave_exit(dev);
 	else
 		mlx4_CLOSE_HCA(dev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_free_icm:
 	if (!mlx4_is_slave(dev))
 		mlx4_free_icms(dev);
 
-<<<<<<< HEAD
-err_stop_fw:
-	if (!mlx4_is_slave(dev)) {
-		mlx4_UNMAP_FA(dev);
-		mlx4_free_icm(dev, priv->fw.fw_icm, 0);
-	}
-unmap_bf:
-	unmap_bf_area(dev);
-=======
 out_free:
 	kfree(dev_cap);
 	kfree(init_hca);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int mlx4_init_counters_table(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
-<<<<<<< HEAD
-	int nent;
-=======
 	int nent_pow2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(dev->caps.flags & MLX4_DEV_CAP_FLAG_COUNTERS))
 		return -ENOENT;
 
-<<<<<<< HEAD
-	nent = dev->caps.max_counters;
-	return mlx4_bitmap_init(&priv->counters_bitmap, nent, nent - 1, 0, 0);
-=======
 	if (!dev->caps.max_counters)
 		return -ENOSPC;
 
@@ -3185,17 +2542,10 @@ static int mlx4_init_counters_table(struct mlx4_dev *dev)
 	return mlx4_bitmap_init(&priv->counters_bitmap, nent_pow2,
 				nent_pow2 - 1, 0,
 				nent_pow2 - dev->caps.max_counters + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mlx4_cleanup_counters_table(struct mlx4_dev *dev)
 {
-<<<<<<< HEAD
-	mlx4_bitmap_cleanup(&mlx4_priv(dev)->counters_bitmap);
-}
-
-int mlx4_counter_alloc(struct mlx4_dev *dev, u32 *idx)
-=======
 	if (!(dev->caps.flags & MLX4_DEV_CAP_FLAG_COUNTERS))
 		return;
 
@@ -3253,7 +2603,6 @@ static int mlx4_allocate_default_counters(struct mlx4_dev *dev)
 }
 
 int __mlx4_counter_alloc(struct mlx4_dev *dev, u32 *idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 
@@ -3261,22 +2610,6 @@ int __mlx4_counter_alloc(struct mlx4_dev *dev, u32 *idx)
 		return -ENOENT;
 
 	*idx = mlx4_bitmap_alloc(&priv->counters_bitmap);
-<<<<<<< HEAD
-	if (*idx == -1)
-		return -ENOMEM;
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(mlx4_counter_alloc);
-
-void mlx4_counter_free(struct mlx4_dev *dev, u32 idx)
-{
-	mlx4_bitmap_free(&mlx4_priv(dev)->counters_bitmap, idx);
-	return;
-}
-EXPORT_SYMBOL_GPL(mlx4_counter_free);
-
-=======
 	if (*idx == -1) {
 		*idx = MLX4_SINK_COUNTER_INDEX(dev);
 		return -ENOSPC;
@@ -3392,7 +2725,6 @@ void mlx4_set_random_admin_guid(struct mlx4_dev *dev, int entry, int port)
 	priv->mfunc.master.vf_admin[entry].vport[port].guid = guid;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mlx4_setup_hca(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -3402,74 +2734,37 @@ static int mlx4_setup_hca(struct mlx4_dev *dev)
 
 	err = mlx4_init_uar_table(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to initialize "
-			 "user access region table, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to initialize user access region table, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	err = mlx4_uar_alloc(dev, &priv->driver_uar);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to allocate driver access region, "
-			 "aborting.\n");
-=======
 		mlx4_err(dev, "Failed to allocate driver access region, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_uar_table_free;
 	}
 
 	priv->kar = ioremap((phys_addr_t) priv->driver_uar.pfn << PAGE_SHIFT, PAGE_SIZE);
 	if (!priv->kar) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Couldn't map kernel access region, "
-			 "aborting.\n");
-=======
 		mlx4_err(dev, "Couldn't map kernel access region, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err_uar_free;
 	}
 
 	err = mlx4_init_pd_table(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to initialize "
-			 "protection domain table, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to initialize protection domain table, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_kar_unmap;
 	}
 
 	err = mlx4_init_xrcd_table(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to initialize "
-			 "reliable connection domain table, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to initialize reliable connection domain table, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_pd_table_free;
 	}
 
 	err = mlx4_init_mr_table(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to initialize "
-			 "memory region table, aborting.\n");
-		goto err_xrcd_table_free;
-	}
-
-	err = mlx4_init_eq_table(dev);
-	if (err) {
-		mlx4_err(dev, "Failed to initialize "
-			 "event queue table, aborting.\n");
-		goto err_mr_table_free;
-=======
 		mlx4_err(dev, "Failed to initialize memory region table, aborting\n");
 		goto err_xrcd_table_free;
 	}
@@ -3491,40 +2786,23 @@ static int mlx4_setup_hca(struct mlx4_dev *dev)
 	if (err) {
 		mlx4_err(dev, "Failed to initialize event queue table, aborting\n");
 		goto err_mcg_table_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = mlx4_cmd_use_events(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to switch to event-driven "
-			 "firmware commands, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to switch to event-driven firmware commands, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_eq_table_free;
 	}
 
 	err = mlx4_NOP(dev);
 	if (err) {
 		if (dev->flags & MLX4_FLAG_MSI_X) {
-<<<<<<< HEAD
-			mlx4_warn(dev, "NOP command failed to generate MSI-X "
-				  "interrupt IRQ %d).\n",
-				  priv->eq_table.eq[dev->caps.num_comp_vectors].irq);
-			mlx4_warn(dev, "Trying again without MSI-X.\n");
-		} else {
-			mlx4_err(dev, "NOP command failed to generate interrupt "
-				 "(IRQ %d), aborting.\n",
-				 priv->eq_table.eq[dev->caps.num_comp_vectors].irq);
-=======
 			mlx4_warn(dev, "NOP command failed to generate MSI-X interrupt IRQ %d)\n",
 				  priv->eq_table.eq[MLX4_EQ_ASYNC].irq);
 			mlx4_warn(dev, "Trying again without MSI-X\n");
 		} else {
 			mlx4_err(dev, "NOP command failed to generate interrupt (IRQ %d), aborting\n",
 				 priv->eq_table.eq[MLX4_EQ_ASYNC].irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlx4_err(dev, "BIOS or ACPI interrupt routing problem?\n");
 		}
 
@@ -3535,63 +2813,34 @@ static int mlx4_setup_hca(struct mlx4_dev *dev)
 
 	err = mlx4_init_cq_table(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to initialize "
-			 "completion queue table, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to initialize completion queue table, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_cmd_poll;
 	}
 
 	err = mlx4_init_srq_table(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to initialize "
-			 "shared receive queue table, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to initialize shared receive queue table, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_cq_table_free;
 	}
 
 	err = mlx4_init_qp_table(dev);
 	if (err) {
-<<<<<<< HEAD
-		mlx4_err(dev, "Failed to initialize "
-			 "queue pair table, aborting.\n");
-=======
 		mlx4_err(dev, "Failed to initialize queue pair table, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_srq_table_free;
 	}
 
 	if (!mlx4_is_slave(dev)) {
-<<<<<<< HEAD
-		err = mlx4_init_mcg_table(dev);
-		if (err) {
-			mlx4_err(dev, "Failed to initialize "
-				 "multicast group table, aborting.\n");
-=======
 		err = mlx4_init_counters_table(dev);
 		if (err && err != -ENOENT) {
 			mlx4_err(dev, "Failed to initialize counters table, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_qp_table_free;
 		}
 	}
 
-<<<<<<< HEAD
-	err = mlx4_init_counters_table(dev);
-	if (err && err != -ENOENT) {
-		mlx4_err(dev, "Failed to initialize counters table, aborting.\n");
-		goto err_mcg_table_free;
-=======
 	err = mlx4_allocate_default_counters(dev);
 	if (err) {
 		mlx4_err(dev, "Failed to allocate default counters, aborting\n");
 		goto err_counters_table_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!mlx4_is_slave(dev)) {
@@ -3600,13 +2849,6 @@ static int mlx4_setup_hca(struct mlx4_dev *dev)
 			err = mlx4_get_port_ib_caps(dev, port,
 						    &ib_port_default_caps);
 			if (err)
-<<<<<<< HEAD
-				mlx4_warn(dev, "failed to get port %d default "
-					  "ib capabilities (%d). Continuing "
-					  "with caps = 0\n", port, err);
-			dev->caps.ib_port_def_cap[port] = ib_port_default_caps;
-
-=======
 				mlx4_warn(dev, "failed to get port %d default ib capabilities (%d). Continuing with caps = 0\n",
 					  port, err);
 			dev->caps.ib_port_def_cap[port] = ib_port_default_caps;
@@ -3622,46 +2864,29 @@ static int mlx4_setup_hca(struct mlx4_dev *dev)
 				}
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (mlx4_is_mfunc(dev))
 				dev->caps.port_ib_mtu[port] = IB_MTU_2048;
 			else
 				dev->caps.port_ib_mtu[port] = IB_MTU_4096;
 
-<<<<<<< HEAD
-			err = mlx4_SET_PORT(dev, port);
-			if (err) {
-				mlx4_err(dev, "Failed to set port %d, aborting\n",
-					port);
-				goto err_counters_table_free;
-=======
 			err = mlx4_SET_PORT(dev, port, mlx4_is_master(dev) ?
 					    dev->caps.pkey_table_len[port] : -1);
 			if (err) {
 				mlx4_err(dev, "Failed to set port %d, aborting\n",
 					 port);
 				goto err_default_countes_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
 	return 0;
 
-<<<<<<< HEAD
-err_counters_table_free:
-	mlx4_cleanup_counters_table(dev);
-
-err_mcg_table_free:
-	mlx4_cleanup_mcg_table(dev);
-=======
 err_default_countes_free:
 	mlx4_cleanup_default_counters(dev);
 
 err_counters_table_free:
 	if (!mlx4_is_slave(dev))
 		mlx4_cleanup_counters_table(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_qp_table_free:
 	mlx4_cleanup_qp_table(dev);
@@ -3678,13 +2903,10 @@ err_cmd_poll:
 err_eq_table_free:
 	mlx4_cleanup_eq_table(dev);
 
-<<<<<<< HEAD
-=======
 err_mcg_table_free:
 	if (!mlx4_is_slave(dev))
 		mlx4_cleanup_mcg_table(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_mr_table_free:
 	mlx4_cleanup_mr_table(dev);
 
@@ -3705,8 +2927,6 @@ err_uar_table_free:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int mlx4_init_affinity_hint(struct mlx4_dev *dev, int port, int eqn)
 {
 	int requested_cpu = 0;
@@ -3737,24 +2957,10 @@ static int mlx4_init_affinity_hint(struct mlx4_dev *dev, int port, int eqn)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mlx4_enable_msi_x(struct mlx4_dev *dev)
 {
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct msix_entry *entries;
-<<<<<<< HEAD
-	int nreq = min_t(int, dev->caps.num_ports *
-			 min_t(int, num_online_cpus() + 1, MAX_MSIX_P_PORT)
-				+ MSIX_LEGACY_SZ, MAX_MSIX);
-	int err;
-	int i;
-
-	if (msi_x) {
-		nreq = min_t(int, dev->caps.num_eqs - dev->caps.reserved_eqs,
-			     nreq);
-
-		entries = kcalloc(nreq, sizeof *entries, GFP_KERNEL);
-=======
 	int i;
 	int port = 0;
 
@@ -3768,41 +2974,12 @@ static void mlx4_enable_msi_x(struct mlx4_dev *dev)
 			nreq = min_t(int, nreq, msi_x);
 
 		entries = kcalloc(nreq, sizeof(*entries), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!entries)
 			goto no_msi;
 
 		for (i = 0; i < nreq; ++i)
 			entries[i].entry = i;
 
-<<<<<<< HEAD
-	retry:
-		err = pci_enable_msix(dev->pdev, entries, nreq);
-		if (err) {
-			/* Try again if at least 2 vectors are available */
-			if (err > 1) {
-				mlx4_info(dev, "Requested %d vectors, "
-					  "but only %d MSI-X vectors available, "
-					  "trying again\n", nreq, err);
-				nreq = err;
-				goto retry;
-			}
-			kfree(entries);
-			goto no_msi;
-		}
-
-		if (nreq <
-		    MSIX_LEGACY_SZ + dev->caps.num_ports * MIN_MSIX_P_PORT) {
-			/*Working in legacy mode , all EQ's shared*/
-			dev->caps.comp_pool           = 0;
-			dev->caps.num_comp_vectors = nreq - 1;
-		} else {
-			dev->caps.comp_pool           = nreq - MSIX_LEGACY_SZ;
-			dev->caps.num_comp_vectors = MSIX_LEGACY_SZ - 1;
-		}
-		for (i = 0; i < nreq; ++i)
-			priv->eq_table.eq[i].irq = entries[i].vector;
-=======
 		nreq = pci_enable_msix_range(dev->persist->pdev, entries, 2,
 					     nreq);
 
@@ -3855,7 +3032,6 @@ static void mlx4_enable_msi_x(struct mlx4_dev *dev)
 				 */
 				port++;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev->flags |= MLX4_FLAG_MSI_X;
 
@@ -3865,18 +3041,6 @@ static void mlx4_enable_msi_x(struct mlx4_dev *dev)
 
 no_msi:
 	dev->caps.num_comp_vectors = 1;
-<<<<<<< HEAD
-	dev->caps.comp_pool	   = 0;
-
-	for (i = 0; i < 2; ++i)
-		priv->eq_table.eq[i].irq = dev->pdev->irq;
-}
-
-static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
-{
-	struct mlx4_port_info *info = &mlx4_priv(dev)->port[port];
-	int err = 0;
-=======
 
 	BUG_ON(MLX4_EQ_ASYNC >= 2);
 	for (i = 0; i < 2; ++i) {
@@ -3938,50 +3102,27 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
 	else if (!IS_ENABLED(CONFIG_MLX4_INFINIBAND) &&
 		 dev->caps.port_type[port] == MLX4_PORT_TYPE_IB)
 		devlink_port_type_ib_set(&info->devlink_port, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->dev = dev;
 	info->port = port;
 	if (!mlx4_is_slave(dev)) {
-<<<<<<< HEAD
-		INIT_RADIX_TREE(&info->mac_tree, GFP_KERNEL);
-		mlx4_init_mac_table(dev, &info->mac_table);
-		mlx4_init_vlan_table(dev, &info->vlan_table);
-		info->base_qpn =
-			dev->caps.reserved_qps_base[MLX4_QP_REGION_ETH_ADDR] +
-			(port - 1) * (1 << log_num_mac);
-=======
 		mlx4_init_mac_table(dev, &info->mac_table);
 		mlx4_init_vlan_table(dev, &info->vlan_table);
 		mlx4_init_roce_gid_table(dev, &info->gid_table);
 		info->base_qpn = mlx4_get_base_qpn(dev, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sprintf(info->dev_name, "mlx4_port%d", port);
 	info->port_attr.attr.name = info->dev_name;
-<<<<<<< HEAD
-	if (mlx4_is_mfunc(dev))
-		info->port_attr.attr.mode = S_IRUGO;
-	else {
-		info->port_attr.attr.mode = S_IRUGO | S_IWUSR;
-=======
 	if (mlx4_is_mfunc(dev)) {
 		info->port_attr.attr.mode = 0444;
 	} else {
 		info->port_attr.attr.mode = 0644;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->port_attr.store     = set_port_type;
 	}
 	info->port_attr.show      = show_port_type;
 	sysfs_attr_init(&info->port_attr.attr);
 
-<<<<<<< HEAD
-	err = device_create_file(&dev->pdev->dev, &info->port_attr);
-	if (err) {
-		mlx4_err(dev, "Failed to create file for port %d\n", port);
-		info->port = -1;
-=======
 	err = device_create_file(&dev->persist->pdev->dev, &info->port_attr);
 	if (err) {
 		mlx4_err(dev, "Failed to create file for port %d\n", port);
@@ -3989,37 +3130,19 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
 		devl_port_unregister(&info->devlink_port);
 		info->port = -1;
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sprintf(info->dev_mtu_name, "mlx4_port%d_mtu", port);
 	info->port_mtu_attr.attr.name = info->dev_mtu_name;
-<<<<<<< HEAD
-	if (mlx4_is_mfunc(dev))
-		info->port_mtu_attr.attr.mode = S_IRUGO;
-	else {
-		info->port_mtu_attr.attr.mode = S_IRUGO | S_IWUSR;
-=======
 	if (mlx4_is_mfunc(dev)) {
 		info->port_mtu_attr.attr.mode = 0444;
 	} else {
 		info->port_mtu_attr.attr.mode = 0644;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->port_mtu_attr.store     = set_port_ib_mtu;
 	}
 	info->port_mtu_attr.show      = show_port_ib_mtu;
 	sysfs_attr_init(&info->port_mtu_attr.attr);
 
-<<<<<<< HEAD
-	err = device_create_file(&dev->pdev->dev, &info->port_mtu_attr);
-	if (err) {
-		mlx4_err(dev, "Failed to create mtu file for port %d\n", port);
-		device_remove_file(&info->dev->pdev->dev, &info->port_attr);
-		info->port = -1;
-	}
-
-	return err;
-=======
 	err = device_create_file(&dev->persist->pdev->dev,
 				 &info->port_mtu_attr);
 	if (err) {
@@ -4033,7 +3156,6 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mlx4_cleanup_port_info(struct mlx4_port_info *info)
@@ -4041,10 +3163,6 @@ static void mlx4_cleanup_port_info(struct mlx4_port_info *info)
 	if (info->port < 0)
 		return;
 
-<<<<<<< HEAD
-	device_remove_file(&info->dev->pdev->dev, &info->port_attr);
-	device_remove_file(&info->dev->pdev->dev, &info->port_mtu_attr);
-=======
 	device_remove_file(&info->dev->persist->pdev->dev, &info->port_attr);
 	device_remove_file(&info->dev->persist->pdev->dev,
 			   &info->port_mtu_attr);
@@ -4055,7 +3173,6 @@ static void mlx4_cleanup_port_info(struct mlx4_port_info *info)
 	free_irq_cpu_rmap(info->rmap);
 	info->rmap = NULL;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mlx4_init_steering(struct mlx4_dev *dev)
@@ -4064,12 +3181,8 @@ static int mlx4_init_steering(struct mlx4_dev *dev)
 	int num_entries = dev->caps.num_ports;
 	int i, j;
 
-<<<<<<< HEAD
-	priv->steer = kzalloc(sizeof(struct mlx4_steer) * num_entries, GFP_KERNEL);
-=======
 	priv->steer = kcalloc(num_entries, sizeof(struct mlx4_steer),
 			      GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv->steer)
 		return -ENOMEM;
 
@@ -4127,15 +3240,11 @@ static int mlx4_get_ownership(struct mlx4_dev *dev)
 	void __iomem *owner;
 	u32 ret;
 
-<<<<<<< HEAD
-	owner = ioremap(pci_resource_start(dev->pdev, 0) + MLX4_OWNER_BASE,
-=======
 	if (pci_channel_offline(dev->persist->pdev))
 		return -EIO;
 
 	owner = ioremap(pci_resource_start(dev->persist->pdev, 0) +
 			MLX4_OWNER_BASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MLX4_OWNER_SIZE);
 	if (!owner) {
 		mlx4_err(dev, "Failed to obtain ownership bit\n");
@@ -4151,15 +3260,11 @@ static void mlx4_free_ownership(struct mlx4_dev *dev)
 {
 	void __iomem *owner;
 
-<<<<<<< HEAD
-	owner = ioremap(pci_resource_start(dev->pdev, 0) + MLX4_OWNER_BASE,
-=======
 	if (pci_channel_offline(dev->persist->pdev))
 		return;
 
 	owner = ioremap(pci_resource_start(dev->persist->pdev, 0) +
 			MLX4_OWNER_BASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MLX4_OWNER_SIZE);
 	if (!owner) {
 		mlx4_err(dev, "Failed to obtain ownership bit\n");
@@ -4170,35 +3275,6 @@ static void mlx4_free_ownership(struct mlx4_dev *dev)
 	iounmap(owner);
 }
 
-<<<<<<< HEAD
-static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data)
-{
-	struct mlx4_priv *priv;
-	struct mlx4_dev *dev;
-	int err;
-	int port;
-
-	pr_info(DRV_NAME ": Initializing %s\n", pci_name(pdev));
-
-	err = pci_enable_device(pdev);
-	if (err) {
-		dev_err(&pdev->dev, "Cannot enable PCI device, "
-			"aborting.\n");
-		return err;
-	}
-	if (num_vfs > MLX4_MAX_NUM_VF) {
-		printk(KERN_ERR "There are more VF's (%d) than allowed(%d)\n",
-		       num_vfs, MLX4_MAX_NUM_VF);
-		return -EINVAL;
-	}
-	/*
-	 * Check for BARs.
-	 */
-	if (!(pci_dev_data & MLX4_PCI_DEV_IS_VF) &&
-	    !(pci_resource_flags(pdev, 0) & IORESOURCE_MEM)) {
-		dev_err(&pdev->dev, "Missing DCS, aborting."
-			"(driver_data: 0x%x, pci_resource_flags(pdev, 0):0x%lx)\n",
-=======
 #define SRIOV_VALID_STATE(flags) (!!((flags) & MLX4_FLAG_SRIOV)	==\
 				  !!((flags) & MLX4_FLAG_MASTER))
 
@@ -4777,17 +3853,12 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
 	if (!(pci_dev_data & MLX4_PCI_DEV_IS_VF) &&
 	    !(pci_resource_flags(pdev, 0) & IORESOURCE_MEM)) {
 		dev_err(&pdev->dev, "Missing DCS, aborting (driver_data: 0x%x, pci_resource_flags(pdev, 0):0x%lx)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_dev_data, pci_resource_flags(pdev, 0));
 		err = -ENODEV;
 		goto err_disable_pdev;
 	}
 	if (!(pci_resource_flags(pdev, 2) & IORESOURCE_MEM)) {
-<<<<<<< HEAD
-		dev_err(&pdev->dev, "Missing UAR, aborting.\n");
-=======
 		dev_err(&pdev->dev, "Missing UAR, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto err_disable_pdev;
 	}
@@ -4800,131 +3871,18 @@ static int __mlx4_init_one(struct pci_dev *pdev, int pci_dev_data,
 
 	pci_set_master(pdev);
 
-<<<<<<< HEAD
-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-	if (err) {
-		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit PCI DMA mask.\n");
-		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (err) {
-			dev_err(&pdev->dev, "Can't set PCI DMA mask, aborting.\n");
-			goto err_release_regions;
-		}
-	}
-	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-	if (err) {
-		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit "
-			 "consistent PCI DMA mask.\n");
-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (err) {
-			dev_err(&pdev->dev, "Can't set consistent PCI DMA mask, "
-				"aborting.\n");
-=======
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err) {
 		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit PCI DMA mask\n");
 		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 		if (err) {
 			dev_err(&pdev->dev, "Can't set PCI DMA mask, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_release_regions;
 		}
 	}
 
 	/* Allow large DMA segments, up to the firmware limit of 1 GB */
 	dma_set_max_seg_size(&pdev->dev, 1024 * 1024 * 1024);
-<<<<<<< HEAD
-
-	dev       = pci_get_drvdata(pdev);
-	priv      = mlx4_priv(dev);
-	dev->pdev = pdev;
-	INIT_LIST_HEAD(&priv->ctx_list);
-	spin_lock_init(&priv->ctx_lock);
-
-	mutex_init(&priv->port_mutex);
-
-	INIT_LIST_HEAD(&priv->pgdir_list);
-	mutex_init(&priv->pgdir_mutex);
-
-	INIT_LIST_HEAD(&priv->bf_list);
-	mutex_init(&priv->bf_mutex);
-
-	dev->rev_id = pdev->revision;
-	/* Detect if this device is a virtual function */
-	if (pci_dev_data & MLX4_PCI_DEV_IS_VF) {
-		/* When acting as pf, we normally skip vfs unless explicitly
-		 * requested to probe them. */
-		if (num_vfs && extended_func_num(pdev) > probe_vf) {
-			mlx4_warn(dev, "Skipping virtual function:%d\n",
-						extended_func_num(pdev));
-			err = -ENODEV;
-			goto err_free_dev;
-		}
-		mlx4_warn(dev, "Detected virtual function - running in slave mode\n");
-		dev->flags |= MLX4_FLAG_SLAVE;
-	} else {
-		/* We reset the device and enable SRIOV only for physical
-		 * devices.  Try to claim ownership on the device;
-		 * if already taken, skip -- do not allow multiple PFs */
-		err = mlx4_get_ownership(dev);
-		if (err) {
-			if (err < 0)
-				goto err_free_dev;
-			else {
-				mlx4_warn(dev, "Multiple PFs not yet supported."
-					  " Skipping PF.\n");
-				err = -EINVAL;
-				goto err_free_dev;
-			}
-		}
-
-		if (num_vfs) {
-			mlx4_warn(dev, "Enabling sriov with:%d vfs\n", num_vfs);
-			err = pci_enable_sriov(pdev, num_vfs);
-			if (err) {
-				mlx4_err(dev, "Failed to enable sriov,"
-					 "continuing without sriov enabled"
-					 " (err = %d).\n", err);
-				num_vfs = 0;
-				err = 0;
-			} else {
-				mlx4_warn(dev, "Running in master mode\n");
-				dev->flags |= MLX4_FLAG_SRIOV |
-					      MLX4_FLAG_MASTER;
-				dev->num_vfs = num_vfs;
-			}
-		}
-
-		/*
-		 * Now reset the HCA before we touch the PCI capabilities or
-		 * attempt a firmware command, since a boot ROM may have left
-		 * the HCA in an undefined state.
-		 */
-		err = mlx4_reset(dev);
-		if (err) {
-			mlx4_err(dev, "Failed to reset HCA, aborting.\n");
-			goto err_rel_own;
-		}
-	}
-
-slave_start:
-	if (mlx4_cmd_init(dev)) {
-		mlx4_err(dev, "Failed to init command interface, aborting.\n");
-		goto err_sriov;
-	}
-
-	/* In slave functions, the communication channel must be initialized
-	 * before posting commands. Also, init num_slaves before calling
-	 * mlx4_init_hca */
-	if (mlx4_is_mfunc(dev)) {
-		if (mlx4_is_master(dev))
-			dev->num_slaves = MLX4_MAX_NUM_SLAVES;
-		else {
-			dev->num_slaves = 0;
-			if (mlx4_multi_func_init(dev)) {
-				mlx4_err(dev, "Failed to init slave mfunc"
-					 " interface, aborting.\n");
-				goto err_cmd;
-=======
 	/* Detect if this device is a virtual function */
 	if (pci_dev_data & MLX4_PCI_DEV_IS_VF) {
 		/* When acting as pf, we normally skip vfs unless explicitly
@@ -4947,135 +3905,10 @@ slave_start:
 					 extended_func_num(pdev));
 				err = -ENODEV;
 				goto err_release_regions;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
-<<<<<<< HEAD
-	err = mlx4_init_hca(dev);
-	if (err) {
-		if (err == -EACCES) {
-			/* Not primary Physical function
-			 * Running in slave mode */
-			mlx4_cmd_cleanup(dev);
-			dev->flags |= MLX4_FLAG_SLAVE;
-			dev->flags &= ~MLX4_FLAG_MASTER;
-			goto slave_start;
-		} else
-			goto err_mfunc;
-	}
-
-	/* In master functions, the communication channel must be initialized
-	 * after obtaining its address from fw */
-	if (mlx4_is_master(dev)) {
-		if (mlx4_multi_func_init(dev)) {
-			mlx4_err(dev, "Failed to init master mfunc"
-				 "interface, aborting.\n");
-			goto err_close;
-		}
-	}
-
-	err = mlx4_alloc_eq_table(dev);
-	if (err)
-		goto err_master_mfunc;
-
-	priv->msix_ctl.pool_bm = 0;
-	mutex_init(&priv->msix_ctl.pool_lock);
-
-	mlx4_enable_msi_x(dev);
-	if ((mlx4_is_mfunc(dev)) &&
-	    !(dev->flags & MLX4_FLAG_MSI_X)) {
-		mlx4_err(dev, "INTx is not supported in multi-function mode."
-			 " aborting.\n");
-		goto err_free_eq;
-	}
-
-	if (!mlx4_is_slave(dev)) {
-		err = mlx4_init_steering(dev);
-		if (err)
-			goto err_free_eq;
-	}
-
-	err = mlx4_setup_hca(dev);
-	if (err == -EBUSY && (dev->flags & MLX4_FLAG_MSI_X) &&
-	    !mlx4_is_mfunc(dev)) {
-		dev->flags &= ~MLX4_FLAG_MSI_X;
-		pci_disable_msix(pdev);
-		err = mlx4_setup_hca(dev);
-	}
-
-	if (err)
-		goto err_steer;
-
-	for (port = 1; port <= dev->caps.num_ports; port++) {
-		err = mlx4_init_port_info(dev, port);
-		if (err)
-			goto err_port;
-	}
-
-	err = mlx4_register_device(dev);
-	if (err)
-		goto err_port;
-
-	mlx4_sense_init(dev);
-	mlx4_start_sense(dev);
-
-	priv->removed = 0;
-
-	return 0;
-
-err_port:
-	for (--port; port >= 1; --port)
-		mlx4_cleanup_port_info(&priv->port[port]);
-
-	mlx4_cleanup_counters_table(dev);
-	mlx4_cleanup_mcg_table(dev);
-	mlx4_cleanup_qp_table(dev);
-	mlx4_cleanup_srq_table(dev);
-	mlx4_cleanup_cq_table(dev);
-	mlx4_cmd_use_polling(dev);
-	mlx4_cleanup_eq_table(dev);
-	mlx4_cleanup_mr_table(dev);
-	mlx4_cleanup_xrcd_table(dev);
-	mlx4_cleanup_pd_table(dev);
-	mlx4_cleanup_uar_table(dev);
-
-err_steer:
-	if (!mlx4_is_slave(dev))
-		mlx4_clear_steering(dev);
-
-err_free_eq:
-	mlx4_free_eq_table(dev);
-
-err_master_mfunc:
-	if (mlx4_is_master(dev))
-		mlx4_multi_func_cleanup(dev);
-
-err_close:
-	if (dev->flags & MLX4_FLAG_MSI_X)
-		pci_disable_msix(pdev);
-
-	mlx4_close_hca(dev);
-
-err_mfunc:
-	if (mlx4_is_slave(dev))
-		mlx4_multi_func_cleanup(dev);
-
-err_cmd:
-	mlx4_cmd_cleanup(dev);
-
-err_sriov:
-	if (num_vfs && (dev->flags & MLX4_FLAG_SRIOV))
-		pci_disable_sriov(pdev);
-
-err_rel_own:
-	if (!mlx4_is_slave(dev))
-		mlx4_free_ownership(dev);
-
-err_free_dev:
-	kfree(priv);
-=======
 	err = mlx4_crdump_init(&priv->dev);
 	if (err)
 		goto err_release_regions;
@@ -5095,56 +3928,11 @@ err_catas:
 
 err_crdump:
 	mlx4_crdump_end(&priv->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_release_regions:
 	pci_release_regions(pdev);
 
 err_disable_pdev:
-<<<<<<< HEAD
-	pci_disable_device(pdev);
-	pci_set_drvdata(pdev, NULL);
-	return err;
-}
-
-static int __devinit mlx4_init_one(struct pci_dev *pdev,
-				   const struct pci_device_id *id)
-{
-	struct mlx4_priv *priv;
-	struct mlx4_dev *dev;
-
-	printk_once(KERN_INFO "%s", mlx4_version);
-
-	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-	if (!priv)
-		return -ENOMEM;
-
-	dev       = &priv->dev;
-	pci_set_drvdata(pdev, dev);
-	priv->pci_dev_data = id->driver_data;
-
-	return __mlx4_init_one(pdev, id->driver_data);
-}
-
-static void __mlx4_remove_one(struct pci_dev *pdev)
-{
-	struct mlx4_dev  *dev  = pci_get_drvdata(pdev);
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	int               pci_dev_data;
-	int p;
-
-	if (priv->removed)
-		return;
-
-	pci_dev_data = priv->pci_dev_data;
-
-	/* in SRIOV it is not allowed to unload the pf's
-	 * driver while there are alive vf's */
-	if (mlx4_is_master(dev)) {
-		if (mlx4_how_many_lives_vf(dev))
-			printk(KERN_ERR "Removing PF when there are assigned VF's !!!\n");
-	}
-=======
 	mlx4_pci_disable_device(&priv->dev);
 	return err;
 }
@@ -5326,7 +4114,6 @@ static void mlx4_unload_one(struct pci_dev *pdev)
 
 	pci_dev_data = priv->pci_dev_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_stop_sense(dev);
 	mlx4_unregister_device(dev);
 
@@ -5335,10 +4122,6 @@ static void mlx4_unload_one(struct pci_dev *pdev)
 		mlx4_CLOSE_PORT(dev, p);
 	}
 
-<<<<<<< HEAD
-	mlx4_cleanup_counters_table(dev);
-	mlx4_cleanup_mcg_table(dev);
-=======
 	if (mlx4_is_master(dev))
 		mlx4_free_resource_tracker(dev,
 					   RES_TR_FREE_SLAVES_ONLY);
@@ -5346,27 +4129,19 @@ static void mlx4_unload_one(struct pci_dev *pdev)
 	mlx4_cleanup_default_counters(dev);
 	if (!mlx4_is_slave(dev))
 		mlx4_cleanup_counters_table(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_cleanup_qp_table(dev);
 	mlx4_cleanup_srq_table(dev);
 	mlx4_cleanup_cq_table(dev);
 	mlx4_cmd_use_polling(dev);
 	mlx4_cleanup_eq_table(dev);
-<<<<<<< HEAD
-=======
 	mlx4_cleanup_mcg_table(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_cleanup_mr_table(dev);
 	mlx4_cleanup_xrcd_table(dev);
 	mlx4_cleanup_pd_table(dev);
 
 	if (mlx4_is_master(dev))
-<<<<<<< HEAD
-		mlx4_free_resource_tracker(dev);
-=======
 		mlx4_free_resource_tracker(dev,
 					   RES_TR_FREE_STRUCTS_ONLY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iounmap(priv->kar);
 	mlx4_uar_free(dev, &priv->driver_uar);
@@ -5377,18 +4152,6 @@ static void mlx4_unload_one(struct pci_dev *pdev)
 	if (mlx4_is_master(dev))
 		mlx4_multi_func_cleanup(dev);
 	mlx4_close_hca(dev);
-<<<<<<< HEAD
-	if (mlx4_is_slave(dev))
-		mlx4_multi_func_cleanup(dev);
-	mlx4_cmd_cleanup(dev);
-
-	if (dev->flags & MLX4_FLAG_MSI_X)
-		pci_disable_msix(pdev);
-	if (num_vfs && (dev->flags & MLX4_FLAG_SRIOV)) {
-		mlx4_warn(dev, "Disabling sriov\n");
-		pci_disable_sriov(pdev);
-	}
-=======
 	mlx4_close_fw(dev);
 	if (mlx4_is_slave(dev))
 		mlx4_multi_func_cleanup(dev);
@@ -5396,37 +4159,22 @@ static void mlx4_unload_one(struct pci_dev *pdev)
 
 	if (dev->flags & MLX4_FLAG_MSI_X)
 		pci_disable_msix(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mlx4_is_slave(dev))
 		mlx4_free_ownership(dev);
 
-<<<<<<< HEAD
-	pci_release_regions(pdev);
-	pci_disable_device(pdev);
-	memset(priv, 0, sizeof(*priv));
-=======
 	mlx4_slave_destroy_special_qp_cap(dev);
 	kfree(dev->dev_vfs);
 
 	mlx4_adev_cleanup(dev);
 
 	mlx4_clean_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->pci_dev_data = pci_dev_data;
 	priv->removed = 1;
 }
 
 static void mlx4_remove_one(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	struct mlx4_dev  *dev  = pci_get_drvdata(pdev);
-	struct mlx4_priv *priv = mlx4_priv(dev);
-
-	__mlx4_remove_one(pdev);
-	kfree(priv);
-	pci_set_drvdata(pdev, NULL);
-=======
 	struct mlx4_dev_persistent *persist = pci_get_drvdata(pdev);
 	struct mlx4_dev  *dev  = persist->dev;
 	struct mlx4_priv *priv = mlx4_priv(dev);
@@ -5528,65 +4276,10 @@ static int mlx4_restart_one_up(struct pci_dev *pdev, bool reload,
 			 err);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mlx4_restart_one(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	struct mlx4_dev	 *dev  = pci_get_drvdata(pdev);
-	struct mlx4_priv *priv = mlx4_priv(dev);
-	int		  pci_dev_data;
-
-	pci_dev_data = priv->pci_dev_data;
-	__mlx4_remove_one(pdev);
-	return __mlx4_init_one(pdev, pci_dev_data);
-}
-
-static DEFINE_PCI_DEVICE_TABLE(mlx4_pci_table) = {
-	/* MT25408 "Hermon" SDR */
-	{ PCI_VDEVICE(MELLANOX, 0x6340), 0 },
-	/* MT25408 "Hermon" DDR */
-	{ PCI_VDEVICE(MELLANOX, 0x634a), 0 },
-	/* MT25408 "Hermon" QDR */
-	{ PCI_VDEVICE(MELLANOX, 0x6354), 0 },
-	/* MT25408 "Hermon" DDR PCIe gen2 */
-	{ PCI_VDEVICE(MELLANOX, 0x6732), 0 },
-	/* MT25408 "Hermon" QDR PCIe gen2 */
-	{ PCI_VDEVICE(MELLANOX, 0x673c), 0 },
-	/* MT25408 "Hermon" EN 10GigE */
-	{ PCI_VDEVICE(MELLANOX, 0x6368), 0 },
-	/* MT25408 "Hermon" EN 10GigE PCIe gen2 */
-	{ PCI_VDEVICE(MELLANOX, 0x6750), 0 },
-	/* MT25458 ConnectX EN 10GBASE-T 10GigE */
-	{ PCI_VDEVICE(MELLANOX, 0x6372), 0 },
-	/* MT25458 ConnectX EN 10GBASE-T+Gen2 10GigE */
-	{ PCI_VDEVICE(MELLANOX, 0x675a), 0 },
-	/* MT26468 ConnectX EN 10GigE PCIe gen2*/
-	{ PCI_VDEVICE(MELLANOX, 0x6764), 0 },
-	/* MT26438 ConnectX EN 40GigE PCIe gen2 5GT/s */
-	{ PCI_VDEVICE(MELLANOX, 0x6746), 0 },
-	/* MT26478 ConnectX2 40GigE PCIe gen2 */
-	{ PCI_VDEVICE(MELLANOX, 0x676e), 0 },
-	/* MT25400 Family [ConnectX-2 Virtual Function] */
-	{ PCI_VDEVICE(MELLANOX, 0x1002), MLX4_PCI_DEV_IS_VF },
-	/* MT27500 Family [ConnectX-3] */
-	{ PCI_VDEVICE(MELLANOX, 0x1003), 0 },
-	/* MT27500 Family [ConnectX-3 Virtual Function] */
-	{ PCI_VDEVICE(MELLANOX, 0x1004), MLX4_PCI_DEV_IS_VF },
-	{ PCI_VDEVICE(MELLANOX, 0x1005), 0 }, /* MT27510 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x1006), 0 }, /* MT27511 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x1007), 0 }, /* MT27520 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x1008), 0 }, /* MT27521 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x1009), 0 }, /* MT27530 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x100a), 0 }, /* MT27531 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x100b), 0 }, /* MT27540 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x100c), 0 }, /* MT27541 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x100d), 0 }, /* MT27550 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x100e), 0 }, /* MT27551 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x100f), 0 }, /* MT27560 Family */
-	{ PCI_VDEVICE(MELLANOX, 0x1010), 0 }, /* MT27561 Family */
-=======
 	mlx4_restart_one_down(pdev);
 	return mlx4_restart_one_up(pdev, false, NULL);
 }
@@ -5638,14 +4331,11 @@ static const struct pci_device_id mlx4_pci_table[] = {
 	 * adding devices
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, }
 };
 
 MODULE_DEVICE_TABLE(pci, mlx4_pci_table);
 
-<<<<<<< HEAD
-=======
 static pci_ers_result_t mlx4_pci_err_detected(struct pci_dev *pdev,
 					      pci_channel_state_t state)
 {
@@ -5806,27 +4496,18 @@ static int __maybe_unused mlx4_resume(struct device *dev_d)
 
 static SIMPLE_DEV_PM_OPS(mlx4_pm_ops, mlx4_suspend, mlx4_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver mlx4_driver = {
 	.name		= DRV_NAME,
 	.id_table	= mlx4_pci_table,
 	.probe		= mlx4_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(mlx4_remove_one)
-=======
 	.shutdown	= mlx4_shutdown,
 	.remove		= mlx4_remove_one,
 	.driver.pm	= &mlx4_pm_ops,
 	.err_handler    = &mlx4_err_handler,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init mlx4_verify_params(void)
 {
-<<<<<<< HEAD
-	if ((log_num_mac < 0) || (log_num_mac > 7)) {
-		pr_warning("mlx4_core: bad num_mac: %d\n", log_num_mac);
-=======
 	if (msi_x < 0) {
 		pr_warn("mlx4_core: bad msi_x: %d\n", msi_x);
 		return -1;
@@ -5834,18 +4515,10 @@ static int __init mlx4_verify_params(void)
 
 	if ((log_num_mac < 0) || (log_num_mac > 7)) {
 		pr_warn("mlx4_core: bad num_mac: %d\n", log_num_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
 	if (log_num_vlan != 0)
-<<<<<<< HEAD
-		pr_warning("mlx4_core: log_num_vlan - obsolete module param, using %d\n",
-			   MLX4_LOG_NUM_VLANS);
-
-	if ((log_mtts_per_seg < 1) || (log_mtts_per_seg > 7)) {
-		pr_warning("mlx4_core: bad log_mtts_per_seg: %d\n", log_mtts_per_seg);
-=======
 		pr_warn("mlx4_core: log_num_vlan - obsolete module param, using %d\n",
 			MLX4_LOG_NUM_VLANS);
 
@@ -5855,18 +4528,11 @@ static int __init mlx4_verify_params(void)
 	if ((log_mtts_per_seg < 0) || (log_mtts_per_seg > 7)) {
 		pr_warn("mlx4_core: bad log_mtts_per_seg: %d\n",
 			log_mtts_per_seg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
 	/* Check if module param for ports type has legal combination */
 	if (port_type_array[0] == false && port_type_array[1] == true) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Module parameter configuration ETH/IB is not supported. Switching to default configuration IB/IB\n");
-		port_type_array[0] = true;
-	}
-
-=======
 		pr_warn("Module parameter configuration ETH/IB is not supported. Switching to default configuration IB/IB\n");
 		port_type_array[0] = true;
 	}
@@ -5882,7 +4548,6 @@ static int __init mlx4_verify_params(void)
 		return -1;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5890,30 +4555,20 @@ static int __init mlx4_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	if (mlx4_verify_params())
-		return -EINVAL;
-
-	mlx4_catas_init();
-=======
 	WARN_ONCE(strcmp(MLX4_ADEV_NAME, KBUILD_MODNAME),
 		  "mlx4_core name not in sync with kernel module name");
 
 	if (mlx4_verify_params())
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlx4_wq = create_singlethread_workqueue("mlx4");
 	if (!mlx4_wq)
 		return -ENOMEM;
 
 	ret = pci_register_driver(&mlx4_driver);
-<<<<<<< HEAD
-=======
 	if (ret < 0)
 		destroy_workqueue(mlx4_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret < 0 ? ret : 0;
 }
 

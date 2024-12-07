@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2005 Paolo 'Blaisorblade' Giarrusso <blaisorblade@yahoo.it>
- * Licensed under the GPL
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2005 Paolo 'Blaisorblade' Giarrusso <blaisorblade@yahoo.it>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_MALLOC_H__

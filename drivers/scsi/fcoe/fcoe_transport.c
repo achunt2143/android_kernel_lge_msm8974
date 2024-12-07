@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright(c) 2008 - 2011 Intel Corporation. All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -29,10 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/list.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-=======
 #include <linux/ethtool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/crc32.h>
 #include <scsi/libfcoe.h>
@@ -43,15 +21,6 @@ MODULE_AUTHOR("Open-FCoE.org");
 MODULE_DESCRIPTION("FIP discovery protocol and FCoE transport for FCoE HBAs");
 MODULE_LICENSE("GPL v2");
 
-<<<<<<< HEAD
-static int fcoe_transport_create(const char *, struct kernel_param *);
-static int fcoe_transport_destroy(const char *, struct kernel_param *);
-static int fcoe_transport_show(char *buffer, const struct kernel_param *kp);
-static struct fcoe_transport *fcoe_transport_lookup(struct net_device *device);
-static struct fcoe_transport *fcoe_netdev_map_lookup(struct net_device *device);
-static int fcoe_transport_enable(const char *, struct kernel_param *);
-static int fcoe_transport_disable(const char *, struct kernel_param *);
-=======
 static int fcoe_transport_create(const char *, const struct kernel_param *);
 static int fcoe_transport_destroy(const char *, const struct kernel_param *);
 static int fcoe_transport_show(char *buffer, const struct kernel_param *kp);
@@ -59,7 +28,6 @@ static struct fcoe_transport *fcoe_transport_lookup(struct net_device *device);
 static struct fcoe_transport *fcoe_netdev_map_lookup(struct net_device *device);
 static int fcoe_transport_enable(const char *, const struct kernel_param *);
 static int fcoe_transport_disable(const char *, const struct kernel_param *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int libfcoe_device_notification(struct notifier_block *notifier,
 				    ulong event, void *ptr);
 
@@ -79,11 +47,7 @@ MODULE_PARM_DESC(show, " Show attached FCoE transports");
 module_param_call(create, fcoe_transport_create, NULL,
 		  (void *)FIP_MODE_FABRIC, S_IWUSR);
 __MODULE_PARM_TYPE(create, "string");
-<<<<<<< HEAD
-MODULE_PARM_DESC(create, " Creates fcoe instance on a ethernet interface");
-=======
 MODULE_PARM_DESC(create, " Creates fcoe instance on an ethernet interface");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_call(create_vn2vn, fcoe_transport_create, NULL,
 		  (void *)FIP_MODE_VN2VN, S_IWUSR);
@@ -93,17 +57,6 @@ MODULE_PARM_DESC(create_vn2vn, " Creates a VN_node to VN_node FCoE instance "
 
 module_param_call(destroy, fcoe_transport_destroy, NULL, NULL, S_IWUSR);
 __MODULE_PARM_TYPE(destroy, "string");
-<<<<<<< HEAD
-MODULE_PARM_DESC(destroy, " Destroys fcoe instance on a ethernet interface");
-
-module_param_call(enable, fcoe_transport_enable, NULL, NULL, S_IWUSR);
-__MODULE_PARM_TYPE(enable, "string");
-MODULE_PARM_DESC(enable, " Enables fcoe on a ethernet interface.");
-
-module_param_call(disable, fcoe_transport_disable, NULL, NULL, S_IWUSR);
-__MODULE_PARM_TYPE(disable, "string");
-MODULE_PARM_DESC(disable, " Disables fcoe on a ethernet interface.");
-=======
 MODULE_PARM_DESC(destroy, " Destroys fcoe instance on an ethernet interface");
 
 module_param_call(enable, fcoe_transport_enable, NULL, NULL, S_IWUSR);
@@ -113,15 +66,12 @@ MODULE_PARM_DESC(enable, " Enables fcoe on an ethernet interface.");
 module_param_call(disable, fcoe_transport_disable, NULL, NULL, S_IWUSR);
 __MODULE_PARM_TYPE(disable, "string");
 MODULE_PARM_DESC(disable, " Disables fcoe on an ethernet interface.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* notification function for packets from net device */
 static struct notifier_block libfcoe_notifier = {
 	.notifier_call = libfcoe_device_notification,
 };
 
-<<<<<<< HEAD
-=======
 static const struct {
 	u32 fc_port_speed;
 #define SPEED_2000	2000
@@ -216,18 +166,13 @@ EXPORT_SYMBOL_GPL(fcoe_link_speed_update);
  * Note, the Link Error Status Block (LESB) for FCoE is defined in FC-BB-6
  * Clause 7.11 in v1.04.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __fcoe_get_lesb(struct fc_lport *lport,
 		     struct fc_els_lesb *fc_lesb,
 		     struct net_device *netdev)
 {
 	unsigned int cpu;
 	u32 lfc, vlfc, mdac;
-<<<<<<< HEAD
-	struct fcoe_dev_stats *devst;
-=======
 	struct fc_stats *stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fcoe_fc_els_lesb *lesb;
 	struct rtnl_link_stats64 temp;
 
@@ -237,17 +182,10 @@ void __fcoe_get_lesb(struct fc_lport *lport,
 	lesb = (struct fcoe_fc_els_lesb *)fc_lesb;
 	memset(lesb, 0, sizeof(*lesb));
 	for_each_possible_cpu(cpu) {
-<<<<<<< HEAD
-		devst = per_cpu_ptr(lport->dev_stats, cpu);
-		lfc += devst->LinkFailureCount;
-		vlfc += devst->VLinkFailureCount;
-		mdac += devst->MissDiscAdvCount;
-=======
 		stats = per_cpu_ptr(lport->stats, cpu);
 		lfc += READ_ONCE(stats->LinkFailureCount);
 		vlfc += READ_ONCE(stats->VLinkFailureCount);
 		mdac += READ_ONCE(stats->MissDiscAdvCount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	lesb->lesb_link_fail = htonl(lfc);
 	lesb->lesb_vlink_fail = htonl(vlfc);
@@ -257,8 +195,6 @@ void __fcoe_get_lesb(struct fc_lport *lport,
 }
 EXPORT_SYMBOL_GPL(__fcoe_get_lesb);
 
-<<<<<<< HEAD
-=======
 /**
  * fcoe_get_lesb() - Fill the FCoE Link Error Status Block
  * @lport: the local port
@@ -290,7 +226,6 @@ void fcoe_ctlr_get_lesb(struct fcoe_ctlr_device *ctlr_dev)
 }
 EXPORT_SYMBOL_GPL(fcoe_ctlr_get_lesb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fcoe_wwn_to_str(u64 wwn, char *buf, int len)
 {
 	u8 wwpn[8];
@@ -374,11 +309,7 @@ EXPORT_SYMBOL_GPL(fcoe_get_wwn);
 u32 fcoe_fc_crc(struct fc_frame *fp)
 {
 	struct sk_buff *skb = fp_skb(fp);
-<<<<<<< HEAD
-	struct skb_frag_struct *frag;
-=======
 	skb_frag_t *frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *data;
 	unsigned long off, len, clen;
 	u32 crc;
@@ -388,11 +319,7 @@ u32 fcoe_fc_crc(struct fc_frame *fp)
 
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 		frag = &skb_shinfo(skb)->frags[i];
-<<<<<<< HEAD
-		off = frag->page_offset;
-=======
 		off = skb_frag_off(frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = skb_frag_size(frag);
 		while (len > 0) {
 			clen = min(len, PAGE_SIZE - (off & ~PAGE_MASK));
@@ -456,10 +383,7 @@ EXPORT_SYMBOL_GPL(fcoe_clean_pending_queue);
 /**
  * fcoe_check_wait_queue() - Attempt to clear the transmit backlog
  * @lport: The local port whose backlog is to be cleared
-<<<<<<< HEAD
-=======
  * @skb: The received FIP packet
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This empties the wait_queue, dequeues the head of the wait_queue queue
  * and calls fcoe_start_io() for each packet. If all skb have been
@@ -517,15 +441,6 @@ EXPORT_SYMBOL_GPL(fcoe_check_wait_queue);
 
 /**
  * fcoe_queue_timer() - The fcoe queue timer
-<<<<<<< HEAD
- * @lport: The local port
- *
- * Calls fcoe_check_wait_queue on timeout
- */
-void fcoe_queue_timer(ulong lport)
-{
-	fcoe_check_wait_queue((struct fc_lport *)lport, NULL);
-=======
  * @t: Timer context use to obtain the FCoE port
  *
  * Calls fcoe_check_wait_queue on timeout
@@ -535,7 +450,6 @@ void fcoe_queue_timer(struct timer_list *t)
 	struct fcoe_port *port = from_timer(port, t, timer);
 
 	fcoe_check_wait_queue(port->lport, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(fcoe_queue_timer);
 
@@ -705,11 +619,7 @@ static int __init fcoe_transport_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __exit fcoe_transport_exit(void)
-=======
 static int fcoe_transport_exit(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fcoe_transport *ft;
 
@@ -764,10 +674,7 @@ static void fcoe_del_netdev_mapping(struct net_device *netdev)
 /**
  * fcoe_netdev_map_lookup - find the fcoe transport that matches the netdev on which
  * it was created
-<<<<<<< HEAD
-=======
  * @netdev: The net device that the FCoE interface is on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns : ptr to the fcoe transport that supports this netdev or NULL
  * if not found.
@@ -804,11 +711,7 @@ static struct net_device *fcoe_if_to_netdev(const char *buffer)
 	char ifname[IFNAMSIZ + 2];
 
 	if (buffer) {
-<<<<<<< HEAD
-		strlcpy(ifname, buffer, IFNAMSIZ);
-=======
 		strscpy(ifname, buffer, IFNAMSIZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cp = ifname + strlen(ifname);
 		while (--cp >= ifname && *cp == '\n')
 			*cp = '\0';
@@ -830,11 +733,7 @@ static struct net_device *fcoe_if_to_netdev(const char *buffer)
 static int libfcoe_device_notification(struct notifier_block *notifier,
 				    ulong event, void *ptr)
 {
-<<<<<<< HEAD
-	struct net_device *netdev = ptr;
-=======
 	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case NETDEV_UNREGISTER:
@@ -846,8 +745,6 @@ static int libfcoe_device_notification(struct notifier_block *notifier,
 	return NOTIFY_OK;
 }
 
-<<<<<<< HEAD
-=======
 ssize_t fcoe_ctlr_create_store(const char *buf, size_t count)
 {
 	struct net_device *netdev = NULL;
@@ -947,7 +844,6 @@ out_nodev:
 	mutex_unlock(&ft_mutex);
 	return rc;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fcoe_transport_create() - Create a fcoe interface
@@ -959,21 +855,13 @@ out_nodev:
  *
  * Returns: 0 for success
  */
-<<<<<<< HEAD
-static int fcoe_transport_create(const char *buffer, struct kernel_param *kp)
-=======
 static int fcoe_transport_create(const char *buffer,
 				 const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct net_device *netdev = NULL;
 	struct fcoe_transport *ft = NULL;
-<<<<<<< HEAD
-	enum fip_state fip_mode = (enum fip_state)(long)kp->arg;
-=======
 	enum fip_mode fip_mode = (enum fip_mode)(uintptr_t)kp->arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ft_mutex);
 
@@ -1033,12 +921,8 @@ out_nodev:
  *
  * Returns: 0 for success
  */
-<<<<<<< HEAD
-static int fcoe_transport_destroy(const char *buffer, struct kernel_param *kp)
-=======
 static int fcoe_transport_destroy(const char *buffer,
 				  const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct net_device *netdev = NULL;
@@ -1082,12 +966,8 @@ out_nodev:
  *
  * Returns: 0 for success
  */
-<<<<<<< HEAD
-static int fcoe_transport_disable(const char *buffer, struct kernel_param *kp)
-=======
 static int fcoe_transport_disable(const char *buffer,
 				  const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct net_device *netdev = NULL;
@@ -1109,15 +989,7 @@ out_putdev:
 	dev_put(netdev);
 out_nodev:
 	mutex_unlock(&ft_mutex);
-<<<<<<< HEAD
-
-	if (rc == -ERESTARTSYS)
-		return restart_syscall();
-	else
-		return rc;
-=======
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1129,12 +1001,8 @@ out_nodev:
  *
  * Returns: 0 for success
  */
-<<<<<<< HEAD
-static int fcoe_transport_enable(const char *buffer, struct kernel_param *kp)
-=======
 static int fcoe_transport_enable(const char *buffer,
 				 const struct kernel_param *kp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = -ENODEV;
 	struct net_device *netdev = NULL;
@@ -1164,11 +1032,6 @@ out_nodev:
  */
 static int __init libfcoe_init(void)
 {
-<<<<<<< HEAD
-	fcoe_transport_init();
-
-	return 0;
-=======
 	int rc = 0;
 
 	rc = fcoe_transport_init();
@@ -1180,7 +1043,6 @@ static int __init libfcoe_init(void)
 		fcoe_transport_exit();
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_init(libfcoe_init);
 
@@ -1189,10 +1051,7 @@ module_init(libfcoe_init);
  */
 static void __exit libfcoe_exit(void)
 {
-<<<<<<< HEAD
-=======
 	fcoe_sysfs_teardown();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fcoe_transport_exit();
 }
 module_exit(libfcoe_exit);

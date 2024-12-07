@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bus.c - bus driver management
  *
@@ -9,19 +6,11 @@
  * Copyright (c) 2002-3 Open Source Development Labs
  * Copyright (c) 2007 Greg Kroah-Hartman <gregkh@suse.de>
  * Copyright (c) 2007 Novell Inc.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2
- *
- */
-
-=======
  * Copyright (c) 2023 Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  */
 
 #include <linux/async.h>
 #include <linux/device/bus.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -29,23 +18,15 @@
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-=======
 #include <linux/sysfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "base.h"
 #include "power/power.h"
 
 /* /sys/devices/system */
-<<<<<<< HEAD
-/* FIXME: make static after drivers/base/sys.c is deleted */
-struct kset *system_kset;
-=======
 static struct kset *system_kset;
 
 /* /sys/bus */
 static struct kset *bus_kset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define to_bus_attr(_attr) container_of(_attr, struct bus_attribute, attr)
 
@@ -55,31 +36,13 @@ static struct kset *bus_kset;
 
 #define to_drv_attr(_attr) container_of(_attr, struct driver_attribute, attr)
 
-<<<<<<< HEAD
-=======
 #define DRIVER_ATTR_IGNORE_LOCKDEP(_name, _mode, _show, _store) \
 	struct driver_attribute driver_attr_##_name =		\
 		__ATTR_IGNORE_LOCKDEP(_name, _mode, _show, _store)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __must_check bus_rescan_devices_helper(struct device *dev,
 						void *data);
 
-<<<<<<< HEAD
-static struct bus_type *bus_get(struct bus_type *bus)
-{
-	if (bus) {
-		kset_get(&bus->p->subsys);
-		return bus;
-	}
-	return NULL;
-}
-
-static void bus_put(struct bus_type *bus)
-{
-	if (bus)
-		kset_put(&bus->p->subsys);
-=======
 /**
  * bus_to_subsys - Turn a struct bus_type into a struct subsys_private
  *
@@ -137,7 +100,6 @@ static void bus_put(const struct bus_type *bus)
 	/* two puts are required as the call to bus_to_subsys incremented it again */
 	subsys_put(sp);
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t drv_attr_show(struct kobject *kobj, struct attribute *attr,
@@ -177,11 +139,7 @@ static void driver_release(struct kobject *kobj)
 	kfree(drv_priv);
 }
 
-<<<<<<< HEAD
-static struct kobj_type driver_ktype = {
-=======
 static const struct kobj_type driver_ktype = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysfs_ops	= &driver_sysfs_ops,
 	.release	= driver_release,
 };
@@ -218,16 +176,6 @@ static const struct sysfs_ops bus_sysfs_ops = {
 	.store	= bus_attr_store,
 };
 
-<<<<<<< HEAD
-int bus_create_file(struct bus_type *bus, struct bus_attribute *attr)
-{
-	int error;
-	if (bus_get(bus)) {
-		error = sysfs_create_file(&bus->p->subsys.kobj, &attr->attr);
-		bus_put(bus);
-	} else
-		error = -EINVAL;
-=======
 int bus_create_file(const struct bus_type *bus, struct bus_attribute *attr)
 {
 	struct subsys_private *sp = bus_to_subsys(bus);
@@ -239,29 +187,10 @@ int bus_create_file(const struct bus_type *bus, struct bus_attribute *attr)
 	error = sysfs_create_file(&sp->subsys.kobj, &attr->attr);
 
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(bus_create_file);
 
-<<<<<<< HEAD
-void bus_remove_file(struct bus_type *bus, struct bus_attribute *attr)
-{
-	if (bus_get(bus)) {
-		sysfs_remove_file(&bus->p->subsys.kobj, &attr->attr);
-		bus_put(bus);
-	}
-}
-EXPORT_SYMBOL_GPL(bus_remove_file);
-
-static struct kobj_type bus_ktype = {
-	.sysfs_ops	= &bus_sysfs_ops,
-};
-
-static int bus_uevent_filter(struct kset *kset, struct kobject *kobj)
-{
-	struct kobj_type *ktype = get_ktype(kobj);
-=======
 void bus_remove_file(const struct bus_type *bus, struct bus_attribute *attr)
 {
 	struct subsys_private *sp = bus_to_subsys(bus);
@@ -290,7 +219,6 @@ static const struct kobj_type bus_ktype = {
 static int bus_uevent_filter(const struct kobject *kobj)
 {
 	const struct kobj_type *ktype = get_ktype(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ktype == &bus_ktype)
 		return 1;
@@ -301,118 +229,49 @@ static const struct kset_uevent_ops bus_uevent_ops = {
 	.filter = bus_uevent_filter,
 };
 
-<<<<<<< HEAD
-static struct kset *bus_kset;
-
-
-#ifdef CONFIG_HOTPLUG
-/* Manually detach a device from its associated driver. */
-static ssize_t driver_unbind(struct device_driver *drv,
-			     const char *buf, size_t count)
-{
-	struct bus_type *bus = bus_get(drv->bus);
-=======
 /* Manually detach a device from its associated driver. */
 static ssize_t unbind_store(struct device_driver *drv, const char *buf,
 			    size_t count)
 {
 	const struct bus_type *bus = bus_get(drv->bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev;
 	int err = -ENODEV;
 
 	dev = bus_find_device_by_name(bus, NULL, buf);
 	if (dev && dev->driver == drv) {
-<<<<<<< HEAD
-		if (dev->parent)	/* Needed for USB */
-			device_lock(dev->parent);
-		device_release_driver(dev);
-		if (dev->parent)
-			device_unlock(dev->parent);
-=======
 		device_driver_detach(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = count;
 	}
 	put_device(dev);
 	bus_put(bus);
 	return err;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(unbind, S_IWUSR, NULL, driver_unbind);
-=======
 static DRIVER_ATTR_IGNORE_LOCKDEP(unbind, 0200, NULL, unbind_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Manually attach a device to a driver.
  * Note: the driver must want to bind to the device,
  * it is not possible to override the driver's id table.
  */
-<<<<<<< HEAD
-static ssize_t driver_bind(struct device_driver *drv,
-			   const char *buf, size_t count)
-{
-	struct bus_type *bus = bus_get(drv->bus);
-=======
 static ssize_t bind_store(struct device_driver *drv, const char *buf,
 			  size_t count)
 {
 	const struct bus_type *bus = bus_get(drv->bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev;
 	int err = -ENODEV;
 
 	dev = bus_find_device_by_name(bus, NULL, buf);
-<<<<<<< HEAD
-	if (dev && dev->driver == NULL && driver_match_device(drv, dev)) {
-		if (dev->parent)	/* Needed for USB */
-			device_lock(dev->parent);
-		device_lock(dev);
-		err = driver_probe_device(drv, dev);
-		device_unlock(dev);
-		if (dev->parent)
-			device_unlock(dev->parent);
-
-		if (err > 0) {
-			/* success */
-			err = count;
-		} else if (err == 0) {
-			/* driver didn't accept device */
-			err = -ENODEV;
-=======
 	if (dev && driver_match_device(drv, dev)) {
 		err = device_driver_attach(drv, dev);
 		if (!err) {
 			/* success */
 			err = count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	put_device(dev);
 	bus_put(bus);
 	return err;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(bind, S_IWUSR, NULL, driver_bind);
-
-static ssize_t show_drivers_autoprobe(struct bus_type *bus, char *buf)
-{
-	return sprintf(buf, "%d\n", bus->p->drivers_autoprobe);
-}
-
-static ssize_t store_drivers_autoprobe(struct bus_type *bus,
-				       const char *buf, size_t count)
-{
-	if (buf[0] == '0')
-		bus->p->drivers_autoprobe = 0;
-	else
-		bus->p->drivers_autoprobe = 1;
-	return count;
-}
-
-static ssize_t store_drivers_probe(struct bus_type *bus,
-=======
 static DRIVER_ATTR_IGNORE_LOCKDEP(bind, 0200, NULL, bind_store);
 
 static ssize_t drivers_autoprobe_show(const struct bus_type *bus, char *buf)
@@ -446,7 +305,6 @@ static ssize_t drivers_autoprobe_store(const struct bus_type *bus,
 }
 
 static ssize_t drivers_probe_store(const struct bus_type *bus,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const char *buf, size_t count)
 {
 	struct device *dev;
@@ -460,10 +318,6 @@ static ssize_t drivers_probe_store(const struct bus_type *bus,
 	put_device(dev);
 	return err;
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct device *next_device(struct klist_iter *i)
 {
@@ -497,30 +351,14 @@ static struct device *next_device(struct klist_iter *i)
  * to retain this data, it should do so, and increment the reference
  * count in the supplied callback.
  */
-<<<<<<< HEAD
-int bus_for_each_dev(struct bus_type *bus, struct device *start,
-		     void *data, int (*fn)(struct device *, void *))
-{
-=======
 int bus_for_each_dev(const struct bus_type *bus, struct device *start,
 		     void *data, int (*fn)(struct device *, void *))
 {
 	struct subsys_private *sp = bus_to_subsys(bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct klist_iter i;
 	struct device *dev;
 	int error = 0;
 
-<<<<<<< HEAD
-	if (!bus || !bus->p)
-		return -EINVAL;
-
-	klist_iter_init_node(&bus->p->klist_devices, &i,
-			     (start ? &start->p->knode_bus : NULL));
-	while ((dev = next_device(&i)) && !error)
-		error = fn(dev, data);
-	klist_iter_exit(&i);
-=======
 	if (!sp)
 		return -EINVAL;
 
@@ -530,7 +368,6 @@ int bus_for_each_dev(const struct bus_type *bus, struct device *start,
 		error = fn(dev, data);
 	klist_iter_exit(&i);
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(bus_for_each_dev);
@@ -550,19 +387,6 @@ EXPORT_SYMBOL_GPL(bus_for_each_dev);
  * if it does.  If the callback returns non-zero, this function will
  * return to the caller and not iterate over any more devices.
  */
-<<<<<<< HEAD
-struct device *bus_find_device(struct bus_type *bus,
-			       struct device *start, void *data,
-			       int (*match)(struct device *dev, void *data))
-{
-	struct klist_iter i;
-	struct device *dev;
-
-	if (!bus || !bus->p)
-		return NULL;
-
-	klist_iter_init_node(&bus->p->klist_devices, &i,
-=======
 struct device *bus_find_device(const struct bus_type *bus,
 			       struct device *start, const void *data,
 			       int (*match)(struct device *dev, const void *data))
@@ -575,88 +399,16 @@ struct device *bus_find_device(const struct bus_type *bus,
 		return NULL;
 
 	klist_iter_init_node(&sp->klist_devices, &i,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     (start ? &start->p->knode_bus : NULL));
 	while ((dev = next_device(&i)))
 		if (match(dev, data) && get_device(dev))
 			break;
 	klist_iter_exit(&i);
-<<<<<<< HEAD
-=======
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dev;
 }
 EXPORT_SYMBOL_GPL(bus_find_device);
 
-<<<<<<< HEAD
-static int match_name(struct device *dev, void *data)
-{
-	const char *name = data;
-
-	return sysfs_streq(name, dev_name(dev));
-}
-
-/**
- * bus_find_device_by_name - device iterator for locating a particular device of a specific name
- * @bus: bus type
- * @start: Device to begin with
- * @name: name of the device to match
- *
- * This is similar to the bus_find_device() function above, but it handles
- * searching by a name automatically, no need to write another strcmp matching
- * function.
- */
-struct device *bus_find_device_by_name(struct bus_type *bus,
-				       struct device *start, const char *name)
-{
-	return bus_find_device(bus, start, (void *)name, match_name);
-}
-EXPORT_SYMBOL_GPL(bus_find_device_by_name);
-
-/**
- * subsys_find_device_by_id - find a device with a specific enumeration number
- * @subsys: subsystem
- * @id: index 'id' in struct device
- * @hint: device to check first
- *
- * Check the hint's next object and if it is a match return it directly,
- * otherwise, fall back to a full list search. Either way a reference for
- * the returned object is taken.
- */
-struct device *subsys_find_device_by_id(struct bus_type *subsys, unsigned int id,
-					struct device *hint)
-{
-	struct klist_iter i;
-	struct device *dev;
-
-	if (!subsys)
-		return NULL;
-
-	if (hint) {
-		klist_iter_init_node(&subsys->p->klist_devices, &i, &hint->p->knode_bus);
-		dev = next_device(&i);
-		if (dev && dev->id == id && get_device(dev)) {
-			klist_iter_exit(&i);
-			return dev;
-		}
-		klist_iter_exit(&i);
-	}
-
-	klist_iter_init_node(&subsys->p->klist_devices, &i, NULL);
-	while ((dev = next_device(&i))) {
-		if (dev->id == id && get_device(dev)) {
-			klist_iter_exit(&i);
-			return dev;
-		}
-	}
-	klist_iter_exit(&i);
-	return NULL;
-}
-EXPORT_SYMBOL_GPL(subsys_find_device_by_id);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct device_driver *next_driver(struct klist_iter *i)
 {
 	struct klist_node *n = klist_next(i);
@@ -688,75 +440,27 @@ static struct device_driver *next_driver(struct klist_iter *i)
  * in the callback. It must also be sure to increment the refcount
  * so it doesn't disappear before returning to the caller.
  */
-<<<<<<< HEAD
-int bus_for_each_drv(struct bus_type *bus, struct device_driver *start,
-		     void *data, int (*fn)(struct device_driver *, void *))
-{
-=======
 int bus_for_each_drv(const struct bus_type *bus, struct device_driver *start,
 		     void *data, int (*fn)(struct device_driver *, void *))
 {
 	struct subsys_private *sp = bus_to_subsys(bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct klist_iter i;
 	struct device_driver *drv;
 	int error = 0;
 
-<<<<<<< HEAD
-	if (!bus)
-		return -EINVAL;
-
-	klist_iter_init_node(&bus->p->klist_drivers, &i,
-=======
 	if (!sp)
 		return -EINVAL;
 
 	klist_iter_init_node(&sp->klist_drivers, &i,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     start ? &start->p->knode_bus : NULL);
 	while ((drv = next_driver(&i)) && !error)
 		error = fn(drv, data);
 	klist_iter_exit(&i);
-<<<<<<< HEAD
-=======
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL_GPL(bus_for_each_drv);
 
-<<<<<<< HEAD
-static int device_add_attrs(struct bus_type *bus, struct device *dev)
-{
-	int error = 0;
-	int i;
-
-	if (!bus->dev_attrs)
-		return 0;
-
-	for (i = 0; attr_name(bus->dev_attrs[i]); i++) {
-		error = device_create_file(dev, &bus->dev_attrs[i]);
-		if (error) {
-			while (--i >= 0)
-				device_remove_file(dev, &bus->dev_attrs[i]);
-			break;
-		}
-	}
-	return error;
-}
-
-static void device_remove_attrs(struct bus_type *bus, struct device *dev)
-{
-	int i;
-
-	if (bus->dev_attrs) {
-		for (i = 0; attr_name(bus->dev_attrs[i]); i++)
-			device_remove_file(dev, &bus->dev_attrs[i]);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * bus_add_device - add device to bus
  * @dev: device being added
@@ -767,34 +471,6 @@ static void device_remove_attrs(struct bus_type *bus, struct device *dev)
  */
 int bus_add_device(struct device *dev)
 {
-<<<<<<< HEAD
-	struct bus_type *bus = bus_get(dev->bus);
-	int error = 0;
-
-	if (bus) {
-		pr_debug("bus: '%s': add device %s\n", bus->name, dev_name(dev));
-		error = device_add_attrs(bus, dev);
-		if (error)
-			goto out_put;
-		error = sysfs_create_link(&bus->p->devices_kset->kobj,
-						&dev->kobj, dev_name(dev));
-		if (error)
-			goto out_id;
-		error = sysfs_create_link(&dev->kobj,
-				&dev->bus->p->subsys.kobj, "subsystem");
-		if (error)
-			goto out_subsys;
-		klist_add_tail(&dev->p->knode_bus, &bus->p->klist_devices);
-	}
-	return 0;
-
-out_subsys:
-	sysfs_remove_link(&bus->p->devices_kset->kobj, dev_name(dev));
-out_id:
-	device_remove_attrs(bus, dev);
-out_put:
-	bus_put(dev->bus);
-=======
 	struct subsys_private *sp = bus_to_subsys(dev->bus);
 	int error;
 
@@ -835,7 +511,6 @@ out_groups:
 	device_remove_groups(dev, sp->bus->dev_groups);
 out_put:
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -847,25 +522,6 @@ out_put:
  */
 void bus_probe_device(struct device *dev)
 {
-<<<<<<< HEAD
-	struct bus_type *bus = dev->bus;
-	struct subsys_interface *sif;
-	int ret;
-
-	if (!bus)
-		return;
-
-	if (bus->p->drivers_autoprobe) {
-		ret = device_attach(dev);
-		WARN_ON(ret < 0);
-	}
-
-	mutex_lock(&bus->p->mutex);
-	list_for_each_entry(sif, &bus->p->interfaces, node)
-		if (sif->add_dev)
-			sif->add_dev(dev, sif);
-	mutex_unlock(&bus->p->mutex);
-=======
 	struct subsys_private *sp = bus_to_subsys(dev->bus);
 	struct subsys_interface *sif;
 
@@ -881,7 +537,6 @@ void bus_probe_device(struct device *dev)
 			sif->add_dev(dev, sif);
 	mutex_unlock(&sp->mutex);
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -896,24 +551,6 @@ void bus_probe_device(struct device *dev)
  */
 void bus_remove_device(struct device *dev)
 {
-<<<<<<< HEAD
-	struct bus_type *bus = dev->bus;
-	struct subsys_interface *sif;
-
-	if (!bus)
-		return;
-
-	mutex_lock(&bus->p->mutex);
-	list_for_each_entry(sif, &bus->p->interfaces, node)
-		if (sif->remove_dev)
-			sif->remove_dev(dev, sif);
-	mutex_unlock(&bus->p->mutex);
-
-	sysfs_remove_link(&dev->kobj, "subsystem");
-	sysfs_remove_link(&dev->bus->p->devices_kset->kobj,
-			  dev_name(dev));
-	device_remove_attrs(dev->bus, dev);
-=======
 	struct subsys_private *sp = bus_to_subsys(dev->bus);
 	struct subsys_interface *sif;
 
@@ -929,54 +566,12 @@ void bus_remove_device(struct device *dev)
 	sysfs_remove_link(&dev->kobj, "subsystem");
 	sysfs_remove_link(&sp->devices_kset->kobj, dev_name(dev));
 	device_remove_groups(dev, dev->bus->dev_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (klist_node_attached(&dev->p->knode_bus))
 		klist_del(&dev->p->knode_bus);
 
 	pr_debug("bus: '%s': remove device %s\n",
 		 dev->bus->name, dev_name(dev));
 	device_release_driver(dev);
-<<<<<<< HEAD
-	bus_put(dev->bus);
-}
-
-static int driver_add_attrs(struct bus_type *bus, struct device_driver *drv)
-{
-	int error = 0;
-	int i;
-
-	if (bus->drv_attrs) {
-		for (i = 0; attr_name(bus->drv_attrs[i]); i++) {
-			error = driver_create_file(drv, &bus->drv_attrs[i]);
-			if (error)
-				goto err;
-		}
-	}
-done:
-	return error;
-err:
-	while (--i >= 0)
-		driver_remove_file(drv, &bus->drv_attrs[i]);
-	goto done;
-}
-
-static void driver_remove_attrs(struct bus_type *bus,
-				struct device_driver *drv)
-{
-	int i;
-
-	if (bus->drv_attrs) {
-		for (i = 0; attr_name(bus->drv_attrs[i]); i++)
-			driver_remove_file(drv, &bus->drv_attrs[i]);
-	}
-}
-
-#ifdef CONFIG_HOTPLUG
-/*
- * Thanks to drivers making their tables __devinit, we can't allow manual
- * bind and unbind from userspace unless CONFIG_HOTPLUG is enabled.
- */
-=======
 
 	/*
 	 * Decrement the reference count twice, once for the bus_to_subsys()
@@ -987,7 +582,6 @@ static void driver_remove_attrs(struct bus_type *bus,
 	subsys_put(sp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __must_check add_bind_files(struct device_driver *drv)
 {
 	int ret;
@@ -1007,18 +601,10 @@ static void remove_bind_files(struct device_driver *drv)
 	driver_remove_file(drv, &driver_attr_unbind);
 }
 
-<<<<<<< HEAD
-static BUS_ATTR(drivers_probe, S_IWUSR, NULL, store_drivers_probe);
-static BUS_ATTR(drivers_autoprobe, S_IWUSR | S_IRUGO,
-		show_drivers_autoprobe, store_drivers_autoprobe);
-
-static int add_probe_files(struct bus_type *bus)
-=======
 static BUS_ATTR_WO(drivers_probe);
 static BUS_ATTR_RW(drivers_autoprobe);
 
 static int add_probe_files(const struct bus_type *bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 
@@ -1033,34 +619,11 @@ out:
 	return retval;
 }
 
-<<<<<<< HEAD
-static void remove_probe_files(struct bus_type *bus)
-=======
 static void remove_probe_files(const struct bus_type *bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bus_remove_file(bus, &bus_attr_drivers_autoprobe);
 	bus_remove_file(bus, &bus_attr_drivers_probe);
 }
-<<<<<<< HEAD
-#else
-static inline int add_bind_files(struct device_driver *drv) { return 0; }
-static inline void remove_bind_files(struct device_driver *drv) {}
-static inline int add_probe_files(struct bus_type *bus) { return 0; }
-static inline void remove_probe_files(struct bus_type *bus) {}
-#endif
-
-static ssize_t driver_uevent_store(struct device_driver *drv,
-				   const char *buf, size_t count)
-{
-	enum kobject_action action;
-
-	if (kobject_action_type(buf, count, &action) == 0)
-		kobject_uevent(&drv->p->kobj, action);
-	return count;
-}
-static DRIVER_ATTR(uevent, S_IWUSR, NULL, driver_uevent_store);
-=======
 
 static ssize_t uevent_store(struct device_driver *drv, const char *buf,
 			    size_t count)
@@ -1071,7 +634,6 @@ static ssize_t uevent_store(struct device_driver *drv, const char *buf,
 	return rc ? rc : count;
 }
 static DRIVER_ATTR_WO(uevent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * bus_add_driver - Add a driver to the bus.
@@ -1079,17 +641,6 @@ static DRIVER_ATTR_WO(uevent);
  */
 int bus_add_driver(struct device_driver *drv)
 {
-<<<<<<< HEAD
-	struct bus_type *bus;
-	struct driver_private *priv;
-	int error = 0;
-
-	bus = bus_get(drv->bus);
-	if (!bus)
-		return -EINVAL;
-
-	pr_debug("bus: '%s': add driver %s\n", bus->name, drv->name);
-=======
 	struct subsys_private *sp = bus_to_subsys(drv->bus);
 	struct driver_private *priv;
 	int error = 0;
@@ -1102,7 +653,6 @@ int bus_add_driver(struct device_driver *drv)
 	 * the driver is removed from the bus
 	 */
 	pr_debug("bus: '%s': add driver %s\n", sp->bus->name, drv->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv) {
@@ -1112,29 +662,17 @@ int bus_add_driver(struct device_driver *drv)
 	klist_init(&priv->klist_devices, NULL, NULL);
 	priv->driver = drv;
 	drv->p = priv;
-<<<<<<< HEAD
-	priv->kobj.kset = bus->p->drivers_kset;
-=======
 	priv->kobj.kset = sp->drivers_kset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = kobject_init_and_add(&priv->kobj, &driver_ktype, NULL,
 				     "%s", drv->name);
 	if (error)
 		goto out_unregister;
 
-<<<<<<< HEAD
-	klist_add_tail(&priv->knode_bus, &bus->p->klist_drivers);
-	if (drv->bus->p->drivers_autoprobe) {
-		error = driver_attach(drv);
-		if (error)
-			goto out_unregister;
-=======
 	klist_add_tail(&priv->knode_bus, &sp->klist_drivers);
 	if (sp->drivers_autoprobe) {
 		error = driver_attach(drv);
 		if (error)
 			goto out_del_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	module_add_driver(drv->owner, drv);
 
@@ -1143,17 +681,10 @@ int bus_add_driver(struct device_driver *drv)
 		printk(KERN_ERR "%s: uevent attr (%s) failed\n",
 			__func__, drv->name);
 	}
-<<<<<<< HEAD
-	error = driver_add_attrs(bus, drv);
-	if (error) {
-		/* How the hell do we get out of this pickle? Give up */
-		printk(KERN_ERR "%s: driver_add_attrs(%s) failed\n",
-=======
 	error = driver_add_groups(drv, sp->bus->drv_groups);
 	if (error) {
 		/* How the hell do we get out of this pickle? Give up */
 		printk(KERN_ERR "%s: driver_add_groups(%s) failed\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, drv->name);
 	}
 
@@ -1166,17 +697,6 @@ int bus_add_driver(struct device_driver *drv)
 		}
 	}
 
-<<<<<<< HEAD
-	kobject_uevent(&priv->kobj, KOBJ_ADD);
-	return 0;
-
-out_unregister:
-	kobject_put(&priv->kobj);
-	kfree(drv->p);
-	drv->p = NULL;
-out_put_bus:
-	bus_put(bus);
-=======
 	return 0;
 
 out_del_list:
@@ -1187,7 +707,6 @@ out_unregister:
 	drv->p = NULL;
 out_put_bus:
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1201,21 +720,6 @@ out_put_bus:
  */
 void bus_remove_driver(struct device_driver *drv)
 {
-<<<<<<< HEAD
-	if (!drv->bus)
-		return;
-
-	if (!drv->suppress_bind_attrs)
-		remove_bind_files(drv);
-	driver_remove_attrs(drv->bus, drv);
-	driver_remove_file(drv, &driver_attr_uevent);
-	klist_remove(&drv->p->knode_bus);
-	pr_debug("bus: '%s': remove driver %s\n", drv->bus->name, drv->name);
-	driver_detach(drv);
-	module_remove_driver(drv);
-	kobject_put(&drv->p->kobj);
-	bus_put(drv->bus);
-=======
 	struct subsys_private *sp = bus_to_subsys(drv->bus);
 
 	if (!sp)
@@ -1239,7 +743,6 @@ void bus_remove_driver(struct device_driver *drv)
 	 */
 	subsys_put(sp);
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Helper for bus_rescan_devices's iter */
@@ -1249,17 +752,10 @@ static int __must_check bus_rescan_devices_helper(struct device *dev,
 	int ret = 0;
 
 	if (!dev->driver) {
-<<<<<<< HEAD
-		if (dev->parent)	/* Needed for USB */
-			device_lock(dev->parent);
-		ret = device_attach(dev);
-		if (dev->parent)
-=======
 		if (dev->parent && dev->bus->need_parent_lock)
 			device_lock(dev->parent);
 		ret = device_attach(dev);
 		if (dev->parent && dev->bus->need_parent_lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			device_unlock(dev->parent);
 	}
 	return ret < 0 ? ret : 0;
@@ -1273,11 +769,7 @@ static int __must_check bus_rescan_devices_helper(struct device *dev,
  * attached and rescan it against existing drivers to see if it matches
  * any by calling device_attach() for the unbound devices.
  */
-<<<<<<< HEAD
-int bus_rescan_devices(struct bus_type *bus)
-=======
 int bus_rescan_devices(const struct bus_type *bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return bus_for_each_dev(bus, NULL, NULL, bus_rescan_devices_helper);
 }
@@ -1294,78 +786,12 @@ EXPORT_SYMBOL_GPL(bus_rescan_devices);
  */
 int device_reprobe(struct device *dev)
 {
-<<<<<<< HEAD
-	if (dev->driver) {
-		if (dev->parent)        /* Needed for USB */
-			device_lock(dev->parent);
-		device_release_driver(dev);
-		if (dev->parent)
-			device_unlock(dev->parent);
-	}
-=======
 	if (dev->driver)
 		device_driver_detach(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bus_rescan_devices_helper(dev, NULL);
 }
 EXPORT_SYMBOL_GPL(device_reprobe);
 
-<<<<<<< HEAD
-/**
- * find_bus - locate bus by name.
- * @name: name of bus.
- *
- * Call kset_find_obj() to iterate over list of buses to
- * find a bus by name. Return bus if found.
- *
- * Note that kset_find_obj increments bus' reference count.
- */
-#if 0
-struct bus_type *find_bus(char *name)
-{
-	struct kobject *k = kset_find_obj(bus_kset, name);
-	return k ? to_bus(k) : NULL;
-}
-#endif  /*  0  */
-
-
-/**
- * bus_add_attrs - Add default attributes for this bus.
- * @bus: Bus that has just been registered.
- */
-
-static int bus_add_attrs(struct bus_type *bus)
-{
-	int error = 0;
-	int i;
-
-	if (bus->bus_attrs) {
-		for (i = 0; attr_name(bus->bus_attrs[i]); i++) {
-			error = bus_create_file(bus, &bus->bus_attrs[i]);
-			if (error)
-				goto err;
-		}
-	}
-done:
-	return error;
-err:
-	while (--i >= 0)
-		bus_remove_file(bus, &bus->bus_attrs[i]);
-	goto done;
-}
-
-static void bus_remove_attrs(struct bus_type *bus)
-{
-	int i;
-
-	if (bus->bus_attrs) {
-		for (i = 0; attr_name(bus->bus_attrs[i]); i++)
-			bus_remove_file(bus, &bus->bus_attrs[i]);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void klist_devices_get(struct klist_node *n)
 {
 	struct device_private *dev_prv = to_device_private_bus(n);
@@ -1382,23 +808,6 @@ static void klist_devices_put(struct klist_node *n)
 	put_device(dev);
 }
 
-<<<<<<< HEAD
-static ssize_t bus_uevent_store(struct bus_type *bus,
-				const char *buf, size_t count)
-{
-	enum kobject_action action;
-
-	if (kobject_action_type(buf, count, &action) == 0)
-		kobject_uevent(&bus->p->subsys.kobj, action);
-	return count;
-}
-static BUS_ATTR(uevent, S_IWUSR, NULL, bus_uevent_store);
-
-/**
- * __bus_register - register a driver-core subsystem
- * @bus: bus to register
- * @key: lockdep class key
-=======
 static ssize_t bus_uevent_store(const struct bus_type *bus,
 				const char *buf, size_t count)
 {
@@ -1427,43 +836,23 @@ static struct bus_attribute bus_attr_uevent = __ATTR(uevent, 0200, NULL,
 /**
  * bus_register - register a driver-core subsystem
  * @bus: bus to register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Once we have that, we register the bus with the kobject
  * infrastructure, then register the children subsystems it has:
  * the devices and drivers that belong to the subsystem.
  */
-<<<<<<< HEAD
-int __bus_register(struct bus_type *bus, struct lock_class_key *key)
-{
-	int retval;
-	struct subsys_private *priv;
-=======
 int bus_register(const struct bus_type *bus)
 {
 	int retval;
 	struct subsys_private *priv;
 	struct kobject *bus_kobj;
 	struct lock_class_key *key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = kzalloc(sizeof(struct subsys_private), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
 	priv->bus = bus;
-<<<<<<< HEAD
-	bus->p = priv;
-
-	BLOCKING_INIT_NOTIFIER_HEAD(&priv->bus_notifier);
-
-	retval = kobject_set_name(&priv->subsys.kobj, "%s", bus->name);
-	if (retval)
-		goto out;
-
-	priv->subsys.kobj.kset = bus_kset;
-	priv->subsys.kobj.ktype = &bus_ktype;
-=======
 
 	BLOCKING_INIT_NOTIFIER_HEAD(&priv->bus_notifier);
 
@@ -1474,7 +863,6 @@ int bus_register(const struct bus_type *bus)
 
 	bus_kobj->kset = bus_kset;
 	bus_kobj->ktype = &bus_ktype;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->drivers_autoprobe = 1;
 
 	retval = kset_register(&priv->subsys);
@@ -1485,34 +873,21 @@ int bus_register(const struct bus_type *bus)
 	if (retval)
 		goto bus_uevent_fail;
 
-<<<<<<< HEAD
-	priv->devices_kset = kset_create_and_add("devices", NULL,
-						 &priv->subsys.kobj);
-=======
 	priv->devices_kset = kset_create_and_add("devices", NULL, bus_kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv->devices_kset) {
 		retval = -ENOMEM;
 		goto bus_devices_fail;
 	}
 
-<<<<<<< HEAD
-	priv->drivers_kset = kset_create_and_add("drivers", NULL,
-						 &priv->subsys.kobj);
-=======
 	priv->drivers_kset = kset_create_and_add("drivers", NULL, bus_kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv->drivers_kset) {
 		retval = -ENOMEM;
 		goto bus_drivers_fail;
 	}
 
 	INIT_LIST_HEAD(&priv->interfaces);
-<<<<<<< HEAD
-=======
 	key = &priv->lock_key;
 	lockdep_register_key(key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__mutex_init(&priv->mutex, "subsys mutex", key);
 	klist_init(&priv->klist_devices, klist_devices_get, klist_devices_put);
 	klist_init(&priv->klist_drivers, NULL, NULL);
@@ -1521,37 +896,13 @@ int bus_register(const struct bus_type *bus)
 	if (retval)
 		goto bus_probe_files_fail;
 
-<<<<<<< HEAD
-	retval = bus_add_attrs(bus);
-	if (retval)
-		goto bus_attrs_fail;
-=======
 	retval = sysfs_create_groups(bus_kobj, bus->bus_groups);
 	if (retval)
 		goto bus_groups_fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("bus: '%s': registered\n", bus->name);
 	return 0;
 
-<<<<<<< HEAD
-bus_attrs_fail:
-	remove_probe_files(bus);
-bus_probe_files_fail:
-	kset_unregister(bus->p->drivers_kset);
-bus_drivers_fail:
-	kset_unregister(bus->p->devices_kset);
-bus_devices_fail:
-	bus_remove_file(bus, &bus_attr_uevent);
-bus_uevent_fail:
-	kset_unregister(&bus->p->subsys);
-out:
-	kfree(bus->p);
-	bus->p = NULL;
-	return retval;
-}
-EXPORT_SYMBOL_GPL(__bus_register);
-=======
 bus_groups_fail:
 	remove_probe_files(bus);
 bus_probe_files_fail:
@@ -1567,7 +918,6 @@ out:
 	return retval;
 }
 EXPORT_SYMBOL_GPL(bus_register);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * bus_unregister - remove a bus from the system
@@ -1576,48 +926,6 @@ EXPORT_SYMBOL_GPL(bus_register);
  * Unregister the child subsystems and the bus itself.
  * Finally, we call bus_put() to release the refcount
  */
-<<<<<<< HEAD
-void bus_unregister(struct bus_type *bus)
-{
-	pr_debug("bus: '%s': unregistering\n", bus->name);
-	if (bus->dev_root)
-		device_unregister(bus->dev_root);
-	bus_remove_attrs(bus);
-	remove_probe_files(bus);
-	kset_unregister(bus->p->drivers_kset);
-	kset_unregister(bus->p->devices_kset);
-	bus_remove_file(bus, &bus_attr_uevent);
-	kset_unregister(&bus->p->subsys);
-	kfree(bus->p);
-	bus->p = NULL;
-}
-EXPORT_SYMBOL_GPL(bus_unregister);
-
-int bus_register_notifier(struct bus_type *bus, struct notifier_block *nb)
-{
-	return blocking_notifier_chain_register(&bus->p->bus_notifier, nb);
-}
-EXPORT_SYMBOL_GPL(bus_register_notifier);
-
-int bus_unregister_notifier(struct bus_type *bus, struct notifier_block *nb)
-{
-	return blocking_notifier_chain_unregister(&bus->p->bus_notifier, nb);
-}
-EXPORT_SYMBOL_GPL(bus_unregister_notifier);
-
-struct kset *bus_get_kset(struct bus_type *bus)
-{
-	return &bus->p->subsys;
-}
-EXPORT_SYMBOL_GPL(bus_get_kset);
-
-struct klist *bus_get_device_klist(struct bus_type *bus)
-{
-	return &bus->p->klist_devices;
-}
-EXPORT_SYMBOL_GPL(bus_get_device_klist);
-
-=======
 void bus_unregister(const struct bus_type *bus)
 {
 	struct subsys_private *sp = bus_to_subsys(bus);
@@ -1695,7 +1003,6 @@ struct kset *bus_get_kset(const struct bus_type *bus)
 }
 EXPORT_SYMBOL_GPL(bus_get_kset);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Yes, this forcibly breaks the klist abstraction temporarily.  It
  * just wants to sort the klist, not change reference counts and
@@ -1707,20 +1014,11 @@ static void device_insertion_sort_klist(struct device *a, struct list_head *list
 					int (*compare)(const struct device *a,
 							const struct device *b))
 {
-<<<<<<< HEAD
-	struct list_head *pos;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct klist_node *n;
 	struct device_private *dev_prv;
 	struct device *b;
 
-<<<<<<< HEAD
-	list_for_each(pos, list) {
-		n = container_of(pos, struct klist_node, n_node);
-=======
 	list_for_each_entry(n, list, n_node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_prv = to_device_private_bus(n);
 		b = dev_prv->device;
 		if (compare(a, b) <= 0) {
@@ -1732,15 +1030,6 @@ static void device_insertion_sort_klist(struct device *a, struct list_head *list
 	list_move_tail(&a->p->knode_bus.n_node, list);
 }
 
-<<<<<<< HEAD
-void bus_sort_breadthfirst(struct bus_type *bus,
-			   int (*compare)(const struct device *a,
-					  const struct device *b))
-{
-	LIST_HEAD(sorted_devices);
-	struct list_head *pos, *tmp;
-	struct klist_node *n;
-=======
 void bus_sort_breadthfirst(const struct bus_type *bus,
 			   int (*compare)(const struct device *a,
 					  const struct device *b))
@@ -1748,40 +1037,22 @@ void bus_sort_breadthfirst(const struct bus_type *bus,
 	struct subsys_private *sp = bus_to_subsys(bus);
 	LIST_HEAD(sorted_devices);
 	struct klist_node *n, *tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_private *dev_prv;
 	struct device *dev;
 	struct klist *device_klist;
 
-<<<<<<< HEAD
-	device_klist = bus_get_device_klist(bus);
-
-	spin_lock(&device_klist->k_lock);
-	list_for_each_safe(pos, tmp, &device_klist->k_list) {
-		n = container_of(pos, struct klist_node, n_node);
-=======
 	if (!sp)
 		return;
 	device_klist = &sp->klist_devices;
 
 	spin_lock(&device_klist->k_lock);
 	list_for_each_entry_safe(n, tmp, &device_klist->k_list, n_node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_prv = to_device_private_bus(n);
 		dev = dev_prv->device;
 		device_insertion_sort_klist(dev, &sorted_devices, compare);
 	}
 	list_splice(&sorted_devices, &device_klist->k_list);
 	spin_unlock(&device_klist->k_lock);
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL_GPL(bus_sort_breadthfirst);
-
-/**
- * subsys_dev_iter_init - initialize subsys device iterator
- * @iter: subsys iterator to initialize
- * @subsys: the subsys we wanna iterate over
-=======
 	subsys_put(sp);
 }
 EXPORT_SYMBOL_GPL(bus_sort_breadthfirst);
@@ -1795,7 +1066,6 @@ struct subsys_dev_iter {
  * subsys_dev_iter_init - initialize subsys device iterator
  * @iter: subsys iterator to initialize
  * @sp: the subsys private (i.e. bus) we wanna iterate over
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @start: the device to start iterating from, if any
  * @type: device_type of the devices to iterate over, NULL for all
  *
@@ -1804,28 +1074,16 @@ struct subsys_dev_iter {
  * otherwise if it is NULL, the iteration starts at the beginning of
  * the list.
  */
-<<<<<<< HEAD
-void subsys_dev_iter_init(struct subsys_dev_iter *iter, struct bus_type *subsys,
-			  struct device *start, const struct device_type *type)
-=======
 static void subsys_dev_iter_init(struct subsys_dev_iter *iter, struct subsys_private *sp,
 				 struct device *start, const struct device_type *type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct klist_node *start_knode = NULL;
 
 	if (start)
 		start_knode = &start->p->knode_bus;
-<<<<<<< HEAD
-	klist_iter_init_node(&subsys->p->klist_devices, &iter->ki, start_knode);
-	iter->type = type;
-}
-EXPORT_SYMBOL_GPL(subsys_dev_iter_init);
-=======
 	klist_iter_init_node(&sp->klist_devices, &iter->ki, start_knode);
 	iter->type = type;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * subsys_dev_iter_next - iterate to the next device
@@ -1839,11 +1097,7 @@ EXPORT_SYMBOL_GPL(subsys_dev_iter_init);
  * free to do whatever it wants to do with the device including
  * calling back into subsys code.
  */
-<<<<<<< HEAD
-struct device *subsys_dev_iter_next(struct subsys_dev_iter *iter)
-=======
 static struct device *subsys_dev_iter_next(struct subsys_dev_iter *iter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct klist_node *knode;
 	struct device *dev;
@@ -1852,19 +1106,11 @@ static struct device *subsys_dev_iter_next(struct subsys_dev_iter *iter)
 		knode = klist_next(&iter->ki);
 		if (!knode)
 			return NULL;
-<<<<<<< HEAD
-		dev = container_of(knode, struct device_private, knode_bus)->device;
-=======
 		dev = to_device_private_bus(knode)->device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!iter->type || iter->type == dev->type)
 			return dev;
 	}
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(subsys_dev_iter_next);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * subsys_dev_iter_exit - finish iteration
@@ -1873,17 +1119,6 @@ EXPORT_SYMBOL_GPL(subsys_dev_iter_next);
  * Finish an iteration.  Always call this function after iteration is
  * complete whether the iteration ran till the end or not.
  */
-<<<<<<< HEAD
-void subsys_dev_iter_exit(struct subsys_dev_iter *iter)
-{
-	klist_iter_exit(&iter->ki);
-}
-EXPORT_SYMBOL_GPL(subsys_dev_iter_exit);
-
-int subsys_interface_register(struct subsys_interface *sif)
-{
-	struct bus_type *subsys;
-=======
 static void subsys_dev_iter_exit(struct subsys_dev_iter *iter)
 {
 	klist_iter_exit(&iter->ki);
@@ -1892,23 +1127,12 @@ static void subsys_dev_iter_exit(struct subsys_dev_iter *iter)
 int subsys_interface_register(struct subsys_interface *sif)
 {
 	struct subsys_private *sp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct subsys_dev_iter iter;
 	struct device *dev;
 
 	if (!sif || !sif->subsys)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	subsys = bus_get(sif->subsys);
-	if (!subsys)
-		return -EINVAL;
-
-	mutex_lock(&subsys->p->mutex);
-	list_add_tail(&sif->node, &subsys->p->interfaces);
-	if (sif->add_dev) {
-		subsys_dev_iter_init(&iter, subsys, NULL, NULL);
-=======
 	sp = bus_to_subsys(sif->subsys);
 	if (!sp)
 		return -EINVAL;
@@ -1922,16 +1146,11 @@ int subsys_interface_register(struct subsys_interface *sif)
 	list_add_tail(&sif->node, &sp->interfaces);
 	if (sif->add_dev) {
 		subsys_dev_iter_init(&iter, sp, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((dev = subsys_dev_iter_next(&iter)))
 			sif->add_dev(dev, sif);
 		subsys_dev_iter_exit(&iter);
 	}
-<<<<<<< HEAD
-	mutex_unlock(&subsys->p->mutex);
-=======
 	mutex_unlock(&sp->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1939,25 +1158,13 @@ EXPORT_SYMBOL_GPL(subsys_interface_register);
 
 void subsys_interface_unregister(struct subsys_interface *sif)
 {
-<<<<<<< HEAD
-	struct bus_type *subsys;
-=======
 	struct subsys_private *sp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct subsys_dev_iter iter;
 	struct device *dev;
 
 	if (!sif || !sif->subsys)
 		return;
 
-<<<<<<< HEAD
-	subsys = sif->subsys;
-
-	mutex_lock(&subsys->p->mutex);
-	list_del_init(&sif->node);
-	if (sif->remove_dev) {
-		subsys_dev_iter_init(&iter, subsys, NULL, NULL);
-=======
 	sp = bus_to_subsys(sif->subsys);
 	if (!sp)
 		return;
@@ -1966,16 +1173,10 @@ void subsys_interface_unregister(struct subsys_interface *sif)
 	list_del_init(&sif->node);
 	if (sif->remove_dev) {
 		subsys_dev_iter_init(&iter, sp, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((dev = subsys_dev_iter_next(&iter)))
 			sif->remove_dev(dev, sif);
 		subsys_dev_iter_exit(&iter);
 	}
-<<<<<<< HEAD
-	mutex_unlock(&subsys->p->mutex);
-
-	bus_put(subsys);
-=======
 	mutex_unlock(&sp->mutex);
 
 	/*
@@ -1985,7 +1186,6 @@ void subsys_interface_unregister(struct subsys_interface *sif)
 	 */
 	subsys_put(sp);
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(subsys_interface_unregister);
 
@@ -1993,36 +1193,12 @@ static void system_root_device_release(struct device *dev)
 {
 	kfree(dev);
 }
-<<<<<<< HEAD
-/**
- * subsys_system_register - register a subsystem at /sys/devices/system/
- * @subsys: system subsystem
- * @groups: default attributes for the root device
- *
- * All 'system' subsystems have a /sys/devices/system/<name> root device
- * with the name of the subsystem. The root device can carry subsystem-
- * wide attributes. All registered devices are below this single root
- * device and are named after the subsystem with a simple enumeration
- * number appended. The registered devices are not explicitely named;
- * only 'id' in the device needs to be set.
- *
- * Do not use this interface for anything new, it exists for compatibility
- * with bad ideas only. New subsystems should use plain subsystems; and
- * add the subsystem-wide attributes should be added to the subsystem
- * directory itself and not some create fake root-device placed in
- * /sys/devices/system/<name>.
- */
-int subsys_system_register(struct bus_type *subsys,
-			   const struct attribute_group **groups)
-{
-=======
 
 static int subsys_register(const struct bus_type *subsys,
 			   const struct attribute_group **groups,
 			   struct kobject *parent_of_root)
 {
 	struct subsys_private *sp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev;
 	int err;
 
@@ -2030,15 +1206,12 @@ static int subsys_register(const struct bus_type *subsys,
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-=======
 	sp = bus_to_subsys(subsys);
 	if (!sp) {
 		err = -EINVAL;
 		goto err_sp;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = kzalloc(sizeof(struct device), GFP_KERNEL);
 	if (!dev) {
 		err = -ENOMEM;
@@ -2049,11 +1222,7 @@ static int subsys_register(const struct bus_type *subsys,
 	if (err < 0)
 		goto err_name;
 
-<<<<<<< HEAD
-	dev->kobj.parent = &system_kset->kobj;
-=======
 	dev->kobj.parent = parent_of_root;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->groups = groups;
 	dev->release = system_root_device_release;
 
@@ -2061,12 +1230,8 @@ static int subsys_register(const struct bus_type *subsys,
 	if (err < 0)
 		goto err_dev_reg;
 
-<<<<<<< HEAD
-	subsys->dev_root = dev;
-=======
 	sp->dev_root = dev;
 	subsys_put(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_dev_reg:
@@ -2075,13 +1240,6 @@ err_dev_reg:
 err_name:
 	kfree(dev);
 err_dev:
-<<<<<<< HEAD
-	bus_unregister(subsys);
-	return err;
-}
-EXPORT_SYMBOL_GPL(subsys_system_register);
-
-=======
 	subsys_put(sp);
 err_sp:
 	bus_unregister(subsys);
@@ -2213,7 +1371,6 @@ struct device *bus_get_dev_root(const struct bus_type *bus)
 }
 EXPORT_SYMBOL_GPL(bus_get_dev_root);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init buses_init(void)
 {
 	bus_kset = kset_create_and_add("bus", &bus_uevent_ops, NULL);

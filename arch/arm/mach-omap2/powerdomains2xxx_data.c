@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2XXX powerdomain definitions
  *
@@ -9,22 +6,12 @@
  * Copyright (C) 2007-2011 Nokia Corporation
  *
  * Paul Walmsley, Jouni Högander
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 
-<<<<<<< HEAD
-=======
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "powerdomain.h"
 #include "powerdomains2xxx_3xxx_data.h"
 
@@ -48,11 +35,7 @@ static struct powerdomain dsp_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain mpu_24xx_pwrdm = {
@@ -67,21 +50,14 @@ static struct powerdomain mpu_24xx_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct powerdomain core_24xx_pwrdm = {
 	.name		  = "core_pwrdm",
 	.prcm_offs	  = CORE_MOD,
 	.pwrsts		  = PWRSTS_OFF_RET_ON,
-<<<<<<< HEAD
-=======
 	.pwrsts_logic_ret = PWRSTS_RET,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.banks		  = 3,
 	.pwrsts_mem_ret	  = {
 		[0] = PWRSTS_OFF_RET,	 /* MEM1RETSTATE */
@@ -93,11 +69,7 @@ static struct powerdomain core_24xx_pwrdm = {
 		[1] = PWRSTS_OFF_RET_ON, /* MEM2ONSTATE */
 		[2] = PWRSTS_OFF_RET_ON, /* MEM3ONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -119,11 +91,7 @@ static struct powerdomain mdm_pwrdm = {
 	.pwrsts_mem_on	  = {
 		[0] = PWRSTS_ON,  /* MEMONSTATE */
 	},
-<<<<<<< HEAD
-	.voltdm           = { .name = "core" },
-=======
 	.voltdm		  = { .name = "core" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

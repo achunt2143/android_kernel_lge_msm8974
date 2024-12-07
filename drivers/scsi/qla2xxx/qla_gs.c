@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
- */
-#include "qla_def.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic Fibre Channel HBA Driver
@@ -15,7 +6,6 @@
 #include "qla_def.h"
 #include "qla_target.h"
 #include <linux/utsname.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int qla2x00_sns_ga_nxt(scsi_qla_host_t *, fc_port_t *);
 static int qla2x00_sns_gid_pt(scsi_qla_host_t *, sw_info_t *);
@@ -23,19 +13,6 @@ static int qla2x00_sns_gpn_id(scsi_qla_host_t *, sw_info_t *);
 static int qla2x00_sns_gnn_id(scsi_qla_host_t *, sw_info_t *);
 static int qla2x00_sns_rft_id(scsi_qla_host_t *);
 static int qla2x00_sns_rnn_id(scsi_qla_host_t *);
-<<<<<<< HEAD
-
-/**
- * qla2x00_prep_ms_iocb() - Prepare common MS/CT IOCB fields for SNS CT query.
- * @ha: HA context
- * @req_size: request size in bytes
- * @rsp_size: response size in bytes
- *
- * Returns a pointer to the @ha's ms_iocb.
- */
-void *
-qla2x00_prep_ms_iocb(scsi_qla_host_t *vha, uint32_t req_size, uint32_t rsp_size)
-=======
 static int qla_async_rftid(scsi_qla_host_t *, port_id_t *);
 static int qla_async_rffid(scsi_qla_host_t *, port_id_t *, u8, u8);
 static int qla_async_rnnid(scsi_qla_host_t *, port_id_t *, u8*);
@@ -52,37 +29,16 @@ static int qla_async_rsnn_nn(scsi_qla_host_t *);
  */
 void *
 qla2x00_prep_ms_iocb(scsi_qla_host_t *vha, struct ct_arg *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qla_hw_data *ha = vha->hw;
 	ms_iocb_entry_t *ms_pkt;
 
-<<<<<<< HEAD
-	ms_pkt = ha->ms_iocb;
-=======
 	ms_pkt = (ms_iocb_entry_t *)arg->iocb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ms_pkt, 0, sizeof(ms_iocb_entry_t));
 
 	ms_pkt->entry_type = MS_IOCB_TYPE;
 	ms_pkt->entry_count = 1;
 	SET_TARGET_ID(ha, ms_pkt->loop_id, SIMPLE_NAME_SERVER);
-<<<<<<< HEAD
-	ms_pkt->control_flags = __constant_cpu_to_le16(CF_READ | CF_HEAD_TAG);
-	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
-	ms_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
-	ms_pkt->total_dsd_count = __constant_cpu_to_le16(2);
-	ms_pkt->rsp_bytecount = cpu_to_le32(rsp_size);
-	ms_pkt->req_bytecount = cpu_to_le32(req_size);
-
-	ms_pkt->dseg_req_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ms_pkt->dseg_req_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ms_pkt->dseg_req_length = ms_pkt->req_bytecount;
-
-	ms_pkt->dseg_rsp_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ms_pkt->dseg_rsp_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ms_pkt->dseg_rsp_length = ms_pkt->rsp_bytecount;
-=======
 	ms_pkt->control_flags = cpu_to_le16(CF_READ | CF_HEAD_TAG);
 	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	ms_pkt->cmd_dsd_count = cpu_to_le16(1);
@@ -97,61 +53,28 @@ qla2x00_prep_ms_iocb(scsi_qla_host_t *vha, struct ct_arg *arg)
 	ms_pkt->rsp_dsd.length = ms_pkt->rsp_bytecount;
 
 	vha->qla_stats.control_requests++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (ms_pkt);
 }
 
 /**
  * qla24xx_prep_ms_iocb() - Prepare common CT IOCB fields for SNS CT query.
-<<<<<<< HEAD
- * @ha: HA context
- * @req_size: request size in bytes
- * @rsp_size: response size in bytes
-=======
  * @vha: HA context
  * @arg: CT arguments
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns a pointer to the @ha's ms_iocb.
  */
 void *
-<<<<<<< HEAD
-qla24xx_prep_ms_iocb(scsi_qla_host_t *vha, uint32_t req_size, uint32_t rsp_size)
-=======
 qla24xx_prep_ms_iocb(scsi_qla_host_t *vha, struct ct_arg *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qla_hw_data *ha = vha->hw;
 	struct ct_entry_24xx *ct_pkt;
 
-<<<<<<< HEAD
-	ct_pkt = (struct ct_entry_24xx *)ha->ms_iocb;
-=======
 	ct_pkt = (struct ct_entry_24xx *)arg->iocb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ct_pkt, 0, sizeof(struct ct_entry_24xx));
 
 	ct_pkt->entry_type = CT_IOCB_TYPE;
 	ct_pkt->entry_count = 1;
-<<<<<<< HEAD
-	ct_pkt->nport_handle = __constant_cpu_to_le16(NPH_SNS);
-	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
-	ct_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
-	ct_pkt->rsp_dsd_count = __constant_cpu_to_le16(1);
-	ct_pkt->rsp_byte_count = cpu_to_le32(rsp_size);
-	ct_pkt->cmd_byte_count = cpu_to_le32(req_size);
-
-	ct_pkt->dseg_0_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ct_pkt->dseg_0_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ct_pkt->dseg_0_len = ct_pkt->cmd_byte_count;
-
-	ct_pkt->dseg_1_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ct_pkt->dseg_1_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ct_pkt->dseg_1_len = ct_pkt->rsp_byte_count;
-	ct_pkt->vp_index = vha->vp_idx;
-
-=======
 	ct_pkt->nport_handle = cpu_to_le16(arg->nport_handle);
 	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	ct_pkt->cmd_dsd_count = cpu_to_le16(1);
@@ -168,39 +91,18 @@ qla24xx_prep_ms_iocb(scsi_qla_host_t *vha, struct ct_arg *arg)
 
 	vha->qla_stats.control_requests++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (ct_pkt);
 }
 
 /**
  * qla2x00_prep_ct_req() - Prepare common CT request fields for SNS query.
-<<<<<<< HEAD
- * @ct_req: CT request buffer
-=======
  * @p: CT request buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd: GS command
  * @rsp_size: response size in bytes
  *
  * Returns a pointer to the intitialized @ct_req.
  */
 static inline struct ct_sns_req *
-<<<<<<< HEAD
-qla2x00_prep_ct_req(struct ct_sns_req *ct_req, uint16_t cmd, uint16_t rsp_size)
-{
-	memset(ct_req, 0, sizeof(struct ct_sns_pkt));
-
-	ct_req->header.revision = 0x01;
-	ct_req->header.gs_type = 0xFC;
-	ct_req->header.gs_subtype = 0x02;
-	ct_req->command = cpu_to_be16(cmd);
-	ct_req->max_rsp_size = cpu_to_be16((rsp_size - 16) / 4);
-
-	return (ct_req);
-}
-
-static int
-=======
 qla2x00_prep_ct_req(struct ct_sns_pkt *p, uint16_t cmd, uint16_t rsp_size)
 {
 	memset(p, 0, sizeof(struct ct_sns_pkt));
@@ -215,17 +117,13 @@ qla2x00_prep_ct_req(struct ct_sns_pkt *p, uint16_t cmd, uint16_t rsp_size)
 }
 
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_chk_ms_status(scsi_qla_host_t *vha, ms_iocb_entry_t *ms_pkt,
     struct ct_sns_rsp *ct_rsp, const char *routine)
 {
 	int rval;
 	uint16_t comp_status;
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-=======
 	bool lid_is_sns = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rval = QLA_FUNCTION_FAILED;
 	if (ms_pkt->entry_status != 0) {
@@ -244,17 +142,6 @@ qla2x00_chk_ms_status(scsi_qla_host_t *vha, ms_iocb_entry_t *ms_pkt,
 		case CS_DATA_UNDERRUN:
 		case CS_DATA_OVERRUN:		/* Overrun? */
 			if (ct_rsp->header.response !=
-<<<<<<< HEAD
-			    __constant_cpu_to_be16(CT_ACCEPT_RESPONSE)) {
-				ql_dbg(ql_dbg_disc + ql_dbg_buffer, vha, 0x2077,
-				    "%s failed rejected request on port_id: "
-				    "%02x%02x%02x.\n", routine,
-				    vha->d_id.b.domain, vha->d_id.b.area,
-				    vha->d_id.b.al_pa);
-				ql_dump_buffer(ql_dbg_disc + ql_dbg_buffer, vha,
-				    0x2078, (uint8_t *)&ct_rsp->header,
-				    sizeof(struct ct_rsp_hdr));
-=======
 			    cpu_to_be16(CT_ACCEPT_RESPONSE)) {
 				ql_dbg(ql_dbg_disc + ql_dbg_buffer, vha, 0x2077,
 				    "%s failed rejected request on port_id: %02x%02x%02x Completion status 0x%x, response 0x%x\n",
@@ -264,13 +151,10 @@ qla2x00_chk_ms_status(scsi_qla_host_t *vha, ms_iocb_entry_t *ms_pkt,
 				ql_dump_buffer(ql_dbg_disc + ql_dbg_buffer, vha,
 				    0x2078, ct_rsp,
 				    offsetof(typeof(*ct_rsp), rsp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rval = QLA_INVALID_COMMAND;
 			} else
 				rval = QLA_SUCCESS;
 			break;
-<<<<<<< HEAD
-=======
 		case CS_PORT_LOGGED_OUT:
 			if (IS_FWI2_CAPABLE(ha)) {
 				if (le16_to_cpu(ms_pkt->loop_id.extended) ==
@@ -293,7 +177,6 @@ qla2x00_chk_ms_status(scsi_qla_host_t *vha, ms_iocb_entry_t *ms_pkt,
 		case CS_TIMEOUT:
 			rval = QLA_FUNCTION_TIMEOUT;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			ql_dbg(ql_dbg_disc, vha, 0x2033,
 			    "%s failed, completion status (%x) on port_id: "
@@ -308,11 +191,7 @@ qla2x00_chk_ms_status(scsi_qla_host_t *vha, ms_iocb_entry_t *ms_pkt,
 
 /**
  * qla2x00_ga_nxt() - SNS scan for fabric devices via GA_NXT command.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fcport: fcport entry to updated
  *
  * Returns 0 on success.
@@ -326,23 +205,11 @@ qla2x00_ga_nxt(scsi_qla_host_t *vha, fc_port_t *fcport)
 	struct ct_sns_req	*ct_req;
 	struct ct_sns_rsp	*ct_rsp;
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-=======
 	struct ct_arg arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha))
 		return qla2x00_sns_ga_nxt(vha, fcport);
 
-<<<<<<< HEAD
-	/* Issue GA_NXT */
-	/* Prepare common MS IOCB */
-	ms_pkt = ha->isp_ops->prep_ms_iocb(vha, GA_NXT_REQ_SIZE,
-	    GA_NXT_RSP_SIZE);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, GA_NXT_CMD,
-=======
 	arg.iocb = ha->ms_iocb;
 	arg.req_dma = ha->ct_sns_dma;
 	arg.rsp_dma = ha->ct_sns_dma;
@@ -356,18 +223,11 @@ qla2x00_ga_nxt(scsi_qla_host_t *vha, fc_port_t *fcport)
 
 	/* Prepare CT request */
 	ct_req = qla2x00_prep_ct_req(ha->ct_sns, GA_NXT_CMD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    GA_NXT_RSP_SIZE);
 	ct_rsp = &ha->ct_sns->p.rsp;
 
 	/* Prepare CT arguments -- port_id */
-<<<<<<< HEAD
-	ct_req->req.port_id.port_id[0] = fcport->d_id.b.domain;
-	ct_req->req.port_id.port_id[1] = fcport->d_id.b.area;
-	ct_req->req.port_id.port_id[2] = fcport->d_id.b.al_pa;
-=======
 	ct_req->req.port_id.port_id = port_id_to_be_id(fcport->d_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Execute MS IOCB */
 	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
@@ -381,47 +241,24 @@ qla2x00_ga_nxt(scsi_qla_host_t *vha, fc_port_t *fcport)
 		rval = QLA_FUNCTION_FAILED;
 	} else {
 		/* Populate fc_port_t entry. */
-<<<<<<< HEAD
-		fcport->d_id.b.domain = ct_rsp->rsp.ga_nxt.port_id[0];
-		fcport->d_id.b.area = ct_rsp->rsp.ga_nxt.port_id[1];
-		fcport->d_id.b.al_pa = ct_rsp->rsp.ga_nxt.port_id[2];
-=======
 		fcport->d_id = be_to_port_id(ct_rsp->rsp.ga_nxt.port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memcpy(fcport->node_name, ct_rsp->rsp.ga_nxt.node_name,
 		    WWN_SIZE);
 		memcpy(fcport->port_name, ct_rsp->rsp.ga_nxt.port_name,
 		    WWN_SIZE);
 
-<<<<<<< HEAD
-=======
 		fcport->fc4_type = (ct_rsp->rsp.ga_nxt.fc4_types[2] & BIT_0) ?
 		    FS_FC4TYPE_FCP : FC4_TYPE_OTHER;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ct_rsp->rsp.ga_nxt.port_type != NS_N_PORT_TYPE &&
 		    ct_rsp->rsp.ga_nxt.port_type != NS_NL_PORT_TYPE)
 			fcport->d_id.b.domain = 0xf0;
 
 		ql_dbg(ql_dbg_disc, vha, 0x2063,
-<<<<<<< HEAD
-		    "GA_NXT entry - nn %02x%02x%02x%02x%02x%02x%02x%02x "
-		    "pn %02x%02x%02x%02x%02x%02x%02x%02x "
-		    "port_id=%02x%02x%02x.\n",
-		    fcport->node_name[0], fcport->node_name[1],
-		    fcport->node_name[2], fcport->node_name[3],
-		    fcport->node_name[4], fcport->node_name[5],
-		    fcport->node_name[6], fcport->node_name[7],
-		    fcport->port_name[0], fcport->port_name[1],
-		    fcport->port_name[2], fcport->port_name[3],
-		    fcport->port_name[4], fcport->port_name[5],
-		    fcport->port_name[6], fcport->port_name[7],
-=======
 		    "GA_NXT entry - nn %8phN pn %8phN "
 		    "port_id=%02x%02x%02x.\n",
 		    fcport->node_name, fcport->port_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    fcport->d_id.b.domain, fcport->d_id.b.area,
 		    fcport->d_id.b.al_pa);
 	}
@@ -437,11 +274,7 @@ qla2x00_gid_pt_rsp_size(scsi_qla_host_t *vha)
 
 /**
  * qla2x00_gid_pt() - SNS scan for fabric devices via GID_PT command.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * NOTE: Non-Nx_Ports are not requested.
@@ -461,26 +294,13 @@ qla2x00_gid_pt(scsi_qla_host_t *vha, sw_info_t *list)
 	struct ct_sns_gid_pt_data *gid_data;
 	struct qla_hw_data *ha = vha->hw;
 	uint16_t gid_pt_rsp_size;
-<<<<<<< HEAD
-=======
 	struct ct_arg arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha))
 		return qla2x00_sns_gid_pt(vha, list);
 
 	gid_data = NULL;
 	gid_pt_rsp_size = qla2x00_gid_pt_rsp_size(vha);
-<<<<<<< HEAD
-	/* Issue GID_PT */
-	/* Prepare common MS IOCB */
-	ms_pkt = ha->isp_ops->prep_ms_iocb(vha, GID_PT_REQ_SIZE,
-	    gid_pt_rsp_size);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, GID_PT_CMD,
-	    gid_pt_rsp_size);
-=======
 
 	arg.iocb = ha->ms_iocb;
 	arg.req_dma = ha->ct_sns_dma;
@@ -495,7 +315,6 @@ qla2x00_gid_pt(scsi_qla_host_t *vha, sw_info_t *list)
 
 	/* Prepare CT request */
 	ct_req = qla2x00_prep_ct_req(ha->ct_sns, GID_PT_CMD, gid_pt_rsp_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ct_rsp = &ha->ct_sns->p.rsp;
 
 	/* Prepare CT arguments -- port_type */
@@ -515,13 +334,7 @@ qla2x00_gid_pt(scsi_qla_host_t *vha, sw_info_t *list)
 		/* Set port IDs in switch info list. */
 		for (i = 0; i < ha->max_fibre_devices; i++) {
 			gid_data = &ct_rsp->rsp.gid_pt.entries[i];
-<<<<<<< HEAD
-			list[i].d_id.b.domain = gid_data->port_id[0];
-			list[i].d_id.b.area = gid_data->port_id[1];
-			list[i].d_id.b.al_pa = gid_data->port_id[2];
-=======
 			list[i].d_id = be_to_port_id(gid_data->port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memset(list[i].fabric_port_name, 0, WWN_SIZE);
 			list[i].fp_speed = PORT_SPEED_UNKNOWN;
 
@@ -547,11 +360,7 @@ qla2x00_gid_pt(scsi_qla_host_t *vha, sw_info_t *list)
 
 /**
  * qla2x00_gpn_id() - SNS Get Port Name (GPN_ID) query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * Returns 0 on success.
@@ -566,24 +375,11 @@ qla2x00_gpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 	struct ct_sns_req	*ct_req;
 	struct ct_sns_rsp	*ct_rsp;
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-=======
 	struct ct_arg arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha))
 		return qla2x00_sns_gpn_id(vha, list);
 
-<<<<<<< HEAD
-	for (i = 0; i < ha->max_fibre_devices; i++) {
-		/* Issue GPN_ID */
-		/* Prepare common MS IOCB */
-		ms_pkt = ha->isp_ops->prep_ms_iocb(vha, GPN_ID_REQ_SIZE,
-		    GPN_ID_RSP_SIZE);
-
-		/* Prepare CT request */
-		ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, GPN_ID_CMD,
-=======
 	arg.iocb = ha->ms_iocb;
 	arg.req_dma = ha->ct_sns_dma;
 	arg.rsp_dma = ha->ct_sns_dma;
@@ -598,18 +394,11 @@ qla2x00_gpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 
 		/* Prepare CT request */
 		ct_req = qla2x00_prep_ct_req(ha->ct_sns, GPN_ID_CMD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    GPN_ID_RSP_SIZE);
 		ct_rsp = &ha->ct_sns->p.rsp;
 
 		/* Prepare CT arguments -- port_id */
-<<<<<<< HEAD
-		ct_req->req.port_id.port_id[0] = list[i].d_id.b.domain;
-		ct_req->req.port_id.port_id[1] = list[i].d_id.b.area;
-		ct_req->req.port_id.port_id[2] = list[i].d_id.b.al_pa;
-=======
 		ct_req->req.port_id.port_id = port_id_to_be_id(list[i].d_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Execute MS IOCB */
 		rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
@@ -639,11 +428,7 @@ qla2x00_gpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 
 /**
  * qla2x00_gnn_id() - SNS Get Node Name (GNN_ID) query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * Returns 0 on success.
@@ -657,24 +442,11 @@ qla2x00_gnn_id(scsi_qla_host_t *vha, sw_info_t *list)
 	ms_iocb_entry_t	*ms_pkt;
 	struct ct_sns_req	*ct_req;
 	struct ct_sns_rsp	*ct_rsp;
-<<<<<<< HEAD
-=======
 	struct ct_arg arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha))
 		return qla2x00_sns_gnn_id(vha, list);
 
-<<<<<<< HEAD
-	for (i = 0; i < ha->max_fibre_devices; i++) {
-		/* Issue GNN_ID */
-		/* Prepare common MS IOCB */
-		ms_pkt = ha->isp_ops->prep_ms_iocb(vha, GNN_ID_REQ_SIZE,
-		    GNN_ID_RSP_SIZE);
-
-		/* Prepare CT request */
-		ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, GNN_ID_CMD,
-=======
 	arg.iocb = ha->ms_iocb;
 	arg.req_dma = ha->ct_sns_dma;
 	arg.rsp_dma = ha->ct_sns_dma;
@@ -689,18 +461,11 @@ qla2x00_gnn_id(scsi_qla_host_t *vha, sw_info_t *list)
 
 		/* Prepare CT request */
 		ct_req = qla2x00_prep_ct_req(ha->ct_sns, GNN_ID_CMD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    GNN_ID_RSP_SIZE);
 		ct_rsp = &ha->ct_sns->p.rsp;
 
 		/* Prepare CT arguments -- port_id */
-<<<<<<< HEAD
-		ct_req->req.port_id.port_id[0] = list[i].d_id.b.domain;
-		ct_req->req.port_id.port_id[1] = list[i].d_id.b.area;
-		ct_req->req.port_id.port_id[2] = list[i].d_id.b.al_pa;
-=======
 		ct_req->req.port_id.port_id = port_id_to_be_id(list[i].d_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Execute MS IOCB */
 		rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
@@ -720,23 +485,9 @@ qla2x00_gnn_id(scsi_qla_host_t *vha, sw_info_t *list)
 			    ct_rsp->rsp.gnn_id.node_name, WWN_SIZE);
 
 			ql_dbg(ql_dbg_disc, vha, 0x2058,
-<<<<<<< HEAD
-			    "GID_PT entry - nn %02x%02x%02x%02x%02x%02x%02X%02x "
-			    "pn %02x%02x%02x%02x%02x%02x%02X%02x "
-			    "portid=%02x%02x%02x.\n",
-			    list[i].node_name[0], list[i].node_name[1],
-			    list[i].node_name[2], list[i].node_name[3],
-			    list[i].node_name[4], list[i].node_name[5],
-			    list[i].node_name[6], list[i].node_name[7],
-			    list[i].port_name[0], list[i].port_name[1],
-			    list[i].port_name[2], list[i].port_name[3],
-			    list[i].port_name[4], list[i].port_name[5],
-			    list[i].port_name[6], list[i].port_name[7],
-=======
 			    "GID_PT entry - nn %8phN pn %8phN "
 			    "portid=%02x%02x%02x.\n",
 			    list[i].node_name, list[i].port_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    list[i].d_id.b.domain, list[i].d_id.b.area,
 			    list[i].d_id.b.al_pa);
 		}
@@ -749,11 +500,6 @@ qla2x00_gnn_id(scsi_qla_host_t *vha, sw_info_t *list)
 	return (rval);
 }
 
-<<<<<<< HEAD
-/**
- * qla2x00_rft_id() - SNS Register FC-4 TYPEs (RFT_ID) supported by the HBA.
- * @ha: HA context
-=======
 static void qla2x00_async_sns_sp_done(srb_t *sp, int rc)
 {
 	struct scsi_qla_host *vha = sp->vha;
@@ -821,61 +567,17 @@ err2:
 /**
  * qla2x00_rft_id() - SNS Register FC-4 TYPEs (RFT_ID) supported by the HBA.
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success.
  */
 int
 qla2x00_rft_id(scsi_qla_host_t *vha)
 {
-<<<<<<< HEAD
-	int		rval;
 	struct qla_hw_data *ha = vha->hw;
-	ms_iocb_entry_t	*ms_pkt;
-	struct ct_sns_req	*ct_req;
-	struct ct_sns_rsp	*ct_rsp;
-=======
-	struct qla_hw_data *ha = vha->hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha))
 		return qla2x00_sns_rft_id(vha);
 
-<<<<<<< HEAD
-	/* Issue RFT_ID */
-	/* Prepare common MS IOCB */
-	ms_pkt = ha->isp_ops->prep_ms_iocb(vha, RFT_ID_REQ_SIZE,
-	    RFT_ID_RSP_SIZE);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, RFT_ID_CMD,
-	    RFT_ID_RSP_SIZE);
-	ct_rsp = &ha->ct_sns->p.rsp;
-
-	/* Prepare CT arguments -- port_id, FC-4 types */
-	ct_req->req.rft_id.port_id[0] = vha->d_id.b.domain;
-	ct_req->req.rft_id.port_id[1] = vha->d_id.b.area;
-	ct_req->req.rft_id.port_id[2] = vha->d_id.b.al_pa;
-
-	ct_req->req.rft_id.fc4_types[2] = 0x01;		/* FCP-3 */
-
-	/* Execute MS IOCB */
-	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
-	    sizeof(ms_iocb_entry_t));
-	if (rval != QLA_SUCCESS) {
-		/*EMPTY*/
-		ql_dbg(ql_dbg_disc, vha, 0x2043,
-		    "RFT_ID issue IOCB failed (%d).\n", rval);
-	} else if (qla2x00_chk_ms_status(vha, ms_pkt, ct_rsp, "RFT_ID") !=
-	    QLA_SUCCESS) {
-		rval = QLA_FUNCTION_FAILED;
-	} else {
-		ql_dbg(ql_dbg_disc, vha, 0x2044,
-		    "RFT_ID exiting normally.\n");
-	}
-
-	return (rval);
-=======
 	return qla_async_rftid(vha, &vha->d_id);
 }
 
@@ -954,34 +656,19 @@ done_free_sp:
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	return rval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla2x00_rff_id() - SNS Register FC-4 Features (RFF_ID) supported by the HBA.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
  * @type: not used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success.
  */
 int
-<<<<<<< HEAD
-qla2x00_rff_id(scsi_qla_host_t *vha)
-{
-	int		rval;
-	struct qla_hw_data *ha = vha->hw;
-	ms_iocb_entry_t	*ms_pkt;
-	struct ct_sns_req	*ct_req;
-	struct ct_sns_rsp	*ct_rsp;
-=======
 qla2x00_rff_id(scsi_qla_host_t *vha, u8 type)
 {
 	struct qla_hw_data *ha = vha->hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha)) {
 		ql_dbg(ql_dbg_disc, vha, 0x2046,
@@ -989,42 +676,6 @@ qla2x00_rff_id(scsi_qla_host_t *vha, u8 type)
 		return (QLA_SUCCESS);
 	}
 
-<<<<<<< HEAD
-	/* Issue RFF_ID */
-	/* Prepare common MS IOCB */
-	ms_pkt = ha->isp_ops->prep_ms_iocb(vha, RFF_ID_REQ_SIZE,
-	    RFF_ID_RSP_SIZE);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, RFF_ID_CMD,
-	    RFF_ID_RSP_SIZE);
-	ct_rsp = &ha->ct_sns->p.rsp;
-
-	/* Prepare CT arguments -- port_id, FC-4 feature, FC-4 type */
-	ct_req->req.rff_id.port_id[0] = vha->d_id.b.domain;
-	ct_req->req.rff_id.port_id[1] = vha->d_id.b.area;
-	ct_req->req.rff_id.port_id[2] = vha->d_id.b.al_pa;
-
-	ct_req->req.rff_id.fc4_feature = BIT_1;
-	ct_req->req.rff_id.fc4_type = 0x08;		/* SCSI - FCP */
-
-	/* Execute MS IOCB */
-	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
-	    sizeof(ms_iocb_entry_t));
-	if (rval != QLA_SUCCESS) {
-		/*EMPTY*/
-		ql_dbg(ql_dbg_disc, vha, 0x2047,
-		    "RFF_ID issue IOCB failed (%d).\n", rval);
-	} else if (qla2x00_chk_ms_status(vha, ms_pkt, ct_rsp, "RFF_ID") !=
-	    QLA_SUCCESS) {
-		rval = QLA_FUNCTION_FAILED;
-	} else {
-		ql_dbg(ql_dbg_disc, vha, 0x2048,
-		    "RFF_ID exiting normally.\n");
-	}
-
-	return (rval);
-=======
 	return qla_async_rffid(vha, &vha->d_id, qlt_rff_id(vha), type);
 }
 
@@ -1101,78 +752,22 @@ done_free_sp:
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	return rval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla2x00_rnn_id() - SNS Register Node Name (RNN_ID) of the HBA.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success.
  */
 int
 qla2x00_rnn_id(scsi_qla_host_t *vha)
 {
-<<<<<<< HEAD
-	int		rval;
 	struct qla_hw_data *ha = vha->hw;
-	ms_iocb_entry_t	*ms_pkt;
-	struct ct_sns_req	*ct_req;
-	struct ct_sns_rsp	*ct_rsp;
-=======
-	struct qla_hw_data *ha = vha->hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha))
 		return qla2x00_sns_rnn_id(vha);
 
-<<<<<<< HEAD
-	/* Issue RNN_ID */
-	/* Prepare common MS IOCB */
-	ms_pkt = ha->isp_ops->prep_ms_iocb(vha, RNN_ID_REQ_SIZE,
-	    RNN_ID_RSP_SIZE);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, RNN_ID_CMD,
-	    RNN_ID_RSP_SIZE);
-	ct_rsp = &ha->ct_sns->p.rsp;
-
-	/* Prepare CT arguments -- port_id, node_name */
-	ct_req->req.rnn_id.port_id[0] = vha->d_id.b.domain;
-	ct_req->req.rnn_id.port_id[1] = vha->d_id.b.area;
-	ct_req->req.rnn_id.port_id[2] = vha->d_id.b.al_pa;
-
-	memcpy(ct_req->req.rnn_id.node_name, vha->node_name, WWN_SIZE);
-
-	/* Execute MS IOCB */
-	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
-	    sizeof(ms_iocb_entry_t));
-	if (rval != QLA_SUCCESS) {
-		/*EMPTY*/
-		ql_dbg(ql_dbg_disc, vha, 0x204d,
-		    "RNN_ID issue IOCB failed (%d).\n", rval);
-	} else if (qla2x00_chk_ms_status(vha, ms_pkt, ct_rsp, "RNN_ID") !=
-	    QLA_SUCCESS) {
-		rval = QLA_FUNCTION_FAILED;
-	} else {
-		ql_dbg(ql_dbg_disc, vha, 0x204e,
-		    "RNN_ID exiting normally.\n");
-	}
-
-	return (rval);
-}
-
-void
-qla2x00_get_sym_node_name(scsi_qla_host_t *vha, uint8_t *snn)
-{
-	struct qla_hw_data *ha = vha->hw;
-	sprintf(snn, "%s FW:v%d.%02d.%02d DVR:v%s",ha->model_number,
-	    ha->fw_major_version, ha->fw_minor_version,
-=======
 	return  qla_async_rnnid(vha, &vha->d_id, vha->node_name);
 }
 
@@ -1261,32 +856,19 @@ qla2x00_get_sym_node_name(scsi_qla_host_t *vha, uint8_t *snn, size_t size)
 
 	return scnprintf(snn, size, "%s FW:v%d.%02d.%02d DVR:v%s",
 	    ha->model_number, ha->fw_major_version, ha->fw_minor_version,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ha->fw_subminor_version, qla2x00_version_str);
 }
 
 /**
  * qla2x00_rsnn_nn() - SNS Register Symbolic Node Name (RSNN_NN) of the HBA.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success.
  */
 int
 qla2x00_rsnn_nn(scsi_qla_host_t *vha)
 {
-<<<<<<< HEAD
-	int		rval;
 	struct qla_hw_data *ha = vha->hw;
-	ms_iocb_entry_t	*ms_pkt;
-	struct ct_sns_req	*ct_req;
-	struct ct_sns_rsp	*ct_rsp;
-=======
-	struct qla_hw_data *ha = vha->hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha)) {
 		ql_dbg(ql_dbg_disc, vha, 0x2050,
@@ -1294,17 +876,6 @@ qla2x00_rsnn_nn(scsi_qla_host_t *vha)
 		return (QLA_SUCCESS);
 	}
 
-<<<<<<< HEAD
-	/* Issue RSNN_NN */
-	/* Prepare common MS IOCB */
-	/*   Request size adjusted after CT preparation */
-	ms_pkt = ha->isp_ops->prep_ms_iocb(vha, 0, RSNN_NN_RSP_SIZE);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, RSNN_NN_CMD,
-	    RSNN_NN_RSP_SIZE);
-	ct_rsp = &ha->ct_sns->p.rsp;
-=======
 	return qla_async_rsnn_nn(vha);
 }
 
@@ -1352,41 +923,11 @@ static int qla_async_rsnn_nn(scsi_qla_host_t *vha)
 
 	/* Prepare CT request */
 	ct_req = qla2x00_prep_ct_req(ct_sns, RSNN_NN_CMD, RSNN_NN_RSP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Prepare CT arguments -- node_name, symbolic node_name, size */
 	memcpy(ct_req->req.rsnn_nn.node_name, vha->node_name, WWN_SIZE);
 
 	/* Prepare the Symbolic Node Name */
-<<<<<<< HEAD
-	qla2x00_get_sym_node_name(vha, ct_req->req.rsnn_nn.sym_node_name);
-
-	/* Calculate SNN length */
-	ct_req->req.rsnn_nn.name_len =
-	    (uint8_t)strlen(ct_req->req.rsnn_nn.sym_node_name);
-
-	/* Update MS IOCB request */
-	ms_pkt->req_bytecount =
-	    cpu_to_le32(24 + 1 + ct_req->req.rsnn_nn.name_len);
-	ms_pkt->dseg_req_length = ms_pkt->req_bytecount;
-
-	/* Execute MS IOCB */
-	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
-	    sizeof(ms_iocb_entry_t));
-	if (rval != QLA_SUCCESS) {
-		/*EMPTY*/
-		ql_dbg(ql_dbg_disc, vha, 0x2051,
-		    "RSNN_NN issue IOCB failed (%d).\n", rval);
-	} else if (qla2x00_chk_ms_status(vha, ms_pkt, ct_rsp, "RSNN_NN") !=
-	    QLA_SUCCESS) {
-		rval = QLA_FUNCTION_FAILED;
-	} else {
-		ql_dbg(ql_dbg_disc, vha, 0x2052,
-		    "RSNN_NN exiting normally.\n");
-	}
-
-	return (rval);
-=======
 	qla2x00_get_sym_node_name(vha, ct_req->req.rsnn_nn.sym_node_name,
 	    sizeof(ct_req->req.rsnn_nn.sym_node_name));
 	ct_req->req.rsnn_nn.name_len =
@@ -1415,16 +956,11 @@ done_free_sp:
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 done:
 	return rval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla2x00_prep_sns_cmd() - Prepare common SNS command request fields for query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd: GS command
  * @scmd_len: Subcommand length
  * @data_size: response size in bytes
@@ -1443,32 +979,20 @@ qla2x00_prep_sns_cmd(scsi_qla_host_t *vha, uint16_t cmd, uint16_t scmd_len,
 	memset(sns_cmd, 0, sizeof(struct sns_cmd_pkt));
 	wc = data_size / 2;			/* Size in 16bit words. */
 	sns_cmd->p.cmd.buffer_length = cpu_to_le16(wc);
-<<<<<<< HEAD
-	sns_cmd->p.cmd.buffer_address[0] = cpu_to_le32(LSD(ha->sns_cmd_dma));
-	sns_cmd->p.cmd.buffer_address[1] = cpu_to_le32(MSD(ha->sns_cmd_dma));
-=======
 	put_unaligned_le64(ha->sns_cmd_dma, &sns_cmd->p.cmd.buffer_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sns_cmd->p.cmd.subcommand_length = cpu_to_le16(scmd_len);
 	sns_cmd->p.cmd.subcommand = cpu_to_le16(cmd);
 	wc = (data_size - 16) / 4;		/* Size in 32bit words. */
 	sns_cmd->p.cmd.size = cpu_to_le16(wc);
 
-<<<<<<< HEAD
-=======
 	vha->qla_stats.control_requests++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (sns_cmd);
 }
 
 /**
  * qla2x00_sns_ga_nxt() - SNS scan for fabric devices via GA_NXT command.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fcport: fcport entry to updated
  *
  * This command uses the old Exectute SNS Command mailbox routine.
@@ -1520,23 +1044,9 @@ qla2x00_sns_ga_nxt(scsi_qla_host_t *vha, fc_port_t *fcport)
 			fcport->d_id.b.domain = 0xf0;
 
 		ql_dbg(ql_dbg_disc, vha, 0x2061,
-<<<<<<< HEAD
-		    "GA_NXT entry - nn %02x%02x%02x%02x%02x%02x%02x%02x "
-		    "pn %02x%02x%02x%02x%02x%02x%02x%02x "
-		    "port_id=%02x%02x%02x.\n",
-		    fcport->node_name[0], fcport->node_name[1],
-		    fcport->node_name[2], fcport->node_name[3],
-		    fcport->node_name[4], fcport->node_name[5],
-		    fcport->node_name[6], fcport->node_name[7],
-		    fcport->port_name[0], fcport->port_name[1],
-		    fcport->port_name[2], fcport->port_name[3],
-		    fcport->port_name[4], fcport->port_name[5],
-		    fcport->port_name[6], fcport->port_name[7],
-=======
 		    "GA_NXT entry - nn %8phN pn %8phN "
 		    "port_id=%02x%02x%02x.\n",
 		    fcport->node_name, fcport->port_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    fcport->d_id.b.domain, fcport->d_id.b.area,
 		    fcport->d_id.b.al_pa);
 	}
@@ -1546,11 +1056,7 @@ qla2x00_sns_ga_nxt(scsi_qla_host_t *vha, fc_port_t *fcport)
 
 /**
  * qla2x00_sns_gid_pt() - SNS scan for fabric devices via GID_PT command.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * This command uses the old Exectute SNS Command mailbox routine.
@@ -1623,11 +1129,7 @@ qla2x00_sns_gid_pt(scsi_qla_host_t *vha, sw_info_t *list)
 
 /**
  * qla2x00_sns_gpn_id() - SNS Get Port Name (GPN_ID) query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * This command uses the old Exectute SNS Command mailbox routine.
@@ -1664,11 +1166,7 @@ qla2x00_sns_gpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 		    sns_cmd->p.gpn_data[9] != 0x02) {
 			ql_dbg(ql_dbg_disc + ql_dbg_buffer, vha, 0x207e,
 			    "GPN_ID failed, rejected request, gpn_rsp:\n");
-<<<<<<< HEAD
-			ql_dump_buffer(ql_dbg_disc, vha, 0x207f,
-=======
 			ql_dump_buffer(ql_dbg_disc + ql_dbg_buffer, vha, 0x207f,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    sns_cmd->p.gpn_data, 16);
 			rval = QLA_FUNCTION_FAILED;
 		} else {
@@ -1687,11 +1185,7 @@ qla2x00_sns_gpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 
 /**
  * qla2x00_sns_gnn_id() - SNS Get Node Name (GNN_ID) query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * This command uses the old Exectute SNS Command mailbox routine.
@@ -1737,23 +1231,9 @@ qla2x00_sns_gnn_id(scsi_qla_host_t *vha, sw_info_t *list)
 			    WWN_SIZE);
 
 			ql_dbg(ql_dbg_disc, vha, 0x206e,
-<<<<<<< HEAD
-			    "GID_PT entry - nn %02x%02x%02x%02x%02x%02x%02x%02x "
-			    "pn %02x%02x%02x%02x%02x%02x%02x%02x "
-			    "port_id=%02x%02x%02x.\n",
-			    list[i].node_name[0], list[i].node_name[1],
-			    list[i].node_name[2], list[i].node_name[3],
-			    list[i].node_name[4], list[i].node_name[5],
-			    list[i].node_name[6], list[i].node_name[7],
-			    list[i].port_name[0], list[i].port_name[1],
-			    list[i].port_name[2], list[i].port_name[3],
-			    list[i].port_name[4], list[i].port_name[5],
-			    list[i].port_name[6], list[i].port_name[7],
-=======
 			    "GID_PT entry - nn %8phN pn %8phN "
 			    "port_id=%02x%02x%02x.\n",
 			    list[i].node_name, list[i].port_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    list[i].d_id.b.domain, list[i].d_id.b.area,
 			    list[i].d_id.b.al_pa);
 		}
@@ -1767,13 +1247,8 @@ qla2x00_sns_gnn_id(scsi_qla_host_t *vha, sw_info_t *list)
 }
 
 /**
-<<<<<<< HEAD
- * qla2x00_snd_rft_id() - SNS Register FC-4 TYPEs (RFT_ID) supported by the HBA.
- * @ha: HA context
-=======
  * qla2x00_sns_rft_id() - SNS Register FC-4 TYPEs (RFT_ID) supported by the HBA.
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This command uses the old Exectute SNS Command mailbox routine.
  *
@@ -1822,12 +1297,7 @@ qla2x00_sns_rft_id(scsi_qla_host_t *vha)
 
 /**
  * qla2x00_sns_rnn_id() - SNS Register Node Name (RNN_ID) of the HBA.
-<<<<<<< HEAD
- * HBA.
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This command uses the old Exectute SNS Command mailbox routine.
  *
@@ -1883,38 +1353,23 @@ qla2x00_sns_rnn_id(scsi_qla_host_t *vha)
 
 /**
  * qla2x00_mgmt_svr_login() - Login to fabric Management Service.
-<<<<<<< HEAD
- * @ha: HA context
- *
- * Returns 0 on success.
- */
-static int
-=======
  * @vha: HA context
  *
  * Returns 0 on success.
  */
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_mgmt_svr_login(scsi_qla_host_t *vha)
 {
 	int ret, rval;
 	uint16_t mb[MAILBOX_REGISTER_COUNT];
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = QLA_SUCCESS;
 	if (vha->flags.management_server_logged_in)
 		return ret;
 
 	rval = ha->isp_ops->fabric_login(vha, vha->mgmt_svr_loop_id, 0xff, 0xff,
-<<<<<<< HEAD
-	    0xfa, mb, BIT_1|BIT_0);
-=======
 	    0xfa, mb, BIT_1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rval != QLA_SUCCESS || mb[0] != MBS_COMMAND_COMPLETE) {
 		if (rval == QLA_MEMORY_ALLOC_FAILED)
 			ql_dbg(ql_dbg_disc, vha, 0x2085,
@@ -1935,11 +1390,7 @@ qla2x00_mgmt_svr_login(scsi_qla_host_t *vha)
 
 /**
  * qla2x00_prep_ms_fdmi_iocb() - Prepare common MS IOCB fields for FDMI query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @req_size: request size in bytes
  * @rsp_size: response size in bytes
  *
@@ -1951,32 +1402,13 @@ qla2x00_prep_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size,
 {
 	ms_iocb_entry_t *ms_pkt;
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ms_pkt = ha->ms_iocb;
 	memset(ms_pkt, 0, sizeof(ms_iocb_entry_t));
 
 	ms_pkt->entry_type = MS_IOCB_TYPE;
 	ms_pkt->entry_count = 1;
 	SET_TARGET_ID(ha, ms_pkt->loop_id, vha->mgmt_svr_loop_id);
-<<<<<<< HEAD
-	ms_pkt->control_flags = __constant_cpu_to_le16(CF_READ | CF_HEAD_TAG);
-	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
-	ms_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
-	ms_pkt->total_dsd_count = __constant_cpu_to_le16(2);
-	ms_pkt->rsp_bytecount = cpu_to_le32(rsp_size);
-	ms_pkt->req_bytecount = cpu_to_le32(req_size);
-
-	ms_pkt->dseg_req_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ms_pkt->dseg_req_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ms_pkt->dseg_req_length = ms_pkt->req_bytecount;
-
-	ms_pkt->dseg_rsp_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ms_pkt->dseg_rsp_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ms_pkt->dseg_rsp_length = ms_pkt->rsp_bytecount;
-=======
 	ms_pkt->control_flags = cpu_to_le16(CF_READ | CF_HEAD_TAG);
 	ms_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
 	ms_pkt->cmd_dsd_count = cpu_to_le16(1);
@@ -1989,18 +1421,13 @@ qla2x00_prep_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size,
 
 	put_unaligned_le64(ha->ct_sns_dma, &ms_pkt->rsp_dsd.address);
 	ms_pkt->rsp_dsd.length = ms_pkt->rsp_bytecount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ms_pkt;
 }
 
 /**
  * qla24xx_prep_ms_fdmi_iocb() - Prepare common MS IOCB fields for FDMI query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @req_size: request size in bytes
  * @rsp_size: response size in bytes
  *
@@ -2020,20 +1447,6 @@ qla24xx_prep_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size,
 	ct_pkt->entry_count = 1;
 	ct_pkt->nport_handle = cpu_to_le16(vha->mgmt_svr_loop_id);
 	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
-<<<<<<< HEAD
-	ct_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
-	ct_pkt->rsp_dsd_count = __constant_cpu_to_le16(1);
-	ct_pkt->rsp_byte_count = cpu_to_le32(rsp_size);
-	ct_pkt->cmd_byte_count = cpu_to_le32(req_size);
-
-	ct_pkt->dseg_0_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ct_pkt->dseg_0_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ct_pkt->dseg_0_len = ct_pkt->cmd_byte_count;
-
-	ct_pkt->dseg_1_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ct_pkt->dseg_1_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ct_pkt->dseg_1_len = ct_pkt->rsp_byte_count;
-=======
 	ct_pkt->cmd_dsd_count = cpu_to_le16(1);
 	ct_pkt->rsp_dsd_count = cpu_to_le16(1);
 	ct_pkt->rsp_byte_count = cpu_to_le32(rsp_size);
@@ -2044,17 +1457,12 @@ qla24xx_prep_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size,
 
 	put_unaligned_le64(ha->ct_sns_dma, &ct_pkt->dsd[1].address);
 	ct_pkt->dsd[1].length = ct_pkt->rsp_byte_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ct_pkt->vp_index = vha->vp_idx;
 
 	return ct_pkt;
 }
 
-<<<<<<< HEAD
-static inline ms_iocb_entry_t *
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla2x00_update_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size)
 {
 	struct qla_hw_data *ha = vha->hw;
@@ -2063,20 +1471,6 @@ qla2x00_update_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size)
 
 	if (IS_FWI2_CAPABLE(ha)) {
 		ct_pkt->cmd_byte_count = cpu_to_le32(req_size);
-<<<<<<< HEAD
-		ct_pkt->dseg_0_len = ct_pkt->cmd_byte_count;
-	} else {
-		ms_pkt->req_bytecount = cpu_to_le32(req_size);
-		ms_pkt->dseg_req_length = ms_pkt->req_bytecount;
-	}
-
-	return ms_pkt;
-}
-
-/**
- * qla2x00_prep_ct_req() - Prepare common CT request fields for SNS query.
- * @ct_req: CT request buffer
-=======
 		ct_pkt->dsd[0].length = ct_pkt->cmd_byte_count;
 	} else {
 		ms_pkt->req_bytecount = cpu_to_le32(req_size);
@@ -2087,32 +1481,12 @@ qla2x00_update_ms_fdmi_iocb(scsi_qla_host_t *vha, uint32_t req_size)
 /**
  * qla2x00_prep_ct_fdmi_req() - Prepare common CT request fields for SNS query.
  * @p: CT request buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd: GS command
  * @rsp_size: response size in bytes
  *
  * Returns a pointer to the intitialized @ct_req.
  */
 static inline struct ct_sns_req *
-<<<<<<< HEAD
-qla2x00_prep_ct_fdmi_req(struct ct_sns_req *ct_req, uint16_t cmd,
-    uint16_t rsp_size)
-{
-	memset(ct_req, 0, sizeof(struct ct_sns_pkt));
-
-	ct_req->header.revision = 0x01;
-	ct_req->header.gs_type = 0xFA;
-	ct_req->header.gs_subtype = 0x10;
-	ct_req->command = cpu_to_be16(cmd);
-	ct_req->max_rsp_size = cpu_to_be16((rsp_size - 16) / 4);
-
-	return ct_req;
-}
-
-/**
- * qla2x00_fdmi_rhba() -
- * @ha: HA context
-=======
 qla2x00_prep_ct_fdmi_req(struct ct_sns_pkt *p, uint16_t cmd,
     uint16_t rsp_size)
 {
@@ -2767,157 +2141,10 @@ done:
  * qla2x00_fdmi_rhba() - perform RHBA FDMI registration
  * @vha: HA context
  * @callopt: Option to issue FDMI registration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success.
  */
 static int
-<<<<<<< HEAD
-qla2x00_fdmi_rhba(scsi_qla_host_t *vha)
-{
-	int rval, alen;
-	uint32_t size, sn;
-
-	ms_iocb_entry_t *ms_pkt;
-	struct ct_sns_req *ct_req;
-	struct ct_sns_rsp *ct_rsp;
-	uint8_t *entries;
-	struct ct_fdmi_hba_attr *eiter;
-	struct qla_hw_data *ha = vha->hw;
-
-	/* Issue RHBA */
-	/* Prepare common MS IOCB */
-	/*   Request size adjusted after CT preparation */
-	ms_pkt = ha->isp_ops->prep_ms_fdmi_iocb(vha, 0, RHBA_RSP_SIZE);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_fdmi_req(&ha->ct_sns->p.req, RHBA_CMD,
-	    RHBA_RSP_SIZE);
-	ct_rsp = &ha->ct_sns->p.rsp;
-
-	/* Prepare FDMI command arguments -- attribute block, attributes. */
-	memcpy(ct_req->req.rhba.hba_identifier, vha->port_name, WWN_SIZE);
-	ct_req->req.rhba.entry_count = __constant_cpu_to_be32(1);
-	memcpy(ct_req->req.rhba.port_name, vha->port_name, WWN_SIZE);
-	size = 2 * WWN_SIZE + 4 + 4;
-
-	/* Attributes */
-	ct_req->req.rhba.attrs.count =
-	    __constant_cpu_to_be32(FDMI_HBA_ATTR_COUNT);
-	entries = ct_req->req.rhba.hba_identifier;
-
-	/* Nodename. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_NODE_NAME);
-	eiter->len = __constant_cpu_to_be16(4 + WWN_SIZE);
-	memcpy(eiter->a.node_name, vha->node_name, WWN_SIZE);
-	size += 4 + WWN_SIZE;
-
-	ql_dbg(ql_dbg_disc, vha, 0x2025,
-	    "NodeName = %02x%02x%02x%02x%02x%02x%02x%02x.\n",
-	    eiter->a.node_name[0], eiter->a.node_name[1],
-	    eiter->a.node_name[2], eiter->a.node_name[3],
-	    eiter->a.node_name[4], eiter->a.node_name[5],
-	    eiter->a.node_name[6], eiter->a.node_name[7]);
-
-	/* Manufacturer. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_MANUFACTURER);
-	strcpy(eiter->a.manufacturer, "QLogic Corporation");
-	alen = strlen(eiter->a.manufacturer);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x2026,
-	    "Manufacturer = %s.\n", eiter->a.manufacturer);
-
-	/* Serial number. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_SERIAL_NUMBER);
-	sn = ((ha->serial0 & 0x1f) << 16) | (ha->serial2 << 8) | ha->serial1;
-	sprintf(eiter->a.serial_num, "%c%05d", 'A' + sn / 100000, sn % 100000);
-	alen = strlen(eiter->a.serial_num);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x2027,
-	    "Serial no. = %s.\n", eiter->a.serial_num);
-
-	/* Model name. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_MODEL);
-	strcpy(eiter->a.model, ha->model_number);
-	alen = strlen(eiter->a.model);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x2028,
-	    "Model Name = %s.\n", eiter->a.model);
-
-	/* Model description. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_MODEL_DESCRIPTION);
-	if (ha->model_desc)
-		strncpy(eiter->a.model_desc, ha->model_desc, 80);
-	alen = strlen(eiter->a.model_desc);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x2029,
-	    "Model Desc = %s.\n", eiter->a.model_desc);
-
-	/* Hardware version. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_HARDWARE_VERSION);
-	strcpy(eiter->a.hw_version, ha->adapter_id);
-	alen = strlen(eiter->a.hw_version);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x202a,
-	    "Hardware ver = %s.\n", eiter->a.hw_version);
-
-	/* Driver version. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_DRIVER_VERSION);
-	strcpy(eiter->a.driver_version, qla2x00_version_str);
-	alen = strlen(eiter->a.driver_version);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x202b,
-	    "Driver ver = %s.\n", eiter->a.driver_version);
-
-	/* Option ROM version. */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_OPTION_ROM_VERSION);
-	strcpy(eiter->a.orom_version, "0.00");
-	alen = strlen(eiter->a.orom_version);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha , 0x202c,
-	    "Optrom vers = %s.\n", eiter->a.orom_version);
-
-	/* Firmware version */
-	eiter = (struct ct_fdmi_hba_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_HBA_FIRMWARE_VERSION);
-	ha->isp_ops->fw_version_str(vha, eiter->a.fw_version);
-	alen = strlen(eiter->a.fw_version);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x202d,
-	    "Firmware vers = %s.\n", eiter->a.fw_version);
-=======
 qla2x00_fdmi_rhba(scsi_qla_host_t *vha, unsigned int callopt)
 {
 	struct qla_hw_data *ha = vha->hw;
@@ -2963,67 +2190,20 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha, unsigned int callopt)
 	entries = &ct_req->req.rhba.attrs.entry;
 
 	size += qla2x00_hba_attributes(vha, entries, callopt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update MS request size. */
 	qla2x00_update_ms_fdmi_iocb(vha, size + 16);
 
-<<<<<<< HEAD
-	ql_dbg(ql_dbg_disc, vha, 0x202e,
-	    "RHBA identifier = "
-	    "%02x%02x%02x%02x%02x%02x%02x%02x size=%d.\n",
-	    ct_req->req.rhba.hba_identifier[0],
-	    ct_req->req.rhba.hba_identifier[1],
-	    ct_req->req.rhba.hba_identifier[2],
-	    ct_req->req.rhba.hba_identifier[3],
-	    ct_req->req.rhba.hba_identifier[4],
-	    ct_req->req.rhba.hba_identifier[5],
-	    ct_req->req.rhba.hba_identifier[6],
-	    ct_req->req.rhba.hba_identifier[7], size);
-	ql_dump_buffer(ql_dbg_disc + ql_dbg_buffer, vha, 0x2076,
-=======
 	ql_dbg(ql_dbg_disc, vha, 0x20e1,
 	    "RHBA %016llx %016llx.\n",
 	    wwn_to_u64(ct_req->req.rhba.hba_identifier),
 	    wwn_to_u64(ct_req->req.rhba.port_name));
 
 	ql_dump_buffer(ql_dbg_disc + ql_dbg_buffer, vha, 0x20e2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    entries, size);
 
 	/* Execute MS IOCB */
 	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
-<<<<<<< HEAD
-	    sizeof(ms_iocb_entry_t));
-	if (rval != QLA_SUCCESS) {
-		/*EMPTY*/
-		ql_dbg(ql_dbg_disc, vha, 0x2030,
-		    "RHBA issue IOCB failed (%d).\n", rval);
-	} else if (qla2x00_chk_ms_status(vha, ms_pkt, ct_rsp, "RHBA") !=
-	    QLA_SUCCESS) {
-		rval = QLA_FUNCTION_FAILED;
-		if (ct_rsp->header.reason_code == CT_REASON_CANNOT_PERFORM &&
-		    ct_rsp->header.explanation_code ==
-		    CT_EXPL_ALREADY_REGISTERED) {
-			ql_dbg(ql_dbg_disc, vha, 0x2034,
-			    "HBA already registered.\n");
-			rval = QLA_ALREADY_REGISTERED;
-		}
-	} else {
-		ql_dbg(ql_dbg_disc, vha, 0x2035,
-		    "RHBA exiting normally.\n");
-	}
-
-	return rval;
-}
-
-/**
- * qla2x00_fdmi_dhba() -
- * @ha: HA context
- *
- * Returns 0 on success.
- */
-=======
 	    sizeof(*ha->ms_iocb));
 	if (rval) {
 		ql_dbg(ql_dbg_disc, vha, 0x20e3,
@@ -3053,7 +2233,6 @@ qla2x00_fdmi_rhba(scsi_qla_host_t *vha, unsigned int callopt)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 qla2x00_fdmi_dhba(scsi_qla_host_t *vha)
 {
@@ -3062,32 +2241,10 @@ qla2x00_fdmi_dhba(scsi_qla_host_t *vha)
 	ms_iocb_entry_t *ms_pkt;
 	struct ct_sns_req *ct_req;
 	struct ct_sns_rsp *ct_rsp;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Issue RPA */
 	/* Prepare common MS IOCB */
 	ms_pkt = ha->isp_ops->prep_ms_fdmi_iocb(vha, DHBA_REQ_SIZE,
 	    DHBA_RSP_SIZE);
-<<<<<<< HEAD
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_fdmi_req(&ha->ct_sns->p.req, DHBA_CMD,
-	    DHBA_RSP_SIZE);
-	ct_rsp = &ha->ct_sns->p.rsp;
-
-	/* Prepare FDMI command arguments -- portname. */
-	memcpy(ct_req->req.dhba.port_name, vha->port_name, WWN_SIZE);
-
-	ql_dbg(ql_dbg_disc, vha, 0x2036,
-	    "DHBA portname = %02x%02x%02x%02x%02x%02x%02x%02x.\n",
-	    ct_req->req.dhba.port_name[0], ct_req->req.dhba.port_name[1],
-	    ct_req->req.dhba.port_name[2], ct_req->req.dhba.port_name[3],
-	    ct_req->req.dhba.port_name[4], ct_req->req.dhba.port_name[5],
-	    ct_req->req.dhba.port_name[6], ct_req->req.dhba.port_name[7]);
-
-=======
 	/* Prepare CT request */
 	ct_req = qla2x00_prep_ct_fdmi_req(ha->ct_sns, DHBA_CMD, DHBA_RSP_SIZE);
 	ct_rsp = &ha->ct_sns->p.rsp;
@@ -3095,7 +2252,6 @@ qla2x00_fdmi_dhba(scsi_qla_host_t *vha)
 	memcpy(ct_req->req.dhba.port_name, vha->port_name, WWN_SIZE);
 	ql_dbg(ql_dbg_disc, vha, 0x2036,
 	    "DHBA portname = %8phN.\n", ct_req->req.dhba.port_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Execute MS IOCB */
 	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
 	    sizeof(ms_iocb_entry_t));
@@ -3110,178 +2266,18 @@ qla2x00_fdmi_dhba(scsi_qla_host_t *vha)
 		ql_dbg(ql_dbg_disc, vha, 0x2038,
 		    "DHBA exiting normally.\n");
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 /**
-<<<<<<< HEAD
- * qla2x00_fdmi_rpa() -
- * @ha: HA context
-=======
  * qla2x00_fdmi_rprt() - perform RPRT registration
  * @vha: HA context
  * @callopt: Option to issue extended or standard FDMI
  *           command parameter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success.
  */
 static int
-<<<<<<< HEAD
-qla2x00_fdmi_rpa(scsi_qla_host_t *vha)
-{
-	int rval, alen;
-	uint32_t size, max_frame_size;
-	struct qla_hw_data *ha = vha->hw;
-	ms_iocb_entry_t *ms_pkt;
-	struct ct_sns_req *ct_req;
-	struct ct_sns_rsp *ct_rsp;
-	uint8_t *entries;
-	struct ct_fdmi_port_attr *eiter;
-	struct init_cb_24xx *icb24 = (struct init_cb_24xx *)ha->init_cb;
-
-	/* Issue RPA */
-	/* Prepare common MS IOCB */
-	/*   Request size adjusted after CT preparation */
-	ms_pkt = ha->isp_ops->prep_ms_fdmi_iocb(vha, 0, RPA_RSP_SIZE);
-
-	/* Prepare CT request */
-	ct_req = qla2x00_prep_ct_fdmi_req(&ha->ct_sns->p.req, RPA_CMD,
-	    RPA_RSP_SIZE);
-	ct_rsp = &ha->ct_sns->p.rsp;
-
-	/* Prepare FDMI command arguments -- attribute block, attributes. */
-	memcpy(ct_req->req.rpa.port_name, vha->port_name, WWN_SIZE);
-	size = WWN_SIZE + 4;
-
-	/* Attributes */
-	ct_req->req.rpa.attrs.count =
-	    __constant_cpu_to_be32(FDMI_PORT_ATTR_COUNT - 1);
-	entries = ct_req->req.rpa.port_name;
-
-	/* FC4 types. */
-	eiter = (struct ct_fdmi_port_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_PORT_FC4_TYPES);
-	eiter->len = __constant_cpu_to_be16(4 + 32);
-	eiter->a.fc4_types[2] = 0x01;
-	size += 4 + 32;
-
-	ql_dbg(ql_dbg_disc, vha, 0x2039,
-	    "FC4_TYPES=%02x %02x.\n",
-	    eiter->a.fc4_types[2],
-	    eiter->a.fc4_types[1]);
-
-	/* Supported speed. */
-	eiter = (struct ct_fdmi_port_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_PORT_SUPPORT_SPEED);
-	eiter->len = __constant_cpu_to_be16(4 + 4);
-	if (IS_CNA_CAPABLE(ha))
-		eiter->a.sup_speed = __constant_cpu_to_be32(
-		    FDMI_PORT_SPEED_10GB);
-	else if (IS_QLA25XX(ha))
-		eiter->a.sup_speed = __constant_cpu_to_be32(
-		    FDMI_PORT_SPEED_1GB|FDMI_PORT_SPEED_2GB|
-		    FDMI_PORT_SPEED_4GB|FDMI_PORT_SPEED_8GB);
-	else if (IS_QLA24XX_TYPE(ha))
-		eiter->a.sup_speed = __constant_cpu_to_be32(
-		    FDMI_PORT_SPEED_1GB|FDMI_PORT_SPEED_2GB|
-		    FDMI_PORT_SPEED_4GB);
-	else if (IS_QLA23XX(ha))
-		eiter->a.sup_speed =__constant_cpu_to_be32(
-		    FDMI_PORT_SPEED_1GB|FDMI_PORT_SPEED_2GB);
-	else
-		eiter->a.sup_speed = __constant_cpu_to_be32(
-		    FDMI_PORT_SPEED_1GB);
-	size += 4 + 4;
-
-	ql_dbg(ql_dbg_disc, vha, 0x203a,
-	    "Supported_Speed=%x.\n", eiter->a.sup_speed);
-
-	/* Current speed. */
-	eiter = (struct ct_fdmi_port_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_PORT_CURRENT_SPEED);
-	eiter->len = __constant_cpu_to_be16(4 + 4);
-	switch (ha->link_data_rate) {
-	case PORT_SPEED_1GB:
-		eiter->a.cur_speed =
-		    __constant_cpu_to_be32(FDMI_PORT_SPEED_1GB);
-		break;
-	case PORT_SPEED_2GB:
-		eiter->a.cur_speed =
-		    __constant_cpu_to_be32(FDMI_PORT_SPEED_2GB);
-		break;
-	case PORT_SPEED_4GB:
-		eiter->a.cur_speed =
-		    __constant_cpu_to_be32(FDMI_PORT_SPEED_4GB);
-		break;
-	case PORT_SPEED_8GB:
-		eiter->a.cur_speed =
-		    __constant_cpu_to_be32(FDMI_PORT_SPEED_8GB);
-		break;
-	case PORT_SPEED_10GB:
-		eiter->a.cur_speed =
-		    __constant_cpu_to_be32(FDMI_PORT_SPEED_10GB);
-		break;
-	case PORT_SPEED_16GB:
-		eiter->a.cur_speed =
-		    __constant_cpu_to_be32(FDMI_PORT_SPEED_16GB);
-		break;
-	default:
-		eiter->a.cur_speed =
-		    __constant_cpu_to_be32(FDMI_PORT_SPEED_UNKNOWN);
-		break;
-	}
-	size += 4 + 4;
-
-	ql_dbg(ql_dbg_disc, vha, 0x203b,
-	    "Current_Speed=%x.\n", eiter->a.cur_speed);
-
-	/* Max frame size. */
-	eiter = (struct ct_fdmi_port_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_PORT_MAX_FRAME_SIZE);
-	eiter->len = __constant_cpu_to_be16(4 + 4);
-	max_frame_size = IS_FWI2_CAPABLE(ha) ?
-	    le16_to_cpu(icb24->frame_payload_size):
-	    le16_to_cpu(ha->init_cb->frame_payload_size);
-	eiter->a.max_frame_size = cpu_to_be32(max_frame_size);
-	size += 4 + 4;
-
-	ql_dbg(ql_dbg_disc, vha, 0x203c,
-	    "Max_Frame_Size=%x.\n", eiter->a.max_frame_size);
-
-	/* OS device name. */
-	eiter = (struct ct_fdmi_port_attr *) (entries + size);
-	eiter->type = __constant_cpu_to_be16(FDMI_PORT_OS_DEVICE_NAME);
-	strcpy(eiter->a.os_dev_name, QLA2XXX_DRIVER_NAME);
-	alen = strlen(eiter->a.os_dev_name);
-	alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-	eiter->len = cpu_to_be16(4 + alen);
-	size += 4 + alen;
-
-	ql_dbg(ql_dbg_disc, vha, 0x204b,
-	    "OS_Device_Name=%s.\n", eiter->a.os_dev_name);
-
-	/* Hostname. */
-	if (strlen(fc_host_system_hostname(vha->host))) {
-		ct_req->req.rpa.attrs.count =
-		    __constant_cpu_to_be32(FDMI_PORT_ATTR_COUNT);
-		eiter = (struct ct_fdmi_port_attr *) (entries + size);
-		eiter->type = __constant_cpu_to_be16(FDMI_PORT_HOST_NAME);
-		snprintf(eiter->a.host_name, sizeof(eiter->a.host_name),
-		    "%s", fc_host_system_hostname(vha->host));
-		alen = strlen(eiter->a.host_name);
-		alen += (alen & 3) ? (4 - (alen & 3)) : 4;
-		eiter->len = cpu_to_be16(4 + alen);
-		size += 4 + alen;
-
-		ql_dbg(ql_dbg_disc, vha, 0x203d,
-		    "HostName=%s.\n", eiter->a.host_name);
-	}
-=======
 qla2x00_fdmi_rprt(scsi_qla_host_t *vha, int callopt)
 {
 	struct scsi_qla_host *base_vha = pci_get_drvdata(vha->hw->pdev);
@@ -3405,45 +2401,18 @@ qla2x00_fdmi_rpa(scsi_qla_host_t *vha, uint callopt)
 	entries = ct_req->req.rpa.attrs.entry;
 
 	size += qla2x00_port_attributes(vha, entries, callopt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update MS request size. */
 	qla2x00_update_ms_fdmi_iocb(vha, size + 16);
 
-<<<<<<< HEAD
-	ql_dbg(ql_dbg_disc, vha, 0x203e,
-	    "RPA portname= %02x%02x%02x%02x%02X%02x%02x%02x size=%d.\n",
-	    ct_req->req.rpa.port_name[0], ct_req->req.rpa.port_name[1],
-	    ct_req->req.rpa.port_name[2], ct_req->req.rpa.port_name[3],
-	    ct_req->req.rpa.port_name[4], ct_req->req.rpa.port_name[5],
-	    ct_req->req.rpa.port_name[6], ct_req->req.rpa.port_name[7],
-	    size);
-	ql_dump_buffer(ql_dbg_disc + ql_dbg_buffer, vha, 0x2079,
-=======
 	ql_dbg(ql_dbg_disc, vha, 0x20f1,
 	    "RPA %016llx.\n", wwn_to_u64(ct_req->req.rpa.port_name));
 
 	ql_dump_buffer(ql_dbg_disc + ql_dbg_buffer, vha, 0x20f2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    entries, size);
 
 	/* Execute MS IOCB */
 	rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
-<<<<<<< HEAD
-	    sizeof(ms_iocb_entry_t));
-	if (rval != QLA_SUCCESS) {
-		/*EMPTY*/
-		ql_dbg(ql_dbg_disc, vha, 0x2040,
-		    "RPA issue IOCB failed (%d).\n", rval);
-	} else if (qla2x00_chk_ms_status(vha, ms_pkt, ct_rsp, "RPA") !=
-	    QLA_SUCCESS) {
-		rval = QLA_FUNCTION_FAILED;
-	} else {
-		ql_dbg(ql_dbg_disc, vha, 0x2041,
-		    "RPA exiting nornally.\n");
-	}
-
-=======
 	    sizeof(*ha->ms_iocb));
 	if (rval) {
 		ql_dbg(ql_dbg_disc, vha, 0x20f3,
@@ -3469,45 +2438,29 @@ qla2x00_fdmi_rpa(scsi_qla_host_t *vha, uint callopt)
 	}
 
 	ql_dbg(ql_dbg_disc, vha, 0x20f6, "RPA exiting normally.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 /**
  * qla2x00_fdmi_register() -
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success.
  */
 int
 qla2x00_fdmi_register(scsi_qla_host_t *vha)
 {
-<<<<<<< HEAD
-	int rval;
-       struct qla_hw_data *ha = vha->hw;
-
-	if (IS_QLA2100(ha) || IS_QLA2200(ha))
-		return QLA_FUNCTION_FAILED;
-=======
 	int rval = QLA_SUCCESS;
 	struct qla_hw_data *ha = vha->hw;
 
 	if (IS_QLA2100(ha) || IS_QLA2200(ha) ||
 	    IS_QLAFX00(ha))
 		return rval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rval = qla2x00_mgmt_svr_login(vha);
 	if (rval)
 		return rval;
 
-<<<<<<< HEAD
-	rval = qla2x00_fdmi_rhba(vha);
-=======
 	/* For npiv/vport send rprt only */
 	if (vha->vp_idx) {
 		if (ql2xsmartsan)
@@ -3546,7 +2499,6 @@ qla2x00_fdmi_register(scsi_qla_host_t *vha)
 
 try_fdmi:
 	rval = qla2x00_fdmi_rhba(vha, CALLOPT_FDMI1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rval) {
 		if (rval != QLA_ALREADY_REGISTERED)
 			return rval;
@@ -3555,31 +2507,19 @@ try_fdmi:
 		if (rval)
 			return rval;
 
-<<<<<<< HEAD
-		rval = qla2x00_fdmi_rhba(vha);
-		if (rval)
-			return rval;
-	}
-	rval = qla2x00_fdmi_rpa(vha);
-=======
 		rval = qla2x00_fdmi_rhba(vha, CALLOPT_FDMI1);
 		if (rval)
 			return rval;
 	}
 
 	rval = qla2x00_fdmi_rpa(vha, CALLOPT_FDMI1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rval;
 }
 
 /**
  * qla2x00_gfpn_id() - SNS Get Fabric Port Name (GFPN_ID) query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * Returns 0 on success.
@@ -3593,24 +2533,11 @@ qla2x00_gfpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 	ms_iocb_entry_t	*ms_pkt;
 	struct ct_sns_req	*ct_req;
 	struct ct_sns_rsp	*ct_rsp;
-<<<<<<< HEAD
-=======
 	struct ct_arg arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_IIDMA_CAPABLE(ha))
 		return QLA_FUNCTION_FAILED;
 
-<<<<<<< HEAD
-	for (i = 0; i < ha->max_fibre_devices; i++) {
-		/* Issue GFPN_ID */
-		/* Prepare common MS IOCB */
-		ms_pkt = ha->isp_ops->prep_ms_iocb(vha, GFPN_ID_REQ_SIZE,
-		    GFPN_ID_RSP_SIZE);
-
-		/* Prepare CT request */
-		ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, GFPN_ID_CMD,
-=======
 	arg.iocb = ha->ms_iocb;
 	arg.req_dma = ha->ct_sns_dma;
 	arg.rsp_dma = ha->ct_sns_dma;
@@ -3625,18 +2552,11 @@ qla2x00_gfpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 
 		/* Prepare CT request */
 		ct_req = qla2x00_prep_ct_req(ha->ct_sns, GFPN_ID_CMD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    GFPN_ID_RSP_SIZE);
 		ct_rsp = &ha->ct_sns->p.rsp;
 
 		/* Prepare CT arguments -- port_id */
-<<<<<<< HEAD
-		ct_req->req.port_id.port_id[0] = list[i].d_id.b.domain;
-		ct_req->req.port_id.port_id[1] = list[i].d_id.b.area;
-		ct_req->req.port_id.port_id[2] = list[i].d_id.b.al_pa;
-=======
 		ct_req->req.port_id.port_id = port_id_to_be_id(list[i].d_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Execute MS IOCB */
 		rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
@@ -3664,52 +2584,6 @@ qla2x00_gfpn_id(scsi_qla_host_t *vha, sw_info_t *list)
 	return (rval);
 }
 
-<<<<<<< HEAD
-static inline void *
-qla24xx_prep_ms_fm_iocb(scsi_qla_host_t *vha, uint32_t req_size,
-    uint32_t rsp_size)
-{
-	struct ct_entry_24xx *ct_pkt;
-	struct qla_hw_data *ha = vha->hw;
-	ct_pkt = (struct ct_entry_24xx *)ha->ms_iocb;
-	memset(ct_pkt, 0, sizeof(struct ct_entry_24xx));
-
-	ct_pkt->entry_type = CT_IOCB_TYPE;
-	ct_pkt->entry_count = 1;
-	ct_pkt->nport_handle = cpu_to_le16(vha->mgmt_svr_loop_id);
-	ct_pkt->timeout = cpu_to_le16(ha->r_a_tov / 10 * 2);
-	ct_pkt->cmd_dsd_count = __constant_cpu_to_le16(1);
-	ct_pkt->rsp_dsd_count = __constant_cpu_to_le16(1);
-	ct_pkt->rsp_byte_count = cpu_to_le32(rsp_size);
-	ct_pkt->cmd_byte_count = cpu_to_le32(req_size);
-
-	ct_pkt->dseg_0_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ct_pkt->dseg_0_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ct_pkt->dseg_0_len = ct_pkt->cmd_byte_count;
-
-	ct_pkt->dseg_1_address[0] = cpu_to_le32(LSD(ha->ct_sns_dma));
-	ct_pkt->dseg_1_address[1] = cpu_to_le32(MSD(ha->ct_sns_dma));
-	ct_pkt->dseg_1_len = ct_pkt->rsp_byte_count;
-	ct_pkt->vp_index = vha->vp_idx;
-
-	return ct_pkt;
-}
-
-
-static inline struct ct_sns_req *
-qla24xx_prep_ct_fm_req(struct ct_sns_req *ct_req, uint16_t cmd,
-    uint16_t rsp_size)
-{
-	memset(ct_req, 0, sizeof(struct ct_sns_pkt));
-
-	ct_req->header.revision = 0x01;
-	ct_req->header.gs_type = 0xFA;
-	ct_req->header.gs_subtype = 0x01;
-	ct_req->command = cpu_to_be16(cmd);
-	ct_req->max_rsp_size = cpu_to_be16((rsp_size - 16) / 4);
-
-	return ct_req;
-=======
 
 static inline struct ct_sns_req *
 qla24xx_prep_ct_fm_req(struct ct_sns_pkt *p, uint16_t cmd,
@@ -3749,16 +2623,11 @@ qla2x00_port_speed_capability(uint16_t speed)
 	default:
 		return PORT_SPEED_UNKNOWN;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * qla2x00_gpsc() - FCS Get Port Speed Capabilities (GPSC) query.
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  * Returns 0 on success.
@@ -3769,16 +2638,10 @@ qla2x00_gpsc(scsi_qla_host_t *vha, sw_info_t *list)
 	int		rval;
 	uint16_t	i;
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-	ms_iocb_entry_t	*ms_pkt;
-	struct ct_sns_req	*ct_req;
-	struct ct_sns_rsp	*ct_rsp;
-=======
 	ms_iocb_entry_t *ms_pkt;
 	struct ct_sns_req	*ct_req;
 	struct ct_sns_rsp	*ct_rsp;
 	struct ct_arg arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_IIDMA_CAPABLE(ha))
 		return QLA_FUNCTION_FAILED;
@@ -3789,17 +2652,6 @@ qla2x00_gpsc(scsi_qla_host_t *vha, sw_info_t *list)
 	if (rval)
 		return rval;
 
-<<<<<<< HEAD
-	for (i = 0; i < ha->max_fibre_devices; i++) {
-		/* Issue GFPN_ID */
-		/* Prepare common MS IOCB */
-		ms_pkt = qla24xx_prep_ms_fm_iocb(vha, GPSC_REQ_SIZE,
-		    GPSC_RSP_SIZE);
-
-		/* Prepare CT request */
-		ct_req = qla24xx_prep_ct_fm_req(&ha->ct_sns->p.req,
-		    GPSC_CMD, GPSC_RSP_SIZE);
-=======
 	arg.iocb = ha->ms_iocb;
 	arg.req_dma = ha->ct_sns_dma;
 	arg.rsp_dma = ha->ct_sns_dma;
@@ -3815,7 +2667,6 @@ qla2x00_gpsc(scsi_qla_host_t *vha, sw_info_t *list)
 		/* Prepare CT request */
 		ct_req = qla24xx_prep_ct_fm_req(ha->ct_sns, GPSC_CMD,
 		    GPSC_RSP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ct_rsp = &ha->ct_sns->p.rsp;
 
 		/* Prepare CT arguments -- port_name */
@@ -3846,46 +2697,12 @@ qla2x00_gpsc(scsi_qla_host_t *vha, sw_info_t *list)
 			}
 			rval = QLA_FUNCTION_FAILED;
 		} else {
-<<<<<<< HEAD
-			/* Save port-speed */
-			switch (be16_to_cpu(ct_rsp->rsp.gpsc.speed)) {
-			case BIT_15:
-				list[i].fp_speed = PORT_SPEED_1GB;
-				break;
-			case BIT_14:
-				list[i].fp_speed = PORT_SPEED_2GB;
-				break;
-			case BIT_13:
-				list[i].fp_speed = PORT_SPEED_4GB;
-				break;
-			case BIT_12:
-				list[i].fp_speed = PORT_SPEED_10GB;
-				break;
-			case BIT_11:
-				list[i].fp_speed = PORT_SPEED_8GB;
-				break;
-			}
-
-			ql_dbg(ql_dbg_disc, vha, 0x205b,
-			    "GPSC ext entry - fpn "
-			    "%02x%02x%02x%02x%02x%02x%02x%02x speeds=%04x "
-			    "speed=%04x.\n",
-			    list[i].fabric_port_name[0],
-			    list[i].fabric_port_name[1],
-			    list[i].fabric_port_name[2],
-			    list[i].fabric_port_name[3],
-			    list[i].fabric_port_name[4],
-			    list[i].fabric_port_name[5],
-			    list[i].fabric_port_name[6],
-			    list[i].fabric_port_name[7],
-=======
 			list->fp_speed = qla2x00_port_speed_capability(
 			    be16_to_cpu(ct_rsp->rsp.gpsc.speed));
 			ql_dbg(ql_dbg_disc, vha, 0x205b,
 			    "GPSC ext entry - fpn "
 			    "%8phN speeds=%04x speed=%04x.\n",
 			    list[i].fabric_port_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    be16_to_cpu(ct_rsp->rsp.gpsc.speeds),
 			    be16_to_cpu(ct_rsp->rsp.gpsc.speed));
 		}
@@ -3901,11 +2718,7 @@ qla2x00_gpsc(scsi_qla_host_t *vha, sw_info_t *list)
 /**
  * qla2x00_gff_id() - SNS Get FC-4 Features (GFF_ID) query.
  *
-<<<<<<< HEAD
- * @ha: HA context
-=======
  * @vha: HA context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @list: switch info entries to populate
  *
  */
@@ -3919,34 +2732,18 @@ qla2x00_gff_id(scsi_qla_host_t *vha, sw_info_t *list)
 	struct ct_sns_req	*ct_req;
 	struct ct_sns_rsp	*ct_rsp;
 	struct qla_hw_data *ha = vha->hw;
-<<<<<<< HEAD
-	uint8_t fcp_scsi_features = 0;
-=======
 	uint8_t fcp_scsi_features = 0, nvme_features = 0;
 	struct ct_arg arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ha->max_fibre_devices; i++) {
 		/* Set default FC4 Type as UNKNOWN so the default is to
 		 * Process this port */
-<<<<<<< HEAD
-		list[i].fc4_type = FC4_TYPE_UNKNOWN;
-=======
 		list[i].fc4_type = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Do not attempt GFF_ID if we are not FWI_2 capable */
 		if (!IS_FWI2_CAPABLE(ha))
 			continue;
 
-<<<<<<< HEAD
-		/* Prepare common MS IOCB */
-		ms_pkt = ha->isp_ops->prep_ms_iocb(vha, GFF_ID_REQ_SIZE,
-		    GFF_ID_RSP_SIZE);
-
-		/* Prepare CT request */
-		ct_req = qla2x00_prep_ct_req(&ha->ct_sns->p.req, GFF_ID_CMD,
-=======
 		arg.iocb = ha->ms_iocb;
 		arg.req_dma = ha->ct_sns_dma;
 		arg.rsp_dma = ha->ct_sns_dma;
@@ -3959,18 +2756,11 @@ qla2x00_gff_id(scsi_qla_host_t *vha, sw_info_t *list)
 
 		/* Prepare CT request */
 		ct_req = qla2x00_prep_ct_req(ha->ct_sns, GFF_ID_CMD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    GFF_ID_RSP_SIZE);
 		ct_rsp = &ha->ct_sns->p.rsp;
 
 		/* Prepare CT arguments -- port_id */
-<<<<<<< HEAD
-		ct_req->req.port_id.port_id[0] = list[i].d_id.b.domain;
-		ct_req->req.port_id.port_id[1] = list[i].d_id.b.area;
-		ct_req->req.port_id.port_id[2] = list[i].d_id.b.al_pa;
-=======
 		ct_req->req.port_id.port_id = port_id_to_be_id(list[i].d_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Execute MS IOCB */
 		rval = qla2x00_issue_iocb(vha, ha->ms_iocb, ha->ms_iocb_dma,
@@ -3988,12 +2778,6 @@ qla2x00_gff_id(scsi_qla_host_t *vha, sw_info_t *list)
 			   ct_rsp->rsp.gff_id.fc4_features[GFF_FCP_SCSI_OFFSET];
 			fcp_scsi_features &= 0x0f;
 
-<<<<<<< HEAD
-			if (fcp_scsi_features)
-				list[i].fc4_type = FC4_TYPE_FCP_SCSI;
-			else
-				list[i].fc4_type = FC4_TYPE_OTHER;
-=======
 			if (fcp_scsi_features) {
 				list[i].fc4_type = FS_FC4TYPE_FCP;
 				list[i].fc4_features = fcp_scsi_features;
@@ -4007,7 +2791,6 @@ qla2x00_gff_id(scsi_qla_host_t *vha, sw_info_t *list)
 				list[i].fc4_type |= FS_FC4TYPE_NVME;
 				list[i].fc4_features = nvme_features;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Last device exit. */
@@ -4015,8 +2798,6 @@ qla2x00_gff_id(scsi_qla_host_t *vha, sw_info_t *list)
 			break;
 	}
 }
-<<<<<<< HEAD
-=======
 
 int qla24xx_post_gpsc_work(struct scsi_qla_host *vha, fc_port_t *fcport)
 {
@@ -5239,4 +4020,3 @@ int qla24xx_post_gfpnid_work(struct scsi_qla_host *vha, fc_port_t *fcport)
 	e->u.fcport.fcport = fcport;
 	return qla2x00_post_work(vha, e);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

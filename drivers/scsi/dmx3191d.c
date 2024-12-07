@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     dmx3191d.c - driver for the Domex DMX3191D SCSI card.
     Copyright (C) 2000 by Massimo Piccioni <dafastidio@libero.it>
@@ -9,22 +6,6 @@
 
     Based on the generic NCR5380 driver by Drew Eckhardt et al.
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/init.h>
@@ -40,22 +21,6 @@
 /*
  * Definitions for the generic 5380 driver.
  */
-<<<<<<< HEAD
-#define AUTOSENSE
-
-#define NCR5380_read(reg)		inb(port + reg)
-#define NCR5380_write(reg, value)	outb(value, port + reg)
-
-#define NCR5380_implementation_fields	unsigned int port
-#define NCR5380_local_declare()		NCR5380_implementation_fields
-#define NCR5380_setup(instance)		port = instance->io_port
-
-/*
- * Includes needed for NCR5380.[ch] (XXX: Move them to NCR5380.h)
- */
-#include <linux/delay.h>
-#include "scsi.h"
-=======
 
 #define NCR5380_read(reg)		inb(hostdata->base + (reg))
 #define NCR5380_write(reg, value)	outb(value, hostdata->base + (reg))
@@ -66,7 +31,6 @@
 #define NCR5380_dma_residual		NCR5380_dma_residual_none
 
 #define NCR5380_implementation_fields	/* none */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "NCR5380.h"
 #include "NCR5380.c"
@@ -75,14 +39,6 @@
 #define DMX3191D_REGION_LEN	8
 
 
-<<<<<<< HEAD
-static struct scsi_host_template dmx3191d_driver_template = {
-	.proc_name		= DMX3191D_DRIVER_NAME,
-	.name			= "Domex DMX3191D",
-	.queuecommand		= NCR5380_queue_command,
-	.eh_abort_handler	= NCR5380_abort,
-	.eh_bus_reset_handler	= NCR5380_bus_reset,
-=======
 static const struct scsi_host_template dmx3191d_driver_template = {
 	.module			= THIS_MODULE,
 	.proc_name		= DMX3191D_DRIVER_NAME,
@@ -91,20 +47,10 @@ static const struct scsi_host_template dmx3191d_driver_template = {
 	.queuecommand		= NCR5380_queue_command,
 	.eh_abort_handler	= NCR5380_abort,
 	.eh_host_reset_handler	= NCR5380_host_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.can_queue		= 32,
 	.this_id		= 7,
 	.sg_tablesize		= SG_ALL,
 	.cmd_per_lun		= 2,
-<<<<<<< HEAD
-	.use_clustering		= DISABLE_CLUSTERING,
-};
-
-static int __devinit dmx3191d_probe_one(struct pci_dev *pdev,
-		const struct pci_device_id *id)
-{
-	struct Scsi_Host *shost;
-=======
 	.dma_boundary		= PAGE_SIZE - 1,
 	.cmd_size		= sizeof(struct NCR5380_cmd),
 };
@@ -114,7 +60,6 @@ static int dmx3191d_probe_one(struct pci_dev *pdev,
 {
 	struct Scsi_Host *shost;
 	struct NCR5380_hostdata *hostdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long io;
 	int error = -ENODEV;
 
@@ -132,22 +77,6 @@ static int dmx3191d_probe_one(struct pci_dev *pdev,
 			sizeof(struct NCR5380_hostdata));
 	if (!shost)
 		goto out_release_region;       
-<<<<<<< HEAD
-	shost->io_port = io;
-	shost->irq = pdev->irq;
-
-	NCR5380_init(shost, FLAG_NO_PSEUDO_DMA | FLAG_DTC3181E);
-
-	if (request_irq(pdev->irq, NCR5380_intr, IRQF_SHARED,
-				DMX3191D_DRIVER_NAME, shost)) {
-		/*
-		 * Steam powered scsi controllers run without an IRQ anyway
-		 */
-		printk(KERN_WARNING "dmx3191: IRQ %d not available - "
-				    "switching to polled mode.\n", pdev->irq);
-		shost->irq = SCSI_IRQ_NONE;
-	}
-=======
 
 	hostdata = shost_priv(shost);
 	hostdata->base = io;
@@ -162,30 +91,20 @@ static int dmx3191d_probe_one(struct pci_dev *pdev,
 		goto out_host_put;
 
 	NCR5380_maybe_reset_bus(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pdev, shost);
 
 	error = scsi_add_host(shost, &pdev->dev);
 	if (error)
-<<<<<<< HEAD
-		goto out_free_irq;
-=======
 		goto out_exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scsi_scan_host(shost);
 	return 0;
 
-<<<<<<< HEAD
- out_free_irq:
-	free_irq(shost->irq, shost);
-=======
 out_exit:
 	NCR5380_exit(shost);
 out_host_put:
 	scsi_host_put(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out_release_region:
 	release_region(io, DMX3191D_REGION_LEN);
  out_disable_device:
@@ -194,34 +113,18 @@ out_host_put:
 	return error;
 }
 
-<<<<<<< HEAD
-static void __devexit dmx3191d_remove_one(struct pci_dev *pdev)
-{
-	struct Scsi_Host *shost = pci_get_drvdata(pdev);
-=======
 static void dmx3191d_remove_one(struct pci_dev *pdev)
 {
 	struct Scsi_Host *shost = pci_get_drvdata(pdev);
 	struct NCR5380_hostdata *hostdata = shost_priv(shost);
 	unsigned long io = hostdata->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scsi_remove_host(shost);
 
 	NCR5380_exit(shost);
-<<<<<<< HEAD
-
-	if (shost->irq != SCSI_IRQ_NONE)
-		free_irq(shost->irq, shost);
-	release_region(shost->io_port, DMX3191D_REGION_LEN);
-	pci_disable_device(pdev);
-
-	scsi_host_put(shost);
-=======
 	scsi_host_put(shost);
 	release_region(io, DMX3191D_REGION_LEN);
 	pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_device_id dmx3191d_pci_tbl[] = {
@@ -235,28 +138,10 @@ static struct pci_driver dmx3191d_pci_driver = {
 	.name		= DMX3191D_DRIVER_NAME,
 	.id_table	= dmx3191d_pci_tbl,
 	.probe		= dmx3191d_probe_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(dmx3191d_remove_one),
-};
-
-static int __init dmx3191d_init(void)
-{
-	return pci_register_driver(&dmx3191d_pci_driver);
-}
-
-static void __exit dmx3191d_exit(void)
-{
-	pci_unregister_driver(&dmx3191d_pci_driver);
-}
-
-module_init(dmx3191d_init);
-module_exit(dmx3191d_exit);
-=======
 	.remove		= dmx3191d_remove_one,
 };
 
 module_pci_driver(dmx3191d_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Massimo Piccioni <dafastidio@libero.it>");
 MODULE_DESCRIPTION("Domex DMX3191D SCSI driver");

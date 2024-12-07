@@ -1,14 +1,8 @@
 #!/bin/sh
-<<<<<<< HEAD
-
-#
-# buildtar 0.0.4
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 #
 # buildtar 0.0.5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # (C) 2004-2006 by Jan-Benedict Glaw <jbglaw@lug-owl.de>
 #
@@ -22,40 +16,7 @@ set -e
 #
 # Some variables and settings used throughout the script
 #
-<<<<<<< HEAD
-tmpdir="${objtree}/tar-install"
-tarball="${objtree}/linux-${KERNELRELEASE}.tar"
-
-
-#
-# Figure out how to compress, if requested at all
-#
-case "${1}" in
-	tar-pkg)
-		compress="cat"
-		file_ext=""
-		;;
-	targz-pkg)
-		compress="gzip -c9"
-		file_ext=".gz"
-		;;
-	tarbz2-pkg)
-		compress="bzip2 -c9"
-		file_ext=".bz2"
-		;;
-	tarxz-pkg)
-		compress="xz -c9"
-		file_ext=".xz"
-		;;
-	*)
-		echo "Unknown tarball target \"${1}\" requested, please add it to ${0}." >&2
-		exit 1
-		;;
-esac
-
-=======
 tmpdir=$1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Clean-up and re-create the temporary directory
@@ -65,12 +26,6 @@ mkdir -p -- "${tmpdir}/boot"
 
 
 #
-<<<<<<< HEAD
-# Try to install modules
-#
-if grep -q '^CONFIG_MODULES=y' "${objtree}/.config"; then
-	make ARCH="${ARCH}" O="${objtree}" KBUILD_SRC= INSTALL_MOD_PATH="${tmpdir}" modules_install
-=======
 # Try to install dtbs
 #
 if grep -q '^CONFIG_OF_EARLY_FLATTREE=y' include/config/auto.conf; then
@@ -78,17 +33,10 @@ if grep -q '^CONFIG_OF_EARLY_FLATTREE=y' include/config/auto.conf; then
 	if [ -d "${srctree}/arch/${SRCARCH}/boot/dts" ]; then
 		$MAKE ARCH="${ARCH}" -f ${srctree}/Makefile INSTALL_DTBS_PATH="${tmpdir}/boot/dtbs/${KERNELRELEASE}" dtbs_install
     fi
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fi
 
 
 #
-<<<<<<< HEAD
-# Install basic kernel files
-#
-cp -v -- "${objtree}/System.map" "${tmpdir}/boot/System.map-${KERNELRELEASE}"
-cp -v -- "${objtree}/.config" "${tmpdir}/boot/config-${KERNELRELEASE}"
-=======
 # Install modules
 #
 make ARCH="${ARCH}" -f ${srctree}/Makefile INSTALL_MOD_PATH="${tmpdir}" modules_install
@@ -99,7 +47,6 @@ make ARCH="${ARCH}" -f ${srctree}/Makefile INSTALL_MOD_PATH="${tmpdir}" modules_
 #
 cp -v -- "${objtree}/System.map" "${tmpdir}/boot/System.map-${KERNELRELEASE}"
 cp -v -- "${KCONFIG_CONFIG}" "${tmpdir}/boot/config-${KERNELRELEASE}"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cp -v -- "${objtree}/vmlinux" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
 
 
@@ -117,11 +64,6 @@ case "${ARCH}" in
 		[ -f "${KBUILD_IMAGE}" ] && cp -v -- "${KBUILD_IMAGE}" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}"
 		[ -f "${objtree}/lifimage" ] && cp -v -- "${objtree}/lifimage" "${tmpdir}/boot/lifimage-${KERNELRELEASE}"
 		;;
-<<<<<<< HEAD
-	vax)
-		[ -f "${objtree}/vmlinux.SYS" ] && cp -v -- "${objtree}/vmlinux.SYS" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}.SYS"
-		[ -f "${objtree}/vmlinux.dsk" ] && cp -v -- "${objtree}/vmlinux.dsk" "${tmpdir}/boot/vmlinux-${KERNELRELEASE}.dsk"
-=======
 	mips)
 		if [ -f "${objtree}/arch/mips/boot/compressed/vmlinux.bin" ]; then
 			cp -v -- "${objtree}/arch/mips/boot/compressed/vmlinux.bin" "${tmpdir}/boot/vmlinuz-${KERNELRELEASE}"
@@ -158,7 +100,6 @@ case "${ARCH}" in
 				break
 			fi
 		done
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		;;
 	*)
 		[ -f "${KBUILD_IMAGE}" ] && cp -v -- "${KBUILD_IMAGE}" "${tmpdir}/boot/vmlinux-kbuild-${KERNELRELEASE}"
@@ -171,24 +112,3 @@ case "${ARCH}" in
 		sleep 5
 		;;
 esac
-<<<<<<< HEAD
-
-
-#
-# Create the tarball
-#
-(
-	cd "${tmpdir}"
-	opts=
-	if tar --owner=root --group=root --help >/dev/null 2>&1; then
-		opts="--owner=root --group=root"
-	fi
-	tar cf - boot/* lib/* $opts | ${compress} > "${tarball}${file_ext}"
-)
-
-echo "Tarball successfully created in ${tarball}${file_ext}"
-
-exit 0
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

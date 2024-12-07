@@ -1,28 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stack_o2cb.c
  *
  * Code which interfaces ocfs2 with the o2cb stack.
  *
  * Copyright (C) 2007 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, version 2.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -75,36 +57,10 @@ static inline int mode_to_o2dlm(int mode)
 	return mode;
 }
 
-<<<<<<< HEAD
-#define map_flag(_generic, _o2dlm)		\
-	if (flags & (_generic)) {		\
-		flags &= ~(_generic);		\
-		o2dlm_flags |= (_o2dlm);	\
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int flags_to_o2dlm(u32 flags)
 {
 	int o2dlm_flags = 0;
 
-<<<<<<< HEAD
-	map_flag(DLM_LKF_NOQUEUE, LKM_NOQUEUE);
-	map_flag(DLM_LKF_CANCEL, LKM_CANCEL);
-	map_flag(DLM_LKF_CONVERT, LKM_CONVERT);
-	map_flag(DLM_LKF_VALBLK, LKM_VALBLK);
-	map_flag(DLM_LKF_IVVALBLK, LKM_INVVALBLK);
-	map_flag(DLM_LKF_ORPHAN, LKM_ORPHAN);
-	map_flag(DLM_LKF_FORCEUNLOCK, LKM_FORCE);
-	map_flag(DLM_LKF_TIMEOUT, LKM_TIMEOUT);
-	map_flag(DLM_LKF_LOCAL, LKM_LOCAL);
-
-	/* map_flag() should have cleared every flag passed in */
-	BUG_ON(flags != 0);
-
-	return o2dlm_flags;
-}
-#undef map_flag
-=======
 	if (flags & DLM_LKF_NOQUEUE)
 		o2dlm_flags |= LKM_NOQUEUE;
 	if (flags & DLM_LKF_CANCEL)
@@ -126,7 +82,6 @@ static int flags_to_o2dlm(u32 flags)
 
 	return o2dlm_flags;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Map an o2dlm status to standard errno values.
@@ -318,32 +273,19 @@ static int o2cb_cluster_check(void)
 	 */
 #define	O2CB_MAP_STABILIZE_COUNT	60
 	for (i = 0; i < O2CB_MAP_STABILIZE_COUNT; ++i) {
-<<<<<<< HEAD
-		o2hb_fill_node_map(hbmap, sizeof(hbmap));
-=======
 		o2hb_fill_node_map(hbmap, O2NM_MAX_NODES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!test_bit(node_num, hbmap)) {
 			printk(KERN_ERR "o2cb: %s heartbeat has not been "
 			       "started.\n", (o2hb_global_heartbeat_active() ?
 					      "Global" : "Local"));
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		o2net_fill_node_map(netmap, sizeof(netmap));
-		/* Force set the current node to allow easy compare */
-		set_bit(node_num, netmap);
-		if (!memcmp(hbmap, netmap, sizeof(hbmap)))
-			return 0;
-		if (i < O2CB_MAP_STABILIZE_COUNT)
-=======
 		o2net_fill_node_map(netmap, O2NM_MAX_NODES);
 		/* Force set the current node to allow easy compare */
 		set_bit(node_num, netmap);
 		if (bitmap_equal(hbmap, netmap, O2NM_MAX_NODES))
 			return 0;
 		if (i < O2CB_MAP_STABILIZE_COUNT - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msleep(1000);
 	}
 
@@ -424,11 +366,7 @@ static int o2cb_cluster_connect(struct ocfs2_cluster_connection *conn)
 	dlm_register_eviction_cb(dlm, &priv->op_eviction_cb);
 
 out_free:
-<<<<<<< HEAD
-	if (rc && conn->cc_private)
-=======
 	if (rc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(conn->cc_private);
 
 out:
@@ -450,12 +388,8 @@ static int o2cb_cluster_disconnect(struct ocfs2_cluster_connection *conn)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int o2cb_cluster_this_node(unsigned int *node)
-=======
 static int o2cb_cluster_this_node(struct ocfs2_cluster_connection *conn,
 				  unsigned int *node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int node_num;
 

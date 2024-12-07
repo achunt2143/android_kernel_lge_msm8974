@@ -178,21 +178,13 @@ struct snd_opl4 {
 	spinlock_t reg_lock;
 	struct snd_card *card;
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
 #ifdef CONFIG_SND_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_info_entry *proc_entry;
 	int memory_access;
 #endif
 	struct mutex access_mutex;
 
-<<<<<<< HEAD
-#if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
-=======
 #if IS_ENABLED(CONFIG_SND_SEQUENCER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int used;
 
 	int seq_dev_num;
@@ -215,12 +207,6 @@ void snd_opl4_write_memory(struct snd_opl4 *opl4, const char *buf, int offset, i
 /* opl4_mixer.c */
 int snd_opl4_create_mixer(struct snd_opl4 *opl4);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-/* opl4_proc.c */
-int snd_opl4_create_proc(struct snd_opl4 *opl4);
-void snd_opl4_free_proc(struct snd_opl4 *opl4);
-=======
 #ifdef CONFIG_SND_PROC_FS
 /* opl4_proc.c */
 int snd_opl4_create_proc(struct snd_opl4 *opl4);
@@ -228,7 +214,6 @@ void snd_opl4_free_proc(struct snd_opl4 *opl4);
 #else
 static inline int snd_opl4_create_proc(struct snd_opl4 *opl4) { return 0; }
 static inline void snd_opl4_free_proc(struct snd_opl4 *opl4) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* opl4_seq.c */

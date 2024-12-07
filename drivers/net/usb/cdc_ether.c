@@ -1,38 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CDC Ethernet based networking peripherals
  * Copyright (C) 2003-2005 by David Brownell
  * Copyright (C) 2006 by Ole Andre Vadla Ravnas (ActiveSync)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 // #define	DEBUG			// error path messages, extra info
 // #define	VERBOSE			// more; success messages
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -43,11 +19,7 @@
 #include <linux/usb/usbnet.h>
 
 
-<<<<<<< HEAD
-#if defined(CONFIG_USB_NET_RNDIS_HOST) || defined(CONFIG_USB_NET_RNDIS_HOST_MODULE)
-=======
 #if IS_ENABLED(CONFIG_USB_NET_RNDIS_HOST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int is_rndis(struct usb_interface_descriptor *desc)
 {
@@ -70,8 +42,6 @@ static int is_wireless_rndis(struct usb_interface_descriptor *desc)
 		desc->bInterfaceProtocol == 3);
 }
 
-<<<<<<< HEAD
-=======
 static int is_novatel_rndis(struct usb_interface_descriptor *desc)
 {
 	return (desc->bInterfaceClass == USB_CLASS_MISC &&
@@ -79,16 +49,12 @@ static int is_novatel_rndis(struct usb_interface_descriptor *desc)
 		desc->bInterfaceProtocol == 1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 #define is_rndis(desc)		0
 #define is_activesync(desc)	0
 #define is_wireless_rndis(desc)	0
-<<<<<<< HEAD
-=======
 #define is_novatel_rndis(desc)	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -97,10 +63,6 @@ static const u8 mbm_guid[16] = {
 	0xa6, 0x07, 0xc0, 0xff, 0xcb, 0x7e, 0x39, 0x2a,
 };
 
-<<<<<<< HEAD
-/*
- * probes control interface, claims data interface, collects the bulk
-=======
 void usbnet_cdc_update_filter(struct usbnet *dev)
 {
 	struct net_device	*net = dev->net;
@@ -143,7 +105,6 @@ static const struct ethtool_ops cdc_ether_ethtool_ops = {
 };
 
 /* probes control interface, claims data interface, collects the bulk
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * endpoints, activates data interface (if needed), maybe sets MTU.
  * all pure cdc, except for certain firmware workarounds, and knowing
  * that rndis uses one different rule.
@@ -158,16 +119,9 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 	int				rndis;
 	bool				android_rndis_quirk = false;
 	struct usb_driver		*driver = driver_of(intf);
-<<<<<<< HEAD
-	struct usb_cdc_mdlm_desc	*desc = NULL;
-	struct usb_cdc_mdlm_detail_desc *detail = NULL;
-
-	if (sizeof dev->data < sizeof *info)
-=======
 	struct usb_cdc_parsed_header header;
 
 	if (sizeof(dev->data) < sizeof(*info))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EDOM;
 
 	/* expect strict spec conformance for the descriptors, but
@@ -203,163 +157,6 @@ int usbnet_generic_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 	 */
 	rndis = (is_rndis(&intf->cur_altsetting->desc) ||
 		 is_activesync(&intf->cur_altsetting->desc) ||
-<<<<<<< HEAD
-		 is_wireless_rndis(&intf->cur_altsetting->desc));
-
-	memset(info, 0, sizeof *info);
-	info->control = intf;
-	while (len > 0) {
-
-		if ((len < buf [0]) || (buf [0] < 3)) {
-			dev_dbg(&intf->dev, "invalid descriptor buffer length\n");
-			goto bad_desc;
-		}
-
-		if (buf [1] != USB_DT_CS_INTERFACE)
-			goto next_desc;
-
-		/* use bDescriptorSubType to identify the CDC descriptors.
-		 * We expect devices with CDC header and union descriptors.
-		 * For CDC Ethernet we need the ethernet descriptor.
-		 * For RNDIS, ignore two (pointless) CDC modem descriptors
-		 * in favor of a complicated OID-based RPC scheme doing what
-		 * CDC Ethernet achieves with a simple descriptor.
-		 */
-		switch (buf [2]) {
-		case USB_CDC_HEADER_TYPE:
-			if (info->header) {
-				dev_dbg(&intf->dev, "extra CDC header\n");
-				goto bad_desc;
-			}
-			info->header = (void *) buf;
-			if (info->header->bLength != sizeof *info->header) {
-				dev_dbg(&intf->dev, "CDC header len %u\n",
-					info->header->bLength);
-				goto bad_desc;
-			}
-			break;
-		case USB_CDC_ACM_TYPE:
-			/* paranoia:  disambiguate a "real" vendor-specific
-			 * modem interface from an RNDIS non-modem.
-			 */
-			if (rndis) {
-				struct usb_cdc_acm_descriptor *acm;
-
-				acm = (void *) buf;
-				if (acm->bmCapabilities) {
-					dev_dbg(&intf->dev,
-						"ACM capabilities %02x, "
-						"not really RNDIS?\n",
-						acm->bmCapabilities);
-					goto bad_desc;
-				}
-			}
-			break;
-		case USB_CDC_UNION_TYPE:
-			if (info->u) {
-				dev_dbg(&intf->dev, "extra CDC union\n");
-				goto bad_desc;
-			}
-			info->u = (void *) buf;
-			if (info->u->bLength != sizeof *info->u) {
-				dev_dbg(&intf->dev, "CDC union len %u\n",
-					info->u->bLength);
-				goto bad_desc;
-			}
-
-			/* we need a master/control interface (what we're
-			 * probed with) and a slave/data interface; union
-			 * descriptors sort this all out.
-			 */
-			info->control = usb_ifnum_to_if(dev->udev,
-						info->u->bMasterInterface0);
-			info->data = usb_ifnum_to_if(dev->udev,
-						info->u->bSlaveInterface0);
-			if (!info->control || !info->data) {
-				dev_dbg(&intf->dev,
-					"master #%u/%p slave #%u/%p\n",
-					info->u->bMasterInterface0,
-					info->control,
-					info->u->bSlaveInterface0,
-					info->data);
-				/* fall back to hard-wiring for RNDIS */
-				if (rndis) {
-					android_rndis_quirk = true;
-					goto next_desc;
-				}
-				goto bad_desc;
-			}
-			if (info->control != intf) {
-				dev_dbg(&intf->dev, "bogus CDC Union\n");
-				/* Ambit USB Cable Modem (and maybe others)
-				 * interchanges master and slave interface.
-				 */
-				if (info->data == intf) {
-					info->data = info->control;
-					info->control = intf;
-				} else
-					goto bad_desc;
-			}
-
-			/* a data interface altsetting does the real i/o */
-			d = &info->data->cur_altsetting->desc;
-			if (d->bInterfaceClass != USB_CLASS_CDC_DATA) {
-				dev_dbg(&intf->dev, "slave class %u\n",
-					d->bInterfaceClass);
-				goto bad_desc;
-			}
-			break;
-		case USB_CDC_ETHERNET_TYPE:
-			if (info->ether) {
-				dev_dbg(&intf->dev, "extra CDC ether\n");
-				goto bad_desc;
-			}
-			info->ether = (void *) buf;
-			if (info->ether->bLength != sizeof *info->ether) {
-				dev_dbg(&intf->dev, "CDC ether len %u\n",
-					info->ether->bLength);
-				goto bad_desc;
-			}
-			dev->hard_mtu = le16_to_cpu(
-						info->ether->wMaxSegmentSize);
-			/* because of Zaurus, we may be ignoring the host
-			 * side link address we were given.
-			 */
-			break;
-		case USB_CDC_MDLM_TYPE:
-			if (desc) {
-				dev_dbg(&intf->dev, "extra MDLM descriptor\n");
-				goto bad_desc;
-			}
-
-			desc = (void *)buf;
-
-			if (desc->bLength != sizeof(*desc))
-				goto bad_desc;
-
-			if (memcmp(&desc->bGUID, mbm_guid, 16))
-				goto bad_desc;
-			break;
-		case USB_CDC_MDLM_DETAIL_TYPE:
-			if (detail) {
-				dev_dbg(&intf->dev, "extra MDLM detail descriptor\n");
-				goto bad_desc;
-			}
-
-			detail = (void *)buf;
-
-			if (detail->bGuidDescriptorType == 0) {
-				if (detail->bLength < (sizeof(*detail) + 1))
-					goto bad_desc;
-			} else
-				goto bad_desc;
-			break;
-		}
-next_desc:
-		len -= buf [0];	/* bLength */
-		buf += buf [0];
-	}
-=======
 		 is_wireless_rndis(&intf->cur_altsetting->desc) ||
 		 is_novatel_rndis(&intf->cur_altsetting->desc));
 
@@ -457,7 +254,6 @@ skip:
 	}
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Microsoft ActiveSync based and some regular RNDIS devices lack the
 	 * CDC descriptors, so we'll hard-wire the interfaces and not check
@@ -478,11 +274,7 @@ skip:
 			goto bad_desc;
 		}
 
-<<<<<<< HEAD
-	} else if (!info->header || !info->u || (!rndis && !info->ether)) {
-=======
 	} else if (!info->header || (!rndis && !info->ether)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&intf->dev, "missing cdc %s%s%sdescriptor\n",
 			info->header ? "" : "header ",
 			info->u ? "" : "union ",
@@ -493,45 +285,27 @@ skip:
 	/* claim data interface and set it up ... with side effects.
 	 * network traffic can't flow until an altsetting is enabled.
 	 */
-<<<<<<< HEAD
-	status = usb_driver_claim_interface(driver, info->data, dev);
-	if (status < 0)
-		return status;
-=======
 	if (info->data != info->control) {
 		status = usb_driver_claim_interface(driver, info->data, dev);
 		if (status < 0)
 			return status;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = usbnet_get_endpoints(dev, info->data);
 	if (status < 0) {
 		/* ensure immediate exit from usbnet_disconnect */
 		usb_set_intfdata(info->data, NULL);
-<<<<<<< HEAD
-		usb_driver_release_interface(driver, info->data);
-=======
 		if (info->data != info->control)
 			usb_driver_release_interface(driver, info->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return status;
 	}
 
 	/* status endpoint: optional for CDC Ethernet, not RNDIS (or ACM) */
-<<<<<<< HEAD
-	dev->status = NULL;
-	if (info->control->cur_altsetting->desc.bNumEndpoints == 1) {
-		struct usb_endpoint_descriptor	*desc;
-
-		dev->status = &info->control->cur_altsetting->endpoint [0];
-=======
 	if (info->data != info->control)
 		dev->status = NULL;
 	if (info->control->cur_altsetting->desc.bNumEndpoints == 1) {
 		struct usb_endpoint_descriptor	*desc;
 
 		dev->status = &info->control->cur_altsetting->endpoint[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc = &dev->status->desc;
 		if (!usb_endpoint_is_int_in(desc) ||
 		    (le16_to_cpu(desc->wMaxPacketSize)
@@ -547,13 +321,10 @@ skip:
 		usb_driver_release_interface(driver, info->data);
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-=======
 
 	/* override ethtool_ops */
 	dev->net->ethtool_ops = &cdc_ether_ethtool_ops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 bad_desc:
@@ -562,8 +333,6 @@ bad_desc:
 }
 EXPORT_SYMBOL_GPL(usbnet_generic_cdc_bind);
 
-<<<<<<< HEAD
-=======
 
 /* like usbnet_generic_cdc_bind() but handles filter initialization
  * correctly
@@ -588,19 +357,15 @@ bail_out:
 }
 EXPORT_SYMBOL_GPL(usbnet_ether_cdc_bind);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void usbnet_cdc_unbind(struct usbnet *dev, struct usb_interface *intf)
 {
 	struct cdc_state		*info = (void *) &dev->data;
 	struct usb_driver		*driver = driver_of(intf);
 
-<<<<<<< HEAD
-=======
 	/* combined interface - nothing  to do */
 	if (info->data == info->control)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disconnect master --> disconnect slave */
 	if (intf == info->control && info->data) {
 		/* ensure immediate exit from usbnet_disconnect */
@@ -619,13 +384,7 @@ void usbnet_cdc_unbind(struct usbnet *dev, struct usb_interface *intf)
 }
 EXPORT_SYMBOL_GPL(usbnet_cdc_unbind);
 
-<<<<<<< HEAD
-/*-------------------------------------------------------------------------
- *
- * Communications Device Class, Ethernet Control model
-=======
 /* Communications Device Class, Ethernet Control model
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Takes two interfaces.  The DATA interface is inactive till an altsetting
  * is selected.  Configuration data includes class descriptors.  There's
@@ -633,44 +392,24 @@ EXPORT_SYMBOL_GPL(usbnet_cdc_unbind);
  *
  * This should interop with whatever the 2.4 "CDCEther.c" driver
  * (by Brad Hards) talked with, with more functionality.
-<<<<<<< HEAD
- *
- *-------------------------------------------------------------------------*/
-
-static void dumpspeed(struct usbnet *dev, __le32 *speeds)
-{
-	netif_info(dev, timer, dev->net,
-		   "link speeds: %u kbps up, %u kbps down\n",
-		   __le32_to_cpu(speeds[0]) / 1000,
-		   __le32_to_cpu(speeds[1]) / 1000);
-=======
  */
 
 static void speed_change(struct usbnet *dev, __le32 *speeds)
 {
 	dev->tx_speed = __le32_to_cpu(speeds[0]);
 	dev->rx_speed = __le32_to_cpu(speeds[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void usbnet_cdc_status(struct usbnet *dev, struct urb *urb)
 {
 	struct usb_cdc_notification	*event;
 
-<<<<<<< HEAD
-	if (urb->actual_length < sizeof *event)
-=======
 	if (urb->actual_length < sizeof(*event))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* SPEED_CHANGE can get split into two 8-byte packets */
 	if (test_and_clear_bit(EVENT_STS_SPLIT, &dev->flags)) {
-<<<<<<< HEAD
-		dumpspeed(dev, (__le32 *) urb->transfer_buffer);
-=======
 		speed_change(dev, (__le32 *) urb->transfer_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -679,29 +418,15 @@ void usbnet_cdc_status(struct usbnet *dev, struct urb *urb)
 	case USB_CDC_NOTIFY_NETWORK_CONNECTION:
 		netif_dbg(dev, timer, dev->net, "CDC: carrier %s\n",
 			  event->wValue ? "on" : "off");
-<<<<<<< HEAD
-		if (event->wValue)
-			netif_carrier_on(dev->net);
-		else
-			netif_carrier_off(dev->net);
-=======
 		usbnet_link_change(dev, !!event->wValue, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case USB_CDC_NOTIFY_SPEED_CHANGE:	/* tx/rx rates */
 		netif_dbg(dev, timer, dev->net, "CDC: speed change (len %d)\n",
 			  urb->actual_length);
-<<<<<<< HEAD
-		if (urb->actual_length != (sizeof *event + 8))
-			set_bit(EVENT_STS_SPLIT, &dev->flags);
-		else
-			dumpspeed(dev, (__le32 *) &event[1]);
-=======
 		if (urb->actual_length != (sizeof(*event) + 8))
 			set_bit(EVENT_STS_SPLIT, &dev->flags);
 		else
 			speed_change(dev, (__le32 *) &event[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	/* USB_CDC_NOTIFY_RESPONSE_AVAILABLE can happen too (e.g. RNDIS),
 	 * but there are no standard formats for the response data.
@@ -722,11 +447,7 @@ int usbnet_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 	BUILD_BUG_ON((sizeof(((struct usbnet *)0)->data)
 			< sizeof(struct cdc_state)));
 
-<<<<<<< HEAD
-	status = usbnet_generic_cdc_bind(dev, intf);
-=======
 	status = usbnet_ether_cdc_bind(dev, intf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		return status;
 
@@ -737,23 +458,10 @@ int usbnet_cdc_bind(struct usbnet *dev, struct usb_interface *intf)
 		return status;
 	}
 
-<<<<<<< HEAD
-	/* FIXME cdc-ether has some multicast code too, though it complains
-	 * in routine cases.  info->ether describes the multicast support.
-	 * Implement that here, manipulating the cdc filter as needed.
-	 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(usbnet_cdc_bind);
 
-<<<<<<< HEAD
-static int cdc_manage_power(struct usbnet *dev, int on)
-{
-	dev->intf->needs_remote_wakeup = on;
-	return 0;
-=======
 static int usbnet_cdc_zte_bind(struct usbnet *dev, struct usb_interface *intf)
 {
 	int status = usbnet_cdc_bind(dev, intf);
@@ -811,19 +519,11 @@ static void usbnet_cdc_zte_status(struct usbnet *dev, struct urb *urb)
 		netif_carrier_off(dev->net);
 
 	usbnet_link_change(dev, !!event->wValue, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct driver_info	cdc_info = {
 	.description =	"CDC Ethernet Device",
 	.flags =	FLAG_ETHER | FLAG_POINTTOPOINT,
-<<<<<<< HEAD
-	// .check_connect = cdc_check_connect,
-	.bind =		usbnet_cdc_bind,
-	.unbind =	usbnet_cdc_unbind,
-	.status =	usbnet_cdc_status,
-	.manage_power =	cdc_manage_power,
-=======
 	.bind =		usbnet_cdc_bind,
 	.unbind =	usbnet_cdc_unbind,
 	.status =	usbnet_cdc_status,
@@ -840,7 +540,6 @@ static const struct driver_info	zte_cdc_info = {
 	.set_rx_mode =	usbnet_cdc_update_filter,
 	.manage_power =	usbnet_manage_power,
 	.rx_fixup = usbnet_cdc_zte_rx_fixup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct driver_info wwan_info = {
@@ -849,24 +548,14 @@ static const struct driver_info wwan_info = {
 	.bind =		usbnet_cdc_bind,
 	.unbind =	usbnet_cdc_unbind,
 	.status =	usbnet_cdc_status,
-<<<<<<< HEAD
-	.manage_power =	cdc_manage_power,
-=======
 	.set_rx_mode =	usbnet_cdc_update_filter,
 	.manage_power =	usbnet_manage_power,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*-------------------------------------------------------------------------*/
 
 #define HUAWEI_VENDOR_ID	0x12D1
 #define NOVATEL_VENDOR_ID	0x1410
-<<<<<<< HEAD
-
-static const struct usb_device_id	products [] = {
-/*
- * BLACKLIST !!
-=======
 #define ZTE_VENDOR_ID		0x19D2
 #define DELL_VENDOR_ID		0x413C
 #define REALTEK_VENDOR_ID	0x0bda
@@ -883,7 +572,6 @@ static const struct usb_device_id	products [] = {
 
 static const struct usb_device_id	products[] = {
 /* BLACKLIST !!
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * First blacklist any products that are egregiously nonconformant
  * with the CDC Ethernet specs.  Minor braindamage we cope with; when
@@ -896,14 +584,11 @@ static const struct usb_device_id	products[] = {
 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 
-<<<<<<< HEAD
-=======
 #define ZAURUS_FAKE_INTERFACE \
 	.bInterfaceClass	= USB_CLASS_COMM, \
 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
  * wire-incompatible with true CDC Ethernet implementations.
  * (And, it seems, needlessly so...)
@@ -933,8 +618,6 @@ static const struct usb_device_id	products[] = {
 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
-<<<<<<< HEAD
-=======
 	.idProduct		= 0x8005,   /* A-300 */
 	ZAURUS_FAKE_INTERFACE,
 	.driver_info        = 0,
@@ -942,15 +625,11 @@ static const struct usb_device_id	products[] = {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.idProduct		= 0x8006,	/* B-500/SL-5600 */
 	ZAURUS_MASTER_INTERFACE,
 	.driver_info		= 0,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-<<<<<<< HEAD
-	          | USB_DEVICE_ID_MATCH_DEVICE,
-=======
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
 	.idProduct		= 0x8006,   /* B-500/SL-5600 */
@@ -959,15 +638,12 @@ static const struct usb_device_id	products[] = {
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
 			  | USB_DEVICE_ID_MATCH_DEVICE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.idVendor		= 0x04DD,
 	.idProduct		= 0x8007,	/* C-700 */
 	ZAURUS_MASTER_INTERFACE,
 	.driver_info		= 0,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-<<<<<<< HEAD
-=======
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
 	.idProduct		= 0x8007,   /* C-700 */
@@ -975,7 +651,6 @@ static const struct usb_device_id	products[] = {
 	.driver_info        = 0,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor               = 0x04DD,
 	.idProduct              = 0x9031,	/* C-750 C-760 */
@@ -992,8 +667,6 @@ static const struct usb_device_id	products[] = {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
 		 | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor               = 0x04DD,
-<<<<<<< HEAD
-=======
 	.idProduct              = 0x9032,	/* SL-6000 */
 	ZAURUS_FAKE_INTERFACE,
 	.driver_info		= 0,
@@ -1001,7 +674,6 @@ static const struct usb_device_id	products[] = {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
 		 | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor               = 0x04DD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reported with some C860 units */
 	.idProduct              = 0x9050,	/* C-860 */
 	ZAURUS_MASTER_INTERFACE,
@@ -1034,10 +706,6 @@ static const struct usb_device_id	products[] = {
 	.driver_info		= 0,
 },
 
-<<<<<<< HEAD
-/*
- * WHITELIST!!!
-=======
 /* Novatel USB551L and MC551 - handled by qmi_wwan */
 {
 	USB_DEVICE_AND_INTERFACE_INFO(NOVATEL_VENDOR_ID, 0xB001, USB_CLASS_COMM,
@@ -1155,7 +823,6 @@ static const struct usb_device_id	products[] = {
 },
 
 /* WHITELIST!!!
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * CDC Ether uses two interfaces, not necessarily consecutive.
  * We match the main interface, ignoring the optional device
@@ -1166,21 +833,6 @@ static const struct usb_device_id	products[] = {
  * because of bugs/quirks in a given product (like Zaurus, above).
  */
 {
-<<<<<<< HEAD
-	/* Novatel USB551L */
-	/* This match must come *before* the generic CDC-ETHER match so that
-	 * we get FLAG_WWAN set on the device, since it's descriptors are
-	 * generic CDC-ETHER.
-	 */
-	.match_flags    =   USB_DEVICE_ID_MATCH_VENDOR
-		 | USB_DEVICE_ID_MATCH_PRODUCT
-		 | USB_DEVICE_ID_MATCH_INT_INFO,
-	.idVendor               = NOVATEL_VENDOR_ID,
-	.idProduct		= 0xB001,
-	.bInterfaceClass	= USB_CLASS_COMM,
-	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET,
-	.bInterfaceProtocol	= USB_CDC_PROTO_NONE,
-=======
 	/* ZTE (Vodafone) K3805-Z */
 	USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1003, USB_CLASS_COMM,
 				      USB_CDC_SUBCLASS_ETHERNET,
@@ -1209,7 +861,6 @@ static const struct usb_device_id	products[] = {
 	USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1181, USB_CLASS_COMM,
 				      USB_CDC_SUBCLASS_ETHERNET,
 				      USB_CDC_PROTO_NONE),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver_info = (unsigned long)&wwan_info,
 }, {
 	/* Telit modules */
@@ -1217,8 +868,6 @@ static const struct usb_device_id	products[] = {
 			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
 	.driver_info = (kernel_ulong_t) &wwan_info,
 }, {
-<<<<<<< HEAD
-=======
 	/* Dell DW5580 modules */
 	USB_DEVICE_AND_INTERFACE_INFO(DELL_VENDOR_ID, 0x81ba, USB_CLASS_COMM,
 			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
@@ -1284,7 +933,6 @@ static const struct usb_device_id	products[] = {
 				      USB_CDC_PROTO_NONE),
 	.driver_info = (unsigned long)&wwan_info,
 }, {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
 			USB_CDC_PROTO_NONE),
 	.driver_info = (unsigned long) &cdc_info,
@@ -1295,23 +943,11 @@ static const struct usb_device_id	products[] = {
 
 }, {
 	/* Various Huawei modems with a network port like the UMG1831 */
-<<<<<<< HEAD
-	.match_flags    =   USB_DEVICE_ID_MATCH_VENDOR
-		 | USB_DEVICE_ID_MATCH_INT_INFO,
-	.idVendor               = HUAWEI_VENDOR_ID,
-	.bInterfaceClass	= USB_CLASS_COMM,
-	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET,
-	.bInterfaceProtocol	= 255,
-	.driver_info = (unsigned long)&wwan_info,
-},
-	{ },		// END
-=======
 	USB_VENDOR_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, USB_CLASS_COMM,
 				      USB_CDC_SUBCLASS_ETHERNET, 255),
 	.driver_info = (unsigned long)&wwan_info,
 },
 	{ },		/* END */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_DEVICE_TABLE(usb, products);
 
@@ -1324,10 +960,7 @@ static struct usb_driver cdc_driver = {
 	.resume =	usbnet_resume,
 	.reset_resume =	usbnet_resume,
 	.supports_autosuspend = 1,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(cdc_driver);

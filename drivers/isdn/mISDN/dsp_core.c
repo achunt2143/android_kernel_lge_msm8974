@@ -4,11 +4,6 @@
  *		Karsten Keil (keil@isdn4linux.de)
  *
  *		This file is (c) under GNU PUBLIC LICENSE
-<<<<<<< HEAD
- *		For changes and modifications please read
- *		../../../Documentation/isdn/mISDN.cert
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Thanks to    Karsten Keil (great drivers)
  *              Cologne Chip (great chips)
@@ -118,11 +113,7 @@
  *
  * The CMX has special functions for conferences with one, two and more
  * members. It will allow different types of data flow. Receive and transmit
-<<<<<<< HEAD
- * data to/form upper layer may be swithed on/off individually without losing
-=======
  * data to/form upper layer may be switched on/off individually without losing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * features of CMX, Tones and DTMF.
  *
  * Echo Cancellation: Sometimes we like to cancel echo from the interface.
@@ -185,15 +176,9 @@ MODULE_LICENSE("GPL");
 
 /*int spinnest = 0;*/
 
-<<<<<<< HEAD
-spinlock_t dsp_lock; /* global dsp lock */
-struct list_head dsp_ilist;
-struct list_head conf_ilist;
-=======
 DEFINE_SPINLOCK(dsp_lock); /* global dsp lock */
 LIST_HEAD(dsp_ilist);
 LIST_HEAD(conf_ilist);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dsp_debug;
 int dsp_options;
 int dsp_poll, dsp_tics;
@@ -281,10 +266,7 @@ dsp_fill_empty(struct dsp *dsp)
 	}
 	cq.op = MISDN_CTRL_FILL_EMPTY;
 	cq.p1 = 1;
-<<<<<<< HEAD
-=======
 	cq.p2 = dsp_silence;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dsp->ch.peer->ctrl(dsp->ch.peer, CONTROL_CHANNEL, &cq)) {
 		printk(KERN_DEBUG "%s: CONTROL_CHANNEL failed\n",
 		       __func__);
@@ -304,15 +286,10 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 	u8 *data;
 	int len;
 
-<<<<<<< HEAD
-	if (skb->len < sizeof(int))
-		printk(KERN_ERR "%s: PH_CONTROL message too short\n", __func__);
-=======
 	if (skb->len < sizeof(int)) {
 		printk(KERN_ERR "%s: PH_CONTROL message too short\n", __func__);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cont = *((int *)skb->data);
 	len = skb->len - sizeof(int);
 	data = skb->data + sizeof(int);
@@ -481,11 +458,7 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 		}
 		if (dsp_debug & DEBUG_DSP_CORE)
 			printk(KERN_DEBUG "%s: enable mixing of "
-<<<<<<< HEAD
-			       "tx-data with conf mebers\n", __func__);
-=======
 			       "tx-data with conf members\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dsp->tx_mix = 1;
 		dsp_cmx_hardware(dsp->conf, dsp);
 		dsp_rx_off(dsp);
@@ -499,11 +472,7 @@ dsp_control_req(struct dsp *dsp, struct mISDNhead *hh, struct sk_buff *skb)
 		}
 		if (dsp_debug & DEBUG_DSP_CORE)
 			printk(KERN_DEBUG "%s: disable mixing of "
-<<<<<<< HEAD
-			       "tx-data with conf mebers\n", __func__);
-=======
 			       "tx-data with conf members\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dsp->tx_mix = 0;
 		dsp_cmx_hardware(dsp->conf, dsp);
 		dsp_rx_off(dsp);
@@ -984,10 +953,6 @@ dsp_ctrl(struct mISDNchannel *ch, u_int cmd, void *arg)
 {
 	struct dsp		*dsp = container_of(ch, struct dsp, ch);
 	u_long		flags;
-<<<<<<< HEAD
-	int		err = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (debug & DEBUG_DSP_CTRL)
 		printk(KERN_DEBUG "%s:(%x)\n", __func__, cmd);
@@ -1032,11 +997,7 @@ dsp_ctrl(struct mISDNchannel *ch, u_int cmd, void *arg)
 		module_put(THIS_MODULE);
 		break;
 	}
-<<<<<<< HEAD
-	return err;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1128,13 +1089,7 @@ dspcreate(struct channel_req *crq)
 	ndsp->pcm_bank_tx = -1;
 	ndsp->hfc_conf = -1; /* current conference number */
 	/* set tone timer */
-<<<<<<< HEAD
-	ndsp->tone.tl.function = (void *)dsp_tone_timeout;
-	ndsp->tone.tl.data = (long) ndsp;
-	init_timer(&ndsp->tone.tl);
-=======
 	timer_setup(&ndsp->tone.tl, dsp_tone_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dtmfthreshold < 20 || dtmfthreshold > 500)
 		dtmfthreshold = 200;
@@ -1214,13 +1169,6 @@ static int __init dsp_init(void)
 	printk(KERN_INFO "mISDN_dsp: DSP clocks every %d samples. This equals "
 	       "%d jiffies.\n", dsp_poll, dsp_tics);
 
-<<<<<<< HEAD
-	spin_lock_init(&dsp_lock);
-	INIT_LIST_HEAD(&dsp_ilist);
-	INIT_LIST_HEAD(&conf_ilist);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* init conversion tables */
 	dsp_audio_generate_law_tables();
 	dsp_silence = (dsp_options & DSP_OPT_ULAW) ? 0xff : 0x2a;
@@ -1247,13 +1195,7 @@ static int __init dsp_init(void)
 	}
 
 	/* set sample timer */
-<<<<<<< HEAD
-	dsp_spl_tl.function = (void *)dsp_cmx_send;
-	dsp_spl_tl.data = 0;
-	init_timer(&dsp_spl_tl);
-=======
 	timer_setup(&dsp_spl_tl, dsp_cmx_send, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dsp_spl_tl.expires = jiffies + dsp_tics;
 	dsp_spl_jiffies = dsp_spl_tl.expires;
 	add_timer(&dsp_spl_tl);
@@ -1266,12 +1208,7 @@ static void __exit dsp_cleanup(void)
 {
 	mISDN_unregister_Bprotocol(&DSP);
 
-<<<<<<< HEAD
-	if (timer_pending(&dsp_spl_tl))
-		del_timer(&dsp_spl_tl);
-=======
 	del_timer_sync(&dsp_spl_tl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!list_empty(&dsp_ilist)) {
 		printk(KERN_ERR "mISDN_dsp: Audio DSP object inst list not "

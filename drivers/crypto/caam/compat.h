@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2008-2011 Freescale Semiconductor, Inc.
  */
@@ -15,18 +12,12 @@
 #include <linux/device.h>
 #include <linux/interrupt.h>
 #include <linux/crypto.h>
-<<<<<<< HEAD
-=======
 #include <linux/hash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hw_random.h>
 #include <linux/of_platform.h>
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/iommu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/rtnetlink.h>
 #include <linux/in.h>
@@ -34,19 +25,6 @@
 #include <linux/types.h>
 #include <linux/debugfs.h>
 #include <linux/circ_buf.h>
-<<<<<<< HEAD
-#include <net/xfrm.h>
-
-#include <crypto/algapi.h>
-#include <crypto/aes.h>
-#include <crypto/des.h>
-#include <crypto/sha.h>
-#include <crypto/md5.h>
-#include <crypto/aead.h>
-#include <crypto/authenc.h>
-#include <crypto/scatterwalk.h>
-#include <crypto/internal/skcipher.h>
-=======
 #include <linux/clk.h>
 #include <net/xfrm.h>
 
@@ -70,6 +48,5 @@
 #include <crypto/internal/hash.h>
 #include <crypto/internal/rsa.h>
 #include <crypto/internal/akcipher.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !defined(CAAM_COMPAT_H) */

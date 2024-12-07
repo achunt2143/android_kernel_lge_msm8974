@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c)  2009-2010 QLogic Corporation
- *
- * See LICENSE.qlcnic for copyright and licensing details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * QLogic qlcnic NIC Driver
  * Copyright (c) 2009-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _QLCNIC_H_
@@ -27,34 +19,17 @@
 #include <linux/tcp.h>
 #include <linux/skbuff.h>
 #include <linux/firmware.h>
-<<<<<<< HEAD
-
-#include <linux/ethtool.h>
-#include <linux/mii.h>
-#include <linux/timer.h>
-
-#include <linux/vmalloc.h>
-
-=======
 #include <linux/ethtool.h>
 #include <linux/mii.h>
 #include <linux/timer.h>
 #include <linux/irq.h>
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <asm/byteorder.h>
 #include <linux/bitops.h>
 #include <linux/if_vlan.h>
 
 #include "qlcnic_hdr.h"
-<<<<<<< HEAD
-
-#define _QLCNIC_LINUX_MAJOR 5
-#define _QLCNIC_LINUX_MINOR 0
-#define _QLCNIC_LINUX_SUBVERSION 27
-#define QLCNIC_LINUX_VERSIONID  "5.0.27"
-=======
 #include "qlcnic_hw.h"
 #include "qlcnic_83xx_hw.h"
 #include "qlcnic_dcb.h"
@@ -63,7 +38,6 @@
 #define _QLCNIC_LINUX_MINOR 3
 #define _QLCNIC_LINUX_SUBVERSION 66
 #define QLCNIC_LINUX_VERSIONID  "5.3.66"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_DRV_IDC_VER  0x01
 #define QLCNIC_DRIVER_VERSION  ((_QLCNIC_LINUX_MAJOR << 16) |\
 		 (_QLCNIC_LINUX_MINOR << 8) | (_QLCNIC_LINUX_SUBVERSION))
@@ -115,19 +89,6 @@
 #define QLCNIC_CT_DEFAULT_RX_BUF_LEN	2048
 #define QLCNIC_LRO_BUFFER_EXTRA		2048
 
-<<<<<<< HEAD
-/* Opcodes to be used with the commands */
-#define TX_ETHER_PKT	0x01
-#define TX_TCP_PKT	0x02
-#define TX_UDP_PKT	0x03
-#define TX_IP_PKT	0x04
-#define TX_TCP_LSO	0x05
-#define TX_TCP_LSO6	0x06
-#define TX_TCPV6_PKT	0x0b
-#define TX_UDPV6_PKT	0x0c
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Tx defines */
 #define QLCNIC_MAX_FRAGS_PER_TX	14
 #define MAX_TSO_HEADER_DESC	2
@@ -136,8 +97,6 @@
 							+ MGMT_CMD_DESC_RESV)
 #define QLCNIC_MAX_TX_TIMEOUTS	2
 
-<<<<<<< HEAD
-=======
 /* Driver will use 1 Tx ring in INT-x/MSI/SRIOV mode. */
 #define QLCNIC_SINGLE_RING		1
 #define QLCNIC_DEF_SDS_RINGS		4
@@ -160,7 +119,6 @@ enum qlcnic_queue_type {
 #define QLC_DEFAULT_VNIC_COUNT	8
 #define QLC_84XX_VNIC_COUNT	16
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Following are the states of the Phantom. Phantom will set them and
  * Host will read to check if the fields are correct.
@@ -201,31 +159,6 @@ enum qlcnic_queue_type {
  * Added fileds of tcpHdrSize and ipHdrSize, The driver needs to do it only when
  * we are doing LSO (above the 1500 size packet) only.
  */
-<<<<<<< HEAD
-
-#define FLAGS_VLAN_TAGGED	0x10
-#define FLAGS_VLAN_OOB		0x40
-
-#define qlcnic_set_tx_vlan_tci(cmd_desc, v)	\
-	(cmd_desc)->vlan_TCI = cpu_to_le16(v);
-#define qlcnic_set_cmd_desc_port(cmd_desc, var)	\
-	((cmd_desc)->port_ctxid |= ((var) & 0x0F))
-#define qlcnic_set_cmd_desc_ctxid(cmd_desc, var)	\
-	((cmd_desc)->port_ctxid |= ((var) << 4 & 0xF0))
-
-#define qlcnic_set_tx_port(_desc, _port) \
-	((_desc)->port_ctxid = ((_port) & 0xf) | (((_port) << 4) & 0xf0))
-
-#define qlcnic_set_tx_flags_opcode(_desc, _flags, _opcode) \
-	((_desc)->flags_opcode |= \
-	cpu_to_le16(((_flags) & 0x7f) | (((_opcode) & 0x3f) << 7)))
-
-#define qlcnic_set_tx_frags_len(_desc, _frags, _len) \
-	((_desc)->nfrags__length = \
-	cpu_to_le32(((_frags) & 0xff) | (((_len) & 0xffffff) << 8)))
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cmd_desc_type0 {
 	u8 tcp_hdr_offset;	/* For LSO only */
 	u8 ip_hdr_offset;	/* For LSO only */
@@ -234,13 +167,6 @@ struct cmd_desc_type0 {
 
 	__le64 addr_buffer2;
 
-<<<<<<< HEAD
-	__le16 reference_handle;
-	__le16 mss;
-	u8 port_ctxid;		/* 7:4 ctxid 3:0 port */
-	u8 total_hdr_length;	/* LSO only : MAC+IP+TCP Hdr size */
-	__le16 conn_id;		/* IPSec offoad only */
-=======
 	__le16 encap_descr;	/* 15:10 offset of outer L3 header,
 				 * 9:6 number of 32bit words in outer L3 header,
 				 * 5 offload outer L4 checksum,
@@ -255,7 +181,6 @@ struct cmd_desc_type0 {
 	u8 hdr_length;		/* LSO only : MAC+IP+TCP Hdr size */
 	u8 outer_hdr_length;	/* Encapsulation only */
 	u8 rsvd1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__le64 addr_buffer3;
 	__le64 addr_buffer1;
@@ -265,13 +190,9 @@ struct cmd_desc_type0 {
 	__le64 addr_buffer4;
 
 	u8 eth_addr[ETH_ALEN];
-<<<<<<< HEAD
-	__le16 vlan_TCI;
-=======
 	__le16 vlan_TCI;	/* In case of  encapsulation,
 				 * this is for outer VLAN
 				 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } __attribute__ ((aligned(64)));
 
@@ -283,66 +204,6 @@ struct rcv_desc {
 	__le64 addr_buffer;
 } __packed;
 
-<<<<<<< HEAD
-/* opcode field in status_desc */
-#define QLCNIC_SYN_OFFLOAD	0x03
-#define QLCNIC_RXPKT_DESC  	0x04
-#define QLCNIC_OLD_RXPKT_DESC	0x3f
-#define QLCNIC_RESPONSE_DESC	0x05
-#define QLCNIC_LRO_DESC  	0x12
-
-/* for status field in status_desc */
-#define STATUS_CKSUM_LOOP	0
-#define STATUS_CKSUM_OK		2
-
-/* owner bits of status_desc */
-#define STATUS_OWNER_HOST	(0x1ULL << 56)
-#define STATUS_OWNER_PHANTOM	(0x2ULL << 56)
-
-/* Status descriptor:
-   0-3 port, 4-7 status, 8-11 type, 12-27 total_length
-   28-43 reference_handle, 44-47 protocol, 48-52 pkt_offset
-   53-55 desc_cnt, 56-57 owner, 58-63 opcode
- */
-#define qlcnic_get_sts_port(sts_data)	\
-	((sts_data) & 0x0F)
-#define qlcnic_get_sts_status(sts_data)	\
-	(((sts_data) >> 4) & 0x0F)
-#define qlcnic_get_sts_type(sts_data)	\
-	(((sts_data) >> 8) & 0x0F)
-#define qlcnic_get_sts_totallength(sts_data)	\
-	(((sts_data) >> 12) & 0xFFFF)
-#define qlcnic_get_sts_refhandle(sts_data)	\
-	(((sts_data) >> 28) & 0xFFFF)
-#define qlcnic_get_sts_prot(sts_data)	\
-	(((sts_data) >> 44) & 0x0F)
-#define qlcnic_get_sts_pkt_offset(sts_data)	\
-	(((sts_data) >> 48) & 0x1F)
-#define qlcnic_get_sts_desc_cnt(sts_data)	\
-	(((sts_data) >> 53) & 0x7)
-#define qlcnic_get_sts_opcode(sts_data)	\
-	(((sts_data) >> 58) & 0x03F)
-
-#define qlcnic_get_lro_sts_refhandle(sts_data) 	\
-	((sts_data) & 0x0FFFF)
-#define qlcnic_get_lro_sts_length(sts_data)	\
-	(((sts_data) >> 16) & 0x0FFFF)
-#define qlcnic_get_lro_sts_l2_hdr_offset(sts_data)	\
-	(((sts_data) >> 32) & 0x0FF)
-#define qlcnic_get_lro_sts_l4_hdr_offset(sts_data)	\
-	(((sts_data) >> 40) & 0x0FF)
-#define qlcnic_get_lro_sts_timestamp(sts_data)	\
-	(((sts_data) >> 48) & 0x1)
-#define qlcnic_get_lro_sts_type(sts_data)	\
-	(((sts_data) >> 49) & 0x7)
-#define qlcnic_get_lro_sts_push_flag(sts_data)		\
-	(((sts_data) >> 52) & 0x1)
-#define qlcnic_get_lro_sts_seq_number(sts_data)		\
-	((sts_data) & 0x0FFFFFFFF)
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct status_desc {
 	__le64 status_desc_data[2];
 } __attribute__ ((aligned(16)));
@@ -361,18 +222,6 @@ struct status_desc {
 #define QLCNIC_UNI_FIRMWARE_IDX_OFF 	29
 
 struct uni_table_desc{
-<<<<<<< HEAD
-	u32	findex;
-	u32	num_entries;
-	u32	entry_size;
-	u32	reserved[5];
-};
-
-struct uni_data_desc{
-	u32	findex;
-	u32	size;
-	u32	reserved[5];
-=======
 	__le32	findex;
 	__le32	num_entries;
 	__le32	entry_size;
@@ -383,15 +232,11 @@ struct uni_data_desc{
 	__le32	findex;
 	__le32	size;
 	__le32	reserved[5];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Flash Defines and Structures */
 #define QLCNIC_FLT_LOCATION	0x3F1000
-<<<<<<< HEAD
-=======
 #define QLCNIC_FDT_LOCATION     0x3F0000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_B0_FW_IMAGE_REGION 0x74
 #define QLCNIC_C0_FW_IMAGE_REGION 0x97
 #define QLCNIC_BOOTLD_REGION    0X72
@@ -412,8 +257,6 @@ struct qlcnic_flt_entry {
 	u32 end_addr;
 };
 
-<<<<<<< HEAD
-=======
 /* Flash Descriptor Table */
 struct qlcnic_fdt {
 	u32	valid;
@@ -444,7 +287,6 @@ struct qlcnic_fdt {
 	u8	protected_sec_cmd;
 	u8	resvd[65];
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Magic number to let user know flash is programmed */
 #define	QLCNIC_BDINFO_MAGIC 0x12345678
 
@@ -469,11 +311,7 @@ struct qlcnic_fdt {
 #define QLCNIC_BRDCFG_START	0x4000		/* board config */
 #define QLCNIC_BOOTLD_START	0x10000		/* bootld */
 #define QLCNIC_IMAGE_START	0x43000		/* compressed image */
-<<<<<<< HEAD
-#define QLCNIC_USER_START	0x3E8000	/* Firmare info */
-=======
 #define QLCNIC_USER_START	0x3E8000	/* Firmware info */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QLCNIC_FW_VERSION_OFFSET	(QLCNIC_USER_START+0x408)
 #define QLCNIC_FW_SIZE_OFFSET		(QLCNIC_USER_START+0x40c)
@@ -493,14 +331,11 @@ struct qlcnic_fdt {
 
 extern char qlcnic_driver_name[];
 
-<<<<<<< HEAD
-=======
 extern int qlcnic_use_msi;
 extern int qlcnic_use_msi_x;
 extern int qlcnic_auto_fw_reset;
 extern int qlcnic_load_fw_file;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Number of status descriptors to handle per interrupt */
 #define MAX_STATUS_HANDLE	(64)
 
@@ -543,13 +378,6 @@ struct qlcnic_rx_buffer {
  * Interrupt coalescing defaults. The defaults are for 1500 MTU. It is
  * adjusted based on configured MTU.
  */
-<<<<<<< HEAD
-#define QLCNIC_DEFAULT_INTR_COALESCE_RX_TIME_US	3
-#define QLCNIC_DEFAULT_INTR_COALESCE_RX_PACKETS	256
-
-#define QLCNIC_INTR_DEFAULT			0x04
-#define QLCNIC_CONFIG_INTR_COALESCE		3
-=======
 #define QLCNIC_INTR_COAL_TYPE_RX		1
 #define QLCNIC_INTR_COAL_TYPE_TX		2
 #define QLCNIC_INTR_COAL_TYPE_RX_TX		3
@@ -563,46 +391,18 @@ struct qlcnic_rx_buffer {
 #define QLCNIC_INTR_DEFAULT			0x04
 #define QLCNIC_CONFIG_INTR_COALESCE		3
 #define QLCNIC_DEV_INFO_SIZE			2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct qlcnic_nic_intr_coalesce {
 	u8	type;
 	u8	sts_ring_mask;
 	u16	rx_packets;
 	u16	rx_time_us;
-<<<<<<< HEAD
-=======
 	u16	tx_packets;
 	u16	tx_time_us;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16	flag;
 	u32	timer_out;
 };
 
-<<<<<<< HEAD
-struct qlcnic_dump_template_hdr {
-	__le32	type;
-	__le32	offset;
-	__le32	size;
-	__le32	cap_mask;
-	__le32	num_entries;
-	__le32	version;
-	__le32	timestamp;
-	__le32	checksum;
-	__le32	drv_cap_mask;
-	__le32	sys_info[3];
-	__le32	saved_state[16];
-	__le32	cap_sizes[8];
-	__le32	rsvd[0];
-};
-
-struct qlcnic_fw_dump {
-	u8	clr;	/* flag to indicate if dump is cleared */
-	u8	enable; /* enable/disable dump */
-	u32	size;	/* total size of the dump */
-	void	*data;	/* dump data area */
-	struct	qlcnic_dump_template_hdr *tmpl_hdr;
-=======
 struct qlcnic_83xx_dump_template_hdr {
 	u32	type;
 	u32	offset;
@@ -658,7 +458,6 @@ struct qlcnic_fw_dump {
 	u32	version;
 	u32	num_entries;
 	u32	offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -678,15 +477,6 @@ struct qlcnic_hardware_context {
 	u8 pci_func;
 	u8 linkup;
 	u8 loopback_state;
-<<<<<<< HEAD
-	u16 port_type;
-	u16 board_type;
-
-	u8 beacon_state;
-
-	struct qlcnic_nic_intr_coalesce coal;
-	struct qlcnic_fw_dump fw_dump;
-=======
 	u8 beacon_state;
 	u8 has_link_events;
 	u8 fw_type;
@@ -748,7 +538,6 @@ struct qlcnic_hardware_context {
 	struct device *hwmon_dev;
 	u32 post_mode;
 	bool run_post;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qlcnic_adapter_stats {
@@ -763,24 +552,18 @@ struct qlcnic_adapter_stats {
 	u64  txbytes;
 	u64  lrobytes;
 	u64  lso_frames;
-<<<<<<< HEAD
-=======
 	u64  encap_lso_frames;
 	u64  encap_tx_csummed;
 	u64  encap_rx_csummed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64  xmit_on;
 	u64  xmit_off;
 	u64  skb_alloc_failure;
 	u64  null_rxbuf;
 	u64  rx_dma_map_error;
 	u64  tx_dma_map_error;
-<<<<<<< HEAD
-=======
 	u64  spurious_intr;
 	u64  mac_filter_limit_overrun;
 	u64  mbx_spurious_intr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -806,10 +589,7 @@ struct qlcnic_host_sds_ring {
 	u32 num_desc;
 	void __iomem *crb_sts_consumer;
 
-<<<<<<< HEAD
-=======
 	struct qlcnic_host_tx_ring *tx_ring;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct status_desc *desc_head;
 	struct qlcnic_adapter *adapter;
 	struct napi_struct napi;
@@ -819,17 +599,6 @@ struct qlcnic_host_sds_ring {
 	int irq;
 
 	dma_addr_t phys_addr;
-<<<<<<< HEAD
-	char name[IFNAMSIZ+4];
-} ____cacheline_internodealigned_in_smp;
-
-struct qlcnic_host_tx_ring {
-	u32 producer;
-	u32 sw_consumer;
-	u32 num_desc;
-	void __iomem *crb_cmd_producer;
-	struct cmd_desc_type0 *desc_head;
-=======
 	char name[IFNAMSIZ + 12];
 } ____cacheline_internodealigned_in_smp;
 
@@ -858,18 +627,14 @@ struct qlcnic_host_tx_ring {
 	struct cmd_desc_type0 *desc_head;
 	struct qlcnic_adapter *adapter;
 	struct napi_struct napi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qlcnic_cmd_buffer *cmd_buf_arr;
 	__le32 *hw_consumer;
 
 	dma_addr_t phys_addr;
 	dma_addr_t hw_cons_phys_addr;
 	struct netdev_queue *txq;
-<<<<<<< HEAD
-=======
 	/* Lock to protect Tx descriptors cleanup */
 	spinlock_t tx_clean_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ____cacheline_internodealigned_in_smp;
 
 /*
@@ -884,20 +649,11 @@ struct qlcnic_recv_context {
 	u32 state;
 	u16 context_id;
 	u16 virt_port;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* HW context creation */
 
 #define QLCNIC_OS_CRB_RETRY_COUNT	4000
-<<<<<<< HEAD
-#define QLCNIC_CDRP_SIGNATURE_MAKE(pcifn, version) \
-	(((pcifn) & 0xff) | (((version) & 0xff) << 8) | (0xcafe << 16))
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QLCNIC_CDRP_CMD_BIT		0x80000000
 
@@ -917,47 +673,6 @@ struct qlcnic_recv_context {
  * the crb QLCNIC_CDRP_CRB_OFFSET.
  */
 #define QLCNIC_CDRP_FORM_CMD(cmd)	(QLCNIC_CDRP_CMD_BIT | (cmd))
-<<<<<<< HEAD
-#define QLCNIC_CDRP_IS_CMD(cmd)	(((cmd) & QLCNIC_CDRP_CMD_BIT) != 0)
-
-#define QLCNIC_CDRP_CMD_SUBMIT_CAPABILITIES     0x00000001
-#define QLCNIC_CDRP_CMD_READ_MAX_RDS_PER_CTX    0x00000002
-#define QLCNIC_CDRP_CMD_READ_MAX_SDS_PER_CTX    0x00000003
-#define QLCNIC_CDRP_CMD_READ_MAX_RULES_PER_CTX  0x00000004
-#define QLCNIC_CDRP_CMD_READ_MAX_RX_CTX         0x00000005
-#define QLCNIC_CDRP_CMD_READ_MAX_TX_CTX         0x00000006
-#define QLCNIC_CDRP_CMD_CREATE_RX_CTX           0x00000007
-#define QLCNIC_CDRP_CMD_DESTROY_RX_CTX          0x00000008
-#define QLCNIC_CDRP_CMD_CREATE_TX_CTX           0x00000009
-#define QLCNIC_CDRP_CMD_DESTROY_TX_CTX          0x0000000a
-#define QLCNIC_CDRP_CMD_INTRPT_TEST		0x00000011
-#define QLCNIC_CDRP_CMD_SET_MTU                 0x00000012
-#define QLCNIC_CDRP_CMD_READ_PHY		0x00000013
-#define QLCNIC_CDRP_CMD_WRITE_PHY		0x00000014
-#define QLCNIC_CDRP_CMD_READ_HW_REG		0x00000015
-#define QLCNIC_CDRP_CMD_GET_FLOW_CTL		0x00000016
-#define QLCNIC_CDRP_CMD_SET_FLOW_CTL		0x00000017
-#define QLCNIC_CDRP_CMD_READ_MAX_MTU		0x00000018
-#define QLCNIC_CDRP_CMD_READ_MAX_LRO		0x00000019
-#define QLCNIC_CDRP_CMD_MAC_ADDRESS		0x0000001f
-
-#define QLCNIC_CDRP_CMD_GET_PCI_INFO		0x00000020
-#define QLCNIC_CDRP_CMD_GET_NIC_INFO		0x00000021
-#define QLCNIC_CDRP_CMD_SET_NIC_INFO		0x00000022
-#define QLCNIC_CDRP_CMD_GET_ESWITCH_CAPABILITY	0x00000024
-#define QLCNIC_CDRP_CMD_TOGGLE_ESWITCH		0x00000025
-#define QLCNIC_CDRP_CMD_GET_ESWITCH_STATUS	0x00000026
-#define QLCNIC_CDRP_CMD_SET_PORTMIRRORING	0x00000027
-#define QLCNIC_CDRP_CMD_CONFIGURE_ESWITCH	0x00000028
-#define QLCNIC_CDRP_CMD_GET_ESWITCH_PORT_CONFIG	0x00000029
-#define QLCNIC_CDRP_CMD_GET_ESWITCH_STATS	0x0000002a
-#define QLCNIC_CDRP_CMD_CONFIG_PORT		0x0000002E
-#define QLCNIC_CDRP_CMD_TEMP_SIZE		0x0000002f
-#define QLCNIC_CDRP_CMD_GET_TEMP_HDR		0x00000030
-
-#define QLCNIC_RCODE_SUCCESS		0
-#define QLCNIC_RCODE_NOT_SUPPORTED	9
-=======
 
 #define QLCNIC_RCODE_SUCCESS		0
 #define QLCNIC_RCODE_INVALID_ARGS	6
@@ -965,7 +680,6 @@ struct qlcnic_recv_context {
 #define QLCNIC_RCODE_NOT_PERMITTED	10
 #define QLCNIC_RCODE_NOT_IMPL		15
 #define QLCNIC_RCODE_INVALID		16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_RCODE_TIMEOUT		17
 #define QLCNIC_DESTROY_CTX_RESET	0
 
@@ -978,11 +692,8 @@ struct qlcnic_recv_context {
 #define QLCNIC_CAP0_JUMBO_CONTIGUOUS	(1 << 7)
 #define QLCNIC_CAP0_LRO_CONTIGUOUS	(1 << 8)
 #define QLCNIC_CAP0_VALIDOFF		(1 << 11)
-<<<<<<< HEAD
-=======
 #define QLCNIC_CAP0_LRO_MSS		(1 << 21)
 #define QLCNIC_CAP0_TX_MULTI		(1 << 22)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Context state
@@ -1010,11 +721,7 @@ struct qlcnic_hostrq_rds_ring {
 
 struct qlcnic_hostrq_rx_ctx {
 	__le64 host_rsp_dma_addr;	/* Response dma'd here */
-<<<<<<< HEAD
-	__le32 capabilities[4];	/* Flag bit vector */
-=======
 	__le32 capabilities[4];		/* Flag bit vector */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32 host_int_crb_mode;	/* Interrupt crb usage */
 	__le32 host_rds_crb_mode;	/* RDS crb usage */
 	/* These ring offsets are relative to data[0] below */
@@ -1030,11 +737,7 @@ struct qlcnic_hostrq_rx_ctx {
 	   The following is packed:
 	   - N hostrq_rds_rings
 	   - N hostrq_sds_rings */
-<<<<<<< HEAD
-	char data[0];
-=======
 	char data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct qlcnic_cardrsp_rds_ring{
@@ -1063,11 +766,7 @@ struct qlcnic_cardrsp_rx_ctx {
 	   The following is packed:
 	   - N cardrsp_rds_rings
 	   - N cardrs_sds_rings */
-<<<<<<< HEAD
-	char data[0];
-=======
 	char data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define SIZEOF_HOSTRQ_RX(HOSTRQ_RX, rds_rings, sds_rings)	\
@@ -1146,13 +845,6 @@ struct qlcnic_cardrsp_tx_ctx {
 #define QLCNIC_MAC_VLAN_ADD	3
 #define QLCNIC_MAC_VLAN_DEL	4
 
-<<<<<<< HEAD
-struct qlcnic_mac_list_s {
-	struct list_head list;
-	uint8_t mac_addr[ETH_ALEN+2];
-};
-
-=======
 enum qlcnic_mac_type {
 	QLCNIC_UNICAST_MAC,
 	QLCNIC_MULTICAST_MAC,
@@ -1171,7 +863,6 @@ struct qlcnic_mac_vlan_list {
 #define DRV_MAC_LEARN		1
 #define FDB_MAC_LEARN		2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_HOST_REQUEST	0x13
 #define QLCNIC_REQUEST		0x14
 
@@ -1182,10 +873,7 @@ struct qlcnic_mac_vlan_list {
 
 #define QLCNIC_ILB_MODE		0x1
 #define QLCNIC_ELB_MODE		0x2
-<<<<<<< HEAD
-=======
 #define QLCNIC_LB_MODE_MASK	0x3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QLCNIC_LINKEVENT	0x1
 #define QLCNIC_LB_RESPONSE	0x2
@@ -1212,12 +900,8 @@ struct qlcnic_mac_vlan_list {
  */
 
 #define QLCNIC_C2H_OPCODE_CONFIG_LOOPBACK		0x8f
-<<<<<<< HEAD
-#define QLCNIC_C2H_OPCODE_GET_LINKEVENT_RESPONSE	141
-=======
 #define QLCNIC_C2H_OPCODE_GET_LINKEVENT_RESPONSE	0x8D
 #define QLCNIC_C2H_OPCODE_GET_DCB_AEN			0x90
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VPORT_MISS_MODE_DROP		0 /* drop all unmatched */
 #define VPORT_MISS_MODE_ACCEPT_ALL	1 /* accept all packets */
@@ -1230,9 +914,6 @@ struct qlcnic_mac_vlan_list {
 #define QLCNIC_FW_CAPABILITY_BDG		BIT_8
 #define QLCNIC_FW_CAPABILITY_FVLANTX		BIT_9
 #define QLCNIC_FW_CAPABILITY_HW_LRO		BIT_10
-<<<<<<< HEAD
-#define QLCNIC_FW_CAPABILITY_MULTI_LOOPBACK	BIT_27
-=======
 #define QLCNIC_FW_CAPABILITY_2_MULTI_TX		BIT_4
 #define QLCNIC_FW_CAPABILITY_MULTI_LOOPBACK	BIT_27
 #define QLCNIC_FW_CAPABILITY_MORE_CAPS		BIT_31
@@ -1247,7 +928,6 @@ struct qlcnic_mac_vlan_list {
 #define QLCNIC_83XX_FW_CAPAB_ENCAP_RX_OFFLOAD	BIT_0
 #define QLCNIC_83XX_FW_CAPAB_ENCAP_TX_OFFLOAD	BIT_1
 #define QLCNIC_83XX_FW_CAPAB_ENCAP_CKO_OFFLOAD	BIT_4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* module types */
 #define LINKEVENT_MODULE_NOT_PRESENT			1
@@ -1324,11 +1004,7 @@ struct qlcnic_ipaddr {
 
 #define QLCNIC_MSI_ENABLED		0x02
 #define QLCNIC_MSIX_ENABLED		0x04
-<<<<<<< HEAD
-#define QLCNIC_LRO_ENABLED		0x08
-=======
 #define QLCNIC_LRO_ENABLED		0x01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_LRO_DISABLED		0x00
 #define QLCNIC_BRIDGE_ENABLED       	0X10
 #define QLCNIC_DIAG_ENABLED		0x20
@@ -1341,12 +1017,6 @@ struct qlcnic_ipaddr {
 #define QLCNIC_NEED_FLR			0x1000
 #define QLCNIC_FW_RESET_OWNER		0x2000
 #define QLCNIC_FW_HANG			0x4000
-<<<<<<< HEAD
-#define QLCNIC_IS_MSI_FAMILY(adapter) \
-	((adapter)->flags & (QLCNIC_MSI_ENABLED | QLCNIC_MSIX_ENABLED))
-
-#define QLCNIC_DEF_NUM_STS_DESC_RINGS	4
-=======
 #define QLCNIC_FW_LRO_MSS_CAP		0x8000
 #define QLCNIC_TX_INTR_SHARED		0x10000
 #define QLCNIC_APP_CHANGED_FLAGS	0x20000
@@ -1366,15 +1036,10 @@ struct qlcnic_ipaddr {
 #define QLCNIC_BEACON_ON		2
 #define QLCNIC_BEACON_OFF		0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_MSIX_TBL_SPACE		8192
 #define QLCNIC_PCI_REG_MSIX_TBL 	0x44
 #define QLCNIC_MSIX_TBL_PGSIZE		4096
 
-<<<<<<< HEAD
-#define QLCNIC_NETDEV_WEIGHT	128
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_ADAPTER_UP_MAGIC 777
 
 #define __QLCNIC_FW_ATTACHED		0
@@ -1384,8 +1049,6 @@ struct qlcnic_ipaddr {
 #define __QLCNIC_AER			5
 #define __QLCNIC_DIAG_RES_ALLOC		6
 #define __QLCNIC_LED_ENABLE		7
-<<<<<<< HEAD
-=======
 #define __QLCNIC_ELB_INPROGRESS		8
 #define __QLCNIC_MULTI_TX_UNIQUE	9
 #define __QLCNIC_SRIOV_ENABLE		10
@@ -1393,7 +1056,6 @@ struct qlcnic_ipaddr {
 #define __QLCNIC_MBX_POLL_ENABLE	12
 #define __QLCNIC_DIAG_MODE		13
 #define __QLCNIC_MAINTENANCE_MODE	16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QLCNIC_INTERRUPT_TEST		1
 #define QLCNIC_LOOPBACK_TEST		2
@@ -1402,35 +1064,19 @@ struct qlcnic_ipaddr {
 #define QLCNIC_FILTER_AGE	80
 #define QLCNIC_READD_AGE	20
 #define QLCNIC_LB_MAX_FILTERS	64
-<<<<<<< HEAD
-
-/* QLCNIC Driver Error Code */
-#define QLCNIC_FW_NOT_RESPOND		51
-#define QLCNIC_TEST_IN_PROGRESS		52
-#define QLCNIC_UNDEFINED_ERROR		53
-#define QLCNIC_LB_CABLE_NOT_CONN	54
-=======
 #define QLCNIC_LB_BUCKET_SIZE	32
 #define QLCNIC_ILB_MAX_RCV_LOOP	10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct qlcnic_filter {
 	struct hlist_node fnode;
 	u8 faddr[ETH_ALEN];
-<<<<<<< HEAD
-	__le16 vlan_id;
-=======
 	u16 vlan_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ftime;
 };
 
 struct qlcnic_filter_hash {
 	struct hlist_head *fhead;
 	u8 fnum;
-<<<<<<< HEAD
-	u8 fmax;
-=======
 	u16 fmax;
 	u16 fbucket_size;
 };
@@ -1448,7 +1094,6 @@ struct qlcnic_mailbox {
 	spinlock_t		aen_lock;	/* Mailbox response/AEN lock */
 	u32			rsp_status;
 	u32			num_cmds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qlcnic_adapter {
@@ -1468,16 +1113,6 @@ struct qlcnic_adapter {
 	u16 max_jumbo_rxd;
 
 	u8 max_rds_rings;
-<<<<<<< HEAD
-	u8 max_sds_rings;
-	u8 msix_supported;
-	u8 portnum;
-	u8 physical_port;
-	u8 reset_context;
-
-	u8 mc_enabled;
-	u8 max_mc_count;
-=======
 
 	u8 max_sds_rings; /* max sds rings supported by adapter */
 	u8 max_tx_rings;  /* max tx rings supported by adapter */
@@ -1491,46 +1126,10 @@ struct qlcnic_adapter {
 	u8 rx_csum;
 	u8 portnum;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 fw_wait_cnt;
 	u8 fw_fail_cnt;
 	u8 tx_timeo_cnt;
 	u8 need_fw_reset;
-<<<<<<< HEAD
-
-	u8 has_link_events;
-	u8 fw_type;
-	u16 tx_context_id;
-	u16 is_up;
-
-	u16 link_speed;
-	u16 link_duplex;
-	u16 link_autoneg;
-	u16 module_type;
-
-	u16 op_mode;
-	u16 switch_mode;
-	u16 max_tx_ques;
-	u16 max_rx_ques;
-	u16 max_mtu;
-	u16 pvid;
-
-	u32 fw_hal_version;
-	u32 capabilities;
-	u32 irq;
-	u32 temp;
-
-	u32 int_vec_bit;
-	u32 heartbeat;
-
-	u8 max_mac_filters;
-	u8 dev_state;
-	u8 diag_test;
-	char diag_cnt;
-	u8 reset_ack_timeo;
-	u8 dev_init_timeo;
-	u16 msg_enable;
-=======
 	u8 reset_ctx_cnt;
 
 	u16 is_up;
@@ -1543,22 +1142,15 @@ struct qlcnic_adapter {
 	u8 dev_state;
 	u8 reset_ack_timeo;
 	u8 dev_init_timeo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 mac_addr[ETH_ALEN];
 
 	u64 dev_rst_time;
-<<<<<<< HEAD
-	u8 mac_learn;
-	unsigned long vlans[BITS_TO_LONGS(VLAN_N_VID)];
-
-=======
 	bool drv_mac_learn;
 	bool fdb_mac_learn;
 	bool rx_mac_learn;
 	unsigned long vlans[BITS_TO_LONGS(VLAN_N_VID)];
 	u8 flash_mfg_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qlcnic_npar_info *npars;
 	struct qlcnic_eswitch *eswitch;
 	struct qlcnic_nic_template *nic_ops;
@@ -1572,26 +1164,6 @@ struct qlcnic_adapter {
 	void __iomem	*isr_int_vec;
 
 	struct msix_entry *msix_entries;
-<<<<<<< HEAD
-
-	struct delayed_work fw_work;
-
-
-	struct qlcnic_filter_hash fhash;
-
-	spinlock_t tx_clean_lock;
-	spinlock_t mac_learn_lock;
-	__le32 file_prd_off;	/*File fw product offset*/
-	u32 fw_version;
-	const struct firmware *fw;
-};
-
-struct qlcnic_info {
-	__le16	pci_func;
-	__le16	op_mode; /* 1 = Priv, 2 = NP, 3 = NP passthru */
-	__le16	phys_port;
-	__le16	switch_mode; /* 0 = disabled, 1 = int, 2 = ext */
-=======
 	struct workqueue_struct *qlcnic_wq;
 	struct delayed_work fw_work;
 	struct delayed_work idc_aen_work;
@@ -1616,7 +1188,6 @@ struct qlcnic_info_le {
 	__le16	op_mode;	/* 1 = Priv, 2 = NP, 3 = NP passthru */
 	__le16	phys_port;
 	__le16	switch_mode;	/* 0 = disabled, 1 = int, 2 = ext */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__le32	capabilities;
 	u8	max_mac_filters;
@@ -1627,18 +1198,6 @@ struct qlcnic_info_le {
 	__le16	max_rx_ques;
 	__le16	min_tx_bw;
 	__le16	max_tx_bw;
-<<<<<<< HEAD
-	u8	reserved2[104];
-} __packed;
-
-struct qlcnic_pci_info {
-	__le16	id; /* pci function id */
-	__le16	active; /* 1 = Enabled */
-	__le16	type; /* 1 = NIC, 2 = FCoE, 3 = iSCSI */
-	__le16	default_port; /* default port number */
-
-	__le16	tx_min_bw; /* Multiple of 100mbpc */
-=======
 	__le32  op_type;
 	__le16  max_bw_reg_offset;
 	__le16  max_linkspeed_reg_offset;
@@ -1705,17 +1264,10 @@ struct qlcnic_pci_info_le {
 	__le16	default_port;	/* default port number */
 
 	__le16	tx_min_bw;	/* Multiple of 100mbpc */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16	tx_max_bw;
 	__le16	reserved1[2];
 
 	u8	mac[ETH_ALEN];
-<<<<<<< HEAD
-	u8	reserved2[106];
-} __packed;
-
-struct qlcnic_npar_info {
-=======
 	__le16  func_count;
 	u8      reserved2[104];
 
@@ -1734,7 +1286,6 @@ struct qlcnic_pci_info {
 
 struct qlcnic_npar_info {
 	bool	eswitch_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16	pvid;
 	u16	min_bw;
 	u16	max_bw;
@@ -1748,11 +1299,8 @@ struct qlcnic_npar_info {
 	u8	mac_anti_spoof;
 	u8	promisc_mode;
 	u8	offload_flags;
-<<<<<<< HEAD
-=======
 	u8      pci_func;
 	u8      mac[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qlcnic_eswitch {
@@ -1771,15 +1319,8 @@ struct qlcnic_eswitch {
 };
 
 
-<<<<<<< HEAD
-/* Return codes for Error handling */
-#define QL_STATUS_INVALID_PARAM	-1
-
-#define MAX_BW			100	/* % of link speed */
-=======
 #define MAX_BW			100	/* % of link speed */
 #define MIN_BW			1	/* % of link speed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_VLAN_ID		4095
 #define MIN_VLAN_ID		2
 #define DEFAULT_MAC_LEARN	1
@@ -1794,11 +1335,7 @@ struct qlcnic_pci_func_cfg {
 	u16	port_num;
 	u8	pci_func;
 	u8	func_state;
-<<<<<<< HEAD
-	u8	def_mac_addr[6];
-=======
 	u8	def_mac_addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qlcnic_npar_func_cfg {
@@ -1838,21 +1375,6 @@ struct qlcnic_esw_func_cfg {
 #define QLCNIC_STATS_ESWITCH		2
 #define QLCNIC_QUERY_RX_COUNTER		0
 #define QLCNIC_QUERY_TX_COUNTER		1
-<<<<<<< HEAD
-#define QLCNIC_ESW_STATS_NOT_AVAIL	0xffffffffffffffffULL
-
-#define QLCNIC_ADD_ESW_STATS(VAL1, VAL2)\
-do {	\
-	if (((VAL1) == QLCNIC_ESW_STATS_NOT_AVAIL) && \
-	    ((VAL2) != QLCNIC_ESW_STATS_NOT_AVAIL)) \
-		(VAL1) = (VAL2); \
-	else if (((VAL1) != QLCNIC_ESW_STATS_NOT_AVAIL) && \
-		 ((VAL2) != QLCNIC_ESW_STATS_NOT_AVAIL)) \
-			(VAL1) += (VAL2); \
-} while (0)
-
-struct __qlcnic_esw_statistics {
-=======
 #define QLCNIC_STATS_NOT_AVAIL	0xffffffffffffffffULL
 #define QLCNIC_FILL_STATS(VAL1) \
 	(((VAL1) == QLCNIC_STATS_NOT_AVAIL) ? 0 : VAL1)
@@ -1948,7 +1470,6 @@ struct qlcnic_mac_statistics {
 };
 
 struct qlcnic_esw_stats_le {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 context_id;
 	__le16 version;
 	__le16 size;
@@ -1963,8 +1484,6 @@ struct qlcnic_esw_stats_le {
 	__le64 rsvd[3];
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct __qlcnic_esw_statistics {
 	u16	context_id;
 	u16	version;
@@ -1980,174 +1499,15 @@ struct __qlcnic_esw_statistics {
 	u64	rsvd[3];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct qlcnic_esw_statistics {
 	struct __qlcnic_esw_statistics rx;
 	struct __qlcnic_esw_statistics tx;
 };
 
-<<<<<<< HEAD
-struct qlcnic_common_entry_hdr {
-	__le32	type;
-	__le32	offset;
-	__le32	cap_size;
-	u8	mask;
-	u8	rsvd[2];
-	u8	flags;
-} __packed;
-
-struct __crb {
-	__le32	addr;
-	u8	stride;
-	u8	rsvd1[3];
-	__le32	data_size;
-	__le32	no_ops;
-	__le32	rsvd2[4];
-} __packed;
-
-struct __ctrl {
-	__le32	addr;
-	u8	stride;
-	u8	index_a;
-	__le16	timeout;
-	__le32	data_size;
-	__le32	no_ops;
-	u8	opcode;
-	u8	index_v;
-	u8	shl_val;
-	u8	shr_val;
-	__le32	val1;
-	__le32	val2;
-	__le32	val3;
-} __packed;
-
-struct __cache {
-	__le32	addr;
-	__le16	stride;
-	__le16	init_tag_val;
-	__le32	size;
-	__le32	no_ops;
-	__le32	ctrl_addr;
-	__le32	ctrl_val;
-	__le32	read_addr;
-	u8	read_addr_stride;
-	u8	read_addr_num;
-	u8	rsvd1[2];
-} __packed;
-
-struct __ocm {
-	u8	rsvd[8];
-	__le32	size;
-	__le32	no_ops;
-	u8	rsvd1[8];
-	__le32	read_addr;
-	__le32	read_addr_stride;
-} __packed;
-
-struct __mem {
-	u8	rsvd[24];
-	__le32	addr;
-	__le32	size;
-} __packed;
-
-struct __mux {
-	__le32	addr;
-	u8	rsvd[4];
-	__le32	size;
-	__le32	no_ops;
-	__le32	val;
-	__le32	val_stride;
-	__le32	read_addr;
-	u8	rsvd2[4];
-} __packed;
-
-struct __queue {
-	__le32	sel_addr;
-	__le16	stride;
-	u8	rsvd[2];
-	__le32	size;
-	__le32	no_ops;
-	u8	rsvd2[8];
-	__le32	read_addr;
-	u8	read_addr_stride;
-	u8	read_addr_cnt;
-	u8	rsvd3[2];
-} __packed;
-
-struct qlcnic_dump_entry {
-	struct qlcnic_common_entry_hdr hdr;
-	union {
-		struct __crb	crb;
-		struct __cache	cache;
-		struct __ocm	ocm;
-		struct __mem	mem;
-		struct __mux	mux;
-		struct __queue	que;
-		struct __ctrl	ctrl;
-	} region;
-} __packed;
-
-enum op_codes {
-	QLCNIC_DUMP_NOP		= 0,
-	QLCNIC_DUMP_READ_CRB	= 1,
-	QLCNIC_DUMP_READ_MUX	= 2,
-	QLCNIC_DUMP_QUEUE	= 3,
-	QLCNIC_DUMP_BRD_CONFIG	= 4,
-	QLCNIC_DUMP_READ_OCM	= 6,
-	QLCNIC_DUMP_PEG_REG	= 7,
-	QLCNIC_DUMP_L1_DTAG	= 8,
-	QLCNIC_DUMP_L1_ITAG	= 9,
-	QLCNIC_DUMP_L1_DATA	= 11,
-	QLCNIC_DUMP_L1_INST	= 12,
-	QLCNIC_DUMP_L2_DTAG	= 21,
-	QLCNIC_DUMP_L2_ITAG	= 22,
-	QLCNIC_DUMP_L2_DATA	= 23,
-	QLCNIC_DUMP_L2_INST	= 24,
-	QLCNIC_DUMP_READ_ROM	= 71,
-	QLCNIC_DUMP_READ_MEM	= 72,
-	QLCNIC_DUMP_READ_CTRL	= 98,
-	QLCNIC_DUMP_TLHDR	= 99,
-	QLCNIC_DUMP_RDEND	= 255
-};
-
-#define QLCNIC_DUMP_WCRB	BIT_0
-#define QLCNIC_DUMP_RWCRB	BIT_1
-#define QLCNIC_DUMP_ANDCRB	BIT_2
-#define QLCNIC_DUMP_ORCRB	BIT_3
-#define QLCNIC_DUMP_POLLCRB	BIT_4
-#define QLCNIC_DUMP_RD_SAVE	BIT_5
-#define QLCNIC_DUMP_WRT_SAVED	BIT_6
-#define QLCNIC_DUMP_MOD_SAVE_ST	BIT_7
-#define QLCNIC_DUMP_SKIP	BIT_7
-
-#define QLCNIC_DUMP_MASK_MIN		3
-#define QLCNIC_DUMP_MASK_DEF		0x1f
-#define QLCNIC_DUMP_MASK_MAX		0xff
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QLCNIC_FORCE_FW_DUMP_KEY	0xdeadfeed
 #define QLCNIC_ENABLE_FW_DUMP		0xaddfeed
 #define QLCNIC_DISABLE_FW_DUMP		0xbadfeed
 #define QLCNIC_FORCE_FW_RESET		0xdeaddead
-<<<<<<< HEAD
-
-struct qlcnic_dump_operations {
-	enum op_codes opcode;
-	u32 (*handler)(struct qlcnic_adapter *,
-			struct qlcnic_dump_entry *, u32 *);
-};
-
-struct _cdrp_cmd {
-	u32 cmd;
-	u32 arg1;
-	u32 arg2;
-	u32 arg3;
-};
-
-struct qlcnic_cmd_args {
-	struct _cdrp_cmd req;
-	struct _cdrp_cmd rsp;
-=======
 #define QLCNIC_SET_QUIESCENT		0xadd00010
 #define QLCNIC_RESET_QUIESCENT		0xadd00020
 
@@ -2171,39 +1531,21 @@ struct qlcnic_cmd_args {
 	u32			*hdr;	/* Back channel message header */
 	u32			*pay;	/* Back channel message payload */
 	u8			func_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int qlcnic_fw_cmd_get_minidump_temp(struct qlcnic_adapter *adapter);
 int qlcnic_fw_cmd_set_port(struct qlcnic_adapter *adapter, u32 config);
-<<<<<<< HEAD
-
-u32 qlcnic_hw_read_wx_2M(struct qlcnic_adapter *adapter, ulong off);
-int qlcnic_hw_write_wx_2M(struct qlcnic_adapter *, ulong off, u32 data);
 int qlcnic_pci_mem_write_2M(struct qlcnic_adapter *, u64 off, u64 data);
 int qlcnic_pci_mem_read_2M(struct qlcnic_adapter *, u64 off, u64 *data);
-void qlcnic_pci_camqm_read_2M(struct qlcnic_adapter *, u64, u64 *);
-void qlcnic_pci_camqm_write_2M(struct qlcnic_adapter *, u64, u64);
-=======
-int qlcnic_pci_mem_write_2M(struct qlcnic_adapter *, u64 off, u64 data);
-int qlcnic_pci_mem_read_2M(struct qlcnic_adapter *, u64 off, u64 *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ADDR_IN_RANGE(addr, low, high)	\
 	(((addr) < (high)) && ((addr) >= (low)))
 
-<<<<<<< HEAD
-#define QLCRD32(adapter, off) \
-	(qlcnic_hw_read_wx_2M(adapter, off))
-#define QLCWR32(adapter, off, val) \
-	(qlcnic_hw_write_wx_2M(adapter, off, val))
-=======
 #define QLCRD32(adapter, off, err) \
 	(adapter->ahw->hw_ops->read_reg)(adapter, off, err)
 
 #define QLCWR32(adapter, off, val) \
 	adapter->ahw->hw_ops->write_reg(adapter, off, val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int qlcnic_pcie_sem_lock(struct qlcnic_adapter *, int, u32);
 void qlcnic_pcie_sem_unlock(struct qlcnic_adapter *, int);
@@ -2216,13 +1558,6 @@ void qlcnic_pcie_sem_unlock(struct qlcnic_adapter *, int);
 	qlcnic_pcie_sem_lock((a), 3, QLCNIC_PHY_LOCK_ID)
 #define qlcnic_phy_unlock(a)	\
 	qlcnic_pcie_sem_unlock((a), 3)
-<<<<<<< HEAD
-#define qlcnic_api_lock(a)	\
-	qlcnic_pcie_sem_lock((a), 5, 0)
-#define qlcnic_api_unlock(a)	\
-	qlcnic_pcie_sem_unlock((a), 5)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define qlcnic_sw_lock(a)	\
 	qlcnic_pcie_sem_lock((a), 6, 0)
 #define qlcnic_sw_unlock(a)	\
@@ -2235,16 +1570,6 @@ void qlcnic_pcie_sem_unlock(struct qlcnic_adapter *, int);
 #define __QLCNIC_MAX_LED_RATE	0xf
 #define __QLCNIC_MAX_LED_STATE	0x2
 
-<<<<<<< HEAD
-int qlcnic_get_board_info(struct qlcnic_adapter *adapter);
-int qlcnic_wol_supported(struct qlcnic_adapter *adapter);
-int qlcnic_config_led(struct qlcnic_adapter *adapter, u32 state, u32 rate);
-void qlcnic_prune_lb_filters(struct qlcnic_adapter *adapter);
-void qlcnic_delete_lb_filters(struct qlcnic_adapter *adapter);
-int qlcnic_dump_fw(struct qlcnic_adapter *);
-
-/* Functions from qlcnic_init.c */
-=======
 #define MAX_CTL_CHECK 1000
 
 void qlcnic_prune_lb_filters(struct qlcnic_adapter *adapter);
@@ -2255,7 +1580,6 @@ bool qlcnic_check_fw_dump_state(struct qlcnic_adapter *);
 
 /* Functions from qlcnic_init.c */
 void qlcnic_schedule_work(struct qlcnic_adapter *, work_func_t, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int qlcnic_load_firmware(struct qlcnic_adapter *adapter);
 int qlcnic_need_fw_reset(struct qlcnic_adapter *adapter);
 void qlcnic_request_firmware(struct qlcnic_adapter *adapter);
@@ -2270,11 +1594,7 @@ int qlcnic_rom_fast_read_words(struct qlcnic_adapter *adapter, int addr,
 int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter);
 void qlcnic_free_sw_resources(struct qlcnic_adapter *adapter);
 
-<<<<<<< HEAD
-void __iomem *qlcnic_get_ioaddr(struct qlcnic_adapter *, u32);
-=======
 void __iomem *qlcnic_get_ioaddr(struct qlcnic_hardware_context *, u32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int qlcnic_alloc_hw_resources(struct qlcnic_adapter *adapter);
 void qlcnic_free_hw_resources(struct qlcnic_adapter *adapter);
@@ -2284,30 +1604,12 @@ void qlcnic_fw_destroy_ctx(struct qlcnic_adapter *adapter);
 
 void qlcnic_reset_rx_buffers_list(struct qlcnic_adapter *adapter);
 void qlcnic_release_rx_buffers(struct qlcnic_adapter *adapter);
-<<<<<<< HEAD
-void qlcnic_release_tx_buffers(struct qlcnic_adapter *adapter);
-=======
 void qlcnic_release_tx_buffers(struct qlcnic_adapter *,
 			       struct qlcnic_host_tx_ring *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int qlcnic_check_fw_status(struct qlcnic_adapter *adapter);
 void qlcnic_watchdog_task(struct work_struct *work);
 void qlcnic_post_rx_buffers(struct qlcnic_adapter *adapter,
-<<<<<<< HEAD
-		struct qlcnic_host_rds_ring *rds_ring);
-int qlcnic_process_rcv_ring(struct qlcnic_host_sds_ring *sds_ring, int max);
-void qlcnic_set_multi(struct net_device *netdev);
-void qlcnic_free_mac_list(struct qlcnic_adapter *adapter);
-int qlcnic_nic_set_promisc(struct qlcnic_adapter *adapter, u32);
-int qlcnic_config_intr_coalesce(struct qlcnic_adapter *adapter);
-int qlcnic_config_rss(struct qlcnic_adapter *adapter, int enable);
-int qlcnic_config_ipaddr(struct qlcnic_adapter *adapter, __be32 ip, int cmd);
-int qlcnic_linkevent_request(struct qlcnic_adapter *adapter, int enable);
-void qlcnic_advert_link_change(struct qlcnic_adapter *adapter, int linkup);
-
-int qlcnic_fw_cmd_set_mtu(struct qlcnic_adapter *adapter, int mtu);
-=======
 		struct qlcnic_host_rds_ring *rds_ring, u8 ring_id);
 void qlcnic_set_multi(struct net_device *netdev);
 void qlcnic_flush_mcast_mac(struct qlcnic_adapter *);
@@ -2319,42 +1621,10 @@ int qlcnic_82xx_read_phys_port_id(struct qlcnic_adapter *);
 
 int qlcnic_fw_cmd_set_mtu(struct qlcnic_adapter *adapter, int mtu);
 int qlcnic_fw_cmd_set_drv_version(struct qlcnic_adapter *, u32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int qlcnic_change_mtu(struct net_device *netdev, int new_mtu);
 netdev_features_t qlcnic_fix_features(struct net_device *netdev,
 	netdev_features_t features);
 int qlcnic_set_features(struct net_device *netdev, netdev_features_t features);
-<<<<<<< HEAD
-int qlcnic_config_hw_lro(struct qlcnic_adapter *adapter, int enable);
-int qlcnic_config_bridged_mode(struct qlcnic_adapter *adapter, u32 enable);
-int qlcnic_send_lro_cleanup(struct qlcnic_adapter *adapter);
-void qlcnic_update_cmd_producer(struct qlcnic_adapter *adapter,
-		struct qlcnic_host_tx_ring *tx_ring);
-void qlcnic_fetch_mac(struct qlcnic_adapter *, u32, u32, u8, u8 *);
-void qlcnic_process_rcv_ring_diag(struct qlcnic_host_sds_ring *sds_ring);
-void qlcnic_clear_lb_mode(struct qlcnic_adapter *adapter);
-int qlcnic_set_lb_mode(struct qlcnic_adapter *adapter, u8 mode);
-
-/* Functions from qlcnic_ethtool.c */
-int qlcnic_check_loopback_buff(unsigned char *data, u8 mac[]);
-
-/* Functions from qlcnic_main.c */
-int qlcnic_reset_context(struct qlcnic_adapter *);
-void qlcnic_issue_cmd(struct qlcnic_adapter *adapter, struct qlcnic_cmd_args *);
-void qlcnic_diag_free_res(struct net_device *netdev, int max_sds_rings);
-int qlcnic_diag_alloc_res(struct net_device *netdev, int test);
-netdev_tx_t qlcnic_xmit_frame(struct sk_buff *skb, struct net_device *netdev);
-int qlcnic_validate_max_rss(struct net_device *netdev, u8 max_hw, u8 val);
-int qlcnic_set_max_rss(struct qlcnic_adapter *adapter, u8 data);
-void qlcnic_dev_request_reset(struct qlcnic_adapter *);
-void qlcnic_alloc_lb_filters_mem(struct qlcnic_adapter *adapter);
-
-/* Management functions */
-int qlcnic_get_mac_address(struct qlcnic_adapter *, u8*);
-int qlcnic_get_nic_info(struct qlcnic_adapter *, struct qlcnic_info *, u8);
-int qlcnic_set_nic_info(struct qlcnic_adapter *, struct qlcnic_info *);
-int qlcnic_get_pci_info(struct qlcnic_adapter *, struct qlcnic_pci_info*);
-=======
 int qlcnic_config_bridged_mode(struct qlcnic_adapter *adapter, u32 enable);
 void qlcnic_update_cmd_producer(struct qlcnic_host_tx_ring *);
 
@@ -2374,15 +1644,11 @@ int qlcnic_validate_rings(struct qlcnic_adapter *, __u32, int);
 void qlcnic_alloc_lb_filters_mem(struct qlcnic_adapter *adapter);
 int qlcnic_enable_msix(struct qlcnic_adapter *, u32);
 void qlcnic_set_drv_version(struct qlcnic_adapter *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  eSwitch management functions */
 int qlcnic_config_switch_port(struct qlcnic_adapter *,
 				struct qlcnic_esw_func_cfg *);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int qlcnic_get_eswitch_port_config(struct qlcnic_adapter *,
 				struct qlcnic_esw_func_cfg *);
 int qlcnic_config_port_mirroring(struct qlcnic_adapter *, u8, u8, u8);
@@ -2391,9 +1657,6 @@ int qlcnic_get_port_stats(struct qlcnic_adapter *, const u8, const u8,
 int qlcnic_get_eswitch_stats(struct qlcnic_adapter *, const u8, u8,
 					struct __qlcnic_esw_statistics *);
 int qlcnic_clear_esw_stats(struct qlcnic_adapter *adapter, u8, u8, u8);
-<<<<<<< HEAD
-extern int qlcnic_config_tso;
-=======
 int qlcnic_get_mac_stats(struct qlcnic_adapter *, struct qlcnic_mac_statistics *);
 
 void qlcnic_free_mbx_args(struct qlcnic_cmd_args *cmd);
@@ -2442,18 +1705,13 @@ void qlcnic_sriov_vf_set_multi(struct net_device *);
 int qlcnic_is_valid_nic_func(struct qlcnic_adapter *, u8);
 int qlcnic_get_pci_func_type(struct qlcnic_adapter *, u16, u16 *, u16 *,
 			     u16 *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * QLOGIC Board information
  */
 
 #define QLCNIC_MAX_BOARD_NAME_LEN 100
-<<<<<<< HEAD
-struct qlcnic_brdinfo {
-=======
 struct qlcnic_board_info {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short  vendor;
 	unsigned short  device;
 	unsigned short  sub_vendor;
@@ -2461,33 +1719,6 @@ struct qlcnic_board_info {
 	char short_name[QLCNIC_MAX_BOARD_NAME_LEN];
 };
 
-<<<<<<< HEAD
-static const struct qlcnic_brdinfo qlcnic_boards[] = {
-	{0x1077, 0x8020, 0x1077, 0x203,
-		"8200 Series Single Port 10GbE Converged Network Adapter "
-		"(TCP/IP Networking)"},
-	{0x1077, 0x8020, 0x1077, 0x207,
-		"8200 Series Dual Port 10GbE Converged Network Adapter "
-		"(TCP/IP Networking)"},
-	{0x1077, 0x8020, 0x1077, 0x20b,
-		"3200 Series Dual Port 10Gb Intelligent Ethernet Adapter"},
-	{0x1077, 0x8020, 0x1077, 0x20c,
-		"3200 Series Quad Port 1Gb Intelligent Ethernet Adapter"},
-	{0x1077, 0x8020, 0x1077, 0x20f,
-		"3200 Series Single Port 10Gb Intelligent Ethernet Adapter"},
-	{0x1077, 0x8020, 0x103c, 0x3733,
-		"NC523SFP 10Gb 2-port Server Adapter"},
-	{0x1077, 0x8020, 0x103c, 0x3346,
-		"CN1000Q Dual Port Converged Network Adapter"},
-	{0x1077, 0x8020, 0x1077, 0x210,
-		"QME8242-k 10GbE Dual Port Mezzanine Card"},
-	{0x1077, 0x8020, 0x0, 0x0, "cLOM8214 1/10GbE Controller"},
-};
-
-#define NUM_SUPPORTED_BOARDS ARRAY_SIZE(qlcnic_boards)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 qlcnic_tx_avail(struct qlcnic_host_tx_ring *tx_ring)
 {
 	if (likely(tx_ring->producer < tx_ring->sw_consumer))
@@ -2497,21 +1728,10 @@ static inline u32 qlcnic_tx_avail(struct qlcnic_host_tx_ring *tx_ring)
 				tx_ring->producer;
 }
 
-<<<<<<< HEAD
-extern const struct ethtool_ops qlcnic_ethtool_ops;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct qlcnic_nic_template {
 	int (*config_bridged_mode) (struct qlcnic_adapter *, u32);
 	int (*config_led) (struct qlcnic_adapter *, u32, u32);
 	int (*start_firmware) (struct qlcnic_adapter *);
-<<<<<<< HEAD
-};
-
-#define QLCDB(adapter, lvl, _fmt, _args...) do {	\
-	if (NETIF_MSG_##lvl & adapter->msg_enable)	\
-=======
 	int (*init_driver) (struct qlcnic_adapter *);
 	void (*request_reset) (struct qlcnic_adapter *, u32);
 	void (*cancel_idc_work) (struct qlcnic_adapter *);
@@ -3077,14 +2297,11 @@ extern const struct ethtool_ops qlcnic_ethtool_failed_ops;
 
 #define QLCDB(adapter, lvl, _fmt, _args...) do {	\
 	if (NETIF_MSG_##lvl & adapter->ahw->msg_enable)	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_INFO "%s: %s: " _fmt,	\
 			 dev_name(&adapter->pdev->dev),	\
 			__func__, ##_args);		\
 	} while (0)
 
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_QLOGIC_QLE824X		0x8020
 #define PCI_DEVICE_ID_QLOGIC_QLE834X		0x8030
 #define PCI_DEVICE_ID_QLOGIC_VF_QLE834X	0x8430
@@ -3198,5 +2415,4 @@ static inline void qlcnic_unregister_hwmon_dev(struct qlcnic_adapter *adapter)
 	return;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* __QLCNIC_H_ */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  IBM System z Huge TLB Page Support for Kernel.
  *
@@ -12,17 +9,6 @@
 #ifndef _ASM_S390_HUGETLB_H
 #define _ASM_S390_HUGETLB_H
 
-<<<<<<< HEAD
-#include <asm/page.h>
-#include <asm/pgtable.h>
-
-
-#define is_hugepage_only_range(mm, addr, len)	0
-#define hugetlb_free_pgd_range			free_pgd_range
-
-void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
-		     pte_t *ptep, pte_t pte);
-=======
 #include <linux/pgtable.h>
 #include <asm/page.h>
 
@@ -36,7 +22,6 @@ void __set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
 pte_t huge_ptep_get(pte_t *ptep);
 pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
 			      unsigned long addr, pte_t *ptep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * If the arch doesn't supply something else, assume that hugepage
@@ -45,32 +30,15 @@ pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
 static inline int prepare_hugepage_range(struct file *file,
 			unsigned long addr, unsigned long len)
 {
-<<<<<<< HEAD
-	if (len & ~HPAGE_MASK)
-		return -EINVAL;
-	if (addr & ~HPAGE_MASK)
-=======
 	struct hstate *h = hstate_file(file);
 
 	if (len & ~huge_page_mask(h))
 		return -EINVAL;
 	if (addr & ~huge_page_mask(h))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	return 0;
 }
 
-<<<<<<< HEAD
-#define hugetlb_prefault_arch_hook(mm)		do { } while (0)
-
-int arch_prepare_hugepage(struct page *page);
-void arch_release_hugepage(struct page *page);
-
-static inline pte_t huge_pte_wrprotect(pte_t pte)
-{
-	pte_val(pte) |= _PAGE_RO;
-	return pte;
-=======
 static inline void arch_clear_hugepage_flags(struct page *page)
 {
 	clear_bit(PG_arch_1, &page->flags);
@@ -114,112 +82,10 @@ static inline void huge_ptep_set_wrprotect(struct mm_struct *mm,
 static inline pte_t mk_huge_pte(struct page *page, pgprot_t pgprot)
 {
 	return mk_pte(page, pgprot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int huge_pte_none(pte_t pte)
 {
-<<<<<<< HEAD
-	return (pte_val(pte) & _SEGMENT_ENTRY_INV) &&
-		!(pte_val(pte) & _SEGMENT_ENTRY_RO);
-}
-
-static inline pte_t huge_ptep_get(pte_t *ptep)
-{
-	pte_t pte = *ptep;
-	unsigned long mask;
-
-	if (!MACHINE_HAS_HPAGE) {
-		ptep = (pte_t *) (pte_val(pte) & _SEGMENT_ENTRY_ORIGIN);
-		if (ptep) {
-			mask = pte_val(pte) &
-				(_SEGMENT_ENTRY_INV | _SEGMENT_ENTRY_RO);
-			pte = pte_mkhuge(*ptep);
-			pte_val(pte) |= mask;
-		}
-	}
-	return pte;
-}
-
-static inline pte_t huge_ptep_get_and_clear(struct mm_struct *mm,
-					    unsigned long addr, pte_t *ptep)
-{
-	pte_t pte = huge_ptep_get(ptep);
-
-	mm->context.flush_mm = 1;
-	pmd_clear((pmd_t *) ptep);
-	return pte;
-}
-
-static inline void __pmd_csp(pmd_t *pmdp)
-{
-	register unsigned long reg2 asm("2") = pmd_val(*pmdp);
-	register unsigned long reg3 asm("3") = pmd_val(*pmdp) |
-					       _SEGMENT_ENTRY_INV;
-	register unsigned long reg4 asm("4") = ((unsigned long) pmdp) + 5;
-
-	asm volatile(
-		"	csp %1,%3"
-		: "=m" (*pmdp)
-		: "d" (reg2), "d" (reg3), "d" (reg4), "m" (*pmdp) : "cc");
-	pmd_val(*pmdp) = _SEGMENT_ENTRY_INV | _SEGMENT_ENTRY;
-}
-
-static inline void __pmd_idte(unsigned long address, pmd_t *pmdp)
-{
-	unsigned long sto = (unsigned long) pmdp -
-				pmd_index(address) * sizeof(pmd_t);
-
-	if (!(pmd_val(*pmdp) & _SEGMENT_ENTRY_INV)) {
-		asm volatile(
-			"	.insn	rrf,0xb98e0000,%2,%3,0,0"
-			: "=m" (*pmdp)
-			: "m" (*pmdp), "a" (sto),
-			  "a" ((address & HPAGE_MASK))
-		);
-	}
-	pmd_val(*pmdp) = _SEGMENT_ENTRY_INV | _SEGMENT_ENTRY;
-}
-
-static inline void huge_ptep_invalidate(struct mm_struct *mm,
-					unsigned long address, pte_t *ptep)
-{
-	pmd_t *pmdp = (pmd_t *) ptep;
-
-	if (MACHINE_HAS_IDTE)
-		__pmd_idte(address, pmdp);
-	else
-		__pmd_csp(pmdp);
-}
-
-#define huge_ptep_set_access_flags(__vma, __addr, __ptep, __entry, __dirty) \
-({									    \
-	int __changed = !pte_same(huge_ptep_get(__ptep), __entry);	    \
-	if (__changed) {						    \
-		huge_ptep_invalidate((__vma)->vm_mm, __addr, __ptep);	    \
-		set_huge_pte_at((__vma)->vm_mm, __addr, __ptep, __entry);   \
-	}								    \
-	__changed;							    \
-})
-
-#define huge_ptep_set_wrprotect(__mm, __addr, __ptep)			\
-({									\
-	pte_t __pte = huge_ptep_get(__ptep);				\
-	if (pte_write(__pte)) {						\
-		(__mm)->context.flush_mm = 1;				\
-		if (atomic_read(&(__mm)->context.attach_count) > 1 ||	\
-		    (__mm) != current->active_mm)			\
-			huge_ptep_invalidate(__mm, __addr, __ptep);	\
-		set_huge_pte_at(__mm, __addr, __ptep,			\
-				huge_pte_wrprotect(__pte));		\
-	}								\
-})
-
-static inline void huge_ptep_clear_flush(struct vm_area_struct *vma,
-					 unsigned long address, pte_t *ptep)
-{
-	huge_ptep_invalidate(vma->vm_mm, address, ptep);
-=======
 	return pte_none(pte);
 }
 
@@ -276,7 +142,6 @@ static inline int huge_pte_uffd_wp(pte_t pte)
 static inline bool gigantic_page_runtime_supported(void)
 {
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* _ASM_S390_HUGETLB_H */

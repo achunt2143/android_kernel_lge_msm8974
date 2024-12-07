@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM block
 
@@ -10,70 +7,11 @@
 
 #include <linux/blktrace_api.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-=======
 #include <linux/buffer_head.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tracepoint.h>
 
 #define RWBS_LEN	8
 
-<<<<<<< HEAD
-DECLARE_EVENT_CLASS(block_rq_with_error,
-
-	TP_PROTO(struct request_queue *q, struct request *rq),
-
-	TP_ARGS(q, rq),
-
-	TP_STRUCT__entry(
-		__field(  dev_t,	dev			)
-		__field(  sector_t,	sector			)
-		__field(  unsigned int,	nr_sector		)
-		__field(  int,		errors			)
-		__array(  char,		rwbs,	RWBS_LEN	)
-		__dynamic_array( char,	cmd,	blk_cmd_buf_len(rq)	)
-	),
-
-	TP_fast_assign(
-		__entry->dev	   = rq->rq_disk ? disk_devt(rq->rq_disk) : 0;
-		__entry->sector    = (rq->cmd_type == REQ_TYPE_BLOCK_PC) ?
-					0 : blk_rq_pos(rq);
-		__entry->nr_sector = (rq->cmd_type == REQ_TYPE_BLOCK_PC) ?
-					0 : blk_rq_sectors(rq);
-		__entry->errors    = rq->errors;
-
-		blk_fill_rwbs(__entry->rwbs, rq->cmd_flags, blk_rq_bytes(rq));
-		blk_dump_cmd(__get_str(cmd), rq);
-	),
-
-	TP_printk("%d,%d %s (%s) %llu + %u [%d]",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->rwbs, __get_str(cmd),
-		  (unsigned long long)__entry->sector,
-		  __entry->nr_sector, __entry->errors)
-);
-
-/**
- * block_rq_abort - abort block operation request
- * @q: queue containing the block operation request
- * @rq: block IO operation request
- *
- * Called immediately after pending block IO operation request @rq in
- * queue @q is aborted. The fields in the operation request @rq
- * can be examined to determine which device and sectors the pending
- * operation would access.
- */
-DEFINE_EVENT(block_rq_with_error, block_rq_abort,
-
-	TP_PROTO(struct request_queue *q, struct request *rq),
-
-	TP_ARGS(q, rq)
-);
-
-/**
- * block_rq_requeue - place block IO request back on a queue
- * @q: queue holding operation
-=======
 #ifdef CONFIG_BUFFER_HEAD
 DECLARE_EVENT_CLASS(block_buffer,
 
@@ -128,20 +66,12 @@ DEFINE_EVENT(block_buffer, block_dirty_buffer,
 
 /**
  * block_rq_requeue - place block IO request back on a queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rq: block IO operation request
  *
  * The block operation request @rq is being placed back into queue
  * @q.  For some reason the request was not completed and needs to be
  * put back in the queue.
  */
-<<<<<<< HEAD
-DEFINE_EVENT(block_rq_with_error, block_rq_requeue,
-
-	TP_PROTO(struct request_queue *q, struct request *rq),
-
-	TP_ARGS(q, rq)
-=======
 TRACE_EVENT(block_rq_requeue,
 
 	TP_PROTO(struct request *rq),
@@ -202,18 +132,12 @@ DECLARE_EVENT_CLASS(block_rq_completion,
 		  __entry->rwbs, __get_str(cmd),
 		  (unsigned long long)__entry->sector,
 		  __entry->nr_sector, __entry->error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * block_rq_complete - block IO operation completed by device driver
-<<<<<<< HEAD
- * @q: queue containing the block operation request
- * @rq: block operations request
-=======
  * @rq: block operations request
  * @error: status code
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @nr_bytes: number of completed bytes
  *
  * The block_rq_complete tracepoint event indicates that some portion
@@ -222,39 +146,6 @@ DECLARE_EVENT_CLASS(block_rq_completion,
  * do for the request. If @rq->bio is non-NULL then there is
  * additional work required to complete the request.
  */
-<<<<<<< HEAD
-TRACE_EVENT(block_rq_complete,
-
-	TP_PROTO(struct request_queue *q, struct request *rq,
-		 unsigned int nr_bytes),
-
-	TP_ARGS(q, rq, nr_bytes),
-
-	TP_STRUCT__entry(
-		__field(  dev_t,	dev			)
-		__field(  sector_t,	sector			)
-		__field(  unsigned int,	nr_sector		)
-		__field(  int,		errors			)
-		__array(  char,		rwbs,	RWBS_LEN	)
-		__dynamic_array( char,	cmd,	blk_cmd_buf_len(rq)	)
-	),
-
-	TP_fast_assign(
-		__entry->dev	   = rq->rq_disk ? disk_devt(rq->rq_disk) : 0;
-		__entry->sector    = blk_rq_pos(rq);
-		__entry->nr_sector = nr_bytes >> 9;
-		__entry->errors    = rq->errors;
-
-		blk_fill_rwbs(__entry->rwbs, rq->cmd_flags, nr_bytes);
-		blk_dump_cmd(__get_str(cmd), rq);
-	),
-
-	TP_printk("%d,%d %s (%s) %llu + %u [%d]",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->rwbs, __get_str(cmd),
-		  (unsigned long long)__entry->sector,
-		  __entry->nr_sector, __entry->errors)
-=======
 DEFINE_EVENT(block_rq_completion, block_rq_complete,
 
 	TP_PROTO(struct request *rq, blk_status_t error, unsigned int nr_bytes),
@@ -276,20 +167,13 @@ DEFINE_EVENT(block_rq_completion, block_rq_error,
 	TP_PROTO(struct request *rq, blk_status_t error, unsigned int nr_bytes),
 
 	TP_ARGS(rq, error, nr_bytes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(block_rq,
 
-<<<<<<< HEAD
-	TP_PROTO(struct request_queue *q, struct request *rq),
-
-	TP_ARGS(q, rq),
-=======
 	TP_PROTO(struct request *rq),
 
 	TP_ARGS(rq),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(  dev_t,	dev			)
@@ -298,22 +182,6 @@ DECLARE_EVENT_CLASS(block_rq,
 		__field(  unsigned int,	bytes			)
 		__array(  char,		rwbs,	RWBS_LEN	)
 		__array(  char,         comm,   TASK_COMM_LEN   )
-<<<<<<< HEAD
-		__dynamic_array( char,	cmd,	blk_cmd_buf_len(rq)	)
-	),
-
-	TP_fast_assign(
-		__entry->dev	   = rq->rq_disk ? disk_devt(rq->rq_disk) : 0;
-		__entry->sector    = (rq->cmd_type == REQ_TYPE_BLOCK_PC) ?
-					0 : blk_rq_pos(rq);
-		__entry->nr_sector = (rq->cmd_type == REQ_TYPE_BLOCK_PC) ?
-					0 : blk_rq_sectors(rq);
-		__entry->bytes     = (rq->cmd_type == REQ_TYPE_BLOCK_PC) ?
-					blk_rq_bytes(rq) : 0;
-
-		blk_fill_rwbs(__entry->rwbs, rq->cmd_flags, blk_rq_bytes(rq));
-		blk_dump_cmd(__get_str(cmd), rq);
-=======
 		__dynamic_array( char,	cmd,	1		)
 	),
 
@@ -325,7 +193,6 @@ DECLARE_EVENT_CLASS(block_rq,
 
 		blk_fill_rwbs(__entry->rwbs, rq->cmd_flags);
 		__get_str(cmd)[0] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(__entry->comm, current->comm, TASK_COMM_LEN);
 	),
 
@@ -338,10 +205,6 @@ DECLARE_EVENT_CLASS(block_rq,
 
 /**
  * block_rq_insert - insert block operation request into queue
-<<<<<<< HEAD
- * @q: target queue
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rq: block IO operation request
  *
  * Called immediately before block operation request @rq is inserted
@@ -351,76 +214,20 @@ DECLARE_EVENT_CLASS(block_rq,
  */
 DEFINE_EVENT(block_rq, block_rq_insert,
 
-<<<<<<< HEAD
-	TP_PROTO(struct request_queue *q, struct request *rq),
-
-	TP_ARGS(q, rq)
-=======
 	TP_PROTO(struct request *rq),
 
 	TP_ARGS(rq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * block_rq_issue - issue pending block IO request operation to device driver
-<<<<<<< HEAD
- * @q: queue holding operation
- * @rq: block IO operation operation request
-=======
  * @rq: block IO operation request
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Called when block operation request @rq from queue @q is sent to a
  * device driver for processing.
  */
 DEFINE_EVENT(block_rq, block_rq_issue,
 
-<<<<<<< HEAD
-	TP_PROTO(struct request_queue *q, struct request *rq),
-
-	TP_ARGS(q, rq)
-);
-
-/**
- * block_bio_bounce - used bounce buffer when processing block operation
- * @q: queue holding the block operation
- * @bio: block operation
- *
- * A bounce buffer was used to handle the block operation @bio in @q.
- * This occurs when hardware limitations prevent a direct transfer of
- * data between the @bio data memory area and the IO device.  Use of a
- * bounce buffer requires extra copying of data and decreases
- * performance.
- */
-TRACE_EVENT(block_bio_bounce,
-
-	TP_PROTO(struct request_queue *q, struct bio *bio),
-
-	TP_ARGS(q, bio),
-
-	TP_STRUCT__entry(
-		__field( dev_t,		dev			)
-		__field( sector_t,	sector			)
-		__field( unsigned int,	nr_sector		)
-		__array( char,		rwbs,	RWBS_LEN	)
-		__array( char,		comm,	TASK_COMM_LEN	)
-	),
-
-	TP_fast_assign(
-		__entry->dev		= bio->bi_bdev ?
-					  bio->bi_bdev->bd_dev : 0;
-		__entry->sector		= bio->bi_sector;
-		__entry->nr_sector	= bio->bi_size >> 9;
-		blk_fill_rwbs(__entry->rwbs, bio->bi_rw, bio->bi_size);
-		memcpy(__entry->comm, current->comm, TASK_COMM_LEN);
-	),
-
-	TP_printk("%d,%d %s %llu + %u [%s]",
-		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->rwbs,
-		  (unsigned long long)__entry->sector,
-		  __entry->nr_sector, __entry->comm)
-=======
 	TP_PROTO(struct request *rq),
 
 	TP_ARGS(rq)
@@ -464,32 +271,21 @@ DEFINE_EVENT(block_rq, block_io_done,
 	TP_PROTO(struct request *rq),
 
 	TP_ARGS(rq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * block_bio_complete - completed all work on the block operation
  * @q: queue holding the block operation
  * @bio: block operation completed
-<<<<<<< HEAD
- * @error: io error value
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This tracepoint indicates there is no further work to do on this
  * block IO operation @bio.
  */
 TRACE_EVENT(block_bio_complete,
 
-<<<<<<< HEAD
-	TP_PROTO(struct request_queue *q, struct bio *bio, int error),
-
-	TP_ARGS(q, bio, error),
-=======
 	TP_PROTO(struct request_queue *q, struct bio *bio),
 
 	TP_ARGS(q, bio),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( dev_t,		dev		)
@@ -500,19 +296,11 @@ TRACE_EVENT(block_bio_complete,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev		= bio->bi_bdev->bd_dev;
-		__entry->sector		= bio->bi_sector;
-		__entry->nr_sector	= bio->bi_size >> 9;
-		__entry->error		= error;
-		blk_fill_rwbs(__entry->rwbs, bio->bi_rw, bio->bi_size);
-=======
 		__entry->dev		= bio_dev(bio);
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->nr_sector	= bio_sectors(bio);
 		__entry->error		= blk_status_to_errno(bio->bi_status);
 		blk_fill_rwbs(__entry->rwbs, bio->bi_opf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("%d,%d %s %llu + %u [%d]",
@@ -523,15 +311,9 @@ TRACE_EVENT(block_bio_complete,
 
 DECLARE_EVENT_CLASS(block_bio,
 
-<<<<<<< HEAD
-	TP_PROTO(struct request_queue *q, struct bio *bio),
-
-	TP_ARGS(q, bio),
-=======
 	TP_PROTO(struct bio *bio),
 
 	TP_ARGS(bio),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( dev_t,		dev			)
@@ -542,17 +324,10 @@ DECLARE_EVENT_CLASS(block_bio,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev		= bio->bi_bdev->bd_dev;
-		__entry->sector		= bio->bi_sector;
-		__entry->nr_sector	= bio->bi_size >> 9;
-		blk_fill_rwbs(__entry->rwbs, bio->bi_rw, bio->bi_size);
-=======
 		__entry->dev		= bio_dev(bio);
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->nr_sector	= bio_sectors(bio);
 		blk_fill_rwbs(__entry->rwbs, bio->bi_opf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(__entry->comm, current->comm, TASK_COMM_LEN);
 	),
 
@@ -563,20 +338,6 @@ DECLARE_EVENT_CLASS(block_bio,
 );
 
 /**
-<<<<<<< HEAD
- * block_bio_backmerge - merging block operation to the end of an existing operation
- * @q: queue holding operation
- * @bio: new block operation to merge
- *
- * Merging block request @bio to the end of an existing block request
- * in queue @q.
- */
-DEFINE_EVENT(block_bio, block_bio_backmerge,
-
-	TP_PROTO(struct request_queue *q, struct bio *bio),
-
-	TP_ARGS(q, bio)
-=======
  * block_bio_bounce - used bounce buffer when processing block operation
  * @bio: block operation
  *
@@ -600,24 +361,10 @@ DEFINE_EVENT(block_bio, block_bio_bounce,
 DEFINE_EVENT(block_bio, block_bio_backmerge,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * block_bio_frontmerge - merging block operation to the beginning of an existing operation
-<<<<<<< HEAD
- * @q: queue holding operation
- * @bio: new block operation to merge
- *
- * Merging block IO operation @bio to the beginning of an existing block
- * operation in queue @q.
- */
-DEFINE_EVENT(block_bio, block_bio_frontmerge,
-
-	TP_PROTO(struct request_queue *q, struct bio *bio),
-
-	TP_ARGS(q, bio)
-=======
  * @bio: new block operation to merge
  *
  * Merging block IO operation @bio to the beginning of an existing block request.
@@ -625,94 +372,21 @@ DEFINE_EVENT(block_bio, block_bio_frontmerge,
 DEFINE_EVENT(block_bio, block_bio_frontmerge,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * block_bio_queue - putting new block IO operation in queue
-<<<<<<< HEAD
- * @q: queue holding operation
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bio: new block operation
  *
  * About to place the block IO operation @bio into queue @q.
  */
 DEFINE_EVENT(block_bio, block_bio_queue,
-<<<<<<< HEAD
-
-	TP_PROTO(struct request_queue *q, struct bio *bio),
-
-	TP_ARGS(q, bio)
-);
-
-DECLARE_EVENT_CLASS(block_get_rq,
-
-	TP_PROTO(struct request_queue *q, struct bio *bio, int rw),
-
-	TP_ARGS(q, bio, rw),
-
-	TP_STRUCT__entry(
-		__field( dev_t,		dev			)
-		__field( sector_t,	sector			)
-		__field( unsigned int,	nr_sector		)
-		__array( char,		rwbs,	RWBS_LEN	)
-		__array( char,		comm,	TASK_COMM_LEN	)
-        ),
-
-	TP_fast_assign(
-		__entry->dev		= bio ? bio->bi_bdev->bd_dev : 0;
-		__entry->sector		= bio ? bio->bi_sector : 0;
-		__entry->nr_sector	= bio ? bio->bi_size >> 9 : 0;
-		blk_fill_rwbs(__entry->rwbs,
-			      bio ? bio->bi_rw : 0, __entry->nr_sector);
-		memcpy(__entry->comm, current->comm, TASK_COMM_LEN);
-        ),
-
-	TP_printk("%d,%d %s %llu + %u [%s]",
-		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->rwbs,
-		  (unsigned long long)__entry->sector,
-		  __entry->nr_sector, __entry->comm)
-=======
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
  * block_getrq - get a free request entry in queue for block IO operations
-<<<<<<< HEAD
- * @q: queue for operations
- * @bio: pending block IO operation
- * @rw: low bit indicates a read (%0) or a write (%1)
- *
- * A request struct for queue @q has been allocated to handle the
- * block IO operation @bio.
- */
-DEFINE_EVENT(block_get_rq, block_getrq,
-
-	TP_PROTO(struct request_queue *q, struct bio *bio, int rw),
-
-	TP_ARGS(q, bio, rw)
-);
-
-/**
- * block_sleeprq - waiting to get a free request entry in queue for block IO operation
- * @q: queue for operation
- * @bio: pending block IO operation
- * @rw: low bit indicates a read (%0) or a write (%1)
- *
- * In the case where a request struct cannot be provided for queue @q
- * the process needs to wait for an request struct to become
- * available.  This tracepoint event is generated each time the
- * process goes to sleep waiting for request struct become available.
- */
-DEFINE_EVENT(block_get_rq, block_sleeprq,
-
-	TP_PROTO(struct request_queue *q, struct bio *bio, int rw),
-
-	TP_ARGS(q, bio, rw)
-=======
  * @bio: pending block IO operation (can be %NULL)
  *
  * A request struct has been allocated to handle the block IO operation @bio.
@@ -720,7 +394,6 @@ DEFINE_EVENT(block_get_rq, block_sleeprq,
 DEFINE_EVENT(block_bio, block_getrq,
 	TP_PROTO(struct bio *bio),
 	TP_ARGS(bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
@@ -785,23 +458,6 @@ DEFINE_EVENT(block_unplug, block_unplug,
 
 /**
  * block_split - split a single bio struct into two bio structs
-<<<<<<< HEAD
- * @q: queue containing the bio
- * @bio: block operation being split
- * @new_sector: The starting sector for the new bio
- *
- * The bio request @bio in request queue @q needs to be split into two
- * bio requests. The newly created @bio request starts at
- * @new_sector. This split may be required due to hardware limitation
- * such as operation crossing device boundaries in a RAID system.
- */
-TRACE_EVENT(block_split,
-
-	TP_PROTO(struct request_queue *q, struct bio *bio,
-		 unsigned int new_sector),
-
-	TP_ARGS(q, bio, new_sector),
-=======
  * @bio: block operation being split
  * @new_sector: The starting sector for the new bio
  *
@@ -815,7 +471,6 @@ TRACE_EVENT(block_split,
 	TP_PROTO(struct bio *bio, unsigned int new_sector),
 
 	TP_ARGS(bio, new_sector),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( dev_t,		dev				)
@@ -826,17 +481,10 @@ TRACE_EVENT(block_split,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev		= bio->bi_bdev->bd_dev;
-		__entry->sector		= bio->bi_sector;
-		__entry->new_sector	= new_sector;
-		blk_fill_rwbs(__entry->rwbs, bio->bi_rw, bio->bi_size);
-=======
 		__entry->dev		= bio_dev(bio);
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->new_sector	= new_sector;
 		blk_fill_rwbs(__entry->rwbs, bio->bi_opf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(__entry->comm, current->comm, TASK_COMM_LEN);
 	),
 
@@ -849,14 +497,8 @@ TRACE_EVENT(block_split,
 
 /**
  * block_bio_remap - map request for a logical device to the raw device
-<<<<<<< HEAD
- * @q: queue holding the operation
- * @bio: revised operation
- * @dev: device for the operation
-=======
  * @bio: revised operation
  * @dev: original device for the operation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @from: original sector for the operation
  *
  * An operation for a logical device has been mapped to the
@@ -864,16 +506,9 @@ TRACE_EVENT(block_split,
  */
 TRACE_EVENT(block_bio_remap,
 
-<<<<<<< HEAD
-	TP_PROTO(struct request_queue *q, struct bio *bio, dev_t dev,
-		 sector_t from),
-
-	TP_ARGS(q, bio, dev, from),
-=======
 	TP_PROTO(struct bio *bio, dev_t dev, sector_t from),
 
 	TP_ARGS(bio, dev, from),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( dev_t,		dev		)
@@ -885,21 +520,12 @@ TRACE_EVENT(block_bio_remap,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev		= bio->bi_bdev->bd_dev;
-		__entry->sector		= bio->bi_sector;
-		__entry->nr_sector	= bio->bi_size >> 9;
-		__entry->old_dev	= dev;
-		__entry->old_sector	= from;
-		blk_fill_rwbs(__entry->rwbs, bio->bi_rw, bio->bi_size);
-=======
 		__entry->dev		= bio_dev(bio);
 		__entry->sector		= bio->bi_iter.bi_sector;
 		__entry->nr_sector	= bio_sectors(bio);
 		__entry->old_dev	= dev;
 		__entry->old_sector	= from;
 		blk_fill_rwbs(__entry->rwbs, bio->bi_opf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("%d,%d %s %llu + %u <- (%d,%d) %llu",
@@ -912,10 +538,6 @@ TRACE_EVENT(block_bio_remap,
 
 /**
  * block_rq_remap - map request for a block operation request
-<<<<<<< HEAD
- * @q: queue holding the operation
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rq: block IO operation request
  * @dev: device for the operation
  * @from: original sector for the operation
@@ -926,16 +548,9 @@ TRACE_EVENT(block_bio_remap,
  */
 TRACE_EVENT(block_rq_remap,
 
-<<<<<<< HEAD
-	TP_PROTO(struct request_queue *q, struct request *rq, dev_t dev,
-		 sector_t from),
-
-	TP_ARGS(q, rq, dev, from),
-=======
 	TP_PROTO(struct request *rq, dev_t dev, sector_t from),
 
 	TP_ARGS(rq, dev, from),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field( dev_t,		dev		)
@@ -943,44 +558,26 @@ TRACE_EVENT(block_rq_remap,
 		__field( unsigned int,	nr_sector	)
 		__field( dev_t,		old_dev		)
 		__field( sector_t,	old_sector	)
-<<<<<<< HEAD
-=======
 		__field( unsigned int,	nr_bios		)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__array( char,		rwbs,	RWBS_LEN)
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev		= disk_devt(rq->rq_disk);
-=======
 		__entry->dev		= disk_devt(rq->q->disk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->sector		= blk_rq_pos(rq);
 		__entry->nr_sector	= blk_rq_sectors(rq);
 		__entry->old_dev	= dev;
 		__entry->old_sector	= from;
-<<<<<<< HEAD
-		blk_fill_rwbs(__entry->rwbs, rq->cmd_flags, blk_rq_bytes(rq));
-	),
-
-	TP_printk("%d,%d %s %llu + %u <- (%d,%d) %llu",
-=======
 		__entry->nr_bios	= blk_rq_count_bios(rq);
 		blk_fill_rwbs(__entry->rwbs, rq->cmd_flags);
 	),
 
 	TP_printk("%d,%d %s %llu + %u <- (%d,%d) %llu %u",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev), __entry->rwbs,
 		  (unsigned long long)__entry->sector,
 		  __entry->nr_sector,
 		  MAJOR(__entry->old_dev), MINOR(__entry->old_dev),
-<<<<<<< HEAD
-		  (unsigned long long)__entry->old_sector)
-=======
 		  (unsigned long long)__entry->old_sector, __entry->nr_bios)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 #endif /* _TRACE_BLOCK_H */

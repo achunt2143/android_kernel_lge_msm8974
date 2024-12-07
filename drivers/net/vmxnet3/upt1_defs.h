@@ -1,11 +1,7 @@
 /*
  * Linux driver for VMware's vmxnet3 ethernet NIC.
  *
-<<<<<<< HEAD
- * Copyright (C) 2008-2009, VMware, Inc. All Rights Reserved.
-=======
  * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,11 +20,7 @@
  * The full GNU General Public License is included in this distribution in
  * the file called "COPYING".
  *
-<<<<<<< HEAD
- * Maintained by: Shreyas Bhatewara <pv-drivers@vmware.com>
-=======
  * Maintained by: pv-drivers@vmware.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -100,11 +92,8 @@ enum {
 	UPT1_F_RSS		= cpu_to_le64(0x0002),
 	UPT1_F_RXVLAN		= cpu_to_le64(0x0004),   /* VLAN tag stripping */
 	UPT1_F_LRO		= cpu_to_le64(0x0008),
-<<<<<<< HEAD
-=======
 	UPT1_F_RXINNEROFLD      = cpu_to_le64(0x00010),  /* Geneve/Vxlan rx csum
 							  * offloading
 							  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif

@@ -34,12 +34,9 @@
 #define MLX4_CMD_H
 
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-=======
 #include <linux/if_link.h>
 #include <linux/mlx4/device.h>
 #include <linux/netdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	/* initialization and general commands */
@@ -72,10 +69,6 @@ enum {
 	MLX4_CMD_MAP_ICM_AUX	 = 0xffc,
 	MLX4_CMD_UNMAP_ICM_AUX	 = 0xffb,
 	MLX4_CMD_SET_ICM_SIZE	 = 0xffd,
-<<<<<<< HEAD
-	/*master notify fw on finish for slave's flr*/
-	MLX4_CMD_INFORM_FLR_DONE = 0x5b,
-=======
 	MLX4_CMD_ACCESS_REG	 = 0x3b,
 	MLX4_CMD_ALLOCATE_VPP	 = 0x80,
 	MLX4_CMD_SET_VPORT_QOS	 = 0x81,
@@ -84,7 +77,6 @@ enum {
 	MLX4_CMD_INFORM_FLR_DONE = 0x5b,
 	MLX4_CMD_VIRT_PORT_MAP   = 0x5c,
 	MLX4_CMD_GET_OP_REQ      = 0x59,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TPT commands */
 	MLX4_CMD_SW2HW_MPT	 = 0xd,
@@ -127,17 +119,11 @@ enum {
 	MLX4_CMD_INIT2INIT_QP	 = 0x2d,
 	MLX4_CMD_SUSPEND_QP	 = 0x32,
 	MLX4_CMD_UNSUSPEND_QP	 = 0x33,
-<<<<<<< HEAD
-	/* special QP and management commands */
-	MLX4_CMD_CONF_SPECIAL_QP = 0x23,
-	MLX4_CMD_MAD_IFC	 = 0x24,
-=======
 	MLX4_CMD_UPDATE_QP	 = 0x61,
 	/* special QP and management commands */
 	MLX4_CMD_CONF_SPECIAL_QP = 0x23,
 	MLX4_CMD_MAD_IFC	 = 0x24,
 	MLX4_CMD_MAD_DEMUX	 = 0x203,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* multicast commands */
 	MLX4_CMD_READ_MCG	 = 0x25,
@@ -147,10 +133,7 @@ enum {
 	/* miscellaneous commands */
 	MLX4_CMD_DIAG_RPRT	 = 0x30,
 	MLX4_CMD_NOP		 = 0x31,
-<<<<<<< HEAD
-=======
 	MLX4_CMD_CONFIG_DEV	 = 0x3a,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_CMD_ACCESS_MEM	 = 0x2e,
 	MLX4_CMD_SET_VEP	 = 0x52,
 
@@ -179,14 +162,6 @@ enum {
 	/* statistics commands */
 	MLX4_CMD_QUERY_IF_STAT	 = 0X54,
 	MLX4_CMD_SET_IF_STAT	 = 0X55,
-<<<<<<< HEAD
-};
-
-enum {
-	MLX4_CMD_TIME_CLASS_A	= 10000,
-	MLX4_CMD_TIME_CLASS_B	= 10000,
-	MLX4_CMD_TIME_CLASS_C	= 10000,
-=======
 
 	/* register/delete flow steering network rules */
 	MLX4_QP_FLOW_STEERING_ATTACH = 0x65,
@@ -207,7 +182,6 @@ enum {
 	/* virtual to physical port mapping opcode modifiers */
 	MLX4_GET_PORT_VIRT2PHY = 0x0,
 	MLX4_SET_PORT_VIRT2PHY = 0x1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -216,9 +190,6 @@ enum {
 };
 
 enum {
-<<<<<<< HEAD
-	/* set port opcode modifiers */
-=======
 	/* Set port opcode modifiers */
 	MLX4_SET_PORT_IB_OPCODE		= 0x0,
 	MLX4_SET_PORT_ETH_OPCODE	= 0x1,
@@ -227,15 +198,12 @@ enum {
 
 enum {
 	/* Set port Ethernet input modifiers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MLX4_SET_PORT_GENERAL   = 0x0,
 	MLX4_SET_PORT_RQP_CALC  = 0x1,
 	MLX4_SET_PORT_MAC_TABLE = 0x2,
 	MLX4_SET_PORT_VLAN_TABLE = 0x3,
 	MLX4_SET_PORT_PRIO_MAP  = 0x4,
 	MLX4_SET_PORT_GID_TABLE = 0x5,
-<<<<<<< HEAD
-=======
 	MLX4_SET_PORT_PRIO2TC	= 0x8,
 	MLX4_SET_PORT_SCHEDULER = 0x9,
 	MLX4_SET_PORT_VXLAN	= 0xB,
@@ -246,7 +214,6 @@ enum {
 	MLX4_CMD_MAD_DEMUX_CONFIG	= 0,
 	MLX4_CMD_MAD_DEMUX_QUERY_STATE	= 1,
 	MLX4_CMD_MAD_DEMUX_QUERY_RESTR	= 2, /* Query mad demux restrictions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -254,8 +221,6 @@ enum {
 	MLX4_CMD_NATIVE
 };
 
-<<<<<<< HEAD
-=======
 /*
  * MLX4_RX_CSUM_MODE_VAL_NON_TCP_UDP -
  * Receive checksum value is reported in CQE also for non TCP/UDP packets.
@@ -293,7 +258,6 @@ enum mlx4_en_congestion_control_opmod {
 	MLX4_CONGESTION_CONTROL_SET_PARAMS = 4,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_dev;
 
 struct mlx4_cmd_mailbox {
@@ -339,11 +303,6 @@ static inline int mlx4_cmd_imm(struct mlx4_dev *dev, u64 in_param, u64 *out_para
 struct mlx4_cmd_mailbox *mlx4_alloc_cmd_mailbox(struct mlx4_dev *dev);
 void mlx4_free_cmd_mailbox(struct mlx4_dev *dev, struct mlx4_cmd_mailbox *mailbox);
 
-<<<<<<< HEAD
-u32 mlx4_comm_get_version(void);
-
-#define MLX4_COMM_GET_IF_REV(cmd_chan_ver) (u8)((cmd_chan_ver) >> 8)
-=======
 int mlx4_get_counter_stats(struct mlx4_dev *dev, int counter_index,
 			   struct mlx4_counter *counter_stats, int reset);
 int mlx4_get_vf_stats(struct mlx4_dev *dev, int port, int vf_idx,
@@ -371,6 +330,5 @@ bool mlx4_get_slave_default_vlan(struct mlx4_dev *dev, int port, int slave,
 
 #define MLX4_COMM_GET_IF_REV(cmd_chan_ver) (u8)((cmd_chan_ver) >> 8)
 #define COMM_CHAN_EVENT_INTERNAL_ERR (1 << 17)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* MLX4_CMD_H */

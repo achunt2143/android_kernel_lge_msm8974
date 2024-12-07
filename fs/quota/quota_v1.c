@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/quota.h>
@@ -58,29 +55,18 @@ static void v1_mem2disk_dqblk(struct v1_disk_dqblk *d, struct mem_dqblk *m)
 
 static int v1_read_dqblk(struct dquot *dquot)
 {
-<<<<<<< HEAD
-	int type = dquot->dq_type;
-	struct v1_disk_dqblk dqblk;
-
-	if (!sb_dqopt(dquot->dq_sb)->files[type])
-=======
 	int type = dquot->dq_id.type;
 	struct v1_disk_dqblk dqblk;
 	struct quota_info *dqopt = sb_dqopt(dquot->dq_sb);
 
 	if (!dqopt->files[type])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Set structure to 0s in case read fails/is after end of file */
 	memset(&dqblk, 0, sizeof(struct v1_disk_dqblk));
 	dquot->dq_sb->s_op->quota_read(dquot->dq_sb, type, (char *)&dqblk,
-<<<<<<< HEAD
-			sizeof(struct v1_disk_dqblk), v1_dqoff(dquot->dq_id));
-=======
 			sizeof(struct v1_disk_dqblk),
 			v1_dqoff(from_kqid(&init_user_ns, dquot->dq_id)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	v1_disk2mem_dqblk(&dquot->dq_dqb, &dqblk);
 	if (dquot->dq_dqb.dqb_bhardlimit == 0 &&
@@ -95,21 +81,13 @@ static int v1_read_dqblk(struct dquot *dquot)
 
 static int v1_commit_dqblk(struct dquot *dquot)
 {
-<<<<<<< HEAD
-	short type = dquot->dq_type;
-=======
 	short type = dquot->dq_id.type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret;
 	struct v1_disk_dqblk dqblk;
 
 	v1_mem2disk_dqblk(&dqblk, &dquot->dq_dqb);
-<<<<<<< HEAD
-	if (dquot->dq_id == 0) {
-=======
 	if (((type == USRQUOTA) && uid_eq(dquot->dq_id.uid, GLOBAL_ROOT_UID)) ||
 	    ((type == GRPQUOTA) && gid_eq(dquot->dq_id.gid, GLOBAL_ROOT_GID))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dqblk.dqb_btime =
 			sb_dqopt(dquot->dq_sb)->info[type].dqi_bgrace;
 		dqblk.dqb_itime =
@@ -119,11 +97,7 @@ static int v1_commit_dqblk(struct dquot *dquot)
 	if (sb_dqopt(dquot->dq_sb)->files[type])
 		ret = dquot->dq_sb->s_op->quota_write(dquot->dq_sb, type,
 			(char *)&dqblk, sizeof(struct v1_disk_dqblk),
-<<<<<<< HEAD
-			v1_dqoff(dquot->dq_id));
-=======
 			v1_dqoff(from_kqid(&init_user_ns, dquot->dq_id)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != sizeof(struct v1_disk_dqblk)) {
 		quota_error(dquot->dq_sb, "dquota write failed");
 		if (ret >= 0)
@@ -154,11 +128,7 @@ static int v1_check_quota_file(struct super_block *sb, int type)
 {
 	struct inode *inode = sb_dqopt(sb)->files[type];
 	ulong blocks;
-<<<<<<< HEAD
-	size_t off; 
-=======
 	size_t off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct v2_disk_dqheader dqhead;
 	ssize_t size;
 	loff_t isize;
@@ -190,16 +160,11 @@ static int v1_read_file_info(struct super_block *sb, int type)
 {
 	struct quota_info *dqopt = sb_dqopt(sb);
 	struct v1_disk_dqblk dqblk;
-<<<<<<< HEAD
-	int ret;
-
-=======
 	unsigned int memalloc;
 	int ret;
 
 	down_read(&dqopt->dqio_sem);
 	memalloc = memalloc_nofs_save();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = sb->s_op->quota_read(sb, type, (char *)&dqblk,
 				sizeof(struct v1_disk_dqblk), v1_dqoff(0));
 	if (ret != sizeof(struct v1_disk_dqblk)) {
@@ -209,23 +174,15 @@ static int v1_read_file_info(struct super_block *sb, int type)
 	}
 	ret = 0;
 	/* limits are stored as unsigned 32-bit data */
-<<<<<<< HEAD
-	dqopt->info[type].dqi_maxblimit = 0xffffffff;
-	dqopt->info[type].dqi_maxilimit = 0xffffffff;
-=======
 	dqopt->info[type].dqi_max_spc_limit = 0xffffffffULL << QUOTABLOCK_BITS;
 	dqopt->info[type].dqi_max_ino_limit = 0xffffffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dqopt->info[type].dqi_igrace =
 			dqblk.dqb_itime ? dqblk.dqb_itime : MAX_IQ_TIME;
 	dqopt->info[type].dqi_bgrace =
 			dqblk.dqb_btime ? dqblk.dqb_btime : MAX_DQ_TIME;
 out:
-<<<<<<< HEAD
-=======
 	memalloc_nofs_restore(memalloc);
 	up_read(&dqopt->dqio_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -233,17 +190,11 @@ static int v1_write_file_info(struct super_block *sb, int type)
 {
 	struct quota_info *dqopt = sb_dqopt(sb);
 	struct v1_disk_dqblk dqblk;
-<<<<<<< HEAD
-	int ret;
-
-	dqopt->info[type].dqi_flags &= ~DQF_INFO_DIRTY;
-=======
 	unsigned int memalloc;
 	int ret;
 
 	down_write(&dqopt->dqio_sem);
 	memalloc = memalloc_nofs_save();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = sb->s_op->quota_read(sb, type, (char *)&dqblk,
 				sizeof(struct v1_disk_dqblk), v1_dqoff(0));
 	if (ret != sizeof(struct v1_disk_dqblk)) {
@@ -251,31 +202,20 @@ static int v1_write_file_info(struct super_block *sb, int type)
 			ret = -EIO;
 		goto out;
 	}
-<<<<<<< HEAD
-	dqblk.dqb_itime = dqopt->info[type].dqi_igrace;
-	dqblk.dqb_btime = dqopt->info[type].dqi_bgrace;
-=======
 	spin_lock(&dq_data_lock);
 	dqopt->info[type].dqi_flags &= ~DQF_INFO_DIRTY;
 	dqblk.dqb_itime = dqopt->info[type].dqi_igrace;
 	dqblk.dqb_btime = dqopt->info[type].dqi_bgrace;
 	spin_unlock(&dq_data_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = sb->s_op->quota_write(sb, type, (char *)&dqblk,
 	      sizeof(struct v1_disk_dqblk), v1_dqoff(0));
 	if (ret == sizeof(struct v1_disk_dqblk))
 		ret = 0;
-<<<<<<< HEAD
-	else if (ret > 0)
-		ret = -EIO;
-out:
-=======
 	else if (ret >= 0)
 		ret = -EIO;
 out:
 	memalloc_nofs_restore(memalloc);
 	up_write(&dqopt->dqio_sem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -283,10 +223,6 @@ static const struct quota_format_ops v1_format_ops = {
 	.check_quota_file	= v1_check_quota_file,
 	.read_file_info		= v1_read_file_info,
 	.write_file_info	= v1_write_file_info,
-<<<<<<< HEAD
-	.free_file_info		= NULL,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_dqblk		= v1_read_dqblk,
 	.commit_dqblk		= v1_commit_dqblk,
 };

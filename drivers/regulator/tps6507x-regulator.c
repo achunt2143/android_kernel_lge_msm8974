@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tps6507x-regulator.c
  *
  * Regulator driver for TPS65073 PMIC
  *
-<<<<<<< HEAD
- * Copyright (C) 2009 Texas Instrument Incorporated - http://www.ti.com/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any kind,
- * whether express or implied; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
  * Copyright (C) 2009 Texas Instrument Incorporated - https://www.ti.com/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -31,16 +15,10 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/tps6507x.h>
-<<<<<<< HEAD
-#include <linux/delay.h>
-#include <linux/slab.h>
-#include <linux/mfd/tps6507x.h>
-=======
 #include <linux/of.h>
 #include <linux/slab.h>
 #include <linux/mfd/tps6507x.h>
 #include <linux/regulator/of_regulator.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* DCDC's */
 #define TPS6507X_DCDC_1				0
@@ -59,60 +37,6 @@
 /* Number of total regulators available */
 #define TPS6507X_NUM_REGULATOR		(TPS6507X_NUM_DCDC + TPS6507X_NUM_LDO)
 
-<<<<<<< HEAD
-/* Supported voltage values for regulators (in milliVolts) */
-static const u16 VDCDCx_VSEL_table[] = {
-	725, 750, 775, 800,
-	825, 850, 875, 900,
-	925, 950, 975, 1000,
-	1025, 1050, 1075, 1100,
-	1125, 1150, 1175, 1200,
-	1225, 1250, 1275, 1300,
-	1325, 1350, 1375, 1400,
-	1425, 1450, 1475, 1500,
-	1550, 1600, 1650, 1700,
-	1750, 1800, 1850, 1900,
-	1950, 2000, 2050, 2100,
-	2150, 2200, 2250, 2300,
-	2350, 2400, 2450, 2500,
-	2550, 2600, 2650, 2700,
-	2750, 2800, 2850, 2900,
-	3000, 3100, 3200, 3300,
-};
-
-static const u16 LDO1_VSEL_table[] = {
-	1000, 1100, 1200, 1250,
-	1300, 1350, 1400, 1500,
-	1600, 1800, 2500, 2750,
-	2800, 3000, 3100, 3300,
-};
-
-static const u16 LDO2_VSEL_table[] = {
-	725, 750, 775, 800,
-	825, 850, 875, 900,
-	925, 950, 975, 1000,
-	1025, 1050, 1075, 1100,
-	1125, 1150, 1175, 1200,
-	1225, 1250, 1275, 1300,
-	1325, 1350, 1375, 1400,
-	1425, 1450, 1475, 1500,
-	1550, 1600, 1650, 1700,
-	1750, 1800, 1850, 1900,
-	1950, 2000, 2050, 2100,
-	2150, 2200, 2250, 2300,
-	2350, 2400, 2450, 2500,
-	2550, 2600, 2650, 2700,
-	2750, 2800, 2850, 2900,
-	3000, 3100, 3200, 3300,
-};
-
-struct tps_info {
-	const char *name;
-	unsigned min_uV;
-	unsigned max_uV;
-	u8 table_len;
-	const u16 *table;
-=======
 /* Supported voltage values for regulators (in microVolts) */
 static const unsigned int VDCDCx_VSEL_table[] = {
 	725000, 750000, 775000, 800000,
@@ -147,7 +71,6 @@ struct tps_info {
 	const char *name;
 	u8 table_len;
 	const unsigned int *table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Does DCDC high or the low register defines output voltage? */
 	bool defdcdc_default;
@@ -156,51 +79,26 @@ struct tps_info {
 static struct tps_info tps6507x_pmic_regs[] = {
 	{
 		.name = "VDCDC1",
-<<<<<<< HEAD
-		.min_uV = 725000,
-		.max_uV = 3300000,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.table_len = ARRAY_SIZE(VDCDCx_VSEL_table),
 		.table = VDCDCx_VSEL_table,
 	},
 	{
 		.name = "VDCDC2",
-<<<<<<< HEAD
-		.min_uV = 725000,
-		.max_uV = 3300000,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.table_len = ARRAY_SIZE(VDCDCx_VSEL_table),
 		.table = VDCDCx_VSEL_table,
 	},
 	{
 		.name = "VDCDC3",
-<<<<<<< HEAD
-		.min_uV = 725000,
-		.max_uV = 3300000,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.table_len = ARRAY_SIZE(VDCDCx_VSEL_table),
 		.table = VDCDCx_VSEL_table,
 	},
 	{
 		.name = "LDO1",
-<<<<<<< HEAD
-		.min_uV = 1000000,
-		.max_uV = 3300000,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.table_len = ARRAY_SIZE(LDO1_VSEL_table),
 		.table = LDO1_VSEL_table,
 	},
 	{
 		.name = "LDO2",
-<<<<<<< HEAD
-		.min_uV = 725000,
-		.max_uV = 3300000,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.table_len = ARRAY_SIZE(LDO2_VSEL_table),
 		.table = LDO2_VSEL_table,
 	},
@@ -209,10 +107,6 @@ static struct tps_info tps6507x_pmic_regs[] = {
 struct tps6507x_pmic {
 	struct regulator_desc desc[TPS6507X_NUM_REGULATOR];
 	struct tps6507x_dev *mfd;
-<<<<<<< HEAD
-	struct regulator_dev *rdev[TPS6507X_NUM_REGULATOR];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tps_info *info[TPS6507X_NUM_REGULATOR];
 	struct mutex io_lock;
 };
@@ -353,11 +247,7 @@ static int tps6507x_pmic_disable(struct regulator_dev *dev)
 					1 << shift);
 }
 
-<<<<<<< HEAD
-static int tps6507x_pmic_get_voltage(struct regulator_dev *dev)
-=======
 static int tps6507x_pmic_get_voltage_sel(struct regulator_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tps6507x_pmic *tps = rdev_get_drvdata(dev);
 	int data, rid = rdev_get_id(dev);
@@ -399,11 +289,7 @@ static int tps6507x_pmic_get_voltage_sel(struct regulator_dev *dev)
 		return data;
 
 	data &= mask;
-<<<<<<< HEAD
-	return tps->info[rid]->table[data] * 1000;
-=======
 	return data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int tps6507x_pmic_set_voltage_sel(struct regulator_dev *dev,
@@ -454,37 +340,6 @@ static int tps6507x_pmic_set_voltage_sel(struct regulator_dev *dev,
 	return tps6507x_pmic_reg_write(tps, reg, data);
 }
 
-<<<<<<< HEAD
-static int tps6507x_pmic_list_voltage(struct regulator_dev *dev,
-					unsigned selector)
-{
-	struct tps6507x_pmic *tps = rdev_get_drvdata(dev);
-	int rid = rdev_get_id(dev);
-
-	if (rid < TPS6507X_DCDC_1 || rid > TPS6507X_LDO_2)
-		return -EINVAL;
-
-	if (selector >= tps->info[rid]->table_len)
-		return -EINVAL;
-	else
-		return tps->info[rid]->table[selector] * 1000;
-}
-
-static struct regulator_ops tps6507x_pmic_ops = {
-	.is_enabled = tps6507x_pmic_is_enabled,
-	.enable = tps6507x_pmic_enable,
-	.disable = tps6507x_pmic_disable,
-	.get_voltage = tps6507x_pmic_get_voltage,
-	.set_voltage_sel = tps6507x_pmic_set_voltage_sel,
-	.list_voltage = tps6507x_pmic_list_voltage,
-};
-
-static __devinit int tps6507x_pmic_probe(struct platform_device *pdev)
-{
-	struct tps6507x_dev *tps6507x_dev = dev_get_drvdata(pdev->dev.parent);
-	struct tps_info *info = &tps6507x_pmic_regs[0];
-	struct regulator_init_data *init_data;
-=======
 static const struct regulator_ops tps6507x_pmic_ops = {
 	.is_enabled = tps6507x_pmic_is_enabled,
 	.enable = tps6507x_pmic_enable,
@@ -517,15 +372,10 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 	struct tps_info *info = &tps6507x_pmic_regs[0];
 	struct regulator_config config = { };
 	struct regulator_init_data *init_data = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct regulator_dev *rdev;
 	struct tps6507x_pmic *tps;
 	struct tps6507x_board *tps_board;
 	int i;
-<<<<<<< HEAD
-	int error;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/**
 	 * tps_board points to pmic related constants
@@ -533,25 +383,10 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 	 */
 
 	tps_board = dev_get_platdata(tps6507x_dev->dev);
-<<<<<<< HEAD
-	if (!tps_board)
-		return -EINVAL;
-
-	/**
-	 * init_data points to array of regulator_init structures
-	 * coming from the board-evm file.
-	 */
-	init_data = tps_board->tps6507x_pmic_init_data;
-	if (!init_data)
-		return -EINVAL;
-
-	tps = kzalloc(sizeof(*tps), GFP_KERNEL);
-=======
 	if (tps_board)
 		init_data = tps_board->tps6507x_pmic_init_data;
 
 	tps = devm_kzalloc(&pdev->dev, sizeof(*tps), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tps)
 		return -ENOMEM;
 
@@ -560,20 +395,6 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 	/* common for all regulators */
 	tps->mfd = tps6507x_dev;
 
-<<<<<<< HEAD
-	for (i = 0; i < TPS6507X_NUM_REGULATOR; i++, info++, init_data++) {
-		/* Register the regulators */
-		tps->info[i] = info;
-		if (init_data->driver_data) {
-			struct tps6507x_reg_platform_data *data =
-							init_data->driver_data;
-			tps->info[i]->defdcdc_default = data->defdcdc_default;
-		}
-
-		tps->desc[i].name = info->name;
-		tps->desc[i].id = i;
-		tps->desc[i].n_voltages = info->table_len;
-=======
 	for (i = 0; i < TPS6507X_NUM_REGULATOR; i++, info++) {
 		/* Register the regulators */
 		tps->info[i] = info;
@@ -590,82 +411,36 @@ static int tps6507x_pmic_probe(struct platform_device *pdev)
 		tps->desc[i].id = i;
 		tps->desc[i].n_voltages = info->table_len;
 		tps->desc[i].volt_table = info->table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tps->desc[i].ops = &tps6507x_pmic_ops;
 		tps->desc[i].type = REGULATOR_VOLTAGE;
 		tps->desc[i].owner = THIS_MODULE;
 
-<<<<<<< HEAD
-		rdev = regulator_register(&tps->desc[i],
-					tps6507x_dev->dev, init_data, tps, NULL);
-=======
 		config.dev = tps6507x_dev->dev;
 		config.init_data = init_data;
 		config.driver_data = tps;
 
 		rdev = devm_regulator_register(&pdev->dev, &tps->desc[i],
 					       &config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(rdev)) {
 			dev_err(tps6507x_dev->dev,
 				"failed to register %s regulator\n",
 				pdev->name);
-<<<<<<< HEAD
-			error = PTR_ERR(rdev);
-			goto fail;
-		}
-
-		/* Save regulator for cleanup */
-		tps->rdev[i] = rdev;
-=======
 			return PTR_ERR(rdev);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tps6507x_dev->pmic = tps;
 	platform_set_drvdata(pdev, tps6507x_dev);
 
 	return 0;
-<<<<<<< HEAD
-
-fail:
-	while (--i >= 0)
-		regulator_unregister(tps->rdev[i]);
-
-	kfree(tps);
-	return error;
-}
-
-static int __devexit tps6507x_pmic_remove(struct platform_device *pdev)
-{
-	struct tps6507x_dev *tps6507x_dev = platform_get_drvdata(pdev);
-	struct tps6507x_pmic *tps = tps6507x_dev->pmic;
-	int i;
-
-	for (i = 0; i < TPS6507X_NUM_REGULATOR; i++)
-		regulator_unregister(tps->rdev[i]);
-
-	kfree(tps);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver tps6507x_pmic_driver = {
 	.driver = {
 		.name = "tps6507x-pmic",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = tps6507x_pmic_probe,
-	.remove = __devexit_p(tps6507x_pmic_remove),
-=======
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 	.probe = tps6507x_pmic_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init tps6507x_pmic_init(void)

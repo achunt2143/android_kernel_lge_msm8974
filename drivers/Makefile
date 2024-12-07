@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Linux kernel device drivers.
 #
@@ -9,12 +6,6 @@
 # Rewritten to use lists instead of if-statements.
 #
 
-<<<<<<< HEAD
-# GPIO must come after pinctrl as gpios may need to mux pins etc
-obj-y				+= pinctrl/
-obj-y				+= gpio/
-obj-$(CONFIG_PCI)		+= pci/
-=======
 # Some driver Makefiles miss $(srctree)/ for include directive.
 ifdef building_out_of_srctree
 MAKEFLAGS += --include-dir=$(srctree)
@@ -33,24 +24,10 @@ obj-y				+= pwm/
 
 obj-y				+= pci/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_PARISC)		+= parisc/
 obj-$(CONFIG_RAPIDIO)		+= rapidio/
 obj-y				+= video/
 obj-y				+= idle/
-<<<<<<< HEAD
-obj-$(CONFIG_ACPI)		+= acpi/
-obj-$(CONFIG_SFI)		+= sfi/
-# PnP must come after ACPI since it will eventually need to check if acpi
-# was used and do nothing if so
-obj-$(CONFIG_PNP)		+= pnp/
-obj-$(CONFIG_ARM_AMBA)		+= amba/
-# Many drivers will want to use DMA so this has to be made available
-# really early.
-obj-$(CONFIG_DMA_ENGINE)	+= dma/
-
-obj-$(CONFIG_VIRTIO)		+= virtio/
-=======
 
 # IPMI must come before ACPI in order to provide IPMI opregion support
 obj-y				+= char/ipmi/
@@ -73,47 +50,27 @@ obj-$(CONFIG_PM_GENERIC_DOMAINS)	+= pmdomain/
 
 obj-y				+= virtio/
 obj-$(CONFIG_VDPA)		+= vdpa/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_XEN)		+= xen/
 
 # regulators early, since some subsystems rely on them to initialize
 obj-$(CONFIG_REGULATOR)		+= regulator/
 
-<<<<<<< HEAD
-=======
 # reset controllers early, since gpu drivers might rely on them to initialize
 obj-$(CONFIG_RESET_CONTROLLER)	+= reset/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # tty/ comes before char/ so that the VT console is the boot-time
 # default.
 obj-y				+= tty/
 obj-y				+= char/
 
-<<<<<<< HEAD
-# gpu/ comes after char for AGP vs DRM startup
-=======
 # iommu/ comes before gpu as gpu are using iommu controllers
 obj-y				+= iommu/
 
 # gpu/ comes after char for AGP vs DRM startup and after iommu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-y				+= gpu/
 
 obj-$(CONFIG_CONNECTOR)		+= connector/
 
-<<<<<<< HEAD
-# i810fb and intelfb depend on char/agp/
-obj-$(CONFIG_FB_I810)           += video/i810/
-obj-$(CONFIG_FB_INTEL)          += video/intelfb/
-
-obj-$(CONFIG_PARPORT)		+= parport/
-obj-y				+= base/ block/ misc/ mfd/ nfc/
-obj-$(CONFIG_NUBUS)		+= nubus/
-obj-y				+= macintosh/
-obj-$(CONFIG_IDE)		+= ide/
-obj-$(CONFIG_SCSI)		+= scsi/
-=======
 # i810fb depends on char/agp/
 obj-$(CONFIG_FB_I810)           += video/fbdev/i810/
 
@@ -127,55 +84,25 @@ obj-y				+= cxl/
 obj-y				+= macintosh/
 obj-y				+= scsi/
 obj-y				+= nvme/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_ATA)		+= ata/
 obj-$(CONFIG_TARGET_CORE)	+= target/
 obj-$(CONFIG_MTD)		+= mtd/
 obj-$(CONFIG_SPI)		+= spi/
 obj-$(CONFIG_SPMI)		+= spmi/
-<<<<<<< HEAD
-obj-$(CONFIG_SLIMBUS)		+= slimbus/
-obj-y				+= hsi/
-=======
 obj-$(CONFIG_HSI)		+= hsi/
 obj-$(CONFIG_SLIMBUS)		+= slimbus/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-y				+= net/
 obj-$(CONFIG_ATM)		+= atm/
 obj-$(CONFIG_FUSION)		+= message/
 obj-y				+= firewire/
 obj-$(CONFIG_UIO)		+= uio/
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_VFIO)		+= vfio/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-y				+= cdrom/
 obj-y				+= auxdisplay/
 obj-$(CONFIG_PCCARD)		+= pcmcia/
 obj-$(CONFIG_DIO)		+= dio/
 obj-$(CONFIG_SBUS)		+= sbus/
 obj-$(CONFIG_ZORRO)		+= zorro/
-<<<<<<< HEAD
-obj-$(CONFIG_MAC)		+= macintosh/
-obj-$(CONFIG_ATA_OVER_ETH)	+= block/aoe/
-obj-$(CONFIG_PARIDE) 		+= block/paride/
-obj-$(CONFIG_TC)		+= tc/
-obj-$(CONFIG_UWB)		+= uwb/
-obj-$(CONFIG_USB_OTG_UTILS)	+= usb/
-obj-$(CONFIG_USB)		+= usb/
-obj-$(CONFIG_PCI)		+= usb/
-obj-$(CONFIG_USB_GADGET)	+= usb/
-obj-$(CONFIG_SERIO)		+= input/serio/
-obj-$(CONFIG_GAMEPORT)		+= input/gameport/
-obj-$(CONFIG_INPUT)		+= input/
-obj-$(CONFIG_I2O)		+= message/
-obj-$(CONFIG_RTC_LIB)		+= rtc/
-obj-y				+= i2c/ media/
-obj-$(CONFIG_PPS)		+= pps/
-obj-$(CONFIG_PTP_1588_CLOCK)	+= ptp/
-obj-$(CONFIG_W1)		+= w1/
-obj-$(CONFIG_POWER_SUPPLY)	+= power/
-=======
 obj-$(CONFIG_ATA_OVER_ETH)	+= block/aoe/
 obj-$(CONFIG_TC)		+= tc/
 obj-$(CONFIG_USB_PHY)		+= usb/
@@ -193,7 +120,6 @@ obj-$(CONFIG_PPS)		+= pps/
 obj-y				+= ptp/
 obj-$(CONFIG_W1)		+= w1/
 obj-y				+= power/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_HWMON)		+= hwmon/
 obj-$(CONFIG_THERMAL)		+= thermal/
 obj-$(CONFIG_WATCHDOG)		+= watchdog/
@@ -202,28 +128,6 @@ obj-$(CONFIG_BT)		+= bluetooth/
 obj-$(CONFIG_ACCESSIBILITY)	+= accessibility/
 obj-$(CONFIG_ISDN)		+= isdn/
 obj-$(CONFIG_EDAC)		+= edac/
-<<<<<<< HEAD
-obj-$(CONFIG_MCA)		+= mca/
-obj-$(CONFIG_EISA)		+= eisa/
-obj-y				+= lguest/
-obj-$(CONFIG_CPU_FREQ)		+= cpufreq/
-obj-$(CONFIG_CPU_IDLE)		+= cpuidle/
-obj-y				+= mmc/
-obj-$(CONFIG_MEMSTICK)		+= memstick/
-obj-y				+= leds/
-obj-$(CONFIG_SWITCH)		+= switch/
-obj-$(CONFIG_INFINIBAND)	+= infiniband/
-obj-$(CONFIG_SGI_SN)		+= sn/
-obj-y				+= firmware/
-obj-$(CONFIG_CRYPTO)		+= crypto/
-obj-$(CONFIG_SUPERH)		+= sh/
-obj-$(CONFIG_ARCH_SHMOBILE)	+= sh/
-ifndef CONFIG_ARCH_USES_GETTIMEOFFSET
-obj-y				+= clocksource/
-endif
-obj-$(CONFIG_DCA)		+= dca/
-obj-$(CONFIG_HID)		+= hid/
-=======
 obj-$(CONFIG_EISA)		+= eisa/
 obj-$(CONFIG_PM_OPP)		+= opp/
 obj-$(CONFIG_CPU_FREQ)		+= cpufreq/
@@ -239,46 +143,10 @@ obj-$(CONFIG_SUPERH)		+= sh/
 obj-y				+= clocksource/
 obj-$(CONFIG_DCA)		+= dca/
 obj-$(CONFIG_HID_SUPPORT)	+= hid/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_PPC_PS3)		+= ps3/
 obj-$(CONFIG_OF)		+= of/
 obj-$(CONFIG_SSB)		+= ssb/
 obj-$(CONFIG_BCMA)		+= bcma/
-<<<<<<< HEAD
-obj-$(CONFIG_VHOST_NET)		+= vhost/
-obj-$(CONFIG_VLYNQ)		+= vlynq/
-obj-$(CONFIG_STAGING)		+= staging/
-obj-y				+= platform/
-obj-y				+= ieee802154/
-#common clk code
-obj-y				+= clk/
-
-obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
-obj-$(CONFIG_NFC)		+= nfc/
-obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
-obj-$(CONFIG_REMOTEPROC)	+= remoteproc/
-obj-$(CONFIG_RPMSG)		+= rpmsg/
-
-# Virtualization drivers
-obj-$(CONFIG_VIRT_DRIVERS)	+= virt/
-obj-$(CONFIG_HYPERV)		+= hv/
-
-obj-$(CONFIG_PM_DEVFREQ)	+= devfreq/
-
-obj-$(CONFIG_CORESIGHT)		+= coresight/
-
-# LGE_BROADCAST_TDMB {
-obj-$(CONFIG_LGE_BROADCAST_TDMB) += broadcast/
-# LGE_BROADCAST_TDMB }
-# LGE_BROADCAST_ISDBT_JAPAN {
-obj-$(CONFIG_LGE_BROADCAST_ISDBT_JAPAN) += broadcast/
-
-#FeliCa
-obj-$(CONFIG_LGE_FELICA)        += felica/
-
-obj-$(CONFIG_BIF)		+= bif/
-obj-$(CONFIG_SENSORS)		+= sensors/
-=======
 obj-$(CONFIG_VHOST_RING)	+= vhost/
 obj-$(CONFIG_VHOST_IOTLB)	+= vhost/
 obj-$(CONFIG_VHOST)		+= vhost/
@@ -330,4 +198,3 @@ obj-$(CONFIG_CDX_BUS)		+= cdx/
 obj-$(CONFIG_DPLL)		+= dpll/
 
 obj-$(CONFIG_S390)		+= s390/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

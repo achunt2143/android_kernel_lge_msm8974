@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # KVM configuration
 #
@@ -10,14 +7,8 @@ source "virt/kvm/Kconfig"
 
 menuconfig VIRTUALIZATION
 	bool "Virtualization"
-<<<<<<< HEAD
-	depends on HAVE_KVM || X86
-	default y
-	---help---
-=======
 	default y
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to get to see options for using your Linux host to run other
 	  operating systems inside virtual machines (guests).
 	  This option alone does not add any kernel code.
@@ -28,26 +19,6 @@ if VIRTUALIZATION
 
 config KVM
 	tristate "Kernel-based Virtual Machine (KVM) support"
-<<<<<<< HEAD
-	depends on HAVE_KVM
-	# for device assignment:
-	depends on PCI
-	# for TASKSTATS/TASK_DELAY_ACCT:
-	depends on NET
-	select PREEMPT_NOTIFIERS
-	select MMU_NOTIFIER
-	select ANON_INODES
-	select HAVE_KVM_IRQCHIP
-	select HAVE_KVM_EVENTFD
-	select KVM_APIC_ARCHITECTURE
-	select KVM_ASYNC_PF
-	select USER_RETURN_NOTIFIER
-	select KVM_MMIO
-	select TASKSTATS
-	select TASK_DELAY_ACCT
-	select PERF_EVENTS
-	---help---
-=======
 	depends on HIGH_RES_TIMERS
 	depends on X86_LOCAL_APIC
 	select KVM_COMMON
@@ -74,7 +45,6 @@ config KVM
 	select HAVE_KVM_PM_NOTIFIER if PM
 	select KVM_GENERIC_HARDWARE_ENABLING
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Support hosting fully virtualized guest machines using hardware
 	  virtualization extensions.  You will need a fairly recent
 	  processor equipped with virtualization extensions. You will also
@@ -88,16 +58,6 @@ config KVM
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config KVM_INTEL
-	tristate "KVM for Intel processors support"
-	depends on KVM
-	# for perf_guest_get_msrs():
-	depends on CPU_SUP_INTEL
-	---help---
-	  Provides support for KVM on Intel processors equipped with the VT
-	  extensions.
-=======
 config KVM_WERROR
 	bool "Compile KVM with -Werror"
 	# Disallow KVM's -Werror if KASAN is enabled, e.g. to guard against
@@ -131,17 +91,10 @@ config KVM_INTEL
 	help
 	  Provides support for KVM on processors equipped with Intel's VT
 	  extensions, a.k.a. Virtual Machine Extensions (VMX).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this as a module, choose M here: the module
 	  will be called kvm-intel.
 
-<<<<<<< HEAD
-config KVM_AMD
-	tristate "KVM for AMD processors support"
-	depends on KVM
-	---help---
-=======
 config X86_SGX_KVM
 	bool "Software Guard eXtensions (SGX) Virtualization"
 	depends on X86_SGX && KVM_INTEL
@@ -158,26 +111,12 @@ config KVM_AMD
 	tristate "KVM for AMD processors support"
 	depends on KVM && (CPU_SUP_AMD || CPU_SUP_HYGON)
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Provides support for KVM on AMD processors equipped with the AMD-V
 	  (SVM) extensions.
 
 	  To compile this as a module, choose M here: the module
 	  will be called kvm-amd.
 
-<<<<<<< HEAD
-config KVM_MMU_AUDIT
-	bool "Audit KVM MMU"
-	depends on KVM && TRACEPOINTS
-	---help---
-	 This option adds a R/W kVM module parameter 'mmu_audit', which allows
-	 audit  KVM MMU at runtime.
-
-# OK, it's a little counter-intuitive to do this, but it puts it neatly under
-# the virtualization menu.
-source drivers/vhost/Kconfig
-source drivers/lguest/Kconfig
-=======
 config KVM_AMD_SEV
 	bool "AMD Secure Encrypted Virtualization (SEV) support"
 	default y
@@ -248,6 +187,5 @@ config KVM_MAX_NR_VCPUS
 	  Set the maximum number of vCPUs per KVM guest. Larger values will increase
 	  the memory footprint of each KVM guest, regardless of how many vCPUs are
 	  created for a given VM.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # VIRTUALIZATION

@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acinterp.h - Interpreter subcomponent prototypes and defines
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACINTERP_H__
 #define __ACINTERP_H__
 
@@ -78,11 +33,7 @@
 typedef const struct acpi_exdump_info {
 	u8 opcode;
 	u8 offset;
-<<<<<<< HEAD
-	char *name;
-=======
 	const char *name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } acpi_exdump_info;
 
@@ -102,13 +53,10 @@ typedef const struct acpi_exdump_info {
 #define ACPI_EXD_PACKAGE                11
 #define ACPI_EXD_FIELD                  12
 #define ACPI_EXD_REFERENCE              13
-<<<<<<< HEAD
-=======
 #define ACPI_EXD_LIST                   14	/* Operand object list */
 #define ACPI_EXD_HDLR_LIST              15	/* Address Handler list */
 #define ACPI_EXD_RGN_LIST               16	/* Region list */
 #define ACPI_EXD_NODE                   17	/* Namespace Node */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* restore default alignment */
 
@@ -119,12 +67,8 @@ typedef const struct acpi_exdump_info {
  */
 acpi_status
 acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
-<<<<<<< HEAD
-			   union acpi_operand_object **result_desc, u32 flags);
-=======
 			   union acpi_operand_object **result_desc,
 			   u32 implicit_conversion);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 acpi_status
 acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
@@ -154,8 +98,6 @@ void
 acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			u32 level, u32 index);
 
-<<<<<<< HEAD
-=======
 void
 acpi_ex_start_trace_method(struct acpi_namespace_node *method_node,
 			   union acpi_operand_object *obj_desc,
@@ -178,17 +120,13 @@ void
 acpi_ex_trace_point(acpi_trace_event_type type,
 		    u8 begin, u8 *aml, char *pathname);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * exfield - ACPI AML (p-code) execution - field manipulation
  */
 acpi_status
-<<<<<<< HEAD
-=======
 acpi_ex_get_protocol_buffer_length(u32 protocol_id, u32 *return_length);
 
 acpi_status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_ex_common_buffer_setup(union acpi_operand_object *obj_desc,
 			    u32 buffer_length, u32 * datum_count);
 
@@ -333,8 +271,6 @@ acpi_ex_prep_common_field_object(union acpi_operand_object *obj_desc,
 acpi_status acpi_ex_prep_field_value(struct acpi_create_field_info *info);
 
 /*
-<<<<<<< HEAD
-=======
  * exserial - field_unit support for serial address spaces
  */
 acpi_status
@@ -355,7 +291,6 @@ acpi_ex_write_gpio(union acpi_operand_object *source_desc,
 		   union acpi_operand_object **return_buffer);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * exsystem - Interface to OS services
  */
 acpi_status
@@ -425,11 +360,7 @@ acpi_ex_resolve_to_value(union acpi_operand_object **stack_ptr,
 acpi_status
 acpi_ex_resolve_multiple(struct acpi_walk_state *walk_state,
 			 union acpi_operand_object *operand,
-<<<<<<< HEAD
-			 acpi_object_type * return_type,
-=======
 			 acpi_object_type *return_type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 union acpi_operand_object **return_desc);
 
 /*
@@ -456,18 +387,10 @@ void
 acpi_ex_dump_operands(union acpi_operand_object **operands,
 		      const char *opcode_name, u32 num_opcodes);
 
-<<<<<<< HEAD
-#ifdef	ACPI_FUTURE_USAGE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 acpi_ex_dump_object_descriptor(union acpi_operand_object *object, u32 flags);
 
 void acpi_ex_dump_namespace_node(struct acpi_namespace_node *node, u32 flags);
-<<<<<<< HEAD
-#endif				/* ACPI_FUTURE_USAGE */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * exnames - AML namestring support
@@ -491,12 +414,6 @@ acpi_ex_store_object_to_node(union acpi_operand_object *source_desc,
 			     struct acpi_walk_state *walk_state,
 			     u8 implicit_conversion);
 
-<<<<<<< HEAD
-#define ACPI_IMPLICIT_CONVERSION        TRUE
-#define ACPI_NO_IMPLICIT_CONVERSION     FALSE
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * exstoren - resolve/store object
  */
@@ -548,15 +465,7 @@ void acpi_ex_enter_interpreter(void);
 
 void acpi_ex_exit_interpreter(void);
 
-<<<<<<< HEAD
-void acpi_ex_reacquire_interpreter(void);
-
-void acpi_ex_relinquish_interpreter(void);
-
-void acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc);
-=======
 u8 acpi_ex_truncate_for32bit_table(union acpi_operand_object *obj_desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void acpi_ex_acquire_global_lock(u32 rule);
 
@@ -566,11 +475,8 @@ void acpi_ex_eisa_id_to_string(char *dest, u64 compressed_id);
 
 void acpi_ex_integer_to_string(char *dest, u64 value);
 
-<<<<<<< HEAD
-=======
 void acpi_ex_pci_cls_to_string(char *dest, u8 class_code[3]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 acpi_is_valid_space_id(u8 space_id);
 
 /*

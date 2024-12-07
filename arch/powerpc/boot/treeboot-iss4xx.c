@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2010 Ben. Herrenschmidt, IBM Corporation.
  *
@@ -15,14 +12,6 @@
  *   Copyright (c) 2003, 2004 Zultys Technologies
  *
  *    Copyright 2007 David Gibson, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <stdarg.h>
 #include <stddef.h>
@@ -66,11 +55,7 @@ static void *iss_4xx_vmlinux_alloc(unsigned long size)
 	return (void *)ibm4xx_memstart;
 }
 
-<<<<<<< HEAD
-#define SPRN_PIR	0x11E	/* Processor Indentification Register */
-=======
 #define SPRN_PIR	0x11E	/* Processor Identification Register */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void platform_init(void)
 {
 	unsigned long end_of_ram = 0x08000000;

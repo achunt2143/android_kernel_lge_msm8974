@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ATM ioctl handling */
 
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -59,11 +56,8 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 	int error;
 	struct list_head *pos;
 	void __user *argp = (void __user *)arg;
-<<<<<<< HEAD
-=======
 	void __user *buf;
 	int __user *len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vcc = ATM_SD(sock);
 	switch (cmd) {
@@ -79,42 +73,12 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 	case SIOCINQ:
 	{
 		struct sk_buff *skb;
-<<<<<<< HEAD
-=======
 		int amount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sock->state != SS_CONNECTED) {
 			error = -EINVAL;
 			goto done;
 		}
-<<<<<<< HEAD
-		skb = skb_peek(&sk->sk_receive_queue);
-		error = put_user(skb ? skb->len : 0,
-				 (int __user *)argp) ? -EFAULT : 0;
-		goto done;
-	}
-	case SIOCGSTAMP: /* borrowed from IP */
-#ifdef CONFIG_COMPAT
-		if (compat)
-			error = compat_sock_get_timestamp(sk, argp);
-		else
-#endif
-			error = sock_get_timestamp(sk, argp);
-		goto done;
-	case SIOCGSTAMPNS: /* borrowed from IP */
-#ifdef CONFIG_COMPAT
-		if (compat)
-			error = compat_sock_get_timestampns(sk, argp);
-		else
-#endif
-			error = sock_get_timestampns(sk, argp);
-		goto done;
-	case ATM_SETSC:
-		if (net_ratelimit())
-			pr_warning("ATM_SETSC is obsolete; used by %s:%d\n",
-				   current->comm, task_pid_nr(current));
-=======
 		spin_lock_irq(&sk->sk_receive_queue.lock);
 		skb = skb_peek(&sk->sk_receive_queue);
 		amount = skb ? skb->len : 0;
@@ -125,7 +89,6 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 	case ATM_SETSC:
 		net_warn_ratelimited("ATM_SETSC is obsolete; used by %s:%d\n",
 				     current->comm, task_pid_nr(current));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = 0;
 		goto done;
 	case ATMSIGD_CTRL:
@@ -149,12 +112,7 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 		   work for 32-bit userspace. TBH I don't really want
 		   to think about it at all. dwmw2. */
 		if (compat) {
-<<<<<<< HEAD
-			if (net_ratelimit())
-				pr_warning("32-bit task cannot be atmsigd\n");
-=======
 			net_warn_ratelimited("32-bit task cannot be atmsigd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -EINVAL;
 			goto done;
 		}
@@ -209,9 +167,6 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 	if (error != -ENOIOCTLCMD)
 		goto done;
 
-<<<<<<< HEAD
-	error = atm_dev_ioctl(cmd, argp, compat);
-=======
 	if (cmd == ATM_GETNAMES) {
 		if (IS_ENABLED(CONFIG_COMPAT) && compat) {
 #ifdef CONFIG_COMPAT
@@ -255,7 +210,6 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 		}
 		error = atm_dev_ioctl(cmd, buf, len, number, compat);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	return error;
@@ -323,34 +277,6 @@ static struct {
 static int do_atm_iobuf(struct socket *sock, unsigned int cmd,
 			unsigned long arg)
 {
-<<<<<<< HEAD
-	struct atm_iobuf __user *iobuf;
-	struct compat_atm_iobuf __user *iobuf32;
-	u32 data;
-	void __user *datap;
-	int len, err;
-
-	iobuf = compat_alloc_user_space(sizeof(*iobuf));
-	iobuf32 = compat_ptr(arg);
-
-	if (get_user(len, &iobuf32->length) ||
-	    get_user(data, &iobuf32->buffer))
-		return -EFAULT;
-	datap = compat_ptr(data);
-	if (put_user(len, &iobuf->length) ||
-	    put_user(datap, &iobuf->buffer))
-		return -EFAULT;
-
-	err = do_vcc_ioctl(sock, cmd, (unsigned long) iobuf, 0);
-
-	if (!err) {
-		if (copy_in_user(&iobuf32->length, &iobuf->length,
-				 sizeof(int)))
-			err = -EFAULT;
-	}
-
-	return err;
-=======
 	struct compat_atm_iobuf __user *iobuf32 = compat_ptr(arg);
 	u32 data;
 
@@ -358,38 +284,11 @@ static int do_atm_iobuf(struct socket *sock, unsigned int cmd,
 		return -EFAULT;
 
 	return atm_getnames(&iobuf32->length, compat_ptr(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int do_atmif_sioc(struct socket *sock, unsigned int cmd,
 			 unsigned long arg)
 {
-<<<<<<< HEAD
-	struct atmif_sioc __user *sioc;
-	struct compat_atmif_sioc __user *sioc32;
-	u32 data;
-	void __user *datap;
-	int err;
-
-	sioc = compat_alloc_user_space(sizeof(*sioc));
-	sioc32 = compat_ptr(arg);
-
-	if (copy_in_user(&sioc->number, &sioc32->number, 2 * sizeof(int)) ||
-	    get_user(data, &sioc32->arg))
-		return -EFAULT;
-	datap = compat_ptr(data);
-	if (put_user(datap, &sioc->arg))
-		return -EFAULT;
-
-	err = do_vcc_ioctl(sock, cmd, (unsigned long) sioc, 0);
-
-	if (!err) {
-		if (copy_in_user(&sioc32->length, &sioc->length,
-				 sizeof(int)))
-			err = -EFAULT;
-	}
-	return err;
-=======
 	struct compat_atmif_sioc __user *sioc32 = compat_ptr(arg);
 	int number;
 	u32 data;
@@ -397,7 +296,6 @@ static int do_atmif_sioc(struct socket *sock, unsigned int cmd,
 	if (get_user(data, &sioc32->arg) || get_user(number, &sioc32->number))
 		return -EFAULT;
 	return atm_dev_ioctl(cmd, compat_ptr(data), &sioc32->length, number, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int do_atm_ioctl(struct socket *sock, unsigned int cmd32,

@@ -1,26 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 ST-Ericsson SA
  * Written on behalf of Linaro for ST-Ericsson
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef MFD_TPS6105X_H
 #define MFD_TPS6105X_H
 
 #include <linux/i2c.h>
-<<<<<<< HEAD
-=======
 #include <linux/regmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regulator/machine.h>
 
 /*
@@ -93,24 +82,6 @@ struct tps6105x_platform_data {
 
 /**
  * struct tps6105x - state holder for the TPS6105x drivers
-<<<<<<< HEAD
- * @mutex: mutex to serialize I2C accesses
- * @i2c_client: corresponding I2C client
- * @regulator: regulator device if used in voltage mode
- */
-struct tps6105x {
-	struct tps6105x_platform_data *pdata;
-	struct mutex		lock;
-	struct i2c_client	*client;
-	struct regulator_dev	*regulator;
-};
-
-extern int tps6105x_set(struct tps6105x *tps6105x, u8 reg, u8 value);
-extern int tps6105x_get(struct tps6105x *tps6105x, u8 reg, u8 *buf);
-extern int tps6105x_mask_and_set(struct tps6105x *tps6105x, u8 reg,
-				 u8 bitmask, u8 bitvalues);
-
-=======
  * @i2c_client: corresponding I2C client
  * @regulator: regulator device if used in voltage mode
  * @regmap: used for i2c communcation on accessing registers
@@ -122,5 +93,4 @@ struct tps6105x {
 	struct regmap		*regmap;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Written by Kanoj Sarcar (kanoj@sgi.com) Aug 99
  * Rewritten for Linux 2.6 by Christoph Hellwig (hch@lst.de) Jan 2004
@@ -10,15 +7,6 @@
 #define _ASM_MMZONE_H_
 
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <mmzone.h>
-
-#ifdef CONFIG_DISCONTIGMEM
-
-#define pfn_to_nid(pfn)		pa_to_nid((pfn) << PAGE_SHIFT)
-
-#endif /* CONFIG_DISCONTIGMEM */
-=======
 
 #ifdef CONFIG_NUMA
 # include <mmzone.h>
@@ -33,6 +21,5 @@
 #endif
 
 extern void setup_zero_pages(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_MMZONE_H_ */

@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCAP2 Regulator Driver
  *
  * Copyright (c) 2009 Daniel Ribeiro <drwyrm@gmail.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -25,34 +14,6 @@
 #include <linux/regulator/machine.h>
 #include <linux/mfd/ezx-pcap.h>
 
-<<<<<<< HEAD
-static const u16 V1_table[] = {
-	2775, 1275, 1600, 1725, 1825, 1925, 2075, 2275,
-};
-
-static const u16 V2_table[] = {
-	2500, 2775,
-};
-
-static const u16 V3_table[] = {
-	1075, 1275, 1550, 1725, 1876, 1950, 2075, 2275,
-};
-
-static const u16 V4_table[] = {
-	1275, 1550, 1725, 1875, 1950, 2075, 2275, 2775,
-};
-
-static const u16 V5_table[] = {
-	1875, 2275, 2475, 2775,
-};
-
-static const u16 V6_table[] = {
-	2475, 2775,
-};
-
-static const u16 V7_table[] = {
-	1875, 2775,
-=======
 static const unsigned int V1_table[] = {
 	2775000, 1275000, 1600000, 1725000, 1825000, 1925000, 2075000, 2275000,
 };
@@ -79,23 +40,10 @@ static const unsigned int V6_table[] = {
 
 static const unsigned int V7_table[] = {
 	1875000, 2775000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define V8_table V4_table
 
-<<<<<<< HEAD
-static const u16 V9_table[] = {
-	1575, 1875, 2475, 2775,
-};
-
-static const u16 V10_table[] = {
-	5000,
-};
-
-static const u16 VAUX1_table[] = {
-	1875, 2475, 2775, 3000,
-=======
 static const unsigned int V9_table[] = {
 	1575000, 1875000, 2475000, 2775000,
 };
@@ -106,37 +54,10 @@ static const unsigned int V10_table[] = {
 
 static const unsigned int VAUX1_table[] = {
 	1875000, 2475000, 2775000, 3000000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define VAUX2_table VAUX1_table
 
-<<<<<<< HEAD
-static const u16 VAUX3_table[] = {
-	1200, 1200, 1200, 1200, 1400, 1600, 1800, 2000,
-	2200, 2400, 2600, 2800, 3000, 3200, 3400, 3600,
-};
-
-static const u16 VAUX4_table[] = {
-	1800, 1800, 3000, 5000,
-};
-
-static const u16 VSIM_table[] = {
-	1875, 3000,
-};
-
-static const u16 VSIM2_table[] = {
-	1875,
-};
-
-static const u16 VVIB_table[] = {
-	1300, 1800, 2000, 3000,
-};
-
-static const u16 SW1_table[] = {
-	900, 950, 1000, 1050, 1100, 1150, 1200, 1250,
-	1300, 1350, 1400, 1450, 1500, 1600, 1875, 2250,
-=======
 static const unsigned int VAUX3_table[] = {
 	1200000, 1200000, 1200000, 1200000, 1400000, 1600000, 1800000, 2000000,
 	2200000, 2400000, 2600000, 2800000, 3000000, 3200000, 3400000, 3600000,
@@ -161,29 +82,16 @@ static const unsigned int VVIB_table[] = {
 static const unsigned int SW1_table[] = {
 	 900000,  950000, 1000000, 1050000, 1100000, 1150000, 1200000, 1250000,
 	1300000, 1350000, 1400000, 1450000, 1500000, 1600000, 1875000, 2250000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define SW2_table SW1_table
 
-<<<<<<< HEAD
-static const u16 SW3_table[] = {
-	4000, 4500, 5000, 5500,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pcap_regulator {
 	const u8 reg;
 	const u8 en;
 	const u8 index;
 	const u8 stby;
 	const u8 lowpwr;
-<<<<<<< HEAD
-	const u8 n_voltages;
-	const u16 *voltage_table;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define NA 0xff
@@ -195,11 +103,6 @@ struct pcap_regulator {
 		.index		= _index,				\
 		.stby		= _stby,				\
 		.lowpwr		= _lowpwr,				\
-<<<<<<< HEAD
-		.n_voltages	= ARRAY_SIZE(_vreg##_table),		\
-		.voltage_table	= _vreg##_table,			\
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 static struct pcap_regulator vreg_table[] = {
@@ -235,45 +138,6 @@ static struct pcap_regulator vreg_table[] = {
 	VREG_INFO(SW2S,  PCAP_REG_LOWPWR,  NA, 20, NA, NA), */
 };
 
-<<<<<<< HEAD
-static int pcap_regulator_set_voltage(struct regulator_dev *rdev,
-				      int min_uV, int max_uV,
-				      unsigned *selector)
-{
-	struct pcap_regulator *vreg = &vreg_table[rdev_get_id(rdev)];
-	void *pcap = rdev_get_drvdata(rdev);
-	int uV;
-	u8 i;
-
-	/* the regulator doesn't support voltage switching */
-	if (vreg->n_voltages == 1)
-		return -EINVAL;
-
-	for (i = 0; i < vreg->n_voltages; i++) {
-		/* For V1 the first is not the best match */
-		if (i == 0 && rdev_get_id(rdev) == V1)
-			i = 1;
-		else if (i + 1 == vreg->n_voltages && rdev_get_id(rdev) == V1)
-			i = 0;
-
-		uV = vreg->voltage_table[i] * 1000;
-		if (min_uV <= uV && uV <= max_uV) {
-			*selector = i;
-			return ezx_pcap_set_bits(pcap, vreg->reg,
-					(vreg->n_voltages - 1) << vreg->index,
-					i << vreg->index);
-		}
-
-		if (i == 0 && rdev_get_id(rdev) == V1)
-			i = vreg->n_voltages - 1;
-	}
-
-	/* the requested voltage range is not supported by this regulator */
-	return -EINVAL;
-}
-
-static int pcap_regulator_get_voltage(struct regulator_dev *rdev)
-=======
 static int pcap_regulator_set_voltage_sel(struct regulator_dev *rdev,
 					  unsigned selector)
 {
@@ -290,23 +154,10 @@ static int pcap_regulator_set_voltage_sel(struct regulator_dev *rdev,
 }
 
 static int pcap_regulator_get_voltage_sel(struct regulator_dev *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcap_regulator *vreg = &vreg_table[rdev_get_id(rdev)];
 	void *pcap = rdev_get_drvdata(rdev);
 	u32 tmp;
-<<<<<<< HEAD
-	int mV;
-
-	if (vreg->n_voltages == 1)
-		return vreg->voltage_table[0] * 1000;
-
-	ezx_pcap_read(pcap, vreg->reg, &tmp);
-	tmp = ((tmp >> vreg->index) & (vreg->n_voltages - 1));
-	mV = vreg->voltage_table[tmp];
-
-	return mV * 1000;
-=======
 
 	if (rdev->desc->n_voltages == 1)
 		return 0;
@@ -314,7 +165,6 @@ static int pcap_regulator_get_voltage_sel(struct regulator_dev *rdev)
 	ezx_pcap_read(pcap, vreg->reg, &tmp);
 	tmp = ((tmp >> vreg->index) & (rdev->desc->n_voltages - 1));
 	return tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcap_regulator_enable(struct regulator_dev *rdev)
@@ -352,25 +202,10 @@ static int pcap_regulator_is_enabled(struct regulator_dev *rdev)
 	return (tmp >> vreg->en) & 1;
 }
 
-<<<<<<< HEAD
-static int pcap_regulator_list_voltage(struct regulator_dev *rdev,
-							unsigned int index)
-{
-	struct pcap_regulator *vreg = &vreg_table[rdev_get_id(rdev)];
-
-	return vreg->voltage_table[index] * 1000;
-}
-
-static struct regulator_ops pcap_regulator_ops = {
-	.list_voltage	= pcap_regulator_list_voltage,
-	.set_voltage	= pcap_regulator_set_voltage,
-	.get_voltage	= pcap_regulator_get_voltage,
-=======
 static const struct regulator_ops pcap_regulator_ops = {
 	.list_voltage	= regulator_list_voltage_table,
 	.set_voltage_sel = pcap_regulator_set_voltage_sel,
 	.get_voltage_sel = pcap_regulator_get_voltage_sel,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable		= pcap_regulator_enable,
 	.disable	= pcap_regulator_disable,
 	.is_enabled	= pcap_regulator_is_enabled,
@@ -381,34 +216,18 @@ static const struct regulator_ops pcap_regulator_ops = {
 		.name		= #_vreg,			\
 		.id		= _vreg,			\
 		.n_voltages	= ARRAY_SIZE(_vreg##_table),	\
-<<<<<<< HEAD
-=======
 		.volt_table	= _vreg##_table,		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ops		= &pcap_regulator_ops,		\
 		.type		= REGULATOR_VOLTAGE,		\
 		.owner		= THIS_MODULE,			\
 	}
 
-<<<<<<< HEAD
-static struct regulator_desc pcap_regulators[] = {
-=======
 static const struct regulator_desc pcap_regulators[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	VREG(V1), VREG(V2), VREG(V3), VREG(V4), VREG(V5), VREG(V6), VREG(V7),
 	VREG(V8), VREG(V9), VREG(V10), VREG(VAUX1), VREG(VAUX2), VREG(VAUX3),
 	VREG(VAUX4), VREG(VSIM), VREG(VSIM2), VREG(VVIB), VREG(SW1), VREG(SW2),
 };
 
-<<<<<<< HEAD
-static int __devinit pcap_regulator_probe(struct platform_device *pdev)
-{
-	struct regulator_dev *rdev;
-	void *pcap = dev_get_drvdata(pdev->dev.parent);
-
-	rdev = regulator_register(&pcap_regulators[pdev->id], &pdev->dev,
-				pdev->dev.platform_data, pcap, NULL);
-=======
 static int pcap_regulator_probe(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev;
@@ -421,7 +240,6 @@ static int pcap_regulator_probe(struct platform_device *pdev)
 
 	rdev = devm_regulator_register(&pdev->dev, &pcap_regulators[pdev->id],
 				       &config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rdev))
 		return PTR_ERR(rdev);
 
@@ -430,32 +248,12 @@ static int pcap_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit pcap_regulator_remove(struct platform_device *pdev)
-{
-	struct regulator_dev *rdev = platform_get_drvdata(pdev);
-
-	regulator_unregister(rdev);
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-}
-
-static struct platform_driver pcap_regulator_driver = {
-	.driver = {
-		.name	= "pcap-regulator",
-		.owner	= THIS_MODULE,
-	},
-	.probe	= pcap_regulator_probe,
-	.remove	= __devexit_p(pcap_regulator_remove),
-=======
 static struct platform_driver pcap_regulator_driver = {
 	.driver = {
 		.name	= "pcap-regulator",
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 	.probe	= pcap_regulator_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pcap_regulator_init(void)

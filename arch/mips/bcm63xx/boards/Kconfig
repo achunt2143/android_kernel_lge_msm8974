@@ -1,20 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 choice
 	prompt "Board support"
 	depends on BCM63XX
 	default BOARD_BCM963XX
 
 config BOARD_BCM963XX
-<<<<<<< HEAD
-       bool "Generic Broadcom 963xx boards"
-	select SSB
-       help
-=======
 	bool "Generic Broadcom 963xx boards"
 	select SSB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endchoice

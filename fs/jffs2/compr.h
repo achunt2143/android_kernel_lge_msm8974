@@ -88,20 +88,6 @@ int jffs2_rubinmips_init(void);
 void jffs2_rubinmips_exit(void);
 int jffs2_dynrubin_init(void);
 void jffs2_dynrubin_exit(void);
-<<<<<<< HEAD
-#endif
-#ifdef CONFIG_JFFS2_RTIME
-int jffs2_rtime_init(void);
-void jffs2_rtime_exit(void);
-#endif
-#ifdef CONFIG_JFFS2_ZLIB
-int jffs2_zlib_init(void);
-void jffs2_zlib_exit(void);
-#endif
-#ifdef CONFIG_JFFS2_LZO
-int jffs2_lzo_init(void);
-void jffs2_lzo_exit(void);
-=======
 #else
 static inline int jffs2_rubinmips_init(void) { return 0; }
 static inline void jffs2_rubinmips_exit(void) {}
@@ -128,7 +114,6 @@ extern void jffs2_lzo_exit(void);
 #else
 static inline int jffs2_lzo_init(void) { return 0; }
 static inline void jffs2_lzo_exit(void) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __JFFS2_COMPR_H__ */

@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef __USBAUDIO_QUIRKS_H
-#define __USBAUDIO_QUIRKS_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __USBAUDIO_QUIRKS_H
 #define __USBAUDIO_QUIRKS_H
@@ -11,7 +6,6 @@ struct audioformat;
 struct snd_usb_endpoint;
 struct snd_usb_substream;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_usb_create_quirk(struct snd_usb_audio *chip,
 			 struct usb_interface *iface,
 			 struct usb_driver *driver,
@@ -23,15 +17,6 @@ int snd_usb_apply_interface_quirk(struct snd_usb_audio *chip,
 
 int snd_usb_apply_boot_quirk(struct usb_device *dev,
 			     struct usb_interface *intf,
-<<<<<<< HEAD
-			     const struct snd_usb_audio_quirk *quirk);
-
-void snd_usb_set_format_quirk(struct snd_usb_substream *subs,
-			      struct audioformat *fmt);
-
-int snd_usb_is_big_endian_format(struct snd_usb_audio *chip,
-				 struct audioformat *fp);
-=======
 			     const struct snd_usb_audio_quirk *quirk,
 			     unsigned int usb_id);
 
@@ -64,6 +49,5 @@ void snd_usb_audioformat_attributes_quirk(struct snd_usb_audio *chip,
 					  int stream);
 
 void snd_usb_init_quirk_flags(struct snd_usb_audio *chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __USBAUDIO_QUIRKS_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/mount.c
  *
@@ -9,10 +6,7 @@
  */
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <uapi/linux/mount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 
 /* String table for special mount operations. */
@@ -55,10 +49,7 @@ static bool tomoyo_check_mount_acl(struct tomoyo_request_info *r,
 {
 	const struct tomoyo_mount_acl *acl =
 		container_of(ptr, typeof(*acl), head);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return tomoyo_compare_number_union(r->param.mount.flags,
 					   &acl->flags) &&
 		tomoyo_compare_name_union(r->param.mount.type,
@@ -85,11 +76,7 @@ static bool tomoyo_check_mount_acl(struct tomoyo_request_info *r,
  */
 static int tomoyo_mount_acl(struct tomoyo_request_info *r,
 			    const char *dev_name,
-<<<<<<< HEAD
-			    struct path *dir, const char *type,
-=======
 			    const struct path *dir, const char *type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    unsigned long flags)
 {
 	struct tomoyo_obj_info obj = { };
@@ -103,10 +90,7 @@ static int tomoyo_mount_acl(struct tomoyo_request_info *r,
 	struct tomoyo_path_info rdir;
 	int need_dev = 0;
 	int error = -ENOMEM;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r->obj = &obj;
 
 	/* Get fstype. */
@@ -204,11 +188,7 @@ static int tomoyo_mount_acl(struct tomoyo_request_info *r,
  *
  * Returns 0 on success, negative value otherwise.
  */
-<<<<<<< HEAD
-int tomoyo_mount_permission(const char *dev_name, struct path *path,
-=======
 int tomoyo_mount_permission(const char *dev_name, const struct path *path,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    const char *type, unsigned long flags,
 			    void *data_page)
 {

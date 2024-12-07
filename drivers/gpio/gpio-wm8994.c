@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * gpiolib support for Wolfson WM8994
  *
@@ -9,22 +6,6 @@
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/slab.h>
-#include <linux/module.h>
-#include <linux/gpio.h>
-#include <linux/mfd/core.h>
-#include <linux/platform_device.h>
-#include <linux/seq_file.h>
-=======
  */
 
 #include <linux/cleanup.h>
@@ -36,7 +17,6 @@
 #include <linux/platform_device.h>
 #include <linux/seq_file.h>
 #include <linux/regmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/wm8994/core.h>
 #include <linux/mfd/wm8994/pdata.h>
@@ -48,20 +28,9 @@ struct wm8994_gpio {
 	struct gpio_chip gpio_chip;
 };
 
-<<<<<<< HEAD
-static inline struct wm8994_gpio *to_wm8994_gpio(struct gpio_chip *chip)
-{
-	return container_of(chip, struct wm8994_gpio, gpio_chip);
-}
-
-static int wm8994_gpio_request(struct gpio_chip *chip, unsigned offset)
-{
-	struct wm8994_gpio *wm8994_gpio = to_wm8994_gpio(chip);
-=======
 static int wm8994_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	struct wm8994_gpio *wm8994_gpio = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
 
 	switch (wm8994->type) {
@@ -84,11 +53,7 @@ static int wm8994_gpio_request(struct gpio_chip *chip, unsigned offset)
 
 static int wm8994_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	struct wm8994_gpio *wm8994_gpio = to_wm8994_gpio(chip);
-=======
 	struct wm8994_gpio *wm8994_gpio = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
 
 	return wm8994_set_bits(wm8994, WM8994_GPIO_1 + offset,
@@ -97,11 +62,7 @@ static int wm8994_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 
 static int wm8994_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	struct wm8994_gpio *wm8994_gpio = to_wm8994_gpio(chip);
-=======
 	struct wm8994_gpio *wm8994_gpio = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
 	int ret;
 
@@ -118,11 +79,7 @@ static int wm8994_gpio_get(struct gpio_chip *chip, unsigned offset)
 static int wm8994_gpio_direction_out(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct wm8994_gpio *wm8994_gpio = to_wm8994_gpio(chip);
-=======
 	struct wm8994_gpio *wm8994_gpio = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
 
 	if (value)
@@ -134,11 +91,7 @@ static int wm8994_gpio_direction_out(struct gpio_chip *chip,
 
 static void wm8994_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct wm8994_gpio *wm8994_gpio = to_wm8994_gpio(chip);
-=======
 	struct wm8994_gpio *wm8994_gpio = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
 
 	if (value)
@@ -147,17 +100,6 @@ static void wm8994_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 	wm8994_set_bits(wm8994, WM8994_GPIO_1 + offset, WM8994_GPN_LVL, value);
 }
 
-<<<<<<< HEAD
-static int wm8994_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
-{
-	struct wm8994_gpio *wm8994_gpio = to_wm8994_gpio(chip);
-	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
-
-	if (!wm8994->irq_base)
-		return -EINVAL;
-
-	return wm8994->irq_base + offset;
-=======
 static int wm8994_gpio_set_config(struct gpio_chip *chip, unsigned int offset,
 				  unsigned long config)
 {
@@ -185,7 +127,6 @@ static int wm8994_gpio_to_irq(struct gpio_chip *chip, unsigned offset)
 	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
 
 	return regmap_irq_get_virq(wm8994->irq_data, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -246,34 +187,19 @@ static const char *wm8994_gpio_fn(u16 fn)
 
 static void wm8994_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 {
-<<<<<<< HEAD
-	struct wm8994_gpio *wm8994_gpio = to_wm8994_gpio(chip);
-=======
 	struct wm8994_gpio *wm8994_gpio = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8994 *wm8994 = wm8994_gpio->wm8994;
 	int i;
 
 	for (i = 0; i < chip->ngpio; i++) {
 		int gpio = i + chip->base;
 		int reg;
-<<<<<<< HEAD
-		const char *label;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* We report the GPIO even if it's not requested since
 		 * we're also reporting things like alternate
 		 * functions which apply even when the GPIO is not in
 		 * use as a GPIO.
 		 */
-<<<<<<< HEAD
-		label = gpiochip_is_requested(chip, i);
-		if (!label)
-			label = "Unrequested";
-
-		seq_printf(s, " gpio-%-3d (%-20.20s) ", gpio, label);
-=======
 		char *label __free(kfree) = gpiochip_dup_line_label(chip, i);
 		if (IS_ERR(label)) {
 			dev_err(wm8994->dev, "Failed to duplicate label\n");
@@ -282,7 +208,6 @@ static void wm8994_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 
 		seq_printf(s, " gpio-%-3d (%-20.20s) ", gpio,
 			   label ?: "Unrequested");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		reg = wm8994_reg_read(wm8994, WM8994_GPIO_1 + i);
 		if (reg < 0) {
@@ -312,11 +237,7 @@ static void wm8994_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 		if (reg & WM8994_GPN_OP_CFG)
 			seq_printf(s, "open drain ");
 		else
-<<<<<<< HEAD
-			seq_printf(s, "CMOS ");
-=======
 			seq_printf(s, "push-pull ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		seq_printf(s, "%s (%x)\n",
 			   wm8994_gpio_fn(reg & WM8994_GPN_FN_MASK), reg);
@@ -326,11 +247,7 @@ static void wm8994_gpio_dbg_show(struct seq_file *s, struct gpio_chip *chip)
 #define wm8994_gpio_dbg_show NULL
 #endif
 
-<<<<<<< HEAD
-static struct gpio_chip template_chip = {
-=======
 static const struct gpio_chip template_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.label			= "wm8994",
 	.owner			= THIS_MODULE,
 	.request		= wm8994_gpio_request,
@@ -338,21 +255,6 @@ static const struct gpio_chip template_chip = {
 	.get			= wm8994_gpio_get,
 	.direction_output	= wm8994_gpio_direction_out,
 	.set			= wm8994_gpio_set,
-<<<<<<< HEAD
-	.to_irq			= wm8994_gpio_to_irq,
-	.dbg_show		= wm8994_gpio_dbg_show,
-	.can_sleep		= 1,
-};
-
-static int __devinit wm8994_gpio_probe(struct platform_device *pdev)
-{
-	struct wm8994 *wm8994 = dev_get_drvdata(pdev->dev.parent);
-	struct wm8994_pdata *pdata = wm8994->dev->platform_data;
-	struct wm8994_gpio *wm8994_gpio;
-	int ret;
-
-	wm8994_gpio = kzalloc(sizeof(*wm8994_gpio), GFP_KERNEL);
-=======
 	.set_config		= wm8994_gpio_set_config,
 	.to_irq			= wm8994_gpio_to_irq,
 	.dbg_show		= wm8994_gpio_dbg_show,
@@ -367,64 +269,24 @@ static int wm8994_gpio_probe(struct platform_device *pdev)
 
 	wm8994_gpio = devm_kzalloc(&pdev->dev, sizeof(*wm8994_gpio),
 				   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wm8994_gpio == NULL)
 		return -ENOMEM;
 
 	wm8994_gpio->wm8994 = wm8994;
 	wm8994_gpio->gpio_chip = template_chip;
 	wm8994_gpio->gpio_chip.ngpio = WM8994_GPIO_MAX;
-<<<<<<< HEAD
-	wm8994_gpio->gpio_chip.dev = &pdev->dev;
-=======
 	wm8994_gpio->gpio_chip.parent = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata && pdata->gpio_base)
 		wm8994_gpio->gpio_chip.base = pdata->gpio_base;
 	else
 		wm8994_gpio->gpio_chip.base = -1;
 
-<<<<<<< HEAD
-	ret = gpiochip_add(&wm8994_gpio->gpio_chip);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "Could not register gpiochip, %d\n",
-			ret);
-		goto err;
-	}
-
-	platform_set_drvdata(pdev, wm8994_gpio);
-
-	return ret;
-
-err:
-	kfree(wm8994_gpio);
-	return ret;
-}
-
-static int __devexit wm8994_gpio_remove(struct platform_device *pdev)
-{
-	struct wm8994_gpio *wm8994_gpio = platform_get_drvdata(pdev);
-	int ret;
-
-	ret = gpiochip_remove(&wm8994_gpio->gpio_chip);
-	if (ret == 0)
-		kfree(wm8994_gpio);
-
-	return ret;
-=======
 	return devm_gpiochip_add_data(&pdev->dev, &wm8994_gpio->gpio_chip, wm8994_gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm8994_gpio_driver = {
 	.driver.name	= "wm8994-gpio",
-<<<<<<< HEAD
-	.driver.owner	= THIS_MODULE,
 	.probe		= wm8994_gpio_probe,
-	.remove		= __devexit_p(wm8994_gpio_remove),
-=======
-	.probe		= wm8994_gpio_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init wm8994_gpio_init(void)

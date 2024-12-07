@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005-2010 IBM Corporation
  *
@@ -9,24 +6,10 @@
  * Mimi Zohar <zohar@us.ibm.com>
  * Kylene Hall <kjhall@us.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File: evm_crypto.c
  *	 Using root's kernel master key (kmk), calculate the HMAC
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/crypto.h>
-#include <linux/xattr.h>
-#include <keys/encrypted-type.h>
-#include <crypto/hash.h>
-=======
 #define pr_fmt(fmt) "EVM: "fmt
 
 #include <linux/export.h>
@@ -36,61 +19,11 @@
 #include <keys/encrypted-type.h>
 #include <crypto/hash.h>
 #include <crypto/hash_info.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "evm.h"
 
 #define EVMKEY "evm-key"
 #define MAX_KEY_SIZE 128
 static unsigned char evmkey[MAX_KEY_SIZE];
-<<<<<<< HEAD
-static int evmkey_len = MAX_KEY_SIZE;
-
-struct crypto_shash *hmac_tfm;
-struct crypto_shash *hash_tfm;
-
-static DEFINE_MUTEX(mutex);
-
-static struct shash_desc *init_desc(char type)
-{
-	long rc;
-	char *algo;
-	struct crypto_shash **tfm;
-	struct shash_desc *desc;
-
-	if (type == EVM_XATTR_HMAC) {
-		tfm = &hmac_tfm;
-		algo = evm_hmac;
-	} else {
-		tfm = &hash_tfm;
-		algo = evm_hash;
-	}
-
-	if (*tfm == NULL) {
-		mutex_lock(&mutex);
-		if (*tfm)
-			goto out;
-		*tfm = crypto_alloc_shash(algo, 0, CRYPTO_ALG_ASYNC);
-		if (IS_ERR(*tfm)) {
-			rc = PTR_ERR(*tfm);
-			pr_err("Can not allocate %s (reason: %ld)\n", algo, rc);
-			*tfm = NULL;
-			mutex_unlock(&mutex);
-			return ERR_PTR(rc);
-		}
-		if (type == EVM_XATTR_HMAC) {
-			rc = crypto_shash_setkey(*tfm, evmkey, evmkey_len);
-			if (rc) {
-				crypto_free_shash(*tfm);
-				*tfm = NULL;
-				mutex_unlock(&mutex);
-				return ERR_PTR(rc);
-			}
-		}
-out:
-		mutex_unlock(&mutex);
-	}
-
-=======
 static const int evmkey_len = MAX_KEY_SIZE;
 
 static struct crypto_shash *hmac_tfm;
@@ -185,17 +118,12 @@ static struct shash_desc *init_desc(char type, uint8_t hash_algo)
 unlock:
 	mutex_unlock(&mutex);
 alloc:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc = kmalloc(sizeof(*desc) + crypto_shash_descsize(*tfm),
 			GFP_KERNEL);
 	if (!desc)
 		return ERR_PTR(-ENOMEM);
 
 	desc->tfm = *tfm;
-<<<<<<< HEAD
-	desc->flags = CRYPTO_TFM_REQ_MAY_SLEEP;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = crypto_shash_init(desc);
 	if (rc) {
@@ -212,11 +140,7 @@ alloc:
  * protection.)
  */
 static void hmac_add_misc(struct shash_desc *desc, struct inode *inode,
-<<<<<<< HEAD
-			  char *digest)
-=======
 			  char type, char *digest)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct h_misc {
 		unsigned long ino;
@@ -226,16 +150,6 @@ static void hmac_add_misc(struct shash_desc *desc, struct inode *inode,
 		umode_t mode;
 	} hmac_misc;
 
-<<<<<<< HEAD
-	memset(&hmac_misc, 0, sizeof hmac_misc);
-	hmac_misc.ino = inode->i_ino;
-	hmac_misc.generation = inode->i_generation;
-	hmac_misc.uid = inode->i_uid;
-	hmac_misc.gid = inode->i_gid;
-	hmac_misc.mode = inode->i_mode;
-	crypto_shash_update(desc, (const u8 *)&hmac_misc, sizeof hmac_misc);
-	crypto_shash_final(desc, digest);
-=======
 	memset(&hmac_misc, 0, sizeof(hmac_misc));
 	/* Don't include the inode or generation number in portable
 	 * signatures
@@ -294,7 +208,6 @@ static void dump_security_xattr(const char *name, const char *value,
 			 (int)value_len, value);
 	else
 		dump_security_xattr_l(name, value, value_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -305,37 +218,6 @@ static void dump_security_xattr(const char *name, const char *value,
  * each xattr, but attempt to re-use the previously allocated memory.
  */
 static int evm_calc_hmac_or_hash(struct dentry *dentry,
-<<<<<<< HEAD
-				const char *req_xattr_name,
-				const char *req_xattr_value,
-				size_t req_xattr_value_len,
-				char type, char *digest)
-{
-	struct inode *inode = dentry->d_inode;
-	struct shash_desc *desc;
-	char **xattrname;
-	size_t xattr_size = 0;
-	char *xattr_value = NULL;
-	int error;
-	int size;
-
-	if (!inode->i_op || !inode->i_op->getxattr)
-		return -EOPNOTSUPP;
-	desc = init_desc(type);
-	if (IS_ERR(desc))
-		return PTR_ERR(desc);
-
-	error = -ENODATA;
-	for (xattrname = evm_config_xattrnames; *xattrname != NULL; xattrname++) {
-		if ((req_xattr_name && req_xattr_value)
-		    && !strcmp(*xattrname, req_xattr_name)) {
-			error = 0;
-			crypto_shash_update(desc, (const u8 *)req_xattr_value,
-					     req_xattr_value_len);
-			continue;
-		}
-		size = vfs_getxattr_alloc(dentry, *xattrname,
-=======
 				 const char *req_xattr_name,
 				 const char *req_xattr_value,
 				 size_t req_xattr_value_len,
@@ -388,7 +270,6 @@ static int evm_calc_hmac_or_hash(struct dentry *dentry,
 			continue;
 		}
 		size = vfs_getxattr_alloc(&nop_mnt_idmap, dentry, xattr->name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  &xattr_value, xattr_size, GFP_NOFS);
 		if (size == -ENOMEM) {
 			error = -ENOMEM;
@@ -397,14 +278,6 @@ static int evm_calc_hmac_or_hash(struct dentry *dentry,
 		if (size < 0)
 			continue;
 
-<<<<<<< HEAD
-		error = 0;
-		xattr_size = size;
-		crypto_shash_update(desc, (const u8 *)xattr_value, xattr_size);
-	}
-	hmac_add_misc(desc, inode, digest);
-
-=======
 		user_space_size = vfs_getxattr(&nop_mnt_idmap, dentry,
 					       xattr->name, NULL, 0);
 		if (user_space_size != size)
@@ -424,7 +297,6 @@ static int evm_calc_hmac_or_hash(struct dentry *dentry,
 	/* Portable EVM signatures must include an IMA hash */
 	if (type == EVM_XATTR_PORTABLE_DIGSIG && !ima_present)
 		error = -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	kfree(xattr_value);
 	kfree(desc);
@@ -433,29 +305,14 @@ out:
 
 int evm_calc_hmac(struct dentry *dentry, const char *req_xattr_name,
 		  const char *req_xattr_value, size_t req_xattr_value_len,
-<<<<<<< HEAD
-		  char *digest)
-{
-	return evm_calc_hmac_or_hash(dentry, req_xattr_name, req_xattr_value,
-				req_xattr_value_len, EVM_XATTR_HMAC, digest);
-=======
 		  struct evm_digest *data)
 {
 	return evm_calc_hmac_or_hash(dentry, req_xattr_name, req_xattr_value,
 				    req_xattr_value_len, EVM_XATTR_HMAC, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int evm_calc_hash(struct dentry *dentry, const char *req_xattr_name,
 		  const char *req_xattr_value, size_t req_xattr_value_len,
-<<<<<<< HEAD
-		  char *digest)
-{
-	return evm_calc_hmac_or_hash(dentry, req_xattr_name, req_xattr_value,
-				req_xattr_value_len, IMA_XATTR_DIGEST, digest);
-}
-
-=======
 		  char type, struct evm_digest *data)
 {
 	return evm_calc_hmac_or_hash(dentry, req_xattr_name, req_xattr_value,
@@ -491,7 +348,6 @@ out:
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Calculate the hmac and update security.evm xattr
  *
@@ -500,21 +356,6 @@ out:
 int evm_update_evmxattr(struct dentry *dentry, const char *xattr_name,
 			const char *xattr_value, size_t xattr_value_len)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-	struct evm_ima_xattr_data xattr_data;
-	int rc = 0;
-
-	rc = evm_calc_hmac(dentry, xattr_name, xattr_value,
-			   xattr_value_len, xattr_data.digest);
-	if (rc == 0) {
-		xattr_data.type = EVM_XATTR_HMAC;
-		rc = __vfs_setxattr_noperm(dentry, XATTR_NAME_EVM,
-					   &xattr_data,
-					   sizeof(xattr_data), 0);
-	} else if (rc == -ENODATA && inode->i_op->removexattr) {
-		rc = inode->i_op->removexattr(dentry, XATTR_NAME_EVM);
-=======
 	struct inode *inode = d_backing_inode(dentry);
 	struct evm_digest data;
 	int rc = 0;
@@ -540,26 +381,10 @@ int evm_update_evmxattr(struct dentry *dentry, const char *xattr_name,
 					   SHA1_DIGEST_SIZE + 1, 0);
 	} else if (rc == -ENODATA && (inode->i_opflags & IOP_XATTR)) {
 		rc = __vfs_removexattr(&nop_mnt_idmap, dentry, XATTR_NAME_EVM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }
 
-<<<<<<< HEAD
-int evm_init_hmac(struct inode *inode, const struct xattr *lsm_xattr,
-		  char *hmac_val)
-{
-	struct shash_desc *desc;
-
-	desc = init_desc(EVM_XATTR_HMAC);
-	if (IS_ERR(desc)) {
-		printk(KERN_INFO "init_desc failed\n");
-		return PTR_ERR(desc);
-	}
-
-	crypto_shash_update(desc, lsm_xattr->value, lsm_xattr->value_len);
-	hmac_add_misc(desc, inode, hmac_val);
-=======
 int evm_init_hmac(struct inode *inode, const struct xattr *xattrs,
 		  char *hmac_val)
 {
@@ -580,7 +405,6 @@ int evm_init_hmac(struct inode *inode, const struct xattr *xattrs,
 	}
 
 	hmac_add_misc(desc, inode, EVM_XATTR_HMAC, hmac_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(desc);
 	return 0;
 }
@@ -592,31 +416,17 @@ int evm_init_key(void)
 {
 	struct key *evm_key;
 	struct encrypted_key_payload *ekp;
-<<<<<<< HEAD
-	int rc = 0;
-=======
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	evm_key = request_key(&key_type_encrypted, EVMKEY, NULL);
 	if (IS_ERR(evm_key))
 		return -ENOENT;
 
 	down_read(&evm_key->sem);
-<<<<<<< HEAD
-	ekp = evm_key->payload.data;
-	if (ekp->decrypted_datalen > MAX_KEY_SIZE) {
-		rc = -EINVAL;
-		goto out;
-	}
-	memcpy(evmkey, ekp->decrypted_data, ekp->decrypted_datalen);
-out:
-=======
 	ekp = evm_key->payload.data[0];
 
 	rc = evm_set_key(ekp->decrypted_data, ekp->decrypted_datalen);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* burn the original key contents */
 	memset(ekp->decrypted_data, 0, ekp->decrypted_datalen);
 	up_read(&evm_key->sem);

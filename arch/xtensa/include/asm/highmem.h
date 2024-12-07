@@ -6,21 +6,12 @@
  * this archive for more details.
  *
  * Copyright (C) 2003 - 2005 Tensilica Inc.
-<<<<<<< HEAD
-=======
  * Copyright (C) 2014 Cadence Design Systems Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _XTENSA_HIGHMEM_H
 #define _XTENSA_HIGHMEM_H
 
-<<<<<<< HEAD
-extern void flush_cache_kmaps(void);
-
-#endif
-
-=======
 #ifdef CONFIG_HIGHMEM
 #include <linux/wait.h>
 #include <linux/pgtable.h>
@@ -91,4 +82,3 @@ void kmap_init(void);
 
 #endif /* CONFIG_HIGHMEM */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

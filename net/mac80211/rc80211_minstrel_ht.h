@@ -1,22 +1,11 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2010 Felix Fietkau <nbd@openwrt.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2010 Felix Fietkau <nbd@openwrt.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __RC_MINSTREL_HT_H
 #define __RC_MINSTREL_HT_H
 
-<<<<<<< HEAD
-=======
 #include <linux/bitfield.h>
 
 /* number of highest throughput rates to consider*/
@@ -46,29 +35,10 @@
 #define MINSTREL_AVG_COEFF2		0x00001499
 #define MINSTREL_AVG_COEFF3		-0x0000092e
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The number of streams can be changed to 2 to reduce code
  * size and memory footprint.
  */
-<<<<<<< HEAD
-#define MINSTREL_MAX_STREAMS	3
-#define MINSTREL_STREAM_GROUPS	4
-
-/* scaled fraction values */
-#define MINSTREL_SCALE	16
-#define MINSTREL_FRAC(val, div) (((val) << MINSTREL_SCALE) / div)
-#define MINSTREL_TRUNC(val) ((val) >> MINSTREL_SCALE)
-
-#define MCS_GROUP_RATES	8
-
-struct mcs_group {
-	u32 flags;
-	unsigned int streams;
-	unsigned int duration[MCS_GROUP_RATES];
-};
-
-=======
 #define MINSTREL_MAX_STREAMS		4
 #define MINSTREL_HT_STREAM_GROUPS	4 /* BW(=2) * SGI(=2) */
 #define MINSTREL_VHT_STREAM_GROUPS	6 /* BW(=3) * SGI(=2) */
@@ -135,31 +105,10 @@ struct mcs_group {
 
 extern const s16 minstrel_cck_bitrates[4];
 extern const s16 minstrel_ofdm_bitrates[8];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct mcs_group minstrel_mcs_groups[];
 
 struct minstrel_rate_stats {
 	/* current / last sampling period attempts/success counters */
-<<<<<<< HEAD
-	unsigned int attempts, last_attempts;
-	unsigned int success, last_success;
-
-	/* total attempts/success counters */
-	u64 att_hist, succ_hist;
-
-	/* current throughput */
-	unsigned int cur_tp;
-
-	/* packet delivery probabilities */
-	unsigned int cur_prob, probability;
-
-	/* maximum retry counts */
-	unsigned int retry_count;
-	unsigned int retry_count_rtscts;
-
-	bool retry_updated;
-	u8 sample_skipped;
-=======
 	u16 attempts, last_attempts;
 	u16 success, last_success;
 
@@ -182,34 +131,20 @@ enum minstrel_sample_type {
 	MINSTREL_SAMPLE_TYPE_JUMP,
 	MINSTREL_SAMPLE_TYPE_SLOW,
 	__MINSTREL_SAMPLE_TYPE_MAX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct minstrel_mcs_group_data {
 	u8 index;
 	u8 column;
 
-<<<<<<< HEAD
-	/* bitfield of supported MCS rates of this group */
-	u8 supported;
-
-	/* selected primary rates */
-	unsigned int max_tp_rate;
-	unsigned int max_tp_rate2;
-	unsigned int max_prob_rate;
-=======
 	/* sorted rate set within a MCS group*/
 	u16 max_group_tp_rate[MAX_THR_RATES];
 	u16 max_group_prob_rate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* MCS rate statistics */
 	struct minstrel_rate_stats rates[MCS_GROUP_RATES];
 };
 
-<<<<<<< HEAD
-struct minstrel_ht_sta {
-=======
 struct minstrel_sample_category {
 	u8 sample_group;
 	u16 sample_rates[MINSTREL_SAMPLE_RATES];
@@ -219,7 +154,6 @@ struct minstrel_sample_category {
 struct minstrel_ht_sta {
 	struct ieee80211_sta *sta;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ampdu length (average, per sampling interval) */
 	unsigned int ampdu_len;
 	unsigned int ampdu_packets;
@@ -227,71 +161,24 @@ struct minstrel_ht_sta {
 	/* ampdu length (EWMA) */
 	unsigned int avg_ampdu_len;
 
-<<<<<<< HEAD
-	/* best throughput rate */
-	unsigned int max_tp_rate;
-
-	/* second best throughput rate */
-	unsigned int max_tp_rate2;
-
-	/* best probability rate */
-	unsigned int max_prob_rate;
-
-	/* time of last status update */
-	unsigned long stats_update;
-=======
 	/* overall sorted rate set */
 	u16 max_tp_rate[MAX_THR_RATES];
 	u16 max_prob_rate;
 
 	/* time of last status update */
 	unsigned long last_stats_update;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* overhead time in usec for each frame */
 	unsigned int overhead;
 	unsigned int overhead_rtscts;
-<<<<<<< HEAD
-=======
 	unsigned int overhead_legacy;
 	unsigned int overhead_legacy_rtscts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int total_packets;
 	unsigned int sample_packets;
 
 	/* tx flags to add for frames for this sta */
 	u32 tx_flags;
-<<<<<<< HEAD
-
-	u8 sample_wait;
-	u8 sample_tries;
-	u8 sample_count;
-	u8 sample_slow;
-
-	/* current MCS group to be sampled */
-	u8 sample_group;
-
-	/* MCS rate group info and statistics */
-	struct minstrel_mcs_group_data groups[MINSTREL_MAX_STREAMS * MINSTREL_STREAM_GROUPS];
-};
-
-struct minstrel_ht_sta_priv {
-	union {
-		struct minstrel_ht_sta ht;
-		struct minstrel_sta_info legacy;
-	};
-#ifdef CONFIG_MAC80211_DEBUGFS
-	struct dentry *dbg_stats;
-#endif
-	void *ratelist;
-	void *sample_table;
-	bool is_ht;
-};
-
-void minstrel_ht_add_sta_debugfs(void *priv, void *priv_sta, struct dentry *dir);
-void minstrel_ht_remove_sta_debugfs(void *priv, void *priv_sta);
-=======
 	bool use_short_preamble;
 	u8 band;
 
@@ -311,6 +198,5 @@ void minstrel_ht_remove_sta_debugfs(void *priv, void *priv_sta);
 void minstrel_ht_add_sta_debugfs(void *priv, void *priv_sta, struct dentry *dir);
 int minstrel_ht_get_tp_avg(struct minstrel_ht_sta *mi, int group, int rate,
 			   int prob_avg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

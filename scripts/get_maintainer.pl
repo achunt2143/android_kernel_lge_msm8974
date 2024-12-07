@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-#!/usr/bin/perl -w
-=======
 #!/usr/bin/env perl
 # SPDX-License-Identifier: GPL-2.0
 #
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # (c) 2007, Joe Perches <joe@perches.com>
 #           created from checkpatch.pl
 #
@@ -13,42 +9,28 @@
 #
 # usage: perl scripts/get_maintainer.pl [OPTIONS] <patch>
 #        perl scripts/get_maintainer.pl [OPTIONS] -f <file>
-<<<<<<< HEAD
-#
-# Licensed under the terms of the GNU GPL License version 2
-
-=======
 
 use warnings;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 use strict;
 
 my $P = $0;
 my $V = '0.26';
 
 use Getopt::Long qw(:config no_auto_abbrev);
-<<<<<<< HEAD
-
-=======
 use Cwd;
 use File::Find;
 use File::Spec::Functions;
 use open qw(:std :encoding(UTF-8));
 
 my $cur_path = fastgetcwd() . '/';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $lk_path = "./";
 my $email = 1;
 my $email_usename = 1;
 my $email_maintainer = 1;
-<<<<<<< HEAD
-my $email_list = 1;
-=======
 my $email_reviewer = 1;
 my $email_fixes = 1;
 my $email_list = 1;
 my $email_moderated_list = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $email_subscriber_list = 0;
 my $email_git_penguin_chiefs = 0;
 my $email_git = 0;
@@ -68,20 +50,6 @@ my $output_multiline = 1;
 my $output_separator = ", ";
 my $output_roles = 0;
 my $output_rolestats = 1;
-<<<<<<< HEAD
-my $scm = 0;
-my $web = 0;
-my $subsystem = 0;
-my $status = 0;
-my $keywords = 1;
-my $sections = 0;
-my $file_emails = 0;
-my $from_filename = 0;
-my $pattern_depth = 0;
-my $version = 0;
-my $help = 0;
-
-=======
 my $output_section_maxlen = 50;
 my $scm = 0;
 my $tree = 1;
@@ -100,20 +68,16 @@ my $version = 0;
 my $help = 0;
 my $find_maintainer_files = 0;
 my $maintainer_path;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $vcs_used = 0;
 
 my $exit = 0;
 
-<<<<<<< HEAD
-=======
 my @files = ();
 my @fixes = ();			# If a patch description includes Fixes: lines
 my @range = ();
 my @keyword_tvi = ();
 my @file_emails = ();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my %commit_author_hash;
 my %commit_signer_hash;
 
@@ -140,11 +104,8 @@ push(@signature_tags, "Signed-off-by:");
 push(@signature_tags, "Reviewed-by:");
 push(@signature_tags, "Acked-by:");
 
-<<<<<<< HEAD
-=======
 my $signature_pattern = "\(" . join("|", @signature_tags) . "\)";
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # rfc822 email address - preloaded methods go here.
 my $rfc822_lwsp = "(?:(?:\\r\\n)?[ \\t])";
 my $rfc822_char = '[\\000-\\377]';
@@ -155,16 +116,10 @@ my %VCS_cmds;
 
 my %VCS_cmds_git = (
     "execute_cmd" => \&git_execute_cmd,
-<<<<<<< HEAD
-    "available" => '(which("git") ne "") && (-d ".git")',
-    "find_signers_cmd" =>
-	"git log --no-color --follow --since=\$email_git_since " .
-=======
     "available" => '(which("git") ne "") && (-e ".git")',
     "find_signers_cmd" =>
 	"git log --no-color --follow --since=\$email_git_since " .
 	    '--numstat --no-merges ' .
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    '--format="GitCommit: %H%n' .
 		      'GitAuthor: %an <%ae>%n' .
 		      'GitDate: %aD%n' .
@@ -173,10 +128,7 @@ my %VCS_cmds_git = (
 	    " -- \$file",
     "find_commit_signers_cmd" =>
 	"git log --no-color " .
-<<<<<<< HEAD
-=======
 	    '--numstat ' .
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    '--format="GitCommit: %H%n' .
 		      'GitAuthor: %an <%ae>%n' .
 		      'GitDate: %aD%n' .
@@ -185,10 +137,7 @@ my %VCS_cmds_git = (
 	    " -1 \$commit",
     "find_commit_author_cmd" =>
 	"git log --no-color " .
-<<<<<<< HEAD
-=======
 	    '--numstat ' .
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    '--format="GitCommit: %H%n' .
 		      'GitAuthor: %an <%ae>%n' .
 		      'GitDate: %aD%n' .
@@ -200,12 +149,9 @@ my %VCS_cmds_git = (
     "blame_commit_pattern" => "^([0-9a-f]+) ",
     "author_pattern" => "^GitAuthor: (.*)",
     "subject_pattern" => "^GitSubject: (.*)",
-<<<<<<< HEAD
-=======
     "stat_pattern" => "^(\\d+)\\t(\\d+)\\t\$file\$",
     "file_exists_cmd" => "git ls-files \$file",
     "list_files_cmd" => "git ls-files \$file",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 my %VCS_cmds_hg = (
@@ -233,12 +179,9 @@ my %VCS_cmds_hg = (
     "blame_commit_pattern" => "^([ 0-9a-f]+):",
     "author_pattern" => "^HgAuthor: (.*)",
     "subject_pattern" => "^HgSubject: (.*)",
-<<<<<<< HEAD
-=======
     "stat_pattern" => "^(\\d+)\t(\\d+)\t\$file\$",
     "file_exists_cmd" => "hg files \$file",
     "list_files_cmd" => "hg manifest -R \$file",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 my $conf = which_conf(".get_maintainer.conf");
@@ -267,8 +210,6 @@ if (-f $conf) {
     unshift(@ARGV, @conf_args) if @conf_args;
 }
 
-<<<<<<< HEAD
-=======
 my @ignore_emails = ();
 my $ignore_file = which_conf(".get_maintainer.ignore");
 if (-f $ignore_file) {
@@ -298,7 +239,6 @@ if ($#ARGV > 0) {
     }
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if (!GetOptions(
 		'email!' => \$email,
 		'git!' => \$email_git,
@@ -316,16 +256,11 @@ if (!GetOptions(
 		'remove-duplicates!' => \$email_remove_duplicates,
 		'mailmap!' => \$email_use_mailmap,
 		'm!' => \$email_maintainer,
-<<<<<<< HEAD
-		'n!' => \$email_usename,
-		'l!' => \$email_list,
-=======
 		'r!' => \$email_reviewer,
 		'n!' => \$email_usename,
 		'l!' => \$email_list,
 		'fixes!' => \$email_fixes,
 		'moderated!' => \$email_moderated_list,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		's!' => \$email_subscriber_list,
 		'multiline!' => \$output_multiline,
 		'roles!' => \$output_roles,
@@ -334,14 +269,6 @@ if (!GetOptions(
 		'subsystem!' => \$subsystem,
 		'status!' => \$status,
 		'scm!' => \$scm,
-<<<<<<< HEAD
-		'web!' => \$web,
-		'pattern-depth=i' => \$pattern_depth,
-		'k|keywords!' => \$keywords,
-		'sections!' => \$sections,
-		'fe|file-emails!' => \$file_emails,
-		'f|file' => \$from_filename,
-=======
 		'tree!' => \$tree,
 		'web!' => \$web,
 		'letters=s' => \$letters,
@@ -354,7 +281,6 @@ if (!GetOptions(
 		'find-maintainer-files' => \$find_maintainer_files,
 		'mpath|maintainer-path=s' => \$maintainer_path,
 		'self-test:s' => \$self_test,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		'v|version' => \$version,
 		'h|help|usage' => \$help,
 		)) {
@@ -371,15 +297,12 @@ if ($version != 0) {
     exit 0;
 }
 
-<<<<<<< HEAD
-=======
 if (defined $self_test) {
     read_all_maintainer_files();
     self_test();
     exit 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if (-t STDIN && !@ARGV) {
     # We're talking to a terminal, but have no command line arguments.
     die "$P: missing patchfile or -f file - use --help if necessary\n";
@@ -389,12 +312,8 @@ $output_multiline = 0 if ($output_separator ne ", ");
 $output_rolestats = 1 if ($interactive);
 $output_roles = 1 if ($output_rolestats);
 
-<<<<<<< HEAD
-if ($sections) {
-=======
 if ($sections || $letters ne "") {
     $sections = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     $email = 0;
     $email_list = 0;
     $scm = 0;
@@ -402,10 +321,7 @@ if ($sections || $letters ne "") {
     $subsystem = 0;
     $web = 0;
     $keywords = 0;
-<<<<<<< HEAD
-=======
     $keywords_in_file = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     $interactive = 0;
 } else {
     my $selections = $email + $scm + $status + $subsystem + $web;
@@ -415,21 +331,13 @@ if ($sections || $letters ne "") {
 }
 
 if ($email &&
-<<<<<<< HEAD
-    ($email_maintainer + $email_list + $email_subscriber_list +
-=======
     ($email_maintainer + $email_reviewer +
      $email_list + $email_subscriber_list +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      $email_git + $email_git_penguin_chiefs + $email_git_blame) == 0) {
     die "$P: Please select at least 1 email option\n";
 }
 
-<<<<<<< HEAD
-if (!top_of_kernel_tree($lk_path)) {
-=======
 if ($tree && !top_of_kernel_tree($lk_path)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     die "$P: The current directory does not appear to be "
 	. "a linux kernel source tree.\n";
 }
@@ -438,38 +346,6 @@ if ($tree && !top_of_kernel_tree($lk_path)) {
 
 my @typevalue = ();
 my %keyword_hash;
-<<<<<<< HEAD
-
-open (my $maint, '<', "${lk_path}MAINTAINERS")
-    or die "$P: Can't open MAINTAINERS: $!\n";
-while (<$maint>) {
-    my $line = $_;
-
-    if ($line =~ m/^(\C):\s*(.*)/) {
-	my $type = $1;
-	my $value = $2;
-
-	##Filename pattern matching
-	if ($type eq "F" || $type eq "X") {
-	    $value =~ s@\.@\\\.@g;       ##Convert . to \.
-	    $value =~ s/\*/\.\*/g;       ##Convert * to .*
-	    $value =~ s/\?/\./g;         ##Convert ? to .
-	    ##if pattern is a directory and it lacks a trailing slash, add one
-	    if ((-d $value)) {
-		$value =~ s@([^/])$@$1/@;
-	    }
-	} elsif ($type eq "K") {
-	    $keyword_hash{@typevalue} = $value;
-	}
-	push(@typevalue, "$type:$value");
-    } elsif (!/^(\s)*$/) {
-	$line =~ s/\n$//g;
-	push(@typevalue, $line);
-    }
-}
-close($maint);
-
-=======
 my @mfiles = ();
 my @self_test_info = ();
 
@@ -574,7 +450,6 @@ sub maintainers_in_file {
 	push(@file_emails, clean_file_emails(@poss_addr));
     }
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Read mail address map
@@ -656,24 +531,13 @@ sub read_mailmap {
 
 ## use the filenames on the command line or find the filenames in the patchfiles
 
-<<<<<<< HEAD
-my @files = ();
-my @range = ();
-my @keyword_tvi = ();
-my @file_emails = ();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if (!@ARGV) {
     push(@ARGV, "&STDIN");
 }
 
 foreach my $file (@ARGV) {
     if ($file ne "&STDIN") {
-<<<<<<< HEAD
-=======
 	$file = canonpath($file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	##if $file is a directory and it lacks a trailing slash, add one
 	if ((-d $file)) {
 	    $file =~ s@([^/])$@$1/@;
@@ -681,11 +545,6 @@ foreach my $file (@ARGV) {
 	    die "$P: file '${file}' not found\n";
 	}
     }
-<<<<<<< HEAD
-    if ($from_filename) {
-	push(@files, $file);
-	if ($file ne "MAINTAINERS" && -f $file && ($keywords || $file_emails)) {
-=======
     if ($from_filename && (vcs_exists() && !vcs_file_exists($file))) {
 	warn "$P: file '$file' not found in version control $!\n";
     }
@@ -694,30 +553,15 @@ foreach my $file (@ARGV) {
 	$file =~ s/^\Q${lk_path}\E//;	#or the path to the lk tree
 	push(@files, $file);
 	if ($file ne "MAINTAINERS" && -f $file && $keywords && $keywords_in_file) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    open(my $f, '<', $file)
 		or die "$P: Can't open $file: $!\n";
 	    my $text = do { local($/) ; <$f> };
 	    close($f);
-<<<<<<< HEAD
-	    if ($keywords) {
-		foreach my $line (keys %keyword_hash) {
-		    if ($text =~ m/$keyword_hash{$line}/x) {
-			push(@keyword_tvi, $line);
-		    }
-		}
-	    }
-	    if ($file_emails) {
-		my @poss_addr = $text =~ m$[A-Za-zÀ-ÿ\"\' \,\.\+-]*\s*[\,]*\s*[\(\<\{]{0,1}[A-Za-z0-9_\.\+-]+\@[A-Za-z0-9\.-]+\.[A-Za-z0-9]+[\)\>\}]{0,1}$g;
-		push(@file_emails, clean_file_emails(@poss_addr));
-	    }
-=======
 	    foreach my $line (keys %keyword_hash) {
 		if ($text =~ m/$keyword_hash{$line}/x) {
 		    push(@keyword_tvi, $line);
 		}
 	    }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
     } else {
 	my $file_cnt = @files;
@@ -735,9 +579,6 @@ foreach my $file (@ARGV) {
 
 	while (<$patch>) {
 	    my $patch_line = $_;
-<<<<<<< HEAD
-	    if (m/^\+\+\+\s+(\S+)/) {
-=======
 	    if (m/^ mode change [0-7]+ => [0-7]+ (\S+)\s*$/) {
 		my $filename = $1;
 		push(@files, $filename);
@@ -752,7 +593,6 @@ foreach my $file (@ARGV) {
 	    } elsif (m/^Fixes:\s+([0-9a-fA-F]{6,40})/) {
 		push(@fixes, $1) if ($email_fixes);
 	    } elsif (m/^\+\+\+\s+(\S+)/ or m/^---\s+(\S+)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		my $filename = $1;
 		$filename =~ s@^[^/]*/@@;
 		$filename =~ s@\n@@;
@@ -782,10 +622,7 @@ foreach my $file (@ARGV) {
 }
 
 @file_emails = uniq(@file_emails);
-<<<<<<< HEAD
-=======
 @fixes = uniq(@fixes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 my %email_hash_name;
 my %email_hash_address;
@@ -798,15 +635,8 @@ my @subsystem = ();
 my @status = ();
 my %deduplicate_name_hash = ();
 my %deduplicate_address_hash = ();
-<<<<<<< HEAD
-my $signature_pattern;
 
 my @maintainers = get_maintainers();
-
-=======
-
-my @maintainers = get_maintainers();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if (@maintainers) {
     @maintainers = merge_email(@maintainers);
     output(@maintainers);
@@ -834,8 +664,6 @@ if ($web) {
 
 exit($exit);
 
-<<<<<<< HEAD
-=======
 sub self_test {
     my @lsfiles = ();
     my @good_links = ();
@@ -975,17 +803,12 @@ sub ignore_email_address {
     return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub range_is_maintained {
     my ($start, $end) = @_;
 
     for (my $i = $start; $i < $end; $i++) {
 	my $line = $typevalue[$i];
-<<<<<<< HEAD
-	if ($line =~ m/^(\C):\s*(.*)/) {
-=======
 	if ($line =~ m/^([A-Z]):\s*(.*)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    my $type = $1;
 	    my $value = $2;
 	    if ($type eq 'S') {
@@ -1003,11 +826,7 @@ sub range_has_maintainer {
 
     for (my $i = $start; $i < $end; $i++) {
 	my $line = $typevalue[$i];
-<<<<<<< HEAD
-	if ($line =~ m/^(\C):\s*(.*)/) {
-=======
 	if ($line =~ m/^([A-Z]):\s*(.*)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    my $type = $1;
 	    my $value = $2;
 	    if ($type eq 'M') {
@@ -1056,11 +875,7 @@ sub get_maintainers {
 
 	    for ($i = $start; $i < $end; $i++) {
 		my $line = $typevalue[$i];
-<<<<<<< HEAD
-		if ($line =~ m/^(\C):\s*(.*)/) {
-=======
 		if ($line =~ m/^([A-Z]):\s*(.*)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    my $type = $1;
 		    my $value = $2;
 		    if ($type eq 'X') {
@@ -1075,11 +890,7 @@ sub get_maintainers {
 	    if (!$exclude) {
 		for ($i = $start; $i < $end; $i++) {
 		    my $line = $typevalue[$i];
-<<<<<<< HEAD
-		    if ($line =~ m/^(\C):\s*(.*)/) {
-=======
 		    if ($line =~ m/^([A-Z]):\s*(.*)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			my $type = $1;
 			my $value = $2;
 			if ($type eq 'F') {
@@ -1098,13 +909,10 @@ sub get_maintainers {
 				    $hash{$tvi} = $value_pd;
 				}
 			    }
-<<<<<<< HEAD
-=======
 			} elsif ($type eq 'N') {
 			    if ($file =~ m/$value/x) {
 				$hash{$tvi} = 0;
 			    }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		    }
 		}
@@ -1113,11 +921,7 @@ sub get_maintainers {
 	}
 
 	foreach my $line (sort {$hash{$b} <=> $hash{$a}} keys %hash) {
-<<<<<<< HEAD
-	    add_categories($line);
-=======
 	    add_categories($line, "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    if ($sections) {
 		my $i;
 		my $start = find_starting_index($line);
@@ -1130,34 +934,22 @@ sub get_maintainers {
 			$line =~ s/\\\./\./g;       	##Convert \. to .
 			$line =~ s/\.\*/\*/g;       	##Convert .* to *
 		    }
-<<<<<<< HEAD
-		    $line =~ s/^([A-Z]):/$1:\t/g;
-		    print("$line\n");
-=======
 		    my $count = $line =~ s/^([A-Z]):/$1:\t/g;
 		    if ($letters eq "" || (!$count || $letters =~ /$1/i)) {
 			print("$line\n");
 		    }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		print("\n");
 	    }
 	}
-<<<<<<< HEAD
-=======
 
 	maintainers_in_file($file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 
     if ($keywords) {
 	@keyword_tvi = sort_and_uniq(@keyword_tvi);
 	foreach my $line (@keyword_tvi) {
-<<<<<<< HEAD
-	    add_categories($line);
-=======
 	    add_categories($line, ":Keyword:$keyword_hash{$line}");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
     }
 
@@ -1167,15 +959,10 @@ sub get_maintainers {
 
     foreach my $file (@files) {
 	if ($email &&
-<<<<<<< HEAD
-	    ($email_git || ($email_git_fallback &&
-			    !$exact_pattern_match_hash{$file}))) {
-=======
 	    ($email_git ||
 	     ($email_git_fallback &&
 	      $file !~ /MAINTAINERS$/ &&
 	      !$exact_pattern_match_hash{$file}))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    vcs_file_signoffs($file);
 	}
 	if ($email && $email_git_blame) {
@@ -1198,10 +985,7 @@ sub get_maintainers {
 	}
 
 	foreach my $email (@file_emails) {
-<<<<<<< HEAD
-=======
 	    $email = mailmap_email($email);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    my ($name, $address) = parse_email($email);
 
 	    my $tmp_email = format_email($name, $address, $email_usename);
@@ -1210,13 +994,10 @@ sub get_maintainers {
 	}
     }
 
-<<<<<<< HEAD
-=======
     foreach my $fix (@fixes) {
 	vcs_add_commit_signers($fix, "blamed_fixes");
     }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     my @to = ();
     if ($email || $email_list) {
 	if ($email) {
@@ -1269,33 +1050,21 @@ MAINTAINER field selection options:
     --git-max-maintainers => maximum maintainers to add (default: $email_git_max_maintainers)
     --git-min-percent => minimum percentage of commits required (default: $email_git_min_percent)
     --git-blame => use git blame to find modified commits for patch or file
-<<<<<<< HEAD
-=======
     --git-blame-signatures => when used with --git-blame, also include all commit signers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     --git-since => git history to use (default: $email_git_since)
     --hg-since => hg history to use (default: $email_hg_since)
     --interactive => display a menu (mostly useful if used with the --git option)
     --m => include maintainer(s) if any
-<<<<<<< HEAD
-    --n => include name 'Full Name <addr\@domain.tld>'
-    --l => include list(s) if any
-    --s => include subscriber only list(s) if any
-=======
     --r => include reviewer(s) if any
     --n => include name 'Full Name <addr\@domain.tld>'
     --l => include list(s) if any
     --moderated => include moderated lists(s) if any (default: true)
     --s => include subscriber only list(s) if any (default: false)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     --remove-duplicates => minimize duplicate email names/addresses
     --roles => show roles (status:subsystem, git-signer, list, etc...)
     --rolestats => show roles and statistics (commits/total_commits, %)
     --file-emails => add email addresses found in -f file (default: 0 (off))
-<<<<<<< HEAD
-=======
     --fixes => for patches, add signatures of commits with 'Fixes: <commit>' (default: 1 (on))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   --scm => print SCM tree(s) if any
   --status => print status if any
   --subsystem => print subsystem name if any
@@ -1309,28 +1078,18 @@ Output type options:
 Other options:
   --pattern-depth => Number of pattern directory traversals (default: 0 (all))
   --keywords => scan patch for keywords (default: $keywords)
-<<<<<<< HEAD
-  --sections => print all of the subsystem sections with pattern matches
-  --mailmap => use .mailmap file (default: $email_use_mailmap)
-=======
   --keywords-in-file => scan file for keywords (default: $keywords_in_file)
   --sections => print all of the subsystem sections with pattern matches
   --letters => print all matching 'letter' types from all matching sections
   --mailmap => use .mailmap file (default: $email_use_mailmap)
   --no-tree => run without a kernel tree
   --self-test => show potential issues with MAINTAINERS file content
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   --version => show version
   --help => show this help information
 
 Default options:
-<<<<<<< HEAD
-  [--email --nogit --git-fallback --m --n --l --multiline -pattern-depth=0
-   --remove-duplicates --rolestats]
-=======
   [--email --tree --nogit --git-fallback --m --r --n --l --multiline
    --pattern-depth=0 --remove-duplicates --rolestats --keywords]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Notes:
   Using "-f directory" may give unexpected results:
@@ -1361,12 +1120,9 @@ Notes:
       Entries in this file can be any command line argument.
       This file is prepended to any additional command line arguments.
       Multiple lines and # comments are allowed.
-<<<<<<< HEAD
-=======
   Most options have both positive and negative forms.
       The negative forms for --<foo> are --no<foo> and --no-<foo>.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EOT
 }
 
@@ -1379,11 +1135,7 @@ sub top_of_kernel_tree {
     if (   (-f "${lk_path}COPYING")
 	&& (-f "${lk_path}CREDITS")
 	&& (-f "${lk_path}Kbuild")
-<<<<<<< HEAD
-	&& (-f "${lk_path}MAINTAINERS")
-=======
 	&& (-e "${lk_path}MAINTAINERS")
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&& (-f "${lk_path}Makefile")
 	&& (-f "${lk_path}README")
 	&& (-d "${lk_path}Documentation")
@@ -1401,8 +1153,6 @@ sub top_of_kernel_tree {
     return 0;
 }
 
-<<<<<<< HEAD
-=======
 sub escape_name {
     my ($name) = @_;
 
@@ -1414,7 +1164,6 @@ sub escape_name {
     return $name;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub parse_email {
     my ($formatted_email) = @_;
 
@@ -1432,19 +1181,9 @@ sub parse_email {
 
     $name =~ s/^\s+|\s+$//g;
     $name =~ s/^\"|\"$//g;
-<<<<<<< HEAD
-    $address =~ s/^\s+|\s+$//g;
-
-    if ($name =~ /[^\w \-]/i) {  	 ##has "must quote" chars
-	$name =~ s/(?<!\\)"/\\"/g;       ##escape quotes
-	$name = "\"$name\"";
-    }
-
-=======
     $name = escape_name($name);
     $address =~ s/^\s+|\s+$//g;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     return ($name, $address);
 }
 
@@ -1455,19 +1194,9 @@ sub format_email {
 
     $name =~ s/^\s+|\s+$//g;
     $name =~ s/^\"|\"$//g;
-<<<<<<< HEAD
-    $address =~ s/^\s+|\s+$//g;
-
-    if ($name =~ /[^\w \-]/i) {          ##has "must quote" chars
-	$name =~ s/(?<!\\)"/\\"/g;       ##escape quotes
-	$name = "\"$name\"";
-    }
-
-=======
     $name = escape_name($name);
     $address =~ s/^\s+|\s+$//g;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if ($usename) {
 	if ("$name" eq "") {
 	    $formatted_email = "$address";
@@ -1486,11 +1215,7 @@ sub find_first_section {
 
     while ($index < @typevalue) {
 	my $tv = $typevalue[$index];
-<<<<<<< HEAD
-	if (($tv =~ m/^(\C):\s*(.*)/)) {
-=======
 	if (($tv =~ m/^([A-Z]):\s*(.*)/)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    last;
 	}
 	$index++;
@@ -1504,11 +1229,7 @@ sub find_starting_index {
 
     while ($index > 0) {
 	my $tv = $typevalue[$index];
-<<<<<<< HEAD
-	if (!($tv =~ m/^(\C):\s*(.*)/)) {
-=======
 	if (!($tv =~ m/^([A-Z]):\s*(.*)/)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    last;
 	}
 	$index--;
@@ -1522,11 +1243,7 @@ sub find_ending_index {
 
     while ($index < @typevalue) {
 	my $tv = $typevalue[$index];
-<<<<<<< HEAD
-	if (!($tv =~ m/^(\C):\s*(.*)/)) {
-=======
 	if (!($tv =~ m/^([A-Z]):\s*(.*)/)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    last;
 	}
 	$index++;
@@ -1535,8 +1252,6 @@ sub find_ending_index {
     return $index;
 }
 
-<<<<<<< HEAD
-=======
 sub get_subsystem_name {
     my ($index) = @_;
 
@@ -1551,7 +1266,6 @@ sub get_subsystem_name {
     return $subsystem;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub get_maintainer_role {
     my ($index) = @_;
 
@@ -1560,24 +1274,11 @@ sub get_maintainer_role {
     my $end = find_ending_index($index);
 
     my $role = "unknown";
-<<<<<<< HEAD
-    my $subsystem = $typevalue[$start];
-    if (length($subsystem) > 20) {
-	$subsystem = substr($subsystem, 0, 17);
-	$subsystem =~ s/\s*$//;
-	$subsystem = $subsystem . "...";
-    }
-
-    for ($i = $start + 1; $i < $end; $i++) {
-	my $tv = $typevalue[$i];
-	if ($tv =~ m/^(\C):\s*(.*)/) {
-=======
     my $subsystem = get_subsystem_name($index);
 
     for ($i = $start + 1; $i < $end; $i++) {
 	my $tv = $typevalue[$i];
 	if ($tv =~ m/^([A-Z]):\s*(.*)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    my $ptype = $1;
 	    my $pvalue = $2;
 	    if ($ptype eq "S") {
@@ -1607,20 +1308,7 @@ sub get_maintainer_role {
 sub get_list_role {
     my ($index) = @_;
 
-<<<<<<< HEAD
-    my $i;
-    my $start = find_starting_index($index);
-    my $end = find_ending_index($index);
-
-    my $subsystem = $typevalue[$start];
-    if (length($subsystem) > 20) {
-	$subsystem = substr($subsystem, 0, 17);
-	$subsystem =~ s/\s*$//;
-	$subsystem = $subsystem . "...";
-    }
-=======
     my $subsystem = get_subsystem_name($index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     if ($subsystem eq "THE REST") {
 	$subsystem = "";
@@ -1630,11 +1318,7 @@ sub get_list_role {
 }
 
 sub add_categories {
-<<<<<<< HEAD
-    my ($index) = @_;
-=======
     my ($index, $suffix) = @_;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     my $i;
     my $start = find_starting_index($index);
@@ -1644,11 +1328,7 @@ sub add_categories {
 
     for ($i = $start + 1; $i < $end; $i++) {
 	my $tv = $typevalue[$i];
-<<<<<<< HEAD
-	if ($tv =~ m/^(\C):\s*(.*)/) {
-=======
 	if ($tv =~ m/^([A-Z]):\s*(.*)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    my $ptype = $1;
 	    my $pvalue = $2;
 	    if ($ptype eq "L") {
@@ -1668,25 +1348,12 @@ sub add_categories {
 			if (!$hash_list_to{lc($list_address)}) {
 			    $hash_list_to{lc($list_address)} = 1;
 			    push(@list_to, [$list_address,
-<<<<<<< HEAD
-					    "subscriber list${list_role}"]);
-=======
 					    "subscriber list${list_role}" . $suffix]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		    }
 		} else {
 		    if ($email_list) {
 			if (!$hash_list_to{lc($list_address)}) {
-<<<<<<< HEAD
-			    $hash_list_to{lc($list_address)} = 1;
-			    if ($list_additional =~ m/moderated/) {
-				push(@list_to, [$list_address,
-						"moderated list${list_role}"]);
-			    } else {
-				push(@list_to, [$list_address,
-						"open list${list_role}"]);
-=======
 			    if ($list_additional =~ m/moderated/) {
 				if ($email_moderated_list) {
 				    $hash_list_to{lc($list_address)} = 1;
@@ -1697,36 +1364,11 @@ sub add_categories {
 				$hash_list_to{lc($list_address)} = 1;
 				push(@list_to, [$list_address,
 						"open list${list_role}" . $suffix]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    }
 			}
 		    }
 		}
 	    } elsif ($ptype eq "M") {
-<<<<<<< HEAD
-		my ($name, $address) = parse_email($pvalue);
-		if ($name eq "") {
-		    if ($i > 0) {
-			my $tv = $typevalue[$i - 1];
-			if ($tv =~ m/^(\C):\s*(.*)/) {
-			    if ($1 eq "P") {
-				$name = $2;
-				$pvalue = format_email($name, $address, $email_usename);
-			    }
-			}
-		    }
-		}
-		if ($email_maintainer) {
-		    my $role = get_maintainer_role($i);
-		    push_email_addresses($pvalue, $role);
-		}
-	    } elsif ($ptype eq "T") {
-		push(@scm, $pvalue);
-	    } elsif ($ptype eq "W") {
-		push(@web, $pvalue);
-	    } elsif ($ptype eq "S") {
-		push(@status, $pvalue);
-=======
 		if ($email_maintainer) {
 		    my $role = get_maintainer_role($i);
 		    push_email_addresses($pvalue, $role . $suffix);
@@ -1742,7 +1384,6 @@ sub add_categories {
 		push(@web, $pvalue . $suffix);
 	    } elsif ($ptype eq "S") {
 		push(@status, $pvalue . $suffix);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    }
 	}
     }
@@ -1947,31 +1588,16 @@ sub extract_formatted_signatures {
 }
 
 sub vcs_find_signers {
-<<<<<<< HEAD
-    my ($cmd) = @_;
-    my $commits;
-    my @lines = ();
-    my @signatures = ();
-=======
     my ($cmd, $file) = @_;
     my $commits;
     my @lines = ();
     my @signatures = ();
     my @authors = ();
     my @stats = ();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     @lines = &{$VCS_cmds{"execute_cmd"}}($cmd);
 
     my $pattern = $VCS_cmds{"commit_pattern"};
-<<<<<<< HEAD
-
-    $commits = grep(/$pattern/, @lines);	# of commits
-
-    @signatures = grep(/^[ \t]*${signature_pattern}.*\@.*$/, @lines);
-
-    return (0, @signatures) if !@signatures;
-=======
     my $author_pattern = $VCS_cmds{"author_pattern"};
     my $stat_pattern = $VCS_cmds{"stat_pattern"};
 
@@ -1986,7 +1612,6 @@ sub vcs_find_signers {
 #    print("stats: <@stats>\n");
 
     return (0, \@signatures, \@authors, \@stats) if !@signatures;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     save_commits_by_author(@lines) if ($interactive);
     save_commits_by_signer(@lines) if ($interactive);
@@ -1995,16 +1620,10 @@ sub vcs_find_signers {
 	@signatures = grep(!/${penguin_chiefs}/i, @signatures);
     }
 
-<<<<<<< HEAD
-    my ($types_ref, $signers_ref) = extract_formatted_signatures(@signatures);
-
-    return ($commits, @$signers_ref);
-=======
     my ($author_ref, $authors_ref) = extract_formatted_signatures(@authors);
     my ($types_ref, $signers_ref) = extract_formatted_signatures(@signatures);
 
     return ($commits, $signers_ref, $authors_ref, \@stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 sub vcs_find_author {
@@ -2106,11 +1725,7 @@ sub vcs_exists {
     %VCS_cmds = %VCS_cmds_hg;
     return 2 if eval $VCS_cmds{"available"};
     %VCS_cmds = ();
-<<<<<<< HEAD
-    if (!$printed_novcs) {
-=======
     if (!$printed_novcs && $email_git) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	warn("$P: No supported VCS found.  Add --nogit to options?\n");
 	warn("Using a git repository produces better results.\n");
 	warn("Try Linus Torvalds' latest git repository using:\n");
@@ -2129,8 +1744,6 @@ sub vcs_is_hg {
     return $vcs_used == 2;
 }
 
-<<<<<<< HEAD
-=======
 sub vcs_add_commit_signers {
     return if (!vcs_exists());
 
@@ -2157,7 +1770,6 @@ sub vcs_add_commit_signers {
     vcs_assign($desc, 1, @commit_signers);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub interactive_get_maintainers {
     my ($list_ref) = @_;
     my @list = @$list_ref;
@@ -2251,11 +1863,7 @@ tm toggle maintainers
 tg toggle git entries
 tl toggle open list entries
 ts toggle subscriber list entries
-<<<<<<< HEAD
-f  emails in file       [$file_emails]
-=======
 f  emails in file       [$email_file_emails]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 k  keywords in file     [$keywords]
 r  remove duplicates    [$email_remove_duplicates]
 p# pattern match depth  [$pattern_depth]
@@ -2380,11 +1988,7 @@ EOT
 		bool_invert(\$email_git_all_signature_types);
 		$rerun = 1;
 	    } elsif ($sel eq "f") {
-<<<<<<< HEAD
-		bool_invert(\$file_emails);
-=======
 		bool_invert(\$email_file_emails);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		$rerun = 1;
 	    } elsif ($sel eq "r") {
 		bool_invert(\$email_remove_duplicates);
@@ -2584,10 +2188,7 @@ sub vcs_assign {
 	my $percent = $sign_offs * 100 / $divisor;
 
 	$percent = 100 if ($percent > 100);
-<<<<<<< HEAD
-=======
 	next if (ignore_email_address($line));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$count++;
 	last if ($sign_offs < $email_git_min_signatures ||
 		 $count > $email_git_max_maintainers ||
@@ -2605,16 +2206,12 @@ sub vcs_assign {
 sub vcs_file_signoffs {
     my ($file) = @_;
 
-<<<<<<< HEAD
-    my @signers = ();
-=======
     my $authors_ref;
     my $signers_ref;
     my $stats_ref;
     my @authors = ();
     my @signers = ();
     my @stats = ();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     my $commits;
 
     $vcs_used = vcs_exists();
@@ -2623,9 +2220,6 @@ sub vcs_file_signoffs {
     my $cmd = $VCS_cmds{"find_signers_cmd"};
     $cmd =~ s/(\$\w+)/$1/eeg;		# interpolate $cmd
 
-<<<<<<< HEAD
-    ($commits, @signers) = vcs_find_signers($cmd);
-=======
     ($commits, $signers_ref, $authors_ref, $stats_ref) = vcs_find_signers($cmd, $file);
 
     @signers = @{$signers_ref} if defined $signers_ref;
@@ -2633,15 +2227,12 @@ sub vcs_file_signoffs {
     @stats = @{$stats_ref} if defined $stats_ref;
 
 #    print("commits: <$commits>\nsigners:<@signers>\nauthors: <@authors>\nstats: <@stats>\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     foreach my $signer (@signers) {
 	$signer = deduplicate_email($signer);
     }
 
     vcs_assign("commit_signer", $commits, @signers);
-<<<<<<< HEAD
-=======
     vcs_assign("authored", $commits, @authors);
     if ($#authors == $#stats) {
 	my $stat_pattern = $VCS_cmds{"stat_pattern"};
@@ -2682,7 +2273,6 @@ sub vcs_file_signoffs {
 	vcs_assign("added_lines", $added, @list_added);
 	vcs_assign("removed_lines", $deleted, @list_deleted);
     }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 sub vcs_file_blame {
@@ -2705,13 +2295,10 @@ sub vcs_file_blame {
     if ($email_git_blame_signatures) {
 	if (vcs_is_hg()) {
 	    my $commit_count;
-<<<<<<< HEAD
-=======
 	    my $commit_authors_ref;
 	    my $commit_signers_ref;
 	    my $stats_ref;
 	    my @commit_authors = ();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    my @commit_signers = ();
 	    my $commit = join(" -r ", @commits);
 	    my $cmd;
@@ -2719,38 +2306,27 @@ sub vcs_file_blame {
 	    $cmd = $VCS_cmds{"find_commit_signers_cmd"};
 	    $cmd =~ s/(\$\w+)/$1/eeg;	#substitute variables in $cmd
 
-<<<<<<< HEAD
-	    ($commit_count, @commit_signers) = vcs_find_signers($cmd);
-=======
 	    ($commit_count, $commit_signers_ref, $commit_authors_ref, $stats_ref) = vcs_find_signers($cmd, $file);
 	    @commit_authors = @{$commit_authors_ref} if defined $commit_authors_ref;
 	    @commit_signers = @{$commit_signers_ref} if defined $commit_signers_ref;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	    push(@signers, @commit_signers);
 	} else {
 	    foreach my $commit (@commits) {
 		my $commit_count;
-<<<<<<< HEAD
-=======
 		my $commit_authors_ref;
 		my $commit_signers_ref;
 		my $stats_ref;
 		my @commit_authors = ();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		my @commit_signers = ();
 		my $cmd;
 
 		$cmd = $VCS_cmds{"find_commit_signers_cmd"};
 		$cmd =~ s/(\$\w+)/$1/eeg;	#substitute variables in $cmd
 
-<<<<<<< HEAD
-		($commit_count, @commit_signers) = vcs_find_signers($cmd);
-=======
 		($commit_count, $commit_signers_ref, $commit_authors_ref, $stats_ref) = vcs_find_signers($cmd, $file);
 		@commit_authors = @{$commit_authors_ref} if defined $commit_authors_ref;
 		@commit_signers = @{$commit_signers_ref} if defined $commit_signers_ref;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		push(@signers, @commit_signers);
 	    }
@@ -2827,8 +2403,6 @@ sub vcs_file_blame {
     }
 }
 
-<<<<<<< HEAD
-=======
 sub vcs_file_exists {
     my ($file) = @_;
 
@@ -2864,7 +2438,6 @@ sub vcs_list_files {
     return @lsfiles;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub uniq {
     my (@parms) = @_;
 
@@ -2889,13 +2462,6 @@ sub clean_file_emails {
     foreach my $email (@file_emails) {
 	$email =~ s/[\(\<\{]{0,1}([A-Za-z0-9_\.\+-]+\@[A-Za-z0-9\.-]+)[\)\>\}]{0,1}/\<$1\>/g;
 	my ($name, $address) = parse_email($email);
-<<<<<<< HEAD
-	if ($name eq '"[,\.]"') {
-	    $name = "";
-	}
-
-	my @nw = split(/[^A-Za-zÀ-ÿ\'\,\.\+-]/, $name);
-=======
 
 	# Strip quotes for easier processing, format_email will add them back
 	$name =~ s/^"(.*)"$/$1/;
@@ -2907,17 +2473,12 @@ sub clean_file_emails {
 	# Make a best effort to extract the name, and only the name, by taking
 	# only the last two names, or in the case of obvious initials, the last
 	# three names.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (@nw > 2) {
 	    my $first = $nw[@nw - 3];
 	    my $middle = $nw[@nw - 2];
 	    my $last = $nw[@nw - 1];
 
-<<<<<<< HEAD
-	    if (((length($first) == 1 && $first =~ m/[A-Za-z]/) ||
-=======
 	    if (((length($first) == 1 && $first =~ m/\p{L}/) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 (length($first) == 2 && substr($first, -1) eq ".")) ||
 		(length($middle) == 1 ||
 		 (length($middle) == 2 && substr($middle, -1) eq "."))) {
@@ -2925,29 +2486,16 @@ sub clean_file_emails {
 	    } else {
 		$name = "$middle $last";
 	    }
-<<<<<<< HEAD
-=======
 	} else {
 	    $name = "@nw";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (substr($name, -1) =~ /[,\.]/) {
 	    $name = substr($name, 0, length($name) - 1);
-<<<<<<< HEAD
-	} elsif (substr($name, -2) =~ /[,\.]"/) {
-	    $name = substr($name, 0, length($name) - 2) . '"';
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (substr($name, 0, 1) =~ /[,\.]/) {
 	    $name = substr($name, 1, length($name) - 1);
-<<<<<<< HEAD
-	} elsif (substr($name, 0, 2) =~ /"[,\.]/) {
-	    $name = '"' . substr($name, 2, length($name) - 2);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	my $fmt_email = format_email($name, $address, $email_usename);

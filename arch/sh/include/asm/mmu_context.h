@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999 Niibe Yutaka
  * Copyright (C) 2003 - 2007 Paul Mundt
@@ -11,18 +8,11 @@
 #ifndef __ASM_SH_MMU_CONTEXT_H
 #define __ASM_SH_MMU_CONTEXT_H
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-#include <cpu/mmu_context.h>
-#include <asm/tlbflush.h>
-#include <asm/uaccess.h>
-=======
 #include <cpu/mmu_context.h>
 #include <asm/tlbflush.h>
 #include <linux/uaccess.h>
 #include <linux/mm_types.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm-generic/mm_hooks.h>
 
@@ -57,15 +47,7 @@
  */
 #define MMU_VPN_MASK	0xfffff000
 
-<<<<<<< HEAD
-#if defined(CONFIG_SUPERH32)
-#include "mmu_context_32.h"
-#else
-#include "mmu_context_64.h"
-#endif
-=======
 #include <asm/mmu_context_32.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Get MMU context if needed.
@@ -87,23 +69,9 @@ static inline void get_mmu_context(struct mm_struct *mm, unsigned int cpu)
 		 */
 		local_flush_tlb_all();
 
-<<<<<<< HEAD
-#ifdef CONFIG_SUPERH64
-		/*
-		 * The SH-5 cache uses the ASIDs, requiring both the I and D
-		 * cache to be flushed when the ASID is exhausted. Weak.
-		 */
-		flush_cache_all();
-#endif
-
-		/*
-		 * Fix version; Note that we avoid version #0
-		 * to distingush NO_CONTEXT.
-=======
 		/*
 		 * Fix version; Note that we avoid version #0
 		 * to distinguish NO_CONTEXT.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (!asid)
 			asid = MMU_CONTEXT_FIRST_VERSION;
@@ -116,20 +84,13 @@ static inline void get_mmu_context(struct mm_struct *mm, unsigned int cpu)
  * Initialize the context related info for a new mm_struct
  * instance.
  */
-<<<<<<< HEAD
-=======
 #define init_new_context init_new_context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int init_new_context(struct task_struct *tsk,
 				   struct mm_struct *mm)
 {
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < num_online_cpus(); i++)
-=======
 	for_each_online_cpu(i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpu_context(i, mm) = NO_CONTEXT;
 
 	return 0;
@@ -160,13 +121,7 @@ static inline void switch_mm(struct mm_struct *prev,
 			activate_context(next, cpu);
 }
 
-<<<<<<< HEAD
-#define activate_mm(prev, next)		switch_mm((prev),(next),NULL)
-#define deactivate_mm(tsk,mm)		do { } while (0)
-#define enter_lazy_tlb(mm,tsk)		do { } while (0)
-=======
 #include <asm-generic/mmu_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -177,11 +132,7 @@ static inline void switch_mm(struct mm_struct *prev,
 #define set_TTB(pgd)			do { } while (0)
 #define get_TTB()			(0)
 
-<<<<<<< HEAD
-#include <asm-generic/mmu_context.h>
-=======
 #include <asm-generic/nommu_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_MMU */
 
@@ -224,8 +175,4 @@ static inline void disable_mmu(void)
 #define disable_mmu()	do { } while (0)
 #endif
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_MMU_CONTEXT_H */

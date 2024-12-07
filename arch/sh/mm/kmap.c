@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/mm/kmap.c
  *
  * Copyright (C) 1999, 2000, 2002  Niibe Yutaka
  * Copyright (C) 2002 - 2009  Paul Mundt
-<<<<<<< HEAD
- *
- * Released under the terms of the GNU GPL v2.0.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/mm.h>
 #include <linux/init.h>
@@ -22,12 +14,6 @@
 #include <asm/mmu_context.h>
 #include <asm/cacheflush.h>
 
-<<<<<<< HEAD
-#define kmap_get_fixmap_pte(vaddr)                                     \
-	pte_offset_kernel(pmd_offset(pud_offset(pgd_offset_k(vaddr), (vaddr)), (vaddr)), (vaddr))
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static pte_t *kmap_coherent_pte;
 
 void __init kmap_coherent_init(void)
@@ -36,22 +22,11 @@ void __init kmap_coherent_init(void)
 
 	/* cache the first coherent kmap pte */
 	vaddr = __fix_to_virt(FIX_CMAP_BEGIN);
-<<<<<<< HEAD
-	kmap_coherent_pte = kmap_get_fixmap_pte(vaddr);
-=======
 	kmap_coherent_pte = virt_to_kpte(vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void *kmap_coherent(struct page *page, unsigned long addr)
 {
-<<<<<<< HEAD
-	enum fixed_addresses idx;
-	unsigned long vaddr;
-
-	BUG_ON(!test_bit(PG_dcache_clean, &page->flags));
-
-=======
 	struct folio *folio = page_folio(page);
 	enum fixed_addresses idx;
 	unsigned long vaddr;
@@ -59,7 +34,6 @@ void *kmap_coherent(struct page *page, unsigned long addr)
 	BUG_ON(!test_bit(PG_dcache_clean, &folio->flags));
 
 	preempt_disable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pagefault_disable();
 
 	idx = FIX_CMAP_END -
@@ -88,8 +62,5 @@ void kunmap_coherent(void *kvaddr)
 	}
 
 	pagefault_enable();
-<<<<<<< HEAD
-=======
 	preempt_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ALPHA_SPINLOCK_H
 #define _ALPHA_SPINLOCK_H
 
 #include <linux/kernel.h>
 #include <asm/current.h>
-<<<<<<< HEAD
-=======
 #include <asm/barrier.h>
 #include <asm/processor.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Simple spin lock operations.  There are two variants, one clears IRQ's
@@ -20,19 +14,12 @@
  * We make no fairness assumptions. They have a cost.
  */
 
-<<<<<<< HEAD
-#define arch_spin_lock_flags(lock, flags) arch_spin_lock(lock)
-#define arch_spin_is_locked(x)	((x)->lock != 0)
-#define arch_spin_unlock_wait(x) \
-		do { cpu_relax(); } while ((x)->lock)
-=======
 #define arch_spin_is_locked(x)	((x)->lock != 0)
 
 static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
 {
         return lock.lock == 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void arch_spin_unlock(arch_spinlock_t * lock)
 {
@@ -67,19 +54,6 @@ static inline int arch_spin_trylock(arch_spinlock_t *lock)
 
 /***********************************************************/
 
-<<<<<<< HEAD
-static inline int arch_read_can_lock(arch_rwlock_t *lock)
-{
-	return (lock->lock & 1) == 0;
-}
-
-static inline int arch_write_can_lock(arch_rwlock_t *lock)
-{
-	return lock->lock == 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void arch_read_lock(arch_rwlock_t *lock)
 {
 	long regx;
@@ -186,14 +160,4 @@ static inline void arch_write_unlock(arch_rwlock_t * lock)
 	lock->lock = 0;
 }
 
-<<<<<<< HEAD
-#define arch_read_lock_flags(lock, flags) arch_read_lock(lock)
-#define arch_write_lock_flags(lock, flags) arch_write_lock(lock)
-
-#define arch_spin_relax(lock)	cpu_relax()
-#define arch_read_relax(lock)	cpu_relax()
-#define arch_write_relax(lock)	cpu_relax()
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ALPHA_SPINLOCK_H */

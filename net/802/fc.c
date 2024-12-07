@@ -1,27 +1,12 @@
-<<<<<<< HEAD
-/*
- * NET3:	Fibre Channel device handling subroutines
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * NET3:	Fibre Channel device handling subroutines
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		Vineet Abraham <vma@iol.unh.edu>
  *		v 1.0 03/22/99
  */
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -46,11 +31,7 @@
 
 static int fc_header(struct sk_buff *skb, struct net_device *dev,
 		     unsigned short type,
-<<<<<<< HEAD
-		     const void *daddr, const void *saddr, unsigned len)
-=======
 		     const void *daddr, const void *saddr, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fch_hdr *fch;
 	int hdr_len;
@@ -64,11 +45,7 @@ static int fc_header(struct sk_buff *skb, struct net_device *dev,
 		struct fcllc *fcllc;
 
 		hdr_len = sizeof(struct fch_hdr) + sizeof(struct fcllc);
-<<<<<<< HEAD
-		fch = (struct fch_hdr *)skb_push(skb, hdr_len);
-=======
 		fch = skb_push(skb, hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fcllc = (struct fcllc *)(fch+1);
 		fcllc->dsap = fcllc->ssap = EXTENDED_SAP;
 		fcllc->llc = UI_CMD;
@@ -78,11 +55,7 @@ static int fc_header(struct sk_buff *skb, struct net_device *dev,
 	else
 	{
 		hdr_len = sizeof(struct fch_hdr);
-<<<<<<< HEAD
-		fch = (struct fch_hdr *)skb_push(skb, hdr_len);
-=======
 		fch = skb_push(skb, hdr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if(saddr)
@@ -98,34 +71,8 @@ static int fc_header(struct sk_buff *skb, struct net_device *dev,
 	return -hdr_len;
 }
 
-<<<<<<< HEAD
-/*
- *	A neighbour discovery of some species (eg arp) has completed. We
- *	can now send the packet.
- */
-
-static int fc_rebuild_header(struct sk_buff *skb)
-{
-#ifdef CONFIG_INET
-	struct fch_hdr *fch=(struct fch_hdr *)skb->data;
-	struct fcllc *fcllc=(struct fcllc *)(skb->data+sizeof(struct fch_hdr));
-	if(fcllc->ethertype != htons(ETH_P_IP)) {
-		printk("fc_rebuild_header: Don't know how to resolve type %04X addresses ?\n", ntohs(fcllc->ethertype));
-		return 0;
-	}
-	return arp_find(fch->daddr, skb);
-#else
-	return 0;
-#endif
-}
-
 static const struct header_ops fc_header_ops = {
 	.create	 = fc_header,
-	.rebuild = fc_rebuild_header,
-=======
-static const struct header_ops fc_header_ops = {
-	.create	 = fc_header,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void fc_setup(struct net_device *dev)
@@ -154,10 +101,6 @@ static void fc_setup(struct net_device *dev)
  */
 struct net_device *alloc_fcdev(int sizeof_priv)
 {
-<<<<<<< HEAD
-	return alloc_netdev(sizeof_priv, "fc%d", fc_setup);
-=======
 	return alloc_netdev(sizeof_priv, "fc%d", NET_NAME_UNKNOWN, fc_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(alloc_fcdev);

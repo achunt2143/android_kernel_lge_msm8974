@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_FS_NOTIFY_H
 #define _LINUX_FS_NOTIFY_H
 
@@ -20,64 +17,6 @@
 #include <linux/slab.h>
 #include <linux/bug.h>
 
-<<<<<<< HEAD
-/*
- * fsnotify_d_instantiate - instantiate a dentry for inode
- */
-static inline void fsnotify_d_instantiate(struct dentry *dentry,
-					  struct inode *inode)
-{
-	__fsnotify_d_instantiate(dentry, inode);
-}
-
-/* Notify this dentry's parent about a child's events. */
-static inline int fsnotify_parent(struct path *path, struct dentry *dentry, __u32 mask)
-{
-	if (!dentry)
-		dentry = path->dentry;
-
-	return __fsnotify_parent(path, dentry, mask);
-}
-
-/* simple call site for access decisions */
-static inline int fsnotify_perm(struct file *file, int mask)
-{
-	struct path *path = &file->f_path;
-	struct inode *inode = path->dentry->d_inode;
-	__u32 fsnotify_mask = 0;
-	int ret;
-
-	if (file->f_mode & FMODE_NONOTIFY)
-		return 0;
-	if (!(mask & (MAY_READ | MAY_OPEN)))
-		return 0;
-	if (mask & MAY_OPEN)
-		fsnotify_mask = FS_OPEN_PERM;
-	else if (mask & MAY_READ)
-		fsnotify_mask = FS_ACCESS_PERM;
-	else
-		BUG();
-
-	ret = fsnotify_parent(path, NULL, fsnotify_mask);
-	if (ret)
-		return ret;
-
-	return fsnotify(inode, fsnotify_mask, path, FSNOTIFY_EVENT_PATH, NULL, 0);
-}
-
-/*
- * fsnotify_d_move - dentry has been moved
- */
-static inline void fsnotify_d_move(struct dentry *dentry)
-{
-	/*
-	 * On move we need to update dentry->d_flags to indicate if the new parent
-	 * cares about events from this dentry.
-	 */
-	__fsnotify_update_dcache_flags(dentry);
-}
-
-=======
 /* Are there any inode/mount/sb objects that are being watched at all? */
 static inline bool fsnotify_sb_has_watchers(struct super_block *sb)
 {
@@ -231,36 +170,18 @@ static inline int fsnotify_open_perm(struct file *file)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fsnotify_link_count - inode's link count changed
  */
 static inline void fsnotify_link_count(struct inode *inode)
 {
-<<<<<<< HEAD
-	fsnotify(inode, FS_ATTRIB, inode, FSNOTIFY_EVENT_INODE, NULL, 0);
-=======
 	fsnotify_inode(inode, FS_ATTRIB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * fsnotify_move - file old_name at old_dir was moved to new_name at new_dir
  */
 static inline void fsnotify_move(struct inode *old_dir, struct inode *new_dir,
-<<<<<<< HEAD
-				 const unsigned char *old_name,
-				 int isdir, struct inode *target, struct dentry *moved)
-{
-	struct inode *source = moved->d_inode;
-	u32 fs_cookie = fsnotify_get_cookie();
-	__u32 old_dir_mask = (FS_EVENT_ON_CHILD | FS_MOVED_FROM);
-	__u32 new_dir_mask = (FS_EVENT_ON_CHILD | FS_MOVED_TO);
-	const unsigned char *new_name = moved->d_name.name;
-
-	if (old_dir == new_dir)
-		old_dir_mask |= FS_DN_RENAME;
-=======
 				 const struct qstr *old_name,
 				 int isdir, struct inode *target,
 				 struct dentry *moved)
@@ -271,26 +192,10 @@ static inline void fsnotify_move(struct inode *old_dir, struct inode *new_dir,
 	__u32 new_dir_mask = FS_MOVED_TO;
 	__u32 rename_mask = FS_RENAME;
 	const struct qstr *new_name = &moved->d_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (isdir) {
 		old_dir_mask |= FS_ISDIR;
 		new_dir_mask |= FS_ISDIR;
-<<<<<<< HEAD
-	}
-
-	fsnotify(old_dir, old_dir_mask, source, FSNOTIFY_EVENT_INODE, old_name,
-		 fs_cookie);
-	fsnotify(new_dir, new_dir_mask, source, FSNOTIFY_EVENT_INODE, new_name,
-		 fs_cookie);
-
-	if (target)
-		fsnotify_link_count(target);
-
-	if (source)
-		fsnotify(source, FS_MOVE_SELF, moved->d_inode, FSNOTIFY_EVENT_INODE, NULL, 0);
-	audit_inode_child(moved, new_dir);
-=======
 		rename_mask |= FS_ISDIR;
 	}
 
@@ -307,7 +212,6 @@ static inline void fsnotify_move(struct inode *old_dir, struct inode *new_dir,
 		fsnotify_link_count(target);
 	fsnotify_inode(source, FS_MOVE_SELF);
 	audit_inode_child(new_dir, moved, AUDIT_TYPE_CHILD_CREATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -327,44 +231,16 @@ static inline void fsnotify_vfsmount_delete(struct vfsmount *mnt)
 }
 
 /*
-<<<<<<< HEAD
- * fsnotify_nameremove - a filename was removed from a directory
- */
-static inline void fsnotify_nameremove(struct dentry *dentry, int isdir)
-{
-	__u32 mask = FS_DELETE;
-
-	if (isdir)
-		mask |= FS_ISDIR;
-
-	fsnotify_parent(NULL, dentry, mask);
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fsnotify_inoderemove - an inode is going away
  */
 static inline void fsnotify_inoderemove(struct inode *inode)
 {
-<<<<<<< HEAD
-	fsnotify(inode, FS_DELETE_SELF, inode, FSNOTIFY_EVENT_INODE, NULL, 0);
-=======
 	fsnotify_inode(inode, FS_DELETE_SELF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__fsnotify_inode_delete(inode);
 }
 
 /*
  * fsnotify_create - 'name' was linked in
-<<<<<<< HEAD
- */
-static inline void fsnotify_create(struct inode *inode, struct dentry *dentry)
-{
-	audit_inode_child(dentry, inode);
-
-	fsnotify(inode, FS_CREATE, dentry->d_inode, FSNOTIFY_EVENT_INODE, dentry->d_name.name, 0);
-=======
  *
  * Caller must make sure that dentry->d_name is stable.
  * Note: some filesystems (e.g. kernfs) leave @dentry negative and instantiate
@@ -375,22 +251,10 @@ static inline void fsnotify_create(struct inode *dir, struct dentry *dentry)
 	audit_inode_child(dir, dentry, AUDIT_TYPE_CHILD_CREATE);
 
 	fsnotify_dirent(dir, dentry, FS_CREATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * fsnotify_link - new hardlink in 'inode' directory
-<<<<<<< HEAD
- * Note: We have to pass also the linked inode ptr as some filesystems leave
- *   new_dentry->d_inode NULL and instantiate inode pointer later
- */
-static inline void fsnotify_link(struct inode *dir, struct inode *inode, struct dentry *new_dentry)
-{
-	fsnotify_link_count(inode);
-	audit_inode_child(new_dentry, dir);
-
-	fsnotify(dir, FS_CREATE, inode, FSNOTIFY_EVENT_INODE, new_dentry->d_name.name, 0);
-=======
  *
  * Caller must make sure that new_dentry->d_name is stable.
  * Note: We have to pass also the linked inode ptr as some filesystems leave
@@ -454,22 +318,10 @@ static inline void fsnotify_unlink(struct inode *dir, struct dentry *dentry)
 		return;
 
 	fsnotify_delete(dir, d_inode(dentry), dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * fsnotify_mkdir - directory 'name' was created
-<<<<<<< HEAD
- */
-static inline void fsnotify_mkdir(struct inode *inode, struct dentry *dentry)
-{
-	__u32 mask = (FS_CREATE | FS_ISDIR);
-	struct inode *d_inode = dentry->d_inode;
-
-	audit_inode_child(dentry, inode);
-
-	fsnotify(inode, mask, d_inode, FSNOTIFY_EVENT_INODE, dentry->d_name.name, 0);
-=======
  *
  * Caller must make sure that dentry->d_name is stable.
  * Note: some filesystems (e.g. kernfs) leave @dentry negative and instantiate
@@ -493,7 +345,6 @@ static inline void fsnotify_rmdir(struct inode *dir, struct dentry *dentry)
 		return;
 
 	fsnotify_delete(dir, d_inode(dentry), dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -501,21 +352,7 @@ static inline void fsnotify_rmdir(struct inode *dir, struct dentry *dentry)
  */
 static inline void fsnotify_access(struct file *file)
 {
-<<<<<<< HEAD
-	struct path *path = &file->f_path;
-	struct inode *inode = path->dentry->d_inode;
-	__u32 mask = FS_ACCESS;
-
-	if (S_ISDIR(inode->i_mode))
-		mask |= FS_ISDIR;
-
-	if (!(file->f_mode & FMODE_NONOTIFY)) {
-		fsnotify_parent(path, NULL, mask);
-		fsnotify(inode, mask, path, FSNOTIFY_EVENT_PATH, NULL, 0);
-	}
-=======
 	fsnotify_file(file, FS_ACCESS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -523,21 +360,7 @@ static inline void fsnotify_access(struct file *file)
  */
 static inline void fsnotify_modify(struct file *file)
 {
-<<<<<<< HEAD
-	struct path *path = &file->f_path;
-	struct inode *inode = path->dentry->d_inode;
-	__u32 mask = FS_MODIFY;
-
-	if (S_ISDIR(inode->i_mode))
-		mask |= FS_ISDIR;
-
-	if (!(file->f_mode & FMODE_NONOTIFY)) {
-		fsnotify_parent(path, NULL, mask);
-		fsnotify(inode, mask, path, FSNOTIFY_EVENT_PATH, NULL, 0);
-	}
-=======
 	fsnotify_file(file, FS_MODIFY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -545,31 +368,12 @@ static inline void fsnotify_modify(struct file *file)
  */
 static inline void fsnotify_open(struct file *file)
 {
-<<<<<<< HEAD
-	struct path *path = &file->f_path;
-	struct path lower_path;
-	struct inode *inode = path->dentry->d_inode;
-	__u32 mask = FS_OPEN;
-
-	if (S_ISDIR(inode->i_mode))
-		mask |= FS_ISDIR;
-
-	if (path->dentry->d_op && path->dentry->d_op->d_canonical_path) {
-		path->dentry->d_op->d_canonical_path(path, &lower_path);
-		fsnotify_parent(&lower_path, NULL, mask);
-		fsnotify(lower_path.dentry->d_inode, mask, &lower_path, FSNOTIFY_EVENT_PATH, NULL, 0);
-		path_put(&lower_path);
-	}
-	fsnotify_parent(path, NULL, mask);
-	fsnotify(inode, mask, path, FSNOTIFY_EVENT_PATH, NULL, 0);
-=======
 	__u32 mask = FS_OPEN;
 
 	if (file->f_flags & __FMODE_EXEC)
 		mask |= FS_OPEN_EXEC;
 
 	fsnotify_file(file, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -577,25 +381,10 @@ static inline void fsnotify_open(struct file *file)
  */
 static inline void fsnotify_close(struct file *file)
 {
-<<<<<<< HEAD
-	struct path *path = &file->f_path;
-	struct inode *inode = file->f_path.dentry->d_inode;
-	fmode_t mode = file->f_mode;
-	__u32 mask = (mode & FMODE_WRITE) ? FS_CLOSE_WRITE : FS_CLOSE_NOWRITE;
-
-	if (S_ISDIR(inode->i_mode))
-		mask |= FS_ISDIR;
-
-	if (!(file->f_mode & FMODE_NONOTIFY)) {
-		fsnotify_parent(path, NULL, mask);
-		fsnotify(inode, mask, path, FSNOTIFY_EVENT_PATH, NULL, 0);
-	}
-=======
 	__u32 mask = (file->f_mode & FMODE_WRITE) ? FS_CLOSE_WRITE :
 						    FS_CLOSE_NOWRITE;
 
 	fsnotify_file(file, mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -603,18 +392,7 @@ static inline void fsnotify_close(struct file *file)
  */
 static inline void fsnotify_xattr(struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-	__u32 mask = FS_ATTRIB;
-
-	if (S_ISDIR(inode->i_mode))
-		mask |= FS_ISDIR;
-
-	fsnotify_parent(NULL, dentry, mask);
-	fsnotify(inode, mask, inode, FSNOTIFY_EVENT_INODE, NULL, 0);
-=======
 	fsnotify_dentry(dentry, FS_ATTRIB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -623,10 +401,6 @@ static inline void fsnotify_xattr(struct dentry *dentry)
  */
 static inline void fsnotify_change(struct dentry *dentry, unsigned int ia_valid)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u32 mask = 0;
 
 	if (ia_valid & ATTR_UID)
@@ -647,15 +421,6 @@ static inline void fsnotify_change(struct dentry *dentry, unsigned int ia_valid)
 	if (ia_valid & ATTR_MODE)
 		mask |= FS_ATTRIB;
 
-<<<<<<< HEAD
-	if (mask) {
-		if (S_ISDIR(inode->i_mode))
-			mask |= FS_ISDIR;
-
-		fsnotify_parent(NULL, dentry, mask);
-		fsnotify(inode, mask, inode, FSNOTIFY_EVENT_INODE, NULL, 0);
-	}
-=======
 	if (mask)
 		fsnotify_dentry(dentry, mask);
 }
@@ -671,7 +436,6 @@ static inline int fsnotify_sb_error(struct super_block *sb, struct inode *inode,
 
 	return fsnotify(FS_ERROR, &report, FSNOTIFY_EVENT_ERROR,
 			NULL, NULL, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif	/* _LINUX_FS_NOTIFY_H */

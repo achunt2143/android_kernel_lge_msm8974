@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* linux/drivers/mtd/maps/scx200_docflash.c
 
    Copyright (c) 2001,2002 Christer Weinigel <wingel@nano-system.com>
@@ -220,13 +217,3 @@ static void __exit cleanup_scx200_docflash(void)
 
 module_init(init_scx200_docflash);
 module_exit(cleanup_scx200_docflash);
-<<<<<<< HEAD
-
-/*
-    Local variables:
-        compile-command: "make -k -C ../../.. SUBDIRS=drivers/mtd/maps modules"
-        c-basic-offset: 8
-    End:
-*/
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

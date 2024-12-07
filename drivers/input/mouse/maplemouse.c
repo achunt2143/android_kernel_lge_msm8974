@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	SEGA Dreamcast mouse driver
  *	Based on drivers/usb/usbmouse.c
@@ -68,11 +65,7 @@ static void dc_mouse_close(struct input_dev *dev)
 }
 
 /* allow the mouse to be used */
-<<<<<<< HEAD
-static int __devinit probe_maple_mouse(struct device *dev)
-=======
 static int probe_maple_mouse(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct maple_device *mdev = to_maple_dev(dev);
 	struct maple_driver *mdrv = to_maple_driver(dev->driver);
@@ -95,10 +88,6 @@ static int probe_maple_mouse(struct device *dev)
 	mse->dev = input_dev;
 	mse->mdev = mdev;
 
-<<<<<<< HEAD
-	input_set_drvdata(input_dev, mse);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_REL);
 	input_dev->keybit[BIT_WORD(BTN_MOUSE)] = BIT_MASK(BTN_LEFT) |
 		BIT_MASK(BTN_RIGHT) | BIT_MASK(BTN_MIDDLE);
@@ -125,11 +114,7 @@ fail:
 	return error;
 }
 
-<<<<<<< HEAD
-static int __devexit remove_maple_mouse(struct device *dev)
-=======
 static int remove_maple_mouse(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct maple_device *mdev = to_maple_dev(dev);
 	struct dc_mouse *mse = maple_get_drvdata(mdev);
@@ -147,11 +132,7 @@ static struct maple_driver dc_mouse_driver = {
 	.drv = {
 		.name = "Dreamcast_mouse",
 		.probe = probe_maple_mouse,
-<<<<<<< HEAD
-		.remove = __devexit_p(remove_maple_mouse),
-=======
 		.remove = remove_maple_mouse,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

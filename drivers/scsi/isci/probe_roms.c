@@ -54,10 +54,7 @@ struct isci_orom *isci_request_oprom(struct pci_dev *pdev)
 	len = pci_biosrom_size(pdev);
 	rom = devm_kzalloc(&pdev->dev, sizeof(*rom), GFP_KERNEL);
 	if (!rom) {
-<<<<<<< HEAD
-=======
 		pci_unmap_biosrom(oprom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(&pdev->dev,
 			 "Unable to allocate memory for orom\n");
 		return NULL;
@@ -115,21 +112,6 @@ struct isci_orom *isci_request_oprom(struct pci_dev *pdev)
 	return rom;
 }
 
-<<<<<<< HEAD
-enum sci_status isci_parse_oem_parameters(struct sci_oem_params *oem,
-					  struct isci_orom *orom, int scu_index)
-{
-	/* check for valid inputs */
-	if (scu_index < 0 || scu_index >= SCI_MAX_CONTROLLERS ||
-	    scu_index > orom->hdr.num_elements || !oem)
-		return -EINVAL;
-
-	*oem = orom->ctrl[scu_index];
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct isci_orom *isci_request_firmware(struct pci_dev *pdev, const struct firmware *fw)
 {
 	struct isci_orom *orom = NULL, *data;

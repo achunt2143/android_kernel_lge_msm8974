@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000,2001,2002,2003,2004 Broadcom Corporation
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-#include <linux/init.h>
-#include <linux/kernel.h>
-#include <linux/module.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2000,2001,2002,2003,2004 Broadcom Corporation
@@ -27,15 +5,11 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/reboot.h>
 #include <linux/string.h>
 
 #include <asm/bootinfo.h>
-<<<<<<< HEAD
-=======
 #include <asm/cpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mipsregs.h>
 #include <asm/io.h>
 #include <asm/sibyte/sb1250.h>
@@ -49,10 +23,7 @@ unsigned int soc_pass;
 unsigned int soc_type;
 EXPORT_SYMBOL(soc_type);
 unsigned int periph_rev;
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(periph_rev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int zbbus_mhz;
 EXPORT_SYMBOL(zbbus_mhz);
 
@@ -63,11 +34,6 @@ static char *pass_str;
 
 static int __init setup_bcm1x80_bcm1x55(void)
 {
-<<<<<<< HEAD
-	int ret = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (soc_pass) {
 	case K_SYS_REVISION_BCM1480_S0:
 		periph_rev = 1;
@@ -96,11 +62,7 @@ static int __init setup_bcm1x80_bcm1x55(void)
 		break;
 	}
 
-<<<<<<< HEAD
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Setup code likely to be common to all SiByte platforms */
@@ -144,11 +106,7 @@ void __init bcm1480_setup(void)
 	uint64_t sys_rev;
 	int plldiv;
 
-<<<<<<< HEAD
-	sb1_pass = read_c0_prid() & 0xff;
-=======
 	sb1_pass = read_c0_prid() & PRID_REV_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sys_rev = __raw_readq(IOADDR(A_SCD_SYSTEM_REVISION));
 	soc_type = SYS_SOC_TYPE(sys_rev);
 	part_type = G_SYS_PART(sys_rev);

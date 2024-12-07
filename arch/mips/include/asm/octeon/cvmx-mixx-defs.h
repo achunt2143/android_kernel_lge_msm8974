@@ -4,11 +4,7 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
-<<<<<<< HEAD
- * Copyright (c) 2003-2010 Cavium Networks
-=======
  * Copyright (c) 2003-2012 Cavium Networks
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -51,10 +47,7 @@
 union cvmx_mixx_bist {
 	uint64_t u64;
 	struct cvmx_mixx_bist_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_6_63:58;
 		uint64_t opfdat:1;
 		uint64_t mrgdat:1;
@@ -62,10 +55,6 @@ union cvmx_mixx_bist {
 		uint64_t ipfdat:1;
 		uint64_t irfdat:1;
 		uint64_t orfdat:1;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_bist_cn52xx {
-=======
 #else
 		uint64_t orfdat:1;
 		uint64_t irfdat:1;
@@ -78,20 +67,11 @@ union cvmx_mixx_bist {
 	} s;
 	struct cvmx_mixx_bist_cn52xx {
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_4_63:60;
 		uint64_t mrqdat:1;
 		uint64_t ipfdat:1;
 		uint64_t irfdat:1;
 		uint64_t orfdat:1;
-<<<<<<< HEAD
-	} cn52xx;
-	struct cvmx_mixx_bist_cn52xx cn52xxp1;
-	struct cvmx_mixx_bist_cn52xx cn56xx;
-	struct cvmx_mixx_bist_cn52xx cn56xxp1;
-	struct cvmx_mixx_bist_s cn63xx;
-	struct cvmx_mixx_bist_s cn63xxp1;
-=======
 #else
 		uint64_t orfdat:1;
 		uint64_t irfdat:1;
@@ -100,16 +80,12 @@ union cvmx_mixx_bist {
 		uint64_t reserved_4_63:60;
 #endif
 	} cn52xx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_ctl {
 	uint64_t u64;
 	struct cvmx_mixx_ctl_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_12_63:52;
 		uint64_t ts_thresh:4;
 		uint64_t crc_strip:1;
@@ -119,10 +95,6 @@ union cvmx_mixx_ctl {
 		uint64_t lendian:1;
 		uint64_t nbtarb:1;
 		uint64_t mrq_hwm:2;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_ctl_cn52xx {
-=======
 #else
 		uint64_t mrq_hwm:2;
 		uint64_t nbtarb:1;
@@ -137,7 +109,6 @@ union cvmx_mixx_ctl {
 	} s;
 	struct cvmx_mixx_ctl_cn52xx {
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_8_63:56;
 		uint64_t crc_strip:1;
 		uint64_t busy:1;
@@ -146,14 +117,6 @@ union cvmx_mixx_ctl {
 		uint64_t lendian:1;
 		uint64_t nbtarb:1;
 		uint64_t mrq_hwm:2;
-<<<<<<< HEAD
-	} cn52xx;
-	struct cvmx_mixx_ctl_cn52xx cn52xxp1;
-	struct cvmx_mixx_ctl_cn52xx cn56xx;
-	struct cvmx_mixx_ctl_cn52xx cn56xxp1;
-	struct cvmx_mixx_ctl_s cn63xx;
-	struct cvmx_mixx_ctl_s cn63xxp1;
-=======
 #else
 		uint64_t mrq_hwm:2;
 		uint64_t nbtarb:1;
@@ -165,16 +128,12 @@ union cvmx_mixx_ctl {
 		uint64_t reserved_8_63:56;
 #endif
 	} cn52xx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_intena {
 	uint64_t u64;
 	struct cvmx_mixx_intena_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_8_63:56;
 		uint64_t tsena:1;
 		uint64_t orunena:1;
@@ -184,10 +143,6 @@ union cvmx_mixx_intena {
 		uint64_t othena:1;
 		uint64_t ivfena:1;
 		uint64_t ovfena:1;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_intena_cn52xx {
-=======
 #else
 		uint64_t ovfena:1;
 		uint64_t ivfena:1;
@@ -202,7 +157,6 @@ union cvmx_mixx_intena {
 	} s;
 	struct cvmx_mixx_intena_cn52xx {
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_7_63:57;
 		uint64_t orunena:1;
 		uint64_t irunena:1;
@@ -211,14 +165,6 @@ union cvmx_mixx_intena {
 		uint64_t othena:1;
 		uint64_t ivfena:1;
 		uint64_t ovfena:1;
-<<<<<<< HEAD
-	} cn52xx;
-	struct cvmx_mixx_intena_cn52xx cn52xxp1;
-	struct cvmx_mixx_intena_cn52xx cn56xx;
-	struct cvmx_mixx_intena_cn52xx cn56xxp1;
-	struct cvmx_mixx_intena_s cn63xx;
-	struct cvmx_mixx_intena_s cn63xxp1;
-=======
 #else
 		uint64_t ovfena:1;
 		uint64_t ivfena:1;
@@ -230,23 +176,11 @@ union cvmx_mixx_intena {
 		uint64_t reserved_7_63:57;
 #endif
 	} cn52xx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_ircnt {
 	uint64_t u64;
 	struct cvmx_mixx_ircnt_s {
-<<<<<<< HEAD
-		uint64_t reserved_20_63:44;
-		uint64_t ircnt:20;
-	} s;
-	struct cvmx_mixx_ircnt_s cn52xx;
-	struct cvmx_mixx_ircnt_s cn52xxp1;
-	struct cvmx_mixx_ircnt_s cn56xx;
-	struct cvmx_mixx_ircnt_s cn56xxp1;
-	struct cvmx_mixx_ircnt_s cn63xx;
-	struct cvmx_mixx_ircnt_s cn63xxp1;
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
 		uint64_t reserved_20_63:44;
 		uint64_t ircnt:20;
@@ -255,24 +189,11 @@ union cvmx_mixx_ircnt {
 		uint64_t reserved_20_63:44;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_irhwm {
 	uint64_t u64;
 	struct cvmx_mixx_irhwm_s {
-<<<<<<< HEAD
-		uint64_t reserved_40_63:24;
-		uint64_t ibplwm:20;
-		uint64_t irhwm:20;
-	} s;
-	struct cvmx_mixx_irhwm_s cn52xx;
-	struct cvmx_mixx_irhwm_s cn52xxp1;
-	struct cvmx_mixx_irhwm_s cn56xx;
-	struct cvmx_mixx_irhwm_s cn56xxp1;
-	struct cvmx_mixx_irhwm_s cn63xx;
-	struct cvmx_mixx_irhwm_s cn63xxp1;
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
 		uint64_t reserved_40_63:24;
 		uint64_t ibplwm:20;
@@ -283,24 +204,16 @@ union cvmx_mixx_irhwm {
 		uint64_t reserved_40_63:24;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_iring1 {
 	uint64_t u64;
 	struct cvmx_mixx_iring1_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_60_63:4;
 		uint64_t isize:20;
 		uint64_t ibase:37;
 		uint64_t reserved_0_2:3;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_iring1_cn52xx {
-=======
 #else
 		uint64_t reserved_0_2:3;
 		uint64_t ibase:37;
@@ -310,20 +223,11 @@ union cvmx_mixx_iring1 {
 	} s;
 	struct cvmx_mixx_iring1_cn52xx {
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_60_63:4;
 		uint64_t isize:20;
 		uint64_t reserved_36_39:4;
 		uint64_t ibase:33;
 		uint64_t reserved_0_2:3;
-<<<<<<< HEAD
-	} cn52xx;
-	struct cvmx_mixx_iring1_cn52xx cn52xxp1;
-	struct cvmx_mixx_iring1_cn52xx cn56xx;
-	struct cvmx_mixx_iring1_cn52xx cn56xxp1;
-	struct cvmx_mixx_iring1_s cn63xx;
-	struct cvmx_mixx_iring1_s cn63xxp1;
-=======
 #else
 		uint64_t reserved_0_2:3;
 		uint64_t ibase:33;
@@ -332,29 +236,16 @@ union cvmx_mixx_iring1 {
 		uint64_t reserved_60_63:4;
 #endif
 	} cn52xx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_iring2 {
 	uint64_t u64;
 	struct cvmx_mixx_iring2_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_52_63:12;
 		uint64_t itlptr:20;
 		uint64_t reserved_20_31:12;
 		uint64_t idbell:20;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_iring2_s cn52xx;
-	struct cvmx_mixx_iring2_s cn52xxp1;
-	struct cvmx_mixx_iring2_s cn56xx;
-	struct cvmx_mixx_iring2_s cn56xxp1;
-	struct cvmx_mixx_iring2_s cn63xx;
-	struct cvmx_mixx_iring2_s cn63xxp1;
-=======
 #else
 		uint64_t idbell:20;
 		uint64_t reserved_20_31:12;
@@ -362,16 +253,12 @@ union cvmx_mixx_iring2 {
 		uint64_t reserved_52_63:12;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_isr {
 	uint64_t u64;
 	struct cvmx_mixx_isr_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_8_63:56;
 		uint64_t ts:1;
 		uint64_t orun:1;
@@ -381,10 +268,6 @@ union cvmx_mixx_isr {
 		uint64_t orthresh:1;
 		uint64_t idblovf:1;
 		uint64_t odblovf:1;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_isr_cn52xx {
-=======
 #else
 		uint64_t odblovf:1;
 		uint64_t idblovf:1;
@@ -399,7 +282,6 @@ union cvmx_mixx_isr {
 	} s;
 	struct cvmx_mixx_isr_cn52xx {
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_7_63:57;
 		uint64_t orun:1;
 		uint64_t irun:1;
@@ -408,14 +290,6 @@ union cvmx_mixx_isr {
 		uint64_t orthresh:1;
 		uint64_t idblovf:1;
 		uint64_t odblovf:1;
-<<<<<<< HEAD
-	} cn52xx;
-	struct cvmx_mixx_isr_cn52xx cn52xxp1;
-	struct cvmx_mixx_isr_cn52xx cn56xx;
-	struct cvmx_mixx_isr_cn52xx cn56xxp1;
-	struct cvmx_mixx_isr_s cn63xx;
-	struct cvmx_mixx_isr_s cn63xxp1;
-=======
 #else
 		uint64_t odblovf:1;
 		uint64_t idblovf:1;
@@ -427,23 +301,11 @@ union cvmx_mixx_isr {
 		uint64_t reserved_7_63:57;
 #endif
 	} cn52xx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_orcnt {
 	uint64_t u64;
 	struct cvmx_mixx_orcnt_s {
-<<<<<<< HEAD
-		uint64_t reserved_20_63:44;
-		uint64_t orcnt:20;
-	} s;
-	struct cvmx_mixx_orcnt_s cn52xx;
-	struct cvmx_mixx_orcnt_s cn52xxp1;
-	struct cvmx_mixx_orcnt_s cn56xx;
-	struct cvmx_mixx_orcnt_s cn56xxp1;
-	struct cvmx_mixx_orcnt_s cn63xx;
-	struct cvmx_mixx_orcnt_s cn63xxp1;
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
 		uint64_t reserved_20_63:44;
 		uint64_t orcnt:20;
@@ -452,23 +314,11 @@ union cvmx_mixx_orcnt {
 		uint64_t reserved_20_63:44;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_orhwm {
 	uint64_t u64;
 	struct cvmx_mixx_orhwm_s {
-<<<<<<< HEAD
-		uint64_t reserved_20_63:44;
-		uint64_t orhwm:20;
-	} s;
-	struct cvmx_mixx_orhwm_s cn52xx;
-	struct cvmx_mixx_orhwm_s cn52xxp1;
-	struct cvmx_mixx_orhwm_s cn56xx;
-	struct cvmx_mixx_orhwm_s cn56xxp1;
-	struct cvmx_mixx_orhwm_s cn63xx;
-	struct cvmx_mixx_orhwm_s cn63xxp1;
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
 		uint64_t reserved_20_63:44;
 		uint64_t orhwm:20;
@@ -477,24 +327,16 @@ union cvmx_mixx_orhwm {
 		uint64_t reserved_20_63:44;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_oring1 {
 	uint64_t u64;
 	struct cvmx_mixx_oring1_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_60_63:4;
 		uint64_t osize:20;
 		uint64_t obase:37;
 		uint64_t reserved_0_2:3;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_oring1_cn52xx {
-=======
 #else
 		uint64_t reserved_0_2:3;
 		uint64_t obase:37;
@@ -504,20 +346,11 @@ union cvmx_mixx_oring1 {
 	} s;
 	struct cvmx_mixx_oring1_cn52xx {
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_60_63:4;
 		uint64_t osize:20;
 		uint64_t reserved_36_39:4;
 		uint64_t obase:33;
 		uint64_t reserved_0_2:3;
-<<<<<<< HEAD
-	} cn52xx;
-	struct cvmx_mixx_oring1_cn52xx cn52xxp1;
-	struct cvmx_mixx_oring1_cn52xx cn56xx;
-	struct cvmx_mixx_oring1_cn52xx cn56xxp1;
-	struct cvmx_mixx_oring1_s cn63xx;
-	struct cvmx_mixx_oring1_s cn63xxp1;
-=======
 #else
 		uint64_t reserved_0_2:3;
 		uint64_t obase:33;
@@ -526,29 +359,16 @@ union cvmx_mixx_oring1 {
 		uint64_t reserved_60_63:4;
 #endif
 	} cn52xx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_oring2 {
 	uint64_t u64;
 	struct cvmx_mixx_oring2_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_52_63:12;
 		uint64_t otlptr:20;
 		uint64_t reserved_20_31:12;
 		uint64_t odbell:20;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_oring2_s cn52xx;
-	struct cvmx_mixx_oring2_s cn52xxp1;
-	struct cvmx_mixx_oring2_s cn56xx;
-	struct cvmx_mixx_oring2_s cn56xxp1;
-	struct cvmx_mixx_oring2_s cn63xx;
-	struct cvmx_mixx_oring2_s cn63xxp1;
-=======
 #else
 		uint64_t odbell:20;
 		uint64_t reserved_20_31:12;
@@ -556,29 +376,16 @@ union cvmx_mixx_oring2 {
 		uint64_t reserved_52_63:12;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_remcnt {
 	uint64_t u64;
 	struct cvmx_mixx_remcnt_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_52_63:12;
 		uint64_t iremcnt:20;
 		uint64_t reserved_20_31:12;
 		uint64_t oremcnt:20;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_remcnt_s cn52xx;
-	struct cvmx_mixx_remcnt_s cn52xxp1;
-	struct cvmx_mixx_remcnt_s cn56xx;
-	struct cvmx_mixx_remcnt_s cn56xxp1;
-	struct cvmx_mixx_remcnt_s cn63xx;
-	struct cvmx_mixx_remcnt_s cn63xxp1;
-=======
 #else
 		uint64_t oremcnt:20;
 		uint64_t reserved_20_31:12;
@@ -586,27 +393,18 @@ union cvmx_mixx_remcnt {
 		uint64_t reserved_52_63:12;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_tsctl {
 	uint64_t u64;
 	struct cvmx_mixx_tsctl_s {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_21_63:43;
 		uint64_t tsavl:5;
 		uint64_t reserved_13_15:3;
 		uint64_t tstot:5;
 		uint64_t reserved_5_7:3;
 		uint64_t tscnt:5;
-<<<<<<< HEAD
-	} s;
-	struct cvmx_mixx_tsctl_s cn63xx;
-	struct cvmx_mixx_tsctl_s cn63xxp1;
-=======
 #else
 		uint64_t tscnt:5;
 		uint64_t reserved_5_7:3;
@@ -616,25 +414,17 @@ union cvmx_mixx_tsctl {
 		uint64_t reserved_21_63:43;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_mixx_tstamp {
 	uint64_t u64;
 	struct cvmx_mixx_tstamp_s {
-<<<<<<< HEAD
-		uint64_t tstamp:64;
-	} s;
-	struct cvmx_mixx_tstamp_s cn63xx;
-	struct cvmx_mixx_tstamp_s cn63xxp1;
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
 		uint64_t tstamp:64;
 #else
 		uint64_t tstamp:64;
 #endif
 	} s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

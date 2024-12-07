@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/readdir.c
  *
@@ -17,24 +14,11 @@
 #include <linux/stat.h>
 #include <linux/file.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/fsnotify.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dirent.h>
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/unistd.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-
-int vfs_readdir(struct file *file, filldir_t filler, void *buf)
-{
-	struct inode *inode = file->f_path.dentry->d_inode;
-	int res = -ENOTDIR;
-	if (!file->f_op || !file->f_op->readdir)
-=======
 #include <linux/compat.h>
 #include <linux/uaccess.h>
 
@@ -106,45 +90,22 @@ int iterate_dir(struct file *file, struct dir_context *ctx)
 	int res = -ENOTDIR;
 
 	if (!file->f_op->iterate_shared)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	res = security_file_permission(file, MAY_READ);
 	if (res)
 		goto out;
 
-<<<<<<< HEAD
-	res = mutex_lock_killable(&inode->i_mutex);
-=======
 	res = fsnotify_file_perm(file, MAY_READ);
 	if (res)
 		goto out;
 
 	res = down_read_killable(&inode->i_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res)
 		goto out;
 
 	res = -ENOENT;
 	if (!IS_DEADDIR(inode)) {
-<<<<<<< HEAD
-		res = file->f_op->readdir(file, buf, filler);
-		file_accessed(file);
-	}
-	mutex_unlock(&inode->i_mutex);
-out:
-	return res;
-}
-
-EXPORT_SYMBOL(vfs_readdir);
-
-static bool hide_name(const char *name, int namlen)
-{
-	if (namlen == 2 && !memcmp(name, "su", 2))
-		if (!su_visible())
-			return true;
-	return false;
-=======
 		ctx->pos = file->f_pos;
 		res = file->f_op->iterate_shared(file, ctx);
 		file->f_pos = ctx->pos;
@@ -193,7 +154,6 @@ static int verify_dirent_name(const char *name, int len)
 	if (memchr(name, '/', len))
 		return -EIO;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -211,21 +171,6 @@ struct old_linux_dirent {
 	unsigned long	d_ino;
 	unsigned long	d_offset;
 	unsigned short	d_namlen;
-<<<<<<< HEAD
-	char		d_name[1];
-};
-
-struct readdir_callback {
-	struct old_linux_dirent __user * dirent;
-	int result;
-	bool romnt;
-};
-
-static int fillonedir(void * __buf, const char * name, int namlen, loff_t offset,
-		      u64 ino, unsigned int d_type)
-{
-	struct readdir_callback * buf = (struct readdir_callback *) __buf;
-=======
 	char		d_name[];
 };
 
@@ -240,37 +185,10 @@ static bool fillonedir(struct dir_context *ctx, const char *name, int namlen,
 {
 	struct readdir_callback *buf =
 		container_of(ctx, struct readdir_callback, ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct old_linux_dirent __user * dirent;
 	unsigned long d_ino;
 
 	if (buf->result)
-<<<<<<< HEAD
-		return -EINVAL;
-	d_ino = ino;
-	if (sizeof(d_ino) < sizeof(ino) && d_ino != ino) {
-		buf->result = -EOVERFLOW;
-		return -EOVERFLOW;
-	}
-	if (hide_name(name, namlen) && buf->romnt)
-		return 0;
-	buf->result++;
-	dirent = buf->dirent;
-	if (!access_ok(VERIFY_WRITE, dirent,
-			(unsigned long)(dirent->d_name + namlen + 1) -
-				(unsigned long)dirent))
-		goto efault;
-	if (	__put_user(d_ino, &dirent->d_ino) ||
-		__put_user(offset, &dirent->d_offset) ||
-		__put_user(namlen, &dirent->d_namlen) ||
-		__copy_to_user(dirent->d_name, name, namlen) ||
-		__put_user(0, dirent->d_name + namlen))
-		goto efault;
-	return 0;
-efault:
-	buf->result = -EFAULT;
-	return -EFAULT;
-=======
 		return false;
 	buf->result = verify_dirent_name(name, namlen);
 	if (buf->result)
@@ -297,33 +215,12 @@ efault_end:
 efault:
 	buf->result = -EFAULT;
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(old_readdir, unsigned int, fd,
 		struct old_linux_dirent __user *, dirent, unsigned int, count)
 {
 	int error;
-<<<<<<< HEAD
-	struct file * file;
-	struct readdir_callback buf;
-
-	error = -EBADF;
-	file = fget(fd);
-	if (!file)
-		goto out;
-
-	buf.result = 0;
-	buf.dirent = dirent;
-	buf.romnt = (file->f_path.dentry->d_sb->s_flags & MS_RDONLY);
-
-	error = vfs_readdir(file, fillonedir, &buf);
-	if (buf.result)
-		error = buf.result;
-
-	fput(file);
-out:
-=======
 	struct fd f = fdget_pos(fd);
 	struct readdir_callback buf = {
 		.ctx.actor = fillonedir,
@@ -338,7 +235,6 @@ out:
 		error = buf.result;
 
 	fdput_pos(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -352,62 +248,6 @@ struct linux_dirent {
 	unsigned long	d_ino;
 	unsigned long	d_off;
 	unsigned short	d_reclen;
-<<<<<<< HEAD
-	char		d_name[1];
-};
-
-struct getdents_callback {
-	struct linux_dirent __user * current_dir;
-	struct linux_dirent __user * previous;
-	int count;
-	int error;
-	bool romnt;
-};
-
-static int filldir(void * __buf, const char * name, int namlen, loff_t offset,
-		   u64 ino, unsigned int d_type)
-{
-	struct linux_dirent __user * dirent;
-	struct getdents_callback * buf = (struct getdents_callback *) __buf;
-	unsigned long d_ino;
-	int reclen = ALIGN(offsetof(struct linux_dirent, d_name) + namlen + 2,
-		sizeof(long));
-
-	buf->error = -EINVAL;	/* only used if we fail.. */
-	if (reclen > buf->count)
-		return -EINVAL;
-	d_ino = ino;
-	if (sizeof(d_ino) < sizeof(ino) && d_ino != ino) {
-		buf->error = -EOVERFLOW;
-		return -EOVERFLOW;
-	}
-	if (hide_name(name, namlen) && buf->romnt)
-		return 0;
-	dirent = buf->previous;
-	if (dirent) {
-		if (__put_user(offset, &dirent->d_off))
-			goto efault;
-	}
-	dirent = buf->current_dir;
-	if (__put_user(d_ino, &dirent->d_ino))
-		goto efault;
-	if (__put_user(reclen, &dirent->d_reclen))
-		goto efault;
-	if (copy_to_user(dirent->d_name, name, namlen))
-		goto efault;
-	if (__put_user(0, dirent->d_name + namlen))
-		goto efault;
-	if (__put_user(d_type, (char __user *) dirent + reclen - 1))
-		goto efault;
-	buf->previous = dirent;
-	dirent = (void __user *)dirent + reclen;
-	buf->current_dir = dirent;
-	buf->count -= reclen;
-	return 0;
-efault:
-	buf->error = -EFAULT;
-	return -EFAULT;
-=======
 	char		d_name[];
 };
 
@@ -466,40 +306,11 @@ efault_end:
 efault:
 	buf->error = -EFAULT;
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(getdents, unsigned int, fd,
 		struct linux_dirent __user *, dirent, unsigned int, count)
 {
-<<<<<<< HEAD
-	struct file * file;
-	struct linux_dirent __user * lastdirent;
-	struct getdents_callback buf;
-	int error;
-
-	error = -EFAULT;
-	if (!access_ok(VERIFY_WRITE, dirent, count))
-		goto out;
-
-	error = -EBADF;
-	file = fget(fd);
-	if (!file)
-		goto out;
-
-	buf.current_dir = dirent;
-	buf.previous = NULL;
-	buf.count = count;
-	buf.error = 0;
-	buf.romnt = (file->f_path.dentry->d_sb->s_flags & MS_RDONLY);
-
-	error = vfs_readdir(file, filldir, &buf);
-	if (error >= 0)
-		error = buf.error;
-	lastdirent = buf.previous;
-	if (lastdirent) {
-		if (put_user(file->f_pos, &lastdirent->d_off))
-=======
 	struct fd f;
 	struct getdents_callback buf = {
 		.ctx.actor = filldir,
@@ -520,69 +331,15 @@ SYSCALL_DEFINE3(getdents, unsigned int, fd,
 		lastdirent = (void __user *)buf.current_dir - buf.prev_reclen;
 
 		if (put_user(buf.ctx.pos, &lastdirent->d_off))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -EFAULT;
 		else
 			error = count - buf.count;
 	}
-<<<<<<< HEAD
-	fput(file);
-out:
-=======
 	fdput_pos(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 struct getdents_callback64 {
-<<<<<<< HEAD
-	struct linux_dirent64 __user * current_dir;
-	struct linux_dirent64 __user * previous;
-	int count;
-	int error;
-	bool romnt;
-};
-
-static int filldir64(void * __buf, const char * name, int namlen, loff_t offset,
-		     u64 ino, unsigned int d_type)
-{
-	struct linux_dirent64 __user *dirent;
-	struct getdents_callback64 * buf = (struct getdents_callback64 *) __buf;
-	int reclen = ALIGN(offsetof(struct linux_dirent64, d_name) + namlen + 1,
-		sizeof(u64));
-
-	buf->error = -EINVAL;	/* only used if we fail.. */
-	if (reclen > buf->count)
-		return -EINVAL;
-	if (hide_name(name, namlen) && buf->romnt)
-		return 0;
-	dirent = buf->previous;
-	if (dirent) {
-		if (__put_user(offset, &dirent->d_off))
-			goto efault;
-	}
-	dirent = buf->current_dir;
-	if (__put_user(ino, &dirent->d_ino))
-		goto efault;
-	if (__put_user(0, &dirent->d_off))
-		goto efault;
-	if (__put_user(reclen, &dirent->d_reclen))
-		goto efault;
-	if (__put_user(d_type, &dirent->d_type))
-		goto efault;
-	if (copy_to_user(dirent->d_name, name, namlen))
-		goto efault;
-	if (__put_user(0, dirent->d_name + namlen))
-		goto efault;
-	buf->previous = dirent;
-	dirent = (void __user *)dirent + reclen;
-	buf->current_dir = dirent;
-	buf->count -= reclen;
-	return 0;
-efault:
-	buf->error = -EFAULT;
-	return -EFAULT;
-=======
 	struct dir_context ctx;
 	struct linux_dirent64 __user * current_dir;
 	int prev_reclen;
@@ -632,41 +389,11 @@ efault_end:
 efault:
 	buf->error = -EFAULT;
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(getdents64, unsigned int, fd,
 		struct linux_dirent64 __user *, dirent, unsigned int, count)
 {
-<<<<<<< HEAD
-	struct file * file;
-	struct linux_dirent64 __user * lastdirent;
-	struct getdents_callback64 buf;
-	int error;
-
-	error = -EFAULT;
-	if (!access_ok(VERIFY_WRITE, dirent, count))
-		goto out;
-
-	error = -EBADF;
-	file = fget(fd);
-	if (!file)
-		goto out;
-
-	buf.current_dir = dirent;
-	buf.previous = NULL;
-	buf.count = count;
-	buf.error = 0;
-	buf.romnt = (file->f_path.dentry->d_sb->s_flags & MS_RDONLY);
-
-	error = vfs_readdir(file, filldir64, &buf);
-	if (error >= 0)
-		error = buf.error;
-	lastdirent = buf.previous;
-	if (lastdirent) {
-		typeof(lastdirent->d_off) d_off = file->f_pos;
-		if (__put_user(d_off, &lastdirent->d_off))
-=======
 	struct fd f;
 	struct getdents_callback64 buf = {
 		.ctx.actor = filldir64,
@@ -688,17 +415,10 @@ SYSCALL_DEFINE3(getdents64, unsigned int, fd,
 
 		lastdirent = (void __user *) buf.current_dir - buf.prev_reclen;
 		if (put_user(d_off, &lastdirent->d_off))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -EFAULT;
 		else
 			error = count - buf.count;
 	}
-<<<<<<< HEAD
-	fput(file);
-out:
-	return error;
-}
-=======
 	fdput_pos(f);
 	return error;
 }
@@ -870,4 +590,3 @@ COMPAT_SYSCALL_DEFINE3(getdents, unsigned int, fd,
 	return error;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

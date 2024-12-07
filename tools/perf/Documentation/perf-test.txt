@@ -23,11 +23,6 @@ from 'perf test list'.
 
 OPTIONS
 -------
-<<<<<<< HEAD
--v::
---verbose::
-	Be more verbose.
-=======
 -s::
 --skip::
 	Tests to skip (comma separated numeric list).
@@ -42,4 +37,3 @@ OPTIONS
 
 --dso::
 	Specify a DSO for the "Symbols" test.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MTD primitives for XIP support
  *
@@ -11,13 +8,6 @@
  *
  * This XIP support for MTD has been loosely inspired
  * by an earlier patch authored by David Woodhouse.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MTD_XIP_H__
@@ -37,13 +27,9 @@
  * obviously not be running from flash.  The __xipram is therefore marking
  * those functions so they get relocated to ram.
  */
-<<<<<<< HEAD
-#define __xipram noinline __attribute__ ((__section__ (".data")))
-=======
 #ifdef CONFIG_XIP_KERNEL
 #define __xipram noinline __section(".xiptext")
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Each architecture has to provide the following macros.  They must access
@@ -103,19 +89,10 @@
 #define xip_cpu_idle()  do { } while (0)
 #endif
 
-<<<<<<< HEAD
-#else
-
-#define __xipram
-
-#endif /* CONFIG_MTD_XIP */
-
-=======
 #endif /* CONFIG_MTD_XIP */
 
 #ifndef __xipram
 #define __xipram
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_MTD_XIP_H__ */

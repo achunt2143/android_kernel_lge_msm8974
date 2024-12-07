@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sun4v_ivec.S: Sun4v interrupt vector handling.
  *
  * Copyright (C) 2006 <davem@davemloft.net>
@@ -30,8 +27,6 @@ sun4v_cpu_mondo:
 	ldxa	[%g0] ASI_SCRATCHPAD, %g4
 	sub	%g4, TRAP_PER_CPU_FAULT_INFO, %g4
 
-<<<<<<< HEAD
-=======
 	/* Get smp_processor_id() into %g3 */
 	sethi	%hi(trap_block), %g5
 	or	%g5, %lo(trap_block), %g5
@@ -47,7 +42,6 @@ sun4v_cpu_mondo:
 	add	%g3, 1, %g3
 	stx	%g3, [%g5]
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get CPU mondo queue base phys address into %g7.  */
 	ldx	[%g4 + TRAP_PER_CPU_CPU_MONDO_PA], %g7
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/nfs/nfs3proc.c
  *
@@ -22,17 +19,11 @@
 #include <linux/lockd/bind.h>
 #include <linux/nfs_mount.h>
 #include <linux/freezer.h>
-<<<<<<< HEAD
-
-#include "iostat.h"
-#include "internal.h"
-=======
 #include <linux/xattr.h>
 
 #include "iostat.h"
 #include "internal.h"
 #include "nfs3_fs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSDBG_FACILITY		NFSDBG_PROC
 
@@ -45,12 +36,8 @@ nfs3_rpc_wrapper(struct rpc_clnt *clnt, struct rpc_message *msg, int flags)
 		res = rpc_call_sync(clnt, msg, flags);
 		if (res != -EJUKEBOX)
 			break;
-<<<<<<< HEAD
-		freezable_schedule_timeout_killable(NFS_JUKEBOX_RETRY_TIME);
-=======
 		__set_current_state(TASK_KILLABLE|TASK_FREEZABLE_UNSAFE);
 		schedule_timeout(NFS_JUKEBOX_RETRY_TIME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = -ERESTARTSYS;
 	} while (!fatal_signal_pending(current));
 	return res;
@@ -63,12 +50,7 @@ nfs3_async_handle_jukebox(struct rpc_task *task, struct inode *inode)
 {
 	if (task->tk_status != -EJUKEBOX)
 		return 0;
-<<<<<<< HEAD
-	if (task->tk_status == -EJUKEBOX)
-		nfs_inc_stats(inode, NFSIOS_DELAY);
-=======
 	nfs_inc_stats(inode, NFSIOS_DELAY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task->tk_status = 0;
 	rpc_restart_call(task);
 	rpc_delay(task, NFS_JUKEBOX_RETRY_TIME);
@@ -119,11 +101,7 @@ nfs3_proc_get_root(struct nfs_server *server, struct nfs_fh *fhandle,
  */
 static int
 nfs3_proc_getattr(struct nfs_server *server, struct nfs_fh *fhandle,
-<<<<<<< HEAD
-		struct nfs_fattr *fattr)
-=======
 		struct nfs_fattr *fattr, struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rpc_message msg = {
 		.rpc_proc	= &nfs3_procedures[NFS3PROC_GETATTR],
@@ -131,12 +109,6 @@ nfs3_proc_getattr(struct nfs_server *server, struct nfs_fh *fhandle,
 		.rpc_resp	= fattr,
 	};
 	int	status;
-<<<<<<< HEAD
-
-	dprintk("NFS call  getattr\n");
-	nfs_fattr_init(fattr);
-	status = rpc_call_sync(server->client, &msg, 0);
-=======
 	unsigned short task_flags = 0;
 
 	/* Is this is an attribute revalidation, subject to softreval? */
@@ -146,7 +118,6 @@ nfs3_proc_getattr(struct nfs_server *server, struct nfs_fh *fhandle,
 	dprintk("NFS call  getattr\n");
 	nfs_fattr_init(fattr);
 	status = rpc_call_sync(server->client, &msg, task_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("NFS reply getattr: %d\n", status);
 	return status;
 }
@@ -155,11 +126,7 @@ static int
 nfs3_proc_setattr(struct dentry *dentry, struct nfs_fattr *fattr,
 			struct iattr *sattr)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nfs3_sattrargs	arg = {
 		.fh		= NFS_FH(inode),
 		.sattr		= sattr,
@@ -176,30 +143,16 @@ nfs3_proc_setattr(struct dentry *dentry, struct nfs_fattr *fattr,
 		msg.rpc_cred = nfs_file_cred(sattr->ia_file);
 	nfs_fattr_init(fattr);
 	status = rpc_call_sync(NFS_CLIENT(inode), &msg, 0);
-<<<<<<< HEAD
-	if (status == 0)
-		nfs_setattr_update_inode(inode, sattr);
-=======
 	if (status == 0) {
 		nfs_setattr_update_inode(inode, sattr, fattr);
 		if (NFS_I(inode)->cache_validity & NFS_INO_INVALID_ACL)
 			nfs_zap_acl_cache(inode);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("NFS reply setattr: %d\n", status);
 	return status;
 }
 
 static int
-<<<<<<< HEAD
-nfs3_proc_lookup(struct rpc_clnt *clnt, struct inode *dir, struct qstr *name,
-		 struct nfs_fh *fhandle, struct nfs_fattr *fattr)
-{
-	struct nfs3_diropargs	arg = {
-		.fh		= NFS_FH(dir),
-		.name		= name->name,
-		.len		= name->len
-=======
 __nfs3_proc_lookup(struct inode *dir, const char *name, size_t len,
 		   struct nfs_fh *fhandle, struct nfs_fattr *fattr,
 		   unsigned short task_flags)
@@ -208,7 +161,6 @@ __nfs3_proc_lookup(struct inode *dir, const char *name, size_t len,
 		.fh		= NFS_FH(dir),
 		.name		= name,
 		.len		= len
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct nfs3_diropres	res = {
 		.fh		= fhandle,
@@ -221,42 +173,24 @@ __nfs3_proc_lookup(struct inode *dir, const char *name, size_t len,
 	};
 	int			status;
 
-<<<<<<< HEAD
-	dprintk("NFS call  lookup %s\n", name->name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res.dir_attr = nfs_alloc_fattr();
 	if (res.dir_attr == NULL)
 		return -ENOMEM;
 
 	nfs_fattr_init(fattr);
-<<<<<<< HEAD
-	status = rpc_call_sync(NFS_CLIENT(dir), &msg, 0);
-=======
 	status = rpc_call_sync(NFS_CLIENT(dir), &msg, task_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs_refresh_inode(dir, res.dir_attr);
 	if (status >= 0 && !(fattr->valid & NFS_ATTR_FATTR)) {
 		msg.rpc_proc = &nfs3_procedures[NFS3PROC_GETATTR];
 		msg.rpc_argp = fhandle;
 		msg.rpc_resp = fattr;
-<<<<<<< HEAD
-		status = rpc_call_sync(NFS_CLIENT(dir), &msg, 0);
-=======
 		status = rpc_call_sync(NFS_CLIENT(dir), &msg, task_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	nfs_free_fattr(res.dir_attr);
 	dprintk("NFS reply lookup: %d\n", status);
 	return status;
 }
 
-<<<<<<< HEAD
-static int nfs3_proc_access(struct inode *inode, struct nfs_access_entry *entry)
-{
-	struct nfs3_accessargs	arg = {
-		.fh		= NFS_FH(inode),
-=======
 static int
 nfs3_proc_lookup(struct inode *dir, struct dentry *dentry,
 		 struct nfs_fh *fhandle, struct nfs_fattr *fattr)
@@ -293,62 +227,25 @@ static int nfs3_proc_access(struct inode *inode, struct nfs_access_entry *entry,
 	struct nfs3_accessargs	arg = {
 		.fh		= NFS_FH(inode),
 		.access		= entry->mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct nfs3_accessres	res;
 	struct rpc_message msg = {
 		.rpc_proc	= &nfs3_procedures[NFS3PROC_ACCESS],
 		.rpc_argp	= &arg,
 		.rpc_resp	= &res,
-<<<<<<< HEAD
-		.rpc_cred	= entry->cred,
-	};
-	int mode = entry->mask;
-	int status = -ENOMEM;
-
-	dprintk("NFS call  access\n");
-
-	if (mode & MAY_READ)
-		arg.access |= NFS3_ACCESS_READ;
-	if (S_ISDIR(inode->i_mode)) {
-		if (mode & MAY_WRITE)
-			arg.access |= NFS3_ACCESS_MODIFY | NFS3_ACCESS_EXTEND | NFS3_ACCESS_DELETE;
-		if (mode & MAY_EXEC)
-			arg.access |= NFS3_ACCESS_LOOKUP;
-	} else {
-		if (mode & MAY_WRITE)
-			arg.access |= NFS3_ACCESS_MODIFY | NFS3_ACCESS_EXTEND;
-		if (mode & MAY_EXEC)
-			arg.access |= NFS3_ACCESS_EXECUTE;
-	}
-
-=======
 		.rpc_cred	= cred,
 	};
 	int status = -ENOMEM;
 
 	dprintk("NFS call  access\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res.fattr = nfs_alloc_fattr();
 	if (res.fattr == NULL)
 		goto out;
 
 	status = rpc_call_sync(NFS_CLIENT(inode), &msg, 0);
 	nfs_refresh_inode(inode, res.fattr);
-<<<<<<< HEAD
-	if (status == 0) {
-		entry->mask = 0;
-		if (res.access & NFS3_ACCESS_READ)
-			entry->mask |= MAY_READ;
-		if (res.access & (NFS3_ACCESS_MODIFY | NFS3_ACCESS_EXTEND | NFS3_ACCESS_DELETE))
-			entry->mask |= MAY_WRITE;
-		if (res.access & (NFS3_ACCESS_LOOKUP|NFS3_ACCESS_EXECUTE))
-			entry->mask |= MAY_EXEC;
-	}
-=======
 	if (status == 0)
 		nfs_access_set_mask(entry, res.access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs_free_fattr(res.fattr);
 out:
 	dprintk("NFS reply access: %d\n", status);
@@ -416,27 +313,17 @@ static struct nfs3_createdata *nfs3_alloc_createdata(void)
 	return data;
 }
 
-<<<<<<< HEAD
-static int nfs3_do_create(struct inode *dir, struct dentry *dentry, struct nfs3_createdata *data)
-=======
 static struct dentry *
 nfs3_do_create(struct inode *dir, struct dentry *dentry, struct nfs3_createdata *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status;
 
 	status = rpc_call_sync(NFS_CLIENT(dir), &data->msg, 0);
 	nfs_post_op_update_inode(dir, data->res.dir_attr);
-<<<<<<< HEAD
-	if (status == 0)
-		status = nfs_instantiate(dentry, data->res.fh, data->res.fattr);
-	return status;
-=======
 	if (status != 0)
 		return ERR_PTR(status);
 
 	return nfs_add_or_obtain(dentry, data->res.fh, data->res.fattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nfs3_free_createdata(struct nfs3_createdata *data)
@@ -451,20 +338,12 @@ static int
 nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 		 int flags)
 {
-<<<<<<< HEAD
-	struct nfs3_createdata *data;
-	umode_t mode = sattr->ia_mode;
-	int status = -ENOMEM;
-
-	dprintk("NFS call  create %s\n", dentry->d_name.name);
-=======
 	struct posix_acl *default_acl, *acl;
 	struct nfs3_createdata *data;
 	struct dentry *d_alias;
 	int status = -ENOMEM;
 
 	dprintk("NFS call  create %pd\n", dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = nfs3_alloc_createdata();
 	if (data == NULL)
@@ -479,16 +358,6 @@ nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 	data->arg.create.createmode = NFS3_CREATE_UNCHECKED;
 	if (flags & O_EXCL) {
 		data->arg.create.createmode  = NFS3_CREATE_EXCLUSIVE;
-<<<<<<< HEAD
-		data->arg.create.verifier[0] = jiffies;
-		data->arg.create.verifier[1] = current->pid;
-	}
-
-	sattr->ia_mode &= ~current_umask();
-
-	for (;;) {
-		status = nfs3_do_create(dir, dentry, data);
-=======
 		data->arg.create.verifier[0] = cpu_to_be32(jiffies);
 		data->arg.create.verifier[1] = cpu_to_be32(current->pid);
 	}
@@ -500,7 +369,6 @@ nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 	for (;;) {
 		d_alias = nfs3_do_create(dir, dentry, data);
 		status = PTR_ERR_OR_ZERO(d_alias);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (status != -ENOTSUPP)
 			break;
@@ -516,25 +384,17 @@ nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 				break;
 
 			case NFS3_CREATE_UNCHECKED:
-<<<<<<< HEAD
-				goto out;
-=======
 				goto out_release_acls;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		nfs_fattr_init(data->res.dir_attr);
 		nfs_fattr_init(data->res.fattr);
 	}
 
 	if (status != 0)
-<<<<<<< HEAD
-		goto out;
-=======
 		goto out_release_acls;
 
 	if (d_alias)
 		dentry = d_alias;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* When we created the file with exclusive semantics, make
 	 * sure we set the attributes afterwards. */
@@ -550,14 +410,6 @@ nfs3_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 		 * not sure this buys us anything (and I'd have
 		 * to revamp the NFSv3 XDR code) */
 		status = nfs3_proc_setattr(dentry, data->res.fattr, sattr);
-<<<<<<< HEAD
-		nfs_post_op_update_inode(dentry->d_inode, data->res.fattr);
-		dprintk("NFS reply setattr (post-create): %d\n", status);
-		if (status != 0)
-			goto out;
-	}
-	status = nfs3_proc_set_default_acl(dir, dentry->d_inode, mode);
-=======
 		nfs_post_op_update_inode(d_inode(dentry), data->res.fattr);
 		dprintk("NFS reply setattr (post-create): %d\n", status);
 		if (status != 0)
@@ -571,7 +423,6 @@ out_dput:
 out_release_acls:
 	posix_acl_release(acl);
 	posix_acl_release(default_acl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	nfs3_free_createdata(data);
 	dprintk("NFS reply create: %d\n", status);
@@ -579,19 +430,11 @@ out:
 }
 
 static int
-<<<<<<< HEAD
-nfs3_proc_remove(struct inode *dir, struct qstr *name)
-{
-	struct nfs_removeargs arg = {
-		.fh = NFS_FH(dir),
-		.name = *name,
-=======
 nfs3_proc_remove(struct inode *dir, struct dentry *dentry)
 {
 	struct nfs_removeargs arg = {
 		.fh = NFS_FH(dir),
 		.name = dentry->d_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct nfs_removeres res;
 	struct rpc_message msg = {
@@ -601,11 +444,7 @@ nfs3_proc_remove(struct inode *dir, struct dentry *dentry)
 	};
 	int status = -ENOMEM;
 
-<<<<<<< HEAD
-	dprintk("NFS call  remove %s\n", name->name);
-=======
 	dprintk("NFS call  remove %pd2\n", dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res.dir_attr = nfs_alloc_fattr();
 	if (res.dir_attr == NULL)
 		goto out;
@@ -619,13 +458,9 @@ out:
 }
 
 static void
-<<<<<<< HEAD
-nfs3_proc_unlink_setup(struct rpc_message *msg, struct inode *dir)
-=======
 nfs3_proc_unlink_setup(struct rpc_message *msg,
 		struct dentry *dentry,
 		struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg->rpc_proc = &nfs3_procedures[NFS3PROC_REMOVE];
 }
@@ -647,13 +482,9 @@ nfs3_proc_unlink_done(struct rpc_task *task, struct inode *dir)
 }
 
 static void
-<<<<<<< HEAD
-nfs3_proc_rename_setup(struct rpc_message *msg, struct inode *dir)
-=======
 nfs3_proc_rename_setup(struct rpc_message *msg,
 		struct dentry *old_dentry,
 		struct dentry *new_dentry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg->rpc_proc = &nfs3_procedures[NFS3PROC_RENAME];
 }
@@ -679,46 +510,7 @@ nfs3_proc_rename_done(struct rpc_task *task, struct inode *old_dir,
 }
 
 static int
-<<<<<<< HEAD
-nfs3_proc_rename(struct inode *old_dir, struct qstr *old_name,
-		 struct inode *new_dir, struct qstr *new_name)
-{
-	struct nfs_renameargs	arg = {
-		.old_dir	= NFS_FH(old_dir),
-		.old_name	= old_name,
-		.new_dir	= NFS_FH(new_dir),
-		.new_name	= new_name,
-	};
-	struct nfs_renameres res;
-	struct rpc_message msg = {
-		.rpc_proc	= &nfs3_procedures[NFS3PROC_RENAME],
-		.rpc_argp	= &arg,
-		.rpc_resp	= &res,
-	};
-	int status = -ENOMEM;
-
-	dprintk("NFS call  rename %s -> %s\n", old_name->name, new_name->name);
-
-	res.old_fattr = nfs_alloc_fattr();
-	res.new_fattr = nfs_alloc_fattr();
-	if (res.old_fattr == NULL || res.new_fattr == NULL)
-		goto out;
-
-	status = rpc_call_sync(NFS_CLIENT(old_dir), &msg, 0);
-	nfs_post_op_update_inode(old_dir, res.old_fattr);
-	nfs_post_op_update_inode(new_dir, res.new_fattr);
-out:
-	nfs_free_fattr(res.old_fattr);
-	nfs_free_fattr(res.new_fattr);
-	dprintk("NFS reply rename: %d\n", status);
-	return status;
-}
-
-static int
-nfs3_proc_link(struct inode *inode, struct inode *dir, struct qstr *name)
-=======
 nfs3_proc_link(struct inode *inode, struct inode *dir, const struct qstr *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs3_linkargs	arg = {
 		.fromfh		= NFS_FH(inode),
@@ -751,29 +543,18 @@ out:
 }
 
 static int
-<<<<<<< HEAD
-nfs3_proc_symlink(struct inode *dir, struct dentry *dentry, struct page *page,
-		  unsigned int len, struct iattr *sattr)
-{
-	struct nfs3_createdata *data;
-=======
 nfs3_proc_symlink(struct inode *dir, struct dentry *dentry, struct folio *folio,
 		  unsigned int len, struct iattr *sattr)
 {
 	struct page *page = &folio->page;
 	struct nfs3_createdata *data;
 	struct dentry *d_alias;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status = -ENOMEM;
 
 	if (len > NFS3_MAXPATHLEN)
 		return -ENAMETOOLONG;
 
-<<<<<<< HEAD
-	dprintk("NFS call  symlink %s\n", dentry->d_name.name);
-=======
 	dprintk("NFS call  symlink %pd\n", dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = nfs3_alloc_createdata();
 	if (data == NULL)
@@ -786,15 +567,11 @@ nfs3_proc_symlink(struct inode *dir, struct dentry *dentry, struct folio *folio,
 	data->arg.symlink.pathlen = len;
 	data->arg.symlink.sattr = sattr;
 
-<<<<<<< HEAD
-	status = nfs3_do_create(dir, dentry, data);
-=======
 	d_alias = nfs3_do_create(dir, dentry, data);
 	status = PTR_ERR_OR_ZERO(d_alias);
 
 	if (status == 0)
 		dput(d_alias);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfs3_free_createdata(data);
 out:
@@ -805,47 +582,27 @@ out:
 static int
 nfs3_proc_mkdir(struct inode *dir, struct dentry *dentry, struct iattr *sattr)
 {
-<<<<<<< HEAD
-	struct nfs3_createdata *data;
-	umode_t mode = sattr->ia_mode;
-	int status = -ENOMEM;
-
-	dprintk("NFS call  mkdir %s\n", dentry->d_name.name);
-
-	sattr->ia_mode &= ~current_umask();
-=======
 	struct posix_acl *default_acl, *acl;
 	struct nfs3_createdata *data;
 	struct dentry *d_alias;
 	int status = -ENOMEM;
 
 	dprintk("NFS call  mkdir %pd\n", dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = nfs3_alloc_createdata();
 	if (data == NULL)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	status = posix_acl_create(dir, &sattr->ia_mode, &default_acl, &acl);
 	if (status)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->msg.rpc_proc = &nfs3_procedures[NFS3PROC_MKDIR];
 	data->arg.mkdir.fh = NFS_FH(dir);
 	data->arg.mkdir.name = dentry->d_name.name;
 	data->arg.mkdir.len = dentry->d_name.len;
 	data->arg.mkdir.sattr = sattr;
 
-<<<<<<< HEAD
-	status = nfs3_do_create(dir, dentry, data);
-	if (status != 0)
-		goto out;
-
-	status = nfs3_proc_set_default_acl(dir, dentry->d_inode, mode);
-=======
 	d_alias = nfs3_do_create(dir, dentry, data);
 	status = PTR_ERR_OR_ZERO(d_alias);
 
@@ -861,7 +618,6 @@ nfs3_proc_mkdir(struct inode *dir, struct dentry *dentry, struct iattr *sattr)
 out_release_acls:
 	posix_acl_release(acl);
 	posix_acl_release(default_acl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	nfs3_free_createdata(data);
 	dprintk("NFS reply mkdir: %d\n", status);
@@ -869,11 +625,7 @@ out:
 }
 
 static int
-<<<<<<< HEAD
-nfs3_proc_rmdir(struct inode *dir, struct qstr *name)
-=======
 nfs3_proc_rmdir(struct inode *dir, const struct qstr *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_fattr	*dir_attr;
 	struct nfs3_diropargs	arg = {
@@ -910,25 +662,6 @@ out:
  * Also note that this implementation handles both plain readdir and
  * readdirplus.
  */
-<<<<<<< HEAD
-static int
-nfs3_proc_readdir(struct dentry *dentry, struct rpc_cred *cred,
-		  u64 cookie, struct page **pages, unsigned int count, int plus)
-{
-	struct inode		*dir = dentry->d_inode;
-	__be32			*verf = NFS_I(dir)->cookieverf;
-	struct nfs3_readdirargs	arg = {
-		.fh		= NFS_FH(dir),
-		.cookie		= cookie,
-		.verf		= {verf[0], verf[1]},
-		.plus		= plus,
-		.count		= count,
-		.pages		= pages
-	};
-	struct nfs3_readdirres	res = {
-		.verf		= verf,
-		.plus		= plus
-=======
 static int nfs3_proc_readdir(struct nfs_readdir_arg *nr_arg,
 			     struct nfs_readdir_res *nr_res)
 {
@@ -943,23 +676,11 @@ static int nfs3_proc_readdir(struct nfs_readdir_arg *nr_arg,
 	struct nfs3_readdirres	res = {
 		.verf		= nr_res->verf,
 		.plus		= nr_arg->plus,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct rpc_message	msg = {
 		.rpc_proc	= &nfs3_procedures[NFS3PROC_READDIR],
 		.rpc_argp	= &arg,
 		.rpc_resp	= &res,
-<<<<<<< HEAD
-		.rpc_cred	= cred
-	};
-	int status = -ENOMEM;
-
-	if (plus)
-		msg.rpc_proc = &nfs3_procedures[NFS3PROC_READDIRPLUS];
-
-	dprintk("NFS call  readdir%s %d\n",
-			plus? "plus" : "", (unsigned int) cookie);
-=======
 		.rpc_cred	= nr_arg->cred,
 	};
 	int status = -ENOMEM;
@@ -971,7 +692,6 @@ static int nfs3_proc_readdir(struct nfs_readdir_arg *nr_arg,
 
 	dprintk("NFS call  readdir%s %llu\n", nr_arg->plus ? "plus" : "",
 		(unsigned long long)nr_arg->cookie);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res.dir_attr = nfs_alloc_fattr();
 	if (res.dir_attr == NULL)
@@ -984,13 +704,8 @@ static int nfs3_proc_readdir(struct nfs_readdir_arg *nr_arg,
 
 	nfs_free_fattr(res.dir_attr);
 out:
-<<<<<<< HEAD
-	dprintk("NFS reply readdir%s: %d\n",
-			plus? "plus" : "", status);
-=======
 	dprintk("NFS reply readdir%s: %d\n", nr_arg->plus ? "plus" : "",
 		status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -998,17 +713,6 @@ static int
 nfs3_proc_mknod(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 		dev_t rdev)
 {
-<<<<<<< HEAD
-	struct nfs3_createdata *data;
-	umode_t mode = sattr->ia_mode;
-	int status = -ENOMEM;
-
-	dprintk("NFS call  mknod %s %u:%u\n", dentry->d_name.name,
-			MAJOR(rdev), MINOR(rdev));
-
-	sattr->ia_mode &= ~current_umask();
-
-=======
 	struct posix_acl *default_acl, *acl;
 	struct nfs3_createdata *data;
 	struct dentry *d_alias;
@@ -1017,18 +721,14 @@ nfs3_proc_mknod(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 	dprintk("NFS call  mknod %pd %u:%u\n", dentry,
 			MAJOR(rdev), MINOR(rdev));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = nfs3_alloc_createdata();
 	if (data == NULL)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	status = posix_acl_create(dir, &sattr->ia_mode, &default_acl, &acl);
 	if (status)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->msg.rpc_proc = &nfs3_procedures[NFS3PROC_MKNOD];
 	data->arg.mknod.fh = NFS_FH(dir);
 	data->arg.mknod.name = dentry->d_name.name;
@@ -1051,15 +751,6 @@ nfs3_proc_mknod(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 		break;
 	default:
 		status = -EINVAL;
-<<<<<<< HEAD
-		goto out;
-	}
-
-	status = nfs3_do_create(dir, dentry, data);
-	if (status != 0)
-		goto out;
-	status = nfs3_proc_set_default_acl(dir, dentry->d_inode, mode);
-=======
 		goto out_release_acls;
 	}
 
@@ -1077,7 +768,6 @@ nfs3_proc_mknod(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
 out_release_acls:
 	posix_acl_release(acl);
 	posix_acl_release(default_acl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	nfs3_free_createdata(data);
 	dprintk("NFS reply mknod: %d\n", status);
@@ -1154,38 +844,6 @@ nfs3_proc_pathconf(struct nfs_server *server, struct nfs_fh *fhandle,
 	return status;
 }
 
-<<<<<<< HEAD
-static int nfs3_read_done(struct rpc_task *task, struct nfs_read_data *data)
-{
-	if (nfs3_async_handle_jukebox(task, data->inode))
-		return -EAGAIN;
-
-	nfs_invalidate_atime(data->inode);
-	nfs_refresh_inode(data->inode, &data->fattr);
-	return 0;
-}
-
-static void nfs3_proc_read_setup(struct nfs_read_data *data, struct rpc_message *msg)
-{
-	msg->rpc_proc = &nfs3_procedures[NFS3PROC_READ];
-}
-
-static void nfs3_proc_read_rpc_prepare(struct rpc_task *task, struct nfs_read_data *data)
-{
-	rpc_call_start(task);
-}
-
-static int nfs3_write_done(struct rpc_task *task, struct nfs_write_data *data)
-{
-	if (nfs3_async_handle_jukebox(task, data->inode))
-		return -EAGAIN;
-	if (task->tk_status >= 0)
-		nfs_post_op_update_inode_force_wcc(data->inode, data->res.fattr);
-	return 0;
-}
-
-static void nfs3_proc_write_setup(struct nfs_write_data *data, struct rpc_message *msg)
-=======
 static int nfs3_read_done(struct rpc_task *task, struct nfs_pgio_header *hdr)
 {
 	struct inode *inode = hdr->inode;
@@ -1236,56 +894,32 @@ static int nfs3_write_done(struct rpc_task *task, struct nfs_pgio_header *hdr)
 static void nfs3_proc_write_setup(struct nfs_pgio_header *hdr,
 				  struct rpc_message *msg,
 				  struct rpc_clnt **clnt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg->rpc_proc = &nfs3_procedures[NFS3PROC_WRITE];
 }
 
-<<<<<<< HEAD
-static void nfs3_proc_write_rpc_prepare(struct rpc_task *task, struct nfs_write_data *data)
-=======
 static void nfs3_proc_commit_rpc_prepare(struct rpc_task *task, struct nfs_commit_data *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	rpc_call_start(task);
 }
 
-<<<<<<< HEAD
-static int nfs3_commit_done(struct rpc_task *task, struct nfs_write_data *data)
-{
-=======
 static int nfs3_commit_done(struct rpc_task *task, struct nfs_commit_data *data)
 {
 	if (data->commit_done_cb != NULL)
 		return data->commit_done_cb(task, data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nfs3_async_handle_jukebox(task, data->inode))
 		return -EAGAIN;
 	nfs_refresh_inode(data->inode, data->res.fattr);
 	return 0;
 }
 
-<<<<<<< HEAD
-static void nfs3_proc_commit_setup(struct nfs_write_data *data, struct rpc_message *msg)
-=======
 static void nfs3_proc_commit_setup(struct nfs_commit_data *data, struct rpc_message *msg,
 				   struct rpc_clnt **clnt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	msg->rpc_proc = &nfs3_procedures[NFS3PROC_COMMIT];
 }
 
-<<<<<<< HEAD
-static int
-nfs3_proc_lock(struct file *filp, int cmd, struct file_lock *fl)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-
-	return nlmclnt_proc(NFS_SERVER(inode)->nlm_host, cmd, fl);
-}
-
-=======
 static void nfs3_nlm_alloc_call(void *data)
 {
 	struct nfs_lock_context *l_ctx = data;
@@ -1381,19 +1015,12 @@ static const struct inode_operations nfs3_file_inode_operations = {
 #endif
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct nfs_rpc_ops nfs_v3_clientops = {
 	.version	= 3,			/* protocol version */
 	.dentry_ops	= &nfs_dentry_operations,
 	.dir_inode_ops	= &nfs3_dir_inode_operations,
 	.file_inode_ops	= &nfs3_file_inode_operations,
 	.file_ops	= &nfs_file_operations,
-<<<<<<< HEAD
-	.getroot	= nfs3_proc_get_root,
-	.getattr	= nfs3_proc_getattr,
-	.setattr	= nfs3_proc_setattr,
-	.lookup		= nfs3_proc_lookup,
-=======
 	.nlmclnt_ops	= &nlmclnt_fl_close_lock_ops,
 	.getroot	= nfs3_proc_get_root,
 	.submount	= nfs_submount,
@@ -1402,7 +1029,6 @@ const struct nfs_rpc_ops nfs_v3_clientops = {
 	.setattr	= nfs3_proc_setattr,
 	.lookup		= nfs3_proc_lookup,
 	.lookupp	= nfs3_proc_lookupp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.access		= nfs3_proc_access,
 	.readlink	= nfs3_proc_readlink,
 	.create		= nfs3_proc_create,
@@ -1410,10 +1036,6 @@ const struct nfs_rpc_ops nfs_v3_clientops = {
 	.unlink_setup	= nfs3_proc_unlink_setup,
 	.unlink_rpc_prepare = nfs3_proc_unlink_rpc_prepare,
 	.unlink_done	= nfs3_proc_unlink_done,
-<<<<<<< HEAD
-	.rename		= nfs3_proc_rename,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rename_setup	= nfs3_proc_rename_setup,
 	.rename_rpc_prepare = nfs3_proc_rename_rpc_prepare,
 	.rename_done	= nfs3_proc_rename_done,
@@ -1427,20 +1049,6 @@ const struct nfs_rpc_ops nfs_v3_clientops = {
 	.fsinfo		= nfs3_proc_fsinfo,
 	.pathconf	= nfs3_proc_pathconf,
 	.decode_dirent	= nfs3_decode_dirent,
-<<<<<<< HEAD
-	.read_setup	= nfs3_proc_read_setup,
-	.read_rpc_prepare = nfs3_proc_read_rpc_prepare,
-	.read_done	= nfs3_read_done,
-	.write_setup	= nfs3_proc_write_setup,
-	.write_rpc_prepare = nfs3_proc_write_rpc_prepare,
-	.write_done	= nfs3_write_done,
-	.commit_setup	= nfs3_proc_commit_setup,
-	.commit_done	= nfs3_commit_done,
-	.lock		= nfs3_proc_lock,
-	.clear_acl_cache = nfs3_forget_cached_acls,
-	.close_context	= nfs_close_context,
-	.init_client	= nfs_init_client,
-=======
 	.pgio_rpc_prepare = nfs3_proc_pgio_rpc_prepare,
 	.read_setup	= nfs3_proc_read_setup,
 	.read_done	= nfs3_read_done,
@@ -1458,5 +1066,4 @@ const struct nfs_rpc_ops nfs_v3_clientops = {
 	.free_client	= nfs_free_client,
 	.create_server	= nfs3_create_server,
 	.clone_server	= nfs3_clone_server,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

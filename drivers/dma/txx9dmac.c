@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the TXx9 SoC DMA Controller
  *
  * Copyright (C) 2009 Atsushi Nemoto
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
@@ -83,11 +73,7 @@ static void channel64_write_CHAR(const struct txx9dmac_chan *dc, dma_addr_t val)
 
 static void channel64_clear_CHAR(const struct txx9dmac_chan *dc)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_32BIT) && !defined(CONFIG_64BIT_PHYS_ADDR)
-=======
 #if defined(CONFIG_32BIT) && !defined(CONFIG_PHYS_ADDR_T_64BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	channel64_writel(dc, CHAR, 0);
 	channel64_writel(dc, __pad_CHAR, 0);
 #else
@@ -338,10 +324,6 @@ static void txx9dmac_reset_chan(struct txx9dmac_chan *dc)
 	channel_writel(dc, SAIR, 0);
 	channel_writel(dc, DAIR, 0);
 	channel_writel(dc, CCR, 0);
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Called with dc->lock held and bh disabled */
@@ -417,69 +399,25 @@ static void
 txx9dmac_descriptor_complete(struct txx9dmac_chan *dc,
 			     struct txx9dmac_desc *desc)
 {
-<<<<<<< HEAD
-	dma_async_tx_callback callback;
-	void *param;
-	struct dma_async_tx_descriptor *txd = &desc->txd;
-	struct txx9dmac_slave *ds = dc->chan.private;
-=======
 	struct dmaengine_desc_callback cb;
 	struct dma_async_tx_descriptor *txd = &desc->txd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_vdbg(chan2dev(&dc->chan), "descriptor %u %p complete\n",
 		 txd->cookie, desc);
 
 	dma_cookie_complete(txd);
-<<<<<<< HEAD
-	callback = txd->callback;
-	param = txd->callback_param;
-=======
 	dmaengine_desc_get_callback(txd, &cb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txx9dmac_sync_desc_for_cpu(dc, desc);
 	list_splice_init(&desc->tx_list, &dc->free_list);
 	list_move(&desc->desc_node, &dc->free_list);
 
-<<<<<<< HEAD
-	if (!ds) {
-		dma_addr_t dmaaddr;
-		if (!(txd->flags & DMA_COMPL_SKIP_DEST_UNMAP)) {
-			dmaaddr = is_dmac64(dc) ?
-				desc->hwdesc.DAR : desc->hwdesc32.DAR;
-			if (txd->flags & DMA_COMPL_DEST_UNMAP_SINGLE)
-				dma_unmap_single(chan2parent(&dc->chan),
-					dmaaddr, desc->len, DMA_FROM_DEVICE);
-			else
-				dma_unmap_page(chan2parent(&dc->chan),
-					dmaaddr, desc->len, DMA_FROM_DEVICE);
-		}
-		if (!(txd->flags & DMA_COMPL_SKIP_SRC_UNMAP)) {
-			dmaaddr = is_dmac64(dc) ?
-				desc->hwdesc.SAR : desc->hwdesc32.SAR;
-			if (txd->flags & DMA_COMPL_SRC_UNMAP_SINGLE)
-				dma_unmap_single(chan2parent(&dc->chan),
-					dmaaddr, desc->len, DMA_TO_DEVICE);
-			else
-				dma_unmap_page(chan2parent(&dc->chan),
-					dmaaddr, desc->len, DMA_TO_DEVICE);
-		}
-	}
-
-=======
 	dma_descriptor_unmap(txd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The API requires that no submissions are done from a
 	 * callback, so we don't need to drop the lock here
 	 */
-<<<<<<< HEAD
-	if (callback)
-		callback(param);
-=======
 	dmaengine_desc_callback_invoke(&cb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_run_dependencies(txd);
 }
 
@@ -663,21 +601,13 @@ scan_done:
 	}
 }
 
-<<<<<<< HEAD
-static void txx9dmac_chan_tasklet(unsigned long data)
-=======
 static void txx9dmac_chan_tasklet(struct tasklet_struct *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int irq;
 	u32 csr;
 	struct txx9dmac_chan *dc;
 
-<<<<<<< HEAD
-	dc = (struct txx9dmac_chan *)data;
-=======
 	dc = from_tasklet(dc, t, tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	csr = channel_readl(dc, CSR);
 	dev_vdbg(chan2dev(&dc->chan), "tasklet: status=%x\n", csr);
 
@@ -708,21 +638,13 @@ static irqreturn_t txx9dmac_chan_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static void txx9dmac_tasklet(unsigned long data)
-=======
 static void txx9dmac_tasklet(struct tasklet_struct *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int irq;
 	u32 csr;
 	struct txx9dmac_chan *dc;
 
-<<<<<<< HEAD
-	struct txx9dmac_dev *ddev = (struct txx9dmac_dev *)data;
-=======
 	struct txx9dmac_dev *ddev = from_tasklet(ddev, t, tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mcr;
 	int i;
 
@@ -972,24 +894,12 @@ txx9dmac_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 	return &first->txd;
 }
 
-<<<<<<< HEAD
-static int txx9dmac_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
-			    unsigned long arg)
-=======
 static int txx9dmac_terminate_all(struct dma_chan *chan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct txx9dmac_chan *dc = to_txx9dmac_chan(chan);
 	struct txx9dmac_desc *desc, *_desc;
 	LIST_HEAD(list);
 
-<<<<<<< HEAD
-	/* Only supports DMA_TERMINATE_ALL */
-	if (cmd != DMA_TERMINATE_ALL)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_vdbg(chan2dev(chan), "terminate_all\n");
 	spin_lock_bh(&dc->lock);
 
@@ -1016,17 +926,6 @@ txx9dmac_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 	enum dma_status ret;
 
 	ret = dma_cookie_status(chan, cookie, txstate);
-<<<<<<< HEAD
-	if (ret != DMA_SUCCESS) {
-		spin_lock_bh(&dc->lock);
-		txx9dmac_scan_descriptors(dc);
-		spin_unlock_bh(&dc->lock);
-
-		ret = dma_cookie_status(chan, cookie, txstate);
-	}
-
-	return ret;
-=======
 	if (ret == DMA_COMPLETE)
 		return DMA_COMPLETE;
 
@@ -1035,7 +934,6 @@ txx9dmac_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 	spin_unlock_bh(&dc->lock);
 
 	return dma_cookie_status(chan, cookie, txstate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void txx9dmac_chain_dynamic(struct txx9dmac_chan *dc,
@@ -1052,10 +950,6 @@ static void txx9dmac_chain_dynamic(struct txx9dmac_chan *dc,
 	dma_sync_single_for_device(chan2parent(&dc->chan),
 				   prev->txd.phys, ddev->descsize,
 				   DMA_TO_DEVICE);
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(channel_readl(dc, CSR) & TXX9_DMA_CSR_CHNEN) &&
 	    channel_read_CHAR(dc) == prev->txd.phys)
 		/* Restart chain DMA */
@@ -1181,24 +1075,14 @@ static void txx9dmac_free_chan_resources(struct dma_chan *chan)
 static void txx9dmac_off(struct txx9dmac_dev *ddev)
 {
 	dma_writel(ddev, MCR, 0);
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init txx9dmac_chan_probe(struct platform_device *pdev)
 {
-<<<<<<< HEAD
-	struct txx9dmac_chan_platform_data *cpdata = pdev->dev.platform_data;
-	struct platform_device *dmac_dev = cpdata->dmac_dev;
-	struct txx9dmac_platform_data *pdata = dmac_dev->dev.platform_data;
-=======
 	struct txx9dmac_chan_platform_data *cpdata =
 			dev_get_platdata(&pdev->dev);
 	struct platform_device *dmac_dev = cpdata->dmac_dev;
 	struct txx9dmac_platform_data *pdata = dev_get_platdata(&dmac_dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct txx9dmac_chan *dc;
 	int err;
 	int ch = pdev->id % TXX9_DMA_MAX_NR_CHANNELS;
@@ -1211,11 +1095,7 @@ static int __init txx9dmac_chan_probe(struct platform_device *pdev)
 	dc->dma.dev = &pdev->dev;
 	dc->dma.device_alloc_chan_resources = txx9dmac_alloc_chan_resources;
 	dc->dma.device_free_chan_resources = txx9dmac_free_chan_resources;
-<<<<<<< HEAD
-	dc->dma.device_control = txx9dmac_control;
-=======
 	dc->dma.device_terminate_all = txx9dmac_terminate_all;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dc->dma.device_tx_status = txx9dmac_tx_status;
 	dc->dma.device_issue_pending = txx9dmac_issue_pending;
 	if (pdata && pdata->memcpy_chan == ch) {
@@ -1233,12 +1113,7 @@ static int __init txx9dmac_chan_probe(struct platform_device *pdev)
 		irq = platform_get_irq(pdev, 0);
 		if (irq < 0)
 			return irq;
-<<<<<<< HEAD
-		tasklet_init(&dc->tasklet, txx9dmac_chan_tasklet,
-				(unsigned long)dc);
-=======
 		tasklet_setup(&dc->tasklet, txx9dmac_chan_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dc->irq = irq;
 		err = devm_request_irq(&pdev->dev, dc->irq,
 			txx9dmac_chan_interrupt, 0, dev_name(&pdev->dev), dc);
@@ -1276,17 +1151,6 @@ static int __init txx9dmac_chan_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __exit txx9dmac_chan_remove(struct platform_device *pdev)
-{
-	struct txx9dmac_chan *dc = platform_get_drvdata(pdev);
-
-	dma_async_device_unregister(&dc->dma);
-	if (dc->irq >= 0)
-		tasklet_kill(&dc->tasklet);
-	dc->ddev->chan[pdev->id % TXX9_DMA_MAX_NR_CHANNELS] = NULL;
-	return 0;
-=======
 static void txx9dmac_chan_remove(struct platform_device *pdev)
 {
 	struct txx9dmac_chan *dc = platform_get_drvdata(pdev);
@@ -1298,16 +1162,11 @@ static void txx9dmac_chan_remove(struct platform_device *pdev)
 		tasklet_kill(&dc->tasklet);
 	}
 	dc->ddev->chan[pdev->id % TXX9_DMA_MAX_NR_CHANNELS] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init txx9dmac_probe(struct platform_device *pdev)
 {
-<<<<<<< HEAD
-	struct txx9dmac_platform_data *pdata = pdev->dev.platform_data;
-=======
 	struct txx9dmac_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *io;
 	struct txx9dmac_dev *ddev;
 	u32 mcr;
@@ -1339,12 +1198,7 @@ static int __init txx9dmac_probe(struct platform_device *pdev)
 
 	ddev->irq = platform_get_irq(pdev, 0);
 	if (ddev->irq >= 0) {
-<<<<<<< HEAD
-		tasklet_init(&ddev->tasklet, txx9dmac_tasklet,
-				(unsigned long)ddev);
-=======
 		tasklet_setup(&ddev->tasklet, txx9dmac_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = devm_request_irq(&pdev->dev, ddev->irq,
 			txx9dmac_interrupt, 0, dev_name(&pdev->dev), ddev);
 		if (err)
@@ -1360,25 +1214,15 @@ static int __init txx9dmac_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __exit txx9dmac_remove(struct platform_device *pdev)
-=======
 static void txx9dmac_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct txx9dmac_dev *ddev = platform_get_drvdata(pdev);
 
 	txx9dmac_off(ddev);
-<<<<<<< HEAD
-	if (ddev->irq >= 0)
-		tasklet_kill(&ddev->tasklet);
-	return 0;
-=======
 	if (ddev->irq >= 0) {
 		devm_free_irq(&pdev->dev, ddev->irq, ddev);
 		tasklet_kill(&ddev->tasklet);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void txx9dmac_shutdown(struct platform_device *pdev)
@@ -1390,12 +1234,7 @@ static void txx9dmac_shutdown(struct platform_device *pdev)
 
 static int txx9dmac_suspend_noirq(struct device *dev)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(dev);
-	struct txx9dmac_dev *ddev = platform_get_drvdata(pdev);
-=======
 	struct txx9dmac_dev *ddev = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txx9dmac_off(ddev);
 	return 0;
@@ -1403,14 +1242,8 @@ static int txx9dmac_suspend_noirq(struct device *dev)
 
 static int txx9dmac_resume_noirq(struct device *dev)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(dev);
-	struct txx9dmac_dev *ddev = platform_get_drvdata(pdev);
-	struct txx9dmac_platform_data *pdata = pdev->dev.platform_data;
-=======
 	struct txx9dmac_dev *ddev = dev_get_drvdata(dev);
 	struct txx9dmac_platform_data *pdata = dev_get_platdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mcr;
 
 	mcr = TXX9_DMA_MCR_MSTEN | MCR_LE;
@@ -1427,22 +1260,14 @@ static const struct dev_pm_ops txx9dmac_dev_pm_ops = {
 };
 
 static struct platform_driver txx9dmac_chan_driver = {
-<<<<<<< HEAD
-	.remove		= __exit_p(txx9dmac_chan_remove),
-=======
 	.remove_new	= txx9dmac_chan_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name	= "txx9dmac-chan",
 	},
 };
 
 static struct platform_driver txx9dmac_driver = {
-<<<<<<< HEAD
-	.remove		= __exit_p(txx9dmac_remove),
-=======
 	.remove_new	= txx9dmac_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= txx9dmac_shutdown,
 	.driver = {
 		.name	= "txx9dmac",

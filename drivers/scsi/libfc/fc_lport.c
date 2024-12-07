@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2007 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright(c) 2007 Intel Corporation. All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -103,29 +84,19 @@
 #include <scsi/fc/fc_gs.h>
 
 #include <scsi/libfc.h>
-<<<<<<< HEAD
-#include <scsi/fc_encode.h>
-#include <linux/scatterlist.h>
-
-=======
 #include <linux/scatterlist.h>
 
 #include "fc_encode.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fc_libfc.h"
 
 /* Fabric IDs to use for point-to-point mode, chosen on whims. */
 #define FC_LOCAL_PTP_FID_LO   0x010101
 #define FC_LOCAL_PTP_FID_HI   0x010102
 
-<<<<<<< HEAD
-#define	DNS_DELAY	      3 /* Discovery delay after RSCN (in seconds)*/
-=======
 #define	DNS_DELAY		3 /* Discovery delay after RSCN (in seconds)*/
 #define	MAX_CT_PAYLOAD		2048
 #define	DISCOVERED_PORTS	4
 #define	NUMBER_OF_PORTS		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void fc_lport_error(struct fc_lport *, struct fc_frame *);
 
@@ -169,11 +140,7 @@ static const char *fc_lport_state_names[] = {
  * @offset:   The offset into the response data
  */
 struct fc_bsg_info {
-<<<<<<< HEAD
-	struct fc_bsg_job *job;
-=======
 	struct bsg_job *job;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport;
 	u16 rsp_code;
 	struct scatterlist *sg;
@@ -224,11 +191,7 @@ static void fc_lport_rport_callback(struct fc_lport *lport,
 				     "in the DNS or FDMI state, it's in the "
 				     "%d state", rdata->ids.port_id,
 				     lport->state);
-<<<<<<< HEAD
-			lport->tt.rport_logoff(rdata);
-=======
 			fc_rport_logoff(rdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case RPORT_EV_LOGO:
@@ -270,14 +233,6 @@ static void fc_lport_ptp_setup(struct fc_lport *lport,
 			       u32 remote_fid, u64 remote_wwpn,
 			       u64 remote_wwnn)
 {
-<<<<<<< HEAD
-	mutex_lock(&lport->disc.disc_mutex);
-	if (lport->ptp_rdata) {
-		lport->tt.rport_logoff(lport->ptp_rdata);
-		kref_put(&lport->ptp_rdata->kref, lport->tt.rport_destroy);
-	}
-	lport->ptp_rdata = lport->tt.rport_create(lport, remote_fid);
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
 	if (lport->ptp_rdata) {
@@ -292,17 +247,12 @@ static void fc_lport_ptp_setup(struct fc_lport *lport,
 		mutex_unlock(&lport->disc.disc_mutex);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kref_get(&lport->ptp_rdata->kref);
 	lport->ptp_rdata->ids.port_name = remote_wwpn;
 	lport->ptp_rdata->ids.node_name = remote_wwnn;
 	mutex_unlock(&lport->disc.disc_mutex);
 
-<<<<<<< HEAD
-	lport->tt.rport_login(lport->ptp_rdata);
-=======
 	fc_rport_login(lport->ptp_rdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fc_lport_enter_ready(lport);
 }
@@ -348,54 +298,12 @@ EXPORT_SYMBOL(fc_get_host_speed);
  */
 struct fc_host_statistics *fc_get_host_stats(struct Scsi_Host *shost)
 {
-<<<<<<< HEAD
-	struct fc_host_statistics *fcoe_stats;
-	struct fc_lport *lport = shost_priv(shost);
-	struct timespec v0, v1;
-=======
 	struct fc_host_statistics *fc_stats;
 	struct fc_lport *lport = shost_priv(shost);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cpu;
 	u64 fcp_in_bytes = 0;
 	u64 fcp_out_bytes = 0;
 
-<<<<<<< HEAD
-	fcoe_stats = &lport->host_stats;
-	memset(fcoe_stats, 0, sizeof(struct fc_host_statistics));
-
-	jiffies_to_timespec(jiffies, &v0);
-	jiffies_to_timespec(lport->boot_time, &v1);
-	fcoe_stats->seconds_since_last_reset = (v0.tv_sec - v1.tv_sec);
-
-	for_each_possible_cpu(cpu) {
-		struct fcoe_dev_stats *stats;
-
-		stats = per_cpu_ptr(lport->dev_stats, cpu);
-
-		fcoe_stats->tx_frames += stats->TxFrames;
-		fcoe_stats->tx_words += stats->TxWords;
-		fcoe_stats->rx_frames += stats->RxFrames;
-		fcoe_stats->rx_words += stats->RxWords;
-		fcoe_stats->error_frames += stats->ErrorFrames;
-		fcoe_stats->invalid_crc_count += stats->InvalidCRCCount;
-		fcoe_stats->fcp_input_requests += stats->InputRequests;
-		fcoe_stats->fcp_output_requests += stats->OutputRequests;
-		fcoe_stats->fcp_control_requests += stats->ControlRequests;
-		fcp_in_bytes += stats->InputBytes;
-		fcp_out_bytes += stats->OutputBytes;
-		fcoe_stats->link_failure_count += stats->LinkFailureCount;
-	}
-	fcoe_stats->fcp_input_megabytes = div_u64(fcp_in_bytes, 1000000);
-	fcoe_stats->fcp_output_megabytes = div_u64(fcp_out_bytes, 1000000);
-	fcoe_stats->lip_count = -1;
-	fcoe_stats->nos_count = -1;
-	fcoe_stats->loss_of_sync_count = -1;
-	fcoe_stats->loss_of_signal_count = -1;
-	fcoe_stats->prim_seq_protocol_err_count = -1;
-	fcoe_stats->dumped_frames = -1;
-	return fcoe_stats;
-=======
 	fc_stats = &lport->host_stats;
 	memset(fc_stats, 0, sizeof(struct fc_host_statistics));
 
@@ -435,7 +343,6 @@ struct fc_host_statistics *fc_get_host_stats(struct Scsi_Host *shost)
 	fc_exch_update_stats(lport);
 
 	return fc_stats;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(fc_get_host_stats);
 
@@ -492,18 +399,6 @@ static void fc_lport_add_fc4_type(struct fc_lport *lport, enum fc_fh_type type)
  * fc_lport_recv_rlir_req() - Handle received Registered Link Incident Report.
  * @lport: Fibre Channel local port receiving the RLIR
  * @fp:	   The RLIR request frame
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this function.
- */
-static void fc_lport_recv_rlir_req(struct fc_lport *lport, struct fc_frame *fp)
-{
-	FC_LPORT_DBG(lport, "Received RLIR request while in state %s\n",
-		     fc_lport_state(lport));
-
-	lport->tt.seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
-=======
  */
 static void fc_lport_recv_rlir_req(struct fc_lport *lport, struct fc_frame *fp)
 {
@@ -513,21 +408,13 @@ static void fc_lport_recv_rlir_req(struct fc_lport *lport, struct fc_frame *fp)
 		     fc_lport_state(lport));
 
 	fc_seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_frame_free(fp);
 }
 
 /**
  * fc_lport_recv_echo_req() - Handle received ECHO request
  * @lport: The local port receiving the ECHO
-<<<<<<< HEAD
- * @fp:	   ECHO request frame
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this function.
-=======
  * @in_fp: ECHO request frame
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_recv_echo_req(struct fc_lport *lport,
 				   struct fc_frame *in_fp)
@@ -537,11 +424,8 @@ static void fc_lport_recv_echo_req(struct fc_lport *lport,
 	void *pp;
 	void *dp;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Received ECHO request while in state %s\n",
 		     fc_lport_state(lport));
 
@@ -565,14 +449,7 @@ static void fc_lport_recv_echo_req(struct fc_lport *lport,
 /**
  * fc_lport_recv_rnid_req() - Handle received Request Node ID data request
  * @lport: The local port receiving the RNID
-<<<<<<< HEAD
- * @fp:	   The RNID request frame
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this function.
-=======
  * @in_fp: The RNID request frame
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_recv_rnid_req(struct fc_lport *lport,
 				   struct fc_frame *in_fp)
@@ -588,11 +465,8 @@ static void fc_lport_recv_rnid_req(struct fc_lport *lport,
 	u8 fmt;
 	size_t len;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Received RNID request while in state %s\n",
 		     fc_lport_state(lport));
 
@@ -600,11 +474,7 @@ static void fc_lport_recv_rnid_req(struct fc_lport *lport,
 	if (!req) {
 		rjt_data.reason = ELS_RJT_LOGIC;
 		rjt_data.explan = ELS_EXPL_NONE;
-<<<<<<< HEAD
-		lport->tt.seq_els_rsp_send(in_fp, ELS_LS_RJT, &rjt_data);
-=======
 		fc_seq_els_rsp_send(in_fp, ELS_LS_RJT, &rjt_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		fmt = req->rnid_fmt;
 		len = sizeof(*rp);
@@ -638,22 +508,12 @@ static void fc_lport_recv_rnid_req(struct fc_lport *lport,
  * fc_lport_recv_logo_req() - Handle received fabric LOGO request
  * @lport: The local port receiving the LOGO
  * @fp:	   The LOGO request frame
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is exected to be held before calling
- * this function.
- */
-static void fc_lport_recv_logo_req(struct fc_lport *lport, struct fc_frame *fp)
-{
-	lport->tt.seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
-=======
  */
 static void fc_lport_recv_logo_req(struct fc_lport *lport, struct fc_frame *fp)
 {
 	lockdep_assert_held(&lport->lp_mutex);
 
 	fc_seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_lport_enter_reset(lport);
 	fc_frame_free(fp);
 }
@@ -685,19 +545,11 @@ EXPORT_SYMBOL(fc_fabric_login);
 /**
  * __fc_linkup() - Handler for transport linkup events
  * @lport: The lport whose link is up
-<<<<<<< HEAD
- *
- * Locking: must be called with the lp_mutex held
- */
-void __fc_linkup(struct fc_lport *lport)
-{
-=======
  */
 void __fc_linkup(struct fc_lport *lport)
 {
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lport->link_up) {
 		lport->link_up = 1;
 
@@ -724,19 +576,11 @@ EXPORT_SYMBOL(fc_linkup);
 /**
  * __fc_linkdown() - Handler for transport linkdown events
  * @lport: The lport whose link is down
-<<<<<<< HEAD
- *
- * Locking: must be called with the lp_mutex held
- */
-void __fc_linkdown(struct fc_lport *lport)
-{
-=======
  */
 void __fc_linkdown(struct fc_lport *lport)
 {
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lport->link_up) {
 		lport->link_up = 0;
 		fc_lport_enter_reset(lport);
@@ -771,15 +615,9 @@ int fc_fabric_logoff(struct fc_lport *lport)
 	lport->tt.disc_stop_final(lport);
 	mutex_lock(&lport->lp_mutex);
 	if (lport->dns_rdata)
-<<<<<<< HEAD
-		lport->tt.rport_logoff(lport->dns_rdata);
-	mutex_unlock(&lport->lp_mutex);
-	lport->tt.rport_flush_queue();
-=======
 		fc_rport_logoff(lport->dns_rdata);
 	mutex_unlock(&lport->lp_mutex);
 	fc_rport_flush_queue();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&lport->lp_mutex);
 	fc_lport_enter_logo(lport);
 	mutex_unlock(&lport->lp_mutex);
@@ -809,10 +647,7 @@ int fc_lport_destroy(struct fc_lport *lport)
 	lport->tt.fcp_abort_io(lport);
 	lport->tt.disc_stop_final(lport);
 	lport->tt.exch_mgr_reset(lport, 0, 0);
-<<<<<<< HEAD
-=======
 	cancel_delayed_work_sync(&lport->retry_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_fc4_del_lport(lport);
 	return 0;
 }
@@ -877,16 +712,6 @@ static void fc_lport_disc_callback(struct fc_lport *lport,
 }
 
 /**
-<<<<<<< HEAD
- * fc_rport_enter_ready() - Enter the ready state and start discovery
- * @lport: The local port that is ready
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
- */
-static void fc_lport_enter_ready(struct fc_lport *lport)
-{
-=======
  * fc_lport_enter_ready() - Enter the ready state and start discovery
  * @lport: The local port that is ready
  */
@@ -894,7 +719,6 @@ static void fc_lport_enter_ready(struct fc_lport *lport)
 {
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered READY from state %s\n",
 		     fc_lport_state(lport));
 
@@ -912,21 +736,12 @@ static void fc_lport_enter_ready(struct fc_lport *lport)
  * @lport: The local port which will have its Port ID set.
  * @port_id: The new port ID.
  * @fp: The frame containing the incoming request, or NULL.
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this function.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_set_port_id(struct fc_lport *lport, u32 port_id,
 				 struct fc_frame *fp)
 {
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port_id)
 		printk(KERN_INFO "host%d: Assigned Port ID %6.6x\n",
 		       lport->host->host_no, port_id);
@@ -941,11 +756,7 @@ static void fc_lport_set_port_id(struct fc_lport *lport, u32 port_id,
 }
 
 /**
-<<<<<<< HEAD
- * fc_lport_set_port_id() - set the local port Port ID for point-to-multipoint
-=======
  * fc_lport_set_local_id() - set the local port Port ID for point-to-multipoint
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @lport: The local port which will have its Port ID set.
  * @port_id: The new port ID.
  *
@@ -980,12 +791,6 @@ EXPORT_SYMBOL(fc_lport_set_local_id);
  * A received FLOGI request indicates a point-to-point connection.
  * Accept it with the common service parameters indicating our N port.
  * Set up to do a PLOGI if we have the higher-number WWPN.
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this function.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_recv_flogi_req(struct fc_lport *lport,
 				    struct fc_frame *rx_fp)
@@ -998,11 +803,8 @@ static void fc_lport_recv_flogi_req(struct fc_lport *lport,
 	u32 remote_fid;
 	u32 local_fid;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Received FLOGI request while in state %s\n",
 		     fc_lport_state(lport));
 
@@ -1074,11 +876,6 @@ out:
 static void fc_lport_recv_els_req(struct fc_lport *lport,
 				  struct fc_frame *fp)
 {
-<<<<<<< HEAD
-	void (*recv)(struct fc_lport *, struct fc_frame *);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&lport->lp_mutex);
 
 	/*
@@ -1092,33 +889,6 @@ static void fc_lport_recv_els_req(struct fc_lport *lport,
 		/*
 		 * Check opcode.
 		 */
-<<<<<<< HEAD
-		recv = lport->tt.rport_recv_req;
-		switch (fc_frame_payload_op(fp)) {
-		case ELS_FLOGI:
-			if (!lport->point_to_multipoint)
-				recv = fc_lport_recv_flogi_req;
-			break;
-		case ELS_LOGO:
-			if (fc_frame_sid(fp) == FC_FID_FLOGI)
-				recv = fc_lport_recv_logo_req;
-			break;
-		case ELS_RSCN:
-			recv = lport->tt.disc_recv_req;
-			break;
-		case ELS_ECHO:
-			recv = fc_lport_recv_echo_req;
-			break;
-		case ELS_RLIR:
-			recv = fc_lport_recv_rlir_req;
-			break;
-		case ELS_RNID:
-			recv = fc_lport_recv_rnid_req;
-			break;
-		}
-
-		recv(lport, fp);
-=======
 		switch (fc_frame_payload_op(fp)) {
 		case ELS_FLOGI:
 			if (!lport->point_to_multipoint)
@@ -1148,7 +918,6 @@ static void fc_lport_recv_els_req(struct fc_lport *lport,
 			fc_rport_recv_req(lport, fp);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&lport->lp_mutex);
 }
@@ -1166,23 +935,14 @@ struct fc4_prov fc_lport_els_prov = {
 };
 
 /**
-<<<<<<< HEAD
- * fc_lport_recv_req() - The generic lport request handler
-=======
  * fc_lport_recv() - The generic lport request handler
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @lport: The lport that received the request
  * @fp: The frame the request is in
  *
  * Locking Note: This function should not be called with the lport
  *		 lock held because it may grab the lock.
  */
-<<<<<<< HEAD
-static void fc_lport_recv_req(struct fc_lport *lport,
-			      struct fc_frame *fp)
-=======
 void fc_lport_recv(struct fc_lport *lport, struct fc_frame *fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_frame_header *fh = fc_frame_header_get(fp);
 	struct fc_seq *sp = fr_seq(fp);
@@ -1210,15 +970,10 @@ drop:
 	rcu_read_unlock();
 	FC_LPORT_DBG(lport, "dropping unexpected frame type %x\n", fh->fh_type);
 	fc_frame_free(fp);
-<<<<<<< HEAD
-	lport->tt.exch_done(sp);
-}
-=======
 	if (sp)
 		fc_exch_done(sp);
 }
 EXPORT_SYMBOL(fc_lport_recv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_lport_reset() - Reset a local port
@@ -1240,20 +995,6 @@ EXPORT_SYMBOL(fc_lport_reset);
 /**
  * fc_lport_reset_locked() - Reset the local port w/ the lport lock held
  * @lport: The local port to be reset
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
- */
-static void fc_lport_reset_locked(struct fc_lport *lport)
-{
-	if (lport->dns_rdata)
-		lport->tt.rport_logoff(lport->dns_rdata);
-
-	if (lport->ptp_rdata) {
-		lport->tt.rport_logoff(lport->ptp_rdata);
-		kref_put(&lport->ptp_rdata->kref, lport->tt.rport_destroy);
-=======
  */
 static void fc_lport_reset_locked(struct fc_lport *lport)
 {
@@ -1267,7 +1008,6 @@ static void fc_lport_reset_locked(struct fc_lport *lport)
 	if (lport->ptp_rdata) {
 		fc_rport_logoff(lport->ptp_rdata);
 		kref_put(&lport->ptp_rdata->kref, fc_rport_destroy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lport->ptp_rdata = NULL;
 	}
 
@@ -1283,20 +1023,11 @@ static void fc_lport_reset_locked(struct fc_lport *lport)
 /**
  * fc_lport_enter_reset() - Reset the local port
  * @lport: The local port to be reset
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
- */
-static void fc_lport_enter_reset(struct fc_lport *lport)
-{
-=======
  */
 static void fc_lport_enter_reset(struct fc_lport *lport)
 {
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered RESET state from %s state\n",
 		     fc_lport_state(lport));
 
@@ -1321,20 +1052,11 @@ static void fc_lport_enter_reset(struct fc_lport *lport)
 /**
  * fc_lport_enter_disabled() - Disable the local port
  * @lport: The local port to be reset
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
- */
-static void fc_lport_enter_disabled(struct fc_lport *lport)
-{
-=======
  */
 static void fc_lport_enter_disabled(struct fc_lport *lport)
 {
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered disabled state from %s state\n",
 		     fc_lport_state(lport));
 
@@ -1356,11 +1078,7 @@ static void fc_lport_error(struct fc_lport *lport, struct fc_frame *fp)
 {
 	unsigned long delay = 0;
 	FC_LPORT_DBG(lport, "Error %ld in state %s, retries %d\n",
-<<<<<<< HEAD
-		     PTR_ERR(fp), fc_lport_state(lport),
-=======
 		     IS_ERR(fp) ? -PTR_ERR(fp) : 0, fc_lport_state(lport),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     lport->retry_count);
 
 	if (PTR_ERR(fp) == -FC_EX_CLOSED)
@@ -1476,11 +1194,7 @@ static void fc_lport_ms_resp(struct fc_seq *sp, struct fc_frame *fp,
 	struct fc_lport *lport = lp_arg;
 	struct fc_frame_header *fh;
 	struct fc_ct_hdr *ct;
-<<<<<<< HEAD
-
-=======
 	struct fc_host_attrs *fc_host = shost_to_fc_host(lport->host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Received a ms %s\n", fc_els_resp_type(fp));
 
 	if (fp == ERR_PTR(-FC_EX_CLOSED))
@@ -1514,9 +1228,6 @@ static void fc_lport_ms_resp(struct fc_seq *sp, struct fc_frame *fp,
 
 		switch (lport->state) {
 		case LPORT_ST_RHBA:
-<<<<<<< HEAD
-			if (ntohs(ct->ct_cmd) == FC_FS_ACC)
-=======
 			if ((ntohs(ct->ct_cmd) == FC_FS_RJT) && fc_host->fdmi_version == FDMI_V2) {
 				FC_LPORT_DBG(lport, "Error for FDMI-V2, fall back to FDMI-V1\n");
 				fc_host->fdmi_version = FDMI_V1;
@@ -1524,7 +1235,6 @@ static void fc_lport_ms_resp(struct fc_seq *sp, struct fc_frame *fp,
 				fc_lport_enter_ms(lport, LPORT_ST_RHBA);
 
 			} else if (ntohs(ct->ct_cmd) == FC_FS_ACC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fc_lport_enter_ms(lport, LPORT_ST_RPA);
 			else /* Error Skip RPA */
 				fc_lport_enter_scr(lport);
@@ -1603,22 +1313,13 @@ err:
 /**
  * fc_lport_enter_scr() - Send a SCR (State Change Register) request
  * @lport: The local port to register for state changes
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_enter_scr(struct fc_lport *lport)
 {
 	struct fc_frame *fp;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered SCR state from %s state\n",
 		     fc_lport_state(lport));
 
@@ -1639,13 +1340,7 @@ static void fc_lport_enter_scr(struct fc_lport *lport)
 /**
  * fc_lport_enter_ns() - register some object with the name server
  * @lport: Fibre Channel local port to register
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
-=======
  * @state: Local port state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_enter_ns(struct fc_lport *lport, enum fc_lport_state state)
 {
@@ -1654,11 +1349,8 @@ static void fc_lport_enter_ns(struct fc_lport *lport, enum fc_lport_state state)
 	int size = sizeof(struct fc_ct_hdr);
 	size_t len;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered %s state from %s state\n",
 		     fc_lport_state_names[state],
 		     fc_lport_state(lport));
@@ -1716,47 +1408,28 @@ static struct fc_rport_operations fc_lport_rport_ops = {
 };
 
 /**
-<<<<<<< HEAD
- * fc_rport_enter_dns() - Create a fc_rport for the name server
- * @lport: The local port requesting a remote port for the name server
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
-=======
  * fc_lport_enter_dns() - Create a fc_rport for the name server
  * @lport: The local port requesting a remote port for the name server
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_enter_dns(struct fc_lport *lport)
 {
 	struct fc_rport_priv *rdata;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered DNS state from %s state\n",
 		     fc_lport_state(lport));
 
 	fc_lport_state_enter(lport, LPORT_ST_DNS);
 
 	mutex_lock(&lport->disc.disc_mutex);
-<<<<<<< HEAD
-	rdata = lport->tt.rport_create(lport, FC_FID_DIR_SERV);
-=======
 	rdata = fc_rport_create(lport, FC_FID_DIR_SERV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&lport->disc.disc_mutex);
 	if (!rdata)
 		goto err;
 
 	rdata->ops = &fc_lport_rport_ops;
-<<<<<<< HEAD
-	lport->tt.rport_login(rdata);
-=======
 	fc_rport_login(rdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 err:
@@ -1766,13 +1439,7 @@ err:
 /**
  * fc_lport_enter_ms() - management server commands
  * @lport: Fibre Channel local port to register
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
-=======
  * @state: Local port state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 {
@@ -1781,11 +1448,8 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 	int size = sizeof(struct fc_ct_hdr);
 	size_t len;
 	int numattrs;
-<<<<<<< HEAD
-=======
 	struct fc_host_attrs *fc_host = shost_to_fc_host(lport->host);
 	lockdep_assert_held(&lport->lp_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	FC_LPORT_DBG(lport, "Entered %s state from %s state\n",
 		     fc_lport_state_names[state],
@@ -1797,17 +1461,10 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 	case LPORT_ST_RHBA:
 		cmd = FC_FDMI_RHBA;
 		/* Number of HBA Attributes */
-<<<<<<< HEAD
-		numattrs = 10;
-		len = sizeof(struct fc_fdmi_rhba);
-		len -= sizeof(struct fc_fdmi_attr_entry);
-		len += (numattrs * FC_FDMI_ATTR_ENTRY_HEADER_LEN);
-=======
 		numattrs = 11;
 		len = sizeof(struct fc_fdmi_rhba);
 		len -= sizeof(struct fc_fdmi_attr_entry);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len += FC_FDMI_HBA_ATTR_NODENAME_LEN;
 		len += FC_FDMI_HBA_ATTR_MANUFACTURER_LEN;
 		len += FC_FDMI_HBA_ATTR_SERIALNUMBER_LEN;
@@ -1818,8 +1475,6 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 		len += FC_FDMI_HBA_ATTR_OPTIONROMVERSION_LEN;
 		len += FC_FDMI_HBA_ATTR_FIRMWAREVERSION_LEN;
 		len += FC_FDMI_HBA_ATTR_OSNAMEVERSION_LEN;
-<<<<<<< HEAD
-=======
 		len += FC_FDMI_HBA_ATTR_MAXCTPAYLOAD_LEN;
 
 
@@ -1835,7 +1490,6 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 		}
 
 		len += (numattrs * FC_FDMI_ATTR_ENTRY_HEADER_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		size += len;
 		break;
@@ -1845,10 +1499,6 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 		numattrs = 6;
 		len = sizeof(struct fc_fdmi_rpa);
 		len -= sizeof(struct fc_fdmi_attr_entry);
-<<<<<<< HEAD
-		len += (numattrs * FC_FDMI_ATTR_ENTRY_HEADER_LEN);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len += FC_FDMI_PORT_ATTR_FC4TYPES_LEN;
 		len += FC_FDMI_PORT_ATTR_SUPPORTEDSPEED_LEN;
 		len += FC_FDMI_PORT_ATTR_CURRENTPORTSPEED_LEN;
@@ -1856,8 +1506,6 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 		len += FC_FDMI_PORT_ATTR_OSDEVICENAME_LEN;
 		len += FC_FDMI_PORT_ATTR_HOSTNAME_LEN;
 
-<<<<<<< HEAD
-=======
 		if (fc_host->fdmi_version == FDMI_V2) {
 			numattrs += 10;
 			len += FC_FDMI_PORT_ATTR_NODENAME_LEN;
@@ -1874,7 +1522,6 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 
 		len += (numattrs * FC_FDMI_ATTR_ENTRY_HEADER_LEN);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size += len;
 		break;
 	case LPORT_ST_DPRT:
@@ -1907,47 +1554,28 @@ static void fc_lport_enter_ms(struct fc_lport *lport, enum fc_lport_state state)
 }
 
 /**
-<<<<<<< HEAD
- * fc_rport_enter_fdmi() - Create a fc_rport for the management server
- * @lport: The local port requesting a remote port for the management server
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
-=======
  * fc_lport_enter_fdmi() - Create a fc_rport for the management server
  * @lport: The local port requesting a remote port for the management server
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_enter_fdmi(struct fc_lport *lport)
 {
 	struct fc_rport_priv *rdata;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered FDMI state from %s state\n",
 		     fc_lport_state(lport));
 
 	fc_lport_state_enter(lport, LPORT_ST_FDMI);
 
 	mutex_lock(&lport->disc.disc_mutex);
-<<<<<<< HEAD
-	rdata = lport->tt.rport_create(lport, FC_FID_MGMT_SERV);
-=======
 	rdata = fc_rport_create(lport, FC_FID_MGMT_SERV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&lport->disc.disc_mutex);
 	if (!rdata)
 		goto err;
 
 	rdata->ops = &fc_lport_rport_ops;
-<<<<<<< HEAD
-	lport->tt.rport_login(rdata);
-=======
 	fc_rport_login(rdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 err:
@@ -1963,19 +1591,12 @@ static void fc_lport_timeout(struct work_struct *work)
 	struct fc_lport *lport =
 		container_of(work, struct fc_lport,
 			     retry_work.work);
-<<<<<<< HEAD
-=======
 	struct fc_host_attrs *fc_host = shost_to_fc_host(lport->host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&lport->lp_mutex);
 
 	switch (lport->state) {
 	case LPORT_ST_DISABLED:
-<<<<<<< HEAD
-		WARN_ON(1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case LPORT_ST_READY:
 		break;
@@ -1998,13 +1619,6 @@ static void fc_lport_timeout(struct work_struct *work)
 		fc_lport_enter_fdmi(lport);
 		break;
 	case LPORT_ST_RHBA:
-<<<<<<< HEAD
-	case LPORT_ST_RPA:
-	case LPORT_ST_DHBA:
-	case LPORT_ST_DPRT:
-		fc_lport_enter_ms(lport, lport->state);
-		break;
-=======
 		if (fc_host->fdmi_version == FDMI_V2) {
 			FC_LPORT_DBG(lport, "timeout for FDMI-V2 RHBA,fall back to FDMI-V1\n");
 			fc_host->fdmi_version = FDMI_V1;
@@ -2018,7 +1632,6 @@ static void fc_lport_timeout(struct work_struct *work)
 		FC_LPORT_DBG(lport, "Skipping lport state %s to SCR\n",
 			     fc_lport_state(lport));
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case LPORT_ST_SCR:
 		fc_lport_enter_scr(lport);
 		break;
@@ -2080,27 +1693,16 @@ err:
 EXPORT_SYMBOL(fc_lport_logo_resp);
 
 /**
-<<<<<<< HEAD
- * fc_rport_enter_logo() - Logout of the fabric
- * @lport: The local port to be logged out
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
-=======
  * fc_lport_enter_logo() - Logout of the fabric
  * @lport: The local port to be logged out
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_enter_logo(struct fc_lport *lport)
 {
 	struct fc_frame *fp;
 	struct fc_els_logo *logo;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered LOGO state from %s state\n",
 		     fc_lport_state(lport));
 
@@ -2167,22 +1769,14 @@ void fc_lport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	    fc_frame_payload_op(fp) != ELS_LS_ACC) {
 		FC_LPORT_DBG(lport, "FLOGI not accepted or bad response\n");
 		fc_lport_error(lport, fp);
-<<<<<<< HEAD
-		goto err;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	flp = fc_frame_payload_get(fp, sizeof(*flp));
 	if (!flp) {
 		FC_LPORT_DBG(lport, "FLOGI bad response\n");
 		fc_lport_error(lport, fp);
-<<<<<<< HEAD
-		goto err;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mfs = ntohs(flp->fl_csp.sp_bb_data) &
@@ -2190,15 +1784,9 @@ void fc_lport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 
 	if (mfs < FC_SP_MIN_MAX_PAYLOAD || mfs > FC_SP_MAX_MAX_PAYLOAD) {
 		FC_LPORT_DBG(lport, "FLOGI bad mfs:%hu response, "
-<<<<<<< HEAD
-			     "lport->mfs:%hu\n", mfs, lport->mfs);
-		fc_lport_error(lport, fp);
-		goto err;
-=======
 			     "lport->mfs:%u\n", mfs, lport->mfs);
 		fc_lport_error(lport, fp);
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (mfs <= lport->mfs) {
@@ -2217,11 +1805,7 @@ void fc_lport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	if ((csp_flags & FC_SP_FT_FPORT) == 0) {
 		if (e_d_tov > lport->e_d_tov)
 			lport->e_d_tov = e_d_tov;
-<<<<<<< HEAD
-		lport->r_a_tov = 2 * e_d_tov;
-=======
 		lport->r_a_tov = 2 * lport->e_d_tov;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_lport_set_port_id(lport, did, fp);
 		printk(KERN_INFO "host%d: libfc: "
 		       "Port (%6.6x) entered "
@@ -2233,15 +1817,10 @@ void fc_lport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 				   get_unaligned_be64(
 					   &flp->fl_wwnn));
 	} else {
-<<<<<<< HEAD
-		lport->e_d_tov = e_d_tov;
-		lport->r_a_tov = r_a_tov;
-=======
 		if (e_d_tov > lport->e_d_tov)
 			lport->e_d_tov = e_d_tov;
 		if (r_a_tov > lport->r_a_tov)
 			lport->r_a_tov = r_a_tov;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_host_fabric_name(lport->host) =
 			get_unaligned_be64(&flp->fl_wwnn);
 		fc_lport_set_port_id(lport, did, fp);
@@ -2256,26 +1835,15 @@ err:
 EXPORT_SYMBOL(fc_lport_flogi_resp);
 
 /**
-<<<<<<< HEAD
- * fc_rport_enter_flogi() - Send a FLOGI request to the fabric manager
- * @lport: Fibre Channel local port to be logged in to the fabric
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
-=======
  * fc_lport_enter_flogi() - Send a FLOGI request to the fabric manager
  * @lport: Fibre Channel local port to be logged in to the fabric
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_lport_enter_flogi(struct fc_lport *lport)
 {
 	struct fc_frame *fp;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_LPORT_DBG(lport, "Entered FLOGI state from %s state\n",
 		     fc_lport_state(lport));
 
@@ -2324,20 +1892,12 @@ EXPORT_SYMBOL(fc_lport_config);
  */
 int fc_lport_init(struct fc_lport *lport)
 {
-<<<<<<< HEAD
-	if (!lport->tt.lport_recv)
-		lport->tt.lport_recv = fc_lport_recv_req;
-
-	if (!lport->tt.lport_reset)
-		lport->tt.lport_reset = fc_lport_reset;
-=======
 	struct fc_host_attrs *fc_host;
 
 	fc_host = shost_to_fc_host(lport->host);
 
 	/* Set FDMI version to FDMI-2 specification*/
 	fc_host->fdmi_version = FDMI_V2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fc_host_port_type(lport->host) = FC_PORTTYPE_NPORT;
 	fc_host_node_name(lport->host) = lport->wwnn;
@@ -2347,10 +1907,7 @@ int fc_lport_init(struct fc_lport *lport)
 	       sizeof(fc_host_supported_fc4s(lport->host)));
 	fc_host_supported_fc4s(lport->host)[2] = 1;
 	fc_host_supported_fc4s(lport->host)[7] = 1;
-<<<<<<< HEAD
-=======
 	fc_host_num_discovered_ports(lport->host) = 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This value is also unchanging */
 	memset(fc_host_active_fc4s(lport->host), 0,
@@ -2363,10 +1920,6 @@ int fc_lport_init(struct fc_lport *lport)
 		fc_host_supported_speeds(lport->host) |= FC_PORTSPEED_1GBIT;
 	if (lport->link_supported_speeds & FC_PORTSPEED_10GBIT)
 		fc_host_supported_speeds(lport->host) |= FC_PORTSPEED_10GBIT;
-<<<<<<< HEAD
-	fc_fc4_add_lport(lport);
-
-=======
 	if (lport->link_supported_speeds & FC_PORTSPEED_40GBIT)
 		fc_host_supported_speeds(lport->host) |= FC_PORTSPEED_40GBIT;
 	if (lport->link_supported_speeds & FC_PORTSPEED_100GBIT)
@@ -2388,7 +1941,6 @@ int fc_lport_init(struct fc_lport *lport)
 	snprintf(fc_host_bootbios_version(lport->host),
 		FC_SYMBOLIC_NAME_SIZE, "%s", "Unknown");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(fc_lport_init);
@@ -2403,31 +1955,19 @@ static void fc_lport_bsg_resp(struct fc_seq *sp, struct fc_frame *fp,
 			      void *info_arg)
 {
 	struct fc_bsg_info *info = info_arg;
-<<<<<<< HEAD
-	struct fc_bsg_job *job = info->job;
-=======
 	struct bsg_job *job = info->job;
 	struct fc_bsg_reply *bsg_reply = job->reply;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport = info->lport;
 	struct fc_frame_header *fh;
 	size_t len;
 	void *buf;
 
 	if (IS_ERR(fp)) {
-<<<<<<< HEAD
-		job->reply->result = (PTR_ERR(fp) == -FC_EX_CLOSED) ?
-			-ECONNABORTED : -ETIMEDOUT;
-		job->reply_len = sizeof(uint32_t);
-		job->state_flags |= FC_RQST_STATE_DONE;
-		job->job_done(job);
-=======
 		bsg_reply->result = (PTR_ERR(fp) == -FC_EX_CLOSED) ?
 			-ECONNABORTED : -ETIMEDOUT;
 		job->reply_len = sizeof(uint32_t);
 		bsg_job_done(job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(info);
 		return;
 	}
@@ -2444,35 +1984,18 @@ static void fc_lport_bsg_resp(struct fc_seq *sp, struct fc_frame *fp,
 			(unsigned short)fc_frame_payload_op(fp);
 
 		/* Save the reply status of the job */
-<<<<<<< HEAD
-		job->reply->reply_data.ctels_reply.status =
-=======
 		bsg_reply->reply_data.ctels_reply.status =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(cmd == info->rsp_code) ?
 			FC_CTELS_STATUS_OK : FC_CTELS_STATUS_REJECT;
 	}
 
-<<<<<<< HEAD
-	job->reply->reply_payload_rcv_len +=
-=======
 	bsg_reply->reply_payload_rcv_len +=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_copy_buffer_to_sglist(buf, len, info->sg, &info->nents,
 					 &info->offset, NULL);
 
 	if (fr_eof(fp) == FC_EOF_T &&
 	    (ntoh24(fh->fh_f_ctl) & (FC_FC_LAST_SEQ | FC_FC_END_SEQ)) ==
 	    (FC_FC_LAST_SEQ | FC_FC_END_SEQ)) {
-<<<<<<< HEAD
-		if (job->reply->reply_payload_rcv_len >
-		    job->reply_payload.payload_len)
-			job->reply->reply_payload_rcv_len =
-				job->reply_payload.payload_len;
-		job->reply->result = 0;
-		job->state_flags |= FC_RQST_STATE_DONE;
-		job->job_done(job);
-=======
 		if (bsg_reply->reply_payload_rcv_len >
 		    job->reply_payload.payload_len)
 			bsg_reply->reply_payload_rcv_len =
@@ -2480,7 +2003,6 @@ static void fc_lport_bsg_resp(struct fc_seq *sp, struct fc_frame *fp,
 		bsg_reply->result = 0;
 		bsg_job_done(job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(info);
 	}
 	fc_frame_free(fp);
@@ -2492,17 +2014,9 @@ static void fc_lport_bsg_resp(struct fc_seq *sp, struct fc_frame *fp,
  * @job:   The BSG Passthrough job
  * @lport: The local port sending the request
  * @did:   The destination port id
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
- */
-static int fc_lport_els_request(struct fc_bsg_job *job,
-=======
  * @tov:   The timeout period (in ms)
  */
 static int fc_lport_els_request(struct bsg_job *job,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct fc_lport *lport,
 				u32 did, u32 tov)
 {
@@ -2512,11 +2026,8 @@ static int fc_lport_els_request(struct bsg_job *job,
 	char *pp;
 	int len;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fp = fc_frame_alloc(lport, job->request_payload.payload_len);
 	if (!fp)
 		return -ENOMEM;
@@ -2550,13 +2061,8 @@ static int fc_lport_els_request(struct bsg_job *job,
 	info->nents = job->reply_payload.sg_cnt;
 	info->sg = job->reply_payload.sg_list;
 
-<<<<<<< HEAD
-	if (!lport->tt.exch_seq_send(lport, fp, fc_lport_bsg_resp,
-				     NULL, info, tov)) {
-=======
 	if (!fc_exch_seq_send(lport, fp, fc_lport_bsg_resp,
 			      NULL, info, tov)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(info);
 		return -ECOMM;
 	}
@@ -2569,16 +2075,8 @@ static int fc_lport_els_request(struct bsg_job *job,
  * @lport: The local port sending the request
  * @did:   The destination FC-ID
  * @tov:   The timeout period to wait for the response
-<<<<<<< HEAD
- *
- * Locking Note: The lport lock is expected to be held before calling
- * this routine.
- */
-static int fc_lport_ct_request(struct fc_bsg_job *job,
-=======
  */
 static int fc_lport_ct_request(struct bsg_job *job,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct fc_lport *lport, u32 did, u32 tov)
 {
 	struct fc_bsg_info *info;
@@ -2587,11 +2085,8 @@ static int fc_lport_ct_request(struct bsg_job *job,
 	struct fc_ct_req *ct;
 	size_t len;
 
-<<<<<<< HEAD
-=======
 	lockdep_assert_held(&lport->lp_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fp = fc_frame_alloc(lport, sizeof(struct fc_ct_hdr) +
 			    job->request_payload.payload_len);
 	if (!fp)
@@ -2626,13 +2121,8 @@ static int fc_lport_ct_request(struct bsg_job *job,
 	info->nents = job->reply_payload.sg_cnt;
 	info->sg = job->reply_payload.sg_list;
 
-<<<<<<< HEAD
-	if (!lport->tt.exch_seq_send(lport, fp, fc_lport_bsg_resp,
-				     NULL, info, tov)) {
-=======
 	if (!fc_exch_seq_send(lport, fp, fc_lport_bsg_resp,
 			      NULL, info, tov)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(info);
 		return -ECOMM;
 	}
@@ -2644,35 +2134,15 @@ static int fc_lport_ct_request(struct bsg_job *job,
  *			    FC Passthrough requests
  * @job: The BSG passthrough job
  */
-<<<<<<< HEAD
-int fc_lport_bsg_request(struct fc_bsg_job *job)
-{
-	struct request *rsp = job->req->next_rq;
-	struct Scsi_Host *shost = job->shost;
-=======
 int fc_lport_bsg_request(struct bsg_job *job)
 {
 	struct fc_bsg_request *bsg_request = job->request;
 	struct fc_bsg_reply *bsg_reply = job->reply;
 	struct Scsi_Host *shost = fc_bsg_to_shost(job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport = shost_priv(shost);
 	struct fc_rport *rport;
 	struct fc_rport_priv *rdata;
 	int rc = -EINVAL;
-<<<<<<< HEAD
-	u32 did;
-
-	job->reply->reply_payload_rcv_len = 0;
-	if (rsp)
-		rsp->resid_len = job->reply_payload.payload_len;
-
-	mutex_lock(&lport->lp_mutex);
-
-	switch (job->request->msgcode) {
-	case FC_BSG_RPT_ELS:
-		rport = job->rport;
-=======
 	u32 did, tov;
 
 	bsg_reply->reply_payload_rcv_len = 0;
@@ -2682,7 +2152,6 @@ int fc_lport_bsg_request(struct bsg_job *job)
 	switch (bsg_request->msgcode) {
 	case FC_BSG_RPT_ELS:
 		rport = fc_bsg_to_rport(job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rport)
 			break;
 
@@ -2692,11 +2161,7 @@ int fc_lport_bsg_request(struct bsg_job *job)
 		break;
 
 	case FC_BSG_RPT_CT:
-<<<<<<< HEAD
-		rport = job->rport;
-=======
 		rport = fc_bsg_to_rport(job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rport)
 			break;
 
@@ -2706,22 +2171,6 @@ int fc_lport_bsg_request(struct bsg_job *job)
 		break;
 
 	case FC_BSG_HST_CT:
-<<<<<<< HEAD
-		did = ntoh24(job->request->rqst_data.h_ct.port_id);
-		if (did == FC_FID_DIR_SERV)
-			rdata = lport->dns_rdata;
-		else
-			rdata = lport->tt.rport_lookup(lport, did);
-
-		if (!rdata)
-			break;
-
-		rc = fc_lport_ct_request(job, lport, did, rdata->e_d_tov);
-		break;
-
-	case FC_BSG_HST_ELS_NOLOGIN:
-		did = ntoh24(job->request->rqst_data.h_els.port_id);
-=======
 		did = ntoh24(bsg_request->rqst_data.h_ct.port_id);
 		if (did == FC_FID_DIR_SERV) {
 			rdata = lport->dns_rdata;
@@ -2741,7 +2190,6 @@ int fc_lport_bsg_request(struct bsg_job *job)
 
 	case FC_BSG_HST_ELS_NOLOGIN:
 		did = ntoh24(bsg_request->rqst_data.h_els.port_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = fc_lport_els_request(job, lport, did, lport->e_d_tov);
 		break;
 	}

@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-#ifndef _ALPHA_TLB_H
-#define _ALPHA_TLB_H
-
-#define tlb_start_vma(tlb, vma)			do { } while (0)
-#define tlb_end_vma(tlb, vma)			do { } while (0)
-#define __tlb_remove_tlb_entry(tlb, pte, addr)	do { } while (0)
-
-#define tlb_flush(tlb)				flush_tlb_mm((tlb)->mm)
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ALPHA_TLB_H
 #define _ALPHA_TLB_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/tlb.h>
 
 #define __pte_free_tlb(tlb, pte, address)		pte_free((tlb)->mm, pte)

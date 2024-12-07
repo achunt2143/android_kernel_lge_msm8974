@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-#ifndef _ASM_HIGHMEM_H
-#define _ASM_HIGHMEM_H
-
-#include <asm/kmap_types.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_HIGHMEM_H
 #define _ASM_HIGHMEM_H
 
 #include <asm/cachetype.h>
 #include <asm/fixmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PKMAP_BASE		(PAGE_OFFSET - PMD_SIZE)
 #define LAST_PKMAP		PTRS_PER_PTE
@@ -18,11 +11,6 @@
 #define PKMAP_NR(virt)		(((virt) - PKMAP_BASE) >> PAGE_SHIFT)
 #define PKMAP_ADDR(nr)		(PKMAP_BASE + ((nr) << PAGE_SHIFT))
 
-<<<<<<< HEAD
-#define kmap_prot		PAGE_KERNEL
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define flush_cache_kmaps() \
 	do { \
 		if (cache_is_vivt()) \
@@ -31,12 +19,6 @@
 
 extern pte_t *pkmap_page_table;
 
-<<<<<<< HEAD
-extern void *kmap_high(struct page *page);
-extern void kunmap_high(struct page *page);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The reason for kmap_high_get() is to ensure that the currently kmap'd
  * page usage count does not decrease to zero while we're using its
@@ -56,11 +38,6 @@ extern void kunmap_high(struct page *page);
 #endif
 #endif
 
-<<<<<<< HEAD
-#ifdef ARCH_NEEDS_KMAP_HIGH_GET
-extern void *kmap_high_get(struct page *page);
-#else
-=======
 /*
  * Needed to be able to broadcast the TLB invalidation for kmap.
  */
@@ -80,27 +57,10 @@ static inline void *arch_kmap_local_high_get(struct page *page)
 #define arch_kmap_local_high_get arch_kmap_local_high_get
 
 #else /* ARCH_NEEDS_KMAP_HIGH_GET */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void *kmap_high_get(struct page *page)
 {
 	return NULL;
 }
-<<<<<<< HEAD
-#endif
-
-/*
- * The following functions are already defined by <linux/highmem.h>
- * when CONFIG_HIGHMEM is not set.
- */
-#ifdef CONFIG_HIGHMEM
-extern void *kmap(struct page *page);
-extern void kunmap(struct page *page);
-extern void *kmap_atomic(struct page *page);
-extern void __kunmap_atomic(void *kvaddr);
-extern void *kmap_atomic_pfn(unsigned long pfn);
-extern struct page *kmap_atomic_to_page(const void *ptr);
-#endif
-=======
 #endif /* !ARCH_NEEDS_KMAP_HIGH_GET */
 
 #define arch_kmap_local_post_map(vaddr, pteval)				\
@@ -114,6 +74,5 @@ do {									\
 
 #define arch_kmap_local_post_unmap(vaddr)				\
 	local_flush_tlb_kernel_page(vaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

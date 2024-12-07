@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Based on the same principle as kgdboe using the NETPOLL api, this
  * driver uses a console polling api to implement a gdb serial inteface
@@ -10,18 +7,10 @@
  * Maintainer: Jason Wessel <jason.wessel@windriver.com>
  *
  * 2007-2008 (c) Jason Wessel - Wind River Systems, Inc.
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/ctype.h>
 #include <linux/kgdb.h>
@@ -31,11 +20,8 @@
 #include <linux/vt_kern.h>
 #include <linux/input.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_device.h>
 #include <linux/serial_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_CONFIG_LEN		40
 
@@ -43,10 +29,7 @@ static struct kgdb_io		kgdboc_io_ops;
 
 /* -1 = init not run yet, 0 = unconfigured, 1 = configured. */
 static int configured		= -1;
-<<<<<<< HEAD
-=======
 static DEFINE_MUTEX(config_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char config[MAX_CONFIG_LEN];
 static struct kparam_string kps = {
@@ -58,8 +41,6 @@ static int kgdboc_use_kms;  /* 1 if we use kernel mode switching */
 static struct tty_driver	*kgdb_tty_driver;
 static int			kgdb_tty_line;
 
-<<<<<<< HEAD
-=======
 static struct platform_device *kgdboc_pdev;
 
 #if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
@@ -67,7 +48,6 @@ static struct kgdb_io		kgdboc_earlycon_io_ops;
 static int                      (*earlycon_orig_exit)(struct console *con);
 #endif /* IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE) */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KDB_KEYBOARD
 static int kgdboc_reset_connect(struct input_handler *handler,
 				struct input_dev *dev,
@@ -75,11 +55,7 @@ static int kgdboc_reset_connect(struct input_handler *handler,
 {
 	input_reset_device(dev);
 
-<<<<<<< HEAD
-	/* Retrun an error - we do not want to bind, just to reset */
-=======
 	/* Return an error - we do not want to bind, just to reset */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -131,12 +107,8 @@ static void kgdboc_restore_input(void)
 
 static int kgdboc_register_kbd(char **cptr)
 {
-<<<<<<< HEAD
-	if (strncmp(*cptr, "kbd", 3) == 0) {
-=======
 	if (strncmp(*cptr, "kbd", 3) == 0 ||
 		strncmp(*cptr, "kdb", 3) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (kdb_poll_idx < KDB_POLL_FUNC_MAX) {
 			kdb_poll_funcs[kdb_poll_idx] = kdb_get_kbd_char;
 			kdb_poll_idx++;
@@ -161,11 +133,7 @@ static void kgdboc_unregister_kbd(void)
 			i--;
 		}
 	}
-<<<<<<< HEAD
-	flush_work_sync(&kgdboc_restore_input_work);
-=======
 	flush_work(&kgdboc_restore_input_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else /* ! CONFIG_KDB_KEYBOARD */
 #define kgdboc_register_kbd(x) 0
@@ -173,26 +141,6 @@ static void kgdboc_unregister_kbd(void)
 #define kgdboc_restore_input()
 #endif /* ! CONFIG_KDB_KEYBOARD */
 
-<<<<<<< HEAD
-static int kgdboc_option_setup(char *opt)
-{
-	if (strlen(opt) >= MAX_CONFIG_LEN) {
-		printk(KERN_ERR "kgdboc: config string too long\n");
-		return -ENOSPC;
-	}
-	strcpy(config, opt);
-
-	return 0;
-}
-
-__setup("kgdboc=", kgdboc_option_setup);
-
-static void cleanup_kgdboc(void)
-{
-	kgdboc_unregister_kbd();
-	if (configured == 1)
-		kgdb_unregister_io_module(&kgdboc_io_ops);
-=======
 #if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
 static void cleanup_earlycon(void)
 {
@@ -214,25 +162,12 @@ static void cleanup_kgdboc(void)
 		return;
 	kgdboc_unregister_kbd();
 	kgdb_unregister_io_module(&kgdboc_io_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int configure_kgdboc(void)
 {
 	struct tty_driver *p;
 	int tty_line = 0;
-<<<<<<< HEAD
-	int err;
-	char *cptr = config;
-	struct console *cons;
-
-	err = kgdboc_option_setup(config);
-	if (err || !strlen(config) || isspace(config[0]))
-		goto noconfig;
-
-	err = -ENODEV;
-	kgdboc_io_ops.is_console = 0;
-=======
 	int err = -ENODEV;
 	char *cptr = config;
 	struct console *cons;
@@ -244,7 +179,6 @@ static int configure_kgdboc(void)
 	}
 
 	kgdboc_io_ops.cons = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kgdb_tty_driver = NULL;
 
 	kgdboc_use_kms = 0;
@@ -260,18 +194,6 @@ static int configure_kgdboc(void)
 	if (!p)
 		goto noconfig;
 
-<<<<<<< HEAD
-	cons = console_drivers;
-	while (cons) {
-		int idx;
-		if (cons->device && cons->device(cons, &idx) == p &&
-		    idx == tty_line) {
-			kgdboc_io_ops.is_console = 1;
-			break;
-		}
-		cons = cons->next;
-	}
-=======
 	/*
 	 * Take console_lock to serialize device() callback with
 	 * other console operations. For example, fg_console is
@@ -291,7 +213,6 @@ static int configure_kgdboc(void)
 	console_srcu_read_unlock(cookie);
 
 	console_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kgdb_tty_driver = p;
 	kgdb_tty_line = tty_line;
@@ -301,42 +222,23 @@ do_register:
 	if (err)
 		goto noconfig;
 
-<<<<<<< HEAD
-=======
 	err = kgdb_register_nmi_console();
 	if (err)
 		goto nmi_con_failed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	configured = 1;
 
 	return 0;
 
-<<<<<<< HEAD
-noconfig:
-	config[0] = 0;
-	configured = 0;
-	cleanup_kgdboc();
-=======
 nmi_con_failed:
 	kgdb_unregister_io_module(&kgdboc_io_ops);
 noconfig:
 	kgdboc_unregister_kbd();
 	configured = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int __init init_kgdboc(void)
-{
-	/* Already configured? */
-	if (configured == 1)
-		return 0;
-
-	return configure_kgdboc();
-=======
 static int kgdboc_probe(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -405,7 +307,6 @@ static void exit_kgdboc(void)
 
 	platform_device_unregister(kgdboc_pdev);
 	platform_driver_unregister(&kgdboc_platform_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kgdboc_get_char(void)
@@ -424,33 +325,6 @@ static void kgdboc_put_char(u8 chr)
 					kgdb_tty_line, chr);
 }
 
-<<<<<<< HEAD
-static int param_set_kgdboc_var(const char *kmessage, struct kernel_param *kp)
-{
-	int len = strlen(kmessage);
-
-	if (len >= MAX_CONFIG_LEN) {
-		printk(KERN_ERR "kgdboc: config string too long\n");
-		return -ENOSPC;
-	}
-
-	/* Only copy in the string if the init function has not run yet */
-	if (configured < 0) {
-		strcpy(config, kmessage);
-		return 0;
-	}
-
-	if (kgdb_connected) {
-		printk(KERN_ERR
-		       "kgdboc: Cannot reconfigure while KGDB is connected.\n");
-
-		return -EBUSY;
-	}
-
-	strcpy(config, kmessage);
-	/* Chop out \n char as a result of echo */
-	if (config[len - 1] == '\n')
-=======
 static int param_set_kgdboc_var(const char *kmessage,
 				const struct kernel_param *kp)
 {
@@ -472,16 +346,11 @@ static int param_set_kgdboc_var(const char *kmessage,
 	strcpy(config, kmessage);
 	/* Chop out \n char as a result of echo */
 	if (len && config[len - 1] == '\n')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		config[len - 1] = '\0';
 
 	if (configured == 1)
 		cleanup_kgdboc();
 
-<<<<<<< HEAD
-	/* Go and configure with the new params. */
-	return configure_kgdboc();
-=======
 	/*
 	 * Configure with the new params as long as init already ran.
 	 * Note that we can get called before init if someone loads us
@@ -506,7 +375,6 @@ static int param_set_kgdboc_var(const char *kmessage,
 	mutex_unlock(&config_mutex);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dbg_restore_graphics;
@@ -542,21 +410,6 @@ static struct kgdb_io kgdboc_io_ops = {
 	.post_exception		= kgdboc_post_exp_handler,
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_KGDB_SERIAL_CONSOLE
-/* This is only available if kgdboc is a built in for early debugging */
-static int __init kgdboc_early_init(char *opt)
-{
-	/* save the first character of the config string because the
-	 * init routine can destroy it.
-	 */
-	char save_ch;
-
-	kgdboc_option_setup(opt);
-	save_ch = config[0];
-	init_kgdboc();
-	config[0] = save_ch;
-=======
 #if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
 static int kgdboc_option_setup(char *opt)
 {
@@ -582,17 +435,10 @@ static int __init kgdboc_early_init(char *opt)
 {
 	kgdboc_option_setup(opt);
 	configure_kgdboc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 early_param("ekgdboc", kgdboc_early_init);
-<<<<<<< HEAD
-#endif /* CONFIG_KGDB_SERIAL_CONSOLE */
-
-module_init(init_kgdboc);
-module_exit(cleanup_kgdboc);
-=======
 
 static int kgdboc_earlycon_get_char(void)
 {
@@ -778,7 +624,6 @@ console_initcall(kgdboc_earlycon_late_init);
 
 module_init(init_kgdboc);
 module_exit(exit_kgdboc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_call(kgdboc, param_set_kgdboc_var, param_get_string, &kps, 0644);
 MODULE_PARM_DESC(kgdboc, "<serial_device>[,baud]");
 MODULE_DESCRIPTION("KGDB Console TTY Driver");

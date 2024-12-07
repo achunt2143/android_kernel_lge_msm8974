@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#
-# Makefile for the CAAM backend and dependent components
-#
-
-obj-$(CONFIG_CRYPTO_DEV_FSL_CAAM) += caam.o
-obj-$(CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API) += caamalg.o
-
-caam-objs := ctrl.o jr.o error.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 #
 # Makefile for the CAAM backend and dependent components
@@ -45,4 +35,3 @@ obj-$(CONFIG_CRYPTO_DEV_FSL_DPAA2_CAAM) += dpaa2_caam.o
 
 dpaa2_caam-y    := caamalg_qi2.o dpseci.o
 dpaa2_caam-$(CONFIG_DEBUG_FS) += dpseci-debugfs.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

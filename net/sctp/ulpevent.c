@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -13,47 +10,15 @@
  * These functions manipulate an sctp event.   The struct ulpevent is used
  * to carry notifications and data to the ULP (sockets).
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    Jon Grimm             <jgrimm@us.ibm.com>
  *    La Monte H.P. Yarroll <piggy@acm.org>
  *    Ardelle Fan	    <ardelle.fan@intel.com>
  *    Sridhar Samudrala     <sri@us.ibm.com>
-<<<<<<< HEAD
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -70,15 +35,9 @@ static void sctp_ulpevent_release_frag_data(struct sctp_ulpevent *event);
 
 
 /* Initialize an ULP event from an given skb.  */
-<<<<<<< HEAD
-SCTP_STATIC void sctp_ulpevent_init(struct sctp_ulpevent *event,
-				    int msg_flags,
-				    unsigned int len)
-=======
 static void sctp_ulpevent_init(struct sctp_ulpevent *event,
 			       __u16 msg_flags,
 			       unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memset(event, 0, sizeof(struct sctp_ulpevent));
 	event->msg_flags = msg_flags;
@@ -86,13 +45,8 @@ static void sctp_ulpevent_init(struct sctp_ulpevent *event,
 }
 
 /* Create a new sctp_ulpevent.  */
-<<<<<<< HEAD
-SCTP_STATIC struct sctp_ulpevent *sctp_ulpevent_new(int size, int msg_flags,
-						    gfp_t gfp)
-=======
 static struct sctp_ulpevent *sctp_ulpevent_new(int size, __u16 msg_flags,
 					       gfp_t gfp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_ulpevent *event;
 	struct sk_buff *skb;
@@ -122,10 +76,7 @@ int sctp_ulpevent_is_notification(const struct sctp_ulpevent *event)
 static inline void sctp_ulpevent_set_owner(struct sctp_ulpevent *event,
 					   const struct sctp_association *asoc)
 {
-<<<<<<< HEAD
-=======
 	struct sctp_chunk *chunk = event->chunk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 
 	/* Cast away the const, as we are just wanting to
@@ -136,11 +87,8 @@ static inline void sctp_ulpevent_set_owner(struct sctp_ulpevent *event,
 	event->asoc = (struct sctp_association *)asoc;
 	atomic_add(event->rmem_len, &event->asoc->rmem_alloc);
 	sctp_skb_set_owner_r(skb, asoc->base.sk);
-<<<<<<< HEAD
-=======
 	if (chunk && chunk->head_skb && !chunk->head_skb->sk)
 		chunk->head_skb->sk = asoc->base.sk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* A simple destructor to give up the reference to the association. */
@@ -190,21 +138,12 @@ struct sctp_ulpevent  *sctp_ulpevent_make_assoc_change(
 		sctp_ulpevent_init(event, MSG_NOTIFICATION, skb->truesize);
 
 		/* Include the notification structure */
-<<<<<<< HEAD
-		sac = (struct sctp_assoc_change *)
-			skb_push(skb, sizeof(struct sctp_assoc_change));
-=======
 		sac = skb_push(skb, sizeof(struct sctp_assoc_change));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Trim the buffer to the right length.  */
 		skb_trim(skb, sizeof(struct sctp_assoc_change) +
 			 ntohs(chunk->chunk_hdr->length) -
-<<<<<<< HEAD
-			 sizeof(sctp_chunkhdr_t));
-=======
 			 sizeof(struct sctp_chunkhdr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		event = sctp_ulpevent_new(sizeof(struct sctp_assoc_change),
 				  MSG_NOTIFICATION, gfp);
@@ -212,12 +151,7 @@ struct sctp_ulpevent  *sctp_ulpevent_make_assoc_change(
 			goto fail;
 
 		skb = sctp_event2skb(event);
-<<<<<<< HEAD
-		sac = (struct sctp_assoc_change *) skb_put(skb,
-					sizeof(struct sctp_assoc_change));
-=======
 		sac = skb_put(skb, sizeof(struct sctp_assoc_change));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Socket Extensions for SCTP
@@ -304,11 +238,7 @@ fail:
  * When a destination address on a multi-homed peer encounters a change
  * an interface details event is sent.
  */
-<<<<<<< HEAD
-struct sctp_ulpevent *sctp_ulpevent_make_peer_addr_change(
-=======
 static struct sctp_ulpevent *sctp_ulpevent_make_peer_addr_change(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct sctp_association *asoc,
 	const struct sockaddr_storage *aaddr,
 	int flags, int state, int error, gfp_t gfp)
@@ -323,12 +253,7 @@ static struct sctp_ulpevent *sctp_ulpevent_make_peer_addr_change(
 		goto fail;
 
 	skb = sctp_event2skb(event);
-<<<<<<< HEAD
-	spc = (struct sctp_paddr_change *)
-		skb_put(skb, sizeof(struct sctp_paddr_change));
-=======
 	spc = skb_put(skb, sizeof(struct sctp_paddr_change));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Sockets API Extensions for SCTP
 	 * Section 5.3.1.2 SCTP_PEER_ADDR_CHANGE
@@ -401,11 +326,7 @@ static struct sctp_ulpevent *sctp_ulpevent_make_peer_addr_change(
 	memcpy(&spc->spc_aaddr, aaddr, sizeof(struct sockaddr_storage));
 
 	/* Map ipv4 address into v4-mapped-on-v6 address.  */
-<<<<<<< HEAD
-	sctp_get_pf_specific(asoc->base.sk->sk_family)->addr_v4map(
-=======
 	sctp_get_pf_specific(asoc->base.sk->sk_family)->addr_to_user(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sctp_sk(asoc->base.sk),
 					(union sctp_addr *)&spc->spc_aaddr);
 
@@ -415,8 +336,6 @@ fail:
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 void sctp_ulpevent_notify_peer_addr_change(struct sctp_transport *transport,
 					   int state, int error)
 {
@@ -436,7 +355,6 @@ void sctp_ulpevent_notify_peer_addr_change(struct sctp_transport *transport,
 		asoc->stream.si->enqueue_event(&asoc->ulpq, event);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Create and initialize an SCTP_REMOTE_ERROR notification.
  *
  * Note: This assumes that the chunk->skb->data already points to the
@@ -457,21 +375,6 @@ sctp_ulpevent_make_remote_error(const struct sctp_association *asoc,
 				struct sctp_chunk *chunk, __u16 flags,
 				gfp_t gfp)
 {
-<<<<<<< HEAD
-	struct sctp_ulpevent *event;
-	struct sctp_remote_error *sre;
-	struct sk_buff *skb;
-	sctp_errhdr_t *ch;
-	__be16 cause;
-	int elen;
-
-	ch = (sctp_errhdr_t *)(chunk->skb->data);
-	cause = ch->cause;
-	elen = WORD_ROUND(ntohs(ch->length)) - sizeof(sctp_errhdr_t);
-
-	/* Pull off the ERROR header.  */
-	skb_pull(chunk->skb, sizeof(sctp_errhdr_t));
-=======
 	struct sctp_remote_error *sre;
 	struct sctp_ulpevent *event;
 	struct sctp_errhdr *ch;
@@ -485,7 +388,6 @@ sctp_ulpevent_make_remote_error(const struct sctp_association *asoc,
 
 	/* Pull off the ERROR header.  */
 	skb_pull(chunk->skb, sizeof(*ch));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy the skb to a new skb with room for us to prepend
 	 * notification with.
@@ -501,11 +403,7 @@ sctp_ulpevent_make_remote_error(const struct sctp_association *asoc,
 	event = sctp_skb2event(skb);
 	sctp_ulpevent_init(event, MSG_NOTIFICATION, skb->truesize);
 
-<<<<<<< HEAD
-	sre = (struct sctp_remote_error *) skb_push(skb, sizeof(*sre));
-=======
 	sre = skb_push(skb, sizeof(*sre));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Trim the buffer to the right length.  */
 	skb_trim(skb, sizeof(*sre) + elen);
@@ -549,24 +447,14 @@ struct sctp_ulpevent *sctp_ulpevent_make_send_failed(
 		goto fail;
 
 	/* Pull off the common chunk header and DATA header.  */
-<<<<<<< HEAD
-	skb_pull(skb, sizeof(struct sctp_data_chunk));
-	len -= sizeof(struct sctp_data_chunk);
-=======
 	skb_pull(skb, sctp_datachk_len(&asoc->stream));
 	len -= sctp_datachk_len(&asoc->stream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Embed the event fields inside the cloned skb.  */
 	event = sctp_skb2event(skb);
 	sctp_ulpevent_init(event, MSG_NOTIFICATION, skb->truesize);
 
-<<<<<<< HEAD
-	ssf = (struct sctp_send_failed *)
-		skb_push(skb, sizeof(struct sctp_send_failed));
-=======
 	ssf = skb_push(skb, sizeof(struct sctp_send_failed));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Socket Extensions for SCTP
 	 * 5.3.1.4 SCTP_SEND_FAILED
@@ -642,8 +530,6 @@ fail:
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 struct sctp_ulpevent *sctp_ulpevent_make_send_failed_event(
 	const struct sctp_association *asoc, struct sctp_chunk *chunk,
 	__u16 flags, __u32 error, gfp_t gfp)
@@ -683,7 +569,6 @@ struct sctp_ulpevent *sctp_ulpevent_make_send_failed_event(
 	return event;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Create and initialize a SCTP_SHUTDOWN_EVENT notification.
  *
  * Socket Extensions for SCTP - draft-01
@@ -703,12 +588,7 @@ struct sctp_ulpevent *sctp_ulpevent_make_shutdown_event(
 		goto fail;
 
 	skb = sctp_event2skb(event);
-<<<<<<< HEAD
-	sse = (struct sctp_shutdown_event *)
-		skb_put(skb, sizeof(struct sctp_shutdown_event));
-=======
 	sse = skb_put(skb, sizeof(struct sctp_shutdown_event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Socket Extensions for SCTP
 	 * 5.3.1.5 SCTP_SHUTDOWN_EVENT
@@ -770,12 +650,7 @@ struct sctp_ulpevent *sctp_ulpevent_make_adaptation_indication(
 		goto fail;
 
 	skb = sctp_event2skb(event);
-<<<<<<< HEAD
-	sai = (struct sctp_adaptation_event *)
-		skb_put(skb, sizeof(struct sctp_adaptation_event));
-=======
 	sai = skb_put(skb, sizeof(struct sctp_adaptation_event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sai->sai_type = SCTP_ADAPTATION_INDICATION;
 	sai->sai_flags = 0;
@@ -802,14 +677,9 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 						gfp_t gfp)
 {
 	struct sctp_ulpevent *event = NULL;
-<<<<<<< HEAD
-	struct sk_buff *skb;
-	size_t padding, len;
-=======
 	struct sk_buff *skb = chunk->skb;
 	struct sock *sk = asoc->base.sk;
 	size_t padding, datalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rx_count;
 
 	/*
@@ -820,23 +690,12 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	if (asoc->ep->rcvbuf_policy)
 		rx_count = atomic_read(&asoc->rmem_alloc);
 	else
-<<<<<<< HEAD
-		rx_count = atomic_read(&asoc->base.sk->sk_rmem_alloc);
-
-	if (rx_count >= asoc->base.sk->sk_rcvbuf) {
-
-		if ((asoc->base.sk->sk_userlocks & SOCK_RCVBUF_LOCK) ||
-		    (!sk_rmem_schedule(asoc->base.sk, chunk->skb->truesize)))
-			goto fail;
-	}
-=======
 		rx_count = atomic_read(&sk->sk_rmem_alloc);
 
 	datalen = ntohs(chunk->chunk_hdr->length);
 
 	if (rx_count >= sk->sk_rcvbuf || !sk_rmem_schedule(sk, skb, datalen))
 		goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clone the original skb, sharing the data.  */
 	skb = skb_clone(chunk->skb, gfp);
@@ -847,12 +706,8 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	 * can mark it as received so the tsn_map is updated correctly.
 	 */
 	if (sctp_tsnmap_mark(&asoc->peer.tsn_map,
-<<<<<<< HEAD
-			     ntohl(chunk->subh.data_hdr->tsn)))
-=======
 			     ntohl(chunk->subh.data_hdr->tsn),
 			     chunk->transport))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_mark;
 
 	/* First calculate the padding, so we don't inadvertently
@@ -867,12 +722,7 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	 * The sender should never pad with more than 3 bytes.  The receiver
 	 * MUST ignore the padding bytes.
 	 */
-<<<<<<< HEAD
-	len = ntohs(chunk->chunk_hdr->length);
-	padding = WORD_ROUND(len) - len;
-=======
 	padding = SCTP_PAD4(datalen) - datalen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fixup cloned skb with just this chunks data.  */
 	skb_trim(skb, chunk->chunk_end - padding - skb->data);
@@ -886,13 +736,6 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	 */
 	sctp_ulpevent_init(event, 0, skb->len + sizeof(struct sk_buff));
 
-<<<<<<< HEAD
-	sctp_ulpevent_receive_data(event, asoc);
-
-	event->stream = ntohs(chunk->subh.data_hdr->stream);
-	event->ssn = ntohs(chunk->subh.data_hdr->ssn);
-	event->ppid = chunk->subh.data_hdr->ppid;
-=======
 	/* And hold the chunk as we need it for getting the IP headers
 	 * later in recvmsg
 	 */
@@ -902,17 +745,12 @@ struct sctp_ulpevent *sctp_ulpevent_make_rcvmsg(struct sctp_association *asoc,
 	sctp_ulpevent_receive_data(event, asoc);
 
 	event->stream = ntohs(chunk->subh.data_hdr->stream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chunk->chunk_hdr->flags & SCTP_DATA_UNORDERED) {
 		event->flags |= SCTP_UNORDERED;
 		event->cumtsn = sctp_tsnmap_get_ctsn(&asoc->peer.tsn_map);
 	}
 	event->tsn = ntohl(chunk->subh.data_hdr->tsn);
 	event->msg_flags |= chunk->chunk_hdr->flags;
-<<<<<<< HEAD
-	event->iif = sctp_chunk_iif(chunk);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return event;
 
@@ -931,14 +769,9 @@ fail:
  *   various events.
  */
 struct sctp_ulpevent *sctp_ulpevent_make_pdapi(
-<<<<<<< HEAD
-	const struct sctp_association *asoc, __u32 indication,
-	gfp_t gfp)
-=======
 					const struct sctp_association *asoc,
 					__u32 indication, __u32 sid, __u32 seq,
 					__u32 flags, gfp_t gfp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sctp_ulpevent *event;
 	struct sctp_pdapi_event *pd;
@@ -950,12 +783,7 @@ struct sctp_ulpevent *sctp_ulpevent_make_pdapi(
 		goto fail;
 
 	skb = sctp_event2skb(event);
-<<<<<<< HEAD
-	pd = (struct sctp_pdapi_event *)
-		skb_put(skb, sizeof(struct sctp_pdapi_event));
-=======
 	pd = skb_put(skb, sizeof(struct sctp_pdapi_event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pdapi_type
 	 *   It should be SCTP_PARTIAL_DELIVERY_EVENT
@@ -964,13 +792,9 @@ struct sctp_ulpevent *sctp_ulpevent_make_pdapi(
 	 *   Currently unused.
 	 */
 	pd->pdapi_type = SCTP_PARTIAL_DELIVERY_EVENT;
-<<<<<<< HEAD
-	pd->pdapi_flags = 0;
-=======
 	pd->pdapi_flags = flags;
 	pd->pdapi_stream = sid;
 	pd->pdapi_seq = seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pdapi_length: 32 bits (unsigned integer)
 	 *
@@ -1012,12 +836,7 @@ struct sctp_ulpevent *sctp_ulpevent_make_authkey(
 		goto fail;
 
 	skb = sctp_event2skb(event);
-<<<<<<< HEAD
-	ak = (struct sctp_authkey_event *)
-		skb_put(skb, sizeof(struct sctp_authkey_event));
-=======
 	ak = skb_put(skb, sizeof(struct sctp_authkey_event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ak->auth_type = SCTP_AUTHENTICATION_EVENT;
 	ak->auth_flags = 0;
@@ -1055,12 +874,7 @@ struct sctp_ulpevent *sctp_ulpevent_make_sender_dry_event(
 		return NULL;
 
 	skb = sctp_event2skb(event);
-<<<<<<< HEAD
-	sdry = (struct sctp_sender_dry_event *)
-		skb_put(skb, sizeof(struct sctp_sender_dry_event));
-=======
 	sdry = skb_put(skb, sizeof(struct sctp_sender_dry_event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sdry->sender_dry_type = SCTP_SENDER_DRY_EVENT;
 	sdry->sender_dry_flags = 0;
@@ -1071,8 +885,6 @@ struct sctp_ulpevent *sctp_ulpevent_make_sender_dry_event(
 	return event;
 }
 
-<<<<<<< HEAD
-=======
 struct sctp_ulpevent *sctp_ulpevent_make_stream_reset_event(
 	const struct sctp_association *asoc, __u16 flags, __u16 stream_num,
 	__be16 *stream_list, gfp_t gfp)
@@ -1156,7 +968,6 @@ struct sctp_ulpevent *sctp_ulpevent_make_stream_change_event(
 	return event;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Return the notification type, assuming this is a notification
  * event.
  */
@@ -1198,8 +1009,6 @@ void sctp_ulpevent_read_sndrcvinfo(const struct sctp_ulpevent *event,
 		 sizeof(sinfo), &sinfo);
 }
 
-<<<<<<< HEAD
-=======
 /* RFC6458, Section 5.3.5 SCTP Receive Information Structure
  * (SCTP_SNDRCV)
  */
@@ -1263,7 +1072,6 @@ void sctp_ulpevent_read_nxtinfo(const struct sctp_ulpevent *event,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Do accounting for bytes received and hold a reference to the association
  * for each skb.
  */
@@ -1322,10 +1130,7 @@ static void sctp_ulpevent_release_data(struct sctp_ulpevent *event)
 
 done:
 	sctp_assoc_rwnd_increase(event->asoc, len);
-<<<<<<< HEAD
-=======
 	sctp_chunk_put(event->chunk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sctp_ulpevent_release_owner(event);
 }
 
@@ -1348,10 +1153,7 @@ static void sctp_ulpevent_release_frag_data(struct sctp_ulpevent *event)
 	}
 
 done:
-<<<<<<< HEAD
-=======
 	sctp_chunk_put(event->chunk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sctp_ulpevent_release_owner(event);
 }
 

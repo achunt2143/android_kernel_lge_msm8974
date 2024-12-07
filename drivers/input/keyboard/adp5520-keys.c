@@ -1,32 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Keypad driver for Analog Devices ADP5520 MFD PMICs
  *
  * Copyright 2009 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/mfd/adp5520.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct adp5520_keys {
 	struct input_dev *input;
@@ -83,15 +68,9 @@ static int adp5520_keys_notifier(struct notifier_block *nb,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit adp5520_keys_probe(struct platform_device *pdev)
-{
-	struct adp5520_keys_platform_data *pdata = pdev->dev.platform_data;
-=======
 static int adp5520_keys_probe(struct platform_device *pdev)
 {
 	struct adp5520_keys_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input;
 	struct adp5520_keys *dev;
 	int ret, i;
@@ -102,11 +81,7 @@ static int adp5520_keys_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (pdata == NULL) {
-=======
 	if (!pdata) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "missing platform data\n");
 		return -EINVAL;
 	}
@@ -114,28 +89,15 @@ static int adp5520_keys_probe(struct platform_device *pdev)
 	if (!(pdata->rows_en_mask && pdata->cols_en_mask))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-	if (dev == NULL) {
-=======
 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
 	if (!dev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "failed to alloc memory\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	input = input_allocate_device();
-	if (!input) {
-		ret = -ENOMEM;
-		goto err;
-	}
-=======
 	input = devm_input_allocate_device(&pdev->dev);
 	if (!input)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->master = pdev->dev.parent;
 	dev->input = input;
@@ -144,11 +106,6 @@ static int adp5520_keys_probe(struct platform_device *pdev)
 	input->phys = "adp5520-keys/input0";
 	input->dev.parent = &pdev->dev;
 
-<<<<<<< HEAD
-	input_set_drvdata(input, dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input->id.bustype = BUS_I2C;
 	input->id.vendor = 0x0001;
 	input->id.product = 0x5520;
@@ -174,11 +131,7 @@ static int adp5520_keys_probe(struct platform_device *pdev)
 	ret = input_register_device(input);
 	if (ret) {
 		dev_err(&pdev->dev, "unable to register input device\n");
-<<<<<<< HEAD
-		goto err;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	en_mask = pdata->rows_en_mask | pdata->cols_en_mask;
@@ -200,12 +153,7 @@ static int adp5520_keys_probe(struct platform_device *pdev)
 
 	if (ret) {
 		dev_err(&pdev->dev, "failed to write\n");
-<<<<<<< HEAD
-		ret = -EIO;
-		goto err1;
-=======
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev->notifier.notifier_call = adp5520_keys_notifier;
@@ -213,59 +161,27 @@ static int adp5520_keys_probe(struct platform_device *pdev)
 			ADP5520_KP_IEN | ADP5520_KR_IEN);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register notifier\n");
-<<<<<<< HEAD
-		goto err1;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, dev);
 	return 0;
-<<<<<<< HEAD
-
-err1:
-	input_unregister_device(input);
-	input = NULL;
-err:
-	input_free_device(input);
-	kfree(dev);
-	return ret;
-}
-
-static int __devexit adp5520_keys_remove(struct platform_device *pdev)
-=======
 }
 
 static void adp5520_keys_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adp5520_keys *dev = platform_get_drvdata(pdev);
 
 	adp5520_unregister_notifier(dev->master, &dev->notifier,
 				ADP5520_KP_IEN | ADP5520_KR_IEN);
-<<<<<<< HEAD
-
-	input_unregister_device(dev->input);
-	kfree(dev);
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver adp5520_keys_driver = {
 	.driver	= {
 		.name	= "adp5520-keys",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= adp5520_keys_probe,
-	.remove		= __devexit_p(adp5520_keys_remove),
-=======
 	},
 	.probe		= adp5520_keys_probe,
 	.remove_new	= adp5520_keys_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(adp5520_keys_driver);
 

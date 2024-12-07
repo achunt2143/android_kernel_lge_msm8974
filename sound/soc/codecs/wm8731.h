@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8731.h  --  WM8731 Soc Audio driver
  *
@@ -10,20 +7,11 @@
  * Author: Richard Purdie <richard@openedhand.com>
  *
  * Based on wm8753.h
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8731_H
 #define _WM8731_H
 
-<<<<<<< HEAD
-=======
 #include <linux/mutex.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
@@ -31,7 +19,6 @@
 struct clk;
 struct snd_pcm_hw_constraint_list;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* WM8731 register space */
 
 #define WM8731_LINVOL   0x00
@@ -48,13 +35,6 @@ struct snd_pcm_hw_constraint_list;
 
 #define WM8731_CACHEREGNUM 	10
 
-<<<<<<< HEAD
-#define WM8731_SYSCLK_XTAL 1
-#define WM8731_SYSCLK_MCLK 2
-
-#define WM8731_DAI		0
-
-=======
 #define WM8731_SYSCLK_MCLK 0
 #define WM8731_SYSCLK_XTAL 1
 
@@ -80,5 +60,4 @@ extern const struct regmap_config wm8731_regmap;
 
 int wm8731_init(struct device *dev, struct wm8731_priv *wm8731);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

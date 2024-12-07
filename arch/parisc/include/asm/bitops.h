@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PARISC_BITOPS_H
 #define _PARISC_BITOPS_H
 
@@ -10,30 +7,11 @@
 #endif
 
 #include <linux/compiler.h>
-<<<<<<< HEAD
-#include <asm/types.h>		/* for BITS_PER_LONG/SHIFT_PER_LONG */
-#include <asm/byteorder.h>
-#include <linux/atomic.h>
-
-/*
- * HP-PARISC specific bit operations
- * for a detailed description of the functions please refer
- * to include/asm-i386/bitops.h or kerneldoc
- */
-
-#define CHOP_SHIFTCOUNT(x) (((unsigned long) (x)) & (BITS_PER_LONG - 1))
-
-
-#define smp_mb__before_clear_bit()      smp_mb()
-#define smp_mb__after_clear_bit()       smp_mb()
-
-=======
 #include <asm/types.h>
 #include <asm/byteorder.h>
 #include <asm/barrier.h>
 #include <linux/atomic.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* See http://marc.theaimsgroup.com/?t=108826637900003 for discussion
  * on use of volatile and __*_bit() (set/clear/change):
  *	*_bit() want use of volatile.
@@ -42,17 +20,10 @@
 
 static __inline__ void set_bit(int nr, volatile unsigned long * addr)
 {
-<<<<<<< HEAD
-	unsigned long mask = 1UL << CHOP_SHIFTCOUNT(nr);
-	unsigned long flags;
-
-	addr += (nr >> SHIFT_PER_LONG);
-=======
 	unsigned long mask = BIT_MASK(nr);
 	unsigned long flags;
 
 	addr += BIT_WORD(nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_atomic_spin_lock_irqsave(addr, flags);
 	*addr |= mask;
 	_atomic_spin_unlock_irqrestore(addr, flags);
@@ -60,37 +31,21 @@ static __inline__ void set_bit(int nr, volatile unsigned long * addr)
 
 static __inline__ void clear_bit(int nr, volatile unsigned long * addr)
 {
-<<<<<<< HEAD
-	unsigned long mask = ~(1UL << CHOP_SHIFTCOUNT(nr));
-	unsigned long flags;
-
-	addr += (nr >> SHIFT_PER_LONG);
-	_atomic_spin_lock_irqsave(addr, flags);
-	*addr &= mask;
-=======
 	unsigned long mask = BIT_MASK(nr);
 	unsigned long flags;
 
 	addr += BIT_WORD(nr);
 	_atomic_spin_lock_irqsave(addr, flags);
 	*addr &= ~mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_atomic_spin_unlock_irqrestore(addr, flags);
 }
 
 static __inline__ void change_bit(int nr, volatile unsigned long * addr)
 {
-<<<<<<< HEAD
-	unsigned long mask = 1UL << CHOP_SHIFTCOUNT(nr);
-	unsigned long flags;
-
-	addr += (nr >> SHIFT_PER_LONG);
-=======
 	unsigned long mask = BIT_MASK(nr);
 	unsigned long flags;
 
 	addr += BIT_WORD(nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_atomic_spin_lock_irqsave(addr, flags);
 	*addr ^= mask;
 	_atomic_spin_unlock_irqrestore(addr, flags);
@@ -98,20 +53,12 @@ static __inline__ void change_bit(int nr, volatile unsigned long * addr)
 
 static __inline__ int test_and_set_bit(int nr, volatile unsigned long * addr)
 {
-<<<<<<< HEAD
-	unsigned long mask = 1UL << CHOP_SHIFTCOUNT(nr);
-=======
 	unsigned long mask = BIT_MASK(nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long old;
 	unsigned long flags;
 	int set;
 
-<<<<<<< HEAD
-	addr += (nr >> SHIFT_PER_LONG);
-=======
 	addr += BIT_WORD(nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_atomic_spin_lock_irqsave(addr, flags);
 	old = *addr;
 	set = (old & mask) ? 1 : 0;
@@ -124,20 +71,12 @@ static __inline__ int test_and_set_bit(int nr, volatile unsigned long * addr)
 
 static __inline__ int test_and_clear_bit(int nr, volatile unsigned long * addr)
 {
-<<<<<<< HEAD
-	unsigned long mask = 1UL << CHOP_SHIFTCOUNT(nr);
-=======
 	unsigned long mask = BIT_MASK(nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long old;
 	unsigned long flags;
 	int set;
 
-<<<<<<< HEAD
-	addr += (nr >> SHIFT_PER_LONG);
-=======
 	addr += BIT_WORD(nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_atomic_spin_lock_irqsave(addr, flags);
 	old = *addr;
 	set = (old & mask) ? 1 : 0;
@@ -150,19 +89,11 @@ static __inline__ int test_and_clear_bit(int nr, volatile unsigned long * addr)
 
 static __inline__ int test_and_change_bit(int nr, volatile unsigned long * addr)
 {
-<<<<<<< HEAD
-	unsigned long mask = 1UL << CHOP_SHIFTCOUNT(nr);
-	unsigned long oldbit;
-	unsigned long flags;
-
-	addr += (nr >> SHIFT_PER_LONG);
-=======
 	unsigned long mask = BIT_MASK(nr);
 	unsigned long oldbit;
 	unsigned long flags;
 
 	addr += BIT_WORD(nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_atomic_spin_lock_irqsave(addr, flags);
 	oldbit = *addr;
 	*addr = oldbit ^ mask;
@@ -173,11 +104,6 @@ static __inline__ int test_and_change_bit(int nr, volatile unsigned long * addr)
 
 #include <asm-generic/bitops/non-atomic.h>
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * __ffs - find first bit in word. returns 0 to "BITS_PER_LONG-1".
  * @word: The word to search
@@ -245,11 +171,7 @@ static __inline__ int ffs(int x)
  * fls(0) = 0, fls(1) = 1, fls(0x80000000) = 32.
  */
 
-<<<<<<< HEAD
-static __inline__ int fls(int x)
-=======
 static __inline__ int fls(unsigned int x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	if (!x)
@@ -281,22 +203,7 @@ static __inline__ int fls(unsigned int x)
 #include <asm-generic/bitops/hweight.h>
 #include <asm-generic/bitops/lock.h>
 #include <asm-generic/bitops/sched.h>
-<<<<<<< HEAD
-
-#endif /* __KERNEL__ */
-
-#include <asm-generic/bitops/find.h>
-
-#ifdef __KERNEL__
-
 #include <asm-generic/bitops/le.h>
 #include <asm-generic/bitops/ext2-atomic-setbit.h>
 
-#endif	/* __KERNEL__ */
-
-=======
-#include <asm-generic/bitops/le.h>
-#include <asm-generic/bitops/ext2-atomic-setbit.h>
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PARISC_BITOPS_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2004 ICT CAS
  * Author: Li xiaoyu, ICT CAS
@@ -9,14 +6,6 @@
  *
  * Copyright (C) 2007 Lemote, Inc. & Institute of Computing Technology
  * Author: Fuxin Zhang, zhangfx@lemote.com
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/pci.h>
@@ -26,11 +15,7 @@
 /* South bridge slot number is set by the pci probe process */
 static u8 sb_slot = 5;
 
-<<<<<<< HEAD
-int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-=======
 int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int irq = 0;
 
@@ -59,11 +44,7 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __init loongson2e_nec_fixup(struct pci_dev *pdev)
-=======
 static void loongson2e_nec_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val;
 
@@ -75,11 +56,7 @@ static void loongson2e_nec_fixup(struct pci_dev *pdev)
 	pci_write_config_dword(pdev, 0xe4, 1 << 5);
 }
 
-<<<<<<< HEAD
-static void __init loongson2e_686b_func0_fixup(struct pci_dev *pdev)
-=======
 static void loongson2e_686b_func0_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char c;
 
@@ -154,11 +131,7 @@ static void loongson2e_686b_func0_fixup(struct pci_dev *pdev)
 	printk(KERN_INFO"via686b fix: ISA bridge done\n");
 }
 
-<<<<<<< HEAD
-static void __init loongson2e_686b_func1_fixup(struct pci_dev *pdev)
-=======
 static void loongson2e_686b_func1_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_INFO"via686b fix: IDE\n");
 
@@ -175,11 +148,7 @@ static void loongson2e_686b_func1_fixup(struct pci_dev *pdev)
 	/* disable read prefetch/write post buffers */
 	pci_write_config_byte(pdev, 0x41, 0x02);
 
-<<<<<<< HEAD
-	/* use 3/4 as fifo thresh hold  */
-=======
 	/* use 3/4 as fifo thresh hold	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_byte(pdev, 0x43, 0x0a);
 	pci_write_config_byte(pdev, 0x44, 0x00);
 
@@ -195,31 +164,19 @@ static void loongson2e_686b_func1_fixup(struct pci_dev *pdev)
 	printk(KERN_INFO"via686b fix: IDE done\n");
 }
 
-<<<<<<< HEAD
-static void __init loongson2e_686b_func2_fixup(struct pci_dev *pdev)
-=======
 static void loongson2e_686b_func2_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* irq routing */
 	pci_write_config_byte(pdev, PCI_INTERRUPT_LINE, 10);
 }
 
-<<<<<<< HEAD
-static void __init loongson2e_686b_func3_fixup(struct pci_dev *pdev)
-=======
 static void loongson2e_686b_func3_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* irq routing */
 	pci_write_config_byte(pdev, PCI_INTERRUPT_LINE, 11);
 }
 
-<<<<<<< HEAD
-static void __init loongson2e_686b_func5_fixup(struct pci_dev *pdev)
-=======
 static void loongson2e_686b_func5_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val;
 	unsigned char c;

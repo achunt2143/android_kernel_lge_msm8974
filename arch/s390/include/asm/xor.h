@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-#include <asm-generic/xor.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Optimited xor routines
@@ -22,4 +19,3 @@ do {							\
 #define XOR_SELECT_TEMPLATE(FASTEST)	(&xor_block_xc)
 
 #endif /* _ASM_S390_XOR_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -39,10 +39,6 @@
 #include <linux/serial.h>
 #include <linux/serial_reg.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <asm/system.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include <linux/device.h>
@@ -71,11 +67,7 @@ MODULE_FIRMWARE("BT3CPCC.bin");
 /* ======================== Local structures ======================== */
 
 
-<<<<<<< HEAD
-typedef struct bt3c_info_t {
-=======
 struct bt3c_info {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcmcia_device *p_dev;
 
 	struct hci_dev *hdev;
@@ -88,11 +80,7 @@ struct bt3c_info {
 	unsigned long rx_state;
 	unsigned long rx_count;
 	struct sk_buff *rx_skb;
-<<<<<<< HEAD
-} bt3c_info_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static int bt3c_config(struct pcmcia_device *link);
@@ -187,11 +175,7 @@ static int bt3c_write(unsigned int iobase, int fifo_size, __u8 *buf, int len)
 }
 
 
-<<<<<<< HEAD
-static void bt3c_write_wakeup(bt3c_info_t *info)
-=======
 static void bt3c_write_wakeup(struct bt3c_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!info) {
 		BT_ERR("Unknown device");
@@ -202,26 +186,15 @@ static void bt3c_write_wakeup(struct bt3c_info *info)
 		return;
 
 	do {
-<<<<<<< HEAD
-		register unsigned int iobase = info->p_dev->resource[0]->start;
-		register struct sk_buff *skb;
-		register int len;
-=======
 		unsigned int iobase = info->p_dev->resource[0]->start;
 		register struct sk_buff *skb;
 		int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!pcmcia_dev_present(info->p_dev))
 			break;
 
-<<<<<<< HEAD
-
-		if (!(skb = skb_dequeue(&(info->txq)))) {
-=======
 		skb = skb_dequeue(&(info->txq));
 		if (!skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			clear_bit(XMIT_SENDING, &(info->tx_state));
 			break;
 		}
@@ -229,14 +202,8 @@ static void bt3c_write_wakeup(struct bt3c_info *info)
 		/* Send frame */
 		len = bt3c_write(iobase, 256, skb->data, skb->len);
 
-<<<<<<< HEAD
-		if (len != skb->len) {
-			BT_ERR("Very strange");
-		}
-=======
 		if (len != skb->len)
 			BT_ERR("Very strange");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		kfree_skb(skb);
 
@@ -246,11 +213,7 @@ static void bt3c_write_wakeup(struct bt3c_info *info)
 }
 
 
-<<<<<<< HEAD
-static void bt3c_receive(bt3c_info_t *info)
-=======
 static void bt3c_receive(struct bt3c_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int iobase;
 	int size = 0, avail;
@@ -263,10 +226,6 @@ static void bt3c_receive(struct bt3c_info *info)
 	iobase = info->p_dev->resource[0]->start;
 
 	avail = bt3c_read(iobase, 0x7006);
-<<<<<<< HEAD
-	//printk("bt3c_cs: receiving %d bytes\n", avail);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bt3c_address(iobase, 0x7480);
 	while (size < avail) {
@@ -274,18 +233,11 @@ static void bt3c_receive(struct bt3c_info *info)
 		info->hdev->stat.byte_rx++;
 
 		/* Allocate packet */
-<<<<<<< HEAD
-		if (info->rx_skb == NULL) {
-			info->rx_state = RECV_WAIT_PACKET_TYPE;
-			info->rx_count = 0;
-			if (!(info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC))) {
-=======
 		if (!info->rx_skb) {
 			info->rx_state = RECV_WAIT_PACKET_TYPE;
 			info->rx_count = 0;
 			info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC);
 			if (!info->rx_skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				BT_ERR("Can't allocate mem for new packet");
 				return;
 			}
@@ -294,19 +246,10 @@ static void bt3c_receive(struct bt3c_info *info)
 
 		if (info->rx_state == RECV_WAIT_PACKET_TYPE) {
 
-<<<<<<< HEAD
-			info->rx_skb->dev = (void *) info->hdev;
-			bt_cb(info->rx_skb)->pkt_type = inb(iobase + DATA_L);
-			inb(iobase + DATA_H);
-			//printk("bt3c: PACKET_TYPE=%02x\n", bt_cb(info->rx_skb)->pkt_type);
-
-			switch (bt_cb(info->rx_skb)->pkt_type) {
-=======
 			hci_skb_pkt_type(info->rx_skb) = inb(iobase + DATA_L);
 			inb(iobase + DATA_H);
 
 			switch (hci_skb_pkt_type(info->rx_skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			case HCI_EVENT_PKT:
 				info->rx_state = RECV_WAIT_EVENT_HEADER;
@@ -325,15 +268,9 @@ static void bt3c_receive(struct bt3c_info *info)
 
 			default:
 				/* Unknown packet */
-<<<<<<< HEAD
-				BT_ERR("Unknown HCI packet with type 0x%02x received", bt_cb(info->rx_skb)->pkt_type);
-				info->hdev->stat.err_rx++;
-				clear_bit(HCI_RUNNING, &(info->hdev->flags));
-=======
 				BT_ERR("Unknown HCI packet with type 0x%02x received",
 				       hci_skb_pkt_type(info->rx_skb));
 				info->hdev->stat.err_rx++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				kfree_skb(info->rx_skb);
 				info->rx_skb = NULL;
@@ -345,11 +282,7 @@ static void bt3c_receive(struct bt3c_info *info)
 
 			__u8 x = inb(iobase + DATA_L);
 
-<<<<<<< HEAD
-			*skb_put(info->rx_skb, 1) = x;
-=======
 			skb_put_u8(info->rx_skb, x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			inb(iobase + DATA_H);
 			info->rx_count--;
 
@@ -382,11 +315,7 @@ static void bt3c_receive(struct bt3c_info *info)
 					break;
 
 				case RECV_WAIT_DATA:
-<<<<<<< HEAD
-					hci_recv_frame(info->rx_skb);
-=======
 					hci_recv_frame(info->hdev, info->rx_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					info->rx_skb = NULL;
 					break;
 
@@ -404,11 +333,7 @@ static void bt3c_receive(struct bt3c_info *info)
 
 static irqreturn_t bt3c_interrupt(int irq, void *dev_inst)
 {
-<<<<<<< HEAD
-	bt3c_info_t *info = dev_inst;
-=======
 	struct bt3c_info *info = dev_inst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int iobase;
 	int iir;
 	irqreturn_t r = IRQ_NONE;
@@ -430,20 +355,12 @@ static irqreturn_t bt3c_interrupt(int irq, void *dev_inst)
 		} else if ((stat & 0xff) != 0xff) {
 			if (stat & 0x0020) {
 				int status = bt3c_read(iobase, 0x7002) & 0x10;
-<<<<<<< HEAD
-				BT_INFO("%s: Antenna %s", info->hdev->name,
-=======
 				bt_dev_info(info->hdev, "Antenna %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							status ? "out" : "in");
 			}
 			if (stat & 0x0001)
 				bt3c_receive(info);
 			if (stat & 0x0002) {
-<<<<<<< HEAD
-				//BT_ERR("Ack (stat=0x%04x)", stat);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				clear_bit(XMIT_SENDING, &(info->tx_state));
 				bt3c_write_wakeup(info);
 			}
@@ -467,11 +384,7 @@ static irqreturn_t bt3c_interrupt(int irq, void *dev_inst)
 
 static int bt3c_hci_flush(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	bt3c_info_t *info = (bt3c_info_t *)(hdev->driver_data);
-=======
 	struct bt3c_info *info = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Drop TX queue */
 	skb_queue_purge(&(info->txq));
@@ -482,52 +395,24 @@ static int bt3c_hci_flush(struct hci_dev *hdev)
 
 static int bt3c_hci_open(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	set_bit(HCI_RUNNING, &(hdev->flags));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 static int bt3c_hci_close(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	if (!test_and_clear_bit(HCI_RUNNING, &(hdev->flags)))
-		return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bt3c_hci_flush(hdev);
 
 	return 0;
 }
 
 
-<<<<<<< HEAD
-static int bt3c_hci_send_frame(struct sk_buff *skb)
-{
-	bt3c_info_t *info;
-	struct hci_dev *hdev = (struct hci_dev *)(skb->dev);
-	unsigned long flags;
-
-	if (!hdev) {
-		BT_ERR("Frame for unknown HCI device (hdev=NULL)");
-		return -ENODEV;
-	}
-
-	info = (bt3c_info_t *) (hdev->driver_data);
-
-	switch (bt_cb(skb)->pkt_type) {
-=======
 static int bt3c_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct bt3c_info *info = hci_get_drvdata(hdev);
 	unsigned long flags;
 
 	switch (hci_skb_pkt_type(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		break;
@@ -537,17 +422,10 @@ static int bt3c_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	case HCI_SCODATA_PKT:
 		hdev->stat.sco_tx++;
 		break;
-<<<<<<< HEAD
-	};
-
-	/* Prepend skb with frame type */
-	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
-=======
 	}
 
 	/* Prepend skb with frame type */
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_tail(&(info->txq), skb);
 
 	spin_lock_irqsave(&(info->lock), flags);
@@ -560,40 +438,18 @@ static int bt3c_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 }
 
 
-<<<<<<< HEAD
-static void bt3c_hci_destruct(struct hci_dev *hdev)
-{
-}
-
-
-static int bt3c_hci_ioctl(struct hci_dev *hdev, unsigned int cmd, unsigned long arg)
-{
-	return -ENOIOCTLCMD;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ======================== Card services HCI interaction ======================== */
 
 
-<<<<<<< HEAD
-static int bt3c_load_firmware(bt3c_info_t *info, const unsigned char *firmware,
-=======
 static int bt3c_load_firmware(struct bt3c_info *info,
 			      const unsigned char *firmware,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      int count)
 {
 	char *ptr = (char *) firmware;
 	char b[9];
-<<<<<<< HEAD
-	unsigned int iobase, size, addr, fcs, tmp;
-=======
 	unsigned int iobase, tmp, tn;
 	unsigned long size, addr, fcs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, err = 0;
 
 	iobase = info->p_dev->resource[0]->start;
@@ -618,17 +474,6 @@ static int bt3c_load_firmware(struct bt3c_info *info,
 
 		memset(b, 0, sizeof(b));
 		memcpy(b, ptr + 2, 2);
-<<<<<<< HEAD
-		size = simple_strtoul(b, NULL, 16);
-
-		memset(b, 0, sizeof(b));
-		memcpy(b, ptr + 4, 8);
-		addr = simple_strtoul(b, NULL, 16);
-
-		memset(b, 0, sizeof(b));
-		memcpy(b, ptr + (size * 2) + 2, 2);
-		fcs = simple_strtoul(b, NULL, 16);
-=======
 		if (kstrtoul(b, 16, &size) < 0)
 			return -EINVAL;
 
@@ -641,18 +486,13 @@ static int bt3c_load_firmware(struct bt3c_info *info,
 		memcpy(b, ptr + (size * 2) + 2, 2);
 		if (kstrtoul(b, 16, &fcs) < 0)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(b, 0, sizeof(b));
 		for (tmp = 0, i = 0; i < size; i++) {
 			memcpy(b, ptr + (i * 2) + 2, 2);
-<<<<<<< HEAD
-			tmp += simple_strtol(b, NULL, 16);
-=======
 			if (kstrtouint(b, 16, &tn))
 				return -EINVAL;
 			tmp += tn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (((tmp + fcs) & 0xff) != 0xff) {
@@ -667,12 +507,8 @@ static int bt3c_load_firmware(struct bt3c_info *info,
 			memset(b, 0, sizeof(b));
 			for (i = 0; i < (size - 4) / 2; i++) {
 				memcpy(b, ptr + (i * 4) + 12, 4);
-<<<<<<< HEAD
-				tmp = simple_strtoul(b, NULL, 16);
-=======
 				if (kstrtouint(b, 16, &tmp))
 					return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bt3c_put(iobase, tmp);
 			}
 		}
@@ -699,11 +535,7 @@ error:
 }
 
 
-<<<<<<< HEAD
-static int bt3c_open(bt3c_info_t *info)
-=======
 static int bt3c_open(struct bt3c_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct firmware *firmware;
 	struct hci_dev *hdev;
@@ -727,19 +559,6 @@ static int bt3c_open(struct bt3c_info *info)
 	info->hdev = hdev;
 
 	hdev->bus = HCI_PCCARD;
-<<<<<<< HEAD
-	hdev->driver_data = info;
-	SET_HCIDEV_DEV(hdev, &info->p_dev->dev);
-
-	hdev->open     = bt3c_hci_open;
-	hdev->close    = bt3c_hci_close;
-	hdev->flush    = bt3c_hci_flush;
-	hdev->send     = bt3c_hci_send_frame;
-	hdev->destruct = bt3c_hci_destruct;
-	hdev->ioctl    = bt3c_hci_ioctl;
-
-	hdev->owner = THIS_MODULE;
-=======
 	hci_set_drvdata(hdev, info);
 	SET_HCIDEV_DEV(hdev, &info->p_dev->dev);
 
@@ -747,7 +566,6 @@ static int bt3c_open(struct bt3c_info *info)
 	hdev->close = bt3c_hci_close;
 	hdev->flush = bt3c_hci_flush;
 	hdev->send  = bt3c_hci_send_frame;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load firmware */
 	err = request_firmware(&firmware, "BT3CPCC.bin", &info->p_dev->dev);
@@ -784,11 +602,7 @@ error:
 }
 
 
-<<<<<<< HEAD
-static int bt3c_close(bt3c_info_t *info)
-=======
 static int bt3c_close(struct bt3c_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hci_dev *hdev = info->hdev;
 
@@ -797,13 +611,7 @@ static int bt3c_close(struct bt3c_info *info)
 
 	bt3c_hci_close(hdev);
 
-<<<<<<< HEAD
-	if (hci_unregister_dev(hdev) < 0)
-		BT_ERR("Can't unregister HCI device %s", hdev->name);
-
-=======
 	hci_unregister_dev(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hci_free_dev(hdev);
 
 	return 0;
@@ -811,17 +619,10 @@ static int bt3c_close(struct bt3c_info *info)
 
 static int bt3c_probe(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bt3c_info_t *info;
-
-	/* Create new info device */
-	info = kzalloc(sizeof(*info), GFP_KERNEL);
-=======
 	struct bt3c_info *info;
 
 	/* Create new info device */
 	info = devm_kzalloc(&link->dev, sizeof(*info), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 
@@ -837,25 +638,14 @@ static int bt3c_probe(struct pcmcia_device *link)
 
 static void bt3c_detach(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bt3c_info_t *info = link->priv;
-
 	bt3c_release(link);
-	kfree(info);
-=======
-	bt3c_release(link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int bt3c_check_config(struct pcmcia_device *p_dev, void *priv_data)
 {
 	int *try = priv_data;
 
-<<<<<<< HEAD
-	if (try == 0)
-=======
 	if (!try)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p_dev->io_lines = 16;
 
 	if ((p_dev->resource[0]->end != 8) || (p_dev->resource[0]->start == 0))
@@ -892,34 +682,21 @@ static int bt3c_check_config_notpicky(struct pcmcia_device *p_dev,
 
 static int bt3c_config(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bt3c_info_t *info = link->priv;
-=======
 	struct bt3c_info *info = link->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	unsigned long try;
 
 	/* First pass: look for a config entry that looks normal.
-<<<<<<< HEAD
-	   Two tries: without IO aliases, then with aliases */
-=======
 	 * Two tries: without IO aliases, then with aliases
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (try = 0; try < 2; try++)
 		if (!pcmcia_loop_config(link, bt3c_check_config, (void *) try))
 			goto found_port;
 
 	/* Second pass: try to find an entry that isn't picky about
-<<<<<<< HEAD
-	   its base address, then try to grab any standard serial port
-	   address, and finally try to get any free port. */
-=======
 	 * its base address, then try to grab any standard serial port
 	 * address, and finally try to get any free port.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pcmcia_loop_config(link, bt3c_check_config_notpicky, NULL))
 		goto found_port;
 
@@ -948,11 +725,7 @@ failed:
 
 static void bt3c_release(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bt3c_info_t *info = link->priv;
-=======
 	struct bt3c_info *info = link->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bt3c_close(info);
 
@@ -960,11 +733,7 @@ static void bt3c_release(struct pcmcia_device *link)
 }
 
 
-<<<<<<< HEAD
-static struct pcmcia_device_id bt3c_ids[] = {
-=======
 static const struct pcmcia_device_id bt3c_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_DEVICE_PROD_ID13("3COM", "Bluetooth PC Card", 0xefce0a31, 0xd4ce9b02),
 	PCMCIA_DEVICE_NULL
 };
@@ -977,21 +746,4 @@ static struct pcmcia_driver bt3c_driver = {
 	.remove		= bt3c_detach,
 	.id_table	= bt3c_ids,
 };
-<<<<<<< HEAD
-
-static int __init init_bt3c_cs(void)
-{
-	return pcmcia_register_driver(&bt3c_driver);
-}
-
-
-static void __exit exit_bt3c_cs(void)
-{
-	pcmcia_unregister_driver(&bt3c_driver);
-}
-
-module_init(init_bt3c_cs);
-module_exit(exit_bt3c_cs);
-=======
 module_pcmcia_driver(bt3c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

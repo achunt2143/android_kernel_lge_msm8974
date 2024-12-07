@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -25,21 +7,13 @@
  * Copyright (c) 2014-2015 QLogic Corporation
  * All rights reserved
  * www.qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __BFA_DEFS_CNA_H__
 #define __BFA_DEFS_CNA_H__
 
 #include "bfa_defs.h"
 
-<<<<<<< HEAD
-/**
- * @brief
- * FC physical port statistics.
- */
-=======
 /* FC physical port statistics. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_port_fc_stats {
 	u64	secs_reset;	/*!< Seconds since stats is reset */
 	u64	tx_frames;	/*!< Tx frames			*/
@@ -75,14 +49,7 @@ struct bfa_port_fc_stats {
 	u64	bbsc_link_resets; /*!< Credit Recovery-Link Resets   */
 };
 
-<<<<<<< HEAD
-/**
- * @brief
- * Eth Physical Port statistics.
- */
-=======
 /* Eth Physical Port statistics. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_port_eth_stats {
 	u64	secs_reset;	/*!< Seconds since stats is reset */
 	u64	frame_64;	/*!< Frames 64 bytes		*/
@@ -128,24 +95,12 @@ struct bfa_port_eth_stats {
 	u64	tx_iscsi_zero_pause; /*!< Tx iSCSI zero pause	*/
 };
 
-<<<<<<< HEAD
-/**
- * @brief
- *		Port statistics.
- */
-=======
 /* Port statistics. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 union bfa_port_stats_u {
 	struct bfa_port_fc_stats fc;
 	struct bfa_port_eth_stats eth;
 };
 
-<<<<<<< HEAD
-#pragma pack(1)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_CEE_LLDP_MAX_STRING_LEN (128)
 #define BFA_CEE_DCBX_MAX_PRIORITY	(8)
 #define BFA_CEE_DCBX_MAX_PGID		(8)
@@ -168,15 +123,9 @@ struct bfa_cee_lldp_str {
 	u8 len;
 	u8 rsvd[2];
 	u8 value[BFA_CEE_LLDP_MAX_STRING_LEN];
-<<<<<<< HEAD
-};
-
-/* LLDP paramters */
-=======
 } __packed;
 
 /* LLDP parameters */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_cee_lldp_cfg {
 	struct bfa_cee_lldp_str chassis_id;
 	struct bfa_cee_lldp_str port_id;
@@ -186,11 +135,7 @@ struct bfa_cee_lldp_cfg {
 	struct bfa_cee_lldp_str mgmt_addr;
 	u16 time_to_live;
 	u16 enabled_system_cap;
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum bfa_cee_dcbx_version {
 	DCBX_PROTOCOL_PRECEE	= 1,
@@ -216,11 +161,7 @@ struct bfa_cee_dcbx_cfg {
 	u8 lls_fcoe; /* FCoE Logical Link Status */
 	u8 lls_lan; /* LAN Logical Link Status */
 	u8 rsvd[2];
-<<<<<<< HEAD
-};
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CEE status */
 /* Making this to tri-state for the benefit of port list command */
@@ -237,19 +178,11 @@ struct bfa_cee_attr {
 	u8 error_reason;
 	struct bfa_cee_lldp_cfg lldp_remote;
 	struct bfa_cee_dcbx_cfg dcbx_remote;
-<<<<<<< HEAD
-	mac_t src_mac;
-	u8 link_speed;
-	u8 nw_priority;
-	u8 filler[2];
-};
-=======
 	u8 src_mac[ETH_ALEN];
 	u8 link_speed;
 	u8 nw_priority;
 	u8 filler[2];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* LLDP/DCBX/CEE Statistics */
 struct bfa_cee_stats {
@@ -271,12 +204,6 @@ struct bfa_cee_stats {
 	u32	cee_status_up;		/*!< CEE status up */
 	u32	cee_hw_cfg_changed;	/*!< CEE hw cfg changed */
 	u32	cee_rx_invalid_cfg;	/*!< CEE invalid cfg */
-<<<<<<< HEAD
-};
-
-#pragma pack()
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __BFA_DEFS_CNA_H__ */

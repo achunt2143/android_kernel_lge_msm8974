@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* central.c: Central FHC driver for Sunfire/Starfire/Wildfire.
  *
  * Copyright (C) 1997, 1999, 2008 David S. Miller (davem@davemloft.net)
@@ -13,11 +10,7 @@
 #include <linux/export.h>
 #include <linux/string.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 
 #include <asm/fhc.h>
@@ -41,11 +34,7 @@ struct fhc {
 	struct platform_device	leds_pdev;
 };
 
-<<<<<<< HEAD
-static int __devinit clock_board_calc_nslots(struct clock_board *p)
-=======
 static int clock_board_calc_nslots(struct clock_board *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 reg = upa_readb(p->clock_regs + CLOCK_STAT1) & 0xc0;
 
@@ -66,21 +55,13 @@ static int clock_board_calc_nslots(struct clock_board *p)
 			else
 				return 5;
 		}
-<<<<<<< HEAD
-		/* Fallthrough */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return 4;
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit clock_board_probe(struct platform_device *op)
-=======
 static int clock_board_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct clock_board *p = kzalloc(sizeof(*p), GFP_KERNEL);
 	int err = -ENOMEM;
@@ -172,19 +153,11 @@ static struct platform_driver clock_board_driver = {
 	.probe		= clock_board_probe,
 	.driver = {
 		.name = "clock_board",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = clock_board_match,
 	},
 };
 
-<<<<<<< HEAD
-static int __devinit fhc_probe(struct platform_device *op)
-=======
 static int fhc_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fhc *p = kzalloc(sizeof(*p), GFP_KERNEL);
 	int err = -ENOMEM;
@@ -195,11 +168,7 @@ static int fhc_probe(struct platform_device *op)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (!strcmp(op->dev.of_node->parent->name, "central"))
-=======
 	if (of_node_name_eq(op->dev.of_node->parent, "central"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->central = true;
 
 	p->pregs = of_ioremap(&op->resource[0], 0,
@@ -288,10 +257,6 @@ static struct platform_driver fhc_driver = {
 	.probe		= fhc_probe,
 	.driver = {
 		.name = "fhc",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = fhc_match,
 	},
 };

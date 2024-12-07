@@ -1,37 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_ARM_TOPOLOGY_H
 #define _ASM_ARM_TOPOLOGY_H
 
 #ifdef CONFIG_ARM_CPU_TOPOLOGY
 
 #include <linux/cpumask.h>
-<<<<<<< HEAD
-
-struct cputopo_arm {
-	int thread_id;
-	int core_id;
-	int socket_id;
-	cpumask_t thread_sibling;
-	cpumask_t core_sibling;
-};
-
-extern struct cputopo_arm cpu_topology[NR_CPUS];
-
-#define topology_physical_package_id(cpu)	(cpu_topology[cpu].socket_id)
-#define topology_core_id(cpu)		(cpu_topology[cpu].core_id)
-#define topology_core_cpumask(cpu)	(&cpu_topology[cpu].core_sibling)
-#define topology_thread_cpumask(cpu)	(&cpu_topology[cpu].thread_sibling)
-
-#define mc_capable()	(cpu_topology[0].socket_id != -1)
-#define smt_capable()	(cpu_topology[0].thread_id != -1)
-
-void init_cpu_topology(void);
-void store_cpu_topology(unsigned int cpuid);
-const struct cpumask *cpu_coregroup_mask(int cpu);
-=======
 #include <linux/arch_topology.h>
 
 /* big.LITTLE switcher is incompatible with frequency invariance */
@@ -52,7 +25,6 @@ const struct cpumask *cpu_coregroup_mask(int cpu);
 /* Replace task scheduler's default thermal pressure API */
 #define arch_scale_thermal_pressure topology_get_thermal_pressure
 #define arch_update_thermal_pressure	topology_update_thermal_pressure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 

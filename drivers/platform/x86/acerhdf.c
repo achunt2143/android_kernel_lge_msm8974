@@ -1,21 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * acerhdf - A driver which monitors the temperature
  *           of the aspire one netbook, turns on/off the fan
  *           as soon as the upper/lower threshold is reached.
  *
-<<<<<<< HEAD
- * (C) 2009 - Peter Feuerer     peter (a) piie.net
- *                              http://piie.net
- *     2009 Borislav Petkov <petkovbb@gmail.com>
-=======
  * (C) 2009 - Peter Kaestle     peter (a) piie.net
  *                              https://piie.net
  *     2009 Borislav Petkov	bp (a) alien8.de
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Inspired by and many thanks to:
  *  o acerfand   - Rachel Greenham
@@ -25,23 +16,6 @@
  *  o lkml       - Matthew Garrett
  *               - Borislav Petkov
  *               - Andreas Mohr
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "acerhdf: " fmt
@@ -63,11 +37,7 @@
  */
 #undef START_IN_KERNEL_MODE
 
-<<<<<<< HEAD
-#define DRV_VER "0.5.26"
-=======
 #define DRV_VER "0.7.0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * According to the Atom N270 datasheet,
@@ -76,11 +46,8 @@
  * measured by the on-die thermal monitor are within 0 <= Tj <= 90. So,
  * assume 89°C is critical temperature.
  */
-<<<<<<< HEAD
-=======
 #define ACERHDF_DEFAULT_TEMP_FANON 60000
 #define ACERHDF_DEFAULT_TEMP_FANOFF 53000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACERHDF_TEMP_CRIT 89000
 #define ACERHDF_FAN_OFF 0
 #define ACERHDF_FAN_AUTO 1
@@ -105,15 +72,6 @@ static int kernelmode;
 #endif
 
 static unsigned int interval = 10;
-<<<<<<< HEAD
-static unsigned int fanon = 60000;
-static unsigned int fanoff = 53000;
-static unsigned int verbose;
-static unsigned int fanstate = ACERHDF_FAN_AUTO;
-static char force_bios[16];
-static char force_product[16];
-static unsigned int prev_interval;
-=======
 static unsigned int fanon = ACERHDF_DEFAULT_TEMP_FANON;
 static unsigned int fanoff = ACERHDF_DEFAULT_TEMP_FANOFF;
 static unsigned int verbose;
@@ -121,37 +79,24 @@ static unsigned int list_supported;
 static unsigned int fanstate = ACERHDF_FAN_AUTO;
 static char force_bios[16];
 static char force_product[16];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct thermal_zone_device *thz_dev;
 static struct thermal_cooling_device *cl_dev;
 static struct platform_device *acerhdf_dev;
 
 module_param(kernelmode, uint, 0);
 MODULE_PARM_DESC(kernelmode, "Kernel mode fan control on / off");
-<<<<<<< HEAD
-module_param(interval, uint, 0600);
-MODULE_PARM_DESC(interval, "Polling interval of temperature check");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(fanon, uint, 0600);
 MODULE_PARM_DESC(fanon, "Turn the fan on above this temperature");
 module_param(fanoff, uint, 0600);
 MODULE_PARM_DESC(fanoff, "Turn the fan off below this temperature");
 module_param(verbose, uint, 0600);
 MODULE_PARM_DESC(verbose, "Enable verbose dmesg output");
-<<<<<<< HEAD
-module_param_string(force_bios, force_bios, 16, 0);
-MODULE_PARM_DESC(force_bios, "Force BIOS version and omit BIOS check");
-module_param_string(force_product, force_product, 16, 0);
-MODULE_PARM_DESC(force_product, "Force BIOS product and omit BIOS check");
-=======
 module_param(list_supported, uint, 0600);
 MODULE_PARM_DESC(list_supported, "List supported models and BIOS versions");
 module_param_string(force_bios, force_bios, 16, 0);
 MODULE_PARM_DESC(force_bios, "Pretend system has this known supported BIOS version");
 module_param_string(force_product, force_product, 16, 0);
 MODULE_PARM_DESC(force_product, "Pretend system is this known supported model");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cmd_off: to switch the fan completely off and check if the fan is off
@@ -163,118 +108,6 @@ struct fancmd {
 	u8 cmd_auto;
 };
 
-<<<<<<< HEAD
-/* BIOS settings */
-struct bios_settings_t {
-	const char *vendor;
-	const char *product;
-	const char *version;
-	unsigned char fanreg;
-	unsigned char tempreg;
-	struct fancmd cmd;
-};
-
-/* Register addresses and values for different BIOS versions */
-static const struct bios_settings_t bios_tbl[] = {
-	/* AOA110 */
-	{"Acer", "AOA110", "v0.3109", 0x55, 0x58, {0x1f, 0x00} },
-	{"Acer", "AOA110", "v0.3114", 0x55, 0x58, {0x1f, 0x00} },
-	{"Acer", "AOA110", "v0.3301", 0x55, 0x58, {0xaf, 0x00} },
-	{"Acer", "AOA110", "v0.3304", 0x55, 0x58, {0xaf, 0x00} },
-	{"Acer", "AOA110", "v0.3305", 0x55, 0x58, {0xaf, 0x00} },
-	{"Acer", "AOA110", "v0.3307", 0x55, 0x58, {0xaf, 0x00} },
-	{"Acer", "AOA110", "v0.3308", 0x55, 0x58, {0x21, 0x00} },
-	{"Acer", "AOA110", "v0.3309", 0x55, 0x58, {0x21, 0x00} },
-	{"Acer", "AOA110", "v0.3310", 0x55, 0x58, {0x21, 0x00} },
-	/* AOA150 */
-	{"Acer", "AOA150", "v0.3114", 0x55, 0x58, {0x1f, 0x00} },
-	{"Acer", "AOA150", "v0.3301", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AOA150", "v0.3304", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AOA150", "v0.3305", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AOA150", "v0.3307", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AOA150", "v0.3308", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AOA150", "v0.3309", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AOA150", "v0.3310", 0x55, 0x58, {0x20, 0x00} },
-	/* LT1005u */
-	{"Acer", "LT-10Q", "v0.3310", 0x55, 0x58, {0x20, 0x00} },
-	/* Acer 1410 */
-	{"Acer", "Aspire 1410", "v0.3108", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v0.3113", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v0.3115", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v0.3117", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v0.3119", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v0.3120", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v1.3204", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v1.3303", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v1.3308", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v1.3310", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1410", "v1.3314", 0x55, 0x58, {0x9e, 0x00} },
-	/* Acer 1810xx */
-	{"Acer", "Aspire 1810TZ", "v0.3108", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v0.3108", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v0.3113", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v0.3113", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v0.3115", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v0.3115", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v0.3117", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v0.3117", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v0.3119", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v0.3119", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v0.3120", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v0.3120", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v1.3204", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v1.3204", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v1.3303", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v1.3303", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v1.3308", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v1.3308", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v1.3310", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v1.3310", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810TZ", "v1.3314", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1810T",  "v1.3314", 0x55, 0x58, {0x9e, 0x00} },
-	/* Acer 531 */
-	{"Acer", "AO531h", "v0.3104", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AO531h", "v0.3201", 0x55, 0x58, {0x20, 0x00} },
-	{"Acer", "AO531h", "v0.3304", 0x55, 0x58, {0x20, 0x00} },
-	/* Acer 751 */
-	{"Acer", "AO751h", "V0.3212", 0x55, 0x58, {0x21, 0x00} },
-	/* Acer 1825 */
-	{"Acer", "Aspire 1825PTZ", "V1.3118", 0x55, 0x58, {0x9e, 0x00} },
-	{"Acer", "Aspire 1825PTZ", "V1.3127", 0x55, 0x58, {0x9e, 0x00} },
-	/* Acer TravelMate 7730 */
-	{"Acer", "TravelMate 7730G", "v0.3509", 0x55, 0x58, {0xaf, 0x00} },
-	/* Gateway */
-	{"Gateway", "AOA110", "v0.3103",  0x55, 0x58, {0x21, 0x00} },
-	{"Gateway", "AOA150", "v0.3103",  0x55, 0x58, {0x20, 0x00} },
-	{"Gateway", "LT31",   "v1.3103",  0x55, 0x58, {0x9e, 0x00} },
-	{"Gateway", "LT31",   "v1.3201",  0x55, 0x58, {0x9e, 0x00} },
-	{"Gateway", "LT31",   "v1.3302",  0x55, 0x58, {0x9e, 0x00} },
-	{"Gateway", "LT31",   "v1.3303t", 0x55, 0x58, {0x9e, 0x00} },
-	/* Packard Bell */
-	{"Packard Bell", "DOA150",  "v0.3104",  0x55, 0x58, {0x21, 0x00} },
-	{"Packard Bell", "DOA150",  "v0.3105",  0x55, 0x58, {0x20, 0x00} },
-	{"Packard Bell", "AOA110",  "v0.3105",  0x55, 0x58, {0x21, 0x00} },
-	{"Packard Bell", "AOA150",  "v0.3105",  0x55, 0x58, {0x20, 0x00} },
-	{"Packard Bell", "ENBFT",   "V1.3118",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "ENBFT",   "V1.3127",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v1.3303",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v0.3120",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v0.3108",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v0.3113",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v0.3115",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v0.3117",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v0.3119",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMU",   "v1.3204",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMA",   "v1.3201",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMA",   "v1.3302",  0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTMA",   "v1.3303t", 0x55, 0x58, {0x9e, 0x00} },
-	{"Packard Bell", "DOTVR46", "v1.3308",  0x55, 0x58, {0x9e, 0x00} },
-	/* pewpew-terminator */
-	{"", "", "", 0, 0, {0, 0} }
-};
-
-static const struct bios_settings_t *bios_cfg __read_mostly;
-=======
 struct manualcmd {
 	u8 mreg;
 	u8 moff;
@@ -441,17 +274,12 @@ static const struct bios_settings bios_tbl[] __initconst = {
 static struct thermal_zone_params acerhdf_zone_params = {
 	.governor_name = "bang_bang",
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int acerhdf_get_temp(int *temp)
 {
 	u8 read_temp;
 
-<<<<<<< HEAD
-	if (ec_read(bios_cfg->tempreg, &read_temp))
-=======
 	if (ec_read(ctrl_cfg.tempreg, &read_temp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	*temp = read_temp * 1000;
@@ -463,17 +291,10 @@ static int acerhdf_get_fanstate(int *state)
 {
 	u8 fan;
 
-<<<<<<< HEAD
-	if (ec_read(bios_cfg->fanreg, &fan))
-		return -EINVAL;
-
-	if (fan != bios_cfg->cmd.cmd_off)
-=======
 	if (ec_read(ctrl_cfg.fanreg, &fan))
 		return -EINVAL;
 
 	if (fan != ctrl_cfg.cmd.cmd_off)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*state = ACERHDF_FAN_AUTO;
 	else
 		*state = ACERHDF_FAN_OFF;
@@ -494,13 +315,6 @@ static void acerhdf_change_fanstate(int state)
 		state = ACERHDF_FAN_AUTO;
 	}
 
-<<<<<<< HEAD
-	cmd = (state == ACERHDF_FAN_OFF) ? bios_cfg->cmd.cmd_off
-					 : bios_cfg->cmd.cmd_auto;
-	fanstate = state;
-
-	ec_write(bios_cfg->fanreg, cmd);
-=======
 	cmd = (state == ACERHDF_FAN_OFF) ? ctrl_cfg.cmd.cmd_off
 					 : ctrl_cfg.cmd.cmd_auto;
 	fanstate = state;
@@ -512,7 +326,6 @@ static void acerhdf_change_fanstate(int state)
 			pr_notice("turning off fan manually\n");
 		ec_write(mcmd.mreg, mcmd.moff);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void acerhdf_check_param(struct thermal_zone_device *thermal)
@@ -523,9 +336,6 @@ static void acerhdf_check_param(struct thermal_zone_device *thermal)
 		fanon = ACERHDF_MAX_FANON;
 	}
 
-<<<<<<< HEAD
-	if (kernelmode && prev_interval != interval) {
-=======
 	if (fanon < fanoff) {
 		pr_err("fanoff temperature (%d) is above fanon temperature (%d), clamping to %d\n",
 		       fanoff, fanon, fanon);
@@ -536,22 +346,14 @@ static void acerhdf_check_param(struct thermal_zone_device *thermal)
 	trips[0].hysteresis  = fanon - fanoff;
 
 	if (kernelmode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (interval > ACERHDF_MAX_INTERVAL) {
 			pr_err("interval too high, set to %d\n",
 			       ACERHDF_MAX_INTERVAL);
 			interval = ACERHDF_MAX_INTERVAL;
 		}
-<<<<<<< HEAD
-		if (verbose)
-			pr_notice("interval changed to: %d\n", interval);
-		thermal->polling_delay = interval*1000;
-		prev_interval = interval;
-=======
 
 		if (verbose)
 			pr_notice("interval changed to: %d\n", interval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -561,20 +363,10 @@ static void acerhdf_check_param(struct thermal_zone_device *thermal)
  * as late as the polling interval is since we can't do that in the respective
  * accessors of the module parameters.
  */
-<<<<<<< HEAD
-static int acerhdf_get_ec_temp(struct thermal_zone_device *thermal,
-			       unsigned long *t)
-{
-	int temp, err = 0;
-
-	acerhdf_check_param(thermal);
-
-=======
 static int acerhdf_get_ec_temp(struct thermal_zone_device *thermal, int *t)
 {
 	int temp, err = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = acerhdf_get_temp(&temp);
 	if (err)
 		return err;
@@ -593,13 +385,9 @@ static int acerhdf_bind(struct thermal_zone_device *thermal,
 	if (cdev != cl_dev)
 		return 0;
 
-<<<<<<< HEAD
-	if (thermal_zone_bind_cooling_device(thermal, 0, cdev)) {
-=======
 	if (thermal_zone_bind_cooling_device(thermal, 0, cdev,
 			THERMAL_NO_LIMIT, THERMAL_NO_LIMIT,
 			THERMAL_WEIGHT_DEFAULT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("error binding cooling dev\n");
 		return -EINVAL;
 	}
@@ -623,54 +411,24 @@ static inline void acerhdf_revert_to_bios_mode(void)
 {
 	acerhdf_change_fanstate(ACERHDF_FAN_AUTO);
 	kernelmode = 0;
-<<<<<<< HEAD
-	if (thz_dev)
-		thz_dev->polling_delay = 0;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_notice("kernel mode fan control OFF\n");
 }
 static inline void acerhdf_enable_kernelmode(void)
 {
 	kernelmode = 1;
 
-<<<<<<< HEAD
-	thz_dev->polling_delay = interval*1000;
-	thermal_zone_device_update(thz_dev);
 	pr_notice("kernel mode fan control ON\n");
 }
 
-static int acerhdf_get_mode(struct thermal_zone_device *thermal,
-			    enum thermal_device_mode *mode)
-{
-	if (verbose)
-		pr_notice("kernel mode fan control %d\n", kernelmode);
-
-	*mode = (kernelmode) ? THERMAL_DEVICE_ENABLED
-			     : THERMAL_DEVICE_DISABLED;
-
-	return 0;
-}
-
-=======
-	pr_notice("kernel mode fan control ON\n");
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * set operation mode;
  * enabled: the thermal layer of the kernel takes care about
  *          the temperature and the fan.
  * disabled: the BIOS takes control of the fan.
  */
-<<<<<<< HEAD
-static int acerhdf_set_mode(struct thermal_zone_device *thermal,
-			    enum thermal_device_mode mode)
-=======
 static int acerhdf_change_mode(struct thermal_zone_device *thermal,
 			       enum thermal_device_mode mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (mode == THERMAL_DEVICE_DISABLED && kernelmode)
 		acerhdf_revert_to_bios_mode();
@@ -680,31 +438,8 @@ static int acerhdf_change_mode(struct thermal_zone_device *thermal,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int acerhdf_get_trip_type(struct thermal_zone_device *thermal, int trip,
-				 enum thermal_trip_type *type)
-{
-	if (trip == 0)
-		*type = THERMAL_TRIP_ACTIVE;
-
-	return 0;
-}
-
-static int acerhdf_get_trip_temp(struct thermal_zone_device *thermal, int trip,
-				 unsigned long *temp)
-{
-	if (trip == 0)
-		*temp = fanon;
-
-	return 0;
-}
-
-static int acerhdf_get_crit_temp(struct thermal_zone_device *thermal,
-				 unsigned long *temperature)
-=======
 static int acerhdf_get_crit_temp(struct thermal_zone_device *thermal,
 				 int *temperature)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	*temperature = ACERHDF_TEMP_CRIT;
 	return 0;
@@ -715,21 +450,10 @@ static struct thermal_zone_device_ops acerhdf_dev_ops = {
 	.bind = acerhdf_bind,
 	.unbind = acerhdf_unbind,
 	.get_temp = acerhdf_get_ec_temp,
-<<<<<<< HEAD
-	.get_mode = acerhdf_get_mode,
-	.set_mode = acerhdf_set_mode,
-	.get_trip_type = acerhdf_get_trip_type,
-	.get_trip_temp = acerhdf_get_trip_temp,
-	.get_crit_temp = acerhdf_get_crit_temp,
-};
-
-
-=======
 	.change_mode = acerhdf_change_mode,
 	.get_crit_temp = acerhdf_get_crit_temp,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cooling device callback functions
  * get maximal fan cooling state
@@ -777,13 +501,7 @@ static int acerhdf_set_cur_state(struct thermal_cooling_device *cdev,
 	}
 
 	if (state == 0) {
-<<<<<<< HEAD
-		/* turn fan off only if below fanoff temperature */
-		if ((cur_state == ACERHDF_FAN_AUTO) &&
-		    (cur_temp < fanoff))
-=======
 		if (cur_state == ACERHDF_FAN_AUTO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			acerhdf_change_fanstate(ACERHDF_FAN_OFF);
 	} else {
 		if (cur_state == ACERHDF_FAN_OFF)
@@ -797,11 +515,7 @@ err_out:
 }
 
 /* bind fan callbacks to fan device */
-<<<<<<< HEAD
-static struct thermal_cooling_device_ops acerhdf_cooling_ops = {
-=======
 static const struct thermal_cooling_device_ops acerhdf_cooling_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_max_state = acerhdf_get_max_state,
 	.get_cur_state = acerhdf_get_cur_state,
 	.set_cur_state = acerhdf_set_cur_state,
@@ -819,16 +533,7 @@ static int acerhdf_suspend(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit acerhdf_probe(struct platform_device *device)
-{
-	return 0;
-}
-
-static int acerhdf_remove(struct platform_device *device)
-=======
 static int acerhdf_probe(struct platform_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -841,35 +546,6 @@ static const struct dev_pm_ops acerhdf_pm_ops = {
 static struct platform_driver acerhdf_driver = {
 	.driver = {
 		.name  = "acerhdf",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.pm    = &acerhdf_pm_ops,
-	},
-	.probe = acerhdf_probe,
-	.remove = acerhdf_remove,
-};
-
-/* checks if str begins with start */
-static int str_starts_with(const char *str, const char *start)
-{
-	unsigned long str_len = 0, start_len = 0;
-
-	str_len = strlen(str);
-	start_len = strlen(start);
-
-	if (str_len >= start_len &&
-			!strncmp(str, start, start_len))
-		return 1;
-
-	return 0;
-}
-
-/* check hardware */
-static int acerhdf_check_hardware(void)
-{
-	char const *vendor, *version, *product;
-	const struct bios_settings_t *bt = NULL;
-=======
 		.pm    = &acerhdf_pm_ops,
 	},
 	.probe = acerhdf_probe,
@@ -881,7 +557,6 @@ static int __init acerhdf_check_hardware(void)
 	char const *vendor, *version, *product;
 	const struct bios_settings *bt = NULL;
 	int found = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get BIOS data */
 	vendor  = dmi_get_system_info(DMI_SYS_VENDOR);
@@ -895,8 +570,6 @@ static int __init acerhdf_check_hardware(void)
 
 	pr_info("Acer Aspire One Fan driver, v.%s\n", DRV_VER);
 
-<<<<<<< HEAD
-=======
 	if (list_supported) {
 		pr_info("List of supported Manufacturer/Model/BIOS:\n");
 		pr_info("---------------------------------------------------\n");
@@ -908,7 +581,6 @@ static int __init acerhdf_check_hardware(void)
 		return -ECANCELED;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (force_bios[0]) {
 		version = force_bios;
 		pr_info("forcing BIOS version: %s\n", version);
@@ -931,61 +603,39 @@ static int __init acerhdf_check_hardware(void)
 		 * check if actual hardware BIOS vendor, product and version
 		 * IDs start with the strings of BIOS table entry
 		 */
-<<<<<<< HEAD
-		if (str_starts_with(vendor, bt->vendor) &&
-				str_starts_with(product, bt->product) &&
-				str_starts_with(version, bt->version)) {
-			bios_cfg = bt;
-=======
 		if (strstarts(vendor, bt->vendor) &&
 		    strstarts(product, bt->product) &&
 		    strstarts(version, bt->version)) {
 			found = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (!bios_cfg) {
-=======
 	if (!found) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("unknown (unsupported) BIOS version %s/%s/%s, please report, aborting!\n",
 		       vendor, product, version);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Copy control settings from BIOS table before we free it. */
 	ctrl_cfg.fanreg = bt->fanreg;
 	ctrl_cfg.tempreg = bt->tempreg;
 	memcpy(&ctrl_cfg.cmd, &bt->cmd, sizeof(struct fancmd));
 	ctrl_cfg.mcmd_enable = bt->mcmd_enable;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * if started with kernel mode off, prevent the kernel from switching
 	 * off the fan
 	 */
 	if (!kernelmode) {
 		pr_notice("Fan control off, to enable do:\n");
-<<<<<<< HEAD
-		pr_notice("echo -n \"enabled\" > /sys/class/thermal/thermal_zone0/mode\n");
-=======
 		pr_notice("echo -n \"enabled\" > /sys/class/thermal/thermal_zoneN/mode # N=0,1,2...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int acerhdf_register_platform(void)
-=======
 static int __init acerhdf_register_platform(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -993,11 +643,7 @@ static int __init acerhdf_register_platform(void)
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	acerhdf_dev = platform_device_alloc("acerhdf", -1);
-=======
 	acerhdf_dev = platform_device_alloc("acerhdf", PLATFORM_DEVID_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!acerhdf_dev) {
 		err = -ENOMEM;
 		goto err_device_alloc;
@@ -1021,29 +667,16 @@ static void acerhdf_unregister_platform(void)
 	platform_driver_unregister(&acerhdf_driver);
 }
 
-<<<<<<< HEAD
-static int acerhdf_register_thermal(void)
-{
-=======
 static int __init acerhdf_register_thermal(void)
 {
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cl_dev = thermal_cooling_device_register("acerhdf-fan", NULL,
 						 &acerhdf_cooling_ops);
 
 	if (IS_ERR(cl_dev))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	thz_dev = thermal_zone_device_register("acerhdf", 1, NULL,
-					      &acerhdf_dev_ops, 0, 0, 0,
-					      (kernelmode) ? interval*1000 : 0);
-	if (IS_ERR(thz_dev))
-		return -EINVAL;
-
-=======
 	thz_dev = thermal_zone_device_register_with_trips("acerhdf", trips, ARRAY_SIZE(trips),
 							  NULL, &acerhdf_dev_ops,
 							  &acerhdf_zone_params, 0,
@@ -1058,7 +691,6 @@ static int __init acerhdf_register_thermal(void)
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1109,21 +741,12 @@ static void __exit acerhdf_exit(void)
 }
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Peter Feuerer");
-=======
 MODULE_AUTHOR("Peter Kaestle");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Aspire One temperature and fan driver");
 MODULE_ALIAS("dmi:*:*Acer*:pnAOA*:");
 MODULE_ALIAS("dmi:*:*Acer*:pnAO751h*:");
 MODULE_ALIAS("dmi:*:*Acer*:pnAspire*1410*:");
 MODULE_ALIAS("dmi:*:*Acer*:pnAspire*1810*:");
-<<<<<<< HEAD
-MODULE_ALIAS("dmi:*:*Acer*:pnAspire*1825PTZ:");
-MODULE_ALIAS("dmi:*:*Acer*:pnAO531*:");
-MODULE_ALIAS("dmi:*:*Acer*:TravelMate*7730G:");
-=======
 MODULE_ALIAS("dmi:*:*Acer*:pnAspire*5755G:");
 MODULE_ALIAS("dmi:*:*Acer*:pnAspire*1825PTZ:");
 MODULE_ALIAS("dmi:*:*Acer*:pnAO521*:");
@@ -1134,7 +757,6 @@ MODULE_ALIAS("dmi:*:*Acer*:pnAspire*5315:");
 MODULE_ALIAS("dmi:*:*Acer*:TravelMate*7730G:");
 MODULE_ALIAS("dmi:*:*Acer*:pnAspire*7551:");
 MODULE_ALIAS("dmi:*:*Acer*:TM8573T:");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("dmi:*:*Gateway*:pnAOA*:");
 MODULE_ALIAS("dmi:*:*Gateway*:pnLT31*:");
 MODULE_ALIAS("dmi:*:*Packard*Bell*:pnAOA*:");
@@ -1143,11 +765,6 @@ MODULE_ALIAS("dmi:*:*Packard*Bell*:pnDOTMU*:");
 MODULE_ALIAS("dmi:*:*Packard*Bell*:pnENBFT*:");
 MODULE_ALIAS("dmi:*:*Packard*Bell*:pnDOTMA*:");
 MODULE_ALIAS("dmi:*:*Packard*Bell*:pnDOTVR46*:");
-<<<<<<< HEAD
-
-module_init(acerhdf_init);
-module_exit(acerhdf_exit);
-=======
 MODULE_ALIAS("dmi:*:*Acer*:pnExtensa*5420*:");
 
 module_init(acerhdf_init);
@@ -1173,4 +790,3 @@ static const struct kernel_param_ops interval_ops = {
 
 module_param_cb(interval, &interval_ops, &interval, 0000);
 MODULE_PARM_DESC(interval, "Polling interval of temperature check");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

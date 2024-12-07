@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Virtual EISA root driver.
  * Acts as a placeholder if we don't have a proper EISA bridge.
  *
  * (C) 2003 Marc Zyngier <maz@wild-wind.fr.eu.org>
-<<<<<<< HEAD
- *
- * This code is released under the GPL version 2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -42,19 +34,11 @@ static struct platform_device eisa_root_dev = {
 };
 
 static struct eisa_root_device eisa_bus_root = {
-<<<<<<< HEAD
-	.dev           = &eisa_root_dev.dev,
-	.bus_base_addr = 0,
-	.res	       = &ioport_resource,
-	.slots	       = EISA_MAX_SLOTS,
-	.dma_mask      = 0xffffffff,
-=======
 	.dev		= &eisa_root_dev.dev,
 	.bus_base_addr	= 0,
 	.res		= &ioport_resource,
 	.slots		= EISA_MAX_SLOTS,
 	.dma_mask	= 0xffffffff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void virtual_eisa_release (struct device *dev)
@@ -65,22 +49,12 @@ static void virtual_eisa_release (struct device *dev)
 static int __init virtual_eisa_root_init (void)
 {
 	int r;
-<<<<<<< HEAD
-	
-        if ((r = platform_device_register (&eisa_root_dev))) {
-                return r;
-        }
-
-	eisa_bus_root.force_probe = force_probe;
-	
-=======
 
 	if ((r = platform_device_register (&eisa_root_dev)))
 		return r;
 
 	eisa_bus_root.force_probe = force_probe;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(&eisa_root_dev.dev, &eisa_bus_root);
 
 	if (eisa_root_register (&eisa_bus_root)) {

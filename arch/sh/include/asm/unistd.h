@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-#ifdef __KERNEL__
-# ifdef CONFIG_SUPERH32
-
-#  include "unistd_32.h"
-#  define __ARCH_WANT_SYS_RT_SIGSUSPEND
-
-# else
-#  include "unistd_64.h"
-# endif
-
-# define __ARCH_WANT_IPC_PARSE_VERSION
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <asm/unistd_32.h>
 
 #define NR_syscalls	__NR_syscalls
 
 # define __ARCH_WANT_NEW_STAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define __ARCH_WANT_OLD_READDIR
 # define __ARCH_WANT_OLD_STAT
 # define __ARCH_WANT_STAT64
@@ -25,52 +11,21 @@
 # define __ARCH_WANT_SYS_GETHOSTNAME
 # define __ARCH_WANT_SYS_IPC
 # define __ARCH_WANT_SYS_PAUSE
-<<<<<<< HEAD
-# define __ARCH_WANT_SYS_SGETMASK
-# define __ARCH_WANT_SYS_SIGNAL
-# define __ARCH_WANT_SYS_TIME
-# define __ARCH_WANT_SYS_UTIME
-=======
 # define __ARCH_WANT_SYS_SIGNAL
 # define __ARCH_WANT_SYS_TIME32
 # define __ARCH_WANT_SYS_UTIME32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define __ARCH_WANT_SYS_WAITPID
 # define __ARCH_WANT_SYS_SOCKETCALL
 # define __ARCH_WANT_SYS_FADVISE64
 # define __ARCH_WANT_SYS_GETPGRP
-<<<<<<< HEAD
-# define __ARCH_WANT_SYS_LLSEEK
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define __ARCH_WANT_SYS_NICE
 # define __ARCH_WANT_SYS_OLD_GETRLIMIT
 # define __ARCH_WANT_SYS_OLD_UNAME
 # define __ARCH_WANT_SYS_OLDUMOUNT
 # define __ARCH_WANT_SYS_SIGPENDING
 # define __ARCH_WANT_SYS_SIGPROCMASK
-<<<<<<< HEAD
-# define __ARCH_WANT_SYS_RT_SIGACTION
-
-/*
- * "Conditional" syscalls
- *
- * What we want is __attribute__((weak,alias("sys_ni_syscall"))),
- * but it doesn't work on all toolchains, so we just do it by hand
- */
-# define cond_syscall(x) asm(".weak\t" #x "\n\t.set\t" #x ",sys_ni_syscall")
-
-#else
-# ifdef __SH5__
-#  include "unistd_64.h"
-# else
-#  include "unistd_32.h"
-# endif
-#endif
-=======
 # define __ARCH_WANT_SYS_FORK
 # define __ARCH_WANT_SYS_VFORK
 # define __ARCH_WANT_SYS_CLONE
 
 #include <uapi/asm/unistd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

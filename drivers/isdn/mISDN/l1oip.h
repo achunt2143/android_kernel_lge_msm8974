@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * see notice in l1oip.c
  */
@@ -62,10 +59,7 @@ struct l1oip {
 	int			bundle;		/* bundle channels in one frm */
 	int			codec;		/* codec to use for transmis. */
 	int			limit;		/* limit number of bchannels */
-<<<<<<< HEAD
-=======
 	bool			shutdown;	/* if card is released */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* timer */
 	struct timer_list	keep_tl;

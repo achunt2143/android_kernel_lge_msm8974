@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  REINER SCT cyberJack pinpad/e-com USB Chipcard Reader Driver
  *
@@ -14,14 +11,6 @@
  *  and associated source files.  Please see the usb/serial files for
  *  individual credits and copyrights.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Thanks to Greg Kroah-Hartman (greg@kroah.com) for his help and
  *  patience.
  *
@@ -37,10 +26,6 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -53,15 +38,6 @@
 
 #define CYBERJACK_LOCAL_BUF_SIZE 32
 
-<<<<<<< HEAD
-static bool debug;
-
-/*
- * Version Information
- */
-#define DRIVER_VERSION "v1.01"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "Matthias Bruestle"
 #define DRIVER_DESC "REINER SCT cyberJack pinpad/e-com USB Chipcard Reader Driver"
 
@@ -70,24 +46,14 @@ static bool debug;
 #define CYBERJACK_PRODUCT_ID	0x0100
 
 /* Function prototypes */
-<<<<<<< HEAD
-static int cyberjack_startup(struct usb_serial *serial);
-static void cyberjack_disconnect(struct usb_serial *serial);
-static void cyberjack_release(struct usb_serial *serial);
-=======
 static int cyberjack_port_probe(struct usb_serial_port *port);
 static void cyberjack_port_remove(struct usb_serial_port *port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int  cyberjack_open(struct tty_struct *tty,
 	struct usb_serial_port *port);
 static void cyberjack_close(struct usb_serial_port *port);
 static int cyberjack_write(struct tty_struct *tty,
 	struct usb_serial_port *port, const unsigned char *buf, int count);
-<<<<<<< HEAD
-static int cyberjack_write_room(struct tty_struct *tty);
-=======
 static unsigned int cyberjack_write_room(struct tty_struct *tty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cyberjack_read_int_callback(struct urb *urb);
 static void cyberjack_read_bulk_callback(struct urb *urb);
 static void cyberjack_write_bulk_callback(struct urb *urb);
@@ -99,16 +65,6 @@ static const struct usb_device_id id_table[] = {
 
 MODULE_DEVICE_TABLE(usb, id_table);
 
-<<<<<<< HEAD
-static struct usb_driver cyberjack_driver = {
-	.name =		"cyberjack",
-	.probe =	usb_serial_probe,
-	.disconnect =	usb_serial_disconnect,
-	.id_table =	id_table,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_serial_driver cyberjack_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
@@ -117,15 +73,9 @@ static struct usb_serial_driver cyberjack_device = {
 	.description =		"Reiner SCT Cyberjack USB card reader",
 	.id_table =		id_table,
 	.num_ports =		1,
-<<<<<<< HEAD
-	.attach =		cyberjack_startup,
-	.disconnect =		cyberjack_disconnect,
-	.release =		cyberjack_release,
-=======
 	.num_bulk_out =		1,
 	.port_probe =		cyberjack_port_probe,
 	.port_remove =		cyberjack_port_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =			cyberjack_open,
 	.close =		cyberjack_close,
 	.write =		cyberjack_write,
@@ -147,83 +97,29 @@ struct cyberjack_private {
 	short		wrsent;		/* Data already sent */
 };
 
-<<<<<<< HEAD
-/* do some startup allocations not currently performed by usb_serial_probe() */
-static int cyberjack_startup(struct usb_serial *serial)
-{
-	struct cyberjack_private *priv;
-	int i;
-
-	dbg("%s", __func__);
-
-	/* allocate the private data structure */
-=======
 static int cyberjack_port_probe(struct usb_serial_port *port)
 {
 	struct cyberjack_private *priv;
 	int result;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv = kmalloc(sizeof(struct cyberjack_private), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	/* set initial values */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&priv->lock);
 	priv->rdtodo = 0;
 	priv->wrfilled = 0;
 	priv->wrsent = 0;
-<<<<<<< HEAD
-	usb_set_serial_port_data(serial->port[0], priv);
-
-	init_waitqueue_head(&serial->port[0]->write_wait);
-
-	for (i = 0; i < serial->num_ports; ++i) {
-		int result;
-		result = usb_submit_urb(serial->port[i]->interrupt_in_urb,
-					GFP_KERNEL);
-		if (result)
-			dev_err(&serial->dev->dev,
-				"usb_submit_urb(read int) failed\n");
-		dbg("%s - usb_submit_urb(int urb)", __func__);
-	}
-=======
 
 	usb_set_serial_port_data(port, priv);
 
 	result = usb_submit_urb(port->interrupt_in_urb, GFP_KERNEL);
 	if (result)
 		dev_err(&port->dev, "usb_submit_urb(read int) failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void cyberjack_disconnect(struct usb_serial *serial)
-{
-	int i;
-
-	dbg("%s", __func__);
-
-	for (i = 0; i < serial->num_ports; ++i)
-		usb_kill_urb(serial->port[i]->interrupt_in_urb);
-}
-
-static void cyberjack_release(struct usb_serial *serial)
-{
-	int i;
-
-	dbg("%s", __func__);
-
-	for (i = 0; i < serial->num_ports; ++i) {
-		/* My special items, the standard routines free my urbs */
-		kfree(usb_get_serial_port_data(serial->port[i]));
-	}
-=======
 static void cyberjack_port_remove(struct usb_serial_port *port)
 {
 	struct cyberjack_private *priv;
@@ -232,7 +128,6 @@ static void cyberjack_port_remove(struct usb_serial_port *port)
 
 	priv = usb_get_serial_port_data(port);
 	kfree(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int  cyberjack_open(struct tty_struct *tty,
@@ -240,16 +135,8 @@ static int  cyberjack_open(struct tty_struct *tty,
 {
 	struct cyberjack_private *priv;
 	unsigned long flags;
-<<<<<<< HEAD
-	int result = 0;
-
-	dbg("%s - port %d", __func__, port->number);
-
-	dbg("%s - usb_clear_halt", __func__);
-=======
 
 	dev_dbg(&port->dev, "%s - usb_clear_halt\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_clear_halt(port->serial->dev, port->write_urb->pipe);
 
 	priv = usb_get_serial_port_data(port);
@@ -259,59 +146,31 @@ static int  cyberjack_open(struct tty_struct *tty,
 	priv->wrsent = 0;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-<<<<<<< HEAD
-	return result;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cyberjack_close(struct usb_serial_port *port)
 {
-<<<<<<< HEAD
-	dbg("%s - port %d", __func__, port->number);
-
-	if (port->serial->dev) {
-		/* shutdown any bulk reads that might be going on */
-		usb_kill_urb(port->write_urb);
-		usb_kill_urb(port->read_urb);
-	}
-=======
 	usb_kill_urb(port->write_urb);
 	usb_kill_urb(port->read_urb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cyberjack_write(struct tty_struct *tty,
 	struct usb_serial_port *port, const unsigned char *buf, int count)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = &port->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cyberjack_private *priv = usb_get_serial_port_data(port);
 	unsigned long flags;
 	int result;
 	int wrexpected;
 
-<<<<<<< HEAD
-	dbg("%s - port %d", __func__, port->number);
-
-	if (count == 0) {
-		dbg("%s - write request of 0 bytes", __func__);
-=======
 	if (count == 0) {
 		dev_dbg(dev, "%s - write request of 0 bytes\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	if (!test_and_clear_bit(0, &port->write_urbs_free)) {
-<<<<<<< HEAD
-		dbg("%s - already writing", __func__);
-=======
 		dev_dbg(dev, "%s - already writing\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -328,21 +187,12 @@ static int cyberjack_write(struct tty_struct *tty,
 	/* Copy data */
 	memcpy(priv->wrbuf + priv->wrfilled, buf, count);
 
-<<<<<<< HEAD
-	usb_serial_debug_data(debug, &port->dev, __func__, count,
-		priv->wrbuf + priv->wrfilled);
-=======
 	usb_serial_debug_data(dev, __func__, count, priv->wrbuf + priv->wrfilled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->wrfilled += count;
 
 	if (priv->wrfilled >= 3) {
 		wrexpected = ((int)priv->wrbuf[2]<<8)+priv->wrbuf[1]+3;
-<<<<<<< HEAD
-		dbg("%s - expected data: %d", __func__, wrexpected);
-=======
 		dev_dbg(dev, "%s - expected data: %d\n", __func__, wrexpected);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		wrexpected = sizeof(priv->wrbuf);
 
@@ -350,11 +200,7 @@ static int cyberjack_write(struct tty_struct *tty,
 		/* We have enough data to begin transmission */
 		int length;
 
-<<<<<<< HEAD
-		dbg("%s - transmitting data (frame 1)", __func__);
-=======
 		dev_dbg(dev, "%s - transmitting data (frame 1)\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		length = (wrexpected > port->bulk_out_size) ?
 					port->bulk_out_size : wrexpected;
 
@@ -368,11 +214,7 @@ static int cyberjack_write(struct tty_struct *tty,
 		result = usb_submit_urb(port->write_urb, GFP_ATOMIC);
 		if (result) {
 			dev_err(&port->dev,
-<<<<<<< HEAD
-				"%s - failed submitting write urb, error %d",
-=======
 				"%s - failed submitting write urb, error %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, result);
 			/* Throw away data. No better idea what to do with it. */
 			priv->wrfilled = 0;
@@ -382,19 +224,11 @@ static int cyberjack_write(struct tty_struct *tty,
 			return 0;
 		}
 
-<<<<<<< HEAD
-		dbg("%s - priv->wrsent=%d", __func__, priv->wrsent);
-		dbg("%s - priv->wrfilled=%d", __func__, priv->wrfilled);
-
-		if (priv->wrsent >= priv->wrfilled) {
-			dbg("%s - buffer cleaned", __func__);
-=======
 		dev_dbg(dev, "%s - priv->wrsent=%d\n", __func__, priv->wrsent);
 		dev_dbg(dev, "%s - priv->wrfilled=%d\n", __func__, priv->wrfilled);
 
 		if (priv->wrsent >= priv->wrfilled) {
 			dev_dbg(dev, "%s - buffer cleaned\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memset(priv->wrbuf, 0, sizeof(priv->wrbuf));
 			priv->wrfilled = 0;
 			priv->wrsent = 0;
@@ -406,11 +240,7 @@ static int cyberjack_write(struct tty_struct *tty,
 	return count;
 }
 
-<<<<<<< HEAD
-static int cyberjack_write_room(struct tty_struct *tty)
-=======
 static unsigned int cyberjack_write_room(struct tty_struct *tty)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* FIXME: .... */
 	return CYBERJACK_LOCAL_BUF_SIZE;
@@ -420,31 +250,17 @@ static void cyberjack_read_int_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	struct cyberjack_private *priv = usb_get_serial_port_data(port);
-<<<<<<< HEAD
-	unsigned char *data = urb->transfer_buffer;
-	int status = urb->status;
-	int result;
-
-	dbg("%s - port %d", __func__, port->number);
-
-=======
 	struct device *dev = &port->dev;
 	unsigned char *data = urb->transfer_buffer;
 	int status = urb->status;
 	unsigned long flags;
 	int result;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the urb might have been killed. */
 	if (status)
 		return;
 
-<<<<<<< HEAD
-	usb_serial_debug_data(debug, &port->dev, __func__,
-						urb->actual_length, data);
-=======
 	usb_serial_debug_data(dev, __func__, urb->actual_length, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* React only to interrupts signaling a bulk_in transfer */
 	if (urb->actual_length == 4 && data[0] == 0x01) {
@@ -453,24 +269,6 @@ static void cyberjack_read_int_callback(struct urb *urb)
 		/* This is a announcement of coming bulk_ins. */
 		unsigned short size = ((unsigned short)data[3]<<8)+data[2]+3;
 
-<<<<<<< HEAD
-		spin_lock(&priv->lock);
-
-		old_rdtodo = priv->rdtodo;
-
-		if (old_rdtodo + size < old_rdtodo) {
-			dbg("To many bulk_in urbs to do.");
-			spin_unlock(&priv->lock);
-			goto resubmit;
-		}
-
-		/* "+=" is probably more fault tollerant than "=" */
-		priv->rdtodo += size;
-
-		dbg("%s - rdtodo: %d", __func__, priv->rdtodo);
-
-		spin_unlock(&priv->lock);
-=======
 		spin_lock_irqsave(&priv->lock, flags);
 
 		old_rdtodo = priv->rdtodo;
@@ -487,21 +285,13 @@ static void cyberjack_read_int_callback(struct urb *urb)
 		dev_dbg(dev, "%s - rdtodo: %d\n", __func__, priv->rdtodo);
 
 		spin_unlock_irqrestore(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!old_rdtodo) {
 			result = usb_submit_urb(port->read_urb, GFP_ATOMIC);
 			if (result)
-<<<<<<< HEAD
-				dev_err(&port->dev, "%s - failed resubmitting "
-					"read urb, error %d\n",
-					__func__, result);
-			dbg("%s - usb_submit_urb(read urb)", __func__);
-=======
 				dev_err(dev, "%s - failed resubmitting read urb, error %d\n",
 					__func__, result);
 			dev_dbg(dev, "%s - usb_submit_urb(read urb)\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -509,53 +299,20 @@ resubmit:
 	result = usb_submit_urb(port->interrupt_in_urb, GFP_ATOMIC);
 	if (result)
 		dev_err(&port->dev, "usb_submit_urb(read int) failed\n");
-<<<<<<< HEAD
-	dbg("%s - usb_submit_urb(int urb)", __func__);
-=======
 	dev_dbg(dev, "%s - usb_submit_urb(int urb)\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cyberjack_read_bulk_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	struct cyberjack_private *priv = usb_get_serial_port_data(port);
-<<<<<<< HEAD
-	struct tty_struct *tty;
-	unsigned char *data = urb->transfer_buffer;
-=======
 	struct device *dev = &port->dev;
 	unsigned char *data = urb->transfer_buffer;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	short todo;
 	int result;
 	int status = urb->status;
 
-<<<<<<< HEAD
-	dbg("%s - port %d", __func__, port->number);
-
-	usb_serial_debug_data(debug, &port->dev, __func__,
-						urb->actual_length, data);
-	if (status) {
-		dbg("%s - nonzero read bulk status received: %d",
-		    __func__, status);
-		return;
-	}
-
-	tty = tty_port_tty_get(&port->port);
-	if (!tty) {
-		dbg("%s - ignoring since device not open", __func__);
-		return;
-	}
-	if (urb->actual_length) {
-		tty_insert_flip_string(tty, data, urb->actual_length);
-		tty_flip_buffer_push(tty);
-	}
-	tty_kref_put(tty);
-
-	spin_lock(&priv->lock);
-=======
 	usb_serial_debug_data(dev, __func__, urb->actual_length, data);
 	if (status) {
 		dev_dbg(dev, "%s - nonzero read bulk status received: %d\n",
@@ -569,7 +326,6 @@ static void cyberjack_read_bulk_callback(struct urb *urb)
 	}
 
 	spin_lock_irqsave(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reduce urbs to do by one. */
 	priv->rdtodo -= urb->actual_length;
@@ -578,29 +334,17 @@ static void cyberjack_read_bulk_callback(struct urb *urb)
 		priv->rdtodo = 0;
 	todo = priv->rdtodo;
 
-<<<<<<< HEAD
-	spin_unlock(&priv->lock);
-
-	dbg("%s - rdtodo: %d", __func__, todo);
-=======
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	dev_dbg(dev, "%s - rdtodo: %d\n", __func__, todo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Continue to read if we have still urbs to do. */
 	if (todo /* || (urb->actual_length==port->bulk_in_endpointAddress)*/) {
 		result = usb_submit_urb(port->read_urb, GFP_ATOMIC);
 		if (result)
-<<<<<<< HEAD
-			dev_err(&port->dev, "%s - failed resubmitting read "
-				"urb, error %d\n", __func__, result);
-		dbg("%s - usb_submit_urb(read urb)", __func__);
-=======
 			dev_err(dev, "%s - failed resubmitting read urb, error %d\n",
 				__func__, result);
 		dev_dbg(dev, "%s - usb_submit_urb(read urb)\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -608,20 +352,6 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	struct cyberjack_private *priv = usb_get_serial_port_data(port);
-<<<<<<< HEAD
-	int status = urb->status;
-
-	dbg("%s - port %d", __func__, port->number);
-
-	set_bit(0, &port->write_urbs_free);
-	if (status) {
-		dbg("%s - nonzero write bulk status received: %d",
-		    __func__, status);
-		return;
-	}
-
-	spin_lock(&priv->lock);
-=======
 	struct device *dev = &port->dev;
 	int status = urb->status;
 	unsigned long flags;
@@ -635,17 +365,12 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 	}
 
 	spin_lock_irqsave(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* only do something if we have more data to send */
 	if (priv->wrfilled) {
 		int length, blksize, result;
 
-<<<<<<< HEAD
-		dbg("%s - transmitting data (frame n)", __func__);
-=======
 		dev_dbg(dev, "%s - transmitting data (frame n)\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		length = ((priv->wrfilled - priv->wrsent) > port->bulk_out_size) ?
 			port->bulk_out_size : (priv->wrfilled - priv->wrsent);
@@ -660,12 +385,7 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 		/* send the data out the bulk port */
 		result = usb_submit_urb(port->write_urb, GFP_ATOMIC);
 		if (result) {
-<<<<<<< HEAD
-			dev_err(&port->dev,
-				"%s - failed submitting write urb, error %d\n",
-=======
 			dev_err(dev, "%s - failed submitting write urb, error %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, result);
 			/* Throw away data. No better idea what to do with it. */
 			priv->wrfilled = 0;
@@ -673,25 +393,16 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 			goto exit;
 		}
 
-<<<<<<< HEAD
-		dbg("%s - priv->wrsent=%d", __func__, priv->wrsent);
-		dbg("%s - priv->wrfilled=%d", __func__, priv->wrfilled);
-=======
 		resubmitted = true;
 
 		dev_dbg(dev, "%s - priv->wrsent=%d\n", __func__, priv->wrsent);
 		dev_dbg(dev, "%s - priv->wrfilled=%d\n", __func__, priv->wrfilled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		blksize = ((int)priv->wrbuf[2]<<8)+priv->wrbuf[1]+3;
 
 		if (priv->wrsent >= priv->wrfilled ||
 					priv->wrsent >= blksize) {
-<<<<<<< HEAD
-			dbg("%s - buffer cleaned", __func__);
-=======
 			dev_dbg(dev, "%s - buffer cleaned\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memset(priv->wrbuf, 0, sizeof(priv->wrbuf));
 			priv->wrfilled = 0;
 			priv->wrsent = 0;
@@ -699,21 +410,6 @@ static void cyberjack_write_bulk_callback(struct urb *urb)
 	}
 
 exit:
-<<<<<<< HEAD
-	spin_unlock(&priv->lock);
-	usb_serial_port_softint(port);
-}
-
-module_usb_serial_driver(cyberjack_driver, serial_drivers);
-
-MODULE_AUTHOR(DRIVER_AUTHOR);
-MODULE_DESCRIPTION(DRIVER_DESC);
-MODULE_VERSION(DRIVER_VERSION);
-MODULE_LICENSE("GPL");
-
-module_param(debug, bool, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(debug, "Debug enabled or not");
-=======
 	spin_unlock_irqrestore(&priv->lock, flags);
 	if (!resubmitted)
 		set_bit(0, &port->write_urbs_free);
@@ -725,4 +421,3 @@ module_usb_serial_driver(serial_drivers, id_table);
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

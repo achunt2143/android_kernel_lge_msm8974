@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BCMA_SCAN_H_
 #define BCMA_SCAN_H_
 
@@ -31,11 +28,7 @@
 #define SCAN_CIB_NMW		0x0007C000
 #define SCAN_CIB_NMW_SHIFT	14
 #define SCAN_CIB_NSW		0x00F80000
-<<<<<<< HEAD
-#define SCAN_CIB_NSW_SHIFT	17
-=======
 #define SCAN_CIB_NSW_SHIFT	19
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SCAN_CIB_REV		0xFF000000
 #define SCAN_CIB_REV_SHIFT	24
 

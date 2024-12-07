@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Alpha IO and memory functions.
  */
@@ -17,41 +14,24 @@
    "generic", which bumps through the machine vector.  */
 
 unsigned int
-<<<<<<< HEAD
-ioread8(void __iomem *addr)
-{
-	unsigned int ret = IO_CONCAT(__IO_PREFIX,ioread8)(addr);
-=======
 ioread8(const void __iomem *addr)
 {
 	unsigned int ret;
 	mb();
 	ret = IO_CONCAT(__IO_PREFIX,ioread8)(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 	return ret;
 }
 
-<<<<<<< HEAD
-unsigned int ioread16(void __iomem *addr)
-{
-	unsigned int ret = IO_CONCAT(__IO_PREFIX,ioread16)(addr);
-=======
 unsigned int ioread16(const void __iomem *addr)
 {
 	unsigned int ret;
 	mb();
 	ret = IO_CONCAT(__IO_PREFIX,ioread16)(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 	return ret;
 }
 
-<<<<<<< HEAD
-unsigned int ioread32(void __iomem *addr)
-{
-	unsigned int ret = IO_CONCAT(__IO_PREFIX,ioread32)(addr);
-=======
 unsigned int ioread32(const void __iomem *addr)
 {
 	unsigned int ret;
@@ -66,39 +46,24 @@ u64 ioread64(const void __iomem *addr)
 	unsigned int ret;
 	mb();
 	ret = IO_CONCAT(__IO_PREFIX,ioread64)(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 	return ret;
 }
 
 void iowrite8(u8 b, void __iomem *addr)
 {
-<<<<<<< HEAD
-	IO_CONCAT(__IO_PREFIX,iowrite8)(b, addr);
-	mb();
-=======
 	mb();
 	IO_CONCAT(__IO_PREFIX,iowrite8)(b, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void iowrite16(u16 b, void __iomem *addr)
 {
-<<<<<<< HEAD
-	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
-	mb();
-=======
 	mb();
 	IO_CONCAT(__IO_PREFIX,iowrite16)(b, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void iowrite32(u32 b, void __iomem *addr)
 {
-<<<<<<< HEAD
-	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
-	mb();
-=======
 	mb();
 	IO_CONCAT(__IO_PREFIX,iowrite32)(b, addr);
 }
@@ -107,23 +72,16 @@ void iowrite64(u64 b, void __iomem *addr)
 {
 	mb();
 	IO_CONCAT(__IO_PREFIX,iowrite64)(b, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(ioread8);
 EXPORT_SYMBOL(ioread16);
 EXPORT_SYMBOL(ioread32);
-<<<<<<< HEAD
-EXPORT_SYMBOL(iowrite8);
-EXPORT_SYMBOL(iowrite16);
-EXPORT_SYMBOL(iowrite32);
-=======
 EXPORT_SYMBOL(ioread64);
 EXPORT_SYMBOL(iowrite8);
 EXPORT_SYMBOL(iowrite16);
 EXPORT_SYMBOL(iowrite32);
 EXPORT_SYMBOL(iowrite64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u8 inb(unsigned long port)
 {
@@ -213,98 +171,62 @@ EXPORT_SYMBOL(__raw_writeq);
 
 u8 readb(const volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	u8 ret = __raw_readb(addr);
-=======
 	u8 ret;
 	mb();
 	ret = __raw_readb(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 	return ret;
 }
 
 u16 readw(const volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	u16 ret = __raw_readw(addr);
-=======
 	u16 ret;
 	mb();
 	ret = __raw_readw(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 	return ret;
 }
 
 u32 readl(const volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	u32 ret = __raw_readl(addr);
-=======
 	u32 ret;
 	mb();
 	ret = __raw_readl(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 	return ret;
 }
 
 u64 readq(const volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	u64 ret = __raw_readq(addr);
-=======
 	u64 ret;
 	mb();
 	ret = __raw_readq(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();
 	return ret;
 }
 
 void writeb(u8 b, volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	__raw_writeb(b, addr);
-	mb();
-=======
 	mb();
 	__raw_writeb(b, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void writew(u16 b, volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	__raw_writew(b, addr);
-	mb();
-=======
 	mb();
 	__raw_writew(b, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void writel(u32 b, volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	__raw_writel(b, addr);
-	mb();
-=======
 	mb();
 	__raw_writel(b, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void writeq(u64 b, volatile void __iomem *addr)
 {
-<<<<<<< HEAD
-	__raw_writeq(b, addr);
-	mb();
-=======
 	mb();
 	__raw_writeq(b, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(readb);
@@ -316,8 +238,6 @@ EXPORT_SYMBOL(writew);
 EXPORT_SYMBOL(writel);
 EXPORT_SYMBOL(writeq);
 
-<<<<<<< HEAD
-=======
 /*
  * The _relaxed functions must be ordered w.r.t. each other, but they don't
  * have to be ordered w.r.t. other memory accesses.
@@ -350,16 +270,11 @@ EXPORT_SYMBOL(readb_relaxed);
 EXPORT_SYMBOL(readw_relaxed);
 EXPORT_SYMBOL(readl_relaxed);
 EXPORT_SYMBOL(readq_relaxed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Read COUNT 8-bit bytes from port PORT into memory starting at SRC.
  */
-<<<<<<< HEAD
-void ioread8_rep(void __iomem *port, void *dst, unsigned long count)
-=======
 void ioread8_rep(const void __iomem *port, void *dst, unsigned long count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while ((unsigned long)dst & 0x3) {
 		if (!count)
@@ -402,11 +317,7 @@ EXPORT_SYMBOL(insb);
  * the interfaces seems to be slow: just using the inlined version
  * of the inw() breaks things.
  */
-<<<<<<< HEAD
-void ioread16_rep(void __iomem *port, void *dst, unsigned long count)
-=======
 void ioread16_rep(const void __iomem *port, void *dst, unsigned long count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (unlikely((unsigned long)dst & 0x3)) {
 		if (!count)
@@ -446,11 +357,7 @@ EXPORT_SYMBOL(insw);
  * but the interfaces seems to be slow: just using the inlined version
  * of the inl() breaks things.
  */
-<<<<<<< HEAD
-void ioread32_rep(void __iomem *port, void *dst, unsigned long count)
-=======
 void ioread32_rep(const void __iomem *port, void *dst, unsigned long count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (unlikely((unsigned long)dst & 0x3)) {
 		while (count--) {

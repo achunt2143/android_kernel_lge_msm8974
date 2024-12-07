@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-#ifndef ISCSI_TARGET_LOGIN_H
-#define ISCSI_TARGET_LOGIN_H
-
-extern int iscsi_login_setup_crypto(struct iscsi_conn *);
-extern int iscsi_check_for_session_reinstatement(struct iscsi_conn *);
-extern int iscsi_login_post_auth_non_zero_tsih(struct iscsi_conn *, u16, u32);
-extern int iscsi_target_setup_login_socket(struct iscsi_np *,
-				struct __kernel_sockaddr_storage *);
-extern int iscsi_target_login_thread(void *);
-extern int iscsi_login_disable_FIM_keys(struct iscsi_param_list *, struct iscsi_conn *);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef ISCSI_TARGET_LOGIN_H
 #define ISCSI_TARGET_LOGIN_H
@@ -37,6 +25,5 @@ extern void iscsi_post_login_handler(struct iscsi_np *, struct iscsit_conn *, u8
 extern void iscsi_target_login_sess_out(struct iscsit_conn *, bool, bool);
 extern int iscsi_target_login_thread(void *);
 extern void iscsi_handle_login_thread_timeout(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif   /*** ISCSI_TARGET_LOGIN_H ***/

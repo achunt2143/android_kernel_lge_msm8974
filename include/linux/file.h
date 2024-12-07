@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Wrapper functions for accessing the file_struct fd array.
  */
@@ -12,24 +9,14 @@
 #include <linux/compiler.h>
 #include <linux/types.h>
 #include <linux/posix_types.h>
-<<<<<<< HEAD
-=======
 #include <linux/errno.h>
 #include <linux/cleanup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct file;
 
 extern void fput(struct file *);
 
 struct file_operations;
-<<<<<<< HEAD
-struct vfsmount;
-struct dentry;
-struct path;
-extern struct file *alloc_file(struct path *, fmode_t mode,
-	const struct file_operations *fop);
-=======
 struct task_struct;
 struct vfsmount;
 struct dentry;
@@ -41,7 +28,6 @@ extern struct file *alloc_file_pseudo_noaccount(struct inode *, struct vfsmount 
 	const char *, int flags, const struct file_operations *);
 extern struct file *alloc_file_clone(struct file *, int flags,
 	const struct file_operations *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void fput_light(struct file *file, int fput_needed)
 {
@@ -49,21 +35,6 @@ static inline void fput_light(struct file *file, int fput_needed)
 		fput(file);
 }
 
-<<<<<<< HEAD
-extern struct file *fget(unsigned int fd);
-extern struct file *fget_light(unsigned int fd, int *fput_needed);
-extern struct file *fget_raw(unsigned int fd);
-extern struct file *fget_raw_light(unsigned int fd, int *fput_needed);
-extern void set_close_on_exec(unsigned int fd, int flag);
-extern void put_filp(struct file *);
-extern int alloc_fd(unsigned start, unsigned flags);
-extern int get_unused_fd(void);
-#define get_unused_fd_flags(flags) alloc_fd(0, (flags))
-extern void put_unused_fd(unsigned int fd);
-
-extern void fd_install(unsigned int fd, struct file *file);
-
-=======
 struct fd {
 	struct file *file;
 	unsigned int flags;
@@ -136,5 +107,4 @@ extern void __fput_sync(struct file *);
 
 extern unsigned int sysctl_nr_open_min, sysctl_nr_open_max;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_FILE_H */

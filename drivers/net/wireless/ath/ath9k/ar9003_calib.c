@@ -23,27 +23,16 @@
 #define MAX_MEASUREMENT	MAX_IQCAL_MEASUREMENT
 #define MAX_MAG_DELTA	11
 #define MAX_PHS_DELTA	10
-<<<<<<< HEAD
-
-struct coeff {
-	int mag_coeff[AR9300_MAX_CHAINS][MAX_MEASUREMENT];
-	int phs_coeff[AR9300_MAX_CHAINS][MAX_MEASUREMENT];
-=======
 #define MAXIQCAL        3
 
 struct coeff {
 	int mag_coeff[AR9300_MAX_CHAINS][MAX_MEASUREMENT][MAXIQCAL];
 	int phs_coeff[AR9300_MAX_CHAINS][MAX_MEASUREMENT][MAXIQCAL];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int iqc_coeff[2];
 };
 
 enum ar9003_cal_types {
 	IQ_MISMATCH_CAL = BIT(0),
-<<<<<<< HEAD
-	TEMP_COMP_CAL = BIT(1),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ar9003_hw_setup_calibration(struct ath_hw *ah,
@@ -60,11 +49,7 @@ static void ar9003_hw_setup_calibration(struct ath_hw *ah,
 		 */
 		REG_RMW_FIELD(ah, AR_PHY_TIMING4,
 			      AR_PHY_TIMING4_IQCAL_LOG_COUNT_MAX,
-<<<<<<< HEAD
-		currCal->calData->calCountMax);
-=======
 			      currCal->calData->calCountMax);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_WRITE(ah, AR_PHY_CALMODE, AR_PHY_CALMODE_IQ);
 
 		ath_dbg(common, CALIBRATE,
@@ -73,19 +58,8 @@ static void ar9003_hw_setup_calibration(struct ath_hw *ah,
 		/* Kick-off cal */
 		REG_SET_BIT(ah, AR_PHY_TIMING4, AR_PHY_TIMING4_DO_CAL);
 		break;
-<<<<<<< HEAD
-	case TEMP_COMP_CAL:
-		REG_RMW_FIELD(ah, AR_PHY_65NM_CH0_THERM,
-			      AR_PHY_65NM_CH0_THERM_LOCAL, 1);
-		REG_RMW_FIELD(ah, AR_PHY_65NM_CH0_THERM,
-			      AR_PHY_65NM_CH0_THERM_START, 1);
-
-		ath_dbg(common, CALIBRATE,
-			"starting Temperature Compensation Calibration\n");
-=======
 	default:
 		ath_err(common, "Invalid calibration type\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -101,43 +75,11 @@ static bool ar9003_hw_per_calibration(struct ath_hw *ah,
 				      struct ath9k_cal_list *currCal)
 {
 	struct ath9k_hw_cal_data *caldata = ah->caldata;
-<<<<<<< HEAD
-	/* Cal is assumed not done until explicitly set below */
-	bool iscaldone = false;
-=======
 	const struct ath9k_percal_data *cur_caldata = currCal->calData;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Calibration in progress. */
 	if (currCal->calState == CAL_RUNNING) {
 		/* Check to see if it has finished. */
-<<<<<<< HEAD
-		if (!(REG_READ(ah, AR_PHY_TIMING4) & AR_PHY_TIMING4_DO_CAL)) {
-			/*
-			* Accumulate cal measures for active chains
-			*/
-			currCal->calData->calCollect(ah);
-			ah->cal_samples++;
-
-			if (ah->cal_samples >=
-			    currCal->calData->calNumSamples) {
-				unsigned int i, numChains = 0;
-				for (i = 0; i < AR9300_MAX_CHAINS; i++) {
-					if (rxchainmask & (1 << i))
-						numChains++;
-				}
-
-				/*
-				* Process accumulated data
-				*/
-				currCal->calData->calPostProc(ah, numChains);
-
-				/* Calibration has finished. */
-				caldata->CalValid |= currCal->calData->calType;
-				currCal->calState = CAL_DONE;
-				iscaldone = true;
-			} else {
-=======
 		if (REG_READ(ah, AR_PHY_TIMING4) & AR_PHY_TIMING4_DO_CAL)
 			return false;
 
@@ -164,36 +106,17 @@ static bool ar9003_hw_per_calibration(struct ath_hw *ah,
 			currCal->calState = CAL_DONE;
 			return true;
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Set-up collection of another sub-sample until we
 			 * get desired number
 			 */
 			ar9003_hw_setup_calibration(ah, currCal);
-<<<<<<< HEAD
-			}
-		}
-	} else if (!(caldata->CalValid & currCal->calData->calType)) {
-=======
 		}
 	} else if (!(caldata->CalValid & cur_caldata->calType)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* If current cal is marked invalid in channel, kick it off */
 		ath9k_hw_reset_calibration(ah, currCal);
 	}
 
-<<<<<<< HEAD
-	return iscaldone;
-}
-
-static bool ar9003_hw_calibrate(struct ath_hw *ah,
-				struct ath9k_channel *chan,
-				u8 rxchainmask,
-				bool longcal)
-{
-	bool iscaldone = true;
-	struct ath9k_cal_list *currCal = ah->cal_list_curr;
-=======
 	return false;
 }
 
@@ -203,7 +126,6 @@ static int ar9003_hw_calibrate(struct ath_hw *ah, struct ath9k_channel *chan,
 	bool iscaldone = true;
 	struct ath9k_cal_list *currCal = ah->cal_list_curr;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For given calibration:
@@ -229,34 +151,19 @@ static int ar9003_hw_calibrate(struct ath_hw *ah, struct ath9k_channel *chan,
 		}
 	}
 
-<<<<<<< HEAD
-	/* Do NF cal only at longer intervals */
-	if (longcal) {
-		/*
-		 * Get the value from the previous NF cal and update
-		 * history buffer.
-		 */
-		ath9k_hw_getnf(ah, chan);
-
-=======
 	/*
 	 * Do NF cal only at longer intervals. Get the value from
 	 * the previous NF cal and update history buffer.
 	 */
 	if (longcal && ath9k_hw_getnf(ah, chan)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Load the NF from history buffer of the current channel.
 		 * NF is slow time-variant, so it is OK to use a historical
 		 * value.
 		 */
-<<<<<<< HEAD
-		ath9k_hw_loadnf(ah, ah->curchan);
-=======
 		ret = ath9k_hw_loadnf(ah, ah->curchan);
 		if (ret < 0)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* start NF calibration, without updating BB NF register */
 		ath9k_hw_start_nfcal(ah, false);
@@ -270,11 +177,7 @@ static void ar9003_hw_iqcal_collect(struct ath_hw *ah)
 	int i;
 
 	/* Accumulate IQ cal measures for active chains */
-<<<<<<< HEAD
-	for (i = 0; i < AR5416_MAX_CHAINS; i++) {
-=======
 	for (i = 0; i < AR9300_MAX_CHAINS; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ah->txchainmask & BIT(i)) {
 			ah->totalPowerMeasI[i] +=
 				REG_READ(ah, AR_PHY_CAL_MEAS_0(i));
@@ -367,14 +270,11 @@ static void ar9003_hw_iqcalibrate(struct ath_hw *ah, u8 numChains)
 				offset_array[i],
 				REG_READ(ah, offset_array[i]));
 
-<<<<<<< HEAD
-=======
 			if (AR_SREV_9565(ah) &&
 			    (iCoff == 63 || qCoff == 63 ||
 			     iCoff == -63 || qCoff == -63))
 				return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			REG_RMW_FIELD(ah, offset_array[i],
 				      AR_PHY_RX_IQCAL_CORR_IQCORR_Q_I_COFF,
 				      iCoff);
@@ -417,8 +317,6 @@ static const struct ath9k_percal_data iq_cal_single_sample = {
 static void ar9003_hw_init_cal_settings(struct ath_hw *ah)
 {
 	ah->iq_caldata.calData = &iq_cal_single_sample;
-<<<<<<< HEAD
-=======
 
 	if (AR_SREV_9300_20_OR_LATER(ah)) {
 		ah->enabled_cals |= TX_IQ_CAL;
@@ -645,7 +543,6 @@ static bool ar9003_hw_dynamic_osdac_selection(struct ath_hw *ah,
 		    AR_PHY_TX_IQCAL_CONTROL_0_ENABLE_TXIQ_CAL);
 
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -669,11 +566,7 @@ static bool ar9003_hw_solve_iq_cal(struct ath_hw *ah,
 	const s32 result_shift = 1 << 15;
 	struct ath_common *common = ath9k_hw_common(ah);
 
-<<<<<<< HEAD
-	f2 = (f1 * f1 + f3 * f3) / result_shift;
-=======
 	f2 = ((f1 >> 3) * (f1 >> 3) + (f3 >> 3) * (f3 >> 3)) >> 9;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!f2) {
 		ath_dbg(common, CALIBRATE, "Divide by 0\n");
@@ -763,12 +656,6 @@ static bool ar9003_hw_calc_iq_corr(struct ath_hw *ah,
 	if (i2_m_q2_a0_d1 > 0x800)
 		i2_m_q2_a0_d1 = -((0xfff - i2_m_q2_a0_d1) + 1);
 
-<<<<<<< HEAD
-	if (i2_p_q2_a0_d1 > 0x800)
-		i2_p_q2_a0_d1 = -((0xfff - i2_p_q2_a0_d1) + 1);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (iq_corr_a0_d1 > 0x800)
 		iq_corr_a0_d1 = -((0xfff - iq_corr_a0_d1) + 1);
 
@@ -811,8 +698,6 @@ static bool ar9003_hw_calc_iq_corr(struct ath_hw *ah,
 		return false;
 	}
 
-<<<<<<< HEAD
-=======
 	if ((i2_p_q2_a0_d0 < 1024) || (i2_p_q2_a0_d0 > 2047) ||
             (i2_p_q2_a1_d0 < 0) || (i2_p_q2_a1_d1 < 0) ||
             (i2_p_q2_a0_d0 <= i2_m_q2_a0_d0) ||
@@ -826,7 +711,6 @@ static bool ar9003_hw_calc_iq_corr(struct ath_hw *ah,
 		return false;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mag_a0_d0 = (i2_m_q2_a0_d0 * res_scale) / i2_p_q2_a0_d0;
 	phs_a0_d0 = (iq_corr_a0_d0 * res_scale) / i2_p_q2_a0_d0;
 
@@ -914,11 +798,7 @@ static bool ar9003_hw_calc_iq_corr(struct ath_hw *ah,
 	if (q_q_coff > 63)
 		q_q_coff = 63;
 
-<<<<<<< HEAD
-	iqc_coeff[0] = (q_q_coff * 128) + q_i_coff;
-=======
 	iqc_coeff[0] = (q_q_coff * 128) + (0x7f & q_i_coff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath_dbg(common, CALIBRATE, "tx chain %d: iq corr coeff=%x\n",
 		chain_idx, iqc_coeff[0]);
@@ -949,11 +829,7 @@ static bool ar9003_hw_calc_iq_corr(struct ath_hw *ah,
 	if (q_q_coff > 63)
 		q_q_coff = 63;
 
-<<<<<<< HEAD
-	iqc_coeff[1] = (q_q_coff * 128) + q_i_coff;
-=======
 	iqc_coeff[1] = (q_q_coff * 128) + (0x7f & q_i_coff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath_dbg(common, CALIBRATE, "rx chain %d: iq corr coeff=%x\n",
 		chain_idx, iqc_coeff[1]);
@@ -961,12 +837,8 @@ static bool ar9003_hw_calc_iq_corr(struct ath_hw *ah,
 	return true;
 }
 
-<<<<<<< HEAD
-static void ar9003_hw_detect_outlier(int *mp_coeff, int nmeasurement,
-=======
 static void ar9003_hw_detect_outlier(int mp_coeff[][MAXIQCAL],
 				     int nmeasurement,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     int max_delta)
 {
 	int mp_max = -64, max_idx = 0;
@@ -975,34 +847,20 @@ static void ar9003_hw_detect_outlier(int mp_coeff[][MAXIQCAL],
 
 	/* find min/max mismatch across all calibrated gains */
 	for (i = 0; i < nmeasurement; i++) {
-<<<<<<< HEAD
-		if (mp_coeff[i] > mp_max) {
-			mp_max = mp_coeff[i];
-			max_idx = i;
-		} else if (mp_coeff[i] < mp_min) {
-			mp_min = mp_coeff[i];
-=======
 		if (mp_coeff[i][0] > mp_max) {
 			mp_max = mp_coeff[i][0];
 			max_idx = i;
 		} else if (mp_coeff[i][0] < mp_min) {
 			mp_min = mp_coeff[i][0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			min_idx = i;
 		}
 	}
 
 	/* find average (exclude max abs value) */
 	for (i = 0; i < nmeasurement; i++) {
-<<<<<<< HEAD
-		if ((abs(mp_coeff[i]) < abs(mp_max)) ||
-		    (abs(mp_coeff[i]) < abs(mp_min))) {
-			mp_avg += mp_coeff[i];
-=======
 		if ((abs(mp_coeff[i][0]) < abs(mp_max)) ||
 		    (abs(mp_coeff[i][0]) < abs(mp_min))) {
 			mp_avg += mp_coeff[i][0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mp_count++;
 		}
 	}
@@ -1014,11 +872,7 @@ static void ar9003_hw_detect_outlier(int mp_coeff[][MAXIQCAL],
 	if (mp_count)
 		mp_avg /= mp_count;
 	else
-<<<<<<< HEAD
-		mp_avg = mp_coeff[nmeasurement - 1];
-=======
 		mp_avg = mp_coeff[nmeasurement - 1][0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* detect outlier */
 	if (abs(mp_max - mp_min) > max_delta) {
@@ -1027,18 +881,6 @@ static void ar9003_hw_detect_outlier(int mp_coeff[][MAXIQCAL],
 		else
 			outlier_idx = min_idx;
 
-<<<<<<< HEAD
-		mp_coeff[outlier_idx] = mp_avg;
-	}
-}
-
-static void ar9003_hw_tx_iqcal_load_avg_2_passes(struct ath_hw *ah,
-						 u8 num_chains,
-						 struct coeff *coeff,
-						 bool is_reusable)
-{
-	int i, im, nmeasurement;
-=======
 		mp_coeff[outlier_idx][0] = mp_avg;
 	}
 }
@@ -1049,18 +891,13 @@ static void ar9003_hw_tx_iq_cal_outlier_detection(struct ath_hw *ah,
 {
 	int i, im, nmeasurement;
 	int magnitude, phase;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS];
 	struct ath9k_hw_cal_data *caldata = ah->caldata;
 
 	memset(tx_corr_coeff, 0, sizeof(tx_corr_coeff));
 	for (i = 0; i < MAX_MEASUREMENT / 2; i++) {
 		tx_corr_coeff[i * 2][0] = tx_corr_coeff[(i * 2) + 1][0] =
-<<<<<<< HEAD
-					AR_PHY_TX_IQCAL_CORR_COEFF_B0(i);
-=======
 					AR_PHY_TX_IQCAL_CORR_COEFF_B0(ah, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!AR_SREV_9485(ah)) {
 			tx_corr_coeff[i * 2][1] =
 			tx_corr_coeff[(i * 2) + 1][1] =
@@ -1073,39 +910,16 @@ static void ar9003_hw_tx_iq_cal_outlier_detection(struct ath_hw *ah,
 	}
 
 	/* Load the average of 2 passes */
-<<<<<<< HEAD
-	for (i = 0; i < num_chains; i++) {
-		nmeasurement = REG_READ_FIELD(ah,
-				AR_PHY_TX_IQCAL_STATUS_B0,
-=======
 	for (i = 0; i < AR9300_MAX_CHAINS; i++) {
 		if (!(ah->txchainmask & (1 << i)))
 			continue;
 		nmeasurement = REG_READ_FIELD(ah,
 				AR_PHY_TX_IQCAL_STATUS_B0(ah),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				AR_PHY_CALIBRATED_GAINS_0);
 
 		if (nmeasurement > MAX_MEASUREMENT)
 			nmeasurement = MAX_MEASUREMENT;
 
-<<<<<<< HEAD
-		/* detect outlier only if nmeasurement > 1 */
-		if (nmeasurement > 1) {
-			/* Detect magnitude outlier */
-			ar9003_hw_detect_outlier(coeff->mag_coeff[i],
-					nmeasurement, MAX_MAG_DELTA);
-
-			/* Detect phase outlier */
-			ar9003_hw_detect_outlier(coeff->phs_coeff[i],
-					nmeasurement, MAX_PHS_DELTA);
-		}
-
-		for (im = 0; im < nmeasurement; im++) {
-
-			coeff->iqc_coeff[0] = (coeff->mag_coeff[i][im] & 0x7f) |
-				((coeff->phs_coeff[i][im] & 0x7f) << 7);
-=======
 		/*
 		 * Skip normal outlier detection for AR9550.
 		 */
@@ -1130,7 +944,6 @@ static void ar9003_hw_tx_iq_cal_outlier_detection(struct ath_hw *ah,
 
 			coeff->iqc_coeff[0] =
 				(phase & 0x7f) | ((magnitude & 0x7f) << 7);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if ((im % 2) == 0)
 				REG_RMW_FIELD(ah, tx_corr_coeff[im][i],
@@ -1154,17 +967,12 @@ static void ar9003_hw_tx_iq_cal_outlier_detection(struct ath_hw *ah,
 	REG_RMW_FIELD(ah, AR_PHY_RX_IQCAL_CORR_B0,
 		      AR_PHY_RX_IQCAL_CORR_B0_LOOPBACK_IQCORR_EN, 0x1);
 
-<<<<<<< HEAD
-	if (caldata)
-		caldata->done_txiqcal_once = is_reusable;
-=======
 	if (caldata) {
 		if (is_reusable)
 			set_bit(TXIQCAL_DONE, &caldata->cal_flags);
 		else
 			clear_bit(TXIQCAL_DONE, &caldata->cal_flags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -1180,17 +988,10 @@ static bool ar9003_hw_tx_iq_cal_run(struct ath_hw *ah)
 		REG_RMW_FIELD(ah, AR_PHY_TX_FORCED_GAIN,
 			      AR_PHY_TXGAIN_FORCE, 0);
 
-<<<<<<< HEAD
-	REG_RMW_FIELD(ah, AR_PHY_TX_IQCAL_START,
-		      AR_PHY_TX_IQCAL_START_DO_CAL, 1);
-
-	if (!ath9k_hw_wait(ah, AR_PHY_TX_IQCAL_START,
-=======
 	REG_RMW_FIELD(ah, AR_PHY_TX_IQCAL_START(ah),
 		      AR_PHY_TX_IQCAL_START_DO_CAL, 1);
 
 	if (!ath9k_hw_wait(ah, AR_PHY_TX_IQCAL_START(ah),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			AR_PHY_TX_IQCAL_START_DO_CAL, 0,
 			AH_WAIT_TIMEOUT)) {
 		ath_dbg(common, CALIBRATE, "Tx IQ Cal is not completed\n");
@@ -1199,13 +1000,6 @@ static bool ar9003_hw_tx_iq_cal_run(struct ath_hw *ah)
 	return true;
 }
 
-<<<<<<< HEAD
-static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah, bool is_reusable)
-{
-	struct ath_common *common = ath9k_hw_common(ah);
-	const u32 txiqcal_status[AR9300_MAX_CHAINS] = {
-		AR_PHY_TX_IQCAL_STATUS_B0,
-=======
 static void __ar955x_tx_iq_cal_sort(struct ath_hw *ah,
 				    struct coeff *coeff,
 				    int i, int nmeasurement)
@@ -1263,7 +1057,6 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
 	struct ath_common *common = ath9k_hw_common(ah);
 	const u32 txiqcal_status[AR9300_MAX_CHAINS] = {
 		AR_PHY_TX_IQCAL_STATUS_B0(ah),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AR_PHY_TX_IQCAL_STATUS_B1,
 		AR_PHY_TX_IQCAL_STATUS_B2,
 	};
@@ -1272,22 +1065,6 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
 		AR_PHY_CHAN_INFO_TAB_1,
 		AR_PHY_CHAN_INFO_TAB_2,
 	};
-<<<<<<< HEAD
-	struct coeff coeff;
-	s32 iq_res[6];
-	u8 num_chains = 0;
-	int i, im, j;
-	int nmeasurement;
-
-	for (i = 0; i < AR9300_MAX_CHAINS; i++) {
-		if (ah->txchainmask & (1 << i))
-			num_chains++;
-	}
-
-	for (i = 0; i < num_chains; i++) {
-		nmeasurement = REG_READ_FIELD(ah,
-				AR_PHY_TX_IQCAL_STATUS_B0,
-=======
 	static struct coeff coeff;
 	s32 iq_res[6];
 	int i, im, j;
@@ -1300,7 +1077,6 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
 
 		nmeasurement = REG_READ_FIELD(ah,
 				AR_PHY_TX_IQCAL_STATUS_B0(ah),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				AR_PHY_CALIBRATED_GAINS_0);
 		if (nmeasurement > MAX_MEASUREMENT)
 			nmeasurement = MAX_MEASUREMENT;
@@ -1320,11 +1096,7 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
 				u32 idx = 2 * j, offset = 4 * (3 * im + j);
 
 				REG_RMW_FIELD(ah,
-<<<<<<< HEAD
-						AR_PHY_CHAN_INFO_MEMORY,
-=======
 						AR_PHY_CHAN_INFO_MEMORY(ah),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						AR_PHY_CHAN_INFO_TAB_S2_READ,
 						0);
 
@@ -1334,11 +1106,7 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
 						offset);
 
 				REG_RMW_FIELD(ah,
-<<<<<<< HEAD
-						AR_PHY_CHAN_INFO_MEMORY,
-=======
 						AR_PHY_CHAN_INFO_MEMORY(ah),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						AR_PHY_CHAN_INFO_TAB_S2_READ,
 						1);
 
@@ -1359,20 +1127,6 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
 				goto tx_iqcal_fail;
 			}
 
-<<<<<<< HEAD
-			coeff.mag_coeff[i][im] = coeff.iqc_coeff[0] & 0x7f;
-			coeff.phs_coeff[i][im] =
-				(coeff.iqc_coeff[0] >> 7) & 0x7f;
-
-			if (coeff.mag_coeff[i][im] > 63)
-				coeff.mag_coeff[i][im] -= 128;
-			if (coeff.phs_coeff[i][im] > 63)
-				coeff.phs_coeff[i][im] -= 128;
-		}
-	}
-	ar9003_hw_tx_iqcal_load_avg_2_passes(ah, num_chains,
-					     &coeff, is_reusable);
-=======
 			coeff.phs_coeff[i][im][iqcal_idx] =
 				coeff.iqc_coeff[0] & 0x7f;
 			coeff.mag_coeff[i][im][iqcal_idx] =
@@ -1390,7 +1144,6 @@ static void ar9003_hw_tx_iq_cal_post_proc(struct ath_hw *ah,
 							 iqcal_idx, nmeasurement);
 	if (outlier_detect)
 		ar9003_hw_tx_iq_cal_outlier_detection(ah, &coeff, is_reusable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 
@@ -1408,11 +1161,7 @@ static void ar9003_hw_tx_iq_cal_reload(struct ath_hw *ah)
 	memset(tx_corr_coeff, 0, sizeof(tx_corr_coeff));
 	for (i = 0; i < MAX_MEASUREMENT / 2; i++) {
 		tx_corr_coeff[i * 2][0] = tx_corr_coeff[(i * 2) + 1][0] =
-<<<<<<< HEAD
-					AR_PHY_TX_IQCAL_CORR_COEFF_B0(i);
-=======
 					AR_PHY_TX_IQCAL_CORR_COEFF_B0(ah, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!AR_SREV_9485(ah)) {
 			tx_corr_coeff[i * 2][1] =
 			tx_corr_coeff[(i * 2) + 1][1] =
@@ -1446,221 +1195,6 @@ static void ar9003_hw_tx_iq_cal_reload(struct ath_hw *ah)
 		      AR_PHY_RX_IQCAL_CORR_B0_LOOPBACK_IQCORR_EN, 0x1);
 }
 
-<<<<<<< HEAD
-static bool ar9003_hw_rtt_restore(struct ath_hw *ah, struct ath9k_channel *chan)
-{
-	struct ath9k_rtt_hist *hist;
-	u32 *table;
-	int i;
-	bool restore;
-
-	if (!ah->caldata)
-		return false;
-
-	hist = &ah->caldata->rtt_hist;
-	if (!hist->num_readings)
-		return false;
-
-	ar9003_hw_rtt_enable(ah);
-	ar9003_hw_rtt_set_mask(ah, 0x00);
-	for (i = 0; i < AR9300_MAX_CHAINS; i++) {
-		if (!(ah->rxchainmask & (1 << i)))
-			continue;
-		table = &hist->table[i][hist->num_readings][0];
-		ar9003_hw_rtt_load_hist(ah, i, table);
-	}
-	restore = ar9003_hw_rtt_force_restore(ah);
-	ar9003_hw_rtt_disable(ah);
-
-	return restore;
-}
-
-static bool ar9003_hw_init_cal(struct ath_hw *ah,
-			       struct ath9k_channel *chan)
-{
-	struct ath_common *common = ath9k_hw_common(ah);
-	struct ath9k_hw_cal_data *caldata = ah->caldata;
-	bool txiqcal_done = false, txclcal_done = false;
-	bool is_reusable = true, status = true;
-	bool run_rtt_cal = false, run_agc_cal;
-	bool rtt = !!(ah->caps.hw_caps & ATH9K_HW_CAP_RTT);
-	bool mci = !!(ah->caps.hw_caps & ATH9K_HW_CAP_MCI);
-	u32 agc_ctrl = 0, agc_supp_cals = AR_PHY_AGC_CONTROL_OFFSET_CAL |
-					  AR_PHY_AGC_CONTROL_FLTR_CAL   |
-					  AR_PHY_AGC_CONTROL_PKDET_CAL;
-	int i, j;
-	u32 cl_idx[AR9300_MAX_CHAINS] = { AR_PHY_CL_TAB_0,
-					  AR_PHY_CL_TAB_1,
-					  AR_PHY_CL_TAB_2 };
-
-	/* Use chip chainmask only for calibration */
-	ar9003_hw_set_chain_masks(ah, ah->caps.rx_chainmask, ah->caps.tx_chainmask);
-
-	if (rtt) {
-		if (!ar9003_hw_rtt_restore(ah, chan))
-			run_rtt_cal = true;
-
-		ath_dbg(common, CALIBRATE, "RTT restore %s\n",
-			run_rtt_cal ? "failed" : "succeed");
-	}
-	run_agc_cal = run_rtt_cal;
-
-	if (run_rtt_cal) {
-		ar9003_hw_rtt_enable(ah);
-		ar9003_hw_rtt_set_mask(ah, 0x00);
-		ar9003_hw_rtt_clear_hist(ah);
-	}
-
-	if (rtt && !run_rtt_cal) {
-		agc_ctrl = REG_READ(ah, AR_PHY_AGC_CONTROL);
-		agc_supp_cals &= agc_ctrl;
-		agc_ctrl &= ~(AR_PHY_AGC_CONTROL_OFFSET_CAL |
-			     AR_PHY_AGC_CONTROL_FLTR_CAL |
-			     AR_PHY_AGC_CONTROL_PKDET_CAL);
-		REG_WRITE(ah, AR_PHY_AGC_CONTROL, agc_ctrl);
-	}
-
-	if (ah->enabled_cals & TX_CL_CAL) {
-		if (caldata && caldata->done_txclcal_once)
-			REG_CLR_BIT(ah, AR_PHY_CL_CAL_CTL,
-				    AR_PHY_CL_CAL_ENABLE);
-		else {
-			REG_SET_BIT(ah, AR_PHY_CL_CAL_CTL,
-				    AR_PHY_CL_CAL_ENABLE);
-			run_agc_cal = true;
-		}
-	}
-
-	if (!(ah->enabled_cals & TX_IQ_CAL))
-		goto skip_tx_iqcal;
-
-	/* Do Tx IQ Calibration */
-	REG_RMW_FIELD(ah, AR_PHY_TX_IQCAL_CONTROL_1,
-		      AR_PHY_TX_IQCAL_CONTROL_1_IQCORR_I_Q_COFF_DELPT,
-		      DELPT);
-
-	/*
-	 * For AR9485 or later chips, TxIQ cal runs as part of
-	 * AGC calibration
-	 */
-	if (ah->enabled_cals & TX_IQ_ON_AGC_CAL) {
-		if (caldata && !caldata->done_txiqcal_once)
-			REG_SET_BIT(ah, AR_PHY_TX_IQCAL_CONTROL_0,
-				    AR_PHY_TX_IQCAL_CONTROL_0_ENABLE_TXIQ_CAL);
-		else
-			REG_CLR_BIT(ah, AR_PHY_TX_IQCAL_CONTROL_0,
-				    AR_PHY_TX_IQCAL_CONTROL_0_ENABLE_TXIQ_CAL);
-		txiqcal_done = run_agc_cal = true;
-		goto skip_tx_iqcal;
-	} else if (caldata && !caldata->done_txiqcal_once)
-		run_agc_cal = true;
-
-	if (mci && IS_CHAN_2GHZ(chan) && run_agc_cal)
-		ar9003_mci_init_cal_req(ah, &is_reusable);
-
-	txiqcal_done = ar9003_hw_tx_iq_cal_run(ah);
-	REG_WRITE(ah, AR_PHY_ACTIVE, AR_PHY_ACTIVE_DIS);
-	udelay(5);
-	REG_WRITE(ah, AR_PHY_ACTIVE, AR_PHY_ACTIVE_EN);
-
-skip_tx_iqcal:
-	if (run_agc_cal || !(ah->ah_flags & AH_FASTCC)) {
-		/* Calibrate the AGC */
-		REG_WRITE(ah, AR_PHY_AGC_CONTROL,
-			  REG_READ(ah, AR_PHY_AGC_CONTROL) |
-			  AR_PHY_AGC_CONTROL_CAL);
-
-		/* Poll for offset calibration complete */
-		status = ath9k_hw_wait(ah, AR_PHY_AGC_CONTROL,
-				       AR_PHY_AGC_CONTROL_CAL,
-				       0, AH_WAIT_TIMEOUT);
-	}
-
-	if (mci && IS_CHAN_2GHZ(chan) && run_agc_cal)
-		ar9003_mci_init_cal_done(ah);
-
-	if (rtt && !run_rtt_cal) {
-		agc_ctrl |= agc_supp_cals;
-		REG_WRITE(ah, AR_PHY_AGC_CONTROL, agc_ctrl);
-	}
-
-	if (!status) {
-		if (run_rtt_cal)
-			ar9003_hw_rtt_disable(ah);
-
-		ath_dbg(common, CALIBRATE,
-			"offset calibration failed to complete in 1ms; noisy environment?\n");
-		return false;
-	}
-
-	if (txiqcal_done)
-		ar9003_hw_tx_iq_cal_post_proc(ah, is_reusable);
-	else if (caldata && caldata->done_txiqcal_once)
-		ar9003_hw_tx_iq_cal_reload(ah);
-
-#define CL_TAB_ENTRY(reg_base)	(reg_base + (4 * j))
-	if (caldata && (ah->enabled_cals & TX_CL_CAL)) {
-		txclcal_done = !!(REG_READ(ah, AR_PHY_AGC_CONTROL) &
-					   AR_PHY_AGC_CONTROL_CLC_SUCCESS);
-		if (caldata->done_txclcal_once) {
-			for (i = 0; i < AR9300_MAX_CHAINS; i++) {
-				if (!(ah->txchainmask & (1 << i)))
-					continue;
-				for (j = 0; j < MAX_CL_TAB_ENTRY; j++)
-					REG_WRITE(ah, CL_TAB_ENTRY(cl_idx[i]),
-						  caldata->tx_clcal[i][j]);
-			}
-		} else if (is_reusable && txclcal_done) {
-			for (i = 0; i < AR9300_MAX_CHAINS; i++) {
-				if (!(ah->txchainmask & (1 << i)))
-					continue;
-				for (j = 0; j < MAX_CL_TAB_ENTRY; j++)
-					caldata->tx_clcal[i][j] =
-						REG_READ(ah,
-						  CL_TAB_ENTRY(cl_idx[i]));
-			}
-			caldata->done_txclcal_once = true;
-		}
-	}
-#undef CL_TAB_ENTRY
-
-	if (run_rtt_cal && caldata) {
-		struct ath9k_rtt_hist *hist = &caldata->rtt_hist;
-		if (is_reusable && (hist->num_readings < RTT_HIST_MAX)) {
-			u32 *table;
-
-			hist->num_readings++;
-			for (i = 0; i < AR9300_MAX_CHAINS; i++) {
-				if (!(ah->rxchainmask & (1 << i)))
-					continue;
-				table = &hist->table[i][hist->num_readings][0];
-				ar9003_hw_rtt_fill_hist(ah, i, table);
-			}
-		}
-
-		ar9003_hw_rtt_disable(ah);
-	}
-
-	/* Revert chainmask to runtime parameters */
-	ar9003_hw_set_chain_masks(ah, ah->rxchainmask, ah->txchainmask);
-
-	/* Initialize list pointers */
-	ah->cal_list = ah->cal_list_last = ah->cal_list_curr = NULL;
-	ah->supp_cals = IQ_MISMATCH_CAL;
-
-	if (ah->supp_cals & IQ_MISMATCH_CAL) {
-		INIT_CAL(&ah->iq_caldata);
-		INSERT_CAL(ah, &ah->iq_caldata);
-		ath_dbg(common, CALIBRATE, "enabling IQ Calibration\n");
-	}
-
-	if (ah->supp_cals & TEMP_COMP_CAL) {
-		INIT_CAL(&ah->tempCompCalData);
-		INSERT_CAL(ah, &ah->tempCompCalData);
-		ath_dbg(common, CALIBRATE,
-			"enabling Temperature Compensation Calibration\n");
-	}
-=======
 static void ar9003_hw_manual_peak_cal(struct ath_hw *ah, u8 chain, bool is_2g)
 {
 	int offset[8] = {0}, total = 0, test;
@@ -1844,7 +1378,6 @@ static void ar9003_hw_init_cal_common(struct ath_hw *ah)
 
 	INIT_CAL(&ah->iq_caldata);
 	INSERT_CAL(ah, &ah->iq_caldata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize current pointer to first element in list */
 	ah->cal_list_curr = ah->cal_list;
@@ -1854,8 +1387,6 @@ static void ar9003_hw_init_cal_common(struct ath_hw *ah)
 
 	if (caldata)
 		caldata->CalValid = 0;
-<<<<<<< HEAD
-=======
 }
 
 static bool ar9003_hw_init_cal_pcoem(struct ath_hw *ah,
@@ -2146,7 +1677,6 @@ skip_tx_iqcal:
 	ar9003_hw_set_chain_masks(ah, ah->rxchainmask, ah->txchainmask);
 
 	ar9003_hw_init_cal_common(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
@@ -2156,17 +1686,12 @@ void ar9003_hw_attach_calib_ops(struct ath_hw *ah)
 	struct ath_hw_private_ops *priv_ops = ath9k_hw_private_ops(ah);
 	struct ath_hw_ops *ops = ath9k_hw_ops(ah);
 
-<<<<<<< HEAD
-	priv_ops->init_cal_settings = ar9003_hw_init_cal_settings;
-	priv_ops->init_cal = ar9003_hw_init_cal;
-=======
 	if (AR_SREV_9003_PCOEM(ah))
 		priv_ops->init_cal = ar9003_hw_init_cal_pcoem;
 	else
 		priv_ops->init_cal = ar9003_hw_init_cal_soc;
 
 	priv_ops->init_cal_settings = ar9003_hw_init_cal_settings;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv_ops->setup_calibration = ar9003_hw_setup_calibration;
 
 	ops->calibrate = ar9003_hw_calibrate;

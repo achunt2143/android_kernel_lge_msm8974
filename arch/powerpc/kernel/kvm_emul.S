@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright SUSE Linux Products GmbH 2010
  * Copyright 2010-2011 Freescale Semiconductor, Inc.
@@ -28,20 +12,7 @@
 #include <asm/reg.h>
 #include <asm/page.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-
-/* Hypercall entry point. Will be patched with device tree instructions. */
-
-.global kvm_hypercall_start
-kvm_hypercall_start:
-	li	r3, -1
-	nop
-	nop
-	nop
-	blr
-=======
 #include <asm/asm-compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KVM_MAGIC_PAGE		(-4096)
 
@@ -141,11 +112,7 @@ kvm_emulate_mtmsrd_len:
 	.long (kvm_emulate_mtmsrd_end - kvm_emulate_mtmsrd) / 4
 
 
-<<<<<<< HEAD
-#define MSR_SAFE_BITS (MSR_EE | MSR_CE | MSR_ME | MSR_RI)
-=======
 #define MSR_SAFE_BITS (MSR_EE | MSR_RI)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_CRITICAL_BITS ~MSR_SAFE_BITS
 
 .global kvm_emulate_mtmsr
@@ -225,11 +192,8 @@ kvm_emulate_mtmsr_orig_ins_offs:
 kvm_emulate_mtmsr_len:
 	.long (kvm_emulate_mtmsr_end - kvm_emulate_mtmsr) / 4
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_BOOKE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* also used for wrteei 1 */
 .global kvm_emulate_wrtee
 kvm_emulate_wrtee:
@@ -323,13 +287,10 @@ kvm_emulate_wrteei_0_branch_offs:
 kvm_emulate_wrteei_0_len:
 	.long (kvm_emulate_wrteei_0_end - kvm_emulate_wrteei_0) / 4
 
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_BOOKE */
 
 #ifdef CONFIG_PPC_BOOK3S_32
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .global kvm_emulate_mtsrin
 kvm_emulate_mtsrin:
 
@@ -379,8 +340,6 @@ kvm_emulate_mtsrin_orig_ins_offs:
 kvm_emulate_mtsrin_len:
 	.long (kvm_emulate_mtsrin_end - kvm_emulate_mtsrin) / 4
 
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_PPC_BOOK3S_32 */
 
 	.balign 4
@@ -391,6 +350,5 @@ kvm_tmp:
 .global kvm_tmp_end
 kvm_tmp_end:
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .global kvm_template_end
 kvm_template_end:

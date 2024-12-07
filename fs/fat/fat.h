@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FAT_H
 #define _FAT_H
 
 #include <linux/buffer_head.h>
-<<<<<<< HEAD
-#include <linux/string.h>
-#include <linux/nls.h>
-#include <linux/fs.h>
-#include <linux/mutex.h>
-=======
 #include <linux/nls.h>
 #include <linux/hash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ratelimit.h>
 #include <linux/msdos_fs.h>
 
@@ -31,33 +21,6 @@
 #define FAT_ERRORS_PANIC	2      /* panic on error */
 #define FAT_ERRORS_RO		3      /* remount r/o on error */
 
-<<<<<<< HEAD
-struct fat_mount_options {
-	uid_t fs_uid;
-	gid_t fs_gid;
-	unsigned short fs_fmask;
-	unsigned short fs_dmask;
-	unsigned short codepage;  /* Codepage for shortname conversions */
-	char *iocharset;          /* Charset used for filename input/display */
-	unsigned short shortname; /* flags for shortname display/create rule */
-	unsigned char name_check; /* r = relaxed, n = normal, s = strict */
-	unsigned char errors;	  /* On error: continue, panic, remount-ro */
-	unsigned short allow_utime;/* permission for setting the [am]time */
-	unsigned quiet:1,         /* set = fake successful chmods and chowns */
-		 showexec:1,      /* set = only set x bit for com/exe/bat */
-		 sys_immutable:1, /* set = system files are immutable */
-		 dotsOK:1,        /* set = hidden and system files are named '.filename' */
-		 isvfat:1,        /* 0=no vfat long filename support, 1=vfat support */
-		 utf8:1,	  /* Use of UTF-8 character set (Default) */
-		 unicode_xlate:1, /* create escape sequences for unhandled Unicode */
-		 numtail:1,       /* Does first alias have a numeric '~1' type tail? */
-		 flush:1,	  /* write things quickly */
-		 nocase:1,	  /* Does this need case conversion? 0=need case conversion*/
-		 usefree:1,	  /* Use free_clusters for FAT32 */
-		 tz_utc:1,	  /* Filesystem timestamps are in UTC */
-		 rodir:1,	  /* allow ATTR_RO for directory */
-		 discard:1;	  /* Issue discard requests on deletions */
-=======
 #define FAT_NFS_STALE_RW	1      /* NFS RW support, can cause ESTALE */
 #define FAT_NFS_NOSTALE_RO	2      /* NFS RO support, no ESTALE issue */
 
@@ -89,7 +52,6 @@ struct fat_mount_options {
 		 rodir:1,	   /* allow ATTR_RO for directory */
 		 discard:1,	   /* Issue discard requests on deletions */
 		 dos1xfloppy:1;	   /* Assume default BPB for DOS 1.x floppies */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define FAT_HASH_BITS	8
@@ -99,21 +61,6 @@ struct fat_mount_options {
  * MS-DOS file system in-core superblock data
  */
 struct msdos_sb_info {
-<<<<<<< HEAD
-	unsigned short sec_per_clus; /* sectors/cluster */
-	unsigned short cluster_bits; /* log2(cluster_size) */
-	unsigned int cluster_size;   /* cluster size */
-	unsigned char fats,fat_bits; /* number of FATs, FAT bits (12 or 16) */
-	unsigned short fat_start;
-	unsigned long fat_length;    /* FAT start & length (sec.) */
-	unsigned long dir_start;
-	unsigned short dir_entries;  /* root dir start & entries */
-	unsigned long data_start;    /* first data sector */
-	unsigned long max_cluster;   /* maximum cluster number */
-	unsigned long root_cluster;  /* first cluster of the root directory */
-	unsigned long fsinfo_sector; /* sector number of FAT32 fsinfo */
-	struct mutex fat_lock;
-=======
 	unsigned short sec_per_clus;  /* sectors/cluster */
 	unsigned short cluster_bits;  /* log2(cluster_size) */
 	unsigned int cluster_size;    /* cluster size */
@@ -129,23 +76,10 @@ struct msdos_sb_info {
 	struct mutex fat_lock;
 	struct mutex nfs_build_inode_lock;
 	struct mutex s_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int prev_free;      /* previously allocated cluster number */
 	unsigned int free_clusters;  /* -1 if undefined */
 	unsigned int free_clus_valid; /* is free_clusters valid? */
 	struct fat_mount_options options;
-<<<<<<< HEAD
-	struct nls_table *nls_disk;  /* Codepage used on disk */
-	struct nls_table *nls_io;    /* Charset used for input and display */
-	const void *dir_ops;		     /* Opaque; default directory operations */
-	int dir_per_block;	     /* dir entries per block */
-	int dir_per_block_bits;	     /* log2(dir_per_block) */
-	unsigned long vol_id;        /* volume ID */
-
-	int fatent_shift;
-	struct fatent_operations *fatent_ops;
-	struct inode *fat_inode;
-=======
 	struct nls_table *nls_disk;   /* Codepage used on disk */
 	struct nls_table *nls_io;     /* Charset used for input and display */
 	const void *dir_ops;	      /* Opaque; default directory operations */
@@ -157,21 +91,17 @@ struct msdos_sb_info {
 	const struct fatent_operations *fatent_ops;
 	struct inode *fat_inode;
 	struct inode *fsinfo_inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ratelimit_state ratelimit;
 
 	spinlock_t inode_hash_lock;
 	struct hlist_head inode_hashtable[FAT_HASH_SIZE];
-<<<<<<< HEAD
-=======
 
 	spinlock_t dir_hash_lock;
 	struct hlist_head dir_hashtable[FAT_HASH_SIZE];
 
 	unsigned int dirty;           /* fs state before mount */
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define FAT_CACHE_VALID	0	/* special case for valid cache */
@@ -194,13 +124,9 @@ struct msdos_inode_info {
 	int i_attrs;		/* unused attribute bits */
 	loff_t i_pos;		/* on-disk position of directory entry or 0 */
 	struct hlist_node i_fat_hash;	/* hash by i_location */
-<<<<<<< HEAD
-	struct rw_semaphore truncate_lock; /* protect bmap against truncate */
-=======
 	struct hlist_node i_dir_hash;	/* hash by i_logstart */
 	struct rw_semaphore truncate_lock; /* protect bmap against truncate */
 	struct timespec64 i_crtime;	/* File creation (birth) time */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode vfs_inode;
 };
 
@@ -217,8 +143,6 @@ static inline struct msdos_sb_info *MSDOS_SB(struct super_block *sb)
 	return sb->s_fs_info;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Functions that determine the variant of the FAT file system (i.e.,
  * whether this is FAT12, FAT16 or FAT32.
@@ -247,7 +171,6 @@ static inline u32 max_fat(struct super_block *sb)
 		is_fat16(sbi) ? MAX_FAT16 : MAX_FAT12;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct msdos_inode_info *MSDOS_I(struct inode *inode)
 {
 	return container_of(inode, struct msdos_inode_info, vfs_inode);
@@ -326,8 +249,6 @@ static inline sector_t fat_clus_to_blknr(struct msdos_sb_info *sbi, int clus)
 		+ sbi->data_start;
 }
 
-<<<<<<< HEAD
-=======
 static inline void fat_get_blknr_offset(struct msdos_sb_info *sbi,
 				loff_t i_pos, sector_t *blknr, int *offset)
 {
@@ -349,7 +270,6 @@ static inline loff_t fat_i_pos_read(struct msdos_sb_info *sbi,
 	return i_pos;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void fat16_towchar(wchar_t *dst, const __u8 *src, size_t len)
 {
 #ifdef __BIG_ENDIAN
@@ -362,8 +282,6 @@ static inline void fat16_towchar(wchar_t *dst, const __u8 *src, size_t len)
 #endif
 }
 
-<<<<<<< HEAD
-=======
 static inline int fat_get_start(const struct msdos_sb_info *sbi,
 				const struct msdos_dir_entry *de)
 {
@@ -379,7 +297,6 @@ static inline void fat_set_start(struct msdos_dir_entry *de, int cluster)
 	de->starthi = cpu_to_le16(cluster >> 16);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void fatwchar_to16(__u8 *dst, const wchar_t *src, size_t len)
 {
 #ifdef __BIG_ENDIAN
@@ -398,16 +315,11 @@ static inline void fatwchar_to16(__u8 *dst, const wchar_t *src, size_t len)
 extern void fat_cache_inval_inode(struct inode *inode);
 extern int fat_get_cluster(struct inode *inode, int cluster,
 			   int *fclus, int *dclus);
-<<<<<<< HEAD
-extern int fat_bmap(struct inode *inode, sector_t sector, sector_t *phys,
-		    unsigned long *mapped_blocks, int create);
-=======
 extern int fat_get_mapped_cluster(struct inode *inode, sector_t sector,
 				  sector_t last_block,
 				  unsigned long *mapped_blocks, sector_t *bmap);
 extern int fat_bmap(struct inode *inode, sector_t sector, sector_t *phys,
 		    unsigned long *mapped_blocks, int create, bool from_bmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* fat/dir.c */
 extern const struct file_operations fat_dir_operations;
@@ -417,17 +329,11 @@ extern int fat_dir_empty(struct inode *dir);
 extern int fat_subdirs(struct inode *dir);
 extern int fat_scan(struct inode *dir, const unsigned char *name,
 		    struct fat_slot_info *sinfo);
-<<<<<<< HEAD
-extern int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
-				struct msdos_dir_entry **de, loff_t *i_pos);
-extern int fat_alloc_new_dir(struct inode *dir, struct timespec *ts);
-=======
 extern int fat_scan_logstart(struct inode *dir, int i_logstart,
 			     struct fat_slot_info *sinfo);
 extern int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
 				struct msdos_dir_entry **de);
 extern int fat_alloc_new_dir(struct inode *dir, struct timespec64 *ts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int fat_add_entries(struct inode *dir, void *slots, int nr_slots,
 			   struct fat_slot_info *sinfo);
 extern int fat_remove_entries(struct inode *dir, struct fat_slot_info *sinfo);
@@ -471,14 +377,11 @@ static inline void fatent_brelse(struct fat_entry *fatent)
 	fatent->fat_inode = NULL;
 }
 
-<<<<<<< HEAD
-=======
 static inline bool fat_valid_entry(struct msdos_sb_info *sbi, int entry)
 {
 	return FAT_START_ENT <= entry && entry < sbi->max_cluster;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fat_ent_access_init(struct super_block *sb);
 extern int fat_ent_read(struct inode *inode, struct fat_entry *fatent,
 			int entry);
@@ -488,37 +391,24 @@ extern int fat_alloc_clusters(struct inode *inode, int *cluster,
 			      int nr_cluster);
 extern int fat_free_clusters(struct inode *inode, int cluster);
 extern int fat_count_free_clusters(struct super_block *sb);
-<<<<<<< HEAD
-=======
 extern int fat_trim_fs(struct inode *inode, struct fstrim_range *range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* fat/file.c */
 extern long fat_generic_ioctl(struct file *filp, unsigned int cmd,
 			      unsigned long arg);
 extern const struct file_operations fat_file_operations;
 extern const struct inode_operations fat_file_inode_operations;
-<<<<<<< HEAD
-extern int fat_setattr(struct dentry * dentry, struct iattr * attr);
-extern void fat_truncate_blocks(struct inode *inode, loff_t offset);
-extern int fat_getattr(struct vfsmount *mnt, struct dentry *dentry,
-		       struct kstat *stat);
-=======
 extern int fat_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		       struct iattr *attr);
 extern void fat_truncate_blocks(struct inode *inode, loff_t offset);
 extern int fat_getattr(struct mnt_idmap *idmap,
 		       const struct path *path, struct kstat *stat,
 		       u32 request_mask, unsigned int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int fat_file_fsync(struct file *file, loff_t start, loff_t end,
 			  int datasync);
 
 /* fat/inode.c */
-<<<<<<< HEAD
-=======
 extern int fat_block_truncate_page(struct inode *inode, loff_t from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fat_attach(struct inode *inode, loff_t i_pos);
 extern void fat_detach(struct inode *inode);
 extern struct inode *fat_iget(struct super_block *sb, loff_t i_pos);
@@ -527,30 +417,6 @@ extern struct inode *fat_build_inode(struct super_block *sb,
 extern int fat_sync_inode(struct inode *inode);
 extern int fat_fill_super(struct super_block *sb, void *data, int silent,
 			  int isvfat, void (*setup)(struct super_block *));
-<<<<<<< HEAD
-
-extern int fat_flush_inodes(struct super_block *sb, struct inode *i1,
-		            struct inode *i2);
-/* fat/misc.c */
-extern __printf(3, 4) __cold
-void __fat_fs_error(struct super_block *sb, int report, const char *fmt, ...);
-#define fat_fs_error_ratelimit(sb, fmt, args...) \
-	__fat_fs_error(sb, __ratelimit(&MSDOS_SB(sb)->ratelimit), fmt , ## args)
-/*
- * If removable devices with a fat fs are removed without a unmount, further
- * accesses to the device by applications causes a large number of error prints
- * & in some cases leads to watchdog bark.
- */
-#define fat_fs_error(sb, fmt, args...)	fat_fs_error_ratelimit(sb, fmt, ## args)
-__printf(3, 4) __cold
-void fat_msg(struct super_block *sb, const char *level, const char *fmt, ...);
-extern int fat_clusters_flush(struct super_block *sb);
-extern int fat_chain_add(struct inode *inode, int new_dclus, int nr_cluster);
-extern void fat_time_fat2unix(struct msdos_sb_info *sbi, struct timespec *ts,
-			      __le16 __time, __le16 __date, u8 time_cs);
-extern void fat_time_unix2fat(struct msdos_sb_info *sbi, struct timespec *ts,
-			      __le16 *time, __le16 *date, u8 *time_cs);
-=======
 extern int fat_fill_inode(struct inode *inode, struct msdos_dir_entry *de);
 
 extern int fat_flush_inodes(struct super_block *sb, struct inode *i1,
@@ -595,19 +461,15 @@ extern struct timespec64 fat_truncate_mtime(const struct msdos_sb_info *sbi,
 extern int fat_truncate_time(struct inode *inode, struct timespec64 *now,
 			     int flags);
 extern int fat_update_time(struct inode *inode, int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int fat_sync_bhs(struct buffer_head **bhs, int nr_bhs);
 
 int fat_cache_init(void);
 void fat_cache_destroy(void);
 
-<<<<<<< HEAD
-=======
 /* fat/nfs.c */
 extern const struct export_operations fat_export_ops;
 extern const struct export_operations fat_export_ops_nostale;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* helper for printk */
 typedef unsigned long long	llu;
 

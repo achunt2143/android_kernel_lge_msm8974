@@ -30,12 +30,9 @@
  * IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define dev_fmt pr_fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DPRINTK(fmt, args...)				\
 	pr_debug("xenbus_probe (%s:%d) " fmt ".\n",	\
 		 __func__, __LINE__, ##args)
@@ -55,48 +52,30 @@
 #include <linux/module.h>
 
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/xen/hypervisor.h>
 
 #include <xen/xen.h>
 #include <xen/xenbus.h>
 #include <xen/events.h>
-<<<<<<< HEAD
-=======
 #include <xen/xen-ops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <xen/page.h>
 
 #include <xen/hvm.h>
 
-<<<<<<< HEAD
-#include "xenbus_comms.h"
-#include "xenbus_probe.h"
-
-
-=======
 #include "xenbus.h"
 
 
 static int xs_init_irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xen_store_evtchn;
 EXPORT_SYMBOL_GPL(xen_store_evtchn);
 
 struct xenstore_domain_interface *xen_store_interface;
 EXPORT_SYMBOL_GPL(xen_store_interface);
 
-<<<<<<< HEAD
-static unsigned long xen_store_mfn;
-=======
 enum xenstore_init xen_store_domain_type;
 EXPORT_SYMBOL_GPL(xen_store_domain_type);
 
 static unsigned long xen_store_gfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static BLOCKING_NOTIFIER_HEAD(xenstore_chain);
 
@@ -158,10 +137,7 @@ static int watch_otherend(struct xenbus_device *dev)
 		container_of(dev->dev.bus, struct xen_bus_type, bus);
 
 	return xenbus_watch_pathfmt(dev, &dev->otherend_watch,
-<<<<<<< HEAD
-=======
 				    bus->otherend_will_handle,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    bus->otherend_changed,
 				    "%s/%s", dev->otherend, "state");
 }
@@ -195,11 +171,7 @@ int xenbus_read_otherend_details(struct xenbus_device *xendev,
 EXPORT_SYMBOL_GPL(xenbus_read_otherend_details);
 
 void xenbus_otherend_changed(struct xenbus_watch *watch,
-<<<<<<< HEAD
-			     const char **vec, unsigned int len,
-=======
 			     const char *path, const char *token,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     int ignore_on_shutdown)
 {
 	struct xenbus_device *dev =
@@ -210,27 +182,15 @@ void xenbus_otherend_changed(struct xenbus_watch *watch,
 	/* Protect us against watches firing on old details when the otherend
 	   details change, say immediately after a resume. */
 	if (!dev->otherend ||
-<<<<<<< HEAD
-	    strncmp(dev->otherend, vec[XS_WATCH_PATH],
-		    strlen(dev->otherend))) {
-		dev_dbg(&dev->dev, "Ignoring watch at %s\n",
-			vec[XS_WATCH_PATH]);
-=======
 	    strncmp(dev->otherend, path, strlen(dev->otherend))) {
 		dev_dbg(&dev->dev, "Ignoring watch at %s\n", path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	state = xenbus_read_driver_state(dev->otherend);
 
 	dev_dbg(&dev->dev, "state is %d, (%s), %s, %s\n",
-<<<<<<< HEAD
-		state, xenbus_strstate(state), dev->otherend_watch.node,
-		vec[XS_WATCH_PATH]);
-=======
 		state, xenbus_strstate(state), dev->otherend_watch.node, path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ignore xenbus transitions during shutdown. This prevents us doing
@@ -247,8 +207,6 @@ void xenbus_otherend_changed(struct xenbus_watch *watch,
 }
 EXPORT_SYMBOL_GPL(xenbus_otherend_changed);
 
-<<<<<<< HEAD
-=======
 #define XENBUS_SHOW_STAT(name)						\
 static ssize_t name##_show(struct device *_dev,				\
 			   struct device_attribute *attr,		\
@@ -307,7 +265,6 @@ static const struct attribute_group xenbus_group = {
 	.attrs = xenbus_attrs,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xenbus_dev_probe(struct device *_dev)
 {
 	struct xenbus_device *dev = to_xenbus_device(_dev);
@@ -335,11 +292,6 @@ int xenbus_dev_probe(struct device *_dev)
 		return err;
 	}
 
-<<<<<<< HEAD
-	err = drv->probe(dev, id);
-	if (err)
-		goto fail;
-=======
 	if (!try_module_get(drv->driver.owner)) {
 		dev_warn(&dev->dev, "failed to acquire module reference on '%s'\n",
 			 drv->driver.name);
@@ -352,7 +304,6 @@ int xenbus_dev_probe(struct device *_dev)
 	up(&dev->reclaim_sem);
 	if (err)
 		goto fail_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = watch_otherend(dev);
 	if (err) {
@@ -361,12 +312,6 @@ int xenbus_dev_probe(struct device *_dev)
 		return err;
 	}
 
-<<<<<<< HEAD
-	return 0;
-fail:
-	xenbus_dev_error(dev, err, "xenbus_dev_probe on %s", dev->nodename);
-	xenbus_switch_state(dev, XenbusStateClosed);
-=======
 	dev->spurious_threshold = 1;
 	if (sysfs_create_group(&dev->dev.kobj, &xenbus_group))
 		dev_warn(&dev->dev, "sysfs_create_group on %s failed.\n",
@@ -377,63 +322,17 @@ fail_put:
 	module_put(drv->driver.owner);
 fail:
 	xenbus_dev_error(dev, err, "xenbus_dev_probe on %s", dev->nodename);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL_GPL(xenbus_dev_probe);
 
-<<<<<<< HEAD
-int xenbus_dev_remove(struct device *_dev)
-=======
 void xenbus_dev_remove(struct device *_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xenbus_device *dev = to_xenbus_device(_dev);
 	struct xenbus_driver *drv = to_xenbus_driver(_dev->driver);
 
 	DPRINTK("%s", dev->nodename);
 
-<<<<<<< HEAD
-	free_otherend_watch(dev);
-
-	if (drv->remove)
-		drv->remove(dev);
-
-	free_otherend_details(dev);
-
-	xenbus_switch_state(dev, XenbusStateClosed);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(xenbus_dev_remove);
-
-void xenbus_dev_shutdown(struct device *_dev)
-{
-	struct xenbus_device *dev = to_xenbus_device(_dev);
-	unsigned long timeout = 5*HZ;
-
-	DPRINTK("%s", dev->nodename);
-
-	get_device(&dev->dev);
-	if (dev->state != XenbusStateConnected) {
-		printk(KERN_INFO "%s: %s: %s != Connected, skipping\n", __func__,
-		       dev->nodename, xenbus_strstate(dev->state));
-		goto out;
-	}
-	xenbus_switch_state(dev, XenbusStateClosing);
-	timeout = wait_for_completion_timeout(&dev->down, timeout);
-	if (!timeout)
-		printk(KERN_INFO "%s: %s timeout closing device\n",
-		       __func__, dev->nodename);
- out:
-	put_device(&dev->dev);
-}
-EXPORT_SYMBOL_GPL(xenbus_dev_shutdown);
-
-int xenbus_register_driver_common(struct xenbus_driver *drv,
-				  struct xen_bus_type *bus)
-{
-	drv->driver.bus = &bus->bus;
-=======
 	sysfs_remove_group(&dev->dev.kobj, &xenbus_group);
 
 	free_otherend_watch(dev);
@@ -468,7 +367,6 @@ int xenbus_register_driver_common(struct xenbus_driver *drv,
 	drv->driver.bus = &bus->bus;
 	drv->driver.owner = owner;
 	drv->driver.mod_name = mod_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return driver_register(&drv->driver);
 }
@@ -498,13 +396,8 @@ static int cmp_dev(struct device *dev, void *data)
 	return 0;
 }
 
-<<<<<<< HEAD
-struct xenbus_device *xenbus_device_find(const char *nodename,
-					 struct bus_type *bus)
-=======
 static struct xenbus_device *xenbus_device_find(const char *nodename,
 						struct bus_type *bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xb_find_info info = { .dev = NULL, .nodename = nodename };
 
@@ -558,20 +451,14 @@ static ssize_t nodename_show(struct device *dev,
 {
 	return sprintf(buf, "%s\n", to_xenbus_device(dev)->nodename);
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR_RO(nodename);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t devtype_show(struct device *dev,
 			    struct device_attribute *attr, char *buf)
 {
 	return sprintf(buf, "%s\n", to_xenbus_device(dev)->devicetype);
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR_RO(devtype);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t modalias_show(struct device *dev,
 			     struct device_attribute *attr, char *buf)
@@ -579,16 +466,6 @@ static ssize_t modalias_show(struct device *dev,
 	return sprintf(buf, "%s:%s\n", dev->bus->name,
 		       to_xenbus_device(dev)->devicetype);
 }
-<<<<<<< HEAD
-
-struct device_attribute xenbus_dev_attrs[] = {
-	__ATTR_RO(nodename),
-	__ATTR_RO(devtype),
-	__ATTR_RO(modalias),
-	__ATTR_NULL
-};
-EXPORT_SYMBOL_GPL(xenbus_dev_attrs);
-=======
 static DEVICE_ATTR_RO(modalias);
 
 static ssize_t state_show(struct device *dev,
@@ -616,7 +493,6 @@ const struct attribute_group *xenbus_dev_groups[] = {
 	NULL,
 };
 EXPORT_SYMBOL_GPL(xenbus_dev_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int xenbus_probe_node(struct xen_bus_type *bus,
 		      const char *type,
@@ -661,14 +537,6 @@ int xenbus_probe_node(struct xen_bus_type *bus,
 	if (err)
 		goto fail;
 
-<<<<<<< HEAD
-	dev_set_name(&xendev->dev, devname);
-
-	/* Register with generic device framework. */
-	err = device_register(&xendev->dev);
-	if (err)
-		goto fail;
-=======
 	dev_set_name(&xendev->dev, "%s", devname);
 	sema_init(&xendev->reclaim_sem, 1);
 
@@ -679,7 +547,6 @@ int xenbus_probe_node(struct xen_bus_type *bus,
 		xendev = NULL;
 		goto fail;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 fail:
@@ -806,12 +673,7 @@ int xenbus_dev_suspend(struct device *dev)
 	if (drv->suspend)
 		err = drv->suspend(xdev);
 	if (err)
-<<<<<<< HEAD
-		printk(KERN_WARNING
-		       "xenbus: suspend %s failed: %i\n", dev_name(dev), err);
-=======
 		dev_warn(dev, "suspend failed: %i\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(xenbus_dev_suspend);
@@ -830,13 +692,7 @@ int xenbus_dev_resume(struct device *dev)
 	drv = to_xenbus_driver(dev->driver);
 	err = talk_to_otherend(xdev);
 	if (err) {
-<<<<<<< HEAD
-		printk(KERN_WARNING
-		       "xenbus: resume (talk_to_otherend) %s failed: %i\n",
-		       dev_name(dev), err);
-=======
 		dev_warn(dev, "resume (talk_to_otherend) failed: %i\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -845,26 +701,14 @@ int xenbus_dev_resume(struct device *dev)
 	if (drv->resume) {
 		err = drv->resume(xdev);
 		if (err) {
-<<<<<<< HEAD
-			printk(KERN_WARNING
-			       "xenbus: resume %s failed: %i\n",
-			       dev_name(dev), err);
-=======
 			dev_warn(dev, "resume failed: %i\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
 
 	err = watch_otherend(xdev);
 	if (err) {
-<<<<<<< HEAD
-		printk(KERN_WARNING
-		       "xenbus_probe: resume (watch_otherend) %s failed: "
-		       "%d.\n", dev_name(dev), err);
-=======
 		dev_warn(dev, "resume (watch_otherend) failed: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -903,16 +747,6 @@ void unregister_xenstore_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL_GPL(unregister_xenstore_notifier);
 
-<<<<<<< HEAD
-void xenbus_probe(struct work_struct *unused)
-{
-	xenstored_ready = 1;
-
-	/* Notify others that xenstore is up */
-	blocking_notifier_call_chain(&xenstore_chain, 0, NULL);
-}
-EXPORT_SYMBOL_GPL(xenbus_probe);
-=======
 static void xenbus_probe(void)
 {
 	xenstored_ready = 1;
@@ -974,24 +808,12 @@ static int xenbus_probe_thread(void *unused)
 	xenbus_probe();
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init xenbus_probe_initcall(void)
 {
 	if (!xen_domain())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (xen_initial_domain() || xen_hvm_domain())
-		return 0;
-
-	xenbus_probe(NULL);
-	return 0;
-}
-
-device_initcall(xenbus_probe_initcall);
-
-=======
 	/*
 	 * Probe XenBus here in the XS_PV case, and also XS_HVM unless we
 	 * need to wait for the platform PCI device to come up or
@@ -1045,17 +867,12 @@ int xen_set_callback_via(uint64_t via)
 }
 EXPORT_SYMBOL_GPL(xen_set_callback_via);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Set up event channel for xenstored which is run as a local process
  * (this is normally used only in dom0)
  */
 static int __init xenstored_local_init(void)
 {
-<<<<<<< HEAD
-	int err = 0;
-=======
 	int err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long page = 0;
 	struct evtchn_alloc_unbound alloc_unbound;
 
@@ -1064,13 +881,7 @@ static int __init xenstored_local_init(void)
 	if (!page)
 		goto out_err;
 
-<<<<<<< HEAD
-	xen_store_mfn = xen_start_info->store_mfn =
-		pfn_to_mfn(virt_to_phys((void *)page) >>
-			   PAGE_SHIFT);
-=======
 	xen_store_gfn = virt_to_gfn((void *)page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Next allocate a local port which xenstored can bind to */
 	alloc_unbound.dom        = DOMID_SELF;
@@ -1082,12 +893,7 @@ static int __init xenstored_local_init(void)
 		goto out_err;
 
 	BUG_ON(err);
-<<<<<<< HEAD
-	xen_store_evtchn = xen_start_info->store_evtchn =
-		alloc_unbound.port;
-=======
 	xen_store_evtchn = alloc_unbound.port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1097,12 +903,6 @@ static int __init xenstored_local_init(void)
 	return err;
 }
 
-<<<<<<< HEAD
-static int __init xenbus_init(void)
-{
-	int err = 0;
-
-=======
 static int xenbus_resume_cb(struct notifier_block *nb,
 			    unsigned long action, void *data)
 {
@@ -1148,16 +948,11 @@ static int __init xenbus_init(void)
 	bool wait = false;
 	xen_store_domain_type = XS_UNKNOWN;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xen_domain())
 		return -ENODEV;
 
 	xenbus_ring_ops_init();
 
-<<<<<<< HEAD
-	if (xen_hvm_domain()) {
-		uint64_t v = 0;
-=======
 	if (xen_pv_domain())
 		xen_store_domain_type = XS_PV;
 	if (xen_hvm_domain())
@@ -1182,7 +977,6 @@ static int __init xenbus_init(void)
 		xen_store_interface = gfn_to_virt(xen_store_gfn);
 		break;
 	case XS_HVM:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = hvm_get_parameter(HVM_PARAM_STORE_EVTCHN, &v);
 		if (err)
 			goto out_error;
@@ -1190,31 +984,6 @@ static int __init xenbus_init(void)
 		err = hvm_get_parameter(HVM_PARAM_STORE_PFN, &v);
 		if (err)
 			goto out_error;
-<<<<<<< HEAD
-		xen_store_mfn = (unsigned long)v;
-		xen_store_interface = ioremap(xen_store_mfn << PAGE_SHIFT, PAGE_SIZE);
-	} else {
-		xen_store_evtchn = xen_start_info->store_evtchn;
-		xen_store_mfn = xen_start_info->store_mfn;
-		if (xen_store_evtchn)
-			xenstored_ready = 1;
-		else {
-			err = xenstored_local_init();
-			if (err)
-				goto out_error;
-		}
-		xen_store_interface = mfn_to_virt(xen_store_mfn);
-	}
-
-	/* Initialize the interface to xenstore. */
-	err = xs_init();
-	if (err) {
-		printk(KERN_WARNING
-		       "XENBUS: Error initializing xenstore comms: %i\n", err);
-		goto out_error;
-	}
-
-=======
 		/*
 		 * Uninitialized hvm_params are zero and return no error.
 		 * Although it is theoretically possible to have
@@ -1284,25 +1053,17 @@ static int __init xenbus_init(void)
 	    (xen_store_domain_type != XS_UNKNOWN))
 		xen_resume_notifier_register(&xenbus_resume_nb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_XEN_COMPAT_XENFS
 	/*
 	 * Create xenfs mountpoint in /proc for compatibility with
 	 * utilities that expect to find "xenbus" under "/proc/xen".
 	 */
-<<<<<<< HEAD
-	proc_mkdir("xen", NULL);
-#endif
-
-out_error:
-=======
 	proc_create_mount_point("xen");
 #endif
 	return 0;
 
 out_error:
 	xen_store_domain_type = XS_UNKNOWN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 

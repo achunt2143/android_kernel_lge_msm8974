@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 * linux/arch/arm/mach-omap1/board-sx1.c
 *
@@ -13,18 +10,9 @@
 *
 * Maintainters : Vladimir Ananiev (aka Vovan888), Sergge
 *		oslik.ru
-<<<<<<< HEAD
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License version 2 as
-* published by the Free Software Foundation.
-*/
-#include <linux/gpio.h>
-=======
 */
 #include <linux/gpio/machine.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/input.h>
@@ -38,37 +26,19 @@
 #include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/omapfb.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_data/keypad-omap.h>
 #include <linux/omap-dma.h>
 #include "tc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/map.h>
 
-<<<<<<< HEAD
-#include <plat/flash.h>
-#include <plat/mux.h>
-#include <plat/dma.h>
-#include <plat/irda.h>
-#include <plat/usb.h>
-#include <plat/tc.h>
-#include <plat/board.h>
-#include <plat/keypad.h>
-#include <plat/board-sx1.h>
-
-#include <mach/hardware.h>
-
-=======
 #include "flash.h"
 #include "mux.h"
 #include "board-sx1.h"
 #include "hardware.h"
 #include "usb.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 
 /* Write to I2C device */
@@ -252,42 +222,6 @@ static struct platform_device sx1_kp_device = {
 	.resource	= sx1_kp_resources,
 };
 
-<<<<<<< HEAD
-/*----------- IRDA -------------------------*/
-
-static struct omap_irda_config sx1_irda_data = {
-	.transceiver_cap	= IR_SIRMODE,
-	.rx_channel		= OMAP_DMA_UART3_RX,
-	.tx_channel		= OMAP_DMA_UART3_TX,
-	.dest_start		= UART3_THR,
-	.src_start		= UART3_RHR,
-	.tx_trigger		= 0,
-	.rx_trigger		= 0,
-};
-
-static struct resource sx1_irda_resources[] = {
-	[0] = {
-		.start	= INT_UART3,
-		.end	= INT_UART3,
-		.flags	= IORESOURCE_IRQ,
-	},
-};
-
-static u64 irda_dmamask = 0xffffffff;
-
-static struct platform_device sx1_irda_device = {
-	.name		= "omapirda",
-	.id		= 0,
-	.dev		= {
-		.platform_data	= &sx1_irda_data,
-		.dma_mask	= &irda_dmamask,
-	},
-	.num_resources	= ARRAY_SIZE(sx1_irda_resources),
-	.resource	= sx1_irda_resources,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*----------- MTD -------------------------*/
 
 static struct mtd_partition sx1_partitions[] = {
@@ -328,34 +262,6 @@ static struct physmap_flash_data sx1_flash_data = {
 	.nr_parts	= ARRAY_SIZE(sx1_partitions),
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_SX1_OLD_FLASH
-/* MTD Intel StrataFlash - old flashes */
-static struct resource sx1_old_flash_resource[] = {
-	[0] = {
-		.start	= OMAP_CS0_PHYS,	/* Physical */
-		.end	= OMAP_CS0_PHYS + SZ_16M - 1,,
-		.flags	= IORESOURCE_MEM,
-	},
-	[1] = {
-		.start	= OMAP_CS1_PHYS,
-		.end	= OMAP_CS1_PHYS + SZ_8M - 1,
-		.flags	= IORESOURCE_MEM,
-	},
-};
-
-static struct platform_device sx1_flash_device = {
-	.name		= "physmap-flash",
-	.id		= 0,
-	.dev		= {
-		.platform_data	= &sx1_flash_data,
-	},
-	.num_resources	= 2,
-	.resource	= &sx1_old_flash_resource,
-};
-#else
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* MTD Intel 4000 flash - new flashes */
 static struct resource sx1_new_flash_resource = {
 	.start		= OMAP_CS0_PHYS,
@@ -372,10 +278,6 @@ static struct platform_device sx1_flash_device = {
 	.num_resources	= 1,
 	.resource	= &sx1_new_flash_resource,
 };
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*----------- USB -------------------------*/
 
@@ -391,11 +293,7 @@ static struct omap_usb_config sx1_usb_config __initdata = {
 
 /*----------- LCD -------------------------*/
 
-<<<<<<< HEAD
-static struct omap_lcd_config sx1_lcd_config __initdata = {
-=======
 static const struct omap_lcd_config sx1_lcd_config __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ctrl_name	= "internal",
 };
 
@@ -403,18 +301,10 @@ static const struct omap_lcd_config sx1_lcd_config __initconst = {
 static struct platform_device *sx1_devices[] __initdata = {
 	&sx1_flash_device,
 	&sx1_kp_device,
-<<<<<<< HEAD
-	&sx1_irda_device,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*-----------------------------------------*/
 
-<<<<<<< HEAD
-static void __init omap_sx1_init(void)
-{
-=======
 static struct gpiod_lookup_table sx1_gpio_table = {
 	.dev_id = NULL,
 	.table = {
@@ -432,7 +322,6 @@ static void __init omap_sx1_init(void)
 {
 	struct gpio_desc *d;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* mux pins for uarts */
 	omap_cfg_reg(UART1_TX);
 	omap_cfg_reg(UART1_RTS);
@@ -447,17 +336,6 @@ static void __init omap_sx1_init(void)
 	omap_register_i2c_bus(1, 100, NULL, 0);
 	omap1_usb_init(&sx1_usb_config);
 	sx1_mmc_init();
-<<<<<<< HEAD
-
-	/* turn on USB power */
-	/* sx1_setusbpower(1); can't do it here because i2c is not ready */
-	gpio_request(1, "A_IRDA_OFF");
-	gpio_request(11, "A_SWITCH");
-	gpio_request(15, "A_USB_ON");
-	gpio_direction_output(1, 1);	/*A_IRDA_OFF = 1 */
-	gpio_direction_output(11, 0);	/*A_SWITCH = 0 */
-	gpio_direction_output(15, 0);	/*A_USB_ON = 0 */
-=======
 	gpiod_add_lookup_table(&sx1_gpio_table);
 
 	/* turn on USB power */
@@ -477,27 +355,17 @@ static void __init omap_sx1_init(void)
 		pr_err("Unable to get USB ON GPIO descriptor\n");
 	else
 		gpiod_put(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	omapfb_set_lcd_config(&sx1_lcd_config);
 }
 
 MACHINE_START(SX1, "OMAP310 based Siemens SX1")
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-	.map_io		= omap15xx_map_io,
-	.init_early     = omap1_init_early,
-	.reserve	= omap_reserve,
-	.init_irq	= omap1_init_irq,
-	.init_machine	= omap_sx1_init,
-	.timer		= &omap1_timer,
-=======
 	.map_io		= omap1_map_io,
 	.init_early     = omap1_init_early,
 	.init_irq	= omap1_init_irq,
 	.init_machine	= omap_sx1_init,
 	.init_late	= omap1_init_late,
 	.init_time	= omap1_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= omap1_restart,
 MACHINE_END

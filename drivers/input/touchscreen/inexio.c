@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * iNexio serial touchscreen driver
  *
  * Copyright (c) 2008 Richard Lemon
  * Based on the mtouch driver (c) Vojtech Pavlik and Dan Streetman
-<<<<<<< HEAD
- *
  */
 
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 2008/06/19 Richard Lemon <richard@codelemon.com>
@@ -32,10 +18,6 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"iNexio serial touchscreen driver"
 
@@ -92,11 +74,7 @@ static void inexio_process_data(struct inexio *pinexio)
 static irqreturn_t inexio_interrupt(struct serio *serio,
 		unsigned char data, unsigned int flags)
 {
-<<<<<<< HEAD
-	struct inexio* pinexio = serio_get_drvdata(serio);
-=======
 	struct inexio *pinexio = serio_get_drvdata(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pinexio->data[pinexio->idx] = data;
 
@@ -114,11 +92,7 @@ static irqreturn_t inexio_interrupt(struct serio *serio,
 
 static void inexio_disconnect(struct serio *serio)
 {
-<<<<<<< HEAD
-	struct inexio* pinexio = serio_get_drvdata(serio);
-=======
 	struct inexio *pinexio = serio_get_drvdata(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_get_device(pinexio->dev);
 	input_unregister_device(pinexio->dev);
@@ -186,11 +160,7 @@ static int inexio_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
-<<<<<<< HEAD
-static struct serio_device_id inexio_serio_ids[] = {
-=======
 static const struct serio_device_id inexio_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_INEXIO,
@@ -213,23 +183,4 @@ static struct serio_driver inexio_drv = {
 	.disconnect	= inexio_disconnect,
 };
 
-<<<<<<< HEAD
-/*
- * The functions for inserting/removing us as a module.
- */
-
-static int __init inexio_init(void)
-{
-	return serio_register_driver(&inexio_drv);
-}
-
-static void __exit inexio_exit(void)
-{
-	serio_unregister_driver(&inexio_drv);
-}
-
-module_init(inexio_init);
-module_exit(inexio_exit);
-=======
 module_serio_driver(inexio_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

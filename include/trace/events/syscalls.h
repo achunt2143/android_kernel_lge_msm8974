@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-#undef TRACE_SYSTEM
-#define TRACE_SYSTEM raw_syscalls
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM raw_syscalls
 #undef TRACE_INCLUDE_FILE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TRACE_INCLUDE_FILE syscalls
 
 #if !defined(_TRACE_EVENTS_SYSCALLS_H) || defined(TRACE_HEADER_MULTI_READ)
@@ -20,12 +15,6 @@
 
 #ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS
 
-<<<<<<< HEAD
-extern void syscall_regfunc(void);
-extern void syscall_unregfunc(void);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT_FN(sys_enter,
 
 	TP_PROTO(struct pt_regs *regs, long id),
@@ -39,11 +28,7 @@ TRACE_EVENT_FN(sys_enter,
 
 	TP_fast_assign(
 		__entry->id	= id;
-<<<<<<< HEAD
-		syscall_get_arguments(current, regs, 0, 6, __entry->args);
-=======
 		syscall_get_arguments(current, regs, __entry->args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("NR %ld (%lx, %lx, %lx, %lx, %lx, %lx)",

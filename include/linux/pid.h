@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_PID_H
-#define _LINUX_PID_H
-
-#include <linux/rcupdate.h>
-
-enum pid_type
-{
-	PIDTYPE_PID,
-	PIDTYPE_PGID,
-	PIDTYPE_SID,
-	PIDTYPE_MAX
-};
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_PID_H
 #define _LINUX_PID_H
@@ -22,7 +8,6 @@ enum pid_type
 #include <linux/refcount.h>
 #include <linux/sched.h>
 #include <linux/wait.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * What is struct pid?
@@ -60,31 +45,15 @@ enum pid_type
  * find_pid_ns() using the int nr and struct pid_namespace *ns.
  */
 
-<<<<<<< HEAD
-struct upid {
-	/* Try to keep pid_chain in the same cacheline as nr for find_vpid */
-	int nr;
-	struct pid_namespace *ns;
-	struct hlist_node pid_chain;
-=======
 #define RESERVED_PIDS 300
 
 struct upid {
 	int nr;
 	struct pid_namespace *ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pid
 {
-<<<<<<< HEAD
-	atomic_t count;
-	unsigned int level;
-	/* lists of tasks that use this pid */
-	struct hlist_head tasks[PIDTYPE_MAX];
-	struct rcu_head rcu;
-	struct upid numbers[1];
-=======
 	refcount_t count;
 	unsigned int level;
 	spinlock_t lock;
@@ -97,18 +66,10 @@ struct pid
 	wait_queue_head_t wait_pidfd;
 	struct rcu_head rcu;
 	struct upid numbers[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct pid init_struct_pid;
 
-<<<<<<< HEAD
-struct pid_link
-{
-	struct hlist_node node;
-	struct pid *pid;
-};
-=======
 struct file;
 
 struct pid *pidfd_pid(const struct file *file);
@@ -116,48 +77,25 @@ struct pid *pidfd_get_pid(unsigned int fd, unsigned int *flags);
 struct task_struct *pidfd_get_task(int pidfd, unsigned int *flags);
 int pidfd_prepare(struct pid *pid, unsigned int flags, struct file **ret);
 void do_notify_pidfd(struct task_struct *task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct pid *get_pid(struct pid *pid)
 {
 	if (pid)
-<<<<<<< HEAD
-		atomic_inc(&pid->count);
-=======
 		refcount_inc(&pid->count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pid;
 }
 
 extern void put_pid(struct pid *pid);
 extern struct task_struct *pid_task(struct pid *pid, enum pid_type);
-<<<<<<< HEAD
-=======
 static inline bool pid_has_task(struct pid *pid, enum pid_type type)
 {
 	return !hlist_empty(&pid->tasks[type]);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct task_struct *get_pid_task(struct pid *pid, enum pid_type);
 
 extern struct pid *get_task_pid(struct task_struct *task, enum pid_type type);
 
 /*
-<<<<<<< HEAD
- * attach_pid() and detach_pid() must be called with the tasklist_lock
- * write-held.
- */
-extern void attach_pid(struct task_struct *task, enum pid_type type,
-			struct pid *pid);
-extern void detach_pid(struct task_struct *task, enum pid_type);
-extern void change_pid(struct task_struct *task, enum pid_type,
-			struct pid *pid);
-extern void transfer_pid(struct task_struct *old, struct task_struct *new,
-			 enum pid_type);
-
-struct pid_namespace;
-extern struct pid_namespace init_pid_ns;
-=======
  * these helpers must be called with the tasklist_lock write-held.
  */
 extern void attach_pid(struct task_struct *task, enum pid_type);
@@ -170,7 +108,6 @@ extern void transfer_pid(struct task_struct *old, struct task_struct *new,
 
 extern int pid_max;
 extern int pid_max_min, pid_max_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * look up a PID in the hash table. Must be called with the tasklist_lock
@@ -189,18 +126,11 @@ extern struct pid *find_vpid(int nr);
  */
 extern struct pid *find_get_pid(int nr);
 extern struct pid *find_ge_pid(int nr, struct pid_namespace *);
-<<<<<<< HEAD
-int next_pidmap(struct pid_namespace *pid_ns, unsigned int last);
-
-extern struct pid *alloc_pid(struct pid_namespace *ns);
-extern void free_pid(struct pid *pid);
-=======
 
 extern struct pid *alloc_pid(struct pid_namespace *ns, pid_t *set_tid,
 			     size_t set_tid_size);
 extern void free_pid(struct pid *pid);
 extern void disable_pid_allocation(struct pid_namespace *ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ns_of_pid() returns the pid namespace in which the specified pid was
@@ -255,16 +185,9 @@ pid_t pid_vnr(struct pid *pid);
 
 #define do_each_pid_task(pid, type, task)				\
 	do {								\
-<<<<<<< HEAD
-		struct hlist_node *pos___;				\
-		if ((pid) != NULL)					\
-			hlist_for_each_entry_rcu((task), pos___,	\
-				&(pid)->tasks[type], pids[type].node) {
-=======
 		if ((pid) != NULL)					\
 			hlist_for_each_entry_rcu((task),		\
 				&(pid)->tasks[type], pid_links[type]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Both old and new leaders may be attached to
@@ -279,14 +202,6 @@ pid_t pid_vnr(struct pid *pid);
 #define do_each_pid_thread(pid, type, task)				\
 	do_each_pid_task(pid, type, task) {				\
 		struct task_struct *tg___ = task;			\
-<<<<<<< HEAD
-		do {
-
-#define while_each_pid_thread(pid, type, task)				\
-		} while_each_thread(tg___, task);			\
-		task = tg___;						\
-	} while_each_pid_task(pid, type, task)
-=======
 		for_each_thread(tg___, task) {
 
 #define while_each_pid_thread(pid, type, task)				\
@@ -416,5 +331,4 @@ static inline int is_global_init(struct task_struct *tsk)
 	return task_tgid_nr(tsk) == 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_PID_H */

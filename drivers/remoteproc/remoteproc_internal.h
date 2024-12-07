@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Remote processor framework
  *
@@ -10,36 +7,12 @@
  *
  * Ohad Ben-Cohen <ohad@wizery.com>
  * Brian Swetland <swetland@google.com>
-<<<<<<< HEAD
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef REMOTEPROC_INTERNAL_H
 #define REMOTEPROC_INTERNAL_H
 
 #include <linux/irqreturn.h>
-<<<<<<< HEAD
-
-struct rproc;
-
-/* from remoteproc_core.c */
-void rproc_release(struct kref *kref);
-irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
-
-/* from remoteproc_virtio.c */
-int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id);
-void rproc_remove_virtio_dev(struct rproc_vdev *rvdev);
-=======
 #include <linux/firmware.h>
 
 struct rproc;
@@ -88,23 +61,16 @@ int rproc_of_parse_firmware(struct device *dev, int index,
 
 /* from remoteproc_virtio.c */
 irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* from remoteproc_debugfs.c */
 void rproc_remove_trace_file(struct dentry *tfile);
 struct dentry *rproc_create_trace_file(const char *name, struct rproc *rproc,
-<<<<<<< HEAD
-					struct rproc_mem_entry *trace);
-=======
 				       struct rproc_debug_trace *trace);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rproc_delete_debug_dir(struct rproc *rproc);
 void rproc_create_debug_dir(struct rproc *rproc);
 void rproc_init_debugfs(void);
 void rproc_exit_debugfs(void);
 
-<<<<<<< HEAD
-=======
 /* from remoteproc_sysfs.c */
 extern struct class rproc_class;
 int rproc_init_sysfs(void);
@@ -255,5 +221,4 @@ bool rproc_u64_fit_in_size_t(u64 val)
 	return (val <= (size_t) -1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* REMOTEPROC_INTERNAL_H */

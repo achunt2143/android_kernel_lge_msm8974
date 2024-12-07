@@ -1,58 +1,36 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _KERNEL_EVENTS_INTERNAL_H
 #define _KERNEL_EVENTS_INTERNAL_H
 
 #include <linux/hardirq.h>
-<<<<<<< HEAD
-=======
 #include <linux/uaccess.h>
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Buffer handling */
 
 #define RING_BUFFER_WRITABLE		0x01
 
-<<<<<<< HEAD
-struct ring_buffer {
-	atomic_t			refcount;
-=======
 struct perf_buffer {
 	refcount_t			refcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rcu_head			rcu_head;
 #ifdef CONFIG_PERF_USE_VMALLOC
 	struct work_struct		work;
 	int				page_order;	/* allocation order  */
 #endif
 	int				nr_pages;	/* nr of data pages  */
-<<<<<<< HEAD
-	int				writable;	/* are we writable   */
-=======
 	int				overwrite;	/* can overwrite itself */
 	int				paused;		/* can write into ring buffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_t			poll;		/* POLL_ for wakeups */
 
 	local_t				head;		/* write position    */
-<<<<<<< HEAD
-	local_t				nest;		/* nested writers    */
-=======
 	unsigned int			nest;		/* nested writers    */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_t				events;		/* event limit       */
 	local_t				wakeup;		/* wakeup stamp      */
 	local_t				lost;		/* nr records lost   */
 
 	long				watermark;	/* wakeup watermark  */
-<<<<<<< HEAD
-=======
 	long				aux_watermark;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* poll crap */
 	spinlock_t			event_lock;
 	struct list_head		event_list;
@@ -61,28 +39,6 @@ struct perf_buffer {
 	unsigned long			mmap_locked;
 	struct user_struct		*mmap_user;
 
-<<<<<<< HEAD
-	struct perf_event_mmap_page	*user_page;
-	void				*data_pages[0];
-};
-
-extern void rb_free(struct ring_buffer *rb);
-extern struct ring_buffer *
-rb_alloc(int nr_pages, long watermark, int cpu, int flags);
-extern void perf_event_wakeup(struct perf_event *event);
-
-extern void
-perf_event_header__init_id(struct perf_event_header *header,
-			   struct perf_sample_data *data,
-			   struct perf_event *event);
-extern void
-perf_event__output_id_sample(struct perf_event *event,
-			     struct perf_output_handle *handle,
-			     struct perf_sample_data *sample);
-
-extern struct page *
-perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff);
-=======
 	/* AUX area */
 	long				aux_head;
 	unsigned int			aux_nest;
@@ -139,7 +95,6 @@ void perf_event_aux_event(struct perf_event *event, unsigned long head,
 
 extern struct page *
 perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PERF_USE_VMALLOC
 /*
@@ -148,84 +103,29 @@ perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff);
  * Required for architectures that have d-cache aliasing issues.
  */
 
-<<<<<<< HEAD
-static inline int page_order(struct ring_buffer *rb)
-=======
 static inline int page_order(struct perf_buffer *rb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return rb->page_order;
 }
 
 #else
 
-<<<<<<< HEAD
-static inline int page_order(struct ring_buffer *rb)
-=======
 static inline int page_order(struct perf_buffer *rb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-static inline unsigned long perf_data_size(struct ring_buffer *rb)
-=======
 static inline int data_page_nr(struct perf_buffer *rb)
 {
 	return rb->nr_pages << page_order(rb);
 }
 
 static inline unsigned long perf_data_size(struct perf_buffer *rb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
 }
 
-<<<<<<< HEAD
-static inline void
-__output_copy(struct perf_output_handle *handle,
-		   const void *buf, unsigned int len)
-{
-	do {
-		unsigned long size = min_t(unsigned long, handle->size, len);
-
-		memcpy(handle->addr, buf, size);
-
-		len -= size;
-		handle->addr += size;
-		buf += size;
-		handle->size -= size;
-		if (!handle->size) {
-			struct ring_buffer *rb = handle->rb;
-
-			handle->page++;
-			handle->page &= rb->nr_pages - 1;
-			handle->addr = rb->data_pages[handle->page];
-			handle->size = PAGE_SIZE << page_order(rb);
-		}
-	} while (len);
-}
-
-/* Callchain handling */
-extern struct perf_callchain_entry *perf_callchain(struct pt_regs *regs);
-extern int get_callchain_buffers(void);
-extern void put_callchain_buffers(void);
-
-static inline int get_recursion_context(int *recursion)
-{
-	int rctx;
-
-	if (in_nmi())
-		rctx = 3;
-	else if (in_irq())
-		rctx = 2;
-	else if (in_softirq())
-		rctx = 1;
-	else
-		rctx = 0;
-=======
 static inline unsigned long perf_aux_size(struct perf_buffer *rb)
 {
 	return rb->aux_nr_pages << PAGE_SHIFT;
@@ -311,7 +211,6 @@ DEFINE_OUTPUT_COPY(__output_copy_user, arch_perf_out_copy_user)
 static inline int get_recursion_context(int *recursion)
 {
 	unsigned char rctx = interrupt_context_level();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (recursion[rctx])
 		return -1;
@@ -328,8 +227,6 @@ static inline void put_recursion_context(int *recursion, int rctx)
 	recursion[rctx]--;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAVE_PERF_USER_STACK_DUMP
 static inline bool arch_perf_have_user_stack_dump(void)
 {
@@ -346,5 +243,4 @@ static inline bool arch_perf_have_user_stack_dump(void)
 #define perf_user_stack_pointer(regs) 0
 #endif /* CONFIG_HAVE_PERF_USER_STACK_DUMP */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _KERNEL_EVENTS_INTERNAL_H */

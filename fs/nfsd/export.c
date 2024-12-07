@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NFS exporting and validation.
  *
@@ -19,19 +16,6 @@
 #include <linux/namei.h>
 #include <linux/module.h>
 #include <linux/exportfs.h>
-<<<<<<< HEAD
-
-#include <net/ipv6.h>
-
-#include "nfsd.h"
-#include "nfsfh.h"
-
-#define NFSDDBG_FACILITY	NFSDDBG_EXPORT
-
-typedef struct auth_domain	svc_client;
-typedef struct svc_export	svc_export;
-
-=======
 #include <linux/sunrpc/svc_xprt.h>
 
 #include "nfsd.h"
@@ -43,7 +27,6 @@ typedef struct svc_export	svc_export;
 
 #define NFSDDBG_FACILITY	NFSDDBG_EXPORT
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We have two caches.
  * One maps client+vfsmnt+dentry to export options - the export map
@@ -56,10 +39,6 @@ typedef struct svc_export	svc_export;
 #define	EXPKEY_HASHBITS		8
 #define	EXPKEY_HASHMAX		(1 << EXPKEY_HASHBITS)
 #define	EXPKEY_HASHMASK		(EXPKEY_HASHMAX -1)
-<<<<<<< HEAD
-static struct cache_head *expkey_table[EXPKEY_HASHMAX];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void expkey_put(struct kref *ref)
 {
@@ -69,16 +48,12 @@ static void expkey_put(struct kref *ref)
 	    !test_bit(CACHE_NEGATIVE, &key->h.flags))
 		path_put(&key->ek_path);
 	auth_domain_put(key->ek_client);
-<<<<<<< HEAD
-	kfree(key);
-=======
 	kfree_rcu(key, ek_rcu);
 }
 
 static int expkey_upcall(struct cache_detail *cd, struct cache_head *h)
 {
 	return sunrpc_cache_pipe_upcall(cd, h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void expkey_request(struct cache_detail *cd,
@@ -96,20 +71,6 @@ static void expkey_request(struct cache_detail *cd,
 	(*bpp)[-1] = '\n';
 }
 
-<<<<<<< HEAD
-static int expkey_upcall(struct cache_detail *cd, struct cache_head *h)
-{
-	return sunrpc_cache_pipe_upcall(cd, h, expkey_request);
-}
-
-static struct svc_expkey *svc_expkey_update(struct svc_expkey *new, struct svc_expkey *old);
-static struct svc_expkey *svc_expkey_lookup(struct svc_expkey *);
-static struct cache_detail svc_expkey_cache;
-
-static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
-{
-	/* client fsidtype fsid [path] */
-=======
 static struct svc_expkey *svc_expkey_update(struct cache_detail *cd, struct svc_expkey *new,
 					    struct svc_expkey *old);
 static struct svc_expkey *svc_expkey_lookup(struct cache_detail *cd, struct svc_expkey *);
@@ -117,7 +78,6 @@ static struct svc_expkey *svc_expkey_lookup(struct cache_detail *cd, struct svc_
 static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
 {
 	/* client fsidtype fsid expiry [path] */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *buf;
 	int len;
 	struct auth_domain *dom = NULL;
@@ -137,11 +97,7 @@ static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
 		goto out;
 
 	err = -EINVAL;
-<<<<<<< HEAD
-	if ((len=qword_get(&mesg, buf, PAGE_SIZE)) <= 0)
-=======
 	if (qword_get(&mesg, buf, PAGE_SIZE) <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	err = -ENOENT;
@@ -151,11 +107,7 @@ static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
 	dprintk("found domain %s\n", buf);
 
 	err = -EINVAL;
-<<<<<<< HEAD
-	if ((len=qword_get(&mesg, buf, PAGE_SIZE)) <= 0)
-=======
 	if (qword_get(&mesg, buf, PAGE_SIZE) <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	fsidtype = simple_strtoul(buf, &ep, 10);
 	if (*ep)
@@ -171,17 +123,6 @@ static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
 
 	/* OK, we seem to have a valid key */
 	key.h.flags = 0;
-<<<<<<< HEAD
-	key.h.expiry_time = get_expiry(&mesg);
-	if (key.h.expiry_time == 0)
-		goto out;
-
-	key.ek_client = dom;	
-	key.ek_fsidtype = fsidtype;
-	memcpy(key.ek_fsid, buf, len);
-
-	ek = svc_expkey_lookup(&key);
-=======
 	err = get_expiry(&mesg, &key.h.expiry_time);
 	if (err)
 		goto out;
@@ -191,7 +132,6 @@ static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
 	memcpy(key.ek_fsid, buf, len);
 
 	ek = svc_expkey_lookup(cd, &key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENOMEM;
 	if (!ek)
 		goto out;
@@ -205,15 +145,10 @@ static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
 	err = 0;
 	if (len == 0) {
 		set_bit(CACHE_NEGATIVE, &key.h.flags);
-<<<<<<< HEAD
-		ek = svc_expkey_update(&key, ek);
-		if (!ek)
-=======
 		ek = svc_expkey_update(cd, &key, ek);
 		if (ek)
 			trace_nfsd_expkey_update(ek, NULL);
 		else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOMEM;
 	} else {
 		err = kern_path(buf, 0, &key.ek_path);
@@ -222,26 +157,17 @@ static int expkey_parse(struct cache_detail *cd, char *mesg, int mlen)
 
 		dprintk("Found the path %s\n", buf);
 
-<<<<<<< HEAD
-		ek = svc_expkey_update(&key, ek);
-		if (!ek)
-=======
 		ek = svc_expkey_update(cd, &key, ek);
 		if (ek)
 			trace_nfsd_expkey_update(ek, buf);
 		else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOMEM;
 		path_put(&key.ek_path);
 	}
 	cache_flush();
  out:
 	if (ek)
-<<<<<<< HEAD
-		cache_put(&ek->h, &svc_expkey_cache);
-=======
 		cache_put(&ek->h, cd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dom)
 		auth_domain_put(dom);
 	kfree(buf);
@@ -317,15 +243,6 @@ static struct cache_head *expkey_alloc(void)
 		return NULL;
 }
 
-<<<<<<< HEAD
-static struct cache_detail svc_expkey_cache = {
-	.owner		= THIS_MODULE,
-	.hash_size	= EXPKEY_HASHMAX,
-	.hash_table	= expkey_table,
-	.name		= "nfsd.fh",
-	.cache_put	= expkey_put,
-	.cache_upcall	= expkey_upcall,
-=======
 static void expkey_flush(void)
 {
 	/*
@@ -344,17 +261,13 @@ static const struct cache_detail svc_expkey_cache_template = {
 	.cache_put	= expkey_put,
 	.cache_upcall	= expkey_upcall,
 	.cache_request	= expkey_request,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cache_parse	= expkey_parse,
 	.cache_show	= expkey_show,
 	.match		= expkey_match,
 	.init		= expkey_init,
 	.update       	= expkey_update,
 	.alloc		= expkey_alloc,
-<<<<<<< HEAD
-=======
 	.flush		= expkey_flush,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int
@@ -371,21 +284,12 @@ svc_expkey_hash(struct svc_expkey *item)
 }
 
 static struct svc_expkey *
-<<<<<<< HEAD
-svc_expkey_lookup(struct svc_expkey *item)
-=======
 svc_expkey_lookup(struct cache_detail *cd, struct svc_expkey *item)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache_head *ch;
 	int hash = svc_expkey_hash(item);
 
-<<<<<<< HEAD
-	ch = sunrpc_cache_lookup(&svc_expkey_cache, &item->h,
-				 hash);
-=======
 	ch = sunrpc_cache_lookup_rcu(cd, &item->h, hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch)
 		return container_of(ch, struct svc_expkey, h);
 	else
@@ -393,22 +297,13 @@ svc_expkey_lookup(struct cache_detail *cd, struct svc_expkey *item)
 }
 
 static struct svc_expkey *
-<<<<<<< HEAD
-svc_expkey_update(struct svc_expkey *new, struct svc_expkey *old)
-=======
 svc_expkey_update(struct cache_detail *cd, struct svc_expkey *new,
 		  struct svc_expkey *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache_head *ch;
 	int hash = svc_expkey_hash(new);
 
-<<<<<<< HEAD
-	ch = sunrpc_cache_update(&svc_expkey_cache, &new->h,
-				 &old->h, hash);
-=======
 	ch = sunrpc_cache_update(cd, &new->h, &old->h, hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch)
 		return container_of(ch, struct svc_expkey, h);
 	else
@@ -419,19 +314,6 @@ svc_expkey_update(struct cache_detail *cd, struct svc_expkey *new,
 #define	EXPORT_HASHBITS		8
 #define	EXPORT_HASHMAX		(1<< EXPORT_HASHBITS)
 
-<<<<<<< HEAD
-static struct cache_head *export_table[EXPORT_HASHMAX];
-
-static void nfsd4_fslocs_free(struct nfsd4_fs_locations *fsloc)
-{
-	int i;
-
-	for (i = 0; i < fsloc->locations_count; i++) {
-		kfree(fsloc->locations[i].path);
-		kfree(fsloc->locations[i].hosts);
-	}
-	kfree(fsloc->locations);
-=======
 static void nfsd4_fslocs_free(struct nfsd4_fs_locations *fsloc)
 {
 	struct nfsd4_fs_location *locations = fsloc->locations;
@@ -467,7 +349,6 @@ static void export_stats_destroy(struct export_stats *stats)
 	if (stats)
 		nfsd_percpu_counters_destroy(stats->counter,
 					     EXP_STATS_COUNTERS_NUM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void svc_export_put(struct kref *ref)
@@ -476,9 +357,6 @@ static void svc_export_put(struct kref *ref)
 	path_put(&exp->ex_path);
 	auth_domain_put(exp->ex_client);
 	nfsd4_fslocs_free(&exp->ex_fslocs);
-<<<<<<< HEAD
-	kfree(exp);
-=======
 	export_stats_destroy(exp->ex_stats);
 	kfree(exp->ex_stats);
 	kfree(exp->ex_uuid);
@@ -488,7 +366,6 @@ static void svc_export_put(struct kref *ref)
 static int svc_export_upcall(struct cache_detail *cd, struct cache_head *h)
 {
 	return sunrpc_cache_pipe_upcall(cd, h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void svc_export_request(struct cache_detail *cd,
@@ -510,26 +387,13 @@ static void svc_export_request(struct cache_detail *cd,
 	(*bpp)[-1] = '\n';
 }
 
-<<<<<<< HEAD
-static int svc_export_upcall(struct cache_detail *cd, struct cache_head *h)
-{
-	return sunrpc_cache_pipe_upcall(cd, h, svc_export_request);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct svc_export *svc_export_update(struct svc_export *new,
 					    struct svc_export *old);
 static struct svc_export *svc_export_lookup(struct svc_export *);
 
-<<<<<<< HEAD
-static int check_export(struct inode *inode, int *flags, unsigned char *uuid)
-{
-=======
 static int check_export(struct path *path, int *flags, unsigned char *uuid)
 {
 	struct inode *inode = d_inode(path->dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We currently export only dirs, regular files, and (for v4
@@ -553,10 +417,7 @@ static int check_export(struct path *path, int *flags, unsigned char *uuid)
 	 *       or an FSID number (so NFSEXP_FSID or ->uuid is needed).
 	 * 2:  We must be able to find an inode from a filehandle.
 	 *       This means that s_export_op must be set.
-<<<<<<< HEAD
-=======
 	 * 3: We must not currently be on an idmapped mount.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!(inode->i_sb->s_type->fs_flags & FS_REQUIRES_DEV) &&
 	    !(*flags & NFSEXP_FSID) &&
@@ -565,20 +426,11 @@ static int check_export(struct path *path, int *flags, unsigned char *uuid)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (!inode->i_sb->s_export_op ||
-	    !inode->i_sb->s_export_op->fh_to_dentry) {
-=======
 	if (!exportfs_can_decode_fh(inode->i_sb->s_export_op)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk("exp_export: export of invalid fs type.\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	return 0;
-
-=======
 	if (is_idmapped_mnt(path->mnt)) {
 		dprintk("exp_export: export of idmapped mounts not yet supported.\n");
 		return -EINVAL;
@@ -591,7 +443,6 @@ static int check_export(struct path *path, int *flags, unsigned char *uuid)
 		return -EINVAL;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_NFSD_V4
@@ -602,13 +453,10 @@ fsloc_parse(char **mesg, char *buf, struct nfsd4_fs_locations *fsloc)
 	int len;
 	int migrated, i, err;
 
-<<<<<<< HEAD
-=======
 	/* more than one fsloc */
 	if (fsloc->locations)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* listsize */
 	err = get_uint(mesg, &fsloc->locations_count);
 	if (err)
@@ -618,14 +466,9 @@ fsloc_parse(char **mesg, char *buf, struct nfsd4_fs_locations *fsloc)
 	if (fsloc->locations_count == 0)
 		return 0;
 
-<<<<<<< HEAD
-	fsloc->locations = kzalloc(fsloc->locations_count
-			* sizeof(struct nfsd4_fs_location), GFP_KERNEL);
-=======
 	fsloc->locations = kcalloc(fsloc->locations_count,
 				   sizeof(struct nfsd4_fs_location),
 				   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fsloc->locations)
 		return -ENOMEM;
 	for (i=0; i < fsloc->locations_count; i++) {
@@ -664,15 +507,6 @@ out_free_all:
 
 static int secinfo_parse(char **mesg, char *buf, struct svc_export *exp)
 {
-<<<<<<< HEAD
-	int listsize, err;
-	struct exp_flavor_info *f;
-
-	err = get_int(mesg, &listsize);
-	if (err)
-		return err;
-	if (listsize < 0 || listsize > MAX_SECINFO_LIST)
-=======
 	struct exp_flavor_info *f;
 	u32 listsize;
 	int err;
@@ -685,7 +519,6 @@ static int secinfo_parse(char **mesg, char *buf, struct svc_export *exp)
 	if (err)
 		return err;
 	if (listsize > MAX_SECINFO_LIST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	for (f = exp->ex_flavors; f < exp->ex_flavors + listsize; f++) {
@@ -716,8 +549,6 @@ static inline int
 secinfo_parse(char **mesg, char *buf, struct svc_export *exp) { return 0; }
 #endif
 
-<<<<<<< HEAD
-=======
 static int xprtsec_parse(char **mesg, char *buf, struct svc_export *exp)
 {
 	unsigned int i, mode, listsize;
@@ -762,15 +593,10 @@ nfsd_uuid_parse(char **mesg, char *buf, unsigned char **puuid)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 {
 	/* client path expiry [flags anonuid anongid fsid] */
 	char *buf;
-<<<<<<< HEAD
-	int len;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	struct auth_domain *dom = NULL;
 	struct svc_export exp = {}, *expp;
@@ -786,12 +612,7 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 
 	/* client */
 	err = -EINVAL;
-<<<<<<< HEAD
-	len = qword_get(&mesg, buf, PAGE_SIZE);
-	if (len <= 0)
-=======
 	if (qword_get(&mesg, buf, PAGE_SIZE) <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	err = -ENOENT;
@@ -801,11 +622,7 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 
 	/* path */
 	err = -EINVAL;
-<<<<<<< HEAD
-	if ((len = qword_get(&mesg, buf, PAGE_SIZE)) <= 0)
-=======
 	if (qword_get(&mesg, buf, PAGE_SIZE) <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out1;
 
 	err = kern_path(buf, 0, &exp.ex_path);
@@ -813,13 +630,6 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 		goto out1;
 
 	exp.ex_client = dom;
-<<<<<<< HEAD
-
-	/* expiry */
-	err = -EINVAL;
-	exp.h.expiry_time = get_expiry(&mesg);
-	if (exp.h.expiry_time == 0)
-=======
 	exp.cd = cd;
 	exp.ex_devid_map = NULL;
 	exp.ex_xprtsec_modes = NFSEXP_XPRTSEC_ALL;
@@ -827,7 +637,6 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 	/* expiry */
 	err = get_expiry(&mesg, &exp.h.expiry_time);
 	if (err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out3;
 
 	/* flags */
@@ -839,30 +648,18 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 		if (err || an_int < 0)
 			goto out3;
 		exp.ex_flags= an_int;
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* anon uid */
 		err = get_int(&mesg, &an_int);
 		if (err)
 			goto out3;
-<<<<<<< HEAD
-		exp.ex_anon_uid= an_int;
-=======
 		exp.ex_anon_uid= make_kuid(current_user_ns(), an_int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* anon gid */
 		err = get_int(&mesg, &an_int);
 		if (err)
 			goto out3;
-<<<<<<< HEAD
-		exp.ex_anon_gid= an_int;
-=======
 		exp.ex_anon_gid= make_kgid(current_user_ns(), an_int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* fsid */
 		err = get_int(&mesg, &an_int);
@@ -870,24 +667,6 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 			goto out3;
 		exp.ex_fsid = an_int;
 
-<<<<<<< HEAD
-		while ((len = qword_get(&mesg, buf, PAGE_SIZE)) > 0) {
-			if (strcmp(buf, "fsloc") == 0)
-				err = fsloc_parse(&mesg, buf, &exp.ex_fslocs);
-			else if (strcmp(buf, "uuid") == 0) {
-				/* expect a 16 byte uuid encoded as \xXXXX... */
-				len = qword_get(&mesg, buf, PAGE_SIZE);
-				if (len != 16)
-					err  = -EINVAL;
-				else {
-					exp.ex_uuid =
-						kmemdup(buf, 16, GFP_KERNEL);
-					if (exp.ex_uuid == NULL)
-						err = -ENOMEM;
-				}
-			} else if (strcmp(buf, "secinfo") == 0)
-				err = secinfo_parse(&mesg, buf, &exp);
-=======
 		while (qword_get(&mesg, buf, PAGE_SIZE) > 0) {
 			if (strcmp(buf, "fsloc") == 0)
 				err = fsloc_parse(&mesg, buf, &exp.ex_fslocs);
@@ -897,7 +676,6 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 				err = secinfo_parse(&mesg, buf, &exp);
 			else if (strcmp(buf, "xprtsec") == 0)
 				err = xprtsec_parse(&mesg, buf, &exp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				/* quietly ignore unknown words and anything
 				 * following. Newer user-space can try to set
@@ -908,24 +686,6 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 				goto out4;
 		}
 
-<<<<<<< HEAD
-		err = check_export(exp.ex_path.dentry->d_inode, &exp.ex_flags,
-				   exp.ex_uuid);
-		if (err)
-			goto out4;
-	}
-
-	expp = svc_export_lookup(&exp);
-	if (expp)
-		expp = svc_export_update(&exp, expp);
-	else
-		err = -ENOMEM;
-	cache_flush();
-	if (expp == NULL)
-		err = -ENOMEM;
-	else
-		exp_put(expp);
-=======
 		err = check_export(&exp.ex_path, &exp.ex_flags, exp.ex_uuid);
 		if (err)
 			goto out4;
@@ -966,7 +726,6 @@ static int svc_export_parse(struct cache_detail *cd, char *mesg, int mlen)
 		exp_put(expp);
 	} else
 		err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out4:
 	nfsd4_fslocs_free(&exp.ex_fslocs);
 	kfree(exp.ex_uuid);
@@ -980,11 +739,6 @@ out:
 }
 
 static void exp_flags(struct seq_file *m, int flag, int fsid,
-<<<<<<< HEAD
-		uid_t anonu, uid_t anong, struct nfsd4_fs_locations *fslocs);
-static void show_secinfo(struct seq_file *m, struct svc_export *exp);
-
-=======
 		kuid_t anonu, kgid_t anong, struct nfsd4_fs_locations *fslocs);
 static void show_secinfo(struct seq_file *m, struct svc_export *exp);
 
@@ -998,17 +752,10 @@ static int is_export_stats_file(struct seq_file *m)
 	return !strcmp(m->file->f_path.dentry->d_name.name, "export_stats");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int svc_export_show(struct seq_file *m,
 			   struct cache_detail *cd,
 			   struct cache_head *h)
 {
-<<<<<<< HEAD
-	struct svc_export *exp ;
-
-	if (h ==NULL) {
-		seq_puts(m, "#path domain(flags)\n");
-=======
 	struct svc_export *exp;
 	bool export_stats = is_export_stats_file(m);
 
@@ -1017,17 +764,12 @@ static int svc_export_show(struct seq_file *m,
 			seq_puts(m, "#path domain start-time\n#\tstats\n");
 		else
 			seq_puts(m, "#path domain(flags)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	exp = container_of(h, struct svc_export, h);
 	seq_path(m, &exp->ex_path, " \t\n\\");
 	seq_putc(m, '\t');
 	seq_escape(m, exp->ex_client->name, " \t\n\\");
-<<<<<<< HEAD
-	seq_putc(m, '(');
-	if (test_bit(CACHE_VALID, &h->flags) && 
-=======
 	if (export_stats) {
 		struct percpu_counter *counter = exp->ex_stats->counter;
 
@@ -1043,18 +785,13 @@ static int svc_export_show(struct seq_file *m,
 	}
 	seq_putc(m, '(');
 	if (test_bit(CACHE_VALID, &h->flags) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !test_bit(CACHE_NEGATIVE, &h->flags)) {
 		exp_flags(m, exp->ex_flags, exp->ex_fsid,
 			  exp->ex_anon_uid, exp->ex_anon_gid, &exp->ex_fslocs);
 		if (exp->ex_uuid) {
 			int i;
 			seq_puts(m, ",uuid=");
-<<<<<<< HEAD
-			for (i=0; i<16; i++) {
-=======
 			for (i = 0; i < EX_UUID_LEN; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((i&3) == 0 && i)
 					seq_putc(m, ':');
 				seq_printf(m, "%02x", exp->ex_uuid[i]);
@@ -1070,12 +807,7 @@ static int svc_export_match(struct cache_head *a, struct cache_head *b)
 	struct svc_export *orig = container_of(a, struct svc_export, h);
 	struct svc_export *new = container_of(b, struct svc_export, h);
 	return orig->ex_client == new->ex_client &&
-<<<<<<< HEAD
-		orig->ex_path.dentry == new->ex_path.dentry &&
-		orig->ex_path.mnt == new->ex_path.mnt;
-=======
 		path_equal(&orig->ex_path, &new->ex_path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void svc_export_init(struct cache_head *cnew, struct cache_head *citem)
@@ -1085,13 +817,6 @@ static void svc_export_init(struct cache_head *cnew, struct cache_head *citem)
 
 	kref_get(&item->ex_client->ref);
 	new->ex_client = item->ex_client;
-<<<<<<< HEAD
-	new->ex_path.dentry = dget(item->ex_path.dentry);
-	new->ex_path.mnt = mntget(item->ex_path.mnt);
-	new->ex_fslocs.locations = NULL;
-	new->ex_fslocs.locations_count = 0;
-	new->ex_fslocs.migrated = 0;
-=======
 	new->ex_path = item->ex_path;
 	path_get(&item->ex_path);
 	new->ex_fslocs.locations = NULL;
@@ -1101,7 +826,6 @@ static void svc_export_init(struct cache_head *cnew, struct cache_head *citem)
 	new->ex_uuid = NULL;
 	new->cd = item->cd;
 	export_stats_reset(new->ex_stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void export_update(struct cache_head *cnew, struct cache_head *citem)
@@ -1114,11 +838,8 @@ static void export_update(struct cache_head *cnew, struct cache_head *citem)
 	new->ex_anon_uid = item->ex_anon_uid;
 	new->ex_anon_gid = item->ex_anon_gid;
 	new->ex_fsid = item->ex_fsid;
-<<<<<<< HEAD
-=======
 	new->ex_devid_map = item->ex_devid_map;
 	item->ex_devid_map = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->ex_uuid = item->ex_uuid;
 	item->ex_uuid = NULL;
 	new->ex_fslocs.locations = item->ex_fslocs.locations;
@@ -1127,38 +848,17 @@ static void export_update(struct cache_head *cnew, struct cache_head *citem)
 	item->ex_fslocs.locations_count = 0;
 	new->ex_fslocs.migrated = item->ex_fslocs.migrated;
 	item->ex_fslocs.migrated = 0;
-<<<<<<< HEAD
-=======
 	new->ex_layout_types = item->ex_layout_types;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->ex_nflavors = item->ex_nflavors;
 	for (i = 0; i < MAX_SECINFO_LIST; i++) {
 		new->ex_flavors[i] = item->ex_flavors[i];
 	}
-<<<<<<< HEAD
-=======
 	new->ex_xprtsec_modes = item->ex_xprtsec_modes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct cache_head *svc_export_alloc(void)
 {
 	struct svc_export *i = kmalloc(sizeof(*i), GFP_KERNEL);
-<<<<<<< HEAD
-	if (i)
-		return &i->h;
-	else
-		return NULL;
-}
-
-struct cache_detail svc_export_cache = {
-	.owner		= THIS_MODULE,
-	.hash_size	= EXPORT_HASHMAX,
-	.hash_table	= export_table,
-	.name		= "nfsd.export",
-	.cache_put	= svc_export_put,
-	.cache_upcall	= svc_export_upcall,
-=======
 	if (!i)
 		return NULL;
 
@@ -1184,7 +884,6 @@ static const struct cache_detail svc_export_cache_template = {
 	.cache_put	= svc_export_put,
 	.cache_upcall	= svc_export_upcall,
 	.cache_request	= svc_export_request,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cache_parse	= svc_export_parse,
 	.cache_show	= svc_export_show,
 	.match		= svc_export_match,
@@ -1210,12 +909,7 @@ svc_export_lookup(struct svc_export *exp)
 	struct cache_head *ch;
 	int hash = svc_export_hash(exp);
 
-<<<<<<< HEAD
-	ch = sunrpc_cache_lookup(&svc_export_cache, &exp->h,
-				 hash);
-=======
 	ch = sunrpc_cache_lookup_rcu(exp->cd, &exp->h, hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch)
 		return container_of(ch, struct svc_export, h);
 	else
@@ -1228,13 +922,7 @@ svc_export_update(struct svc_export *new, struct svc_export *old)
 	struct cache_head *ch;
 	int hash = svc_export_hash(old);
 
-<<<<<<< HEAD
-	ch = sunrpc_cache_update(&svc_export_cache, &new->h,
-				 &old->h,
-				 hash);
-=======
 	ch = sunrpc_cache_update(old->cd, &new->h, &old->h, hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch)
 		return container_of(ch, struct svc_export, h);
 	else
@@ -1243,12 +931,8 @@ svc_export_update(struct svc_export *new, struct svc_export *old)
 
 
 static struct svc_expkey *
-<<<<<<< HEAD
-exp_find_key(svc_client *clp, int fsid_type, u32 *fsidv, struct cache_req *reqp)
-=======
 exp_find_key(struct cache_detail *cd, struct auth_domain *clp, int fsid_type,
 	     u32 *fsidv, struct cache_req *reqp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct svc_expkey key, *ek;
 	int err;
@@ -1260,20 +944,6 @@ exp_find_key(struct cache_detail *cd, struct auth_domain *clp, int fsid_type,
 	key.ek_fsidtype = fsid_type;
 	memcpy(key.ek_fsid, fsidv, key_len(fsid_type));
 
-<<<<<<< HEAD
-	ek = svc_expkey_lookup(&key);
-	if (ek == NULL)
-		return ERR_PTR(-ENOMEM);
-	err = cache_check(&svc_expkey_cache, &ek->h, reqp);
-	if (err)
-		return ERR_PTR(err);
-	return ek;
-}
-
-
-static svc_export *exp_get_by_name(svc_client *clp, const struct path *path,
-				     struct cache_req *reqp)
-=======
 	ek = svc_expkey_lookup(cd, &key);
 	if (ek == NULL)
 		return ERR_PTR(-ENOMEM);
@@ -1288,7 +958,6 @@ static svc_export *exp_get_by_name(svc_client *clp, const struct path *path,
 static struct svc_export *
 exp_get_by_name(struct cache_detail *cd, struct auth_domain *clp,
 		const struct path *path, struct cache_req *reqp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct svc_export *exp, key;
 	int err;
@@ -1298,53 +967,33 @@ exp_get_by_name(struct cache_detail *cd, struct auth_domain *clp,
 
 	key.ex_client = clp;
 	key.ex_path = *path;
-<<<<<<< HEAD
-=======
 	key.cd = cd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	exp = svc_export_lookup(&key);
 	if (exp == NULL)
 		return ERR_PTR(-ENOMEM);
-<<<<<<< HEAD
-	err = cache_check(&svc_export_cache, &exp->h, reqp);
-	if (err)
-		return ERR_PTR(err);
-=======
 	err = cache_check(cd, &exp->h, reqp);
 	if (err) {
 		trace_nfsd_exp_get_by_name(&key, err);
 		return ERR_PTR(err);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return exp;
 }
 
 /*
  * Find the export entry for a given dentry.
  */
-<<<<<<< HEAD
-static struct svc_export *exp_parent(svc_client *clp, struct path *path)
-{
-	struct dentry *saved = dget(path->dentry);
-	svc_export *exp = exp_get_by_name(clp, path, NULL);
-=======
 static struct svc_export *
 exp_parent(struct cache_detail *cd, struct auth_domain *clp, struct path *path)
 {
 	struct dentry *saved = dget(path->dentry);
 	struct svc_export *exp = exp_get_by_name(cd, clp, path, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (PTR_ERR(exp) == -ENOENT && !IS_ROOT(path->dentry)) {
 		struct dentry *parent = dget_parent(path->dentry);
 		dput(path->dentry);
 		path->dentry = parent;
-<<<<<<< HEAD
-		exp = exp_get_by_name(clp, path, NULL);
-=======
 		exp = exp_get_by_name(cd, clp, path, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dput(path->dentry);
 	path->dentry = saved;
@@ -1359,23 +1008,16 @@ exp_parent(struct cache_detail *cd, struct auth_domain *clp, struct path *path)
  * since its harder to fool a kernel module than a user space program.
  */
 int
-<<<<<<< HEAD
-exp_rootfh(svc_client *clp, char *name, struct knfsd_fh *f, int maxsize)
-=======
 exp_rootfh(struct net *net, struct auth_domain *clp, char *name,
 	   struct knfsd_fh *f, int maxsize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct svc_export	*exp;
 	struct path		path;
 	struct inode		*inode;
 	struct svc_fh		fh;
 	int			err;
-<<<<<<< HEAD
-=======
 	struct nfsd_net		*nn = net_generic(net, nfsd_net_id);
 	struct cache_detail	*cd = nn->svc_export_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -EPERM;
 	/* NB: we probably ought to check that it's NUL-terminated */
@@ -1383,20 +1025,12 @@ exp_rootfh(struct net *net, struct auth_domain *clp, char *name,
 		printk("nfsd: exp_rootfh path not found %s", name);
 		return err;
 	}
-<<<<<<< HEAD
-	inode = path.dentry->d_inode;
-=======
 	inode = d_inode(path.dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("nfsd: exp_rootfh(%s [%p] %s:%s/%ld)\n",
 		 name, path.dentry, clp->name,
 		 inode->i_sb->s_id, inode->i_ino);
-<<<<<<< HEAD
-	exp = exp_parent(clp, &path);
-=======
 	exp = exp_parent(cd, clp, &path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(exp)) {
 		err = PTR_ERR(exp);
 		goto out;
@@ -1418,18 +1052,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static struct svc_export *exp_find(struct auth_domain *clp, int fsid_type,
-				   u32 *fsidv, struct cache_req *reqp)
-{
-	struct svc_export *exp;
-	struct svc_expkey *ek = exp_find_key(clp, fsid_type, fsidv, reqp);
-	if (IS_ERR(ek))
-		return ERR_CAST(ek);
-
-	exp = exp_get_by_name(clp, &ek->ek_path, reqp);
-	cache_put(&ek->h, &svc_expkey_cache);
-=======
 static struct svc_export *exp_find(struct cache_detail *cd,
 				   struct auth_domain *clp, int fsid_type,
 				   u32 *fsidv, struct cache_req *reqp)
@@ -1442,7 +1064,6 @@ static struct svc_export *exp_find(struct cache_detail *cd,
 
 	exp = exp_get_by_name(cd, clp, &ek->ek_path, reqp);
 	cache_put(&ek->h, nn->svc_expkey_cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(exp))
 		return ERR_CAST(exp);
@@ -1451,11 +1072,6 @@ static struct svc_export *exp_find(struct cache_detail *cd,
 
 __be32 check_nfsd_access(struct svc_export *exp, struct svc_rqst *rqstp)
 {
-<<<<<<< HEAD
-	struct exp_flavor_info *f;
-	struct exp_flavor_info *end = exp->ex_flavors + exp->ex_nflavors;
-
-=======
 	struct exp_flavor_info *f, *end = exp->ex_flavors + exp->ex_nflavors;
 	struct svc_xprt *xprt = rqstp->rq_xprt;
 
@@ -1476,28 +1092,16 @@ __be32 check_nfsd_access(struct svc_export *exp, struct svc_rqst *rqstp)
 	goto denied;
 
 ok:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* legacy gss-only clients are always OK: */
 	if (exp->ex_client == rqstp->rq_gssclient)
 		return 0;
 	/* ip-address based client; check sec= export option: */
 	for (f = exp->ex_flavors; f < end; f++) {
-<<<<<<< HEAD
-		if (f->pseudoflavor == rqstp->rq_flavor)
-=======
 		if (f->pseudoflavor == rqstp->rq_cred.cr_flavor)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 	}
 	/* defaults in absence of sec= options: */
 	if (exp->ex_nflavors == 0) {
-<<<<<<< HEAD
-		if (rqstp->rq_flavor == RPC_AUTH_NULL ||
-		    rqstp->rq_flavor == RPC_AUTH_UNIX)
-			return 0;
-	}
-	return nfserr_wrongsec;
-=======
 		if (rqstp->rq_cred.cr_flavor == RPC_AUTH_NULL ||
 		    rqstp->rq_cred.cr_flavor == RPC_AUTH_UNIX)
 			return 0;
@@ -1514,7 +1118,6 @@ ok:
 
 denied:
 	return rqstp->rq_vers < 4 ? nfserr_acces : nfserr_wrongsec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1530,21 +1133,14 @@ struct svc_export *
 rqst_exp_get_by_name(struct svc_rqst *rqstp, struct path *path)
 {
 	struct svc_export *gssexp, *exp = ERR_PTR(-ENOENT);
-<<<<<<< HEAD
-=======
 	struct nfsd_net *nn = net_generic(SVC_NET(rqstp), nfsd_net_id);
 	struct cache_detail *cd = nn->svc_export_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rqstp->rq_client == NULL)
 		goto gss;
 
 	/* First try the auth_unix client: */
-<<<<<<< HEAD
-	exp = exp_get_by_name(rqstp->rq_client, path, &rqstp->rq_chandle);
-=======
 	exp = exp_get_by_name(cd, rqstp->rq_client, path, &rqstp->rq_chandle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (PTR_ERR(exp) == -ENOENT)
 		goto gss;
 	if (IS_ERR(exp))
@@ -1556,11 +1152,7 @@ gss:
 	/* Otherwise, try falling back on gss client */
 	if (rqstp->rq_gssclient == NULL)
 		return exp;
-<<<<<<< HEAD
-	gssexp = exp_get_by_name(rqstp->rq_gssclient, path, &rqstp->rq_chandle);
-=======
 	gssexp = exp_get_by_name(cd, rqstp->rq_gssclient, path, &rqstp->rq_chandle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (PTR_ERR(gssexp) == -ENOENT)
 		return exp;
 	if (!IS_ERR(exp))
@@ -1572,22 +1164,15 @@ struct svc_export *
 rqst_exp_find(struct svc_rqst *rqstp, int fsid_type, u32 *fsidv)
 {
 	struct svc_export *gssexp, *exp = ERR_PTR(-ENOENT);
-<<<<<<< HEAD
-=======
 	struct nfsd_net *nn = net_generic(SVC_NET(rqstp), nfsd_net_id);
 	struct cache_detail *cd = nn->svc_export_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rqstp->rq_client == NULL)
 		goto gss;
 
 	/* First try the auth_unix client: */
-<<<<<<< HEAD
-	exp = exp_find(rqstp->rq_client, fsid_type, fsidv, &rqstp->rq_chandle);
-=======
 	exp = exp_find(cd, rqstp->rq_client, fsid_type,
 		       fsidv, &rqstp->rq_chandle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (PTR_ERR(exp) == -ENOENT)
 		goto gss;
 	if (IS_ERR(exp))
@@ -1599,11 +1184,7 @@ gss:
 	/* Otherwise, try falling back on gss client */
 	if (rqstp->rq_gssclient == NULL)
 		return exp;
-<<<<<<< HEAD
-	gssexp = exp_find(rqstp->rq_gssclient, fsid_type, fsidv,
-=======
 	gssexp = exp_find(cd, rqstp->rq_gssclient, fsid_type, fsidv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						&rqstp->rq_chandle);
 	if (PTR_ERR(gssexp) == -ENOENT)
 		return exp;
@@ -1657,70 +1238,6 @@ exp_pseudoroot(struct svc_rqst *rqstp, struct svc_fh *fhp)
 	return rv;
 }
 
-<<<<<<< HEAD
-/* Iterator */
-
-static void *e_start(struct seq_file *m, loff_t *pos)
-	__acquires(svc_export_cache.hash_lock)
-{
-	loff_t n = *pos;
-	unsigned hash, export;
-	struct cache_head *ch;
-	
-	read_lock(&svc_export_cache.hash_lock);
-	if (!n--)
-		return SEQ_START_TOKEN;
-	hash = n >> 32;
-	export = n & ((1LL<<32) - 1);
-
-	
-	for (ch=export_table[hash]; ch; ch=ch->next)
-		if (!export--)
-			return ch;
-	n &= ~((1LL<<32) - 1);
-	do {
-		hash++;
-		n += 1LL<<32;
-	} while(hash < EXPORT_HASHMAX && export_table[hash]==NULL);
-	if (hash >= EXPORT_HASHMAX)
-		return NULL;
-	*pos = n+1;
-	return export_table[hash];
-}
-
-static void *e_next(struct seq_file *m, void *p, loff_t *pos)
-{
-	struct cache_head *ch = p;
-	int hash = (*pos >> 32);
-
-	if (p == SEQ_START_TOKEN)
-		hash = 0;
-	else if (ch->next == NULL) {
-		hash++;
-		*pos += 1LL<<32;
-	} else {
-		++*pos;
-		return ch->next;
-	}
-	*pos &= ~((1LL<<32) - 1);
-	while (hash < EXPORT_HASHMAX && export_table[hash] == NULL) {
-		hash++;
-		*pos += 1LL<<32;
-	}
-	if (hash >= EXPORT_HASHMAX)
-		return NULL;
-	++*pos;
-	return export_table[hash];
-}
-
-static void e_stop(struct seq_file *m, void *p)
-	__releases(svc_export_cache.hash_lock)
-{
-	read_unlock(&svc_export_cache.hash_lock);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct flags {
 	int flag;
 	char *name[2];
@@ -1731,20 +1248,14 @@ static struct flags {
 	{ NFSEXP_ALLSQUASH, {"all_squash", ""}},
 	{ NFSEXP_ASYNC, {"async", "sync"}},
 	{ NFSEXP_GATHERED_WRITES, {"wdelay", "no_wdelay"}},
-<<<<<<< HEAD
-=======
 	{ NFSEXP_NOREADDIRPLUS, {"nordirplus", ""}},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ NFSEXP_NOHIDE, {"nohide", ""}},
 	{ NFSEXP_CROSSMOUNT, {"crossmnt", ""}},
 	{ NFSEXP_NOSUBTREECHECK, {"no_subtree_check", ""}},
 	{ NFSEXP_NOAUTHNLM, {"insecure_locks", ""}},
 	{ NFSEXP_V4ROOT, {"v4root", ""}},
-<<<<<<< HEAD
-=======
 	{ NFSEXP_PNFS, {"pnfs", ""}},
 	{ NFSEXP_SECURITY_LABEL, {"security_label", ""}},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, {"", ""}}
 };
 
@@ -1808,17 +1319,6 @@ static void show_secinfo(struct seq_file *m, struct svc_export *exp)
 }
 
 static void exp_flags(struct seq_file *m, int flag, int fsid,
-<<<<<<< HEAD
-		uid_t anonu, uid_t anong, struct nfsd4_fs_locations *fsloc)
-{
-	show_expflags(m, flag, NFSEXP_ALLFLAGS);
-	if (flag & NFSEXP_FSID)
-		seq_printf(m, ",fsid=%d", fsid);
-	if (anonu != (uid_t)-2 && anonu != (0x10000-2))
-		seq_printf(m, ",anonuid=%u", anonu);
-	if (anong != (gid_t)-2 && anong != (0x10000-2))
-		seq_printf(m, ",anongid=%u", anong);
-=======
 		kuid_t anonu, kgid_t anong, struct nfsd4_fs_locations *fsloc)
 {
 	struct user_namespace *userns = m->file->f_cred->user_ns;
@@ -1832,7 +1332,6 @@ static void exp_flags(struct seq_file *m, int flag, int fsid,
 	if (!gid_eq(anong, make_kgid(userns, (gid_t)-2)) &&
 	    !gid_eq(anong, make_kgid(userns, 0x10000-2)))
 		seq_printf(m, ",anongid=%u", from_kgid_munged(userns, anong));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fsloc && fsloc->locations_count > 0) {
 		char *loctype = (fsloc->migrated) ? "refer" : "replicas";
 		int i;
@@ -1854,30 +1353,6 @@ static int e_show(struct seq_file *m, void *p)
 {
 	struct cache_head *cp = p;
 	struct svc_export *exp = container_of(cp, struct svc_export, h);
-<<<<<<< HEAD
-
-	if (p == SEQ_START_TOKEN) {
-		seq_puts(m, "# Version 1.1\n");
-		seq_puts(m, "# Path Client(Flags) # IPs\n");
-		return 0;
-	}
-
-	cache_get(&exp->h);
-	if (cache_check(&svc_export_cache, &exp->h, NULL))
-		return 0;
-	cache_put(&exp->h, &svc_export_cache);
-	return svc_export_show(m, &svc_export_cache, cp);
-}
-
-const struct seq_operations nfs_exports_op = {
-	.start	= e_start,
-	.next	= e_next,
-	.stop	= e_stop,
-	.show	= e_show,
-};
-
-
-=======
 	struct cache_detail *cd = m->private;
 	bool export_stats = is_export_stats_file(m);
 
@@ -1904,26 +1379,10 @@ const struct seq_operations nfs_exports_op = {
 	.show	= e_show,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initialize the exports module.
  */
 int
-<<<<<<< HEAD
-nfsd_export_init(void)
-{
-	int rv;
-	dprintk("nfsd: initializing export module.\n");
-
-	rv = cache_register_net(&svc_export_cache, &init_net);
-	if (rv)
-		return rv;
-	rv = cache_register_net(&svc_expkey_cache, &init_net);
-	if (rv)
-		cache_unregister_net(&svc_export_cache, &init_net);
-	return rv;
-
-=======
 nfsd_export_init(struct net *net)
 {
 	int rv;
@@ -1955,44 +1414,24 @@ unregister_export_cache:
 destroy_export_cache:
 	cache_destroy_net(nn->svc_export_cache, net);
 	return rv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Flush exports table - called when last nfsd thread is killed
  */
 void
-<<<<<<< HEAD
-nfsd_export_flush(void)
-{
-	cache_purge(&svc_expkey_cache);
-	cache_purge(&svc_export_cache);
-=======
 nfsd_export_flush(struct net *net)
 {
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
 
 	cache_purge(nn->svc_expkey_cache);
 	cache_purge(nn->svc_export_cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Shutdown the exports module.
  */
 void
-<<<<<<< HEAD
-nfsd_export_shutdown(void)
-{
-
-	dprintk("nfsd: shutting down export module.\n");
-
-	cache_unregister_net(&svc_expkey_cache, &init_net);
-	cache_unregister_net(&svc_export_cache, &init_net);
-	svcauth_unix_purge();
-
-	dprintk("nfsd: export shutdown complete.\n");
-=======
 nfsd_export_shutdown(struct net *net)
 {
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
@@ -2006,5 +1445,4 @@ nfsd_export_shutdown(struct net *net)
 	svcauth_unix_purge(net);
 
 	dprintk("nfsd: export shutdown complete (net: %x).\n", net->ns.inum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

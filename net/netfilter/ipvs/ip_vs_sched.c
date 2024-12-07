@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPVS         An implementation of the IP virtual server support for the
  *              LINUX operating system.  IPVS is now implemented as a module
@@ -12,17 +9,7 @@
  * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
  *              Peter Kese <peter.kese@ijs.si>
  *
-<<<<<<< HEAD
- *              This program is free software; you can redistribute it and/or
- *              modify it under the terms of the GNU General Public License
- *              as published by the Free Software Foundation; either version
- *              2 of the License, or (at your option) any later version.
- *
  * Changes:
- *
-=======
- * Changes:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "IPVS"
@@ -43,13 +30,8 @@ EXPORT_SYMBOL(ip_vs_scheduler_err);
  */
 static LIST_HEAD(ip_vs_schedulers);
 
-<<<<<<< HEAD
-/* lock for service table */
-static DEFINE_SPINLOCK(ip_vs_sched_lock);
-=======
 /* semaphore for schedulers */
 static DEFINE_MUTEX(ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -60,11 +42,6 @@ int ip_vs_bind_scheduler(struct ip_vs_service *svc,
 {
 	int ret;
 
-<<<<<<< HEAD
-	svc->scheduler = scheduler;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (scheduler->init_service) {
 		ret = scheduler->init_service(svc);
 		if (ret) {
@@ -72,11 +49,7 @@ int ip_vs_bind_scheduler(struct ip_vs_service *svc,
 			return ret;
 		}
 	}
-<<<<<<< HEAD
-
-=======
 	rcu_assign_pointer(svc->scheduler, scheduler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -84,24 +57,6 @@ int ip_vs_bind_scheduler(struct ip_vs_service *svc,
 /*
  *  Unbind a service with its scheduler
  */
-<<<<<<< HEAD
-int ip_vs_unbind_scheduler(struct ip_vs_service *svc)
-{
-	struct ip_vs_scheduler *sched = svc->scheduler;
-
-	if (!sched)
-		return 0;
-
-	if (sched->done_service) {
-		if (sched->done_service(svc) != 0) {
-			pr_err("%s(): done error\n", __func__);
-			return -EINVAL;
-		}
-	}
-
-	svc->scheduler = NULL;
-	return 0;
-=======
 void ip_vs_unbind_scheduler(struct ip_vs_service *svc,
 			    struct ip_vs_scheduler *sched)
 {
@@ -115,7 +70,6 @@ void ip_vs_unbind_scheduler(struct ip_vs_service *svc,
 	if (sched->done_service)
 		sched->done_service(svc);
 	/* svc->scheduler can be set to NULL only by caller */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -128,11 +82,7 @@ static struct ip_vs_scheduler *ip_vs_sched_getbyname(const char *sched_name)
 
 	IP_VS_DBG(2, "%s(): sched_name \"%s\"\n", __func__, sched_name);
 
-<<<<<<< HEAD
-	spin_lock_bh(&ip_vs_sched_lock);
-=======
 	mutex_lock(&ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(sched, &ip_vs_schedulers, n_list) {
 		/*
@@ -146,16 +96,6 @@ static struct ip_vs_scheduler *ip_vs_sched_getbyname(const char *sched_name)
 		}
 		if (strcmp(sched_name, sched->name)==0) {
 			/* HIT */
-<<<<<<< HEAD
-			spin_unlock_bh(&ip_vs_sched_lock);
-			return sched;
-		}
-		if (sched->module)
-			module_put(sched->module);
-	}
-
-	spin_unlock_bh(&ip_vs_sched_lock);
-=======
 			mutex_unlock(&ip_vs_sched_mutex);
 			return sched;
 		}
@@ -163,7 +103,6 @@ static struct ip_vs_scheduler *ip_vs_sched_getbyname(const char *sched_name)
 	}
 
 	mutex_unlock(&ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -193,11 +132,7 @@ struct ip_vs_scheduler *ip_vs_scheduler_get(const char *sched_name)
 
 void ip_vs_scheduler_put(struct ip_vs_scheduler *scheduler)
 {
-<<<<<<< HEAD
-	if (scheduler && scheduler->module)
-=======
 	if (scheduler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		module_put(scheduler->module);
 }
 
@@ -207,17 +142,6 @@ void ip_vs_scheduler_put(struct ip_vs_scheduler *scheduler)
 
 void ip_vs_scheduler_err(struct ip_vs_service *svc, const char *msg)
 {
-<<<<<<< HEAD
-	if (svc->fwmark) {
-		IP_VS_ERR_RL("%s: FWM %u 0x%08X - %s\n",
-			     svc->scheduler->name, svc->fwmark,
-			     svc->fwmark, msg);
-#ifdef CONFIG_IP_VS_IPV6
-	} else if (svc->af == AF_INET6) {
-		IP_VS_ERR_RL("%s: %s [%pI6]:%d - %s\n",
-			     svc->scheduler->name,
-			     ip_vs_proto_name(svc->protocol),
-=======
 	struct ip_vs_scheduler *sched = rcu_dereference(svc->scheduler);
 	char *sched_name = sched ? sched->name : "none";
 
@@ -228,17 +152,11 @@ void ip_vs_scheduler_err(struct ip_vs_service *svc, const char *msg)
 	} else if (svc->af == AF_INET6) {
 		IP_VS_ERR_RL("%s: %s [%pI6c]:%d - %s\n",
 			     sched_name, ip_vs_proto_name(svc->protocol),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     &svc->addr.in6, ntohs(svc->port), msg);
 #endif
 	} else {
 		IP_VS_ERR_RL("%s: %s %pI4:%d - %s\n",
-<<<<<<< HEAD
-			     svc->scheduler->name,
-			     ip_vs_proto_name(svc->protocol),
-=======
 			     sched_name, ip_vs_proto_name(svc->protocol),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     &svc->addr.ip, ntohs(svc->port), msg);
 	}
 }
@@ -261,14 +179,6 @@ int register_ip_vs_scheduler(struct ip_vs_scheduler *scheduler)
 	}
 
 	/* increase the module use count */
-<<<<<<< HEAD
-	ip_vs_use_count_inc();
-
-	spin_lock_bh(&ip_vs_sched_lock);
-
-	if (!list_empty(&scheduler->n_list)) {
-		spin_unlock_bh(&ip_vs_sched_lock);
-=======
 	if (!ip_vs_use_count_inc())
 		return -ENOENT;
 
@@ -276,7 +186,6 @@ int register_ip_vs_scheduler(struct ip_vs_scheduler *scheduler)
 
 	if (!list_empty(&scheduler->n_list)) {
 		mutex_unlock(&ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ip_vs_use_count_dec();
 		pr_err("%s(): [%s] scheduler already linked\n",
 		       __func__, scheduler->name);
@@ -289,11 +198,7 @@ int register_ip_vs_scheduler(struct ip_vs_scheduler *scheduler)
 	 */
 	list_for_each_entry(sched, &ip_vs_schedulers, n_list) {
 		if (strcmp(scheduler->name, sched->name) == 0) {
-<<<<<<< HEAD
-			spin_unlock_bh(&ip_vs_sched_lock);
-=======
 			mutex_unlock(&ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ip_vs_use_count_dec();
 			pr_err("%s(): [%s] scheduler already existed "
 			       "in the system\n", __func__, scheduler->name);
@@ -304,11 +209,7 @@ int register_ip_vs_scheduler(struct ip_vs_scheduler *scheduler)
 	 *	Add it into the d-linked scheduler list
 	 */
 	list_add(&scheduler->n_list, &ip_vs_schedulers);
-<<<<<<< HEAD
-	spin_unlock_bh(&ip_vs_sched_lock);
-=======
 	mutex_unlock(&ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("[%s] scheduler registered.\n", scheduler->name);
 
@@ -326,15 +227,9 @@ int unregister_ip_vs_scheduler(struct ip_vs_scheduler *scheduler)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	spin_lock_bh(&ip_vs_sched_lock);
-	if (list_empty(&scheduler->n_list)) {
-		spin_unlock_bh(&ip_vs_sched_lock);
-=======
 	mutex_lock(&ip_vs_sched_mutex);
 	if (list_empty(&scheduler->n_list)) {
 		mutex_unlock(&ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("%s(): [%s] scheduler is not in the list. failed\n",
 		       __func__, scheduler->name);
 		return -EINVAL;
@@ -344,11 +239,7 @@ int unregister_ip_vs_scheduler(struct ip_vs_scheduler *scheduler)
 	 *	Remove it from the d-linked scheduler list
 	 */
 	list_del(&scheduler->n_list);
-<<<<<<< HEAD
-	spin_unlock_bh(&ip_vs_sched_lock);
-=======
 	mutex_unlock(&ip_vs_sched_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* decrease the module use count */
 	ip_vs_use_count_dec();

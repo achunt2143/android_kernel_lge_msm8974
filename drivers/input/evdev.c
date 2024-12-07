@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Event char devices, giving access to raw input device events.
  *
  * Copyright (c) 1999-2002 Vojtech Pavlik
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -25,41 +15,25 @@
 #include <linux/poll.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/vmalloc.h>
 #include <linux/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/input/mt.h>
 #include <linux/major.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/wakelock.h>
-=======
 #include <linux/cdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "input-compat.h"
 
 struct evdev {
 	int open;
-<<<<<<< HEAD
-	int minor;
 	struct input_handle handle;
-	wait_queue_head_t wait;
-=======
-	struct input_handle handle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct evdev_client __rcu *grab;
 	struct list_head client_list;
 	spinlock_t client_lock; /* protects client_list */
 	struct mutex mutex;
 	struct device dev;
-<<<<<<< HEAD
-=======
 	struct cdev cdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool exist;
 };
 
@@ -68,32 +42,6 @@ struct evdev_client {
 	unsigned int tail;
 	unsigned int packet_head; /* [future] position of the first element of next packet */
 	spinlock_t buffer_lock; /* protects access to buffer, head and tail */
-<<<<<<< HEAD
-	struct wake_lock wake_lock;
-	bool use_wake_lock;
-	char name[28];
-	struct fasync_struct *fasync;
-	struct evdev *evdev;
-	struct list_head node;
-	int clkid;
-	unsigned int bufsize;
-	struct input_event buffer[];
-};
-
-static struct evdev *evdev_table[EVDEV_MINORS];
-static DEFINE_MUTEX(evdev_table_mutex);
-
-static void evdev_pass_event(struct evdev_client *client,
-			     struct input_event *event,
-			     ktime_t mono, ktime_t real)
-{
-	event->time = ktime_to_timeval(client->clkid == CLOCK_MONOTONIC ?
-					mono : real);
-
-	/* Interrupts are disabled, just acquire the lock. */
-	spin_lock(&client->buffer_lock);
-
-=======
 	wait_queue_head_t wait;
 	struct fasync_struct *fasync;
 	struct evdev *evdev;
@@ -266,7 +214,6 @@ static int evdev_set_clk_type(struct evdev_client *client, unsigned int clkid)
 static void __pass_event(struct evdev_client *client,
 			 const struct input_event *event)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	client->buffer[client->head++] = *event;
 	client->head &= client->bufsize - 1;
 
@@ -277,16 +224,6 @@ static void __pass_event(struct evdev_client *client,
 		 */
 		client->tail = (client->head - 2) & (client->bufsize - 1);
 
-<<<<<<< HEAD
-		client->buffer[client->tail].time = event->time;
-		client->buffer[client->tail].type = EV_SYN;
-		client->buffer[client->tail].code = SYN_DROPPED;
-		client->buffer[client->tail].value = 0;
-
-		client->packet_head = client->tail;
-		if (client->use_wake_lock)
-			wake_unlock(&client->wake_lock);
-=======
 		client->buffer[client->tail] = (struct input_event) {
 			.input_event_sec = event->input_event_sec,
 			.input_event_usec = event->input_event_usec,
@@ -296,19 +233,10 @@ static void __pass_event(struct evdev_client *client,
 		};
 
 		client->packet_head = client->tail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (event->type == EV_SYN && event->code == SYN_REPORT) {
 		client->packet_head = client->head;
-<<<<<<< HEAD
-		if (client->use_wake_lock)
-			wake_lock(&client->wake_lock);
-		kill_fasync(&client->fasync, SIGIO, POLL_IN);
-	}
-
-	spin_unlock(&client->buffer_lock);
-=======
 		kill_fasync(&client->fasync, SIGIO, POLL_IN);
 	}
 }
@@ -378,7 +306,6 @@ static void evdev_events(struct input_handle *handle,
 			evdev_pass_values(client, vals, count, ev_time);
 
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -387,38 +314,9 @@ static void evdev_events(struct input_handle *handle,
 static void evdev_event(struct input_handle *handle,
 			unsigned int type, unsigned int code, int value)
 {
-<<<<<<< HEAD
-	struct evdev *evdev = handle->private;
-	struct evdev_client *client;
-	struct input_event event;
-	ktime_t time_mono, time_real;
-
-	time_mono = ktime_get();
-	time_real = ktime_sub(time_mono, ktime_get_monotonic_offset());
-
-	event.type = type;
-	event.code = code;
-	event.value = value;
-
-	rcu_read_lock();
-
-	client = rcu_dereference(evdev->grab);
-
-	if (client)
-		evdev_pass_event(client, &event, time_mono, time_real);
-	else
-		list_for_each_entry_rcu(client, &evdev->client_list, node)
-			evdev_pass_event(client, &event, time_mono, time_real);
-
-	rcu_read_unlock();
-
-	if (type == EV_SYN && code == SYN_REPORT)
-		wake_up_interruptible(&evdev->wait);
-=======
 	struct input_value vals[] = { { type, code, value } };
 
 	evdev_events(handle, vals, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int evdev_fasync(int fd, struct file *file, int on)
@@ -428,28 +326,6 @@ static int evdev_fasync(int fd, struct file *file, int on)
 	return fasync_helper(fd, file, on, &client->fasync);
 }
 
-<<<<<<< HEAD
-static int evdev_flush(struct file *file, fl_owner_t id)
-{
-	struct evdev_client *client = file->private_data;
-	struct evdev *evdev = client->evdev;
-	int retval;
-
-	retval = mutex_lock_interruptible(&evdev->mutex);
-	if (retval)
-		return retval;
-
-	if (!evdev->exist)
-		retval = -ENODEV;
-	else
-		retval = input_flush_device(&evdev->handle, file);
-
-	mutex_unlock(&evdev->mutex);
-	return retval;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void evdev_free(struct device *dev)
 {
 	struct evdev *evdev = container_of(dev, struct evdev, dev);
@@ -480,14 +356,10 @@ static int evdev_grab(struct evdev *evdev, struct evdev_client *client)
 
 static int evdev_ungrab(struct evdev *evdev, struct evdev_client *client)
 {
-<<<<<<< HEAD
-	if (evdev->grab != client)
-=======
 	struct evdev_client *grab = rcu_dereference_protected(evdev->grab,
 					lockdep_is_held(&evdev->mutex));
 
 	if (grab != client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return  -EINVAL;
 
 	rcu_assign_pointer(evdev->grab, NULL);
@@ -553,40 +425,17 @@ static void evdev_hangup(struct evdev *evdev)
 	struct evdev_client *client;
 
 	spin_lock(&evdev->client_lock);
-<<<<<<< HEAD
-	list_for_each_entry(client, &evdev->client_list, node)
-		kill_fasync(&client->fasync, SIGIO, POLL_HUP);
-	spin_unlock(&evdev->client_lock);
-
-	wake_up_interruptible(&evdev->wait);
-=======
 	list_for_each_entry(client, &evdev->client_list, node) {
 		kill_fasync(&client->fasync, SIGIO, POLL_HUP);
 		wake_up_interruptible_poll(&client->wait, EPOLLHUP | EPOLLERR);
 	}
 	spin_unlock(&evdev->client_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int evdev_release(struct inode *inode, struct file *file)
 {
 	struct evdev_client *client = file->private_data;
 	struct evdev *evdev = client->evdev;
-<<<<<<< HEAD
-
-	mutex_lock(&evdev->mutex);
-	if (evdev->grab == client)
-		evdev_ungrab(evdev, client);
-	mutex_unlock(&evdev->mutex);
-
-	evdev_detach_client(evdev, client);
-	if (client->use_wake_lock)
-		wake_lock_destroy(&client->wake_lock);
-	kfree(client);
-
-	evdev_close_device(evdev);
-	put_device(&evdev->dev);
-=======
 	unsigned int i;
 
 	mutex_lock(&evdev->mutex);
@@ -605,7 +454,6 @@ static int evdev_release(struct inode *inode, struct file *file)
 	kvfree(client);
 
 	evdev_close_device(evdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -621,43 +469,6 @@ static unsigned int evdev_compute_buffer_size(struct input_dev *dev)
 
 static int evdev_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	struct evdev *evdev;
-	struct evdev_client *client;
-	int i = iminor(inode) - EVDEV_MINOR_BASE;
-	unsigned int bufsize;
-	int error;
-
-	if (i >= EVDEV_MINORS)
-		return -ENODEV;
-
-	error = mutex_lock_interruptible(&evdev_table_mutex);
-	if (error)
-		return error;
-	evdev = evdev_table[i];
-	if (evdev)
-		get_device(&evdev->dev);
-	mutex_unlock(&evdev_table_mutex);
-
-	if (!evdev)
-		return -ENODEV;
-
-	bufsize = evdev_compute_buffer_size(evdev->handle.dev);
-
-	client = kzalloc(sizeof(struct evdev_client) +
-				bufsize * sizeof(struct input_event),
-			 GFP_KERNEL);
-	if (!client) {
-		error = -ENOMEM;
-		goto err_put_evdev;
-	}
-
-	client->clkid = CLOCK_MONOTONIC;
-	client->bufsize = bufsize;
-	spin_lock_init(&client->buffer_lock);
-	snprintf(client->name, sizeof(client->name), "%s-%d",
-			dev_name(&evdev->dev), task_tgid_vnr(current));
-=======
 	struct evdev *evdev = container_of(inode->i_cdev, struct evdev, cdev);
 	unsigned int bufsize = evdev_compute_buffer_size(evdev->handle.dev);
 	struct evdev_client *client;
@@ -670,7 +481,6 @@ static int evdev_open(struct inode *inode, struct file *file)
 	init_waitqueue_head(&client->wait);
 	client->bufsize = bufsize;
 	spin_lock_init(&client->buffer_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	client->evdev = evdev;
 	evdev_attach_client(evdev, client);
 
@@ -679,23 +489,13 @@ static int evdev_open(struct inode *inode, struct file *file)
 		goto err_free_client;
 
 	file->private_data = client;
-<<<<<<< HEAD
-	nonseekable_open(inode, file);
-=======
 	stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  err_free_client:
 	evdev_detach_client(evdev, client);
-<<<<<<< HEAD
-	kfree(client);
- err_put_evdev:
-	put_device(&evdev->dev);
-=======
 	kvfree(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -707,32 +507,20 @@ static ssize_t evdev_write(struct file *file, const char __user *buffer,
 	struct input_event event;
 	int retval = 0;
 
-<<<<<<< HEAD
-	if (count < input_event_size())
-=======
 	if (count != 0 && count < input_event_size())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	retval = mutex_lock_interruptible(&evdev->mutex);
 	if (retval)
 		return retval;
 
-<<<<<<< HEAD
-	if (!evdev->exist) {
-=======
 	if (!evdev->exist || client->revoked) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	do {
-=======
 	while (retval + input_event_size() <= count) {
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (input_event_from_user(buffer + retval, &event)) {
 			retval = -EFAULT;
 			goto out;
@@ -741,12 +529,8 @@ static ssize_t evdev_write(struct file *file, const char __user *buffer,
 
 		input_inject_event(&evdev->handle,
 				   event.type, event.code, event.value);
-<<<<<<< HEAD
-	} while (retval + input_event_size() <= count);
-=======
 		cond_resched();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out:
 	mutex_unlock(&evdev->mutex);
@@ -764,12 +548,6 @@ static int evdev_fetch_next_event(struct evdev_client *client,
 	if (have_event) {
 		*event = client->buffer[client->tail++];
 		client->tail &= client->bufsize - 1;
-<<<<<<< HEAD
-		if (client->use_wake_lock &&
-		    client->packet_head == client->tail)
-			wake_unlock(&client->wake_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irq(&client->buffer_lock);
@@ -783,51 +561,6 @@ static ssize_t evdev_read(struct file *file, char __user *buffer,
 	struct evdev_client *client = file->private_data;
 	struct evdev *evdev = client->evdev;
 	struct input_event event;
-<<<<<<< HEAD
-	int retval = 0;
-
-	if (count < input_event_size())
-		return -EINVAL;
-
-	if (!(file->f_flags & O_NONBLOCK)) {
-		retval = wait_event_interruptible(evdev->wait,
-				client->packet_head != client->tail ||
-				!evdev->exist);
-		if (retval)
-			return retval;
-	}
-
-	if (!evdev->exist)
-		return -ENODEV;
-
-	while (retval + input_event_size() <= count &&
-	       evdev_fetch_next_event(client, &event)) {
-
-		if (input_event_to_user(buffer + retval, &event))
-			return -EFAULT;
-
-		retval += input_event_size();
-	}
-
-	if (retval == 0 && (file->f_flags & O_NONBLOCK))
-		return -EAGAIN;
-
-	return retval;
-}
-
-/* No kernel lock - fine */
-static unsigned int evdev_poll(struct file *file, poll_table *wait)
-{
-	struct evdev_client *client = file->private_data;
-	struct evdev *evdev = client->evdev;
-	unsigned int mask;
-
-	poll_wait(file, &evdev->wait, wait);
-
-	mask = evdev->exist ? POLLOUT | POLLWRNORM : POLLHUP | POLLERR;
-	if (client->packet_head != client->tail)
-		mask |= POLLIN | POLLRDNORM;
-=======
 	size_t read = 0;
 	int error;
 
@@ -889,7 +622,6 @@ static __poll_t evdev_poll(struct file *file, poll_table *wait)
 
 	if (client->packet_head != client->tail)
 		mask |= EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
@@ -927,9 +659,6 @@ static int bits_to_user(unsigned long *bits, unsigned int maxbit,
 
 	return len;
 }
-<<<<<<< HEAD
-#else
-=======
 
 static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 			  unsigned int maxlen, const void __user *p, int compat)
@@ -970,7 +699,6 @@ static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 
 #else
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bits_to_user(unsigned long *bits, unsigned int maxbit,
 			unsigned int maxlen, void __user *p, int compat)
 {
@@ -983,8 +711,6 @@ static int bits_to_user(unsigned long *bits, unsigned int maxbit,
 
 	return copy_to_user(p, bits, len) ? -EFAULT : len;
 }
-<<<<<<< HEAD
-=======
 
 static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 			  unsigned int maxlen, const void __user *p, int compat)
@@ -1003,7 +729,6 @@ static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 	return copy_from_user(bits, p, len) ? -EFAULT : len;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __BIG_ENDIAN */
 
 #else
@@ -1019,8 +744,6 @@ static int bits_to_user(unsigned long *bits, unsigned int maxbit,
 	return copy_to_user(p, bits, len) ? -EFAULT : len;
 }
 
-<<<<<<< HEAD
-=======
 static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 			  unsigned int maxlen, const void __user *p, int compat)
 {
@@ -1036,7 +759,6 @@ static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 	return copy_from_user(bits, p, len) ? -EFAULT : len;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_COMPAT */
 
 static int str_to_user(const char *str, unsigned int maxlen, void __user *p)
@@ -1053,18 +775,10 @@ static int str_to_user(const char *str, unsigned int maxlen, void __user *p)
 	return copy_to_user(p, str, len) ? -EFAULT : len;
 }
 
-<<<<<<< HEAD
-#define OLD_KEY_MAX	0x1ff
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int handle_eviocgbit(struct input_dev *dev,
 			    unsigned int type, unsigned int size,
 			    void __user *p, int compat_mode)
 {
-<<<<<<< HEAD
-	static unsigned long keymax_warn_time;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *bits;
 	int len;
 
@@ -1082,29 +796,8 @@ static int handle_eviocgbit(struct input_dev *dev,
 	default: return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Work around bugs in userspace programs that like to do
-	 * EVIOCGBIT(EV_KEY, KEY_MAX) and not realize that 'len'
-	 * should be in bytes, not in bits.
-	 */
-	if (type == EV_KEY && size == OLD_KEY_MAX) {
-		len = OLD_KEY_MAX;
-		if (printk_timed_ratelimit(&keymax_warn_time, 10 * 1000))
-			pr_warning("(EVIOCGBIT): Suspicious buffer size %u, "
-				   "limiting output to %zu bytes. See "
-				   "http://userweb.kernel.org/~dtor/eviocgbit-bug.html\n",
-				   OLD_KEY_MAX,
-				   BITS_TO_LONGS(OLD_KEY_MAX) * sizeof(long));
-	}
-
 	return bits_to_user(bits, len, size, p, compat_mode);
 }
-#undef OLD_KEY_MAX
-=======
-	return bits_to_user(bits, len, size, p, compat_mode);
-}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int evdev_handle_get_keycode(struct input_dev *dev, void __user *p)
 {
@@ -1177,8 +870,6 @@ static int evdev_handle_set_keycode_v2(struct input_dev *dev, void __user *p)
 	return input_set_keycode(dev, &ke);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * If we transfer state to the user, we should flush all pending events
  * of the same type from the client's queue. Otherwise, they might end up
@@ -1225,31 +916,17 @@ static int evdev_handle_get_val(struct evdev_client *client,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int evdev_handle_mt_request(struct input_dev *dev,
 				   unsigned int size,
 				   int __user *ip)
 {
-<<<<<<< HEAD
-	const struct input_mt_slot *mt = dev->mt;
-=======
 	const struct input_mt *mt = dev->mt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int code;
 	int max_slots;
 	int i;
 
 	if (get_user(code, &ip[0]))
 		return -EFAULT;
-<<<<<<< HEAD
-	if (!input_is_mt_value(code))
-		return -EINVAL;
-
-	max_slots = (size - sizeof(__u32)) / sizeof(__s32);
-	for (i = 0; i < dev->mtsize && i < max_slots; i++)
-		if (put_user(input_mt_get_value(&mt[i], code), &ip[1 + i]))
-			return -EFAULT;
-=======
 	if (!mt || !input_is_mt_value(code))
 		return -EINVAL;
 
@@ -1259,38 +936,10 @@ static int evdev_handle_mt_request(struct input_dev *dev,
 		if (put_user(value, &ip[1 + i]))
 			return -EFAULT;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int evdev_enable_suspend_block(struct evdev *evdev,
-				      struct evdev_client *client)
-{
-	if (client->use_wake_lock)
-		return 0;
-
-	spin_lock_irq(&client->buffer_lock);
-	wake_lock_init(&client->wake_lock, WAKE_LOCK_SUSPEND, client->name);
-	client->use_wake_lock = true;
-	if (client->packet_head != client->tail)
-		wake_lock(&client->wake_lock);
-	spin_unlock_irq(&client->buffer_lock);
-	return 0;
-}
-
-static int evdev_disable_suspend_block(struct evdev *evdev,
-				       struct evdev_client *client)
-{
-	if (!client->use_wake_lock)
-		return 0;
-
-	spin_lock_irq(&client->buffer_lock);
-	client->use_wake_lock = false;
-	spin_unlock_irq(&client->buffer_lock);
-	wake_lock_destroy(&client->wake_lock);
-=======
 static int evdev_revoke(struct evdev *evdev, struct evdev_client *client,
 			struct file *file)
 {
@@ -1373,7 +1022,6 @@ static int evdev_get_mask(struct evdev_client *client,
 	if (xfer_size < codes_size)
 		if (clear_user(codes + xfer_size, codes_size - xfer_size))
 			return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1385,10 +1033,7 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 	struct evdev *evdev = client->evdev;
 	struct input_dev *dev = evdev->handle.dev;
 	struct input_absinfo abs;
-<<<<<<< HEAD
-=======
 	struct input_mask mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ff_effect effect;
 	int __user *ip = (int __user *)p;
 	unsigned int i, t, u, v;
@@ -1444,15 +1089,6 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 		else
 			return evdev_ungrab(evdev, client);
 
-<<<<<<< HEAD
-	case EVIOCSCLOCKID:
-		if (copy_from_user(&i, p, sizeof(unsigned int)))
-			return -EFAULT;
-		if (i != CLOCK_MONOTONIC && i != CLOCK_REALTIME)
-			return -EINVAL;
-		client->clkid = i;
-		return 0;
-=======
 	case EVIOCREVOKE:
 		if (p)
 			return -EINVAL;
@@ -1488,7 +1124,6 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 			return -EFAULT;
 
 		return evdev_set_clk_type(client, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case EVIOCGKEYCODE:
 		return evdev_handle_get_keycode(dev, p);
@@ -1501,18 +1136,6 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 
 	case EVIOCSKEYCODE_V2:
 		return evdev_handle_set_keycode_v2(dev, p);
-<<<<<<< HEAD
-
-	case EVIOCGSUSPENDBLOCK:
-		return put_user(client->use_wake_lock, ip);
-
-	case EVIOCSSUSPENDBLOCK:
-		if (p)
-			return evdev_enable_suspend_block(evdev, client);
-		else
-			return evdev_disable_suspend_block(evdev, client);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	size = _IOC_SIZE(cmd);
@@ -1529,18 +1152,6 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 		return evdev_handle_mt_request(dev, size, ip);
 
 	case EVIOCGKEY(0):
-<<<<<<< HEAD
-		return bits_to_user(dev->key, KEY_MAX, size, p, compat_mode);
-
-	case EVIOCGLED(0):
-		return bits_to_user(dev->led, LED_MAX, size, p, compat_mode);
-
-	case EVIOCGSND(0):
-		return bits_to_user(dev->snd, SND_MAX, size, p, compat_mode);
-
-	case EVIOCGSW(0):
-		return bits_to_user(dev->sw, SW_MAX, size, p, compat_mode);
-=======
 		return evdev_handle_get_val(client, dev, EV_KEY, dev->key,
 					    KEY_MAX, size, p, compat_mode);
 
@@ -1555,7 +1166,6 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 	case EVIOCGSW(0):
 		return evdev_handle_get_val(client, dev, EV_SW, dev->sw,
 					    SW_MAX, size, p, compat_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case EVIOCGNAME(0):
 		return str_to_user(dev->name, size, p);
@@ -1571,20 +1181,13 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 			return -EFAULT;
 
 		error = input_ff_upload(dev, &effect, file);
-<<<<<<< HEAD
-=======
 		if (error)
 			return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (put_user(effect.id, &(((struct ff_effect __user *)p)->id)))
 			return -EFAULT;
 
-<<<<<<< HEAD
-		return error;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Multi-number variable-length handlers */
@@ -1661,11 +1264,7 @@ static long evdev_ioctl_handler(struct file *file, unsigned int cmd,
 	if (retval)
 		return retval;
 
-<<<<<<< HEAD
-	if (!evdev->exist) {
-=======
 	if (!evdev->exist || client->revoked) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto out;
 	}
@@ -1702,36 +1301,9 @@ static const struct file_operations evdev_fops = {
 	.compat_ioctl	= evdev_ioctl_compat,
 #endif
 	.fasync		= evdev_fasync,
-<<<<<<< HEAD
-	.flush		= evdev_flush,
 	.llseek		= no_llseek,
 };
 
-static int evdev_install_chrdev(struct evdev *evdev)
-{
-	/*
-	 * No need to do any locking here as calls to connect and
-	 * disconnect are serialized by the input core
-	 */
-	evdev_table[evdev->minor] = evdev;
-	return 0;
-}
-
-static void evdev_remove_chrdev(struct evdev *evdev)
-{
-	/*
-	 * Lock evdev table to prevent race with evdev_open()
-	 */
-	mutex_lock(&evdev_table_mutex);
-	evdev_table[evdev->minor] = NULL;
-	mutex_unlock(&evdev_table_mutex);
-}
-
-=======
-	.llseek		= no_llseek,
-};
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mark device non-existent. This disables writes, ioctls and
  * prevents new users from opening the device. Already posted
@@ -1750,10 +1322,6 @@ static void evdev_cleanup(struct evdev *evdev)
 
 	evdev_mark_dead(evdev);
 	evdev_hangup(evdev);
-<<<<<<< HEAD
-	evdev_remove_chrdev(evdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* evdev is marked dead so no one else accesses evdev->open */
 	if (evdev->open) {
@@ -1764,33 +1332,13 @@ static void evdev_cleanup(struct evdev *evdev)
 
 /*
  * Create new evdev device. Note that input core serializes calls
-<<<<<<< HEAD
- * to connect and disconnect so we don't need to lock evdev_table here.
-=======
  * to connect and disconnect.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 			 const struct input_device_id *id)
 {
 	struct evdev *evdev;
 	int minor;
-<<<<<<< HEAD
-	int error;
-
-	for (minor = 0; minor < EVDEV_MINORS; minor++)
-		if (!evdev_table[minor])
-			break;
-
-	if (minor == EVDEV_MINORS) {
-		pr_err("no more free evdev devices\n");
-		return -ENFILE;
-	}
-
-	evdev = kzalloc(sizeof(struct evdev), GFP_KERNEL);
-	if (!evdev)
-		return -ENOMEM;
-=======
 	int dev_no;
 	int error;
 
@@ -1806,18 +1354,10 @@ static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 		error = -ENOMEM;
 		goto err_free_minor;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&evdev->client_list);
 	spin_lock_init(&evdev->client_lock);
 	mutex_init(&evdev->mutex);
-<<<<<<< HEAD
-	init_waitqueue_head(&evdev->wait);
-
-	dev_set_name(&evdev->dev, "event%d", minor);
-	evdev->exist = true;
-	evdev->minor = minor;
-=======
 	evdev->exist = true;
 
 	dev_no = minor;
@@ -1825,18 +1365,13 @@ static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 	if (dev_no < EVDEV_MINOR_BASE + EVDEV_MINORS)
 		dev_no -= EVDEV_MINOR_BASE;
 	dev_set_name(&evdev->dev, "event%d", dev_no);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	evdev->handle.dev = input_get_device(dev);
 	evdev->handle.name = dev_name(&evdev->dev);
 	evdev->handle.handler = handler;
 	evdev->handle.private = evdev;
 
-<<<<<<< HEAD
-	evdev->dev.devt = MKDEV(INPUT_MAJOR, EVDEV_MINOR_BASE + minor);
-=======
 	evdev->dev.devt = MKDEV(INPUT_MAJOR, minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	evdev->dev.class = &input_class;
 	evdev->dev.parent = &dev->dev;
 	evdev->dev.release = evdev_free;
@@ -1846,17 +1381,9 @@ static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 	if (error)
 		goto err_free_evdev;
 
-<<<<<<< HEAD
-	error = evdev_install_chrdev(evdev);
-	if (error)
-		goto err_unregister_handle;
-
-	error = device_add(&evdev->dev);
-=======
 	cdev_init(&evdev->cdev, &evdev_fops);
 
 	error = cdev_device_add(&evdev->cdev, &evdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto err_cleanup_evdev;
 
@@ -1864,18 +1391,11 @@ static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 
  err_cleanup_evdev:
 	evdev_cleanup(evdev);
-<<<<<<< HEAD
- err_unregister_handle:
-	input_unregister_handle(&evdev->handle);
- err_free_evdev:
-	put_device(&evdev->dev);
-=======
 	input_unregister_handle(&evdev->handle);
  err_free_evdev:
 	put_device(&evdev->dev);
  err_free_minor:
 	input_free_minor(minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1883,14 +1403,9 @@ static void evdev_disconnect(struct input_handle *handle)
 {
 	struct evdev *evdev = handle->private;
 
-<<<<<<< HEAD
-	device_del(&evdev->dev);
-	evdev_cleanup(evdev);
-=======
 	cdev_device_del(&evdev->cdev, &evdev->dev);
 	evdev_cleanup(evdev);
 	input_free_minor(MINOR(evdev->dev.devt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_unregister_handle(handle);
 	put_device(&evdev->dev);
 }
@@ -1904,16 +1419,10 @@ MODULE_DEVICE_TABLE(input, evdev_ids);
 
 static struct input_handler evdev_handler = {
 	.event		= evdev_event,
-<<<<<<< HEAD
-	.connect	= evdev_connect,
-	.disconnect	= evdev_disconnect,
-	.fops		= &evdev_fops,
-=======
 	.events		= evdev_events,
 	.connect	= evdev_connect,
 	.disconnect	= evdev_disconnect,
 	.legacy_minors	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.minor		= EVDEV_MINOR_BASE,
 	.name		= "evdev",
 	.id_table	= evdev_ids,

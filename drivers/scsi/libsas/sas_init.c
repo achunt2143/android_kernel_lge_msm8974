@@ -1,33 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Serial Attached SCSI (SAS) Transport Layer initialization
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -43,39 +19,22 @@
 
 #include "sas_internal.h"
 
-<<<<<<< HEAD
-#include "../scsi_sas_internal.h"
-
-static struct kmem_cache *sas_task_cache;
-=======
 #include "scsi_sas_internal.h"
 
 static struct kmem_cache *sas_task_cache;
 static struct kmem_cache *sas_event_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sas_task *sas_alloc_task(gfp_t flags)
 {
 	struct sas_task *task = kmem_cache_zalloc(sas_task_cache, flags);
 
 	if (task) {
-<<<<<<< HEAD
-		INIT_LIST_HEAD(&task->list);
 		spin_lock_init(&task->task_state_lock);
 		task->task_state_flags = SAS_TASK_STATE_PENDING;
-		init_timer(&task->timer);
-		init_completion(&task->completion);
-=======
-		spin_lock_init(&task->task_state_lock);
-		task->task_state_flags = SAS_TASK_STATE_PENDING;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return task;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(sas_alloc_task);
-=======
 
 struct sas_task *sas_alloc_slow_task(gfp_t flags)
 {
@@ -96,59 +55,18 @@ struct sas_task *sas_alloc_slow_task(gfp_t flags)
 
 	return task;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void sas_free_task(struct sas_task *task)
 {
 	if (task) {
-<<<<<<< HEAD
-		BUG_ON(!list_empty(&task->list));
-		kmem_cache_free(sas_task_cache, task);
-	}
-}
-EXPORT_SYMBOL_GPL(sas_free_task);
-=======
 		kfree(task->slow_task);
 		kmem_cache_free(sas_task_cache, task);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*------------ SAS addr hash -----------*/
 void sas_hash_addr(u8 *hashed, const u8 *sas_addr)
 {
-<<<<<<< HEAD
-        const u32 poly = 0x00DB2777;
-        u32     r = 0;
-        int     i;
-
-        for (i = 0; i < 8; i++) {
-                int b;
-                for (b = 7; b >= 0; b--) {
-                        r <<= 1;
-                        if ((1 << b) & sas_addr[i]) {
-                                if (!(r & 0x01000000))
-                                        r ^= poly;
-                        } else if (r & 0x01000000)
-                                r ^= poly;
-                }
-        }
-
-        hashed[0] = (r >> 16) & 0xFF;
-        hashed[1] = (r >> 8) & 0xFF ;
-        hashed[2] = r & 0xFF;
-}
-
-
-/* ---------- HA events ---------- */
-
-void sas_hae_reset(struct work_struct *work)
-{
-	struct sas_ha_event *ev = to_sas_ha_event(work);
-	struct sas_ha_struct *ha = ev->ha;
-
-	clear_bit(HAE_RESET, &ha->pending);
-=======
 	const u32 poly = 0x00DB2777;
 	u32 r = 0;
 	int i;
@@ -170,36 +88,17 @@ void sas_hae_reset(struct work_struct *work)
 	hashed[0] = (r >> 16) & 0xFF;
 	hashed[1] = (r >> 8) & 0xFF;
 	hashed[2] = r & 0xFF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sas_register_ha(struct sas_ha_struct *sas_ha)
 {
-<<<<<<< HEAD
-=======
 	char name[64];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 
 	mutex_init(&sas_ha->disco_mutex);
 	spin_lock_init(&sas_ha->phy_port_lock);
 	sas_hash_addr(sas_ha->hashed_sas_addr, sas_ha->sas_addr);
 
-<<<<<<< HEAD
-	if (sas_ha->lldd_queue_size == 0)
-		sas_ha->lldd_queue_size = 1;
-	else if (sas_ha->lldd_queue_size == -1)
-		sas_ha->lldd_queue_size = 128; /* Sanity */
-
-	set_bit(SAS_HA_REGISTERED, &sas_ha->state);
-	spin_lock_init(&sas_ha->state_lock);
-	mutex_init(&sas_ha->drain_mutex);
-	INIT_LIST_HEAD(&sas_ha->defer_q);
-
-	error = sas_register_phys(sas_ha);
-	if (error) {
-		printk(KERN_NOTICE "couldn't register sas phys:%d\n", error);
-=======
 	set_bit(SAS_HA_REGISTERED, &sas_ha->state);
 	spin_lock_init(&sas_ha->lock);
 	mutex_init(&sas_ha->drain_mutex);
@@ -212,32 +111,11 @@ int sas_register_ha(struct sas_ha_struct *sas_ha)
 	error = sas_register_phys(sas_ha);
 	if (error) {
 		pr_notice("couldn't register sas phys:%d\n", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 	}
 
 	error = sas_register_ports(sas_ha);
 	if (error) {
-<<<<<<< HEAD
-		printk(KERN_NOTICE "couldn't register sas ports:%d\n", error);
-		goto Undo_phys;
-	}
-
-	error = sas_init_events(sas_ha);
-	if (error) {
-		printk(KERN_NOTICE "couldn't start event thread:%d\n", error);
-		goto Undo_ports;
-	}
-
-	if (sas_ha->lldd_max_execute_num > 1) {
-		error = sas_init_queue(sas_ha);
-		if (error) {
-			printk(KERN_NOTICE "couldn't start queue thread:%d, "
-			       "running in direct mode\n", error);
-			sas_ha->lldd_max_execute_num = 1;
-		}
-	}
-=======
 		pr_notice("couldn't register sas ports:%d\n", error);
 		goto Undo_phys;
 	}
@@ -252,45 +130,28 @@ int sas_register_ha(struct sas_ha_struct *sas_ha)
 	sas_ha->disco_q = create_singlethread_workqueue(name);
 	if (!sas_ha->disco_q)
 		goto Undo_event_q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&sas_ha->eh_done_q);
 	INIT_LIST_HEAD(&sas_ha->eh_ata_q);
 
 	return 0;
 
-<<<<<<< HEAD
-=======
 Undo_event_q:
 	destroy_workqueue(sas_ha->event_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Undo_ports:
 	sas_unregister_ports(sas_ha);
 Undo_phys:
 
 	return error;
 }
-<<<<<<< HEAD
-
-int sas_unregister_ha(struct sas_ha_struct *sas_ha)
-=======
 EXPORT_SYMBOL_GPL(sas_register_ha);
 
 static void sas_disable_events(struct sas_ha_struct *sas_ha)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Set the state to unregistered to avoid further unchained
 	 * events to be queued, and flush any in-progress drainers
 	 */
 	mutex_lock(&sas_ha->drain_mutex);
-<<<<<<< HEAD
-	spin_lock_irq(&sas_ha->state_lock);
-	clear_bit(SAS_HA_REGISTERED, &sas_ha->state);
-	spin_unlock_irq(&sas_ha->state_lock);
-	__sas_drain_work(sas_ha);
-	mutex_unlock(&sas_ha->drain_mutex);
-
-=======
 	spin_lock_irq(&sas_ha->lock);
 	clear_bit(SAS_HA_REGISTERED, &sas_ha->state);
 	spin_unlock_irq(&sas_ha->lock);
@@ -301,7 +162,6 @@ static void sas_disable_events(struct sas_ha_struct *sas_ha)
 int sas_unregister_ha(struct sas_ha_struct *sas_ha)
 {
 	sas_disable_events(sas_ha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_unregister_ports(sas_ha);
 
 	/* flush unregistration work */
@@ -309,22 +169,12 @@ int sas_unregister_ha(struct sas_ha_struct *sas_ha)
 	__sas_drain_work(sas_ha);
 	mutex_unlock(&sas_ha->drain_mutex);
 
-<<<<<<< HEAD
-	if (sas_ha->lldd_max_execute_num > 1) {
-		sas_shutdown_queue(sas_ha);
-		sas_ha->lldd_max_execute_num = 1;
-	}
-
-	return 0;
-}
-=======
 	destroy_workqueue(sas_ha->disco_q);
 	destroy_workqueue(sas_ha->event_q);
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(sas_unregister_ha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sas_get_linkerrors(struct sas_phy *phy)
 {
@@ -333,11 +183,7 @@ static int sas_get_linkerrors(struct sas_phy *phy)
 		struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
 		struct asd_sas_phy *asd_phy = sas_ha->sas_phy[phy->number];
 		struct sas_internal *i =
-<<<<<<< HEAD
-			to_sas_internal(sas_ha->core.shost->transportt);
-=======
 			to_sas_internal(sas_ha->shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return i->dft->lldd_control_phy(asd_phy, PHY_FUNC_GET_EVENTS, NULL);
 	}
@@ -366,11 +212,7 @@ int sas_try_ata_reset(struct asd_sas_phy *asd_phy)
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * transport_sas_phy_reset - reset a phy and permit libata to manage the link
  *
  * phy reset request via sysfs in host workqueue context so we know we
@@ -390,11 +232,7 @@ static int transport_sas_phy_reset(struct sas_phy *phy, int hard_reset)
 		struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
 		struct asd_sas_phy *asd_phy = sas_ha->sas_phy[phy->number];
 		struct sas_internal *i =
-<<<<<<< HEAD
-			to_sas_internal(sas_ha->core.shost->transportt);
-=======
 			to_sas_internal(sas_ha->shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!hard_reset && sas_try_ata_reset(asd_phy) == 0)
 			return 0;
@@ -413,11 +251,7 @@ static int transport_sas_phy_reset(struct sas_phy *phy, int hard_reset)
 	}
 }
 
-<<<<<<< HEAD
-static int sas_phy_enable(struct sas_phy *phy, int enable)
-=======
 int sas_phy_enable(struct sas_phy *phy, int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	enum phy_func cmd;
@@ -432,11 +266,7 @@ int sas_phy_enable(struct sas_phy *phy, int enable)
 		struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
 		struct asd_sas_phy *asd_phy = sas_ha->sas_phy[phy->number];
 		struct sas_internal *i =
-<<<<<<< HEAD
-			to_sas_internal(sas_ha->core.shost->transportt);
-=======
 			to_sas_internal(sas_ha->shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (enable)
 			ret = transport_sas_phy_reset(phy, 0);
@@ -453,10 +283,7 @@ int sas_phy_enable(struct sas_phy *phy, int enable)
 	}
 	return ret;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(sas_phy_enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sas_phy_reset(struct sas_phy *phy, int hard_reset)
 {
@@ -476,11 +303,7 @@ int sas_phy_reset(struct sas_phy *phy, int hard_reset)
 		struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
 		struct asd_sas_phy *asd_phy = sas_ha->sas_phy[phy->number];
 		struct sas_internal *i =
-<<<<<<< HEAD
-			to_sas_internal(sas_ha->core.shost->transportt);
-=======
 			to_sas_internal(sas_ha->shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = i->dft->lldd_control_phy(asd_phy, reset_type, NULL);
 	} else {
@@ -490,16 +313,10 @@ int sas_phy_reset(struct sas_phy *phy, int hard_reset)
 	}
 	return ret;
 }
-<<<<<<< HEAD
-
-int sas_set_phy_speed(struct sas_phy *phy,
-		      struct sas_phy_linkrates *rates)
-=======
 EXPORT_SYMBOL_GPL(sas_phy_reset);
 
 static int sas_set_phy_speed(struct sas_phy *phy,
 			     struct sas_phy_linkrates *rates)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -522,11 +339,7 @@ static int sas_set_phy_speed(struct sas_phy *phy,
 		struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
 		struct asd_sas_phy *asd_phy = sas_ha->sas_phy[phy->number];
 		struct sas_internal *i =
-<<<<<<< HEAD
-			to_sas_internal(sas_ha->core.shost->transportt);
-=======
 			to_sas_internal(sas_ha->shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = i->dft->lldd_control_phy(asd_phy, PHY_FUNC_SET_LINK_RATE,
 					       rates);
@@ -541,8 +354,6 @@ static int sas_set_phy_speed(struct sas_phy *phy,
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 void sas_prep_resume_ha(struct sas_ha_struct *ha)
 {
 	int i;
@@ -671,7 +482,6 @@ void sas_suspend_ha(struct sas_ha_struct *ha)
 }
 EXPORT_SYMBOL(sas_suspend_ha);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sas_phy_release(struct sas_phy *phy)
 {
 	kfree(phy->hostdata);
@@ -718,33 +528,21 @@ static int queue_phy_reset(struct sas_phy *phy, int hard_reset)
 	if (!d)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	pm_runtime_get_sync(ha->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* libsas workqueue coordinates ata-eh reset with discovery */
 	mutex_lock(&d->event_lock);
 	d->reset_result = 0;
 	d->hard_reset = hard_reset;
 
-<<<<<<< HEAD
-	spin_lock_irq(&ha->state_lock);
-	sas_queue_work(ha, &d->reset_work);
-	spin_unlock_irq(&ha->state_lock);
-=======
 	spin_lock_irq(&ha->lock);
 	sas_queue_work(ha, &d->reset_work);
 	spin_unlock_irq(&ha->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = sas_drain_work(ha);
 	if (rc == 0)
 		rc = d->reset_result;
 	mutex_unlock(&d->event_lock);
-<<<<<<< HEAD
-=======
 	pm_runtime_put_sync(ha->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -759,33 +557,21 @@ static int queue_phy_enable(struct sas_phy *phy, int enable)
 	if (!d)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	pm_runtime_get_sync(ha->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* libsas workqueue coordinates ata-eh reset with discovery */
 	mutex_lock(&d->event_lock);
 	d->enable_result = 0;
 	d->enable = enable;
 
-<<<<<<< HEAD
-	spin_lock_irq(&ha->state_lock);
-	sas_queue_work(ha, &d->enable_work);
-	spin_unlock_irq(&ha->state_lock);
-=======
 	spin_lock_irq(&ha->lock);
 	sas_queue_work(ha, &d->enable_work);
 	spin_unlock_irq(&ha->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = sas_drain_work(ha);
 	if (rc == 0)
 		rc = d->enable_result;
 	mutex_unlock(&d->event_lock);
-<<<<<<< HEAD
-=======
 	pm_runtime_put_sync(ha->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -800,8 +586,6 @@ static struct sas_function_template sft = {
 	.smp_handler = sas_smp_handler,
 };
 
-<<<<<<< HEAD
-=======
 static inline ssize_t phy_event_threshold_show(struct device *dev,
 			struct device_attribute *attr, char *buf)
 {
@@ -833,7 +617,6 @@ DEVICE_ATTR(phy_event_threshold,
 	phy_event_threshold_store);
 EXPORT_SYMBOL_GPL(dev_attr_phy_event_threshold);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct scsi_transport_template *
 sas_domain_attach_transport(struct sas_domain_function_template *dft)
 {
@@ -846,24 +629,12 @@ sas_domain_attach_transport(struct sas_domain_function_template *dft)
 	i = to_sas_internal(stt);
 	i->dft = dft;
 	stt->create_work_queue = 1;
-<<<<<<< HEAD
-	stt->eh_timed_out = sas_scsi_timed_out;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stt->eh_strategy_handler = sas_scsi_recover_host;
 
 	return stt;
 }
 EXPORT_SYMBOL_GPL(sas_domain_attach_transport);
 
-<<<<<<< HEAD
-
-void sas_domain_release_transport(struct scsi_transport_template *stt)
-{
-	sas_release_transport(stt);
-}
-EXPORT_SYMBOL_GPL(sas_domain_release_transport);
-=======
 struct asd_sas_event *sas_alloc_event(struct asd_sas_phy *phy,
 				      gfp_t gfp_flags)
 {
@@ -905,7 +676,6 @@ void sas_free_event(struct asd_sas_event *event)
 	kmem_cache_free(sas_event_cache, event);
 	atomic_dec(&phy->event_nr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---------- SAS Class register/unregister ---------- */
 
@@ -913,11 +683,6 @@ static int __init sas_class_init(void)
 {
 	sas_task_cache = KMEM_CACHE(sas_task, SLAB_HWCACHE_ALIGN);
 	if (!sas_task_cache)
-<<<<<<< HEAD
-		return -ENOMEM;
-
-	return 0;
-=======
 		goto out;
 
 	sas_event_cache = KMEM_CACHE(asd_sas_event, SLAB_HWCACHE_ALIGN);
@@ -929,16 +694,12 @@ free_task_kmem:
 	kmem_cache_destroy(sas_task_cache);
 out:
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit sas_class_exit(void)
 {
 	kmem_cache_destroy(sas_task_cache);
-<<<<<<< HEAD
-=======
 	kmem_cache_destroy(sas_event_cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_AUTHOR("Luben Tuikov <luben_tuikov@adaptec.com>");
@@ -948,8 +709,3 @@ MODULE_LICENSE("GPL v2");
 module_init(sas_class_init);
 module_exit(sas_class_exit);
 
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(sas_register_ha);
-EXPORT_SYMBOL_GPL(sas_unregister_ha);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

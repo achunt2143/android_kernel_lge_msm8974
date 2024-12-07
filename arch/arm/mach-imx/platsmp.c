@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2011 Linaro Ltd.
- *
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 or later at the following locations:
- *
- * http://www.opensource.org/licenses/gpl-license.html
- * http://www.gnu.org/copyleft/gpl.html
- */
-
-#include <linux/init.h>
-#include <linux/smp.h>
-#include <asm/page.h>
-#include <asm/smp_scu.h>
-#include <asm/hardware/gic.h>
-#include <asm/mach/map.h>
-#include <mach/common.h>
-#include <mach/hardware.h>
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2011 Freescale Semiconductor, Inc.
@@ -41,7 +18,6 @@
 #include "hardware.h"
 
 u32 g_diag_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __iomem *scu_base;
 
 static struct map_desc scu_io_desc __initdata = {
@@ -64,21 +40,7 @@ void __init imx_scu_map_io(void)
 	scu_base = IMX_IO_ADDRESS(base);
 }
 
-<<<<<<< HEAD
-void __cpuinit platform_secondary_init(unsigned int cpu)
-{
-	/*
-	 * if any interrupts are already enabled for the primary
-	 * core (e.g. timer irq), then they will not have been enabled
-	 * for us: do so
-	 */
-	gic_secondary_init(0);
-}
-
-int __cpuinit boot_secondary(unsigned int cpu, struct task_struct *idle)
-=======
 static int imx_boot_secondary(unsigned int cpu, struct task_struct *idle)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	imx_set_cpu_jump(cpu, v7_secondary_startup);
 	imx_enable_cpu(cpu, true);
@@ -89,25 +51,14 @@ static int imx_boot_secondary(unsigned int cpu, struct task_struct *idle)
  * Initialise the CPU possible map early - this describes the CPUs
  * which may be present or become present in the system.
  */
-<<<<<<< HEAD
-void __init smp_init_cpus(void)
-=======
 static void __init imx_smp_init_cpus(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ncores;
 
 	ncores = scu_get_core_count(scu_base);
 
-<<<<<<< HEAD
-	for (i = 0; i < ncores; i++)
-		set_cpu_possible(i, true);
-
-	set_smp_cross_call(gic_raise_softirq);
-=======
 	for (i = ncores; i < NR_CPUS; i++)
 		set_cpu_possible(i, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void imx_smp_prepare(void)
@@ -115,12 +66,6 @@ void imx_smp_prepare(void)
 	scu_enable(scu_base);
 }
 
-<<<<<<< HEAD
-void __init platform_smp_prepare_cpus(unsigned int max_cpus)
-{
-	imx_smp_prepare();
-}
-=======
 static void __init imx_smp_prepare_cpus(unsigned int max_cpus)
 {
 	imx_smp_prepare();
@@ -203,4 +148,3 @@ const struct smp_operations ls1021a_smp_ops __initconst = {
 	.smp_prepare_cpus	= ls1021a_smp_prepare_cpus,
 	.smp_boot_secondary	= ls1021a_boot_secondary,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

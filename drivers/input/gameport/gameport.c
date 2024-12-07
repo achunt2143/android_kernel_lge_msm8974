@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic gameport layer
  *
@@ -9,23 +6,12 @@
  * Copyright (c) 2005 Dmitry Torokhov
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/stddef.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/gameport.h>
@@ -34,24 +20,16 @@
 #include <linux/workqueue.h>
 #include <linux/sched.h>	/* HZ */
 #include <linux/mutex.h>
-<<<<<<< HEAD
-
-/*#include <asm/io.h>*/
-=======
 #include <linux/timekeeping.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION("Generic gameport layer");
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-=======
 static bool use_ktime = true;
 module_param(use_ktime, bool, 0400);
 MODULE_PARM_DESC(use_ktime, "Use ktime for measuring I/O speed");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * gameport_mutex protects entire gameport subsystem and is taken
  * every time gameport port or driver registrered or unregistered.
@@ -60,11 +38,7 @@ static DEFINE_MUTEX(gameport_mutex);
 
 static LIST_HEAD(gameport_list);
 
-<<<<<<< HEAD
-static struct bus_type gameport_bus;
-=======
 static const struct bus_type gameport_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void gameport_add_port(struct gameport *gameport);
 static void gameport_attach_driver(struct gameport_driver *drv);
@@ -102,8 +76,6 @@ static unsigned int get_time_pit(void)
 
 static int gameport_measure_speed(struct gameport *gameport)
 {
-<<<<<<< HEAD
-=======
 	unsigned int i, t, tx;
 	u64 t1, t2, t3;
 	unsigned long flags;
@@ -136,7 +108,6 @@ static int gameport_measure_speed(struct gameport *gameport)
 
 static int old_gameport_measure_speed(struct gameport *gameport)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__i386__)
 
 	unsigned int i, t, t1, t2, t3, tx;
@@ -173,15 +144,9 @@ static int old_gameport_measure_speed(struct gameport *gameport)
 
 	for(i = 0; i < 50; i++) {
 		local_irq_save(flags);
-<<<<<<< HEAD
-		rdtscl(t1);
-		for (t = 0; t < 50; t++) gameport_read(gameport);
-		rdtscl(t2);
-=======
 		t1 = rdtsc();
 		for (t = 0; t < 50; t++) gameport_read(gameport);
 		t2 = rdtsc();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_restore(flags);
 		udelay(i * 10);
 		if (t2 - t1 < tx) tx = t2 - t1;
@@ -232,15 +197,9 @@ void gameport_stop_polling(struct gameport *gameport)
 }
 EXPORT_SYMBOL(gameport_stop_polling);
 
-<<<<<<< HEAD
-static void gameport_run_poll_handler(unsigned long d)
-{
-	struct gameport *gameport = (struct gameport *)d;
-=======
 static void gameport_run_poll_handler(struct timer_list *t)
 {
 	struct gameport *gameport = from_timer(gameport, t, poll_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gameport->poll_handler(gameport);
 	if (gameport->poll_cnt)
@@ -421,13 +380,8 @@ static int gameport_queue_event(void *object, struct module *owner,
 	}
 
 	if (!try_module_get(owner)) {
-<<<<<<< HEAD
-		pr_warning("Can't get module reference, dropping event %d\n",
-			   event_type);
-=======
 		pr_warn("Can't get module reference, dropping event %d\n",
 			event_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(event);
 		retval = -EINVAL;
 		goto out;
@@ -500,24 +454,15 @@ static struct gameport *gameport_get_pending_child(struct gameport *parent)
  * Gameport port operations
  */
 
-<<<<<<< HEAD
-static ssize_t gameport_show_description(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static ssize_t gameport_description_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gameport = to_gameport_port(dev);
 
 	return sprintf(buf, "%s\n", gameport->name);
 }
-<<<<<<< HEAD
-
-static ssize_t gameport_rebind_driver(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
-=======
 static DEVICE_ATTR(description, S_IRUGO, gameport_description_show, NULL);
 
 static ssize_t drvctl_store(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gameport = to_gameport_port(dev);
 	struct device_driver *drv;
@@ -545,14 +490,6 @@ static ssize_t drvctl_store(struct device *dev, struct device_attribute *attr, c
 
 	return error ? error : count;
 }
-<<<<<<< HEAD
-
-static struct device_attribute gameport_device_attrs[] = {
-	__ATTR(description, S_IRUGO, gameport_show_description, NULL),
-	__ATTR(drvctl, S_IWUSR, NULL, gameport_rebind_driver),
-	__ATTR_NULL
-};
-=======
 static DEVICE_ATTR_WO(drvctl);
 
 static struct attribute *gameport_device_attrs[] = {
@@ -561,7 +498,6 @@ static struct attribute *gameport_device_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(gameport_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void gameport_release_port(struct device *dev)
 {
@@ -581,8 +517,6 @@ void gameport_set_phys(struct gameport *gameport, const char *fmt, ...)
 }
 EXPORT_SYMBOL(gameport_set_phys);
 
-<<<<<<< HEAD
-=======
 static void gameport_default_trigger(struct gameport *gameport)
 {
 #ifdef CONFIG_HAS_IOPORT
@@ -613,45 +547,28 @@ static void gameport_setup_default_handlers(struct gameport *gameport)
 		gameport->read = gameport_default_read;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Prepare gameport port for registration.
  */
 static void gameport_init_port(struct gameport *gameport)
 {
-<<<<<<< HEAD
-	static atomic_t gameport_no = ATOMIC_INIT(0);
-=======
 	static atomic_t gameport_no = ATOMIC_INIT(-1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__module_get(THIS_MODULE);
 
 	mutex_init(&gameport->drv_mutex);
 	device_initialize(&gameport->dev);
 	dev_set_name(&gameport->dev, "gameport%lu",
-<<<<<<< HEAD
-			(unsigned long)atomic_inc_return(&gameport_no) - 1);
-=======
 			(unsigned long)atomic_inc_return(&gameport_no));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gameport->dev.bus = &gameport_bus;
 	gameport->dev.release = gameport_release_port;
 	if (gameport->parent)
 		gameport->dev.parent = &gameport->parent->dev;
 
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&gameport->node);
-	spin_lock_init(&gameport->timer_lock);
-	init_timer(&gameport->poll_timer);
-	gameport->poll_timer.function = gameport_run_poll_handler;
-	gameport->poll_timer.data = (unsigned long)gameport;
-=======
 	gameport_setup_default_handlers(gameport);
 	INIT_LIST_HEAD(&gameport->node);
 	spin_lock_init(&gameport->timer_lock);
 	timer_setup(&gameport->poll_timer, gameport_run_poll_handler, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -665,13 +582,9 @@ static void gameport_add_port(struct gameport *gameport)
 	if (gameport->parent)
 		gameport->parent->child = gameport;
 
-<<<<<<< HEAD
-	gameport->speed = gameport_measure_speed(gameport);
-=======
 	gameport->speed = use_ktime ?
 		gameport_measure_speed(gameport) :
 		old_gameport_measure_speed(gameport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add_tail(&gameport->node, &gameport_list);
 
@@ -792,22 +705,11 @@ EXPORT_SYMBOL(gameport_unregister_port);
  * Gameport driver operations
  */
 
-<<<<<<< HEAD
-static ssize_t gameport_driver_show_description(struct device_driver *drv, char *buf)
-=======
 static ssize_t description_show(struct device_driver *drv, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport_driver *driver = to_gameport_driver(drv);
 	return sprintf(buf, "%s\n", driver->description ? driver->description : "(none)");
 }
-<<<<<<< HEAD
-
-static struct driver_attribute gameport_driver_attrs[] = {
-	__ATTR(description, S_IRUGO, gameport_driver_show_description, NULL),
-	__ATTR_NULL
-};
-=======
 static DRIVER_ATTR_RO(description);
 
 static struct attribute *gameport_driver_attrs[] = {
@@ -815,7 +717,6 @@ static struct attribute *gameport_driver_attrs[] = {
 	NULL
 };
 ATTRIBUTE_GROUPS(gameport_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int gameport_driver_probe(struct device *dev)
 {
@@ -826,20 +727,12 @@ static int gameport_driver_probe(struct device *dev)
 	return gameport->drv ? 0 : -ENODEV;
 }
 
-<<<<<<< HEAD
-static int gameport_driver_remove(struct device *dev)
-=======
 static void gameport_driver_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gameport = to_gameport_port(dev);
 	struct gameport_driver *drv = to_gameport_driver(dev->driver);
 
 	drv->disconnect(gameport);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gameport_attach_driver(struct gameport_driver *drv)
@@ -920,17 +813,10 @@ static int gameport_bus_match(struct device *dev, struct device_driver *drv)
 	return !gameport_drv->ignore;
 }
 
-<<<<<<< HEAD
-static struct bus_type gameport_bus = {
-	.name		= "gameport",
-	.dev_attrs	= gameport_device_attrs,
-	.drv_attrs	= gameport_driver_attrs,
-=======
 static const struct bus_type gameport_bus = {
 	.name		= "gameport",
 	.dev_groups	= gameport_device_groups,
 	.drv_groups	= gameport_driver_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match		= gameport_bus_match,
 	.probe		= gameport_driver_probe,
 	.remove		= gameport_driver_remove,

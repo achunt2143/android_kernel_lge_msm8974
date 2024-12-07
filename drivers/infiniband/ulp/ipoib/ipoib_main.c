@@ -46,15 +46,11 @@
 #include <linux/ip.h>
 #include <linux/in.h>
 
-<<<<<<< HEAD
-#include <net/dst.h>
-=======
 #include <linux/jhash.h>
 #include <net/arp.h>
 #include <net/addrconf.h>
 #include <linux/inetdevice.h>
 #include <rdma/ib_cache.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Roland Dreier");
 MODULE_DESCRIPTION("IP-over-InfiniBand net driver");
@@ -90,10 +86,6 @@ struct workqueue_struct *ipoib_workqueue;
 
 struct ib_sa_client ipoib_sa_client;
 
-<<<<<<< HEAD
-static void ipoib_add_one(struct ib_device *device);
-static void ipoib_remove_one(struct ib_device *device);
-=======
 static int ipoib_add_one(struct ib_device *device);
 static void ipoib_remove_one(struct ib_device *device, void *client_data);
 static void ipoib_neigh_reclaim(struct rcu_head *rp);
@@ -104,32 +96,10 @@ static struct net_device *ipoib_get_net_dev_by_params(
 static int ipoib_set_mac(struct net_device *dev, void *addr);
 static int ipoib_ioctl(struct net_device *dev, struct ifreq *ifr,
 		       int cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ib_client ipoib_client = {
 	.name   = "ipoib",
 	.add    = ipoib_add_one,
-<<<<<<< HEAD
-	.remove = ipoib_remove_one
-};
-
-int ipoib_open(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	ipoib_dbg(priv, "bringing up interface\n");
-
-	set_bit(IPOIB_FLAG_ADMIN_UP, &priv->flags);
-
-	if (ipoib_pkey_dev_delay_open(dev))
-		return 0;
-
-	if (ipoib_ib_dev_open(dev))
-		goto err_disable;
-
-	if (ipoib_ib_dev_up(dev))
-		goto err_stop;
-=======
 	.remove = ipoib_remove_one,
 	.get_net_dev_by_params = ipoib_get_net_dev_by_params,
 };
@@ -178,17 +148,12 @@ int ipoib_open(struct net_device *dev)
 	}
 
 	ipoib_ib_dev_up(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(IPOIB_FLAG_SUBINTERFACE, &priv->flags)) {
 		struct ipoib_dev_priv *cpriv;
 
 		/* Bring up any child interfaces too */
-<<<<<<< HEAD
-		mutex_lock(&priv->vlan_mutex);
-=======
 		down_read(&priv->vlan_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_entry(cpriv, &priv->child_intfs, list) {
 			int flags;
 
@@ -196,13 +161,6 @@ int ipoib_open(struct net_device *dev)
 			if (flags & IFF_UP)
 				continue;
 
-<<<<<<< HEAD
-			dev_change_flags(cpriv->dev, flags | IFF_UP);
-		}
-		mutex_unlock(&priv->vlan_mutex);
-	}
-
-=======
 			dev_change_flags(cpriv->dev, flags | IFF_UP, NULL);
 		}
 		up_read(&priv->vlan_rwsem);
@@ -213,17 +171,10 @@ int ipoib_open(struct net_device *dev)
 			ipoib_dbg(priv, "parent device %s is not up, so child device may be not functioning.\n",
 				  ppriv->dev->name);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(dev);
 
 	return 0;
 
-<<<<<<< HEAD
-err_stop:
-	ipoib_ib_dev_stop(dev, 1);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_disable:
 	clear_bit(IPOIB_FLAG_ADMIN_UP, &priv->flags);
 
@@ -232,11 +183,7 @@ err_disable:
 
 static int ipoib_stop(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipoib_dbg(priv, "stopping interface\n");
 
@@ -244,23 +191,14 @@ static int ipoib_stop(struct net_device *dev)
 
 	netif_stop_queue(dev);
 
-<<<<<<< HEAD
-	ipoib_ib_dev_down(dev, 1);
-	ipoib_ib_dev_stop(dev, 0);
-=======
 	ipoib_ib_dev_down(dev);
 	ipoib_ib_dev_stop(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(IPOIB_FLAG_SUBINTERFACE, &priv->flags)) {
 		struct ipoib_dev_priv *cpriv;
 
 		/* Bring down any child interfaces too */
-<<<<<<< HEAD
-		mutex_lock(&priv->vlan_mutex);
-=======
 		down_read(&priv->vlan_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_entry(cpriv, &priv->child_intfs, list) {
 			int flags;
 
@@ -268,15 +206,9 @@ static int ipoib_stop(struct net_device *dev)
 			if (!(flags & IFF_UP))
 				continue;
 
-<<<<<<< HEAD
-			dev_change_flags(cpriv->dev, flags & ~IFF_UP);
-		}
-		mutex_unlock(&priv->vlan_mutex);
-=======
 			dev_change_flags(cpriv->dev, flags & ~IFF_UP, NULL);
 		}
 		up_read(&priv->vlan_rwsem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -284,29 +216,18 @@ static int ipoib_stop(struct net_device *dev)
 
 static netdev_features_t ipoib_fix_features(struct net_device *dev, netdev_features_t features)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	if (test_bit(IPOIB_FLAG_ADMIN_CM, &priv->flags))
-		features &= ~(NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_TSO);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 
 	if (test_bit(IPOIB_FLAG_ADMIN_CM, &priv->flags))
 		features &= ~(NETIF_F_IP_CSUM | NETIF_F_TSO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
 
 static int ipoib_change_mtu(struct net_device *dev, int new_mtu)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* dev->mtu > 2K ==> connected mode */
 	if (ipoib_cm_admin_enabled(dev)) {
@@ -321,26 +242,12 @@ static int ipoib_change_mtu(struct net_device *dev, int new_mtu)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	if (new_mtu > IPOIB_UD_MTU(priv->max_ib_mtu))
-=======
 	if (new_mtu < (ETH_MIN_MTU + IPOIB_ENCAP_LEN) ||
 	    new_mtu > IPOIB_UD_MTU(priv->max_ib_mtu))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	priv->admin_mtu = new_mtu;
 
-<<<<<<< HEAD
-	dev->mtu = min(priv->mcast_mtu, priv->admin_mtu);
-
-	return 0;
-}
-
-static struct ipoib_path *__path_find(struct net_device *dev, void *gid)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	if (priv->mcast_mtu < priv->admin_mtu)
 		ipoib_dbg(priv, "MTU must be smaller than the underlying "
 				"link layer MTU - 4 (%u)\n", priv->mcast_mtu);
@@ -650,7 +557,6 @@ int ipoib_set_mode(struct net_device *dev, const char *buf)
 struct ipoib_path *__path_find(struct net_device *dev, void *gid)
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node *n = priv->path_tree.rb_node;
 	struct ipoib_path *path;
 	int ret;
@@ -674,11 +580,7 @@ struct ipoib_path *__path_find(struct net_device *dev, void *gid)
 
 static int __path_add(struct net_device *dev, struct ipoib_path *path)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node **n = &priv->path_tree.rb_node;
 	struct rb_node *pn = NULL;
 	struct ipoib_path *tpath;
@@ -708,41 +610,15 @@ static int __path_add(struct net_device *dev, struct ipoib_path *path)
 
 static void path_free(struct net_device *dev, struct ipoib_path *path)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	struct ipoib_neigh *neigh, *tn;
 	struct sk_buff *skb;
-	unsigned long flags;
-=======
-	struct sk_buff *skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((skb = __skb_dequeue(&path->queue)))
 		dev_kfree_skb_irq(skb);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&priv->lock, flags);
-
-	list_for_each_entry_safe(neigh, tn, &path->neigh_list, list) {
-		/*
-		 * It's safe to call ipoib_put_ah() inside priv->lock
-		 * here, because we know that path->ah will always
-		 * hold one more reference, so ipoib_put_ah() will
-		 * never do more than decrement the ref count.
-		 */
-		if (neigh->ah)
-			ipoib_put_ah(neigh->ah);
-
-		ipoib_neigh_free(dev, neigh);
-	}
-
-	spin_unlock_irqrestore(&priv->lock, flags);
-=======
 	ipoib_dbg(ipoib_priv(dev), "%s\n", __func__);
 
 	/* remove all neigh connected to this path */
 	ipoib_del_neighs_by_gid(dev, path->pathrec.dgid.raw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (path->ah)
 		ipoib_put_ah(path->ah);
@@ -756,11 +632,7 @@ struct ipoib_path_iter *ipoib_path_iter_init(struct net_device *dev)
 {
 	struct ipoib_path_iter *iter;
 
-<<<<<<< HEAD
-	iter = kmalloc(sizeof *iter, GFP_KERNEL);
-=======
 	iter = kmalloc(sizeof(*iter), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!iter)
 		return NULL;
 
@@ -777,11 +649,7 @@ struct ipoib_path_iter *ipoib_path_iter_init(struct net_device *dev)
 
 int ipoib_path_iter_next(struct ipoib_path_iter *iter)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(iter->dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(iter->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node *n;
 	struct ipoib_path *path;
 	int ret = 1;
@@ -818,38 +686,22 @@ void ipoib_path_iter_read(struct ipoib_path_iter *iter,
 
 void ipoib_mark_paths_invalid(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipoib_path *path, *tp;
 
 	spin_lock_irq(&priv->lock);
 
 	list_for_each_entry_safe(path, tp, &priv->path_list, list) {
-<<<<<<< HEAD
-		ipoib_dbg(priv, "mark path LID 0x%04x GID %pI6 invalid\n",
-			be16_to_cpu(path->pathrec.dlid),
-			path->pathrec.dgid.raw);
-		path->valid =  0;
-=======
 		ipoib_dbg(priv, "mark path LID 0x%08x GID %pI6 invalid\n",
 			  be32_to_cpu(sa_path_get_dlid(&path->pathrec)),
 			  path->pathrec.dgid.raw);
 		if (path->ah)
 			path->ah->valid = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irq(&priv->lock);
 }
 
-<<<<<<< HEAD
-void ipoib_flush_paths(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 static void push_pseudo_header(struct sk_buff *skb, const char *daddr)
 {
 	struct ipoib_pseudo_header *phdr;
@@ -861,7 +713,6 @@ static void push_pseudo_header(struct sk_buff *skb, const char *daddr)
 void ipoib_flush_paths(struct net_device *dev)
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipoib_path *path, *tp;
 	LIST_HEAD(remove_list);
 	unsigned long flags;
@@ -890,21 +741,12 @@ void ipoib_flush_paths(struct net_device *dev)
 }
 
 static void path_rec_completion(int status,
-<<<<<<< HEAD
-				struct ib_sa_path_rec *pathrec,
-				void *path_ptr)
-{
-	struct ipoib_path *path = path_ptr;
-	struct net_device *dev = path->dev;
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 				struct sa_path_rec *pathrec,
 				unsigned int num_prs, void *path_ptr)
 {
 	struct ipoib_path *path = path_ptr;
 	struct net_device *dev = path->dev;
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipoib_ah *ah = NULL;
 	struct ipoib_ah *old_ah = NULL;
 	struct ipoib_neigh *neigh, *tn;
@@ -914,12 +756,8 @@ static void path_rec_completion(int status,
 
 	if (!status)
 		ipoib_dbg(priv, "PathRec LID 0x%04x for GID %pI6\n",
-<<<<<<< HEAD
-			  be16_to_cpu(pathrec->dlid), pathrec->dgid.raw);
-=======
 			  be32_to_cpu(sa_path_get_dlid(pathrec)),
 			  pathrec->dgid.raw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		ipoib_dbg(priv, "PathRec status %d for GID %pI6\n",
 			  status, path->pathrec.dgid.raw);
@@ -927,12 +765,6 @@ static void path_rec_completion(int status,
 	skb_queue_head_init(&skqueue);
 
 	if (!status) {
-<<<<<<< HEAD
-		struct ib_ah_attr av;
-
-		if (!ib_init_ah_from_path(priv->ca, priv->port, pathrec, &av))
-			ah = ipoib_create_ah(dev, priv->pd, &av);
-=======
 		struct rdma_ah_attr av;
 
 		if (!ib_init_ah_attr_from_path(priv->ca, priv->port,
@@ -940,14 +772,11 @@ static void path_rec_completion(int status,
 			ah = ipoib_create_ah(dev, priv->pd, &av);
 			rdma_destroy_ah_attr(&av);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_irqsave(&priv->lock, flags);
 
 	if (!IS_ERR_OR_NULL(ah)) {
-<<<<<<< HEAD
-=======
 		/*
 		 * pathrec.dgid is used as the database key from the LLADDR,
 		 * it must remain unchanged even if the SA returns a different
@@ -964,19 +793,14 @@ static void path_rec_completion(int status,
 			       sizeof(union ib_gid));
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		path->pathrec = *pathrec;
 
 		old_ah   = path->ah;
 		path->ah = ah;
 
 		ipoib_dbg(priv, "created address handle %p for LID 0x%04x, SL %d\n",
-<<<<<<< HEAD
-			  ah, be16_to_cpu(pathrec->dlid), pathrec->sl);
-=======
 			  ah, be32_to_cpu(sa_path_get_dlid(pathrec)),
 			  pathrec->sl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while ((skb = __skb_dequeue(&path->queue)))
 			__skb_queue_tail(&skqueue, skb);
@@ -995,28 +819,14 @@ static void path_rec_completion(int status,
 			}
 			kref_get(&path->ah->ref);
 			neigh->ah = path->ah;
-<<<<<<< HEAD
-			memcpy(&neigh->dgid.raw, &path->pathrec.dgid.raw,
-			       sizeof(union ib_gid));
-
-			if (ipoib_cm_enabled(dev, neigh->neighbour)) {
-=======
 
 			if (ipoib_cm_enabled(dev, neigh->daddr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!ipoib_cm_get(neigh))
 					ipoib_cm_set(neigh, ipoib_cm_create_tx(dev,
 									       path,
 									       neigh));
 				if (!ipoib_cm_get(neigh)) {
-<<<<<<< HEAD
-					list_del(&neigh->list);
-					if (neigh->ah)
-						ipoib_put_ah(neigh->ah);
-					ipoib_neigh_free(dev, neigh);
-=======
 					ipoib_neigh_free(neigh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					continue;
 				}
 			}
@@ -1024,11 +834,7 @@ static void path_rec_completion(int status,
 			while ((skb = __skb_dequeue(&neigh->queue)))
 				__skb_queue_tail(&skqueue, skb);
 		}
-<<<<<<< HEAD
-		path->valid = 1;
-=======
 		path->ah->valid = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	path->query = NULL;
@@ -1036,28 +842,13 @@ static void path_rec_completion(int status,
 
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-<<<<<<< HEAD
-=======
 	if (IS_ERR_OR_NULL(ah))
 		ipoib_del_neighs_by_gid(dev, path->pathrec.dgid.raw);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (old_ah)
 		ipoib_put_ah(old_ah);
 
 	while ((skb = __skb_dequeue(&skqueue))) {
-<<<<<<< HEAD
-		skb->dev = dev;
-		if (dev_queue_xmit(skb))
-			ipoib_warn(priv, "dev_queue_xmit failed "
-				   "to requeue packet\n");
-	}
-}
-
-static struct ipoib_path *path_rec_create(struct net_device *dev, void *gid)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 		int ret;
 		skb->dev = dev;
 		ret = dev_queue_xmit(skb);
@@ -1087,38 +878,20 @@ static void init_path_rec(struct ipoib_dev_priv *priv, struct ipoib_path *path,
 static struct ipoib_path *path_rec_create(struct net_device *dev, void *gid)
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipoib_path *path;
 
 	if (!priv->broadcast)
 		return NULL;
 
-<<<<<<< HEAD
-	path = kzalloc(sizeof *path, GFP_ATOMIC);
-	if (!path)
-		return NULL;
-
-	path->dev = dev;
-
-=======
 	path = kzalloc(sizeof(*path), GFP_ATOMIC);
 	if (!path)
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_head_init(&path->queue);
 
 	INIT_LIST_HEAD(&path->neigh_list);
 
-<<<<<<< HEAD
-	memcpy(path->pathrec.dgid.raw, gid, sizeof (union ib_gid));
-	path->pathrec.sgid	    = priv->local_gid;
-	path->pathrec.pkey	    = cpu_to_be16(priv->pkey);
-	path->pathrec.numb_path     = 1;
-	path->pathrec.traffic_class = priv->broadcast->mcmember.traffic_class;
-=======
 	init_path_rec(priv, path, gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return path;
 }
@@ -1126,11 +899,7 @@ static struct ipoib_path *path_rec_create(struct net_device *dev, void *gid)
 static int path_rec_start(struct net_device *dev,
 			  struct ipoib_path *path)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipoib_dbg(priv, "Start path record lookup for %pI6\n",
 		  path->pathrec.dgid.raw);
@@ -1158,12 +927,6 @@ static int path_rec_start(struct net_device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-/* called with rcu_read_lock */
-static void neigh_add_path(struct sk_buff *skb, struct neighbour *n, struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 static void neigh_refresh_path(struct ipoib_neigh *neigh, u8 *daddr,
 			       struct net_device *dev)
 {
@@ -1187,25 +950,10 @@ static struct ipoib_neigh *neigh_add_path(struct sk_buff *skb, u8 *daddr,
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 	struct rdma_netdev *rn = netdev_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipoib_path *path;
 	struct ipoib_neigh *neigh;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	neigh = ipoib_neigh_alloc(n, skb->dev);
-	if (!neigh) {
-		++dev->stats.tx_dropped;
-		dev_kfree_skb_any(skb);
-		return;
-	}
-
-	spin_lock_irqsave(&priv->lock, flags);
-
-	path = __path_find(dev, n->ha + 4);
-	if (!path) {
-		path = path_rec_create(dev, n->ha + 4);
-=======
 	spin_lock_irqsave(&priv->lock, flags);
 	neigh = ipoib_neigh_alloc(daddr, dev);
 	if (!neigh) {
@@ -1226,7 +974,6 @@ static struct ipoib_neigh *neigh_add_path(struct sk_buff *skb, u8 *daddr,
 	path = __path_find(dev, daddr + 4);
 	if (!path) {
 		path = path_rec_create(dev, daddr + 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!path)
 			goto err_path;
 
@@ -1235,27 +982,6 @@ static struct ipoib_neigh *neigh_add_path(struct sk_buff *skb, u8 *daddr,
 
 	list_add_tail(&neigh->list, &path->neigh_list);
 
-<<<<<<< HEAD
-	if (path->ah) {
-		kref_get(&path->ah->ref);
-		neigh->ah = path->ah;
-		memcpy(&neigh->dgid.raw, &path->pathrec.dgid.raw,
-		       sizeof(union ib_gid));
-
-		if (ipoib_cm_enabled(dev, neigh->neighbour)) {
-			if (!ipoib_cm_get(neigh))
-				ipoib_cm_set(neigh, ipoib_cm_create_tx(dev, path, neigh));
-			if (!ipoib_cm_get(neigh)) {
-				list_del(&neigh->list);
-				if (neigh->ah)
-					ipoib_put_ah(neigh->ah);
-				ipoib_neigh_free(dev, neigh);
-				goto err_drop;
-			}
-			if (skb_queue_len(&neigh->queue) < IPOIB_MAX_PATH_REC_QUEUE)
-				__skb_queue_tail(&neigh->queue, skb);
-			else {
-=======
 	if (path->ah && path->ah->valid) {
 		kref_get(&path->ah->ref);
 		neigh->ah = path->ah;
@@ -1272,42 +998,21 @@ static struct ipoib_neigh *neigh_add_path(struct sk_buff *skb, u8 *daddr,
 				push_pseudo_header(skb, neigh->daddr);
 				__skb_queue_tail(&neigh->queue, skb);
 			} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ipoib_warn(priv, "queue length limit %d. Packet drop.\n",
 					   skb_queue_len(&neigh->queue));
 				goto err_drop;
 			}
 		} else {
 			spin_unlock_irqrestore(&priv->lock, flags);
-<<<<<<< HEAD
-			ipoib_send(dev, skb, path->ah, IPOIB_QPN(n->ha));
-			return;
-=======
 			path->ah->last_send = rn->send(dev, skb, path->ah->ah,
 						       IPOIB_QPN(daddr));
 			ipoib_neigh_put(neigh);
 			return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		neigh->ah  = NULL;
 
 		if (!path->query && path_rec_start(dev, path))
-<<<<<<< HEAD
-			goto err_list;
-
-		__skb_queue_tail(&neigh->queue, skb);
-	}
-
-	spin_unlock_irqrestore(&priv->lock, flags);
-	return;
-
-err_list:
-	list_del(&neigh->list);
-
-err_path:
-	ipoib_neigh_free(dev, neigh);
-=======
 			goto err_path;
 		if (skb_queue_len(&neigh->queue) < IPOIB_MAX_PATH_REC_QUEUE) {
 			push_pseudo_header(skb, neigh->daddr);
@@ -1323,37 +1028,11 @@ err_path:
 
 err_path:
 	ipoib_neigh_free(neigh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_drop:
 	++dev->stats.tx_dropped;
 	dev_kfree_skb_any(skb);
 
 	spin_unlock_irqrestore(&priv->lock, flags);
-<<<<<<< HEAD
-}
-
-/* called with rcu_read_lock */
-static void ipoib_path_lookup(struct sk_buff *skb, struct neighbour *n, struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(skb->dev);
-
-	/* Look up path record for unicasts */
-	if (n->ha[4] != 0xff) {
-		neigh_add_path(skb, n, dev);
-		return;
-	}
-
-	/* Add in the P_Key for multicasts */
-	n->ha[8] = (priv->pkey >> 8) & 0xff;
-	n->ha[9] = priv->pkey & 0xff;
-	ipoib_mcast_send(dev, n->ha + 4, skb);
-}
-
-static void unicast_arp_send(struct sk_buff *skb, struct net_device *dev,
-			     struct ipoib_cb *cb)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	ipoib_neigh_put(neigh);
 
 	return NULL;
@@ -1364,51 +1043,11 @@ static void unicast_arp_send(struct sk_buff *skb, struct net_device *dev,
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 	struct rdma_netdev *rn = netdev_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipoib_path *path;
 	unsigned long flags;
 
 	spin_lock_irqsave(&priv->lock, flags);
 
-<<<<<<< HEAD
-	path = __path_find(dev, cb->hwaddr + 4);
-	if (!path || !path->valid) {
-		int new_path = 0;
-
-		if (!path) {
-			path = path_rec_create(dev, cb->hwaddr + 4);
-			new_path = 1;
-		}
-		if (path) {
-			__skb_queue_tail(&path->queue, skb);
-
-			if (!path->query && path_rec_start(dev, path)) {
-				spin_unlock_irqrestore(&priv->lock, flags);
-				if (new_path)
-					path_free(dev, path);
-				return;
-			} else
-				__path_add(dev, path);
-		} else {
-			++dev->stats.tx_dropped;
-			dev_kfree_skb_any(skb);
-		}
-
-		spin_unlock_irqrestore(&priv->lock, flags);
-		return;
-	}
-
-	if (path->ah) {
-		ipoib_dbg(priv, "Send unicast ARP to %04x\n",
-			  be16_to_cpu(path->pathrec.dlid));
-
-		spin_unlock_irqrestore(&priv->lock, flags);
-		ipoib_send(dev, skb, path->ah, IPOIB_QPN(cb->hwaddr));
-		return;
-	} else if ((path->query || !path_rec_start(dev, path)) &&
-		   skb_queue_len(&path->queue) < IPOIB_MAX_PATH_REC_QUEUE) {
-		__skb_queue_tail(&path->queue, skb);
-=======
 	/* no broadcast means that all paths are (going to be) not valid */
 	if (!priv->broadcast)
 		goto drop_and_unlock;
@@ -1534,122 +1173,11 @@ send_using_neigh:
 		spin_lock_irqsave(&priv->lock, flags);
 		__skb_queue_tail(&neigh->queue, skb);
 		spin_unlock_irqrestore(&priv->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		++dev->stats.tx_dropped;
 		dev_kfree_skb_any(skb);
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&priv->lock, flags);
-}
-
-static int ipoib_start_xmit(struct sk_buff *skb, struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	struct ipoib_neigh *neigh;
-	struct neighbour *n = NULL;
-	unsigned long flags;
-
-	rcu_read_lock();
-	if (likely(skb_dst(skb))) {
-		n = dst_get_neighbour_noref(skb_dst(skb));
-		if (!n) {
-			++dev->stats.tx_dropped;
-			dev_kfree_skb_any(skb);
-			goto unlock;
-		}
-	}
-	if (likely(n)) {
-		if (unlikely(!*to_ipoib_neigh(n))) {
-			ipoib_path_lookup(skb, n, dev);
-			goto unlock;
-		}
-
-		neigh = *to_ipoib_neigh(n);
-
-		if (unlikely((memcmp(&neigh->dgid.raw,
-				     n->ha + 4,
-				     sizeof(union ib_gid))) ||
-			     (neigh->dev != dev))) {
-			spin_lock_irqsave(&priv->lock, flags);
-			/*
-			 * It's safe to call ipoib_put_ah() inside
-			 * priv->lock here, because we know that
-			 * path->ah will always hold one more reference,
-			 * so ipoib_put_ah() will never do more than
-			 * decrement the ref count.
-			 */
-			if (neigh->ah)
-				ipoib_put_ah(neigh->ah);
-			list_del(&neigh->list);
-			ipoib_neigh_free(dev, neigh);
-			spin_unlock_irqrestore(&priv->lock, flags);
-			ipoib_path_lookup(skb, n, dev);
-			goto unlock;
-		}
-
-		if (ipoib_cm_get(neigh)) {
-			if (ipoib_cm_up(neigh)) {
-				ipoib_cm_send(dev, skb, ipoib_cm_get(neigh));
-				goto unlock;
-			}
-		} else if (neigh->ah) {
-			ipoib_send(dev, skb, neigh->ah, IPOIB_QPN(n->ha));
-			goto unlock;
-		}
-
-		if (skb_queue_len(&neigh->queue) < IPOIB_MAX_PATH_REC_QUEUE) {
-			spin_lock_irqsave(&priv->lock, flags);
-			__skb_queue_tail(&neigh->queue, skb);
-			spin_unlock_irqrestore(&priv->lock, flags);
-		} else {
-			++dev->stats.tx_dropped;
-			dev_kfree_skb_any(skb);
-		}
-	} else {
-		struct ipoib_cb *cb = (struct ipoib_cb *) skb->cb;
-
-		if (cb->hwaddr[4] == 0xff) {
-			/* Add in the P_Key for multicast*/
-			cb->hwaddr[8] = (priv->pkey >> 8) & 0xff;
-			cb->hwaddr[9] = priv->pkey & 0xff;
-
-			ipoib_mcast_send(dev, cb->hwaddr + 4, skb);
-		} else {
-			/* unicast GID -- should be ARP or RARP reply */
-
-			if ((be16_to_cpup((__be16 *) skb->data) != ETH_P_ARP) &&
-			    (be16_to_cpup((__be16 *) skb->data) != ETH_P_RARP)) {
-				ipoib_warn(priv, "Unicast, no %s: type %04x, QPN %06x %pI6\n",
-					   skb_dst(skb) ? "neigh" : "dst",
-					   be16_to_cpup((__be16 *) skb->data),
-					   IPOIB_QPN(cb->hwaddr),
-					   cb->hwaddr + 4);
-				dev_kfree_skb_any(skb);
-				++dev->stats.tx_dropped;
-				goto unlock;
-			}
-
-			unicast_arp_send(skb, dev, cb);
-		}
-	}
-unlock:
-	rcu_read_unlock();
-	return NETDEV_TX_OK;
-}
-
-static void ipoib_timeout(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	ipoib_warn(priv, "transmit timeout: latency %d msecs\n",
-		   jiffies_to_msecs(jiffies - dev->trans_start));
-	ipoib_warn(priv, "queue stopped %d, tx_head %u, tx_tail %u\n",
-		   netif_queue_stopped(dev),
-		   priv->tx_head, priv->tx_tail);
-	/* XXX reset QP, etc. */
-=======
 unref:
 	ipoib_neigh_put(neigh);
 
@@ -1700,19 +1228,11 @@ void ipoib_ib_tx_timeout_work(struct work_struct *work)
 unlock:
 	rtnl_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ipoib_hard_header(struct sk_buff *skb,
 			     struct net_device *dev,
 			     unsigned short type,
-<<<<<<< HEAD
-			     const void *daddr, const void *saddr, unsigned len)
-{
-	struct ipoib_header *header;
-
-	header = (struct ipoib_header *) skb_push(skb, sizeof *header);
-=======
 			     const void *daddr,
 			     const void *saddr,
 			     unsigned int len)
@@ -1720,24 +1240,11 @@ static int ipoib_hard_header(struct sk_buff *skb,
 	struct ipoib_header *header;
 
 	header = skb_push(skb, sizeof(*header));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	header->proto = htons(type);
 	header->reserved = 0;
 
 	/*
-<<<<<<< HEAD
-	 * If we don't have a dst_entry structure, stuff the
-	 * destination address into skb->cb so we can figure out where
-	 * to send the packet later.
-	 */
-	if (!skb_dst(skb)) {
-		struct ipoib_cb *cb = (struct ipoib_cb *) skb->cb;
-		memcpy(cb->hwaddr, daddr, INFINIBAND_ALEN);
-	}
-
-	return 0;
-=======
 	 * we don't rely on dst_entry structure,  always stuff the
 	 * destination address into skb hard header so we can figure out where
 	 * to send the packet later.
@@ -1745,58 +1252,17 @@ static int ipoib_hard_header(struct sk_buff *skb,
 	push_pseudo_header(skb, daddr);
 
 	return IPOIB_HARD_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ipoib_set_mcast_list(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(IPOIB_FLAG_OPER_UP, &priv->flags)) {
 		ipoib_dbg(priv, "IPOIB_FLAG_OPER_UP not set");
 		return;
 	}
 
-<<<<<<< HEAD
-	queue_work(ipoib_workqueue, &priv->restart_task);
-}
-
-static void ipoib_neigh_cleanup(struct neighbour *n)
-{
-	struct ipoib_neigh *neigh;
-	struct ipoib_dev_priv *priv = netdev_priv(n->dev);
-	unsigned long flags;
-	struct ipoib_ah *ah = NULL;
-
-	neigh = *to_ipoib_neigh(n);
-	if (neigh)
-		priv = netdev_priv(neigh->dev);
-	else
-		return;
-	ipoib_dbg(priv,
-		  "neigh_cleanup for %06x %pI6\n",
-		  IPOIB_QPN(n->ha),
-		  n->ha + 4);
-
-	spin_lock_irqsave(&priv->lock, flags);
-
-	if (neigh->ah)
-		ah = neigh->ah;
-	list_del(&neigh->list);
-	ipoib_neigh_free(n->dev, neigh);
-
-	spin_unlock_irqrestore(&priv->lock, flags);
-
-	if (ah)
-		ipoib_put_ah(ah);
-}
-
-struct ipoib_neigh *ipoib_neigh_alloc(struct neighbour *neighbour,
-=======
 	queue_work(priv->wq, &priv->restart_task);
 }
 
@@ -1930,23 +1396,10 @@ static void ipoib_reap_neigh(struct work_struct *work)
 
 
 static struct ipoib_neigh *ipoib_neigh_ctor(u8 *daddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      struct net_device *dev)
 {
 	struct ipoib_neigh *neigh;
 
-<<<<<<< HEAD
-	neigh = kmalloc(sizeof *neigh, GFP_ATOMIC);
-	if (!neigh)
-		return NULL;
-
-	neigh->neighbour = neighbour;
-	neigh->dev = dev;
-	memset(&neigh->dgid.raw, 0, sizeof (union ib_gid));
-	*to_ipoib_neigh(neighbour) = neigh;
-	skb_queue_head_init(&neigh->queue);
-	ipoib_cm_set(neigh, NULL);
-=======
 	neigh = kzalloc(sizeof(*neigh), GFP_ATOMIC);
 	if (!neigh)
 		return NULL;
@@ -1958,17 +1411,10 @@ static struct ipoib_neigh *ipoib_neigh_ctor(u8 *daddr,
 	ipoib_cm_set(neigh, NULL);
 	/* one ref on behalf of the caller */
 	refcount_set(&neigh->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return neigh;
 }
 
-<<<<<<< HEAD
-void ipoib_neigh_free(struct net_device *dev, struct ipoib_neigh *neigh)
-{
-	struct sk_buff *skb;
-	*to_ipoib_neigh(neigh->neighbour) = NULL;
-=======
 struct ipoib_neigh *ipoib_neigh_alloc(u8 *daddr,
 				      struct net_device *dev)
 {
@@ -2033,21 +1479,12 @@ void ipoib_neigh_dtor(struct ipoib_neigh *neigh)
 	struct sk_buff *skb;
 	if (neigh->ah)
 		ipoib_put_ah(neigh->ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((skb = __skb_dequeue(&neigh->queue))) {
 		++dev->stats.tx_dropped;
 		dev_kfree_skb_any(skb);
 	}
 	if (ipoib_cm_get(neigh))
 		ipoib_cm_destroy_tx(ipoib_cm_get(neigh));
-<<<<<<< HEAD
-	kfree(neigh);
-}
-
-static int ipoib_neigh_setup_dev(struct net_device *dev, struct neigh_parms *parms)
-{
-	parms->neigh_cleanup = ipoib_neigh_cleanup;
-=======
 	ipoib_dbg(ipoib_priv(dev),
 		  "neigh free for %06x %pI6\n",
 		  IPOIB_QPN(neigh->daddr),
@@ -2132,37 +1569,10 @@ static int ipoib_neigh_hash_init(struct ipoib_dev_priv *priv)
 	/* start garbage collection */
 	queue_delayed_work(priv->wq, &priv->neigh_reap_task,
 			   arp_tbl.gc_interval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int ipoib_dev_init(struct net_device *dev, struct ib_device *ca, int port)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	/* Allocate RX/TX "rings" to hold queued skbs */
-	priv->rx_ring =	kzalloc(ipoib_recvq_size * sizeof *priv->rx_ring,
-				GFP_KERNEL);
-	if (!priv->rx_ring) {
-		printk(KERN_WARNING "%s: failed to allocate RX ring (%d entries)\n",
-		       ca->name, ipoib_recvq_size);
-		goto out;
-	}
-
-	priv->tx_ring = vzalloc(ipoib_sendq_size * sizeof *priv->tx_ring);
-	if (!priv->tx_ring) {
-		printk(KERN_WARNING "%s: failed to allocate TX ring (%d entries)\n",
-		       ca->name, ipoib_sendq_size);
-		goto out_rx_ring_cleanup;
-	}
-
-	/* priv->tx_head, tx_tail & tx_outstanding are already 0 */
-
-	if (ipoib_ib_dev_init(dev, ca, port))
-		goto out_tx_ring_cleanup;
-=======
 static void neigh_hash_free_rcu(struct rcu_head *head)
 {
 	struct ipoib_neigh_hash *htbl = container_of(head,
@@ -2347,7 +1757,6 @@ static int ipoib_dev_init_default(struct net_device *dev)
 	addr_mod[1] = (priv->qp->qp_num >>  8) & 0xff;
 	addr_mod[2] = (priv->qp->qp_num) & 0xff;
 	dev_addr_mod(priv->dev, 1, addr_mod, sizeof(addr_mod));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -2358,31 +1767,6 @@ out_rx_ring_cleanup:
 	kfree(priv->rx_ring);
 
 out:
-<<<<<<< HEAD
-	return -ENOMEM;
-}
-
-void ipoib_dev_cleanup(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev), *cpriv, *tcpriv;
-
-	ipoib_delete_debug_files(dev);
-
-	/* Delete any child interfaces first */
-	list_for_each_entry_safe(cpriv, tcpriv, &priv->child_intfs, list) {
-		unregister_netdev(cpriv->dev);
-		ipoib_dev_cleanup(cpriv->dev);
-		free_netdev(cpriv->dev);
-	}
-
-	ipoib_ib_dev_cleanup(dev);
-
-	kfree(priv->rx_ring);
-	vfree(priv->tx_ring);
-
-	priv->rx_ring = NULL;
-	priv->tx_ring = NULL;
-=======
 	ipoib_napi_del(dev);
 	return -ENOMEM;
 }
@@ -2699,16 +2083,12 @@ static int ipoib_get_vf_stats(struct net_device *dev, int vf,
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 
 	return ib_get_vf_stats(priv->ca, vf, priv->port, vf_stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct header_ops ipoib_header_ops = {
 	.create	= ipoib_hard_header,
 };
 
-<<<<<<< HEAD
-static const struct net_device_ops ipoib_netdev_ops = {
-=======
 static const struct net_device_ops ipoib_netdev_ops_pf = {
 	.ndo_init		 = ipoib_ndo_init,
 	.ndo_uninit		 = ipoib_ndo_uninit,
@@ -2733,7 +2113,6 @@ static const struct net_device_ops ipoib_netdev_ops_pf = {
 static const struct net_device_ops ipoib_netdev_ops_vf = {
 	.ndo_init		 = ipoib_ndo_init,
 	.ndo_uninit		 = ipoib_ndo_uninit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_open		 = ipoib_open,
 	.ndo_stop		 = ipoib_stop,
 	.ndo_change_mtu		 = ipoib_change_mtu,
@@ -2741,27 +2120,6 @@ static const struct net_device_ops ipoib_netdev_ops_vf = {
 	.ndo_start_xmit	 	 = ipoib_start_xmit,
 	.ndo_tx_timeout		 = ipoib_timeout,
 	.ndo_set_rx_mode	 = ipoib_set_mcast_list,
-<<<<<<< HEAD
-	.ndo_neigh_setup	 = ipoib_neigh_setup_dev,
-};
-
-static void ipoib_setup(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	dev->netdev_ops		 = &ipoib_netdev_ops;
-	dev->header_ops		 = &ipoib_header_ops;
-
-	ipoib_set_ethtool_ops(dev);
-
-	netif_napi_add(dev, &priv->napi, ipoib_poll, 100);
-
-	dev->watchdog_timeo	 = HZ;
-
-	dev->flags		|= IFF_BROADCAST | IFF_MULTICAST;
-
-	dev->hard_header_len	 = IPOIB_ENCAP_LEN;
-=======
 	.ndo_get_iflink		 = ipoib_get_iflink,
 	.ndo_get_stats64	 = ipoib_get_stats,
 	.ndo_eth_ioctl		 = ipoib_ioctl,
@@ -2786,25 +2144,11 @@ void ipoib_setup_common(struct net_device *dev)
 	dev->flags		|= IFF_BROADCAST | IFF_MULTICAST;
 
 	dev->hard_header_len	 = IPOIB_HARD_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->addr_len		 = INFINIBAND_ALEN;
 	dev->type		 = ARPHRD_INFINIBAND;
 	dev->tx_queue_len	 = ipoib_sendq_size * 2;
 	dev->features		 = (NETIF_F_VLAN_CHALLENGED	|
 				    NETIF_F_HIGHDMA);
-<<<<<<< HEAD
-	dev->priv_flags		&= ~IFF_XMIT_DST_RELEASE;
-
-	memcpy(dev->broadcast, ipv4_bcast_addr, INFINIBAND_ALEN);
-
-	netif_carrier_off(dev);
-
-	priv->dev = dev;
-
-	spin_lock_init(&priv->lock);
-
-	mutex_init(&priv->vlan_mutex);
-=======
 	netif_keep_dst(dev);
 
 	memcpy(dev->broadcast, ipv4_bcast_addr, INFINIBAND_ALEN);
@@ -2825,66 +2169,19 @@ static void ipoib_build_priv(struct net_device *dev)
 	spin_lock_init(&priv->lock);
 	init_rwsem(&priv->vlan_rwsem);
 	mutex_init(&priv->mcast_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&priv->path_list);
 	INIT_LIST_HEAD(&priv->child_intfs);
 	INIT_LIST_HEAD(&priv->dead_ahs);
 	INIT_LIST_HEAD(&priv->multicast_list);
 
-<<<<<<< HEAD
-	INIT_DELAYED_WORK(&priv->pkey_poll_task, ipoib_pkey_poll);
-	INIT_DELAYED_WORK(&priv->mcast_task,   ipoib_mcast_join_task);
-	INIT_WORK(&priv->carrier_on_task, ipoib_mcast_carrier_on_task);
-=======
 	INIT_DELAYED_WORK(&priv->mcast_task,   ipoib_mcast_join_task);
 	INIT_WORK(&priv->carrier_on_task, ipoib_mcast_carrier_on_task);
 	INIT_WORK(&priv->reschedule_napi_work, ipoib_napi_schedule_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_WORK(&priv->flush_light,   ipoib_ib_dev_flush_light);
 	INIT_WORK(&priv->flush_normal,   ipoib_ib_dev_flush_normal);
 	INIT_WORK(&priv->flush_heavy,   ipoib_ib_dev_flush_heavy);
 	INIT_WORK(&priv->restart_task, ipoib_mcast_restart_task);
-<<<<<<< HEAD
-	INIT_DELAYED_WORK(&priv->ah_reap_task, ipoib_reap_ah);
-}
-
-struct ipoib_dev_priv *ipoib_intf_alloc(const char *name)
-{
-	struct net_device *dev;
-
-	dev = alloc_netdev((int) sizeof (struct ipoib_dev_priv), name,
-			   ipoib_setup);
-	if (!dev)
-		return NULL;
-
-	return netdev_priv(dev);
-}
-
-static ssize_t show_pkey(struct device *dev,
-			 struct device_attribute *attr, char *buf)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(to_net_dev(dev));
-
-	return sprintf(buf, "0x%04x\n", priv->pkey);
-}
-static DEVICE_ATTR(pkey, S_IRUGO, show_pkey, NULL);
-
-static ssize_t show_umcast(struct device *dev,
-			   struct device_attribute *attr, char *buf)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(to_net_dev(dev));
-
-	return sprintf(buf, "%d\n", test_bit(IPOIB_FLAG_UMCAST, &priv->flags));
-}
-
-static ssize_t set_umcast(struct device *dev,
-			  struct device_attribute *attr,
-			  const char *buf, size_t count)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(to_net_dev(dev));
-	unsigned long umcast_val = simple_strtoul(buf, NULL, 0);
-=======
 	INIT_WORK(&priv->tx_timeout_work, ipoib_ib_tx_timeout_work);
 	INIT_DELAYED_WORK(&priv->ah_reap_task, ipoib_reap_ah);
 	INIT_DELAYED_WORK(&priv->neigh_reap_task, ipoib_reap_neigh);
@@ -3034,7 +2331,6 @@ static ssize_t umcast_show(struct device *dev, struct device_attribute *attr,
 void ipoib_set_umcast(struct net_device *ndev, int umcast_val)
 {
 	struct ipoib_dev_priv *priv = ipoib_priv(ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (umcast_val > 0) {
 		set_bit(IPOIB_FLAG_UMCAST, &priv->flags);
@@ -3042,12 +2338,6 @@ void ipoib_set_umcast(struct net_device *ndev, int umcast_val)
 				"by userspace\n");
 	} else
 		clear_bit(IPOIB_FLAG_UMCAST, &priv->flags);
-<<<<<<< HEAD
-
-	return count;
-}
-static DEVICE_ATTR(umcast, S_IWUSR | S_IRUGO, show_umcast, set_umcast);
-=======
 }
 
 static ssize_t umcast_store(struct device *dev, struct device_attribute *attr,
@@ -3060,18 +2350,12 @@ static ssize_t umcast_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 static DEVICE_ATTR_RW(umcast);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ipoib_add_umcast_attr(struct net_device *dev)
 {
 	return device_create_file(&dev->dev, &dev_attr_umcast);
 }
 
-<<<<<<< HEAD
-static ssize_t create_child(struct device *dev,
-			    struct device_attribute *attr,
-			    const char *buf, size_t count)
-=======
 static void set_base_guid(struct ipoib_dev_priv *priv, union ib_gid *gid)
 {
 	struct ipoib_dev_priv *child_priv;
@@ -3139,7 +2423,6 @@ static int ipoib_set_mac(struct net_device *dev, void *addr)
 static ssize_t create_child_store(struct device *dev,
 				  struct device_attribute *attr,
 				  const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pkey;
 	int ret;
@@ -3147,38 +2430,18 @@ static ssize_t create_child_store(struct device *dev,
 	if (sscanf(buf, "%i", &pkey) != 1)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (pkey < 0 || pkey > 0xffff)
-		return -EINVAL;
-
-	/*
-	 * Set the full membership bit, so that we join the right
-	 * broadcast group, etc.
-	 */
-	pkey |= 0x8000;
-
-=======
 	if (pkey <= 0 || pkey > 0xffff || pkey == 0x8000)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ipoib_vlan_add(to_net_dev(dev), pkey);
 
 	return ret ? ret : count;
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(create_child, S_IWUSR, NULL, create_child);
-
-static ssize_t delete_child(struct device *dev,
-			    struct device_attribute *attr,
-			    const char *buf, size_t count)
-=======
 static DEVICE_ATTR_WO(create_child);
 
 static ssize_t delete_child_store(struct device *dev,
 				  struct device_attribute *attr,
 				  const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pkey;
 	int ret;
@@ -3194,168 +2457,13 @@ static ssize_t delete_child_store(struct device *dev,
 	return ret ? ret : count;
 
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(delete_child, S_IWUSR, NULL, delete_child);
-=======
 static DEVICE_ATTR_WO(delete_child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ipoib_add_pkey_attr(struct net_device *dev)
 {
 	return device_create_file(&dev->dev, &dev_attr_pkey);
 }
 
-<<<<<<< HEAD
-int ipoib_set_dev_features(struct ipoib_dev_priv *priv, struct ib_device *hca)
-{
-	struct ib_device_attr *device_attr;
-	int result = -ENOMEM;
-
-	device_attr = kmalloc(sizeof *device_attr, GFP_KERNEL);
-	if (!device_attr) {
-		printk(KERN_WARNING "%s: allocation of %zu bytes failed\n",
-		       hca->name, sizeof *device_attr);
-		return result;
-	}
-
-	result = ib_query_device(hca, device_attr);
-	if (result) {
-		printk(KERN_WARNING "%s: ib_query_device failed (ret = %d)\n",
-		       hca->name, result);
-		kfree(device_attr);
-		return result;
-	}
-	priv->hca_caps = device_attr->device_cap_flags;
-
-	kfree(device_attr);
-
-	if (priv->hca_caps & IB_DEVICE_UD_IP_CSUM) {
-		priv->dev->hw_features = NETIF_F_SG |
-			NETIF_F_IP_CSUM | NETIF_F_RXCSUM;
-
-		if (priv->hca_caps & IB_DEVICE_UD_TSO)
-			priv->dev->hw_features |= NETIF_F_TSO;
-
-		priv->dev->features |= priv->dev->hw_features;
-	}
-
-	return 0;
-}
-
-static struct net_device *ipoib_add_port(const char *format,
-					 struct ib_device *hca, u8 port)
-{
-	struct ipoib_dev_priv *priv;
-	struct ib_port_attr attr;
-	int result = -ENOMEM;
-
-	priv = ipoib_intf_alloc(format);
-	if (!priv)
-		goto alloc_mem_failed;
-
-	SET_NETDEV_DEV(priv->dev, hca->dma_device);
-	priv->dev->dev_id = port - 1;
-
-	if (!ib_query_port(hca, port, &attr))
-		priv->max_ib_mtu = ib_mtu_enum_to_int(attr.max_mtu);
-	else {
-		printk(KERN_WARNING "%s: ib_query_port %d failed\n",
-		       hca->name, port);
-		goto device_init_failed;
-	}
-
-	/* MTU will be reset when mcast join happens */
-	priv->dev->mtu  = IPOIB_UD_MTU(priv->max_ib_mtu);
-	priv->mcast_mtu  = priv->admin_mtu = priv->dev->mtu;
-
-	priv->dev->neigh_priv_len = sizeof(struct ipoib_neigh);
-
-	result = ib_query_pkey(hca, port, 0, &priv->pkey);
-	if (result) {
-		printk(KERN_WARNING "%s: ib_query_pkey port %d failed (ret = %d)\n",
-		       hca->name, port, result);
-		goto device_init_failed;
-	}
-
-	if (ipoib_set_dev_features(priv, hca))
-		goto device_init_failed;
-
-	/*
-	 * Set the full membership bit, so that we join the right
-	 * broadcast group, etc.
-	 */
-	priv->pkey |= 0x8000;
-
-	priv->dev->broadcast[8] = priv->pkey >> 8;
-	priv->dev->broadcast[9] = priv->pkey & 0xff;
-
-	result = ib_query_gid(hca, port, 0, &priv->local_gid);
-	if (result) {
-		printk(KERN_WARNING "%s: ib_query_gid port %d failed (ret = %d)\n",
-		       hca->name, port, result);
-		goto device_init_failed;
-	} else
-		memcpy(priv->dev->dev_addr + 4, priv->local_gid.raw, sizeof (union ib_gid));
-
-	result = ipoib_dev_init(priv->dev, hca, port);
-	if (result < 0) {
-		printk(KERN_WARNING "%s: failed to initialize port %d (ret = %d)\n",
-		       hca->name, port, result);
-		goto device_init_failed;
-	}
-
-	INIT_IB_EVENT_HANDLER(&priv->event_handler,
-			      priv->ca, ipoib_event);
-	result = ib_register_event_handler(&priv->event_handler);
-	if (result < 0) {
-		printk(KERN_WARNING "%s: ib_register_event_handler failed for "
-		       "port %d (ret = %d)\n",
-		       hca->name, port, result);
-		goto event_failed;
-	}
-
-	result = register_netdev(priv->dev);
-	if (result) {
-		printk(KERN_WARNING "%s: couldn't register ipoib port %d; error %d\n",
-		       hca->name, port, result);
-		goto register_failed;
-	}
-
-	ipoib_create_debug_files(priv->dev);
-
-	if (ipoib_cm_add_mode_attr(priv->dev))
-		goto sysfs_failed;
-	if (ipoib_add_pkey_attr(priv->dev))
-		goto sysfs_failed;
-	if (ipoib_add_umcast_attr(priv->dev))
-		goto sysfs_failed;
-	if (device_create_file(&priv->dev->dev, &dev_attr_create_child))
-		goto sysfs_failed;
-	if (device_create_file(&priv->dev->dev, &dev_attr_delete_child))
-		goto sysfs_failed;
-
-	return priv->dev;
-
-sysfs_failed:
-	ipoib_delete_debug_files(priv->dev);
-	unregister_netdev(priv->dev);
-
-register_failed:
-	ib_unregister_event_handler(&priv->event_handler);
-	flush_workqueue(ipoib_workqueue);
-
-event_failed:
-	ipoib_dev_cleanup(priv->dev);
-
-device_init_failed:
-	free_netdev(priv->dev);
-
-alloc_mem_failed:
-	return ERR_PTR(result);
-}
-
-static void ipoib_add_one(struct ib_device *device)
-=======
 /*
  * We erroneously exposed the iface's port number in the dev_id
  * sysfs field long after dev_port was introduced for that purpose[1],
@@ -3472,67 +2580,10 @@ sysfs_failed:
 }
 
 static int ipoib_add_one(struct ib_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *dev_list;
 	struct net_device *dev;
 	struct ipoib_dev_priv *priv;
-<<<<<<< HEAD
-	int s, e, p;
-
-	if (rdma_node_get_transport(device->node_type) != RDMA_TRANSPORT_IB)
-		return;
-
-	dev_list = kmalloc(sizeof *dev_list, GFP_KERNEL);
-	if (!dev_list)
-		return;
-
-	INIT_LIST_HEAD(dev_list);
-
-	if (device->node_type == RDMA_NODE_IB_SWITCH) {
-		s = 0;
-		e = 0;
-	} else {
-		s = 1;
-		e = device->phys_port_cnt;
-	}
-
-	for (p = s; p <= e; ++p) {
-		if (rdma_port_get_link_layer(device, p) != IB_LINK_LAYER_INFINIBAND)
-			continue;
-		dev = ipoib_add_port("ib%d", device, p);
-		if (!IS_ERR(dev)) {
-			priv = netdev_priv(dev);
-			list_add_tail(&priv->list, dev_list);
-		}
-	}
-
-	ib_set_client_data(device, &ipoib_client, dev_list);
-}
-
-static void ipoib_remove_one(struct ib_device *device)
-{
-	struct ipoib_dev_priv *priv, *tmp;
-	struct list_head *dev_list;
-
-	if (rdma_node_get_transport(device->node_type) != RDMA_TRANSPORT_IB)
-		return;
-
-	dev_list = ib_get_client_data(device, &ipoib_client);
-
-	list_for_each_entry_safe(priv, tmp, dev_list, list) {
-		ib_unregister_event_handler(&priv->event_handler);
-
-		rtnl_lock();
-		dev_change_flags(priv->dev, priv->dev->flags & ~IFF_UP);
-		rtnl_unlock();
-
-		flush_workqueue(ipoib_workqueue);
-
-		unregister_netdev(priv->dev);
-		ipoib_dev_cleanup(priv->dev);
-		free_netdev(priv->dev);
-=======
 	unsigned int p;
 	int count = 0;
 
@@ -3580,21 +2631,17 @@ static void ipoib_remove_one(struct ib_device *device, void *client_data)
 		unregister_netdevice_many(&head);
 
 		rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(dev_list);
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_IPOIB_DEBUG
 static struct notifier_block ipoib_netdev_notifier = {
 	.notifier_call = ipoib_netdev_event,
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init ipoib_init_module(void)
 {
 	int ret;
@@ -3608,10 +2655,7 @@ static int __init ipoib_init_module(void)
 	ipoib_sendq_size = max3(ipoib_sendq_size, 2 * MAX_SEND_CQE, IPOIB_MIN_QUEUE_SIZE);
 #ifdef CONFIG_INFINIBAND_IPOIB_CM
 	ipoib_max_conn_qp = min(ipoib_max_conn_qp, IPOIB_CM_MAX_CONN_QP);
-<<<<<<< HEAD
-=======
 	ipoib_max_conn_qp = max(ipoib_max_conn_qp, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/*
@@ -3620,21 +2664,6 @@ static int __init ipoib_init_module(void)
 	 */
 	BUILD_BUG_ON(IPOIB_CM_COPYBREAK > IPOIB_CM_HEAD_SIZE);
 
-<<<<<<< HEAD
-	ret = ipoib_register_debugfs();
-	if (ret)
-		return ret;
-
-	/*
-	 * We create our own workqueue mainly because we want to be
-	 * able to flush it when devices are being removed.  We can't
-	 * use schedule_work()/flush_scheduled_work() because both
-	 * unregister_netdev() and linkwatch_event take the rtnl lock,
-	 * so flush_scheduled_work() can deadlock during device
-	 * removal.
-	 */
-	ipoib_workqueue = create_singlethread_workqueue("ipoib");
-=======
 	ipoib_register_debugfs();
 
 	/*
@@ -3648,7 +2677,6 @@ static int __init ipoib_init_module(void)
 	 * on our global flush workqueue.  This avoids the deadlocks.
 	 */
 	ipoib_workqueue = alloc_ordered_workqueue("ipoib_flush", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ipoib_workqueue) {
 		ret = -ENOMEM;
 		goto err_fs;
@@ -3660,10 +2688,6 @@ static int __init ipoib_init_module(void)
 	if (ret)
 		goto err_sa;
 
-<<<<<<< HEAD
-	return 0;
-
-=======
 	ret = ipoib_netlink_init();
 	if (ret)
 		goto err_client;
@@ -3676,7 +2700,6 @@ static int __init ipoib_init_module(void)
 err_client:
 	ib_unregister_client(&ipoib_client);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_sa:
 	ib_sa_unregister_client(&ipoib_sa_client);
 	destroy_workqueue(ipoib_workqueue);
@@ -3689,13 +2712,10 @@ err_fs:
 
 static void __exit ipoib_cleanup_module(void)
 {
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_INFINIBAND_IPOIB_DEBUG
 	unregister_netdevice_notifier(&ipoib_netdev_notifier);
 #endif
 	ipoib_netlink_fini();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ib_unregister_client(&ipoib_client);
 	ib_sa_unregister_client(&ipoib_sa_client);
 	ipoib_unregister_debugfs();

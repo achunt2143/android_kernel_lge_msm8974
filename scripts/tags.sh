@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-#!/bin/sh
-# Generate tags or cscope files
-# Usage tags.sh <mode>
-#
-# mode may be any of: tags, TAGS, cscope
-#
-# Uses the following environment variables:
-# ARCH, SUBARCH, SRCARCH, srctree, src, obj
-
-if [ "$KBUILD_VERBOSE" = "1" ]; then
-	set -x
-fi
-
-# This is a duplicate of RCS_FIND_IGNORE without escaped '()'
-ignore="( -name SCCS -o -name BitKeeper -o -name .svn -o \
-          -name CVS  -o -name .pc       -o -name .hg  -o \
-          -name .git )                                   \
-          -prune -o"
-
-# Do not use full path if we do not use O=.. builds
-# Use make O=. {tags|cscope}
-# to force full paths for a non-O= build
-if [ "${KBUILD_SRC}" = "" ]; then
-=======
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-only
 # Generate tags or cscope files
@@ -52,46 +27,22 @@ fi
 # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
 # to force full paths for a non-O= build
 if [ "${srctree}" = "." -o -z "${srctree}" ]; then
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tree=
 else
 	tree=${srctree}/
 fi
 
-<<<<<<< HEAD
-# Find all available archs
-find_all_archs()
-{
-	ALLSOURCE_ARCHS=""
-	for arch in `ls ${tree}arch`; do
-		ALLSOURCE_ARCHS="${ALLSOURCE_ARCHS} "${arch##\/}
-	done
-}
-=======
 # gtags(1) refuses to index any file outside of its current working dir.
 # If gtags indexing is requested and the build output directory is not
 # the kernel source tree, index all files in absolute-path form.
 if [[ "$1" == "gtags" && -n "${tree}" ]]; then
 	tree=$(realpath "$tree")/
 fi
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Detect if ALLSOURCE_ARCHS is set. If not, we assume SRCARCH
 if [ "${ALLSOURCE_ARCHS}" = "" ]; then
 	ALLSOURCE_ARCHS=${SRCARCH}
 elif [ "${ALLSOURCE_ARCHS}" = "all" ]; then
-<<<<<<< HEAD
-	find_all_archs
-fi
-
-# find sources in arch/$ARCH
-find_arch_sources()
-{
-	for i in $archincludedir; do
-		prune="$prune -wholename $i -prune -o"
-	done
-	find ${tree}arch/$1 $ignore $subarchprune $prune -name "$2" -print;
-=======
 	ALLSOURCE_ARCHS=$(find ${tree}arch/ -mindepth 1 -maxdepth 1 -type d -printf '%f ')
 fi
 
@@ -102,36 +53,23 @@ find_arch_sources()
 		local prune="$prune ( -path $i ) -prune -o"
 	done
 	find ${tree}arch/$1 $ignore $prune -name "$2" -not -type l -print;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 # find sources in arch/$1/include
 find_arch_include_sources()
 {
-<<<<<<< HEAD
-	include=$(find ${tree}arch/$1/ $subarchprune \
-					-name include -type d -print);
-	if [ -n "$include" ]; then
-		archincludedir="$archincludedir $include"
-		find $include $ignore -name "$2" -print;
-=======
 	local include=$(find ${tree}arch/$1/ -name include -type d -print);
 	if [ -n "$include" ]; then
 		archincludedir="$archincludedir $include"
 		find $include $ignore -name "$2" -not -type l -print;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fi
 }
 
 # find sources in include/
 find_include_sources()
 {
-<<<<<<< HEAD
-	find ${tree}include $ignore -name config -prune -o -name "$1" -print;
-=======
 	find ${tree}include $ignore -name config -prune -o -name "$1" \
 		-not -type l -print;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 # find sources in rest of tree
@@ -139,59 +77,26 @@ find_include_sources()
 find_other_sources()
 {
 	find ${tree}* $ignore \
-<<<<<<< HEAD
-	     \( -name include -o -name arch -o -name '.tmp_*' \) -prune -o \
-	       -name "$1" -print;
-}
-
-find_sources()
-{
-	find_arch_sources $1 "$2"
-=======
 	     \( -path ${tree}include -o -path ${tree}arch -o -name '.tmp_*' \) -prune -o \
 	       -name "$1" -not -type l -print;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 all_sources()
 {
 	find_arch_include_sources ${SRCARCH} '*.[chS]'
-<<<<<<< HEAD
-	if [ ! -z "$archinclude" ]; then
-=======
 	if [ -n "$archinclude" ]; then
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		find_arch_include_sources $archinclude '*.[chS]'
 	fi
 	find_include_sources '*.[chS]'
 	for arch in $ALLSOURCE_ARCHS
 	do
-<<<<<<< HEAD
-		find_sources $arch '*.[chS]'
-=======
 		find_arch_sources $arch '*.[chS]'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	done
 	find_other_sources '*.[chS]'
 }
 
 all_compiled_sources()
 {
-<<<<<<< HEAD
-	for i in $(all_sources); do
-		case "$i" in
-			*.[cS])
-				j=${i/\.[cS]/\.o}
-				if [ -e $j ]; then
-					echo $i
-				fi
-				;;
-			*)
-				echo $i
-				;;
-		esac
-	done
-=======
 	{
 		echo include/generated/autoconf.h
 		find $ignore -name "*.cmd" -exec \
@@ -199,7 +104,6 @@ all_compiled_sources()
 		awk '!a[$0]++'
 	} | xargs realpath -esq $([ -z "$KBUILD_ABS_SRCTREE" ] && echo --relative-to=.) |
 	sort -u
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 all_target_sources()
@@ -213,27 +117,14 @@ all_target_sources()
 
 all_kconfigs()
 {
-<<<<<<< HEAD
-	for arch in $ALLSOURCE_ARCHS; do
-		find_sources $arch 'Kconfig*'
-=======
 	find ${tree}arch/ -maxdepth 1 $ignore \
 	       -name "Kconfig*" -not -type l -print;
 	for arch in $ALLSOURCE_ARCHS; do
 		find_arch_sources $arch 'Kconfig*'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	done
 	find_other_sources 'Kconfig*'
 }
 
-<<<<<<< HEAD
-all_defconfigs()
-{
-	find_sources $ALLSOURCE_ARCHS "defconfig"
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 docscope()
 {
 	(echo \-k; echo \-q; all_target_sources) > cscope.files
@@ -242,9 +133,6 @@ docscope()
 
 dogtags()
 {
-<<<<<<< HEAD
-	all_target_sources | gtags -i -f -
-=======
 	all_target_sources | gtags -i -C "${tree:-.}" -f - "$PWD"
 }
 
@@ -360,66 +248,10 @@ setup_regex()
 			fi
 		done
 	done
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 exuberant()
 {
-<<<<<<< HEAD
-	all_target_sources | xargs $1 -a                        \
-	-I __initdata,__exitdata,__initconst,__devinitdata	\
-	-I __devinitconst,__cpuinitdata,__initdata_memblock	\
-	-I __refdata,__attribute				\
-	-I __acquires,__releases,__deprecated			\
-	-I __read_mostly,__aligned,____cacheline_aligned        \
-	-I ____cacheline_aligned_in_smp                         \
-	-I ____cacheline_internodealigned_in_smp                \
-	-I __used,__packed,__packed2__,__must_check,__must_hold	\
-	-I EXPORT_SYMBOL,EXPORT_SYMBOL_GPL                      \
-	-I DEFINE_TRACE,EXPORT_TRACEPOINT_SYMBOL,EXPORT_TRACEPOINT_SYMBOL_GPL \
-	-I static,const						\
-	--extra=+f --c-kinds=+px                                \
-	--regex-asm='/^(ENTRY|_GLOBAL)\(([^)]*)\).*/\2/'        \
-	--regex-c='/^SYSCALL_DEFINE[[:digit:]]?\(([^,)]*).*/sys_\1/' \
-	--regex-c++='/^TRACE_EVENT\(([^,)]*).*/trace_\1/'		\
-	--regex-c++='/^DEFINE_EVENT\([^,)]*, *([^,)]*).*/trace_\1/'	\
-	--regex-c++='/PAGEFLAG\(([^,)]*).*/Page\1/'			\
-	--regex-c++='/PAGEFLAG\(([^,)]*).*/SetPage\1/'			\
-	--regex-c++='/PAGEFLAG\(([^,)]*).*/ClearPage\1/'		\
-	--regex-c++='/TESTSETFLAG\(([^,)]*).*/TestSetPage\1/'		\
-	--regex-c++='/TESTPAGEFLAG\(([^,)]*).*/Page\1/'			\
-	--regex-c++='/SETPAGEFLAG\(([^,)]*).*/SetPage\1/'		\
-	--regex-c++='/__SETPAGEFLAG\(([^,)]*).*/__SetPage\1/'		\
-	--regex-c++='/TESTCLEARFLAG\(([^,)]*).*/TestClearPage\1/'	\
-	--regex-c++='/__TESTCLEARFLAG\(([^,)]*).*/TestClearPage\1/'	\
-	--regex-c++='/CLEARPAGEFLAG\(([^,)]*).*/ClearPage\1/'		\
-	--regex-c++='/__CLEARPAGEFLAG\(([^,)]*).*/__ClearPage\1/'	\
-	--regex-c++='/__PAGEFLAG\(([^,)]*).*/__SetPage\1/'		\
-	--regex-c++='/__PAGEFLAG\(([^,)]*).*/__ClearPage\1/'		\
-	--regex-c++='/PAGEFLAG_FALSE\(([^,)]*).*/Page\1/'		\
-	--regex-c++='/TESTSCFLAG\(([^,)]*).*/TestSetPage\1/'		\
-	--regex-c++='/TESTSCFLAG\(([^,)]*).*/TestClearPage\1/'		\
-	--regex-c++='/SETPAGEFLAG_NOOP\(([^,)]*).*/SetPage\1/'		\
-	--regex-c++='/CLEARPAGEFLAG_NOOP\(([^,)]*).*/ClearPage\1/'	\
-	--regex-c++='/__CLEARPAGEFLAG_NOOP\(([^,)]*).*/__ClearPage\1/'	\
-	--regex-c++='/TESTCLEARFLAG_FALSE\(([^,)]*).*/TestClearPage\1/' \
-	--regex-c++='/__TESTCLEARFLAG_FALSE\(([^,)]*).*/__TestClearPage\1/'\
-	--regex-c++='/TASK_PFA_TEST\([^,]*,\s*([^)]*)\)/task_\1/'	\
-	--regex-c++='/TASK_PFA_SET\([^,]*,\s*([^)]*)\)/task_set_\1/'	\
-	--regex-c++='/TASK_PFA_CLEAR\([^,]*,\s*([^)]*)\)/task_clear_\1/'
-
-	all_kconfigs | xargs $1 -a                              \
-	--langdef=kconfig --language-force=kconfig              \
-	--regex-kconfig='/^[[:blank:]]*(menu|)config[[:blank:]]+([[:alnum:]_]+)/\2/'
-
-	all_kconfigs | xargs $1 -a                              \
-	--langdef=kconfig --language-force=kconfig              \
-	--regex-kconfig='/^[[:blank:]]*(menu|)config[[:blank:]]+([[:alnum:]_]+)/CONFIG_\2/'
-
-	all_defconfigs | xargs -r $1 -a                         \
-	--langdef=dotconfig --language-force=dotconfig          \
-	--regex-dotconfig='/^#?[[:blank:]]*(CONFIG_[[:alnum:]_]+)/\1/'
-=======
 	CTAGS_EXTRA="extra"
 	if $1 --version 2>&1 | grep -iq universal; then
 	    CTAGS_EXTRA="extras"
@@ -447,57 +279,15 @@ exuberant()
 		KCONFIG_ARGS=(--langdef=kconfig --language-force=kconfig "${regex[@]}")
 	fi
 	all_kconfigs | xargs $1 -a "${KCONFIG_ARGS[@]}"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 emacs()
 {
-<<<<<<< HEAD
-	all_target_sources | xargs $1 -a                        \
-	--regex='/^\(ENTRY\|_GLOBAL\)(\([^)]*\)).*/\2/'         \
-	--regex='/^SYSCALL_DEFINE[0-9]?(\([^,)]*\).*/sys_\1/'   \
-	--regex='/^TRACE_EVENT(\([^,)]*\).*/trace_\1/'		\
-	--regex='/^DEFINE_EVENT([^,)]*, *\([^,)]*\).*/trace_\1/' \
-	--regex='/PAGEFLAG\(([^,)]*).*/Page\1/'			\
-	--regex='/PAGEFLAG\(([^,)]*).*/SetPage\1/'		\
-	--regex='/PAGEFLAG\(([^,)]*).*/ClearPage\1/'		\
-	--regex='/TESTSETFLAG\(([^,)]*).*/TestSetPage\1/'	\
-	--regex='/TESTPAGEFLAG\(([^,)]*).*/Page\1/'		\
-	--regex='/SETPAGEFLAG\(([^,)]*).*/SetPage\1/'		\
-	--regex='/__SETPAGEFLAG\(([^,)]*).*/__SetPage\1/'	\
-	--regex='/TESTCLEARFLAG\(([^,)]*).*/TestClearPage\1/'	\
-	--regex='/__TESTCLEARFLAG\(([^,)]*).*/TestClearPage\1/'	\
-	--regex='/CLEARPAGEFLAG\(([^,)]*).*/ClearPage\1/'	\
-	--regex='/__CLEARPAGEFLAG\(([^,)]*).*/__ClearPage\1/'	\
-	--regex='/__PAGEFLAG\(([^,)]*).*/__SetPage\1/'		\
-	--regex='/__PAGEFLAG\(([^,)]*).*/__ClearPage\1/'	\
-	--regex='/PAGEFLAG_FALSE\(([^,)]*).*/Page\1/'		\
-	--regex='/TESTSCFLAG\(([^,)]*).*/TestSetPage\1/'	\
-	--regex='/TESTSCFLAG\(([^,)]*).*/TestClearPage\1/'	\
-	--regex='/SETPAGEFLAG_NOOP\(([^,)]*).*/SetPage\1/'	\
-	--regex='/CLEARPAGEFLAG_NOOP\(([^,)]*).*/ClearPage\1/'	\
-	--regex='/__CLEARPAGEFLAG_NOOP\(([^,)]*).*/__ClearPage\1/' \
-	--regex='/TESTCLEARFLAG_FALSE\(([^,)]*).*/TestClearPage\1/' \
-	--regex='/__TESTCLEARFLAG_FALSE\(([^,)]*).*/__TestClearPage\1/'\
-	--regex='/TASK_PFA_TEST\([^,]*,\s*([^)]*)\)/task_\1/'		\
-	--regex='/TASK_PFA_SET\([^,]*,\s*([^)]*)\)/task_set_\1/'	\
-	--regex='/TASK_PFA_CLEAR\([^,]*,\s*([^)]*)\)/task_clear_\1/'
-
-	all_kconfigs | xargs $1 -a                              \
-	--regex='/^[ \t]*\(\(menu\)*config\)[ \t]+\([a-zA-Z0-9_]+\)/\3/'
-
-	all_kconfigs | xargs $1 -a                              \
-	--regex='/^[ \t]*\(\(menu\)*config\)[ \t]+\([a-zA-Z0-9_]+\)/CONFIG_\3/'
-
-	all_defconfigs | xargs -r $1 -a                         \
-	--regex='/^#?[ \t]?\(CONFIG_[a-zA-Z0-9_]+\)/\1/'
-=======
 	setup_regex emacs asm c
 	all_target_sources | xargs $1 -a "${regex[@]}"
 
 	setup_regex emacs kconfig
 	all_kconfigs | xargs $1 -a "${regex[@]}"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 xtags()
@@ -508,11 +298,7 @@ xtags()
 		emacs $1
 	else
 		all_target_sources | xargs $1 -a
-<<<<<<< HEAD
-        fi
-=======
 	fi
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 # Support um (which uses SUBARCH)
@@ -524,24 +310,6 @@ if [ "${ARCH}" = "um" ]; then
 	else
 		archinclude=${SUBARCH}
 	fi
-<<<<<<< HEAD
-elif [ "${SRCARCH}" = "arm" -a "${SUBARCH}" != "" ]; then
-	subarchdir=$(find ${tree}arch/$SRCARCH/ -name "mach-*" -type d -o \
-							-name "plat-*" -type d);
-	for i in $subarchdir; do
-		case "$i" in
-			*"mach-"${SUBARCH})
-				;;
-			*"plat-"${SUBARCH})
-				;;
-			*)
-				subarchprune="$subarchprune \
-						-wholename $i -prune -o"
-				;;
-		esac
-	done
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fi
 
 remove_structs=
@@ -569,9 +337,5 @@ esac
 
 # Remove structure forward declarations.
 if [ -n "$remove_structs" ]; then
-<<<<<<< HEAD
-    LANG=C sed -i -e '/^\([a-zA-Z_][a-zA-Z0-9_]*\)\t.*\t\/\^struct \1;.*\$\/;"\tx$/d' $1
-=======
     LC_ALL=C sed -i -e '/^\([a-zA-Z_][a-zA-Z0-9_]*\)\t.*\t\/\^struct \1;.*\$\/;"\tx$/d' $1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fi

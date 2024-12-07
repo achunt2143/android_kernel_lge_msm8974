@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config HVC_DRIVER
 	bool
 	help
 	  Generic "hypervisor virtual console" infrastructure for various
-<<<<<<< HEAD
-	  hypervisors (pSeries, iSeries, Xen, lguest).
-=======
 	  hypervisors (pSeries, iSeries, Xen).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  It will automatically be selected if one of the back-end console drivers
 	  is selected.
 
@@ -31,10 +24,6 @@ config HVC_CONSOLE
 config HVC_OLD_HVSI
 	bool "Old driver for pSeries serial port (/dev/hvsi*)"
 	depends on HVC_CONSOLE
-<<<<<<< HEAD
-	default n
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HVC_OPAL
 	bool "OPAL Console support"
@@ -52,22 +41,9 @@ config HVC_RTAS
 	help
 	  IBM Console device driver which makes use of RTAS
 
-<<<<<<< HEAD
-config HVC_BEAT
-	bool "Toshiba's Beat Hypervisor Console support"
-	depends on PPC_CELLEB
-	select HVC_DRIVER
-	help
-	  Toshiba's Cell Reference Set Beat Console device driver
-
-config HVC_IUCV
-	bool "z/VM IUCV Hypervisor console support (VM only)"
-	depends on S390
-=======
 config HVC_IUCV
 	bool "z/VM IUCV Hypervisor console support (VM only)"
 	depends on S390 && NET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select HVC_DRIVER
 	select IUCV
 	default y
@@ -93,34 +69,6 @@ config HVC_XEN_FRONTEND
 	  Xen driver for secondary virtual consoles
 
 config HVC_UDBG
-<<<<<<< HEAD
-       bool "udbg based fake hypervisor console"
-       depends on PPC && EXPERIMENTAL
-       select HVC_DRIVER
-       default n
-       help
-         This is meant to be used during HW bring up or debugging when
-	 no other console mechanism exist but udbg, to get you a quick
-	 console for userspace. Do NOT enable in production kernels. 
-
-config HVC_DCC
-       bool "ARM JTAG DCC console"
-       depends on ARM
-       select HVC_DRIVER
-       help
-         This console uses the JTAG DCC on ARM to create a console under the HVC
-	 driver. This console is used through a JTAG only on ARM. If you don't have
-	 a JTAG then you probably don't want this option.
-
-config HVC_BFIN_JTAG
-	bool "Blackfin JTAG console"
-	depends on BLACKFIN
-	select HVC_DRIVER
-	help
-	 This console uses the Blackfin JTAG to create a console under the
-	 the HVC driver.  If you don't have JTAG, then you probably don't
-	 want this option.
-=======
 	bool "udbg based fake hypervisor console"
 	depends on PPC
 	select HVC_DRIVER
@@ -169,7 +117,6 @@ config HVC_RISCV_SBI
 	  systems that directly access the console.
 
 	  If you don't know what do to here, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HVCS
 	tristate "IBM Hypervisor Virtual Console Server support"
@@ -187,7 +134,3 @@ config HVCS
 	  will depend on arch specific APIs exported from hvcserver.ko
 	  which will also be compiled when this driver is built as a
 	  module.
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

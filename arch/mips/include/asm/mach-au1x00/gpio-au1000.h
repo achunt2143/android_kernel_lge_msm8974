@@ -12,43 +12,19 @@
 #include <asm/mach-au1x00/au1000.h>
 
 /* The default GPIO numberspace as documented in the Alchemy manuals.
-<<<<<<< HEAD
- * GPIO0-31 from GPIO1 block,   GPIO200-215 from GPIO2 block.
-=======
  * GPIO0-31 from GPIO1 block,	GPIO200-215 from GPIO2 block.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ALCHEMY_GPIO1_BASE	0
 #define ALCHEMY_GPIO2_BASE	200
 
 #define ALCHEMY_GPIO1_NUM	32
 #define ALCHEMY_GPIO2_NUM	16
-<<<<<<< HEAD
-#define ALCHEMY_GPIO1_MAX 	(ALCHEMY_GPIO1_BASE + ALCHEMY_GPIO1_NUM - 1)
-=======
 #define ALCHEMY_GPIO1_MAX	(ALCHEMY_GPIO1_BASE + ALCHEMY_GPIO1_NUM - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ALCHEMY_GPIO2_MAX	(ALCHEMY_GPIO2_BASE + ALCHEMY_GPIO2_NUM - 1)
 
 #define MAKE_IRQ(intc, off)	(AU1000_INTC##intc##_INT_BASE + (off))
 
 /* GPIO1 registers within SYS_ area */
-<<<<<<< HEAD
-#define SYS_TRIOUTRD		0x100
-#define SYS_TRIOUTCLR		0x100
-#define SYS_OUTPUTRD		0x108
-#define SYS_OUTPUTSET		0x108
-#define SYS_OUTPUTCLR		0x10C
-#define SYS_PINSTATERD		0x110
-#define SYS_PININPUTEN		0x110
-
-/* register offsets within GPIO2 block */
-#define GPIO2_DIR		0x00
-#define GPIO2_OUTPUT		0x08
-#define GPIO2_PINSTATE		0x0C
-#define GPIO2_INTENABLE		0x10
-#define GPIO2_ENABLE		0x14
-=======
 #define AU1000_SYS_TRIOUTRD	0x100
 #define AU1000_SYS_TRIOUTCLR	0x100
 #define AU1000_SYS_OUTPUTRD	0x108
@@ -63,7 +39,6 @@
 #define AU1000_GPIO2_PINSTATE	0x0C
 #define AU1000_GPIO2_INTENABLE	0x10
 #define AU1000_GPIO2_ENABLE	0x14
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gpio;
 
@@ -92,11 +67,7 @@ static inline int au1500_gpio1_to_irq(int gpio)
 	switch (gpio) {
 	case 0 ... 15:
 	case 20:
-<<<<<<< HEAD
-	case 23 ... 28:	return MAKE_IRQ(1, gpio);
-=======
 	case 23 ... 28: return MAKE_IRQ(1, gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENXIO;
@@ -168,13 +139,8 @@ static inline int au1550_gpio1_to_irq(int gpio)
 
 	switch (gpio) {
 	case 0 ... 15:
-<<<<<<< HEAD
-	case 20 ... 28:	return MAKE_IRQ(1, gpio);
-	case 16 ... 17:	return MAKE_IRQ(1, 18 + gpio - 16);
-=======
 	case 20 ... 28: return MAKE_IRQ(1, gpio);
 	case 16 ... 17: return MAKE_IRQ(1, 18 + gpio - 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENXIO;
@@ -186,15 +152,9 @@ static inline int au1550_gpio2_to_irq(int gpio)
 
 	switch (gpio) {
 	case 0:		return MAKE_IRQ(1, 16);
-<<<<<<< HEAD
-	case 1 ... 5:	return MAKE_IRQ(1, 17);	/* shared GPIO201_205 */
-	case 6 ... 7:	return MAKE_IRQ(1, 29 + gpio - 6);
-	case 8 ... 15:	return MAKE_IRQ(1, 31);	/* shared GPIO208_215 */
-=======
 	case 1 ... 5:	return MAKE_IRQ(1, 17); /* shared GPIO201_205 */
 	case 6 ... 7:	return MAKE_IRQ(1, 29 + gpio - 6);
 	case 8 ... 15:	return MAKE_IRQ(1, 31); /* shared GPIO208_215 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENXIO;
@@ -230,11 +190,7 @@ static inline int au1200_gpio2_to_irq(int gpio)
 	case 0 ... 2:	return MAKE_IRQ(0, 5 + gpio - 0);
 	case 3:		return MAKE_IRQ(0, 22);
 	case 4 ... 7:	return MAKE_IRQ(0, 24 + gpio - 4);
-<<<<<<< HEAD
-	case 8 ... 15:	return MAKE_IRQ(0, 28);	/* shared GPIO208_215 */
-=======
 	case 8 ... 15:	return MAKE_IRQ(0, 28); /* shared GPIO208_215 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENXIO;
@@ -261,42 +217,21 @@ static inline int au1200_irq_to_gpio(int irq)
  */
 static inline void alchemy_gpio1_set_value(int gpio, int v)
 {
-<<<<<<< HEAD
-	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1000_SYS_PHYS_ADDR);
-	unsigned long mask = 1 << (gpio - ALCHEMY_GPIO1_BASE);
-	unsigned long r = v ? SYS_OUTPUTSET : SYS_OUTPUTCLR;
-	__raw_writel(mask, base + r);
-	wmb();
-=======
 	unsigned long mask = 1 << (gpio - ALCHEMY_GPIO1_BASE);
 	unsigned long r = v ? AU1000_SYS_OUTPUTSET : AU1000_SYS_OUTPUTCLR;
 	alchemy_wrsys(mask, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int alchemy_gpio1_get_value(int gpio)
 {
-<<<<<<< HEAD
-	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1000_SYS_PHYS_ADDR);
-	unsigned long mask = 1 << (gpio - ALCHEMY_GPIO1_BASE);
-	return __raw_readl(base + SYS_PINSTATERD) & mask;
-=======
 	unsigned long mask = 1 << (gpio - ALCHEMY_GPIO1_BASE);
 	return alchemy_rdsys(AU1000_SYS_PINSTATERD) & mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int alchemy_gpio1_direction_input(int gpio)
 {
-<<<<<<< HEAD
-	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1000_SYS_PHYS_ADDR);
-	unsigned long mask = 1 << (gpio - ALCHEMY_GPIO1_BASE);
-	__raw_writel(mask, base + SYS_TRIOUTCLR);
-	wmb();
-=======
 	unsigned long mask = 1 << (gpio - ALCHEMY_GPIO1_BASE);
 	alchemy_wrsys(mask, AU1000_SYS_TRIOUTCLR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -331,8 +266,6 @@ static inline int alchemy_gpio1_to_irq(int gpio)
 	return -ENXIO;
 }
 
-<<<<<<< HEAD
-=======
 /* On Au1000, Au1500 and Au1100 GPIOs won't work as inputs before
  * SYS_PININPUTEN is written to at least once.  On Au1550/Au1200/Au1300 this
  * register enables use of GPIOs as wake source.
@@ -344,7 +277,6 @@ static inline void alchemy_gpio1_input_enable(void)
 	wmb();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GPIO2 block macros for common linux GPIO functions. The 'gpio'
  * parameter must be in range of ALCHEMY_GPIO2_BASE..ALCHEMY_GPIO2_MAX.
@@ -353,21 +285,13 @@ static inline void __alchemy_gpio2_mod_dir(int gpio, int to_out)
 {
 	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1500_GPIO2_PHYS_ADDR);
 	unsigned long mask = 1 << (gpio - ALCHEMY_GPIO2_BASE);
-<<<<<<< HEAD
-	unsigned long d = __raw_readl(base + GPIO2_DIR);
-=======
 	unsigned long d = __raw_readl(base + AU1000_GPIO2_DIR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (to_out)
 		d |= mask;
 	else
 		d &= ~mask;
-<<<<<<< HEAD
-	__raw_writel(d, base + GPIO2_DIR);
-=======
 	__raw_writel(d, base + AU1000_GPIO2_DIR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 }
 
@@ -376,23 +300,15 @@ static inline void alchemy_gpio2_set_value(int gpio, int v)
 	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1500_GPIO2_PHYS_ADDR);
 	unsigned long mask;
 	mask = ((v) ? 0x00010001 : 0x00010000) << (gpio - ALCHEMY_GPIO2_BASE);
-<<<<<<< HEAD
-	__raw_writel(mask, base + GPIO2_OUTPUT);
-=======
 	__raw_writel(mask, base + AU1000_GPIO2_OUTPUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 }
 
 static inline int alchemy_gpio2_get_value(int gpio)
 {
 	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1500_GPIO2_PHYS_ADDR);
-<<<<<<< HEAD
-	return __raw_readl(base + GPIO2_PINSTATE) & (1 << (gpio - ALCHEMY_GPIO2_BASE));
-=======
 	return __raw_readl(base + AU1000_GPIO2_PINSTATE) &
 				(1 << (gpio - ALCHEMY_GPIO2_BASE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int alchemy_gpio2_direction_input(int gpio)
@@ -443,20 +359,12 @@ static inline int alchemy_gpio2_to_irq(int gpio)
 static inline void __alchemy_gpio2_mod_int(int gpio2, int en)
 {
 	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1500_GPIO2_PHYS_ADDR);
-<<<<<<< HEAD
-	unsigned long r = __raw_readl(base + GPIO2_INTENABLE);
-=======
 	unsigned long r = __raw_readl(base + AU1000_GPIO2_INTENABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (en)
 		r |= 1 << gpio2;
 	else
 		r &= ~(1 << gpio2);
-<<<<<<< HEAD
-	__raw_writel(r, base + GPIO2_INTENABLE);
-=======
 	__raw_writel(r, base + AU1000_GPIO2_INTENABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 }
 
@@ -527,25 +435,15 @@ static inline void alchemy_gpio2_disable_int(int gpio2)
 /**
  * alchemy_gpio2_enable -  Activate GPIO2 block.
  *
-<<<<<<< HEAD
- * The GPIO2 block must be enabled excplicitly to work.  On systems
-=======
  * The GPIO2 block must be enabled explicitly to work.	 On systems
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * where this isn't done by the bootloader, this macro can be used.
  */
 static inline void alchemy_gpio2_enable(void)
 {
 	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1500_GPIO2_PHYS_ADDR);
-<<<<<<< HEAD
-	__raw_writel(3, base + GPIO2_ENABLE);	/* reset, clock enabled */
-	wmb();
-	__raw_writel(1, base + GPIO2_ENABLE);	/* clock enabled */
-=======
 	__raw_writel(3, base + AU1000_GPIO2_ENABLE);	/* reset, clock enabled */
 	wmb();
 	__raw_writel(1, base + AU1000_GPIO2_ENABLE);	/* clock enabled */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 }
 
@@ -557,11 +455,7 @@ static inline void alchemy_gpio2_enable(void)
 static inline void alchemy_gpio2_disable(void)
 {
 	void __iomem *base = (void __iomem *)KSEG1ADDR(AU1500_GPIO2_PHYS_ADDR);
-<<<<<<< HEAD
-	__raw_writel(2, base + GPIO2_ENABLE);	/* reset, clock disabled */
-=======
 	__raw_writel(2, base + AU1000_GPIO2_ENABLE);	/* reset, clock disabled */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 }
 
@@ -606,14 +500,6 @@ static inline int alchemy_gpio_is_valid(int gpio)
 		alchemy_gpio1_is_valid(gpio);
 }
 
-<<<<<<< HEAD
-static inline int alchemy_gpio_cansleep(int gpio)
-{
-	return 0;	/* Alchemy never gets tired */
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int alchemy_gpio_to_irq(int gpio)
 {
 	return (gpio >= ALCHEMY_GPIO2_BASE) ?
@@ -638,144 +524,4 @@ static inline int alchemy_irq_to_gpio(int irq)
 	return -ENXIO;
 }
 
-<<<<<<< HEAD
-/**********************************************************************/
-
-/* Linux gpio framework integration.
- *
- * 4 use cases of Au1000-Au1200 GPIOS:
- *(1) GPIOLIB=y, ALCHEMY_GPIO_INDIRECT=y:
- *	Board must register gpiochips.
- *(2) GPIOLIB=y, ALCHEMY_GPIO_INDIRECT=n:
- *	2 (1 for Au1000) gpio_chips are registered.
- *
- *(3) GPIOLIB=n, ALCHEMY_GPIO_INDIRECT=y:
- *	the boards' gpio.h must provide	the linux gpio wrapper functions,
- *
- *(4) GPIOLIB=n, ALCHEMY_GPIO_INDIRECT=n:
- *	inlinable gpio functions are provided which enable access to the
- *	Au1000 gpios only by using the numbers straight out of the data-
- *	sheets.
-
- * Cases 1 and 3 are intended for boards which want to provide their own
- * GPIO namespace and -operations (i.e. for example you have 8 GPIOs
- * which are in part provided by spare Au1000 GPIO pins and in part by
- * an external FPGA but you still want them to be accssible in linux
- * as gpio0-7. The board can of course use the alchemy_gpioX_* functions
- * as required).
- */
-
-#ifndef CONFIG_GPIOLIB
-
-#ifdef CONFIG_ALCHEMY_GPIOINT_AU1000
-
-#ifndef CONFIG_ALCHEMY_GPIO_INDIRECT	/* case (4) */
-
-static inline int gpio_direction_input(int gpio)
-{
-	return alchemy_gpio_direction_input(gpio);
-}
-
-static inline int gpio_direction_output(int gpio, int v)
-{
-	return alchemy_gpio_direction_output(gpio, v);
-}
-
-static inline int gpio_get_value(int gpio)
-{
-	return alchemy_gpio_get_value(gpio);
-}
-
-static inline void gpio_set_value(int gpio, int v)
-{
-	alchemy_gpio_set_value(gpio, v);
-}
-
-static inline int gpio_get_value_cansleep(unsigned gpio)
-{
-	return gpio_get_value(gpio);
-}
-
-static inline void gpio_set_value_cansleep(unsigned gpio, int value)
-{
-	gpio_set_value(gpio, value);
-}
-
-static inline int gpio_is_valid(int gpio)
-{
-	return alchemy_gpio_is_valid(gpio);
-}
-
-static inline int gpio_cansleep(int gpio)
-{
-	return alchemy_gpio_cansleep(gpio);
-}
-
-static inline int gpio_to_irq(int gpio)
-{
-	return alchemy_gpio_to_irq(gpio);
-}
-
-static inline int irq_to_gpio(int irq)
-{
-	return alchemy_irq_to_gpio(irq);
-}
-
-static inline int gpio_request(unsigned gpio, const char *label)
-{
-	return 0;
-}
-
-static inline int gpio_request_one(unsigned gpio,
-					unsigned long flags, const char *label)
-{
-	return 0;
-}
-
-static inline int gpio_request_array(struct gpio *array, size_t num)
-{
-	return 0;
-}
-
-static inline void gpio_free(unsigned gpio)
-{
-}
-
-static inline void gpio_free_array(struct gpio *array, size_t num)
-{
-}
-
-static inline int gpio_set_debounce(unsigned gpio, unsigned debounce)
-{
-	return -ENOSYS;
-}
-
-static inline int gpio_export(unsigned gpio, bool direction_may_change)
-{
-	return -ENOSYS;
-}
-
-static inline int gpio_export_link(struct device *dev, const char *name,
-				   unsigned gpio)
-{
-	return -ENOSYS;
-}
-
-static inline int gpio_sysfs_set_active_low(unsigned gpio, int value)
-{
-	return -ENOSYS;
-}
-
-static inline void gpio_unexport(unsigned gpio)
-{
-}
-
-#endif	/* !CONFIG_ALCHEMY_GPIO_INDIRECT */
-
-#endif	/* CONFIG_ALCHEMY_GPIOINT_AU1000 */
-
-#endif	/* !CONFIG_GPIOLIB */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ALCHEMY_GPIO_AU1000_H_ */

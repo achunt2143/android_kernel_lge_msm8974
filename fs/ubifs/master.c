@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -32,8 +13,6 @@
 #include "ubifs.h"
 
 /**
-<<<<<<< HEAD
-=======
  * ubifs_compare_master_node - compare two UBIFS master nodes
  * @c: UBIFS file-system description object
  * @m1: the first node
@@ -100,7 +79,6 @@ static int mst_node_check_hash(const struct ubifs_info *c,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scan_for_master - search the valid master node.
  * @c: UBIFS file-system description object
  *
@@ -113,11 +91,7 @@ static int scan_for_master(struct ubifs_info *c)
 {
 	struct ubifs_scan_leb *sleb;
 	struct ubifs_scan_node *snod;
-<<<<<<< HEAD
-	int lnum, offs = 0, nodes_cnt;
-=======
 	int lnum, offs = 0, nodes_cnt, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lnum = UBIFS_MST_LNUM;
 
@@ -149,14 +123,6 @@ static int scan_for_master(struct ubifs_info *c)
 		goto out_dump;
 	if (snod->offs != offs)
 		goto out;
-<<<<<<< HEAD
-	if (memcmp((void *)c->mst_node + UBIFS_CH_SZ,
-		   (void *)snod->node + UBIFS_CH_SZ,
-		   UBIFS_MST_NODE_SZ - UBIFS_CH_SZ))
-		goto out;
-	c->mst_offs = offs;
-	ubifs_scan_destroy(sleb);
-=======
 	if (ubifs_compare_master_node(c, c->mst_node, snod->node))
 		goto out;
 
@@ -182,7 +148,6 @@ static int scan_for_master(struct ubifs_info *c)
 	if (err)
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out:
@@ -190,11 +155,7 @@ out:
 	return -EUCLEAN;
 
 out_dump:
-<<<<<<< HEAD
-	ubifs_err("unexpected node type %d master LEB %d:%d",
-=======
 	ubifs_err(c, "unexpected node type %d master LEB %d:%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  snod->type, lnum, snod->offs);
 	ubifs_scan_destroy(sleb);
 	return -EINVAL;
@@ -352,13 +313,8 @@ static int validate_master(const struct ubifs_info *c)
 	return 0;
 
 out:
-<<<<<<< HEAD
-	ubifs_err("bad master node at offset %d error %d", c->mst_offs, err);
-	dbg_dump_node(c, c->mst_node);
-=======
 	ubifs_err(c, "bad master node at offset %d error %d", c->mst_offs, err);
 	ubifs_dump_node(c, c->mst_node, c->mst_node_alsz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -422,11 +378,8 @@ int ubifs_read_master(struct ubifs_info *c)
 	c->lst.total_dead  = le64_to_cpu(c->mst_node->total_dead);
 	c->lst.total_dark  = le64_to_cpu(c->mst_node->total_dark);
 
-<<<<<<< HEAD
-=======
 	ubifs_copy_hash(c, c->mst_node->hash_root_idx, c->zroot.hash);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->calc_idx_sz = c->bi.old_idx_sz;
 
 	if (c->mst_node->flags & cpu_to_le32(UBIFS_MST_NO_ORPHS))
@@ -438,13 +391,8 @@ int ubifs_read_master(struct ubifs_info *c)
 
 		if (c->leb_cnt < old_leb_cnt ||
 		    c->leb_cnt < UBIFS_MIN_LEB_CNT) {
-<<<<<<< HEAD
-			ubifs_err("bad leb_cnt on master node");
-			dbg_dump_node(c, c->mst_node);
-=======
 			ubifs_err(c, "bad leb_cnt on master node");
 			ubifs_dump_node(c, c->mst_node, c->mst_node_alsz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -487,11 +435,7 @@ int ubifs_write_master(struct ubifs_info *c)
 {
 	int err, lnum, offs, len;
 
-<<<<<<< HEAD
-	ubifs_assert(!c->ro_media && !c->ro_mount);
-=======
 	ubifs_assert(c, !c->ro_media && !c->ro_mount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (c->ro_error)
 		return -EROFS;
 
@@ -509,13 +453,9 @@ int ubifs_write_master(struct ubifs_info *c)
 	c->mst_offs = offs;
 	c->mst_node->highest_inum = cpu_to_le64(c->highest_inum);
 
-<<<<<<< HEAD
-	err = ubifs_write_node(c, c->mst_node, len, lnum, offs, UBI_SHORTTERM);
-=======
 	ubifs_copy_hash(c, c->zroot.hash, c->mst_node->hash_root_idx);
 	err = ubifs_write_node_hmac(c, c->mst_node, len, lnum, offs,
 				    offsetof(struct ubifs_mst_node, hmac));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -526,12 +466,8 @@ int ubifs_write_master(struct ubifs_info *c)
 		if (err)
 			return err;
 	}
-<<<<<<< HEAD
-	err = ubifs_write_node(c, c->mst_node, len, lnum, offs, UBI_SHORTTERM);
-=======
 	err = ubifs_write_node_hmac(c, c->mst_node, len, lnum, offs,
 				    offsetof(struct ubifs_mst_node, hmac));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }

@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/* Kernel module to match AH parameters. */
-
-/* (C) 2001-2002 Andras Kis-Szabo <kisza@sch.bme.hu>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* Kernel module to match AH parameters. */
 
 /* (C) 2001-2002 Andras Kis-Szabo <kisza@sch.bme.hu>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -65,11 +55,7 @@ static bool ah_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 		return false;
 	}
 
-<<<<<<< HEAD
-	hdrlen = (ah->hdrlen + 2) << 2;
-=======
 	hdrlen = ipv6_authlen(ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("IPv6 AH LEN %u %u ", hdrlen, ah->hdrlen);
 	pr_debug("RES %04X ", ah->reserved);
@@ -88,12 +74,7 @@ static bool ah_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 		 ahinfo->hdrres, ah->reserved,
 		 !(ahinfo->hdrres && ah->reserved));
 
-<<<<<<< HEAD
-	return (ah != NULL) &&
-		spi_match(ahinfo->spis[0], ahinfo->spis[1],
-=======
 	return spi_match(ahinfo->spis[0], ahinfo->spis[1],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ntohl(ah->spi),
 			  !!(ahinfo->invflags & IP6T_AH_INV_SPI)) &&
 		(!ahinfo->hdrlen ||

@@ -1,47 +1,25 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An rtc driver for the Dallas DS1742
  *
  * Copyright (C) 2006 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2006 Torsten Ertbjerg Rasmussen <tr@newtec.dk>
  *  - nvram size determined from resource
  *  - this ds1742 driver now supports ds1743.
  */
 
 #include <linux/bcd.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/gfp.h>
 #include <linux/delay.h>
 #include <linux/jiffies.h>
 #include <linux/rtc.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/module.h>
 
-<<<<<<< HEAD
-#define DRV_VERSION "0.4"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RTC_SIZE		8
 
 #define RTC_CONTROL		0
@@ -69,29 +47,14 @@
 #define RTC_BATT_FLAG		0x80
 
 struct rtc_plat_data {
-<<<<<<< HEAD
-	struct rtc_device *rtc;
-	void __iomem *ioaddr_nvram;
-	void __iomem *ioaddr_rtc;
-	size_t size_nvram;
-	size_t size;
-	unsigned long last_jiffies;
-	struct bin_attribute nvram_attr;
-=======
 	void __iomem *ioaddr_nvram;
 	void __iomem *ioaddr_rtc;
 	unsigned long last_jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ds1742_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(dev);
-	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
-=======
 	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = pdata->ioaddr_rtc;
 	u8 century;
 
@@ -115,12 +78,7 @@ static int ds1742_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 static int ds1742_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(dev);
-	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
-=======
 	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = pdata->ioaddr_rtc;
 	unsigned int year, month, day, hour, minute, second, week;
 	unsigned int century;
@@ -148,13 +106,6 @@ static int ds1742_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	/* year is 1900 + tm->tm_year */
 	tm->tm_year = bcd2bin(year) + bcd2bin(century) * 100 - 1900;
 
-<<<<<<< HEAD
-	if (rtc_valid_tm(tm) < 0) {
-		dev_err(dev, "retrieved date/time is not valid.\n");
-		rtc_time_to_tm(0, tm);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -163,39 +114,6 @@ static const struct rtc_class_ops ds1742_rtc_ops = {
 	.set_time	= ds1742_rtc_set_time,
 };
 
-<<<<<<< HEAD
-static ssize_t ds1742_nvram_read(struct file *filp, struct kobject *kobj,
-				 struct bin_attribute *bin_attr,
-				 char *buf, loff_t pos, size_t size)
-{
-	struct device *dev = container_of(kobj, struct device, kobj);
-	struct platform_device *pdev = to_platform_device(dev);
-	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
-	void __iomem *ioaddr = pdata->ioaddr_nvram;
-	ssize_t count;
-
-	for (count = 0; size > 0 && pos < pdata->size_nvram; count++, size--)
-		*buf++ = readb(ioaddr + pos++);
-	return count;
-}
-
-static ssize_t ds1742_nvram_write(struct file *filp, struct kobject *kobj,
-				  struct bin_attribute *bin_attr,
-				  char *buf, loff_t pos, size_t size)
-{
-	struct device *dev = container_of(kobj, struct device, kobj);
-	struct platform_device *pdev = to_platform_device(dev);
-	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
-	void __iomem *ioaddr = pdata->ioaddr_nvram;
-	ssize_t count;
-
-	for (count = 0; size > 0 && pos < pdata->size_nvram; count++, size--)
-		writeb(*buf++, ioaddr + pos++);
-	return count;
-}
-
-static int __devinit ds1742_rtc_probe(struct platform_device *pdev)
-=======
 static int ds1742_nvram_read(void *priv, unsigned int pos, void *val,
 			     size_t bytes)
 {
@@ -221,7 +139,6 @@ static int ds1742_nvram_write(void *priv, unsigned int pos, void *val,
 }
 
 static int ds1742_rtc_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_device *rtc;
 	struct resource *res;
@@ -229,33 +146,6 @@ static int ds1742_rtc_probe(struct platform_device *pdev)
 	struct rtc_plat_data *pdata;
 	void __iomem *ioaddr;
 	int ret = 0;
-<<<<<<< HEAD
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res)
-		return -ENODEV;
-	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-	if (!pdata)
-		return -ENOMEM;
-	pdata->size = resource_size(res);
-	if (!devm_request_mem_region(&pdev->dev, res->start, pdata->size,
-		pdev->name))
-		return -EBUSY;
-	ioaddr = devm_ioremap(&pdev->dev, res->start, pdata->size);
-	if (!ioaddr)
-		return -ENOMEM;
-
-	pdata->ioaddr_nvram = ioaddr;
-	pdata->size_nvram = pdata->size - RTC_SIZE;
-	pdata->ioaddr_rtc = ioaddr + pdata->size_nvram;
-
-	sysfs_bin_attr_init(&pdata->nvram_attr);
-	pdata->nvram_attr.attr.name = "nvram";
-	pdata->nvram_attr.attr.mode = S_IRUGO | S_IWUSR;
-	pdata->nvram_attr.read = ds1742_nvram_read;
-	pdata->nvram_attr.write = ds1742_nvram_write;
-	pdata->nvram_attr.size = pdata->size_nvram;
-=======
 	struct nvmem_config nvmem_cfg = {
 		.name = "ds1742_nvram",
 		.reg_read = ds1742_nvram_read,
@@ -276,7 +166,6 @@ static int ds1742_rtc_probe(struct platform_device *pdev)
 
 	nvmem_cfg.size = resource_size(res) - RTC_SIZE;
 	nvmem_cfg.priv = pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* turn RTC on if it was not on */
 	ioaddr = pdata->ioaddr_rtc;
@@ -293,37 +182,6 @@ static int ds1742_rtc_probe(struct platform_device *pdev)
 
 	pdata->last_jiffies = jiffies;
 	platform_set_drvdata(pdev, pdata);
-<<<<<<< HEAD
-	rtc = rtc_device_register(pdev->name, &pdev->dev,
-				  &ds1742_rtc_ops, THIS_MODULE);
-	if (IS_ERR(rtc))
-		return PTR_ERR(rtc);
-	pdata->rtc = rtc;
-
-	ret = sysfs_create_bin_file(&pdev->dev.kobj, &pdata->nvram_attr);
-	if (ret) {
-		dev_err(&pdev->dev, "creating nvram file in sysfs failed\n");
-		rtc_device_unregister(rtc);
-	}
-	return ret;
-}
-
-static int __devexit ds1742_rtc_remove(struct platform_device *pdev)
-{
-	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
-
-	sysfs_remove_bin_file(&pdev->dev.kobj, &pdata->nvram_attr);
-	rtc_device_unregister(pdata->rtc);
-	return 0;
-}
-
-static struct platform_driver ds1742_rtc_driver = {
-	.probe		= ds1742_rtc_probe,
-	.remove		= __devexit_p(ds1742_rtc_remove),
-	.driver		= {
-		.name	= "rtc-ds1742",
-		.owner	= THIS_MODULE,
-=======
 
 	rtc = devm_rtc_allocate_device(&pdev->dev);
 	if (IS_ERR(rtc))
@@ -351,7 +209,6 @@ static struct platform_driver ds1742_rtc_driver = {
 	.driver		= {
 		.name	= "rtc-ds1742",
 		.of_match_table = of_match_ptr(ds1742_rtc_of_match),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -360,8 +217,4 @@ module_platform_driver(ds1742_rtc_driver);
 MODULE_AUTHOR("Atsushi Nemoto <anemo@mba.ocn.ne.jp>");
 MODULE_DESCRIPTION("Dallas DS1742 RTC driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:rtc-ds1742");

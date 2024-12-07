@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- *	drivers/s390/net/ctcm_main.h
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Copyright IBM Corp. 2001, 2007
  *	Authors:	Fritz Elfert (felfert@millenux.com)
  *			Peter Tiedemann (ptiedem@de.ibm.com)
@@ -106,10 +100,7 @@ enum ctcm_channel_types {
 #define CTCM_PROTO_MPC		4
 #define CTCM_PROTO_MAX		4
 
-<<<<<<< HEAD
-=======
 #define CTCM_STATSIZE_LIMIT	64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CTCM_BUFSIZE_LIMIT	65535
 #define CTCM_BUFSIZE_DEFAULT	32768
 #define MPC_BUFSIZE_DEFAULT	CTCM_BUFSIZE_LIMIT
@@ -132,11 +123,7 @@ struct ctcm_profile {
 	unsigned long doios_multi;
 	unsigned long txlen;
 	unsigned long tx_time;
-<<<<<<< HEAD
-	struct timespec send_stamp;
-=======
 	unsigned long send_stamp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -238,17 +225,7 @@ struct ctcm_priv {
 int ctcm_open(struct net_device *dev);
 int ctcm_close(struct net_device *dev);
 
-<<<<<<< HEAD
-/*
- * prototypes for non-static sysfs functions
- */
-int ctcm_add_attributes(struct device *dev);
-void ctcm_remove_attributes(struct device *dev);
-int ctcm_add_files(struct device *dev);
-void ctcm_remove_files(struct device *dev);
-=======
 extern const struct attribute_group *ctcm_attr_groups[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Compatibility macros for busy handling
@@ -322,14 +299,6 @@ struct mpc_group *ctcmpc_init_mpc_group(struct ctcm_priv *priv);
 /* test if struct ctcm_priv of struct net_device has MPC protocol setting */
 #define IS_MPCDEV(dev) IS_MPC((struct ctcm_priv *)dev->ml_priv)
 
-<<<<<<< HEAD
-static inline gfp_t gfp_type(void)
-{
-	return in_interrupt() ? GFP_ATOMIC : GFP_KERNEL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definition of our link level header.
  */

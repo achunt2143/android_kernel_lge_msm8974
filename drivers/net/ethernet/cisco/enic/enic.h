@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ENIC_H_
@@ -36,17 +16,6 @@
 #include "vnic_stats.h"
 #include "vnic_nic.h"
 #include "vnic_rss.h"
-<<<<<<< HEAD
-
-#define DRV_NAME		"enic"
-#define DRV_DESCRIPTION		"Cisco VIC Ethernet NIC Driver"
-#define DRV_VERSION		"2.1.1.39"
-#define DRV_COPYRIGHT		"Copyright 2008-2011 Cisco Systems, Inc"
-
-#define ENIC_BARS_MAX		6
-
-#define ENIC_WQ_MAX		1
-=======
 #include <linux/irq.h>
 
 #define DRV_NAME		"enic"
@@ -55,18 +24,10 @@
 #define ENIC_BARS_MAX		6
 
 #define ENIC_WQ_MAX		8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ENIC_RQ_MAX		8
 #define ENIC_CQ_MAX		(ENIC_WQ_MAX + ENIC_RQ_MAX)
 #define ENIC_INTR_MAX		(ENIC_CQ_MAX + 2)
 
-<<<<<<< HEAD
-struct enic_msix_entry {
-	int requested;
-	char devname[IFNAMSIZ];
-	irqreturn_t (*isr)(int, void *);
-	void *devid;
-=======
 #define ENIC_WQ_NAPI_BUDGET	256
 
 #define ENIC_AIC_LARGE_PKT_DIFF	3
@@ -104,7 +65,6 @@ struct enic_rx_coal {
 	u32 large_pkt_range_start;
 	u32 range_end;
 	u32 use_adaptive_rx_coalesce;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* priv_flags */
@@ -127,8 +87,6 @@ struct enic_port_profile {
 	u8 mac_addr[ETH_ALEN];
 };
 
-<<<<<<< HEAD
-=======
 /* enic_rfs_fltr_node - rfs filter node in hash table
  *	@@keys: IPv4 5 tuple
  *	@flow_id: flow_id of clsf filter provided by kernel
@@ -170,7 +128,6 @@ struct vxlan_offload {
 	u8 flags;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Per-instance private data structure */
 struct enic {
 	struct net_device *netdev;
@@ -180,40 +137,26 @@ struct enic {
 	struct vnic_dev *vdev;
 	struct timer_list notify_timer;
 	struct work_struct reset;
-<<<<<<< HEAD
-=======
 	struct work_struct tx_hang_reset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct change_mtu_work;
 	struct msix_entry msix_entry[ENIC_INTR_MAX];
 	struct enic_msix_entry msix[ENIC_INTR_MAX];
 	u32 msg_enable;
 	spinlock_t devcmd_lock;
 	u8 mac_addr[ETH_ALEN];
-<<<<<<< HEAD
-	u8 mc_addr[ENIC_MULTICAST_PERFECT_FILTERS][ETH_ALEN];
-	u8 uc_addr[ENIC_UNICAST_PERFECT_FILTERS][ETH_ALEN];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int flags;
 	unsigned int priv_flags;
 	unsigned int mc_count;
 	unsigned int uc_count;
 	u32 port_mtu;
-<<<<<<< HEAD
-=======
 	struct enic_rx_coal rx_coalesce_setting;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 rx_coalesce_usecs;
 	u32 tx_coalesce_usecs;
 #ifdef CONFIG_PCI_IOV
 	u16 num_vfs;
 #endif
-<<<<<<< HEAD
-=======
 	spinlock_t enic_api_lock;
 	bool enic_api_busy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct enic_port_profile *pp;
 
 	/* work queue cache line section */
@@ -226,16 +169,10 @@ struct enic {
 	/* receive queue cache line section */
 	____cacheline_aligned struct vnic_rq rq[ENIC_RQ_MAX];
 	unsigned int rq_count;
-<<<<<<< HEAD
-	u64 rq_truncated_pkts;
-	u64 rq_bad_fcs;
-	struct napi_struct napi[ENIC_RQ_MAX];
-=======
 	struct vxlan_offload vxlan;
 	u64 rq_truncated_pkts;
 	u64 rq_bad_fcs;
 	struct napi_struct napi[ENIC_RQ_MAX + ENIC_WQ_MAX];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* interrupt resource cache line section */
 	____cacheline_aligned struct vnic_intr intr[ENIC_INTR_MAX];
@@ -245,10 +182,6 @@ struct enic {
 	/* completion queue cache line section */
 	____cacheline_aligned struct vnic_cq cq[ENIC_CQ_MAX];
 	unsigned int cq_count;
-<<<<<<< HEAD
-};
-
-=======
 	struct enic_rfs_flw_tbl rfs_h;
 	u32 rx_copybreak;
 	u8 rss_key[ENIC_RSS_LEN];
@@ -278,14 +211,11 @@ static inline struct net_device *vnic_get_netdev(struct vnic_dev *vdev)
 #define vdev_netinfo(vdev, fmt, ...)					\
 	netdev_info(vnic_get_netdev(vdev), fmt, ##__VA_ARGS__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct device *enic_get_dev(struct enic *enic)
 {
 	return &(enic->pdev->dev);
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned int enic_cq_rq(struct enic *enic, unsigned int rq)
 {
 	return rq;
@@ -361,15 +291,11 @@ static inline int enic_dma_map_check(struct enic *enic, dma_addr_t dma_addr)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void enic_reset_addr_lists(struct enic *enic);
 int enic_sriov_enabled(struct enic *enic);
 int enic_is_valid_vf(struct enic *enic, int vf);
 int enic_is_dynamic(struct enic *enic);
-<<<<<<< HEAD
-=======
 void enic_set_ethtool_ops(struct net_device *netdev);
 int __enic_set_rsskey(struct enic *enic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ENIC_H_ */

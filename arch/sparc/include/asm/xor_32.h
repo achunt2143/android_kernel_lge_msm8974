@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm/xor.h
  *
  * Optimized RAID-5 checksumming functions for 32-bit Sparc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * You should have received a copy of the GNU General Public License
- * (for example /usr/src/linux/COPYING); if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -28,12 +13,8 @@
  */
 
 static void
-<<<<<<< HEAD
-sparc_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
-=======
 sparc_2(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int lines = bytes / (sizeof (long)) / 8;
 
@@ -70,14 +51,9 @@ sparc_2(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-sparc_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	unsigned long *p3)
-=======
 sparc_3(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2,
 	const unsigned long * __restrict p3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int lines = bytes / (sizeof (long)) / 8;
 
@@ -127,15 +103,10 @@ sparc_3(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-sparc_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	unsigned long *p3, unsigned long *p4)
-=======
 sparc_4(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2,
 	const unsigned long * __restrict p3,
 	const unsigned long * __restrict p4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int lines = bytes / (sizeof (long)) / 8;
 
@@ -198,16 +169,11 @@ sparc_4(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-sparc_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	unsigned long *p3, unsigned long *p4, unsigned long *p5)
-=======
 sparc_5(unsigned long bytes, unsigned long * __restrict p1,
 	const unsigned long * __restrict p2,
 	const unsigned long * __restrict p3,
 	const unsigned long * __restrict p4,
 	const unsigned long * __restrict p5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int lines = bytes / (sizeof (long)) / 8;
 

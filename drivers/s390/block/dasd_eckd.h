@@ -1,18 +1,9 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_eckd.h
- * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
- *		    Horst Hummel <Horst.Hummel@de.ibm.com>
- * Bugreports.to..: <Linux390@de.ibm.com>
- * (C) IBM Corporation, IBM Deutschland Entwicklung GmbH, 1999,2000
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
  *		    Horst Hummel <Horst.Hummel@de.ibm.com>
  * Bugreports.to..: <Linux390@de.ibm.com>
  * Copyright IBM Corp. 1999, 2000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -22,10 +13,7 @@
 /*****************************************************************************
  * SECTION: CCW Definitions
  ****************************************************************************/
-<<<<<<< HEAD
-=======
 #define DASD_ECKD_CCW_NOP		 0x03
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DASD_ECKD_CCW_WRITE		 0x05
 #define DASD_ECKD_CCW_READ		 0x06
 #define DASD_ECKD_CCW_WRITE_HOME_ADDRESS 0x09
@@ -43,20 +31,14 @@
 #define DASD_ECKD_CCW_SNID		 0x34
 #define DASD_ECKD_CCW_RSSD		 0x3e
 #define DASD_ECKD_CCW_LOCATE_RECORD	 0x47
-<<<<<<< HEAD
-=======
 #define DASD_ECKD_CCW_LOCATE_RECORD_EXT	 0x4b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DASD_ECKD_CCW_SNSS		 0x54
 #define DASD_ECKD_CCW_DEFINE_EXTENT	 0x63
 #define DASD_ECKD_CCW_WRITE_MT		 0x85
 #define DASD_ECKD_CCW_READ_MT		 0x86
 #define DASD_ECKD_CCW_WRITE_KD_MT	 0x8d
 #define DASD_ECKD_CCW_READ_KD_MT	 0x8e
-<<<<<<< HEAD
-=======
 #define DASD_ECKD_CCW_READ_COUNT_MT	 0x92
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DASD_ECKD_CCW_RELEASE		 0x94
 #define DASD_ECKD_CCW_WRITE_FULL_TRACK	 0x95
 #define DASD_ECKD_CCW_READ_CKD_MT	 0x9e
@@ -69,8 +51,6 @@
 #define DASD_ECKD_CCW_PFX_READ		 0xEA
 #define DASD_ECKD_CCW_RSCK		 0xF9
 #define DASD_ECKD_CCW_RCD		 0xFA
-<<<<<<< HEAD
-=======
 #define DASD_ECKD_CCW_DSO		 0xF7
 
 /* Define Subsystem Function / Orders */
@@ -82,18 +62,10 @@
 #define PSF_ORDER_PRSSD			 0x18
 #define PSF_ORDER_CUIR_RESPONSE		 0x1A
 #define PSF_ORDER_SSC			 0x1D
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Perform Subsystem Function / Sub-Orders
  */
-<<<<<<< HEAD
-#define PSF_ORDER_PRSSD 0x18
-#define PSF_ORDER_SSC	0x1D
-
-/*
- * Size that is reportet for large volumes in the old 16-bit no_cyl field
-=======
 #define PSF_SUBORDER_QHA		 0x1C /* Query Host Access */
 #define PSF_SUBORDER_PPRCEQ		 0x50 /* PPRC Extended Query */
 #define PSF_SUBORDER_VSQ		 0x52 /* Volume Storage Query */
@@ -146,7 +118,6 @@
 
 /*
  * Size that is reported for large volumes in the old 16-bit no_cyl field
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define LV_COMPAT_CYL 0xFFFE
 
@@ -154,8 +125,6 @@
 #define FCX_MAX_DATA_FACTOR 65536
 #define DASD_ECKD_RCD_DATA_SIZE 256
 
-<<<<<<< HEAD
-=======
 #define DASD_ECKD_PATH_THRHLD		 256
 #define DASD_ECKD_PATH_INTERVAL		 300
 
@@ -164,7 +133,6 @@
  */
 #define DASD_ECKD_MAX_BLOCKS		 190
 #define DASD_ECKD_MAX_BLOCKS_RAW	 256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * SECTION: Type Definitions
@@ -183,41 +151,12 @@ struct ch_t {
 	__u16 head;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-struct chs_t {
-	__u16 cyl;
-	__u16 head;
-	__u32 sector;
-} __attribute__ ((packed));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct chr_t {
 	__u16 cyl;
 	__u16 head;
 	__u8 record;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-struct geom_t {
-	__u16 cyl;
-	__u16 head;
-	__u32 sector;
-} __attribute__ ((packed));
-
-struct eckd_home {
-	__u8 skip_control[14];
-	__u16 cell_number;
-	__u8 physical_addr[3];
-	__u8 flag;
-	struct ch_t track_addr;
-	__u8 reserved;
-	__u8 key_length;
-	__u8 reserved2[2];
-} __attribute__ ((packed));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct DE_eckd_data {
 	struct {
 		unsigned char perm:2;	/* Permissions on this extent */
@@ -239,11 +178,7 @@ struct DE_eckd_data {
 	__u8 ga_extended;	/* Global Attributes Extended	*/
 	struct ch_t beg_ext;
 	struct ch_t end_ext;
-<<<<<<< HEAD
-	unsigned long long ep_sys_time; /* Ext Parameter - System Time Stamp */
-=======
 	unsigned long ep_sys_time; /* Ext Parameter - System Time Stamp */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 ep_format;        /* Extended Parameter format byte       */
 	__u8 ep_prio;          /* Extended Parameter priority I/O byte */
 	__u8 ep_reserved1;     /* Extended Parameter Reserved	       */
@@ -292,11 +227,7 @@ struct LRE_eckd_data {
 	__u8 imbedded_count;
 	__u8 extended_operation;
 	__u16 extended_parameter_length;
-<<<<<<< HEAD
-	__u8 extended_parameter[0];
-=======
 	__u8 extended_parameter[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 /* Prefix data for format 0x00 and 0x01 */
@@ -337,11 +268,7 @@ struct dasd_eckd_characteristics {
 		unsigned char reserved3:8;
 		unsigned char defect_wr:1;
 		unsigned char XRC_supported:1;
-<<<<<<< HEAD
-		unsigned char reserved4:1;
-=======
 		unsigned char PPRC_enabled:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned char striping:1;
 		unsigned char reserved5:4;
 		unsigned char cfw:1;
@@ -412,15 +339,10 @@ struct dasd_ned {
 	__u8 dev_type[6];
 	__u8 dev_model[3];
 	__u8 HDA_manufacturer[3];
-<<<<<<< HEAD
-	__u8 HDA_location[2];
-	__u8 HDA_seqno[12];
-=======
 	struct {
 		__u8 HDA_location[2];
 		__u8 HDA_seqno[12];
 	} serial;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 ID;
 	__u8 unit_addr;
 } __attribute__ ((packed));
@@ -455,12 +377,8 @@ struct dasd_gneq {
 		__u8 identifier:2;
 		__u8 reserved:6;
 	} __attribute__ ((packed)) flags;
-<<<<<<< HEAD
-	__u8 reserved[5];
-=======
 	__u8 record_selector;
 	__u8 reserved[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		__u8 value:2;
 		__u8 number:6;
@@ -474,8 +392,6 @@ struct dasd_rssd_features {
 	char feature[256];
 } __attribute__((packed));
 
-<<<<<<< HEAD
-=======
 struct dasd_rssd_messages {
 	__u16 length;
 	__u8 format;
@@ -613,7 +529,6 @@ struct dasd_psf_query_host_access {
 	__u8 unused[10];
 	__u8 host_access_information[16394];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Perform Subsystem Function - Prepare for Read Subsystem Data
@@ -621,14 +536,10 @@ struct dasd_psf_query_host_access {
 struct dasd_psf_prssd_data {
 	unsigned char order;
 	unsigned char flags;
-<<<<<<< HEAD
-	unsigned char reserved[4];
-=======
 	unsigned char reserved1;
 	unsigned char reserved2;
 	unsigned char lss;
 	unsigned char volume;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char suborder;
 	unsigned char varies[5];
 } __attribute__ ((packed));
@@ -644,8 +555,6 @@ struct dasd_psf_ssc_data {
 	unsigned char reserved[59];
 } __attribute__((packed));
 
-<<<<<<< HEAD
-=======
 /* Maximum number of extents for a single Release Allocated Space command */
 #define DASD_ECKD_RAS_EXTS_MAX		110U
 
@@ -682,7 +591,6 @@ struct dasd_dso_ras_data {
 	__u16 reserved3;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * some structures and definitions for alias handling
@@ -751,12 +659,6 @@ struct alias_pav_group {
 	struct dasd_device *next;
 };
 
-<<<<<<< HEAD
-struct dasd_eckd_private {
-	struct dasd_eckd_characteristics rdc_data;
-	u8 *conf_data;
-	int conf_len;
-=======
 struct dasd_conf_data {
 	struct dasd_ned neds[5];
 	u8 reserved[64];
@@ -766,47 +668,34 @@ struct dasd_conf_data {
 struct dasd_conf {
 	u8 *data;
 	int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* pointers to specific parts in the conf_data */
 	struct dasd_ned *ned;
 	struct dasd_sneq *sneq;
 	struct vd_sneq *vdsneq;
 	struct dasd_gneq *gneq;
-<<<<<<< HEAD
-=======
 };
 
 struct dasd_eckd_private {
 	struct dasd_eckd_characteristics rdc_data;
 	struct dasd_conf conf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct eckd_count count_area[5];
 	int init_cqr_status;
 	int uses_cdl;
 	struct attrib_data_t attrib;	/* e.g. cache operations */
 	struct dasd_rssd_features features;
-<<<<<<< HEAD
-	u32 real_cyl;
-
-	/* alias managemnet */
-=======
 	struct dasd_rssd_vsq vsq;
 	struct dasd_ext_pool_sum eps;
 	u32 real_cyl;
 
 	/* alias management */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dasd_uid uid;
 	struct alias_pav_group *pavgroup;
 	struct alias_lcu *lcu;
 	int count;
 
 	u32 fcx_max_data;
-<<<<<<< HEAD
-=======
 	char suc_reason;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -816,14 +705,7 @@ void dasd_alias_disconnect_device_from_lcu(struct dasd_device *);
 int dasd_alias_add_device(struct dasd_device *);
 int dasd_alias_remove_device(struct dasd_device *);
 struct dasd_device *dasd_alias_get_start_dev(struct dasd_device *);
-<<<<<<< HEAD
-void dasd_alias_handle_summary_unit_check(struct dasd_device *, struct irb *);
-void dasd_eckd_reset_ccw_to_base_io(struct dasd_ccw_req *);
-void dasd_alias_lcu_setup_complete(struct dasd_device *);
-void dasd_alias_wait_for_lcu_setup(struct dasd_device *);
-=======
 void dasd_alias_handle_summary_unit_check(struct work_struct *);
 void dasd_eckd_reset_ccw_to_base_io(struct dasd_ccw_req *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dasd_alias_update_add_device(struct dasd_device *);
 #endif				/* DASD_ECKD_H */

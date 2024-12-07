@@ -113,10 +113,7 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-<<<<<<< HEAD
-=======
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -131,20 +128,12 @@
 #include <linux/if_eql.h>
 #include <linux/pkt_sched.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-static int eql_open(struct net_device *dev);
-static int eql_close(struct net_device *dev);
-static int eql_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
-=======
 #include <linux/uaccess.h>
 
 static int eql_open(struct net_device *dev);
 static int eql_close(struct net_device *dev);
 static int eql_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 			      void __user *data, int cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static netdev_tx_t eql_slave_xmit(struct sk_buff *skb, struct net_device *dev);
 
 #define eql_is_slave(dev)	((dev->flags & IFF_SLAVE) == IFF_SLAVE)
@@ -152,15 +141,9 @@ static netdev_tx_t eql_slave_xmit(struct sk_buff *skb, struct net_device *dev);
 
 static void eql_kill_one_slave(slave_queue_t *queue, slave_t *slave);
 
-<<<<<<< HEAD
-static void eql_timer(unsigned long param)
-{
-	equalizer_t *eql = (equalizer_t *) param;
-=======
 static void eql_timer(struct timer_list *t)
 {
 	equalizer_t *eql = from_timer(eql, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head *this, *tmp, *head;
 
 	spin_lock(&eql->queue.lock);
@@ -189,11 +172,7 @@ static const char version[] __initconst =
 static const struct net_device_ops eql_netdev_ops = {
 	.ndo_open	= eql_open,
 	.ndo_stop	= eql_close,
-<<<<<<< HEAD
-	.ndo_do_ioctl	= eql_ioctl,
-=======
 	.ndo_siocdevprivate = eql_siocdevprivate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_start_xmit	= eql_slave_xmit,
 };
 
@@ -201,15 +180,8 @@ static void __init eql_setup(struct net_device *dev)
 {
 	equalizer_t *eql = netdev_priv(dev);
 
-<<<<<<< HEAD
-	init_timer(&eql->timer);
-	eql->timer.data     	= (unsigned long) eql;
-	eql->timer.expires  	= jiffies + EQL_DEFAULT_RESCHED_IVAL;
-	eql->timer.function 	= eql_timer;
-=======
 	timer_setup(&eql->timer, eql_timer, 0);
 	eql->timer.expires  	= jiffies + EQL_DEFAULT_RESCHED_IVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&eql->queue.lock);
 	INIT_LIST_HEAD(&eql->queue.all_slaves);
@@ -227,11 +199,7 @@ static void __init eql_setup(struct net_device *dev)
 
 	dev->type       	= ARPHRD_SLIP;
 	dev->tx_queue_len 	= 5;		/* Hands them off fast */
-<<<<<<< HEAD
-	dev->priv_flags	       &= ~IFF_XMIT_DST_RELEASE;
-=======
 	netif_keep_dst(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int eql_open(struct net_device *dev)
@@ -257,11 +225,7 @@ static void eql_kill_one_slave(slave_queue_t *queue, slave_t *slave)
 	list_del(&slave->list);
 	queue->num_slaves--;
 	slave->dev->flags &= ~IFF_SLAVE;
-<<<<<<< HEAD
-	dev_put(slave->dev);
-=======
 	netdev_put(slave->dev, &slave->dev_tracker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(slave);
 }
 
@@ -306,32 +270,13 @@ static int eql_s_slave_cfg(struct net_device *dev, slave_config_t __user *sc);
 static int eql_g_master_cfg(struct net_device *dev, master_config_t __user *mc);
 static int eql_s_master_cfg(struct net_device *dev, master_config_t __user *mc);
 
-<<<<<<< HEAD
-static int eql_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-=======
 static int eql_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 			      void __user *data, int cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cmd != EQL_GETMASTRCFG && cmd != EQL_GETSLAVECFG &&
 	    !capable(CAP_NET_ADMIN))
 	  	return -EPERM;
 
-<<<<<<< HEAD
-	switch (cmd) {
-		case EQL_ENSLAVE:
-			return eql_enslave(dev, ifr->ifr_data);
-		case EQL_EMANCIPATE:
-			return eql_emancipate(dev, ifr->ifr_data);
-		case EQL_GETSLAVECFG:
-			return eql_g_slave_cfg(dev, ifr->ifr_data);
-		case EQL_SETSLAVECFG:
-			return eql_s_slave_cfg(dev, ifr->ifr_data);
-		case EQL_GETMASTRCFG:
-			return eql_g_master_cfg(dev, ifr->ifr_data);
-		case EQL_SETMASTRCFG:
-			return eql_s_master_cfg(dev, ifr->ifr_data);
-=======
 	if (in_compat_syscall()) /* to be implemented */
 		return -EOPNOTSUPP;
 
@@ -348,7 +293,6 @@ static int eql_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 			return eql_g_master_cfg(dev, data);
 		case EQL_SETMASTRCFG:
 			return eql_s_master_cfg(dev, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return -EOPNOTSUPP;
 	}
@@ -455,10 +399,7 @@ static int __eql_insert_slave(slave_queue_t *queue, slave_t *slave)
 		if (duplicate_slave)
 			eql_kill_one_slave(queue, duplicate_slave);
 
-<<<<<<< HEAD
-=======
 		netdev_hold(slave->dev, &slave->dev_tracker, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add(&slave->list, &queue->all_slaves);
 		queue->num_slaves++;
 		slave->dev->flags |= IFF_SLAVE;
@@ -477,41 +418,6 @@ static int eql_enslave(struct net_device *master_dev, slaving_request_t __user *
 	if (copy_from_user(&srq, srqp, sizeof (slaving_request_t)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	slave_dev  = dev_get_by_name(&init_net, srq.slave_name);
-	if (slave_dev) {
-		if ((master_dev->flags & IFF_UP) == IFF_UP) {
-			/* slave is not a master & not already a slave: */
-			if (!eql_is_master(slave_dev) &&
-			    !eql_is_slave(slave_dev)) {
-				slave_t *s = kmalloc(sizeof(*s), GFP_KERNEL);
-				equalizer_t *eql = netdev_priv(master_dev);
-				int ret;
-
-				if (!s) {
-					dev_put(slave_dev);
-					return -ENOMEM;
-				}
-
-				memset(s, 0, sizeof(*s));
-				s->dev = slave_dev;
-				s->priority = srq.priority;
-				s->priority_bps = srq.priority;
-				s->priority_Bps = srq.priority / 8;
-
-				spin_lock_bh(&eql->queue.lock);
-				ret = __eql_insert_slave(&eql->queue, s);
-				if (ret) {
-					dev_put(slave_dev);
-					kfree(s);
-				}
-				spin_unlock_bh(&eql->queue.lock);
-
-				return ret;
-			}
-		}
-		dev_put(slave_dev);
-=======
 	slave_dev = __dev_get_by_name(&init_net, srq.slave_name);
 	if (!slave_dev)
 		return -ENODEV;
@@ -540,7 +446,6 @@ static int eql_enslave(struct net_device *master_dev, slaving_request_t __user *
 
 			return ret;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -EINVAL;
@@ -556,26 +461,6 @@ static int eql_emancipate(struct net_device *master_dev, slaving_request_t __use
 	if (copy_from_user(&srq, srqp, sizeof (slaving_request_t)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	slave_dev = dev_get_by_name(&init_net, srq.slave_name);
-	ret = -EINVAL;
-	if (slave_dev) {
-		spin_lock_bh(&eql->queue.lock);
-
-		if (eql_is_slave(slave_dev)) {
-			slave_t *slave = __eql_find_slave_dev(&eql->queue,
-							      slave_dev);
-
-			if (slave) {
-				eql_kill_one_slave(&eql->queue, slave);
-				ret = 0;
-			}
-		}
-		dev_put(slave_dev);
-
-		spin_unlock_bh(&eql->queue.lock);
-	}
-=======
 	slave_dev = __dev_get_by_name(&init_net, srq.slave_name);
 	if (!slave_dev)
 		return -ENODEV;
@@ -590,7 +475,6 @@ static int eql_emancipate(struct net_device *master_dev, slaving_request_t __use
 		}
 	}
 	spin_unlock_bh(&eql->queue.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -606,11 +490,7 @@ static int eql_g_slave_cfg(struct net_device *dev, slave_config_t __user *scp)
 	if (copy_from_user(&sc, scp, sizeof (slave_config_t)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	slave_dev = dev_get_by_name(&init_net, sc.slave_name);
-=======
 	slave_dev = __dev_get_by_name(&init_net, sc.slave_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!slave_dev)
 		return -ENODEV;
 
@@ -626,11 +506,6 @@ static int eql_g_slave_cfg(struct net_device *dev, slave_config_t __user *scp)
 	}
 	spin_unlock_bh(&eql->queue.lock);
 
-<<<<<<< HEAD
-	dev_put(slave_dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret && copy_to_user(scp, &sc, sizeof (slave_config_t)))
 		ret = -EFAULT;
 
@@ -648,11 +523,7 @@ static int eql_s_slave_cfg(struct net_device *dev, slave_config_t __user *scp)
 	if (copy_from_user(&sc, scp, sizeof (slave_config_t)))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	slave_dev = dev_get_by_name(&init_net, sc.slave_name);
-=======
 	slave_dev = __dev_get_by_name(&init_net, sc.slave_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!slave_dev)
 		return -ENODEV;
 
@@ -671,11 +542,6 @@ static int eql_s_slave_cfg(struct net_device *dev, slave_config_t __user *scp)
 	}
 	spin_unlock_bh(&eql->queue.lock);
 
-<<<<<<< HEAD
-	dev_put(slave_dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -722,12 +588,8 @@ static int __init eql_init_module(void)
 
 	pr_info("%s\n", version);
 
-<<<<<<< HEAD
-	dev_eql = alloc_netdev(sizeof(equalizer_t), "eql", eql_setup);
-=======
 	dev_eql = alloc_netdev(sizeof(equalizer_t), "eql", NET_NAME_UNKNOWN,
 			       eql_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev_eql)
 		return -ENOMEM;
 
@@ -745,8 +607,5 @@ static void __exit eql_cleanup_module(void)
 
 module_init(eql_init_module);
 module_exit(eql_cleanup_module);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("Equalizer Load-balancer for serial network interfaces");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

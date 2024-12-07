@@ -1,36 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PS3 Disk Storage Driver
  *
  * Copyright (C) 2007 Sony Computer Entertainment Inc.
  * Copyright 2007 Sony Corp.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published
- * by the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
-#include <linux/ata.h>
-#include <linux/blkdev.h>
-=======
  */
 
 #include <linux/ata.h>
 #include <linux/blk-mq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 
@@ -52,11 +29,7 @@
 
 struct ps3disk_private {
 	spinlock_t lock;		/* Request queue spinlock */
-<<<<<<< HEAD
-	struct request_queue *queue;
-=======
 	struct blk_mq_tag_set tag_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gendisk *gendisk;
 	unsigned int blocking_factor;
 	struct request *req;
@@ -109,35 +82,6 @@ static void ps3disk_scatter_gather(struct ps3_storage_device *dev,
 {
 	unsigned int offset = 0;
 	struct req_iterator iter;
-<<<<<<< HEAD
-	struct bio_vec *bvec;
-	unsigned int i = 0;
-	size_t size;
-	void *buf;
-
-	rq_for_each_segment(bvec, req, iter) {
-		unsigned long flags;
-		dev_dbg(&dev->sbd.core,
-			"%s:%u: bio %u: %u segs %u sectors from %lu\n",
-			__func__, __LINE__, i, bio_segments(iter.bio),
-			bio_sectors(iter.bio), iter.bio->bi_sector);
-
-		size = bvec->bv_len;
-		buf = bvec_kmap_irq(bvec, &flags);
-		if (gather)
-			memcpy(dev->bounce_buf+offset, buf, size);
-		else
-			memcpy(buf, dev->bounce_buf+offset, size);
-		offset += size;
-		flush_kernel_dcache_page(bvec->bv_page);
-		bvec_kunmap_irq(buf, &flags);
-		i++;
-	}
-}
-
-static int ps3disk_submit_request_sg(struct ps3_storage_device *dev,
-				     struct request *req)
-=======
 	struct bio_vec bvec;
 
 	rq_for_each_segment(bvec, req, iter) {
@@ -150,7 +94,6 @@ static int ps3disk_submit_request_sg(struct ps3_storage_device *dev,
 
 static blk_status_t ps3disk_submit_request_sg(struct ps3_storage_device *dev,
 					      struct request *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3disk_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
 	int write = rq_data_dir(req), res;
@@ -160,11 +103,7 @@ static blk_status_t ps3disk_submit_request_sg(struct ps3_storage_device *dev,
 
 #ifdef DEBUG
 	unsigned int n = 0;
-<<<<<<< HEAD
-	struct bio_vec *bv;
-=======
 	struct bio_vec bv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct req_iterator iter;
 
 	rq_for_each_segment(bv, req, iter)
@@ -193,18 +132,6 @@ static blk_status_t ps3disk_submit_request_sg(struct ps3_storage_device *dev,
 	if (res) {
 		dev_err(&dev->sbd.core, "%s:%u: %s failed %d\n", __func__,
 			__LINE__, op, res);
-<<<<<<< HEAD
-		__blk_end_request_all(req, -EIO);
-		return 0;
-	}
-
-	priv->req = req;
-	return 1;
-}
-
-static int ps3disk_submit_flush_request(struct ps3_storage_device *dev,
-					struct request *req)
-=======
 		return BLK_STS_IOERR;
 	}
 
@@ -214,7 +141,6 @@ static int ps3disk_submit_flush_request(struct ps3_storage_device *dev,
 
 static blk_status_t ps3disk_submit_flush_request(struct ps3_storage_device *dev,
 						 struct request *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3disk_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
 	u64 res;
@@ -227,49 +153,6 @@ static blk_status_t ps3disk_submit_flush_request(struct ps3_storage_device *dev,
 	if (res) {
 		dev_err(&dev->sbd.core, "%s:%u: sync cache failed 0x%llx\n",
 			__func__, __LINE__, res);
-<<<<<<< HEAD
-		__blk_end_request_all(req, -EIO);
-		return 0;
-	}
-
-	priv->req = req;
-	return 1;
-}
-
-static void ps3disk_do_request(struct ps3_storage_device *dev,
-			       struct request_queue *q)
-{
-	struct request *req;
-
-	dev_dbg(&dev->sbd.core, "%s:%u\n", __func__, __LINE__);
-
-	while ((req = blk_fetch_request(q))) {
-		if (req->cmd_flags & REQ_FLUSH) {
-			if (ps3disk_submit_flush_request(dev, req))
-				break;
-		} else if (req->cmd_type == REQ_TYPE_FS) {
-			if (ps3disk_submit_request_sg(dev, req))
-				break;
-		} else {
-			blk_dump_rq_flags(req, DEVICE_NAME " bad request");
-			__blk_end_request_all(req, -EIO);
-			continue;
-		}
-	}
-}
-
-static void ps3disk_request(struct request_queue *q)
-{
-	struct ps3_storage_device *dev = q->queuedata;
-	struct ps3disk_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
-
-	if (priv->req) {
-		dev_dbg(&dev->sbd.core, "%s:%u busy\n", __func__, __LINE__);
-		return;
-	}
-
-	ps3disk_do_request(dev, q);
-=======
 		return BLK_STS_IOERR;
 	}
 
@@ -309,7 +192,6 @@ static blk_status_t ps3disk_queue_rq(struct blk_mq_hw_ctx *hctx,
 	spin_unlock_irq(&priv->lock);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t ps3disk_interrupt(int irq, void *data)
@@ -317,12 +199,8 @@ static irqreturn_t ps3disk_interrupt(int irq, void *data)
 	struct ps3_storage_device *dev = data;
 	struct ps3disk_private *priv;
 	struct request *req;
-<<<<<<< HEAD
-	int res, read, error;
-=======
 	int res, read;
 	blk_status_t error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 tag, status;
 	const char *op;
 
@@ -350,11 +228,7 @@ static irqreturn_t ps3disk_interrupt(int irq, void *data)
 		return IRQ_HANDLED;
 	}
 
-<<<<<<< HEAD
-	if (req->cmd_flags & REQ_FLUSH) {
-=======
 	if (req_op(req) == REQ_OP_FLUSH) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		read = 0;
 		op = "flush";
 	} else {
@@ -364,11 +238,7 @@ static irqreturn_t ps3disk_interrupt(int irq, void *data)
 	if (status) {
 		dev_dbg(&dev->sbd.core, "%s:%u: %s failed 0x%llx\n", __func__,
 			__LINE__, op, status);
-<<<<<<< HEAD
-		error = -EIO;
-=======
 		error = BLK_STS_IOERR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		dev_dbg(&dev->sbd.core, "%s:%u: %s completed\n", __func__,
 			__LINE__, op);
@@ -378,19 +248,11 @@ static irqreturn_t ps3disk_interrupt(int irq, void *data)
 	}
 
 	spin_lock(&priv->lock);
-<<<<<<< HEAD
-	__blk_end_request_all(req, error);
-	priv->req = NULL;
-	ps3disk_do_request(dev, priv->queue);
-	spin_unlock(&priv->lock);
-
-=======
 	priv->req = NULL;
 	blk_mq_end_request(req, error);
 	spin_unlock(&priv->lock);
 
 	blk_mq_run_hw_queues(priv->gendisk->queue, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -510,22 +372,16 @@ static unsigned long ps3disk_mask;
 
 static DEFINE_MUTEX(ps3disk_mask_mutex);
 
-<<<<<<< HEAD
-static int __devinit ps3disk_probe(struct ps3_system_bus_device *_dev)
-=======
 static const struct blk_mq_ops ps3disk_mq_ops = {
 	.queue_rq	= ps3disk_queue_rq,
 };
 
 static int ps3disk_probe(struct ps3_system_bus_device *_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_storage_device *dev = to_ps3_storage_device(&_dev->core);
 	struct ps3disk_private *priv;
 	int error;
 	unsigned int devidx;
-<<<<<<< HEAD
-=======
 	struct queue_limits lim = {
 		.logical_block_size	= dev->blk_size,
 		.max_hw_sectors		= dev->bounce_size >> 9,
@@ -534,7 +390,6 @@ static int ps3disk_probe(struct ps3_system_bus_device *_dev)
 		.dma_alignment		= dev->blk_size - 1,
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct request_queue *queue;
 	struct gendisk *gendisk;
 
@@ -579,38 +434,6 @@ static int ps3disk_probe(struct ps3_system_bus_device *_dev)
 
 	ps3disk_identify(dev);
 
-<<<<<<< HEAD
-	queue = blk_init_queue(ps3disk_request, &priv->lock);
-	if (!queue) {
-		dev_err(&dev->sbd.core, "%s:%u: blk_init_queue failed\n",
-			__func__, __LINE__);
-		error = -ENOMEM;
-		goto fail_teardown;
-	}
-
-	priv->queue = queue;
-	queue->queuedata = dev;
-
-	blk_queue_bounce_limit(queue, BLK_BOUNCE_HIGH);
-
-	blk_queue_max_hw_sectors(queue, dev->bounce_size >> 9);
-	blk_queue_segment_boundary(queue, -1UL);
-	blk_queue_dma_alignment(queue, dev->blk_size-1);
-	blk_queue_logical_block_size(queue, dev->blk_size);
-
-	blk_queue_flush(queue, REQ_FLUSH);
-
-	blk_queue_max_segments(queue, -1);
-	blk_queue_max_segment_size(queue, dev->bounce_size);
-
-	gendisk = alloc_disk(PS3DISK_MINORS);
-	if (!gendisk) {
-		dev_err(&dev->sbd.core, "%s:%u: alloc_disk failed\n", __func__,
-			__LINE__);
-		error = -ENOMEM;
-		goto fail_cleanup_queue;
-	}
-=======
 	error = blk_mq_alloc_sq_tag_set(&priv->tag_set, &ps3disk_mq_ops, 1,
 					BLK_MQ_F_SHOULD_MERGE);
 	if (error)
@@ -627,21 +450,13 @@ static int ps3disk_probe(struct ps3_system_bus_device *_dev)
 	queue = gendisk->queue;
 
 	blk_queue_write_cache(queue, true, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->gendisk = gendisk;
 	gendisk->major = ps3disk_major;
 	gendisk->first_minor = devidx * PS3DISK_MINORS;
-<<<<<<< HEAD
-	gendisk->fops = &ps3disk_fops;
-	gendisk->queue = queue;
-	gendisk->private_data = dev;
-	gendisk->driverfs_dev = &dev->sbd.core;
-=======
 	gendisk->minors = PS3DISK_MINORS;
 	gendisk->fops = &ps3disk_fops;
 	gendisk->private_data = dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(gendisk->disk_name, sizeof(gendisk->disk_name), PS3DISK_NAME,
 		 devidx+'a');
 	priv->blocking_factor = dev->blk_size >> 9;
@@ -649,17 +464,6 @@ static int ps3disk_probe(struct ps3_system_bus_device *_dev)
 		     dev->regions[dev->region_idx].size*priv->blocking_factor);
 
 	dev_info(&dev->sbd.core,
-<<<<<<< HEAD
-		 "%s is a %s (%llu MiB total, %lu MiB for OtherOS)\n",
-		 gendisk->disk_name, priv->model, priv->raw_capacity >> 11,
-		 get_capacity(gendisk) >> 11);
-
-	add_disk(gendisk);
-	return 0;
-
-fail_cleanup_queue:
-	blk_cleanup_queue(queue);
-=======
 		 "%s is a %s (%llu MiB total, %llu MiB for OtherOS)\n",
 		 gendisk->disk_name, priv->model, priv->raw_capacity >> 11,
 		 get_capacity(gendisk) >> 11);
@@ -673,7 +477,6 @@ fail_cleanup_disk:
 	put_disk(gendisk);
 fail_free_tag_set:
 	blk_mq_free_tag_set(&priv->tag_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_teardown:
 	ps3stor_teardown(dev);
 fail_free_bounce:
@@ -688,11 +491,7 @@ fail:
 	return error;
 }
 
-<<<<<<< HEAD
-static int ps3disk_remove(struct ps3_system_bus_device *_dev)
-=======
 static void ps3disk_remove(struct ps3_system_bus_device *_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps3_storage_device *dev = to_ps3_storage_device(&_dev->core);
 	struct ps3disk_private *priv = ps3_system_bus_get_drvdata(&dev->sbd);
@@ -702,23 +501,14 @@ static void ps3disk_remove(struct ps3_system_bus_device *_dev)
 		    &ps3disk_mask);
 	mutex_unlock(&ps3disk_mask_mutex);
 	del_gendisk(priv->gendisk);
-<<<<<<< HEAD
-	blk_cleanup_queue(priv->queue);
-	put_disk(priv->gendisk);
-=======
 	put_disk(priv->gendisk);
 	blk_mq_free_tag_set(&priv->tag_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_notice(&dev->sbd.core, "Synchronizing disk cache\n");
 	ps3disk_sync_cache(dev);
 	ps3stor_teardown(dev);
 	kfree(dev->bounce_buf);
 	kfree(priv);
 	ps3_system_bus_set_drvdata(_dev, NULL);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ps3_system_bus_driver ps3disk = {

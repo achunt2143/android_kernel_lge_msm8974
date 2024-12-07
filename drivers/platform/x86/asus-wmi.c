@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Asus PC WMI hotkey driver
  *
@@ -12,60 +9,10 @@
  * Copyright (C) 2005 Miloslav Trmac <mitr@volny.cz>
  * Copyright (C) 2005 Bernhard Rosenkraenzer <bero@arklinux.org>
  * Copyright (C) 2005 Dmitry Torokhov <dtor@mail.ru>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/types.h>
-#include <linux/slab.h>
-#include <linux/input.h>
-#include <linux/input/sparse-keymap.h>
-#include <linux/fb.h>
-#include <linux/backlight.h>
-#include <linux/leds.h>
-#include <linux/rfkill.h>
-#include <linux/pci.h>
-#include <linux/pci_hotplug.h>
-#include <linux/hwmon.h>
-#include <linux/hwmon-sysfs.h>
-#include <linux/debugfs.h>
-#include <linux/seq_file.h>
-#include <linux/platform_device.h>
-#include <linux/thermal.h>
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-
-#include "asus-wmi.h"
-
-MODULE_AUTHOR("Corentin Chary <corentincj@iksaif.net>, "
-	      "Yong Wang <yong.y.wang@intel.com>");
-MODULE_DESCRIPTION("Asus Generic WMI Driver");
-MODULE_LICENSE("GPL");
-
-#define to_platform_driver(drv)					\
-	(container_of((drv), struct platform_driver, driver))
-=======
 #include <linux/acpi.h>
 #include <linux/backlight.h>
 #include <linux/debugfs.h>
@@ -105,7 +52,6 @@ MODULE_LICENSE("GPL");
 
 static bool fnlock_default = true;
 module_param(fnlock_default, bool, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define to_asus_wmi_driver(pdrv)					\
 	(container_of((pdrv), struct asus_wmi_driver, platform_driver))
@@ -116,85 +62,6 @@ module_param(fnlock_default, bool, 0444);
 #define NOTIFY_BRNUP_MAX		0x1f
 #define NOTIFY_BRNDOWN_MIN		0x20
 #define NOTIFY_BRNDOWN_MAX		0x2e
-<<<<<<< HEAD
-#define NOTIFY_KBD_BRTUP		0xc4
-#define NOTIFY_KBD_BRTDWN		0xc5
-
-/* WMI Methods */
-#define ASUS_WMI_METHODID_SPEC	        0x43455053 /* BIOS SPECification */
-#define ASUS_WMI_METHODID_SFBD		0x44424653 /* Set First Boot Device */
-#define ASUS_WMI_METHODID_GLCD		0x44434C47 /* Get LCD status */
-#define ASUS_WMI_METHODID_GPID		0x44495047 /* Get Panel ID?? (Resol) */
-#define ASUS_WMI_METHODID_QMOD		0x444F4D51 /* Quiet MODe */
-#define ASUS_WMI_METHODID_SPLV		0x4C425053 /* Set Panel Light Value */
-#define ASUS_WMI_METHODID_SFUN		0x4E554653 /* FUNCtionalities */
-#define ASUS_WMI_METHODID_SDSP		0x50534453 /* Set DiSPlay output */
-#define ASUS_WMI_METHODID_GDSP		0x50534447 /* Get DiSPlay output */
-#define ASUS_WMI_METHODID_DEVP		0x50564544 /* DEVice Policy */
-#define ASUS_WMI_METHODID_OSVR		0x5256534F /* OS VeRsion */
-#define ASUS_WMI_METHODID_DSTS		0x53544344 /* Device STatuS */
-#define ASUS_WMI_METHODID_DSTS2		0x53545344 /* Device STatuS #2*/
-#define ASUS_WMI_METHODID_BSTS		0x53545342 /* Bios STatuS ? */
-#define ASUS_WMI_METHODID_DEVS		0x53564544 /* DEVice Set */
-#define ASUS_WMI_METHODID_CFVS		0x53564643 /* CPU Frequency Volt Set */
-#define ASUS_WMI_METHODID_KBFT		0x5446424B /* KeyBoard FilTer */
-#define ASUS_WMI_METHODID_INIT		0x54494E49 /* INITialize */
-#define ASUS_WMI_METHODID_HKEY		0x59454B48 /* Hot KEY ?? */
-
-#define ASUS_WMI_UNSUPPORTED_METHOD	0xFFFFFFFE
-
-/* Wireless */
-#define ASUS_WMI_DEVID_HW_SWITCH	0x00010001
-#define ASUS_WMI_DEVID_WIRELESS_LED	0x00010002
-#define ASUS_WMI_DEVID_CWAP		0x00010003
-#define ASUS_WMI_DEVID_WLAN		0x00010011
-#define ASUS_WMI_DEVID_BLUETOOTH	0x00010013
-#define ASUS_WMI_DEVID_GPS		0x00010015
-#define ASUS_WMI_DEVID_WIMAX		0x00010017
-#define ASUS_WMI_DEVID_WWAN3G		0x00010019
-#define ASUS_WMI_DEVID_UWB		0x00010021
-
-/* Leds */
-/* 0x000200XX and 0x000400XX */
-#define ASUS_WMI_DEVID_LED1		0x00020011
-#define ASUS_WMI_DEVID_LED2		0x00020012
-#define ASUS_WMI_DEVID_LED3		0x00020013
-#define ASUS_WMI_DEVID_LED4		0x00020014
-#define ASUS_WMI_DEVID_LED5		0x00020015
-#define ASUS_WMI_DEVID_LED6		0x00020016
-
-/* Backlight and Brightness */
-#define ASUS_WMI_DEVID_BACKLIGHT	0x00050011
-#define ASUS_WMI_DEVID_BRIGHTNESS	0x00050012
-#define ASUS_WMI_DEVID_KBD_BACKLIGHT	0x00050021
-#define ASUS_WMI_DEVID_LIGHT_SENSOR	0x00050022 /* ?? */
-
-/* Misc */
-#define ASUS_WMI_DEVID_CAMERA		0x00060013
-
-/* Storage */
-#define ASUS_WMI_DEVID_CARDREADER	0x00080013
-
-/* Input */
-#define ASUS_WMI_DEVID_TOUCHPAD		0x00100011
-#define ASUS_WMI_DEVID_TOUCHPAD_LED	0x00100012
-
-/* Fan, Thermal */
-#define ASUS_WMI_DEVID_THERMAL_CTRL	0x00110011
-#define ASUS_WMI_DEVID_FAN_CTRL		0x00110012
-
-/* Power */
-#define ASUS_WMI_DEVID_PROCESSOR_STATE	0x00120012
-
-/* DSTS masks */
-#define ASUS_WMI_DSTS_STATUS_BIT	0x00000001
-#define ASUS_WMI_DSTS_UNKNOWN_BIT	0x00000002
-#define ASUS_WMI_DSTS_PRESENCE_BIT	0x00010000
-#define ASUS_WMI_DSTS_USER_BIT		0x00020000
-#define ASUS_WMI_DSTS_BIOS_BIT		0x00040000
-#define ASUS_WMI_DSTS_BRIGHTNESS_MASK	0x000000FF
-#define ASUS_WMI_DSTS_MAX_BRIGTH_MASK	0x0000FF00
-=======
 #define NOTIFY_FNLOCK_TOGGLE		0x4e
 #define NOTIFY_KBD_DOCK_CHANGE		0x75
 #define NOTIFY_KBD_BRTUP		0xc4
@@ -277,13 +144,10 @@ static bool ashs_present(void)
 	}
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bios_args {
 	u32 arg0;
 	u32 arg1;
-<<<<<<< HEAD
-=======
 	u32 arg2; /* At least TUF Gaming series uses 3 dword input buffer. */
 	u32 arg3;
 	u32 arg4; /* Some ROG laptops require a full 5 input args */
@@ -307,7 +171,6 @@ struct agfn_fan_args {
 	struct agfn_args agfn;	/* common fields */
 	u8 fan;			/* fan number: 0: set auto mode 1: 1st fan */
 	u32 speed;		/* read: RPM/100 - write: 0-255 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /*
@@ -332,8 +195,6 @@ struct asus_rfkill {
 	u32 dev_id;
 };
 
-<<<<<<< HEAD
-=======
 enum fan_type {
 	FAN_TYPE_NONE = 0,
 	FAN_TYPE_AGFN,		/* deprecated on newer platforms */
@@ -347,7 +208,6 @@ struct fan_curve_data {
 	u8 percents[FAN_CURVE_POINTS];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct asus_wmi {
 	int dsts_id;
 	int spec;
@@ -355,26 +215,15 @@ struct asus_wmi {
 
 	struct input_dev *inputdev;
 	struct backlight_device *backlight_device;
-<<<<<<< HEAD
-	struct device *hwmon_device;
-	struct platform_device *platform_device;
-
-=======
 	struct backlight_device *screenpad_backlight_device;
 	struct platform_device *platform_device;
 
 	struct led_classdev wlan_led;
 	int wlan_led_wk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct led_classdev tpd_led;
 	int tpd_led_wk;
 	struct led_classdev kbd_led;
 	int kbd_led_wk;
-<<<<<<< HEAD
-	struct workqueue_struct *led_workqueue;
-	struct work_struct tpd_led_work;
-	struct work_struct kbd_led_work;
-=======
 	struct led_classdev lightbar_led;
 	int lightbar_led_wk;
 	struct led_classdev micmute_led;
@@ -382,7 +231,6 @@ struct asus_wmi {
 	struct work_struct tpd_led_work;
 	struct work_struct wlan_led_work;
 	struct work_struct lightbar_led_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct asus_rfkill wlan;
 	struct asus_rfkill bluetooth;
@@ -391,9 +239,6 @@ struct asus_wmi {
 	struct asus_rfkill gps;
 	struct asus_rfkill uwb;
 
-<<<<<<< HEAD
-	struct hotplug_slot *hotplug_slot;
-=======
 	int tablet_switch_event_code;
 	u32 tablet_switch_dev_id;
 	bool tablet_switch_inverted;
@@ -446,97 +291,35 @@ struct asus_wmi {
 	bool mini_led_mode_available;
 
 	struct hotplug_slot hotplug_slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex hotplug_lock;
 	struct mutex wmi_lock;
 	struct workqueue_struct *hotplug_workqueue;
 	struct work_struct hotplug_work;
 
-<<<<<<< HEAD
-=======
 	bool fnlock_locked;
 
 	/* The ROG Ally device requires the MCU USB device be disconnected before suspend */
 	bool ally_mcu_usb_switch;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct asus_wmi_debug debug;
 
 	struct asus_wmi_driver *driver;
 };
 
-<<<<<<< HEAD
-static int asus_wmi_input_init(struct asus_wmi *asus)
-{
-	int err;
-
-	asus->inputdev = input_allocate_device();
-	if (!asus->inputdev)
-		return -ENOMEM;
-
-	asus->inputdev->name = asus->driver->input_name;
-	asus->inputdev->phys = asus->driver->input_phys;
-	asus->inputdev->id.bustype = BUS_HOST;
-	asus->inputdev->dev.parent = &asus->platform_device->dev;
-	set_bit(EV_REP, asus->inputdev->evbit);
-
-	err = sparse_keymap_setup(asus->inputdev, asus->driver->keymap, NULL);
-	if (err)
-		goto err_free_dev;
-
-	err = input_register_device(asus->inputdev);
-	if (err)
-		goto err_free_keymap;
-
-	return 0;
-
-err_free_keymap:
-	sparse_keymap_free(asus->inputdev);
-err_free_dev:
-	input_free_device(asus->inputdev);
-	return err;
-}
-
-static void asus_wmi_input_exit(struct asus_wmi *asus)
-{
-	if (asus->inputdev) {
-		sparse_keymap_free(asus->inputdev);
-		input_unregister_device(asus->inputdev);
-	}
-
-	asus->inputdev = NULL;
-}
-
-static int asus_wmi_evaluate_method(u32 method_id, u32 arg0, u32 arg1,
-				    u32 *retval)
-=======
 /* WMI ************************************************************************/
 
 static int asus_wmi_evaluate_method3(u32 method_id,
 		u32 arg0, u32 arg1, u32 arg2, u32 *retval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bios_args args = {
 		.arg0 = arg0,
 		.arg1 = arg1,
-<<<<<<< HEAD
-=======
 		.arg2 = arg2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct acpi_buffer input = { (acpi_size) sizeof(args), &args };
 	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
 	acpi_status status;
 	union acpi_object *obj;
-<<<<<<< HEAD
-	u32 tmp;
-
-	status = wmi_evaluate_method(ASUS_WMI_MGMT_GUID, 1, method_id,
-				     &input, &output);
-
-	if (ACPI_FAILURE(status))
-		goto exit;
-=======
 	u32 tmp = 0;
 
 	status = wmi_evaluate_method(ASUS_WMI_MGMT_GUID, 0, method_id,
@@ -544,40 +327,22 @@ static int asus_wmi_evaluate_method3(u32 method_id,
 
 	if (ACPI_FAILURE(status))
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	obj = (union acpi_object *)output.pointer;
 	if (obj && obj->type == ACPI_TYPE_INTEGER)
 		tmp = (u32) obj->integer.value;
-<<<<<<< HEAD
-	else
-		tmp = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (retval)
 		*retval = tmp;
 
 	kfree(obj);
 
-<<<<<<< HEAD
-exit:
-	if (ACPI_FAILURE(status))
-		return -EIO;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tmp == ASUS_WMI_UNSUPPORTED_METHOD)
 		return -ENODEV;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int asus_wmi_get_devstate(struct asus_wmi *asus, u32 dev_id, u32 *retval)
-{
-	return asus_wmi_evaluate_method(asus->dsts_id, dev_id, 0, retval);
-=======
 int asus_wmi_evaluate_method(u32 method_id, u32 arg0, u32 arg1, u32 *retval)
 {
 	return asus_wmi_evaluate_method3(method_id, arg0, arg1, 0, retval);
@@ -727,7 +492,6 @@ static int asus_wmi_get_devstate(struct asus_wmi *asus, u32 dev_id, u32 *retval)
 		return -ENODEV;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int asus_wmi_set_devstate(u32 dev_id, u32 ctrl_param,
@@ -745,10 +509,6 @@ static int asus_wmi_get_devstate_bits(struct asus_wmi *asus,
 	int err;
 
 	err = asus_wmi_get_devstate(asus, dev_id, &retval);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -769,11 +529,6 @@ static int asus_wmi_get_devstate_simple(struct asus_wmi *asus, u32 dev_id)
 					  ASUS_WMI_DSTS_STATUS_BIT);
 }
 
-<<<<<<< HEAD
-/*
- * LEDs
- */
-=======
 static bool asus_wmi_dev_is_present(struct asus_wmi *asus, u32 dev_id)
 {
 	u32 retval;
@@ -1572,7 +1327,6 @@ static void asus_wmi_battery_exit(struct asus_wmi *asus)
 
 /* LEDs ***********************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These functions actually update the LED's, and are called from a
  * workqueue. By doing this as separate work rather than when the LED
@@ -1615,28 +1369,11 @@ static enum led_brightness tpd_led_get(struct led_classdev *led_cdev)
 	return read_tpd_led_state(asus);
 }
 
-<<<<<<< HEAD
-static void kbd_led_update(struct work_struct *work)
-{
-	int ctrl_param = 0;
-	struct asus_wmi *asus;
-
-	asus = container_of(work, struct asus_wmi, kbd_led_work);
-
-	/*
-	 * bits 0-2: level
-	 * bit 7: light on/off
-	 */
-	if (asus->kbd_led_wk > 0)
-		ctrl_param = 0x80 | (asus->kbd_led_wk & 0x7F);
-
-=======
 static void kbd_led_update(struct asus_wmi *asus)
 {
 	int ctrl_param = 0;
 
 	ctrl_param = 0x80 | (asus->kbd_led_wk & 0x7F);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asus_wmi_set_devstate(ASUS_WMI_DEVID_KBD_BACKLIGHT, ctrl_param, NULL);
 }
 
@@ -1657,17 +1394,6 @@ static int kbd_led_read(struct asus_wmi *asus, int *level, int *env)
 	if (retval == 0x8000)
 		retval = 0;
 
-<<<<<<< HEAD
-	if (retval >= 0) {
-		if (level)
-			*level = retval & 0x7F;
-		if (env)
-			*env = (retval >> 8) & 0x7F;
-		retval = 0;
-	}
-
-	return retval;
-=======
 	if (retval < 0)
 		return retval;
 
@@ -1688,25 +1414,11 @@ static void do_kbd_led_set(struct led_classdev *led_cdev, int value)
 
 	asus->kbd_led_wk = clamp_val(value, 0, max_level);
 	kbd_led_update(asus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kbd_led_set(struct led_classdev *led_cdev,
 			enum led_brightness value)
 {
-<<<<<<< HEAD
-	struct asus_wmi *asus;
-
-	asus = container_of(led_cdev, struct asus_wmi, kbd_led);
-
-	if (value > asus->kbd_led.max_brightness)
-		value = asus->kbd_led.max_brightness;
-	else if (value < 0)
-		value = 0;
-
-	asus->kbd_led_wk = value;
-	queue_work(asus->led_workqueue, &asus->kbd_led_work);
-=======
 	/* Prevent disabling keyboard backlight on module unregister */
 	if (led_cdev->flags & LED_UNREGISTERING)
 		return;
@@ -1720,7 +1432,6 @@ static void kbd_led_set_by_kbd(struct asus_wmi *asus, enum led_brightness value)
 
 	do_kbd_led_set(led_cdev, value);
 	led_classdev_notify_brightness_hw_changed(led_cdev, asus->kbd_led_wk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum led_brightness kbd_led_get(struct led_classdev *led_cdev)
@@ -1731,24 +1442,12 @@ static enum led_brightness kbd_led_get(struct led_classdev *led_cdev)
 	asus = container_of(led_cdev, struct asus_wmi, kbd_led);
 
 	retval = kbd_led_read(asus, &value, NULL);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval < 0)
 		return retval;
 
 	return value;
 }
 
-<<<<<<< HEAD
-static void asus_wmi_led_exit(struct asus_wmi *asus)
-{
-	if (!IS_ERR_OR_NULL(asus->kbd_led.dev))
-		led_classdev_unregister(&asus->kbd_led);
-	if (!IS_ERR_OR_NULL(asus->tpd_led.dev))
-		led_classdev_unregister(&asus->tpd_led);
-=======
 static int wlan_led_unknown_state(struct asus_wmi *asus)
 {
 	u32 result;
@@ -1842,23 +1541,18 @@ static void asus_wmi_led_exit(struct asus_wmi *asus)
 	led_classdev_unregister(&asus->lightbar_led);
 	led_classdev_unregister(&asus->micmute_led);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (asus->led_workqueue)
 		destroy_workqueue(asus->led_workqueue);
 }
 
 static int asus_wmi_led_init(struct asus_wmi *asus)
 {
-<<<<<<< HEAD
-	int rv = 0;
-=======
 	int rv = 0, num_rgb_groups = 0, led_val;
 
 	if (asus->kbd_rgb_mode_available)
 		kbd_rgb_mode_groups[num_rgb_groups++] = &kbd_rgb_mode_group;
 	if (asus->kbd_rgb_state_available)
 		kbd_rgb_mode_groups[num_rgb_groups++] = &kbd_rgb_state_group;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	asus->led_workqueue = create_singlethread_workqueue("led_workqueue");
 	if (!asus->led_workqueue)
@@ -1878,25 +1572,14 @@ static int asus_wmi_led_init(struct asus_wmi *asus)
 			goto error;
 	}
 
-<<<<<<< HEAD
-	if (kbd_led_read(asus, NULL, NULL) >= 0) {
-		INIT_WORK(&asus->kbd_led_work, kbd_led_update);
-
-		asus->kbd_led.name = "asus::kbd_backlight";
-=======
 	if (!kbd_led_read(asus, &led_val, NULL)) {
 		asus->kbd_led_wk = led_val;
 		asus->kbd_led.name = "asus::kbd_backlight";
 		asus->kbd_led.flags = LED_BRIGHT_HW_CHANGED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asus->kbd_led.brightness_set = kbd_led_set;
 		asus->kbd_led.brightness_get = kbd_led_get;
 		asus->kbd_led.max_brightness = 3;
 
-<<<<<<< HEAD
-		rv = led_classdev_register(&asus->platform_device->dev,
-					   &asus->kbd_led);
-=======
 		if (num_rgb_groups != 0)
 			asus->kbd_led.groups = kbd_rgb_mode_groups;
 
@@ -1946,7 +1629,6 @@ static int asus_wmi_led_init(struct asus_wmi *asus)
 						&asus->micmute_led);
 		if (rv)
 			goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 error:
@@ -1956,10 +1638,7 @@ error:
 	return rv;
 }
 
-<<<<<<< HEAD
-=======
 /* RF *************************************************************************/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PCI hotplug (for wlan rfkill)
@@ -1986,19 +1665,12 @@ static void asus_rfkill_hotplug(struct asus_wmi *asus)
 	mutex_unlock(&asus->wmi_lock);
 
 	mutex_lock(&asus->hotplug_lock);
-<<<<<<< HEAD
-=======
 	pci_lock_rescan_remove();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (asus->wlan.rfkill)
 		rfkill_set_sw_state(asus->wlan.rfkill, blocked);
 
-<<<<<<< HEAD
-	if (asus->hotplug_slot) {
-=======
 	if (asus->hotplug_slot.ops) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bus = pci_find_bus(0, 1);
 		if (!bus) {
 			pr_warn("Unable to find PCI bus 1?\n");
@@ -2012,19 +1684,10 @@ static void asus_rfkill_hotplug(struct asus_wmi *asus)
 		absent = (l == 0xffffffff);
 
 		if (blocked != absent) {
-<<<<<<< HEAD
-			pr_warn("BIOS says wireless lan is %s, "
-				"but the pci device is %s\n",
-				blocked ? "blocked" : "unblocked",
-				absent ? "absent" : "present");
-			pr_warn("skipped wireless hotplug as probably "
-				"inappropriate for this model\n");
-=======
 			pr_warn("BIOS says wireless lan is %s, but the pci device is %s\n",
 				blocked ? "blocked" : "unblocked",
 				absent ? "absent" : "present");
 			pr_warn("skipped wireless hotplug as probably inappropriate for this model\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_unlock;
 		}
 
@@ -2038,12 +1701,7 @@ static void asus_rfkill_hotplug(struct asus_wmi *asus)
 			dev = pci_scan_single_device(bus, 0);
 			if (dev) {
 				pci_bus_assign_resources(bus);
-<<<<<<< HEAD
-				if (pci_bus_add_device(dev))
-					pr_err("Unable to hotplug wifi\n");
-=======
 				pci_bus_add_device(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			dev = pci_get_slot(bus, 0);
@@ -2055,10 +1713,7 @@ static void asus_rfkill_hotplug(struct asus_wmi *asus)
 	}
 
 out_unlock:
-<<<<<<< HEAD
-=======
 	pci_unlock_rescan_remove();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&asus->hotplug_lock);
 }
 
@@ -2085,18 +1740,6 @@ static int asus_register_rfkill_notifier(struct asus_wmi *asus, char *node)
 	acpi_handle handle;
 
 	status = acpi_get_handle(NULL, node, &handle);
-<<<<<<< HEAD
-
-	if (ACPI_SUCCESS(status)) {
-		status = acpi_install_notify_handler(handle,
-						     ACPI_SYSTEM_NOTIFY,
-						     asus_rfkill_notify, asus);
-		if (ACPI_FAILURE(status))
-			pr_warn("Failed to register notify on %s\n", node);
-	} else
-		return -ENODEV;
-
-=======
 	if (ACPI_FAILURE(status))
 		return -ENODEV;
 
@@ -2105,7 +1748,6 @@ static int asus_register_rfkill_notifier(struct asus_wmi *asus, char *node)
 	if (ACPI_FAILURE(status))
 		pr_warn("Failed to register notify on %s\n", node);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2115,17 +1757,6 @@ static void asus_unregister_rfkill_notifier(struct asus_wmi *asus, char *node)
 	acpi_handle handle;
 
 	status = acpi_get_handle(NULL, node, &handle);
-<<<<<<< HEAD
-
-	if (ACPI_SUCCESS(status)) {
-		status = acpi_remove_notify_handler(handle,
-						    ACPI_SYSTEM_NOTIFY,
-						    asus_rfkill_notify);
-		if (ACPI_FAILURE(status))
-			pr_err("Error removing rfkill notify handler %s\n",
-			       node);
-	}
-=======
 	if (ACPI_FAILURE(status))
 		return;
 
@@ -2133,18 +1764,13 @@ static void asus_unregister_rfkill_notifier(struct asus_wmi *asus, char *node)
 					    asus_rfkill_notify);
 	if (ACPI_FAILURE(status))
 		pr_err("Error removing rfkill notify handler %s\n", node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int asus_get_adapter_status(struct hotplug_slot *hotplug_slot,
 				   u8 *value)
 {
-<<<<<<< HEAD
-	struct asus_wmi *asus = hotplug_slot->private;
-=======
 	struct asus_wmi *asus = container_of(hotplug_slot,
 					     struct asus_wmi, hotplug_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_WLAN);
 
 	if (result < 0)
@@ -2154,18 +1780,7 @@ static int asus_get_adapter_status(struct hotplug_slot *hotplug_slot,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void asus_cleanup_pci_hotplug(struct hotplug_slot *hotplug_slot)
-{
-	kfree(hotplug_slot->info);
-	kfree(hotplug_slot);
-}
-
-static struct hotplug_slot_ops asus_hotplug_slot_ops = {
-	.owner = THIS_MODULE,
-=======
 static const struct hotplug_slot_ops asus_hotplug_slot_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_adapter_status = asus_get_adapter_status,
 	.get_power_status = asus_get_adapter_status,
 };
@@ -2195,28 +1810,9 @@ static int asus_setup_pci_hotplug(struct asus_wmi *asus)
 
 	INIT_WORK(&asus->hotplug_work, asus_hotplug_work);
 
-<<<<<<< HEAD
-	asus->hotplug_slot = kzalloc(sizeof(struct hotplug_slot), GFP_KERNEL);
-	if (!asus->hotplug_slot)
-		goto error_slot;
-
-	asus->hotplug_slot->info = kzalloc(sizeof(struct hotplug_slot_info),
-					   GFP_KERNEL);
-	if (!asus->hotplug_slot->info)
-		goto error_info;
-
-	asus->hotplug_slot->private = asus;
-	asus->hotplug_slot->release = &asus_cleanup_pci_hotplug;
-	asus->hotplug_slot->ops = &asus_hotplug_slot_ops;
-	asus_get_adapter_status(asus->hotplug_slot,
-				&asus->hotplug_slot->info->adapter_status);
-
-	ret = pci_hp_register(asus->hotplug_slot, bus, 0, "asus-wifi");
-=======
 	asus->hotplug_slot.ops = &asus_hotplug_slot_ops;
 
 	ret = pci_hp_register(&asus->hotplug_slot, bus, 0, "asus-wifi");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		pr_err("Unable to register hotplug slot - %d\n", ret);
 		goto error_register;
@@ -2225,15 +1821,7 @@ static int asus_setup_pci_hotplug(struct asus_wmi *asus)
 	return 0;
 
 error_register:
-<<<<<<< HEAD
-	kfree(asus->hotplug_slot->info);
-error_info:
-	kfree(asus->hotplug_slot);
-	asus->hotplug_slot = NULL;
-error_slot:
-=======
 	asus->hotplug_slot.ops = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(asus->hotplug_workqueue);
 error_workqueue:
 	return ret;
@@ -2246,10 +1834,6 @@ static int asus_rfkill_set(void *data, bool blocked)
 {
 	struct asus_rfkill *priv = data;
 	u32 ctrl_param = !blocked;
-<<<<<<< HEAD
-
-	return asus_wmi_set_devstate(priv->dev_id, ctrl_param, NULL);
-=======
 	u32 dev_id = priv->dev_id;
 
 	/*
@@ -2265,7 +1849,6 @@ static int asus_rfkill_set(void *data, bool blocked)
 		dev_id = ASUS_WMI_DEVID_WLAN_LED;
 
 	return asus_wmi_set_devstate(dev_id, ctrl_param, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void asus_rfkill_query(struct rfkill *rfkill, void *data)
@@ -2334,13 +1917,10 @@ static int asus_new_rfkill(struct asus_wmi *asus,
 	if (!*rfkill)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if ((dev_id == ASUS_WMI_DEVID_WLAN) &&
 			(asus->driver->quirks->wapf > 0))
 		rfkill_set_led_trigger_name(*rfkill, "asus-wlan");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfkill_init_sw_state(*rfkill, !result);
 	result = rfkill_register(*rfkill);
 	if (result) {
@@ -2353,12 +1933,9 @@ static int asus_new_rfkill(struct asus_wmi *asus,
 
 static void asus_wmi_rfkill_exit(struct asus_wmi *asus)
 {
-<<<<<<< HEAD
-=======
 	if (asus->driver->wlan_ctrl_by_user && ashs_present())
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asus_unregister_rfkill_notifier(asus, "\\_SB.PCI0.P0P5");
 	asus_unregister_rfkill_notifier(asus, "\\_SB.PCI0.P0P6");
 	asus_unregister_rfkill_notifier(asus, "\\_SB.PCI0.P0P7");
@@ -2372,13 +1949,8 @@ static void asus_wmi_rfkill_exit(struct asus_wmi *asus)
 	 * asus_unregister_rfkill_notifier()
 	 */
 	asus_rfkill_hotplug(asus);
-<<<<<<< HEAD
-	if (asus->hotplug_slot)
-		pci_hp_deregister(asus->hotplug_slot);
-=======
 	if (asus->hotplug_slot.ops)
 		pci_hp_deregister(&asus->hotplug_slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (asus->hotplug_workqueue)
 		destroy_workqueue(asus->hotplug_workqueue);
 
@@ -2483,12 +2055,6 @@ exit:
 	return result;
 }
 
-<<<<<<< HEAD
-/*
- * Hwmon device
- */
-static ssize_t asus_hwmon_pwm1(struct device *dev,
-=======
 /* Panel Overdrive ************************************************************/
 static ssize_t panel_od_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
@@ -2751,18 +2317,10 @@ static int asus_fan_set_auto(struct asus_wmi *asus)
 }
 
 static ssize_t pwm1_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr,
 			       char *buf)
 {
 	struct asus_wmi *asus = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	u32 value;
-	int err;
-
-	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_FAN_CTRL, &value);
-
-=======
 	int err;
 	int value;
 
@@ -2775,7 +2333,6 @@ static ssize_t pwm1_show(struct device *dev,
 	 * we read a current value through the (now-deprecated) FAN_CTRL device.
 	 */
 	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_FAN_CTRL, &value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -2787,14 +2344,6 @@ static ssize_t pwm1_show(struct device *dev,
 		value = 170;
 	else if (value == 3)
 		value = 255;
-<<<<<<< HEAD
-	else if (value != 0) {
-		pr_err("Unknown fan speed %#x", value);
-		value = -1;
-	}
-
-	return sprintf(buf, "%d\n", value);
-=======
 	else if (value) {
 		pr_err("Unknown fan speed %#x\n", value);
 		value = -1;
@@ -2949,7 +2498,6 @@ static ssize_t fan1_label_show(struct device *dev,
 					  char *buf)
 {
 	return sysfs_emit(buf, "%s\n", ASUS_FAN_DESC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t asus_hwmon_temp1(struct device *dev,
@@ -2961,31 +2509,6 @@ static ssize_t asus_hwmon_temp1(struct device *dev,
 	int err;
 
 	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_THERMAL_CTRL, &value);
-<<<<<<< HEAD
-
-	if (err < 0)
-		return err;
-
-	value = KELVIN_TO_CELSIUS((value & 0xFFFF)) * 1000;
-
-	return sprintf(buf, "%d\n", value);
-}
-
-static SENSOR_DEVICE_ATTR(pwm1, S_IRUGO, asus_hwmon_pwm1, NULL, 0);
-static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, asus_hwmon_temp1, NULL, 0);
-
-static ssize_t
-show_name(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	return sprintf(buf, "asus\n");
-}
-static SENSOR_DEVICE_ATTR(name, S_IRUGO, show_name, NULL, 0);
-
-static struct attribute *hwmon_attributes[] = {
-	&sensor_dev_attr_pwm1.dev_attr.attr,
-	&sensor_dev_attr_temp1_input.dev_attr.attr,
-	&sensor_dev_attr_name.dev_attr.attr,
-=======
 	if (err < 0)
 		return err;
 
@@ -3165,78 +2688,12 @@ static struct attribute *hwmon_attributes[] = {
 	&dev_attr_fan3_label.attr,
 
 	&dev_attr_temp1_input.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
 static umode_t asus_hwmon_sysfs_is_visible(struct kobject *kobj,
 					  struct attribute *attr, int idx)
 {
-<<<<<<< HEAD
-	struct device *dev = container_of(kobj, struct device, kobj);
-	struct platform_device *pdev = to_platform_device(dev->parent);
-	struct asus_wmi *asus = platform_get_drvdata(pdev);
-	bool ok = true;
-	int dev_id = -1;
-	u32 value = ASUS_WMI_UNSUPPORTED_METHOD;
-
-	if (attr == &sensor_dev_attr_pwm1.dev_attr.attr)
-		dev_id = ASUS_WMI_DEVID_FAN_CTRL;
-	else if (attr == &sensor_dev_attr_temp1_input.dev_attr.attr)
-		dev_id = ASUS_WMI_DEVID_THERMAL_CTRL;
-
-	if (dev_id != -1) {
-		int err = asus_wmi_get_devstate(asus, dev_id, &value);
-
-		if (err < 0)
-			return 0; /* can't return negative here */
-	}
-
-	if (dev_id == ASUS_WMI_DEVID_FAN_CTRL) {
-		/*
-		 * We need to find a better way, probably using sfun,
-		 * bits or spec ...
-		 * Currently we disable it if:
-		 * - ASUS_WMI_UNSUPPORTED_METHOD is returned
-		 * - reverved bits are non-zero
-		 * - sfun and presence bit are not set
-		 */
-		if (value == ASUS_WMI_UNSUPPORTED_METHOD || value & 0xFFF80000
-		    || (!asus->sfun && !(value & ASUS_WMI_DSTS_PRESENCE_BIT)))
-			ok = false;
-	} else if (dev_id == ASUS_WMI_DEVID_THERMAL_CTRL) {
-		/* If value is zero, something is clearly wrong */
-		if (value == 0)
-			ok = false;
-	}
-
-	return ok ? attr->mode : 0;
-}
-
-static struct attribute_group hwmon_attribute_group = {
-	.is_visible = asus_hwmon_sysfs_is_visible,
-	.attrs = hwmon_attributes
-};
-
-static void asus_wmi_hwmon_exit(struct asus_wmi *asus)
-{
-	struct device *hwmon;
-
-	hwmon = asus->hwmon_device;
-	if (!hwmon)
-		return;
-	sysfs_remove_group(&hwmon->kobj, &hwmon_attribute_group);
-	hwmon_device_unregister(hwmon);
-	asus->hwmon_device = NULL;
-}
-
-static int asus_wmi_hwmon_init(struct asus_wmi *asus)
-{
-	struct device *hwmon;
-	int result;
-
-	hwmon = hwmon_device_register(&asus->platform_device->dev);
-=======
 	struct device *dev = kobj_to_dev(kobj);
 	struct asus_wmi *asus = dev_get_drvdata(dev->parent);
 	u32 value = ASUS_WMI_UNSUPPORTED_METHOD;
@@ -3292,27 +2749,10 @@ static int asus_wmi_hwmon_init(struct asus_wmi *asus)
 	hwmon = devm_hwmon_device_register_with_groups(dev, "asus", asus,
 			hwmon_attribute_groups);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(hwmon)) {
 		pr_err("Could not register asus hwmon device\n");
 		return PTR_ERR(hwmon);
 	}
-<<<<<<< HEAD
-	dev_set_drvdata(hwmon, asus);
-	asus->hwmon_device = hwmon;
-	result = sysfs_create_group(&hwmon->kobj, &hwmon_attribute_group);
-	if (result)
-		asus_wmi_hwmon_exit(asus);
-	return result;
-}
-
-/*
- * Backlight
- */
-static int read_backlight_power(struct asus_wmi *asus)
-{
-	int ret;
-=======
 	return 0;
 }
 
@@ -4177,7 +3617,6 @@ static int read_backlight_power(struct asus_wmi *asus)
 {
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (asus->driver->quirks->store_backlight_power)
 		ret = !asus->driver->panel_power;
 	else
@@ -4196,10 +3635,6 @@ static int read_brightness_max(struct asus_wmi *asus)
 	int err;
 
 	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_BRIGHTNESS, &retval);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -4219,10 +3654,6 @@ static int read_brightness(struct backlight_device *bd)
 	int err;
 
 	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_BRIGHTNESS, &retval);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -4308,21 +3739,10 @@ static int asus_wmi_backlight_init(struct asus_wmi *asus)
 	int power;
 
 	max = read_brightness_max(asus);
-<<<<<<< HEAD
-
-	if (max == -ENODEV)
-		max = 0;
-	else if (max < 0)
-		return max;
-
-	power = read_backlight_power(asus);
-
-=======
 	if (max < 0)
 		return max;
 
 	power = read_backlight_power(asus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (power == -ENODEV)
 		power = FB_BLANK_UNBLANK;
 	else if (power < 0)
@@ -4355,21 +3775,11 @@ static int asus_wmi_backlight_init(struct asus_wmi *asus)
 
 static void asus_wmi_backlight_exit(struct asus_wmi *asus)
 {
-<<<<<<< HEAD
-	if (asus->backlight_device)
-		backlight_device_unregister(asus->backlight_device);
-=======
 	backlight_device_unregister(asus->backlight_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	asus->backlight_device = NULL;
 }
 
-<<<<<<< HEAD
-static void asus_wmi_notify(u32 value, void *context)
-{
-	struct asus_wmi *asus = context;
-=======
 static int is_display_toggle(int code)
 {
 	/* display toggle keys */
@@ -4523,39 +3933,20 @@ static void asus_wmi_fnlock_update(struct asus_wmi *asus)
 
 static int asus_wmi_get_event_code(u32 value)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_buffer response = { ACPI_ALLOCATE_BUFFER, NULL };
 	union acpi_object *obj;
 	acpi_status status;
 	int code;
-<<<<<<< HEAD
-	int orig_code;
-	unsigned int key_value = 1;
-	bool autorelease = 1;
-
-	status = wmi_get_event_data(value, &response);
-	if (status != AE_OK) {
-		pr_err("bad event status 0x%x\n", status);
-		return;
-=======
 
 	status = wmi_get_event_data(value, &response);
 	if (ACPI_FAILURE(status)) {
 		pr_warn("Failed to get WMI notify code: %s\n",
 				acpi_format_exception(status));
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	obj = (union acpi_object *)response.pointer;
 
-<<<<<<< HEAD
-	if (!obj || obj->type != ACPI_TYPE_INTEGER)
-		goto exit;
-
-	code = obj->integer.value;
-	orig_code = code;
-=======
 	if (obj && obj->type == ACPI_TYPE_INTEGER)
 		code = (int)(obj->integer.value & WMI_EVENT_MASK);
 	else
@@ -4569,46 +3960,11 @@ static void asus_wmi_handle_event_code(int code, struct asus_wmi *asus)
 {
 	unsigned int key_value = 1;
 	bool autorelease = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (asus->driver->key_filter) {
 		asus->driver->key_filter(asus->driver, &code, &key_value,
 					 &autorelease);
 		if (code == ASUS_WMI_KEY_IGNORE)
-<<<<<<< HEAD
-			goto exit;
-	}
-
-	if (code >= NOTIFY_BRNUP_MIN && code <= NOTIFY_BRNUP_MAX)
-		code = NOTIFY_BRNUP_MIN;
-	else if (code >= NOTIFY_BRNDOWN_MIN &&
-		 code <= NOTIFY_BRNDOWN_MAX)
-		code = NOTIFY_BRNDOWN_MIN;
-
-	if (code == NOTIFY_BRNUP_MIN || code == NOTIFY_BRNDOWN_MIN) {
-		if (!acpi_video_backlight_support())
-			asus_wmi_backlight_notify(asus, orig_code);
-	} else if (!sparse_keymap_report_event(asus->inputdev, code,
-					       key_value, autorelease))
-		pr_info("Unknown key %x pressed\n", code);
-
-exit:
-	kfree(obj);
-}
-
-/*
- * Sys helpers
- */
-static int parse_arg(const char *buf, unsigned long count, int *val)
-{
-	if (!count)
-		return 0;
-	if (sscanf(buf, "%i", val) != 1)
-		return -EINVAL;
-	return count;
-}
-
-=======
 			return;
 	}
 
@@ -4677,26 +4033,10 @@ static void asus_wmi_notify(u32 value, void *context)
 
 /* Sysfs **********************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t store_sys_wmi(struct asus_wmi *asus, int devid,
 			     const char *buf, size_t count)
 {
 	u32 retval;
-<<<<<<< HEAD
-	int rv, err, value;
-
-	value = asus_wmi_get_devstate_simple(asus, devid);
-	if (value == -ENODEV)	/* Check device presence */
-		return value;
-
-	rv = parse_arg(buf, count, &value);
-	err = asus_wmi_set_devstate(devid, value, &retval);
-
-	if (err < 0)
-		return err;
-
-	return rv;
-=======
 	int err, value;
 
 	value = asus_wmi_get_devstate_simple(asus, devid);
@@ -4712,7 +4052,6 @@ static ssize_t store_sys_wmi(struct asus_wmi *asus, int devid,
 		return err;
 
 	return count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t show_sys_wmi(struct asus_wmi *asus, int devid, char *buf)
@@ -4753,28 +4092,18 @@ static ssize_t show_sys_wmi(struct asus_wmi *asus, int devid, char *buf)
 ASUS_WMI_CREATE_DEVICE_ATTR(touchpad, 0644, ASUS_WMI_DEVID_TOUCHPAD);
 ASUS_WMI_CREATE_DEVICE_ATTR(camera, 0644, ASUS_WMI_DEVID_CAMERA);
 ASUS_WMI_CREATE_DEVICE_ATTR(cardr, 0644, ASUS_WMI_DEVID_CARDREADER);
-<<<<<<< HEAD
-
-static ssize_t store_cpufv(struct device *dev, struct device_attribute *attr,
-=======
 ASUS_WMI_CREATE_DEVICE_ATTR(lid_resume, 0644, ASUS_WMI_DEVID_LID_RESUME);
 ASUS_WMI_CREATE_DEVICE_ATTR(als_enable, 0644, ASUS_WMI_DEVID_ALS_ENABLE);
 
 static ssize_t cpufv_store(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   const char *buf, size_t count)
 {
 	int value, rv;
 
-<<<<<<< HEAD
-	if (!count || sscanf(buf, "%i", &value) != 1)
-		return -EINVAL;
-=======
 	rv = kstrtoint(buf, 0, &value);
 	if (rv)
 		return rv;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (value < 0 || value > 2)
 		return -EINVAL;
 
@@ -4785,19 +4114,13 @@ static ssize_t cpufv_store(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(cpufv, S_IRUGO | S_IWUSR, NULL, store_cpufv);
-=======
 static DEVICE_ATTR_WO(cpufv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *platform_attributes[] = {
 	&dev_attr_cpufv.attr,
 	&dev_attr_camera.attr,
 	&dev_attr_cardr.attr,
 	&dev_attr_touchpad.attr,
-<<<<<<< HEAD
-=======
 	&dev_attr_charge_mode.attr,
 	&dev_attr_egpu_enable.attr,
 	&dev_attr_egpu_connected.attr,
@@ -4816,21 +4139,14 @@ static struct attribute *platform_attributes[] = {
 	&dev_attr_nv_temp_target.attr,
 	&dev_attr_panel_od.attr,
 	&dev_attr_mini_led_mode.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
 static umode_t asus_sysfs_is_visible(struct kobject *kobj,
 				    struct attribute *attr, int idx)
 {
-<<<<<<< HEAD
-	struct device *dev = container_of(kobj, struct device, kobj);
-	struct platform_device *pdev = to_platform_device(dev);
-	struct asus_wmi *asus = platform_get_drvdata(pdev);
-=======
 	struct device *dev = kobj_to_dev(kobj);
 	struct asus_wmi *asus = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool ok = true;
 	int devid = -1;
 
@@ -4840,8 +4156,6 @@ static umode_t asus_sysfs_is_visible(struct kobject *kobj,
 		devid = ASUS_WMI_DEVID_CARDREADER;
 	else if (attr == &dev_attr_touchpad.attr)
 		devid = ASUS_WMI_DEVID_TOUCHPAD;
-<<<<<<< HEAD
-=======
 	else if (attr == &dev_attr_lid_resume.attr)
 		devid = ASUS_WMI_DEVID_LID_RESUME;
 	else if (attr == &dev_attr_als_enable.attr)
@@ -4878,7 +4192,6 @@ static umode_t asus_sysfs_is_visible(struct kobject *kobj,
 		ok = asus->panel_overdrive_available;
 	else if (attr == &dev_attr_mini_led_mode.attr)
 		ok = asus->mini_led_mode_available;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (devid != -1)
 		ok = !(asus_wmi_get_devstate_simple(asus, devid) < 0);
@@ -4886,11 +4199,7 @@ static umode_t asus_sysfs_is_visible(struct kobject *kobj,
 	return ok ? attr->mode : 0;
 }
 
-<<<<<<< HEAD
-static struct attribute_group platform_attribute_group = {
-=======
 static const struct attribute_group platform_attribute_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.is_visible = asus_sysfs_is_visible,
 	.attrs = platform_attributes
 };
@@ -4905,37 +4214,21 @@ static int asus_wmi_sysfs_init(struct platform_device *device)
 	return sysfs_create_group(&device->dev.kobj, &platform_attribute_group);
 }
 
-<<<<<<< HEAD
-/*
- * Platform device
- */
-static int asus_wmi_platform_init(struct asus_wmi *asus)
-{
-=======
 /* Platform device ************************************************************/
 
 static int asus_wmi_platform_init(struct asus_wmi *asus)
 {
 	struct device *dev = &asus->platform_device->dev;
 	char *wmi_uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rv;
 
 	/* INIT enable hotkeys on some models */
 	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_INIT, 0, 0, &rv))
-<<<<<<< HEAD
-		pr_info("Initialization: %#x", rv);
-
-	/* We don't know yet what to do with this version... */
-	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_SPEC, 0, 0x9, &rv)) {
-		pr_info("BIOS WMI version: %d.%d", rv >> 16, rv & 0xFF);
-=======
 		pr_info("Initialization: %#x\n", rv);
 
 	/* We don't know yet what to do with this version... */
 	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_SPEC, 0, 0x9, &rv)) {
 		pr_info("BIOS WMI version: %d.%d\n", rv >> 16, rv & 0xFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asus->spec = rv;
 	}
 
@@ -4946,11 +4239,7 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 	 * The significance of others is yet to be found.
 	 */
 	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_SFUN, 0, 0, &rv)) {
-<<<<<<< HEAD
-		pr_info("SFUN value: %#x", rv);
-=======
 		pr_info("SFUN value: %#x\n", rv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asus->sfun = rv;
 	}
 
@@ -4960,13 +4249,6 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 	 * Note, on most Eeepc, there is no way to check if a method exist
 	 * or note, while on notebooks, they returns 0xFFFFFFFE on failure,
 	 * but once again, SPEC may probably be used for that kind of things.
-<<<<<<< HEAD
-	 */
-	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_DSTS, 0, 0, NULL))
-		asus->dsts_id = ASUS_WMI_METHODID_DSTS;
-	else
-		asus->dsts_id = ASUS_WMI_METHODID_DSTS2;
-=======
 	 *
 	 * Additionally at least TUF Gaming series laptops return nothing for
 	 * unknown methods, so the detection in this way is not possible.
@@ -4985,7 +4267,6 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 		dev_info(dev, "Detected %s, not ASUSWMI, use DSTS\n", wmi_uid);
 		asus->dsts_id = ASUS_WMI_METHODID_DSTS;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* CWAP allow to define the behavior of the Fn+F2 key,
 	 * this method doesn't seems to be present on Eee PCs */
@@ -4993,25 +4274,11 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 		asus_wmi_set_devstate(ASUS_WMI_DEVID_CWAP,
 				      asus->driver->quirks->wapf, NULL);
 
-<<<<<<< HEAD
-	return asus_wmi_sysfs_init(asus->platform_device);
-}
-
-static void asus_wmi_platform_exit(struct asus_wmi *asus)
-{
-	asus_wmi_sysfs_exit(asus->platform_device);
-}
-
-/*
- * debugfs
- */
-=======
 	return 0;
 }
 
 /* debugfs ********************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct asus_wmi_debugfs_node {
 	struct asus_wmi *asus;
 	char *name;
@@ -5025,10 +4292,6 @@ static int show_dsts(struct seq_file *m, void *data)
 	u32 retval = -1;
 
 	err = asus_wmi_get_devstate(asus, asus->debug.dev_id, &retval);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -5045,10 +4308,6 @@ static int show_devs(struct seq_file *m, void *data)
 
 	err = asus_wmi_set_devstate(asus->debug.dev_id, asus->debug.ctrl_param,
 				    &retval);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -5071,11 +4330,7 @@ static int show_call(struct seq_file *m, void *data)
 	acpi_status status;
 
 	status = wmi_evaluate_method(ASUS_WMI_MGMT_GUID,
-<<<<<<< HEAD
-				     1, asus->debug.method_id,
-=======
 				     0, asus->debug.method_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     &input, &output);
 
 	if (ACPI_FAILURE(status))
@@ -5122,33 +4377,6 @@ static void asus_wmi_debugfs_exit(struct asus_wmi *asus)
 	debugfs_remove_recursive(asus->debug.root);
 }
 
-<<<<<<< HEAD
-static int asus_wmi_debugfs_init(struct asus_wmi *asus)
-{
-	struct dentry *dent;
-	int i;
-
-	asus->debug.root = debugfs_create_dir(asus->driver->name, NULL);
-	if (!asus->debug.root) {
-		pr_err("failed to create debugfs directory");
-		goto error_debugfs;
-	}
-
-	dent = debugfs_create_x32("method_id", S_IRUGO | S_IWUSR,
-				  asus->debug.root, &asus->debug.method_id);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_x32("dev_id", S_IRUGO | S_IWUSR,
-				  asus->debug.root, &asus->debug.dev_id);
-	if (!dent)
-		goto error_debugfs;
-
-	dent = debugfs_create_x32("ctrl_param", S_IRUGO | S_IWUSR,
-				  asus->debug.root, &asus->debug.ctrl_param);
-	if (!dent)
-		goto error_debugfs;
-=======
 static void asus_wmi_debugfs_init(struct asus_wmi *asus)
 {
 	int i;
@@ -5163,33 +4391,11 @@ static void asus_wmi_debugfs_init(struct asus_wmi *asus)
 
 	debugfs_create_x32("ctrl_param", S_IRUGO | S_IWUSR, asus->debug.root,
 			   &asus->debug.ctrl_param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(asus_wmi_debug_files); i++) {
 		struct asus_wmi_debugfs_node *node = &asus_wmi_debug_files[i];
 
 		node->asus = asus;
-<<<<<<< HEAD
-		dent = debugfs_create_file(node->name, S_IFREG | S_IRUGO,
-					   asus->debug.root, node,
-					   &asus_wmi_debugfs_io_ops);
-		if (!dent) {
-			pr_err("failed to create debug file: %s\n", node->name);
-			goto error_debugfs;
-		}
-	}
-
-	return 0;
-
-error_debugfs:
-	asus_wmi_debugfs_exit(asus);
-	return -ENOMEM;
-}
-
-/*
- * WMI Driver
- */
-=======
 		debugfs_create_file(node->name, S_IFREG | S_IRUGO,
 				    asus->debug.root, node,
 				    &asus_wmi_debugfs_io_ops);
@@ -5198,7 +4404,6 @@ error_debugfs:
 
 /* Init / exit ****************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int asus_wmi_add(struct platform_device *pdev)
 {
 	struct platform_driver *pdrv = to_platform_driver(pdev->dev.driver);
@@ -5206,10 +4411,7 @@ static int asus_wmi_add(struct platform_device *pdev)
 	struct asus_wmi *asus;
 	acpi_status status;
 	int err;
-<<<<<<< HEAD
-=======
 	u32 result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	asus = kzalloc(sizeof(struct asus_wmi), GFP_KERNEL);
 	if (!asus)
@@ -5227,8 +4429,6 @@ static int asus_wmi_add(struct platform_device *pdev)
 	if (err)
 		goto fail_platform;
 
-<<<<<<< HEAD
-=======
 	asus->charge_mode_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_CHARGE_MODE);
 	asus->egpu_enable_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_EGPU);
 	asus->egpu_connect_available = asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_EGPU_CONNECTED);
@@ -5266,43 +4466,24 @@ static int asus_wmi_add(struct platform_device *pdev)
 	if (err)
 		goto fail_sysfs;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = asus_wmi_input_init(asus);
 	if (err)
 		goto fail_input;
 
-<<<<<<< HEAD
-=======
 	err = asus_wmi_fan_init(asus); /* probably no problems on error */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = asus_wmi_hwmon_init(asus);
 	if (err)
 		goto fail_hwmon;
 
-<<<<<<< HEAD
-=======
 	err = asus_wmi_custom_fan_curve_init(asus);
 	if (err)
 		goto fail_custom_fan_curve;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = asus_wmi_led_init(asus);
 	if (err)
 		goto fail_leds;
 
-<<<<<<< HEAD
-	err = asus_wmi_rfkill_init(asus);
-	if (err)
-		goto fail_rfkill;
-
-	if (!acpi_video_backlight_support()) {
-		err = asus_wmi_backlight_init(asus);
-		if (err && err != -ENODEV)
-			goto fail_backlight;
-	} else
-		pr_info("Backlight controlled by ACPI video driver\n");
-=======
 	asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_WLAN, &result);
 	if (result & (ASUS_WMI_DSTS_PRESENCE_BIT | ASUS_WMI_DSTS_USER_BIT))
 		asus->driver->wlan_ctrl_by_user = 1;
@@ -5336,7 +4517,6 @@ static int asus_wmi_add(struct platform_device *pdev)
 		asus->fnlock_locked = fnlock_default;
 		asus_wmi_fnlock_update(asus);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = wmi_install_notify_handler(asus->driver->event_guid,
 					    asus_wmi_notify, asus);
@@ -5346,16 +4526,6 @@ static int asus_wmi_add(struct platform_device *pdev)
 		goto fail_wmi_handler;
 	}
 
-<<<<<<< HEAD
-	err = asus_wmi_debugfs_init(asus);
-	if (err)
-		goto fail_debugfs;
-
-	return 0;
-
-fail_debugfs:
-	wmi_remove_notify_handler(asus->driver->event_guid);
-=======
 	if (asus->driver->i8042_filter) {
 		err = i8042_install_filter(asus->driver->i8042_filter);
 		if (err)
@@ -5368,21 +4538,10 @@ fail_debugfs:
 
 	return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_wmi_handler:
 	asus_wmi_backlight_exit(asus);
 fail_backlight:
 	asus_wmi_rfkill_exit(asus);
-<<<<<<< HEAD
-fail_rfkill:
-	asus_wmi_led_exit(asus);
-fail_leds:
-	asus_wmi_hwmon_exit(asus);
-fail_hwmon:
-	asus_wmi_input_exit(asus);
-fail_input:
-	asus_wmi_platform_exit(asus);
-=======
 fail_screenpad:
 	asus_screenpad_exit(asus);
 fail_rfkill:
@@ -5399,39 +4558,16 @@ fail_platform_profile_setup:
 	if (asus->platform_profile_support)
 		platform_profile_remove();
 fail_fan_boost_mode:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_platform:
 	kfree(asus);
 	return err;
 }
 
-<<<<<<< HEAD
-static int asus_wmi_remove(struct platform_device *device)
-=======
 static void asus_wmi_remove(struct platform_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_wmi *asus;
 
 	asus = platform_get_drvdata(device);
-<<<<<<< HEAD
-	wmi_remove_notify_handler(asus->driver->event_guid);
-	asus_wmi_backlight_exit(asus);
-	asus_wmi_input_exit(asus);
-	asus_wmi_hwmon_exit(asus);
-	asus_wmi_led_exit(asus);
-	asus_wmi_rfkill_exit(asus);
-	asus_wmi_debugfs_exit(asus);
-	asus_wmi_platform_exit(asus);
-
-	kfree(asus);
-	return 0;
-}
-
-/*
- * Platform driver - hibernate/resume callbacks
- */
-=======
 	if (asus->driver->i8042_filter)
 		i8042_remove_filter(asus->driver->i8042_filter);
 	wmi_remove_notify_handler(asus->driver->event_guid);
@@ -5454,7 +4590,6 @@ static void asus_wmi_remove(struct platform_device *device)
 
 /* Platform driver - hibernate/resume callbacks *******************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int asus_hotk_thaw(struct device *device)
 {
 	struct asus_wmi *asus = dev_get_drvdata(device);
@@ -5474,8 +4609,6 @@ static int asus_hotk_thaw(struct device *device)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int asus_hotk_resume(struct device *device)
 {
 	struct asus_wmi *asus = dev_get_drvdata(device);
@@ -5527,7 +4660,6 @@ static int asus_hotk_prepare(struct device *device)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int asus_hotk_restore(struct device *device)
 {
 	struct asus_wmi *asus = dev_get_drvdata(device);
@@ -5558,9 +4690,6 @@ static int asus_hotk_restore(struct device *device)
 		bl = !asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_UWB);
 		rfkill_set_sw_state(asus->uwb.rfkill, bl);
 	}
-<<<<<<< HEAD
-
-=======
 	if (!IS_ERR_OR_NULL(asus->kbd_led.dev))
 		kbd_led_update(asus);
 
@@ -5568,17 +4697,12 @@ static int asus_hotk_restore(struct device *device)
 		asus_wmi_fnlock_update(asus);
 
 	asus_wmi_tablet_mode_get_state(asus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static const struct dev_pm_ops asus_pm_ops = {
 	.thaw = asus_hotk_thaw,
 	.restore = asus_hotk_restore,
-<<<<<<< HEAD
-};
-
-=======
 	.resume = asus_hotk_resume,
 	.resume_early = asus_hotk_resume_early,
 	.prepare = asus_hotk_prepare,
@@ -5586,7 +4710,6 @@ static const struct dev_pm_ops asus_pm_ops = {
 
 /* Registration ***************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int asus_wmi_probe(struct platform_device *pdev)
 {
 	struct platform_driver *pdrv = to_platform_driver(pdev->dev.driver);
@@ -5594,20 +4717,12 @@ static int asus_wmi_probe(struct platform_device *pdev)
 	int ret;
 
 	if (!wmi_has_guid(ASUS_WMI_MGMT_GUID)) {
-<<<<<<< HEAD
-		pr_warn("Management GUID not found\n");
-=======
 		pr_warn("ASUS Management GUID not found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	if (wdrv->event_guid && !wmi_has_guid(wdrv->event_guid)) {
-<<<<<<< HEAD
-		pr_warn("Event GUID not found\n");
-=======
 		pr_warn("ASUS Event GUID not found\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -5631,11 +4746,7 @@ int __init_or_module asus_wmi_register_driver(struct asus_wmi_driver *driver)
 		return -EBUSY;
 
 	platform_driver = &driver->platform_driver;
-<<<<<<< HEAD
-	platform_driver->remove = asus_wmi_remove;
-=======
 	platform_driver->remove_new = asus_wmi_remove;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_driver->driver.owner = driver->owner;
 	platform_driver->driver.name = driver->name;
 	platform_driver->driver.pm = &asus_pm_ops;
@@ -5661,26 +4772,13 @@ EXPORT_SYMBOL_GPL(asus_wmi_unregister_driver);
 
 static int __init asus_wmi_init(void)
 {
-<<<<<<< HEAD
-	if (!wmi_has_guid(ASUS_WMI_MGMT_GUID)) {
-		pr_info("Asus Management GUID not found");
-		return -ENODEV;
-	}
-
-	pr_info("ASUS WMI generic driver loaded");
-=======
 	pr_info("ASUS WMI generic driver loaded\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit asus_wmi_exit(void)
 {
-<<<<<<< HEAD
-	pr_info("ASUS WMI generic driver unloaded");
-=======
 	pr_info("ASUS WMI generic driver unloaded\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(asus_wmi_init);

@@ -9,13 +9,9 @@
  *
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/compiler.h>
 #include <linux/module.h>
 #include <linux/ethtool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/major.h>
@@ -44,26 +40,18 @@
 #include <linux/isdn/capiutil.h>
 #include <linux/isdn/capicmd.h>
 
-<<<<<<< HEAD
-MODULE_DESCRIPTION("CAPI4Linux: Userspace /dev/capi20 interface");
-=======
 #include "kcapi.h"
 
 MODULE_DESCRIPTION("CAPI4Linux: kernel CAPI layer and /dev/capi20 interface");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Carsten Paeth");
 MODULE_LICENSE("GPL");
 
 /* -------- driver information -------------------------------------- */
 
 static DEFINE_MUTEX(capi_mutex);
-<<<<<<< HEAD
-static struct class *capi_class;
-=======
 static const struct class capi_class = {
 	.name = "capi",
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int capi_major = 68;		/* allocated */
 
 module_param_named(major, capi_major, uint, 0);
@@ -95,11 +83,6 @@ struct ackqueue_entry {
 };
 
 struct capiminor {
-<<<<<<< HEAD
-	struct kref kref;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int      minor;
 
 	struct capi20_appl	*ap;
@@ -211,9 +194,6 @@ static void capiminor_del_all_ack(struct capiminor *mp)
 
 /* -------- struct capiminor ---------------------------------------- */
 
-<<<<<<< HEAD
-static const struct tty_port_operations capiminor_port_ops; /* we have none */
-=======
 static void capiminor_destroy(struct tty_port *port)
 {
 	struct capiminor *mp = container_of(port, struct capiminor, port);
@@ -228,7 +208,6 @@ static void capiminor_destroy(struct tty_port *port)
 static const struct tty_port_operations capiminor_port_ops = {
 	.destruct = capiminor_destroy,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct capiminor *capiminor_alloc(struct capi20_appl *ap, u32 ncci)
 {
@@ -242,11 +221,6 @@ static struct capiminor *capiminor_alloc(struct capi20_appl *ap, u32 ncci)
 		return NULL;
 	}
 
-<<<<<<< HEAD
-	kref_init(&mp->kref);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp->ap = ap;
 	mp->ncci = ncci;
 	INIT_LIST_HEAD(&mp->ackqueue);
@@ -275,12 +249,8 @@ static struct capiminor *capiminor_alloc(struct capi20_appl *ap, u32 ncci)
 
 	mp->minor = minor;
 
-<<<<<<< HEAD
-	dev = tty_register_device(capinc_tty_driver, minor, NULL);
-=======
 	dev = tty_port_register_device(&mp->port, capinc_tty_driver, minor,
 			NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dev))
 		goto err_out2;
 
@@ -292,28 +262,10 @@ err_out2:
 	spin_unlock(&capiminors_lock);
 
 err_out1:
-<<<<<<< HEAD
-	kfree(mp);
-	return NULL;
-}
-
-static void capiminor_destroy(struct kref *kref)
-{
-	struct capiminor *mp = container_of(kref, struct capiminor, kref);
-
-	kfree_skb(mp->outskb);
-	skb_queue_purge(&mp->inqueue);
-	skb_queue_purge(&mp->outqueue);
-	capiminor_del_all_ack(mp);
-	kfree(mp);
-}
-
-=======
 	tty_port_put(&mp->port);
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct capiminor *capiminor_get(unsigned int minor)
 {
 	struct capiminor *mp;
@@ -321,11 +273,7 @@ static struct capiminor *capiminor_get(unsigned int minor)
 	spin_lock(&capiminors_lock);
 	mp = capiminors[minor];
 	if (mp)
-<<<<<<< HEAD
-		kref_get(&mp->kref);
-=======
 		tty_port_get(&mp->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&capiminors_lock);
 
 	return mp;
@@ -333,11 +281,7 @@ static struct capiminor *capiminor_get(unsigned int minor)
 
 static inline void capiminor_put(struct capiminor *mp)
 {
-<<<<<<< HEAD
-	kref_put(&mp->kref, capiminor_destroy);
-=======
 	tty_port_put(&mp->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void capiminor_free(struct capiminor *mp)
@@ -397,14 +341,6 @@ static inline void
 capincci_alloc_minor(struct capidev *cdev, struct capincci *np) { }
 static inline void capincci_free_minor(struct capincci *np) { }
 
-<<<<<<< HEAD
-static inline unsigned int capincci_minor_opencount(struct capincci *np)
-{
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !CONFIG_ISDN_CAPI_MIDDLEWARE */
 
 static struct capincci *capincci_alloc(struct capidev *cdev, u32 ncci)
@@ -436,10 +372,7 @@ static void capincci_free(struct capidev *cdev, u32 ncci)
 		}
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ISDN_CAPI_MIDDLEWARE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct capincci *capincci_find(struct capidev *cdev, u32 ncci)
 {
 	struct capincci *np;
@@ -450,10 +383,6 @@ static struct capincci *capincci_find(struct capidev *cdev, u32 ncci)
 	return NULL;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_ISDN_CAPI_MIDDLEWARE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -------- handle data queue --------------------------------------- */
 
 static struct sk_buff *
@@ -646,18 +575,10 @@ static void capi_recv_message(struct capi20_appl *ap, struct sk_buff *skb)
 {
 	struct capidev *cdev = ap->private;
 #ifdef CONFIG_ISDN_CAPI_MIDDLEWARE
-<<<<<<< HEAD
-	struct tty_struct *tty;
-	struct capiminor *mp;
-	u16 datahandle;
-#endif /* CONFIG_ISDN_CAPI_MIDDLEWARE */
-	struct capincci *np;
-=======
 	struct capiminor *mp;
 	u16 datahandle;
 	struct capincci *np;
 #endif /* CONFIG_ISDN_CAPI_MIDDLEWARE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&cdev->lock);
 
@@ -675,15 +596,12 @@ static void capi_recv_message(struct capi20_appl *ap, struct sk_buff *skb)
 		goto unlock_out;
 	}
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_ISDN_CAPI_MIDDLEWARE
 	skb_queue_tail(&cdev->recvqueue, skb);
 	wake_up_interruptible(&cdev->recvwait);
 
 #else /* CONFIG_ISDN_CAPI_MIDDLEWARE */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np = capincci_find(cdev, CAPIMSG_CONTROL(skb->data));
 	if (!np) {
 		printk(KERN_ERR "BUG: capi_signal: ncci not found\n");
@@ -692,15 +610,6 @@ static void capi_recv_message(struct capi20_appl *ap, struct sk_buff *skb)
 		goto unlock_out;
 	}
 
-<<<<<<< HEAD
-#ifndef CONFIG_ISDN_CAPI_MIDDLEWARE
-	skb_queue_tail(&cdev->recvqueue, skb);
-	wake_up_interruptible(&cdev->recvwait);
-
-#else /* CONFIG_ISDN_CAPI_MIDDLEWARE */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp = np->minorp;
 	if (!mp) {
 		skb_queue_tail(&cdev->recvqueue, skb);
@@ -723,15 +632,7 @@ static void capi_recv_message(struct capi20_appl *ap, struct sk_buff *skb)
 			 CAPIMSG_U16(skb->data, CAPIMSG_BASELEN + 4 + 2));
 		kfree_skb(skb);
 		capiminor_del_ack(mp, datahandle);
-<<<<<<< HEAD
-		tty = tty_port_tty_get(&mp->port);
-		if (tty) {
-			tty_wakeup(tty);
-			tty_kref_put(tty);
-		}
-=======
 		tty_port_tty_wakeup(&mp->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handle_minor_send(mp);
 
 	} else {
@@ -792,12 +693,9 @@ capi_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos
 	if (!cdev->ap.applid)
 		return -ENODEV;
 
-<<<<<<< HEAD
-=======
 	if (count < CAPIMSG_BASELEN)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb = alloc_skb(count, GFP_USER);
 	if (!skb)
 		return -ENOMEM;
@@ -808,12 +706,8 @@ capi_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos
 	}
 	mlen = CAPIMSG_LEN(skb->data);
 	if (CAPIMSG_CMD(skb->data) == CAPI_DATA_B3_REQ) {
-<<<<<<< HEAD
-		if ((size_t)(mlen + CAPIMSG_DATALEN(skb->data)) != count) {
-=======
 		if (count < CAPI_DATA_B3_REQ_LEN ||
 		    (size_t)(mlen + CAPIMSG_DATALEN(skb->data)) != count) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree_skb(skb);
 			return -EINVAL;
 		}
@@ -826,13 +720,10 @@ capi_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos
 	CAPIMSG_SETAPPID(skb->data, cdev->ap.applid);
 
 	if (CAPIMSG_CMD(skb->data) == CAPI_DISCONNECT_B3_RESP) {
-<<<<<<< HEAD
-=======
 		if (count < CAPI_DISCONNECT_B3_RESP_LEN) {
 			kfree_skb(skb);
 			return -EINVAL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_lock(&cdev->lock);
 		capincci_free(cdev, CAPIMSG_NCCI(skb->data));
 		mutex_unlock(&cdev->lock);
@@ -847,21 +738,6 @@ capi_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos
 	return count;
 }
 
-<<<<<<< HEAD
-static unsigned int
-capi_poll(struct file *file, poll_table *wait)
-{
-	struct capidev *cdev = file->private_data;
-	unsigned int mask = 0;
-
-	if (!cdev->ap.applid)
-		return POLLERR;
-
-	poll_wait(file, &(cdev->recvwait), wait);
-	mask = POLLOUT | POLLWRNORM;
-	if (!skb_queue_empty(&cdev->recvqueue))
-		mask |= POLLIN | POLLRDNORM;
-=======
 static __poll_t
 capi_poll(struct file *file, poll_table *wait)
 {
@@ -875,7 +751,6 @@ capi_poll(struct file *file, poll_table *wait)
 	mask = EPOLLOUT | EPOLLWRNORM;
 	if (!skb_queue_empty_lockless(&cdev->recvqueue))
 		mask |= EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mask;
 }
 
@@ -914,10 +789,6 @@ register_out:
 		return retval;
 
 	case CAPI_GET_VERSION:
-<<<<<<< HEAD
-	{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_from_user(&data.contr, argp,
 				   sizeof(data.contr)))
 			return -EFAULT;
@@ -927,17 +798,9 @@ register_out:
 		if (copy_to_user(argp, &data.version,
 				 sizeof(data.version)))
 			return -EFAULT;
-<<<<<<< HEAD
-	}
-	return 0;
-
-	case CAPI_GET_SERIAL:
-	{
-=======
 		return 0;
 
 	case CAPI_GET_SERIAL:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_from_user(&data.contr, argp,
 				   sizeof(data.contr)))
 			return -EFAULT;
@@ -947,16 +810,9 @@ register_out:
 		if (copy_to_user(argp, data.serial,
 				 sizeof(data.serial)))
 			return -EFAULT;
-<<<<<<< HEAD
-	}
-	return 0;
-	case CAPI_GET_PROFILE:
-	{
-=======
 		return 0;
 
 	case CAPI_GET_PROFILE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_from_user(&data.contr, argp,
 				   sizeof(data.contr)))
 			return -EFAULT;
@@ -980,17 +836,9 @@ register_out:
 		}
 		if (retval)
 			return -EFAULT;
-<<<<<<< HEAD
-	}
-	return 0;
-
-	case CAPI_GET_MANUFACTURER:
-	{
-=======
 		return 0;
 
 	case CAPI_GET_MANUFACTURER:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_from_user(&data.contr, argp,
 				   sizeof(data.contr)))
 			return -EFAULT;
@@ -1002,13 +850,8 @@ register_out:
 				 sizeof(data.manufacturer)))
 			return -EFAULT;
 
-<<<<<<< HEAD
-	}
-	return 0;
-=======
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CAPI_GET_ERRCODE:
 		data.errcode = cdev->errcode;
 		cdev->errcode = CAPI_NOERROR;
@@ -1024,12 +867,7 @@ register_out:
 			return 0;
 		return -ENXIO;
 
-<<<<<<< HEAD
-	case CAPI_MANUFACTURER_CMD:
-	{
-=======
 	case CAPI_MANUFACTURER_CMD: {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct capi_manufacturer_cmd mcmd;
 		if (!capable(CAP_SYS_ADMIN))
 			return -EPERM;
@@ -1037,11 +875,6 @@ register_out:
 			return -EFAULT;
 		return capi20_manufacturer(mcmd.cmd, mcmd.data);
 	}
-<<<<<<< HEAD
-	return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CAPI_SET_FLAGS:
 	case CAPI_CLR_FLAGS: {
 		unsigned userflags;
@@ -1063,14 +896,11 @@ register_out:
 			return -EFAULT;
 		return 0;
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_ISDN_CAPI_MIDDLEWARE
 	case CAPI_NCCI_OPENCOUNT:
 		return 0;
 
 #else /* CONFIG_ISDN_CAPI_MIDDLEWARE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CAPI_NCCI_OPENCOUNT: {
 		struct capincci *nccip;
 		unsigned ncci;
@@ -1087,10 +917,6 @@ register_out:
 		return count;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_ISDN_CAPI_MIDDLEWARE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CAPI_NCCI_GETUNIT: {
 		struct capincci *nccip;
 		struct capiminor *mp;
@@ -1129,8 +955,6 @@ capi_unlocked_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_COMPAT
 static long
 capi_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
@@ -1159,7 +983,6 @@ capi_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int capi_open(struct inode *inode, struct file *file)
 {
 	struct capidev *cdev;
@@ -1178,11 +1001,7 @@ static int capi_open(struct inode *inode, struct file *file)
 	list_add_tail(&cdev->list, &capidev_list);
 	mutex_unlock(&capidev_list_lock);
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int capi_release(struct inode *inode, struct file *file)
@@ -1210,12 +1029,9 @@ static const struct file_operations capi_fops =
 	.write		= capi_write,
 	.poll		= capi_poll,
 	.unlocked_ioctl	= capi_unlocked_ioctl,
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= capi_compat_ioctl,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= capi_open,
 	.release	= capi_release,
 };
@@ -1263,22 +1079,13 @@ static void capinc_tty_close(struct tty_struct *tty, struct file *filp)
 	tty_port_close(&mp->port, tty, filp);
 }
 
-<<<<<<< HEAD
-static int capinc_tty_write(struct tty_struct *tty,
-			    const unsigned char *buf, int count)
-=======
 static ssize_t capinc_tty_write(struct tty_struct *tty, const u8 *buf,
 				size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capiminor *mp = tty->driver_data;
 	struct sk_buff *skb;
 
-<<<<<<< HEAD
-	pr_debug("capinc_tty_write(count=%d)\n", count);
-=======
 	pr_debug("capinc_tty_write(count=%zu)\n", count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&mp->outlock);
 	skb = mp->outskb;
@@ -1296,11 +1103,7 @@ static ssize_t capinc_tty_write(struct tty_struct *tty, const u8 *buf,
 	}
 
 	skb_reserve(skb, CAPI_DATA_B3_REQ_LEN);
-<<<<<<< HEAD
-	memcpy(skb_put(skb, count), buf, count);
-=======
 	skb_put_data(skb, buf, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__skb_queue_tail(&mp->outqueue, skb);
 	mp->outbytes += skb->len;
@@ -1311,11 +1114,7 @@ static ssize_t capinc_tty_write(struct tty_struct *tty, const u8 *buf,
 	return count;
 }
 
-<<<<<<< HEAD
-static int capinc_tty_put_char(struct tty_struct *tty, unsigned char ch)
-=======
 static int capinc_tty_put_char(struct tty_struct *tty, u8 ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capiminor *mp = tty->driver_data;
 	bool invoke_send = false;
@@ -1328,11 +1127,7 @@ static int capinc_tty_put_char(struct tty_struct *tty, u8 ch)
 	skb = mp->outskb;
 	if (skb) {
 		if (skb_tailroom(skb) > 0) {
-<<<<<<< HEAD
-			*(skb_put(skb, 1)) = ch;
-=======
 			skb_put_u8(skb, ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto unlock_out;
 		}
 		mp->outskb = NULL;
@@ -1344,11 +1139,7 @@ static int capinc_tty_put_char(struct tty_struct *tty, u8 ch)
 	skb = alloc_skb(CAPI_DATA_B3_REQ_LEN + CAPI_MAX_BLKSIZE, GFP_ATOMIC);
 	if (skb) {
 		skb_reserve(skb, CAPI_DATA_B3_REQ_LEN);
-<<<<<<< HEAD
-		*(skb_put(skb, 1)) = ch;
-=======
 		skb_put_u8(skb, ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mp->outskb = skb;
 	} else {
 		printk(KERN_ERR "capinc_put_char: char %u lost\n", ch);
@@ -1369,11 +1160,6 @@ static void capinc_tty_flush_chars(struct tty_struct *tty)
 	struct capiminor *mp = tty->driver_data;
 	struct sk_buff *skb;
 
-<<<<<<< HEAD
-	pr_debug("capinc_tty_flush_chars\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&mp->outlock);
 	skb = mp->outskb;
 	if (skb) {
@@ -1389,20 +1175,6 @@ static void capinc_tty_flush_chars(struct tty_struct *tty)
 	handle_minor_recv(mp);
 }
 
-<<<<<<< HEAD
-static int capinc_tty_write_room(struct tty_struct *tty)
-{
-	struct capiminor *mp = tty->driver_data;
-	int room;
-
-	room = CAPINC_MAX_SENDQUEUE-skb_queue_len(&mp->outqueue);
-	room *= CAPI_MAX_BLKSIZE;
-	pr_debug("capinc_tty_write_room = %d\n", room);
-	return room;
-}
-
-static int capinc_tty_chars_in_buffer(struct tty_struct *tty)
-=======
 static unsigned int capinc_tty_write_room(struct tty_struct *tty)
 {
 	struct capiminor *mp = tty->driver_data;
@@ -1415,7 +1187,6 @@ static unsigned int capinc_tty_write_room(struct tty_struct *tty)
 }
 
 static unsigned int capinc_tty_chars_in_buffer(struct tty_struct *tty)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capiminor *mp = tty->driver_data;
 
@@ -1426,27 +1197,9 @@ static unsigned int capinc_tty_chars_in_buffer(struct tty_struct *tty)
 	return mp->outbytes;
 }
 
-<<<<<<< HEAD
-static int capinc_tty_ioctl(struct tty_struct *tty,
-			    unsigned int cmd, unsigned long arg)
-{
-	return -ENOIOCTLCMD;
-}
-
-static void capinc_tty_set_termios(struct tty_struct *tty, struct ktermios *old)
-{
-	pr_debug("capinc_tty_set_termios\n");
-}
-
 static void capinc_tty_throttle(struct tty_struct *tty)
 {
 	struct capiminor *mp = tty->driver_data;
-	pr_debug("capinc_tty_throttle\n");
-=======
-static void capinc_tty_throttle(struct tty_struct *tty)
-{
-	struct capiminor *mp = tty->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp->ttyinstop = 1;
 }
 
@@ -1454,10 +1207,6 @@ static void capinc_tty_unthrottle(struct tty_struct *tty)
 {
 	struct capiminor *mp = tty->driver_data;
 
-<<<<<<< HEAD
-	pr_debug("capinc_tty_unthrottle\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp->ttyinstop = 0;
 	handle_minor_recv(mp);
 }
@@ -1466,10 +1215,6 @@ static void capinc_tty_stop(struct tty_struct *tty)
 {
 	struct capiminor *mp = tty->driver_data;
 
-<<<<<<< HEAD
-	pr_debug("capinc_tty_stop\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp->ttyoutstop = 1;
 }
 
@@ -1477,10 +1222,6 @@ static void capinc_tty_start(struct tty_struct *tty)
 {
 	struct capiminor *mp = tty->driver_data;
 
-<<<<<<< HEAD
-	pr_debug("capinc_tty_start\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp->ttyoutstop = 0;
 	handle_minor_send(mp);
 }
@@ -1489,38 +1230,12 @@ static void capinc_tty_hangup(struct tty_struct *tty)
 {
 	struct capiminor *mp = tty->driver_data;
 
-<<<<<<< HEAD
-	pr_debug("capinc_tty_hangup\n");
-	tty_port_hangup(&mp->port);
-}
-
-static int capinc_tty_break_ctl(struct tty_struct *tty, int state)
-{
-	pr_debug("capinc_tty_break_ctl(%d)\n", state);
-	return 0;
-}
-
-static void capinc_tty_flush_buffer(struct tty_struct *tty)
-{
-	pr_debug("capinc_tty_flush_buffer\n");
-}
-
-static void capinc_tty_set_ldisc(struct tty_struct *tty)
-{
-	pr_debug("capinc_tty_set_ldisc\n");
-}
-
-static void capinc_tty_send_xchar(struct tty_struct *tty, char ch)
-{
-	pr_debug("capinc_tty_send_xchar(%d)\n", ch);
-=======
 	tty_port_hangup(&mp->port);
 }
 
 static void capinc_tty_send_xchar(struct tty_struct *tty, u8 ch)
 {
 	pr_debug("capinc_tty_send_xchar(%u)\n", ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct tty_operations capinc_ops = {
@@ -1531,22 +1246,11 @@ static const struct tty_operations capinc_ops = {
 	.flush_chars = capinc_tty_flush_chars,
 	.write_room = capinc_tty_write_room,
 	.chars_in_buffer = capinc_tty_chars_in_buffer,
-<<<<<<< HEAD
-	.ioctl = capinc_tty_ioctl,
-	.set_termios = capinc_tty_set_termios,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.throttle = capinc_tty_throttle,
 	.unthrottle = capinc_tty_unthrottle,
 	.stop = capinc_tty_stop,
 	.start = capinc_tty_start,
 	.hangup = capinc_tty_hangup,
-<<<<<<< HEAD
-	.break_ctl = capinc_tty_break_ctl,
-	.flush_buffer = capinc_tty_flush_buffer,
-	.set_ldisc = capinc_tty_set_ldisc,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send_xchar = capinc_tty_send_xchar,
 	.install = capinc_tty_install,
 	.cleanup = capinc_tty_cleanup,
@@ -1562,24 +1266,11 @@ static int __init capinc_tty_init(void)
 	if (capi_ttyminors <= 0)
 		capi_ttyminors = CAPINC_NR_PORTS;
 
-<<<<<<< HEAD
-	capiminors = kzalloc(sizeof(struct capi_minor *) * capi_ttyminors,
-=======
 	capiminors = kcalloc(capi_ttyminors, sizeof(struct capiminor *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     GFP_KERNEL);
 	if (!capiminors)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	drv = alloc_tty_driver(capi_ttyminors);
-	if (!drv) {
-		kfree(capiminors);
-		return -ENOMEM;
-	}
-	drv->driver_name = "capi_nc";
-	drv->name = "capi";
-=======
 	drv = tty_alloc_driver(capi_ttyminors, TTY_DRIVER_REAL_RAW |
 			TTY_DRIVER_RESET_TERMIOS | TTY_DRIVER_DYNAMIC_DEV);
 	if (IS_ERR(drv)) {
@@ -1588,7 +1279,6 @@ static int __init capinc_tty_init(void)
 	}
 	drv->driver_name = "capi_nc";
 	drv->name = "capi!";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drv->major = 0;
 	drv->minor_start = 0;
 	drv->type = TTY_DRIVER_TYPE_SERIAL;
@@ -1598,21 +1288,11 @@ static int __init capinc_tty_init(void)
 	drv->init_termios.c_oflag = OPOST | ONLCR;
 	drv->init_termios.c_cflag = B9600 | CS8 | CREAD | HUPCL | CLOCAL;
 	drv->init_termios.c_lflag = 0;
-<<<<<<< HEAD
-	drv->flags =
-		TTY_DRIVER_REAL_RAW | TTY_DRIVER_RESET_TERMIOS |
-		TTY_DRIVER_DYNAMIC_DEV;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tty_set_operations(drv, &capinc_ops);
 
 	err = tty_register_driver(drv);
 	if (err) {
-<<<<<<< HEAD
-		put_tty_driver(drv);
-=======
 		tty_driver_kref_put(drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(capiminors);
 		printk(KERN_ERR "Couldn't register capi_nc driver\n");
 		return err;
@@ -1624,11 +1304,7 @@ static int __init capinc_tty_init(void)
 static void __exit capinc_tty_exit(void)
 {
 	tty_unregister_driver(capinc_tty_driver);
-<<<<<<< HEAD
-	put_tty_driver(capinc_tty_driver);
-=======
 	tty_driver_kref_put(capinc_tty_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(capiminors);
 }
 
@@ -1649,11 +1325,7 @@ static inline void capinc_tty_exit(void) { }
  * /proc/capi/capi20:
  *  minor applid nrecvctlpkt nrecvdatapkt nsendctlpkt nsenddatapkt
  */
-<<<<<<< HEAD
-static int capi20_proc_show(struct seq_file *m, void *v)
-=======
 static int __maybe_unused capi20_proc_show(struct seq_file *m, void *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capidev *cdev;
 	struct list_head *l;
@@ -1672,31 +1344,11 @@ static int __maybe_unused capi20_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int capi20_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, capi20_proc_show, NULL);
-}
-
-static const struct file_operations capi20_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= capi20_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * /proc/capi/capi20ncci:
  *  applid ncci
  */
-<<<<<<< HEAD
-static int capi20ncci_proc_show(struct seq_file *m, void *v)
-=======
 static int __maybe_unused capi20ncci_proc_show(struct seq_file *m, void *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct capidev *cdev;
 	struct capincci *np;
@@ -1712,30 +1364,10 @@ static int __maybe_unused capi20ncci_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int capi20ncci_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, capi20ncci_proc_show, NULL);
-}
-
-static const struct file_operations capi20ncci_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= capi20ncci_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static void __init proc_init(void)
-{
-	proc_create("capi/capi20", 0, NULL, &capi20_proc_fops);
-	proc_create("capi/capi20ncci", 0, NULL, &capi20ncci_proc_fops);
-=======
 static void __init proc_init(void)
 {
 	proc_create_single("capi/capi20", 0, NULL, capi20_proc_show);
 	proc_create_single("capi/capi20ncci", 0, NULL, capi20ncci_proc_show);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit proc_exit(void)
@@ -1751,34 +1383,15 @@ static int __init capi_init(void)
 {
 	const char *compileinfo;
 	int major_ret;
-<<<<<<< HEAD
-=======
 	int ret;
 
 	ret = kcapi_init();
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	major_ret = register_chrdev(capi_major, "capi20", &capi_fops);
 	if (major_ret < 0) {
 		printk(KERN_ERR "capi20: unable to get major %d\n", capi_major);
-<<<<<<< HEAD
-		return major_ret;
-	}
-	capi_class = class_create(THIS_MODULE, "capi");
-	if (IS_ERR(capi_class)) {
-		unregister_chrdev(capi_major, "capi20");
-		return PTR_ERR(capi_class);
-	}
-
-	device_create(capi_class, NULL, MKDEV(capi_major, 0), NULL, "capi");
-
-	if (capinc_tty_init() < 0) {
-		device_destroy(capi_class, MKDEV(capi_major, 0));
-		class_destroy(capi_class);
-		unregister_chrdev(capi_major, "capi20");
-=======
 		kcapi_exit();
 		return major_ret;
 	}
@@ -1797,7 +1410,6 @@ static int __init capi_init(void)
 		class_unregister(&capi_class);
 		unregister_chrdev(capi_major, "capi20");
 		kcapi_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1818,13 +1430,6 @@ static void __exit capi_exit(void)
 {
 	proc_exit();
 
-<<<<<<< HEAD
-	device_destroy(capi_class, MKDEV(capi_major, 0));
-	class_destroy(capi_class);
-	unregister_chrdev(capi_major, "capi20");
-
-	capinc_tty_exit();
-=======
 	device_destroy(&capi_class, MKDEV(capi_major, 0));
 	class_unregister(&capi_class);
 	unregister_chrdev(capi_major, "capi20");
@@ -1832,7 +1437,6 @@ static void __exit capi_exit(void)
 	capinc_tty_exit();
 
 	kcapi_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(capi_init);

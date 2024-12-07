@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core Source for:
  * Cypress TrueTouch(TM) Standard Product (TTSP) touchscreen drivers.
@@ -13,36 +10,12 @@
  * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
  * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2, and only version 2, as published by the
- * Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
  * Contact Cypress Semiconductor at www.cypress.com <kev@cypress.com>
- *
-=======
- * Contact Cypress Semiconductor at www.cypress.com <kev@cypress.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/input.h>
 #include <linux/input/mt.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/interrupt.h>
-#include <linux/slab.h>
-=======
 #include <linux/input/touchscreen.h>
 #include <linux/gpio.h>
 #include <linux/interrupt.h>
@@ -50,7 +23,6 @@
 #include <linux/property.h>
 #include <linux/gpio/consumer.h>
 #include <linux/regulator/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "cyttsp_core.h"
 
@@ -74,9 +46,6 @@
 #define CY_MAXZ				255
 #define CY_DELAY_DFLT			20 /* ms */
 #define CY_DELAY_MAX			500
-<<<<<<< HEAD
-#define CY_ACT_DIST_DFLT		0xF8
-=======
 /* Active distance in pixels for a gesture to be reported */
 #define CY_ACT_DIST_DFLT		0xF8 /* pixels */
 #define CY_ACT_DIST_MASK		0x0F
@@ -86,7 +55,6 @@
 #define CY_LP_INTRVL_DFLT		0x0A /* ms */
 /* touch timeout for the Active power */
 #define CY_TCH_TMOUT_DFLT		0xFF /* ms */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CY_HNDSHK_BIT			0x80
 /* device mode bits */
 #define CY_OPERATE_MODE			0x00
@@ -114,12 +82,8 @@ static int ttsp_read_block_data(struct cyttsp *ts, u8 command,
 	int tries;
 
 	for (tries = 0; tries < CY_NUM_RETRY; tries++) {
-<<<<<<< HEAD
-		error = ts->bus_ops->read(ts, command, length, buf);
-=======
 		error = ts->bus_ops->read(ts->dev, ts->xfer_buf, command,
 				length, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!error)
 			return 0;
 
@@ -136,12 +100,8 @@ static int ttsp_write_block_data(struct cyttsp *ts, u8 command,
 	int tries;
 
 	for (tries = 0; tries < CY_NUM_RETRY; tries++) {
-<<<<<<< HEAD
-		error = ts->bus_ops->write(ts, command, length, buf);
-=======
 		error = ts->bus_ops->write(ts->dev, ts->xfer_buf, command,
 				length, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!error)
 			return 0;
 
@@ -156,8 +116,6 @@ static int ttsp_send_command(struct cyttsp *ts, u8 cmd)
 	return ttsp_write_block_data(ts, CY_REG_BASE, sizeof(cmd), &cmd);
 }
 
-<<<<<<< HEAD
-=======
 static int cyttsp_handshake(struct cyttsp *ts)
 {
 	if (ts->use_hndshk)
@@ -167,7 +125,6 @@ static int cyttsp_handshake(struct cyttsp *ts)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cyttsp_load_bl_regs(struct cyttsp *ts)
 {
 	memset(&ts->bl_data, 0, sizeof(ts->bl_data));
@@ -183,15 +140,9 @@ static int cyttsp_exit_bl_mode(struct cyttsp *ts)
 	u8 bl_cmd[sizeof(bl_command)];
 
 	memcpy(bl_cmd, bl_command, sizeof(bl_command));
-<<<<<<< HEAD
-	if (ts->pdata->bl_keys)
-		memcpy(&bl_cmd[sizeof(bl_command) - CY_NUM_BL_KEYS],
-			ts->pdata->bl_keys, CY_NUM_BL_KEYS);
-=======
 	if (ts->bl_keys)
 		memcpy(&bl_cmd[sizeof(bl_command) - CY_NUM_BL_KEYS],
 			ts->bl_keys, CY_NUM_BL_KEYS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = ttsp_write_block_data(ts, CY_REG_BASE,
 				      sizeof(bl_cmd), bl_cmd);
@@ -225,13 +176,10 @@ static int cyttsp_set_operational_mode(struct cyttsp *ts)
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-=======
 	error = cyttsp_handshake(ts);
 	if (error)
 		return error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ts->xy_data.act_dist == CY_ACT_DIST_DFLT ? -EIO : 0;
 }
 
@@ -253,13 +201,10 @@ static int cyttsp_set_sysinfo_mode(struct cyttsp *ts)
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-=======
 	error = cyttsp_handshake(ts);
 	if (error)
 		return error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ts->sysinfo_data.tts_verh && !ts->sysinfo_data.tts_verl)
 		return -EIO;
 
@@ -270,16 +215,6 @@ static int cyttsp_set_sysinfo_regs(struct cyttsp *ts)
 {
 	int retval = 0;
 
-<<<<<<< HEAD
-	if (ts->pdata->act_intrvl != CY_ACT_INTRVL_DFLT ||
-	    ts->pdata->tch_tmout != CY_TCH_TMOUT_DFLT ||
-	    ts->pdata->lp_intrvl != CY_LP_INTRVL_DFLT) {
-
-		u8 intrvl_ray[] = {
-			ts->pdata->act_intrvl,
-			ts->pdata->tch_tmout,
-			ts->pdata->lp_intrvl
-=======
 	if (ts->act_intrvl != CY_ACT_INTRVL_DFLT ||
 	    ts->tch_tmout != CY_TCH_TMOUT_DFLT ||
 	    ts->lp_intrvl != CY_LP_INTRVL_DFLT) {
@@ -288,7 +223,6 @@ static int cyttsp_set_sysinfo_regs(struct cyttsp *ts)
 			ts->act_intrvl,
 			ts->tch_tmout,
 			ts->lp_intrvl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		};
 
 		/* set intrvl registers */
@@ -300,15 +234,6 @@ static int cyttsp_set_sysinfo_regs(struct cyttsp *ts)
 	return retval;
 }
 
-<<<<<<< HEAD
-static int cyttsp_soft_reset(struct cyttsp *ts)
-{
-	unsigned long timeout;
-	int retval;
-
-	/* wait for interrupt to set ready completion */
-	INIT_COMPLETION(ts->bl_ready);
-=======
 static void cyttsp_hard_reset(struct cyttsp *ts)
 {
 	if (ts->reset_gpio) {
@@ -331,20 +256,11 @@ static int cyttsp_soft_reset(struct cyttsp *ts)
 
 	/* wait for interrupt to set ready completion */
 	reinit_completion(&ts->bl_ready);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ts->state = CY_BL_STATE;
 
 	enable_irq(ts->irq);
 
 	retval = ttsp_send_command(ts, CY_SOFT_RESET_MODE);
-<<<<<<< HEAD
-	if (retval)
-		goto out;
-
-	timeout = wait_for_completion_timeout(&ts->bl_ready,
-			msecs_to_jiffies(CY_DELAY_DFLT * CY_DELAY_MAX));
-	retval = timeout ? 0 : -EIO;
-=======
 	if (retval) {
 		dev_err(ts->dev, "failed to send soft reset\n");
 		goto out;
@@ -355,7 +271,6 @@ static int cyttsp_soft_reset(struct cyttsp *ts)
 		dev_err(ts->dev, "timeout waiting for soft reset\n");
 		retval = -EIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	ts->state = CY_IDLE_STATE;
@@ -365,11 +280,7 @@ out:
 
 static int cyttsp_act_dist_setup(struct cyttsp *ts)
 {
-<<<<<<< HEAD
-	u8 act_dist_setup = ts->pdata->act_dist;
-=======
 	u8 act_dist_setup = ts->act_dist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init gesture; active distance setup */
 	return ttsp_write_block_data(ts, CY_REG_ACT_DIST,
@@ -446,11 +357,7 @@ static void cyttsp_report_tchdata(struct cyttsp *ts)
 			continue;
 
 		input_mt_slot(input, i);
-<<<<<<< HEAD
-		input_mt_report_slot_state(input, MT_TOOL_FINGER, false);
-=======
 		input_mt_report_slot_inactive(input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input_sync(input);
@@ -473,18 +380,9 @@ static irqreturn_t cyttsp_irq(int irq, void *handle)
 		goto out;
 
 	/* provide flow control handshake */
-<<<<<<< HEAD
-	if (ts->pdata->use_hndshk) {
-		error = ttsp_send_command(ts,
-				ts->xy_data.hst_mode ^ CY_HNDSHK_BIT);
-		if (error)
-			goto out;
-	}
-=======
 	error = cyttsp_handshake(ts);
 	if (error)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(ts->state == CY_IDLE_STATE))
 		goto out;
@@ -524,15 +422,10 @@ static int cyttsp_power_on(struct cyttsp *ts)
 	if (GET_BOOTLOADERMODE(ts->bl_data.bl_status) &&
 	    IS_VALID_APP(ts->bl_data.bl_status)) {
 		error = cyttsp_exit_bl_mode(ts);
-<<<<<<< HEAD
-		if (error)
-			return error;
-=======
 		if (error) {
 			dev_err(ts->dev, "failed to exit bootloader mode\n");
 			return error;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (GET_HSTMODE(ts->bl_data.bl_file) != CY_OPERATE_MODE ||
@@ -598,10 +491,6 @@ static int cyttsp_disable(struct cyttsp *ts)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM_SLEEP
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cyttsp_suspend(struct device *dev)
 {
 	struct cyttsp *ts = dev_get_drvdata(dev);
@@ -609,11 +498,7 @@ static int cyttsp_suspend(struct device *dev)
 
 	mutex_lock(&ts->input->mutex);
 
-<<<<<<< HEAD
-	if (ts->input->users) {
-=======
 	if (input_device_enabled(ts->input)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = cyttsp_disable(ts);
 		if (retval == 0)
 			ts->suspended = true;
@@ -630,11 +515,7 @@ static int cyttsp_resume(struct device *dev)
 
 	mutex_lock(&ts->input->mutex);
 
-<<<<<<< HEAD
-	if (ts->input->users)
-=======
 	if (input_device_enabled(ts->input))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cyttsp_enable(ts);
 
 	ts->suspended = false;
@@ -644,14 +525,7 @@ static int cyttsp_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif
-
-SIMPLE_DEV_PM_OPS(cyttsp_pm_ops, cyttsp_suspend, cyttsp_resume);
-EXPORT_SYMBOL_GPL(cyttsp_pm_ops);
-=======
 EXPORT_GPL_SIMPLE_DEV_PM_OPS(cyttsp_pm_ops, cyttsp_suspend, cyttsp_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int cyttsp_open(struct input_dev *dev)
 {
@@ -672,12 +546,6 @@ static void cyttsp_close(struct input_dev *dev)
 		cyttsp_disable(ts);
 }
 
-<<<<<<< HEAD
-struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
-			    struct device *dev, int irq, size_t xfer_buf_size)
-{
-	const struct cyttsp_platform_data *pdata = dev->platform_data;
-=======
 static int cyttsp_parse_properties(struct cyttsp *ts)
 {
 	struct device *dev = ts->dev;
@@ -758,45 +626,10 @@ static void cyttsp_disable_regulators(void *_ts)
 struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 			    struct device *dev, int irq, size_t xfer_buf_size)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cyttsp *ts;
 	struct input_dev *input_dev;
 	int error;
 
-<<<<<<< HEAD
-	if (!pdata || !pdata->name || irq <= 0) {
-		error = -EINVAL;
-		goto err_out;
-	}
-
-	ts = kzalloc(sizeof(*ts) + xfer_buf_size, GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!ts || !input_dev) {
-		error = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	ts->dev = dev;
-	ts->input = input_dev;
-	ts->pdata = dev->platform_data;
-	ts->bus_ops = bus_ops;
-	ts->irq = irq;
-
-	init_completion(&ts->bl_ready);
-	snprintf(ts->phys, sizeof(ts->phys), "%s/input0", dev_name(dev));
-
-	if (pdata->init) {
-		error = pdata->init();
-		if (error) {
-			dev_err(ts->dev, "platform init failed, err: %d\n",
-				error);
-			goto err_free_mem;
-		}
-	}
-
-	input_dev->name = pdata->name;
-	input_dev->phys = ts->phys;
-=======
 	ts = devm_kzalloc(dev, sizeof(*ts) + xfer_buf_size, GFP_KERNEL);
 	if (!ts)
 		return ERR_PTR(-ENOMEM);
@@ -850,7 +683,6 @@ struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 	init_completion(&ts->bl_ready);
 
 	input_dev->name = "Cypress TTSP TouchScreen";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->id.bustype = bus_ops->bustype;
 	input_dev->dev.parent = ts->dev;
 
@@ -859,32 +691,6 @@ struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 
 	input_set_drvdata(input_dev, ts);
 
-<<<<<<< HEAD
-	__set_bit(EV_ABS, input_dev->evbit);
-	input_set_abs_params(input_dev, ABS_MT_POSITION_X,
-			     0, pdata->maxx, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_POSITION_Y,
-			     0, pdata->maxy, 0, 0);
-	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR,
-			     0, CY_MAXZ, 0, 0);
-
-	input_mt_init_slots(input_dev, CY_MAX_ID);
-
-	error = request_threaded_irq(ts->irq, NULL, cyttsp_irq,
-				     IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-				     pdata->name, ts);
-	if (error) {
-		dev_err(ts->dev, "failed to request IRQ %d, err: %d\n",
-			ts->irq, error);
-		goto err_platform_exit;
-	}
-
-	disable_irq(ts->irq);
-
-	error = cyttsp_power_on(ts);
-	if (error)
-		goto err_free_irq;
-=======
 	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_X);
 	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_Y);
 	/* One byte for width 0..255 so this is the limit */
@@ -912,42 +718,11 @@ struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 	error = cyttsp_power_on(ts);
 	if (error)
 		return ERR_PTR(error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(ts->dev, "failed to register input device: %d\n",
 			error);
-<<<<<<< HEAD
-		goto err_free_irq;
-	}
-
-	return ts;
-
-err_free_irq:
-	free_irq(ts->irq, ts);
-err_platform_exit:
-	if (pdata->exit)
-		pdata->exit();
-err_free_mem:
-	input_free_device(input_dev);
-	kfree(ts);
-err_out:
-	return ERR_PTR(error);
-}
-EXPORT_SYMBOL_GPL(cyttsp_probe);
-
-void cyttsp_remove(struct cyttsp *ts)
-{
-	free_irq(ts->irq, ts);
-	input_unregister_device(ts->input);
-	if (ts->pdata->exit)
-		ts->pdata->exit();
-	kfree(ts);
-}
-EXPORT_SYMBOL_GPL(cyttsp_remove);
-
-=======
 		return ERR_PTR(error);
 	}
 
@@ -955,7 +730,6 @@ EXPORT_SYMBOL_GPL(cyttsp_remove);
 }
 EXPORT_SYMBOL_GPL(cyttsp_probe);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Cypress TrueTouch(R) Standard touchscreen driver core");
 MODULE_AUTHOR("Cypress");

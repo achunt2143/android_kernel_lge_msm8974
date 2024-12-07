@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfad_drv.h"
@@ -35,10 +17,6 @@ BFA_TRC_FILE(HAL, FCPIM);
  *  BFA ITNIM Related definitions
  */
 static void bfa_itnim_update_del_itn_stats(struct bfa_itnim_s *itnim);
-<<<<<<< HEAD
-static void bfa_ioim_lm_init(struct bfa_s *bfa);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BFA_ITNIM_FROM_TAG(_fcpim, _tag)                                \
 	(((_fcpim)->itnim_arr + ((_tag) & ((_fcpim)->num_itnims - 1))))
@@ -87,24 +65,6 @@ enum bfa_ioim_lm_ua_status {
 };
 
 /*
-<<<<<<< HEAD
- *  itnim state machine event
- */
-enum bfa_itnim_event {
-	BFA_ITNIM_SM_CREATE = 1,	/*  itnim is created */
-	BFA_ITNIM_SM_ONLINE = 2,	/*  itnim is online */
-	BFA_ITNIM_SM_OFFLINE = 3,	/*  itnim is offline */
-	BFA_ITNIM_SM_FWRSP = 4,		/*  firmware response */
-	BFA_ITNIM_SM_DELETE = 5,	/*  deleting an existing itnim */
-	BFA_ITNIM_SM_CLEANUP = 6,	/*  IO cleanup completion */
-	BFA_ITNIM_SM_SLER = 7,		/*  second level error recovery */
-	BFA_ITNIM_SM_HWFAIL = 8,	/*  IOC h/w failure event */
-	BFA_ITNIM_SM_QRESUME = 9,	/*  queue space available */
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  BFA IOIM related definitions
  */
 #define bfa_ioim_move_to_comp_q(__ioim) do {				\
@@ -123,33 +83,6 @@ enum bfa_itnim_event {
 		(__fcpim)->profile_start(__ioim);			\
 } while (0)
 
-<<<<<<< HEAD
-/*
- * IO state machine events
- */
-enum bfa_ioim_event {
-	BFA_IOIM_SM_START	= 1,	/*  io start request from host */
-	BFA_IOIM_SM_COMP_GOOD	= 2,	/*  io good comp, resource free */
-	BFA_IOIM_SM_COMP	= 3,	/*  io comp, resource is free */
-	BFA_IOIM_SM_COMP_UTAG	= 4,	/*  io comp, resource is free */
-	BFA_IOIM_SM_DONE	= 5,	/*  io comp, resource not free */
-	BFA_IOIM_SM_FREE	= 6,	/*  io resource is freed */
-	BFA_IOIM_SM_ABORT	= 7,	/*  abort request from scsi stack */
-	BFA_IOIM_SM_ABORT_COMP	= 8,	/*  abort from f/w */
-	BFA_IOIM_SM_ABORT_DONE	= 9,	/*  abort completion from f/w */
-	BFA_IOIM_SM_QRESUME	= 10,	/*  CQ space available to queue IO */
-	BFA_IOIM_SM_SGALLOCED	= 11,	/*  SG page allocation successful */
-	BFA_IOIM_SM_SQRETRY	= 12,	/*  sequence recovery retry */
-	BFA_IOIM_SM_HCB		= 13,	/*  bfa callback complete */
-	BFA_IOIM_SM_CLEANUP	= 14,	/*  IO cleanup from itnim */
-	BFA_IOIM_SM_TMSTART	= 15,	/*  IO cleanup from tskim */
-	BFA_IOIM_SM_TMDONE	= 16,	/*  IO cleanup from tskim */
-	BFA_IOIM_SM_HWFAIL	= 17,	/*  IOC h/w failure event */
-	BFA_IOIM_SM_IOTOV	= 18,	/*  ITN offline TOV */
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  BFA TSKIM related definitions
@@ -169,20 +102,6 @@ enum bfa_ioim_event {
 } while (0)
 
 
-<<<<<<< HEAD
-enum bfa_tskim_event {
-	BFA_TSKIM_SM_START	= 1,	/*  TM command start		*/
-	BFA_TSKIM_SM_DONE	= 2,	/*  TM completion		*/
-	BFA_TSKIM_SM_QRESUME	= 3,	/*  resume after qfull		*/
-	BFA_TSKIM_SM_HWFAIL	= 5,	/*  IOC h/w failure event	*/
-	BFA_TSKIM_SM_HCB	= 6,	/*  BFA callback completion	*/
-	BFA_TSKIM_SM_IOS_DONE	= 7,	/*  IO and sub TM completions	*/
-	BFA_TSKIM_SM_CLEANUP	= 8,	/*  TM cleanup on ITN offline	*/
-	BFA_TSKIM_SM_CLEANUP_DONE = 9,	/*  TM abort completion	*/
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * forward declaration for BFA ITNIM functions
  */
@@ -360,11 +279,7 @@ bfa_fcpim_attach(struct bfa_fcp_mod_s *fcp, void *bfad,
 	bfa_ioim_attach(fcpim);
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcpim_iocdisable(struct bfa_fcp_mod_s *fcp)
 {
 	struct bfa_fcpim_s *fcpim = &fcp->fcpim;
@@ -470,11 +385,7 @@ bfa_fcpim_port_iostats(struct bfa_s *bfa,
 	return BFA_STATUS_OK;
 }
 
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_ioim_profile_comp(struct bfa_ioim_s *ioim)
 {
 	struct bfa_itnim_latency_s *io_lat =
@@ -491,22 +402,14 @@ bfa_ioim_profile_comp(struct bfa_ioim_s *ioim)
 	io_lat->avg[idx] += val;
 }
 
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_ioim_profile_start(struct bfa_ioim_s *ioim)
 {
 	ioim->start_time = jiffies;
 }
 
 bfa_status_t
-<<<<<<< HEAD
-bfa_fcpim_profile_on(struct bfa_s *bfa, u32 time)
-=======
 bfa_fcpim_profile_on(struct bfa_s *bfa, time64_t time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bfa_itnim_s *itnim;
 	struct bfa_fcpim_s *fcpim = BFA_FCPIM(bfa);
@@ -1505,9 +1408,6 @@ bfa_status_t
 bfa_itnim_get_ioprofile(struct bfa_itnim_s *itnim,
 			struct bfa_itnim_ioprofile_s *ioprofile)
 {
-<<<<<<< HEAD
-	struct bfa_fcpim_s *fcpim = BFA_FCPIM(itnim->bfa);
-=======
 	struct bfa_fcpim_s *fcpim;
 
 	if (!itnim)
@@ -1515,15 +1415,11 @@ bfa_itnim_get_ioprofile(struct bfa_itnim_s *itnim,
 
 	fcpim = BFA_FCPIM(itnim->bfa);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fcpim->io_profile)
 		return BFA_STATUS_IOPROFILE_OFF;
 
 	itnim->ioprofile.index = BFA_IOBUCKET_MAX;
-<<<<<<< HEAD
-=======
 	/* unsigned 32-bit time_t overflow here in y2106 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	itnim->ioprofile.io_profile_start_time =
 				bfa_io_profile_start_time(itnim->bfa);
 	itnim->ioprofile.clock_res_mul = bfa_io_lat_clock_res_mul;
@@ -1537,13 +1433,10 @@ void
 bfa_itnim_clear_stats(struct bfa_itnim_s *itnim)
 {
 	int j;
-<<<<<<< HEAD
-=======
 
 	if (!itnim)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&itnim->stats, 0, sizeof(itnim->stats));
 	memset(&itnim->ioprofile, 0, sizeof(itnim->ioprofile));
 	for (j = 0; j < BFA_IOBUCKET_MAX; j++)
@@ -2153,11 +2046,7 @@ bfa_ioim_sm_resfree(struct bfa_ioim_s *ioim, enum bfa_ioim_event event)
  * is complete by driver. now invalidate the stale content of lun mask
  * like unit attention, rp tag and lp tag.
  */
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_ioim_lm_init(struct bfa_s *bfa)
 {
 	struct bfa_lun_mask_s *lunm_list;
@@ -2206,11 +2095,7 @@ __bfa_cb_ioim_comp(void *cbarg, bfa_boolean_t complete)
 		/*
 		 * setup sense information, if present
 		 */
-<<<<<<< HEAD
-		if ((m->scsi_status == SCSI_STATUS_CHECK_CONDITION) &&
-=======
 		if ((m->scsi_status == SAM_STAT_CHECK_CONDITION) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					m->sns_len) {
 			sns_len = m->sns_len;
 			snsinfo = BFA_SNSINFO_FROM_TAG(ioim->fcpim->fcp,
@@ -2399,13 +2284,7 @@ bfa_fcpim_lunmask_delete(struct bfa_s *bfa, u16 vf_id, wwn_t *pwwn,
 			 wwn_t rpwwn, struct scsi_lun lun)
 {
 	struct bfa_lun_mask_s	*lunm_list;
-<<<<<<< HEAD
-	struct bfa_rport_s	*rp = NULL;
 	struct bfa_fcs_lport_s *port = NULL;
-	struct bfa_fcs_rport_s *rp_fcs;
-=======
-	struct bfa_fcs_lport_s *port = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	i;
 
 	/* in min cfg lunm_list could be NULL but  no commands should run. */
@@ -2421,17 +2300,8 @@ bfa_fcpim_lunmask_delete(struct bfa_s *bfa, u16 vf_id, wwn_t *pwwn,
 		port = bfa_fcs_lookup_port(
 				&((struct bfad_s *)bfa->bfad)->bfa_fcs,
 				vf_id, *pwwn);
-<<<<<<< HEAD
-		if (port) {
-			*pwwn = port->port_cfg.pwwn;
-			rp_fcs = bfa_fcs_lport_get_rport_by_pwwn(port, rpwwn);
-			if (rp_fcs)
-				rp = rp_fcs->bfa_rport;
-		}
-=======
 		if (port)
 			*pwwn = port->port_cfg.pwwn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lunm_list = bfa_get_lun_mask_list(bfa);
@@ -2651,10 +2521,7 @@ bfa_ioim_send_ioreq(struct bfa_ioim_s *ioim)
 	case FCP_IODIR_RW:
 		bfa_stats(itnim, input_reqs);
 		bfa_stats(itnim, output_reqs);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfi_h2i_set(m->mh, BFI_MC_IOIM_IO, 0, bfa_fn_lpu(ioim->bfa));
 	}
@@ -2889,10 +2756,7 @@ bfa_ioim_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 
 	case BFI_IOIM_STS_TIMEDOUT:
 		bfa_stats(ioim->itnim, iocomp_timedout);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFI_IOIM_STS_ABORTED:
 		rsp->io_status = BFI_IOIM_STS_ABORTED;
 		bfa_stats(ioim->itnim, iocomp_aborted);
@@ -2956,11 +2820,7 @@ bfa_ioim_good_comp_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 	iotag = be16_to_cpu(rsp->io_tag);
 
 	ioim = BFA_IOIM_FROM_TAG(fcpim, iotag);
-<<<<<<< HEAD
-	WARN_ON(BFA_IOIM_TAG_2_ID(ioim->iotag) != iotag);
-=======
 	WARN_ON(ioim->iotag != iotag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_ioim_cb_profile_comp(fcpim, ioim);
 
@@ -3115,11 +2975,7 @@ bfa_ioim_abort(struct bfa_ioim_s *ioim)
 static void
 bfa_tskim_sm_uninit(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 {
-<<<<<<< HEAD
-	bfa_trc(tskim->bfa, event);
-=======
 	bfa_trc(tskim->bfa, tskim->tsk_tag << 16 | event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case BFA_TSKIM_SM_START:
@@ -3157,11 +3013,7 @@ bfa_tskim_sm_uninit(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 static void
 bfa_tskim_sm_active(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 {
-<<<<<<< HEAD
-	bfa_trc(tskim->bfa, event);
-=======
 	bfa_trc(tskim->bfa, tskim->tsk_tag << 16 | event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case BFA_TSKIM_SM_DONE:
@@ -3197,11 +3049,7 @@ bfa_tskim_sm_active(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 static void
 bfa_tskim_sm_cleanup(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 {
-<<<<<<< HEAD
-	bfa_trc(tskim->bfa, event);
-=======
 	bfa_trc(tskim->bfa, tskim->tsk_tag << 16 | event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case BFA_TSKIM_SM_DONE:
@@ -3210,10 +3058,7 @@ bfa_tskim_sm_cleanup(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 		 */
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_TSKIM_SM_UTAG:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_TSKIM_SM_CLEANUP_DONE:
 		bfa_sm_set_state(tskim, bfa_tskim_sm_iocleanup);
 		bfa_tskim_cleanup_ios(tskim);
@@ -3233,11 +3078,7 @@ bfa_tskim_sm_cleanup(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 static void
 bfa_tskim_sm_iocleanup(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 {
-<<<<<<< HEAD
-	bfa_trc(tskim->bfa, event);
-=======
 	bfa_trc(tskim->bfa, tskim->tsk_tag << 16 | event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case BFA_TSKIM_SM_IOS_DONE:
@@ -3269,11 +3110,7 @@ bfa_tskim_sm_iocleanup(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 static void
 bfa_tskim_sm_qfull(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 {
-<<<<<<< HEAD
-	bfa_trc(tskim->bfa, event);
-=======
 	bfa_trc(tskim->bfa, tskim->tsk_tag << 16 | event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case BFA_TSKIM_SM_QRESUME:
@@ -3310,22 +3147,12 @@ static void
 bfa_tskim_sm_cleanup_qfull(struct bfa_tskim_s *tskim,
 		enum bfa_tskim_event event)
 {
-<<<<<<< HEAD
-	bfa_trc(tskim->bfa, event);
-=======
 	bfa_trc(tskim->bfa, tskim->tsk_tag << 16 | event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case BFA_TSKIM_SM_DONE:
 		bfa_reqq_wcancel(&tskim->reqq_wait);
-<<<<<<< HEAD
-		/*
-		 * Fall through !!!
-		 */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_TSKIM_SM_QRESUME:
 		bfa_sm_set_state(tskim, bfa_tskim_sm_cleanup);
 		bfa_tskim_send_abort(tskim);
@@ -3349,11 +3176,7 @@ bfa_tskim_sm_cleanup_qfull(struct bfa_tskim_s *tskim,
 static void
 bfa_tskim_sm_hcb(struct bfa_tskim_s *tskim, enum bfa_tskim_event event)
 {
-<<<<<<< HEAD
-	bfa_trc(tskim->bfa, event);
-=======
 	bfa_trc(tskim->bfa, tskim->tsk_tag << 16 | event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case BFA_TSKIM_SM_HCB:
@@ -3675,11 +3498,8 @@ bfa_tskim_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 	if (rsp->tsk_status == BFI_TSKIM_STS_ABORTED) {
 		bfa_stats(tskim->itnim, tm_cleanup_comps);
 		bfa_sm_send_event(tskim, BFA_TSKIM_SM_CLEANUP_DONE);
-<<<<<<< HEAD
-=======
 	} else if (rsp->tsk_status == BFI_TSKIM_STS_UTAG) {
 		bfa_sm_send_event(tskim, BFA_TSKIM_SM_UTAG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		bfa_stats(tskim->itnim, tm_fw_rsps);
 		bfa_sm_send_event(tskim, BFA_TSKIM_SM_DONE);
@@ -3749,15 +3569,7 @@ bfa_tskim_res_recfg(struct bfa_s *bfa, u16 num_tskim_fw)
 	}
 }
 
-<<<<<<< HEAD
-/* BFA FCP module - parent module for fcpim */
-
-BFA_MODULE(fcp);
-
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcp_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
 {
@@ -3815,11 +3627,7 @@ bfa_fcp_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 	bfa_mem_kva_setup(minfo, fcp_kva, km_len);
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcp_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
 {
@@ -3827,10 +3635,7 @@ bfa_fcp_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	struct bfa_mem_dma_s *seg_ptr;
 	u16	idx, nsegs, num_io_req;
 
-<<<<<<< HEAD
-=======
 	fcp->max_ioim_reqs = cfg->fwcfg.num_ioim_reqs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fcp->num_ioim_reqs = cfg->fwcfg.num_ioim_reqs;
 	fcp->num_fwtio_reqs  = cfg->fwcfg.num_fwtio_reqs;
 	fcp->num_itns   = cfg->fwcfg.num_rports;
@@ -3853,10 +3658,7 @@ bfa_fcp_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		bfa_iocfc_set_snsbase(bfa, idx, fcp->snsbase[idx].pa);
 	}
 
-<<<<<<< HEAD
-=======
 	fcp->throttle_update_required = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_fcpim_attach(fcp, bfad, cfg, pcidev);
 
 	bfa_iotag_attach(fcp);
@@ -3868,70 +3670,29 @@ bfa_fcp_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 			(fcp->num_itns * sizeof(struct bfa_itn_s)));
 }
 
-<<<<<<< HEAD
-static void
-bfa_fcp_detach(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_fcp_start(struct bfa_s *bfa)
-{
-	struct bfa_fcp_mod_s *fcp = BFA_FCP_MOD(bfa);
-
-	/*
-	 * bfa_init() with flash read is complete. now invalidate the stale
-	 * content of lun mask like unit attention, rp tag and lp tag.
-	 */
-	bfa_ioim_lm_init(fcp->bfa);
-}
-
-static void
-bfa_fcp_stop(struct bfa_s *bfa)
-{
-}
-
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcp_iocdisable(struct bfa_s *bfa)
 {
 	struct bfa_fcp_mod_s *fcp = BFA_FCP_MOD(bfa);
 
-<<<<<<< HEAD
-	/* Enqueue unused ioim resources to free_q */
-	list_splice_tail_init(&fcp->iotag_unused_q, &fcp->iotag_ioim_free_q);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_fcpim_iocdisable(fcp);
 }
 
 void
-<<<<<<< HEAD
-bfa_fcp_res_recfg(struct bfa_s *bfa, u16 num_ioim_fw)
-=======
 bfa_fcp_res_recfg(struct bfa_s *bfa, u16 num_ioim_fw, u16 max_ioim_fw)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bfa_fcp_mod_s	*mod = BFA_FCP_MOD(bfa);
 	struct list_head	*qe;
 	int	i;
 
-<<<<<<< HEAD
-=======
 	/* Update io throttle value only once during driver load time */
 	if (!mod->throttle_update_required)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < (mod->num_ioim_reqs - num_ioim_fw); i++) {
 		bfa_q_deq_tail(&mod->iotag_ioim_free_q, &qe);
 		list_add_tail(qe, &mod->iotag_unused_q);
 	}
-<<<<<<< HEAD
-=======
 
 	if (mod->num_ioim_reqs != num_ioim_fw) {
 		bfa_trc(bfa, mod->num_ioim_reqs);
@@ -3941,7 +3702,6 @@ bfa_fcp_res_recfg(struct bfa_s *bfa, u16 num_ioim_fw, u16 max_ioim_fw)
 	mod->max_ioim_reqs = max_ioim_fw;
 	mod->num_ioim_reqs = num_ioim_fw;
 	mod->throttle_update_required = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -3999,8 +3759,6 @@ bfa_iotag_attach(struct bfa_fcp_mod_s *fcp)
 
 	bfa_mem_kva_curp(fcp) = (u8 *) iotag;
 }
-<<<<<<< HEAD
-=======
 
 
 /*
@@ -4086,4 +3844,3 @@ bfa_fcpim_throttle_get(struct bfa_s *bfa, void *buf)
 
 	return BFA_STATUS_OK;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

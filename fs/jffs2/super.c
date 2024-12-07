@@ -19,12 +19,8 @@
 #include <linux/fs.h>
 #include <linux/err.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-#include <linux/parser.h>
-=======
 #include <linux/fs_context.h>
 #include <linux/fs_parser.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/jffs2.h>
 #include <linux/pagemap.h>
 #include <linux/mtd/super.h>
@@ -43,34 +39,18 @@ static struct inode *jffs2_alloc_inode(struct super_block *sb)
 {
 	struct jffs2_inode_info *f;
 
-<<<<<<< HEAD
-	f = kmem_cache_alloc(jffs2_inode_cachep, GFP_KERNEL);
-=======
 	f = alloc_inode_sb(sb, jffs2_inode_cachep, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!f)
 		return NULL;
 	return &f->vfs_inode;
 }
 
-<<<<<<< HEAD
-static void jffs2_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(jffs2_inode_cachep, JFFS2_INODE_INFO(inode));
-}
-
-static void jffs2_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, jffs2_i_callback);
-=======
 static void jffs2_free_inode(struct inode *inode)
 {
 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
 
 	kfree(f->target);
 	kmem_cache_free(jffs2_inode_cachep, f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void jffs2_i_init_once(void *foo)
@@ -81,24 +61,6 @@ static void jffs2_i_init_once(void *foo)
 	inode_init_once(&f->vfs_inode);
 }
 
-<<<<<<< HEAD
-static void jffs2_write_super(struct super_block *sb)
-{
-	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
-
-	lock_super(sb);
-	sb->s_dirt = 0;
-
-	if (!(sb->s_flags & MS_RDONLY)) {
-		jffs2_dbg(1, "%s()\n", __func__);
-		jffs2_flush_wbuf_gc(c, 0);
-	}
-
-	unlock_super(sb);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *jffs2_compr_name(unsigned int compr)
 {
 	switch (compr) {
@@ -126,11 +88,8 @@ static int jffs2_show_options(struct seq_file *s, struct dentry *root)
 
 	if (opts->override_compr)
 		seq_printf(s, ",compr=%s", jffs2_compr_name(opts->compr));
-<<<<<<< HEAD
-=======
 	if (opts->set_rp_size)
 		seq_printf(s, ",rp_size=%u", opts->rp_size / 1024);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -139,14 +98,10 @@ static int jffs2_sync_fs(struct super_block *sb, int wait)
 {
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
 
-<<<<<<< HEAD
-	jffs2_write_super(sb);
-=======
 #ifdef CONFIG_JFFS2_FS_WRITEBUFFER
 	if (jffs2_is_writebuffered(c))
 		cancel_delayed_work_sync(&c->wbuf_dwork);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&c->alloc_sem);
 	jffs2_flush_wbuf_pad(c);
@@ -182,33 +137,20 @@ static struct dentry *jffs2_get_parent(struct dentry *child)
 	struct jffs2_inode_info *f;
 	uint32_t pino;
 
-<<<<<<< HEAD
-	BUG_ON(!S_ISDIR(child->d_inode->i_mode));
-
-	f = JFFS2_INODE_INFO(child->d_inode);
-=======
 	BUG_ON(!d_is_dir(child));
 
 	f = JFFS2_INODE_INFO(d_inode(child));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pino = f->inocache->pino_nlink;
 
 	JFFS2_DEBUG("Parent of directory ino #%u is #%u\n",
 		    f->inocache->ino, pino);
 
-<<<<<<< HEAD
-	return d_obtain_alias(jffs2_iget(child->d_inode->i_sb, pino));
-}
-
-static const struct export_operations jffs2_export_ops = {
-=======
 	return d_obtain_alias(jffs2_iget(child->d_sb, pino));
 }
 
 static const struct export_operations jffs2_export_ops = {
 	.encode_fh = generic_encode_ino32_fh,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_parent = jffs2_get_parent,
 	.fh_to_dentry = jffs2_fh_to_dentry,
 	.fh_to_parent = jffs2_fh_to_parent,
@@ -217,67 +159,6 @@ static const struct export_operations jffs2_export_ops = {
 /*
  * JFFS2 mount options.
  *
-<<<<<<< HEAD
- * Opt_override_compr: override default compressor
- * Opt_err: just end of array marker
- */
-enum {
-	Opt_override_compr,
-	Opt_err,
-};
-
-static const match_table_t tokens = {
-	{Opt_override_compr, "compr=%s"},
-	{Opt_err, NULL},
-};
-
-static int jffs2_parse_options(struct jffs2_sb_info *c, char *data)
-{
-	substring_t args[MAX_OPT_ARGS];
-	char *p, *name;
-
-	if (!data)
-		return 0;
-
-	while ((p = strsep(&data, ","))) {
-		int token;
-
-		if (!*p)
-			continue;
-
-		token = match_token(p, tokens, args);
-		switch (token) {
-		case Opt_override_compr:
-			name = match_strdup(&args[0]);
-
-			if (!name)
-				return -ENOMEM;
-			if (!strcmp(name, "none"))
-				c->mount_opts.compr = JFFS2_COMPR_MODE_NONE;
-#ifdef CONFIG_JFFS2_LZO
-			else if (!strcmp(name, "lzo"))
-				c->mount_opts.compr = JFFS2_COMPR_MODE_FORCELZO;
-#endif
-#ifdef CONFIG_JFFS2_ZLIB
-			else if (!strcmp(name, "zlib"))
-				c->mount_opts.compr =
-						JFFS2_COMPR_MODE_FORCEZLIB;
-#endif
-			else {
-				pr_err("Error: unknown compressor \"%s\"\n",
-				       name);
-				kfree(name);
-				return -EINVAL;
-			}
-			kfree(name);
-			c->mount_opts.override_compr = true;
-			break;
-		default:
-			pr_err("Error: unrecognized mount option '%s' or missing value\n",
-			       p);
-			return -EINVAL;
-		}
-=======
  * Opt_source: The source device
  * Opt_override_compr: override default compressor
  * Opt_rp_size: size of reserved pool in KiB
@@ -327,24 +208,11 @@ static int jffs2_parse_param(struct fs_context *fc, struct fs_parameter *param)
 		break;
 	default:
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int jffs2_remount_fs(struct super_block *sb, int *flags, char *data)
-{
-	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
-	int err;
-
-	err = jffs2_parse_options(c, data);
-	if (err)
-		return -EINVAL;
-
-	return jffs2_do_remount_fs(sb, flags, data);
-=======
 static inline void jffs2_update_mount_opts(struct fs_context *fc)
 {
 	struct jffs2_sb_info *new_c = fc->s_fs_info;
@@ -370,23 +238,14 @@ static int jffs2_reconfigure(struct fs_context *fc)
 	jffs2_update_mount_opts(fc);
 
 	return jffs2_do_remount_fs(sb, fc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct super_operations jffs2_super_operations =
 {
 	.alloc_inode =	jffs2_alloc_inode,
-<<<<<<< HEAD
-	.destroy_inode =jffs2_destroy_inode,
-	.put_super =	jffs2_put_super,
-	.write_super =	jffs2_write_super,
-	.statfs =	jffs2_statfs,
-	.remount_fs =	jffs2_remount_fs,
-=======
 	.free_inode =	jffs2_free_inode,
 	.put_super =	jffs2_put_super,
 	.statfs =	jffs2_statfs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.evict_inode =	jffs2_evict_inode,
 	.dirty_inode =	jffs2_dirty_inode,
 	.show_options =	jffs2_show_options,
@@ -396,43 +255,20 @@ static const struct super_operations jffs2_super_operations =
 /*
  * fill in the superblock
  */
-<<<<<<< HEAD
-static int jffs2_fill_super(struct super_block *sb, void *data, int silent)
-{
-	struct jffs2_sb_info *c;
-	int ret;
-=======
 static int jffs2_fill_super(struct super_block *sb, struct fs_context *fc)
 {
 	struct jffs2_sb_info *c = sb->s_fs_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jffs2_dbg(1, "jffs2_get_sb_mtd():"
 		  " New superblock for device %d (\"%s\")\n",
 		  sb->s_mtd->index, sb->s_mtd->name);
 
-<<<<<<< HEAD
-	c = kzalloc(sizeof(*c), GFP_KERNEL);
-	if (!c)
-		return -ENOMEM;
-
-	c->mtd = sb->s_mtd;
-	c->os_priv = sb;
-	sb->s_fs_info = c;
-
-	ret = jffs2_parse_options(c, data);
-	if (ret) {
-		kfree(c);
-		return -EINVAL;
-	}
-=======
 	c->mtd = sb->s_mtd;
 	c->os_priv = sb;
 
 	if (c->mount_opts.rp_size > c->mtd->size)
 		return invalf(fc, "jffs2: Too large reserve pool specified, max is %llu KB",
 			      c->mtd->size / 1024);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize JFFS2 superblock locks, the further initialization will
 	 * be done later */
@@ -445,22 +281,6 @@ static int jffs2_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	sb->s_op = &jffs2_super_operations;
 	sb->s_export_op = &jffs2_export_ops;
-<<<<<<< HEAD
-	sb->s_flags = sb->s_flags | MS_NOATIME;
-	sb->s_xattr = jffs2_xattr_handlers;
-#ifdef CONFIG_JFFS2_FS_POSIX_ACL
-	sb->s_flags |= MS_POSIXACL;
-#endif
-	ret = jffs2_do_fill_super(sb, data, silent);
-	return ret;
-}
-
-static struct dentry *jffs2_mount(struct file_system_type *fs_type,
-			int flags, const char *dev_name,
-			void *data)
-{
-	return mount_mtd(fs_type, flags, dev_name, data, jffs2_fill_super);
-=======
 	sb->s_flags = sb->s_flags | SB_NOATIME;
 	sb->s_xattr = jffs2_xattr_handlers;
 #ifdef CONFIG_JFFS2_FS_POSIX_ACL
@@ -497,7 +317,6 @@ static int jffs2_init_fs_context(struct fs_context *fc)
 	fc->s_fs_info = ctx;
 	fc->ops = &jffs2_context_ops;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void jffs2_put_super (struct super_block *sb)
@@ -506,12 +325,6 @@ static void jffs2_put_super (struct super_block *sb)
 
 	jffs2_dbg(2, "%s()\n", __func__);
 
-<<<<<<< HEAD
-	if (sb->s_dirt)
-		jffs2_write_super(sb);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&c->alloc_sem);
 	jffs2_flush_wbuf_pad(c);
 	mutex_unlock(&c->alloc_sem);
@@ -520,14 +333,7 @@ static void jffs2_put_super (struct super_block *sb)
 
 	jffs2_free_ino_caches(c);
 	jffs2_free_raw_node_refs(c);
-<<<<<<< HEAD
-	if (jffs2_blocks_use_vmalloc(c))
-		vfree(c->blocks);
-	else
-		kfree(c->blocks);
-=======
 	kvfree(c->blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jffs2_flash_cleanup(c);
 	kfree(c->inocache_list);
 	jffs2_clear_xattr_subsystem(c);
@@ -538,11 +344,7 @@ static void jffs2_put_super (struct super_block *sb)
 static void jffs2_kill_sb(struct super_block *sb)
 {
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
-<<<<<<< HEAD
-	if (!(sb->s_flags & MS_RDONLY))
-=======
 	if (c && !sb_rdonly(sb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jffs2_stop_garbage_collect_thread(c);
 	kill_mtd_super(sb);
 	kfree(c);
@@ -551,12 +353,8 @@ static void jffs2_kill_sb(struct super_block *sb)
 static struct file_system_type jffs2_fs_type = {
 	.owner =	THIS_MODULE,
 	.name =		"jffs2",
-<<<<<<< HEAD
-	.mount =	jffs2_mount,
-=======
 	.init_fs_context = jffs2_init_fs_context,
 	.parameters =	jffs2_fs_parameters,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb =	jffs2_kill_sb,
 };
 MODULE_ALIAS_FS("jffs2");
@@ -589,11 +387,7 @@ static int __init init_jffs2_fs(void)
 	jffs2_inode_cachep = kmem_cache_create("jffs2_i",
 					     sizeof(struct jffs2_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
-<<<<<<< HEAD
-						SLAB_MEM_SPREAD),
-=======
 						SLAB_ACCOUNT),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     jffs2_i_init_once);
 	if (!jffs2_inode_cachep) {
 		pr_err("error: Failed to initialise inode cache\n");

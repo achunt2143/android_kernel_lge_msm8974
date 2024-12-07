@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_via.c 	- VIA PATA for new ATA layer
  *			  (C) 2005-2006 Red Hat Inc
@@ -59,10 +56,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/gfp.h>
@@ -255,15 +248,9 @@ static void via_do_set_mode(struct ata_port *ap, struct ata_device *adev,
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	struct ata_device *peer = ata_dev_pair(adev);
 	struct ata_timing t, p;
-<<<<<<< HEAD
-	static int via_clock = 33333;	/* Bus clock in kHZ */
-	unsigned long T =  1000000000 / via_clock;
-	unsigned long UT = T;
-=======
 	const int via_clock = 33333;	/* Bus clock in kHz */
 	const int T = 1000000000 / via_clock;
 	int UT = T;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ut;
 	int offset = 3 - (2*ap->port_no) - adev->devno;
 
@@ -365,11 +352,7 @@ static void via_set_dmamode(struct ata_port *ap, struct ata_device *adev)
  *	one breed of Transcend SSD. Return the updated mask.
  */
 
-<<<<<<< HEAD
-static unsigned long via_mode_filter(struct ata_device *dev, unsigned long mask)
-=======
 static unsigned int via_mode_filter(struct ata_device *dev, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_host *host = dev->link->ap->host;
 	const struct via_isa_bridge *config = host->private_data;
@@ -431,15 +414,6 @@ static void via_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
 		iowrite8(tf->hob_lbal, ioaddr->lbal_addr);
 		iowrite8(tf->hob_lbam, ioaddr->lbam_addr);
 		iowrite8(tf->hob_lbah, ioaddr->lbah_addr);
-<<<<<<< HEAD
-		VPRINTK("hob: feat 0x%X nsect 0x%X, lba 0x%X 0x%X 0x%X\n",
-			tf->hob_feature,
-			tf->hob_nsect,
-			tf->hob_lbal,
-			tf->hob_lbam,
-			tf->hob_lbah);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (is_addr) {
@@ -448,15 +422,6 @@ static void via_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
 		iowrite8(tf->lbal, ioaddr->lbal_addr);
 		iowrite8(tf->lbam, ioaddr->lbam_addr);
 		iowrite8(tf->lbah, ioaddr->lbah_addr);
-<<<<<<< HEAD
-		VPRINTK("feat 0x%X nsect 0x%X lba 0x%X 0x%X 0x%X\n",
-			tf->feature,
-			tf->nsect,
-			tf->lbal,
-			tf->lbam,
-			tf->lbah);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ata_wait_idle(ap);
@@ -478,11 +443,7 @@ static int via_port_start(struct ata_port *ap)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template via_sht = {
-=======
 static const struct scsi_host_template via_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -499,11 +460,7 @@ static struct ata_port_operations via_port_ops = {
 
 static struct ata_port_operations via_port_ops_noirq = {
 	.inherits	= &via_port_ops,
-<<<<<<< HEAD
-	.sff_data_xfer	= ata_sff_data_xfer_noirq,
-=======
 	.sff_data_xfer	= ata_sff_data_xfer32,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -691,17 +648,10 @@ static int via_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return ata_pci_bmdma_init_one(pdev, ppi, &via_sht, (void *)config, 0);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-/**
- *	via_reinit_one		-	reinit after resume
- *	@pdev; PCI device
-=======
 #ifdef CONFIG_PM_SLEEP
 /**
  *	via_reinit_one		-	reinit after resume
  *	@pdev: PCI device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Called when the VIA PATA device is resumed. We must then
  *	reconfigure the fifo and other setup we may have altered. In
@@ -711,11 +661,7 @@ static int via_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 
 static int via_reinit_one(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -747,38 +693,16 @@ static struct pci_driver via_pci_driver = {
 	.id_table	= via,
 	.probe 		= via_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= via_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init via_init(void)
-{
-	return pci_register_driver(&via_pci_driver);
-}
-
-static void __exit via_exit(void)
-{
-	pci_unregister_driver(&via_pci_driver);
-}
-=======
 module_pci_driver(via_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for VIA PATA");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, via);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(via_init);
-module_exit(via_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

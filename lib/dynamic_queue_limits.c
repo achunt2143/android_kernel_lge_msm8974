@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dynamic byte queue limits.  See include/linux/dynamic_queue_limits.h
  *
  * Copyright (c) 2011, Tom Herbert <therbert@google.com>
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/types.h>
-#include <linux/ctype.h>
-#include <linux/kernel.h>
-#include <linux/jiffies.h>
-#include <linux/dynamic_queue_limits.h>
-=======
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/jiffies.h>
@@ -22,13 +11,10 @@
 #include <linux/compiler.h>
 #include <linux/export.h>
 #include <trace/events/napi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define POSDIFF(A, B) ((int)((A) - (B)) > 0 ? (A) - (B) : 0)
 #define AFTER_EQ(A, B) ((int)((A) - (B)) >= 0)
 
-<<<<<<< HEAD
-=======
 static void dql_check_stall(struct dql *dql)
 {
 	unsigned short stall_thrs;
@@ -95,7 +81,6 @@ no_stall:
 	dql->last_reap = now;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Records completed count and recalculates the queue limit */
 void dql_completed(struct dql *dql, unsigned int count)
 {
@@ -103,11 +88,7 @@ void dql_completed(struct dql *dql, unsigned int count)
 	unsigned int ovlimit, completed, num_queued;
 	bool all_prev_completed;
 
-<<<<<<< HEAD
-	num_queued = ACCESS_ONCE(dql->num_queued);
-=======
 	num_queued = READ_ONCE(dql->num_queued);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Can't complete more than what's in queue */
 	BUG_ON(count > num_queued - dql->num_completed);
@@ -146,13 +127,8 @@ void dql_completed(struct dql *dql, unsigned int count)
 		 * A decrease is only considered if the queue has been busy in
 		 * the whole interval (the check above).
 		 *
-<<<<<<< HEAD
-		 * If there is slack, the amount of execess data queued above
-		 * the the amount needed to prevent starvation, the queue limit
-=======
 		 * If there is slack, the amount of excess data queued above
 		 * the amount needed to prevent starvation, the queue limit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * can be decreased.  To avoid hysteresis we consider the
 		 * minimum amount of slack found over several iterations of the
 		 * completion routine.
@@ -201,11 +177,8 @@ void dql_completed(struct dql *dql, unsigned int count)
 	dql->prev_last_obj_cnt = dql->last_obj_cnt;
 	dql->num_completed = completed;
 	dql->prev_num_queued = num_queued;
-<<<<<<< HEAD
-=======
 
 	dql_check_stall(dql);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dql_completed);
 
@@ -221,12 +194,6 @@ void dql_reset(struct dql *dql)
 	dql->prev_ovlimit = 0;
 	dql->lowest_slack = UINT_MAX;
 	dql->slack_start_time = jiffies;
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL(dql_reset);
-
-int dql_init(struct dql *dql, unsigned hold_time)
-=======
 
 	dql->last_reap = jiffies;
 	dql->history_head = jiffies / BITS_PER_LONG;
@@ -235,17 +202,11 @@ int dql_init(struct dql *dql, unsigned hold_time)
 EXPORT_SYMBOL(dql_reset);
 
 void dql_init(struct dql *dql, unsigned int hold_time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dql->max_limit = DQL_MAX_LIMIT;
 	dql->min_limit = 0;
 	dql->slack_hold_time = hold_time;
-<<<<<<< HEAD
-	dql_reset(dql);
-	return 0;
-=======
 	dql->stall_thrs = 0;
 	dql_reset(dql);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dql_init);

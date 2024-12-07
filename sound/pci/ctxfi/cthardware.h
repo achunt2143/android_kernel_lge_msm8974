@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * This source file is released under GPL v2 license (no other versions).
- * See the COPYING file included in the main directory of this source
- * distribution for the license terms and conditions.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	cthardware.h
  *
  * @Brief
@@ -19,10 +9,6 @@
  *
  * @Author	Liu Chun
  * @Date 	May 13 2008
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CTHARDWARE_H
@@ -30,10 +16,7 @@
 
 #include <linux/types.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-=======
 #include <sound/core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum CHIPTYP {
 	ATC20K1,
@@ -43,14 +26,9 @@ enum CHIPTYP {
 
 enum CTCARDS {
 	/* 20k1 models */
-<<<<<<< HEAD
-	CTSB055X,
-	CT20K1_MODEL_FIRST = CTSB055X,
-=======
 	CTSB046X,
 	CT20K1_MODEL_FIRST = CTSB046X,
 	CTSB055X,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTSB073X,
 	CTUAA,
 	CT20K1_UNKNOWN,
@@ -92,13 +70,8 @@ struct hw {
 	int (*card_init)(struct hw *hw, struct card_conf *info);
 	int (*card_stop)(struct hw *hw);
 	int (*pll_init)(struct hw *hw, unsigned int rsr);
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	int (*suspend)(struct hw *hw, pm_message_t state);
-=======
 #ifdef CONFIG_PM_SLEEP
 	int (*suspend)(struct hw *hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*resume)(struct hw *hw, struct card_conf *info);
 #endif
 	int (*is_adc_source_selected)(struct hw *hw, enum ADCSRC source);
@@ -209,16 +182,10 @@ struct hw {
 	void *irq_callback_data;
 
 	struct pci_dev *pci;	/* the pci kernel structure of this card */
-<<<<<<< HEAD
-	int irq;
-	unsigned long io_base;
-	unsigned long mem_base;
-=======
 	struct snd_card *card;	/* pointer to this card */
 	int irq;
 	unsigned long io_base;
 	void __iomem *mem_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum CHIPTYP chip_type;
 	enum CTCARDS model;

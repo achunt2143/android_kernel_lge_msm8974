@@ -1,31 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	LAPB release 002
  *
  *	This code REQUIRES 2.1.15 or higher/ NET3.038
  *
-<<<<<<< HEAD
- *	This module:
- *		This module is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	LAPB 001	Jonathan Naylor	Started Coding
  *	LAPB 002	Jonathan Naylor	New timer architecture.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -39,11 +24,7 @@
 #include <linux/skbuff.h>
 #include <linux/slab.h>
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -76,15 +57,8 @@ static void lapb_send_iframe(struct lapb_cb *lapb, struct sk_buff *skb, int poll
 		*frame |= lapb->vs << 1;
 	}
 
-<<<<<<< HEAD
-#if LAPB_DEBUG > 1
-	printk(KERN_DEBUG "lapb: (%p) S%d TX I(%d) S%d R%d\n",
-	       lapb->dev, lapb->state, poll_bit, lapb->vs, lapb->vr);
-#endif
-=======
 	lapb_dbg(1, "(%p) S%d TX I(%d) S%d R%d\n",
 		 lapb->dev, lapb->state, poll_bit, lapb->vs, lapb->vr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lapb_transmit_buffer(lapb, skb, LAPB_COMMAND);
 }
@@ -108,12 +82,8 @@ void lapb_kick(struct lapb_cb *lapb)
 		skb = skb_dequeue(&lapb->write_queue);
 
 		do {
-<<<<<<< HEAD
-			if ((skbn = skb_clone(skb, GFP_ATOMIC)) == NULL) {
-=======
 			skbn = skb_copy(skb, GFP_ATOMIC);
 			if (!skbn) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				skb_queue_head(&lapb->write_queue, skb);
 				break;
 			}
@@ -174,15 +144,7 @@ void lapb_transmit_buffer(struct lapb_cb *lapb, struct sk_buff *skb, int type)
 		}
 	}
 
-<<<<<<< HEAD
-#if LAPB_DEBUG > 2
-	printk(KERN_DEBUG "lapb: (%p) S%d TX %02X %02X %02X\n",
-	       lapb->dev, lapb->state,
-	       skb->data[0], skb->data[1], skb->data[2]);
-#endif
-=======
 	lapb_dbg(2, "(%p) S%d TX %3ph\n", lapb->dev, lapb->state, skb->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!lapb_data_transmit(lapb, skb))
 		kfree_skb(skb);
@@ -194,23 +156,10 @@ void lapb_establish_data_link(struct lapb_cb *lapb)
 	lapb->n2count   = 0;
 
 	if (lapb->mode & LAPB_EXTENDED) {
-<<<<<<< HEAD
-#if LAPB_DEBUG > 1
-		printk(KERN_DEBUG "lapb: (%p) S%d TX SABME(1)\n",
-		       lapb->dev, lapb->state);
-#endif
-		lapb_send_control(lapb, LAPB_SABME, LAPB_POLLON, LAPB_COMMAND);
-	} else {
-#if LAPB_DEBUG > 1
-		printk(KERN_DEBUG "lapb: (%p) S%d TX SABM(1)\n",
-		       lapb->dev, lapb->state);
-#endif
-=======
 		lapb_dbg(1, "(%p) S%d TX SABME(1)\n", lapb->dev, lapb->state);
 		lapb_send_control(lapb, LAPB_SABME, LAPB_POLLON, LAPB_COMMAND);
 	} else {
 		lapb_dbg(1, "(%p) S%d TX SABM(1)\n", lapb->dev, lapb->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lapb_send_control(lapb, LAPB_SABM, LAPB_POLLON, LAPB_COMMAND);
 	}
 
@@ -220,15 +169,8 @@ void lapb_establish_data_link(struct lapb_cb *lapb)
 
 void lapb_enquiry_response(struct lapb_cb *lapb)
 {
-<<<<<<< HEAD
-#if LAPB_DEBUG > 1
-	printk(KERN_DEBUG "lapb: (%p) S%d TX RR(1) R%d\n",
-	       lapb->dev, lapb->state, lapb->vr);
-#endif
-=======
 	lapb_dbg(1, "(%p) S%d TX RR(1) R%d\n",
 		 lapb->dev, lapb->state, lapb->vr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lapb_send_control(lapb, LAPB_RR, LAPB_POLLON, LAPB_RESPONSE);
 
@@ -237,15 +179,8 @@ void lapb_enquiry_response(struct lapb_cb *lapb)
 
 void lapb_timeout_response(struct lapb_cb *lapb)
 {
-<<<<<<< HEAD
-#if LAPB_DEBUG > 1
-	printk(KERN_DEBUG "lapb: (%p) S%d TX RR(0) R%d\n",
-	       lapb->dev, lapb->state, lapb->vr);
-#endif
-=======
 	lapb_dbg(1, "(%p) S%d TX RR(0) R%d\n",
 		 lapb->dev, lapb->state, lapb->vr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lapb_send_control(lapb, LAPB_RR, LAPB_POLLOFF, LAPB_RESPONSE);
 
 	lapb->condition &= ~LAPB_ACK_PENDING_CONDITION;

@@ -1,13 +1,7 @@
 ksymoops has been removed from the kernel.  It was always meant to be a
 free standing utility, not linked to any particular kernel version.
 The latest version can be found in
-<<<<<<< HEAD
-ftp://ftp.<country>.kernel.org/pub/linux/utils/kernel/ksymoops together
-with patches to other utilities in order to give more accurate Oops
-debugging.
-=======
 https://www.kernel.org/pub/linux/utils/kernel/ksymoops together with patches to
 other utilities in order to give more accurate Oops debugging.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Keith Owens <kaos@ocs.com.au> Sat Jun 19 10:30:34 EST 1999

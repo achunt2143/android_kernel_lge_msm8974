@@ -1,40 +1,17 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  The NFC Controller Interface is the communication protocol between an
  *  NFC Controller (NFCC) and a Device Host (DH).
  *
  *  Copyright (C) 2011 Texas Instruments, Inc.
-<<<<<<< HEAD
-=======
  *  Copyright (C) 2013 Intel Corporation. All rights reserved.
  *  Copyright (C) 2014 Marvell International Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Written by Ilan Elias <ilane@ti.com>
  *
  *  Acknowledgements:
  *  This file is based on hci_core.h, which was written
  *  by Maxim Krasnyansky.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __NCI_CORE_H
@@ -42,10 +19,7 @@
 
 #include <linux/interrupt.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-=======
 #include <linux/tty.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/nfc/nfc.h>
 #include <net/nfc/nci.h>
@@ -56,10 +30,7 @@ enum nci_flag {
 	NCI_UP,
 	NCI_DATA_EXCHANGE,
 	NCI_DATA_EXCHANGE_TO,
-<<<<<<< HEAD
-=======
 	NCI_UNREG,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* NCI device states */
@@ -69,20 +40,14 @@ enum nci_state {
 	NCI_W4_ALL_DISCOVERIES,
 	NCI_W4_HOST_SELECT,
 	NCI_POLL_ACTIVE,
-<<<<<<< HEAD
-=======
 	NCI_LISTEN_ACTIVE,
 	NCI_LISTEN_SLEEP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* NCI timeouts */
 #define NCI_RESET_TIMEOUT			5000
 #define NCI_INIT_TIMEOUT			5000
-<<<<<<< HEAD
-=======
 #define NCI_SET_CONFIG_TIMEOUT			5000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NCI_RF_DISC_TIMEOUT			5000
 #define NCI_RF_DISC_SELECT_TIMEOUT		5000
 #define NCI_RF_DEACTIVATE_TIMEOUT		30000
@@ -91,12 +56,6 @@ enum nci_state {
 
 struct nci_dev;
 
-<<<<<<< HEAD
-struct nci_ops {
-	int (*open)(struct nci_dev *ndev);
-	int (*close)(struct nci_dev *ndev);
-	int (*send)(struct sk_buff *skb);
-=======
 struct nci_driver_ops {
 	__u16 opcode;
 	int (*rsp)(struct nci_dev *dev, struct sk_buff *skb);
@@ -129,13 +88,10 @@ struct nci_ops {
 
 	const struct nci_driver_ops *core_ops;
 	size_t n_core_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define NCI_MAX_SUPPORTED_RF_INTERFACES		4
 #define NCI_MAX_DISCOVERED_TARGETS		10
-<<<<<<< HEAD
-=======
 #define NCI_MAX_NUM_NFCEE   255
 #define NCI_MAX_CONN_ID		7
 #define NCI_MAX_PROPRIETARY_CMD 64
@@ -235,17 +191,12 @@ struct nci_hci_dev {
 	struct work_struct msg_rx_work;
 	struct sk_buff_head msg_rx_queue;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NCI Core structures */
 struct nci_dev {
 	struct nfc_dev		*nfc_dev;
-<<<<<<< HEAD
-	struct nci_ops		*ops;
-=======
 	const struct nci_ops	*ops;
 	struct nci_hci_dev	*hci_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			tx_headroom;
 	int			tx_tailroom;
@@ -254,14 +205,10 @@ struct nci_dev {
 	unsigned long		flags;
 
 	atomic_t		cmd_cnt;
-<<<<<<< HEAD
-	atomic_t		credits_cnt;
-=======
 	__u8			cur_conn_id;
 
 	struct list_head	conn_info_list;
 	struct nci_conn_info	*rf_conn_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct timer_list	cmd_timer;
 	struct timer_list	data_timer;
@@ -307,20 +254,6 @@ struct nci_dev {
 	__u8			manufact_id;
 	__u32			manufact_specific_info;
 
-<<<<<<< HEAD
-	/* received during NCI_OP_RF_INTF_ACTIVATED_NTF */
-	__u8			max_data_pkt_payload_size;
-	__u8			initial_num_credits;
-
-	/* stored during nci_data_exchange */
-	data_exchange_cb_t	data_exchange_cb;
-	void			*data_exchange_cb_context;
-	struct sk_buff		*rx_data_reassembly;
-};
-
-/* ----- NCI Devices ----- */
-struct nci_dev *nci_allocate_device(struct nci_ops *ops,
-=======
 	/* Save RF Discovery ID or NFCEE ID under conn_create */
 	struct dest_spec_params cur_params;
 	/* Save destination type under conn_create */
@@ -336,16 +269,12 @@ struct nci_dev *nci_allocate_device(struct nci_ops *ops,
 
 /* ----- NCI Devices ----- */
 struct nci_dev *nci_allocate_device(const struct nci_ops *ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    __u32 supported_protocols,
 				    int tx_headroom,
 				    int tx_tailroom);
 void nci_free_device(struct nci_dev *ndev);
 int nci_register_device(struct nci_dev *ndev);
 void nci_unregister_device(struct nci_dev *ndev);
-<<<<<<< HEAD
-int nci_recv_frame(struct sk_buff *skb);
-=======
 int nci_request(struct nci_dev *ndev,
 		void (*req)(struct nci_dev *ndev,
 			    const void *opt),
@@ -387,7 +316,6 @@ int nci_hci_get_param(struct nci_dev *ndev, u8 gate, u8 idx,
 		      struct sk_buff **skb);
 int nci_hci_clear_all_pipes(struct nci_dev *ndev);
 int nci_hci_dev_session_init(struct nci_dev *ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct sk_buff *nci_skb_alloc(struct nci_dev *ndev,
 					    unsigned int len,
@@ -417,15 +345,6 @@ static inline void *nci_get_drvdata(struct nci_dev *ndev)
 	return ndev->driver_data;
 }
 
-<<<<<<< HEAD
-void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb);
-void nci_ntf_packet(struct nci_dev *ndev, struct sk_buff *skb);
-void nci_rx_data_packet(struct nci_dev *ndev, struct sk_buff *skb);
-int nci_send_cmd(struct nci_dev *ndev, __u16 opcode, __u8 plen, void *payload);
-int nci_send_data(struct nci_dev *ndev, __u8 conn_id, struct sk_buff *skb);
-void nci_data_exchange_complete(struct nci_dev *ndev, struct sk_buff *skb,
-				int err);
-=======
 static inline int nci_set_vendor_cmds(struct nci_dev *ndev,
 				      const struct nfc_vendor_cmd *cmds,
 				      int n_cmds)
@@ -451,7 +370,6 @@ void nci_data_exchange_complete(struct nci_dev *ndev, struct sk_buff *skb,
 				__u8 conn_id, int err);
 void nci_hci_data_received_cb(void *context, struct sk_buff *skb, int err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nci_clear_target_list(struct nci_dev *ndev);
 
 /* ----- NCI requests ----- */
@@ -460,19 +378,14 @@ void nci_clear_target_list(struct nci_dev *ndev);
 #define NCI_REQ_CANCELED	2
 
 void nci_req_complete(struct nci_dev *ndev, int result);
-<<<<<<< HEAD
-=======
 struct nci_conn_info *nci_get_conn_info_by_conn_id(struct nci_dev *ndev,
 						   int conn_id);
 int nci_get_conn_info_by_dest_type_params(struct nci_dev *ndev, u8 dest_type,
 					  const struct dest_spec_params *params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ----- NCI status code ----- */
 int nci_to_errno(__u8 code);
 
-<<<<<<< HEAD
-=======
 /* ----- NCI over SPI acknowledge modes ----- */
 #define NCI_SPI_CRC_DISABLED	0x00
 #define NCI_SPI_CRC_ENABLED	0x01
@@ -549,5 +462,4 @@ int nci_uart_register(struct nci_uart *nu);
 void nci_uart_unregister(struct nci_uart *nu);
 void nci_uart_set_config(struct nci_uart *nu, int baudrate, int flow_ctrl);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __NCI_CORE_H */

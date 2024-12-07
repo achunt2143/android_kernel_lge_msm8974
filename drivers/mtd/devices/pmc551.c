@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PMC551 PCI Mezzanine Ram Device
  *
@@ -9,14 +6,6 @@
  *	Mark Ferrell <mferrell@mvista.com>
  *	Copyright 1999,2000 Nortel Networks
  *
-<<<<<<< HEAD
- * License:
- *	As part of this driver was derived from the slram.c driver it
- *	falls under the same license, which is GNU General Public
- *	License v2
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Description:
  *	This driver is intended to support the PMC551 PCI Ram device
  *	from Ramix Inc.  The PMC551 is a PMC Mezzanine module for
@@ -89,11 +78,7 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/ptrace.h>
@@ -150,11 +135,7 @@ static int pmc551_point(struct mtd_info *mtd, loff_t from, size_t len,
 static int pmc551_erase(struct mtd_info *mtd, struct erase_info *instr)
 {
 	struct mypriv *priv = mtd->priv;
-<<<<<<< HEAD
-	u32 soff_hi, soff_lo;	/* start address offset hi/lo */
-=======
 	u32 soff_hi;		/* start address offset hi */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 eoff_hi, eoff_lo;	/* end address offset hi/lo */
 	unsigned long end;
 	u_char *ptr;
@@ -169,10 +150,6 @@ static int pmc551_erase(struct mtd_info *mtd, struct erase_info *instr)
 	eoff_hi = end & ~(priv->asize - 1);
 	soff_hi = instr->addr & ~(priv->asize - 1);
 	eoff_lo = end & (priv->asize - 1);
-<<<<<<< HEAD
-	soff_lo = instr->addr & (priv->asize - 1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmc551_point(mtd, instr->addr, instr->len, &retlen,
 		     (void **)&ptr, NULL);
@@ -202,18 +179,10 @@ static int pmc551_erase(struct mtd_info *mtd, struct erase_info *instr)
 	}
 
       out:
-<<<<<<< HEAD
-	instr->state = MTD_ERASE_DONE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MTD_PMC551_DEBUG
 	printk(KERN_DEBUG "pmc551_erase() done\n");
 #endif
 
-<<<<<<< HEAD
-	mtd_erase_callback(instr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -255,11 +224,7 @@ static int pmc551_read(struct mtd_info *mtd, loff_t from, size_t len,
 			size_t * retlen, u_char * buf)
 {
 	struct mypriv *priv = mtd->priv;
-<<<<<<< HEAD
-	u32 soff_hi, soff_lo;	/* start address offset hi/lo */
-=======
 	u32 soff_hi;		/* start address offset hi */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 eoff_hi, eoff_lo;	/* end address offset hi/lo */
 	unsigned long end;
 	u_char *ptr;
@@ -273,10 +238,6 @@ static int pmc551_read(struct mtd_info *mtd, loff_t from, size_t len,
 	end = from + len - 1;
 	soff_hi = from & ~(priv->asize - 1);
 	eoff_hi = end & ~(priv->asize - 1);
-<<<<<<< HEAD
-	soff_lo = from & (priv->asize - 1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eoff_lo = end & (priv->asize - 1);
 
 	pmc551_point(mtd, from, len, retlen, (void **)&ptr, NULL);
@@ -319,11 +280,7 @@ static int pmc551_write(struct mtd_info *mtd, loff_t to, size_t len,
 			size_t * retlen, const u_char * buf)
 {
 	struct mypriv *priv = mtd->priv;
-<<<<<<< HEAD
-	u32 soff_hi, soff_lo;	/* start address offset hi/lo */
-=======
 	u32 soff_hi;		/* start address offset hi */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 eoff_hi, eoff_lo;	/* end address offset hi/lo */
 	unsigned long end;
 	u_char *ptr;
@@ -337,10 +294,6 @@ static int pmc551_write(struct mtd_info *mtd, loff_t to, size_t len,
 	end = to + len - 1;
 	soff_hi = to & ~(priv->asize - 1);
 	eoff_hi = end & ~(priv->asize - 1);
-<<<<<<< HEAD
-	soff_lo = to & (priv->asize - 1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eoff_lo = end & (priv->asize - 1);
 
 	pmc551_point(mtd, to, len, retlen, (void **)&ptr, NULL);
@@ -391,11 +344,7 @@ static int pmc551_write(struct mtd_info *mtd, loff_t to, size_t len,
  * mechanism
  * returns the size of the memory region found.
  */
-<<<<<<< HEAD
-static int fixup_pmc551(struct pci_dev *dev)
-=======
 static int __init fixup_pmc551(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_MTD_PMC551_BUGFIX
 	u32 dram_data;
@@ -767,24 +716,11 @@ static int __init init_pmc551(void)
 		}
 
 		mtd = kzalloc(sizeof(struct mtd_info), GFP_KERNEL);
-<<<<<<< HEAD
-		if (!mtd) {
-			printk(KERN_NOTICE "pmc551: Cannot allocate new MTD "
-				"device.\n");
-			break;
-		}
-
-		priv = kzalloc(sizeof(struct mypriv), GFP_KERNEL);
-		if (!priv) {
-			printk(KERN_NOTICE "pmc551: Cannot allocate new MTD "
-				"device.\n");
-=======
 		if (!mtd)
 			break;
 
 		priv = kzalloc(sizeof(struct mypriv), GFP_KERNEL);
 		if (!priv) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(mtd);
 			break;
 		}
@@ -867,12 +803,7 @@ static int __init init_pmc551(void)
 	}
 
 	/* Exited early, reference left over */
-<<<<<<< HEAD
-	if (PCI_Device)
-		pci_dev_put(PCI_Device);
-=======
 	pci_dev_put(PCI_Device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pmc551list) {
 		printk(KERN_NOTICE "pmc551: not detected\n");

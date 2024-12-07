@@ -36,16 +36,11 @@
 
 #include <linux/bitops.h>
 #include <linux/compiler.h>
-<<<<<<< HEAD
-=======
 #include <linux/ethtool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/mutex.h>
 #include <linux/netdevice.h>
 #include <linux/if_vlan.h>
-<<<<<<< HEAD
-=======
 #include <linux/net_tstamp.h>
 #ifdef CONFIG_MLX4_EN_DCB
 #include <linux/dcbnl.h>
@@ -55,7 +50,6 @@
 #include <linux/irq.h>
 #include <net/xdp.h>
 #include <linux/notifier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mlx4/device.h>
 #include <linux/mlx4/qp.h>
@@ -65,17 +59,10 @@
 #include <linux/mlx4/cmd.h>
 
 #include "en_port.h"
-<<<<<<< HEAD
-
-#define DRV_NAME	"mlx4_en"
-#define DRV_VERSION	"2.0"
-#define DRV_RELDATE	"Dec 2011"
-=======
 #include "mlx4_stats.h"
 
 #define DRV_NAME	"mlx4_en"
 #define DRV_VERSION	"4.0-0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MLX4_EN_MSG_LEVEL	(NETIF_MSG_LINK | NETIF_MSG_IFDOWN)
 
@@ -86,29 +73,17 @@
 
 #define MLX4_EN_PAGE_SHIFT	12
 #define MLX4_EN_PAGE_SIZE	(1 << MLX4_EN_PAGE_SHIFT)
-<<<<<<< HEAD
-#define MAX_RX_RINGS		16
-#define MIN_RX_RINGS		4
-#define TXBB_SIZE		64
-=======
 #define DEF_RX_RINGS		16
 #define MAX_RX_RINGS		128
 #define MIN_RX_RINGS		1
 #define LOG_TXBB_SIZE		6
 #define TXBB_SIZE		BIT(LOG_TXBB_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HEADROOM		(2048 / TXBB_SIZE + 1)
 #define STAMP_STRIDE		64
 #define STAMP_DWORDS		(STAMP_STRIDE / 4)
 #define STAMP_SHIFT		31
 #define STAMP_VAL		0x7fffffff
 #define STATS_DELAY		(HZ / 4)
-<<<<<<< HEAD
-
-/* Typical TSO descriptor with 16 gather entries is 352 bytes... */
-#define MAX_DESC_SIZE		512
-#define MAX_DESC_TXBBS		(MAX_DESC_SIZE / TXBB_SIZE)
-=======
 #define SERVICE_TASK_DELAY	(HZ / 4)
 #define MAX_NUM_OF_FS_RULES	256
 
@@ -128,60 +103,30 @@
 	ALIGN(256 + CTRL_SIZE + DS_SIZE + MAX_SKB_FRAGS * DS_SIZE, TXBB_SIZE)
 
 #define MLX4_MAX_DESC_TXBBS	   (MLX4_TX_BOUNCE_BUFFER_SIZE / TXBB_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * OS related constants and tunables
  */
 
-<<<<<<< HEAD
-=======
 #define MLX4_EN_PRIV_FLAGS_BLUEFLAME 1
 #define MLX4_EN_PRIV_FLAGS_PHV	     2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MLX4_EN_WATCHDOG_TIMEOUT	(15 * HZ)
 
 /* Use the maximum between 16384 and a single page */
 #define MLX4_EN_ALLOC_SIZE	PAGE_ALIGN(16384)
-<<<<<<< HEAD
-#define MLX4_EN_ALLOC_ORDER	get_order(MLX4_EN_ALLOC_SIZE)
 
-#define MLX4_EN_MAX_LRO_DESCRIPTORS	32
-
-/* Receive fragment sizes; we use at most 4 fragments (for 9600 byte MTU
- * and 4K allocations) */
-enum {
-	FRAG_SZ0 = 512 - NET_IP_ALIGN,
-	FRAG_SZ1 = 1024,
-	FRAG_SZ2 = 4096,
-	FRAG_SZ3 = MLX4_EN_ALLOC_SIZE
-};
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MLX4_EN_MAX_RX_FRAGS	4
 
 /* Maximum ring sizes */
 #define MLX4_EN_MAX_TX_SIZE	8192
 #define MLX4_EN_MAX_RX_SIZE	8192
 
-<<<<<<< HEAD
-/* Minimum ring size for our page-allocation sceme to work */
-=======
 /* Minimum ring size for our page-allocation scheme to work */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MLX4_EN_MIN_RX_SIZE	(MLX4_EN_ALLOC_SIZE / SMP_CACHE_BYTES)
 #define MLX4_EN_MIN_TX_SIZE	(4096 / TXBB_SIZE)
 
 #define MLX4_EN_SMALL_PKT_SIZE		64
-<<<<<<< HEAD
-#define MLX4_EN_NUM_TX_RINGS		8
-#define MLX4_EN_NUM_PPP_RINGS		8
-#define MAX_TX_RINGS			(MLX4_EN_NUM_TX_RINGS + MLX4_EN_NUM_PPP_RINGS)
-#define MLX4_EN_DEF_TX_RING_SIZE	512
-#define MLX4_EN_DEF_RX_RING_SIZE  	1024
-=======
 #define MLX4_EN_MIN_TX_RING_P_UP	1
 #define MLX4_EN_MAX_TX_RING_P_UP	32
 #define MLX4_EN_NUM_UP_LOW		1
@@ -192,22 +137,16 @@ enum {
 					 MLX4_EN_NUM_UP_HIGH)
 
 #define MLX4_EN_DEFAULT_TX_WORK		256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Target number of packets to coalesce with interrupt moderation */
 #define MLX4_EN_RX_COAL_TARGET	44
 #define MLX4_EN_RX_COAL_TIME	0x10
 
-<<<<<<< HEAD
-#define MLX4_EN_TX_COAL_PKTS	5
-#define MLX4_EN_TX_COAL_TIME	0x80
-=======
 #define MLX4_EN_TX_COAL_PKTS	16
 #define MLX4_EN_TX_COAL_TIME	0x10
 
 #define MLX4_EN_MAX_COAL_PKTS	U16_MAX
 #define MLX4_EN_MAX_COAL_TIME	U16_MAX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MLX4_EN_RX_RATE_LOW		400000
 #define MLX4_EN_RX_COAL_TIME_LOW	0
@@ -228,15 +167,6 @@ enum {
 #define MLX4_EN_TX_POLL_MODER	16
 #define MLX4_EN_TX_POLL_TIMEOUT	(HZ / 4)
 
-<<<<<<< HEAD
-#define ETH_LLC_SNAP_SIZE	8
-
-#define SMALL_PACKET_SIZE      (256 - NET_IP_ALIGN)
-#define HEADER_COPY_SIZE       (128 - NET_IP_ALIGN)
-#define MLX4_LOOPBACK_TEST_PAYLOAD (HEADER_COPY_SIZE - ETH_HLEN)
-
-#define MLX4_EN_MIN_MTU		46
-=======
 #define SMALL_PACKET_SIZE      (256 - NET_IP_ALIGN)
 #define HEADER_COPY_SIZE       (128 - NET_IP_ALIGN)
 #define MLX4_LOOPBACK_TEST_PAYLOAD (HEADER_COPY_SIZE - ETH_HLEN)
@@ -248,59 +178,28 @@ enum {
  * headers. (For example: ETH_P_8021Q and ETH_P_8021AD).
  */
 #define MLX4_EN_EFF_MTU(mtu)	((mtu) + ETH_HLEN + (2 * VLAN_HLEN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ETH_BCAST		0xffffffffffffULL
 
 #define MLX4_EN_LOOPBACK_RETRIES	5
 #define MLX4_EN_LOOPBACK_TIMEOUT	100
 
-<<<<<<< HEAD
-#ifdef MLX4_EN_PERF_STAT
-/* Number of samples to 'average' */
-#define AVG_SIZE			128
-#define AVG_FACTOR			1024
-#define NUM_PERF_STATS			NUM_PERF_COUNTERS
-
-#define INC_PERF_COUNTER(cnt)		(++(cnt))
-#define ADD_PERF_COUNTER(cnt, add)	((cnt) += (add))
-#define AVG_PERF_COUNTER(cnt, sample) \
-	((cnt) = ((cnt) * (AVG_SIZE - 1) + (sample) * AVG_FACTOR) / AVG_SIZE)
-#define GET_PERF_COUNTER(cnt)		(cnt)
-#define GET_AVG_PERF_COUNTER(cnt)	((cnt) / AVG_FACTOR)
-
-#else
-
-#define NUM_PERF_STATS			0
-#define INC_PERF_COUNTER(cnt)		do {} while (0)
-#define ADD_PERF_COUNTER(cnt, add)	do {} while (0)
-#define AVG_PERF_COUNTER(cnt, sample)	do {} while (0)
-#define GET_PERF_COUNTER(cnt)		(0)
-#define GET_AVG_PERF_COUNTER(cnt)	(0)
-#endif /* MLX4_EN_PERF_STAT */
-=======
 /* Constants for TX flow */
 enum {
 	MAX_INLINE = 104, /* 128 - 16 - 4 - 4 */
 	MAX_BF = 256,
 	MIN_PKT_LEN = 17,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Configurables
  */
 
 enum cq_type {
-<<<<<<< HEAD
-	RX = 0,
-	TX = 1,
-=======
 	/* keep tx types first */
 	TX,
 	TX_XDP,
 #define MLX4_EN_NUM_TX_TYPES (TX_XDP + 1)
 	RX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -309,24 +208,6 @@ enum cq_type {
  */
 #define ROUNDUP_LOG2(x)		ilog2(roundup_pow_of_two(x))
 #define XNOR(x, y)		(!(x) == !(y))
-<<<<<<< HEAD
-#define ILLEGAL_MAC(addr)	(addr == 0xffffffffffffULL || addr == 0x0)
-
-
-struct mlx4_en_tx_info {
-	struct sk_buff *skb;
-	u32 nr_txbb;
-	u8 linear;
-	u8 data_offset;
-	u8 inl;
-};
-
-
-#define MLX4_EN_BIT_DESC_OWN	0x80000000
-#define CTRL_SIZE	sizeof(struct mlx4_wqe_ctrl_seg)
-#define MLX4_EN_MEMTYPE_PAD	0x100
-#define DS_SIZE		sizeof(struct mlx4_wqe_data_seg)
-=======
 
 
 struct mlx4_en_tx_info {
@@ -348,7 +229,6 @@ struct mlx4_en_tx_info {
 
 #define MLX4_EN_BIT_DESC_OWN	0x80000000
 #define MLX4_EN_MEMTYPE_PAD	0x100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 struct mlx4_en_tx_desc {
@@ -366,44 +246,6 @@ struct mlx4_en_tx_desc {
 #define MLX4_EN_CX3_HIGH_ID	0x1005
 
 struct mlx4_en_rx_alloc {
-<<<<<<< HEAD
-	struct page *page;
-	u16 offset;
-};
-
-struct mlx4_en_tx_ring {
-	struct mlx4_hwq_resources wqres;
-	u32 size ; /* number of TXBBs */
-	u32 size_mask;
-	u16 stride;
-	u16 cqn;	/* index of port CQ associated with this ring */
-	u32 prod;
-	u32 cons;
-	u32 buf_size;
-	u32 doorbell_qpn;
-	void *buf;
-	u16 poll_cnt;
-	int blocked;
-	struct mlx4_en_tx_info *tx_info;
-	u8 *bounce_buf;
-	u32 last_nr_txbb;
-	struct mlx4_qp qp;
-	struct mlx4_qp_context context;
-	int qpn;
-	enum mlx4_qp_state qp_state;
-	struct mlx4_srq dummy;
-	unsigned long bytes;
-	unsigned long packets;
-	unsigned long tx_csum;
-	spinlock_t comp_lock;
-	struct mlx4_bf bf;
-	bool bf_enabled;
-};
-
-struct mlx4_en_rx_desc {
-	/* actual number of entries depends on rx ring stride */
-	struct mlx4_wqe_data_seg data[0];
-=======
 	struct page	*page;
 	dma_addr_t	dma;
 	u32		page_offset;
@@ -483,15 +325,10 @@ struct mlx4_en_tx_ring {
 struct mlx4_en_rx_desc {
 	/* actual number of entries depends on rx ring stride */
 	DECLARE_FLEX_ARRAY(struct mlx4_wqe_data_seg, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_en_rx_ring {
 	struct mlx4_hwq_resources wqres;
-<<<<<<< HEAD
-	struct mlx4_en_rx_alloc page_alloc[MLX4_EN_MAX_RX_FRAGS];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 size ;	/* number of Rx descs*/
 	u32 actual_size;
 	u32 size_mask;
@@ -504,34 +341,12 @@ struct mlx4_en_rx_ring {
 	u8  fcs_del;
 	void *buf;
 	void *rx_info;
-<<<<<<< HEAD
-=======
 	struct bpf_prog __rcu *xdp_prog;
 	struct mlx4_en_page_cache page_cache;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long bytes;
 	unsigned long packets;
 	unsigned long csum_ok;
 	unsigned long csum_none;
-<<<<<<< HEAD
-};
-
-
-static inline int mlx4_en_can_lro(__be16 status)
-{
-	return (status & cpu_to_be16(MLX4_CQE_STATUS_IPV4	|
-				     MLX4_CQE_STATUS_IPV4F	|
-				     MLX4_CQE_STATUS_IPV6	|
-				     MLX4_CQE_STATUS_IPV4OPT	|
-				     MLX4_CQE_STATUS_TCP	|
-				     MLX4_CQE_STATUS_UDP	|
-				     MLX4_CQE_STATUS_IPOK)) ==
-		cpu_to_be16(MLX4_CQE_STATUS_IPV4 |
-			    MLX4_CQE_STATUS_IPOK |
-			    MLX4_CQE_STATUS_TCP);
-}
-
-=======
 	unsigned long csum_complete;
 	unsigned long rx_alloc_pages;
 	unsigned long xdp_drop;
@@ -545,21 +360,11 @@ static inline int mlx4_en_can_lro(__be16 status)
 	struct xdp_rxq_info xdp_rxq;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_en_cq {
 	struct mlx4_cq          mcq;
 	struct mlx4_hwq_resources wqres;
 	int                     ring;
 	struct net_device      *dev;
-<<<<<<< HEAD
-	struct napi_struct	napi;
-	/* Per-core Tx cq processing support */
-	struct timer_list timer;
-	int size;
-	int buf_size;
-	unsigned vector;
-	enum cq_type is_tx;
-=======
 	union {
 		struct napi_struct napi;
 		bool               xdp_busy;
@@ -568,43 +373,25 @@ struct mlx4_en_cq {
 	int buf_size;
 	int vector;
 	enum cq_type type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 moder_time;
 	u16 moder_cnt;
 	struct mlx4_cqe *buf;
 #define MLX4_EN_OPCODE_ERROR	0x1e
-<<<<<<< HEAD
-=======
 
 	const struct cpumask *aff_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_en_port_profile {
 	u32 flags;
-<<<<<<< HEAD
-	u32 tx_ring_num;
-	u32 rx_ring_num;
-	u32 tx_ring_size;
-	u32 rx_ring_size;
-=======
 	u32 tx_ring_num[MLX4_EN_NUM_TX_TYPES];
 	u32 rx_ring_num;
 	u32 tx_ring_size;
 	u32 rx_ring_size;
 	u8 num_tx_rings_p_up;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rx_pause;
 	u8 rx_ppp;
 	u8 tx_pause;
 	u8 tx_ppp;
-<<<<<<< HEAD
-	int rss_rings;
-};
-
-struct mlx4_en_profile {
-	int rss_xor;
-=======
 	u8 num_up;
 	int rss_rings;
 	int inline_thold;
@@ -612,16 +399,12 @@ struct mlx4_en_profile {
 };
 
 struct mlx4_en_profile {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int udp_rss;
 	u8 rss_mask;
 	u32 active_ports;
 	u32 small_pkt_int;
 	u8 no_reset;
-<<<<<<< HEAD
-=======
 	u8 max_num_tx_rings_p_up;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_en_port_profile prof[MLX4_MAX_PORTS + 1];
 };
 
@@ -630,10 +413,7 @@ struct mlx4_en_dev {
 	struct pci_dev		*pdev;
 	struct mutex		state_lock;
 	struct net_device       *pndev[MLX4_MAX_PORTS + 1];
-<<<<<<< HEAD
-=======
 	struct net_device       *upper[MLX4_MAX_PORTS + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32                     port_cnt;
 	bool			device_up;
 	struct mlx4_en_profile  profile;
@@ -646,8 +426,6 @@ struct mlx4_en_dev {
 	u32                     priv_pdn;
 	spinlock_t              uar_lock;
 	u8			mac_removed[MLX4_MAX_PORTS + 1];
-<<<<<<< HEAD
-=======
 	u32			nominal_c_mult;
 	struct cyclecounter	cycles;
 	seqlock_t		clock_lock;
@@ -657,7 +435,6 @@ struct mlx4_en_dev {
 	struct ptp_clock_info	ptp_clock_info;
 	struct notifier_block	netdev_nb;
 	struct notifier_block	mlx_nb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -665,45 +442,6 @@ struct mlx4_en_rss_map {
 	int base_qpn;
 	struct mlx4_qp qps[MAX_RX_RINGS];
 	enum mlx4_qp_state state[MAX_RX_RINGS];
-<<<<<<< HEAD
-	struct mlx4_qp indir_qp;
-	enum mlx4_qp_state indir_state;
-};
-
-struct mlx4_en_port_state {
-	int link_state;
-	int link_speed;
-	int transciver;
-};
-
-struct mlx4_en_pkt_stats {
-	unsigned long broadcast;
-	unsigned long rx_prio[8];
-	unsigned long tx_prio[8];
-#define NUM_PKT_STATS		17
-};
-
-struct mlx4_en_port_stats {
-	unsigned long tso_packets;
-	unsigned long queue_stopped;
-	unsigned long wake_queue;
-	unsigned long tx_timeout;
-	unsigned long rx_alloc_failed;
-	unsigned long rx_chksum_good;
-	unsigned long rx_chksum_none;
-	unsigned long tx_chksum_offload;
-#define NUM_PORT_STATS		8
-};
-
-struct mlx4_en_perf_stats {
-	u32 tx_poll;
-	u64 tx_pktsz_avg;
-	u32 inflight_avg;
-	u16 tx_coal_avg;
-	u16 rx_coal_avg;
-	u32 napi_quota;
-#define NUM_PERF_COUNTERS		6
-=======
 	struct mlx4_qp *indir_qp;
 	enum mlx4_qp_state indir_state;
 };
@@ -732,18 +470,10 @@ struct mlx4_en_mc_list {
 	u8			addr[ETH_ALEN];
 	u64			reg_id;
 	u64			tunnel_reg_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_en_frag_info {
 	u16 frag_size;
-<<<<<<< HEAD
-	u16 frag_prefix_size;
-	u16 frag_stride;
-	u16 frag_align;
-	u16 last_offset;
-
-=======
 	u32 frag_stride;
 };
 
@@ -801,7 +531,6 @@ struct mlx4_en_stats_bitmap {
 
 enum {
 	MLX4_EN_STATE_FLAG_RESTARTING,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_en_priv {
@@ -809,18 +538,11 @@ struct mlx4_en_priv {
 	struct mlx4_en_port_profile *prof;
 	struct net_device *dev;
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
-<<<<<<< HEAD
-	struct net_device_stats stats;
-	struct net_device_stats ret_stats;
-	struct mlx4_en_port_state port_state;
-	spinlock_t stats_lock;
-=======
 	struct mlx4_en_port_state port_state;
 	spinlock_t stats_lock;
 	struct ethtool_flow_id ethtool_rules[MAX_NUM_OF_FS_RULES];
 	/* To allow rules removal while port is going down */
 	struct list_head ethtool_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long last_moder_packets[MAX_RX_RINGS];
 	unsigned long last_moder_tx_packets;
@@ -835,71 +557,29 @@ struct mlx4_en_priv {
 	u16 rx_usecs_low;
 	u32 pkt_rate_high;
 	u16 rx_usecs_high;
-<<<<<<< HEAD
-	u16 sample_interval;
-	u16 adaptive_rx_coal;
-=======
 	u32 sample_interval;
 	u32 adaptive_rx_coal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 msg_enable;
 	u32 loopback_ok;
 	u32 validate_loopback;
 
 	struct mlx4_hwq_resources res;
 	int link_state;
-<<<<<<< HEAD
-	int last_link_state;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool port_up;
 	int port;
 	int registered;
 	int allocated;
 	int stride;
-<<<<<<< HEAD
-	u64 mac;
-	int mac_index;
-	unsigned max_mtu;
-	int base_qpn;
-=======
 	unsigned char current_mac[ETH_ALEN + 2];
 	int mac_index;
 	unsigned max_mtu;
 	int base_qpn;
 	int cqe_factor;
 	int cqe_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mlx4_en_rss_map rss_map;
 	__be32 ctrl_flags;
 	u32 flags;
-<<<<<<< HEAD
-#define MLX4_EN_FLAG_PROMISC	0x1
-#define MLX4_EN_FLAG_MC_PROMISC	0x2
-	u32 tx_ring_num;
-	u32 rx_ring_num;
-	u32 rx_skb_size;
-	struct mlx4_en_frag_info frag_info[MLX4_EN_MAX_RX_FRAGS];
-	u16 num_frags;
-	u16 log_rx_info;
-
-	struct mlx4_en_tx_ring tx_ring[MAX_TX_RINGS];
-	struct mlx4_en_rx_ring rx_ring[MAX_RX_RINGS];
-	struct mlx4_en_cq tx_cq[MAX_TX_RINGS];
-	struct mlx4_en_cq rx_cq[MAX_RX_RINGS];
-	struct work_struct mcast_task;
-	struct work_struct mac_task;
-	struct work_struct watchdog_task;
-	struct work_struct linkstate_task;
-	struct delayed_work stats_task;
-	struct mlx4_en_perf_stats pstats;
-	struct mlx4_en_pkt_stats pkstats;
-	struct mlx4_en_port_stats port_stats;
-	u64 stats_bitmap;
-	char *mc_addrs;
-	int mc_addrs_cnt;
-=======
 	u8 num_tx_rings_p_up;
 	u32 tx_work_limit;
 	u32 tx_ring_num[MLX4_EN_NUM_TX_TYPES];
@@ -934,13 +614,10 @@ struct mlx4_en_priv {
 	struct list_head mc_list;
 	struct list_head curr_list;
 	u64 broadcast_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_en_stat_out_mbox hw_stats;
 	int vids[128];
 	bool wol;
 	struct device *ddev;
-<<<<<<< HEAD
-=======
 	struct hlist_head mac_hash[MLX4_EN_MAC_HASH_SIZE];
 	struct hwtstamp_config hwtstamp_config;
 	u32 counter_index;
@@ -966,7 +643,6 @@ struct mlx4_en_priv {
 	u8 rss_key[MLX4_EN_RSS_KEY_SIZE];
 	u8 rss_hash_fn;
 	unsigned long state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum mlx4_en_wol {
@@ -974,10 +650,6 @@ enum mlx4_en_wol {
 	MLX4_EN_WOL_ENABLED = (1ULL << 62),
 };
 
-<<<<<<< HEAD
-#define MLX4_EN_WOL_DO_MODIFY (1ULL << 63)
-
-=======
 struct mlx4_mac_entry {
 	struct hlist_node hlist;
 	unsigned char mac[ETH_ALEN + 2];
@@ -996,22 +668,11 @@ void mlx4_en_init_ptys2ethtool_map(void);
 void mlx4_en_update_loopback_state(struct net_device *dev,
 				   netdev_features_t features);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_en_destroy_netdev(struct net_device *dev);
 int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
 			struct mlx4_en_port_profile *prof);
 
 int mlx4_en_start_port(struct net_device *dev);
-<<<<<<< HEAD
-void mlx4_en_stop_port(struct net_device *dev);
-
-void mlx4_en_free_resources(struct mlx4_en_priv *priv);
-int mlx4_en_alloc_resources(struct mlx4_en_priv *priv);
-
-int mlx4_en_create_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq,
-		      int entries, int ring, enum cq_type mode);
-void mlx4_en_destroy_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq);
-=======
 void mlx4_en_stop_port(struct net_device *dev, int detach);
 
 void mlx4_en_set_stats_bitmap(struct mlx4_dev *dev,
@@ -1029,34 +690,10 @@ void mlx4_en_safe_replace_resources(struct mlx4_en_priv *priv,
 int mlx4_en_create_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq **pcq,
 		      int entries, int ring, enum cq_type mode, int node);
 void mlx4_en_destroy_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq **pcq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_en_activate_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq,
 			int cq_idx);
 void mlx4_en_deactivate_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq);
 int mlx4_en_set_cq_moder(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq);
-<<<<<<< HEAD
-int mlx4_en_arm_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq);
-
-void mlx4_en_poll_tx_cq(unsigned long data);
-void mlx4_en_tx_irq(struct mlx4_cq *mcq);
-u16 mlx4_en_select_queue(struct net_device *dev, struct sk_buff *skb);
-netdev_tx_t mlx4_en_xmit(struct sk_buff *skb, struct net_device *dev);
-
-int mlx4_en_create_tx_ring(struct mlx4_en_priv *priv, struct mlx4_en_tx_ring *ring,
-			   int qpn, u32 size, u16 stride);
-void mlx4_en_destroy_tx_ring(struct mlx4_en_priv *priv, struct mlx4_en_tx_ring *ring);
-int mlx4_en_activate_tx_ring(struct mlx4_en_priv *priv,
-			     struct mlx4_en_tx_ring *ring,
-			     int cq);
-void mlx4_en_deactivate_tx_ring(struct mlx4_en_priv *priv,
-				struct mlx4_en_tx_ring *ring);
-
-int mlx4_en_create_rx_ring(struct mlx4_en_priv *priv,
-			   struct mlx4_en_rx_ring *ring,
-			   u32 size, u16 stride);
-void mlx4_en_destroy_rx_ring(struct mlx4_en_priv *priv,
-			     struct mlx4_en_rx_ring *ring,
-=======
 void mlx4_en_arm_cq(struct mlx4_en_priv *priv, struct mlx4_en_cq *cq);
 
 void mlx4_en_tx_irq(struct mlx4_cq *mcq);
@@ -1091,7 +728,6 @@ int mlx4_en_create_rx_ring(struct mlx4_en_priv *priv,
 			   u32 size, u16 stride, int node, int queue_index);
 void mlx4_en_destroy_rx_ring(struct mlx4_en_priv *priv,
 			     struct mlx4_en_rx_ring **pring,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     u32 size, u16 stride);
 int mlx4_en_activate_rx_rings(struct mlx4_en_priv *priv);
 void mlx4_en_deactivate_rx_ring(struct mlx4_en_priv *priv,
@@ -1100,18 +736,6 @@ int mlx4_en_process_rx_cq(struct net_device *dev,
 			  struct mlx4_en_cq *cq,
 			  int budget);
 int mlx4_en_poll_rx_cq(struct napi_struct *napi, int budget);
-<<<<<<< HEAD
-void mlx4_en_fill_qp_context(struct mlx4_en_priv *priv, int size, int stride,
-			     int is_tx, int rss, int qpn, int cqn,
-			     struct mlx4_qp_context *context);
-void mlx4_en_sqp_event(struct mlx4_qp *qp, enum mlx4_event event);
-int mlx4_en_map_buffer(struct mlx4_buf *buf);
-void mlx4_en_unmap_buffer(struct mlx4_buf *buf);
-
-void mlx4_en_calc_rx_buf(struct net_device *dev);
-int mlx4_en_config_rss_steer(struct mlx4_en_priv *priv);
-void mlx4_en_release_rss_steer(struct mlx4_en_priv *priv);
-=======
 int mlx4_en_poll_tx_cq(struct napi_struct *napi, int budget);
 int mlx4_en_process_tx_cq(struct net_device *dev,
 			  struct mlx4_en_cq *cq, int napi_budget);
@@ -1134,24 +758,12 @@ int mlx4_en_config_rss_steer(struct mlx4_en_priv *priv);
 void mlx4_en_release_rss_steer(struct mlx4_en_priv *priv);
 int mlx4_en_create_drop_qp(struct mlx4_en_priv *priv);
 void mlx4_en_destroy_drop_qp(struct mlx4_en_priv *priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_en_free_tx_buf(struct net_device *dev, struct mlx4_en_tx_ring *ring);
 void mlx4_en_rx_irq(struct mlx4_cq *mcq);
 
 int mlx4_SET_MCAST_FLTR(struct mlx4_dev *dev, u8 port, u64 mac, u64 clear, u8 mode);
 int mlx4_SET_VLAN_FLTR(struct mlx4_dev *dev, struct mlx4_en_priv *priv);
 
-<<<<<<< HEAD
-int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset);
-int mlx4_en_QUERY_PORT(struct mlx4_en_dev *mdev, u8 port);
-
-#define MLX4_EN_NUM_SELF_TEST	5
-void mlx4_en_ex_selftest(struct net_device *dev, u32 *flags, u64 *buf);
-u64 mlx4_en_mac_to_u64(u8 *addr);
-
-/*
- * Globals
-=======
 void mlx4_en_fold_software_stats(struct net_device *dev);
 int mlx4_en_DUMP_ETH_STATS(struct mlx4_en_dev *mdev, u8 port, u8 reset);
 int mlx4_en_QUERY_PORT(struct mlx4_en_dev *mdev, u8 port);
@@ -1203,7 +815,6 @@ void mlx4_en_init_timestamp(struct mlx4_en_dev *mdev);
 void mlx4_en_remove_timestamp(struct mlx4_en_dev *mdev);
 
 /* Globals
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 extern const struct ethtool_ops mlx4_en_ethtool_ops;
 
@@ -1214,32 +825,6 @@ extern const struct ethtool_ops mlx4_en_ethtool_ops;
  */
 
 __printf(3, 4)
-<<<<<<< HEAD
-int en_print(const char *level, const struct mlx4_en_priv *priv,
-	     const char *format, ...);
-
-#define en_dbg(mlevel, priv, format, arg...)			\
-do {								\
-	if (NETIF_MSG_##mlevel & priv->msg_enable)		\
-		en_print(KERN_DEBUG, priv, format, ##arg);	\
-} while (0)
-#define en_warn(priv, format, arg...)			\
-	en_print(KERN_WARNING, priv, format, ##arg)
-#define en_err(priv, format, arg...)			\
-	en_print(KERN_ERR, priv, format, ##arg)
-#define en_info(priv, format, arg...)			\
-	en_print(KERN_INFO, priv, format, ## arg)
-
-#define mlx4_err(mdev, format, arg...)			\
-	pr_err("%s %s: " format, DRV_NAME,		\
-	       dev_name(&mdev->pdev->dev), ##arg)
-#define mlx4_info(mdev, format, arg...)			\
-	pr_info("%s %s: " format, DRV_NAME,		\
-		dev_name(&mdev->pdev->dev), ##arg)
-#define mlx4_warn(mdev, format, arg...)			\
-	pr_warning("%s %s: " format, DRV_NAME,		\
-		   dev_name(&mdev->pdev->dev), ##arg)
-=======
 void en_print(const char *level, const struct mlx4_en_priv *priv,
 	      const char *format, ...);
 
@@ -1264,6 +849,5 @@ do {									\
 #define mlx4_warn(mdev, format, ...)					\
 	pr_warn(DRV_NAME " %s: " format,				\
 		dev_name(&(mdev)->pdev->dev), ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

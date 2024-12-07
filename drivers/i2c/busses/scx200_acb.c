@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     Copyright (c) 2001,2002 Christer Weinigel <wingel@nano-system.com>
 
@@ -12,28 +9,10 @@
         Copyright (c) 2001 Benjamin Herrenschmidt <benh@kernel.crashing.org>
         Copyright (c) 2000 Philip Edelbrock <phil@stimpy.netroedge.com>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License as
-    published by the Free Software Foundation; either version 2 of the
-    License, or (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-=======
 */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -48,11 +27,6 @@
 
 #include <linux/scx200.h>
 
-<<<<<<< HEAD
-#define NAME "scx200_acb"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Christer Weinigel <wingel@nano-system.com>");
 MODULE_DESCRIPTION("NatSemi SCx200 ACCESS.bus Driver");
 MODULE_ALIAS("platform:cs5535-smb");
@@ -60,11 +34,7 @@ MODULE_LICENSE("GPL");
 
 #define MAX_DEVICES 4
 static int base[MAX_DEVICES] = { 0x820, 0x840 };
-<<<<<<< HEAD
-module_param_array(base, int, NULL, 0);
-=======
 module_param_hw_array(base, int, ioport, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(base, "Base addresses for the ACCESS.bus controllers");
 
 #define POLL_TIMEOUT	(HZ/5)
@@ -181,11 +151,7 @@ static void scx200_acb_machine(struct scx200_acb_iface *iface, u8 status)
 
 	case state_repeat_start:
 		outb(inb(ACBCTL1) | ACBCTL1_START, ACBCTL1);
-<<<<<<< HEAD
-		/* fallthrough */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case state_quick:
 		if (iface->address_byte & 1) {
@@ -411,11 +377,7 @@ static const struct i2c_algorithm scx200_acb_algorithm = {
 static struct scx200_acb_iface *scx200_acb_list;
 static DEFINE_MUTEX(scx200_acb_list_mutex);
 
-<<<<<<< HEAD
-static __devinit int scx200_acb_probe(struct scx200_acb_iface *iface)
-=======
 static int scx200_acb_probe(struct scx200_acb_iface *iface)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 val;
 
@@ -424,11 +386,7 @@ static int scx200_acb_probe(struct scx200_acb_iface *iface)
 	outb(0x70, ACBCTL2);
 
 	if (inb(ACBCTL2) != 0x70) {
-<<<<<<< HEAD
-		pr_debug(NAME ": ACBCTL2 readback failed\n");
-=======
 		pr_debug("ACBCTL2 readback failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 
@@ -436,12 +394,7 @@ static int scx200_acb_probe(struct scx200_acb_iface *iface)
 
 	val = inb(ACBCTL1);
 	if (val) {
-<<<<<<< HEAD
-		pr_debug(NAME ": disabled, but ACBCTL1=0x%02x\n",
-			val);
-=======
 		pr_debug("disabled, but ACBCTL1=0x%02x\n", val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 
@@ -451,50 +404,30 @@ static int scx200_acb_probe(struct scx200_acb_iface *iface)
 
 	val = inb(ACBCTL1);
 	if ((val & ACBCTL1_NMINTE) != ACBCTL1_NMINTE) {
-<<<<<<< HEAD
-		pr_debug(NAME ": enabled, but NMINTE won't be set, "
-			 "ACBCTL1=0x%02x\n", val);
-=======
 		pr_debug("enabled, but NMINTE won't be set, ACBCTL1=0x%02x\n",
 			 val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static __devinit struct scx200_acb_iface *scx200_create_iface(const char *text,
-=======
 static struct scx200_acb_iface *scx200_create_iface(const char *text,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device *dev, int index)
 {
 	struct scx200_acb_iface *iface;
 	struct i2c_adapter *adapter;
 
 	iface = kzalloc(sizeof(*iface), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!iface) {
-		printk(KERN_ERR NAME ": can't allocate memory\n");
-		return NULL;
-	}
-=======
 	if (!iface)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter = &iface->adapter;
 	i2c_set_adapdata(adapter, iface);
 	snprintf(adapter->name, sizeof(adapter->name), "%s ACB%d", text, index);
 	adapter->owner = THIS_MODULE;
 	adapter->algo = &scx200_acb_algorithm;
-<<<<<<< HEAD
-	adapter->class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
-=======
 	adapter->class = I2C_CLASS_HWMON;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->dev.parent = dev;
 
 	mutex_init(&iface->mutex);
@@ -502,11 +435,7 @@ static struct scx200_acb_iface *scx200_create_iface(const char *text,
 	return iface;
 }
 
-<<<<<<< HEAD
-static int __devinit scx200_acb_create(struct scx200_acb_iface *iface)
-=======
 static int scx200_acb_create(struct scx200_acb_iface *iface)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_adapter *adapter;
 	int rc;
@@ -515,22 +444,14 @@ static int scx200_acb_create(struct scx200_acb_iface *iface)
 
 	rc = scx200_acb_probe(iface);
 	if (rc) {
-<<<<<<< HEAD
-		printk(KERN_WARNING NAME ": probe failed\n");
-=======
 		pr_warn("probe failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
 	scx200_acb_reset(iface);
 
 	if (i2c_add_adapter(adapter) < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR NAME ": failed to register\n");
-=======
 		pr_err("failed to register\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -545,11 +466,7 @@ static int scx200_acb_create(struct scx200_acb_iface *iface)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct scx200_acb_iface * __devinit scx200_create_dev(const char *text,
-=======
 static struct scx200_acb_iface *scx200_create_dev(const char *text,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long base, int index, struct device *dev)
 {
 	struct scx200_acb_iface *iface;
@@ -561,12 +478,7 @@ static struct scx200_acb_iface *scx200_create_dev(const char *text,
 		return NULL;
 
 	if (!request_region(base, 8, iface->adapter.name)) {
-<<<<<<< HEAD
-		printk(KERN_ERR NAME ": can't allocate io 0x%lx-0x%lx\n",
-		       base, base + 8 - 1);
-=======
 		pr_err("can't allocate io 0x%lx-0x%lx\n", base, base + 8 - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto errout_free;
 	}
 
@@ -582,11 +494,7 @@ static struct scx200_acb_iface *scx200_create_dev(const char *text,
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int __devinit scx200_probe(struct platform_device *pdev)
-=======
 static int scx200_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scx200_acb_iface *iface;
 	struct resource *res;
@@ -608,55 +516,30 @@ static int scx200_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit scx200_cleanup_iface(struct scx200_acb_iface *iface)
-=======
 static void scx200_cleanup_iface(struct scx200_acb_iface *iface)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i2c_del_adapter(&iface->adapter);
 	release_region(iface->base, 8);
 	kfree(iface);
 }
 
-<<<<<<< HEAD
-static int __devexit scx200_remove(struct platform_device *pdev)
-=======
 static void scx200_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scx200_acb_iface *iface;
 
 	iface = platform_get_drvdata(pdev);
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
 	scx200_cleanup_iface(iface);
-
-	return 0;
-=======
-	scx200_cleanup_iface(iface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver scx200_pci_driver = {
 	.driver = {
 		.name = "cs5535-smb",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe = scx200_probe,
-	.remove = __devexit_p(scx200_remove),
-};
-
-static DEFINE_PCI_DEVICE_TABLE(scx200_isa) = {
-=======
 	},
 	.probe = scx200_probe,
 	.remove_new = scx200_remove,
 };
 
 static const struct pci_device_id scx200_isa[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_NS, PCI_DEVICE_ID_NS_SCx200_BRIDGE) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_NS, PCI_DEVICE_ID_NS_SC1100_BRIDGE) },
 	{ 0, }
@@ -680,11 +563,7 @@ static __init void scx200_scan_isa(void)
 
 static int __init scx200_acb_init(void)
 {
-<<<<<<< HEAD
-	pr_debug(NAME ": NatSemi SCx200 ACCESS.bus Driver\n");
-=======
 	pr_debug("NatSemi SCx200 ACCESS.bus Driver\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First scan for ISA-based devices */
 	scx200_scan_isa();	/* XXX: should we care about errors? */

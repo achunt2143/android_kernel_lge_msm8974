@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2008, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307 USA.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2008, Intel Corporation.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Alexander Duyck <alexander.h.duyck@intel.com>
  */
 
@@ -28,19 +9,6 @@
 #define __NET_TC_SKBEDIT_H
 
 #include <net/act_api.h>
-<<<<<<< HEAD
-
-struct tcf_skbedit {
-	struct tcf_common	common;
-	u32			flags;
-	u32     		priority;
-	u32     		mark;
-	u16			queue_mapping;
-	/* XXX: 16-bit pad here? */
-};
-#define to_skbedit(pc) \
-	container_of(pc, struct tcf_skbedit, common)
-=======
 #include <linux/tc_act/tc_skbedit.h>
 
 struct tcf_skbedit_params {
@@ -167,6 +135,5 @@ static inline bool is_tcf_skbedit_inheritdsfield(const struct tc_action *a)
 {
 	return is_tcf_skbedit_with_flag(a, SKBEDIT_F_INHERITDSFIELD);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __NET_TC_SKBEDIT_H */

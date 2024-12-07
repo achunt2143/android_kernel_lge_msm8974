@@ -1,29 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Misc and compatibility things
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Misc and compatibility things
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -32,10 +10,7 @@
 #include <linux/time.h>
 #include <linux/slab.h>
 #include <linux/ioport.h>
-<<<<<<< HEAD
-=======
 #include <linux/fs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 
 #ifdef CONFIG_SND_DEBUG
@@ -59,10 +34,6 @@ void release_and_free_resource(struct resource *res)
 		kfree(res);
 	}
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(release_and_free_resource);
 
 #ifdef CONFIG_SND_VERBOSE_PRINTK
@@ -82,15 +53,10 @@ void __snd_printk(unsigned int level, const char *path, int line,
 {
 	va_list args;
 #ifdef CONFIG_SND_VERBOSE_PRINTK
-<<<<<<< HEAD
-	struct va_format vaf;
-	char verbose_fmt[] = KERN_DEFAULT "ALSA %s:%d %pV";
-=======
 	int kern_level;
 	struct va_format vaf;
 	char verbose_fmt[] = KERN_DEFAULT "ALSA %s:%d %pV";
 	bool level_found = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_SND_DEBUG
@@ -102,13 +68,6 @@ void __snd_printk(unsigned int level, const char *path, int line,
 #ifdef CONFIG_SND_VERBOSE_PRINTK
 	vaf.fmt = format;
 	vaf.va = &args;
-<<<<<<< HEAD
-	if (format[0] == '<' && format[2] == '>') {
-		memcpy(verbose_fmt, format, 3);
-		vaf.fmt = format + 3;
-	} else if (level)
-		memcpy(verbose_fmt, KERN_DEBUG, 3);
-=======
 
 	while ((kern_level = printk_get_level(vaf.fmt)) != 0) {
 		const char *end_of_header = printk_skip_level(vaf.fmt);
@@ -125,7 +84,6 @@ void __snd_printk(unsigned int level, const char *path, int line,
 	if (!level_found && level)
 		memcpy(verbose_fmt, KERN_DEBUG, sizeof(KERN_DEBUG) - 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(verbose_fmt, sanity_file_name(path), line, &vaf);
 #else
 	vprintk(format, args);
@@ -155,11 +113,7 @@ snd_pci_quirk_lookup_id(u16 vendor, u16 device,
 {
 	const struct snd_pci_quirk *q;
 
-<<<<<<< HEAD
-	for (q = list; q->subvendor; q++) {
-=======
 	for (q = list; q->subvendor || q->subdevice; q++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (q->subvendor != vendor)
 			continue;
 		if (!q->subdevice ||
@@ -184,19 +138,14 @@ EXPORT_SYMBOL(snd_pci_quirk_lookup_id);
 const struct snd_pci_quirk *
 snd_pci_quirk_lookup(struct pci_dev *pci, const struct snd_pci_quirk *list)
 {
-<<<<<<< HEAD
-=======
 	if (!pci)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return snd_pci_quirk_lookup_id(pci->subsystem_vendor,
 				       pci->subsystem_device,
 				       list);
 }
 EXPORT_SYMBOL(snd_pci_quirk_lookup);
 #endif
-<<<<<<< HEAD
-=======
 
 /*
  * Deferred async signal helpers
@@ -290,4 +239,3 @@ void snd_fasync_free(struct snd_fasync *fasync)
 	kfree(fasync);
 }
 EXPORT_SYMBOL_GPL(snd_fasync_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

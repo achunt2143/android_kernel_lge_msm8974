@@ -9,13 +9,10 @@
 #ifndef _FS_FUSE_I_H
 #define _FS_FUSE_I_H
 
-<<<<<<< HEAD
-=======
 #ifndef pr_fmt
 # define pr_fmt(fmt) "fuse: " fmt
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fuse.h>
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -29,11 +26,6 @@
 #include <linux/rbtree.h>
 #include <linux/poll.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-
-/** Max number of pages that can be used in a single read request */
-#define FUSE_MAX_PAGES_PER_REQ 32
-=======
 #include <linux/kref.h>
 #include <linux/xattr.h>
 #include <linux/pid_namespace.h>
@@ -45,7 +37,6 @@
 
 /** Maximum of max_pages received in init_out */
 #define FUSE_MAX_MAX_PAGES 256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /** Bias for fi->writectr, meaning new writepages must not be sent */
 #define FUSE_NOWRITE INT_MIN
@@ -56,18 +47,6 @@
 /** Number of dentries for each connection in the control filesystem */
 #define FUSE_CTL_NUM_DENTRIES 5
 
-<<<<<<< HEAD
-/** If the FUSE_DEFAULT_PERMISSIONS flag is given, the filesystem
-    module will check permissions based on the file mode.  Otherwise no
-    permission checking is done in the kernel */
-#define FUSE_DEFAULT_PERMISSIONS (1 << 0)
-
-/** If the FUSE_ALLOW_OTHER flag is given, then not only the user
-    doing the mount will be allowed to access the filesystem */
-#define FUSE_ALLOW_OTHER         (1 << 1)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /** List of active connections */
 extern struct list_head fuse_conn_list;
 
@@ -84,8 +63,6 @@ struct fuse_forget_link {
 	struct fuse_forget_link *next;
 };
 
-<<<<<<< HEAD
-=======
 /* Submount lookup tracking */
 struct fuse_submount_lookup {
 	/** Refcount */
@@ -109,7 +86,6 @@ struct fuse_backing {
 	struct rcu_head rcu;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /** FUSE inode */
 struct fuse_inode {
 	/** Inode data */
@@ -128,48 +104,22 @@ struct fuse_inode {
 	/** Time in jiffies until the file attributes are valid */
 	u64 i_time;
 
-<<<<<<< HEAD
-=======
 	/* Which attributes are invalid */
 	u32 inval_mask;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** The sticky bit in inode->i_mode may have been removed, so
 	    preserve the original mode */
 	umode_t orig_i_mode;
 
-<<<<<<< HEAD
-=======
 	/* Cache birthtime */
 	struct timespec64 i_btime;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** 64 bit inode number */
 	u64 orig_ino;
 
 	/** Version of last attribute change */
 	u64 attr_version;
 
-<<<<<<< HEAD
-	/** Files usable in writepage.  Protected by fc->lock */
-	struct list_head write_files;
-
-	/** Writepages pending on truncate or fsync */
-	struct list_head queued_writes;
-
-	/** Number of sent writes, a negative bias (FUSE_NOWRITE)
-	 * means more writes are blocked */
-	int writectr;
-
-	/** Waitq for writepage completion */
-	wait_queue_head_t page_waitq;
-
-	/** List of writepage requestst (pending or sent) */
-	struct list_head writepages;
-
-	/** Miscellaneous bits describing inode state */
-	unsigned long state;
-=======
 	union {
 		/* read/write io cache (regular file only) */
 		struct {
@@ -243,18 +193,10 @@ struct fuse_inode {
 	/** Reference to backing file in passthrough mode */
 	struct fuse_backing *fb;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /** FUSE inode state bits */
 enum {
-<<<<<<< HEAD
-	/** An operation changing file size is in progress  */
-	FUSE_I_SIZE_UNSTABLE,
-};
-
-struct fuse_conn;
-=======
 	/** Advise readdirplus  */
 	FUSE_I_ADVISE_RDPLUS,
 	/** Initialized with readdirplus */
@@ -272,22 +214,14 @@ struct fuse_conn;
 struct fuse_conn;
 struct fuse_mount;
 union fuse_file_args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /** FUSE specific file data */
 struct fuse_file {
 	/** Fuse connection for this file */
-<<<<<<< HEAD
-	struct fuse_conn *fc;
-
-	/** Request reserved for flush and release */
-	struct fuse_req *reserved_req;
-=======
 	struct fuse_mount *fm;
 
 	/* Argument space reserved for open/release */
 	union fuse_file_args *args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/** Kernel file handle guaranteed to be unique */
 	u64 kh;
@@ -299,11 +233,7 @@ struct fuse_file {
 	u64 nodeid;
 
 	/** Refcount */
-<<<<<<< HEAD
-	atomic_t count;
-=======
 	refcount_t count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/** FOPEN_* flags returned by open */
 	u32 open_flags;
@@ -311,8 +241,6 @@ struct fuse_file {
 	/** Entry on inode's write_files list */
 	struct list_head write_entry;
 
-<<<<<<< HEAD
-=======
 	/* Readdir related */
 	struct {
 		/* Dir stream position */
@@ -326,15 +254,12 @@ struct fuse_file {
 
 	} readdir;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** RB node to be linked on fuse_conn->polled_files */
 	struct rb_node polled_node;
 
 	/** Wait queue head for poll */
 	wait_queue_head_t poll_wait;
 
-<<<<<<< HEAD
-=======
 	/** Does file hold a fi->iocachectr refcount? */
 	enum { IOM_NONE, IOM_CACHED, IOM_UNCACHED } iomode;
 
@@ -344,7 +269,6 @@ struct fuse_file {
 	const struct cred *cred;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** Has flock been performed on this file? */
 	bool flock:1;
 };
@@ -355,70 +279,12 @@ struct fuse_in_arg {
 	const void *value;
 };
 
-<<<<<<< HEAD
-/** The request input */
-struct fuse_in {
-	/** The request header */
-	struct fuse_in_header h;
-
-	/** True if the data for the last argument is in req->pages */
-	unsigned argpages:1;
-
-	/** Number of arguments */
-	unsigned numargs;
-
-	/** Array of arguments */
-	struct fuse_in_arg args[3];
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /** One output argument of a request */
 struct fuse_arg {
 	unsigned size;
 	void *value;
 };
 
-<<<<<<< HEAD
-/** The request output */
-struct fuse_out {
-	/** Header returned from userspace */
-	struct fuse_out_header h;
-
-	/*
-	 * The following bitfields are not changed during the request
-	 * processing
-	 */
-
-	/** Last argument is variable length (can be shorter than
-	    arg->size) */
-	unsigned argvar:1;
-
-	/** Last argument is a list of pages to copy data to */
-	unsigned argpages:1;
-
-	/** Zero partially or not copied pages */
-	unsigned page_zeroing:1;
-
-	/** Pages may be replaced with new ones */
-	unsigned page_replace:1;
-
-	/** Number or arguments */
-	unsigned numargs;
-
-	/** Array of arguments */
-	struct fuse_arg args[3];
-};
-
-/** The request state */
-enum fuse_req_state {
-	FUSE_REQ_INIT = 0,
-	FUSE_REQ_PENDING,
-	FUSE_REQ_READING,
-	FUSE_REQ_SENT,
-	FUSE_REQ_WRITING,
-	FUSE_REQ_FINISHED
-=======
 /** FUSE page descriptor */
 struct fuse_page_desc {
 	unsigned int length;
@@ -523,18 +389,14 @@ enum fuse_req_flag {
 	FR_FINISHED,
 	FR_PRIVATE,
 	FR_ASYNC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * A request to the client
-<<<<<<< HEAD
-=======
  *
  * .waitq.lock protects the following fields:
  *   - FR_ABORTED
  *   - FR_LOCKED (may also be modified under fc->lock, tested under both)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct fuse_req {
 	/** This can be on either pending processing or io lists in
@@ -544,49 +406,6 @@ struct fuse_req {
 	/** Entry on the interrupts list  */
 	struct list_head intr_entry;
 
-<<<<<<< HEAD
-	/** refcount */
-	atomic_t count;
-
-	/** Unique ID for the interrupt request */
-	u64 intr_unique;
-
-	/*
-	 * The following bitfields are either set once before the
-	 * request is queued or setting/clearing them is protected by
-	 * fuse_conn->lock
-	 */
-
-	/** True if the request has reply */
-	unsigned isreply:1;
-
-	/** Force sending of the request even if interrupted */
-	unsigned force:1;
-
-	/** The request was aborted */
-	unsigned aborted:1;
-
-	/** Request is sent in the background */
-	unsigned background:1;
-
-	/** The request has been interrupted */
-	unsigned interrupted:1;
-
-	/** Data is being copied to/from the request */
-	unsigned locked:1;
-
-	/** Request is counted as "waiting" */
-	unsigned waiting:1;
-
-	/** State of the request */
-	enum fuse_req_state state;
-
-	/** The request input */
-	struct fuse_in in;
-
-	/** The request output */
-	struct fuse_out out;
-=======
 	/* Input/output arguments */
 	struct fuse_args *args;
 
@@ -605,63 +424,10 @@ struct fuse_req {
 	struct {
 		struct fuse_out_header h;
 	} out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/** Used to wake up the task waiting for completion of request*/
 	wait_queue_head_t waitq;
 
-<<<<<<< HEAD
-	/** Data for asynchronous requests */
-	union {
-		struct {
-			union {
-				struct fuse_release_in in;
-				struct work_struct work;
-			};
-			struct path path;
-		} release;
-		struct fuse_init_in init_in;
-		struct fuse_init_out init_out;
-		struct cuse_init_in cuse_init_in;
-		struct {
-			struct fuse_read_in in;
-			u64 attr_ver;
-		} read;
-		struct {
-			struct fuse_write_in in;
-			struct fuse_write_out out;
-		} write;
-		struct fuse_notify_retrieve_in retrieve_in;
-		struct fuse_lk_in lk_in;
-	} misc;
-
-	/** page vector */
-	struct page *pages[FUSE_MAX_PAGES_PER_REQ];
-
-	/** number of pages in vector */
-	unsigned num_pages;
-
-	/** offset of data on first page */
-	unsigned page_offset;
-
-	/** File used in the request (or NULL) */
-	struct fuse_file *ff;
-
-	/** Inode used in the request or NULL */
-	struct inode *inode;
-
-	/** Path used for completing d_canonical_path */
-	struct path *canonical_path;
-
-	/** Link on fi->writepages */
-	struct list_head writepages_entry;
-
-	/** Request completion callback */
-	void (*end)(struct fuse_conn *, struct fuse_req *);
-
-	/** Request is stolen from fuse_file->reserved_req */
-	struct file *stolen_file;
-=======
 #if IS_ENABLED(CONFIG_VIRTIO_FS)
 	/** virtio-fs's physically contiguous buffer for in and out args */
 	void *argbuf;
@@ -822,42 +588,19 @@ struct fuse_sync_bucket {
 	atomic_t count;
 	wait_queue_head_t waitq;
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * A Fuse connection.
  *
-<<<<<<< HEAD
- * This structure is created, when the filesystem is mounted, and is
- * destroyed, when the client device is closed and the filesystem is
- * unmounted.
-=======
  * This structure is created, when the root filesystem is mounted, and
  * is destroyed, when the client device is closed and the last
  * fuse_mount is destroyed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct fuse_conn {
 	/** Lock protecting accessess to  members of this structure */
 	spinlock_t lock;
 
-<<<<<<< HEAD
-	/** Mutex protecting against directory alias creation */
-	struct mutex inst_mutex;
-
-	/** Refcount */
-	atomic_t count;
-
-	/** The user id for this mount */
-	uid_t user_id;
-
-	/** The group id for this mount */
-	gid_t group_id;
-
-	/** The fuse mount flags for this mount */
-	unsigned flags;
-=======
 	/** Refcount */
 	refcount_t count;
 
@@ -877,7 +620,6 @@ struct fuse_conn {
 
 	/** The user namespace for this mount */
 	struct user_namespace *user_ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/** Maximum read size */
 	unsigned max_read;
@@ -885,22 +627,6 @@ struct fuse_conn {
 	/** Maximum write size */
 	unsigned max_write;
 
-<<<<<<< HEAD
-	/** Readers of the connection are waiting on this */
-	wait_queue_head_t waitq;
-
-	/** The list of pending requests */
-	struct list_head pending;
-
-	/** The list of requests being processed */
-	struct list_head processing;
-
-	/** The list of requests under I/O */
-	struct list_head io;
-
-	/** The next unique kernel file handle */
-	u64 khctr;
-=======
 	/** Maximum number of pages that can be used in a single request */
 	unsigned int max_pages;
 
@@ -912,7 +638,6 @@ struct fuse_conn {
 
 	/** The next unique kernel file handle */
 	atomic64_t khctr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/** rbtree of fuse_files waiting for poll events indexed by ph */
 	struct rb_root polled_files;
@@ -932,17 +657,6 @@ struct fuse_conn {
 	/** The list of background requests set aside for later queuing */
 	struct list_head bg_queue;
 
-<<<<<<< HEAD
-	/** Pending interrupts */
-	struct list_head interrupts;
-
-	/** Queue of pending forgets */
-	struct fuse_forget_link forget_list_head;
-	struct fuse_forget_link *forget_list_tail;
-
-	/** Batching of FORGET requests (positive indicates FORGET batch) */
-	int forget_batch;
-=======
 	/** Protects: max_background, congestion_threshold, num_background,
 	 * active_background, bg_queue, blocked */
 	spinlock_t bg_lock;
@@ -950,7 +664,6 @@ struct fuse_conn {
 	/** Flag indicating that INIT reply has been received. Allocating
 	 * any fuse request will be suspended until the flag is set */
 	int initialized;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/** Flag indicating if connection is blocked.  This will be
 	    the case before the INIT reply is received, and if there
@@ -960,25 +673,13 @@ struct fuse_conn {
 	/** waitq for blocked connection */
 	wait_queue_head_t blocked_waitq;
 
-<<<<<<< HEAD
-	/** waitq for reserved requests */
-	wait_queue_head_t reserved_req_waitq;
-
-	/** The next unique request id */
-	u64 reqctr;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** Connection established, cleared on umount, connection
 	    abort and device release */
 	unsigned connected;
 
-<<<<<<< HEAD
-=======
 	/** Connection aborted via sysfs */
 	bool aborted;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** Connection failed (version mismatch).  Cannot race with
 	    setting other bitfields since it is only set once in INIT
 	    reply, before any other request, and never cleared */
@@ -987,28 +688,18 @@ struct fuse_conn {
 	/** Connection successful.  Only set in INIT */
 	unsigned conn_init:1;
 
-<<<<<<< HEAD
-	/** Do readpages asynchronously?  Only set in INIT */
-	unsigned async_read:1;
-
-=======
 	/** Do readahead asynchronously?  Only set in INIT */
 	unsigned async_read:1;
 
 	/** Return an unique read error after abort.  Only set in INIT */
 	unsigned abort_err:1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** Do not send separate SETATTR request before open(O_TRUNC)  */
 	unsigned atomic_o_trunc:1;
 
 	/** Filesystem supports NFS exporting.  Only set in INIT */
 	unsigned export_support:1;
 
-<<<<<<< HEAD
-	/** Set if bdi is valid */
-	unsigned bdi_initialized:1;
-=======
 	/** write-back cache policy (default is write-through) */
 	unsigned writeback_cache:1;
 
@@ -1031,22 +722,18 @@ struct fuse_conn {
 	 * file has group execute permission.
 	 */
 	unsigned handle_killpriv_v2:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The following bitfields are only for optimization purposes
 	 * and hence races in setting them will not cause malfunction
 	 */
 
-<<<<<<< HEAD
-=======
 	/** Is open/release not implemented by fs? */
 	unsigned no_open:1;
 
 	/** Is opendir/releasedir not implemented by fs? */
 	unsigned no_opendir:1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** Is fsync not implemented by fs? */
 	unsigned no_fsync:1;
 
@@ -1059,12 +746,9 @@ struct fuse_conn {
 	/** Is setxattr not implemented by fs? */
 	unsigned no_setxattr:1;
 
-<<<<<<< HEAD
-=======
 	/** Does file server support extended setxattr */
 	unsigned setxattr_ext:1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** Is getxattr not implemented by fs? */
 	unsigned no_getxattr:1;
 
@@ -1101,8 +785,6 @@ struct fuse_conn {
 	/** Are BSD file locking primitives not implemented by fs? */
 	unsigned no_flock:1;
 
-<<<<<<< HEAD
-=======
 	/** Is fallocate not implemented by fs? */
 	unsigned no_fallocate:1;
 
@@ -1181,27 +863,16 @@ struct fuse_conn {
 	/** Maximum stack depth for passthrough backing files */
 	int max_stack_depth;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/** The number of requests waiting for completion */
 	atomic_t num_waiting;
 
 	/** Negotiated minor version */
 	unsigned minor;
 
-<<<<<<< HEAD
-	/** Backing dev info */
-	struct backing_dev_info bdi;
-
-	/** Entry on the fuse_conn_list */
-	struct list_head entry;
-
-	/** Device ID from super block */
-=======
 	/** Entry on the fuse_mount_list */
 	struct list_head entry;
 
 	/** Device ID from the root super block */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_t dev;
 
 	/** Dentries in the control filesystem */
@@ -1210,39 +881,15 @@ struct fuse_conn {
 	/** number of dentries used in the above array */
 	int ctl_ndents;
 
-<<<<<<< HEAD
-	/** O_ASYNC requests */
-	struct fasync_struct *fasync;
-
-	/** Key for lock owner ID scrambling */
-	u32 scramble_key[4];
-
-	/** Reserved request for the DESTROY message */
-	struct fuse_req *destroy_req;
-
-	/** Version counter for attribute changes */
-	u64 attr_version;
-=======
 	/** Key for lock owner ID scrambling */
 	u32 scramble_key[4];
 
 	/** Version counter for attribute changes */
 	atomic64_t attr_version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/** Called on final put */
 	void (*release)(struct fuse_conn *);
 
-<<<<<<< HEAD
-	/** Super block for this connection. */
-	struct super_block *sb;
-
-	/** Read/write semaphore to hold when accessing sb. */
-	struct rw_semaphore killsb;
-};
-
-static inline struct fuse_conn *get_fuse_conn_super(struct super_block *sb)
-=======
 	/**
 	 * Read/write semaphore to hold when accessing the sb of any
 	 * fuse_mount belonging to this connection
@@ -1295,16 +942,10 @@ struct fuse_mount {
 };
 
 static inline struct fuse_mount *get_fuse_mount_super(struct super_block *sb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sb->s_fs_info;
 }
 
-<<<<<<< HEAD
-static inline struct fuse_conn *get_fuse_conn(struct inode *inode)
-{
-	return get_fuse_conn_super(inode->i_sb);
-=======
 static inline struct fuse_conn *get_fuse_conn_super(struct super_block *sb)
 {
 	return get_fuse_mount_super(sb)->fc;
@@ -1318,7 +959,6 @@ static inline struct fuse_mount *get_fuse_mount(struct inode *inode)
 static inline struct fuse_conn *get_fuse_conn(struct inode *inode)
 {
 	return get_fuse_mount_super(inode->i_sb)->fc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct fuse_inode *get_fuse_inode(struct inode *inode)
@@ -1331,8 +971,6 @@ static inline u64 get_node_id(struct inode *inode)
 	return get_fuse_inode(inode)->nodeid;
 }
 
-<<<<<<< HEAD
-=======
 static inline int invalid_nodeid(u64 nodeid)
 {
 	return !nodeid || nodeid == FUSE_ROOT_ID;
@@ -1391,20 +1029,11 @@ static inline void fuse_sync_bucket_dec(struct fuse_sync_bucket *bucket)
 	rcu_read_unlock();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /** Device operations */
 extern const struct file_operations fuse_dev_operations;
 
 extern const struct dentry_operations fuse_dentry_operations;
-<<<<<<< HEAD
-
-/**
- * Inode to nodeid comparison.
- */
-int fuse_inode_eq(struct inode *inode, void *_nodeidp);
-=======
 extern const struct dentry_operations fuse_root_dentry_operations;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Get a filled in inode
@@ -1413,11 +1042,7 @@ struct inode *fuse_iget(struct super_block *sb, u64 nodeid,
 			int generation, struct fuse_attr *attr,
 			u64 attr_valid, u64 attr_version);
 
-<<<<<<< HEAD
-int fuse_lookup_name(struct super_block *sb, u64 nodeid, struct qstr *name,
-=======
 int fuse_lookup_name(struct super_block *sb, u64 nodeid, const struct qstr *name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     struct fuse_entry_out *outarg, struct inode **inode);
 
 /**
@@ -1428,25 +1053,6 @@ void fuse_queue_forget(struct fuse_conn *fc, struct fuse_forget_link *forget,
 
 struct fuse_forget_link *fuse_alloc_forget(void);
 
-<<<<<<< HEAD
-/**
- * Initialize READ or READDIR request
- */
-void fuse_read_fill(struct fuse_req *req, struct file *file,
-		    loff_t pos, size_t count, int opcode);
-
-/**
- * Send OPEN or OPENDIR request
- */
-int fuse_open_common(struct inode *inode, struct file *file, bool isdir);
-
-struct fuse_file *fuse_file_alloc(struct fuse_conn *fc);
-struct fuse_file *fuse_file_get(struct fuse_file *ff);
-void fuse_file_free(struct fuse_file *ff);
-void fuse_finish_open(struct inode *inode, struct file *file);
-
-void fuse_sync_release(struct fuse_file *ff, int flags);
-=======
 struct fuse_forget_link *fuse_dequeue_forget(struct fuse_iqueue *fiq,
 					     unsigned int max,
 					     unsigned int *countp);
@@ -1481,26 +1087,17 @@ int fuse_finish_open(struct inode *inode, struct file *file);
 
 void fuse_sync_release(struct fuse_inode *fi, struct fuse_file *ff,
 		       unsigned int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Send RELEASE or RELEASEDIR request
  */
-<<<<<<< HEAD
-void fuse_release_common(struct file *file, int opcode);
-=======
 void fuse_release_common(struct file *file, bool isdir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Send FSYNC or FSYNCDIR request
  */
 int fuse_fsync_common(struct file *file, loff_t start, loff_t end,
-<<<<<<< HEAD
-		      int datasync, int isdir);
-=======
 		      int datasync, int opcode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Notify poll wakeup
@@ -1511,11 +1108,7 @@ int fuse_notify_poll_wakeup(struct fuse_conn *fc,
 /**
  * Initialize file operations on a regular file
  */
-<<<<<<< HEAD
-void fuse_init_file_inode(struct inode *inode);
-=======
 void fuse_init_file_inode(struct inode *inode, unsigned int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Initialize inode operations on regular files and special files
@@ -1536,12 +1129,6 @@ void fuse_init_symlink(struct inode *inode);
  * Change attributes of an inode
  */
 void fuse_change_attributes(struct inode *inode, struct fuse_attr *attr,
-<<<<<<< HEAD
-			    u64 attr_valid, u64 attr_version);
-
-void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
-				   u64 attr_valid);
-=======
 			    struct fuse_statx *sx,
 			    u64 attr_valid, u64 attr_version);
 
@@ -1550,7 +1137,6 @@ void fuse_change_attributes_common(struct inode *inode, struct fuse_attr *attr,
 				   u64 attr_valid, u32 cache_mask);
 
 u32 fuse_get_cache_mask(struct inode *inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Initialize the client device
@@ -1563,53 +1149,6 @@ int fuse_dev_init(void);
 void fuse_dev_cleanup(void);
 
 int fuse_ctl_init(void);
-<<<<<<< HEAD
-void fuse_ctl_cleanup(void);
-
-/**
- * Allocate a request
- */
-struct fuse_req *fuse_request_alloc(void);
-
-struct fuse_req *fuse_request_alloc_nofs(void);
-
-/**
- * Free a request
- */
-void fuse_request_free(struct fuse_req *req);
-
-/**
- * Get a request, may fail with -ENOMEM
- */
-struct fuse_req *fuse_get_req(struct fuse_conn *fc);
-
-/**
- * Gets a requests for a file operation, always succeeds
- */
-struct fuse_req *fuse_get_req_nofail(struct fuse_conn *fc, struct file *file);
-
-/**
- * Decrement reference count of a request.  If count goes to zero free
- * the request.
- */
-void fuse_put_request(struct fuse_conn *fc, struct fuse_req *req);
-
-/**
- * Send a request (synchronous)
- */
-void fuse_request_send(struct fuse_conn *fc, struct fuse_req *req);
-
-/**
- * Send a request in the background
- */
-void fuse_request_send_background(struct fuse_conn *fc, struct fuse_req *req);
-
-void fuse_request_send_background_locked(struct fuse_conn *fc,
-					 struct fuse_req *req);
-
-/* Abort all requests */
-void fuse_abort_conn(struct fuse_conn *fc);
-=======
 void __exit fuse_ctl_cleanup(void);
 
 /**
@@ -1627,17 +1166,10 @@ void fuse_request_end(struct fuse_req *req);
 /* Abort all requests */
 void fuse_abort_conn(struct fuse_conn *fc);
 void fuse_wait_aborted(struct fuse_conn *fc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Invalidate inode attributes
  */
-<<<<<<< HEAD
-void fuse_invalidate_attr(struct inode *inode);
-
-void fuse_invalidate_entry_cache(struct dentry *entry);
-
-=======
 
 /* Attributes possibly changed on data modification */
 #define FUSE_STATX_MODIFY	(STATX_MTIME | STATX_CTIME | STATX_BLOCKS)
@@ -1658,35 +1190,23 @@ u64 fuse_time_to_jiffies(u64 sec, u32 nsec);
 
 void fuse_change_entry_timeout(struct dentry *entry, struct fuse_entry_out *o);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * Acquire reference to fuse_conn
  */
 struct fuse_conn *fuse_conn_get(struct fuse_conn *fc);
 
-<<<<<<< HEAD
-void fuse_conn_kill(struct fuse_conn *fc);
-
-/**
- * Initialize fuse_conn
- */
-void fuse_conn_init(struct fuse_conn *fc);
-=======
 /**
  * Initialize fuse_conn
  */
 void fuse_conn_init(struct fuse_conn *fc, struct fuse_mount *fm,
 		    struct user_namespace *user_ns,
 		    const struct fuse_iqueue_ops *fiq_ops, void *fiq_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Release reference to fuse_conn
  */
 void fuse_conn_put(struct fuse_conn *fc);
 
-<<<<<<< HEAD
-=======
 struct fuse_dev *fuse_dev_alloc_install(struct fuse_conn *fc);
 struct fuse_dev *fuse_dev_alloc(void);
 void fuse_dev_install(struct fuse_dev *fud, struct fuse_conn *fc);
@@ -1720,7 +1240,6 @@ void fuse_conn_destroy(struct fuse_mount *fm);
 /* Drop the connection and free the fuse mount */
 void fuse_mount_destroy(struct fuse_mount *fm);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * Add connection to control filesystem
  */
@@ -1736,17 +1255,6 @@ void fuse_ctl_remove_conn(struct fuse_conn *fc);
  */
 int fuse_valid_type(int m);
 
-<<<<<<< HEAD
-/**
- * Is task allowed to perform filesystem operation?
- */
-int fuse_allow_task(struct fuse_conn *fc, struct task_struct *task);
-
-u64 fuse_lock_owner_id(struct fuse_conn *fc, fl_owner_t id);
-
-int fuse_update_attributes(struct inode *inode, struct kstat *stat,
-			   struct file *file, bool *refreshed);
-=======
 bool fuse_invalid_attr(struct fuse_attr *attr);
 
 /**
@@ -1760,16 +1268,12 @@ void fuse_flush_time_update(struct inode *inode);
 void fuse_update_ctime(struct inode *inode);
 
 int fuse_update_attributes(struct inode *inode, struct file *file, u32 mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void fuse_flush_writepages(struct inode *inode);
 
 void fuse_set_nowrite(struct inode *inode);
 void fuse_release_nowrite(struct inode *inode);
 
-<<<<<<< HEAD
-u64 fuse_get_attr_version(struct fuse_conn *fc);
-=======
 /**
  * Scan all fuse_mounts belonging to fc to find the first where
  * ilookup5() returns a result.  Return that result and the
@@ -1779,16 +1283,11 @@ u64 fuse_get_attr_version(struct fuse_conn *fc);
  */
 struct inode *fuse_ilookup(struct fuse_conn *fc, u64 nodeid,
 			   struct fuse_mount **fm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * File-system tells the kernel to invalidate cache for the given node id.
  */
-<<<<<<< HEAD
-int fuse_reverse_inval_inode(struct super_block *sb, u64 nodeid,
-=======
 int fuse_reverse_inval_inode(struct fuse_conn *fc, u64 nodeid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     loff_t offset, loff_t len);
 
 /**
@@ -1801,15 +1300,6 @@ int fuse_reverse_inval_inode(struct fuse_conn *fc, u64 nodeid,
  *    - is a file or oan empty directory
  * then the dentry is unhashed (d_delete()).
  */
-<<<<<<< HEAD
-int fuse_reverse_inval_entry(struct super_block *sb, u64 parent_nodeid,
-			     u64 child_nodeid, struct qstr *name);
-
-int fuse_do_open(struct fuse_conn *fc, u64 nodeid, struct file *file,
-		 bool isdir);
-ssize_t fuse_direct_io(struct file *file, const char __user *buf,
-		       size_t count, loff_t *ppos, int write);
-=======
 int fuse_reverse_inval_entry(struct fuse_conn *fc, u64 parent_nodeid,
 			     u64 child_nodeid, struct qstr *name, u32 flags);
 
@@ -1828,17 +1318,10 @@ int fuse_do_open(struct fuse_mount *fm, u64 nodeid, struct file *file,
 
 ssize_t fuse_direct_io(struct fuse_io_priv *io, struct iov_iter *iter,
 		       loff_t *ppos, int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long fuse_do_ioctl(struct file *file, unsigned int cmd, unsigned long arg,
 		   unsigned int flags);
 long fuse_ioctl_common(struct file *file, unsigned int cmd,
 		       unsigned long arg, unsigned int flags);
-<<<<<<< HEAD
-unsigned fuse_file_poll(struct file *file, poll_table *wait);
-int fuse_dev_release(struct inode *inode, struct file *file);
-
-void fuse_write_update_size(struct inode *inode, loff_t pos);
-=======
 __poll_t fuse_file_poll(struct file *file, poll_table *wait);
 int fuse_dev_release(struct inode *inode, struct file *file);
 
@@ -1988,6 +1471,5 @@ ssize_t fuse_passthrough_splice_write(struct pipe_inode_info *pipe,
 				      struct file *out, loff_t *ppos,
 				      size_t len, unsigned int flags);
 ssize_t fuse_passthrough_mmap(struct file *file, struct vm_area_struct *vma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _FS_FUSE_I_H */

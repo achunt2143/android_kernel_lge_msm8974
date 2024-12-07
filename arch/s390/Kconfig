@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-config MMU
-	def_bool y
-
-config ZONE_DMA
-=======
 # SPDX-License-Identifier: GPL-2.0
 config MMU
 	def_bool y
 
 config CPU_BIG_ENDIAN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	def_bool y
 
 config LOCKDEP_SUPPORT
@@ -18,18 +11,6 @@ config LOCKDEP_SUPPORT
 config STACKTRACE_SUPPORT
 	def_bool y
 
-<<<<<<< HEAD
-config HAVE_LATENCYTOP_SUPPORT
-	def_bool y
-
-config RWSEM_GENERIC_SPINLOCK
-	bool
-
-config RWSEM_XCHGADD_ALGORITHM
-	def_bool y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ARCH_HAS_ILOG2_U32
 	def_bool n
 
@@ -39,93 +20,18 @@ config ARCH_HAS_ILOG2_U64
 config GENERIC_HWEIGHT
 	def_bool y
 
-<<<<<<< HEAD
-config GENERIC_TIME_VSYSCALL
-	def_bool y
-
-config GENERIC_CLOCKEVENTS
-	def_bool y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config GENERIC_BUG
 	def_bool y if BUG
 
 config GENERIC_BUG_RELATIVE_POINTERS
 	def_bool y
 
-<<<<<<< HEAD
-config NO_IOMEM
-	def_bool y
-
-config NO_DMA
-	def_bool y
-
-config ARCH_DMA_ADDR_T_64BIT
-	def_bool 64BIT
-
-config GENERIC_LOCKBREAK
-	def_bool y if SMP && PREEMPT
-=======
 config GENERIC_LOCKBREAK
 	def_bool y if PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PGSTE
 	def_bool y if KVM
 
-<<<<<<< HEAD
-config VIRT_CPU_ACCOUNTING
-	def_bool y
-
-config ARCH_SUPPORTS_DEBUG_PAGEALLOC
-	def_bool y
-
-config S390
-	def_bool y
-	select USE_GENERIC_SMP_HELPERS if SMP
-	select GENERIC_CPU_DEVICES if !SMP
-	select HAVE_SYSCALL_WRAPPERS
-	select HAVE_FUNCTION_TRACER
-	select HAVE_FUNCTION_TRACE_MCOUNT_TEST
-	select HAVE_FTRACE_MCOUNT_RECORD
-	select HAVE_C_RECORDMCOUNT
-	select HAVE_SYSCALL_TRACEPOINTS
-	select HAVE_DYNAMIC_FTRACE
-	select HAVE_FUNCTION_GRAPH_TRACER
-	select HAVE_REGS_AND_STACK_ACCESS_API
-	select HAVE_OPROFILE
-	select HAVE_KPROBES
-	select HAVE_KRETPROBES
-	select HAVE_KVM if 64BIT
-	select HAVE_ARCH_TRACEHOOK
-	select INIT_ALL_POSSIBLE
-	select HAVE_IRQ_WORK
-	select HAVE_PERF_EVENTS
-	select ARCH_HAVE_NMI_SAFE_CMPXCHG
-	select HAVE_KERNEL_GZIP
-	select HAVE_KERNEL_BZIP2
-	select HAVE_KERNEL_LZMA
-	select HAVE_KERNEL_LZO
-	select HAVE_KERNEL_XZ
-	select HAVE_ARCH_MUTEX_CPU_RELAX
-	select HAVE_ARCH_JUMP_LABEL if !MARCH_G5
-	select ARCH_SAVE_PAGE_KEYS if HIBERNATION
-	select HAVE_MEMBLOCK
-	select HAVE_MEMBLOCK_NODE_MAP
-	select ARCH_DISCARD_MEMBLOCK
-	select ARCH_INLINE_SPIN_TRYLOCK
-	select ARCH_INLINE_SPIN_TRYLOCK_BH
-	select ARCH_INLINE_SPIN_LOCK
-	select ARCH_INLINE_SPIN_LOCK_BH
-	select ARCH_INLINE_SPIN_LOCK_IRQ
-	select ARCH_INLINE_SPIN_LOCK_IRQSAVE
-	select ARCH_INLINE_SPIN_UNLOCK
-	select ARCH_INLINE_SPIN_UNLOCK_BH
-	select ARCH_INLINE_SPIN_UNLOCK_IRQ
-	select ARCH_INLINE_SPIN_UNLOCK_IRQRESTORE
-	select ARCH_INLINE_READ_TRYLOCK
-=======
 config AUDIT_ARCH
 	def_bool y
 
@@ -180,22 +86,15 @@ config S390
 	select ARCH_HAS_UBSAN
 	select ARCH_HAS_VDSO_DATA
 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select ARCH_INLINE_READ_LOCK
 	select ARCH_INLINE_READ_LOCK_BH
 	select ARCH_INLINE_READ_LOCK_IRQ
 	select ARCH_INLINE_READ_LOCK_IRQSAVE
-<<<<<<< HEAD
-=======
 	select ARCH_INLINE_READ_TRYLOCK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select ARCH_INLINE_READ_UNLOCK
 	select ARCH_INLINE_READ_UNLOCK_BH
 	select ARCH_INLINE_READ_UNLOCK_IRQ
 	select ARCH_INLINE_READ_UNLOCK_IRQRESTORE
-<<<<<<< HEAD
-	select ARCH_INLINE_WRITE_TRYLOCK
-=======
 	select ARCH_INLINE_SPIN_LOCK
 	select ARCH_INLINE_SPIN_LOCK_BH
 	select ARCH_INLINE_SPIN_LOCK_IRQ
@@ -206,21 +105,15 @@ config S390
 	select ARCH_INLINE_SPIN_UNLOCK_BH
 	select ARCH_INLINE_SPIN_UNLOCK_IRQ
 	select ARCH_INLINE_SPIN_UNLOCK_IRQRESTORE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select ARCH_INLINE_WRITE_LOCK
 	select ARCH_INLINE_WRITE_LOCK_BH
 	select ARCH_INLINE_WRITE_LOCK_IRQ
 	select ARCH_INLINE_WRITE_LOCK_IRQSAVE
-<<<<<<< HEAD
-=======
 	select ARCH_INLINE_WRITE_TRYLOCK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select ARCH_INLINE_WRITE_UNLOCK
 	select ARCH_INLINE_WRITE_UNLOCK_BH
 	select ARCH_INLINE_WRITE_UNLOCK_IRQ
 	select ARCH_INLINE_WRITE_UNLOCK_IRQRESTORE
-<<<<<<< HEAD
-=======
 	select ARCH_MHP_MEMMAP_ON_MEMORY_ENABLE
 	select ARCH_STACKWALK
 	select ARCH_SUPPORTS_ATOMIC_RMW
@@ -348,64 +241,10 @@ config S390
 	select VIRT_CPU_ACCOUNTING
 	select ZONE_DMA
 	# Note: keep the above list sorted alphabetically
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SCHED_OMIT_FRAME_POINTER
 	def_bool y
 
-<<<<<<< HEAD
-source "init/Kconfig"
-
-source "kernel/Kconfig.freezer"
-
-menu "Base setup"
-
-comment "Processor type and features"
-
-source "kernel/time/Kconfig"
-
-config 64BIT
-	def_bool y
-	prompt "64 bit kernel"
-	help
-	  Select this option if you have an IBM z/Architecture machine
-	  and want to use the 64 bit addressing mode.
-
-config 32BIT
-	def_bool y if !64BIT
-
-config KTIME_SCALAR
-	def_bool 32BIT
-
-config SMP
-	def_bool y
-	prompt "Symmetric multi-processing support"
-	---help---
-	  This enables support for systems with more than one CPU. If you have
-	  a system with only one CPU, like most personal computers, say N. If
-	  you have a system with more than one CPU, say Y.
-
-	  If you say N here, the kernel will run on single and multiprocessor
-	  machines, but will use only one CPU of a multiprocessor machine. If
-	  you say Y here, the kernel will run on many, but not all,
-	  singleprocessor machines. On a singleprocessor machine, the kernel
-	  will run faster if you say N here.
-
-	  See also the SMP-HOWTO available at
-	  <http://www.tldp.org/docs.html#howto>.
-
-	  Even if you don't know what to do here, say Y.
-
-config NR_CPUS
-	int "Maximum number of CPUs (2-64)"
-	range 2 64
-	depends on SMP
-	default "32" if !64BIT
-	default "64" if 64BIT
-	help
-	  This allows you to specify the maximum number of CPUs which this
-	  kernel will support.  The maximum supported value is 64 and the
-=======
 config PGTABLE_LEVELS
 	int
 	default 5
@@ -631,7 +470,6 @@ config NR_CPUS
 	help
 	  This allows you to specify the maximum number of CPUs which this
 	  kernel will support. The maximum supported value is 512 and the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  minimum value which makes sense is 2.
 
 	  This is purely to save memory - each supported CPU adds
@@ -639,15 +477,6 @@ config NR_CPUS
 
 config HOTPLUG_CPU
 	def_bool y
-<<<<<<< HEAD
-	prompt "Support for hot-pluggable CPUs"
-	depends on SMP
-	select HOTPLUG
-	help
-	  Say Y here to be able to turn CPUs off and on. CPUs
-	  can be controlled through /sys/devices/system/cpu/cpu#.
-	  Say N if you want to disable CPU hotplug.
-=======
 
 config NUMA
 	bool "NUMA support"
@@ -665,131 +494,10 @@ config NODES_SHIFT
 
 config SCHED_SMT
 	def_bool n
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SCHED_MC
 	def_bool n
 
-<<<<<<< HEAD
-config SCHED_BOOK
-	def_bool y
-	prompt "Book scheduler support"
-	depends on SMP
-	select SCHED_MC
-	help
-	  Book scheduler support improves the CPU scheduler's decision making
-	  when dealing with machines that have several books.
-
-config MATHEMU
-	def_bool y
-	prompt "IEEE FPU emulation"
-	depends on MARCH_G5
-	help
-	  This option is required for IEEE compliant floating point arithmetic
-	  on older ESA/390 machines. Say Y unless you know your machine doesn't
-	  need this.
-
-config COMPAT
-	def_bool y
-	prompt "Kernel support for 31 bit emulation"
-	depends on 64BIT
-	select COMPAT_BINFMT_ELF
-	select ARCH_WANT_OLD_COMPAT_IPC
-	help
-	  Select this option if you want to enable your system kernel to
-	  handle system-calls from ELF binaries for 31 bit ESA.  This option
-	  (and some other stuff like libraries and such) is needed for
-	  executing 31 bit applications.  It is safe to say "Y".
-
-config SYSVIPC_COMPAT
-	def_bool y if COMPAT && SYSVIPC
-
-config KEYS_COMPAT
-	def_bool y if COMPAT && KEYS
-
-config AUDIT_ARCH
-	def_bool y
-
-comment "Code generation options"
-
-choice
-	prompt "Processor type"
-	default MARCH_G5
-
-config MARCH_G5
-	bool "System/390 model G5 and G6"
-	depends on !64BIT
-	help
-	  Select this to build a 31 bit kernel that works
-	  on all ESA/390 and z/Architecture machines.
-
-config MARCH_Z900
-	bool "IBM zSeries model z800 and z900"
-	help
-	  Select this to enable optimizations for model z800/z900 (2064 and
-	  2066 series). This will enable some optimizations that are not
-	  available on older ESA/390 (31 Bit) only CPUs.
-
-config MARCH_Z990
-	bool "IBM zSeries model z890 and z990"
-	help
-	  Select this to enable optimizations for model z890/z990 (2084 and
-	  2086 series). The kernel will be slightly faster but will not work
-	  on older machines.
-
-config MARCH_Z9_109
-	bool "IBM System z9"
-	help
-	  Select this to enable optimizations for IBM System z9 (2094 and
-	  2096 series). The kernel will be slightly faster but will not work
-	  on older machines.
-
-config MARCH_Z10
-	bool "IBM System z10"
-	help
-	  Select this to enable optimizations for IBM System z10 (2097 and
-	  2098 series). The kernel will be slightly faster but will not work
-	  on older machines.
-
-config MARCH_Z196
-	bool "IBM zEnterprise 114 and 196"
-	help
-	  Select this to enable optimizations for IBM zEnterprise 114 and 196
-	  (2818 and 2817 series). The kernel will be slightly faster but will
-	  not work on older machines.
-
-endchoice
-
-config PACK_STACK
-	def_bool y
-	prompt "Pack kernel stack"
-	help
-	  This option enables the compiler option -mkernel-backchain if it
-	  is available. If the option is available the compiler supports
-	  the new stack layout which dramatically reduces the minimum stack
-	  frame size. With an old compiler a non-leaf function needs a
-	  minimum of 96 bytes on 31 bit and 160 bytes on 64 bit. With
-	  -mkernel-backchain the minimum size drops to 16 byte on 31 bit
-	  and 24 byte on 64 bit.
-
-	  Say Y if you are unsure.
-
-config SMALL_STACK
-	def_bool n
-	prompt "Use 8kb for kernel stack instead of 16kb"
-	depends on PACK_STACK && 64BIT && !LOCKDEP
-	help
-	  If you say Y here and the compiler supports the -mkernel-backchain
-	  option the kernel will use a smaller kernel stack size. The reduced
-	  size is 8kb instead of 16kb. This allows to run more threads on a
-	  system and reduces the pressure on the memory management for higher
-	  order page allocations.
-
-	  Say N if you are unsure.
-
-config CHECK_STACK
-	def_bool y
-=======
 config SCHED_TOPOLOGY
 	def_bool y
 	prompt "Topology scheduler support"
@@ -928,7 +636,6 @@ config MAX_PHYSMEM_BITS
 config CHECK_STACK
 	def_bool y
 	depends on !VMAP_STACK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prompt "Detect kernel stack overflow"
 	help
 	  This option enables the compiler option -mstack-guard and
@@ -952,59 +659,14 @@ config STACK_GUARD
 	  The minimum size for the stack guard should be 256 for 31 bit and
 	  512 for 64 bit.
 
-<<<<<<< HEAD
-config WARN_DYNAMIC_STACK
-	def_bool n
-	prompt "Emit compiler warnings for function with dynamic stack usage"
-	help
-	  This option enables the compiler option -mwarn-dynamicstack. If the
-	  compiler supports this options generates warnings for functions
-	  that dynamically allocate stack space using alloca.
-
-	  Say N if you are unsure.
-
-comment "Kernel preemption"
-
-source "kernel/Kconfig.preempt"
-
-config ARCH_SPARSEMEM_ENABLE
-	def_bool y
-	select SPARSEMEM_VMEMMAP_ENABLE
-	select SPARSEMEM_VMEMMAP
-	select SPARSEMEM_STATIC if !64BIT
-
-config ARCH_SPARSEMEM_DEFAULT
-	def_bool y
-
-config ARCH_SELECT_MEMORY_MODEL
-	def_bool y
-
-config ARCH_ENABLE_MEMORY_HOTPLUG
-	def_bool y if SPARSEMEM
-
-config ARCH_ENABLE_MEMORY_HOTREMOVE
-	def_bool y
-
-config ARCH_HIBERNATION_POSSIBLE
-	def_bool y if 64BIT
-
-source "mm/Kconfig"
-
-comment "I/O subsystem configuration"
-=======
 endmenu
 
 menu "I/O subsystem"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config QDIO
 	def_tristate y
 	prompt "QDIO support"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver provides the Queued Direct I/O base support for
 	  IBM System z.
 
@@ -1013,8 +675,6 @@ config QDIO
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-=======
 if PCI
 
 config PCI_NR_FUNCTIONS
@@ -1030,7 +690,6 @@ endif # PCI
 config HAS_IOMEM
 	def_bool PCI
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CHSC_SCH
 	def_tristate m
 	prompt "Support for CHSC subchannels"
@@ -1048,42 +707,6 @@ config CHSC_SCH
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-comment "Misc"
-
-config IPL
-	def_bool y
-	prompt "Builtin IPL record support"
-	help
-	  If you want to use the produced kernel to IPL directly from a
-	  device, you have to merge a bootsector specific to the device
-	  into the first bytes of the kernel. You will have to select the
-	  IPL device.
-
-choice
-	prompt "IPL method generated into head.S"
-	depends on IPL
-	default IPL_VM
-	help
-	  Select "tape" if you want to IPL the image from a Tape.
-
-	  Select "vm_reader" if you are running under VM/ESA and want
-	  to IPL the image from the emulated card reader.
-
-config IPL_TAPE
-	bool "tape"
-
-config IPL_VM
-	bool "vm_reader"
-
-endchoice
-
-source "fs/Kconfig.binfmt"
-
-config FORCE_MAX_ZONEORDER
-	int
-	default "9"
-=======
 config SCM_BUS
 	def_bool y
 	prompt "SCM bus driver"
@@ -1147,7 +770,6 @@ config PROTECTED_VIRTUALIZATION_GUEST
 	  located at machine level (an ultravisor). With help of the
 	  Ultravisor, KVM will be able to run "protected" VMs, special
 	  VMs whose memory and management data are unavailable to KVM.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PFAULT
 	def_bool y
@@ -1162,21 +784,6 @@ config PFAULT
 	  Everybody who wants to run Linux under VM != VM4.2 should select
 	  this option.
 
-<<<<<<< HEAD
-config SHARED_KERNEL
-	def_bool y
-	prompt "VM shared kernel support"
-	help
-	  Select this option, if you want to share the text segment of the
-	  Linux kernel between different VM guests. This reduces memory
-	  usage with lots of guests but greatly increases kernel size.
-	  Also if a kernel was IPL'ed from a shared segment the kexec system
-	  call will not work.
-	  You should only select this option if you know what you are
-	  doing and want to exploit this feature.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CMM
 	def_tristate n
 	prompt "Cooperative memory management"
@@ -1201,11 +808,7 @@ config CMM_IUCV
 config APPLDATA_BASE
 	def_bool n
 	prompt "Linux - VM Monitor Stream, base infrastructure"
-<<<<<<< HEAD
-	depends on PROC_FS
-=======
 	depends on PROC_SYSCTL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This provides a kernel interface for creating and updating z/VM APPLDATA
 	  monitor records. The monitor records are updated at certain time
@@ -1266,105 +869,6 @@ config APPLDATA_NET_SUM
 	  This can also be compiled as a module, which will be called
 	  appldata_net_sum.o.
 
-<<<<<<< HEAD
-source kernel/Kconfig.hz
-
-config S390_HYPFS_FS
-	def_bool y
-	prompt "s390 hypervisor file system support"
-	select SYS_HYPERVISOR
-	help
-	  This is a virtual file system intended to provide accounting
-	  information in an s390 hypervisor environment.
-
-config KEXEC
-	def_bool n
-	prompt "kexec system call"
-	help
-	  kexec is a system call that implements the ability to shutdown your
-	  current kernel, and to start another kernel.  It is like a reboot
-	  but is independent of hardware/microcode support.
-
-config CRASH_DUMP
-	bool "kernel crash dumps"
-	depends on 64BIT
-	select KEXEC
-	help
-	  Generate crash dump after being started by kexec.
-	  Crash dump kernels are loaded in the main kernel with kexec-tools
-	  into a specially reserved region and then later executed after
-	  a crash by kdump/kexec.
-	  For more details see Documentation/kdump/kdump.txt
-
-config ZFCPDUMP
-	def_bool n
-	prompt "zfcpdump support"
-	select SMP
-	help
-	  Select this option if you want to build an zfcpdump enabled kernel.
-	  Refer to <file:Documentation/s390/zfcpdump.txt> for more details on this.
-
-config S390_GUEST
-	def_bool y
-	prompt "s390 guest support for KVM (EXPERIMENTAL)"
-	depends on 64BIT && EXPERIMENTAL
-	select VIRTUALIZATION
-	select VIRTIO
-	select VIRTIO_RING
-	select VIRTIO_CONSOLE
-	help
-	  Select this option if you want to run the kernel as a guest under
-	  the KVM hypervisor. This will add detection for KVM as well  as a
-	  virtio transport. If KVM is detected, the virtio console will be
-	  the default console.
-
-config SECCOMP
-	def_bool y
-	prompt "Enable seccomp to safely compute untrusted bytecode"
-	depends on PROC_FS
-	help
-	  This kernel feature is useful for number crunching applications
-	  that may need to compute untrusted bytecode during their
-	  execution. By using pipes or other transports made available to
-	  the process as file descriptors supporting the read/write
-	  syscalls, it's possible to isolate those applications in
-	  their own address space using seccomp. Once seccomp is
-	  enabled via /proc/<pid>/seccomp, it cannot be disabled
-	  and the task is only allowed to execute a few safe syscalls
-	  defined by each seccomp mode.
-
-	  If unsure, say Y.
-
-endmenu
-
-menu "Power Management"
-
-source "kernel/power/Kconfig"
-
-endmenu
-
-source "net/Kconfig"
-
-config PCMCIA
-	def_bool n
-
-config CCW
-	def_bool y
-
-source "drivers/Kconfig"
-
-source "fs/Kconfig"
-
-source "arch/s390/Kconfig.debug"
-
-source "security/Kconfig"
-
-source "crypto/Kconfig"
-
-source "lib/Kconfig"
-
-source "arch/s390/kvm/Kconfig"
-=======
 config S390_HYPFS
 	def_bool y
 	prompt "s390 hypervisor information"
@@ -1443,4 +947,3 @@ config S390_MODULES_SANITY_TEST
 
 	  Say N if you are unsure.
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

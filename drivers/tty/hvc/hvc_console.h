@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hvc_console.h
  * Copyright (C) 2005 IBM Corporation
@@ -12,23 +9,6 @@
  * hvc_console header information:
  *      moved here from arch/powerpc/include/asm/hvconsole.h
  *      and drivers/char/hvc_console.c
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef HVC_CONSOLE_H
@@ -53,19 +33,10 @@
 #define HVC_ALLOC_TTY_ADAPTERS	8
 
 struct hvc_struct {
-<<<<<<< HEAD
-	spinlock_t lock;
-	int index;
-	struct tty_struct *tty;
-	int count;
-	int do_wakeup;
-	char *outbuf;
-=======
 	struct tty_port port;
 	spinlock_t lock;
 	int index;
 	int do_wakeup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int outbuf_size;
 	int n_outbuf;
 	uint32_t vtermno;
@@ -75,24 +46,15 @@ struct hvc_struct {
 	struct winsize ws;
 	struct work_struct tty_resize;
 	struct list_head next;
-<<<<<<< HEAD
-	struct kref kref; /* ref count & hvc_struct lifetime */
-=======
 	unsigned long flags;
 	u8 outbuf[] __aligned(sizeof(long));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* implemented by a low level driver */
 struct hv_ops {
-<<<<<<< HEAD
-	int (*get_chars)(uint32_t vtermno, char *buf, int count);
-	int (*put_chars)(uint32_t vtermno, const char *buf, int count);
-=======
 	ssize_t (*get_chars)(uint32_t vtermno, u8 *buf, size_t count);
 	ssize_t (*put_chars)(uint32_t vtermno, const u8 *buf, size_t count);
 	int (*flush)(uint32_t vtermno, bool wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Callbacks for notification. Called in open, close and hangup */
 	int (*notifier_add)(struct hvc_struct *hp, int irq);
@@ -102,12 +64,9 @@ struct hv_ops {
 	/* tiocmget/set implementation */
 	int (*tiocmget)(struct hvc_struct *hp);
 	int (*tiocmset)(struct hvc_struct *hp, unsigned int set, unsigned int clear);
-<<<<<<< HEAD
-=======
 
 	/* Callbacks to handle tty ports */
 	void (*dtr_rts)(struct hvc_struct *hp, bool active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Register a vterm and a slot index for use as a console (console_init) */
@@ -118,11 +77,7 @@ extern int hvc_instantiate(uint32_t vtermno, int index,
 extern struct hvc_struct * hvc_alloc(uint32_t vtermno, int data,
 				     const struct hv_ops *ops, int outbuf_size);
 /* remove a vterm from hvc tty operation (module_exit or hotplug remove) */
-<<<<<<< HEAD
-extern int hvc_remove(struct hvc_struct *hp);
-=======
 extern void hvc_remove(struct hvc_struct *hp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* data available */
 int hvc_poll(struct hvc_struct *hp);

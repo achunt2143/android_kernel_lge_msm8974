@@ -1,21 +1,12 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # HIPPI network device configuration
 #
 
 config HIPPI
-<<<<<<< HEAD
-	bool "HIPPI driver support (EXPERIMENTAL)"
-	depends on EXPERIMENTAL && INET && PCI
-	---help---
-=======
 	bool "HIPPI driver support"
 	depends on INET && PCI
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  HIgh Performance Parallel Interface (HIPPI) is a 800Mbit/sec and
 	  1600Mbit/sec dual-simplex switched or point-to-point network. HIPPI
 	  can run over copper (25m) or fiber (300m on multi-mode or 10km on
@@ -28,30 +19,18 @@ config HIPPI
 if HIPPI
 
 config ROADRUNNER
-<<<<<<< HEAD
-	tristate "Essential RoadRunner HIPPI PCI adapter support (EXPERIMENTAL)"
-	depends on PCI
-	---help---
-=======
 	tristate "Essential RoadRunner HIPPI PCI adapter support"
 	depends on PCI
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if this is your PCI HIPPI network card.
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called rrunner.  If unsure, say N.
 
 config ROADRUNNER_LARGE_RINGS
-<<<<<<< HEAD
-	bool "Use large TX/RX rings (EXPERIMENTAL)"
-	depends on ROADRUNNER
-	---help---
-=======
 	bool "Use large TX/RX rings"
 	depends on ROADRUNNER
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, the RoadRunner driver will preallocate up to 2 MB
 	  of additional memory to allow for fastest operation, both for
 	  transmitting and receiving. This memory cannot be used by any other

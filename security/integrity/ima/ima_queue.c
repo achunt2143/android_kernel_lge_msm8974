@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005,2006,2007,2008 IBM Corporation
  *
@@ -10,14 +7,6 @@
  * Reiner Sailer <sailer@watson.ibm.com>
  * Mimi Zohar <zohar@us.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File: ima_queue.c
  *       Implements queues that store template measurements and
  *       maintains aggregate over the stored measurements
@@ -25,20 +14,13 @@
  *       The measurement list is append-only. No entry is
  *       ever removed or changed during the boot-cycle.
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rculist.h>
 #include <linux/slab.h>
 #include "ima.h"
 
 #define AUDIT_CAUSE_LEN_MAX 32
 
-<<<<<<< HEAD
-LIST_HEAD(ima_measurements);	/* list of all measurements */
-=======
 /* pre-allocated array of tpm_digest structures to extend a PCR */
 static struct tpm_digest *digests;
 
@@ -48,7 +30,6 @@ static unsigned long binary_runtime_size;
 #else
 static unsigned long binary_runtime_size = ULONG_MAX;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* key: inode (before secure-hashing a file) */
 struct ima_h_table ima_htable = {
@@ -64,33 +45,19 @@ struct ima_h_table ima_htable = {
 static DEFINE_MUTEX(ima_extend_list_mutex);
 
 /* lookup up the digest value in the hash table, and return the entry */
-<<<<<<< HEAD
-static struct ima_queue_entry *ima_lookup_digest_entry(u8 *digest_value)
-{
-	struct ima_queue_entry *qe, *ret = NULL;
-	unsigned int key;
-	struct hlist_node *pos;
-=======
 static struct ima_queue_entry *ima_lookup_digest_entry(u8 *digest_value,
 						       int pcr)
 {
 	struct ima_queue_entry *qe, *ret = NULL;
 	unsigned int key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	key = ima_hash_key(digest_value);
 	rcu_read_lock();
-<<<<<<< HEAD
-	hlist_for_each_entry_rcu(qe, pos, &ima_htable.queue[key], hnext) {
-		rc = memcmp(qe->entry->digest, digest_value, IMA_DIGEST_SIZE);
-		if (rc == 0) {
-=======
 	hlist_for_each_entry_rcu(qe, &ima_htable.queue[key], hnext) {
 		rc = memcmp(qe->entry->digests[ima_hash_algo_idx].digest,
 			    digest_value, hash_digest_size[ima_hash_algo]);
 		if ((rc == 0) && (qe->entry->pcr == pcr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = qe;
 			break;
 		}
@@ -99,14 +66,6 @@ static struct ima_queue_entry *ima_lookup_digest_entry(u8 *digest_value,
 	return ret;
 }
 
-<<<<<<< HEAD
-/* ima_add_template_entry helper function:
- * - Add template entry to measurement list and hash table.
- *
- * (Called with ima_extend_list_mutex held.)
- */
-static int ima_add_digest_entry(struct ima_template_entry *entry)
-=======
 /*
  * Calculate the memory required for serializing a single
  * binary_runtime_measurement list entry, which contains a
@@ -133,18 +92,13 @@ static int get_binary_runtime_size(struct ima_template_entry *entry)
  */
 static int ima_add_digest_entry(struct ima_template_entry *entry,
 				bool update_htable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ima_queue_entry *qe;
 	unsigned int key;
 
 	qe = kmalloc(sizeof(*qe), GFP_KERNEL);
 	if (qe == NULL) {
-<<<<<<< HEAD
-		pr_err("IMA: OUT OF MEMORY ERROR creating queue entry.\n");
-=======
 		pr_err("OUT OF MEMORY ERROR creating queue entry\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	qe->entry = entry;
@@ -153,34 +107,6 @@ static int ima_add_digest_entry(struct ima_template_entry *entry,
 	list_add_tail_rcu(&qe->later, &ima_measurements);
 
 	atomic_long_inc(&ima_htable.len);
-<<<<<<< HEAD
-	key = ima_hash_key(entry->digest);
-	hlist_add_head_rcu(&qe->hnext, &ima_htable.queue[key]);
-	return 0;
-}
-
-static int ima_pcr_extend(const u8 *hash)
-{
-	int result = 0;
-
-	if (!ima_used_chip)
-		return result;
-
-	result = tpm_pcr_extend(TPM_ANY_NUM, CONFIG_IMA_MEASURE_PCR_IDX, hash);
-	if (result != 0)
-		pr_err("IMA: Error Communicating to TPM chip, result: %d\n",
-		       result);
-	return result;
-}
-
-/* Add template entry to the measurement list and hash table,
- * and extend the pcr.
- */
-int ima_add_template_entry(struct ima_template_entry *entry, int violation,
-			   const char *op, struct inode *inode)
-{
-	u8 digest[IMA_DIGEST_SIZE];
-=======
 	if (update_htable) {
 		key = ima_hash_key(entry->digests[ima_hash_algo_idx].digest);
 		hlist_add_head_rcu(&qe->hnext, &ima_htable.queue[key]);
@@ -236,33 +162,22 @@ int ima_add_template_entry(struct ima_template_entry *entry, int violation,
 {
 	u8 *digest = entry->digests[ima_hash_algo_idx].digest;
 	struct tpm_digest *digests_arg = entry->digests;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *audit_cause = "hash_added";
 	char tpm_audit_cause[AUDIT_CAUSE_LEN_MAX];
 	int audit_info = 1;
 	int result = 0, tpmresult = 0;
 
 	mutex_lock(&ima_extend_list_mutex);
-<<<<<<< HEAD
-	if (!violation) {
-		memcpy(digest, entry->digest, sizeof digest);
-		if (ima_lookup_digest_entry(digest)) {
-=======
 	if (!violation && !IS_ENABLED(CONFIG_IMA_DISABLE_HTABLE)) {
 		if (ima_lookup_digest_entry(digest, entry->pcr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			audit_cause = "hash_exists";
 			result = -EEXIST;
 			goto out;
 		}
 	}
 
-<<<<<<< HEAD
-	result = ima_add_digest_entry(entry);
-=======
 	result = ima_add_digest_entry(entry,
 				      !IS_ENABLED(CONFIG_IMA_DISABLE_HTABLE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result < 0) {
 		audit_cause = "ENOMEM";
 		audit_info = 0;
@@ -270,15 +185,9 @@ int ima_add_template_entry(struct ima_template_entry *entry, int violation,
 	}
 
 	if (violation)		/* invalidate pcr */
-<<<<<<< HEAD
-		memset(digest, 0xff, sizeof digest);
-
-	tpmresult = ima_pcr_extend(digest);
-=======
 		digests_arg = digests;
 
 	tpmresult = ima_pcr_extend(digests_arg, entry->pcr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tpmresult != 0) {
 		snprintf(tpm_audit_cause, AUDIT_CAUSE_LEN_MAX, "TPM_error(%d)",
 			 tpmresult);
@@ -287,13 +196,6 @@ int ima_add_template_entry(struct ima_template_entry *entry, int violation,
 	}
 out:
 	mutex_unlock(&ima_extend_list_mutex);
-<<<<<<< HEAD
-	integrity_audit_msg(AUDIT_INTEGRITY_PCR, inode,
-			    entry->template.file_name,
-			    op, audit_cause, result, audit_info);
-	return result;
-}
-=======
 	integrity_audit_msg(AUDIT_INTEGRITY_PCR, inode, filename,
 			    op, audit_cause, result, audit_info);
 	return result;
@@ -337,4 +239,3 @@ int __init ima_init_digests(void)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

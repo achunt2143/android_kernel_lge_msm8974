@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2011 The Chromium Authors, All Rights Reserved.
  * Copyright 2008 Jon Loeliger, Freescale Semiconductor, Inc.
  *
  * util_is_printable_string contributed by
  *	Pantelis Antoniou <pantelis.antoniou AT gmail.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <ctype.h>
@@ -34,10 +13,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <assert.h>
-<<<<<<< HEAD
-=======
 #include <inttypes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <errno.h>
 #include <fcntl.h>
@@ -45,21 +21,11 @@
 
 #include "libfdt.h"
 #include "util.h"
-<<<<<<< HEAD
-=======
 #include "version_gen.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 char *xstrdup(const char *s)
 {
 	int len = strlen(s) + 1;
-<<<<<<< HEAD
-	char *dup = xmalloc(len);
-
-	memcpy(dup, s, len);
-
-	return dup;
-=======
 	char *d = xmalloc(len);
 
 	memcpy(d, s, len);
@@ -124,7 +90,6 @@ int xasprintf(char **strp, const char *fmt, ...)
 	va_end(ap);
 
 	return n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 char *join_path(const char *path, const char *name)
@@ -151,17 +116,10 @@ char *join_path(const char *path, const char *name)
 	return str;
 }
 
-<<<<<<< HEAD
-int util_is_printable_string(const void *data, int len)
-{
-	const char *s = data;
-	const char *ss;
-=======
 bool util_is_printable_string(const void *data, int len)
 {
 	const char *s = data;
 	const char *ss, *se;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* zero length is not */
 	if (len == 0)
@@ -171,15 +129,6 @@ bool util_is_printable_string(const void *data, int len)
 	if (s[len - 1] != '\0')
 		return 0;
 
-<<<<<<< HEAD
-	ss = s;
-	while (*s && isprint(*s))
-		s++;
-
-	/* not zero, or not done yet */
-	if (*s != '\0' || (s + 1 - ss) < len)
-		return 0;
-=======
 	se = s + len;
 
 	while (s < se) {
@@ -193,7 +142,6 @@ bool util_is_printable_string(const void *data, int len)
 
 		s++;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -250,10 +198,6 @@ char get_escape_char(const char *s, int *i)
 	int	j = *i + 1;
 	char	val;
 
-<<<<<<< HEAD
-	assert(c);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (c) {
 	case 'a':
 		val = '\a';
@@ -299,19 +243,11 @@ char get_escape_char(const char *s, int *i)
 	return val;
 }
 
-<<<<<<< HEAD
-int utilfdt_read_err(const char *filename, char **buffp)
-{
-	int fd = 0;	/* assume stdin */
-	char *buf = NULL;
-	off_t bufsize = 1024, offset = 0;
-=======
 int utilfdt_read_err(const char *filename, char **buffp, size_t *len)
 {
 	int fd = 0;	/* assume stdin */
 	char *buf = NULL;
 	size_t bufsize = 1024, offset = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	*buffp = NULL;
@@ -322,24 +258,12 @@ int utilfdt_read_err(const char *filename, char **buffp, size_t *len)
 	}
 
 	/* Loop until we have read everything */
-<<<<<<< HEAD
-	buf = malloc(bufsize);
-=======
 	buf = xmalloc(bufsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		/* Expand the buffer to hold the next chunk */
 		if (offset == bufsize) {
 			bufsize *= 2;
-<<<<<<< HEAD
-			buf = realloc(buf, bufsize);
-			if (!buf) {
-				ret = ENOMEM;
-				break;
-			}
-=======
 			buf = xrealloc(buf, bufsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ret = read(fd, &buf[offset], bufsize - offset);
@@ -356,15 +280,6 @@ int utilfdt_read_err(const char *filename, char **buffp, size_t *len)
 		free(buf);
 	else
 		*buffp = buf;
-<<<<<<< HEAD
-	return ret;
-}
-
-char *utilfdt_read(const char *filename)
-{
-	char *buff;
-	int ret = utilfdt_read_err(filename, &buff);
-=======
 	if (len)
 		*len = bufsize;
 	return ret;
@@ -374,7 +289,6 @@ char *utilfdt_read(const char *filename, size_t *len)
 {
 	char *buff;
 	int ret = utilfdt_read_err(filename, &buff, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret) {
 		fprintf(stderr, "Couldn't open blob from '%s': %s\n", filename,
@@ -450,19 +364,11 @@ int utilfdt_decode_type(const char *fmt, int *type, int *size)
 	}
 
 	/* we should now have a type */
-<<<<<<< HEAD
-	if ((*fmt == '\0') || !strchr("iuxs", *fmt))
-		return -1;
-
-	/* convert qualifier (bhL) to byte size */
-	if (*fmt != 's')
-=======
 	if ((*fmt == '\0') || !strchr("iuxsr", *fmt))
 		return -1;
 
 	/* convert qualifier (bhL) to byte size */
 	if (*fmt != 's' && *fmt != 'r')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*size = qualifier == 'b' ? 1 :
 				qualifier == 'h' ? 2 :
 				qualifier == 'l' ? 4 : -1;
@@ -473,8 +379,6 @@ int utilfdt_decode_type(const char *fmt, int *type, int *size)
 		return -1;
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 void utilfdt_print_data(const char *data, int len)
 {
@@ -573,4 +477,3 @@ void NORETURN util_usage(const char *errmsg, const char *synopsis,
 	} else
 		exit(EXIT_SUCCESS);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * OMAP2xxx DVFS virtual clock functions
- *
- * Copyright (C) 2005-2008 Texas Instruments, Inc.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMAP2xxx DVFS virtual clock functions
  *
  * Copyright (C) 2005-2008, 2012 Texas Instruments, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2004-2010 Nokia Corporation
  *
  * Contacts:
@@ -19,13 +12,6 @@
  * Based on earlier work by Tuukka Tikkanen, Tony Lindgren,
  * Gordon McNutt and RidgeRun, Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XXX Some of this code should be replaceable by the upcoming OPP layer
  * code.  However, some notion of "rate set" is probably still necessary
  * for OMAP2xxx at least.  Rate sets should be generalized so they can be
@@ -44,18 +30,6 @@
 #include <linux/cpufreq.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#include <plat/cpu.h>
-#include <plat/clock.h>
-#include <plat/sram.h>
-#include <plat/sdrc.h>
-
-#include "clock.h"
-#include "clock2xxx.h"
-#include "opp2xxx.h"
-#include "cm2xxx_3xxx.h"
-#include "cm-regbits-24xx.h"
-=======
 #include "soc.h"
 #include "clock.h"
 #include "clock2xxx.h"
@@ -66,13 +40,10 @@
 #include "sram.h"
 
 static u16 cpu_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct prcm_config *curr_prcm_set;
 const struct prcm_config *rate_table;
 
-<<<<<<< HEAD
-=======
 /*
  * sys_ck_rate: the rate of the external high-frequency clock
  * oscillator on the board.  Set by the SoC-specific clock init code.
@@ -80,19 +51,14 @@ const struct prcm_config *rate_table;
  */
 static unsigned long sys_ck_rate;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * omap2_table_mpu_recalc - just return the MPU speed
  * @clk: virt_prcm_set struct clk
  *
  * Set virt_prcm_set's rate to the mpu_speed field of the current PRCM set.
  */
-<<<<<<< HEAD
-unsigned long omap2_table_mpu_recalc(struct clk *clk)
-=======
 static unsigned long omap2_table_mpu_recalc(struct clk_hw *clk,
 				     unsigned long parent_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return curr_prcm_set->mpu_speed;
 }
@@ -104,12 +70,8 @@ static unsigned long omap2_table_mpu_recalc(struct clk_hw *clk,
  * Some might argue L3-DDR, others ARM, others IVA. This code is simple and
  * just uses the ARM rates.
  */
-<<<<<<< HEAD
-long omap2_round_to_table_rate(struct clk *clk, unsigned long rate)
-=======
 static long omap2_round_to_table_rate(struct clk_hw *hw, unsigned long rate,
 			       unsigned long *parent_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct prcm_config *ptr;
 	long highest_rate;
@@ -119,11 +81,7 @@ static long omap2_round_to_table_rate(struct clk_hw *hw, unsigned long rate,
 	for (ptr = rate_table; ptr->mpu_speed; ptr++) {
 		if (!(ptr->flags & cpu_mask))
 			continue;
-<<<<<<< HEAD
-		if (ptr->xtal_speed != sclk->rate)
-=======
 		if (ptr->xtal_speed != sys_ck_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		highest_rate = ptr->mpu_speed;
@@ -136,16 +94,10 @@ static long omap2_round_to_table_rate(struct clk_hw *hw, unsigned long rate,
 }
 
 /* Sets basic clocks based on the specified rate */
-<<<<<<< HEAD
-int omap2_select_table_rate(struct clk *clk, unsigned long rate)
-{
-	u32 cur_rate, done_rate, bypass = 0, tmp;
-=======
 static int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 				   unsigned long parent_rate)
 {
 	u32 cur_rate, done_rate, bypass = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct prcm_config *prcm;
 	unsigned long found_speed = 0;
 	unsigned long flags;
@@ -154,11 +106,7 @@ static int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 		if (!(prcm->flags & cpu_mask))
 			continue;
 
-<<<<<<< HEAD
-		if (prcm->xtal_speed != sclk->rate)
-=======
 		if (prcm->xtal_speed != sys_ck_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (prcm->mpu_speed <= rate) {
@@ -174,11 +122,7 @@ static int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 	}
 
 	curr_prcm_set = prcm;
-<<<<<<< HEAD
-	cur_rate = omap2xxx_clk_get_core_rate(dclk);
-=======
 	cur_rate = omap2xxx_clk_get_core_rate();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (prcm->dpll_speed == cur_rate / 2) {
 		omap2xxx_sdrc_reprogram(CORE_CLK_SRC_DPLL, 1);
@@ -196,31 +140,11 @@ static int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 		else
 			done_rate = CORE_CLK_SRC_DPLL;
 
-<<<<<<< HEAD
-		/* MPU divider */
-		omap2_cm_write_mod_reg(prcm->cm_clksel_mpu, MPU_MOD, CM_CLKSEL);
-
-		/* dsp + iva1 div(2420), iva2.1(2430) */
-		omap2_cm_write_mod_reg(prcm->cm_clksel_dsp,
-				 OMAP24XX_DSP_MOD, CM_CLKSEL);
-
-		omap2_cm_write_mod_reg(prcm->cm_clksel_gfx, GFX_MOD, CM_CLKSEL);
-
-		/* Major subsystem dividers */
-		tmp = omap2_cm_read_mod_reg(CORE_MOD, CM_CLKSEL1) & OMAP24XX_CLKSEL_DSS2_MASK;
-		omap2_cm_write_mod_reg(prcm->cm_clksel1_core | tmp, CORE_MOD,
-				 CM_CLKSEL1);
-
-		if (cpu_is_omap2430())
-			omap2_cm_write_mod_reg(prcm->cm_clksel_mdm,
-					 OMAP2430_MDM_MOD, CM_CLKSEL);
-=======
 		omap2xxx_cm_set_mod_dividers(prcm->cm_clksel_mpu,
 					     prcm->cm_clksel_dsp,
 					     prcm->cm_clksel_gfx,
 					     prcm->cm_clksel1_core,
 					     prcm->cm_clksel_mdm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* x2 to enter omap2xxx_sdrc_init_params() */
 		omap2xxx_sdrc_reprogram(CORE_CLK_SRC_DPLL_X2, 1);
@@ -236,8 +160,6 @@ static int omap2_select_table_rate(struct clk_hw *hw, unsigned long rate,
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 /**
  * omap2xxx_clkt_vps_check_bootloader_rates - determine which of the rate
@@ -333,4 +255,3 @@ void omap2xxx_clkt_vps_init(void)
 	clkdev_create(clk, "cpufreq_ck", NULL);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

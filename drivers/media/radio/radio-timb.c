@@ -1,46 +1,20 @@
-<<<<<<< HEAD
-/*
- * radio-timb.c Timberdale FPGA Radio driver
- * Copyright (c) 2009 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * radio-timb.c Timberdale FPGA Radio driver
  * Copyright (c) 2009 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/io.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-device.h>
-<<<<<<< HEAD
-=======
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <media/timb_radio.h>
-=======
 #include <linux/platform_data/media/timb_radio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME "timb-radio"
 
@@ -57,16 +31,9 @@ struct timbradio {
 static int timbradio_vidioc_querycap(struct file *file, void  *priv,
 	struct v4l2_capability *v)
 {
-<<<<<<< HEAD
-	strlcpy(v->driver, DRIVER_NAME, sizeof(v->driver));
-	strlcpy(v->card, "Timberdale Radio", sizeof(v->card));
-	snprintf(v->bus_info, sizeof(v->bus_info), "platform:"DRIVER_NAME);
-	v->capabilities = V4L2_CAP_TUNER | V4L2_CAP_RADIO;
-=======
 	strscpy(v->driver, DRIVER_NAME, sizeof(v->driver));
 	strscpy(v->card, "Timberdale Radio", sizeof(v->card));
 	snprintf(v->bus_info, sizeof(v->bus_info), "platform:"DRIVER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -78,51 +45,14 @@ static int timbradio_vidioc_g_tuner(struct file *file, void *priv,
 }
 
 static int timbradio_vidioc_s_tuner(struct file *file, void *priv,
-<<<<<<< HEAD
-	struct v4l2_tuner *v)
-=======
 	const struct v4l2_tuner *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct timbradio *tr = video_drvdata(file);
 	return v4l2_subdev_call(tr->sd_tuner, tuner, s_tuner, v);
 }
 
-<<<<<<< HEAD
-static int timbradio_vidioc_g_input(struct file *filp, void *priv,
-	unsigned int *i)
-{
-	*i = 0;
-	return 0;
-}
-
-static int timbradio_vidioc_s_input(struct file *filp, void *priv,
-	unsigned int i)
-{
-	return i ? -EINVAL : 0;
-}
-
-static int timbradio_vidioc_g_audio(struct file *file, void *priv,
-	struct v4l2_audio *a)
-{
-	a->index = 0;
-	strlcpy(a->name, "Radio", sizeof(a->name));
-	a->capability = V4L2_AUDCAP_STEREO;
-	return 0;
-}
-
-static int timbradio_vidioc_s_audio(struct file *file, void *priv,
-	struct v4l2_audio *a)
-{
-	return a->index ? -EINVAL : 0;
-}
-
-static int timbradio_vidioc_s_frequency(struct file *file, void *priv,
-	struct v4l2_frequency *f)
-=======
 static int timbradio_vidioc_s_frequency(struct file *file, void *priv,
 	const struct v4l2_frequency *f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct timbradio *tr = video_drvdata(file);
 	return v4l2_subdev_call(tr->sd_tuner, tuner, s_frequency, f);
@@ -135,59 +65,19 @@ static int timbradio_vidioc_g_frequency(struct file *file, void *priv,
 	return v4l2_subdev_call(tr->sd_tuner, tuner, g_frequency, f);
 }
 
-<<<<<<< HEAD
-static int timbradio_vidioc_queryctrl(struct file *file, void *priv,
-	struct v4l2_queryctrl *qc)
-{
-	struct timbradio *tr = video_drvdata(file);
-	return v4l2_subdev_call(tr->sd_dsp, core, queryctrl, qc);
-}
-
-static int timbradio_vidioc_g_ctrl(struct file *file, void *priv,
-	struct v4l2_control *ctrl)
-{
-	struct timbradio *tr = video_drvdata(file);
-	return v4l2_subdev_call(tr->sd_dsp, core, g_ctrl, ctrl);
-}
-
-static int timbradio_vidioc_s_ctrl(struct file *file, void *priv,
-	struct v4l2_control *ctrl)
-{
-	struct timbradio *tr = video_drvdata(file);
-	return v4l2_subdev_call(tr->sd_dsp, core, s_ctrl, ctrl);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct v4l2_ioctl_ops timbradio_ioctl_ops = {
 	.vidioc_querycap	= timbradio_vidioc_querycap,
 	.vidioc_g_tuner		= timbradio_vidioc_g_tuner,
 	.vidioc_s_tuner		= timbradio_vidioc_s_tuner,
 	.vidioc_g_frequency	= timbradio_vidioc_g_frequency,
 	.vidioc_s_frequency	= timbradio_vidioc_s_frequency,
-<<<<<<< HEAD
-	.vidioc_g_input		= timbradio_vidioc_g_input,
-	.vidioc_s_input		= timbradio_vidioc_s_input,
-	.vidioc_g_audio		= timbradio_vidioc_g_audio,
-	.vidioc_s_audio		= timbradio_vidioc_s_audio,
-	.vidioc_queryctrl	= timbradio_vidioc_queryctrl,
-	.vidioc_g_ctrl		= timbradio_vidioc_g_ctrl,
-	.vidioc_s_ctrl		= timbradio_vidioc_s_ctrl
-=======
 	.vidioc_log_status      = v4l2_ctrl_log_status,
 	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct v4l2_file_operations timbradio_fops = {
 	.owner		= THIS_MODULE,
-<<<<<<< HEAD
-	.unlocked_ioctl	= video_ioctl2,
-};
-
-static int __devinit timbradio_probe(struct platform_device *pdev)
-=======
 	.open		= v4l2_fh_open,
 	.release	= v4l2_fh_release,
 	.poll		= v4l2_ctrl_poll,
@@ -195,7 +85,6 @@ static int __devinit timbradio_probe(struct platform_device *pdev)
 };
 
 static int timbradio_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct timb_radio_platform_data *pdata = pdev->dev.platform_data;
 	struct timbradio *tr;
@@ -207,11 +96,7 @@ static int timbradio_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-<<<<<<< HEAD
-	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
-=======
 	tr = devm_kzalloc(&pdev->dev, sizeof(*tr), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tr) {
 		err = -ENOMEM;
 		goto err;
@@ -220,27 +105,13 @@ static int timbradio_probe(struct platform_device *pdev)
 	tr->pdata = *pdata;
 	mutex_init(&tr->lock);
 
-<<<<<<< HEAD
-	strlcpy(tr->video_dev.name, "Timberdale Radio",
-=======
 	strscpy(tr->video_dev.name, "Timberdale Radio",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(tr->video_dev.name));
 	tr->video_dev.fops = &timbradio_fops;
 	tr->video_dev.ioctl_ops = &timbradio_ioctl_ops;
 	tr->video_dev.release = video_device_release_empty;
 	tr->video_dev.minor = -1;
 	tr->video_dev.lock = &tr->lock;
-<<<<<<< HEAD
-
-	strlcpy(tr->v4l2_dev.name, DRIVER_NAME, sizeof(tr->v4l2_dev.name));
-	err = v4l2_device_register(NULL, &tr->v4l2_dev);
-	if (err)
-		goto err_v4l2_dev;
-
-	tr->video_dev.v4l2_dev = &tr->v4l2_dev;
-
-=======
 	tr->video_dev.device_caps = V4L2_CAP_TUNER | V4L2_CAP_RADIO;
 
 	strscpy(tr->v4l2_dev.name, DRIVER_NAME, sizeof(tr->v4l2_dev.name));
@@ -261,7 +132,6 @@ static int timbradio_probe(struct platform_device *pdev)
 
 	tr->v4l2_dev.ctrl_handler = tr->sd_dsp->ctrl_handler;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = video_register_device(&tr->video_dev, VFL_TYPE_RADIO, -1);
 	if (err) {
 		dev_err(&pdev->dev, "Error reg video\n");
@@ -274,55 +144,27 @@ static int timbradio_probe(struct platform_device *pdev)
 	return 0;
 
 err_video_req:
-<<<<<<< HEAD
-	video_device_release_empty(&tr->video_dev);
 	v4l2_device_unregister(&tr->v4l2_dev);
-err_v4l2_dev:
-	kfree(tr);
-=======
-	v4l2_device_unregister(&tr->v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	dev_err(&pdev->dev, "Failed to register: %d\n", err);
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit timbradio_remove(struct platform_device *pdev)
-=======
 static void timbradio_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct timbradio *tr = platform_get_drvdata(pdev);
 
 	video_unregister_device(&tr->video_dev);
-<<<<<<< HEAD
-	video_device_release_empty(&tr->video_dev);
-
 	v4l2_device_unregister(&tr->v4l2_dev);
-
-	kfree(tr);
-
-	return 0;
-=======
-	v4l2_device_unregister(&tr->v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver timbradio_platform_driver = {
 	.driver = {
 		.name	= DRIVER_NAME,
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= timbradio_probe,
-	.remove		= timbradio_remove,
-=======
 	},
 	.probe		= timbradio_probe,
 	.remove_new	= timbradio_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(timbradio_platform_driver);

@@ -1,38 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SPU file system -- file contents
  *
  * (C) Copyright IBM Deutschland Entwicklung GmbH 2005
  *
  * Author: Arnd Bergmann <arndb@de.ibm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
 
-<<<<<<< HEAD
-=======
 #include <linux/coredump.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/ioctl.h>
 #include <linux/export.h>
@@ -46,11 +23,7 @@
 #include <asm/time.h>
 #include <asm/spu.h>
 #include <asm/spu_info.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "spufs.h"
 #include "sputrace.h"
@@ -157,8 +130,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t spufs_dump_emit(struct coredump_params *cprm, void *buf,
 		size_t size)
 {
@@ -167,7 +138,6 @@ static ssize_t spufs_dump_emit(struct coredump_params *cprm, void *buf,
 	return size;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFINE_SPUFS_SIMPLE_ATTRIBUTE(__fops, __get, __set, __fmt)	\
 static int __fops ## _open(struct inode *inode, struct file *file)	\
 {									\
@@ -175,10 +145,6 @@ static int __fops ## _open(struct inode *inode, struct file *file)	\
 	return spufs_attr_open(inode, file, __get, __set, __fmt);	\
 }									\
 static const struct file_operations __fops = {				\
-<<<<<<< HEAD
-	.owner	 = THIS_MODULE,						\
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open	 = __fops ## _open,					\
 	.release = spufs_attr_release,					\
 	.read	 = spufs_attr_read,					\
@@ -215,18 +181,9 @@ spufs_mem_release(struct inode *inode, struct file *file)
 }
 
 static ssize_t
-<<<<<<< HEAD
-__spufs_mem_read(struct spu_context *ctx, char __user *buffer,
-			size_t size, loff_t *pos)
-{
-	char *local_store = ctx->ops->get_ls(ctx);
-	return simple_read_from_buffer(buffer, size, pos, local_store,
-					LS_SIZE);
-=======
 spufs_mem_dump(struct spu_context *ctx, struct coredump_params *cprm)
 {
 	return spufs_dump_emit(cprm, ctx->ops->get_ls(ctx), LS_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -239,12 +196,8 @@ spufs_mem_read(struct file *file, char __user *buffer,
 	ret = spu_acquire(ctx);
 	if (ret)
 		return ret;
-<<<<<<< HEAD
-	ret = __spufs_mem_read(ctx, buffer, size, pos);
-=======
 	ret = simple_read_from_buffer(buffer, size, pos, ctx->ops->get_ls(ctx),
 				      LS_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_release(ctx);
 
 	return ret;
@@ -273,31 +226,6 @@ spufs_mem_write(struct file *file, const char __user *buffer,
 	return size;
 }
 
-<<<<<<< HEAD
-static int
-spufs_mem_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	struct spu_context *ctx	= vma->vm_file->private_data;
-	unsigned long address = (unsigned long)vmf->virtual_address;
-	unsigned long pfn, offset;
-
-#ifdef CONFIG_SPU_FS_64K_LS
-	struct spu_state *csa = &ctx->csa;
-	int psize;
-
-	/* Check what page size we are using */
-	psize = get_slice_psize(vma->vm_mm, address);
-
-	/* Some sanity checking */
-	BUG_ON(csa->use_big_pages != (psize == MMU_PAGE_64K));
-
-	/* Wow, 64K, cool, we need to align the address though */
-	if (csa->use_big_pages) {
-		BUG_ON(vma->vm_start & 0xffff);
-		address &= ~0xfffful;
-	}
-#endif /* CONFIG_SPU_FS_64K_LS */
-=======
 static vm_fault_t
 spufs_mem_mmap_fault(struct vm_fault *vmf)
 {
@@ -305,18 +233,13 @@ spufs_mem_mmap_fault(struct vm_fault *vmf)
 	struct spu_context *ctx	= vma->vm_file->private_data;
 	unsigned long pfn, offset;
 	vm_fault_t ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = vmf->pgoff << PAGE_SHIFT;
 	if (offset >= LS_SIZE)
 		return VM_FAULT_SIGBUS;
 
 	pr_debug("spufs_mem_mmap_fault address=0x%lx, offset=0x%lx\n",
-<<<<<<< HEAD
-			address, offset);
-=======
 			vmf->address, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (spu_acquire(ctx))
 		return VM_FAULT_NOPAGE;
@@ -328,19 +251,11 @@ spufs_mem_mmap_fault(struct vm_fault *vmf)
 		vma->vm_page_prot = pgprot_noncached_wc(vma->vm_page_prot);
 		pfn = (ctx->spu->local_store_phys + offset) >> PAGE_SHIFT;
 	}
-<<<<<<< HEAD
-	vm_insert_pfn(vma, address, pfn);
-
-	spu_release(ctx);
-
-	return VM_FAULT_NOPAGE;
-=======
 	ret = vmf_insert_pfn(vma, vmf->address, pfn);
 
 	spu_release(ctx);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spufs_mem_mmap_access(struct vm_area_struct *vma,
@@ -373,61 +288,16 @@ static const struct vm_operations_struct spufs_mem_mmap_vmops = {
 
 static int spufs_mem_mmap(struct file *file, struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_SPU_FS_64K_LS
-	struct spu_context	*ctx = file->private_data;
-	struct spu_state	*csa = &ctx->csa;
-
-	/* Sanity check VMA alignment */
-	if (csa->use_big_pages) {
-		pr_debug("spufs_mem_mmap 64K, start=0x%lx, end=0x%lx,"
-			 " pgoff=0x%lx\n", vma->vm_start, vma->vm_end,
-			 vma->vm_pgoff);
-		if (vma->vm_start & 0xffff)
-			return -EINVAL;
-		if (vma->vm_pgoff & 0xf)
-			return -EINVAL;
-	}
-#endif /* CONFIG_SPU_FS_64K_LS */
-
-	if (!(vma->vm_flags & VM_SHARED))
-		return -EINVAL;
-
-	vma->vm_flags |= VM_IO | VM_PFNMAP;
-=======
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
 	vm_flags_set(vma, VM_IO | VM_PFNMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = pgprot_noncached_wc(vma->vm_page_prot);
 
 	vma->vm_ops = &spufs_mem_mmap_vmops;
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_SPU_FS_64K_LS
-static unsigned long spufs_get_unmapped_area(struct file *file,
-		unsigned long addr, unsigned long len, unsigned long pgoff,
-		unsigned long flags)
-{
-	struct spu_context	*ctx = file->private_data;
-	struct spu_state	*csa = &ctx->csa;
-
-	/* If not using big pages, fallback to normal MM g_u_a */
-	if (!csa->use_big_pages)
-		return current->mm->get_unmapped_area(file, addr, len,
-						      pgoff, flags);
-
-	/* Else, try to obtain a 64K pages slice */
-	return slice_get_unmapped_area(addr, len, flags,
-				       MMU_PAGE_64K, 1, 0);
-}
-#endif /* CONFIG_SPU_FS_64K_LS */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct file_operations spufs_mem_fops = {
 	.open			= spufs_mem_open,
 	.release		= spufs_mem_release,
@@ -435,21 +305,6 @@ static const struct file_operations spufs_mem_fops = {
 	.write			= spufs_mem_write,
 	.llseek			= generic_file_llseek,
 	.mmap			= spufs_mem_mmap,
-<<<<<<< HEAD
-#ifdef CONFIG_SPU_FS_64K_LS
-	.get_unmapped_area	= spufs_get_unmapped_area,
-#endif
-};
-
-static int spufs_ps_fault(struct vm_area_struct *vma,
-				    struct vm_fault *vmf,
-				    unsigned long ps_offs,
-				    unsigned long ps_size)
-{
-	struct spu_context *ctx = vma->vm_file->private_data;
-	unsigned long area, offset = vmf->pgoff << PAGE_SHIFT;
-	int ret = 0;
-=======
 };
 
 static vm_fault_t spufs_ps_fault(struct vm_fault *vmf,
@@ -460,7 +315,6 @@ static vm_fault_t spufs_ps_fault(struct vm_fault *vmf,
 	unsigned long area, offset = vmf->pgoff << PAGE_SHIFT;
 	int err = 0;
 	vm_fault_t ret = VM_FAULT_NOPAGE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spu_context_nospu_trace(spufs_ps_fault__enter, ctx);
 
@@ -471,11 +325,7 @@ static vm_fault_t spufs_ps_fault(struct vm_fault *vmf,
 		return VM_FAULT_SIGBUS;
 
 	/*
-<<<<<<< HEAD
-	 * Because we release the mmap_sem, the context may be destroyed while
-=======
 	 * Because we release the mmap_lock, the context may be destroyed while
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * we're in spu_wait. Grab an extra reference so it isn't destroyed
 	 * in the meantime.
 	 */
@@ -484,13 +334,8 @@ static vm_fault_t spufs_ps_fault(struct vm_fault *vmf,
 	/*
 	 * We have to wait for context to be loaded before we have
 	 * pages to hand out to the user, but we don't want to wait
-<<<<<<< HEAD
-	 * with the mmap_sem held.
-	 * It is possible to drop the mmap_sem here, but then we need
-=======
 	 * with the mmap_lock held.
 	 * It is possible to drop the mmap_lock here, but then we need
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to return VM_FAULT_NOPAGE because the mappings may have
 	 * hanged.
 	 */
@@ -498,21 +343,6 @@ static vm_fault_t spufs_ps_fault(struct vm_fault *vmf,
 		goto refault;
 
 	if (ctx->state == SPU_STATE_SAVED) {
-<<<<<<< HEAD
-		up_read(&current->mm->mmap_sem);
-		spu_context_nospu_trace(spufs_ps_fault__sleep, ctx);
-		ret = spufs_wait(ctx->run_wq, ctx->state == SPU_STATE_RUNNABLE);
-		spu_context_trace(spufs_ps_fault__wake, ctx, ctx->spu);
-		down_read(&current->mm->mmap_sem);
-	} else {
-		area = ctx->spu->problem_phys + ps_offs;
-		vm_insert_pfn(vma, (unsigned long)vmf->virtual_address,
-					(area + offset) >> PAGE_SHIFT);
-		spu_context_trace(spufs_ps_fault__insert, ctx, ctx->spu);
-	}
-
-	if (!ret)
-=======
 		mmap_read_unlock(current->mm);
 		spu_context_nospu_trace(spufs_ps_fault__sleep, ctx);
 		err = spufs_wait(ctx->run_wq, ctx->state == SPU_STATE_RUNNABLE);
@@ -526,21 +356,10 @@ static vm_fault_t spufs_ps_fault(struct vm_fault *vmf,
 	}
 
 	if (!err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spu_release(ctx);
 
 refault:
 	put_spu_context(ctx);
-<<<<<<< HEAD
-	return VM_FAULT_NOPAGE;
-}
-
-#if SPUFS_MMAP_4K
-static int spufs_cntl_mmap_fault(struct vm_area_struct *vma,
-					   struct vm_fault *vmf)
-{
-	return spufs_ps_fault(vma, vmf, 0x4000, SPUFS_CNTL_MAP_SIZE);
-=======
 	return ret;
 }
 
@@ -548,7 +367,6 @@ static int spufs_cntl_mmap_fault(struct vm_area_struct *vma,
 static vm_fault_t spufs_cntl_mmap_fault(struct vm_fault *vmf)
 {
 	return spufs_ps_fault(vmf, 0x4000, SPUFS_CNTL_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct vm_operations_struct spufs_cntl_mmap_vmops = {
@@ -563,11 +381,7 @@ static int spufs_cntl_mmap(struct file *file, struct vm_area_struct *vma)
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	vma->vm_flags |= VM_IO | VM_PFNMAP;
-=======
 	vm_flags_set(vma, VM_IO | VM_PFNMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
 	vma->vm_ops = &spufs_cntl_mmap_vmops;
@@ -639,11 +453,7 @@ static const struct file_operations spufs_cntl_fops = {
 	.release = spufs_cntl_release,
 	.read = simple_attr_read,
 	.write = simple_attr_write,
-<<<<<<< HEAD
-	.llseek	= generic_file_llseek,
-=======
 	.llseek	= no_llseek,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mmap = spufs_cntl_mmap,
 };
 
@@ -656,19 +466,10 @@ spufs_regs_open(struct inode *inode, struct file *file)
 }
 
 static ssize_t
-<<<<<<< HEAD
-__spufs_regs_read(struct spu_context *ctx, char __user *buffer,
-			size_t size, loff_t *pos)
-{
-	struct spu_lscsa *lscsa = ctx->csa.lscsa;
-	return simple_read_from_buffer(buffer, size, pos,
-				      lscsa->gprs, sizeof lscsa->gprs);
-=======
 spufs_regs_dump(struct spu_context *ctx, struct coredump_params *cprm)
 {
 	return spufs_dump_emit(cprm, ctx->csa.lscsa->gprs,
 			       sizeof(ctx->csa.lscsa->gprs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -686,12 +487,8 @@ spufs_regs_read(struct file *file, char __user *buffer,
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
-<<<<<<< HEAD
-	ret = __spufs_regs_read(ctx, buffer, size, pos);
-=======
 	ret = simple_read_from_buffer(buffer, size, pos, ctx->csa.lscsa->gprs,
 				      sizeof(ctx->csa.lscsa->gprs));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_release_saved(ctx);
 	return ret;
 }
@@ -726,19 +523,10 @@ static const struct file_operations spufs_regs_fops = {
 };
 
 static ssize_t
-<<<<<<< HEAD
-__spufs_fpcr_read(struct spu_context *ctx, char __user * buffer,
-			size_t size, loff_t * pos)
-{
-	struct spu_lscsa *lscsa = ctx->csa.lscsa;
-	return simple_read_from_buffer(buffer, size, pos,
-				      &lscsa->fpcr, sizeof(lscsa->fpcr));
-=======
 spufs_fpcr_dump(struct spu_context *ctx, struct coredump_params *cprm)
 {
 	return spufs_dump_emit(cprm, &ctx->csa.lscsa->fpcr,
 			       sizeof(ctx->csa.lscsa->fpcr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -751,12 +539,8 @@ spufs_fpcr_read(struct file *file, char __user * buffer,
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
-<<<<<<< HEAD
-	ret = __spufs_fpcr_read(ctx, buffer, size, pos);
-=======
 	ret = simple_read_from_buffer(buffer, size, pos, &ctx->csa.lscsa->fpcr,
 				      sizeof(ctx->csa.lscsa->fpcr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_release_saved(ctx);
 	return ret;
 }
@@ -796,11 +580,7 @@ static int spufs_pipe_open(struct inode *inode, struct file *file)
 	struct spufs_inode_info *i = SPUFS_I(inode);
 	file->private_data = i->i_ctx;
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -815,24 +595,12 @@ static ssize_t spufs_mbox_read(struct file *file, char __user *buf,
 			size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
-<<<<<<< HEAD
-	u32 mbox_data, __user *udata;
-=======
 	u32 mbox_data, __user *udata = (void __user *)buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t count;
 
 	if (len < 4)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, buf, len))
-		return -EFAULT;
-
-	udata = (void __user *)buf;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	count = spu_acquire(ctx);
 	if (count)
 		return count;
@@ -848,11 +616,7 @@ static ssize_t spufs_mbox_read(struct file *file, char __user *buf,
 		 * but still need to return the data we have
 		 * read successfully so far.
 		 */
-<<<<<<< HEAD
-		ret = __put_user(mbox_data, udata);
-=======
 		ret = put_user(mbox_data, udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			if (!count)
 				count = -EFAULT;
@@ -909,31 +673,13 @@ size_t spu_ibox_read(struct spu_context *ctx, u32 *data)
 	return ctx->ops->ibox_read(ctx, data);
 }
 
-<<<<<<< HEAD
-static int spufs_ibox_fasync(int fd, struct file *file, int on)
-{
-	struct spu_context *ctx = file->private_data;
-
-	return fasync_helper(fd, file, on, &ctx->ibox_fasync);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* interrupt-level ibox callback function. */
 void spufs_ibox_callback(struct spu *spu)
 {
 	struct spu_context *ctx = spu->ctx;
 
-<<<<<<< HEAD
-	if (!ctx)
-		return;
-
-	wake_up_all(&ctx->ibox_wq);
-	kill_fasync(&ctx->ibox_fasync, SIGIO, POLLIN);
-=======
 	if (ctx)
 		wake_up_all(&ctx->ibox_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -952,24 +698,12 @@ static ssize_t spufs_ibox_read(struct file *file, char __user *buf,
 			size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
-<<<<<<< HEAD
-	u32 ibox_data, __user *udata;
-=======
 	u32 ibox_data, __user *udata = (void __user *)buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t count;
 
 	if (len < 4)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, buf, len))
-		return -EFAULT;
-
-	udata = (void __user *)buf;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	count = spu_acquire(ctx);
 	if (count)
 		goto out;
@@ -988,11 +722,7 @@ static ssize_t spufs_ibox_read(struct file *file, char __user *buf,
 	}
 
 	/* if we can't write at all, return -EFAULT */
-<<<<<<< HEAD
-	count = __put_user(ibox_data, udata);
-=======
 	count = put_user(ibox_data, udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count)
 		goto out_unlock;
 
@@ -1006,11 +736,7 @@ static ssize_t spufs_ibox_read(struct file *file, char __user *buf,
 		 * but still need to return the data we have
 		 * read successfully so far.
 		 */
-<<<<<<< HEAD
-		ret = __put_user(ibox_data, udata);
-=======
 		ret = put_user(ibox_data, udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			break;
 	}
@@ -1021,17 +747,10 @@ out:
 	return count;
 }
 
-<<<<<<< HEAD
-static unsigned int spufs_ibox_poll(struct file *file, poll_table *wait)
-{
-	struct spu_context *ctx = file->private_data;
-	unsigned int mask;
-=======
 static __poll_t spufs_ibox_poll(struct file *file, poll_table *wait)
 {
 	struct spu_context *ctx = file->private_data;
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &ctx->ibox_wq, wait);
 
@@ -1040,11 +759,7 @@ static __poll_t spufs_ibox_poll(struct file *file, poll_table *wait)
 	 * that poll should not sleep.  Will be fixed later.
 	 */
 	mutex_lock(&ctx->state_mutex);
-<<<<<<< HEAD
-	mask = ctx->ops->mbox_stat_poll(ctx, POLLIN | POLLRDNORM);
-=======
 	mask = ctx->ops->mbox_stat_poll(ctx, EPOLLIN | EPOLLRDNORM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_release(ctx);
 
 	return mask;
@@ -1054,10 +769,6 @@ static const struct file_operations spufs_ibox_fops = {
 	.open	= spufs_pipe_open,
 	.read	= spufs_ibox_read,
 	.poll	= spufs_ibox_poll,
-<<<<<<< HEAD
-	.fasync	= spufs_ibox_fasync,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek = no_llseek,
 };
 
@@ -1095,34 +806,13 @@ size_t spu_wbox_write(struct spu_context *ctx, u32 data)
 	return ctx->ops->wbox_write(ctx, data);
 }
 
-<<<<<<< HEAD
-static int spufs_wbox_fasync(int fd, struct file *file, int on)
-{
-	struct spu_context *ctx = file->private_data;
-	int ret;
-
-	ret = fasync_helper(fd, file, on, &ctx->wbox_fasync);
-
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* interrupt-level wbox callback function. */
 void spufs_wbox_callback(struct spu *spu)
 {
 	struct spu_context *ctx = spu->ctx;
 
-<<<<<<< HEAD
-	if (!ctx)
-		return;
-
-	wake_up_all(&ctx->wbox_wq);
-	kill_fasync(&ctx->wbox_fasync, SIGIO, POLLOUT);
-=======
 	if (ctx)
 		wake_up_all(&ctx->wbox_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1134,36 +824,20 @@ void spufs_wbox_callback(struct spu *spu)
  * - end of the mapped area
  *
  * If the file is opened without O_NONBLOCK, we wait here until
-<<<<<<< HEAD
- * space is availabyl, but return when we have been able to
-=======
  * space is available, but return when we have been able to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * write something.
  */
 static ssize_t spufs_wbox_write(struct file *file, const char __user *buf,
 			size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
-<<<<<<< HEAD
-	u32 wbox_data, __user *udata;
-=======
 	u32 wbox_data, __user *udata = (void __user *)buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t count;
 
 	if (len < 4)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	udata = (void __user *)buf;
-	if (!access_ok(VERIFY_READ, buf, len))
-		return -EFAULT;
-
-	if (__get_user(wbox_data, udata))
-=======
 	if (get_user(wbox_data, udata))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	count = spu_acquire(ctx);
@@ -1190,11 +864,7 @@ static ssize_t spufs_wbox_write(struct file *file, const char __user *buf,
 	/* write as much as possible */
 	for (count = 4, udata++; (count + 4) <= len; count += 4, udata++) {
 		int ret;
-<<<<<<< HEAD
-		ret = __get_user(wbox_data, udata);
-=======
 		ret = get_user(wbox_data, udata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			break;
 
@@ -1209,17 +879,10 @@ out:
 	return count;
 }
 
-<<<<<<< HEAD
-static unsigned int spufs_wbox_poll(struct file *file, poll_table *wait)
-{
-	struct spu_context *ctx = file->private_data;
-	unsigned int mask;
-=======
 static __poll_t spufs_wbox_poll(struct file *file, poll_table *wait)
 {
 	struct spu_context *ctx = file->private_data;
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &ctx->wbox_wq, wait);
 
@@ -1228,11 +891,7 @@ static __poll_t spufs_wbox_poll(struct file *file, poll_table *wait)
 	 * that poll should not sleep.  Will be fixed later.
 	 */
 	mutex_lock(&ctx->state_mutex);
-<<<<<<< HEAD
-	mask = ctx->ops->mbox_stat_poll(ctx, POLLOUT | POLLWRNORM);
-=======
 	mask = ctx->ops->mbox_stat_poll(ctx, EPOLLOUT | EPOLLWRNORM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_release(ctx);
 
 	return mask;
@@ -1242,10 +901,6 @@ static const struct file_operations spufs_wbox_fops = {
 	.open	= spufs_pipe_open,
 	.write	= spufs_wbox_write,
 	.poll	= spufs_wbox_poll,
-<<<<<<< HEAD
-	.fasync	= spufs_wbox_fasync,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek = no_llseek,
 };
 
@@ -1303,30 +958,6 @@ spufs_signal1_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-static ssize_t __spufs_signal1_read(struct spu_context *ctx, char __user *buf,
-			size_t len, loff_t *pos)
-{
-	int ret = 0;
-	u32 data;
-
-	if (len < 4)
-		return -EINVAL;
-
-	if (ctx->csa.spu_chnlcnt_RW[3]) {
-		data = ctx->csa.spu_chnldata_RW[3];
-		ret = 4;
-	}
-
-	if (!ret)
-		goto out;
-
-	if (copy_to_user(buf, &data, 4))
-		return -EFAULT;
-
-out:
-	return ret;
-=======
 static ssize_t spufs_signal1_dump(struct spu_context *ctx,
 		struct coredump_params *cprm)
 {
@@ -1347,7 +978,6 @@ static ssize_t __spufs_signal1_read(struct spu_context *ctx, char __user *buf,
 			 sizeof(ctx->csa.spu_chnldata_RW[3])))
 		return -EFAULT;
 	return sizeof(ctx->csa.spu_chnldata_RW[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t spufs_signal1_read(struct file *file, char __user *buf,
@@ -1359,11 +989,7 @@ static ssize_t spufs_signal1_read(struct file *file, char __user *buf,
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
-<<<<<<< HEAD
-	ret = __spufs_signal1_read(ctx, buf, len, pos);
-=======
 	ret = __spufs_signal1_read(ctx, buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_release_saved(ctx);
 
 	return ret;
@@ -1393,28 +1019,16 @@ static ssize_t spufs_signal1_write(struct file *file, const char __user *buf,
 	return 4;
 }
 
-<<<<<<< HEAD
-static int
-spufs_signal1_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-#if SPUFS_SIGNAL_MAP_SIZE == 0x1000
-	return spufs_ps_fault(vma, vmf, 0x14000, SPUFS_SIGNAL_MAP_SIZE);
-=======
 static vm_fault_t
 spufs_signal1_mmap_fault(struct vm_fault *vmf)
 {
 #if SPUFS_SIGNAL_MAP_SIZE == 0x1000
 	return spufs_ps_fault(vmf, 0x14000, SPUFS_SIGNAL_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif SPUFS_SIGNAL_MAP_SIZE == 0x10000
 	/* For 64k pages, both signal1 and signal2 can be used to mmap the whole
 	 * signal 1 and 2 area
 	 */
-<<<<<<< HEAD
-	return spufs_ps_fault(vma, vmf, 0x10000, SPUFS_SIGNAL_MAP_SIZE);
-=======
 	return spufs_ps_fault(vmf, 0x10000, SPUFS_SIGNAL_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #error unsupported page size
 #endif
@@ -1429,11 +1043,7 @@ static int spufs_signal1_mmap(struct file *file, struct vm_area_struct *vma)
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	vma->vm_flags |= VM_IO | VM_PFNMAP;
-=======
 	vm_flags_set(vma, VM_IO | VM_PFNMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
 	vma->vm_ops = &spufs_signal1_mmap_vmops;
@@ -1483,30 +1093,6 @@ spufs_signal2_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-static ssize_t __spufs_signal2_read(struct spu_context *ctx, char __user *buf,
-			size_t len, loff_t *pos)
-{
-	int ret = 0;
-	u32 data;
-
-	if (len < 4)
-		return -EINVAL;
-
-	if (ctx->csa.spu_chnlcnt_RW[4]) {
-		data =  ctx->csa.spu_chnldata_RW[4];
-		ret = 4;
-	}
-
-	if (!ret)
-		goto out;
-
-	if (copy_to_user(buf, &data, 4))
-		return -EFAULT;
-
-out:
-	return ret;
-=======
 static ssize_t spufs_signal2_dump(struct spu_context *ctx,
 		struct coredump_params *cprm)
 {
@@ -1527,7 +1113,6 @@ static ssize_t __spufs_signal2_read(struct spu_context *ctx, char __user *buf,
 			 sizeof(ctx->csa.spu_chnldata_RW[4])))
 		return -EFAULT;
 	return sizeof(ctx->csa.spu_chnldata_RW[4]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t spufs_signal2_read(struct file *file, char __user *buf,
@@ -1539,11 +1124,7 @@ static ssize_t spufs_signal2_read(struct file *file, char __user *buf,
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
-<<<<<<< HEAD
-	ret = __spufs_signal2_read(ctx, buf, len, pos);
-=======
 	ret = __spufs_signal2_read(ctx, buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_release_saved(ctx);
 
 	return ret;
@@ -1574,28 +1155,16 @@ static ssize_t spufs_signal2_write(struct file *file, const char __user *buf,
 }
 
 #if SPUFS_MMAP_4K
-<<<<<<< HEAD
-static int
-spufs_signal2_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-#if SPUFS_SIGNAL_MAP_SIZE == 0x1000
-	return spufs_ps_fault(vma, vmf, 0x1c000, SPUFS_SIGNAL_MAP_SIZE);
-=======
 static vm_fault_t
 spufs_signal2_mmap_fault(struct vm_fault *vmf)
 {
 #if SPUFS_SIGNAL_MAP_SIZE == 0x1000
 	return spufs_ps_fault(vmf, 0x1c000, SPUFS_SIGNAL_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif SPUFS_SIGNAL_MAP_SIZE == 0x10000
 	/* For 64k pages, both signal1 and signal2 can be used to mmap the whole
 	 * signal 1 and 2 area
 	 */
-<<<<<<< HEAD
-	return spufs_ps_fault(vma, vmf, 0x10000, SPUFS_SIGNAL_MAP_SIZE);
-=======
 	return spufs_ps_fault(vmf, 0x10000, SPUFS_SIGNAL_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #error unsupported page size
 #endif
@@ -1610,11 +1179,7 @@ static int spufs_signal2_mmap(struct file *file, struct vm_area_struct *vma)
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	vma->vm_flags |= VM_IO | VM_PFNMAP;
-=======
 	vm_flags_set(vma, VM_IO | VM_PFNMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
 	vma->vm_ops = &spufs_signal2_mmap_vmops;
@@ -1719,17 +1284,10 @@ DEFINE_SPUFS_ATTRIBUTE(spufs_signal2_type, spufs_signal2_type_get,
 		       spufs_signal2_type_set, "%llu\n", SPU_ATTR_ACQUIRE);
 
 #if SPUFS_MMAP_4K
-<<<<<<< HEAD
-static int
-spufs_mss_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	return spufs_ps_fault(vma, vmf, 0x0000, SPUFS_MSS_MAP_SIZE);
-=======
 static vm_fault_t
 spufs_mss_mmap_fault(struct vm_fault *vmf)
 {
 	return spufs_ps_fault(vmf, 0x0000, SPUFS_MSS_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct vm_operations_struct spufs_mss_mmap_vmops = {
@@ -1744,11 +1302,7 @@ static int spufs_mss_mmap(struct file *file, struct vm_area_struct *vma)
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	vma->vm_flags |= VM_IO | VM_PFNMAP;
-=======
 	vm_flags_set(vma, VM_IO | VM_PFNMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
 	vma->vm_ops = &spufs_mss_mmap_vmops;
@@ -1792,17 +1346,10 @@ static const struct file_operations spufs_mss_fops = {
 	.llseek  = no_llseek,
 };
 
-<<<<<<< HEAD
-static int
-spufs_psmap_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	return spufs_ps_fault(vma, vmf, 0x0000, SPUFS_PS_MAP_SIZE);
-=======
 static vm_fault_t
 spufs_psmap_mmap_fault(struct vm_fault *vmf)
 {
 	return spufs_ps_fault(vmf, 0x0000, SPUFS_PS_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct vm_operations_struct spufs_psmap_mmap_vmops = {
@@ -1817,11 +1364,7 @@ static int spufs_psmap_mmap(struct file *file, struct vm_area_struct *vma)
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	vma->vm_flags |= VM_IO | VM_PFNMAP;
-=======
 	vm_flags_set(vma, VM_IO | VM_PFNMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
 	vma->vm_ops = &spufs_psmap_mmap_vmops;
@@ -1863,17 +1406,10 @@ static const struct file_operations spufs_psmap_fops = {
 
 
 #if SPUFS_MMAP_4K
-<<<<<<< HEAD
-static int
-spufs_mfc_mmap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	return spufs_ps_fault(vma, vmf, 0x3000, SPUFS_MFC_MAP_SIZE);
-=======
 static vm_fault_t
 spufs_mfc_mmap_fault(struct vm_fault *vmf)
 {
 	return spufs_ps_fault(vmf, 0x3000, SPUFS_MFC_MAP_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct vm_operations_struct spufs_mfc_mmap_vmops = {
@@ -1888,11 +1424,7 @@ static int spufs_mfc_mmap(struct file *file, struct vm_area_struct *vma)
 	if (!(vma->vm_flags & VM_SHARED))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	vma->vm_flags |= VM_IO | VM_PFNMAP;
-=======
 	vm_flags_set(vma, VM_IO | VM_PFNMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
 	vma->vm_ops = &spufs_mfc_mmap_vmops;
@@ -1940,33 +1472,8 @@ void spufs_mfc_callback(struct spu *spu)
 {
 	struct spu_context *ctx = spu->ctx;
 
-<<<<<<< HEAD
-	if (!ctx)
-		return;
-
-	wake_up_all(&ctx->mfc_wq);
-
-	pr_debug("%s %s\n", __func__, spu->name);
-	if (ctx->mfc_fasync) {
-		u32 free_elements, tagstatus;
-		unsigned int mask;
-
-		/* no need for spu_acquire in interrupt context */
-		free_elements = ctx->ops->get_mfc_free_elements(ctx);
-		tagstatus = ctx->ops->read_mfc_tagstatus(ctx);
-
-		mask = 0;
-		if (free_elements & 0xffff)
-			mask |= POLLOUT;
-		if (tagstatus & ctx->tagwait)
-			mask |= POLLIN;
-
-		kill_fasync(&ctx->mfc_fasync, SIGIO, mask);
-	}
-=======
 	if (ctx)
 		wake_up_all(&ctx->mfc_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spufs_read_mfc_tagstatus(struct spu_context *ctx, u32 *status)
@@ -2160,19 +1667,11 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static unsigned int spufs_mfc_poll(struct file *file,poll_table *wait)
-{
-	struct spu_context *ctx = file->private_data;
-	u32 free_elements, tagstatus;
-	unsigned int mask;
-=======
 static __poll_t spufs_mfc_poll(struct file *file,poll_table *wait)
 {
 	struct spu_context *ctx = file->private_data;
 	u32 free_elements, tagstatus;
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &ctx->mfc_wq, wait);
 
@@ -2188,15 +1687,9 @@ static __poll_t spufs_mfc_poll(struct file *file,poll_table *wait)
 
 	mask = 0;
 	if (free_elements & 0xffff)
-<<<<<<< HEAD
-		mask |= POLLOUT | POLLWRNORM;
-	if (tagstatus & ctx->tagwait)
-		mask |= POLLIN | POLLRDNORM;
-=======
 		mask |= EPOLLOUT | EPOLLWRNORM;
 	if (tagstatus & ctx->tagwait)
 		mask |= EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: free %d tagstatus %d tagwait %d\n", __func__,
 		free_elements, tagstatus, ctx->tagwait);
@@ -2232,35 +1725,16 @@ out:
 
 static int spufs_mfc_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-	int err = filemap_write_and_wait_range(inode->i_mapping, start, end);
-	if (!err) {
-		mutex_lock(&inode->i_mutex);
-		err = spufs_mfc_flush(file, NULL);
-		mutex_unlock(&inode->i_mutex);
-=======
 	struct inode *inode = file_inode(file);
 	int err = file_write_and_wait_range(file, start, end);
 	if (!err) {
 		inode_lock(inode);
 		err = spufs_mfc_flush(file, NULL);
 		inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
-<<<<<<< HEAD
-static int spufs_mfc_fasync(int fd, struct file *file, int on)
-{
-	struct spu_context *ctx = file->private_data;
-
-	return fasync_helper(fd, file, on, &ctx->mfc_fasync);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct file_operations spufs_mfc_fops = {
 	.open	 = spufs_mfc_open,
 	.release = spufs_mfc_release,
@@ -2269,10 +1743,6 @@ static const struct file_operations spufs_mfc_fops = {
 	.poll	 = spufs_mfc_poll,
 	.flush	 = spufs_mfc_flush,
 	.fsync	 = spufs_mfc_fsync,
-<<<<<<< HEAD
-	.fasync	 = spufs_mfc_fasync,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mmap	 = spufs_mfc_mmap,
 	.llseek  = no_llseek,
 };
@@ -2478,20 +1948,6 @@ static const struct file_operations spufs_caps_fops = {
 	.release	= single_release,
 };
 
-<<<<<<< HEAD
-static ssize_t __spufs_mbox_info_read(struct spu_context *ctx,
-			char __user *buf, size_t len, loff_t *pos)
-{
-	u32 data;
-
-	/* EOF if there's no entry in the mbox */
-	if (!(ctx->csa.prob.mb_stat_R & 0x0000ff))
-		return 0;
-
-	data = ctx->csa.prob.pu_mb_R;
-
-	return simple_read_from_buffer(buf, len, pos, &data, sizeof data);
-=======
 static ssize_t spufs_mbox_info_dump(struct spu_context *ctx,
 		struct coredump_params *cprm)
 {
@@ -2499,35 +1955,19 @@ static ssize_t spufs_mbox_info_dump(struct spu_context *ctx,
 		return 0;
 	return spufs_dump_emit(cprm, &ctx->csa.prob.pu_mb_R,
 			       sizeof(ctx->csa.prob.pu_mb_R));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t spufs_mbox_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
-<<<<<<< HEAD
-	int ret;
-	struct spu_context *ctx = file->private_data;
-
-	if (!access_ok(VERIFY_WRITE, buf, len))
-		return -EFAULT;
-=======
 	struct spu_context *ctx = file->private_data;
 	u32 stat, data;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
-<<<<<<< HEAD
-	ret = __spufs_mbox_info_read(ctx, buf, len, pos);
-	spin_unlock(&ctx->csa.register_lock);
-	spu_release_saved(ctx);
-
-	return ret;
-=======
 	stat = ctx->csa.prob.mb_stat_R;
 	data = ctx->csa.prob.pu_mb_R;
 	spin_unlock(&ctx->csa.register_lock);
@@ -2538,7 +1978,6 @@ static ssize_t spufs_mbox_info_read(struct file *file, char __user *buf,
 		return 0;
 
 	return simple_read_from_buffer(buf, len, pos, &data, sizeof(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations spufs_mbox_info_fops = {
@@ -2547,20 +1986,6 @@ static const struct file_operations spufs_mbox_info_fops = {
 	.llseek  = generic_file_llseek,
 };
 
-<<<<<<< HEAD
-static ssize_t __spufs_ibox_info_read(struct spu_context *ctx,
-				char __user *buf, size_t len, loff_t *pos)
-{
-	u32 data;
-
-	/* EOF if there's no entry in the ibox */
-	if (!(ctx->csa.prob.mb_stat_R & 0xff0000))
-		return 0;
-
-	data = ctx->csa.priv2.puint_mb_R;
-
-	return simple_read_from_buffer(buf, len, pos, &data, sizeof data);
-=======
 static ssize_t spufs_ibox_info_dump(struct spu_context *ctx,
 		struct coredump_params *cprm)
 {
@@ -2568,35 +1993,19 @@ static ssize_t spufs_ibox_info_dump(struct spu_context *ctx,
 		return 0;
 	return spufs_dump_emit(cprm, &ctx->csa.priv2.puint_mb_R,
 			       sizeof(ctx->csa.priv2.puint_mb_R));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t spufs_ibox_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
-<<<<<<< HEAD
-	int ret;
-
-	if (!access_ok(VERIFY_WRITE, buf, len))
-		return -EFAULT;
-
-=======
 	u32 stat, data;
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
-<<<<<<< HEAD
-	ret = __spufs_ibox_info_read(ctx, buf, len, pos);
-	spin_unlock(&ctx->csa.register_lock);
-	spu_release_saved(ctx);
-
-	return ret;
-=======
 	stat = ctx->csa.prob.mb_stat_R;
 	data = ctx->csa.priv2.puint_mb_R;
 	spin_unlock(&ctx->csa.register_lock);
@@ -2607,7 +2016,6 @@ static ssize_t spufs_ibox_info_read(struct file *file, char __user *buf,
 		return 0;
 
 	return simple_read_from_buffer(buf, len, pos, &data, sizeof(data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations spufs_ibox_info_fops = {
@@ -2616,23 +2024,6 @@ static const struct file_operations spufs_ibox_info_fops = {
 	.llseek  = generic_file_llseek,
 };
 
-<<<<<<< HEAD
-static ssize_t __spufs_wbox_info_read(struct spu_context *ctx,
-			char __user *buf, size_t len, loff_t *pos)
-{
-	int i, cnt;
-	u32 data[4];
-	u32 wbox_stat;
-
-	wbox_stat = ctx->csa.prob.mb_stat_R;
-	cnt = 4 - ((wbox_stat & 0x00ff00) >> 8);
-	for (i = 0; i < cnt; i++) {
-		data[i] = ctx->csa.spu_mailbox_data[i];
-	}
-
-	return simple_read_from_buffer(buf, len, pos, &data,
-				cnt * sizeof(u32));
-=======
 static size_t spufs_wbox_info_cnt(struct spu_context *ctx)
 {
 	return (4 - ((ctx->csa.prob.mb_stat_R & 0x00ff00) >> 8)) * sizeof(u32);
@@ -2643,34 +2034,19 @@ static ssize_t spufs_wbox_info_dump(struct spu_context *ctx,
 {
 	return spufs_dump_emit(cprm, &ctx->csa.spu_mailbox_data,
 			spufs_wbox_info_cnt(ctx));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t spufs_wbox_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
-<<<<<<< HEAD
-	int ret;
-
-	if (!access_ok(VERIFY_WRITE, buf, len))
-		return -EFAULT;
-=======
 	u32 data[ARRAY_SIZE(ctx->csa.spu_mailbox_data)];
 	int ret, count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
-<<<<<<< HEAD
-	ret = __spufs_wbox_info_read(ctx, buf, len, pos);
-	spin_unlock(&ctx->csa.register_lock);
-	spu_release_saved(ctx);
-
-	return ret;
-=======
 	count = spufs_wbox_info_cnt(ctx);
 	memcpy(&data, &ctx->csa.spu_mailbox_data, sizeof(data));
 	spin_unlock(&ctx->csa.register_lock);
@@ -2678,7 +2054,6 @@ static ssize_t spufs_wbox_info_read(struct file *file, char __user *buf,
 
 	return simple_read_from_buffer(buf, len, pos, &data,
 				count * sizeof(u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations spufs_wbox_info_fops = {
@@ -2687,23 +2062,6 @@ static const struct file_operations spufs_wbox_info_fops = {
 	.llseek  = generic_file_llseek,
 };
 
-<<<<<<< HEAD
-static ssize_t __spufs_dma_info_read(struct spu_context *ctx,
-			char __user *buf, size_t len, loff_t *pos)
-{
-	struct spu_dma_info info;
-	struct mfc_cq_sr *qp, *spuqp;
-	int i;
-
-	info.dma_info_type = ctx->csa.priv2.spu_tag_status_query_RW;
-	info.dma_info_mask = ctx->csa.lscsa->tag_mask.slot[0];
-	info.dma_info_status = ctx->csa.spu_chnldata_RW[24];
-	info.dma_info_stall_and_notify = ctx->csa.spu_chnldata_RW[25];
-	info.dma_info_atomic_command_status = ctx->csa.spu_chnldata_RW[27];
-	for (i = 0; i < 16; i++) {
-		qp = &info.dma_info_command_data[i];
-		spuqp = &ctx->csa.priv2.spuq[i];
-=======
 static void spufs_get_dma_info(struct spu_context *ctx,
 		struct spu_dma_info *info)
 {
@@ -2717,18 +2075,12 @@ static void spufs_get_dma_info(struct spu_context *ctx,
 	for (i = 0; i < 16; i++) {
 		struct mfc_cq_sr *qp = &info->dma_info_command_data[i];
 		struct mfc_cq_sr *spuqp = &ctx->csa.priv2.spuq[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		qp->mfc_cq_data0_RW = spuqp->mfc_cq_data0_RW;
 		qp->mfc_cq_data1_RW = spuqp->mfc_cq_data1_RW;
 		qp->mfc_cq_data2_RW = spuqp->mfc_cq_data2_RW;
 		qp->mfc_cq_data3_RW = spuqp->mfc_cq_data3_RW;
 	}
-<<<<<<< HEAD
-
-	return simple_read_from_buffer(buf, len, pos, &info,
-				sizeof info);
-=======
 }
 
 static ssize_t spufs_dma_info_dump(struct spu_context *ctx,
@@ -2738,42 +2090,25 @@ static ssize_t spufs_dma_info_dump(struct spu_context *ctx,
 
 	spufs_get_dma_info(ctx, &info);
 	return spufs_dump_emit(cprm, &info, sizeof(info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t spufs_dma_info_read(struct file *file, char __user *buf,
 			      size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
-<<<<<<< HEAD
-	int ret;
-
-	if (!access_ok(VERIFY_WRITE, buf, len))
-		return -EFAULT;
-
-=======
 	struct spu_dma_info info;
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
-<<<<<<< HEAD
-	ret = __spufs_dma_info_read(ctx, buf, len, pos);
-	spin_unlock(&ctx->csa.register_lock);
-	spu_release_saved(ctx);
-
-	return ret;
-=======
 	spufs_get_dma_info(ctx, &info);
 	spin_unlock(&ctx->csa.register_lock);
 	spu_release_saved(ctx);
 
 	return simple_read_from_buffer(buf, len, pos, &info,
 				sizeof(info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations spufs_dma_info_fops = {
@@ -2782,28 +2117,6 @@ static const struct file_operations spufs_dma_info_fops = {
 	.llseek = no_llseek,
 };
 
-<<<<<<< HEAD
-static ssize_t __spufs_proxydma_info_read(struct spu_context *ctx,
-			char __user *buf, size_t len, loff_t *pos)
-{
-	struct spu_proxydma_info info;
-	struct mfc_cq_sr *qp, *puqp;
-	int ret = sizeof info;
-	int i;
-
-	if (len < ret)
-		return -EINVAL;
-
-	if (!access_ok(VERIFY_WRITE, buf, len))
-		return -EFAULT;
-
-	info.proxydma_info_type = ctx->csa.prob.dma_querytype_RW;
-	info.proxydma_info_mask = ctx->csa.prob.dma_querymask_RW;
-	info.proxydma_info_status = ctx->csa.prob.dma_tagstatus_R;
-	for (i = 0; i < 8; i++) {
-		qp = &info.proxydma_info_command_data[i];
-		puqp = &ctx->csa.priv2.puq[i];
-=======
 static void spufs_get_proxydma_info(struct spu_context *ctx,
 		struct spu_proxydma_info *info)
 {
@@ -2816,18 +2129,12 @@ static void spufs_get_proxydma_info(struct spu_context *ctx,
 	for (i = 0; i < 8; i++) {
 		struct mfc_cq_sr *qp = &info->proxydma_info_command_data[i];
 		struct mfc_cq_sr *puqp = &ctx->csa.priv2.puq[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		qp->mfc_cq_data0_RW = puqp->mfc_cq_data0_RW;
 		qp->mfc_cq_data1_RW = puqp->mfc_cq_data1_RW;
 		qp->mfc_cq_data2_RW = puqp->mfc_cq_data2_RW;
 		qp->mfc_cq_data3_RW = puqp->mfc_cq_data3_RW;
 	}
-<<<<<<< HEAD
-
-	return simple_read_from_buffer(buf, len, pos, &info,
-				sizeof info);
-=======
 }
 
 static ssize_t spufs_proxydma_info_dump(struct spu_context *ctx,
@@ -2837,42 +2144,28 @@ static ssize_t spufs_proxydma_info_dump(struct spu_context *ctx,
 
 	spufs_get_proxydma_info(ctx, &info);
 	return spufs_dump_emit(cprm, &info, sizeof(info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t spufs_proxydma_info_read(struct file *file, char __user *buf,
 				   size_t len, loff_t *pos)
 {
 	struct spu_context *ctx = file->private_data;
-<<<<<<< HEAD
-	int ret;
-
-=======
 	struct spu_proxydma_info info;
 	int ret;
 
 	if (len < sizeof(info))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spu_acquire_saved(ctx);
 	if (ret)
 		return ret;
 	spin_lock(&ctx->csa.register_lock);
-<<<<<<< HEAD
-	ret = __spufs_proxydma_info_read(ctx, buf, len, pos);
-	spin_unlock(&ctx->csa.register_lock);
-	spu_release_saved(ctx);
-
-	return ret;
-=======
 	spufs_get_proxydma_info(ctx, &info);
 	spin_unlock(&ctx->csa.register_lock);
 	spu_release_saved(ctx);
 
 	return simple_read_from_buffer(buf, len, pos, &info,
 				sizeof(info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations spufs_proxydma_info_fops = {
@@ -2908,10 +2201,6 @@ static const char *ctx_state_names[] = {
 static unsigned long long spufs_acct_time(struct spu_context *ctx,
 		enum spu_utilization_state state)
 {
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long time = ctx->stats.times[state];
 
 	/*
@@ -2924,12 +2213,7 @@ static unsigned long long spufs_acct_time(struct spu_context *ctx,
 	 * of the spu context.
 	 */
 	if (ctx->spu && ctx->stats.util_state == state) {
-<<<<<<< HEAD
-		ktime_get_ts(&ts);
-		time += timespec_to_ns(&ts) - ctx->stats.tstamp;
-=======
 		time += ktime_get_ns() - ctx->stats.tstamp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return time / NSEC_PER_MSEC;
@@ -3025,14 +2309,8 @@ static int spufs_switch_log_open(struct inode *inode, struct file *file)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ctx->switch_log = kmalloc(sizeof(struct switch_log) +
-		SWITCH_LOG_BUFSIZE * sizeof(struct switch_log_entry),
-		GFP_KERNEL);
-=======
 	ctx->switch_log = kmalloc(struct_size(ctx->switch_log, log,
 				  SWITCH_LOG_BUFSIZE), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ctx->switch_log) {
 		rc = -ENOMEM;
@@ -3070,13 +2348,8 @@ static int switch_log_sprint(struct spu_context *ctx, char *tbuf, int n)
 
 	p = ctx->switch_log->log + ctx->switch_log->tail % SWITCH_LOG_BUFSIZE;
 
-<<<<<<< HEAD
-	return snprintf(tbuf, n, "%u.%09u %d %u %u %llu\n",
-			(unsigned int) p->tstamp.tv_sec,
-=======
 	return snprintf(tbuf, n, "%llu.%09u %d %u %u %llu\n",
 			(unsigned long long) p->tstamp.tv_sec,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned int) p->tstamp.tv_nsec,
 			p->spu_id,
 			(unsigned int) p->type,
@@ -3087,11 +2360,7 @@ static int switch_log_sprint(struct spu_context *ctx, char *tbuf, int n)
 static ssize_t spufs_switch_log_read(struct file *file, char __user *buf,
 			     size_t len, loff_t *ppos)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-=======
 	struct inode *inode = file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spu_context *ctx = SPUFS_I(inode)->i_ctx;
 	int error = 0, cnt = 0;
 
@@ -3159,19 +2428,11 @@ static ssize_t spufs_switch_log_read(struct file *file, char __user *buf,
 	return cnt == 0 ? error : cnt;
 }
 
-<<<<<<< HEAD
-static unsigned int spufs_switch_log_poll(struct file *file, poll_table *wait)
-{
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct spu_context *ctx = SPUFS_I(inode)->i_ctx;
-	unsigned int mask = 0;
-=======
 static __poll_t spufs_switch_log_poll(struct file *file, poll_table *wait)
 {
 	struct inode *inode = file_inode(file);
 	struct spu_context *ctx = SPUFS_I(inode)->i_ctx;
 	__poll_t mask = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	poll_wait(file, &ctx->switch_log->wait, wait);
@@ -3181,11 +2442,7 @@ static __poll_t spufs_switch_log_poll(struct file *file, poll_table *wait)
 		return rc;
 
 	if (spufs_switch_log_used(ctx) > 0)
-<<<<<<< HEAD
-		mask |= POLLIN;
-=======
 		mask |= EPOLLIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spu_release(ctx);
 
@@ -3193,10 +2450,6 @@ static __poll_t spufs_switch_log_poll(struct file *file, poll_table *wait)
 }
 
 static const struct file_operations spufs_switch_log_fops = {
-<<<<<<< HEAD
-	.owner		= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= spufs_switch_log_open,
 	.read		= spufs_switch_log_read,
 	.poll		= spufs_switch_log_poll,
@@ -3219,11 +2472,7 @@ void spu_switch_log_notify(struct spu *spu, struct spu_context *ctx,
 		struct switch_log_entry *p;
 
 		p = ctx->switch_log->log + ctx->switch_log->head;
-<<<<<<< HEAD
-		ktime_get_ts(&p->tstamp);
-=======
 		ktime_get_ts64(&p->tstamp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->timebase = get_tb();
 		p->spu_id = spu ? spu->number : -1;
 		p->type = type;
@@ -3360,25 +2609,6 @@ const struct spufs_tree_descr spufs_dir_debug_contents[] = {
 };
 
 const struct spufs_coredump_reader spufs_coredump_read[] = {
-<<<<<<< HEAD
-	{ "regs", __spufs_regs_read, NULL, sizeof(struct spu_reg128[128])},
-	{ "fpcr", __spufs_fpcr_read, NULL, sizeof(struct spu_reg128) },
-	{ "lslr", NULL, spufs_lslr_get, 19 },
-	{ "decr", NULL, spufs_decr_get, 19 },
-	{ "decr_status", NULL, spufs_decr_status_get, 19 },
-	{ "mem", __spufs_mem_read, NULL, LS_SIZE, },
-	{ "signal1", __spufs_signal1_read, NULL, sizeof(u32) },
-	{ "signal1_type", NULL, spufs_signal1_type_get, 19 },
-	{ "signal2", __spufs_signal2_read, NULL, sizeof(u32) },
-	{ "signal2_type", NULL, spufs_signal2_type_get, 19 },
-	{ "event_mask", NULL, spufs_event_mask_get, 19 },
-	{ "event_status", NULL, spufs_event_status_get, 19 },
-	{ "mbox_info", __spufs_mbox_info_read, NULL, sizeof(u32) },
-	{ "ibox_info", __spufs_ibox_info_read, NULL, sizeof(u32) },
-	{ "wbox_info", __spufs_wbox_info_read, NULL, 4 * sizeof(u32)},
-	{ "dma_info", __spufs_dma_info_read, NULL, sizeof(struct spu_dma_info)},
-	{ "proxydma_info", __spufs_proxydma_info_read,
-=======
 	{ "regs", spufs_regs_dump, NULL, sizeof(struct spu_reg128[128])},
 	{ "fpcr", spufs_fpcr_dump, NULL, sizeof(struct spu_reg128) },
 	{ "lslr", NULL, spufs_lslr_get, 19 },
@@ -3396,7 +2626,6 @@ const struct spufs_coredump_reader spufs_coredump_read[] = {
 	{ "wbox_info", spufs_wbox_info_dump, NULL, 4 * sizeof(u32)},
 	{ "dma_info", spufs_dma_info_dump, NULL, sizeof(struct spu_dma_info)},
 	{ "proxydma_info", spufs_proxydma_info_dump,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   NULL, sizeof(struct spu_proxydma_info)},
 	{ "object-id", NULL, spufs_object_id_get, 19 },
 	{ "npc", NULL, spufs_npc_get, 19 },

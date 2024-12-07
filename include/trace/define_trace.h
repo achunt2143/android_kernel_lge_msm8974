@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * Trace files that want to automate creationg of all tracepoints defined
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Trace files that want to automate creation of all tracepoints defined
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in their file should include this file. The following are macros that the
  * trace file may define:
  *
@@ -30,11 +25,7 @@
 
 #undef TRACE_EVENT
 #define TRACE_EVENT(name, proto, args, tstruct, assign, print)	\
-<<<<<<< HEAD
-	DEFINE_TRACE(name)
-=======
 	DEFINE_TRACE(name, PARAMS(proto), PARAMS(args))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef TRACE_EVENT_CONDITION
 #define TRACE_EVENT_CONDITION(name, proto, args, cond, tstruct, assign, print) \
@@ -48,17 +39,6 @@
 #undef TRACE_EVENT_FN
 #define TRACE_EVENT_FN(name, proto, args, tstruct,		\
 		assign, print, reg, unreg)			\
-<<<<<<< HEAD
-	DEFINE_TRACE_FN(name, reg, unreg)
-
-#undef DEFINE_EVENT
-#define DEFINE_EVENT(template, name, proto, args) \
-	DEFINE_TRACE(name)
-
-#undef DEFINE_EVENT_PRINT
-#define DEFINE_EVENT_PRINT(template, name, proto, args, print)	\
-	DEFINE_TRACE(name)
-=======
 	DEFINE_TRACE_FN(name, reg, unreg, PARAMS(proto), PARAMS(args))
 
 #undef TRACE_EVENT_FN_COND
@@ -83,7 +63,6 @@
 #undef DEFINE_EVENT_PRINT
 #define DEFINE_EVENT_PRINT(template, name, proto, args, print)	\
 	DEFINE_TRACE(name, PARAMS(proto), PARAMS(args))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEFINE_EVENT_CONDITION
 #define DEFINE_EVENT_CONDITION(template, name, proto, args, cond) \
@@ -91,11 +70,7 @@
 
 #undef DECLARE_TRACE
 #define DECLARE_TRACE(name, proto, args)	\
-<<<<<<< HEAD
-	DEFINE_TRACE(name)
-=======
 	DEFINE_TRACE(name, PARAMS(proto), PARAMS(args))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef TRACE_INCLUDE
 #undef __TRACE_INCLUDE
@@ -123,24 +98,14 @@
 #undef DECLARE_TRACE
 #define DECLARE_TRACE(name, proto, args)
 
-<<<<<<< HEAD
-#ifdef CONFIG_EVENT_TRACING
-#include <trace/ftrace.h>
-=======
 #ifdef TRACEPOINTS_ENABLED
 #include <trace/trace_events.h>
 #include <trace/perf.h>
 #include <trace/bpf_probe.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #undef TRACE_EVENT
 #undef TRACE_EVENT_FN
-<<<<<<< HEAD
-#undef TRACE_EVENT_CONDITION
-#undef DECLARE_EVENT_CLASS
-#undef DEFINE_EVENT
-=======
 #undef TRACE_EVENT_FN_COND
 #undef TRACE_EVENT_CONDITION
 #undef TRACE_EVENT_NOP
@@ -148,7 +113,6 @@
 #undef DECLARE_EVENT_CLASS
 #undef DEFINE_EVENT
 #undef DEFINE_EVENT_FN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef DEFINE_EVENT_PRINT
 #undef DEFINE_EVENT_CONDITION
 #undef TRACE_HEADER_MULTI_READ

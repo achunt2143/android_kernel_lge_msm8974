@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * viking.S: High speed Viking cache/mmu operations
  *
@@ -16,15 +13,9 @@
 #include <asm/asi.h>
 #include <asm/mxcc.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtsrmmu.h>
-#include <asm/viking.h>
-#include <asm/btfixup.h>
-=======
 #include <asm/pgtable.h>
 #include <asm/pgtsrmmu.h>
 #include <asm/viking.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 	.data
@@ -167,11 +158,7 @@ viking_flush_tlb_range:
 	cmp	%o3, -1
 	be	2f
 #endif
-<<<<<<< HEAD
-	sethi	%hi(~((1 << SRMMU_PGDIR_SHIFT) - 1)), %o4
-=======
 	sethi	%hi(~((1 << PGDIR_SHIFT) - 1)), %o4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sta	%o3, [%g1] ASI_M_MMUREGS
 	and	%o1, %o4, %o1
 	add	%o1, 0x200, %o1
@@ -257,11 +244,7 @@ sun4dsmp_flush_tlb_range:
 	ld	[%o0 + VMA_VM_MM], %o0
 	ld	[%o0 + AOFF_mm_context], %o3
 	lda	[%g1] ASI_M_MMUREGS, %g5
-<<<<<<< HEAD
-	sethi	%hi(~((1 << SRMMU_PGDIR_SHIFT) - 1)), %o4
-=======
 	sethi	%hi(~((1 << PGDIR_SHIFT) - 1)), %o4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sta	%o3, [%g1] ASI_M_MMUREGS
 	and	%o1, %o4, %o1
 	add	%o1, 0x200, %o1

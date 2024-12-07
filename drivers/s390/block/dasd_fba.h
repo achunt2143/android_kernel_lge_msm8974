@@ -1,30 +1,19 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_fba.h
- * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
- * Bugreports.to..: <Linux390@de.ibm.com>
- * (C) IBM Corporation, IBM Deutschland Entwicklung GmbH, 1999,2000
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
  * Bugreports.to..: <Linux390@de.ibm.com>
  * Copyright IBM Corp. 1999, 2000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
 #ifndef DASD_FBA_H
 #define DASD_FBA_H
 
-<<<<<<< HEAD
-=======
 /*
  * Maximum number of blocks to be chained
  */
 #define DASD_FBA_MAX_BLOCKS		96
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct DE_fba_data {
 	struct {
 		unsigned char perm:2;	/* Permissions on this extent */

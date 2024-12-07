@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008 IBM Corporation
  *
  * Author: Mimi Zohar <zohar@us.ibm.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- *
- * File: ima_api.c
- *	Implements must_measure, collect_measurement, store_measurement,
- *	and store_template.
- */
-#include <linux/module.h>
-#include <linux/slab.h>
-
-#include "ima.h"
-static const char *IMA_TEMPLATE_NAME = "ima";
-=======
  * File: ima_api.c
  *	Implements must_appraise_or_measure, collect_measurement,
  *	appraise_measurement, store_measurement and store_template.
@@ -101,7 +82,6 @@ out:
 	*entry = NULL;
 	return result;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ima_store_template - store ima template measurements
@@ -120,25 +100,6 @@ out:
  * Returns 0 on success, error code otherwise
  */
 int ima_store_template(struct ima_template_entry *entry,
-<<<<<<< HEAD
-		       int violation, struct inode *inode)
-{
-	const char *op = "add_template_measure";
-	const char *audit_cause = "hashing_error";
-	int result;
-
-	memset(entry->digest, 0, sizeof(entry->digest));
-	entry->template_name = IMA_TEMPLATE_NAME;
-	entry->template_len = sizeof(entry->template);
-
-	if (!violation) {
-		result = ima_calc_template_hash(entry->template_len,
-						&entry->template,
-						entry->digest);
-		if (result < 0) {
-			integrity_audit_msg(AUDIT_INTEGRITY_PCR, inode,
-					    entry->template_name, op,
-=======
 		       int violation, struct inode *inode,
 		       const unsigned char *filename, int pcr)
 {
@@ -153,17 +114,12 @@ int ima_store_template(struct ima_template_entry *entry,
 		if (result < 0) {
 			integrity_audit_msg(AUDIT_INTEGRITY_PCR, inode,
 					    template_name, op,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    audit_cause, result, 0);
 			return result;
 		}
 	}
-<<<<<<< HEAD
-	result = ima_add_template_entry(entry, violation, op, inode);
-=======
 	entry->pcr = pcr;
 	result = ima_add_template_entry(entry, violation, op, inode, filename);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -174,12 +130,6 @@ int ima_store_template(struct ima_template_entry *entry,
  * By extending the PCR with 0xFF's instead of with zeroes, the PCR
  * value is invalidated.
  */
-<<<<<<< HEAD
-void ima_add_violation(struct inode *inode, const unsigned char *filename,
-		       const char *op, const char *cause)
-{
-	struct ima_template_entry *entry;
-=======
 void ima_add_violation(struct file *file, const unsigned char *filename,
 		       struct ima_iint_cache *iint, const char *op,
 		       const char *cause)
@@ -190,25 +140,12 @@ void ima_add_violation(struct file *file, const unsigned char *filename,
 					     .file = file,
 					     .filename = filename,
 					     .violation = cause };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int violation = 1;
 	int result;
 
 	/* can overflow, only indicator */
 	atomic_long_inc(&ima_htable.violations);
 
-<<<<<<< HEAD
-	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
-	if (!entry) {
-		result = -ENOMEM;
-		goto err_out;
-	}
-	memset(&entry->template, 0, sizeof(entry->template));
-	strncpy(entry->template.file_name, filename, IMA_EVENT_NAME_LEN_MAX);
-	result = ima_store_template(entry, violation, inode);
-	if (result < 0)
-		kfree(entry);
-=======
 	result = ima_alloc_init_template(&event_data, &entry, NULL);
 	if (result < 0) {
 		result = -ENOMEM;
@@ -218,36 +155,12 @@ void ima_add_violation(struct file *file, const unsigned char *filename,
 				    filename, CONFIG_IMA_MEASURE_PCR_IDX);
 	if (result < 0)
 		ima_free_template_entry(entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	integrity_audit_msg(AUDIT_INTEGRITY_PCR, inode, filename,
 			    op, cause, result, 0);
 }
 
 /**
-<<<<<<< HEAD
- * ima_must_measure - measure decision based on policy.
- * @inode: pointer to inode to measure
- * @mask: contains the permission mask (MAY_READ, MAY_WRITE, MAY_EXECUTE)
- * @function: calling function (FILE_CHECK, BPRM_CHECK, FILE_MMAP)
- *
- * The policy is defined in terms of keypairs:
- * 		subj=, obj=, type=, func=, mask=, fsmagic=
- *	subj,obj, and type: are LSM specific.
- * 	func: FILE_CHECK | BPRM_CHECK | FILE_MMAP
- * 	mask: contains the permission mask
- *	fsmagic: hex value
- *
- * Return 0 to measure. For matching a DONT_MEASURE policy, no policy,
- * or other error, return an error code.
-*/
-int ima_must_measure(struct inode *inode, int mask, int function)
-{
-	int must_measure;
-
-	must_measure = ima_match_policy(inode, function, mask);
-	return must_measure ? 0 : -EACCES;
-=======
  * ima_get_action - appraise & measure decision based on policy.
  * @idmap: idmap of the mount the inode was found from
  * @inode: pointer to the inode associated with the object being validated
@@ -313,7 +226,6 @@ static bool ima_get_verity_digest(struct ima_iint_cache *iint,
 	hash->hdr.algo = alg;
 	hash->hdr.length = digest_len;
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -326,20 +238,6 @@ static bool ima_get_verity_digest(struct ima_iint_cache *iint,
  *
  * Return 0 on success, error code otherwise
  */
-<<<<<<< HEAD
-int ima_collect_measurement(struct integrity_iint_cache *iint,
-			    struct file *file)
-{
-	int result = -EEXIST;
-
-	if (!(iint->flags & IMA_MEASURED)) {
-		u64 i_version = file->f_dentry->d_inode->i_version;
-
-		memset(iint->digest, 0, IMA_DIGEST_SIZE);
-		result = ima_calc_hash(file, iint->digest);
-		if (!result)
-			iint->version = i_version;
-=======
 int ima_collect_measurement(struct ima_iint_cache *iint, struct file *file,
 			    void *buf, loff_t size, enum hash_algo algo,
 			    struct modsig *modsig)
@@ -422,7 +320,6 @@ out:
 		integrity_audit_msg(AUDIT_INTEGRITY_DATA, inode,
 				    filename, "collect_data", audit_cause,
 				    result, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return result;
 }
@@ -435,31 +332,13 @@ out:
  *
  * We only get here if the inode has not already been measured,
  * but the measurement could already exist:
-<<<<<<< HEAD
- * 	- multiple copies of the same file on either the same or
-=======
  *	- multiple copies of the same file on either the same or
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	  different filesystems.
  *	- the inode was previously flushed as well as the iint info,
  *	  containing the hashing info.
  *
  * Must be called with iint->mutex held.
  */
-<<<<<<< HEAD
-void ima_store_measurement(struct integrity_iint_cache *iint,
-			   struct file *file, const unsigned char *filename)
-{
-	const char *op = "add_template_measure";
-	const char *audit_cause = "ENOMEM";
-	int result = -ENOMEM;
-	struct inode *inode = file->f_dentry->d_inode;
-	struct ima_template_entry *entry;
-	int violation = 0;
-
-	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
-	if (!entry) {
-=======
 void ima_store_measurement(struct ima_iint_cache *iint, struct file *file,
 			   const unsigned char *filename,
 			   struct evm_ima_xattr_data *xattr_value,
@@ -490,22 +369,10 @@ void ima_store_measurement(struct ima_iint_cache *iint, struct file *file,
 
 	result = ima_alloc_init_template(&event_data, &entry, template_desc);
 	if (result < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		integrity_audit_msg(AUDIT_INTEGRITY_PCR, inode, filename,
 				    op, audit_cause, result, 0);
 		return;
 	}
-<<<<<<< HEAD
-	memset(&entry->template, 0, sizeof(entry->template));
-	memcpy(entry->template.digest, iint->digest, IMA_DIGEST_SIZE);
-	strncpy(entry->template.file_name, filename, IMA_EVENT_NAME_LEN_MAX);
-
-	result = ima_store_template(entry, violation, inode);
-	if (!result || result == -EEXIST)
-		iint->flags |= IMA_MEASURED;
-	if (result < 0)
-		kfree(entry);
-=======
 
 	result = ima_store_template(entry, violation, inode, filename, pcr);
 	if ((!result || result == -EEXIST) && !(file->f_flags & O_DIRECT)) {
@@ -583,5 +450,4 @@ const char *ima_d_path(const struct path *path, char **pathbuf, char *namebuf)
 	}
 
 	return pathname;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

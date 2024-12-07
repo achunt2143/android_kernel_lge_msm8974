@@ -1,38 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IBM ASM Service Processor Device Driver
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) IBM Corporation, 2004
  *
  * Author: Max Asböck <amax@us.ibm.com>
  *
  * This driver is based on code originally written by Pete Reynolds
  * and others.
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -72,11 +48,7 @@ module_param(ibmasm_debug, int , S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(ibmasm_debug, " Set debug mode on or off");
 
 
-<<<<<<< HEAD
-static int __devinit ibmasm_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
-=======
 static int ibmasm_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result;
 	struct service_processor *sp;
@@ -108,22 +80,14 @@ static int ibmasm_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	snprintf(sp->dirname, IBMASM_NAME_SIZE, "%d", sp->number);
 	snprintf(sp->devname, IBMASM_NAME_SIZE, "%s%d", DRIVER_NAME, sp->number);
 
-<<<<<<< HEAD
-	if (ibmasm_event_buffer_init(sp)) {
-=======
 	result = ibmasm_event_buffer_init(sp);
 	if (result) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(sp->dev, "Failed to allocate event buffer\n");
 		goto error_eventbuffer;
 	}
 
-<<<<<<< HEAD
-	if (ibmasm_heartbeat_init(sp)) {
-=======
 	result = ibmasm_heartbeat_init(sp);
 	if (result) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(sp->dev, "Failed to allocate heartbeat command\n");
 		goto error_heartbeat;
 	}
@@ -147,11 +111,7 @@ static int ibmasm_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	result = ibmasm_init_remote_input_dev(sp);
 	if (result) {
 		dev_err(sp->dev, "Failed to initialize remote queue\n");
-<<<<<<< HEAD
-		goto error_send_message;
-=======
 		goto error_init_remote;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	result = ibmasm_send_driver_vpd(sp);
@@ -171,14 +131,9 @@ static int ibmasm_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return 0;
 
 error_send_message:
-<<<<<<< HEAD
-	disable_sp_interrupts(sp->base_address);
-	ibmasm_free_remote_input_dev(sp);
-=======
 	ibmasm_free_remote_input_dev(sp);
 error_init_remote:
 	disable_sp_interrupts(sp->base_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_irq(sp->irq, (void *)sp);
 error_request_irq:
 	iounmap(sp->base_address);
@@ -187,10 +142,6 @@ error_ioremap:
 error_heartbeat:
 	ibmasm_event_buffer_exit(sp);
 error_eventbuffer:
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sp);
 error_kmalloc:
         pci_release_regions(pdev);
@@ -200,25 +151,15 @@ error_resources:
 	return result;
 }
 
-<<<<<<< HEAD
-static void __devexit ibmasm_remove_one(struct pci_dev *pdev)
-{
-	struct service_processor *sp = (struct service_processor *)pci_get_drvdata(pdev);
-=======
 static void ibmasm_remove_one(struct pci_dev *pdev)
 {
 	struct service_processor *sp = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg("Unregistering UART\n");
 	ibmasm_unregister_uart(sp);
 	dbg("Sending OS down message\n");
 	if (ibmasm_send_os_state(sp, SYSTEM_STATE_OS_DOWN))
-<<<<<<< HEAD
-		err("failed to get repsonse to 'Send OS State' command\n");
-=======
 		err("failed to get response to 'Send OS State' command\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg("Disabling heartbeats\n");
 	ibmasm_heartbeat_exit(sp);
 	dbg("Disabling interrupts\n");
@@ -229,10 +170,6 @@ static void ibmasm_remove_one(struct pci_dev *pdev)
 	ibmasm_free_remote_input_dev(sp);
 	iounmap(sp->base_address);
 	ibmasm_event_buffer_exit(sp);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sp);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
@@ -248,11 +185,7 @@ static struct pci_driver ibmasm_driver = {
 	.name		= DRIVER_NAME,
 	.id_table	= ibmasm_pci_table,
 	.probe		= ibmasm_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(ibmasm_remove_one),
-=======
 	.remove		= ibmasm_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __exit ibmasm_exit (void)

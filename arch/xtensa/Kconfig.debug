@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-menu "Kernel hacking"
-
-source "lib/Kconfig.debug"
-
-endmenu
-
-
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 config DEBUG_TLB_SANITY
@@ -55,4 +46,3 @@ config PRINT_USER_CODE_ON_UNHANDLED_EXCEPTION
 	  exception (starting at address aligned on 16 byte boundary).
 	  This may simplify finding faulting code in the absence of other
 	  debug facilities.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

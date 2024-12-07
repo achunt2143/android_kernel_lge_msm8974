@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/proc-fns.h
  *
  *  Copyright (C) 1997-1999 Russell King
  *  Copyright (C) 2000 Deep Blue Solutions Ltd
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_PROCFNS_H
 #define __ASM_PROCFNS_H
@@ -30,11 +20,7 @@ struct mm_struct;
 /*
  * Don't change this structure - ASM code relies on it.
  */
-<<<<<<< HEAD
-extern struct processor {
-=======
 struct processor {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* MISC
 	 * get data abort address/flags
 	 */
@@ -48,24 +34,17 @@ struct processor {
 	 */
 	void (*_proc_init)(void);
 	/*
-<<<<<<< HEAD
-=======
 	 * Check for processor bugs
 	 */
 	void (*check_bugs)(void);
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Disable any processor specifics
 	 */
 	void (*_proc_fin)(void);
 	/*
 	 * Special stuff for a reset
 	 */
-<<<<<<< HEAD
-	void (*reset)(unsigned long addr) __attribute__((noreturn));
-=======
 	void (*reset)(unsigned long addr, bool hvc) __attribute__((noreturn));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Idle the processor
 	 */
@@ -82,11 +61,7 @@ struct processor {
 	/*
 	 * Set the page table
 	 */
-<<<<<<< HEAD
-	void (*switch_mm)(unsigned long pgd_phys, struct mm_struct *mm);
-=======
 	void (*switch_mm)(phys_addr_t pgd_phys, struct mm_struct *mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Set a possibly extended PTE.  Non-extended PTEs should
 	 * ignore 'ext'.
@@ -101,11 +76,6 @@ struct processor {
 	unsigned int suspend_size;
 	void (*do_suspend)(void *);
 	void (*do_resume)(void *);
-<<<<<<< HEAD
-} processor;
-
-#ifndef MULTI_CPU
-=======
 };
 
 #ifndef MULTI_CPU
@@ -113,44 +83,22 @@ static inline void init_proc_vtable(const struct processor *p)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void cpu_proc_init(void);
 extern void cpu_proc_fin(void);
 extern int cpu_do_idle(void);
 extern void cpu_dcache_clean_area(void *, int);
-<<<<<<< HEAD
-extern void cpu_do_switch_mm(unsigned long pgd_phys, struct mm_struct *mm);
-=======
 extern void cpu_do_switch_mm(phys_addr_t pgd_phys, struct mm_struct *mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ARM_LPAE
 extern void cpu_set_pte_ext(pte_t *ptep, pte_t pte);
 #else
 extern void cpu_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext);
 #endif
-<<<<<<< HEAD
-extern void cpu_reset(unsigned long addr) __attribute__((noreturn));
-=======
 extern void cpu_reset(unsigned long addr, bool hvc) __attribute__((noreturn));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These three are private to arch/arm/kernel/suspend.c */
 extern void cpu_do_suspend(void *);
 extern void cpu_do_resume(void *);
 #else
-<<<<<<< HEAD
-#define cpu_proc_init			processor._proc_init
-#define cpu_proc_fin			processor._proc_fin
-#define cpu_reset			processor.reset
-#define cpu_do_idle			processor._do_idle
-#define cpu_dcache_clean_area		processor.dcache_clean_area
-#define cpu_set_pte_ext			processor.set_pte_ext
-#define cpu_do_switch_mm		processor.switch_mm
-
-/* These three are private to arch/arm/kernel/suspend.c */
-#define cpu_do_suspend			processor.do_suspend
-#define cpu_do_resume			processor.do_resume
-=======
 
 extern struct processor processor;
 #if defined(CONFIG_BIG_LITTLE) && defined(CONFIG_HARDEN_BRANCH_PREDICTOR)
@@ -195,30 +143,15 @@ static inline void init_proc_vtable(const struct processor *p)
 /* These two are private to arch/arm/kernel/suspend.c */
 #define cpu_do_suspend			PROC_VTABLE(do_suspend)
 #define cpu_do_resume			PROC_VTABLE(do_resume)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 extern void cpu_resume(void);
 
-<<<<<<< HEAD
-#include <asm/memory.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MMU
 
 #define cpu_switch_mm(pgd,mm) cpu_do_switch_mm(virt_to_phys(pgd),mm)
 
 #ifdef CONFIG_ARM_LPAE
-<<<<<<< HEAD
-#define cpu_get_pgd()	\
-	({						\
-		unsigned long pg, pg2;			\
-		__asm__("mrrc	p15, 0, %0, %1, c2"	\
-			: "=r" (pg), "=r" (pg2)		\
-			:				\
-			: "cc");			\
-=======
 
 #define cpu_get_ttbr(nr)					\
 	({							\
@@ -231,7 +164,6 @@ extern void cpu_resume(void);
 #define cpu_get_pgd()	\
 	({						\
 		u64 pg = cpu_get_ttbr(0);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pg &= ~(PTRS_PER_PGD*sizeof(pgd_t)-1);	\
 		(pgd_t *)phys_to_virt(pg);		\
 	})
@@ -246,13 +178,10 @@ extern void cpu_resume(void);
 	})
 #endif
 
-<<<<<<< HEAD
-=======
 #else	/*!CONFIG_MMU */
 
 #define cpu_switch_mm(pgd,mm)	{ }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __ASSEMBLY__ */

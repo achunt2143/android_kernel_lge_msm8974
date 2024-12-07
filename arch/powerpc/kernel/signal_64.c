@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PowerPC version 
  *    Copyright (C) 1995-1996 Gary Thomas (gdt@linuxppc.org)
@@ -9,14 +6,6 @@
  *  Derived from "arch/i386/kernel/signal.c"
  *    Copyright (C) 1991, 1992 Linus Torvalds
  *    1997-11-28  Modified for POSIX.1b signals by Richard Henderson
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -31,48 +20,28 @@
 #include <linux/elf.h>
 #include <linux/ptrace.h>
 #include <linux/ratelimit.h>
-<<<<<<< HEAD
-
-#include <asm/sigcontext.h>
-#include <asm/ucontext.h>
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/syscalls.h>
 #include <linux/pagemap.h>
 
 #include <asm/sigcontext.h>
 #include <asm/ucontext.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unistd.h>
 #include <asm/cacheflush.h>
 #include <asm/syscalls.h>
 #include <asm/vdso.h>
 #include <asm/switch_to.h>
-<<<<<<< HEAD
-
-#include "signal.h"
-
-#define DEBUG_SIG 0
-=======
 #include <asm/tm.h>
 #include <asm/asm-prototypes.h>
 
 #include "signal.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GP_REGS_SIZE	min(sizeof(elf_gregset_t), sizeof(struct pt_regs))
 #define FP_REGS_SIZE	sizeof(elf_fpregset_t)
 
-<<<<<<< HEAD
-#define TRAMP_TRACEBACK	3
-#define TRAMP_SIZE	6
-=======
 #define TRAMP_TRACEBACK	4
 #define TRAMP_SIZE	7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * When we have signals to deliver, we set up on the user stack,
@@ -85,27 +54,14 @@
 struct rt_sigframe {
 	/* sys_rt_sigreturn requires the ucontext be the first field */
 	struct ucontext uc;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
 	struct ucontext uc_transact;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long _unused[2];
 	unsigned int tramp[TRAMP_SIZE];
 	struct siginfo __user *pinfo;
 	void __user *puc;
 	struct siginfo info;
-<<<<<<< HEAD
-	/* 64 bit ABI allows for 288 bytes below sp before decrementing it. */
-	char abigap[288];
-} __attribute__ ((aligned (16)));
-
-static const char fmt32[] = KERN_INFO \
-	"%s[%d]: bad frame in %s: %08lx nip %08lx lr %08lx\n";
-static const char fmt64[] = KERN_INFO \
-	"%s[%d]: bad frame in %s: %016lx nip %016lx lr %016lx\n";
-=======
 	/* New 64 bit little-endian ABI allows redzone of 512 bytes below sp */
 	char abigap[USER_REDZONE_SIZE];
 } __attribute__ ((aligned (16)));
@@ -145,17 +101,11 @@ static void prepare_setup_sigcontext(struct task_struct *tsk)
 		flush_vsx_to_thread(tsk);
 #endif /* CONFIG_VSX */
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set up the sigcontext for the signal frame.
  */
 
-<<<<<<< HEAD
-static long setup_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs,
-		 int signr, sigset_t *set, unsigned long handler,
-		 int ctx_has_vsx_region)
-=======
 #define unsafe_setup_sigcontext(sc, tsk, signr, set, handler, ctx_has_vsx_region, label)\
 do {											\
 	if (__unsafe_setup_sigcontext(sc, tsk, signr, set, handler, ctx_has_vsx_region))\
@@ -164,34 +114,12 @@ do {											\
 static long notrace __unsafe_setup_sigcontext(struct sigcontext __user *sc,
 					struct task_struct *tsk, int signr, sigset_t *set,
 					unsigned long handler, int ctx_has_vsx_region)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* When CONFIG_ALTIVEC is set, we _always_ setup v_regs even if the
 	 * process never used altivec yet (MSR_VEC is zero in pt_regs of
 	 * the context). This is very important because we must ensure we
 	 * don't lose the VRSAVE content that may have been set prior to
 	 * the process doing its first vector operation
-<<<<<<< HEAD
-	 * Userland shall check AT_HWCAP to know wether it can rely on the
-	 * v_regs pointer or not
-	 */
-#ifdef CONFIG_ALTIVEC
-	elf_vrreg_t __user *v_regs = (elf_vrreg_t __user *)(((unsigned long)sc->vmx_reserve + 15) & ~0xful);
-#endif
-	unsigned long msr = regs->msr;
-	long err = 0;
-
-	flush_fp_to_thread(current);
-
-#ifdef CONFIG_ALTIVEC
-	err |= __put_user(v_regs, &sc->v_regs);
-
-	/* save altivec registers */
-	if (current->thread.used_vr) {
-		flush_altivec_to_thread(current);
-		/* Copy 33 vec registers (vr0..31 and vscr) to the stack */
-		err |= __copy_to_user(v_regs, current->thread.vr, 33 * sizeof(vector128));
-=======
 	 * Userland shall check AT_HWCAP to know whether it can rely on the
 	 * v_regs pointer or not
 	 */
@@ -213,7 +141,6 @@ static long notrace __unsafe_setup_sigcontext(struct sigcontext __user *sc,
 		/* Copy 33 vec registers (vr0..31 and vscr) to the stack */
 		unsafe_copy_to_user(v_regs, &tsk->thread.vr_state,
 				    33 * sizeof(vector128), efault_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set MSR_VEC in the MSR value in the frame to indicate that sc->v_reg)
 		 * contains valid data.
 		 */
@@ -222,22 +149,12 @@ static long notrace __unsafe_setup_sigcontext(struct sigcontext __user *sc,
 	/* We always copy to/from vrsave, it's 0 if we don't have or don't
 	 * use altivec.
 	 */
-<<<<<<< HEAD
-	err |= __put_user(current->thread.vrsave, (u32 __user *)&v_regs[33]);
-#else /* CONFIG_ALTIVEC */
-	err |= __put_user(0, &sc->v_regs);
-#endif /* CONFIG_ALTIVEC */
-	flush_fp_to_thread(current);
-	/* copy fpr regs and fpscr */
-	err |= copy_fpr_to_user(&sc->fp_regs, current);
-=======
 	unsafe_put_user(tsk->thread.vrsave, (u32 __user *)&v_regs[33], efault_out);
 #else /* CONFIG_ALTIVEC */
 	unsafe_put_user(0, &sc->v_regs, efault_out);
 #endif /* CONFIG_ALTIVEC */
 	/* copy fpr regs and fpscr */
 	unsafe_copy_fpr_to_user(&sc->fp_regs, tsk, efault_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Clear the MSR VSX bit to indicate there is no valid state attached
@@ -250,27 +167,15 @@ static long notrace __unsafe_setup_sigcontext(struct sigcontext __user *sc,
 	 * then out to userspace.  Update v_regs to point after the
 	 * VMX data.
 	 */
-<<<<<<< HEAD
-	if (current->thread.used_vsr && ctx_has_vsx_region) {
-		__giveup_vsx(current);
-		v_regs += ELF_NVRREG;
-		err |= copy_vsx_to_user(v_regs, current);
-=======
 	if (tsk->thread.used_vsr && ctx_has_vsx_region) {
 		v_regs += ELF_NVRREG;
 		unsafe_copy_vsx_to_user(v_regs, tsk, efault_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set MSR_VSX in the MSR value in the frame to
 		 * indicate that sc->vs_reg) contains valid data.
 		 */
 		msr |= MSR_VSX;
 	}
 #endif /* CONFIG_VSX */
-<<<<<<< HEAD
-	err |= __put_user(&sc->gp_regs, &sc->regs);
-	WARN_ON(!FULL_REGS(regs));
-	err |= __copy_to_user(&sc->gp_regs, regs, GP_REGS_SIZE);
-=======
 	unsafe_put_user(&sc->gp_regs, &sc->regs, efault_out);
 	unsafe_copy_to_user(&sc->gp_regs, regs, GP_REGS_SIZE, efault_out);
 	unsafe_put_user(msr, &sc->gp_regs[PT_MSR], efault_out);
@@ -412,7 +317,6 @@ static long setup_tm_sigcontexts(struct sigcontext __user *sc,
 	err |= __copy_to_user(&sc->gp_regs,
 			      &tsk->thread.ckpt_regs, GP_REGS_SIZE);
 	err |= __put_user(msr, &tm_sc->gp_regs[PT_MSR]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err |= __put_user(msr, &sc->gp_regs[PT_MSR]);
 	err |= __put_user(signr, &sc->signal);
 	err |= __put_user(handler, &sc->handler);
@@ -421,71 +325,35 @@ static long setup_tm_sigcontexts(struct sigcontext __user *sc,
 
 	return err;
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Restore the sigcontext from the signal frame.
  */
-<<<<<<< HEAD
-
-static long restore_sigcontext(struct pt_regs *regs, sigset_t *set, int sig,
-			      struct sigcontext __user *sc)
-=======
 #define unsafe_restore_sigcontext(tsk, set, sig, sc, label) do {	\
 	if (__unsafe_restore_sigcontext(tsk, set, sig, sc))		\
 		goto label;						\
 } while (0)
 static long notrace __unsafe_restore_sigcontext(struct task_struct *tsk, sigset_t *set,
 						int sig, struct sigcontext __user *sc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_ALTIVEC
 	elf_vrreg_t __user *v_regs;
 #endif
-<<<<<<< HEAD
-	unsigned long err = 0;
-	unsigned long save_r13 = 0;
-	unsigned long msr;
-=======
 	unsigned long save_r13 = 0;
 	unsigned long msr;
 	struct pt_regs *regs = tsk->thread.regs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_VSX
 	int i;
 #endif
 
-<<<<<<< HEAD
-=======
 	BUG_ON(tsk != current);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If this is not a signal return, we preserve the TLS in r13 */
 	if (!sig)
 		save_r13 = regs->gpr[13];
 
 	/* copy the GPRs */
-<<<<<<< HEAD
-	err |= __copy_from_user(regs->gpr, sc->gp_regs, sizeof(regs->gpr));
-	err |= __get_user(regs->nip, &sc->gp_regs[PT_NIP]);
-	/* get MSR separately, transfer the LE bit if doing signal return */
-	err |= __get_user(msr, &sc->gp_regs[PT_MSR]);
-	if (sig)
-		regs->msr = (regs->msr & ~MSR_LE) | (msr & MSR_LE);
-	err |= __get_user(regs->orig_gpr3, &sc->gp_regs[PT_ORIG_R3]);
-	err |= __get_user(regs->ctr, &sc->gp_regs[PT_CTR]);
-	err |= __get_user(regs->link, &sc->gp_regs[PT_LNK]);
-	err |= __get_user(regs->xer, &sc->gp_regs[PT_XER]);
-	err |= __get_user(regs->ccr, &sc->gp_regs[PT_CCR]);
-	/* skip SOFTE */
-	regs->trap = 0;
-	err |= __get_user(regs->dar, &sc->gp_regs[PT_DAR]);
-	err |= __get_user(regs->dsisr, &sc->gp_regs[PT_DSISR]);
-	err |= __get_user(regs->result, &sc->gp_regs[PT_RESULT]);
-=======
 	unsafe_copy_from_user(regs->gpr, sc->gp_regs, sizeof(regs->gpr), efault_out);
 	unsafe_get_user(regs->nip, &sc->gp_regs[PT_NIP], efault_out);
 	/* get MSR separately, transfer the LE bit if doing signal return */
@@ -502,51 +370,10 @@ static long notrace __unsafe_restore_sigcontext(struct task_struct *tsk, sigset_
 	unsafe_get_user(regs->dar, &sc->gp_regs[PT_DAR], efault_out);
 	unsafe_get_user(regs->dsisr, &sc->gp_regs[PT_DSISR], efault_out);
 	unsafe_get_user(regs->result, &sc->gp_regs[PT_RESULT], efault_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sig)
 		regs->gpr[13] = save_r13;
 	if (set != NULL)
-<<<<<<< HEAD
-		err |=  __get_user(set->sig[0], &sc->oldmask);
-
-	/*
-	 * Do this before updating the thread state in
-	 * current->thread.fpr/vr.  That way, if we get preempted
-	 * and another task grabs the FPU/Altivec, it won't be
-	 * tempted to save the current CPU state into the thread_struct
-	 * and corrupt what we are writing there.
-	 */
-	discard_lazy_cpu_state();
-
-	/*
-	 * Force reload of FP/VEC.
-	 * This has to be done before copying stuff into current->thread.fpr/vr
-	 * for the reasons explained in the previous comment.
-	 */
-	regs->msr &= ~(MSR_FP | MSR_FE0 | MSR_FE1 | MSR_VEC | MSR_VSX);
-
-#ifdef CONFIG_ALTIVEC
-	err |= __get_user(v_regs, &sc->v_regs);
-	if (err)
-		return err;
-	if (v_regs && !access_ok(VERIFY_READ, v_regs, 34 * sizeof(vector128)))
-		return -EFAULT;
-	/* Copy 33 vec registers (vr0..31 and vscr) from the stack */
-	if (v_regs != 0 && (msr & MSR_VEC) != 0)
-		err |= __copy_from_user(current->thread.vr, v_regs,
-					33 * sizeof(vector128));
-	else if (current->thread.used_vr)
-		memset(current->thread.vr, 0, 33 * sizeof(vector128));
-	/* Always get VRSAVE back */
-	if (v_regs != 0)
-		err |= __get_user(current->thread.vrsave, (u32 __user *)&v_regs[33]);
-	else
-		current->thread.vrsave = 0;
-#endif /* CONFIG_ALTIVEC */
-	/* restore floating point */
-	err |= copy_fpr_from_user(current, &sc->fp_regs);
-=======
 		unsafe_get_user(set->sig[0], &sc->oldmask, efault_out);
 
 	/*
@@ -581,7 +408,6 @@ static long notrace __unsafe_restore_sigcontext(struct task_struct *tsk, sigset_
 #endif /* CONFIG_ALTIVEC */
 	/* restore floating point */
 	unsafe_copy_fpr_from_user(tsk, &sc->fp_regs, efault_out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_VSX
 	/*
 	 * Get additional VSX data. Update v_regs to point after the
@@ -589,16 +415,6 @@ static long notrace __unsafe_restore_sigcontext(struct task_struct *tsk, sigset_
 	 * buffer for formatting, then into the taskstruct.
 	 */
 	v_regs += ELF_NVRREG;
-<<<<<<< HEAD
-	if ((msr & MSR_VSX) != 0)
-		err |= copy_vsx_from_user(current, v_regs);
-	else
-		for (i = 0; i < 32 ; i++)
-			current->thread.fpr[i][TS_VSRLOWOFFSET] = 0;
-#endif
-	return err;
-}
-=======
 	if ((msr & MSR_VSX) != 0) {
 		unsafe_copy_vsx_from_user(tsk, v_regs, efault_out);
 		tsk->thread.used_vsr = true;
@@ -801,7 +617,6 @@ static long restore_tm_sigcontexts(struct task_struct *tsk, struct sigcontext __
 	return -EINVAL;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Setup the trampoline code on the stack
@@ -811,21 +626,12 @@ static long setup_trampoline(unsigned int syscall, unsigned int __user *tramp)
 	int i;
 	long err = 0;
 
-<<<<<<< HEAD
-	/* addi r1, r1, __SIGNAL_FRAMESIZE  # Pop the dummy stackframe */
-	err |= __put_user(0x38210000UL | (__SIGNAL_FRAMESIZE & 0xffff), &tramp[0]);
-	/* li r0, __NR_[rt_]sigreturn| */
-	err |= __put_user(0x38000000UL | (syscall & 0xffff), &tramp[1]);
-	/* sc */
-	err |= __put_user(0x44000002UL, &tramp[2]);
-=======
 	/* Call the handler and pop the dummy stackframe*/
 	err |= __put_user(PPC_RAW_BCTRL(), &tramp[0]);
 	err |= __put_user(PPC_RAW_ADDI(_R1, _R1, __SIGNAL_FRAMESIZE), &tramp[1]);
 
 	err |= __put_user(PPC_RAW_LI(_R0, syscall), &tramp[2]);
 	err |= __put_user(PPC_RAW_SC(), &tramp[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Minimal traceback info */
 	for (i=TRAMP_TRACEBACK; i < TRAMP_SIZE ;i++)
@@ -848,17 +654,9 @@ static long setup_trampoline(unsigned int syscall, unsigned int __user *tramp)
 /*
  * Handle {get,set,swap}_context operations
  */
-<<<<<<< HEAD
-int sys_swapcontext(struct ucontext __user *old_ctx,
-		    struct ucontext __user *new_ctx,
-		    long ctx_size, long r6, long r7, long r8, struct pt_regs *regs)
-{
-	unsigned char tmp;
-=======
 SYSCALL_DEFINE3(swapcontext, struct ucontext __user *, old_ctx,
 		struct ucontext __user *, new_ctx, long, ctx_size)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sigset_t set;
 	unsigned long new_msr = 0;
 	int ctx_has_vsx_region = 0;
@@ -884,20 +682,6 @@ SYSCALL_DEFINE3(swapcontext, struct ucontext __user *, old_ctx,
 		ctx_has_vsx_region = 1;
 
 	if (old_ctx != NULL) {
-<<<<<<< HEAD
-		if (!access_ok(VERIFY_WRITE, old_ctx, ctx_size)
-		    || setup_sigcontext(&old_ctx->uc_mcontext, regs, 0, NULL, 0,
-					ctx_has_vsx_region)
-		    || __copy_to_user(&old_ctx->uc_sigmask,
-				      &current->blocked, sizeof(sigset_t)))
-			return -EFAULT;
-	}
-	if (new_ctx == NULL)
-		return 0;
-	if (!access_ok(VERIFY_READ, new_ctx, ctx_size)
-	    || __get_user(tmp, (u8 __user *) new_ctx)
-	    || __get_user(tmp, (u8 __user *) new_ctx + ctx_size - 1))
-=======
 		prepare_setup_sigcontext(current);
 		if (!user_write_access_begin(old_ctx, ctx_size))
 			return -EFAULT;
@@ -913,7 +697,6 @@ SYSCALL_DEFINE3(swapcontext, struct ucontext __user *, old_ctx,
 		return 0;
 	if (!access_ok(new_ctx, ctx_size) ||
 	    fault_in_readable((char __user *)new_ctx, ctx_size))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	/*
@@ -928,17 +711,6 @@ SYSCALL_DEFINE3(swapcontext, struct ucontext __user *, old_ctx,
 	 * We kill the task with a SIGSEGV in this situation.
 	 */
 
-<<<<<<< HEAD
-	if (__copy_from_user(&set, &new_ctx->uc_sigmask, sizeof(set)))
-		do_exit(SIGSEGV);
-	restore_sigmask(&set);
-	if (restore_sigcontext(regs, NULL, 0, &new_ctx->uc_mcontext))
-		do_exit(SIGSEGV);
-
-	/* This returns like rt_sigreturn */
-	set_thread_flag(TIF_RESTOREALL);
-	return 0;
-=======
 	if (__get_user_sigset(&set, &new_ctx->uc_sigmask)) {
 		force_exit_sig(SIGSEGV);
 		return -EFAULT;
@@ -962,7 +734,6 @@ SYSCALL_DEFINE3(swapcontext, struct ucontext __user *, old_ctx,
 efault_out:
 	user_write_access_end();
 	return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -970,91 +741,6 @@ efault_out:
  * Do a signal return; undo the signal stack.
  */
 
-<<<<<<< HEAD
-int sys_rt_sigreturn(unsigned long r3, unsigned long r4, unsigned long r5,
-		     unsigned long r6, unsigned long r7, unsigned long r8,
-		     struct pt_regs *regs)
-{
-	struct ucontext __user *uc = (struct ucontext __user *)regs->gpr[1];
-	sigset_t set;
-
-	/* Always make any pending restarted system calls return -EINTR */
-	current_thread_info()->restart_block.fn = do_no_restart_syscall;
-
-	if (!access_ok(VERIFY_READ, uc, sizeof(*uc)))
-		goto badframe;
-
-	if (__copy_from_user(&set, &uc->uc_sigmask, sizeof(set)))
-		goto badframe;
-	restore_sigmask(&set);
-	if (restore_sigcontext(regs, NULL, 1, &uc->uc_mcontext))
-		goto badframe;
-
-	/* do_sigaltstack expects a __user pointer and won't modify
-	 * what's in there anyway
-	 */
-	do_sigaltstack(&uc->uc_stack, NULL, regs->gpr[1]);
-
-	set_thread_flag(TIF_RESTOREALL);
-	return 0;
-
-badframe:
-#if DEBUG_SIG
-	printk("badframe in sys_rt_sigreturn, regs=%p uc=%p &uc->uc_mcontext=%p\n",
-	       regs, uc, &uc->uc_mcontext);
-#endif
-	if (show_unhandled_signals)
-		printk_ratelimited(regs->msr & MSR_64BIT ? fmt64 : fmt32,
-				   current->comm, current->pid, "rt_sigreturn",
-				   (long)uc, regs->nip, regs->link);
-
-	force_sig(SIGSEGV, current);
-	return 0;
-}
-
-int handle_rt_signal64(int signr, struct k_sigaction *ka, siginfo_t *info,
-		sigset_t *set, struct pt_regs *regs)
-{
-	/* Handler is *really* a pointer to the function descriptor for
-	 * the signal routine.  The first entry in the function
-	 * descriptor is the entry address of signal and the second
-	 * entry is the TOC value we need to use.
-	 */
-	func_descr_t __user *funct_desc_ptr;
-	struct rt_sigframe __user *frame;
-	unsigned long newsp = 0;
-	long err = 0;
-
-	frame = get_sigframe(ka, regs, sizeof(*frame), 0);
-	if (unlikely(frame == NULL))
-		goto badframe;
-
-	err |= __put_user(&frame->info, &frame->pinfo);
-	err |= __put_user(&frame->uc, &frame->puc);
-	err |= copy_siginfo_to_user(&frame->info, info);
-	if (err)
-		goto badframe;
-
-	/* Create the ucontext.  */
-	err |= __put_user(0, &frame->uc.uc_flags);
-	err |= __put_user(0, &frame->uc.uc_link);
-	err |= __put_user(current->sas_ss_sp, &frame->uc.uc_stack.ss_sp);
-	err |= __put_user(sas_ss_flags(regs->gpr[1]),
-			  &frame->uc.uc_stack.ss_flags);
-	err |= __put_user(current->sas_ss_size, &frame->uc.uc_stack.ss_size);
-	err |= setup_sigcontext(&frame->uc.uc_mcontext, regs, signr, NULL,
-				(unsigned long)ka->sa.sa_handler, 1);
-	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
-	if (err)
-		goto badframe;
-
-	/* Make sure signal handler doesn't get spurious FP exceptions */
-	current->thread.fpscr.val = 0;
-
-	/* Set up to return from userspace. */
-	if (vdso64_rt_sigtramp && current->mm->context.vdso_base) {
-		regs->link = current->mm->context.vdso_base + vdso64_rt_sigtramp;
-=======
 SYSCALL_DEFINE0(rt_sigreturn)
 {
 	struct pt_regs *regs = current_pt_regs();
@@ -1237,37 +923,18 @@ int handle_rt_signal64(struct ksignal *ksig, sigset_t *set,
 	/* Set up to return from userspace. */
 	if (tsk->mm->context.vdso) {
 		regs_set_return_ip(regs, VDSO64_SYMBOL(tsk->mm->context.vdso, sigtramp_rt64));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		err |= setup_trampoline(__NR_rt_sigreturn, &frame->tramp[0]);
 		if (err)
 			goto badframe;
-<<<<<<< HEAD
-		regs->link = (unsigned long) &frame->tramp[0];
-	}
-	funct_desc_ptr = (func_descr_t __user *) ka->sa.sa_handler;
-=======
 		regs_set_return_ip(regs, (unsigned long) &frame->tramp[0]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate a dummy caller frame for the signal handler. */
 	newsp = ((unsigned long)frame) - __SIGNAL_FRAMESIZE;
 	err |= put_user(regs->gpr[1], (unsigned long __user *)newsp);
 
 	/* Set up "regs" so we "return" to the signal handler. */
-<<<<<<< HEAD
-	err |= get_user(regs->nip, &funct_desc_ptr->entry);
-	/* enter the signal handler in big-endian mode */
-	regs->msr &= ~MSR_LE;
-	regs->gpr[1] = newsp;
-	err |= get_user(regs->gpr[2], &funct_desc_ptr->toc);
-	regs->gpr[3] = signr;
-	regs->result = 0;
-	if (ka->sa.sa_flags & SA_SIGINFO) {
-		err |= get_user(regs->gpr[4], (unsigned long __user *)&frame->pinfo);
-		err |= get_user(regs->gpr[5], (unsigned long __user *)&frame->puc);
-=======
 	if (is_elf2_task()) {
 		regs->ctr = (unsigned long) ksig->ka.sa.sa_handler;
 		regs->gpr[12] = regs->ctr;
@@ -1292,7 +959,6 @@ int handle_rt_signal64(struct ksignal *ksig, sigset_t *set,
 	if (ksig->ka.sa.sa_flags & SA_SIGINFO) {
 		regs->gpr[4] = (unsigned long)&frame->info;
 		regs->gpr[5] = (unsigned long)&frame->uc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regs->gpr[6] = (unsigned long) frame;
 	} else {
 		regs->gpr[4] = (unsigned long)&frame->uc.uc_mcontext;
@@ -1300,22 +966,6 @@ int handle_rt_signal64(struct ksignal *ksig, sigset_t *set,
 	if (err)
 		goto badframe;
 
-<<<<<<< HEAD
-	return 1;
-
-badframe:
-#if DEBUG_SIG
-	printk("badframe in setup_rt_frame, regs=%p frame=%p newsp=%lx\n",
-	       regs, frame, newsp);
-#endif
-	if (show_unhandled_signals)
-		printk_ratelimited(regs->msr & MSR_64BIT ? fmt64 : fmt32,
-				   current->comm, current->pid, "setup_rt_frame",
-				   (long)frame, regs->nip, regs->link);
-
-	force_sigsegv(signr, current);
-	return 0;
-=======
 	return 0;
 
 badframe_block:
@@ -1324,5 +974,4 @@ badframe:
 	signal_fault(current, regs, "handle_rt_signal64", frame);
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

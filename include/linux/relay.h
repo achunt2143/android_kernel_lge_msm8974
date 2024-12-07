@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/relay.h
  *
@@ -19,21 +16,12 @@
 #include <linux/timer.h>
 #include <linux/wait.h>
 #include <linux/list.h>
-<<<<<<< HEAD
-=======
 #include <linux/irq_work.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bug.h>
 #include <linux/fs.h>
 #include <linux/poll.h>
 #include <linux/kref.h>
-<<<<<<< HEAD
-
-/* Needs a _much_ better name... */
-#define FIX_SIZE(x) ((((x) - 1) & PAGE_MASK) + PAGE_SIZE)
-=======
 #include <linux/percpu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tracks changes to rchan/rchan_buf structs
@@ -52,11 +40,7 @@ struct rchan_buf
 	size_t subbufs_consumed;	/* count of sub-buffers consumed */
 	struct rchan *chan;		/* associated channel */
 	wait_queue_head_t read_wait;	/* reader wait queue */
-<<<<<<< HEAD
-	struct timer_list timer; 	/* reader wake-up timer */
-=======
 	struct irq_work wakeup_work;	/* reader wakeup */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dentry *dentry;		/* channel file dentry */
 	struct kref kref;		/* channel buffer refcount */
 	struct page **page_array;	/* array of current buffer pages */
@@ -78,19 +62,11 @@ struct rchan
 	size_t subbuf_size;		/* sub-buffer size */
 	size_t n_subbufs;		/* number of sub-buffers per buffer */
 	size_t alloc_size;		/* total buffer size allocated */
-<<<<<<< HEAD
-	struct rchan_callbacks *cb;	/* client callbacks */
-	struct kref kref;		/* channel refcount */
-	void *private_data;		/* for user-defined data */
-	size_t last_toobig;		/* tried to log event > subbuf size */
-	struct rchan_buf *buf[NR_CPUS]; /* per-cpu channel buffers */
-=======
 	const struct rchan_callbacks *cb; /* client callbacks */
 	struct kref kref;		/* channel refcount */
 	void *private_data;		/* for user-defined data */
 	size_t last_toobig;		/* tried to log event > subbuf size */
 	struct rchan_buf * __percpu *buf; /* per-cpu channel buffers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int is_global;			/* One global buffer ? */
 	struct list_head list;		/* for channel list */
 	struct dentry *parent;		/* parent dentry passed to open */
@@ -113,11 +89,8 @@ struct rchan_callbacks
 	 * The client should return 1 to continue logging, 0 to stop
 	 * logging.
 	 *
-<<<<<<< HEAD
-=======
 	 * This callback is optional.
 	 *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * NOTE: subbuf_start will also be invoked when the buffer is
 	 *       created, so that the first sub-buffer can be initialized
 	 *       if necessary.  In this case, prev_subbuf will be NULL.
@@ -131,28 +104,6 @@ struct rchan_callbacks
 			     size_t prev_padding);
 
 	/*
-<<<<<<< HEAD
-	 * buf_mapped - relay buffer mmap notification
-	 * @buf: the channel buffer
-	 * @filp: relay file pointer
-	 *
-	 * Called when a relay file is successfully mmapped
-	 */
-        void (*buf_mapped)(struct rchan_buf *buf,
-			   struct file *filp);
-
-	/*
-	 * buf_unmapped - relay buffer unmap notification
-	 * @buf: the channel buffer
-	 * @filp: relay file pointer
-	 *
-	 * Called when a relay file is successfully unmapped
-	 */
-        void (*buf_unmapped)(struct rchan_buf *buf,
-			     struct file *filp);
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * create_buf_file - create file to represent a relay channel buffer
 	 * @filename: the name of the file to create
 	 * @parent: the parent of the file to create
@@ -173,13 +124,9 @@ struct rchan_callbacks
 	 * cause relay_open() to create a single global buffer rather
 	 * than the default set of per-cpu buffers.
 	 *
-<<<<<<< HEAD
-	 * See Documentation/filesystems/relay.txt for more info.
-=======
 	 * This callback is mandatory.
 	 *
 	 * See Documentation/filesystems/relay.rst for more info.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	struct dentry *(*create_buf_file)(const char *filename,
 					  struct dentry *parent,
@@ -196,11 +143,8 @@ struct rchan_callbacks
 	 * channel buffer.
 	 *
 	 * The callback should return 0 if successful, negative if not.
-<<<<<<< HEAD
-=======
 	 *
 	 * This callback is mandatory.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	int (*remove_buf_file)(struct dentry *dentry);
 };
@@ -213,11 +157,7 @@ struct rchan *relay_open(const char *base_filename,
 			 struct dentry *parent,
 			 size_t subbuf_size,
 			 size_t n_subbufs,
-<<<<<<< HEAD
-			 struct rchan_callbacks *cb,
-=======
 			 const struct rchan_callbacks *cb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 void *private_data);
 extern int relay_late_setup_files(struct rchan *chan,
 				  const char *base_filename,
@@ -254,11 +194,7 @@ static inline void relay_write(struct rchan *chan,
 	struct rchan_buf *buf;
 
 	local_irq_save(flags);
-<<<<<<< HEAD
-	buf = chan->buf[smp_processor_id()];
-=======
 	buf = *this_cpu_ptr(chan->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(buf->offset + length > chan->subbuf_size))
 		length = relay_switch_subbuf(buf, length);
 	memcpy(buf->data + buf->offset, data, length);
@@ -284,20 +220,12 @@ static inline void __relay_write(struct rchan *chan,
 {
 	struct rchan_buf *buf;
 
-<<<<<<< HEAD
-	buf = chan->buf[get_cpu()];
-=======
 	buf = *get_cpu_ptr(chan->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(buf->offset + length > buf->chan->subbuf_size))
 		length = relay_switch_subbuf(buf, length);
 	memcpy(buf->data + buf->offset, data, length);
 	buf->offset += length;
-<<<<<<< HEAD
-	put_cpu();
-=======
 	put_cpu_ptr(chan->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -313,31 +241,19 @@ static inline void __relay_write(struct rchan *chan,
  */
 static inline void *relay_reserve(struct rchan *chan, size_t length)
 {
-<<<<<<< HEAD
-	void *reserved;
-	struct rchan_buf *buf = chan->buf[smp_processor_id()];
-=======
 	void *reserved = NULL;
 	struct rchan_buf *buf = *get_cpu_ptr(chan->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(buf->offset + length > buf->chan->subbuf_size)) {
 		length = relay_switch_subbuf(buf, length);
 		if (!length)
-<<<<<<< HEAD
-			return NULL;
-=======
 			goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	reserved = buf->data + buf->offset;
 	buf->offset += length;
 
-<<<<<<< HEAD
-=======
 end:
 	put_cpu_ptr(chan->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return reserved;
 }
 
@@ -361,14 +277,11 @@ static inline void subbuf_start_reserve(struct rchan_buf *buf,
  */
 extern const struct file_operations relay_file_operations;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RELAY
 int relay_prepare_cpu(unsigned int cpu);
 #else
 #define relay_prepare_cpu     NULL
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_RELAY_H */
 

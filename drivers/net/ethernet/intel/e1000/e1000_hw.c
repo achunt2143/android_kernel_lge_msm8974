@@ -1,44 +1,11 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel PRO/1000 Linux driver
-  Copyright(c) 1999 - 2006 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  Linux NICS <linux.nics@intel.com>
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 1999 - 2006 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* e1000_hw.c
  * Shared functions for accessing and configuring the MAC
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/bitfield.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "e1000.h"
 
 static s32 e1000_check_downshift(struct e1000_hw *hw);
@@ -115,12 +82,8 @@ u16 e1000_igp_cable_length_table[IGP01E1000_AGC_LENGTH_TABLE_SIZE] = {
 	    120, 120
 };
 
-<<<<<<< HEAD
-static DEFINE_SPINLOCK(e1000_eeprom_lock);
-=======
 static DEFINE_MUTEX(e1000_eeprom_lock);
 static DEFINE_SPINLOCK(e1000_phy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * e1000_set_phy_type - Set the phy type member in the hw struct.
@@ -128,11 +91,6 @@ static DEFINE_SPINLOCK(e1000_phy_lock);
  */
 static s32 e1000_set_phy_type(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	e_dbg("e1000_set_phy_type");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->mac_type == e1000_undefined)
 		return -E1000_ERR_PHY_TYPE;
 
@@ -172,19 +130,6 @@ static s32 e1000_set_phy_type(struct e1000_hw *hw)
  */
 static void e1000_phy_init_script(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	u32 ret_val;
-	u16 phy_saved_data;
-
-	e_dbg("e1000_phy_init_script");
-
-	if (hw->phy_init_script) {
-		msleep(20);
-
-		/* Save off the current value of register 0x2F5B to be restored at
-		 * the end of this routine. */
-		ret_val = e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
-=======
 	u16 phy_saved_data;
 
 	if (hw->phy_init_script) {
@@ -194,7 +139,6 @@ static void e1000_phy_init_script(struct e1000_hw *hw)
 		 * at the end of this routine.
 		 */
 		e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Disabled the PHY transmitter */
 		e1000_write_phy_reg(hw, 0x2F5B, 0x0003);
@@ -280,11 +224,6 @@ static void e1000_phy_init_script(struct e1000_hw *hw)
  */
 s32 e1000_set_mac_type(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	e_dbg("e1000_set_mac_type");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->device_id) {
 	case E1000_DEV_ID_82542:
 		switch (hw->revision_id) {
@@ -395,11 +334,6 @@ void e1000_set_media_type(struct e1000_hw *hw)
 {
 	u32 status;
 
-<<<<<<< HEAD
-	e_dbg("e1000_set_media_type");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->mac_type != e1000_82543) {
 		/* tbi_compatibility is only valid on 82543 */
 		hw->tbi_compatibility_en = false;
@@ -434,11 +368,7 @@ void e1000_set_media_type(struct e1000_hw *hw)
 }
 
 /**
-<<<<<<< HEAD
- * e1000_reset_hw: reset the hardware completely
-=======
  * e1000_reset_hw - reset the hardware completely
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @hw: Struct containing variables accessed by shared code
  *
  * Reset the transmit and receive units; mask and clear all interrupts.
@@ -447,19 +377,10 @@ s32 e1000_reset_hw(struct e1000_hw *hw)
 {
 	u32 ctrl;
 	u32 ctrl_ext;
-<<<<<<< HEAD
-	u32 icr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 manc;
 	u32 led_ctrl;
 	s32 ret_val;
 
-<<<<<<< HEAD
-	e_dbg("e1000_reset_hw");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* For 82542 (rev 2.0), disable MWI before issuing a device reset */
 	if (hw->mac_type == e1000_82542_rev2_0) {
 		e_dbg("Disabling MWI on 82542 rev 2.0\n");
@@ -510,12 +431,8 @@ s32 e1000_reset_hw(struct e1000_hw *hw)
 	case e1000_82541:
 	case e1000_82541_rev_2:
 		/* These controllers can't ack the 64-bit write when issuing the
-<<<<<<< HEAD
-		 * reset, so use IO-mapping as a workaround to issue the reset */
-=======
 		 * reset, so use IO-mapping as a workaround to issue the reset
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		E1000_WRITE_REG_IO(hw, CTRL, (ctrl | E1000_CTRL_RST));
 		break;
 	case e1000_82545_rev_3:
@@ -529,15 +446,9 @@ s32 e1000_reset_hw(struct e1000_hw *hw)
 		break;
 	}
 
-<<<<<<< HEAD
-	/* After MAC reset, force reload of EEPROM to restore power-on settings to
-	 * device.  Later controllers reload the EEPROM automatically, so just wait
-	 * for reload to complete.
-=======
 	/* After MAC reset, force reload of EEPROM to restore power-on settings
 	 * to device.  Later controllers reload the EEPROM automatically, so
 	 * just wait for reload to complete.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	switch (hw->mac_type) {
 	case e1000_82542_rev2_0:
@@ -590,11 +501,7 @@ s32 e1000_reset_hw(struct e1000_hw *hw)
 	ew32(IMC, 0xffffffff);
 
 	/* Clear any pending interrupt events. */
-<<<<<<< HEAD
-	icr = er32(ICR);
-=======
 	er32(ICR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If MWI was previously enabled, reenable it. */
 	if (hw->mac_type == e1000_82542_rev2_0) {
@@ -606,11 +513,7 @@ s32 e1000_reset_hw(struct e1000_hw *hw)
 }
 
 /**
-<<<<<<< HEAD
- * e1000_init_hw: Performs basic configuration of the adapter.
-=======
  * e1000_init_hw - Performs basic configuration of the adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @hw: Struct containing variables accessed by shared code
  *
  * Assumes that the controller has previously been reset and is in a
@@ -627,11 +530,6 @@ s32 e1000_init_hw(struct e1000_hw *hw)
 	u32 mta_size;
 	u32 ctrl_ext;
 
-<<<<<<< HEAD
-	e_dbg("e1000_init_hw");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize Identification LED */
 	ret_val = e1000_id_led_init(hw);
 	if (ret_val) {
@@ -657,13 +555,8 @@ s32 e1000_init_hw(struct e1000_hw *hw)
 		msleep(5);
 	}
 
-<<<<<<< HEAD
-	/* Setup the receive address. This involves initializing all of the Receive
-	 * Address Registers (RARs 0 - 15).
-=======
 	/* Setup the receive address. This involves initializing all of the
 	 * Receive Address Registers (RARs 0 - 15).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	e1000_init_rx_addrs(hw);
 
@@ -682,12 +575,8 @@ s32 e1000_init_hw(struct e1000_hw *hw)
 	for (i = 0; i < mta_size; i++) {
 		E1000_WRITE_REG_ARRAY(hw, MTA, i, 0);
 		/* use write flush to prevent Memory Write Block (MWB) from
-<<<<<<< HEAD
-		 * occurring when accessing our register space */
-=======
 		 * occurring when accessing our register space
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		E1000_WRITE_FLUSH();
 	}
 
@@ -706,17 +595,11 @@ s32 e1000_init_hw(struct e1000_hw *hw)
 	case e1000_82546_rev_3:
 		break;
 	default:
-<<<<<<< HEAD
-		/* Workaround for PCI-X problem when BIOS sets MMRBC incorrectly. */
-		if (hw->bus_type == e1000_bus_type_pcix
-		    && e1000_pcix_get_mmrbc(hw) > 2048)
-=======
 		/* Workaround for PCI-X problem when BIOS sets MMRBC
 		 * incorrectly.
 		 */
 		if (hw->bus_type == e1000_bus_type_pcix &&
 		    e1000_pcix_get_mmrbc(hw) > 2048)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e1000_pcix_set_mmrbc(hw, 2048);
 		break;
 	}
@@ -744,12 +627,8 @@ s32 e1000_init_hw(struct e1000_hw *hw)
 	    hw->device_id == E1000_DEV_ID_82546GB_QUAD_COPPER_KSP3) {
 		ctrl_ext = er32(CTRL_EXT);
 		/* Relaxed ordering must be disabled to avoid a parity
-<<<<<<< HEAD
-		 * error crash in a PCI slot. */
-=======
 		 * error crash in a PCI slot.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctrl_ext |= E1000_CTRL_EXT_RO_DIS;
 		ew32(CTRL_EXT, ctrl_ext);
 	}
@@ -766,11 +645,6 @@ static s32 e1000_adjust_serdes_amplitude(struct e1000_hw *hw)
 	u16 eeprom_data;
 	s32 ret_val;
 
-<<<<<<< HEAD
-	e_dbg("e1000_adjust_serdes_amplitude");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->media_type != e1000_media_type_internal_serdes)
 		return E1000_SUCCESS;
 
@@ -783,16 +657,9 @@ static s32 e1000_adjust_serdes_amplitude(struct e1000_hw *hw)
 	}
 
 	ret_val = e1000_read_eeprom(hw, EEPROM_SERDES_AMPLITUDE, 1,
-<<<<<<< HEAD
-	                            &eeprom_data);
-	if (ret_val) {
-		return ret_val;
-	}
-=======
 				    &eeprom_data);
 	if (ret_val)
 		return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (eeprom_data != EEPROM_RESERVED_WORD) {
 		/* Adjust SERDES output amplitude only. */
@@ -822,11 +689,6 @@ s32 e1000_setup_link(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 eeprom_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_setup_link");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read and store word 0x0F of the EEPROM. This word contains bits
 	 * that determine the hardware's default PAUSE (flow control) mode,
 	 * a bit that determines whether the HW defaults to enabling or
@@ -911,14 +773,9 @@ s32 e1000_setup_link(struct e1000_hw *hw)
 		ew32(FCRTL, 0);
 		ew32(FCRTH, 0);
 	} else {
-<<<<<<< HEAD
-		/* We need to set up the Receive Threshold high and low water marks
-		 * as well as (optionally) enabling the transmission of XON frames.
-=======
 		/* We need to set up the Receive Threshold high and low water
 		 * marks as well as (optionally) enabling the transmission of
 		 * XON frames.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (hw->fc_send_xon) {
 			ew32(FCRTL, (hw->fc_low_water | E1000_FCRTL_XONE));
@@ -948,11 +805,6 @@ static s32 e1000_setup_fiber_serdes_link(struct e1000_hw *hw)
 	u32 signal = 0;
 	s32 ret_val;
 
-<<<<<<< HEAD
-	e_dbg("e1000_setup_fiber_serdes_link");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* On adapters with a MAC newer than 82544, SWDP 1 will be
 	 * set when the optics detect a signal. On older adapters, it will be
 	 * cleared when there is a signal.  This applies to fiber media only.
@@ -978,33 +830,6 @@ static s32 e1000_setup_fiber_serdes_link(struct e1000_hw *hw)
 	e1000_config_collision_dist(hw);
 
 	/* Check for a software override of the flow control settings, and setup
-<<<<<<< HEAD
-	 * the device accordingly.  If auto-negotiation is enabled, then software
-	 * will have to set the "PAUSE" bits to the correct value in the Tranmsit
-	 * Config Word Register (TXCW) and re-start auto-negotiation.  However, if
-	 * auto-negotiation is disabled, then software will have to manually
-	 * configure the two flow control enable bits in the CTRL register.
-	 *
-	 * The possible values of the "fc" parameter are:
-	 *      0:  Flow control is completely disabled
-	 *      1:  Rx flow control is enabled (we can receive pause frames, but
-	 *          not send pause frames).
-	 *      2:  Tx flow control is enabled (we can send pause frames but we do
-	 *          not support receiving pause frames).
-	 *      3:  Both Rx and TX flow control (symmetric) are enabled.
-	 */
-	switch (hw->fc) {
-	case E1000_FC_NONE:
-		/* Flow control is completely disabled by a software over-ride. */
-		txcw = (E1000_TXCW_ANE | E1000_TXCW_FD);
-		break;
-	case E1000_FC_RX_PAUSE:
-		/* RX Flow control is enabled and TX Flow control is disabled by a
-		 * software over-ride. Since there really isn't a way to advertise
-		 * that we are capable of RX Pause ONLY, we will advertise that we
-		 * support both symmetric and asymmetric RX PAUSE. Later, we will
-		 *  disable the adapter's ability to send PAUSE frames.
-=======
 	 * the device accordingly.  If auto-negotiation is enabled, then
 	 * software will have to set the "PAUSE" bits to the correct value in
 	 * the Tranmsit Config Word Register (TXCW) and re-start
@@ -1032,44 +857,24 @@ static s32 e1000_setup_fiber_serdes_link(struct e1000_hw *hw)
 		 * advertise that we support both symmetric and asymmetric Rx
 		 * PAUSE. Later, we will disable the adapter's ability to send
 		 * PAUSE frames.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		txcw = (E1000_TXCW_ANE | E1000_TXCW_FD | E1000_TXCW_PAUSE_MASK);
 		break;
 	case E1000_FC_TX_PAUSE:
-<<<<<<< HEAD
-		/* TX Flow control is enabled, and RX Flow control is disabled, by a
-		 * software over-ride.
-=======
 		/* Tx Flow control is enabled, and Rx Flow control is disabled,
 		 * by a software over-ride.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		txcw = (E1000_TXCW_ANE | E1000_TXCW_FD | E1000_TXCW_ASM_DIR);
 		break;
 	case E1000_FC_FULL:
-<<<<<<< HEAD
-		/* Flow control (both RX and TX) is enabled by a software over-ride. */
-=======
 		/* Flow control (both Rx and Tx) is enabled by a software
 		 * over-ride.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		txcw = (E1000_TXCW_ANE | E1000_TXCW_FD | E1000_TXCW_PAUSE_MASK);
 		break;
 	default:
 		e_dbg("Flow control param set incorrectly\n");
 		return -E1000_ERR_CONFIG;
-<<<<<<< HEAD
-		break;
-	}
-
-	/* Since auto-negotiation is enabled, take the link out of reset (the link
-	 * will be in reset, because we previously reset the chip). This will
-	 * restart auto-negotiation.  If auto-negotiation is successful then the
-	 * link-up status bit will be set and the flow control enable bits (RFCE
-	 * and TFCE) will be set according to their negotiated value.
-=======
 	}
 
 	/* Since auto-negotiation is enabled, take the link out of reset (the
@@ -1077,7 +882,6 @@ static s32 e1000_setup_fiber_serdes_link(struct e1000_hw *hw)
 	 * will restart auto-negotiation.  If auto-negotiation is successful
 	 * then the link-up status bit will be set and the flow control enable
 	 * bits (RFCE and TFCE) will be set according to their negotiated value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	e_dbg("Auto-negotiation enabled\n");
 
@@ -1088,20 +892,12 @@ static s32 e1000_setup_fiber_serdes_link(struct e1000_hw *hw)
 	hw->txcw = txcw;
 	msleep(1);
 
-<<<<<<< HEAD
-	/* If we have a signal (the cable is plugged in) then poll for a "Link-Up"
-	 * indication in the Device Status Register.  Time-out if a link isn't
-	 * seen in 500 milliseconds seconds (Auto-negotiation should complete in
-	 * less than 500 milliseconds even if the other end is doing it in SW).
-	 * For internal serdes, we just assume a signal is present, then poll.
-=======
 	/* If we have a signal (the cable is plugged in) then poll for a
 	 * "Link-Up" indication in the Device Status Register.  Time-out if a
 	 * link isn't seen in 500 milliseconds seconds (Auto-negotiation should
 	 * complete in less than 500 milliseconds even if the other end is doing
 	 * it in SW). For internal serdes, we just assume a signal is present,
 	 * then poll.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (hw->media_type == e1000_media_type_internal_serdes ||
 	    (er32(CTRL) & E1000_CTRL_SWDPIN1) == signal) {
@@ -1116,15 +912,9 @@ static s32 e1000_setup_fiber_serdes_link(struct e1000_hw *hw)
 			e_dbg("Never got a valid link from auto-neg!!!\n");
 			hw->autoneg_failed = 1;
 			/* AutoNeg failed to achieve a link, so we'll call
-<<<<<<< HEAD
-			 * e1000_check_for_link. This routine will force the link up if
-			 * we detect a signal. This will allow us to communicate with
-			 * non-autonegotiating link partners.
-=======
 			 * e1000_check_for_link. This routine will force the
 			 * link up if we detect a signal. This will allow us to
 			 * communicate with non-autonegotiating link partners.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			ret_val = e1000_check_for_link(hw);
 			if (ret_val) {
@@ -1215,19 +1005,10 @@ static s32 e1000_copper_link_preconfig(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_copper_link_preconfig");
-
-	ctrl = er32(CTRL);
-	/* With 82543, we need to force speed and duplex on the MAC equal to what
-	 * the PHY speed and duplex configuration is. In addition, we need to
-	 * perform a hardware reset on the PHY to take it out of reset.
-=======
 	ctrl = er32(CTRL);
 	/* With 82543, we need to force speed and duplex on the MAC equal to
 	 * what the PHY speed and duplex configuration is. In addition, we need
 	 * to perform a hardware reset on the PHY to take it out of reset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (hw->mac_type > e1000_82543) {
 		ctrl |= E1000_CTRL_SLU;
@@ -1266,13 +1047,8 @@ static s32 e1000_copper_link_preconfig(struct e1000_hw *hw)
 
 	if (hw->mac_type <= e1000_82543 ||
 	    hw->mac_type == e1000_82541 || hw->mac_type == e1000_82547 ||
-<<<<<<< HEAD
-	    hw->mac_type == e1000_82541_rev_2
-	    || hw->mac_type == e1000_82547_rev_2)
-=======
 	    hw->mac_type == e1000_82541_rev_2 ||
 	    hw->mac_type == e1000_82547_rev_2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->phy_reset_disable = false;
 
 	return E1000_SUCCESS;
@@ -1288,11 +1064,6 @@ static s32 e1000_copper_link_igp_setup(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_copper_link_igp_setup");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy_reset_disable)
 		return E1000_SUCCESS;
 
@@ -1366,12 +1137,8 @@ static s32 e1000_copper_link_igp_setup(struct e1000_hw *hw)
 
 		/* when autonegotiation advertisement is only 1000Mbps then we
 		 * should disable SmartSpeed and enable Auto MasterSlave
-<<<<<<< HEAD
-		 * resolution as hardware default. */
-=======
 		 * resolution as hardware default.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hw->autoneg_advertised == ADVERTISE_1000_FULL) {
 			/* Disable SmartSpeed */
 			ret_val =
@@ -1417,10 +1184,7 @@ static s32 e1000_copper_link_igp_setup(struct e1000_hw *hw)
 			break;
 		case e1000_ms_auto:
 			phy_data &= ~CR_1000T_MS_ENABLE;
-<<<<<<< HEAD
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -1441,11 +1205,6 @@ static s32 e1000_copper_link_mgp_setup(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_copper_link_mgp_setup");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy_reset_disable)
 		return E1000_SUCCESS;
 
@@ -1552,11 +1311,6 @@ static s32 e1000_copper_link_autoneg(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_copper_link_autoneg");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Perform some bounds checking on the hw->autoneg_advertised
 	 * parameter.  If this variable is zero, then set it to the default.
 	 */
@@ -1625,10 +1379,6 @@ static s32 e1000_copper_link_autoneg(struct e1000_hw *hw)
 static s32 e1000_copper_link_postconfig(struct e1000_hw *hw)
 {
 	s32 ret_val;
-<<<<<<< HEAD
-	e_dbg("e1000_copper_link_postconfig");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((hw->mac_type >= e1000_82544) && (hw->mac_type != e1000_ce4100)) {
 		e1000_config_collision_dist(hw);
@@ -1669,11 +1419,6 @@ static s32 e1000_setup_copper_link(struct e1000_hw *hw)
 	u16 i;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_setup_copper_link");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check if it is a valid PHY and set PHY mode if necessary. */
 	ret_val = e1000_copper_link_preconfig(hw);
 	if (ret_val)
@@ -1697,23 +1442,15 @@ static s32 e1000_setup_copper_link(struct e1000_hw *hw)
 
 	if (hw->autoneg) {
 		/* Setup autoneg and flow control advertisement
-<<<<<<< HEAD
-		 * and perform autonegotiation */
-=======
 		 * and perform autonegotiation
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000_copper_link_autoneg(hw);
 		if (ret_val)
 			return ret_val;
 	} else {
 		/* PHY will be set to 10H, 10F, 100H,or 100F
-<<<<<<< HEAD
-		 * depending on value from forced_speed_duplex. */
-=======
 		 * depending on value from forced_speed_duplex.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e_dbg("Forcing speed and duplex\n");
 		ret_val = e1000_phy_force_speed_duplex(hw);
 		if (ret_val) {
@@ -1761,11 +1498,6 @@ s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
 	u16 mii_autoneg_adv_reg;
 	u16 mii_1000t_ctrl_reg;
 
-<<<<<<< HEAD
-	e_dbg("e1000_phy_setup_autoneg");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read the MII Auto-Neg Advertisement Register (Address 4). */
 	ret_val = e1000_read_phy_reg(hw, PHY_AUTONEG_ADV, &mii_autoneg_adv_reg);
 	if (ret_val)
@@ -1834,12 +1566,8 @@ s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
 	 * setup the PHY advertisement registers accordingly.  If
 	 * auto-negotiation is enabled, then software will have to set the
 	 * "PAUSE" bits to the correct value in the Auto-Negotiation
-<<<<<<< HEAD
-	 * Advertisement Register (PHY_AUTONEG_ADV) and re-start auto-negotiation.
-=======
 	 * Advertisement Register (PHY_AUTONEG_ADV) and re-start
 	 * auto-negotiation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * The possible values of the "fc" parameter are:
 	 *      0:  Flow control is completely disabled
@@ -1866,11 +1594,7 @@ s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
 		 * capable of RX Pause ONLY, we will advertise that we
 		 * support both symmetric and asymmetric RX PAUSE.  Later
 		 * (in e1000_config_fc_after_link_up) we will disable the
-<<<<<<< HEAD
-		 *hw's ability to send PAUSE frames.
-=======
 		 * hw's ability to send PAUSE frames.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		mii_autoneg_adv_reg |= (NWAY_AR_ASM_DIR | NWAY_AR_PAUSE);
 		break;
@@ -1902,11 +1626,7 @@ s32 e1000_phy_setup_autoneg(struct e1000_hw *hw)
 		mii_1000t_ctrl_reg = 0;
 	} else {
 		ret_val = e1000_write_phy_reg(hw, PHY_1000T_CTRL,
-<<<<<<< HEAD
-		                              mii_1000t_ctrl_reg);
-=======
 					      mii_1000t_ctrl_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 	}
@@ -1929,11 +1649,6 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 	u16 phy_data;
 	u16 i;
 
-<<<<<<< HEAD
-	e_dbg("e1000_phy_force_speed_duplex");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Turn off Flow control if we are forcing speed and duplex. */
 	hw->fc = E1000_FC_NONE;
 
@@ -1961,25 +1676,15 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 	/* Are we forcing Full or Half Duplex? */
 	if (hw->forced_speed_duplex == e1000_100_full ||
 	    hw->forced_speed_duplex == e1000_10_full) {
-<<<<<<< HEAD
-		/* We want to force full duplex so we SET the full duplex bits in the
-		 * Device and MII Control Registers.
-=======
 		/* We want to force full duplex so we SET the full duplex bits
 		 * in the Device and MII Control Registers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ctrl |= E1000_CTRL_FD;
 		mii_ctrl_reg |= MII_CR_FULL_DUPLEX;
 		e_dbg("Full Duplex\n");
 	} else {
-<<<<<<< HEAD
-		/* We want to force half duplex so we CLEAR the full duplex bits in
-		 * the Device and MII Control Registers.
-=======
 		/* We want to force half duplex so we CLEAR the full duplex bits
 		 * in the Device and MII Control Registers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ctrl &= ~E1000_CTRL_FD;
 		mii_ctrl_reg &= ~MII_CR_FULL_DUPLEX;
@@ -2013,13 +1718,8 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 		if (ret_val)
 			return ret_val;
 
-<<<<<<< HEAD
-		/* Clear Auto-Crossover to force MDI manually. M88E1000 requires MDI
-		 * forced whenever speed are duplex are forced.
-=======
 		/* Clear Auto-Crossover to force MDI manually. M88E1000 requires
 		 * MDI forced whenever speed are duplex are forced.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		phy_data &= ~M88E1000_PSCR_AUTO_X_MODE;
 		ret_val =
@@ -2070,17 +1770,10 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 		e_dbg("Waiting for forced speed/duplex link.\n");
 		mii_status_reg = 0;
 
-<<<<<<< HEAD
-		/* We will wait for autoneg to complete or 4.5 seconds to expire. */
-		for (i = PHY_FORCE_TIME; i > 0; i--) {
-			/* Read the MII Status Register and wait for Auto-Neg Complete bit
-			 * to be set.
-=======
 		/* Wait for autoneg to complete or 4.5 seconds to expire */
 		for (i = PHY_FORCE_TIME; i > 0; i--) {
 			/* Read the MII Status Register and wait for Auto-Neg
 			 * Complete bit to be set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			ret_val =
 			    e1000_read_phy_reg(hw, PHY_STATUS, &mii_status_reg);
@@ -2097,37 +1790,24 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 			msleep(100);
 		}
 		if ((i == 0) && (hw->phy_type == e1000_phy_m88)) {
-<<<<<<< HEAD
-			/* We didn't get link.  Reset the DSP and wait again for link. */
-=======
 			/* We didn't get link.  Reset the DSP and wait again
 			 * for link.
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret_val = e1000_phy_reset_dsp(hw);
 			if (ret_val) {
 				e_dbg("Error Resetting PHY DSP\n");
 				return ret_val;
 			}
 		}
-<<<<<<< HEAD
-		/* This loop will early-out if the link condition has been met.  */
-=======
 		/* This loop will early-out if the link condition has been
 		 * met
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = PHY_FORCE_TIME; i > 0; i--) {
 			if (mii_status_reg & MII_SR_LINK_STATUS)
 				break;
 			msleep(100);
-<<<<<<< HEAD
-			/* Read the MII Status Register and wait for Auto-Neg Complete bit
-			 * to be set.
-=======
 			/* Read the MII Status Register and wait for Auto-Neg
 			 * Complete bit to be set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			ret_val =
 			    e1000_read_phy_reg(hw, PHY_STATUS, &mii_status_reg);
@@ -2142,16 +1822,10 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 	}
 
 	if (hw->phy_type == e1000_phy_m88) {
-<<<<<<< HEAD
-		/* Because we reset the PHY above, we need to re-force TX_CLK in the
-		 * Extended PHY Specific Control Register to 25MHz clock.  This value
-		 * defaults back to a 2.5MHz clock when the PHY is reset.
-=======
 		/* Because we reset the PHY above, we need to re-force TX_CLK in
 		 * the Extended PHY Specific Control Register to 25MHz clock.
 		 * This value defaults back to a 2.5MHz clock when the PHY is
 		 * reset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ret_val =
 		    e1000_read_phy_reg(hw, M88E1000_EXT_PHY_SPEC_CTRL,
@@ -2166,14 +1840,9 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 		if (ret_val)
 			return ret_val;
 
-<<<<<<< HEAD
-		/* In addition, because of the s/w reset above, we need to enable CRS on
-		 * TX.  This must be set for both full and half duplex operation.
-=======
 		/* In addition, because of the s/w reset above, we need to
 		 * enable CRS on Tx.  This must be set for both full and half
 		 * duplex operation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ret_val =
 		    e1000_read_phy_reg(hw, M88E1000_PHY_SPEC_CTRL, &phy_data);
@@ -2186,18 +1855,11 @@ static s32 e1000_phy_force_speed_duplex(struct e1000_hw *hw)
 		if (ret_val)
 			return ret_val;
 
-<<<<<<< HEAD
-		if ((hw->mac_type == e1000_82544 || hw->mac_type == e1000_82543)
-		    && (!hw->autoneg)
-		    && (hw->forced_speed_duplex == e1000_10_full
-			|| hw->forced_speed_duplex == e1000_10_half)) {
-=======
 		if ((hw->mac_type == e1000_82544 ||
 		     hw->mac_type == e1000_82543) &&
 		    (!hw->autoneg) &&
 		    (hw->forced_speed_duplex == e1000_10_full ||
 		     hw->forced_speed_duplex == e1000_10_half)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret_val = e1000_polarity_reversal_workaround(hw);
 			if (ret_val)
 				return ret_val;
@@ -2218,11 +1880,6 @@ void e1000_config_collision_dist(struct e1000_hw *hw)
 {
 	u32 tctl, coll_dist;
 
-<<<<<<< HEAD
-	e_dbg("e1000_config_collision_dist");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->mac_type < e1000_82543)
 		coll_dist = E1000_COLLISION_DISTANCE_82542;
 	else
@@ -2240,10 +1897,6 @@ void e1000_config_collision_dist(struct e1000_hw *hw)
 /**
  * e1000_config_mac_to_phy - sync phy and mac settings
  * @hw: Struct containing variables accessed by shared code
-<<<<<<< HEAD
- * @mii_reg: data to write to the MII control register
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Sets MAC speed and duplex settings to reflect the those in the PHY
  * The contents of the PHY register containing the needed information need to
@@ -2255,16 +1908,9 @@ static s32 e1000_config_mac_to_phy(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_config_mac_to_phy");
-
-	/* 82544 or newer MAC, Auto Speed Detection takes care of
-	 * MAC speed/duplex configuration.*/
-=======
 	/* 82544 or newer MAC, Auto Speed Detection takes care of
 	 * MAC speed/duplex configuration.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((hw->mac_type >= e1000_82544) && (hw->mac_type != e1000_ce4100))
 		return E1000_SUCCESS;
 
@@ -2298,11 +1944,7 @@ static s32 e1000_config_mac_to_phy(struct e1000_hw *hw)
 		 * registers depending on negotiated values.
 		 */
 		ret_val = e1000_read_phy_reg(hw, M88E1000_PHY_SPEC_STATUS,
-<<<<<<< HEAD
-		                             &phy_data);
-=======
 					     &phy_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret_val)
 			return ret_val;
 
@@ -2319,11 +1961,7 @@ static s32 e1000_config_mac_to_phy(struct e1000_hw *hw)
 		if ((phy_data & M88E1000_PSSR_SPEED) == M88E1000_PSSR_1000MBS)
 			ctrl |= E1000_CTRL_SPD_1000;
 		else if ((phy_data & M88E1000_PSSR_SPEED) ==
-<<<<<<< HEAD
-		         M88E1000_PSSR_100MBS)
-=======
 			 M88E1000_PSSR_100MBS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ctrl |= E1000_CTRL_SPD_100;
 	}
 
@@ -2347,11 +1985,6 @@ s32 e1000_force_mac_fc(struct e1000_hw *hw)
 {
 	u32 ctrl;
 
-<<<<<<< HEAD
-	e_dbg("e1000_force_mac_fc");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get the current configuration of the Device Control Register */
 	ctrl = er32(CTRL);
 
@@ -2368,11 +2001,7 @@ s32 e1000_force_mac_fc(struct e1000_hw *hw)
 	 *      1:  Rx flow control is enabled (we can receive pause
 	 *          frames but not send pause frames).
 	 *      2:  Tx flow control is enabled (we can send pause frames
-<<<<<<< HEAD
-	 *          frames but we do not receive pause frames).
-=======
 	 *          but we do not receive pause frames).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *      3:  Both Rx and TX flow control (symmetric) is enabled.
 	 *  other:  No other values should be possible at this point.
 	 */
@@ -2425,29 +2054,16 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 	u16 speed;
 	u16 duplex;
 
-<<<<<<< HEAD
-	e_dbg("e1000_config_fc_after_link_up");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check for the case where we have fiber media and auto-neg failed
 	 * so we had to force link.  In this case, we need to force the
 	 * configuration of the MAC to match the "fc" parameter.
 	 */
-<<<<<<< HEAD
-	if (((hw->media_type == e1000_media_type_fiber) && (hw->autoneg_failed))
-	    || ((hw->media_type == e1000_media_type_internal_serdes)
-		&& (hw->autoneg_failed))
-	    || ((hw->media_type == e1000_media_type_copper)
-		&& (!hw->autoneg))) {
-=======
 	if (((hw->media_type == e1000_media_type_fiber) &&
 	     (hw->autoneg_failed)) ||
 	    ((hw->media_type == e1000_media_type_internal_serdes) &&
 	     (hw->autoneg_failed)) ||
 	    ((hw->media_type == e1000_media_type_copper) &&
 	     (!hw->autoneg))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000_force_mac_fc(hw);
 		if (ret_val) {
 			e_dbg("Error forcing flow control settings\n");
@@ -2475,15 +2091,9 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 		if (mii_status_reg & MII_SR_AUTONEG_COMPLETE) {
 			/* The AutoNeg process has completed, so we now need to
 			 * read both the Auto Negotiation Advertisement Register
-<<<<<<< HEAD
-			 * (Address 4) and the Auto_Negotiation Base Page Ability
-			 * Register (Address 5) to determine how flow control was
-			 * negotiated.
-=======
 			 * (Address 4) and the Auto_Negotiation Base Page
 			 * Ability Register (Address 5) to determine how flow
 			 * control was negotiated.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			ret_val = e1000_read_phy_reg(hw, PHY_AUTONEG_ADV,
 						     &mii_nway_adv_reg);
@@ -2494,15 +2104,6 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 			if (ret_val)
 				return ret_val;
 
-<<<<<<< HEAD
-			/* Two bits in the Auto Negotiation Advertisement Register
-			 * (Address 4) and two bits in the Auto Negotiation Base
-			 * Page Ability Register (Address 5) determine flow control
-			 * for both the PHY and the link partner.  The following
-			 * table, taken out of the IEEE 802.3ab/D6.0 dated March 25,
-			 * 1999, describes these PAUSE resolution bits and how flow
-			 * control is determined based upon these settings.
-=======
 			/* Two bits in the Auto Negotiation Advertisement
 			 * Register (Address 4) and two bits in the Auto
 			 * Negotiation Base Page Ability Register (Address 5)
@@ -2511,16 +2112,11 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 			 * 802.3ab/D6.0 dated March 25, 1999, describes these
 			 * PAUSE resolution bits and how flow control is
 			 * determined based upon these settings.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * NOTE:  DC = Don't Care
 			 *
 			 *   LOCAL DEVICE  |   LINK PARTNER
 			 * PAUSE | ASM_DIR | PAUSE | ASM_DIR | NIC Resolution
-<<<<<<< HEAD
-			 *-------|---------|-------|---------|--------------------
-=======
 			 *-------|---------|-------|---------|------------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *   0   |    0    |  DC   |   DC    | E1000_FC_NONE
 			 *   0   |    1    |   0   |   DC    | E1000_FC_NONE
 			 *   0   |    1    |   1   |    0    | E1000_FC_NONE
@@ -2539,30 +2135,18 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 			 *
 			 *   LOCAL DEVICE  |   LINK PARTNER
 			 * PAUSE | ASM_DIR | PAUSE | ASM_DIR | Result
-<<<<<<< HEAD
-			 *-------|---------|-------|---------|--------------------
-=======
 			 *-------|---------|-------|---------|------------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *   1   |   DC    |   1   |   DC    | E1000_FC_FULL
 			 *
 			 */
 			if ((mii_nway_adv_reg & NWAY_AR_PAUSE) &&
 			    (mii_nway_lp_ability_reg & NWAY_LPAR_PAUSE)) {
-<<<<<<< HEAD
-				/* Now we need to check if the user selected RX ONLY
-				 * of pause frames.  In this case, we had to advertise
-				 * FULL flow control because we could not advertise RX
-				 * ONLY. Hence, we must now check to see if we need to
-				 * turn OFF  the TRANSMISSION of PAUSE frames.
-=======
 				/* Now we need to check if the user selected Rx
 				 * ONLY of pause frames.  In this case, we had
 				 * to advertise FULL flow control because we
 				 * could not advertise Rx ONLY. Hence, we must
 				 * now check to see if we need to turn OFF the
 				 * TRANSMISSION of PAUSE frames.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 */
 				if (hw->original_fc == E1000_FC_FULL) {
 					hw->fc = E1000_FC_FULL;
@@ -2577,23 +2161,14 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 			 *
 			 *   LOCAL DEVICE  |   LINK PARTNER
 			 * PAUSE | ASM_DIR | PAUSE | ASM_DIR | Result
-<<<<<<< HEAD
-			 *-------|---------|-------|---------|--------------------
-=======
 			 *-------|---------|-------|---------|------------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *   0   |    1    |   1   |    1    | E1000_FC_TX_PAUSE
 			 *
 			 */
 			else if (!(mii_nway_adv_reg & NWAY_AR_PAUSE) &&
 				 (mii_nway_adv_reg & NWAY_AR_ASM_DIR) &&
 				 (mii_nway_lp_ability_reg & NWAY_LPAR_PAUSE) &&
-<<<<<<< HEAD
-				 (mii_nway_lp_ability_reg & NWAY_LPAR_ASM_DIR))
-			{
-=======
 				 (mii_nway_lp_ability_reg & NWAY_LPAR_ASM_DIR)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hw->fc = E1000_FC_TX_PAUSE;
 				e_dbg
 				    ("Flow Control = TX PAUSE frames only.\n");
@@ -2602,48 +2177,18 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 			 *
 			 *   LOCAL DEVICE  |   LINK PARTNER
 			 * PAUSE | ASM_DIR | PAUSE | ASM_DIR | Result
-<<<<<<< HEAD
-			 *-------|---------|-------|---------|--------------------
-=======
 			 *-------|---------|-------|---------|------------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *   1   |    1    |   0   |    1    | E1000_FC_RX_PAUSE
 			 *
 			 */
 			else if ((mii_nway_adv_reg & NWAY_AR_PAUSE) &&
 				 (mii_nway_adv_reg & NWAY_AR_ASM_DIR) &&
 				 !(mii_nway_lp_ability_reg & NWAY_LPAR_PAUSE) &&
-<<<<<<< HEAD
-				 (mii_nway_lp_ability_reg & NWAY_LPAR_ASM_DIR))
-			{
-=======
 				 (mii_nway_lp_ability_reg & NWAY_LPAR_ASM_DIR)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hw->fc = E1000_FC_RX_PAUSE;
 				e_dbg
 				    ("Flow Control = RX PAUSE frames only.\n");
 			}
-<<<<<<< HEAD
-			/* Per the IEEE spec, at this point flow control should be
-			 * disabled.  However, we want to consider that we could
-			 * be connected to a legacy switch that doesn't advertise
-			 * desired flow control, but can be forced on the link
-			 * partner.  So if we advertised no flow control, that is
-			 * what we will resolve to.  If we advertised some kind of
-			 * receive capability (Rx Pause Only or Full Flow Control)
-			 * and the link partner advertised none, we will configure
-			 * ourselves to enable Rx Flow Control only.  We can do
-			 * this safely for two reasons:  If the link partner really
-			 * didn't want flow control enabled, and we enable Rx, no
-			 * harm done since we won't be receiving any PAUSE frames
-			 * anyway.  If the intent on the link partner was to have
-			 * flow control enabled, then by us enabling RX only, we
-			 * can at least receive pause frames and process them.
-			 * This is a good idea because in most cases, since we are
-			 * predominantly a server NIC, more times than not we will
-			 * be asked to delay transmission of packets than asking
-			 * our link partner to pause transmission of frames.
-=======
 			/* Per the IEEE spec, at this point flow control should
 			 * be disabled.  However, we want to consider that we
 			 * could be connected to a legacy switch that doesn't
@@ -2665,7 +2210,6 @@ static s32 e1000_config_fc_after_link_up(struct e1000_hw *hw)
 			 * times than not we will be asked to delay transmission
 			 * of packets than asking our link partner to pause
 			 * transmission of frames.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			else if ((hw->original_fc == E1000_FC_NONE ||
 				  hw->original_fc == E1000_FC_TX_PAUSE) ||
@@ -2724,21 +2268,11 @@ static s32 e1000_check_for_serdes_link_generic(struct e1000_hw *hw)
 	u32 status;
 	s32 ret_val = E1000_SUCCESS;
 
-<<<<<<< HEAD
-	e_dbg("e1000_check_for_serdes_link_generic");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl = er32(CTRL);
 	status = er32(STATUS);
 	rxcw = er32(RXCW);
 
-<<<<<<< HEAD
-	/*
-	 * If we don't have link (auto-negotiation failed or link partner
-=======
 	/* If we don't have link (auto-negotiation failed or link partner
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * cannot auto-negotiate), and our link partner is not trying to
 	 * auto-negotiate with us (we are receiving idles or data),
 	 * we need to force link up. We also need to give auto-negotiation
@@ -2767,12 +2301,7 @@ static s32 e1000_check_for_serdes_link_generic(struct e1000_hw *hw)
 			goto out;
 		}
 	} else if ((ctrl & E1000_CTRL_SLU) && (rxcw & E1000_RXCW_C)) {
-<<<<<<< HEAD
-		/*
-		 * If we are forcing link and we are receiving /C/ ordered
-=======
 		/* If we are forcing link and we are receiving /C/ ordered
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * sets, re-enable auto-negotiation in the TXCW register
 		 * and disable forced link in the Device Control register
 		 * in an attempt to auto-negotiate with our link partner.
@@ -2783,12 +2312,7 @@ static s32 e1000_check_for_serdes_link_generic(struct e1000_hw *hw)
 
 		hw->serdes_has_link = true;
 	} else if (!(E1000_TXCW_ANE & er32(TXCW))) {
-<<<<<<< HEAD
-		/*
-		 * If we force link for non-auto-negotiation switch, check
-=======
 		/* If we force link for non-auto-negotiation switch, check
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * link status based on MAC synchronization for internal
 		 * serdes media type.
 		 */
@@ -2845,20 +2369,6 @@ static s32 e1000_check_for_serdes_link_generic(struct e1000_hw *hw)
  */
 s32 e1000_check_for_link(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	u32 rxcw = 0;
-	u32 ctrl;
-	u32 status;
-	u32 rctl;
-	u32 icr;
-	u32 signal = 0;
-	s32 ret_val;
-	u16 phy_data;
-
-	e_dbg("e1000_check_for_link");
-
-	ctrl = er32(CTRL);
-=======
 	u32 status;
 	u32 rctl;
 	u32 icr;
@@ -2866,7 +2376,6 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 	u16 phy_data;
 
 	er32(CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = er32(STATUS);
 
 	/* On adapters with a MAC newer than 82544, SW Definable pin 1 will be
@@ -2875,18 +2384,9 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 	 */
 	if ((hw->media_type == e1000_media_type_fiber) ||
 	    (hw->media_type == e1000_media_type_internal_serdes)) {
-<<<<<<< HEAD
-		rxcw = er32(RXCW);
-
-		if (hw->media_type == e1000_media_type_fiber) {
-			signal =
-			    (hw->mac_type >
-			     e1000_82544) ? E1000_CTRL_SWDPIN1 : 0;
-=======
 		er32(RXCW);
 
 		if (hw->media_type == e1000_media_type_fiber) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (status & E1000_STATUS_LU)
 				hw->get_link_status = false;
 		}
@@ -2913,24 +2413,6 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 
 		if (phy_data & MII_SR_LINK_STATUS) {
 			hw->get_link_status = false;
-<<<<<<< HEAD
-			/* Check if there was DownShift, must be checked immediately after
-			 * link-up */
-			e1000_check_downshift(hw);
-
-			/* If we are on 82544 or 82543 silicon and speed/duplex
-			 * are forced to 10H or 10F, then we will implement the polarity
-			 * reversal workaround.  We disable interrupts first, and upon
-			 * returning, place the devices interrupt state to its previous
-			 * value except for the link status change interrupt which will
-			 * happen due to the execution of this workaround.
-			 */
-
-			if ((hw->mac_type == e1000_82544
-			     || hw->mac_type == e1000_82543) && (!hw->autoneg)
-			    && (hw->forced_speed_duplex == e1000_10_full
-				|| hw->forced_speed_duplex == e1000_10_half)) {
-=======
 			/* Check if there was DownShift, must be checked
 			 * immediately after link-up
 			 */
@@ -2950,7 +2432,6 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 			    (!hw->autoneg) &&
 			    (hw->forced_speed_duplex == e1000_10_full ||
 			     hw->forced_speed_duplex == e1000_10_half)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ew32(IMC, 0xffffffff);
 				ret_val =
 				    e1000_polarity_reversal_workaround(hw);
@@ -2994,16 +2475,10 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 			}
 		}
 
-<<<<<<< HEAD
-		/* Configure Flow Control now that Auto-Neg has completed. First, we
-		 * need to restore the desired flow control settings because we may
-		 * have had to re-autoneg with a different link partner.
-=======
 		/* Configure Flow Control now that Auto-Neg has completed.
 		 * First, we need to restore the desired flow control settings
 		 * because we may have had to re-autoneg with a different link
 		 * partner.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ret_val = e1000_config_fc_after_link_up(hw);
 		if (ret_val) {
@@ -3012,18 +2487,6 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 		}
 
 		/* At this point we know that we are on copper and we have
-<<<<<<< HEAD
-		 * auto-negotiated link.  These are conditions for checking the link
-		 * partner capability register.  We use the link speed to determine if
-		 * TBI compatibility needs to be turned on or off.  If the link is not
-		 * at gigabit speed, then TBI compatibility is not needed.  If we are
-		 * at gigabit speed, we turn on TBI compatibility.
-		 */
-		if (hw->tbi_compatibility_en) {
-			u16 speed, duplex;
-			ret_val =
-			    e1000_get_speed_and_duplex(hw, &speed, &duplex);
-=======
 		 * auto-negotiated link.  These are conditions for checking the
 		 * link partner capability register.  We use the link speed to
 		 * determine if TBI compatibility needs to be turned on or off.
@@ -3037,20 +2500,12 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 			ret_val =
 			    e1000_get_speed_and_duplex(hw, &speed, &duplex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret_val) {
 				e_dbg
 				    ("Error getting link speed and duplex\n");
 				return ret_val;
 			}
 			if (speed != SPEED_1000) {
-<<<<<<< HEAD
-				/* If link speed is not set to gigabit speed, we do not need
-				 * to enable TBI compatibility.
-				 */
-				if (hw->tbi_compatibility_on) {
-					/* If we previously were in the mode, turn it off. */
-=======
 				/* If link speed is not set to gigabit speed, we
 				 * do not need to enable TBI compatibility.
 				 */
@@ -3058,25 +2513,17 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
 					/* If we previously were in the mode,
 					 * turn it off.
 					 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rctl = er32(RCTL);
 					rctl &= ~E1000_RCTL_SBP;
 					ew32(RCTL, rctl);
 					hw->tbi_compatibility_on = false;
 				}
 			} else {
-<<<<<<< HEAD
-				/* If TBI compatibility is was previously off, turn it on. For
-				 * compatibility with a TBI link partner, we will store bad
-				 * packets. Some frames have an additional byte on the end and
-				 * will look like CRC errors to to the hardware.
-=======
 				/* If TBI compatibility is was previously off,
 				 * turn it on. For compatibility with a TBI link
 				 * partner, we will store bad packets. Some
 				 * frames have an additional byte on the end and
 				 * will look like CRC errors to the hardware.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 */
 				if (!hw->tbi_compatibility_on) {
 					hw->tbi_compatibility_on = true;
@@ -3100,11 +2547,7 @@ s32 e1000_check_for_link(struct e1000_hw *hw)
  * @hw: Struct containing variables accessed by shared code
  * @speed: Speed of the connection
  * @duplex: Duplex setting of the connection
-<<<<<<< HEAD
-
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Detects the current speed and duplex settings of the hardware.
  */
 s32 e1000_get_speed_and_duplex(struct e1000_hw *hw, u16 *speed, u16 *duplex)
@@ -3113,11 +2556,6 @@ s32 e1000_get_speed_and_duplex(struct e1000_hw *hw, u16 *speed, u16 *duplex)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_get_speed_and_duplex");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->mac_type >= e1000_82543) {
 		status = er32(STATUS);
 		if (status & E1000_STATUS_SPEED_1000) {
@@ -3144,15 +2582,9 @@ s32 e1000_get_speed_and_duplex(struct e1000_hw *hw, u16 *speed, u16 *duplex)
 		*duplex = FULL_DUPLEX;
 	}
 
-<<<<<<< HEAD
-	/* IGP01 PHY may advertise full duplex operation after speed downgrade even
-	 * if it is operating at half duplex.  Here we set the duplex settings to
-	 * match the duplex in the link partner's capabilities.
-=======
 	/* IGP01 PHY may advertise full duplex operation after speed downgrade
 	 * even if it is operating at half duplex.  Here we set the duplex
 	 * settings to match the duplex in the link partner's capabilities.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (hw->phy_type == e1000_phy_igp && hw->speed_downgraded) {
 		ret_val = e1000_read_phy_reg(hw, PHY_AUTONEG_EXP, &phy_data);
@@ -3166,17 +2598,10 @@ s32 e1000_get_speed_and_duplex(struct e1000_hw *hw, u16 *speed, u16 *duplex)
 			    e1000_read_phy_reg(hw, PHY_LP_ABILITY, &phy_data);
 			if (ret_val)
 				return ret_val;
-<<<<<<< HEAD
-			if ((*speed == SPEED_100
-			     && !(phy_data & NWAY_LPAR_100TX_FD_CAPS))
-			    || (*speed == SPEED_10
-				&& !(phy_data & NWAY_LPAR_10T_FD_CAPS)))
-=======
 			if ((*speed == SPEED_100 &&
 			     !(phy_data & NWAY_LPAR_100TX_FD_CAPS)) ||
 			    (*speed == SPEED_10 &&
 			     !(phy_data & NWAY_LPAR_10T_FD_CAPS)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*duplex = HALF_DUPLEX;
 		}
 	}
@@ -3196,10 +2621,6 @@ static s32 e1000_wait_autoneg(struct e1000_hw *hw)
 	u16 i;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_wait_autoneg");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e_dbg("Waiting for Auto-Neg to complete.\n");
 
 	/* We will wait for autoneg to complete or 4.5 seconds to expire. */
@@ -3213,15 +2634,9 @@ static s32 e1000_wait_autoneg(struct e1000_hw *hw)
 		ret_val = e1000_read_phy_reg(hw, PHY_STATUS, &phy_data);
 		if (ret_val)
 			return ret_val;
-<<<<<<< HEAD
-		if (phy_data & MII_SR_AUTONEG_COMPLETE) {
-			return E1000_SUCCESS;
-		}
-=======
 		if (phy_data & MII_SR_AUTONEG_COMPLETE)
 			return E1000_SUCCESS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(100);
 	}
 	return E1000_SUCCESS;
@@ -3234,13 +2649,8 @@ static s32 e1000_wait_autoneg(struct e1000_hw *hw)
  */
 static void e1000_raise_mdi_clk(struct e1000_hw *hw, u32 *ctrl)
 {
-<<<<<<< HEAD
-	/* Raise the clock input to the Management Data Clock (by setting the MDC
-	 * bit), and then delay 10 microseconds.
-=======
 	/* Raise the clock input to the Management Data Clock (by setting the
 	 * MDC bit), and then delay 10 microseconds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	ew32(CTRL, (*ctrl | E1000_CTRL_MDC));
 	E1000_WRITE_FLUSH();
@@ -3254,13 +2664,8 @@ static void e1000_raise_mdi_clk(struct e1000_hw *hw, u32 *ctrl)
  */
 static void e1000_lower_mdi_clk(struct e1000_hw *hw, u32 *ctrl)
 {
-<<<<<<< HEAD
-	/* Lower the clock input to the Management Data Clock (by clearing the MDC
-	 * bit), and then delay 10 microseconds.
-=======
 	/* Lower the clock input to the Management Data Clock (by clearing the
 	 * MDC bit), and then delay 10 microseconds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	ew32(CTRL, (*ctrl & ~E1000_CTRL_MDC));
 	E1000_WRITE_FLUSH();
@@ -3293,17 +2698,10 @@ static void e1000_shift_out_mdi_bits(struct e1000_hw *hw, u32 data, u16 count)
 	ctrl |= (E1000_CTRL_MDIO_DIR | E1000_CTRL_MDC_DIR);
 
 	while (mask) {
-<<<<<<< HEAD
-		/* A "1" is shifted out to the PHY by setting the MDIO bit to "1" and
-		 * then raising and lowering the Management Data Clock. A "0" is
-		 * shifted out to the PHY by setting the MDIO bit to "0" and then
-		 * raising and lowering the clock.
-=======
 		/* A "1" is shifted out to the PHY by setting the MDIO bit to
 		 * "1" and then raising and lowering the Management Data Clock.
 		 * A "0" is shifted out to the PHY by setting the MDIO bit to
 		 * "0" and then raising and lowering the clock.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (data & mask)
 			ctrl |= E1000_CTRL_MDIO;
@@ -3326,11 +2724,7 @@ static void e1000_shift_out_mdi_bits(struct e1000_hw *hw, u32 data, u16 count)
  * e1000_shift_in_mdi_bits - Shifts data bits in from the PHY
  * @hw: Struct containing variables accessed by shared code
  *
-<<<<<<< HEAD
- * Bits are shifted in in MSB to LSB order.
-=======
  * Bits are shifted in MSB to LSB order.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static u16 e1000_shift_in_mdi_bits(struct e1000_hw *hw)
 {
@@ -3339,17 +2733,6 @@ static u16 e1000_shift_in_mdi_bits(struct e1000_hw *hw)
 	u8 i;
 
 	/* In order to read a register from the PHY, we need to shift in a total
-<<<<<<< HEAD
-	 * of 18 bits from the PHY. The first two bit (turnaround) times are used
-	 * to avoid contention on the MDIO pin when a read operation is performed.
-	 * These two bits are ignored by us and thrown away. Bits are "shifted in"
-	 * by raising the input to the Management Data Clock (setting the MDC bit),
-	 * and then reading the value of the MDIO bit.
-	 */
-	ctrl = er32(CTRL);
-
-	/* Clear MDIO_DIR (SWDPIO1) to indicate this bit is to be used as input. */
-=======
 	 * of 18 bits from the PHY. The first two bit (turnaround) times are
 	 * used to avoid contention on the MDIO pin when a read operation is
 	 * performed. These two bits are ignored by us and thrown away. Bits are
@@ -3361,22 +2744,15 @@ static u16 e1000_shift_in_mdi_bits(struct e1000_hw *hw)
 	/* Clear MDIO_DIR (SWDPIO1) to indicate this bit is to be used as
 	 * input.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl &= ~E1000_CTRL_MDIO_DIR;
 	ctrl &= ~E1000_CTRL_MDIO;
 
 	ew32(CTRL, ctrl);
 	E1000_WRITE_FLUSH();
 
-<<<<<<< HEAD
-	/* Raise and Lower the clock before reading in the data. This accounts for
-	 * the turnaround bits. The first clock occurred when we clocked out the
-	 * last bit of the Register Address.
-=======
 	/* Raise and Lower the clock before reading in the data. This accounts
 	 * for the turnaround bits. The first clock occurred when we clocked out
 	 * the last bit of the Register Address.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	e1000_raise_mdi_clk(hw, &ctrl);
 	e1000_lower_mdi_clk(hw, &ctrl);
@@ -3397,18 +2773,11 @@ static u16 e1000_shift_in_mdi_bits(struct e1000_hw *hw)
 	return data;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * e1000_read_phy_reg - read a phy register
  * @hw: Struct containing variables accessed by shared code
  * @reg_addr: address of the PHY register to read
-<<<<<<< HEAD
-=======
  * @phy_data: pointer to the value on the PHY register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Reads the value from a PHY register, if the value is on a specific non zero
  * page, sets the page first.
@@ -3416,34 +2785,22 @@ static u16 e1000_shift_in_mdi_bits(struct e1000_hw *hw)
 s32 e1000_read_phy_reg(struct e1000_hw *hw, u32 reg_addr, u16 *phy_data)
 {
 	u32 ret_val;
-<<<<<<< HEAD
-
-	e_dbg("e1000_read_phy_reg");
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&e1000_phy_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((hw->phy_type == e1000_phy_igp) &&
 	    (reg_addr > MAX_PHY_MULTI_PAGE_REG)) {
 		ret_val = e1000_write_phy_reg_ex(hw, IGP01E1000_PHY_PAGE_SELECT,
 						 (u16) reg_addr);
 		if (ret_val)
-<<<<<<< HEAD
-			return ret_val;
-=======
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret_val = e1000_read_phy_reg_ex(hw, MAX_PHY_REG_ADDRESS & reg_addr,
 					phy_data);
-<<<<<<< HEAD
-=======
 out:
 	spin_unlock_irqrestore(&e1000_phy_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
@@ -3455,11 +2812,6 @@ static s32 e1000_read_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 	u32 mdic = 0;
 	const u32 phy_addr = (hw->mac_type == e1000_ce4100) ? hw->phy_addr : 1;
 
-<<<<<<< HEAD
-	e_dbg("e1000_read_phy_reg_ex");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reg_addr > MAX_PHY_REG_ADDRESS) {
 		e_dbg("PHY Address %d is out of range\n", reg_addr);
 		return -E1000_ERR_PARAM;
@@ -3467,13 +2819,8 @@ static s32 e1000_read_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 
 	if (hw->mac_type > e1000_82543) {
 		/* Set up Op-code, Phy Address, and register address in the MDI
-<<<<<<< HEAD
-		 * Control register.  The MAC will take care of interfacing with the
-		 * PHY to retrieve the desired data.
-=======
 		 * Control register.  The MAC will take care of interfacing with
 		 * the PHY to retrieve the desired data.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (hw->mac_type == e1000_ce4100) {
 			mdic = ((reg_addr << E1000_MDIC_REG_SHIFT) |
@@ -3503,11 +2850,7 @@ static s32 e1000_read_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 				e_dbg("MDI Read Error\n");
 				return -E1000_ERR_PHY;
 			}
-<<<<<<< HEAD
-			*phy_data = (u16) mdic;
-=======
 			*phy_data = (u16)mdic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			mdic = ((reg_addr << E1000_MDIC_REG_SHIFT) |
 				(phy_addr << E1000_MDIC_PHY_SHIFT) |
@@ -3532,36 +2875,17 @@ static s32 e1000_read_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 				e_dbg("MDI Error\n");
 				return -E1000_ERR_PHY;
 			}
-<<<<<<< HEAD
-			*phy_data = (u16) mdic;
-		}
-	} else {
-		/* We must first send a preamble through the MDIO pin to signal the
-		 * beginning of an MII instruction.  This is done by sending 32
-		 * consecutive "1" bits.
-=======
 			*phy_data = (u16)mdic;
 		}
 	} else {
 		/* We must first send a preamble through the MDIO pin to signal
 		 * the beginning of an MII instruction.  This is done by sending
 		 * 32 consecutive "1" bits.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		e1000_shift_out_mdi_bits(hw, PHY_PREAMBLE, PHY_PREAMBLE_SIZE);
 
 		/* Now combine the next few fields that are required for a read
 		 * operation.  We use this method instead of calling the
-<<<<<<< HEAD
-		 * e1000_shift_out_mdi_bits routine five different times. The format of
-		 * a MII read instruction consists of a shift out of 14 bits and is
-		 * defined as follows:
-		 *    <Preamble><SOF><Op Code><Phy Addr><Reg Addr>
-		 * followed by a shift in of 18 bits.  This first two bits shifted in
-		 * are TurnAround bits used to avoid contention on the MDIO pin when a
-		 * READ operation is performed.  These two bits are thrown away
-		 * followed by a shift in of 16 bits which contains the desired data.
-=======
 		 * e1000_shift_out_mdi_bits routine five different times. The
 		 * format of a MII read instruction consists of a shift out of
 		 * 14 bits and is defined as follows:
@@ -3571,22 +2895,15 @@ static s32 e1000_read_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 		 * the MDIO pin when a READ operation is performed.  These two
 		 * bits are thrown away followed by a shift in of 16 bits which
 		 * contains the desired data.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		mdic = ((reg_addr) | (phy_addr << 5) |
 			(PHY_OP_READ << 10) | (PHY_SOF << 12));
 
 		e1000_shift_out_mdi_bits(hw, mdic, 14);
 
-<<<<<<< HEAD
-		/* Now that we've shifted out the read command to the MII, we need to
-		 * "shift in" the 16-bit value (18 total bits) of the requested PHY
-		 * register address.
-=======
 		/* Now that we've shifted out the read command to the MII, we
 		 * need to "shift in" the 16-bit value (18 total bits) of the
 		 * requested PHY register address.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		*phy_data = e1000_shift_in_mdi_bits(hw);
 	}
@@ -3598,49 +2915,30 @@ static s32 e1000_read_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
  *
  * @hw: Struct containing variables accessed by shared code
  * @reg_addr: address of the PHY register to write
-<<<<<<< HEAD
- * @data: data to write to the PHY
-
-=======
  * @phy_data: data to write to the PHY
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Writes a value to a PHY register
  */
 s32 e1000_write_phy_reg(struct e1000_hw *hw, u32 reg_addr, u16 phy_data)
 {
 	u32 ret_val;
-<<<<<<< HEAD
-
-	e_dbg("e1000_write_phy_reg");
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&e1000_phy_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((hw->phy_type == e1000_phy_igp) &&
 	    (reg_addr > MAX_PHY_MULTI_PAGE_REG)) {
 		ret_val = e1000_write_phy_reg_ex(hw, IGP01E1000_PHY_PAGE_SELECT,
-<<<<<<< HEAD
-						 (u16) reg_addr);
-		if (ret_val)
-			return ret_val;
-=======
 						 (u16)reg_addr);
 		if (ret_val) {
 			spin_unlock_irqrestore(&e1000_phy_lock, flags);
 			return ret_val;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret_val = e1000_write_phy_reg_ex(hw, MAX_PHY_REG_ADDRESS & reg_addr,
 					 phy_data);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&e1000_phy_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
@@ -3652,11 +2950,6 @@ static s32 e1000_write_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 	u32 mdic = 0;
 	const u32 phy_addr = (hw->mac_type == e1000_ce4100) ? hw->phy_addr : 1;
 
-<<<<<<< HEAD
-	e_dbg("e1000_write_phy_reg_ex");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reg_addr > MAX_PHY_REG_ADDRESS) {
 		e_dbg("PHY Address %d is out of range\n", reg_addr);
 		return -E1000_ERR_PARAM;
@@ -3669,11 +2962,7 @@ static s32 e1000_write_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 		 * the desired data.
 		 */
 		if (hw->mac_type == e1000_ce4100) {
-<<<<<<< HEAD
-			mdic = (((u32) phy_data) |
-=======
 			mdic = (((u32)phy_data) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(reg_addr << E1000_MDIC_REG_SHIFT) |
 				(phy_addr << E1000_MDIC_PHY_SHIFT) |
 				(INTEL_CE_GBE_MDIC_OP_WRITE) |
@@ -3695,11 +2984,7 @@ static s32 e1000_write_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 				return -E1000_ERR_PHY;
 			}
 		} else {
-<<<<<<< HEAD
-			mdic = (((u32) phy_data) |
-=======
 			mdic = (((u32)phy_data) |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(reg_addr << E1000_MDIC_REG_SHIFT) |
 				(phy_addr << E1000_MDIC_PHY_SHIFT) |
 				(E1000_MDIC_OP_WRITE));
@@ -3721,20 +3006,6 @@ static s32 e1000_write_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 			}
 		}
 	} else {
-<<<<<<< HEAD
-		/* We'll need to use the SW defined pins to shift the write command
-		 * out to the PHY. We first send a preamble to the PHY to signal the
-		 * beginning of the MII instruction.  This is done by sending 32
-		 * consecutive "1" bits.
-		 */
-		e1000_shift_out_mdi_bits(hw, PHY_PREAMBLE, PHY_PREAMBLE_SIZE);
-
-		/* Now combine the remaining required fields that will indicate a
-		 * write operation. We use this method instead of calling the
-		 * e1000_shift_out_mdi_bits routine for each field in the command. The
-		 * format of a MII write instruction is as follows:
-		 * <Preamble><SOF><Op Code><Phy Addr><Reg Addr><Turnaround><Data>.
-=======
 		/* We'll need to use the SW defined pins to shift the write
 		 * command out to the PHY. We first send a preamble to the PHY
 		 * to signal the beginning of the MII instruction.  This is done
@@ -3747,16 +3018,11 @@ static s32 e1000_write_phy_reg_ex(struct e1000_hw *hw, u32 reg_addr,
 		 * e1000_shift_out_mdi_bits routine for each field in the
 		 * command. The format of a MII write instruction is as follows:
 		 * <Preamble><SOF><OpCode><PhyAddr><RegAddr><Turnaround><Data>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		mdic = ((PHY_TURNAROUND) | (reg_addr << 2) | (phy_addr << 7) |
 			(PHY_OP_WRITE << 12) | (PHY_SOF << 14));
 		mdic <<= 16;
-<<<<<<< HEAD
-		mdic |= (u32) phy_data;
-=======
 		mdic |= (u32)phy_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		e1000_shift_out_mdi_bits(hw, mdic, 32);
 	}
@@ -3775,17 +3041,6 @@ s32 e1000_phy_hw_reset(struct e1000_hw *hw)
 	u32 ctrl, ctrl_ext;
 	u32 led_ctrl;
 
-<<<<<<< HEAD
-	e_dbg("e1000_phy_hw_reset");
-
-	e_dbg("Resetting Phy...\n");
-
-	if (hw->mac_type > e1000_82543) {
-		/* Read the device control register and assert the E1000_CTRL_PHY_RST
-		 * bit. Then, take it out of reset.
-		 * For e1000 hardware, we delay for 10ms between the assert
-		 * and deassert.
-=======
 	e_dbg("Resetting Phy...\n");
 
 	if (hw->mac_type > e1000_82543) {
@@ -3793,7 +3048,6 @@ s32 e1000_phy_hw_reset(struct e1000_hw *hw)
 		 * E1000_CTRL_PHY_RST bit. Then, take it out of reset.
 		 * For e1000 hardware, we delay for 10ms between the assert
 		 * and de-assert.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ctrl = er32(CTRL);
 		ew32(CTRL, ctrl | E1000_CTRL_PHY_RST);
@@ -3805,14 +3059,9 @@ s32 e1000_phy_hw_reset(struct e1000_hw *hw)
 		E1000_WRITE_FLUSH();
 
 	} else {
-<<<<<<< HEAD
-		/* Read the Extended Device Control Register, assert the PHY_RESET_DIR
-		 * bit to put the PHY into reset. Then, take it out of reset.
-=======
 		/* Read the Extended Device Control Register, assert the
 		 * PHY_RESET_DIR bit to put the PHY into reset. Then, take it
 		 * out of reset.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		ctrl_ext = er32(CTRL_EXT);
 		ctrl_ext |= E1000_CTRL_EXT_SDP4_DIR;
@@ -3850,11 +3099,6 @@ s32 e1000_phy_reset(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_phy_reset");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->phy_type) {
 	case e1000_phy_igp:
 		ret_val = e1000_phy_hw_reset(hw);
@@ -3893,11 +3137,6 @@ static s32 e1000_detect_gig_phy(struct e1000_hw *hw)
 	u16 phy_id_high, phy_id_low;
 	bool match = false;
 
-<<<<<<< HEAD
-	e_dbg("e1000_detect_gig_phy");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy_id != 0)
 		return E1000_SUCCESS;
 
@@ -3906,23 +3145,14 @@ static s32 e1000_detect_gig_phy(struct e1000_hw *hw)
 	if (ret_val)
 		return ret_val;
 
-<<<<<<< HEAD
-	hw->phy_id = (u32) (phy_id_high << 16);
-=======
 	hw->phy_id = (u32)(phy_id_high << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(20);
 	ret_val = e1000_read_phy_reg(hw, PHY_ID2, &phy_id_low);
 	if (ret_val)
 		return ret_val;
 
-<<<<<<< HEAD
-	hw->phy_id |= (u32) (phy_id_low & PHY_REVISION_MASK);
-	hw->phy_revision = (u32) phy_id_low & ~PHY_REVISION_MASK;
-=======
 	hw->phy_id |= (u32)(phy_id_low & PHY_REVISION_MASK);
 	hw->phy_revision = (u32)phy_id_low & ~PHY_REVISION_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hw->mac_type) {
 	case e1000_82543:
@@ -3977,10 +3207,6 @@ static s32 e1000_detect_gig_phy(struct e1000_hw *hw)
 static s32 e1000_phy_reset_dsp(struct e1000_hw *hw)
 {
 	s32 ret_val;
-<<<<<<< HEAD
-	e_dbg("e1000_phy_reset_dsp");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		ret_val = e1000_write_phy_reg(hw, 29, 0x001d);
@@ -4012,16 +3238,9 @@ static s32 e1000_phy_igp_get_info(struct e1000_hw *hw,
 	u16 phy_data, min_length, max_length, average;
 	e1000_rev_polarity polarity;
 
-<<<<<<< HEAD
-	e_dbg("e1000_phy_igp_get_info");
-
-	/* The downshift status is checked only once, after link is established,
-	 * and it stored in the hw->speed_downgraded parameter. */
-=======
 	/* The downshift status is checked only once, after link is established,
 	 * and it stored in the hw->speed_downgraded parameter.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy_info->downshift = (e1000_downshift) hw->speed_downgraded;
 
 	/* IGP01E1000 does not need to support it. */
@@ -4042,14 +3261,6 @@ static s32 e1000_phy_igp_get_info(struct e1000_hw *hw,
 		return ret_val;
 
 	phy_info->mdix_mode =
-<<<<<<< HEAD
-	    (e1000_auto_x_mode) ((phy_data & IGP01E1000_PSSR_MDIX) >>
-				 IGP01E1000_PSSR_MDIX_SHIFT);
-
-	if ((phy_data & IGP01E1000_PSSR_SPEED_MASK) ==
-	    IGP01E1000_PSSR_SPEED_1000MBPS) {
-		/* Local/Remote Receiver Information are only valid at 1000 Mbps */
-=======
 	    (e1000_auto_x_mode)FIELD_GET(IGP01E1000_PSSR_MDIX, phy_data);
 
 	if ((phy_data & IGP01E1000_PSSR_SPEED_MASK) ==
@@ -4057,24 +3268,15 @@ static s32 e1000_phy_igp_get_info(struct e1000_hw *hw,
 		/* Local/Remote Receiver Information are only valid @ 1000
 		 * Mbps
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000_read_phy_reg(hw, PHY_1000T_STATUS, &phy_data);
 		if (ret_val)
 			return ret_val;
 
-<<<<<<< HEAD
-		phy_info->local_rx = ((phy_data & SR_1000T_LOCAL_RX_STATUS) >>
-				      SR_1000T_LOCAL_RX_STATUS_SHIFT) ?
-		    e1000_1000t_rx_status_ok : e1000_1000t_rx_status_not_ok;
-		phy_info->remote_rx = ((phy_data & SR_1000T_REMOTE_RX_STATUS) >>
-				       SR_1000T_REMOTE_RX_STATUS_SHIFT) ?
-=======
 		phy_info->local_rx = FIELD_GET(SR_1000T_LOCAL_RX_STATUS,
 					       phy_data) ?
 		    e1000_1000t_rx_status_ok : e1000_1000t_rx_status_not_ok;
 		phy_info->remote_rx = FIELD_GET(SR_1000T_REMOTE_RX_STATUS,
 						phy_data) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    e1000_1000t_rx_status_ok : e1000_1000t_rx_status_not_ok;
 
 		/* Get cable length */
@@ -4114,16 +3316,9 @@ static s32 e1000_phy_m88_get_info(struct e1000_hw *hw,
 	u16 phy_data;
 	e1000_rev_polarity polarity;
 
-<<<<<<< HEAD
-	e_dbg("e1000_phy_m88_get_info");
-
-	/* The downshift status is checked only once, after link is established,
-	 * and it stored in the hw->speed_downgraded parameter. */
-=======
 	/* The downshift status is checked only once, after link is established,
 	 * and it stored in the hw->speed_downgraded parameter.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy_info->downshift = (e1000_downshift) hw->speed_downgraded;
 
 	ret_val = e1000_read_phy_reg(hw, M88E1000_PHY_SPEC_CTRL, &phy_data);
@@ -4131,22 +3326,12 @@ static s32 e1000_phy_m88_get_info(struct e1000_hw *hw,
 		return ret_val;
 
 	phy_info->extended_10bt_distance =
-<<<<<<< HEAD
-	    ((phy_data & M88E1000_PSCR_10BT_EXT_DIST_ENABLE) >>
-	     M88E1000_PSCR_10BT_EXT_DIST_ENABLE_SHIFT) ?
-=======
 	    FIELD_GET(M88E1000_PSCR_10BT_EXT_DIST_ENABLE, phy_data) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    e1000_10bt_ext_dist_enable_lower :
 	    e1000_10bt_ext_dist_enable_normal;
 
 	phy_info->polarity_correction =
-<<<<<<< HEAD
-	    ((phy_data & M88E1000_PSCR_POLARITY_REVERSAL) >>
-	     M88E1000_PSCR_POLARITY_REVERSAL_SHIFT) ?
-=======
 	    FIELD_GET(M88E1000_PSCR_POLARITY_REVERSAL, phy_data) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    e1000_polarity_reversal_disabled : e1000_polarity_reversal_enabled;
 
 	/* Check polarity status */
@@ -4160,47 +3345,26 @@ static s32 e1000_phy_m88_get_info(struct e1000_hw *hw,
 		return ret_val;
 
 	phy_info->mdix_mode =
-<<<<<<< HEAD
-	    (e1000_auto_x_mode) ((phy_data & M88E1000_PSSR_MDIX) >>
-				 M88E1000_PSSR_MDIX_SHIFT);
-=======
 	    (e1000_auto_x_mode)FIELD_GET(M88E1000_PSSR_MDIX, phy_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((phy_data & M88E1000_PSSR_SPEED) == M88E1000_PSSR_1000MBS) {
 		/* Cable Length Estimation and Local/Remote Receiver Information
 		 * are only valid at 1000 Mbps.
 		 */
 		phy_info->cable_length =
-<<<<<<< HEAD
-		    (e1000_cable_length) ((phy_data &
-					   M88E1000_PSSR_CABLE_LENGTH) >>
-					  M88E1000_PSSR_CABLE_LENGTH_SHIFT);
-=======
 		    (e1000_cable_length)FIELD_GET(M88E1000_PSSR_CABLE_LENGTH,
 						  phy_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret_val = e1000_read_phy_reg(hw, PHY_1000T_STATUS, &phy_data);
 		if (ret_val)
 			return ret_val;
 
-<<<<<<< HEAD
-		phy_info->local_rx = ((phy_data & SR_1000T_LOCAL_RX_STATUS) >>
-				      SR_1000T_LOCAL_RX_STATUS_SHIFT) ?
-		    e1000_1000t_rx_status_ok : e1000_1000t_rx_status_not_ok;
-		phy_info->remote_rx = ((phy_data & SR_1000T_REMOTE_RX_STATUS) >>
-				       SR_1000T_REMOTE_RX_STATUS_SHIFT) ?
-		    e1000_1000t_rx_status_ok : e1000_1000t_rx_status_not_ok;
-
-=======
 		phy_info->local_rx = FIELD_GET(SR_1000T_LOCAL_RX_STATUS,
 					       phy_data) ?
 		    e1000_1000t_rx_status_ok : e1000_1000t_rx_status_not_ok;
 		phy_info->remote_rx = FIELD_GET(SR_1000T_REMOTE_RX_STATUS,
 						phy_data) ?
 		    e1000_1000t_rx_status_ok : e1000_1000t_rx_status_not_ok;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return E1000_SUCCESS;
@@ -4218,11 +3382,6 @@ s32 e1000_phy_get_info(struct e1000_hw *hw, struct e1000_phy_info *phy_info)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_phy_get_info");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phy_info->cable_length = e1000_cable_length_undefined;
 	phy_info->extended_10bt_distance = e1000_10bt_ext_dist_enable_undefined;
 	phy_info->cable_polarity = e1000_rev_polarity_undefined;
@@ -4253,11 +3412,7 @@ s32 e1000_phy_get_info(struct e1000_hw *hw, struct e1000_phy_info *phy_info)
 	if (hw->phy_type == e1000_phy_igp)
 		return e1000_phy_igp_get_info(hw, phy_info);
 	else if ((hw->phy_type == e1000_phy_8211) ||
-<<<<<<< HEAD
-	         (hw->phy_type == e1000_phy_8201))
-=======
 		 (hw->phy_type == e1000_phy_8201))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return E1000_SUCCESS;
 	else
 		return e1000_phy_m88_get_info(hw, phy_info);
@@ -4265,11 +3420,6 @@ s32 e1000_phy_get_info(struct e1000_hw *hw, struct e1000_phy_info *phy_info)
 
 s32 e1000_validate_mdi_setting(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	e_dbg("e1000_validate_mdi_settings");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hw->autoneg && (hw->mdix == 0 || hw->mdix == 3)) {
 		e_dbg("Invalid MDI setting detected\n");
 		hw->mdix = 1;
@@ -4292,11 +3442,6 @@ s32 e1000_init_eeprom_params(struct e1000_hw *hw)
 	s32 ret_val = E1000_SUCCESS;
 	u16 eeprom_size;
 
-<<<<<<< HEAD
-	e_dbg("e1000_init_eeprom_params");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->mac_type) {
 	case e1000_82542_rev2_0:
 	case e1000_82542_rev2_1:
@@ -4357,13 +3502,8 @@ s32 e1000_init_eeprom_params(struct e1000_hw *hw)
 	}
 
 	if (eeprom->type == e1000_eeprom_spi) {
-<<<<<<< HEAD
-		/* eeprom_size will be an enum [0..8] that maps to eeprom sizes 128B to
-		 * 32KB (incremented by powers of 2).
-=======
 		/* eeprom_size will be an enum [0..8] that maps to eeprom sizes
 		 * 128B to 32KB (incremented by powers of 2).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		/* Set to default value for initial eeprom read. */
 		eeprom->word_size = 64;
@@ -4371,18 +3511,11 @@ s32 e1000_init_eeprom_params(struct e1000_hw *hw)
 		if (ret_val)
 			return ret_val;
 		eeprom_size =
-<<<<<<< HEAD
-		    (eeprom_size & EEPROM_SIZE_MASK) >> EEPROM_SIZE_SHIFT;
-		/* 256B eeprom size was not supported in earlier hardware, so we
-		 * bump eeprom_size up one to ensure that "1" (which maps to 256B)
-		 * is never the result used in the shifting logic below. */
-=======
 		    FIELD_GET(EEPROM_SIZE_MASK, eeprom_size);
 		/* 256B eeprom size was not supported in earlier hardware, so we
 		 * bump eeprom_size up one to ensure that "1" (which maps to
 		 * 256B) is never the result used in the shifting logic below.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (eeprom_size)
 			eeprom_size++;
 
@@ -4414,13 +3547,8 @@ static void e1000_raise_ee_clk(struct e1000_hw *hw, u32 *eecd)
  */
 static void e1000_lower_ee_clk(struct e1000_hw *hw, u32 *eecd)
 {
-<<<<<<< HEAD
-	/* Lower the clock input to the EEPROM (by clearing the SK bit), and then
-	 * wait 50 microseconds.
-=======
 	/* Lower the clock input to the EEPROM (by clearing the SK bit), and
 	 * then wait 50 microseconds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	*eecd = *eecd & ~E1000_EECD_SK;
 	ew32(EECD, *eecd);
@@ -4446,18 +3574,6 @@ static void e1000_shift_out_ee_bits(struct e1000_hw *hw, u16 data, u16 count)
 	 */
 	mask = 0x01 << (count - 1);
 	eecd = er32(EECD);
-<<<<<<< HEAD
-	if (eeprom->type == e1000_eeprom_microwire) {
-		eecd &= ~E1000_EECD_DO;
-	} else if (eeprom->type == e1000_eeprom_spi) {
-		eecd |= E1000_EECD_DO;
-	}
-	do {
-		/* A "1" is shifted out to the EEPROM by setting bit "DI" to a "1",
-		 * and then raising and then lowering the clock (the SK bit controls
-		 * the clock input to the EEPROM).  A "0" is shifted out to the EEPROM
-		 * by setting "DI" to "0" and then raising and then lowering the clock.
-=======
 	if (eeprom->type == e1000_eeprom_microwire)
 		eecd &= ~E1000_EECD_DO;
 	else if (eeprom->type == e1000_eeprom_spi)
@@ -4469,7 +3585,6 @@ static void e1000_shift_out_ee_bits(struct e1000_hw *hw, u16 data, u16 count)
 		 * controls the clock input to the EEPROM).  A "0" is shifted
 		 * out to the EEPROM by setting "DI" to "0" and then raising and
 		 * then lowering the clock.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		eecd &= ~E1000_EECD_DI;
 
@@ -4506,15 +3621,9 @@ static u16 e1000_shift_in_ee_bits(struct e1000_hw *hw, u16 count)
 
 	/* In order to read a register from the EEPROM, we need to shift 'count'
 	 * bits in from the EEPROM. Bits are "shifted in" by raising the clock
-<<<<<<< HEAD
-	 * input to the EEPROM (setting the SK bit), and then reading the value of
-	 * the "DO" bit.  During this "shifting in" process the "DI" bit should
-	 * always be clear.
-=======
 	 * input to the EEPROM (setting the SK bit), and then reading the value
 	 * of the "DO" bit.  During this "shifting in" process the "DI" bit
 	 * should always be clear.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	eecd = er32(EECD);
@@ -4550,11 +3659,6 @@ static s32 e1000_acquire_eeprom(struct e1000_hw *hw)
 	struct e1000_eeprom_info *eeprom = &hw->eeprom;
 	u32 eecd, i = 0;
 
-<<<<<<< HEAD
-	e_dbg("e1000_acquire_eeprom");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eecd = er32(EECD);
 
 	/* Request EEPROM Access */
@@ -4654,11 +3758,6 @@ static void e1000_release_eeprom(struct e1000_hw *hw)
 {
 	u32 eecd;
 
-<<<<<<< HEAD
-	e_dbg("e1000_release_eeprom");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eecd = er32(EECD);
 
 	if (hw->eeprom.type == e1000_eeprom_spi) {
@@ -4706,11 +3805,6 @@ static s32 e1000_spi_eeprom_ready(struct e1000_hw *hw)
 	u16 retry_count = 0;
 	u8 spi_stat_reg;
 
-<<<<<<< HEAD
-	e_dbg("e1000_spi_eeprom_ready");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read "Status Register" repeatedly until the LSB is cleared.  The
 	 * EEPROM will signal that the command has been completed by clearing
 	 * bit 0 of the internal status register.  If it's not cleared within
@@ -4720,11 +3814,7 @@ static s32 e1000_spi_eeprom_ready(struct e1000_hw *hw)
 	do {
 		e1000_shift_out_ee_bits(hw, EEPROM_RDSR_OPCODE_SPI,
 					hw->eeprom.opcode_bits);
-<<<<<<< HEAD
-		spi_stat_reg = (u8) e1000_shift_in_ee_bits(hw, 8);
-=======
 		spi_stat_reg = (u8)e1000_shift_in_ee_bits(hw, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(spi_stat_reg & EEPROM_STATUS_RDY_SPI))
 			break;
 
@@ -4755,16 +3845,10 @@ static s32 e1000_spi_eeprom_ready(struct e1000_hw *hw)
 s32 e1000_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 {
 	s32 ret;
-<<<<<<< HEAD
-	spin_lock(&e1000_eeprom_lock);
-	ret = e1000_do_read_eeprom(hw, offset, words, data);
-	spin_unlock(&e1000_eeprom_lock);
-=======
 
 	mutex_lock(&e1000_eeprom_lock);
 	ret = e1000_do_read_eeprom(hw, offset, words, data);
 	mutex_unlock(&e1000_eeprom_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -4774,25 +3858,6 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 	struct e1000_eeprom_info *eeprom = &hw->eeprom;
 	u32 i = 0;
 
-<<<<<<< HEAD
-	e_dbg("e1000_read_eeprom");
-
-	if (hw->mac_type == e1000_ce4100) {
-		GBE_CONFIG_FLASH_READ(GBE_CONFIG_BASE_VIRT, offset, words,
-		                      data);
-		return E1000_SUCCESS;
-	}
-
-	/* If eeprom is not yet detected, do so now */
-	if (eeprom->word_size == 0)
-		e1000_init_eeprom_params(hw);
-
-	/* A check for invalid values:  offset too large, too many words, and not
-	 * enough words.
-	 */
-	if ((offset >= eeprom->word_size)
-	    || (words > eeprom->word_size - offset) || (words == 0)) {
-=======
 	if (hw->mac_type == e1000_ce4100) {
 		GBE_CONFIG_FLASH_READ(GBE_CONFIG_BASE_VIRT, offset, words,
 				      data);
@@ -4805,7 +3870,6 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 	if ((offset >= eeprom->word_size) ||
 	    (words > eeprom->word_size - offset) ||
 	    (words == 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e_dbg("\"words\" parameter out of bounds. Words = %d,"
 		      "size = %d\n", offset, eeprom->word_size);
 		return -E1000_ERR_EEPROM;
@@ -4820,12 +3884,8 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 		return -E1000_ERR_EEPROM;
 
 	/* Set up the SPI or Microwire EEPROM for bit-bang reading.  We have
-<<<<<<< HEAD
-	 * acquired the EEPROM at this point, so any returns should release it */
-=======
 	 * acquired the EEPROM at this point, so any returns should release it
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (eeprom->type == e1000_eeprom_spi) {
 		u16 word_in;
 		u8 read_opcode = EEPROM_READ_OPCODE_SPI;
@@ -4837,28 +3897,14 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 
 		e1000_standby_eeprom(hw);
 
-<<<<<<< HEAD
-		/* Some SPI eeproms use the 8th address bit embedded in the opcode */
-=======
 		/* Some SPI eeproms use the 8th address bit embedded in the
 		 * opcode
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((eeprom->address_bits == 8) && (offset >= 128))
 			read_opcode |= EEPROM_A8_OPCODE_SPI;
 
 		/* Send the READ command (opcode + addr)  */
 		e1000_shift_out_ee_bits(hw, read_opcode, eeprom->opcode_bits);
-<<<<<<< HEAD
-		e1000_shift_out_ee_bits(hw, (u16) (offset * 2),
-					eeprom->address_bits);
-
-		/* Read the data.  The address of the eeprom internally increments with
-		 * each byte (spi) being read, saving on the overhead of eeprom setup
-		 * and tear-down.  The address counter will roll over if reading beyond
-		 * the size of the eeprom, thus allowing the entire memory to be read
-		 * starting from any offset. */
-=======
 		e1000_shift_out_ee_bits(hw, (u16)(offset * 2),
 					eeprom->address_bits);
 
@@ -4869,7 +3915,6 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 		 * allowing the entire memory to be read starting from any
 		 * offset.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < words; i++) {
 			word_in = e1000_shift_in_ee_bits(hw, 16);
 			data[i] = (word_in >> 8) | (word_in << 8);
@@ -4880,15 +3925,6 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 			e1000_shift_out_ee_bits(hw,
 						EEPROM_READ_OPCODE_MICROWIRE,
 						eeprom->opcode_bits);
-<<<<<<< HEAD
-			e1000_shift_out_ee_bits(hw, (u16) (offset + i),
-						eeprom->address_bits);
-
-			/* Read the data.  For microwire, each word requires the overhead
-			 * of eeprom setup and tear-down. */
-			data[i] = e1000_shift_in_ee_bits(hw, 16);
-			e1000_standby_eeprom(hw);
-=======
 			e1000_shift_out_ee_bits(hw, (u16)(offset + i),
 						eeprom->address_bits);
 
@@ -4898,7 +3934,6 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 			data[i] = e1000_shift_in_ee_bits(hw, 16);
 			e1000_standby_eeprom(hw);
 			cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -4913,11 +3948,7 @@ static s32 e1000_do_read_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
  * @hw: Struct containing variables accessed by shared code
  *
  * Reads the first 64 16 bit words of the EEPROM and sums the values read.
-<<<<<<< HEAD
- * If the the sum of the 64 16 bit words is 0xBABA, the EEPROM's checksum is
-=======
  * If the sum of the 64 16 bit words is 0xBABA, the EEPROM's checksum is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * valid.
  */
 s32 e1000_validate_eeprom_checksum(struct e1000_hw *hw)
@@ -4925,11 +3956,6 @@ s32 e1000_validate_eeprom_checksum(struct e1000_hw *hw)
 	u16 checksum = 0;
 	u16 i, eeprom_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_validate_eeprom_checksum");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < (EEPROM_CHECKSUM_REG + 1); i++) {
 		if (e1000_read_eeprom(hw, i, 1, &eeprom_data) < 0) {
 			e_dbg("EEPROM Read Error\n");
@@ -4944,11 +3970,7 @@ s32 e1000_validate_eeprom_checksum(struct e1000_hw *hw)
 		return E1000_SUCCESS;
 
 #endif
-<<<<<<< HEAD
-	if (checksum == (u16) EEPROM_SUM)
-=======
 	if (checksum == (u16)EEPROM_SUM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return E1000_SUCCESS;
 	else {
 		e_dbg("EEPROM Checksum Invalid\n");
@@ -4968,11 +3990,6 @@ s32 e1000_update_eeprom_checksum(struct e1000_hw *hw)
 	u16 checksum = 0;
 	u16 i, eeprom_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_update_eeprom_checksum");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < EEPROM_CHECKSUM_REG; i++) {
 		if (e1000_read_eeprom(hw, i, 1, &eeprom_data) < 0) {
 			e_dbg("EEPROM Read Error\n");
@@ -4980,11 +3997,7 @@ s32 e1000_update_eeprom_checksum(struct e1000_hw *hw)
 		}
 		checksum += eeprom_data;
 	}
-<<<<<<< HEAD
-	checksum = (u16) EEPROM_SUM - checksum;
-=======
 	checksum = (u16)EEPROM_SUM - checksum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e1000_write_eeprom(hw, EEPROM_CHECKSUM_REG, 1, &checksum) < 0) {
 		e_dbg("EEPROM Write Error\n");
 		return -E1000_ERR_EEPROM;
@@ -5005,16 +4018,10 @@ s32 e1000_update_eeprom_checksum(struct e1000_hw *hw)
 s32 e1000_write_eeprom(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 {
 	s32 ret;
-<<<<<<< HEAD
-	spin_lock(&e1000_eeprom_lock);
-	ret = e1000_do_write_eeprom(hw, offset, words, data);
-	spin_unlock(&e1000_eeprom_lock);
-=======
 
 	mutex_lock(&e1000_eeprom_lock);
 	ret = e1000_do_write_eeprom(hw, offset, words, data);
 	mutex_unlock(&e1000_eeprom_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -5024,25 +4031,6 @@ static s32 e1000_do_write_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 	struct e1000_eeprom_info *eeprom = &hw->eeprom;
 	s32 status = 0;
 
-<<<<<<< HEAD
-	e_dbg("e1000_write_eeprom");
-
-	if (hw->mac_type == e1000_ce4100) {
-		GBE_CONFIG_FLASH_WRITE(GBE_CONFIG_BASE_VIRT, offset, words,
-		                       data);
-		return E1000_SUCCESS;
-	}
-
-	/* If eeprom is not yet detected, do so now */
-	if (eeprom->word_size == 0)
-		e1000_init_eeprom_params(hw);
-
-	/* A check for invalid values:  offset too large, too many words, and not
-	 * enough words.
-	 */
-	if ((offset >= eeprom->word_size)
-	    || (words > eeprom->word_size - offset) || (words == 0)) {
-=======
 	if (hw->mac_type == e1000_ce4100) {
 		GBE_CONFIG_FLASH_WRITE(GBE_CONFIG_BASE_VIRT, offset, words,
 				       data);
@@ -5055,7 +4043,6 @@ static s32 e1000_do_write_eeprom(struct e1000_hw *hw, u16 offset, u16 words,
 	if ((offset >= eeprom->word_size) ||
 	    (words > eeprom->word_size - offset) ||
 	    (words == 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e_dbg("\"words\" parameter out of bounds\n");
 		return -E1000_ERR_EEPROM;
 	}
@@ -5090,11 +4077,6 @@ static s32 e1000_write_eeprom_spi(struct e1000_hw *hw, u16 offset, u16 words,
 	struct e1000_eeprom_info *eeprom = &hw->eeprom;
 	u16 widx = 0;
 
-<<<<<<< HEAD
-	e_dbg("e1000_write_eeprom_spi");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (widx < words) {
 		u8 write_opcode = EEPROM_WRITE_OPCODE_SPI;
 
@@ -5102,10 +4084,7 @@ static s32 e1000_write_eeprom_spi(struct e1000_hw *hw, u16 offset, u16 words,
 			return -E1000_ERR_EEPROM;
 
 		e1000_standby_eeprom(hw);
-<<<<<<< HEAD
-=======
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*  Send the WRITE ENABLE command (8 bit opcode )  */
 		e1000_shift_out_ee_bits(hw, EEPROM_WREN_OPCODE_SPI,
@@ -5113,54 +4092,34 @@ static s32 e1000_write_eeprom_spi(struct e1000_hw *hw, u16 offset, u16 words,
 
 		e1000_standby_eeprom(hw);
 
-<<<<<<< HEAD
-		/* Some SPI eeproms use the 8th address bit embedded in the opcode */
-=======
 		/* Some SPI eeproms use the 8th address bit embedded in the
 		 * opcode
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((eeprom->address_bits == 8) && (offset >= 128))
 			write_opcode |= EEPROM_A8_OPCODE_SPI;
 
 		/* Send the Write command (8-bit opcode + addr) */
 		e1000_shift_out_ee_bits(hw, write_opcode, eeprom->opcode_bits);
 
-<<<<<<< HEAD
-		e1000_shift_out_ee_bits(hw, (u16) ((offset + widx) * 2),
-=======
 		e1000_shift_out_ee_bits(hw, (u16)((offset + widx) * 2),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					eeprom->address_bits);
 
 		/* Send the data */
 
-<<<<<<< HEAD
-		/* Loop to allow for up to whole page write (32 bytes) of eeprom */
-		while (widx < words) {
-			u16 word_out = data[widx];
-=======
 		/* Loop to allow for up to whole page write (32 bytes) of
 		 * eeprom
 		 */
 		while (widx < words) {
 			u16 word_out = data[widx];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			word_out = (word_out >> 8) | (word_out << 8);
 			e1000_shift_out_ee_bits(hw, word_out, 16);
 			widx++;
 
-<<<<<<< HEAD
-			/* Some larger eeprom sizes are capable of a 32-byte PAGE WRITE
-			 * operation, while the smaller eeproms are capable of an 8-byte
-			 * PAGE WRITE operation.  Break the inner loop to pass new address
-=======
 			/* Some larger eeprom sizes are capable of a 32-byte
 			 * PAGE WRITE operation, while the smaller eeproms are
 			 * capable of an 8-byte PAGE WRITE operation.  Break the
 			 * inner loop to pass new address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			if ((((offset + widx) * 2) % eeprom->page_size) == 0) {
 				e1000_standby_eeprom(hw);
@@ -5187,11 +4146,6 @@ static s32 e1000_write_eeprom_microwire(struct e1000_hw *hw, u16 offset,
 	u16 words_written = 0;
 	u16 i = 0;
 
-<<<<<<< HEAD
-	e_dbg("e1000_write_eeprom_microwire");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Send the write enable command to the EEPROM (3-bit opcode plus
 	 * 6/8-bit dummy address beginning with 11).  It's less work to include
 	 * the 11 of the dummy address as part of the opcode than it is to shift
@@ -5199,15 +4153,9 @@ static s32 e1000_write_eeprom_microwire(struct e1000_hw *hw, u16 offset,
 	 * EEPROM into write/erase mode.
 	 */
 	e1000_shift_out_ee_bits(hw, EEPROM_EWEN_OPCODE_MICROWIRE,
-<<<<<<< HEAD
-				(u16) (eeprom->opcode_bits + 2));
-
-	e1000_shift_out_ee_bits(hw, 0, (u16) (eeprom->address_bits - 2));
-=======
 				(u16)(eeprom->opcode_bits + 2));
 
 	e1000_shift_out_ee_bits(hw, 0, (u16)(eeprom->address_bits - 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Prepare the EEPROM */
 	e1000_standby_eeprom(hw);
@@ -5217,26 +4165,12 @@ static s32 e1000_write_eeprom_microwire(struct e1000_hw *hw, u16 offset,
 		e1000_shift_out_ee_bits(hw, EEPROM_WRITE_OPCODE_MICROWIRE,
 					eeprom->opcode_bits);
 
-<<<<<<< HEAD
-		e1000_shift_out_ee_bits(hw, (u16) (offset + words_written),
-=======
 		e1000_shift_out_ee_bits(hw, (u16)(offset + words_written),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					eeprom->address_bits);
 
 		/* Send the data */
 		e1000_shift_out_ee_bits(hw, data[words_written], 16);
 
-<<<<<<< HEAD
-		/* Toggle the CS line.  This in effect tells the EEPROM to execute
-		 * the previous command.
-		 */
-		e1000_standby_eeprom(hw);
-
-		/* Read DO repeatedly until it is high (equal to '1').  The EEPROM will
-		 * signal that the command has been completed by raising the DO signal.
-		 * If DO does not go high in 10 milliseconds, then error out.
-=======
 		/* Toggle the CS line.  This in effect tells the EEPROM to
 		 * execute the previous command.
 		 */
@@ -5246,7 +4180,6 @@ static s32 e1000_write_eeprom_microwire(struct e1000_hw *hw, u16 offset,
 		 * EEPROM will signal that the command has been completed by
 		 * raising the DO signal. If DO does not go high in 10
 		 * milliseconds, then error out.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		for (i = 0; i < 200; i++) {
 			eecd = er32(EECD);
@@ -5261,10 +4194,7 @@ static s32 e1000_write_eeprom_microwire(struct e1000_hw *hw, u16 offset,
 
 		/* Recover from write */
 		e1000_standby_eeprom(hw);
-<<<<<<< HEAD
-=======
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		words_written++;
 	}
@@ -5276,15 +4206,9 @@ static s32 e1000_write_eeprom_microwire(struct e1000_hw *hw, u16 offset,
 	 * EEPROM out of write/erase mode.
 	 */
 	e1000_shift_out_ee_bits(hw, EEPROM_EWDS_OPCODE_MICROWIRE,
-<<<<<<< HEAD
-				(u16) (eeprom->opcode_bits + 2));
-
-	e1000_shift_out_ee_bits(hw, 0, (u16) (eeprom->address_bits - 2));
-=======
 				(u16)(eeprom->opcode_bits + 2));
 
 	e1000_shift_out_ee_bits(hw, 0, (u16)(eeprom->address_bits - 2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return E1000_SUCCESS;
 }
@@ -5301,24 +4225,14 @@ s32 e1000_read_mac_addr(struct e1000_hw *hw)
 	u16 offset;
 	u16 eeprom_data, i;
 
-<<<<<<< HEAD
-	e_dbg("e1000_read_mac_addr");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < NODE_ADDRESS_SIZE; i += 2) {
 		offset = i >> 1;
 		if (e1000_read_eeprom(hw, offset, 1, &eeprom_data) < 0) {
 			e_dbg("EEPROM Read Error\n");
 			return -E1000_ERR_EEPROM;
 		}
-<<<<<<< HEAD
-		hw->perm_mac_addr[i] = (u8) (eeprom_data & 0x00FF);
-		hw->perm_mac_addr[i + 1] = (u8) (eeprom_data >> 8);
-=======
 		hw->perm_mac_addr[i] = (u8)(eeprom_data & 0x00FF);
 		hw->perm_mac_addr[i + 1] = (u8)(eeprom_data >> 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (hw->mac_type) {
@@ -5349,11 +4263,6 @@ static void e1000_init_rx_addrs(struct e1000_hw *hw)
 	u32 i;
 	u32 rar_num;
 
-<<<<<<< HEAD
-	e_dbg("e1000_init_rx_addrs");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setup the receive address. */
 	e_dbg("Programming MAC Address into RAR[0]\n");
 
@@ -5361,15 +4270,10 @@ static void e1000_init_rx_addrs(struct e1000_hw *hw)
 
 	rar_num = E1000_RAR_ENTRIES;
 
-<<<<<<< HEAD
-	/* Zero out the other 15 receive addresses. */
-	e_dbg("Clearing RAR[1-15]\n");
-=======
 	/* Zero out the following 14 receive addresses. RAR[15] is for
 	 * manageability
 	 */
 	e_dbg("Clearing RAR[1-14]\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 1; i < rar_num; i++) {
 		E1000_WRITE_REG_ARRAY(hw, RA, (i << 1), 0);
 		E1000_WRITE_FLUSH();
@@ -5397,21 +4301,6 @@ u32 e1000_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
 		 */
 	case 0:
 		/* [47:36] i.e. 0x563 for above example address */
-<<<<<<< HEAD
-		hash_value = ((mc_addr[4] >> 4) | (((u16) mc_addr[5]) << 4));
-		break;
-	case 1:
-		/* [46:35] i.e. 0xAC6 for above example address */
-		hash_value = ((mc_addr[4] >> 3) | (((u16) mc_addr[5]) << 5));
-		break;
-	case 2:
-		/* [45:34] i.e. 0x5D8 for above example address */
-		hash_value = ((mc_addr[4] >> 2) | (((u16) mc_addr[5]) << 6));
-		break;
-	case 3:
-		/* [43:32] i.e. 0x634 for above example address */
-		hash_value = ((mc_addr[4]) | (((u16) mc_addr[5]) << 8));
-=======
 		hash_value = ((mc_addr[4] >> 4) | (((u16)mc_addr[5]) << 4));
 		break;
 	case 1:
@@ -5425,7 +4314,6 @@ u32 e1000_hash_mc_addr(struct e1000_hw *hw, u8 *mc_addr)
 	case 3:
 		/* [43:32] i.e. 0x634 for above example address */
 		hash_value = ((mc_addr[4]) | (((u16)mc_addr[5]) << 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -5446,15 +4334,9 @@ void e1000_rar_set(struct e1000_hw *hw, u8 *addr, u32 index)
 	/* HW expects these in little endian so we reverse the byte order
 	 * from network order (big endian) to little endian
 	 */
-<<<<<<< HEAD
-	rar_low = ((u32) addr[0] | ((u32) addr[1] << 8) |
-		   ((u32) addr[2] << 16) | ((u32) addr[3] << 24));
-	rar_high = ((u32) addr[4] | ((u32) addr[5] << 8));
-=======
 	rar_low = ((u32)addr[0] | ((u32)addr[1] << 8) |
 		   ((u32)addr[2] << 16) | ((u32)addr[3] << 24));
 	rar_high = ((u32)addr[4] | ((u32)addr[5] << 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable Rx and flush all Rx frames before enabling RSS to avoid Rx
 	 * unit hang.
@@ -5490,11 +4372,7 @@ void e1000_rar_set(struct e1000_hw *hw, u8 *addr, u32 index)
 /**
  * e1000_write_vfta - Writes a value to the specified offset in the VLAN filter table.
  * @hw: Struct containing variables accessed by shared code
-<<<<<<< HEAD
- * @offset: Offset in VLAN filer table to write
-=======
  * @offset: Offset in VLAN filter table to write
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @value: Value to write into VLAN filter table
  */
 void e1000_write_vfta(struct e1000_hw *hw, u32 offset, u32 value)
@@ -5514,32 +4392,15 @@ void e1000_write_vfta(struct e1000_hw *hw, u32 offset, u32 value)
 }
 
 /**
-<<<<<<< HEAD
- * e1000_clear_vfta - Clears the VLAN filer table
-=======
  * e1000_clear_vfta - Clears the VLAN filter table
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @hw: Struct containing variables accessed by shared code
  */
 static void e1000_clear_vfta(struct e1000_hw *hw)
 {
 	u32 offset;
-<<<<<<< HEAD
-	u32 vfta_value = 0;
-	u32 vfta_offset = 0;
-	u32 vfta_bit_in_reg = 0;
-
-	for (offset = 0; offset < E1000_VLAN_FILTER_TBL_SIZE; offset++) {
-		/* If the offset we want to clear is the same offset of the
-		 * manageability VLAN ID, then clear all bits except that of the
-		 * manageability unit */
-		vfta_value = (offset == vfta_offset) ? vfta_bit_in_reg : 0;
-		E1000_WRITE_REG_ARRAY(hw, VFTA, offset, vfta_value);
-=======
 
 	for (offset = 0; offset < E1000_VLAN_FILTER_TBL_SIZE; offset++) {
 		E1000_WRITE_REG_ARRAY(hw, VFTA, offset, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		E1000_WRITE_FLUSH();
 	}
 }
@@ -5553,11 +4414,6 @@ static s32 e1000_id_led_init(struct e1000_hw *hw)
 	u16 eeprom_data, i, temp;
 	const u16 led_mask = 0x0F;
 
-<<<<<<< HEAD
-	e_dbg("e1000_id_led_init");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->mac_type < e1000_82540) {
 		/* Nothing to do */
 		return E1000_SUCCESS;
@@ -5629,11 +4485,6 @@ s32 e1000_setup_led(struct e1000_hw *hw)
 	u32 ledctl;
 	s32 ret_val = E1000_SUCCESS;
 
-<<<<<<< HEAD
-	e_dbg("e1000_setup_led");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->mac_type) {
 	case e1000_82542_rev2_0:
 	case e1000_82542_rev2_1:
@@ -5651,19 +4502,11 @@ s32 e1000_setup_led(struct e1000_hw *hw)
 		if (ret_val)
 			return ret_val;
 		ret_val = e1000_write_phy_reg(hw, IGP01E1000_GMII_FIFO,
-<<<<<<< HEAD
-					      (u16) (hw->phy_spd_default &
-						     ~IGP01E1000_GMII_SPD));
-		if (ret_val)
-			return ret_val;
-		/* Fall Through */
-=======
 					      (u16)(hw->phy_spd_default &
 						     ~IGP01E1000_GMII_SPD));
 		if (ret_val)
 			return ret_val;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		if (hw->media_type == e1000_media_type_fiber) {
 			ledctl = er32(LEDCTL);
@@ -5692,11 +4535,6 @@ s32 e1000_cleanup_led(struct e1000_hw *hw)
 {
 	s32 ret_val = E1000_SUCCESS;
 
-<<<<<<< HEAD
-	e_dbg("e1000_cleanup_led");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->mac_type) {
 	case e1000_82542_rev2_0:
 	case e1000_82542_rev2_1:
@@ -5713,11 +4551,7 @@ s32 e1000_cleanup_led(struct e1000_hw *hw)
 					      hw->phy_spd_default);
 		if (ret_val)
 			return ret_val;
-<<<<<<< HEAD
-		/* Fall Through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* Restore LEDCTL settings */
 		ew32(LEDCTL, hw->ledctl_default);
@@ -5735,11 +4569,6 @@ s32 e1000_led_on(struct e1000_hw *hw)
 {
 	u32 ctrl = er32(CTRL);
 
-<<<<<<< HEAD
-	e_dbg("e1000_led_on");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->mac_type) {
 	case e1000_82542_rev2_0:
 	case e1000_82542_rev2_1:
@@ -5784,11 +4613,6 @@ s32 e1000_led_off(struct e1000_hw *hw)
 {
 	u32 ctrl = er32(CTRL);
 
-<<<<<<< HEAD
-	e_dbg("e1000_led_off");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->mac_type) {
 	case e1000_82542_rev2_0:
 	case e1000_82542_rev2_1:
@@ -5831,63 +4655,6 @@ s32 e1000_led_off(struct e1000_hw *hw)
  */
 static void e1000_clear_hw_cntrs(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	volatile u32 temp;
-
-	temp = er32(CRCERRS);
-	temp = er32(SYMERRS);
-	temp = er32(MPC);
-	temp = er32(SCC);
-	temp = er32(ECOL);
-	temp = er32(MCC);
-	temp = er32(LATECOL);
-	temp = er32(COLC);
-	temp = er32(DC);
-	temp = er32(SEC);
-	temp = er32(RLEC);
-	temp = er32(XONRXC);
-	temp = er32(XONTXC);
-	temp = er32(XOFFRXC);
-	temp = er32(XOFFTXC);
-	temp = er32(FCRUC);
-
-	temp = er32(PRC64);
-	temp = er32(PRC127);
-	temp = er32(PRC255);
-	temp = er32(PRC511);
-	temp = er32(PRC1023);
-	temp = er32(PRC1522);
-
-	temp = er32(GPRC);
-	temp = er32(BPRC);
-	temp = er32(MPRC);
-	temp = er32(GPTC);
-	temp = er32(GORCL);
-	temp = er32(GORCH);
-	temp = er32(GOTCL);
-	temp = er32(GOTCH);
-	temp = er32(RNBC);
-	temp = er32(RUC);
-	temp = er32(RFC);
-	temp = er32(ROC);
-	temp = er32(RJC);
-	temp = er32(TORL);
-	temp = er32(TORH);
-	temp = er32(TOTL);
-	temp = er32(TOTH);
-	temp = er32(TPR);
-	temp = er32(TPT);
-
-	temp = er32(PTC64);
-	temp = er32(PTC127);
-	temp = er32(PTC255);
-	temp = er32(PTC511);
-	temp = er32(PTC1023);
-	temp = er32(PTC1522);
-
-	temp = er32(MPTC);
-	temp = er32(BPTC);
-=======
 	er32(CRCERRS);
 	er32(SYMERRS);
 	er32(MPC);
@@ -5941,39 +4708,23 @@ static void e1000_clear_hw_cntrs(struct e1000_hw *hw)
 
 	er32(MPTC);
 	er32(BPTC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->mac_type < e1000_82543)
 		return;
 
-<<<<<<< HEAD
-	temp = er32(ALGNERRC);
-	temp = er32(RXERRC);
-	temp = er32(TNCRS);
-	temp = er32(CEXTERR);
-	temp = er32(TSCTC);
-	temp = er32(TSCTFC);
-=======
 	er32(ALGNERRC);
 	er32(RXERRC);
 	er32(TNCRS);
 	er32(CEXTERR);
 	er32(TSCTC);
 	er32(TSCTFC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->mac_type <= e1000_82544)
 		return;
 
-<<<<<<< HEAD
-	temp = er32(MGTPRC);
-	temp = er32(MGTPDC);
-	temp = er32(MGTPTC);
-=======
 	er32(MGTPRC);
 	er32(MGTPDC);
 	er32(MGTPTC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -5987,11 +4738,6 @@ static void e1000_clear_hw_cntrs(struct e1000_hw *hw)
  */
 void e1000_reset_adaptive(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	e_dbg("e1000_reset_adaptive");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->adaptive_ifs) {
 		if (!hw->ifs_params_forced) {
 			hw->current_ifs_val = 0;
@@ -6010,26 +4756,14 @@ void e1000_reset_adaptive(struct e1000_hw *hw)
 /**
  * e1000_update_adaptive - update adaptive IFS
  * @hw: Struct containing variables accessed by shared code
-<<<<<<< HEAD
- * @tx_packets: Number of transmits since last callback
- * @total_collisions: Number of collisions since last callback
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Called during the callback/watchdog routine to update IFS value based on
  * the ratio of transmits to collisions.
  */
 void e1000_update_adaptive(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	e_dbg("e1000_update_adaptive");
-
-	if (hw->adaptive_ifs) {
-		if ((hw->collision_delta *hw->ifs_ratio) > hw->tx_packet_delta) {
-=======
 	if (hw->adaptive_ifs) {
 		if ((hw->collision_delta * hw->ifs_ratio) > hw->tx_packet_delta) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hw->tx_packet_delta > MIN_NUM_XMITS) {
 				hw->in_ifs_mode = true;
 				if (hw->current_ifs_val < hw->ifs_max_val) {
@@ -6043,13 +4777,8 @@ void e1000_update_adaptive(struct e1000_hw *hw)
 				}
 			}
 		} else {
-<<<<<<< HEAD
-			if (hw->in_ifs_mode
-			    && (hw->tx_packet_delta <= MIN_NUM_XMITS)) {
-=======
 			if (hw->in_ifs_mode &&
 			    (hw->tx_packet_delta <= MIN_NUM_XMITS)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hw->current_ifs_val = 0;
 				hw->in_ifs_mode = false;
 				ew32(AIT, 0);
@@ -6061,87 +4790,6 @@ void e1000_update_adaptive(struct e1000_hw *hw)
 }
 
 /**
-<<<<<<< HEAD
- * e1000_tbi_adjust_stats
- * @hw: Struct containing variables accessed by shared code
- * @frame_len: The length of the frame in question
- * @mac_addr: The Ethernet destination address of the frame in question
- *
- * Adjusts the statistic counters when a frame is accepted by TBI_ACCEPT
- */
-void e1000_tbi_adjust_stats(struct e1000_hw *hw, struct e1000_hw_stats *stats,
-			    u32 frame_len, u8 *mac_addr)
-{
-	u64 carry_bit;
-
-	/* First adjust the frame length. */
-	frame_len--;
-	/* We need to adjust the statistics counters, since the hardware
-	 * counters overcount this packet as a CRC error and undercount
-	 * the packet as a good packet
-	 */
-	/* This packet should not be counted as a CRC error.    */
-	stats->crcerrs--;
-	/* This packet does count as a Good Packet Received.    */
-	stats->gprc++;
-
-	/* Adjust the Good Octets received counters             */
-	carry_bit = 0x80000000 & stats->gorcl;
-	stats->gorcl += frame_len;
-	/* If the high bit of Gorcl (the low 32 bits of the Good Octets
-	 * Received Count) was one before the addition,
-	 * AND it is zero after, then we lost the carry out,
-	 * need to add one to Gorch (Good Octets Received Count High).
-	 * This could be simplified if all environments supported
-	 * 64-bit integers.
-	 */
-	if (carry_bit && ((stats->gorcl & 0x80000000) == 0))
-		stats->gorch++;
-	/* Is this a broadcast or multicast?  Check broadcast first,
-	 * since the test for a multicast frame will test positive on
-	 * a broadcast frame.
-	 */
-	if ((mac_addr[0] == (u8) 0xff) && (mac_addr[1] == (u8) 0xff))
-		/* Broadcast packet */
-		stats->bprc++;
-	else if (*mac_addr & 0x01)
-		/* Multicast packet */
-		stats->mprc++;
-
-	if (frame_len == hw->max_frame_size) {
-		/* In this case, the hardware has overcounted the number of
-		 * oversize frames.
-		 */
-		if (stats->roc > 0)
-			stats->roc--;
-	}
-
-	/* Adjust the bin counters when the extra byte put the frame in the
-	 * wrong bin. Remember that the frame_len was adjusted above.
-	 */
-	if (frame_len == 64) {
-		stats->prc64++;
-		stats->prc127--;
-	} else if (frame_len == 127) {
-		stats->prc127++;
-		stats->prc255--;
-	} else if (frame_len == 255) {
-		stats->prc255++;
-		stats->prc511--;
-	} else if (frame_len == 511) {
-		stats->prc511++;
-		stats->prc1023--;
-	} else if (frame_len == 1023) {
-		stats->prc1023++;
-		stats->prc1522--;
-	} else if (frame_len == 1522) {
-		stats->prc1522++;
-	}
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * e1000_get_bus_info
  * @hw: Struct containing variables accessed by shared code
  *
@@ -6231,29 +4879,15 @@ static s32 e1000_get_cable_length(struct e1000_hw *hw, u16 *min_length,
 	u16 i, phy_data;
 	u16 cable_length;
 
-<<<<<<< HEAD
-	e_dbg("e1000_get_cable_length");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*min_length = *max_length = 0;
 
 	/* Use old method for Phy older than IGP */
 	if (hw->phy_type == e1000_phy_m88) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val = e1000_read_phy_reg(hw, M88E1000_PHY_SPEC_STATUS,
 					     &phy_data);
 		if (ret_val)
 			return ret_val;
-<<<<<<< HEAD
-		cable_length = (phy_data & M88E1000_PSSR_CABLE_LENGTH) >>
-		    M88E1000_PSSR_CABLE_LENGTH_SHIFT;
-=======
 		cable_length = FIELD_GET(M88E1000_PSSR_CABLE_LENGTH, phy_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Convert the enum value to ranged values */
 		switch (cable_length) {
@@ -6279,10 +4913,6 @@ static s32 e1000_get_cable_length(struct e1000_hw *hw, u16 *min_length,
 			break;
 		default:
 			return -E1000_ERR_PHY;
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (hw->phy_type == e1000_phy_igp) {	/* For IGP PHY */
 		u16 cur_agc_value;
@@ -6295,10 +4925,6 @@ static s32 e1000_get_cable_length(struct e1000_hw *hw, u16 *min_length,
 		};
 		/* Read the AGC registers for all channels */
 		for (i = 0; i < IGP01E1000_PHY_CHANNEL_NUM; i++) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret_val =
 			    e1000_read_phy_reg(hw, agc_reg_array[i], &phy_data);
 			if (ret_val)
@@ -6308,13 +4934,8 @@ static s32 e1000_get_cable_length(struct e1000_hw *hw, u16 *min_length,
 
 			/* Value bound check. */
 			if ((cur_agc_value >=
-<<<<<<< HEAD
-			     IGP01E1000_AGC_LENGTH_TABLE_SIZE - 1)
-			    || (cur_agc_value == 0))
-=======
 			     IGP01E1000_AGC_LENGTH_TABLE_SIZE - 1) ||
 			    (cur_agc_value == 0))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -E1000_ERR_PHY;
 
 			agc_value += cur_agc_value;
@@ -6369,23 +4990,13 @@ static s32 e1000_check_polarity(struct e1000_hw *hw,
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_check_polarity");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy_type == e1000_phy_m88) {
 		/* return the Polarity bit in the Status register. */
 		ret_val = e1000_read_phy_reg(hw, M88E1000_PHY_SPEC_STATUS,
 					     &phy_data);
 		if (ret_val)
 			return ret_val;
-<<<<<<< HEAD
-		*polarity = ((phy_data & M88E1000_PSSR_REV_POLARITY) >>
-			     M88E1000_PSSR_REV_POLARITY_SHIFT) ?
-=======
 		*polarity = FIELD_GET(M88E1000_PSSR_REV_POLARITY, phy_data) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    e1000_rev_polarity_reversed : e1000_rev_polarity_normal;
 
 	} else if (hw->phy_type == e1000_phy_igp) {
@@ -6395,19 +5006,11 @@ static s32 e1000_check_polarity(struct e1000_hw *hw,
 		if (ret_val)
 			return ret_val;
 
-<<<<<<< HEAD
-		/* If speed is 1000 Mbps, must read the IGP01E1000_PHY_PCS_INIT_REG to
-		 * find the polarity status */
-		if ((phy_data & IGP01E1000_PSSR_SPEED_MASK) ==
-		    IGP01E1000_PSSR_SPEED_1000MBPS) {
-
-=======
 		/* If speed is 1000 Mbps, must read the
 		 * IGP01E1000_PHY_PCS_INIT_REG to find the polarity status
 		 */
 		if ((phy_data & IGP01E1000_PSSR_SPEED_MASK) ==
 		    IGP01E1000_PSSR_SPEED_1000MBPS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Read the GIG initialization PCS register (0x00B4) */
 			ret_val =
 			    e1000_read_phy_reg(hw, IGP01E1000_PHY_PCS_INIT_REG,
@@ -6420,14 +5023,9 @@ static s32 e1000_check_polarity(struct e1000_hw *hw,
 			    e1000_rev_polarity_reversed :
 			    e1000_rev_polarity_normal;
 		} else {
-<<<<<<< HEAD
-			/* For 10 Mbps, read the polarity bit in the status register. (for
-			 * 100 Mbps this bit is always 0) */
-=======
 			/* For 10 Mbps, read the polarity bit in the status
 			 * register. (for 100 Mbps this bit is always 0)
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*polarity =
 			    (phy_data & IGP01E1000_PSSR_POLARITY_REVERSED) ?
 			    e1000_rev_polarity_reversed :
@@ -6440,11 +5038,6 @@ static s32 e1000_check_polarity(struct e1000_hw *hw,
 /**
  * e1000_check_downshift - Check if Downshift occurred
  * @hw: Struct containing variables accessed by shared code
-<<<<<<< HEAD
- * @downshift: output parameter : 0 - No Downshift occurred.
- *                                1 - Downshift occurred.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * returns: - E1000_ERR_XXX
  *            E1000_SUCCESS
@@ -6459,11 +5052,6 @@ static s32 e1000_check_downshift(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_check_downshift");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy_type == e1000_phy_igp) {
 		ret_val = e1000_read_phy_reg(hw, IGP01E1000_PHY_LINK_HEALTH,
 					     &phy_data);
@@ -6478,13 +5066,8 @@ static s32 e1000_check_downshift(struct e1000_hw *hw)
 		if (ret_val)
 			return ret_val;
 
-<<<<<<< HEAD
-		hw->speed_downgraded = (phy_data & M88E1000_PSSR_DOWNSHIFT) >>
-		    M88E1000_PSSR_DOWNSHIFT_SHIFT;
-=======
 		hw->speed_downgraded = FIELD_GET(M88E1000_PSSR_DOWNSHIFT,
 						 phy_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return E1000_SUCCESS;
@@ -6546,13 +5129,8 @@ static s32 e1000_1000Mb_check_cable_length(struct e1000_hw *hw)
 				hw->ffe_config_state = e1000_ffe_config_active;
 
 				ret_val = e1000_write_phy_reg(hw,
-<<<<<<< HEAD
-					      IGP01E1000_PHY_DSP_FFE,
-					      IGP01E1000_PHY_DSP_FFE_CM_CP);
-=======
 							      IGP01E1000_PHY_DSP_FFE,
 							      IGP01E1000_PHY_DSP_FFE_CM_CP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret_val)
 					return ret_val;
 				break;
@@ -6584,11 +5162,6 @@ static s32 e1000_config_dsp_after_link_change(struct e1000_hw *hw, bool link_up)
 	s32 ret_val;
 	u16 phy_data, phy_saved_data, speed, duplex, i;
 
-<<<<<<< HEAD
-	e_dbg("e1000_config_dsp_after_link_change");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->phy_type != e1000_phy_igp)
 		return E1000_SUCCESS;
 
@@ -6606,14 +5179,9 @@ static s32 e1000_config_dsp_after_link_change(struct e1000_hw *hw, bool link_up)
 		}
 	} else {
 		if (hw->dsp_config_state == e1000_dsp_config_activated) {
-<<<<<<< HEAD
-			/* Save off the current value of register 0x2F5B to be restored at
-			 * the end of the routines. */
-=======
 			/* Save off the current value of register 0x2F5B to be
 			 * restored at the end of the routines.
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret_val =
 			    e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
 
@@ -6667,14 +5235,9 @@ static s32 e1000_config_dsp_after_link_change(struct e1000_hw *hw, bool link_up)
 		}
 
 		if (hw->ffe_config_state == e1000_ffe_config_active) {
-<<<<<<< HEAD
-			/* Save off the current value of register 0x2F5B to be restored at
-			 * the end of the routines. */
-=======
 			/* Save off the current value of register 0x2F5B to be
 			 * restored at the end of the routines.
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret_val =
 			    e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
 
@@ -6732,24 +5295,13 @@ static s32 e1000_set_phy_mode(struct e1000_hw *hw)
 	s32 ret_val;
 	u16 eeprom_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_set_phy_mode");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((hw->mac_type == e1000_82545_rev_3) &&
 	    (hw->media_type == e1000_media_type_copper)) {
 		ret_val =
 		    e1000_read_eeprom(hw, EEPROM_PHY_CLASS_WORD, 1,
 				      &eeprom_data);
-<<<<<<< HEAD
-		if (ret_val) {
-			return ret_val;
-		}
-=======
 		if (ret_val)
 			return ret_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((eeprom_data != EEPROM_RESERVED_WORD) &&
 		    (eeprom_data & EEPROM_PHY_CLASS_A)) {
@@ -6788,27 +5340,16 @@ static s32 e1000_set_d3_lplu_state(struct e1000_hw *hw, bool active)
 {
 	s32 ret_val;
 	u16 phy_data;
-<<<<<<< HEAD
-	e_dbg("e1000_set_d3_lplu_state");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->phy_type != e1000_phy_igp)
 		return E1000_SUCCESS;
 
 	/* During driver activity LPLU should not be used or it will attain link
-<<<<<<< HEAD
-	 * from the lowest speeds starting from 10Mbps. The capability is used for
-	 * Dx transitions and states */
-	if (hw->mac_type == e1000_82541_rev_2
-	    || hw->mac_type == e1000_82547_rev_2) {
-=======
 	 * from the lowest speeds starting from 10Mbps. The capability is used
 	 * for Dx transitions and states
 	 */
 	if (hw->mac_type == e1000_82541_rev_2 ||
 	    hw->mac_type == e1000_82547_rev_2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret_val =
 		    e1000_read_phy_reg(hw, IGP01E1000_GMII_FIFO, &phy_data);
 		if (ret_val)
@@ -6826,18 +5367,11 @@ static s32 e1000_set_d3_lplu_state(struct e1000_hw *hw, bool active)
 				return ret_val;
 		}
 
-<<<<<<< HEAD
-		/* LPLU and SmartSpeed are mutually exclusive.  LPLU is used during
-		 * Dx states where the power conservation is most important.  During
-		 * driver activity we should enable SmartSpeed, so performance is
-		 * maintained. */
-=======
 		/* LPLU and SmartSpeed are mutually exclusive.  LPLU is used
 		 * during Dx states where the power conservation is most
 		 * important.  During driver activity we should enable
 		 * SmartSpeed, so performance is maintained.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hw->smart_speed == e1000_smart_speed_on) {
 			ret_val =
 			    e1000_read_phy_reg(hw, IGP01E1000_PHY_PORT_CONFIG,
@@ -6865,17 +5399,9 @@ static s32 e1000_set_d3_lplu_state(struct e1000_hw *hw, bool active)
 			if (ret_val)
 				return ret_val;
 		}
-<<<<<<< HEAD
-	} else if ((hw->autoneg_advertised == AUTONEG_ADVERTISE_SPEED_DEFAULT)
-		   || (hw->autoneg_advertised == AUTONEG_ADVERTISE_10_ALL)
-		   || (hw->autoneg_advertised ==
-		       AUTONEG_ADVERTISE_10_100_ALL)) {
-
-=======
 	} else if ((hw->autoneg_advertised == AUTONEG_ADVERTISE_SPEED_DEFAULT) ||
 		   (hw->autoneg_advertised == AUTONEG_ADVERTISE_10_ALL) ||
 		   (hw->autoneg_advertised == AUTONEG_ADVERTISE_10_100_ALL)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hw->mac_type == e1000_82541_rev_2 ||
 		    hw->mac_type == e1000_82547_rev_2) {
 			phy_data |= IGP01E1000_GMII_FLEX_SPD;
@@ -6899,10 +5425,6 @@ static s32 e1000_set_d3_lplu_state(struct e1000_hw *hw, bool active)
 					phy_data);
 		if (ret_val)
 			return ret_val;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return E1000_SUCCESS;
 }
@@ -6919,11 +5441,6 @@ static s32 e1000_set_vco_speed(struct e1000_hw *hw)
 	u16 default_page = 0;
 	u16 phy_data;
 
-<<<<<<< HEAD
-	e_dbg("e1000_set_vco_speed");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hw->mac_type) {
 	case e1000_82545_rev_3:
 	case e1000_82546_rev_3:
@@ -6975,10 +5492,6 @@ static s32 e1000_set_vco_speed(struct e1000_hw *hw)
 	return E1000_SUCCESS;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * e1000_enable_mng_pass_thru - check for bmc pass through
  * @hw: Struct containing variables accessed by shared code
@@ -7098,10 +5611,6 @@ static s32 e1000_polarity_reversal_workaround(struct e1000_hw *hw)
  */
 static s32 e1000_get_auto_rd_done(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	e_dbg("e1000_get_auto_rd_done");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(5);
 	return E1000_SUCCESS;
 }
@@ -7116,10 +5625,6 @@ static s32 e1000_get_auto_rd_done(struct e1000_hw *hw)
  */
 static s32 e1000_get_phy_cfg_done(struct e1000_hw *hw)
 {
-<<<<<<< HEAD
-	e_dbg("e1000_get_phy_cfg_done");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(10);
 	return E1000_SUCCESS;
 }

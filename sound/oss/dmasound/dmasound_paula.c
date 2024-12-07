@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/sound/oss/dmasound/dmasound_paula.c
  *
@@ -27,11 +24,7 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 #include <asm/amigahw.h>
 #include <asm/amigaints.h>
@@ -727,35 +720,6 @@ static int __init amiga_audio_probe(struct platform_device *pdev)
 	return dmasound_init();
 }
 
-<<<<<<< HEAD
-static int __exit amiga_audio_remove(struct platform_device *pdev)
-{
-	dmasound_deinit();
-	return 0;
-}
-
-static struct platform_driver amiga_audio_driver = {
-	.remove = __exit_p(amiga_audio_remove),
-	.driver   = {
-		.name	= "amiga-audio",
-		.owner	= THIS_MODULE,
-	},
-};
-
-static int __init amiga_audio_init(void)
-{
-	return platform_driver_probe(&amiga_audio_driver, amiga_audio_probe);
-}
-
-module_init(amiga_audio_init);
-
-static void __exit amiga_audio_exit(void)
-{
-	platform_driver_unregister(&amiga_audio_driver);
-}
-
-module_exit(amiga_audio_exit);
-=======
 static void __exit amiga_audio_remove(struct platform_device *pdev)
 {
 	dmasound_deinit();
@@ -775,7 +739,6 @@ static struct platform_driver amiga_audio_driver __refdata = {
 };
 
 module_platform_driver_probe(amiga_audio_driver, amiga_audio_probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:amiga-audio");

@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-#ifndef __PERF_CPUMAP_H
-#define __PERF_CPUMAP_H
-
-#include <stdio.h>
-
-struct cpu_map {
-	int nr;
-	int map[];
-};
-
-struct cpu_map *cpu_map__new(const char *cpu_list);
-struct cpu_map *cpu_map__dummy_new(void);
-void cpu_map__delete(struct cpu_map *map);
-
-size_t cpu_map__fprintf(struct cpu_map *map, FILE *fp);
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PERF_CPUMAP_H
 #define __PERF_CPUMAP_H
@@ -179,5 +161,4 @@ struct aggr_cpu_id aggr_cpu_id__node(struct perf_cpu cpu, void *data);
  * The function signature is compatible with aggr_cpu_id_get_t.
  */
 struct aggr_cpu_id aggr_cpu_id__global(struct perf_cpu cpu, void *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __PERF_CPUMAP_H */

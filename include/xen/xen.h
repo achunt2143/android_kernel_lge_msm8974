@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-#ifndef _XEN_XEN_H
-#define _XEN_XEN_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _XEN_XEN_H
 #define _XEN_XEN_H
 
 #include <linux/types.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum xen_domain_type {
 	XEN_NATIVE,		/* running on bare hardware    */
 	XEN_PV_DOMAIN,		/* running in a PV domain      */
@@ -22,13 +16,6 @@ extern enum xen_domain_type xen_domain_type;
 #define xen_domain_type		XEN_NATIVE
 #endif
 
-<<<<<<< HEAD
-#define xen_domain()		(xen_domain_type != XEN_NATIVE)
-#define xen_pv_domain()		(xen_domain() &&			\
-				 xen_domain_type == XEN_PV_DOMAIN)
-#define xen_hvm_domain()	(xen_domain() &&			\
-				 xen_domain_type == XEN_HVM_DOMAIN)
-=======
 #ifdef CONFIG_XEN_PVH
 extern bool xen_pvh;
 #else
@@ -53,25 +40,17 @@ extern struct hvm_start_info pvh_start_info;
 void xen_prepare_pvh(void);
 struct pt_regs;
 void xen_pv_evtchn_do_upcall(struct pt_regs *regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_XEN_DOM0
 #include <xen/interface/xen.h>
 #include <asm/xen/hypervisor.h>
 
-<<<<<<< HEAD
-#define xen_initial_domain()	(xen_pv_domain() && \
-				 xen_start_info->flags & SIF_INITDOMAIN)
-=======
 #define xen_initial_domain()	(xen_domain() && \
 				 (xen_start_flags & SIF_INITDOMAIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else  /* !CONFIG_XEN_DOM0 */
 #define xen_initial_domain()	(0)
 #endif	/* CONFIG_XEN_DOM0 */
 
-<<<<<<< HEAD
-=======
 struct bio_vec;
 struct page;
 
@@ -112,5 +91,4 @@ static inline bool xen_processor_present(uint32_t acpi_id)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _XEN_XEN_H */

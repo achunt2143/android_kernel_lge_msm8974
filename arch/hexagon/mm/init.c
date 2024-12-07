@@ -1,81 +1,35 @@
-<<<<<<< HEAD
-/*
- * Memory subsystem initialization for Hexagon
- *
- * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Memory subsystem initialization for Hexagon
  *
  * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/atomic.h>
 #include <linux/highmem.h>
 #include <asm/tlb.h>
 #include <asm/sections.h>
-<<<<<<< HEAD
-=======
 #include <asm/setup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/vm_mmu.h>
 
 /*
  * Define a startpg just past the end of the kernel image and a lastpg
  * that corresponds to the end of real or simulated platform memory.
  */
-<<<<<<< HEAD
-#define bootmem_startpg (PFN_UP(((unsigned long) _end) - PAGE_OFFSET))
-
-unsigned long bootmem_lastpg;  /*  Should be set by platform code  */
-=======
 #define bootmem_startpg (PFN_UP(((unsigned long) _end) - PAGE_OFFSET + PHYS_OFFSET))
 
 unsigned long bootmem_lastpg;	/*  Should be set by platform code  */
 unsigned long __phys_offset;	/*  physical kernel offset >> 12  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  Set as variable to limit PMD copies  */
 int max_kernel_seg = 0x303;
 
-<<<<<<< HEAD
-/*  think this should be (page_size-1) the way it's used...*/
-unsigned long zero_page_mask;
-
 /*  indicate pfn's of high memory  */
 unsigned long highstart_pfn, highend_pfn;
 
-/* struct mmu_gather defined in asm-generic.h;  */
-DEFINE_PER_CPU(struct mmu_gather, mmu_gathers);
-
-=======
-/*  indicate pfn's of high memory  */
-unsigned long highstart_pfn, highend_pfn;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Default cache attribute for newly created page tables */
 unsigned long _dflt_cache_att = CACHEDEF;
 
@@ -99,14 +53,7 @@ unsigned long long kmap_generation;
 void __init mem_init(void)
 {
 	/*  No idea where this is actually declared.  Seems to evade LXR.  */
-<<<<<<< HEAD
-	totalram_pages += free_all_bootmem();
-	num_physpages = bootmem_lastpg;	/*  seriously, what?  */
-
-	printk(KERN_INFO "totalram_pages = %ld\n", totalram_pages);
-=======
 	memblock_free_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  To-Do:  someone somewhere should wipe out the bootmem map
@@ -122,32 +69,6 @@ void __init mem_init(void)
 	init_mm.context.ptbase = __pa(init_mm.pgd);
 }
 
-<<<<<<< HEAD
-/*
- * free_initmem - frees memory used by stuff declared with __init
- *
- * Todo:  free pages between __init_begin and __init_end; possibly
- * some devtree related stuff as well.
- */
-void __init_refok free_initmem(void)
-{
-}
-
-/*
- * free_initrd_mem - frees...  initrd memory.
- * @start - start of init memory
- * @end - end of init memory
- *
- * Apparently has to be passed the address of the initrd memory.
- *
- * Wrapped by #ifdef CONFIG_BLKDEV_INITRD
- */
-void free_initrd_mem(unsigned long start, unsigned long end)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sync_icache_dcache(pte_t pte)
 {
 	unsigned long addr;
@@ -166,15 +87,9 @@ void sync_icache_dcache(pte_t pte)
  * In this mode, we only have one pg_data_t
  * structure: contig_mem_data.
  */
-<<<<<<< HEAD
-void __init paging_init(void)
-{
-	unsigned long zones_sizes[MAX_NR_ZONES] = {0, };
-=======
 static void __init paging_init(void)
 {
 	unsigned long max_zone_pfn[MAX_NR_ZONES] = {0, };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  This is not particularly well documented anywhere, but
@@ -184,15 +99,9 @@ static void __init paging_init(void)
 	 *  adjust accordingly.
 	 */
 
-<<<<<<< HEAD
-	zones_sizes[ZONE_NORMAL] = max_low_pfn;
-
-	free_area_init(zones_sizes);  /*  sets up the zonelists and mem_map  */
-=======
 	max_zone_pfn[ZONE_NORMAL] = max_low_pfn;
 
 	free_area_init(max_zone_pfn);  /*  sets up the zonelists and mem_map  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Start of high memory area.  Will probably need something more
@@ -229,10 +138,6 @@ size_t hexagon_coherent_pool_size = (size_t) (DMA_RESERVE << 22);
 
 void __init setup_arch_memory(void)
 {
-<<<<<<< HEAD
-	int bootmap_size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*  XXX Todo: this probably should be cleaned up  */
 	u32 *segtable = (u32 *) &swapper_pg_dir[0];
 	u32 *segtable_end;
@@ -244,37 +149,23 @@ void __init setup_arch_memory(void)
 	 * This needs to change for highmem setups.
 	 */
 
-<<<<<<< HEAD
-=======
 	/*  Prior to this, bootmem_lastpg is actually mem size  */
 	bootmem_lastpg += ARCH_PFN_OFFSET;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory size needs to be a multiple of 16M */
 	bootmem_lastpg = PFN_DOWN((bootmem_lastpg << PAGE_SHIFT) &
 		~((BIG_KERNEL_PAGE_SIZE) - 1));
 
-<<<<<<< HEAD
-=======
 	memblock_add(PHYS_OFFSET,
 		     (bootmem_lastpg - ARCH_PFN_OFFSET) << PAGE_SHIFT);
 
 	/* Reserve kernel text/data/bss */
 	memblock_reserve(PHYS_OFFSET,
 			 (bootmem_startpg - ARCH_PFN_OFFSET) << PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Reserve the top DMA_RESERVE bytes of RAM for DMA (uncached)
 	 * memory allocation
 	 */
-<<<<<<< HEAD
-	bootmap_size = init_bootmem(bootmem_startpg, bootmem_lastpg -
-				    PFN_DOWN(DMA_RESERVED_BYTES));
-
-	printk(KERN_INFO "bootmem_startpg:  0x%08lx\n", bootmem_startpg);
-	printk(KERN_INFO "bootmem_lastpg:  0x%08lx\n", bootmem_lastpg);
-	printk(KERN_INFO "bootmap_size:  %d\n", bootmap_size);
-=======
 	max_low_pfn = bootmem_lastpg - PFN_DOWN(DMA_RESERVED_BYTES);
 	min_low_pfn = ARCH_PFN_OFFSET;
 	memblock_reserve(PFN_PHYS(max_low_pfn), DMA_RESERVED_BYTES);
@@ -282,7 +173,6 @@ void __init setup_arch_memory(void)
 	printk(KERN_INFO "bootmem_startpg:  0x%08lx\n", bootmem_startpg);
 	printk(KERN_INFO "bootmem_lastpg:  0x%08lx\n", bootmem_lastpg);
 	printk(KERN_INFO "min_low_pfn:  0x%08lx\n", min_low_pfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "max_low_pfn:  0x%08lx\n", max_low_pfn);
 
 	/*
@@ -297,16 +187,6 @@ void __init setup_arch_memory(void)
 	/*  this actually only goes to the end of the first gig  */
 	segtable_end = segtable + (1<<(30-22));
 
-<<<<<<< HEAD
-	/*  Move forward to the start of empty pages  */
-	segtable += bootmem_lastpg >> (22-PAGE_SHIFT);
-
-	{
-	    int i;
-
-	    for (i = 1 ; i <= DMA_RESERVE ; i++)
-		segtable[-i] = ((segtable[-i] & __HVM_PTE_PGMASK_4MB)
-=======
 	/*
 	 * Move forward to the start of empty pages; take into account
 	 * phys_offset shift.
@@ -318,7 +198,6 @@ void __init setup_arch_memory(void)
 
 		for (i = 1 ; i <= DMA_RESERVE ; i++)
 			segtable[-i] = ((segtable[-i] & __HVM_PTE_PGMASK_4MB)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				| __HVM_PTE_R | __HVM_PTE_W | __HVM_PTE_X
 				| __HEXAGON_C_UNC << 6
 				| __HVM_PDE_S_4MB);
@@ -343,17 +222,6 @@ void __init setup_arch_memory(void)
 #endif
 
 	/*
-<<<<<<< HEAD
-	 * Free all the memory that wasn't taken up by the bootmap, the DMA
-	 * reserve, or kernel itself.
-	 */
-	free_bootmem(PFN_PHYS(bootmem_startpg)+bootmap_size,
-		     PFN_PHYS(bootmem_lastpg - bootmem_startpg) - bootmap_size -
-		     DMA_RESERVED_BYTES);
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *  The bootmem allocator seemingly just lives to feed memory
 	 *  to the paging system
 	 */
@@ -367,8 +235,6 @@ void __init setup_arch_memory(void)
 	 *  which is called by start_kernel() later on in the process
 	 */
 }
-<<<<<<< HEAD
-=======
 
 static const pgprot_t protection_map[16] = {
 	[VM_NONE]					= __pgprot(_PAGE_PRESENT | _PAGE_USER |
@@ -411,4 +277,3 @@ static const pgprot_t protection_map[16] = {
 								   _PAGE_WRITE | CACHEDEF)
 };
 DECLARE_VM_GET_PAGE_PROT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

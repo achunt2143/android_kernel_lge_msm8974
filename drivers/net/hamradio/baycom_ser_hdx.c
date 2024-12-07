@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 
 /*
@@ -9,31 +6,10 @@
  *
  *	Copyright (C) 1996-2000  Thomas Sailer (sailer@ife.ee.ethz.ch)
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Please note that the GPL allows you to use the driver, NOT the radio.
  *  In order to use the radio, you need a license from the communications
  *  authority of your country.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Supported modems
  *
  *  ser12:  This is a very simple 1200 baud AFSK modem. The modem consists only
@@ -44,10 +20,6 @@
  *          port, the kernel driver for serial ports cannot be used, and this
  *          driver only supports standard serial hardware (8250, 16450, 16550A)
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Command line options (insmod command line)
  *
  *  mode     ser12    hardware DCD
@@ -58,10 +30,6 @@
  *  iobase   base address of the port; common values are 0x3f8, 0x2f8, 0x3e8, 0x2e8
  *  irq      interrupt line of the port; common values are 4,3
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  History:
  *   0.1  26.06.1996  Adapted from baycom.c and made network driver interface
  *        18.10.1996  Changed to new user space access routines (copy_{to,from}_user)
@@ -83,11 +51,7 @@
 #include <linux/string.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <linux/hdlcdrv.h>
 #include <linux/baycom.h>
@@ -510,11 +474,7 @@ static int ser12_open(struct net_device *dev)
 	outb(0, FCR(dev->base_addr));  /* disable FIFOs */
 	outb(0x0d, MCR(dev->base_addr));
 	outb(0, IER(dev->base_addr));
-<<<<<<< HEAD
-	if (request_irq(dev->irq, ser12_interrupt, IRQF_DISABLED | IRQF_SHARED,
-=======
 	if (request_irq(dev->irq, ser12_interrupt, IRQF_SHARED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"baycom_ser12", dev)) {
 		release_region(dev->base_addr, SER12_EXTENT);       
 		return -EBUSY;
@@ -561,20 +521,12 @@ static int ser12_close(struct net_device *dev)
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
-=======
 static int baycom_ioctl(struct net_device *dev, void __user *data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct hdlcdrv_ioctl *hi, int cmd);
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static struct hdlcdrv_ops ser12_ops = {
-=======
 static const struct hdlcdrv_ops ser12_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.drvname = bc_drvname,
 	.drvinfo = bc_drvinfo,
 	.open    = ser12_open,
@@ -599,11 +551,7 @@ static int baycom_setmode(struct baycom_state *bc, const char *modestr)
 
 /* --------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int baycom_ioctl(struct net_device *dev, struct ifreq *ifr,
-=======
 static int baycom_ioctl(struct net_device *dev, void __user *data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct hdlcdrv_ioctl *hi, int cmd)
 {
 	struct baycom_state *bc;
@@ -625,11 +573,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 		strcpy(hi->data.modename, "ser12");
 		if (bc->opt_dcd <= 0)
 			strcat(hi->data.modename, (!bc->opt_dcd) ? "*" : (bc->opt_dcd == -2) ? "@" : "+");
-<<<<<<< HEAD
-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
-=======
 		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		return 0;
 
@@ -641,11 +585,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 
 	case HDLCDRVCTL_MODELIST:
 		strcpy(hi->data.modename, "ser12");
-<<<<<<< HEAD
-		if (copy_to_user(ifr->ifr_data, hi, sizeof(struct hdlcdrv_ioctl)))
-=======
 		if (copy_to_user(data, hi, sizeof(struct hdlcdrv_ioctl)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		return 0;
 
@@ -654,11 +594,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 
 	}
 
-<<<<<<< HEAD
-	if (copy_from_user(&bi, ifr->ifr_data, sizeof(bi)))
-=======
 	if (copy_from_user(&bi, data, sizeof(bi)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	switch (bi.cmd) {
 	default:
@@ -673,11 +609,7 @@ static int baycom_ioctl(struct net_device *dev, void __user *data,
 #endif /* BAYCOM_DEBUG */
 
 	}
-<<<<<<< HEAD
-	if (copy_to_user(ifr->ifr_data, &bi, sizeof(bi)))
-=======
 	if (copy_to_user(data, &bi, sizeof(bi)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 
@@ -694,15 +626,9 @@ static int irq[NR_PORTS] = { 4, };
 
 module_param_array(mode, charp, NULL, 0);
 MODULE_PARM_DESC(mode, "baycom operating mode; * for software DCD");
-<<<<<<< HEAD
-module_param_array(iobase, int, NULL, 0);
-MODULE_PARM_DESC(iobase, "baycom io base address");
-module_param_array(irq, int, NULL, 0);
-=======
 module_param_hw_array(iobase, int, ioport, NULL, 0);
 MODULE_PARM_DESC(iobase, "baycom io base address");
 module_param_hw_array(irq, int, irq, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(irq, "baycom irq number");
 
 MODULE_AUTHOR("Thomas M. Sailer, sailer@ife.ee.ethz.ch, hb9jnx@hb9w.che.eu");

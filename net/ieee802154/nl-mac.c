@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-/*
- * Netlink inteface for IEEE 802.15.4 stack
- *
- * Copyright 2007, 2008 Siemens AG
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Netlink interface for IEEE 802.15.4 stack
  *
  * Copyright 2007, 2008 Siemens AG
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written by:
  * Sergey Lapin <slapin@ossfans.org>
  * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
@@ -35,212 +14,13 @@
 #include <linux/kernel.h>
 #include <linux/if_arp.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-=======
 #include <linux/ieee802154.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netlink.h>
 #include <net/genetlink.h>
 #include <net/sock.h>
 #include <linux/nl802154.h>
 #include <linux/export.h>
 #include <net/af_ieee802154.h>
-<<<<<<< HEAD
-#include <net/nl802154.h>
-#include <net/ieee802154.h>
-#include <net/ieee802154_netdev.h>
-#include <net/wpan-phy.h>
-
-#include "ieee802154.h"
-
-static struct genl_multicast_group ieee802154_coord_mcgrp = {
-	.name		= IEEE802154_MCAST_COORD_NAME,
-};
-
-static struct genl_multicast_group ieee802154_beacon_mcgrp = {
-	.name		= IEEE802154_MCAST_BEACON_NAME,
-};
-
-int ieee802154_nl_assoc_indic(struct net_device *dev,
-		struct ieee802154_addr *addr, u8 cap)
-{
-	struct sk_buff *msg;
-
-	pr_debug("%s\n", __func__);
-
-	if (addr->addr_type != IEEE802154_ADDR_LONG) {
-		pr_err("%s: received non-long source address!\n", __func__);
-		return -EINVAL;
-	}
-
-	msg = ieee802154_nl_create(0, IEEE802154_ASSOCIATE_INDIC);
-	if (!msg)
-		return -ENOBUFS;
-
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-			dev->dev_addr);
-
-	NLA_PUT(msg, IEEE802154_ATTR_SRC_HW_ADDR, IEEE802154_ADDR_LEN,
-			addr->hwaddr);
-
-	NLA_PUT_U8(msg, IEEE802154_ATTR_CAPABILITY, cap);
-
-	return ieee802154_nl_mcast(msg, ieee802154_coord_mcgrp.id);
-
-nla_put_failure:
-	nlmsg_free(msg);
-	return -ENOBUFS;
-}
-EXPORT_SYMBOL(ieee802154_nl_assoc_indic);
-
-int ieee802154_nl_assoc_confirm(struct net_device *dev, u16 short_addr,
-		u8 status)
-{
-	struct sk_buff *msg;
-
-	pr_debug("%s\n", __func__);
-
-	msg = ieee802154_nl_create(0, IEEE802154_ASSOCIATE_CONF);
-	if (!msg)
-		return -ENOBUFS;
-
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-			dev->dev_addr);
-
-	NLA_PUT_U16(msg, IEEE802154_ATTR_SHORT_ADDR, short_addr);
-	NLA_PUT_U8(msg, IEEE802154_ATTR_STATUS, status);
-
-	return ieee802154_nl_mcast(msg, ieee802154_coord_mcgrp.id);
-
-nla_put_failure:
-	nlmsg_free(msg);
-	return -ENOBUFS;
-}
-EXPORT_SYMBOL(ieee802154_nl_assoc_confirm);
-
-int ieee802154_nl_disassoc_indic(struct net_device *dev,
-		struct ieee802154_addr *addr, u8 reason)
-{
-	struct sk_buff *msg;
-
-	pr_debug("%s\n", __func__);
-
-	msg = ieee802154_nl_create(0, IEEE802154_DISASSOCIATE_INDIC);
-	if (!msg)
-		return -ENOBUFS;
-
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-			dev->dev_addr);
-
-	if (addr->addr_type == IEEE802154_ADDR_LONG)
-		NLA_PUT(msg, IEEE802154_ATTR_SRC_HW_ADDR, IEEE802154_ADDR_LEN,
-				addr->hwaddr);
-	else
-		NLA_PUT_U16(msg, IEEE802154_ATTR_SRC_SHORT_ADDR,
-				addr->short_addr);
-
-	NLA_PUT_U8(msg, IEEE802154_ATTR_REASON, reason);
-
-	return ieee802154_nl_mcast(msg, ieee802154_coord_mcgrp.id);
-
-nla_put_failure:
-	nlmsg_free(msg);
-	return -ENOBUFS;
-}
-EXPORT_SYMBOL(ieee802154_nl_disassoc_indic);
-
-int ieee802154_nl_disassoc_confirm(struct net_device *dev, u8 status)
-{
-	struct sk_buff *msg;
-
-	pr_debug("%s\n", __func__);
-
-	msg = ieee802154_nl_create(0, IEEE802154_DISASSOCIATE_CONF);
-	if (!msg)
-		return -ENOBUFS;
-
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-			dev->dev_addr);
-
-	NLA_PUT_U8(msg, IEEE802154_ATTR_STATUS, status);
-
-	return ieee802154_nl_mcast(msg, ieee802154_coord_mcgrp.id);
-
-nla_put_failure:
-	nlmsg_free(msg);
-	return -ENOBUFS;
-}
-EXPORT_SYMBOL(ieee802154_nl_disassoc_confirm);
-
-int ieee802154_nl_beacon_indic(struct net_device *dev,
-		u16 panid, u16 coord_addr)
-{
-	struct sk_buff *msg;
-
-	pr_debug("%s\n", __func__);
-
-	msg = ieee802154_nl_create(0, IEEE802154_BEACON_NOTIFY_INDIC);
-	if (!msg)
-		return -ENOBUFS;
-
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-			dev->dev_addr);
-	NLA_PUT_U16(msg, IEEE802154_ATTR_COORD_SHORT_ADDR, coord_addr);
-	NLA_PUT_U16(msg, IEEE802154_ATTR_COORD_PAN_ID, panid);
-
-	return ieee802154_nl_mcast(msg, ieee802154_coord_mcgrp.id);
-
-nla_put_failure:
-	nlmsg_free(msg);
-	return -ENOBUFS;
-}
-EXPORT_SYMBOL(ieee802154_nl_beacon_indic);
-
-int ieee802154_nl_scan_confirm(struct net_device *dev,
-		u8 status, u8 scan_type, u32 unscanned, u8 page,
-		u8 *edl/* , struct list_head *pan_desc_list */)
-{
-	struct sk_buff *msg;
-
-	pr_debug("%s\n", __func__);
-
-	msg = ieee802154_nl_create(0, IEEE802154_SCAN_CONF);
-	if (!msg)
-		return -ENOBUFS;
-
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-			dev->dev_addr);
-
-	NLA_PUT_U8(msg, IEEE802154_ATTR_STATUS, status);
-	NLA_PUT_U8(msg, IEEE802154_ATTR_SCAN_TYPE, scan_type);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_CHANNELS, unscanned);
-	NLA_PUT_U8(msg, IEEE802154_ATTR_PAGE, page);
-
-	if (edl)
-		NLA_PUT(msg, IEEE802154_ATTR_ED_LIST, 27, edl);
-
-	return ieee802154_nl_mcast(msg, ieee802154_coord_mcgrp.id);
-
-nla_put_failure:
-	nlmsg_free(msg);
-	return -ENOBUFS;
-}
-EXPORT_SYMBOL(ieee802154_nl_scan_confirm);
-
-int ieee802154_nl_start_confirm(struct net_device *dev, u8 status)
-=======
 #include <net/ieee802154_netdev.h>
 #include <net/cfg802154.h>
 
@@ -269,7 +49,6 @@ static __le16 nla_get_shortaddr(const struct nlattr *nla)
 }
 
 static int ieee802154_nl_start_confirm(struct net_device *dev, u8 status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *msg;
 
@@ -279,16 +58,6 @@ static int ieee802154_nl_start_confirm(struct net_device *dev, u8 status)
 	if (!msg)
 		return -ENOBUFS;
 
-<<<<<<< HEAD
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-			dev->dev_addr);
-
-	NLA_PUT_U8(msg, IEEE802154_ATTR_STATUS, status);
-
-	return ieee802154_nl_mcast(msg, ieee802154_coord_mcgrp.id);
-=======
 	if (nla_put_string(msg, IEEE802154_ATTR_DEV_NAME, dev->name) ||
 	    nla_put_u32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex) ||
 	    nla_put(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
@@ -296,21 +65,11 @@ static int ieee802154_nl_start_confirm(struct net_device *dev, u8 status)
 	    nla_put_u8(msg, IEEE802154_ATTR_STATUS, status))
 		goto nla_put_failure;
 	return ieee802154_nl_mcast(msg, IEEE802154_COORD_MCGRP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 nla_put_failure:
 	nlmsg_free(msg);
 	return -ENOBUFS;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(ieee802154_nl_start_confirm);
-
-static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 pid,
-	u32 seq, int flags, struct net_device *dev)
-{
-	void *hdr;
-	struct wpan_phy *phy;
-=======
 
 static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 				    u32 seq, int flags, struct net_device *dev)
@@ -319,32 +78,10 @@ static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 	struct wpan_phy *phy;
 	struct ieee802154_mlme_ops *ops;
 	__le16 short_addr, pan_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s\n", __func__);
 
 	hdr = genlmsg_put(msg, 0, seq, &nl802154_family, flags,
-<<<<<<< HEAD
-		IEEE802154_LIST_IFACE);
-	if (!hdr)
-		goto out;
-
-	phy = ieee802154_mlme_ops(dev)->get_phy(dev);
-	BUG_ON(!phy);
-
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_DEV_NAME, dev->name);
-	NLA_PUT_STRING(msg, IEEE802154_ATTR_PHY_NAME, wpan_phy_name(phy));
-	NLA_PUT_U32(msg, IEEE802154_ATTR_DEV_INDEX, dev->ifindex);
-
-	NLA_PUT(msg, IEEE802154_ATTR_HW_ADDR, IEEE802154_ADDR_LEN,
-		dev->dev_addr);
-	NLA_PUT_U16(msg, IEEE802154_ATTR_SHORT_ADDR,
-		ieee802154_mlme_ops(dev)->get_short_addr(dev));
-	NLA_PUT_U16(msg, IEEE802154_ATTR_PAN_ID,
-		ieee802154_mlme_ops(dev)->get_pan_id(dev));
-	wpan_phy_put(phy);
-	return genlmsg_end(msg, hdr);
-=======
 			  IEEE802154_LIST_IFACE);
 	if (!hdr)
 		goto out;
@@ -396,7 +133,6 @@ static int ieee802154_nl_fill_iface(struct sk_buff *msg, u32 portid,
 	wpan_phy_put(phy);
 	genlmsg_end(msg, hdr);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 nla_put_failure:
 	wpan_phy_put(phy);
@@ -412,16 +148,6 @@ static struct net_device *ieee802154_nl_get_dev(struct genl_info *info)
 
 	if (info->attrs[IEEE802154_ATTR_DEV_NAME]) {
 		char name[IFNAMSIZ + 1];
-<<<<<<< HEAD
-		nla_strlcpy(name, info->attrs[IEEE802154_ATTR_DEV_NAME],
-				sizeof(name));
-		dev = dev_get_by_name(&init_net, name);
-	} else if (info->attrs[IEEE802154_ATTR_DEV_INDEX])
-		dev = dev_get_by_index(&init_net,
-			nla_get_u32(info->attrs[IEEE802154_ATTR_DEV_INDEX]));
-	else
-		return NULL;
-=======
 
 		nla_strscpy(name, info->attrs[IEEE802154_ATTR_DEV_NAME],
 			    sizeof(name));
@@ -432,7 +158,6 @@ static struct net_device *ieee802154_nl_get_dev(struct genl_info *info)
 	} else {
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev)
 		return NULL;
@@ -445,21 +170,12 @@ static struct net_device *ieee802154_nl_get_dev(struct genl_info *info)
 	return dev;
 }
 
-<<<<<<< HEAD
-static int ieee802154_associate_req(struct sk_buff *skb,
-		struct genl_info *info)
-=======
 int ieee802154_associate_req(struct sk_buff *skb, struct genl_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct ieee802154_addr addr;
 	u8 page;
-<<<<<<< HEAD
-	int ret = -EINVAL;
-=======
 	int ret = -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!info->attrs[IEEE802154_ATTR_CHANNEL] ||
 	    !info->attrs[IEEE802154_ATTR_COORD_PAN_ID] ||
@@ -471,20 +187,6 @@ int ieee802154_associate_req(struct sk_buff *skb, struct genl_info *info)
 	dev = ieee802154_nl_get_dev(info);
 	if (!dev)
 		return -ENODEV;
-<<<<<<< HEAD
-
-	if (info->attrs[IEEE802154_ATTR_COORD_HW_ADDR]) {
-		addr.addr_type = IEEE802154_ADDR_LONG;
-		nla_memcpy(addr.hwaddr,
-				info->attrs[IEEE802154_ATTR_COORD_HW_ADDR],
-				IEEE802154_ADDR_LEN);
-	} else {
-		addr.addr_type = IEEE802154_ADDR_SHORT;
-		addr.short_addr = nla_get_u16(
-				info->attrs[IEEE802154_ATTR_COORD_SHORT_ADDR]);
-	}
-	addr.pan_id = nla_get_u16(info->attrs[IEEE802154_ATTR_COORD_PAN_ID]);
-=======
 	if (!ieee802154_mlme_ops(dev)->assoc_req)
 		goto out;
 
@@ -499,7 +201,6 @@ int ieee802154_associate_req(struct sk_buff *skb, struct genl_info *info)
 	}
 	addr.pan_id = nla_get_shortaddr(
 			info->attrs[IEEE802154_ATTR_COORD_PAN_ID]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->attrs[IEEE802154_ATTR_PAGE])
 		page = nla_get_u8(info->attrs[IEEE802154_ATTR_PAGE]);
@@ -511,28 +212,16 @@ int ieee802154_associate_req(struct sk_buff *skb, struct genl_info *info)
 			page,
 			nla_get_u8(info->attrs[IEEE802154_ATTR_CAPABILITY]));
 
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_put(dev);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ieee802154_associate_resp(struct sk_buff *skb,
-		struct genl_info *info)
-{
-	struct net_device *dev;
-	struct ieee802154_addr addr;
-	int ret = -EINVAL;
-=======
 int ieee802154_associate_resp(struct sk_buff *skb, struct genl_info *info)
 {
 	struct net_device *dev;
 	struct ieee802154_addr addr;
 	int ret = -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!info->attrs[IEEE802154_ATTR_STATUS] ||
 	    !info->attrs[IEEE802154_ATTR_DEST_HW_ADDR] ||
@@ -542,19 +231,6 @@ int ieee802154_associate_resp(struct sk_buff *skb, struct genl_info *info)
 	dev = ieee802154_nl_get_dev(info);
 	if (!dev)
 		return -ENODEV;
-<<<<<<< HEAD
-
-	addr.addr_type = IEEE802154_ADDR_LONG;
-	nla_memcpy(addr.hwaddr, info->attrs[IEEE802154_ATTR_DEST_HW_ADDR],
-			IEEE802154_ADDR_LEN);
-	addr.pan_id = ieee802154_mlme_ops(dev)->get_pan_id(dev);
-
-
-	ret = ieee802154_mlme_ops(dev)->assoc_resp(dev, &addr,
-		nla_get_u16(info->attrs[IEEE802154_ATTR_DEST_SHORT_ADDR]),
-		nla_get_u8(info->attrs[IEEE802154_ATTR_STATUS]));
-
-=======
 	if (!ieee802154_mlme_ops(dev)->assoc_resp)
 		goto out;
 
@@ -570,22 +246,10 @@ int ieee802154_associate_resp(struct sk_buff *skb, struct genl_info *info)
 		nla_get_u8(info->attrs[IEEE802154_ATTR_STATUS]));
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_put(dev);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ieee802154_disassociate_req(struct sk_buff *skb,
-		struct genl_info *info)
-{
-	struct net_device *dev;
-	struct ieee802154_addr addr;
-	int ret = -EINVAL;
-
-	if ((!info->attrs[IEEE802154_ATTR_DEST_HW_ADDR] &&
-		!info->attrs[IEEE802154_ATTR_DEST_SHORT_ADDR]) ||
-=======
 int ieee802154_disassociate_req(struct sk_buff *skb, struct genl_info *info)
 {
 	struct net_device *dev;
@@ -594,27 +258,12 @@ int ieee802154_disassociate_req(struct sk_buff *skb, struct genl_info *info)
 
 	if ((!info->attrs[IEEE802154_ATTR_DEST_HW_ADDR] &&
 	    !info->attrs[IEEE802154_ATTR_DEST_SHORT_ADDR]) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !info->attrs[IEEE802154_ATTR_REASON])
 		return -EINVAL;
 
 	dev = ieee802154_nl_get_dev(info);
 	if (!dev)
 		return -ENODEV;
-<<<<<<< HEAD
-
-	if (info->attrs[IEEE802154_ATTR_DEST_HW_ADDR]) {
-		addr.addr_type = IEEE802154_ADDR_LONG;
-		nla_memcpy(addr.hwaddr,
-				info->attrs[IEEE802154_ATTR_DEST_HW_ADDR],
-				IEEE802154_ADDR_LEN);
-	} else {
-		addr.addr_type = IEEE802154_ADDR_SHORT;
-		addr.short_addr = nla_get_u16(
-				info->attrs[IEEE802154_ATTR_DEST_SHORT_ADDR]);
-	}
-	addr.pan_id = ieee802154_mlme_ops(dev)->get_pan_id(dev);
-=======
 	if (!ieee802154_mlme_ops(dev)->disassoc_req)
 		goto out;
 
@@ -630,33 +279,20 @@ int ieee802154_disassociate_req(struct sk_buff *skb, struct genl_info *info)
 	rtnl_lock();
 	addr.pan_id = dev->ieee802154_ptr->pan_id;
 	rtnl_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ieee802154_mlme_ops(dev)->disassoc_req(dev, &addr,
 			nla_get_u8(info->attrs[IEEE802154_ATTR_REASON]));
 
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_put(dev);
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * PANid, channel, beacon_order = 15, superframe_order = 15,
- * PAN_coordinator, battery_life_extension = 0,
- * coord_realignment = 0, security_enable = 0
-*/
-static int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
-=======
 /* PANid, channel, beacon_order = 15, superframe_order = 15,
  * PAN_coordinator, battery_life_extension = 0,
  * coord_realignment = 0, security_enable = 0
 */
 int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct ieee802154_addr addr;
@@ -664,11 +300,7 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 	u8 channel, bcn_ord, sf_ord;
 	u8 page;
 	int pan_coord, blx, coord_realign;
-<<<<<<< HEAD
-	int ret;
-=======
 	int ret = -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!info->attrs[IEEE802154_ATTR_COORD_PAN_ID] ||
 	    !info->attrs[IEEE802154_ATTR_COORD_SHORT_ADDR] ||
@@ -685,12 +317,6 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 	if (!dev)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	addr.addr_type = IEEE802154_ADDR_SHORT;
-	addr.short_addr = nla_get_u16(
-			info->attrs[IEEE802154_ATTR_COORD_SHORT_ADDR]);
-	addr.pan_id = nla_get_u16(info->attrs[IEEE802154_ATTR_COORD_PAN_ID]);
-=======
 	if (netif_running(dev))
 		goto out;
 
@@ -704,7 +330,6 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 			info->attrs[IEEE802154_ATTR_COORD_SHORT_ADDR]);
 	addr.pan_id = nla_get_shortaddr(
 			info->attrs[IEEE802154_ATTR_COORD_PAN_ID]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	channel = nla_get_u8(info->attrs[IEEE802154_ATTR_CHANNEL]);
 	bcn_ord = nla_get_u8(info->attrs[IEEE802154_ATTR_BCN_ORD]);
@@ -718,22 +343,12 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 	else
 		page = 0;
 
-<<<<<<< HEAD
-
-	if (addr.short_addr == IEEE802154_ADDR_BROADCAST) {
-=======
 	if (addr.short_addr == cpu_to_le16(IEEE802154_ADDR_BROADCAST)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ieee802154_nl_start_confirm(dev, IEEE802154_NO_SHORT_ADDRESS);
 		dev_put(dev);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	ret = ieee802154_mlme_ops(dev)->start_req(dev, &addr, channel, page,
-		bcn_ord, sf_ord, pan_coord, blx, coord_realign);
-
-=======
 	rtnl_lock();
 	ret = ieee802154_mlme_ops(dev)->start_req(dev, &addr, channel, page,
 		bcn_ord, sf_ord, pan_coord, blx, coord_realign);
@@ -745,22 +360,14 @@ int ieee802154_start_req(struct sk_buff *skb, struct genl_info *info)
 	ieee802154_nl_start_confirm(dev, IEEE802154_SUCCESS);
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_put(dev);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ieee802154_scan_req(struct sk_buff *skb, struct genl_info *info)
-{
-	struct net_device *dev;
-	int ret;
-=======
 int ieee802154_scan_req(struct sk_buff *skb, struct genl_info *info)
 {
 	struct net_device *dev;
 	int ret = -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 type;
 	u32 channels;
 	u8 duration;
@@ -774,11 +381,8 @@ int ieee802154_scan_req(struct sk_buff *skb, struct genl_info *info)
 	dev = ieee802154_nl_get_dev(info);
 	if (!dev)
 		return -ENODEV;
-<<<<<<< HEAD
-=======
 	if (!ieee802154_mlme_ops(dev)->scan_req)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	type = nla_get_u8(info->attrs[IEEE802154_ATTR_SCAN_TYPE]);
 	channels = nla_get_u32(info->attrs[IEEE802154_ATTR_CHANNELS]);
@@ -789,34 +393,19 @@ int ieee802154_scan_req(struct sk_buff *skb, struct genl_info *info)
 	else
 		page = 0;
 
-<<<<<<< HEAD
-
-	ret = ieee802154_mlme_ops(dev)->scan_req(dev, type, channels, page,
-			duration);
-
-=======
 	ret = ieee802154_mlme_ops(dev)->scan_req(dev, type, channels,
 						 page, duration);
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_put(dev);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int ieee802154_list_iface(struct sk_buff *skb,
-	struct genl_info *info)
-{
-	/* Request for interface name, index, type, IEEE address,
-	   PAN Id, short address */
-=======
 int ieee802154_list_iface(struct sk_buff *skb, struct genl_info *info)
 {
 	/* Request for interface name, index, type, IEEE address,
 	 * PAN Id, short address
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *msg;
 	struct net_device *dev = NULL;
 	int rc = -ENOBUFS;
@@ -827,21 +416,12 @@ int ieee802154_list_iface(struct sk_buff *skb, struct genl_info *info)
 	if (!dev)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
-	if (!msg)
-		goto out_dev;
-
-	rc = ieee802154_nl_fill_iface(msg, info->snd_pid, info->snd_seq,
-			0, dev);
-=======
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (!msg)
 		goto out_dev;
 
 	rc = ieee802154_nl_fill_iface(msg, info->snd_portid, info->snd_seq,
 				      0, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		goto out_free;
 
@@ -853,17 +433,9 @@ out_free:
 out_dev:
 	dev_put(dev);
 	return rc;
-<<<<<<< HEAD
-
-}
-
-static int ieee802154_dump_iface(struct sk_buff *skb,
-	struct netlink_callback *cb)
-=======
 }
 
 int ieee802154_dump_iface(struct sk_buff *skb, struct netlink_callback *cb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	struct net_device *dev;
@@ -874,20 +446,12 @@ int ieee802154_dump_iface(struct sk_buff *skb, struct netlink_callback *cb)
 
 	idx = 0;
 	for_each_netdev(net, dev) {
-<<<<<<< HEAD
-		if (idx < s_idx || (dev->type != ARPHRD_IEEE802154))
-			goto cont;
-
-		if (ieee802154_nl_fill_iface(skb, NETLINK_CB(cb->skb).pid,
-			cb->nlh->nlmsg_seq, NLM_F_MULTI, dev) < 0)
-=======
 		if (idx < s_idx || dev->type != ARPHRD_IEEE802154)
 			goto cont;
 
 		if (ieee802154_nl_fill_iface(skb, NETLINK_CB(cb->skb).portid,
 					     cb->nlh->nlmsg_seq,
 					     NLM_F_MULTI, dev) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 cont:
 		idx++;
@@ -897,41 +461,6 @@ cont:
 	return skb->len;
 }
 
-<<<<<<< HEAD
-static struct genl_ops ieee802154_coordinator_ops[] = {
-	IEEE802154_OP(IEEE802154_ASSOCIATE_REQ, ieee802154_associate_req),
-	IEEE802154_OP(IEEE802154_ASSOCIATE_RESP, ieee802154_associate_resp),
-	IEEE802154_OP(IEEE802154_DISASSOCIATE_REQ, ieee802154_disassociate_req),
-	IEEE802154_OP(IEEE802154_SCAN_REQ, ieee802154_scan_req),
-	IEEE802154_OP(IEEE802154_START_REQ, ieee802154_start_req),
-	IEEE802154_DUMP(IEEE802154_LIST_IFACE, ieee802154_list_iface,
-							ieee802154_dump_iface),
-};
-
-/*
- * No need to unregister as family unregistration will do it.
- */
-int nl802154_mac_register(void)
-{
-	int i;
-	int rc;
-
-	rc = genl_register_mc_group(&nl802154_family,
-			&ieee802154_coord_mcgrp);
-	if (rc)
-		return rc;
-
-	rc = genl_register_mc_group(&nl802154_family,
-			&ieee802154_beacon_mcgrp);
-	if (rc)
-		return rc;
-
-	for (i = 0; i < ARRAY_SIZE(ieee802154_coordinator_ops); i++) {
-		rc = genl_register_ops(&nl802154_family,
-				&ieee802154_coordinator_ops[i]);
-		if (rc)
-			return rc;
-=======
 int ieee802154_set_macparams(struct sk_buff *skb, struct genl_info *info)
 {
 	struct net_device *dev = NULL;
@@ -1065,13 +594,10 @@ ieee802154_llsec_parse_key_id(struct genl_info *info,
 	case IEEE802154_SCF_KEY_HW_INDEX:
 		desc->extended_source = nla_get_hwaddr(info->attrs[IEEE802154_ATTR_LLSEC_KEY_SOURCE_EXTENDED]);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 static int
 ieee802154_llsec_fill_key_id(struct sk_buff *msg,
@@ -1816,4 +1342,3 @@ int ieee802154_llsec_dump_seclevels(struct sk_buff *skb,
 {
 	return ieee802154_llsec_dump_table(skb, cb, llsec_iter_seclevels);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

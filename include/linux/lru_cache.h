@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
    lru_cache.c
 
@@ -11,22 +8,6 @@
    Copyright (C) 2003-2008, Philipp Reisner <philipp.reisner@linbit.com>.
    Copyright (C) 2003-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
 
-<<<<<<< HEAD
-   drbd is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   drbd is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with drbd; see the file COPYING.  If not, write to
-   the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  */
 
@@ -51,11 +32,7 @@ This header file (and its .c file; kernel-doc of functions see there)
   Because of this later property, it is called "lru_cache".
   As it actually Tracks Objects in an Active SeT, we could also call it
   toast (incidentally that is what may happen to the data on the
-<<<<<<< HEAD
-  backend storage uppon next resync, if we don't get it right).
-=======
   backend storage upon next resync, if we don't get it right).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What for?
 
@@ -63,13 +40,8 @@ We replicate IO (more or less synchronously) to local and remote disk.
 
 For crash recovery after replication node failure,
   we need to resync all regions that have been target of in-flight WRITE IO
-<<<<<<< HEAD
-  (in use, or "hot", regions), as we don't know wether or not those WRITEs have
-  made it to stable storage.
-=======
   (in use, or "hot", regions), as we don't know whether or not those WRITEs
   have made it to stable storage.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   To avoid a "full resync", we need to persistently track these regions.
 
@@ -180,13 +152,6 @@ struct lc_element {
 	 * for paranoia, and for "lc_element_to_index" */
 	unsigned lc_index;
 	/* if we want to track a larger set of objects,
-<<<<<<< HEAD
-	 * it needs to become arch independend u64 */
-	unsigned lc_number;
-
-	/* special label when on free list */
-#define LC_FREE (~0U)
-=======
 	 * it needs to become an architecture independent u64 */
 	unsigned lc_number;
 	/* special label when on free list */
@@ -194,7 +159,6 @@ struct lc_element {
 
 	/* for pending changes */
 	unsigned lc_new_number;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lru_cache {
@@ -202,10 +166,7 @@ struct lru_cache {
 	struct list_head lru;
 	struct list_head free;
 	struct list_head in_use;
-<<<<<<< HEAD
-=======
 	struct list_head to_be_changed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the pre-created kmem cache to allocate the objects from */
 	struct kmem_cache *lc_cache;
@@ -216,11 +177,7 @@ struct lru_cache {
 	size_t element_off;
 
 	/* number of elements (indices) */
-<<<<<<< HEAD
-	unsigned int  nr_elements;
-=======
 	unsigned int nr_elements;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Arbitrary limit on maximum tracked objects. Practical limit is much
 	 * lower due to allocation failures, probably. For typical use cases,
 	 * nr_elements should be a few thousand at most.
@@ -228,11 +185,6 @@ struct lru_cache {
 	 * 8 high bits of .lc_index to be overloaded with flags in the future. */
 #define LC_MAX_ACTIVE	(1<<24)
 
-<<<<<<< HEAD
-	/* statistics */
-	unsigned used; /* number of lelements currently on in_use list */
-	unsigned long hits, misses, starving, dirty, changed;
-=======
 	/* allow to accumulate a few (index:label) changes,
 	 * but no more than max_pending_changes */
 	unsigned int max_pending_changes;
@@ -242,22 +194,11 @@ struct lru_cache {
 	/* statistics */
 	unsigned used; /* number of elements currently on in_use list */
 	unsigned long hits, misses, starving, locked, changed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* see below: flag-bits for lru_cache */
 	unsigned long flags;
 
-<<<<<<< HEAD
-	/* when changing the label of an index element */
-	unsigned int  new_number;
 
-	/* for paranoia when changing the label of an index element */
-	struct lc_element *changing_element;
-
-	void  *lc_private;
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *name;
 
 	/* nr_elements there */
@@ -271,12 +212,6 @@ enum {
 	/* debugging aid, to catch concurrent access early.
 	 * user needs to guarantee exclusive access by proper locking! */
 	__LC_PARANOIA,
-<<<<<<< HEAD
-	/* if we need to change the set, but currently there is a changing
-	 * transaction pending, we are "dirty", and must deferr further
-	 * changing requests */
-	__LC_DIRTY,
-=======
 
 	/* annotate that the set is "dirty", possibly accumulating further
 	 * changes, until a transaction is finally triggered */
@@ -286,7 +221,6 @@ enum {
 	 * Also used to serialize changing transactions. */
 	__LC_LOCKED,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if we need to change the set, but currently there is no free nor
 	 * unused element available, we are "starving", and must not give out
 	 * further references, to guarantee that eventually some refcnt will
@@ -298,17 +232,6 @@ enum {
 };
 #define LC_PARANOIA (1<<__LC_PARANOIA)
 #define LC_DIRTY    (1<<__LC_DIRTY)
-<<<<<<< HEAD
-#define LC_STARVING (1<<__LC_STARVING)
-
-extern struct lru_cache *lc_create(const char *name, struct kmem_cache *cache,
-		unsigned e_count, size_t e_size, size_t e_off);
-extern void lc_reset(struct lru_cache *lc);
-extern void lc_destroy(struct lru_cache *lc);
-extern void lc_set(struct lru_cache *lc, unsigned int enr, int index);
-extern void lc_del(struct lru_cache *lc, struct lc_element *element);
-
-=======
 #define LC_LOCKED   (1<<__LC_LOCKED)
 #define LC_STARVING (1<<__LC_STARVING)
 
@@ -320,39 +243,19 @@ extern void lc_destroy(struct lru_cache *lc);
 extern void lc_del(struct lru_cache *lc, struct lc_element *element);
 
 extern struct lc_element *lc_get_cumulative(struct lru_cache *lc, unsigned int enr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct lc_element *lc_try_get(struct lru_cache *lc, unsigned int enr);
 extern struct lc_element *lc_find(struct lru_cache *lc, unsigned int enr);
 extern struct lc_element *lc_get(struct lru_cache *lc, unsigned int enr);
 extern unsigned int lc_put(struct lru_cache *lc, struct lc_element *e);
-<<<<<<< HEAD
-extern void lc_changed(struct lru_cache *lc, struct lc_element *e);
-
-struct seq_file;
-extern size_t lc_seq_printf_stats(struct seq_file *seq, struct lru_cache *lc);
-=======
 extern void lc_committed(struct lru_cache *lc);
 
 struct seq_file;
 extern void lc_seq_printf_stats(struct seq_file *seq, struct lru_cache *lc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void lc_seq_dump_details(struct seq_file *seq, struct lru_cache *lc, char *utext,
 				void (*detail) (struct seq_file *, struct lc_element *));
 
 /**
-<<<<<<< HEAD
- * lc_try_lock - can be used to stop lc_get() from changing the tracked set
- * @lc: the lru cache to operate on
- *
- * Note that the reference counts and order on the active and lru lists may
- * still change.  Returns true if we acquired the lock.
- */
-static inline int lc_try_lock(struct lru_cache *lc)
-{
-	return !test_and_set_bit(__LC_DIRTY, &lc->flags);
-}
-=======
  * lc_try_lock_for_transaction - can be used to stop lc_get() from changing the tracked set
  * @lc: the lru cache to operate on
  *
@@ -375,7 +278,6 @@ static inline int lc_try_lock_for_transaction(struct lru_cache *lc)
  * change the set will not succeed until the next lc_unlock().
  */
 extern int lc_try_lock(struct lru_cache *lc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * lc_unlock - unlock @lc, allow lc_get() to change the set again
@@ -384,29 +286,14 @@ extern int lc_try_lock(struct lru_cache *lc);
 static inline void lc_unlock(struct lru_cache *lc)
 {
 	clear_bit(__LC_DIRTY, &lc->flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-}
-
-static inline int lc_is_used(struct lru_cache *lc, unsigned int enr)
-{
-	struct lc_element *e = lc_find(lc, enr);
-	return e && e->refcnt;
-}
-=======
 	clear_bit_unlock(__LC_LOCKED, &lc->flags);
 }
 
 extern bool lc_is_used(struct lru_cache *lc, unsigned int enr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define lc_entry(ptr, type, member) \
 	container_of(ptr, type, member)
 
 extern struct lc_element *lc_element_by_index(struct lru_cache *lc, unsigned i);
-<<<<<<< HEAD
-extern unsigned int lc_index_of(struct lru_cache *lc, struct lc_element *e);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

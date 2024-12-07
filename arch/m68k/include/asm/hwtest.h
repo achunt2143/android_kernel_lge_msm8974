@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Routines to test for presence/absence of hardware registers:
  * see arch/m68k/mm/hwtest.c.
  *  -- PMM <pmaydell@chiark.greenend.org.uk> 05/1998

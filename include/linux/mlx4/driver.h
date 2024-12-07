@@ -33,12 +33,6 @@
 #ifndef MLX4_DRIVER_H
 #define MLX4_DRIVER_H
 
-<<<<<<< HEAD
-#include <linux/mlx4/device.h>
-
-struct mlx4_dev;
-
-=======
 #include <net/devlink.h>
 #include <linux/auxiliary_bus.h>
 #include <linux/notifier.h>
@@ -50,30 +44,11 @@ struct mlx4_dev;
 
 #define MLX4_MAC_MASK	   0xffffffffffffULL
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum mlx4_dev_event {
 	MLX4_DEV_EVENT_CATASTROPHIC_ERROR,
 	MLX4_DEV_EVENT_PORT_UP,
 	MLX4_DEV_EVENT_PORT_DOWN,
 	MLX4_DEV_EVENT_PORT_REINIT,
-<<<<<<< HEAD
-};
-
-struct mlx4_interface {
-	void *			(*add)	 (struct mlx4_dev *dev);
-	void			(*remove)(struct mlx4_dev *dev, void *context);
-	void			(*event) (struct mlx4_dev *dev, void *context,
-					  enum mlx4_dev_event event, int port);
-	void *			(*get_dev)(struct mlx4_dev *dev, void *context, u8 port);
-	struct list_head	list;
-	enum mlx4_protocol	protocol;
-};
-
-int mlx4_register_interface(struct mlx4_interface *intf);
-void mlx4_unregister_interface(struct mlx4_interface *intf);
-
-void *mlx4_get_protocol_dev(struct mlx4_dev *dev, enum mlx4_protocol proto, int port);
-=======
 	MLX4_DEV_EVENT_PORT_MGMT_CHANGE,
 	MLX4_DEV_EVENT_SLAVE_INIT,
 	MLX4_DEV_EVENT_SLAVE_SHUTDOWN,
@@ -98,6 +73,5 @@ int mlx4_unregister_event_notifier(struct mlx4_dev *dev,
 				   struct notifier_block *nb);
 
 struct devlink_port *mlx4_get_devlink_port(struct mlx4_dev *dev, int port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* MLX4_DRIVER_H */

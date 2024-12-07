@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-#include <asm/setup.h>
-#include <libfdt.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/libfdt_env.h>
 #include <asm/setup.h>
@@ -15,27 +11,18 @@
 #endif
 
 #define NR_BANKS 16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int node_offset(void *fdt, const char *node_path)
 {
 	int offset = fdt_path_offset(fdt, node_path);
 	if (offset == -FDT_ERR_NOTFOUND)
-<<<<<<< HEAD
-		offset = fdt_add_subnode(fdt, 0, node_path);
-=======
 		/* Add the node to root if not found, dropping the leading '/' */
 		offset = fdt_add_subnode(fdt, 0, node_path + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return offset;
 }
 
 static int setprop(void *fdt, const char *node_path, const char *property,
-<<<<<<< HEAD
-		   uint32_t *val_array, int size)
-=======
 		   void *val_array, int size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int offset = node_offset(fdt, node_path);
 	if (offset < 0)
@@ -61,12 +48,6 @@ static int setprop_cell(void *fdt, const char *node_path,
 	return fdt_setprop_cell(fdt, offset, property, val);
 }
 
-<<<<<<< HEAD
-/*
- * Convert and fold provided ATAGs into the provided FDT.
- *
- * REturn values:
-=======
 static const void *getprop(const void *fdt, const char *node_path,
 			   const char *property, int *len)
 {
@@ -142,7 +123,6 @@ static void hex_str(char *out, uint32_t value)
  * Convert and fold provided ATAGs into the provided FDT.
  *
  * Return values:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    = 0 -> pretend success
  *    = 1 -> bad ATAG (may retry with another possible ATAG pointer)
  *    < 0 -> error from libfdt
@@ -150,28 +130,18 @@ static void hex_str(char *out, uint32_t value)
 int atags_to_fdt(void *atag_list, void *fdt, int total_space)
 {
 	struct tag *atag = atag_list;
-<<<<<<< HEAD
-	uint32_t mem_reg_property[2 * NR_BANKS];
-	int memcount = 0;
-	int ret;
-=======
 	/* In the case of 64 bits memory size, need to reserve 2 cells for
 	 * address and size for each bank */
 	__be32 mem_reg_property[2 * 2 * NR_BANKS];
 	int memcount = 0;
 	int ret, memsize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make sure we've got an aligned pointer */
 	if ((u32)atag_list & 0x3)
 		return 1;
 
 	/* if we get a DTB here we're done already */
-<<<<<<< HEAD
-	if (*(u32 *)atag_list == fdt32_to_cpu(FDT_MAGIC))
-=======
 	if (*(__be32 *)atag_list == cpu_to_fdt32(FDT_MAGIC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       return 0;
 
 	/* validate the ATAG */
@@ -187,10 +157,6 @@ int atags_to_fdt(void *atag_list, void *fdt, int total_space)
 
 	for_each_tag(atag, atag_list) {
 		if (atag->hdr.tag == ATAG_CMDLINE) {
-<<<<<<< HEAD
-			setprop_string(fdt, "/chosen", "bootargs",
-					atag->u.cmdline.cmdline);
-=======
 			/* Append the ATAGS command line to the device tree
 			 * command line.
 			 * NB: This means that if the same parameter is set in
@@ -203,16 +169,11 @@ int atags_to_fdt(void *atag_list, void *fdt, int total_space)
 			else
 				setprop_string(fdt, "/chosen", "bootargs",
 					       atag->u.cmdline.cmdline);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (atag->hdr.tag == ATAG_MEM) {
 			if (memcount >= sizeof(mem_reg_property)/4)
 				continue;
 			if (!atag->u.mem.size)
 				continue;
-<<<<<<< HEAD
-			mem_reg_property[memcount++] = cpu_to_fdt32(atag->u.mem.start);
-			mem_reg_property[memcount++] = cpu_to_fdt32(atag->u.mem.size);
-=======
 			memsize = get_cell_size(fdt);
 
 			if (memsize == 2) {
@@ -232,7 +193,6 @@ int atags_to_fdt(void *atag_list, void *fdt, int total_space)
 					cpu_to_fdt32(atag->u.mem.size);
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (atag->hdr.tag == ATAG_INITRD2) {
 			uint32_t initrd_start, initrd_size;
 			initrd_start = atag->u.initrd.start;
@@ -241,13 +201,6 @@ int atags_to_fdt(void *atag_list, void *fdt, int total_space)
 					initrd_start);
 			setprop_cell(fdt, "/chosen", "linux,initrd-end",
 					initrd_start + initrd_size);
-<<<<<<< HEAD
-		}
-	}
-
-	if (memcount)
-		setprop(fdt, "/memory", "reg", mem_reg_property, 4*memcount);
-=======
 		} else if (atag->hdr.tag == ATAG_SERIAL) {
 			char serno[16+2];
 			hex_str(serno, atag->u.serialnr.high);
@@ -260,7 +213,6 @@ int atags_to_fdt(void *atag_list, void *fdt, int total_space)
 		setprop(fdt, "/memory", "reg", mem_reg_property,
 			4 * memcount * memsize);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return fdt_pack(fdt);
 }

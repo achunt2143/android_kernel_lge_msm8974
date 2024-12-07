@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-/*
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * include/asm-sh/cpu-sh4/sq.h
  *
  * Copyright (C) 2001, 2002, 2003  Paul Mundt
  * Copyright (C) 2001, 2002  M. R. Brown
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_CPU_SH4_SQ_H
 #define __ASM_CPU_SH4_SQ_H

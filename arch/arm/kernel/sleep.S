@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 #include <linux/threads.h>
 #include <asm/asm-offsets.h>
@@ -11,8 +8,6 @@
 	.text
 
 /*
-<<<<<<< HEAD
-=======
  * Implementation of MPIDR hash algorithm through shifting
  * and OR'ing.
  *
@@ -56,16 +51,12 @@
 	.endm
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Save CPU state for a suspend.  This saves the CPU general purpose
  * registers, and allocates space on the kernel stack to save the CPU
  * specific registers and some other data for resume.
  *  r0 = suspend function arg0
  *  r1 = suspend function
-<<<<<<< HEAD
-=======
  *  r2 = MPIDR value the resuming CPU will use
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 ENTRY(__cpu_suspend)
 	stmfd	sp!, {r4 - r11, lr}
@@ -76,23 +67,6 @@ ENTRY(__cpu_suspend)
 	ldr	r4, =cpu_suspend_size
 #endif
 	mov	r5, sp			@ current virtual SP
-<<<<<<< HEAD
-	add	r4, r4, #12		@ Space for pgd, virt sp, phys resume fn
-	sub	sp, sp, r4		@ allocate CPU state on stack
-	stmfd	sp!, {r0, r1}		@ save suspend func arg and pointer
-	add	r0, sp, #8		@ save pointer to save block
-	mov	r1, r4			@ size of save block
-	mov	r2, r5			@ virtual SP
-	ldr	r3, =sleep_save_sp
-#ifdef CONFIG_SMP
-	ALT_SMP(mrc p15, 0, lr, c0, c0, 5)
-	ALT_UP(mov lr, #0)
-	and	lr, lr, #15
-	add	r3, r3, lr, lsl #2
-#endif
-	bl	__cpu_suspend_save
-	adr	lr, BSYM(cpu_suspend_abort)
-=======
 #ifdef CONFIG_VMAP_STACK
 	@ Run the suspend code from the overflow stack so we don't have to rely
 	@ on vmalloc-to-phys conversions anywhere in the arch suspend code.
@@ -116,7 +90,6 @@ ENTRY(__cpu_suspend)
 	add	r0, sp, #8		@ pointer to save block
 	bl	__cpu_suspend_save
 	badr	lr, cpu_suspend_abort
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldmfd	sp!, {r0, pc}		@ call suspend fn
 ENDPROC(__cpu_suspend)
 	.ltorg
@@ -142,13 +115,6 @@ ENTRY(cpu_resume_mmu)
 	instr_sync
 	mov	r0, r0
 	mov	r0, r0
-<<<<<<< HEAD
-	mov	pc, r3			@ jump to virtual address
-ENDPROC(cpu_resume_mmu)
-	.popsection
-cpu_resume_after_mmu:
-	bl	cpu_init		@ restore the und/abt/irq banked regs
-=======
 	ret	r3			@ jump to virtual address
 ENDPROC(cpu_resume_mmu)
 	.popsection
@@ -165,33 +131,10 @@ cpu_resume_after_mmu:
 	mov	r0, sp
 	bl	kasan_unpoison_task_stack_below
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	r0, #0			@ return zero on success
 	ldmfd	sp!, {r4 - r11, pc}
 ENDPROC(cpu_resume_after_mmu)
 
-<<<<<<< HEAD
-/*
- * Note: Yes, part of the following code is located into the .data section.
- *       This is to allow sleep_save_sp to be accessed with a relative load
- *       while we can't rely on any MMU translation.  We could have put
- *       sleep_save_sp in the .text section as well, but some setups might
- *       insist on it to be truly read-only.
- */
-	.data
-	.align
-ENTRY(cpu_resume)
-#ifdef CONFIG_SMP
-	adr	r0, sleep_save_sp
-	ALT_SMP(mrc p15, 0, r1, c0, c0, 5)
-	ALT_UP(mov r1, #0)
-	and	r1, r1, #15
-	ldr	r0, [r0, r1, lsl #2]	@ stack phys addr
-#else
-	ldr	r0, sleep_save_sp	@ stack phys addr
-#endif
-	setmode	PSR_I_BIT | PSR_F_BIT | SVC_MODE, r1  @ set SVC, irqs off
-=======
 	.text
 	.align
 
@@ -234,7 +177,6 @@ no_hyp:
 	ldr_l	r0, sleep_save_sp + SLEEP_SAVE_SP_PHYS
 	ldr	r0, [r0, r1, lsl #2]
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	@ load phys pgd, stack, resume fn
   ARM(	ldmia	r0!, {r1, sp, pc}	)
 THUMB(	ldmia	r0!, {r1, r2, r3}	)
@@ -242,12 +184,6 @@ THUMB(	mov	sp, r2			)
 THUMB(	bx	r3			)
 ENDPROC(cpu_resume)
 
-<<<<<<< HEAD
-sleep_save_sp:
-	.rept	CONFIG_NR_CPUS
-	.long	0				@ preserve stack phys ptr here
-	.endr
-=======
 #ifdef CONFIG_MMU
 ENDPROC(cpu_resume_arm)
 #endif
@@ -260,4 +196,3 @@ ENDPROC(cpu_resume_no_hyp)
 	.type	sleep_save_sp, #object
 ENTRY(sleep_save_sp)
 	.space	SLEEP_SAVE_SP_SZ		@ struct sleep_save_sp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

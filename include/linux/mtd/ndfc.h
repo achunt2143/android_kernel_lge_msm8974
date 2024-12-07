@@ -1,24 +1,9 @@
-<<<<<<< HEAD
-/*
- *  linux/include/linux/mtd/ndfc.h
- *
- *  Copyright (c) 2006 Thomas Gleixner <tglx@linutronix.de>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- *  Info:
- *   Contains defines, datastructures for ndfc nand controller
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  *  Copyright (c) 2006 Thomas Gleixner <tglx@linutronix.de>
  *
  *  Info:
  *   Contains defines, datastructures for ndfc nand controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LINUX_MTD_NDFC_H
 #define __LINUX_MTD_NDFC_H

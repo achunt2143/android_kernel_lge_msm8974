@@ -1,28 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * blockcheck.c
  *
  * Checksum and ECC codes for the OCFS2 userspace library.
  *
  * Copyright (C) 2006, 2008 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License, version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -140,11 +122,7 @@ u32 ocfs2_hamming_encode(u32 parity, void *data, unsigned int d, unsigned int nr
 		 * parity bits that are part of the bit number
 		 * representation.  Huh?
 		 *
-<<<<<<< HEAD
-		 * <wikipedia href="http://en.wikipedia.org/wiki/Hamming_code">
-=======
 		 * <wikipedia href="https://en.wikipedia.org/wiki/Hamming_code">
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * In other words, the parity bit at position 2^k
 		 * checks bits in positions having bit k set in
 		 * their binary representation.  Conversely, for
@@ -249,80 +227,16 @@ static int blockcheck_u64_get(void *data, u64 *val)
 	*val = *(u64 *)data;
 	return 0;
 }
-<<<<<<< HEAD
-DEFINE_SIMPLE_ATTRIBUTE(blockcheck_fops, blockcheck_u64_get, NULL, "%llu\n");
-
-static struct dentry *blockcheck_debugfs_create(const char *name,
-						struct dentry *parent,
-						u64 *value)
-{
-	return debugfs_create_file(name, S_IFREG | S_IRUSR, parent, value,
-				   &blockcheck_fops);
-}
-=======
 DEFINE_DEBUGFS_ATTRIBUTE(blockcheck_fops, blockcheck_u64_get, NULL, "%llu\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ocfs2_blockcheck_debug_remove(struct ocfs2_blockcheck_stats *stats)
 {
 	if (stats) {
-<<<<<<< HEAD
-		debugfs_remove(stats->b_debug_check);
-		stats->b_debug_check = NULL;
-		debugfs_remove(stats->b_debug_failure);
-		stats->b_debug_failure = NULL;
-		debugfs_remove(stats->b_debug_recover);
-		stats->b_debug_recover = NULL;
-		debugfs_remove(stats->b_debug_dir);
-=======
 		debugfs_remove_recursive(stats->b_debug_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stats->b_debug_dir = NULL;
 	}
 }
 
-<<<<<<< HEAD
-static int ocfs2_blockcheck_debug_install(struct ocfs2_blockcheck_stats *stats,
-					  struct dentry *parent)
-{
-	int rc = -EINVAL;
-
-	if (!stats)
-		goto out;
-
-	stats->b_debug_dir = debugfs_create_dir("blockcheck", parent);
-	if (!stats->b_debug_dir)
-		goto out;
-
-	stats->b_debug_check =
-		blockcheck_debugfs_create("blocks_checked",
-					  stats->b_debug_dir,
-					  &stats->b_check_count);
-
-	stats->b_debug_failure =
-		blockcheck_debugfs_create("checksums_failed",
-					  stats->b_debug_dir,
-					  &stats->b_failure_count);
-
-	stats->b_debug_recover =
-		blockcheck_debugfs_create("ecc_recoveries",
-					  stats->b_debug_dir,
-					  &stats->b_recover_count);
-	if (stats->b_debug_check && stats->b_debug_failure &&
-	    stats->b_debug_recover)
-		rc = 0;
-
-out:
-	if (rc)
-		ocfs2_blockcheck_debug_remove(stats);
-	return rc;
-}
-#else
-static inline int ocfs2_blockcheck_debug_install(struct ocfs2_blockcheck_stats *stats,
-						 struct dentry *parent)
-{
-	return 0;
-=======
 static void ocfs2_blockcheck_debug_install(struct ocfs2_blockcheck_stats *stats,
 					   struct dentry *parent)
 {
@@ -345,7 +259,6 @@ static void ocfs2_blockcheck_debug_install(struct ocfs2_blockcheck_stats *stats,
 static inline void ocfs2_blockcheck_debug_install(struct ocfs2_blockcheck_stats *stats,
 						  struct dentry *parent)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ocfs2_blockcheck_debug_remove(struct ocfs2_blockcheck_stats *stats)
@@ -354,17 +267,10 @@ static inline void ocfs2_blockcheck_debug_remove(struct ocfs2_blockcheck_stats *
 #endif  /* CONFIG_DEBUG_FS */
 
 /* Always-called wrappers for starting and stopping the debugfs files */
-<<<<<<< HEAD
-int ocfs2_blockcheck_stats_debugfs_install(struct ocfs2_blockcheck_stats *stats,
-					   struct dentry *parent)
-{
-	return ocfs2_blockcheck_debug_install(stats, parent);
-=======
 void ocfs2_blockcheck_stats_debugfs_install(struct ocfs2_blockcheck_stats *stats,
 					    struct dentry *parent)
 {
 	ocfs2_blockcheck_debug_install(stats, parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ocfs2_blockcheck_stats_debugfs_remove(struct ocfs2_blockcheck_stats *stats)
@@ -474,49 +380,25 @@ int ocfs2_block_check_validate(void *data, size_t blocksize,
 			       struct ocfs2_blockcheck_stats *stats)
 {
 	int rc = 0;
-<<<<<<< HEAD
-	struct ocfs2_block_check check;
-=======
 	u32 bc_crc32e;
 	u16 bc_ecc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 crc, ecc;
 
 	ocfs2_blockcheck_inc_check(stats);
 
-<<<<<<< HEAD
-	check.bc_crc32e = le32_to_cpu(bc->bc_crc32e);
-	check.bc_ecc = le16_to_cpu(bc->bc_ecc);
-=======
 	bc_crc32e = le32_to_cpu(bc->bc_crc32e);
 	bc_ecc = le16_to_cpu(bc->bc_ecc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(bc, 0, sizeof(struct ocfs2_block_check));
 
 	/* Fast path - if the crc32 validates, we're good to go */
 	crc = crc32_le(~0, data, blocksize);
-<<<<<<< HEAD
-	if (crc == check.bc_crc32e)
-=======
 	if (crc == bc_crc32e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	ocfs2_blockcheck_inc_failure(stats);
 	mlog(ML_ERROR,
 	     "CRC32 failed: stored: 0x%x, computed 0x%x. Applying ECC.\n",
-<<<<<<< HEAD
-	     (unsigned int)check.bc_crc32e, (unsigned int)crc);
-
-	/* Ok, try ECC fixups */
-	ecc = ocfs2_hamming_encode_block(data, blocksize);
-	ocfs2_hamming_fix_block(data, blocksize, ecc ^ check.bc_ecc);
-
-	/* And check the crc32 again */
-	crc = crc32_le(~0, data, blocksize);
-	if (crc == check.bc_crc32e) {
-=======
 	     (unsigned int)bc_crc32e, (unsigned int)crc);
 
 	/* Ok, try ECC fixups */
@@ -526,28 +408,18 @@ int ocfs2_block_check_validate(void *data, size_t blocksize,
 	/* And check the crc32 again */
 	crc = crc32_le(~0, data, blocksize);
 	if (crc == bc_crc32e) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ocfs2_blockcheck_inc_recover(stats);
 		goto out;
 	}
 
 	mlog(ML_ERROR, "Fixed CRC32 failed: stored: 0x%x, computed 0x%x\n",
-<<<<<<< HEAD
-	     (unsigned int)check.bc_crc32e, (unsigned int)crc);
-=======
 	     (unsigned int)bc_crc32e, (unsigned int)crc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = -EIO;
 
 out:
-<<<<<<< HEAD
-	bc->bc_crc32e = cpu_to_le32(check.bc_crc32e);
-	bc->bc_ecc = cpu_to_le16(check.bc_ecc);
-=======
 	bc->bc_crc32e = cpu_to_le32(bc_crc32e);
 	bc->bc_ecc = cpu_to_le16(bc_ecc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -615,12 +487,8 @@ int ocfs2_block_check_validate_bhs(struct buffer_head **bhs, int nr,
 				   struct ocfs2_blockcheck_stats *stats)
 {
 	int i, rc = 0;
-<<<<<<< HEAD
-	struct ocfs2_block_check check;
-=======
 	u32 bc_crc32e;
 	u16 bc_ecc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 crc, ecc, fix;
 
 	BUG_ON(nr < 0);
@@ -630,34 +498,21 @@ int ocfs2_block_check_validate_bhs(struct buffer_head **bhs, int nr,
 
 	ocfs2_blockcheck_inc_check(stats);
 
-<<<<<<< HEAD
-	check.bc_crc32e = le32_to_cpu(bc->bc_crc32e);
-	check.bc_ecc = le16_to_cpu(bc->bc_ecc);
-=======
 	bc_crc32e = le32_to_cpu(bc->bc_crc32e);
 	bc_ecc = le16_to_cpu(bc->bc_ecc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(bc, 0, sizeof(struct ocfs2_block_check));
 
 	/* Fast path - if the crc32 validates, we're good to go */
 	for (i = 0, crc = ~0; i < nr; i++)
 		crc = crc32_le(crc, bhs[i]->b_data, bhs[i]->b_size);
-<<<<<<< HEAD
-	if (crc == check.bc_crc32e)
-=======
 	if (crc == bc_crc32e)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	ocfs2_blockcheck_inc_failure(stats);
 	mlog(ML_ERROR,
 	     "CRC32 failed: stored: %u, computed %u.  Applying ECC.\n",
-<<<<<<< HEAD
-	     (unsigned int)check.bc_crc32e, (unsigned int)crc);
-=======
 	     (unsigned int)bc_crc32e, (unsigned int)crc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ok, try ECC fixups */
 	for (i = 0, ecc = 0; i < nr; i++) {
@@ -670,11 +525,7 @@ int ocfs2_block_check_validate_bhs(struct buffer_head **bhs, int nr,
 						bhs[i]->b_size * 8,
 						bhs[i]->b_size * 8 * i);
 	}
-<<<<<<< HEAD
-	fix = ecc ^ check.bc_ecc;
-=======
 	fix = ecc ^ bc_ecc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < nr; i++) {
 		/*
 		 * Try the fix against each buffer.  It will only affect
@@ -687,32 +538,19 @@ int ocfs2_block_check_validate_bhs(struct buffer_head **bhs, int nr,
 	/* And check the crc32 again */
 	for (i = 0, crc = ~0; i < nr; i++)
 		crc = crc32_le(crc, bhs[i]->b_data, bhs[i]->b_size);
-<<<<<<< HEAD
-	if (crc == check.bc_crc32e) {
-=======
 	if (crc == bc_crc32e) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ocfs2_blockcheck_inc_recover(stats);
 		goto out;
 	}
 
 	mlog(ML_ERROR, "Fixed CRC32 failed: stored: %u, computed %u\n",
-<<<<<<< HEAD
-	     (unsigned int)check.bc_crc32e, (unsigned int)crc);
-=======
 	     (unsigned int)bc_crc32e, (unsigned int)crc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = -EIO;
 
 out:
-<<<<<<< HEAD
-	bc->bc_crc32e = cpu_to_le32(check.bc_crc32e);
-	bc->bc_ecc = cpu_to_le16(check.bc_ecc);
-=======
 	bc->bc_crc32e = cpu_to_le32(bc_crc32e);
 	bc->bc_ecc = cpu_to_le16(bc_ecc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }

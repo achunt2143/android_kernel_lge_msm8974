@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM lock
 
 #if !defined(_TRACE_LOCK_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_LOCK_H
 
-<<<<<<< HEAD
-#include <linux/lockdep.h>
-#include <linux/tracepoint.h>
-
-#ifdef CONFIG_LOCKDEP
-
-=======
 #include <linux/sched.h>
 #include <linux/tracepoint.h>
 
@@ -31,7 +21,6 @@
 
 #include <linux/lockdep.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(lock_acquire,
 
 	TP_PROTO(struct lockdep_map *lock, unsigned int subclass,
@@ -100,10 +89,6 @@ DEFINE_EVENT(lock, lock_acquired,
 	TP_ARGS(lock, ip)
 );
 
-<<<<<<< HEAD
-#endif
-#endif
-=======
 #endif /* CONFIG_LOCK_STAT */
 #endif /* CONFIG_LOCKDEP */
 
@@ -152,7 +137,6 @@ TRACE_EVENT(contention_end,
 
 	TP_printk("%p (ret=%d)", __entry->lock_addr, __entry->ret)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _TRACE_LOCK_H */
 

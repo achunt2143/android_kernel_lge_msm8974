@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/nmi.h
  */
@@ -11,24 +8,6 @@
 #include <linux/sched.h>
 #include <asm/irq.h>
 
-<<<<<<< HEAD
-/**
- * touch_nmi_watchdog - restart NMI watchdog timeout.
- * 
- * If the architecture supports the NMI watchdog, touch_nmi_watchdog()
- * may be used to reset the timeout - for code which intentionally
- * disables interrupts for a long time. This call is stateless.
- */
-#if defined(CONFIG_HAVE_NMI_WATCHDOG) || defined(CONFIG_HARDLOCKUP_DETECTOR)
-#include <asm/nmi.h>
-extern void touch_nmi_watchdog(void);
-#else
-static inline void touch_nmi_watchdog(void)
-{
-	touch_softlockup_watchdog();
-}
-#endif
-=======
 /* Arch specific watchdogs might need to share extra watchdog-related APIs. */
 #if defined(CONFIG_HARDLOCKUP_DETECTOR_ARCH) || defined(CONFIG_HARDLOCKUP_DETECTOR_SPARC64)
 #include <asm/nmi.h>
@@ -169,22 +148,12 @@ static inline void touch_nmi_watchdog(void)
 
 	touch_softlockup_watchdog();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Create trigger_all_cpu_backtrace() out of the arch-provided
  * base function. Return whether such support was available,
  * to allow calling code to fall back to some other mechanism:
  */
-<<<<<<< HEAD
-#ifdef arch_trigger_all_cpu_backtrace
-static inline bool trigger_all_cpu_backtrace(void)
-{
-	arch_trigger_all_cpu_backtrace();
-
-	return true;
-}
-=======
 #ifdef arch_trigger_cpumask_backtrace
 static inline bool trigger_all_cpu_backtrace(void)
 {
@@ -216,24 +185,11 @@ void nmi_trigger_cpumask_backtrace(const cpumask_t *mask,
 				   void (*raise)(cpumask_t *mask));
 bool nmi_cpu_backtrace(struct pt_regs *regs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline bool trigger_all_cpu_backtrace(void)
 {
 	return false;
 }
-<<<<<<< HEAD
-#endif
-
-#ifdef CONFIG_LOCKUP_DETECTOR
-int hw_nmi_is_cpu_stuck(struct pt_regs *);
-u64 hw_nmi_get_sample_period(int watchdog_thresh);
-extern int watchdog_enabled;
-extern int watchdog_thresh;
-struct ctl_table;
-extern int proc_dowatchdog(struct ctl_table *, int ,
-			   void __user *, size_t *, loff_t *);
-=======
 static inline bool trigger_allbutcpu_cpu_backtrace(int exclude_cpu)
 {
 	return false;
@@ -270,7 +226,6 @@ void nmi_backtrace_stall_check(const struct cpumask *btp);
 #else
 static inline void nmi_backtrace_stall_snap(const struct cpumask *btp) {}
 static inline void nmi_backtrace_stall_check(const struct cpumask *btp) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

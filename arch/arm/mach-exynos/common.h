@@ -1,67 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2011 Samsung Electronics Co., Ltd.
  *		http://www.samsung.com
  *
-<<<<<<< HEAD
- * Common Header for EXYNOS machines
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  * Common Header for Exynos machines
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ARCH_ARM_MACH_EXYNOS_COMMON_H
 #define __ARCH_ARM_MACH_EXYNOS_COMMON_H
 
-<<<<<<< HEAD
-extern struct sys_timer exynos4_timer;
-
-void exynos_init_io(struct map_desc *mach_desc, int size);
-void exynos4_init_irq(void);
-void exynos5_init_irq(void);
-void exynos4_restart(char mode, const char *cmd);
-void exynos5_restart(char mode, const char *cmd);
-
-#ifdef CONFIG_ARCH_EXYNOS4
-void exynos4_register_clocks(void);
-void exynos4_setup_clocks(void);
-
-#else
-#define exynos4_register_clocks()
-#define exynos4_setup_clocks()
-#endif
-
-#ifdef CONFIG_ARCH_EXYNOS5
-void exynos5_register_clocks(void);
-void exynos5_setup_clocks(void);
-
-#else
-#define exynos5_register_clocks()
-#define exynos5_setup_clocks()
-#endif
-
-#ifdef CONFIG_CPU_EXYNOS4210
-void exynos4210_register_clocks(void);
-
-#else
-#define exynos4210_register_clocks()
-#endif
-
-#ifdef CONFIG_SOC_EXYNOS4212
-void exynos4212_register_clocks(void);
-
-#else
-#define exynos4212_register_clocks()
-#endif
-
-=======
 #include <linux/platform_data/cpuidle-exynos.h>
 
 #define EXYNOS3250_SOC_ID	0xE3472000
@@ -223,5 +170,4 @@ static inline u32 pmu_raw_readl(u32 offset)
 	return readl_relaxed(pmu_base_addr + offset);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ARCH_ARM_MACH_EXYNOS_COMMON_H */

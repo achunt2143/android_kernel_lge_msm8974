@@ -1,31 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mm/cache-feroceon-l2.c - Feroceon L2 cache controller support
  *
  * Copyright (C) 2008 Marvell Semiconductor
  *
-<<<<<<< HEAD
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * References:
  * - Unified Layer 2 Cache for Feroceon CPU Cores,
  *   Document ID MV-S104858-00, Rev. A, October 23 2007.
  */
 
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/highmem.h>
-#include <asm/cacheflush.h>
-#include <asm/cp15.h>
-#include <plat/cache-feroceon-l2.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/highmem.h>
@@ -35,7 +19,6 @@
 #include <asm/hardware/cache-feroceon-l2.h>
 
 #define L2_WRITETHROUGH_KIRKWOOD	BIT(4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Low-level cache maintenance operations.
@@ -327,11 +310,7 @@ static void __init disable_l2_prefetch(void)
 	 */
 	u = read_extra_features();
 	if (!(u & 0x01000000)) {
-<<<<<<< HEAD
-		printk(KERN_INFO "Feroceon L2: Disabling L2 prefetch.\n");
-=======
 		pr_info("Feroceon L2: Disabling L2 prefetch.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_extra_features(u | 0x01000000);
 	}
 }
@@ -344,11 +323,7 @@ static void __init enable_l2(void)
 	if (!(u & 0x00400000)) {
 		int i, d;
 
-<<<<<<< HEAD
-		printk(KERN_INFO "Feroceon L2: Enabling L2\n");
-=======
 		pr_info("Feroceon L2: Enabling L2\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		d = flush_and_disable_dcache();
 		i = invalidate_and_disable_icache();
@@ -358,13 +333,9 @@ static void __init enable_l2(void)
 			enable_icache();
 		if (d)
 			enable_dcache();
-<<<<<<< HEAD
-	}
-=======
 	} else
 		pr_err(FW_BUG
 		       "Feroceon L2: bootloader left the L2 cache on!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init feroceon_l2_init(int __l2_wt_override)
@@ -376,15 +347,6 @@ void __init feroceon_l2_init(int __l2_wt_override)
 	outer_cache.inv_range = feroceon_l2_inv_range;
 	outer_cache.clean_range = feroceon_l2_clean_range;
 	outer_cache.flush_range = feroceon_l2_flush_range;
-<<<<<<< HEAD
-	outer_cache.inv_all = l2_inv_all;
-
-	enable_l2();
-
-	printk(KERN_INFO "Feroceon L2: Cache support initialised%s.\n",
-			 l2_wt_override ? ", in WT override mode" : "");
-}
-=======
 
 	enable_l2();
 
@@ -425,4 +387,3 @@ int __init feroceon_of_init(void)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

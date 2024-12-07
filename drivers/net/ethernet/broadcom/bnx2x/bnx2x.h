@@ -1,35 +1,20 @@
-<<<<<<< HEAD
-/* bnx2x.h: Broadcom Everest network driver.
- *
- * Copyright (c) 2007-2012 Broadcom Corporation
-=======
 /* bnx2x.h: QLogic Everest network driver.
  *
  * Copyright (c) 2007-2013 Broadcom Corporation
  * Copyright (c) 2014 QLogic Corporation
  * All rights reserved
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
-<<<<<<< HEAD
- * Maintained by: Eilon Greenstein <eilong@broadcom.com>
-=======
  * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written by: Eliezer Tamir
  * Based on code from Michael Chan's bnx2 driver
  */
 
 #ifndef BNX2X_H
 #define BNX2X_H
-<<<<<<< HEAD
-#include <linux/netdevice.h>
-#include <linux/dma-mapping.h>
-#include <linux/types.h>
-=======
 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
@@ -40,7 +25,6 @@
 #include <linux/ptp_clock_kernel.h>
 #include <linux/net_tstamp.h>
 #include <linux/timecounter.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* compilation time flags */
 
@@ -48,10 +32,6 @@
  * (you will need to reboot afterwards) */
 /* #define BNX2X_STOP_ON_ERROR */
 
-<<<<<<< HEAD
-#define DRV_MODULE_VERSION      "1.72.10-0"
-#define DRV_MODULE_RELDATE      "2012/02/20"
-=======
 /* FIXME: Delete the DRV_MODULE_VERSION below, but please be warned
  * that it is not an easy task because such change has all chances
  * to break this driver due to amount of abuse of in-kernel interfaces
@@ -60,49 +40,27 @@
  * DO NOT UPDATE DRV_MODULE_VERSION below.
  */
 #define DRV_MODULE_VERSION      "1.713.36-0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNX2X_BC_VER            0x040200
 
 #if defined(CONFIG_DCB)
 #define BCM_DCBNL
 #endif
-<<<<<<< HEAD
-#if defined(CONFIG_CNIC) || defined(CONFIG_CNIC_MODULE)
-#define BCM_CNIC 1
-#include "../cnic_if.h"
-#endif
-
-#ifdef BCM_CNIC
-#define BNX2X_MIN_MSIX_VEC_CNT 3
-#define BNX2X_MSIX_VEC_FP_START 2
-#else
-#define BNX2X_MIN_MSIX_VEC_CNT 2
-#define BNX2X_MSIX_VEC_FP_START 1
-#endif
-=======
 
 #include "bnx2x_hsi.h"
 
 #include "../cnic_if.h"
 
 #define BNX2X_MIN_MSIX_VEC_CNT(bp)		((bp)->min_msix_vec_cnt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mdio.h>
 
 #include "bnx2x_reg.h"
 #include "bnx2x_fw_defs.h"
-<<<<<<< HEAD
-#include "bnx2x_hsi.h"
-=======
 #include "bnx2x_mfw_req.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "bnx2x_link.h"
 #include "bnx2x_sp.h"
 #include "bnx2x_dcb.h"
 #include "bnx2x_stats.h"
-<<<<<<< HEAD
-=======
 #include "bnx2x_vfpf.h"
 
 enum bnx2x_int_mode {
@@ -110,7 +68,6 @@ enum bnx2x_int_mode {
 	BNX2X_INT_MODE_INTX,
 	BNX2X_INT_MODE_MSI
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* error/debug prints */
 
@@ -125,24 +82,12 @@ enum bnx2x_int_mode {
 #define BNX2X_MSG_SP			0x0100000 /* was: NETIF_MSG_INTR */
 #define BNX2X_MSG_FP			0x0200000 /* was: NETIF_MSG_INTR */
 #define BNX2X_MSG_IOV			0x0800000
-<<<<<<< HEAD
-=======
 #define BNX2X_MSG_PTP			0x1000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNX2X_MSG_IDLE			0x2000000 /* used for idle check*/
 #define BNX2X_MSG_ETHTOOL		0x4000000
 #define BNX2X_MSG_DCB			0x8000000
 
 /* regular debug print */
-<<<<<<< HEAD
-#define DP(__mask, fmt, ...)					\
-do {								\
-	if (unlikely(bp->msg_enable & (__mask)))		\
-		pr_notice("[%s:%d(%s)]" fmt,			\
-			  __func__, __LINE__,			\
-			  bp->dev ? (bp->dev->name) : "?",	\
-			  ##__VA_ARGS__);			\
-=======
 #define DP_INNER(fmt, ...)					\
 	pr_notice("[%s:%d(%s)]" fmt,				\
 		  __func__, __LINE__,				\
@@ -159,7 +104,6 @@ do {								\
 do {								\
 	if (unlikely((bp->msg_enable & (__mask)) == __mask))	\
 		DP_INNER(fmt, ##__VA_ARGS__);			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #define DP_CONT(__mask, fmt, ...)				\
@@ -190,10 +134,6 @@ do {								\
 #define BNX2X_ERROR(fmt, ...)					\
 	pr_err("[%s:%d]" fmt, __func__, __LINE__, ##__VA_ARGS__)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* before we have a dev->name use dev_info() */
 #define BNX2X_DEV_INFO(fmt, ...)				 \
 do {								 \
@@ -201,68 +141,43 @@ do {								 \
 		dev_info(&bp->pdev->dev, fmt, ##__VA_ARGS__);	 \
 } while (0)
 
-<<<<<<< HEAD
-#ifdef BNX2X_STOP_ON_ERROR
-void bnx2x_int_disable(struct bnx2x *bp);
-=======
 /* Error handling */
 void bnx2x_panic_dump(struct bnx2x *bp, bool disable_int);
 #ifdef BNX2X_STOP_ON_ERROR
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define bnx2x_panic()				\
 do {						\
 	bp->panic = 1;				\
 	BNX2X_ERR("driver assert\n");		\
-<<<<<<< HEAD
-	bnx2x_int_disable(bp);			\
-	bnx2x_panic_dump(bp);			\
-=======
 	bnx2x_panic_dump(bp, true);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 #else
 #define bnx2x_panic()				\
 do {						\
 	bp->panic = 1;				\
 	BNX2X_ERR("driver assert\n");		\
-<<<<<<< HEAD
-	bnx2x_panic_dump(bp);			\
-=======
 	bnx2x_panic_dump(bp, false);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 #endif
 
 #define bnx2x_mc_addr(ha)      ((ha)->addr)
 #define bnx2x_uc_addr(ha)      ((ha)->addr)
 
-<<<<<<< HEAD
-#define U64_LO(x)			(u32)(((u64)(x)) & 0xffffffff)
-#define U64_HI(x)			(u32)(((u64)(x)) >> 32)
-#define HILO_U64(hi, lo)		((((u64)(hi)) << 32) + (lo))
-
-
-=======
 #define U64_LO(x)			((u32)(((u64)(x)) & 0xffffffff))
 #define U64_HI(x)			((u32)(((u64)(x)) >> 32))
 #define HILO_U64(hi, lo)		((((u64)(hi)) << 32) + (lo))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_ADDR(bp, offset)		((bp->regview) + (offset))
 
 #define REG_RD(bp, offset)		readl(REG_ADDR(bp, offset))
 #define REG_RD8(bp, offset)		readb(REG_ADDR(bp, offset))
 #define REG_RD16(bp, offset)		readw(REG_ADDR(bp, offset))
 
-<<<<<<< HEAD
-=======
 #define REG_WR_RELAXED(bp, offset, val)	\
 	writel_relaxed((u32)val, REG_ADDR(bp, offset))
 
 #define REG_WR16_RELAXED(bp, offset, val) \
 	writew_relaxed((u16)val, REG_ADDR(bp, offset))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_WR(bp, offset, val)		writel((u32)val, REG_ADDR(bp, offset))
 #define REG_WR8(bp, offset, val)	writeb((u8)val, REG_ADDR(bp, offset))
 #define REG_WR16(bp, offset, val)	writew((u16)val, REG_ADDR(bp, offset))
@@ -359,25 +274,6 @@ enum {
 	BNX2X_MAX_CNIC_ETH_CL_ID_IDX,
 };
 
-<<<<<<< HEAD
-#define BNX2X_CNIC_START_ETH_CID	48
-enum {
-	/* iSCSI L2 */
-	BNX2X_ISCSI_ETH_CID = BNX2X_CNIC_START_ETH_CID,
-	/* FCoE L2 */
-	BNX2X_FCOE_ETH_CID,
-};
-
-/** Additional rings budgeting */
-#ifdef BCM_CNIC
-#define CNIC_PRESENT			1
-#define FCOE_PRESENT			1
-#else
-#define CNIC_PRESENT			0
-#define FCOE_PRESENT			0
-#endif /* BCM_CNIC */
-#define NON_ETH_CONTEXT_USE	(FCOE_PRESENT)
-=======
 /* use a value high enough to be above all the PFs, which has least significant
  * nibble as 8, so when cnic needs to come up with a CID for UIO to use to
  * calculate doorbell address according to old doorbell configuration scheme
@@ -418,7 +314,6 @@ enum {
 #define CNIC_ENABLED(bp)		((bp)->cnic_enabled)
 #define CNIC_LOADED(bp)			((bp)->cnic_loaded)
 #define FCOE_INIT(bp)			((bp)->fcoe_init)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AEU_IN_ATTN_BITS_PXPPCICLOCKCLIENT_PARITY_ERROR \
 	AEU_INPUTS_ATTN_BITS_PXPPCICLOCKCLIENT_PARITY_ERROR
@@ -430,31 +325,6 @@ enum {
 #define FIRST_TX_ONLY_COS_INDEX		1
 #define FIRST_TX_COS_INDEX		0
 
-<<<<<<< HEAD
-/* defines for decodeing the fastpath index and the cos index out of the
- * transmission queue index
- */
-#define MAX_TXQS_PER_COS	FP_SB_MAX_E1x
-
-#define TXQ_TO_FP(txq_index)	((txq_index) % MAX_TXQS_PER_COS)
-#define TXQ_TO_COS(txq_index)	((txq_index) / MAX_TXQS_PER_COS)
-
-/* rules for calculating the cids of tx-only connections */
-#define CID_TO_FP(cid)		((cid) % MAX_TXQS_PER_COS)
-#define CID_COS_TO_TX_ONLY_CID(cid, cos)	(cid + cos * MAX_TXQS_PER_COS)
-
-/* fp index inside class of service range */
-#define FP_COS_TO_TXQ(fp, cos)    ((fp)->index + cos * MAX_TXQS_PER_COS)
-
-/*
- * 0..15 eth cos0
- * 16..31 eth cos1 if applicable
- * 32..47 eth cos2 If applicable
- * fcoe queue follows eth queues (16, 32, 48 depending on cos)
- */
-#define MAX_ETH_TXQ_IDX(bp)	(MAX_TXQS_PER_COS * (bp)->max_cos)
-#define FCOE_TXQ_IDX(bp)	(MAX_ETH_TXQ_IDX(bp))
-=======
 /* rules for calculating the cids of tx-only connections */
 #define CID_TO_FP(cid, bp)		((cid) % BNX2X_NUM_NON_CNIC_QUEUES(bp))
 #define CID_COS_TO_TX_ONLY_CID(cid, cos, bp) \
@@ -477,7 +347,6 @@ enum {
 };
 #define MAX_ETH_TXQ_IDX(bp)	(BNX2X_NUM_NON_CNIC_QUEUES(bp) * (bp)->max_cos)
 #define FCOE_TXQ_IDX(bp)	(MAX_ETH_TXQ_IDX(bp) + FCOE_TXQ_IDX_OFFSET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* fast path */
 /*
@@ -496,19 +365,13 @@ struct sw_tx_bd {
 	u8		flags;
 /* Set on the first BD descriptor when there is a split BD */
 #define BNX2X_TSO_SPLIT_BD		(1<<0)
-<<<<<<< HEAD
-=======
 #define BNX2X_HAS_SECOND_PBD		(1<<1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sw_rx_page {
 	struct page	*page;
 	DEFINE_DMA_UNMAP_ADDR(mapping);
-<<<<<<< HEAD
-=======
 	unsigned int	offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union db_prod {
@@ -533,12 +396,6 @@ union db_prod {
 
 #define PAGES_PER_SGE_SHIFT	0
 #define PAGES_PER_SGE		(1 << PAGES_PER_SGE_SHIFT)
-<<<<<<< HEAD
-#define SGE_PAGE_SIZE		PAGE_SIZE
-#define SGE_PAGE_SHIFT		PAGE_SHIFT
-#define SGE_PAGE_ALIGN(addr)	PAGE_ALIGN((typeof(PAGE_SIZE))(addr))
-#define SGE_PAGES		(SGE_PAGE_SIZE * PAGES_PER_SGE)
-=======
 #define SGE_PAGE_SHIFT		12
 #define SGE_PAGE_SIZE		(1 << SGE_PAGE_SHIFT)
 #define SGE_PAGE_MASK		(~(SGE_PAGE_SIZE - 1))
@@ -546,7 +403,6 @@ union db_prod {
 #define SGE_PAGES		(SGE_PAGE_SIZE * PAGES_PER_SGE)
 #define TPA_AGG_SIZE		min_t(u32, (min_t(u32, 8, MAX_SKB_FRAGS) * \
 					    SGE_PAGES), 0xffff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SGE ring related macros */
 #define NUM_RX_SGE_PAGES	2
@@ -566,11 +422,7 @@ union db_prod {
 /*
  * Number of required  SGEs is the sum of two:
  * 1. Number of possible opened aggregations (next packet for
-<<<<<<< HEAD
- *    these aggregations will probably consume SGE immidiatelly)
-=======
  *    these aggregations will probably consume SGE immediately)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 2. Rest of BRB blocks divided by 2 (block will consume new SGE only
  *    after placement on BD for new TPA aggregation)
  *
@@ -591,10 +443,6 @@ union db_prod {
 #define BIT_VEC64_ELEM_SHIFT		6
 #define BIT_VEC64_ELEM_MASK		((u64)BIT_VEC64_ELEM_SZ - 1)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __BIT_VEC64_SET_BIT(el, bit) \
 	do { \
 		el = ((el) | ((u64)0x1 << (bit))); \
@@ -605,10 +453,6 @@ union db_prod {
 		el = ((el) & (~((u64)0x1 << (bit)))); \
 	} while (0)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BIT_VEC64_SET_BIT(vec64, idx) \
 	__BIT_VEC64_SET_BIT((vec64)[(idx) >> BIT_VEC64_ELEM_SHIFT], \
 			   (idx) & BIT_VEC64_ELEM_MASK)
@@ -629,11 +473,6 @@ union db_prod {
 
 /*******************************************************/
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Number of u64 elements in SGE mask array */
 #define RX_SGE_MASK_LEN			(NUM_RX_SGE / BIT_VEC64_ELEM_SZ)
 #define RX_SGE_MASK_LEN_MASK		(RX_SGE_MASK_LEN - 1)
@@ -664,10 +503,7 @@ struct bnx2x_agg_info {
 	u16			vlan_tag;
 	u16			len_on_bd;
 	u32			rxhash;
-<<<<<<< HEAD
-=======
 	enum pkt_hash_types	rxhash_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16			gro_size;
 	u16			full_page;
 };
@@ -696,38 +532,16 @@ struct bnx2x_fp_txdata {
 	__le16			*tx_cons_sb;
 
 	int			txq_index;
-<<<<<<< HEAD
-};
-
-enum bnx2x_tpa_mode_t {
-=======
 	struct bnx2x_fastpath	*parent_fp;
 	int			tx_ring_size;
 };
 
 enum bnx2x_tpa_mode_t {
 	TPA_MODE_DISABLED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TPA_MODE_LRO,
 	TPA_MODE_GRO
 };
 
-<<<<<<< HEAD
-struct bnx2x_fastpath {
-	struct bnx2x		*bp; /* parent */
-
-#define BNX2X_NAPI_WEIGHT       128
-	struct napi_struct	napi;
-	union host_hc_status_block	status_blk;
-	/* chip independed shortcuts into sb structure */
-	__le16			*sb_index_values;
-	__le16			*sb_running_index;
-	/* chip independed shortcut into rx_prods_offset memory */
-	u32			ustorm_rx_prods_offset;
-
-	u32			rx_buf_size;
-
-=======
 struct bnx2x_alloc_pool {
 	struct page	*page;
 	unsigned int	offset;
@@ -747,17 +561,12 @@ struct bnx2x_fastpath {
 
 	u32			rx_buf_size;
 	u32			rx_frag_size; /* 0 if kmalloced(), or rx_buf_size + NET_SKB_PAD */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t		status_blk_mapping;
 
 	enum bnx2x_tpa_mode_t	mode;
 
 	u8			max_cos; /* actual number of active tx coses */
-<<<<<<< HEAD
-	struct bnx2x_fp_txdata	txdata[BNX2X_MULTI_TX_COS];
-=======
 	struct bnx2x_fp_txdata	*txdata_ptr[BNX2X_MULTI_TX_COS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct sw_rx_bd		*rx_buf_ring;	/* BDs mappings ring */
 	struct sw_rx_page	*rx_page_ring;	/* SGE pages mappings ring */
@@ -793,31 +602,12 @@ struct bnx2x_fastpath {
 	/* The last maximal completed SGE */
 	u16			last_max_sge;
 	__le16			*rx_cons_sb;
-<<<<<<< HEAD
-	unsigned long		rx_pkt,
-				rx_calls;
-
-	/* TPA related */
-	struct bnx2x_agg_info	tpa_info[ETH_MAX_AGGREGATION_QUEUES_E1H_E2];
-	u8			disable_tpa;
-#ifdef BNX2X_STOP_ON_ERROR
-	u64			tpa_queue_used;
-#endif
-
-	struct tstorm_per_queue_stats old_tclient;
-	struct ustorm_per_queue_stats old_uclient;
-	struct xstorm_per_queue_stats old_xclient;
-	struct bnx2x_eth_q_stats eth_q_stats;
-	struct bnx2x_eth_q_stats_old eth_q_stats_old;
-
-=======
 
 	/* TPA related */
 	struct bnx2x_agg_info	*tpa_info;
 #ifdef BNX2X_STOP_ON_ERROR
 	u64			tpa_queue_used;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The size is calculated using the following:
 	     sizeof name field from netdev structure +
 	     4 ('-Xx-' string) +
@@ -825,17 +615,6 @@ struct bnx2x_fastpath {
 #define FP_NAME_SIZE		(sizeof(((struct net_device *)0)->name) + 8)
 	char			name[FP_NAME_SIZE];
 
-<<<<<<< HEAD
-	/* MACs object */
-	struct bnx2x_vlan_mac_obj mac_obj;
-
-	/* Queue State object */
-	struct bnx2x_queue_sp_obj q_obj;
-
-};
-
-#define bnx2x_fp(bp, nr, var)		(bp->fp[nr].var)
-=======
 	struct bnx2x_alloc_pool	page_pool;
 };
 
@@ -843,31 +622,10 @@ struct bnx2x_fastpath {
 #define bnx2x_sp_obj(bp, fp)	((bp)->sp_objs[(fp)->index])
 #define bnx2x_fp_stats(bp, fp)	(&((bp)->fp_stats[(fp)->index]))
 #define bnx2x_fp_qstats(bp, fp)	(&((bp)->fp_stats[(fp)->index].eth_q_stats))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Use 2500 as a mini-jumbo MTU for FCoE */
 #define BNX2X_FCOE_MINI_JUMBO_MTU	2500
 
-<<<<<<< HEAD
-/* FCoE L2 `fastpath' entry is right after the eth entries */
-#define FCOE_IDX			BNX2X_NUM_ETH_QUEUES(bp)
-#define bnx2x_fcoe_fp(bp)		(&bp->fp[FCOE_IDX])
-#define bnx2x_fcoe(bp, var)		(bnx2x_fcoe_fp(bp)->var)
-#define bnx2x_fcoe_tx(bp, var)		(bnx2x_fcoe_fp(bp)-> \
-						txdata[FIRST_TX_COS_INDEX].var)
-
-
-#define IS_ETH_FP(fp)			(fp->index < \
-					 BNX2X_NUM_ETH_QUEUES(fp->bp))
-#ifdef BCM_CNIC
-#define IS_FCOE_FP(fp)			(fp->index == FCOE_IDX)
-#define IS_FCOE_IDX(idx)		((idx) == FCOE_IDX)
-#else
-#define IS_FCOE_FP(fp)		false
-#define IS_FCOE_IDX(idx)	false
-#endif
-
-=======
 #define	FCOE_IDX_OFFSET		0
 
 #define FCOE_IDX(bp)		(BNX2X_NUM_NON_CNIC_QUEUES(bp) + \
@@ -883,7 +641,6 @@ struct bnx2x_fastpath {
 #define IS_ETH_FP(fp)		((fp)->index < BNX2X_NUM_ETH_QUEUES((fp)->bp))
 #define IS_FCOE_FP(fp)		((fp)->index == FCOE_IDX((fp)->bp))
 #define IS_FCOE_IDX(idx)	((idx) == FCOE_IDX(bp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MC hsi */
 #define MAX_FETCH_BD		13	/* HW max BDs per packet */
@@ -903,8 +660,6 @@ struct bnx2x_fastpath {
 #define TX_BD(x)		((x) & MAX_TX_BD)
 #define TX_BD_POFF(x)		((x) & MAX_TX_DESC_CNT)
 
-<<<<<<< HEAD
-=======
 /* number of NEXT_PAGE descriptors may be required during placement */
 #define NEXT_CNT_PER_TX_PKT(bds)	\
 				(((bds) + MAX_TX_DESC_CNT - 1) / \
@@ -922,7 +677,6 @@ struct bnx2x_fastpath {
 #define MAX_DESC_PER_TX_PKT	(MAX_BDS_PER_TX_PKT + \
 				 NEXT_CNT_PER_TX_PKT(MAX_BDS_PER_TX_PKT))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The RX BD ring is special, each bd is 8 bytes but the last one is 16 */
 #define NUM_RX_RINGS		8
 #define RX_DESC_CNT		(BCM_PAGE_SIZE / sizeof(struct eth_rx_bd))
@@ -995,18 +749,10 @@ struct bnx2x_fastpath {
 				 FW_DROP_LEVEL(bp))
 #define RCQ_TH_HI(bp)		(RCQ_TH_LO(bp) + DROPLESS_FC_HEADROOM)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is needed for determining of last_max */
 #define SUB_S16(a, b)		(s16)((s16)(a) - (s16)(b))
 #define SUB_S32(a, b)		(s32)((s32)(a) - (s32)(b))
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNX2X_SWCID_SHIFT	17
 #define BNX2X_SWCID_MASK	((0x1 << BNX2X_SWCID_SHIFT) - 1)
 
@@ -1020,26 +766,12 @@ struct bnx2x_fastpath {
 #define BD_UNMAP_LEN(bd)		(le16_to_cpu((bd)->nbytes))
 
 #define BNX2X_DB_MIN_SHIFT		3	/* 8 bytes */
-<<<<<<< HEAD
-#define BNX2X_DB_SHIFT			7	/* 128 bytes*/
-#if (BNX2X_DB_SHIFT < BNX2X_DB_MIN_SHIFT)
-#error "Min DB doorbell stride is 8"
-#endif
-#define DPM_TRIGER_TYPE			0x40
-#define DOORBELL(bp, cid, val) \
-	do { \
-		writel((u32)(val), bp->doorbells + (bp->db_size * (cid)) + \
-		       DPM_TRIGER_TYPE); \
-	} while (0)
-
-=======
 #define BNX2X_DB_SHIFT			3	/* 8 bytes*/
 #if (BNX2X_DB_SHIFT < BNX2X_DB_MIN_SHIFT)
 #error "Min DB doorbell stride is 8"
 #endif
 #define DOORBELL_RELAXED(bp, cid, val) \
 	writel_relaxed((u32)(val), (bp)->doorbells + ((bp)->db_size * (cid)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* TX CSUM helpers */
 #define SKB_CS_OFF(skb)		(offsetof(struct tcphdr, check) - \
@@ -1047,20 +779,6 @@ struct bnx2x_fastpath {
 #define SKB_CS(skb)		(*(u16 *)(skb_transport_header(skb) + \
 					  skb->csum_offset))
 
-<<<<<<< HEAD
-#define pbd_tcp_flags(skb)	(ntohl(tcp_flag_word(tcp_hdr(skb)))>>16 & 0xff)
-
-#define XMIT_PLAIN			0
-#define XMIT_CSUM_V4			0x1
-#define XMIT_CSUM_V6			0x2
-#define XMIT_CSUM_TCP			0x4
-#define XMIT_GSO_V4			0x8
-#define XMIT_GSO_V6			0x10
-
-#define XMIT_CSUM			(XMIT_CSUM_V4 | XMIT_CSUM_V6)
-#define XMIT_GSO			(XMIT_GSO_V4 | XMIT_GSO_V6)
-
-=======
 #define pbd_tcp_flags(tcp_hdr)	(ntohl(tcp_flag_word(tcp_hdr))>>16 & 0xff)
 
 #define XMIT_PLAIN		0
@@ -1079,7 +797,6 @@ struct bnx2x_fastpath {
 
 #define XMIT_CSUM		(XMIT_CSUM_V4 | XMIT_CSUM_V6 | XMIT_CSUM_ENC)
 #define XMIT_GSO		(XMIT_GSO_V4 | XMIT_GSO_V6 | XMIT_GSO_ENC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* stuff added to make the code fit 80Col */
 #define CQE_TYPE(cqe_fp_flags)	 ((cqe_fp_flags) & ETH_FAST_PATH_RX_CQE_TYPE)
@@ -1098,10 +815,6 @@ struct bnx2x_fastpath {
 #define BNX2X_RX_SUM_FIX(cqe) \
 	BNX2X_PRS_FLAG_OVERETH_IPV4(cqe->fast_path_cqe.pars_flags.flags)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FP_USB_FUNC_OFF	\
 			offsetof(struct cstorm_status_block_u, func)
 #define FP_CSB_FUNC_OFF	\
@@ -1143,20 +856,11 @@ struct bnx2x_common {
 #define CHIP_NUM_57711E			0x1650
 #define CHIP_NUM_57712			0x1662
 #define CHIP_NUM_57712_MF		0x1663
-<<<<<<< HEAD
-=======
 #define CHIP_NUM_57712_VF		0x166f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CHIP_NUM_57713			0x1651
 #define CHIP_NUM_57713E			0x1652
 #define CHIP_NUM_57800			0x168a
 #define CHIP_NUM_57800_MF		0x16a5
-<<<<<<< HEAD
-#define CHIP_NUM_57810			0x168e
-#define CHIP_NUM_57810_MF		0x16ae
-#define CHIP_NUM_57840			0x168d
-#define CHIP_NUM_57840_MF		0x16ab
-=======
 #define CHIP_NUM_57800_VF		0x16a9
 #define CHIP_NUM_57810			0x168e
 #define CHIP_NUM_57810_MF		0x16ae
@@ -1170,30 +874,10 @@ struct bnx2x_common {
 #define CHIP_NUM_57840_2_20		0x16a2
 #define CHIP_NUM_57840_MF		0x16a4
 #define CHIP_NUM_57840_VF		0x16ad
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CHIP_IS_E1(bp)			(CHIP_NUM(bp) == CHIP_NUM_57710)
 #define CHIP_IS_57711(bp)		(CHIP_NUM(bp) == CHIP_NUM_57711)
 #define CHIP_IS_57711E(bp)		(CHIP_NUM(bp) == CHIP_NUM_57711E)
 #define CHIP_IS_57712(bp)		(CHIP_NUM(bp) == CHIP_NUM_57712)
-<<<<<<< HEAD
-#define CHIP_IS_57712_MF(bp)		(CHIP_NUM(bp) == CHIP_NUM_57712_MF)
-#define CHIP_IS_57800(bp)		(CHIP_NUM(bp) == CHIP_NUM_57800)
-#define CHIP_IS_57800_MF(bp)		(CHIP_NUM(bp) == CHIP_NUM_57800_MF)
-#define CHIP_IS_57810(bp)		(CHIP_NUM(bp) == CHIP_NUM_57810)
-#define CHIP_IS_57810_MF(bp)		(CHIP_NUM(bp) == CHIP_NUM_57810_MF)
-#define CHIP_IS_57840(bp)		(CHIP_NUM(bp) == CHIP_NUM_57840)
-#define CHIP_IS_57840_MF(bp)		(CHIP_NUM(bp) == CHIP_NUM_57840_MF)
-#define CHIP_IS_E1H(bp)			(CHIP_IS_57711(bp) || \
-					 CHIP_IS_57711E(bp))
-#define CHIP_IS_E2(bp)			(CHIP_IS_57712(bp) || \
-					 CHIP_IS_57712_MF(bp))
-#define CHIP_IS_E3(bp)			(CHIP_IS_57800(bp) || \
-					 CHIP_IS_57800_MF(bp) || \
-					 CHIP_IS_57810(bp) || \
-					 CHIP_IS_57810_MF(bp) || \
-					 CHIP_IS_57840(bp) || \
-					 CHIP_IS_57840_MF(bp))
-=======
 #define CHIP_IS_57712_VF(bp)		(CHIP_NUM(bp) == CHIP_NUM_57712_VF)
 #define CHIP_IS_57712_MF(bp)		(CHIP_NUM(bp) == CHIP_NUM_57712_MF)
 #define CHIP_IS_57800(bp)		(CHIP_NUM(bp) == CHIP_NUM_57800)
@@ -1230,7 +914,6 @@ struct bnx2x_common {
 					 CHIP_IS_57840(bp) || \
 					 CHIP_IS_57840_MF(bp) || \
 					 CHIP_IS_57840_VF(bp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CHIP_IS_E1x(bp)			(CHIP_IS_E1((bp)) || CHIP_IS_E1H((bp)))
 #define USES_WARPCORE(bp)		(CHIP_IS_E3(bp))
 #define IS_E1H_OFFSET			(!CHIP_IS_E1(bp))
@@ -1264,8 +947,6 @@ struct bnx2x_common {
 					 (CHIP_REV(bp) == CHIP_REV_Bx))
 #define CHIP_IS_E3A0(bp)		(CHIP_IS_E3(bp) && \
 					 (CHIP_REV(bp) == CHIP_REV_Ax))
-<<<<<<< HEAD
-=======
 /* This define is used in two main places:
  * 1. In the early stages of nic_load, to know if to configure Parser / Searcher
  * to nic-only mode or to offload mode. Offload mode is configured if either the
@@ -1278,7 +959,6 @@ struct bnx2x_common {
  * where never requested.
  */
 #define CONFIGURE_NIC_MODE(bp)		(!CHIP_IS_E1x(bp) && !CNIC_ENABLED(bp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			flash_size;
 #define BNX2X_NVRAM_1MB_SIZE			0x20000	/* 1M bit in bytes */
@@ -1318,10 +998,7 @@ struct bnx2x_common {
 #define BNX2X_IGU_STAS_MSG_VF_CNT 64
 #define BNX2X_IGU_STAS_MSG_PF_CNT 4
 
-<<<<<<< HEAD
-=======
 #define MAX_IGU_ATTN_ACK_TO       100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* end of common */
 
 /* port */
@@ -1332,26 +1009,13 @@ struct bnx2x_port {
 	u32			link_config[LINK_CONFIG_SIZE];
 
 	u32			supported[LINK_CONFIG_SIZE];
-<<<<<<< HEAD
-/* link settings - missing defines */
-#define SUPPORTED_2500baseX_Full	(1 << 15)
 
 	u32			advertising[LINK_CONFIG_SIZE];
-/* link settings - missing defines */
-#define ADVERTISED_2500baseX_Full	(1 << 15)
-=======
-
-	u32			advertising[LINK_CONFIG_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32			phy_addr;
 
 	/* used to synchronize phy accesses */
 	struct mutex		phy_mutex;
-<<<<<<< HEAD
-	int			need_hw_lock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32			port_stx;
 
@@ -1364,15 +1028,6 @@ struct bnx2x_port {
 			(offsetof(struct bnx2x_eth_stats, stat_name) / 4)
 
 /* slow path */
-<<<<<<< HEAD
-
-/* slow path work-queue */
-extern struct workqueue_struct *bnx2x_wq;
-
-#define BNX2X_MAX_NUM_OF_VFS	64
-#define BNX2X_VF_ID_INVALID	0xFF
-
-=======
 #define BNX2X_MAX_NUM_OF_VFS	64
 #define BNX2X_VF_CID_WND	4 /* log num of queues per VF. HW config. */
 #define BNX2X_CIDS_PER_VF	(1 << BNX2X_VF_CID_WND)
@@ -1395,7 +1050,6 @@ extern struct workqueue_struct *bnx2x_wq;
 #error "VF doorbell bar size is 512"
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The total number of L2 queues, MSIX vectors and HW contexts (CIDs) is
  * control by the number of fast-path status blocks supported by the
@@ -1408,22 +1062,14 @@ extern struct workqueue_struct *bnx2x_wq;
  * If the maximum number of FP-SB available is X then:
  * a. If CNIC is supported it consumes 1 FP-SB thus the max number of
  *    regular L2 queues is Y=X-1
-<<<<<<< HEAD
- * b. in MF mode the actual number of L2 queues is Y= (X-1/MF_factor)
-=======
  * b. In MF mode the actual number of L2 queues is Y= (X-1/MF_factor)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * c. If the FCoE L2 queue is supported the actual number of L2 queues
  *    is Y+1
  * d. The number of irqs (MSIX vectors) is either Y+1 (one extra for
  *    slow-path interrupts) or Y+2 if CNIC is supported (one additional
  *    FP interrupt context for the CNIC).
  * e. The number of HW context (CID count) is always X or X+1 if FCoE
-<<<<<<< HEAD
- *    L2 queue is supported. the cid for the FCoE L2 queue is always X.
-=======
  *    L2 queue is supported. The cid for the FCoE L2 queue is always X.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* fast-path interrupt contexts E1x */
@@ -1437,46 +1083,25 @@ union cdu_context {
 };
 
 /* CDU host DB constants */
-<<<<<<< HEAD
-#define CDU_ILT_PAGE_SZ_HW	3
-#define CDU_ILT_PAGE_SZ		(8192 << CDU_ILT_PAGE_SZ_HW) /* 64K */
-#define ILT_PAGE_CIDS		(CDU_ILT_PAGE_SZ / sizeof(union cdu_context))
-
-#ifdef BCM_CNIC
-=======
 #define CDU_ILT_PAGE_SZ_HW	2
 #define CDU_ILT_PAGE_SZ		(8192 << CDU_ILT_PAGE_SZ_HW) /* 32K */
 #define ILT_PAGE_CIDS		(CDU_ILT_PAGE_SZ / sizeof(union cdu_context))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CNIC_ISCSI_CID_MAX	256
 #define CNIC_FCOE_CID_MAX	2048
 #define CNIC_CID_MAX		(CNIC_ISCSI_CID_MAX + CNIC_FCOE_CID_MAX)
 #define CNIC_ILT_LINES		DIV_ROUND_UP(CNIC_CID_MAX, ILT_PAGE_CIDS)
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QM_ILT_PAGE_SZ_HW	0
 #define QM_ILT_PAGE_SZ		(4096 << QM_ILT_PAGE_SZ_HW) /* 4K */
 #define QM_CID_ROUND		1024
 
-<<<<<<< HEAD
-#ifdef BCM_CNIC
-/* TM (timers) host DB constants */
-#define TM_ILT_PAGE_SZ_HW	0
-#define TM_ILT_PAGE_SZ		(4096 << TM_ILT_PAGE_SZ_HW) /* 4K */
-/* #define TM_CONN_NUM		(CNIC_STARTING_CID+CNIC_ISCSI_CXT_MAX) */
-#define TM_CONN_NUM		1024
-=======
 /* TM (timers) host DB constants */
 #define TM_ILT_PAGE_SZ_HW	0
 #define TM_ILT_PAGE_SZ		(4096 << TM_ILT_PAGE_SZ_HW) /* 4K */
 #define TM_CONN_NUM		(BNX2X_FIRST_VF_CID + \
 				 BNX2X_VF_CIDS + \
 				 CNIC_ISCSI_CID_MAX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TM_ILT_SZ		(8 * TM_CONN_NUM)
 #define TM_ILT_LINES		DIV_ROUND_UP(TM_ILT_SZ, TM_ILT_PAGE_SZ)
 
@@ -1489,11 +1114,6 @@ union cdu_context {
 #define SRC_T2_SZ		SRC_ILT_SZ
 #define SRC_ILT_LINES		DIV_ROUND_UP(SRC_ILT_SZ, SRC_ILT_PAGE_SZ)
 
-<<<<<<< HEAD
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_DMAE_C		8
 
 /* DMA memory not used in fastpath */
@@ -1503,12 +1123,9 @@ struct bnx2x_slowpath {
 		struct eth_classify_rules_ramrod_data	e2;
 	} mac_rdata;
 
-<<<<<<< HEAD
-=======
 	union {
 		struct eth_classify_rules_ramrod_data	e2;
 	} vlan_rdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	union {
 		struct tstorm_eth_mac_filter_config	e1x;
@@ -1526,10 +1143,7 @@ struct bnx2x_slowpath {
 	union {
 		struct client_init_ramrod_data  init_data;
 		struct client_update_ramrod_data update_data;
-<<<<<<< HEAD
-=======
 		struct tpa_update_ramrod_data tpa_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} q_rdata;
 
 	union {
@@ -1538,8 +1152,6 @@ struct bnx2x_slowpath {
 		struct flow_control_configuration pfc_config;
 	} func_rdata;
 
-<<<<<<< HEAD
-=======
 	/* afex ramrod can not be a part of func_rdata union because these
 	 * events might arrive in parallel to other events from func_rdata.
 	 * Therefore, if they would have been defined in the same union,
@@ -1550,7 +1162,6 @@ struct bnx2x_slowpath {
 		struct function_update_data		func_update;
 	} func_afex_rdata;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* used by dmae command executer */
 	struct dmae_command		dmae[MAX_DMAE_C];
 
@@ -1570,10 +1181,6 @@ struct bnx2x_slowpath {
 #define bnx2x_sp_mapping(bp, var) \
 		(bp->slowpath_mapping + offsetof(struct bnx2x_slowpath, var))
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* attn group wiring */
 #define MAX_DYNAMIC_ATTN_GRPS		8
 
@@ -1598,10 +1205,7 @@ struct hw_context {
 /* forward */
 struct bnx2x_ilt;
 
-<<<<<<< HEAD
-=======
 struct bnx2x_vfdb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum bnx2x_recovery_state {
 	BNX2X_RECOVERY_DONE,
@@ -1663,28 +1267,6 @@ struct bnx2x_fw_stats_req {
 };
 
 struct bnx2x_fw_stats_data {
-<<<<<<< HEAD
-	struct stats_counter	storm_counters;
-	struct per_port_stats	port;
-	struct per_pf_stats	pf;
-	struct fcoe_statistics_params	fcoe;
-	struct per_queue_stats  queue_stats[1];
-};
-
-/* Public slow path states */
-enum {
-	BNX2X_SP_RTNL_SETUP_TC,
-	BNX2X_SP_RTNL_TX_TIMEOUT,
-	BNX2X_SP_RTNL_FAN_FAILURE,
-};
-
-
-struct bnx2x_prev_path_list {
-	u8 bus;
-	u8 slot;
-	u8 path;
-	struct list_head list;
-=======
 	struct stats_counter		storm_counters;
 	struct per_port_stats		port;
 	struct per_pf_stats		pf;
@@ -1758,7 +1340,6 @@ enum bnx2x_udp_port_type {
 	BNX2X_UDP_PORT_VXLAN,
 	BNX2X_UDP_PORT_GENEVE,
 	BNX2X_UDP_PORT_MAX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bnx2x {
@@ -1766,12 +1347,9 @@ struct bnx2x {
 	 * are grouped together in the beginning of the structure
 	 */
 	struct bnx2x_fastpath	*fp;
-<<<<<<< HEAD
-=======
 	struct bnx2x_sp_objs	*sp_objs;
 	struct bnx2x_fp_stats	*fp_stats;
 	struct bnx2x_fp_txdata	*bnx2x_txq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem		*regview;
 	void __iomem		*doorbells;
 	u16			db_size;
@@ -1790,8 +1368,6 @@ struct bnx2x {
 	  (vn) * ((CHIP_IS_E1x(bp) || (CHIP_MODE_IS_4_PORT(bp))) ? 2  : 1))
 #define BP_FW_MB_IDX(bp)		BP_FW_MB_IDX_VN(bp, BP_VN(bp))
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_BNX2X_SRIOV
 	/* protects vf2pf mailbox from simultaneous access */
 	struct mutex		vf2pf_mutex;
@@ -1812,7 +1388,6 @@ struct bnx2x {
 	u16 requested_nr_virtfn;
 #endif /* CONFIG_BNX2X_SRIOV */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device	*dev;
 	struct pci_dev		*pdev;
 
@@ -1826,18 +1401,6 @@ struct bnx2x {
 	int			tx_ring_size;
 
 /* L2 header size + 2*VLANs (8 bytes) + LLC SNAP (8 bytes) */
-<<<<<<< HEAD
-#define ETH_OVREHEAD		(ETH_HLEN + 8 + 8)
-#define ETH_MIN_PACKET_SIZE		60
-#define ETH_MAX_PACKET_SIZE		1500
-#define ETH_MAX_JUMBO_PACKET_SIZE	9600
-/* TCP with Timestamp Option (32) + IPv6 (40) */
-#define ETH_MAX_TPA_HEADER_SIZE		72
-#define ETH_MIN_TPA_HEADER_SIZE		40
-
-	/* Max supported alignment is 256 (8 shift) */
-#define BNX2X_RX_ALIGN_SHIFT		min(8, L1_CACHE_SHIFT)
-=======
 #define ETH_OVERHEAD		(ETH_HLEN + 8 + 8)
 #define ETH_MIN_PACKET_SIZE		(ETH_ZLEN - ETH_HLEN)
 #define ETH_MAX_PACKET_SIZE		ETH_DATA_LEN
@@ -1849,7 +1412,6 @@ struct bnx2x {
 	 * minimal alignment shift 6 is optimal for 57xxx HW performance
 	 */
 #define BNX2X_RX_ALIGN_SHIFT		max(6, min(8, L1_CACHE_SHIFT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FW uses 2 Cache lines Alignment for start packet and size
 	 *
@@ -1860,11 +1422,7 @@ struct bnx2x {
 #define BNX2X_FW_RX_ALIGN_START	(1UL << BNX2X_RX_ALIGN_SHIFT)
 
 #define BNX2X_FW_RX_ALIGN_END					\
-<<<<<<< HEAD
-	max(1UL << BNX2X_RX_ALIGN_SHIFT, 			\
-=======
 	max_t(u64, 1UL << BNX2X_RX_ALIGN_SHIFT,			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 
 #define BNX2X_PXP_DRAM_ALIGN		(BNX2X_RX_ALIGN_SHIFT - 5)
@@ -1896,11 +1454,6 @@ struct bnx2x {
 	__le16			*eq_cons_sb;
 	atomic_t		eq_spq_left; /* COMMON_XXX ramrods credit */
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Counter for marking that there is a STAT_QUERY ramrod pending */
 	u16			stats_pending;
 	/*  Counter for completed statistics ramrods */
@@ -1916,30 +1469,16 @@ struct bnx2x {
 #define PCI_32BIT_FLAG			(1 << 1)
 #define ONE_PORT_FLAG			(1 << 2)
 #define NO_WOL_FLAG			(1 << 3)
-<<<<<<< HEAD
-#define USING_DAC_FLAG			(1 << 4)
-#define USING_MSIX_FLAG			(1 << 5)
-#define USING_MSI_FLAG			(1 << 6)
-#define DISABLE_MSI_FLAG		(1 << 7)
-#define TPA_ENABLE_FLAG			(1 << 8)
-#define NO_MCP_FLAG			(1 << 9)
-
-#define BP_NOMCP(bp)			(bp->flags & NO_MCP_FLAG)
-#define GRO_ENABLE_FLAG			(1 << 10)
-=======
 #define USING_MSIX_FLAG			(1 << 5)
 #define USING_MSI_FLAG			(1 << 6)
 #define DISABLE_MSI_FLAG		(1 << 7)
 #define NO_MCP_FLAG			(1 << 9)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MF_FUNC_DIS			(1 << 11)
 #define OWN_CNIC_IRQ			(1 << 12)
 #define NO_ISCSI_OOO_FLAG		(1 << 13)
 #define NO_ISCSI_FLAG			(1 << 14)
 #define NO_FCOE_FLAG			(1 << 15)
 #define BC_SUPPORTS_PFC_STATS		(1 << 17)
-<<<<<<< HEAD
-=======
 #define TX_SWITCHING			(1 << 18)
 #define BC_SUPPORTS_FCOE_FEATURES	(1 << 19)
 #define USING_SINGLE_MSIX_FLAG		(1 << 20)
@@ -1959,18 +1498,11 @@ struct bnx2x {
 #define IS_VF(bp)			false
 #define IS_PF(bp)			true
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NO_ISCSI(bp)		((bp)->flags & NO_ISCSI_FLAG)
 #define NO_ISCSI_OOO(bp)	((bp)->flags & NO_ISCSI_OOO_FLAG)
 #define NO_FCOE(bp)		((bp)->flags & NO_FCOE_FLAG)
 
-<<<<<<< HEAD
-	int			pm_cap;
-	int			mrrs;
-
-	struct delayed_work	sp_task;
-=======
 	u8			cnic_support;
 	bool			cnic_enabled;
 	bool			cnic_loaded;
@@ -1989,7 +1521,6 @@ struct bnx2x {
 	struct delayed_work	iov_task;
 
 	atomic_t		interrupt_occurred;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct delayed_work	sp_rtnl_task;
 
 	struct delayed_work	period_task;
@@ -2004,40 +1535,23 @@ struct bnx2x {
 	struct link_vars	link_vars;
 	u32			link_cnt;
 	struct bnx2x_link_report_data last_reported_link;
-<<<<<<< HEAD
-=======
 	bool			force_link_down;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mdio_if_info	mdio;
 
 	struct bnx2x_common	common;
 	struct bnx2x_port	port;
 
-<<<<<<< HEAD
-	struct cmng_struct_per_port cmng;
-	u32			vn_weight_sum;
-	u32			mf_config[E1HVN_MAX];
-	u32			mf2_config[E2_FUNC_MAX];
-=======
 	struct cmng_init	cmng;
 
 	u32			mf_config[E1HVN_MAX];
 	u32			mf_ext_config;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			path_has_ovlan; /* E3 */
 	u16			mf_ov;
 	u8			mf_mode;
 #define IS_MF(bp)		(bp->mf_mode != 0)
 #define IS_MF_SI(bp)		(bp->mf_mode == MULTI_FUNCTION_SI)
 #define IS_MF_SD(bp)		(bp->mf_mode == MULTI_FUNCTION_SD)
-<<<<<<< HEAD
-
-	u8			wol;
-
-	bool			gro_check;
-
-=======
 #define IS_MF_AFEX(bp)		(bp->mf_mode == MULTI_FUNCTION_AFEX)
 	u8			mf_sub_mode;
 #define IS_MF_UFP(bp)		(IS_MF_SD(bp) && \
@@ -2047,7 +1561,6 @@ struct bnx2x {
 
 	u8			wol;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			rx_ring_size;
 
 	u16			tx_quick_cons_trip_int;
@@ -2060,11 +1573,7 @@ struct bnx2x {
 	u16			rx_ticks_int;
 	u16			rx_ticks;
 /* Maximal coalescing timeout in us */
-<<<<<<< HEAD
-#define BNX2X_MAX_COALESCE_TOUT		(0xf0*12)
-=======
 #define BNX2X_MAX_COALESCE_TOUT		(0xff*BNX2X_BTR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32			lin_cnt;
 
@@ -2079,19 +1588,10 @@ struct bnx2x {
 #define BNX2X_STATE_DIAG		0xe000
 #define BNX2X_STATE_ERROR		0xf000
 
-<<<<<<< HEAD
-	int			multi_mode;
-#define BNX2X_MAX_PRIORITY		8
-#define BNX2X_MAX_ENTRIES_PER_PRI	16
-#define BNX2X_MAX_COS			3
-#define BNX2X_MAX_TX_COS		2
-	int			num_queues;
-=======
 #define BNX2X_MAX_PRIORITY		8
 	int			num_queues;
 	uint			num_ethernet_queues;
 	uint			num_cnic_queues;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			disable_tpa;
 
 	u32			rx_mode;
@@ -2104,24 +1604,18 @@ struct bnx2x {
 	u8			igu_dsb_id;
 	u8			igu_base_sb;
 	u8			igu_sb_cnt;
-<<<<<<< HEAD
-=======
 	u8			min_msix_vec_cnt;
 
 	u32			igu_base_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t		def_status_blk_mapping;
 
 	struct bnx2x_slowpath	*slowpath;
 	dma_addr_t		slowpath_mapping;
 
-<<<<<<< HEAD
-=======
 	/* Mechanism protecting the drv_info_to_mcp */
 	struct mutex		drv_info_mutex;
 	bool			drv_info_mng_owner;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Total number of FW statistics requests */
 	u8			fw_stats_num;
 
@@ -2141,26 +1635,18 @@ struct bnx2x {
 	int				fw_stats_req_sz;
 
 	/*
-<<<<<<< HEAD
-	 * FW statistics data shortcut (points at the begining of
-=======
 	 * FW statistics data shortcut (points at the beginning of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * fw_stats buffer + fw_stats_req_sz).
 	 */
 	struct bnx2x_fw_stats_data	*fw_stats_data;
 	dma_addr_t			fw_stats_data_mapping;
 	int				fw_stats_data_sz;
 
-<<<<<<< HEAD
-	struct hw_context	context;
-=======
 	/* For max 1024 cids (VF RSS), 32KB ILT page size and 1KB
 	 * context size we need 8 ILT entries.
 	 */
 #define ILT_MAX_L2_LINES	32
 	struct hw_context	context[ILT_MAX_L2_LINES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct bnx2x_ilt	*ilt;
 #define BP_ILT(bp)		((bp)->ilt)
@@ -2169,27 +1655,6 @@ struct bnx2x {
  * Maximum supported number of RSS queues: number of IGU SBs minus one that goes
  * to CNIC.
  */
-<<<<<<< HEAD
-#define BNX2X_MAX_RSS_COUNT(bp)	((bp)->igu_sb_cnt - CNIC_PRESENT)
-
-/*
- * Maximum CID count that might be required by the bnx2x:
- * Max Tss * Max_Tx_Multi_Cos + CNIC L2 Clients (FCoE and iSCSI related)
- */
-#define BNX2X_L2_CID_COUNT(bp)	(MAX_TXQS_PER_COS * BNX2X_MULTI_TX_COS +\
-					NON_ETH_CONTEXT_USE + CNIC_PRESENT)
-#define L2_ILT_LINES(bp)	(DIV_ROUND_UP(BNX2X_L2_CID_COUNT(bp),\
-					ILT_PAGE_CIDS))
-#define BNX2X_DB_SIZE(bp)	(BNX2X_L2_CID_COUNT(bp) * (1 << BNX2X_DB_SHIFT))
-
-	int			qm_cid_count;
-
-	int			dropless_fc;
-
-#ifdef BCM_CNIC
-	u32			cnic_flags;
-#define BNX2X_CNIC_FLAG_MAC_SET		1
-=======
 #define BNX2X_MAX_RSS_COUNT(bp)	((bp)->igu_sb_cnt - CNIC_SUPPORT(bp))
 
 /*
@@ -2208,7 +1673,6 @@ struct bnx2x {
 
 	bool			dropless_fc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			*t2;
 	dma_addr_t		t2_mapping;
 	struct cnic_ops	__rcu	*cnic_ops;
@@ -2227,14 +1691,8 @@ struct bnx2x {
 	struct mutex		cnic_mutex;
 	struct bnx2x_vlan_mac_obj iscsi_l2_mac_obj;
 
-<<<<<<< HEAD
-	/* Start index of the "special" (CNIC related) L2 cleints */
-	u8				cnic_base_cl_id;
-#endif
-=======
 	/* Start index of the "special" (CNIC related) L2 clients */
 	u8				cnic_base_cl_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			dmae_ready;
 	/* used to synchronize dmae accesses */
@@ -2247,11 +1705,7 @@ struct bnx2x {
 	int			stats_state;
 
 	/* used for synchronization of concurrent threads statistics handling */
-<<<<<<< HEAD
-	spinlock_t		stats_lock;
-=======
 	struct semaphore	stats_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* used by dmae command loader */
 	struct dmae_command	stats_dmae;
@@ -2306,12 +1760,9 @@ struct bnx2x {
 	char			fw_ver[32];
 	const struct firmware	*firmware;
 
-<<<<<<< HEAD
-=======
 	struct bnx2x_vfdb	*vfdb;
 #define IS_SRIOV(bp)		((bp)->vfdb)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* DCB support on/off */
 	u16 dcb_state;
 #define BNX2X_DCB_STATE_OFF			0
@@ -2331,11 +1782,8 @@ struct bnx2x {
 	int					dcb_version;
 
 	/* CAM credit pools */
-<<<<<<< HEAD
-=======
 	struct bnx2x_credit_pool_obj		vlans_pool;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2x_credit_pool_obj		macs_pool;
 
 	/* RX_MODE object */
@@ -2355,14 +1803,10 @@ struct bnx2x {
 	/* operation indication for the sp_rtnl task */
 	unsigned long				sp_rtnl_state;
 
-<<<<<<< HEAD
-	/* DCBX Negotation results */
-=======
 	/* Indication of the IOV tasks */
 	unsigned long				iov_task_state;
 
 	/* DCBX Negotiation results */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dcbx_features			dcbx_local_feat;
 	u32					dcbx_error;
 
@@ -2370,12 +1814,9 @@ struct bnx2x {
 	struct dcbx_features			dcbx_remote_feat;
 	u32					dcbx_remote_flags;
 #endif
-<<<<<<< HEAD
-=======
 	/* AFEX: store default vlan used */
 	int					afex_def_vlan_tag;
 	enum mf_cfg_afex_vlan_mode		afex_vlan_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32					pending_max;
 
 	/* multiple tx classes of service */
@@ -2383,8 +1824,6 @@ struct bnx2x {
 
 	/* priority to cos mapping */
 	u8					prio_to_cos[8];
-<<<<<<< HEAD
-=======
 
 	int fp_array_size;
 	u32 dump_preset_idx;
@@ -2420,19 +1859,14 @@ struct bnx2x {
 	u32 fw_minor;
 	u32 fw_rev;
 	u32 fw_eng;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Tx queues may be less or equal to Rx queues */
 extern int num_queues;
 #define BNX2X_NUM_QUEUES(bp)	(bp->num_queues)
-<<<<<<< HEAD
-#define BNX2X_NUM_ETH_QUEUES(bp) (BNX2X_NUM_QUEUES(bp) - NON_ETH_CONTEXT_USE)
-=======
 #define BNX2X_NUM_ETH_QUEUES(bp) ((bp)->num_ethernet_queues)
 #define BNX2X_NUM_NON_CNIC_QUEUES(bp)	(BNX2X_NUM_QUEUES(bp) - \
 					 (bp)->num_cnic_queues)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNX2X_NUM_RX_QUEUES(bp)	BNX2X_NUM_QUEUES(bp)
 
 #define is_multi(bp)		(BNX2X_NUM_QUEUES(bp) > 1)
@@ -2452,28 +1886,6 @@ extern int num_queues;
 #define RSS_IPV6_TCP_CAP_MASK						\
 	TSTORM_ETH_FUNCTION_COMMON_CONFIG_RSS_IPV6_TCP_CAPABILITY
 
-<<<<<<< HEAD
-/* func init flags */
-#define FUNC_FLG_RSS		0x0001
-#define FUNC_FLG_STATS		0x0002
-/* removed  FUNC_FLG_UNMATCHED	0x0004 */
-#define FUNC_FLG_TPA		0x0008
-#define FUNC_FLG_SPQ		0x0010
-#define FUNC_FLG_LEADING	0x0020	/* PF only */
-
-
-struct bnx2x_func_init_params {
-	/* dma */
-	dma_addr_t	fw_stat_map;	/* valid iff FUNC_FLG_STATS */
-	dma_addr_t	spq_map;	/* valid iff FUNC_FLG_SPQ */
-
-	u16		func_flgs;
-	u16		func_id;	/* abs fid */
-	u16		pf_id;
-	u16		spq_prod;	/* valid iff FUNC_FLG_SPQ */
-};
-
-=======
 struct bnx2x_func_init_params {
 	/* dma */
 	bool		spq_active;
@@ -2491,7 +1903,6 @@ struct bnx2x_func_init_params {
 			continue;		\
 		else
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_each_eth_queue(bp, var) \
 	for ((var) = 0; (var) < BNX2X_NUM_ETH_QUEUES(bp); (var)++)
 
@@ -2505,8 +1916,6 @@ struct bnx2x_func_init_params {
 		else
 
 /* Skip forwarding FP */
-<<<<<<< HEAD
-=======
 #define for_each_valid_rx_queue(bp, var)			\
 	for ((var) = 0;						\
 	     (var) < (CNIC_LOADED(bp) ? BNX2X_NUM_QUEUES(bp) :	\
@@ -2523,7 +1932,6 @@ struct bnx2x_func_init_params {
 			continue;		\
 		else
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_each_rx_queue(bp, var) \
 	for ((var) = 0; (var) < BNX2X_NUM_QUEUES(bp); (var)++) \
 		if (skip_rx_queue(bp, var))	\
@@ -2531,8 +1939,6 @@ struct bnx2x_func_init_params {
 		else
 
 /* Skip OOO FP */
-<<<<<<< HEAD
-=======
 #define for_each_valid_tx_queue(bp, var)			\
 	for ((var) = 0;						\
 	     (var) < (CNIC_LOADED(bp) ? BNX2X_NUM_QUEUES(bp) :	\
@@ -2549,7 +1955,6 @@ struct bnx2x_func_init_params {
 			continue;		\
 		else
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_each_tx_queue(bp, var) \
 	for ((var) = 0; (var) < BNX2X_NUM_QUEUES(bp); (var)++) \
 		if (skip_tx_queue(bp, var))	\
@@ -2577,13 +1982,8 @@ struct bnx2x_func_init_params {
 
 #define skip_queue(bp, idx)	(NO_FCOE(bp) && IS_FCOE_IDX(idx))
 
-<<<<<<< HEAD
-
-
-=======
 /*self test*/
 int bnx2x_idle_chk(struct bnx2x *bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * bnx2x_set_mac_one - configure a single MAC address
@@ -2603,19 +2003,6 @@ int bnx2x_idle_chk(struct bnx2x *bp);
  * operation has been successfully scheduled and a negative - if a requested
  * operations has failed.
  */
-<<<<<<< HEAD
-int bnx2x_set_mac_one(struct bnx2x *bp, u8 *mac,
-		      struct bnx2x_vlan_mac_obj *obj, bool set,
-		      int mac_type, unsigned long *ramrod_flags);
-/**
- * Deletes all MACs configured for the specific MAC object.
- *
- * @param bp Function driver instance
- * @param mac_obj MAC object to cleanup
- *
- * @return zero if all MACs were cleaned
- */
-=======
 int bnx2x_set_mac_one(struct bnx2x *bp, const u8 *mac,
 		      struct bnx2x_vlan_mac_obj *obj, bool set,
 		      int mac_type, unsigned long *ramrod_flags);
@@ -2623,7 +2010,6 @@ int bnx2x_set_mac_one(struct bnx2x *bp, const u8 *mac,
 int bnx2x_set_vlan_one(struct bnx2x *bp, u16 vlan,
 		       struct bnx2x_vlan_mac_obj *obj, bool set,
 		       unsigned long *ramrod_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * bnx2x_del_all_macs - delete all MACs configured for the specific MAC object
@@ -2645,21 +2031,15 @@ int bnx2x_del_all_macs(struct bnx2x *bp,
 
 /* Init Function API  */
 void bnx2x_func_init(struct bnx2x *bp, struct bnx2x_func_init_params *p);
-<<<<<<< HEAD
-=======
 void bnx2x_init_sb(struct bnx2x *bp, dma_addr_t mapping, int vfid,
 		    u8 vf_valid, int fw_sb_id, int igu_sb_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int bnx2x_get_gpio(struct bnx2x *bp, int gpio_num, u8 port);
 int bnx2x_set_gpio(struct bnx2x *bp, int gpio_num, u32 mode, u8 port);
 int bnx2x_set_mult_gpio(struct bnx2x *bp, u8 pins, u32 mode);
 int bnx2x_set_gpio_int(struct bnx2x *bp, int gpio_num, u32 mode, u8 port);
 void bnx2x_read_mf_cfg(struct bnx2x *bp);
 
-<<<<<<< HEAD
-=======
 int bnx2x_pretend_func(struct bnx2x *bp, u16 pretend_func_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* dmae */
 void bnx2x_read_dmae(struct bnx2x *bp, u32 src_addr, u32 len32);
@@ -2671,8 +2051,6 @@ u32 bnx2x_dmae_opcode_clr_src_reset(u32 opcode);
 u32 bnx2x_dmae_opcode(struct bnx2x *bp, u8 src_type, u8 dst_type,
 		      bool with_comp, u8 comp_type);
 
-<<<<<<< HEAD
-=======
 void bnx2x_prep_dmae_with_comp(struct bnx2x *bp, struct dmae_command *dmae,
 			       u8 src_type, u8 dst_type);
 int bnx2x_issue_dmae_with_comp(struct bnx2x *bp, struct dmae_command *dmae,
@@ -2685,7 +2063,6 @@ int bnx2x_send_final_clnup(struct bnx2x *bp, u8 clnup_func, u32 poll_cnt);
 u8 bnx2x_is_pcie_pending(struct pci_dev *dev);
 int bnx2x_flr_clnup_poll_hw_counter(struct bnx2x *bp, u32 reg,
 				    char *msg, u32 poll_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void bnx2x_calc_fc_adv(struct bnx2x *bp);
 int bnx2x_sp_post(struct bnx2x *bp, int command, int cid,
@@ -2693,11 +2070,8 @@ int bnx2x_sp_post(struct bnx2x *bp, int command, int cid,
 void bnx2x_update_coalesce(struct bnx2x *bp);
 int bnx2x_get_cur_phy_idx(struct bnx2x *bp);
 
-<<<<<<< HEAD
-=======
 bool bnx2x_port_after_undi(struct bnx2x *bp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 reg_poll(struct bnx2x *bp, u32 reg, u32 expected, int ms,
 			   int wait)
 {
@@ -2715,20 +2089,11 @@ static inline u32 reg_poll(struct bnx2x *bp, u32 reg, u32 expected, int ms,
 	return val;
 }
 
-<<<<<<< HEAD
-#define BNX2X_ILT_ZALLOC(x, y, size) \
-	do { \
-		x = dma_alloc_coherent(&bp->pdev->dev, size, y, GFP_KERNEL); \
-		if (x) \
-			memset(x, 0, size); \
-	} while (0)
-=======
 void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 			    bool is_pf);
 
 #define BNX2X_ILT_ZALLOC(x, y, size)					\
 	x = dma_alloc_coherent(&bp->pdev->dev, size, y, GFP_KERNEL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BNX2X_ILT_FREE(x, y, size) \
 	do { \
@@ -2762,18 +2127,11 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 #define LOAD_NORMAL			0
 #define LOAD_OPEN			1
 #define LOAD_DIAG			2
-<<<<<<< HEAD
-=======
 #define LOAD_LOOPBACK_EXT		3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define UNLOAD_NORMAL			0
 #define UNLOAD_CLOSE			1
 #define UNLOAD_RECOVERY			2
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DMAE command defines */
 #define DMAE_TIMEOUT			-1
 #define DMAE_PCI_ERROR			-2	/* E2 and onward */
@@ -2837,12 +2195,8 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 #define DMAE_LEN32_WR_MAX(bp)		(CHIP_IS_E1(bp) ? 0x400 : 0x2000)
 
 #define DMAE_COMP_VAL			0x60d0d0ae /* E2 and on - upper bit
-<<<<<<< HEAD
-							indicates eror */
-=======
 						    * indicates error
 						    */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_DMAE_C_PER_PORT		8
 #define INIT_DMAE_C(bp)			(BP_PORT(bp) * MAX_DMAE_C_PER_PORT + \
@@ -2850,8 +2204,6 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 #define PMF_DMAE_C(bp)			(BP_PORT(bp) * MAX_DMAE_C_PER_PORT + \
 					 E1HVN_MAX)
 
-<<<<<<< HEAD
-=======
 /* Following is the DMAE channel number allocation for the clients.
  *   MFW: OCBB/OCSD implementations use DMAE channels 14/15 respectively.
  *   Driver: 0-3 and 8-11 (for PF dmae operations)
@@ -2859,29 +2211,12 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
  */
 #define BNX2X_FW_DMAE_C                 13 /* Channel for FW DMAE operations */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCIE link and speed */
 #define PCICFG_LINK_WIDTH		0x1f00000
 #define PCICFG_LINK_WIDTH_SHIFT		20
 #define PCICFG_LINK_SPEED		0xf0000
 #define PCICFG_LINK_SPEED_SHIFT		16
 
-<<<<<<< HEAD
-
-#define BNX2X_NUM_TESTS			7
-
-#define BNX2X_PHY_LOOPBACK		0
-#define BNX2X_MAC_LOOPBACK		1
-#define BNX2X_PHY_LOOPBACK_FAILED	1
-#define BNX2X_MAC_LOOPBACK_FAILED	2
-#define BNX2X_LOOPBACK_FAILED		(BNX2X_MAC_LOOPBACK_FAILED | \
-					 BNX2X_PHY_LOOPBACK_FAILED)
-
-
-#define STROM_ASSERT_ARRAY_SIZE		50
-
-
-=======
 #define BNX2X_NUM_TESTS_SF		7
 #define BNX2X_NUM_TESTS_MF		3
 #define BNX2X_NUM_TESTS(bp)		(IS_MF(bp) ? BNX2X_NUM_TESTS_MF : \
@@ -2898,7 +2233,6 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 
 #define STROM_ASSERT_ARRAY_SIZE		50
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* must be used on a CID before placing it on a HW ring */
 #define HW_CID(bp, x)			((BP_PORT(bp) << 23) | \
 					 (BP_VN(bp) << BNX2X_SWCID_SHIFT) | \
@@ -2907,10 +2241,6 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 #define SP_DESC_CNT		(BCM_PAGE_SIZE / sizeof(struct eth_spe))
 #define MAX_SP_DESC_CNT			(SP_DESC_CNT - 1)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNX2X_BTR			4
 #define MAX_SPQ_PENDING			8
 
@@ -2932,10 +2262,6 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 /* Memory of fairness algorithm . 2 cycles */
 #define FAIR_MEM					2
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATTN_NIG_FOR_FUNC		(1L << 8)
 #define ATTN_SW_TIMER_4_FUNC		(1L << 9)
 #define GPIO_2_FUNC			(1L << 10)
@@ -2951,11 +2277,8 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 #define ATTN_HARD_WIRED_MASK		0xff00
 #define ATTENTION_ID			4
 
-<<<<<<< HEAD
-=======
 #define IS_MF_STORAGE_ONLY(bp) (IS_MF_STORAGE_PERSONALITY_ONLY(bp) || \
 				 IS_MF_FCOE_AFEX(bp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* stuff added to make the code fit 80Col */
 
@@ -2979,18 +2302,11 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 				 GENERAL_ATTEN_OFFSET(LATCHED_ATTN_RBCP) | \
 				 GENERAL_ATTEN_OFFSET(LATCHED_ATTN_RSVD_GRC))
 
-<<<<<<< HEAD
-#define HW_INTERRUT_ASSERT_SET_0 \
-				(AEU_INPUTS_ATTN_BITS_TSDM_HW_INTERRUPT | \
-				 AEU_INPUTS_ATTN_BITS_TCM_HW_INTERRUPT | \
-				 AEU_INPUTS_ATTN_BITS_TSEMI_HW_INTERRUPT | \
-=======
 #define HW_INTERRUPT_ASSERT_SET_0 \
 				(AEU_INPUTS_ATTN_BITS_TSDM_HW_INTERRUPT | \
 				 AEU_INPUTS_ATTN_BITS_TCM_HW_INTERRUPT | \
 				 AEU_INPUTS_ATTN_BITS_TSEMI_HW_INTERRUPT | \
 				 AEU_INPUTS_ATTN_BITS_BRB_HW_INTERRUPT | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 AEU_INPUTS_ATTN_BITS_PBCLIENT_HW_INTERRUPT)
 #define HW_PRTY_ASSERT_SET_0	(AEU_INPUTS_ATTN_BITS_BRB_PARITY_ERROR | \
 				 AEU_INPUTS_ATTN_BITS_PARSER_PARITY_ERROR | \
@@ -2999,11 +2315,7 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 				 AEU_INPUTS_ATTN_BITS_TSEMI_PARITY_ERROR |\
 				 AEU_INPUTS_ATTN_BITS_TCM_PARITY_ERROR |\
 				 AEU_INPUTS_ATTN_BITS_PBCLIENT_PARITY_ERROR)
-<<<<<<< HEAD
-#define HW_INTERRUT_ASSERT_SET_1 \
-=======
 #define HW_INTERRUPT_ASSERT_SET_1 \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(AEU_INPUTS_ATTN_BITS_QM_HW_INTERRUPT | \
 				 AEU_INPUTS_ATTN_BITS_TIMERS_HW_INTERRUPT | \
 				 AEU_INPUTS_ATTN_BITS_XSDM_HW_INTERRUPT | \
@@ -3031,11 +2343,7 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 				 AEU_INPUTS_ATTN_BITS_UPB_PARITY_ERROR | \
 				 AEU_INPUTS_ATTN_BITS_CSDM_PARITY_ERROR |\
 				 AEU_INPUTS_ATTN_BITS_CCM_PARITY_ERROR)
-<<<<<<< HEAD
-#define HW_INTERRUT_ASSERT_SET_2 \
-=======
 #define HW_INTERRUPT_ASSERT_SET_2 \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(AEU_INPUTS_ATTN_BITS_CSEMI_HW_INTERRUPT | \
 				 AEU_INPUTS_ATTN_BITS_CDU_HW_INTERRUPT | \
 				 AEU_INPUTS_ATTN_BITS_DMAE_HW_INTERRUPT | \
@@ -3050,12 +2358,6 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 				 AEU_INPUTS_ATTN_BITS_IGU_PARITY_ERROR | \
 				 AEU_INPUTS_ATTN_BITS_MISC_PARITY_ERROR)
 
-<<<<<<< HEAD
-#define HW_PRTY_ASSERT_SET_3 (AEU_INPUTS_ATTN_BITS_MCP_LATCHED_ROM_PARITY | \
-		AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_RX_PARITY | \
-		AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_TX_PARITY | \
-		AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY)
-=======
 #define HW_PRTY_ASSERT_SET_3_WITHOUT_SCPAD \
 		(AEU_INPUTS_ATTN_BITS_MCP_LATCHED_ROM_PARITY | \
 		 AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_RX_PARITY | \
@@ -3063,17 +2365,12 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 
 #define HW_PRTY_ASSERT_SET_3 (HW_PRTY_ASSERT_SET_3_WITHOUT_SCPAD | \
 			      AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HW_PRTY_ASSERT_SET_4 (AEU_INPUTS_ATTN_BITS_PGLUE_PARITY_ERROR | \
 			      AEU_INPUTS_ATTN_BITS_ATC_PARITY_ERROR)
 
 #define MULTI_MASK			0x7f
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEF_USB_FUNC_OFF	offsetof(struct cstorm_def_status_block_u, func)
 #define DEF_CSB_FUNC_OFF	offsetof(struct cstorm_def_status_block_c, func)
 #define DEF_XSB_FUNC_OFF	offsetof(struct xstorm_def_status_block, func)
@@ -3101,8 +2398,6 @@ void bnx2x_igu_clear_sb_gen(struct bnx2x *bp, u8 func, u8 idu_sb_id,
 		(&bp->def_status_blk->sp_sb.\
 					index_values[HC_SP_INDEX_ETH_DEF_CONS])
 
-<<<<<<< HEAD
-=======
 #define CAM_IS_INVALID(x) \
 	(GET_FLAG(x.flags, \
 	MAC_CONFIGURATION_ENTRY_ACTION_TYPE) == \
@@ -3197,7 +2492,6 @@ void bnx2x_notify_link_changed(struct bnx2x *bp);
  */
 #define IS_MF_PERCENT_BW(bp) (IS_MF_SI(bp) || IS_MF_UFP(bp) || IS_MF_BD(bp))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SET_FLAG(value, mask, flag) \
 	do {\
 		(value) &= ~(mask);\
@@ -3210,67 +2504,6 @@ void bnx2x_notify_link_changed(struct bnx2x *bp);
 #define GET_FIELD(value, fname) \
 	(((value) & (fname##_MASK)) >> (fname##_SHIFT))
 
-<<<<<<< HEAD
-#define CAM_IS_INVALID(x) \
-	(GET_FLAG(x.flags, \
-	MAC_CONFIGURATION_ENTRY_ACTION_TYPE) == \
-	(T_ETH_MAC_COMMAND_INVALIDATE))
-
-/* Number of u32 elements in MC hash array */
-#define MC_HASH_SIZE			8
-#define MC_HASH_OFFSET(bp, i)		(BAR_TSTRORM_INTMEM + \
-	TSTORM_APPROXIMATE_MATCH_MULTICAST_FILTERING_OFFSET(BP_FUNC(bp)) + i*4)
-
-
-#ifndef PXP2_REG_PXP2_INT_STS
-#define PXP2_REG_PXP2_INT_STS		PXP2_REG_PXP2_INT_STS_0
-#endif
-
-#ifndef ETH_MAX_RX_CLIENTS_E2
-#define ETH_MAX_RX_CLIENTS_E2		ETH_MAX_RX_CLIENTS_E1H
-#endif
-
-#define BNX2X_VPD_LEN			128
-#define VENDOR_ID_LEN			4
-
-/* Congestion management fairness mode */
-#define CMNG_FNS_NONE		0
-#define CMNG_FNS_MINMAX		1
-
-#define HC_SEG_ACCESS_DEF		0   /*Driver decision 0-3*/
-#define HC_SEG_ACCESS_ATTN		4
-#define HC_SEG_ACCESS_NORM		0   /*Driver decision 0-1*/
-
-static const u32 dmae_reg_go_c[] = {
-	DMAE_REG_GO_C0, DMAE_REG_GO_C1, DMAE_REG_GO_C2, DMAE_REG_GO_C3,
-	DMAE_REG_GO_C4, DMAE_REG_GO_C5, DMAE_REG_GO_C6, DMAE_REG_GO_C7,
-	DMAE_REG_GO_C8, DMAE_REG_GO_C9, DMAE_REG_GO_C10, DMAE_REG_GO_C11,
-	DMAE_REG_GO_C12, DMAE_REG_GO_C13, DMAE_REG_GO_C14, DMAE_REG_GO_C15
-};
-
-void bnx2x_set_ethtool_ops(struct net_device *netdev);
-void bnx2x_notify_link_changed(struct bnx2x *bp);
-
-
-#define BNX2X_MF_SD_PROTOCOL(bp) \
-	((bp)->mf_config[BP_VN(bp)] & FUNC_MF_CFG_PROTOCOL_MASK)
-
-#ifdef BCM_CNIC
-#define BNX2X_IS_MF_SD_PROTOCOL_ISCSI(bp) \
-	(BNX2X_MF_SD_PROTOCOL(bp) == FUNC_MF_CFG_PROTOCOL_ISCSI)
-
-#define BNX2X_IS_MF_SD_PROTOCOL_FCOE(bp) \
-	(BNX2X_MF_SD_PROTOCOL(bp) == FUNC_MF_CFG_PROTOCOL_FCOE)
-
-#define IS_MF_ISCSI_SD(bp) (IS_MF_SD(bp) && BNX2X_IS_MF_SD_PROTOCOL_ISCSI(bp))
-#define IS_MF_FCOE_SD(bp) (IS_MF_SD(bp) && BNX2X_IS_MF_SD_PROTOCOL_FCOE(bp))
-
-#define IS_MF_STORAGE_SD(bp) (IS_MF_SD(bp) && \
-				(BNX2X_IS_MF_SD_PROTOCOL_ISCSI(bp) || \
-				 BNX2X_IS_MF_SD_PROTOCOL_FCOE(bp)))
-#endif
-
-=======
 enum {
 	SWITCH_UPDATE,
 	AFEX_UPDATE,
@@ -3301,5 +2534,4 @@ void bnx2x_register_phc(struct bnx2x *bp);
  * Meant for implicit re-load flows.
  */
 int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* bnx2x.h */

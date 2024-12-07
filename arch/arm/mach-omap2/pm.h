@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2/3 Power Management Routines
  *
  * Copyright (C) 2008 Nokia Corporation
  * Jouni Hogander
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ARCH_ARM_MACH_OMAP2_PM_H
 #define __ARCH_ARM_MACH_OMAP2_PM_H
@@ -22,51 +12,6 @@
 
 #include "powerdomain.h"
 
-<<<<<<< HEAD
-extern void *omap3_secure_ram_storage;
-extern void omap3_pm_off_mode_enable(int);
-extern void omap_sram_idle(void);
-extern int omap_set_pwrdm_state(struct powerdomain *pwrdm, u32 state);
-extern int omap3_idle_init(void);
-extern int omap4_idle_init(void);
-extern int omap_pm_clkdms_setup(struct clockdomain *clkdm, void *unused);
-extern int (*omap_pm_suspend)(void);
-
-#if defined(CONFIG_PM_OPP)
-extern int omap3_opp_init(void);
-extern int omap4_opp_init(void);
-#else
-static inline int omap3_opp_init(void)
-{
-	return -EINVAL;
-}
-static inline int omap4_opp_init(void)
-{
-	return -EINVAL;
-}
-#endif
-
-/*
- * cpuidle mach specific parameters
- *
- * The board code can override the default C-states definition using
- * omap3_pm_init_cpuidle
- */
-struct cpuidle_params {
-	u32 exit_latency;	/* exit_latency = sleep + wake-up latencies */
-	u32 target_residency;
-	u8 valid;		/* validates the C-state */
-};
-
-#if defined(CONFIG_PM) && defined(CONFIG_CPU_IDLE)
-extern void omap3_pm_init_cpuidle(struct cpuidle_params *cpuidle_board_params);
-#else
-static
-inline void omap3_pm_init_cpuidle(struct cpuidle_params *cpuidle_board_params)
-{
-}
-#endif
-=======
 #ifdef CONFIG_CPU_IDLE
 extern int __init omap3_idle_init(void);
 extern int __init omap4_idle_init(void);
@@ -86,20 +31,11 @@ extern void *omap3_secure_ram_storage;
 extern void omap3_pm_off_mode_enable(int);
 extern void omap_sram_idle(bool rcuidle);
 extern int omap_pm_clkdms_setup(struct clockdomain *clkdm, void *unused);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int omap3_pm_get_suspend_state(struct powerdomain *pwrdm);
 extern int omap3_pm_set_suspend_state(struct powerdomain *pwrdm, int state);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM_DEBUG
 extern u32 enable_off_mode;
-#else
-#define enable_off_mode 0
-#endif
-=======
-extern u32 enable_off_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_PM_DEBUG) && defined(CONFIG_DEBUG_FS)
 extern void pm_dbg_update_time(struct powerdomain *pwrdm, int prev);
@@ -108,12 +44,6 @@ extern void pm_dbg_update_time(struct powerdomain *pwrdm, int prev);
 #endif /* CONFIG_PM_DEBUG */
 
 /* 24xx */
-<<<<<<< HEAD
-extern void omap24xx_idle_loop_suspend(void);
-extern unsigned int omap24xx_idle_loop_suspend_sz;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void omap24xx_cpu_suspend(u32 dll_ctrl, void __iomem *sdrc_dlla_ctrl,
 					void __iomem *sdrc_power);
 extern unsigned int omap24xx_cpu_suspend_sz;
@@ -127,23 +57,14 @@ extern unsigned int omap3_do_wfi_sz;
 /* ... and its pointer from SRAM after copy */
 extern void (*omap3_do_wfi_sram)(void);
 
-<<<<<<< HEAD
-/* save_secure_ram_context function pointer and size, for copy to SRAM */
-extern int save_secure_ram_context(u32 *addr);
-extern unsigned int save_secure_ram_context_sz;
-=======
 extern struct am33xx_pm_sram_addr am33xx_pm_sram;
 extern struct am33xx_pm_sram_addr am43xx_pm_sram;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void omap3_save_scratchpad_contents(void);
 
 #define PM_RTA_ERRATUM_i608		(1 << 0)
 #define PM_SDRC_WAKEUP_ERRATUM_i583	(1 << 1)
-<<<<<<< HEAD
-=======
 #define PM_PER_MEMORIES_ERRATUM_i582	(1 << 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_PM) && defined(CONFIG_ARCH_OMAP3)
 extern u16 pm34xx_errata;
@@ -154,11 +75,6 @@ extern void enable_omap3630_toggle_l2_on_restore(void);
 static inline void enable_omap3630_toggle_l2_on_restore(void) { }
 #endif		/* defined(CONFIG_PM) && defined(CONFIG_ARCH_OMAP3) */
 
-<<<<<<< HEAD
-#ifdef CONFIG_OMAP_SMARTREFLEX
-extern int omap_devinit_smartreflex(void);
-extern void omap_enable_smartreflex_on_init(void);
-=======
 #define PM_OMAP4_ROM_SMP_BOOT_ERRATUM_GICD	(1 << 0)
 #define PM_OMAP4_CPU_OSWR_DISABLE		(1 << 1)
 
@@ -177,26 +93,16 @@ extern u16 pm44xx_errata;
 
 #ifdef CONFIG_POWER_AVS_OMAP
 extern int omap_devinit_smartreflex(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline int omap_devinit_smartreflex(void)
 {
 	return -EINVAL;
 }
-<<<<<<< HEAD
-
-static inline void omap_enable_smartreflex_on_init(void) {}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_TWL4030_CORE
 extern int omap3_twl_init(void);
 extern int omap4_twl_init(void);
-<<<<<<< HEAD
-extern int omap3_twl_set_sr_bit(bool enable);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline int omap3_twl_init(void)
 {
@@ -208,8 +114,6 @@ static inline int omap4_twl_init(void)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_MFD_CPCAP)
 extern int omap4_cpcap_init(void);
 #else
@@ -232,5 +136,4 @@ static inline void omap_common_suspend_init(void *pm_suspend)
 {
 }
 #endif /* CONFIG_SUSPEND */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

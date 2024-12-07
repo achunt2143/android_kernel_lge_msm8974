@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * Fibre Channel related definitions and inline functions for the zfcp
  * device driver
  *
-<<<<<<< HEAD
- * Copyright IBM Corporation 2009
-=======
  * Copyright IBM Corp. 2009, 2017
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef ZFCP_FC_H
@@ -128,11 +121,6 @@ struct zfcp_fc_rspn_req {
 /**
  * struct zfcp_fc_req - Container for FC ELS and CT requests sent from zfcp
  * @ct_els: data required for issuing fsf command
-<<<<<<< HEAD
- * @sg_req: scatterlist entry for request data
- * @sg_rsp: scatterlist entry for response data
- * @u: request specific data
-=======
  * @sg_req: scatterlist entry for request data, refers to embedded @u submember
  * @sg_rsp: scatterlist entry for response data, refers to embedded @u submember
  * @u: request and response specific data
@@ -151,7 +139,6 @@ struct zfcp_fc_rspn_req {
  * @u.rspn: RSPN specific data
  * @u.rspn.req: RSPN request
  * @u.rspn.rsp: RSPN response
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct zfcp_fc_req {
 	struct zfcp_fsf_ct_els				ct_els;
@@ -198,12 +185,8 @@ enum zfcp_fc_wka_status {
 /**
  * struct zfcp_fc_wka_port - representation of well-known-address (WKA) FC port
  * @adapter: Pointer to adapter structure this WKA port belongs to
-<<<<<<< HEAD
- * @completion_wq: Wait for completion of open/close command
-=======
  * @opened: Wait for completion of open command
  * @closed: Wait for completion of close command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @status: Current status of WKA port
  * @refcount: Reference count to keep port open as long as it is in use
  * @d_id: FC destination id or well-known-address
@@ -213,12 +196,8 @@ enum zfcp_fc_wka_status {
  */
 struct zfcp_fc_wka_port {
 	struct zfcp_adapter	*adapter;
-<<<<<<< HEAD
-	wait_queue_head_t	completion_wq;
-=======
 	wait_queue_head_t	opened;
 	wait_queue_head_t	closed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum zfcp_fc_wka_status	status;
 	atomic_t		refcount;
 	u32			d_id;
@@ -245,34 +224,6 @@ struct zfcp_fc_wka_ports {
  * zfcp_fc_scsi_to_fcp - setup FCP command with data from scsi_cmnd
  * @fcp: fcp_cmnd to setup
  * @scsi: scsi_cmnd where to get LUN, task attributes/flags and CDB
-<<<<<<< HEAD
- * @tm: task management flags to setup task management command
- */
-static inline
-void zfcp_fc_scsi_to_fcp(struct fcp_cmnd *fcp, struct scsi_cmnd *scsi,
-			 u8 tm_flags)
-{
-	char tag[2];
-
-	int_to_scsilun(scsi->device->lun, (struct scsi_lun *) &fcp->fc_lun);
-
-	if (unlikely(tm_flags)) {
-		fcp->fc_tm_flags = tm_flags;
-		return;
-	}
-
-	if (scsi_populate_tag_msg(scsi, tag)) {
-		switch (tag[0]) {
-		case MSG_ORDERED_TAG:
-			fcp->fc_pri_ta |= FCP_PTA_ORDERED;
-			break;
-		case MSG_SIMPLE_TAG:
-			fcp->fc_pri_ta |= FCP_PTA_SIMPLE;
-			break;
-		};
-	} else
-		fcp->fc_pri_ta = FCP_PTA_SIMPLE;
-=======
  */
 static inline
 void zfcp_fc_scsi_to_fcp(struct fcp_cmnd *fcp, struct scsi_cmnd *scsi)
@@ -282,7 +233,6 @@ void zfcp_fc_scsi_to_fcp(struct fcp_cmnd *fcp, struct scsi_cmnd *scsi)
 	int_to_scsilun(scsi->device->lun, (struct scsi_lun *) &fcp->fc_lun);
 
 	fcp->fc_pri_ta = FCP_PTA_SIMPLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (scsi->sc_data_direction == DMA_FROM_DEVICE)
 		fcp->fc_flags |= FCP_CFL_RDDATA;
@@ -291,12 +241,6 @@ void zfcp_fc_scsi_to_fcp(struct fcp_cmnd *fcp, struct scsi_cmnd *scsi)
 
 	memcpy(fcp->fc_cdb, scsi->cmnd, scsi->cmd_len);
 
-<<<<<<< HEAD
-	fcp->fc_dl = scsi_bufflen(scsi);
-
-	if (scsi_get_prot_type(scsi) == SCSI_PROT_DIF_TYPE1)
-		fcp->fc_dl += fcp->fc_dl / scsi->device->sector_size * 8;
-=======
 	datalen = scsi_bufflen(scsi);
 	fcp->fc_dl = cpu_to_be32(datalen);
 
@@ -317,7 +261,6 @@ void zfcp_fc_fcp_tm(struct fcp_cmnd *fcp, struct scsi_device *dev, u8 tm_flags)
 {
 	int_to_scsilun(dev->lun, (struct scsi_lun *) &fcp->fc_lun);
 	fcp->fc_tm_flags = tm_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -334,10 +277,6 @@ void zfcp_fc_eval_fcp_rsp(struct fcp_resp_with_ext *fcp_rsp,
 	u32 sense_len, resid;
 	u8 rsp_flags;
 
-<<<<<<< HEAD
-	set_msg_byte(scsi, COMMAND_COMPLETE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi->result |= fcp_rsp->resp.fr_status;
 
 	rsp_flags = fcp_rsp->resp.fr_flags;
@@ -355,36 +294,23 @@ void zfcp_fc_eval_fcp_rsp(struct fcp_resp_with_ext *fcp_rsp,
 	if (unlikely(rsp_flags & FCP_SNS_LEN_VAL)) {
 		sense = (char *) &fcp_rsp[1];
 		if (rsp_flags & FCP_RSP_LEN_VAL)
-<<<<<<< HEAD
-			sense += fcp_rsp->ext.fr_rsp_len;
-		sense_len = min(fcp_rsp->ext.fr_sns_len,
-				(u32) SCSI_SENSE_BUFFERSIZE);
-=======
 			sense += be32_to_cpu(fcp_rsp->ext.fr_rsp_len);
 		sense_len = min_t(u32, be32_to_cpu(fcp_rsp->ext.fr_sns_len),
 				  SCSI_SENSE_BUFFERSIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(scsi->sense_buffer, sense, sense_len);
 	}
 
 	if (unlikely(rsp_flags & FCP_RESID_UNDER)) {
-<<<<<<< HEAD
-		resid = fcp_rsp->ext.fr_resid;
-=======
 		resid = be32_to_cpu(fcp_rsp->ext.fr_resid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scsi_set_resid(scsi, resid);
 		if (scsi_bufflen(scsi) - resid < scsi->underflow &&
 		     !(rsp_flags & FCP_SNS_LEN_VAL) &&
 		     fcp_rsp->resp.fr_status == SAM_STAT_GOOD)
 			set_host_byte(scsi, DID_ERROR);
-<<<<<<< HEAD
-=======
 	} else if (unlikely(rsp_flags & FCP_RESID_OVER)) {
 		/* FCP_DL was not sufficient for SCSI data length */
 		if (fcp_rsp->resp.fr_status == SAM_STAT_GOOD)
 			set_host_byte(scsi, DID_ERROR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

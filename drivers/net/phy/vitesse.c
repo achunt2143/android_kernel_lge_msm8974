@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Vitesse PHYs
  *
  * Author: Kriston Carson
-<<<<<<< HEAD
- *
- * Copyright (c) 2005, 2009 Freescale Semiconductor, Inc.
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -25,14 +11,11 @@
 #include <linux/ethtool.h>
 #include <linux/phy.h>
 
-<<<<<<< HEAD
-=======
 /* Vitesse Extended Page Magic Register(s) */
 #define MII_VSC82X4_EXT_PAGE_16E	0x10
 #define MII_VSC82X4_EXT_PAGE_17E	0x11
 #define MII_VSC82X4_EXT_PAGE_18E	0x12
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Vitesse Extended Control Register 1 */
 #define MII_VSC8244_EXT_CON1           0x17
 #define MII_VSC8244_EXTCON1_INIT       0x0000
@@ -57,16 +40,6 @@
 #define MII_VSC8244_ISTAT_SPEED		0x4000
 #define MII_VSC8244_ISTAT_LINK		0x2000
 #define MII_VSC8244_ISTAT_DUPLEX	0x1000
-<<<<<<< HEAD
-
-/* Vitesse Auxiliary Control/Status Register */
-#define MII_VSC8244_AUX_CONSTAT        	0x1c
-#define MII_VSC8244_AUXCONSTAT_INIT    	0x0000
-#define MII_VSC8244_AUXCONSTAT_DUPLEX  	0x0020
-#define MII_VSC8244_AUXCONSTAT_SPEED   	0x0018
-#define MII_VSC8244_AUXCONSTAT_GBIT    	0x0010
-#define MII_VSC8244_AUXCONSTAT_100     	0x0008
-=======
 #define MII_VSC8244_ISTAT_MASK		(MII_VSC8244_ISTAT_SPEED | \
 					 MII_VSC8244_ISTAT_LINK | \
 					 MII_VSC8244_ISTAT_DUPLEX)
@@ -80,15 +53,10 @@
 #define MII_VSC8244_AUXCONSTAT_SPEED	0x0018
 #define MII_VSC8244_AUXCONSTAT_GBIT	0x0010
 #define MII_VSC8244_AUXCONSTAT_100	0x0008
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MII_VSC8221_AUXCONSTAT_INIT	0x0004 /* need to set this bit? */
 #define MII_VSC8221_AUXCONSTAT_RESERVED	0x0004
 
-<<<<<<< HEAD
-#define PHY_ID_VSC8244			0x000fc6c0
-#define PHY_ID_VSC8221			0x000fc550
-=======
 /* Vitesse Extended Page Access Register */
 #define MII_VSC82X4_EXT_PAGE_ACCESS	0x1f
 
@@ -107,17 +75,12 @@
 #define PHY_ID_VSC8662			0x00070660
 #define PHY_ID_VSC8221			0x000fc550
 #define PHY_ID_VSC8211			0x000fc4b0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Vitesse PHY driver");
 MODULE_AUTHOR("Kriston Carson");
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-int vsc824x_add_skew(struct phy_device *phydev)
-=======
 static int vsc824x_add_skew(struct phy_device *phydev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	int extcon;
@@ -137,10 +100,6 @@ static int vsc824x_add_skew(struct phy_device *phydev)
 
 	return err;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(vsc824x_add_skew);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int vsc824x_config_init(struct phy_device *phydev)
 {
@@ -157,21 +116,6 @@ static int vsc824x_config_init(struct phy_device *phydev)
 	return err;
 }
 
-<<<<<<< HEAD
-static int vsc824x_ack_interrupt(struct phy_device *phydev)
-{
-	int err = 0;
-	
-	/*
-	 * Don't bother to ACK the interrupts if interrupts
-	 * are disabled.  The 824x cannot clear the interrupts
-	 * if they are disabled.
-	 */
-	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-		err = phy_read(phydev, MII_VSC8244_ISTAT);
-
-	return (err < 0) ? err : 0;
-=======
 #define VSC73XX_EXT_PAGE_ACCESS 0x1f
 
 static int vsc73xx_read_page(struct phy_device *phydev)
@@ -330,7 +274,6 @@ static int vsc8601_config_init(struct phy_device *phydev)
 		return ret;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vsc82xx_config_intr(struct phy_device *phydev)
@@ -338,15 +281,6 @@ static int vsc82xx_config_intr(struct phy_device *phydev)
 	int err;
 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-<<<<<<< HEAD
-		err = phy_write(phydev, MII_VSC8244_IMASK,
-			phydev->drv->phy_id == PHY_ID_VSC8244 ?
-				MII_VSC8244_IMASK_MASK :
-				MII_VSC8221_IMASK_MASK);
-	else {
-		/*
-		 * The Vitesse PHY cannot clear the interrupt
-=======
 		/* Don't bother to ACK the interrupts since the 824x cannot
 		 * clear the interrupts if they are disabled.
 		 */
@@ -359,7 +293,6 @@ static int vsc82xx_config_intr(struct phy_device *phydev)
 				MII_VSC8221_IMASK_MASK);
 	else {
 		/* The Vitesse PHY cannot clear the interrupt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * once it has disabled them, so we clear them first
 		 */
 		err = phy_read(phydev, MII_VSC8244_ISTAT);
@@ -373,22 +306,6 @@ static int vsc82xx_config_intr(struct phy_device *phydev)
 	return err;
 }
 
-<<<<<<< HEAD
-/* Vitesse 824x */
-static struct phy_driver vsc8244_driver = {
-	.phy_id		= PHY_ID_VSC8244,
-	.name		= "Vitesse VSC8244",
-	.phy_id_mask	= 0x000fffc0,
-	.features	= PHY_GBIT_FEATURES,
-	.flags		= PHY_HAS_INTERRUPT,
-	.config_init	= &vsc824x_config_init,
-	.config_aneg	= &genphy_config_aneg,
-	.read_status	= &genphy_read_status,
-	.ack_interrupt	= &vsc824x_ack_interrupt,
-	.config_intr	= &vsc82xx_config_intr,
-	.driver 	= { .owner = THIS_MODULE,},
-};
-=======
 static irqreturn_t vsc82xx_handle_interrupt(struct phy_device *phydev)
 {
 	int irq_status, irq_mask;
@@ -413,7 +330,6 @@ static irqreturn_t vsc82xx_handle_interrupt(struct phy_device *phydev)
 
 	return IRQ_HANDLED;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int vsc8221_config_init(struct phy_device *phydev)
 {
@@ -424,51 +340,6 @@ static int vsc8221_config_init(struct phy_device *phydev)
 	return err;
 
 	/* Perhaps we should set EXT_CON1 based on the interface?
-<<<<<<< HEAD
-	   Options are 802.3Z SerDes or SGMII */
-}
-
-/* Vitesse 8221 */
-static struct phy_driver vsc8221_driver = {
-	.phy_id		= PHY_ID_VSC8221,
-	.phy_id_mask	= 0x000ffff0,
-	.name		= "Vitesse VSC8221",
-	.features	= PHY_GBIT_FEATURES,
-	.flags		= PHY_HAS_INTERRUPT,
-	.config_init	= &vsc8221_config_init,
-	.config_aneg	= &genphy_config_aneg,
-	.read_status	= &genphy_read_status,
-	.ack_interrupt	= &vsc824x_ack_interrupt,
-	.config_intr	= &vsc82xx_config_intr,
-	.driver 	= { .owner = THIS_MODULE,},
-};
-
-static int __init vsc82xx_init(void)
-{
-	int err;
-
-	err = phy_driver_register(&vsc8244_driver);
-	if (err < 0)
-		return err;
-	err = phy_driver_register(&vsc8221_driver);
-	if (err < 0)
-		phy_driver_unregister(&vsc8244_driver);
-	return err;
-}
-
-static void __exit vsc82xx_exit(void)
-{
-	phy_driver_unregister(&vsc8244_driver);
-	phy_driver_unregister(&vsc8221_driver);
-}
-
-module_init(vsc82xx_init);
-module_exit(vsc82xx_exit);
-
-static struct mdio_device_id __maybe_unused vitesse_tbl[] = {
-	{ PHY_ID_VSC8244, 0x000fffc0 },
-	{ PHY_ID_VSC8221, 0x000ffff0 },
-=======
 	 * Options are 802.3Z SerDes or SGMII
 	 */
 }
@@ -645,7 +516,6 @@ static struct mdio_device_id __maybe_unused vitesse_tbl[] = {
 	{ PHY_ID_VSC8662, 0x000ffff0 },
 	{ PHY_ID_VSC8221, 0x000ffff0 },
 	{ PHY_ID_VSC8211, 0x000ffff0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 

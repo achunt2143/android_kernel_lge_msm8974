@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * rtc class driver for the Maxim MAX6900 chip
- *
- * Author: Dale Farnsworth <dale@farnsworth.org>
- *
- * based on previously existing rtc class drivers
- *
- * 2007 (c) MontaVista, Software, Inc.  This file is licensed under
- * the terms of the GNU General Public License version 2.  This program
- * is licensed "as is" without any warranty of any kind, whether express
- * or implied.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * rtc class driver for the Maxim MAX6900 chip
@@ -20,7 +7,6 @@
  * Author: Dale Farnsworth <dale@farnsworth.org>
  *
  * based on previously existing rtc class drivers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -29,11 +15,6 @@
 #include <linux/rtc.h>
 #include <linux/delay.h>
 
-<<<<<<< HEAD
-#define DRV_VERSION "0.2"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * register indices
  */
@@ -156,14 +137,9 @@ static int max6900_i2c_write_regs(struct i2c_client *client, u8 const *buf)
 	return -EIO;
 }
 
-<<<<<<< HEAD
-static int max6900_i2c_read_time(struct i2c_client *client, struct rtc_time *tm)
-{
-=======
 static int max6900_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 	u8 regs[MAX6900_REG_LEN];
 
@@ -180,37 +156,17 @@ static int max6900_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		      bcd2bin(regs[MAX6900_REG_CENTURY]) * 100 - 1900;
 	tm->tm_wday = bcd2bin(regs[MAX6900_REG_DW]);
 
-<<<<<<< HEAD
-	return rtc_valid_tm(tm);
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int max6900_i2c_clear_write_protect(struct i2c_client *client)
 {
-<<<<<<< HEAD
-	int rc;
-	rc = i2c_smbus_write_byte_data(client, MAX6900_REG_CONTROL_WRITE, 0);
-	if (rc < 0) {
-		dev_err(&client->dev, "%s: control register write failed\n",
-			__func__);
-		return -EIO;
-	}
-	return 0;
-}
-
-static int
-max6900_i2c_set_time(struct i2c_client *client, struct rtc_time const *tm)
-{
-=======
 	return i2c_smbus_write_byte_data(client, MAX6900_REG_CONTROL_WRITE, 0);
 }
 
 static int max6900_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 regs[MAX6900_REG_LEN];
 	int rc;
 
@@ -236,55 +192,20 @@ static int max6900_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int max6900_rtc_read_time(struct device *dev, struct rtc_time *tm)
-{
-	return max6900_i2c_read_time(to_i2c_client(dev), tm);
-}
-
-static int max6900_rtc_set_time(struct device *dev, struct rtc_time *tm)
-{
-	return max6900_i2c_set_time(to_i2c_client(dev), tm);
-}
-
-static int max6900_remove(struct i2c_client *client)
-{
-	struct rtc_device *rtc = i2c_get_clientdata(client);
-
-	if (rtc)
-		rtc_device_unregister(rtc);
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct rtc_class_ops max6900_rtc_ops = {
 	.read_time = max6900_rtc_read_time,
 	.set_time = max6900_rtc_set_time,
 };
 
-<<<<<<< HEAD
-static int
-max6900_probe(struct i2c_client *client, const struct i2c_device_id *id)
-=======
 static int max6900_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_device *rtc;
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
-
-	rtc = rtc_device_register(max6900_driver.driver.name,
-				  &client->dev, &max6900_rtc_ops, THIS_MODULE);
-=======
 	rtc = devm_rtc_device_register(&client->dev, max6900_driver.driver.name,
 					&max6900_rtc_ops, THIS_MODULE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
@@ -293,28 +214,17 @@ static int max6900_probe(struct i2c_client *client)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct i2c_device_id max6900_id[] = {
-	{ "max6900", 0 },
-	{ }
-};
-=======
 static const struct i2c_device_id max6900_id[] = {
 	{ "max6900", 0 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, max6900_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver max6900_driver = {
 	.driver = {
 		   .name = "rtc-max6900",
 		   },
 	.probe = max6900_probe,
-<<<<<<< HEAD
-	.remove = max6900_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = max6900_id,
 };
 
@@ -323,7 +233,3 @@ module_i2c_driver(max6900_driver);
 MODULE_DESCRIPTION("Maxim MAX6900 RTC driver");
 MODULE_AUTHOR("Dale Farnsworth <dale@farnsworth.org>");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

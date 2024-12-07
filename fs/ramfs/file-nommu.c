@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* file-nommu.c: no-MMU version of ramfs
  *
  * Copyright (C) 2005 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,30 +19,6 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include "internal.h"
-
-static int ramfs_nommu_setattr(struct dentry *, struct iattr *);
-
-const struct address_space_operations ramfs_aops = {
-	.readpage		= simple_readpage,
-	.write_begin		= simple_write_begin,
-	.write_end		= simple_write_end,
-	.set_page_dirty		= __set_page_dirty_no_writeback,
-};
-
-const struct file_operations ramfs_file_operations = {
-	.mmap			= ramfs_nommu_mmap,
-	.get_unmapped_area	= ramfs_nommu_get_unmapped_area,
-	.read			= do_sync_read,
-	.aio_read		= generic_file_aio_read,
-	.write			= do_sync_write,
-	.aio_write		= generic_file_aio_write,
-	.fsync			= noop_fsync,
-	.splice_read		= generic_file_splice_read,
-	.splice_write		= generic_file_splice_write,
-=======
 #include <linux/uaccess.h>
 #include "internal.h"
 
@@ -80,7 +45,6 @@ const struct file_operations ramfs_file_operations = {
 	.fsync			= noop_fsync,
 	.splice_read		= filemap_splice_read,
 	.splice_write		= iter_file_splice_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek			= generic_file_llseek,
 };
 
@@ -102,18 +66,11 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 	unsigned order;
 	void *data;
 	int ret;
-<<<<<<< HEAD
-
-	/* make various checks */
-	order = get_order(newsize);
-	if (unlikely(order >= MAX_ORDER))
-=======
 	gfp_t gfp = mapping_gfp_mask(inode->i_mapping);
 
 	/* make various checks */
 	order = get_order(newsize);
 	if (unlikely(order > MAX_PAGE_ORDER))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFBIG;
 
 	ret = inode_newsize_ok(inode, newsize);
@@ -124,11 +81,7 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 
 	/* allocate enough contiguous pages to be able to satisfy the
 	 * request */
-<<<<<<< HEAD
-	pages = alloc_pages(mapping_gfp_mask(inode->i_mapping), order);
-=======
 	pages = alloc_pages(gfp, order);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pages)
 		return -ENOMEM;
 
@@ -152,11 +105,7 @@ int ramfs_nommu_expand_for_mapping(struct inode *inode, size_t newsize)
 		struct page *page = pages + loop;
 
 		ret = add_to_page_cache_lru(page, inode->i_mapping, loop,
-<<<<<<< HEAD
-					GFP_KERNEL);
-=======
 					gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			goto add_error;
 
@@ -209,25 +158,15 @@ static int ramfs_nommu_resize(struct inode *inode, loff_t newsize, loff_t size)
  * handle a change of attributes
  * - we're specifically interested in a change of size
  */
-<<<<<<< HEAD
-static int ramfs_nommu_setattr(struct dentry *dentry, struct iattr *ia)
-{
-	struct inode *inode = dentry->d_inode;
-=======
 static int ramfs_nommu_setattr(struct mnt_idmap *idmap,
 			       struct dentry *dentry, struct iattr *ia)
 {
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int old_ia_valid = ia->ia_valid;
 	int ret = 0;
 
 	/* POSIX UID/GID verification for setting inode attributes */
-<<<<<<< HEAD
-	ret = inode_change_ok(inode, ia);
-=======
 	ret = setattr_prepare(&nop_mnt_idmap, dentry, ia);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -247,11 +186,7 @@ static int ramfs_nommu_setattr(struct mnt_idmap *idmap,
 		}
 	}
 
-<<<<<<< HEAD
-	setattr_copy(inode, ia);
-=======
 	setattr_copy(&nop_mnt_idmap, inode, ia);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	ia->ia_valid = old_ia_valid;
 	return ret;
@@ -264,20 +199,6 @@ static int ramfs_nommu_setattr(struct mnt_idmap *idmap,
  *   - the pages to be mapped must exist
  *   - the pages be physically contiguous in sequence
  */
-<<<<<<< HEAD
-unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
-					    unsigned long addr, unsigned long len,
-					    unsigned long pgoff, unsigned long flags)
-{
-	unsigned long maxpages, lpages, nr, loop, ret;
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct page **pages = NULL, **ptr, *page;
-	loff_t isize;
-
-	if (!(flags & MAP_SHARED))
-		return addr;
-
-=======
 static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 					    unsigned long addr, unsigned long len,
 					    unsigned long pgoff, unsigned long flags)
@@ -287,16 +208,11 @@ static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 	struct folio_batch fbatch;
 	loff_t isize;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the mapping mustn't extend beyond the EOF */
 	lpages = (len + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	isize = i_size_read(inode);
 
-<<<<<<< HEAD
-	ret = -EINVAL;
-=======
 	ret = -ENOSYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	maxpages = (isize + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	if (pgoff >= maxpages)
 		goto out;
@@ -305,34 +221,6 @@ static unsigned long ramfs_nommu_get_unmapped_area(struct file *file,
 		goto out;
 
 	/* gang-find the pages */
-<<<<<<< HEAD
-	ret = -ENOMEM;
-	pages = kzalloc(lpages * sizeof(struct page *), GFP_KERNEL);
-	if (!pages)
-		goto out_free;
-
-	nr = find_get_pages(inode->i_mapping, pgoff, lpages, pages);
-	if (nr != lpages)
-		goto out_free_pages; /* leave if some pages were missing */
-
-	/* check the pages for physical adjacency */
-	ptr = pages;
-	page = *ptr++;
-	page++;
-	for (loop = lpages; loop > 1; loop--)
-		if (*ptr++ != page++)
-			goto out_free_pages;
-
-	/* okay - all conditions fulfilled */
-	ret = (unsigned long) page_address(pages[0]);
-
-out_free_pages:
-	ptr = pages;
-	for (loop = nr; loop > 0; loop--)
-		put_page(*ptr++);
-out_free:
-	kfree(pages);
-=======
 	folio_batch_init(&fbatch);
 	nr_pages = 0;
 repeat:
@@ -366,7 +254,6 @@ repeat:
 
 out_free:
 	folio_batch_release(&fbatch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -375,15 +262,9 @@ out:
 /*
  * set up a mapping for shared memory segments
  */
-<<<<<<< HEAD
-int ramfs_nommu_mmap(struct file *file, struct vm_area_struct *vma)
-{
-	if (!(vma->vm_flags & VM_SHARED))
-=======
 static int ramfs_nommu_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	if (!is_nommu_shared_mapping(vma->vm_flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 
 	file_accessed(file);

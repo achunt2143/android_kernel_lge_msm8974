@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2004
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *   Portions Copyright (C) Tino Reichardt, 2012
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -32,10 +13,7 @@
 #include "jfs_lock.h"
 #include "jfs_metapage.h"
 #include "jfs_debug.h"
-<<<<<<< HEAD
-=======
 #include "jfs_discard.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	SERIALIZATION of the Block Allocation Map.
@@ -85,17 +63,10 @@
  */
 static void dbAllocBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 			int nblocks);
-<<<<<<< HEAD
-static void dbSplit(dmtree_t * tp, int leafno, int splitsz, int newval);
-static int dbBackSplit(dmtree_t * tp, int leafno);
-static int dbJoin(dmtree_t * tp, int leafno, int newval);
-static void dbAdjTree(dmtree_t * tp, int leafno, int newval);
-=======
 static void dbSplit(dmtree_t *tp, int leafno, int splitsz, int newval, bool is_ctl);
 static int dbBackSplit(dmtree_t *tp, int leafno, bool is_ctl);
 static int dbJoin(dmtree_t *tp, int leafno, int newval, bool is_ctl);
 static void dbAdjTree(dmtree_t *tp, int leafno, int newval, bool is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc,
 		    int level);
 static int dbAllocAny(struct bmap * bmp, s64 nblocks, int l2nb, s64 * results);
@@ -116,20 +87,12 @@ static int dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno,
 static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks);
 static int dbFindBits(u32 word, int l2nb);
 static int dbFindCtl(struct bmap * bmp, int l2nb, int level, s64 * blkno);
-<<<<<<< HEAD
-static int dbFindLeaf(dmtree_t * tp, int l2nb, int *leafidx);
-=======
 static int dbFindLeaf(dmtree_t *tp, int l2nb, int *leafidx, bool is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dbFreeBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 		      int nblocks);
 static int dbFreeDmap(struct bmap * bmp, struct dmap * dp, s64 blkno,
 		      int nblocks);
 static int dbMaxBud(u8 * cp);
-<<<<<<< HEAD
-s64 dbMapFileSizeToMapSize(struct inode *ipbmap);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int blkstol2(s64 nb);
 
 static int cntlz(u32 value);
@@ -170,10 +133,6 @@ static const s8 budtab[256] = {
 	2, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NAME:	dbMount()
  *
@@ -189,21 +148,14 @@ static const s8 budtab[256] = {
  *	0	- success
  *	-ENOMEM	- insufficient memory
  *	-EIO	- i/o error
-<<<<<<< HEAD
-=======
  *	-EINVAL - wrong bmap data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int dbMount(struct inode *ipbmap)
 {
 	struct bmap *bmp;
 	struct dbmap_disk *dbmp_le;
 	struct metapage *mp;
-<<<<<<< HEAD
-	int i;
-=======
 	int i, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * allocate/initialize the in-memory bmap descriptor
@@ -218,26 +170,14 @@ int dbMount(struct inode *ipbmap)
 			   BMAPBLKNO << JFS_SBI(ipbmap->i_sb)->l2nbperpage,
 			   PSIZE, 0);
 	if (mp == NULL) {
-<<<<<<< HEAD
-		kfree(bmp);
-		return -EIO;
-=======
 		err = -EIO;
 		goto err_kfree_bmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* copy the on-disk bmap descriptor to its in-memory version. */
 	dbmp_le = (struct dbmap_disk *) mp->data;
 	bmp->db_mapsize = le64_to_cpu(dbmp_le->dn_mapsize);
 	bmp->db_nfree = le64_to_cpu(dbmp_le->dn_nfree);
-<<<<<<< HEAD
-	bmp->db_l2nbperpage = le32_to_cpu(dbmp_le->dn_l2nbperpage);
-	bmp->db_numag = le32_to_cpu(dbmp_le->dn_numag);
-	bmp->db_maxlevel = le32_to_cpu(dbmp_le->dn_maxlevel);
-	bmp->db_maxag = le32_to_cpu(dbmp_le->dn_maxag);
-	bmp->db_agpref = le32_to_cpu(dbmp_le->dn_agpref);
-=======
 
 	bmp->db_l2nbperpage = le32_to_cpu(dbmp_le->dn_l2nbperpage);
 	if (bmp->db_l2nbperpage > L2PSIZE - L2MINBLOCKSIZE ||
@@ -261,14 +201,11 @@ int dbMount(struct inode *ipbmap)
 		goto err_release_metapage;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bmp->db_aglevel = le32_to_cpu(dbmp_le->dn_aglevel);
 	bmp->db_agheight = le32_to_cpu(dbmp_le->dn_agheight);
 	bmp->db_agwidth = le32_to_cpu(dbmp_le->dn_agwidth);
 	bmp->db_agstart = le32_to_cpu(dbmp_le->dn_agstart);
 	bmp->db_agl2size = le32_to_cpu(dbmp_le->dn_agl2size);
-<<<<<<< HEAD
-=======
 	if (bmp->db_agl2size > L2MAXL2SIZE - L2MAXAG ||
 	    bmp->db_agl2size < 0) {
 		err = -EINVAL;
@@ -280,7 +217,6 @@ int dbMount(struct inode *ipbmap)
 		goto err_release_metapage;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < MAXAG; i++)
 		bmp->db_agfree[i] = le64_to_cpu(dbmp_le->dn_agfree[i]);
 	bmp->db_agsize = le64_to_cpu(dbmp_le->dn_agsize);
@@ -301,15 +237,12 @@ int dbMount(struct inode *ipbmap)
 	BMAP_LOCK_INIT(bmp);
 
 	return (0);
-<<<<<<< HEAD
-=======
 
 err_release_metapage:
 	release_metapage(mp);
 err_kfree_bmp:
 	kfree(bmp);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -343,10 +276,7 @@ int dbUnmount(struct inode *ipbmap, int mounterror)
 
 	/* free the memory for the in-memory bmap. */
 	kfree(bmp);
-<<<<<<< HEAD
-=======
 	JFS_SBI(ipbmap->i_sb)->bmap = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (0);
 }
@@ -404,10 +334,6 @@ int dbSync(struct inode *ipbmap)
 	return (0);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NAME:	dbFree()
  *
@@ -434,10 +360,7 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
 	s64 lblkno, rem;
 	struct inode *ipbmap = JFS_SBI(ip->i_sb)->ipbmap;
 	struct bmap *bmp = JFS_SBI(ip->i_sb)->bmap;
-<<<<<<< HEAD
-=======
 	struct super_block *sb = ipbmap->i_sb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	IREAD_LOCK(ipbmap, RDWRLOCK_DMAP);
 
@@ -447,13 +370,6 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
 		printk(KERN_ERR "blkno = %Lx, nblocks = %Lx\n",
 		       (unsigned long long) blkno,
 		       (unsigned long long) nblocks);
-<<<<<<< HEAD
-		jfs_error(ip->i_sb,
-			  "dbFree: block to be freed is outside the map");
-		return -EIO;
-	}
-
-=======
 		jfs_error(ip->i_sb, "block to be freed is outside the map\n");
 		return -EIO;
 	}
@@ -465,7 +381,6 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
 		if (JFS_SBI(sb)->minblks_trim <= nblocks)
 			jfs_issue_discard(ipbmap, blkno, nblocks);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * free the blocks a dmap at a time.
 	 */
@@ -492,11 +407,7 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
 
 		/* free the blocks. */
 		if ((rc = dbFreeDmap(bmp, dp, blkno, nb))) {
-<<<<<<< HEAD
-			jfs_error(ip->i_sb, "dbFree: error in block map\n");
-=======
 			jfs_error(ip->i_sb, "error in block map\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_metapage(mp);
 			IREAD_UNLOCK(ipbmap);
 			return (rc);
@@ -504,12 +415,8 @@ int dbFree(struct inode *ip, s64 blkno, s64 nblocks)
 	}
 
 	/* write the last buffer. */
-<<<<<<< HEAD
-	write_metapage(mp);
-=======
 	if (mp)
 		write_metapage(mp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	IREAD_UNLOCK(ipbmap);
 
@@ -558,12 +465,7 @@ dbUpdatePMap(struct inode *ipbmap,
 		printk(KERN_ERR "blkno = %Lx, nblocks = %Lx\n",
 		       (unsigned long long) blkno,
 		       (unsigned long long) nblocks);
-<<<<<<< HEAD
-		jfs_error(ipbmap->i_sb,
-			  "dbUpdatePMap: blocks are outside the map");
-=======
 		jfs_error(ipbmap->i_sb, "blocks are outside the map\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -804,11 +706,7 @@ unlock:
  *		this does not succeed, we finally try to allocate anywhere
  *		within the aggregate.
  *
-<<<<<<< HEAD
- *		we also try to allocate anywhere within the aggregate for
-=======
  *		we also try to allocate anywhere within the aggregate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		for allocation requests larger than the allocation group
  *		size or requests that specify no hint value.
  *
@@ -851,11 +749,7 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
 
 	/* the hint should be within the map */
 	if (hint >= mapSize) {
-<<<<<<< HEAD
-		jfs_error(ip->i_sb, "dbAlloc: the hint is outside the map");
-=======
 		jfs_error(ip->i_sb, "the hint is outside the map\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1005,77 +899,6 @@ int dbAlloc(struct inode *ip, s64 hint, s64 nblocks, s64 * results)
 	return (rc);
 }
 
-<<<<<<< HEAD
-#ifdef _NOTYET
-/*
- * NAME:	dbAllocExact()
- *
- * FUNCTION:	try to allocate the requested extent;
- *
- * PARAMETERS:
- *	ip	- pointer to in-core inode;
- *	blkno	- extent address;
- *	nblocks	- extent length;
- *
- * RETURN VALUES:
- *	0	- success
- *	-ENOSPC	- insufficient disk resources
- *	-EIO	- i/o error
- */
-int dbAllocExact(struct inode *ip, s64 blkno, int nblocks)
-{
-	int rc;
-	struct inode *ipbmap = JFS_SBI(ip->i_sb)->ipbmap;
-	struct bmap *bmp = JFS_SBI(ip->i_sb)->bmap;
-	struct dmap *dp;
-	s64 lblkno;
-	struct metapage *mp;
-
-	IREAD_LOCK(ipbmap, RDWRLOCK_DMAP);
-
-	/*
-	 * validate extent request:
-	 *
-	 * note: defragfs policy:
-	 *  max 64 blocks will be moved.
-	 *  allocation request size must be satisfied from a single dmap.
-	 */
-	if (nblocks <= 0 || nblocks > BPERDMAP || blkno >= bmp->db_mapsize) {
-		IREAD_UNLOCK(ipbmap);
-		return -EINVAL;
-	}
-
-	if (nblocks > ((s64) 1 << bmp->db_maxfreebud)) {
-		/* the free space is no longer available */
-		IREAD_UNLOCK(ipbmap);
-		return -ENOSPC;
-	}
-
-	/* read in the dmap covering the extent */
-	lblkno = BLKTODMAP(blkno, bmp->db_l2nbperpage);
-	mp = read_metapage(ipbmap, lblkno, PSIZE, 0);
-	if (mp == NULL) {
-		IREAD_UNLOCK(ipbmap);
-		return -EIO;
-	}
-	dp = (struct dmap *) mp->data;
-
-	/* try to allocate the requested extent */
-	rc = dbAllocNext(bmp, dp, blkno, nblocks);
-
-	IREAD_UNLOCK(ipbmap);
-
-	if (rc == 0)
-		mark_metapage_dirty(mp);
-
-	release_metapage(mp);
-
-	return (rc);
-}
-#endif /* _NOTYET */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NAME:	dbReAlloc()
  *
@@ -1189,12 +1012,7 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
 	bmp = sbi->bmap;
 	if (lastblkno < 0 || lastblkno >= bmp->db_mapsize) {
 		IREAD_UNLOCK(ipbmap);
-<<<<<<< HEAD
-		jfs_error(ip->i_sb,
-			  "dbExtend: the block is outside the filesystem");
-=======
 		jfs_error(ip->i_sb, "the block is outside the filesystem\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1238,10 +1056,6 @@ static int dbExtend(struct inode *ip, s64 blkno, s64 nblocks, s64 addnblocks)
 		/* we were not successful */
 		release_metapage(mp);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (rc);
 }
 
@@ -1274,12 +1088,7 @@ static int dbAllocNext(struct bmap * bmp, struct dmap * dp, s64 blkno,
 	u32 mask;
 
 	if (dp->tree.leafidx != cpu_to_le32(LEAFIND)) {
-<<<<<<< HEAD
-		jfs_error(bmp->db_ipbmap->i_sb,
-			  "dbAllocNext: Corrupt dmap page");
-=======
 		jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1356,11 +1165,7 @@ static int dbAllocNext(struct bmap * bmp, struct dmap * dp, s64 blkno,
 				 * by this leaf.
 				 */
 				l2size =
-<<<<<<< HEAD
-				    min((int)leaf[word], NLSTOL2BSZ(nwords));
-=======
 				    min_t(int, leaf[word], NLSTOL2BSZ(nwords));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* determine how many words were handled.
 				 */
@@ -1413,12 +1218,7 @@ dbAllocNear(struct bmap * bmp,
 	s8 *leaf;
 
 	if (dp->tree.leafidx != cpu_to_le32(LEAFIND)) {
-<<<<<<< HEAD
-		jfs_error(bmp->db_ipbmap->i_sb,
-			  "dbAllocNear: Corrupt dmap page");
-=======
 		jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmap page\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1533,12 +1333,7 @@ dbAllocAG(struct bmap * bmp, int agno, s64 nblocks, int l2nb, s64 * results)
 	 */
 	if (l2nb > bmp->db_agl2size) {
 		jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-			  "dbAllocAG: allocation request is larger than the "
-			  "allocation group size");
-=======
 			  "allocation request is larger than the allocation group size\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1573,11 +1368,7 @@ dbAllocAG(struct bmap * bmp, int agno, s64 nblocks, int l2nb, s64 * results)
 			       (unsigned long long) blkno,
 			       (unsigned long long) nblocks);
 			jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-				  "dbAllocAG: dbAllocCtl failed in free AG");
-=======
 				  "dbAllocCtl failed in free AG\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return (rc);
 	}
@@ -1593,12 +1384,7 @@ dbAllocAG(struct bmap * bmp, int agno, s64 nblocks, int l2nb, s64 * results)
 	budmin = dcp->budmin;
 
 	if (dcp->leafidx != cpu_to_le32(CTLLEAFIND)) {
-<<<<<<< HEAD
-		jfs_error(bmp->db_ipbmap->i_sb,
-			  "dbAllocAG: Corrupt dmapctl page");
-=======
 		jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmapctl page\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_metapage(mp);
 		return -EIO;
 	}
@@ -1639,11 +1425,7 @@ dbAllocAG(struct bmap * bmp, int agno, s64 nblocks, int l2nb, s64 * results)
 			}
 			if (n == 4) {
 				jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-					  "dbAllocAG: failed descending stree");
-=======
 					  "failed descending stree\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				release_metapage(mp);
 				return -EIO;
 			}
@@ -1683,12 +1465,7 @@ dbAllocAG(struct bmap * bmp, int agno, s64 nblocks, int l2nb, s64 * results)
 				       &blkno))) {
 				if (rc == -ENOSPC) {
 					jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-						  "dbAllocAG: control page "
-						  "inconsistent");
-=======
 						  "control page inconsistent\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return -EIO;
 				}
 				return (rc);
@@ -1700,11 +1477,7 @@ dbAllocAG(struct bmap * bmp, int agno, s64 nblocks, int l2nb, s64 * results)
 		rc = dbAllocCtl(bmp, nblocks, l2nb, blkno, results);
 		if (rc == -ENOSPC) {
 			jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-				  "dbAllocAG: unable to allocate blocks");
-=======
 				  "unable to allocate blocks\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -EIO;
 		}
 		return (rc);
@@ -1763,12 +1536,7 @@ static int dbAllocAny(struct bmap * bmp, s64 nblocks, int l2nb, s64 * results)
 	 */
 	rc = dbAllocCtl(bmp, nblocks, l2nb, blkno, results);
 	if (rc == -ENOSPC) {
-<<<<<<< HEAD
-		jfs_error(bmp->db_ipbmap->i_sb,
-			  "dbAllocAny: unable to allocate blocks");
-=======
 		jfs_error(bmp->db_ipbmap->i_sb, "unable to allocate blocks\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	return (rc);
@@ -1776,8 +1544,6 @@ static int dbAllocAny(struct bmap * bmp, s64 nblocks, int l2nb, s64 * results)
 
 
 /*
-<<<<<<< HEAD
-=======
  * NAME:	dbDiscardAG()
  *
  * FUNCTION:	attempt to discard (TRIM) all free blocks of specific AG
@@ -1888,7 +1654,6 @@ s64 dbDiscardAG(struct inode *ip, int agno, s64 minlen)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NAME:	dbFindCtl()
  *
  * FUNCTION:	starting at a specified dmap control page level and block
@@ -1942,11 +1707,7 @@ static int dbFindCtl(struct bmap * bmp, int l2nb, int level, s64 * blkno)
 
 		if (dcp->leafidx != cpu_to_le32(CTLLEAFIND)) {
 			jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-				  "dbFindCtl: Corrupt dmapctl page");
-=======
 				  "Corrupt dmapctl page\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_metapage(mp);
 			return -EIO;
 		}
@@ -1956,11 +1717,7 @@ static int dbFindCtl(struct bmap * bmp, int l2nb, int level, s64 * blkno)
 		 * dbFindLeaf() returns the index of the leaf at which
 		 * free space was found.
 		 */
-<<<<<<< HEAD
-		rc = dbFindLeaf((dmtree_t *) dcp, l2nb, &leafidx);
-=======
 		rc = dbFindLeaf((dmtree_t *) dcp, l2nb, &leafidx, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* release the buffer.
 		 */
@@ -1971,11 +1728,7 @@ static int dbFindCtl(struct bmap * bmp, int l2nb, int level, s64 * blkno)
 		if (rc) {
 			if (lev != level) {
 				jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-					  "dbFindCtl: dmap inconsistent");
-=======
 					  "dmap inconsistent\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EIO;
 			}
 			return -ENOSPC;
@@ -2099,22 +1852,14 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
 		if (dp->tree.stree[ROOT] != L2BPERDMAP) {
 			release_metapage(mp);
 			jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-				  "dbAllocCtl: the dmap is not all free");
-=======
 				  "the dmap is not all free\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -EIO;
 			goto backout;
 		}
 
 		/* determine how many blocks to allocate from this dmap.
 		 */
-<<<<<<< HEAD
-		nb = min(n, (s64)BPERDMAP);
-=======
 		nb = min_t(s64, n, BPERDMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* allocate the blocks from the dmap.
 		 */
@@ -2154,11 +1899,7 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
 			 * to indicate that we have leaked blocks.
 			 */
 			jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-				  "dbAllocCtl: I/O Error: Block Leakage.");
-=======
 				  "I/O Error: Block Leakage\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		dp = (struct dmap *) mp->data;
@@ -2170,12 +1911,7 @@ dbAllocCtl(struct bmap * bmp, s64 nblocks, int l2nb, s64 blkno, s64 * results)
 			 * to indicate that we have leaked blocks.
 			 */
 			release_metapage(mp);
-<<<<<<< HEAD
-			jfs_error(bmp->db_ipbmap->i_sb,
-				  "dbAllocCtl: Block Leakage.");
-=======
 			jfs_error(bmp->db_ipbmap->i_sb, "Block Leakage\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -2228,18 +1964,12 @@ dbAllocDmapLev(struct bmap * bmp,
 	 * free space.  if sufficient free space is found, dbFindLeaf()
 	 * returns the index of the leaf at which free space was found.
 	 */
-<<<<<<< HEAD
-	if (dbFindLeaf((dmtree_t *) & dp->tree, l2nb, &leafidx))
-		return -ENOSPC;
-
-=======
 	if (dbFindLeaf((dmtree_t *) &dp->tree, l2nb, &leafidx, false))
 		return -ENOSPC;
 
 	if (leafidx < 0)
 		return -EIO;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* determine the block number within the file system corresponding
 	 * to the leaf at which free space was found.
 	 */
@@ -2373,11 +2103,7 @@ static int dbFreeDmap(struct bmap * bmp, struct dmap * dp, s64 blkno,
 		 * system.
 		 */
 		if (dp->tree.stree[word] == NOFREE)
-<<<<<<< HEAD
-			dbBackSplit((dmtree_t *) & dp->tree, word);
-=======
 			dbBackSplit((dmtree_t *)&dp->tree, word, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dbAllocBits(bmp, dp, blkno, nblocks);
 	}
@@ -2463,11 +2189,7 @@ static void dbAllocBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 			 * the binary system of the leaves if need be.
 			 */
 			dbSplit(tp, word, BUDMIN,
-<<<<<<< HEAD
-				dbMaxBud((u8 *) & dp->wmap[word]));
-=======
 				dbMaxBud((u8 *)&dp->wmap[word]), false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			word += 1;
 		} else {
@@ -2489,12 +2211,7 @@ static void dbAllocBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 			for (; nwords > 0; nwords -= nw) {
 				if (leaf[word] < BUDMIN) {
 					jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-						  "dbAllocBits: leaf page "
-						  "corrupt");
-=======
 						  "leaf page corrupt\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 
@@ -2503,12 +2220,8 @@ static void dbAllocBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 				 * of bits being allocated and the l2 number
 				 * of bits currently described by this leaf.
 				 */
-<<<<<<< HEAD
-				size = min((int)leaf[word], NLSTOL2BSZ(nwords));
-=======
 				size = min_t(int, leaf[word],
 					     NLSTOL2BSZ(nwords));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* update the leaf to reflect the allocation.
 				 * in addition to setting the leaf value to
@@ -2516,11 +2229,7 @@ static void dbAllocBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 				 * system of the leaves to reflect the current
 				 * allocation (size).
 				 */
-<<<<<<< HEAD
-				dbSplit(tp, word, size, NOFREE);
-=======
 				dbSplit(tp, word, size, NOFREE, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* get the number of dmap words handled */
 				nw = BUDSIZE(size, BUDMIN);
@@ -2627,11 +2336,7 @@ static int dbFreeBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 			/* update the leaf for this dmap word.
 			 */
 			rc = dbJoin(tp, word,
-<<<<<<< HEAD
-				    dbMaxBud((u8 *) & dp->wmap[word]));
-=======
 				    dbMaxBud((u8 *)&dp->wmap[word]), false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return rc;
 
@@ -2664,11 +2369,7 @@ static int dbFreeBits(struct bmap * bmp, struct dmap * dp, s64 blkno,
 
 				/* update the leaf.
 				 */
-<<<<<<< HEAD
-				rc = dbJoin(tp, word, size);
-=======
 				rc = dbJoin(tp, word, size, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (rc)
 					return rc;
 
@@ -2783,12 +2484,7 @@ dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc, int level)
 	dcp = (struct dmapctl *) mp->data;
 
 	if (dcp->leafidx != cpu_to_le32(CTLLEAFIND)) {
-<<<<<<< HEAD
-		jfs_error(bmp->db_ipbmap->i_sb,
-			  "dbAdjCtl: Corrupt dmapctl page");
-=======
 		jfs_error(bmp->db_ipbmap->i_sb, "Corrupt dmapctl page\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_metapage(mp);
 		return -EIO;
 	}
@@ -2825,18 +2521,6 @@ dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc, int level)
 		 * that it is at the front of a binary buddy system.
 		 */
 		if (oldval == NOFREE) {
-<<<<<<< HEAD
-			rc = dbBackSplit((dmtree_t *) dcp, leafno);
-			if (rc)
-				return rc;
-			oldval = dcp->stree[ti];
-		}
-		dbSplit((dmtree_t *) dcp, leafno, dcp->budmin, newval);
-	} else {
-		rc = dbJoin((dmtree_t *) dcp, leafno, newval);
-		if (rc)
-			return rc;
-=======
 			rc = dbBackSplit((dmtree_t *)dcp, leafno, true);
 			if (rc) {
 				release_metapage(mp);
@@ -2851,7 +2535,6 @@ dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc, int level)
 			release_metapage(mp);
 			return rc;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* check if the root of the current dmap control page changed due
@@ -2878,11 +2561,7 @@ dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc, int level)
 				 */
 				if (alloc) {
 					dbJoin((dmtree_t *) dcp, leafno,
-<<<<<<< HEAD
-					       oldval);
-=======
 					       oldval, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else {
 					/* the dbJoin() above might have
 					 * caused a larger binary buddy system
@@ -2892,15 +2571,9 @@ dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc, int level)
 					 */
 					if (dcp->stree[ti] == NOFREE)
 						dbBackSplit((dmtree_t *)
-<<<<<<< HEAD
-							    dcp, leafno);
-					dbSplit((dmtree_t *) dcp, leafno,
-						dcp->budmin, oldval);
-=======
 							    dcp, leafno, true);
 					dbSplit((dmtree_t *) dcp, leafno,
 						dcp->budmin, oldval, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				/* release the buffer and return the error.
@@ -2916,12 +2589,7 @@ dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc, int level)
 			assert(level == bmp->db_maxlevel);
 			if (bmp->db_maxfreebud != oldroot) {
 				jfs_error(bmp->db_ipbmap->i_sb,
-<<<<<<< HEAD
-					  "dbAdjCtl: the maximum free buddy is "
-					  "not the old root");
-=======
 					  "the maximum free buddy is not the old root\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			bmp->db_maxfreebud = dcp->stree[ROOT];
 		}
@@ -2953,11 +2621,7 @@ dbAdjCtl(struct bmap * bmp, s64 blkno, int newval, int alloc, int level)
  *
  * serialization: IREAD_LOCK(ipbmap) or IWRITE_LOCK(ipbmap) held on entry/exit;
  */
-<<<<<<< HEAD
-static void dbSplit(dmtree_t * tp, int leafno, int splitsz, int newval)
-=======
 static void dbSplit(dmtree_t *tp, int leafno, int splitsz, int newval, bool is_ctl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int budsz;
 	int cursz;
@@ -2979,11 +2643,7 @@ static void dbSplit(dmtree_t *tp, int leafno, int splitsz, int newval, bool is_c
 		while (cursz >= splitsz) {
 			/* update the buddy's leaf with its new value.
 			 */
-<<<<<<< HEAD
-			dbAdjTree(tp, leafno ^ budsz, cursz);
-=======
 			dbAdjTree(tp, leafno ^ budsz, cursz, is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* on to the next size and buddy.
 			 */
@@ -2995,11 +2655,7 @@ static void dbSplit(dmtree_t *tp, int leafno, int splitsz, int newval, bool is_c
 	/* adjust the dmap tree to reflect the specified leaf's new
 	 * value.
 	 */
-<<<<<<< HEAD
-	dbAdjTree(tp, leafno, newval);
-=======
 	dbAdjTree(tp, leafno, newval, is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -3030,11 +2686,7 @@ static void dbSplit(dmtree_t *tp, int leafno, int splitsz, int newval, bool is_c
  *
  * serialization: IREAD_LOCK(ipbmap) or IWRITE_LOCK(ipbmap) held on entry/exit;
  */
-<<<<<<< HEAD
-static int dbBackSplit(dmtree_t * tp, int leafno)
-=======
 static int dbBackSplit(dmtree_t *tp, int leafno, bool is_ctl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int budsz, bud, w, bsz, size;
 	int cursz;
@@ -3085,11 +2737,7 @@ static int dbBackSplit(dmtree_t *tp, int leafno, bool is_ctl)
 				 * system in two.
 				 */
 				cursz = leaf[bud] - 1;
-<<<<<<< HEAD
-				dbSplit(tp, bud, cursz, cursz);
-=======
 				dbSplit(tp, bud, cursz, cursz, is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
@@ -3117,11 +2765,7 @@ static int dbBackSplit(dmtree_t *tp, int leafno, bool is_ctl)
  *
  * RETURN VALUES: none
  */
-<<<<<<< HEAD
-static int dbJoin(dmtree_t * tp, int leafno, int newval)
-=======
 static int dbJoin(dmtree_t *tp, int leafno, int newval, bool is_ctl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int budsz, buddy;
 	s8 *leaf;
@@ -3176,20 +2820,12 @@ static int dbJoin(dmtree_t *tp, int leafno, int newval, bool is_ctl)
 			if (leafno < buddy) {
 				/* leafno is the left buddy.
 				 */
-<<<<<<< HEAD
-				dbAdjTree(tp, buddy, NOFREE);
-=======
 				dbAdjTree(tp, buddy, NOFREE, is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				/* buddy is the left buddy and becomes
 				 * leafno.
 				 */
-<<<<<<< HEAD
-				dbAdjTree(tp, leafno, NOFREE);
-=======
 				dbAdjTree(tp, leafno, NOFREE, is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				leafno = buddy;
 			}
 
@@ -3202,11 +2838,7 @@ static int dbJoin(dmtree_t *tp, int leafno, int newval, bool is_ctl)
 
 	/* update the leaf value.
 	 */
-<<<<<<< HEAD
-	dbAdjTree(tp, leafno, newval);
-=======
 	dbAdjTree(tp, leafno, newval, is_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3227,30 +2859,20 @@ static int dbJoin(dmtree_t *tp, int leafno, int newval, bool is_ctl)
  *
  * RETURN VALUES: none
  */
-<<<<<<< HEAD
-static void dbAdjTree(dmtree_t * tp, int leafno, int newval)
-{
-	int lp, pp, k;
-	int max;
-=======
 static void dbAdjTree(dmtree_t *tp, int leafno, int newval, bool is_ctl)
 {
 	int lp, pp, k;
 	int max, size;
 
 	size = is_ctl ? CTLTREESIZE : TREESIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pick up the index of the leaf for this leafno.
 	 */
 	lp = leafno + le32_to_cpu(tp->dmt_leafidx);
 
-<<<<<<< HEAD
-=======
 	if (WARN_ON_ONCE(lp >= size || lp < 0))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* is the current value the same as the old value ?  if so,
 	 * there is nothing to do.
 	 */
@@ -3311,27 +2933,18 @@ static void dbAdjTree(dmtree_t *tp, int leafno, int newval, bool is_ctl)
  *	leafidx	- return pointer to be set to the index of the leaf
  *		  describing at least l2nb free blocks if sufficient
  *		  free blocks are found.
-<<<<<<< HEAD
-=======
  *	is_ctl	- determines if the tree is of type ctl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN VALUES:
  *	0	- success
  *	-ENOSPC	- insufficient free blocks.
  */
-<<<<<<< HEAD
-static int dbFindLeaf(dmtree_t * tp, int l2nb, int *leafidx)
-{
-	int ti, n = 0, k, x = 0;
-=======
 static int dbFindLeaf(dmtree_t *tp, int l2nb, int *leafidx, bool is_ctl)
 {
 	int ti, n = 0, k, x = 0;
 	int max_size;
 
 	max_size = is_ctl ? CTLTREESIZE : TREESIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* first check the root of the tree to see if there is
 	 * sufficient free space.
@@ -3352,11 +2965,8 @@ static int dbFindLeaf(dmtree_t *tp, int l2nb, int *leafidx, bool is_ctl)
 			/* sufficient free space found.  move to the next
 			 * level (or quit if this is the last level).
 			 */
-<<<<<<< HEAD
-=======
 			if (x + n > max_size)
 				return -ENOSPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (l2nb <= tp->dmt_stree[x + n])
 				break;
 		}
@@ -3832,11 +3442,7 @@ int dbExtendFS(struct inode *ipbmap, s64 blkno,	s64 nblocks)
 	p = BMAPBLKNO + nbperpage;	/* L2 page */
 	l2mp = read_metapage(ipbmap, p, PSIZE, 0);
 	if (!l2mp) {
-<<<<<<< HEAD
-		jfs_error(ipbmap->i_sb, "dbExtendFS: L2 page could not be read");
-=======
 		jfs_error(ipbmap->i_sb, "L2 page could not be read\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	l2dcp = (struct dmapctl *) l2mp->data;
@@ -3933,11 +3539,7 @@ int dbExtendFS(struct inode *ipbmap, s64 blkno,	s64 nblocks)
 					if (mp == NULL)
 						goto errout;
 
-<<<<<<< HEAD
-					n = min(nblocks, (s64)BPERDMAP);
-=======
 					n = min_t(s64, nblocks, BPERDMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				dp = (struct dmap *) mp->data;
@@ -4005,12 +3607,7 @@ int dbExtendFS(struct inode *ipbmap, s64 blkno,	s64 nblocks)
 		}
 	}			/* for each L1 in a L2 */
 
-<<<<<<< HEAD
-	jfs_error(ipbmap->i_sb,
-		  "dbExtendFS: function has not returned as expected");
-=======
 	jfs_error(ipbmap->i_sb, "function has not returned as expected\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 errout:
 	if (l0mp)
 		release_metapage(l0mp);
@@ -4047,11 +3644,7 @@ void dbFinalizeBmap(struct inode *ipbmap)
 	 * (the leftmost ag with average free space in it);
 	 */
 //agpref:
-<<<<<<< HEAD
-	/* get the number of active ags and inacitve ags */
-=======
 	/* get the number of active ags and inactive ags */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	actags = bmp->db_maxag + 1;
 	inactags = bmp->db_numag - actags;
 	ag_rem = bmp->db_mapsize & (bmp->db_agsize - 1);	/* ??? */
@@ -4084,11 +3677,7 @@ void dbFinalizeBmap(struct inode *ipbmap)
 		}
 		if (bmp->db_agpref >= bmp->db_numag) {
 			jfs_error(ipbmap->i_sb,
-<<<<<<< HEAD
-				  "cannot find ag with average freespace");
-=======
 				  "cannot find ag with average freespace\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -4290,11 +3879,7 @@ static int dbInitTree(struct dmaptree * dtp)
 	l2max = le32_to_cpu(dtp->l2nleafs) + dtp->budmin;
 
 	/*
-<<<<<<< HEAD
-	 * configure the leaf levevl into binary buddy system
-=======
 	 * configure the leaf level into binary buddy system
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * Try to combine buddies starting with a buddy size of 1
 	 * (i.e. two leaves). At a buddy size of 1 two buddy leaves
@@ -4430,10 +4015,6 @@ static int dbGetL2AGSize(s64 nblocks)
  */
 #define MAXL0PAGES	(1 + LPERCTL)
 #define MAXL1PAGES	(1 + LPERCTL * MAXL0PAGES)
-<<<<<<< HEAD
-#define MAXL2PAGES	(1 + LPERCTL * MAXL1PAGES)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * convert number of map pages to the zero origin top dmapctl level

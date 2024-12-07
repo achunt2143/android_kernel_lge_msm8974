@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  checklist.c -- implements the checklist box
  *
@@ -9,23 +6,6 @@
  *     Stuart Herbert - S.Herbert@sheffield.ac.uk: radiolist extension
  *     Alessandro Rubini - rubini@ipvvis.unipv.it: merged the two
  *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcap@cfw.com)
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "dialog.h"
@@ -110,13 +90,8 @@ static void print_buttons(WINDOW * dialog, int height, int width, int selected)
 	int x = width / 2 - 11;
 	int y = height - 2;
 
-<<<<<<< HEAD
-	print_button(dialog, gettext("Select"), y, x, selected == 0);
-	print_button(dialog, gettext(" Help "), y, x + 14, selected == 1);
-=======
 	print_button(dialog, "Select", y, x, selected == 0);
 	print_button(dialog, " Help ", y, x + 14, selected == 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wmove(dialog, y, x + 1 + 14 * selected);
 	wrefresh(dialog);
@@ -144,27 +119,16 @@ int dialog_checklist(const char *title, const char *prompt, int height,
 	}
 
 do_resize:
-<<<<<<< HEAD
-	if (getmaxy(stdscr) < (height + 6))
-		return -ERRDISPLAYTOOSMALL;
-	if (getmaxx(stdscr) < (width + 6))
-=======
 	if (getmaxy(stdscr) < (height + CHECKLIST_HEIGHT_MIN))
 		return -ERRDISPLAYTOOSMALL;
 	if (getmaxx(stdscr) < (width + CHECKLIST_WIDTH_MIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERRDISPLAYTOOSMALL;
 
 	max_choice = MIN(list_height, item_count());
 
 	/* center dialog box on screen */
-<<<<<<< HEAD
-	x = (COLS - width) / 2;
-	y = (LINES - height) / 2;
-=======
 	x = (getmaxx(stdscr) - width) / 2;
 	y = (getmaxy(stdscr) - height) / 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	draw_shadow(stdscr, y, x, height, width);
 
@@ -191,21 +155,13 @@ do_resize:
 
 	/* create new window for the list */
 	list = subwin(dialog, list_height, list_width, y + box_y + 1,
-<<<<<<< HEAD
-	              x + box_x + 1);
-=======
 		      x + box_x + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keypad(list, TRUE);
 
 	/* draw a box around the list items */
 	draw_box(dialog, box_y, box_x, list_height + 2, list_width + 2,
-<<<<<<< HEAD
-	         dlg.menubox_border.atr, dlg.menubox.atr);
-=======
 		 dlg.menubox_border.atr, dlg.menubox.atr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find length of longest item in order to center checklist */
 	check_x = 0;
@@ -232,14 +188,8 @@ do_resize:
 
 	print_buttons(dialog, height, width, 0);
 
-<<<<<<< HEAD
-	wnoutrefresh(dialog);
-	wnoutrefresh(list);
-	doupdate();
-=======
 	wmove(list, choice, check_x + 1);
 	wrefresh(list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (key != KEY_ESC) {
 		key = wgetch(dialog);

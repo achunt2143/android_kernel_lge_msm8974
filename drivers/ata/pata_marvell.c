@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Marvell PATA driver.
  *
@@ -15,10 +12,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -39,10 +32,6 @@
 
 static int marvell_pata_active(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 devices;
 	void __iomem *barp;
 
@@ -54,14 +43,6 @@ static int marvell_pata_active(struct pci_dev *pdev)
 	if (barp == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	printk("BAR5:");
-	for(i = 0; i <= 0x0F; i++)
-		printk("%02X:%02X ", i, ioread8(barp + i));
-	printk("\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devices = ioread32(barp + 0x0C);
 	pci_iounmap(pdev, barp);
 
@@ -96,11 +77,8 @@ static int marvell_cable_detect(struct ata_port *ap)
 	switch(ap->port_no)
 	{
 	case 0:
-<<<<<<< HEAD
-=======
 		if (!ap->ioaddr.bmdma_addr)
 			return ATA_CBL_PATA_UNK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ioread8(ap->ioaddr.bmdma_addr + 1) & 1)
 			return ATA_CBL_PATA40;
 		return ATA_CBL_PATA80;
@@ -114,11 +92,7 @@ static int marvell_cable_detect(struct ata_port *ap)
 
 /* No PIO or DMA methods needed for this device */
 
-<<<<<<< HEAD
-static struct scsi_host_template marvell_sht = {
-=======
 static const struct scsi_host_template marvell_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -132,11 +106,7 @@ static struct ata_port_operations marvell_ops = {
 /**
  *	marvell_init_one - Register Marvell ATA PCI device with kernel services
  *	@pdev: PCI device to register
-<<<<<<< HEAD
- *	@ent: Entry in marvell_pci_tbl matching with @pdev
-=======
  *	@id: PCI device ID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Called from kernel PCI layer.
  *
@@ -173,16 +143,10 @@ static int marvell_init_one (struct pci_dev *pdev, const struct pci_device_id *i
 	if (pdev->device == 0x6101)
 		ppi[1] = &ata_dummy_port_info;
 
-<<<<<<< HEAD
-#if defined(CONFIG_SATA_AHCI) || defined(CONFIG_SATA_AHCI_MODULE)
-	if (!marvell_pata_active(pdev)) {
-		printk(KERN_INFO DRV_NAME ": PATA port not active, deferring to AHCI driver.\n");
-=======
 #if IS_ENABLED(CONFIG_SATA_AHCI)
 	if (!marvell_pata_active(pdev)) {
 		dev_info(&pdev->dev,
 			 "PATA port not active, deferring to AHCI driver.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 #endif
@@ -205,39 +169,16 @@ static struct pci_driver marvell_pci_driver = {
 	.id_table		= marvell_pci_tbl,
 	.probe			= marvell_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init marvell_init(void)
-{
-	return pci_register_driver(&marvell_pci_driver);
-}
-
-static void __exit marvell_exit(void)
-{
-	pci_unregister_driver(&marvell_pci_driver);
-}
-
-module_init(marvell_init);
-module_exit(marvell_exit);
-=======
 module_pci_driver(marvell_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for Marvell ATA in legacy mode");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, marvell_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

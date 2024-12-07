@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ld script for sparc32/sparc64 kernel */
 
 #include <asm-generic/vmlinux.lds.h>
@@ -37,12 +34,6 @@ ENTRY(_start)
 jiffies = jiffies_64;
 #endif
 
-<<<<<<< HEAD
-SECTIONS
-{
-	/* swapper_low_pmd_dir is sparc64 only */
-	swapper_low_pmd_dir = 0x0000000000402000;
-=======
 #ifdef CONFIG_SPARC64
 ASSERT((swapper_tsb == 0x0000000000408000), "Error: sparc64 early assembler too large")
 #endif
@@ -52,7 +43,6 @@ SECTIONS
 #ifdef CONFIG_SPARC64
 	swapper_pg_dir = 0x0000000000402000;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	. = INITIAL_ADDRESS;
 	.text TEXTSTART :
 	{
@@ -63,10 +53,7 @@ SECTIONS
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
-<<<<<<< HEAD
-=======
 		SOFTIRQENTRY_TEXT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(.gnu.warning)
 	} = 0
 	_etext = .;
@@ -79,11 +66,7 @@ SECTIONS
 	.data1 : {
 		*(.data1)
 	}
-<<<<<<< HEAD
-	RW_DATA_SECTION(SMP_CACHE_BYTES, 0, THREAD_SIZE)
-=======
 	RW_DATA(SMP_CACHE_BYTES, 0, THREAD_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* End of data section */
 	_edata = .;
@@ -94,10 +77,6 @@ SECTIONS
 		__stop___fixup = .;
 	}
 	EXCEPTION_TABLE(16)
-<<<<<<< HEAD
-	NOTES
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	. = ALIGN(PAGE_SIZE);
 	__init_begin = ALIGN(PAGE_SIZE);
@@ -134,14 +113,11 @@ SECTIONS
 		*(.sun4v_2insn_patch)
 		__sun4v_2insn_patch_end = .;
 	}
-<<<<<<< HEAD
-=======
 	.leon_1insn_patch : {
 		__leon_1insn_patch = .;
 		*(.leon_1insn_patch)
 		__leon_1insn_patch_end = .;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.swapper_tsb_phys_patch : {
 		__swapper_tsb_phys_patch = .;
 		*(.swapper_tsb_phys_patch)
@@ -162,11 +138,6 @@ SECTIONS
 		*(.popc_6insn_patch)
 		__popc_6insn_patch_end = .;
 	}
-<<<<<<< HEAD
-	PERCPU_SECTION(SMP_CACHE_BYTES)
-
-	. = ALIGN(PAGE_SIZE);
-=======
 	.pause_3insn_patch : {
 		__pause_3insn_patch = .;
 		*(.pause_3insn_patch)
@@ -209,17 +180,13 @@ SECTIONS
 	}
 
 	. = ALIGN(PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__init_end = .;
 	BSS_SECTION(0, 0, 0)
 	_end = . ;
 
 	STABS_DEBUG
 	DWARF_DEBUG
-<<<<<<< HEAD
-=======
 	ELF_DETAILS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DISCARDS
 }

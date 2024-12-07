@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Moxa C101 synchronous serial card driver for Linux
  *
  * Copyright (C) 2000-2003 Krzysztof Halasa <khc@pm.waw.pl>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License
- * as published by the Free Software Foundation.
- *
- * For information see <http://www.kernel.org/pub/linux/utils/net/hdlc/>
-=======
  * For information see <https://www.kernel.org/pub/linux/utils/net/hdlc/>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Sources of information:
  *    Hitachi HD64570 SCA User's Manual
@@ -32,10 +21,6 @@
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/moduleparam.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/hdlc.h>
 #include <linux/delay.h>
@@ -43,14 +28,8 @@
 
 #include "hd64570.h"
 
-<<<<<<< HEAD
-
-static const char* version = "Moxa C101 driver version: 1.15";
-static const char* devname = "C101";
-=======
 static const char *version = "Moxa C101 driver version: 1.15";
 static const char *devname = "C101";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG_PKT
 #define DEBUG_RINGS
@@ -71,10 +50,6 @@ static const char *devname = "C101";
 
 static char *hw;		/* pointer to hw=xxx command line string */
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct card_s {
 	struct net_device *dev;
 	spinlock_t lock;	/* TX lock */
@@ -95,21 +70,13 @@ typedef struct card_s {
 	u8 page;
 
 	struct card_s *next_card;
-<<<<<<< HEAD
-}card_t;
-=======
 } card_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef card_t port_t;
 
 static card_t *first_card;
 static card_t **new_card = &first_card;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define sca_in(reg, card)	   readb((card)->win0base + C101_SCA + (reg))
 #define sca_out(value, reg, card)  writeb(value, (card)->win0base + C101_SCA + (reg))
 #define sca_inw(reg, card)	   readw((card)->win0base + C101_SCA + (reg))
@@ -117,31 +84,18 @@ static card_t **new_card = &first_card;
 /* EDA address register must be set in EDAL, EDAH order - 8 bit ISA bus */
 #define sca_outw(value, reg, card) do { \
 	writeb(value & 0xFF, (card)->win0base + C101_SCA + (reg)); \
-<<<<<<< HEAD
-	writeb((value >> 8 ) & 0xFF, (card)->win0base + C101_SCA + (reg + 1));\
-} while(0)
-=======
 	writeb((value >> 8) & 0xFF, (card)->win0base + C101_SCA + (reg + 1));\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define port_to_card(port)	   (port)
 #define log_node(port)		   (0)
 #define phy_node(port)		   (0)
 #define winsize(card)		   (C101_WINDOW_SIZE)
 #define win0base(card)		   ((card)->win0base)
-<<<<<<< HEAD
-#define winbase(card)      	   ((card)->win0base + 0x2000)
-#define get_port(card, port)	   (card)
-static void sca_msci_intr(port_t *port);
-
-
-=======
 #define winbase(card)		   ((card)->win0base + 0x2000)
 #define get_port(card, port)	   (card)
 static void sca_msci_intr(port_t *port);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 sca_get_page(card_t *card)
 {
 	return card->page;
@@ -153,15 +107,8 @@ static inline void openwin(card_t *card, u8 page)
 	writeb(page, card->win0base + C101_PAGE);
 }
 
-<<<<<<< HEAD
-
 #include "hd64570.c"
 
-
-=======
-#include "hd64570.c"
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void set_carrier(port_t *port)
 {
 	if (!(sca_in(MSCI1_OFFSET + ST3, port) & ST3_DCD))
@@ -170,10 +117,6 @@ static inline void set_carrier(port_t *port)
 		netif_carrier_off(port_to_dev(port));
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sca_msci_intr(port_t *port)
 {
 	u8 stat = sca_in(MSCI0_OFFSET + ST1, port); /* read MSCI ST1 status */
@@ -195,20 +138,12 @@ static void sca_msci_intr(port_t *port)
 		set_carrier(port);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void c101_set_iface(port_t *port)
 {
 	u8 rxs = port->rxs & CLK_BRG_MASK;
 	u8 txs = port->txs & CLK_BRG_MASK;
 
-<<<<<<< HEAD
-	switch(port->settings.clock_type) {
-=======
 	switch (port->settings.clock_type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLOCK_INT:
 		rxs |= CLK_BRG_RX; /* TX clock */
 		txs |= CLK_RXCLK_TX; /* BRG output */
@@ -236,10 +171,6 @@ static void c101_set_iface(port_t *port)
 	sca_set_port(port);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int c101_open(struct net_device *dev)
 {
 	port_t *port = dev_to_port(dev);
@@ -266,10 +197,6 @@ static int c101_open(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int c101_close(struct net_device *dev)
 {
 	port_t *port = dev_to_port(dev);
@@ -281,24 +208,12 @@ static int c101_close(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-static int c101_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-{
-	const size_t size = sizeof(sync_serial_settings);
-	sync_serial_settings new_line;
-	sync_serial_settings __user *line = ifr->ifr_settings.ifs_ifsu.sync;
-	port_t *port = dev_to_port(dev);
-
-#ifdef DEBUG_RINGS
-=======
 static int c101_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 			       void __user *data, int cmd)
 {
 #ifdef DEBUG_RINGS
 	port_t *port = dev_to_port(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd == SIOCDEVPRIVATE) {
 		sca_dump_rings(dev);
 		printk(KERN_DEBUG "MSCI1: ST: %02x %02x %02x %02x\n",
@@ -309,16 +224,6 @@ static int c101_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
 		return 0;
 	}
 #endif
-<<<<<<< HEAD
-	if (cmd != SIOCWANDEV)
-		return hdlc_ioctl(dev, ifr, cmd);
-
-	switch(ifr->ifr_settings.type) {
-	case IF_GET_IFACE:
-		ifr->ifr_settings.type = IF_IFACE_SYNC_SERIAL;
-		if (ifr->ifr_settings.size < size) {
-			ifr->ifr_settings.size = size; /* data size wanted */
-=======
 
 	return -EOPNOTSUPP;
 }
@@ -335,7 +240,6 @@ static int c101_ioctl(struct net_device *dev, struct if_settings *ifs)
 		ifs->type = IF_IFACE_SYNC_SERIAL;
 		if (ifs->size < size) {
 			ifs->size = size; /* data size wanted */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOBUFS;
 		}
 		if (copy_to_user(line, &port->settings, size))
@@ -343,11 +247,7 @@ static int c101_ioctl(struct net_device *dev, struct if_settings *ifs)
 		return 0;
 
 	case IF_IFACE_SYNC_SERIAL:
-<<<<<<< HEAD
-		if(!capable(CAP_NET_ADMIN))
-=======
 		if (!capable(CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPERM;
 
 		if (copy_from_user(&new_line, line, size))
@@ -367,19 +267,10 @@ static int c101_ioctl(struct net_device *dev, struct if_settings *ifs)
 		return 0;
 
 	default:
-<<<<<<< HEAD
-		return hdlc_ioctl(dev, ifr, cmd);
-	}
-}
-
-
-
-=======
 		return hdlc_ioctl(dev, ifs);
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void c101_destroy_card(card_t *card)
 {
 	readb(card->win0base + C101_PAGE); /* Resets SCA? */
@@ -400,15 +291,9 @@ static void c101_destroy_card(card_t *card)
 static const struct net_device_ops c101_ops = {
 	.ndo_open       = c101_open,
 	.ndo_stop       = c101_close,
-<<<<<<< HEAD
-	.ndo_change_mtu = hdlc_change_mtu,
-	.ndo_start_xmit = hdlc_start_xmit,
-	.ndo_do_ioctl   = c101_ioctl,
-=======
 	.ndo_start_xmit = hdlc_start_xmit,
 	.ndo_siocwandev = c101_ioctl,
 	.ndo_siocdevprivate = c101_siocdevprivate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init c101_run(unsigned long irq, unsigned long winbase)
@@ -418,30 +303,18 @@ static int __init c101_run(unsigned long irq, unsigned long winbase)
 	card_t *card;
 	int result;
 
-<<<<<<< HEAD
-	if (irq<3 || irq>15 || irq == 6) /* FIXME */ {
-=======
 	if (irq < 3 || irq > 15 || irq == 6) /* FIXME */ {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("invalid IRQ value\n");
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	if (winbase < 0xC0000 || winbase > 0xDFFFF || (winbase & 0x3FFF) !=0) {
-=======
 	if (winbase < 0xC0000 || winbase > 0xDFFFF || (winbase & 0x3FFF) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("invalid RAM value\n");
 		return -ENODEV;
 	}
 
 	card = kzalloc(sizeof(card_t), GFP_KERNEL);
-<<<<<<< HEAD
-	if (card == NULL)
-=======
 	if (!card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOBUFS;
 
 	card->dev = alloc_hdlcdev(card);
@@ -513,17 +386,9 @@ static int __init c101_run(unsigned long irq, unsigned long winbase)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-
-static int __init c101_init(void)
-{
-	if (hw == NULL) {
-=======
 static int __init c101_init(void)
 {
 	if (!hw) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MODULE
 		pr_info("no card initialized\n");
 #endif
@@ -546,40 +411,25 @@ static int __init c101_init(void)
 
 		if (*hw == '\x0')
 			return first_card ? 0 : -EINVAL;
-<<<<<<< HEAD
-	}while(*hw++ == ':');
-=======
 	} while (*hw++ == ':');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_err("invalid hardware parameters\n");
 	return first_card ? 0 : -EINVAL;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __exit c101_cleanup(void)
 {
 	card_t *card = first_card;
 
 	while (card) {
 		card_t *ptr = card;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		card = card->next_card;
 		unregister_hdlc_device(port_to_dev(ptr));
 		c101_destroy_card(ptr);
 	}
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_init(c101_init);
 module_exit(c101_cleanup);
 

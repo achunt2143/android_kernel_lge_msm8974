@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Freescale device configuration
 #
@@ -11,18 +8,10 @@ config NET_VENDOR_FREESCALE
 	default y
 	depends on FSL_SOC || QUICC_ENGINE || CPM1 || CPM2 || PPC_MPC512x || \
 		   M523x || M527x || M5272 || M528x || M520x || M532x || \
-<<<<<<< HEAD
-		   ARCH_MXC || ARCH_MXS || (PPC_MPC52xx && PPC_BESTCOMM)
-	---help---
-	  If you have a network (Ethernet) card belonging to this class, say Y
-	  and read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 		   ARCH_MXC || ARCH_MXS || (PPC_MPC52xx && PPC_BESTCOMM) || \
 		   ARCH_LAYERSCAPE || ARCH_S32 || COMPILE_TEST
 	help
 	  If you have a network (Ethernet) card belonging to this class, say Y.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -34,14 +23,6 @@ if NET_VENDOR_FREESCALE
 config FEC
 	tristate "FEC ethernet controller (of ColdFire and some i.MX CPUs)"
 	depends on (M523x || M527x || M5272 || M528x || M520x || M532x || \
-<<<<<<< HEAD
-		   ARCH_MXC || SOC_IMX28)
-	default ARCH_MXC || SOC_IMX28 if ARM
-	select PHYLIB
-	---help---
-	  Say Y here if you want to use the built-in 10/100 Fast ethernet
-	  controller on some Motorola ColdFire and Freescale i.MX processors.
-=======
 		   ARCH_MXC || ARCH_S32 || SOC_IMX28 || COMPILE_TEST)
 	default ARCH_MXC || SOC_IMX28 if ARM
 	depends on PTP_1588_CLOCK_OPTIONAL
@@ -53,7 +34,6 @@ config FEC
 	help
 	  Say Y here if you want to use the built-in 10/100 Fast ethernet
 	  controller on some Motorola ColdFire and Freescale i.MX/S32 processors.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config FEC_MPC52xx
 	tristate "FEC MPC52xx driver"
@@ -61,11 +41,7 @@ config FEC_MPC52xx
 	select CRC32
 	select PHYLIB
 	select PPC_BESTCOMM_FEC
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This option enables support for the MPC5200's on-chip
 	  Fast Ethernet Controller
 	  If compiled as module, it will be called fec_mpc52xx.
@@ -74,11 +50,7 @@ config FEC_MPC52xx_MDIO
 	bool "FEC MPC52xx MDIO bus driver"
 	depends on FEC_MPC52xx
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The MPC5200's FEC can connect to the Ethernet either with
 	  an external MII PHY chip or 10 Mbps 7-wire interface
 	  (Motorola? industry standard).
@@ -87,22 +59,6 @@ config FEC_MPC52xx_MDIO
 	  If compiled as module, it will be called fec_mpc52xx_phy.
 
 source "drivers/net/ethernet/freescale/fs_enet/Kconfig"
-<<<<<<< HEAD
-
-config FSL_PQ_MDIO
-	tristate "Freescale PQ MDIO"
-	depends on FSL_SOC
-	select PHYLIB
-	---help---
-	  This driver supports the MDIO bus used by the gianfar and UCC drivers.
-
-config UCC_GETH
-	tristate "Freescale QE Gigabit Ethernet"
-	depends on QUICC_ENGINE
-	select FSL_PQ_MDIO
-	select PHYLIB
-	---help---
-=======
 source "drivers/net/ethernet/freescale/fman/Kconfig"
 
 config FSL_PQ_MDIO
@@ -128,7 +84,6 @@ config UCC_GETH
 	select PHYLIB
 	select FIXED_PHY
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports the Gigabit Ethernet mode of the QUICC Engine,
 	  which is available on some Freescale SOCs.
 
@@ -138,15 +93,6 @@ config UGETH_TX_ON_DEMAND
 
 config GIANFAR
 	tristate "Gianfar Ethernet"
-<<<<<<< HEAD
-	depends on FSL_SOC
-	select FSL_PQ_MDIO
-	select PHYLIB
-	select CRC32
-	---help---
-	  This driver supports the Gigabit TSEC on the MPC83xx, MPC85xx,
-	  and MPC86xx family of chips, and the FEC on the 8540.
-=======
 	depends on HAS_DMA
 	select FSL_PQ_MDIO
 	select PHYLIB
@@ -160,6 +106,5 @@ config GIANFAR
 source "drivers/net/ethernet/freescale/dpaa/Kconfig"
 source "drivers/net/ethernet/freescale/dpaa2/Kconfig"
 source "drivers/net/ethernet/freescale/enetc/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # NET_VENDOR_FREESCALE

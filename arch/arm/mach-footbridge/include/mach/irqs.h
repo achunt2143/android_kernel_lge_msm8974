@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-footbridge/include/mach/irqs.h
  *
@@ -93,11 +90,6 @@
 #define IRQ_NETWINDER_VGA	_ISA_IRQ(11)
 #define IRQ_NETWINDER_SOUND	_ISA_IRQ(12)
 
-<<<<<<< HEAD
-#undef RTC_IRQ
-#define RTC_IRQ		IRQ_ISA_RTC_ALARM
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define I8042_KBD_IRQ	IRQ_ISA_KEYBOARD
 #define I8042_AUX_IRQ	(machine_is_netwinder() ? IRQ_NETWINDER_PS2MOUSE : IRQ_ISA_PS2MOUSE)
 #define IRQ_FLOPPYDISK	IRQ_ISA_FLOPPY

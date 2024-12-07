@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-/*
- *  (C) 2003 Dave Jones.
- *
- *  Licensed under the terms of the GNU GPL License version 2.
- *
- *  AMD-specific information
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  *  (C) 2003 Dave Jones.
  *
  *  AMD-specific information
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 union msr_fidvidctl {

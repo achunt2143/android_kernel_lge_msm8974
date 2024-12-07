@@ -15,17 +15,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include "core.h"
-#include "debug.h"
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include "core.h"
 #include "debug.h"
 #include "htc-ops.h"
 #include "trace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * tid - tid_mux0..tid_mux3
@@ -130,14 +125,9 @@ static bool ath6kl_process_uapsdq(struct ath6kl_sta *conn,
 		*flags |= WMI_DATA_HDR_FLAGS_UAPSD;
 		spin_unlock_bh(&conn->psq_lock);
 		return false;
-<<<<<<< HEAD
-	} else if (!conn->apsd_info)
-		return false;
-=======
 	} else if (!conn->apsd_info) {
 		return false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(WMM_ENABLED, &vif->flags)) {
 		ether_type = be16_to_cpu(datap->h_proto);
@@ -300,10 +290,6 @@ int ath6kl_control_tx(void *devt, struct sk_buff *skb,
 	int status = 0;
 	struct ath6kl_cookie *cookie = NULL;
 
-<<<<<<< HEAD
-	if (WARN_ON_ONCE(ar->state == ATH6KL_STATE_WOW))
-		return -EACCES;
-=======
 	trace_ath6kl_wmi_cmd(skb->data, skb->len);
 
 	if (WARN_ON_ONCE(ar->state == ATH6KL_STATE_WOW)) {
@@ -316,7 +302,6 @@ int ath6kl_control_tx(void *devt, struct sk_buff *skb,
 		status = -EINVAL;
 		goto fail_ctrl_tx;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&ar->lock);
 
@@ -332,14 +317,9 @@ int ath6kl_control_tx(void *devt, struct sk_buff *skb,
 		cookie = NULL;
 		ath6kl_err("wmi ctrl ep full, dropping pkt : 0x%p, len:%d\n",
 			   skb, skb->len);
-<<<<<<< HEAD
-	} else
-		cookie = ath6kl_alloc_cookie(ar);
-=======
 	} else {
 		cookie = ath6kl_alloc_cookie(ar);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cookie == NULL) {
 		spin_unlock_bh(&ar->lock);
@@ -358,10 +338,7 @@ int ath6kl_control_tx(void *devt, struct sk_buff *skb,
 	cookie->map_no = 0;
 	set_htc_pkt_info(&cookie->htc_pkt, cookie, skb->data, skb->len,
 			 eid, ATH6KL_CONTROL_PKT_TAG);
-<<<<<<< HEAD
-=======
 	cookie->htc_pkt.skb = skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This interface is asynchronous, if there is an error, cleanup
@@ -376,11 +353,7 @@ fail_ctrl_tx:
 	return status;
 }
 
-<<<<<<< HEAD
-int ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
-=======
 netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath6kl *ar = ath6kl_priv(dev);
 	struct ath6kl_cookie *cookie = NULL;
@@ -388,11 +361,7 @@ netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
 	struct ath6kl_vif *vif = netdev_priv(dev);
 	u32 map_no = 0;
 	u16 htc_tag = ATH6KL_DATA_PKT_TAG;
-<<<<<<< HEAD
-	u8 ac = 99 ; /* initialize to unmapped ac */
-=======
 	u8 ac = 99; /* initialize to unmapped ac */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool chk_adhoc_ps_mapping = false;
 	int ret;
 	struct wmi_tx_meta_v2 meta_v2;
@@ -406,23 +375,11 @@ netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
 		   skb, skb->data, skb->len);
 
 	/* If target is not associated */
-<<<<<<< HEAD
-	if (!test_bit(CONNECTED, &vif->flags)) {
-		dev_kfree_skb(skb);
-		return 0;
-	}
-
-	if (WARN_ON_ONCE(ar->state != ATH6KL_STATE_ON)) {
-		dev_kfree_skb(skb);
-		return 0;
-	}
-=======
 	if (!test_bit(CONNECTED, &vif->flags))
 		goto fail_tx;
 
 	if (WARN_ON_ONCE(ar->state != ATH6KL_STATE_ON))
 		goto fail_tx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!test_bit(WMI_READY, &ar->flag))
 		goto fail_tx;
@@ -442,22 +399,10 @@ netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
 			csum_dest = skb->csum_offset + csum_start;
 		}
 
-<<<<<<< HEAD
-		if (skb_headroom(skb) < dev->needed_headroom) {
-			struct sk_buff *tmp_skb = skb;
-
-			skb = skb_realloc_headroom(skb, dev->needed_headroom);
-			kfree_skb(tmp_skb);
-			if (skb == NULL) {
-				vif->net_stats.tx_dropped++;
-				return 0;
-			}
-=======
 		if (skb_cow_head(skb, dev->needed_headroom)) {
 			dev->stats.tx_dropped++;
 			kfree_skb(skb);
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (ath6kl_wmi_dix_2_dot3(ar->wmi, skb)) {
@@ -501,14 +446,9 @@ netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
 			if (ret)
 				goto fail_tx;
 		}
-<<<<<<< HEAD
-	} else
-		goto fail_tx;
-=======
 	} else {
 		goto fail_tx;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&ar->lock);
 
@@ -559,10 +499,7 @@ netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
 	cookie->map_no = map_no;
 	set_htc_pkt_info(&cookie->htc_pkt, cookie, skb->data, skb->len,
 			 eid, htc_tag);
-<<<<<<< HEAD
-=======
 	cookie->htc_pkt.skb = skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath6kl_dbg_dump(ATH6KL_DBG_RAW_BYTES, __func__, "tx ",
 			skb->data, skb->len);
@@ -578,13 +515,8 @@ netdev_tx_t ath6kl_data_tx(struct sk_buff *skb, struct net_device *dev)
 fail_tx:
 	dev_kfree_skb(skb);
 
-<<<<<<< HEAD
-	vif->net_stats.tx_dropped++;
-	vif->net_stats.tx_aborted_errors++;
-=======
 	dev->stats.tx_dropped++;
 	dev->stats.tx_aborted_errors++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -648,11 +580,7 @@ void ath6kl_indicate_tx_activity(void *devt, u8 traffic_class, bool active)
 
 notify_htc:
 	/* notify HTC, this may cause credit distribution changes */
-<<<<<<< HEAD
-	ath6kl_htc_indicate_activity_change(ar->htc_target, eid, active);
-=======
 	ath6kl_htc_activity_changed(ar->htc_target, eid, active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum htc_send_full_action ath6kl_tx_queue_full(struct htc_target *target,
@@ -672,10 +600,7 @@ enum htc_send_full_action ath6kl_tx_queue_full(struct htc_target *target,
 		 */
 		set_bit(WMI_CTRL_EP_FULL, &ar->flag);
 		ath6kl_err("wmi ctrl ep is full\n");
-<<<<<<< HEAD
-=======
 		ath6kl_recovery_err_notify(ar, ATH6KL_FW_EP_FULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return action;
 	}
 
@@ -752,16 +677,10 @@ static void ath6kl_tx_clear_node_map(struct ath6kl_vif *vif,
 	}
 }
 
-<<<<<<< HEAD
-void ath6kl_tx_complete(void *context, struct list_head *packet_queue)
-{
-	struct ath6kl *ar = context;
-=======
 void ath6kl_tx_complete(struct htc_target *target,
 			struct list_head *packet_queue)
 {
 	struct ath6kl *ar = target->dev->ar;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff_head skb_queue;
 	struct htc_packet *packet;
 	struct sk_buff *skb;
@@ -781,19 +700,10 @@ void ath6kl_tx_complete(struct htc_target *target,
 
 	/* reap completed packets */
 	while (!list_empty(packet_queue)) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		packet = list_first_entry(packet_queue, struct htc_packet,
 					  list);
 		list_del(&packet->list);
 
-<<<<<<< HEAD
-		ath6kl_cookie = (struct ath6kl_cookie *)packet->pkt_cntxt;
-		if (!ath6kl_cookie)
-			goto fatal;
-=======
 		if (WARN_ON_ONCE(packet->endpoint == ENDPOINT_UNUSED ||
 				 packet->endpoint >= ENDPOINT_MAX))
 			continue;
@@ -801,22 +711,12 @@ void ath6kl_tx_complete(struct htc_target *target,
 		ath6kl_cookie = packet->pkt_cntxt;
 		if (WARN_ON_ONCE(!ath6kl_cookie))
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = packet->status;
 		skb = ath6kl_cookie->skb;
 		eid = packet->endpoint;
 		map_no = ath6kl_cookie->map_no;
 
-<<<<<<< HEAD
-		if (!skb || !skb->data)
-			goto fatal;
-
-		__skb_queue_tail(&skb_queue, skb);
-
-		if (!status && (packet->act_len != skb->len))
-			goto fatal;
-=======
 		if (WARN_ON_ONCE(!skb || !skb->data)) {
 			dev_kfree_skb(skb);
 			ath6kl_free_cookie(ar, ath6kl_cookie);
@@ -829,7 +729,6 @@ void ath6kl_tx_complete(struct htc_target *target,
 			ath6kl_free_cookie(ar, ath6kl_cookie);
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ar->tx_pending[eid]--;
 
@@ -863,11 +762,7 @@ void ath6kl_tx_complete(struct htc_target *target,
 				/* a packet was flushed  */
 				flushing[if_idx] = true;
 
-<<<<<<< HEAD
-			vif->net_stats.tx_errors++;
-=======
 			vif->ndev->stats.tx_errors++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (status != -ENOSPC && status != -ECANCELED)
 				ath6kl_warn("tx complete error: %d\n", status);
@@ -883,13 +778,8 @@ void ath6kl_tx_complete(struct htc_target *target,
 				   eid, "OK");
 
 			flushing[if_idx] = false;
-<<<<<<< HEAD
-			vif->net_stats.tx_packets++;
-			vif->net_stats.tx_bytes += skb->len;
-=======
 			vif->ndev->stats.tx_packets++;
 			vif->ndev->stats.tx_bytes += skb->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ath6kl_tx_clear_node_map(vif, eid, map_no);
@@ -920,14 +810,6 @@ void ath6kl_tx_complete(struct htc_target *target,
 		wake_up(&ar->event_wq);
 
 	return;
-<<<<<<< HEAD
-
-fatal:
-	WARN_ON(1);
-	spin_unlock_bh(&ar->lock);
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath6kl_tx_data_cleanup(struct ath6kl *ar)
@@ -957,11 +839,7 @@ static void ath6kl_deliver_frames_to_nw_stack(struct net_device *dev,
 
 	skb->protocol = eth_type_trans(skb, skb->dev);
 
-<<<<<<< HEAD
-	netif_rx_ni(skb);
-=======
 	netif_rx(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath6kl_alloc_netbufs(struct sk_buff_head *q, u16 num)
@@ -1020,12 +898,6 @@ void ath6kl_rx_refill(struct htc_target *target, enum htc_endpoint_id endpoint)
 			break;
 
 		packet = (struct htc_packet *) skb->head;
-<<<<<<< HEAD
-		if (!IS_ALIGNED((unsigned long) skb->data, 4))
-			skb->data = PTR_ALIGN(skb->data - 4, 4);
-		set_htc_rxpkt_info(packet, skb, skb->data,
-				   ATH6KL_BUFFER_SIZE, endpoint);
-=======
 		if (!IS_ALIGNED((unsigned long) skb->data, 4)) {
 			size_t len = skb_headlen(skb);
 			skb->data = PTR_ALIGN(skb->data - 4, 4);
@@ -1034,7 +906,6 @@ void ath6kl_rx_refill(struct htc_target *target, enum htc_endpoint_id endpoint)
 		set_htc_rxpkt_info(packet, skb, skb->data,
 				   ATH6KL_BUFFER_SIZE, endpoint);
 		packet->skb = skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&packet->list, &queue);
 	}
 
@@ -1053,12 +924,6 @@ void ath6kl_refill_amsdu_rxbufs(struct ath6kl *ar, int count)
 			return;
 
 		packet = (struct htc_packet *) skb->head;
-<<<<<<< HEAD
-		if (!IS_ALIGNED((unsigned long) skb->data, 4))
-			skb->data = PTR_ALIGN(skb->data - 4, 4);
-		set_htc_rxpkt_info(packet, skb, skb->data,
-				   ATH6KL_AMSDU_BUFFER_SIZE, 0);
-=======
 		if (!IS_ALIGNED((unsigned long) skb->data, 4)) {
 			size_t len = skb_headlen(skb);
 			skb->data = PTR_ALIGN(skb->data - 4, 4);
@@ -1068,7 +933,6 @@ void ath6kl_refill_amsdu_rxbufs(struct ath6kl *ar, int count)
 				   ATH6KL_AMSDU_BUFFER_SIZE, 0);
 		packet->skb = skb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_bh(&ar->lock);
 		list_add_tail(&packet->list, &ar->amsdu_rx_buffer_queue);
 		spin_unlock_bh(&ar->lock);
@@ -1137,11 +1001,7 @@ static void aggr_slice_amsdu(struct aggr_info *p_aggr,
 
 	while (amsdu_len > mac_hdr_len) {
 		hdr = (struct ethhdr *) framep;
-<<<<<<< HEAD
-		payload_8023_len = ntohs(hdr->h_proto);
-=======
 		payload_8023_len = be16_to_cpu(hdr->h_proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (payload_8023_len < MIN_MSDU_SUBFRAME_PAYLOAD_LEN ||
 		    payload_8023_len > MAX_MSDU_SUBFRAME_PAYLOAD_LEN) {
@@ -1195,10 +1055,7 @@ static void aggr_deque_frms(struct aggr_info_conn *agg_conn, u8 tid,
 	rxtid = &agg_conn->rx_tid[tid];
 	stats = &agg_conn->stat[tid];
 
-<<<<<<< HEAD
-=======
 	spin_lock_bh(&rxtid->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idx = AGGR_WIN_IDX(rxtid->seq_next, rxtid->hold_q_sz);
 
 	/*
@@ -1217,11 +1074,6 @@ static void aggr_deque_frms(struct aggr_info_conn *agg_conn, u8 tid,
 	seq_end = seq_no ? seq_no : rxtid->seq_next;
 	idx_end = AGGR_WIN_IDX(seq_end, rxtid->hold_q_sz);
 
-<<<<<<< HEAD
-	spin_lock_bh(&rxtid->lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		node = &rxtid->hold_q[idx];
 		if ((order == 1) && (!node->skb))
@@ -1234,14 +1086,9 @@ static void aggr_deque_frms(struct aggr_info_conn *agg_conn, u8 tid,
 			else
 				skb_queue_tail(&rxtid->q, node->skb);
 			node->skb = NULL;
-<<<<<<< HEAD
-		} else
-			stats->num_hole++;
-=======
 		} else {
 			stats->num_hole++;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rxtid->seq_next = ATH6KL_NEXT_SEQ_NO(rxtid->seq_next);
 		idx = AGGR_WIN_IDX(rxtid->seq_next, rxtid->hold_q_sz);
@@ -1299,19 +1146,13 @@ static bool aggr_process_recv_frm(struct aggr_info_conn *agg_conn, u8 tid,
 		    ((end > extended_end) && (cur > extended_end) &&
 		     (cur < end))) {
 			aggr_deque_frms(agg_conn, tid, 0, 0);
-<<<<<<< HEAD
-=======
 			spin_lock_bh(&rxtid->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cur >= rxtid->hold_q_sz - 1)
 				rxtid->seq_next = cur - (rxtid->hold_q_sz - 1);
 			else
 				rxtid->seq_next = ATH6KL_MAX_SEQ_NO -
 						  (rxtid->hold_q_sz - 2 - cur);
-<<<<<<< HEAD
-=======
 			spin_unlock_bh(&rxtid->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/*
 			 * Dequeue only those frames that are outside the
@@ -1365,27 +1206,6 @@ static bool aggr_process_recv_frm(struct aggr_info_conn *agg_conn, u8 tid,
 	aggr_deque_frms(agg_conn, tid, 0, 1);
 
 	if (agg_conn->timer_scheduled)
-<<<<<<< HEAD
-		rxtid->progress = true;
-	else
-		for (idx = 0 ; idx < rxtid->hold_q_sz; idx++) {
-			if (rxtid->hold_q[idx].skb) {
-				/*
-				 * There is a frame in the queue and no
-				 * timer so start a timer to ensure that
-				 * the frame doesn't remain stuck
-				 * forever.
-				 */
-				agg_conn->timer_scheduled = true;
-				mod_timer(&agg_conn->timer,
-					  (jiffies +
-					   HZ * (AGGR_RX_TIMEOUT) / 1000));
-				rxtid->progress = false;
-				rxtid->timer_mon = true;
-				break;
-			}
-		}
-=======
 		return is_queued;
 
 	spin_lock_bh(&rxtid->lock);
@@ -1405,7 +1225,6 @@ static bool aggr_process_recv_frm(struct aggr_info_conn *agg_conn, u8 tid,
 		}
 	}
 	spin_unlock_bh(&rxtid->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return is_queued;
 }
@@ -1444,10 +1263,6 @@ static void ath6kl_uapsd_trigger_frame_rx(struct ath6kl_vif *vif,
 	is_apsdq_empty_at_start = is_apsdq_empty;
 
 	while ((!is_apsdq_empty) && (num_frames_to_deliver)) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_bh(&conn->psq_lock);
 		skb = skb_dequeue(&conn->apsdq);
 		is_apsdq_empty = skb_queue_empty(&conn->apsdq);
@@ -1491,10 +1306,7 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 	struct wmi_data_hdr *dhdr;
 	int min_hdr_len;
 	u8 meta_type, dot11_hdr = 0;
-<<<<<<< HEAD
-=======
 	u8 pad_before_data_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status = packet->status;
 	enum htc_endpoint_id ept = packet->endpoint;
 	bool is_amsdu, prev_ps, ps_state = false;
@@ -1512,11 +1324,7 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 		   __func__, ar, ept, skb, packet->buf,
 		   packet->act_len, status);
 
-<<<<<<< HEAD
-	if (status || !(skb->data + HTC_HDR_LENGTH)) {
-=======
 	if (status || packet->act_len < HTC_HDR_LENGTH) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb(skb);
 		return;
 	}
@@ -1552,13 +1360,8 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 	 */
 	spin_lock_bh(&vif->if_lock);
 
-<<<<<<< HEAD
-	vif->net_stats.rx_packets++;
-	vif->net_stats.rx_bytes += packet->act_len;
-=======
 	vif->ndev->stats.rx_packets++;
 	vif->ndev->stats.rx_bytes += packet->act_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_bh(&vif->if_lock);
 
@@ -1587,24 +1390,16 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 	    ((packet->act_len < min_hdr_len) ||
 	     (packet->act_len > WMI_MAX_AMSDU_RX_DATA_FRAME_LENGTH))) {
 		ath6kl_info("frame len is too short or too long\n");
-<<<<<<< HEAD
-		vif->net_stats.rx_errors++;
-		vif->net_stats.rx_length_errors++;
-=======
 		vif->ndev->stats.rx_errors++;
 		vif->ndev->stats.rx_length_errors++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb(skb);
 		return;
 	}
 
-<<<<<<< HEAD
-=======
 	pad_before_data_start =
 		(le16_to_cpu(dhdr->info3) >> WMI_DATA_HDR_PAD_BEFORE_DATA_SHIFT)
 			& WMI_DATA_HDR_PAD_BEFORE_DATA_MASK;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get the Power save state of the STA */
 	if (vif->nw_type == AP_NETWORK) {
 		meta_type = wmi_data_hdr_get_meta(dhdr);
@@ -1612,11 +1407,7 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 		ps_state = !!((dhdr->info >> WMI_DATA_HDR_PS_SHIFT) &
 			      WMI_DATA_HDR_PS_MASK);
 
-<<<<<<< HEAD
-		offset = sizeof(struct wmi_data_hdr);
-=======
 		offset = sizeof(struct wmi_data_hdr) + pad_before_data_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trig_state = !!(le16_to_cpu(dhdr->info3) & WMI_DATA_HDR_TRIG);
 
 		switch (meta_type) {
@@ -1731,10 +1522,7 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 	seq_no = wmi_data_hdr_get_seqno(dhdr);
 	meta_type = wmi_data_hdr_get_meta(dhdr);
 	dot11_hdr = wmi_data_hdr_get_dot11(dhdr);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_pull(skb, sizeof(struct wmi_data_hdr));
 
 	switch (meta_type) {
@@ -1753,11 +1541,8 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	skb_pull(skb, pad_before_data_start);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dot11_hdr)
 		status = ath6kl_wmi_dot11_hdr_remove(ar->wmi, skb);
 	else if (!is_amsdu)
@@ -1819,41 +1604,26 @@ void ath6kl_rx(struct htc_target *target, struct htc_packet *packet)
 			if (!conn)
 				return;
 			aggr_conn = conn->aggr_conn;
-<<<<<<< HEAD
-		} else
-			aggr_conn = vif->aggr_cntxt->aggr_conn;
-=======
 		} else {
 			aggr_conn = vif->aggr_cntxt->aggr_conn;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (aggr_process_recv_frm(aggr_conn, tid, seq_no,
 					  is_amsdu, skb)) {
 			/* aggregation code will handle the skb */
 			return;
 		}
-<<<<<<< HEAD
-=======
 	} else if (!is_broadcast_ether_addr(datap->h_dest)) {
 		vif->ndev->stats.multicast++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ath6kl_deliver_frames_to_nw_stack(vif->ndev, skb);
 }
 
-<<<<<<< HEAD
-static void aggr_timeout(unsigned long arg)
-{
-	u8 i, j;
-	struct aggr_info_conn *aggr_conn = (struct aggr_info_conn *) arg;
-=======
 static void aggr_timeout(struct timer_list *t)
 {
 	u8 i, j;
 	struct aggr_info_conn *aggr_conn = from_timer(aggr_conn, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rxtid *rxtid;
 	struct rxtid_stats *stats;
 
@@ -1861,11 +1631,7 @@ static void aggr_timeout(struct timer_list *t)
 		rxtid = &aggr_conn->rx_tid[i];
 		stats = &aggr_conn->stat[i];
 
-<<<<<<< HEAD
-		if (!rxtid->aggr || !rxtid->timer_mon || rxtid->progress)
-=======
 		if (!rxtid->aggr || !rxtid->timer_mon)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		stats->num_timeouts++;
@@ -1883,25 +1649,15 @@ static void aggr_timeout(struct timer_list *t)
 		rxtid = &aggr_conn->rx_tid[i];
 
 		if (rxtid->aggr && rxtid->hold_q) {
-<<<<<<< HEAD
-=======
 			spin_lock_bh(&rxtid->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = 0; j < rxtid->hold_q_sz; j++) {
 				if (rxtid->hold_q[j].skb) {
 					aggr_conn->timer_scheduled = true;
 					rxtid->timer_mon = true;
-<<<<<<< HEAD
-					rxtid->progress = false;
-					break;
-				}
-			}
-=======
 					break;
 				}
 			}
 			spin_unlock_bh(&rxtid->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (j >= rxtid->hold_q_sz)
 				rxtid->timer_mon = false;
@@ -1928,10 +1684,6 @@ static void aggr_delete_tid_state(struct aggr_info_conn *aggr_conn, u8 tid)
 		aggr_deque_frms(aggr_conn, tid, 0, 0);
 
 	rxtid->aggr = false;
-<<<<<<< HEAD
-	rxtid->progress = false;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rxtid->timer_mon = false;
 	rxtid->win_sz = 0;
 	rxtid->seq_next = 0;
@@ -1949,10 +1701,6 @@ void aggr_recv_addba_req_evt(struct ath6kl_vif *vif, u8 tid_mux, u16 seq_no,
 	struct ath6kl_sta *sta;
 	struct aggr_info_conn *aggr_conn = NULL;
 	struct rxtid *rxtid;
-<<<<<<< HEAD
-	struct rxtid_stats *stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 hold_q_size;
 	u8 tid, aid;
 
@@ -1961,14 +1709,9 @@ void aggr_recv_addba_req_evt(struct ath6kl_vif *vif, u8 tid_mux, u16 seq_no,
 		sta = ath6kl_find_sta_by_aid(vif->ar, aid);
 		if (sta)
 			aggr_conn = sta->aggr_conn;
-<<<<<<< HEAD
-	} else
-		aggr_conn = vif->aggr_cntxt->aggr_conn;
-=======
 	} else {
 		aggr_conn = vif->aggr_cntxt->aggr_conn;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!aggr_conn)
 		return;
@@ -1978,10 +1721,6 @@ void aggr_recv_addba_req_evt(struct ath6kl_vif *vif, u8 tid_mux, u16 seq_no,
 		return;
 
 	rxtid = &aggr_conn->rx_tid[tid];
-<<<<<<< HEAD
-	stats = &aggr_conn->stat[tid];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (win_sz < AGGR_WIN_SZ_MIN || win_sz > AGGR_WIN_SZ_MAX)
 		ath6kl_dbg(ATH6KL_DBG_WLAN_RX, "%s: win_sz %d, tid %d\n",
@@ -2012,13 +1751,7 @@ void aggr_conn_init(struct ath6kl_vif *vif, struct aggr_info *aggr_info,
 
 	aggr_conn->aggr_sz = AGGR_SZ_DEFAULT;
 	aggr_conn->dev = vif->ndev;
-<<<<<<< HEAD
-	init_timer(&aggr_conn->timer);
-	aggr_conn->timer.function = aggr_timeout;
-	aggr_conn->timer.data = (unsigned long) aggr_conn;
-=======
 	timer_setup(&aggr_conn->timer, aggr_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aggr_conn->aggr_info = aggr_info;
 
 	aggr_conn->timer_scheduled = false;
@@ -2026,18 +1759,10 @@ void aggr_conn_init(struct ath6kl_vif *vif, struct aggr_info *aggr_info,
 	for (i = 0; i < NUM_OF_TIDS; i++) {
 		rxtid = &aggr_conn->rx_tid[i];
 		rxtid->aggr = false;
-<<<<<<< HEAD
-		rxtid->progress = false;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rxtid->timer_mon = false;
 		skb_queue_head_init(&rxtid->q);
 		spin_lock_init(&rxtid->lock);
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct aggr_info *aggr_init(struct ath6kl_vif *vif)
@@ -2077,14 +1802,9 @@ void aggr_recv_delba_req_evt(struct ath6kl_vif *vif, u8 tid_mux)
 		sta = ath6kl_find_sta_by_aid(vif->ar, aid);
 		if (sta)
 			aggr_conn = sta->aggr_conn;
-<<<<<<< HEAD
-	} else
-		aggr_conn = vif->aggr_cntxt->aggr_conn;
-=======
 	} else {
 		aggr_conn = vif->aggr_cntxt->aggr_conn;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!aggr_conn)
 		return;

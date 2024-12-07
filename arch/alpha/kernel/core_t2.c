@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/core_t2.c
  *
@@ -354,11 +351,7 @@ t2_sg_map_window2(struct pci_controller *hose,
 
 	/* Note we can only do 1 SG window, as the other is for direct, so
 	   do an ISA SG area, especially for the floppy. */
-<<<<<<< HEAD
-	hose->sg_isa = iommu_arena_new(hose, base, length, 0);
-=======
 	hose->sg_isa = iommu_arena_new(hose, base, length, SMP_CACHE_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hose->sg_pci = NULL;
 
 	temp = (base & 0xfff00000UL) | ((base + length - 1) >> 20);

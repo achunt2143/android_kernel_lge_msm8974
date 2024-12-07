@@ -1,24 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __NET_TC_GACT_H
 #define __NET_TC_GACT_H
 
 #include <net/act_api.h>
-<<<<<<< HEAD
-
-struct tcf_gact {
-	struct tcf_common	common;
-#ifdef CONFIG_GACT_PROB
-        u16			tcfg_ptype;
-        u16			tcfg_pval;
-        int			tcfg_paction;
-#endif
-};
-#define to_gact(pc) \
-	container_of(pc, struct tcf_gact, common)
-=======
 #include <linux/tc_act/tc_gact.h>
 
 struct tcf_gact {
@@ -89,6 +73,5 @@ static inline bool is_tcf_gact_pipe(const struct tc_action *a)
 {
 	return __is_tcf_gact_act(a, TC_ACT_PIPE, false);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __NET_TC_GACT_H */

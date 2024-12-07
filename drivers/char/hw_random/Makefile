@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for HW Random Number Generator (RNG) device drivers.
 #
@@ -12,27 +9,11 @@ obj-$(CONFIG_HW_RANDOM_TIMERIOMEM) += timeriomem-rng.o
 obj-$(CONFIG_HW_RANDOM_INTEL) += intel-rng.o
 obj-$(CONFIG_HW_RANDOM_AMD) += amd-rng.o
 obj-$(CONFIG_HW_RANDOM_ATMEL) += atmel-rng.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_HW_RANDOM_BA431) += ba431-rng.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_HW_RANDOM_GEODE) += geode-rng.o
 obj-$(CONFIG_HW_RANDOM_N2RNG) += n2-rng.o
 n2-rng-y := n2-drv.o n2-asm.o
 obj-$(CONFIG_HW_RANDOM_VIA) += via-rng.o
-<<<<<<< HEAD
-obj-$(CONFIG_HW_RANDOM_IXP4XX) += ixp4xx-rng.o
-obj-$(CONFIG_HW_RANDOM_OMAP) += omap-rng.o
-obj-$(CONFIG_HW_RANDOM_PASEMI) += pasemi-rng.o
-obj-$(CONFIG_HW_RANDOM_VIRTIO) += virtio-rng.o
-obj-$(CONFIG_HW_RANDOM_TX4939) += tx4939-rng.o
-obj-$(CONFIG_HW_RANDOM_MXC_RNGA) += mxc-rnga.o
-obj-$(CONFIG_HW_RANDOM_OCTEON) += octeon-rng.o
-obj-$(CONFIG_HW_RANDOM_NOMADIK) += nomadik-rng.o
-obj-$(CONFIG_HW_RANDOM_PICOXCELL) += picoxcell-rng.o
-obj-$(CONFIG_HW_RANDOM_PPC4XX) += ppc4xx-rng.o
-obj-$(CONFIG_HW_RANDOM_MSM) += msm_rng.o fips_drbg.o ctr_drbg.o msm_fips_selftest.o
-=======
 obj-$(CONFIG_HW_RANDOM_EXYNOS) += exynos-trng.o
 obj-$(CONFIG_HW_RANDOM_IXP4XX) += ixp4xx-rng.o
 obj-$(CONFIG_HW_RANDOM_OMAP) += omap-rng.o
@@ -68,4 +49,3 @@ obj-$(CONFIG_HW_RANDOM_ARM_SMCCC_TRNG) += arm_smccc_trng.o
 obj-$(CONFIG_HW_RANDOM_CN10K) += cn10k-rng.o
 obj-$(CONFIG_HW_RANDOM_POLARFIRE_SOC) += mpfs-rng.o
 obj-$(CONFIG_HW_RANDOM_JH7110) += jh7110-trng.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

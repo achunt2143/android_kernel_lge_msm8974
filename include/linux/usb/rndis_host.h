@@ -1,37 +1,14 @@
-<<<<<<< HEAD
-/*
- * Host Side support for RNDIS Networking Links
- * Copyright (C) 2005 by David Brownell
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Host Side support for RNDIS Networking Links
  * Copyright (C) 2005 by David Brownell
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef	__LINUX_USB_RNDIS_HOST_H
 #define	__LINUX_USB_RNDIS_HOST_H
 
-<<<<<<< HEAD
-=======
 #include <linux/rndis.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CONTROL uses CDC "encapsulated commands" with funky notifications.
  *  - control-out:  SEND_ENCAPSULATED
@@ -61,50 +38,6 @@ struct rndis_msg_hdr {
  */
 #define	RNDIS_CONTROL_TIMEOUT_MS	(5 * 1000)
 
-<<<<<<< HEAD
-#define RNDIS_MSG_COMPLETION	cpu_to_le32(0x80000000)
-
-/* codes for "msg_type" field of rndis messages;
- * only the data channel uses packet messages (maybe batched);
- * everything else goes on the control channel.
- */
-#define RNDIS_MSG_PACKET	cpu_to_le32(0x00000001)	/* 1-N packets */
-#define RNDIS_MSG_INIT		cpu_to_le32(0x00000002)
-#define RNDIS_MSG_INIT_C	(RNDIS_MSG_INIT|RNDIS_MSG_COMPLETION)
-#define RNDIS_MSG_HALT		cpu_to_le32(0x00000003)
-#define RNDIS_MSG_QUERY		cpu_to_le32(0x00000004)
-#define RNDIS_MSG_QUERY_C	(RNDIS_MSG_QUERY|RNDIS_MSG_COMPLETION)
-#define RNDIS_MSG_SET		cpu_to_le32(0x00000005)
-#define RNDIS_MSG_SET_C		(RNDIS_MSG_SET|RNDIS_MSG_COMPLETION)
-#define RNDIS_MSG_RESET		cpu_to_le32(0x00000006)
-#define RNDIS_MSG_RESET_C	(RNDIS_MSG_RESET|RNDIS_MSG_COMPLETION)
-#define RNDIS_MSG_INDICATE	cpu_to_le32(0x00000007)
-#define RNDIS_MSG_KEEPALIVE	cpu_to_le32(0x00000008)
-#define RNDIS_MSG_KEEPALIVE_C	(RNDIS_MSG_KEEPALIVE|RNDIS_MSG_COMPLETION)
-
-/* codes for "status" field of completion messages */
-#define	RNDIS_STATUS_SUCCESS			cpu_to_le32(0x00000000)
-#define	RNDIS_STATUS_FAILURE			cpu_to_le32(0xc0000001)
-#define	RNDIS_STATUS_INVALID_DATA		cpu_to_le32(0xc0010015)
-#define	RNDIS_STATUS_NOT_SUPPORTED		cpu_to_le32(0xc00000bb)
-#define	RNDIS_STATUS_MEDIA_CONNECT		cpu_to_le32(0x4001000b)
-#define	RNDIS_STATUS_MEDIA_DISCONNECT		cpu_to_le32(0x4001000c)
-#define	RNDIS_STATUS_MEDIA_SPECIFIC_INDICATION	cpu_to_le32(0x40010012)
-
-/* codes for OID_GEN_PHYSICAL_MEDIUM */
-#define	RNDIS_PHYSICAL_MEDIUM_UNSPECIFIED	cpu_to_le32(0x00000000)
-#define	RNDIS_PHYSICAL_MEDIUM_WIRELESS_LAN	cpu_to_le32(0x00000001)
-#define	RNDIS_PHYSICAL_MEDIUM_CABLE_MODEM	cpu_to_le32(0x00000002)
-#define	RNDIS_PHYSICAL_MEDIUM_PHONE_LINE	cpu_to_le32(0x00000003)
-#define	RNDIS_PHYSICAL_MEDIUM_POWER_LINE	cpu_to_le32(0x00000004)
-#define	RNDIS_PHYSICAL_MEDIUM_DSL		cpu_to_le32(0x00000005)
-#define	RNDIS_PHYSICAL_MEDIUM_FIBRE_CHANNEL	cpu_to_le32(0x00000006)
-#define	RNDIS_PHYSICAL_MEDIUM_1394		cpu_to_le32(0x00000007)
-#define	RNDIS_PHYSICAL_MEDIUM_WIRELESS_WAN	cpu_to_le32(0x00000008)
-#define	RNDIS_PHYSICAL_MEDIUM_MAX		cpu_to_le32(0x00000009)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rndis_data_hdr {
 	__le32	msg_type;		/* RNDIS_MSG_PACKET */
 	__le32	msg_len;		/* rndis_data_hdr + data_len + pad */
@@ -237,32 +170,6 @@ struct rndis_keepalive_c {	/* IN (optionally OUT) */
 	__le32	status;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-/* NOTE:  about 30 OIDs are "mandatory" for peripherals to support ... and
- * there are gobs more that may optionally be supported.  We'll avoid as much
- * of that mess as possible.
- */
-#define OID_802_3_PERMANENT_ADDRESS	cpu_to_le32(0x01010101)
-#define OID_GEN_MAXIMUM_FRAME_SIZE	cpu_to_le32(0x00010106)
-#define OID_GEN_CURRENT_PACKET_FILTER	cpu_to_le32(0x0001010e)
-#define OID_GEN_PHYSICAL_MEDIUM		cpu_to_le32(0x00010202)
-
-/* packet filter bits used by OID_GEN_CURRENT_PACKET_FILTER */
-#define RNDIS_PACKET_TYPE_DIRECTED		cpu_to_le32(0x00000001)
-#define RNDIS_PACKET_TYPE_MULTICAST		cpu_to_le32(0x00000002)
-#define RNDIS_PACKET_TYPE_ALL_MULTICAST		cpu_to_le32(0x00000004)
-#define RNDIS_PACKET_TYPE_BROADCAST		cpu_to_le32(0x00000008)
-#define RNDIS_PACKET_TYPE_SOURCE_ROUTING	cpu_to_le32(0x00000010)
-#define RNDIS_PACKET_TYPE_PROMISCUOUS		cpu_to_le32(0x00000020)
-#define RNDIS_PACKET_TYPE_SMT			cpu_to_le32(0x00000040)
-#define RNDIS_PACKET_TYPE_ALL_LOCAL		cpu_to_le32(0x00000080)
-#define RNDIS_PACKET_TYPE_GROUP			cpu_to_le32(0x00001000)
-#define RNDIS_PACKET_TYPE_ALL_FUNCTIONAL	cpu_to_le32(0x00002000)
-#define RNDIS_PACKET_TYPE_FUNCTIONAL		cpu_to_le32(0x00004000)
-#define RNDIS_PACKET_TYPE_MAC_FRAME		cpu_to_le32(0x00008000)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* default filter used with RNDIS devices */
 #define RNDIS_DEFAULT_FILTER ( \
 	RNDIS_PACKET_TYPE_DIRECTED | \
@@ -276,10 +183,7 @@ struct rndis_keepalive_c {	/* IN (optionally OUT) */
 
 /* Flags for driver_info::data */
 #define RNDIS_DRIVER_DATA_POLL_STATUS	1	/* poll status before control */
-<<<<<<< HEAD
-=======
 #define RNDIS_DRIVER_DATA_DST_MAC_FIXUP	2	/* device ignores configured MAC address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void rndis_status(struct usbnet *dev, struct urb *urb);
 extern int

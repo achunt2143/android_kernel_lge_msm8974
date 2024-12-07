@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/timex.h
- *
- *  S390 version
- *    Copyright (C) 1999 IBM Deutschland Entwicklung GmbH, IBM Corporation
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *  S390 version
  *    Copyright IBM Corp. 1999
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Derived from "include/asm-i386/timex.h"
  *    Copyright (C) 1992, Linus Torvalds
@@ -18,20 +10,13 @@
 #ifndef _ASM_S390_TIMEX_H
 #define _ASM_S390_TIMEX_H
 
-<<<<<<< HEAD
-=======
 #include <linux/preempt.h>
 #include <linux/time64.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/lowcore.h>
 
 /* The value of the TOD clock for 1.1.1970. */
 #define TOD_UNIX_EPOCH 0x7d91048bca000000ULL
 
-<<<<<<< HEAD
-/* Inline functions for clock register access. */
-static inline int set_clock(__u64 time)
-=======
 extern u64 clock_comparator_max;
 
 union tod_clock {
@@ -55,7 +40,6 @@ union tod_clock {
 
 /* Inline functions for clock register access. */
 static inline int set_tod_clock(__u64 time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cc;
 
@@ -67,24 +51,11 @@ static inline int set_tod_clock(__u64 time)
 	return cc;
 }
 
-<<<<<<< HEAD
-static inline int store_clock(__u64 *time)
-=======
 static inline int store_tod_clock_ext_cc(union tod_clock *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cc;
 
 	asm volatile(
-<<<<<<< HEAD
-		"   stck  %1\n"
-		"   ipm   %0\n"
-		"   srl   %0,28\n"
-		: "=d" (cc), "=Q" (*time) : : "cc");
-	return cc;
-}
-
-=======
 		"   stcke  %1\n"
 		"   ipm   %0\n"
 		"   srl   %0,28\n"
@@ -97,17 +68,11 @@ static __always_inline void store_tod_clock_ext(union tod_clock *tod)
 	asm volatile("stcke %0" : "=Q" (*tod) : : "cc");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void set_clock_comparator(__u64 time)
 {
 	asm volatile("sckc %0" : : "Q" (time));
 }
 
-<<<<<<< HEAD
-static inline void store_clock_comparator(__u64 *time)
-{
-	asm volatile("stckc %0" : "=Q" (*time));
-=======
 static inline void set_tod_programmable_field(u16 val)
 {
 	asm volatile(
@@ -116,19 +81,10 @@ static inline void set_tod_programmable_field(u16 val)
 		:
 		: [val] "d" ((unsigned long)val)
 		: "0");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void clock_comparator_work(void);
 
-<<<<<<< HEAD
-static inline unsigned long long local_tick_disable(void)
-{
-	unsigned long long old;
-
-	old = S390_lowcore.clock_comparator;
-	S390_lowcore.clock_comparator = -1ULL;
-=======
 void __init time_early_init(void);
 
 extern unsigned char ptff_function_mask[16];
@@ -207,89 +163,16 @@ static inline unsigned long local_tick_disable(void)
 
 	old = S390_lowcore.clock_comparator;
 	S390_lowcore.clock_comparator = clock_comparator_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_clock_comparator(S390_lowcore.clock_comparator);
 	return old;
 }
 
-<<<<<<< HEAD
-static inline void local_tick_enable(unsigned long long comp)
-=======
 static inline void local_tick_enable(unsigned long comp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	S390_lowcore.clock_comparator = comp;
 	set_clock_comparator(S390_lowcore.clock_comparator);
 }
 
-<<<<<<< HEAD
-#define CLOCK_TICK_RATE	1193180 /* Underlying HZ */
-
-typedef unsigned long long cycles_t;
-
-static inline unsigned long long get_clock (void)
-{
-	unsigned long long clk;
-
-	asm volatile("stck %0" : "=Q" (clk) : : "cc");
-	return clk;
-}
-
-static inline void get_clock_ext(char *clk)
-{
-	asm volatile("stcke %0" : "=Q" (*clk) : : "cc");
-}
-
-static inline unsigned long long get_clock_fast(void)
-{
-	unsigned long long clk;
-
-	if (MACHINE_HAS_STCKF)
-		asm volatile(".insn	s,0xb27c0000,%0" : "=Q" (clk) : : "cc");
-	else
-		clk = get_clock();
-	return clk;
-}
-
-static inline unsigned long long get_clock_xt(void)
-{
-	unsigned char clk[16];
-	get_clock_ext(clk);
-	return *((unsigned long long *)&clk[1]);
-}
-
-static inline cycles_t get_cycles(void)
-{
-	return (cycles_t) get_clock() >> 2;
-}
-
-int get_sync_clock(unsigned long long *clock);
-void init_cpu_timer(void);
-unsigned long long monotonic_clock(void);
-
-void tod_to_timeval(__u64, struct timespec *);
-
-static inline
-void stck_to_timespec(unsigned long long stck, struct timespec *ts)
-{
-	tod_to_timeval(stck - TOD_UNIX_EPOCH, ts);
-}
-
-extern u64 sched_clock_base_cc;
-
-/**
- * get_clock_monotonic - returns current time in clock rate units
- *
- * The caller must ensure that preemption is disabled.
- * The clock and sched_clock_base get changed via stop_machine.
- * Therefore preemption must be disabled when calling this
- * function, otherwise the returned value is not guaranteed to
- * be monotonic.
- */
-static inline unsigned long long get_clock_monotonic(void)
-{
-	return get_clock_xt() - sched_clock_base_cc;
-=======
 #define CLOCK_TICK_RATE		1193180 /* Underlying HZ */
 
 typedef unsigned long cycles_t;
@@ -341,7 +224,6 @@ static inline unsigned long get_tod_clock_monotonic(void)
 	tod = __get_tod_clock_monotonic();
 	preempt_enable_notrace();
 	return tod;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -356,22 +238,6 @@ static inline unsigned long get_tod_clock_monotonic(void)
  *    ns = (todval * 125) >> 9;
  *
  * In order to avoid an overflow with the multiplication we can rewrite this.
-<<<<<<< HEAD
- * With a split todval == 2^32 * th + tl (th upper 32 bits, tl lower 32 bits)
- * we end up with
- *
- *    ns = ((2^32 * th + tl) * 125 ) >> 9;
- * -> ns = (2^23 * th * 125) + ((tl * 125) >> 9);
- *
- */
-static inline unsigned long long tod_to_ns(unsigned long long todval)
-{
-	unsigned long long ns;
-
-	ns = ((todval >> 32) << 23) * 125;
-	ns += ((todval & 0xffffffff) * 125) >> 9;
-	return ns;
-=======
  * With a split todval == 2^9 * th + tl (th upper 55 bits, tl lower 9 bits)
  * we end up with
  *
@@ -410,7 +276,6 @@ static inline int tod_after_eq(unsigned long a, unsigned long b)
 	if (MACHINE_HAS_SCC)
 		return (long) a >= (long) b;
 	return a >= b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif

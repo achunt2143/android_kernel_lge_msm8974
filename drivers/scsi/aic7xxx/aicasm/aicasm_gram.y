@@ -52,24 +52,12 @@
 #include <string.h>
 #include <sysexits.h>
 
-<<<<<<< HEAD
-#ifdef __linux__
 #include "../queue.h"
-#else
-#include <sys/queue.h>
-#endif
-=======
-#include "../queue.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "aicasm.h"
 #include "aicasm_symbol.h"
 #include "aicasm_insformat.h"
 
-<<<<<<< HEAD
-int yylineno;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *yyfilename;
 char stock_prefix[] = "aic_";
 char *prefix = stock_prefix;

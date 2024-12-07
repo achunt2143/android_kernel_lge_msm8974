@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/include/asm/vfp.h
  *
@@ -9,13 +6,10 @@
  * First, the standard VFP set.
  */
 
-<<<<<<< HEAD
-=======
 #ifndef __ASM_VFP_H
 #define __ASM_VFP_H
 
 #ifndef CONFIG_AS_VFP_VMRS_FPINST
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FPSID			cr0
 #define FPSCR			cr1
 #define MVFR1			cr6
@@ -23,10 +17,7 @@
 #define FPEXC			cr8
 #define FPINST			cr9
 #define FPINST2			cr10
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FPSID bits */
 #define FPSID_IMPLEMENTER_BIT	(24)
@@ -36,12 +27,8 @@
 #define FPSID_FORMAT_MASK	(0x3  << FPSID_FORMAT_BIT)
 #define FPSID_NODOUBLE		(1<<20)
 #define FPSID_ARCH_BIT		(16)
-<<<<<<< HEAD
-#define FPSID_ARCH_MASK		(0x7F  << FPSID_ARCH_BIT)
-=======
 #define FPSID_ARCH_MASK		(0xF  << FPSID_ARCH_BIT)
 #define FPSID_CPUID_ARCH_MASK	(0x7F  << FPSID_ARCH_BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FPSID_PART_BIT		(8)
 #define FPSID_PART_MASK		(0xFF << FPSID_PART_BIT)
 #define FPSID_VARIANT_BIT	(4)
@@ -95,8 +82,6 @@
 /* MVFR0 bits */
 #define MVFR0_A_SIMD_BIT	(0)
 #define MVFR0_A_SIMD_MASK	(0xf << MVFR0_A_SIMD_BIT)
-<<<<<<< HEAD
-=======
 #define MVFR0_SP_BIT		(4)
 #define MVFR0_SP_MASK		(0xf << MVFR0_SP_BIT)
 #define MVFR0_DP_BIT		(8)
@@ -107,7 +92,6 @@
 #define MVFR1_ASIMDHP_MASK	(0xf << MVFR1_ASIMDHP_BIT)
 #define MVFR1_FPHP_BIT		(24)
 #define MVFR1_FPHP_MASK		(0xf << MVFR1_FPHP_BIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bit patterns for decoding the packaged operation descriptors */
 #define VFPOPDESC_LENGTH_BIT	(9)
@@ -117,13 +101,7 @@
 #define VFPOPDESC_OPDESC_MASK	(~(VFPOPDESC_LENGTH_MASK | VFPOPDESC_UNUSED_MASK))
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-int vfp_pm_suspend(void);
-void vfp_pm_resume(void);
-#endif
-=======
 void vfp_disable(void);
 #endif
 
 #endif /* __ASM_VFP_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

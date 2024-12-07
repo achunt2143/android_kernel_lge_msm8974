@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/setup.c
  *
@@ -10,17 +7,9 @@
  *  Copyright (C) 1999  Niibe Yutaka
  *  Copyright (C) 2002 - 2010 Paul Mundt
  */
-<<<<<<< HEAD
-#include <linux/screen_info.h>
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/initrd.h>
-#include <linux/bootmem.h>
-=======
-#include <linux/ioport.h>
-#include <linux/init.h>
-#include <linux/initrd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/console.h>
 #include <linux/root_dev.h>
 #include <linux/utsname.h>
@@ -39,14 +28,10 @@
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/memblock.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/of.h>
 #include <linux/of_fdt.h>
 #include <linux/uaccess.h>
 #include <uapi/linux/mount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/page.h>
 #include <asm/elf.h>
@@ -57,13 +42,9 @@
 #include <asm/smp.h>
 #include <asm/mmu_context.h>
 #include <asm/mmzone.h>
-<<<<<<< HEAD
-#include <asm/sparsemem.h>
-=======
 #include <asm/processor.h>
 #include <asm/sparsemem.h>
 #include <asm/platform_early.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialize loops_per_jiffy as 10000000 (1000MIPS).
@@ -87,13 +68,6 @@ EXPORT_SYMBOL(cpu_data);
 struct sh_machine_vector sh_mv = { .mv_name = "generic", };
 EXPORT_SYMBOL(sh_mv);
 
-<<<<<<< HEAD
-#ifdef CONFIG_VT
-struct screen_info screen_info;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int root_mountflags;
 
 #define RAMDISK_IMAGE_START_MASK	0x07FF
@@ -104,29 +78,17 @@ static char __initdata command_line[COMMAND_LINE_SIZE] = { 0, };
 
 static struct resource code_resource = {
 	.name = "Kernel code",
-<<<<<<< HEAD
-	.flags = IORESOURCE_BUSY | IORESOURCE_MEM,
-=======
 	.flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource data_resource = {
 	.name = "Kernel data",
-<<<<<<< HEAD
-	.flags = IORESOURCE_BUSY | IORESOURCE_MEM,
-=======
 	.flags = IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource bss_resource = {
 	.name	= "Kernel bss",
-<<<<<<< HEAD
-	.flags	= IORESOURCE_BUSY | IORESOURCE_MEM,
-=======
 	.flags	= IORESOURCE_BUSY | IORESOURCE_SYSTEM_RAM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 unsigned long memory_start;
@@ -210,12 +172,8 @@ disable:
 #endif
 }
 
-<<<<<<< HEAD
-void __cpuinit calibrate_delay(void)
-=======
 #ifndef CONFIG_GENERIC_CALIBRATE_DELAY
 void calibrate_delay(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct clk *clk = clk_get(NULL, "cpu_clk");
 
@@ -230,10 +188,7 @@ void calibrate_delay(void)
 			 (loops_per_jiffy/(5000/HZ)) % 100,
 			 loops_per_jiffy);
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init __add_active_range(unsigned int nid, unsigned long start_pfn,
 						unsigned long end_pfn)
@@ -249,11 +204,7 @@ void __init __add_active_range(unsigned int nid, unsigned long start_pfn,
 	res->name = "System RAM";
 	res->start = start;
 	res->end = end - 1;
-<<<<<<< HEAD
-	res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-=======
 	res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (request_resource(&iomem_resource, res)) {
 		pr_err("unable to request memory_resource 0x%lx 0x%lx\n",
@@ -269,11 +220,7 @@ void __init __add_active_range(unsigned int nid, unsigned long start_pfn,
 	request_resource(res, &code_resource);
 	request_resource(res, &data_resource);
 	request_resource(res, &bss_resource);
-<<<<<<< HEAD
-#ifdef CONFIG_KEXEC
-=======
 #ifdef CONFIG_CRASH_RESERVE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	request_resource(res, &crashk_res);
 #endif
 
@@ -285,21 +232,14 @@ void __init __add_active_range(unsigned int nid, unsigned long start_pfn,
 	pmb_bolt_mapping((unsigned long)__va(start), start, end - start,
 			 PAGE_KERNEL);
 
-<<<<<<< HEAD
-	memblock_set_node(PFN_PHYS(start_pfn),
-			  PFN_PHYS(end_pfn - start_pfn), nid);
-=======
 	memblock_set_node(PFN_PHYS(start_pfn), PFN_PHYS(end_pfn - start_pfn),
 			  &memblock.memory, nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init __weak plat_early_device_setup(void)
 {
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_OF_EARLY_FLATTREE
 void __ref sh_fdt_init(phys_addr_t dt_phys)
 {
@@ -327,7 +267,6 @@ void __ref sh_fdt_init(phys_addr_t dt_phys)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init setup_arch(char **cmdline_p)
 {
 	enable_mmu();
@@ -347,44 +286,23 @@ void __init setup_arch(char **cmdline_p)
 
 #ifdef CONFIG_BLK_DEV_RAM
 	rd_image_start = RAMDISK_FLAGS & RAMDISK_IMAGE_START_MASK;
-<<<<<<< HEAD
-	rd_prompt = ((RAMDISK_FLAGS & RAMDISK_PROMPT_FLAG) != 0);
-	rd_doload = ((RAMDISK_FLAGS & RAMDISK_LOAD_FLAG) != 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	if (!MOUNT_ROOT_RDONLY)
 		root_mountflags &= ~MS_RDONLY;
-<<<<<<< HEAD
-	init_mm.start_code = (unsigned long) _text;
-	init_mm.end_code = (unsigned long) _etext;
-	init_mm.end_data = (unsigned long) _edata;
-	init_mm.brk = (unsigned long) _end;
-=======
 	setup_initial_init_mm(_text, _etext, _edata, _end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	code_resource.start = virt_to_phys(_text);
 	code_resource.end = virt_to_phys(_etext)-1;
 	data_resource.start = virt_to_phys(_etext);
 	data_resource.end = virt_to_phys(_edata)-1;
 	bss_resource.start = virt_to_phys(__bss_start);
-<<<<<<< HEAD
-	bss_resource.end = virt_to_phys(_ebss)-1;
-
-#ifdef CONFIG_CMDLINE_OVERWRITE
-	strlcpy(command_line, CONFIG_CMDLINE, sizeof(command_line));
-#else
-	strlcpy(command_line, COMMAND_LINE, sizeof(command_line));
-=======
 	bss_resource.end = virt_to_phys(__bss_stop)-1;
 
 #ifdef CONFIG_CMDLINE_OVERWRITE
 	strscpy(command_line, CONFIG_CMDLINE, sizeof(command_line));
 #else
 	strscpy(command_line, COMMAND_LINE, sizeof(command_line));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CMDLINE_EXTEND
 	strlcat(command_line, " ", sizeof(command_line));
 	strlcat(command_line, CONFIG_CMDLINE, sizeof(command_line));
@@ -402,16 +320,6 @@ void __init setup_arch(char **cmdline_p)
 	sh_mv_setup();
 
 	/* Let earlyprintk output early console messages */
-<<<<<<< HEAD
-	early_platform_driver_probe("earlyprintk", 1, 1);
-
-	paging_init();
-
-#ifdef CONFIG_DUMMY_CONSOLE
-	conswitchp = &dummy_con;
-#endif
-
-=======
 	sh_early_platform_driver_probe("earlyprintk", 1, 1);
 
 #ifdef CONFIG_OF_EARLY_FLATTREE
@@ -424,7 +332,6 @@ void __init setup_arch(char **cmdline_p)
 
 	paging_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Perform the machine specific initialisation */
 	if (likely(sh_mv.mv_setup))
 		sh_mv.mv_setup(cmdline_p);
@@ -435,11 +342,7 @@ void __init setup_arch(char **cmdline_p)
 /* processor boot mode configuration */
 int generic_mode_pins(void)
 {
-<<<<<<< HEAD
-	pr_warning("generic_mode_pins(): missing mode pin configuration\n");
-=======
 	pr_warn("generic_mode_pins(): missing mode pin configuration\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -447,8 +350,6 @@ int test_mode_pin(int pin)
 {
 	return sh_mv.mv_mode_pins() & pin;
 }
-<<<<<<< HEAD
-=======
 
 void __init arch_cpu_finalize_init(void)
 {
@@ -503,4 +404,3 @@ void __init arch_cpu_finalize_init(void)
 #endif
 	*p = '\0';
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

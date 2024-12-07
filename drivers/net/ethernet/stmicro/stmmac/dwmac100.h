@@ -1,40 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
   MAC 10/100 Header File
 
   Copyright (C) 2007-2009  STMicroelectronics Ltd
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
 *******************************************************************************/
 
-<<<<<<< HEAD
-=======
 #ifndef __DWMAC100_H__
 #define __DWMAC100_H__
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/phy.h>
 #include "common.h"
 
@@ -80,11 +56,7 @@
 #define MAC_CONTROL_TE		0x00000008	/* Transmitter Enable */
 #define MAC_CONTROL_RE		0x00000004	/* Receiver Enable */
 
-<<<<<<< HEAD
-#define MAC_CORE_INIT (MAC_CONTROL_HBD | MAC_CONTROL_ASTP)
-=======
 #define MAC_CORE_INIT (MAC_CONTROL_HBD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MAC FLOW CTRL defines */
 #define MAC_FLOW_CTRL_PT_MASK	0xffff0000	/* Pause Time Mask */
@@ -109,10 +81,6 @@
 #define DMA_BUS_MODE_DSL_MASK	0x0000007c	/* Descriptor Skip Length */
 #define DMA_BUS_MODE_DSL_SHIFT	2	/*   (in DWORDS)      */
 #define DMA_BUS_MODE_BAR_BUS	0x00000002	/* Bar-Bus Arbitration */
-<<<<<<< HEAD
-#define DMA_BUS_MODE_SFT_RESET	0x00000001	/* Software Reset */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DMA_BUS_MODE_DEFAULT	0x00000000
 
 /* DMA Control register defines */
@@ -139,8 +107,5 @@ enum ttc_control {
 #define DMA_MISSED_FRAME_M_CNTR	0x0000ffff	/* Missed Frame Couinter */
 
 extern const struct stmmac_dma_ops dwmac100_dma_ops;
-<<<<<<< HEAD
-=======
 
 #endif /* __DWMAC100_H__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

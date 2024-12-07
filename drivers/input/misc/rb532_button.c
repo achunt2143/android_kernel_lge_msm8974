@@ -1,23 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for the S1 button on Routerboard 532
  *
  * Copyright (C) 2009  Phil Sutter <n0-1@freewrt.org>
  */
 
-<<<<<<< HEAD
-#include <linux/input-polldev.h>
-#include <linux/module.h>
-#include <linux/platform_device.h>
-=======
 #include <linux/input.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-rc32434/gpio.h>
 #include <asm/mach-rc32434/rb.h>
@@ -55,52 +46,6 @@ static bool rb532_button_pressed(void)
 	return !val;
 }
 
-<<<<<<< HEAD
-static void rb532_button_poll(struct input_polled_dev *poll_dev)
-{
-	input_report_key(poll_dev->input, RB532_BTN_KSYM,
-			 rb532_button_pressed());
-	input_sync(poll_dev->input);
-}
-
-static int __devinit rb532_button_probe(struct platform_device *pdev)
-{
-	struct input_polled_dev *poll_dev;
-	int error;
-
-	poll_dev = input_allocate_polled_device();
-	if (!poll_dev)
-		return -ENOMEM;
-
-	poll_dev->poll = rb532_button_poll;
-	poll_dev->poll_interval = RB532_BTN_RATE;
-
-	poll_dev->input->name = "rb532 button";
-	poll_dev->input->phys = "rb532/button0";
-	poll_dev->input->id.bustype = BUS_HOST;
-	poll_dev->input->dev.parent = &pdev->dev;
-
-	dev_set_drvdata(&pdev->dev, poll_dev);
-
-	input_set_capability(poll_dev->input, EV_KEY, RB532_BTN_KSYM);
-
-	error = input_register_polled_device(poll_dev);
-	if (error) {
-		input_free_polled_device(poll_dev);
-		return error;
-	}
-
-	return 0;
-}
-
-static int __devexit rb532_button_remove(struct platform_device *pdev)
-{
-	struct input_polled_dev *poll_dev = dev_get_drvdata(&pdev->dev);
-
-	input_unregister_polled_device(poll_dev);
-	input_free_polled_device(poll_dev);
-	dev_set_drvdata(&pdev->dev, NULL);
-=======
 static void rb532_button_poll(struct input_dev *input)
 {
 	input_report_key(input, RB532_BTN_KSYM, rb532_button_pressed());
@@ -131,22 +76,14 @@ static int rb532_button_probe(struct platform_device *pdev)
 	error = input_register_device(input);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static struct platform_driver rb532_button_driver = {
 	.probe = rb532_button_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(rb532_button_remove),
 	.driver = {
 		.name = DRV_NAME,
-		.owner = THIS_MODULE,
-=======
-	.driver = {
-		.name = DRV_NAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(rb532_button_driver);

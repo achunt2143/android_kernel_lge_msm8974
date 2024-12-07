@@ -45,10 +45,6 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -56,38 +52,20 @@
 #include <linux/ethtool.h>
 #include <linux/usb.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-
-#define USB_VENDOR_APPLE        0x05ac
-#define USB_PRODUCT_IPHONE      0x1290
-#define USB_PRODUCT_IPHONE_3G   0x1292
-#define USB_PRODUCT_IPHONE_3GS  0x1294
-#define USB_PRODUCT_IPHONE_4	0x1297
-#define USB_PRODUCT_IPAD 0x129a
-#define USB_PRODUCT_IPHONE_4_VZW 0x129c
-#define USB_PRODUCT_IPHONE_4S	0x12a0
-#define USB_PRODUCT_IPHONE_5	0x12a8
-=======
 #include <linux/usb/cdc.h>
 
 #define USB_VENDOR_APPLE        0x05ac
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPHETH_USBINTF_CLASS    255
 #define IPHETH_USBINTF_SUBCLASS 253
 #define IPHETH_USBINTF_PROTO    1
 
-<<<<<<< HEAD
-#define IPHETH_BUF_SIZE         1516
-#define IPHETH_IP_ALIGN		2	/* padding at front of URB */
-=======
 #define IPHETH_IP_ALIGN		2	/* padding at front of URB */
 #define IPHETH_NCM_HEADER_SIZE  (12 + 96) /* NCMH + NCM0 */
 #define IPHETH_TX_BUF_SIZE      ETH_FRAME_LEN
 #define IPHETH_RX_BUF_SIZE_LEGACY (IPHETH_IP_ALIGN + ETH_FRAME_LEN)
 #define IPHETH_RX_BUF_SIZE_NCM	65536
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPHETH_TX_TIMEOUT       (5 * HZ)
 
 #define IPHETH_INTFNUM          2
@@ -98,55 +76,16 @@
 #define IPHETH_CTRL_TIMEOUT     (5 * HZ)
 
 #define IPHETH_CMD_GET_MACADDR   0x00
-<<<<<<< HEAD
-=======
 #define IPHETH_CMD_ENABLE_NCM    0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPHETH_CMD_CARRIER_CHECK 0x45
 
 #define IPHETH_CARRIER_CHECK_TIMEOUT round_jiffies_relative(1 * HZ)
 #define IPHETH_CARRIER_ON       0x04
 
-<<<<<<< HEAD
-static struct usb_device_id ipheth_table[] = {
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPHONE,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPHONE_3G,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPHONE_3GS,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPHONE_4,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPAD,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPHONE_4_VZW,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPHONE_4S,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-	{ USB_DEVICE_AND_INTERFACE_INFO(
-		USB_VENDOR_APPLE, USB_PRODUCT_IPHONE_5,
-		IPHETH_USBINTF_CLASS, IPHETH_USBINTF_SUBCLASS,
-		IPHETH_USBINTF_PROTO) },
-=======
 static const struct usb_device_id ipheth_table[] = {
 	{ USB_VENDOR_AND_INTERFACE_INFO(USB_VENDOR_APPLE, IPHETH_USBINTF_CLASS,
 					IPHETH_USBINTF_SUBCLASS,
 					IPHETH_USBINTF_PROTO) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(usb, ipheth_table);
@@ -155,10 +94,6 @@ struct ipheth_device {
 	struct usb_device *udev;
 	struct usb_interface *intf;
 	struct net_device *net;
-<<<<<<< HEAD
-	struct sk_buff *tx_skb;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *tx_urb;
 	struct urb *rx_urb;
 	unsigned char *tx_buf;
@@ -167,12 +102,9 @@ struct ipheth_device {
 	u8 bulk_in;
 	u8 bulk_out;
 	struct delayed_work carrier_work;
-<<<<<<< HEAD
-=======
 	bool confirmed_pairing;
 	int (*rcvbulk_callback)(struct urb *urb);
 	size_t rx_buf_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ipheth_rx_submit(struct ipheth_device *dev, gfp_t mem_flags);
@@ -192,20 +124,12 @@ static int ipheth_alloc_urbs(struct ipheth_device *iphone)
 	if (rx_urb == NULL)
 		goto free_tx_urb;
 
-<<<<<<< HEAD
-	tx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-=======
 	tx_buf = usb_alloc_coherent(iphone->udev, IPHETH_TX_BUF_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    GFP_KERNEL, &tx_urb->transfer_dma);
 	if (tx_buf == NULL)
 		goto free_rx_urb;
 
-<<<<<<< HEAD
-	rx_buf = usb_alloc_coherent(iphone->udev, IPHETH_BUF_SIZE,
-=======
 	rx_buf = usb_alloc_coherent(iphone->udev, iphone->rx_buf_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    GFP_KERNEL, &rx_urb->transfer_dma);
 	if (rx_buf == NULL)
 		goto free_tx_buf;
@@ -218,11 +142,7 @@ static int ipheth_alloc_urbs(struct ipheth_device *iphone)
 	return 0;
 
 free_tx_buf:
-<<<<<<< HEAD
-	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, tx_buf,
-=======
 	usb_free_coherent(iphone->udev, IPHETH_TX_BUF_SIZE, tx_buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  tx_urb->transfer_dma);
 free_rx_urb:
 	usb_free_urb(rx_urb);
@@ -234,15 +154,9 @@ error_nomem:
 
 static void ipheth_free_urbs(struct ipheth_device *iphone)
 {
-<<<<<<< HEAD
-	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->rx_buf,
-			  iphone->rx_urb->transfer_dma);
-	usb_free_coherent(iphone->udev, IPHETH_BUF_SIZE, iphone->tx_buf,
-=======
 	usb_free_coherent(iphone->udev, iphone->rx_buf_len, iphone->rx_buf,
 			  iphone->rx_urb->transfer_dma);
 	usb_free_coherent(iphone->udev, IPHETH_TX_BUF_SIZE, iphone->tx_buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  iphone->tx_urb->transfer_dma);
 	usb_free_urb(iphone->rx_urb);
 	usb_free_urb(iphone->tx_urb);
@@ -254,15 +168,6 @@ static void ipheth_kill_urbs(struct ipheth_device *dev)
 	usb_kill_urb(dev->rx_urb);
 }
 
-<<<<<<< HEAD
-static void ipheth_rcvbulk_callback(struct urb *urb)
-{
-	struct ipheth_device *dev;
-	struct sk_buff *skb;
-	int status;
-	char *buf;
-	int len;
-=======
 static int ipheth_consume_skb(char *buf, int len, struct ipheth_device *dev)
 {
 	struct sk_buff *skb;
@@ -361,7 +266,6 @@ static void ipheth_rcvbulk_callback(struct urb *urb)
 {
 	struct ipheth_device *dev;
 	int retval, status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = urb->context;
 	if (dev == NULL)
@@ -372,20 +276,13 @@ static void ipheth_rcvbulk_callback(struct urb *urb)
 	case -ENOENT:
 	case -ECONNRESET:
 	case -ESHUTDOWN:
-<<<<<<< HEAD
-=======
 	case -EPROTO:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	case 0:
 		break;
 	default:
-<<<<<<< HEAD
-		err("%s: urb status: %d", __func__, status);
-=======
 		dev_err(&dev->intf->dev, "%s: urb status: %d\n",
 			__func__, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -393,26 +290,6 @@ static void ipheth_rcvbulk_callback(struct urb *urb)
 		dev->net->stats.rx_length_errors++;
 		return;
 	}
-<<<<<<< HEAD
-	len = urb->actual_length - IPHETH_IP_ALIGN;
-	buf = urb->transfer_buffer + IPHETH_IP_ALIGN;
-
-	skb = dev_alloc_skb(len);
-	if (!skb) {
-		err("%s: dev_alloc_skb: -ENOMEM", __func__);
-		dev->net->stats.rx_dropped++;
-		return;
-	}
-
-	memcpy(skb_put(skb, len), buf, len);
-	skb->dev = dev->net;
-	skb->protocol = eth_type_trans(skb, dev->net);
-
-	dev->net->stats.rx_packets++;
-	dev->net->stats.rx_bytes += len;
-
-	netif_rx(skb);
-=======
 
 	/* RX URBs starting with 0x00 0x01 do not encapsulate Ethernet frames,
 	 * but rather are control frames. Their purpose is not documented, and
@@ -434,7 +311,6 @@ static void ipheth_rcvbulk_callback(struct urb *urb)
 
 rx_submit:
 	dev->confirmed_pairing = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipheth_rx_submit(dev, GFP_ATOMIC);
 }
 
@@ -451,12 +327,6 @@ static void ipheth_sndbulk_callback(struct urb *urb)
 	    status != -ENOENT &&
 	    status != -ECONNRESET &&
 	    status != -ESHUTDOWN)
-<<<<<<< HEAD
-		err("%s: urb status: %d", __func__, status);
-
-	dev_kfree_skb_irq(dev->tx_skb);
-	netif_wake_queue(dev->net);
-=======
 		dev_err(&dev->intf->dev, "%s: urb status: %d\n",
 		__func__, status);
 
@@ -465,16 +335,10 @@ static void ipheth_sndbulk_callback(struct urb *urb)
 	else
 		// on URB error, trigger immediate poll
 		schedule_delayed_work(&dev->carrier_work, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ipheth_carrier_set(struct ipheth_device *dev)
 {
-<<<<<<< HEAD
-	struct usb_device *udev = dev->udev;
-	int retval;
-
-=======
 	struct usb_device *udev;
 	int retval;
 
@@ -482,7 +346,6 @@ static int ipheth_carrier_set(struct ipheth_device *dev)
 		return 0;
 
 	udev = dev->udev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = usb_control_msg(udev,
 			usb_rcvctrlpipe(udev, IPHETH_CTRL_ENDP),
 			IPHETH_CMD_CARRIER_CHECK, /* request */
@@ -492,17 +355,6 @@ static int ipheth_carrier_set(struct ipheth_device *dev)
 			dev->ctrl_buf, IPHETH_CTRL_BUF_SIZE,
 			IPHETH_CTRL_TIMEOUT);
 	if (retval < 0) {
-<<<<<<< HEAD
-		err("%s: usb_control_msg: %d", __func__, retval);
-		return retval;
-	}
-
-	if (dev->ctrl_buf[0] == IPHETH_CARRIER_ON)
-		netif_carrier_on(dev->net);
-	else
-		netif_carrier_off(dev->net);
-
-=======
 		dev_err(&dev->intf->dev, "%s: usb_control_msg: %d\n",
 			__func__, retval);
 		return retval;
@@ -516,7 +368,6 @@ static int ipheth_carrier_set(struct ipheth_device *dev)
 		netif_carrier_off(dev->net);
 		netif_stop_queue(dev->net);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -545,15 +396,6 @@ static int ipheth_get_macaddr(struct ipheth_device *dev)
 				 IPHETH_CTRL_BUF_SIZE,
 				 IPHETH_CTRL_TIMEOUT);
 	if (retval < 0) {
-<<<<<<< HEAD
-		err("%s: usb_control_msg: %d", __func__, retval);
-	} else if (retval < ETH_ALEN) {
-		err("%s: usb_control_msg: short packet: %d bytes",
-			__func__, retval);
-		retval = -EINVAL;
-	} else {
-		memcpy(net->dev_addr, dev->ctrl_buf, ETH_ALEN);
-=======
 		dev_err(&dev->intf->dev, "%s: usb_control_msg: %d\n",
 			__func__, retval);
 	} else if (retval < ETH_ALEN) {
@@ -563,15 +405,12 @@ static int ipheth_get_macaddr(struct ipheth_device *dev)
 		retval = -EINVAL;
 	} else {
 		eth_hw_addr_set(net, dev->ctrl_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = 0;
 	}
 
 	return retval;
 }
 
-<<<<<<< HEAD
-=======
 static int ipheth_enable_ncm(struct ipheth_device *dev)
 {
 	struct usb_device *udev = dev->udev;
@@ -593,7 +432,6 @@ static int ipheth_enable_ncm(struct ipheth_device *dev)
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ipheth_rx_submit(struct ipheth_device *dev, gfp_t mem_flags)
 {
 	struct usb_device *udev = dev->udev;
@@ -601,23 +439,15 @@ static int ipheth_rx_submit(struct ipheth_device *dev, gfp_t mem_flags)
 
 	usb_fill_bulk_urb(dev->rx_urb, udev,
 			  usb_rcvbulkpipe(udev, dev->bulk_in),
-<<<<<<< HEAD
-			  dev->rx_buf, IPHETH_BUF_SIZE,
-=======
 			  dev->rx_buf, dev->rx_buf_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ipheth_rcvbulk_callback,
 			  dev);
 	dev->rx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
 	retval = usb_submit_urb(dev->rx_urb, mem_flags);
 	if (retval)
-<<<<<<< HEAD
-		err("%s: usb_submit_urb: %d", __func__, retval);
-=======
 		dev_err(&dev->intf->dev, "%s: usb_submit_urb: %d\n",
 			__func__, retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -638,10 +468,6 @@ static int ipheth_open(struct net_device *net)
 		return retval;
 
 	schedule_delayed_work(&dev->carrier_work, IPHETH_CARRIER_CHECK_TIMEOUT);
-<<<<<<< HEAD
-	netif_start_queue(net);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -654,62 +480,29 @@ static int ipheth_close(struct net_device *net)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ipheth_tx(struct sk_buff *skb, struct net_device *net)
-=======
 static netdev_tx_t ipheth_tx(struct sk_buff *skb, struct net_device *net)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipheth_device *dev = netdev_priv(net);
 	struct usb_device *udev = dev->udev;
 	int retval;
 
 	/* Paranoid */
-<<<<<<< HEAD
-	if (skb->len > IPHETH_BUF_SIZE) {
-		WARN(1, "%s: skb too large: %d bytes\n", __func__, skb->len);
-		dev->net->stats.tx_dropped++;
-		dev_kfree_skb_irq(skb);
-=======
 	if (skb->len > IPHETH_TX_BUF_SIZE) {
 		WARN(1, "%s: skb too large: %d bytes\n", __func__, skb->len);
 		dev->net->stats.tx_dropped++;
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 	}
 
 	memcpy(dev->tx_buf, skb->data, skb->len);
-<<<<<<< HEAD
-	if (skb->len < IPHETH_BUF_SIZE)
-		memset(dev->tx_buf + skb->len, 0, IPHETH_BUF_SIZE - skb->len);
-
-	usb_fill_bulk_urb(dev->tx_urb, udev,
-			  usb_sndbulkpipe(udev, dev->bulk_out),
-			  dev->tx_buf, IPHETH_BUF_SIZE,
-=======
 
 	usb_fill_bulk_urb(dev->tx_urb, udev,
 			  usb_sndbulkpipe(udev, dev->bulk_out),
 			  dev->tx_buf, skb->len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ipheth_sndbulk_callback,
 			  dev);
 	dev->tx_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
-<<<<<<< HEAD
-	retval = usb_submit_urb(dev->tx_urb, GFP_ATOMIC);
-	if (retval) {
-		err("%s: usb_submit_urb: %d", __func__, retval);
-		dev->net->stats.tx_errors++;
-		dev_kfree_skb_irq(skb);
-	} else {
-		dev->tx_skb = skb;
-
-		dev->net->stats.tx_packets++;
-		dev->net->stats.tx_bytes += skb->len;
-		netif_stop_queue(net);
-=======
 	netif_stop_queue(net);
 	retval = usb_submit_urb(dev->tx_urb, GFP_ATOMIC);
 	if (retval) {
@@ -722,25 +515,16 @@ static netdev_tx_t ipheth_tx(struct sk_buff *skb, struct net_device *net)
 		dev->net->stats.tx_packets++;
 		dev->net->stats.tx_bytes += skb->len;
 		dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-static void ipheth_tx_timeout(struct net_device *net)
-{
-	struct ipheth_device *dev = netdev_priv(net);
-
-	err("%s: TX timeout", __func__);
-=======
 static void ipheth_tx_timeout(struct net_device *net, unsigned int txqueue)
 {
 	struct ipheth_device *dev = netdev_priv(net);
 
 	dev_err(&dev->intf->dev, "%s: TX timeout\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->net->stats.tx_errors++;
 	usb_unlink_urb(dev->tx_urb);
 }
@@ -779,32 +563,20 @@ static int ipheth_probe(struct usb_interface *intf,
 
 	netdev->netdev_ops = &ipheth_netdev_ops;
 	netdev->watchdog_timeo = IPHETH_TX_TIMEOUT;
-<<<<<<< HEAD
-	strcpy(netdev->name, "eth%d");
-=======
 	strscpy(netdev->name, "eth%d", sizeof(netdev->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = netdev_priv(netdev);
 	dev->udev = udev;
 	dev->net = netdev;
 	dev->intf = intf;
-<<<<<<< HEAD
-
-=======
 	dev->confirmed_pairing = false;
 	dev->rx_buf_len = IPHETH_RX_BUF_SIZE_LEGACY;
 	dev->rcvbulk_callback = ipheth_rcvbulk_callback_legacy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set up endpoints */
 	hintf = usb_altnum_to_altsetting(intf, IPHETH_ALT_INTFNUM);
 	if (hintf == NULL) {
 		retval = -ENODEV;
-<<<<<<< HEAD
-		err("Unable to find alternate settings interface");
-=======
 		dev_err(&intf->dev, "Unable to find alternate settings interface\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_endpoints;
 	}
 
@@ -817,11 +589,7 @@ static int ipheth_probe(struct usb_interface *intf,
 	}
 	if (!(dev->bulk_in && dev->bulk_out)) {
 		retval = -ENODEV;
-<<<<<<< HEAD
-		err("Unable to find endpoints");
-=======
 		dev_err(&intf->dev, "Unable to find endpoints\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_endpoints;
 	}
 
@@ -835,41 +603,23 @@ static int ipheth_probe(struct usb_interface *intf,
 	if (retval)
 		goto err_get_macaddr;
 
-<<<<<<< HEAD
-=======
 	retval = ipheth_enable_ncm(dev);
 	if (!retval) {
 		dev->rx_buf_len = IPHETH_RX_BUF_SIZE_NCM;
 		dev->rcvbulk_callback = ipheth_rcvbulk_callback_ncm;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_DELAYED_WORK(&dev->carrier_work, ipheth_carrier_check_work);
 
 	retval = ipheth_alloc_urbs(dev);
 	if (retval) {
-<<<<<<< HEAD
-		err("error allocating urbs: %d", retval);
-=======
 		dev_err(&intf->dev, "error allocating urbs: %d\n", retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_alloc_urbs;
 	}
 
 	usb_set_intfdata(intf, dev);
 
 	SET_NETDEV_DEV(netdev, &intf->dev);
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(netdev, &ops);
-
-	retval = register_netdev(netdev);
-	if (retval) {
-		err("error registering netdev: %d", retval);
-		retval = -EIO;
-		goto err_register_netdev;
-	}
-
-=======
 	netdev->ethtool_ops = &ops;
 
 	retval = register_netdev(netdev);
@@ -881,7 +631,6 @@ static int ipheth_probe(struct usb_interface *intf,
 	// carrier down and transmit queues stopped until packet from device
 	netif_carrier_off(netdev);
 	netif_tx_stop_all_queues(netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&intf->dev, "Apple iPhone USB Ethernet device attached\n");
 	return 0;
 
@@ -889,13 +638,8 @@ err_register_netdev:
 	ipheth_free_urbs(dev);
 err_alloc_urbs:
 err_get_macaddr:
-<<<<<<< HEAD
-err_alloc_ctrl_buf:
-	kfree(dev->ctrl_buf);
-=======
 	kfree(dev->ctrl_buf);
 err_alloc_ctrl_buf:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_endpoints:
 	free_netdev(netdev);
 	return retval;
@@ -922,10 +666,7 @@ static struct usb_driver ipheth_driver = {
 	.probe =	ipheth_probe,
 	.disconnect =	ipheth_disconnect,
 	.id_table =	ipheth_table,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(ipheth_driver);

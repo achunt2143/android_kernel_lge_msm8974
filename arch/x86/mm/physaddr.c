@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#include <linux/mmdebug.h>
-#include <linux/module.h>
-#include <linux/mm.h>
-
-#include <asm/page.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/memblock.h>
 #include <linux/mmdebug.h>
@@ -13,25 +6,11 @@
 
 #include <asm/page.h>
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "physaddr.h"
 
 #ifdef CONFIG_X86_64
 
-<<<<<<< HEAD
-unsigned long __phys_addr(unsigned long x)
-{
-	if (x >= __START_KERNEL_map) {
-		x -= __START_KERNEL_map;
-		VIRTUAL_BUG_ON(x >= KERNEL_IMAGE_SIZE);
-		x += phys_base;
-	} else {
-		VIRTUAL_BUG_ON(x < PAGE_OFFSET);
-		x -= PAGE_OFFSET;
-		VIRTUAL_BUG_ON(!phys_addr_valid(x));
-	}
-=======
 #ifdef CONFIG_DEBUG_VIRTUAL
 unsigned long __phys_addr(unsigned long x)
 {
@@ -49,25 +28,10 @@ unsigned long __phys_addr(unsigned long x)
 		VIRTUAL_BUG_ON((x > y) || !phys_addr_valid(x));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return x;
 }
 EXPORT_SYMBOL(__phys_addr);
 
-<<<<<<< HEAD
-bool __virt_addr_valid(unsigned long x)
-{
-	if (x >= __START_KERNEL_map) {
-		x -= __START_KERNEL_map;
-		if (x >= KERNEL_IMAGE_SIZE)
-			return false;
-		x += phys_base;
-	} else {
-		if (x < PAGE_OFFSET)
-			return false;
-		x -= PAGE_OFFSET;
-		if (!phys_addr_valid(x))
-=======
 unsigned long __phys_addr_symbol(unsigned long x)
 {
 	unsigned long y = x - __START_KERNEL_map;
@@ -95,7 +59,6 @@ bool __virt_addr_valid(unsigned long x)
 
 		/* carry flag will be set if starting x was >= PAGE_OFFSET */
 		if ((x > y) || !phys_addr_valid(x))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 	}
 
@@ -108,12 +71,6 @@ EXPORT_SYMBOL(__virt_addr_valid);
 #ifdef CONFIG_DEBUG_VIRTUAL
 unsigned long __phys_addr(unsigned long x)
 {
-<<<<<<< HEAD
-	/* VMALLOC_* aren't constants  */
-	VIRTUAL_BUG_ON(x < PAGE_OFFSET);
-	VIRTUAL_BUG_ON(__vmalloc_start_set && is_vmalloc_addr((void *) x));
-	return x - PAGE_OFFSET;
-=======
 	unsigned long phys_addr = x - PAGE_OFFSET;
 	/* VMALLOC_* aren't constants  */
 	VIRTUAL_BUG_ON(x < PAGE_OFFSET);
@@ -124,7 +81,6 @@ unsigned long __phys_addr(unsigned long x)
 		BUG_ON(slow_virt_to_phys((void *)x) != phys_addr);
 	}
 	return phys_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__phys_addr);
 #endif

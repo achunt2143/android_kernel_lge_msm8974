@@ -1,34 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tboot.c: main implementation of helper functions used by kernel for
  *          runtime support of Intel(R) Trusted Execution Technology
  *
  * Copyright (c) 2006-2009, Intel Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
  */
 
-#include <linux/dma_remapping.h>
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init_task.h>
 #include <linux/spinlock.h>
 #include <linux/export.h>
@@ -40,26 +17,6 @@
 #include <linux/pfn.h>
 #include <linux/mm.h>
 #include <linux/tboot.h>
-<<<<<<< HEAD
-
-#include <asm/trampoline.h>
-#include <asm/processor.h>
-#include <asm/bootparam.h>
-#include <asm/pgtable.h>
-#include <asm/pgalloc.h>
-#include <asm/swiotlb.h>
-#include <asm/fixmap.h>
-#include <asm/proto.h>
-#include <asm/setup.h>
-#include <asm/e820.h>
-#include <asm/io.h>
-
-#include "acpi/realmode/wakeup.h"
-
-/* Global pointer to shared data; NULL means no measured launch. */
-struct tboot *tboot __read_mostly;
-EXPORT_SYMBOL(tboot);
-=======
 #include <linux/debugfs.h>
 
 #include <asm/realmode.h>
@@ -76,7 +33,6 @@ EXPORT_SYMBOL(tboot);
 
 /* Global pointer to shared data; NULL means no measured launch. */
 static struct tboot *tboot __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* timeout for APs (in secs) to enter wait-for-SIPI state during shutdown */
 #define AP_WAIT_TIMEOUT		1
@@ -86,8 +42,6 @@ static struct tboot *tboot __read_mostly;
 
 static u8 tboot_uuid[16] __initdata = TBOOT_UUID;
 
-<<<<<<< HEAD
-=======
 bool tboot_enabled(void)
 {
 	return tboot != NULL;
@@ -117,7 +71,6 @@ static noinline __init bool check_tboot_version(void)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init tboot_probe(void)
 {
 	/* Look for valid page-aligned address for shared page. */
@@ -127,70 +80,27 @@ void __init tboot_probe(void)
 	 * also verify that it is mapped as we expect it before calling
 	 * set_fixmap(), to reduce chance of garbage value causing crash
 	 */
-<<<<<<< HEAD
-	if (!e820_any_mapped(boot_params.tboot_addr,
-			     boot_params.tboot_addr, E820_RESERVED)) {
-		pr_warning("non-0 tboot_addr but it is not of type E820_RESERVED\n");
-		return;
-	}
-
-	/* only a natively booted kernel should be using TXT */
-	if (paravirt_enabled()) {
-		pr_warning("non-0 tboot_addr but pv_ops is enabled\n");
-=======
 	if (!e820__mapped_any(boot_params.tboot_addr,
 			     boot_params.tboot_addr, E820_TYPE_RESERVED)) {
 		pr_warn("non-0 tboot_addr but it is not of type E820_TYPE_RESERVED\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* Map and check for tboot UUID. */
 	set_fixmap(FIX_TBOOT_BASE, boot_params.tboot_addr);
-<<<<<<< HEAD
-	tboot = (struct tboot *)fix_to_virt(FIX_TBOOT_BASE);
-	if (memcmp(&tboot_uuid, &tboot->uuid, sizeof(tboot->uuid))) {
-		pr_warning("tboot at 0x%llx is invalid\n",
-			   boot_params.tboot_addr);
-		tboot = NULL;
-		return;
-	}
-	if (tboot->version < 5) {
-		pr_warning("tboot version is invalid: %u\n", tboot->version);
-		tboot = NULL;
-		return;
-	}
-
-	pr_info("found shared page at phys addr 0x%llx:\n",
-		boot_params.tboot_addr);
-	pr_debug("version: %d\n", tboot->version);
-	pr_debug("log_addr: 0x%08x\n", tboot->log_addr);
-	pr_debug("shutdown_entry: 0x%x\n", tboot->shutdown_entry);
-	pr_debug("tboot_base: 0x%08x\n", tboot->tboot_base);
-	pr_debug("tboot_size: 0x%x\n", tboot->tboot_size);
-=======
 	tboot = (void *)fix_to_virt(FIX_TBOOT_BASE);
 	if (!check_tboot_version())
 		tboot = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static pgd_t *tboot_pg_dir;
 static struct mm_struct tboot_mm = {
-<<<<<<< HEAD
-	.mm_rb          = RB_ROOT,
-	.pgd            = swapper_pg_dir,
-	.mm_users       = ATOMIC_INIT(2),
-	.mm_count       = ATOMIC_INIT(1),
-	.mmap_sem       = __RWSEM_INITIALIZER(init_mm.mmap_sem),
-=======
 	.mm_mt          = MTREE_INIT_EXT(mm_mt, MM_MT_FLAGS, tboot_mm.mmap_lock),
 	.pgd            = swapper_pg_dir,
 	.mm_users       = ATOMIC_INIT(2),
 	.mm_count       = ATOMIC_INIT(1),
 	.write_protect_seq = SEQCNT_ZERO(tboot_mm.write_protect_seq),
 	MMAP_LOCK_INITIALIZER(init_mm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.page_table_lock =  __SPIN_LOCK_UNLOCKED(init_mm.page_table_lock),
 	.mmlist         = LIST_HEAD_INIT(init_mm.mmlist),
 };
@@ -204,39 +114,26 @@ static int map_tboot_page(unsigned long vaddr, unsigned long pfn,
 			  pgprot_t prot)
 {
 	pgd_t *pgd;
-<<<<<<< HEAD
-=======
 	p4d_t *p4d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 	pmd_t *pmd;
 	pte_t *pte;
 
 	pgd = pgd_offset(&tboot_mm, vaddr);
-<<<<<<< HEAD
-	pud = pud_alloc(&tboot_mm, pgd, vaddr);
-=======
 	p4d = p4d_alloc(&tboot_mm, pgd, vaddr);
 	if (!p4d)
 		return -1;
 	pud = pud_alloc(&tboot_mm, p4d, vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pud)
 		return -1;
 	pmd = pmd_alloc(&tboot_mm, pud, vaddr);
 	if (!pmd)
 		return -1;
-<<<<<<< HEAD
-	pte = pte_alloc_map(&tboot_mm, NULL, pmd, vaddr);
-=======
 	pte = pte_alloc_map(&tboot_mm, pmd, vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pte)
 		return -1;
 	set_pte_at(&tboot_mm, vaddr, pte, pfn_pte(pfn, prot));
 	pte_unmap(pte);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * PTI poisons low addresses in the kernel page tables in the
@@ -248,7 +145,6 @@ static int map_tboot_page(unsigned long vaddr, unsigned long pfn,
 	 */
 	pgd->pgd &= ~_PAGE_NX;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -303,17 +199,6 @@ static int tboot_setup_sleep(void)
 
 	tboot->num_mac_regions = 0;
 
-<<<<<<< HEAD
-	for (i = 0; i < e820.nr_map; i++) {
-		if ((e820.map[i].type != E820_RAM)
-		 && (e820.map[i].type != E820_RESERVED_KERN))
-			continue;
-
-		add_mac_region(e820.map[i].addr, e820.map[i].size);
-	}
-
-	tboot->acpi_sinfo.kernel_s3_resume_vector = acpi_wakeup_address;
-=======
 	for (i = 0; i < e820_table->nr_entries; i++) {
 		if ((e820_table->entries[i].type != E820_TYPE_RAM)
 		 && (e820_table->entries[i].type != E820_TYPE_RESERVED_KERN))
@@ -324,7 +209,6 @@ static int tboot_setup_sleep(void)
 
 	tboot->acpi_sinfo.kernel_s3_resume_vector =
 		real_mode_header->wakeup_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -414,11 +298,7 @@ static int tboot_sleep(u8 sleep_state, u32 pm1a_control, u32 pm1b_control)
 
 	if (sleep_state >= ACPI_S_STATE_COUNT ||
 	    acpi_shutdown_map[sleep_state] == -1) {
-<<<<<<< HEAD
-		pr_warning("unsupported sleep state 0x%x\n", sleep_state);
-=======
 		pr_warn("unsupported sleep state 0x%x\n", sleep_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -426,8 +306,6 @@ static int tboot_sleep(u8 sleep_state, u32 pm1a_control, u32 pm1b_control)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int tboot_extended_sleep(u8 sleep_state, u32 val_a, u32 val_b)
 {
 	if (!tboot_enabled())
@@ -437,7 +315,6 @@ static int tboot_extended_sleep(u8 sleep_state, u32 val_a, u32 val_b)
 	return -ENODEV;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static atomic_t ap_wfs_count;
 
 static int tboot_wait_for_aps(int num_aps)
@@ -452,36 +329,11 @@ static int tboot_wait_for_aps(int num_aps)
 	}
 
 	if (timeout)
-<<<<<<< HEAD
-		pr_warning("tboot wait for APs timeout\n");
-=======
 		pr_warn("tboot wait for APs timeout\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return !(atomic_read((atomic_t *)&tboot->num_in_wfs) == num_aps);
 }
 
-<<<<<<< HEAD
-static int __cpuinit tboot_cpu_callback(struct notifier_block *nfb,
-			unsigned long action, void *hcpu)
-{
-	switch (action) {
-	case CPU_DYING:
-		atomic_inc(&ap_wfs_count);
-		if (num_online_cpus() == 1)
-			if (tboot_wait_for_aps(atomic_read(&ap_wfs_count)))
-				return NOTIFY_BAD;
-		break;
-	}
-	return NOTIFY_OK;
-}
-
-static struct notifier_block tboot_cpu_notifier __cpuinitdata =
-{
-	.notifier_call = tboot_cpu_callback,
-};
-
-=======
 static int tboot_dying_cpu(unsigned int cpu)
 {
 	atomic_inc(&ap_wfs_count);
@@ -559,7 +411,6 @@ static const struct file_operations tboot_log_fops = {
 
 #endif /* CONFIG_DEBUG_FS */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __init int tboot_late_init(void)
 {
 	if (!tboot_enabled())
@@ -568,11 +419,6 @@ static __init int tboot_late_init(void)
 	tboot_create_trampoline();
 
 	atomic_set(&ap_wfs_count, 0);
-<<<<<<< HEAD
-	register_hotcpu_notifier(&tboot_cpu_notifier);
-
-	acpi_os_set_prepare_sleep(&tboot_sleep);
-=======
 	cpuhp_setup_state(CPUHP_AP_X86_TBOOT_DYING, "x86/tboot:dying", NULL,
 			  tboot_dying_cpu);
 #ifdef CONFIG_DEBUG_FS
@@ -582,7 +428,6 @@ static __init int tboot_late_init(void)
 
 	acpi_os_set_prepare_sleep(&tboot_sleep);
 	acpi_os_set_prepare_extended_sleep(&tboot_extended_sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -670,23 +515,3 @@ struct acpi_table_header *tboot_get_dmar_table(struct acpi_table_header *dmar_tb
 
 	return dmar_tbl;
 }
-<<<<<<< HEAD
-
-int tboot_force_iommu(void)
-{
-	if (!tboot_enabled())
-		return 0;
-
-	if (no_iommu || swiotlb || dmar_disabled)
-		pr_warning("Forcing Intel-IOMMU to enabled\n");
-
-	dmar_disabled = 0;
-#ifdef CONFIG_SWIOTLB
-	swiotlb = 0;
-#endif
-	no_iommu = 0;
-
-	return 1;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

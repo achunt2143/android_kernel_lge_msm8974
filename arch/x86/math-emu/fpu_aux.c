@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  fpu_aux.c                                                                |
  |                                                                           |
@@ -34,11 +31,7 @@ static void fclex(void)
 }
 
 /* Needs to be externally visible */
-<<<<<<< HEAD
-void finit_soft_fpu(struct i387_soft_struct *soft)
-=======
 void fpstate_init_soft(struct swregs_state *soft)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct address *oaddr, *iaddr;
 	memset(soft, 0, sizeof(*soft));
@@ -60,11 +53,7 @@ void fpstate_init_soft(struct swregs_state *soft)
 
 void finit(void)
 {
-<<<<<<< HEAD
-	finit_soft_fpu(&current->thread.fpu.state->soft);
-=======
 	fpstate_init_soft(&current->thread.fpu.fpstate->regs.soft);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -181,8 +170,6 @@ void fxch_i(void)
 	fpu_tag_word = tag_word;
 }
 
-<<<<<<< HEAD
-=======
 static void fcmovCC(void)
 {
 	/* fcmovCC st(i) */
@@ -253,7 +240,6 @@ void fcmovnu(void)
 		fcmovCC();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ffree_(void)
 {
 	/* ffree st(i) */

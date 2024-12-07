@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale MPC85xx/MPC86xx RapidIO support
  *
@@ -21,14 +18,6 @@
  *
  * Copyright 2005 MontaVista Software, Inc.
  * Matt Porter <mporter@kernel.crashing.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __FSL_RIO_H
@@ -48,11 +37,7 @@
 #define DOORBELL_ROWAR_PCI	0x02000000 /* PCI window */
 #define DOORBELL_ROWAR_NREAD	0x00040000 /* NREAD */
 #define DOORBELL_ROWAR_MAINTRD	0x00070000  /* maintenance read */
-<<<<<<< HEAD
-#define DOORBELL_ROWAR_RES	0x00002000 /* wrtpy: reserverd */
-=======
 #define DOORBELL_ROWAR_RES	0x00002000 /* wrtpy: reserved */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DOORBELL_ROWAR_MAINTWD	0x00007000
 #define DOORBELL_ROWAR_SIZE	0x0000000b /* window size is 4k */
 
@@ -61,18 +46,12 @@
 #define RIO_S_DBELL_REGS_OFFSET	0x13400
 #define RIO_S_PW_REGS_OFFSET	0x134e0
 #define RIO_ATMU_REGS_DBELL_OFFSET	0x10C40
-<<<<<<< HEAD
-
-#define MAX_MSG_UNIT_NUM	2
-#define MAX_PORT_NUM		4
-=======
 #define RIO_INB_ATMU_REGS_PORT1_OFFSET 0x10d60
 #define RIO_INB_ATMU_REGS_PORT2_OFFSET 0x10f60
 
 #define MAX_MSG_UNIT_NUM	2
 #define MAX_PORT_NUM		4
 #define RIO_INB_ATMU_COUNT	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct rio_atmu_regs {
 	 u32 rowtar;
@@ -83,8 +62,6 @@ struct rio_atmu_regs {
 	 u32 pad2[3];
 };
 
-<<<<<<< HEAD
-=======
 struct rio_inb_atmu_regs {
 	u32 riwtar;
 	u32 pad1;
@@ -94,7 +71,6 @@ struct rio_inb_atmu_regs {
 	u32 pad3[3];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rio_dbell_ring {
 	void *virt;
 	dma_addr_t phys;
@@ -117,10 +93,7 @@ struct fsl_rio_dbell {
 };
 
 struct fsl_rio_pw {
-<<<<<<< HEAD
-=======
 	struct rio_mport *mport[MAX_PORT_NUM];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev;
 	struct rio_pw_regs __iomem *pw_regs;
 	struct rio_port_write_msg port_write_msg;
@@ -135,10 +108,7 @@ struct rio_priv {
 	void __iomem *regs_win;
 	struct rio_atmu_regs __iomem *atmu_regs;
 	struct rio_atmu_regs __iomem *maint_atmu_regs;
-<<<<<<< HEAD
-=======
 	struct rio_inb_atmu_regs __iomem *inb_atmu_regs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *maint_win;
 	void *rmm_handle; /* RapidIO message manager(unit) Handle */
 };

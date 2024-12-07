@@ -39,11 +39,7 @@
 #define CVMX_BOOTMEM_NUM_NAMED_BLOCKS 64
 
 /* minimum alignment of bootmem alloced blocks */
-<<<<<<< HEAD
-#define CVMX_BOOTMEM_ALIGNMENT_SIZE     (16ull)
-=======
 #define CVMX_BOOTMEM_ALIGNMENT_SIZE	(16ull)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags for cvmx_bootmem_phy_mem* functions */
 /* Allocate from end of block instead of beginning */
@@ -99,10 +95,7 @@ struct cvmx_bootmem_named_block_desc {
  * positions for backwards compatibility.
  */
 struct cvmx_bootmem_desc {
-<<<<<<< HEAD
-=======
 #if defined(__BIG_ENDIAN_BITFIELD) || defined(CVMX_BUILD_FOR_LINUX_HOST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* spinlock to control access to list */
 	uint32_t lock;
 	/* flags for indicating various conditions */
@@ -128,9 +121,6 @@ struct cvmx_bootmem_desc {
 	uint32_t named_block_name_len;
 	/* address of named memory block descriptors */
 	uint64_t named_block_array_addr;
-<<<<<<< HEAD
-
-=======
 #else                           /* __LITTLE_ENDIAN */
 	uint32_t flags;
 	uint32_t lock;
@@ -145,7 +135,6 @@ struct cvmx_bootmem_desc {
 	uint32_t named_block_num_blocks;
 	uint64_t named_block_array_addr;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -157,21 +146,6 @@ struct cvmx_bootmem_desc {
 extern int cvmx_bootmem_init(void *mem_desc_ptr);
 
 /**
-<<<<<<< HEAD
- * Allocate a block of memory from the free list that was passed
- * to the application by the bootloader.
- * This is an allocate-only algorithm, so freeing memory is not possible.
- *
- * @size:      Size in bytes of block to allocate
- * @alignment: Alignment required - must be power of 2
- *
- * Returns pointer to block of memory, NULL on error
- */
-extern void *cvmx_bootmem_alloc(uint64_t size, uint64_t alignment);
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Allocate a block of memory from the free list that was
  * passed to the application by the bootloader at a specific
  * address. This is an allocate-only algorithm, so
@@ -179,13 +153,8 @@ extern void *cvmx_bootmem_alloc(uint64_t size, uint64_t alignment);
  * memory cannot be allocated at the specified address.
  *
  * @size:      Size in bytes of block to allocate
-<<<<<<< HEAD
- * @address:   Physical address to allocate memory at.  If this memory is not
- *                  available, the allocation fails.
-=======
  * @address:   Physical address to allocate memory at.	If this memory is not
  *		    available, the allocation fails.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @alignment: Alignment required - must be power of 2
  * Returns pointer to block of memory, NULL on error
  */
@@ -193,35 +162,12 @@ extern void *cvmx_bootmem_alloc_address(uint64_t size, uint64_t address,
 					uint64_t alignment);
 
 /**
-<<<<<<< HEAD
- * Allocate a block of memory from the free list that was
- * passed to the application by the bootloader within a specified
- * address range. This is an allocate-only algorithm, so
- * freeing memory is not possible. Allocation will fail if
- * memory cannot be allocated in the requested range.
- *
- * @size:      Size in bytes of block to allocate
- * @min_addr:  defines the minimum address of the range
- * @max_addr:  defines the maximum address of the range
- * @alignment: Alignment required - must be power of 2
- * Returns pointer to block of memory, NULL on error
- */
-extern void *cvmx_bootmem_alloc_range(uint64_t size, uint64_t alignment,
-				      uint64_t min_addr, uint64_t max_addr);
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Frees a previously allocated named bootmem block.
  *
  * @name:   name of block to free
  *
  * Returns 0 on failure,
-<<<<<<< HEAD
- *         !0 on success
-=======
  *	   !0 on success
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -240,30 +186,6 @@ extern void *cvmx_bootmem_alloc_range(uint64_t size, uint64_t alignment,
 extern void *cvmx_bootmem_alloc_named(uint64_t size, uint64_t alignment,
 				      char *name);
 
-<<<<<<< HEAD
-
-
-/**
- * Allocate a block of memory from the free list that was passed
- * to the application by the bootloader, and assign it a name in the
- * global named block table.  (part of the cvmx_bootmem_descriptor_t structure)
- * Named blocks can later be freed.
- *
- * @size:     Size in bytes of block to allocate
- * @address:  Physical address to allocate memory at.  If this
- *            memory is not available, the allocation fails.
- * @name:     name of block - must be less than CVMX_BOOTMEM_NAME_LEN
- *            bytes
- *
- * Returns a pointer to block of memory, NULL on error
- */
-extern void *cvmx_bootmem_alloc_named_address(uint64_t size, uint64_t address,
-					      char *name);
-
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * Allocate a block of memory from a specific range of the free list
  * that was passed to the application by the bootloader, and assign it
@@ -284,8 +206,6 @@ extern void *cvmx_bootmem_alloc_named_range(uint64_t size, uint64_t min_addr,
 					    uint64_t max_addr, uint64_t align,
 					    char *name);
 
-<<<<<<< HEAD
-=======
 /**
  * Allocate if needed a block of memory from a specific range of the
  * free list that was passed to the application by the bootloader, and
@@ -314,7 +234,6 @@ void *cvmx_bootmem_alloc_named_range_once(uint64_t size,
 					  char *name,
 					  void (*init) (void *));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int cvmx_bootmem_free_named(char *name);
 
 /**
@@ -323,11 +242,7 @@ extern int cvmx_bootmem_free_named(char *name);
  * @name:   name of block to free
  *
  * Returns pointer to named block descriptor on success
-<<<<<<< HEAD
- *         0 on failure
-=======
  *	   0 on failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct cvmx_bootmem_named_block_desc *cvmx_bootmem_find_named_block(char *name);
 
@@ -336,26 +251,11 @@ struct cvmx_bootmem_named_block_desc *cvmx_bootmem_find_named_block(char *name);
  * (optional) requested address and alignment.
  *
  * @req_size: size of region to allocate.  All requests are rounded up
-<<<<<<< HEAD
- *            to be a multiple CVMX_BOOTMEM_ALIGNMENT_SIZE bytes size
-=======
  *	      to be a multiple CVMX_BOOTMEM_ALIGNMENT_SIZE bytes size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @address_min: Minimum address that block can occupy.
  *
  * @address_max: Specifies the maximum address_min (inclusive) that
-<<<<<<< HEAD
- *               the allocation can use.
- *
- * @alignment: Requested alignment of the block.  If this alignment
- *             cannot be met, the allocation fails.  This must be a
- *             power of 2.  (Note: Alignment of
- *             CVMX_BOOTMEM_ALIGNMENT_SIZE bytes is required, and
- *             internally enforced.  Requested alignments of less than
- *             CVMX_BOOTMEM_ALIGNMENT_SIZE are set to
- *             CVMX_BOOTMEM_ALIGNMENT_SIZE.)
-=======
  *		 the allocation can use.
  *
  * @alignment: Requested alignment of the block.  If this alignment
@@ -365,7 +265,6 @@ struct cvmx_bootmem_named_block_desc *cvmx_bootmem_find_named_block(char *name);
  *	       internally enforced.  Requested alignments of less than
  *	       CVMX_BOOTMEM_ALIGNMENT_SIZE are set to
  *	       CVMX_BOOTMEM_ALIGNMENT_SIZE.)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @flags:     Flags to control options for the allocation.
  *
@@ -379,23 +278,6 @@ int64_t cvmx_bootmem_phy_alloc(uint64_t req_size, uint64_t address_min,
  * Allocates a named block of physical memory from the free list, at
  * (optional) requested address and alignment.
  *
-<<<<<<< HEAD
- * @param size      size of region to allocate.  All requests are rounded
- *                  up to be a multiple CVMX_BOOTMEM_ALIGNMENT_SIZE
- *                  bytes size
- * @param min_addr Minimum address that block can occupy.
- * @param max_addr  Specifies the maximum address_min (inclusive) that
- *                  the allocation can use.
- * @param alignment Requested alignment of the block.  If this
- *                  alignment cannot be met, the allocation fails.
- *                  This must be a power of 2.  (Note: Alignment of
- *                  CVMX_BOOTMEM_ALIGNMENT_SIZE bytes is required, and
- *                  internally enforced.  Requested alignments of less
- *                  than CVMX_BOOTMEM_ALIGNMENT_SIZE are set to
- *                  CVMX_BOOTMEM_ALIGNMENT_SIZE.)
- * @param name      name to assign to named block
- * @param flags     Flags to control options for the allocation.
-=======
  * @param size	    size of region to allocate.	 All requests are rounded
  *		    up to be a multiple CVMX_BOOTMEM_ALIGNMENT_SIZE
  *		    bytes size
@@ -411,7 +293,6 @@ int64_t cvmx_bootmem_phy_alloc(uint64_t req_size, uint64_t address_min,
  *		    CVMX_BOOTMEM_ALIGNMENT_SIZE.)
  * @param name	    name to assign to named block
  * @param flags	    Flags to control options for the allocation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @return physical address of block allocated, or -1 on failure
  */
@@ -421,69 +302,26 @@ int64_t cvmx_bootmem_phy_named_block_alloc(uint64_t size, uint64_t min_addr,
 					   char *name, uint32_t flags);
 
 /**
-<<<<<<< HEAD
- * Finds a named memory block by name.
- * Also used for finding an unused entry in the named block table.
- *
- * @name: Name of memory block to find.  If NULL pointer given, then
- *        finds unused descriptor, if available.
- *
- * @flags: Flags to control options for the allocation.
- *
- * Returns Pointer to memory block descriptor, NULL if not found.
- *         If NULL returned when name parameter is NULL, then no memory
- *         block descriptors are available.
- */
-struct cvmx_bootmem_named_block_desc *
-cvmx_bootmem_phy_named_block_find(char *name, uint32_t flags);
-
-/**
- * Frees a named block.
- *
- * @name:   name of block to free
- * @flags:  flags for passing options
- *
- * Returns 0 on failure
- *         1 on success
- */
-int cvmx_bootmem_phy_named_block_free(char *name, uint32_t flags);
-
-/**
- * Frees a block to the bootmem allocator list.  This must
-=======
  * Frees a block to the bootmem allocator list.	 This must
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * be used with care, as the size provided must match the size
  * of the block that was allocated, or the list will become
  * corrupted.
  *
  * IMPORTANT:  This is only intended to be used as part of named block
  * frees and initial population of the free memory list.
-<<<<<<< HEAD
- *                                                      *
-=======
  *							*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @phy_addr: physical address of block
  * @size:     size of block in bytes.
  * @flags:    flags for passing options
  *
  * Returns 1 on success,
-<<<<<<< HEAD
- *         0 on failure
-=======
  *	   0 on failure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int __cvmx_bootmem_phy_free(uint64_t phy_addr, uint64_t size, uint32_t flags);
 
 /**
-<<<<<<< HEAD
- * Locks the bootmem allocator.  This is useful in certain situations
-=======
  * Locks the bootmem allocator.	 This is useful in certain situations
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * where multiple allocations must be made without being interrupted.
  * This should be used with the CVMX_BOOTMEM_FLAG_NO_LOCKING flag.
  *
@@ -498,9 +336,6 @@ void cvmx_bootmem_lock(void);
  */
 void cvmx_bootmem_unlock(void);
 
-<<<<<<< HEAD
-=======
 extern struct cvmx_bootmem_desc *cvmx_bootmem_get_desc(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*   __CVMX_BOOTMEM_H__ */

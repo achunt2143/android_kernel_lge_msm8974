@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * iommu.c:  IOMMU specific routines for memory management.
  *
@@ -10,30 +7,16 @@
  * Copyright (C) 1996 Eddie C. Dost    (ecd@skynet.be)
  * Copyright (C) 1997,1998 Jakub Jelinek    (jj@sunsite.mff.cuni.cz)
  */
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/highmem.h>	/* pte_offset_map => kmap_atomic */
-#include <linux/scatterlist.h>
-#include <linux/of.h>
-#include <linux/of_device.h>
-
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/dma-map-ops.h>
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/mxcc.h>
 #include <asm/mbus.h>
@@ -43,11 +26,8 @@
 #include <asm/iommu.h>
 #include <asm/dma.h>
 
-<<<<<<< HEAD
-=======
 #include "mm_32.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This can be sized dynamically, but we will do this
  * only when we have a guidance about actual I/O pressures.
@@ -55,20 +35,9 @@
 #define IOMMU_RNGE	IOMMU_RNGE_256MB
 #define IOMMU_START	0xF0000000
 #define IOMMU_WINSIZE	(256*1024*1024U)
-<<<<<<< HEAD
-#define IOMMU_NPTES	(IOMMU_WINSIZE/PAGE_SIZE)	/* 64K PTEs, 265KB */
-#define IOMMU_ORDER	6				/* 4096 * (1<<6) */
-
-/* srmmu.c */
-extern int viking_mxcc_present;
-BTFIXUPDEF_CALL(void, flush_page_for_dma, unsigned long)
-#define flush_page_for_dma(page) BTFIXUP_CALL(flush_page_for_dma)(page)
-extern int flush_page_for_dma_global;
-=======
 #define IOMMU_NPTES	(IOMMU_WINSIZE/PAGE_SIZE)	/* 64K PTEs, 256KB */
 #define IOMMU_ORDER	6				/* 4096 * (1<<6) */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int viking_flush;
 /* viking.S */
 extern void viking_flush_page(unsigned long page);
@@ -83,22 +52,16 @@ static pgprot_t dvma_prot;		/* Consistent mapping pte flags */
 #define IOPERM        (IOPTE_CACHE | IOPTE_WRITE | IOPTE_VALID)
 #define MKIOPTE(pfn, perm) (((((pfn)<<8) & IOPTE_PAGE) | (perm)) & ~IOPTE_WAZ)
 
-<<<<<<< HEAD
-=======
 static const struct dma_map_ops sbus_iommu_dma_gflush_ops;
 static const struct dma_map_ops sbus_iommu_dma_pflush_ops;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init sbus_iommu_init(struct platform_device *op)
 {
 	struct iommu_struct *iommu;
 	unsigned int impl, vers;
 	unsigned long *bitmap;
-<<<<<<< HEAD
-=======
 	unsigned long control;
 	unsigned long base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long tmp;
 
 	iommu = kmalloc(sizeof(struct iommu_struct), GFP_KERNEL);
@@ -113,14 +76,6 @@ static void __init sbus_iommu_init(struct platform_device *op)
 		prom_printf("Cannot map IOMMU registers\n");
 		prom_halt();
 	}
-<<<<<<< HEAD
-	impl = (iommu->regs->control & IOMMU_CTRL_IMPL) >> 28;
-	vers = (iommu->regs->control & IOMMU_CTRL_VERS) >> 24;
-	tmp = iommu->regs->control;
-	tmp &= ~(IOMMU_CTRL_RNGE);
-	tmp |= (IOMMU_RNGE_256MB | IOMMU_CTRL_ENAB);
-	iommu->regs->control = tmp;
-=======
 
 	control = sbus_readl(&iommu->regs->control);
 	impl = (control & IOMMU_CTRL_IMPL) >> 28;
@@ -129,7 +84,6 @@ static void __init sbus_iommu_init(struct platform_device *op)
 	control |= (IOMMU_RNGE_256MB | IOMMU_CTRL_ENAB);
 	sbus_writel(control, &iommu->regs->control);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iommu_invalidate(iommu->regs);
 	iommu->start = IOMMU_START;
 	iommu->end = 0xffffffff;
@@ -141,13 +95,8 @@ static void __init sbus_iommu_init(struct platform_device *op)
            it to us. */
         tmp = __get_free_pages(GFP_KERNEL, IOMMU_ORDER);
 	if (!tmp) {
-<<<<<<< HEAD
-		prom_printf("Unable to allocate iommu table [0x%08x]\n",
-			    IOMMU_NPTES*sizeof(iopte_t));
-=======
 		prom_printf("Unable to allocate iommu table [0x%lx]\n",
 			    IOMMU_NPTES * sizeof(iopte_t));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prom_halt();
 	}
 	iommu->page_table = (iopte_t *)tmp;
@@ -156,13 +105,9 @@ static void __init sbus_iommu_init(struct platform_device *op)
 	memset(iommu->page_table, 0, IOMMU_NPTES*sizeof(iopte_t));
 	flush_cache_all();
 	flush_tlb_all();
-<<<<<<< HEAD
-	iommu->regs->base = __pa((unsigned long) iommu->page_table) >> 4;
-=======
 
 	base = __pa((unsigned long)iommu->page_table) >> 4;
 	sbus_writel(base, &iommu->regs->base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iommu_invalidate(iommu->regs);
 
 	bitmap = kmalloc(IOMMU_NPTES>>3, GFP_KERNEL);
@@ -185,14 +130,11 @@ static void __init sbus_iommu_init(struct platform_device *op)
 	       (int)(IOMMU_NPTES*sizeof(iopte_t)), (int)IOMMU_NPTES);
 
 	op->dev.archdata.iommu = iommu;
-<<<<<<< HEAD
-=======
 
 	if (flush_page_for_dma_global)
 		op->dev.dma_ops = &sbus_iommu_dma_gflush_ops;
 	 else
 		op->dev.dma_ops = &sbus_iommu_dma_pflush_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init iommu_init(void)
@@ -211,10 +153,6 @@ static int __init iommu_init(void)
 
 subsys_initcall(iommu_init);
 
-<<<<<<< HEAD
-/* This begs to be btfixup-ed by srmmu. */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Flush the iotlb entries to ram. */
 /* This could be better if we didn't have to flush whole pages. */
 static void iommu_flush_iotlb(iopte_t *iopte, unsigned int niopte)
@@ -243,18 +181,6 @@ static void iommu_flush_iotlb(iopte_t *iopte, unsigned int niopte)
 	}
 }
 
-<<<<<<< HEAD
-static u32 iommu_get_one(struct device *dev, struct page *page, int npages)
-{
-	struct iommu_struct *iommu = dev->archdata.iommu;
-	int ioptex;
-	iopte_t *iopte, *iopte0;
-	unsigned int busa, busa0;
-	int i;
-
-	/* page color = pfn of page */
-	ioptex = bit_map_string_get(&iommu->usemap, npages, page_to_pfn(page));
-=======
 static dma_addr_t __sbus_iommu_map_page(struct device *dev, struct page *page,
 		unsigned long offset, size_t len, bool per_page_flush)
 {
@@ -286,7 +212,6 @@ static dma_addr_t __sbus_iommu_map_page(struct device *dev, struct page *page,
 
 	/* page color = pfn of page */
 	ioptex = bit_map_string_get(&iommu->usemap, npages, pfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ioptex < 0)
 		panic("iommu out");
 	busa0 = iommu->start + (ioptex << PAGE_SHIFT);
@@ -295,122 +220,6 @@ static dma_addr_t __sbus_iommu_map_page(struct device *dev, struct page *page,
 	busa = busa0;
 	iopte = iopte0;
 	for (i = 0; i < npages; i++) {
-<<<<<<< HEAD
-		iopte_val(*iopte) = MKIOPTE(page_to_pfn(page), IOPERM);
-		iommu_invalidate_page(iommu->regs, busa);
-		busa += PAGE_SIZE;
-		iopte++;
-		page++;
-	}
-
-	iommu_flush_iotlb(iopte0, npages);
-
-	return busa0;
-}
-
-static u32 iommu_get_scsi_one(struct device *dev, char *vaddr, unsigned int len)
-{
-	unsigned long off;
-	int npages;
-	struct page *page;
-	u32 busa;
-
-	off = (unsigned long)vaddr & ~PAGE_MASK;
-	npages = (off + len + PAGE_SIZE-1) >> PAGE_SHIFT;
-	page = virt_to_page((unsigned long)vaddr & PAGE_MASK);
-	busa = iommu_get_one(dev, page, npages);
-	return busa + off;
-}
-
-static __u32 iommu_get_scsi_one_noflush(struct device *dev, char *vaddr, unsigned long len)
-{
-	return iommu_get_scsi_one(dev, vaddr, len);
-}
-
-static __u32 iommu_get_scsi_one_gflush(struct device *dev, char *vaddr, unsigned long len)
-{
-	flush_page_for_dma(0);
-	return iommu_get_scsi_one(dev, vaddr, len);
-}
-
-static __u32 iommu_get_scsi_one_pflush(struct device *dev, char *vaddr, unsigned long len)
-{
-	unsigned long page = ((unsigned long) vaddr) & PAGE_MASK;
-
-	while(page < ((unsigned long)(vaddr + len))) {
-		flush_page_for_dma(page);
-		page += PAGE_SIZE;
-	}
-	return iommu_get_scsi_one(dev, vaddr, len);
-}
-
-static void iommu_get_scsi_sgl_noflush(struct device *dev, struct scatterlist *sg, int sz)
-{
-	int n;
-
-	while (sz != 0) {
-		--sz;
-		n = (sg->length + sg->offset + PAGE_SIZE-1) >> PAGE_SHIFT;
-		sg->dma_address = iommu_get_one(dev, sg_page(sg), n) + sg->offset;
-		sg->dma_length = sg->length;
-		sg = sg_next(sg);
-	}
-}
-
-static void iommu_get_scsi_sgl_gflush(struct device *dev, struct scatterlist *sg, int sz)
-{
-	int n;
-
-	flush_page_for_dma(0);
-	while (sz != 0) {
-		--sz;
-		n = (sg->length + sg->offset + PAGE_SIZE-1) >> PAGE_SHIFT;
-		sg->dma_address = iommu_get_one(dev, sg_page(sg), n) + sg->offset;
-		sg->dma_length = sg->length;
-		sg = sg_next(sg);
-	}
-}
-
-static void iommu_get_scsi_sgl_pflush(struct device *dev, struct scatterlist *sg, int sz)
-{
-	unsigned long page, oldpage = 0;
-	int n, i;
-
-	while(sz != 0) {
-		--sz;
-
-		n = (sg->length + sg->offset + PAGE_SIZE-1) >> PAGE_SHIFT;
-
-		/*
-		 * We expect unmapped highmem pages to be not in the cache.
-		 * XXX Is this a good assumption?
-		 * XXX What if someone else unmaps it here and races us?
-		 */
-		if ((page = (unsigned long) page_address(sg_page(sg))) != 0) {
-			for (i = 0; i < n; i++) {
-				if (page != oldpage) {	/* Already flushed? */
-					flush_page_for_dma(page);
-					oldpage = page;
-				}
-				page += PAGE_SIZE;
-			}
-		}
-
-		sg->dma_address = iommu_get_one(dev, sg_page(sg), n) + sg->offset;
-		sg->dma_length = sg->length;
-		sg = sg_next(sg);
-	}
-}
-
-static void iommu_release_one(struct device *dev, u32 busa, int npages)
-{
-	struct iommu_struct *iommu = dev->archdata.iommu;
-	int ioptex;
-	int i;
-
-	BUG_ON(busa < iommu->start);
-	ioptex = (busa - iommu->start) >> PAGE_SHIFT;
-=======
 		iopte_val(*iopte) = MKIOPTE(pfn, IOPERM);
 		iommu_invalidate_page(iommu->regs, busa);
 		busa += PAGE_SIZE;
@@ -479,7 +288,6 @@ static void sbus_iommu_unmap_page(struct device *dev, dma_addr_t dma_addr,
 	unsigned int i;
 
 	BUG_ON(busa < iommu->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < npages; i++) {
 		iopte_val(iommu->page_table[ioptex + i]) = 0;
 		iommu_invalidate_page(iommu->regs, busa);
@@ -488,29 +296,6 @@ static void sbus_iommu_unmap_page(struct device *dev, dma_addr_t dma_addr,
 	bit_map_clear(&iommu->usemap, ioptex, npages);
 }
 
-<<<<<<< HEAD
-static void iommu_release_scsi_one(struct device *dev, __u32 vaddr, unsigned long len)
-{
-	unsigned long off;
-	int npages;
-
-	off = vaddr & ~PAGE_MASK;
-	npages = (off + len + PAGE_SIZE-1) >> PAGE_SHIFT;
-	iommu_release_one(dev, vaddr & PAGE_MASK, npages);
-}
-
-static void iommu_release_scsi_sgl(struct device *dev, struct scatterlist *sg, int sz)
-{
-	int n;
-
-	while(sz != 0) {
-		--sz;
-
-		n = (sg->length + sg->offset + PAGE_SIZE-1) >> PAGE_SHIFT;
-		iommu_release_one(dev, sg->dma_address & PAGE_MASK, n);
-		sg->dma_address = 0x21212121;
-		sg = sg_next(sg);
-=======
 static void sbus_iommu_unmap_sg(struct device *dev, struct scatterlist *sgl,
 		int nents, enum dma_data_direction dir, unsigned long attrs)
 {
@@ -521,30 +306,19 @@ static void sbus_iommu_unmap_sg(struct device *dev, struct scatterlist *sgl,
 		sbus_iommu_unmap_page(dev, sg->dma_address, sg->length, dir,
 				attrs);
 		sg->dma_address = 0x21212121;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 #ifdef CONFIG_SBUS
-<<<<<<< HEAD
-static int iommu_map_dma_area(struct device *dev, dma_addr_t *pba, unsigned long va,
-			      unsigned long addr, int len)
-{
-	struct iommu_struct *iommu = dev->archdata.iommu;
-	unsigned long page, end;
-=======
 static void *sbus_iommu_alloc(struct device *dev, size_t len,
 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
 {
 	struct iommu_struct *iommu = dev->archdata.iommu;
 	unsigned long va, addr, page, end, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iopte_t *iopte = iommu->page_table;
 	iopte_t *first;
 	int ioptex;
 
-<<<<<<< HEAD
-=======
 	/* XXX So what is maxphys for us and how do drivers know it? */
 	if (!len || len > 256 * 1024)
 		return NULL;
@@ -558,7 +332,6 @@ static void *sbus_iommu_alloc(struct device *dev, size_t len,
 	if (!addr)
 		goto out_free_pages;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON((va & ~PAGE_MASK) != 0);
 	BUG_ON((addr & ~PAGE_MASK) != 0);
 	BUG_ON((len & ~PAGE_MASK) != 0);
@@ -575,10 +348,6 @@ static void *sbus_iommu_alloc(struct device *dev, size_t len,
 	while(addr < end) {
 		page = va;
 		{
-<<<<<<< HEAD
-			pgd_t *pgdp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pmd_t *pmdp;
 			pte_t *ptep;
 
@@ -589,14 +358,8 @@ static void *sbus_iommu_alloc(struct device *dev, size_t len,
 			else
 				__flush_page_to_ram(page);
 
-<<<<<<< HEAD
-			pgdp = pgd_offset(&init_mm, addr);
-			pmdp = pmd_offset(pgdp, addr);
-			ptep = pte_offset_map(pmdp, addr);
-=======
 			pmdp = pmd_off_k(addr);
 			ptep = pte_offset_kernel(pmdp, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			set_pte(ptep, mk_pte(virt_to_page(page), dvma_prot));
 		}
@@ -621,18 +384,6 @@ static void *sbus_iommu_alloc(struct device *dev, size_t len,
 	flush_tlb_all();
 	iommu_invalidate(iommu->regs);
 
-<<<<<<< HEAD
-	*pba = iommu->start + (ioptex << PAGE_SHIFT);
-	return 0;
-}
-
-static void iommu_unmap_dma_area(struct device *dev, unsigned long busa, int len)
-{
-	struct iommu_struct *iommu = dev->archdata.iommu;
-	iopte_t *iopte = iommu->page_table;
-	unsigned long end;
-	int ioptex = (busa - iommu->start) >> PAGE_SHIFT;
-=======
 	*dma_handle = iommu->start + (ioptex << PAGE_SHIFT);
 	return (void *)ret;
 
@@ -652,7 +403,6 @@ static void sbus_iommu_free(struct device *dev, size_t len, void *cpu_addr,
 
 	if (!sparc_dma_free_resource(cpu_addr, len))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON((busa & ~PAGE_MASK) != 0);
 	BUG_ON((len & ~PAGE_MASK) != 0);
@@ -666,46 +416,6 @@ static void sbus_iommu_free(struct device *dev, size_t len, void *cpu_addr,
 	flush_tlb_all();
 	iommu_invalidate(iommu->regs);
 	bit_map_clear(&iommu->usemap, ioptex, len >> PAGE_SHIFT);
-<<<<<<< HEAD
-}
-#endif
-
-static char *iommu_lockarea(char *vaddr, unsigned long len)
-{
-	return vaddr;
-}
-
-static void iommu_unlockarea(char *vaddr, unsigned long len)
-{
-}
-
-void __init ld_mmu_iommu(void)
-{
-	viking_flush = (BTFIXUPVAL_CALL(flush_page_for_dma) == (unsigned long)viking_flush_page);
-	BTFIXUPSET_CALL(mmu_lockarea, iommu_lockarea, BTFIXUPCALL_RETO0);
-	BTFIXUPSET_CALL(mmu_unlockarea, iommu_unlockarea, BTFIXUPCALL_NOP);
-
-	if (!BTFIXUPVAL_CALL(flush_page_for_dma)) {
-		/* IO coherent chip */
-		BTFIXUPSET_CALL(mmu_get_scsi_one, iommu_get_scsi_one_noflush, BTFIXUPCALL_RETO0);
-		BTFIXUPSET_CALL(mmu_get_scsi_sgl, iommu_get_scsi_sgl_noflush, BTFIXUPCALL_NORM);
-	} else if (flush_page_for_dma_global) {
-		/* flush_page_for_dma flushes everything, no matter of what page is it */
-		BTFIXUPSET_CALL(mmu_get_scsi_one, iommu_get_scsi_one_gflush, BTFIXUPCALL_NORM);
-		BTFIXUPSET_CALL(mmu_get_scsi_sgl, iommu_get_scsi_sgl_gflush, BTFIXUPCALL_NORM);
-	} else {
-		BTFIXUPSET_CALL(mmu_get_scsi_one, iommu_get_scsi_one_pflush, BTFIXUPCALL_NORM);
-		BTFIXUPSET_CALL(mmu_get_scsi_sgl, iommu_get_scsi_sgl_pflush, BTFIXUPCALL_NORM);
-	}
-	BTFIXUPSET_CALL(mmu_release_scsi_one, iommu_release_scsi_one, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(mmu_release_scsi_sgl, iommu_release_scsi_sgl, BTFIXUPCALL_NORM);
-
-#ifdef CONFIG_SBUS
-	BTFIXUPSET_CALL(mmu_map_dma_area, iommu_map_dma_area, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(mmu_unmap_dma_area, iommu_unmap_dma_area, BTFIXUPCALL_NORM);
-#endif
-
-=======
 
 	__free_pages(page, get_order(len));
 }
@@ -735,7 +445,6 @@ static const struct dma_map_ops sbus_iommu_dma_pflush_ops = {
 
 void __init ld_mmu_iommu(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (viking_mxcc_present || srmmu_modtype == HyperSparc) {
 		dvma_prot = __pgprot(SRMMU_CACHE | SRMMU_ET_PTE | SRMMU_PRIV);
 		ioperm_noc = IOPTE_CACHE | IOPTE_WRITE | IOPTE_VALID;

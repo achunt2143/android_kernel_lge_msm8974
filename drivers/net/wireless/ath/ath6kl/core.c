@@ -20,49 +20,27 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-
-#include "debug.h"
-#include "hif-ops.h"
-=======
 #include <linux/vmalloc.h>
 
 #include "debug.h"
 #include "hif-ops.h"
 #include "htc-ops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "cfg80211.h"
 
 unsigned int debug_mask;
 static unsigned int suspend_mode;
 static unsigned int wow_mode;
 static unsigned int uart_debug;
-<<<<<<< HEAD
-static unsigned int ath6kl_p2p;
-static unsigned int testmode;
-=======
 static unsigned int uart_rate = 115200;
 static unsigned int ath6kl_p2p;
 static unsigned int testmode;
 static unsigned int recovery_enable;
 static unsigned int heart_beat_poll;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(debug_mask, uint, 0644);
 module_param(suspend_mode, uint, 0644);
 module_param(wow_mode, uint, 0644);
 module_param(uart_debug, uint, 0644);
-<<<<<<< HEAD
-module_param(ath6kl_p2p, uint, 0644);
-module_param(testmode, uint, 0644);
-
-int ath6kl_core_init(struct ath6kl *ar)
-{
-	struct ath6kl_bmi_target_info targ_info;
-	struct net_device *ndev;
-	int ret = 0, i;
-
-=======
 module_param(uart_rate, uint, 0644);
 module_param(ath6kl_p2p, uint, 0644);
 module_param(testmode, uint, 0644);
@@ -103,7 +81,6 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 		return -ENOMEM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ar->ath6kl_wq = create_singlethread_workqueue("ath6kl");
 	if (!ar->ath6kl_wq)
 		return -ENOMEM;
@@ -148,8 +125,6 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 
 	/* FIXME: we should free all firmwares in the error cases below */
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Backwards compatibility support for older ar6004 firmware images
 	 * which do not set these feature flags.
@@ -166,7 +141,6 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 				  ar->fw_capabilities);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Indicate that WMI is enabled (although not ready yet) */
 	set_bit(WMI_ENABLED, &ar->flag);
 	ar->wmi = ath6kl_wmi_init(ar);
@@ -208,10 +182,7 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 
 	if (uart_debug)
 		ar->conf_flags |= ATH6KL_CONF_UART_DEBUG;
-<<<<<<< HEAD
-=======
 	ar->hw.uarttx_rate = uart_rate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(FIRST_BOOT, &ar->flag);
 
@@ -241,16 +212,6 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 		ar->avail_idx_map |= BIT(i);
 
 	rtnl_lock();
-<<<<<<< HEAD
-
-	/* Add an initial station interface */
-	ndev = ath6kl_interface_add(ar, "wlan%d", NL80211_IFTYPE_STATION, 0,
-				    INFRA_NETWORK);
-
-	rtnl_unlock();
-
-	if (!ndev) {
-=======
 	wiphy_lock(ar->wiphy);
 
 	/* Add an initial station interface */
@@ -261,7 +222,6 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 	rtnl_unlock();
 
 	if (!wdev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath6kl_err("Failed to instantiate a network device\n");
 		ret = -ENOMEM;
 		wiphy_unregister(ar->wiphy);
@@ -269,9 +229,6 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 	}
 
 	ath6kl_dbg(ATH6KL_DBG_TRC, "%s: name=%s dev=0x%p, ar=0x%p\n",
-<<<<<<< HEAD
-		   __func__, ndev->name, ndev, ar);
-=======
 		   __func__, wdev->netdev->name, wdev->netdev, ar);
 
 	ar->fw_recovery.enable = !!recovery_enable;
@@ -284,7 +241,6 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 		ar->fw_recovery.hb_poll = heart_beat_poll;
 
 	ath6kl_recovery_init(ar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 
@@ -375,11 +331,8 @@ void ath6kl_core_cleanup(struct ath6kl *ar)
 {
 	ath6kl_hif_power_off(ar);
 
-<<<<<<< HEAD
-=======
 	ath6kl_recovery_cleanup(ar);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(ar->ath6kl_wq);
 
 	if (ar->htc_target)
@@ -395,11 +348,7 @@ void ath6kl_core_cleanup(struct ath6kl *ar)
 
 	kfree(ar->fw_board);
 	kfree(ar->fw_otp);
-<<<<<<< HEAD
-	kfree(ar->fw);
-=======
 	vfree(ar->fw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ar->fw_patch);
 	kfree(ar->fw_testscript);
 

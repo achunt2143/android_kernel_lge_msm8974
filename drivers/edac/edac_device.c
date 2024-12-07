@@ -12,25 +12,6 @@
  * 19 Jan 2007
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/types.h>
-#include <linux/smp.h>
-#include <linux/init.h>
-#include <linux/sysctl.h>
-#include <linux/highmem.h>
-#include <linux/timer.h>
-#include <linux/slab.h>
-#include <linux/jiffies.h>
-#include <linux/spinlock.h>
-#include <linux/list.h>
-#include <linux/ctype.h>
-#include <linux/workqueue.h>
-#include <asm/uaccess.h>
-#include <asm/page.h>
-
-#include "edac_core.h"
-=======
 #include <asm/page.h>
 #include <linux/uaccess.h>
 #include <linux/ctype.h>
@@ -45,7 +26,6 @@
 #include <linux/timer.h>
 
 #include "edac_device.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "edac_module.h"
 
 /* lock for the list: 'edac_device_list', manipulation of this list
@@ -54,49 +34,6 @@
 static DEFINE_MUTEX(device_ctls_mutex);
 static LIST_HEAD(edac_device_list);
 
-<<<<<<< HEAD
-#ifdef CONFIG_EDAC_DEBUG
-static void edac_device_dump_device(struct edac_device_ctl_info *edac_dev)
-{
-	debugf3("\tedac_dev = %p dev_idx=%d \n", edac_dev, edac_dev->dev_idx);
-	debugf4("\tedac_dev->edac_check = %p\n", edac_dev->edac_check);
-	debugf3("\tdev = %p\n", edac_dev->dev);
-	debugf3("\tmod_name:ctl_name = %s:%s\n",
-		edac_dev->mod_name, edac_dev->ctl_name);
-	debugf3("\tpvt_info = %p\n\n", edac_dev->pvt_info);
-}
-#endif				/* CONFIG_EDAC_DEBUG */
-
-
-/*
- * edac_device_alloc_ctl_info()
- *	Allocate a new edac device control info structure
- *
- *	The control structure is allocated in complete chunk
- *	from the OS. It is in turn sub allocated to the
- *	various objects that compose the struture
- *
- *	The structure has a 'nr_instance' array within itself.
- *	Each instance represents a major component
- *		Example:  L1 cache and L2 cache are 2 instance components
- *
- *	Within each instance is an array of 'nr_blocks' blockoffsets
- */
-struct edac_device_ctl_info *edac_device_alloc_ctl_info(
-	unsigned sz_private,
-	char *edac_device_name, unsigned nr_instances,
-	char *edac_block_name, unsigned nr_blocks,
-	unsigned offset_value,		/* zero, 1, or other based offset */
-	struct edac_dev_sysfs_block_attribute *attrib_spec, unsigned nr_attrib,
-	int device_index)
-{
-	struct edac_device_ctl_info *dev_ctl;
-	struct edac_device_instance *dev_inst, *inst;
-	struct edac_device_block *dev_blk, *blk_p, *blk;
-	struct edac_dev_sysfs_block_attribute *dev_attrib, *attrib_p, *attrib;
-	unsigned total_size;
-	unsigned count;
-=======
 /* Default workqueue processing interval on this instance, in msecs */
 #define DEFAULT_POLL_INTERVAL 1000
 
@@ -126,84 +63,10 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 	struct edac_device_block *dev_blk, *blk_p, *blk;
 	struct edac_device_instance *dev_inst, *inst;
 	struct edac_device_ctl_info *dev_ctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned instance, block, attr;
 	void *pvt;
 	int err;
 
-<<<<<<< HEAD
-	debugf4("%s() instances=%d blocks=%d\n",
-		__func__, nr_instances, nr_blocks);
-
-	/* Calculate the size of memory we need to allocate AND
-	 * determine the offsets of the various item arrays
-	 * (instance,block,attrib) from the start of an  allocated structure.
-	 * We want the alignment of each item  (instance,block,attrib)
-	 * to be at least as stringent as what the compiler would
-	 * provide if we could simply hardcode everything into a single struct.
-	 */
-	dev_ctl = (struct edac_device_ctl_info *)NULL;
-
-	/* Calc the 'end' offset past end of ONE ctl_info structure
-	 * which will become the start of the 'instance' array
-	 */
-	dev_inst = edac_align_ptr(&dev_ctl[1], sizeof(*dev_inst));
-
-	/* Calc the 'end' offset past the instance array within the ctl_info
-	 * which will become the start of the block array
-	 */
-	dev_blk = edac_align_ptr(&dev_inst[nr_instances], sizeof(*dev_blk));
-
-	/* Calc the 'end' offset past the dev_blk array
-	 * which will become the start of the attrib array, if any.
-	 */
-	count = nr_instances * nr_blocks;
-	dev_attrib = edac_align_ptr(&dev_blk[count], sizeof(*dev_attrib));
-
-	/* Check for case of when an attribute array is specified */
-	if (nr_attrib > 0) {
-		/* calc how many nr_attrib we need */
-		count *= nr_attrib;
-
-		/* Calc the 'end' offset past the attributes array */
-		pvt = edac_align_ptr(&dev_attrib[count], sz_private);
-	} else {
-		/* no attribute array specificed */
-		pvt = edac_align_ptr(dev_attrib, sz_private);
-	}
-
-	/* 'pvt' now points to where the private data area is.
-	 * At this point 'pvt' (like dev_inst,dev_blk and dev_attrib)
-	 * is baselined at ZERO
-	 */
-	total_size = ((unsigned long)pvt) + sz_private;
-
-	/* Allocate the amount of memory for the set of control structures */
-	dev_ctl = kzalloc(total_size, GFP_KERNEL);
-	if (dev_ctl == NULL)
-		return NULL;
-
-	/* Adjust pointers so they point within the actual memory we
-	 * just allocated rather than an imaginary chunk of memory
-	 * located at address 0.
-	 * 'dev_ctl' points to REAL memory, while the others are
-	 * ZERO based and thus need to be adjusted to point within
-	 * the allocated memory.
-	 */
-	dev_inst = (struct edac_device_instance *)
-		(((char *)dev_ctl) + ((unsigned long)dev_inst));
-	dev_blk = (struct edac_device_block *)
-		(((char *)dev_ctl) + ((unsigned long)dev_blk));
-	dev_attrib = (struct edac_dev_sysfs_block_attribute *)
-		(((char *)dev_ctl) + ((unsigned long)dev_attrib));
-	pvt = sz_private ? (((char *)dev_ctl) + ((unsigned long)pvt)) : NULL;
-
-	/* Begin storing the information into the control info structure */
-	dev_ctl->dev_idx = device_index;
-	dev_ctl->nr_instances = nr_instances;
-	dev_ctl->instances = dev_inst;
-	dev_ctl->pvt_info = pvt;
-=======
 	edac_dbg(4, "instances=%d blocks=%d\n", nr_instances, nr_blocks);
 
 	dev_ctl = kzalloc(sizeof(struct edac_device_ctl_info), GFP_KERNEL);
@@ -241,21 +104,13 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 
 	dev_ctl->dev_idx	= device_index;
 	dev_ctl->nr_instances	= nr_instances;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Default logging of CEs and UEs */
 	dev_ctl->log_ce = 1;
 	dev_ctl->log_ue = 1;
 
 	/* Name of this edac device */
-<<<<<<< HEAD
-	snprintf(dev_ctl->name,sizeof(dev_ctl->name),"%s",edac_device_name);
-
-	debugf4("%s() edac_dev=%p next after end=%p\n",
-		__func__, dev_ctl, pvt + sz_private );
-=======
 	snprintf(dev_ctl->name, sizeof(dev_ctl->name),"%s", dev_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize every Instance */
 	for (instance = 0; instance < nr_instances; instance++) {
@@ -266,31 +121,17 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 		inst->blocks = blk_p;
 
 		/* name of this instance */
-<<<<<<< HEAD
-		snprintf(inst->name, sizeof(inst->name),
-			 "%s%u", edac_device_name, instance);
-=======
 		snprintf(inst->name, sizeof(inst->name), "%s%u", dev_name, instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Initialize every block in each instance */
 		for (block = 0; block < nr_blocks; block++) {
 			blk = &blk_p[block];
 			blk->instance = inst;
 			snprintf(blk->name, sizeof(blk->name),
-<<<<<<< HEAD
-				 "%s%d", edac_block_name, block+offset_value);
-
-			debugf4("%s() instance=%d inst_p=%p block=#%d "
-				"block_p=%p name='%s'\n",
-				__func__, instance, inst, block,
-				blk, blk->name);
-=======
 				 "%s%d", blk_name, block + off_val);
 
 			edac_dbg(4, "instance=%d inst_p=%p block=#%d block_p=%p name='%s'\n",
 				 instance, inst, block, blk, blk->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* if there are NO attributes OR no attribute pointer
 			 * then continue on to next block iteration
@@ -303,13 +144,8 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 			attrib_p = &dev_attrib[block*nr_instances*nr_attrib];
 			blk->block_attributes = attrib_p;
 
-<<<<<<< HEAD
-			debugf4("%s() THIS BLOCK_ATTRIB=%p\n",
-				__func__, blk->block_attributes);
-=======
 			edac_dbg(4, "THIS BLOCK_ATTRIB=%p\n",
 				 blk->block_attributes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Initialize every user specified attribute in this
 			 * block with the data the caller passed in
@@ -328,18 +164,10 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 
 				attrib->block = blk;	/* up link */
 
-<<<<<<< HEAD
-				debugf4("%s() alloc-attrib=%p attrib_name='%s' "
-					"attrib-spec=%p spec-name=%s\n",
-					__func__, attrib, attrib->attr.name,
-					&attrib_spec[attr],
-					attrib_spec[attr].attr.name
-=======
 				edac_dbg(4, "alloc-attrib=%p attrib_name='%s' attrib-spec=%p spec-name=%s\n",
 					 attrib, attrib->attr.name,
 					 &attrib_spec[attr],
 					 attrib_spec[attr].attr.name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					);
 			}
 		}
@@ -352,15 +180,8 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 	 * Initialize the 'root' kobj for the edac_device controller
 	 */
 	err = edac_device_register_sysfs_main_kobj(dev_ctl);
-<<<<<<< HEAD
-	if (err) {
-		kfree(dev_ctl);
-		return NULL;
-	}
-=======
 	if (err)
 		goto free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* at this point, the root kobj is valid, and in order to
 	 * 'free' the object, then the function:
@@ -370,16 +191,6 @@ edac_device_alloc_ctl_info(unsigned pvt_sz, char *dev_name, unsigned nr_instance
 	 */
 
 	return dev_ctl;
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL_GPL(edac_device_alloc_ctl_info);
-
-/*
- * edac_device_free_ctl_info()
- *	frees the memory allocated by the edac_device_alloc_ctl_info()
- *	function
- */
-=======
 
 free:
 	__edac_device_free_ctl_info(dev_ctl);
@@ -388,7 +199,6 @@ free:
 }
 EXPORT_SYMBOL_GPL(edac_device_alloc_ctl_info);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void edac_device_free_ctl_info(struct edac_device_ctl_info *ctl_info)
 {
 	edac_device_unregister_sysfs_main_kobj(ctl_info);
@@ -410,11 +220,7 @@ static struct edac_device_ctl_info *find_edac_device_by_dev(struct device *dev)
 	struct edac_device_ctl_info *edac_dev;
 	struct list_head *item;
 
-<<<<<<< HEAD
-	debugf0("%s()\n", __func__);
-=======
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each(item, &edac_device_list) {
 		edac_dev = list_entry(item, struct edac_device_ctl_info, link);
@@ -530,17 +336,6 @@ static void edac_device_workq_function(struct work_struct *work_req)
 
 	/* Reschedule the workq for the next time period to start again
 	 * if the number of msec is for 1 sec, then adjust to the next
-<<<<<<< HEAD
-	 * whole one second to save timers fireing all over the period
-	 * between integral seconds
-	 */
-	if (edac_dev->poll_msec == 1000)
-		queue_delayed_work(edac_workqueue, &edac_dev->work,
-				round_jiffies_relative(edac_dev->delay));
-	else
-		queue_delayed_work(edac_workqueue, &edac_dev->work,
-				edac_dev->delay);
-=======
 	 * whole one second to save timers firing all over the period
 	 * between integral seconds
 	 */
@@ -548,7 +343,6 @@ static void edac_device_workq_function(struct work_struct *work_req)
 		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
 	else
 		edac_queue_work(&edac_dev->work, edac_dev->delay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -556,17 +350,10 @@ static void edac_device_workq_function(struct work_struct *work_req)
  *	initialize a workq item for this edac_device instance
  *	passing in the new delay period in msec
  */
-<<<<<<< HEAD
-void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
-				unsigned msec)
-{
-	debugf0("%s()\n", __func__);
-=======
 static void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 				    unsigned msec)
 {
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* take the arg 'msec' and set it into the control structure
 	 * to used in the time period calculation
@@ -582,36 +369,16 @@ static void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
 	 * timers firing on sub-second basis, while they are happy
 	 * to fire together on the 1 second exactly
 	 */
-<<<<<<< HEAD
-	if (edac_dev->poll_msec == 1000)
-		queue_delayed_work(edac_workqueue, &edac_dev->work,
-				round_jiffies_relative(edac_dev->delay));
-	else
-		queue_delayed_work(edac_workqueue, &edac_dev->work,
-				edac_dev->delay);
-=======
 	if (edac_dev->poll_msec == DEFAULT_POLL_INTERVAL)
 		edac_queue_work(&edac_dev->work, round_jiffies_relative(edac_dev->delay));
 	else
 		edac_queue_work(&edac_dev->work, edac_dev->delay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * edac_device_workq_teardown
  *	stop the workq processing on this edac_dev
  */
-<<<<<<< HEAD
-void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
-{
-	int status;
-
-	status = cancel_delayed_work(&edac_dev->work);
-	if (status == 0) {
-		/* workq instance might be running, wait for it */
-		flush_workqueue(edac_workqueue);
-	}
-=======
 static void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 {
 	if (!edac_dev->edac_check)
@@ -620,7 +387,6 @@ static void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
 	edac_dev->op_state = OP_OFFLINE;
 
 	edac_stop_work(&edac_dev->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -631,28 +397,6 @@ static void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev)
  *	Then restart the workq on the new delay
  */
 void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
-<<<<<<< HEAD
-					unsigned long value)
-{
-	/* cancel the current workq request, without the mutex lock */
-	edac_device_workq_teardown(edac_dev);
-
-	/* acquire the mutex before doing the workq setup */
-	mutex_lock(&device_ctls_mutex);
-
-	/* restart the workq request, with new delay value */
-	edac_device_workq_setup(edac_dev, value);
-
-	mutex_unlock(&device_ctls_mutex);
-}
-
-/*
- * edac_device_alloc_index: Allocate a unique device index number
- *
- * Return:
- *	allocated index number
- */
-=======
 				    unsigned long msec)
 {
 	edac_dev->poll_msec = msec;
@@ -665,7 +409,6 @@ void edac_device_reset_delay_period(struct edac_device_ctl_info *edac_dev,
 		edac_mod_work(&edac_dev->work, edac_dev->delay);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int edac_device_alloc_index(void)
 {
 	static atomic_t device_indexes = ATOMIC_INIT(0);
@@ -674,26 +417,9 @@ int edac_device_alloc_index(void)
 }
 EXPORT_SYMBOL_GPL(edac_device_alloc_index);
 
-<<<<<<< HEAD
-/**
- * edac_device_add_device: Insert the 'edac_dev' structure into the
- * edac_device global list and create sysfs entries associated with
- * edac_device structure.
- * @edac_device: pointer to the edac_device structure to be added to the list
- * 'edac_device' structure.
- *
- * Return:
- *	0	Success
- *	!0	Failure
- */
-int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
-{
-	debugf0("%s()\n", __func__);
-=======
 int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
 {
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_EDAC_DEBUG
 	if (edac_debug_level >= 3)
@@ -719,33 +445,16 @@ int edac_device_add_device(struct edac_device_ctl_info *edac_dev)
 		/* This instance is NOW RUNNING */
 		edac_dev->op_state = OP_RUNNING_POLL;
 
-<<<<<<< HEAD
-		/*
-		 * enable workq processing on this instance,
-		 * default = 1000 msec
-		 */
-		edac_device_workq_setup(edac_dev, 1000);
-=======
 		edac_device_workq_setup(edac_dev, edac_dev->poll_msec ?: DEFAULT_POLL_INTERVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		edac_dev->op_state = OP_RUNNING_INTERRUPT;
 	}
 
 	/* Report action taken */
 	edac_device_printk(edac_dev, KERN_INFO,
-<<<<<<< HEAD
-				"Giving out device to module '%s' controller "
-				"'%s': DEV '%s' (%s)\n",
-				edac_dev->mod_name,
-				edac_dev->ctl_name,
-				edac_dev_name(edac_dev),
-				edac_op_state_to_string(edac_dev->op_state));
-=======
 		"Giving out device to module %s controller %s: DEV %s (%s)\n",
 		edac_dev->mod_name, edac_dev->ctl_name, edac_dev->dev_name,
 		edac_op_state_to_string(edac_dev->op_state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&device_ctls_mutex);
 	return 0;
@@ -760,31 +469,11 @@ fail0:
 }
 EXPORT_SYMBOL_GPL(edac_device_add_device);
 
-<<<<<<< HEAD
-/**
- * edac_device_del_device:
- *	Remove sysfs entries for specified edac_device structure and
- *	then remove edac_device structure from global list
- *
- * @pdev:
- *	Pointer to 'struct device' representing edac_device
- *	structure to remove.
- *
- * Return:
- *	Pointer to removed edac_device structure,
- *	OR NULL if device not found.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct edac_device_ctl_info *edac_device_del_device(struct device *dev)
 {
 	struct edac_device_ctl_info *edac_dev;
 
-<<<<<<< HEAD
-	debugf0("%s()\n", __func__);
-=======
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&device_ctls_mutex);
 
@@ -834,28 +523,16 @@ static inline int edac_device_get_panic_on_ue(struct edac_device_ctl_info
 	return edac_dev->panic_on_ue;
 }
 
-<<<<<<< HEAD
-/*
- * edac_device_handle_ce
- *	perform a common output and handling of an 'edac_dev' CE event
- */
-void edac_device_handle_ce(struct edac_device_ctl_info *edac_dev,
-			int inst_nr, int block_nr, const char *msg)
-=======
 void edac_device_handle_ce_count(struct edac_device_ctl_info *edac_dev,
 				 unsigned int count, int inst_nr, int block_nr,
 				 const char *msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct edac_device_instance *instance;
 	struct edac_device_block *block = NULL;
 
-<<<<<<< HEAD
-=======
 	if (!count)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((inst_nr >= edac_dev->nr_instances) || (inst_nr < 0)) {
 		edac_device_printk(edac_dev, KERN_ERR,
 				"INTERNAL ERROR: 'instance' out of range "
@@ -877,29 +554,6 @@ void edac_device_handle_ce_count(struct edac_device_ctl_info *edac_dev,
 
 	if (instance->nr_blocks > 0) {
 		block = instance->blocks + block_nr;
-<<<<<<< HEAD
-		block->counters.ce_count++;
-	}
-
-	/* Propagate the count up the 'totals' tree */
-	instance->counters.ce_count++;
-	edac_dev->counters.ce_count++;
-
-	if (edac_device_get_log_ce(edac_dev))
-		edac_device_printk(edac_dev, KERN_WARNING,
-				"CE: %s instance: %s block: %s '%s'\n",
-				edac_dev->ctl_name, instance->name,
-				block ? block->name : "N/A", msg);
-}
-EXPORT_SYMBOL_GPL(edac_device_handle_ce);
-
-/*
- * edac_device_handle_ue
- *	perform a common output and handling of an 'edac_dev' UE event
- */
-void edac_device_handle_ue(struct edac_device_ctl_info *edac_dev,
-			int inst_nr, int block_nr, const char *msg)
-=======
 		block->counters.ce_count += count;
 	}
 
@@ -918,17 +572,13 @@ EXPORT_SYMBOL_GPL(edac_device_handle_ce_count);
 void edac_device_handle_ue_count(struct edac_device_ctl_info *edac_dev,
 				 unsigned int count, int inst_nr, int block_nr,
 				 const char *msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct edac_device_instance *instance;
 	struct edac_device_block *block = NULL;
 
-<<<<<<< HEAD
-=======
 	if (!count)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((inst_nr >= edac_dev->nr_instances) || (inst_nr < 0)) {
 		edac_device_printk(edac_dev, KERN_ERR,
 				"INTERNAL ERROR: 'instance' out of range "
@@ -950,27 +600,6 @@ void edac_device_handle_ue_count(struct edac_device_ctl_info *edac_dev,
 
 	if (instance->nr_blocks > 0) {
 		block = instance->blocks + block_nr;
-<<<<<<< HEAD
-		block->counters.ue_count++;
-	}
-
-	/* Propagate the count up the 'totals' tree */
-	instance->counters.ue_count++;
-	edac_dev->counters.ue_count++;
-
-	if (edac_device_get_log_ue(edac_dev))
-		edac_device_printk(edac_dev, KERN_EMERG,
-				"UE: %s instance: %s block: %s '%s'\n",
-				edac_dev->ctl_name, instance->name,
-				block ? block->name : "N/A", msg);
-
-	if (edac_device_get_panic_on_ue(edac_dev))
-		panic("EDAC %s: UE instance: %s block %s '%s'\n",
-			edac_dev->ctl_name, instance->name,
-			block ? block->name : "N/A", msg);
-}
-EXPORT_SYMBOL_GPL(edac_device_handle_ue);
-=======
 		block->counters.ue_count += count;
 	}
 
@@ -990,4 +619,3 @@ EXPORT_SYMBOL_GPL(edac_device_handle_ue);
 		      block ? block->name : "N/A", count, msg);
 }
 EXPORT_SYMBOL_GPL(edac_device_handle_ue_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

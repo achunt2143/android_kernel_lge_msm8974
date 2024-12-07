@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-#include <asm-generic/vmlinux.lds.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <asm/vmlinux.lds.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 
 OUTPUT_FORMAT(ELF_FORMAT)
@@ -11,15 +7,12 @@ OUTPUT_ARCH(ELF_ARCH)
 ENTRY(_start)
 jiffies = jiffies_64;
 
-<<<<<<< HEAD
-=======
 VERSION {
   {
     local: *;
   };
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SECTIONS
 {
   /* This must contain the right address - not quite the default ELF one.*/
@@ -32,20 +25,6 @@ SECTIONS
   __binary_start = START;
 
   . = START + SIZEOF_HEADERS;
-<<<<<<< HEAD
-
-  _text = .;
-  _stext = .;
-  __init_begin = .;
-  INIT_TEXT_SECTION(0)
-  . = ALIGN(PAGE_SIZE);
-
-  .text      :
-  {
-    TEXT_TEXT
-    SCHED_TEXT
-    LOCK_TEXT
-=======
   . = ALIGN(PAGE_SIZE);
 
   _text = .;
@@ -59,7 +38,6 @@ SECTIONS
     LOCK_TEXT
     IRQENTRY_TEXT
     SOFTIRQENTRY_TEXT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     *(.fixup)
     /* .gnu.warning sections are handled specially by elf32.em.  */
     *(.gnu.warning)
@@ -90,18 +68,12 @@ SECTIONS
 	PROVIDE_HIDDEN(__rela_iplt_end = .);
   }
 
-<<<<<<< HEAD
-  #include "asm/common.lds.S"
-
-  init.data : { INIT_DATA }
-=======
   #include <asm/common.lds.S>
 
   __init_begin = .;
   init.data : { INIT_DATA }
   __init_end = .;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   .data    :
   {
     INIT_TASK_DATA(KERNEL_STACK_SIZE)
@@ -122,10 +94,7 @@ SECTIONS
   }
 
   .got           : { *(.got.plt) *(.got) }
-<<<<<<< HEAD
-=======
   .eh_frame       : { KEEP (*(.eh_frame)) }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   .dynamic       : { *(.dynamic) }
   .tdata	  : { *(.tdata .tdata.* .gnu.linkonce.td.*) }
   .tbss		  : { *(.tbss .tbss.* .gnu.linkonce.tb.*) *(.tcommon) }
@@ -140,21 +109,13 @@ SECTIONS
   PROVIDE(_bss_start = .);
   SBSS(0)
   BSS(0)
-<<<<<<< HEAD
-=======
    __bss_stop = .;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   _end = .;
   PROVIDE (end = .);
 
   STABS_DEBUG
-<<<<<<< HEAD
-
-  DWARF_DEBUG
-=======
   DWARF_DEBUG
   ELF_DETAILS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   DISCARDS
 }

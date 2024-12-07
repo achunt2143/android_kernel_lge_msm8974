@@ -1,27 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * VTI CMA3000_D0x Accelerometer driver
  *
  * Copyright (C) 2010 Texas Instruments
  * Author: Hemanth V <hemanthv@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program.  If not, see <http://www.gnu.org/licenses/>.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -65,11 +47,7 @@
 
 /*
  * Bit weights in mg for bit 0, other bits need
-<<<<<<< HEAD
- * multipy factor 2^n. Eight bit is the sign bit.
-=======
  * multiply factor 2^n. Eight bit is the sign bit.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define BIT_TO_2G  18
 #define BIT_TO_8G  71
@@ -295,11 +273,7 @@ EXPORT_SYMBOL(cma3000_resume);
 struct cma3000_accl_data *cma3000_init(struct device *dev, int irq,
 				       const struct cma3000_bus_ops *bops)
 {
-<<<<<<< HEAD
-	const struct cma3000_platform_data *pdata = dev->platform_data;
-=======
 	const struct cma3000_platform_data *pdata = dev_get_platdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cma3000_accl_data *data;
 	struct input_dev *input_dev;
 	int rev;
@@ -333,11 +307,7 @@ struct cma3000_accl_data *cma3000_init(struct device *dev, int irq,
 	mutex_init(&data->mutex);
 
 	data->mode = pdata->mode;
-<<<<<<< HEAD
-	if (data->mode < CMAMODE_DEFAULT || data->mode > CMAMODE_POFF) {
-=======
 	if (data->mode > CMAMODE_POFF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->mode = CMAMODE_MOTDET;
 		dev_warn(dev,
 			 "Invalid mode specified, assuming Motion Detect\n");
@@ -355,11 +325,6 @@ struct cma3000_accl_data *cma3000_init(struct device *dev, int irq,
 	input_dev->open = cma3000_open;
 	input_dev->close = cma3000_close;
 
-<<<<<<< HEAD
-	 __set_bit(EV_ABS, input_dev->evbit);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_set_abs_params(input_dev, ABS_X,
 			-data->g_range, data->g_range, pdata->fuzz_x, 0);
 	input_set_abs_params(input_dev, ABS_Y,

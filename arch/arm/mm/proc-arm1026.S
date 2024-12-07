@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/proc-arm1026.S: MMU functions for ARM1026EJ-S
  *
@@ -9,32 +6,16 @@
  *  Copyright (C) 2000 Deep Blue Solutions Ltd.
  *  hacked for non-paged-MM by Hyok S. Choi, 2003.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * These are the low level assembler for performing cache and TLB
  * functions on the ARM1026EJ-S.
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/assembler.h>
 #include <asm/asm-offsets.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 
 #include "proc-macros.S"
@@ -76,11 +57,7 @@
  * cpu_arm1026_proc_init()
  */
 ENTRY(cpu_arm1026_proc_init)
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_arm1026_proc_fin()
@@ -90,11 +67,7 @@ ENTRY(cpu_arm1026_proc_fin)
 	bic	r0, r0, #0x1000 		@ ...i............
 	bic	r0, r0, #0x000e 		@ ............wca.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_arm1026_reset(loc)
@@ -118,11 +91,7 @@ ENTRY(cpu_arm1026_reset)
 	bic	ip, ip, #0x000f 		@ ............wcam
 	bic	ip, ip, #0x1100 		@ ...i...s........
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
-<<<<<<< HEAD
-	mov	pc, r0
-=======
 	ret	r0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(cpu_arm1026_reset)
 	.popsection
 
@@ -132,11 +101,7 @@ ENDPROC(cpu_arm1026_reset)
 	.align	5
 ENTRY(cpu_arm1026_do_idle)
 	mcr	p15, 0, r0, c7, c0, 4		@ Wait for interrupt
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ================================= CACHE ================================ */
 
@@ -152,11 +117,7 @@ ENTRY(arm1026_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
 #endif
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(arm1026_flush_icache_all)
 
 /*
@@ -177,11 +138,7 @@ ENTRY(arm1026_flush_kern_cache_all)
 	mov	ip, #0
 __flush_whole_cache:
 #ifndef CONFIG_CPU_DCACHE_DISABLE
-<<<<<<< HEAD
-1:	mrc	p15, 0, r15, c7, c14, 3		@ test, clean, invalidate
-=======
 1:	mrc	p15, 0, APSR_nzcv, c7, c14, 3		@ test, clean, invalidate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bne	1b
 #endif
 	tst	r2, #VM_EXEC
@@ -189,11 +146,7 @@ __flush_whole_cache:
 	mcrne	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 #endif
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_user_cache_range(start, end, flags)
@@ -222,11 +175,7 @@ ENTRY(arm1026_flush_user_cache_range)
 	mcrne	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 #endif
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	coherent_kern_range(start, end)
@@ -264,12 +213,8 @@ ENTRY(arm1026_coherent_user_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	mov	r0, #0
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -290,11 +235,7 @@ ENTRY(arm1026_flush_kern_dcache_area)
 	blo	1b
 #endif
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_inv_range(start, end)
@@ -323,11 +264,7 @@ arm1026_dma_inv_range:
 	blo	1b
 #endif
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_clean_range(start, end)
@@ -349,11 +286,7 @@ arm1026_dma_clean_range:
 	blo	1b
 #endif
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_flush_range(start, end)
@@ -373,11 +306,7 @@ ENTRY(arm1026_dma_flush_range)
 	blo	1b
 #endif
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_map_area(start, size, dir)
@@ -400,11 +329,7 @@ ENDPROC(arm1026_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(arm1026_dma_unmap_area)
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(arm1026_dma_unmap_area)
 
 	.globl	arm1026_flush_kern_cache_louis
@@ -422,11 +347,7 @@ ENTRY(cpu_arm1026_dcache_clean_area)
 	subs	r1, r1, #CACHE_DLINESIZE
 	bhi	1b
 #endif
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* =============================== PageTable ============================== */
 
@@ -442,11 +363,7 @@ ENTRY(cpu_arm1026_switch_mm)
 #ifdef CONFIG_MMU
 	mov	r1, #0
 #ifndef CONFIG_CPU_DCACHE_DISABLE
-<<<<<<< HEAD
-1:	mrc	p15, 0, r15, c7, c14, 3		@ test, clean, invalidate
-=======
 1:	mrc	p15, 0, APSR_nzcv, c7, c14, 3		@ test, clean, invalidate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bne	1b
 #endif
 #ifndef CONFIG_CPU_ICACHE_DISABLE
@@ -456,11 +373,7 @@ ENTRY(cpu_arm1026_switch_mm)
 	mcr	p15, 0, r0, c2, c0, 0		@ load page table pointer
 	mcr	p15, 0, r1, c8, c7, 0		@ invalidate I & D TLBs
 #endif
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         
 /*
  * cpu_arm1026_set_pte_ext(ptep, pte, ext)
@@ -476,14 +389,7 @@ ENTRY(cpu_arm1026_set_pte_ext)
 	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 #endif
 #endif /* CONFIG_MMU */
-<<<<<<< HEAD
-	mov	pc, lr
-
-
-	__CPUINIT
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.type	__arm1026_setup, #function
 __arm1026_setup:
@@ -506,11 +412,7 @@ __arm1026_setup:
 #ifdef CONFIG_CPU_CACHE_ROUND_ROBIN
 	orr	r0, r0, #0x4000 		@ .R.. .... .... ....
 #endif
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size	__arm1026_setup, . - __arm1026_setup
 
 	/*
@@ -535,11 +437,7 @@ arm1026_crval:
 	string	cpu_arm1026_name, "ARM1026EJ-S"
 	.align
 
-<<<<<<< HEAD
-	.section ".proc.info.init", #alloc, #execinstr
-=======
 	.section ".proc.info.init", "a"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.type	__arm1026_proc_info,#object
 __arm1026_proc_info:
@@ -553,11 +451,7 @@ __arm1026_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
-<<<<<<< HEAD
-	b	__arm1026_setup
-=======
 	initfn	__arm1026_setup, __arm1026_proc_info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP|HWCAP_JAVA

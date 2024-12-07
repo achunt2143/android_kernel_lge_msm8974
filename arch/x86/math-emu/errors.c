@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  errors.c                                                                 |
  |                                                                           |
@@ -23,11 +20,7 @@
 
 #include <linux/signal.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fpu_emu.h"
 #include "fpu_system.h"
@@ -185,15 +178,6 @@ void FPU_printall(void)
 	for (i = 0; i < 8; i++) {
 		FPU_REG *r = &st(i);
 		u_char tagi = FPU_gettagi(i);
-<<<<<<< HEAD
-		switch (tagi) {
-		case TAG_Empty:
-			continue;
-			break;
-		case TAG_Zero:
-		case TAG_Special:
-			tagi = FPU_Special(r);
-=======
 
 		switch (tagi) {
 		case TAG_Empty:
@@ -203,7 +187,6 @@ void FPU_printall(void)
 			/* Update tagi for the printk below */
 			tagi = FPU_Special(r);
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case TAG_Valid:
 			printk("st(%d)  %c .%04lx %04lx %04lx %04lx e%+-6d ", i,
 			       getsign(r) ? '-' : '+',
@@ -217,10 +200,6 @@ void FPU_printall(void)
 			printk("Whoops! Error in errors.c: tag%d is %d ", i,
 			       tagi);
 			continue;
-<<<<<<< HEAD
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		printk("%s\n", tag_desc[(int)(unsigned)tagi]);
 	}
@@ -325,11 +304,7 @@ static struct {
 	      0x242  in div_Xsig.S
  */
 
-<<<<<<< HEAD
-asmlinkage void FPU_exception(int n)
-=======
 asmlinkage __visible void FPU_exception(int n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, int_type;
 
@@ -357,14 +332,6 @@ asmlinkage __visible void FPU_exception(int n)
 
 	RE_ENTRANT_CHECK_OFF;
 	if ((~control_word & n & CW_Exceptions) || (n == EX_INTERNAL)) {
-<<<<<<< HEAD
-#ifdef PRINT_MESSAGES
-		/* My message from the sponsor */
-		printk(FPU_VERSION " " __DATE__ " (C) W. Metzenthen.\n");
-#endif /* PRINT_MESSAGES */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Get a name string for error reporting */
 		for (i = 0; exception_names[i].type; i++)
 			if ((exception_names[i].type & n) ==
@@ -527,11 +494,7 @@ int real_2op_NaN(FPU_REG const *b, u_char tagb,
 
 /* Invalid arith operation on Valid registers */
 /* Returns < 0 if the exception is unmasked */
-<<<<<<< HEAD
-asmlinkage int arith_invalid(int deststnr)
-=======
 asmlinkage __visible int arith_invalid(int deststnr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	EXCEPTION(EX_Invalid);
@@ -546,11 +509,7 @@ asmlinkage __visible int arith_invalid(int deststnr)
 }
 
 /* Divide a finite number by zero */
-<<<<<<< HEAD
-asmlinkage int FPU_divide_by_zero(int deststnr, u_char sign)
-=======
 asmlinkage __visible int FPU_divide_by_zero(int deststnr, u_char sign)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	FPU_REG *dest = &st(deststnr);
 	int tag = TAG_Valid;
@@ -582,11 +541,7 @@ int set_precision_flag(int flags)
 }
 
 /* This may be called often, so keep it lean */
-<<<<<<< HEAD
-asmlinkage void set_precision_flag_up(void)
-=======
 asmlinkage __visible void set_precision_flag_up(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (control_word & CW_Precision)
 		partial_status |= (SW_Precision | SW_C1);	/* The masked response */
@@ -595,11 +550,7 @@ asmlinkage __visible void set_precision_flag_up(void)
 }
 
 /* This may be called often, so keep it lean */
-<<<<<<< HEAD
-asmlinkage void set_precision_flag_down(void)
-=======
 asmlinkage __visible void set_precision_flag_down(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (control_word & CW_Precision) {	/* The masked response */
 		partial_status &= ~SW_C1;
@@ -608,11 +559,7 @@ asmlinkage __visible void set_precision_flag_down(void)
 		EXCEPTION(EX_Precision);
 }
 
-<<<<<<< HEAD
-asmlinkage int denormal_operand(void)
-=======
 asmlinkage __visible int denormal_operand(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (control_word & CW_Denormal) {	/* The masked response */
 		partial_status |= SW_Denorm_Op;
@@ -623,11 +570,7 @@ asmlinkage __visible int denormal_operand(void)
 	}
 }
 
-<<<<<<< HEAD
-asmlinkage int arith_overflow(FPU_REG *dest)
-=======
 asmlinkage __visible int arith_overflow(FPU_REG *dest)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int tag = TAG_Valid;
 
@@ -655,11 +598,7 @@ asmlinkage __visible int arith_overflow(FPU_REG *dest)
 
 }
 
-<<<<<<< HEAD
-asmlinkage int arith_underflow(FPU_REG *dest)
-=======
 asmlinkage __visible int arith_underflow(FPU_REG *dest)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int tag = TAG_Valid;
 

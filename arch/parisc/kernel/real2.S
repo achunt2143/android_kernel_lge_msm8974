@@ -15,36 +15,6 @@
 
 #include <linux/linkage.h>
 
-<<<<<<< HEAD
-
-	.section	.bss
-
-	.export pdc_result
-	.export pdc_result2
-	.align 8
-pdc_result:
-	.block	ASM_PDC_RESULT_SIZE
-pdc_result2:
-	.block	ASM_PDC_RESULT_SIZE
-
-	.export real_stack
-	.export real32_stack
-	.export real64_stack
-	.align	64
-real_stack:
-real32_stack:
-real64_stack:
-	.block	8192
-
-#ifdef CONFIG_64BIT
-#  define REG_SZ 8
-#else
-#  define REG_SZ 4
-#endif
-
-#define N_SAVED_REGS 9
-
-=======
 	.export real_stack
 	.export real64_stack
 	__PAGE_ALIGNED_BSS
@@ -54,7 +24,6 @@ real64_stack:
 
 #define N_SAVED_REGS 9
 	.section	.bss
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 save_cr_space:
 	.block	REG_SZ * N_SAVED_REGS
 save_cr_end:
@@ -73,11 +42,7 @@ save_cr_end:
 	 *	iodc_fn is the IODC function to call
 	 */
 
-<<<<<<< HEAD
-ENTRY(real32_call_asm)
-=======
 ENTRY_CFI(real32_call_asm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STREG	%rp, -RP_OFFSET(%sp)	/* save RP */
 #ifdef CONFIG_64BIT
 	callee_save
@@ -135,22 +100,14 @@ ric_ret:
 	LDREG	-RP_OFFSET(%sp), %rp	/* restore RP */
 	bv	0(%rp)
 	nop
-<<<<<<< HEAD
-ENDPROC(real32_call_asm)
-=======
 ENDPROC_CFI(real32_call_asm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #  define PUSH_CR(r, where) mfctl r, %r1 ! STREG,ma %r1, REG_SZ(where)
 #  define POP_CR(r, where) LDREG,mb -REG_SZ(where), %r1 ! mtctl %r1, r
 
 	.text
-<<<<<<< HEAD
-save_control_regs:
-=======
 ENTRY_CFI(save_control_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	load32	PA(save_cr_space), %r28
 	PUSH_CR(%cr24, %r28)
 	PUSH_CR(%cr25, %r28)
@@ -163,14 +120,9 @@ ENTRY_CFI(save_control_regs)
 	PUSH_CR(%cr15, %r28)
 	bv 0(%r2)
 	nop
-<<<<<<< HEAD
-
-restore_control_regs:
-=======
 ENDPROC_CFI(save_control_regs)
 
 ENTRY_CFI(restore_control_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	load32	PA(save_cr_end), %r26
 	POP_CR(%cr15, %r26)
 	POP_CR(%cr31, %r26)
@@ -183,22 +135,15 @@ ENTRY_CFI(restore_control_regs)
 	POP_CR(%cr24, %r26)
 	bv 0(%r2)
 	nop
-<<<<<<< HEAD
-=======
 ENDPROC_CFI(restore_control_regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* rfi_virt2real() and rfi_real2virt() could perhaps be adapted for
  * more general-purpose use by the several places which need RFIs
  */
 	.text
 	.align 128
-<<<<<<< HEAD
-rfi_virt2real:
-=======
 ENTRY_CFI(rfi_virt2real)
 #if !defined(BOOTLOADER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* switch to real mode... */
 	rsm		PSW_SM_I,%r0
 	load32		PA(rfi_v2r_1), %r1
@@ -228,14 +173,6 @@ ENTRY_CFI(rfi_virt2real)
 	nop
 rfi_v2r_1:
 	tophys_r1 %r2
-<<<<<<< HEAD
-	bv	0(%r2)
-	nop
-
-	.text
-	.align 128
-rfi_real2virt:
-=======
 #endif /* defined(BOOTLOADER) */
 	bv	0(%r2)
 	nop
@@ -245,7 +182,6 @@ ENDPROC_CFI(rfi_virt2real)
 	.align 128
 ENTRY_CFI(rfi_real2virt)
 #if !defined(BOOTLOADER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rsm		PSW_SM_I,%r0
 	load32		(rfi_r2v_1), %r1
 	nop
@@ -274,15 +210,10 @@ ENTRY_CFI(rfi_real2virt)
 	nop
 rfi_r2v_1:
 	tovirt_r1 %r2
-<<<<<<< HEAD
-	bv	0(%r2)
-	nop
-=======
 #endif /* defined(BOOTLOADER) */
 	bv	0(%r2)
 	nop
 ENDPROC_CFI(rfi_real2virt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 
@@ -296,11 +227,7 @@ ENDPROC_CFI(rfi_real2virt)
 	 *	arg0p points to where saved arg values may be found
 	 *	iodc_fn is the IODC function to call
 	 */
-<<<<<<< HEAD
-ENTRY(real64_call_asm)
-=======
 ENTRY_CFI(real64_call_asm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	std	%rp, -0x10(%sp)		/* save RP */
 	std	%sp, -8(%arg0)		/* save SP on real-mode stack */
 	copy	%arg0, %sp		/* adopt the real-mode SP */
@@ -308,12 +235,6 @@ ENTRY_CFI(real64_call_asm)
 	/* save fn */
 	copy	%arg2, %r31
 
-<<<<<<< HEAD
-	/* set up the new ap */
-	ldo	64(%arg1), %r29
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* load up the arg registers from the saved arg area */
 	/* 32-bit calling convention passes first 4 args in registers */
 	ldd	0*REG_SZ(%arg1), %arg0		/* note overwriting arg0 */
@@ -325,13 +246,9 @@ ENTRY_CFI(real64_call_asm)
 	ldd	7*REG_SZ(%arg1), %r19
 	ldd	1*REG_SZ(%arg1), %arg1		/* do this one last! */
 
-<<<<<<< HEAD
-	tophys_r1 %sp
-=======
 	/* set up real-mode stack and real-mode ap */
 	tophys_r1 %sp
 	ldo	-16(%sp), %r29			/* Reference param save area */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	b,l	rfi_virt2real,%r2
 	nop
@@ -355,11 +272,7 @@ r64_ret:
 	ldd	-0x10(%sp), %rp		/* restore RP */
 	bv	0(%rp)
 	nop
-<<<<<<< HEAD
-ENDPROC(real64_call_asm)
-=======
 ENDPROC_CFI(real64_call_asm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -368,20 +281,12 @@ ENDPROC_CFI(real64_call_asm)
 	**	GCC 3.3 and later has a new function in libgcc.a for
 	**	comparing function pointers.
 	*/
-<<<<<<< HEAD
-ENTRY(__canonicalize_funcptr_for_compare)
-=======
 ENTRY_CFI(__canonicalize_funcptr_for_compare)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_64BIT
 	bve (%r2)
 #else
 	bv %r0(%r2)
 #endif
 	copy %r26,%r28
-<<<<<<< HEAD
-ENDPROC(__canonicalize_funcptr_for_compare)
-=======
 ENDPROC_CFI(__canonicalize_funcptr_for_compare)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

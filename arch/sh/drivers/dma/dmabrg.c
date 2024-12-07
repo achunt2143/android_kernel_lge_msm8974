@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SH7760 DMABRG IRQ handling
  *
  * (c) 2007 MSC Vertriebsges.m.b.H, Manuel Lauss <mlau@msc-ge.com>
-<<<<<<< HEAD
- *  licensed under the GPLv2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -161,11 +153,7 @@ static int __init dmabrg_init(void)
 	unsigned long or;
 	int ret;
 
-<<<<<<< HEAD
-	dmabrg_handlers = kzalloc(10 * sizeof(struct dmabrg_handler),
-=======
 	dmabrg_handlers = kcalloc(10, sizeof(struct dmabrg_handler),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  GFP_KERNEL);
 	if (!dmabrg_handlers)
 		return -ENOMEM;

@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright 2003 H. Peter Anvin - All Rights Reserved
  *
-<<<<<<< HEAD
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, Inc., 53 Temple Place Ste 330,
- *   Boston MA 02111-1307, USA; either version 2 of the License, or
- *   (at your option) any later version; incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 #ifndef LINUX_RAID_RAID6_H
@@ -22,39 +10,19 @@
 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-/* Set to 1 to use kernel-wide empty_zero_page */
-#define RAID6_USE_EMPTY_ZERO_PAGE 0
-#include <linux/blkdev.h>
-
-/* We need a pre-zeroed page... if we don't want to use the kernel-provided
-   one define it here */
-#if RAID6_USE_EMPTY_ZERO_PAGE
-# define raid6_empty_zero_page empty_zero_page
-#else
-extern const char raid6_empty_zero_page[PAGE_SIZE];
-#endif
-=======
 #include <linux/blkdev.h>
 
 extern const char raid6_empty_zero_page[PAGE_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* ! __KERNEL__ */
 /* Used for testing in user space */
 
 #include <errno.h>
 #include <inttypes.h>
-<<<<<<< HEAD
-#include <limits.h>
-#include <stddef.h>
-#include <sys/mman.h>
-=======
 #include <stddef.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/time.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sys/types.h>
 
 /* Not standard, but glibc defines it */
@@ -68,23 +36,16 @@ typedef uint64_t u64;
 #ifndef PAGE_SIZE
 # define PAGE_SIZE 4096
 #endif
-<<<<<<< HEAD
-=======
 #ifndef PAGE_SHIFT
 # define PAGE_SHIFT 12
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const char raid6_empty_zero_page[PAGE_SIZE];
 
 #define __init
 #define __exit
-<<<<<<< HEAD
-#define __attribute_const__ __attribute__((const))
-=======
 #ifndef __attribute_const__
 # define __attribute_const__ __attribute__((const))
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define noinline __attribute__((noinline))
 
 #define preempt_enable()
@@ -93,39 +54,26 @@ extern const char raid6_empty_zero_page[PAGE_SIZE];
 #define enable_kernel_altivec()
 #define disable_kernel_altivec()
 
-<<<<<<< HEAD
-#define EXPORT_SYMBOL(sym)
-=======
 #undef	EXPORT_SYMBOL
 #define EXPORT_SYMBOL(sym)
 #undef	EXPORT_SYMBOL_GPL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXPORT_SYMBOL_GPL(sym)
 #define MODULE_LICENSE(licence)
 #define MODULE_DESCRIPTION(desc)
 #define subsys_initcall(x)
 #define module_exit(x)
-<<<<<<< HEAD
-=======
 
 #define IS_ENABLED(x) (x)
 #define CONFIG_RAID6_PQ_BENCHMARK 1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 
 /* Routine choices */
 struct raid6_calls {
 	void (*gen_syndrome)(int, size_t, void **);
-<<<<<<< HEAD
-	int  (*valid)(void);	/* Returns 1 if this routine set is usable */
-	const char *name;	/* Name of this routine set */
-	int prefer;		/* Has special performance attribute */
-=======
 	void (*xor_syndrome)(int, int, int, size_t, void **);
 	int  (*valid)(void);	/* Returns 1 if this routine set is usable */
 	const char *name;	/* Name of this routine set */
 	int priority;		/* Relative priority ranking if non-zero */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Selected algorithm */
@@ -136,11 +84,6 @@ extern const struct raid6_calls raid6_intx1;
 extern const struct raid6_calls raid6_intx2;
 extern const struct raid6_calls raid6_intx4;
 extern const struct raid6_calls raid6_intx8;
-<<<<<<< HEAD
-extern const struct raid6_calls raid6_intx16;
-extern const struct raid6_calls raid6_intx32;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct raid6_calls raid6_mmxx1;
 extern const struct raid6_calls raid6_mmxx2;
 extern const struct raid6_calls raid6_sse1x1;
@@ -152,11 +95,6 @@ extern const struct raid6_calls raid6_altivec1;
 extern const struct raid6_calls raid6_altivec2;
 extern const struct raid6_calls raid6_altivec4;
 extern const struct raid6_calls raid6_altivec8;
-<<<<<<< HEAD
-
-/* Algorithm list */
-extern const struct raid6_calls * const raid6_algos[];
-=======
 extern const struct raid6_calls raid6_avx2x1;
 extern const struct raid6_calls raid6_avx2x2;
 extern const struct raid6_calls raid6_avx2x4;
@@ -196,7 +134,6 @@ extern const struct raid6_calls raid6_neonx8;
 /* Algorithm list */
 extern const struct raid6_calls * const raid6_algos[];
 extern const struct raid6_recov_calls *const raid6_recov_algos[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int raid6_select_algo(void);
 
 /* Return values from chk_syndrome */
@@ -207,27 +144,17 @@ int raid6_select_algo(void);
 
 /* Galois field tables */
 extern const u8 raid6_gfmul[256][256] __attribute__((aligned(256)));
-<<<<<<< HEAD
-extern const u8 raid6_gfexp[256]      __attribute__((aligned(256)));
-=======
 extern const u8 raid6_vgfmul[256][32] __attribute__((aligned(256)));
 extern const u8 raid6_gfexp[256]      __attribute__((aligned(256)));
 extern const u8 raid6_gflog[256]      __attribute__((aligned(256)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const u8 raid6_gfinv[256]      __attribute__((aligned(256)));
 extern const u8 raid6_gfexi[256]      __attribute__((aligned(256)));
 
 /* Recovery routines */
-<<<<<<< HEAD
-void raid6_2data_recov(int disks, size_t bytes, int faila, int failb,
-		       void **ptrs);
-void raid6_datap_recov(int disks, size_t bytes, int faila, void **ptrs);
-=======
 extern void (*raid6_2data_recov)(int disks, size_t bytes, int faila, int failb,
 		       void **ptrs);
 extern void (*raid6_datap_recov)(int disks, size_t bytes, int faila,
 			void **ptrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void raid6_dual_recov(int disks, size_t bytes, int faila, int failb,
 		      void **ptrs);
 
@@ -236,11 +163,8 @@ void raid6_dual_recov(int disks, size_t bytes, int faila, int failb,
 
 # define jiffies	raid6_jiffies()
 # define printk 	printf
-<<<<<<< HEAD
-=======
 # define pr_err(format, ...) fprintf(stderr, format, ## __VA_ARGS__)
 # define pr_info(format, ...) fprintf(stdout, format, ## __VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define GFP_KERNEL	0
 # define __get_free_pages(x, y)	((unsigned long)mmap(NULL, PAGE_SIZE << (y), \
 						     PROT_READ|PROT_WRITE,   \

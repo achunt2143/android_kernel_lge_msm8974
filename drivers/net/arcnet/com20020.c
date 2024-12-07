@@ -1,10 +1,6 @@
 /*
  * Linux ARCnet driver - COM20020 chipset support
-<<<<<<< HEAD
- * 
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written 1997 by David Woodhouse.
  * Written 1994-1999 by Avery Pennarun.
  * Written 1999 by Martin Mares <mj@ucw.cz>.
@@ -29,12 +25,9 @@
  *
  * **********************
  */
-<<<<<<< HEAD
-=======
 
 #define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -44,19 +37,6 @@
 #include <linux/netdevice.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/arcdevice.h>
-#include <linux/com20020.h>
-
-#include <asm/io.h>
-
-#define VERSION "arcnet: COM20020 chipset support (by David Woodhouse et al.)\n"
-
-static char *clockrates[] =
-{"10 Mb/s", "Reserved", "5 Mb/s",
- "2.5 Mb/s", "1.25Mb/s", "625 Kb/s", "312.5 Kb/s",
- "156.25 Kb/s", "Reserved", "Reserved", "Reserved"};
-=======
 #include <linux/io.h>
 
 #include "arcdevice.h"
@@ -67,7 +47,6 @@ static const char * const clockrates[] = {
 	"1.25Mb/s", "625 Kb/s", "312.5 Kb/s", "156.25 Kb/s",
 	"Reserved", "Reserved", "Reserved"
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void com20020_command(struct net_device *dev, int command);
 static int com20020_status(struct net_device *dev);
@@ -86,16 +65,6 @@ static void com20020_copy_from_card(struct net_device *dev, int bufnum,
 	int ioaddr = dev->base_addr, ofs = 512 * bufnum + offset;
 
 	/* set up the address register */
-<<<<<<< HEAD
-	outb((ofs >> 8) | RDDATAflag | AUTOINCflag, _ADDR_HI);
-	outb(ofs & 0xff, _ADDR_LO);
-
-	/* copy the data */
-	TIME("insb", count, insb(_MEMDATA, buf, count));
-}
-
-
-=======
 	arcnet_outb((ofs >> 8) | RDDATAflag | AUTOINCflag,
 		    ioaddr, COM20020_REG_W_ADDR_HI);
 	arcnet_outb(ofs & 0xff, ioaddr, COM20020_REG_W_ADDR_LO);
@@ -105,23 +74,12 @@ static void com20020_copy_from_card(struct net_device *dev, int bufnum,
 	     arcnet_insb(ioaddr, COM20020_REG_RW_MEMDATA, buf, count));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void com20020_copy_to_card(struct net_device *dev, int bufnum,
 				  int offset, void *buf, int count)
 {
 	int ioaddr = dev->base_addr, ofs = 512 * bufnum + offset;
 
 	/* set up the address register */
-<<<<<<< HEAD
-	outb((ofs >> 8) | AUTOINCflag, _ADDR_HI);
-	outb(ofs & 0xff, _ADDR_LO);
-
-	/* copy the data */
-	TIME("outsb", count, outsb(_MEMDATA, buf, count));
-}
-
-
-=======
 	arcnet_outb((ofs >> 8) | AUTOINCflag, ioaddr, COM20020_REG_W_ADDR_HI);
 	arcnet_outb(ofs & 0xff, ioaddr, COM20020_REG_W_ADDR_LO);
 
@@ -130,20 +88,15 @@ static void com20020_copy_to_card(struct net_device *dev, int bufnum,
 	     arcnet_outsb(ioaddr, COM20020_REG_RW_MEMDATA, buf, count));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reset the card and check some basic stuff during the detection stage. */
 int com20020_check(struct net_device *dev)
 {
 	int ioaddr = dev->base_addr, status;
 	struct arcnet_local *lp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	ARCRESET0;
-=======
 	arcnet_outb(XTOcfg(3) | RESETcfg, ioaddr, COM20020_REG_W_CONFIG);
 	udelay(5);
 	arcnet_outb(XTOcfg(3), ioaddr, COM20020_REG_W_CONFIG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdelay(RESETtime);
 
 	lp->setup = lp->clockm ? 0 : (lp->clockp << 1);
@@ -153,51 +106,6 @@ int com20020_check(struct net_device *dev)
 	/* Enable P1Mode for backplane mode */
 	lp->setup = lp->setup | P1MODE;
 
-<<<<<<< HEAD
-	SET_SUBADR(SUB_SETUP1);
-	outb(lp->setup, _XREG);
-
-	if (lp->clockm != 0)
-	{
-		SET_SUBADR(SUB_SETUP2);
-		outb(lp->setup2, _XREG);
-	
-		/* must now write the magic "restart operation" command */
-		mdelay(1);
-		outb(0x18, _COMMAND);
-	}
-
-	lp->config = 0x21 | (lp->timeout << 3) | (lp->backplane << 2);
-	/* set node ID to 0x42 (but transmitter is disabled, so it's okay) */
-	SETCONF;
-	outb(0x42, ioaddr + BUS_ALIGN*7);
-
-	status = ASTATUS();
-
-	if ((status & 0x99) != (NORXflag | TXFREEflag | RESETflag)) {
-		BUGMSG(D_NORMAL, "status invalid (%Xh).\n", status);
-		return -ENODEV;
-	}
-	BUGMSG(D_INIT_REASONS, "status after reset: %X\n", status);
-
-	/* Enable TX */
-	outb(0x39, _CONFIG);
-	outb(inb(ioaddr + BUS_ALIGN*8), ioaddr + BUS_ALIGN*7);
-
-	ACOMMAND(CFLAGScmd | RESETclear | CONFIGclear);
-
-	status = ASTATUS();
-	BUGMSG(D_INIT_REASONS, "status after reset acknowledged: %X\n",
-	       status);
-
-	/* Read first location of memory */
-	outb(0 | RDDATAflag | AUTOINCflag, _ADDR_HI);
-	outb(0, _ADDR_LO);
-
-	if ((status = inb(_MEMDATA)) != TESTvalue) {
-		BUGMSG(D_NORMAL, "Signature byte not found (%02Xh != D1h).\n",
-		       status);
-=======
 	com20020_set_subaddress(lp, ioaddr, SUB_SETUP1);
 	arcnet_outb(lp->setup, ioaddr, COM20020_REG_W_XREG);
 
@@ -238,19 +146,11 @@ int com20020_check(struct net_device *dev)
 	if (status != TESTvalue) {
 		arc_printk(D_NORMAL, dev, "Signature byte not found (%02Xh != D1h).\n",
 			   status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-const struct net_device_ops com20020_netdev_ops = {
-	.ndo_open	= arcnet_open,
-	.ndo_stop	= arcnet_close,
-	.ndo_start_xmit = arcnet_send_packet,
-	.ndo_tx_timeout = arcnet_timeout,
-=======
 static int com20020_set_hwaddr(struct net_device *dev, void *addr)
 {
 	int ioaddr = dev->base_addr;
@@ -294,7 +194,6 @@ const struct net_device_ops com20020_netdev_ops = {
 	.ndo_start_xmit = arcnet_send_packet,
 	.ndo_tx_timeout = arcnet_timeout,
 	.ndo_set_mac_address = com20020_set_hwaddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_rx_mode = com20020_set_mc_list,
 };
 
@@ -319,28 +218,6 @@ int com20020_found(struct net_device *dev, int shared)
 	lp->hw.copy_from_card = com20020_copy_from_card;
 	lp->hw.close = com20020_close;
 
-<<<<<<< HEAD
-	if (!dev->dev_addr[0])
-		dev->dev_addr[0] = inb(ioaddr + BUS_ALIGN*8);	/* FIXME: do this some other way! */
-
-	SET_SUBADR(SUB_SETUP1);
-	outb(lp->setup, _XREG);
-
-	if (lp->card_flags & ARC_CAN_10MBIT)
-	{
-		SET_SUBADR(SUB_SETUP2);
-		outb(lp->setup2, _XREG);
-	
-		/* must now write the magic "restart operation" command */
-		mdelay(1);
-		outb(0x18, _COMMAND);
-	}
-
-	lp->config = 0x20 | (lp->timeout << 3) | (lp->backplane << 2) | 1;
-	/* Default 0x38 + register: Node ID */
-	SETCONF;
-	outb(dev->dev_addr[0], _XREG);
-=======
 	/* FIXME: do this some other way! */
 	if (!dev->dev_addr[0])
 		arcnet_set_addr(dev, arcnet_inb(ioaddr, 8));
@@ -361,31 +238,10 @@ int com20020_found(struct net_device *dev, int shared)
 	/* Default 0x38 + register: Node ID */
 	arcnet_outb(lp->config, ioaddr, COM20020_REG_W_CONFIG);
 	arcnet_outb(dev->dev_addr[0], ioaddr, COM20020_REG_W_XREG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reserve the irq */
 	if (request_irq(dev->irq, arcnet_interrupt, shared,
 			"arcnet (COM20020)", dev)) {
-<<<<<<< HEAD
-		BUGMSG(D_NORMAL, "Can't get IRQ %d!\n", dev->irq);
-		return -ENODEV;
-	}
-
-	dev->base_addr = ioaddr;
-
-	BUGMSG(D_NORMAL, "%s: station %02Xh found at %03lXh, IRQ %d.\n",
-	       lp->card_name, dev->dev_addr[0], dev->base_addr, dev->irq);
-
-	if (lp->backplane)
-		BUGMSG(D_NORMAL, "Using backplane mode.\n");
-
-	if (lp->timeout != 3)
-		BUGMSG(D_NORMAL, "Using extended timeout value of %d.\n", lp->timeout);
-
-	BUGMSG(D_NORMAL, "Using CKP %d - data rate %s.\n",
-	       lp->setup >> 1, 
-	       clockrates[3 - ((lp->setup2 & 0xF0) >> 4) + ((lp->setup & 0x0F) >> 1)]);
-=======
 		arc_printk(D_NORMAL, dev, "Can't get IRQ %d!\n", dev->irq);
 		return -ENODEV;
 	}
@@ -408,7 +264,6 @@ int com20020_found(struct net_device *dev, int shared)
 			/* The clockrates array index looks very fragile.
 			 * It seems like it could have negative indexing.
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (register_netdev(dev)) {
 		free_irq(dev->irq, dev);
@@ -417,15 +272,8 @@ int com20020_found(struct net_device *dev, int shared)
 	return 0;
 }
 
-<<<<<<< HEAD
-
-/* 
- * Do a hardware reset on the card, and set up necessary registers.
- * 
-=======
 /* Do a hardware reset on the card, and set up necessary registers.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This should be called as little as possible, because it disrupts the
  * token on the network (causes a RECON) and requires a significant delay.
  *
@@ -437,41 +285,6 @@ static int com20020_reset(struct net_device *dev, int really_reset)
 	u_int ioaddr = dev->base_addr;
 	u_char inbyte;
 
-<<<<<<< HEAD
-	BUGMSG(D_DEBUG, "%s: %d: %s: dev: %p, lp: %p, dev->name: %s\n",
-		__FILE__,__LINE__,__func__,dev,lp,dev->name);
-	BUGMSG(D_INIT, "Resetting %s (status=%02Xh)\n",
-	       dev->name, ASTATUS());
-
-	BUGMSG(D_DEBUG, "%s: %d: %s\n",__FILE__,__LINE__,__func__);
-	lp->config = TXENcfg | (lp->timeout << 3) | (lp->backplane << 2);
-	/* power-up defaults */
-	SETCONF;
-	BUGMSG(D_DEBUG, "%s: %d: %s\n",__FILE__,__LINE__,__func__);
-
-	if (really_reset) {
-		/* reset the card */
-		ARCRESET;
-		mdelay(RESETtime * 2);	/* COM20020 seems to be slower sometimes */
-	}
-	/* clear flags & end reset */
-	BUGMSG(D_DEBUG, "%s: %d: %s\n",__FILE__,__LINE__,__func__);
-	ACOMMAND(CFLAGScmd | RESETclear | CONFIGclear);
-
-	/* verify that the ARCnet signature byte is present */
-	BUGMSG(D_DEBUG, "%s: %d: %s\n",__FILE__,__LINE__,__func__);
-
-	com20020_copy_from_card(dev, 0, 0, &inbyte, 1);
-	BUGMSG(D_DEBUG, "%s: %d: %s\n",__FILE__,__LINE__,__func__);
-	if (inbyte != TESTvalue) {
-		BUGMSG(D_DEBUG, "%s: %d: %s\n",__FILE__,__LINE__,__func__);
-		BUGMSG(D_NORMAL, "reset failed: TESTvalue not present.\n");
-		return 1;
-	}
-	/* enable extended (512-byte) packets */
-	ACOMMAND(CONFIGcmd | EXTconf);
-	BUGMSG(D_DEBUG, "%s: %d: %s\n",__FILE__,__LINE__,__func__);
-=======
 	arc_printk(D_DEBUG, dev, "%s: %d: %s: dev: %p, lp: %p, dev->name: %s\n",
 		   __FILE__, __LINE__, __func__, dev, lp, dev->name);
 	arc_printk(D_INIT, dev, "Resetting %s (status=%02Xh)\n",
@@ -511,22 +324,11 @@ static int com20020_reset(struct net_device *dev, int really_reset)
 	arcnet_outb(CONFIGcmd | EXTconf, ioaddr, COM20020_REG_W_COMMAND);
 
 	arc_printk(D_DEBUG, dev, "%s: %d: %s\n", __FILE__, __LINE__, __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* done!  return success. */
 	return 0;
 }
 
-<<<<<<< HEAD
-
-static void com20020_setmask(struct net_device *dev, int mask)
-{
-	u_int ioaddr = dev->base_addr;
-	BUGMSG(D_DURING, "Setting mask to %x at %x\n",mask,ioaddr);
-	AINTMASK(mask);
-}
-
-=======
 static void com20020_setmask(struct net_device *dev, int mask)
 {
 	u_int ioaddr = dev->base_addr;
@@ -534,31 +336,20 @@ static void com20020_setmask(struct net_device *dev, int mask)
 	arc_printk(D_DURING, dev, "Setting mask to %x at %x\n", mask, ioaddr);
 	arcnet_outb(mask, ioaddr, COM20020_REG_W_INTMASK);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void com20020_command(struct net_device *dev, int cmd)
 {
 	u_int ioaddr = dev->base_addr;
-<<<<<<< HEAD
-	ACOMMAND(cmd);
-}
-
-=======
 
 	arcnet_outb(cmd, ioaddr, COM20020_REG_W_COMMAND);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int com20020_status(struct net_device *dev)
 {
 	u_int ioaddr = dev->base_addr;
 
-<<<<<<< HEAD
-	return ASTATUS() + (ADIAGSTATUS()<<8);
-=======
 	return arcnet_inb(ioaddr, COM20020_REG_R_STATUS) +
 		(arcnet_inb(ioaddr, COM20020_REG_R_DIAGSTAT) << 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void com20020_close(struct net_device *dev)
@@ -568,11 +359,7 @@ static void com20020_close(struct net_device *dev)
 
 	/* disable transmitter */
 	lp->config &= ~TXENcfg;
-<<<<<<< HEAD
-	SETCONF;
-=======
 	arcnet_outb(lp->config, ioaddr, COM20020_REG_W_CONFIG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Set or clear the multicast filter for this adaptor.
@@ -587,22 +374,6 @@ static void com20020_set_mc_list(struct net_device *dev)
 	struct arcnet_local *lp = netdev_priv(dev);
 	int ioaddr = dev->base_addr;
 
-<<<<<<< HEAD
-	if ((dev->flags & IFF_PROMISC) && (dev->flags & IFF_UP)) {	/* Enable promiscuous mode */
-		if (!(lp->setup & PROMISCset))
-			BUGMSG(D_NORMAL, "Setting promiscuous flag...\n");
-		SET_SUBADR(SUB_SETUP1);
-		lp->setup |= PROMISCset;
-		outb(lp->setup, _XREG);
-	} else
-		/* Disable promiscuous mode, use normal mode */
-	{
-		if ((lp->setup & PROMISCset))
-			BUGMSG(D_NORMAL, "Resetting promiscuous flag...\n");
-		SET_SUBADR(SUB_SETUP1);
-		lp->setup &= ~PROMISCset;
-		outb(lp->setup, _XREG);
-=======
 	if ((dev->flags & IFF_PROMISC) && (dev->flags & IFF_UP)) {
 		/* Enable promiscuous mode */
 		if (!(lp->setup & PROMISCset))
@@ -617,7 +388,6 @@ static void com20020_set_mc_list(struct net_device *dev)
 		com20020_set_subaddress(lp, ioaddr, SUB_SETUP1);
 		lp->setup &= ~PROMISCset;
 		arcnet_outb(lp->setup, ioaddr, COM20020_REG_W_XREG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -629,22 +399,15 @@ EXPORT_SYMBOL(com20020_found);
 EXPORT_SYMBOL(com20020_netdev_ops);
 #endif
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("ARCnet COM20020 chipset core driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 #ifdef MODULE
 
 static int __init com20020_module_init(void)
 {
-<<<<<<< HEAD
-	BUGLVL(D_NORMAL) printk(VERSION);
-=======
 	if (BUGLVL(D_NORMAL))
 		pr_info("%s\n", "COM20020 chipset support (by David Woodhouse et al.)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

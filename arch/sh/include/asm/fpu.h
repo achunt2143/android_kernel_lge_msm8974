@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_FPU_H
 #define __ASM_SH_FPU_H
 
 #ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-=======
 #include <asm/ptrace.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct task_struct;
 
 #ifdef CONFIG_SH_FPU
@@ -43,14 +37,6 @@ struct user_regset;
 extern int do_fpu_inst(unsigned short, struct pt_regs *);
 extern int init_fpu(struct task_struct *);
 
-<<<<<<< HEAD
-extern int fpregs_get(struct task_struct *target,
-		      const struct user_regset *regset,
-		      unsigned int pos, unsigned int count,
-		      void *kbuf, void __user *ubuf);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __unlazy_fpu(struct task_struct *tsk, struct pt_regs *regs)
 {
 	if (task_thread_info(tsk)->status & TS_USEDFPU) {
@@ -58,11 +44,7 @@ static inline void __unlazy_fpu(struct task_struct *tsk, struct pt_regs *regs)
 		save_fpu(tsk);
 		release_fpu(regs);
 	} else
-<<<<<<< HEAD
-		tsk->fpu_counter = 0;
-=======
 		tsk->thread.fpu_counter = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void unlazy_fpu(struct task_struct *tsk, struct pt_regs *regs)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_mark
  *
@@ -48,11 +45,7 @@ static int ebt_mark_tg_check(const struct xt_tgchk_param *par)
 	tmp = info->target | ~EBT_VERDICT_BITS;
 	if (BASE_CHAIN && tmp == EBT_RETURN)
 		return -EINVAL;
-<<<<<<< HEAD
-	if (tmp < -NUM_STANDARD_TARGETS || tmp >= 0)
-=======
 	if (ebt_invalid_target(tmp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	tmp = info->target & ~EBT_VERDICT_BITS;
 	if (tmp != MARK_SET_VALUE && tmp != MARK_OR_VALUE &&
@@ -60,11 +53,7 @@ static int ebt_mark_tg_check(const struct xt_tgchk_param *par)
 		return -EINVAL;
 	return 0;
 }
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct compat_ebt_mark_t_info {
 	compat_ulong_t mark;
 	compat_uint_t target;
@@ -98,11 +87,7 @@ static struct xt_target ebt_mark_tg_reg __read_mostly = {
 	.target		= ebt_mark_tg,
 	.checkentry	= ebt_mark_tg_check,
 	.targetsize	= sizeof(struct ebt_mark_t_info),
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.compatsize	= sizeof(struct compat_ebt_mark_t_info),
 	.compat_from_user = mark_tg_compat_from_user,
 	.compat_to_user	= mark_tg_compat_to_user,

@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* netsc520.c -- MTD map driver for AMD NetSc520 Demonstration Board
  *
  * Copyright (C) 2001 Mark Langsdorf (mark.langsdorf@amd.com)
  *	based on sc520cdp.c by Sysgo Real-Time Solutions GmbH
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The NetSc520 is a demonstration board for the Elan Sc520 processor available
  * from AMD.  It has a single back of 16 megs of 32-bit Flash ROM and another
  * 16 megs of SDRAM.
@@ -59,11 +39,7 @@
 /* partition_info gives details on the logical partitions that the split the
  * single flash device into. If the size if zero we use up to the end of the
  * device. */
-<<<<<<< HEAD
-static struct mtd_partition partition_info[]={
-=======
 static const struct mtd_partition partition_info[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     {
 	    .name = "NetSc520 boot kernel",
 	    .offset = 0,
@@ -106,17 +82,10 @@ static int __init init_netsc520(void)
 	printk(KERN_NOTICE "NetSc520 flash device: 0x%Lx at 0x%Lx\n",
 			(unsigned long long)netsc520_map.size,
 			(unsigned long long)netsc520_map.phys);
-<<<<<<< HEAD
-	netsc520_map.virt = ioremap_nocache(netsc520_map.phys, netsc520_map.size);
-
-	if (!netsc520_map.virt) {
-		printk("Failed to ioremap_nocache\n");
-=======
 	netsc520_map.virt = ioremap(netsc520_map.phys, netsc520_map.size);
 
 	if (!netsc520_map.virt) {
 		printk("Failed to ioremap\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 

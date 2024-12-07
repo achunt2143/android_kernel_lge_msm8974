@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/vfat/namei.c
  *
@@ -20,15 +17,6 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/jiffies.h>
-#include <linux/ctype.h>
-#include <linux/slab.h>
-#include <linux/buffer_head.h>
-#include <linux/namei.h>
-#include "fat.h"
-
-=======
 #include <linux/ctype.h>
 #include <linux/slab.h>
 #include <linux/namei.h>
@@ -47,7 +35,6 @@ static inline void vfat_d_version_set(struct dentry *dentry,
 	dentry->d_fsdata = (void *) version;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If new entry was created in the parent, it could create the 8.3
  * alias (the shortname of logname).  So, the parent may have the
@@ -60,11 +47,7 @@ static int vfat_revalidate_shortname(struct dentry *dentry)
 {
 	int ret = 1;
 	spin_lock(&dentry->d_lock);
-<<<<<<< HEAD
-	if (dentry->d_time != dentry->d_parent->d_inode->i_version)
-=======
 	if (!inode_eq_iversion(d_inode(dentry->d_parent), vfat_d_version(dentry)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0;
 	spin_unlock(&dentry->d_lock);
 	return ret;
@@ -76,11 +59,7 @@ static int vfat_revalidate(struct dentry *dentry, unsigned int flags)
 		return -ECHILD;
 
 	/* This is not negative dentry. Always valid. */
-<<<<<<< HEAD
-	if (dentry->d_inode)
-=======
 	if (d_really_is_positive(dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return vfat_revalidate_shortname(dentry);
 }
@@ -100,11 +79,7 @@ static int vfat_revalidate_ci(struct dentry *dentry, unsigned int flags)
 	 * positive dentry isn't good idea. So it's unsupported like
 	 * rename("filename", "FILENAME") for now.
 	 */
-<<<<<<< HEAD
-	if (dentry->d_inode)
-=======
 	if (d_really_is_positive(dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	/*
@@ -144,16 +119,9 @@ static unsigned int vfat_striptail_len(const struct qstr *qstr)
  * that the existing dentry can be used. The vfat fs routines will
  * return ENOENT or EINVAL as appropriate.
  */
-<<<<<<< HEAD
-static int vfat_hash(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *qstr)
-{
-	qstr->hash = full_name_hash(qstr->name, vfat_striptail_len(qstr));
-=======
 static int vfat_hash(const struct dentry *dentry, struct qstr *qstr)
 {
 	qstr->hash = full_name_hash(dentry, qstr->name, vfat_striptail_len(qstr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -163,12 +131,7 @@ static int vfat_hash(const struct dentry *dentry, struct qstr *qstr)
  * that the existing dentry can be used. The vfat fs routines will
  * return ENOENT or EINVAL as appropriate.
  */
-<<<<<<< HEAD
-static int vfat_hashi(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *qstr)
-=======
 static int vfat_hashi(const struct dentry *dentry, struct qstr *qstr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nls_table *t = MSDOS_SB(dentry->d_sb)->nls_io;
 	const unsigned char *name;
@@ -178,11 +141,7 @@ static int vfat_hashi(const struct dentry *dentry, struct qstr *qstr)
 	name = qstr->name;
 	len = vfat_striptail_len(qstr);
 
-<<<<<<< HEAD
-	hash = init_name_hash();
-=======
 	hash = init_name_hash(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (len--)
 		hash = partial_name_hash(nls_tolower(t, *name++), hash);
 	qstr->hash = end_name_hash(hash);
@@ -193,18 +152,10 @@ static int vfat_hashi(const struct dentry *dentry, struct qstr *qstr)
 /*
  * Case insensitive compare of two vfat names.
  */
-<<<<<<< HEAD
-static int vfat_cmpi(const struct dentry *parent, const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-		unsigned int len, const char *str, const struct qstr *name)
-{
-	struct nls_table *t = MSDOS_SB(parent->d_sb)->nls_io;
-=======
 static int vfat_cmpi(const struct dentry *dentry,
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	struct nls_table *t = MSDOS_SB(dentry->d_sb)->nls_io;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int alen, blen;
 
 	/* A filename cannot end in '.' or we treat it like it has none */
@@ -220,12 +171,7 @@ static int vfat_cmpi(const struct dentry *dentry,
 /*
  * Case sensitive compare of two vfat names.
  */
-<<<<<<< HEAD
-static int vfat_cmp(const struct dentry *parent, const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-=======
 static int vfat_cmp(const struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	unsigned int alen, blen;
@@ -254,11 +200,7 @@ static const struct dentry_operations vfat_dentry_ops = {
 
 /* Characters that are undesirable in an MS-DOS file name */
 
-<<<<<<< HEAD
-static inline wchar_t vfat_bad_char(wchar_t w)
-=======
 static inline bool vfat_bad_char(wchar_t w)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (w < 0x0020)
 	    || (w == '*') || (w == '?') || (w == '<') || (w == '>')
@@ -266,11 +208,7 @@ static inline bool vfat_bad_char(wchar_t w)
 	    || (w == '\\');
 }
 
-<<<<<<< HEAD
-static inline wchar_t vfat_replace_char(wchar_t w)
-=======
 static inline bool vfat_replace_char(wchar_t w)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (w == '[') || (w == ']') || (w == ';') || (w == ',')
 	    || (w == '+') || (w == '=');
@@ -575,15 +513,8 @@ xlate_to_uni(const unsigned char *name, int len, unsigned char *outname,
 	     struct nls_table *nls)
 {
 	const unsigned char *ip;
-<<<<<<< HEAD
-	unsigned char nc;
-	unsigned char *op;
-	unsigned int ec;
-	int i, k, fill;
-=======
 	unsigned char *op;
 	int i, fill;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int charlen;
 
 	if (utf8) {
@@ -600,30 +531,6 @@ xlate_to_uni(const unsigned char *name, int len, unsigned char *outname,
 			 i < len && *outlen < FAT_LFN_LEN;
 			 *outlen += 1) {
 			if (escape && (*ip == ':')) {
-<<<<<<< HEAD
-				if (i > len - 5)
-					return -EINVAL;
-				ec = 0;
-				for (k = 1; k < 5; k++) {
-					nc = ip[k];
-					ec <<= 4;
-					if (nc >= '0' && nc <= '9') {
-						ec |= nc - '0';
-						continue;
-					}
-					if (nc >= 'a' && nc <= 'f') {
-						ec |= nc - ('a' - 10);
-						continue;
-					}
-					if (nc >= 'A' && nc <= 'F') {
-						ec |= nc - ('A' - 10);
-						continue;
-					}
-					return -EINVAL;
-				}
-				*op++ = ec & 0xFF;
-				*op++ = ec >> 8;
-=======
 				u8 uc[2];
 
 				if (i > len - 5)
@@ -635,16 +542,11 @@ xlate_to_uni(const unsigned char *name, int len, unsigned char *outname,
 				*(wchar_t *)op = uc[0] << 8 | uc[1];
 
 				op += 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ip += 5;
 				i += 5;
 			} else {
 				charlen = nls->char2uni(ip, len - i,
-<<<<<<< HEAD
-									(wchar_t *)op);
-=======
 							(wchar_t *)op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (charlen < 0)
 					return -EINVAL;
 				ip += charlen;
@@ -676,11 +578,7 @@ xlate_to_uni(const unsigned char *name, int len, unsigned char *outname,
 
 static int vfat_build_slots(struct inode *dir, const unsigned char *name,
 			    int len, int is_dir, int cluster,
-<<<<<<< HEAD
-			    struct timespec *ts,
-=======
 			    struct timespec64 *ts,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    struct msdos_dir_slot *slots, int *nr_slots)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(dir->i_sb);
@@ -748,25 +646,15 @@ shortname:
 	de->time = de->ctime = time;
 	de->date = de->cdate = de->adate = date;
 	de->ctime_cs = time_cs;
-<<<<<<< HEAD
-	de->start = cpu_to_le16(cluster);
-	de->starthi = cpu_to_le16(cluster >> 16);
-=======
 	fat_set_start(de, cluster);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	de->size = 0;
 out_free:
 	__putname(uname);
 	return err;
 }
 
-<<<<<<< HEAD
-static int vfat_add_entry(struct inode *dir, struct qstr *qname, int is_dir,
-			  int cluster, struct timespec *ts,
-=======
 static int vfat_add_entry(struct inode *dir, const struct qstr *qname,
 			  int is_dir, int cluster, struct timespec64 *ts,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct fat_slot_info *sinfo)
 {
 	struct msdos_dir_slot *slots;
@@ -777,11 +665,7 @@ static int vfat_add_entry(struct inode *dir, const struct qstr *qname,
 	if (len == 0)
 		return -ENOENT;
 
-<<<<<<< HEAD
-	slots = kmalloc(sizeof(*slots) * MSDOS_SLOTS, GFP_NOFS);
-=======
 	slots = kmalloc_array(MSDOS_SLOTS, sizeof(*slots), GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (slots == NULL)
 		return -ENOMEM;
 
@@ -795,11 +679,7 @@ static int vfat_add_entry(struct inode *dir, const struct qstr *qname,
 		goto cleanup;
 
 	/* update timestamp */
-<<<<<<< HEAD
-	dir->i_ctime = dir->i_mtime = dir->i_atime = *ts;
-=======
 	fat_truncate_time(dir, ts, S_CTIME|S_MTIME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_DIRSYNC(dir))
 		(void)fat_sync_inode(dir);
 	else
@@ -809,11 +689,7 @@ cleanup:
 	return err;
 }
 
-<<<<<<< HEAD
-static int vfat_find(struct inode *dir, struct qstr *qname,
-=======
 static int vfat_find(struct inode *dir, const struct qstr *qname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     struct fat_slot_info *sinfo)
 {
 	unsigned int len = vfat_striptail_len(qname);
@@ -822,18 +698,6 @@ static int vfat_find(struct inode *dir, const struct qstr *qname,
 	return fat_search_long(dir, qname->name, len, sinfo);
 }
 
-<<<<<<< HEAD
-/*
- * (nfsd's) anonymous disconnected dentry?
- * NOTE: !IS_ROOT() is not anonymous (I.e. d_splice_alias() did the job).
- */
-static int vfat_d_anon_disconn(struct dentry *dentry)
-{
-	return IS_ROOT(dentry) && (dentry->d_flags & DCACHE_DISCONNECTED);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dentry *vfat_lookup(struct inode *dir, struct dentry *dentry,
 				  unsigned int flags)
 {
@@ -843,11 +707,7 @@ static struct dentry *vfat_lookup(struct inode *dir, struct dentry *dentry,
 	struct dentry *alias;
 	int err;
 
-<<<<<<< HEAD
-	lock_super(sb);
-=======
 	mutex_lock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = vfat_find(dir, &dentry->d_name, &sinfo);
 	if (err) {
@@ -866,15 +726,11 @@ static struct dentry *vfat_lookup(struct inode *dir, struct dentry *dentry,
 	}
 
 	alias = d_find_alias(inode);
-<<<<<<< HEAD
-	if (alias && !vfat_d_anon_disconn(alias)) {
-=======
 	/*
 	 * Checking "alias->d_parent == dentry->d_parent" to make sure
 	 * FS is not corrupted (especially double linked dir).
 	 */
 	if (alias && alias->d_parent == dentry->d_parent) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This inode has non anonymous-DCACHE_DISCONNECTED
 		 * dentry. This means, the user did ->lookup() by an
@@ -882,39 +738,15 @@ static struct dentry *vfat_lookup(struct inode *dir, struct dentry *dentry,
 		 *
 		 * Switch to new one for reason of locality if possible.
 		 */
-<<<<<<< HEAD
-		BUG_ON(d_unhashed(alias));
-		if (!S_ISDIR(inode->i_mode))
-			d_move(alias, dentry);
-		iput(inode);
-		unlock_super(sb);
-=======
 		if (!S_ISDIR(inode->i_mode))
 			d_move(alias, dentry);
 		iput(inode);
 		mutex_unlock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return alias;
 	} else
 		dput(alias);
 
 out:
-<<<<<<< HEAD
-	unlock_super(sb);
-	dentry->d_time = dentry->d_parent->d_inode->i_version;
-	dentry = d_splice_alias(inode, dentry);
-	if (dentry)
-		dentry->d_time = dentry->d_parent->d_inode->i_version;
-	return dentry;
-
-error:
-	unlock_super(sb);
-	return ERR_PTR(err);
-}
-
-static int vfat_create(struct inode *dir, struct dentry *dentry, umode_t mode,
-		       bool excl)
-=======
 	mutex_unlock(&MSDOS_SB(sb)->s_lock);
 	if (!inode)
 		vfat_d_version_set(dentry, inode_query_iversion(dir));
@@ -926,23 +758,10 @@ error:
 
 static int vfat_create(struct mnt_idmap *idmap, struct inode *dir,
 		       struct dentry *dentry, umode_t mode, bool excl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = dir->i_sb;
 	struct inode *inode;
 	struct fat_slot_info sinfo;
-<<<<<<< HEAD
-	struct timespec ts;
-	int err;
-
-	lock_super(sb);
-
-	ts = CURRENT_TIME_SEC;
-	err = vfat_add_entry(dir, &dentry->d_name, 0, 0, &ts, &sinfo);
-	if (err)
-		goto out;
-	dir->i_version++;
-=======
 	struct timespec64 ts;
 	int err;
 
@@ -953,7 +772,6 @@ static int vfat_create(struct mnt_idmap *idmap, struct inode *dir,
 	if (err)
 		goto out;
 	inode_inc_iversion(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode = fat_build_inode(sb, sinfo.de, sinfo.i_pos);
 	brelse(sinfo.bh);
@@ -961,41 +779,22 @@ static int vfat_create(struct mnt_idmap *idmap, struct inode *dir,
 		err = PTR_ERR(inode);
 		goto out;
 	}
-<<<<<<< HEAD
-	inode->i_version++;
-	inode->i_mtime = inode->i_atime = inode->i_ctime = ts;
-	/* timestamp is already written, so mark_inode_dirty() is unneeded. */
-
-	dentry->d_time = dentry->d_parent->d_inode->i_version;
-	d_instantiate(dentry, inode);
-out:
-	unlock_super(sb);
-=======
 	inode_inc_iversion(inode);
 
 	d_instantiate(dentry, inode);
 out:
 	mutex_unlock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int vfat_rmdir(struct inode *dir, struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = dir->i_sb;
 	struct fat_slot_info sinfo;
 	int err;
 
-<<<<<<< HEAD
-	lock_super(sb);
-=======
 	mutex_lock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = fat_dir_empty(inode);
 	if (err)
@@ -1010,38 +809,23 @@ static int vfat_rmdir(struct inode *dir, struct dentry *dentry)
 	drop_nlink(dir);
 
 	clear_nlink(inode);
-<<<<<<< HEAD
-	inode->i_mtime = inode->i_atime = CURRENT_TIME_SEC;
-	fat_detach(inode);
-out:
-	unlock_super(sb);
-=======
 	fat_truncate_time(inode, NULL, S_ATIME|S_MTIME);
 	fat_detach(inode);
 	vfat_d_version_set(dentry, inode_query_iversion(dir));
 out:
 	mutex_unlock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
 static int vfat_unlink(struct inode *dir, struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = dir->i_sb;
 	struct fat_slot_info sinfo;
 	int err;
 
-<<<<<<< HEAD
-	lock_super(sb);
-=======
 	mutex_lock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = vfat_find(dir, &dentry->d_name, &sinfo);
 	if (err)
@@ -1051,47 +835,27 @@ static int vfat_unlink(struct inode *dir, struct dentry *dentry)
 	if (err)
 		goto out;
 	clear_nlink(inode);
-<<<<<<< HEAD
-	inode->i_mtime = inode->i_atime = CURRENT_TIME_SEC;
-	fat_detach(inode);
-out:
-	unlock_super(sb);
-=======
 	fat_truncate_time(inode, NULL, S_ATIME|S_MTIME);
 	fat_detach(inode);
 	vfat_d_version_set(dentry, inode_query_iversion(dir));
 out:
 	mutex_unlock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int vfat_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 static int vfat_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		      struct dentry *dentry, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = dir->i_sb;
 	struct inode *inode;
 	struct fat_slot_info sinfo;
-<<<<<<< HEAD
-	struct timespec ts;
-	int err, cluster;
-
-	lock_super(sb);
-
-	ts = CURRENT_TIME_SEC;
-=======
 	struct timespec64 ts;
 	int err, cluster;
 
 	mutex_lock(&MSDOS_SB(sb)->s_lock);
 
 	ts = current_time(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cluster = fat_alloc_new_dir(dir, &ts);
 	if (cluster < 0) {
 		err = cluster;
@@ -1100,11 +864,7 @@ static int vfat_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	err = vfat_add_entry(dir, &dentry->d_name, 1, cluster, &ts, &sinfo);
 	if (err)
 		goto out_free;
-<<<<<<< HEAD
-	dir->i_version++;
-=======
 	inode_inc_iversion(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inc_nlink(dir);
 
 	inode = fat_build_inode(sb, sinfo.de, sinfo.i_pos);
@@ -1114,35 +874,17 @@ static int vfat_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		/* the directory was completed, just return a error */
 		goto out;
 	}
-<<<<<<< HEAD
-	inode->i_version++;
-	set_nlink(inode, 2);
-	inode->i_mtime = inode->i_atime = inode->i_ctime = ts;
-	/* timestamp is already written, so mark_inode_dirty() is unneeded. */
-
-	dentry->d_time = dentry->d_parent->d_inode->i_version;
-	d_instantiate(dentry, inode);
-
-	unlock_super(sb);
-=======
 	inode_inc_iversion(inode);
 	set_nlink(inode, 2);
 
 	d_instantiate(dentry, inode);
 
 	mutex_unlock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out_free:
 	fat_free_clusters(dir, cluster);
 out:
-<<<<<<< HEAD
-	unlock_super(sb);
-	return err;
-}
-
-=======
 	mutex_unlock(&MSDOS_SB(sb)->s_lock);
 	return err;
 }
@@ -1186,25 +928,10 @@ static void vfat_update_dir_metadata(struct inode *dir, struct timespec64 *ts)
 		mark_inode_dirty(dir);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
 		       struct inode *new_dir, struct dentry *new_dentry)
 {
 	struct buffer_head *dotdot_bh;
-<<<<<<< HEAD
-	struct msdos_dir_entry *dotdot_de;
-	struct inode *old_inode, *new_inode;
-	struct fat_slot_info old_sinfo, sinfo;
-	struct timespec ts;
-	loff_t dotdot_i_pos, new_i_pos;
-	int err, is_dir, update_dotdot, corrupt = 0;
-	struct super_block *sb = old_dir->i_sb;
-
-	old_sinfo.bh = sinfo.bh = dotdot_bh = NULL;
-	old_inode = old_dentry->d_inode;
-	new_inode = new_dentry->d_inode;
-	lock_super(sb);
-=======
 	struct msdos_dir_entry *dotdot_de = NULL;
 	struct inode *old_inode, *new_inode;
 	struct fat_slot_info old_sinfo, sinfo;
@@ -1217,24 +944,10 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
 	old_inode = d_inode(old_dentry);
 	new_inode = d_inode(new_dentry);
 	mutex_lock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = vfat_find(old_dir, &old_dentry->d_name, &old_sinfo);
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	is_dir = S_ISDIR(old_inode->i_mode);
-	update_dotdot = (is_dir && old_dir != new_dir);
-	if (update_dotdot) {
-		if (fat_get_dotdot_entry(old_inode, &dotdot_bh, &dotdot_de,
-					 &dotdot_i_pos) < 0) {
-			err = -EIO;
-			goto out;
-		}
-	}
-
-	ts = CURRENT_TIME_SEC;
-=======
 	if (old_dir != new_dir) {
 		err = vfat_get_dotdot_de(old_inode, &dotdot_bh, &dotdot_de);
 		if (err)
@@ -1243,7 +956,6 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	is_dir = S_ISDIR(old_inode->i_mode);
 	ts = current_time(old_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_inode) {
 		if (is_dir) {
 			err = fat_dir_empty(new_inode);
@@ -1259,29 +971,6 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
 			goto out;
 		new_i_pos = sinfo.i_pos;
 	}
-<<<<<<< HEAD
-	new_dir->i_version++;
-
-	fat_detach(old_inode);
-	fat_attach(old_inode, new_i_pos);
-	if (IS_DIRSYNC(new_dir)) {
-		err = fat_sync_inode(old_inode);
-		if (err)
-			goto error_inode;
-	} else
-		mark_inode_dirty(old_inode);
-
-	if (update_dotdot) {
-		int start = MSDOS_I(new_dir)->i_logstart;
-		dotdot_de->start = cpu_to_le16(start);
-		dotdot_de->starthi = cpu_to_le16(start >> 16);
-		mark_buffer_dirty_inode(dotdot_bh, old_inode);
-		if (IS_DIRSYNC(new_dir)) {
-			err = sync_dirty_buffer(dotdot_bh);
-			if (err)
-				goto error_dotdot;
-		}
-=======
 	inode_inc_iversion(new_dir);
 
 	fat_detach(old_inode);
@@ -1295,7 +984,6 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
 					    dotdot_de);
 		if (err)
 			goto error_dotdot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drop_nlink(old_dir);
 		if (!new_inode)
  			inc_nlink(new_dir);
@@ -1305,36 +993,19 @@ static int vfat_rename(struct inode *old_dir, struct dentry *old_dentry,
 	old_sinfo.bh = NULL;
 	if (err)
 		goto error_dotdot;
-<<<<<<< HEAD
-	old_dir->i_version++;
-	old_dir->i_ctime = old_dir->i_mtime = ts;
-	if (IS_DIRSYNC(old_dir))
-		(void)fat_sync_inode(old_dir);
-	else
-		mark_inode_dirty(old_dir);
-=======
 	vfat_update_dir_metadata(old_dir, &ts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new_inode) {
 		drop_nlink(new_inode);
 		if (is_dir)
 			drop_nlink(new_inode);
-<<<<<<< HEAD
-		new_inode->i_ctime = ts;
-=======
 		fat_truncate_time(new_inode, &ts, S_CTIME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	brelse(sinfo.bh);
 	brelse(dotdot_bh);
 	brelse(old_sinfo.bh);
-<<<<<<< HEAD
-	unlock_super(sb);
-=======
 	mutex_unlock(&MSDOS_SB(sb)->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 
@@ -1342,18 +1013,9 @@ error_dotdot:
 	/* data cluster is shared, serious corruption */
 	corrupt = 1;
 
-<<<<<<< HEAD
-	if (update_dotdot) {
-		int start = MSDOS_I(old_dir)->i_logstart;
-		dotdot_de->start = cpu_to_le16(start);
-		dotdot_de->starthi = cpu_to_le16(start >> 16);
-		mark_buffer_dirty_inode(dotdot_bh, old_inode);
-		corrupt |= sync_dirty_buffer(dotdot_bh);
-=======
 	if (dotdot_de) {
 		corrupt |= vfat_update_dotdot_de(old_dir, old_inode, dotdot_bh,
 						 dotdot_de);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 error_inode:
 	fat_detach(old_inode);
@@ -1380,8 +1042,6 @@ error_inode:
 	goto out;
 }
 
-<<<<<<< HEAD
-=======
 static void vfat_exchange_ipos(struct inode *old_inode, struct inode *new_inode,
 			       loff_t old_i_pos, loff_t new_i_pos)
 {
@@ -1514,23 +1174,16 @@ static int vfat_rename2(struct mnt_idmap *idmap, struct inode *old_dir,
 	return vfat_rename(old_dir, old_dentry, new_dir, new_dentry);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct inode_operations vfat_dir_inode_operations = {
 	.create		= vfat_create,
 	.lookup		= vfat_lookup,
 	.unlink		= vfat_unlink,
 	.mkdir		= vfat_mkdir,
 	.rmdir		= vfat_rmdir,
-<<<<<<< HEAD
-	.rename		= vfat_rename,
-	.setattr	= fat_setattr,
-	.getattr	= fat_getattr,
-=======
 	.rename		= vfat_rename2,
 	.setattr	= fat_setattr,
 	.getattr	= fat_getattr,
 	.update_time	= fat_update_time,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void setup(struct super_block *sb)
@@ -1559,11 +1212,7 @@ static struct file_system_type vfat_fs_type = {
 	.name		= "vfat",
 	.mount		= vfat_mount,
 	.kill_sb	= kill_block_super,
-<<<<<<< HEAD
-	.fs_flags	= FS_REQUIRES_DEV,
-=======
 	.fs_flags	= FS_REQUIRES_DEV | FS_ALLOW_IDMAP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_ALIAS_FS("vfat");
 

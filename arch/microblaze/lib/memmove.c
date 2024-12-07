@@ -24,39 +24,6 @@
  * not any responsibility to update it.
  */
 
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/stddef.h>
-#include <linux/compiler.h>
-#include <linux/module.h>
-#include <linux/string.h>
-
-#ifdef __HAVE_ARCH_MEMMOVE
-#ifndef CONFIG_OPT_LIB_FUNCTION
-void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
-{
-	const char *src = v_src;
-	char *dst = v_dst;
-
-	if (!c)
-		return v_dst;
-
-	/* Use memcpy when source is higher than dest */
-	if (v_dst <= v_src)
-		return memcpy(v_dst, v_src, c);
-
-	/* copy backwards, from end to beginning */
-	src += c;
-	dst += c;
-
-	/* Simple, byte oriented memmove. */
-	while (c--)
-		*--dst = *--src;
-
-	return v_dst;
-}
-#else /* CONFIG_OPT_LIB_FUNCTION */
-=======
 #include <linux/export.h>
 #include <linux/types.h>
 #include <linux/stddef.h>
@@ -64,7 +31,6 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 #include <linux/string.h>
 
 #ifdef CONFIG_OPT_LIB_FUNCTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 {
 	const char *src = v_src;
@@ -100,17 +66,11 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 		case 3:
 			*--dst = *--src;
 			--c;
-<<<<<<< HEAD
-		case 2:
-			*--dst = *--src;
-			--c;
-=======
 			fallthrough;
 		case 2:
 			*--dst = *--src;
 			--c;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1:
 			*--dst = *--src;
 			--c;
@@ -118,11 +78,7 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 
 		i_dst = (void *)dst;
 		/* Choose a copy scheme based on the source */
-<<<<<<< HEAD
-		/* alignment relative to dstination. */
-=======
 		/* alignment relative to destination. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch ((unsigned long)src & 3) {
 		case 0x0:	/* Both byte offsets are aligned */
 
@@ -151,12 +107,8 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 
 			for (; c >= 4; c -= 4) {
 				value = *--i_src;
-<<<<<<< HEAD
-				*--i_dst = buf_hold | ((value & 0xFFFFFF00)>>8);
-=======
 				*--i_dst = buf_hold |
 						((value & 0xFFFFFF00) >> 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				buf_hold = (value  & 0xFF) << 24;
 			}
 #endif
@@ -182,12 +134,8 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 
 			for (; c >= 4; c -= 4) {
 				value = *--i_src;
-<<<<<<< HEAD
-				*--i_dst = buf_hold | ((value & 0xFFFF0000)>>16);
-=======
 				*--i_dst = buf_hold |
 						((value & 0xFFFF0000) >> 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				buf_hold = (value & 0xFFFF) << 16;
 			}
 #endif
@@ -213,12 +161,8 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 
 			for (; c >= 4; c -= 4) {
 				value = *--i_src;
-<<<<<<< HEAD
-				*--i_dst = buf_hold | ((value & 0xFF000000)>> 24);
-=======
 				*--i_dst = buf_hold |
 						((value & 0xFF000000) >> 24);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				buf_hold = (value & 0xFFFFFF) << 8;
 			}
 #endif
@@ -235,12 +179,6 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 	switch (c) {
 	case 4:
 		*--dst = *--src;
-<<<<<<< HEAD
-	case 3:
-		*--dst = *--src;
-	case 2:
-		*--dst = *--src;
-=======
 		fallthrough;
 	case 3:
 		*--dst = *--src;
@@ -248,17 +186,10 @@ void *memmove(void *v_dst, const void *v_src, __kernel_size_t c)
 	case 2:
 		*--dst = *--src;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		*--dst = *--src;
 	}
 	return v_dst;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_OPT_LIB_FUNCTION */
-EXPORT_SYMBOL(memmove);
-#endif /* __HAVE_ARCH_MEMMOVE */
-=======
 EXPORT_SYMBOL(memmove);
 #endif /* CONFIG_OPT_LIB_FUNCTION */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

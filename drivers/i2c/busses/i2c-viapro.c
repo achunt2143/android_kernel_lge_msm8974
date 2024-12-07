@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     Copyright (c) 1998 - 2002  Frodo Looijaard <frodol@dds.nl>,
     Philip Edelbrock <phil@netroedge.com>, Kyösti Mälkki <kmalkki@cc.hut.fi>,
     Mark D. Studebaker <mdsxyz123@yahoo.com>
-<<<<<<< HEAD
-    Copyright (C) 2005 - 2008  Jean Delvare <khali@linux-fr.org>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
     Copyright (C) 2005 - 2008  Jean Delvare <jdelvare@suse.de>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -107,11 +86,7 @@ MODULE_PARM_DESC(force, "Forcibly enable the SMBus. DANGEROUS!");
 /* If force_addr is set to anything different from 0, we forcibly enable
    the VT596 at the given address. VERY DANGEROUS! */
 static u16 force_addr;
-<<<<<<< HEAD
-module_param(force_addr, ushort, 0);
-=======
 module_param_hw(force_addr, ushort, ioport, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(force_addr,
 		 "Forcibly enable the SMBus at the given address. "
 		 "EXTREMELY DANGEROUS!");
@@ -253,11 +228,7 @@ static s32 vt596_access(struct i2c_adapter *adap, u16 addr,
 			goto exit_unsupported;
 		if (read_write == I2C_SMBUS_READ)
 			outb_p(data->block[0], SMBHSTDAT0);
-<<<<<<< HEAD
-		/* Fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case I2C_SMBUS_BLOCK_DATA:
 		outb_p(command, SMBHSTCMD);
 		if (read_write == I2C_SMBUS_WRITE) {
@@ -333,21 +304,12 @@ static const struct i2c_algorithm smbus_algorithm = {
 
 static struct i2c_adapter vt596_adapter = {
 	.owner		= THIS_MODULE,
-<<<<<<< HEAD
-	.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
-	.algo		= &smbus_algorithm,
-};
-
-static int __devinit vt596_probe(struct pci_dev *pdev,
-				 const struct pci_device_id *id)
-=======
 	.class		= I2C_CLASS_HWMON,
 	.algo		= &smbus_algorithm,
 };
 
 static int vt596_probe(struct pci_dev *pdev,
 		       const struct pci_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char temp;
 	int error;
@@ -427,10 +389,7 @@ found:
 	case PCI_DEVICE_ID_VIA_CX700:
 	case PCI_DEVICE_ID_VIA_VX800:
 	case PCI_DEVICE_ID_VIA_VX855:
-<<<<<<< HEAD
-=======
 	case PCI_DEVICE_ID_VIA_VX900:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PCI_DEVICE_ID_VIA_8251:
 	case PCI_DEVICE_ID_VIA_8237:
 	case PCI_DEVICE_ID_VIA_8237A:
@@ -471,11 +430,7 @@ release_region:
 	return error;
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(vt596_ids) = {
-=======
 static const struct pci_device_id vt596_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C596_3),
 	  .driver_data = SMBBA1 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C596B_3),
@@ -504,11 +459,8 @@ static const struct pci_device_id vt596_ids[] = {
 	  .driver_data = SMBBA3 },
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855),
 	  .driver_data = SMBBA3 },
-<<<<<<< HEAD
-=======
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX900),
 	  .driver_data = SMBBA3 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, }
 };
 
@@ -537,15 +489,9 @@ static void __exit i2c_vt596_exit(void)
 	}
 }
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Kyosti Malkki <kmalkki@cc.hut.fi>, "
-	      "Mark D. Studebaker <mdsxyz123@yahoo.com> and "
-	      "Jean Delvare <khali@linux-fr.org>");
-=======
 MODULE_AUTHOR("Kyosti Malkki <kmalkki@cc.hut.fi>");
 MODULE_AUTHOR("Mark D. Studebaker <mdsxyz123@yahoo.com>");
 MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("vt82c596 SMBus driver");
 MODULE_LICENSE("GPL");
 

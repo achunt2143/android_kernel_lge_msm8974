@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Wrapper functions for 16bit uid back compatibility. All nicely tied
  *	together in the faint hope we can take the out in five years time.
@@ -16,18 +13,6 @@
 #include <linux/init.h>
 #include <linux/highuid.h>
 #include <linux/security.h>
-<<<<<<< HEAD
-#include <linux/syscalls.h>
-
-#include <asm/uaccess.h>
-
-SYSCALL_DEFINE3(chown16, const char __user *, filename, old_uid_t, user, old_gid_t, group)
-{
-	long ret = sys_chown(filename, low2highuid(user), low2highgid(group));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(3, ret, filename, user, group);
-	return ret;
-=======
 #include <linux/cred.h>
 #include <linux/syscalls.h>
 
@@ -38,100 +23,40 @@ SYSCALL_DEFINE3(chown16, const char __user *, filename, old_uid_t, user, old_gid
 SYSCALL_DEFINE3(chown16, const char __user *, filename, old_uid_t, user, old_gid_t, group)
 {
 	return ksys_chown(filename, low2highuid(user), low2highgid(group));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(lchown16, const char __user *, filename, old_uid_t, user, old_gid_t, group)
 {
-<<<<<<< HEAD
-	long ret = sys_lchown(filename, low2highuid(user), low2highgid(group));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(3, ret, filename, user, group);
-	return ret;
-=======
 	return ksys_lchown(filename, low2highuid(user), low2highgid(group));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(fchown16, unsigned int, fd, old_uid_t, user, old_gid_t, group)
 {
-<<<<<<< HEAD
-	long ret = sys_fchown(fd, low2highuid(user), low2highgid(group));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(3, ret, fd, user, group);
-	return ret;
-=======
 	return ksys_fchown(fd, low2highuid(user), low2highgid(group));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE2(setregid16, old_gid_t, rgid, old_gid_t, egid)
 {
-<<<<<<< HEAD
-	long ret = sys_setregid(low2highgid(rgid), low2highgid(egid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(2, ret, rgid, egid);
-	return ret;
-=======
 	return __sys_setregid(low2highgid(rgid), low2highgid(egid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE1(setgid16, old_gid_t, gid)
 {
-<<<<<<< HEAD
-	long ret = sys_setgid(low2highgid(gid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(1, ret, gid);
-	return ret;
-=======
 	return __sys_setgid(low2highgid(gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE2(setreuid16, old_uid_t, ruid, old_uid_t, euid)
 {
-<<<<<<< HEAD
-	long ret = sys_setreuid(low2highuid(ruid), low2highuid(euid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(2, ret, ruid, euid);
-	return ret;
-=======
 	return __sys_setreuid(low2highuid(ruid), low2highuid(euid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE1(setuid16, old_uid_t, uid)
 {
-<<<<<<< HEAD
-	long ret = sys_setuid(low2highuid(uid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(1, ret, uid);
-	return ret;
-=======
 	return __sys_setuid(low2highuid(uid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE3(setresuid16, old_uid_t, ruid, old_uid_t, euid, old_uid_t, suid)
 {
-<<<<<<< HEAD
-	long ret = sys_setresuid(low2highuid(ruid), low2highuid(euid),
-				 low2highuid(suid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(3, ret, ruid, euid, suid);
-	return ret;
-}
-
-SYSCALL_DEFINE3(getresuid16, old_uid_t __user *, ruid, old_uid_t __user *, euid, old_uid_t __user *, suid)
-{
-	const struct cred *cred = current_cred();
-	int retval;
-
-	if (!(retval   = put_user(high2lowuid(cred->uid),  ruid)) &&
-	    !(retval   = put_user(high2lowuid(cred->euid), euid)))
-		retval = put_user(high2lowuid(cred->suid), suid);
-=======
 	return __sys_setresuid(low2highuid(ruid), low2highuid(euid),
 				 low2highuid(suid));
 }
@@ -149,31 +74,12 @@ SYSCALL_DEFINE3(getresuid16, old_uid_t __user *, ruidp, old_uid_t __user *, euid
 	if (!(retval   = put_user(ruid, ruidp)) &&
 	    !(retval   = put_user(euid, euidp)))
 		retval = put_user(suid, suidp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
 
 SYSCALL_DEFINE3(setresgid16, old_gid_t, rgid, old_gid_t, egid, old_gid_t, sgid)
 {
-<<<<<<< HEAD
-	long ret = sys_setresgid(low2highgid(rgid), low2highgid(egid),
-				 low2highgid(sgid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(3, ret, rgid, egid, sgid);
-	return ret;
-}
-
-
-SYSCALL_DEFINE3(getresgid16, old_gid_t __user *, rgid, old_gid_t __user *, egid, old_gid_t __user *, sgid)
-{
-	const struct cred *cred = current_cred();
-	int retval;
-
-	if (!(retval   = put_user(high2lowgid(cred->gid),  rgid)) &&
-	    !(retval   = put_user(high2lowgid(cred->egid), egid)))
-		retval = put_user(high2lowgid(cred->sgid), sgid);
-=======
 	return __sys_setresgid(low2highgid(rgid), low2highgid(egid),
 				 low2highgid(sgid));
 }
@@ -191,45 +97,23 @@ SYSCALL_DEFINE3(getresgid16, old_gid_t __user *, rgidp, old_gid_t __user *, egid
 	if (!(retval   = put_user(rgid, rgidp)) &&
 	    !(retval   = put_user(egid, egidp)))
 		retval = put_user(sgid, sgidp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
 
 SYSCALL_DEFINE1(setfsuid16, old_uid_t, uid)
 {
-<<<<<<< HEAD
-	long ret = sys_setfsuid(low2highuid(uid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(1, ret, uid);
-	return ret;
-=======
 	return __sys_setfsuid(low2highuid(uid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE1(setfsgid16, old_gid_t, gid)
 {
-<<<<<<< HEAD
-	long ret = sys_setfsgid(low2highgid(gid));
-	/* avoid REGPARM breakage on x86: */
-	asmlinkage_protect(1, ret, gid);
-	return ret;
-=======
 	return __sys_setfsgid(low2highgid(gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int groups16_to_user(old_gid_t __user *grouplist,
     struct group_info *group_info)
 {
-<<<<<<< HEAD
-	int i;
-	old_gid_t group;
-
-	for (i = 0; i < group_info->ngroups; i++) {
-		group = high2lowgid(GROUP_AT(group_info, i));
-=======
 	struct user_namespace *user_ns = current_user_ns();
 	int i;
 	old_gid_t group;
@@ -238,7 +122,6 @@ static int groups16_to_user(old_gid_t __user *grouplist,
 	for (i = 0; i < group_info->ngroups; i++) {
 		kgid = group_info->gid[i];
 		group = high2lowgid(from_kgid_munged(user_ns, kgid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (put_user(group, grouplist+i))
 			return -EFAULT;
 	}
@@ -249,29 +132,20 @@ static int groups16_to_user(old_gid_t __user *grouplist,
 static int groups16_from_user(struct group_info *group_info,
     old_gid_t __user *grouplist)
 {
-<<<<<<< HEAD
-	int i;
-	old_gid_t group;
-=======
 	struct user_namespace *user_ns = current_user_ns();
 	int i;
 	old_gid_t group;
 	kgid_t kgid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < group_info->ngroups; i++) {
 		if (get_user(group, grouplist+i))
 			return  -EFAULT;
-<<<<<<< HEAD
-		GROUP_AT(group_info, i) = low2highgid(group);
-=======
 
 		kgid = make_kgid(user_ns, low2highgid(group));
 		if (!gid_valid(kgid))
 			return -EINVAL;
 
 		group_info->gid[i] = kgid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -305,11 +179,7 @@ SYSCALL_DEFINE2(setgroups16, int, gidsetsize, old_gid_t __user *, grouplist)
 	struct group_info *group_info;
 	int retval;
 
-<<<<<<< HEAD
-	if (!nsown_capable(CAP_SETGID))
-=======
 	if (!may_setgroups())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	if ((unsigned)gidsetsize > NGROUPS_MAX)
 		return -EINVAL;
@@ -323,10 +193,7 @@ SYSCALL_DEFINE2(setgroups16, int, gidsetsize, old_gid_t __user *, grouplist)
 		return retval;
 	}
 
-<<<<<<< HEAD
-=======
 	groups_sort(group_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = set_current_groups(group_info);
 	put_group_info(group_info);
 
@@ -335,36 +202,20 @@ SYSCALL_DEFINE2(setgroups16, int, gidsetsize, old_gid_t __user *, grouplist)
 
 SYSCALL_DEFINE0(getuid16)
 {
-<<<<<<< HEAD
-	return high2lowuid(current_uid());
-=======
 	return high2lowuid(from_kuid_munged(current_user_ns(), current_uid()));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE0(geteuid16)
 {
-<<<<<<< HEAD
-	return high2lowuid(current_euid());
-=======
 	return high2lowuid(from_kuid_munged(current_user_ns(), current_euid()));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE0(getgid16)
 {
-<<<<<<< HEAD
-	return high2lowgid(current_gid());
-=======
 	return high2lowgid(from_kgid_munged(current_user_ns(), current_gid()));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE0(getegid16)
 {
-<<<<<<< HEAD
-	return high2lowgid(current_egid());
-=======
 	return high2lowgid(from_kgid_munged(current_user_ns(), current_egid()));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

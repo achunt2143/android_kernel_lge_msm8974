@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic iSCSI HBA Driver
@@ -14,14 +5,10 @@
  */
 
 #include <linux/ctype.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ql4_def.h"
 #include "ql4_glbl.h"
 #include "ql4_dbg.h"
 #include "ql4_inline.h"
-<<<<<<< HEAD
-
-=======
 #include "ql4_version.h"
 
 void qla4xxx_queue_mbox_cmd(struct scsi_qla_host *ha, uint32_t *mbx_cmd,
@@ -79,7 +66,6 @@ static int qla4xxx_is_intr_poll_mode(struct scsi_qla_host *ha)
 
 	return rval;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * qla4xxx_mailbox_command - issues mailbox commands
@@ -100,10 +86,6 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 	int status = QLA_ERROR;
 	uint8_t i;
 	u_long wait_count;
-<<<<<<< HEAD
-	uint32_t intr_status;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags = 0;
 	uint32_t dev_state;
 
@@ -124,28 +106,6 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 		}
 	}
 
-<<<<<<< HEAD
-	if (is_qla8022(ha)) {
-		if (test_bit(AF_FW_RECOVERY, &ha->flags)) {
-			DEBUG2(ql4_printk(KERN_WARNING, ha, "scsi%ld: %s: "
-			    "prematurely completing mbx cmd as firmware "
-			    "recovery detected\n", ha->host_no, __func__));
-			return status;
-		}
-		/* Do not send any mbx cmd if h/w is in failed state*/
-		qla4_8xxx_idc_lock(ha);
-		dev_state = qla4_8xxx_rd_32(ha, QLA82XX_CRB_DEV_STATE);
-		qla4_8xxx_idc_unlock(ha);
-		if (dev_state == QLA82XX_DEV_FAILED) {
-			ql4_printk(KERN_WARNING, ha, "scsi%ld: %s: H/W is in "
-			    "failed state, do not send any mailbox commands\n",
-			    ha->host_no, __func__);
-			return status;
-		}
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((is_aer_supported(ha)) &&
 	    (test_bit(AF_PCI_CHANNEL_IO_PERM_FAILURE, &ha->flags))) {
 		DEBUG2(printk(KERN_WARNING "scsi%ld: %s: Perm failure on EEH, "
@@ -172,8 +132,6 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 		msleep(10);
 	}
 
-<<<<<<< HEAD
-=======
 	if (is_qla80XX(ha)) {
 		if (test_bit(AF_FW_RECOVERY, &ha->flags)) {
 			DEBUG2(ql4_printk(KERN_WARNING, ha,
@@ -193,42 +151,14 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 
 	ha->mbox_status_count = outCount;
 	for (i = 0; i < outCount; i++)
 		ha->mbox_status[i] = 0;
 
-<<<<<<< HEAD
-	if (is_qla8022(ha)) {
-		/* Load all mailbox registers, except mailbox 0. */
-		DEBUG5(
-		    printk("scsi%ld: %s: Cmd ", ha->host_no, __func__);
-		    for (i = 0; i < inCount; i++)
-			printk("mb%d=%04x ", i, mbx_cmd[i]);
-		    printk("\n"));
-
-		for (i = 1; i < inCount; i++)
-			writel(mbx_cmd[i], &ha->qla4_8xxx_reg->mailbox_in[i]);
-		writel(mbx_cmd[0], &ha->qla4_8xxx_reg->mailbox_in[0]);
-		readl(&ha->qla4_8xxx_reg->mailbox_in[0]);
-		writel(HINT_MBX_INT_PENDING, &ha->qla4_8xxx_reg->hint);
-	} else {
-		/* Load all mailbox registers, except mailbox 0. */
-		for (i = 1; i < inCount; i++)
-			writel(mbx_cmd[i], &ha->reg->mailbox[i]);
-
-		/* Wakeup firmware  */
-		writel(mbx_cmd[0], &ha->reg->mailbox[0]);
-		readl(&ha->reg->mailbox[0]);
-		writel(set_rmask(CSR_INTR_RISC), &ha->reg->ctrl_status);
-		readl(&ha->reg->ctrl_status);
-	}
-=======
 	/* Queue the mailbox command to the firmware */
 	ha->isp_ops->queue_mailbox_command(ha, mbx_cmd, inCount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
@@ -247,72 +177,18 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 	/*
 	 * Wait for completion: Poll or completion queue
 	 */
-<<<<<<< HEAD
-	if (test_bit(AF_IRQ_ATTACHED, &ha->flags) &&
-	    test_bit(AF_INTERRUPTS_ON, &ha->flags) &&
-	    test_bit(AF_ONLINE, &ha->flags) &&
-	    !test_bit(AF_HA_REMOVAL, &ha->flags)) {
-		/* Do not poll for completion. Use completion queue */
-		set_bit(AF_MBOX_COMMAND_NOPOLL, &ha->flags);
-		wait_for_completion_timeout(&ha->mbx_intr_comp, MBOX_TOV * HZ);
-		clear_bit(AF_MBOX_COMMAND_NOPOLL, &ha->flags);
-	} else {
-=======
 	if (qla4xxx_is_intr_poll_mode(ha)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Poll for command to complete */
 		wait_count = jiffies + MBOX_TOV * HZ;
 		while (test_bit(AF_MBOX_COMMAND_DONE, &ha->flags) == 0) {
 			if (time_after_eq(jiffies, wait_count))
 				break;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Service the interrupt.
 			 * The ISR will save the mailbox status registers
 			 * to a temporary storage location in the adapter
 			 * structure.
 			 */
-<<<<<<< HEAD
-
-			spin_lock_irqsave(&ha->hardware_lock, flags);
-			if (is_qla8022(ha)) {
-				intr_status =
-				    readl(&ha->qla4_8xxx_reg->host_int);
-				if (intr_status & ISRX_82XX_RISC_INT) {
-					ha->mbox_status_count = outCount;
-					intr_status =
-					 readl(&ha->qla4_8xxx_reg->host_status);
-					ha->isp_ops->interrupt_service_routine(
-					    ha, intr_status);
-					if (test_bit(AF_INTERRUPTS_ON,
-					    &ha->flags) &&
-					    test_bit(AF_INTx_ENABLED,
-					    &ha->flags))
-						qla4_8xxx_wr_32(ha,
-						ha->nx_legacy_intr.tgt_mask_reg,
-						0xfbff);
-				}
-			} else {
-				intr_status = readl(&ha->reg->ctrl_status);
-				if (intr_status & INTR_PENDING) {
-					/*
-					 * Service the interrupt.
-					 * The ISR will save the mailbox status
-					 * registers to a temporary storage
-					 * location in the adapter structure.
-					 */
-					ha->mbox_status_count = outCount;
-					ha->isp_ops->interrupt_service_routine(
-					    ha, intr_status);
-				}
-			}
-			spin_unlock_irqrestore(&ha->hardware_lock, flags);
-			msleep(10);
-		}
-=======
 			spin_lock_irqsave(&ha->hardware_lock, flags);
 			ha->isp_ops->process_mailbox_interrupt(ha, outCount);
 			spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -323,16 +199,11 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 		set_bit(AF_MBOX_COMMAND_NOPOLL, &ha->flags);
 		wait_for_completion_timeout(&ha->mbx_intr_comp, MBOX_TOV * HZ);
 		clear_bit(AF_MBOX_COMMAND_NOPOLL, &ha->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Check for mailbox timeout. */
 	if (!test_bit(AF_MBOX_COMMAND_DONE, &ha->flags)) {
-<<<<<<< HEAD
-		if (is_qla8022(ha) &&
-=======
 		if (is_qla80XX(ha) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    test_bit(AF_FW_RECOVERY, &ha->flags)) {
 			DEBUG2(ql4_printk(KERN_INFO, ha,
 			    "scsi%ld: %s: prematurely completing mbx cmd as "
@@ -340,25 +211,14 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 			    ha->host_no, __func__));
 			goto mbox_exit;
 		}
-<<<<<<< HEAD
-		DEBUG2(printk("scsi%ld: Mailbox Cmd 0x%08X timed out ...,"
-			      " Scheduling Adapter Reset\n", ha->host_no,
-			      mbx_cmd[0]));
-=======
 		ql4_printk(KERN_WARNING, ha, "scsi%ld: Mailbox Cmd 0x%08X timed out, Scheduling Adapter Reset\n",
 			   ha->host_no, mbx_cmd[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->mailbox_timeout_count++;
 		mbx_sts[0] = (-1);
 		set_bit(DPC_RESET_HA, &ha->dpc_flags);
 		if (is_qla8022(ha)) {
 			ql4_printk(KERN_INFO, ha,
 				   "disabling pause transmit on port 0 & 1.\n");
-<<<<<<< HEAD
-			qla4_8xxx_wr_32(ha, QLA82XX_CRB_NIU + 0x98,
-					CRB_NIU_XG_PAUSE_CTL_P0 |
-					CRB_NIU_XG_PAUSE_CTL_P1);
-=======
 			qla4_82xx_wr_32(ha, QLA82XX_CRB_NIU + 0x98,
 					CRB_NIU_XG_PAUSE_CTL_P0 |
 					CRB_NIU_XG_PAUSE_CTL_P1);
@@ -366,7 +226,6 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 			ql4_printk(KERN_INFO, ha, " %s: disabling pause transmit on port 0 & 1.\n",
 				   __func__);
 			qla4_83xx_disable_pause(ha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto mbox_exit;
 	}
@@ -390,27 +249,16 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 		break;
 
 	case MBOX_STS_BUSY:
-<<<<<<< HEAD
-		DEBUG2( printk("scsi%ld: %s: Cmd = %08X, ISP BUSY\n",
-			       ha->host_no, __func__, mbx_cmd[0]));
-=======
 		ql4_printk(KERN_WARNING, ha, "scsi%ld: %s: Cmd = %08X, ISP BUSY\n",
 			   ha->host_no, __func__, mbx_cmd[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->mailbox_timeout_count++;
 		break;
 
 	default:
-<<<<<<< HEAD
-		DEBUG2(printk("scsi%ld: %s: **** FAILED, cmd = %08X, "
-			      "sts = %08X ****\n", ha->host_no, __func__,
-			      mbx_cmd[0], mbx_sts[0]));
-=======
 		ql4_printk(KERN_WARNING, ha, "scsi%ld: %s: FAILED, MBOX CMD = %08X, MBOX STS = %08X %08X %08X %08X %08X %08X %08X %08X\n",
 			   ha->host_no, __func__, mbx_cmd[0], mbx_sts[0],
 			   mbx_sts[1], mbx_sts[2], mbx_sts[3], mbx_sts[4],
 			   mbx_sts[5], mbx_sts[6], mbx_sts[7]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
@@ -424,8 +272,6 @@ mbox_exit:
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * qla4xxx_get_minidump_template - Get the firmware template
  * @ha: Pointer to host adapter structure.
@@ -499,7 +345,6 @@ int qla4xxx_req_template_size(struct scsi_qla_host *ha)
 	return status;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void qla4xxx_mailbox_premature_completion(struct scsi_qla_host *ha)
 {
 	set_bit(AF_FW_RECOVERY, &ha->flags);
@@ -530,21 +375,13 @@ qla4xxx_set_ifcb(struct scsi_qla_host *ha, uint32_t *mbox_cmd,
 	memset(mbox_sts, 0, sizeof(mbox_sts[0]) * MBOX_REG_COUNT);
 
 	if (is_qla8022(ha))
-<<<<<<< HEAD
-		qla4_8xxx_wr_32(ha, ha->nx_db_wr_ptr, 0);
-=======
 		qla4_82xx_wr_32(ha, ha->nx_db_wr_ptr, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbox_cmd[0] = MBOX_CMD_INITIALIZE_FIRMWARE;
 	mbox_cmd[1] = 0;
 	mbox_cmd[2] = LSDW(init_fw_cb_dma);
 	mbox_cmd[3] = MSDW(init_fw_cb_dma);
 	mbox_cmd[4] = sizeof(struct addr_ctrl_blk);
-<<<<<<< HEAD
-	mbox_cmd[5] = (IFCB_VER_MAX << 8) | IFCB_VER_MIN;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (qla4xxx_mailbox_command(ha, 6, 6, mbox_cmd, mbox_sts) !=
 	    QLA_SUCCESS) {
@@ -579,8 +416,6 @@ qla4xxx_get_ifcb(struct scsi_qla_host *ha, uint32_t *mbox_cmd,
 	return QLA_SUCCESS;
 }
 
-<<<<<<< HEAD
-=======
 uint8_t qla4xxx_set_ipaddr_state(uint8_t fw_ipaddr_state)
 {
 	uint8_t ipaddr_state;
@@ -613,7 +448,6 @@ uint8_t qla4xxx_set_ipaddr_state(uint8_t fw_ipaddr_state)
 	return ipaddr_state;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 			struct addr_ctrl_blk *init_fw_cb)
@@ -621,11 +455,7 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 	ha->ip_config.tcp_options = le16_to_cpu(init_fw_cb->ipv4_tcp_opts);
 	ha->ip_config.ipv4_options = le16_to_cpu(init_fw_cb->ipv4_ip_opts);
 	ha->ip_config.ipv4_addr_state =
-<<<<<<< HEAD
-				le16_to_cpu(init_fw_cb->ipv4_addr_state);
-=======
 			qla4xxx_set_ipaddr_state(init_fw_cb->ipv4_addr_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->ip_config.eth_mtu_size =
 				le16_to_cpu(init_fw_cb->eth_mtu_size);
 	ha->ip_config.ipv4_port = le16_to_cpu(init_fw_cb->ipv4_port);
@@ -634,11 +464,8 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 		ha->ip_config.ipv6_options = le16_to_cpu(init_fw_cb->ipv6_opts);
 		ha->ip_config.ipv6_addl_options =
 				le16_to_cpu(init_fw_cb->ipv6_addtl_opts);
-<<<<<<< HEAD
-=======
 		ha->ip_config.ipv6_tcp_options =
 				le16_to_cpu(init_fw_cb->ipv6_tcp_opts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Save IPv4 Address Info */
@@ -653,8 +480,6 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 		   sizeof(init_fw_cb->ipv4_gw_addr)));
 
 	ha->ip_config.ipv4_vlan_tag = be16_to_cpu(init_fw_cb->ipv4_vlan_tag);
-<<<<<<< HEAD
-=======
 	ha->ip_config.control = init_fw_cb->control;
 	ha->ip_config.tcp_wsf = init_fw_cb->ipv4_tcp_wsf;
 	ha->ip_config.ipv4_tos = init_fw_cb->ipv4_tos;
@@ -682,20 +507,10 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 	memcpy(ha->ip_config.iscsi_name, init_fw_cb->iscsi_name,
 	       min(sizeof(ha->ip_config.iscsi_name),
 		   sizeof(init_fw_cb->iscsi_name)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_ipv6_enabled(ha)) {
 		/* Save IPv6 Address */
 		ha->ip_config.ipv6_link_local_state =
-<<<<<<< HEAD
-			le16_to_cpu(init_fw_cb->ipv6_lnk_lcl_addr_state);
-		ha->ip_config.ipv6_addr0_state =
-				le16_to_cpu(init_fw_cb->ipv6_addr0_state);
-		ha->ip_config.ipv6_addr1_state =
-				le16_to_cpu(init_fw_cb->ipv6_addr1_state);
-		ha->ip_config.ipv6_default_router_state =
-				le16_to_cpu(init_fw_cb->ipv6_dflt_rtr_state);
-=======
 		  qla4xxx_set_ipaddr_state(init_fw_cb->ipv6_lnk_lcl_addr_state);
 		ha->ip_config.ipv6_addr0_state =
 			qla4xxx_set_ipaddr_state(init_fw_cb->ipv6_addr0_state);
@@ -724,7 +539,6 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 						ISCSI_ROUTER_STATE_UNKNOWN;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->ip_config.ipv6_link_local_addr.in6_u.u6_addr8[0] = 0xFE;
 		ha->ip_config.ipv6_link_local_addr.in6_u.u6_addr8[1] = 0x80;
 
@@ -745,8 +559,6 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 		ha->ip_config.ipv6_vlan_tag =
 				be16_to_cpu(init_fw_cb->ipv6_vlan_tag);
 		ha->ip_config.ipv6_port = le16_to_cpu(init_fw_cb->ipv6_port);
-<<<<<<< HEAD
-=======
 		ha->ip_config.ipv6_cache_id = init_fw_cb->ipv6_cache_id;
 		ha->ip_config.ipv6_flow_lbl =
 				le16_to_cpu(init_fw_cb->ipv6_flow_lbl);
@@ -764,7 +576,6 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 		ha->ip_config.ipv6_gw_advrt_mtu =
 				le32_to_cpu(init_fw_cb->ipv6_gw_advrt_mtu);
 		ha->ip_config.ipv6_tcp_wsf = init_fw_cb->ipv6_tcp_wsf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -821,10 +632,6 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 			      ha->host_no, __func__));
 		goto exit_init_fw_cb_no_free;
 	}
-<<<<<<< HEAD
-	memset(init_fw_cb, 0, sizeof(struct addr_ctrl_blk));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get Initialize Firmware Control Block. */
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
@@ -832,22 +639,6 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 
 	if (qla4xxx_get_ifcb(ha, &mbox_cmd[0], &mbox_sts[0], init_fw_cb_dma) !=
 	    QLA_SUCCESS) {
-<<<<<<< HEAD
-		dma_free_coherent(&ha->pdev->dev,
-				  sizeof(struct addr_ctrl_blk),
-				  init_fw_cb, init_fw_cb_dma);
-		goto exit_init_fw_cb;
-	}
-
-	/* Initialize request and response queues. */
-	qla4xxx_init_rings(ha);
-
-	/* Fill in the request and response queue information. */
-	init_fw_cb->rqq_consumer_idx = cpu_to_le16(ha->request_out);
-	init_fw_cb->compq_producer_idx = cpu_to_le16(ha->response_in);
-	init_fw_cb->rqq_len = __constant_cpu_to_le16(REQUEST_QUEUE_DEPTH);
-	init_fw_cb->compq_len = __constant_cpu_to_le16(RESPONSE_QUEUE_DEPTH);
-=======
 		goto exit_init_fw_cb;
 	}
 
@@ -856,7 +647,6 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 	init_fw_cb->compq_producer_idx = cpu_to_le16(ha->response_in);
 	init_fw_cb->rqq_len = cpu_to_le16(REQUEST_QUEUE_DEPTH);
 	init_fw_cb->compq_len = cpu_to_le16(RESPONSE_QUEUE_DEPTH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_fw_cb->rqq_addr_lo = cpu_to_le32(LSDW(ha->request_dma));
 	init_fw_cb->rqq_addr_hi = cpu_to_le32(MSDW(ha->request_dma));
 	init_fw_cb->compq_addr_lo = cpu_to_le32(LSDW(ha->response_dma));
@@ -866,22 +656,6 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 
 	/* Set up required options. */
 	init_fw_cb->fw_options |=
-<<<<<<< HEAD
-		__constant_cpu_to_le16(FWOPT_SESSION_MODE |
-				       FWOPT_INITIATOR_MODE);
-
-	if (is_qla8022(ha))
-		init_fw_cb->fw_options |=
-		    __constant_cpu_to_le16(FWOPT_ENABLE_CRBDB);
-
-	init_fw_cb->fw_options &= __constant_cpu_to_le16(~FWOPT_TARGET_MODE);
-
-	init_fw_cb->add_fw_options = 0;
-	init_fw_cb->add_fw_options |=
-			__constant_cpu_to_le16(ADFWOPT_SERIALIZE_TASK_MGMT);
-	init_fw_cb->add_fw_options |=
-			__constant_cpu_to_le16(ADFWOPT_AUTOCONN_DISABLE);
-=======
 		cpu_to_le16(FWOPT_SESSION_MODE |
 			    FWOPT_INITIATOR_MODE);
 
@@ -896,7 +670,6 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 			cpu_to_le16(ADFWOPT_SERIALIZE_TASK_MGMT);
 	init_fw_cb->add_fw_options |=
 			cpu_to_le16(ADFWOPT_AUTOCONN_DISABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (qla4xxx_set_ifcb(ha, &mbox_cmd[0], &mbox_sts[0], init_fw_cb_dma)
 		!= QLA_SUCCESS) {
@@ -942,10 +715,6 @@ int qla4xxx_get_dhcp_ip_address(struct scsi_qla_host * ha)
 	}
 
 	/* Get Initialize Firmware Control Block. */
-<<<<<<< HEAD
-	memset(init_fw_cb, 0, sizeof(struct addr_ctrl_blk));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (qla4xxx_get_ifcb(ha, &mbox_cmd[0], &mbox_sts[0], init_fw_cb_dma) !=
 	    QLA_SUCCESS) {
 		DEBUG2(printk("scsi%ld: %s: Failed to get init_fw_ctrl_blk\n",
@@ -1018,10 +787,6 @@ int qla4xxx_get_firmware_status(struct scsi_qla_host * ha)
 		return QLA_ERROR;
 	}
 
-<<<<<<< HEAD
-	ql4_printk(KERN_INFO, ha, "%ld firmware IOCBs available (%d).\n",
-	    ha->host_no, mbox_sts[2]);
-=======
 	/* High-water mark of IOCBs */
 	ha->iocb_hiwat = mbox_sts[2];
 	DEBUG2(ql4_printk(KERN_INFO, ha,
@@ -1040,16 +805,11 @@ int qla4xxx_get_firmware_status(struct scsi_qla_host * ha)
 				  "%s: Setting IOCB's to = %d\n", __func__,
 				  ha->iocb_hiwat));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return QLA_SUCCESS;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * qla4xxx_get_fwddb_entry - retrieves firmware ddb entry
  * @ha: Pointer to host adapter structure.
  * @fw_ddb_index: Firmware's device database index
@@ -1173,11 +933,7 @@ int qla4xxx_conn_open(struct scsi_qla_host *ha, uint16_t fw_ddb_index)
 }
 
 /**
-<<<<<<< HEAD
- * qla4xxx_set_fwddb_entry - sets a ddb entry.
-=======
  * qla4xxx_set_ddb_entry - sets a ddb entry.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ha: Pointer to host adapter structure.
  * @fw_ddb_index: Firmware's device database index
  * @fw_ddb_entry_dma: dma address of ddb entry
@@ -1236,13 +992,10 @@ int qla4xxx_session_logout_ddb(struct scsi_qla_host *ha,
 				  "%s: MBOX_CMD_CONN_CLOSE_SESS_LOGOUT "
 				  "failed sts %04X %04X", __func__,
 				  mbox_sts[0], mbox_sts[1]));
-<<<<<<< HEAD
-=======
 		if ((mbox_sts[0] == MBOX_STS_COMMAND_ERROR) &&
 		    (mbox_sts[1] == DDB_NOT_LOGGED_IN)) {
 			set_bit(DDB_CONN_CLOSE_FAILURE, &ddb_entry->flags);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return status;
@@ -1446,11 +1199,7 @@ int qla4xxx_abort_task(struct scsi_qla_host *ha, struct srb *srb)
 	if (mbox_sts[0] != MBOX_STS_COMMAND_COMPLETE) {
 		status = QLA_ERROR;
 
-<<<<<<< HEAD
-		DEBUG2(printk(KERN_WARNING "scsi%ld:%d:%d: abort task FAILED: "
-=======
 		DEBUG2(printk(KERN_WARNING "scsi%ld:%d:%llu: abort task FAILED: "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "mbx0=%04X, mb1=%04X, mb2=%04X, mb3=%04X, mb4=%04X\n",
 		    ha->host_no, cmd->device->id, cmd->device->lun, mbox_sts[0],
 		    mbox_sts[1], mbox_sts[2], mbox_sts[3], mbox_sts[4]));
@@ -1470,15 +1219,6 @@ int qla4xxx_abort_task(struct scsi_qla_host *ha, struct srb *srb)
  * are valid before calling this routine.
  **/
 int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
-<<<<<<< HEAD
-		      int lun)
-{
-	uint32_t mbox_cmd[MBOX_REG_COUNT];
-	uint32_t mbox_sts[MBOX_REG_COUNT];
-	int status = QLA_SUCCESS;
-
-	DEBUG2(printk("scsi%ld:%d:%d: lun reset issued\n", ha->host_no,
-=======
 		      uint64_t lun)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -1487,7 +1227,6 @@ int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
 	int status = QLA_SUCCESS;
 
 	DEBUG2(printk("scsi%ld:%d:%llu: lun reset issued\n", ha->host_no,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      ddb_entry->fw_ddb_index, lun));
 
 	/*
@@ -1496,12 +1235,6 @@ int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
 	 */
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
-<<<<<<< HEAD
-
-	mbox_cmd[0] = MBOX_CMD_LUN_RESET;
-	mbox_cmd[1] = ddb_entry->fw_ddb_index;
-	mbox_cmd[2] = lun << 8;
-=======
 	int_to_scsilun(lun, (struct scsi_lun *) scsi_lun);
 
 	mbox_cmd[0] = MBOX_CMD_LUN_RESET;
@@ -1512,7 +1245,6 @@ int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
 	/* FW expects LUN bytes 4-7 in Incoming Mailbox 3
 	 * (LUN byte 4 is LSByte, byte 7 is MSByte) */
 	mbox_cmd[3] = cpu_to_le32(scsi_lun[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox_cmd[5] = 0x01;	/* Immediate Command Enable */
 
 	qla4xxx_mailbox_command(ha, MBOX_REG_COUNT, 1, &mbox_cmd[0], &mbox_sts[0]);
@@ -1526,12 +1258,7 @@ int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
 /**
  * qla4xxx_reset_target - issues target Reset
  * @ha: Pointer to host adapter structure.
-<<<<<<< HEAD
- * @db_entry: Pointer to device database entry
- * @un_entry: Pointer to lun entry structure
-=======
  * @ddb_entry: Pointer to device database entry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine performs a TARGET RESET on the specified target.
  * The caller must ensure that the ddb_entry pointers
@@ -1617,10 +1344,6 @@ int qla4xxx_about_firmware(struct scsi_qla_host *ha)
 		return status;
 	}
 
-<<<<<<< HEAD
-	memset(about_fw, 0, sizeof(struct about_fw_info));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 
@@ -1639,18 +1362,6 @@ int qla4xxx_about_firmware(struct scsi_qla_host *ha)
 	}
 
 	/* Save version information. */
-<<<<<<< HEAD
-	ha->firmware_version[0] = le16_to_cpu(about_fw->fw_major);
-	ha->firmware_version[1] = le16_to_cpu(about_fw->fw_minor);
-	ha->patch_number = le16_to_cpu(about_fw->fw_patch);
-	ha->build_number = le16_to_cpu(about_fw->fw_build);
-	ha->iscsi_major = le16_to_cpu(about_fw->iscsi_major);
-	ha->iscsi_minor = le16_to_cpu(about_fw->iscsi_minor);
-	ha->bootload_major = le16_to_cpu(about_fw->bootload_major);
-	ha->bootload_minor = le16_to_cpu(about_fw->bootload_minor);
-	ha->bootload_patch = le16_to_cpu(about_fw->bootload_patch);
-	ha->bootload_build = le16_to_cpu(about_fw->bootload_build);
-=======
 	ha->fw_info.fw_major = le16_to_cpu(about_fw->fw_major);
 	ha->fw_info.fw_minor = le16_to_cpu(about_fw->fw_minor);
 	ha->fw_info.fw_patch = le16_to_cpu(about_fw->fw_patch);
@@ -1673,7 +1384,6 @@ int qla4xxx_about_firmware(struct scsi_qla_host *ha)
 
 	ha->fw_uptime_secs = le32_to_cpu(mbox_sts[5]);
 	ha->fw_uptime_msecs = le32_to_cpu(mbox_sts[6]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = QLA_SUCCESS;
 
 exit_about_fw:
@@ -1682,13 +1392,8 @@ exit_about_fw:
 	return status;
 }
 
-<<<<<<< HEAD
-static int qla4xxx_get_default_ddb(struct scsi_qla_host *ha, uint32_t options,
-				   dma_addr_t dma_addr)
-=======
 int qla4xxx_get_default_ddb(struct scsi_qla_host *ha, uint32_t options,
 			    dma_addr_t dma_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
 	uint32_t mbox_sts[MBOX_REG_COUNT];
@@ -1816,8 +1521,6 @@ exit_bootdb_failed:
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 int qla4xxx_flashdb_by_index(struct scsi_qla_host *ha,
 			     struct dev_db_entry *fw_ddb_entry,
 			     dma_addr_t fw_ddb_entry_dma, uint16_t ddb_index)
@@ -1867,7 +1570,6 @@ exit_fdb_failed:
 	return status;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int qla4xxx_get_chap(struct scsi_qla_host *ha, char *username, char *password,
 		     uint16_t idx)
 {
@@ -1877,22 +1579,11 @@ int qla4xxx_get_chap(struct scsi_qla_host *ha, char *username, char *password,
 	struct ql4_chap_table *chap_table;
 	dma_addr_t chap_dma;
 
-<<<<<<< HEAD
-	chap_table = dma_pool_alloc(ha->chap_dma_pool, GFP_KERNEL, &chap_dma);
-	if (chap_table == NULL) {
-		ret = -ENOMEM;
-		goto exit_get_chap;
-	}
-
-	chap_size = sizeof(struct ql4_chap_table);
-	memset(chap_table, 0, chap_size);
-=======
 	chap_table = dma_pool_zalloc(ha->chap_dma_pool, GFP_KERNEL, &chap_dma);
 	if (chap_table == NULL)
 		return -ENOMEM;
 
 	chap_size = sizeof(struct ql4_chap_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_qla40XX(ha))
 		offset = FLASH_CHAP_OFFSET | (idx * chap_size);
@@ -1920,25 +1611,15 @@ int qla4xxx_get_chap(struct scsi_qla_host *ha, char *username, char *password,
 		goto exit_get_chap;
 	}
 
-<<<<<<< HEAD
-	strncpy(password, chap_table->secret, QL4_CHAP_MAX_SECRET_LEN);
-	strncpy(username, chap_table->name, QL4_CHAP_MAX_NAME_LEN);
-	chap_table->cookie = __constant_cpu_to_le16(CHAP_VALID_COOKIE);
-=======
 	strscpy(password, chap_table->secret, QL4_CHAP_MAX_SECRET_LEN);
 	strscpy(username, chap_table->name, QL4_CHAP_MAX_NAME_LEN);
 	chap_table->cookie = cpu_to_le16(CHAP_VALID_COOKIE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit_get_chap:
 	dma_pool_free(ha->chap_dma_pool, chap_table, chap_dma);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username,
-			    char *password, uint16_t idx, int bidi)
-=======
 /**
  * qla4xxx_set_chap - Make a chap entry at the given index
  * @ha: pointer to adapter structure
@@ -1953,42 +1634,25 @@ static int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username,
  **/
 int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username, char *password,
 		     uint16_t idx, int bidi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	int rval = QLA_ERROR;
 	uint32_t offset = 0;
 	struct ql4_chap_table *chap_table;
-<<<<<<< HEAD
-	dma_addr_t chap_dma;
-
-	chap_table = dma_pool_alloc(ha->chap_dma_pool, GFP_KERNEL, &chap_dma);
-=======
 	uint32_t chap_size = 0;
 	dma_addr_t chap_dma;
 
 	chap_table = dma_pool_zalloc(ha->chap_dma_pool, GFP_KERNEL, &chap_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chap_table == NULL) {
 		ret =  -ENOMEM;
 		goto exit_set_chap;
 	}
 
-<<<<<<< HEAD
-	memset(chap_table, 0, sizeof(struct ql4_chap_table));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bidi)
 		chap_table->flags |= BIT_6; /* peer */
 	else
 		chap_table->flags |= BIT_7; /* local */
 	chap_table->secret_len = strlen(password);
-<<<<<<< HEAD
-	strncpy(chap_table->secret, password, MAX_CHAP_SECRET_LEN);
-	strncpy(chap_table->name, username, MAX_CHAP_NAME_LEN);
-	chap_table->cookie = __constant_cpu_to_le16(CHAP_VALID_COOKIE);
-	offset = FLASH_CHAP_OFFSET | (idx * sizeof(struct ql4_chap_table));
-=======
 	strncpy(chap_table->secret, password, MAX_CHAP_SECRET_LEN - 1);
 	strncpy(chap_table->name, username, MAX_CHAP_NAME_LEN - 1);
 	chap_table->cookie = cpu_to_le16(CHAP_VALID_COOKIE);
@@ -2006,7 +1670,6 @@ int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username, char *password,
 	}
 
 	offset += (idx * sizeof(struct ql4_chap_table));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rval = qla4xxx_set_flash(ha, chap_dma, offset,
 				sizeof(struct ql4_chap_table),
 				FLASH_OPT_RMW_COMMIT);
@@ -2024,8 +1687,6 @@ exit_set_chap:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 
 int qla4xxx_get_uni_chap_at_index(struct scsi_qla_host *ha, char *username,
 				  char *password, uint16_t chap_index)
@@ -2082,7 +1743,6 @@ exit_uni_chap:
 	return rval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * qla4xxx_get_chap_index - Get chap index given username and secret
  * @ha: pointer to adapter structure
@@ -2104,11 +1764,7 @@ int qla4xxx_get_chap_index(struct scsi_qla_host *ha, char *username,
 	int max_chap_entries = 0;
 	struct ql4_chap_table *chap_table;
 
-<<<<<<< HEAD
-	if (is_qla8022(ha))
-=======
 	if (is_qla80XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		max_chap_entries = (ha->hw.flt_chap_size / 2) /
 						sizeof(struct ql4_chap_table);
 	else
@@ -2128,11 +1784,7 @@ int qla4xxx_get_chap_index(struct scsi_qla_host *ha, char *username,
 	for (i = 0; i < max_chap_entries; i++) {
 		chap_table = (struct ql4_chap_table *)ha->chap_list + i;
 		if (chap_table->cookie !=
-<<<<<<< HEAD
-		    __constant_cpu_to_le16(CHAP_VALID_COOKIE)) {
-=======
 		    cpu_to_le16(CHAP_VALID_COOKIE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i > MAX_RESRV_CHAP_IDX && free_index == -1)
 				free_index = i;
 			continue;
@@ -2199,8 +1851,6 @@ int qla4xxx_conn_close_sess_logout(struct scsi_qla_host *ha,
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * qla4_84xx_extend_idc_tmo - Extend IDC Timeout.
  * @ha: Pointer to host adapter structure.
@@ -2240,7 +1890,6 @@ static int qla4_84xx_extend_idc_tmo(struct scsi_qla_host *ha, uint32_t ext_tmo)
 	return QLA_SUCCESS;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int qla4xxx_disable_acb(struct scsi_qla_host *ha)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -2257,8 +1906,6 @@ int qla4xxx_disable_acb(struct scsi_qla_host *ha)
 		DEBUG2(ql4_printk(KERN_WARNING, ha, "%s: MBOX_CMD_DISABLE_ACB "
 				  "failed w/ status %04X %04X %04X", __func__,
 				  mbox_sts[0], mbox_sts[1], mbox_sts[2]));
-<<<<<<< HEAD
-=======
 	} else {
 		if (is_qla8042(ha) &&
 		    test_bit(DPC_POST_IDC_ACK, &ha->dpc_flags) &&
@@ -2277,7 +1924,6 @@ int qla4xxx_disable_acb(struct scsi_qla_host *ha)
 					   __func__);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
@@ -2362,11 +2008,7 @@ int qla4xxx_set_param_ddbentry(struct scsi_qla_host *ha,
 	conn = cls_conn->dd_data;
 	qla_conn = conn->dd_data;
 	sess = conn->session;
-<<<<<<< HEAD
-	dst_addr = &qla_conn->qla_ep->dst_addr;
-=======
 	dst_addr = (struct sockaddr *)&qla_conn->qla_ep->dst_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dst_addr->sa_family == AF_INET6)
 		options |= IPV6_DEFAULT_DDB_ENTRY;
@@ -2380,14 +2022,7 @@ int qla4xxx_set_param_ddbentry(struct scsi_qla_host *ha,
 	ptid = (uint16_t *)&fw_ddb_entry->isid[1];
 	*ptid = cpu_to_le16((uint16_t)ddb_entry->sess->target_id);
 
-<<<<<<< HEAD
-	DEBUG2(ql4_printk(KERN_INFO, ha, "ISID [%02x%02x%02x%02x%02x%02x]\n",
-			  fw_ddb_entry->isid[5], fw_ddb_entry->isid[4],
-			  fw_ddb_entry->isid[3], fw_ddb_entry->isid[2],
-			  fw_ddb_entry->isid[1], fw_ddb_entry->isid[0]));
-=======
 	DEBUG2(ql4_printk(KERN_INFO, ha, "ISID [%pmR]\n", fw_ddb_entry->isid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iscsi_opts = le16_to_cpu(fw_ddb_entry->iscsi_options);
 	memset(fw_ddb_entry->iscsi_alias, 0, sizeof(fw_ddb_entry->iscsi_alias));
@@ -2470,30 +2105,18 @@ int qla4xxx_set_param_ddbentry(struct scsi_qla_host *ha,
 
 	if (conn->max_recv_dlength)
 		fw_ddb_entry->iscsi_max_rcv_data_seg_len =
-<<<<<<< HEAD
-		  __constant_cpu_to_le16((conn->max_recv_dlength / BYTE_UNITS));
-=======
 		  cpu_to_le16((conn->max_recv_dlength / BYTE_UNITS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sess->max_r2t)
 		fw_ddb_entry->iscsi_max_outsnd_r2t = cpu_to_le16(sess->max_r2t);
 
 	if (sess->first_burst)
 		fw_ddb_entry->iscsi_first_burst_len =
-<<<<<<< HEAD
-		       __constant_cpu_to_le16((sess->first_burst / BYTE_UNITS));
-
-	if (sess->max_burst)
-		fw_ddb_entry->iscsi_max_burst_len =
-			__constant_cpu_to_le16((sess->max_burst / BYTE_UNITS));
-=======
 		       cpu_to_le16((sess->first_burst / BYTE_UNITS));
 
 	if (sess->max_burst)
 		fw_ddb_entry->iscsi_max_burst_len =
 			cpu_to_le16((sess->max_burst / BYTE_UNITS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sess->time2wait)
 		fw_ddb_entry->iscsi_def_time2wait =
@@ -2640,8 +2263,6 @@ int qla4xxx_restore_factory_defaults(struct scsi_qla_host *ha,
 	}
 	return status;
 }
-<<<<<<< HEAD
-=======
 
 /**
  * qla4_8xxx_set_param - set driver version in firmware.
@@ -2828,4 +2449,3 @@ int qla4_83xx_set_port_config(struct scsi_qla_host *ha, uint32_t *config)
 
 	return status;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

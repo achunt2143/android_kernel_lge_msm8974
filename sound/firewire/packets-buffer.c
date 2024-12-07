@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * helpers for managing a buffer for many packets
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- * Licensed under the terms of the GNU General Public License, version 2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/firewire.h>
@@ -34,11 +27,7 @@ int iso_packets_buffer_init(struct iso_packets_buffer *b, struct fw_unit *unit,
 	void *p;
 	int err;
 
-<<<<<<< HEAD
-	b->packets = kmalloc(count * sizeof(*b->packets), GFP_KERNEL);
-=======
 	b->packets = kmalloc_array(count, sizeof(*b->packets), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!b->packets) {
 		err = -ENOMEM;
 		goto error;
@@ -48,11 +37,7 @@ int iso_packets_buffer_init(struct iso_packets_buffer *b, struct fw_unit *unit,
 	packets_per_page = PAGE_SIZE / packet_size;
 	if (WARN_ON(!packets_per_page)) {
 		err = -EINVAL;
-<<<<<<< HEAD
-		goto error;
-=======
 		goto err_packets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pages = DIV_ROUND_UP(count, packets_per_page);
 

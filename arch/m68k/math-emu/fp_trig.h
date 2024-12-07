@@ -15,13 +15,8 @@
 
 */
 
-<<<<<<< HEAD
-#ifndef FP_TRIG_H
-#define FP_TRIG_H
-=======
 #ifndef _FP_TRIG_H
 #define _FP_TRIG_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fp_emu.h"
 
@@ -34,9 +29,6 @@
    they return a status code, which should end up in %d0, if all goes
    well.  */
 
-<<<<<<< HEAD
-#endif /* FP_TRIG__H */
-=======
 struct fp_ext *fp_fsin(struct fp_ext *dest, struct fp_ext *src);
 struct fp_ext *fp_fcos(struct fp_ext *dest, struct fp_ext *src);
 struct fp_ext *fp_ftan(struct fp_ext *dest, struct fp_ext *src);
@@ -57,4 +49,3 @@ struct fp_ext *fp_fsincos6(struct fp_ext *dest, struct fp_ext *src);
 struct fp_ext *fp_fsincos7(struct fp_ext *dest, struct fp_ext *src);
 
 #endif /* _FP_TRIG_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

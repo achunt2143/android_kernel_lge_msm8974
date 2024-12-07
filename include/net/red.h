@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __NET_SCHED_RED_H
 #define __NET_SCHED_RED_H
 
@@ -125,10 +122,6 @@ struct red_stats {
 	u32		forced_drop;	/* Forced drops, qavg > max_thresh */
 	u32		forced_mark;	/* Forced marks, qavg > max_thresh */
 	u32		pdrop;          /* Drops due to queue limits */
-<<<<<<< HEAD
-	u32		other;          /* Drops due to drop() calls */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct red_parms {
@@ -137,12 +130,8 @@ struct red_parms {
 	u32		qth_max;	/* Max avg length threshold: Wlog scaled */
 	u32		Scell_max;
 	u32		max_P;		/* probability, [0 .. 1.0] 32 scaled */
-<<<<<<< HEAD
-	u32		max_P_reciprocal; /* reciprocal_value(max_P / qth_delta) */
-=======
 	/* reciprocal_value(max_P / qth_delta) */
 	struct reciprocal_value	max_P_reciprocal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		qth_delta;	/* max_th - min_th */
 	u32		target_min;	/* min_th + 0.4*(max_th - min_th) */
 	u32		target_max;	/* min_th + 0.6*(max_th - min_th) */
@@ -178,8 +167,6 @@ static inline void red_set_vars(struct red_vars *v)
 	v->qcount	= -1;
 }
 
-<<<<<<< HEAD
-=======
 static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog,
 				    u8 Scell_log, u8 *stab)
 {
@@ -239,7 +226,6 @@ static inline int red_validate_flags(unsigned char flags,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void red_set_parms(struct red_parms *p,
 				 u32 qth_min, u32 qth_max, u8 Wlog, u8 Plog,
 				 u8 Scell_log, u8 *stab, u32 max_P)
@@ -251,11 +237,7 @@ static inline void red_set_parms(struct red_parms *p,
 	p->qth_max	= qth_max << Wlog;
 	p->Wlog		= Wlog;
 	p->Plog		= Plog;
-<<<<<<< HEAD
-	if (delta < 0)
-=======
 	if (delta <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		delta = 1;
 	p->qth_delta	= delta;
 	if (!max_P) {
@@ -284,11 +266,7 @@ static inline void red_set_parms(struct red_parms *p,
 
 static inline int red_is_idling(const struct red_vars *v)
 {
-<<<<<<< HEAD
-	return v->qidlestart.tv64 != 0;
-=======
 	return v->qidlestart != 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void red_start_of_idle_period(struct red_vars *v)
@@ -298,11 +276,7 @@ static inline void red_start_of_idle_period(struct red_vars *v)
 
 static inline void red_end_of_idle_period(struct red_vars *v)
 {
-<<<<<<< HEAD
-	v->qidlestart.tv64 = 0;
-=======
 	v->qidlestart = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void red_restart(struct red_vars *v)
@@ -320,11 +294,7 @@ static inline unsigned long red_calc_qavg_from_idle_time(const struct red_parms 
 	int  shift;
 
 	/*
-<<<<<<< HEAD
-	 * The problem: ideally, average length queue recalcultion should
-=======
 	 * The problem: ideally, average length queue recalculation should
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * be done over constant clock intervals. This is too expensive, so
 	 * that the calculation is driven by outgoing packets.
 	 * When the queue is idle we have to model this clock by hand.
@@ -393,11 +363,7 @@ static inline unsigned long red_calc_qavg(const struct red_parms *p,
 
 static inline u32 red_random(const struct red_parms *p)
 {
-<<<<<<< HEAD
-	return reciprocal_divide(net_random(), p->max_P_reciprocal);
-=======
 	return reciprocal_divide(get_random_u32(), p->max_P_reciprocal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int red_mark_probability(const struct red_parms *p,

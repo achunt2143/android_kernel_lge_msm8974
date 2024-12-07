@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#
-# EISA configuration
-#
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # EISA configuration
@@ -27,16 +22,11 @@ menuconfig EISA
 
 	  Otherwise, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config EISA_VLB_PRIMING
 	bool "Vesa Local Bus priming"
 	depends on X86 && EISA
 	default n
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Activate this option if your system contains a Vesa Local
 	  Bus (VLB) card that identify itself as an EISA card (such as
 	  the Adaptec AHA-284x).
@@ -47,11 +37,7 @@ config EISA_PCI_EISA
 	bool "Generic PCI/EISA bridge"
 	depends on !PARISC && PCI && EISA
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Activate this option if your system contains a PCI to EISA
 	  bridge. If your system have both PCI and EISA slots, you
 	  certainly need this option.
@@ -65,11 +51,7 @@ config EISA_VIRTUAL_ROOT
 	bool "EISA virtual root device"
 	depends on EISA && (ALPHA || X86)
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Activate this option if your system only have EISA bus
 	  (no PCI slots). The Alpha Jensen is an example of such
 	  a system.
@@ -80,11 +62,7 @@ config EISA_NAMES
 	bool "EISA device name database"
 	depends on EISA
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  By default, the kernel contains a database of all known EISA
 	  device names to make the information in sysfs comprehensible
 	  to the user. This database increases size of the kernel
@@ -96,7 +74,3 @@ config EISA_NAMES
 	  names.
 
 	  When in doubt, say Y.
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

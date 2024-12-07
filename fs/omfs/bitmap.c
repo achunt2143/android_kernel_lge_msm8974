@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
@@ -163,11 +160,7 @@ int omfs_allocate_range(struct super_block *sb,
 	goto out;
 
 found:
-<<<<<<< HEAD
-	*return_block = i * bits_per_entry + bit;
-=======
 	*return_block = (u64) i * bits_per_entry + bit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*return_size = run;
 	ret = set_run(sb, i, bits_per_entry, bit, run, 1);
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  USB HID quirks support for Linux
  *
@@ -9,70 +6,17 @@
  *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
  *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
  *  Copyright (c) 2006-2007 Jiri Kosina
-<<<<<<< HEAD
- *  Copyright (c) 2007 Paul Walmsley
- *  Copyright (c) 2008 Jiri Slaby <jirislaby@gmail.com>
- */
-
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
  *  Copyright (c) 2008 Jiri Slaby <jirislaby@gmail.com>
  *  Copyright (c) 2019 Paul Pawlowski <paul@mrarm.io>
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/device.h>
 #include <linux/hid.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/usb.h>
-
-#include "hid-ids.h"
-
-#define APPLE_RDESC_JIS		0x0001
-#define APPLE_IGNORE_MOUSE	0x0002
-#define APPLE_HAS_FN		0x0004
-#define APPLE_HIDDEV		0x0008
-#define APPLE_ISO_KEYBOARD	0x0010
-#define APPLE_MIGHTYMOUSE	0x0020
-#define APPLE_INVERT_HWHEEL	0x0040
-#define APPLE_IGNORE_HIDINPUT	0x0080
-#define APPLE_NUMLOCK_EMULATION	0x0100
-
-#define APPLE_FLAG_FKEY		0x01
-
-static unsigned int fnmode = 1;
-module_param(fnmode, uint, 0644);
-MODULE_PARM_DESC(fnmode, "Mode of fn key on Apple keyboards (0 = disabled, "
-		"[1] = fkeyslast, 2 = fkeysfirst)");
-
-static unsigned int iso_layout = 1;
-module_param(iso_layout, uint, 0644);
-MODULE_PARM_DESC(iso_layout, "Enable/Disable hardcoded ISO-layout of the keyboard. "
-		"(0 = disabled, [1] = enabled)");
-
-static unsigned int swap_opt_cmd = 0;
-module_param(swap_opt_cmd, uint, 0644);
-MODULE_PARM_DESC(swap_opt_cmd, "Swap the Option (\"Alt\") and Command (\"Flag\") keys. "
-		"(For people who want to keep Windows PC keyboard muscle memory. "
-		"[0] = as-is, Mac layout. 1 = swapped, Windows layout.)");
-
-struct apple_sc {
-	unsigned long quirks;
-	unsigned int fn_on;
-	DECLARE_BITMAP(pressed_fn, KEY_CNT);
-	DECLARE_BITMAP(pressed_numlock, KEY_CNT);
-=======
 #include <linux/jiffies.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -145,7 +89,6 @@ struct apple_sc {
 	DECLARE_BITMAP(pressed_numlock, KEY_CNT);
 	struct timer_list battery_timer;
 	struct apple_sc_backlight *backlight;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct apple_key_translation {
@@ -154,8 +97,6 @@ struct apple_key_translation {
 	u8 flags;
 };
 
-<<<<<<< HEAD
-=======
 static const struct apple_key_translation magic_keyboard_alu_fn_keys[] = {
 	{ KEY_BACKSPACE, KEY_DELETE },
 	{ KEY_ENTER,	KEY_INSERT },
@@ -233,7 +174,6 @@ static const struct apple_key_translation apple2021_fn_keys[] = {
 	{ }
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct apple_key_translation macbookair_fn_keys[] = {
 	{ KEY_BACKSPACE, KEY_DELETE },
 	{ KEY_ENTER,	KEY_INSERT },
@@ -255,8 +195,6 @@ static const struct apple_key_translation macbookair_fn_keys[] = {
 	{ }
 };
 
-<<<<<<< HEAD
-=======
 static const struct apple_key_translation macbookpro_no_esc_fn_keys[] = {
 	{ KEY_BACKSPACE, KEY_DELETE },
 	{ KEY_ENTER,	KEY_INSERT },
@@ -302,7 +240,6 @@ static const struct apple_key_translation macbookpro_dedicated_esc_fn_keys[] = {
 	{ }
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct apple_key_translation apple_fn_keys[] = {
 	{ KEY_BACKSPACE, KEY_DELETE },
 	{ KEY_ENTER,	KEY_INSERT },
@@ -377,12 +314,6 @@ static const struct apple_key_translation swapped_option_cmd_keys[] = {
 	{ KEY_LEFTALT,	KEY_LEFTMETA },
 	{ KEY_LEFTMETA,	KEY_LEFTALT },
 	{ KEY_RIGHTALT,	KEY_RIGHTMETA },
-<<<<<<< HEAD
-	{ KEY_RIGHTMETA,KEY_RIGHTALT },
-	{ }
-};
-
-=======
 	{ KEY_RIGHTMETA, KEY_RIGHTALT },
 	{ }
 };
@@ -442,7 +373,6 @@ static inline void apple_setup_key_translation(struct input_dev *input,
 		set_bit(trans->to, input->keybit);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct apple_key_translation *apple_find_translation(
 		const struct apple_key_translation *table, u16 from)
 {
@@ -456,8 +386,6 @@ static const struct apple_key_translation *apple_find_translation(
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static void input_event_with_scancode(struct input_dev *input,
 		__u8 type, __u16 code, unsigned int hid, __s32 value)
 {
@@ -467,25 +395,11 @@ static void input_event_with_scancode(struct input_dev *input,
 	input_event(input, type, code, value);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
 		struct hid_usage *usage, __s32 value)
 {
 	struct apple_sc *asc = hid_get_drvdata(hid);
 	const struct apple_key_translation *trans, *table;
-<<<<<<< HEAD
-
-	if (usage->code == KEY_FN) {
-		asc->fn_on = !!value;
-		input_event(input, usage->type, usage->code, value);
-		return 1;
-	}
-
-	if (fnmode) {
-		int do_translate;
-
-		if (hid->product >= USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI &&
-=======
 	bool do_translate;
 	u16 code = usage->code;
 	unsigned int real_fnmode;
@@ -561,7 +475,6 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
 			 hid->product == USB_DEVICE_ID_APPLE_WELLSPRINGT2_J230K)
 				table = apple_fn_keys;
 		else if (hid->product >= USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hid->product <= USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS)
 			table = macbookair_fn_keys;
 		else if (hid->product < 0x21d || hid->product >= 0x300)
@@ -569,29 +482,6 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
 		else
 			table = apple_fn_keys;
 
-<<<<<<< HEAD
-		trans = apple_find_translation (table, usage->code);
-
-		if (trans) {
-			if (test_bit(usage->code, asc->pressed_fn))
-				do_translate = 1;
-			else if (trans->flags & APPLE_FLAG_FKEY)
-				do_translate = (fnmode == 2 && asc->fn_on) ||
-					(fnmode == 1 && !asc->fn_on);
-			else
-				do_translate = asc->fn_on;
-
-			if (do_translate) {
-				if (value)
-					set_bit(usage->code, asc->pressed_fn);
-				else
-					clear_bit(usage->code, asc->pressed_fn);
-
-				input_event(input, usage->type, trans->to,
-						value);
-
-				return 1;
-=======
 		trans = apple_find_translation(table, code);
 
 		if (trans) {
@@ -622,40 +512,10 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
 
 				if (do_translate)
 					code = trans->to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 		if (asc->quirks & APPLE_NUMLOCK_EMULATION &&
-<<<<<<< HEAD
-				(test_bit(usage->code, asc->pressed_numlock) ||
-				test_bit(LED_NUML, input->led))) {
-			trans = apple_find_translation(powerbook_numlock_keys,
-					usage->code);
-
-			if (trans) {
-				if (value)
-					set_bit(usage->code,
-							asc->pressed_numlock);
-				else
-					clear_bit(usage->code,
-							asc->pressed_numlock);
-
-				input_event(input, usage->type, trans->to,
-						value);
-			}
-
-			return 1;
-		}
-	}
-
-        if (iso_layout) {
-		if (asc->quirks & APPLE_ISO_KEYBOARD) {
-			trans = apple_find_translation(apple_iso_keyboard, usage->code);
-			if (trans) {
-				input_event(input, usage->type, trans->to, value);
-				return 1;
-=======
 				(test_bit(code, asc->pressed_numlock) ||
 				test_bit(LED_NUML, input->led))) {
 			trans = apple_find_translation(powerbook_numlock_keys, code);
@@ -667,24 +527,14 @@ static int hidinput_apple_event(struct hid_device *hid, struct input_dev *input,
 					clear_bit(code, asc->pressed_numlock);
 
 				code = trans->to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
-<<<<<<< HEAD
-	if (swap_opt_cmd) {
-		trans = apple_find_translation(swapped_option_cmd_keys, usage->code);
-		if (trans) {
-			input_event(input, usage->type, trans->to, value);
-			return 1;
-		}
-=======
 	if (usage->code != code) {
 		input_event_with_scancode(input, usage->type, code, usage->hid, value);
 
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -701,13 +551,8 @@ static int apple_event(struct hid_device *hdev, struct hid_field *field,
 
 	if ((asc->quirks & APPLE_INVERT_HWHEEL) &&
 			usage->code == REL_HWHEEL) {
-<<<<<<< HEAD
-		input_event(field->hidinput->input, usage->type, usage->code,
-				-value);
-=======
 		input_event_with_scancode(field->hidinput->input, usage->type,
 				usage->code, usage->hid, -value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -720,10 +565,6 @@ static int apple_event(struct hid_device *hdev, struct hid_field *field,
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * MacBook JIS keyboard has wrong logical maximum
-=======
 static int apple_fetch_battery(struct hid_device *hdev)
 {
 #ifdef CONFIG_HID_BATTERY_STRENGTH
@@ -764,30 +605,24 @@ static void apple_battery_timer_tick(struct timer_list *t)
 /*
  * MacBook JIS keyboard has wrong logical maximum
  * Magic Keyboard JIS has wrong logical maximum
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static __u8 *apple_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
 	struct apple_sc *asc = hid_get_drvdata(hdev);
 
-<<<<<<< HEAD
-=======
 	if(*rsize >=71 && rdesc[70] == 0x65 && rdesc[64] == 0x65) {
 		hid_info(hdev,
 			 "fixing up Magic Keyboard JIS report descriptor\n");
 		rdesc[64] = rdesc[70] = 0xe7;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((asc->quirks & APPLE_RDESC_JIS) && *rsize >= 60 &&
 			rdesc[53] == 0x65 && rdesc[59] == 0x65) {
 		hid_info(hdev,
 			 "fixing up MacBook JIS keyboard report descriptor\n");
 		rdesc[53] = rdesc[59] = 0xe7;
 	}
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Change the usage from:
@@ -812,30 +647,11 @@ static __u8 *apple_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		rdesc[3] = 0x06;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rdesc;
 }
 
 static void apple_setup_input(struct input_dev *input)
 {
-<<<<<<< HEAD
-	const struct apple_key_translation *trans;
-
-	set_bit(KEY_NUMLOCK, input->keybit);
-
-	/* Enable all needed keys */
-	for (trans = apple_fn_keys; trans->from; trans++)
-		set_bit(trans->to, input->keybit);
-
-	for (trans = powerbook_fn_keys; trans->from; trans++)
-		set_bit(trans->to, input->keybit);
-
-	for (trans = powerbook_numlock_keys; trans->from; trans++)
-		set_bit(trans->to, input->keybit);
-
-	for (trans = apple_iso_keyboard; trans->from; trans++)
-		set_bit(trans->to, input->keybit);
-=======
 	set_bit(KEY_NUMLOCK, input->keybit);
 
 	/* Enable all needed keys */
@@ -848,19 +664,12 @@ static void apple_setup_input(struct input_dev *input)
 	apple_setup_key_translation(input, apple2021_fn_keys);
 	apple_setup_key_translation(input, macbookpro_no_esc_fn_keys);
 	apple_setup_key_translation(input, macbookpro_dedicated_esc_fn_keys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
-<<<<<<< HEAD
-	if (usage->hid == (HID_UP_CUSTOM | 0x0003)) {
-		/* The fn key on Apple USB keyboards */
-		set_bit(EV_REP, hi->input->evbit);
-		hid_map_usage_clear(hi, usage, bit, max, EV_KEY, KEY_FN);
-=======
 	struct apple_sc *asc = hid_get_drvdata(hdev);
 
 	if (usage->hid == (HID_UP_CUSTOM | 0x0003) ||
@@ -870,7 +679,6 @@ static int apple_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		set_bit(EV_REP, hi->input->evbit);
 		hid_map_usage_clear(hi, usage, bit, max, EV_KEY, KEY_FN);
 		asc->fn_found = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		apple_setup_input(hi->input);
 		return 1;
 	}
@@ -897,8 +705,6 @@ static int apple_input_mapped(struct hid_device *hdev, struct hid_input *hi,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int apple_input_configured(struct hid_device *hdev,
 		struct hid_input *hidinput)
 {
@@ -1016,31 +822,20 @@ cleanup_and_exit:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int apple_probe(struct hid_device *hdev,
 		const struct hid_device_id *id)
 {
 	unsigned long quirks = id->driver_data;
 	struct apple_sc *asc;
-<<<<<<< HEAD
-	unsigned int connect_mask = HID_CONNECT_DEFAULT;
-	int ret;
-
-	asc = kzalloc(sizeof(*asc), GFP_KERNEL);
-=======
 	int ret;
 
 	asc = devm_kzalloc(&hdev->dev, sizeof(*asc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (asc == NULL) {
 		hid_err(hdev, "can't alloc apple descriptor\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-=======
 	asc->hdev = hdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asc->quirks = quirks;
 
 	hid_set_drvdata(hdev, asc);
@@ -1048,26 +843,6 @@ static int apple_probe(struct hid_device *hdev,
 	ret = hid_parse(hdev);
 	if (ret) {
 		hid_err(hdev, "parse failed\n");
-<<<<<<< HEAD
-		goto err_free;
-	}
-
-	if (quirks & APPLE_HIDDEV)
-		connect_mask |= HID_CONNECT_HIDDEV_FORCE;
-	if (quirks & APPLE_IGNORE_HIDINPUT)
-		connect_mask &= ~HID_CONNECT_HIDINPUT;
-
-	ret = hid_hw_start(hdev, connect_mask);
-	if (ret) {
-		hid_err(hdev, "hw start failed\n");
-		goto err_free;
-	}
-
-	return 0;
-err_free:
-	kfree(asc);
-	return ret;
-=======
 		return ret;
 	}
 
@@ -1086,22 +861,10 @@ err_free:
 		apple_backlight_init(hdev);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void apple_remove(struct hid_device *hdev)
 {
-<<<<<<< HEAD
-	hid_hw_stop(hdev);
-	kfree(hid_get_drvdata(hdev));
-}
-
-static const struct hid_device_id apple_devices[] = {
-	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ATV_IRCONTROL),
-		.driver_data = APPLE_HIDDEV | APPLE_IGNORE_HIDINPUT },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_IRCONTROL4),
-		.driver_data = APPLE_HIDDEV | APPLE_IGNORE_HIDINPUT },
-=======
 	struct apple_sc *asc = hid_get_drvdata(hdev);
 
 	del_timer_sync(&asc->battery_timer);
@@ -1110,7 +873,6 @@ static const struct hid_device_id apple_devices[] = {
 }
 
 static const struct hid_device_id apple_devices[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MIGHTYMOUSE),
 		.driver_data = APPLE_MIGHTYMOUSE | APPLE_INVERT_HWHEEL },
 
@@ -1121,23 +883,14 @@ static const struct hid_device_id apple_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER_ANSI),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
-			APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER_JIS),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER3_ANSI),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER3_ISO),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
-<<<<<<< HEAD
-			APPLE_ISO_KEYBOARD },
-=======
 			APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER3_JIS),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
 			APPLE_RDESC_JIS },
@@ -1145,80 +898,44 @@ static const struct hid_device_id apple_devices[] = {
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER4_ISO),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
-<<<<<<< HEAD
-			APPLE_ISO_KEYBOARD },
-=======
 			APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER4_JIS),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
 			APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_MINI_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_MINI_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_MINI_JIS),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_JIS),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER4_HF_ANSI),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER4_HF_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
-=======
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
 			APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER4_HF_JIS),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
 			APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_REVB_ANSI),
 		.driver_data = APPLE_HAS_FN },
-<<<<<<< HEAD
-	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_REVB_ISO),
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_REVB_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_REVB_ISO),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_REVB_ISO),
 		.driver_data = APPLE_HAS_FN },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_REVB_JIS),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_ANSI),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_ISO),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
-<<<<<<< HEAD
-			APPLE_ISO_KEYBOARD },
-	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ISO),
-		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
-			APPLE_ISO_KEYBOARD },
-	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
-				USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ANSI),
-		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
-	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_JIS),
-		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING_ANSI),
-		.driver_data = APPLE_HAS_FN },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING_ISO),
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 			APPLE_ISO_TILDE_QUIRK },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_2011_ISO),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
@@ -1243,97 +960,59 @@ static const struct hid_device_id apple_devices[] = {
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING_ISO),
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING2_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING2_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING2_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING3_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING3_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING3_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING4_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING4_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING4_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING4A_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING4A_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING4A_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6A_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6A_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING6A_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5A_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5A_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING5A_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7_ANSI),
 		.driver_data = APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7_ISO),
-<<<<<<< HEAD
-		.driver_data = APPLE_HAS_FN | APPLE_ISO_KEYBOARD },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7_JIS),
-		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
-=======
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRING7_JIS),
 		.driver_data = APPLE_HAS_FN | APPLE_RDESC_JIS },
@@ -1371,24 +1050,17 @@ static const struct hid_device_id apple_devices[] = {
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_WELLSPRINGT2_J152F),
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ANSI),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_ISO),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN |
-<<<<<<< HEAD
-			APPLE_ISO_KEYBOARD },
-=======
 			APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_JIS),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_FOUNTAIN_TP_ONLY),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_GEYSER1_TP_ONLY),
 		.driver_data = APPLE_NUMLOCK_EMULATION | APPLE_HAS_FN },
-<<<<<<< HEAD
-=======
 	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_2021),
@@ -1401,7 +1073,6 @@ static const struct hid_device_id apple_devices[] = {
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK | APPLE_RDESC_BATTERY },
 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGIC_KEYBOARD_NUMPAD_2021),
 		.driver_data = APPLE_HAS_FN | APPLE_ISO_TILDE_QUIRK },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ }
 };
@@ -1416,31 +1087,8 @@ static struct hid_driver apple_driver = {
 	.event = apple_event,
 	.input_mapping = apple_input_mapping,
 	.input_mapped = apple_input_mapped,
-<<<<<<< HEAD
-};
-
-static int __init apple_init(void)
-{
-	int ret;
-
-	ret = hid_register_driver(&apple_driver);
-	if (ret)
-		pr_err("can't register apple driver\n");
-
-	return ret;
-}
-
-static void __exit apple_exit(void)
-{
-	hid_unregister_driver(&apple_driver);
-}
-
-module_init(apple_init);
-module_exit(apple_exit);
-=======
 	.input_configured = apple_input_configured,
 };
 module_hid_driver(apple_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

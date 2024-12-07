@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the USB Mass Storage device drivers.
 #
@@ -9,35 +6,18 @@
 # Rewritten to use lists instead of if-statements.
 #
 
-<<<<<<< HEAD
-ccflags-y := -Idrivers/scsi
-=======
 ccflags-y := -I $(srctree)/drivers/scsi
 
 ccflags-y += -DDEFAULT_SYMBOL_NAMESPACE=USB_STORAGE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_USB_UAS)		+= uas.o
 obj-$(CONFIG_USB_STORAGE)	+= usb-storage.o
 
 usb-storage-y := scsiglue.o protocol.o transport.o usb.o
 usb-storage-y += initializers.o sierra_ms.o option_ms.o
-<<<<<<< HEAD
-
-usb-storage-$(CONFIG_USB_STORAGE_DEBUG) += debug.o
-
-ifeq ($(CONFIG_USB_LIBUSUAL),)
-	usb-storage-y		+= usual-tables.o
-else
-	obj-$(CONFIG_USB)	+= usb-libusual.o
-	usb-libusual-y		:= libusual.o usual-tables.o
-endif
-
-=======
 usb-storage-y += usual-tables.o
 usb-storage-$(CONFIG_USB_STORAGE_DEBUG) += debug.o
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_USB_STORAGE_ALAUDA)	+= ums-alauda.o
 obj-$(CONFIG_USB_STORAGE_CYPRESS_ATACB) += ums-cypress.o
 obj-$(CONFIG_USB_STORAGE_DATAFAB)	+= ums-datafab.o

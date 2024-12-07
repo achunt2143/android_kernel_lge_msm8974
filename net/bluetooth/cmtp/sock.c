@@ -20,11 +20,7 @@
    SOFTWARE IS DISCLAIMED.
 */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/types.h>
 #include <linux/capability.h>
@@ -43,12 +39,6 @@
 
 #include <linux/isdn/capilli.h>
 
-<<<<<<< HEAD
-#include <asm/system.h>
-
-#include "cmtp.h"
-
-=======
 
 #include "cmtp.h"
 
@@ -56,7 +46,6 @@ static struct bt_sock_list cmtp_sk_list = {
 	.lock = __RW_LOCK_UNLOCKED(cmtp_sk_list.lock)
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cmtp_sock_release(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
@@ -66,47 +55,29 @@ static int cmtp_sock_release(struct socket *sock)
 	if (!sk)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	bt_sock_unlink(&cmtp_sk_list, sk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_orphan(sk);
 	sock_put(sk);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int cmtp_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-=======
 static int do_cmtp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user *argp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cmtp_connadd_req ca;
 	struct cmtp_conndel_req cd;
 	struct cmtp_connlist_req cl;
 	struct cmtp_conninfo ci;
 	struct socket *nsock;
-<<<<<<< HEAD
-	void __user *argp = (void __user *)arg;
-	int err;
-
-	BT_DBG("cmd %x arg %lx", cmd, arg);
-=======
 	int err;
 
 	BT_DBG("cmd %x arg %p", cmd, argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case CMTPCONNADD:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (copy_from_user(&ca, argp, sizeof(ca)))
 			return -EFAULT;
@@ -131,11 +102,7 @@ static int do_cmtp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user
 
 	case CMTPCONNDEL:
 		if (!capable(CAP_NET_ADMIN))
-<<<<<<< HEAD
-			return -EACCES;
-=======
 			return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (copy_from_user(&cd, argp, sizeof(cd)))
 			return -EFAULT;
@@ -169,18 +136,6 @@ static int do_cmtp_sock_ioctl(struct socket *sock, unsigned int cmd, void __user
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-static int cmtp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-	if (cmd == CMTPGETCONNLIST) {
-		struct cmtp_connlist_req cl;
-		uint32_t uci;
-		int err;
-
-		if (get_user(cl.cnum, (uint32_t __user *) arg) ||
-				get_user(uci, (u32 __user *) (arg + 4)))
-=======
 static int cmtp_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 {
 	return do_cmtp_sock_ioctl(sock, cmd, (void __user *)arg);
@@ -197,7 +152,6 @@ static int cmtp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigne
 		int err;
 
 		if (get_user(cl.cnum, p) || get_user(uci, p + 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		cl.ci = compat_ptr(uci);
@@ -207,21 +161,13 @@ static int cmtp_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigne
 
 		err = cmtp_get_connlist(&cl);
 
-<<<<<<< HEAD
-		if (!err && put_user(cl.cnum, (uint32_t __user *) arg))
-=======
 		if (!err && put_user(cl.cnum, p))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EFAULT;
 
 		return err;
 	}
 
-<<<<<<< HEAD
-	return cmtp_sock_ioctl(sock, cmd, arg);
-=======
 	return do_cmtp_sock_ioctl(sock, cmd, argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -237,16 +183,8 @@ static const struct proto_ops cmtp_sock_ops = {
 	.getname	= sock_no_getname,
 	.sendmsg	= sock_no_sendmsg,
 	.recvmsg	= sock_no_recvmsg,
-<<<<<<< HEAD
-	.poll		= sock_no_poll,
 	.listen		= sock_no_listen,
 	.shutdown	= sock_no_shutdown,
-	.setsockopt	= sock_no_setsockopt,
-	.getsockopt	= sock_no_getsockopt,
-=======
-	.listen		= sock_no_listen,
-	.shutdown	= sock_no_shutdown,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.connect	= sock_no_connect,
 	.socketpair	= sock_no_socketpair,
 	.accept		= sock_no_accept,
@@ -269,11 +207,7 @@ static int cmtp_sock_create(struct net *net, struct socket *sock, int protocol,
 	if (sock->type != SOCK_RAW)
 		return -ESOCKTNOSUPPORT;
 
-<<<<<<< HEAD
-	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &cmtp_proto);
-=======
 	sk = sk_alloc(net, PF_BLUETOOTH, GFP_ATOMIC, &cmtp_proto, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		return -ENOMEM;
 
@@ -288,11 +222,8 @@ static int cmtp_sock_create(struct net *net, struct socket *sock, int protocol,
 	sk->sk_protocol = protocol;
 	sk->sk_state    = BT_OPEN;
 
-<<<<<<< HEAD
-=======
 	bt_sock_link(&cmtp_sk_list, sk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -311,10 +242,6 @@ int cmtp_init_sockets(void)
 		return err;
 
 	err = bt_sock_register(BTPROTO_CMTP, &cmtp_sock_family_ops);
-<<<<<<< HEAD
-	if (err < 0)
-		goto error;
-=======
 	if (err < 0) {
 		BT_ERR("Can't register CMTP socket");
 		goto error;
@@ -328,28 +255,17 @@ int cmtp_init_sockets(void)
 	}
 
 	BT_INFO("CMTP socket layer initialized");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 error:
-<<<<<<< HEAD
-	BT_ERR("Can't register CMTP socket");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&cmtp_proto);
 	return err;
 }
 
 void cmtp_cleanup_sockets(void)
 {
-<<<<<<< HEAD
-	if (bt_sock_unregister(BTPROTO_CMTP) < 0)
-		BT_ERR("Can't unregister CMTP socket");
-
-=======
 	bt_procfs_cleanup(&init_net, "cmtp");
 	bt_sock_unregister(BTPROTO_CMTP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&cmtp_proto);
 }

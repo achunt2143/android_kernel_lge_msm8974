@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/pppoatm.c - RFC2364 PPP over ATM/AAL5 */
 
 /* Copyright 1999-2000 by Mitchell Blank Jr */
@@ -10,13 +7,6 @@
 /* And help from Jens Axboe */
 
 /*
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This driver provides the encapsulation and framing for sending
  * and receiving PPP frames in ATM AAL5 PDUs.
@@ -67,25 +57,18 @@ struct pppoatm_vcc {
 	struct atm_vcc	*atmvcc;	/* VCC descriptor */
 	void (*old_push)(struct atm_vcc *, struct sk_buff *);
 	void (*old_pop)(struct atm_vcc *, struct sk_buff *);
-<<<<<<< HEAD
-					/* keep old push/pop for detaching */
-	enum pppoatm_encaps encaps;
-=======
 	void (*old_release_cb)(struct atm_vcc *);
 	struct module *old_owner;
 					/* keep old push/pop for detaching */
 	enum pppoatm_encaps encaps;
 	atomic_t inflight;
 	unsigned long blocked;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int flags;			/* SC_COMP_PROT - compress protocol */
 	struct ppp_channel chan;	/* interface to generic ppp layer */
 	struct tasklet_struct wakeup_tasklet;
 };
 
 /*
-<<<<<<< HEAD
-=======
  * We want to allow two packets in the queue. The one that's currently in
  * flight, and *one* queued up ready for the ATM device to send immediately
  * from its TX done IRQ. We want to be able to use atomic_inc_not_zero(), so
@@ -97,7 +80,6 @@ struct pppoatm_vcc {
 #define BLOCKED 0
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Header used for LLC Encapsulated PPP (4 bytes) followed by the LCP protocol
  * ID (0xC021) used in autodetection
  */
@@ -119,13 +101,6 @@ static inline struct pppoatm_vcc *chan_to_pvcc(const struct ppp_channel *chan)
  * doesn't want to be called in interrupt context, so we do it from
  * a tasklet
  */
-<<<<<<< HEAD
-static void pppoatm_wakeup_sender(unsigned long arg)
-{
-	ppp_output_wakeup((struct ppp_channel *) arg);
-}
-
-=======
 static void pppoatm_wakeup_sender(struct tasklet_struct *t)
 {
 	struct pppoatm_vcc *pvcc = from_tasklet(pvcc, t, wakeup_tasklet);
@@ -151,7 +126,6 @@ static void pppoatm_release_cb(struct atm_vcc *atmvcc)
 	if (pvcc->old_release_cb)
 		pvcc->old_release_cb(atmvcc);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This gets called every time the ATM card has finished sending our
  * skb.  The ->old_pop will take care up normal atm flow control,
@@ -160,18 +134,6 @@ static void pppoatm_release_cb(struct atm_vcc *atmvcc)
 static void pppoatm_pop(struct atm_vcc *atmvcc, struct sk_buff *skb)
 {
 	struct pppoatm_vcc *pvcc = atmvcc_to_pvcc(atmvcc);
-<<<<<<< HEAD
-	pvcc->old_pop(atmvcc, skb);
-	/*
-	 * We don't really always want to do this since it's
-	 * really inefficient - it would be much better if we could
-	 * test if we had actually throttled the generic layer.
-	 * Unfortunately then there would be a nasty SMP race where
-	 * we could clear that flag just as we refuse another packet.
-	 * For now we do the safe thing.
-	 */
-	tasklet_schedule(&pvcc->wakeup_tasklet);
-=======
 
 	pvcc->old_pop(atmvcc, skb);
 	atomic_dec(&pvcc->inflight);
@@ -196,7 +158,6 @@ static void pppoatm_pop(struct atm_vcc *atmvcc, struct sk_buff *skb)
 	 */
 	if (test_and_clear_bit(BLOCKED, &pvcc->blocked))
 		tasklet_schedule(&pvcc->wakeup_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -209,19 +170,11 @@ static void pppoatm_unassign_vcc(struct atm_vcc *atmvcc)
 	pvcc = atmvcc_to_pvcc(atmvcc);
 	atmvcc->push = pvcc->old_push;
 	atmvcc->pop = pvcc->old_pop;
-<<<<<<< HEAD
-=======
 	atmvcc->release_cb = pvcc->old_release_cb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tasklet_kill(&pvcc->wakeup_tasklet);
 	ppp_unregister_channel(&pvcc->chan);
 	atmvcc->user_back = NULL;
 	kfree(pvcc);
-<<<<<<< HEAD
-	/* Gee, I hope we have the big kernel lock here... */
-	module_put(THIS_MODULE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Called when an AAL5 PDU comes in */
@@ -230,11 +183,6 @@ static void pppoatm_push(struct atm_vcc *atmvcc, struct sk_buff *skb)
 	struct pppoatm_vcc *pvcc = atmvcc_to_pvcc(atmvcc);
 	pr_debug("\n");
 	if (skb == NULL) {			/* VCC was closed */
-<<<<<<< HEAD
-		pr_debug("removing ATMPPP VCC %p\n", pvcc);
-		pppoatm_unassign_vcc(atmvcc);
-		atmvcc->push(atmvcc, NULL);	/* Pass along bad news */
-=======
 		struct module *module;
 
 		pr_debug("removing ATMPPP VCC %p\n", pvcc);
@@ -242,7 +190,6 @@ static void pppoatm_push(struct atm_vcc *atmvcc, struct sk_buff *skb)
 		pppoatm_unassign_vcc(atmvcc);
 		atmvcc->push(atmvcc, NULL);	/* Pass along bad news */
 		module_put(module);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	atm_return(atmvcc, skb->truesize);
@@ -271,13 +218,7 @@ static void pppoatm_push(struct atm_vcc *atmvcc, struct sk_buff *skb)
 			pvcc->chan.mtu += LLC_LEN;
 			break;
 		}
-<<<<<<< HEAD
-		pr_debug("Couldn't autodetect yet (skb: %02X %02X %02X %02X %02X %02X)\n",
-			 skb->data[0], skb->data[1], skb->data[2],
-			 skb->data[3], skb->data[4], skb->data[5]);
-=======
 		pr_debug("Couldn't autodetect yet (skb: %6ph)\n", skb->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	case e_vc:
 		break;
@@ -290,8 +231,6 @@ error:
 	ppp_input_error(&pvcc->chan, 0);
 }
 
-<<<<<<< HEAD
-=======
 static int pppoatm_may_send(struct pppoatm_vcc *pvcc, int size)
 {
 	/*
@@ -337,7 +276,6 @@ static int pppoatm_may_send(struct pppoatm_vcc *pvcc, int size)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called by the ppp_generic.c to send a packet - returns true if packet
  * was accepted.  If we return false, then it's our job to call
@@ -351,18 +289,13 @@ static int pppoatm_may_send(struct pppoatm_vcc *pvcc, int size)
 static int pppoatm_send(struct ppp_channel *chan, struct sk_buff *skb)
 {
 	struct pppoatm_vcc *pvcc = chan_to_pvcc(chan);
-<<<<<<< HEAD
-=======
 	struct atm_vcc *vcc;
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATM_SKB(skb)->vcc = pvcc->atmvcc;
 	pr_debug("(skb=0x%p, vcc=0x%p)\n", skb, pvcc->atmvcc);
 	if (skb->data[0] == '\0' && (pvcc->flags & SC_COMP_PROT))
 		(void) skb_pull(skb, 1);
-<<<<<<< HEAD
-=======
 
 	vcc = ATM_SKB(skb)->vcc;
 	bh_lock_sock(sk_atm(vcc));
@@ -383,24 +316,12 @@ static int pppoatm_send(struct ppp_channel *chan, struct sk_buff *skb)
 		return DROP_PACKET;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (pvcc->encaps) {		/* LLC encapsulation needed */
 	case e_llc:
 		if (skb_headroom(skb) < LLC_LEN) {
 			struct sk_buff *n;
 			n = skb_realloc_headroom(skb, LLC_LEN);
 			if (n != NULL &&
-<<<<<<< HEAD
-			    !atm_may_send(pvcc->atmvcc, n->truesize)) {
-				kfree_skb(n);
-				goto nospace;
-			}
-			kfree_skb(skb);
-			skb = n;
-			if (skb == NULL)
-				return DROP_PACKET;
-		} else if (!atm_may_send(pvcc->atmvcc, skb->truesize))
-=======
 			    !pppoatm_may_send(pvcc, n->truesize)) {
 				kfree_skb(n);
 				goto nospace;
@@ -412,37 +333,20 @@ static int pppoatm_send(struct ppp_channel *chan, struct sk_buff *skb)
 				return DROP_PACKET;
 			}
 		} else if (!pppoatm_may_send(pvcc, skb->truesize))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto nospace;
 		memcpy(skb_push(skb, LLC_LEN), pppllc, LLC_LEN);
 		break;
 	case e_vc:
-<<<<<<< HEAD
-		if (!atm_may_send(pvcc->atmvcc, skb->truesize))
-			goto nospace;
-		break;
-	case e_autodetect:
-=======
 		if (!pppoatm_may_send(pvcc, skb->truesize))
 			goto nospace;
 		break;
 	case e_autodetect:
 		bh_unlock_sock(sk_atm(vcc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("Trying to send without setting encaps!\n");
 		kfree_skb(skb);
 		return 1;
 	}
 
-<<<<<<< HEAD
-	atomic_add(skb->truesize, &sk_atm(ATM_SKB(skb)->vcc)->sk_wmem_alloc);
-	ATM_SKB(skb)->atm_options = ATM_SKB(skb)->vcc->atm_options;
-	pr_debug("atm_skb(%p)->vcc(%p)->dev(%p)\n",
-		 skb, ATM_SKB(skb)->vcc, ATM_SKB(skb)->vcc->dev);
-	return ATM_SKB(skb)->vcc->send(ATM_SKB(skb)->vcc, skb)
-	    ? DROP_PACKET : 1;
-nospace:
-=======
 	atm_account_tx(vcc, skb);
 	pr_debug("atm_skb(%p)->vcc(%p)->dev(%p)\n",
 		 skb, ATM_SKB(skb)->vcc, ATM_SKB(skb)->vcc->dev);
@@ -452,7 +356,6 @@ nospace:
 	return ret;
 nospace:
 	bh_unlock_sock(sk_atm(vcc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We don't have space to send this SKB now, but we might have
 	 * already applied SC_COMP_PROT compression, so may need to undo
@@ -488,15 +391,7 @@ static int pppoatm_assign_vcc(struct atm_vcc *atmvcc, void __user *arg)
 	struct atm_backend_ppp be;
 	struct pppoatm_vcc *pvcc;
 	int err;
-<<<<<<< HEAD
-	/*
-	 * Each PPPoATM instance has its own tasklet - this is just a
-	 * prototypical one used to initialize them
-	 */
-	static const DECLARE_TASKLET(tasklet_proto, pppoatm_wakeup_sender, 0);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_from_user(&be, arg, sizeof be))
 		return -EFAULT;
 	if (be.encaps != PPPOATM_ENCAPS_AUTODETECT &&
@@ -506,10 +401,6 @@ static int pppoatm_assign_vcc(struct atm_vcc *atmvcc, void __user *arg)
 	if (pvcc == NULL)
 		return -ENOMEM;
 	pvcc->atmvcc = atmvcc;
-<<<<<<< HEAD
-	pvcc->old_push = atmvcc->push;
-	pvcc->old_pop = atmvcc->pop;
-=======
 
 	/* Maximum is zero, so that we can use atomic_inc_not_zero() */
 	atomic_set(&pvcc->inflight, NONE_INFLIGHT);
@@ -517,18 +408,12 @@ static int pppoatm_assign_vcc(struct atm_vcc *atmvcc, void __user *arg)
 	pvcc->old_pop = atmvcc->pop;
 	pvcc->old_owner = atmvcc->owner;
 	pvcc->old_release_cb = atmvcc->release_cb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pvcc->encaps = (enum pppoatm_encaps) be.encaps;
 	pvcc->chan.private = pvcc;
 	pvcc->chan.ops = &pppoatm_ops;
 	pvcc->chan.mtu = atmvcc->qos.txtp.max_sdu - PPP_HDRLEN -
 	    (be.encaps == e_vc ? 0 : LLC_LEN);
-<<<<<<< HEAD
-	pvcc->wakeup_tasklet = tasklet_proto;
-	pvcc->wakeup_tasklet.data = (unsigned long) &pvcc->chan;
-=======
 	tasklet_setup(&pvcc->wakeup_tasklet, pppoatm_wakeup_sender);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ppp_register_channel(&pvcc->chan);
 	if (err != 0) {
 		kfree(pvcc);
@@ -537,13 +422,9 @@ static int pppoatm_assign_vcc(struct atm_vcc *atmvcc, void __user *arg)
 	atmvcc->user_back = pvcc;
 	atmvcc->push = pppoatm_push;
 	atmvcc->pop = pppoatm_pop;
-<<<<<<< HEAD
-	__module_get(THIS_MODULE);
-=======
 	atmvcc->release_cb = pppoatm_release_cb;
 	__module_get(THIS_MODULE);
 	atmvcc->owner = THIS_MODULE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* re-process everything received between connection setup and
 	   backend setup */
@@ -572,11 +453,8 @@ static int pppoatm_ioctl(struct socket *sock, unsigned int cmd,
 			return -ENOIOCTLCMD;
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
-<<<<<<< HEAD
-=======
 		if (sock->state != SS_CONNECTED)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return pppoatm_assign_vcc(atmvcc, argp);
 		}
 	case PPPIOCGCHAN:

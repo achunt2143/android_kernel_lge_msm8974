@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-# Makefile for xmon
-
-subdir-ccflags-$(CONFIG_PPC_WERROR) := -Werror
-
-GCOV_PROFILE := n
-
-ccflags-$(CONFIG_PPC64) := -mno-minimal-toc
-
-obj-y			+= xmon.o start.o nonstdio.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 # Makefile for xmon
 
@@ -28,7 +17,6 @@ ccflags-$(CONFIG_PPC64) := $(NO_MINIMAL_TOC)
 ccflags-$(CONFIG_CC_IS_CLANG) += -Wframe-larger-than=4096
 
 obj-y			+= xmon.o nonstdio.o spr_access.o xmon_bpts.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ifdef CONFIG_XMON_DISASSEMBLY
 obj-y			+= ppc-dis.o ppc-opc.o

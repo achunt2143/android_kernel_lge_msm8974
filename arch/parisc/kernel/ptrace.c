@@ -1,37 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel support for the ptrace() and syscall tracing interfaces.
  *
  * Copyright (C) 2000 Hewlett-Packard Co, Linuxcare Inc.
  * Copyright (C) 2000 Matthew Wilcox <matthew@wil.cx>
  * Copyright (C) 2000 David Huggins-Daines <dhd@debian.org>
-<<<<<<< HEAD
- * Copyright (C) 2008 Helge Deller <deller@gmx.de>
-=======
  * Copyright (C) 2008-2016 Helge Deller <deller@gmx.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/smp.h>
-<<<<<<< HEAD
-#include <linux/errno.h>
-#include <linux/ptrace.h>
-#include <linux/tracehook.h>
-#include <linux/user.h>
-#include <linux/personality.h>
-#include <linux/security.h>
-#include <linux/compat.h>
-#include <linux/signal.h>
-
-#include <asm/uaccess.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/elf.h>
 #include <linux/errno.h>
 #include <linux/ptrace.h>
@@ -45,14 +25,10 @@
 #include <linux/audit.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/asm-offsets.h>
 
 /* PSW bits we allow the debugger to modify */
-<<<<<<< HEAD
-#define USER_PSW_BITS	(PSW_N | PSW_V | PSW_CB)
-=======
 #define USER_PSW_BITS	(PSW_N | PSW_B | PSW_V | PSW_CB)
 
 #define CREATE_TRACE_POINTS
@@ -65,7 +41,6 @@ enum parisc_regset {
 	REGSET_GENERAL,
 	REGSET_FP
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called by kernel/ptrace.c when detaching..
@@ -99,11 +74,6 @@ void user_enable_single_step(struct task_struct *task)
 	set_tsk_thread_flag(task, TIF_SINGLESTEP);
 
 	if (pa_psw(task)->n) {
-<<<<<<< HEAD
-		struct siginfo si;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Nullified, just crank over the queue. */
 		task_regs(task)->iaoq[0] = task_regs(task)->iaoq[1];
 		task_regs(task)->iasq[0] = task_regs(task)->iasq[1];
@@ -116,17 +86,9 @@ void user_enable_single_step(struct task_struct *task)
 		ptrace_disable(task);
 		/* Don't wake up the task, but let the
 		   parent know something happened. */
-<<<<<<< HEAD
-		si.si_code = TRAP_TRACE;
-		si.si_addr = (void __user *) (task_regs(task)->iaoq[0] & ~3);
-		si.si_signo = SIGTRAP;
-		si.si_errno = 0;
-		force_sig_info(SIGTRAP, &si, task);
-=======
 		force_sig_fault_to_task(SIGTRAP, TRAP_TRACE,
 					(void __user *) (task_regs(task)->iaoq[0] & ~3),
 					task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* notify_parent(task, SIGCHLD); */
 		return;
 	}
@@ -160,11 +122,6 @@ void user_enable_block_step(struct task_struct *task)
 long arch_ptrace(struct task_struct *child, long request,
 		 unsigned long addr, unsigned long data)
 {
-<<<<<<< HEAD
-	unsigned long tmp;
-	long ret = -EIO;
-
-=======
 	unsigned long __user *datap = (unsigned long __user *)data;
 	unsigned long tmp;
 	long ret = -EIO;
@@ -175,7 +132,6 @@ long arch_ptrace(struct task_struct *child, long request,
 		user_regs_struct_size /= 2;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (request) {
 
 	/* Read the word at location addr in the USER area.  For ptraced
@@ -185,11 +141,7 @@ long arch_ptrace(struct task_struct *child, long request,
 		     addr >= sizeof(struct pt_regs))
 			break;
 		tmp = *(unsigned long *) ((char *) task_regs(child) + addr);
-<<<<<<< HEAD
-		ret = put_user(tmp, (unsigned long __user *) data);
-=======
 		ret = put_user(tmp, datap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* Write the word at location addr in the USER area.  This will need
@@ -219,12 +171,9 @@ long arch_ptrace(struct task_struct *child, long request,
 		if ((addr & (sizeof(unsigned long)-1)) ||
 		     addr >= sizeof(struct pt_regs))
 			break;
-<<<<<<< HEAD
-=======
 		if (addr == PT_IAOQ0 || addr == PT_IAOQ1) {
 			data |= PRIV_USER; /* ensure userspace privilege */
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((addr >= PT_GR1 && addr <= PT_GR31) ||
 				addr == PT_IAOQ0 || addr == PT_IAOQ1 ||
 				(addr >= PT_FR0 && addr <= PT_FR31 + 4) ||
@@ -234,8 +183,6 @@ long arch_ptrace(struct task_struct *child, long request,
 		}
 		break;
 
-<<<<<<< HEAD
-=======
 	case PTRACE_GETREGS:	/* Get all gp regs from the child. */
 		return copy_regset_to_user(child,
 					   task_user_regset_view(current),
@@ -264,7 +211,6 @@ long arch_ptrace(struct task_struct *child, long request,
 					     0, sizeof(struct user_fp_struct),
 					     datap);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ret = ptrace_request(child, request, addr, data);
 		break;
@@ -289,18 +235,6 @@ long arch_ptrace(struct task_struct *child, long request,
 
 static compat_ulong_t translate_usr_offset(compat_ulong_t offset)
 {
-<<<<<<< HEAD
-	if (offset < 0)
-		return sizeof(struct pt_regs);
-	else if (offset <= 32*4)	/* gr[0..31] */
-		return offset * 2 + 4;
-	else if (offset <= 32*4+32*8)	/* gr[0..31] + fr[0..31] */
-		return offset + 32*4;
-	else if (offset < sizeof(struct pt_regs)/2 + 32*4)
-		return offset * 2 + 4 - 32*8;
-	else
-		return sizeof(struct pt_regs);
-=======
 	compat_ulong_t pos;
 
 	if (offset < 32*4)	/* gr[0..31] */
@@ -313,7 +247,6 @@ static compat_ulong_t translate_usr_offset(compat_ulong_t offset)
 		pos = sizeof(struct pt_regs);
 
 	return pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
@@ -357,18 +290,12 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 			addr = translate_usr_offset(addr);
 			if (addr >= sizeof(struct pt_regs))
 				break;
-<<<<<<< HEAD
-			if (addr >= PT_FR0 && addr <= PT_FR31 + 4) {
-				/* Special case, fp regs are 64 bits anyway */
-				*(__u64 *) ((char *) task_regs(child) + addr) = data;
-=======
 			if (addr == PT_IAOQ0+4 || addr == PT_IAOQ1+4) {
 				data |= PRIV_USER; /* ensure userspace privilege */
 			}
 			if (addr >= PT_FR0 && addr <= PT_FR31 + 4) {
 				/* Special case, fp regs are 64 bits anyway */
 				*(__u32 *) ((char *) task_regs(child) + addr) = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = 0;
 			}
 			else if ((addr >= PT_GR1+4 && addr <= PT_GR31+4) ||
@@ -381,14 +308,11 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 			}
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case PTRACE_GETREGS:
 	case PTRACE_SETREGS:
 	case PTRACE_GETFPREGS:
 	case PTRACE_SETFPREGS:
 		return arch_ptrace(child, request, addr, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		ret = compat_ptrace_request(child, request, addr, data);
@@ -401,13 +325,6 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 
 long do_syscall_trace_enter(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	if (test_thread_flag(TIF_SYSCALL_TRACE) &&
-	    tracehook_report_syscall_entry(regs))
-		return -1L;
-
-	return regs->gr[20];
-=======
 	if (test_thread_flag(TIF_SYSCALL_TRACE)) {
 		int rc = ptrace_report_syscall_entry(regs);
 
@@ -459,7 +376,6 @@ long do_syscall_trace_enter(struct pt_regs *regs)
 	 * modified by a compat ptrace call
 	 */
 	return (int) ((u32) regs->gr[20]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_syscall_trace_exit(struct pt_regs *regs)
@@ -467,10 +383,6 @@ void do_syscall_trace_exit(struct pt_regs *regs)
 	int stepping = test_thread_flag(TIF_SINGLESTEP) ||
 		test_thread_flag(TIF_BLOCKSTEP);
 
-<<<<<<< HEAD
-	if (stepping || test_thread_flag(TIF_SYSCALL_TRACE))
-		tracehook_report_syscall_exit(regs, stepping);
-=======
 	audit_syscall_exit(regs);
 
 #ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS
@@ -878,5 +790,4 @@ unsigned long regs_get_kernel_stack_nth(struct pt_regs *regs, unsigned int n)
 		return 0;
 
 	return *addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

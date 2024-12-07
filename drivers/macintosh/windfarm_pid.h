@@ -1,21 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef _WINDFARM_PID_H
 #define _WINDFARM_PID_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control. Generic PID helpers
  *
  * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
  *                    <benh@kernel.crashing.org>
  *
-<<<<<<< HEAD
- * Released under the term of the GNU GPL v2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is a pair of generic PID helpers that can be used by
  * control loops. One is the basic PID implementation, the
  * other one is more specifically tailored to the loops used
@@ -93,8 +85,5 @@ struct wf_cpu_pid_state {
 extern void wf_cpu_pid_init(struct wf_cpu_pid_state *st,
 			    struct wf_cpu_pid_param *param);
 extern s32 wf_cpu_pid_run(struct wf_cpu_pid_state *st, s32 power, s32 temp);
-<<<<<<< HEAD
-=======
 
 #endif /* _WINDFARM_PID_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

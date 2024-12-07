@@ -3,32 +3,11 @@ perf-diff(1)
 
 NAME
 ----
-<<<<<<< HEAD
-perf-diff - Read two perf.data files and display the differential profile
-=======
 perf-diff - Read perf.data files and display the differential profile
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SYNOPSIS
 --------
 [verse]
-<<<<<<< HEAD
-'perf diff' [oldfile] [newfile]
-
-DESCRIPTION
------------
-This command displays the performance difference amongst two perf.data files
-captured via perf record.
-
-If no parameters are passed it will assume perf.data.old and perf.data.
-
-OPTIONS
--------
--M::
---displacement::
-        Show position displacement relative to baseline.
-
-=======
 'perf diff' [baseline file] [data file1] [[data file2] ... ]
 
 DESCRIPTION
@@ -48,17 +27,13 @@ symbols name.
 
 OPTIONS
 -------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -D::
 --dump-raw-trace::
         Dump raw trace in ASCII.
 
-<<<<<<< HEAD
-=======
 --kallsyms=<file>::
         kallsyms pathname
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -m::
 --modules::
         Load module symbols. WARNING: use only with -k and LIVE kernel
@@ -66,33 +41,18 @@ OPTIONS
 -d::
 --dsos=::
 	Only consider symbols in these dsos. CSV that understands
-<<<<<<< HEAD
-	file://filename entries.
-=======
 	file://filename entries.  This option will affect the percentage
 	of the Baseline/Delta column.  See --percentage for more info.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -C::
 --comms=::
 	Only consider symbols in these comms. CSV that understands
-<<<<<<< HEAD
-	file://filename entries.
-=======
 	file://filename entries.  This option will affect the percentage
 	of the Baseline/Delta column.  See --percentage for more info.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -S::
 --symbols=::
 	Only consider these symbols. CSV that understands
-<<<<<<< HEAD
-	file://filename entries.
-
--s::
---sort=::
-	Sort by key(s): pid, comm, dso, symbol.
-=======
 	file://filename entries.  This option will affect the percentage
 	of the Baseline/Delta column.  See --percentage for more info.
 
@@ -100,7 +60,6 @@ OPTIONS
 --sort=::
 	Sort by key(s): pid, comm, dso, symbol, cpu, parent, srcline.
 	Please see description of --sort in the perf-report man page.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 -t::
 --field-separator=::
@@ -114,11 +73,6 @@ OPTIONS
 	Be verbose, for instance, show the raw counts in addition to the
 	diff.
 
-<<<<<<< HEAD
--f::
---force::
-       Don't complain, do it.
-=======
 -q::
 --quiet::
 	Do not show any warnings or messages.  (Suppress -v)
@@ -126,16 +80,10 @@ OPTIONS
 -f::
 --force::
         Don't do ownership validation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 --symfs=<directory>::
         Look for files with symbols relative to this directory.
 
-<<<<<<< HEAD
-SEE ALSO
---------
-linkperf:perf-record[1]
-=======
 -b::
 --baseline-only::
         Show only items with match in baseline.
@@ -355,4 +303,3 @@ instead.
 SEE ALSO
 --------
 linkperf:perf-record[1], linkperf:perf-report[1]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

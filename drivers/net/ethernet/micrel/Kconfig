@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Micrel device configuration
 #
@@ -9,18 +6,9 @@
 config NET_VENDOR_MICREL
 	bool "Micrel devices"
 	default y
-<<<<<<< HEAD
-	depends on (HAS_IOMEM && DMA_ENGINE) || SPI || PCI || HAS_IOMEM || \
-		   (ARM && ARCH_KS8695)
-	---help---
-	  If you have a network (Ethernet) card belonging to this class, say Y
-	  and read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 	depends on (HAS_IOMEM && DMA_ENGINE) || SPI || PCI || HAS_IOMEM
 	help
 	  If you have a network (Ethernet) card belonging to this class, say Y.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -29,26 +17,10 @@ config NET_VENDOR_MICREL
 
 if NET_VENDOR_MICREL
 
-<<<<<<< HEAD
-config ARM_KS8695_ETHER
-	tristate "KS8695 Ethernet support"
-	depends on ARM && ARCH_KS8695
-	select NET_CORE
-	select MII
-	---help---
-	  If you wish to compile a kernel for the KS8695 and want to
-	  use the internal ethernet then you should answer Y to this.
-
-config KS8842
-	tristate "Micrel KSZ8841/42 with generic bus interface"
-	depends on HAS_IOMEM && DMA_ENGINE
-	---help---
-=======
 config KS8842
 	tristate "Micrel KSZ8841/42 with generic bus interface"
 	depends on HAS_IOMEM && DMA_ENGINE
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This platform driver is for KSZ8841(1-port) / KS8842(2-port)
 	  ethernet switch chip (managed, VLAN, QoS) from Micrel or
 	  Timberdale(FPGA).
@@ -56,13 +28,6 @@ config KS8842
 config KS8851
 	tristate "Micrel KS8851 SPI"
 	depends on SPI
-<<<<<<< HEAD
-	select NET_CORE
-	select MII
-	select CRC32
-	select EEPROM_93CX6
-	---help---
-=======
 	depends on PTP_1588_CLOCK_OPTIONAL
 	select MII
 	select CRC32
@@ -70,17 +35,11 @@ config KS8851
 	select PHYLIB
 	select MICREL_PHY
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  SPI driver for Micrel KS8851 SPI attached network chip.
 
 config KS8851_MLL
 	tristate "Micrel KS8851 MLL"
 	depends on HAS_IOMEM
-<<<<<<< HEAD
-	select NET_CORE
-	select MII
-	---help---
-=======
 	depends on PTP_1588_CLOCK_OPTIONAL
 	select MII
 	select CRC32
@@ -88,23 +47,15 @@ config KS8851_MLL
 	select PHYLIB
 	select MICREL_PHY
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This platform driver is for Micrel KS8851 Address/data bus
 	  multiplexed network chip.
 
 config KSZ884X_PCI
 	tristate "Micrel KSZ8841/2 PCI"
 	depends on PCI
-<<<<<<< HEAD
-	select NET_CORE
-	select MII
-	select CRC32
-	---help---
-=======
 	select MII
 	select CRC32
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This PCI driver is for Micrel KSZ8841/KSZ8842 PCI Ethernet chip.
 
 	  To compile this driver as a module, choose M here. The module

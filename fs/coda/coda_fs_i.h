@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  coda_fs_i.h
  *
@@ -29,11 +26,7 @@ struct coda_inode_info {
 	u_short	           c_flags;     /* flags (see below) */
 	unsigned int	   c_mapcount;  /* nr of times this inode is mapped */
 	unsigned int	   c_cached_epoch; /* epoch for cached permissions */
-<<<<<<< HEAD
-	vuid_t		   c_uid;	/* fsuid for cached permissions */
-=======
 	kuid_t		   c_uid;	/* fsuid for cached permissions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int       c_cached_perm; /* cached access permissions */
 	spinlock_t	   c_lock;
 	struct inode	   vfs_inode;
@@ -47,16 +40,9 @@ struct coda_file_info {
 	int		   cfi_magic;	  /* magic number */
 	struct file	  *cfi_container; /* container file for this cnode */
 	unsigned int	   cfi_mapcount;  /* nr of times this file is mapped */
-<<<<<<< HEAD
-};
-
-#define CODA_FTOC(file) ((struct coda_file_info *)((file)->private_data))
-
-=======
 	bool		   cfi_access_intent; /* is access intent supported */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* flags */
 #define C_VATTR       0x1   /* Validity of vattr in inode */
 #define C_FLUSH       0x2   /* used after a flush */
@@ -67,10 +53,7 @@ struct inode *coda_cnode_make(struct CodaFid *, struct super_block *);
 struct inode *coda_iget(struct super_block *sb, struct CodaFid *fid, struct coda_vattr *attr);
 struct inode *coda_cnode_makectl(struct super_block *sb);
 struct inode *coda_fid_to_inode(struct CodaFid *fid, struct super_block *sb);
-<<<<<<< HEAD
-=======
 struct coda_file_info *coda_ftoc(struct file *file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void coda_replace_fid(struct inode *, struct CodaFid *, struct CodaFid *);
 
 #endif

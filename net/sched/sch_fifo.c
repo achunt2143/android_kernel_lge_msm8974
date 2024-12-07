@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- * net/sched/sch_fifo.c	The simplest FIFO queue.
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * net/sched/sch_fifo.c	The simplest FIFO queue.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  */
 
@@ -23,50 +12,16 @@
 #include <linux/errno.h>
 #include <linux/skbuff.h>
 #include <net/pkt_sched.h>
-<<<<<<< HEAD
-
-/* 1 band FIFO pseudo-"scheduler" */
-
-static int bfifo_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-=======
 #include <net/pkt_cls.h>
 
 /* 1 band FIFO pseudo-"scheduler" */
 
 static int bfifo_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 			 struct sk_buff **to_free)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (likely(sch->qstats.backlog + qdisc_pkt_len(skb) <= sch->limit))
 		return qdisc_enqueue_tail(skb, sch);
 
-<<<<<<< HEAD
-	return qdisc_reshape_fail(skb, sch);
-}
-
-static int pfifo_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-{
-	if (likely(skb_queue_len(&sch->q) < sch->limit))
-		return qdisc_enqueue_tail(skb, sch);
-
-	return qdisc_reshape_fail(skb, sch);
-}
-
-static int pfifo_tail_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-{
-	if (likely(skb_queue_len(&sch->q) < sch->limit))
-		return qdisc_enqueue_tail(skb, sch);
-
-	/* queue full, remove one skb to fulfill the limit */
-	__qdisc_queue_drop_head(sch, &sch->q);
-	sch->qstats.drops++;
-	qdisc_enqueue_tail(skb, sch);
-
-	return NET_XMIT_CN;
-}
-
-static int fifo_init(struct Qdisc *sch, struct nlattr *opt)
-=======
 	return qdisc_drop(skb, sch, to_free);
 }
 
@@ -140,17 +95,12 @@ static int fifo_offload_dump(struct Qdisc *sch)
 
 static int __fifo_init(struct Qdisc *sch, struct nlattr *opt,
 		       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bool bypass;
 	bool is_bfifo = sch->ops == &bfifo_qdisc_ops;
 
 	if (opt == NULL) {
-<<<<<<< HEAD
-		u32 limit = qdisc_dev(sch)->tx_queue_len ? : 1;
-=======
 		u32 limit = qdisc_dev(sch)->tx_queue_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (is_bfifo)
 			limit *= psched_mtu(qdisc_dev(sch));
@@ -174,16 +124,6 @@ static int __fifo_init(struct Qdisc *sch, struct nlattr *opt,
 		sch->flags |= TCQ_F_CAN_BYPASS;
 	else
 		sch->flags &= ~TCQ_F_CAN_BYPASS;
-<<<<<<< HEAD
-	return 0;
-}
-
-static int fifo_dump(struct Qdisc *sch, struct sk_buff *skb)
-{
-	struct tc_fifo_qopt opt = { .limit = sch->limit };
-
-	NLA_PUT(skb, TCA_OPTIONS, sizeof(opt), &opt);
-=======
 
 	return 0;
 }
@@ -218,15 +158,12 @@ static int __fifo_dump(struct Qdisc *sch, struct sk_buff *skb)
 
 	if (nla_put(skb, TCA_OPTIONS, sizeof(opt), &opt))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb->len;
 
 nla_put_failure:
 	return -1;
 }
 
-<<<<<<< HEAD
-=======
 static int fifo_dump(struct Qdisc *sch, struct sk_buff *skb)
 {
 	int err;
@@ -243,20 +180,14 @@ static int fifo_hd_dump(struct Qdisc *sch, struct sk_buff *skb)
 	return __fifo_dump(sch, skb);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct Qdisc_ops pfifo_qdisc_ops __read_mostly = {
 	.id		=	"pfifo",
 	.priv_size	=	0,
 	.enqueue	=	pfifo_enqueue,
 	.dequeue	=	qdisc_dequeue_head,
 	.peek		=	qdisc_peek_head,
-<<<<<<< HEAD
-	.drop		=	qdisc_queue_drop,
-	.init		=	fifo_init,
-=======
 	.init		=	fifo_init,
 	.destroy	=	fifo_destroy,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reset		=	qdisc_reset_queue,
 	.change		=	fifo_init,
 	.dump		=	fifo_dump,
@@ -270,13 +201,8 @@ struct Qdisc_ops bfifo_qdisc_ops __read_mostly = {
 	.enqueue	=	bfifo_enqueue,
 	.dequeue	=	qdisc_dequeue_head,
 	.peek		=	qdisc_peek_head,
-<<<<<<< HEAD
-	.drop		=	qdisc_queue_drop,
-	.init		=	fifo_init,
-=======
 	.init		=	fifo_init,
 	.destroy	=	fifo_destroy,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reset		=	qdisc_reset_queue,
 	.change		=	fifo_init,
 	.dump		=	fifo_dump,
@@ -290,18 +216,10 @@ struct Qdisc_ops pfifo_head_drop_qdisc_ops __read_mostly = {
 	.enqueue	=	pfifo_tail_enqueue,
 	.dequeue	=	qdisc_dequeue_head,
 	.peek		=	qdisc_peek_head,
-<<<<<<< HEAD
-	.drop		=	qdisc_queue_drop_head,
-	.init		=	fifo_init,
-	.reset		=	qdisc_reset_queue,
-	.change		=	fifo_init,
-	.dump		=	fifo_dump,
-=======
 	.init		=	fifo_hd_init,
 	.reset		=	qdisc_reset_queue,
 	.change		=	fifo_hd_init,
 	.dump		=	fifo_hd_dump,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner		=	THIS_MODULE,
 };
 
@@ -315,23 +233,16 @@ int fifo_set_limit(struct Qdisc *q, unsigned int limit)
 	if (strncmp(q->ops->id + 1, "fifo", 4) != 0)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (!q->ops->change)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nla = kmalloc(nla_attr_size(sizeof(struct tc_fifo_qopt)), GFP_KERNEL);
 	if (nla) {
 		nla->nla_type = RTM_NEWQDISC;
 		nla->nla_len = nla_attr_size(sizeof(struct tc_fifo_qopt));
 		((struct tc_fifo_qopt *)nla_data(nla))->limit = limit;
 
-<<<<<<< HEAD
-		ret = q->ops->change(q, nla);
-=======
 		ret = q->ops->change(q, nla, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(nla);
 	}
 	return ret;
@@ -339,30 +250,18 @@ int fifo_set_limit(struct Qdisc *q, unsigned int limit)
 EXPORT_SYMBOL(fifo_set_limit);
 
 struct Qdisc *fifo_create_dflt(struct Qdisc *sch, struct Qdisc_ops *ops,
-<<<<<<< HEAD
-			       unsigned int limit)
-=======
 			       unsigned int limit,
 			       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Qdisc *q;
 	int err = -ENOMEM;
 
-<<<<<<< HEAD
-	q = qdisc_create_dflt(sch->dev_queue, ops, TC_H_MAKE(sch->handle, 1));
-	if (q) {
-		err = fifo_set_limit(q, limit);
-		if (err < 0) {
-			qdisc_destroy(q);
-=======
 	q = qdisc_create_dflt(sch->dev_queue, ops, TC_H_MAKE(sch->handle, 1),
 			      extack);
 	if (q) {
 		err = fifo_set_limit(q, limit);
 		if (err < 0) {
 			qdisc_put(q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			q = NULL;
 		}
 	}
@@ -370,7 +269,4 @@ struct Qdisc *fifo_create_dflt(struct Qdisc *sch, struct Qdisc_ops *ops,
 	return q ? : ERR_PTR(err);
 }
 EXPORT_SYMBOL(fifo_create_dflt);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("Single queue packet and byte based First In First Out(P/BFIFO) scheduler");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

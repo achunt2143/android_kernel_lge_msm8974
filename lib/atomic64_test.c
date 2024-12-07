@@ -1,33 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Testsuite for atomic64_t functions
  *
  * Copyright © 2010  Luca Barbieri
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/bug.h>
 #include <linux/kernel.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-
-#define INIT(c) do { atomic64_set(&v, c); r = c; } while (0)
-static __init int test_atomic64(void)
-=======
 #include <linux/module.h>
 
 #ifdef CONFIG_X86
@@ -162,20 +145,14 @@ static __init void test_atomic(void)
 
 #define INIT(c) do { atomic64_set(&v, c); r = c; } while (0)
 static __init void test_atomic64(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long long v0 = 0xaaa31337c001d00dLL;
 	long long v1 = 0xdeadbeefdeafcafeLL;
 	long long v2 = 0xfaceabadf00df001LL;
-<<<<<<< HEAD
-	long long onestwos = 0x1111111122222222LL;
-	long long one = 1LL;
-=======
 	long long v3 = 0x8000000000000000LL;
 	long long onestwos = 0x1111111122222222LL;
 	long long one = 1LL;
 	int r_int;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic64_t v = ATOMIC64_INIT(v0);
 	long long r = v0;
@@ -186,47 +163,6 @@ static __init void test_atomic64(void)
 	BUG_ON(v.counter != r);
 	BUG_ON(atomic64_read(&v) != r);
 
-<<<<<<< HEAD
-	INIT(v0);
-	atomic64_add(onestwos, &v);
-	r += onestwos;
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	atomic64_add(-one, &v);
-	r += -one;
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	r += onestwos;
-	BUG_ON(atomic64_add_return(onestwos, &v) != r);
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	r += -one;
-	BUG_ON(atomic64_add_return(-one, &v) != r);
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	atomic64_sub(onestwos, &v);
-	r -= onestwos;
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	atomic64_sub(-one, &v);
-	r -= -one;
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	r -= onestwos;
-	BUG_ON(atomic64_sub_return(onestwos, &v) != r);
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	r -= -one;
-	BUG_ON(atomic64_sub_return(-one, &v) != r);
-	BUG_ON(v.counter != r);
-=======
 	TEST(64, add, +=, onestwos);
 	TEST(64, add, +=, -one);
 	TEST(64, sub, -=, onestwos);
@@ -250,7 +186,6 @@ static __init void test_atomic64(void)
 	FETCH_FAMILY_TEST(64, fetch_and, &=, v1);
 	FETCH_FAMILY_TEST(64, fetch_andnot, &= ~, v1);
 	FETCH_FAMILY_TEST(64, fetch_xor, ^=, v1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT(v0);
 	atomic64_inc(&v);
@@ -258,44 +193,15 @@ static __init void test_atomic64(void)
 	BUG_ON(v.counter != r);
 
 	INIT(v0);
-<<<<<<< HEAD
-	r += one;
-	BUG_ON(atomic64_inc_return(&v) != r);
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic64_dec(&v);
 	r -= one;
 	BUG_ON(v.counter != r);
 
-<<<<<<< HEAD
-	INIT(v0);
-	r -= one;
-	BUG_ON(atomic64_dec_return(&v) != r);
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	BUG_ON(atomic64_xchg(&v, v1) != v0);
-	r = v1;
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	BUG_ON(atomic64_cmpxchg(&v, v0, v1) != v0);
-	r = v1;
-	BUG_ON(v.counter != r);
-
-	INIT(v0);
-	BUG_ON(atomic64_cmpxchg(&v, v2, v1) != v0);
-	BUG_ON(v.counter != r);
-=======
 	INC_RETURN_FAMILY_TEST(64, v0);
 	DEC_RETURN_FAMILY_TEST(64, v0);
 
 	XCHG_FAMILY_TEST(64, v0, v1);
 	CMPXCHG_FAMILY_TEST(64, v0, v1, v2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT(v0);
 	BUG_ON(atomic64_add_unless(&v, one, v0));
@@ -306,11 +212,6 @@ static __init void test_atomic64(void)
 	r += one;
 	BUG_ON(v.counter != r);
 
-<<<<<<< HEAD
-#if defined(CONFIG_X86) || defined(CONFIG_MIPS) || defined(CONFIG_PPC) || \
-    defined(CONFIG_S390) || defined(_ASM_GENERIC_ATOMIC64_H) || defined(CONFIG_ARM)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT(onestwos);
 	BUG_ON(atomic64_dec_if_positive(&v) != (onestwos - 1));
 	r -= one;
@@ -323,12 +224,6 @@ static __init void test_atomic64(void)
 	INIT(-one);
 	BUG_ON(atomic64_dec_if_positive(&v) != (-one - one));
 	BUG_ON(v.counter != r);
-<<<<<<< HEAD
-#else
-#warning Please implement atomic64_dec_if_positive for your architecture, and add it to the IF above
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT(onestwos);
 	BUG_ON(!atomic64_inc_not_zero(&v));
@@ -344,16 +239,6 @@ static __init void test_atomic64(void)
 	r += one;
 	BUG_ON(v.counter != r);
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86
-	printk(KERN_INFO "atomic64 test passed for %s platform %s CX8 and %s SSE\n",
-#ifdef CONFIG_X86_64
-	       "x86-64",
-#elif defined(CONFIG_X86_CMPXCHG64)
-	       "i586+",
-#else
-	       "i386+",
-=======
 	/* Confirm the return value fits in an int, even if the value doesn't */
 	INIT(v3);
 	r_int = atomic64_inc_not_zero(&v);
@@ -373,28 +258,19 @@ static __init int test_atomics_init(void)
 		"i586+",
 #else
 		"i386+",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	       boot_cpu_has(X86_FEATURE_CX8) ? "with" : "without",
 	       boot_cpu_has(X86_FEATURE_XMM) ? "with" : "without");
 #else
-<<<<<<< HEAD
-	printk(KERN_INFO "atomic64 test passed\n");
-=======
 	pr_info("passed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return 0;
 }
 
-<<<<<<< HEAD
-core_initcall(test_atomic64);
-=======
 static __exit void test_atomics_exit(void) {}
 
 module_init(test_atomics_init);
 module_exit(test_atomics_exit);
 
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

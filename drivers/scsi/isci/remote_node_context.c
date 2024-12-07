@@ -52,11 +52,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-<<<<<<< HEAD
-
-=======
 #include <scsi/sas_ata.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "host.h"
 #include "isci.h"
 #include "remote_device.h"
@@ -70,22 +66,15 @@ const char *rnc_state_name(enum scis_sds_remote_node_context_states state)
 {
 	static const char * const strings[] = RNC_STATES;
 
-<<<<<<< HEAD
-=======
 	if (state >= ARRAY_SIZE(strings))
 		return "UNKNOWN";
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return strings[state];
 }
 #undef C
 
 /**
-<<<<<<< HEAD
- *
-=======
  * sci_remote_node_context_is_ready()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sci_rnc: The state of the remote node context object to check.
  *
  * This method will return true if the remote node context is in a READY state
@@ -104,8 +93,6 @@ bool sci_remote_node_context_is_ready(
 	return false;
 }
 
-<<<<<<< HEAD
-=======
 bool sci_remote_node_context_is_suspended(struct sci_remote_node_context *sci_rnc)
 {
 	u32 current_state = sci_rnc->sm.current_state_id;
@@ -115,7 +102,6 @@ bool sci_remote_node_context_is_suspended(struct sci_remote_node_context *sci_rn
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static union scu_remote_node_context *sci_rnc_by_id(struct isci_host *ihost, u16 id)
 {
 	if (id < ihost->remote_node_entries &&
@@ -157,11 +143,7 @@ static void sci_remote_node_context_construct_buffer(struct sci_remote_node_cont
 
 	rnc->ssp.arbitration_wait_time = 0;
 
-<<<<<<< HEAD
-	if (dev->dev_type == SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP)) {
-=======
 	if (dev_is_sata(dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rnc->ssp.connection_occupancy_timeout =
 			ihost->user_parameters.stp_max_occupancy_timeout;
 		rnc->ssp.connection_inactivity_timeout =
@@ -181,17 +163,7 @@ static void sci_remote_node_context_construct_buffer(struct sci_remote_node_cont
 	rnc->ssp.oaf_source_zone_group = 0;
 	rnc->ssp.oaf_more_compatibility_features = 0;
 }
-<<<<<<< HEAD
-
-/**
- *
- * @sci_rnc:
- * @callback:
- * @callback_parameter:
- *
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This method will setup the remote node context object so it will transition
  * to its ready state.  If the remote node context is already setup to
  * transition to its final state then this function does nothing. none
@@ -199,18 +171,6 @@ static void sci_remote_node_context_construct_buffer(struct sci_remote_node_cont
 static void sci_remote_node_context_setup_to_resume(
 	struct sci_remote_node_context *sci_rnc,
 	scics_sds_remote_node_context_callback callback,
-<<<<<<< HEAD
-	void *callback_parameter)
-{
-	if (sci_rnc->destination_state != SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_FINAL) {
-		sci_rnc->destination_state = SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_READY;
-		sci_rnc->user_callback     = callback;
-		sci_rnc->user_cookie       = callback_parameter;
-	}
-}
-
-static void sci_remote_node_context_setup_to_destory(
-=======
 	void *callback_parameter,
 	enum sci_remote_node_context_destination_state dest_param)
 {
@@ -224,21 +184,10 @@ static void sci_remote_node_context_setup_to_destory(
 }
 
 static void sci_remote_node_context_setup_to_destroy(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sci_remote_node_context *sci_rnc,
 	scics_sds_remote_node_context_callback callback,
 	void *callback_parameter)
 {
-<<<<<<< HEAD
-	sci_rnc->destination_state = SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_FINAL;
-	sci_rnc->user_callback     = callback;
-	sci_rnc->user_cookie       = callback_parameter;
-}
-
-/**
- *
- *
-=======
 	struct isci_host *ihost = idev_to_ihost(rnc_to_dev(sci_rnc));
 
 	sci_rnc->destination_state = RNC_DEST_FINAL;
@@ -249,7 +198,6 @@ static void sci_remote_node_context_setup_to_destroy(
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This method just calls the user callback function and then resets the
  * callback.
  */
@@ -266,11 +214,6 @@ static void sci_remote_node_context_notify_user(
 
 static void sci_remote_node_context_continue_state_transitions(struct sci_remote_node_context *rnc)
 {
-<<<<<<< HEAD
-	if (rnc->destination_state == SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_READY)
-		sci_remote_node_context_resume(rnc, rnc->user_callback,
-						    rnc->user_cookie);
-=======
 	switch (rnc->destination_state) {
 	case RNC_DEST_READY:
 	case RNC_DEST_SUSPENDED_RESUME:
@@ -284,7 +227,6 @@ static void sci_remote_node_context_continue_state_transitions(struct sci_remote
 		rnc->destination_state = RNC_DEST_UNSPECIFIED;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sci_remote_node_context_validate_context_buffer(struct sci_remote_node_context *sci_rnc)
@@ -298,21 +240,12 @@ static void sci_remote_node_context_validate_context_buffer(struct sci_remote_no
 
 	rnc_buffer->ssp.is_valid = true;
 
-<<<<<<< HEAD
-	if (!idev->is_direct_attached &&
-	    (dev->dev_type == SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP))) {
-=======
 	if (dev_is_sata(dev) && dev->parent) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sci_remote_device_post_request(idev, SCU_CONTEXT_COMMAND_POST_RNC_96);
 	} else {
 		sci_remote_device_post_request(idev, SCU_CONTEXT_COMMAND_POST_RNC_32);
 
-<<<<<<< HEAD
-		if (idev->is_direct_attached)
-=======
 		if (!dev->parent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sci_port_setup_transports(idev->owning_port,
 						  sci_rnc->remote_node_index);
 	}
@@ -335,26 +268,18 @@ static void sci_remote_node_context_invalidate_context_buffer(struct sci_remote_
 static void sci_remote_node_context_initial_state_enter(struct sci_base_state_machine *sm)
 {
 	struct sci_remote_node_context *rnc = container_of(sm, typeof(*rnc), sm);
-<<<<<<< HEAD
-=======
 	struct isci_remote_device *idev = rnc_to_dev(rnc);
 	struct isci_host *ihost = idev->owning_port->owning_controller;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check to see if we have gotten back to the initial state because
 	 * someone requested to destroy the remote node context object.
 	 */
 	if (sm->previous_state_id == SCI_RNC_INVALIDATING) {
-<<<<<<< HEAD
-		rnc->destination_state = SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_UNSPECIFIED;
-		sci_remote_node_context_notify_user(rnc);
-=======
 		rnc->destination_state = RNC_DEST_UNSPECIFIED;
 		sci_remote_node_context_notify_user(rnc);
 
 		smp_wmb();
 		wake_up(&ihost->eventq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -369,11 +294,8 @@ static void sci_remote_node_context_invalidating_state_enter(struct sci_base_sta
 {
 	struct sci_remote_node_context *rnc = container_of(sm, typeof(*rnc), sm);
 
-<<<<<<< HEAD
-=======
 	/* Terminate all outstanding requests. */
 	sci_remote_device_terminate_requests(rnc_to_dev(rnc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sci_remote_node_context_invalidate_context_buffer(rnc);
 }
 
@@ -392,15 +314,8 @@ static void sci_remote_node_context_resuming_state_enter(struct sci_base_state_m
 	 * resume because of a target reset we also need to update
 	 * the STPTLDARNI register with the RNi of the device
 	 */
-<<<<<<< HEAD
-	if ((dev->dev_type == SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP)) &&
-	    idev->is_direct_attached)
-		sci_port_setup_transports(idev->owning_port,
-					       rnc->remote_node_index);
-=======
 	if (dev_is_sata(dev) && !dev->parent)
 		sci_port_setup_transports(idev->owning_port, rnc->remote_node_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sci_remote_device_post_request(idev, SCU_CONTEXT_COMMAND_POST_RNC_RESUME);
 }
@@ -408,12 +323,6 @@ static void sci_remote_node_context_resuming_state_enter(struct sci_base_state_m
 static void sci_remote_node_context_ready_state_enter(struct sci_base_state_machine *sm)
 {
 	struct sci_remote_node_context *rnc = container_of(sm, typeof(*rnc), sm);
-<<<<<<< HEAD
-
-	rnc->destination_state = SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_UNSPECIFIED;
-
-	if (rnc->user_callback)
-=======
 	enum sci_remote_node_context_destination_state dest_select;
 	int tell_user = 1;
 
@@ -430,7 +339,6 @@ static void sci_remote_node_context_ready_state_enter(struct sci_base_state_mach
 			tell_user = 0;  /* Wait until ready again. */
 	}
 	if (tell_user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sci_remote_node_context_notify_user(rnc);
 }
 
@@ -444,12 +352,6 @@ static void sci_remote_node_context_tx_suspended_state_enter(struct sci_base_sta
 static void sci_remote_node_context_tx_rx_suspended_state_enter(struct sci_base_state_machine *sm)
 {
 	struct sci_remote_node_context *rnc = container_of(sm, typeof(*rnc), sm);
-<<<<<<< HEAD
-
-	sci_remote_node_context_continue_state_transitions(rnc);
-}
-
-=======
 	struct isci_remote_device *idev = rnc_to_dev(rnc);
 	struct isci_host *ihost = idev->owning_port->owning_controller;
 	u32 new_count = rnc->suspend_count + 1;
@@ -478,7 +380,6 @@ static void sci_remote_node_context_await_suspend_state_exit(
 		isci_dev_set_hang_detection_timeout(idev, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct sci_base_state sci_remote_node_context_state_table[] = {
 	[SCI_RNC_INITIAL] = {
 		.enter_state = sci_remote_node_context_initial_state_enter,
@@ -501,13 +402,9 @@ static const struct sci_base_state sci_remote_node_context_state_table[] = {
 	[SCI_RNC_TX_RX_SUSPENDED] = {
 		.enter_state = sci_remote_node_context_tx_rx_suspended_state_enter,
 	},
-<<<<<<< HEAD
-	[SCI_RNC_AWAIT_SUSPENSION] = { },
-=======
 	[SCI_RNC_AWAIT_SUSPENSION] = {
 		.exit_state = sci_remote_node_context_await_suspend_state_exit,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void sci_remote_node_context_construct(struct sci_remote_node_context *rnc,
@@ -516,11 +413,7 @@ void sci_remote_node_context_construct(struct sci_remote_node_context *rnc,
 	memset(rnc, 0, sizeof(struct sci_remote_node_context));
 
 	rnc->remote_node_index = remote_node_index;
-<<<<<<< HEAD
-	rnc->destination_state = SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_UNSPECIFIED;
-=======
 	rnc->destination_state = RNC_DEST_UNSPECIFIED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sci_init_sm(&rnc->sm, sci_remote_node_context_state_table, SCI_RNC_INITIAL);
 }
@@ -529,10 +422,7 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 							   u32 event_code)
 {
 	enum scis_sds_remote_node_context_states state;
-<<<<<<< HEAD
-=======
 	u32 next_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	state = sci_rnc->sm.current_state_id;
 	switch (state) {
@@ -547,34 +437,20 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 		break;
 	case SCI_RNC_INVALIDATING:
 		if (scu_get_event_code(event_code) == SCU_EVENT_POST_RNC_INVALIDATE_COMPLETE) {
-<<<<<<< HEAD
-			if (sci_rnc->destination_state == SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_FINAL)
-				state = SCI_RNC_INITIAL;
-			else
-				state = SCI_RNC_POSTING;
-			sci_change_state(&sci_rnc->sm, state);
-=======
 			if (sci_rnc->destination_state == RNC_DEST_FINAL)
 				next_state = SCI_RNC_INITIAL;
 			else
 				next_state = SCI_RNC_POSTING;
 			sci_change_state(&sci_rnc->sm, next_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			switch (scu_get_event_type(event_code)) {
 			case SCU_EVENT_TYPE_RNC_SUSPEND_TX:
 			case SCU_EVENT_TYPE_RNC_SUSPEND_TX_RX:
 				/* We really dont care if the hardware is going to suspend
 				 * the device since it's being invalidated anyway */
-<<<<<<< HEAD
-				dev_dbg(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-					"%s: SCIC Remote Node Context 0x%p was "
-					"suspeneded by hardware while being "
-=======
 				dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 					"%s: SCIC Remote Node Context 0x%p was "
 					"suspended by hardware while being "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"invalidated.\n", __func__, sci_rnc);
 				break;
 			default:
@@ -591,15 +467,9 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 			case SCU_EVENT_TYPE_RNC_SUSPEND_TX_RX:
 				/* We really dont care if the hardware is going to suspend
 				 * the device since it's being resumed anyway */
-<<<<<<< HEAD
-				dev_dbg(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-					"%s: SCIC Remote Node Context 0x%p was "
-					"suspeneded by hardware while being resumed.\n",
-=======
 				dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 					"%s: SCIC Remote Node Context 0x%p was "
 					"suspended by hardware while being resumed.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					__func__, sci_rnc);
 				break;
 			default:
@@ -611,19 +481,11 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 		switch (scu_get_event_type(event_code)) {
 		case SCU_EVENT_TL_RNC_SUSPEND_TX:
 			sci_change_state(&sci_rnc->sm, SCI_RNC_TX_SUSPENDED);
-<<<<<<< HEAD
-			sci_rnc->suspension_code = scu_get_event_specifier(event_code);
-			break;
-		case SCU_EVENT_TL_RNC_SUSPEND_TX_RX:
-			sci_change_state(&sci_rnc->sm, SCI_RNC_TX_RX_SUSPENDED);
-			sci_rnc->suspension_code = scu_get_event_specifier(event_code);
-=======
 			sci_rnc->suspend_type = scu_get_event_type(event_code);
 			break;
 		case SCU_EVENT_TL_RNC_SUSPEND_TX_RX:
 			sci_change_state(&sci_rnc->sm, SCI_RNC_TX_RX_SUSPENDED);
 			sci_rnc->suspend_type = scu_get_event_type(event_code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			goto out;
@@ -632,29 +494,14 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 	case SCI_RNC_AWAIT_SUSPENSION:
 		switch (scu_get_event_type(event_code)) {
 		case SCU_EVENT_TL_RNC_SUSPEND_TX:
-<<<<<<< HEAD
-			sci_change_state(&sci_rnc->sm, SCI_RNC_TX_SUSPENDED);
-			sci_rnc->suspension_code = scu_get_event_specifier(event_code);
-			break;
-		case SCU_EVENT_TL_RNC_SUSPEND_TX_RX:
-			sci_change_state(&sci_rnc->sm, SCI_RNC_TX_RX_SUSPENDED);
-			sci_rnc->suspension_code = scu_get_event_specifier(event_code);
-=======
 			next_state = SCI_RNC_TX_SUSPENDED;
 			break;
 		case SCU_EVENT_TL_RNC_SUSPEND_TX_RX:
 			next_state = SCI_RNC_TX_RX_SUSPENDED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			goto out;
 		}
-<<<<<<< HEAD
-		break;
-	default:
-		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-			 "%s: invalid state %d\n", __func__, state);
-=======
 		if (sci_rnc->suspend_type == scu_get_event_type(event_code))
 			sci_change_state(&sci_rnc->sm, next_state);
 		break;
@@ -662,19 +509,14 @@ enum sci_status sci_remote_node_context_event_handler(struct sci_remote_node_con
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 			 "%s: invalid state: %s\n", __func__,
 			 rnc_state_name(state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 	return SCI_SUCCESS;
 
  out:
 	dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-<<<<<<< HEAD
-		 "%s: code: %#x state: %d\n", __func__, event_code, state);
-=======
 		 "%s: code: %#x state: %s\n", __func__, event_code,
 		 rnc_state_name(state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SCI_FAILURE;
 
 }
@@ -688,26 +530,13 @@ enum sci_status sci_remote_node_context_destruct(struct sci_remote_node_context 
 	state = sci_rnc->sm.current_state_id;
 	switch (state) {
 	case SCI_RNC_INVALIDATING:
-<<<<<<< HEAD
-		sci_remote_node_context_setup_to_destory(sci_rnc, cb_fn, cb_p);
-=======
 		sci_remote_node_context_setup_to_destroy(sci_rnc, cb_fn, cb_p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_SUCCESS;
 	case SCI_RNC_POSTING:
 	case SCI_RNC_RESUMING:
 	case SCI_RNC_READY:
 	case SCI_RNC_TX_SUSPENDED:
 	case SCI_RNC_TX_RX_SUSPENDED:
-<<<<<<< HEAD
-	case SCI_RNC_AWAIT_SUSPENSION:
-		sci_remote_node_context_setup_to_destory(sci_rnc, cb_fn, cb_p);
-		sci_change_state(&sci_rnc->sm, SCI_RNC_INVALIDATING);
-		return SCI_SUCCESS;
-	case SCI_RNC_INITIAL:
-		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-			 "%s: invalid state %d\n", __func__, state);
-=======
 		sci_remote_node_context_setup_to_destroy(sci_rnc, cb_fn, cb_p);
 		sci_change_state(&sci_rnc->sm, SCI_RNC_INVALIDATING);
 		return SCI_SUCCESS;
@@ -718,7 +547,6 @@ enum sci_status sci_remote_node_context_destruct(struct sci_remote_node_context 
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 			 "%s: invalid state: %s\n", __func__,
 			 rnc_state_name(state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We have decided that the destruct request on the remote node context
 		 * can not fail since it is either in the initial/destroyed state or is
 		 * can be destroyed.
@@ -726,42 +554,12 @@ enum sci_status sci_remote_node_context_destruct(struct sci_remote_node_context 
 		return SCI_SUCCESS;
 	default:
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-<<<<<<< HEAD
-			 "%s: invalid state %d\n", __func__, state);
-=======
 			 "%s: invalid state %s\n", __func__,
 			 rnc_state_name(state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 }
 
-<<<<<<< HEAD
-enum sci_status sci_remote_node_context_suspend(struct sci_remote_node_context *sci_rnc,
-						     u32 suspend_type,
-						     scics_sds_remote_node_context_callback cb_fn,
-						     void *cb_p)
-{
-	enum scis_sds_remote_node_context_states state;
-
-	state = sci_rnc->sm.current_state_id;
-	if (state != SCI_RNC_READY) {
-		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-			 "%s: invalid state %d\n", __func__, state);
-		return SCI_FAILURE_INVALID_STATE;
-	}
-
-	sci_rnc->user_callback   = cb_fn;
-	sci_rnc->user_cookie     = cb_p;
-	sci_rnc->suspension_code = suspend_type;
-
-	if (suspend_type == SCI_SOFTWARE_SUSPENSION) {
-		sci_remote_device_post_request(rnc_to_dev(sci_rnc),
-						    SCU_CONTEXT_COMMAND_POST_RNC_SUSPEND_TX);
-	}
-
-	sci_change_state(&sci_rnc->sm, SCI_RNC_AWAIT_SUSPENSION);
-=======
 enum sci_status sci_remote_node_context_suspend(
 			struct sci_remote_node_context *sci_rnc,
 			enum sci_remote_node_suspension_reasons suspend_reason,
@@ -851,7 +649,6 @@ enum sci_status sci_remote_node_context_suspend(
 	if (state != SCI_RNC_AWAIT_SUSPENSION)
 		sci_change_state(&sci_rnc->sm, SCI_RNC_AWAIT_SUSPENSION);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SCI_SUCCESS;
 }
 
@@ -860,10 +657,6 @@ enum sci_status sci_remote_node_context_resume(struct sci_remote_node_context *s
 						    void *cb_p)
 {
 	enum scis_sds_remote_node_context_states state;
-<<<<<<< HEAD
-
-	state = sci_rnc->sm.current_state_id;
-=======
 	struct isci_remote_device *idev = rnc_to_dev(sci_rnc);
 
 	state = sci_rnc->sm.current_state_id;
@@ -875,57 +668,11 @@ enum sci_status sci_remote_node_context_resume(struct sci_remote_node_context *s
 		test_bit(IDEV_ABORT_PATH_ACTIVE, &idev->flags)
 			? "<abort active>" : "<normal>");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (state) {
 	case SCI_RNC_INITIAL:
 		if (sci_rnc->remote_node_index == SCIC_SDS_REMOTE_NODE_CONTEXT_INVALID_INDEX)
 			return SCI_FAILURE_INVALID_STATE;
 
-<<<<<<< HEAD
-		sci_remote_node_context_setup_to_resume(sci_rnc, cb_fn, cb_p);
-		sci_remote_node_context_construct_buffer(sci_rnc);
-		sci_change_state(&sci_rnc->sm, SCI_RNC_POSTING);
-		return SCI_SUCCESS;
-	case SCI_RNC_POSTING:
-	case SCI_RNC_INVALIDATING:
-	case SCI_RNC_RESUMING:
-		if (sci_rnc->destination_state != SCIC_SDS_REMOTE_NODE_DESTINATION_STATE_READY)
-			return SCI_FAILURE_INVALID_STATE;
-
-		sci_rnc->user_callback = cb_fn;
-		sci_rnc->user_cookie   = cb_p;
-		return SCI_SUCCESS;
-	case SCI_RNC_TX_SUSPENDED: {
-		struct isci_remote_device *idev = rnc_to_dev(sci_rnc);
-		struct domain_device *dev = idev->domain_dev;
-
-		sci_remote_node_context_setup_to_resume(sci_rnc, cb_fn, cb_p);
-
-		/* TODO: consider adding a resume action of NONE, INVALIDATE, WRITE_TLCR */
-		if (dev->dev_type == SAS_END_DEV || dev_is_expander(dev))
-			sci_change_state(&sci_rnc->sm, SCI_RNC_RESUMING);
-		else if (dev->dev_type == SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP)) {
-			if (idev->is_direct_attached) {
-				/* @todo Fix this since I am being silly in writing to the STPTLDARNI register. */
-				sci_change_state(&sci_rnc->sm, SCI_RNC_RESUMING);
-			} else {
-				sci_change_state(&sci_rnc->sm, SCI_RNC_INVALIDATING);
-			}
-		} else
-			return SCI_FAILURE;
-		return SCI_SUCCESS;
-	}
-	case SCI_RNC_TX_RX_SUSPENDED:
-		sci_remote_node_context_setup_to_resume(sci_rnc, cb_fn, cb_p);
-		sci_change_state(&sci_rnc->sm, SCI_RNC_RESUMING);
-		return SCI_FAILURE_INVALID_STATE;
-	case SCI_RNC_AWAIT_SUSPENSION:
-		sci_remote_node_context_setup_to_resume(sci_rnc, cb_fn, cb_p);
-		return SCI_SUCCESS;
-	default:
-		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-			 "%s: invalid state %d\n", __func__, state);
-=======
 		sci_remote_node_context_setup_to_resume(sci_rnc, cb_fn,	cb_p,
 							RNC_DEST_READY);
 		if (!test_bit(IDEV_ABORT_PATH_ACTIVE, &idev->flags)) {
@@ -990,7 +737,6 @@ enum sci_status sci_remote_node_context_resume(struct sci_remote_node_context *s
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 			 "%s: invalid state %s\n", __func__,
 			 rnc_state_name(state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 }
@@ -1009,21 +755,6 @@ enum sci_status sci_remote_node_context_start_io(struct sci_remote_node_context 
 	case SCI_RNC_TX_RX_SUSPENDED:
 	case SCI_RNC_AWAIT_SUSPENSION:
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-<<<<<<< HEAD
-			 "%s: invalid state %d\n", __func__, state);
-		return SCI_FAILURE_REMOTE_DEVICE_RESET_REQUIRED;
-	default:
-		break;
-	}
-	dev_dbg(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-		"%s: requested to start IO while still resuming, %d\n",
-		__func__, state);
-	return SCI_FAILURE_INVALID_STATE;
-}
-
-enum sci_status sci_remote_node_context_start_task(struct sci_remote_node_context *sci_rnc,
-							struct isci_request *ireq)
-=======
 			 "%s: invalid state %s\n", __func__,
 			 rnc_state_name(state));
 		return SCI_FAILURE_REMOTE_DEVICE_RESET_REQUIRED;
@@ -1051,26 +782,11 @@ enum sci_status sci_remote_node_context_start_task(
 
 int sci_remote_node_context_is_safe_to_abort(
 	struct sci_remote_node_context *sci_rnc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enum scis_sds_remote_node_context_states state;
 
 	state = sci_rnc->sm.current_state_id;
 	switch (state) {
-<<<<<<< HEAD
-	case SCI_RNC_RESUMING:
-	case SCI_RNC_READY:
-	case SCI_RNC_AWAIT_SUSPENSION:
-		return SCI_SUCCESS;
-	case SCI_RNC_TX_SUSPENDED:
-	case SCI_RNC_TX_RX_SUSPENDED:
-		sci_remote_node_context_resume(sci_rnc, NULL, NULL);
-		return SCI_SUCCESS;
-	default:
-		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
-			 "%s: invalid state %d\n", __func__, state);
-		return SCI_FAILURE_INVALID_STATE;
-=======
 	case SCI_RNC_INVALIDATING:
 	case SCI_RNC_TX_RX_SUSPENDED:
 		return 1;
@@ -1085,6 +801,5 @@ int sci_remote_node_context_is_safe_to_abort(
 		dev_warn(scirdev_to_dev(rnc_to_dev(sci_rnc)),
 			 "%s: invalid state %d\n", __func__, state);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }

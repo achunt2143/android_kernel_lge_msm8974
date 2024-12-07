@@ -1,16 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright 2006-2008, IBM Corporation.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2006-2008, IBM Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -22,28 +12,17 @@
 #include <linux/reboot.h>
 #include <linux/kexec.h>
 #include <linux/crash_dump.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/kexec.h>
 #include <asm/reg.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/rtas.h>
 #include <asm/cell-regs.h>
 
 #include "ras.h"
-<<<<<<< HEAD
-
-=======
 #include "pervasive.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dump_fir(int cpu)
 {
@@ -70,11 +49,7 @@ static void dump_fir(int cpu)
 
 }
 
-<<<<<<< HEAD
-void cbe_system_error_exception(struct pt_regs *regs)
-=======
 DEFINE_INTERRUPT_HANDLER(cbe_system_error_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu = smp_processor_id();
 
@@ -83,11 +58,7 @@ DEFINE_INTERRUPT_HANDLER(cbe_system_error_exception)
 	dump_stack();
 }
 
-<<<<<<< HEAD
-void cbe_maintenance_exception(struct pt_regs *regs)
-=======
 DEFINE_INTERRUPT_HANDLER(cbe_maintenance_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu = smp_processor_id();
 
@@ -99,11 +70,7 @@ DEFINE_INTERRUPT_HANDLER(cbe_maintenance_exception)
 	dump_stack();
 }
 
-<<<<<<< HEAD
-void cbe_thermal_exception(struct pt_regs *regs)
-=======
 DEFINE_INTERRUPT_HANDLER(cbe_thermal_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu = smp_processor_id();
 
@@ -152,12 +119,8 @@ static int __init cbe_ptcal_enable_on_node(int nid, int order)
 
 	area->nid = nid;
 	area->order = order;
-<<<<<<< HEAD
-	area->pages = alloc_pages_exact_node(area->nid, GFP_KERNEL|GFP_THISNODE,
-=======
 	area->pages = __alloc_pages_node(area->nid,
 						GFP_KERNEL|__GFP_THISNODE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						area->order);
 
 	if (!area->pages) {
@@ -229,13 +192,8 @@ static int __init cbe_ptcal_enable(void)
 	for_each_node_by_type(np, "cpu") {
 		const u32 *nid = of_get_property(np, "node-id", NULL);
 		if (!nid) {
-<<<<<<< HEAD
-			printk(KERN_ERR "%s: node %s is missing node-id?\n",
-					__func__, np->full_name);
-=======
 			printk(KERN_ERR "%s: node %pOF is missing node-id?\n",
 					__func__, np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		cbe_ptcal_enable_on_node(*nid, order);
@@ -336,19 +294,11 @@ int cbe_sysreset_hack(void)
 }
 #endif /* CONFIG_PPC_IBM_CELL_RESETBUTTON */
 
-<<<<<<< HEAD
-int __init cbe_ptcal_init(void)
-{
-	int ret;
-	ptcal_start_tok = rtas_token("ibm,cbe-start-ptcal");
-	ptcal_stop_tok = rtas_token("ibm,cbe-stop-ptcal");
-=======
 static int __init cbe_ptcal_init(void)
 {
 	int ret;
 	ptcal_start_tok = rtas_function_token(RTAS_FN_IBM_CBE_START_PTCAL);
 	ptcal_stop_tok = rtas_function_token(RTAS_FN_IBM_CBE_STOP_PTCAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ptcal_start_tok == RTAS_UNKNOWN_SERVICE
 			|| ptcal_stop_tok == RTAS_UNKNOWN_SERVICE)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/power/trace.c
  *
@@ -10,14 +7,6 @@
  * Trace facility for suspend/resume problems, when none of the
  * devices may be working.
  */
-<<<<<<< HEAD
-
-#include <linux/resume-trace.h>
-#include <linux/export.h>
-#include <linux/rtc.h>
-
-#include <asm/rtc.h>
-=======
 #define pr_fmt(fmt) "PM: " fmt
 
 #include <linux/pm-trace.h>
@@ -27,7 +16,6 @@
 #include <linux/init.h>
 
 #include <linux/mc146818rtc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "power.h"
 
@@ -90,12 +78,9 @@
 
 #define DEVSEED (7919)
 
-<<<<<<< HEAD
-=======
 bool pm_trace_rtc_abused __read_mostly;
 EXPORT_SYMBOL_GPL(pm_trace_rtc_abused);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int dev_hash_value;
 
 static int set_magic_time(unsigned int user, unsigned int file, unsigned int device)
@@ -125,12 +110,8 @@ static int set_magic_time(unsigned int user, unsigned int file, unsigned int dev
 	n /= 24;
 	time.tm_min = (n % 20) * 3;
 	n /= 20;
-<<<<<<< HEAD
-	set_rtc_time(&time);
-=======
 	mc146818_set_time(&time);
 	pm_trace_rtc_abused = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return n ? -1 : 0;
 }
 
@@ -139,19 +120,12 @@ static unsigned int read_magic_time(void)
 	struct rtc_time time;
 	unsigned int val;
 
-<<<<<<< HEAD
-	get_rtc_time(&time);
-	pr_info("RTC time: %2d:%02d:%02d, date: %02d/%02d/%02d\n",
-		time.tm_hour, time.tm_min, time.tm_sec,
-		time.tm_mon + 1, time.tm_mday, time.tm_year % 100);
-=======
 	if (mc146818_get_time(&time, 1000) < 0) {
 		pr_err("Unable to read current time from RTC\n");
 		return 0;
 	}
 
 	pr_info("RTC time: %ptRt, date: %ptRd\n", &time, &time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = time.tm_year;				/* 100 years */
 	if (val > 100)
 		val -= 100;
@@ -190,46 +164,29 @@ EXPORT_SYMBOL(set_trace_device);
  * it's not any guarantee, but it's a high _likelihood_ that
  * the match is valid).
  */
-<<<<<<< HEAD
-void generate_resume_trace(const void *tracedata, unsigned int user)
-=======
 void generate_pm_trace(const void *tracedata, unsigned int user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned short lineno = *(unsigned short *)tracedata;
 	const char *file = *(const char **)(tracedata + 2);
 	unsigned int user_hash_value, file_hash_value;
 
-<<<<<<< HEAD
-=======
 	if (!x86_platform.legacy.rtc)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	user_hash_value = user % USERHASH;
 	file_hash_value = hash_string(lineno, file, FILEHASH);
 	set_magic_time(user_hash_value, file_hash_value, dev_hash_value);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(generate_resume_trace);
-
-extern char __tracedata_start, __tracedata_end;
-=======
 EXPORT_SYMBOL(generate_pm_trace);
 
 extern char __tracedata_start[], __tracedata_end[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int show_file_hash(unsigned int value)
 {
 	int match;
 	char *tracedata;
 
 	match = 0;
-<<<<<<< HEAD
-	for (tracedata = &__tracedata_start ; tracedata < &__tracedata_end ;
-=======
 	for (tracedata = __tracedata_start ; tracedata < __tracedata_end ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tracedata += 2 + sizeof(unsigned long)) {
 		unsigned short lineno = *(unsigned short *)tracedata;
 		const char *file = *(const char **)(tracedata + 2);
@@ -295,15 +252,6 @@ int show_trace_dev_match(char *buf, size_t size)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int early_resume_init(void)
-{
-	hash_value_early_read = read_magic_time();
-	return 0;
-}
-
-static int late_resume_init(void)
-=======
 static int
 pm_trace_notify(struct notifier_block *nb, unsigned long mode, void *_unused)
 {
@@ -336,17 +284,13 @@ static int __init early_resume_init(void)
 }
 
 static int __init late_resume_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val = hash_value_early_read;
 	unsigned int user, file, dev;
 
-<<<<<<< HEAD
-=======
 	if (!x86_platform.legacy.rtc)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	user = val % USERHASH;
 	val = val / USERHASH;
 	file = val % FILEHASH;

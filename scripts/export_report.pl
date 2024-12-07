@@ -1,23 +1,13 @@
-<<<<<<< HEAD
-#!/usr/bin/perl -w
-#
-# (C) Copyright IBM Corporation 2006.
-#	Released under GPL v2.
-=======
 #!/usr/bin/env perl
 # SPDX-License-Identifier: GPL-2.0-only
 #
 # (C) Copyright IBM Corporation 2006.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #	Author : Ram Pai (linuxram@us.ibm.com)
 #
 # Usage: export_report.pl -k Module.symvers [-o report_file ] -f *.mod.c
 #
 
-<<<<<<< HEAD
-=======
 use warnings;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 use Getopt::Std;
 use strict;
 
@@ -62,22 +52,12 @@ sub usage {
 
 sub collectcfiles {
     my @file;
-<<<<<<< HEAD
-    while (<.tmp_versions/*.mod>) {
-	open my $fh, '<', $_ or die "cannot open $_: $!\n";
-	push (@file,
-	      grep s/\.ko/.mod.c/,	# change the suffix
-	      grep m/.+\.ko/,		# find the .ko path
-	      <$fh>);			# lines in opened file
-    }
-=======
     open my $fh, '< modules.order' or die "cannot open modules.order: $!\n";
     while (<$fh>) {
 	s/\.ko$/.mod.c/;
 	push (@file, $_)
     }
     close($fh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     chomp @file;
     return @file;
 }
@@ -114,11 +94,7 @@ if (defined $opt{'o'}) {
 #
 while ( <$module_symvers> ) {
 	chomp;
-<<<<<<< HEAD
-	my (undef, $symbol, $module, $gpl) = split;
-=======
 	my (undef, $symbol, $module, $gpl, $namespace) = split('\t');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$SYMBOL { $symbol } =  [ $module , "0" , $symbol, $gpl];
 }
 close($module_symvers);

@@ -292,15 +292,6 @@ static int mthca_cmd_post(struct mthca_dev *dev,
 		err = mthca_cmd_post_hcr(dev, in_param, out_param, in_modifier,
 					 op_modifier, op, token, event);
 
-<<<<<<< HEAD
-	/*
-	 * Make sure that our HCR writes don't get mixed in with
-	 * writes from another CPU starting a FW command.
-	 */
-	mmiowb();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dev->cmd.hcr_mutex);
 	return err;
 }
@@ -370,23 +361,16 @@ static int mthca_cmd_poll(struct mthca_dev *dev,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (out_is_imm)
-=======
 	if (out_is_imm && out_param) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*out_param =
 			(u64) be32_to_cpu((__force __be32)
 					  __raw_readl(dev->hcr + HCR_OUT_PARAM_OFFSET)) << 32 |
 			(u64) be32_to_cpu((__force __be32)
 					  __raw_readl(dev->hcr + HCR_OUT_PARAM_OFFSET + 4));
-<<<<<<< HEAD
-=======
 	} else if (out_is_imm) {
 		err = -EINVAL;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be32_to_cpu((__force __be32) __raw_readl(dev->hcr + HCR_STATUS_OFFSET)) >> 24;
 	if (status) {
@@ -464,17 +448,12 @@ static int mthca_cmd_wait(struct mthca_dev *dev,
 		err = mthca_status_to_errno(context->status);
 	}
 
-<<<<<<< HEAD
-	if (out_is_imm)
-		*out_param = context->out_param;
-=======
 	if (out_is_imm && out_param) {
 		*out_param = context->out_param;
 	} else if (out_is_imm) {
 		err = -EINVAL;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	spin_lock(&dev->cmd.context_lock);
@@ -553,11 +532,7 @@ int mthca_cmd_init(struct mthca_dev *dev)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	dev->cmd.pool = pci_pool_create("mthca_cmd", dev->pdev,
-=======
 	dev->cmd.pool = dma_pool_create("mthca_cmd", &dev->pdev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					MTHCA_MAILBOX_SIZE,
 					MTHCA_MAILBOX_SIZE, 0);
 	if (!dev->cmd.pool) {
@@ -570,11 +545,7 @@ int mthca_cmd_init(struct mthca_dev *dev)
 
 void mthca_cmd_cleanup(struct mthca_dev *dev)
 {
-<<<<<<< HEAD
-	pci_pool_destroy(dev->cmd.pool);
-=======
 	dma_pool_destroy(dev->cmd.pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(dev->hcr);
 	if (dev->cmd.flags & MTHCA_CMD_POST_DOORBELLS)
 		iounmap(dev->cmd.dbell_map);
@@ -588,15 +559,9 @@ int mthca_cmd_use_events(struct mthca_dev *dev)
 {
 	int i;
 
-<<<<<<< HEAD
-	dev->cmd.context = kmalloc(dev->cmd.max_cmds *
-				   sizeof (struct mthca_cmd_context),
-				   GFP_KERNEL);
-=======
 	dev->cmd.context = kmalloc_array(dev->cmd.max_cmds,
 					 sizeof(struct mthca_cmd_context),
 					 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev->cmd.context)
 		return -ENOMEM;
 
@@ -650,11 +615,7 @@ struct mthca_mailbox *mthca_alloc_mailbox(struct mthca_dev *dev,
 	if (!mailbox)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-	mailbox->buf = pci_pool_alloc(dev->cmd.pool, gfp_mask, &mailbox->dma);
-=======
 	mailbox->buf = dma_pool_alloc(dev->cmd.pool, gfp_mask, &mailbox->dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mailbox->buf) {
 		kfree(mailbox);
 		return ERR_PTR(-ENOMEM);
@@ -668,21 +629,13 @@ void mthca_free_mailbox(struct mthca_dev *dev, struct mthca_mailbox *mailbox)
 	if (!mailbox)
 		return;
 
-<<<<<<< HEAD
-	pci_pool_free(dev->cmd.pool, mailbox->buf, mailbox->dma);
-=======
 	dma_pool_free(dev->cmd.pool, mailbox->buf, mailbox->dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mailbox);
 }
 
 int mthca_SYS_EN(struct mthca_dev *dev)
 {
-<<<<<<< HEAD
-	u64 out;
-=======
 	u64 out = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = mthca_cmd_imm(dev, 0, &out, 0, 0, CMD_SYS_EN, CMD_TIME_CLASS_D);
@@ -739,11 +692,7 @@ static int mthca_map_cmd(struct mthca_dev *dev, u16 op, struct mthca_icm *icm,
 		for (i = 0; i < mthca_icm_size(&iter) >> lg; ++i) {
 			if (virt != -1) {
 				pages[nent * 2] = cpu_to_be64(virt);
-<<<<<<< HEAD
-				virt += 1 << lg;
-=======
 				virt += 1ULL << lg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			pages[nent * 2 + 1] =
@@ -1303,11 +1252,7 @@ static void get_board_id(void *vsd, char *board_id)
 
 	if (be16_to_cpup(vsd + VSD_OFFSET_SIG1) == VSD_SIGNATURE_TOPSPIN &&
 	    be16_to_cpup(vsd + VSD_OFFSET_SIG2) == VSD_SIGNATURE_TOPSPIN) {
-<<<<<<< HEAD
-		strlcpy(board_id, vsd + VSD_OFFSET_TS_BOARD_ID, MTHCA_BOARD_ID_LEN);
-=======
 		strscpy(board_id, vsd + VSD_OFFSET_TS_BOARD_ID, MTHCA_BOARD_ID_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * The board ID is a string but the firmware byte
@@ -1915,13 +1860,8 @@ int mthca_CONF_SPECIAL_QP(struct mthca_dev *dev, int type, u32 qpn)
 }
 
 int mthca_MAD_IFC(struct mthca_dev *dev, int ignore_mkey, int ignore_bkey,
-<<<<<<< HEAD
-		  int port, struct ib_wc *in_wc, struct ib_grh *in_grh,
-		  void *in_mad, void *response_mad)
-=======
 		  int port, const struct ib_wc *in_wc, const struct ib_grh *in_grh,
 		  const void *in_mad, void *response_mad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mthca_mailbox *inmailbox, *outmailbox;
 	void *inbox;
@@ -1975,11 +1915,7 @@ int mthca_MAD_IFC(struct mthca_dev *dev, int ignore_mkey, int ignore_bkey,
 			(in_wc->wc_flags & IB_WC_GRH ? 0x80 : 0);
 		MTHCA_PUT(inbox, val,               MAD_IFC_G_PATH_OFFSET);
 
-<<<<<<< HEAD
-		MTHCA_PUT(inbox, in_wc->slid,       MAD_IFC_RLID_OFFSET);
-=======
 		MTHCA_PUT(inbox, ib_lid_cpu16(in_wc->slid), MAD_IFC_RLID_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		MTHCA_PUT(inbox, in_wc->pkey_index, MAD_IFC_PKEY_OFFSET);
 
 		if (in_grh)
@@ -1987,11 +1923,7 @@ int mthca_MAD_IFC(struct mthca_dev *dev, int ignore_mkey, int ignore_bkey,
 
 		op_modifier |= 0x4;
 
-<<<<<<< HEAD
-		in_modifier |= in_wc->slid << 16;
-=======
 		in_modifier |= ib_lid_cpu16(in_wc->slid) << 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = mthca_cmd_box(dev, inmailbox->dma, outmailbox->dma,
@@ -2023,11 +1955,7 @@ int mthca_WRITE_MGM(struct mthca_dev *dev, int index,
 int mthca_MGID_HASH(struct mthca_dev *dev, struct mthca_mailbox *mailbox,
 		    u16 *hash)
 {
-<<<<<<< HEAD
-	u64 imm;
-=======
 	u64 imm = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = mthca_cmd_imm(dev, mailbox->dma, &imm, 0, 0, CMD_MGID_HASH,

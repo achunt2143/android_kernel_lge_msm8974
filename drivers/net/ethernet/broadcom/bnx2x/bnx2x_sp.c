@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/* bnx2x_sp.c: Broadcom Everest network driver.
- *
- * Copyright (c) 2011-2012 Broadcom Corporation
- *
- * Unless you and Broadcom execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2, available
- * at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html (the "GPL").
- *
- * Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other Broadcom software provided under a
- * license other than the GPL, without Broadcom's express prior written
- * consent.
- *
- * Maintained by: Eilon Greenstein <eilong@broadcom.com>
-=======
 /* bnx2x_sp.c: Qlogic Everest network driver.
  *
  * Copyright 2011-2013 Broadcom Corporation
@@ -32,7 +15,6 @@
  * consent.
  *
  * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written by: Vladislav Zolotarov
  *
  */
@@ -50,29 +32,17 @@
 
 #define BNX2X_MAX_EMUL_MULTI		16
 
-<<<<<<< HEAD
-#define MAC_LEADING_ZERO_CNT (ALIGN(ETH_ALEN, sizeof(u32)) - ETH_ALEN)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**** Exe Queue interfaces ****/
 
 /**
  * bnx2x_exe_queue_init - init the Exe Queue object
  *
-<<<<<<< HEAD
- * @o:		poiter to the object
- * @exe_len:	length
- * @owner:	poiter to the owner
- * @validate:	validate function pointer
-=======
  * @bp:		driver handle
  * @o:		pointer to the object
  * @exe_len:	length
  * @owner:	pointer to the owner
  * @validate:	validate function pointer
  * @remove:	remove function pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @optimize:	optimize function pointer
  * @exec:	execute function pointer
  * @get:	get function pointer
@@ -135,11 +105,7 @@ static inline int bnx2x_exe_queue_length(struct bnx2x_exe_queue_obj *o)
  *
  * @bp:		driver handle
  * @o:		queue
-<<<<<<< HEAD
- * @cmd:	new command to add
-=======
  * @elem:	new command to add
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @restore:	true - do not optimize the command
  *
  * If the element is optimized or is illegal, frees it.
@@ -162,11 +128,7 @@ static inline int bnx2x_exe_queue_add(struct bnx2x *bp,
 		/* Check if this request is ok */
 		rc = o->validate(bp, o->owner, elem);
 		if (rc) {
-<<<<<<< HEAD
-			BNX2X_ERR("Preamble failed: %d\n", rc);
-=======
 			DP(BNX2X_MSG_SP, "Preamble failed: %d\n", rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto free_and_exit;
 		}
 	}
@@ -184,10 +146,6 @@ free_and_exit:
 	spin_unlock_bh(&o->lock);
 
 	return rc;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void __bnx2x_exe_queue_reset_pending(
@@ -205,21 +163,6 @@ static inline void __bnx2x_exe_queue_reset_pending(
 	}
 }
 
-<<<<<<< HEAD
-static inline void bnx2x_exe_queue_reset_pending(struct bnx2x *bp,
-						 struct bnx2x_exe_queue_obj *o)
-{
-
-	spin_lock_bh(&o->lock);
-
-	__bnx2x_exe_queue_reset_pending(bp, o);
-
-	spin_unlock_bh(&o->lock);
-
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * bnx2x_exe_queue_step - execute one execution chunk atomically
  *
@@ -227,11 +170,7 @@ static inline void bnx2x_exe_queue_reset_pending(struct bnx2x *bp,
  * @o:			queue
  * @ramrod_flags:	flags
  *
-<<<<<<< HEAD
- * (Atomicy is ensured using the exe_queue->lock).
-=======
  * (Should be called while holding the exe_queue->lock).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int bnx2x_exe_queue_step(struct bnx2x *bp,
 				       struct bnx2x_exe_queue_obj *o,
@@ -242,14 +181,7 @@ static inline int bnx2x_exe_queue_step(struct bnx2x *bp,
 
 	memset(&spacer, 0, sizeof(spacer));
 
-<<<<<<< HEAD
-	spin_lock_bh(&o->lock);
-
-	/*
-	 * Next step should not be performed until the current is finished,
-=======
 	/* Next step should not be performed until the current is finished,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * unless a DRV_CLEAR_ONLY bit is set. In this case we just want to
 	 * properly clear object internals without sending any command to the FW
 	 * which also implies there won't be any completion to clear the
@@ -260,20 +192,11 @@ static inline int bnx2x_exe_queue_step(struct bnx2x *bp,
 			DP(BNX2X_MSG_SP, "RAMROD_DRV_CLR_ONLY requested: resetting a pending_comp list\n");
 			__bnx2x_exe_queue_reset_pending(bp, o);
 		} else {
-<<<<<<< HEAD
-			spin_unlock_bh(&o->lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Run through the pending commands list and create a next
-=======
 	/* Run through the pending commands list and create a next
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * execution chunk.
 	 */
 	while (!list_empty(&o->exe_queue)) {
@@ -283,46 +206,19 @@ static inline int bnx2x_exe_queue_step(struct bnx2x *bp,
 
 		if (cur_len + elem->cmd_len <= o->exe_chunk_len) {
 			cur_len += elem->cmd_len;
-<<<<<<< HEAD
-			/*
-			 * Prevent from both lists being empty when moving an
-=======
 			/* Prevent from both lists being empty when moving an
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * element. This will allow the call of
 			 * bnx2x_exe_queue_empty() without locking.
 			 */
 			list_add_tail(&spacer.link, &o->pending_comp);
 			mb();
-<<<<<<< HEAD
-			list_del(&elem->link);
-			list_add_tail(&elem->link, &o->pending_comp);
-=======
 			list_move_tail(&elem->link, &o->pending_comp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_del(&spacer.link);
 		} else
 			break;
 	}
 
 	/* Sanity check */
-<<<<<<< HEAD
-	if (!cur_len) {
-		spin_unlock_bh(&o->lock);
-		return 0;
-	}
-
-	rc = o->execute(bp, o->owner, &o->pending_comp, ramrod_flags);
-	if (rc < 0)
-		/*
-		 *  In case of an error return the commands back to the queue
-		 *  and reset the pending_comp.
-		 */
-		list_splice_init(&o->pending_comp, &o->exe_queue);
-	else if (!rc)
-		/*
-		 * If zero is returned, means there are no outstanding pending
-=======
 	if (!cur_len)
 		return 0;
 
@@ -334,15 +230,10 @@ static inline int bnx2x_exe_queue_step(struct bnx2x *bp,
 		list_splice_init(&o->pending_comp, &o->exe_queue);
 	else if (!rc)
 		/* If zero is returned, means there are no outstanding pending
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * completions and we may dismiss the pending list.
 		 */
 		__bnx2x_exe_queue_reset_pending(bp, o);
 
-<<<<<<< HEAD
-	spin_unlock_bh(&o->lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -371,28 +262,16 @@ static bool bnx2x_raw_check_pending(struct bnx2x_raw_obj *o)
 
 static void bnx2x_raw_clear_pending(struct bnx2x_raw_obj *o)
 {
-<<<<<<< HEAD
-	smp_mb__before_clear_bit();
-	clear_bit(o->state, o->pstate);
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__before_atomic();
 	clear_bit(o->state, o->pstate);
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2x_raw_set_pending(struct bnx2x_raw_obj *o)
 {
-<<<<<<< HEAD
-	smp_mb__before_clear_bit();
-	set_bit(o->state, o->pstate);
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__before_atomic();
 	set_bit(o->state, o->pstate);
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -400,11 +279,7 @@ static void bnx2x_raw_set_pending(struct bnx2x_raw_obj *o)
  *
  * @bp:		device handle
  * @state:	state which is to be cleared
-<<<<<<< HEAD
- * @state_p:	state buffer
-=======
  * @pstate:	state buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 static inline int bnx2x_state_wait(struct bnx2x *bp, int state,
@@ -413,10 +288,6 @@ static inline int bnx2x_state_wait(struct bnx2x *bp, int state,
 	/* can take a while if any port is running */
 	int cnt = 5000;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (CHIP_REV_IS_EMUL(bp))
 		cnt *= 20;
 
@@ -431,11 +302,7 @@ static inline int bnx2x_state_wait(struct bnx2x *bp, int state,
 			return 0;
 		}
 
-<<<<<<< HEAD
-		usleep_range(1000, 1000);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (bp->panic)
 			return -EIO;
@@ -553,14 +420,6 @@ static bool bnx2x_put_credit_vlan_mac(struct bnx2x_vlan_mac_obj *o)
 	return true;
 }
 
-<<<<<<< HEAD
-static int bnx2x_get_n_elements(struct bnx2x *bp, struct bnx2x_vlan_mac_obj *o,
-				int n, u8 *buf)
-{
-	struct bnx2x_vlan_mac_registry_elem *pos;
-	u8 *next = buf;
-	int counter = 0;
-=======
 /**
  * __bnx2x_vlan_mac_h_write_trylock - try getting the vlan mac writer lock
  *
@@ -758,30 +617,10 @@ static int bnx2x_get_n_elements(struct bnx2x *bp, struct bnx2x_vlan_mac_obj *o,
 	read_lock = bnx2x_vlan_mac_h_read_lock(bp, o);
 	if (read_lock != 0)
 		BNX2X_ERR("get_n_elements failed to get vlan mac reader lock; Access without lock\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* traverse list */
 	list_for_each_entry(pos, &o->head, link) {
 		if (counter < n) {
-<<<<<<< HEAD
-			/* place leading zeroes in buffer */
-			memset(next, 0, MAC_LEADING_ZERO_CNT);
-
-			/* place mac after leading zeroes*/
-			memcpy(next + MAC_LEADING_ZERO_CNT, pos->u.mac.mac,
-			       ETH_ALEN);
-
-			/* calculate address of next element and
-			 * advance counter
-			 */
-			counter++;
-			next = buf + counter * ALIGN(ETH_ALEN, sizeof(u32));
-
-			DP(BNX2X_MSG_SP, "copied element number %d to address %p element was %pM\n",
-			   counter, next, pos->u.mac.mac);
-		}
-	}
-=======
 			memcpy(next, &pos->u, size);
 			counter++;
 			DP(BNX2X_MSG_SP, "copied element number %d to address %p element was:\n",
@@ -795,7 +634,6 @@ static int bnx2x_get_n_elements(struct bnx2x *bp, struct bnx2x_vlan_mac_obj *o,
 		bnx2x_vlan_mac_h_read_unlock(bp, o);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return counter * ETH_ALEN;
 }
 
@@ -813,12 +651,8 @@ static int bnx2x_check_mac_add(struct bnx2x *bp,
 
 	/* Check if a requested MAC already exists */
 	list_for_each_entry(pos, &o->head, link)
-<<<<<<< HEAD
-		if (!memcmp(data->mac.mac, pos->u.mac.mac, ETH_ALEN))
-=======
 		if (ether_addr_equal(data->mac.mac, pos->u.mac.mac) &&
 		    (data->mac.is_inner_mac == pos->u.mac.is_inner_mac))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EEXIST;
 
 	return 0;
@@ -851,22 +685,14 @@ static int bnx2x_check_vlan_mac_add(struct bnx2x *bp,
 	list_for_each_entry(pos, &o->head, link)
 		if ((data->vlan_mac.vlan == pos->u.vlan_mac.vlan) &&
 		    (!memcmp(data->vlan_mac.mac, pos->u.vlan_mac.mac,
-<<<<<<< HEAD
-			     ETH_ALEN)))
-=======
 				  ETH_ALEN)) &&
 		    (data->vlan_mac.is_inner_mac ==
 		     pos->u.vlan_mac.is_inner_mac))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EEXIST;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* check_del() callbacks */
 static struct bnx2x_vlan_mac_registry_elem *
 	bnx2x_check_mac_del(struct bnx2x *bp,
@@ -878,12 +704,8 @@ static struct bnx2x_vlan_mac_registry_elem *
 	DP(BNX2X_MSG_SP, "Checking MAC %pM for DEL command\n", data->mac.mac);
 
 	list_for_each_entry(pos, &o->head, link)
-<<<<<<< HEAD
-		if (!memcmp(data->mac.mac, pos->u.mac.mac, ETH_ALEN))
-=======
 		if (ether_addr_equal(data->mac.mac, pos->u.mac.mac) &&
 		    (data->mac.is_inner_mac == pos->u.mac.is_inner_mac))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pos;
 
 	return NULL;
@@ -918,13 +740,9 @@ static struct bnx2x_vlan_mac_registry_elem *
 	list_for_each_entry(pos, &o->head, link)
 		if ((data->vlan_mac.vlan == pos->u.vlan_mac.vlan) &&
 		    (!memcmp(data->vlan_mac.mac, pos->u.vlan_mac.mac,
-<<<<<<< HEAD
-			     ETH_ALEN)))
-=======
 			     ETH_ALEN)) &&
 		    (data->vlan_mac.is_inner_mac ==
 		     pos->u.vlan_mac.is_inner_mac))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pos;
 
 	return NULL;
@@ -965,10 +783,6 @@ static bool bnx2x_check_move_always_err(
 	return false;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 bnx2x_vlan_mac_get_rx_tx_flag(struct bnx2x_vlan_mac_obj *o)
 {
 	struct bnx2x_raw_obj *raw = &o->raw;
@@ -985,26 +799,17 @@ static inline u8 bnx2x_vlan_mac_get_rx_tx_flag(struct bnx2x_vlan_mac_obj *o)
 	return rx_tx_flag;
 }
 
-<<<<<<< HEAD
-
-static inline void bnx2x_set_mac_in_nig(struct bnx2x *bp,
-=======
 static void bnx2x_set_mac_in_nig(struct bnx2x *bp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 bool add, unsigned char *dev_addr, int index)
 {
 	u32 wb_data[2];
 	u32 reg_offset = BP_PORT(bp) ? NIG_REG_LLH1_FUNC_MEM :
 			 NIG_REG_LLH0_FUNC_MEM;
 
-<<<<<<< HEAD
-	if (!IS_MF_SI(bp) || index > BNX2X_LLH_CAM_MAX_PF_LINE)
-=======
 	if (!IS_MF_SI(bp) && !IS_MF_AFEX(bp))
 		return;
 
 	if (index > BNX2X_LLH_CAM_MAX_PF_LINE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	DP(BNX2X_MSG_SP, "Going to %s LLH configuration at entry %d\n",
@@ -1060,11 +865,7 @@ static inline void bnx2x_vlan_mac_set_cmd_hdr_e2(struct bnx2x *bp,
  *
  * @cid:	connection id
  * @type:	BNX2X_FILTER_XXX_PENDING
-<<<<<<< HEAD
- * @hdr:	poiter to header to setup
-=======
  * @hdr:	pointer to header to setup
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rule_cnt:
  *
  * currently we always configure one rule and echo field to contain a CID and an
@@ -1073,19 +874,11 @@ static inline void bnx2x_vlan_mac_set_cmd_hdr_e2(struct bnx2x *bp,
 static inline void bnx2x_vlan_mac_set_rdata_hdr_e2(u32 cid, int type,
 				struct eth_classify_header *hdr, int rule_cnt)
 {
-<<<<<<< HEAD
-	hdr->echo = (cid & BNX2X_SWCID_MASK) | (type << BNX2X_SWCID_SHIFT);
-	hdr->rule_cnt = (u8)rule_cnt;
-}
-
-
-=======
 	hdr->echo = cpu_to_le32((cid & BNX2X_SWCID_MASK) |
 				(type << BNX2X_SWCID_SHIFT));
 	hdr->rule_cnt = (u8)rule_cnt;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* hw_config() callbacks */
 static void bnx2x_set_one_mac_e2(struct bnx2x *bp,
 				 struct bnx2x_vlan_mac_obj *o,
@@ -1097,20 +890,11 @@ static void bnx2x_set_one_mac_e2(struct bnx2x *bp,
 		(struct eth_classify_rules_ramrod_data *)(raw->rdata);
 	int rule_cnt = rule_idx + 1, cmd = elem->cmd_data.vlan_mac.cmd;
 	union eth_classify_rule_cmd *rule_entry = &data->rules[rule_idx];
-<<<<<<< HEAD
-	bool add = (cmd == BNX2X_VLAN_MAC_ADD) ? true : false;
-	unsigned long *vlan_mac_flags = &elem->cmd_data.vlan_mac.vlan_mac_flags;
-	u8 *mac = elem->cmd_data.vlan_mac.u.mac.mac;
-
-	/*
-	 * Set LLH CAM entry: currently only iSCSI and ETH macs are
-=======
 	bool add = cmd == BNX2X_VLAN_MAC_ADD;
 	unsigned long *vlan_mac_flags = &elem->cmd_data.vlan_mac.vlan_mac_flags;
 	u8 *mac = elem->cmd_data.vlan_mac.u.mac.mac;
 
 	/* Set LLH CAM entry: currently only iSCSI and ETH macs are
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * relevant. In addition, current implementation is tuned for a
 	 * single ETH MAC.
 	 *
@@ -1151,11 +935,8 @@ static void bnx2x_set_one_mac_e2(struct bnx2x *bp,
 	bnx2x_set_fw_mac_addr(&rule_entry->mac.mac_msb,
 			      &rule_entry->mac.mac_mid,
 			      &rule_entry->mac.mac_lsb, mac);
-<<<<<<< HEAD
-=======
 	rule_entry->mac.inner_mac =
 		cpu_to_le16(elem->cmd_data.vlan_mac.u.mac.is_inner_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* MOVE: Add a rule that will add this MAC to the target Queue */
 	if (cmd == BNX2X_VLAN_MAC_MOVE) {
@@ -1172,12 +953,9 @@ static void bnx2x_set_one_mac_e2(struct bnx2x *bp,
 		bnx2x_set_fw_mac_addr(&rule_entry->mac.mac_msb,
 				      &rule_entry->mac.mac_mid,
 				      &rule_entry->mac.mac_lsb, mac);
-<<<<<<< HEAD
-=======
 		rule_entry->mac.inner_mac =
 			cpu_to_le16(elem->cmd_data.vlan_mac.
 						u.mac.is_inner_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set the ramrod data header */
@@ -1192,11 +970,7 @@ static void bnx2x_set_one_mac_e2(struct bnx2x *bp,
  *
  * @bp:		device handle
  * @o:		queue
-<<<<<<< HEAD
- * @type:
-=======
  * @type:	the type of echo
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cam_offset:	offset in cam memory
  * @hdr:	pointer to a header to setup
  *
@@ -1210,14 +984,9 @@ static inline void bnx2x_vlan_mac_set_rdata_hdr_e1x(struct bnx2x *bp,
 
 	hdr->length = 1;
 	hdr->offset = (u8)cam_offset;
-<<<<<<< HEAD
-	hdr->client_id = 0xff;
-	hdr->echo = ((r->cid & BNX2X_SWCID_MASK) | (type << BNX2X_SWCID_SHIFT));
-=======
 	hdr->client_id = cpu_to_le16(0xff);
 	hdr->echo = cpu_to_le32((r->cid & BNX2X_SWCID_MASK) |
 				(type << BNX2X_SWCID_SHIFT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void bnx2x_vlan_mac_set_cfg_entry_e1x(struct bnx2x *bp,
@@ -1280,12 +1049,7 @@ static void bnx2x_set_one_mac_e1x(struct bnx2x *bp,
 	struct bnx2x_raw_obj *raw = &o->raw;
 	struct mac_configuration_cmd *config =
 		(struct mac_configuration_cmd *)(raw->rdata);
-<<<<<<< HEAD
-	/*
-	 * 57710 and 57711 do not support MOVE command,
-=======
 	/* 57710 and 57711 do not support MOVE command,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * so it's either ADD or DEL
 	 */
 	bool add = (elem->cmd_data.vlan_mac.cmd == BNX2X_VLAN_MAC_ADD) ?
@@ -1310,13 +1074,8 @@ static void bnx2x_set_one_vlan_e2(struct bnx2x *bp,
 		(struct eth_classify_rules_ramrod_data *)(raw->rdata);
 	int rule_cnt = rule_idx + 1;
 	union eth_classify_rule_cmd *rule_entry = &data->rules[rule_idx];
-<<<<<<< HEAD
-	int cmd = elem->cmd_data.vlan_mac.cmd;
-	bool add = (cmd == BNX2X_VLAN_MAC_ADD) ? true : false;
-=======
 	enum bnx2x_vlan_mac_cmd cmd = elem->cmd_data.vlan_mac.cmd;
 	bool add = cmd == BNX2X_VLAN_MAC_ADD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 vlan = elem->cmd_data.vlan_mac.u.vlan.vlan;
 
 	/* Reset the ramrod data buffer for the first rule */
@@ -1365,19 +1124,11 @@ static void bnx2x_set_one_vlan_mac_e2(struct bnx2x *bp,
 		(struct eth_classify_rules_ramrod_data *)(raw->rdata);
 	int rule_cnt = rule_idx + 1;
 	union eth_classify_rule_cmd *rule_entry = &data->rules[rule_idx];
-<<<<<<< HEAD
-	int cmd = elem->cmd_data.vlan_mac.cmd;
-	bool add = (cmd == BNX2X_VLAN_MAC_ADD) ? true : false;
-	u16 vlan = elem->cmd_data.vlan_mac.u.vlan_mac.vlan;
-	u8 *mac = elem->cmd_data.vlan_mac.u.vlan_mac.mac;
-
-=======
 	enum bnx2x_vlan_mac_cmd cmd = elem->cmd_data.vlan_mac.cmd;
 	bool add = cmd == BNX2X_VLAN_MAC_ADD;
 	u16 vlan = elem->cmd_data.vlan_mac.u.vlan_mac.vlan;
 	u8 *mac = elem->cmd_data.vlan_mac.u.vlan_mac.mac;
 	u16 inner_mac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset the ramrod data buffer for the first rule */
 	if (rule_idx == 0)
@@ -1387,38 +1138,23 @@ static void bnx2x_set_one_vlan_mac_e2(struct bnx2x *bp,
 	bnx2x_vlan_mac_set_cmd_hdr_e2(bp, o, add, CLASSIFY_RULE_OPCODE_PAIR,
 				      &rule_entry->pair.header);
 
-<<<<<<< HEAD
-	/* Set VLAN and MAC themselvs */
-=======
 	/* Set VLAN and MAC themselves */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rule_entry->pair.vlan = cpu_to_le16(vlan);
 	bnx2x_set_fw_mac_addr(&rule_entry->pair.mac_msb,
 			      &rule_entry->pair.mac_mid,
 			      &rule_entry->pair.mac_lsb, mac);
-<<<<<<< HEAD
-
-	/* MOVE: Add a rule that will add this MAC to the target Queue */
-	if (cmd == BNX2X_VLAN_MAC_MOVE) {
-=======
 	inner_mac = elem->cmd_data.vlan_mac.u.vlan_mac.is_inner_mac;
 	rule_entry->pair.inner_mac = cpu_to_le16(inner_mac);
 	/* MOVE: Add a rule that will add this MAC/VLAN to the target Queue */
 	if (cmd == BNX2X_VLAN_MAC_MOVE) {
 		struct bnx2x_vlan_mac_obj *target_obj;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rule_entry++;
 		rule_cnt++;
 
 		/* Setup ramrod data */
-<<<<<<< HEAD
-		bnx2x_vlan_mac_set_cmd_hdr_e2(bp,
-					elem->cmd_data.vlan_mac.target_obj,
-=======
 		target_obj = elem->cmd_data.vlan_mac.target_obj;
 		bnx2x_vlan_mac_set_cmd_hdr_e2(bp, target_obj,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      true, CLASSIFY_RULE_OPCODE_PAIR,
 					      &rule_entry->pair.header);
 
@@ -1427,18 +1163,10 @@ static void bnx2x_set_one_vlan_mac_e2(struct bnx2x *bp,
 		bnx2x_set_fw_mac_addr(&rule_entry->pair.mac_msb,
 				      &rule_entry->pair.mac_mid,
 				      &rule_entry->pair.mac_lsb, mac);
-<<<<<<< HEAD
-	}
-
-	/* Set the ramrod data header */
-	/* TODO: take this to the higher level in order to prevent multiple
-		 writing */
-=======
 		rule_entry->pair.inner_mac = cpu_to_le16(inner_mac);
 	}
 
 	/* Set the ramrod data header */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2x_vlan_mac_set_rdata_hdr_e2(raw->cid, raw->state, &data->header,
 					rule_cnt);
 }
@@ -1460,12 +1188,7 @@ static void bnx2x_set_one_vlan_mac_e1h(struct bnx2x *bp,
 	struct bnx2x_raw_obj *raw = &o->raw;
 	struct mac_configuration_cmd *config =
 		(struct mac_configuration_cmd *)(raw->rdata);
-<<<<<<< HEAD
-	/*
-	 * 57710 and 57711 do not support MOVE command,
-=======
 	/* 57710 and 57711 do not support MOVE command,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * so it's either ADD or DEL
 	 */
 	bool add = (elem->cmd_data.vlan_mac.cmd == BNX2X_VLAN_MAC_ADD) ?
@@ -1486,11 +1209,7 @@ static void bnx2x_set_one_vlan_mac_e1h(struct bnx2x *bp,
  *
  * @bp:		device handle
  * @p:		command parameters
-<<<<<<< HEAD
- * @ppos:	pointer to the cooky
-=======
  * @ppos:	pointer to the cookie
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * reconfigure next MAC/VLAN/VLAN-MAC element from the
  * previously configured elements list.
@@ -1498,11 +1217,7 @@ static void bnx2x_set_one_vlan_mac_e1h(struct bnx2x *bp,
  * from command parameters only RAMROD_COMP_WAIT bit in ramrod_flags is	taken
  * into an account
  *
-<<<<<<< HEAD
- * pointer to the cooky  - that should be given back in the next call to make
-=======
  * pointer to the cookie  - that should be given back in the next call to make
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * function handle the next element. If *ppos is set to NULL it will restart the
  * iterator. If returned *ppos == NULL this means that the last element has been
  * handled.
@@ -1550,12 +1265,7 @@ static int bnx2x_vlan_mac_restore(struct bnx2x *bp,
 	return bnx2x_config_vlan_mac(bp, p);
 }
 
-<<<<<<< HEAD
-/*
- * bnx2x_exeq_get_mac/bnx2x_exeq_get_vlan/bnx2x_exeq_get_vlan_mac return a
-=======
 /* bnx2x_exeq_get_mac/bnx2x_exeq_get_vlan/bnx2x_exeq_get_vlan_mac return a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pointer to an element with a specific criteria and NULL if such an element
  * hasn't been found.
  */
@@ -1604,14 +1314,9 @@ static struct bnx2x_exeq_elem *bnx2x_exeq_get_vlan_mac(
 	/* Check pending for execution commands */
 	list_for_each_entry(pos, &o->exe_queue, link)
 		if (!memcmp(&pos->cmd_data.vlan_mac.u.vlan_mac, data,
-<<<<<<< HEAD
-			      sizeof(*data)) &&
-		    (pos->cmd_data.vlan_mac.cmd == elem->cmd_data.vlan_mac.cmd))
-=======
 			    sizeof(*data)) &&
 		    (pos->cmd_data.vlan_mac.cmd ==
 		     elem->cmd_data.vlan_mac.cmd))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pos;
 
 	return NULL;
@@ -1645,12 +1350,7 @@ static inline int bnx2x_validate_vlan_mac_add(struct bnx2x *bp,
 		return rc;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Check if there is a pending ADD command for this
-=======
 	/* Check if there is a pending ADD command for this
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * MAC/VLAN/VLAN-MAC. Return an error if there is.
 	 */
 	if (exeq->get(exeq, elem)) {
@@ -1658,12 +1358,7 @@ static inline int bnx2x_validate_vlan_mac_add(struct bnx2x *bp,
 		return -EEXIST;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * TODO: Check the pending MOVE from other objects where this
-=======
 	/* TODO: Check the pending MOVE from other objects where this
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * object is a destination object.
 	 */
 
@@ -1706,12 +1401,7 @@ static inline int bnx2x_validate_vlan_mac_del(struct bnx2x *bp,
 		return -EEXIST;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Check if there are pending DEL or MOVE commands for this
-=======
 	/* Check if there are pending DEL or MOVE commands for this
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * MAC/VLAN/VLAN-MAC. Return an error if so.
 	 */
 	memcpy(&query_elem, elem, sizeof(query_elem));
@@ -1762,12 +1452,7 @@ static inline int bnx2x_validate_vlan_mac_move(struct bnx2x *bp,
 	struct bnx2x_exe_queue_obj *src_exeq = &src_o->exe_queue;
 	struct bnx2x_exe_queue_obj *dest_exeq = &dest_o->exe_queue;
 
-<<<<<<< HEAD
-	/*
-	 * Check if we can perform this operation based on the current registry
-=======
 	/* Check if we can perform this operation based on the current registry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * state.
 	 */
 	if (!src_o->check_move(bp, src_o, dest_o,
@@ -1776,12 +1461,7 @@ static inline int bnx2x_validate_vlan_mac_move(struct bnx2x *bp,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Check if there is an already pending DEL or MOVE command for the
-=======
 	/* Check if there is an already pending DEL or MOVE command for the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * source object or ADD command for a destination object. Return an
 	 * error if so.
 	 */
@@ -1870,11 +1550,7 @@ static int bnx2x_remove_vlan_mac(struct bnx2x *bp,
 }
 
 /**
-<<<<<<< HEAD
- * bnx2x_wait_vlan_mac - passivly wait for 5 seconds until all work completes.
-=======
  * bnx2x_wait_vlan_mac - passively wait for 5 seconds until all work completes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @bp:		device handle
  * @o:		bnx2x_vlan_mac_obj
@@ -1895,11 +1571,7 @@ static int bnx2x_wait_vlan_mac(struct bnx2x *bp,
 
 		/* Wait until there are no pending commands */
 		if (!bnx2x_exe_queue_empty(exeq))
-<<<<<<< HEAD
-			usleep_range(1000, 1000);
-=======
 			usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			return 0;
 	}
@@ -1907,8 +1579,6 @@ static int bnx2x_wait_vlan_mac(struct bnx2x *bp,
 	return -EBUSY;
 }
 
-<<<<<<< HEAD
-=======
 static int __bnx2x_vlan_mac_execute_step(struct bnx2x *bp,
 					 struct bnx2x_vlan_mac_obj *o,
 					 unsigned long *ramrod_flags)
@@ -1935,19 +1605,13 @@ static int __bnx2x_vlan_mac_execute_step(struct bnx2x *bp,
 	return rc;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * bnx2x_complete_vlan_mac - complete one VLAN-MAC ramrod
  *
  * @bp:		device handle
  * @o:		bnx2x_vlan_mac_obj
-<<<<<<< HEAD
- * @cqe:
- * @cont:	if true schedule next execution chunk
-=======
  * @cqe:	completion element
  * @ramrod_flags: if set schedule next execution chunk
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 static int bnx2x_complete_vlan_mac(struct bnx2x *bp,
@@ -1958,10 +1622,6 @@ static int bnx2x_complete_vlan_mac(struct bnx2x *bp,
 	struct bnx2x_raw_obj *r = &o->raw;
 	int rc;
 
-<<<<<<< HEAD
-	/* Reset pending list */
-	bnx2x_exe_queue_reset_pending(bp, &o->exe_queue);
-=======
 	/* Clearing the pending list & raw state should be made
 	 * atomically (as execution flow assumes they represent the same).
 	 */
@@ -1969,30 +1629,20 @@ static int bnx2x_complete_vlan_mac(struct bnx2x *bp,
 
 	/* Reset pending list */
 	__bnx2x_exe_queue_reset_pending(bp, &o->exe_queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear pending */
 	r->clear_pending(r);
 
-<<<<<<< HEAD
-=======
 	spin_unlock_bh(&o->exe_queue.lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If ramrod failed this is most likely a SW bug */
 	if (cqe->message.error)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	/* Run the next bulk of pending commands if requeted */
-	if (test_bit(RAMROD_CONT, ramrod_flags)) {
-		rc = bnx2x_exe_queue_step(bp, &o->exe_queue, ramrod_flags);
-=======
 	/* Run the next bulk of pending commands if requested */
 	if (test_bit(RAMROD_CONT, ramrod_flags)) {
 		rc = __bnx2x_vlan_mac_execute_step(bp, o, ramrod_flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc < 0)
 			return rc;
 	}
@@ -2008,11 +1658,7 @@ static int bnx2x_complete_vlan_mac(struct bnx2x *bp,
  * bnx2x_optimize_vlan_mac - optimize ADD and DEL commands.
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:		bnx2x_qable_obj
-=======
  * @qo:		bnx2x_qable_obj
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @elem:	bnx2x_exeq_elem
  */
 static int bnx2x_optimize_vlan_mac(struct bnx2x *bp,
@@ -2070,17 +1716,10 @@ static int bnx2x_optimize_vlan_mac(struct bnx2x *bp,
  * bnx2x_vlan_mac_get_registry_elem - prepare a registry element
  *
  * @bp:	  device handle
-<<<<<<< HEAD
- * @o:
- * @elem:
- * @restore:
- * @re:
-=======
  * @o:	vlan object
  * @elem: element
  * @restore: to restore or not
  * @re: registry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * prepare a registry element according to the current command request.
  */
@@ -2091,11 +1730,7 @@ static inline int bnx2x_vlan_mac_get_registry_elem(
 	bool restore,
 	struct bnx2x_vlan_mac_registry_elem **re)
 {
-<<<<<<< HEAD
-	int cmd = elem->cmd_data.vlan_mac.cmd;
-=======
 	enum bnx2x_vlan_mac_cmd cmd = elem->cmd_data.vlan_mac.cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2x_vlan_mac_registry_elem *reg_elem;
 
 	/* Allocate a new registry element if needed. */
@@ -2107,14 +1742,8 @@ static inline int bnx2x_vlan_mac_get_registry_elem(
 
 		/* Get a new CAM offset */
 		if (!o->get_cam_offset(o, &reg_elem->cam_offset)) {
-<<<<<<< HEAD
-			/*
-			 * This shell never happen, because we have checked the
-			 * CAM availiability in the 'validate'.
-=======
 			/* This shall never happen, because we have checked the
 			 * CAM availability in the 'validate'.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			WARN_ON(1);
 			kfree(reg_elem);
@@ -2141,15 +1770,9 @@ static inline int bnx2x_vlan_mac_get_registry_elem(
  * bnx2x_execute_vlan_mac - execute vlan mac command
  *
  * @bp:			device handle
-<<<<<<< HEAD
- * @qo:
- * @exe_chunk:
- * @ramrod_flags:
-=======
  * @qo:			bnx2x_qable_obj pointer
  * @exe_chunk:		chunk
  * @ramrod_flags:	flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * go and send a ramrod!
  */
@@ -2165,16 +1788,9 @@ static int bnx2x_execute_vlan_mac(struct bnx2x *bp,
 	bool restore = test_bit(RAMROD_RESTORE, ramrod_flags);
 	bool drv_only = test_bit(RAMROD_DRV_CLR_ONLY, ramrod_flags);
 	struct bnx2x_vlan_mac_registry_elem *reg_elem;
-<<<<<<< HEAD
-	int cmd;
-
-	/*
-	 * If DRIVER_ONLY execution is requested, cleanup a registry
-=======
 	enum bnx2x_vlan_mac_cmd cmd;
 
 	/* If DRIVER_ONLY execution is requested, cleanup a registry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and exit. Otherwise send a ramrod to FW.
 	 */
 	if (!drv_only) {
@@ -2183,18 +1799,10 @@ static int bnx2x_execute_vlan_mac(struct bnx2x *bp,
 		/* Set pending */
 		r->set_pending(r);
 
-<<<<<<< HEAD
-		/* Fill tha ramrod data */
-		list_for_each_entry(elem, exe_chunk, link) {
-			cmd = elem->cmd_data.vlan_mac.cmd;
-			/*
-			 * We will add to the target object in MOVE command, so
-=======
 		/* Fill the ramrod data */
 		list_for_each_entry(elem, exe_chunk, link) {
 			cmd = elem->cmd_data.vlan_mac.cmd;
 			/* We will add to the target object in MOVE command, so
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * change the object for a CAM search.
 			 */
 			if (cmd == BNX2X_VLAN_MAC_MOVE)
@@ -2227,20 +1835,11 @@ static int bnx2x_execute_vlan_mac(struct bnx2x *bp,
 				idx++;
 		}
 
-<<<<<<< HEAD
-		/*
-		 *  No need for an explicit memory barrier here as long we would
-		 *  need to ensure the ordering of writing to the SPQ element
-		 *  and updating of the SPQ producer which involves a memory
-		 *  read and we will have to put a full memory barrier there
-		 *  (inside bnx2x_sp_post()).
-=======
 		/* No need for an explicit memory barrier here as long we would
 		 * need to ensure the ordering of writing to the SPQ element
 		 * and updating of the SPQ producer which involves a memory
 		 * read and we will have to put a full memory barrier there
 		 * (inside bnx2x_sp_post()).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 
 		rc = bnx2x_sp_post(bp, o->ramrod_cmd, r->cid,
@@ -2336,14 +1935,8 @@ static inline int bnx2x_vlan_mac_push_new_cmd(
  * @p:
  *
  */
-<<<<<<< HEAD
-int bnx2x_config_vlan_mac(
-	struct bnx2x *bp,
-	struct bnx2x_vlan_mac_ramrod_params *p)
-=======
 int bnx2x_config_vlan_mac(struct bnx2x *bp,
 			   struct bnx2x_vlan_mac_ramrod_params *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 	struct bnx2x_vlan_mac_obj *o = p->vlan_mac_obj;
@@ -2360,12 +1953,7 @@ int bnx2x_config_vlan_mac(struct bnx2x *bp,
 			return rc;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * If nothing will be executed further in this iteration we want to
-=======
 	/* If nothing will be executed further in this iteration we want to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * return PENDING if there are pending commands
 	 */
 	if (!bnx2x_exe_queue_empty(&o->exe_queue))
@@ -2379,31 +1967,17 @@ int bnx2x_config_vlan_mac(struct bnx2x *bp,
 	/* Execute commands if required */
 	if (cont || test_bit(RAMROD_EXEC, ramrod_flags) ||
 	    test_bit(RAMROD_COMP_WAIT, ramrod_flags)) {
-<<<<<<< HEAD
-		rc = bnx2x_exe_queue_step(bp, &o->exe_queue, ramrod_flags);
-=======
 		rc = __bnx2x_vlan_mac_execute_step(bp, p->vlan_mac_obj,
 						   &p->ramrod_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc < 0)
 			return rc;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * RAMROD_COMP_WAIT is a superset of RAMROD_EXEC. If it was set
-	 * then user want to wait until the last command is done.
-	 */
-	if (test_bit(RAMROD_COMP_WAIT, &p->ramrod_flags)) {
-		/*
-		 * Wait maximum for the current exe_queue length iterations plus
-=======
 	/* RAMROD_COMP_WAIT is a superset of RAMROD_EXEC. If it was set
 	 * then user want to wait until the last command is done.
 	 */
 	if (test_bit(RAMROD_COMP_WAIT, &p->ramrod_flags)) {
 		/* Wait maximum for the current exe_queue length iterations plus
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * one (for the current pending command).
 		 */
 		int max_iterations = bnx2x_exe_queue_length(&o->exe_queue) + 1;
@@ -2417,14 +1991,9 @@ int bnx2x_config_vlan_mac(struct bnx2x *bp,
 				return rc;
 
 			/* Make a next step */
-<<<<<<< HEAD
-			rc = bnx2x_exe_queue_step(bp, &o->exe_queue,
-						  ramrod_flags);
-=======
 			rc = __bnx2x_vlan_mac_execute_step(bp,
 							   p->vlan_mac_obj,
 							   &p->ramrod_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc < 0)
 				return rc;
 		}
@@ -2435,30 +2004,16 @@ int bnx2x_config_vlan_mac(struct bnx2x *bp,
 	return rc;
 }
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * bnx2x_vlan_mac_del_all - delete elements with given vlan_mac_flags spec
  *
  * @bp:			device handle
-<<<<<<< HEAD
- * @o:
- * @vlan_mac_flags:
- * @ramrod_flags:	execution flags to be used for this deletion
- *
- * if the last operation has completed successfully and there are no
- * moreelements left, positive value if the last operation has completed
-=======
  * @o:			vlan object info
  * @vlan_mac_flags:	vlan flags
  * @ramrod_flags:	execution flags to be used for this deletion
  *
  * if the last operation has completed successfully and there are no
  * more elements left, positive value if the last operation has completed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * successfully and there are more previously configured elements, negative
  * value is current operation has failed.
  */
@@ -2468,33 +2023,21 @@ static int bnx2x_vlan_mac_del_all(struct bnx2x *bp,
 				  unsigned long *ramrod_flags)
 {
 	struct bnx2x_vlan_mac_registry_elem *pos = NULL;
-<<<<<<< HEAD
-	int rc = 0;
-	struct bnx2x_vlan_mac_ramrod_params p;
-	struct bnx2x_exe_queue_obj *exeq = &o->exe_queue;
-	struct bnx2x_exeq_elem *exeq_pos, *exeq_pos_n;
-=======
 	struct bnx2x_vlan_mac_ramrod_params p;
 	struct bnx2x_exe_queue_obj *exeq = &o->exe_queue;
 	struct bnx2x_exeq_elem *exeq_pos, *exeq_pos_n;
 	unsigned long flags;
 	int read_lock;
 	int rc = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear pending commands first */
 
 	spin_lock_bh(&exeq->lock);
 
 	list_for_each_entry_safe(exeq_pos, exeq_pos_n, &exeq->exe_queue, link) {
-<<<<<<< HEAD
-		if (exeq_pos->cmd_data.vlan_mac.vlan_mac_flags ==
-		    *vlan_mac_flags) {
-=======
 		flags = exeq_pos->cmd_data.vlan_mac.vlan_mac_flags;
 		if (BNX2X_VLAN_MAC_CMP_FLAGS(flags) ==
 		    BNX2X_VLAN_MAC_CMP_FLAGS(*vlan_mac_flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = exeq->remove(bp, exeq->owner, exeq_pos);
 			if (rc) {
 				BNX2X_ERR("Failed to remove command\n");
@@ -2502,10 +2045,7 @@ static int bnx2x_vlan_mac_del_all(struct bnx2x *bp,
 				return rc;
 			}
 			list_del(&exeq_pos->link);
-<<<<<<< HEAD
-=======
 			bnx2x_exe_queue_free_elem(bp, exeq_pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2517,22 +2057,13 @@ static int bnx2x_vlan_mac_del_all(struct bnx2x *bp,
 	p.ramrod_flags = *ramrod_flags;
 	p.user_req.cmd = BNX2X_VLAN_MAC_DEL;
 
-<<<<<<< HEAD
-	/*
-	 * Add all but the last VLAN-MAC to the execution queue without actually
-=======
 	/* Add all but the last VLAN-MAC to the execution queue without actually
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * execution anything.
 	 */
 	__clear_bit(RAMROD_COMP_WAIT, &p.ramrod_flags);
 	__clear_bit(RAMROD_EXEC, &p.ramrod_flags);
 	__clear_bit(RAMROD_CONT, &p.ramrod_flags);
 
-<<<<<<< HEAD
-	list_for_each_entry(pos, &o->head, link) {
-		if (pos->vlan_mac_flags == *vlan_mac_flags) {
-=======
 	DP(BNX2X_MSG_SP, "vlan_mac_del_all -- taking vlan_mac_lock (reader)\n");
 	read_lock = bnx2x_vlan_mac_h_read_lock(bp, o);
 	if (read_lock != 0)
@@ -2542,27 +2073,20 @@ static int bnx2x_vlan_mac_del_all(struct bnx2x *bp,
 		flags = pos->vlan_mac_flags;
 		if (BNX2X_VLAN_MAC_CMP_FLAGS(flags) ==
 		    BNX2X_VLAN_MAC_CMP_FLAGS(*vlan_mac_flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p.user_req.vlan_mac_flags = pos->vlan_mac_flags;
 			memcpy(&p.user_req.u, &pos->u, sizeof(pos->u));
 			rc = bnx2x_config_vlan_mac(bp, &p);
 			if (rc < 0) {
 				BNX2X_ERR("Failed to add a new DEL command\n");
-<<<<<<< HEAD
-=======
 				bnx2x_vlan_mac_h_read_unlock(bp, o);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return rc;
 			}
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	DP(BNX2X_MSG_SP, "vlan_mac_del_all -- releasing vlan_mac_lock (reader)\n");
 	bnx2x_vlan_mac_h_read_unlock(bp, o);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p.ramrod_flags = *ramrod_flags;
 	__set_bit(RAMROD_CONT, &p.ramrod_flags);
 
@@ -2594,12 +2118,9 @@ static inline void bnx2x_init_vlan_mac_common(struct bnx2x_vlan_mac_obj *o,
 	struct bnx2x_credit_pool_obj *vlans_pool)
 {
 	INIT_LIST_HEAD(&o->head);
-<<<<<<< HEAD
-=======
 	o->head_reader = 0;
 	o->head_exe_request = false;
 	o->saved_ramrod_flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	o->macs_pool = macs_pool;
 	o->vlans_pool = vlans_pool;
@@ -2613,10 +2134,6 @@ static inline void bnx2x_init_vlan_mac_common(struct bnx2x_vlan_mac_obj *o,
 			   state, pstate, type);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bnx2x_init_mac_obj(struct bnx2x *bp,
 			struct bnx2x_vlan_mac_obj *mac_obj,
 			u8 cl_id, u32 cid, u8 func_id, void *rdata,
@@ -2699,10 +2216,7 @@ void bnx2x_init_vlan_obj(struct bnx2x *bp,
 		vlan_obj->check_move        = bnx2x_check_move;
 		vlan_obj->ramrod_cmd        =
 			RAMROD_CMD_ID_ETH_CLASSIFICATION_RULES;
-<<<<<<< HEAD
-=======
 		vlan_obj->get_n_elements    = bnx2x_get_n_elements;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Exe Queue */
 		bnx2x_exe_queue_init(bp,
@@ -2733,12 +2247,7 @@ void bnx2x_init_vlan_mac_obj(struct bnx2x *bp,
 	/* CAM pool handling */
 	vlan_mac_obj->get_credit = bnx2x_get_credit_vlan_mac;
 	vlan_mac_obj->put_credit = bnx2x_put_credit_vlan_mac;
-<<<<<<< HEAD
-	/*
-	 * CAM offset is relevant for 57710 and 57711 chips only which have a
-=======
 	/* CAM offset is relevant for 57710 and 57711 chips only which have a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * single CAM for both MACs and VLAN-MAC pairs. So the offset
 	 * will be taken from MACs' pool object only.
 	 */
@@ -2781,13 +2290,7 @@ void bnx2x_init_vlan_mac_obj(struct bnx2x *bp,
 				     bnx2x_execute_vlan_mac,
 				     bnx2x_exeq_get_vlan_mac);
 	}
-<<<<<<< HEAD
-
 }
-
-=======
-}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* RX_MODE verbs: DROP_ALL/ACCEPT_ALL/ACCEPT_ALL_MULTI/ACCEPT_ALL_VLAN/NORMAL */
 static inline void __storm_memset_mac_filters(struct bnx2x *bp,
 			struct tstorm_eth_mac_filter_config *mac_filters,
@@ -2804,30 +2307,18 @@ static inline void __storm_memset_mac_filters(struct bnx2x *bp,
 static int bnx2x_set_rx_mode_e1x(struct bnx2x *bp,
 				 struct bnx2x_rx_mode_ramrod_params *p)
 {
-<<<<<<< HEAD
-	/* update the bp MAC filter structure  */
-=======
 	/* update the bp MAC filter structure */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mask = (1 << p->cl_id);
 
 	struct tstorm_eth_mac_filter_config *mac_filters =
 		(struct tstorm_eth_mac_filter_config *)p->rdata;
 
-<<<<<<< HEAD
-	/* initial seeting is drop-all */
-=======
 	/* initial setting is drop-all */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 drop_all_ucast = 1, drop_all_mcast = 1;
 	u8 accp_all_ucast = 0, accp_all_bcast = 0, accp_all_mcast = 0;
 	u8 unmatched_unicast = 0;
 
-<<<<<<< HEAD
-    /* In e1x there we only take into account rx acceot flag since tx switching
-=======
     /* In e1x there we only take into account rx accept flag since tx switching
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      * isn't enabled. */
 	if (test_bit(BNX2X_ACCEPT_UNICAST, &p->rx_accept_flags))
 		/* accept matched ucast */
@@ -2879,11 +2370,7 @@ static int bnx2x_set_rx_mode_e1x(struct bnx2x *bp,
 		mac_filters->unmatched_unicast & ~mask;
 
 	DP(BNX2X_MSG_SP, "drop_ucast 0x%x\ndrop_mcast 0x%x\n accp_ucast 0x%x\n"
-<<<<<<< HEAD
-					 "accp_mcast 0x%x\naccp_bcast 0x%x\n",
-=======
 			 "accp_mcast 0x%x\naccp_bcast 0x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   mac_filters->ucast_drop_all, mac_filters->mcast_drop_all,
 	   mac_filters->ucast_accept_all, mac_filters->mcast_accept_all,
 	   mac_filters->bcast_accept_all);
@@ -2893,11 +2380,7 @@ static int bnx2x_set_rx_mode_e1x(struct bnx2x *bp,
 
 	/* The operation is completed */
 	clear_bit(p->state, p->pstate);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2907,20 +2390,12 @@ static inline void bnx2x_rx_mode_set_rdata_hdr_e2(u32 cid,
 				struct eth_classify_header *hdr,
 				u8 rule_cnt)
 {
-<<<<<<< HEAD
-	hdr->echo = cid;
-=======
 	hdr->echo = cpu_to_le32(cid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr->rule_cnt = rule_cnt;
 }
 
 static inline void bnx2x_rx_mode_set_cmd_state_e2(struct bnx2x *bp,
-<<<<<<< HEAD
-				unsigned long accept_flags,
-=======
 				unsigned long *accept_flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct eth_filter_rules_cmd *cmd,
 				bool clear_accept_all)
 {
@@ -2930,35 +2405,6 @@ static inline void bnx2x_rx_mode_set_cmd_state_e2(struct bnx2x *bp,
 	state = ETH_FILTER_RULES_CMD_UCAST_DROP_ALL |
 		ETH_FILTER_RULES_CMD_MCAST_DROP_ALL;
 
-<<<<<<< HEAD
-	if (accept_flags) {
-		if (test_bit(BNX2X_ACCEPT_UNICAST, &accept_flags))
-			state &= ~ETH_FILTER_RULES_CMD_UCAST_DROP_ALL;
-
-		if (test_bit(BNX2X_ACCEPT_MULTICAST, &accept_flags))
-			state &= ~ETH_FILTER_RULES_CMD_MCAST_DROP_ALL;
-
-		if (test_bit(BNX2X_ACCEPT_ALL_UNICAST, &accept_flags)) {
-			state &= ~ETH_FILTER_RULES_CMD_UCAST_DROP_ALL;
-			state |= ETH_FILTER_RULES_CMD_UCAST_ACCEPT_ALL;
-		}
-
-		if (test_bit(BNX2X_ACCEPT_ALL_MULTICAST, &accept_flags)) {
-			state |= ETH_FILTER_RULES_CMD_MCAST_ACCEPT_ALL;
-			state &= ~ETH_FILTER_RULES_CMD_MCAST_DROP_ALL;
-		}
-		if (test_bit(BNX2X_ACCEPT_BROADCAST, &accept_flags))
-			state |= ETH_FILTER_RULES_CMD_BCAST_ACCEPT_ALL;
-
-		if (test_bit(BNX2X_ACCEPT_UNMATCHED, &accept_flags)) {
-			state &= ~ETH_FILTER_RULES_CMD_UCAST_DROP_ALL;
-			state |= ETH_FILTER_RULES_CMD_UCAST_ACCEPT_UNMATCHED;
-		}
-		if (test_bit(BNX2X_ACCEPT_ANY_VLAN, &accept_flags))
-			state |= ETH_FILTER_RULES_CMD_ACCEPT_ANY_VLAN;
-	}
-
-=======
 	if (test_bit(BNX2X_ACCEPT_UNICAST, accept_flags))
 		state &= ~ETH_FILTER_RULES_CMD_UCAST_DROP_ALL;
 
@@ -2986,7 +2432,6 @@ static inline void bnx2x_rx_mode_set_cmd_state_e2(struct bnx2x *bp,
 	if (test_bit(BNX2X_ACCEPT_ANY_VLAN, accept_flags))
 		state |= ETH_FILTER_RULES_CMD_ACCEPT_ANY_VLAN;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear ACCEPT_ALL_XXX flags for FCoE L2 Queue */
 	if (clear_accept_all) {
 		state &= ~ETH_FILTER_RULES_CMD_MCAST_ACCEPT_ALL;
@@ -2996,10 +2441,6 @@ static inline void bnx2x_rx_mode_set_cmd_state_e2(struct bnx2x *bp,
 	}
 
 	cmd->state = cpu_to_le16(state);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int bnx2x_set_rx_mode_e2(struct bnx2x *bp,
@@ -3022,14 +2463,9 @@ static int bnx2x_set_rx_mode_e2(struct bnx2x *bp,
 		data->rules[rule_idx].cmd_general_data =
 			ETH_FILTER_RULES_CMD_TX_CMD;
 
-<<<<<<< HEAD
-		bnx2x_rx_mode_set_cmd_state_e2(bp, p->tx_accept_flags,
-			&(data->rules[rule_idx++]), false);
-=======
 		bnx2x_rx_mode_set_cmd_state_e2(bp, &p->tx_accept_flags,
 					       &(data->rules[rule_idx++]),
 					       false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Rx */
@@ -3040,22 +2476,12 @@ static int bnx2x_set_rx_mode_e2(struct bnx2x *bp,
 		data->rules[rule_idx].cmd_general_data =
 			ETH_FILTER_RULES_CMD_RX_CMD;
 
-<<<<<<< HEAD
-		bnx2x_rx_mode_set_cmd_state_e2(bp, p->rx_accept_flags,
-			&(data->rules[rule_idx++]), false);
-	}
-
-
-	/*
-	 * If FCoE Queue configuration has been requested configure the Rx and
-=======
 		bnx2x_rx_mode_set_cmd_state_e2(bp, &p->rx_accept_flags,
 					       &(data->rules[rule_idx++]),
 					       false);
 	}
 
 	/* If FCoE Queue configuration has been requested configure the Rx and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * internal switching modes for this queue in separate rules.
 	 *
 	 * FCoE queue shell never be set to ACCEPT_ALL packets of any sort:
@@ -3070,16 +2496,10 @@ static int bnx2x_set_rx_mode_e2(struct bnx2x *bp,
 			data->rules[rule_idx].cmd_general_data =
 						ETH_FILTER_RULES_CMD_TX_CMD;
 
-<<<<<<< HEAD
-			bnx2x_rx_mode_set_cmd_state_e2(bp, p->tx_accept_flags,
-						     &(data->rules[rule_idx++]),
-						       true);
-=======
 			bnx2x_rx_mode_set_cmd_state_e2(bp, &p->tx_accept_flags,
 						       &(data->rules[rule_idx]),
 						       true);
 			rule_idx++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Rx */
@@ -3090,16 +2510,6 @@ static int bnx2x_set_rx_mode_e2(struct bnx2x *bp,
 			data->rules[rule_idx].cmd_general_data =
 						ETH_FILTER_RULES_CMD_RX_CMD;
 
-<<<<<<< HEAD
-			bnx2x_rx_mode_set_cmd_state_e2(bp, p->rx_accept_flags,
-						     &(data->rules[rule_idx++]),
-						       true);
-		}
-	}
-
-	/*
-	 * Set the ramrod header (most importantly - number of rules to
-=======
 			bnx2x_rx_mode_set_cmd_state_e2(bp, &p->rx_accept_flags,
 						       &(data->rules[rule_idx]),
 						       true);
@@ -3108,7 +2518,6 @@ static int bnx2x_set_rx_mode_e2(struct bnx2x *bp,
 	}
 
 	/* Set the ramrod header (most importantly - number of rules to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * configure).
 	 */
 	bnx2x_rx_mode_set_rdata_hdr_e2(p->cid, &data->header, rule_idx);
@@ -3117,20 +2526,11 @@ static int bnx2x_set_rx_mode_e2(struct bnx2x *bp,
 			 data->header.rule_cnt, p->rx_accept_flags,
 			 p->tx_accept_flags);
 
-<<<<<<< HEAD
-	/*
-	 *  No need for an explicit memory barrier here as long we would
-	 *  need to ensure the ordering of writing to the SPQ element
-	 *  and updating of the SPQ producer which involves a memory
-	 *  read and we will have to put a full memory barrier there
-	 *  (inside bnx2x_sp_post()).
-=======
 	/* No need for an explicit memory barrier here as long as we
 	 * ensure the ordering of writing to the SPQ element
 	 * and updating of the SPQ producer which involves a memory
 	 * read. If the memory read is removed we will have to put a
 	 * full memory barrier there (inside bnx2x_sp_post()).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/* Send a ramrod */
@@ -3202,10 +2602,6 @@ struct bnx2x_mcast_mac_elem {
 	u8 pad[2]; /* For a natural alignment of the following buffer */
 };
 
-<<<<<<< HEAD
-struct bnx2x_pending_mcast_cmd {
-	struct list_head link;
-=======
 struct bnx2x_mcast_bin_elem {
 	struct list_head link;
 	int bin;
@@ -3229,7 +2625,6 @@ struct bnx2x_mcast_elem_group {
 struct bnx2x_pending_mcast_cmd {
 	struct list_head link;
 	struct list_head group_head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int type; /* BNX2X_MCAST_CMD_X */
 	union {
 		struct list_head macs_head;
@@ -3237,14 +2632,11 @@ struct bnx2x_pending_mcast_cmd {
 		int next_bin; /* Needed for RESTORE flow with aprox match */
 	} data;
 
-<<<<<<< HEAD
-=======
 	bool set_convert; /* in case type == BNX2X_MCAST_CMD_SET, this is set
 			   * when macs_head had been converted to a list of
 			   * bnx2x_mcast_bin_elem.
 			   */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool done; /* set to true, when the command has been handled,
 		    * practically used in 57712 handling only, where one pending
 		    * command may be handled in a few operations. As long as for
@@ -3263,19 +2655,6 @@ static int bnx2x_mcast_wait(struct bnx2x *bp,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int bnx2x_mcast_enqueue_cmd(struct bnx2x *bp,
-				   struct bnx2x_mcast_obj *o,
-				   struct bnx2x_mcast_ramrod_params *p,
-				   int cmd)
-{
-	int total_sz;
-	struct bnx2x_pending_mcast_cmd *new_cmd;
-	struct bnx2x_mcast_mac_elem *cur_mac = NULL;
-	struct bnx2x_mcast_list_elem *pos;
-	int macs_list_len = ((cmd == BNX2X_MCAST_CMD_ADD) ?
-			     p->mcast_list_len : 0);
-=======
 static void bnx2x_free_groups(struct list_head *mcast_group_list)
 {
 	struct bnx2x_mcast_elem_group *current_mcast_group;
@@ -3303,45 +2682,11 @@ static int bnx2x_mcast_enqueue_cmd(struct bnx2x *bp,
 	/* When adding MACs we'll need to store their values */
 	if (cmd == BNX2X_MCAST_CMD_ADD || cmd == BNX2X_MCAST_CMD_SET)
 		macs_list_len = p->mcast_list_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the command is empty ("handle pending commands only"), break */
 	if (!p->mcast_list_len)
 		return 0;
 
-<<<<<<< HEAD
-	total_sz = sizeof(*new_cmd) +
-		macs_list_len * sizeof(struct bnx2x_mcast_mac_elem);
-
-	/* Add mcast is called under spin_lock, thus calling with GFP_ATOMIC */
-	new_cmd = kzalloc(total_sz, GFP_ATOMIC);
-
-	if (!new_cmd)
-		return -ENOMEM;
-
-	DP(BNX2X_MSG_SP, "About to enqueue a new %d command. macs_list_len=%d\n",
-	   cmd, macs_list_len);
-
-	INIT_LIST_HEAD(&new_cmd->data.macs_head);
-
-	new_cmd->type = cmd;
-	new_cmd->done = false;
-
-	switch (cmd) {
-	case BNX2X_MCAST_CMD_ADD:
-		cur_mac = (struct bnx2x_mcast_mac_elem *)
-			  ((u8 *)new_cmd + sizeof(*new_cmd));
-
-		/* Push the MACs of the current command into the pendig command
-		 * MACs list: FIFO
-		 */
-		list_for_each_entry(pos, &p->mcast_list, link) {
-			memcpy(cur_mac->mac, pos->mac, ETH_ALEN);
-			list_add_tail(&cur_mac->link, &new_cmd->data.macs_head);
-			cur_mac++;
-		}
-
-=======
 	/* Add mcast is called under spin_lock, thus calling with GFP_ATOMIC */
 	new_cmd = kzalloc(sizeof(*new_cmd), GFP_ATOMIC);
 	if (!new_cmd)
@@ -3397,7 +2742,6 @@ static int bnx2x_mcast_enqueue_cmd(struct bnx2x *bp,
 							     mcast_group_link);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BNX2X_MCAST_CMD_DEL:
@@ -3409,10 +2753,7 @@ static int bnx2x_mcast_enqueue_cmd(struct bnx2x *bp,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 		kfree(new_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BNX2X_ERR("Unknown command: %d\n", cmd);
 		return -EINVAL;
 	}
@@ -3428,11 +2769,7 @@ static int bnx2x_mcast_enqueue_cmd(struct bnx2x *bp,
 /**
  * bnx2x_mcast_get_next_bin - get the next set bin (index)
  *
-<<<<<<< HEAD
- * @o:
-=======
  * @o:		multicast object info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @last:	index to start looking from (including)
  *
  * returns the next found (set) bin or a negative value if none is found.
@@ -3493,11 +2830,7 @@ static inline u8 bnx2x_mcast_get_rx_tx_flag(struct bnx2x_mcast_obj *o)
 static void bnx2x_mcast_set_one_rule_e2(struct bnx2x *bp,
 					struct bnx2x_mcast_obj *o, int idx,
 					union bnx2x_mcast_config_data *cfg_data,
-<<<<<<< HEAD
-					int cmd)
-=======
 					enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_raw_obj *r = &o->raw;
 	struct eth_multicast_rules_ramrod_data *data =
@@ -3506,12 +2839,8 @@ static void bnx2x_mcast_set_one_rule_e2(struct bnx2x *bp,
 	u8 rx_tx_add_flag = bnx2x_mcast_get_rx_tx_flag(o);
 	int bin;
 
-<<<<<<< HEAD
-	if ((cmd == BNX2X_MCAST_CMD_ADD) || (cmd == BNX2X_MCAST_CMD_RESTORE))
-=======
 	if ((cmd == BNX2X_MCAST_CMD_ADD) || (cmd == BNX2X_MCAST_CMD_RESTORE) ||
 	    (cmd == BNX2X_MCAST_CMD_SET_ADD))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rx_tx_add_flag |= ETH_MULTICAST_RULES_CMD_IS_ADD;
 
 	data->rules[idx].cmd_general_data |= rx_tx_add_flag;
@@ -3537,8 +2866,6 @@ static void bnx2x_mcast_set_one_rule_e2(struct bnx2x *bp,
 		bin = cfg_data->bin;
 		break;
 
-<<<<<<< HEAD
-=======
 	case BNX2X_MCAST_CMD_SET_ADD:
 		bin = cfg_data->bin;
 		BIT_VEC64_SET_BIT(o->registry.aprox_match.vec, bin);
@@ -3549,7 +2876,6 @@ static void bnx2x_mcast_set_one_rule_e2(struct bnx2x *bp,
 		BIT_VEC64_CLEAR_BIT(o->registry.aprox_match.vec, bin);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BNX2X_ERR("Unknown command: %d\n", cmd);
 		return;
@@ -3568,11 +2894,7 @@ static void bnx2x_mcast_set_one_rule_e2(struct bnx2x *bp,
  * bnx2x_mcast_handle_restore_cmd_e2 - restore configuration from the registry
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:
-=======
  * @o:		multicast object info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @start_bin:	index in the registry to start from (including)
  * @rdata_idx:	index in the ramrod data to start from
  *
@@ -3583,11 +2905,7 @@ static inline int bnx2x_mcast_handle_restore_cmd_e2(
 	int *rdata_idx)
 {
 	int cur_bin, cnt = *rdata_idx;
-<<<<<<< HEAD
-	union bnx2x_mcast_config_data cfg_data = {0};
-=======
 	union bnx2x_mcast_config_data cfg_data = {NULL};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* go through the registry and configure the bins from it */
 	for (cur_bin = bnx2x_mcast_get_next_bin(o, start_bin); cur_bin >= 0;
@@ -3619,11 +2937,7 @@ static inline void bnx2x_mcast_hdl_pending_add_e2(struct bnx2x *bp,
 {
 	struct bnx2x_mcast_mac_elem *pmac_pos, *pmac_pos_n;
 	int cnt = *line_idx;
-<<<<<<< HEAD
-	union bnx2x_mcast_config_data cfg_data = {0};
-=======
 	union bnx2x_mcast_config_data cfg_data = {NULL};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry_safe(pmac_pos, pmac_pos_n, &cmd_pos->data.macs_head,
 				 link) {
@@ -3665,13 +2979,8 @@ static inline void bnx2x_mcast_hdl_pending_del_e2(struct bnx2x *bp,
 
 		cmd_pos->data.macs_num--;
 
-<<<<<<< HEAD
-		  DP(BNX2X_MSG_SP, "Deleting MAC. %d left,cnt is %d\n",
-				   cmd_pos->data.macs_num, cnt);
-=======
 		DP(BNX2X_MSG_SP, "Deleting MAC. %d left,cnt is %d\n",
 		   cmd_pos->data.macs_num, cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Break if we reached the maximum
 		 * number of rules.
@@ -3702,8 +3011,6 @@ static inline void bnx2x_mcast_hdl_pending_restore_e2(struct bnx2x *bp,
 		cmd_pos->data.next_bin++;
 }
 
-<<<<<<< HEAD
-=======
 static void
 bnx2x_mcast_hdl_pending_set_e2_convert(struct bnx2x *bp,
 				       struct bnx2x_mcast_obj *o,
@@ -3808,7 +3115,6 @@ bnx2x_mcast_hdl_pending_set_e2(struct bnx2x *bp,
 		cmd_pos->done = true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int bnx2x_mcast_handle_pending_cmds_e2(struct bnx2x *bp,
 				struct bnx2x_mcast_ramrod_params *p)
 {
@@ -3832,13 +3138,10 @@ static inline int bnx2x_mcast_handle_pending_cmds_e2(struct bnx2x *bp,
 							   &cnt);
 			break;
 
-<<<<<<< HEAD
-=======
 		case BNX2X_MCAST_CMD_SET:
 			bnx2x_mcast_hdl_pending_set_e2(bp, o, cmd_pos, &cnt);
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			BNX2X_ERR("Unknown command: %d\n", cmd_pos->type);
 			return -EINVAL;
@@ -3849,10 +3152,7 @@ static inline int bnx2x_mcast_handle_pending_cmds_e2(struct bnx2x *bp,
 		 */
 		if (cmd_pos->done) {
 			list_del(&cmd_pos->link);
-<<<<<<< HEAD
-=======
 			bnx2x_free_groups(&cmd_pos->group_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(cmd_pos);
 		}
 
@@ -3869,11 +3169,7 @@ static inline void bnx2x_mcast_hdl_add(struct bnx2x *bp,
 	int *line_idx)
 {
 	struct bnx2x_mcast_list_elem *mlist_pos;
-<<<<<<< HEAD
-	union bnx2x_mcast_config_data cfg_data = {0};
-=======
 	union bnx2x_mcast_config_data cfg_data = {NULL};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cnt = *line_idx;
 
 	list_for_each_entry(mlist_pos, &p->mcast_list, link) {
@@ -3883,11 +3179,7 @@ static inline void bnx2x_mcast_hdl_add(struct bnx2x *bp,
 		cnt++;
 
 		DP(BNX2X_MSG_SP, "About to configure %pM mcast MAC\n",
-<<<<<<< HEAD
-				 mlist_pos->mac);
-=======
 		   mlist_pos->mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	*line_idx = cnt;
@@ -3912,19 +3204,11 @@ static inline void bnx2x_mcast_hdl_del(struct bnx2x *bp,
 }
 
 /**
-<<<<<<< HEAD
- * bnx2x_mcast_handle_current_cmd -
- *
- * @bp:		device handle
- * @p:
- * @cmd:
-=======
  * bnx2x_mcast_handle_current_cmd - send command if room
  *
  * @bp:		device handle
  * @p:		ramrod mcast info
  * @cmd:	command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @start_cnt:	first line in the ramrod data that may be used
  *
  * This function is called iff there is enough place for the current command in
@@ -3932,12 +3216,8 @@ static inline void bnx2x_mcast_hdl_del(struct bnx2x *bp,
  * Returns number of lines filled in the ramrod data in total.
  */
 static inline int bnx2x_mcast_handle_current_cmd(struct bnx2x *bp,
-<<<<<<< HEAD
-			struct bnx2x_mcast_ramrod_params *p, int cmd,
-=======
 			struct bnx2x_mcast_ramrod_params *p,
 			enum bnx2x_mcast_cmd cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int start_cnt)
 {
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
@@ -3971,11 +3251,7 @@ static inline int bnx2x_mcast_handle_current_cmd(struct bnx2x *bp,
 
 static int bnx2x_mcast_validate_e2(struct bnx2x *bp,
 				   struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				   int cmd)
-=======
 				   enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
 	int reg_sz = o->get_registry_size(o);
@@ -3984,11 +3260,7 @@ static int bnx2x_mcast_validate_e2(struct bnx2x *bp,
 	/* DEL command deletes all currently configured MACs */
 	case BNX2X_MCAST_CMD_DEL:
 		o->set_registry_size(o, 0);
-<<<<<<< HEAD
-		/* Don't break */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RESTORE command will restore the entire multicast configuration */
 	case BNX2X_MCAST_CMD_RESTORE:
@@ -4011,12 +3283,6 @@ static int bnx2x_mcast_validate_e2(struct bnx2x *bp,
 		o->set_registry_size(o, reg_sz + p->mcast_list_len);
 		break;
 
-<<<<<<< HEAD
-	default:
-		BNX2X_ERR("Unknown command: %d\n", cmd);
-		return -EINVAL;
-
-=======
 	case BNX2X_MCAST_CMD_SET:
 		/* We can only learn how many commands would actually be used
 		 * when this is being configured. So for now, simply guarantee
@@ -4033,7 +3299,6 @@ static int bnx2x_mcast_validate_e2(struct bnx2x *bp,
 	default:
 		BNX2X_ERR("Unknown command: %d\n", cmd);
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Increase the total number of MACs pending to be configured */
@@ -4044,34 +3309,23 @@ static int bnx2x_mcast_validate_e2(struct bnx2x *bp,
 
 static void bnx2x_mcast_revert_e2(struct bnx2x *bp,
 				      struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				      int old_num_bins)
-=======
 				  int old_num_bins,
 				  enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
 
 	o->set_registry_size(o, old_num_bins);
 	o->total_pending_num -= p->mcast_list_len;
-<<<<<<< HEAD
-=======
 
 	if (cmd == BNX2X_MCAST_CMD_SET)
 		o->total_pending_num -= o->max_cmd_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * bnx2x_mcast_set_rdata_hdr_e2 - sets a header values
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @p:
-=======
  * @p:		ramrod parameters
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len:	number of rules to handle
  */
 static inline void bnx2x_mcast_set_rdata_hdr_e2(struct bnx2x *bp,
@@ -4082,14 +3336,9 @@ static inline void bnx2x_mcast_set_rdata_hdr_e2(struct bnx2x *bp,
 	struct eth_multicast_rules_ramrod_data *data =
 		(struct eth_multicast_rules_ramrod_data *)(r->rdata);
 
-<<<<<<< HEAD
-	data->header.echo = ((r->cid & BNX2X_SWCID_MASK) |
-			  (BNX2X_FILTER_MCAST_PENDING << BNX2X_SWCID_SHIFT));
-=======
 	data->header.echo = cpu_to_le32((r->cid & BNX2X_SWCID_MASK) |
 					(BNX2X_FILTER_MCAST_PENDING <<
 					 BNX2X_SWCID_SHIFT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->header.rule_cnt = len;
 }
 
@@ -4123,11 +3372,7 @@ static inline int bnx2x_mcast_refresh_registry_e2(struct bnx2x *bp,
 
 static int bnx2x_mcast_setup_e2(struct bnx2x *bp,
 				struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				int cmd)
-=======
 				enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_raw_obj *raw = &p->mcast_obj->raw;
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
@@ -4182,22 +3427,6 @@ static int bnx2x_mcast_setup_e2(struct bnx2x *bp,
 	if (!o->total_pending_num)
 		bnx2x_mcast_refresh_registry_e2(bp, o);
 
-<<<<<<< HEAD
-	/*
-	 * If CLEAR_ONLY was requested - don't send a ramrod and clear
-	 * RAMROD_PENDING status immediately.
-	 */
-	if (test_bit(RAMROD_DRV_CLR_ONLY, &p->ramrod_flags)) {
-		raw->clear_pending(raw);
-		return 0;
-	} else {
-		/*
-		 *  No need for an explicit memory barrier here as long we would
-		 *  need to ensure the ordering of writing to the SPQ element
-		 *  and updating of the SPQ producer which involves a memory
-		 *  read and we will have to put a full memory barrier there
-		 *  (inside bnx2x_sp_post()).
-=======
 	/* If CLEAR_ONLY was requested - don't send a ramrod and clear
 	 * RAMROD_PENDING status immediately. due to the SET option, it's also
 	 * possible that after evaluating the differences there's no need for
@@ -4212,7 +3441,6 @@ static int bnx2x_mcast_setup_e2(struct bnx2x *bp,
 		 * and updating of the SPQ producer which involves a memory
 		 * read. If the memory read is removed we will have to put a
 		 * full memory barrier there (inside bnx2x_sp_post()).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 
 		/* Send a ramrod */
@@ -4230,10 +3458,6 @@ static int bnx2x_mcast_setup_e2(struct bnx2x *bp,
 
 static int bnx2x_mcast_validate_e1h(struct bnx2x *bp,
 				    struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				    int cmd)
-{
-=======
 				    enum bnx2x_mcast_cmd cmd)
 {
 	if (cmd == BNX2X_MCAST_CMD_SET) {
@@ -4241,7 +3465,6 @@ static int bnx2x_mcast_validate_e1h(struct bnx2x *bp,
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Mark, that there is a work to do */
 	if ((cmd == BNX2X_MCAST_CMD_DEL) || (cmd == BNX2X_MCAST_CMD_RESTORE))
 		p->mcast_list_len = 1;
@@ -4251,12 +3474,8 @@ static int bnx2x_mcast_validate_e1h(struct bnx2x *bp,
 
 static void bnx2x_mcast_revert_e1h(struct bnx2x *bp,
 				       struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				       int old_num_bins)
-=======
 				       int old_num_bins,
 				       enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Do nothing */
 }
@@ -4279,11 +3498,7 @@ static inline void bnx2x_mcast_hdl_add_e1h(struct bnx2x *bp,
 		BNX2X_57711_SET_MC_FILTER(mc_filter, bit);
 
 		DP(BNX2X_MSG_SP, "About to configure %pM mcast MAC, bin %d\n",
-<<<<<<< HEAD
-				 mlist_pos->mac, bit);
-=======
 		   mlist_pos->mac, bit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* bookkeeping... */
 		BIT_VEC64_SET_BIT(o->registry.aprox_match.vec,
@@ -4305,21 +3520,13 @@ static inline void bnx2x_mcast_hdl_restore_e1h(struct bnx2x *bp,
 	}
 }
 
-<<<<<<< HEAD
-/* On 57711 we write the multicast MACs' aproximate match
-=======
 /* On 57711 we write the multicast MACs' approximate match
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * table by directly into the TSTORM's internal RAM. So we don't
  * really need to handle any tricks to make it work.
  */
 static int bnx2x_mcast_setup_e1h(struct bnx2x *bp,
 				 struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				 int cmd)
-=======
 				 enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
@@ -4373,43 +3580,27 @@ static int bnx2x_mcast_setup_e1h(struct bnx2x *bp,
 
 static int bnx2x_mcast_validate_e1(struct bnx2x *bp,
 				   struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				   int cmd)
-=======
 				   enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
 	int reg_sz = o->get_registry_size(o);
 
-<<<<<<< HEAD
-=======
 	if (cmd == BNX2X_MCAST_CMD_SET) {
 		BNX2X_ERR("Can't use `set' command on e1!\n");
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	/* DEL command deletes all currently configured MACs */
 	case BNX2X_MCAST_CMD_DEL:
 		o->set_registry_size(o, 0);
-<<<<<<< HEAD
-		/* Don't break */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RESTORE command will restore the entire multicast configuration */
 	case BNX2X_MCAST_CMD_RESTORE:
 		p->mcast_list_len = reg_sz;
-<<<<<<< HEAD
-		  DP(BNX2X_MSG_SP, "Command %d, p->mcast_list_len=%d\n",
-				   cmd, p->mcast_list_len);
-=======
 		DP(BNX2X_MSG_SP, "Command %d, p->mcast_list_len=%d\n",
 		   cmd, p->mcast_list_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BNX2X_MCAST_CMD_ADD:
@@ -4436,10 +3627,6 @@ static int bnx2x_mcast_validate_e1(struct bnx2x *bp,
 	default:
 		BNX2X_ERR("Unknown command: %d\n", cmd);
 		return -EINVAL;
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* We want to ensure that commands are executed one by one for 57710.
@@ -4453,12 +3640,8 @@ static int bnx2x_mcast_validate_e1(struct bnx2x *bp,
 
 static void bnx2x_mcast_revert_e1(struct bnx2x *bp,
 				      struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				      int old_num_macs)
-=======
 				   int old_num_macs,
 				   enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
 
@@ -4466,11 +3649,7 @@ static void bnx2x_mcast_revert_e1(struct bnx2x *bp,
 
 	/* If current command hasn't been handled yet and we are
 	 * here means that it's meant to be dropped and we have to
-<<<<<<< HEAD
-	 * update the number of outstandling MACs accordingly.
-=======
 	 * update the number of outstanding MACs accordingly.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (p->mcast_list_len)
 		o->total_pending_num -= o->max_cmd_len;
@@ -4479,11 +3658,7 @@ static void bnx2x_mcast_revert_e1(struct bnx2x *bp,
 static void bnx2x_mcast_set_one_rule_e1(struct bnx2x *bp,
 					struct bnx2x_mcast_obj *o, int idx,
 					union bnx2x_mcast_config_data *cfg_data,
-<<<<<<< HEAD
-					int cmd)
-=======
 					enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_raw_obj *r = &o->raw;
 	struct mac_configuration_cmd *data =
@@ -4511,11 +3686,7 @@ static void bnx2x_mcast_set_one_rule_e1(struct bnx2x *bp,
  * bnx2x_mcast_set_rdata_hdr_e1  - set header values in mac_configuration_cmd
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @p:
-=======
  * @p:		ramrod parameters
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len:	number of rules to handle
  */
 static inline void bnx2x_mcast_set_rdata_hdr_e1(struct bnx2x *bp,
@@ -4531,16 +3702,10 @@ static inline void bnx2x_mcast_set_rdata_hdr_e1(struct bnx2x *bp,
 		     BNX2X_MAX_MULTICAST*(1 + r->func_id));
 
 	data->hdr.offset = offset;
-<<<<<<< HEAD
-	data->hdr.client_id = 0xff;
-	data->hdr.echo = ((r->cid & BNX2X_SWCID_MASK) |
-			  (BNX2X_FILTER_MCAST_PENDING << BNX2X_SWCID_SHIFT));
-=======
 	data->hdr.client_id = cpu_to_le16(0xff);
 	data->hdr.echo = cpu_to_le32((r->cid & BNX2X_SWCID_MASK) |
 				     (BNX2X_FILTER_MCAST_PENDING <<
 				      BNX2X_SWCID_SHIFT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->hdr.length = len;
 }
 
@@ -4548,11 +3713,7 @@ static inline void bnx2x_mcast_set_rdata_hdr_e1(struct bnx2x *bp,
  * bnx2x_mcast_handle_restore_cmd_e1 - restore command for 57710
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:
-=======
  * @o:		multicast info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @start_idx:	index in the registry to start from
  * @rdata_idx:	index in the ramrod data to start from
  *
@@ -4567,11 +3728,7 @@ static inline int bnx2x_mcast_handle_restore_cmd_e1(
 {
 	struct bnx2x_mcast_mac_elem *elem;
 	int i = 0;
-<<<<<<< HEAD
-	union bnx2x_mcast_config_data cfg_data = {0};
-=======
 	union bnx2x_mcast_config_data cfg_data = {NULL};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* go through the registry and configure the MACs from it. */
 	list_for_each_entry(elem, &o->registry.exact_match.macs, link) {
@@ -4580,13 +3737,8 @@ static inline int bnx2x_mcast_handle_restore_cmd_e1(
 
 		i++;
 
-<<<<<<< HEAD
-		  DP(BNX2X_MSG_SP, "About to configure %pM mcast MAC\n",
-				   cfg_data.mac);
-=======
 		DP(BNX2X_MSG_SP, "About to configure %pM mcast MAC\n",
 		   cfg_data.mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	*rdata_idx = i;
@@ -4594,26 +3746,15 @@ static inline int bnx2x_mcast_handle_restore_cmd_e1(
 	return -1;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int bnx2x_mcast_handle_pending_cmds_e1(
 	struct bnx2x *bp, struct bnx2x_mcast_ramrod_params *p)
 {
 	struct bnx2x_pending_mcast_cmd *cmd_pos;
 	struct bnx2x_mcast_mac_elem *pmac_pos;
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
-<<<<<<< HEAD
-	union bnx2x_mcast_config_data cfg_data = {0};
-	int cnt = 0;
-
-
-=======
 	union bnx2x_mcast_config_data cfg_data = {NULL};
 	int cnt = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If nothing to be done - return */
 	if (list_empty(&o->pending_cmds_head))
 		return 0;
@@ -4631,11 +3772,7 @@ static inline int bnx2x_mcast_handle_pending_cmds_e1(
 			cnt++;
 
 			DP(BNX2X_MSG_SP, "About to configure %pM mcast MAC\n",
-<<<<<<< HEAD
-					 pmac_pos->mac);
-=======
 			   pmac_pos->mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -4654,10 +3791,7 @@ static inline int bnx2x_mcast_handle_pending_cmds_e1(
 	}
 
 	list_del(&cmd_pos->link);
-<<<<<<< HEAD
-=======
 	bnx2x_free_groups(&cmd_pos->group_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(cmd_pos);
 
 	return cnt;
@@ -4666,17 +3800,10 @@ static inline int bnx2x_mcast_handle_pending_cmds_e1(
 /**
  * bnx2x_get_fw_mac_addr - revert the bnx2x_set_fw_mac_addr().
  *
-<<<<<<< HEAD
- * @fw_hi:
- * @fw_mid:
- * @fw_lo:
- * @mac:
-=======
  * @fw_hi: address
  * @fw_mid: address
  * @fw_lo: address
  * @mac: mac address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void bnx2x_get_fw_mac_addr(__le16 *fw_hi, __le16 *fw_mid,
 					 __le16 *fw_lo, u8 *mac)
@@ -4693,11 +3820,7 @@ static inline void bnx2x_get_fw_mac_addr(__le16 *fw_hi, __le16 *fw_mid,
  * bnx2x_mcast_refresh_registry_e1 -
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @cnt:
-=======
  * @o:		multicast info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Check the ramrod data first entry flag to see if it's a DELETE or ADD command
  * and update the registry correspondingly: if ADD - allocate a memory and add
@@ -4753,11 +3876,7 @@ static inline int bnx2x_mcast_refresh_registry_e1(struct bnx2x *bp,
 
 static int bnx2x_mcast_setup_e1(struct bnx2x *bp,
 				struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-				int cmd)
-=======
 				enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
 	struct bnx2x_raw_obj *raw = &o->raw;
@@ -4807,32 +3926,18 @@ static int bnx2x_mcast_setup_e1(struct bnx2x *bp,
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	/*
-	 * If CLEAR_ONLY was requested - don't send a ramrod and clear
-=======
 	/* If CLEAR_ONLY was requested - don't send a ramrod and clear
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * RAMROD_PENDING status immediately.
 	 */
 	if (test_bit(RAMROD_DRV_CLR_ONLY, &p->ramrod_flags)) {
 		raw->clear_pending(raw);
 		return 0;
 	} else {
-<<<<<<< HEAD
-		/*
-		 *  No need for an explicit memory barrier here as long we would
-		 *  need to ensure the ordering of writing to the SPQ element
-		 *  and updating of the SPQ producer which involves a memory
-		 *  read and we will have to put a full memory barrier there
-		 *  (inside bnx2x_sp_post()).
-=======
 		/* No need for an explicit memory barrier here as long as we
 		 * ensure the ordering of writing to the SPQ element
 		 * and updating of the SPQ producer which involves a memory
 		 * read. If the memory read is removed we will have to put a
 		 * full memory barrier there (inside bnx2x_sp_post()).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 
 		/* Send a ramrod */
@@ -4846,10 +3951,6 @@ static int bnx2x_mcast_setup_e1(struct bnx2x *bp,
 		/* Ramrod completion is pending */
 		return 1;
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int bnx2x_mcast_get_registry_size_exact(struct bnx2x_mcast_obj *o)
@@ -4876,11 +3977,7 @@ static void bnx2x_mcast_set_registry_size_aprox(struct bnx2x_mcast_obj *o,
 
 int bnx2x_config_mcast(struct bnx2x *bp,
 		       struct bnx2x_mcast_ramrod_params *p,
-<<<<<<< HEAD
-		       int cmd)
-=======
 		       enum bnx2x_mcast_cmd cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2x_mcast_obj *o = p->mcast_obj;
 	struct bnx2x_raw_obj *r = &o->raw;
@@ -4939,39 +4036,23 @@ error_exit2:
 	r->clear_pending(r);
 
 error_exit1:
-<<<<<<< HEAD
-	o->revert(bp, p, old_reg_size);
-=======
 	o->revert(bp, p, old_reg_size, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
 
 static void bnx2x_mcast_clear_sched(struct bnx2x_mcast_obj *o)
 {
-<<<<<<< HEAD
-	smp_mb__before_clear_bit();
-	clear_bit(o->sched_state, o->raw.pstate);
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__before_atomic();
 	clear_bit(o->sched_state, o->raw.pstate);
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bnx2x_mcast_set_sched(struct bnx2x_mcast_obj *o)
 {
-<<<<<<< HEAD
-	smp_mb__before_clear_bit();
-	set_bit(o->sched_state, o->raw.pstate);
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__before_atomic();
 	set_bit(o->sched_state, o->raw.pstate);
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool bnx2x_mcast_check_sched(struct bnx2x_mcast_obj *o)
@@ -5071,11 +4152,7 @@ void bnx2x_init_mcast_obj(struct bnx2x *bp,
 /*************************** Credit handling **********************************/
 
 /**
-<<<<<<< HEAD
- * atomic_add_ifless - add if the result is less than a given value.
-=======
  * __atomic_add_ifless - add if the result is less than a given value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @v:	pointer of type atomic_t
  * @a:	the amount to add to v...
@@ -5103,11 +4180,7 @@ static inline bool __atomic_add_ifless(atomic_t *v, int a, int u)
 }
 
 /**
-<<<<<<< HEAD
- * atomic_dec_ifmoe - dec if the result is more or equal than a given value.
-=======
  * __atomic_dec_ifmoe - dec if the result is more or equal than a given value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @v:	pointer of type atomic_t
  * @a:	the amount to dec from v...
@@ -5175,10 +4248,6 @@ static bool bnx2x_credit_pool_always_true(struct bnx2x_credit_pool_obj *o,
 	return true;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool bnx2x_credit_pool_get_entry(
 	struct bnx2x_credit_pool_obj *o,
 	int *offset)
@@ -5244,11 +4313,7 @@ static bool bnx2x_credit_pool_get_entry_always_true(
 /**
  * bnx2x_init_credit_pool - initialize credit pool internals.
  *
-<<<<<<< HEAD
- * @p:
-=======
  * @p:		credit pool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @base:	Base entry in the CAM to use.
  * @credit:	pool size.
  *
@@ -5256,13 +4321,8 @@ static bool bnx2x_credit_pool_get_entry_always_true(
  * If credit is negative pool operations will always succeed (unlimited pool).
  *
  */
-<<<<<<< HEAD
-static inline void bnx2x_init_credit_pool(struct bnx2x_credit_pool_obj *p,
-					  int base, int credit)
-=======
 void bnx2x_init_credit_pool(struct bnx2x_credit_pool_obj *p,
 			    int base, int credit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Zero the object first */
 	memset(p, 0, sizeof(*p));
@@ -5338,20 +4398,6 @@ void bnx2x_init_mac_credit_pool(struct bnx2x *bp,
 
 	} else {
 
-<<<<<<< HEAD
-		/*
-		 * CAM credit is equaly divided between all active functions
-		 * on the PATH.
-		 */
-		if ((func_num > 0)) {
-			if (!CHIP_REV_IS_SLOW(bp))
-				cam_sz = (MAX_MAC_CREDIT_E2 / func_num);
-			else
-				cam_sz = BNX2X_CAM_SIZE_EMUL;
-
-			/*
-			 * No need for CAM entries handling for 57712 and
-=======
 		/* CAM credit is equaly divided between all active functions
 		 * on the PATH.
 		 */
@@ -5362,7 +4408,6 @@ void bnx2x_init_mac_credit_pool(struct bnx2x *bp,
 				cam_sz = BNX2X_CAM_SIZE_EMUL;
 
 			/* No need for CAM entries handling for 57712 and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * newer.
 			 */
 			bnx2x_init_credit_pool(p, -1, cam_sz);
@@ -5370,10 +4415,6 @@ void bnx2x_init_mac_credit_pool(struct bnx2x *bp,
 			/* this should never happen! Block MAC operations. */
 			bnx2x_init_credit_pool(p, 0, 0);
 		}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -5383,25 +4424,11 @@ void bnx2x_init_vlan_credit_pool(struct bnx2x *bp,
 				 u8 func_num)
 {
 	if (CHIP_IS_E1x(bp)) {
-<<<<<<< HEAD
-		/*
-		 * There is no VLAN credit in HW on 57710 and 57711 only
-=======
 		/* There is no VLAN credit in HW on 57710 and 57711 only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * MAC / MAC-VLAN can be set
 		 */
 		bnx2x_init_credit_pool(p, 0, -1);
 	} else {
-<<<<<<< HEAD
-		/*
-		 * CAM credit is equaly divided between all active functions
-		 * on the PATH.
-		 */
-		if (func_num > 0) {
-			int credit = MAX_VLAN_CREDIT_E2 / func_num;
-			bnx2x_init_credit_pool(p, func_id * credit, credit);
-=======
 		/* CAM credit is equally divided between all active functions
 		 * on the PATH.
 		 */
@@ -5409,7 +4436,6 @@ void bnx2x_init_vlan_credit_pool(struct bnx2x *bp,
 			int credit = PF_VLAN_CREDIT_E2(bp, func_num);
 
 			bnx2x_init_credit_pool(p, -1/*unused for E2*/, credit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			/* this should never happen! Block VLAN operations. */
 			bnx2x_init_credit_pool(p, 0, 0);
@@ -5420,11 +4446,7 @@ void bnx2x_init_vlan_credit_pool(struct bnx2x *bp,
 /**
  * bnx2x_debug_print_ind_table - prints the indirection table configuration.
  *
-<<<<<<< HEAD
- * @bp:		driver hanlde
-=======
  * @bp:		driver handle
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @p:		pointer to rss configuration
  *
  * Prints it when NETIF_MSG_IFUP debug level is configured.
@@ -5465,10 +4487,7 @@ static int bnx2x_setup_rss(struct bnx2x *bp,
 	struct bnx2x_raw_obj *r = &o->raw;
 	struct eth_rss_update_ramrod_data *data =
 		(struct eth_rss_update_ramrod_data *)(r->rdata);
-<<<<<<< HEAD
-=======
 	u16 caps = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rss_mode = 0;
 	int rc;
 
@@ -5477,28 +4496,14 @@ static int bnx2x_setup_rss(struct bnx2x *bp,
 	DP(BNX2X_MSG_SP, "Configuring RSS\n");
 
 	/* Set an echo field */
-<<<<<<< HEAD
-	data->echo = (r->cid & BNX2X_SWCID_MASK) |
-		     (r->state << BNX2X_SWCID_SHIFT);
-=======
 	data->echo = cpu_to_le32((r->cid & BNX2X_SWCID_MASK) |
 				 (r->state << BNX2X_SWCID_SHIFT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RSS mode */
 	if (test_bit(BNX2X_RSS_MODE_DISABLED, &p->rss_flags))
 		rss_mode = ETH_RSS_MODE_DISABLED;
 	else if (test_bit(BNX2X_RSS_MODE_REGULAR, &p->rss_flags))
 		rss_mode = ETH_RSS_MODE_REGULAR;
-<<<<<<< HEAD
-	else if (test_bit(BNX2X_RSS_MODE_VLAN_PRI, &p->rss_flags))
-		rss_mode = ETH_RSS_MODE_VLAN_PRI;
-	else if (test_bit(BNX2X_RSS_MODE_E1HOV_PRI, &p->rss_flags))
-		rss_mode = ETH_RSS_MODE_E1HOV_PRI;
-	else if (test_bit(BNX2X_RSS_MODE_IP_DSCP, &p->rss_flags))
-		rss_mode = ETH_RSS_MODE_IP_DSCP;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->rss_mode = rss_mode;
 
@@ -5506,22 +4511,6 @@ static int bnx2x_setup_rss(struct bnx2x *bp,
 
 	/* RSS capabilities */
 	if (test_bit(BNX2X_RSS_IPV4, &p->rss_flags))
-<<<<<<< HEAD
-		data->capabilities |=
-			ETH_RSS_UPDATE_RAMROD_DATA_IPV4_CAPABILITY;
-
-	if (test_bit(BNX2X_RSS_IPV4_TCP, &p->rss_flags))
-		data->capabilities |=
-			ETH_RSS_UPDATE_RAMROD_DATA_IPV4_TCP_CAPABILITY;
-
-	if (test_bit(BNX2X_RSS_IPV6, &p->rss_flags))
-		data->capabilities |=
-			ETH_RSS_UPDATE_RAMROD_DATA_IPV6_CAPABILITY;
-
-	if (test_bit(BNX2X_RSS_IPV6_TCP, &p->rss_flags))
-		data->capabilities |=
-			ETH_RSS_UPDATE_RAMROD_DATA_IPV6_TCP_CAPABILITY;
-=======
 		caps |= ETH_RSS_UPDATE_RAMROD_DATA_IPV4_CAPABILITY;
 
 	if (test_bit(BNX2X_RSS_IPV4_TCP, &p->rss_flags))
@@ -5564,7 +4553,6 @@ static int bnx2x_setup_rss(struct bnx2x *bp,
 	}
 
 	data->capabilities = cpu_to_le16(caps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Hashing mask */
 	data->rss_result_mask = p->rss_result_mask;
@@ -5585,27 +4573,11 @@ static int bnx2x_setup_rss(struct bnx2x *bp,
 	if (netif_msg_ifup(bp))
 		bnx2x_debug_print_ind_table(bp, p);
 
-<<<<<<< HEAD
-	/* RSS keys */
-	if (test_bit(BNX2X_RSS_SET_SRCH, &p->rss_flags)) {
-		memcpy(&data->rss_key[0], &p->rss_key[0],
-		       sizeof(data->rss_key));
-		data->capabilities |= ETH_RSS_UPDATE_RAMROD_DATA_UPDATE_RSS_KEY;
-	}
-
-	/*
-	 *  No need for an explicit memory barrier here as long we would
-	 *  need to ensure the ordering of writing to the SPQ element
-	 *  and updating of the SPQ producer which involves a memory
-	 *  read and we will have to put a full memory barrier there
-	 *  (inside bnx2x_sp_post()).
-=======
 	/* No need for an explicit memory barrier here as long as we
 	 * ensure the ordering of writing to the SPQ element
 	 * and updating of the SPQ producer which involves a memory
 	 * read. If the memory read is removed we will have to put a
 	 * full memory barrier there (inside bnx2x_sp_post()).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/* Send a ramrod */
@@ -5634,16 +4606,11 @@ int bnx2x_config_rss(struct bnx2x *bp,
 	struct bnx2x_raw_obj *r = &o->raw;
 
 	/* Do nothing if only driver cleanup was requested */
-<<<<<<< HEAD
-	if (test_bit(RAMROD_DRV_CLR_ONLY, &p->ramrod_flags))
-		return 0;
-=======
 	if (test_bit(RAMROD_DRV_CLR_ONLY, &p->ramrod_flags)) {
 		DP(BNX2X_MSG_SP, "Not configuring RSS ramrod_flags=%lx\n",
 		   p->ramrod_flags);
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r->set_pending(r);
 
@@ -5659,10 +4626,6 @@ int bnx2x_config_rss(struct bnx2x *bp,
 	return rc;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bnx2x_init_rss_config_obj(struct bnx2x *bp,
 			       struct bnx2x_rss_config_obj *rss_obj,
 			       u8 cl_id, u32 cid, u8 func_id, u8 engine_id,
@@ -5699,13 +4662,6 @@ int bnx2x_queue_state_change(struct bnx2x *bp,
 	unsigned long *pending = &o->pending;
 
 	/* Check that the requested transition is legal */
-<<<<<<< HEAD
-	if (o->check_transition(bp, o, params))
-		return -EINVAL;
-
-	/* Set "pending" bit */
-	pending_bit = o->set_pending(o, params);
-=======
 	rc = o->check_transition(bp, o, params);
 	if (rc) {
 		BNX2X_ERR("check transition returned an error. rc %d\n", rc);
@@ -5716,7 +4672,6 @@ int bnx2x_queue_state_change(struct bnx2x *bp,
 	DP(BNX2X_MSG_SP, "pending bit was=%lx\n", o->pending);
 	pending_bit = o->set_pending(o, params);
 	DP(BNX2X_MSG_SP, "pending bit now=%lx\n", o->pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't send a command if only driver cleanup was requested */
 	if (test_bit(RAMROD_DRV_CLR_ONLY, &params->ramrod_flags))
@@ -5727,11 +4682,7 @@ int bnx2x_queue_state_change(struct bnx2x *bp,
 		if (rc) {
 			o->next_state = BNX2X_Q_STATE_MAX;
 			clear_bit(pending_bit, pending);
-<<<<<<< HEAD
-			smp_mb__after_clear_bit();
-=======
 			smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 
@@ -5747,10 +4698,6 @@ int bnx2x_queue_state_change(struct bnx2x *bp,
 	return !!test_bit(pending_bit, pending);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bnx2x_queue_set_pending(struct bnx2x_queue_sp_obj *obj,
 				   struct bnx2x_queue_state_params *params)
 {
@@ -5780,13 +4727,8 @@ static int bnx2x_queue_wait_comp(struct bnx2x *bp,
  * bnx2x_queue_comp_cmd - complete the state change command.
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:
- * @cmd:
-=======
  * @o:		queue info
  * @cmd:	command to exec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Checks that the arrived completion is expected.
  */
@@ -5804,13 +4746,8 @@ static int bnx2x_queue_comp_cmd(struct bnx2x *bp,
 	}
 
 	if (o->next_tx_only >= o->max_cos)
-<<<<<<< HEAD
-		/* >= becuase tx only must always be smaller than cos since the
-		 * primary connection suports COS 0
-=======
 		/* >= because tx only must always be smaller than cos since the
 		 * primary connection supports COS 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		BNX2X_ERR("illegal value for next tx_only: %d. max cos was %d",
 			   o->next_tx_only, o->max_cos);
@@ -5833,11 +4770,7 @@ static int bnx2x_queue_comp_cmd(struct bnx2x *bp,
 	wmb();
 
 	clear_bit(cmd, &o->pending);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -5879,21 +4812,14 @@ static void bnx2x_q_fill_init_general_data(struct bnx2x *bp,
 	gen_data->mtu = cpu_to_le16(params->mtu);
 	gen_data->func_id = o->func_id;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gen_data->cos = params->cos;
 
 	gen_data->traffic_type =
 		test_bit(BNX2X_Q_FLG_FCOE, flags) ?
 		LLFC_TRAFFIC_TYPE_FCOE : LLFC_TRAFFIC_TYPE_NW;
 
-<<<<<<< HEAD
-=======
 	gen_data->fp_hsi_ver = params->fp_hsi;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DP(BNX2X_MSG_SP, "flags: active %d, cos %d, stats en %d\n",
 	   gen_data->activate_flg, gen_data->cos, gen_data->statistics_en_flg);
 }
@@ -5913,8 +4839,6 @@ static void bnx2x_q_fill_init_tx_data(struct bnx2x_queue_sp_obj *o,
 		test_bit(BNX2X_Q_FLG_TX_SWITCH, flags);
 	tx_data->anti_spoofing_flg =
 		test_bit(BNX2X_Q_FLG_ANTI_SPOOF, flags);
-<<<<<<< HEAD
-=======
 	tx_data->force_default_pri_flg =
 		test_bit(BNX2X_Q_FLG_FORCE_DEFAULT_PRI, flags);
 	tx_data->refuse_outband_vlan_flg =
@@ -5925,7 +4849,6 @@ static void bnx2x_q_fill_init_tx_data(struct bnx2x_queue_sp_obj *o,
 		test_bit(BNX2X_Q_FLG_PCSUM_ON_PKT, flags) ? CSUM_ON_PKT :
 							    CSUM_ON_BD;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tx_data->tx_status_block_id = params->fw_sb_id;
 	tx_data->tx_sb_index_number = params->sb_cq_index;
 	tx_data->tss_leading_client_id = params->tss_leading_cl_id;
@@ -6018,10 +4941,6 @@ static void bnx2x_q_fill_init_rx_data(struct bnx2x_queue_sp_obj *o,
 		cpu_to_le16(params->silent_removal_value);
 	rx_data->silent_vlan_mask =
 		cpu_to_le16(params->silent_removal_mask);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* initialize the general, tx and rx parts of a queue object */
@@ -6122,10 +5041,6 @@ static inline int bnx2x_q_init(struct bnx2x *bp,
 	/* As no ramrod is sent, complete the command immediately  */
 	o->complete_cmd(bp, o, BNX2X_Q_CMD_INIT);
 
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smp_mb();
 
 	return 0;
@@ -6146,23 +5061,12 @@ static inline int bnx2x_q_send_setup_e1x(struct bnx2x *bp,
 	/* Fill the ramrod data */
 	bnx2x_q_fill_setup_data_cmn(bp, params, rdata);
 
-<<<<<<< HEAD
-	/*
-	 *  No need for an explicit memory barrier here as long we would
-	 *  need to ensure the ordering of writing to the SPQ element
-	 *  and updating of the SPQ producer which involves a memory
-	 *  read and we will have to put a full memory barrier there
-	 *  (inside bnx2x_sp_post()).
-	 */
-
-=======
 	/* No need for an explicit memory barrier here as long as we
 	 * ensure the ordering of writing to the SPQ element
 	 * and updating of the SPQ producer which involves a memory
 	 * read. If the memory read is removed we will have to put a
 	 * full memory barrier there (inside bnx2x_sp_post()).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bnx2x_sp_post(bp, ramrod, o->cids[BNX2X_PRIMARY_CID_INDEX],
 			     U64_HI(data_mapping),
 			     U64_LO(data_mapping), ETH_CONNECTION_TYPE);
@@ -6184,23 +5088,12 @@ static inline int bnx2x_q_send_setup_e2(struct bnx2x *bp,
 	bnx2x_q_fill_setup_data_cmn(bp, params, rdata);
 	bnx2x_q_fill_setup_data_e2(bp, params, rdata);
 
-<<<<<<< HEAD
-	/*
-	 *  No need for an explicit memory barrier here as long we would
-	 *  need to ensure the ordering of writing to the SPQ element
-	 *  and updating of the SPQ producer which involves a memory
-	 *  read and we will have to put a full memory barrier there
-	 *  (inside bnx2x_sp_post()).
-	 */
-
-=======
 	/* No need for an explicit memory barrier here as long as we
 	 * ensure the ordering of writing to the SPQ element
 	 * and updating of the SPQ producer which involves a memory
 	 * read. If the memory read is removed we will have to put a
 	 * full memory barrier there (inside bnx2x_sp_post()).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bnx2x_sp_post(bp, ramrod, o->cids[BNX2X_PRIMARY_CID_INDEX],
 			     U64_HI(data_mapping),
 			     U64_LO(data_mapping), ETH_CONNECTION_TYPE);
@@ -6218,10 +5111,6 @@ static inline int bnx2x_q_send_setup_tx_only(struct bnx2x *bp,
 		&params->params.tx_only;
 	u8 cid_index = tx_only_params->cid_index;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cid_index >= o->max_cos) {
 		BNX2X_ERR("queue[%d]: cid_index (%d) is out of range\n",
 			  o->cl_id, cid_index);
@@ -6242,23 +5131,12 @@ static inline int bnx2x_q_send_setup_tx_only(struct bnx2x *bp,
 			 o->cids[cid_index], rdata->general.client_id,
 			 rdata->general.sp_client_id, rdata->general.cos);
 
-<<<<<<< HEAD
-	/*
-	 *  No need for an explicit memory barrier here as long we would
-	 *  need to ensure the ordering of writing to the SPQ element
-	 *  and updating of the SPQ producer which involves a memory
-	 *  read and we will have to put a full memory barrier there
-	 *  (inside bnx2x_sp_post()).
-	 */
-
-=======
 	/* No need for an explicit memory barrier here as long as we
 	 * ensure the ordering of writing to the SPQ element
 	 * and updating of the SPQ producer which involves a memory
 	 * read. If the memory read is removed we will have to put a
 	 * full memory barrier there (inside bnx2x_sp_post()).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bnx2x_sp_post(bp, ramrod, o->cids[cid_index],
 			     U64_HI(data_mapping),
 			     U64_LO(data_mapping), ETH_CONNECTION_TYPE);
@@ -6285,11 +5163,7 @@ static void bnx2x_q_fill_update_data(struct bnx2x *bp,
 		test_bit(BNX2X_Q_UPDATE_IN_VLAN_REM_CHNG,
 			 &params->update_flags);
 
-<<<<<<< HEAD
-	/* Outer VLAN sripping */
-=======
 	/* Outer VLAN stripping */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->outer_vlan_removal_enable_flg =
 		test_bit(BNX2X_Q_UPDATE_OUT_VLAN_REM, &params->update_flags);
 	data->outer_vlan_removal_change_flg =
@@ -6325,8 +5199,6 @@ static void bnx2x_q_fill_update_data(struct bnx2x *bp,
 		test_bit(BNX2X_Q_UPDATE_SILENT_VLAN_REM, &params->update_flags);
 	data->silent_vlan_value = cpu_to_le16(params->silent_removal_value);
 	data->silent_vlan_mask = cpu_to_le16(params->silent_removal_mask);
-<<<<<<< HEAD
-=======
 
 	/* tx switching */
 	data->tx_switching_flg =
@@ -6340,7 +5212,6 @@ static void bnx2x_q_fill_update_data(struct bnx2x *bp,
 		test_bit(BNX2X_Q_UPDATE_PTP_PKTS, &params->update_flags);
 	data->handle_ptp_pkts_change_flg =
 		test_bit(BNX2X_Q_UPDATE_PTP_PKTS_CHNG, &params->update_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int bnx2x_q_send_update(struct bnx2x *bp,
@@ -6360,33 +5231,18 @@ static inline int bnx2x_q_send_update(struct bnx2x *bp,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear the ramrod data */
 	memset(rdata, 0, sizeof(*rdata));
 
 	/* Fill the ramrod data */
 	bnx2x_q_fill_update_data(bp, o, update_params, rdata);
 
-<<<<<<< HEAD
-	/*
-	 *  No need for an explicit memory barrier here as long we would
-	 *  need to ensure the ordering of writing to the SPQ element
-	 *  and updating of the SPQ producer which involves a memory
-	 *  read and we will have to put a full memory barrier there
-	 *  (inside bnx2x_sp_post()).
-	 */
-
-=======
 	/* No need for an explicit memory barrier here as long as we
 	 * ensure the ordering of writing to the SPQ element
 	 * and updating of the SPQ producer which involves a memory
 	 * read. If the memory read is removed we will have to put a
 	 * full memory barrier there (inside bnx2x_sp_post()).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bnx2x_sp_post(bp, RAMROD_CMD_ID_ETH_CLIENT_UPDATE,
 			     o->cids[cid_index], U64_HI(data_mapping),
 			     U64_LO(data_mapping), ETH_CONNECTION_TYPE);
@@ -6433,13 +5289,6 @@ static inline int bnx2x_q_send_activate(struct bnx2x *bp,
 	return bnx2x_q_send_update(bp, params);
 }
 
-<<<<<<< HEAD
-static inline int bnx2x_q_send_update_tpa(struct bnx2x *bp,
-					struct bnx2x_queue_state_params *params)
-{
-	/* TODO: Not implemented yet. */
-	return -1;
-=======
 static void bnx2x_q_fill_update_tpa_data(struct bnx2x *bp,
 				struct bnx2x_queue_sp_obj *obj,
 				struct bnx2x_queue_update_tpa_params *params,
@@ -6496,7 +5345,6 @@ static inline int bnx2x_q_send_update_tpa(struct bnx2x *bp,
 			     o->cids[BNX2X_PRIMARY_CID_INDEX],
 			     U64_HI(data_mapping),
 			     U64_LO(data_mapping), type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int bnx2x_q_send_halt(struct bnx2x *bp,
@@ -6631,13 +5479,8 @@ static int bnx2x_queue_send_cmd_e2(struct bnx2x *bp,
  * bnx2x_queue_chk_transition - check state machine of a regular Queue
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:
- * @params:
-=======
  * @o:		queue info
  * @params:	queue state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * (not Forwarding)
  * It both checks if the requested command is legal in a current
@@ -6658,12 +5501,7 @@ static int bnx2x_queue_chk_transition(struct bnx2x *bp,
 		 &params->params.update;
 	u8 next_tx_only = o->num_tx_only;
 
-<<<<<<< HEAD
-	/*
-	 * Forget all pending for completion commands if a driver only state
-=======
 	/* Forget all pending for completion commands if a driver only state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * transition has been requested.
 	 */
 	if (test_bit(RAMROD_DRV_CLR_ONLY, &params->ramrod_flags)) {
@@ -6671,14 +5509,6 @@ static int bnx2x_queue_chk_transition(struct bnx2x *bp,
 		o->next_state = BNX2X_Q_STATE_MAX;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Don't allow a next state transition if we are in the middle of
-	 * the previous one.
-	 */
-	if (o->pending)
-		return -EBUSY;
-=======
 	/* Don't allow a next state transition if we are in the middle of
 	 * the previous one.
 	 */
@@ -6687,7 +5517,6 @@ static int bnx2x_queue_chk_transition(struct bnx2x *bp,
 			  o->pending);
 		return -EBUSY;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (state) {
 	case BNX2X_Q_STATE_RESET:
@@ -6860,8 +5689,6 @@ void bnx2x_init_queue_obj(struct bnx2x *bp,
 	obj->set_pending = bnx2x_queue_set_pending;
 }
 
-<<<<<<< HEAD
-=======
 /* return a queue object's logical state*/
 int bnx2x_get_q_logical_state(struct bnx2x *bp,
 			       struct bnx2x_queue_sp_obj *obj)
@@ -6883,7 +5710,6 @@ int bnx2x_get_q_logical_state(struct bnx2x *bp,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /********************** Function state object *********************************/
 enum bnx2x_func_state bnx2x_func_get_state(struct bnx2x *bp,
 					   struct bnx2x_func_sp_obj *o)
@@ -6892,12 +5718,7 @@ enum bnx2x_func_state bnx2x_func_get_state(struct bnx2x *bp,
 	if (o->pending)
 		return BNX2X_F_STATE_MAX;
 
-<<<<<<< HEAD
-	/*
-	 * unsure the order of reading of o->pending and o->state
-=======
 	/* unsure the order of reading of o->pending and o->state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * o->pending should be read first
 	 */
 	rmb();
@@ -6916,13 +5737,8 @@ static int bnx2x_func_wait_comp(struct bnx2x *bp,
  * bnx2x_func_state_change_comp - complete the state machine transition
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:
- * @cmd:
-=======
  * @o:		function info
  * @cmd:	more info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Called on state change transition. Completes the state
  * machine transition only - no HW interaction.
@@ -6953,11 +5769,7 @@ static inline int bnx2x_func_state_change_comp(struct bnx2x *bp,
 	wmb();
 
 	clear_bit(cmd, &o->pending);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -6966,13 +5778,8 @@ static inline int bnx2x_func_state_change_comp(struct bnx2x *bp,
  * bnx2x_func_comp_cmd - complete the state change command
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:
- * @cmd:
-=======
  * @o:		function info
  * @cmd:	more info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Checks that the arrived completion is expected.
  */
@@ -6991,13 +5798,8 @@ static int bnx2x_func_comp_cmd(struct bnx2x *bp,
  * bnx2x_func_chk_transition - perform function state machine transition
  *
  * @bp:		device handle
-<<<<<<< HEAD
- * @o:
- * @params:
-=======
  * @o:		function info
  * @params:	state parameters
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * It both checks if the requested command is legal in a current
  * state and, if it's legal, sets a `next_state' in the object
@@ -7014,12 +5816,7 @@ static int bnx2x_func_chk_transition(struct bnx2x *bp,
 	enum bnx2x_func_state state = o->state, next_state = BNX2X_F_STATE_MAX;
 	enum bnx2x_func_cmd cmd = params->cmd;
 
-<<<<<<< HEAD
-	/*
-	 * Forget all pending for completion commands if a driver only state
-=======
 	/* Forget all pending for completion commands if a driver only state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * transition has been requested.
 	 */
 	if (test_bit(RAMROD_DRV_CLR_ONLY, &params->ramrod_flags)) {
@@ -7027,12 +5824,7 @@ static int bnx2x_func_chk_transition(struct bnx2x *bp,
 		o->next_state = BNX2X_F_STATE_MAX;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Don't allow a next state transition if we are in the middle of
-=======
 	/* Don't allow a next state transition if we are in the middle of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the previous one.
 	 */
 	if (o->pending)
@@ -7055,8 +5847,6 @@ static int bnx2x_func_chk_transition(struct bnx2x *bp,
 	case BNX2X_F_STATE_STARTED:
 		if (cmd == BNX2X_F_CMD_STOP)
 			next_state = BNX2X_F_STATE_INITIALIZED;
-<<<<<<< HEAD
-=======
 		/* afex ramrods can be sent only in started mode, and only
 		 * if not pending for function_stop ramrod completion
 		 * for these events - next state remained STARTED.
@@ -7080,15 +5870,11 @@ static int bnx2x_func_chk_transition(struct bnx2x *bp,
 			 (!test_bit(BNX2X_F_CMD_STOP, &o->pending)))
 			next_state = BNX2X_F_STATE_STARTED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (cmd == BNX2X_F_CMD_TX_STOP)
 			next_state = BNX2X_F_STATE_TX_STOPPED;
 
 		break;
 	case BNX2X_F_STATE_TX_STOPPED:
-<<<<<<< HEAD
-		if (cmd == BNX2X_F_CMD_TX_START)
-=======
 		if ((cmd == BNX2X_F_CMD_SWITCH_UPDATE) &&
 		    (!test_bit(BNX2X_F_CMD_STOP, &o->pending)))
 			next_state = BNX2X_F_STATE_TX_STOPPED;
@@ -7098,7 +5884,6 @@ static int bnx2x_func_chk_transition(struct bnx2x *bp,
 			next_state = BNX2X_F_STATE_TX_STOPPED;
 
 		else if (cmd == BNX2X_F_CMD_TX_START)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			next_state = BNX2X_F_STATE_STARTED;
 
 		break;
@@ -7220,11 +6005,7 @@ static int bnx2x_func_hw_init(struct bnx2x *bp,
 		goto init_err;
 	}
 
-<<<<<<< HEAD
-	/* Handle the beginning of COMMON_XXX pases separatelly... */
-=======
 	/* Handle the beginning of COMMON_XXX pases separately... */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (load_code) {
 	case FW_MSG_CODE_DRV_LOAD_COMMON_CHIP:
 		rc = bnx2x_func_init_cmn_chip(bp, drv);
@@ -7258,11 +6039,7 @@ static int bnx2x_func_hw_init(struct bnx2x *bp,
 init_err:
 	drv->gunzip_end(bp);
 
-<<<<<<< HEAD
-	/* In case of success, complete the comand immediatelly: no ramrods
-=======
 	/* In case of success, complete the command immediately: no ramrods
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * have been sent.
 	 */
 	if (!rc)
@@ -7287,11 +6064,7 @@ static inline void bnx2x_func_reset_func(struct bnx2x *bp,
 }
 
 /**
-<<<<<<< HEAD
- * bnx2x_func_reset_port - reser HW at port stage
-=======
  * bnx2x_func_reset_port - reset HW at port stage
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @bp:		device handle
  * @drv:
@@ -7313,11 +6086,7 @@ static inline void bnx2x_func_reset_port(struct bnx2x *bp,
 }
 
 /**
-<<<<<<< HEAD
- * bnx2x_func_reset_cmn - reser HW at common stage
-=======
  * bnx2x_func_reset_cmn - reset HW at common stage
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @bp:		device handle
  * @drv:
@@ -7333,10 +6102,6 @@ static inline void bnx2x_func_reset_cmn(struct bnx2x *bp,
 	drv->reset_hw_cmn(bp);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int bnx2x_func_hw_reset(struct bnx2x *bp,
 				      struct bnx2x_func_state_params *params)
 {
@@ -7363,11 +6128,7 @@ static inline int bnx2x_func_hw_reset(struct bnx2x *bp,
 		break;
 	}
 
-<<<<<<< HEAD
-	/* Complete the comand immediatelly: no ramrods have been sent. */
-=======
 	/* Complete the command immediately: no ramrods have been sent. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	o->complete_cmd(bp, o, BNX2X_F_CMD_HW_RESET);
 
 	return 0;
@@ -7385,15 +6146,6 @@ static inline int bnx2x_func_send_start(struct bnx2x *bp,
 	memset(rdata, 0, sizeof(*rdata));
 
 	/* Fill the ramrod data with provided parameters */
-<<<<<<< HEAD
-	rdata->function_mode = cpu_to_le16(start_params->mf_mode);
-	rdata->sd_vlan_tag   = cpu_to_le16(start_params->sd_vlan_tag);
-	rdata->path_id       = BP_PATH(bp);
-	rdata->network_cos_mode = start_params->network_cos_mode;
-
-	/*
-	 *  No need for an explicit memory barrier here as long we would
-=======
 	rdata->function_mode	= (u8)start_params->mf_mode;
 	rdata->sd_vlan_tag	= cpu_to_le16(start_params->sd_vlan_tag);
 	rdata->path_id		= BP_PATH(bp);
@@ -7584,18 +6336,12 @@ inline int bnx2x_func_send_afex_viflists(struct bnx2x *bp,
 	rdata->echo = afex_vif_params->afex_vif_list_command;
 
 	/*  No need for an explicit memory barrier here as long we would
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *  need to ensure the ordering of writing to the SPQ element
 	 *  and updating of the SPQ producer which involves a memory
 	 *  read and we will have to put a full memory barrier there
 	 *  (inside bnx2x_sp_post()).
 	 */
 
-<<<<<<< HEAD
-	return bnx2x_sp_post(bp, RAMROD_CMD_ID_COMMON_FUNCTION_START, 0,
-			     U64_HI(data_mapping),
-			     U64_LO(data_mapping), NONE_CONNECTION_TYPE);
-=======
 	DP(BNX2X_MSG_SP, "afex: ramrod lists, cmd 0x%x index 0x%x func_bit_map 0x%x func_to_clr 0x%x\n",
 	   rdata->afex_vif_list_command, rdata->vif_list_index,
 	   rdata->func_bit_map, rdata->func_to_clear);
@@ -7604,7 +6350,6 @@ inline int bnx2x_func_send_afex_viflists(struct bnx2x *bp,
 	return bnx2x_sp_post(bp, RAMROD_CMD_ID_COMMON_AFEX_VIF_LISTS, 0,
 			     U64_HI(*p_rdata), U64_LO(*p_rdata),
 			     NONE_CONNECTION_TYPE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int bnx2x_func_send_stop(struct bnx2x *bp,
@@ -7641,8 +6386,6 @@ static inline int bnx2x_func_send_tx_start(struct bnx2x *bp,
 		rdata->traffic_type_to_priority_cos[i] =
 			tx_start_params->traffic_type_to_priority_cos[i];
 
-<<<<<<< HEAD
-=======
 	for (i = 0; i < MAX_TRAFFIC_TYPES; i++)
 		rdata->dcb_outer_pri[i] = tx_start_params->dcb_outer_pri[i];
 	/* No need for an explicit memory barrier here as long as we
@@ -7651,14 +6394,11 @@ static inline int bnx2x_func_send_tx_start(struct bnx2x *bp,
 	 * read. If the memory read is removed we will have to put a
 	 * full memory barrier there (inside bnx2x_sp_post()).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bnx2x_sp_post(bp, RAMROD_CMD_ID_COMMON_START_TRAFFIC, 0,
 			     U64_HI(data_mapping),
 			     U64_LO(data_mapping), NONE_CONNECTION_TYPE);
 }
 
-<<<<<<< HEAD
-=======
 static inline
 int bnx2x_func_send_set_timesync(struct bnx2x *bp,
 				 struct bnx2x_func_state_params *params)
@@ -7695,7 +6435,6 @@ int bnx2x_func_send_set_timesync(struct bnx2x *bp,
 			     U64_LO(data_mapping), NONE_CONNECTION_TYPE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bnx2x_func_send_cmd(struct bnx2x *bp,
 			       struct bnx2x_func_state_params *params)
 {
@@ -7708,24 +6447,18 @@ static int bnx2x_func_send_cmd(struct bnx2x *bp,
 		return bnx2x_func_send_stop(bp, params);
 	case BNX2X_F_CMD_HW_RESET:
 		return bnx2x_func_hw_reset(bp, params);
-<<<<<<< HEAD
-=======
 	case BNX2X_F_CMD_AFEX_UPDATE:
 		return bnx2x_func_send_afex_update(bp, params);
 	case BNX2X_F_CMD_AFEX_VIFLISTS:
 		return bnx2x_func_send_afex_viflists(bp, params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BNX2X_F_CMD_TX_STOP:
 		return bnx2x_func_send_tx_stop(bp, params);
 	case BNX2X_F_CMD_TX_START:
 		return bnx2x_func_send_tx_start(bp, params);
-<<<<<<< HEAD
-=======
 	case BNX2X_F_CMD_SWITCH_UPDATE:
 		return bnx2x_func_send_switch_update(bp, params);
 	case BNX2X_F_CMD_SET_TIMESYNC:
 		return bnx2x_func_send_set_timesync(bp, params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BNX2X_ERR("Unknown command: %d\n", params->cmd);
 		return -EINVAL;
@@ -7735,10 +6468,7 @@ static int bnx2x_func_send_cmd(struct bnx2x *bp,
 void bnx2x_init_func_obj(struct bnx2x *bp,
 			 struct bnx2x_func_sp_obj *obj,
 			 void *rdata, dma_addr_t rdata_mapping,
-<<<<<<< HEAD
-=======
 			 void *afex_rdata, dma_addr_t afex_rdata_mapping,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct bnx2x_func_sp_drv_ops *drv_iface)
 {
 	memset(obj, 0, sizeof(*obj));
@@ -7747,12 +6477,8 @@ void bnx2x_init_func_obj(struct bnx2x *bp,
 
 	obj->rdata = rdata;
 	obj->rdata_mapping = rdata_mapping;
-<<<<<<< HEAD
-
-=======
 	obj->afex_rdata = afex_rdata;
 	obj->afex_rdata_mapping = afex_rdata_mapping;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	obj->send_cmd = bnx2x_func_send_cmd;
 	obj->check_transition = bnx2x_func_chk_transition;
 	obj->complete_cmd = bnx2x_func_comp_cmd;
@@ -7778,22 +6504,13 @@ int bnx2x_func_state_change(struct bnx2x *bp,
 			    struct bnx2x_func_state_params *params)
 {
 	struct bnx2x_func_sp_obj *o = params->f_obj;
-<<<<<<< HEAD
-	int rc;
-=======
 	int rc, cnt = 300;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum bnx2x_func_cmd cmd = params->cmd;
 	unsigned long *pending = &o->pending;
 
 	mutex_lock(&o->one_pending_mutex);
 
 	/* Check that the requested transition is legal */
-<<<<<<< HEAD
-	if (o->check_transition(bp, o, params)) {
-		mutex_unlock(&o->one_pending_mutex);
-		return -EINVAL;
-=======
 	rc = o->check_transition(bp, o, params);
 	if ((rc == -EBUSY) &&
 	    (test_bit(RAMROD_RETRY, &params->ramrod_flags))) {
@@ -7811,7 +6528,6 @@ int bnx2x_func_state_change(struct bnx2x *bp,
 	} else if (rc) {
 		mutex_unlock(&o->one_pending_mutex);
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set "pending" bit */
@@ -7830,11 +6546,7 @@ int bnx2x_func_state_change(struct bnx2x *bp,
 		if (rc) {
 			o->next_state = BNX2X_F_STATE_MAX;
 			clear_bit(cmd, pending);
-<<<<<<< HEAD
-			smp_mb__after_clear_bit();
-=======
 			smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return rc;
 		}
 

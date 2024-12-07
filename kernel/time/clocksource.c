@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-/*
- * linux/kernel/time/clocksource.c
- *
- * This file contains the functions which manage clocksource drivers.
- *
- * Copyright (C) 2004, 2005 IBM, John Stultz (johnstul@us.ibm.com)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * TODO WishList:
- *   o Allow clocksource drivers to be unregistered
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * This file contains the functions which manage clocksource drivers.
@@ -34,7 +7,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/clocksource.h>
 #include <linux/init.h>
@@ -42,90 +14,11 @@
 #include <linux/sched.h> /* for spin_unlock_irq() using preempt_count() m68k */
 #include <linux/tick.h>
 #include <linux/kthread.h>
-<<<<<<< HEAD
-
-void timecounter_init(struct timecounter *tc,
-		      const struct cyclecounter *cc,
-		      u64 start_tstamp)
-{
-	tc->cc = cc;
-	tc->cycle_last = cc->read(cc);
-	tc->nsec = start_tstamp;
-}
-EXPORT_SYMBOL_GPL(timecounter_init);
-
-/**
- * timecounter_read_delta - get nanoseconds since last call of this function
- * @tc:         Pointer to time counter
- *
- * When the underlying cycle counter runs over, this will be handled
- * correctly as long as it does not run over more than once between
- * calls.
- *
- * The first call to this function for a new time counter initializes
- * the time tracking and returns an undefined result.
- */
-static u64 timecounter_read_delta(struct timecounter *tc)
-{
-	cycle_t cycle_now, cycle_delta;
-	u64 ns_offset;
-
-	/* read cycle counter: */
-	cycle_now = tc->cc->read(tc->cc);
-
-	/* calculate the delta since the last timecounter_read_delta(): */
-	cycle_delta = (cycle_now - tc->cycle_last) & tc->cc->mask;
-
-	/* convert to nanoseconds: */
-	ns_offset = cyclecounter_cyc2ns(tc->cc, cycle_delta);
-
-	/* update time stamp of timecounter_read_delta() call: */
-	tc->cycle_last = cycle_now;
-
-	return ns_offset;
-}
-
-u64 timecounter_read(struct timecounter *tc)
-{
-	u64 nsec;
-
-	/* increment time by nanoseconds since last call */
-	nsec = timecounter_read_delta(tc);
-	nsec += tc->nsec;
-	tc->nsec = nsec;
-
-	return nsec;
-}
-EXPORT_SYMBOL_GPL(timecounter_read);
-
-u64 timecounter_cyc2time(struct timecounter *tc,
-			 cycle_t cycle_tstamp)
-{
-	u64 cycle_delta = (cycle_tstamp - tc->cycle_last) & tc->cc->mask;
-	u64 nsec;
-
-	/*
-	 * Instead of always treating cycle_tstamp as more recent
-	 * than tc->cycle_last, detect when it is too far in the
-	 * future and treat it as old time stamp instead.
-	 */
-	if (cycle_delta > tc->cc->mask / 2) {
-		cycle_delta = (tc->cycle_last - cycle_tstamp) & tc->cc->mask;
-		nsec = tc->nsec - cyclecounter_cyc2ns(tc->cc, cycle_delta);
-	} else {
-		nsec = cyclecounter_cyc2ns(tc->cc, cycle_delta) + tc->nsec;
-	}
-
-	return nsec;
-}
-EXPORT_SYMBOL_GPL(timecounter_cyc2time);
-=======
 #include <linux/prandom.h>
 #include <linux/cpu.h>
 
 #include "tick-internal.h"
 #include "timekeeping_internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * clocks_calc_mult_shift - calculate mult/shift factors for scaled math of clocks
@@ -147,11 +40,7 @@ EXPORT_SYMBOL_GPL(timecounter_cyc2time);
  * calculated mult and shift factors. This guarantees that no 64bit
  * overflow happens when the input value of the conversion is
  * multiplied with the calculated mult factor. Larger ranges may
-<<<<<<< HEAD
- * reduce the conversion accuracy by chosing smaller mult and shift
-=======
  * reduce the conversion accuracy by choosing smaller mult and shift
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * factors.
  */
 void
@@ -184,19 +73,13 @@ clocks_calc_mult_shift(u32 *mult, u32 *shift, u32 from, u32 to, u32 maxsec)
 	*mult = tmp;
 	*shift = sft;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(clocks_calc_mult_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*[Clocksource internal variables]---------
  * curr_clocksource:
  *	currently selected clocksource.
-<<<<<<< HEAD
-=======
  * suspend_clocksource:
  *	used to calculate the suspend time.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * clocksource_list:
  *	linked list with the registered clocksources
  * clocksource_mutex:
@@ -205,15 +88,6 @@ EXPORT_SYMBOL_GPL(clocks_calc_mult_shift);
  *	Name of the user-specified clocksource.
  */
 static struct clocksource *curr_clocksource;
-<<<<<<< HEAD
-static LIST_HEAD(clocksource_list);
-static DEFINE_MUTEX(clocksource_mutex);
-static char override_name[32];
-static int finished_booting;
-
-#ifdef CONFIG_CLOCKSOURCE_WATCHDOG
-static void clocksource_watchdog_work(struct work_struct *work);
-=======
 static struct clocksource *suspend_clocksource;
 static LIST_HEAD(clocksource_list);
 static DEFINE_MUTEX(clocksource_mutex);
@@ -253,7 +127,6 @@ static u64 suspend_start;
 #ifdef CONFIG_CLOCKSOURCE_WATCHDOG
 static void clocksource_watchdog_work(struct work_struct *work);
 static void clocksource_select(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(watchdog_list);
 static struct clocksource *watchdog;
@@ -262,8 +135,6 @@ static DECLARE_WORK(watchdog_work, clocksource_watchdog_work);
 static DEFINE_SPINLOCK(watchdog_lock);
 static int watchdog_running;
 static atomic_t watchdog_reset_pending;
-<<<<<<< HEAD
-=======
 static int64_t watchdog_max_interval;
 
 static inline void clocksource_watchdog_lock(unsigned long *flags)
@@ -275,22 +146,10 @@ static inline void clocksource_watchdog_unlock(unsigned long *flags)
 {
 	spin_unlock_irqrestore(&watchdog_lock, *flags);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int clocksource_watchdog_kthread(void *data);
 static void __clocksource_change_rating(struct clocksource *cs, int rating);
 
-<<<<<<< HEAD
-/*
- * Interval: 0.5sec Threshold: 0.0625s
- */
-#define WATCHDOG_INTERVAL (HZ >> 1)
-#define WATCHDOG_THRESHOLD (NSEC_PER_SEC >> 4)
-
-static void clocksource_watchdog_work(struct work_struct *work)
-{
-	/*
-=======
 static void clocksource_watchdog_work(struct work_struct *work)
 {
 	/*
@@ -303,7 +162,6 @@ static void clocksource_watchdog_work(struct work_struct *work)
 	 * of the kernel, so there is no point in creating a more permanent
 	 * kthread for this.
 	 *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If kthread_run fails the next watchdog scan over the
 	 * watchdog_list will find the unstable clock again.
 	 */
@@ -314,8 +172,6 @@ static void __clocksource_unstable(struct clocksource *cs)
 {
 	cs->flags &= ~(CLOCK_SOURCE_VALID_FOR_HRES | CLOCK_SOURCE_WATCHDOG);
 	cs->flags |= CLOCK_SOURCE_UNSTABLE;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * If the clocksource is registered clocksource_watchdog_kthread() will
@@ -330,34 +186,16 @@ static void __clocksource_unstable(struct clocksource *cs)
 		cs->mark_unstable(cs);
 
 	/* kick clocksource_watchdog_kthread() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (finished_booting)
 		schedule_work(&watchdog_work);
 }
 
-<<<<<<< HEAD
-static void clocksource_unstable(struct clocksource *cs, int64_t delta)
-{
-	printk(KERN_WARNING "Clocksource %s unstable (delta = %Ld ns)\n",
-	       cs->name, delta);
-	__clocksource_unstable(cs);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * clocksource_mark_unstable - mark clocksource unstable via watchdog
  * @cs:		clocksource to be marked unstable
  *
-<<<<<<< HEAD
- * This function is called instead of clocksource_change_rating from
- * cpu hotplug code to avoid a deadlock between the clocksource mutex
- * and the cpu hotplug mutex. It defers the update of the clocksource
- * to the watchdog thread.
-=======
  * This function is called by the x86 TSC code to mark clocksources as unstable;
  * it defers demotion and re-selection to a kthread.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void clocksource_mark_unstable(struct clocksource *cs)
 {
@@ -365,25 +203,13 @@ void clocksource_mark_unstable(struct clocksource *cs)
 
 	spin_lock_irqsave(&watchdog_lock, flags);
 	if (!(cs->flags & CLOCK_SOURCE_UNSTABLE)) {
-<<<<<<< HEAD
-		if (list_empty(&cs->wd_list))
-=======
 		if (!list_empty(&cs->list) && list_empty(&cs->wd_list))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add(&cs->wd_list, &watchdog_list);
 		__clocksource_unstable(cs);
 	}
 	spin_unlock_irqrestore(&watchdog_lock, flags);
 }
 
-<<<<<<< HEAD
-static void clocksource_watchdog(unsigned long data)
-{
-	struct clocksource *cs;
-	cycle_t csnow, wdnow;
-	int64_t wd_nsec, cs_nsec;
-	int next_cpu, reset_pending;
-=======
 static int verify_n_cpus = 8;
 module_param(verify_n_cpus, int, 0644);
 
@@ -579,7 +405,6 @@ static void clocksource_watchdog(struct timer_list *unused)
 	enum wd_read_status read_ret;
 	unsigned long extra_wait = 0;
 	u32 md;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&watchdog_lock);
 	if (!watchdog_running)
@@ -596,12 +421,6 @@ static void clocksource_watchdog(struct timer_list *unused)
 			continue;
 		}
 
-<<<<<<< HEAD
-		local_irq_disable();
-		csnow = cs->read(cs);
-		wdnow = watchdog->read(watchdog);
-		local_irq_enable();
-=======
 		read_ret = cs_watchdog_read(cs, &csnow, &wdnow);
 
 		if (read_ret == WD_READ_UNSTABLE) {
@@ -627,7 +446,6 @@ static void clocksource_watchdog(struct timer_list *unused)
 			extra_wait = HZ * 300;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Clocksource initialized ? */
 		if (!(cs->flags & CLOCK_SOURCE_WATCHDOG) ||
@@ -638,13 +456,6 @@ static void clocksource_watchdog(struct timer_list *unused)
 			continue;
 		}
 
-<<<<<<< HEAD
-		wd_nsec = clocksource_cyc2ns((wdnow - cs->wd_last) & watchdog->mask,
-					     watchdog->mult, watchdog->shift);
-
-		cs_nsec = clocksource_cyc2ns((csnow - cs->cs_last) &
-					     cs->mask, cs->mult, cs->shift);
-=======
 		delta = clocksource_delta(wdnow, cs->wd_last, watchdog->mask);
 		wd_nsec = clocksource_cyc2ns(delta, watchdog->mult,
 					     watchdog->shift);
@@ -653,31 +464,12 @@ static void clocksource_watchdog(struct timer_list *unused)
 		cs_nsec = clocksource_cyc2ns(delta, cs->mult, cs->shift);
 		wdlast = cs->wd_last; /* save these in case we print them */
 		cslast = cs->cs_last;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cs->cs_last = csnow;
 		cs->wd_last = wdnow;
 
 		if (atomic_read(&watchdog_reset_pending))
 			continue;
 
-<<<<<<< HEAD
-		/* Check the deviation from the watchdog clocksource. */
-		if ((abs64(cs_nsec - wd_nsec) > WATCHDOG_THRESHOLD)) {
-			clocksource_unstable(cs, cs_nsec - wd_nsec);
-			continue;
-		}
-
-		if (!(cs->flags & CLOCK_SOURCE_VALID_FOR_HRES) &&
-		    (cs->flags & CLOCK_SOURCE_IS_CONTINUOUS) &&
-		    (watchdog->flags & CLOCK_SOURCE_IS_CONTINUOUS)) {
-			cs->flags |= CLOCK_SOURCE_VALID_FOR_HRES;
-			/*
-			 * We just marked the clocksource as highres-capable,
-			 * notify the rest of the system as well so that we
-			 * transition into high-res mode:
-			 */
-			tick_clock_notify();
-=======
 		/*
 		 * The processing of timer softirqs can get delayed (usually
 		 * on account of ksoftirqd not getting to run in a timely
@@ -756,7 +548,6 @@ static void clocksource_watchdog(struct timer_list *unused)
 			} else {
 				tick_clock_notify();
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -774,10 +565,6 @@ static void clocksource_watchdog(struct timer_list *unused)
 	next_cpu = cpumask_next(raw_smp_processor_id(), cpu_online_mask);
 	if (next_cpu >= nr_cpu_ids)
 		next_cpu = cpumask_first(cpu_online_mask);
-<<<<<<< HEAD
-	watchdog_timer.expires += WATCHDOG_INTERVAL;
-	add_timer_on(&watchdog_timer, next_cpu);
-=======
 
 	/*
 	 * Arm timer if not already pending: could race with concurrent
@@ -787,7 +574,6 @@ static void clocksource_watchdog(struct timer_list *unused)
 		watchdog_timer.expires += WATCHDOG_INTERVAL + extra_wait;
 		add_timer_on(&watchdog_timer, next_cpu);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock(&watchdog_lock);
 }
@@ -796,12 +582,7 @@ static inline void clocksource_start_watchdog(void)
 {
 	if (watchdog_running || !watchdog || list_empty(&watchdog_list))
 		return;
-<<<<<<< HEAD
-	init_timer(&watchdog_timer);
-	watchdog_timer.function = clocksource_watchdog;
-=======
 	timer_setup(&watchdog_timer, clocksource_watchdog, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	watchdog_timer.expires = jiffies + WATCHDOG_INTERVAL;
 	add_timer_on(&watchdog_timer, cpumask_first(cpu_online_mask));
 	watchdog_running = 1;
@@ -815,17 +596,6 @@ static inline void clocksource_stop_watchdog(void)
 	watchdog_running = 0;
 }
 
-<<<<<<< HEAD
-static inline void clocksource_reset_watchdog(void)
-{
-	struct clocksource *cs;
-
-	list_for_each_entry(cs, &watchdog_list, wd_list)
-		cs->flags &= ~CLOCK_SOURCE_WATCHDOG;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void clocksource_resume_watchdog(void)
 {
 	atomic_inc(&watchdog_reset_pending);
@@ -833,14 +603,8 @@ static void clocksource_resume_watchdog(void)
 
 static void clocksource_enqueue_watchdog(struct clocksource *cs)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-
-	spin_lock_irqsave(&watchdog_lock, flags);
-=======
 	INIT_LIST_HEAD(&cs->wd_list);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cs->flags & CLOCK_SOURCE_MUST_VERIFY) {
 		/* cs is a clocksource to be watched. */
 		list_add(&cs->wd_list, &watchdog_list);
@@ -849,15 +613,6 @@ static void clocksource_enqueue_watchdog(struct clocksource *cs)
 		/* cs is a watchdog. */
 		if (cs->flags & CLOCK_SOURCE_IS_CONTINUOUS)
 			cs->flags |= CLOCK_SOURCE_VALID_FOR_HRES;
-<<<<<<< HEAD
-		/* Pick the best watchdog. */
-		if (!watchdog || cs->rating > watchdog->rating) {
-			watchdog = cs;
-			/* Reset watchdog cycles */
-			clocksource_reset_watchdog();
-		}
-	}
-=======
 	}
 }
 
@@ -893,7 +648,6 @@ static void clocksource_select_watchdog(bool fallback)
 	if (watchdog != old_wd)
 		clocksource_reset_watchdog();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check if the watchdog timer needs to be started. */
 	clocksource_start_watchdog();
 	spin_unlock_irqrestore(&watchdog_lock, flags);
@@ -901,31 +655,6 @@ static void clocksource_select_watchdog(bool fallback)
 
 static void clocksource_dequeue_watchdog(struct clocksource *cs)
 {
-<<<<<<< HEAD
-	struct clocksource *tmp;
-	unsigned long flags;
-
-	spin_lock_irqsave(&watchdog_lock, flags);
-	if (cs->flags & CLOCK_SOURCE_MUST_VERIFY) {
-		/* cs is a watched clocksource. */
-		list_del_init(&cs->wd_list);
-	} else if (cs == watchdog) {
-		/* Reset watchdog cycles */
-		clocksource_reset_watchdog();
-		/* Current watchdog is removed. Find an alternative. */
-		watchdog = NULL;
-		list_for_each_entry(tmp, &clocksource_list, list) {
-			if (tmp == cs || tmp->flags & CLOCK_SOURCE_MUST_VERIFY)
-				continue;
-			if (!watchdog || tmp->rating > watchdog->rating)
-				watchdog = tmp;
-		}
-	}
-	cs->flags &= ~CLOCK_SOURCE_WATCHDOG;
-	/* Check if the watchdog timer needs to be stopped. */
-	clocksource_stop_watchdog();
-	spin_unlock_irqrestore(&watchdog_lock, flags);
-=======
 	if (cs != watchdog) {
 		if (cs->flags & CLOCK_SOURCE_MUST_VERIFY) {
 			/* cs is a watched clocksource. */
@@ -965,49 +694,22 @@ static int __clocksource_watchdog_kthread(void)
 	spin_unlock_irqrestore(&watchdog_lock, flags);
 
 	return select;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int clocksource_watchdog_kthread(void *data)
 {
-<<<<<<< HEAD
-	struct clocksource *cs, *tmp;
-	unsigned long flags;
-	LIST_HEAD(unstable);
-
-	mutex_lock(&clocksource_mutex);
-	spin_lock_irqsave(&watchdog_lock, flags);
-	list_for_each_entry_safe(cs, tmp, &watchdog_list, wd_list)
-		if (cs->flags & CLOCK_SOURCE_UNSTABLE) {
-			list_del_init(&cs->wd_list);
-			list_add(&cs->wd_list, &unstable);
-		}
-	/* Check if the watchdog timer needs to be stopped. */
-	clocksource_stop_watchdog();
-	spin_unlock_irqrestore(&watchdog_lock, flags);
-
-	/* Needs to be done outside of watchdog lock */
-	list_for_each_entry_safe(cs, tmp, &unstable, wd_list) {
-		list_del_init(&cs->wd_list);
-		__clocksource_change_rating(cs, 0);
-	}
-=======
 	mutex_lock(&clocksource_mutex);
 	if (__clocksource_watchdog_kthread())
 		clocksource_select();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&clocksource_mutex);
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static bool clocksource_is_watchdog(struct clocksource *cs)
 {
 	return cs == watchdog;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* CONFIG_CLOCKSOURCE_WATCHDOG */
 
 static void clocksource_enqueue_watchdog(struct clocksource *cs)
@@ -1016,14 +718,6 @@ static void clocksource_enqueue_watchdog(struct clocksource *cs)
 		cs->flags |= CLOCK_SOURCE_VALID_FOR_HRES;
 }
 
-<<<<<<< HEAD
-static inline void clocksource_dequeue_watchdog(struct clocksource *cs) { }
-static inline void clocksource_resume_watchdog(void) { }
-static inline int clocksource_watchdog_kthread(void *data) { return 0; }
-
-#endif /* CONFIG_CLOCKSOURCE_WATCHDOG */
-
-=======
 static void clocksource_select_watchdog(bool fallback) { }
 static inline void clocksource_dequeue_watchdog(struct clocksource *cs) { }
 static inline void clocksource_resume_watchdog(void) { }
@@ -1170,7 +864,6 @@ u64 clocksource_stop_suspend_timing(struct clocksource *cs, u64 cycle_now)
 	return nsec;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * clocksource_suspend - suspend the clocksource(s)
  */
@@ -1231,10 +924,6 @@ static u32 clocksource_max_adjustment(struct clocksource *cs)
  * @shift:	cycle to nanosecond divisor (power of two)
  * @maxadj:	maximum adjustment value to mult (~11%)
  * @mask:	bitmask for two's complement subtraction of non 64 bit counters
-<<<<<<< HEAD
- */
-u64 clocks_calc_max_nsecs(u32 mult, u32 shift, u32 maxadj, u64 mask)
-=======
  * @max_cyc:	maximum cycle value before potential overflow (does not include
  *		any safety margin)
  *
@@ -1245,32 +934,15 @@ u64 clocks_calc_max_nsecs(u32 mult, u32 shift, u32 maxadj, u64 mask)
  * are larger than what the math used can handle without overflows.
  */
 u64 clocks_calc_max_nsecs(u32 mult, u32 shift, u32 maxadj, u64 mask, u64 *max_cyc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 max_nsecs, max_cycles;
 
 	/*
 	 * Calculate the maximum number of cycles that we can pass to the
-<<<<<<< HEAD
-	 * cyc2ns function without overflowing a 64-bit signed result. The
-	 * maximum number of cycles is equal to ULLONG_MAX/(mult+maxadj)
-	 * which is equivalent to the below.
-	 * max_cycles < (2^63)/(mult + maxadj)
-	 * max_cycles < 2^(log2((2^63)/(mult + maxadj)))
-	 * max_cycles < 2^(log2(2^63) - log2(mult + maxadj))
-	 * max_cycles < 2^(63 - log2(mult + maxadj))
-	 * max_cycles < 1 << (63 - log2(mult + maxadj))
-	 * Please note that we add 1 to the result of the log2 to account for
-	 * any rounding errors, ensure the above inequality is satisfied and
-	 * no overflow will occur.
-	 */
-	max_cycles = 1ULL << (63 - (ilog2(mult + maxadj) + 1));
-=======
 	 * cyc2ns() function without overflowing a 64-bit result.
 	 */
 	max_cycles = ULLONG_MAX;
 	do_div(max_cycles, mult+maxadj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The actual maximum number of cycles we can defer the clocksource is
@@ -1281,8 +953,6 @@ u64 clocks_calc_max_nsecs(u32 mult, u32 shift, u32 maxadj, u64 mask, u64 *max_cy
 	max_cycles = min(max_cycles, mask);
 	max_nsecs = clocksource_cyc2ns(max_cycles, mult - maxadj, shift);
 
-<<<<<<< HEAD
-=======
 	/* return the max_cycles value as well if requested */
 	if (max_cyc)
 		*max_cyc = max_cycles;
@@ -1290,33 +960,10 @@ u64 clocks_calc_max_nsecs(u32 mult, u32 shift, u32 maxadj, u64 mask, u64 *max_cy
 	/* Return 50% of the actual maximum, so we can detect bad values */
 	max_nsecs >>= 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return max_nsecs;
 }
 
 /**
-<<<<<<< HEAD
- * clocksource_max_deferment - Returns max time the clocksource can be deferred
- * @cs:         Pointer to clocksource
- *
- */
-static u64 clocksource_max_deferment(struct clocksource *cs)
-{
-	u64 max_nsecs;
-
-	max_nsecs = clocks_calc_max_nsecs(cs->mult, cs->shift, cs->maxadj,
-					  cs->mask);
-	/*
-	 * To ensure that the clocksource does not wrap whilst we are idle,
-	 * limit the time the clocksource can be deferred by 12.5%. Please
-	 * note a margin of 12.5% is used because this can be computed with
-	 * a shift, versus say 10% which would require division.
-	 */
-	return max_nsecs - (max_nsecs >> 3);
-}
-
-#ifndef CONFIG_ARCH_USES_GETTIMEOFFSET
-=======
  * clocksource_update_max_deferment - Updates the clocksource max_idle_ns & max_cycles
  * @cs:         Pointer to clocksource to be updated
  *
@@ -1400,7 +1047,6 @@ found:
 		curr_clocksource = best;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * clocksource_select - Select the best clocksource available
@@ -1412,47 +1058,6 @@ found:
  */
 static void clocksource_select(void)
 {
-<<<<<<< HEAD
-	struct clocksource *best, *cs;
-
-	if (!finished_booting || list_empty(&clocksource_list))
-		return;
-	/* First clocksource on the list has the best rating. */
-	best = list_first_entry(&clocksource_list, struct clocksource, list);
-	/* Check for the override clocksource. */
-	list_for_each_entry(cs, &clocksource_list, list) {
-		if (strcmp(cs->name, override_name) != 0)
-			continue;
-		/*
-		 * Check to make sure we don't switch to a non-highres
-		 * capable clocksource if the tick code is in oneshot
-		 * mode (highres or nohz)
-		 */
-		if (!(cs->flags & CLOCK_SOURCE_VALID_FOR_HRES) &&
-		    tick_oneshot_mode_active()) {
-			/* Override clocksource cannot be used. */
-			printk(KERN_WARNING "Override clocksource %s is not "
-			       "HRT compatible. Cannot switch while in "
-			       "HRT/NOHZ mode\n", cs->name);
-			override_name[0] = 0;
-		} else
-			/* Override clocksource can be used. */
-			best = cs;
-		break;
-	}
-	if (curr_clocksource != best) {
-		printk(KERN_INFO "Switching to clocksource %s\n", best->name);
-		curr_clocksource = best;
-		timekeeping_notify(curr_clocksource);
-	}
-}
-
-#else /* !CONFIG_ARCH_USES_GETTIMEOFFSET */
-
-static inline void clocksource_select(void) { }
-
-#endif
-=======
 	__clocksource_select(false);
 }
 
@@ -1460,7 +1065,6 @@ static void clocksource_select_fallback(void)
 {
 	__clocksource_select(true);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * clocksource_done_booting - Called near the end of core bootup
@@ -1473,24 +1077,11 @@ static int __init clocksource_done_booting(void)
 {
 	mutex_lock(&clocksource_mutex);
 	curr_clocksource = clocksource_default_clock();
-<<<<<<< HEAD
-	mutex_unlock(&clocksource_mutex);
-
-	finished_booting = 1;
-
-	/*
-	 * Run the watchdog first to eliminate unstable clock sources
-	 */
-	clocksource_watchdog_kthread(NULL);
-
-	mutex_lock(&clocksource_mutex);
-=======
 	finished_booting = 1;
 	/*
 	 * Run the watchdog first to eliminate unstable clock sources
 	 */
 	__clocksource_watchdog_kthread();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clocksource_select();
 	mutex_unlock(&clocksource_mutex);
 	return 0;
@@ -1505,28 +1096,17 @@ static void clocksource_enqueue(struct clocksource *cs)
 	struct list_head *entry = &clocksource_list;
 	struct clocksource *tmp;
 
-<<<<<<< HEAD
-	list_for_each_entry(tmp, &clocksource_list, list)
-		/* Keep track of the place, where to insert */
-		if (tmp->rating >= cs->rating)
-			entry = &tmp->list;
-=======
 	list_for_each_entry(tmp, &clocksource_list, list) {
 		/* Keep track of the place, where to insert */
 		if (tmp->rating < cs->rating)
 			break;
 		entry = &tmp->list;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&cs->list, entry);
 }
 
 /**
-<<<<<<< HEAD
- * __clocksource_updatefreq_scale - Used update clocksource with new freq
-=======
  * __clocksource_update_freq_scale - Used update clocksource with new freq
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cs:		clocksource to be registered
  * @scale:	Scale factor multiplied against freq to get clocksource hz
  * @freq:	clocksource frequency (cycles per second) divided by scale
@@ -1534,42 +1114,6 @@ static void clocksource_enqueue(struct clocksource *cs)
  * This should only be called from the clocksource->enable() method.
  *
  * This *SHOULD NOT* be called directly! Please use the
-<<<<<<< HEAD
- * clocksource_updatefreq_hz() or clocksource_updatefreq_khz helper functions.
- */
-void __clocksource_updatefreq_scale(struct clocksource *cs, u32 scale, u32 freq)
-{
-	u64 sec;
-	/*
-	 * Calc the maximum number of seconds which we can run before
-	 * wrapping around. For clocksources which have a mask > 32bit
-	 * we need to limit the max sleep time to have a good
-	 * conversion precision. 10 minutes is still a reasonable
-	 * amount. That results in a shift value of 24 for a
-	 * clocksource with mask >= 40bit and f >= 4GHz. That maps to
-	 * ~ 0.06ppm granularity for NTP. We apply the same 12.5%
-	 * margin as we do in clocksource_max_deferment()
-	 */
-	sec = (cs->mask - (cs->mask >> 3));
-	do_div(sec, freq);
-	do_div(sec, scale);
-	if (!sec)
-		sec = 1;
-	else if (sec > 600 && cs->mask > UINT_MAX)
-		sec = 600;
-
-	clocks_calc_mult_shift(&cs->mult, &cs->shift, freq,
-			       NSEC_PER_SEC / scale, sec * scale);
-
-	/*
-	 * for clocksources that have large mults, to avoid overflow.
-	 * Since mult may be adjusted by ntp, add an safety extra margin
-	 *
-	 */
-	cs->maxadj = clocksource_max_adjustment(cs);
-	while ((cs->mult + cs->maxadj < cs->mult)
-		|| (cs->mult - cs->maxadj > cs->mult)) {
-=======
  * __clocksource_update_freq_hz() or __clocksource_update_freq_khz() helper
  * functions.
  */
@@ -1629,17 +1173,11 @@ void __clocksource_update_freq_scale(struct clocksource *cs, u32 scale, u32 freq
 	cs->maxadj = clocksource_max_adjustment(cs);
 	while (freq && ((cs->mult + cs->maxadj < cs->mult)
 		|| (cs->mult - cs->maxadj > cs->mult))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cs->mult >>= 1;
 		cs->shift--;
 		cs->maxadj = clocksource_max_adjustment(cs);
 	}
 
-<<<<<<< HEAD
-	cs->max_idle_ns = clocksource_max_deferment(cs);
-}
-EXPORT_SYMBOL_GPL(__clocksource_updatefreq_scale);
-=======
 	/*
 	 * Only warn for *special* clocksources that self-define
 	 * their mult/shift values and don't specify a freq.
@@ -1654,7 +1192,6 @@ EXPORT_SYMBOL_GPL(__clocksource_updatefreq_scale);
 		cs->name, cs->mask, cs->max_cycles, cs->max_idle_ns);
 }
 EXPORT_SYMBOL_GPL(__clocksource_update_freq_scale);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __clocksource_register_scale - Used to install new clocksources
@@ -1669,17 +1206,6 @@ EXPORT_SYMBOL_GPL(__clocksource_update_freq_scale);
  */
 int __clocksource_register_scale(struct clocksource *cs, u32 scale, u32 freq)
 {
-<<<<<<< HEAD
-
-	/* Initialize mult/shift and max_idle_ns */
-	__clocksource_updatefreq_scale(cs, scale, freq);
-
-	/* Add clocksource to the clcoksource list */
-	mutex_lock(&clocksource_mutex);
-	clocksource_enqueue(cs);
-	clocksource_enqueue_watchdog(cs);
-	clocksource_select();
-=======
 	unsigned long flags;
 
 	clocksource_arch_init(cs);
@@ -1707,51 +1233,16 @@ int __clocksource_register_scale(struct clocksource *cs, u32 scale, u32 freq)
 	clocksource_select();
 	clocksource_select_watchdog(false);
 	__clocksource_suspend_select(cs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&clocksource_mutex);
 	return 0;
 }
 EXPORT_SYMBOL_GPL(__clocksource_register_scale);
 
-<<<<<<< HEAD
-
-/**
- * clocksource_register - Used to install new clocksources
- * @cs:		clocksource to be registered
- *
- * Returns -EBUSY if registration fails, zero otherwise.
- */
-int clocksource_register(struct clocksource *cs)
-{
-	/* calculate max adjustment for given mult/shift */
-	cs->maxadj = clocksource_max_adjustment(cs);
-	WARN_ONCE(cs->mult + cs->maxadj < cs->mult,
-		"Clocksource %s might overflow on 11%% adjustment\n",
-		cs->name);
-
-	/* calculate max idle time permitted for this clocksource */
-	cs->max_idle_ns = clocksource_max_deferment(cs);
-
-	mutex_lock(&clocksource_mutex);
-	clocksource_enqueue(cs);
-	clocksource_enqueue_watchdog(cs);
-	clocksource_select();
-	mutex_unlock(&clocksource_mutex);
-	return 0;
-}
-EXPORT_SYMBOL(clocksource_register);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __clocksource_change_rating(struct clocksource *cs, int rating)
 {
 	list_del(&cs->list);
 	cs->rating = rating;
 	clocksource_enqueue(cs);
-<<<<<<< HEAD
-	clocksource_select();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1761,10 +1252,6 @@ static void __clocksource_change_rating(struct clocksource *cs, int rating)
  */
 void clocksource_change_rating(struct clocksource *cs, int rating)
 {
-<<<<<<< HEAD
-	mutex_lock(&clocksource_mutex);
-	__clocksource_change_rating(cs, rating);
-=======
 	unsigned long flags;
 
 	mutex_lock(&clocksource_mutex);
@@ -1775,13 +1262,10 @@ void clocksource_change_rating(struct clocksource *cs, int rating)
 	clocksource_select();
 	clocksource_select_watchdog(false);
 	clocksource_suspend_select(false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&clocksource_mutex);
 }
 EXPORT_SYMBOL(clocksource_change_rating);
 
-<<<<<<< HEAD
-=======
 /*
  * Unbind clocksource @cs. Called with clocksource_mutex held
  */
@@ -1820,20 +1304,10 @@ static int clocksource_unbind(struct clocksource *cs)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * clocksource_unregister - remove a registered clocksource
  * @cs:	clocksource to be unregistered
  */
-<<<<<<< HEAD
-void clocksource_unregister(struct clocksource *cs)
-{
-	mutex_lock(&clocksource_mutex);
-	clocksource_dequeue_watchdog(cs);
-	list_del(&cs->list);
-	clocksource_select();
-	mutex_unlock(&clocksource_mutex);
-=======
 int clocksource_unregister(struct clocksource *cs)
 {
 	int ret = 0;
@@ -1843,32 +1317,21 @@ int clocksource_unregister(struct clocksource *cs)
 		ret = clocksource_unbind(cs);
 	mutex_unlock(&clocksource_mutex);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(clocksource_unregister);
 
 #ifdef CONFIG_SYSFS
 /**
-<<<<<<< HEAD
- * sysfs_show_current_clocksources - sysfs interface for current clocksource
-=======
  * current_clocksource_show - sysfs interface for current clocksource
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	unused
  * @attr:	unused
  * @buf:	char buffer to be filled with clocksource list
  *
  * Provides sysfs interface for listing current clocksource.
  */
-<<<<<<< HEAD
-static ssize_t
-sysfs_show_current_clocksources(struct device *dev,
-				struct device_attribute *attr, char *buf)
-=======
 static ssize_t current_clocksource_show(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ssize_t count = 0;
 
@@ -1879,10 +1342,6 @@ static ssize_t current_clocksource_show(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-/**
- * sysfs_override_clocksource - interface for manually overriding clocksource
-=======
 ssize_t sysfs_get_uname(const char *buf, char *dst, size_t cnt)
 {
 	size_t ret = cnt;
@@ -1902,7 +1361,6 @@ ssize_t sysfs_get_uname(const char *buf, char *dst, size_t cnt)
 
 /**
  * current_clocksource_store - interface for manually overriding clocksource
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	unused
  * @attr:	unused
  * @buf:	name of override clocksource
@@ -1911,28 +1369,6 @@ ssize_t sysfs_get_uname(const char *buf, char *dst, size_t cnt)
  * Takes input from sysfs interface for manually overriding the default
  * clocksource selection.
  */
-<<<<<<< HEAD
-static ssize_t sysfs_override_clocksource(struct device *dev,
-					  struct device_attribute *attr,
-					  const char *buf, size_t count)
-{
-	size_t ret = count;
-
-	/* strings from sysfs write are not 0 terminated! */
-	if (count >= sizeof(override_name))
-		return -EINVAL;
-
-	/* strip of \n: */
-	if (buf[count-1] == '\n')
-		count--;
-
-	mutex_lock(&clocksource_mutex);
-
-	if (count > 0)
-		memcpy(override_name, buf, count);
-	override_name[count] = 0;
-	clocksource_select();
-=======
 static ssize_t current_clocksource_store(struct device *dev,
 					 struct device_attribute *attr,
 					 const char *buf, size_t count)
@@ -1944,17 +1380,11 @@ static ssize_t current_clocksource_store(struct device *dev,
 	ret = sysfs_get_uname(buf, override_name, count);
 	if (ret >= 0)
 		clocksource_select();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&clocksource_mutex);
 
 	return ret;
 }
-<<<<<<< HEAD
-
-/**
- * sysfs_show_available_clocksources - sysfs interface for listing clocksource
-=======
 static DEVICE_ATTR_RW(current_clocksource);
 
 /**
@@ -1994,23 +1424,15 @@ static DEVICE_ATTR_WO(unbind_clocksource);
 
 /**
  * available_clocksource_show - sysfs interface for listing clocksource
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	unused
  * @attr:	unused
  * @buf:	char buffer to be filled with clocksource list
  *
  * Provides sysfs interface for listing registered clocksources
  */
-<<<<<<< HEAD
-static ssize_t
-sysfs_show_available_clocksources(struct device *dev,
-				  struct device_attribute *attr,
-				  char *buf)
-=======
 static ssize_t available_clocksource_show(struct device *dev,
 					  struct device_attribute *attr,
 					  char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct clocksource *src;
 	ssize_t count = 0;
@@ -2034,19 +1456,6 @@ static ssize_t available_clocksource_show(struct device *dev,
 
 	return count;
 }
-<<<<<<< HEAD
-
-/*
- * Sysfs setup bits:
- */
-static DEVICE_ATTR(current_clocksource, 0644, sysfs_show_current_clocksources,
-		   sysfs_override_clocksource);
-
-static DEVICE_ATTR(available_clocksource, 0444,
-		   sysfs_show_available_clocksources, NULL);
-
-static struct bus_type clocksource_subsys = {
-=======
 static DEVICE_ATTR_RO(available_clocksource);
 
 static struct attribute *clocksource_attrs[] = {
@@ -2058,7 +1467,6 @@ static struct attribute *clocksource_attrs[] = {
 ATTRIBUTE_GROUPS(clocksource);
 
 static const struct bus_type clocksource_subsys = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "clocksource",
 	.dev_name = "clocksource",
 };
@@ -2066,10 +1474,7 @@ static const struct bus_type clocksource_subsys = {
 static struct device device_clocksource = {
 	.id	= 0,
 	.bus	= &clocksource_subsys,
-<<<<<<< HEAD
-=======
 	.groups	= clocksource_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init init_clocksource_sysfs(void)
@@ -2078,18 +1483,7 @@ static int __init init_clocksource_sysfs(void)
 
 	if (!error)
 		error = device_register(&device_clocksource);
-<<<<<<< HEAD
-	if (!error)
-		error = device_create_file(
-				&device_clocksource,
-				&dev_attr_current_clocksource);
-	if (!error)
-		error = device_create_file(
-				&device_clocksource,
-				&dev_attr_available_clocksource);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -2107,11 +1501,7 @@ static int __init boot_override_clocksource(char* str)
 {
 	mutex_lock(&clocksource_mutex);
 	if (str)
-<<<<<<< HEAD
-		strlcpy(override_name, str, sizeof(override_name));
-=======
 		strscpy(override_name, str, sizeof(override_name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&clocksource_mutex);
 	return 1;
 }
@@ -2128,19 +1518,10 @@ __setup("clocksource=", boot_override_clocksource);
 static int __init boot_override_clock(char* str)
 {
 	if (!strcmp(str, "pmtmr")) {
-<<<<<<< HEAD
-		printk("Warning: clock=pmtmr is deprecated. "
-			"Use clocksource=acpi_pm.\n");
-		return boot_override_clocksource("acpi_pm");
-	}
-	printk("Warning! clock= boot option is deprecated. "
-		"Use clocksource=xyz\n");
-=======
 		pr_warn("clock=pmtmr is deprecated - use clocksource=acpi_pm\n");
 		return boot_override_clocksource("acpi_pm");
 	}
 	pr_warn("clock= boot option is deprecated - use clocksource=xyz\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return boot_override_clocksource(str);
 }
 

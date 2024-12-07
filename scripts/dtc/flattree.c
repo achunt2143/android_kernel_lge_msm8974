@@ -1,27 +1,6 @@
-<<<<<<< HEAD
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- *
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "dtc.h"
@@ -55,11 +34,7 @@ static struct version_info {
 
 struct emitter {
 	void (*cell)(void *, cell_t);
-<<<<<<< HEAD
-	void (*string)(void *, char *, int);
-=======
 	void (*string)(void *, const char *, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*align)(void *, int);
 	void (*data)(void *, struct data);
 	void (*beginnode)(void *, struct label *labels);
@@ -74,11 +49,7 @@ static void bin_emit_cell(void *e, cell_t val)
 	*dtbuf = data_append_cell(*dtbuf, val);
 }
 
-<<<<<<< HEAD
-static void bin_emit_string(void *e, char *str, int len)
-=======
 static void bin_emit_string(void *e, const char *str, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct data *dtbuf = e;
 
@@ -153,34 +124,12 @@ static void asm_emit_cell(void *e, cell_t val)
 {
 	FILE *f = e;
 
-<<<<<<< HEAD
-	fprintf(f, "\t.byte 0x%02x; .byte 0x%02x; .byte 0x%02x; .byte 0x%02x\n",
-=======
 	fprintf(f, "\t.byte\t0x%02x\n" "\t.byte\t0x%02x\n"
 		"\t.byte\t0x%02x\n" "\t.byte\t0x%02x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(val >> 24) & 0xff, (val >> 16) & 0xff,
 		(val >> 8) & 0xff, val & 0xff);
 }
 
-<<<<<<< HEAD
-static void asm_emit_string(void *e, char *str, int len)
-{
-	FILE *f = e;
-	char c = 0;
-
-	if (len != 0) {
-		/* XXX: ewww */
-		c = str[len];
-		str[len] = '\0';
-	}
-
-	fprintf(f, "\t.string\t\"%s\"\n", str);
-
-	if (len != 0) {
-		str[len] = c;
-	}
-=======
 static void asm_emit_string(void *e, const char *str, int len)
 {
 	FILE *f = e;
@@ -189,7 +138,6 @@ static void asm_emit_string(void *e, const char *str, int len)
 		fprintf(f, "\t.asciz\t\"%.*s\"\n", len, str);
 	else
 		fprintf(f, "\t.asciz\t\"%s\"\n", str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void asm_emit_align(void *e, int a)
@@ -202,22 +150,14 @@ static void asm_emit_align(void *e, int a)
 static void asm_emit_data(void *e, struct data d)
 {
 	FILE *f = e;
-<<<<<<< HEAD
-	int off = 0;
-=======
 	unsigned int off = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct marker *m = d.markers;
 
 	for_each_marker_of_type(m, LABEL)
 		emit_offset_label(f, m->ref, m->offset);
 
 	while ((d.len - off) >= sizeof(uint32_t)) {
-<<<<<<< HEAD
-		asm_emit_cell(e, fdt32_to_cpu(*((uint32_t *)(d.val+off))));
-=======
 		asm_emit_cell(e, dtb_ld32(d.val + off));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		off += sizeof(uint32_t);
 	}
 
@@ -280,11 +220,7 @@ static struct emitter asm_emitter = {
 
 static int stringtable_insert(struct data *d, const char *str)
 {
-<<<<<<< HEAD
-	int i;
-=======
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: do this more efficiently? */
 
@@ -303,11 +239,7 @@ static void flatten_tree(struct node *tree, struct emitter *emit,
 {
 	struct property *prop;
 	struct node *child;
-<<<<<<< HEAD
-	int seen_name_prop = 0;
-=======
 	bool seen_name_prop = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tree->deleted)
 		return;
@@ -325,11 +257,7 @@ static void flatten_tree(struct node *tree, struct emitter *emit,
 		int nameoff;
 
 		if (streq(prop->name, "name"))
-<<<<<<< HEAD
-			seen_name_prop = 1;
-=======
 			seen_name_prop = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nameoff = stringtable_insert(strbuf, prop->name);
 
@@ -368,28 +296,16 @@ static struct data flatten_reserve_list(struct reserve_info *reservelist,
 {
 	struct reserve_info *re;
 	struct data d = empty_data;
-<<<<<<< HEAD
-	static struct fdt_reserve_entry null_re = {0,0};
-	int    j;
-
-	for (re = reservelist; re; re = re->next) {
-		d = data_append_re(d, &re->re);
-=======
 	unsigned int j;
 
 	for (re = reservelist; re; re = re->next) {
 		d = data_append_re(d, re->address, re->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * Add additional reserved slots if the user asked for them.
 	 */
 	for (j = 0; j < reservenum; j++) {
-<<<<<<< HEAD
-		d = data_append_re(d, &null_re);
-=======
 		d = data_append_re(d, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return d;
@@ -427,17 +343,10 @@ static void make_fdt_header(struct fdt_header *fdt,
 		fdt->size_dt_struct = cpu_to_fdt32(dtsize);
 }
 
-<<<<<<< HEAD
-void dt_to_blob(FILE *f, struct boot_info *bi, int version)
-{
-	struct version_info *vi = NULL;
-	int i;
-=======
 void dt_to_blob(FILE *f, struct dt_info *dti, int version)
 {
 	struct version_info *vi = NULL;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct data blob       = empty_data;
 	struct data reservebuf = empty_data;
 	struct data dtbuf      = empty_data;
@@ -452,16 +361,6 @@ void dt_to_blob(FILE *f, struct dt_info *dti, int version)
 	if (!vi)
 		die("Unknown device tree blob version %d\n", version);
 
-<<<<<<< HEAD
-	flatten_tree(bi->dt, &bin_emitter, &dtbuf, &strbuf, vi);
-	bin_emit_cell(&dtbuf, FDT_END);
-
-	reservebuf = flatten_reserve_list(bi->reservelist, vi);
-
-	/* Make header */
-	make_fdt_header(&fdt, vi, reservebuf.len, dtbuf.len, strbuf.len,
-			bi->boot_cpuid_phys);
-=======
 	flatten_tree(dti->dt, &bin_emitter, &dtbuf, &strbuf, vi);
 	bin_emit_cell(&dtbuf, FDT_END);
 
@@ -470,19 +369,12 @@ void dt_to_blob(FILE *f, struct dt_info *dti, int version)
 	/* Make header */
 	make_fdt_header(&fdt, vi, reservebuf.len, dtbuf.len, strbuf.len,
 			dti->boot_cpuid_phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the user asked for more space than is used, adjust the totalsize.
 	 */
 	if (minsize > 0) {
 		padlen = minsize - fdt32_to_cpu(fdt.totalsize);
-<<<<<<< HEAD
-		if ((padlen < 0) && (quiet < 1))
-			fprintf(stderr,
-				"Warning: blob size %d >= minimum size %d\n",
-				fdt32_to_cpu(fdt.totalsize), minsize);
-=======
 		if (padlen < 0) {
 			padlen = 0;
 			if (quiet < 1)
@@ -490,19 +382,15 @@ void dt_to_blob(FILE *f, struct dt_info *dti, int version)
 					"Warning: blob size %"PRIu32" >= minimum size %d\n",
 					fdt32_to_cpu(fdt.totalsize), minsize);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (padsize > 0)
 		padlen = padsize;
 
-<<<<<<< HEAD
-=======
 	if (alignsize > 0)
 		padlen = ALIGN(fdt32_to_cpu(fdt.totalsize) + padlen, alignsize)
 			- fdt32_to_cpu(fdt.totalsize);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (padlen > 0) {
 		int tsize = fdt32_to_cpu(fdt.totalsize);
 		tsize += padlen;
@@ -551,26 +439,15 @@ static void dump_stringtable_asm(FILE *f, struct data strbuf)
 
 	while (p < (strbuf.val + strbuf.len)) {
 		len = strlen(p);
-<<<<<<< HEAD
-		fprintf(f, "\t.string \"%s\"\n", p);
-=======
 		fprintf(f, "\t.asciz \"%s\"\n", p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p += len+1;
 	}
 }
 
-<<<<<<< HEAD
-void dt_to_asm(FILE *f, struct boot_info *bi, int version)
-{
-	struct version_info *vi = NULL;
-	int i;
-=======
 void dt_to_asm(FILE *f, struct dt_info *dti, int version)
 {
 	struct version_info *vi = NULL;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct data strbuf = empty_data;
 	struct reserve_info *re;
 	const char *symprefix = "dt";
@@ -607,11 +484,7 @@ void dt_to_asm(FILE *f, struct dt_info *dti, int version)
 
 	if (vi->flags & FTF_BOOTCPUID) {
 		fprintf(f, "\t/* boot_cpuid_phys */\n");
-<<<<<<< HEAD
-		asm_emit_cell(f, bi->boot_cpuid_phys);
-=======
 		asm_emit_cell(f, dti->boot_cpuid_phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (vi->flags & FTF_STRTABSIZE) {
@@ -638,36 +511,21 @@ void dt_to_asm(FILE *f, struct dt_info *dti, int version)
 	fprintf(f, "/* Memory reserve map from source file */\n");
 
 	/*
-<<<<<<< HEAD
-	 * Use .long on high and low halfs of u64s to avoid .quad
-	 * as it appears .quad isn't available in some assemblers.
-	 */
-	for (re = bi->reservelist; re; re = re->next) {
-=======
 	 * Use .long on high and low halves of u64s to avoid .quad
 	 * as it appears .quad isn't available in some assemblers.
 	 */
 	for (re = dti->reservelist; re; re = re->next) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct label *l;
 
 		for_each_label(re->labels, l) {
 			fprintf(f, "\t.globl\t%s\n", l->label);
 			fprintf(f, "%s:\n", l->label);
 		}
-<<<<<<< HEAD
-		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->re.address >> 32));
-		ASM_EMIT_BELONG(f, "0x%08x",
-				(unsigned int)(re->re.address & 0xffffffff));
-		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->re.size >> 32));
-		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->re.size & 0xffffffff));
-=======
 		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->address >> 32));
 		ASM_EMIT_BELONG(f, "0x%08x",
 				(unsigned int)(re->address & 0xffffffff));
 		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->size >> 32));
 		ASM_EMIT_BELONG(f, "0x%08x", (unsigned int)(re->size & 0xffffffff));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = 0; i < reservenum; i++) {
 		fprintf(f, "\t.long\t0, 0\n\t.long\t0, 0\n");
@@ -676,11 +534,7 @@ void dt_to_asm(FILE *f, struct dt_info *dti, int version)
 	fprintf(f, "\t.long\t0, 0\n\t.long\t0, 0\n");
 
 	emit_label(f, symprefix, "struct_start");
-<<<<<<< HEAD
-	flatten_tree(bi->dt, &asm_emitter, f, &strbuf, vi);
-=======
 	flatten_tree(dti->dt, &asm_emitter, f, &strbuf, vi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fprintf(f, "\t/* FDT_END */\n");
 	asm_emit_cell(f, FDT_END);
@@ -702,11 +556,8 @@ void dt_to_asm(FILE *f, struct dt_info *dti, int version)
 	if (padsize > 0) {
 		fprintf(f, "\t.space\t%d, 0\n", padsize);
 	}
-<<<<<<< HEAD
-=======
 	if (alignsize > 0)
 		asm_emit_align(f, alignsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	emit_label(f, symprefix, "blob_abs_end");
 
 	data_free(strbuf);
@@ -735,11 +586,7 @@ static void flat_read_chunk(struct inbuf *inb, void *p, int len)
 
 static uint32_t flat_read_word(struct inbuf *inb)
 {
-<<<<<<< HEAD
-	uint32_t val;
-=======
 	fdt32_t val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	assert(((inb->ptr - inb->base) % sizeof(val)) == 0);
 
@@ -831,11 +678,7 @@ static struct property *flat_read_property(struct inbuf *dtbuf,
 
 	val = flat_read_data(dtbuf, proplen);
 
-<<<<<<< HEAD
-	return build_property(name, val);
-=======
 	return build_property(name, val, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -852,15 +695,6 @@ static struct reserve_info *flat_read_mem_reserve(struct inbuf *inb)
 	 * First pass, count entries.
 	 */
 	while (1) {
-<<<<<<< HEAD
-		flat_read_chunk(inb, &re, sizeof(re));
-		re.address  = fdt64_to_cpu(re.address);
-		re.size = fdt64_to_cpu(re.size);
-		if (re.size == 0)
-			break;
-
-		new = build_reserve_entry(re.address, re.size);
-=======
 		uint64_t address, size;
 
 		flat_read_chunk(inb, &re, sizeof(re));
@@ -870,7 +704,6 @@ static struct reserve_info *flat_read_mem_reserve(struct inbuf *inb)
 			break;
 
 		new = build_reserve_entry(address, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reservelist = add_reserve_entry(reservelist, new);
 	}
 
@@ -884,11 +717,7 @@ static char *nodename_from_path(const char *ppath, const char *cpath)
 
 	plen = strlen(ppath);
 
-<<<<<<< HEAD
-	if (!strneq(ppath, cpath, plen))
-=======
 	if (!strstarts(cpath, ppath))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		die("Path \"%s\" is not valid as a child of \"%s\"\n",
 		    cpath, ppath);
 
@@ -907,11 +736,7 @@ static struct node *unflatten_tree(struct inbuf *dtbuf,
 	char *flatname;
 	uint32_t val;
 
-<<<<<<< HEAD
-	node = build_node(NULL, NULL);
-=======
 	node = build_node(NULL, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flatname = flat_read_string(dtbuf);
 
@@ -960,27 +785,18 @@ static struct node *unflatten_tree(struct inbuf *dtbuf,
 		}
 	} while (val != FDT_END_NODE);
 
-<<<<<<< HEAD
-=======
 	if (node->name != flatname) {
 		free(flatname);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return node;
 }
 
 
-<<<<<<< HEAD
-struct boot_info *dt_from_blob(const char *fname)
-{
-	FILE *f;
-=======
 struct dt_info *dt_from_blob(const char *fname)
 {
 	FILE *f;
 	fdt32_t magic_buf, totalsize_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t magic, totalsize, version, size_dt, boot_cpuid_phys;
 	uint32_t off_dt, off_str, off_mem_rsvmap;
 	int rc;
@@ -997,11 +813,7 @@ struct dt_info *dt_from_blob(const char *fname)
 
 	f = srcfile_relative_open(fname, NULL);
 
-<<<<<<< HEAD
-	rc = fread(&magic, sizeof(magic), 1, f);
-=======
 	rc = fread(&magic_buf, sizeof(magic_buf), 1, f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ferror(f))
 		die("Error reading DT blob magic number: %s\n",
 		    strerror(errno));
@@ -1012,19 +824,11 @@ struct dt_info *dt_from_blob(const char *fname)
 			die("Mysterious short read reading magic number\n");
 	}
 
-<<<<<<< HEAD
-	magic = fdt32_to_cpu(magic);
-	if (magic != FDT_MAGIC)
-		die("Blob has incorrect magic number\n");
-
-	rc = fread(&totalsize, sizeof(totalsize), 1, f);
-=======
 	magic = fdt32_to_cpu(magic_buf);
 	if (magic != FDT_MAGIC)
 		die("Blob has incorrect magic number\n");
 
 	rc = fread(&totalsize_buf, sizeof(totalsize_buf), 1, f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ferror(f))
 		die("Error reading DT blob size: %s\n", strerror(errno));
 	if (rc < 1) {
@@ -1034,11 +838,7 @@ struct dt_info *dt_from_blob(const char *fname)
 			die("Mysterious short read reading blob size\n");
 	}
 
-<<<<<<< HEAD
-	totalsize = fdt32_to_cpu(totalsize);
-=======
 	totalsize = fdt32_to_cpu(totalsize_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (totalsize < FDT_V1_SIZE)
 		die("DT blob size (%d) is too small\n", totalsize);
 
@@ -1082,11 +882,7 @@ struct dt_info *dt_from_blob(const char *fname)
 
 	if (version >= 3) {
 		uint32_t size_str = fdt32_to_cpu(fdt->size_dt_strings);
-<<<<<<< HEAD
-		if (off_str+size_str > totalsize)
-=======
 		if ((off_str+size_str < off_str) || (off_str+size_str > totalsize))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			die("String table extends past total size\n");
 		inbuf_init(&strbuf, blob + off_str, blob + off_str + size_str);
 	} else {
@@ -1095,11 +891,7 @@ struct dt_info *dt_from_blob(const char *fname)
 
 	if (version >= 17) {
 		size_dt = fdt32_to_cpu(fdt->size_dt_struct);
-<<<<<<< HEAD
-		if (off_dt+size_dt > totalsize)
-=======
 		if ((off_dt+size_dt < off_dt) || (off_dt+size_dt > totalsize))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			die("Structure block extends past total size\n");
 	}
 
@@ -1130,9 +922,5 @@ struct dt_info *dt_from_blob(const char *fname)
 
 	fclose(f);
 
-<<<<<<< HEAD
-	return build_boot_info(reservelist, tree, boot_cpuid_phys);
-=======
 	return build_dt_info(DTSF_V1, reservelist, tree, boot_cpuid_phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

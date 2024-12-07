@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_VGA_H_
 #define _ASM_POWERPC_VGA_H_
 
@@ -29,31 +26,11 @@
 
 static inline void scr_writew(u16 val, volatile u16 *addr)
 {
-<<<<<<< HEAD
-    st_le16(addr, val);
-=======
 	*addr = cpu_to_le16(val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u16 scr_readw(volatile const u16 *addr)
 {
-<<<<<<< HEAD
-    return ld_le16(addr);
-}
-
-#define VT_BUF_HAVE_MEMCPYW
-#define scr_memcpyw	memcpy
-
-#endif /* !CONFIG_VGA_CONSOLE && !CONFIG_MDA_CONSOLE */
-
-extern unsigned long vgacon_remap_base;
-
-#ifdef __powerpc64__
-#define VGA_MAP_MEM(x,s) ((unsigned long) ioremap((x), s))
-#else
-#define VGA_MAP_MEM(x,s) (x + vgacon_remap_base)
-=======
 	return le16_to_cpu(*addr);
 }
 
@@ -74,7 +51,6 @@ static inline void scr_memsetw(u16 *s, u16 v, unsigned int n)
 #define VGA_MAP_MEM(x,s) ((unsigned long) ioremap((x), s))
 #else
 #define VGA_MAP_MEM(x,s) (x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define vga_readb(x) (*(x))

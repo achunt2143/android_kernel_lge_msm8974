@@ -1,43 +1,11 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel 10 Gigabit PCI Express Linux driver
-  Copyright(c) 1999 - 2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Copyright(c) 1999 - 2018 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ixgbe.h"
 #include <linux/if_ether.h>
 #include <linux/gfp.h>
 #include <linux/if_vlan.h>
-<<<<<<< HEAD
-=======
 #include <generated/utsrelease.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
 #include <scsi/fc/fc_fs.h>
@@ -47,11 +15,7 @@
 
 /**
  * ixgbe_fcoe_clear_ddp - clear the given ddp context
-<<<<<<< HEAD
- * @ddp - ptr to the ixgbe_fcoe_ddp
-=======
  * @ddp: ptr to the ixgbe_fcoe_ddp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns : none
  *
@@ -79,19 +43,6 @@ static inline void ixgbe_fcoe_clear_ddp(struct ixgbe_fcoe_ddp *ddp)
  */
 int ixgbe_fcoe_ddp_put(struct net_device *netdev, u16 xid)
 {
-<<<<<<< HEAD
-	int len = 0;
-	struct ixgbe_fcoe *fcoe;
-	struct ixgbe_adapter *adapter;
-	struct ixgbe_fcoe_ddp *ddp;
-	u32 fcbuff;
-
-	if (!netdev)
-		goto out_ddp_put;
-
-	if (xid >= IXGBE_FCOE_DDP_MAX)
-		goto out_ddp_put;
-=======
 	int len;
 	struct ixgbe_fcoe *fcoe;
 	struct ixgbe_adapter *adapter;
@@ -104,40 +55,11 @@ int ixgbe_fcoe_ddp_put(struct net_device *netdev, u16 xid)
 
 	if (xid >= netdev->fcoe_ddp_xid)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter = netdev_priv(netdev);
 	fcoe = &adapter->fcoe;
 	ddp = &fcoe->ddp[xid];
 	if (!ddp->udl)
-<<<<<<< HEAD
-		goto out_ddp_put;
-
-	len = ddp->len;
-	/* if there an error, force to invalidate ddp context */
-	if (ddp->err) {
-		spin_lock_bh(&fcoe->lock);
-		IXGBE_WRITE_REG(&adapter->hw, IXGBE_FCFLT, 0);
-		IXGBE_WRITE_REG(&adapter->hw, IXGBE_FCFLTRW,
-				(xid | IXGBE_FCFLTRW_WE));
-		IXGBE_WRITE_REG(&adapter->hw, IXGBE_FCBUFF, 0);
-		IXGBE_WRITE_REG(&adapter->hw, IXGBE_FCDMARW,
-				(xid | IXGBE_FCDMARW_WE));
-
-		/* guaranteed to be invalidated after 100us */
-		IXGBE_WRITE_REG(&adapter->hw, IXGBE_FCDMARW,
-				(xid | IXGBE_FCDMARW_RE));
-		fcbuff = IXGBE_READ_REG(&adapter->hw, IXGBE_FCBUFF);
-		spin_unlock_bh(&fcoe->lock);
-		if (fcbuff & IXGBE_FCBUFF_VALID)
-			udelay(100);
-	}
-	if (ddp->sgl)
-		pci_unmap_sg(adapter->pdev, ddp->sgl, ddp->sgc,
-			     DMA_FROM_DEVICE);
-	if (ddp->pool) {
-		pci_pool_free(ddp->pool, ddp->udl, ddp->udp);
-=======
 		return 0;
 
 	hw = &adapter->hw;
@@ -190,16 +112,11 @@ skip_ddpinv:
 			     DMA_FROM_DEVICE);
 	if (ddp->pool) {
 		dma_pool_free(ddp->pool, ddp->udl, ddp->udp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ddp->pool = NULL;
 	}
 
 	ixgbe_fcoe_clear_ddp(ddp);
 
-<<<<<<< HEAD
-out_ddp_put:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -209,10 +126,7 @@ out_ddp_put:
  * @xid: the exchange id requesting ddp
  * @sgl: the scatter-gather list for this request
  * @sgc: the number of scatter-gather items
-<<<<<<< HEAD
-=======
  * @target_mode: 1 to setup target mode, 0 to setup initiator mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns : 1 for success and 0 for no ddp
  */
@@ -224,10 +138,7 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 	struct ixgbe_hw *hw;
 	struct ixgbe_fcoe *fcoe;
 	struct ixgbe_fcoe_ddp *ddp;
-<<<<<<< HEAD
-=======
 	struct ixgbe_fcoe_ddp_pool *ddp_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist *sg;
 	unsigned int i, j, dmacount;
 	unsigned int len;
@@ -238,21 +149,12 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 	unsigned int thislen = 0;
 	u32 fcbuff, fcdmarw, fcfltrw, fcrxctl;
 	dma_addr_t addr = 0;
-<<<<<<< HEAD
-	struct pci_pool *pool;
-	unsigned int cpu;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netdev || !sgl)
 		return 0;
 
 	adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	if (xid >= IXGBE_FCOE_DDP_MAX) {
-=======
 	if (xid >= netdev->fcoe_ddp_xid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e_warn(drv, "xid=0x%x out-of-range\n", xid);
 		return 0;
 	}
@@ -263,14 +165,6 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 		return 0;
 
 	fcoe = &adapter->fcoe;
-<<<<<<< HEAD
-	if (!fcoe->pool) {
-		e_warn(drv, "xid=0x%x no ddp pool for fcoe\n", xid);
-		return 0;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ddp = &fcoe->ddp[xid];
 	if (ddp->sgl) {
 		e_err(drv, "xid 0x%x w/ non-null sgl=%p nents=%d\n",
@@ -279,19 +173,6 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 	}
 	ixgbe_fcoe_clear_ddp(ddp);
 
-<<<<<<< HEAD
-	/* setup dma from scsi command sgl */
-	dmacount = pci_map_sg(adapter->pdev, sgl, sgc, DMA_FROM_DEVICE);
-	if (dmacount == 0) {
-		e_err(drv, "xid 0x%x DMA map error\n", xid);
-		return 0;
-	}
-
-	/* alloc the udl from per cpu ddp pool */
-	cpu = get_cpu();
-	pool = *per_cpu_ptr(fcoe->pool, cpu);
-	ddp->udl = pci_pool_alloc(pool, GFP_ATOMIC, &ddp->udp);
-=======
 
 	if (!fcoe->ddp_pool) {
 		e_warn(drv, "No ddp_pool resources allocated\n");
@@ -313,16 +194,11 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 
 	/* alloc the udl from per cpu ddp pool */
 	ddp->udl = dma_pool_alloc(ddp_pool->pool, GFP_ATOMIC, &ddp->udp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ddp->udl) {
 		e_err(drv, "failed allocated ddp context\n");
 		goto out_noddp_unmap;
 	}
-<<<<<<< HEAD
-	ddp->pool = pool;
-=======
 	ddp->pool = ddp_pool->pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ddp->sgl = sgl;
 	ddp->sgc = sgc;
 
@@ -333,11 +209,7 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 		while (len) {
 			/* max number of buffers allowed in one DDP context */
 			if (j >= IXGBE_BUFFCNT_MAX) {
-<<<<<<< HEAD
-				*per_cpu_ptr(fcoe->pcpu_noddp, cpu) += 1;
-=======
 				ddp_pool->noddp++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out_noddp_free;
 			}
 
@@ -377,11 +249,7 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 	 */
 	if (lastsize == bufflen) {
 		if (j >= IXGBE_BUFFCNT_MAX) {
-<<<<<<< HEAD
-			*per_cpu_ptr(fcoe->pcpu_noddp_ext_buff, cpu) += 1;
-=======
 			ddp_pool->noddp_ext_buff++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_noddp_free;
 		}
 
@@ -408,10 +276,6 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 
 	/* program DMA context */
 	hw = &adapter->hw;
-<<<<<<< HEAD
-	spin_lock_bh(&fcoe->lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* turn on last frame indication for target mode as FCP_RSPtarget is
 	 * supposed to send FCP_RSP when it is done. */
@@ -422,18 +286,6 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 		IXGBE_WRITE_REG(hw, IXGBE_FCRXCTRL, fcrxctl);
 	}
 
-<<<<<<< HEAD
-	IXGBE_WRITE_REG(hw, IXGBE_FCPTRL, ddp->udp & DMA_BIT_MASK(32));
-	IXGBE_WRITE_REG(hw, IXGBE_FCPTRH, (u64)ddp->udp >> 32);
-	IXGBE_WRITE_REG(hw, IXGBE_FCBUFF, fcbuff);
-	IXGBE_WRITE_REG(hw, IXGBE_FCDMARW, fcdmarw);
-	/* program filter context */
-	IXGBE_WRITE_REG(hw, IXGBE_FCPARAM, 0);
-	IXGBE_WRITE_REG(hw, IXGBE_FCFLT, IXGBE_FCFLT_VALID);
-	IXGBE_WRITE_REG(hw, IXGBE_FCFLTRW, fcfltrw);
-
-	spin_unlock_bh(&fcoe->lock);
-=======
 	if (hw->mac.type == ixgbe_mac_X550) {
 		/* X550 does not require DDP lock */
 
@@ -461,25 +313,16 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
 
 		spin_unlock_bh(&fcoe->lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 
 out_noddp_free:
-<<<<<<< HEAD
-	pci_pool_free(pool, ddp->udl, ddp->udp);
-	ixgbe_fcoe_clear_ddp(ddp);
-
-out_noddp_unmap:
-	pci_unmap_sg(adapter->pdev, sgl, sgc, DMA_FROM_DEVICE);
-=======
 	dma_pool_free(ddp->pool, ddp->udl, ddp->udp);
 	ixgbe_fcoe_clear_ddp(ddp);
 
 out_noddp_unmap:
 	dma_unmap_sg(&adapter->pdev->dev, sgl, sgc, DMA_FROM_DEVICE);
 out_noddp:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_cpu();
 	return 0;
 }
@@ -548,10 +391,7 @@ int ixgbe_fcoe_ddp(struct ixgbe_adapter *adapter,
 	struct fcoe_crc_eof *crc;
 	__le32 fcerr = ixgbe_test_staterr(rx_desc, IXGBE_RXDADV_ERR_FCERR);
 	__le32 ddp_err;
-<<<<<<< HEAD
-=======
 	int ddp_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 fctl;
 	u16 xid;
 
@@ -573,59 +413,31 @@ int ixgbe_fcoe_ddp(struct ixgbe_adapter *adapter,
 	else
 		xid =  be16_to_cpu(fh->fh_rx_id);
 
-<<<<<<< HEAD
-	if (xid >= IXGBE_FCOE_DDP_MAX)
-		goto ddp_out;
-=======
 	ddp_max = IXGBE_FCOE_DDP_MAX;
 	/* X550 has different DDP Max limit */
 	if (adapter->hw.mac.type == ixgbe_mac_X550)
 		ddp_max = IXGBE_FCOE_DDP_MAX_X550;
 	if (xid >= ddp_max)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fcoe = &adapter->fcoe;
 	ddp = &fcoe->ddp[xid];
 	if (!ddp->udl)
-<<<<<<< HEAD
-		goto ddp_out;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ddp_err = ixgbe_test_staterr(rx_desc, IXGBE_RXDADV_ERR_FCEOFE |
 					      IXGBE_RXDADV_ERR_FCERR);
 	if (ddp_err)
-<<<<<<< HEAD
-		goto ddp_out;
-
-	switch (ixgbe_test_staterr(rx_desc, IXGBE_RXDADV_STAT_FCSTAT)) {
-	/* return 0 to bypass going to ULD for DDPed data */
-	case __constant_cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_DDP):
-=======
 		return -EINVAL;
 
 	switch (ixgbe_test_staterr(rx_desc, IXGBE_RXDADV_STAT_FCSTAT)) {
 	/* return 0 to bypass going to ULD for DDPed data */
 	case cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_DDP):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* update length of DDPed data */
 		ddp->len = le32_to_cpu(rx_desc->wb.lower.hi_dword.rss);
 		rc = 0;
 		break;
 	/* unmap the sg list when FCPRSP is received */
-<<<<<<< HEAD
-	case __constant_cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_FCPRSP):
-		pci_unmap_sg(adapter->pdev, ddp->sgl,
-			     ddp->sgc, DMA_FROM_DEVICE);
-		ddp->err = ddp_err;
-		ddp->sgl = NULL;
-		ddp->sgc = 0;
-		/* fall through */
-	/* if DDP length is present pass it through to ULD */
-	case __constant_cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_NODDP):
-=======
 	case cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_FCPRSP):
 		dma_unmap_sg(&adapter->pdev->dev, ddp->sgl,
 			     ddp->sgc, DMA_FROM_DEVICE);
@@ -635,18 +447,13 @@ int ixgbe_fcoe_ddp(struct ixgbe_adapter *adapter,
 		fallthrough;
 	/* if DDP length is present pass it through to ULD */
 	case cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_NODDP):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* update length of DDPed data */
 		ddp->len = le32_to_cpu(rx_desc->wb.lower.hi_dword.rss);
 		if (ddp->len)
 			rc = ddp->len;
 		break;
 	/* no match will return as an error */
-<<<<<<< HEAD
-	case __constant_cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_NOMTCH):
-=======
 	case cpu_to_le32(IXGBE_RXDADV_STAT_FCSTAT_NOMTCH):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -661,17 +468,10 @@ int ixgbe_fcoe_ddp(struct ixgbe_adapter *adapter,
 	if ((fh->fh_r_ctl == FC_RCTL_DD_SOL_DATA) &&
 	    (fctl & FC_FC_END_SEQ)) {
 		skb_linearize(skb);
-<<<<<<< HEAD
-		crc = (struct fcoe_crc_eof *)skb_put(skb, sizeof(*crc));
-		crc->fcoe_eof = FC_EOF_T;
-	}
-ddp_out:
-=======
 		crc = skb_put(skb, sizeof(*crc));
 		crc->fcoe_eof = FC_EOF_T;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -694,10 +494,7 @@ int ixgbe_fso(struct ixgbe_ring *tx_ring,
 	u32 vlan_macip_lens;
 	u32 fcoe_sof_eof = 0;
 	u32 mss_l4len_idx;
-<<<<<<< HEAD
-=======
 	u32 type_tucmd = IXGBE_ADVTXT_TUCMD_FCOE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 sof, eof;
 
 	if (skb_is_gso(skb) && (skb_shinfo(skb)->gso_type != SKB_GSO_FCOE)) {
@@ -773,17 +570,6 @@ int ixgbe_fso(struct ixgbe_ring *tx_ring,
 		first->gso_segs = DIV_ROUND_UP(skb->len - *hdr_len,
 					       skb_shinfo(skb)->gso_size);
 		first->bytecount += (first->gso_segs - 1) * *hdr_len;
-<<<<<<< HEAD
-		first->tx_flags |= IXGBE_TX_FLAGS_FSO;
-	}
-
-	/* set flag indicating FCOE to ixgbe_tx_map call */
-	first->tx_flags |= IXGBE_TX_FLAGS_FCOE;
-
-	/* mss_l4len_id: use 1 for FSO as TSO, no need for L4LEN */
-	mss_l4len_idx = skb_shinfo(skb)->gso_size << IXGBE_ADVTXD_MSS_SHIFT;
-	mss_l4len_idx |= 1 << IXGBE_ADVTXD_IDX_SHIFT;
-=======
 		first->tx_flags |= IXGBE_TX_FLAGS_TSO;
 		/* Hardware expects L4T to be RSV for FCoE TSO */
 		type_tucmd |= IXGBE_ADVTXD_TUCMD_L4T_RSV;
@@ -794,7 +580,6 @@ int ixgbe_fso(struct ixgbe_ring *tx_ring,
 
 	/* mss_l4len_id: use 0 for FSO as TSO, no need for L4LEN */
 	mss_l4len_idx = skb_shinfo(skb)->gso_size << IXGBE_ADVTXD_MSS_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* vlan_macip_lens: HEADLEN, MACLEN, VLAN tag */
 	vlan_macip_lens = skb_transport_offset(skb) +
@@ -805,55 +590,11 @@ int ixgbe_fso(struct ixgbe_ring *tx_ring,
 
 	/* write context desc */
 	ixgbe_tx_ctxtdesc(tx_ring, vlan_macip_lens, fcoe_sof_eof,
-<<<<<<< HEAD
-			  IXGBE_ADVTXT_TUCMD_FCOE, mss_l4len_idx);
-=======
 			  type_tucmd, mss_l4len_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void ixgbe_fcoe_ddp_pools_free(struct ixgbe_fcoe *fcoe)
-{
-	unsigned int cpu;
-	struct pci_pool **pool;
-
-	for_each_possible_cpu(cpu) {
-		pool = per_cpu_ptr(fcoe->pool, cpu);
-		if (*pool)
-			pci_pool_destroy(*pool);
-	}
-	free_percpu(fcoe->pool);
-	fcoe->pool = NULL;
-}
-
-static void ixgbe_fcoe_ddp_pools_alloc(struct ixgbe_adapter *adapter)
-{
-	struct ixgbe_fcoe *fcoe = &adapter->fcoe;
-	unsigned int cpu;
-	struct pci_pool **pool;
-	char pool_name[32];
-
-	fcoe->pool = alloc_percpu(struct pci_pool *);
-	if (!fcoe->pool)
-		return;
-
-	/* allocate pci pool for each cpu */
-	for_each_possible_cpu(cpu) {
-		snprintf(pool_name, 32, "ixgbe_fcoe_ddp_%d", cpu);
-		pool = per_cpu_ptr(fcoe->pool, cpu);
-		*pool = pci_pool_create(pool_name,
-					adapter->pdev, IXGBE_FCPTR_MAX,
-					IXGBE_FCPTR_ALIGN, PAGE_SIZE);
-		if (!*pool) {
-			e_err(drv, "failed to alloc DDP pool on cpu:%d\n", cpu);
-			ixgbe_fcoe_ddp_pools_free(fcoe);
-			return;
-		}
-	}
-=======
 static void ixgbe_fcoe_dma_pool_free(struct ixgbe_fcoe *fcoe, unsigned int cpu)
 {
 	struct ixgbe_fcoe_ddp_pool *ddp_pool;
@@ -884,7 +625,6 @@ static int ixgbe_fcoe_dma_pool_alloc(struct ixgbe_fcoe *fcoe,
 	ddp_pool->noddp_ext_buff = 0;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -897,88 +637,6 @@ static int ixgbe_fcoe_dma_pool_alloc(struct ixgbe_fcoe *fcoe,
  */
 void ixgbe_configure_fcoe(struct ixgbe_adapter *adapter)
 {
-<<<<<<< HEAD
-	int i, fcoe_q, fcoe_i;
-	struct ixgbe_hw *hw = &adapter->hw;
-	struct ixgbe_fcoe *fcoe = &adapter->fcoe;
-	struct ixgbe_ring_feature *f = &adapter->ring_feature[RING_F_FCOE];
-	unsigned int cpu;
-
-	if (!fcoe->pool) {
-		spin_lock_init(&fcoe->lock);
-
-		ixgbe_fcoe_ddp_pools_alloc(adapter);
-		if (!fcoe->pool) {
-			e_err(drv, "failed to alloc percpu fcoe DDP pools\n");
-			return;
-		}
-
-		/* Extra buffer to be shared by all DDPs for HW work around */
-		fcoe->extra_ddp_buffer = kmalloc(IXGBE_FCBUFF_MIN, GFP_ATOMIC);
-		if (fcoe->extra_ddp_buffer == NULL) {
-			e_err(drv, "failed to allocated extra DDP buffer\n");
-			goto out_ddp_pools;
-		}
-
-		fcoe->extra_ddp_buffer_dma =
-			dma_map_single(&adapter->pdev->dev,
-				       fcoe->extra_ddp_buffer,
-				       IXGBE_FCBUFF_MIN,
-				       DMA_FROM_DEVICE);
-		if (dma_mapping_error(&adapter->pdev->dev,
-				      fcoe->extra_ddp_buffer_dma)) {
-			e_err(drv, "failed to map extra DDP buffer\n");
-			goto out_extra_ddp_buffer;
-		}
-
-		/* Alloc per cpu mem to count the ddp alloc failure number */
-		fcoe->pcpu_noddp = alloc_percpu(u64);
-		if (!fcoe->pcpu_noddp) {
-			e_err(drv, "failed to alloc noddp counter\n");
-			goto out_pcpu_noddp_alloc_fail;
-		}
-
-		fcoe->pcpu_noddp_ext_buff = alloc_percpu(u64);
-		if (!fcoe->pcpu_noddp_ext_buff) {
-			e_err(drv, "failed to alloc noddp extra buff cnt\n");
-			goto out_pcpu_noddp_extra_buff_alloc_fail;
-		}
-
-		for_each_possible_cpu(cpu) {
-			*per_cpu_ptr(fcoe->pcpu_noddp, cpu) = 0;
-			*per_cpu_ptr(fcoe->pcpu_noddp_ext_buff, cpu) = 0;
-		}
-	}
-
-	/* Enable L2 eth type filter for FCoE */
-	IXGBE_WRITE_REG(hw, IXGBE_ETQF(IXGBE_ETQF_FILTER_FCOE),
-			(ETH_P_FCOE | IXGBE_ETQF_FCOE | IXGBE_ETQF_FILTER_EN));
-	/* Enable L2 eth type filter for FIP */
-	IXGBE_WRITE_REG(hw, IXGBE_ETQF(IXGBE_ETQF_FILTER_FIP),
-			(ETH_P_FIP | IXGBE_ETQF_FILTER_EN));
-	if (adapter->ring_feature[RING_F_FCOE].indices) {
-		/* Use multiple rx queues for FCoE by redirection table */
-		for (i = 0; i < IXGBE_FCRETA_SIZE; i++) {
-			fcoe_i = f->mask + i % f->indices;
-			fcoe_i &= IXGBE_FCRETA_ENTRY_MASK;
-			fcoe_q = adapter->rx_ring[fcoe_i]->reg_idx;
-			IXGBE_WRITE_REG(hw, IXGBE_FCRETA(i), fcoe_q);
-		}
-		IXGBE_WRITE_REG(hw, IXGBE_FCRECTL, IXGBE_FCRECTL_ENA);
-		IXGBE_WRITE_REG(hw, IXGBE_ETQS(IXGBE_ETQF_FILTER_FCOE), 0);
-	} else  {
-		/* Use single rx queue for FCoE */
-		fcoe_i = f->mask;
-		fcoe_q = adapter->rx_ring[fcoe_i]->reg_idx;
-		IXGBE_WRITE_REG(hw, IXGBE_FCRECTL, 0);
-		IXGBE_WRITE_REG(hw, IXGBE_ETQS(IXGBE_ETQF_FILTER_FCOE),
-				IXGBE_ETQS_QUEUE_EN |
-				(fcoe_q << IXGBE_ETQS_RX_QUEUE_SHIFT));
-	}
-	/* send FIP frames to the first FCoE queue */
-	fcoe_i = f->mask;
-	fcoe_q = adapter->rx_ring[fcoe_i]->reg_idx;
-=======
 	struct ixgbe_ring_feature *fcoe = &adapter->ring_feature[RING_F_FCOE];
 	struct ixgbe_hw *hw = &adapter->hw;
 	int i, fcoe_q, fcoe_i, fcoe_q_h = 0;
@@ -1034,31 +692,10 @@ void ixgbe_configure_fcoe(struct ixgbe_adapter *adapter)
 
 	/* Send FIP frames to the first FCoE queue */
 	fcoe_q = adapter->rx_ring[fcoe->offset]->reg_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IXGBE_WRITE_REG(hw, IXGBE_ETQS(IXGBE_ETQF_FILTER_FIP),
 			IXGBE_ETQS_QUEUE_EN |
 			(fcoe_q << IXGBE_ETQS_RX_QUEUE_SHIFT));
 
-<<<<<<< HEAD
-	IXGBE_WRITE_REG(hw, IXGBE_FCRXCTRL, IXGBE_FCRXCTRL_FCCRCBO |
-			(FC_FCOE_VER << IXGBE_FCRXCTRL_FCOEVER_SHIFT));
-	return;
-out_pcpu_noddp_extra_buff_alloc_fail:
-	free_percpu(fcoe->pcpu_noddp);
-out_pcpu_noddp_alloc_fail:
-	dma_unmap_single(&adapter->pdev->dev,
-			 fcoe->extra_ddp_buffer_dma,
-			 IXGBE_FCBUFF_MIN,
-			 DMA_FROM_DEVICE);
-out_extra_ddp_buffer:
-	kfree(fcoe->extra_ddp_buffer);
-out_ddp_pools:
-	ixgbe_fcoe_ddp_pools_free(fcoe);
-}
-
-/**
- * ixgbe_cleanup_fcoe - release all fcoe ddp context resources
-=======
 	/* Configure FCoE Rx control */
 	IXGBE_WRITE_REG(hw, IXGBE_FCRXCTRL,
 			IXGBE_FCRXCTRL_FCCRCBO |
@@ -1067,25 +704,12 @@ out_ddp_pools:
 
 /**
  * ixgbe_free_fcoe_ddp_resources - release all fcoe ddp context resources
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @adapter : ixgbe adapter
  *
  * Cleans up outstanding ddp context resources
  *
  * Returns : none
  */
-<<<<<<< HEAD
-void ixgbe_cleanup_fcoe(struct ixgbe_adapter *adapter)
-{
-	int i;
-	struct ixgbe_fcoe *fcoe = &adapter->fcoe;
-
-	if (!fcoe->pool)
-		return;
-
-	for (i = 0; i < IXGBE_FCOE_DDP_MAX; i++)
-		ixgbe_fcoe_ddp_put(adapter->netdev, i);
-=======
 void ixgbe_free_fcoe_ddp_resources(struct ixgbe_adapter *adapter)
 {
 	struct ixgbe_fcoe *fcoe = &adapter->fcoe;
@@ -1106,17 +730,10 @@ void ixgbe_free_fcoe_ddp_resources(struct ixgbe_adapter *adapter)
 	for_each_possible_cpu(cpu)
 		ixgbe_fcoe_dma_pool_free(fcoe, cpu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_unmap_single(&adapter->pdev->dev,
 			 fcoe->extra_ddp_buffer_dma,
 			 IXGBE_FCBUFF_MIN,
 			 DMA_FROM_DEVICE);
-<<<<<<< HEAD
-	free_percpu(fcoe->pcpu_noddp);
-	free_percpu(fcoe->pcpu_noddp_ext_buff);
-	kfree(fcoe->extra_ddp_buffer);
-	ixgbe_fcoe_ddp_pools_free(fcoe);
-=======
 	kfree(fcoe->extra_ddp_buffer);
 
 	fcoe->extra_ddp_buffer = NULL;
@@ -1205,7 +822,6 @@ static void ixgbe_fcoe_ddp_disable(struct ixgbe_adapter *adapter)
 
 	free_percpu(fcoe->ddp_pool);
 	fcoe->ddp_pool = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1218,42 +834,6 @@ static void ixgbe_fcoe_ddp_disable(struct ixgbe_adapter *adapter)
  */
 int ixgbe_fcoe_enable(struct net_device *netdev)
 {
-<<<<<<< HEAD
-	int rc = -EINVAL;
-	struct ixgbe_adapter *adapter = netdev_priv(netdev);
-	struct ixgbe_fcoe *fcoe = &adapter->fcoe;
-
-
-	if (!(adapter->flags & IXGBE_FLAG_FCOE_CAPABLE))
-		goto out_enable;
-
-	atomic_inc(&fcoe->refcnt);
-	if (adapter->flags & IXGBE_FLAG_FCOE_ENABLED)
-		goto out_enable;
-
-	e_info(drv, "Enabling FCoE offload features.\n");
-	if (netif_running(netdev))
-		netdev->netdev_ops->ndo_stop(netdev);
-
-	ixgbe_clear_interrupt_scheme(adapter);
-
-	adapter->flags |= IXGBE_FLAG_FCOE_ENABLED;
-	adapter->ring_feature[RING_F_FCOE].indices = IXGBE_FCRETA_SIZE;
-	netdev->features |= NETIF_F_FCOE_CRC;
-	netdev->features |= NETIF_F_FSO;
-	netdev->features |= NETIF_F_FCOE_MTU;
-	netdev->fcoe_ddp_xid = IXGBE_FCOE_DDP_MAX - 1;
-
-	ixgbe_init_interrupt_scheme(adapter);
-	netdev_features_change(netdev);
-
-	if (netif_running(netdev))
-		netdev->netdev_ops->ndo_open(netdev);
-	rc = 0;
-
-out_enable:
-	return rc;
-=======
 	struct ixgbe_adapter *adapter = netdev_priv(netdev);
 	struct ixgbe_fcoe *fcoe = &adapter->fcoe;
 
@@ -1289,7 +869,6 @@ out_enable:
 		netdev->netdev_ops->ndo_open(netdev);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1302,35 +881,6 @@ out_enable:
  */
 int ixgbe_fcoe_disable(struct net_device *netdev)
 {
-<<<<<<< HEAD
-	int rc = -EINVAL;
-	struct ixgbe_adapter *adapter = netdev_priv(netdev);
-	struct ixgbe_fcoe *fcoe = &adapter->fcoe;
-
-	if (!(adapter->flags & IXGBE_FLAG_FCOE_CAPABLE))
-		goto out_disable;
-
-	if (!(adapter->flags & IXGBE_FLAG_FCOE_ENABLED))
-		goto out_disable;
-
-	if (!atomic_dec_and_test(&fcoe->refcnt))
-		goto out_disable;
-
-	e_info(drv, "Disabling FCoE offload features.\n");
-	netdev->features &= ~NETIF_F_FCOE_CRC;
-	netdev->features &= ~NETIF_F_FSO;
-	netdev->features &= ~NETIF_F_FCOE_MTU;
-	netdev->fcoe_ddp_xid = 0;
-	netdev_features_change(netdev);
-
-	if (netif_running(netdev))
-		netdev->netdev_ops->ndo_stop(netdev);
-
-	ixgbe_clear_interrupt_scheme(adapter);
-	adapter->flags &= ~IXGBE_FLAG_FCOE_ENABLED;
-	adapter->ring_feature[RING_F_FCOE].indices = 0;
-	ixgbe_cleanup_fcoe(adapter);
-=======
 	struct ixgbe_adapter *adapter = netdev_priv(netdev);
 
 	if (!atomic_dec_and_test(&adapter->fcoe.refcnt))
@@ -1354,20 +904,12 @@ int ixgbe_fcoe_disable(struct net_device *netdev)
 
 	/* release existing queues and reallocate them */
 	ixgbe_clear_interrupt_scheme(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ixgbe_init_interrupt_scheme(adapter);
 
 	if (netif_running(netdev))
 		netdev->netdev_ops->ndo_open(netdev);
-<<<<<<< HEAD
-	rc = 0;
-
-out_disable:
-	return rc;
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1384,10 +926,6 @@ out_disable:
  */
 int ixgbe_fcoe_get_wwn(struct net_device *netdev, u64 *wwn, int type)
 {
-<<<<<<< HEAD
-	int rc = -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 prefix = 0xffff;
 	struct ixgbe_adapter *adapter = netdev_priv(netdev);
 	struct ixgbe_mac_info *mac = &adapter->hw.mac;
@@ -1412,15 +950,9 @@ int ixgbe_fcoe_get_wwn(struct net_device *netdev, u64 *wwn, int type)
 		       ((u64) mac->san_addr[3] << 16) |
 		       ((u64) mac->san_addr[4] << 8)  |
 		       ((u64) mac->san_addr[5]);
-<<<<<<< HEAD
-		rc = 0;
-	}
-	return rc;
-=======
 		return 0;
 	}
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1437,23 +969,13 @@ int ixgbe_fcoe_get_hbainfo(struct net_device *netdev,
 {
 	struct ixgbe_adapter *adapter = netdev_priv(netdev);
 	struct ixgbe_hw *hw = &adapter->hw;
-<<<<<<< HEAD
-	int i, pos;
-	u8 buf[8];
-=======
 	u64 dsn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!info)
 		return -EINVAL;
 
 	/* Don't return information on unsupported devices */
-<<<<<<< HEAD
-	if (hw->mac.type != ixgbe_mac_82599EB &&
-	    hw->mac.type != ixgbe_mac_X540)
-=======
 	if (!(adapter->flags & IXGBE_FLAG_FCOE_ENABLED))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Manufacturer */
@@ -1463,25 +985,11 @@ int ixgbe_fcoe_get_hbainfo(struct net_device *netdev,
 	/* Serial Number */
 
 	/* Get the PCI-e Device Serial Number Capability */
-<<<<<<< HEAD
-	pos = pci_find_ext_capability(adapter->pdev, PCI_EXT_CAP_ID_DSN);
-	if (pos) {
-		pos += 4;
-		for (i = 0; i < 8; i++)
-			pci_read_config_byte(adapter->pdev, pos + i, &buf[i]);
-
-		snprintf(info->serial_number, sizeof(info->serial_number),
-			 "%02X%02X%02X%02X%02X%02X%02X%02X",
-			 buf[7], buf[6], buf[5], buf[4],
-			 buf[3], buf[2], buf[1], buf[0]);
-	} else
-=======
 	dsn = pci_get_dsn(adapter->pdev);
 	if (dsn)
 		snprintf(info->serial_number, sizeof(info->serial_number),
 			 "%016llX", dsn);
 	else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(info->serial_number, sizeof(info->serial_number),
 			 "Unknown");
 
@@ -1494,33 +1002,20 @@ int ixgbe_fcoe_get_hbainfo(struct net_device *netdev,
 		 sizeof(info->driver_version),
 		 "%s v%s",
 		 ixgbe_driver_name,
-<<<<<<< HEAD
-		 ixgbe_driver_version);
-	/* Firmware Version */
-	snprintf(info->firmware_version,
-		 sizeof(info->firmware_version),
-		 "0x%08x",
-		 (adapter->eeprom_verh << 16) |
-		  adapter->eeprom_verl);
-=======
 		 UTS_RELEASE);
 	/* Firmware Version */
 	strscpy(info->firmware_version, adapter->eeprom_id,
 		sizeof(info->firmware_version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Model */
 	if (hw->mac.type == ixgbe_mac_82599EB) {
 		snprintf(info->model,
 			 sizeof(info->model),
 			 "Intel 82599");
-<<<<<<< HEAD
-=======
 	} else if (hw->mac.type == ixgbe_mac_X550) {
 		snprintf(info->model,
 			 sizeof(info->model),
 			 "Intel X550");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		snprintf(info->model,
 			 sizeof(info->model),
@@ -1535,8 +1030,6 @@ int ixgbe_fcoe_get_hbainfo(struct net_device *netdev,
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 /**
  * ixgbe_fcoe_get_tc - get the current TC that fcoe is mapped to
@@ -1552,4 +1045,3 @@ u8 ixgbe_fcoe_get_tc(struct ixgbe_adapter *adapter)
 	return 0;
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

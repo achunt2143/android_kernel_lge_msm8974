@@ -1,35 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tsi721 PCIExpress-to-SRIO bridge definitions
  *
  * Copyright 2011, Integrated Device Technology, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __TSI721_H
 #define __TSI721_H
 
-<<<<<<< HEAD
-=======
 /* Debug output filtering masks */
 enum {
 	DBG_NONE	= 0,
@@ -70,7 +48,6 @@ extern u32 tsi_dbg_level;
 #define tsi_err(dev, fmt, arg...) \
 	dev_err(dev, "%s: ERROR " fmt "\n", __func__, ##arg)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRV_NAME	"tsi721"
 
 #define DEFAULT_HOPCOUNT	0xff
@@ -122,11 +99,6 @@ extern u32 tsi_dbg_level;
 #define TSI721_MSIXPBA_OFFSET	0x2a000
 #define TSI721_PCIECFG_EPCTL	0x400
 
-<<<<<<< HEAD
-#define MAX_READ_REQUEST_SZ_SHIFT	12
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Event Management Registers
  */
@@ -209,11 +181,6 @@ extern u32 tsi_dbg_level;
 
 #define TSI721_IBWIN_NUM	8
 
-<<<<<<< HEAD
-#define TSI721_IBWINLB(x)	(0x29000 + (x) * 0x20)
-#define TSI721_IBWINLB_BA	0xfffff000
-#define TSI721_IBWINLB_WEN	0x00000001
-=======
 #define TSI721_IBWIN_LB(x)	(0x29000 + (x) * 0x20)
 #define TSI721_IBWIN_LB_BA	0xfffff000
 #define TSI721_IBWIN_LB_WEN	0x00000001
@@ -226,7 +193,6 @@ extern u32 tsi_dbg_level;
 #define TSI721_IBWIN_TLA(x)	(0x2900c + (x) * 0x20)
 #define TSI721_IBWIN_TLA_ADD	0xfffff000
 #define TSI721_IBWIN_TUA(x)	(0x29010 + (x) * 0x20)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TSI721_SR2PC_GEN_INTE	0x29800
 #define TSI721_SR2PC_PWE	0x29804
@@ -235,11 +201,8 @@ extern u32 tsi_dbg_level;
 #define TSI721_DEV_INTE		0x29840
 #define TSI721_DEV_INT		0x29844
 #define TSI721_DEV_INTSET	0x29848
-<<<<<<< HEAD
-=======
 #define TSI721_DEV_INT_BDMA_CH	0x00002000
 #define TSI721_DEV_INT_BDMA_NCH	0x00001000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TSI721_DEV_INT_SMSG_CH	0x00000800
 #define TSI721_DEV_INT_SMSG_NCH	0x00000400
 #define TSI721_DEV_INT_SR2PC_CH	0x00000200
@@ -254,11 +217,8 @@ extern u32 tsi_dbg_level;
 #define TSI721_INT_IMSG_CHAN(x)	(1 << (16 + (x)))
 #define TSI721_INT_OMSG_CHAN_M	0x0000ff00
 #define TSI721_INT_OMSG_CHAN(x)	(1 << (8 + (x)))
-<<<<<<< HEAD
-=======
 #define TSI721_INT_BDMA_CHAN_M	0x000000ff
 #define TSI721_INT_BDMA_CHAN(x)	(1 << (x))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PC2SR block registers
@@ -313,16 +273,6 @@ extern u32 tsi_dbg_level;
  *   x = 0..7
  */
 
-<<<<<<< HEAD
-#define TSI721_DMAC_DWRCNT(x)	(0x51000 + (x) * 0x1000)
-#define TSI721_DMAC_DRDCNT(x)	(0x51004 + (x) * 0x1000)
-
-#define TSI721_DMAC_CTL(x)	(0x51008 + (x) * 0x1000)
-#define TSI721_DMAC_CTL_SUSP	0x00000002
-#define TSI721_DMAC_CTL_INIT	0x00000001
-
-#define TSI721_DMAC_INT(x)	(0x5100c + (x) * 0x1000)
-=======
 #define TSI721_DMAC_BASE(x)	(0x51000 + (x) * 0x1000)
 
 #define TSI721_DMAC_DWRCNT	0x000
@@ -333,7 +283,6 @@ extern u32 tsi_dbg_level;
 #define TSI721_DMAC_CTL_INIT	0x00000001
 
 #define TSI721_DMAC_INT		0x00c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TSI721_DMAC_INT_STFULL	0x00000010
 #define TSI721_DMAC_INT_DONE	0x00000008
 #define TSI721_DMAC_INT_SUSP	0x00000004
@@ -341,42 +290,13 @@ extern u32 tsi_dbg_level;
 #define TSI721_DMAC_INT_IOFDONE	0x00000001
 #define TSI721_DMAC_INT_ALL	0x0000001f
 
-<<<<<<< HEAD
-#define TSI721_DMAC_INTSET(x)	(0x51010 + (x) * 0x1000)
-
-#define TSI721_DMAC_STS(x)	(0x51014 + (x) * 0x1000)
-=======
 #define TSI721_DMAC_INTSET	0x010
 
 #define TSI721_DMAC_STS		0x014
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TSI721_DMAC_STS_ABORT	0x00400000
 #define TSI721_DMAC_STS_RUN	0x00200000
 #define TSI721_DMAC_STS_CS	0x001f0000
 
-<<<<<<< HEAD
-#define TSI721_DMAC_INTE(x)	(0x51018 + (x) * 0x1000)
-
-#define TSI721_DMAC_DPTRL(x)	(0x51024 + (x) * 0x1000)
-#define TSI721_DMAC_DPTRL_MASK	0xffffffe0
-
-#define TSI721_DMAC_DPTRH(x)	(0x51028 + (x) * 0x1000)
-
-#define TSI721_DMAC_DSBL(x)	(0x5102c + (x) * 0x1000)
-#define TSI721_DMAC_DSBL_MASK	0xffffffc0
-
-#define TSI721_DMAC_DSBH(x)	(0x51030 + (x) * 0x1000)
-
-#define TSI721_DMAC_DSSZ(x)	(0x51034 + (x) * 0x1000)
-#define TSI721_DMAC_DSSZ_SIZE_M	0x0000000f
-#define TSI721_DMAC_DSSZ_SIZE(size)	(__fls(size) - 4)
-
-
-#define TSI721_DMAC_DSRP(x)	(0x51038 + (x) * 0x1000)
-#define TSI721_DMAC_DSRP_MASK	0x0007ffff
-
-#define TSI721_DMAC_DSWP(x)	(0x5103c + (x) * 0x1000)
-=======
 #define TSI721_DMAC_INTE	0x018
 
 #define TSI721_DMAC_DPTRL	0x024
@@ -397,7 +317,6 @@ extern u32 tsi_dbg_level;
 #define TSI721_DMAC_DSRP_MASK	0x0007ffff
 
 #define TSI721_DMAC_DSWP	0x03c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TSI721_DMAC_DSWP_MASK	0x0007ffff
 
 #define TSI721_BDMA_INTE	0x5f000
@@ -729,17 +648,11 @@ enum dma_rtype {
  */
 #define TSI721_DMA_CHNUM	TSI721_DMA_MAXCH
 
-<<<<<<< HEAD
-#define TSI721_DMACH_MAINT	0	/* DMA channel for maint requests */
-#define TSI721_DMACH_MAINT_NBD	32	/* Number of BDs for maint requests */
-
-=======
 #define TSI721_DMACH_MAINT	7	/* DMA channel for maint requests */
 #define TSI721_DMACH_MAINT_NBD	32	/* Number of BDs for maint requests */
 
 #define TSI721_DMACH_DMA	1	/* DMA channel for data transfers */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSG_DMA_ENTRY_INX_TO_SIZE(x)	((0x10 << (x)) & 0xFFFF0)
 
 enum tsi721_smsg_int_flag {
@@ -754,9 +667,6 @@ enum tsi721_smsg_int_flag {
 
 /* Structures */
 
-<<<<<<< HEAD
-struct tsi721_bdma_chan {
-=======
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 
 #define TSI721_BDMA_MAX_BCOUNT	(TSI721_DMAD_BCOUNT1 + 1)
@@ -802,7 +712,6 @@ struct tsi721_bdma_chan {
 
 struct tsi721_bdma_maint {
 	int		ch_id;		/* BDMA channel number */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		bd_num;		/* number of buffer descriptors */
 	void		*bd_base;	/* start of DMA descriptors */
 	dma_addr_t	bd_phys;
@@ -897,8 +806,6 @@ enum tsi721_msix_vect {
 	TSI721_VECT_IMB1_INT,
 	TSI721_VECT_IMB2_INT,
 	TSI721_VECT_IMB3_INT,
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 	TSI721_VECT_DMA0_DONE,
 	TSI721_VECT_DMA1_DONE,
@@ -917,7 +824,6 @@ enum tsi721_msix_vect {
 	TSI721_VECT_DMA6_INT,
 	TSI721_VECT_DMA7_INT,
 #endif /* CONFIG_RAPIDIO_DMA_ENGINE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TSI721_VECT_MAX
 };
 
@@ -929,11 +835,6 @@ struct msix_irq {
 };
 #endif /* CONFIG_PCI_MSI */
 
-<<<<<<< HEAD
-struct tsi721_device {
-	struct pci_dev	*pdev;
-	struct rio_mport *mport;
-=======
 struct tsi721_ib_win_mapping {
 	struct list_head node;
 	dma_addr_t	lstart;
@@ -966,7 +867,6 @@ struct tsi721_ob_win {
 struct tsi721_device {
 	struct pci_dev	*pdev;
 	struct rio_mport mport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		flags;
 	void __iomem	*regs;
 #ifdef CONFIG_PCI_MSI
@@ -986,15 +886,11 @@ struct tsi721_device {
 	u32		pw_discard_count;
 
 	/* BDMA Engine */
-<<<<<<< HEAD
-	struct tsi721_bdma_chan bdma[TSI721_DMA_CHNUM];
-=======
 	struct tsi721_bdma_maint mdma; /* Maintenance rd/wr request channel */
 
 #ifdef CONFIG_RAPIDIO_DMA_ENGINE
 	struct tsi721_bdma_chan bdma[TSI721_DMA_CHNUM];
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Inbound Messaging */
 	int		imsg_init[TSI721_IMSG_CHNUM];
@@ -1003,10 +899,6 @@ struct tsi721_device {
 	/* Outbound Messaging */
 	int		omsg_init[TSI721_OMSG_CHNUM];
 	struct tsi721_omsg_ring	omsg_ring[TSI721_OMSG_CHNUM];
-<<<<<<< HEAD
-};
-
-=======
 
 	/* Inbound Mapping Windows */
 	struct tsi721_ib_win ib_win[TSI721_IBWIN_NUM];
@@ -1028,5 +920,4 @@ extern void tsi721_dma_stop_all(struct tsi721_device *priv);
 #define tsi721_unregister_dma(priv) do {} while (0)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

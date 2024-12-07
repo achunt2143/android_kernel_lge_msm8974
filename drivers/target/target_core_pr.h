@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef TARGET_CORE_PR_H
-#define TARGET_CORE_PR_H
-/*
- * PERSISTENT_RESERVE_OUT service action codes
- *
- * spc4r17 section 6.14.2 Table 171
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef TARGET_CORE_PR_H
 #define TARGET_CORE_PR_H
@@ -17,7 +9,6 @@
  * PERSISTENT_RESERVE_OUT service action codes
  *
  * spc5r04b section 6.15.2 Table 174
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PRO_REGISTER				0x00
 #define PRO_RESERVE				0x01
@@ -27,18 +18,11 @@
 #define PRO_PREEMPT_AND_ABORT			0x05
 #define PRO_REGISTER_AND_IGNORE_EXISTING_KEY	0x06
 #define PRO_REGISTER_AND_MOVE			0x07
-<<<<<<< HEAD
-/*
- * PERSISTENT_RESERVE_IN service action codes
- *
- * spc4r17 section 6.13.1 Table 159
-=======
 #define PRO_REPLACE_LOST_RESERVATION	0x08
 /*
  * PERSISTENT_RESERVE_IN service action codes
  *
  * spc5r04b section 6.14.1 Table 162
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PRI_READ_KEYS				0x00
 #define PRI_READ_RESERVATION			0x01
@@ -47,21 +31,13 @@
 /*
  * PERSISTENT_RESERVE_ SCOPE field
  *
-<<<<<<< HEAD
- * spc4r17 section 6.13.3.3 Table 163
-=======
  * spc5r04b section 6.14.3.2 Table 166
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PR_SCOPE_LU_SCOPE			0x00
 /*
  * PERSISTENT_RESERVE_* TYPE field
  *
-<<<<<<< HEAD
- * spc4r17 section 6.13.3.4 Table 164
-=======
  * spc5r04b section 6.14.3.3 Table 167
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PR_TYPE_WRITE_EXCLUSIVE			0x01
 #define PR_TYPE_EXCLUSIVE_ACCESS		0x03
@@ -73,21 +49,6 @@
 #define PR_APTPL_MAX_IPORT_LEN			256
 #define PR_APTPL_MAX_TPORT_LEN			256
 
-<<<<<<< HEAD
-extern struct kmem_cache *t10_pr_reg_cache;
-
-extern int core_pr_dump_initiator_port(struct t10_pr_registration *,
-			char *, u32);
-extern int target_scsi2_reservation_release(struct se_task *task);
-extern int target_scsi2_reservation_reserve(struct se_task *task);
-extern int core_scsi3_alloc_aptpl_registration(
-			struct t10_reservation *, u64,
-			unsigned char *, unsigned char *, u32,
-			unsigned char *, u16, u32, int, int, u8);
-extern int core_scsi3_check_aptpl_registration(struct se_device *,
-			struct se_portal_group *, struct se_lun *,
-			struct se_lun_acl *);
-=======
 /*
  *  Function defined in target_core_spc.c
  */
@@ -107,20 +68,13 @@ extern int core_scsi3_alloc_aptpl_registration(
 extern int core_scsi3_check_aptpl_registration(struct se_device *,
 			struct se_portal_group *, struct se_lun *,
 			struct se_node_acl *, u64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void core_scsi3_free_pr_reg_from_nacl(struct se_device *,
 					     struct se_node_acl *);
 extern void core_scsi3_free_all_registrations(struct se_device *);
 extern unsigned char *core_scsi3_pr_dump_type(int);
 
-<<<<<<< HEAD
-extern int target_scsi3_emulate_pr_in(struct se_task *task);
-extern int target_scsi3_emulate_pr_out(struct se_task *task);
-extern int core_setup_reservations(struct se_device *, int);
-=======
 extern sense_reason_t target_scsi3_emulate_pr_in(struct se_cmd *);
 extern sense_reason_t target_scsi3_emulate_pr_out(struct se_cmd *);
 extern sense_reason_t target_check_reservation(struct se_cmd *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* TARGET_CORE_PR_H */

@@ -1,24 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Export the iSCSI boot info to userland via sysfs.
  *
  * Copyright (C) 2010 Red Hat, Inc.  All rights reserved.
  * Copyright (C) 2010 Mike Christie
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License v2.0 as published by
- * the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -173,10 +158,7 @@ static struct attribute_group iscsi_boot_target_attr_group = {
 iscsi_boot_rd_attr(eth_index, index, ISCSI_BOOT_ETH_INDEX);
 iscsi_boot_rd_attr(eth_flags, flags, ISCSI_BOOT_ETH_FLAGS);
 iscsi_boot_rd_attr(eth_ip, ip-addr, ISCSI_BOOT_ETH_IP_ADDR);
-<<<<<<< HEAD
-=======
 iscsi_boot_rd_attr(eth_prefix, prefix-len, ISCSI_BOOT_ETH_PREFIX_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iscsi_boot_rd_attr(eth_subnet, subnet-mask, ISCSI_BOOT_ETH_SUBNET_MASK);
 iscsi_boot_rd_attr(eth_origin, origin, ISCSI_BOOT_ETH_ORIGIN);
 iscsi_boot_rd_attr(eth_gateway, gateway, ISCSI_BOOT_ETH_GATEWAY);
@@ -192,10 +174,7 @@ static struct attribute *ethernet_attrs[] = {
 	&iscsi_boot_attr_eth_index.attr,
 	&iscsi_boot_attr_eth_flags.attr,
 	&iscsi_boot_attr_eth_ip.attr,
-<<<<<<< HEAD
-=======
 	&iscsi_boot_attr_eth_prefix.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&iscsi_boot_attr_eth_subnet.attr,
 	&iscsi_boot_attr_eth_origin.attr,
 	&iscsi_boot_attr_eth_gateway.attr,
@@ -223,12 +202,9 @@ static umode_t iscsi_boot_eth_attr_is_visible(struct kobject *kobj,
 	else if (attr ==  &iscsi_boot_attr_eth_ip.attr)
 		return boot_kobj->is_visible(boot_kobj->data,
 					     ISCSI_BOOT_ETH_IP_ADDR);
-<<<<<<< HEAD
-=======
 	else if (attr ==  &iscsi_boot_attr_eth_prefix.attr)
 		return boot_kobj->is_visible(boot_kobj->data,
 					     ISCSI_BOOT_ETH_PREFIX_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (attr ==  &iscsi_boot_attr_eth_subnet.attr)
 		return boot_kobj->is_visible(boot_kobj->data,
 					     ISCSI_BOOT_ETH_SUBNET_MASK);
@@ -322,8 +298,6 @@ static struct attribute_group iscsi_boot_initiator_attr_group = {
 	.is_visible = iscsi_boot_ini_attr_is_visible,
 };
 
-<<<<<<< HEAD
-=======
 /* iBFT ACPI Table attributes */
 iscsi_boot_rd_attr(acpitbl_signature, signature, ISCSI_BOOT_ACPITBL_SIGNATURE);
 iscsi_boot_rd_attr(acpitbl_oem_id, oem_id, ISCSI_BOOT_ACPITBL_OEM_ID);
@@ -360,7 +334,6 @@ static struct attribute_group iscsi_boot_acpitbl_attr_group = {
 	.is_visible = iscsi_boot_acpitbl_attr_is_visible,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct iscsi_boot_kobj *
 iscsi_boot_create_kobj(struct iscsi_boot_kset *boot_kset,
 		       struct attribute_group *attr_group,
@@ -379,11 +352,7 @@ iscsi_boot_create_kobj(struct iscsi_boot_kset *boot_kset,
 	boot_kobj->kobj.kset = boot_kset->kset;
 	if (kobject_init_and_add(&boot_kobj->kobj, &iscsi_boot_ktype,
 				 NULL, name, index)) {
-<<<<<<< HEAD
-		kfree(boot_kobj);
-=======
 		kobject_put(&boot_kobj->kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	boot_kobj->data = data;
@@ -495,8 +464,6 @@ iscsi_boot_create_ethernet(struct iscsi_boot_kset *boot_kset, int index,
 EXPORT_SYMBOL_GPL(iscsi_boot_create_ethernet);
 
 /**
-<<<<<<< HEAD
-=======
  * iscsi_boot_create_acpitbl() - create boot acpi table sysfs dir
  * @boot_kset: boot kset
  * @index: not used
@@ -523,7 +490,6 @@ iscsi_boot_create_acpitbl(struct iscsi_boot_kset *boot_kset, int index,
 EXPORT_SYMBOL_GPL(iscsi_boot_create_acpitbl);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iscsi_boot_create_kset() - creates root sysfs tree
  * @set_name: name of root dir
  */
@@ -583,9 +549,6 @@ void iscsi_boot_destroy_kset(struct iscsi_boot_kset *boot_kset)
 		iscsi_boot_remove_kobj(boot_kobj);
 
 	kset_unregister(boot_kset->kset);
-<<<<<<< HEAD
-=======
 	kfree(boot_kset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(iscsi_boot_destroy_kset);

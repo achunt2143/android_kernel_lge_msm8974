@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 gelic network driver.
  *
@@ -14,23 +11,6 @@
  *
  * Authors : Utz Bacher <utz.bacher@de.ibm.com>
  *           Jens Osterkamp <Jens.Osterkamp@de.ibm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -65,16 +45,6 @@ MODULE_DESCRIPTION("Gelic Network driver");
 MODULE_LICENSE("GPL");
 
 
-<<<<<<< HEAD
-static inline void gelic_card_enable_rxdmac(struct gelic_card *card);
-static inline void gelic_card_disable_rxdmac(struct gelic_card *card);
-static inline void gelic_card_disable_txdmac(struct gelic_card *card);
-static inline void gelic_card_reset_chain(struct gelic_card *card,
-					  struct gelic_descr_chain *chain,
-					  struct gelic_descr *start_descr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* set irq_mask */
 int gelic_card_set_irq_mask(struct gelic_card *card, u64 mask)
 {
@@ -88,20 +58,12 @@ int gelic_card_set_irq_mask(struct gelic_card *card, u64 mask)
 	return status;
 }
 
-<<<<<<< HEAD
-static inline void gelic_card_rx_irq_on(struct gelic_card *card)
-=======
 static void gelic_card_rx_irq_on(struct gelic_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	card->irq_mask |= GELIC_CARD_RXINT;
 	gelic_card_set_irq_mask(card, card->irq_mask);
 }
-<<<<<<< HEAD
-static inline void gelic_card_rx_irq_off(struct gelic_card *card)
-=======
 static void gelic_card_rx_irq_off(struct gelic_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	card->irq_mask &= ~GELIC_CARD_RXINT;
 	gelic_card_set_irq_mask(card, card->irq_mask);
@@ -127,8 +89,6 @@ static void gelic_card_get_ether_port_status(struct gelic_card *card,
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * gelic_descr_get_status -- returns the status of a descriptor
  * @descr: descriptor to look at
@@ -142,7 +102,6 @@ gelic_descr_get_status(struct gelic_descr *descr)
 		GELIC_DESCR_DMA_STAT_MASK;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int gelic_card_set_link_mode(struct gelic_card *card, int mode)
 {
 	int status;
@@ -161,8 +120,6 @@ static int gelic_card_set_link_mode(struct gelic_card *card, int mode)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * gelic_card_disable_txdmac - disables the transmit DMA controller
  * @card: card structure
@@ -278,7 +235,6 @@ static void gelic_card_reset_chain(struct gelic_card *card,
 	(descr - 1)->hw_regs.next_descr_addr = 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void gelic_card_up(struct gelic_card *card)
 {
 	pr_debug("%s: called\n", __func__);
@@ -323,44 +279,6 @@ void gelic_card_down(struct gelic_card *card)
 }
 
 /**
-<<<<<<< HEAD
- * gelic_descr_get_status -- returns the status of a descriptor
- * @descr: descriptor to look at
- *
- * returns the status as in the dmac_cmd_status field of the descriptor
- */
-static enum gelic_descr_dma_status
-gelic_descr_get_status(struct gelic_descr *descr)
-{
-	return be32_to_cpu(descr->dmac_cmd_status) & GELIC_DESCR_DMA_STAT_MASK;
-}
-
-/**
- * gelic_descr_set_status -- sets the status of a descriptor
- * @descr: descriptor to change
- * @status: status to set in the descriptor
- *
- * changes the status to the specified value. Doesn't change other bits
- * in the status
- */
-static void gelic_descr_set_status(struct gelic_descr *descr,
-				   enum gelic_descr_dma_status status)
-{
-	descr->dmac_cmd_status = cpu_to_be32(status |
-			(be32_to_cpu(descr->dmac_cmd_status) &
-			 ~GELIC_DESCR_DMA_STAT_MASK));
-	/*
-	 * dma_cmd_status field is used to indicate whether the descriptor
-	 * is valid or not.
-	 * Usually caller of this function wants to inform that to the
-	 * hardware, so we assure here the hardware sees the change.
-	 */
-	wmb();
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gelic_card_free_chain - free descriptor chain
  * @card: card structure
  * @descr_in: address of desc
@@ -370,19 +288,12 @@ static void gelic_card_free_chain(struct gelic_card *card,
 {
 	struct gelic_descr *descr;
 
-<<<<<<< HEAD
-	for (descr = descr_in; descr && descr->bus_addr; descr = descr->next) {
-		dma_unmap_single(ctodev(card), descr->bus_addr,
-				 GELIC_DESCR_SIZE, DMA_BIDIRECTIONAL);
-		descr->bus_addr = 0;
-=======
 	for (descr = descr_in; descr && descr->link.cpu_addr;
 		descr = descr->next) {
 		dma_unmap_single(ctodev(card), descr->link.cpu_addr,
 				 descr->link.size, DMA_BIDIRECTIONAL);
 		descr->link.cpu_addr = 0;
 		descr->link.size = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -398,16 +309,9 @@ static void gelic_card_free_chain(struct gelic_card *card,
  *
  * returns 0 on success, <0 on failure
  */
-<<<<<<< HEAD
-static int __devinit gelic_card_init_chain(struct gelic_card *card,
-					   struct gelic_descr_chain *chain,
-					   struct gelic_descr *start_descr,
-					   int no)
-=======
 static int gelic_card_init_chain(struct gelic_card *card,
 				 struct gelic_descr_chain *chain,
 				 struct gelic_descr *start_descr, int no)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct gelic_descr *descr;
@@ -418,15 +322,6 @@ static int gelic_card_init_chain(struct gelic_card *card,
 	/* set up the hardware pointers in each descriptor */
 	for (i = 0; i < no; i++, descr++) {
 		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
-<<<<<<< HEAD
-		descr->bus_addr =
-			dma_map_single(ctodev(card), descr,
-				       GELIC_DESCR_SIZE,
-				       DMA_BIDIRECTIONAL);
-
-		if (!descr->bus_addr)
-			goto iommu_error;
-=======
 
 		descr->link.size = sizeof(struct gelic_hw_regs);
 		descr->link.cpu_addr = dma_map_single(ctodev(card), descr,
@@ -440,7 +335,6 @@ static int gelic_card_init_chain(struct gelic_card *card,
 			}
 			return -ENOMEM;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		descr->next = descr + 1;
 		descr->prev = descr - 1;
@@ -452,66 +346,20 @@ static int gelic_card_init_chain(struct gelic_card *card,
 	/* chain bus addr of hw descriptor */
 	descr = start_descr;
 	for (i = 0; i < no; i++, descr++) {
-<<<<<<< HEAD
-		descr->next_descr_addr = cpu_to_be32(descr->next->bus_addr);
-=======
 		descr->hw_regs.next_descr_addr =
 			cpu_to_be32(descr->next->link.cpu_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	chain->head = start_descr;
 	chain->tail = start_descr;
 
 	/* do not chain last hw descriptor */
-<<<<<<< HEAD
-	(descr - 1)->next_descr_addr = 0;
-
-	return 0;
-
-iommu_error:
-	for (i--, descr--; 0 <= i; i--, descr--)
-		if (descr->bus_addr)
-			dma_unmap_single(ctodev(card), descr->bus_addr,
-					 GELIC_DESCR_SIZE,
-					 DMA_BIDIRECTIONAL);
-	return -ENOMEM;
-}
-
-/**
- * gelic_card_reset_chain - reset status of a descriptor chain
- * @card: card structure
- * @chain: address of chain
- * @start_descr: address of descriptor array
- *
- * Reset the status of dma descriptors to ready state
- * and re-initialize the hardware chain for later use
- */
-static void gelic_card_reset_chain(struct gelic_card *card,
-				   struct gelic_descr_chain *chain,
-				   struct gelic_descr *start_descr)
-{
-	struct gelic_descr *descr;
-
-	for (descr = start_descr; start_descr != descr->next; descr++) {
-		gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
-		descr->next_descr_addr = cpu_to_be32(descr->next->bus_addr);
-	}
-
-	chain->head = start_descr;
-	chain->tail = (descr - 1);
-
-	(descr - 1)->next_descr_addr = 0;
-}
-/**
-=======
 	(descr - 1)->hw_regs.next_descr_addr = 0;
 
 	return 0;
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gelic_descr_prepare_rx - reinitializes a rx descriptor
  * @card: card structure
  * @descr: descriptor to re-init
@@ -520,40 +368,13 @@ static void gelic_card_reset_chain(struct gelic_card *card,
  *
  * allocates a new rx skb, iommu-maps it and attaches it to the descriptor.
  * Activate the descriptor state-wise
-<<<<<<< HEAD
-=======
  *
  * Gelic RX sk_buffs must be aligned to GELIC_NET_RXBUF_ALIGN and the length
  * must be a multiple of GELIC_NET_RXBUF_ALIGN.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int gelic_descr_prepare_rx(struct gelic_card *card,
 				  struct gelic_descr *descr)
 {
-<<<<<<< HEAD
-	int offset;
-	unsigned int bufsize;
-
-	if (gelic_descr_get_status(descr) !=  GELIC_DESCR_DMA_NOT_IN_USE)
-		dev_info(ctodev(card), "%s: ERROR status\n", __func__);
-	/* we need to round up the buffer size to a multiple of 128 */
-	bufsize = ALIGN(GELIC_NET_MAX_MTU, GELIC_NET_RXBUF_ALIGN);
-
-	/* and we need to have it 128 byte aligned, therefore we allocate a
-	 * bit more */
-	descr->skb = dev_alloc_skb(bufsize + GELIC_NET_RXBUF_ALIGN - 1);
-	if (!descr->skb) {
-		descr->buf_addr = 0; /* tell DMAC don't touch memory */
-		dev_info(ctodev(card),
-			 "%s:allocate skb failed !!\n", __func__);
-		return -ENOMEM;
-	}
-	descr->buf_size = cpu_to_be32(bufsize);
-	descr->dmac_cmd_status = 0;
-	descr->result_size = 0;
-	descr->valid_size = 0;
-	descr->data_error = 0;
-=======
 	static const unsigned int rx_skb_size =
 		ALIGN(GELIC_NET_MAX_FRAME, GELIC_NET_RXBUF_ALIGN) +
 		GELIC_NET_RXBUF_ALIGN - 1;
@@ -575,37 +396,22 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
 		descr->hw_regs.payload.dev_addr = 0; /* tell DMAC don't touch memory */
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = ((unsigned long)descr->skb->data) &
 		(GELIC_NET_RXBUF_ALIGN - 1);
 	if (offset)
 		skb_reserve(descr->skb, GELIC_NET_RXBUF_ALIGN - offset);
 	/* io-mmu-map the skb */
-<<<<<<< HEAD
-	descr->buf_addr = cpu_to_be32(dma_map_single(ctodev(card),
-						     descr->skb->data,
-						     GELIC_NET_MAX_MTU,
-						     DMA_FROM_DEVICE));
-	if (!descr->buf_addr) {
-=======
 	cpu_addr = dma_map_single(ctodev(card), descr->skb->data,
 				  GELIC_NET_MAX_FRAME, DMA_FROM_DEVICE);
 	descr->hw_regs.payload.dev_addr = cpu_to_be32(cpu_addr);
 	if (dma_mapping_error(ctodev(card), cpu_addr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(descr->skb);
 		descr->skb = NULL;
 		dev_info(ctodev(card),
 			 "%s:Could not iommu-map rx buffer\n", __func__);
 		gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
 		return -ENOMEM;
-<<<<<<< HEAD
-	} else {
-		gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
-		return 0;
-	}
-=======
 	}
 
 	descr->hw_regs.payload.size = cpu_to_be32(GELIC_NET_MAX_FRAME);
@@ -614,7 +420,6 @@ static int gelic_descr_prepare_rx(struct gelic_card *card,
 	gelic_descr_set_status(descr, GELIC_DESCR_DMA_CARDOWNED);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -629,16 +434,6 @@ static void gelic_card_release_rx_chain(struct gelic_card *card)
 	do {
 		if (descr->skb) {
 			dma_unmap_single(ctodev(card),
-<<<<<<< HEAD
-					 be32_to_cpu(descr->buf_addr),
-					 descr->skb->len,
-					 DMA_FROM_DEVICE);
-			descr->buf_addr = 0;
-			dev_kfree_skb_any(descr->skb);
-			descr->skb = NULL;
-			gelic_descr_set_status(descr,
-					       GELIC_DESCR_DMA_NOT_IN_USE);
-=======
 				be32_to_cpu(descr->hw_regs.payload.dev_addr),
 				descr->skb->len,
 				DMA_FROM_DEVICE);
@@ -648,7 +443,6 @@ static void gelic_card_release_rx_chain(struct gelic_card *card)
 			descr->skb = NULL;
 			gelic_descr_set_status(descr,
 				GELIC_DESCR_DMA_NOT_IN_USE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		descr = descr->next;
 	} while (descr != card->rx_chain.head);
@@ -688,11 +482,7 @@ rewind:
  *
  * returns 0 on success, < 0 on failure
  */
-<<<<<<< HEAD
-static int __devinit gelic_card_alloc_rx_skbs(struct gelic_card *card)
-=======
 static int gelic_card_alloc_rx_skbs(struct gelic_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gelic_descr_chain *chain;
 	int ret;
@@ -714,21 +504,6 @@ static void gelic_descr_release_tx(struct gelic_card *card,
 {
 	struct sk_buff *skb = descr->skb;
 
-<<<<<<< HEAD
-	BUG_ON(!(be32_to_cpu(descr->data_status) & GELIC_DESCR_TX_TAIL));
-
-	dma_unmap_single(ctodev(card), be32_to_cpu(descr->buf_addr), skb->len,
-			 DMA_TO_DEVICE);
-	dev_kfree_skb_any(skb);
-
-	descr->buf_addr = 0;
-	descr->buf_size = 0;
-	descr->next_descr_addr = 0;
-	descr->result_size = 0;
-	descr->valid_size = 0;
-	descr->data_status = 0;
-	descr->data_error = 0;
-=======
 	BUG_ON(!(be32_to_cpu(descr->hw_regs.data_status) & GELIC_DESCR_TX_TAIL));
 
 	dma_unmap_single(ctodev(card),
@@ -743,7 +518,6 @@ static void gelic_descr_release_tx(struct gelic_card *card,
 	descr->hw_regs.valid_size = 0;
 	descr->hw_regs.data_status = 0;
 	descr->hw_regs.data_error = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	descr->skb = NULL;
 
 	/* set descr status */
@@ -881,74 +655,6 @@ void gelic_net_set_multi(struct net_device *netdev)
 }
 
 /**
-<<<<<<< HEAD
- * gelic_card_enable_rxdmac - enables the receive DMA controller
- * @card: card structure
- *
- * gelic_card_enable_rxdmac enables the DMA controller by setting RX_DMA_EN
- * in the GDADMACCNTR register
- */
-static inline void gelic_card_enable_rxdmac(struct gelic_card *card)
-{
-	int status;
-
-#ifdef DEBUG
-	if (gelic_descr_get_status(card->rx_chain.head) !=
-	    GELIC_DESCR_DMA_CARDOWNED) {
-		printk(KERN_ERR "%s: status=%x\n", __func__,
-		       be32_to_cpu(card->rx_chain.head->dmac_cmd_status));
-		printk(KERN_ERR "%s: nextphy=%x\n", __func__,
-		       be32_to_cpu(card->rx_chain.head->next_descr_addr));
-		printk(KERN_ERR "%s: head=%p\n", __func__,
-		       card->rx_chain.head);
-	}
-#endif
-	status = lv1_net_start_rx_dma(bus_id(card), dev_id(card),
-				card->rx_chain.head->bus_addr, 0);
-	if (status)
-		dev_info(ctodev(card),
-			 "lv1_net_start_rx_dma failed, status=%d\n", status);
-}
-
-/**
- * gelic_card_disable_rxdmac - disables the receive DMA controller
- * @card: card structure
- *
- * gelic_card_disable_rxdmac terminates processing on the DMA controller by
- * turing off DMA and issuing a force end
- */
-static inline void gelic_card_disable_rxdmac(struct gelic_card *card)
-{
-	int status;
-
-	/* this hvc blocks until the DMA in progress really stopped */
-	status = lv1_net_stop_rx_dma(bus_id(card), dev_id(card));
-	if (status)
-		dev_err(ctodev(card),
-			"lv1_net_stop_rx_dma failed, %d\n", status);
-}
-
-/**
- * gelic_card_disable_txdmac - disables the transmit DMA controller
- * @card: card structure
- *
- * gelic_card_disable_txdmac terminates processing on the DMA controller by
- * turing off DMA and issuing a force end
- */
-static inline void gelic_card_disable_txdmac(struct gelic_card *card)
-{
-	int status;
-
-	/* this hvc blocks until the DMA in progress really stopped */
-	status = lv1_net_stop_tx_dma(bus_id(card), dev_id(card));
-	if (status)
-		dev_err(ctodev(card),
-			"lv1_net_stop_tx_dma failed, status=%d\n", status);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gelic_net_stop - called upon ifconfig down
  * @netdev: interface device structure
  *
@@ -992,11 +698,7 @@ gelic_card_get_next_tx_descr(struct gelic_card *card)
 }
 
 /**
-<<<<<<< HEAD
- * gelic_net_set_txdescr_cmdstat - sets the tx descriptor command field
-=======
  * gelic_descr_set_tx_cmdstat - sets the tx descriptor command field
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @descr: descriptor structure to fill out
  * @skb: packet to consider
  *
@@ -1008,11 +710,7 @@ static void gelic_descr_set_tx_cmdstat(struct gelic_descr *descr,
 				       struct sk_buff *skb)
 {
 	if (skb->ip_summed != CHECKSUM_PARTIAL)
-<<<<<<< HEAD
-		descr->dmac_cmd_status =
-=======
 		descr->hw_regs.dmac_cmd_status =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cpu_to_be32(GELIC_DESCR_DMA_CMD_NO_CHKSUM |
 				    GELIC_DESCR_TX_DMA_FRAME_TAIL);
 	else {
@@ -1020,42 +718,26 @@ static void gelic_descr_set_tx_cmdstat(struct gelic_descr *descr,
 		 * if yes: tcp? udp? */
 		if (skb->protocol == htons(ETH_P_IP)) {
 			if (ip_hdr(skb)->protocol == IPPROTO_TCP)
-<<<<<<< HEAD
-				descr->dmac_cmd_status =
-=======
 				descr->hw_regs.dmac_cmd_status =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cpu_to_be32(GELIC_DESCR_DMA_CMD_TCP_CHKSUM |
 					    GELIC_DESCR_TX_DMA_FRAME_TAIL);
 
 			else if (ip_hdr(skb)->protocol == IPPROTO_UDP)
-<<<<<<< HEAD
-				descr->dmac_cmd_status =
-=======
 				descr->hw_regs.dmac_cmd_status =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cpu_to_be32(GELIC_DESCR_DMA_CMD_UDP_CHKSUM |
 					    GELIC_DESCR_TX_DMA_FRAME_TAIL);
 			else	/*
 				 * the stack should checksum non-tcp and non-udp
 				 * packets on his own: NETIF_F_IP_CSUM
 				 */
-<<<<<<< HEAD
-				descr->dmac_cmd_status =
-=======
 				descr->hw_regs.dmac_cmd_status =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cpu_to_be32(GELIC_DESCR_DMA_CMD_NO_CHKSUM |
 					    GELIC_DESCR_TX_DMA_FRAME_TAIL);
 		}
 	}
 }
 
-<<<<<<< HEAD
-static inline struct sk_buff *gelic_put_vlan_tag(struct sk_buff *skb,
-=======
 static struct sk_buff *gelic_put_vlan_tag(struct sk_buff *skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 unsigned short tag)
 {
 	struct vlan_ethhdr *veth;
@@ -1069,11 +751,7 @@ static struct sk_buff *gelic_put_vlan_tag(struct sk_buff *skb,
 			return NULL;
 		dev_kfree_skb_any(sk_tmp);
 	}
-<<<<<<< HEAD
-	veth = (struct vlan_ethhdr *)skb_push(skb, VLAN_HLEN);
-=======
 	veth = skb_push(skb, VLAN_HLEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Move the mac addresses to the top of buffer */
 	memmove(skb->data, skb->data + VLAN_HLEN, 2 * ETH_ALEN);
@@ -1113,30 +791,18 @@ static int gelic_descr_prepare_tx(struct gelic_card *card,
 
 	buf = dma_map_single(ctodev(card), skb->data, skb->len, DMA_TO_DEVICE);
 
-<<<<<<< HEAD
-	if (!buf) {
-=======
 	if (dma_mapping_error(ctodev(card), buf)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(ctodev(card),
 			"dma map 2 failed (%p, %i). Dropping packet\n",
 			skb->data, skb->len);
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	descr->buf_addr = cpu_to_be32(buf);
-	descr->buf_size = cpu_to_be32(skb->len);
-	descr->skb = skb;
-	descr->data_status = 0;
-	descr->next_descr_addr = 0; /* terminate hw descr */
-=======
 	descr->hw_regs.payload.dev_addr = cpu_to_be32(buf);
 	descr->hw_regs.payload.size = cpu_to_be32(skb->len);
 	descr->skb = skb;
 	descr->hw_regs.data_status = 0;
 	descr->hw_regs.next_descr_addr = 0; /* terminate hw descr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gelic_descr_set_tx_cmdstat(descr, skb);
 
 	/* bump free descriptor pointer */
@@ -1161,11 +827,7 @@ static int gelic_card_kick_txdma(struct gelic_card *card,
 	if (gelic_descr_get_status(descr) == GELIC_DESCR_DMA_CARDOWNED) {
 		card->tx_dma_progress = 1;
 		status = lv1_net_start_tx_dma(bus_id(card), dev_id(card),
-<<<<<<< HEAD
-					      descr->bus_addr, 0);
-=======
 			descr->link.cpu_addr, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status) {
 			card->tx_dma_progress = 0;
 			dev_info(ctodev(card), "lv1_net_start_txdma failed," \
@@ -1180,15 +842,9 @@ static int gelic_card_kick_txdma(struct gelic_card *card,
  * @skb: packet to send out
  * @netdev: interface device structure
  *
-<<<<<<< HEAD
- * returns 0 on success, <0 on failure
- */
-int gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
-=======
  * returns NETDEV_TX_OK on success, NETDEV_TX_BUSY on failure
  */
 netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gelic_card *card = netdev_card(netdev);
 	struct gelic_descr *descr;
@@ -1224,12 +880,8 @@ netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
 	 * link this prepared descriptor to previous one
 	 * to achieve high performance
 	 */
-<<<<<<< HEAD
-	descr->prev->next_descr_addr = cpu_to_be32(descr->bus_addr);
-=======
 	descr->prev->hw_regs.next_descr_addr =
 		cpu_to_be32(descr->link.cpu_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * as hardware descriptor is modified in the above lines,
 	 * ensure that the hardware sees it
@@ -1242,20 +894,12 @@ netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
 		 */
 		netdev->stats.tx_dropped++;
 		/* don't trigger BUG_ON() in gelic_descr_release_tx */
-<<<<<<< HEAD
-		descr->data_status = cpu_to_be32(GELIC_DESCR_TX_TAIL);
-=======
 		descr->hw_regs.data_status = cpu_to_be32(GELIC_DESCR_TX_TAIL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gelic_descr_release_tx(card, descr);
 		/* reset head */
 		card->tx_chain.head = descr;
 		/* reset hw termination */
-<<<<<<< HEAD
-		descr->prev->next_descr_addr = 0;
-=======
 		descr->prev->hw_regs.next_descr_addr = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_info(ctodev(card), "%s: kick failure\n", __func__);
 	}
 
@@ -1280,23 +924,6 @@ static void gelic_net_pass_skb_up(struct gelic_descr *descr,
 	struct sk_buff *skb = descr->skb;
 	u32 data_status, data_error;
 
-<<<<<<< HEAD
-	data_status = be32_to_cpu(descr->data_status);
-	data_error = be32_to_cpu(descr->data_error);
-	/* unmap skb buffer */
-	dma_unmap_single(ctodev(card), be32_to_cpu(descr->buf_addr),
-			 GELIC_NET_MAX_MTU,
-			 DMA_FROM_DEVICE);
-
-	skb_put(skb, be32_to_cpu(descr->valid_size)?
-		be32_to_cpu(descr->valid_size) :
-		be32_to_cpu(descr->result_size));
-	if (!descr->valid_size)
-		dev_info(ctodev(card), "buffer full %x %x %x\n",
-			 be32_to_cpu(descr->result_size),
-			 be32_to_cpu(descr->buf_size),
-			 be32_to_cpu(descr->dmac_cmd_status));
-=======
 	data_status = be32_to_cpu(descr->hw_regs.data_status);
 	data_error = be32_to_cpu(descr->hw_regs.data_error);
 	/* unmap skb buffer */
@@ -1312,7 +939,6 @@ static void gelic_net_pass_skb_up(struct gelic_descr *descr,
 			 be32_to_cpu(descr->hw_regs.result_size),
 			 be32_to_cpu(descr->hw_regs.payload.size),
 			 be32_to_cpu(descr->hw_regs.dmac_cmd_status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	descr->skb = NULL;
 	/*
@@ -1423,33 +1049,21 @@ refill:
 
 	/* is the current descriptor terminated with next_descr == NULL? */
 	dmac_chain_ended =
-<<<<<<< HEAD
-		be32_to_cpu(descr->dmac_cmd_status) &
-=======
 		be32_to_cpu(descr->hw_regs.dmac_cmd_status) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		GELIC_DESCR_RX_DMA_CHAIN_END;
 	/*
 	 * So that always DMAC can see the end
 	 * of the descriptor chain to avoid
 	 * from unwanted DMAC overrun.
 	 */
-<<<<<<< HEAD
-	descr->next_descr_addr = 0;
-=======
 	descr->hw_regs.next_descr_addr = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* change the descriptor state: */
 	gelic_descr_set_status(descr, GELIC_DESCR_DMA_NOT_IN_USE);
 
 	/*
 	 * this call can fail, but for now, just leave this
-<<<<<<< HEAD
-	 * decriptor without skb
-=======
 	 * descriptor without skb
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	gelic_descr_prepare_rx(card, descr);
 
@@ -1459,12 +1073,8 @@ refill:
 	/*
 	 * Set this descriptor the end of the chain.
 	 */
-<<<<<<< HEAD
-	descr->prev->next_descr_addr = cpu_to_be32(descr->bus_addr);
-=======
 	descr->prev->hw_regs.next_descr_addr =
 		cpu_to_be32(descr->link.cpu_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If dmac chain was met, DMAC stopped.
@@ -1498,40 +1108,13 @@ static int gelic_net_poll(struct napi_struct *napi, int budget)
 	}
 
 	if (packets_done < budget) {
-<<<<<<< HEAD
-		napi_complete(napi);
-=======
 		napi_complete_done(napi, packets_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gelic_card_rx_irq_on(card);
 	}
 	return packets_done;
 }
-<<<<<<< HEAD
-/**
- * gelic_net_change_mtu - changes the MTU of an interface
- * @netdev: interface device structure
- * @new_mtu: new MTU value
- *
- * returns 0 on success, <0 on failure
- */
-int gelic_net_change_mtu(struct net_device *netdev, int new_mtu)
-{
-	/* no need to re-alloc skbs or so -- the max mtu is about 2.3k
-	 * and mtu is outbound only anyway */
-	if ((new_mtu < GELIC_NET_MIN_MTU) ||
-	    (new_mtu > GELIC_NET_MAX_MTU)) {
-		return -EINVAL;
-	}
-	netdev->mtu = new_mtu;
-	return 0;
-}
-
-/**
-=======
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gelic_card_interrupt - event handler for gelic_net
  */
 static irqreturn_t gelic_card_interrupt(int irq, void *ptr)
@@ -1579,11 +1162,7 @@ static irqreturn_t gelic_card_interrupt(int irq, void *ptr)
  * gelic_net_poll_controller - artificial interrupt for netconsole etc.
  * @netdev: interface device structure
  *
-<<<<<<< HEAD
- * see Documentation/networking/netconsole.txt
-=======
  * see Documentation/networking/netconsole.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void gelic_net_poll_controller(struct net_device *netdev)
 {
@@ -1622,16 +1201,6 @@ int gelic_net_open(struct net_device *netdev)
 void gelic_net_get_drvinfo(struct net_device *netdev,
 			   struct ethtool_drvinfo *info)
 {
-<<<<<<< HEAD
-	strncpy(info->driver, DRV_NAME, sizeof(info->driver) - 1);
-	strncpy(info->version, DRV_VERSION, sizeof(info->version) - 1);
-}
-
-static int gelic_ether_get_settings(struct net_device *netdev,
-				    struct ethtool_cmd *cmd)
-{
-	struct gelic_card *card = netdev_card(netdev);
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
 }
@@ -1641,45 +1210,10 @@ static int gelic_ether_get_link_ksettings(struct net_device *netdev,
 {
 	struct gelic_card *card = netdev_card(netdev);
 	u32 supported, advertising;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gelic_card_get_ether_port_status(card, 0);
 
 	if (card->ether_port_status & GELIC_LV1_ETHER_FULL_DUPLEX)
-<<<<<<< HEAD
-		cmd->duplex = DUPLEX_FULL;
-	else
-		cmd->duplex = DUPLEX_HALF;
-
-	switch (card->ether_port_status & GELIC_LV1_ETHER_SPEED_MASK) {
-	case GELIC_LV1_ETHER_SPEED_10:
-		ethtool_cmd_speed_set(cmd, SPEED_10);
-		break;
-	case GELIC_LV1_ETHER_SPEED_100:
-		ethtool_cmd_speed_set(cmd, SPEED_100);
-		break;
-	case GELIC_LV1_ETHER_SPEED_1000:
-		ethtool_cmd_speed_set(cmd, SPEED_1000);
-		break;
-	default:
-		pr_info("%s: speed unknown\n", __func__);
-		ethtool_cmd_speed_set(cmd, SPEED_10);
-		break;
-	}
-
-	cmd->supported = SUPPORTED_TP | SUPPORTED_Autoneg |
-			SUPPORTED_10baseT_Half | SUPPORTED_10baseT_Full |
-			SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |
-			SUPPORTED_1000baseT_Full;
-	cmd->advertising = cmd->supported;
-	if (card->link_mode & GELIC_LV1_ETHER_AUTO_NEG) {
-		cmd->autoneg = AUTONEG_ENABLE;
-	} else {
-		cmd->autoneg = AUTONEG_DISABLE;
-		cmd->advertising &= ~ADVERTISED_Autoneg;
-	}
-	cmd->port = PORT_TP;
-=======
 		cmd->base.duplex = DUPLEX_FULL;
 	else
 		cmd->base.duplex = DUPLEX_HALF;
@@ -1717,35 +1251,22 @@ static int gelic_ether_get_link_ksettings(struct net_device *netdev,
 						supported);
 	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
 						advertising);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int gelic_ether_set_settings(struct net_device *netdev,
-				    struct ethtool_cmd *cmd)
-=======
 static int
 gelic_ether_set_link_ksettings(struct net_device *netdev,
 			       const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gelic_card *card = netdev_card(netdev);
 	u64 mode;
 	int ret;
 
-<<<<<<< HEAD
-	if (cmd->autoneg == AUTONEG_ENABLE) {
-		mode = GELIC_LV1_ETHER_AUTO_NEG;
-	} else {
-		switch (cmd->speed) {
-=======
 	if (cmd->base.autoneg == AUTONEG_ENABLE) {
 		mode = GELIC_LV1_ETHER_AUTO_NEG;
 	} else {
 		switch (cmd->base.speed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SPEED_10:
 			mode = GELIC_LV1_ETHER_SPEED_10;
 			break;
@@ -1758,15 +1279,9 @@ gelic_ether_set_link_ksettings(struct net_device *netdev,
 		default:
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		if (cmd->duplex == DUPLEX_FULL)
-			mode |= GELIC_LV1_ETHER_FULL_DUPLEX;
-		else if (cmd->speed == SPEED_1000) {
-=======
 		if (cmd->base.duplex == DUPLEX_FULL) {
 			mode |= GELIC_LV1_ETHER_FULL_DUPLEX;
 		} else if (cmd->base.speed == SPEED_1000) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_info("1000 half duplex is not supported.\n");
 			return -EINVAL;
 		}
@@ -1861,19 +1376,11 @@ done:
 
 static const struct ethtool_ops gelic_ether_ethtool_ops = {
 	.get_drvinfo	= gelic_net_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings	= gelic_ether_get_settings,
-	.set_settings	= gelic_ether_set_settings,
-	.get_link	= ethtool_op_get_link,
-	.get_wol	= gelic_net_get_wol,
-	.set_wol	= gelic_net_set_wol,
-=======
 	.get_link	= ethtool_op_get_link,
 	.get_wol	= gelic_net_get_wol,
 	.set_wol	= gelic_net_set_wol,
 	.get_link_ksettings = gelic_ether_get_link_ksettings,
 	.set_link_ksettings = gelic_ether_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1907,18 +1414,11 @@ out:
 /**
  * gelic_net_tx_timeout - called when the tx timeout watchdog kicks in.
  * @netdev: interface device structure
-<<<<<<< HEAD
- *
- * called, if tx hangs. Schedules a task that resets the interface
- */
-void gelic_net_tx_timeout(struct net_device *netdev)
-=======
  * @txqueue: unused
  *
  * called, if tx hangs. Schedules a task that resets the interface
  */
 void gelic_net_tx_timeout(struct net_device *netdev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gelic_card *card;
 
@@ -1935,10 +1435,6 @@ static const struct net_device_ops gelic_netdevice_ops = {
 	.ndo_stop = gelic_net_stop,
 	.ndo_start_xmit = gelic_net_xmit,
 	.ndo_set_rx_mode = gelic_net_set_multi,
-<<<<<<< HEAD
-	.ndo_change_mtu = gelic_net_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout = gelic_net_tx_timeout,
 	.ndo_set_mac_address = eth_mac_addr,
 	.ndo_validate_addr = eth_validate_addr,
@@ -1950,18 +1446,6 @@ static const struct net_device_ops gelic_netdevice_ops = {
 /**
  * gelic_ether_setup_netdev_ops - initialization of net_device operations
  * @netdev: net_device structure
-<<<<<<< HEAD
- *
- * fills out function pointers in the net_device structure
- */
-static void __devinit gelic_ether_setup_netdev_ops(struct net_device *netdev,
-						   struct napi_struct *napi)
-{
-	netdev->watchdog_timeo = GELIC_NET_WATCHDOG_TIMEOUT;
-	/* NAPI */
-	netif_napi_add(netdev, napi,
-		       gelic_net_poll, GELIC_NET_NAPI_WEIGHT);
-=======
  * @napi: napi structure
  *
  * fills out function pointers in the net_device structure
@@ -1972,17 +1456,12 @@ static void gelic_ether_setup_netdev_ops(struct net_device *netdev,
 	netdev->watchdog_timeo = GELIC_NET_WATCHDOG_TIMEOUT;
 	/* NAPI */
 	netif_napi_add(netdev, napi, gelic_net_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev->ethtool_ops = &gelic_ether_ethtool_ops;
 	netdev->netdev_ops = &gelic_netdevice_ops;
 }
 
 /**
-<<<<<<< HEAD
- * gelic_ether_setup_netdev - initialization of net_device
-=======
  * gelic_net_setup_netdev - initialization of net_device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @netdev: net_device structure
  * @card: card structure
  *
@@ -1991,12 +1470,7 @@ static void gelic_ether_setup_netdev_ops(struct net_device *netdev,
  * gelic_ether_setup_netdev initializes the net_device structure
  * and register it.
  **/
-<<<<<<< HEAD
-int __devinit gelic_net_setup_netdev(struct net_device *netdev,
-				     struct gelic_card *card)
-=======
 int gelic_net_setup_netdev(struct net_device *netdev, struct gelic_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status;
 	u64 v1, v2;
@@ -2017,11 +1491,7 @@ int gelic_net_setup_netdev(struct net_device *netdev, struct gelic_card *card)
 			 __func__, status);
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	memcpy(netdev->dev_addr, &v1, ETH_ALEN);
-=======
 	eth_hw_addr_set(netdev, (u8 *)&v1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (card->vlan_required) {
 		netdev->hard_header_len += VLAN_HLEN;
@@ -2032,13 +1502,10 @@ int gelic_net_setup_netdev(struct net_device *netdev, struct gelic_card *card)
 		netdev->features |= NETIF_F_VLAN_CHALLENGED;
 	}
 
-<<<<<<< HEAD
-=======
 	/* MTU range: 64 - 1518 */
 	netdev->min_mtu = GELIC_NET_MIN_MTU;
 	netdev->max_mtu = GELIC_NET_MAX_MTU;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = register_netdev(netdev);
 	if (status) {
 		dev_err(ctodev(card), "%s:Couldn't register %s %d\n",
@@ -2051,27 +1518,17 @@ int gelic_net_setup_netdev(struct net_device *netdev, struct gelic_card *card)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * gelic_alloc_card_net - allocates net_device and card structure
-=======
 #define GELIC_ALIGN (32)
 
 /**
  * gelic_alloc_card_net - allocates net_device and card structure
  * @netdev: interface device structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * returns the card structure or NULL in case of errors
  *
  * the card and net_device structures are linked to each other
  */
-<<<<<<< HEAD
-#define GELIC_ALIGN (32)
-static struct gelic_card * __devinit gelic_alloc_card_net(struct net_device **netdev)
-=======
 static struct gelic_card *gelic_alloc_card_net(struct net_device **netdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gelic_card *card;
 	struct gelic_port *port;
@@ -2099,11 +1556,7 @@ static struct gelic_card *gelic_alloc_card_net(struct net_device **netdev)
 	 * alloc netdev
 	 */
 	*netdev = alloc_etherdev(sizeof(struct gelic_port));
-<<<<<<< HEAD
-	if (!netdev) {
-=======
 	if (!*netdev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(card->unalign);
 		return NULL;
 	}
@@ -2126,11 +1579,7 @@ static struct gelic_card *gelic_alloc_card_net(struct net_device **netdev)
 	return card;
 }
 
-<<<<<<< HEAD
-static void __devinit gelic_card_get_vlan_info(struct gelic_card *card)
-=======
 static void gelic_card_get_vlan_info(struct gelic_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 v1, v2;
 	int status;
@@ -2201,17 +1650,10 @@ static void gelic_card_get_vlan_info(struct gelic_card *card)
 	dev_info(ctodev(card), "internal vlan %s\n",
 		 card->vlan_required? "enabled" : "disabled");
 }
-<<<<<<< HEAD
-/**
- * ps3_gelic_driver_probe - add a device to the control of this driver
- */
-static int __devinit ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
-=======
 /*
  * ps3_gelic_driver_probe - add a device to the control of this driver
  */
 static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gelic_card *card;
 	struct net_device *netdev;
@@ -2279,11 +1721,7 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 		goto fail_alloc_irq;
 	}
 	result = request_irq(card->irq, gelic_card_interrupt,
-<<<<<<< HEAD
-			     IRQF_DISABLED, netdev->name, card);
-=======
 			     0, netdev->name, card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (result) {
 		dev_info(ctodev(card), "%s:request_irq failed (%d)\n",
@@ -2296,14 +1734,6 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 		GELIC_CARD_PORT_STATUS_CHANGED;
 
 
-<<<<<<< HEAD
-	if (gelic_card_init_chain(card, &card->tx_chain,
-			card->descr, GELIC_NET_TX_DESCRIPTORS))
-		goto fail_alloc_tx;
-	if (gelic_card_init_chain(card, &card->rx_chain,
-				 card->descr + GELIC_NET_TX_DESCRIPTORS,
-				 GELIC_NET_RX_DESCRIPTORS))
-=======
 	result = gelic_card_init_chain(card, &card->tx_chain,
 				       card->descr, GELIC_NET_TX_DESCRIPTORS);
 	if (result)
@@ -2312,7 +1742,6 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 				       card->descr + GELIC_NET_TX_DESCRIPTORS,
 				       GELIC_NET_RX_DESCRIPTORS);
 	if (result)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_alloc_rx;
 
 	/* head of chain */
@@ -2322,12 +1751,8 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 		card->rx_top, card->tx_top, sizeof(struct gelic_descr),
 		GELIC_NET_RX_DESCRIPTORS);
 	/* allocate rx skbs */
-<<<<<<< HEAD
-	if (gelic_card_alloc_rx_skbs(card))
-=======
 	result = gelic_card_alloc_rx_skbs(card);
 	if (result)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_alloc_skbs;
 
 	spin_lock_init(&card->tx_lock);
@@ -2339,22 +1764,14 @@ static int ps3_gelic_driver_probe(struct ps3_system_bus_device *dev)
 	gelic_ether_setup_netdev_ops(netdev, &card->napi);
 	result = gelic_net_setup_netdev(netdev, card);
 	if (result) {
-<<<<<<< HEAD
-		dev_dbg(&dev->core, "%s: setup_netdev failed %d",
-=======
 		dev_dbg(&dev->core, "%s: setup_netdev failed %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, result);
 		goto fail_setup_netdev;
 	}
 
 #ifdef CONFIG_GELIC_WIRELESS
-<<<<<<< HEAD
-	if (gelic_wl_driver_probe(card)) {
-=======
 	result = gelic_wl_driver_probe(card);
 	if (result) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&dev->core, "%s: WL init failed\n", __func__);
 		goto fail_setup_netdev;
 	}
@@ -2369,11 +1786,7 @@ fail_alloc_rx:
 	gelic_card_free_chain(card, card->tx_chain.head);
 fail_alloc_tx:
 	free_irq(card->irq, card);
-<<<<<<< HEAD
-	netdev->irq = NO_IRQ;
-=======
 	netdev->irq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_request_irq:
 	ps3_sb_event_receive_port_destroy(dev, card->irq);
 fail_alloc_irq:
@@ -2392,19 +1805,11 @@ fail_open:
 	return result;
 }
 
-<<<<<<< HEAD
-/**
- * ps3_gelic_driver_remove - remove a device from the control of this driver
- */
-
-static int ps3_gelic_driver_remove(struct ps3_system_bus_device *dev)
-=======
 /*
  * ps3_gelic_driver_remove - remove a device from the control of this driver
  */
 
 static void ps3_gelic_driver_remove(struct ps3_system_bus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gelic_card *card = ps3_system_bus_get_drvdata(dev);
 	struct net_device *netdev0;
@@ -2433,11 +1838,7 @@ static void ps3_gelic_driver_remove(struct ps3_system_bus_device *dev)
 	netdev0 = card->netdev[GELIC_PORT_ETHERNET_0];
 	/* disconnect event port */
 	free_irq(card->irq, card);
-<<<<<<< HEAD
-	netdev0->irq = NO_IRQ;
-=======
 	netdev0->irq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ps3_sb_event_receive_port_destroy(card->dev, card->irq);
 
 	wait_event(card->waitq,
@@ -2457,10 +1858,6 @@ static void ps3_gelic_driver_remove(struct ps3_system_bus_device *dev)
 	ps3_close_hv_device(dev);
 
 	pr_debug("%s: done\n", __func__);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ps3_system_bus_driver ps3_gelic_driver = {

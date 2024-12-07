@@ -1,38 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_MMU_H
 #define _ASM_X86_MMU_H
 
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <linux/mutex.h>
-
-/*
- * The x86 doesn't have a mmu context, but
- * we put the segment information here.
- */
-typedef struct {
-	struct ldt_struct *ldt;
-
-#ifdef CONFIG_X86_64
-	/* True if mm supports a task running in 32 bit compatibility mode. */
-	unsigned short ia32_compat;
-#endif
-
-	struct mutex lock;
-	void *vdso;
-} mm_context_t;
-
-#ifdef CONFIG_SMP
-void leave_mm(int cpu);
-#else
-static inline void leave_mm(int cpu)
-{
-}
-#endif
-=======
 #include <linux/rwsem.h>
 #include <linux/mutex.h>
 #include <linux/atomic.h>
@@ -107,6 +77,5 @@ typedef struct {
 
 void leave_mm(void);
 #define leave_mm leave_mm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_MMU_H */

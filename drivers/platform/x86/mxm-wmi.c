@@ -1,39 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MXM WMI driver
  *
  * Copyright(C) 2010 Red Hat.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-=======
 #include <linux/mxm-wmi.h>
 #include <linux/acpi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Dave Airlie");
 MODULE_DESCRIPTION("MXM WMI Driver");
@@ -60,20 +35,11 @@ int mxm_wmi_call_mxds(int adapter)
 		.xarg = 1,
 	};
 	struct acpi_buffer input = { (acpi_size)sizeof(args), &args };
-<<<<<<< HEAD
-	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	printk("calling mux switch %d\n", adapter);
 
-<<<<<<< HEAD
-	status = wmi_evaluate_method(MXM_WMMX_GUID, 0x1, adapter, &input,
-				     &output);
-=======
 	status = wmi_evaluate_method(MXM_WMMX_GUID, 0x0, adapter, &input, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ACPI_FAILURE(status))
 		return status;
@@ -92,20 +58,11 @@ int mxm_wmi_call_mxmx(int adapter)
 		.xarg = 1,
 	};
 	struct acpi_buffer input = { (acpi_size)sizeof(args), &args };
-<<<<<<< HEAD
-	struct acpi_buffer output = { ACPI_ALLOCATE_BUFFER, NULL };
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 
 	printk("calling mux switch %d\n", adapter);
 
-<<<<<<< HEAD
-	status = wmi_evaluate_method(MXM_WMMX_GUID, 0x1, adapter, &input,
-				     &output);
-=======
 	status = wmi_evaluate_method(MXM_WMMX_GUID, 0x0, adapter, &input, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ACPI_FAILURE(status))
 		return status;

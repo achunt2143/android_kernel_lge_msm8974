@@ -1,44 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * platform.h
  *
  * Hardware platform operations. Intended for use by domain-0 kernel.
  *
-<<<<<<< HEAD
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2002-2006, K Fraser
  */
 
 #ifndef __XEN_PUBLIC_PLATFORM_H__
 #define __XEN_PUBLIC_PLATFORM_H__
 
-<<<<<<< HEAD
-#include "xen.h"
-=======
 #include <xen/interface/xen.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define XENPF_INTERFACE_VERSION 0x03000001
 
@@ -46,21 +18,13 @@
  * Set clock such that it would read <secs,nsecs> after 00:00:00 UTC,
  * 1 January, 1970 if the current system time was <system_time>.
  */
-<<<<<<< HEAD
-#define XENPF_settime             17
-struct xenpf_settime {
-=======
 #define XENPF_settime32             17
 struct xenpf_settime32 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* IN variables. */
 	uint32_t secs;
 	uint32_t nsecs;
 	uint64_t system_time;
 };
-<<<<<<< HEAD
-DEFINE_GUEST_HANDLE_STRUCT(xenpf_settime_t);
-=======
 DEFINE_GUEST_HANDLE_STRUCT(xenpf_settime32_t);
 #define XENPF_settime64           62
 struct xenpf_settime64 {
@@ -71,7 +35,6 @@ struct xenpf_settime64 {
     uint64_t system_time;
 };
 DEFINE_GUEST_HANDLE_STRUCT(xenpf_settime64_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Request memory range (@mfn, @mfn+@nr_mfns-1) to have type @type.
@@ -83,11 +46,7 @@ DEFINE_GUEST_HANDLE_STRUCT(xenpf_settime64_t);
 #define XENPF_add_memtype         31
 struct xenpf_add_memtype {
 	/* IN variables. */
-<<<<<<< HEAD
-	unsigned long mfn;
-=======
 	xen_pfn_t mfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t nr_mfns;
 	uint32_t type;
 	/* OUT variables. */
@@ -117,11 +76,7 @@ struct xenpf_read_memtype {
 	/* IN variables. */
 	uint32_t reg;
 	/* OUT variables. */
-<<<<<<< HEAD
-	unsigned long mfn;
-=======
 	xen_pfn_t mfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t nr_mfns;
 	uint32_t type;
 };
@@ -145,8 +100,6 @@ struct xenpf_platform_quirk {
 };
 DEFINE_GUEST_HANDLE_STRUCT(xenpf_platform_quirk_t);
 
-<<<<<<< HEAD
-=======
 #define XENPF_efi_runtime_call    49
 #define XEN_EFI_get_time                      1
 #define XEN_EFI_set_time                      2
@@ -247,17 +200,13 @@ DEFINE_GUEST_HANDLE_STRUCT(xenpf_efi_runtime_call);
 #define  XEN_FW_EFI_MEM_INFO       3
 #define  XEN_FW_EFI_RT_VERSION     4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define XENPF_firmware_info       50
 #define XEN_FW_DISK_INFO          1 /* from int 13 AH=08/41/48 */
 #define XEN_FW_DISK_MBR_SIGNATURE 2 /* from MBR offset 0x1b8 */
 #define XEN_FW_VBEDDC_INFO        3 /* from int 10 AX=4f15 */
-<<<<<<< HEAD
-=======
 #define XEN_FW_EFI_INFO           4 /* from EFI */
 #define XEN_FW_KBD_SHIFT_FLAGS    5 /* Int16, Fn02: Get keyboard shift flags. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct xenpf_firmware_info {
 	/* IN variables. */
 	uint32_t type;
@@ -288,8 +237,6 @@ struct xenpf_firmware_info {
 			/* must refer to 128-byte buffer */
 			GUEST_HANDLE(uchar) edid;
 		} vbeddc_info; /* XEN_FW_VBEDDC_INFO */
-<<<<<<< HEAD
-=======
 
 		union xenpf_efi_info {
 			uint32_t version;
@@ -312,7 +259,6 @@ struct xenpf_firmware_info {
 		} efi_info; /* XEN_FW_EFI_INFO */
 
 		uint8_t kbd_shift_flags; /* XEN_FW_KBD_SHIFT_FLAGS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 };
 DEFINE_GUEST_HANDLE_STRUCT(xenpf_firmware_info_t);
@@ -320,18 +266,11 @@ DEFINE_GUEST_HANDLE_STRUCT(xenpf_firmware_info_t);
 #define XENPF_enter_acpi_sleep    51
 struct xenpf_enter_acpi_sleep {
 	/* IN variables */
-<<<<<<< HEAD
-	uint16_t pm1a_cnt_val;      /* PM1a control value. */
-	uint16_t pm1b_cnt_val;      /* PM1b control value. */
-	uint32_t sleep_state;       /* Which state to enter (Sn). */
-	uint32_t flags;             /* Must be zero. */
-=======
 	uint16_t val_a;             /* PM1a control / sleep type A. */
 	uint16_t val_b;             /* PM1b control / sleep type B. */
 	uint32_t sleep_state;       /* Which state to enter (Sn). */
 #define XENPF_ACPI_SLEEP_EXTENDED 0x00000001
 	uint32_t flags;             /* XENPF_ACPI_SLEEP_*. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 DEFINE_GUEST_HANDLE_STRUCT(xenpf_enter_acpi_sleep_t);
 
@@ -493,8 +432,6 @@ struct xenpf_pcpuinfo {
 };
 DEFINE_GUEST_HANDLE_STRUCT(xenpf_pcpuinfo);
 
-<<<<<<< HEAD
-=======
 #define XENPF_cpu_online	56
 #define XENPF_cpu_offline	57
 struct xenpf_cpu_ol {
@@ -548,41 +485,30 @@ DEFINE_GUEST_HANDLE_STRUCT(xenpf_symdata);
 
 #define XENPF_get_dom0_console 64
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct xen_platform_op {
 	uint32_t cmd;
 	uint32_t interface_version; /* XENPF_INTERFACE_VERSION */
 	union {
-<<<<<<< HEAD
-		struct xenpf_settime           settime;
-=======
 		struct xenpf_settime32         settime32;
 		struct xenpf_settime64         settime64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xenpf_add_memtype       add_memtype;
 		struct xenpf_del_memtype       del_memtype;
 		struct xenpf_read_memtype      read_memtype;
 		struct xenpf_microcode_update  microcode;
 		struct xenpf_platform_quirk    platform_quirk;
-<<<<<<< HEAD
-=======
 		struct xenpf_efi_runtime_call  efi_runtime_call;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xenpf_firmware_info     firmware_info;
 		struct xenpf_enter_acpi_sleep  enter_acpi_sleep;
 		struct xenpf_change_freq       change_freq;
 		struct xenpf_getidletime       getidletime;
 		struct xenpf_set_processor_pminfo set_pminfo;
 		struct xenpf_pcpuinfo          pcpu_info;
-<<<<<<< HEAD
-=======
 		struct xenpf_cpu_ol            cpu_ol;
 		struct xenpf_cpu_hotadd        cpu_add;
 		struct xenpf_mem_hotadd        mem_add;
 		struct xenpf_core_parking      core_parking;
 		struct xenpf_symdata           symdata;
 		struct dom0_vga_console_info   dom0_console;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint8_t                        pad[128];
 	} u;
 };

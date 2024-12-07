@@ -1,33 +1,19 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* include/net/ax88796.h
  *
  * Copyright 2005 Simtec Electronics
  *	Ben Dooks <ben@simtec.co.uk>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #ifndef __NET_AX88796_PLAT_H
 #define __NET_AX88796_PLAT_H
 
-<<<<<<< HEAD
-=======
 #include <linux/types.h>
 
 struct sk_buff;
 struct net_device;
 struct platform_device;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AXFLG_HAS_EEPROM		(1<<0)
 #define AXFLG_MAC_FROMDEV		(1<<1)	/* device already has MAC */
 #define AXFLG_HAS_93CX6			(1<<2)	/* use eeprom_93cx6 driver */
@@ -42,10 +28,6 @@ struct ax_plat_data {
 	u32		*reg_offsets;	/* register offsets */
 	u8		*mac_addr;	/* MAC addr (only used when
 					   AXFLG_MAC_FROMPLATFORM is used */
-<<<<<<< HEAD
-};
-
-=======
 
 	/* uses default ax88796 buffer if set to NULL */
 	void (*block_output)(struct net_device *dev, int count,
@@ -61,5 +43,4 @@ struct ax_plat_data {
 /* exported from ax88796.c for xsurf100.c  */
 extern void ax_NS8390_reinit(struct net_device *dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __NET_AX88796_PLAT_H */

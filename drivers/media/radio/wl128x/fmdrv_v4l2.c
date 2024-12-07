@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  FM Driver for Connectivity chip of Texas Instruments.
  *  This file provides interfaces to V4L2 subsystem.
@@ -16,23 +13,6 @@
  *  Copyright (C) 2011 Texas Instruments
  *  Author: Raja Mani <raja_mani@ti.com>
  *  Author: Manjunatha Halli <manjunatha_halli@ti.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
@@ -43,11 +23,7 @@
 #include "fmdrv_rx.h"
 #include "fmdrv_tx.h"
 
-<<<<<<< HEAD
-static struct video_device *gradio_dev;
-=======
 static struct video_device gradio_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u8 radio_disconnected;
 
 /* -- V4L2 RADIO (/dev/radioX) device file operation interfaces --- */
@@ -67,13 +43,6 @@ static ssize_t fm_v4l2_fops_read(struct file *file, char __user * buf,
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	/* Turn on RDS mode , if it is disabled */
-	ret = fm_rx_get_rds_mode(fmdev, &rds_mode);
-	if (ret < 0) {
-		fmerr("Unable to read current rds mode\n");
-		return ret;
-=======
 	if (mutex_lock_interruptible(&fmdev->mutex))
 		return -ERESTARTSYS;
 
@@ -82,30 +51,21 @@ static ssize_t fm_v4l2_fops_read(struct file *file, char __user * buf,
 	if (ret < 0) {
 		fmerr("Unable to read current rds mode\n");
 		goto read_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rds_mode == FM_RDS_DISABLE) {
 		ret = fmc_set_rds_mode(fmdev, FM_RDS_ENABLE);
 		if (ret < 0) {
 			fmerr("Failed to enable rds mode\n");
-<<<<<<< HEAD
-			return ret;
-=======
 			goto read_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Copy RDS data from internal buffer to user buffer */
-<<<<<<< HEAD
-	return fmc_transfer_rds_from_internal_buff(fmdev, file, buf, count);
-=======
 	ret = fmc_transfer_rds_from_internal_buff(fmdev, file, buf, count);
 read_unlock:
 	mutex_unlock(&fmdev->mutex);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Write TX RDS data */
@@ -124,41 +84,26 @@ static ssize_t fm_v4l2_fops_write(struct file *file, const char __user * buf,
 		return -EFAULT;
 
 	fmdev = video_drvdata(file);
-<<<<<<< HEAD
-	fm_tx_set_radio_text(fmdev, rds.text, rds.text_type);
-	fm_tx_set_af(fmdev, rds.af_freq);
-=======
 	if (mutex_lock_interruptible(&fmdev->mutex))
 		return -ERESTARTSYS;
 	fm_tx_set_radio_text(fmdev, rds.text, rds.text_type);
 	fm_tx_set_af(fmdev, rds.af_freq);
 	mutex_unlock(&fmdev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sizeof(rds);
 }
 
-<<<<<<< HEAD
-static u32 fm_v4l2_fops_poll(struct file *file, struct poll_table_struct *pts)
-=======
 static __poll_t fm_v4l2_fops_poll(struct file *file, struct poll_table_struct *pts)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct fmdev *fmdev;
 
 	fmdev = video_drvdata(file);
-<<<<<<< HEAD
-	ret = fmc_is_rds_data_available(fmdev, file, pts);
-	if (ret < 0)
-		return POLLIN | POLLRDNORM;
-=======
 	mutex_lock(&fmdev->mutex);
 	ret = fmc_is_rds_data_available(fmdev, file, pts);
 	mutex_unlock(&fmdev->mutex);
 	if (ret < 0)
 		return EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -180,19 +125,12 @@ static int fm_v4l2_fops_open(struct file *file)
 
 	fmdev = video_drvdata(file);
 
-<<<<<<< HEAD
-	ret = fmc_prepare(fmdev);
-	if (ret < 0) {
-		fmerr("Unable to prepare FM CORE\n");
-		return ret;
-=======
 	if (mutex_lock_interruptible(&fmdev->mutex))
 		return -ERESTARTSYS;
 	ret = fmc_prepare(fmdev);
 	if (ret < 0) {
 		fmerr("Unable to prepare FM CORE\n");
 		goto open_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	fmdbg("Load FM RX firmware..\n");
@@ -200,19 +138,12 @@ static int fm_v4l2_fops_open(struct file *file)
 	ret = fmc_set_mode(fmdev, FM_MODE_RX);
 	if (ret < 0) {
 		fmerr("Unable to load FM RX firmware\n");
-<<<<<<< HEAD
-		return ret;
-	}
-	radio_disconnected = 1;
-
-=======
 		goto open_unlock;
 	}
 	radio_disconnected = 1;
 
 open_unlock:
 	mutex_unlock(&fmdev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -227,36 +158,22 @@ static int fm_v4l2_fops_release(struct file *file)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	ret = fmc_set_mode(fmdev, FM_MODE_OFF);
-	if (ret < 0) {
-		fmerr("Unable to turn off the chip\n");
-		return ret;
-=======
 	mutex_lock(&fmdev->mutex);
 	ret = fmc_set_mode(fmdev, FM_MODE_OFF);
 	if (ret < 0) {
 		fmerr("Unable to turn off the chip\n");
 		goto release_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = fmc_release(fmdev);
 	if (ret < 0) {
 		fmerr("FM CORE release failed\n");
-<<<<<<< HEAD
-		return ret;
-	}
-	radio_disconnected = 0;
-
-=======
 		goto release_unlock;
 	}
 	radio_disconnected = 0;
 
 release_unlock:
 	mutex_unlock(&fmdev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -264,22 +181,10 @@ release_unlock:
 static int fm_v4l2_vidioc_querycap(struct file *file, void *priv,
 		struct v4l2_capability *capability)
 {
-<<<<<<< HEAD
-	strlcpy(capability->driver, FM_DRV_NAME, sizeof(capability->driver));
-	strlcpy(capability->card, FM_DRV_CARD_SHORT_NAME,
-			sizeof(capability->card));
-	sprintf(capability->bus_info, "UART");
-	capability->capabilities = V4L2_CAP_HW_FREQ_SEEK | V4L2_CAP_TUNER |
-		V4L2_CAP_RADIO | V4L2_CAP_MODULATOR |
-		V4L2_CAP_AUDIO | V4L2_CAP_READWRITE |
-		V4L2_CAP_RDS_CAPTURE;
-
-=======
 	strscpy(capability->driver, FM_DRV_NAME, sizeof(capability->driver));
 	strscpy(capability->card, FM_DRV_CARD_SHORT_NAME,
 		sizeof(capability->card));
 	sprintf(capability->bus_info, "UART");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -328,22 +233,14 @@ static int fm_v4l2_vidioc_g_audio(struct file *file, void *priv,
 		struct v4l2_audio *audio)
 {
 	memset(audio, 0, sizeof(*audio));
-<<<<<<< HEAD
-	strcpy(audio->name, "Radio");
-=======
 	strscpy(audio->name, "Radio", sizeof(audio->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	audio->capability = V4L2_AUDCAP_STEREO;
 
 	return 0;
 }
 
 static int fm_v4l2_vidioc_s_audio(struct file *file, void *priv,
-<<<<<<< HEAD
-		struct v4l2_audio *audio)
-=======
 		const struct v4l2_audio *audio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (audio->index != 0)
 		return -EINVAL;
@@ -380,11 +277,7 @@ static int fm_v4l2_vidioc_g_tuner(struct file *file, void *priv,
 	if (ret != 0)
 		return ret;
 
-<<<<<<< HEAD
-	strcpy(tuner->name, "FM");
-=======
 	strscpy(tuner->name, "FM", sizeof(tuner->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tuner->type = V4L2_TUNER_RADIO;
 	/* Store rangelow and rangehigh freq in unit of 62.5 Hz */
 	tuner->rangelow = bottom_freq * 16;
@@ -392,13 +285,9 @@ static int fm_v4l2_vidioc_g_tuner(struct file *file, void *priv,
 	tuner->rxsubchans = V4L2_TUNER_SUB_MONO | V4L2_TUNER_SUB_STEREO |
 	((fmdev->rx.rds.flag == FM_RDS_ENABLE) ? V4L2_TUNER_SUB_RDS : 0);
 	tuner->capability = V4L2_TUNER_CAP_STEREO | V4L2_TUNER_CAP_RDS |
-<<<<<<< HEAD
-			    V4L2_TUNER_CAP_LOW;
-=======
 			    V4L2_TUNER_CAP_LOW |
 			    V4L2_TUNER_CAP_HWSEEK_BOUNDED |
 			    V4L2_TUNER_CAP_HWSEEK_WRAP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tuner->audmode = (stereo_mono_mode ?
 			  V4L2_TUNER_MODE_MONO : V4L2_TUNER_MODE_STEREO);
 
@@ -424,11 +313,7 @@ static int fm_v4l2_vidioc_g_tuner(struct file *file, void *priv,
  * Should we set other tuner attributes, too?
  */
 static int fm_v4l2_vidioc_s_tuner(struct file *file, void *priv,
-<<<<<<< HEAD
-		struct v4l2_tuner *tuner)
-=======
 		const struct v4l2_tuner *tuner)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fmdev *fmdev = video_drvdata(file);
 	u16 aud_mode;
@@ -485,11 +370,7 @@ static int fm_v4l2_vidioc_g_freq(struct file *file, void *priv,
 
 /* Set tuner or modulator radio frequency */
 static int fm_v4l2_vidioc_s_freq(struct file *file, void *priv,
-<<<<<<< HEAD
-		struct v4l2_frequency *freq)
-=======
 		const struct v4l2_frequency *freq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fmdev *fmdev = video_drvdata(file);
 
@@ -497,32 +378,19 @@ static int fm_v4l2_vidioc_s_freq(struct file *file, void *priv,
 	 * As V4L2_TUNER_CAP_LOW is set 1 user sends the frequency
 	 * in units of 62.5 Hz.
 	 */
-<<<<<<< HEAD
-	freq->frequency = (u32)(freq->frequency / 16);
-
-	return fmc_set_freq(fmdev, freq->frequency);
-=======
 	return fmc_set_freq(fmdev, freq->frequency / 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Set hardware frequency seek. If current mode is NOT RX, set it RX. */
 static int fm_v4l2_vidioc_s_hw_freq_seek(struct file *file, void *priv,
-<<<<<<< HEAD
-		struct v4l2_hw_freq_seek *seek)
-=======
 		const struct v4l2_hw_freq_seek *seek)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fmdev *fmdev = video_drvdata(file);
 	int ret;
 
-<<<<<<< HEAD
-=======
 	if (file->f_flags & O_NONBLOCK)
 		return -EWOULDBLOCK;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fmdev->curr_fmmode != FM_MODE_RX) {
 		ret = fmc_set_mode(fmdev, FM_MODE_RX);
 		if (ret != 0) {
@@ -563,11 +431,7 @@ static int fm_v4l2_vidioc_g_modulator(struct file *file, void *priv,
 
 /* Set modulator attributes. If mode is not TX, set to TX. */
 static int fm_v4l2_vidioc_s_modulator(struct file *file, void *priv,
-<<<<<<< HEAD
-		struct v4l2_modulator *mod)
-=======
 		const struct v4l2_modulator *mod)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fmdev *fmdev = video_drvdata(file);
 	u8 rds_mode;
@@ -629,13 +493,6 @@ static const struct v4l2_ioctl_ops fm_drv_ioctl_ops = {
 };
 
 /* V4L2 RADIO device parent structure */
-<<<<<<< HEAD
-static struct video_device fm_viddev_template = {
-	.fops = &fm_drv_fops,
-	.ioctl_ops = &fm_drv_ioctl_ops,
-	.name = FM_DRV_NAME,
-	.release = video_device_release,
-=======
 static const struct video_device fm_viddev_template = {
 	.fops = &fm_drv_fops,
 	.ioctl_ops = &fm_drv_ioctl_ops,
@@ -654,7 +511,6 @@ static const struct video_device fm_viddev_template = {
 	.device_caps = V4L2_CAP_HW_FREQ_SEEK | V4L2_CAP_TUNER | V4L2_CAP_RADIO |
 		       V4L2_CAP_MODULATOR | V4L2_CAP_AUDIO |
 		       V4L2_CAP_READWRITE | V4L2_CAP_RDS_CAPTURE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int fm_v4l2_init_video_device(struct fmdev *fmdev, int radio_nr)
@@ -662,28 +518,6 @@ int fm_v4l2_init_video_device(struct fmdev *fmdev, int radio_nr)
 	struct v4l2_ctrl *ctrl;
 	int ret;
 
-<<<<<<< HEAD
-	/* Init mutex for core locking */
-	mutex_init(&fmdev->mutex);
-
-	/* Allocate new video device */
-	gradio_dev = video_device_alloc();
-	if (NULL == gradio_dev) {
-		fmerr("Can't allocate video device\n");
-		return -ENOMEM;
-	}
-
-	/* Setup FM driver's V4L2 properties */
-	memcpy(gradio_dev, &fm_viddev_template, sizeof(fm_viddev_template));
-
-	video_set_drvdata(gradio_dev, fmdev);
-
-	gradio_dev->lock = &fmdev->mutex;
-
-	/* Register with V4L2 subsystem as RADIO device */
-	if (video_register_device(gradio_dev, VFL_TYPE_RADIO, radio_nr)) {
-		video_device_release(gradio_dev);
-=======
 	strscpy(fmdev->v4l2_dev.name, FM_DRV_NAME,
 		sizeof(fmdev->v4l2_dev.name));
 	ret = v4l2_device_register(NULL, &fmdev->v4l2_dev);
@@ -704,16 +538,11 @@ int fm_v4l2_init_video_device(struct fmdev *fmdev, int radio_nr)
 	/* Register with V4L2 subsystem as RADIO device */
 	if (video_register_device(&gradio_dev, VFL_TYPE_RADIO, radio_nr)) {
 		v4l2_device_unregister(&fmdev->v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fmerr("Could not register video device\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	fmdev->radio_dev = gradio_dev;
-=======
 	fmdev->radio_dev = &gradio_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register to v4l2 ctrl handler framework */
 	fmdev->radio_dev->ctrl_handler = &fmdev->ctrl_handler;
@@ -722,11 +551,8 @@ int fm_v4l2_init_video_device(struct fmdev *fmdev, int radio_nr)
 	if (ret < 0) {
 		fmerr("(fmdev): Can't init ctrl handler\n");
 		v4l2_ctrl_handler_free(&fmdev->ctrl_handler);
-<<<<<<< HEAD
-=======
 		video_unregister_device(fmdev->radio_dev);
 		v4l2_device_unregister(&fmdev->v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -764,23 +590,15 @@ void *fm_v4l2_deinit_video_device(void)
 	struct fmdev *fmdev;
 
 
-<<<<<<< HEAD
-	fmdev = video_get_drvdata(gradio_dev);
-=======
 	fmdev = video_get_drvdata(&gradio_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unregister to v4l2 ctrl handler framework*/
 	v4l2_ctrl_handler_free(&fmdev->ctrl_handler);
 
 	/* Unregister RADIO device from V4L2 subsystem */
-<<<<<<< HEAD
-	video_unregister_device(gradio_dev);
-=======
 	video_unregister_device(&gradio_dev);
 
 	v4l2_device_unregister(&fmdev->v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return fmdev;
 }

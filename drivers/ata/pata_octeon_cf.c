@@ -5,25 +5,13 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
-<<<<<<< HEAD
- * Copyright (C) 2005 - 2009 Cavium Networks
-=======
  * Copyright (C) 2005 - 2012 Cavium Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2008 Wind River Systems
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/libata.h>
-<<<<<<< HEAD
-#include <linux/irq.h>
-#include <linux/slab.h>
-#include <linux/platform_device.h>
-#include <linux/workqueue.h>
-#include <scsi/scsi_host.h>
-
-=======
 #include <linux/hrtimer.h>
 #include <linux/slab.h>
 #include <linux/irq.h>
@@ -34,7 +22,6 @@
 #include <scsi/scsi_host.h>
 #include <trace/events/libata.h>
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/octeon/octeon.h>
 
 /*
@@ -51,23 +38,6 @@
  */
 
 #define DRV_NAME	"pata_octeon_cf"
-<<<<<<< HEAD
-#define DRV_VERSION	"2.1"
-
-
-struct octeon_cf_port {
-	struct workqueue_struct *wq;
-	struct delayed_work delayed_finish;
-	struct ata_port *ap;
-	int dma_finished;
-};
-
-static struct scsi_host_template octeon_cf_sht = {
-	ATA_PIO_SHT(DRV_NAME),
-};
-
-/**
-=======
 #define DRV_VERSION	"2.2"
 
 /* Poll interval in nS. */
@@ -99,35 +69,15 @@ MODULE_PARM_DESC(enable_dma,
 		 "Enable use of DMA on interfaces that support it (0=no dma [default], 1=use dma)");
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Convert nanosecond based time to setting used in the
  * boot bus timing register, based on timing multiple
  */
 static unsigned int ns_to_tim_reg(unsigned int tim_mult, unsigned int nsecs)
 {
-<<<<<<< HEAD
-	unsigned int val;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Compute # of eclock periods to get desired duration in
 	 * nanoseconds.
 	 */
-<<<<<<< HEAD
-	val = DIV_ROUND_UP(nsecs * (octeon_get_io_clock_rate() / 1000000),
-			  1000 * tim_mult);
-
-	return val;
-}
-
-static void octeon_cf_set_boot_reg_cfg(int cs)
-{
-	union cvmx_mio_boot_reg_cfgx reg_cfg;
-	reg_cfg.u64 = cvmx_read_csr(CVMX_MIO_BOOT_REG_CFGX(cs));
-	reg_cfg.s.dmack = 0;	/* Don't assert DMACK on access */
-	reg_cfg.s.tim_mult = 2;	/* Timing mutiplier 2x */
-=======
 	return DIV_ROUND_UP(nsecs * (octeon_get_io_clock_rate() / 1000000),
 			  1000 * tim_mult);
 }
@@ -155,7 +105,6 @@ static void octeon_cf_set_boot_reg_cfg(int cs, unsigned int multiplier)
 	reg_cfg.u64 = cvmx_read_csr(CVMX_MIO_BOOT_REG_CFGX(cs));
 	reg_cfg.s.dmack = 0;	/* Don't assert DMACK on access */
 	reg_cfg.s.tim_mult = tim_mult;	/* Timing mutiplier */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg_cfg.s.rd_dly = 0;	/* Sample on falling edge of BOOT_OE */
 	reg_cfg.s.sam = 0;	/* Don't combine write and output enable */
 	reg_cfg.s.we_ext = 0;	/* No write enable extension */
@@ -166,11 +115,7 @@ static void octeon_cf_set_boot_reg_cfg(int cs, unsigned int multiplier)
 	cvmx_write_csr(CVMX_MIO_BOOT_REG_CFGX(cs), reg_cfg.u64);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called after libata determines the needed PIO mode. This
  * function programs the Octeon bootbus regions to support the
  * timing requirements of the PIO mode.
@@ -180,58 +125,16 @@ static void octeon_cf_set_boot_reg_cfg(int cs, unsigned int multiplier)
  */
 static void octeon_cf_set_piomode(struct ata_port *ap, struct ata_device *dev)
 {
-<<<<<<< HEAD
-	struct octeon_cf_data *ocd = ap->dev->platform_data;
-	union cvmx_mio_boot_reg_timx reg_tim;
-	int cs = ocd->base_region;
-	int T;
-	struct ata_timing timing;
-
-=======
 	struct octeon_cf_port *cf_port = ap->private_data;
 	union cvmx_mio_boot_reg_timx reg_tim;
 	int T;
 	struct ata_timing timing;
 
 	unsigned int div;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int use_iordy;
 	int trh;
 	int pause;
 	/* These names are timing parameters from the ATA spec */
-<<<<<<< HEAD
-	int t1;
-	int t2;
-	int t2i;
-
-	T = (int)(2000000000000LL / octeon_get_clock_rate());
-
-	if (ata_timing_compute(dev, dev->pio_mode, &timing, T, T))
-		BUG();
-
-	t1 = timing.setup;
-	if (t1)
-		t1--;
-	t2 = timing.active;
-	if (t2)
-		t2--;
-	t2i = timing.act8b;
-	if (t2i)
-		t2i--;
-
-	trh = ns_to_tim_reg(2, 20);
-	if (trh)
-		trh--;
-
-	pause = timing.cycle - timing.active - timing.setup - trh;
-	if (pause)
-		pause--;
-
-	octeon_cf_set_boot_reg_cfg(cs);
-	if (ocd->dma_engine >= 0)
-		/* True IDE mode, program both chip selects.  */
-		octeon_cf_set_boot_reg_cfg(cs + 1);
-=======
 	int t2;
 
 	/*
@@ -265,16 +168,11 @@ static void octeon_cf_set_piomode(struct ata_port *ap, struct ata_device *dev)
 	if (cf_port->is_true_ide)
 		/* True IDE mode, program both chip selects.  */
 		octeon_cf_set_boot_reg_cfg(cf_port->cs1, div);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	use_iordy = ata_pio_need_iordy(dev);
 
-<<<<<<< HEAD
-	reg_tim.u64 = cvmx_read_csr(CVMX_MIO_BOOT_REG_TIMX(cs));
-=======
 	reg_tim.u64 = cvmx_read_csr(CVMX_MIO_BOOT_REG_TIMX(cf_port->cs0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable page mode */
 	reg_tim.s.pagem = 0;
 	/* Enable dynamic timing */
@@ -298,37 +196,22 @@ static void octeon_cf_set_piomode(struct ata_port *ap, struct ata_device *dev)
 	/* How long read enable is asserted */
 	reg_tim.s.oe = t2;
 	/* Time after CE that read/write starts */
-<<<<<<< HEAD
-	reg_tim.s.ce = ns_to_tim_reg(2, 5);
-=======
 	reg_tim.s.ce = ns_to_tim_reg(div, 5);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Time before CE that address is valid */
 	reg_tim.s.adr = 0;
 
 	/* Program the bootbus region timing for the data port chip select. */
-<<<<<<< HEAD
-	cvmx_write_csr(CVMX_MIO_BOOT_REG_TIMX(cs), reg_tim.u64);
-	if (ocd->dma_engine >= 0)
-		/* True IDE mode, program both chip selects.  */
-		cvmx_write_csr(CVMX_MIO_BOOT_REG_TIMX(cs + 1), reg_tim.u64);
-=======
 	cvmx_write_csr(CVMX_MIO_BOOT_REG_TIMX(cf_port->cs0), reg_tim.u64);
 	if (cf_port->is_true_ide)
 		/* True IDE mode, program both chip selects.  */
 		cvmx_write_csr(CVMX_MIO_BOOT_REG_TIMX(cf_port->cs1),
 			       reg_tim.u64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void octeon_cf_set_dmamode(struct ata_port *ap, struct ata_device *dev)
 {
-<<<<<<< HEAD
-	struct octeon_cf_data *ocd = dev->link->ap->dev->platform_data;
-=======
 	struct octeon_cf_port *cf_port = ap->private_data;
 	union cvmx_mio_boot_pin_defs pin_defs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union cvmx_mio_boot_dma_timx dma_tim;
 	unsigned int oe_a;
 	unsigned int oe_n;
@@ -337,10 +220,7 @@ static void octeon_cf_set_dmamode(struct ata_port *ap, struct ata_device *dev)
 	unsigned int pause;
 	unsigned int T0, Tkr, Td;
 	unsigned int tim_mult;
-<<<<<<< HEAD
-=======
 	int c;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	const struct ata_timing *timing;
 
@@ -357,19 +237,12 @@ static void octeon_cf_set_dmamode(struct ata_port *ap, struct ata_device *dev)
 	/* not spec'ed, value in eclocks, not affected by tim_mult */
 	dma_arq = 8;
 	pause = 25 - dma_arq * 1000 /
-<<<<<<< HEAD
-		(octeon_get_clock_rate() / 1000000); /* Tz */
-=======
 		(octeon_get_io_clock_rate() / 1000000); /* Tz */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	oe_a = Td;
 	/* Tkr from cf spec, lengthened to meet T0 */
 	oe_n = max(T0 - oe_a, Tkr);
 
-<<<<<<< HEAD
-	dma_tim.s.dmack_pi = 1;
-=======
 	pin_defs.u64 = cvmx_read_csr(CVMX_MIO_BOOT_PIN_DEFS);
 
 	/* DMA channel number. */
@@ -377,7 +250,6 @@ static void octeon_cf_set_dmamode(struct ata_port *ap, struct ata_device *dev)
 
 	/* Invert the polarity if the default is 0*/
 	dma_tim.s.dmack_pi = (pin_defs.u64 & (1ull << (11 + c))) ? 0 : 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_tim.s.oe_n = ns_to_tim_reg(tim_mult, oe_n);
 	dma_tim.s.oe_a = ns_to_tim_reg(tim_mult, oe_a);
@@ -398,24 +270,6 @@ static void octeon_cf_set_dmamode(struct ata_port *ap, struct ata_device *dev)
 	dma_tim.s.we_n = ns_to_tim_reg(tim_mult, oe_n);
 	dma_tim.s.we_a = ns_to_tim_reg(tim_mult, oe_a);
 
-<<<<<<< HEAD
-	pr_debug("ns to ticks (mult %d) of %d is: %d\n", tim_mult, 60,
-		 ns_to_tim_reg(tim_mult, 60));
-	pr_debug("oe_n: %d, oe_a: %d, dmack_s: %d, dmack_h: "
-		 "%d, dmarq: %d, pause: %d\n",
-		 dma_tim.s.oe_n, dma_tim.s.oe_a, dma_tim.s.dmack_s,
-		 dma_tim.s.dmack_h, dma_tim.s.dmarq, dma_tim.s.pause);
-
-	cvmx_write_csr(CVMX_MIO_BOOT_DMA_TIMX(ocd->dma_engine),
-		       dma_tim.u64);
-
-}
-
-/**
- * Handle an 8 bit I/O request.
- *
- * @dev:        Device to access
-=======
 	ata_dev_dbg(dev, "ns to ticks (mult %d) of %d is: %d\n", tim_mult, 60,
 		 ns_to_tim_reg(tim_mult, 60));
 	ata_dev_dbg(dev, "oe_n: %d, oe_a: %d, dmack_s: %d, dmack_h: %d, dmarq: %d, pause: %d\n",
@@ -429,25 +283,16 @@ static void octeon_cf_set_dmamode(struct ata_port *ap, struct ata_device *dev)
  * Handle an 8 bit I/O request.
  *
  * @qc:         Queued command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buffer:     Data buffer
  * @buflen:     Length of the buffer.
  * @rw:         True to write.
  */
-<<<<<<< HEAD
-static unsigned int octeon_cf_data_xfer8(struct ata_device *dev,
-=======
 static unsigned int octeon_cf_data_xfer8(struct ata_queued_cmd *qc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned char *buffer,
 					 unsigned int buflen,
 					 int rw)
 {
-<<<<<<< HEAD
-	struct ata_port *ap		= dev->link->ap;
-=======
 	struct ata_port *ap		= qc->dev->link->ap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *data_addr		= ap->ioaddr.data_addr;
 	unsigned long words;
 	int count;
@@ -473,35 +318,20 @@ static unsigned int octeon_cf_data_xfer8(struct ata_queued_cmd *qc,
 	return buflen;
 }
 
-<<<<<<< HEAD
-/**
- * Handle a 16 bit I/O request.
- *
- * @dev:        Device to access
-=======
 /*
  * Handle a 16 bit I/O request.
  *
  * @qc:         Queued command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buffer:     Data buffer
  * @buflen:     Length of the buffer.
  * @rw:         True to write.
  */
-<<<<<<< HEAD
-static unsigned int octeon_cf_data_xfer16(struct ata_device *dev,
-=======
 static unsigned int octeon_cf_data_xfer16(struct ata_queued_cmd *qc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  unsigned char *buffer,
 					  unsigned int buflen,
 					  int rw)
 {
-<<<<<<< HEAD
-	struct ata_port *ap		= dev->link->ap;
-=======
 	struct ata_port *ap		= qc->dev->link->ap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *data_addr		= ap->ioaddr.data_addr;
 	unsigned long words;
 	int count;
@@ -543,11 +373,7 @@ static unsigned int octeon_cf_data_xfer16(struct ata_queued_cmd *qc,
 	return buflen;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Read the taskfile for 16bit non-True IDE only.
  */
 static void octeon_cf_tf_read16(struct ata_port *ap, struct ata_taskfile *tf)
@@ -557,11 +383,7 @@ static void octeon_cf_tf_read16(struct ata_port *ap, struct ata_taskfile *tf)
 	void __iomem *base = ap->ioaddr.data_addr;
 
 	blob = __raw_readw(base + 0xc);
-<<<<<<< HEAD
-	tf->feature = blob >> 8;
-=======
 	tf->error = blob >> 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	blob = __raw_readw(base + 2);
 	tf->nsect = blob & 0xff;
@@ -573,11 +395,7 @@ static void octeon_cf_tf_read16(struct ata_port *ap, struct ata_taskfile *tf)
 
 	blob = __raw_readw(base + 6);
 	tf->device = blob & 0xff;
-<<<<<<< HEAD
-	tf->command = blob >> 8;
-=======
 	tf->status = blob >> 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tf->flags & ATA_TFLAG_LBA48) {
 		if (likely(ap->ioaddr.ctl_addr)) {
@@ -619,10 +437,6 @@ static int octeon_cf_softreset16(struct ata_link *link, unsigned int *classes,
 	int rc;
 	u8 err;
 
-<<<<<<< HEAD
-	DPRINTK("about to softreset\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writew(ap->ctl, base + 0xe);
 	udelay(20);
 	__raw_writew(ap->ctl | ATA_SRST, base + 0xe);
@@ -637,18 +451,10 @@ static int octeon_cf_softreset16(struct ata_link *link, unsigned int *classes,
 
 	/* determine by signature whether we have ATA or ATAPI devices */
 	classes[0] = ata_sff_dev_classify(&link->device[0], 1, &err);
-<<<<<<< HEAD
-	DPRINTK("EXIT, classes[0]=%u [1]=%u\n", classes[0], classes[1]);
-	return 0;
-}
-
-/**
-=======
 	return 0;
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Load the taskfile for 16bit non-True IDE only.  The device_addr is
  * not loaded, we do this as part of octeon_cf_exec_command16.
  */
@@ -668,29 +474,11 @@ static void octeon_cf_tf_load16(struct ata_port *ap,
 		__raw_writew(tf->hob_feature << 8, base + 0xc);
 		__raw_writew(tf->hob_nsect | tf->hob_lbal << 8, base + 2);
 		__raw_writew(tf->hob_lbam | tf->hob_lbah << 8, base + 4);
-<<<<<<< HEAD
-		VPRINTK("hob: feat 0x%X nsect 0x%X, lba 0x%X 0x%X 0x%X\n",
-			tf->hob_feature,
-			tf->hob_nsect,
-			tf->hob_lbal,
-			tf->hob_lbam,
-			tf->hob_lbah);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (is_addr) {
 		__raw_writew(tf->feature << 8, base + 0xc);
 		__raw_writew(tf->nsect | tf->lbal << 8, base + 2);
 		__raw_writew(tf->lbam | tf->lbah << 8, base + 4);
-<<<<<<< HEAD
-		VPRINTK("feat 0x%X nsect 0x%X, lba 0x%X 0x%X 0x%X\n",
-			tf->feature,
-			tf->nsect,
-			tf->lbal,
-			tf->lbam,
-			tf->lbah);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ata_wait_idle(ap);
 }
@@ -711,34 +499,6 @@ static void octeon_cf_exec_command16(struct ata_port *ap,
 {
 	/* The base of the registers is at ioaddr.data_addr. */
 	void __iomem *base = ap->ioaddr.data_addr;
-<<<<<<< HEAD
-	u16 blob;
-
-	if (tf->flags & ATA_TFLAG_DEVICE) {
-		VPRINTK("device 0x%X\n", tf->device);
-		blob = tf->device;
-	} else {
-		blob = 0;
-	}
-
-	DPRINTK("ata%u: cmd 0x%X\n", ap->print_id, tf->command);
-	blob |= (tf->command << 8);
-	__raw_writew(blob, base + 6);
-
-
-	ata_wait_idle(ap);
-}
-
-static void octeon_cf_irq_on(struct ata_port *ap)
-{
-}
-
-static void octeon_cf_irq_clear(struct ata_port *ap)
-{
-	return;
-}
-
-=======
 	u16 blob = 0;
 
 	if (tf->flags & ATA_TFLAG_DEVICE)
@@ -754,51 +514,30 @@ static void octeon_cf_ata_port_noaction(struct ata_port *ap)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void octeon_cf_dma_setup(struct ata_queued_cmd *qc)
 {
 	struct ata_port *ap = qc->ap;
 	struct octeon_cf_port *cf_port;
 
 	cf_port = ap->private_data;
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* issue r/w command */
 	qc->cursg = qc->sg;
 	cf_port->dma_finished = 0;
 	ap->ops->sff_exec_command(ap, &qc->tf);
-<<<<<<< HEAD
-	DPRINTK("EXIT\n");
-}
-
-/**
-=======
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Start a DMA transfer that was already setup
  *
  * @qc:     Information about the DMA
  */
 static void octeon_cf_dma_start(struct ata_queued_cmd *qc)
 {
-<<<<<<< HEAD
-	struct octeon_cf_data *ocd = qc->ap->dev->platform_data;
-=======
 	struct octeon_cf_port *cf_port = qc->ap->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union cvmx_mio_boot_dma_cfgx mio_boot_dma_cfg;
 	union cvmx_mio_boot_dma_intx mio_boot_dma_int;
 	struct scatterlist *sg;
 
-<<<<<<< HEAD
-	VPRINTK("%d scatterlists\n", qc->n_elem);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get the scatter list entry we need to DMA into */
 	sg = qc->cursg;
 	BUG_ON(!sg);
@@ -808,17 +547,6 @@ static void octeon_cf_dma_start(struct ata_queued_cmd *qc)
 	 */
 	mio_boot_dma_int.u64 = 0;
 	mio_boot_dma_int.s.done = 1;
-<<<<<<< HEAD
-	cvmx_write_csr(CVMX_MIO_BOOT_DMA_INTX(ocd->dma_engine),
-		       mio_boot_dma_int.u64);
-
-	/* Enable the interrupt.  */
-	cvmx_write_csr(CVMX_MIO_BOOT_DMA_INT_ENX(ocd->dma_engine),
-		       mio_boot_dma_int.u64);
-
-	/* Set the direction of the DMA */
-	mio_boot_dma_cfg.u64 = 0;
-=======
 	cvmx_write_csr(cf_port->dma_base + DMA_INT, mio_boot_dma_int.u64);
 
 	/* Enable the interrupt.  */
@@ -829,7 +557,6 @@ static void octeon_cf_dma_start(struct ata_queued_cmd *qc)
 #ifdef __LITTLE_ENDIAN
 	mio_boot_dma_cfg.s.endian = 1;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mio_boot_dma_cfg.s.en = 1;
 	mio_boot_dma_cfg.s.rw = ((qc->tf.flags & ATA_TFLAG_WRITE) != 0);
 
@@ -851,22 +578,10 @@ static void octeon_cf_dma_start(struct ata_queued_cmd *qc)
 
 	mio_boot_dma_cfg.s.adr = sg_dma_address(sg);
 
-<<<<<<< HEAD
-	VPRINTK("%s %d bytes address=%p\n",
-		(mio_boot_dma_cfg.s.rw) ? "write" : "read", sg->length,
-		(void *)(unsigned long)mio_boot_dma_cfg.s.adr);
-
-	cvmx_write_csr(CVMX_MIO_BOOT_DMA_CFGX(ocd->dma_engine),
-		       mio_boot_dma_cfg.u64);
-}
-
-/**
-=======
 	cvmx_write_csr(cf_port->dma_base + DMA_CFG, mio_boot_dma_cfg.u64);
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	spin_lock_irqsave(host lock)
@@ -876,35 +591,17 @@ static unsigned int octeon_cf_dma_finished(struct ata_port *ap,
 					struct ata_queued_cmd *qc)
 {
 	struct ata_eh_info *ehi = &ap->link.eh_info;
-<<<<<<< HEAD
-	struct octeon_cf_data *ocd = ap->dev->platform_data;
-	union cvmx_mio_boot_dma_cfgx dma_cfg;
-	union cvmx_mio_boot_dma_intx dma_int;
-	struct octeon_cf_port *cf_port;
-	u8 status;
-
-	VPRINTK("ata%u: protocol %d task_state %d\n",
-		ap->print_id, qc->tf.protocol, ap->hsm_task_state);
-
-=======
 	struct octeon_cf_port *cf_port = ap->private_data;
 	union cvmx_mio_boot_dma_cfgx dma_cfg;
 	union cvmx_mio_boot_dma_intx dma_int;
 	u8 status;
 
 	trace_ata_bmdma_stop(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ap->hsm_task_state != HSM_ST_LAST)
 		return 0;
 
-<<<<<<< HEAD
-	cf_port = ap->private_data;
-
-	dma_cfg.u64 = cvmx_read_csr(CVMX_MIO_BOOT_DMA_CFGX(ocd->dma_engine));
-=======
 	dma_cfg.u64 = cvmx_read_csr(cf_port->dma_base + DMA_CFG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma_cfg.s.size != 0xfffff) {
 		/* Error, the transfer was not complete.  */
 		qc->err_mask |= AC_ERR_HOST_BUS;
@@ -914,17 +611,6 @@ static unsigned int octeon_cf_dma_finished(struct ata_port *ap,
 	/* Stop and clear the dma engine.  */
 	dma_cfg.u64 = 0;
 	dma_cfg.s.size = -1;
-<<<<<<< HEAD
-	cvmx_write_csr(CVMX_MIO_BOOT_DMA_CFGX(ocd->dma_engine), dma_cfg.u64);
-
-	/* Disable the interrupt.  */
-	dma_int.u64 = 0;
-	cvmx_write_csr(CVMX_MIO_BOOT_DMA_INT_ENX(ocd->dma_engine), dma_int.u64);
-
-	/* Clear the DMA complete status */
-	dma_int.s.done = 1;
-	cvmx_write_csr(CVMX_MIO_BOOT_DMA_INTX(ocd->dma_engine), dma_int.u64);
-=======
 	cvmx_write_csr(cf_port->dma_base + DMA_CFG, dma_cfg.u64);
 
 	/* Disable the interrupt.  */
@@ -934,7 +620,6 @@ static unsigned int octeon_cf_dma_finished(struct ata_port *ap,
 	/* Clear the DMA complete status */
 	dma_int.s.done = 1;
 	cvmx_write_csr(cf_port->dma_base + DMA_INT, dma_int.u64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ap->ops->sff_check_status(ap);
 
@@ -960,76 +645,12 @@ static irqreturn_t octeon_cf_interrupt(int irq, void *dev_instance)
 
 	spin_lock_irqsave(&host->lock, flags);
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < host->n_ports; i++) {
 		u8 status;
 		struct ata_port *ap;
 		struct ata_queued_cmd *qc;
 		union cvmx_mio_boot_dma_intx dma_int;
 		union cvmx_mio_boot_dma_cfgx dma_cfg;
-<<<<<<< HEAD
-		struct octeon_cf_data *ocd;
-
-		ap = host->ports[i];
-		ocd = ap->dev->platform_data;
-		cf_port = ap->private_data;
-		dma_int.u64 =
-			cvmx_read_csr(CVMX_MIO_BOOT_DMA_INTX(ocd->dma_engine));
-		dma_cfg.u64 =
-			cvmx_read_csr(CVMX_MIO_BOOT_DMA_CFGX(ocd->dma_engine));
-
-		qc = ata_qc_from_tag(ap, ap->link.active_tag);
-
-		if (qc && !(qc->tf.flags & ATA_TFLAG_POLLING)) {
-			if (dma_int.s.done && !dma_cfg.s.en) {
-				if (!sg_is_last(qc->cursg)) {
-					qc->cursg = sg_next(qc->cursg);
-					handled = 1;
-					octeon_cf_dma_start(qc);
-					continue;
-				} else {
-					cf_port->dma_finished = 1;
-				}
-			}
-			if (!cf_port->dma_finished)
-				continue;
-			status = ioread8(ap->ioaddr.altstatus_addr);
-			if (status & (ATA_BUSY | ATA_DRQ)) {
-				/*
-				 * We are busy, try to handle it
-				 * later.  This is the DMA finished
-				 * interrupt, and it could take a
-				 * little while for the card to be
-				 * ready for more commands.
-				 */
-				/* Clear DMA irq. */
-				dma_int.u64 = 0;
-				dma_int.s.done = 1;
-				cvmx_write_csr(CVMX_MIO_BOOT_DMA_INTX(ocd->dma_engine),
-					       dma_int.u64);
-
-				queue_delayed_work(cf_port->wq,
-						   &cf_port->delayed_finish, 1);
-				handled = 1;
-			} else {
-				handled |= octeon_cf_dma_finished(ap, qc);
-			}
-		}
-	}
-	spin_unlock_irqrestore(&host->lock, flags);
-	DPRINTK("EXIT\n");
-	return IRQ_RETVAL(handled);
-}
-
-static void octeon_cf_delayed_finish(struct work_struct *work)
-{
-	struct octeon_cf_port *cf_port = container_of(work,
-						      struct octeon_cf_port,
-						      delayed_finish.work);
-=======
 
 		ap = host->ports[i];
 		cf_port = ap->private_data;
@@ -1086,16 +707,12 @@ static enum hrtimer_restart octeon_cf_delayed_finish(struct hrtimer *hrt)
 	struct octeon_cf_port *cf_port = container_of(hrt,
 						      struct octeon_cf_port,
 						      delayed_finish);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_port *ap = cf_port->ap;
 	struct ata_host *host = ap->host;
 	struct ata_queued_cmd *qc;
 	unsigned long flags;
 	u8 status;
-<<<<<<< HEAD
-=======
 	enum hrtimer_restart rv = HRTIMER_NORESTART;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&host->lock, flags);
 
@@ -1110,17 +727,6 @@ static enum hrtimer_restart octeon_cf_delayed_finish(struct hrtimer *hrt)
 	status = ioread8(ap->ioaddr.altstatus_addr);
 	if (status & (ATA_BUSY | ATA_DRQ)) {
 		/* Still busy, try again. */
-<<<<<<< HEAD
-		queue_delayed_work(cf_port->wq,
-				   &cf_port->delayed_finish, 1);
-		goto out;
-	}
-	qc = ata_qc_from_tag(ap, ap->link.active_tag);
-	if (qc && !(qc->tf.flags & ATA_TFLAG_POLLING))
-		octeon_cf_dma_finished(ap, qc);
-out:
-	spin_unlock_irqrestore(&host->lock, flags);
-=======
 		hrtimer_forward_now(hrt,
 				    ns_to_ktime(OCTEON_CF_BUSY_POLL_INTERVAL));
 		rv = HRTIMER_RESTART;
@@ -1132,7 +738,6 @@ out:
 out:
 	spin_unlock_irqrestore(&host->lock, flags);
 	return rv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void octeon_cf_dev_config(struct ata_device *dev)
@@ -1161,16 +766,11 @@ static unsigned int octeon_cf_qc_issue(struct ata_queued_cmd *qc)
 	case ATA_PROT_DMA:
 		WARN_ON(qc->tf.flags & ATA_TFLAG_POLLING);
 
-<<<<<<< HEAD
-		ap->ops->sff_tf_load(ap, &qc->tf);  /* load tf registers */
-		octeon_cf_dma_setup(qc);	    /* set up dma */
-=======
 		trace_ata_tf_load(ap, &qc->tf);
 		ap->ops->sff_tf_load(ap, &qc->tf);  /* load tf registers */
 		trace_ata_bmdma_setup(ap, &qc->tf, qc->tag);
 		octeon_cf_dma_setup(qc);	    /* set up dma */
 		trace_ata_bmdma_start(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		octeon_cf_dma_start(qc);	    /* initiate dma */
 		ap->hsm_task_state = HSM_ST_LAST;
 		break;
@@ -1192,25 +792,14 @@ static struct ata_port_operations octeon_cf_ops = {
 	.qc_prep		= ata_noop_qc_prep,
 	.qc_issue		= octeon_cf_qc_issue,
 	.sff_dev_select		= octeon_cf_dev_select,
-<<<<<<< HEAD
-	.sff_irq_on		= octeon_cf_irq_on,
-	.sff_irq_clear		= octeon_cf_irq_clear,
-=======
 	.sff_irq_on		= octeon_cf_ata_port_noaction,
 	.sff_irq_clear		= octeon_cf_ata_port_noaction,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cable_detect		= ata_cable_40wire,
 	.set_piomode		= octeon_cf_set_piomode,
 	.set_dmamode		= octeon_cf_set_dmamode,
 	.dev_config		= octeon_cf_dev_config,
 };
 
-<<<<<<< HEAD
-static int __devinit octeon_cf_probe(struct platform_device *pdev)
-{
-	struct resource *res_cs0, *res_cs1;
-
-=======
 static int octeon_cf_probe(struct platform_device *pdev)
 {
 	struct resource *res_cs0, *res_cs1;
@@ -1218,38 +807,14 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	bool is_16bit;
 	u64 reg;
 	struct device_node *node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *cs0;
 	void __iomem *cs1 = NULL;
 	struct ata_host *host;
 	struct ata_port *ap;
-<<<<<<< HEAD
-	struct octeon_cf_data *ocd;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq = 0;
 	irq_handler_t irq_handler = NULL;
 	void __iomem *base;
 	struct octeon_cf_port *cf_port;
-<<<<<<< HEAD
-	char version[32];
-
-	res_cs0 = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-	if (!res_cs0)
-		return -EINVAL;
-
-	ocd = pdev->dev.platform_data;
-
-	cs0 = devm_ioremap_nocache(&pdev->dev, res_cs0->start,
-				   resource_size(res_cs0));
-
-	if (!cs0)
-		return -ENOMEM;
-
-	/* Determine from availability of DMA if True IDE mode or not */
-	if (ocd->dma_engine >= 0) {
-=======
 	u32 bus_width;
 	int rv;
 
@@ -1306,22 +871,10 @@ static int octeon_cf_probe(struct platform_device *pdev)
 			}
 			of_node_put(dma_node);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res_cs1 = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 		if (!res_cs1)
 			return -EINVAL;
 
-<<<<<<< HEAD
-		cs1 = devm_ioremap_nocache(&pdev->dev, res_cs1->start,
-					   resource_size(res_cs1));
-
-		if (!cs1)
-			return -ENOMEM;
-	}
-
-	cf_port = kzalloc(sizeof(*cf_port), GFP_KERNEL);
-	if (!cf_port)
-=======
 		cs1 = devm_ioremap(&pdev->dev, res_cs1->start,
 					   resource_size(res_cs1));
 		if (!cs1)
@@ -1340,49 +893,31 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	cs0 = devm_ioremap(&pdev->dev, res_cs0->start,
 				   resource_size(res_cs0));
 	if (!cs0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	/* allocate host */
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host)
-<<<<<<< HEAD
-		goto free_cf_port;
-
-	ap = host->ports[0];
-	ap->private_data = cf_port;
-=======
 		return -ENOMEM;
 
 	ap = host->ports[0];
 	ap->private_data = cf_port;
 	pdev->dev.platform_data = cf_port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cf_port->ap = ap;
 	ap->ops = &octeon_cf_ops;
 	ap->pio_mask = ATA_PIO6;
 	ap->flags |= ATA_FLAG_NO_ATAPI | ATA_FLAG_PIO_POLLING;
 
-<<<<<<< HEAD
-	base = cs0 + ocd->base_region_bias;
-	if (!ocd->is16bit) {
-=======
 	if (!is_16bit) {
 		base = cs0 + 0x800;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ioaddr.cmd_addr	= base;
 		ata_sff_std_ports(&ap->ioaddr);
 
 		ap->ioaddr.altstatus_addr = base + 0xe;
 		ap->ioaddr.ctl_addr	= base + 0xe;
 		octeon_cf_ops.sff_data_xfer = octeon_cf_data_xfer8;
-<<<<<<< HEAD
-	} else if (cs1) {
-		/* Presence of cs1 indicates True IDE mode.  */
-=======
 	} else if (cf_port->is_true_ide) {
 		base = cs0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ioaddr.cmd_addr	= base + (ATA_REG_CMD << 1) + 1;
 		ap->ioaddr.data_addr	= base + (ATA_REG_DATA << 1);
 		ap->ioaddr.error_addr	= base + (ATA_REG_ERR << 1) + 1;
@@ -1398,21 +933,6 @@ static int octeon_cf_probe(struct platform_device *pdev)
 		ap->ioaddr.ctl_addr	= cs1 + (6 << 1) + 1;
 		octeon_cf_ops.sff_data_xfer = octeon_cf_data_xfer16;
 
-<<<<<<< HEAD
-		ap->mwdma_mask	= ATA_MWDMA4;
-		irq = platform_get_irq(pdev, 0);
-		irq_handler = octeon_cf_interrupt;
-
-		/* True IDE mode needs delayed work to poll for not-busy.  */
-		cf_port->wq = create_singlethread_workqueue(DRV_NAME);
-		if (!cf_port->wq)
-			goto free_cf_port;
-		INIT_DELAYED_WORK(&cf_port->delayed_finish,
-				  octeon_cf_delayed_finish);
-
-	} else {
-		/* 16 bit but not True IDE */
-=======
 		ap->mwdma_mask	= enable_dma ? ATA_MWDMA4 : 0;
 
 		/* True IDE mode needs a timer to poll for not-busy.  */
@@ -1422,7 +942,6 @@ static int octeon_cf_probe(struct platform_device *pdev)
 	} else {
 		/* 16 bit but not True IDE */
 		base = cs0 + 0x800;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		octeon_cf_ops.sff_data_xfer	= octeon_cf_data_xfer16;
 		octeon_cf_ops.softreset		= octeon_cf_softreset16;
 		octeon_cf_ops.sff_check_status	= octeon_cf_check_status16;
@@ -1436,25 +955,6 @@ static int octeon_cf_probe(struct platform_device *pdev)
 		ap->ioaddr.ctl_addr	= base + 0xe;
 		ap->ioaddr.altstatus_addr = base + 0xe;
 	}
-<<<<<<< HEAD
-
-	ata_port_desc(ap, "cmd %p ctl %p", base, ap->ioaddr.ctl_addr);
-
-
-	snprintf(version, sizeof(version), "%s %d bit%s",
-		 DRV_VERSION,
-		 (ocd->is16bit) ? 16 : 8,
-		 (cs1) ? ", True IDE" : "");
-	ata_print_version_once(&pdev->dev, version);
-
-	return ata_host_activate(host, irq, irq_handler, 0, &octeon_cf_sht);
-
-free_cf_port:
-	kfree(cf_port);
-	return -ENOMEM;
-}
-
-=======
 	cf_port->c0 = ap->ioaddr.ctl_addr;
 
 	rv = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
@@ -1507,17 +1007,12 @@ static const struct of_device_id octeon_cf_match[] = {
 };
 MODULE_DEVICE_TABLE(of, octeon_cf_match);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_driver octeon_cf_driver = {
 	.probe		= octeon_cf_probe,
 	.driver		= {
 		.name	= DRV_NAME,
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-=======
 		.of_match_table = octeon_cf_match,
 		.shutdown = octeon_cf_shutdown
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/kernel/signal.c
  *
@@ -17,12 +14,6 @@
 #include <linux/slab.h>
 #include <linux/export.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/fs.h>
-#include <linux/tty.h>
-#include <linux/binfmts.h>
-=======
 #include <linux/sched/mm.h>
 #include <linux/sched/user.h>
 #include <linux/sched/debug.h>
@@ -36,25 +27,18 @@
 #include <linux/tty.h>
 #include <linux/binfmts.h>
 #include <linux/coredump.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/ptrace.h>
 #include <linux/signal.h>
 #include <linux/signalfd.h>
 #include <linux/ratelimit.h>
-<<<<<<< HEAD
-#include <linux/tracehook.h>
-=======
 #include <linux/task_work.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 #include <linux/freezer.h>
 #include <linux/pid_namespace.h>
 #include <linux/nsproxy.h>
 #include <linux/user_namespace.h>
-<<<<<<< HEAD
-=======
 #include <linux/uprobes.h>
 #include <linux/compat.h>
 #include <linux/cn_proc.h>
@@ -65,24 +49,15 @@
 #include <linux/sysctl.h>
 #include <uapi/linux/pidfd.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CREATE_TRACE_POINTS
 #include <trace/events/signal.h>
 
 #include <asm/param.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/unistd.h>
-#include <asm/siginfo.h>
-#include <asm/cacheflush.h>
-#include "audit.h"	/* audit_signal_info() */
-=======
 #include <linux/uaccess.h>
 #include <asm/unistd.h>
 #include <asm/siginfo.h>
 #include <asm/cacheflush.h>
 #include <asm/syscall.h>	/* for syscall_get_* */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SLAB caches for signal bits.
@@ -97,16 +72,6 @@ static void __user *sig_handler(struct task_struct *t, int sig)
 	return t->sighand->action[sig - 1].sa.sa_handler;
 }
 
-<<<<<<< HEAD
-static int sig_handler_ignored(void __user *handler, int sig)
-{
-	/* Is it explicitly or implicitly ignored? */
-	return handler == SIG_IGN ||
-		(handler == SIG_DFL && sig_kernel_ignore(sig));
-}
-
-static int sig_task_ignored(struct task_struct *t, int sig, bool force)
-=======
 static inline bool sig_handler_ignored(void __user *handler, int sig)
 {
 	/* Is it explicitly or implicitly ignored? */
@@ -115,17 +80,11 @@ static inline bool sig_handler_ignored(void __user *handler, int sig)
 }
 
 static bool sig_task_ignored(struct task_struct *t, int sig, bool force)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __user *handler;
 
 	handler = sig_handler(t, sig);
 
-<<<<<<< HEAD
-	if (unlikely(t->signal->flags & SIGNAL_UNKILLABLE) &&
-			handler == SIG_DFL && !force)
-		return 1;
-=======
 	/* SIGKILL and SIGSTOP may not be sent to the global init */
 	if (unlikely(is_global_init(t) && sig_kernel_only(sig)))
 		return true;
@@ -138,16 +97,11 @@ static bool sig_task_ignored(struct task_struct *t, int sig, bool force)
 	if (unlikely((t->flags & PF_KTHREAD) &&
 		     (handler == SIG_KTHREAD_KERNEL) && !force))
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sig_handler_ignored(handler, sig);
 }
 
-<<<<<<< HEAD
-static int sig_ignored(struct task_struct *t, int sig, bool force)
-=======
 static bool sig_ignored(struct task_struct *t, int sig, bool force)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Blocked signals are never ignored, since the
@@ -155,17 +109,6 @@ static bool sig_ignored(struct task_struct *t, int sig, bool force)
 	 * unblocked.
 	 */
 	if (sigismember(&t->blocked, sig) || sigismember(&t->real_blocked, sig))
-<<<<<<< HEAD
-		return 0;
-
-	if (!sig_task_ignored(t, sig, force))
-		return 0;
-
-	/*
-	 * Tracers may want to know about even ignored signals.
-	 */
-	return !t->ptrace;
-=======
 		return false;
 
 	/*
@@ -177,18 +120,13 @@ static bool sig_ignored(struct task_struct *t, int sig, bool force)
 		return false;
 
 	return sig_task_ignored(t, sig, force);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Re-calculate pending state from the set of locally pending
  * signals, globally pending signals, and blocked signals.
  */
-<<<<<<< HEAD
-static inline int has_pending_signals(sigset_t *signal, sigset_t *blocked)
-=======
 static inline bool has_pending_signals(sigset_t *signal, sigset_t *blocked)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long ready;
 	long i;
@@ -216,16 +154,6 @@ static inline bool has_pending_signals(sigset_t *signal, sigset_t *blocked)
 
 #define PENDING(p,b) has_pending_signals(&(p)->signal, (b))
 
-<<<<<<< HEAD
-static int recalc_sigpending_tsk(struct task_struct *t)
-{
-	if ((t->jobctl & JOBCTL_PENDING_MASK) ||
-	    PENDING(&t->pending, &t->blocked) ||
-	    PENDING(&t->signal->shared_pending, &t->blocked)) {
-		set_tsk_thread_flag(t, TIF_SIGPENDING);
-		return 1;
-	}
-=======
 static bool recalc_sigpending_tsk(struct task_struct *t)
 {
 	if ((t->jobctl & (JOBCTL_PENDING_MASK | JOBCTL_TRAP_FREEZE)) ||
@@ -236,27 +164,12 @@ static bool recalc_sigpending_tsk(struct task_struct *t)
 		return true;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We must never clear the flag in another thread, or in current
 	 * when it's possible the current syscall is returning -ERESTART*.
 	 * So we don't clear it here, and only callers who know they should do.
 	 */
-<<<<<<< HEAD
-	return 0;
-}
-
-/*
- * After recalculating TIF_SIGPENDING, we need to make sure the task wakes up.
- * This is superfluous when called on current, the wakeup is a harmless no-op.
- */
-void recalc_sigpending_and_wake(struct task_struct *t)
-{
-	if (recalc_sigpending_tsk(t))
-		signal_wake_up(t, 0);
-=======
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void recalc_sigpending(void)
@@ -265,8 +178,6 @@ void recalc_sigpending(void)
 		clear_thread_flag(TIF_SIGPENDING);
 
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(recalc_sigpending);
 
 void calculate_sigpending(void)
@@ -279,7 +190,6 @@ void calculate_sigpending(void)
 	recalc_sigpending();
 	spin_unlock_irq(&current->sighand->siglock);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Given the mask, find the first available signal that should be serviced. */
 
@@ -343,11 +253,7 @@ static inline void print_dropped_signal(int sig)
 	if (!__ratelimit(&ratelimit_state))
 		return;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "%s/%d: reached RLIMIT_SIGPENDING, dropped signal %d\n",
-=======
 	pr_info("%s/%d: reached RLIMIT_SIGPENDING, dropped signal %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				current->comm, current->pid, sig);
 }
 
@@ -368,11 +274,7 @@ static inline void print_dropped_signal(int sig)
  * RETURNS:
  * %true if @mask is set, %false if made noop because @task was dying.
  */
-<<<<<<< HEAD
-bool task_set_jobctl_pending(struct task_struct *task, unsigned int mask)
-=======
 bool task_set_jobctl_pending(struct task_struct *task, unsigned long mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG_ON(mask & ~(JOBCTL_PENDING_MASK | JOBCTL_STOP_CONSUME |
 			JOBCTL_STOP_SIGMASK | JOBCTL_TRAPPING));
@@ -404,10 +306,7 @@ void task_clear_jobctl_trapping(struct task_struct *task)
 {
 	if (unlikely(task->jobctl & JOBCTL_TRAPPING)) {
 		task->jobctl &= ~JOBCTL_TRAPPING;
-<<<<<<< HEAD
-=======
 		smp_mb();	/* advised by wake_up_bit() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_bit(&task->jobctl, JOBCTL_TRAPPING_BIT);
 	}
 }
@@ -427,11 +326,7 @@ void task_clear_jobctl_trapping(struct task_struct *task)
  * CONTEXT:
  * Must be called with @task->sighand->siglock held.
  */
-<<<<<<< HEAD
-void task_clear_jobctl_pending(struct task_struct *task, unsigned int mask)
-=======
 void task_clear_jobctl_pending(struct task_struct *task, unsigned long mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG_ON(mask & ~JOBCTL_PENDING_MASK);
 
@@ -451,11 +346,7 @@ void task_clear_jobctl_pending(struct task_struct *task, unsigned long mask)
  * @task has %JOBCTL_STOP_PENDING set and is participating in a group stop.
  * Group stop states are cleared and the group stop count is consumed if
  * %JOBCTL_STOP_CONSUME was set.  If the consumption completes the group
-<<<<<<< HEAD
- * stop, the appropriate %SIGNAL_* flags are set.
-=======
  * stop, the appropriate `SIGNAL_*` flags are set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * CONTEXT:
  * Must be called with @task->sighand->siglock held.
@@ -484,18 +375,12 @@ static bool task_participate_group_stop(struct task_struct *task)
 	 * fresh group stop.  Read comment in do_signal_stop() for details.
 	 */
 	if (!sig->group_stop_count && !(sig->flags & SIGNAL_STOP_STOPPED)) {
-<<<<<<< HEAD
-		sig->flags = SIGNAL_STOP_STOPPED;
-=======
 		signal_set_stop_flags(sig, SIGNAL_STOP_STOPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return true;
 	}
 	return false;
 }
 
-<<<<<<< HEAD
-=======
 void task_join_group_stop(struct task_struct *task)
 {
 	unsigned long mask = current->jobctl & JOBCTL_STOP_SIGMASK;
@@ -511,42 +396,22 @@ void task_join_group_stop(struct task_struct *task)
 	task_set_jobctl_pending(task, mask | JOBCTL_STOP_PENDING);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * allocate a new signal queue record
  * - this may be called without locks if and only if t == current, otherwise an
  *   appropriate lock must be held to stop the target task from exiting
  */
 static struct sigqueue *
-<<<<<<< HEAD
-__sigqueue_alloc(int sig, struct task_struct *t, gfp_t flags, int override_rlimit)
-{
-	struct sigqueue *q = NULL;
-	struct user_struct *user;
-=======
 __sigqueue_alloc(int sig, struct task_struct *t, gfp_t gfp_flags,
 		 int override_rlimit, const unsigned int sigqueue_flags)
 {
 	struct sigqueue *q = NULL;
 	struct ucounts *ucounts;
 	long sigpending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Protect access to @t credentials. This can go away when all
 	 * callers hold rcu read lock.
-<<<<<<< HEAD
-	 */
-	rcu_read_lock();
-	user = get_uid(__task_cred(t)->user);
-	atomic_inc(&user->sigpending);
-	rcu_read_unlock();
-
-	if (override_rlimit ||
-	    atomic_read(&user->sigpending) <=
-			task_rlimit(t, RLIMIT_SIGPENDING)) {
-		q = kmem_cache_alloc(sigqueue_cachep, flags);
-=======
 	 *
 	 * NOTE! A pending signal will hold on to the user refcount,
 	 * and we get/put the refcount only when the sigpending count
@@ -561,29 +426,17 @@ __sigqueue_alloc(int sig, struct task_struct *t, gfp_t gfp_flags,
 
 	if (override_rlimit || likely(sigpending <= task_rlimit(t, RLIMIT_SIGPENDING))) {
 		q = kmem_cache_alloc(sigqueue_cachep, gfp_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		print_dropped_signal(sig);
 	}
 
 	if (unlikely(q == NULL)) {
-<<<<<<< HEAD
-		atomic_dec(&user->sigpending);
-		free_uid(user);
-	} else {
-		INIT_LIST_HEAD(&q->list);
-		q->flags = 0;
-		q->user = user;
-	}
-
-=======
 		dec_rlimit_put_ucounts(ucounts, UCOUNT_RLIMIT_SIGPENDING);
 	} else {
 		INIT_LIST_HEAD(&q->list);
 		q->flags = sigqueue_flags;
 		q->ucounts = ucounts;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return q;
 }
 
@@ -591,15 +444,10 @@ static void __sigqueue_free(struct sigqueue *q)
 {
 	if (q->flags & SIGQUEUE_PREALLOC)
 		return;
-<<<<<<< HEAD
-	atomic_dec(&q->user->sigpending);
-	free_uid(q->user);
-=======
 	if (q->ucounts) {
 		dec_rlimit_put_ucounts(q->ucounts, UCOUNT_RLIMIT_SIGPENDING);
 		q->ucounts = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_free(sigqueue_cachep, q);
 }
 
@@ -616,31 +464,13 @@ void flush_sigqueue(struct sigpending *queue)
 }
 
 /*
-<<<<<<< HEAD
- * Flush all pending signals for a task.
- */
-void __flush_signals(struct task_struct *t)
-{
-	clear_tsk_thread_flag(t, TIF_SIGPENDING);
-	flush_sigqueue(&t->pending);
-	flush_sigqueue(&t->signal->shared_pending);
-}
-
-=======
  * Flush all pending signals for this kthread.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void flush_signals(struct task_struct *t)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(&t->sighand->siglock, flags);
-<<<<<<< HEAD
-	__flush_signals(t);
-	spin_unlock_irqrestore(&t->sighand->siglock, flags);
-}
-
-=======
 	clear_tsk_thread_flag(t, TIF_SIGPENDING);
 	flush_sigqueue(&t->pending);
 	flush_sigqueue(&t->signal->shared_pending);
@@ -649,7 +479,6 @@ void flush_signals(struct task_struct *t)
 EXPORT_SYMBOL(flush_signals);
 
 #ifdef CONFIG_POSIX_TIMERS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __flush_itimer_signals(struct sigpending *pending)
 {
 	sigset_t signal, retain;
@@ -683,10 +512,7 @@ void flush_itimer_signals(void)
 	__flush_itimer_signals(&tsk->signal->shared_pending);
 	spin_unlock_irqrestore(&tsk->sighand->siglock, flags);
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ignore_signals(struct task_struct *t)
 {
@@ -719,15 +545,6 @@ flush_signal_handlers(struct task_struct *t, int force_default)
 	}
 }
 
-<<<<<<< HEAD
-int unhandled_signal(struct task_struct *tsk, int sig)
-{
-	void __user *handler = tsk->sighand->action[sig-1].sa.sa_handler;
-	if (is_global_init(tsk))
-		return 1;
-	if (handler != SIG_IGN && handler != SIG_DFL)
-		return 0;
-=======
 bool unhandled_signal(struct task_struct *tsk, int sig)
 {
 	void __user *handler = tsk->sighand->action[sig-1].sa.sa_handler;
@@ -741,52 +558,12 @@ bool unhandled_signal(struct task_struct *tsk, int sig)
 	if (fatal_signal_pending(tsk))
 		return false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if ptraced, let the tracer determine */
 	return !tsk->ptrace;
 }
 
-<<<<<<< HEAD
-/*
- * Notify the system that a driver wants to block all signals for this
- * process, and wants to be notified if any signals at all were to be
- * sent/acted upon.  If the notifier routine returns non-zero, then the
- * signal will be acted upon after all.  If the notifier routine returns 0,
- * then then signal will be blocked.  Only one block per process is
- * allowed.  priv is a pointer to private data that the notifier routine
- * can use to determine if the signal should be blocked or not.
- */
-void
-block_all_signals(int (*notifier)(void *priv), void *priv, sigset_t *mask)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&current->sighand->siglock, flags);
-	current->notifier_mask = mask;
-	current->notifier_data = priv;
-	current->notifier = notifier;
-	spin_unlock_irqrestore(&current->sighand->siglock, flags);
-}
-
-/* Notify the system that blocking has ended. */
-
-void
-unblock_all_signals(void)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&current->sighand->siglock, flags);
-	current->notifier = NULL;
-	current->notifier_data = NULL;
-	recalc_sigpending();
-	spin_unlock_irqrestore(&current->sighand->siglock, flags);
-}
-
-static void collect_signal(int sig, struct sigpending *list, siginfo_t *info)
-=======
 static void collect_signal(int sig, struct sigpending *list, kernel_siginfo_t *info,
 			   bool *resched_timer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sigqueue *q, *first = NULL;
 
@@ -808,15 +585,12 @@ static void collect_signal(int sig, struct sigpending *list, kernel_siginfo_t *i
 still_pending:
 		list_del_init(&first->list);
 		copy_siginfo(info, &first->info);
-<<<<<<< HEAD
-=======
 
 		*resched_timer =
 			(first->flags & SIGQUEUE_PREALLOC) &&
 			(info->si_code == SI_TIMER) &&
 			(info->si_sys_private);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sigqueue_free(first);
 	} else {
 		/*
@@ -824,10 +598,7 @@ still_pending:
 		 * a fast-pathed signal or we must have been
 		 * out of queue space.  So zero out the info.
 		 */
-<<<<<<< HEAD
-=======
 		clear_siginfo(info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->si_signo = sig;
 		info->si_errno = 0;
 		info->si_code = SI_USER;
@@ -837,32 +608,12 @@ still_pending:
 }
 
 static int __dequeue_signal(struct sigpending *pending, sigset_t *mask,
-<<<<<<< HEAD
-			siginfo_t *info)
-{
-	int sig = next_signal(pending, mask);
-
-	if (sig) {
-		if (current->notifier) {
-			if (sigismember(current->notifier_mask, sig)) {
-				if (!(current->notifier)(current->notifier_data)) {
-					clear_thread_flag(TIF_SIGPENDING);
-					return 0;
-				}
-			}
-		}
-
-		collect_signal(sig, pending, info);
-	}
-
-=======
 			kernel_siginfo_t *info, bool *resched_timer)
 {
 	int sig = next_signal(pending, mask);
 
 	if (sig)
 		collect_signal(sig, pending, info, resched_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sig;
 }
 
@@ -872,26 +623,15 @@ static int __dequeue_signal(struct sigpending *pending, sigset_t *mask,
  *
  * All callers have to hold the siglock.
  */
-<<<<<<< HEAD
-int dequeue_signal(struct task_struct *tsk, sigset_t *mask, siginfo_t *info)
-{
-=======
 int dequeue_signal(struct task_struct *tsk, sigset_t *mask,
 		   kernel_siginfo_t *info, enum pid_type *type)
 {
 	bool resched_timer = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int signr;
 
 	/* We only dequeue private signals from ourselves, we don't let
 	 * signalfd steal them
 	 */
-<<<<<<< HEAD
-	signr = __dequeue_signal(&tsk->pending, mask, info);
-	if (!signr) {
-		signr = __dequeue_signal(&tsk->signal->shared_pending,
-					 mask, info);
-=======
 	*type = PIDTYPE_PID;
 	signr = __dequeue_signal(&tsk->pending, mask, info, &resched_timer);
 	if (!signr) {
@@ -899,7 +639,6 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask,
 		signr = __dequeue_signal(&tsk->signal->shared_pending,
 					 mask, info, &resched_timer);
 #ifdef CONFIG_POSIX_TIMERS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * itimer signal ?
 		 *
@@ -917,20 +656,13 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask,
 			struct hrtimer *tmr = &tsk->signal->real_timer;
 
 			if (!hrtimer_is_queued(tmr) &&
-<<<<<<< HEAD
-			    tsk->signal->it_real_incr.tv64 != 0) {
-=======
 			    tsk->signal->it_real_incr != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hrtimer_forward(tmr, tmr->base->get_time(),
 						tsk->signal->it_real_incr);
 				hrtimer_restart(tmr);
 			}
 		}
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	recalc_sigpending();
@@ -952,12 +684,8 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask,
 		 */
 		current->jobctl |= JOBCTL_STOP_DEQUEUED;
 	}
-<<<<<<< HEAD
-	if ((info->si_code & __SI_MASK) == __SI_TIMER && info->si_sys_private) {
-=======
 #ifdef CONFIG_POSIX_TIMERS
 	if (resched_timer) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Release the siglock to ensure proper locking order
 		 * of timer locks outside of siglocks.  Note, we leave
@@ -965,13 +693,6 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask,
 		 * about to disable them again anyway.
 		 */
 		spin_unlock(&tsk->sighand->siglock);
-<<<<<<< HEAD
-		do_schedule_next_timer(info);
-		spin_lock(&tsk->sighand->siglock);
-	}
-	return signr;
-}
-=======
 		posixtimer_rearm(info);
 		spin_lock(&tsk->sighand->siglock);
 
@@ -1024,7 +745,6 @@ still_pending:
 	__sigqueue_free(sync);
 	return info->si_signo;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tell a process that it has a new active signal..
@@ -1039,14 +759,10 @@ still_pending:
  */
 void signal_wake_up_state(struct task_struct *t, unsigned int state)
 {
-<<<<<<< HEAD
-	set_tsk_thread_flag(t, TIF_SIGPENDING);
-=======
 	lockdep_assert_held(&t->sighand->siglock);
 
 	set_tsk_thread_flag(t, TIF_SIGPENDING);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * TASK_WAKEKILL also means wake it up in the stopped/traced/killable
 	 * case. We don't check t->state here because there is a race with it
@@ -1063,27 +779,15 @@ void signal_wake_up_state(struct task_struct *t, unsigned int state)
  * Returns 1 if any signals were found.
  *
  * All callers must be holding the siglock.
-<<<<<<< HEAD
- *
- * This version takes a sigset mask and looks at all signals,
- * not just those in the first mask word.
- */
-static int rm_from_queue_full(sigset_t *mask, struct sigpending *s)
-=======
  */
 static void flush_sigqueue_mask(sigset_t *mask, struct sigpending *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sigqueue *q, *n;
 	sigset_t m;
 
 	sigandsets(&m, mask, &s->signal);
 	if (sigisemptyset(&m))
-<<<<<<< HEAD
-		return 0;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sigandnsets(&s->signal, &s->signal, mask);
 	list_for_each_entry_safe(q, n, &s->list, list) {
@@ -1092,40 +796,6 @@ static void flush_sigqueue_mask(sigset_t *mask, struct sigpending *s)
 			__sigqueue_free(q);
 		}
 	}
-<<<<<<< HEAD
-	return 1;
-}
-/*
- * Remove signals in mask from the pending set and queue.
- * Returns 1 if any signals were found.
- *
- * All callers must be holding the siglock.
- */
-static int rm_from_queue(unsigned long mask, struct sigpending *s)
-{
-	struct sigqueue *q, *n;
-
-	if (!sigtestsetmask(&s->signal, mask))
-		return 0;
-
-	sigdelsetmask(&s->signal, mask);
-	list_for_each_entry_safe(q, n, &s->list, list) {
-		if (q->info.si_signo < SIGRTMIN &&
-		    (mask & sigmask(q->info.si_signo))) {
-			list_del_init(&q->list);
-			__sigqueue_free(q);
-		}
-	}
-	return 1;
-}
-
-static inline int is_si_special(const struct siginfo *info)
-{
-	return info <= SEND_SIG_FORCED;
-}
-
-static inline bool si_fromuser(const struct siginfo *info)
-=======
 }
 
 static inline int is_si_special(const struct kernel_siginfo *info)
@@ -1134,7 +804,6 @@ static inline int is_si_special(const struct kernel_siginfo *info)
 }
 
 static inline bool si_fromuser(const struct kernel_siginfo *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return info == SEND_SIG_NOINFO ||
 		(!is_si_special(info) && SI_FROMUSER(info));
@@ -1143,45 +812,23 @@ static inline bool si_fromuser(const struct kernel_siginfo *info)
 /*
  * called with RCU read lock from check_kill_permission()
  */
-<<<<<<< HEAD
-static int kill_ok_by_cred(struct task_struct *t)
-=======
 static bool kill_ok_by_cred(struct task_struct *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct cred *cred = current_cred();
 	const struct cred *tcred = __task_cred(t);
 
-<<<<<<< HEAD
-	if (cred->user->user_ns == tcred->user->user_ns &&
-	    (cred->euid == tcred->suid ||
-	     cred->euid == tcred->uid ||
-	     cred->uid  == tcred->suid ||
-	     cred->uid  == tcred->uid))
-		return 1;
-
-	if (ns_capable(tcred->user->user_ns, CAP_KILL))
-		return 1;
-
-	return 0;
-=======
 	return uid_eq(cred->euid, tcred->suid) ||
 	       uid_eq(cred->euid, tcred->uid) ||
 	       uid_eq(cred->uid, tcred->suid) ||
 	       uid_eq(cred->uid, tcred->uid) ||
 	       ns_capable(tcred->user_ns, CAP_KILL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Bad permissions for sending the signal
  * - the caller must hold the RCU read lock
  */
-<<<<<<< HEAD
-static int check_kill_permission(int sig, struct siginfo *info,
-=======
 static int check_kill_permission(int sig, struct kernel_siginfo *info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct task_struct *t)
 {
 	struct pid *sid;
@@ -1208,20 +855,13 @@ static int check_kill_permission(int sig, struct kernel_siginfo *info,
 			 */
 			if (!sid || sid == task_session(current))
 				break;
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return -EPERM;
 		}
 	}
 
-<<<<<<< HEAD
-	return security_task_kill(t, info, sig, 0);
-=======
 	return security_task_kill(t, info, sig, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1244,11 +884,7 @@ static int check_kill_permission(int sig, struct kernel_siginfo *info,
 static void ptrace_trap_notify(struct task_struct *t)
 {
 	WARN_ON_ONCE(!(t->ptrace & PT_SEIZED));
-<<<<<<< HEAD
-	assert_spin_locked(&t->sighand->siglock);
-=======
 	lockdep_assert_held(&t->sighand->siglock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	task_set_jobctl_pending(t, JOBCTL_TRAP_NOTIFY);
 	ptrace_signal_wake_up(t, t->jobctl & JOBCTL_LISTENING);
@@ -1264,17 +900,6 @@ static void ptrace_trap_notify(struct task_struct *t)
  * Returns true if the signal should be actually delivered, otherwise
  * it should be dropped.
  */
-<<<<<<< HEAD
-static int prepare_signal(int sig, struct task_struct *p, bool force)
-{
-	struct signal_struct *signal = p->signal;
-	struct task_struct *t;
-
-	if (unlikely(signal->flags & SIGNAL_GROUP_EXIT)) {
-		/*
-		 * The process is in the middle of dying, nothing to do.
-		 */
-=======
 static bool prepare_signal(int sig, struct task_struct *p, bool force)
 {
 	struct signal_struct *signal = p->signal;
@@ -1288,40 +913,19 @@ static bool prepare_signal(int sig, struct task_struct *p, bool force)
 		 * The process is in the middle of dying, drop the signal.
 		 */
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (sig_kernel_stop(sig)) {
 		/*
 		 * This is a stop signal.  Remove SIGCONT from all queues.
 		 */
-<<<<<<< HEAD
-		rm_from_queue(sigmask(SIGCONT), &signal->shared_pending);
-		t = p;
-		do {
-			rm_from_queue(sigmask(SIGCONT), &t->pending);
-		} while_each_thread(p, t);
-=======
 		siginitset(&flush, sigmask(SIGCONT));
 		flush_sigqueue_mask(&flush, &signal->shared_pending);
 		for_each_thread(p, t)
 			flush_sigqueue_mask(&flush, &t->pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (sig == SIGCONT) {
 		unsigned int why;
 		/*
 		 * Remove all stop signals from all queues, wake all threads.
 		 */
-<<<<<<< HEAD
-		rm_from_queue(SIG_KERNEL_STOP_MASK, &signal->shared_pending);
-		t = p;
-		do {
-			task_clear_jobctl_pending(t, JOBCTL_STOP_PENDING);
-			rm_from_queue(SIG_KERNEL_STOP_MASK, &t->pending);
-			if (likely(!(t->ptrace & PT_SEIZED)))
-				wake_up_state(t, __TASK_STOPPED);
-			else
-				ptrace_trap_notify(t);
-		} while_each_thread(p, t);
-=======
 		siginitset(&flush, SIG_KERNEL_STOP_MASK);
 		flush_sigqueue_mask(&flush, &signal->shared_pending);
 		for_each_thread(p, t) {
@@ -1333,7 +937,6 @@ static bool prepare_signal(int sig, struct task_struct *p, bool force)
 			} else
 				ptrace_trap_notify(t);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Notify the parent with CLD_CONTINUED if we were stopped.
@@ -1353,15 +956,9 @@ static bool prepare_signal(int sig, struct task_struct *p, bool force)
 			/*
 			 * The first thread which returns from do_signal_stop()
 			 * will take ->siglock, notice SIGNAL_CLD_MASK, and
-<<<<<<< HEAD
-			 * notify its parent. See get_signal_to_deliver().
-			 */
-			signal->flags = why | SIGNAL_STOP_CONTINUED;
-=======
 			 * notify its parent. See get_signal().
 			 */
 			signal_set_stop_flags(signal, why | SIGNAL_STOP_CONTINUED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			signal->group_stop_count = 0;
 			signal->group_exit_code = 0;
 		}
@@ -1378,22 +975,6 @@ static bool prepare_signal(int sig, struct task_struct *p, bool force)
  * as soon as they're available, so putting the signal on the shared queue
  * will be equivalent to sending it to one such thread.
  */
-<<<<<<< HEAD
-static inline int wants_signal(int sig, struct task_struct *p)
-{
-	if (sigismember(&p->blocked, sig))
-		return 0;
-	if (p->flags & PF_EXITING)
-		return 0;
-	if (sig == SIGKILL)
-		return 1;
-	if (task_is_stopped_or_traced(p))
-		return 0;
-	return task_curr(p) || !signal_pending(p);
-}
-
-static void complete_signal(int sig, struct task_struct *p, int group)
-=======
 static inline bool wants_signal(int sig, struct task_struct *p)
 {
 	if (sigismember(&p->blocked, sig))
@@ -1412,7 +993,6 @@ static inline bool wants_signal(int sig, struct task_struct *p)
 }
 
 static void complete_signal(int sig, struct task_struct *p, enum pid_type type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct signal_struct *signal = p->signal;
 	struct task_struct *t;
@@ -1420,20 +1000,11 @@ static void complete_signal(int sig, struct task_struct *p, enum pid_type type)
 	/*
 	 * Now find a thread we can wake up to take the signal off the queue.
 	 *
-<<<<<<< HEAD
-	 * If the main thread wants the signal, it gets first crack.
-	 * Probably the least surprising to the average bear.
-	 */
-	if (wants_signal(sig, p))
-		t = p;
-	else if (!group || thread_group_empty(p))
-=======
 	 * Try the suggested task first (may or may not be the main thread).
 	 */
 	if (wants_signal(sig, p))
 		t = p;
 	else if ((type == PIDTYPE_PID) || thread_group_empty(p))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * There is just one thread and it does not need to be woken.
 		 * It will dequeue unblocked signals before it runs again.
@@ -1462,15 +1033,9 @@ static void complete_signal(int sig, struct task_struct *p, enum pid_type type)
 	 * then start taking the whole group down immediately.
 	 */
 	if (sig_fatal(p, sig) &&
-<<<<<<< HEAD
-	    !(signal->flags & (SIGNAL_UNKILLABLE | SIGNAL_GROUP_EXIT)) &&
-	    !sigismember(&t->real_blocked, sig) &&
-	    (sig == SIGKILL || !t->ptrace)) {
-=======
 	    (signal->core_state || !(signal->flags & SIGNAL_GROUP_EXIT)) &&
 	    !sigismember(&t->real_blocked, sig) &&
 	    (sig == SIGKILL || !p->ptrace)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This signal will be fatal to the whole group.
 		 */
@@ -1484,20 +1049,11 @@ static void complete_signal(int sig, struct task_struct *p, enum pid_type type)
 			signal->flags = SIGNAL_GROUP_EXIT;
 			signal->group_exit_code = sig;
 			signal->group_stop_count = 0;
-<<<<<<< HEAD
-			t = p;
-			do {
-				task_clear_jobctl_pending(t, JOBCTL_PENDING_MASK);
-				sigaddset(&t->pending.signal, SIGKILL);
-				signal_wake_up(t, 1);
-			} while_each_thread(p, t);
-=======
 			__for_each_thread(signal, t) {
 				task_clear_jobctl_pending(t, JOBCTL_PENDING_MASK);
 				sigaddset(&t->pending.signal, SIGKILL);
 				signal_wake_up(t, 1);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
@@ -1510,66 +1066,19 @@ static void complete_signal(int sig, struct task_struct *p, enum pid_type type)
 	return;
 }
 
-<<<<<<< HEAD
-static inline int legacy_queue(struct sigpending *signals, int sig)
-=======
 static inline bool legacy_queue(struct sigpending *signals, int sig)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (sig < SIGRTMIN) && sigismember(&signals->signal, sig);
 }
 
-<<<<<<< HEAD
-/*
- * map the uid in struct cred into user namespace *ns
- */
-static inline uid_t map_cred_ns(const struct cred *cred,
-				struct user_namespace *ns)
-{
-	return user_ns_map_uid(ns, cred, cred->uid);
-}
-
-#ifdef CONFIG_USER_NS
-static inline void userns_fixup_signal_uid(struct siginfo *info, struct task_struct *t)
-{
-	if (current_user_ns() == task_cred_xxx(t, user_ns))
-		return;
-
-	if (SI_FROMKERNEL(info))
-		return;
-
-	info->si_uid = user_ns_map_uid(task_cred_xxx(t, user_ns),
-					current_cred(), info->si_uid);
-}
-#else
-static inline void userns_fixup_signal_uid(struct siginfo *info, struct task_struct *t)
-{
-	return;
-}
-#endif
-
-static int __send_signal(int sig, struct siginfo *info, struct task_struct *t,
-			int group, int from_ancestor_ns)
-=======
 static int __send_signal_locked(int sig, struct kernel_siginfo *info,
 				struct task_struct *t, enum pid_type type, bool force)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sigpending *pending;
 	struct sigqueue *q;
 	int override_rlimit;
 	int ret = 0, result;
 
-<<<<<<< HEAD
-	assert_spin_locked(&t->sighand->siglock);
-
-	result = TRACE_SIGNAL_IGNORED;
-	if (!prepare_signal(sig, t,
-			from_ancestor_ns || (info == SEND_SIG_FORCED)))
-		goto ret;
-
-	pending = group ? &t->signal->shared_pending : &t->pending;
-=======
 	lockdep_assert_held(&t->sighand->siglock);
 
 	result = TRACE_SIGNAL_IGNORED;
@@ -1577,7 +1086,6 @@ static int __send_signal_locked(int sig, struct kernel_siginfo *info,
 		goto ret;
 
 	pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Short-circuit ignored signals and support queuing
 	 * exactly one non-rt signal, so that we can get more
@@ -1589,16 +1097,9 @@ static int __send_signal_locked(int sig, struct kernel_siginfo *info,
 
 	result = TRACE_SIGNAL_DELIVERED;
 	/*
-<<<<<<< HEAD
-	 * fast-pathed signals for kernel-internal things like SIGSTOP
-	 * or SIGKILL.
-	 */
-	if (info == SEND_SIG_FORCED)
-=======
 	 * Skip useless siginfo allocation for SIGKILL and kernel threads.
 	 */
 	if ((sig == SIGKILL) || (t->flags & PF_KTHREAD))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_set;
 
 	/*
@@ -1615,31 +1116,18 @@ static int __send_signal_locked(int sig, struct kernel_siginfo *info,
 	else
 		override_rlimit = 0;
 
-<<<<<<< HEAD
-	q = __sigqueue_alloc(sig, t, GFP_ATOMIC | __GFP_NOTRACK_FALSE_POSITIVE,
-		override_rlimit);
-=======
 	q = __sigqueue_alloc(sig, t, GFP_ATOMIC, override_rlimit, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (q) {
 		list_add_tail(&q->list, &pending->list);
 		switch ((unsigned long) info) {
 		case (unsigned long) SEND_SIG_NOINFO:
-<<<<<<< HEAD
-=======
 			clear_siginfo(&q->info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			q->info.si_signo = sig;
 			q->info.si_errno = 0;
 			q->info.si_code = SI_USER;
 			q->info.si_pid = task_tgid_nr_ns(current,
 							task_active_pid_ns(t));
-<<<<<<< HEAD
-			q->info.si_uid = current_uid();
-			break;
-		case (unsigned long) SEND_SIG_PRIV:
-=======
 			rcu_read_lock();
 			q->info.si_uid =
 				from_kuid_munged(task_cred_xxx(t, user_ns),
@@ -1648,7 +1136,6 @@ static int __send_signal_locked(int sig, struct kernel_siginfo *info,
 			break;
 		case (unsigned long) SEND_SIG_PRIV:
 			clear_siginfo(&q->info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			q->info.si_signo = sig;
 			q->info.si_errno = 0;
 			q->info.si_code = SI_KERNEL;
@@ -1657,32 +1144,6 @@ static int __send_signal_locked(int sig, struct kernel_siginfo *info,
 			break;
 		default:
 			copy_siginfo(&q->info, info);
-<<<<<<< HEAD
-			if (from_ancestor_ns)
-				q->info.si_pid = 0;
-			break;
-		}
-
-		userns_fixup_signal_uid(&q->info, t);
-
-	} else if (!is_si_special(info)) {
-		if (sig >= SIGRTMIN && info->si_code != SI_USER) {
-			/*
-			 * Queue overflow, abort.  We may abort if the
-			 * signal was rt and sent by user using something
-			 * other than kill().
-			 */
-			result = TRACE_SIGNAL_OVERFLOW_FAIL;
-			ret = -EAGAIN;
-			goto ret;
-		} else {
-			/*
-			 * This is a silent loss of information.  We still
-			 * send the signal, but the *info bits are lost.
-			 */
-			result = TRACE_SIGNAL_LOSE_INFO;
-		}
-=======
 			break;
 		}
 	} else if (!is_si_special(info) &&
@@ -1701,40 +1162,11 @@ static int __send_signal_locked(int sig, struct kernel_siginfo *info,
 		 * send the signal, but the *info bits are lost.
 		 */
 		result = TRACE_SIGNAL_LOSE_INFO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out_set:
 	signalfd_notify(t, sig);
 	sigaddset(&pending->signal, sig);
-<<<<<<< HEAD
-	complete_signal(sig, t, group);
-ret:
-	trace_signal_generate(sig, info, t, group, result);
-	return ret;
-}
-
-static int send_signal(int sig, struct siginfo *info, struct task_struct *t,
-			int group)
-{
-	int from_ancestor_ns = 0;
-
-#ifdef CONFIG_PID_NS
-	from_ancestor_ns = si_fromuser(info) &&
-			   !task_pid_nr_ns(current, task_active_pid_ns(t));
-#endif
-
-	return __send_signal(sig, info, t, group, from_ancestor_ns);
-}
-
-static void print_fatal_signal(struct pt_regs *regs, int signr)
-{
-	printk("%s/%d: potentially unexpected fatal signal %d.\n",
-		current->comm, task_pid_nr(current), signr);
-
-#if defined(__i386__) && !defined(__arch_um__)
-	printk("code at %08lx: ", regs->ip);
-=======
 
 	/* Let multiprocess signals appear after on-going forks */
 	if (type > PIDTYPE_TGID) {
@@ -1833,7 +1265,6 @@ static void print_fatal_signal(int signr)
 
 #if defined(__i386__) && !defined(__arch_um__)
 	pr_info("code at %08lx: ", regs->ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		int i;
 		for (i = 0; i < 16; i++) {
@@ -1841,19 +1272,11 @@ static void print_fatal_signal(int signr)
 
 			if (get_user(insn, (unsigned char *)(regs->ip + i)))
 				break;
-<<<<<<< HEAD
-			printk("%02x ", insn);
-		}
-	}
-#endif
-	printk("\n");
-=======
 			pr_cont("%02x ", insn);
 		}
 	}
 	pr_cont("\n");
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_disable();
 	show_regs(regs);
 	preempt_enable();
@@ -1868,50 +1291,26 @@ static int __init setup_print_fatal_signals(char *str)
 
 __setup("print-fatal-signals=", setup_print_fatal_signals);
 
-<<<<<<< HEAD
-int
-__group_send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
-{
-	return send_signal(sig, info, p, 1);
-}
-
-static int
-specific_send_sig_info(int sig, struct siginfo *info, struct task_struct *t)
-{
-	return send_signal(sig, info, t, 0);
-}
-
-int do_send_sig_info(int sig, struct siginfo *info, struct task_struct *p,
-			bool group)
-=======
 int do_send_sig_info(int sig, struct kernel_siginfo *info, struct task_struct *p,
 			enum pid_type type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int ret = -ESRCH;
 
 	if (lock_task_sighand(p, &flags)) {
-<<<<<<< HEAD
-		ret = send_signal(sig, info, p, group);
-=======
 		ret = send_signal_locked(sig, info, p, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unlock_task_sighand(p, &flags);
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 enum sig_handler {
 	HANDLER_CURRENT, /* If reachable use the current handler */
 	HANDLER_SIG_DFL, /* Always use SIG_DFL handler semantics */
 	HANDLER_EXIT,	 /* Only visible as the process exit code */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Force a signal that the process can't ignore: if necessary
  * we unblock the signal and change any SIG_IGN to SIG_DFL.
@@ -1923,39 +1322,19 @@ enum sig_handler {
  * We don't want to have recursive SIGSEGV's etc, for example,
  * that is why we also clear SIGNAL_UNKILLABLE.
  */
-<<<<<<< HEAD
-int
-force_sig_info(int sig, struct siginfo *info, struct task_struct *t)
-=======
 static int
 force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,
 	enum sig_handler handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long int flags;
 	int ret, blocked, ignored;
 	struct k_sigaction *action;
-<<<<<<< HEAD
-=======
 	int sig = info->si_signo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&t->sighand->siglock, flags);
 	action = &t->sighand->action[sig-1];
 	ignored = action->sa.sa_handler == SIG_IGN;
 	blocked = sigismember(&t->blocked, sig);
-<<<<<<< HEAD
-	if (blocked || ignored) {
-		action->sa.sa_handler = SIG_DFL;
-		if (blocked) {
-			sigdelset(&t->blocked, sig);
-			recalc_sigpending_and_wake(t);
-		}
-	}
-	if (action->sa.sa_handler == SIG_DFL)
-		t->signal->flags &= ~SIGNAL_UNKILLABLE;
-	ret = specific_send_sig_info(sig, info, t);
-=======
 	if (blocked || ignored || (handler != HANDLER_CURRENT)) {
 		action->sa.sa_handler = SIG_DFL;
 		if (handler == HANDLER_EXIT)
@@ -1974,45 +1353,31 @@ force_sig_info_to_task(struct kernel_siginfo *info, struct task_struct *t,
 	/* This can happen if the signal was already pending and blocked */
 	if (!task_sigpending(t))
 		signal_wake_up(t, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&t->sighand->siglock, flags);
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 int force_sig_info(struct kernel_siginfo *info)
 {
 	return force_sig_info_to_task(info, current, HANDLER_CURRENT);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Nuke all other threads in the group.
  */
 int zap_other_threads(struct task_struct *p)
 {
-<<<<<<< HEAD
-	struct task_struct *t = p;
-=======
 	struct task_struct *t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int count = 0;
 
 	p->signal->group_stop_count = 0;
 
-<<<<<<< HEAD
-	while_each_thread(p, t) {
-		task_clear_jobctl_pending(t, JOBCTL_PENDING_MASK);
-		count++;
-=======
 	for_other_threads(p, t) {
 		task_clear_jobctl_pending(t, JOBCTL_PENDING_MASK);
 		/* Don't require de_thread to wait for the vhost_worker */
 		if ((t->flags & (PF_IO_WORKER | PF_USER_WORKER)) != PF_USER_WORKER)
 			count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Don't bother with already dead threads */
 		if (t->exit_state)
@@ -2029,27 +1394,6 @@ struct sighand_struct *__lock_task_sighand(struct task_struct *tsk,
 {
 	struct sighand_struct *sighand;
 
-<<<<<<< HEAD
-	for (;;) {
-		local_irq_save(*flags);
-		rcu_read_lock();
-		sighand = rcu_dereference(tsk->sighand);
-		if (unlikely(sighand == NULL)) {
-			rcu_read_unlock();
-			local_irq_restore(*flags);
-			break;
-		}
-
-		spin_lock(&sighand->siglock);
-		if (likely(sighand == tsk->sighand)) {
-			rcu_read_unlock();
-			break;
-		}
-		spin_unlock(&sighand->siglock);
-		rcu_read_unlock();
-		local_irq_restore(*flags);
-	}
-=======
 	rcu_read_lock();
 	for (;;) {
 		sighand = rcu_dereference(tsk->sighand);
@@ -2073,17 +1417,10 @@ struct sighand_struct *__lock_task_sighand(struct task_struct *tsk,
 		spin_unlock_irqrestore(&sighand->siglock, *flags);
 	}
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sighand;
 }
 
-<<<<<<< HEAD
-/*
- * send signal info to all the members of a group
- */
-int group_send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
-=======
 #ifdef CONFIG_LOCKDEP
 void lockdep_assert_task_sighand_held(struct task_struct *task)
 {
@@ -2105,7 +1442,6 @@ void lockdep_assert_task_sighand_held(struct task_struct *task)
  */
 int group_send_sig_info(int sig, struct kernel_siginfo *info,
 			struct task_struct *p, enum pid_type type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -2114,11 +1450,7 @@ int group_send_sig_info(int sig, struct kernel_siginfo *info,
 	rcu_read_unlock();
 
 	if (!ret && sig)
-<<<<<<< HEAD
-		ret = do_send_sig_info(sig, info, p, true);
-=======
 		ret = do_send_sig_info(sig, info, p, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -2128,24 +1460,6 @@ int group_send_sig_info(int sig, struct kernel_siginfo *info,
  * control characters do (^C, ^Z etc)
  * - the caller must hold at least a readlock on tasklist_lock
  */
-<<<<<<< HEAD
-int __kill_pgrp_info(int sig, struct siginfo *info, struct pid *pgrp)
-{
-	struct task_struct *p = NULL;
-	int retval, success;
-
-	success = 0;
-	retval = -ESRCH;
-	do_each_pid_task(pgrp, PIDTYPE_PGID, p) {
-		int err = group_send_sig_info(sig, info, p);
-		success |= !err;
-		retval = err;
-	} while_each_pid_task(pgrp, PIDTYPE_PGID, p);
-	return success ? 0 : retval;
-}
-
-int kill_pid_info(int sig, struct siginfo *info, struct pid *pid)
-=======
 int __kill_pgrp_info(int sig, struct kernel_siginfo *info, struct pid *pgrp)
 {
 	struct task_struct *p = NULL;
@@ -2168,33 +1482,10 @@ int __kill_pgrp_info(int sig, struct kernel_siginfo *info, struct pid *pgrp)
 
 static int kill_pid_info_type(int sig, struct kernel_siginfo *info,
 				struct pid *pid, enum pid_type type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = -ESRCH;
 	struct task_struct *p;
 
-<<<<<<< HEAD
-	rcu_read_lock();
-retry:
-	p = pid_task(pid, PIDTYPE_PID);
-	if (p) {
-		error = group_send_sig_info(sig, info, p);
-		if (unlikely(error == -ESRCH))
-			/*
-			 * The task was unhashed in between, try again.
-			 * If it is dead, pid_task() will return NULL,
-			 * if we race with de_thread() it will find the
-			 * new leader.
-			 */
-			goto retry;
-	}
-	rcu_read_unlock();
-
-	return error;
-}
-
-int kill_proc_info(int sig, struct siginfo *info, pid_t pid)
-=======
 	for (;;) {
 		rcu_read_lock();
 		p = pid_task(pid, PIDTYPE_PID);
@@ -2217,7 +1508,6 @@ int kill_pid_info(int sig, struct kernel_siginfo *info, struct pid *pid)
 }
 
 static int kill_proc_info(int sig, struct kernel_siginfo *info, pid_t pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	rcu_read_lock();
@@ -2226,27 +1516,6 @@ static int kill_proc_info(int sig, struct kernel_siginfo *info, pid_t pid)
 	return error;
 }
 
-<<<<<<< HEAD
-static int kill_as_cred_perm(const struct cred *cred,
-			     struct task_struct *target)
-{
-	const struct cred *pcred = __task_cred(target);
-	if (cred->user_ns != pcred->user_ns)
-		return 0;
-	if (cred->euid != pcred->suid && cred->euid != pcred->uid &&
-	    cred->uid  != pcred->suid && cred->uid  != pcred->uid)
-		return 0;
-	return 1;
-}
-
-/* like kill_pid_info(), but doesn't use uid/euid of "current" */
-int kill_pid_info_as_cred(int sig, struct siginfo *info, struct pid *pid,
-			 const struct cred *cred, u32 secid)
-{
-	int ret = -EINVAL;
-	struct task_struct *p;
-	unsigned long flags;
-=======
 static inline bool kill_as_cred_perm(const struct cred *cred,
 				     struct task_struct *target)
 {
@@ -2290,49 +1559,33 @@ int kill_pid_usb_asyncio(int sig, int errno, sigval_t addr,
 	struct task_struct *p;
 	unsigned long flags;
 	int ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!valid_signal(sig))
 		return ret;
 
-<<<<<<< HEAD
-=======
 	clear_siginfo(&info);
 	info.si_signo = sig;
 	info.si_errno = errno;
 	info.si_code = SI_ASYNCIO;
 	*((sigval_t *)&info.si_pid) = addr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_lock();
 	p = pid_task(pid, PIDTYPE_PID);
 	if (!p) {
 		ret = -ESRCH;
 		goto out_unlock;
 	}
-<<<<<<< HEAD
-	if (si_fromuser(info) && !kill_as_cred_perm(cred, p)) {
-		ret = -EPERM;
-		goto out_unlock;
-	}
-	ret = security_task_kill(p, info, sig, secid);
-=======
 	if (!kill_as_cred_perm(cred, p)) {
 		ret = -EPERM;
 		goto out_unlock;
 	}
 	ret = security_task_kill(p, &info, sig, cred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_unlock;
 
 	if (sig) {
 		if (lock_task_sighand(p, &flags)) {
-<<<<<<< HEAD
-			ret = __send_signal(sig, info, p, 1, 0);
-=======
 			ret = __send_signal_locked(sig, &info, p, PIDTYPE_TGID, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unlock_task_sighand(p, &flags);
 		} else
 			ret = -ESRCH;
@@ -2341,11 +1594,7 @@ out_unlock:
 	rcu_read_unlock();
 	return ret;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(kill_pid_info_as_cred);
-=======
 EXPORT_SYMBOL_GPL(kill_pid_usb_asyncio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * kill_something_info() interprets pid in interesting ways just like kill(2).
@@ -2354,18 +1603,6 @@ EXPORT_SYMBOL_GPL(kill_pid_usb_asyncio);
  * is probably wrong.  Should make it like BSD or SYSV.
  */
 
-<<<<<<< HEAD
-static int kill_something_info(int sig, struct siginfo *info, pid_t pid)
-{
-	int ret;
-
-	if (pid > 0) {
-		rcu_read_lock();
-		ret = kill_pid_info(sig, info, find_vpid(pid));
-		rcu_read_unlock();
-		return ret;
-	}
-=======
 static int kill_something_info(int sig, struct kernel_siginfo *info, pid_t pid)
 {
 	int ret;
@@ -2376,7 +1613,6 @@ static int kill_something_info(int sig, struct kernel_siginfo *info, pid_t pid)
 	/* -INT_MIN is undefined.  Exclude this case to avoid a UBSAN warning */
 	if (pid == INT_MIN)
 		return -ESRCH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	read_lock(&tasklist_lock);
 	if (pid != -1) {
@@ -2389,12 +1625,8 @@ static int kill_something_info(int sig, struct kernel_siginfo *info, pid_t pid)
 		for_each_process(p) {
 			if (task_pid_vnr(p) > 1 &&
 					!same_thread_group(p, current)) {
-<<<<<<< HEAD
-				int err = group_send_sig_info(sig, info, p);
-=======
 				int err = group_send_sig_info(sig, info, p,
 							      PIDTYPE_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				++count;
 				if (err != -EPERM)
 					retval = err;
@@ -2411,11 +1643,7 @@ static int kill_something_info(int sig, struct kernel_siginfo *info, pid_t pid)
  * These are for backward compatibility with the rest of the kernel source.
  */
 
-<<<<<<< HEAD
-int send_sig_info(int sig, struct siginfo *info, struct task_struct *p)
-=======
 int send_sig_info(int sig, struct kernel_siginfo *info, struct task_struct *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Make sure legacy kernel users don't send in bad values
@@ -2424,14 +1652,9 @@ int send_sig_info(int sig, struct kernel_siginfo *info, struct task_struct *p)
 	if (!valid_signal(sig))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	return do_send_sig_info(sig, info, p, false);
-}
-=======
 	return do_send_sig_info(sig, info, p, PIDTYPE_PID);
 }
 EXPORT_SYMBOL(send_sig_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __si_special(priv) \
 	((priv) ? SEND_SIG_PRIV : SEND_SIG_NOINFO)
@@ -2441,13 +1664,6 @@ send_sig(int sig, struct task_struct *p, int priv)
 {
 	return send_sig_info(sig, __si_special(priv), p);
 }
-<<<<<<< HEAD
-
-void
-force_sig(int sig, struct task_struct *p)
-{
-	force_sig_info(sig, SEND_SIG_PRIV, p);
-=======
 EXPORT_SYMBOL(send_sig);
 
 void force_sig(int sig)
@@ -2488,7 +1704,6 @@ void force_exit_sig(int sig)
 	info.si_pid = 0;
 	info.si_uid = 0;
 	force_sig_info_to_task(&info, current, HANDLER_EXIT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2497,19 +1712,6 @@ void force_exit_sig(int sig)
  * the problem was already a SIGSEGV, we'll want to
  * make sure we don't even try to deliver the signal..
  */
-<<<<<<< HEAD
-int
-force_sigsegv(int sig, struct task_struct *p)
-{
-	if (sig == SIGSEGV) {
-		unsigned long flags;
-		spin_lock_irqsave(&p->sighand->siglock, flags);
-		p->sighand->action[sig - 1].sa.sa_handler = SIG_DFL;
-		spin_unlock_irqrestore(&p->sighand->siglock, flags);
-	}
-	force_sig(SIGSEGV, p);
-	return 0;
-=======
 void force_sigsegv(int sig)
 {
 	if (sig == SIGSEGV)
@@ -2710,22 +1912,11 @@ static int kill_pgrp_info(int sig, struct kernel_siginfo *info, struct pid *pgrp
 	ret = __kill_pgrp_info(sig, info, pgrp);
 	read_unlock(&tasklist_lock);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kill_pgrp(struct pid *pid, int sig, int priv)
 {
-<<<<<<< HEAD
-	int ret;
-
-	read_lock(&tasklist_lock);
-	ret = __kill_pgrp_info(sig, __si_special(priv), pid);
-	read_unlock(&tasklist_lock);
-
-	return ret;
-=======
 	return kill_pgrp_info(sig, __si_special(priv), pid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(kill_pgrp);
 
@@ -2746,16 +1937,7 @@ EXPORT_SYMBOL(kill_pid);
  */
 struct sigqueue *sigqueue_alloc(void)
 {
-<<<<<<< HEAD
-	struct sigqueue *q = __sigqueue_alloc(-1, current, GFP_KERNEL, 0);
-
-	if (q)
-		q->flags |= SIGQUEUE_PREALLOC;
-
-	return q;
-=======
 	return __sigqueue_alloc(-1, current, GFP_KERNEL, 0, SIGQUEUE_PREALLOC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sigqueue_free(struct sigqueue *q)
@@ -2783,26 +1965,17 @@ void sigqueue_free(struct sigqueue *q)
 		__sigqueue_free(q);
 }
 
-<<<<<<< HEAD
-int send_sigqueue(struct sigqueue *q, struct task_struct *t, int group)
-{
-	int sig = q->info.si_signo;
-	struct sigpending *pending;
-=======
 int send_sigqueue(struct sigqueue *q, struct pid *pid, enum pid_type type)
 {
 	int sig = q->info.si_signo;
 	struct sigpending *pending;
 	struct task_struct *t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int ret, result;
 
 	BUG_ON(!(q->flags & SIGQUEUE_PREALLOC));
 
 	ret = -1;
-<<<<<<< HEAD
-=======
 	rcu_read_lock();
 
 	/*
@@ -2821,7 +1994,6 @@ int send_sigqueue(struct sigqueue *q, struct pid *pid, enum pid_type type)
 		goto ret;
 	if (type != PIDTYPE_PID && same_thread_group(t, current))
 		t = current;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!likely(lock_task_sighand(t, &flags)))
 		goto ret;
 
@@ -2844,20 +2016,6 @@ int send_sigqueue(struct sigqueue *q, struct pid *pid, enum pid_type type)
 	q->info.si_overrun = 0;
 
 	signalfd_notify(t, sig);
-<<<<<<< HEAD
-	pending = group ? &t->signal->shared_pending : &t->pending;
-	list_add_tail(&q->list, &pending->list);
-	sigaddset(&pending->signal, sig);
-	complete_signal(sig, t, group);
-	result = TRACE_SIGNAL_DELIVERED;
-out:
-	trace_signal_generate(sig, &q->info, t, group, result);
-	unlock_task_sighand(t, &flags);
-ret:
-	return ret;
-}
-
-=======
 	pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
 	list_add_tail(&q->list, &pending->list);
 	sigaddset(&pending->signal, sig);
@@ -2881,7 +2039,6 @@ void do_notify_pidfd(struct task_struct *task)
 			poll_to_key(EPOLLIN | EPOLLRDNORM));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Let a parent know about the death of a child.
  * For a stopped/continued status change, use do_notify_parent_cldstop instead.
@@ -2891,20 +2048,6 @@ void do_notify_pidfd(struct task_struct *task)
  */
 bool do_notify_parent(struct task_struct *tsk, int sig)
 {
-<<<<<<< HEAD
-	struct siginfo info;
-	unsigned long flags;
-	struct sighand_struct *psig;
-	bool autoreap = false;
-
-	BUG_ON(sig == -1);
-
- 	/* do_notify_parent_cldstop should have been called instead.  */
- 	BUG_ON(task_is_stopped_or_traced(tsk));
-
-	BUG_ON(!tsk->ptrace &&
-	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
-=======
 	struct kernel_siginfo info;
 	unsigned long flags;
 	struct sighand_struct *psig;
@@ -2924,28 +2067,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
 	 */
 	if (thread_group_empty(tsk))
 		do_notify_pidfd(tsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sig != SIGCHLD) {
 		/*
 		 * This is only possible if parent == real_parent.
 		 * Check if it has changed security domain.
 		 */
-<<<<<<< HEAD
-		if (tsk->parent_exec_id != tsk->parent->self_exec_id)
-			sig = SIGCHLD;
-	}
-
-	info.si_signo = sig;
-	info.si_errno = 0;
-	/*
-	 * we are under tasklist_lock here so our parent is tied to
-	 * us and cannot exit and release its namespace.
-	 *
-	 * the only it can is to switch its nsproxy with sys_unshare,
-	 * bu uncharing pid namespaces is not allowed, so we'll always
-	 * see relevant namespace
-=======
 		if (tsk->parent_exec_id != READ_ONCE(tsk->parent->self_exec_id))
 			sig = SIGCHLD;
 	}
@@ -2959,22 +2086,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
 	 *
 	 * task_active_pid_ns will always return the same pid namespace
 	 * until a task passes through release_task.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * write_lock() currently calls preempt_disable() which is the
 	 * same as rcu_read_lock(), but according to Oleg, this is not
 	 * correct to rely on this
 	 */
 	rcu_read_lock();
-<<<<<<< HEAD
-	info.si_pid = task_pid_nr_ns(tsk, tsk->parent->nsproxy->pid_ns);
-	info.si_uid = map_cred_ns(__task_cred(tsk),
-			task_cred_xxx(tsk->parent, user_ns));
-	rcu_read_unlock();
-
-	info.si_utime = cputime_to_clock_t(tsk->utime + tsk->signal->utime);
-	info.si_stime = cputime_to_clock_t(tsk->stime + tsk->signal->stime);
-=======
 	info.si_pid = task_pid_nr_ns(tsk, task_active_pid_ns(tsk->parent));
 	info.si_uid = from_kuid_munged(task_cred_xxx(tsk->parent, user_ns),
 				       task_uid(tsk));
@@ -2983,7 +2100,6 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
 	task_cputime(tsk, &utime, &stime);
 	info.si_utime = nsec_to_clock_t(utime + tsk->signal->utime);
 	info.si_stime = nsec_to_clock_t(stime + tsk->signal->stime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info.si_status = tsk->exit_code & 0x7f;
 	if (tsk->exit_code & 0x80)
@@ -3019,17 +2135,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
 		if (psig->action[SIGCHLD-1].sa.sa_handler == SIG_IGN)
 			sig = 0;
 	}
-<<<<<<< HEAD
-	if (valid_signal(sig) && sig)
-		__group_send_sig_info(sig, &info, tsk->parent);
-=======
 	/*
 	 * Send with __send_signal as si_pid and si_uid are in the
 	 * parent's namespaces.
 	 */
 	if (valid_signal(sig) && sig)
 		__send_signal_locked(sig, &info, tsk->parent, PIDTYPE_TGID, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__wake_up_parent(tsk, tsk->parent);
 	spin_unlock_irqrestore(&psig->siglock, flags);
 
@@ -3052,18 +2163,11 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
 static void do_notify_parent_cldstop(struct task_struct *tsk,
 				     bool for_ptracer, int why)
 {
-<<<<<<< HEAD
-	struct siginfo info;
-	unsigned long flags;
-	struct task_struct *parent;
-	struct sighand_struct *sighand;
-=======
 	struct kernel_siginfo info;
 	unsigned long flags;
 	struct task_struct *parent;
 	struct sighand_struct *sighand;
 	u64 utime, stime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (for_ptracer) {
 		parent = tsk->parent;
@@ -3072,25 +2176,13 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
 		parent = tsk->real_parent;
 	}
 
-<<<<<<< HEAD
-=======
 	clear_siginfo(&info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.si_signo = SIGCHLD;
 	info.si_errno = 0;
 	/*
 	 * see comment in do_notify_parent() about the following 4 lines
 	 */
 	rcu_read_lock();
-<<<<<<< HEAD
-	info.si_pid = task_pid_nr_ns(tsk, parent->nsproxy->pid_ns);
-	info.si_uid = map_cred_ns(__task_cred(tsk),
-			task_cred_xxx(parent, user_ns));
-	rcu_read_unlock();
-
-	info.si_utime = cputime_to_clock_t(tsk->utime);
-	info.si_stime = cputime_to_clock_t(tsk->stime);
-=======
 	info.si_pid = task_pid_nr_ns(tsk, task_active_pid_ns(parent));
 	info.si_uid = from_kuid_munged(task_cred_xxx(parent, user_ns), task_uid(tsk));
 	rcu_read_unlock();
@@ -3098,7 +2190,6 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
 	task_cputime(tsk, &utime, &stime);
 	info.si_utime = nsec_to_clock_t(utime);
 	info.si_stime = nsec_to_clock_t(stime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  	info.si_code = why;
  	switch (why) {
@@ -3119,11 +2210,7 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
 	spin_lock_irqsave(&sighand->siglock, flags);
 	if (sighand->action[SIGCHLD-1].sa.sa_handler != SIG_IGN &&
 	    !(sighand->action[SIGCHLD-1].sa.sa_flags & SA_NOCLDSTOP))
-<<<<<<< HEAD
-		__group_send_sig_info(SIGCHLD, &info, parent);
-=======
 		send_signal_locked(SIGCHLD, &info, parent, PIDTYPE_TGID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Even if SIGCHLD is not generated, we must wake up wait4 calls.
 	 */
@@ -3131,43 +2218,6 @@ static void do_notify_parent_cldstop(struct task_struct *tsk,
 	spin_unlock_irqrestore(&sighand->siglock, flags);
 }
 
-<<<<<<< HEAD
-static inline int may_ptrace_stop(void)
-{
-	if (!likely(current->ptrace))
-		return 0;
-	/*
-	 * Are we in the middle of do_coredump?
-	 * If so and our tracer is also part of the coredump stopping
-	 * is a deadlock situation, and pointless because our tracer
-	 * is dead so don't allow us to stop.
-	 * If SIGKILL was already sent before the caller unlocked
-	 * ->siglock we must see ->core_state != NULL. Otherwise it
-	 * is safe to enter schedule().
-	 *
-	 * This is almost outdated, a task with the pending SIGKILL can't
-	 * block in TASK_TRACED. But PTRACE_EVENT_EXIT can be reported
-	 * after SIGKILL was already dequeued.
-	 */
-	if (unlikely(current->mm->core_state) &&
-	    unlikely(current->mm == current->parent->mm))
-		return 0;
-
-	return 1;
-}
-
-/*
- * Return non-zero if there is a SIGKILL that should be waking us up.
- * Called with the siglock held.
- */
-static int sigkill_pending(struct task_struct *tsk)
-{
-	return	sigismember(&tsk->pending.signal, SIGKILL) ||
-		sigismember(&tsk->signal->shared_pending.signal, SIGKILL);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This must be called with current->sighand->siglock held.
  *
@@ -3176,29 +2226,18 @@ static int sigkill_pending(struct task_struct *tsk)
  * That makes it a way to test a stopped process for
  * being ptrace-stopped vs being job-control-stopped.
  *
-<<<<<<< HEAD
- * If we actually decide not to stop at all because the tracer
- * is gone, we keep current->exit_code unless clear_code.
- */
-static void ptrace_stop(int exit_code, int why, int clear_code, siginfo_t *info)
-=======
  * Returns the signal the ptracer requested the code resume
  * with.  If the code did not stop because the tracer is gone,
  * the stop signal remains unchanged unless clear_code.
  */
 static int ptrace_stop(int exit_code, int why, unsigned long message,
 		       kernel_siginfo_t *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__releases(&current->sighand->siglock)
 	__acquires(&current->sighand->siglock)
 {
 	bool gstop_done = false;
 
-<<<<<<< HEAD
-	if (arch_ptrace_stop_needed(exit_code, info)) {
-=======
 	if (arch_ptrace_stop_needed()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The arch code has something special to do before a
 		 * ptrace stop.  This is allowed to block, e.g. for faults
@@ -3206,20 +2245,6 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 		 * calling arch_ptrace_stop, so we must release it now.
 		 * To preserve proper semantics, we must do this before
 		 * any signal bookkeeping like checking group_stop_count.
-<<<<<<< HEAD
-		 * Meanwhile, a SIGKILL could come in before we retake the
-		 * siglock.  That must prevent us from sleeping in TASK_TRACED.
-		 * So after regaining the lock, we must check for SIGKILL.
-		 */
-		spin_unlock_irq(&current->sighand->siglock);
-		arch_ptrace_stop(exit_code, info);
-		spin_lock_irq(&current->sighand->siglock);
-		if (sigkill_pending(current))
-			return;
-	}
-
-	/*
-=======
 		 */
 		spin_unlock_irq(&current->sighand->siglock);
 		arch_ptrace_stop();
@@ -3239,17 +2264,11 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 	current->jobctl |= JOBCTL_TRACED;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We're committing to trapping.  TRACED should be visible before
 	 * TRAPPING is cleared; otherwise, the tracer might fail do_wait().
 	 * Also, transition to TRACED and updates to ->jobctl should be
 	 * atomic with respect to siglock and should be done after the arch
 	 * hook as siglock is released and regrabbed across it.
-<<<<<<< HEAD
-	 */
-	set_current_state(TASK_TRACED);
-
-=======
 	 *
 	 *     TRACER				    TRACEE
 	 *
@@ -3265,7 +2284,6 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 	smp_wmb();
 
 	current->ptrace_message = message;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current->last_siginfo = info;
 	current->exit_code = exit_code;
 
@@ -3289,60 +2307,6 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 
 	spin_unlock_irq(&current->sighand->siglock);
 	read_lock(&tasklist_lock);
-<<<<<<< HEAD
-	if (may_ptrace_stop()) {
-		/*
-		 * Notify parents of the stop.
-		 *
-		 * While ptraced, there are two parents - the ptracer and
-		 * the real_parent of the group_leader.  The ptracer should
-		 * know about every stop while the real parent is only
-		 * interested in the completion of group stop.  The states
-		 * for the two don't interact with each other.  Notify
-		 * separately unless they're gonna be duplicates.
-		 */
-		do_notify_parent_cldstop(current, true, why);
-		if (gstop_done && ptrace_reparented(current))
-			do_notify_parent_cldstop(current, false, why);
-
-		/*
-		 * Don't want to allow preemption here, because
-		 * sys_ptrace() needs this task to be inactive.
-		 *
-		 * XXX: implement read_unlock_no_resched().
-		 */
-		preempt_disable();
-		read_unlock(&tasklist_lock);
-		preempt_enable_no_resched();
-		schedule();
-	} else {
-		/*
-		 * By the time we got the lock, our tracer went away.
-		 * Don't drop the lock yet, another tracer may come.
-		 *
-		 * If @gstop_done, the ptracer went away between group stop
-		 * completion and here.  During detach, it would have set
-		 * JOBCTL_STOP_PENDING on us and we'll re-enter
-		 * TASK_STOPPED in do_signal_stop() on return, so notifying
-		 * the real parent of the group stop completion is enough.
-		 */
-		if (gstop_done)
-			do_notify_parent_cldstop(current, false, why);
-
-		/* tasklist protects us from ptrace_freeze_traced() */
-		__set_current_state(TASK_RUNNING);
-		if (clear_code)
-			current->exit_code = 0;
-		read_unlock(&tasklist_lock);
-	}
-
-	/*
-	 * While in TASK_TRACED, we were considered "frozen enough".
-	 * Now that we woke up, it's crucial if we're supposed to be
-	 * frozen that we freeze now before running anything substantial.
-	 */
-	try_to_freeze();
-=======
 	/*
 	 * Notify parents of the stop.
 	 *
@@ -3393,7 +2357,6 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 		preempt_enable_no_resched();
 	schedule();
 	cgroup_leave_frozen(true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We are back.  Now reacquire the siglock before touching
@@ -3401,12 +2364,6 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 	 * any signal-sending on another CPU that wants to examine it.
 	 */
 	spin_lock_irq(&current->sighand->siglock);
-<<<<<<< HEAD
-	current->last_siginfo = NULL;
-
-	/* LISTENING can be set only during STOP traps, clear it */
-	current->jobctl &= ~JOBCTL_LISTENING;
-=======
 	exit_code = current->exit_code;
 	current->last_siginfo = NULL;
 	current->ptrace_message = 0;
@@ -3414,7 +2371,6 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 
 	/* LISTENING can be set only during STOP traps, clear it */
 	current->jobctl &= ~(JOBCTL_LISTENING | JOBCTL_PTRACE_FROZEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Queued signals ignored us while we were stopped for tracing.
@@ -3422,31 +2378,6 @@ static int ptrace_stop(int exit_code, int why, unsigned long message,
 	 * This sets TIF_SIGPENDING, but never clears it.
 	 */
 	recalc_sigpending_tsk(current);
-<<<<<<< HEAD
-}
-
-static void ptrace_do_notify(int signr, int exit_code, int why)
-{
-	siginfo_t info;
-
-	memset(&info, 0, sizeof info);
-	info.si_signo = signr;
-	info.si_code = exit_code;
-	info.si_pid = task_pid_vnr(current);
-	info.si_uid = current_uid();
-
-	/* Let the debugger run.  */
-	ptrace_stop(exit_code, why, 1, &info);
-}
-
-void ptrace_notify(int exit_code)
-{
-	BUG_ON((exit_code & (0x7f | ~0xffff)) != SIGTRAP);
-
-	spin_lock_irq(&current->sighand->siglock);
-	ptrace_do_notify(SIGTRAP, exit_code, CLD_TRAPPED);
-	spin_unlock_irq(&current->sighand->siglock);
-=======
 	return exit_code;
 }
 
@@ -3476,7 +2407,6 @@ int ptrace_notify(int exit_code, unsigned long message)
 	signr = ptrace_do_notify(SIGTRAP, exit_code, CLD_TRAPPED, message);
 	spin_unlock_irq(&current->sighand->siglock);
 	return signr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3507,23 +2437,15 @@ static bool do_signal_stop(int signr)
 	struct signal_struct *sig = current->signal;
 
 	if (!(current->jobctl & JOBCTL_STOP_PENDING)) {
-<<<<<<< HEAD
-		unsigned int gstop = JOBCTL_STOP_PENDING | JOBCTL_STOP_CONSUME;
-=======
 		unsigned long gstop = JOBCTL_STOP_PENDING | JOBCTL_STOP_CONSUME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct task_struct *t;
 
 		/* signr will be recorded in task->jobctl for retries */
 		WARN_ON_ONCE(signr & ~JOBCTL_STOP_SIGMASK);
 
 		if (!likely(current->jobctl & JOBCTL_STOP_DEQUEUED) ||
-<<<<<<< HEAD
-		    unlikely(signal_group_exit(sig)))
-=======
 		    unlikely(sig->flags & SIGNAL_GROUP_EXIT) ||
 		    unlikely(sig->group_exec_task))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 		/*
 		 * There is no group stop already in progress.  We must
@@ -3548,19 +2470,10 @@ static bool do_signal_stop(int signr)
 			sig->group_exit_code = signr;
 
 		sig->group_stop_count = 0;
-<<<<<<< HEAD
-
-		if (task_set_jobctl_pending(current, signr | gstop))
-			sig->group_stop_count++;
-
-		for (t = next_thread(current); t != current;
-		     t = next_thread(t)) {
-=======
 		if (task_set_jobctl_pending(current, signr | gstop))
 			sig->group_stop_count++;
 
 		for_other_threads(current, t) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Setting state to TASK_STOPPED for a group
 			 * stop is always done with the siglock held,
@@ -3588,12 +2501,8 @@ static bool do_signal_stop(int signr)
 		if (task_participate_group_stop(current))
 			notify = CLD_STOPPED;
 
-<<<<<<< HEAD
-		__set_current_state(TASK_STOPPED);
-=======
 		current->jobctl |= JOBCTL_STOPPED;
 		set_special_state(TASK_STOPPED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irq(&current->sighand->siglock);
 
 		/*
@@ -3612,10 +2521,7 @@ static bool do_signal_stop(int signr)
 		}
 
 		/* Now we don't run again until woken by SIGCONT or SIGKILL */
-<<<<<<< HEAD
-=======
 		cgroup_enter_frozen();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule();
 		return true;
 	} else {
@@ -3654,20 +2560,6 @@ static void do_jobctl_trap(void)
 			signr = SIGTRAP;
 		WARN_ON_ONCE(!signr);
 		ptrace_do_notify(signr, signr | (PTRACE_EVENT_STOP << 8),
-<<<<<<< HEAD
-				 CLD_STOPPED);
-	} else {
-		WARN_ON_ONCE(!signr);
-		ptrace_stop(signr, CLD_STOPPED, 0, NULL);
-		current->exit_code = 0;
-	}
-}
-
-static int ptrace_signal(int signr, siginfo_t *info,
-			 struct pt_regs *regs, void *cookie)
-{
-	ptrace_signal_deliver(regs, cookie);
-=======
 				 CLD_STOPPED, 0);
 	} else {
 		WARN_ON_ONCE(!signr);
@@ -3714,7 +2606,6 @@ static void do_freezer_trap(void)
 
 static int ptrace_signal(int signr, kernel_siginfo_t *info, enum pid_type type)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We do not check sig_kernel_stop(signr) but set this marker
 	 * unconditionally because we do not know whether debugger will
@@ -3725,24 +2616,12 @@ static int ptrace_signal(int signr, kernel_siginfo_t *info, enum pid_type type)
 	 * comment in dequeue_signal().
 	 */
 	current->jobctl |= JOBCTL_STOP_DEQUEUED;
-<<<<<<< HEAD
-	ptrace_stop(signr, CLD_TRAPPED, 0, info);
-
-	/* We're back.  Did the debugger cancel the sig?  */
-	signr = current->exit_code;
-	if (signr == 0)
-		return signr;
-
-	current->exit_code = 0;
-
-=======
 	signr = ptrace_stop(signr, CLD_TRAPPED, 0, info);
 
 	/* We're back.  Did the debugger cancel the sig?  */
 	if (signr == 0)
 		return signr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Update the siginfo structure if the signal has
 	 * changed.  If the debugger wanted something
@@ -3750,44 +2629,27 @@ static int ptrace_signal(int signr, kernel_siginfo_t *info, enum pid_type type)
 	 * have updated *info via PTRACE_SETSIGINFO.
 	 */
 	if (signr != info->si_signo) {
-<<<<<<< HEAD
-=======
 		clear_siginfo(info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->si_signo = signr;
 		info->si_errno = 0;
 		info->si_code = SI_USER;
 		rcu_read_lock();
 		info->si_pid = task_pid_vnr(current->parent);
-<<<<<<< HEAD
-		info->si_uid = map_cred_ns(__task_cred(current->parent),
-				current_user_ns());
-=======
 		info->si_uid = from_kuid_munged(current_user_ns(),
 						task_uid(current->parent));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_unlock();
 	}
 
 	/* If the (new) signal is now blocked, requeue it.  */
-<<<<<<< HEAD
-	if (sigismember(&current->blocked, signr)) {
-		specific_send_sig_info(signr, info, current);
-=======
 	if (sigismember(&current->blocked, signr) ||
 	    fatal_signal_pending(current)) {
 		send_signal_locked(signr, info, current, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		signr = 0;
 	}
 
 	return signr;
 }
 
-<<<<<<< HEAD
-int get_signal_to_deliver(siginfo_t *info, struct k_sigaction *return_ka,
-			  struct pt_regs *regs, void *cookie)
-=======
 static void hide_si_addr_tag_bits(struct ksignal *ksig)
 {
 	switch (siginfo_layout(ksig->sig, ksig->info.si_code)) {
@@ -3811,24 +2673,11 @@ static void hide_si_addr_tag_bits(struct ksignal *ksig)
 }
 
 bool get_signal(struct ksignal *ksig)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sighand_struct *sighand = current->sighand;
 	struct signal_struct *signal = current->signal;
 	int signr;
 
-<<<<<<< HEAD
-relock:
-	/*
-	 * We'll jump back here after any time we were stopped in TASK_STOPPED.
-	 * While in TASK_STOPPED, we were considered "frozen enough".
-	 * Now that we woke up, it's crucial if we're supposed to be
-	 * frozen that we freeze now before running anything substantial.
-	 */
-	try_to_freeze();
-
-	spin_lock_irq(&sighand->siglock);
-=======
 	clear_notify_signal();
 	if (unlikely(task_work_pending(current)))
 		task_work_run();
@@ -3849,7 +2698,6 @@ relock:
 relock:
 	spin_lock_irq(&sighand->siglock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Every stopped thread goes here after wakeup. Check to see if
 	 * we should notify the parent, prepare_signal(SIGCONT) encodes
@@ -3888,8 +2736,6 @@ relock:
 
 	for (;;) {
 		struct k_sigaction *ka;
-<<<<<<< HEAD
-=======
 		enum pid_type type;
 
 		/* Has this task already been marked for death? */
@@ -3906,21 +2752,11 @@ relock:
 			 */
 			goto fatal;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (unlikely(current->jobctl & JOBCTL_STOP_PENDING) &&
 		    do_signal_stop(0))
 			goto relock;
 
-<<<<<<< HEAD
-		if (unlikely(current->jobctl & JOBCTL_TRAP_MASK)) {
-			do_jobctl_trap();
-			spin_unlock_irq(&sighand->siglock);
-			goto relock;
-		}
-
-		signr = dequeue_signal(current, &current->blocked, info);
-=======
 		if (unlikely(current->jobctl &
 			     (JOBCTL_TRAP_MASK | JOBCTL_TRAP_FREEZE))) {
 			if (current->jobctl & JOBCTL_TRAP_MASK) {
@@ -3953,20 +2789,13 @@ relock:
 		if (!signr)
 			signr = dequeue_signal(current, &current->blocked,
 					       &ksig->info, &type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!signr)
 			break; /* will return 0 */
 
-<<<<<<< HEAD
-		if (unlikely(current->ptrace) && signr != SIGKILL) {
-			signr = ptrace_signal(signr, info,
-					      regs, cookie);
-=======
 		if (unlikely(current->ptrace) && (signr != SIGKILL) &&
 		    !(sighand->action[signr -1].sa.sa_flags & SA_IMMUTABLE)) {
 			signr = ptrace_signal(signr, &ksig->info, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!signr)
 				continue;
 		}
@@ -3974,21 +2803,13 @@ relock:
 		ka = &sighand->action[signr-1];
 
 		/* Trace actually delivered signals. */
-<<<<<<< HEAD
-		trace_signal_deliver(signr, info, ka);
-=======
 		trace_signal_deliver(signr, &ksig->info, ka);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ka->sa.sa_handler == SIG_IGN) /* Do nothing.  */
 			continue;
 		if (ka->sa.sa_handler != SIG_DFL) {
 			/* Run the handler.  */
-<<<<<<< HEAD
-			*return_ka = *ka;
-=======
 			ksig->ka = *ka;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (ka->sa.sa_flags & SA_ONESHOT)
 				ka->sa.sa_handler = SIG_DFL;
@@ -4038,11 +2859,7 @@ relock:
 				spin_lock_irq(&sighand->siglock);
 			}
 
-<<<<<<< HEAD
-			if (likely(do_signal_stop(info->si_signo))) {
-=======
 			if (likely(do_signal_stop(signr))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* It released the siglock.  */
 				goto relock;
 			}
@@ -4054,14 +2871,10 @@ relock:
 			continue;
 		}
 
-<<<<<<< HEAD
-		spin_unlock_irq(&sighand->siglock);
-=======
 	fatal:
 		spin_unlock_irq(&sighand->siglock);
 		if (unlikely(cgroup_task_frozen(current)))
 			cgroup_leave_frozen(true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Anything else is fatal, maybe with a core dump.
@@ -4070,12 +2883,8 @@ relock:
 
 		if (sig_kernel_coredump(signr)) {
 			if (print_fatal_signals)
-<<<<<<< HEAD
-				print_fatal_signal(regs, info->si_signo);
-=======
 				print_fatal_signal(signr);
 			proc_coredump_connector(current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If it was able to dump core, this kills all
 			 * other threads in the group and synchronizes with
@@ -4084,40 +2893,6 @@ relock:
 			 * first and our do_group_exit call below will use
 			 * that value and ignore the one we pass it.
 			 */
-<<<<<<< HEAD
-			do_coredump(info->si_signo, info->si_signo, regs);
-		}
-
-		/*
-		 * Death signals, no core dump.
-		 */
-		do_group_exit(info->si_signo);
-		/* NOTREACHED */
-	}
-	spin_unlock_irq(&sighand->siglock);
-	return signr;
-}
-
-/**
- * block_sigmask - add @ka's signal mask to current->blocked
- * @ka: action for @signr
- * @signr: signal that has been successfully delivered
- *
- * This function should be called when a signal has succesfully been
- * delivered. It adds the mask of signals for @ka to current->blocked
- * so that they are blocked during the execution of the signal
- * handler. In addition, @signr will be blocked unless %SA_NODEFER is
- * set in @ka->sa.sa_flags.
- */
-void block_sigmask(struct k_sigaction *ka, int signr)
-{
-	sigset_t blocked;
-
-	sigorsets(&blocked, &current->blocked, &ka->sa.sa_mask);
-	if (!(ka->sa.sa_flags & SA_NODEFER))
-		sigaddset(&blocked, signr);
-	set_current_blocked(&blocked);
-=======
 			do_coredump(&ksig->info);
 		}
 
@@ -4182,7 +2957,6 @@ void signal_setup_done(int failed, struct ksignal *ksig, int stepping)
 		force_sigsegv(ksig->sig);
 	else
 		signal_delivered(ksig, stepping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4199,12 +2973,7 @@ static void retarget_shared_pending(struct task_struct *tsk, sigset_t *which)
 	if (sigisemptyset(&retarget))
 		return;
 
-<<<<<<< HEAD
-	t = tsk;
-	while_each_thread(tsk, t) {
-=======
 	for_other_threads(tsk, t) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (t->flags & PF_EXITING)
 			continue;
 
@@ -4213,11 +2982,7 @@ static void retarget_shared_pending(struct task_struct *tsk, sigset_t *which)
 		/* Remove the signals this thread can handle. */
 		sigandsets(&retarget, &retarget, &t->blocked);
 
-<<<<<<< HEAD
-		if (!signal_pending(t))
-=======
 		if (!task_sigpending(t))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			signal_wake_up(t, 0);
 
 		if (sigisemptyset(&retarget))
@@ -4234,20 +2999,12 @@ void exit_signals(struct task_struct *tsk)
 	 * @tsk is about to have PF_EXITING set - lock out users which
 	 * expect stable threadgroup.
 	 */
-<<<<<<< HEAD
-	threadgroup_change_begin(tsk);
-
-	if (thread_group_empty(tsk) || signal_group_exit(tsk->signal)) {
-		tsk->flags |= PF_EXITING;
-		threadgroup_change_end(tsk);
-=======
 	cgroup_threadgroup_change_begin(tsk);
 
 	if (thread_group_empty(tsk) || (tsk->signal->flags & SIGNAL_GROUP_EXIT)) {
 		sched_mm_cid_exit_signals(tsk);
 		tsk->flags |= PF_EXITING;
 		cgroup_threadgroup_change_end(tsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -4256,20 +3013,12 @@ void exit_signals(struct task_struct *tsk)
 	 * From now this task is not visible for group-wide signals,
 	 * see wants_signal(), do_signal_stop().
 	 */
-<<<<<<< HEAD
-	tsk->flags |= PF_EXITING;
-
-	threadgroup_change_end(tsk);
-
-	if (!signal_pending(tsk))
-=======
 	sched_mm_cid_exit_signals(tsk);
 	tsk->flags |= PF_EXITING;
 
 	cgroup_threadgroup_change_end(tsk);
 
 	if (!task_sigpending(tsk))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	unblocked = tsk->blocked;
@@ -4293,20 +3042,6 @@ out:
 	}
 }
 
-<<<<<<< HEAD
-EXPORT_SYMBOL(recalc_sigpending);
-EXPORT_SYMBOL_GPL(dequeue_signal);
-EXPORT_SYMBOL(flush_signals);
-EXPORT_SYMBOL(force_sig);
-EXPORT_SYMBOL(send_sig);
-EXPORT_SYMBOL(send_sig_info);
-EXPORT_SYMBOL(sigprocmask);
-EXPORT_SYMBOL(block_all_signals);
-EXPORT_SYMBOL(unblock_all_signals);
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * System call entry points.
  */
@@ -4316,11 +3051,7 @@ EXPORT_SYMBOL(unblock_all_signals);
  */
 SYSCALL_DEFINE0(restart_syscall)
 {
-<<<<<<< HEAD
-	struct restart_block *restart = &current_thread_info()->restart_block;
-=======
 	struct restart_block *restart = &current->restart_block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return restart->fn(restart);
 }
 
@@ -4331,11 +3062,7 @@ long do_no_restart_syscall(struct restart_block *param)
 
 static void __set_task_blocked(struct task_struct *tsk, const sigset_t *newset)
 {
-<<<<<<< HEAD
-	if (signal_pending(tsk) && !thread_group_empty(tsk)) {
-=======
 	if (task_sigpending(tsk) && !thread_group_empty(tsk)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sigset_t newblocked;
 		/* A set of now blocked but previously unblocked signals. */
 		sigandnsets(&newblocked, newset, &current->blocked);
@@ -4352,12 +3079,6 @@ static void __set_task_blocked(struct task_struct *tsk, const sigset_t *newset)
  * It is wrong to change ->blocked directly, this helper should be used
  * to ensure the process can't miss a shared signal we are going to block.
  */
-<<<<<<< HEAD
-void set_current_blocked(const sigset_t *newset)
-{
-	struct task_struct *tsk = current;
-
-=======
 void set_current_blocked(sigset_t *newset)
 {
 	sigdelsetmask(newset, sigmask(SIGKILL) | sigmask(SIGSTOP));
@@ -4375,7 +3096,6 @@ void __set_current_blocked(const sigset_t *newset)
 	if (sigequalsets(&tsk->blocked, newset))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&tsk->sighand->siglock);
 	__set_task_blocked(tsk, newset);
 	spin_unlock_irq(&tsk->sighand->siglock);
@@ -4412,11 +3132,6 @@ int sigprocmask(int how, sigset_t *set, sigset_t *oldset)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	set_current_blocked(&newset);
-	return 0;
-}
-=======
 	__set_current_blocked(&newset);
 	return 0;
 }
@@ -4469,7 +3184,6 @@ int set_compat_user_sigmask(const compat_sigset_t __user *umask,
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *  sys_rt_sigprocmask - change the list of currently blocked signals
@@ -4508,18 +3222,6 @@ SYSCALL_DEFINE4(rt_sigprocmask, int, how, sigset_t __user *, nset,
 	return 0;
 }
 
-<<<<<<< HEAD
-long do_sigpending(void __user *set, unsigned long sigsetsize)
-{
-	long error = -EINVAL;
-	sigset_t pending;
-
-	if (sigsetsize > sizeof(sigset_t))
-		goto out;
-
-	spin_lock_irq(&current->sighand->siglock);
-	sigorsets(&pending, &current->pending.signal,
-=======
 #ifdef CONFIG_COMPAT
 COMPAT_SYSCALL_DEFINE4(rt_sigprocmask, int, how, compat_sigset_t __user *, nset,
 		compat_sigset_t __user *, oset, compat_size_t, sigsetsize)
@@ -4549,118 +3251,16 @@ static void do_sigpending(sigset_t *set)
 {
 	spin_lock_irq(&current->sighand->siglock);
 	sigorsets(set, &current->pending.signal,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  &current->signal->shared_pending.signal);
 	spin_unlock_irq(&current->sighand->siglock);
 
 	/* Outside the lock because only this thread touches it.  */
-<<<<<<< HEAD
-	sigandsets(&pending, &current->blocked, &pending);
-
-	error = -EFAULT;
-	if (!copy_to_user(set, &pending, sigsetsize))
-		error = 0;
-
-out:
-	return error;
-=======
 	sigandsets(set, &current->blocked, set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *  sys_rt_sigpending - examine a pending signal that has been raised
  *			while blocked
-<<<<<<< HEAD
- *  @set: stores pending signals
- *  @sigsetsize: size of sigset_t type or larger
- */
-SYSCALL_DEFINE2(rt_sigpending, sigset_t __user *, set, size_t, sigsetsize)
-{
-	return do_sigpending(set, sigsetsize);
-}
-
-#ifndef HAVE_ARCH_COPY_SIGINFO_TO_USER
-
-int copy_siginfo_to_user(siginfo_t __user *to, siginfo_t *from)
-{
-	int err;
-
-	if (!access_ok (VERIFY_WRITE, to, sizeof(siginfo_t)))
-		return -EFAULT;
-	if (from->si_code < 0)
-		return __copy_to_user(to, from, sizeof(siginfo_t))
-			? -EFAULT : 0;
-	/*
-	 * If you change siginfo_t structure, please be sure
-	 * this code is fixed accordingly.
-	 * Please remember to update the signalfd_copyinfo() function
-	 * inside fs/signalfd.c too, in case siginfo_t changes.
-	 * It should never copy any pad contained in the structure
-	 * to avoid security leaks, but must copy the generic
-	 * 3 ints plus the relevant union member.
-	 */
-	err = __put_user(from->si_signo, &to->si_signo);
-	err |= __put_user(from->si_errno, &to->si_errno);
-	err |= __put_user((short)from->si_code, &to->si_code);
-	switch (from->si_code & __SI_MASK) {
-	case __SI_KILL:
-		err |= __put_user(from->si_pid, &to->si_pid);
-		err |= __put_user(from->si_uid, &to->si_uid);
-		break;
-	case __SI_TIMER:
-		 err |= __put_user(from->si_tid, &to->si_tid);
-		 err |= __put_user(from->si_overrun, &to->si_overrun);
-		 err |= __put_user(from->si_ptr, &to->si_ptr);
-		break;
-	case __SI_POLL:
-		err |= __put_user(from->si_band, &to->si_band);
-		err |= __put_user(from->si_fd, &to->si_fd);
-		break;
-	case __SI_FAULT:
-		err |= __put_user(from->si_addr, &to->si_addr);
-#ifdef __ARCH_SI_TRAPNO
-		err |= __put_user(from->si_trapno, &to->si_trapno);
-#endif
-#ifdef BUS_MCEERR_AO
-		/*
-		 * Other callers might not initialize the si_lsb field,
-		 * so check explicitly for the right codes here.
-		 */
-		if (from->si_code == BUS_MCEERR_AR || from->si_code == BUS_MCEERR_AO)
-			err |= __put_user(from->si_addr_lsb, &to->si_addr_lsb);
-#endif
-		break;
-	case __SI_CHLD:
-		err |= __put_user(from->si_pid, &to->si_pid);
-		err |= __put_user(from->si_uid, &to->si_uid);
-		err |= __put_user(from->si_status, &to->si_status);
-		err |= __put_user(from->si_utime, &to->si_utime);
-		err |= __put_user(from->si_stime, &to->si_stime);
-		break;
-	case __SI_RT: /* This is not generated by the kernel as of now. */
-	case __SI_MESGQ: /* But this is */
-		err |= __put_user(from->si_pid, &to->si_pid);
-		err |= __put_user(from->si_uid, &to->si_uid);
-		err |= __put_user(from->si_ptr, &to->si_ptr);
-		break;
-#ifdef __ARCH_SIGSYS
-	case __SI_SYS:
-		err |= __put_user(from->si_call_addr, &to->si_call_addr);
-		err |= __put_user(from->si_syscall, &to->si_syscall);
-		err |= __put_user(from->si_arch, &to->si_arch);
-		break;
-#endif
-	default: /* this is just in case for now ... */
-		err |= __put_user(from->si_pid, &to->si_pid);
-		err |= __put_user(from->si_uid, &to->si_uid);
-		break;
-	}
-	return err;
-}
-
-#endif
-=======
  *  @uset: stores pending signals
  *  @sigsetsize: size of sigset_t type or larger
  */
@@ -5012,7 +3612,6 @@ int copy_siginfo_from_user32(struct kernel_siginfo *to,
 	return post_copy_siginfo_from_user32(to, &from);
 }
 #endif /* CONFIG_COMPAT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *  do_sigtimedwait - wait for queued signals specified in @which
@@ -5020,26 +3619,6 @@ int copy_siginfo_from_user32(struct kernel_siginfo *to,
  *  @info: if non-null, the signal's siginfo is returned here
  *  @ts: upper bound on process time suspension
  */
-<<<<<<< HEAD
-int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
-			const struct timespec *ts)
-{
-	struct task_struct *tsk = current;
-	long timeout = MAX_SCHEDULE_TIMEOUT;
-	sigset_t mask = *which;
-	int sig;
-
-	if (ts) {
-		if (!timespec_valid(ts))
-			return -EINVAL;
-		timeout = timespec_to_jiffies(ts);
-		/*
-		 * We can be close to the next tick, add another one
-		 * to ensure we will wait at least the time asked for.
-		 */
-		if (ts->tv_sec || ts->tv_nsec)
-			timeout++;
-=======
 static int do_sigtimedwait(const sigset_t *which, kernel_siginfo_t *info,
 		    const struct timespec64 *ts)
 {
@@ -5054,7 +3633,6 @@ static int do_sigtimedwait(const sigset_t *which, kernel_siginfo_t *info,
 			return -EINVAL;
 		timeout = timespec64_to_ktime(*ts);
 		to = &timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -5064,11 +3642,7 @@ static int do_sigtimedwait(const sigset_t *which, kernel_siginfo_t *info,
 	signotset(&mask);
 
 	spin_lock_irq(&tsk->sighand->siglock);
-<<<<<<< HEAD
-	sig = dequeue_signal(tsk, &mask, info);
-=======
 	sig = dequeue_signal(tsk, &mask, info, &type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sig && timeout) {
 		/*
 		 * None ready, temporarily unblock those we're interested
@@ -5081,14 +3655,6 @@ static int do_sigtimedwait(const sigset_t *which, kernel_siginfo_t *info,
 		recalc_sigpending();
 		spin_unlock_irq(&tsk->sighand->siglock);
 
-<<<<<<< HEAD
-		timeout = schedule_timeout_interruptible(timeout);
-
-		spin_lock_irq(&tsk->sighand->siglock);
-		__set_task_blocked(tsk, &tsk->real_blocked);
-		siginitset(&tsk->real_blocked, 0);
-		sig = dequeue_signal(tsk, &mask, info);
-=======
 		__set_current_state(TASK_INTERRUPTIBLE|TASK_FREEZABLE);
 		ret = schedule_hrtimeout_range(to, tsk->timer_slack_ns,
 					       HRTIMER_MODE_REL);
@@ -5096,17 +3662,12 @@ static int do_sigtimedwait(const sigset_t *which, kernel_siginfo_t *info,
 		__set_task_blocked(tsk, &tsk->real_blocked);
 		sigemptyset(&tsk->real_blocked);
 		sig = dequeue_signal(tsk, &mask, info, &type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irq(&tsk->sighand->siglock);
 
 	if (sig)
 		return sig;
-<<<<<<< HEAD
-	return timeout ? -EINTR : -EAGAIN;
-=======
 	return ret ? -EINTR : -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -5118,14 +3679,6 @@ static int do_sigtimedwait(const sigset_t *which, kernel_siginfo_t *info,
  *  @sigsetsize: size of sigset_t type
  */
 SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
-<<<<<<< HEAD
-		siginfo_t __user *, uinfo, const struct timespec __user *, uts,
-		size_t, sigsetsize)
-{
-	sigset_t these;
-	struct timespec ts;
-	siginfo_t info;
-=======
 		siginfo_t __user *, uinfo,
 		const struct __kernel_timespec __user *, uts,
 		size_t, sigsetsize)
@@ -5133,7 +3686,6 @@ SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
 	sigset_t these;
 	struct timespec64 ts;
 	kernel_siginfo_t info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* XXX: Don't preclude handling different sized sigset_t's.  */
@@ -5144,11 +3696,7 @@ SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
 		return -EFAULT;
 
 	if (uts) {
-<<<<<<< HEAD
-		if (copy_from_user(&ts, uts, sizeof(ts)))
-=======
 		if (get_timespec64(&ts, uts))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 
@@ -5162,8 +3710,6 @@ SYSCALL_DEFINE4(rt_sigtimedwait, const sigset_t __user *, uthese,
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_COMPAT_32BIT_TIME
 SYSCALL_DEFINE4(rt_sigtimedwait_time32, const sigset_t __user *, uthese,
 		siginfo_t __user *, uinfo,
@@ -5272,7 +3818,6 @@ static void prepare_kill_siginfo(int sig, struct kernel_siginfo *info,
 	info->si_uid = from_kuid_munged(current_user_ns(), current_uid());
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  sys_kill - send a signal to a process
  *  @pid: the PID of the process
@@ -5280,27 +3825,13 @@ static void prepare_kill_siginfo(int sig, struct kernel_siginfo *info,
  */
 SYSCALL_DEFINE2(kill, pid_t, pid, int, sig)
 {
-<<<<<<< HEAD
-	struct siginfo info;
-
-	info.si_signo = sig;
-	info.si_errno = 0;
-	info.si_code = SI_USER;
-	info.si_pid = task_tgid_vnr(current);
-	info.si_uid = current_uid();
-=======
 	struct kernel_siginfo info;
 
 	prepare_kill_siginfo(sig, &info, PIDTYPE_TGID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return kill_something_info(sig, &info, pid);
 }
 
-<<<<<<< HEAD
-static int
-do_send_specific(pid_t tgid, pid_t pid, int sig, struct siginfo *info)
-=======
 /*
  * Verify that the signaler and signalee either are in the same pid namespace
  * or that the signaler's pid namespace is an ancestor of the signalee's pid
@@ -5447,7 +3978,6 @@ err:
 
 static int
 do_send_specific(pid_t tgid, pid_t pid, int sig, struct kernel_siginfo *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct task_struct *p;
 	int error = -ESRCH;
@@ -5461,11 +3991,7 @@ do_send_specific(pid_t tgid, pid_t pid, int sig, struct kernel_siginfo *info)
 		 * probe.  No signal is actually delivered.
 		 */
 		if (!error && sig) {
-<<<<<<< HEAD
-			error = do_send_sig_info(sig, info, p, false);
-=======
 			error = do_send_sig_info(sig, info, p, PIDTYPE_PID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If lock_task_sighand() failed we pretend the task
 			 * dies after receiving the signal. The window is tiny,
@@ -5482,19 +4008,9 @@ do_send_specific(pid_t tgid, pid_t pid, int sig, struct kernel_siginfo *info)
 
 static int do_tkill(pid_t tgid, pid_t pid, int sig)
 {
-<<<<<<< HEAD
-	struct siginfo info = {};
-
-	info.si_signo = sig;
-	info.si_errno = 0;
-	info.si_code = SI_TKILL;
-	info.si_pid = task_tgid_vnr(current);
-	info.si_uid = current_uid();
-=======
 	struct kernel_siginfo info;
 
 	prepare_kill_siginfo(sig, &info, PIDTYPE_PID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return do_send_specific(tgid, pid, sig, &info);
 }
@@ -5534,8 +4050,6 @@ SYSCALL_DEFINE2(tkill, pid_t, pid, int, sig)
 	return do_tkill(0, pid, sig);
 }
 
-<<<<<<< HEAD
-=======
 static int do_rt_sigqueueinfo(pid_t pid, int sig, kernel_siginfo_t *info)
 {
 	/* Not even root can pretend to send signals from the kernel.
@@ -5549,7 +4063,6 @@ static int do_rt_sigqueueinfo(pid_t pid, int sig, kernel_siginfo_t *info)
 	return kill_proc_info(sig, info, pid);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  sys_rt_sigqueueinfo - send signal information to a signal
  *  @pid: the PID of the thread
@@ -5559,29 +4072,6 @@ static int do_rt_sigqueueinfo(pid_t pid, int sig, kernel_siginfo_t *info)
 SYSCALL_DEFINE3(rt_sigqueueinfo, pid_t, pid, int, sig,
 		siginfo_t __user *, uinfo)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	if (copy_from_user(&info, uinfo, sizeof(siginfo_t)))
-		return -EFAULT;
-
-	/* Not even root can pretend to send signals from the kernel.
-	 * Nor can they impersonate a kill()/tgkill(), which adds source info.
-	 */
-	if ((info.si_code >= 0 || info.si_code == SI_TKILL) &&
-	    (task_pid_vnr(current) != pid)) {
-		/* We used to allow any < 0 si_code */
-		WARN_ON_ONCE(info.si_code < 0);
-		return -EPERM;
-	}
-	info.si_signo = sig;
-
-	/* POSIX.1b doesn't mention process groups.  */
-	return kill_proc_info(sig, &info, pid);
-}
-
-long do_rt_tgsigqueueinfo(pid_t tgid, pid_t pid, int sig, siginfo_t *info)
-=======
 	kernel_siginfo_t info;
 	int ret = __copy_siginfo_from_user(sig, &info, uinfo);
 	if (unlikely(ret))
@@ -5604,7 +4094,6 @@ COMPAT_SYSCALL_DEFINE3(rt_sigqueueinfo,
 #endif
 
 static int do_rt_tgsigqueueinfo(pid_t tgid, pid_t pid, int sig, kernel_siginfo_t *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* This is only valid for single tasks */
 	if (pid <= 0 || tgid <= 0)
@@ -5614,17 +4103,8 @@ static int do_rt_tgsigqueueinfo(pid_t tgid, pid_t pid, int sig, kernel_siginfo_t
 	 * Nor can they impersonate a kill()/tgkill(), which adds source info.
 	 */
 	if ((info->si_code >= 0 || info->si_code == SI_TKILL) &&
-<<<<<<< HEAD
-	    (task_pid_vnr(current) != pid)) {
-		/* We used to allow any < 0 si_code */
-		WARN_ON_ONCE(info->si_code < 0);
-		return -EPERM;
-	}
-	info->si_signo = sig;
-=======
 	    (task_pid_vnr(current) != pid))
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return do_send_specific(tgid, pid, sig, info);
 }
@@ -5632,19 +4112,6 @@ static int do_rt_tgsigqueueinfo(pid_t tgid, pid_t pid, int sig, kernel_siginfo_t
 SYSCALL_DEFINE4(rt_tgsigqueueinfo, pid_t, tgid, pid_t, pid, int, sig,
 		siginfo_t __user *, uinfo)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	if (copy_from_user(&info, uinfo, sizeof(siginfo_t)))
-		return -EFAULT;
-
-	return do_rt_tgsigqueueinfo(tgid, pid, sig, &info);
-}
-
-int do_sigaction(int sig, struct k_sigaction *act, struct k_sigaction *oact)
-{
-	struct task_struct *t = current;
-=======
 	kernel_siginfo_t info;
 	int ret = __copy_siginfo_from_user(sig, &info, uinfo);
 	if (unlikely(ret))
@@ -5696,21 +4163,12 @@ void __weak sigaction_compat_abi(struct k_sigaction *act,
 int do_sigaction(int sig, struct k_sigaction *act, struct k_sigaction *oact)
 {
 	struct task_struct *p = current, *t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct k_sigaction *k;
 	sigset_t mask;
 
 	if (!valid_signal(sig) || sig < 1 || (act && sig_kernel_only(sig)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	k = &t->sighand->action[sig-1];
-
-	spin_lock_irq(&current->sighand->siglock);
-	if (oact)
-		*oact = *k;
-
-=======
 	k = &p->sighand->action[sig-1];
 
 	spin_lock_irq(&p->sighand->siglock);
@@ -5739,7 +4197,6 @@ int do_sigaction(int sig, struct k_sigaction *act, struct k_sigaction *oact)
 
 	sigaction_compat_abi(act, oact);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (act) {
 		sigdelsetmask(&act->sa.sa_mask,
 			      sigmask(SIGKILL) | sigmask(SIGSTOP));
@@ -5755,89 +4212,6 @@ int do_sigaction(int sig, struct k_sigaction *act, struct k_sigaction *oact)
 		 *   (for example, SIGCHLD), shall cause the pending signal to
 		 *   be discarded, whether or not it is blocked"
 		 */
-<<<<<<< HEAD
-		if (sig_handler_ignored(sig_handler(t, sig), sig)) {
-			sigemptyset(&mask);
-			sigaddset(&mask, sig);
-			rm_from_queue_full(&mask, &t->signal->shared_pending);
-			do {
-				rm_from_queue_full(&mask, &t->pending);
-				t = next_thread(t);
-			} while (t != current);
-		}
-	}
-
-	spin_unlock_irq(&current->sighand->siglock);
-	return 0;
-}
-
-int 
-do_sigaltstack (const stack_t __user *uss, stack_t __user *uoss, unsigned long sp)
-{
-	stack_t oss;
-	int error;
-
-	oss.ss_sp = (void __user *) current->sas_ss_sp;
-	oss.ss_size = current->sas_ss_size;
-	oss.ss_flags = sas_ss_flags(sp);
-
-	if (uss) {
-		void __user *ss_sp;
-		size_t ss_size;
-		int ss_flags;
-
-		error = -EFAULT;
-		if (!access_ok(VERIFY_READ, uss, sizeof(*uss)))
-			goto out;
-		error = __get_user(ss_sp, &uss->ss_sp) |
-			__get_user(ss_flags, &uss->ss_flags) |
-			__get_user(ss_size, &uss->ss_size);
-		if (error)
-			goto out;
-
-		error = -EPERM;
-		if (on_sig_stack(sp))
-			goto out;
-
-		error = -EINVAL;
-		/*
-		 * Note - this code used to test ss_flags incorrectly:
-		 *  	  old code may have been written using ss_flags==0
-		 *	  to mean ss_flags==SS_ONSTACK (as this was the only
-		 *	  way that worked) - this fix preserves that older
-		 *	  mechanism.
-		 */
-		if (ss_flags != SS_DISABLE && ss_flags != SS_ONSTACK && ss_flags != 0)
-			goto out;
-
-		if (ss_flags == SS_DISABLE) {
-			ss_size = 0;
-			ss_sp = NULL;
-		} else {
-			error = -ENOMEM;
-			if (ss_size < MINSIGSTKSZ)
-				goto out;
-		}
-
-		current->sas_ss_sp = (unsigned long) ss_sp;
-		current->sas_ss_size = ss_size;
-	}
-
-	error = 0;
-	if (uoss) {
-		error = -EFAULT;
-		if (!access_ok(VERIFY_WRITE, uoss, sizeof(*uoss)))
-			goto out;
-		error = __put_user(oss.ss_sp, &uoss->ss_sp) |
-			__put_user(oss.ss_size, &uoss->ss_size) |
-			__put_user(oss.ss_flags, &uoss->ss_flags);
-	}
-
-out:
-	return error;
-}
-
-=======
 		if (sig_handler_ignored(sig_handler(p, sig), sig)) {
 			sigemptyset(&mask);
 			sigaddset(&mask, sig);
@@ -6016,20 +4390,10 @@ int __compat_save_altstack(compat_stack_t __user *uss, unsigned long sp)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __ARCH_WANT_SYS_SIGPENDING
 
 /**
  *  sys_sigpending - examine pending signals
-<<<<<<< HEAD
- *  @set: where mask of pending signal is returned
- */
-SYSCALL_DEFINE1(sigpending, old_sigset_t __user *, set)
-{
-	return do_sigpending(set, sizeof(*set));
-}
-
-=======
  *  @uset: where mask of pending signal is returned
  */
 SYSCALL_DEFINE1(sigpending, old_sigset_t __user *, uset)
@@ -6058,7 +4422,6 @@ COMPAT_SYSCALL_DEFINE1(sigpending, compat_old_sigset_t __user *, set32)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef __ARCH_WANT_SYS_SIGPROCMASK
@@ -6083,10 +4446,6 @@ SYSCALL_DEFINE3(sigprocmask, int, how, old_sigset_t __user *, nset,
 	if (nset) {
 		if (copy_from_user(&new_set, nset, sizeof(*nset)))
 			return -EFAULT;
-<<<<<<< HEAD
-		new_set &= ~(sigmask(SIGKILL) | sigmask(SIGSTOP));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		new_blocked = current->blocked;
 
@@ -6116,11 +4475,7 @@ SYSCALL_DEFINE3(sigprocmask, int, how, old_sigset_t __user *, nset,
 }
 #endif /* __ARCH_WANT_SYS_SIGPROCMASK */
 
-<<<<<<< HEAD
-#ifdef __ARCH_WANT_SYS_RT_SIGACTION
-=======
 #ifndef CONFIG_ODD_RT_SIGACTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  sys_rt_sigaction - alter an action taken by a process
  *  @sig: signal to be sent
@@ -6134,31 +4489,6 @@ SYSCALL_DEFINE4(rt_sigaction, int, sig,
 		size_t, sigsetsize)
 {
 	struct k_sigaction new_sa, old_sa;
-<<<<<<< HEAD
-	int ret = -EINVAL;
-
-	/* XXX: Don't preclude handling different sized sigset_t's.  */
-	if (sigsetsize != sizeof(sigset_t))
-		goto out;
-
-	if (act) {
-		if (copy_from_user(&new_sa.sa, act, sizeof(new_sa.sa)))
-			return -EFAULT;
-	}
-
-	ret = do_sigaction(sig, act ? &new_sa : NULL, oact ? &old_sa : NULL);
-
-	if (!ret && oact) {
-		if (copy_to_user(oact, &old_sa.sa, sizeof(old_sa.sa)))
-			return -EFAULT;
-	}
-out:
-	return ret;
-}
-#endif /* __ARCH_WANT_SYS_RT_SIGACTION */
-
-#ifdef __ARCH_WANT_SYS_SGETMASK
-=======
 	int ret;
 
 	/* XXX: Don't preclude handling different sized sigset_t's.  */
@@ -6303,7 +4633,6 @@ COMPAT_SYSCALL_DEFINE3(sigaction, int, sig,
 #endif
 
 #ifdef CONFIG_SGETMASK_SYSCALL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * For backwards compatibility.  Functionality superseded by sigprocmask.
@@ -6319,20 +4648,12 @@ SYSCALL_DEFINE1(ssetmask, int, newmask)
 	int old = current->blocked.sig[0];
 	sigset_t newset;
 
-<<<<<<< HEAD
-	siginitset(&newset, newmask & ~(sigmask(SIGKILL) | sigmask(SIGSTOP)));
-=======
 	siginitset(&newset, newmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_current_blocked(&newset);
 
 	return old;
 }
-<<<<<<< HEAD
-#endif /* __ARCH_WANT_SGETMASK */
-=======
 #endif /* CONFIG_SGETMASK_SYSCALL */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __ARCH_WANT_SYS_SIGNAL
 /*
@@ -6358,11 +4679,7 @@ SYSCALL_DEFINE2(signal, int, sig, __sighandler_t, handler)
 SYSCALL_DEFINE0(pause)
 {
 	while (!signal_pending(current)) {
-<<<<<<< HEAD
-		current->state = TASK_INTERRUPTIBLE;
-=======
 		__set_current_state(TASK_INTERRUPTIBLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule();
 	}
 	return -ERESTARTNOHAND;
@@ -6370,9 +4687,6 @@ SYSCALL_DEFINE0(pause)
 
 #endif
 
-<<<<<<< HEAD
-#ifdef __ARCH_WANT_SYS_RT_SIGSUSPEND
-=======
 static int sigsuspend(sigset_t *set)
 {
 	current->saved_sigmask = current->blocked;
@@ -6386,7 +4700,6 @@ static int sigsuspend(sigset_t *set)
 	return -ERESTARTNOHAND;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  sys_rt_sigsuspend - replace the signal mask for a value with the
  *	@unewset value until a signal is received
@@ -6403,21 +4716,6 @@ SYSCALL_DEFINE2(rt_sigsuspend, sigset_t __user *, unewset, size_t, sigsetsize)
 
 	if (copy_from_user(&newset, unewset, sizeof(newset)))
 		return -EFAULT;
-<<<<<<< HEAD
-	sigdelsetmask(&newset, sigmask(SIGKILL)|sigmask(SIGSTOP));
-
-	current->saved_sigmask = current->blocked;
-	set_current_blocked(&newset);
-
-	current->state = TASK_INTERRUPTIBLE;
-	schedule();
-	set_restore_sigmask();
-	return -ERESTARTNOHAND;
-}
-#endif /* __ARCH_WANT_SYS_RT_SIGSUSPEND */
-
-__attribute__((weak)) const char *arch_vma_name(struct vm_area_struct *vma)
-=======
 	return sigsuspend(&newset);
 }
  
@@ -6454,16 +4752,10 @@ SYSCALL_DEFINE3(sigsuspend, int, unused1, int, unused2, old_sigset_t, mask)
 #endif
 
 __weak const char *arch_vma_name(struct vm_area_struct *vma)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NULL;
 }
 
-<<<<<<< HEAD
-void __init signals_init(void)
-{
-	sigqueue_cachep = KMEM_CACHE(sigqueue, SLAB_PANIC);
-=======
 static inline void siginfo_buildtime_checks(void)
 {
 	BUILD_BUG_ON(sizeof(struct siginfo) != SI_MAX_SIZE);
@@ -6564,50 +4856,30 @@ void __init signals_init(void)
 	siginfo_buildtime_checks();
 
 	sigqueue_cachep = KMEM_CACHE(sigqueue, SLAB_PANIC | SLAB_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_KGDB_KDB
 #include <linux/kdb.h>
 /*
-<<<<<<< HEAD
- * kdb_send_sig_info - Allows kdb to send signals without exposing
-=======
  * kdb_send_sig - Allows kdb to send signals without exposing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * signal internals.  This function checks if the required locks are
  * available before calling the main signal code, to avoid kdb
  * deadlocks.
  */
-<<<<<<< HEAD
-void
-kdb_send_sig_info(struct task_struct *t, struct siginfo *info)
-{
-	static struct task_struct *kdb_prev_t;
-	int sig, new_t;
-=======
 void kdb_send_sig(struct task_struct *t, int sig)
 {
 	static struct task_struct *kdb_prev_t;
 	int new_t, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!spin_trylock(&t->sighand->siglock)) {
 		kdb_printf("Can't do kill command now.\n"
 			   "The sigmask lock is held somewhere else in "
 			   "kernel, try again later\n");
 		return;
 	}
-<<<<<<< HEAD
-	spin_unlock(&t->sighand->siglock);
-	new_t = kdb_prev_t != t;
-	kdb_prev_t = t;
-	if (t->state != TASK_RUNNING && new_t) {
-=======
 	new_t = kdb_prev_t != t;
 	kdb_prev_t = t;
 	if (!task_is_running(t) && new_t) {
 		spin_unlock(&t->sighand->siglock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kdb_printf("Process is not RUNNING, sending a signal from "
 			   "kdb risks deadlock\n"
 			   "on the run queue locks. "
@@ -6616,14 +4888,9 @@ void kdb_send_sig(struct task_struct *t, int sig)
 			   "the deadlock.\n");
 		return;
 	}
-<<<<<<< HEAD
-	sig = info->si_signo;
-	if (send_sig_info(sig, info, t))
-=======
 	ret = send_signal_locked(sig, SEND_SIG_PRIV, t, PIDTYPE_PID);
 	spin_unlock(&t->sighand->siglock);
 	if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kdb_printf("Fail to deliver Signal %d to process %d.\n",
 			   sig, t->pid);
 	else

@@ -1,39 +1,22 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CTR: Counter mode
  *
  * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CRYPTO_CTR_H
 #define _CRYPTO_CTR_H
 
-<<<<<<< HEAD
-=======
 #include <crypto/algapi.h>
 #include <crypto/internal/skcipher.h>
 #include <linux/string.h>
 #include <linux/types.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CTR_RFC3686_NONCE_SIZE 4
 #define CTR_RFC3686_IV_SIZE 8
 #define CTR_RFC3686_BLOCK_SIZE 16
 
-<<<<<<< HEAD
-=======
 static inline int crypto_ctr_encrypt_walk(struct skcipher_request *req,
 					  void (*fn)(struct crypto_skcipher *,
 						     const u8 *, u8 *))
@@ -79,5 +62,4 @@ static inline int crypto_ctr_encrypt_walk(struct skcipher_request *req,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* _CRYPTO_CTR_H */

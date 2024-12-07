@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2004,2007,2008 IBM Corporation
  *
@@ -16,41 +13,10 @@
  *
  * Device driver for TCG/TCPA TPM (trusted platform module).
  * Specifications at www.trustedcomputinggroup.org
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LINUX_TPM_H__
 #define __LINUX_TPM_H__
 
-<<<<<<< HEAD
-/*
- * Chip num is this value or a valid tpm idx
- */
-#define	TPM_ANY_NUM 0xFFFF
-
-#if defined(CONFIG_TCG_TPM) || defined(CONFIG_TCG_TPM_MODULE)
-
-extern int tpm_pcr_read(u32 chip_num, int pcr_idx, u8 *res_buf);
-extern int tpm_pcr_extend(u32 chip_num, int pcr_idx, const u8 *hash);
-extern int tpm_send(u32 chip_num, void *cmd, size_t buflen);
-#else
-static inline int tpm_pcr_read(u32 chip_num, int pcr_idx, u8 *res_buf) {
-	return -ENODEV;
-}
-static inline int tpm_pcr_extend(u32 chip_num, int pcr_idx, const u8 *hash) {
-	return -ENODEV;
-}
-static inline int tpm_send(u32 chip_num, void *cmd, size_t buflen) {
-	return -ENODEV;
-}
-=======
 #include <linux/hw_random.h>
 #include <linux/acpi.h>
 #include <linux/cdev.h>
@@ -497,6 +463,5 @@ static inline struct tpm_chip *tpm_default_chip(void)
 {
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #endif

@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
- */
-#include "qla_def.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * QLogic Fibre Channel HBA Driver
@@ -14,45 +5,10 @@
  */
 #include "qla_def.h"
 #include "qla_gbl.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kthread.h>
 #include <linux/vmalloc.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-
-/* BSG support for ELS/CT pass through */
-void
-qla2x00_bsg_job_done(void *data, void *ptr, int res)
-{
-	srb_t *sp = (srb_t *)ptr;
-	struct scsi_qla_host *vha = (scsi_qla_host_t *)data;
-	struct fc_bsg_job *bsg_job = sp->u.bsg_job;
-
-	bsg_job->reply->result = res;
-	bsg_job->job_done(bsg_job);
-	sp->free(vha, sp);
-}
-
-void
-qla2x00_bsg_sp_free(void *data, void *ptr)
-{
-	srb_t *sp = (srb_t *)ptr;
-	struct scsi_qla_host *vha = (scsi_qla_host_t *)data;
-	struct fc_bsg_job *bsg_job = sp->u.bsg_job;
-	struct qla_hw_data *ha = vha->hw;
-
-	dma_unmap_sg(&ha->pdev->dev, bsg_job->request_payload.sg_list,
-	    bsg_job->request_payload.sg_cnt, DMA_TO_DEVICE);
-
-	dma_unmap_sg(&ha->pdev->dev, bsg_job->reply_payload.sg_list,
-	    bsg_job->reply_payload.sg_cnt, DMA_FROM_DEVICE);
-
-	if (sp->type == SRB_CT_CMD ||
-	    sp->type == SRB_ELS_CMD_HST)
-		kfree(sp->fcport);
-	mempool_free(sp, vha->hw->srb_mempool);
-=======
 #include <linux/bsg-lib.h>
 
 static void qla2xxx_free_fcport_work(struct work_struct *work)
@@ -125,7 +81,6 @@ void qla2x00_bsg_sp_free(srb_t *sp)
 	}
 
 	qla2x00_rel_sp(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
@@ -150,12 +105,7 @@ qla24xx_fcp_prio_cfg_valid(scsi_qla_host_t *vha,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	if (bcode[0] != 'H' || bcode[1] != 'Q' || bcode[2] != 'O' ||
-			bcode[3] != 'S') {
-=======
 	if (memcmp(bcode, "HQOS", 4)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Invalid FCP priority data header*/
 		ql_dbg(ql_dbg_user, vha, 0x7052,
 		    "Invalid FCP Priority data header. bcode=0x%x.\n",
@@ -188,38 +138,24 @@ qla24xx_fcp_prio_cfg_valid(scsi_qla_host_t *vha,
 }
 
 static int
-<<<<<<< HEAD
-qla24xx_proc_fcp_prio_cfg_cmd(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 {
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
 	struct fc_bsg_request *bsg_request = bsg_job->request;
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int ret = 0;
 	uint32_t len;
 	uint32_t oper;
 
-<<<<<<< HEAD
-	if (!(IS_QLA24XX_TYPE(ha) || IS_QLA25XX(ha) || IS_QLA82XX(ha))) {
-=======
 	if (!(IS_QLA24XX_TYPE(ha) || IS_QLA25XX(ha) || IS_P3P_TYPE(ha))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto exit_fcp_prio_cfg;
 	}
 
 	/* Get the sub command */
-<<<<<<< HEAD
-	oper = bsg_job->request->rqst_data.h_vendor.vendor_cmd[1];
-=======
 	oper = bsg_request->rqst_data.h_vendor.vendor_cmd[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only set config is allowed if config memory is not allocated */
 	if (!ha->fcp_prio_cfg && (oper != QLFC_FCP_PRIO_SET_CONFIG)) {
@@ -233,17 +169,10 @@ qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 			ha->fcp_prio_cfg->attributes &=
 				~FCP_PRIO_ATTR_ENABLE;
 			qla24xx_update_all_fcp_prio(vha);
-<<<<<<< HEAD
-			bsg_job->reply->result = DID_OK;
-		} else {
-			ret = -EINVAL;
-			bsg_job->reply->result = (DID_ERROR << 16);
-=======
 			bsg_reply->result = DID_OK;
 		} else {
 			ret = -EINVAL;
 			bsg_reply->result = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto exit_fcp_prio_cfg;
 		}
 		break;
@@ -255,17 +184,10 @@ qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 				ha->fcp_prio_cfg->attributes |=
 				    FCP_PRIO_ATTR_ENABLE;
 				qla24xx_update_all_fcp_prio(vha);
-<<<<<<< HEAD
-				bsg_job->reply->result = DID_OK;
-			} else {
-				ret = -EINVAL;
-				bsg_job->reply->result = (DID_ERROR << 16);
-=======
 				bsg_reply->result = DID_OK;
 			} else {
 				ret = -EINVAL;
 				bsg_reply->result = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto exit_fcp_prio_cfg;
 			}
 		}
@@ -275,21 +197,12 @@ qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 		len = bsg_job->reply_payload.payload_len;
 		if (!len || len > FCP_PRIO_CFG_SIZE) {
 			ret = -EINVAL;
-<<<<<<< HEAD
-			bsg_job->reply->result = (DID_ERROR << 16);
-			goto exit_fcp_prio_cfg;
-		}
-
-		bsg_job->reply->result = DID_OK;
-		bsg_job->reply->reply_payload_rcv_len =
-=======
 			bsg_reply->result = (DID_ERROR << 16);
 			goto exit_fcp_prio_cfg;
 		}
 
 		bsg_reply->result = DID_OK;
 		bsg_reply->reply_payload_rcv_len =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sg_copy_from_buffer(
 			bsg_job->reply_payload.sg_list,
 			bsg_job->reply_payload.sg_cnt, ha->fcp_prio_cfg,
@@ -300,11 +213,7 @@ qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 	case QLFC_FCP_PRIO_SET_CONFIG:
 		len = bsg_job->request_payload.payload_len;
 		if (!len || len > FCP_PRIO_CFG_SIZE) {
-<<<<<<< HEAD
-			bsg_job->reply->result = (DID_ERROR << 16);
-=======
 			bsg_reply->result = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EINVAL;
 			goto exit_fcp_prio_cfg;
 		}
@@ -315,11 +224,7 @@ qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 				ql_log(ql_log_warn, vha, 0x7050,
 				    "Unable to allocate memory for fcp prio "
 				    "config data (%x).\n", FCP_PRIO_CFG_SIZE);
-<<<<<<< HEAD
-				bsg_job->reply->result = (DID_ERROR << 16);
-=======
 				bsg_reply->result = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 				goto exit_fcp_prio_cfg;
 			}
@@ -332,14 +237,8 @@ qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 
 		/* validate fcp priority data */
 
-<<<<<<< HEAD
-		if (!qla24xx_fcp_prio_cfg_valid(vha,
-		    (struct qla_fcp_prio_cfg *) ha->fcp_prio_cfg, 1)) {
-			bsg_job->reply->result = (DID_ERROR << 16);
-=======
 		if (!qla24xx_fcp_prio_cfg_valid(vha, ha->fcp_prio_cfg, 1)) {
 			bsg_reply->result = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EINVAL;
 			/* If buffer was invalidatic int
 			 * fcp_prio_cfg is of no use
@@ -353,36 +252,23 @@ qla24xx_proc_fcp_prio_cfg_cmd(struct bsg_job *bsg_job)
 		if (ha->fcp_prio_cfg->attributes & FCP_PRIO_ATTR_ENABLE)
 			ha->flags.fcp_prio_enabled = 1;
 		qla24xx_update_all_fcp_prio(vha);
-<<<<<<< HEAD
-		bsg_job->reply->result = DID_OK;
-=======
 		bsg_reply->result = DID_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -EINVAL;
 		break;
 	}
 exit_fcp_prio_cfg:
-<<<<<<< HEAD
-	bsg_job->job_done(bsg_job);
-=======
 	if (!ret)
 		bsg_job_done(bsg_job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_process_els(struct fc_bsg_job *bsg_job)
-{
-=======
 qla2x00_process_els(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_rport *rport;
 	fc_port_t *fcport = NULL;
 	struct Scsi_Host *host;
@@ -391,13 +277,6 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 	srb_t *sp;
 	const char *type;
 	int req_sg_cnt, rsp_sg_cnt;
-<<<<<<< HEAD
-	int rval =  (DRIVER_ERROR << 16);
-	uint16_t nextlid = 0;
-
-	if (bsg_job->request->msgcode == FC_BSG_RPT_ELS) {
-		rport = bsg_job->rport;
-=======
 	int rval =  (DID_ERROR << 16);
 	uint32_t els_cmd = 0;
 	int qla_port_allocated = 0;
@@ -408,19 +287,12 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 			rval = -ENOMEM;
 			goto done;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fcport = *(fc_port_t **) rport->dd_data;
 		host = rport_to_shost(rport);
 		vha = shost_priv(host);
 		ha = vha->hw;
 		type = "FC_BSG_RPT_ELS";
 	} else {
-<<<<<<< HEAD
-		host = bsg_job->shost;
-		vha = shost_priv(host);
-		ha = vha->hw;
-		type = "FC_BSG_HST_ELS_NOLOGIN";
-=======
 		host = fc_bsg_to_shost(bsg_job);
 		vha = shost_priv(host);
 		ha = vha->hw;
@@ -434,7 +306,6 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 		ql_log(ql_log_warn, vha, 0x7005, "Host not online.\n");
 		rval = -EIO;
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* pass through is supported only for ISP 4Gb or higher */
@@ -449,11 +320,7 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 	if (bsg_job->request_payload.sg_cnt > 1 ||
 		bsg_job->reply_payload.sg_cnt > 1) {
 		ql_dbg(ql_dbg_user, vha, 0x7002,
-<<<<<<< HEAD
-		    "Multiple SG's are not suppored for ELS requests, "
-=======
 		    "Multiple SG's are not supported for ELS requests, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    "request_sg_cnt=%x reply_sg_cnt=%x.\n",
 		    bsg_job->request_payload.sg_cnt,
 		    bsg_job->reply_payload.sg_cnt);
@@ -462,15 +329,6 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 	}
 
 	/* ELS request for rport */
-<<<<<<< HEAD
-	if (bsg_job->request->msgcode == FC_BSG_RPT_ELS) {
-		/* make sure the rport is logged in,
-		 * if not perform fabric login
-		 */
-		if (qla2x00_fabric_login(vha, fcport, &nextlid)) {
-			ql_dbg(ql_dbg_user, vha, 0x7003,
-			    "Failed to login port %06X for ELS passthru.\n",
-=======
 	if (bsg_request->msgcode == FC_BSG_RPT_ELS) {
 		/* make sure the rport is logged in,
 		 * if not perform fabric login
@@ -478,7 +336,6 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 		if (atomic_read(&fcport->state) != FCS_ONLINE) {
 			ql_dbg(ql_dbg_user, vha, 0x7003,
 			    "Port %06X is not online for ELS passthru.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    fcport->d_id.b24);
 			rval = -EIO;
 			goto done;
@@ -495,17 +352,6 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 			goto done;
 		}
 
-<<<<<<< HEAD
-		/* Initialize all required  fields of fcport */
-		fcport->vha = vha;
-		fcport->vp_idx = vha->vp_idx;
-		fcport->d_id.b.al_pa =
-			bsg_job->request->rqst_data.h_els.port_id[0];
-		fcport->d_id.b.area =
-			bsg_job->request->rqst_data.h_els.port_id[1];
-		fcport->d_id.b.domain =
-			bsg_job->request->rqst_data.h_els.port_id[2];
-=======
 		qla_port_allocated = 1;
 		/* Initialize all required  fields of fcport */
 		fcport->vha = vha;
@@ -515,30 +361,17 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 			bsg_request->rqst_data.h_els.port_id[1];
 		fcport->d_id.b.domain =
 			bsg_request->rqst_data.h_els.port_id[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fcport->loop_id =
 			(fcport->d_id.b.al_pa == 0xFD) ?
 			NPH_FABRIC_CONTROLLER : NPH_F_PORT;
 	}
 
-<<<<<<< HEAD
-	if (!vha->flags.online) {
-		ql_log(ql_log_warn, vha, 0x7005, "Host not online.\n");
-		rval = -EIO;
-		goto done;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req_sg_cnt =
 		dma_map_sg(&ha->pdev->dev, bsg_job->request_payload.sg_list,
 		bsg_job->request_payload.sg_cnt, DMA_TO_DEVICE);
 	if (!req_sg_cnt) {
-<<<<<<< HEAD
-=======
 		dma_unmap_sg(&ha->pdev->dev, bsg_job->request_payload.sg_list,
 		    bsg_job->request_payload.sg_cnt, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rval = -ENOMEM;
 		goto done_free_fcport;
 	}
@@ -546,11 +379,8 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 	rsp_sg_cnt = dma_map_sg(&ha->pdev->dev, bsg_job->reply_payload.sg_list,
 		bsg_job->reply_payload.sg_cnt, DMA_FROM_DEVICE);
         if (!rsp_sg_cnt) {
-<<<<<<< HEAD
-=======
 		dma_unmap_sg(&ha->pdev->dev, bsg_job->reply_payload.sg_list,
 		    bsg_job->reply_payload.sg_cnt, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rval = -ENOMEM;
 		goto done_free_fcport;
 	}
@@ -574,19 +404,11 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 	}
 
 	sp->type =
-<<<<<<< HEAD
-		(bsg_job->request->msgcode == FC_BSG_RPT_ELS ?
-		SRB_ELS_CMD_RPT : SRB_ELS_CMD_HST);
-	sp->name =
-		(bsg_job->request->msgcode == FC_BSG_RPT_ELS ?
-		"bsg_els_rpt" : "bsg_els_hst");
-=======
 		(bsg_request->msgcode == FC_BSG_RPT_ELS ?
 		 SRB_ELS_CMD_RPT : SRB_ELS_CMD_HST);
 	sp->name =
 		(bsg_request->msgcode == FC_BSG_RPT_ELS ?
 		 "bsg_els_rpt" : "bsg_els_hst");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sp->u.bsg_job = bsg_job;
 	sp->free = qla2x00_bsg_sp_free;
 	sp->done = qla2x00_bsg_job_done;
@@ -594,22 +416,14 @@ qla2x00_process_els(struct bsg_job *bsg_job)
 	ql_dbg(ql_dbg_user, vha, 0x700a,
 	    "bsg rqst type: %s els type: %x - loop-id=%x "
 	    "portid=%-2x%02x%02x.\n", type,
-<<<<<<< HEAD
-	    bsg_job->request->rqst_data.h_els.command_code, fcport->loop_id,
-=======
 	    bsg_request->rqst_data.h_els.command_code, fcport->loop_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    fcport->d_id.b.domain, fcport->d_id.b.area, fcport->d_id.b.al_pa);
 
 	rval = qla2x00_start_sp(sp);
 	if (rval != QLA_SUCCESS) {
 		ql_log(ql_log_warn, vha, 0x700e,
 		    "qla2x00_start_sp failed = %d\n", rval);
-<<<<<<< HEAD
-		mempool_free(sp, ha->srb_mempool);
-=======
 		qla2x00_rel_sp(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rval = -EIO;
 		goto done_unmap_sg;
 	}
@@ -623,22 +437,13 @@ done_unmap_sg:
 	goto done_free_fcport;
 
 done_free_fcport:
-<<<<<<< HEAD
-	if (bsg_job->request->msgcode == FC_BSG_HST_ELS_NOLOGIN)
-		kfree(fcport);
-=======
 	if (qla_port_allocated)
 		qla2x00_free_fcport(fcport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	return rval;
 }
 
-<<<<<<< HEAD
-inline uint16_t
-=======
 static inline uint16_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla24xx_calc_ct_iocbs(uint16_t dsds)
 {
 	uint16_t iocbs;
@@ -653,15 +458,6 @@ qla24xx_calc_ct_iocbs(uint16_t dsds)
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_process_ct(struct fc_bsg_job *bsg_job)
-{
-	srb_t *sp;
-	struct Scsi_Host *host = bsg_job->shost;
-	scsi_qla_host_t *vha = shost_priv(host);
-	struct qla_hw_data *ha = vha->hw;
-	int rval = (DRIVER_ERROR << 16);
-=======
 qla2x00_process_ct(struct bsg_job *bsg_job)
 {
 	srb_t *sp;
@@ -670,7 +466,6 @@ qla2x00_process_ct(struct bsg_job *bsg_job)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int req_sg_cnt, rsp_sg_cnt;
 	uint16_t loop_id;
 	struct fc_port *fcport;
@@ -713,19 +508,11 @@ qla2x00_process_ct(struct bsg_job *bsg_job)
 	}
 
 	loop_id =
-<<<<<<< HEAD
-		(bsg_job->request->rqst_data.h_ct.preamble_word1 & 0xFF000000)
-			>> 24;
-	switch (loop_id) {
-	case 0xFC:
-		loop_id = cpu_to_le16(NPH_SNS);
-=======
 		(bsg_request->rqst_data.h_ct.preamble_word1 & 0xFF000000)
 			>> 24;
 	switch (loop_id) {
 	case 0xFC:
 		loop_id = NPH_SNS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 0xFA:
 		loop_id = vha->mgmt_svr_loop_id;
@@ -752,16 +539,9 @@ qla2x00_process_ct(struct bsg_job *bsg_job)
 
 	/* Initialize all required  fields of fcport */
 	fcport->vha = vha;
-<<<<<<< HEAD
-	fcport->vp_idx = vha->vp_idx;
-	fcport->d_id.b.al_pa = bsg_job->request->rqst_data.h_ct.port_id[0];
-	fcport->d_id.b.area = bsg_job->request->rqst_data.h_ct.port_id[1];
-	fcport->d_id.b.domain = bsg_job->request->rqst_data.h_ct.port_id[2];
-=======
 	fcport->d_id.b.al_pa = bsg_request->rqst_data.h_ct.port_id[0];
 	fcport->d_id.b.area = bsg_request->rqst_data.h_ct.port_id[1];
 	fcport->d_id.b.domain = bsg_request->rqst_data.h_ct.port_id[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fcport->loop_id = loop_id;
 
 	/* Alloc SRB structure */
@@ -783,11 +563,7 @@ qla2x00_process_ct(struct bsg_job *bsg_job)
 	ql_dbg(ql_dbg_user, vha, 0x7016,
 	    "bsg rqst type: %s else type: %x - "
 	    "loop-id=%x portid=%02x%02x%02x.\n", type,
-<<<<<<< HEAD
-	    (bsg_job->request->rqst_data.h_ct.preamble_word2 >> 16),
-=======
 	    (bsg_request->rqst_data.h_ct.preamble_word2 >> 16),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    fcport->loop_id, fcport->d_id.b.domain, fcport->d_id.b.area,
 	    fcport->d_id.b.al_pa);
 
@@ -795,22 +571,14 @@ qla2x00_process_ct(struct bsg_job *bsg_job)
 	if (rval != QLA_SUCCESS) {
 		ql_log(ql_log_warn, vha, 0x7017,
 		    "qla2x00_start_sp failed=%d.\n", rval);
-<<<<<<< HEAD
-		mempool_free(sp, ha->srb_mempool);
-=======
 		qla2x00_rel_sp(sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rval = -EIO;
 		goto done_free_fcport;
 	}
 	return rval;
 
 done_free_fcport:
-<<<<<<< HEAD
-	kfree(fcport);
-=======
 	qla2x00_free_fcport(fcport);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done_unmap_sg:
 	dma_unmap_sg(&ha->pdev->dev, bsg_job->request_payload.sg_list,
 		bsg_job->request_payload.sg_cnt, DMA_TO_DEVICE);
@@ -820,24 +588,6 @@ done:
 	return rval;
 }
 
-<<<<<<< HEAD
-/* Set the port configuration to enable the
- * internal loopback on ISP81XX
- */
-static inline int
-qla81xx_set_internal_loopback(scsi_qla_host_t *vha, uint16_t *config,
-    uint16_t *new_config)
-{
-	int ret = 0;
-	int rval = 0;
-	struct qla_hw_data *ha = vha->hw;
-
-	if (!IS_QLA81XX(ha) && !IS_QLA83XX(ha))
-		goto done_set_internal;
-
-	new_config[0] = config[0] | (ENABLE_INTERNAL_LOOPBACK << 1);
-	memcpy(&new_config[1], &config[1], sizeof(uint16_t) * 3) ;
-=======
 /* Disable loopback mode */
 static inline int
 qla81xx_reset_loopback_mode(scsi_qla_host_t *vha, uint16_t *config,
@@ -930,7 +680,6 @@ qla81xx_set_loopback_mode(scsi_qla_host_t *vha, uint16_t *config,
 	     "new_config[0]=%02x\n", (new_config[0] & INTERNAL_LOOPBACK_MASK));
 
 	memcpy(&new_config[1], &config[1], sizeof(uint16_t) * 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ha->notify_dcbx_comp = 1;
 	ret = qla81xx_set_port_config(vha, new_config);
@@ -943,16 +692,6 @@ qla81xx_set_loopback_mode(scsi_qla_host_t *vha, uint16_t *config,
 	}
 
 	/* Wait for DCBX complete event */
-<<<<<<< HEAD
-	if (!wait_for_completion_timeout(&ha->dcbx_comp, (20 * HZ))) {
-		ql_dbg(ql_dbg_user, vha, 0x7022,
-		    "State change notification not received.\n");
-	} else
-		ql_dbg(ql_dbg_user, vha, 0x7023,
-		    "State change received.\n");
-
-	ha->notify_dcbx_comp = 0;
-=======
 	current_tmo = DCBX_COMP_TIMEOUT * HZ;
 	while (1) {
 		rem_tmo = wait_for_completion_timeout(&ha->dcbx_comp,
@@ -991,74 +730,17 @@ qla81xx_set_loopback_mode(scsi_qla_host_t *vha, uint16_t *config,
 
 	ha->notify_dcbx_comp = 0;
 	ha->idc_extend_tmo = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done_set_internal:
 	return rval;
 }
 
-<<<<<<< HEAD
-/* Set the port configuration to disable the
- * internal loopback on ISP81XX
- */
-static inline int
-qla81xx_reset_internal_loopback(scsi_qla_host_t *vha, uint16_t *config,
-    int wait)
-{
-	int ret = 0;
-	int rval = 0;
-	uint16_t new_config[4];
-	struct qla_hw_data *ha = vha->hw;
-
-	if (!IS_QLA81XX(ha) && !IS_QLA83XX(ha))
-		goto done_reset_internal;
-
-	memset(new_config, 0 , sizeof(new_config));
-	if ((config[0] & INTERNAL_LOOPBACK_MASK) >> 1 ==
-			ENABLE_INTERNAL_LOOPBACK) {
-		new_config[0] = config[0] & ~INTERNAL_LOOPBACK_MASK;
-		memcpy(&new_config[1], &config[1], sizeof(uint16_t) * 3) ;
-
-		ha->notify_dcbx_comp = wait;
-		ret = qla81xx_set_port_config(vha, new_config);
-		if (ret != QLA_SUCCESS) {
-			ql_log(ql_log_warn, vha, 0x7025,
-			    "Set port config failed.\n");
-			ha->notify_dcbx_comp = 0;
-			rval = -EINVAL;
-			goto done_reset_internal;
-		}
-
-		/* Wait for DCBX complete event */
-		if (wait && !wait_for_completion_timeout(&ha->dcbx_comp,
-			(20 * HZ))) {
-			ql_dbg(ql_dbg_user, vha, 0x7026,
-			    "State change notification not received.\n");
-			ha->notify_dcbx_comp = 0;
-			rval = -EINVAL;
-			goto done_reset_internal;
-		} else
-			ql_dbg(ql_dbg_user, vha, 0x7027,
-			    "State change received.\n");
-
-		ha->notify_dcbx_comp = 0;
-	}
-done_reset_internal:
-	return rval;
-}
-
-static int
-qla2x00_process_loopback(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 static int
 qla2x00_process_loopback(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval;
@@ -1068,11 +750,7 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 	uint16_t response[MAILBOX_REGISTER_COUNT];
 	uint16_t config[4], new_config[4];
 	uint8_t *fw_sts_ptr;
-<<<<<<< HEAD
-	uint8_t *req_data = NULL;
-=======
 	void *req_data = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t req_data_dma;
 	uint32_t req_data_len;
 	uint8_t *rsp_data = NULL;
@@ -1084,11 +762,8 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-=======
 	memset(&elreq, 0, sizeof(elreq));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	elreq.req_sg_cnt = dma_map_sg(&ha->pdev->dev,
 		bsg_job->request_payload.sg_list, bsg_job->request_payload.sg_cnt,
 		DMA_TO_DEVICE);
@@ -1148,16 +823,6 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 	elreq.rcv_dma = rsp_data_dma;
 	elreq.transfer_size = req_data_len;
 
-<<<<<<< HEAD
-	elreq.options = bsg_job->request->rqst_data.h_vendor.vendor_cmd[1];
-
-	if ((ha->current_topology == ISP_CFG_F ||
-	    (atomic_read(&vha->loop_state) == LOOP_DOWN) ||
-	    ((IS_QLA81XX(ha) || IS_QLA83XX(ha)) &&
-	    le32_to_cpu(*(uint32_t *)req_data) == ELS_OPCODE_BYTE
-	    && req_data_len == MAX_ELS_FRAME_PAYLOAD)) &&
-		elreq.options == EXTERNAL_LOOPBACK) {
-=======
 	elreq.options = bsg_request->rqst_data.h_vendor.vendor_cmd[1];
 	elreq.iteration_count =
 	    bsg_request->rqst_data.h_vendor.vendor_cmd[2];
@@ -1168,50 +833,12 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 	    get_unaligned_le32(req_data) == ELS_OPCODE_BYTE &&
 	    req_data_len == MAX_ELS_FRAME_PAYLOAD &&
 	    elreq.options == EXTERNAL_LOOPBACK))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = "FC_BSG_HST_VENDOR_ECHO_DIAG";
 		ql_dbg(ql_dbg_user, vha, 0x701e,
 		    "BSG request type: %s.\n", type);
 		command_sent = INT_DEF_LB_ECHO_CMD;
 		rval = qla2x00_echo_test(vha, &elreq, response);
 	} else {
-<<<<<<< HEAD
-		if (IS_QLA81XX(ha) || IS_QLA8031(ha)) {
-			memset(config, 0, sizeof(config));
-			memset(new_config, 0, sizeof(new_config));
-			if (qla81xx_get_port_config(vha, config)) {
-				ql_log(ql_log_warn, vha, 0x701f,
-				    "Get port config failed.\n");
-				bsg_job->reply->result = (DID_ERROR << 16);
-				rval = -EPERM;
-				goto done_free_dma_req;
-			}
-
-			if (elreq.options != EXTERNAL_LOOPBACK) {
-				ql_dbg(ql_dbg_user, vha, 0x7020,
-				    "Internal: current port config = %x\n",
-				    config[0]);
-				if (qla81xx_set_internal_loopback(vha, config,
-					new_config)) {
-					ql_log(ql_log_warn, vha, 0x7024,
-					    "Internal loopback failed.\n");
-					bsg_job->reply->result =
-						(DID_ERROR << 16);
-					rval = -EPERM;
-					goto done_free_dma_req;
-				}
-			} else {
-				/* For external loopback to work
-				 * ensure internal loopback is disabled
-				 */
-				if (qla81xx_reset_internal_loopback(vha,
-					config, 1)) {
-					bsg_job->reply->result =
-						(DID_ERROR << 16);
-					rval = -EPERM;
-					goto done_free_dma_req;
-				}
-=======
 		if (IS_QLA81XX(ha) || IS_QLA8031(ha) || IS_QLA8044(ha)) {
 			memset(config, 0, sizeof(config));
 			memset(new_config, 0, sizeof(new_config));
@@ -1248,7 +875,6 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 			if (rval) {
 				rval = -EPERM;
 				goto done_free_dma_rsp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			type = "FC_BSG_HST_VENDOR_LOOPBACK";
@@ -1258,17 +884,6 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 			command_sent = INT_DEF_LB_LOOPBACK_CMD;
 			rval = qla2x00_loopback_test(vha, &elreq, response);
 
-<<<<<<< HEAD
-			if (new_config[0]) {
-				/* Revert back to original port config
-				 * Also clear internal loopback
-				 */
-				qla81xx_reset_internal_loopback(vha,
-				    new_config, 0);
-			}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (response[0] == MBS_COMMAND_ERROR &&
 					response[1] == MBS_LB_RESET) {
 				ql_log(ql_log_warn, vha, 0x7029,
@@ -1277,18 +892,6 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 				qla2xxx_wake_dpc(vha);
 				qla2x00_wait_for_chip_reset(vha);
 				/* Also reset the MPI */
-<<<<<<< HEAD
-				if (qla81xx_restart_mpi_firmware(vha) !=
-				    QLA_SUCCESS) {
-					ql_log(ql_log_warn, vha, 0x702a,
-					    "MPI reset failed.\n");
-				}
-
-				bsg_job->reply->result = (DID_ERROR << 16);
-				rval = -EIO;
-				goto done_free_dma_req;
-			}
-=======
 				if (IS_QLA81XX(ha)) {
 					if (qla81xx_restart_mpi_firmware(vha) !=
 					    QLA_SUCCESS) {
@@ -1322,7 +925,6 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			type = "FC_BSG_HST_VENDOR_LOOPBACK";
 			ql_dbg(ql_dbg_user, vha, 0x702b,
@@ -1336,30 +938,6 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 		ql_log(ql_log_warn, vha, 0x702c,
 		    "Vendor request %s failed.\n", type);
 
-<<<<<<< HEAD
-		fw_sts_ptr = ((uint8_t *)bsg_job->req->sense) +
-		    sizeof(struct fc_bsg_reply);
-
-		memcpy(fw_sts_ptr, response, sizeof(response));
-		fw_sts_ptr += sizeof(response);
-		*fw_sts_ptr = command_sent;
-		rval = 0;
-		bsg_job->reply->result = (DID_ERROR << 16);
-	} else {
-		ql_dbg(ql_dbg_user, vha, 0x702d,
-		    "Vendor request %s completed.\n", type);
-
-		bsg_job->reply_len = sizeof(struct fc_bsg_reply) +
-			sizeof(response) + sizeof(uint8_t);
-		bsg_job->reply->reply_payload_rcv_len =
-			bsg_job->reply_payload.payload_len;
-		fw_sts_ptr = ((uint8_t *)bsg_job->req->sense) +
-			sizeof(struct fc_bsg_reply);
-		memcpy(fw_sts_ptr, response, sizeof(response));
-		fw_sts_ptr += sizeof(response);
-		*fw_sts_ptr = command_sent;
-		bsg_job->reply->result = DID_OK;
-=======
 		rval = 0;
 		bsg_reply->result = (DID_ERROR << 16);
 		bsg_reply->reply_payload_rcv_len = 0;
@@ -1367,15 +945,10 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 		ql_dbg(ql_dbg_user, vha, 0x702d,
 		    "Vendor request %s completed.\n", type);
 		bsg_reply->result = (DID_OK << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sg_copy_from_buffer(bsg_job->reply_payload.sg_list,
 			bsg_job->reply_payload.sg_cnt, rsp_data,
 			rsp_data_len);
 	}
-<<<<<<< HEAD
-	bsg_job->job_done(bsg_job);
-
-=======
 
 	bsg_job->reply_len = sizeof(struct fc_bsg_reply) +
 	    sizeof(response) + sizeof(uint8_t);
@@ -1386,7 +959,6 @@ qla2x00_process_loopback(struct bsg_job *bsg_job)
 	*fw_sts_ptr = command_sent;
 
 done_free_dma_rsp:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_free_coherent(&ha->pdev->dev, rsp_data_len,
 		rsp_data, rsp_data_dma);
 done_free_dma_req:
@@ -1400,27 +972,18 @@ done_unmap_req_sg:
 	dma_unmap_sg(&ha->pdev->dev,
 	    bsg_job->request_payload.sg_list,
 	    bsg_job->request_payload.sg_cnt, DMA_TO_DEVICE);
-<<<<<<< HEAD
-=======
 	if (!rval)
 		bsg_job_done(bsg_job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 static int
-<<<<<<< HEAD
-qla84xx_reset(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla84xx_reset(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval = 0;
@@ -1431,54 +994,32 @@ qla84xx_reset(struct bsg_job *bsg_job)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	flag = bsg_job->request->rqst_data.h_vendor.vendor_cmd[1];
-=======
 	flag = bsg_request->rqst_data.h_vendor.vendor_cmd[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rval = qla84xx_reset_chip(vha, flag == A84_ISSUE_RESET_DIAG_FW);
 
 	if (rval) {
 		ql_log(ql_log_warn, vha, 0x7030,
 		    "Vendor request 84xx reset failed.\n");
-<<<<<<< HEAD
-		rval = 0;
-		bsg_job->reply->result = (DID_ERROR << 16);
-=======
 		rval = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 		ql_dbg(ql_dbg_user, vha, 0x7031,
 		    "Vendor request 84xx reset completed.\n");
-<<<<<<< HEAD
-		bsg_job->reply->result = DID_OK;
-	}
-
-	bsg_job->job_done(bsg_job);
-=======
 		bsg_reply->result = DID_OK;
 		bsg_job_done(bsg_job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 static int
-<<<<<<< HEAD
-qla84xx_updatefw(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla84xx_updatefw(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	struct verify_chip_entry_84xx *mn = NULL;
@@ -1527,11 +1068,7 @@ qla84xx_updatefw(struct bsg_job *bsg_job)
 	sg_copy_to_buffer(bsg_job->request_payload.sg_list,
 		bsg_job->request_payload.sg_cnt, fw_buf, data_len);
 
-<<<<<<< HEAD
-	mn = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &mn_dma);
-=======
 	mn = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &mn_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mn) {
 		ql_log(ql_log_warn, vha, 0x7036,
 		    "DMA alloc failed for fw buffer.\n");
@@ -1539,16 +1076,9 @@ qla84xx_updatefw(struct bsg_job *bsg_job)
 		goto done_free_fw_buf;
 	}
 
-<<<<<<< HEAD
-	flag = bsg_job->request->rqst_data.h_vendor.vendor_cmd[1];
-	fw_ver = le32_to_cpu(*((uint32_t *)((uint32_t *)fw_buf + 2)));
-
-	memset(mn, 0, sizeof(struct access_chip_84xx));
-=======
 	flag = bsg_request->rqst_data.h_vendor.vendor_cmd[1];
 	fw_ver = get_unaligned_le32((uint32_t *)fw_buf + 2);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mn->entry_type = VERIFY_CHIP_IOCB_TYPE;
 	mn->entry_count = 1;
 
@@ -1560,14 +1090,8 @@ qla84xx_updatefw(struct bsg_job *bsg_job)
 	mn->fw_ver =  cpu_to_le32(fw_ver);
 	mn->fw_size =  cpu_to_le32(data_len);
 	mn->fw_seq_size =  cpu_to_le32(data_len);
-<<<<<<< HEAD
-	mn->dseg_address[0] = cpu_to_le32(LSD(fw_dma));
-	mn->dseg_address[1] = cpu_to_le32(MSD(fw_dma));
-	mn->dseg_length = cpu_to_le32(data_len);
-=======
 	put_unaligned_le64(fw_dma, &mn->dsd.address);
 	mn->dsd.length = cpu_to_le32(data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mn->data_seg_cnt = cpu_to_le16(1);
 
 	rval = qla2x00_issue_iocb_timeout(vha, mn, mn_dma, 0, 120);
@@ -1576,27 +1100,15 @@ qla84xx_updatefw(struct bsg_job *bsg_job)
 		ql_log(ql_log_warn, vha, 0x7037,
 		    "Vendor request 84xx updatefw failed.\n");
 
-<<<<<<< HEAD
-		rval = 0;
-		bsg_job->reply->result = (DID_ERROR << 16);
-=======
 		rval = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ql_dbg(ql_dbg_user, vha, 0x7038,
 		    "Vendor request 84xx updatefw completed.\n");
 
 		bsg_job->reply_len = sizeof(struct fc_bsg_reply);
-<<<<<<< HEAD
-		bsg_job->reply->result = DID_OK;
-	}
-
-	bsg_job->job_done(bsg_job);
-=======
 		bsg_reply->result = DID_OK;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_pool_free(ha->s_dma_pool, mn, mn_dma);
 
 done_free_fw_buf:
@@ -1606,27 +1118,18 @@ done_unmap_sg:
 	dma_unmap_sg(&ha->pdev->dev, bsg_job->request_payload.sg_list,
 		bsg_job->request_payload.sg_cnt, DMA_TO_DEVICE);
 
-<<<<<<< HEAD
-=======
 	if (!rval)
 		bsg_job_done(bsg_job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 static int
-<<<<<<< HEAD
-qla84xx_mgmt_cmd(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla84xx_mgmt_cmd(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	struct access_chip_84xx *mn = NULL;
@@ -1644,35 +1147,16 @@ qla84xx_mgmt_cmd(struct bsg_job *bsg_job)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	ql84_mgmt = (struct qla_bsg_a84_mgmt *)((char *)bsg_job->request +
-		sizeof(struct fc_bsg_request));
-	if (!ql84_mgmt) {
-		ql_log(ql_log_warn, vha, 0x703b,
-		    "MGMT header not provided, exiting.\n");
-		return -EINVAL;
-	}
-
-	mn = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &mn_dma);
-=======
 	mn = dma_pool_zalloc(ha->s_dma_pool, GFP_KERNEL, &mn_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mn) {
 		ql_log(ql_log_warn, vha, 0x703c,
 		    "DMA alloc failed for fw buffer.\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	memset(mn, 0, sizeof(struct access_chip_84xx));
-	mn->entry_type = ACCESS_CHIP_IOCB_TYPE;
-	mn->entry_count = 1;
-
-=======
 	mn->entry_type = ACCESS_CHIP_IOCB_TYPE;
 	mn->entry_count = 1;
 	ql84_mgmt = (void *)bsg_request + sizeof(struct fc_bsg_request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ql84_mgmt->mgmt.cmd) {
 	case QLA84_MGMT_READ_MEM:
 	case QLA84_MGMT_GET_INFO:
@@ -1786,14 +1270,8 @@ qla84xx_mgmt_cmd(struct bsg_job *bsg_job)
 	if (ql84_mgmt->mgmt.cmd != QLA84_MGMT_CHNG_CONFIG) {
 		mn->total_byte_cnt = cpu_to_le32(ql84_mgmt->mgmt.len);
 		mn->dseg_count = cpu_to_le16(1);
-<<<<<<< HEAD
-		mn->dseg_address[0] = cpu_to_le32(LSD(mgmt_dma));
-		mn->dseg_address[1] = cpu_to_le32(MSD(mgmt_dma));
-		mn->dseg_length = cpu_to_le32(ql84_mgmt->mgmt.len);
-=======
 		put_unaligned_le64(mgmt_dma, &mn->dsd.address);
 		mn->dsd.length = cpu_to_le32(ql84_mgmt->mgmt.len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rval = qla2x00_issue_iocb(vha, mn, mn_dma, 0);
@@ -1802,31 +1280,18 @@ qla84xx_mgmt_cmd(struct bsg_job *bsg_job)
 		ql_log(ql_log_warn, vha, 0x7043,
 		    "Vendor request 84xx mgmt failed.\n");
 
-<<<<<<< HEAD
-		rval = 0;
-		bsg_job->reply->result = (DID_ERROR << 16);
-=======
 		rval = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 		ql_dbg(ql_dbg_user, vha, 0x7044,
 		    "Vendor request 84xx mgmt completed.\n");
 
 		bsg_job->reply_len = sizeof(struct fc_bsg_reply);
-<<<<<<< HEAD
-		bsg_job->reply->result = DID_OK;
-
-		if ((ql84_mgmt->mgmt.cmd == QLA84_MGMT_READ_MEM) ||
-			(ql84_mgmt->mgmt.cmd == QLA84_MGMT_GET_INFO)) {
-			bsg_job->reply->reply_payload_rcv_len =
-=======
 		bsg_reply->result = DID_OK;
 
 		if ((ql84_mgmt->mgmt.cmd == QLA84_MGMT_READ_MEM) ||
 			(ql84_mgmt->mgmt.cmd == QLA84_MGMT_GET_INFO)) {
 			bsg_reply->reply_payload_rcv_len =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bsg_job->reply_payload.payload_len;
 
 			sg_copy_from_buffer(bsg_job->reply_payload.sg_list,
@@ -1835,11 +1300,6 @@ qla84xx_mgmt_cmd(struct bsg_job *bsg_job)
 		}
 	}
 
-<<<<<<< HEAD
-	bsg_job->job_done(bsg_job);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done_unmap_sg:
 	if (mgmt_b)
 		dma_free_coherent(&ha->pdev->dev, data_len, mgmt_b, mgmt_dma);
@@ -1854,35 +1314,23 @@ done_unmap_sg:
 exit_mgmt:
 	dma_pool_free(ha->s_dma_pool, mn, mn_dma);
 
-<<<<<<< HEAD
-=======
 	if (!rval)
 		bsg_job_done(bsg_job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 static int
-<<<<<<< HEAD
-qla24xx_iidma(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla24xx_iidma(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	int rval = 0;
 	struct qla_port_param *port_param = NULL;
 	fc_port_t *fcport = NULL;
-<<<<<<< HEAD
-=======
 	int found = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t mb[MAILBOX_REGISTER_COUNT];
 	uint8_t *rsp_ptr = NULL;
 
@@ -1891,18 +1339,7 @@ qla24xx_iidma(struct bsg_job *bsg_job)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	port_param = (struct qla_port_param *)((char *)bsg_job->request +
-		sizeof(struct fc_bsg_request));
-	if (!port_param) {
-		ql_log(ql_log_warn, vha, 0x7047,
-		    "port_param header not provided.\n");
-		return -EINVAL;
-	}
-
-=======
 	port_param = (void *)bsg_request + sizeof(struct fc_bsg_request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port_param->fc_scsi_addr.dest_type != EXT_DEF_TYPE_WWPN) {
 		ql_log(ql_log_warn, vha, 0x7048,
 		    "Invalid destination type.\n");
@@ -1916,19 +1353,12 @@ qla24xx_iidma(struct bsg_job *bsg_job)
 		if (memcmp(port_param->fc_scsi_addr.dest_addr.wwpn,
 			fcport->port_name, sizeof(fcport->port_name)))
 			continue;
-<<<<<<< HEAD
-		break;
-	}
-
-	if (!fcport) {
-=======
 
 		found = 1;
 		break;
 	}
 
 	if (!found) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ql_log(ql_log_warn, vha, 0x7049,
 		    "Failed to find port.\n");
 		return -EINVAL;
@@ -1955,64 +1385,35 @@ qla24xx_iidma(struct bsg_job *bsg_job)
 
 	if (rval) {
 		ql_log(ql_log_warn, vha, 0x704c,
-<<<<<<< HEAD
-		    "iIDMA cmd failed for %02x%02x%02x%02x%02x%02x%02x%02x -- "
-		    "%04x %x %04x %04x.\n", fcport->port_name[0],
-		    fcport->port_name[1], fcport->port_name[2],
-		    fcport->port_name[3], fcport->port_name[4],
-		    fcport->port_name[5], fcport->port_name[6],
-		    fcport->port_name[7], rval, fcport->fp_speed, mb[0], mb[1]);
-		rval = 0;
-		bsg_job->reply->result = (DID_ERROR << 16);
-
-=======
 		    "iiDMA cmd failed for %8phN -- "
 		    "%04x %x %04x %04x.\n", fcport->port_name,
 		    rval, fcport->fp_speed, mb[0], mb[1]);
 		rval = (DID_ERROR << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (!port_param->mode) {
 			bsg_job->reply_len = sizeof(struct fc_bsg_reply) +
 				sizeof(struct qla_port_param);
 
-<<<<<<< HEAD
-			rsp_ptr = ((uint8_t *)bsg_job->reply) +
-=======
 			rsp_ptr = ((uint8_t *)bsg_reply) +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sizeof(struct fc_bsg_reply);
 
 			memcpy(rsp_ptr, port_param,
 				sizeof(struct qla_port_param));
 		}
 
-<<<<<<< HEAD
-		bsg_job->reply->result = DID_OK;
-	}
-
-	bsg_job->job_done(bsg_job);
-=======
 		bsg_reply->result = DID_OK;
 		bsg_job_done(bsg_job, bsg_reply->result,
 			       bsg_reply->reply_payload_rcv_len);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_optrom_setup(struct fc_bsg_job *bsg_job, scsi_qla_host_t *vha,
-	uint8_t is_update)
-{
-=======
 qla2x00_optrom_setup(struct bsg_job *bsg_job, scsi_qla_host_t *vha,
 	uint8_t is_update)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t start = 0;
 	int valid = 0;
 	struct qla_hw_data *ha = vha->hw;
@@ -2020,11 +1421,7 @@ qla2x00_optrom_setup(struct bsg_job *bsg_job, scsi_qla_host_t *vha,
 	if (unlikely(pci_channel_offline(ha->pdev)))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	start = bsg_job->request->rqst_data.h_vendor.vendor_cmd[1];
-=======
 	start = bsg_request->rqst_data.h_vendor.vendor_cmd[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (start > ha->optrom_size) {
 		ql_log(ql_log_warn, vha, 0x7055,
 		    "start %d > optrom_size %d.\n", start, ha->optrom_size);
@@ -2046,12 +1443,8 @@ qla2x00_optrom_setup(struct bsg_job *bsg_job, scsi_qla_host_t *vha,
 		    start == (ha->flt_region_fw * 4))
 			valid = 1;
 		else if (IS_QLA24XX_TYPE(ha) || IS_QLA25XX(ha) ||
-<<<<<<< HEAD
-		    IS_CNA_CAPABLE(ha) || IS_QLA2031(ha))
-=======
 		    IS_CNA_CAPABLE(ha) || IS_QLA2031(ha) || IS_QLA27XX(ha) ||
 		    IS_QLA28XX(ha))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			valid = 1;
 		if (!valid) {
 			ql_log(ql_log_warn, vha, 0x7058,
@@ -2073,11 +1466,7 @@ qla2x00_optrom_setup(struct bsg_job *bsg_job, scsi_qla_host_t *vha,
 		ha->optrom_state = QLA_SREADING;
 	}
 
-<<<<<<< HEAD
-	ha->optrom_buffer = vmalloc(ha->optrom_region_size);
-=======
 	ha->optrom_buffer = vzalloc(ha->optrom_region_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ha->optrom_buffer) {
 		ql_log(ql_log_warn, vha, 0x7059,
 		    "Read: Unable to allocate memory for optrom retrieval "
@@ -2087,36 +1476,18 @@ qla2x00_optrom_setup(struct bsg_job *bsg_job, scsi_qla_host_t *vha,
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	memset(ha->optrom_buffer, 0, ha->optrom_region_size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_read_optrom(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla2x00_read_optrom(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval = 0;
 
-<<<<<<< HEAD
-	if (ha->flags.isp82xx_reset_hdlr_active)
-		return -EBUSY;
-
-	rval = qla2x00_optrom_setup(bsg_job, vha, 0);
-	if (rval)
-		return rval;
-=======
 	if (ha->flags.nic_core_reset_hdlr_active)
 		return -EBUSY;
 
@@ -2126,7 +1497,6 @@ qla2x00_read_optrom(struct bsg_job *bsg_job)
 		mutex_unlock(&ha->optrom_mutex);
 		return rval;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ha->isp_ops->read_optrom(vha, ha->optrom_buffer,
 	    ha->optrom_region_start, ha->optrom_region_size);
@@ -2135,14 +1505,6 @@ qla2x00_read_optrom(struct bsg_job *bsg_job)
 	    bsg_job->reply_payload.sg_cnt, ha->optrom_buffer,
 	    ha->optrom_region_size);
 
-<<<<<<< HEAD
-	bsg_job->reply->reply_payload_rcv_len = ha->optrom_region_size;
-	bsg_job->reply->result = DID_OK;
-	vfree(ha->optrom_buffer);
-	ha->optrom_buffer = NULL;
-	ha->optrom_state = QLA_SWAITING;
-	bsg_job->job_done(bsg_job);
-=======
 	bsg_reply->reply_payload_rcv_len = ha->optrom_region_size;
 	bsg_reply->result = DID_OK;
 	vfree(ha->optrom_buffer);
@@ -2151,30 +1513,18 @@ qla2x00_read_optrom(struct bsg_job *bsg_job)
 	mutex_unlock(&ha->optrom_mutex);
 	bsg_job_done(bsg_job, bsg_reply->result,
 		       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_update_optrom(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla2x00_update_optrom(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval = 0;
 
-<<<<<<< HEAD
-	rval = qla2x00_optrom_setup(bsg_job, vha, 1);
-	if (rval)
-		return rval;
-=======
 	mutex_lock(&ha->optrom_mutex);
 	rval = qla2x00_optrom_setup(bsg_job, vha, 1);
 	if (rval) {
@@ -2184,22 +1534,11 @@ qla2x00_update_optrom(struct bsg_job *bsg_job)
 
 	/* Set the isp82xx_no_md_cap not to capture minidump */
 	ha->flags.isp82xx_no_md_cap = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg_copy_to_buffer(bsg_job->request_payload.sg_list,
 	    bsg_job->request_payload.sg_cnt, ha->optrom_buffer,
 	    ha->optrom_region_size);
 
-<<<<<<< HEAD
-	ha->isp_ops->write_optrom(vha, ha->optrom_buffer,
-	    ha->optrom_region_start, ha->optrom_region_size);
-
-	bsg_job->reply->result = DID_OK;
-	vfree(ha->optrom_buffer);
-	ha->optrom_buffer = NULL;
-	ha->optrom_state = QLA_SWAITING;
-	bsg_job->job_done(bsg_job);
-=======
 	rval = ha->isp_ops->write_optrom(vha, ha->optrom_buffer,
 	    ha->optrom_region_start, ha->optrom_region_size);
 
@@ -2215,21 +1554,14 @@ qla2x00_update_optrom(struct bsg_job *bsg_job)
 	mutex_unlock(&ha->optrom_mutex);
 	bsg_job_done(bsg_job, bsg_reply->result,
 		       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rval;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_update_fru_versions(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla2x00_update_fru_versions(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval = 0;
@@ -2239,14 +1571,9 @@ qla2x00_update_fru_versions(struct bsg_job *bsg_job)
 	uint32_t count;
 	dma_addr_t sfp_dma;
 	void *sfp = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &sfp_dma);
-<<<<<<< HEAD
-	if (!sfp) {
-		bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] =
-=======
 
 	if (!sfp) {
 		bsg_reply->reply_data.vendor_reply.vendor_rsp[0] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    EXT_STATUS_NO_MEMORY;
 		goto done;
 	}
@@ -2262,51 +1589,32 @@ qla2x00_update_fru_versions(struct bsg_job *bsg_job)
 		    image->field_address.device, image->field_address.offset,
 		    sizeof(image->field_info), image->field_address.option);
 		if (rval) {
-<<<<<<< HEAD
-			bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] =
-=======
 			bsg_reply->reply_data.vendor_reply.vendor_rsp[0] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    EXT_STATUS_MAILBOX;
 			goto dealloc;
 		}
 		image++;
 	}
 
-<<<<<<< HEAD
-	bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] = 0;
-=======
 	bsg_reply->reply_data.vendor_reply.vendor_rsp[0] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 dealloc:
 	dma_pool_free(ha->s_dma_pool, sfp, sfp_dma);
 
 done:
 	bsg_job->reply_len = sizeof(struct fc_bsg_reply);
-<<<<<<< HEAD
-	bsg_job->reply->result = DID_OK << 16;
-	bsg_job->job_done(bsg_job);
-=======
 	bsg_reply->result = DID_OK << 16;
 	bsg_job_done(bsg_job, bsg_reply->result,
 		       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_read_fru_status(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla2x00_read_fru_status(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval = 0;
@@ -2314,14 +1622,9 @@ qla2x00_read_fru_status(struct bsg_job *bsg_job)
 	struct qla_status_reg *sr = (void *)bsg;
 	dma_addr_t sfp_dma;
 	uint8_t *sfp = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &sfp_dma);
-<<<<<<< HEAD
-	if (!sfp) {
-		bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] =
-=======
 
 	if (!sfp) {
 		bsg_reply->reply_data.vendor_reply.vendor_rsp[0] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    EXT_STATUS_NO_MEMORY;
 		goto done;
 	}
@@ -2335,11 +1638,7 @@ qla2x00_read_fru_status(struct bsg_job *bsg_job)
 	sr->status_reg = *sfp;
 
 	if (rval) {
-<<<<<<< HEAD
-		bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] =
-=======
 		bsg_reply->reply_data.vendor_reply.vendor_rsp[0] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    EXT_STATUS_MAILBOX;
 		goto dealloc;
 	}
@@ -2347,42 +1646,26 @@ qla2x00_read_fru_status(struct bsg_job *bsg_job)
 	sg_copy_from_buffer(bsg_job->reply_payload.sg_list,
 	    bsg_job->reply_payload.sg_cnt, sr, sizeof(*sr));
 
-<<<<<<< HEAD
-	bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] = 0;
-=======
 	bsg_reply->reply_data.vendor_reply.vendor_rsp[0] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 dealloc:
 	dma_pool_free(ha->s_dma_pool, sfp, sfp_dma);
 
 done:
 	bsg_job->reply_len = sizeof(struct fc_bsg_reply);
-<<<<<<< HEAD
-	bsg_job->reply->reply_payload_rcv_len = sizeof(*sr);
-	bsg_job->reply->result = DID_OK << 16;
-	bsg_job->job_done(bsg_job);
-=======
 	bsg_reply->reply_payload_rcv_len = sizeof(*sr);
 	bsg_reply->result = DID_OK << 16;
 	bsg_job_done(bsg_job, bsg_reply->result,
 		       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_write_fru_status(struct fc_bsg_job *bsg_job)
-{
-	struct Scsi_Host *host = bsg_job->shost;
-=======
 qla2x00_write_fru_status(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	struct Scsi_Host *host = fc_bsg_to_shost(bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_qla_host_t *vha = shost_priv(host);
 	struct qla_hw_data *ha = vha->hw;
 	int rval = 0;
@@ -2390,14 +1673,9 @@ qla2x00_write_fru_status(struct bsg_job *bsg_job)
 	struct qla_status_reg *sr = (void *)bsg;
 	dma_addr_t sfp_dma;
 	uint8_t *sfp = dma_pool_alloc(ha->s_dma_pool, GFP_KERNEL, &sfp_dma);
-<<<<<<< HEAD
-	if (!sfp) {
-		bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] =
-=======
 
 	if (!sfp) {
 		bsg_reply->reply_data.vendor_reply.vendor_rsp[0] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    EXT_STATUS_NO_MEMORY;
 		goto done;
 	}
@@ -2411,44 +1689,26 @@ qla2x00_write_fru_status(struct bsg_job *bsg_job)
 	    sizeof(sr->status_reg), sr->field_address.option);
 
 	if (rval) {
-<<<<<<< HEAD
-		bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] =
-=======
 		bsg_reply->reply_data.vendor_reply.vendor_rsp[0] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    EXT_STATUS_MAILBOX;
 		goto dealloc;
 	}
 
-<<<<<<< HEAD
-	bsg_job->reply->reply_data.vendor_reply.vendor_rsp[0] = 0;
-=======
 	bsg_reply->reply_data.vendor_reply.vendor_rsp[0] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 dealloc:
 	dma_pool_free(ha->s_dma_pool, sfp, sfp_dma);
 
 done:
 	bsg_job->reply_len = sizeof(struct fc_bsg_reply);
-<<<<<<< HEAD
-	bsg_job->reply->result = DID_OK << 16;
-	bsg_job->job_done(bsg_job);
-=======
 	bsg_reply->result = DID_OK << 16;
 	bsg_job_done(bsg_job, bsg_reply->result,
 		       bsg_reply->reply_payload_rcv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-qla2x00_process_vendor_specific(struct fc_bsg_job *bsg_job)
-{
-	switch (bsg_job->request->rqst_data.h_vendor.vendor_cmd[0]) {
-=======
 qla2x00_write_i2c(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
@@ -3625,7 +2885,6 @@ qla2x00_process_vendor_specific(struct scsi_qla_host *vha, struct bsg_job *bsg_j
 	    __func__, bsg_request->rqst_data.h_vendor.vendor_cmd[0]);
 
 	switch (bsg_request->rqst_data.h_vendor.vendor_cmd[0]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case QL_VND_LOOPBACK:
 		return qla2x00_process_loopback(bsg_job);
 
@@ -3659,11 +2918,6 @@ qla2x00_process_vendor_specific(struct scsi_qla_host *vha, struct bsg_job *bsg_j
 	case QL_VND_WRITE_FRU_STATUS:
 		return qla2x00_write_fru_status(bsg_job);
 
-<<<<<<< HEAD
-	default:
-		bsg_job->reply->result = (DID_ERROR << 16);
-		bsg_job->job_done(bsg_job);
-=======
 	case QL_VND_WRITE_I2C:
 		return qla2x00_write_i2c(bsg_job);
 
@@ -3723,57 +2977,21 @@ qla2x00_process_vendor_specific(struct scsi_qla_host *vha, struct bsg_job *bsg_j
 		return qla2x00_mailbox_passthru(bsg_job);
 
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 	}
 }
 
 int
-<<<<<<< HEAD
-qla24xx_bsg_request(struct fc_bsg_job *bsg_job)
-{
-	int ret = -EINVAL;
-	struct fc_rport *rport;
-	fc_port_t *fcport = NULL;
-=======
 qla24xx_bsg_request(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_request *bsg_request = bsg_job->request;
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	int ret = -EINVAL;
 	struct fc_rport *rport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host;
 	scsi_qla_host_t *vha;
 
 	/* In case no data transferred. */
-<<<<<<< HEAD
-	bsg_job->reply->reply_payload_rcv_len = 0;
-
-	if (bsg_job->request->msgcode == FC_BSG_RPT_ELS) {
-		rport = bsg_job->rport;
-		fcport = *(fc_port_t **) rport->dd_data;
-		host = rport_to_shost(rport);
-		vha = shost_priv(host);
-	} else {
-		host = bsg_job->shost;
-		vha = shost_priv(host);
-	}
-
-	if (qla2x00_reset_active(vha)) {
-		ql_dbg(ql_dbg_user, vha, 0x709f,
-		    "BSG: ISP abort active/needed -- cmd=%d.\n",
-		    bsg_job->request->msgcode);
-		bsg_job->reply->result = (DID_ERROR << 16);
-		bsg_job->job_done(bsg_job);
-		return -EBUSY;
-	}
-
-	ql_dbg(ql_dbg_user, vha, 0x7000,
-	    "Entered %s msgcode=0x%x.\n", __func__, bsg_job->request->msgcode);
-
-	switch (bsg_job->request->msgcode) {
-=======
 	bsg_reply->reply_payload_rcv_len = 0;
 
 	if (bsg_request->msgcode == FC_BSG_RPT_ELS) {
@@ -3817,7 +3035,6 @@ skip_chip_chk:
 	    __func__, bsg_request->msgcode, bsg_job);
 
 	switch (bsg_request->msgcode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FC_BSG_RPT_ELS:
 	case FC_BSG_HST_ELS_NOLOGIN:
 		ret = qla2x00_process_els(bsg_job);
@@ -3826,51 +3043,33 @@ skip_chip_chk:
 		ret = qla2x00_process_ct(bsg_job);
 		break;
 	case FC_BSG_HST_VENDOR:
-<<<<<<< HEAD
-		ret = qla2x00_process_vendor_specific(bsg_job);
-=======
 		ret = qla2x00_process_vendor_specific(vha, bsg_job);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case FC_BSG_HST_ADD_RPORT:
 	case FC_BSG_HST_DEL_RPORT:
 	case FC_BSG_RPT_CT:
 	default:
 		ql_log(ql_log_warn, vha, 0x705a, "Unsupported BSG request.\n");
-<<<<<<< HEAD
-		bsg_job->reply->result = ret;
-		break;
-	}
-=======
 		break;
 	}
 
 	ql_dbg(ql_dbg_user + ql_dbg_verbose, vha, 0x7000,
 	    "%s done with return %x\n", __func__, ret);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 int
-<<<<<<< HEAD
-qla24xx_bsg_timeout(struct fc_bsg_job *bsg_job)
-{
-	scsi_qla_host_t *vha = shost_priv(bsg_job->shost);
-=======
 qla24xx_bsg_timeout(struct bsg_job *bsg_job)
 {
 	struct fc_bsg_reply *bsg_reply = bsg_job->reply;
 	scsi_qla_host_t *vha = shost_priv(fc_bsg_to_shost(bsg_job));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qla_hw_data *ha = vha->hw;
 	srb_t *sp;
 	int cnt, que;
 	unsigned long flags;
 	struct req_que *req;
 
-<<<<<<< HEAD
-=======
 	ql_log(ql_log_info, vha, 0x708b, "%s CMD timeout. bsg ptr %p.\n",
 	    __func__, bsg_job);
 
@@ -3880,7 +3079,6 @@ qla24xx_bsg_timeout(struct bsg_job *bsg_job)
 		qla_pci_set_eeh_busy(vha);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* find the bsg job from the active list of commands */
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	for (que = 0; que < ha->max_req_queues; que++) {
@@ -3888,31 +3086,6 @@ qla24xx_bsg_timeout(struct bsg_job *bsg_job)
 		if (!req)
 			continue;
 
-<<<<<<< HEAD
-		for (cnt = 1; cnt < MAX_OUTSTANDING_COMMANDS; cnt++) {
-			sp = req->outstanding_cmds[cnt];
-			if (sp) {
-				if (((sp->type == SRB_CT_CMD) ||
-					(sp->type == SRB_ELS_CMD_HST))
-					&& (sp->u.bsg_job == bsg_job)) {
-					spin_unlock_irqrestore(&ha->hardware_lock, flags);
-					if (ha->isp_ops->abort_command(sp)) {
-						ql_log(ql_log_warn, vha, 0x7089,
-						    "mbx abort_command "
-						    "failed.\n");
-						bsg_job->req->errors =
-						bsg_job->reply->result = -EIO;
-					} else {
-						ql_dbg(ql_dbg_user, vha, 0x708a,
-						    "mbx abort_command "
-						    "success.\n");
-						bsg_job->req->errors =
-						bsg_job->reply->result = 0;
-					}
-					spin_lock_irqsave(&ha->hardware_lock, flags);
-					goto done;
-				}
-=======
 		for (cnt = 1; cnt < req->num_outstanding_cmds; cnt++) {
 			sp = req->outstanding_cmds[cnt];
 			if (sp &&
@@ -3936,28 +3109,16 @@ qla24xx_bsg_timeout(struct bsg_job *bsg_job)
 				spin_lock_irqsave(&ha->hardware_lock, flags);
 				goto done;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 	ql_log(ql_log_info, vha, 0x708b, "SRB not found to abort.\n");
-<<<<<<< HEAD
-	bsg_job->req->errors = bsg_job->reply->result = -ENXIO;
-=======
 	bsg_reply->result = -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 done:
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
-<<<<<<< HEAD
-	if (bsg_job->request->msgcode == FC_BSG_HST_CT)
-		kfree(sp->fcport);
-	mempool_free(sp, ha->srb_mempool);
-	return 0;
-}
-=======
 	/* ref: INIT */
 	kref_put(&sp->cmd_kref, qla2x00_sp_release);
 	return 0;
@@ -4007,4 +3168,3 @@ int qla2x00_mailbox_passthru(struct bsg_job *bsg_job)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

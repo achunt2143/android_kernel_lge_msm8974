@@ -1,22 +1,13 @@
-<<<<<<< HEAD
-config CEPH_FS
-        tristate "Ceph distributed file system (EXPERIMENTAL)"
-	depends on INET && EXPERIMENTAL
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config CEPH_FS
 	tristate "Ceph distributed file system"
 	depends on INET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CEPH_LIB
 	select LIBCRC32C
 	select CRYPTO_AES
 	select CRYPTO
-<<<<<<< HEAD
-=======
 	select NETFS_SUPPORT
 	select FS_ENCRYPTION_ALGS if FS_ENCRYPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default n
 	help
 	  Choose Y or M here to include support for mounting the
@@ -24,12 +15,6 @@ config CEPH_FS
 	  scalable file system designed to provide high performance,
 	  reliable access to petabytes of storage.
 
-<<<<<<< HEAD
-	  More information at http://ceph.newdream.net/.
-
-	  If unsure, say N.
-
-=======
 	  More information at https://ceph.io/.
 
 	  If unsure, say N.
@@ -65,4 +50,3 @@ config CEPH_FS_SECURITY_LABEL
 
 	  If you are not using a security module that requires using
 	  extended attributes for file security labels, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

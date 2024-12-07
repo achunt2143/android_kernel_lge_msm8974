@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API.
  *
@@ -9,43 +6,21 @@
  *
  * Copyright IBM Corp. 2007
  * Author(s): Jan Glauber (jang@de.ibm.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <crypto/internal/hash.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include "sha.h"
-#include "crypt_s390.h"
-=======
 #include <asm/cpacf.h>
 #include "sha.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int s390_sha_update(struct shash_desc *desc, const u8 *data, unsigned int len)
 {
 	struct s390_sha_ctx *ctx = shash_desc_ctx(desc);
 	unsigned int bsize = crypto_shash_blocksize(desc->tfm);
-<<<<<<< HEAD
-	unsigned int index;
-	int ret;
-
-	/* how much is already in the buffer? */
-	index = ctx->count & (bsize - 1);
-=======
 	unsigned int index, n;
 
 	/* how much is already in the buffer? */
 	index = ctx->count % bsize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctx->count += len;
 
 	if ((index + len) < bsize)
@@ -54,12 +29,7 @@ int s390_sha_update(struct shash_desc *desc, const u8 *data, unsigned int len)
 	/* process one stored block */
 	if (index) {
 		memcpy(ctx->buf + index, data, bsize - index);
-<<<<<<< HEAD
-		ret = crypt_s390_kimd(ctx->func, ctx->state, ctx->buf, bsize);
-		BUG_ON(ret != bsize);
-=======
 		cpacf_kimd(ctx->func, ctx->state, ctx->buf, bsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data += bsize - index;
 		len -= bsize - index;
 		index = 0;
@@ -67,18 +37,10 @@ int s390_sha_update(struct shash_desc *desc, const u8 *data, unsigned int len)
 
 	/* process as many blocks as possible */
 	if (len >= bsize) {
-<<<<<<< HEAD
-		ret = crypt_s390_kimd(ctx->func, ctx->state, data,
-				      len & ~(bsize - 1));
-		BUG_ON(ret != (len & ~(bsize - 1)));
-		data += ret;
-		len -= ret;
-=======
 		n = (len / bsize) * bsize;
 		cpacf_kimd(ctx->func, ctx->state, data, n);
 		data += n;
 		len -= n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 store:
 	if (len)
@@ -88,8 +50,6 @@ store:
 }
 EXPORT_SYMBOL_GPL(s390_sha_update);
 
-<<<<<<< HEAD
-=======
 static int s390_crypto_shash_parmsize(int func)
 {
 	switch (func) {
@@ -109,40 +69,11 @@ static int s390_crypto_shash_parmsize(int func)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int s390_sha_final(struct shash_desc *desc, u8 *out)
 {
 	struct s390_sha_ctx *ctx = shash_desc_ctx(desc);
 	unsigned int bsize = crypto_shash_blocksize(desc->tfm);
 	u64 bits;
-<<<<<<< HEAD
-	unsigned int index, end, plen;
-	int ret;
-
-	/* SHA-512 uses 128 bit padding length */
-	plen = (bsize > SHA256_BLOCK_SIZE) ? 16 : 8;
-
-	/* must perform manual padding */
-	index = ctx->count & (bsize - 1);
-	end = (index < bsize - plen) ? bsize : (2 * bsize);
-
-	/* start pad with 1 */
-	ctx->buf[index] = 0x80;
-	index++;
-
-	/* pad with zeros */
-	memset(ctx->buf + index, 0x00, end - index - 8);
-
-	/*
-	 * Append message length. Well, SHA-512 wants a 128 bit length value,
-	 * nevertheless we use u64, should be enough for now...
-	 */
-	bits = ctx->count * 8;
-	memcpy(ctx->buf + end - 8, &bits, sizeof(bits));
-
-	ret = crypt_s390_kimd(ctx->func, ctx->state, ctx->buf, end);
-	BUG_ON(ret != end);
-=======
 	unsigned int n;
 	int mbl_offset;
 
@@ -179,7 +110,6 @@ int s390_sha_final(struct shash_desc *desc, u8 *out)
 	}
 
 	cpacf_klmd(ctx->func, ctx->state, ctx->buf, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy digest to out */
 	memcpy(out, ctx->state, crypto_shash_digestsize(desc->tfm));

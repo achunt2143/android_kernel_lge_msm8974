@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-copy_page.S
  *
@@ -60,11 +57,7 @@
    destination pages are in the dcache, but it is my guess that this is
    less important than the dcache miss case.  */
 
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text
 	.align 4
 	.global copy_page
@@ -209,7 +202,4 @@ copy_page:
 	nop
 
 	.end copy_page
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(copy_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2011 Red Hat, Inc., Frederic Weisbecker <fweisbec@redhat.com>
- *
- * Licensed under the terms of the GNU GPL License version 2
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2011 Red Hat, Inc., Frederic Weisbecker <fweisbec@redhat.com>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Selftests for breakpoints (and more generally the do_debug() path) in x86.
  */
 
@@ -23,9 +15,6 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-<<<<<<< HEAD
-
-=======
 #include <errno.h>
 #include <string.h>
 
@@ -33,7 +22,6 @@
 
 #define COUNT_ISN_BPS	4
 #define COUNT_WPS	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Breakpoint access modes */
 enum {
@@ -57,16 +45,9 @@ static void set_breakpoint_addr(void *addr, int n)
 
 	ret = ptrace(PTRACE_POKEUSER, child_pid,
 		     offsetof(struct user, u_debugreg[n]), addr);
-<<<<<<< HEAD
-	if (ret) {
-		perror("Can't set breakpoint addr\n");
-		exit(-1);
-	}
-=======
 	if (ret)
 		ksft_exit_fail_msg("Can't set breakpoint addr: %s\n",
 			strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void toggle_breakpoint(int n, int type, int len,
@@ -127,11 +108,7 @@ static void toggle_breakpoint(int n, int type, int len,
 	ret = ptrace(PTRACE_POKEUSER, child_pid,
 		     offsetof(struct user, u_debugreg[7]), dr7);
 	if (ret) {
-<<<<<<< HEAD
-		perror("Can't set dr7");
-=======
 		ksft_print_msg("Can't set dr7: %s\n", strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exit(-1);
 	}
 }
@@ -231,11 +208,7 @@ static void trigger_tests(void)
 
 	ret = ptrace(PTRACE_TRACEME, 0, NULL, 0);
 	if (ret) {
-<<<<<<< HEAD
-		perror("Can't be traced?\n");
-=======
 		ksft_print_msg("Can't be traced? %s\n", strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -248,11 +221,7 @@ static void trigger_tests(void)
 			if (!local && !global)
 				continue;
 
-<<<<<<< HEAD
-			for (i = 0; i < 4; i++) {
-=======
 			for (i = 0; i < COUNT_ISN_BPS; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dummy_funcs[i]();
 				check_trapped();
 			}
@@ -294,71 +263,41 @@ static void trigger_tests(void)
 
 static void check_success(const char *msg)
 {
-<<<<<<< HEAD
-	const char *msg2;
-	int child_nr_tests;
-	int status;
-=======
 	int child_nr_tests;
 	int status;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait for the child to SIGTRAP */
 	wait(&status);
 
-<<<<<<< HEAD
-	msg2 = "Failed";
-=======
 	ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (WSTOPSIG(status) == SIGTRAP) {
 		child_nr_tests = ptrace(PTRACE_PEEKDATA, child_pid,
 					&nr_tests, 0);
 		if (child_nr_tests == nr_tests)
-<<<<<<< HEAD
-			msg2 = "Ok";
-		if (ptrace(PTRACE_POKEDATA, child_pid, &trapped, 1)) {
-			perror("Can't poke\n");
-			exit(-1);
-		}
-=======
 			ret = 1;
 		if (ptrace(PTRACE_POKEDATA, child_pid, &trapped, 1))
 			ksft_exit_fail_msg("Can't poke: %s\n", strerror(errno));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nr_tests++;
 
-<<<<<<< HEAD
-	printf("%s [%s]\n", msg, msg2);
-=======
 	if (ret)
 		ksft_test_result_pass("%s", msg);
 	else
 		ksft_test_result_fail("%s", msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void launch_instruction_breakpoints(char *buf, int local, int global)
 {
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < 4; i++) {
-		set_breakpoint_addr(dummy_funcs[i], i);
-		toggle_breakpoint(i, BP_X, 1, local, global, 1);
-		ptrace(PTRACE_CONT, child_pid, NULL, 0);
-		sprintf(buf, "Test breakpoint %d with local: %d global: %d",
-=======
 	for (i = 0; i < COUNT_ISN_BPS; i++) {
 		set_breakpoint_addr(dummy_funcs[i], i);
 		toggle_breakpoint(i, BP_X, 1, local, global, 1);
 		ptrace(PTRACE_CONT, child_pid, NULL, 0);
 		sprintf(buf, "Test breakpoint %d with local: %d global: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i, local, global);
 		check_success(buf);
 		toggle_breakpoint(i, BP_X, 1, local, global, 0);
@@ -376,14 +315,6 @@ static void launch_watchpoints(char *buf, int mode, int len,
 	else
 		mode_str = "read";
 
-<<<<<<< HEAD
-	for (i = 0; i < 4; i++) {
-		set_breakpoint_addr(&dummy_var[i], i);
-		toggle_breakpoint(i, mode, len, local, global, 1);
-		ptrace(PTRACE_CONT, child_pid, NULL, 0);
-		sprintf(buf, "Test %s watchpoint %d with len: %d local: "
-			"%d global: %d", mode_str, i, len, local, global);
-=======
 	for (i = 0; i < COUNT_WPS; i++) {
 		set_breakpoint_addr(&dummy_var[i], i);
 		toggle_breakpoint(i, mode, len, local, global, 1);
@@ -391,7 +322,6 @@ static void launch_watchpoints(char *buf, int mode, int len,
 		sprintf(buf,
 			"Test %s watchpoint %d with len: %d local: %d global: %d\n",
 			mode_str, i, len, local, global);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_success(buf);
 		toggle_breakpoint(i, mode, len, local, global, 0);
 	}
@@ -401,10 +331,6 @@ static void launch_watchpoints(char *buf, int mode, int len,
 static void launch_tests(void)
 {
 	char buf[1024];
-<<<<<<< HEAD
-	int len, local, global, i;
-
-=======
 	unsigned int tests = 0;
 	int len, local, global, i;
 
@@ -414,7 +340,6 @@ static void launch_tests(void)
 	tests += 2;
 	ksft_set_plan(tests);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Instruction breakpoints */
 	for (local = 0; local < 2; local++) {
 		for (global = 0; global < 2; global++) {
@@ -450,19 +375,11 @@ static void launch_tests(void)
 
 	/* Icebp traps */
 	ptrace(PTRACE_CONT, child_pid, NULL, 0);
-<<<<<<< HEAD
-	check_success("Test icebp");
-
-	/* Int 3 traps */
-	ptrace(PTRACE_CONT, child_pid, NULL, 0);
-	check_success("Test int 3 trap");
-=======
 	check_success("Test icebp\n");
 
 	/* Int 3 traps */
 	ptrace(PTRACE_CONT, child_pid, NULL, 0);
 	check_success("Test int 3 trap\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ptrace(PTRACE_CONT, child_pid, NULL, 0);
 }
@@ -472,19 +389,12 @@ int main(int argc, char **argv)
 	pid_t pid;
 	int ret;
 
-<<<<<<< HEAD
-	pid = fork();
-	if (!pid) {
-		trigger_tests();
-		return 0;
-=======
 	ksft_print_header();
 
 	pid = fork();
 	if (!pid) {
 		trigger_tests();
 		exit(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	child_pid = pid;
@@ -495,9 +405,5 @@ int main(int argc, char **argv)
 
 	wait(NULL);
 
-<<<<<<< HEAD
-	return 0;
-=======
 	ksft_exit_pass();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -60,22 +60,11 @@
  *                          are considered as fatal)
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/agp_backend.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <linux/wait.h>
 #include <linux/list.h>
 #include <linux/kref.h>
-<<<<<<< HEAD
-
-#include <ttm/ttm_bo_api.h>
-#include <ttm/ttm_bo_driver.h>
-#include <ttm/ttm_placement.h>
-#include <ttm/ttm_module.h>
-#include <ttm/ttm_execbuf_util.h>
-=======
 #include <linux/interval_tree.h>
 #include <linux/hashtable.h>
 #include <linux/dma-fence.h>
@@ -91,7 +80,6 @@
 #include <drm/drm_gem.h>
 #include <drm/drm_audio_component.h>
 #include <drm/drm_suballoc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "radeon_family.h"
 #include "radeon_mode.h"
@@ -116,8 +104,6 @@ extern int radeon_disp_priority;
 extern int radeon_hw_i2c;
 extern int radeon_pcie_gen2;
 extern int radeon_msi;
-<<<<<<< HEAD
-=======
 extern int radeon_lockup_timeout;
 extern int radeon_fastfb;
 extern int radeon_dpm;
@@ -135,36 +121,11 @@ extern int radeon_uvd;
 extern int radeon_vce;
 extern int radeon_si_support;
 extern int radeon_cik_support;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Copy from radeon_drv.h so we don't have to include both and have conflicting
  * symbol;
  */
-<<<<<<< HEAD
-#define RADEON_MAX_USEC_TIMEOUT		100000	/* 100 ms */
-#define RADEON_FENCE_JIFFIES_TIMEOUT	(HZ / 2)
-/* RADEON_IB_POOL_SIZE must be a power of 2 */
-#define RADEON_IB_POOL_SIZE		16
-#define RADEON_DEBUGFS_MAX_COMPONENTS	32
-#define RADEONFB_CONN_LIMIT		4
-#define RADEON_BIOS_NUM_SCRATCH		8
-
-/* max number of rings */
-#define RADEON_NUM_RINGS 3
-
-/* internal ring indices */
-/* r1xx+ has gfx CP ring */
-#define RADEON_RING_TYPE_GFX_INDEX  0
-
-/* cayman has 2 compute CP rings */
-#define CAYMAN_RING_TYPE_CP1_INDEX 1
-#define CAYMAN_RING_TYPE_CP2_INDEX 2
-
-/* hardcode those limit for now */
-#define RADEON_VA_RESERVED_SIZE		(8 << 20)
-#define RADEON_IB_VM_MAX_SIZE		(64 << 10)
-=======
 #define RADEON_MAX_USEC_TIMEOUT			100000	/* 100 ms */
 #define RADEON_FENCE_JIFFIES_TIMEOUT		(HZ / 2)
 #define RADEON_USEC_IB_TEST_TIMEOUT		1000000 /* 1s */
@@ -269,7 +230,6 @@ extern int radeon_cik_support;
 
 #define CIK_CURSOR_WIDTH 128
 #define CIK_CURSOR_HEIGHT 128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Errata workarounds.
@@ -289,59 +249,11 @@ struct radeon_device;
  */
 bool radeon_get_bios(struct radeon_device *rdev);
 
-<<<<<<< HEAD
-
-/*
- * Mutex which allows recursive locking from the same process.
- */
-struct radeon_mutex {
-	struct mutex		mutex;
-	struct task_struct	*owner;
-	int			level;
-};
-
-static inline void radeon_mutex_init(struct radeon_mutex *mutex)
-{
-	mutex_init(&mutex->mutex);
-	mutex->owner = NULL;
-	mutex->level = 0;
-}
-
-static inline void radeon_mutex_lock(struct radeon_mutex *mutex)
-{
-	if (mutex_trylock(&mutex->mutex)) {
-		/* The mutex was unlocked before, so it's ours now */
-		mutex->owner = current;
-	} else if (mutex->owner != current) {
-		/* Another process locked the mutex, take it */
-		mutex_lock(&mutex->mutex);
-		mutex->owner = current;
-	}
-	/* Otherwise the mutex was already locked by this process */
-
-	mutex->level++;
-}
-
-static inline void radeon_mutex_unlock(struct radeon_mutex *mutex)
-{
-	if (--mutex->level > 0)
-		return;
-
-	mutex->owner = NULL;
-	mutex_unlock(&mutex->mutex);
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dummy page
  */
 struct radeon_dummy_page {
-<<<<<<< HEAD
-=======
 	uint64_t	entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page	*page;
 	dma_addr_t	addr;
 };
@@ -362,40 +274,23 @@ struct radeon_clock {
 	uint32_t default_mclk;
 	uint32_t default_sclk;
 	uint32_t default_dispclk;
-<<<<<<< HEAD
-	uint32_t dp_extclk;
-	uint32_t max_pixel_clock;
-=======
 	uint32_t current_dispclk;
 	uint32_t dp_extclk;
 	uint32_t max_pixel_clock;
 	uint32_t vco_freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Power management
  */
 int radeon_pm_init(struct radeon_device *rdev);
-<<<<<<< HEAD
-=======
 int radeon_pm_late_init(struct radeon_device *rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_pm_fini(struct radeon_device *rdev);
 void radeon_pm_compute_clocks(struct radeon_device *rdev);
 void radeon_pm_suspend(struct radeon_device *rdev);
 void radeon_pm_resume(struct radeon_device *rdev);
 void radeon_combios_get_power_modes(struct radeon_device *rdev);
 void radeon_atombios_get_power_modes(struct radeon_device *rdev);
-<<<<<<< HEAD
-void radeon_atom_set_voltage(struct radeon_device *rdev, u16 voltage_level, u8 voltage_type);
-void rs690_pm_info(struct radeon_device *rdev);
-extern int rv6xx_get_temp(struct radeon_device *rdev);
-extern int rv770_get_temp(struct radeon_device *rdev);
-extern int evergreen_get_temp(struct radeon_device *rdev);
-extern int sumo_get_temp(struct radeon_device *rdev);
-extern int si_get_temp(struct radeon_device *rdev);
-=======
 int radeon_atom_get_clock_dividers(struct radeon_device *rdev,
 				   u8 clock_type,
 				   u32 clock,
@@ -458,7 +353,6 @@ int radeon_atom_get_mclk_range_table(struct radeon_device *rdev,
 int radeon_atom_get_max_vddc(struct radeon_device *rdev, u8 voltage_type,
 			     u16 voltage_id, u16 *voltage);
 void rs690_pm_info(struct radeon_device *rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void evergreen_tiling_fields(unsigned tiling_flags, unsigned *bankw,
 				    unsigned *bankh, unsigned *mtaspect,
 				    unsigned *tile_split);
@@ -467,48 +361,6 @@ extern void evergreen_tiling_fields(unsigned tiling_flags, unsigned *bankw,
  * Fences.
  */
 struct radeon_fence_driver {
-<<<<<<< HEAD
-	uint32_t			scratch_reg;
-	uint64_t			gpu_addr;
-	volatile uint32_t		*cpu_addr;
-	atomic_t			seq;
-	uint32_t			last_seq;
-	unsigned long			last_jiffies;
-	unsigned long			last_timeout;
-	wait_queue_head_t		queue;
-	struct list_head		created;
-	struct list_head		emitted;
-	struct list_head		signaled;
-	bool				initialized;
-};
-
-struct radeon_fence {
-	struct radeon_device		*rdev;
-	struct kref			kref;
-	struct list_head		list;
-	/* protected by radeon_fence.lock */
-	uint32_t			seq;
-	bool				emitted;
-	bool				signaled;
-	/* RB, DMA, etc. */
-	int				ring;
-	struct radeon_semaphore		*semaphore;
-};
-
-int radeon_fence_driver_start_ring(struct radeon_device *rdev, int ring);
-int radeon_fence_driver_init(struct radeon_device *rdev);
-void radeon_fence_driver_fini(struct radeon_device *rdev);
-int radeon_fence_create(struct radeon_device *rdev, struct radeon_fence **fence, int ring);
-int radeon_fence_emit(struct radeon_device *rdev, struct radeon_fence *fence);
-void radeon_fence_process(struct radeon_device *rdev, int ring);
-bool radeon_fence_signaled(struct radeon_fence *fence);
-int radeon_fence_wait(struct radeon_fence *fence, bool interruptible);
-int radeon_fence_wait_next(struct radeon_device *rdev, int ring);
-int radeon_fence_wait_last(struct radeon_device *rdev, int ring);
-struct radeon_fence *radeon_fence_ref(struct radeon_fence *fence);
-void radeon_fence_unref(struct radeon_fence **fence);
-int radeon_fence_count_emitted(struct radeon_device *rdev, int ring);
-=======
 	struct radeon_device		*rdev;
 	uint32_t			scratch_reg;
 	uint64_t			gpu_addr;
@@ -586,7 +438,6 @@ static inline bool radeon_fence_is_earlier(struct radeon_fence *a,
 
 	return a->seq < b->seq;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tiling registers
@@ -601,28 +452,6 @@ struct radeon_surface_reg {
  * TTM.
  */
 struct radeon_mman {
-<<<<<<< HEAD
-	struct ttm_bo_global_ref        bo_global_ref;
-	struct drm_global_reference	mem_global_ref;
-	struct ttm_bo_device		bdev;
-	bool				mem_global_referenced;
-	bool				initialized;
-};
-
-/* bo virtual address in a specific vm */
-struct radeon_bo_va {
-	/* bo list is protected by bo being reserved */
-	struct list_head		bo_list;
-	/* vm list is protected by vm mutex */
-	struct list_head		vm_list;
-	/* constant after initialization */
-	struct radeon_vm		*vm;
-	struct radeon_bo		*bo;
-	uint64_t			soffset;
-	uint64_t			eoffset;
-	uint32_t			flags;
-	bool				valid;
-=======
 	struct ttm_device		bdev;
 	bool				initialized;
 };
@@ -651,96 +480,29 @@ struct radeon_bo_va {
 	/* constant after initialization */
 	struct radeon_vm		*vm;
 	struct radeon_bo		*bo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct radeon_bo {
 	/* Protected by gem.mutex */
 	struct list_head		list;
 	/* Protected by tbo.reserved */
-<<<<<<< HEAD
-	u32				placements[3];
-	struct ttm_placement		placement;
-	struct ttm_buffer_object	tbo;
-	struct ttm_bo_kmap_obj		kmap;
-	unsigned			pin_count;
-=======
 	u32				initial_domain;
 	struct ttm_place		placements[4];
 	struct ttm_placement		placement;
 	struct ttm_buffer_object	tbo;
 	struct ttm_bo_kmap_obj		kmap;
 	u32				flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void				*kptr;
 	u32				tiling_flags;
 	u32				pitch;
 	int				surface_reg;
-<<<<<<< HEAD
-=======
 	unsigned			prime_shared_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* list of all virtual address to which this bo
 	 * is associated to
 	 */
 	struct list_head		va;
 	/* Constant after initialization */
 	struct radeon_device		*rdev;
-<<<<<<< HEAD
-	struct drm_gem_object		gem_base;
-};
-#define gem_to_radeon_bo(gobj) container_of((gobj), struct radeon_bo, gem_base)
-
-struct radeon_bo_list {
-	struct ttm_validate_buffer tv;
-	struct radeon_bo	*bo;
-	uint64_t		gpu_offset;
-	unsigned		rdomain;
-	unsigned		wdomain;
-	u32			tiling_flags;
-};
-
-/* sub-allocation manager, it has to be protected by another lock.
- * By conception this is an helper for other part of the driver
- * like the indirect buffer or semaphore, which both have their
- * locking.
- *
- * Principe is simple, we keep a list of sub allocation in offset
- * order (first entry has offset == 0, last entry has the highest
- * offset).
- *
- * When allocating new object we first check if there is room at
- * the end total_size - (last_object_offset + last_object_size) >=
- * alloc_size. If so we allocate new object there.
- *
- * When there is not enough room at the end, we start waiting for
- * each sub object until we reach object_offset+object_size >=
- * alloc_size, this object then become the sub object we return.
- *
- * Alignment can't be bigger than page size.
- *
- * Hole are not considered for allocation to keep things simple.
- * Assumption is that there won't be hole (all object on same
- * alignment).
- */
-struct radeon_sa_manager {
-	struct radeon_bo	*bo;
-	struct list_head	sa_bo;
-	unsigned		size;
-	uint64_t		gpu_addr;
-	void			*cpu_ptr;
-	uint32_t		domain;
-};
-
-struct radeon_sa_bo;
-
-/* sub-allocation buffer */
-struct radeon_sa_bo {
-	struct list_head		list;
-	struct radeon_sa_manager	*manager;
-	unsigned			offset;
-	unsigned			size;
-=======
 
 	pid_t				pid;
 
@@ -756,7 +518,6 @@ struct radeon_sa_manager {
 	uint64_t			gpu_addr;
 	void				*cpu_ptr;
 	u32 domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -767,13 +528,6 @@ struct radeon_gem {
 	struct list_head	objects;
 };
 
-<<<<<<< HEAD
-int radeon_gem_init(struct radeon_device *rdev);
-void radeon_gem_fini(struct radeon_device *rdev);
-int radeon_gem_object_create(struct radeon_device *rdev, int size,
-				int alignment, int initial_domain,
-				bool discardable, bool kernel,
-=======
 extern const struct drm_gem_object_funcs radeon_gem_object_funcs;
 
 int radeon_align_pitch(struct radeon_device *rdev, int width, int cpp, bool tiled);
@@ -783,7 +537,6 @@ void radeon_gem_fini(struct radeon_device *rdev);
 int radeon_gem_object_create(struct radeon_device *rdev, unsigned long size,
 				int alignment, int initial_domain,
 				u32 flags, bool kernel,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct drm_gem_object **obj);
 
 int radeon_mode_dumb_create(struct drm_file *file_priv,
@@ -792,54 +545,10 @@ int radeon_mode_dumb_create(struct drm_file *file_priv,
 int radeon_mode_dumb_mmap(struct drm_file *filp,
 			  struct drm_device *dev,
 			  uint32_t handle, uint64_t *offset_p);
-<<<<<<< HEAD
-int radeon_mode_dumb_destroy(struct drm_file *file_priv,
-			     struct drm_device *dev,
-			     uint32_t handle);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Semaphores.
  */
-<<<<<<< HEAD
-struct radeon_ring;
-
-#define	RADEON_SEMAPHORE_BO_SIZE	256
-
-struct radeon_semaphore_driver {
-	rwlock_t			lock;
-	struct list_head		bo;
-};
-
-struct radeon_semaphore_bo;
-
-/* everything here is constant */
-struct radeon_semaphore {
-	struct list_head		list;
-	uint64_t			gpu_addr;
-	uint32_t			*cpu_ptr;
-	struct radeon_semaphore_bo	*bo;
-};
-
-struct radeon_semaphore_bo {
-	struct list_head		list;
-	struct radeon_ib		*ib;
-	struct list_head		free;
-	struct radeon_semaphore		semaphores[RADEON_SEMAPHORE_BO_SIZE/8];
-	unsigned			nused;
-};
-
-void radeon_semaphore_driver_fini(struct radeon_device *rdev);
-int radeon_semaphore_create(struct radeon_device *rdev,
-			    struct radeon_semaphore **semaphore);
-void radeon_semaphore_emit_signal(struct radeon_device *rdev, int ring,
-				  struct radeon_semaphore *semaphore);
-void radeon_semaphore_emit_wait(struct radeon_device *rdev, int ring,
-				struct radeon_semaphore *semaphore);
-void radeon_semaphore_free(struct radeon_device *rdev,
-			   struct radeon_semaphore *semaphore);
-=======
 struct radeon_semaphore {
 	struct drm_suballoc	*sa_bo;
 	signed			waiters;
@@ -877,7 +586,6 @@ int radeon_sync_rings(struct radeon_device *rdev,
 		      int waiting_ring);
 void radeon_sync_free(struct radeon_device *rdev, struct radeon_sync *sync,
 		      struct radeon_fence *fence);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * GART structures, functions & helpers
@@ -889,15 +597,12 @@ struct radeon_mc;
 #define RADEON_GPU_PAGE_SHIFT 12
 #define RADEON_GPU_PAGE_ALIGN(a) (((a) + RADEON_GPU_PAGE_MASK) & ~RADEON_GPU_PAGE_MASK)
 
-<<<<<<< HEAD
-=======
 #define RADEON_GART_PAGE_DUMMY  0
 #define RADEON_GART_PAGE_VALID	(1 << 0)
 #define RADEON_GART_PAGE_READ	(1 << 1)
 #define RADEON_GART_PAGE_WRITE	(1 << 2)
 #define RADEON_GART_PAGE_SNOOP	(1 << 3)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct radeon_gart {
 	dma_addr_t			table_addr;
 	struct radeon_bo		*robj;
@@ -906,11 +611,7 @@ struct radeon_gart {
 	unsigned			num_cpu_pages;
 	unsigned			table_size;
 	struct page			**pages;
-<<<<<<< HEAD
-	dma_addr_t			*pages_addr;
-=======
 	uint64_t			*pages_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool				ready;
 };
 
@@ -926,12 +627,7 @@ void radeon_gart_unbind(struct radeon_device *rdev, unsigned offset,
 			int pages);
 int radeon_gart_bind(struct radeon_device *rdev, unsigned offset,
 		     int pages, struct page **pagelist,
-<<<<<<< HEAD
-		     dma_addr_t *dma_addr);
-void radeon_gart_restore(struct radeon_device *rdev);
-=======
 		     dma_addr_t *dma_addr, uint32_t flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -956,10 +652,7 @@ struct radeon_mc {
 	bool			vram_is_ddr;
 	bool			igp_sideport_enabled;
 	u64                     gtt_base_align;
-<<<<<<< HEAD
-=======
 	u64                     mc_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 bool radeon_combios_sideport_present(struct radeon_device *rdev);
@@ -978,8 +671,6 @@ struct radeon_scratch {
 int radeon_scratch_get(struct radeon_device *rdev, uint32_t *reg);
 void radeon_scratch_free(struct radeon_device *rdev, uint32_t reg);
 
-<<<<<<< HEAD
-=======
 /*
  * GPU doorbell structures, functions & helpers
  */
@@ -996,22 +687,11 @@ struct radeon_doorbell {
 
 int radeon_doorbell_get(struct radeon_device *rdev, u32 *page);
 void radeon_doorbell_free(struct radeon_device *rdev, u32 doorbell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IRQS.
  */
 
-<<<<<<< HEAD
-struct radeon_unpin_work {
-	struct work_struct work;
-	struct radeon_device *rdev;
-	int crtc_id;
-	struct radeon_fence *fence;
-	struct drm_pending_vblank_event *event;
-	struct radeon_bo *old_rbo;
-	u64 new_crtc_base;
-=======
 struct radeon_flip_work {
 	struct work_struct		flip_work;
 	struct work_struct		unpin_work;
@@ -1023,15 +703,11 @@ struct radeon_flip_work {
 	struct radeon_bo		*old_rbo;
 	struct dma_fence		*fence;
 	bool				async;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct r500_irq_stat_regs {
 	u32 disp_int;
-<<<<<<< HEAD
-=======
 	u32 hdmi0_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct r600_irq_stat_regs {
@@ -1040,11 +716,6 @@ struct r600_irq_stat_regs {
 	u32 disp_int_cont2;
 	u32 d1grph_int;
 	u32 d2grph_int;
-<<<<<<< HEAD
-};
-
-struct evergreen_irq_stat_regs {
-=======
 	u32 hdmi0_status;
 	u32 hdmi1_status;
 };
@@ -1056,17 +727,13 @@ struct evergreen_irq_stat_regs {
 };
 
 struct cik_irq_stat_regs {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 disp_int;
 	u32 disp_int_cont;
 	u32 disp_int_cont2;
 	u32 disp_int_cont3;
 	u32 disp_int_cont4;
 	u32 disp_int_cont5;
-<<<<<<< HEAD
-=======
 	u32 disp_int_cont6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 d1grph_int;
 	u32 d2grph_int;
 	u32 d3grph_int;
@@ -1079,30 +746,6 @@ union radeon_irq_stat_regs {
 	struct r500_irq_stat_regs r500;
 	struct r600_irq_stat_regs r600;
 	struct evergreen_irq_stat_regs evergreen;
-<<<<<<< HEAD
-};
-
-#define RADEON_MAX_HPD_PINS 6
-#define RADEON_MAX_CRTCS 6
-#define RADEON_MAX_HDMI_BLOCKS 2
-
-struct radeon_irq {
-	bool		installed;
-	bool		sw_int[RADEON_NUM_RINGS];
-	bool		crtc_vblank_int[RADEON_MAX_CRTCS];
-	bool		pflip[RADEON_MAX_CRTCS];
-	wait_queue_head_t	vblank_queue;
-	bool            hpd[RADEON_MAX_HPD_PINS];
-	bool            gui_idle;
-	bool            gui_idle_acked;
-	wait_queue_head_t	idle_queue;
-	bool		hdmi[RADEON_MAX_HDMI_BLOCKS];
-	spinlock_t sw_lock;
-	int sw_refcount[RADEON_NUM_RINGS];
-	union radeon_irq_stat_regs stat_regs;
-	spinlock_t pflip_lock[RADEON_MAX_CRTCS];
-	int pflip_refcount[RADEON_MAX_CRTCS];
-=======
 	struct cik_irq_stat_regs cik;
 };
 
@@ -1117,17 +760,11 @@ struct radeon_irq {
 	bool				afmt[RADEON_MAX_AFMT_BLOCKS];
 	union radeon_irq_stat_regs	stat_regs;
 	bool				dpm_thermal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int radeon_irq_kms_init(struct radeon_device *rdev);
 void radeon_irq_kms_fini(struct radeon_device *rdev);
 void radeon_irq_kms_sw_irq_get(struct radeon_device *rdev, int ring);
-<<<<<<< HEAD
-void radeon_irq_kms_sw_irq_put(struct radeon_device *rdev, int ring);
-void radeon_irq_kms_pflip_irq_get(struct radeon_device *rdev, int crtc);
-void radeon_irq_kms_pflip_irq_put(struct radeon_device *rdev, int crtc);
-=======
 bool radeon_irq_kms_sw_irq_get_delayed(struct radeon_device *rdev, int ring);
 void radeon_irq_kms_sw_irq_put(struct radeon_device *rdev, int ring);
 void radeon_irq_kms_pflip_irq_get(struct radeon_device *rdev, int crtc);
@@ -1136,57 +773,12 @@ void radeon_irq_kms_enable_afmt(struct radeon_device *rdev, int block);
 void radeon_irq_kms_disable_afmt(struct radeon_device *rdev, int block);
 void radeon_irq_kms_enable_hpd(struct radeon_device *rdev, unsigned hpd_mask);
 void radeon_irq_kms_disable_hpd(struct radeon_device *rdev, unsigned hpd_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * CP & rings.
  */
 
 struct radeon_ib {
-<<<<<<< HEAD
-	struct radeon_sa_bo	sa_bo;
-	unsigned		idx;
-	uint32_t		length_dw;
-	uint64_t		gpu_addr;
-	uint32_t		*ptr;
-	struct radeon_fence	*fence;
-	unsigned		vm_id;
-	bool			is_const_ib;
-};
-
-/*
- * locking -
- * mutex protects scheduled_ibs, ready, alloc_bm
- */
-struct radeon_ib_pool {
-	struct radeon_mutex		mutex;
-	struct radeon_sa_manager	sa_manager;
-	struct radeon_ib		ibs[RADEON_IB_POOL_SIZE];
-	bool				ready;
-	unsigned			head_id;
-};
-
-struct radeon_ring {
-	struct radeon_bo	*ring_obj;
-	volatile uint32_t	*ring;
-	unsigned		rptr;
-	unsigned		rptr_offs;
-	unsigned		rptr_reg;
-	unsigned		wptr;
-	unsigned		wptr_old;
-	unsigned		wptr_reg;
-	unsigned		ring_size;
-	unsigned		ring_free_dw;
-	int			count_dw;
-	uint64_t		gpu_addr;
-	uint32_t		align_mask;
-	uint32_t		ptr_mask;
-	struct mutex		mutex;
-	bool			ready;
-	u32			ptr_reg_shift;
-	u32			ptr_reg_mask;
-	u32			nop;
-=======
 	struct drm_suballoc		*sa_bo;
 	uint32_t			length_dw;
 	uint64_t			gpu_addr;
@@ -1236,48 +828,11 @@ struct radeon_mec {
 	u32 num_pipe;
 	u32 num_mec;
 	u32 num_queue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * VM
  */
-<<<<<<< HEAD
-struct radeon_vm {
-	struct list_head		list;
-	struct list_head		va;
-	int				id;
-	unsigned			last_pfn;
-	u64				pt_gpu_addr;
-	u64				*pt;
-	struct radeon_sa_bo		sa_bo;
-	struct mutex			mutex;
-	/* last fence for cs using this vm */
-	struct radeon_fence		*fence;
-};
-
-struct radeon_vm_funcs {
-	int (*init)(struct radeon_device *rdev);
-	void (*fini)(struct radeon_device *rdev);
-	/* cs mutex must be lock for schedule_ib */
-	int (*bind)(struct radeon_device *rdev, struct radeon_vm *vm, int id);
-	void (*unbind)(struct radeon_device *rdev, struct radeon_vm *vm);
-	void (*tlb_flush)(struct radeon_device *rdev, struct radeon_vm *vm);
-	uint32_t (*page_flags)(struct radeon_device *rdev,
-			       struct radeon_vm *vm,
-			       uint32_t flags);
-	void (*set_page)(struct radeon_device *rdev, struct radeon_vm *vm,
-			unsigned pfn, uint64_t addr, uint32_t flags);
-};
-
-struct radeon_vm_manager {
-	struct list_head		lru_vm;
-	uint32_t			use_bitmap;
-	struct radeon_sa_manager	sa_manager;
-	uint32_t			max_pfn;
-	/* fields constant after init */
-	const struct radeon_vm_funcs	*funcs;
-=======
 
 /* maximum number of VMIDs */
 #define RADEON_NUM_VM	16
@@ -1352,18 +907,14 @@ struct radeon_vm {
 struct radeon_vm_manager {
 	struct radeon_fence		*active[RADEON_NUM_VM];
 	uint32_t			max_pfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* number of VMIDs */
 	unsigned			nvm;
 	/* vram base address for page table entry  */
 	u64				vram_base_offset;
 	/* is vm enabled? */
 	bool				enabled;
-<<<<<<< HEAD
-=======
 	/* for hw to save the PD addr on suspend/resume */
 	uint32_t			saved_table_addr[RADEON_NUM_VM];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1380,108 +931,6 @@ struct r600_ih {
 	struct radeon_bo	*ring_obj;
 	volatile uint32_t	*ring;
 	unsigned		rptr;
-<<<<<<< HEAD
-	unsigned		rptr_offs;
-	unsigned		wptr;
-	unsigned		wptr_old;
-	unsigned		ring_size;
-	uint64_t		gpu_addr;
-	uint32_t		ptr_mask;
-	spinlock_t              lock;
-	bool                    enabled;
-};
-
-struct r600_blit_cp_primitives {
-	void (*set_render_target)(struct radeon_device *rdev, int format,
-				  int w, int h, u64 gpu_addr);
-	void (*cp_set_surface_sync)(struct radeon_device *rdev,
-				    u32 sync_type, u32 size,
-				    u64 mc_addr);
-	void (*set_shaders)(struct radeon_device *rdev);
-	void (*set_vtx_resource)(struct radeon_device *rdev, u64 gpu_addr);
-	void (*set_tex_resource)(struct radeon_device *rdev,
-				 int format, int w, int h, int pitch,
-				 u64 gpu_addr, u32 size);
-	void (*set_scissors)(struct radeon_device *rdev, int x1, int y1,
-			     int x2, int y2);
-	void (*draw_auto)(struct radeon_device *rdev);
-	void (*set_default_state)(struct radeon_device *rdev);
-};
-
-struct r600_blit {
-	struct mutex		mutex;
-	struct radeon_bo	*shader_obj;
-	struct r600_blit_cp_primitives primitives;
-	int max_dim;
-	int ring_size_common;
-	int ring_size_per_loop;
-	u64 shader_gpu_addr;
-	u32 vs_offset, ps_offset;
-	u32 state_offset;
-	u32 state_len;
-	u32 vb_used, vb_total;
-	struct radeon_ib *vb_ib;
-};
-
-void r600_blit_suspend(struct radeon_device *rdev);
-
-/*
- * SI RLC stuff
- */
-struct si_rlc {
-	/* for power gating */
-	struct radeon_bo	*save_restore_obj;
-	uint64_t		save_restore_gpu_addr;
-	/* for clear state */
-	struct radeon_bo	*clear_state_obj;
-	uint64_t		clear_state_gpu_addr;
-};
-
-int radeon_ib_get(struct radeon_device *rdev, int ring,
-		  struct radeon_ib **ib, unsigned size);
-void radeon_ib_free(struct radeon_device *rdev, struct radeon_ib **ib);
-bool radeon_ib_try_free(struct radeon_device *rdev, struct radeon_ib *ib);
-int radeon_ib_schedule(struct radeon_device *rdev, struct radeon_ib *ib);
-int radeon_ib_pool_init(struct radeon_device *rdev);
-void radeon_ib_pool_fini(struct radeon_device *rdev);
-int radeon_ib_pool_start(struct radeon_device *rdev);
-int radeon_ib_pool_suspend(struct radeon_device *rdev);
-/* Ring access between begin & end cannot sleep */
-int radeon_ring_index(struct radeon_device *rdev, struct radeon_ring *cp);
-void radeon_ring_free_size(struct radeon_device *rdev, struct radeon_ring *cp);
-int radeon_ring_alloc(struct radeon_device *rdev, struct radeon_ring *cp, unsigned ndw);
-int radeon_ring_lock(struct radeon_device *rdev, struct radeon_ring *cp, unsigned ndw);
-void radeon_ring_commit(struct radeon_device *rdev, struct radeon_ring *cp);
-void radeon_ring_unlock_commit(struct radeon_device *rdev, struct radeon_ring *cp);
-void radeon_ring_unlock_undo(struct radeon_device *rdev, struct radeon_ring *cp);
-int radeon_ring_test(struct radeon_device *rdev, struct radeon_ring *cp);
-int radeon_ring_init(struct radeon_device *rdev, struct radeon_ring *cp, unsigned ring_size,
-		     unsigned rptr_offs, unsigned rptr_reg, unsigned wptr_reg,
-		     u32 ptr_reg_shift, u32 ptr_reg_mask, u32 nop);
-void radeon_ring_fini(struct radeon_device *rdev, struct radeon_ring *cp);
-
-
-/*
- * CS.
- */
-struct radeon_cs_reloc {
-	struct drm_gem_object		*gobj;
-	struct radeon_bo		*robj;
-	struct radeon_bo_list		lobj;
-	uint32_t			handle;
-	uint32_t			flags;
-};
-
-struct radeon_cs_chunk {
-	uint32_t		chunk_id;
-	uint32_t		length_dw;
-	int			kpage_idx[2];
-	uint32_t		*kpage[2];
-	uint32_t		*kdata;
-	void __user		*user_ptr;
-	int			last_copied_page;
-	int			last_page_index;
-=======
 	unsigned		ring_size;
 	uint64_t		gpu_addr;
 	uint32_t		ptr_mask;
@@ -1564,7 +1013,6 @@ struct radeon_cs_chunk {
 	uint32_t		length_dw;
 	uint32_t		*kdata;
 	void __user		*user_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct radeon_cs_parser {
@@ -1579,18 +1027,6 @@ struct radeon_cs_parser {
 	unsigned		idx;
 	/* relocations */
 	unsigned		nrelocs;
-<<<<<<< HEAD
-	struct radeon_cs_reloc	*relocs;
-	struct radeon_cs_reloc	**relocs_ptr;
-	struct list_head	validated;
-	/* indices of various chunks */
-	int			chunk_ib_idx;
-	int			chunk_relocs_idx;
-	int			chunk_flags_idx;
-	int			chunk_const_ib_idx;
-	struct radeon_ib	*ib;
-	struct radeon_ib	*const_ib;
-=======
 	struct radeon_bo_list	*relocs;
 	struct radeon_bo_list	*vm_bos;
 	struct list_head	validated;
@@ -1602,20 +1038,12 @@ struct radeon_cs_parser {
 	struct radeon_cs_chunk  *chunk_const_ib;
 	struct radeon_ib	ib;
 	struct radeon_ib	const_ib;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			*track;
 	unsigned		family;
 	int			parser_error;
 	u32			cs_flags;
 	u32			ring;
 	s32			priority;
-<<<<<<< HEAD
-};
-
-extern int radeon_cs_update_pages(struct radeon_cs_parser *p, int pg_idx);
-extern int radeon_cs_finish_pages(struct radeon_cs_parser *p);
-extern u32 radeon_get_ib_value(struct radeon_cs_parser *p, int idx);
-=======
 	struct ww_acquire_ctx	ticket;
 };
 
@@ -1628,7 +1056,6 @@ static inline u32 radeon_get_ib_value(struct radeon_cs_parser *p, int idx)
 	return p->ib.ptr[idx];
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct radeon_cs_packet {
 	unsigned	idx;
@@ -1642,18 +1069,10 @@ struct radeon_cs_packet {
 typedef int (*radeon_packet0_check_t)(struct radeon_cs_parser *p,
 				      struct radeon_cs_packet *pkt,
 				      unsigned idx, unsigned reg);
-<<<<<<< HEAD
-typedef int (*radeon_packet3_check_t)(struct radeon_cs_parser *p,
-				      struct radeon_cs_packet *pkt);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * AGP
  */
-<<<<<<< HEAD
-=======
 
 struct radeon_agp_mode {
 	unsigned long mode;	/**< AGP mode */
@@ -1694,7 +1113,6 @@ static inline struct radeon_agp_head *radeon_agp_head_init(struct drm_device *de
 	return NULL;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_agp_init(struct radeon_device *rdev);
 void radeon_agp_resume(struct radeon_device *rdev);
 void radeon_agp_suspend(struct radeon_device *rdev);
@@ -1713,13 +1131,6 @@ struct radeon_wb {
 };
 
 #define RADEON_WB_SCRATCH_OFFSET 0
-<<<<<<< HEAD
-#define RADEON_WB_CP_RPTR_OFFSET 1024
-#define RADEON_WB_CP1_RPTR_OFFSET 1280
-#define RADEON_WB_CP2_RPTR_OFFSET 1536
-#define R600_WB_IH_WPTR_OFFSET   2048
-#define R600_WB_EVENT_OFFSET     3072
-=======
 #define RADEON_WB_RING0_NEXT_RPTR 256
 #define RADEON_WB_CP_RPTR_OFFSET 1024
 #define RADEON_WB_CP1_RPTR_OFFSET 1280
@@ -1732,7 +1143,6 @@ struct radeon_wb {
 #define CIK_WB_CP2_WPTR_OFFSET     3584
 #define R600_WB_DMA_RING_TEST_OFFSET 3588
 #define CAYMAN_WB_DMA1_RING_TEST_OFFSET 3592
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct radeon_pm - power management datas
@@ -1757,10 +1167,7 @@ struct radeon_wb {
 enum radeon_pm_method {
 	PM_METHOD_PROFILE,
 	PM_METHOD_DYNPM,
-<<<<<<< HEAD
-=======
 	PM_METHOD_DPM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum radeon_dynpm_state {
@@ -1786,13 +1193,6 @@ enum radeon_voltage_type {
 };
 
 enum radeon_pm_state_type {
-<<<<<<< HEAD
-	POWER_STATE_TYPE_DEFAULT,
-	POWER_STATE_TYPE_POWERSAVE,
-	POWER_STATE_TYPE_BATTERY,
-	POWER_STATE_TYPE_BALANCED,
-	POWER_STATE_TYPE_PERFORMANCE,
-=======
 	/* not used for dpm */
 	POWER_STATE_TYPE_DEFAULT,
 	POWER_STATE_TYPE_POWERSAVE,
@@ -1811,7 +1211,6 @@ enum radeon_pm_state_type {
 	POWER_STATE_TYPE_INTERNAL_ACPI,
 	POWER_STATE_TYPE_INTERNAL_ULV,
 	POWER_STATE_TYPE_INTERNAL_3DPERF,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum radeon_pm_profile_type {
@@ -1840,26 +1239,18 @@ struct radeon_pm_profile {
 
 enum radeon_int_thermal_type {
 	THERMAL_TYPE_NONE,
-<<<<<<< HEAD
-	THERMAL_TYPE_RV6XX,
-	THERMAL_TYPE_RV770,
-=======
 	THERMAL_TYPE_EXTERNAL,
 	THERMAL_TYPE_EXTERNAL_GPIO,
 	THERMAL_TYPE_RV6XX,
 	THERMAL_TYPE_RV770,
 	THERMAL_TYPE_ADT7473_WITH_INTERNAL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	THERMAL_TYPE_EVERGREEN,
 	THERMAL_TYPE_SUMO,
 	THERMAL_TYPE_NI,
 	THERMAL_TYPE_SI,
-<<<<<<< HEAD
-=======
 	THERMAL_TYPE_EMC2103_WITH_INTERNAL,
 	THERMAL_TYPE_CI,
 	THERMAL_TYPE_KV,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct radeon_voltage {
@@ -1913,10 +1304,6 @@ struct radeon_power_state {
  */
 #define RADEON_MODE_OVERCLOCK_MARGIN 500 /* 5 MHz */
 
-<<<<<<< HEAD
-struct radeon_pm {
-	struct mutex		mutex;
-=======
 enum radeon_dpm_auto_throttle_src {
 	RADEON_DPM_AUTO_THROTTLE_SRC_THERMAL,
 	RADEON_DPM_AUTO_THROTTLE_SRC_EXTERNAL
@@ -2199,15 +1586,10 @@ struct radeon_pm {
 	struct mutex		mutex;
 	/* write locked while reprogramming mclk */
 	struct rw_semaphore	mclk_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			active_crtcs;
 	int			active_crtc_count;
 	int			req_vblank;
 	bool			vblank_sync;
-<<<<<<< HEAD
-	bool			gui_idle;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fixed20_12		max_bandwidth;
 	fixed20_12		igp_sideport_mclk;
 	fixed20_12		igp_system_mclk;
@@ -2253,13 +1635,6 @@ struct radeon_pm {
 	/* internal thermal controller on rv6xx+ */
 	enum radeon_int_thermal_type int_thermal_type;
 	struct device	        *int_hwmon_dev;
-<<<<<<< HEAD
-};
-
-int radeon_pm_get_type_index(struct radeon_device *rdev,
-			     enum radeon_pm_state_type ps_type,
-			     int instance);
-=======
 	/* fan control parameters */
 	bool                    no_fan;
 	u8                      fan_pulses_per_revolution;
@@ -2386,7 +1761,6 @@ struct r600_audio {
 	bool component_registered;
 	struct mutex component_mutex;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Benchmarking
@@ -2403,8 +1777,6 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 			   struct radeon_ring *cpB);
 void radeon_test_syncing(struct radeon_device *rdev);
 
-<<<<<<< HEAD
-=======
 /*
  * MMU Notifier
  */
@@ -2418,24 +1790,10 @@ static inline int radeon_mn_register(struct radeon_bo *bo, unsigned long addr)
 }
 static inline void radeon_mn_unregister(struct radeon_bo *bo) {}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Debugfs
  */
-<<<<<<< HEAD
-struct radeon_debugfs {
-	struct drm_info_list	*files;
-	unsigned		num_files;
-};
-
-int radeon_debugfs_add_files(struct radeon_device *rdev,
-			     struct drm_info_list *files,
-			     unsigned nfiles);
-int radeon_debugfs_fence_init(struct radeon_device *rdev);
-
-
-=======
 void radeon_debugfs_fence_init(struct radeon_device *rdev);
 void radeon_gem_debugfs_init(struct radeon_device *rdev);
 
@@ -2470,7 +1828,6 @@ struct radeon_asic_ring {
 	void (*ring_start)(struct radeon_device *rdev, struct radeon_ring *cp);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ASIC specific functions.
  */
@@ -2480,44 +1837,13 @@ struct radeon_asic {
 	int (*resume)(struct radeon_device *rdev);
 	int (*suspend)(struct radeon_device *rdev);
 	void (*vga_set_state)(struct radeon_device *rdev, bool state);
-<<<<<<< HEAD
-	bool (*gpu_is_lockup)(struct radeon_device *rdev, struct radeon_ring *cp);
-	int (*asic_reset)(struct radeon_device *rdev);
-	/* ioctl hw specific callback. Some hw might want to perform special
-	 * operation on specific ioctl. For instance on wait idle some hw
-	 * might want to perform and HDP flush through MMIO as it seems that
-	 * some R6XX/R7XX hw doesn't take HDP flush into account if programmed
-	 * through ring.
-	 */
-	void (*ioctl_wait_idle)(struct radeon_device *rdev, struct radeon_bo *bo);
-=======
 	int (*asic_reset)(struct radeon_device *rdev, bool hard);
 	/* Flush the HDP cache via MMIO */
 	void (*mmio_hdp_flush)(struct radeon_device *rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check if 3D engine is idle */
 	bool (*gui_idle)(struct radeon_device *rdev);
 	/* wait for mc_idle */
 	int (*mc_wait_for_idle)(struct radeon_device *rdev);
-<<<<<<< HEAD
-	/* gart */
-	struct {
-		void (*tlb_flush)(struct radeon_device *rdev);
-		int (*set_page)(struct radeon_device *rdev, int i, uint64_t addr);
-	} gart;
-	/* ring specific callbacks */
-	struct {
-		void (*ib_execute)(struct radeon_device *rdev, struct radeon_ib *ib);
-		int (*ib_parse)(struct radeon_device *rdev, struct radeon_ib *ib);
-		void (*emit_fence)(struct radeon_device *rdev, struct radeon_fence *fence);
-		void (*emit_semaphore)(struct radeon_device *rdev, struct radeon_ring *cp,
-				       struct radeon_semaphore *semaphore, bool emit_wait);
-		int (*cs_parse)(struct radeon_cs_parser *p);
-		void (*ring_start)(struct radeon_device *rdev, struct radeon_ring *cp);
-		int (*ring_test)(struct radeon_device *rdev, struct radeon_ring *cp);
-		int (*ib_test)(struct radeon_device *rdev, struct radeon_ring *cp);
-	} ring[RADEON_NUM_RINGS];
-=======
 	/* get the reference clock */
 	u32 (*get_xclk)(struct radeon_device *rdev);
 	/* get the gpu clock counter */
@@ -2552,7 +1878,6 @@ struct radeon_asic {
 	} vm;
 	/* ring specific callbacks */
 	const struct radeon_asic_ring *ring[RADEON_NUM_RINGS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* irqs */
 	struct {
 		int (*set)(struct radeon_device *rdev);
@@ -2566,29 +1891,6 @@ struct radeon_asic {
 		u32 (*get_vblank_counter)(struct radeon_device *rdev, int crtc);
 		/* wait for vblank */
 		void (*wait_for_vblank)(struct radeon_device *rdev, int crtc);
-<<<<<<< HEAD
-	} display;
-	/* copy functions for bo handling */
-	struct {
-		int (*blit)(struct radeon_device *rdev,
-			    uint64_t src_offset,
-			    uint64_t dst_offset,
-			    unsigned num_gpu_pages,
-			    struct radeon_fence *fence);
-		u32 blit_ring_index;
-		int (*dma)(struct radeon_device *rdev,
-			   uint64_t src_offset,
-			   uint64_t dst_offset,
-			   unsigned num_gpu_pages,
-			   struct radeon_fence *fence);
-		u32 dma_ring_index;
-		/* method used for bo copy */
-		int (*copy)(struct radeon_device *rdev,
-			    uint64_t src_offset,
-			    uint64_t dst_offset,
-			    unsigned num_gpu_pages,
-			    struct radeon_fence *fence);
-=======
 		/* set backlight level */
 		void (*set_backlight_level)(struct radeon_encoder *radeon_encoder, u8 level);
 		/* get backlight level */
@@ -2617,7 +1919,6 @@ struct radeon_asic {
 					     uint64_t dst_offset,
 					     unsigned num_gpu_pages,
 					     struct dma_resv *resv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* ring used for bo copies */
 		u32 copy_ring_index;
 	} copy;
@@ -2635,11 +1936,7 @@ struct radeon_asic {
 		bool (*sense)(struct radeon_device *rdev, enum radeon_hpd_id hpd);
 		void (*set_polarity)(struct radeon_device *rdev, enum radeon_hpd_id hpd);
 	} hpd;
-<<<<<<< HEAD
-	/* power management */
-=======
 	/* static power management */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		void (*misc)(struct radeon_device *rdev);
 		void (*prepare)(struct radeon_device *rdev);
@@ -2653,14 +1950,6 @@ struct radeon_asic {
 		int (*get_pcie_lanes)(struct radeon_device *rdev);
 		void (*set_pcie_lanes)(struct radeon_device *rdev, int lanes);
 		void (*set_clock_gating)(struct radeon_device *rdev, int enable);
-<<<<<<< HEAD
-	} pm;
-	/* pageflipping */
-	struct {
-		void (*pre_page_flip)(struct radeon_device *rdev, int crtc);
-		u32 (*page_flip)(struct radeon_device *rdev, int crtc, u64 crtc_base);
-		void (*post_page_flip)(struct radeon_device *rdev, int crtc);
-=======
 		int (*set_uvd_clocks)(struct radeon_device *rdev, u32 vclk, u32 dclk);
 		int (*set_vce_clocks)(struct radeon_device *rdev, u32 evclk, u32 ecclk);
 		int (*get_temperature)(struct radeon_device *rdev);
@@ -2697,29 +1986,16 @@ struct radeon_asic {
 	struct {
 		void (*page_flip)(struct radeon_device *rdev, int crtc, u64 crtc_base, bool async);
 		bool (*page_flip_pending)(struct radeon_device *rdev, int crtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} pflip;
 };
 
 /*
  * Asic structures
  */
-<<<<<<< HEAD
-struct r100_gpu_lockup {
-	unsigned long	last_jiffies;
-	u32		last_cp_rptr;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct r100_asic {
 	const unsigned		*reg_safe_bm;
 	unsigned		reg_safe_bm_size;
 	u32			hdp_cntl;
-<<<<<<< HEAD
-	struct r100_gpu_lockup	lockup;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct r300_asic {
@@ -2727,10 +2003,6 @@ struct r300_asic {
 	unsigned		reg_safe_bm_size;
 	u32			resync_scratch;
 	u32			hdp_cntl;
-<<<<<<< HEAD
-	struct r100_gpu_lockup	lockup;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct r600_asic {
@@ -2752,11 +2024,7 @@ struct r600_asic {
 	unsigned		tiling_group_size;
 	unsigned		tile_config;
 	unsigned		backend_map;
-<<<<<<< HEAD
-	struct r100_gpu_lockup	lockup;
-=======
 	unsigned		active_simds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct rv770_asic {
@@ -2782,11 +2050,7 @@ struct rv770_asic {
 	unsigned		tiling_group_size;
 	unsigned		tile_config;
 	unsigned		backend_map;
-<<<<<<< HEAD
-	struct r100_gpu_lockup	lockup;
-=======
 	unsigned		active_simds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct evergreen_asic {
@@ -2813,11 +2077,7 @@ struct evergreen_asic {
 	unsigned tiling_group_size;
 	unsigned tile_config;
 	unsigned backend_map;
-<<<<<<< HEAD
-	struct r100_gpu_lockup	lockup;
-=======
 	unsigned active_simds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cayman_asic {
@@ -2856,24 +2116,14 @@ struct cayman_asic {
 	unsigned multi_gpu_tile_size;
 
 	unsigned tile_config;
-<<<<<<< HEAD
-	struct r100_gpu_lockup	lockup;
-=======
 	unsigned active_simds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct si_asic {
 	unsigned max_shader_engines;
-<<<<<<< HEAD
-	unsigned max_pipes_per_simd;
-	unsigned max_tile_pipes;
-	unsigned max_simds_per_se;
-=======
 	unsigned max_tile_pipes;
 	unsigned max_cu_per_sh;
 	unsigned max_sh_per_se;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned max_backends_per_se;
 	unsigned max_texture_channel_caches;
 	unsigned max_gprs;
@@ -2884,14 +2134,8 @@ struct si_asic {
 	unsigned sc_hiz_tile_fifo_size;
 	unsigned sc_earlyz_tile_fifo_size;
 
-<<<<<<< HEAD
-	unsigned num_shader_engines;
-	unsigned num_tile_pipes;
-	unsigned num_backends_per_se;
-=======
 	unsigned num_tile_pipes;
 	unsigned backend_enable_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned backend_disable_mask_per_asic;
 	unsigned backend_map;
 	unsigned num_texture_channel_caches;
@@ -2902,9 +2146,6 @@ struct si_asic {
 	unsigned multi_gpu_tile_size;
 
 	unsigned tile_config;
-<<<<<<< HEAD
-	struct r100_gpu_lockup	lockup;
-=======
 	uint32_t tile_mode_array[32];
 	uint32_t active_cus;
 };
@@ -2939,7 +2180,6 @@ struct cik_asic {
 	uint32_t tile_mode_array[32];
 	uint32_t macrotile_mode_array[16];
 	uint32_t active_cus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union radeon_asic_config {
@@ -2950,10 +2190,7 @@ union radeon_asic_config {
 	struct evergreen_asic	evergreen;
 	struct cayman_asic	cayman;
 	struct si_asic		si;
-<<<<<<< HEAD
-=======
 	struct cik_asic		cik;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -2970,22 +2207,12 @@ int radeon_gem_info_ioctl(struct drm_device *dev, void *data,
 			  struct drm_file *filp);
 int radeon_gem_create_ioctl(struct drm_device *dev, void *data,
 			    struct drm_file *filp);
-<<<<<<< HEAD
-=======
 int radeon_gem_userptr_ioctl(struct drm_device *dev, void *data,
 			     struct drm_file *filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_gem_pin_ioctl(struct drm_device *dev, void *data,
 			 struct drm_file *file_priv);
 int radeon_gem_unpin_ioctl(struct drm_device *dev, void *data,
 			   struct drm_file *file_priv);
-<<<<<<< HEAD
-int radeon_gem_pwrite_ioctl(struct drm_device *dev, void *data,
-			    struct drm_file *file_priv);
-int radeon_gem_pread_ioctl(struct drm_device *dev, void *data,
-			   struct drm_file *file_priv);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_gem_set_domain_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *filp);
 int radeon_gem_mmap_ioctl(struct drm_device *dev, void *data,
@@ -2996,20 +2223,14 @@ int radeon_gem_wait_idle_ioctl(struct drm_device *dev, void *data,
 			      struct drm_file *filp);
 int radeon_gem_va_ioctl(struct drm_device *dev, void *data,
 			  struct drm_file *filp);
-<<<<<<< HEAD
-=======
 int radeon_gem_op_ioctl(struct drm_device *dev, void *data,
 			struct drm_file *filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_cs_ioctl(struct drm_device *dev, void *data, struct drm_file *filp);
 int radeon_gem_set_tiling_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *filp);
 int radeon_gem_get_tiling_ioctl(struct drm_device *dev, void *data,
 				struct drm_file *filp);
-<<<<<<< HEAD
-=======
 int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* VRAM scratch page for HDP bug, default vram page */
 struct r600_vram_scratch {
@@ -3018,8 +2239,6 @@ struct r600_vram_scratch {
 	u64				gpu_addr;
 };
 
-<<<<<<< HEAD
-=======
 /*
  * ACPI
  */
@@ -3070,7 +2289,6 @@ struct radeon_atcs_functions {
 struct radeon_atcs {
 	struct radeon_atcs_functions functions;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Core structure, functions and helpers.
@@ -3082,14 +2300,11 @@ struct radeon_device {
 	struct device			*dev;
 	struct drm_device		*ddev;
 	struct pci_dev			*pdev;
-<<<<<<< HEAD
-=======
 #ifdef __alpha__
 	struct pci_controller		*hose;
 #endif
 	struct radeon_agp_head		*agp;
 	struct rw_semaphore		exclusive_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ASIC */
 	union radeon_asic_config	config;
 	enum radeon_family		family;
@@ -3103,12 +2318,6 @@ struct radeon_device {
 	uint8_t				*bios;
 	bool				is_atom_bios;
 	uint16_t			bios_header_start;
-<<<<<<< HEAD
-	struct radeon_bo		*stollen_vga_memory;
-	/* Register mmio */
-	resource_size_t			rmmio_base;
-	resource_size_t			rmmio_size;
-=======
 	struct radeon_bo		*stolen_vga_memory;
 	/* Register mmio */
 	resource_size_t			rmmio_base;
@@ -3137,7 +2346,6 @@ struct radeon_device {
 	spinlock_t didt_idx_lock;
 	/* protects concurrent ENDPOINT (audio) register access */
 	spinlock_t end_idx_lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem			*rmmio;
 	radeon_rreg_t			mc_rreg;
 	radeon_wreg_t			mc_wreg;
@@ -3154,14 +2362,6 @@ struct radeon_device {
 	struct radeon_gart		gart;
 	struct radeon_mode_info		mode_info;
 	struct radeon_scratch		scratch;
-<<<<<<< HEAD
-	struct radeon_mman		mman;
-	rwlock_t			fence_lock;
-	struct radeon_fence_driver	fence_drv[RADEON_NUM_RINGS];
-	struct radeon_semaphore_driver	semaphore_drv;
-	struct radeon_ring		ring[RADEON_NUM_RINGS];
-	struct radeon_ib_pool		ib_pool;
-=======
 	struct radeon_doorbell		doorbell;
 	struct radeon_mman		mman;
 	struct radeon_fence_driver	fence_drv[RADEON_NUM_RINGS];
@@ -3171,22 +2371,10 @@ struct radeon_device {
 	struct radeon_ring		ring[RADEON_NUM_RINGS];
 	bool				ib_pool_ready;
 	struct radeon_sa_manager	ring_tmp_bo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct radeon_irq		irq;
 	struct radeon_asic		*asic;
 	struct radeon_gem		gem;
 	struct radeon_pm		pm;
-<<<<<<< HEAD
-	uint32_t			bios_scratch[RADEON_BIOS_NUM_SCRATCH];
-	struct radeon_mutex		cs_mutex;
-	struct radeon_wb		wb;
-	struct radeon_dummy_page	dummy_page;
-	bool				gpu_lockup;
-	bool				shutdown;
-	bool				suspend;
-	bool				need_dma32;
-	bool				accel_working;
-=======
 	struct radeon_uvd		uvd;
 	struct radeon_vce		vce;
 	uint32_t			bios_scratch[RADEON_BIOS_NUM_SCRATCH];
@@ -3197,34 +2385,12 @@ struct radeon_device {
 	bool				accel_working;
 	bool				fastfb_working; /* IGP feature*/
 	bool				needs_reset, in_reset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct radeon_surface_reg surface_regs[RADEON_GEM_MAX_SURFACES];
 	const struct firmware *me_fw;	/* all family ME firmware */
 	const struct firmware *pfp_fw;	/* r6/700 PFP firmware */
 	const struct firmware *rlc_fw;	/* r6/700 RLC firmware */
 	const struct firmware *mc_fw;	/* NI MC firmware */
 	const struct firmware *ce_fw;	/* SI CE firmware */
-<<<<<<< HEAD
-	struct r600_blit r600_blit;
-	struct r600_vram_scratch vram_scratch;
-	int msi_enabled; /* msi enabled */
-	struct r600_ih ih; /* r6/700 interrupt ring */
-	struct si_rlc rlc;
-	struct work_struct hotplug_work;
-	int num_crtc; /* number of crtcs */
-	struct mutex dc_hw_i2c_mutex; /* display controller hw i2c mutex */
-	struct mutex vram_mutex;
-
-	/* audio stuff */
-	bool			audio_enabled;
-	struct timer_list	audio_timer;
-	int			audio_channels;
-	int			audio_rate;
-	int			audio_bits_per_sample;
-	uint8_t			audio_status_bits;
-	uint8_t			audio_category_code;
-
-=======
 	const struct firmware *mec_fw;	/* CIK MEC firmware */
 	const struct firmware *mec2_fw;	/* KV MEC2 firmware */
 	const struct firmware *sdma_fw;	/* CIK SDMA firmware */
@@ -3245,22 +2411,12 @@ struct radeon_device {
 	bool has_uvd;
 	bool has_vce;
 	struct r600_audio audio; /* audio stuff */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct notifier_block acpi_nb;
 	/* only one userspace can use Hyperz features or CMASK at a time */
 	struct drm_file *hyperz_filp;
 	struct drm_file *cmask_filp;
 	/* i2c buses */
 	struct radeon_i2c_chan *i2c_bus[RADEON_MAX_I2C_BUS];
-<<<<<<< HEAD
-	/* debugfs */
-	struct radeon_debugfs	debugfs[RADEON_DEBUGFS_MAX_COMPONENTS];
-	unsigned 		debugfs_count;
-	/* virtual memory */
-	struct radeon_vm_manager	vm_manager;
-};
-
-=======
 	/* virtual memory */
 	struct radeon_vm_manager	vm_manager;
 	struct mutex			gpu_clock_mutex;
@@ -3286,7 +2442,6 @@ struct radeon_device {
 };
 
 bool radeon_is_px(struct drm_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_device_init(struct radeon_device *rdev,
 		       struct drm_device *ddev,
 		       struct pci_dev *pdev,
@@ -3294,17 +2449,6 @@ int radeon_device_init(struct radeon_device *rdev,
 void radeon_device_fini(struct radeon_device *rdev);
 int radeon_gpu_wait_for_idle(struct radeon_device *rdev);
 
-<<<<<<< HEAD
-uint32_t r100_mm_rreg(struct radeon_device *rdev, uint32_t reg);
-void r100_mm_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v);
-u32 r100_io_rreg(struct radeon_device *rdev, u32 reg);
-void r100_io_wreg(struct radeon_device *rdev, u32 reg, u32 v);
-
-/*
- * Cast helper
- */
-#define to_radeon_fence(p) ((struct radeon_fence *)(p))
-=======
 #define RADEON_MIN_MMIO_SIZE 0x10000
 
 uint32_t r100_mm_rreg_slow(struct radeon_device *rdev, uint32_t reg);
@@ -3347,7 +2491,6 @@ static inline struct radeon_fence *to_radeon_fence(struct dma_fence *f)
 
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Registers read & write functions.
@@ -3356,18 +2499,12 @@ static inline struct radeon_fence *to_radeon_fence(struct dma_fence *f)
 #define WREG8(reg, v) writeb(v, (rdev->rmmio) + (reg))
 #define RREG16(reg) readw((rdev->rmmio) + (reg))
 #define WREG16(reg, v) writew(v, (rdev->rmmio) + (reg))
-<<<<<<< HEAD
-#define RREG32(reg) r100_mm_rreg(rdev, (reg))
-#define DREG32(reg) printk(KERN_INFO "REGISTER: " #reg " : 0x%08X\n", r100_mm_rreg(rdev, (reg)))
-#define WREG32(reg, v) r100_mm_wreg(rdev, (reg), (v))
-=======
 #define RREG32(reg) r100_mm_rreg(rdev, (reg), false)
 #define RREG32_IDX(reg) r100_mm_rreg(rdev, (reg), true)
 #define DREG32(reg) pr_info("REGISTER: " #reg " : 0x%08X\n",	\
 			    r100_mm_rreg(rdev, (reg), false))
 #define WREG32(reg, v) r100_mm_wreg(rdev, (reg), (v), false)
 #define WREG32_IDX(reg, v) r100_mm_wreg(rdev, (reg), (v), true)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_SET(FIELD, v) (((v) << FIELD##_SHIFT) & FIELD##_MASK)
 #define REG_GET(FIELD, v) (((v) << FIELD##_SHIFT) & FIELD##_MASK)
 #define RREG32_PLL(reg) rdev->pll_rreg(rdev, (reg))
@@ -3376,10 +2513,6 @@ static inline struct radeon_fence *to_radeon_fence(struct dma_fence *f)
 #define WREG32_MC(reg, v) rdev->mc_wreg(rdev, (reg), (v))
 #define RREG32_PCIE(reg) rv370_pcie_rreg(rdev, (reg))
 #define WREG32_PCIE(reg, v) rv370_pcie_wreg(rdev, (reg), (v))
-<<<<<<< HEAD
-#define RREG32_PCIE_P(reg) rdev->pciep_rreg(rdev, (reg))
-#define WREG32_PCIE_P(reg, v) rdev->pciep_wreg(rdev, (reg), (v))
-=======
 #define RREG32_PCIE_PORT(reg) rdev->pciep_rreg(rdev, (reg))
 #define WREG32_PCIE_PORT(reg, v) rdev->pciep_wreg(rdev, (reg), (v))
 #define RREG32_SMC(reg) tn_smc_rreg(rdev, (reg))
@@ -3396,7 +2529,6 @@ static inline struct radeon_fence *to_radeon_fence(struct dma_fence *f)
 #define WREG32_UVD_CTX(reg, v) r600_uvd_ctx_wreg(rdev, (reg), (v))
 #define RREG32_DIDT(reg) cik_didt_rreg(rdev, (reg))
 #define WREG32_DIDT(reg, v) cik_didt_wreg(rdev, (reg), (v))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WREG32_P(reg, val, mask)				\
 	do {							\
 		uint32_t tmp_ = RREG32(reg);			\
@@ -3404,11 +2536,8 @@ static inline struct radeon_fence *to_radeon_fence(struct dma_fence *f)
 		tmp_ |= ((val) & ~(mask));			\
 		WREG32(reg, tmp_);				\
 	} while (0)
-<<<<<<< HEAD
-=======
 #define WREG32_AND(reg, and) WREG32_P(reg, 0, and)
 #define WREG32_OR(reg, or) WREG32_P(reg, or, ~(or))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WREG32_PLL_P(reg, val, mask)				\
 	do {							\
 		uint32_t tmp_ = RREG32_PLL(reg);		\
@@ -3416,29 +2545,6 @@ static inline struct radeon_fence *to_radeon_fence(struct dma_fence *f)
 		tmp_ |= ((val) & ~(mask));			\
 		WREG32_PLL(reg, tmp_);				\
 	} while (0)
-<<<<<<< HEAD
-#define DREG32_SYS(sqf, rdev, reg) seq_printf((sqf), #reg " : 0x%08X\n", r100_mm_rreg((rdev), (reg)))
-#define RREG32_IO(reg) r100_io_rreg(rdev, (reg))
-#define WREG32_IO(reg, v) r100_io_wreg(rdev, (reg), (v))
-
-/*
- * Indirect registers accessor
- */
-static inline uint32_t rv370_pcie_rreg(struct radeon_device *rdev, uint32_t reg)
-{
-	uint32_t r;
-
-	WREG32(RADEON_PCIE_INDEX, ((reg) & rdev->pcie_reg_mask));
-	r = RREG32(RADEON_PCIE_DATA);
-	return r;
-}
-
-static inline void rv370_pcie_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v)
-{
-	WREG32(RADEON_PCIE_INDEX, ((reg) & rdev->pcie_reg_mask));
-	WREG32(RADEON_PCIE_DATA, (v));
-}
-=======
 #define WREG32_SMC_P(reg, val, mask)				\
 	do {							\
 		uint32_t tmp_ = RREG32_SMC(reg);		\
@@ -3477,7 +2583,6 @@ u32 r600_uvd_ctx_rreg(struct radeon_device *rdev, u32 reg);
 void r600_uvd_ctx_wreg(struct radeon_device *rdev, u32 reg, u32 v);
 u32 cik_didt_rreg(struct radeon_device *rdev, u32 reg);
 void cik_didt_wreg(struct radeon_device *rdev, u32 reg, u32 v);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void r100_pll_errata_after_index(struct radeon_device *rdev);
 
@@ -3503,16 +2608,6 @@ void r100_pll_errata_after_index(struct radeon_device *rdev);
 		(rdev->family == CHIP_RV410) ||			\
 		(rdev->family == CHIP_RS400) ||			\
 		(rdev->family == CHIP_RS480))
-<<<<<<< HEAD
-#define ASIC_IS_X2(rdev) ((rdev->ddev->pdev->device == 0x9441) || \
-		(rdev->ddev->pdev->device == 0x9443) || \
-		(rdev->ddev->pdev->device == 0x944B) || \
-		(rdev->ddev->pdev->device == 0x9506) || \
-		(rdev->ddev->pdev->device == 0x9509) || \
-		(rdev->ddev->pdev->device == 0x950F) || \
-		(rdev->ddev->pdev->device == 0x689C) || \
-		(rdev->ddev->pdev->device == 0x689D))
-=======
 #define ASIC_IS_X2(rdev) ((rdev->pdev->device == 0x9441) || \
 		(rdev->pdev->device == 0x9443) || \
 		(rdev->pdev->device == 0x944B) || \
@@ -3521,7 +2616,6 @@ void r100_pll_errata_after_index(struct radeon_device *rdev);
 		(rdev->pdev->device == 0x950F) || \
 		(rdev->pdev->device == 0x689C) || \
 		(rdev->pdev->device == 0x689D))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ASIC_IS_AVIVO(rdev) ((rdev->family >= CHIP_RS600))
 #define ASIC_IS_DCE2(rdev) ((rdev->family == CHIP_RS600)  ||	\
 			    (rdev->family == CHIP_RS690)  ||	\
@@ -3536,8 +2630,6 @@ void r100_pll_errata_after_index(struct radeon_device *rdev);
 #define ASIC_IS_DCE6(rdev) ((rdev->family >= CHIP_ARUBA))
 #define ASIC_IS_DCE61(rdev) ((rdev->family >= CHIP_ARUBA) && \
 			     (rdev->flags & RADEON_IS_IGP))
-<<<<<<< HEAD
-=======
 #define ASIC_IS_DCE64(rdev) ((rdev->family == CHIP_OLAND))
 #define ASIC_IS_NODCE(rdev) ((rdev->family == CHIP_HAINAN))
 #define ASIC_IS_DCE8(rdev) ((rdev->family >= CHIP_BONAIRE))
@@ -3554,7 +2646,6 @@ void r100_pll_errata_after_index(struct radeon_device *rdev);
 			      (rdev->pdev->device == 0x6841) || \
 			      (rdev->pdev->device == 0x6842) || \
 			      (rdev->pdev->device == 0x6843))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * BIOS helpers.
@@ -3572,11 +2663,6 @@ void radeon_atombios_fini(struct radeon_device *rdev);
 /*
  * RING helpers.
  */
-<<<<<<< HEAD
-#if DRM_DEBUG_CODE == 0
-static inline void radeon_ring_write(struct radeon_ring *ring, uint32_t v)
-{
-=======
 
 /**
  * radeon_ring_write - write a value to the ring
@@ -3591,19 +2677,11 @@ static inline void radeon_ring_write(struct radeon_ring *ring, uint32_t v)
 	if (ring->count_dw <= 0)
 		DRM_ERROR("radeon: writing more dwords to the ring than expected!\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ring->ring[ring->wptr++] = v;
 	ring->wptr &= ring->ptr_mask;
 	ring->count_dw--;
 	ring->ring_free_dw--;
 }
-<<<<<<< HEAD
-#else
-/* With debugging this is just too big to inline */
-void radeon_ring_write(struct radeon_ring *ring, uint32_t v);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ASICs macro.
@@ -3612,27 +2690,6 @@ void radeon_ring_write(struct radeon_ring *ring, uint32_t v);
 #define radeon_fini(rdev) (rdev)->asic->fini((rdev))
 #define radeon_resume(rdev) (rdev)->asic->resume((rdev))
 #define radeon_suspend(rdev) (rdev)->asic->suspend((rdev))
-<<<<<<< HEAD
-#define radeon_cs_parse(rdev, r, p) (rdev)->asic->ring[(r)].cs_parse((p))
-#define radeon_vga_set_state(rdev, state) (rdev)->asic->vga_set_state((rdev), (state))
-#define radeon_gpu_is_lockup(rdev, cp) (rdev)->asic->gpu_is_lockup((rdev), (cp))
-#define radeon_asic_reset(rdev) (rdev)->asic->asic_reset((rdev))
-#define radeon_gart_tlb_flush(rdev) (rdev)->asic->gart.tlb_flush((rdev))
-#define radeon_gart_set_page(rdev, i, p) (rdev)->asic->gart.set_page((rdev), (i), (p))
-#define radeon_ring_start(rdev, r, cp) (rdev)->asic->ring[(r)].ring_start((rdev), (cp))
-#define radeon_ring_test(rdev, r, cp) (rdev)->asic->ring[(r)].ring_test((rdev), (cp))
-#define radeon_ib_test(rdev, r, cp) (rdev)->asic->ring[(r)].ib_test((rdev), (cp))
-#define radeon_ring_ib_execute(rdev, r, ib) (rdev)->asic->ring[(r)].ib_execute((rdev), (ib))
-#define radeon_ring_ib_parse(rdev, r, ib) (rdev)->asic->ring[(r)].ib_parse((rdev), (ib))
-#define radeon_irq_set(rdev) (rdev)->asic->irq.set((rdev))
-#define radeon_irq_process(rdev) (rdev)->asic->irq.process((rdev))
-#define radeon_get_vblank_counter(rdev, crtc) (rdev)->asic->display.get_vblank_counter((rdev), (crtc))
-#define radeon_fence_ring_emit(rdev, r, fence) (rdev)->asic->ring[(r)].emit_fence((rdev), (fence))
-#define radeon_semaphore_ring_emit(rdev, r, cp, semaphore, emit_wait) (rdev)->asic->ring[(r)].emit_semaphore((rdev), (cp), (semaphore), (emit_wait))
-#define radeon_copy_blit(rdev, s, d, np, f) (rdev)->asic->copy.blit((rdev), (s), (d), (np), (f))
-#define radeon_copy_dma(rdev, s, d, np, f) (rdev)->asic->copy.dma((rdev), (s), (d), (np), (f))
-#define radeon_copy(rdev, s, d, np, f) (rdev)->asic->copy.copy((rdev), (s), (d), (np), (f))
-=======
 #define radeon_cs_parse(rdev, r, p) (rdev)->asic->ring[(r)]->cs_parse((p))
 #define radeon_vga_set_state(rdev, state) (rdev)->asic->vga_set_state((rdev), (state))
 #define radeon_asic_reset(rdev) (rdev)->asic->asic_reset((rdev), false)
@@ -3667,7 +2724,6 @@ void radeon_ring_write(struct radeon_ring *ring, uint32_t v);
 #define radeon_copy_blit(rdev, s, d, np, resv) (rdev)->asic->copy.blit((rdev), (s), (d), (np), (resv))
 #define radeon_copy_dma(rdev, s, d, np, resv) (rdev)->asic->copy.dma((rdev), (s), (d), (np), (resv))
 #define radeon_copy(rdev, s, d, np, resv) (rdev)->asic->copy.copy((rdev), (s), (d), (np), (resv))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define radeon_copy_blit_ring_index(rdev) (rdev)->asic->copy.blit_ring_index
 #define radeon_copy_dma_ring_index(rdev) (rdev)->asic->copy.dma_ring_index
 #define radeon_copy_ring_index(rdev) (rdev)->asic->copy.copy_ring_index
@@ -3678,12 +2734,9 @@ void radeon_ring_write(struct radeon_ring *ring, uint32_t v);
 #define radeon_get_pcie_lanes(rdev) (rdev)->asic->pm.get_pcie_lanes((rdev))
 #define radeon_set_pcie_lanes(rdev, l) (rdev)->asic->pm.set_pcie_lanes((rdev), (l))
 #define radeon_set_clock_gating(rdev, e) (rdev)->asic->pm.set_clock_gating((rdev), (e))
-<<<<<<< HEAD
-=======
 #define radeon_set_uvd_clocks(rdev, v, d) (rdev)->asic->pm.set_uvd_clocks((rdev), (v), (d))
 #define radeon_set_vce_clocks(rdev, ev, ec) (rdev)->asic->pm.set_vce_clocks((rdev), (ev), (ec))
 #define radeon_get_temperature(rdev) (rdev)->asic->pm.get_temperature((rdev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define radeon_set_surface_reg(rdev, r, f, p, o, s) ((rdev)->asic->surface.set_reg((rdev), (r), (f), (p), (o), (s)))
 #define radeon_clear_surface_reg(rdev, r) ((rdev)->asic->surface.clear_reg((rdev), (r)))
 #define radeon_bandwidth_update(rdev) (rdev)->asic->display.bandwidth_update((rdev))
@@ -3697,13 +2750,6 @@ void radeon_ring_write(struct radeon_ring *ring, uint32_t v);
 #define radeon_pm_finish(rdev) (rdev)->asic->pm.finish((rdev))
 #define radeon_pm_init_profile(rdev) (rdev)->asic->pm.init_profile((rdev))
 #define radeon_pm_get_dynpm_state(rdev) (rdev)->asic->pm.get_dynpm_state((rdev))
-<<<<<<< HEAD
-#define radeon_pre_page_flip(rdev, crtc) rdev->asic->pflip.pre_page_flip((rdev), (crtc))
-#define radeon_page_flip(rdev, crtc, base) rdev->asic->pflip.page_flip((rdev), (crtc), (base))
-#define radeon_post_page_flip(rdev, crtc) rdev->asic->pflip.post_page_flip((rdev), (crtc))
-#define radeon_wait_for_vblank(rdev, crtc) rdev->asic->display.wait_for_vblank((rdev), (crtc))
-#define radeon_mc_wait_for_idle(rdev) rdev->asic->mc_wait_for_idle((rdev))
-=======
 #define radeon_page_flip(rdev, crtc, base, async) (rdev)->asic->pflip.page_flip((rdev), (crtc), (base), (async))
 #define radeon_page_flip_pending(rdev, crtc) (rdev)->asic->pflip.page_flip_pending((rdev), (crtc))
 #define radeon_wait_for_vblank(rdev, crtc) (rdev)->asic->display.wait_for_vblank((rdev), (crtc))
@@ -3731,16 +2777,12 @@ void radeon_ring_write(struct radeon_ring *ring, uint32_t v);
 #define radeon_dpm_enable_bapm(rdev, e) rdev->asic->dpm.enable_bapm((rdev), (e))
 #define radeon_dpm_get_current_sclk(rdev) rdev->asic->dpm.get_current_sclk((rdev))
 #define radeon_dpm_get_current_mclk(rdev) rdev->asic->dpm.get_current_mclk((rdev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Common functions */
 /* AGP */
 extern int radeon_gpu_reset(struct radeon_device *rdev);
-<<<<<<< HEAD
-=======
 extern void radeon_pci_config_reset(struct radeon_device *rdev);
 extern void r600_set_bios_scratch_engine_hung(struct radeon_device *rdev, bool hung);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void radeon_agp_disable(struct radeon_device *rdev);
 extern int radeon_modeset_init(struct radeon_device *rdev);
 extern void radeon_modeset_fini(struct radeon_device *rdev);
@@ -3758,13 +2800,6 @@ extern void radeon_legacy_set_clock_gating(struct radeon_device *rdev, int enabl
 extern void radeon_atom_set_clock_gating(struct radeon_device *rdev, int enable);
 extern void radeon_ttm_placement_from_domain(struct radeon_bo *rbo, u32 domain);
 extern bool radeon_ttm_bo_is_radeon_bo(struct ttm_buffer_object *bo);
-<<<<<<< HEAD
-extern void radeon_vram_location(struct radeon_device *rdev, struct radeon_mc *mc, u64 base);
-extern void radeon_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc);
-extern int radeon_resume_kms(struct drm_device *dev);
-extern int radeon_suspend_kms(struct drm_device *dev, pm_message_t state);
-extern void radeon_ttm_set_active_vram_size(struct radeon_device *rdev, u64 size);
-=======
 extern int radeon_ttm_tt_set_userptr(struct radeon_device *rdev,
 				     struct ttm_tt *ttm, uint64_t addr,
 				     uint32_t flags);
@@ -3787,36 +2822,12 @@ struct radeon_device *radeon_get_rdev(struct ttm_device *bdev);
 u32 radeon_get_vblank_counter_kms(struct drm_crtc *crtc);
 int radeon_enable_vblank_kms(struct drm_crtc *crtc);
 void radeon_disable_vblank_kms(struct drm_crtc *crtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * vm
  */
 int radeon_vm_manager_init(struct radeon_device *rdev);
 void radeon_vm_manager_fini(struct radeon_device *rdev);
-<<<<<<< HEAD
-int radeon_vm_manager_start(struct radeon_device *rdev);
-int radeon_vm_manager_suspend(struct radeon_device *rdev);
-int radeon_vm_init(struct radeon_device *rdev, struct radeon_vm *vm);
-void radeon_vm_fini(struct radeon_device *rdev, struct radeon_vm *vm);
-int radeon_vm_bind(struct radeon_device *rdev, struct radeon_vm *vm);
-void radeon_vm_unbind(struct radeon_device *rdev, struct radeon_vm *vm);
-int radeon_vm_bo_update_pte(struct radeon_device *rdev,
-			    struct radeon_vm *vm,
-			    struct radeon_bo *bo,
-			    struct ttm_mem_reg *mem);
-void radeon_vm_bo_invalidate(struct radeon_device *rdev,
-			     struct radeon_bo *bo);
-int radeon_vm_bo_add(struct radeon_device *rdev,
-		     struct radeon_vm *vm,
-		     struct radeon_bo *bo,
-		     uint64_t offset,
-		     uint32_t flags);
-int radeon_vm_bo_rmv(struct radeon_device *rdev,
-		     struct radeon_vm *vm,
-		     struct radeon_bo *bo);
-
-=======
 int radeon_vm_init(struct radeon_device *rdev, struct radeon_vm *vm);
 void radeon_vm_fini(struct radeon_device *rdev, struct radeon_vm *vm);
 struct radeon_bo_list *radeon_vm_get_bos(struct radeon_device *rdev,
@@ -3864,7 +2875,6 @@ void r600_audio_enable(struct radeon_device *rdev,
 void dce6_audio_enable(struct radeon_device *rdev,
 		       struct r600_audio_pin *pin,
 		       u8 enable_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * R600 vram scratch functions
@@ -3885,11 +2895,6 @@ int r600_fmt_get_nblocksy(u32 format, u32 h);
 /*
  * r600 functions used by radeon_encoder.c
  */
-<<<<<<< HEAD
-extern void r600_hdmi_enable(struct drm_encoder *encoder);
-extern void r600_hdmi_disable(struct drm_encoder *encoder);
-extern void r600_hdmi_setmode(struct drm_encoder *encoder, struct drm_display_mode *mode);
-=======
 struct radeon_hdmi_acr {
 	u32 clock;
 
@@ -3913,19 +2918,10 @@ extern u32 r6xx_remap_render_backend(struct radeon_device *rdev,
 /*
  * evergreen functions used by radeon_encoder.c
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int ni_init_microcode(struct radeon_device *rdev);
 extern int ni_mc_load_microcode(struct radeon_device *rdev);
 
-<<<<<<< HEAD
-/* radeon_acpi.c */ 
-#if defined(CONFIG_ACPI) 
-extern int radeon_acpi_init(struct radeon_device *rdev); 
-#else 
-static inline int radeon_acpi_init(struct radeon_device *rdev) { return 0; } 
-#endif 
-=======
 /* radeon_acpi.c */
 #if defined(CONFIG_ACPI)
 extern int radeon_acpi_init(struct radeon_device *rdev);
@@ -3961,7 +2957,6 @@ void radeon_irq_kms_set_irq_n_enabled(struct radeon_device *rdev,
 /* Audio component binding */
 void radeon_audio_component_init(struct radeon_device *rdev);
 void radeon_audio_component_fini(struct radeon_device *rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "radeon_object.h"
 

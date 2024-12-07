@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/nfs/symlink.c
  *
@@ -24,55 +21,11 @@
 #include <linux/stat.h>
 #include <linux/mm.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/namei.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Symlink caching in the page cache is even more simplistic
  * and straight-forward than readdir caching.
  */
 
-<<<<<<< HEAD
-static int nfs_symlink_filler(struct inode *inode, struct page *page)
-{
-	int error;
-
-	error = NFS_PROTO(inode)->readlink(inode, page, 0, PAGE_SIZE);
-	if (error < 0)
-		goto error;
-	SetPageUptodate(page);
-	unlock_page(page);
-	return 0;
-
-error:
-	SetPageError(page);
-	unlock_page(page);
-	return -EIO;
-}
-
-static void *nfs_follow_link(struct dentry *dentry, struct nameidata *nd)
-{
-	struct inode *inode = dentry->d_inode;
-	struct page *page;
-	void *err;
-
-	err = ERR_PTR(nfs_revalidate_mapping(inode, inode->i_mapping));
-	if (err)
-		goto read_failed;
-	page = read_cache_page(&inode->i_data, 0,
-				(filler_t *)nfs_symlink_filler, inode);
-	if (IS_ERR(page)) {
-		err = page;
-		goto read_failed;
-	}
-	nd_set_link(nd, kmap(page));
-	return page;
-
-read_failed:
-	nd_set_link(nd, err);
-	return NULL;
-=======
 static int nfs_symlink_filler(struct file *file, struct folio *folio)
 {
 	struct inode *inode = folio->mapping->host;
@@ -120,20 +73,13 @@ static const char *nfs_get_link(struct dentry *dentry,
 	}
 	set_delayed_call(done, page_put_link, page);
 	return page_address(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * symlinks can't do much...
  */
 const struct inode_operations nfs_symlink_inode_operations = {
-<<<<<<< HEAD
-	.readlink	= generic_readlink,
-	.follow_link	= nfs_follow_link,
-	.put_link	= page_put_link,
-=======
 	.get_link	= nfs_get_link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.getattr	= nfs_getattr,
 	.setattr	= nfs_setattr,
 };

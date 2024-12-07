@@ -246,11 +246,7 @@ int ath6kl_bmi_execute(struct ath6kl *ar, u32 addr, u32 *param)
 		return -EACCES;
 	}
 
-<<<<<<< HEAD
-	size = sizeof(cid) + sizeof(addr) + sizeof(param);
-=======
 	size = sizeof(cid) + sizeof(addr) + sizeof(*param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (size > ar->bmi.max_cmd_size) {
 		WARN_ON(1);
 		return -EINVAL;
@@ -538,11 +534,7 @@ int ath6kl_bmi_init(struct ath6kl *ar)
 	/* cmd + addr + len + data_size */
 	ar->bmi.max_cmd_size = ar->bmi.max_data_size + (sizeof(u32) * 3);
 
-<<<<<<< HEAD
-	ar->bmi.cmd_buf = kzalloc(ar->bmi.max_cmd_size, GFP_ATOMIC);
-=======
 	ar->bmi.cmd_buf = kzalloc(ar->bmi.max_cmd_size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ar->bmi.cmd_buf)
 		return -ENOMEM;
 

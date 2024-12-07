@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-menuconfig IP_SET
-	tristate "IP set support"
-	depends on INET && NETFILTER
-	depends on NETFILTER_NETLINK
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menuconfig IP_SET
 	tristate "IP set support"
 	depends on INET && NETFILTER
 	select NETFILTER_NETLINK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option adds IP set support to the kernel.
 	  In order to define and use the sets, you need the userspace utility
@@ -29,11 +22,7 @@ config IP_SET_MAX
 	  You can define here default value of the maximum number 
 	  of IP sets for the kernel.
 
-<<<<<<< HEAD
-	  The value can be overriden by the 'max_sets' module
-=======
 	  The value can be overridden by the 'max_sets' module
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  parameter of the 'ip_set' module.
 
 config IP_SET_BITMAP_IP
@@ -41,11 +30,7 @@ config IP_SET_BITMAP_IP
 	depends on IP_SET
 	help
 	  This option adds the bitmap:ip set type support, by which one
-<<<<<<< HEAD
-	  can store IPv4 addresses (or network addresse) from a range.
-=======
 	  can store IPv4 addresses (or network addresses) from a range.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
@@ -77,8 +62,6 @@ config IP_SET_HASH_IP
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config IP_SET_HASH_IPMARK
 	tristate "hash:ip,mark set support"
 	depends on IP_SET
@@ -88,7 +71,6 @@ config IP_SET_HASH_IPMARK
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config IP_SET_HASH_IPPORT
 	tristate "hash:ip,port set support"
 	depends on IP_SET
@@ -118,8 +100,6 @@ config IP_SET_HASH_IPPORTNET
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config IP_SET_HASH_IPMAC
 	tristate "hash:ip,mac set support"
 	depends on IP_SET
@@ -147,7 +127,6 @@ config IP_SET_HASH_NETPORTNET
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config IP_SET_HASH_NET
 	tristate "hash:net set support"
 	depends on IP_SET
@@ -157,8 +136,6 @@ config IP_SET_HASH_NET
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config IP_SET_HASH_NETNET
 	tristate "hash:net,net set support"
 	depends on IP_SET
@@ -168,7 +145,6 @@ config IP_SET_HASH_NETNET
 
 	  To compile it as a module, choose M here.  If unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config IP_SET_HASH_NETPORT
 	tristate "hash:net,port set support"
 	depends on IP_SET

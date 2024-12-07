@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menu "Clock Source drivers"
 	depends on GENERIC_CLOCKEVENTS
@@ -15,7 +13,6 @@ config TIMER_ACPI
 config TIMER_PROBE
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CLKSRC_I8253
 	bool
 
@@ -25,37 +22,16 @@ config CLKEVT_I8253
 config I8253_LOCK
 	bool
 
-<<<<<<< HEAD
-=======
 config OMAP_DM_SYSTIMER
 	bool
 	select TIMER_OF
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CLKBLD_I8253
 	def_bool y if CLKSRC_I8253 || CLKEVT_I8253 || I8253_LOCK
 
 config CLKSRC_MMIO
 	bool
 
-<<<<<<< HEAD
-config DW_APB_TIMER
-	bool
-
-config CLKSRC_DBX500_PRCMU
-	bool "Clocksource PRCMU Timer"
-	depends on UX500_SOC_DB5500 || UX500_SOC_DB8500
-	default y
-	help
-	  Use the always on PRCMU Timer as clocksource
-
-config CLKSRC_DBX500_PRCMU_SCHED_CLOCK
-	bool "Clocksource PRCMU Timer sched_clock"
-	depends on (CLKSRC_DBX500_PRCMU && !NOMADIK_MTU_SCHED_CLOCK)
-	default y
-	help
-	  Use the always on PRCMU Timer as sched_clock
-=======
 config BCM2835_TIMER
 	bool "BCM2835 timer driver" if COMPILE_TEST
 	select CLKSRC_MMIO
@@ -768,4 +744,3 @@ config EP93XX_TIMER
 	  EP93XX.
 
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

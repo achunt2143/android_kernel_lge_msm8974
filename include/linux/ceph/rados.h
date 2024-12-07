@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CEPH_RADOS_H
 #define CEPH_RADOS_H
 
@@ -10,19 +7,7 @@
  * (Reliable Autonomic Distributed Object Store).
  */
 
-<<<<<<< HEAD
-#include "msgr.h"
-
-/*
- * osdmap encoding versions
- */
-#define CEPH_OSDMAP_INC_VERSION     5
-#define CEPH_OSDMAP_INC_VERSION_EXT 6
-#define CEPH_OSDMAP_VERSION         5
-#define CEPH_OSDMAP_VERSION_EXT     6
-=======
 #include <linux/ceph/msgr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fs id
@@ -66,21 +51,13 @@ struct ceph_timespec {
 #define CEPH_PG_LAYOUT_LINEAR 2
 #define CEPH_PG_LAYOUT_HYBRID 3
 
-<<<<<<< HEAD
-#define CEPH_PG_MAX_SIZE      16  /* max # osds in a single pg */
-=======
 #define CEPH_PG_MAX_SIZE      32  /* max # osds in a single pg */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * placement group.
  * we encode this into one __le64.
  */
-<<<<<<< HEAD
-struct ceph_pg {
-=======
 struct ceph_pg_v1 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le16 preferred; /* preferred primary osd */
 	__le16 ps;        /* placement seed */
 	__le32 pool;      /* object pool */
@@ -103,31 +80,11 @@ struct ceph_pg_v1 {
  *
  *  lpgp_num -- as above.
  */
-<<<<<<< HEAD
-#define CEPH_PG_TYPE_REP     1
-#define CEPH_PG_TYPE_RAID4   2
-#define CEPH_PG_POOL_VERSION 2
-struct ceph_pg_pool {
-	__u8 type;                /* CEPH_PG_TYPE_* */
-	__u8 size;                /* number of osds in each pg */
-	__u8 crush_ruleset;       /* crush placement rule */
-	__u8 object_hash;         /* hash mapping object name to ps */
-	__le32 pg_num, pgp_num;   /* number of pg's */
-	__le32 lpg_num, lpgp_num; /* number of localized pg's */
-	__le32 last_change;       /* most recent epoch changed */
-	__le64 snap_seq;          /* seq for per-pool snapshot */
-	__le32 snap_epoch;        /* epoch of last snap */
-	__le32 num_snaps;
-	__le32 num_removed_snap_intervals; /* if non-empty, NO per-pool snaps */
-	__le64 auid;               /* who owns the pg */
-} __attribute__ ((packed));
-=======
 #define CEPH_NOPOOL  ((__u64) (-1))  /* pool id not defined */
 
 #define CEPH_POOL_TYPE_REP     1
 #define CEPH_POOL_TYPE_RAID4   2 /* never implemented */
 #define CEPH_POOL_TYPE_EC      3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * stable_mod func is used to control number of placement groups.
@@ -150,11 +107,7 @@ static inline int ceph_stable_mod(int x, int b, int bmask)
  * object layout - how a given object should be stored.
  */
 struct ceph_object_layout {
-<<<<<<< HEAD
-	struct ceph_pg ol_pgid;   /* raw pg, with _full_ ps precision. */
-=======
 	struct ceph_pg_v1 ol_pgid;   /* raw pg, with _full_ ps precision. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le32 ol_stripe_unit;    /* for per-object parity, if any */
 } __attribute__ ((packed));
 
@@ -162,13 +115,8 @@ struct ceph_object_layout {
  * compound epoch+version, used by storage layer to serialize mutations
  */
 struct ceph_eversion {
-<<<<<<< HEAD
-	__le32 epoch;
-	__le64 version;
-=======
 	__le64 version;
 	__le32 epoch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 /*
@@ -176,43 +124,25 @@ struct ceph_eversion {
  */
 
 /* status bits */
-<<<<<<< HEAD
-#define CEPH_OSD_EXISTS 1
-#define CEPH_OSD_UP     2
-=======
 #define CEPH_OSD_EXISTS  (1<<0)
 #define CEPH_OSD_UP      (1<<1)
 #define CEPH_OSD_AUTOOUT (1<<2)  /* osd was automatically marked out */
 #define CEPH_OSD_NEW     (1<<3)  /* osd is new, never marked in */
 
 extern const char *ceph_osd_state_name(int s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* osd weights.  fixed point value: 0x10000 == 1.0 ("in"), 0 == "out" */
 #define CEPH_OSD_IN  0x10000
 #define CEPH_OSD_OUT 0
 
-<<<<<<< HEAD
-=======
 /* osd primary-affinity.  fixed point value: 0x10000 == baseline */
 #define CEPH_OSD_MAX_PRIMARY_AFFINITY 0x10000
 #define CEPH_OSD_DEFAULT_PRIMARY_AFFINITY 0x10000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * osd map flag bits
  */
-<<<<<<< HEAD
-#define CEPH_OSDMAP_NEARFULL (1<<0)  /* sync writes (near ENOSPC) */
-#define CEPH_OSDMAP_FULL     (1<<1)  /* no data writes (ENOSPC) */
-#define CEPH_OSDMAP_PAUSERD  (1<<2)  /* pause all reads */
-#define CEPH_OSDMAP_PAUSEWR  (1<<3)  /* pause all writes */
-#define CEPH_OSDMAP_PAUSEREC (1<<4)  /* pause recovery */
-
-/*
- * osd ops
-=======
 #define CEPH_OSDMAP_NEARFULL (1<<0)  /* sync writes (near ENOSPC),
 					not set since ~luminous */
 #define CEPH_OSDMAP_FULL     (1<<1)  /* no data writes (ENOSPC),
@@ -248,17 +178,13 @@ extern const char *ceph_osd_state_name(int s);
  * WARNING: do not use these op codes directly.  Use the helpers
  * defined below instead.  In certain cases, op code behavior was
  * redefined, resulting in special-cases in the helpers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define CEPH_OSD_OP_MODE       0xf000
 #define CEPH_OSD_OP_MODE_RD    0x1000
 #define CEPH_OSD_OP_MODE_WR    0x2000
 #define CEPH_OSD_OP_MODE_RMW   0x3000
 #define CEPH_OSD_OP_MODE_SUB   0x4000
-<<<<<<< HEAD
-=======
 #define CEPH_OSD_OP_MODE_CACHE 0x8000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CEPH_OSD_OP_TYPE       0x0f00
 #define CEPH_OSD_OP_TYPE_LOCK  0x0100
@@ -266,83 +192,6 @@ extern const char *ceph_osd_state_name(int s);
 #define CEPH_OSD_OP_TYPE_ATTR  0x0300
 #define CEPH_OSD_OP_TYPE_EXEC  0x0400
 #define CEPH_OSD_OP_TYPE_PG    0x0500
-<<<<<<< HEAD
-
-enum {
-	/** data **/
-	/* read */
-	CEPH_OSD_OP_READ      = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 1,
-	CEPH_OSD_OP_STAT      = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 2,
-	CEPH_OSD_OP_MAPEXT    = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 3,
-
-	/* fancy read */
-	CEPH_OSD_OP_MASKTRUNC   = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 4,
-	CEPH_OSD_OP_SPARSE_READ = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 5,
-
-	CEPH_OSD_OP_NOTIFY    = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 6,
-	CEPH_OSD_OP_NOTIFY_ACK = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 7,
-
-	/* versioning */
-	CEPH_OSD_OP_ASSERT_VER = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 8,
-
-	/* write */
-	CEPH_OSD_OP_WRITE     = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 1,
-	CEPH_OSD_OP_WRITEFULL = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 2,
-	CEPH_OSD_OP_TRUNCATE  = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 3,
-	CEPH_OSD_OP_ZERO      = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 4,
-	CEPH_OSD_OP_DELETE    = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 5,
-
-	/* fancy write */
-	CEPH_OSD_OP_APPEND    = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 6,
-	CEPH_OSD_OP_STARTSYNC = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 7,
-	CEPH_OSD_OP_SETTRUNC  = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 8,
-	CEPH_OSD_OP_TRIMTRUNC = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 9,
-
-	CEPH_OSD_OP_TMAPUP  = CEPH_OSD_OP_MODE_RMW | CEPH_OSD_OP_TYPE_DATA | 10,
-	CEPH_OSD_OP_TMAPPUT = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 11,
-	CEPH_OSD_OP_TMAPGET = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_DATA | 12,
-
-	CEPH_OSD_OP_CREATE  = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 13,
-	CEPH_OSD_OP_ROLLBACK= CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 14,
-
-	CEPH_OSD_OP_WATCH   = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_DATA | 15,
-
-	/** attrs **/
-	/* read */
-	CEPH_OSD_OP_GETXATTR  = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_ATTR | 1,
-	CEPH_OSD_OP_GETXATTRS = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_ATTR | 2,
-	CEPH_OSD_OP_CMPXATTR  = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_ATTR | 3,
-
-	/* write */
-	CEPH_OSD_OP_SETXATTR  = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_ATTR | 1,
-	CEPH_OSD_OP_SETXATTRS = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_ATTR | 2,
-	CEPH_OSD_OP_RESETXATTRS = CEPH_OSD_OP_MODE_WR|CEPH_OSD_OP_TYPE_ATTR | 3,
-	CEPH_OSD_OP_RMXATTR   = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_ATTR | 4,
-
-	/** subop **/
-	CEPH_OSD_OP_PULL            = CEPH_OSD_OP_MODE_SUB | 1,
-	CEPH_OSD_OP_PUSH            = CEPH_OSD_OP_MODE_SUB | 2,
-	CEPH_OSD_OP_BALANCEREADS    = CEPH_OSD_OP_MODE_SUB | 3,
-	CEPH_OSD_OP_UNBALANCEREADS  = CEPH_OSD_OP_MODE_SUB | 4,
-	CEPH_OSD_OP_SCRUB           = CEPH_OSD_OP_MODE_SUB | 5,
-	CEPH_OSD_OP_SCRUB_RESERVE   = CEPH_OSD_OP_MODE_SUB | 6,
-	CEPH_OSD_OP_SCRUB_UNRESERVE = CEPH_OSD_OP_MODE_SUB | 7,
-	CEPH_OSD_OP_SCRUB_STOP      = CEPH_OSD_OP_MODE_SUB | 8,
-
-	/** lock **/
-	CEPH_OSD_OP_WRLOCK    = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_LOCK | 1,
-	CEPH_OSD_OP_WRUNLOCK  = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_LOCK | 2,
-	CEPH_OSD_OP_RDLOCK    = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_LOCK | 3,
-	CEPH_OSD_OP_RDUNLOCK  = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_LOCK | 4,
-	CEPH_OSD_OP_UPLOCK    = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_LOCK | 5,
-	CEPH_OSD_OP_DNLOCK    = CEPH_OSD_OP_MODE_WR | CEPH_OSD_OP_TYPE_LOCK | 6,
-
-	/** exec **/
-	CEPH_OSD_OP_CALL    = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_EXEC | 1,
-
-	/** pg **/
-	CEPH_OSD_OP_PGLS      = CEPH_OSD_OP_MODE_RD | CEPH_OSD_OP_TYPE_PG | 1,
-=======
 #define CEPH_OSD_OP_TYPE_MULTI 0x0600 /* multiobject */
 
 #define __CEPH_OSD_OP1(mode, nr) \
@@ -474,7 +323,6 @@ enum {
 #define GENERATE_ENUM_ENTRY(op, opcode, str)	CEPH_OSD_OP_##op = (opcode),
 __CEPH_FORALL_OSD_OPS(GENERATE_ENUM_ENTRY)
 #undef GENERATE_ENUM_ENTRY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int ceph_osd_op_type_lock(int op)
@@ -497,13 +345,10 @@ static inline int ceph_osd_op_type_pg(int op)
 {
 	return (op & CEPH_OSD_OP_TYPE) == CEPH_OSD_OP_TYPE_PG;
 }
-<<<<<<< HEAD
-=======
 static inline int ceph_osd_op_type_multi(int op)
 {
 	return (op & CEPH_OSD_OP_TYPE) == CEPH_OSD_OP_TYPE_MULTI;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int ceph_osd_op_mode_subop(int op)
 {
@@ -511,20 +356,12 @@ static inline int ceph_osd_op_mode_subop(int op)
 }
 static inline int ceph_osd_op_mode_read(int op)
 {
-<<<<<<< HEAD
-	return (op & CEPH_OSD_OP_MODE) == CEPH_OSD_OP_MODE_RD;
-}
-static inline int ceph_osd_op_mode_modify(int op)
-{
-	return (op & CEPH_OSD_OP_MODE) == CEPH_OSD_OP_MODE_WR;
-=======
 	return (op & CEPH_OSD_OP_MODE_RD) &&
 		op != CEPH_OSD_OP_CALL;
 }
 static inline int ceph_osd_op_mode_modify(int op)
 {
 	return op & CEPH_OSD_OP_MODE_WR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -533,41 +370,18 @@ static inline int ceph_osd_op_mode_modify(int op)
  */
 #define CEPH_OSD_TMAP_HDR 'h'
 #define CEPH_OSD_TMAP_SET 's'
-<<<<<<< HEAD
-#define CEPH_OSD_TMAP_RM  'r'
-
-extern const char *ceph_osd_op_name(int op);
-
-
-=======
 #define CEPH_OSD_TMAP_CREATE 'c' /* create key */
 #define CEPH_OSD_TMAP_RM  'r'
 #define CEPH_OSD_TMAP_RMSLOPPY 'R'
 
 extern const char *ceph_osd_op_name(int op);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * osd op flags
  *
  * An op may be READ, WRITE, or READ|WRITE.
  */
 enum {
-<<<<<<< HEAD
-	CEPH_OSD_FLAG_ACK = 1,          /* want (or is) "ack" ack */
-	CEPH_OSD_FLAG_ONNVRAM = 2,      /* want (or is) "onnvram" ack */
-	CEPH_OSD_FLAG_ONDISK = 4,       /* want (or is) "ondisk" ack */
-	CEPH_OSD_FLAG_RETRY = 8,        /* resend attempt */
-	CEPH_OSD_FLAG_READ = 16,        /* op may read */
-	CEPH_OSD_FLAG_WRITE = 32,       /* op may write */
-	CEPH_OSD_FLAG_ORDERSNAP = 64,   /* EOLDSNAP if snapc is out of order */
-	CEPH_OSD_FLAG_PEERSTAT = 128,   /* msg includes osd_peer_stat */
-	CEPH_OSD_FLAG_BALANCE_READS = 256,
-	CEPH_OSD_FLAG_PARALLELEXEC = 512, /* execute op in parallel */
-	CEPH_OSD_FLAG_PGOP = 1024,      /* pg op, no object */
-	CEPH_OSD_FLAG_EXEC = 2048,      /* op may exec */
-	CEPH_OSD_FLAG_EXEC_PUBLIC = 4096, /* op may exec (public) */
-=======
 	CEPH_OSD_FLAG_ACK =            0x0001,  /* want (or is) "ack" ack */
 	CEPH_OSD_FLAG_ONNVRAM =        0x0002,  /* want (or is) "onnvram" ack */
 	CEPH_OSD_FLAG_ONDISK =         0x0004,  /* want (or is) "ondisk" ack */
@@ -594,17 +408,10 @@ enum {
 	CEPH_OSD_FLAG_KNOWN_REDIR = 0x400000,  /* redirect bit is authoritative */
 	CEPH_OSD_FLAG_FULL_TRY =    0x800000,  /* try op despite full flag */
 	CEPH_OSD_FLAG_FULL_FORCE = 0x1000000,  /* force op despite full flag */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
 	CEPH_OSD_OP_FLAG_EXCL = 1,      /* EXCL object create */
-<<<<<<< HEAD
-};
-
-#define EOLDSNAPC    ERESTART  /* ORDERSNAP flag set; writer has old snapc*/
-#define EBLACKLISTED ESHUTDOWN /* blacklisted */
-=======
 	CEPH_OSD_OP_FLAG_FAILOK = 2,    /* continue despite failure */
 	CEPH_OSD_OP_FLAG_FADVISE_RANDOM	    = 0x4, /* the op is random */
 	CEPH_OSD_OP_FLAG_FADVISE_SEQUENTIAL = 0x8, /* the op is sequential */
@@ -618,7 +425,6 @@ enum {
 
 #define EOLDSNAPC    ERESTART  /* ORDERSNAP flag set; writer has old snapc*/
 #define EBLOCKLISTED ESHUTDOWN /* blocklisted */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* xattr comparison */
 enum {
@@ -636,9 +442,6 @@ enum {
 	CEPH_OSD_CMPXATTR_MODE_U64    = 2
 };
 
-<<<<<<< HEAD
-#define RADOS_NOTIFY_VER	1
-=======
 enum {
 	CEPH_OSD_COPY_FROM_FLAG_FLUSH = 1,       /* part of a flush operation */
 	CEPH_OSD_COPY_FROM_FLAG_IGNORE_OVERLAY = 2, /* ignore pool overlay */
@@ -679,7 +482,6 @@ enum {
 	CEPH_OSD_BACKOFF_OP_ACK_BLOCK = 2,
 	CEPH_OSD_BACKOFF_OP_UNBLOCK = 3,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * an individual object operation.  each may be accompanied by some data
@@ -687,11 +489,7 @@ enum {
  */
 struct ceph_osd_op {
 	__le16 op;           /* CEPH_OSD_OP_* */
-<<<<<<< HEAD
-	__le32 flags;        /* CEPH_OSD_FLAG_* */
-=======
 	__le32 flags;        /* CEPH_OSD_OP_FLAG_* */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		struct {
 			__le64 offset, length;
@@ -718,54 +516,6 @@ struct ceph_osd_op {
 	        } __attribute__ ((packed)) snap;
 		struct {
 			__le64 cookie;
-<<<<<<< HEAD
-			__le64 ver;
-			__u8 flag;	/* 0 = unwatch, 1 = watch */
-		} __attribute__ ((packed)) watch;
-};
-	__le32 payload_len;
-} __attribute__ ((packed));
-
-/*
- * osd request message header.  each request may include multiple
- * ceph_osd_op object operations.
- */
-struct ceph_osd_request_head {
-	__le32 client_inc;                 /* client incarnation */
-	struct ceph_object_layout layout;  /* pgid */
-	__le32 osdmap_epoch;               /* client's osdmap epoch */
-
-	__le32 flags;
-
-	struct ceph_timespec mtime;        /* for mutations only */
-	struct ceph_eversion reassert_version; /* if we are replaying op */
-
-	__le32 object_len;     /* length of object name */
-
-	__le64 snapid;         /* snapid to read */
-	__le64 snap_seq;       /* writer's snap context */
-	__le32 num_snaps;
-
-	__le16 num_ops;
-	struct ceph_osd_op ops[];  /* followed by ops[], obj, ticket, snaps */
-} __attribute__ ((packed));
-
-struct ceph_osd_reply_head {
-	__le32 client_inc;                /* client incarnation */
-	__le32 flags;
-	struct ceph_object_layout layout;
-	__le32 osdmap_epoch;
-	struct ceph_eversion reassert_version; /* for replaying uncommitted */
-
-	__le32 result;                    /* result code */
-
-	__le32 object_len;                /* length of object name */
-	__le32 num_ops;
-	struct ceph_osd_op ops[0];  /* ops[], object */
-} __attribute__ ((packed));
-
-
-=======
 			__le64 ver;     /* no longer used */
 			__u8 op;	/* CEPH_OSD_WATCH_OP_* */
 			__le32 gen;     /* registration generation */
@@ -801,6 +551,5 @@ struct ceph_osd_reply_head {
 	__le32 payload_len;
 } __attribute__ ((packed));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

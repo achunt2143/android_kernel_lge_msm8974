@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_CURRENT_H
-#define _ASM_X86_CURRENT_H
-
-#include <linux/compiler.h>
-#include <asm/percpu.h>
-
-#ifndef __ASSEMBLY__
-struct task_struct;
-
-DECLARE_PER_CPU(struct task_struct *, current_task);
-
-static __always_inline struct task_struct *get_current(void)
-{
-	return percpu_read_stable(current_task);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_CURRENT_H
 #define _ASM_X86_CURRENT_H
@@ -63,7 +47,6 @@ static __always_inline struct task_struct *get_current(void)
 		return this_cpu_read_const(const_pcpu_hot.current_task);
 
 	return this_cpu_read_stable(pcpu_hot.current_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define current get_current()

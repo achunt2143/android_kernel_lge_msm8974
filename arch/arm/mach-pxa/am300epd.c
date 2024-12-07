@@ -28,16 +28,10 @@
 #include <linux/irq.h>
 #include <linux/gpio.h>
 
-<<<<<<< HEAD
-#include <mach/gumstix.h>
-#include <mach/mfp-pxa25x.h>
-#include <mach/pxafb.h>
-=======
 #include "gumstix.h"
 #include "mfp-pxa25x.h"
 #include "irqs.h"
 #include <linux/platform_data/video-pxafb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "generic.h"
 
@@ -248,12 +242,7 @@ static int am300_setup_irq(struct fb_info *info)
 	struct broadsheetfb_par *par = info->par;
 
 	ret = request_irq(PXA_GPIO_TO_IRQ(RDY_GPIO_PIN), am300_handle_irq,
-<<<<<<< HEAD
-				IRQF_DISABLED|IRQF_TRIGGER_RISING,
-				"AM300", par);
-=======
 				IRQF_TRIGGER_RISING, "AM300", par);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		dev_err(&am300_device->dev, "request_irq failed: %d\n", ret);
 

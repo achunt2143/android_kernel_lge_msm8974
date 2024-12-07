@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # XFRM configuration
 #
 config XFRM
-<<<<<<< HEAD
-       bool
-       select CRYPTO
-       depends on NET
-
-config XFRM_USER
-	tristate "Transformation user configuration interface"
-	depends on INET && XFRM
-	---help---
-=======
 	bool
 	depends on INET
 	select GRO_CELLS
@@ -37,18 +24,11 @@ config XFRM_USER
 	tristate "Transformation user configuration interface"
 	select XFRM_ALGO
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Support for Transformation(XFRM) user configuration interface
 	  like IPsec used by native Linux tools.
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-config XFRM_SUB_POLICY
-	bool "Transformation sub policy support (EXPERIMENTAL)"
-	depends on XFRM && EXPERIMENTAL
-	---help---
-=======
 config XFRM_USER_COMPAT
 	tristate "Compatible ABI support"
 	depends on XFRM_USER && COMPAT_FOR_U64_ALIGNMENT && \
@@ -72,7 +52,6 @@ config XFRM_SUB_POLICY
 	bool "Transformation sub policy support"
 	depends on XFRM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Support sub policy for developers. By using sub policy with main
 	  one, two policies can be applied to the same packet at once.
 	  Policy which lives shorter time in kernel should be a sub.
@@ -80,15 +59,9 @@ config XFRM_SUB_POLICY
 	  If unsure, say N.
 
 config XFRM_MIGRATE
-<<<<<<< HEAD
-	bool "Transformation migrate database (EXPERIMENTAL)"
-	depends on XFRM && EXPERIMENTAL
-	---help---
-=======
 	bool "Transformation migrate database"
 	depends on XFRM
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  A feature to update locator(s) of a given IPsec security
 	  association dynamically.  This feature is required, for
 	  instance, in a Mobile IPv6 environment with IPsec configuration
@@ -97,26 +70,15 @@ config XFRM_MIGRATE
 	  If unsure, say N.
 
 config XFRM_STATISTICS
-<<<<<<< HEAD
-	bool "Transformation statistics (EXPERIMENTAL)"
-	depends on INET && XFRM && PROC_FS && EXPERIMENTAL
-	---help---
-=======
 	bool "Transformation statistics"
 	depends on XFRM && PROC_FS
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This statistics is not a SNMP/MIB specification but shows
 	  statistics about transformation error (or almost error) factor
 	  at packet processing for developer.
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config XFRM_IPCOMP
-	tristate
-	select XFRM
-=======
 # This option selects XFRM_ALGO along with the AH authentication algorithms that
 # RFC 8221 lists as MUST be implemented.
 config XFRM_AH
@@ -144,19 +106,13 @@ config XFRM_ESP
 config XFRM_IPCOMP
 	tristate
 	select XFRM_ALGO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CRYPTO
 	select CRYPTO_DEFLATE
 
 config NET_KEY
 	tristate "PF_KEY sockets"
-<<<<<<< HEAD
-	select XFRM
-	---help---
-=======
 	select XFRM_ALGO
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  PF_KEYv2 socket family, compatible to KAME ones.
 	  They are required if you are going to use IPsec tools ported
 	  from KAME.
@@ -164,17 +120,10 @@ config NET_KEY
 	  Say Y unless you know what you are doing.
 
 config NET_KEY_MIGRATE
-<<<<<<< HEAD
-	bool "PF_KEY MIGRATE (EXPERIMENTAL)"
-	depends on NET_KEY && EXPERIMENTAL
-	select XFRM_MIGRATE
-	---help---
-=======
 	bool "PF_KEY MIGRATE"
 	depends on NET_KEY
 	select XFRM_MIGRATE
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Add a PF_KEY MIGRATE message to PF_KEYv2 socket family.
 	  The PF_KEY MIGRATE message is used to dynamically update
 	  locator(s) of a given IPsec security association.
@@ -186,10 +135,7 @@ config NET_KEY_MIGRATE
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config XFRM_ESPINTCP
 	bool
 
 endif # INET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

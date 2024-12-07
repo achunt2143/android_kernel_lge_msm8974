@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -16,22 +13,6 @@
  * This file is licenced under the GPL.
  */
 
-<<<<<<< HEAD
-#include <linux/clk.h>
-#include <linux/platform_device.h>
-#include <linux/of_platform.h>
-#include <linux/of_gpio.h>
-
-#include <mach/hardware.h>
-#include <asm/gpio.h>
-
-#include <mach/board.h>
-#include <mach/cpu.h>
-
-#ifndef CONFIG_ARCH_AT91
-#error "CONFIG_ARCH_AT91 must be defined."
-#endif
-=======
 #include <linux/arm-smccc.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -49,36 +30,11 @@
 #include <soc/at91/atmel-sfr.h>
 
 #include "ohci.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define valid_port(index)	((index) >= 0 && (index) < AT91_MAX_USBH_PORTS)
 #define at91_for_each_port(index)	\
 		for ((index) = 0; (index) < AT91_MAX_USBH_PORTS; (index)++)
 
-<<<<<<< HEAD
-/* interface and function clocks; sometimes also an AHB clock */
-static struct clk *iclk, *fclk, *hclk;
-static int clocked;
-
-extern int usb_disabled(void);
-
-/*-------------------------------------------------------------------------*/
-
-static void at91_start_clock(void)
-{
-	clk_enable(hclk);
-	clk_enable(iclk);
-	clk_enable(fclk);
-	clocked = 1;
-}
-
-static void at91_stop_clock(void)
-{
-	clk_disable(fclk);
-	clk_disable(iclk);
-	clk_disable(hclk);
-	clocked = 0;
-=======
 /* interface, function and usb clocks; sometimes also an AHB clock */
 #define hcd_to_ohci_at91_priv(h) \
 	((struct ohci_at91_priv *)hcd_to_ohci(h)->priv)
@@ -135,28 +91,20 @@ static void at91_stop_clock(struct ohci_at91_priv *ohci_at91)
 	clk_disable_unprepare(ohci_at91->iclk);
 	clk_disable_unprepare(ohci_at91->hclk);
 	ohci_at91->clocked = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void at91_start_hc(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
 	struct ohci_regs __iomem *regs = hcd->regs;
-<<<<<<< HEAD
-=======
 	struct ohci_at91_priv *ohci_at91 = hcd_to_ohci_at91_priv(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&pdev->dev, "start\n");
 
 	/*
 	 * Start the USB clocks.
 	 */
-<<<<<<< HEAD
-	at91_start_clock();
-=======
 	at91_start_clock(ohci_at91);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The USB host controller must remain in reset.
@@ -167,39 +115,24 @@ static void at91_start_hc(struct platform_device *pdev)
 static void at91_stop_hc(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
-<<<<<<< HEAD
-	struct ohci_regs __iomem *regs = hcd->regs;
-=======
 	struct ohci_at91_priv *ohci_at91 = hcd_to_ohci_at91_priv(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&pdev->dev, "stop\n");
 
 	/*
 	 * Put the USB host controller into reset.
 	 */
-<<<<<<< HEAD
-	writel(0, &regs->control);
-=======
 	usb_hcd_platform_shutdown(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Stop the USB clocks.
 	 */
-<<<<<<< HEAD
-	at91_stop_clock();
-=======
 	at91_stop_clock(ohci_at91);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static void __devexit usb_hcd_at91_remove (struct usb_hcd *, struct platform_device *);
-=======
 static void usb_hcd_at91_remove (struct usb_hcd *, struct platform_device *);
 
 static u32 at91_dt_suspend_smc(struct device *dev)
@@ -228,92 +161,22 @@ static struct regmap *at91_dt_syscon_sfr(void)
 
 	return regmap;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* configure so an HC device and id are always provided */
 /* always called with process context; sleeping is OK */
 
 
-<<<<<<< HEAD
-/**
- * usb_hcd_at91_probe - initialize AT91-based HCDs
- * Context: !in_interrupt()
-=======
 /*
  * usb_hcd_at91_probe - initialize AT91-based HCDs
  * @driver:	Pointer to hc driver instance
  * @pdev:	USB controller to probe
  *
  * Context: task context, might sleep
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocates basic resources for this USB host controller, and
  * then invokes the start() method for the HCD associated with it
  * through the hotplug entry's driver_data.
  */
-<<<<<<< HEAD
-static int __devinit usb_hcd_at91_probe(const struct hc_driver *driver,
-			struct platform_device *pdev)
-{
-	int retval;
-	struct usb_hcd *hcd = NULL;
-
-	if (pdev->num_resources != 2) {
-		pr_debug("hcd probe: invalid num_resources");
-		return -ENODEV;
-	}
-
-	if ((pdev->resource[0].flags != IORESOURCE_MEM)
-			|| (pdev->resource[1].flags != IORESOURCE_IRQ)) {
-		pr_debug("hcd probe: invalid resource type\n");
-		return -ENODEV;
-	}
-
-	hcd = usb_create_hcd(driver, &pdev->dev, "at91");
-	if (!hcd)
-		return -ENOMEM;
-	hcd->rsrc_start = pdev->resource[0].start;
-	hcd->rsrc_len = pdev->resource[0].end - pdev->resource[0].start + 1;
-
-	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
-		pr_debug("request_mem_region failed\n");
-		retval = -EBUSY;
-		goto err1;
-	}
-
-	hcd->regs = ioremap(hcd->rsrc_start, hcd->rsrc_len);
-	if (!hcd->regs) {
-		pr_debug("ioremap failed\n");
-		retval = -EIO;
-		goto err2;
-	}
-
-	iclk = clk_get(&pdev->dev, "ohci_clk");
-	if (IS_ERR(iclk)) {
-		dev_err(&pdev->dev, "failed to get ohci_clk\n");
-		retval = PTR_ERR(iclk);
-		goto err3;
-	}
-	fclk = clk_get(&pdev->dev, "uhpck");
-	if (IS_ERR(fclk)) {
-		dev_err(&pdev->dev, "failed to get uhpck\n");
-		retval = PTR_ERR(fclk);
-		goto err4;
-	}
-	hclk = clk_get(&pdev->dev, "hclk");
-	if (IS_ERR(hclk)) {
-		dev_err(&pdev->dev, "failed to get hclk\n");
-		retval = PTR_ERR(hclk);
-		goto err5;
-	}
-
-	at91_start_hc(pdev);
-	ohci_hcd_init(hcd_to_ohci(hcd));
-
-	retval = usb_add_hcd(hcd, pdev->resource[1].start, IRQF_SHARED);
-	if (retval == 0)
-		return retval;
-=======
 static int usb_hcd_at91_probe(const struct hc_driver *driver,
 			struct platform_device *pdev)
 {
@@ -386,28 +249,11 @@ static int usb_hcd_at91_probe(const struct hc_driver *driver,
 		device_wakeup_enable(hcd->self.controller);
 		return retval;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Error handling */
 	at91_stop_hc(pdev);
 
-<<<<<<< HEAD
-	clk_put(hclk);
- err5:
-	clk_put(fclk);
- err4:
-	clk_put(iclk);
-
- err3:
-	iounmap(hcd->regs);
-
- err2:
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-
- err1:
-=======
  err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_put_hcd(hcd);
 	return retval;
 }
@@ -415,98 +261,32 @@ static int usb_hcd_at91_probe(const struct hc_driver *driver,
 
 /* may be called with controller, bus, and devices active */
 
-<<<<<<< HEAD
-/**
- * usb_hcd_at91_remove - shutdown processing for AT91-based HCDs
- * @dev: USB Host Controller being removed
- * Context: !in_interrupt()
-=======
 /*
  * usb_hcd_at91_remove - shutdown processing for AT91-based HCDs
  * @hcd:	USB controller to remove
  * @pdev:	Platform device required for cleanup
  *
  * Context: task context, might sleep
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Reverses the effect of usb_hcd_at91_probe(), first invoking
  * the HCD's stop() method.  It is always called from a thread
  * context, "rmmod" or something similar.
-<<<<<<< HEAD
- *
- */
-static void __devexit usb_hcd_at91_remove(struct usb_hcd *hcd,
-=======
  */
 static void usb_hcd_at91_remove(struct usb_hcd *hcd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct platform_device *pdev)
 {
 	usb_remove_hcd(hcd);
 	at91_stop_hc(pdev);
-<<<<<<< HEAD
-	iounmap(hcd->regs);
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-	usb_put_hcd(hcd);
-
-	clk_put(hclk);
-	clk_put(fclk);
-	clk_put(iclk);
-	fclk = iclk = hclk = NULL;
-
-	dev_set_drvdata(&pdev->dev, NULL);
-}
-
-/*-------------------------------------------------------------------------*/
-
-static int __devinit
-ohci_at91_reset (struct usb_hcd *hcd)
-{
-	struct at91_usbh_data	*board = hcd->self.controller->platform_data;
-	struct ohci_hcd		*ohci = hcd_to_ohci (hcd);
-	int			ret;
-
-	if ((ret = ohci_init(ohci)) < 0)
-		return ret;
-
-	ohci->num_ports = board->ports;
-	return 0;
-}
-
-static int __devinit
-ohci_at91_start (struct usb_hcd *hcd)
-{
-	struct ohci_hcd		*ohci = hcd_to_ohci (hcd);
-	int			ret;
-
-	if ((ret = ohci_run(ohci)) < 0) {
-		err("can't start %s", hcd->self.bus_name);
-		ohci_stop(hcd);
-		return ret;
-	}
-	return 0;
-}
-
-=======
 	usb_put_hcd(hcd);
 }
 
 /*-------------------------------------------------------------------------*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ohci_at91_usb_set_power(struct at91_usbh_data *pdata, int port, int enable)
 {
 	if (!valid_port(port))
 		return;
 
-<<<<<<< HEAD
-	if (!gpio_is_valid(pdata->vbus_pin[port]))
-		return;
-
-	gpio_set_value(pdata->vbus_pin[port],
-		       pdata->vbus_pin_active_low[port] ^ enable);
-=======
 	gpiod_set_value(pdata->vbus_pin[port], enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ohci_at91_usb_get_power(struct at91_usbh_data *pdata, int port)
@@ -514,15 +294,7 @@ static int ohci_at91_usb_get_power(struct at91_usbh_data *pdata, int port)
 	if (!valid_port(port))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!gpio_is_valid(pdata->vbus_pin[port]))
-		return -EINVAL;
-
-	return gpio_get_value(pdata->vbus_pin[port]) ^
-		pdata->vbus_pin_active_low[port];
-=======
 	return gpiod_get_value(pdata->vbus_pin[port]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -545,8 +317,6 @@ static int ohci_at91_hub_status_data(struct usb_hcd *hcd, char *buf)
 	return length;
 }
 
-<<<<<<< HEAD
-=======
 static int ohci_at91_port_suspend(struct ohci_at91_priv *ohci_at91, u8 set)
 {
 	struct regmap *regmap = ohci_at91->sfr_regmap;
@@ -575,19 +345,14 @@ static int ohci_at91_port_suspend(struct ohci_at91_priv *ohci_at91, u8 set)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Look at the control requests to the root hub and see if we need to override.
  */
 static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 				 u16 wIndex, char *buf, u16 wLength)
 {
-<<<<<<< HEAD
-	struct at91_usbh_data *pdata = hcd->self.controller->platform_data;
-=======
 	struct at91_usbh_data *pdata = dev_get_platdata(hcd->self.controller);
 	struct ohci_at91_priv *ohci_at91 = hcd_to_ohci_at91_priv(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_hub_descriptor *desc;
 	int ret = -EINVAL;
 	u32 *data = (u32 *)buf;
@@ -600,12 +365,8 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 	switch (typeReq) {
 	case SetPortFeature:
-<<<<<<< HEAD
-		if (wValue == USB_PORT_FEAT_POWER) {
-=======
 		switch (wValue) {
 		case USB_PORT_FEAT_POWER:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_dbg(hcd->self.controller, "SetPortFeat: POWER\n");
 			if (valid_port(wIndex)) {
 				ohci_at91_usb_set_power(pdata, wIndex, 1);
@@ -613,8 +374,6 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			}
 
 			goto out;
-<<<<<<< HEAD
-=======
 
 		case USB_PORT_FEAT_SUSPEND:
 			dev_dbg(hcd->self.controller, "SetPortFeat: SUSPEND\n");
@@ -623,7 +382,6 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 				return 0;
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -657,8 +415,6 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 				ohci_at91_usb_set_power(pdata, wIndex, 0);
 				return 0;
 			}
-<<<<<<< HEAD
-=======
 			break;
 
 		case USB_PORT_FEAT_SUSPEND:
@@ -668,7 +424,6 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 				return 0;
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
@@ -692,13 +447,6 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		 */
 
 		desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_LPSM);
-<<<<<<< HEAD
-		desc->wHubCharacteristics |= cpu_to_le16(0x0001);
-
-		if (pdata->overcurrent_supported) {
-			desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_OCPM);
-			desc->wHubCharacteristics |=  cpu_to_le16(0x0008|0x0001);
-=======
 		desc->wHubCharacteristics |=
 			cpu_to_le16(HUB_CHAR_INDV_PORT_LPSM);
 
@@ -706,7 +454,6 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_OCPM);
 			desc->wHubCharacteristics |=
 				cpu_to_le16(HUB_CHAR_INDV_PORT_OCPM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		dev_dbg(hcd->self.controller, "wHubCharacteristics after 0x%04x\n",
@@ -737,78 +484,17 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static const struct hc_driver ohci_at91_hc_driver = {
-	.description =		hcd_name,
-	.product_desc =		"AT91 OHCI",
-	.hcd_priv_size =	sizeof(struct ohci_hcd),
-
-	/*
-	 * generic hardware linkage
-	 */
-	.irq =			ohci_irq,
-	.flags =		HCD_USB11 | HCD_MEMORY,
-
-	/*
-	 * basic lifecycle operations
-	 */
-	.reset =		ohci_at91_reset,
-	.start =		ohci_at91_start,
-	.stop =			ohci_stop,
-	.shutdown =		ohci_shutdown,
-
-	/*
-	 * managing i/o requests and associated device resources
-	 */
-	.urb_enqueue =		ohci_urb_enqueue,
-	.urb_dequeue =		ohci_urb_dequeue,
-	.endpoint_disable =	ohci_endpoint_disable,
-
-	/*
-	 * scheduling support
-	 */
-	.get_frame_number =	ohci_get_frame,
-
-	/*
-	 * root hub support
-	 */
-	.hub_status_data =	ohci_at91_hub_status_data,
-	.hub_control =		ohci_at91_hub_control,
-#ifdef CONFIG_PM
-	.bus_suspend =		ohci_bus_suspend,
-	.bus_resume =		ohci_bus_resume,
-#endif
-	.start_port_reset =	ohci_start_port_reset,
-};
-
-/*-------------------------------------------------------------------------*/
-
-static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
-{
-	struct platform_device *pdev = data;
-	struct at91_usbh_data *pdata = pdev->dev.platform_data;
-	int val, gpio, port;
-=======
 static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
 {
 	struct platform_device *pdev = data;
 	struct at91_usbh_data *pdata = dev_get_platdata(&pdev->dev);
 	int val, port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* From the GPIO notifying the over-current situation, find
 	 * out the corresponding port */
 	at91_for_each_port(port) {
-<<<<<<< HEAD
-		if (gpio_is_valid(pdata->overcurrent_pin[port]) &&
-				gpio_to_irq(pdata->overcurrent_pin[port]) == irq) {
-			gpio = pdata->overcurrent_pin[port];
-			break;
-		}
-=======
 		if (gpiod_to_irq(pdata->overcurrent_pin[port]) == irq)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (port == AT91_MAX_USBH_PORTS) {
@@ -816,11 +502,7 @@ static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
 		return IRQ_HANDLED;
 	}
 
-<<<<<<< HEAD
-	val = gpio_get_value(gpio);
-=======
 	val = gpiod_get_value(pdata->overcurrent_pin[port]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* When notified of an over-current situation, disable power
 	   on the corresponding port, and mark this port in
@@ -837,10 +519,6 @@ static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_OF
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id at91_ohci_dt_ids[] = {
 	{ .compatible = "atmel,at91rm9200-ohci" },
 	{ /* sentinel */ }
@@ -848,20 +526,6 @@ static const struct of_device_id at91_ohci_dt_ids[] = {
 
 MODULE_DEVICE_TABLE(of, at91_ohci_dt_ids);
 
-<<<<<<< HEAD
-static u64 at91_ohci_dma_mask = DMA_BIT_MASK(32);
-
-static int __devinit ohci_at91_of_init(struct platform_device *pdev)
-{
-	struct device_node *np = pdev->dev.of_node;
-	int i, gpio;
-	enum of_gpio_flags flags;
-	struct at91_usbh_data	*pdata;
-	u32 ports;
-
-	if (!np)
-		return 0;
-=======
 /*-------------------------------------------------------------------------*/
 
 static int ohci_hcd_at91_drv_probe(struct platform_device *pdev)
@@ -872,139 +536,25 @@ static int ohci_hcd_at91_drv_probe(struct platform_device *pdev)
 	int			ret;
 	int			err;
 	u32			ports;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Right now device-tree probed devices don't get dma_mask set.
 	 * Since shared usb code relies on it, set it here for now.
 	 * Once we have dma capability bindings this can go away.
 	 */
-<<<<<<< HEAD
-	if (!pdev->dev.dma_mask)
-		pdev->dev.dma_mask = &at91_ohci_dma_mask;
-=======
 	ret = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	pdev->dev.platform_data = pdata;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!of_property_read_u32(np, "num-ports", &ports))
 		pdata->ports = ports;
 
 	at91_for_each_port(i) {
-<<<<<<< HEAD
-		gpio = of_get_named_gpio_flags(np, "atmel,vbus-gpio", i, &flags);
-		pdata->vbus_pin[i] = gpio;
-		if (!gpio_is_valid(gpio))
-			continue;
-		pdata->vbus_pin_active_low[i] = flags & OF_GPIO_ACTIVE_LOW;
-	}
-
-	at91_for_each_port(i)
-		pdata->overcurrent_pin[i] =
-			of_get_named_gpio_flags(np, "atmel,oc-gpio", i, &flags);
-
-	pdev->dev.platform_data = pdata;
-
-	return 0;
-}
-#else
-static int __devinit ohci_at91_of_init(struct platform_device *pdev)
-{
-	return 0;
-}
-#endif
-
-/*-------------------------------------------------------------------------*/
-
-static int __devinit ohci_hcd_at91_drv_probe(struct platform_device *pdev)
-{
-	struct at91_usbh_data	*pdata;
-	int			i;
-	int			gpio;
-	int			ret;
-
-	ret = ohci_at91_of_init(pdev);
-	if (ret)
-		return ret;
-
-	pdata = pdev->dev.platform_data;
-
-	if (pdata) {
-		at91_for_each_port(i) {
-			/*
-			 * do not configure PIO if not in relation with
-			 * real USB port on board
-			 */
-			if (i >= pdata->ports) {
-				pdata->vbus_pin[i] = -EINVAL;
-				pdata->overcurrent_pin[i] = -EINVAL;
-				break;
-			}
-
-			if (!gpio_is_valid(pdata->vbus_pin[i]))
-				continue;
-			gpio = pdata->vbus_pin[i];
-
-			ret = gpio_request(gpio, "ohci_vbus");
-			if (ret) {
-				dev_err(&pdev->dev,
-					"can't request vbus gpio %d\n", gpio);
-				continue;
-			}
-			ret = gpio_direction_output(gpio,
-						!pdata->vbus_pin_active_low[i]);
-			if (ret) {
-				dev_err(&pdev->dev,
-					"can't put vbus gpio %d as output %d\n",
-					gpio, !pdata->vbus_pin_active_low[i]);
-				gpio_free(gpio);
-				continue;
-			}
-
-			ohci_at91_usb_set_power(pdata, i, 1);
-		}
-
-		at91_for_each_port(i) {
-			if (!gpio_is_valid(pdata->overcurrent_pin[i]))
-				continue;
-			gpio = pdata->overcurrent_pin[i];
-
-			ret = gpio_request(gpio, "ohci_overcurrent");
-			if (ret) {
-				dev_err(&pdev->dev,
-					"can't request overcurrent gpio %d\n",
-					gpio);
-				continue;
-			}
-
-			ret = gpio_direction_input(gpio);
-			if (ret) {
-				dev_err(&pdev->dev,
-					"can't configure overcurrent gpio %d as input\n",
-					gpio);
-				gpio_free(gpio);
-				continue;
-			}
-
-			ret = request_irq(gpio_to_irq(gpio),
-					  ohci_hcd_at91_overcurrent_irq,
-					  IRQF_SHARED, "ohci_overcurrent", pdev);
-			if (ret) {
-				gpio_free(gpio);
-				dev_err(&pdev->dev,
-					"can't get gpio IRQ for overcurrent\n");
-			}
-		}
-=======
 		if (i >= pdata->ports)
 			break;
 
@@ -1040,34 +590,12 @@ static int __devinit ohci_hcd_at91_drv_probe(struct platform_device *pdev)
 				       "ohci_overcurrent", pdev);
 		if (ret)
 			dev_info(&pdev->dev, "failed to request gpio \"overcurrent\" IRQ\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	device_init_wakeup(&pdev->dev, 1);
 	return usb_hcd_at91_probe(&ohci_at91_hc_driver, pdev);
 }
 
-<<<<<<< HEAD
-static int __devexit ohci_hcd_at91_drv_remove(struct platform_device *pdev)
-{
-	struct at91_usbh_data	*pdata = pdev->dev.platform_data;
-	int			i;
-
-	if (pdata) {
-		at91_for_each_port(i) {
-			if (!gpio_is_valid(pdata->vbus_pin[i]))
-				continue;
-			ohci_at91_usb_set_power(pdata, i, 0);
-			gpio_free(pdata->vbus_pin[i]);
-		}
-
-		at91_for_each_port(i) {
-			if (!gpio_is_valid(pdata->overcurrent_pin[i]))
-				continue;
-			free_irq(gpio_to_irq(pdata->overcurrent_pin[i]), pdev);
-			gpio_free(pdata->overcurrent_pin[i]);
-		}
-=======
 static void ohci_hcd_at91_drv_remove(struct platform_device *pdev)
 {
 	struct at91_usbh_data	*pdata = dev_get_platdata(&pdev->dev);
@@ -1076,27 +604,10 @@ static void ohci_hcd_at91_drv_remove(struct platform_device *pdev)
 	if (pdata) {
 		at91_for_each_port(i)
 			ohci_at91_usb_set_power(pdata, i, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	device_init_wakeup(&pdev->dev, 0);
 	usb_hcd_at91_remove(platform_get_drvdata(pdev), pdev);
-<<<<<<< HEAD
-	return 0;
-}
-
-#ifdef CONFIG_PM
-
-static int
-ohci_hcd_at91_drv_suspend(struct platform_device *pdev, pm_message_t mesg)
-{
-	struct usb_hcd	*hcd = platform_get_drvdata(pdev);
-	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
-
-	if (device_may_wakeup(&pdev->dev))
-		enable_irq_wake(hcd->irq);
-
-=======
 }
 
 static int __maybe_unused
@@ -1123,7 +634,6 @@ ohci_hcd_at91_drv_suspend(struct device *dev)
 			disable_irq_wake(hcd->irq);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The integrated transceivers seem unable to notice disconnect,
 	 * reconnect, or wakeup without the 48 MHz clock active.  so for
@@ -1131,50 +641,6 @@ ohci_hcd_at91_drv_suspend(struct device *dev)
 	 *
 	 * REVISIT: some boards will be able to turn VBUS off...
 	 */
-<<<<<<< HEAD
-	if (at91_suspend_entering_slow_clock()) {
-		ohci_usb_reset (ohci);
-		/* flush the writes */
-		(void) ohci_readl (ohci, &ohci->regs->control);
-		at91_stop_clock();
-	}
-
-	return 0;
-}
-
-static int ohci_hcd_at91_drv_resume(struct platform_device *pdev)
-{
-	struct usb_hcd	*hcd = platform_get_drvdata(pdev);
-
-	if (device_may_wakeup(&pdev->dev))
-		disable_irq_wake(hcd->irq);
-
-	if (!clocked)
-		at91_start_clock();
-
-	ohci_finish_controller_resume(hcd);
-	return 0;
-}
-#else
-#define ohci_hcd_at91_drv_suspend NULL
-#define ohci_hcd_at91_drv_resume  NULL
-#endif
-
-MODULE_ALIAS("platform:at91_ohci");
-
-static struct platform_driver ohci_hcd_at91_driver = {
-	.probe		= ohci_hcd_at91_drv_probe,
-	.remove		= __devexit_p(ohci_hcd_at91_drv_remove),
-	.shutdown	= usb_hcd_platform_shutdown,
-	.suspend	= ohci_hcd_at91_drv_suspend,
-	.resume		= ohci_hcd_at91_drv_resume,
-	.driver		= {
-		.name	= "at91_ohci",
-		.owner	= THIS_MODULE,
-		.of_match_table	= of_match_ptr(at91_ohci_dt_ids),
-	},
-};
-=======
 	if (!ohci_at91->wakeup) {
 		ohci->rh_state = OHCI_RH_HALTED;
 
@@ -1260,4 +726,3 @@ module_exit(ohci_at91_cleanup);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:at91_ohci");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,38 +1,21 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lis3lv02d_spi - SPI glue layer for lis3lv02d
  *
  * Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  publishhed by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/workqueue.h>
 #include <linux/spi/spi.h>
 #include <linux/pm.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/of_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "lis3lv02d.h"
 
@@ -74,9 +57,6 @@ static int lis3_spi_init(struct lis3lv02d *lis3)
 static union axis_conversion lis3lv02d_axis_normal =
 	{ .as_array = { 1, 2, 3 } };
 
-<<<<<<< HEAD
-static int __devinit lis302dl_spi_probe(struct spi_device *spi)
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id lis302dl_spi_dt_ids[] = {
 	{ .compatible = "st,lis302dl-spi" },
@@ -86,7 +66,6 @@ MODULE_DEVICE_TABLE(of, lis302dl_spi_dt_ids);
 #endif
 
 static int lis302dl_spi_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -103,8 +82,6 @@ static int lis302dl_spi_probe(struct spi_device *spi)
 	lis3_dev.irq		= spi->irq;
 	lis3_dev.ac		= lis3lv02d_axis_normal;
 	lis3_dev.pdata		= spi->dev.platform_data;
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_OF
 	if (of_match_device(lis302dl_spi_dt_ids, &spi->dev)) {
@@ -114,27 +91,18 @@ static int lis302dl_spi_probe(struct spi_device *spi)
 			return ret;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_set_drvdata(spi, &lis3_dev);
 
 	return lis3lv02d_init_device(&lis3_dev);
 }
 
-<<<<<<< HEAD
-static int __devexit lis302dl_spi_remove(struct spi_device *spi)
-=======
 static void lis302dl_spi_remove(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lis3lv02d *lis3 = spi_get_drvdata(spi);
 	lis3lv02d_joystick_disable(lis3);
 	lis3lv02d_poweroff(lis3);
 
-<<<<<<< HEAD
-	return lis3lv02d_remove_fs(&lis3_dev);
-=======
 	lis3lv02d_remove_fs(&lis3_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -167,19 +135,11 @@ static SIMPLE_DEV_PM_OPS(lis3lv02d_spi_pm, lis3lv02d_spi_suspend,
 static struct spi_driver lis302dl_spi_driver = {
 	.driver	 = {
 		.name   = DRV_NAME,
-<<<<<<< HEAD
-		.owner  = THIS_MODULE,
-		.pm	= &lis3lv02d_spi_pm,
-	},
-	.probe	= lis302dl_spi_probe,
-	.remove	= __devexit_p(lis302dl_spi_remove),
-=======
 		.pm	= &lis3lv02d_spi_pm,
 		.of_match_table = of_match_ptr(lis302dl_spi_dt_ids),
 	},
 	.probe	= lis302dl_spi_probe,
 	.remove	= lis302dl_spi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(lis302dl_spi_driver);

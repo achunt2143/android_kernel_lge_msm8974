@@ -35,15 +35,6 @@ Description:
 
 		This will be one of the following strings:
 
-<<<<<<< HEAD
-			off
-			on
-			error
-			fast
-			normal
-			idle
-			standby
-=======
 			- off
 			- on
 			- error
@@ -51,7 +42,6 @@ Description:
 			- normal
 			- idle
 			- standby
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		"off" means the regulator is not supplying power to the
 		system.
@@ -84,15 +74,9 @@ Description:
 
 		This will be one of the following strings:
 
-<<<<<<< HEAD
-		'voltage'
-		'current'
-		'unknown'
-=======
 		- 'voltage'
 		- 'current'
 		- 'unknown'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		'voltage' means the regulator output voltage can be controlled
 		by software.
@@ -145,19 +129,11 @@ Description:
 
 		The opmode value can be one of the following strings:
 
-<<<<<<< HEAD
-		'fast'
-		'normal'
-		'idle'
-		'standby'
-		'unknown'
-=======
 		- 'fast'
 		- 'normal'
 		- 'idle'
 		- 'standby'
 		- 'unknown'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		The modes are described in include/linux/regulator/consumer.h
 
@@ -373,8 +349,6 @@ Description:
 
 		This will be one of the same strings reported by
 		the "state" attribute.
-<<<<<<< HEAD
-=======
 
 What:		/sys/class/regulator/.../bypass
 Date:		September 2012
@@ -477,4 +451,3 @@ Description:
 		Some regulator directories will contain a field called
 		over_temp_warn.  This indicates if the device reports an
 		over-temperature warning (1) or not (0).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

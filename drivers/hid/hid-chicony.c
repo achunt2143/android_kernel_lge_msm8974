@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for some chicony "special" devices
  *
@@ -14,24 +11,12 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
 #include <linux/input.h>
 #include <linux/hid.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#include "hid-ids.h"
-
-=======
 #include <linux/usb.h>
 
 #include "hid-ids.h"
@@ -69,7 +54,6 @@ static int ch_raw_event(struct hid_device *hdev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ch_map_key_clear(c)	hid_map_usage_clear(hi, usage, bit, max, \
 					EV_KEY, (c))
 static int ch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
@@ -104,12 +88,6 @@ static int ch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 	return 1;
 }
 
-<<<<<<< HEAD
-static const struct hid_device_id ch_devices[] = {
-	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_TACTICAL_PAD) },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_WIRELESS2) },
-	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_AK1D) },
-=======
 static __u8 *ch_switch12_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
@@ -160,7 +138,6 @@ static const struct hid_device_id ch_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_WIRELESS2) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_WIRELESS3) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_ACER_SWITCH12) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, ch_devices);
@@ -168,23 +145,6 @@ MODULE_DEVICE_TABLE(hid, ch_devices);
 static struct hid_driver ch_driver = {
 	.name = "chicony",
 	.id_table = ch_devices,
-<<<<<<< HEAD
-	.input_mapping = ch_input_mapping,
-};
-
-static int __init ch_init(void)
-{
-	return hid_register_driver(&ch_driver);
-}
-
-static void __exit ch_exit(void)
-{
-	hid_unregister_driver(&ch_driver);
-}
-
-module_init(ch_init);
-module_exit(ch_exit);
-=======
 	.report_fixup = ch_switch12_report_fixup,
 	.input_mapping = ch_input_mapping,
 	.probe = ch_probe,
@@ -192,5 +152,4 @@ module_exit(ch_exit);
 };
 module_hid_driver(ch_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

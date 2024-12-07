@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-/*******************************************************************************
- * This file contains error recovery level one used by the iSCSI Target driver.
- *
- * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
- *
- * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- ******************************************************************************/
-
-#include <linux/list.h>
-#include <scsi/iscsi_proto.h>
-#include <target/target_core_base.h>
-#include <target/target_core_fabric.h>
-
-#include "iscsi_target_core.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*******************************************************************************
  * This file contains error recovery level one used by the iSCSI Target driver.
@@ -44,7 +16,6 @@
 #include <target/iscsi/iscsi_transport.h>
 
 #include <target/iscsi/iscsi_target_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_datain_values.h"
 #include "iscsi_target_device.h"
@@ -55,11 +26,7 @@
 #include "iscsi_target_erl2.h"
 #include "iscsi_target.h"
 
-<<<<<<< HEAD
-#define OFFLOAD_BUF_SIZE	32768
-=======
 #define OFFLOAD_BUF_SIZE	32768U
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Used to dump excess datain payload for certain error recovery
@@ -69,18 +36,6 @@
  *	to be dumped.
  */
 int iscsit_dump_data_payload(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-	u32 buf_len,
-	int dump_padding_digest)
-{
-	char *buf, pad_bytes[4];
-	int ret = DATAOUT_WITHIN_COMMAND_RECOVERY, rx_got;
-	u32 length, padding, offset = 0, size;
-	struct kvec iov;
-
-	length = (buf_len > OFFLOAD_BUF_SIZE) ? OFFLOAD_BUF_SIZE : buf_len;
-=======
 	struct iscsit_conn *conn,
 	u32 buf_len,
 	int dump_padding_digest)
@@ -100,7 +55,6 @@ int iscsit_dump_data_payload(
 	}
 
 	length = min(buf_len, OFFLOAD_BUF_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = kzalloc(length, GFP_ATOMIC);
 	if (!buf) {
@@ -111,12 +65,7 @@ int iscsit_dump_data_payload(
 	memset(&iov, 0, sizeof(struct kvec));
 
 	while (offset < buf_len) {
-<<<<<<< HEAD
-		size = ((offset + length) > buf_len) ?
-			(buf_len - offset) : length;
-=======
 		size = min(buf_len - offset, length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		iov.iov_len = size;
 		iov.iov_base = buf;
@@ -124,48 +73,12 @@ int iscsit_dump_data_payload(
 		rx_got = rx_data(conn, &iov, 1, size);
 		if (rx_got != size) {
 			ret = DATAOUT_CANNOT_RECOVER;
-<<<<<<< HEAD
-			goto out;
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		offset += size;
 	}
 
-<<<<<<< HEAD
-	if (!dump_padding_digest)
-		goto out;
-
-	padding = ((-buf_len) & 3);
-	if (padding != 0) {
-		iov.iov_len = padding;
-		iov.iov_base = pad_bytes;
-
-		rx_got = rx_data(conn, &iov, 1, padding);
-		if (rx_got != padding) {
-			ret = DATAOUT_CANNOT_RECOVER;
-			goto out;
-		}
-	}
-
-	if (conn->conn_ops->DataDigest) {
-		u32 data_crc;
-
-		iov.iov_len = ISCSI_CRC_LEN;
-		iov.iov_base = &data_crc;
-
-		rx_got = rx_data(conn, &iov, 1, ISCSI_CRC_LEN);
-		if (rx_got != ISCSI_CRC_LEN) {
-			ret = DATAOUT_CANNOT_RECOVER;
-			goto out;
-		}
-	}
-
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 	return ret;
 }
@@ -174,11 +87,7 @@ out:
  *	Used for retransmitting R2Ts from a R2T SNACK request.
  */
 static int iscsit_send_recovery_r2t_for_snack(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_r2t *r2t)
 {
 	/*
@@ -200,11 +109,7 @@ static int iscsit_send_recovery_r2t_for_snack(
 }
 
 static int iscsit_handle_r2t_snack(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *buf,
 	u32 begrun,
 	u32 runlength)
@@ -224,13 +129,7 @@ static int iscsit_handle_r2t_snack(
 			" protocol error.\n", cmd->init_task_tag, begrun,
 			(begrun + runlength), cmd->acked_data_sn);
 
-<<<<<<< HEAD
-			return iscsit_add_reject_from_cmd(
-					ISCSI_REASON_PROTOCOL_ERROR,
-					1, 0, buf, cmd);
-=======
 		return iscsit_reject_cmd(cmd, ISCSI_REASON_PROTOCOL_ERROR, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (runlength) {
@@ -239,13 +138,8 @@ static int iscsit_handle_r2t_snack(
 			" with BegRun: 0x%08x, RunLength: 0x%08x, exceeds"
 			" current R2TSN: 0x%08x, protocol error.\n",
 			cmd->init_task_tag, begrun, runlength, cmd->r2t_sn);
-<<<<<<< HEAD
-			return iscsit_add_reject_from_cmd(
-				ISCSI_REASON_BOOKMARK_INVALID, 1, 0, buf, cmd);
-=======
 			return iscsit_reject_cmd(cmd,
 					ISCSI_REASON_BOOKMARK_INVALID, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		last_r2tsn = (begrun + runlength);
 	} else
@@ -273,21 +167,13 @@ static int iscsit_handle_r2t_snack(
  *	FIXME: How is this handled for a RData SNACK?
  */
 int iscsit_create_recovery_datain_values_datasequenceinorder_yes(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr)
 {
 	u32 data_sn = 0, data_sn_count = 0;
 	u32 pdu_start = 0, seq_no = 0;
 	u32 begrun = dr->begrun;
-<<<<<<< HEAD
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (begrun > data_sn++) {
 		data_sn_count++;
@@ -327,30 +213,18 @@ int iscsit_create_recovery_datain_values_datasequenceinorder_yes(
  *	FIXME: How is this handled for a RData SNACK?
  */
 int iscsit_create_recovery_datain_values_datasequenceinorder_no(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr)
 {
 	int found_seq = 0, i;
 	u32 data_sn, read_data_done = 0, seq_send_order = 0;
 	u32 begrun = dr->begrun;
 	u32 runlength = dr->runlength;
-<<<<<<< HEAD
-	struct iscsi_conn *conn = cmd->conn;
-	struct iscsi_seq *first_seq = NULL, *seq = NULL;
-
-	if (!cmd->seq_list) {
-		pr_err("struct iscsi_cmd->seq_list is NULL!\n");
-=======
 	struct iscsit_conn *conn = cmd->conn;
 	struct iscsi_seq *first_seq = NULL, *seq = NULL;
 
 	if (!cmd->seq_list) {
 		pr_err("struct iscsit_cmd->seq_list is NULL!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -374,17 +248,9 @@ int iscsit_create_recovery_datain_values_datasequenceinorder_no(
 		 * seq->first_datasn and seq->last_datasn have not been set.
 		 */
 		if (!seq->sent) {
-<<<<<<< HEAD
-#if 0
 			pr_err("Ignoring non-sent sequence 0x%08x ->"
 				" 0x%08x\n\n", seq->first_datasn,
 				seq->last_datasn);
-#endif
-=======
-			pr_err("Ignoring non-sent sequence 0x%08x ->"
-				" 0x%08x\n\n", seq->first_datasn,
-				seq->last_datasn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -395,18 +261,10 @@ int iscsit_create_recovery_datain_values_datasequenceinorder_no(
 		 */
 		if ((seq->first_datasn < begrun) &&
 				(seq->last_datasn < begrun)) {
-<<<<<<< HEAD
-#if 0
-			pr_err("Pre BegRun sequence 0x%08x ->"
-				" 0x%08x\n", seq->first_datasn,
-				seq->last_datasn);
-#endif
-=======
 			pr_err("Pre BegRun sequence 0x%08x ->"
 				" 0x%08x\n", seq->first_datasn,
 				seq->last_datasn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_data_done += cmd->seq_list[i].xfer_len;
 			seq->next_burst_len = seq->pdu_send_order = 0;
 			continue;
@@ -417,18 +275,10 @@ int iscsit_create_recovery_datain_values_datasequenceinorder_no(
 		 */
 		if ((seq->first_datasn <= begrun) &&
 				(seq->last_datasn >= begrun)) {
-<<<<<<< HEAD
-#if 0
-			pr_err("Found sequence begrun: 0x%08x in"
-				" 0x%08x -> 0x%08x\n", begrun,
-				seq->first_datasn, seq->last_datasn);
-#endif
-=======
 			pr_err("Found sequence begrun: 0x%08x in"
 				" 0x%08x -> 0x%08x\n", begrun,
 				seq->first_datasn, seq->last_datasn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seq_send_order = seq->seq_send_order;
 			data_sn = seq->first_datasn;
 			seq->next_burst_len = seq->pdu_send_order = 0;
@@ -484,16 +334,9 @@ int iscsit_create_recovery_datain_values_datasequenceinorder_no(
 		 */
 		if ((seq->first_datasn > begrun) ||
 				(seq->last_datasn > begrun)) {
-<<<<<<< HEAD
-#if 0
-			pr_err("Post BegRun sequence 0x%08x -> 0x%08x\n",
-					seq->first_datasn, seq->last_datasn);
-#endif
-=======
 			pr_err("Post BegRun sequence 0x%08x -> 0x%08x\n",
 					seq->first_datasn, seq->last_datasn);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seq->next_burst_len = seq->pdu_send_order = 0;
 			continue;
 		}
@@ -528,20 +371,12 @@ done:
 }
 
 static int iscsit_handle_recovery_datain(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *buf,
 	u32 begrun,
 	u32 runlength)
 {
-<<<<<<< HEAD
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr;
 	struct se_cmd *se_cmd = &cmd->se_cmd;
 
@@ -563,12 +398,7 @@ static int iscsit_handle_recovery_datain(
 			" protocol error.\n", cmd->init_task_tag, begrun,
 			(begrun + runlength), cmd->acked_data_sn);
 
-<<<<<<< HEAD
-		return iscsit_add_reject_from_cmd(ISCSI_REASON_PROTOCOL_ERROR,
-				1, 0, buf, cmd);
-=======
 		return iscsit_reject_cmd(cmd, ISCSI_REASON_PROTOCOL_ERROR, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -579,24 +409,14 @@ static int iscsit_handle_recovery_datain(
 		pr_err("Initiator requesting BegRun: 0x%08x, RunLength"
 			": 0x%08x greater than maximum DataSN: 0x%08x.\n",
 				begrun, runlength, (cmd->data_sn - 1));
-<<<<<<< HEAD
-		return iscsit_add_reject_from_cmd(ISCSI_REASON_BOOKMARK_INVALID,
-				1, 0, buf, cmd);
-=======
 		return iscsit_reject_cmd(cmd, ISCSI_REASON_BOOKMARK_INVALID,
 					 buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dr = iscsit_allocate_datain_req();
 	if (!dr)
-<<<<<<< HEAD
-		return iscsit_add_reject_from_cmd(ISCSI_REASON_BOOKMARK_NO_RESOURCES,
-				1, 0, buf, cmd);
-=======
 		return iscsit_reject_cmd(cmd, ISCSI_REASON_BOOKMARK_NO_RESOURCES,
 					 buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dr->data_sn = dr->begrun = begrun;
 	dr->runlength = runlength;
@@ -612,24 +432,14 @@ static int iscsit_handle_recovery_datain(
 }
 
 int iscsit_handle_recovery_datain_or_r2t(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-	unsigned char *buf,
-	u32 init_task_tag,
-=======
 	struct iscsit_conn *conn,
 	unsigned char *buf,
 	itt_t init_task_tag,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 targ_xfer_tag,
 	u32 begrun,
 	u32 runlength)
 {
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd;
-=======
 	struct iscsit_cmd *cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = iscsit_find_cmd_from_itt(conn, init_task_tag);
 	if (!cmd)
@@ -655,24 +465,12 @@ int iscsit_handle_recovery_datain_or_r2t(
 
 /* #warning FIXME: Status SNACK needs to be dependent on OPCODE!!! */
 int iscsit_handle_status_snack(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-	u32 init_task_tag,
-=======
 	struct iscsit_conn *conn,
 	itt_t init_task_tag,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 targ_xfer_tag,
 	u32 begrun,
 	u32 runlength)
 {
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd = NULL;
-	u32 last_statsn;
-	int found_cmd;
-
-	if (conn->exp_statsn > begrun) {
-=======
 	struct iscsit_cmd *cmd = NULL;
 	u32 last_statsn;
 	int found_cmd;
@@ -680,7 +478,6 @@ int iscsit_handle_status_snack(
 	if (!begrun) {
 		begrun = conn->exp_statsn;
 	} else if (conn->exp_statsn > begrun) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("Got Status SNACK Begrun: 0x%08x, RunLength:"
 			" 0x%08x but already got ExpStatSN: 0x%08x on CID:"
 			" %hu.\n", begrun, runlength, conn->exp_statsn,
@@ -694,11 +491,7 @@ int iscsit_handle_status_snack(
 		found_cmd = 0;
 
 		spin_lock_bh(&conn->cmd_lock);
-<<<<<<< HEAD
-		list_for_each_entry(cmd, &conn->conn_cmd_list, i_list) {
-=======
 		list_for_each_entry(cmd, &conn->conn_cmd_list, i_conn_node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cmd->stat_sn == begrun) {
 				found_cmd = 1;
 				break;
@@ -736,20 +529,12 @@ int iscsit_handle_status_snack(
 }
 
 int iscsit_handle_data_ack(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-=======
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 targ_xfer_tag,
 	u32 begrun,
 	u32 runlength)
 {
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd = NULL;
-=======
 	struct iscsit_cmd *cmd = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = iscsit_find_cmd_from_ttt(conn, targ_xfer_tag);
 	if (!cmd) {
@@ -780,11 +565,7 @@ int iscsit_handle_data_ack(
 }
 
 static int iscsit_send_recovery_r2t(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 offset,
 	u32 xfer_len)
 {
@@ -798,21 +579,12 @@ static int iscsit_send_recovery_r2t(
 }
 
 int iscsit_dataout_datapduinorder_no_fbit(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-	struct iscsi_pdu *pdu)
-{
-	int i, send_recovery_r2t = 0, recovery = 0;
-	u32 length = 0, offset = 0, pdu_count = 0, xfer_len = 0;
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_cmd *cmd,
 	struct iscsi_pdu *pdu)
 {
 	int i, send_recovery_r2t = 0, recovery = 0;
 	u32 length = 0, offset = 0, pdu_count = 0;
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_pdu *first_pdu = NULL;
 
 	/*
@@ -824,12 +596,7 @@ int iscsit_dataout_datapduinorder_no_fbit(
 			if (cmd->pdu_list[i].seq_no == pdu->seq_no) {
 				if (!first_pdu)
 					first_pdu = &cmd->pdu_list[i];
-<<<<<<< HEAD
-				 xfer_len += cmd->pdu_list[i].length;
-				 pdu_count++;
-=======
 				pdu_count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (pdu_count)
 				break;
 		}
@@ -887,22 +654,14 @@ int iscsit_dataout_datapduinorder_no_fbit(
 }
 
 static int iscsit_recalculate_dataout_values(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pdu_offset,
 	u32 pdu_length,
 	u32 *r2t_offset,
 	u32 *r2t_length)
 {
 	int i;
-<<<<<<< HEAD
-	struct iscsi_conn *conn = cmd->conn;
-=======
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_pdu *pdu = NULL;
 
 	if (conn->sess->sess_ops->DataSequenceInOrder) {
@@ -972,11 +731,7 @@ static int iscsit_recalculate_dataout_values(
 }
 
 int iscsit_recover_dataout_sequence(
-<<<<<<< HEAD
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pdu_offset,
 	u32 pdu_length)
 {
@@ -1010,16 +765,6 @@ static struct iscsi_ooo_cmdsn *iscsit_allocate_ooo_cmdsn(void)
 	return ooo_cmdsn;
 }
 
-<<<<<<< HEAD
-/*
- *	Called with sess->cmdsn_mutex held.
- */
-static int iscsit_attach_ooo_cmdsn(
-	struct iscsi_session *sess,
-	struct iscsi_ooo_cmdsn *ooo_cmdsn)
-{
-	struct iscsi_ooo_cmdsn *ooo_tail, *ooo_tmp;
-=======
 static int iscsit_attach_ooo_cmdsn(
 	struct iscsit_session *sess,
 	struct iscsi_ooo_cmdsn *ooo_cmdsn)
@@ -1028,7 +773,6 @@ static int iscsit_attach_ooo_cmdsn(
 
 	lockdep_assert_held(&sess->cmdsn_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We attach the struct iscsi_ooo_cmdsn entry to the out of order
 	 * list in increasing CmdSN order.
@@ -1070,34 +814,20 @@ static int iscsit_attach_ooo_cmdsn(
 
 /*
  *	Removes an struct iscsi_ooo_cmdsn from a session's list,
-<<<<<<< HEAD
- *	called with struct iscsi_session->cmdsn_mutex held.
- */
-void iscsit_remove_ooo_cmdsn(
-	struct iscsi_session *sess,
-=======
  *	called with struct iscsit_session->cmdsn_mutex held.
  */
 void iscsit_remove_ooo_cmdsn(
 	struct iscsit_session *sess,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_ooo_cmdsn *ooo_cmdsn)
 {
 	list_del(&ooo_cmdsn->ooo_list);
 	kmem_cache_free(lio_ooo_cache, ooo_cmdsn);
 }
 
-<<<<<<< HEAD
-void iscsit_clear_ooo_cmdsns_for_conn(struct iscsi_conn *conn)
-{
-	struct iscsi_ooo_cmdsn *ooo_cmdsn;
-	struct iscsi_session *sess = conn->sess;
-=======
 void iscsit_clear_ooo_cmdsns_for_conn(struct iscsit_conn *conn)
 {
 	struct iscsi_ooo_cmdsn *ooo_cmdsn;
 	struct iscsit_session *sess = conn->sess;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&sess->cmdsn_mutex);
 	list_for_each_entry(ooo_cmdsn, &sess->sess_ooo_cmdsn_list, ooo_list) {
@@ -1109,17 +839,6 @@ void iscsit_clear_ooo_cmdsns_for_conn(struct iscsit_conn *conn)
 	mutex_unlock(&sess->cmdsn_mutex);
 }
 
-<<<<<<< HEAD
-/*
- *	Called with sess->cmdsn_mutex held.
- */
-int iscsit_execute_ooo_cmdsns(struct iscsi_session *sess)
-{
-	int ooo_count = 0;
-	struct iscsi_cmd *cmd = NULL;
-	struct iscsi_ooo_cmdsn *ooo_cmdsn, *ooo_cmdsn_tmp;
-
-=======
 int iscsit_execute_ooo_cmdsns(struct iscsit_session *sess)
 {
 	int ooo_count = 0;
@@ -1128,7 +847,6 @@ int iscsit_execute_ooo_cmdsns(struct iscsit_session *sess)
 
 	lockdep_assert_held(&sess->cmdsn_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(ooo_cmdsn, ooo_cmdsn_tmp,
 				&sess->sess_ooo_cmdsn_list, ooo_list) {
 		if (ooo_cmdsn->cmdsn != sess->exp_cmd_sn)
@@ -1152,11 +870,6 @@ int iscsit_execute_ooo_cmdsns(struct iscsit_session *sess)
 
 		if (iscsit_execute_cmd(cmd, 1) < 0)
 			return -1;
-<<<<<<< HEAD
-
-		continue;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ooo_count;
@@ -1170,16 +883,10 @@ int iscsit_execute_ooo_cmdsns(struct iscsit_session *sess)
  *	2. With no locks held directly from iscsi_handle_XXX_pdu() functions
  *	for immediate commands.
  */
-<<<<<<< HEAD
-int iscsit_execute_cmd(struct iscsi_cmd *cmd, int ooo)
-{
-	struct se_cmd *se_cmd = &cmd->se_cmd;
-=======
 int iscsit_execute_cmd(struct iscsit_cmd *cmd, int ooo)
 {
 	struct se_cmd *se_cmd = &cmd->se_cmd;
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int lr = 0;
 
 	spin_lock_bh(&cmd->istate_lock);
@@ -1190,18 +897,10 @@ int iscsit_execute_cmd(struct iscsit_cmd *cmd, int ooo)
 	case ISCSI_OP_SCSI_CMD:
 		/*
 		 * Go ahead and send the CHECK_CONDITION status for
-<<<<<<< HEAD
-		 * any SCSI CDB exceptions that may have occurred, also
-		 * handle the SCF_SCSI_RESERVATION_CONFLICT case here as well.
-		 */
-		if (se_cmd->se_cmd_flags & SCF_SCSI_CDB_EXCEPTION) {
-			if (se_cmd->scsi_sense_reason == TCM_RESERVATION_CONFLICT) {
-=======
 		 * any SCSI CDB exceptions that may have occurred.
 		 */
 		if (cmd->sense_reason) {
 			if (cmd->sense_reason == TCM_RESERVATION_CONFLICT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cmd->i_state = ISTATE_SEND_STATUS;
 				spin_unlock_bh(&cmd->istate_lock);
 				iscsit_add_cmd_to_response_queue(cmd, cmd->conn,
@@ -1209,29 +908,10 @@ int iscsit_execute_cmd(struct iscsit_cmd *cmd, int ooo)
 				return 0;
 			}
 			spin_unlock_bh(&cmd->istate_lock);
-<<<<<<< HEAD
-			/*
-			 * Determine if delayed TASK_ABORTED status for WRITEs
-			 * should be sent now if no unsolicited data out
-			 * payloads are expected, or if the delayed status
-			 * should be sent after unsolicited data out with
-			 * ISCSI_FLAG_CMD_FINAL set in iscsi_handle_data_out()
-			 */
-			if (transport_check_aborted_status(se_cmd,
-					(cmd->unsolicited_data == 0)) != 0)
-				return 0;
-			/*
-			 * Otherwise send CHECK_CONDITION and sense for
-			 * exception
-			 */
-			return transport_send_check_condition_and_sense(se_cmd,
-					se_cmd->scsi_sense_reason, 0);
-=======
 			if (cmd->se_cmd.transport_state & CMD_T_ABORTED)
 				return 0;
 			return transport_send_check_condition_and_sense(se_cmd,
 					cmd->sense_reason, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/*
 		 * Special case for delayed CmdSN with Immediate
@@ -1240,37 +920,18 @@ int iscsit_execute_cmd(struct iscsit_cmd *cmd, int ooo)
 		if (cmd->immediate_data) {
 			if (cmd->cmd_flags & ICF_GOT_LAST_DATAOUT) {
 				spin_unlock_bh(&cmd->istate_lock);
-<<<<<<< HEAD
-				return transport_generic_handle_data(
-						&cmd->se_cmd);
-=======
 				target_execute_cmd(&cmd->se_cmd);
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			spin_unlock_bh(&cmd->istate_lock);
 
 			if (!(cmd->cmd_flags &
 					ICF_NON_IMMEDIATE_UNSOLICITED_DATA)) {
-<<<<<<< HEAD
-				/*
-				 * Send the delayed TASK_ABORTED status for
-				 * WRITEs if no more unsolicitied data is
-				 * expected.
-				 */
-				if (transport_check_aborted_status(se_cmd, 1)
-						!= 0)
-					return 0;
-
-				iscsit_set_dataout_sequence_values(cmd);
-				iscsit_build_r2ts_for_cmd(cmd, cmd->conn, 0);
-=======
 				if (cmd->se_cmd.transport_state & CMD_T_ABORTED)
 					return 0;
 
 				iscsit_set_dataout_sequence_values(cmd);
 				conn->conn_transport->iscsit_get_dataout(conn, cmd, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			return 0;
 		}
@@ -1281,28 +942,12 @@ int iscsit_execute_cmd(struct iscsit_cmd *cmd, int ooo)
 
 		if ((cmd->data_direction == DMA_TO_DEVICE) &&
 		    !(cmd->cmd_flags & ICF_NON_IMMEDIATE_UNSOLICITED_DATA)) {
-<<<<<<< HEAD
-			/*
-			 * Send the delayed TASK_ABORTED status for WRITEs if
-			 * no more nsolicitied data is expected.
-			 */
-			if (transport_check_aborted_status(se_cmd, 1) != 0)
-				return 0;
-
-			iscsit_set_dataout_sequence_values(cmd);
-			spin_lock_bh(&cmd->dataout_timeout_lock);
-			iscsit_start_dataout_timer(cmd, cmd->conn);
-			spin_unlock_bh(&cmd->dataout_timeout_lock);
-		}
-		return transport_handle_cdb_direct(&cmd->se_cmd);
-=======
 			if (cmd->se_cmd.transport_state & CMD_T_ABORTED)
 				return 0;
 
 			iscsit_set_unsolicited_dataout(cmd);
 		}
 		return target_submit(&cmd->se_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case ISCSI_OP_NOOP_OUT:
 	case ISCSI_OP_TEXT:
@@ -1310,11 +955,7 @@ int iscsit_execute_cmd(struct iscsit_cmd *cmd, int ooo)
 		iscsit_add_cmd_to_response_queue(cmd, cmd->conn, cmd->i_state);
 		break;
 	case ISCSI_OP_SCSI_TMFUNC:
-<<<<<<< HEAD
-		if (se_cmd->se_cmd_flags & SCF_SCSI_CDB_EXCEPTION) {
-=======
 		if (cmd->se_cmd.se_tmr_req->response) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_bh(&cmd->istate_lock);
 			iscsit_add_cmd_to_response_queue(cmd, cmd->conn,
 					cmd->i_state);
@@ -1352,11 +993,7 @@ int iscsit_execute_cmd(struct iscsit_cmd *cmd, int ooo)
 	return 0;
 }
 
-<<<<<<< HEAD
-void iscsit_free_all_ooo_cmdsns(struct iscsi_session *sess)
-=======
 void iscsit_free_all_ooo_cmdsns(struct iscsit_session *sess)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_ooo_cmdsn *ooo_cmdsn, *ooo_cmdsn_tmp;
 
@@ -1371,13 +1008,8 @@ void iscsit_free_all_ooo_cmdsns(struct iscsit_session *sess)
 }
 
 int iscsit_handle_ooo_cmdsn(
-<<<<<<< HEAD
-	struct iscsi_session *sess,
-	struct iscsi_cmd *cmd,
-=======
 	struct iscsit_session *sess,
 	struct iscsit_cmd *cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cmdsn)
 {
 	int batch = 0;
@@ -1398,11 +1030,7 @@ int iscsit_handle_ooo_cmdsn(
 
 	ooo_cmdsn = iscsit_allocate_ooo_cmdsn();
 	if (!ooo_cmdsn)
-<<<<<<< HEAD
-		return CMDSN_ERROR_CANNOT_RECOVER;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ooo_cmdsn->cmd			= cmd;
 	ooo_cmdsn->batch_count		= (batch) ?
@@ -1413,20 +1041,6 @@ int iscsit_handle_ooo_cmdsn(
 
 	if (iscsit_attach_ooo_cmdsn(sess, ooo_cmdsn) < 0) {
 		kmem_cache_free(lio_ooo_cache, ooo_cmdsn);
-<<<<<<< HEAD
-		return CMDSN_ERROR_CANNOT_RECOVER;
-	}
-
-	return CMDSN_HIGHER_THAN_EXP;
-}
-
-static int iscsit_set_dataout_timeout_values(
-	struct iscsi_cmd *cmd,
-	u32 *offset,
-	u32 *length)
-{
-	struct iscsi_conn *conn = cmd->conn;
-=======
 		return -ENOMEM;
 	}
 
@@ -1439,19 +1053,13 @@ static int iscsit_set_dataout_timeout_values(
 	u32 *length)
 {
 	struct iscsit_conn *conn = cmd->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_r2t *r2t;
 
 	if (cmd->unsolicited_data) {
 		*offset = 0;
 		*length = (conn->sess->sess_ops->FirstBurstLength >
-<<<<<<< HEAD
-			   cmd->data_length) ?
-			   cmd->data_length :
-=======
 			   cmd->se_cmd.data_length) ?
 			   cmd->se_cmd.data_length :
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   conn->sess->sess_ops->FirstBurstLength;
 		return 0;
 	}
@@ -1482,15 +1090,6 @@ static int iscsit_set_dataout_timeout_values(
 /*
  *	NOTE: Called from interrupt (timer) context.
  */
-<<<<<<< HEAD
-static void iscsit_handle_dataout_timeout(unsigned long data)
-{
-	u32 pdu_length = 0, pdu_offset = 0;
-	u32 r2t_length = 0, r2t_offset = 0;
-	struct iscsi_cmd *cmd = (struct iscsi_cmd *) data;
-	struct iscsi_conn *conn = cmd->conn;
-	struct iscsi_session *sess = NULL;
-=======
 void iscsit_handle_dataout_timeout(struct timer_list *t)
 {
 	u32 pdu_length = 0, pdu_offset = 0;
@@ -1498,7 +1097,6 @@ void iscsit_handle_dataout_timeout(struct timer_list *t)
 	struct iscsit_cmd *cmd = from_timer(cmd, t, dataout_timer);
 	struct iscsit_conn *conn = cmd->conn;
 	struct iscsit_session *sess = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_node_attrib *na;
 
 	iscsit_inc_conn_usage_count(conn);
@@ -1514,32 +1112,21 @@ void iscsit_handle_dataout_timeout(struct timer_list *t)
 	na = iscsit_tpg_get_node_attrib(sess);
 
 	if (!sess->sess_ops->ErrorRecoveryLevel) {
-<<<<<<< HEAD
-		pr_debug("Unable to recover from DataOut timeout while"
-			" in ERL=0.\n");
-=======
 		pr_err("Unable to recover from DataOut timeout while"
 			" in ERL=0, closing iSCSI connection for I_T Nexus"
 			" %s,i,0x%6phN,%s,t,0x%02x\n",
 			sess->sess_ops->InitiatorName, sess->isid,
 			sess->tpg->tpg_tiqn->tiqn, (u32)sess->tpg->tpgt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failure;
 	}
 
 	if (++cmd->dataout_timeout_retries == na->dataout_timeout_retries) {
-<<<<<<< HEAD
-		pr_debug("Command ITT: 0x%08x exceeded max retries"
-			" for DataOUT timeout %u, closing iSCSI connection.\n",
-			cmd->init_task_tag, na->dataout_timeout_retries);
-=======
 		pr_err("Command ITT: 0x%08x exceeded max retries"
 			" for DataOUT timeout %u, closing iSCSI connection for"
 			" I_T Nexus %s,i,0x%6phN,%s,t,0x%02x\n",
 			cmd->init_task_tag, na->dataout_timeout_retries,
 			sess->sess_ops->InitiatorName, sess->isid,
 			sess->tpg->tpg_tiqn->tiqn, (u32)sess->tpg->tpgt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failure;
 	}
 
@@ -1549,13 +1136,8 @@ void iscsit_handle_dataout_timeout(struct timer_list *t)
 		if (conn->sess->sess_ops->DataPDUInOrder) {
 			pdu_offset = cmd->write_data_done;
 			if ((pdu_offset + (conn->sess->sess_ops->MaxBurstLength -
-<<<<<<< HEAD
-			     cmd->next_burst_len)) > cmd->data_length)
-				pdu_length = (cmd->data_length -
-=======
 			     cmd->next_burst_len)) > cmd->se_cmd.data_length)
 				pdu_length = (cmd->se_cmd.data_length -
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					cmd->write_data_done);
 			else
 				pdu_length = (conn->sess->sess_ops->MaxBurstLength -
@@ -1591,25 +1173,15 @@ void iscsit_handle_dataout_timeout(struct timer_list *t)
 
 failure:
 	spin_unlock_bh(&cmd->dataout_timeout_lock);
-<<<<<<< HEAD
-=======
 	iscsit_fill_cxn_timeout_err_stats(sess);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iscsit_cause_connection_reinstatement(conn, 0);
 	iscsit_dec_conn_usage_count(conn);
 }
 
-<<<<<<< HEAD
-void iscsit_mod_dataout_timer(struct iscsi_cmd *cmd)
-{
-	struct iscsi_conn *conn = cmd->conn;
-	struct iscsi_session *sess = conn->sess;
-=======
 void iscsit_mod_dataout_timer(struct iscsit_cmd *cmd)
 {
 	struct iscsit_conn *conn = cmd->conn;
 	struct iscsit_session *sess = conn->sess;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
 
 	spin_lock_bh(&cmd->dataout_timeout_lock);
@@ -1625,18 +1197,6 @@ void iscsit_mod_dataout_timer(struct iscsit_cmd *cmd)
 	spin_unlock_bh(&cmd->dataout_timeout_lock);
 }
 
-<<<<<<< HEAD
-/*
- *	Called with cmd->dataout_timeout_lock held.
- */
-void iscsit_start_dataout_timer(
-	struct iscsi_cmd *cmd,
-	struct iscsi_conn *conn)
-{
-	struct iscsi_session *sess = conn->sess;
-	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
-
-=======
 void iscsit_start_dataout_timer(
 	struct iscsit_cmd *cmd,
 	struct iscsit_conn *conn)
@@ -1646,32 +1206,18 @@ void iscsit_start_dataout_timer(
 
 	lockdep_assert_held(&cmd->dataout_timeout_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd->dataout_timer_flags & ISCSI_TF_RUNNING)
 		return;
 
 	pr_debug("Starting DataOUT timer for ITT: 0x%08x on"
 		" CID: %hu.\n", cmd->init_task_tag, conn->cid);
 
-<<<<<<< HEAD
-	init_timer(&cmd->dataout_timer);
-	cmd->dataout_timer.expires = (get_jiffies_64() + na->dataout_timeout * HZ);
-	cmd->dataout_timer.data = (unsigned long)cmd;
-	cmd->dataout_timer.function = iscsit_handle_dataout_timeout;
-	cmd->dataout_timer_flags &= ~ISCSI_TF_STOP;
-	cmd->dataout_timer_flags |= ISCSI_TF_RUNNING;
-	add_timer(&cmd->dataout_timer);
-}
-
-void iscsit_stop_dataout_timer(struct iscsi_cmd *cmd)
-=======
 	cmd->dataout_timer_flags &= ~ISCSI_TF_STOP;
 	cmd->dataout_timer_flags |= ISCSI_TF_RUNNING;
 	mod_timer(&cmd->dataout_timer, jiffies + na->dataout_timeout * HZ);
 }
 
 void iscsit_stop_dataout_timer(struct iscsit_cmd *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&cmd->dataout_timeout_lock);
 	if (!(cmd->dataout_timer_flags & ISCSI_TF_RUNNING)) {
@@ -1689,7 +1235,4 @@ void iscsit_stop_dataout_timer(struct iscsit_cmd *cmd)
 			cmd->init_task_tag);
 	spin_unlock_bh(&cmd->dataout_timeout_lock);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(iscsit_stop_dataout_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

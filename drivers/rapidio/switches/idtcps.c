@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IDT CPS RapidIO switches support
  *
  * Copyright 2009-2010 Integrated Device Technology, Inc.
  * Alexandre Bounine <alexandre.bounine@idt.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/rio.h>
 #include <linux/rio_drv.h>
 #include <linux/rio_ids.h>
-<<<<<<< HEAD
-=======
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../rio.h"
 
 #define CPS_DEFAULT_ROUTE	0xde
@@ -129,20 +115,6 @@ idtcps_get_domain(struct rio_mport *mport, u16 destid, u8 hopcount,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int idtcps_switch_init(struct rio_dev *rdev, int do_enum)
-{
-	pr_debug("RIO: %s for %s\n", __func__, rio_name(rdev));
-	rdev->rswitch->add_entry = idtcps_route_add_entry;
-	rdev->rswitch->get_entry = idtcps_route_get_entry;
-	rdev->rswitch->clr_table = idtcps_route_clr_table;
-	rdev->rswitch->set_domain = idtcps_set_domain;
-	rdev->rswitch->get_domain = idtcps_get_domain;
-	rdev->rswitch->em_init = NULL;
-	rdev->rswitch->em_handle = NULL;
-
-	if (do_enum) {
-=======
 static struct rio_switch_ops idtcps_switch_ops = {
 	.owner = THIS_MODULE,
 	.add_entry = idtcps_route_add_entry,
@@ -168,7 +140,6 @@ static int idtcps_probe(struct rio_dev *rdev, const struct rio_device_id *id)
 	rdev->rswitch->ops = &idtcps_switch_ops;
 
 	if (rdev->do_enum) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set TVAL = ~50us */
 		rio_write_config_32(rdev,
 			rdev->phys_efptr + RIO_PORT_LINKTO_CTL_CSR, 0x8e << 8);
@@ -177,17 +148,6 @@ static int idtcps_probe(struct rio_dev *rdev, const struct rio_device_id *id)
 				    RIO_STD_RTE_DEFAULT_PORT, CPS_NO_ROUTE);
 	}
 
-<<<<<<< HEAD
-	return 0;
-}
-
-DECLARE_RIO_SWITCH_INIT(RIO_VID_IDT, RIO_DID_IDTCPS6Q, idtcps_switch_init);
-DECLARE_RIO_SWITCH_INIT(RIO_VID_IDT, RIO_DID_IDTCPS8, idtcps_switch_init);
-DECLARE_RIO_SWITCH_INIT(RIO_VID_IDT, RIO_DID_IDTCPS10Q, idtcps_switch_init);
-DECLARE_RIO_SWITCH_INIT(RIO_VID_IDT, RIO_DID_IDTCPS12, idtcps_switch_init);
-DECLARE_RIO_SWITCH_INIT(RIO_VID_IDT, RIO_DID_IDTCPS16, idtcps_switch_init);
-DECLARE_RIO_SWITCH_INIT(RIO_VID_IDT, RIO_DID_IDT70K200, idtcps_switch_init);
-=======
 	spin_unlock(&rdev->rswitch->lock);
 	return 0;
 }
@@ -237,4 +197,3 @@ module_exit(idtcps_exit);
 MODULE_DESCRIPTION("IDT CPS Gen.1 Serial RapidIO switch family driver");
 MODULE_AUTHOR("Integrated Device Technology, Inc.");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

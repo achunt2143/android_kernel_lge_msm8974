@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MFD driver for wl1273 FM radio and audio codec submodules.
  *
  * Copyright (C) 2011 Nokia Corporation
  * Author: Matti Aaltonen <matti.j.aaltonen@nokia.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mfd/wl1273-core.h>
@@ -177,28 +156,9 @@ static int wl1273_fm_set_volume(struct wl1273_core *core, unsigned int volume)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wl1273_core_remove(struct i2c_client *client)
-{
-	struct wl1273_core *core = i2c_get_clientdata(client);
-
-	dev_dbg(&client->dev, "%s\n", __func__);
-
-	mfd_remove_devices(&client->dev);
-	kfree(core);
-
-	return 0;
-}
-
-static int __devinit wl1273_core_probe(struct i2c_client *client,
-				       const struct i2c_device_id *id)
-{
-	struct wl1273_fm_platform_data *pdata = client->dev.platform_data;
-=======
 static int wl1273_core_probe(struct i2c_client *client)
 {
 	struct wl1273_fm_platform_data *pdata = dev_get_platdata(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wl1273_core *core;
 	struct mfd_cell *cell;
 	int children = 0;
@@ -216,11 +176,7 @@ static int wl1273_core_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	core = kzalloc(sizeof(*core), GFP_KERNEL);
-=======
 	core = devm_kzalloc(&client->dev, sizeof(*core), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!core)
 		return -ENOMEM;
 
@@ -257,13 +213,8 @@ static int wl1273_core_probe(struct i2c_client *client)
 	dev_dbg(&client->dev, "%s: number of children: %d.\n",
 		__func__, children);
 
-<<<<<<< HEAD
-	r = mfd_add_devices(&client->dev, -1, core->cells,
-			    children, NULL, 0);
-=======
 	r = devm_mfd_add_devices(&client->dev, -1, core->cells,
 				 children, NULL, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		goto err;
 
@@ -271,10 +222,6 @@ static int wl1273_core_probe(struct i2c_client *client)
 
 err:
 	pdata->free_resources();
-<<<<<<< HEAD
-	kfree(core);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&client->dev, "%s\n", __func__);
 
@@ -287,10 +234,6 @@ static struct i2c_driver wl1273_core_driver = {
 	},
 	.probe = wl1273_core_probe,
 	.id_table = wl1273_driver_id_table,
-<<<<<<< HEAD
-	.remove = __devexit_p(wl1273_core_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init wl1273_core_init(void)

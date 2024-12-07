@@ -1,27 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * x_tables core - Backend for {ip,ip6,arp}_tables
  *
  * Copyright (C) 2006-2006 Harald Welte <laforge@netfilter.org>
-<<<<<<< HEAD
-=======
  * Copyright (C) 2006-2012 Patrick McHardy <kaber@trash.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Based on existing ip_tables code which is
  *   Copyright (C) 1999 Paul `Rusty' Russell & Michael J. Neuling
  *   Copyright (C) 2000-2005 Netfilter Core Team <coreteam@netfilter.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/kernel.h>
@@ -36,13 +22,9 @@
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/audit.h>
-<<<<<<< HEAD
-#include <net/net_namespace.h>
-=======
 #include <linux/user_namespace.h>
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_arp.h>
@@ -54,9 +36,6 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Harald Welte <laforge@netfilter.org>");
 MODULE_DESCRIPTION("{ip,ip6,arp,eb}_tables backend module");
 
-<<<<<<< HEAD
-#define SMP_ALIGN(x) (((x) + SMP_CACHE_BYTES-1) & ~(SMP_CACHE_BYTES-1))
-=======
 #define XT_PCPU_BLOCK_SIZE 4096
 #define XT_MAX_TABLE_SIZE	(512 * 1024 * 1024)
 
@@ -77,7 +56,6 @@ static struct list_head xt_templates[NFPROTO_NUMPROTO];
 struct xt_pernet {
 	struct list_head tables[NFPROTO_NUMPROTO];
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct compat_delta {
 	unsigned int offset; /* offset in kernel */
@@ -88,11 +66,7 @@ struct xt_af {
 	struct mutex mutex;
 	struct list_head match;
 	struct list_head target;
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex compat_mutex;
 	struct compat_delta *compat_tab;
 	unsigned int number; /* number of slots in compat_tab[] */
@@ -100,12 +74,8 @@ struct xt_af {
 #endif
 };
 
-<<<<<<< HEAD
-static struct xt_af *xt;
-=======
 static unsigned int xt_pernet_id __read_mostly;
 static struct xt_af *xt __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *const xt_prefix[NFPROTO_NUMPROTO] = {
 	[NFPROTO_UNSPEC] = "x",
@@ -115,24 +85,6 @@ static const char *const xt_prefix[NFPROTO_NUMPROTO] = {
 	[NFPROTO_IPV6]   = "ip6",
 };
 
-<<<<<<< HEAD
-/* Allow this many total (re)entries. */
-static const unsigned int xt_jumpstack_multiplier = 2;
-
-/* Registration hooks for targets. */
-int
-xt_register_target(struct xt_target *target)
-{
-	u_int8_t af = target->family;
-	int ret;
-
-	ret = mutex_lock_interruptible(&xt[af].mutex);
-	if (ret != 0)
-		return ret;
-	list_add(&target->list, &xt[af].target);
-	mutex_unlock(&xt[af].mutex);
-	return ret;
-=======
 /* Registration hooks for targets. */
 int xt_register_target(struct xt_target *target)
 {
@@ -142,7 +94,6 @@ int xt_register_target(struct xt_target *target)
 	list_add(&target->list, &xt[af].target);
 	mutex_unlock(&xt[af].mutex);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(xt_register_target);
 
@@ -185,22 +136,6 @@ xt_unregister_targets(struct xt_target *target, unsigned int n)
 }
 EXPORT_SYMBOL(xt_unregister_targets);
 
-<<<<<<< HEAD
-int
-xt_register_match(struct xt_match *match)
-{
-	u_int8_t af = match->family;
-	int ret;
-
-	ret = mutex_lock_interruptible(&xt[af].mutex);
-	if (ret != 0)
-		return ret;
-
-	list_add(&match->list, &xt[af].match);
-	mutex_unlock(&xt[af].mutex);
-
-	return ret;
-=======
 int xt_register_match(struct xt_match *match)
 {
 	u_int8_t af = match->family;
@@ -209,7 +144,6 @@ int xt_register_match(struct xt_match *match)
 	list_add(&match->list, &xt[af].match);
 	mutex_unlock(&xt[af].mutex);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(xt_register_match);
 
@@ -265,16 +199,10 @@ struct xt_match *xt_find_match(u8 af, const char *name, u8 revision)
 	struct xt_match *m;
 	int err = -ENOENT;
 
-<<<<<<< HEAD
-	if (mutex_lock_interruptible(&xt[af].mutex) != 0)
-		return ERR_PTR(-EINTR);
-
-=======
 	if (strnlen(name, XT_EXTENSION_MAXNAMELEN) == XT_EXTENSION_MAXNAMELEN)
 		return ERR_PTR(-EINVAL);
 
 	mutex_lock(&xt[af].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(m, &xt[af].match, list) {
 		if (strcmp(m->name, name) == 0) {
 			if (m->revision == revision) {
@@ -301,12 +229,9 @@ xt_request_find_match(uint8_t nfproto, const char *name, uint8_t revision)
 {
 	struct xt_match *match;
 
-<<<<<<< HEAD
-=======
 	if (strnlen(name, XT_EXTENSION_MAXNAMELEN) == XT_EXTENSION_MAXNAMELEN)
 		return ERR_PTR(-EINVAL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	match = xt_find_match(nfproto, name, revision);
 	if (IS_ERR(match)) {
 		request_module("%st_%s", xt_prefix[nfproto], name);
@@ -318,25 +243,15 @@ xt_request_find_match(uint8_t nfproto, const char *name, uint8_t revision)
 EXPORT_SYMBOL_GPL(xt_request_find_match);
 
 /* Find target, grabs ref.  Returns ERR_PTR() on error. */
-<<<<<<< HEAD
-struct xt_target *xt_find_target(u8 af, const char *name, u8 revision)
-=======
 static struct xt_target *xt_find_target(u8 af, const char *name, u8 revision)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xt_target *t;
 	int err = -ENOENT;
 
-<<<<<<< HEAD
-	if (mutex_lock_interruptible(&xt[af].mutex) != 0)
-		return ERR_PTR(-EINTR);
-
-=======
 	if (strnlen(name, XT_EXTENSION_MAXNAMELEN) == XT_EXTENSION_MAXNAMELEN)
 		return ERR_PTR(-EINVAL);
 
 	mutex_lock(&xt[af].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(t, &xt[af].target, list) {
 		if (strcmp(t->name, name) == 0) {
 			if (t->revision == revision) {
@@ -356,21 +271,14 @@ static struct xt_target *xt_find_target(u8 af, const char *name, u8 revision)
 
 	return ERR_PTR(err);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(xt_find_target);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xt_target *xt_request_find_target(u8 af, const char *name, u8 revision)
 {
 	struct xt_target *target;
 
-<<<<<<< HEAD
-=======
 	if (strnlen(name, XT_EXTENSION_MAXNAMELEN) == XT_EXTENSION_MAXNAMELEN)
 		return ERR_PTR(-EINVAL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	target = xt_find_target(af, name, revision);
 	if (IS_ERR(target)) {
 		request_module("%st_%s", xt_prefix[af], name);
@@ -381,8 +289,6 @@ struct xt_target *xt_request_find_target(u8 af, const char *name, u8 revision)
 }
 EXPORT_SYMBOL_GPL(xt_request_find_target);
 
-<<<<<<< HEAD
-=======
 
 static int xt_obj_to_user(u16 __user *psize, u16 size,
 			  void __user *pname, const char *name,
@@ -439,16 +345,12 @@ int xt_target_to_user(const struct xt_entry_target *t,
 }
 EXPORT_SYMBOL_GPL(xt_target_to_user);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int match_revfn(u8 af, const char *name, u8 revision, int *bestp)
 {
 	const struct xt_match *m;
 	int have_rev = 0;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&xt[af].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(m, &xt[af].match, list) {
 		if (strcmp(m->name, name) == 0) {
 			if (m->revision > *bestp)
@@ -457,10 +359,7 @@ static int match_revfn(u8 af, const char *name, u8 revision, int *bestp)
 				have_rev = 1;
 		}
 	}
-<<<<<<< HEAD
-=======
 	mutex_unlock(&xt[af].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (af != NFPROTO_UNSPEC && !have_rev)
 		return match_revfn(NFPROTO_UNSPEC, name, revision, bestp);
@@ -473,10 +372,7 @@ static int target_revfn(u8 af, const char *name, u8 revision, int *bestp)
 	const struct xt_target *t;
 	int have_rev = 0;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&xt[af].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(t, &xt[af].target, list) {
 		if (strcmp(t->name, name) == 0) {
 			if (t->revision > *bestp)
@@ -485,10 +381,7 @@ static int target_revfn(u8 af, const char *name, u8 revision, int *bestp)
 				have_rev = 1;
 		}
 	}
-<<<<<<< HEAD
-=======
 	mutex_unlock(&xt[af].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (af != NFPROTO_UNSPEC && !have_rev)
 		return target_revfn(NFPROTO_UNSPEC, name, revision, bestp);
@@ -502,21 +395,10 @@ int xt_find_revision(u8 af, const char *name, u8 revision, int target,
 {
 	int have_rev, best = -1;
 
-<<<<<<< HEAD
-	if (mutex_lock_interruptible(&xt[af].mutex) != 0) {
-		*err = -EINTR;
-		return 1;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (target == 1)
 		have_rev = target_revfn(af, name, revision, &best);
 	else
 		have_rev = match_revfn(af, name, revision, &best);
-<<<<<<< HEAD
-	mutex_unlock(&xt[af].mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Nothing at all?  Return 0 to try loading module. */
 	if (best == -1) {
@@ -565,10 +447,6 @@ textify_hooks(char *buf, size_t size, unsigned int mask, uint8_t nfproto)
 	return buf;
 }
 
-<<<<<<< HEAD
-int xt_check_match(struct xt_mtchk_param *par,
-		   unsigned int size, u_int8_t proto, bool inv_proto)
-=======
 /**
  * xt_check_proc_name - check that name is suitable for /proc file creation
  *
@@ -601,7 +479,6 @@ EXPORT_SYMBOL(xt_check_proc_name);
 
 int xt_check_match(struct xt_mtchk_param *par,
 		   unsigned int size, u16 proto, bool inv_proto)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -611,51 +488,22 @@ int xt_check_match(struct xt_mtchk_param *par,
 		 * ebt_among is exempt from centralized matchsize checking
 		 * because it uses a dynamic-size data set.
 		 */
-<<<<<<< HEAD
-		pr_err("%s_tables: %s.%u match: invalid size "
-		       "%u (kernel) != (user) %u\n",
-		       xt_prefix[par->family], par->match->name,
-		       par->match->revision,
-		       XT_ALIGN(par->match->matchsize), size);
-=======
 		pr_err_ratelimited("%s_tables: %s.%u match: invalid size %u (kernel) != (user) %u\n",
 				   xt_prefix[par->family], par->match->name,
 				   par->match->revision,
 				   XT_ALIGN(par->match->matchsize), size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (par->match->table != NULL &&
 	    strcmp(par->match->table, par->table) != 0) {
-<<<<<<< HEAD
-		pr_err("%s_tables: %s match: only valid in %s table, not %s\n",
-		       xt_prefix[par->family], par->match->name,
-		       par->match->table, par->table);
-=======
 		pr_info_ratelimited("%s_tables: %s match: only valid in %s table, not %s\n",
 				    xt_prefix[par->family], par->match->name,
 				    par->match->table, par->table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (par->match->hooks && (par->hook_mask & ~par->match->hooks) != 0) {
 		char used[64], allow[64];
 
-<<<<<<< HEAD
-		pr_err("%s_tables: %s match: used from hooks %s, but only "
-		       "valid from %s\n",
-		       xt_prefix[par->family], par->match->name,
-		       textify_hooks(used, sizeof(used), par->hook_mask,
-		                     par->family),
-		       textify_hooks(allow, sizeof(allow), par->match->hooks,
-		                     par->family));
-		return -EINVAL;
-	}
-	if (par->match->proto && (par->match->proto != proto || inv_proto)) {
-		pr_err("%s_tables: %s match: only valid for protocol %u\n",
-		       xt_prefix[par->family], par->match->name,
-		       par->match->proto);
-=======
 		pr_info_ratelimited("%s_tables: %s match: used from hooks %s, but only valid from %s\n",
 				    xt_prefix[par->family], par->match->name,
 				    textify_hooks(used, sizeof(used),
@@ -669,7 +517,6 @@ int xt_check_match(struct xt_mtchk_param *par,
 		pr_info_ratelimited("%s_tables: %s match: only valid for protocol %u\n",
 				    xt_prefix[par->family], par->match->name,
 				    par->match->proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (par->match->checkentry != NULL) {
@@ -684,9 +531,6 @@ int xt_check_match(struct xt_mtchk_param *par,
 }
 EXPORT_SYMBOL_GPL(xt_check_match);
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 /** xt_check_entry_match - check that matches end before start of target
  *
  * @match: beginning of xt_entry_match
@@ -818,26 +662,14 @@ static bool error_tg_ok(unsigned int usersize, unsigned int kernsize,
 }
 
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xt_compat_add_offset(u_int8_t af, unsigned int offset, int delta)
 {
 	struct xt_af *xp = &xt[af];
 
-<<<<<<< HEAD
-	if (!xp->compat_tab) {
-		if (!xp->number)
-			return -EINVAL;
-		xp->compat_tab = vmalloc(sizeof(struct compat_delta) * xp->number);
-		if (!xp->compat_tab)
-			return -ENOMEM;
-		xp->cur = 0;
-	}
-=======
 	WARN_ON(!mutex_is_locked(&xt[af].compat_mutex));
 
 	if (WARN_ON(!xp->compat_tab))
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xp->cur >= xp->number)
 		return -EINVAL;
@@ -853,11 +685,8 @@ EXPORT_SYMBOL_GPL(xt_compat_add_offset);
 
 void xt_compat_flush_offsets(u_int8_t af)
 {
-<<<<<<< HEAD
-=======
 	WARN_ON(!mutex_is_locked(&xt[af].compat_mutex));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xt[af].compat_tab) {
 		vfree(xt[af].compat_tab);
 		xt[af].compat_tab = NULL;
@@ -885,12 +714,6 @@ int xt_compat_calc_jump(u_int8_t af, unsigned int offset)
 }
 EXPORT_SYMBOL_GPL(xt_compat_calc_jump);
 
-<<<<<<< HEAD
-void xt_compat_init_offsets(u_int8_t af, unsigned int number)
-{
-	xt[af].number = number;
-	xt[af].cur = 0;
-=======
 int xt_compat_init_offsets(u8 af, unsigned int number)
 {
 	size_t mem;
@@ -915,7 +738,6 @@ int xt_compat_init_offsets(u8 af, unsigned int number)
 	xt[af].cur = 0;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(xt_compat_init_offsets);
 
@@ -926,15 +748,6 @@ int xt_compat_match_offset(const struct xt_match *match)
 }
 EXPORT_SYMBOL_GPL(xt_compat_match_offset);
 
-<<<<<<< HEAD
-int xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
-			      unsigned int *size)
-{
-	const struct xt_match *match = m->u.kernel.match;
-	struct compat_xt_entry_match *cm = (struct compat_xt_entry_match *)m;
-	int pad, off = xt_compat_match_offset(match);
-	u_int16_t msize = cm->u.user.match_size;
-=======
 void xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
 			       unsigned int *size)
 {
@@ -943,7 +756,6 @@ void xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
 	int off = xt_compat_match_offset(match);
 	u_int16_t msize = cm->u.user.match_size;
 	char name[sizeof(m->u.user.name)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	m = *dstptr;
 	memcpy(m, cm, sizeof(*cm));
@@ -951,21 +763,6 @@ void xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
 		match->compat_from_user(m->data, cm->data);
 	else
 		memcpy(m->data, cm->data, msize - sizeof(*cm));
-<<<<<<< HEAD
-	pad = XT_ALIGN(match->matchsize) - match->matchsize;
-	if (pad > 0)
-		memset(m->data + match->matchsize, 0, pad);
-
-	msize += off;
-	m->u.user.match_size = msize;
-
-	*size += off;
-	*dstptr += msize;
-	return 0;
-}
-EXPORT_SYMBOL_GPL(xt_compat_match_from_user);
-
-=======
 
 	msize += off;
 	m->u.user.match_size = msize;
@@ -984,7 +781,6 @@ EXPORT_SYMBOL_GPL(xt_compat_match_from_user);
 			C_SIZE,						\
 			COMPAT_XT_ALIGN(C_SIZE))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xt_compat_match_to_user(const struct xt_entry_match *m,
 			    void __user **dstptr, unsigned int *size)
 {
@@ -993,25 +789,14 @@ int xt_compat_match_to_user(const struct xt_entry_match *m,
 	int off = xt_compat_match_offset(match);
 	u_int16_t msize = m->u.user.match_size - off;
 
-<<<<<<< HEAD
-	if (copy_to_user(cm, m, sizeof(*cm)) ||
-	    put_user(msize, &cm->u.user.match_size) ||
-	    copy_to_user(cm->u.user.name, m->u.kernel.match->name,
-			 strlen(m->u.kernel.match->name) + 1))
-=======
 	if (XT_OBJ_TO_USER(cm, m, match, msize))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	if (match->compat_to_user) {
 		if (match->compat_to_user((void __user *)cm->data, m->data))
 			return -EFAULT;
 	} else {
-<<<<<<< HEAD
-		if (copy_to_user(cm->data, m->data, msize - sizeof(*cm)))
-=======
 		if (COMPAT_XT_DATA_TO_USER(cm, m, match, msize - sizeof(*cm)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 
@@ -1020,12 +805,6 @@ int xt_compat_match_to_user(const struct xt_entry_match *m,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(xt_compat_match_to_user);
-<<<<<<< HEAD
-#endif /* CONFIG_COMPAT */
-
-int xt_check_target(struct xt_tgchk_param *par,
-		    unsigned int size, u_int8_t proto, bool inv_proto)
-=======
 
 /* non-compat version may have padding after verdict */
 struct compat_xt_standard_target {
@@ -1220,56 +999,26 @@ EXPORT_SYMBOL(xt_find_jump_offset);
 
 int xt_check_target(struct xt_tgchk_param *par,
 		    unsigned int size, u16 proto, bool inv_proto)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	if (XT_ALIGN(par->target->targetsize) != size) {
-<<<<<<< HEAD
-		pr_err("%s_tables: %s.%u target: invalid size "
-		       "%u (kernel) != (user) %u\n",
-		       xt_prefix[par->family], par->target->name,
-		       par->target->revision,
-		       XT_ALIGN(par->target->targetsize), size);
-=======
 		pr_err_ratelimited("%s_tables: %s.%u target: invalid size %u (kernel) != (user) %u\n",
 				   xt_prefix[par->family], par->target->name,
 				   par->target->revision,
 				   XT_ALIGN(par->target->targetsize), size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (par->target->table != NULL &&
 	    strcmp(par->target->table, par->table) != 0) {
-<<<<<<< HEAD
-		pr_err("%s_tables: %s target: only valid in %s table, not %s\n",
-		       xt_prefix[par->family], par->target->name,
-		       par->target->table, par->table);
-=======
 		pr_info_ratelimited("%s_tables: %s target: only valid in %s table, not %s\n",
 				    xt_prefix[par->family], par->target->name,
 				    par->target->table, par->table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (par->target->hooks && (par->hook_mask & ~par->target->hooks) != 0) {
 		char used[64], allow[64];
 
-<<<<<<< HEAD
-		pr_err("%s_tables: %s target: used from hooks %s, but only "
-		       "usable from %s\n",
-		       xt_prefix[par->family], par->target->name,
-		       textify_hooks(used, sizeof(used), par->hook_mask,
-		                     par->family),
-		       textify_hooks(allow, sizeof(allow), par->target->hooks,
-		                     par->family));
-		return -EINVAL;
-	}
-	if (par->target->proto && (par->target->proto != proto || inv_proto)) {
-		pr_err("%s_tables: %s target: only valid for protocol %u\n",
-		       xt_prefix[par->family], par->target->name,
-		       par->target->proto);
-=======
 		pr_info_ratelimited("%s_tables: %s target: used from hooks %s, but only usable from %s\n",
 				    xt_prefix[par->family], par->target->name,
 				    textify_hooks(used, sizeof(used),
@@ -1283,7 +1032,6 @@ int xt_check_target(struct xt_tgchk_param *par,
 		pr_info_ratelimited("%s_tables: %s target: only valid for protocol %u\n",
 				    xt_prefix[par->family], par->target->name,
 				    par->target->proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (par->target->checkentry != NULL) {
@@ -1298,9 +1046,6 @@ int xt_check_target(struct xt_tgchk_param *par,
 }
 EXPORT_SYMBOL_GPL(xt_check_target);
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 /**
  * xt_copy_counters - copy counters and metadata from a sockptr_t
  *
@@ -1376,7 +1121,6 @@ void *xt_copy_counters(sockptr_t arg, unsigned int len,
 EXPORT_SYMBOL_GPL(xt_copy_counters);
 
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xt_compat_target_offset(const struct xt_target *target)
 {
 	u_int16_t csize = target->compatsize ? : target->targetsize;
@@ -1389,29 +1133,15 @@ void xt_compat_target_from_user(struct xt_entry_target *t, void **dstptr,
 {
 	const struct xt_target *target = t->u.kernel.target;
 	struct compat_xt_entry_target *ct = (struct compat_xt_entry_target *)t;
-<<<<<<< HEAD
-	int pad, off = xt_compat_target_offset(target);
-	u_int16_t tsize = ct->u.user.target_size;
-=======
 	int off = xt_compat_target_offset(target);
 	u_int16_t tsize = ct->u.user.target_size;
 	char name[sizeof(t->u.user.name)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	t = *dstptr;
 	memcpy(t, ct, sizeof(*ct));
 	if (target->compat_from_user)
 		target->compat_from_user(t->data, ct->data);
 	else
-<<<<<<< HEAD
-		memcpy(t->data, ct->data, tsize - sizeof(*ct));
-	pad = XT_ALIGN(target->targetsize) - target->targetsize;
-	if (pad > 0)
-		memset(t->data + target->targetsize, 0, pad);
-
-	tsize += off;
-	t->u.user.target_size = tsize;
-=======
 		unsafe_memcpy(t->data, ct->data, tsize - sizeof(*ct),
 			      /* UAPI 0-sized destination */);
 
@@ -1420,7 +1150,6 @@ void xt_compat_target_from_user(struct xt_entry_target *t, void **dstptr,
 	strscpy(name, target->name, sizeof(name));
 	module_put(target->me);
 	strscpy_pad(t->u.user.name, name, sizeof(t->u.user.name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*size += off;
 	*dstptr += tsize;
@@ -1435,25 +1164,14 @@ int xt_compat_target_to_user(const struct xt_entry_target *t,
 	int off = xt_compat_target_offset(target);
 	u_int16_t tsize = t->u.user.target_size - off;
 
-<<<<<<< HEAD
-	if (copy_to_user(ct, t, sizeof(*ct)) ||
-	    put_user(tsize, &ct->u.user.target_size) ||
-	    copy_to_user(ct->u.user.name, t->u.kernel.target->name,
-			 strlen(t->u.kernel.target->name) + 1))
-=======
 	if (XT_OBJ_TO_USER(ct, t, target, tsize))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	if (target->compat_to_user) {
 		if (target->compat_to_user((void __user *)ct->data, t->data))
 			return -EFAULT;
 	} else {
-<<<<<<< HEAD
-		if (copy_to_user(ct->data, t->data, tsize - sizeof(*ct)))
-=======
 		if (COMPAT_XT_DATA_TO_USER(ct, t, target, tsize - sizeof(*ct)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 
@@ -1466,41 +1184,6 @@ EXPORT_SYMBOL_GPL(xt_compat_target_to_user);
 
 struct xt_table_info *xt_alloc_table_info(unsigned int size)
 {
-<<<<<<< HEAD
-	struct xt_table_info *newinfo;
-	int cpu;
-	size_t sz = sizeof(*newinfo) + size;
-
-	if (sz < sizeof(*newinfo))
-		return NULL;
-
-	/* Pedantry: prevent them from hitting BUG() in vmalloc.c --RR */
-	if ((SMP_ALIGN(size) >> PAGE_SHIFT) + 2 > totalram_pages)
-		return NULL;
-
-	newinfo = kzalloc(XT_TABLE_INFO_SZ, GFP_KERNEL);
-	if (!newinfo)
-		return NULL;
-
-	newinfo->size = size;
-
-	for_each_possible_cpu(cpu) {
-		if (size <= PAGE_SIZE)
-			newinfo->entries[cpu] = kmalloc_node(size,
-							GFP_KERNEL,
-							cpu_to_node(cpu));
-		else
-			newinfo->entries[cpu] = vmalloc_node(size,
-							cpu_to_node(cpu));
-
-		if (newinfo->entries[cpu] == NULL) {
-			xt_free_table_info(newinfo);
-			return NULL;
-		}
-	}
-
-	return newinfo;
-=======
 	struct xt_table_info *info = NULL;
 	size_t sz = sizeof(*info) + size;
 
@@ -1514,7 +1197,6 @@ struct xt_table_info *xt_alloc_table_info(unsigned int size)
 	memset(info, 0, sizeof(*info));
 	info->size = size;
 	return info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(xt_alloc_table_info);
 
@@ -1522,53 +1204,6 @@ void xt_free_table_info(struct xt_table_info *info)
 {
 	int cpu;
 
-<<<<<<< HEAD
-	for_each_possible_cpu(cpu) {
-		if (info->size <= PAGE_SIZE)
-			kfree(info->entries[cpu]);
-		else
-			vfree(info->entries[cpu]);
-	}
-
-	if (info->jumpstack != NULL) {
-		if (sizeof(void *) * info->stacksize > PAGE_SIZE) {
-			for_each_possible_cpu(cpu)
-				vfree(info->jumpstack[cpu]);
-		} else {
-			for_each_possible_cpu(cpu)
-				kfree(info->jumpstack[cpu]);
-		}
-	}
-
-	if (sizeof(void **) * nr_cpu_ids > PAGE_SIZE)
-		vfree(info->jumpstack);
-	else
-		kfree(info->jumpstack);
-
-	free_percpu(info->stackptr);
-
-	kfree(info);
-}
-EXPORT_SYMBOL(xt_free_table_info);
-
-/* Find table by name, grabs mutex & ref.  Returns ERR_PTR() on error. */
-struct xt_table *xt_find_table_lock(struct net *net, u_int8_t af,
-				    const char *name)
-{
-	struct xt_table *t;
-
-	if (mutex_lock_interruptible(&xt[af].mutex) != 0)
-		return ERR_PTR(-EINTR);
-
-	list_for_each_entry(t, &net->xt.tables[af], list)
-		if (strcmp(t->name, name) == 0 && try_module_get(t->me))
-			return t;
-	mutex_unlock(&xt[af].mutex);
-	return NULL;
-}
-EXPORT_SYMBOL_GPL(xt_find_table_lock);
-
-=======
 	if (info->jumpstack != NULL) {
 		for_each_possible_cpu(cpu)
 			kvfree(info->jumpstack[cpu]);
@@ -1662,18 +1297,13 @@ struct xt_table *xt_request_find_table_lock(struct net *net, u_int8_t af,
 }
 EXPORT_SYMBOL_GPL(xt_request_find_table_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void xt_table_unlock(struct xt_table *table)
 {
 	mutex_unlock(&xt[table->af].mutex);
 }
 EXPORT_SYMBOL_GPL(xt_table_unlock);
 
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void xt_compat_lock(u_int8_t af)
 {
 	mutex_lock(&xt[af].compat_mutex);
@@ -1690,46 +1320,22 @@ EXPORT_SYMBOL_GPL(xt_compat_unlock);
 DEFINE_PER_CPU(seqcount_t, xt_recseq);
 EXPORT_PER_CPU_SYMBOL_GPL(xt_recseq);
 
-<<<<<<< HEAD
-=======
 struct static_key xt_tee_enabled __read_mostly;
 EXPORT_SYMBOL_GPL(xt_tee_enabled);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int xt_jumpstack_alloc(struct xt_table_info *i)
 {
 	unsigned int size;
 	int cpu;
 
-<<<<<<< HEAD
-	i->stackptr = alloc_percpu(unsigned int);
-	if (i->stackptr == NULL)
-		return -ENOMEM;
-
-	size = sizeof(void **) * nr_cpu_ids;
-	if (size > PAGE_SIZE)
-		i->jumpstack = vzalloc(size);
-=======
 	size = sizeof(void **) * nr_cpu_ids;
 	if (size > PAGE_SIZE)
 		i->jumpstack = kvzalloc(size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		i->jumpstack = kzalloc(size, GFP_KERNEL);
 	if (i->jumpstack == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	i->stacksize *= xt_jumpstack_multiplier;
-	size = sizeof(void *) * i->stacksize;
-	for_each_possible_cpu(cpu) {
-		if (size > PAGE_SIZE)
-			i->jumpstack[cpu] = vmalloc_node(size,
-				cpu_to_node(cpu));
-		else
-			i->jumpstack[cpu] = kmalloc_node(size,
-				GFP_KERNEL, cpu_to_node(cpu));
-=======
 	/* ruleset without jumps -- no stack needed */
 	if (i->stacksize == 0)
 		return 0;
@@ -1748,7 +1354,6 @@ static int xt_jumpstack_alloc(struct xt_table_info *i)
 	for_each_possible_cpu(cpu) {
 		i->jumpstack[cpu] = kvmalloc_node(size, GFP_KERNEL,
 			cpu_to_node(cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i->jumpstack[cpu] == NULL)
 			/*
 			 * Freeing will be done later on by the callers. The
@@ -1761,8 +1366,6 @@ static int xt_jumpstack_alloc(struct xt_table_info *i)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 struct xt_counters *xt_counters_alloc(unsigned int counters)
 {
 	struct xt_counters *mem;
@@ -1778,7 +1381,6 @@ struct xt_counters *xt_counters_alloc(unsigned int counters)
 }
 EXPORT_SYMBOL(xt_counters_alloc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct xt_table_info *
 xt_replace_table(struct xt_table *table,
 	      unsigned int num_counters,
@@ -1786,10 +1388,7 @@ xt_replace_table(struct xt_table *table,
 	      int *error)
 {
 	struct xt_table_info *private;
-<<<<<<< HEAD
-=======
 	unsigned int cpu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = xt_jumpstack_alloc(newinfo);
@@ -1819,31 +1418,6 @@ xt_replace_table(struct xt_table *table,
 	smp_wmb();
 	table->private = newinfo;
 
-<<<<<<< HEAD
-	/*
-	 * Even though table entries have now been swapped, other CPU's
-	 * may still be using the old entries. This is okay, because
-	 * resynchronization happens because of the locking done
-	 * during the get_counters() routine.
-	 */
-	local_bh_enable();
-
-#ifdef CONFIG_AUDIT
-	if (audit_enabled) {
-		struct audit_buffer *ab;
-
-		ab = audit_log_start(current->audit_context, GFP_KERNEL,
-				     AUDIT_NETFILTER_CFG);
-		if (ab) {
-			audit_log_format(ab, "table=%s family=%u entries=%u",
-					 table->name, table->af,
-					 private->number);
-			audit_log_end(ab);
-		}
-	}
-#endif
-
-=======
 	/* make sure all cpus see new ->private value */
 	smp_mb();
 
@@ -1870,7 +1444,6 @@ xt_replace_table(struct xt_table *table,
 			!private->number ? AUDIT_XT_OP_REGISTER :
 					   AUDIT_XT_OP_REPLACE,
 			GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return private;
 }
 EXPORT_SYMBOL_GPL(xt_replace_table);
@@ -1880,16 +1453,10 @@ struct xt_table *xt_register_table(struct net *net,
 				   struct xt_table_info *bootstrap,
 				   struct xt_table_info *newinfo)
 {
-<<<<<<< HEAD
-	int ret;
-	struct xt_table_info *private;
-	struct xt_table *t, *table;
-=======
 	struct xt_pernet *xt_net = net_generic(net, xt_pernet_id);
 	struct xt_table_info *private;
 	struct xt_table *t, *table;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't add one object to multiple lists. */
 	table = kmemdup(input_table, sizeof(struct xt_table), GFP_KERNEL);
@@ -1898,18 +1465,9 @@ struct xt_table *xt_register_table(struct net *net,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ret = mutex_lock_interruptible(&xt[table->af].mutex);
-	if (ret != 0)
-		goto out_free;
-
-	/* Don't autoload: we'd eat our tail... */
-	list_for_each_entry(t, &net->xt.tables[table->af], list) {
-=======
 	mutex_lock(&xt[table->af].mutex);
 	/* Don't autoload: we'd eat our tail... */
 	list_for_each_entry(t, &xt_net->tables[table->af], list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strcmp(t->name, table->name) == 0) {
 			ret = -EEXIST;
 			goto unlock;
@@ -1928,22 +1486,12 @@ struct xt_table *xt_register_table(struct net *net,
 	/* save number of initial entries */
 	private->initial_entries = private->number;
 
-<<<<<<< HEAD
-	list_add(&table->list, &net->xt.tables[table->af]);
-	mutex_unlock(&xt[table->af].mutex);
-	return table;
-
- unlock:
-	mutex_unlock(&xt[table->af].mutex);
-out_free:
-=======
 	list_add(&table->list, &xt_net->tables[table->af]);
 	mutex_unlock(&xt[table->af].mutex);
 	return table;
 
 unlock:
 	mutex_unlock(&xt[table->af].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(table);
 out:
 	return ERR_PTR(ret);
@@ -1958,12 +1506,9 @@ void *xt_unregister_table(struct xt_table *table)
 	private = table->private;
 	list_del(&table->list);
 	mutex_unlock(&xt[table->af].mutex);
-<<<<<<< HEAD
-=======
 	audit_log_nfcfg(table->name, table->af, private->number,
 			AUDIT_XT_OP_UNREGISTER, GFP_KERNEL);
 	kfree(table->ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(table);
 
 	return private;
@@ -1971,20 +1516,6 @@ void *xt_unregister_table(struct xt_table *table)
 EXPORT_SYMBOL_GPL(xt_unregister_table);
 
 #ifdef CONFIG_PROC_FS
-<<<<<<< HEAD
-struct xt_names_priv {
-	struct seq_net_private p;
-	u_int8_t af;
-};
-static void *xt_table_seq_start(struct seq_file *seq, loff_t *pos)
-{
-	struct xt_names_priv *priv = seq->private;
-	struct net *net = seq_file_net(seq);
-	u_int8_t af = priv->af;
-
-	mutex_lock(&xt[af].mutex);
-	return seq_list_start(&net->xt.tables[af], *pos);
-=======
 static void *xt_table_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	u8 af = (unsigned long)pde_data(file_inode(seq->file));
@@ -1995,18 +1526,10 @@ static void *xt_table_seq_start(struct seq_file *seq, loff_t *pos)
 
 	mutex_lock(&xt[af].mutex);
 	return seq_list_start(&xt_net->tables[af], *pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *xt_table_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 {
-<<<<<<< HEAD
-	struct xt_names_priv *priv = seq->private;
-	struct net *net = seq_file_net(seq);
-	u_int8_t af = priv->af;
-
-	return seq_list_next(v, &net->xt.tables[af], pos);
-=======
 	u8 af = (unsigned long)pde_data(file_inode(seq->file));
 	struct net *net = seq_file_net(seq);
 	struct xt_pernet *xt_net;
@@ -2014,17 +1537,11 @@ static void *xt_table_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	xt_net = net_generic(net, xt_pernet_id);
 
 	return seq_list_next(v, &xt_net->tables[af], pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xt_table_seq_stop(struct seq_file *seq, void *v)
 {
-<<<<<<< HEAD
-	struct xt_names_priv *priv = seq->private;
-	u_int8_t af = priv->af;
-=======
 	u_int8_t af = (unsigned long)pde_data(file_inode(seq->file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&xt[af].mutex);
 }
@@ -2033,16 +1550,9 @@ static int xt_table_seq_show(struct seq_file *seq, void *v)
 {
 	struct xt_table *table = list_entry(v, struct xt_table, list);
 
-<<<<<<< HEAD
-	if (strlen(table->name))
-		return seq_printf(seq, "%s\n", table->name);
-	else
-		return 0;
-=======
 	if (*table->name)
 		seq_printf(seq, "%s\n", table->name);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct seq_operations xt_table_seq_ops = {
@@ -2052,42 +1562,13 @@ static const struct seq_operations xt_table_seq_ops = {
 	.show	= xt_table_seq_show,
 };
 
-<<<<<<< HEAD
-static int xt_table_open(struct inode *inode, struct file *file)
-{
-	int ret;
-	struct xt_names_priv *priv;
-
-	ret = seq_open_net(inode, file, &xt_table_seq_ops,
-			   sizeof(struct xt_names_priv));
-	if (!ret) {
-		priv = ((struct seq_file *)file->private_data)->private;
-		priv->af = (unsigned long)PDE(inode)->data;
-	}
-	return ret;
-}
-
-static const struct file_operations xt_table_ops = {
-	.owner	 = THIS_MODULE,
-	.open	 = xt_table_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = seq_release_net,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Traverse state for ip{,6}_{tables,matches} for helping crossing
  * the multi-AF mutexes.
  */
 struct nf_mttg_trav {
 	struct list_head *head, *curr;
-<<<<<<< HEAD
-	uint8_t class, nfproto;
-=======
 	uint8_t class;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -2104,17 +1585,12 @@ static void *xt_mttg_seq_next(struct seq_file *seq, void *v, loff_t *ppos,
 		[MTTG_TRAV_NFP_UNSPEC] = MTTG_TRAV_NFP_SPEC,
 		[MTTG_TRAV_NFP_SPEC]   = MTTG_TRAV_DONE,
 	};
-<<<<<<< HEAD
-	struct nf_mttg_trav *trav = seq->private;
-
-=======
 	uint8_t nfproto = (unsigned long)pde_data(file_inode(seq->file));
 	struct nf_mttg_trav *trav = seq->private;
 
 	if (ppos != NULL)
 		++(*ppos);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (trav->class) {
 	case MTTG_TRAV_INIT:
 		trav->class = MTTG_TRAV_NFP_UNSPEC;
@@ -2127,35 +1603,19 @@ static void *xt_mttg_seq_next(struct seq_file *seq, void *v, loff_t *ppos,
 		if (trav->curr != trav->head)
 			break;
 		mutex_unlock(&xt[NFPROTO_UNSPEC].mutex);
-<<<<<<< HEAD
-		mutex_lock(&xt[trav->nfproto].mutex);
-		trav->head = trav->curr = is_target ?
-			&xt[trav->nfproto].target : &xt[trav->nfproto].match;
-=======
 		mutex_lock(&xt[nfproto].mutex);
 		trav->head = trav->curr = is_target ?
 			&xt[nfproto].target : &xt[nfproto].match;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trav->class = next_class[trav->class];
 		break;
 	case MTTG_TRAV_NFP_SPEC:
 		trav->curr = trav->curr->next;
 		if (trav->curr != trav->head)
 			break;
-<<<<<<< HEAD
-		/* fallthru, _stop will unlock */
-	default:
-		return NULL;
-	}
-
-	if (ppos != NULL)
-		++*ppos;
-=======
 		fallthrough;
 	default:
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return trav;
 }
 
@@ -2174,10 +1634,7 @@ static void *xt_mttg_seq_start(struct seq_file *seq, loff_t *pos,
 
 static void xt_mttg_seq_stop(struct seq_file *seq, void *v)
 {
-<<<<<<< HEAD
-=======
 	uint8_t nfproto = (unsigned long)pde_data(file_inode(seq->file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nf_mttg_trav *trav = seq->private;
 
 	switch (trav->class) {
@@ -2185,11 +1642,7 @@ static void xt_mttg_seq_stop(struct seq_file *seq, void *v)
 		mutex_unlock(&xt[NFPROTO_UNSPEC].mutex);
 		break;
 	case MTTG_TRAV_NFP_SPEC:
-<<<<<<< HEAD
-		mutex_unlock(&xt[trav->nfproto].mutex);
-=======
 		mutex_unlock(&xt[nfproto].mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -2215,13 +1668,8 @@ static int xt_match_seq_show(struct seq_file *seq, void *v)
 		if (trav->curr == trav->head)
 			return 0;
 		match = list_entry(trav->curr, struct xt_match, list);
-<<<<<<< HEAD
-		return (*match->name == '\0') ? 0 :
-		       seq_printf(seq, "%s\n", match->name);
-=======
 		if (*match->name)
 			seq_printf(seq, "%s\n", match->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -2233,39 +1681,6 @@ static const struct seq_operations xt_match_seq_ops = {
 	.show	= xt_match_seq_show,
 };
 
-<<<<<<< HEAD
-static int xt_match_open(struct inode *inode, struct file *file)
-{
-	struct seq_file *seq;
-	struct nf_mttg_trav *trav;
-	int ret;
-
-	trav = kmalloc(sizeof(*trav), GFP_KERNEL);
-	if (trav == NULL)
-		return -ENOMEM;
-
-	ret = seq_open(file, &xt_match_seq_ops);
-	if (ret < 0) {
-		kfree(trav);
-		return ret;
-	}
-
-	seq = file->private_data;
-	seq->private = trav;
-	trav->nfproto = (unsigned long)PDE(inode)->data;
-	return 0;
-}
-
-static const struct file_operations xt_match_ops = {
-	.owner	 = THIS_MODULE,
-	.open	 = xt_match_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = seq_release_private,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *xt_target_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	return xt_mttg_seq_start(seq, pos, true);
@@ -2287,13 +1702,8 @@ static int xt_target_seq_show(struct seq_file *seq, void *v)
 		if (trav->curr == trav->head)
 			return 0;
 		target = list_entry(trav->curr, struct xt_target, list);
-<<<<<<< HEAD
-		return (*target->name == '\0') ? 0 :
-		       seq_printf(seq, "%s\n", target->name);
-=======
 		if (*target->name)
 			seq_printf(seq, "%s\n", target->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -2305,39 +1715,6 @@ static const struct seq_operations xt_target_seq_ops = {
 	.show	= xt_target_seq_show,
 };
 
-<<<<<<< HEAD
-static int xt_target_open(struct inode *inode, struct file *file)
-{
-	struct seq_file *seq;
-	struct nf_mttg_trav *trav;
-	int ret;
-
-	trav = kmalloc(sizeof(*trav), GFP_KERNEL);
-	if (trav == NULL)
-		return -ENOMEM;
-
-	ret = seq_open(file, &xt_target_seq_ops);
-	if (ret < 0) {
-		kfree(trav);
-		return ret;
-	}
-
-	seq = file->private_data;
-	seq->private = trav;
-	trav->nfproto = (unsigned long)PDE(inode)->data;
-	return 0;
-}
-
-static const struct file_operations xt_target_ops = {
-	.owner	 = THIS_MODULE,
-	.open	 = xt_target_open,
-	.read	 = seq_read,
-	.llseek	 = seq_lseek,
-	.release = seq_release_private,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FORMAT_TABLES	"_tables_names"
 #define	FORMAT_MATCHES	"_tables_matches"
 #define FORMAT_TARGETS 	"_tables_targets"
@@ -2345,16 +1722,6 @@ static const struct file_operations xt_target_ops = {
 #endif /* CONFIG_PROC_FS */
 
 /**
-<<<<<<< HEAD
- * xt_hook_link - set up hooks for a new table
- * @table:	table with metadata needed to set up hooks
- * @fn:		Hook function
- *
- * This function will take care of creating and registering the necessary
- * Netfilter hooks for XT tables.
- */
-struct nf_hook_ops *xt_hook_link(const struct xt_table *table, nf_hookfn *fn)
-=======
  * xt_hook_ops_alloc - set up hooks for a new table
  * @table:	table with metadata needed to set up hooks
  * @fn:		Hook function
@@ -2364,23 +1731,16 @@ struct nf_hook_ops *xt_hook_link(const struct xt_table *table, nf_hookfn *fn)
  */
 struct nf_hook_ops *
 xt_hook_ops_alloc(const struct xt_table *table, nf_hookfn *fn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int hook_mask = table->valid_hooks;
 	uint8_t i, num_hooks = hweight32(hook_mask);
 	uint8_t hooknum;
 	struct nf_hook_ops *ops;
-<<<<<<< HEAD
-	int ret;
-
-	ops = kmalloc(sizeof(*ops) * num_hooks, GFP_KERNEL);
-=======
 
 	if (!num_hooks)
 		return ERR_PTR(-EINVAL);
 
 	ops = kcalloc(num_hooks, sizeof(*ops), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ops == NULL)
 		return ERR_PTR(-ENOMEM);
 
@@ -2389,39 +1749,12 @@ xt_hook_ops_alloc(const struct xt_table *table, nf_hookfn *fn)
 		if (!(hook_mask & 1))
 			continue;
 		ops[i].hook     = fn;
-<<<<<<< HEAD
-		ops[i].owner    = table->me;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ops[i].pf       = table->af;
 		ops[i].hooknum  = hooknum;
 		ops[i].priority = table->priority;
 		++i;
 	}
 
-<<<<<<< HEAD
-	ret = nf_register_hooks(ops, num_hooks);
-	if (ret < 0) {
-		kfree(ops);
-		return ERR_PTR(ret);
-	}
-
-	return ops;
-}
-EXPORT_SYMBOL_GPL(xt_hook_link);
-
-/**
- * xt_hook_unlink - remove hooks for a table
- * @ops:	nf_hook_ops array as returned by nf_hook_link
- * @hook_mask:	the very same mask that was passed to nf_hook_link
- */
-void xt_hook_unlink(const struct xt_table *table, struct nf_hook_ops *ops)
-{
-	nf_unregister_hooks(ops, hweight32(table->valid_hooks));
-	kfree(ops);
-}
-EXPORT_SYMBOL_GPL(xt_hook_unlink);
-=======
 	return ops;
 }
 EXPORT_SYMBOL_GPL(xt_hook_ops_alloc);
@@ -2477,18 +1810,14 @@ void xt_unregister_template(const struct xt_table *table)
 	WARN_ON_ONCE(1);
 }
 EXPORT_SYMBOL_GPL(xt_unregister_template);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int xt_proto_init(struct net *net, u_int8_t af)
 {
 #ifdef CONFIG_PROC_FS
 	char buf[XT_FUNCTION_MAXNAMELEN];
 	struct proc_dir_entry *proc;
-<<<<<<< HEAD
-=======
 	kuid_t root_uid;
 	kgid_t root_gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	if (af >= ARRAY_SIZE(xt_prefix))
@@ -2496,28 +1825,6 @@ int xt_proto_init(struct net *net, u_int8_t af)
 
 
 #ifdef CONFIG_PROC_FS
-<<<<<<< HEAD
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_TABLES, sizeof(buf));
-	proc = proc_create_data(buf, 0440, net->proc_net, &xt_table_ops,
-				(void *)(unsigned long)af);
-	if (!proc)
-		goto out;
-
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
-	proc = proc_create_data(buf, 0440, net->proc_net, &xt_match_ops,
-				(void *)(unsigned long)af);
-	if (!proc)
-		goto out_remove_tables;
-
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_TARGETS, sizeof(buf));
-	proc = proc_create_data(buf, 0440, net->proc_net, &xt_target_ops,
-				(void *)(unsigned long)af);
-	if (!proc)
-		goto out_remove_matches;
-=======
 	root_uid = make_kuid(net->user_ns, 0);
 	root_gid = make_kgid(net->user_ns, 0);
 
@@ -2550,23 +1857,12 @@ int xt_proto_init(struct net *net, u_int8_t af)
 		goto out_remove_matches;
 	if (uid_valid(root_uid) && gid_valid(root_gid))
 		proc_set_user(proc, root_uid, root_gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return 0;
 
 #ifdef CONFIG_PROC_FS
 out_remove_matches:
-<<<<<<< HEAD
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
-	proc_net_remove(net, buf);
-
-out_remove_tables:
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_TABLES, sizeof(buf));
-	proc_net_remove(net, buf);
-=======
 	strscpy(buf, xt_prefix[af], sizeof(buf));
 	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
 	remove_proc_entry(buf, net->proc_net);
@@ -2575,7 +1871,6 @@ out_remove_tables:
 	strscpy(buf, xt_prefix[af], sizeof(buf));
 	strlcat(buf, FORMAT_TABLES, sizeof(buf));
 	remove_proc_entry(buf, net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return -1;
 #endif
@@ -2587,19 +1882,6 @@ void xt_proto_fini(struct net *net, u_int8_t af)
 #ifdef CONFIG_PROC_FS
 	char buf[XT_FUNCTION_MAXNAMELEN];
 
-<<<<<<< HEAD
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_TABLES, sizeof(buf));
-	proc_net_remove(net, buf);
-
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_TARGETS, sizeof(buf));
-	proc_net_remove(net, buf);
-
-	strlcpy(buf, xt_prefix[af], sizeof(buf));
-	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
-	proc_net_remove(net, buf);
-=======
 	strscpy(buf, xt_prefix[af], sizeof(buf));
 	strlcat(buf, FORMAT_TABLES, sizeof(buf));
 	remove_proc_entry(buf, net->proc_net);
@@ -2611,24 +1893,10 @@ void xt_proto_fini(struct net *net, u_int8_t af)
 	strscpy(buf, xt_prefix[af], sizeof(buf));
 	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
 	remove_proc_entry(buf, net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*CONFIG_PROC_FS*/
 }
 EXPORT_SYMBOL_GPL(xt_proto_fini);
 
-<<<<<<< HEAD
-static int __net_init xt_net_init(struct net *net)
-{
-	int i;
-
-	for (i = 0; i < NFPROTO_NUMPROTO; i++)
-		INIT_LIST_HEAD(&net->xt.tables[i]);
-	return 0;
-}
-
-static struct pernet_operations xt_net_ops = {
-	.init = xt_net_init,
-=======
 /**
  * xt_percpu_counter_alloc - allocate x_tables rule counter
  *
@@ -2708,7 +1976,6 @@ static struct pernet_operations xt_net_ops = {
 	.exit = xt_net_exit,
 	.id   = &xt_pernet_id,
 	.size = sizeof(struct xt_pernet),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init xt_init(void)
@@ -2720,30 +1987,19 @@ static int __init xt_init(void)
 		seqcount_init(&per_cpu(xt_recseq, i));
 	}
 
-<<<<<<< HEAD
-	xt = kmalloc(sizeof(struct xt_af) * NFPROTO_NUMPROTO, GFP_KERNEL);
-=======
 	xt = kcalloc(NFPROTO_NUMPROTO, sizeof(struct xt_af), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xt)
 		return -ENOMEM;
 
 	for (i = 0; i < NFPROTO_NUMPROTO; i++) {
 		mutex_init(&xt[i].mutex);
-<<<<<<< HEAD
-#ifdef CONFIG_COMPAT
-=======
 #ifdef CONFIG_NETFILTER_XTABLES_COMPAT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_init(&xt[i].compat_mutex);
 		xt[i].compat_tab = NULL;
 #endif
 		INIT_LIST_HEAD(&xt[i].target);
 		INIT_LIST_HEAD(&xt[i].match);
-<<<<<<< HEAD
-=======
 		INIT_LIST_HEAD(&xt_templates[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rv = register_pernet_subsys(&xt_net_ops);
 	if (rv < 0)
@@ -2759,7 +2015,3 @@ static void __exit xt_fini(void)
 
 module_init(xt_init);
 module_exit(xt_fini);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

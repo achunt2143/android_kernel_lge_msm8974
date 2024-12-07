@@ -1,30 +1,8 @@
-<<<<<<< HEAD
-/*
- * Early kernel startup code for Hexagon
- *
- * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Early kernel startup code for Hexagon
  *
  * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
@@ -33,12 +11,9 @@
 #include <asm/mem-layout.h>
 #include <asm/vm_mmu.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-=======
 #include <asm/hexagon_vm.h>
 
 #define SEGTABLE_ENTRIES #0x0e0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__INIT
 ENTRY(stext)
@@ -57,16 +32,6 @@ ENTRY(stext)
 	 * Symbol is kernel segment address, but we need
 	 * the logical/physical address.
 	 */
-<<<<<<< HEAD
-	r24 = asl(r24, #2)
-	r24 = lsr(r24, #2)
-
-	r0 = r24
-
-	/*
-	 * Initialize a 16MB PTE to make the virtual and physical
-	 * addresses where the kernel was loaded be identical.
-=======
 	r25 = pc;
 	r2.h = #0xffc0;
 	r2.l = #0x0000;
@@ -82,18 +47,11 @@ ENTRY(stext)
 	 * Initialize page dir to make the virtual and physical
 	 * addresses where the kernel was loaded be identical.
 	 * Done in 4MB chunks.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 #define PTE_BITS ( __HVM_PTE_R | __HVM_PTE_W | __HVM_PTE_X	\
 		  | __HEXAGON_C_WB_L2 << 6			\
 		  | __HVM_PDE_S_4MB)
 
-<<<<<<< HEAD
-	r1 = pc
-	r2.H = #0xffc0
-	r2.L = #0x0000
-	r1 = and(r1,r2)		/* round PC to 4MB boundary	*/
-=======
 	/*
 	 * Get number of VA=PA entries; only really needed for jump
 	 * to hyperspace; gets blown away immediately after
@@ -120,21 +78,12 @@ ENTRY(stext)
 	r2.h = #0xffc0;
 	r2.l = #0x0000;		/* round back down to 4MB boundary  */
 	r1 = and(r1,r2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r2 = lsr(r1, #22)	/* 4MB page number		*/
 	r2 = asl(r2, #2)	/* times sizeof(PTE) (4bytes)	*/
 	r0 = add(r0,r2)		/* r0 = address of correct PTE	*/
 	r2 = #PTE_BITS
 	r1 = add(r1,r2)		/* r1 = 4MB PTE for the first entry	*/
 	r2.h = #0x0040
-<<<<<<< HEAD
-	r2.l = #0x0000		/* 4MB	*/
-	memw(r0 ++ #4) = r1
-	r1 = add(r1, r2)
-	memw(r0 ++ #4) = r1
-
-	r0 = r24
-=======
 	r2.l = #0x0000		/* 4MB increments */
 	loop0(1f,r26);
 1:
@@ -162,19 +111,14 @@ ENTRY(stext)
 	{ r1 = add(r1,r2); } :endloop0
 
 	r0 = r24;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The subroutine wrapper around the virtual instruction touches
 	 * no memory, so we should be able to use it even here.
-<<<<<<< HEAD
-	 */
-=======
 	 * Note that in this version, R1 and R2 get "clobbered"; see
 	 * vm_ops.S
 	 */
 	r1 = #VM_TRANS_TYPE_TABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call	__vmnewmap;
 
 	/*  Jump into virtual address range.  */
@@ -188,13 +132,6 @@ ENTRY(stext)
 __head_s_vaddr_target:
 	/*
 	 * Tear down VA=PA translation now that we are running
-<<<<<<< HEAD
-	 * in the desgnated kernel segments.
-	 */
-	r0 = #__HVM_PDE_S_INVALID
-	r1 = r24
-	loop0(1f,#0x100)
-=======
 	 * in kernel virtual space.
 	 */
 	r0 = #__HVM_PDE_S_INVALID
@@ -211,17 +148,13 @@ __head_s_vaddr_target:
 	r1 = add(r1,r2);
 	loop0(1f,r26)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:
 	{
 		memw(R1 ++ #4) = R0
 	}:endloop0
 
 	r0 = r24
-<<<<<<< HEAD
-=======
 	r1 = #VM_TRANS_TYPE_TABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call __vmnewmap
 
 	/*  Go ahead and install the trap0 return so angel calls work  */
@@ -264,8 +197,6 @@ __head_s_vaddr_target:
 	r2 = sub(r2,r0);
 	call memset;
 
-<<<<<<< HEAD
-=======
 	/*  Set PHYS_OFFSET; should be in R25 */
 #ifdef CONFIG_HEXAGON_PHYS_OFFSET
 	r0.l = #LO(__phys_offset);
@@ -273,7 +204,6 @@ __head_s_vaddr_target:
 	memw(r0) = r25;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Time to make the doughnuts.   */
 	call start_kernel
 

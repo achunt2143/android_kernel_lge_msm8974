@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-#ifndef _LINUX_MODULE_H
-#define _LINUX_MODULE_H
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dynamic loading of modules into the kernel.
  *
  * Rewritten by Richard Henderson <rth@tamu.edu> Dec 1996
  * Rewritten again by Rusty Russell, 2002
  */
-<<<<<<< HEAD
-#include <linux/list.h>
-#include <linux/stat.h>
-#include <linux/compiler.h>
-#include <linux/cache.h>
-#include <linux/kmod.h>
-=======
 
 #ifndef _LINUX_MODULE_H
 #define _LINUX_MODULE_H
@@ -28,15 +16,10 @@
 #include <linux/cache.h>
 #include <linux/kmod.h>
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/elf.h>
 #include <linux/stringify.h>
 #include <linux/kobject.h>
 #include <linux/moduleparam.h>
-<<<<<<< HEAD
-#include <linux/tracepoint.h>
-#include <linux/export.h>
-=======
 #include <linux/jump_label.h>
 #include <linux/export.h>
 #include <linux/rbtree_latch.h>
@@ -45,45 +28,27 @@
 #include <linux/srcu.h>
 #include <linux/static_call_types.h>
 #include <linux/dynamic_debug.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/percpu.h>
 #include <asm/module.h>
 
-<<<<<<< HEAD
-/* Not Yet Implemented */
-#define MODULE_SUPPORTED_DEVICE(name)
-
-#define MODULE_NAME_LEN MAX_PARAM_PREFIX_LEN
-
-struct modversion_info
-{
-=======
 #define MODULE_NAME_LEN MAX_PARAM_PREFIX_LEN
 
 struct modversion_info {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long crc;
 	char name[MODULE_NAME_LEN];
 };
 
 struct module;
-<<<<<<< HEAD
-=======
 struct exception_table_entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct module_kobject {
 	struct kobject kobj;
 	struct module *mod;
 	struct kobject *drivers_dir;
 	struct module_param_attrs *mp;
-<<<<<<< HEAD
-};
-=======
 	struct completion *kobj_completion;
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct module_attribute {
 	struct attribute attr;
@@ -100,11 +65,7 @@ struct module_version_attribute {
 	struct module_attribute mattr;
 	const char *module_name;
 	const char *version;
-<<<<<<< HEAD
-} __attribute__ ((__aligned__(sizeof(void *))));
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern ssize_t __modver_version_show(struct module_attribute *,
 				     struct module_kobject *, char *);
@@ -115,29 +76,6 @@ extern struct module_attribute module_uevent;
 extern int init_module(void);
 extern void cleanup_module(void);
 
-<<<<<<< HEAD
-/* Archs provide a method of finding the correct exception table. */
-struct exception_table_entry;
-
-const struct exception_table_entry *
-search_extable(const struct exception_table_entry *first,
-	       const struct exception_table_entry *last,
-	       unsigned long value);
-void sort_extable(struct exception_table_entry *start,
-		  struct exception_table_entry *finish);
-void sort_main_extable(void);
-void trim_init_extable(struct module *m);
-
-#ifdef MODULE
-#define MODULE_GENERIC_TABLE(gtype,name)			\
-extern const struct gtype##_id __mod_##gtype##_table		\
-  __attribute__ ((unused, alias(__stringify(name))))
-
-#else  /* !MODULE */
-#define MODULE_GENERIC_TABLE(gtype,name)
-#endif
-
-=======
 #ifndef MODULE
 /**
  * module_init() - driver initialization entry point
@@ -224,15 +162,12 @@ extern const struct gtype##_id __mod_##gtype##_table		\
 #define __INITRODATA_OR_MODULE __INITRODATA
 #endif /*CONFIG_MODULES*/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Generic info of form tag = "info" */
 #define MODULE_INFO(tag, info) __MODULE_INFO(tag, tag, info)
 
 /* For userspace: you can also call me... */
 #define MODULE_ALIAS(_alias) MODULE_INFO(alias, _alias)
 
-<<<<<<< HEAD
-=======
 /* Soft module dependencies. See man modprobe.d for details.
  * Example: MODULE_SOFTDEP("pre: module-foo module-bar post: module-baz")
  */
@@ -248,16 +183,11 @@ extern const struct gtype##_id __mod_##gtype##_table		\
 #define MODULE_FILE	MODULE_INFO(file, KBUILD_MODFILE);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The following license idents are currently accepted as indicating free
  * software modules
  *
-<<<<<<< HEAD
- *	"GPL"				[GNU Public License v2 or later]
-=======
  *	"GPL"				[GNU Public License v2]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	"GPL v2"			[GNU Public License v2]
  *	"GPL and additional rights"	[GNU Public License v2 rights and more]
  *	"Dual BSD/GPL"			[GNU Public License v2
@@ -271,8 +201,6 @@ extern const struct gtype##_id __mod_##gtype##_table		\
  *
  *	"Proprietary"			[Non free products]
  *
-<<<<<<< HEAD
-=======
  * Both "GPL v2" and "GPL" (the latter also in dual licensed strings) are
  * merely stating that the module is licensed under the GPL v2, but are not
  * telling whether "GPL v2 only" or "GPL v2 or later". The reason why there
@@ -289,55 +217,23 @@ extern const struct gtype##_id __mod_##gtype##_table		\
  * license variants. The detailed and correct license information is again
  * to be found in the corresponding source files.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * There are dual licensed components, but when running with Linux it is the
  * GPL that is relevant so this is a non issue. Similarly LGPL linked with GPL
  * is a GPL combined work.
  *
  * This exists for several reasons
-<<<<<<< HEAD
- * 1.	So modinfo can show license info for users wanting to vet their setup 
-=======
  * 1.	So modinfo can show license info for users wanting to vet their setup
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	is free
  * 2.	So the community can ignore bug reports including proprietary modules
  * 3.	So vendors can do likewise based on their own policies
  */
-<<<<<<< HEAD
-#define MODULE_LICENSE(_license) MODULE_INFO(license, _license)
-=======
 #define MODULE_LICENSE(_license) MODULE_FILE MODULE_INFO(license, _license)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Author(s), use "Name <email>" or just "Name", for multiple
  * authors use multiple MODULE_AUTHOR() statements/lines.
  */
 #define MODULE_AUTHOR(_author) MODULE_INFO(author, _author)
-<<<<<<< HEAD
-  
-/* What your module does. */
-#define MODULE_DESCRIPTION(_description) MODULE_INFO(description, _description)
-
-#define MODULE_DEVICE_TABLE(type,name)		\
-  MODULE_GENERIC_TABLE(type##_device,name)
-
-/* Version of form [<epoch>:]<version>[-<extra-version>].
-   Or for CVS/RCS ID version, everything but the number is stripped.
-  <epoch>: A (small) unsigned integer which allows you to start versions
-           anew. If not mentioned, it's zero.  eg. "2:1.0" is after
-	   "1:2.0".
-  <version>: The <version> may contain only alphanumerics and the
-           character `.'.  Ordered by numeric sort for numeric parts,
-	   ascii sort for ascii parts (as per RPM or DEB algorithm).
-  <extraversion>: Like <version>, but inserted for local
-           customizations, eg "rh3" or "rusty1".
-
-  Using this automatically adds a checksum of the .c files and the
-  local headers in "srcversion".
-*/
-=======
 
 /* What your module does. */
 #define MODULE_DESCRIPTION(_description) MODULE_INFO(description, _description)
@@ -367,28 +263,11 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
  * Using this automatically adds a checksum of the .c files and the
  * local headers in "srcversion".
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(MODULE) || !defined(CONFIG_SYSFS)
 #define MODULE_VERSION(_version) MODULE_INFO(version, _version)
 #else
 #define MODULE_VERSION(_version)					\
-<<<<<<< HEAD
-	static struct module_version_attribute ___modver_attr = {	\
-		.mattr	= {						\
-			.attr	= {					\
-				.name	= "version",			\
-				.mode	= S_IRUGO,			\
-			},						\
-			.show	= __modver_version_show,		\
-		},							\
-		.module_name	= KBUILD_MODNAME,			\
-		.version	= _version,				\
-	};								\
-	static const struct module_version_attribute			\
-	__used __attribute__ ((__section__ ("__modver")))		\
-	* __moduleparam_const __modver_attr = &___modver_attr
-=======
 	MODULE_INFO(version, _version);					\
 	static struct module_version_attribute __modver_attr		\
 		__used __section("__modver")				\
@@ -404,7 +283,6 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
 			.module_name	= KBUILD_MODNAME,		\
 			.version	= _version,			\
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Optional firmware file (or files) needed by the module
@@ -412,12 +290,7 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
  * files require multiple MODULE_FIRMWARE() specifiers */
 #define MODULE_FIRMWARE(_firmware) MODULE_INFO(firmware, _firmware)
 
-<<<<<<< HEAD
-/* Given an address, look for it in the exception tables */
-const struct exception_table_entry *search_exception_tables(unsigned long add);
-=======
 #define MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, __stringify(ns))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct notifier_block;
 
@@ -427,11 +300,7 @@ extern int modules_disabled; /* for sysctl */
 /* Get/put a kernel symbol (calls must be symmetric) */
 void *__symbol_get(const char *symbol);
 void *__symbol_get_gpl(const char *symbol);
-<<<<<<< HEAD
-#define symbol_get(x) ((typeof(&x))(__symbol_get(MODULE_SYMBOL_PREFIX #x)))
-=======
 #define symbol_get(x) ((typeof(&x))(__symbol_get(__stringify(x))))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* modules using other modules: kdb wants to see this. */
 struct module_use {
@@ -440,31 +309,6 @@ struct module_use {
 	struct module *source, *target;
 };
 
-<<<<<<< HEAD
-enum module_state
-{
-	MODULE_STATE_LIVE,
-	MODULE_STATE_COMING,
-	MODULE_STATE_GOING,
-};
-
-/**
- * struct module_ref - per cpu module reference counts
- * @incs: number of module get on this cpu
- * @decs: number of module put on this cpu
- *
- * We force an alignment on 8 or 16 bytes, so that alloc_percpu()
- * put @incs/@decs in same cache line, with no extra memory cost,
- * since alloc_percpu() is fine grained.
- */
-struct module_ref {
-	unsigned long incs;
-	unsigned long decs;
-} __attribute((aligned(2 * sizeof(unsigned long))));
-
-struct module
-{
-=======
 enum module_state {
 	MODULE_STATE_LIVE,	/* Normal state. */
 	MODULE_STATE_COMING,	/* Full formed, running module_init. */
@@ -556,7 +400,6 @@ struct klp_modinfo {
 #endif
 
 struct module {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum module_state state;
 
 	/* Member of list of modules */
@@ -565,14 +408,11 @@ struct module {
 	/* Unique handle for this module */
 	char name[MODULE_NAME_LEN];
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_STACKTRACE_BUILD_ID
 	/* Module build ID */
 	unsigned char build_id[BUILD_ID_SIZE_MAX];
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Sysfs stuff. */
 	struct module_kobject mkobj;
 	struct module_attribute *modinfo_attrs;
@@ -582,12 +422,6 @@ struct module {
 
 	/* Exported symbols */
 	const struct kernel_symbol *syms;
-<<<<<<< HEAD
-	const unsigned long *crcs;
-	unsigned int num_syms;
-
-	/* Kernel parameters. */
-=======
 	const s32 *crcs;
 	unsigned int num_syms;
 
@@ -600,33 +434,12 @@ struct module {
 #ifdef CONFIG_SYSFS
 	struct mutex param_lock;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kernel_param *kp;
 	unsigned int num_kp;
 
 	/* GPL-only exported symbols. */
 	unsigned int num_gpl_syms;
 	const struct kernel_symbol *gpl_syms;
-<<<<<<< HEAD
-	const unsigned long *gpl_crcs;
-
-#ifdef CONFIG_UNUSED_SYMBOLS
-	/* unused exported symbols. */
-	const struct kernel_symbol *unused_syms;
-	const unsigned long *unused_crcs;
-	unsigned int num_unused_syms;
-
-	/* GPL-only, unused exported symbols. */
-	unsigned int num_unused_gpl_syms;
-	const struct kernel_symbol *unused_gpl_syms;
-	const unsigned long *unused_gpl_crcs;
-#endif
-
-	/* symbols that will be GPL-only in the near future. */
-	const struct kernel_symbol *gpl_future_syms;
-	const unsigned long *gpl_future_crcs;
-	unsigned int num_gpl_future_syms;
-=======
 	const s32 *gpl_crcs;
 	bool using_gplonly_symbols;
 
@@ -636,7 +449,6 @@ struct module {
 #endif
 
 	bool async_probe_requested;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Exception table */
 	unsigned int num_exentries;
@@ -645,33 +457,12 @@ struct module {
 	/* Startup function. */
 	int (*init)(void);
 
-<<<<<<< HEAD
-	/* If this is non-NULL, vfree after init() returns */
-	void *module_init;
-
-	/* Here is the actual code + data, vfree'd on unload. */
-	void *module_core;
-
-	/* Here are the sizes of the init and core sections */
-	unsigned int init_size, core_size;
-
-	/* The size of the executable code in each section.  */
-	unsigned int init_text_size, core_text_size;
-
-	/* Size of RO sections of the module (text+rodata) */
-	unsigned int init_ro_size, core_ro_size;
-=======
 	struct module_memory mem[MOD_MEM_NUM_TYPES] __module_memory_align;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Arch-specific module values */
 	struct mod_arch_specific arch;
 
-<<<<<<< HEAD
-	unsigned int taints;	/* same bits as kernel:tainted */
-=======
 	unsigned long taints;	/* same bits as kernel:taint_flags */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_GENERIC_BUG
 	/* Support for BUG */
@@ -681,20 +472,9 @@ struct module {
 #endif
 
 #ifdef CONFIG_KALLSYMS
-<<<<<<< HEAD
-	/*
-	 * We keep the symbol and string tables for kallsyms.
-	 * The core_* fields below are temporary, loader-only (they
-	 * could really be discarded after module init).
-	 */
-	Elf_Sym *symtab, *core_symtab;
-	unsigned int num_symtab, core_num_syms;
-	char *strtab, *core_strtab;
-=======
 	/* Protected by RCU and/or module_mutex: use rcu_dereference() */
 	struct mod_kallsyms __rcu *kallsyms;
 	struct mod_kallsyms core_kallsyms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Section attributes */
 	struct module_sect_attrs *sect_attrs;
@@ -712,14 +492,6 @@ struct module {
 	void __percpu *percpu;
 	unsigned int percpu_size;
 #endif
-<<<<<<< HEAD
-
-#ifdef CONFIG_TRACEPOINTS
-	unsigned int num_tracepoints;
-	struct tracepoint * const *tracepoints_ptrs;
-#endif
-#ifdef HAVE_JUMP_LABEL
-=======
 	void *noinstr_text_start;
 	unsigned int noinstr_text_size;
 
@@ -740,7 +512,6 @@ struct module {
 	void *btf_data;
 #endif
 #ifdef CONFIG_JUMP_LABEL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jump_entry *jump_entries;
 	unsigned int num_jump_entries;
 #endif
@@ -749,22 +520,15 @@ struct module {
 	const char **trace_bprintk_fmt_start;
 #endif
 #ifdef CONFIG_EVENT_TRACING
-<<<<<<< HEAD
-	struct ftrace_event_call **trace_events;
-	unsigned int num_trace_events;
-=======
 	struct trace_event_call **trace_events;
 	unsigned int num_trace_events;
 	struct trace_eval_map **trace_evals;
 	unsigned int num_trace_evals;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef CONFIG_FTRACE_MCOUNT_RECORD
 	unsigned int num_ftrace_callsites;
 	unsigned long *ftrace_callsites;
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_KPROBES
 	void *kprobes_text_start;
 	unsigned int kprobes_text_size;
@@ -795,7 +559,6 @@ struct module {
 	unsigned int printk_index_size;
 	struct pi_entry **printk_index_start;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MODULE_UNLOAD
 	/* What modules depend on me? */
@@ -803,20 +566,10 @@ struct module {
 	/* What modules do I depend on? */
 	struct list_head target_list;
 
-<<<<<<< HEAD
-	/* Who is waiting for us to be unloaded */
-	struct task_struct *waiter;
-
-	/* Destruction function. */
-	void (*exit)(void);
-
-	struct module_ref __percpu *refptr;
-=======
 	/* Destruction function. */
 	void (*exit)(void);
 
 	atomic_t refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_CONSTRUCTORS
@@ -824,9 +577,6 @@ struct module {
 	ctor_fn_t *ctors;
 	unsigned int num_ctors;
 #endif
-<<<<<<< HEAD
-};
-=======
 
 #ifdef CONFIG_FUNCTION_ERROR_INJECTION
 	struct error_injection_entry *ei_funcs;
@@ -836,30 +586,21 @@ struct module {
 	struct _ddebug_info dyndbg_info;
 #endif
 } ____cacheline_aligned __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MODULE_ARCH_INIT
 #define MODULE_ARCH_INIT {}
 #endif
 
-<<<<<<< HEAD
-extern struct mutex module_mutex;
-=======
 #ifndef HAVE_ARCH_KALLSYMS_SYMBOL_VALUE
 static inline unsigned long kallsyms_symbol_value(const Elf_Sym *sym)
 {
 	return sym->st_value;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FIXME: It'd be nice to isolate modules during init, too, so they
    aren't used before they (may) fail.  But presently too much code
    (IDE & SCSI) require entry into the module during init.*/
-<<<<<<< HEAD
-static inline int module_is_live(struct module *mod)
-=======
 static inline bool module_is_live(struct module *mod)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return mod->state != MODULE_STATE_GOING;
 }
@@ -867,69 +608,6 @@ static inline bool module_is_live(struct module *mod)
 struct module *__module_text_address(unsigned long addr);
 struct module *__module_address(unsigned long addr);
 bool is_module_address(unsigned long addr);
-<<<<<<< HEAD
-bool is_module_percpu_address(unsigned long addr);
-bool is_module_text_address(unsigned long addr);
-
-static inline int within_module_core(unsigned long addr, struct module *mod)
-{
-	return (unsigned long)mod->module_core <= addr &&
-	       addr < (unsigned long)mod->module_core + mod->core_size;
-}
-
-static inline int within_module_init(unsigned long addr, struct module *mod)
-{
-	return (unsigned long)mod->module_init <= addr &&
-	       addr < (unsigned long)mod->module_init + mod->init_size;
-}
-
-/* Search for module by name: must hold module_mutex. */
-struct module *find_module(const char *name);
-
-struct symsearch {
-	const struct kernel_symbol *start, *stop;
-	const unsigned long *crcs;
-	enum {
-		NOT_GPL_ONLY,
-		GPL_ONLY,
-		WILL_BE_GPL_ONLY,
-	} licence;
-	bool unused;
-};
-
-/* Search for an exported symbol by name. */
-const struct kernel_symbol *find_symbol(const char *name,
-					struct module **owner,
-					const unsigned long **crc,
-					bool gplok,
-					bool warn);
-
-/* Walk the exported symbol table */
-bool each_symbol_section(bool (*fn)(const struct symsearch *arr,
-				    struct module *owner,
-				    void *data), void *data);
-
-/* Returns 0 and fills in value, defined and namebuf, or -ERANGE if
-   symnum out of range. */
-int module_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
-			char *name, char *module_name, int *exported);
-
-/* Look for this name: can be of form module:name. */
-unsigned long module_kallsyms_lookup_name(const char *name);
-
-int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
-					     struct module *, unsigned long),
-				   void *data);
-
-extern void __module_put_and_exit(struct module *mod, long code)
-	__attribute__((noreturn));
-#define module_put_and_exit(code) __module_put_and_exit(THIS_MODULE, code);
-
-#ifdef CONFIG_MODULE_UNLOAD
-unsigned long module_refcount(struct module *mod);
-void __symbol_put(const char *symbol);
-#define symbol_put(x) __symbol_put(MODULE_SYMBOL_PREFIX #x)
-=======
 bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr);
 bool is_module_percpu_address(unsigned long addr);
 bool is_module_text_address(unsigned long addr);
@@ -981,23 +659,12 @@ extern void __noreturn __module_put_and_kthread_exit(struct module *mod,
 int module_refcount(struct module *mod);
 void __symbol_put(const char *symbol);
 #define symbol_put(x) __symbol_put(__stringify(x))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void symbol_put_addr(void *addr);
 
 /* Sometimes we know we already have a refcount, and it's easier not
    to handle the error case (which only happens with rmmod --wait). */
 extern void __module_get(struct module *module);
 
-<<<<<<< HEAD
-/* This is the Right Way to get a module: if it fails, it's being removed,
- * so pretend it's not there. */
-extern bool try_module_get(struct module *module);
-
-extern void module_put(struct module *module);
-
-#else /*!CONFIG_MODULE_UNLOAD*/
-static inline int try_module_get(struct module *module)
-=======
 /**
  * try_module_get() - take module refcount unless module is being removed
  * @module: the module we should check for
@@ -1042,7 +709,6 @@ extern void module_put(struct module *module);
 
 #else /*!CONFIG_MODULE_UNLOAD*/
 static inline bool try_module_get(struct module *module)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return !module || module_is_live(module);
 }
@@ -1052,18 +718,10 @@ static inline void module_put(struct module *module)
 static inline void __module_get(struct module *module)
 {
 }
-<<<<<<< HEAD
-#define symbol_put(x) do { } while(0)
-#define symbol_put_addr(p) do { } while(0)
-
-#endif /* CONFIG_MODULE_UNLOAD */
-int ref_module(struct module *a, struct module *b);
-=======
 #define symbol_put(x) do { } while (0)
 #define symbol_put_addr(p) do { } while (0)
 
 #endif /* CONFIG_MODULE_UNLOAD */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This is a #define so the string doesn't get put in every .o file */
 #define module_name(mod)			\
@@ -1072,36 +730,6 @@ int ref_module(struct module *a, struct module *b);
 	__mod ? __mod->name : "kernel";		\
 })
 
-<<<<<<< HEAD
-/* For kallsyms to ask for address resolution.  namebuf should be at
- * least KSYM_NAME_LEN long: a pointer to namebuf is returned if
- * found, otherwise NULL. */
-const char *module_address_lookup(unsigned long addr,
-			    unsigned long *symbolsize,
-			    unsigned long *offset,
-			    char **modname,
-			    char *namebuf);
-int lookup_module_symbol_name(unsigned long addr, char *symname);
-int lookup_module_symbol_attrs(unsigned long addr, unsigned long *size, unsigned long *offset, char *modname, char *name);
-
-/* For extable.c to search modules' exception tables. */
-const struct exception_table_entry *search_module_extables(unsigned long addr);
-
-int register_module_notifier(struct notifier_block * nb);
-int unregister_module_notifier(struct notifier_block * nb);
-
-extern void print_modules(void);
-
-#else /* !CONFIG_MODULES... */
-
-/* Given an address, look for it in the exception tables. */
-static inline const struct exception_table_entry *
-search_module_extables(unsigned long addr)
-{
-	return NULL;
-}
-
-=======
 /* Dereference module function descriptor */
 void *dereference_module_function_descriptor(struct module *mod, void *ptr);
 
@@ -1128,7 +756,6 @@ void set_module_sig_enforced(void);
 
 #else /* !CONFIG_MODULES... */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct module *__module_address(unsigned long addr)
 {
 	return NULL;
@@ -1149,25 +776,16 @@ static inline bool is_module_percpu_address(unsigned long addr)
 	return false;
 }
 
-<<<<<<< HEAD
-=======
 static inline bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)
 {
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool is_module_text_address(unsigned long addr)
 {
 	return false;
 }
 
-<<<<<<< HEAD
-/* Get/put a kernel symbol (calls should be symmetric) */
-#define symbol_get(x) ({ extern typeof(x) x __attribute__((weak)); &(x); })
-#define symbol_put(x) do { } while(0)
-#define symbol_put_addr(x) do { } while(0)
-=======
 static inline bool within_module_core(unsigned long addr,
 				      const struct module *mod)
 {
@@ -1189,21 +807,14 @@ static inline bool within_module(unsigned long addr, const struct module *mod)
 #define symbol_get(x) ({ extern typeof(x) x __attribute__((weak,visibility("hidden"))); &(x); })
 #define symbol_put(x) do { } while (0)
 #define symbol_put_addr(x) do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void __module_get(struct module *module)
 {
 }
 
-<<<<<<< HEAD
-static inline int try_module_get(struct module *module)
-{
-	return 1;
-=======
 static inline bool try_module_get(struct module *module)
 {
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void module_put(struct module *module)
@@ -1212,76 +823,22 @@ static inline void module_put(struct module *module)
 
 #define module_name(mod) "kernel"
 
-<<<<<<< HEAD
-/* For kallsyms to ask for address resolution.  NULL means not found. */
-static inline const char *module_address_lookup(unsigned long addr,
-					  unsigned long *symbolsize,
-					  unsigned long *offset,
-					  char **modname,
-					  char *namebuf)
-{
-	return NULL;
-}
-
-static inline int lookup_module_symbol_name(unsigned long addr, char *symname)
-{
-	return -ERANGE;
-}
-
-static inline int lookup_module_symbol_attrs(unsigned long addr, unsigned long *size, unsigned long *offset, char *modname, char *name)
-{
-	return -ERANGE;
-}
-
-static inline int module_get_kallsym(unsigned int symnum, unsigned long *value,
-					char *type, char *name,
-					char *module_name, int *exported)
-{
-	return -ERANGE;
-}
-
-static inline unsigned long module_kallsyms_lookup_name(const char *name)
-{
-	return 0;
-}
-
-static inline int module_kallsyms_on_each_symbol(int (*fn)(void *, const char *,
-							   struct module *,
-							   unsigned long),
-						 void *data)
-{
-	return 0;
-}
-
-static inline int register_module_notifier(struct notifier_block * nb)
-=======
 static inline int register_module_notifier(struct notifier_block *nb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* no events will happen anyway, so this can always succeed */
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int unregister_module_notifier(struct notifier_block * nb)
-=======
 static inline int unregister_module_notifier(struct notifier_block *nb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-#define module_put_and_exit(code) do_exit(code)
-=======
 #define module_put_and_kthread_exit(code) kthread_exit(code)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void print_modules(void)
 {
 }
-<<<<<<< HEAD
-=======
 
 static inline bool module_requested_async_probing(struct module *module)
 {
@@ -1300,17 +857,11 @@ void *dereference_module_function_descriptor(struct module *mod, void *ptr)
 	return ptr;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_MODULES */
 
 #ifdef CONFIG_SYSFS
 extern struct kset *module_kset;
-<<<<<<< HEAD
-extern struct kobj_type module_ktype;
-extern int module_sysfs_initialized;
-=======
 extern const struct kobj_type module_ktype;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SYSFS */
 
 #define symbol_request(x) try_then_request_module(symbol_get(x), "symbol:" #x)
@@ -1319,17 +870,6 @@ extern const struct kobj_type module_ktype;
 
 #define __MODULE_STRING(x) __stringify(x)
 
-<<<<<<< HEAD
-#ifdef CONFIG_DEBUG_SET_MODULE_RONX
-extern void set_all_modules_text_rw(void);
-extern void set_all_modules_text_ro(void);
-#else
-static inline void set_all_modules_text_rw(void) { }
-static inline void set_all_modules_text_ro(void) { }
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_GENERIC_BUG
 void module_bug_finalize(const Elf_Ehdr *, const Elf_Shdr *,
 			 struct module *);
@@ -1345,8 +885,6 @@ static inline void module_bug_finalize(const Elf_Ehdr *hdr,
 static inline void module_bug_cleanup(struct module *mod) {}
 #endif	/* CONFIG_GENERIC_BUG */
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MITIGATION_RETPOLINE
 extern bool retpoline_module_ok(bool has_retpoline);
 #else
@@ -1452,5 +990,4 @@ static inline unsigned long find_kallsyms_symbol_value(struct module *mod,
 
 #endif  /* CONFIG_MODULES && CONFIG_KALLSYMS */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_MODULE_H */

@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
- * Written by: Jayamohan Kallickal (jayamohan.kallickal@emulex.com)
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * This file is part of the Emulex Linux Device Driver for Enterprise iSCSI
@@ -28,7 +9,6 @@
  *
  * Contact Information:
  * linux-drivers@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <scsi/libiscsi.h>
@@ -37,11 +17,8 @@
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
-<<<<<<< HEAD
-=======
 #include <scsi/scsi_netlink.h>
 #include <net/netlink.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 
 #include "be_iscsi.h"
@@ -50,10 +27,7 @@ extern struct iscsi_transport beiscsi_iscsi_transport;
 
 /**
  * beiscsi_session_create - creates a new iscsi session
-<<<<<<< HEAD
-=======
  * @ep: pointer to iscsi ep
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmds_max: max commands supported
  * @qdepth: max queue depth supported
  * @initial_cmdsn: initial iscsi CMDSN
@@ -71,32 +45,13 @@ struct iscsi_cls_session *beiscsi_session_create(struct iscsi_endpoint *ep,
 	struct beiscsi_session *beiscsi_sess;
 	struct beiscsi_io_task *io_task;
 
-<<<<<<< HEAD
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_session_create\n");
-
-	if (!ep) {
-		SE_DEBUG(DBG_LVL_1, "beiscsi_session_create: invalid ep\n");
-=======
 
 	if (!ep) {
 		pr_err("beiscsi_session_create: invalid ep\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	beiscsi_ep = ep->dd_data;
 	phba = beiscsi_ep->phba;
-<<<<<<< HEAD
-	shost = phba->shost;
-	if (cmds_max > beiscsi_ep->phba->params.wrbs_per_cxn) {
-		shost_printk(KERN_ERR, shost, "Cannot handle %d cmds."
-			     "Max cmds per session supported is %d. Using %d. "
-			     "\n", cmds_max,
-			      beiscsi_ep->phba->params.wrbs_per_cxn,
-			      beiscsi_ep->phba->params.wrbs_per_cxn);
-		cmds_max = beiscsi_ep->phba->params.wrbs_per_cxn;
-	}
-
-=======
 
 	if (!beiscsi_hba_is_online(phba)) {
 		beiscsi_log(phba, KERN_INFO, BEISCSI_LOG_CONFIG,
@@ -118,7 +73,6 @@ struct iscsi_cls_session *beiscsi_session_create(struct iscsi_endpoint *ep,
 	}
 
 	shost = phba->shost;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cls_session = iscsi_session_setup(&beiscsi_iscsi_transport,
 					  shost, cmds_max,
 					  sizeof(*beiscsi_sess),
@@ -128,13 +82,8 @@ struct iscsi_cls_session *beiscsi_session_create(struct iscsi_endpoint *ep,
 		return NULL;
 	sess = cls_session->dd_data;
 	beiscsi_sess = sess->dd_data;
-<<<<<<< HEAD
-	beiscsi_sess->bhs_pool =  pci_pool_create("beiscsi_bhs_pool",
-						   phba->pcidev,
-=======
 	beiscsi_sess->bhs_pool =  dma_pool_create("beiscsi_bhs_pool",
 						   &phba->pcidev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(struct be_cmd_bhs),
 						   64, 0);
 	if (!beiscsi_sess->bhs_pool)
@@ -158,19 +107,12 @@ void beiscsi_session_destroy(struct iscsi_cls_session *cls_session)
 	struct iscsi_session *sess = cls_session->dd_data;
 	struct beiscsi_session *beiscsi_sess = sess->dd_data;
 
-<<<<<<< HEAD
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_session_destroy\n");
-	pci_pool_destroy(beiscsi_sess->bhs_pool);
-=======
 	printk(KERN_INFO "In beiscsi_session_destroy\n");
 	dma_pool_destroy(beiscsi_sess->bhs_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iscsi_session_teardown(cls_session);
 }
 
 /**
-<<<<<<< HEAD
-=======
  * beiscsi_session_fail(): Closing session with appropriate error
  * @cls_session: ptr to session
  **/
@@ -181,7 +123,6 @@ void beiscsi_session_fail(struct iscsi_cls_session *cls_session)
 
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * beiscsi_conn_create - create an instance of iscsi connection
  * @cls_session: ptr to iscsi_cls_session
  * @cid: iscsi cid
@@ -197,13 +138,6 @@ beiscsi_conn_create(struct iscsi_cls_session *cls_session, u32 cid)
 	struct iscsi_session *sess;
 	struct beiscsi_session *beiscsi_sess;
 
-<<<<<<< HEAD
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_conn_create ,cid"
-		 "from iscsi layer=%d\n", cid);
-	shost = iscsi_session_to_shost(cls_session);
-	phba = iscsi_host_priv(shost);
-
-=======
 	shost = iscsi_session_to_shost(cls_session);
 	phba = iscsi_host_priv(shost);
 
@@ -211,7 +145,6 @@ beiscsi_conn_create(struct iscsi_cls_session *cls_session, u32 cid)
 		    "BS_%d : In beiscsi_conn_create ,cid"
 		    "from iscsi layer=%d\n", cid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cls_conn = iscsi_conn_setup(cls_session, sizeof(*beiscsi_conn), cid);
 	if (!cls_conn)
 		return NULL;
@@ -228,39 +161,11 @@ beiscsi_conn_create(struct iscsi_cls_session *cls_session, u32 cid)
 }
 
 /**
-<<<<<<< HEAD
- * beiscsi_bindconn_cid - Bind the beiscsi_conn with phba connection table
- * @beiscsi_conn: The pointer to  beiscsi_conn structure
- * @phba: The phba instance
- * @cid: The cid to free
- */
-static int beiscsi_bindconn_cid(struct beiscsi_hba *phba,
-				struct beiscsi_conn *beiscsi_conn,
-				unsigned int cid)
-{
-	if (phba->conn_table[cid]) {
-		SE_DEBUG(DBG_LVL_1,
-			 "Connection table already occupied. Detected clash\n");
-		return -EINVAL;
-	} else {
-		SE_DEBUG(DBG_LVL_8, "phba->conn_table[%d]=%p(beiscsi_conn)\n",
-			 cid, beiscsi_conn);
-		phba->conn_table[cid] = beiscsi_conn;
-	}
-	return 0;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * beiscsi_conn_bind - Binds iscsi session/connection with TCP connection
  * @cls_session: pointer to iscsi cls session
  * @cls_conn: pointer to iscsi cls conn
  * @transport_fd: EP handle(64 bit)
-<<<<<<< HEAD
-=======
  * @is_leading: indicate if this is the session leading connection (MCS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function binds the TCP Conn with iSCSI Connection and Session.
  */
@@ -272,12 +177,6 @@ int beiscsi_conn_bind(struct iscsi_cls_session *cls_session,
 	struct beiscsi_conn *beiscsi_conn = conn->dd_data;
 	struct Scsi_Host *shost = iscsi_session_to_shost(cls_session);
 	struct beiscsi_hba *phba = iscsi_host_priv(shost);
-<<<<<<< HEAD
-	struct beiscsi_endpoint *beiscsi_ep;
-	struct iscsi_endpoint *ep;
-
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_conn_bind\n");
-=======
 	struct hwi_controller *phwi_ctrlr = phba->phwi_ctrlr;
 	struct hwi_wrb_context *pwrb_context;
 	struct beiscsi_endpoint *beiscsi_ep;
@@ -285,23 +184,12 @@ int beiscsi_conn_bind(struct iscsi_cls_session *cls_session,
 	uint16_t cri_index;
 	int rc = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep = iscsi_lookup_endpoint(transport_fd);
 	if (!ep)
 		return -EINVAL;
 
 	beiscsi_ep = ep->dd_data;
 
-<<<<<<< HEAD
-	if (iscsi_conn_bind(cls_session, cls_conn, is_leading))
-		return -EINVAL;
-
-	if (beiscsi_ep->phba != phba) {
-		SE_DEBUG(DBG_LVL_8,
-			 "beiscsi_ep->hba=%p not equal to phba=%p\n",
-			 beiscsi_ep->phba, phba);
-		return -EEXIST;
-=======
 	if (iscsi_conn_bind(cls_session, cls_conn, is_leading)) {
 		rc = -EINVAL;
 		goto put_ep;
@@ -327,17 +215,11 @@ int beiscsi_conn_bind(struct iscsi_cls_session *cls_session,
 			rc = -EINVAL;
 			goto put_ep;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	beiscsi_conn->beiscsi_conn_cid = beiscsi_ep->ep_cid;
 	beiscsi_conn->ep = beiscsi_ep;
 	beiscsi_ep->conn = beiscsi_conn;
-<<<<<<< HEAD
-	SE_DEBUG(DBG_LVL_8, "beiscsi_conn=%p conn=%p ep_cid=%d\n",
-		 beiscsi_conn, conn, beiscsi_ep->ep_cid);
-	return beiscsi_bindconn_cid(phba, beiscsi_conn, beiscsi_ep->ep_cid);
-=======
 	/**
 	 * Each connection is associated with a WRBQ kept in wrb_context.
 	 * Store doorbell offset for transmit path.
@@ -733,7 +615,6 @@ int beiscsi_iface_get_param(struct iscsi_iface *iface,
 	}
 
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -748,39 +629,25 @@ int beiscsi_ep_get_param(struct iscsi_endpoint *ep,
 			   enum iscsi_param param, char *buf)
 {
 	struct beiscsi_endpoint *beiscsi_ep = ep->dd_data;
-<<<<<<< HEAD
-	int len = 0;
-
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_conn_get_param, param= %d\n", param);
-=======
 	int len;
 
 	beiscsi_log(beiscsi_ep->phba, KERN_INFO,
 		    BEISCSI_LOG_CONFIG,
 		    "BS_%d : In beiscsi_ep_get_param,"
 		    " param= %d\n", param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (param) {
 	case ISCSI_PARAM_CONN_PORT:
 		len = sprintf(buf, "%hu\n", beiscsi_ep->dst_tcpport);
 		break;
 	case ISCSI_PARAM_CONN_ADDRESS:
-<<<<<<< HEAD
-		if (beiscsi_ep->ip_type == BE2_IPV4)
-=======
 		if (beiscsi_ep->ip_type == BEISCSI_IP_TYPE_V4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			len = sprintf(buf, "%pI4\n", &beiscsi_ep->dst_addr);
 		else
 			len = sprintf(buf, "%pI6\n", &beiscsi_ep->dst6_addr);
 		break;
 	default:
-<<<<<<< HEAD
-		return -ENOSYS;
-=======
 		len = -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return len;
 }
@@ -790,11 +657,6 @@ int beiscsi_set_param(struct iscsi_cls_conn *cls_conn,
 {
 	struct iscsi_conn *conn = cls_conn->dd_data;
 	struct iscsi_session *session = conn->session;
-<<<<<<< HEAD
-	int ret;
-
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_conn_set_param, param= %d\n", param);
-=======
 	struct beiscsi_hba *phba = NULL;
 	int ret;
 
@@ -803,7 +665,6 @@ int beiscsi_set_param(struct iscsi_cls_conn *cls_conn,
 		    "BS_%d : In beiscsi_conn_set_param,"
 		    " param= %d\n", param);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = iscsi_set_param(cls_conn, param, buf, buflen);
 	if (ret)
 		return ret;
@@ -825,15 +686,9 @@ int beiscsi_set_param(struct iscsi_cls_conn *cls_conn,
 			session->max_burst = 262144;
 		break;
 	case ISCSI_PARAM_MAX_XMIT_DLENGTH:
-<<<<<<< HEAD
-		if ((conn->max_xmit_dlength > 65536) ||
-		    (conn->max_xmit_dlength == 0))
-			conn->max_xmit_dlength = 65536;
-=======
 		if (conn->max_xmit_dlength > 65536)
 			conn->max_xmit_dlength = 65536;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return 0;
 	}
@@ -842,8 +697,6 @@ int beiscsi_set_param(struct iscsi_cls_conn *cls_conn,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * beiscsi_get_port_state - Get the Port State
  * @shost : pointer to scsi_host structure
  *
@@ -892,16 +745,11 @@ static void beiscsi_get_port_speed(struct Scsi_Host *shost)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * beiscsi_get_host_param - get the iscsi parameter
  * @shost: pointer to scsi_host structure
  * @param: parameter type identifier
  * @buf: buffer pointer
  *
-<<<<<<< HEAD
- * returns host parameter
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int beiscsi_get_host_param(struct Scsi_Host *shost,
 			   enum iscsi_host_param param, char *buf)
@@ -909,9 +757,6 @@ int beiscsi_get_host_param(struct Scsi_Host *shost,
 	struct beiscsi_hba *phba = iscsi_host_priv(shost);
 	int status = 0;
 
-<<<<<<< HEAD
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_get_host_param, param= %d\n", param);
-=======
 	if (!beiscsi_hba_is_online(phba)) {
 		beiscsi_log(phba, KERN_INFO, BEISCSI_LOG_CONFIG,
 			    "BS_%d : HBA in error 0x%lx\n", phba->state);
@@ -920,17 +765,10 @@ int beiscsi_get_host_param(struct Scsi_Host *shost,
 	beiscsi_log(phba, KERN_INFO, BEISCSI_LOG_CONFIG,
 		    "BS_%d : In beiscsi_get_host_param, param = %d\n", param);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (param) {
 	case ISCSI_HOST_PARAM_HWADDRESS:
 		status = beiscsi_get_macaddr(buf, phba);
 		if (status < 0) {
-<<<<<<< HEAD
-			SE_DEBUG(DBG_LVL_1, "beiscsi_get_macaddr Failed\n");
-			return status;
-		}
-		break;
-=======
 			beiscsi_log(phba, KERN_ERR, BEISCSI_LOG_CONFIG,
 				    "BS_%d : beiscsi_get_macaddr Failed\n");
 			return 0;
@@ -956,7 +794,6 @@ int beiscsi_get_host_param(struct Scsi_Host *shost,
 		beiscsi_get_port_speed(shost);
 		status = sprintf(buf, "%s\n", iscsi_get_port_speed_name(shost));
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return iscsi_host_get_param(shost, param, buf);
 	}
@@ -965,48 +802,6 @@ int beiscsi_get_host_param(struct Scsi_Host *shost,
 
 int beiscsi_get_macaddr(char *buf, struct beiscsi_hba *phba)
 {
-<<<<<<< HEAD
-	struct be_cmd_resp_get_mac_addr *resp;
-	struct be_mcc_wrb *wrb;
-	unsigned int tag, wrb_num;
-	unsigned short status, extd_status;
-	struct be_queue_info *mccq = &phba->ctrl.mcc_obj.q;
-	int rc;
-
-	if (phba->read_mac_address)
-		return sysfs_format_mac(buf, phba->mac_address,
-					ETH_ALEN);
-
-	tag = be_cmd_get_mac_addr(phba);
-	if (!tag) {
-		SE_DEBUG(DBG_LVL_1, "be_cmd_get_mac_addr Failed\n");
-		return -EBUSY;
-	} else
-		wait_event_interruptible(phba->ctrl.mcc_wait[tag],
-					 phba->ctrl.mcc_numtag[tag]);
-
-	wrb_num = (phba->ctrl.mcc_numtag[tag] & 0x00FF0000) >> 16;
-	extd_status = (phba->ctrl.mcc_numtag[tag] & 0x0000FF00) >> 8;
-	status = phba->ctrl.mcc_numtag[tag] & 0x000000FF;
-	if (status || extd_status) {
-		SE_DEBUG(DBG_LVL_1, "Failed to get be_cmd_get_mac_addr"
-				    " status = %d extd_status = %d\n",
-				    status, extd_status);
-		free_mcc_tag(&phba->ctrl, tag);
-		return -EAGAIN;
-	}
-	wrb = queue_get_wrb(mccq, wrb_num);
-	free_mcc_tag(&phba->ctrl, tag);
-	resp = embedded_payload(wrb);
-	memcpy(phba->mac_address, resp->mac_address, ETH_ALEN);
-	rc = sysfs_format_mac(buf, phba->mac_address,
-			       ETH_ALEN);
-	phba->read_mac_address = 1;
-	return rc;
-}
-
-
-=======
 	struct be_cmd_get_nic_conf_resp resp;
 	int rc;
 
@@ -1023,7 +818,6 @@ int beiscsi_get_macaddr(char *buf, struct beiscsi_hba *phba)
 	return sysfs_format_mac(buf, phba->mac_address, ETH_ALEN);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * beiscsi_conn_get_stats - get the iscsi stats
  * @cls_conn: pointer to iscsi cls conn
@@ -1035,17 +829,12 @@ void beiscsi_conn_get_stats(struct iscsi_cls_conn *cls_conn,
 			    struct iscsi_stats *stats)
 {
 	struct iscsi_conn *conn = cls_conn->dd_data;
-<<<<<<< HEAD
-
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_conn_get_stats\n");
-=======
 	struct beiscsi_hba *phba = NULL;
 
 	phba = ((struct beiscsi_conn *)conn->dd_data)->phba;
 	beiscsi_log(phba, KERN_INFO, BEISCSI_LOG_CONFIG,
 		    "BS_%d : In beiscsi_conn_get_stats\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stats->txdata_octets = conn->txdata_octets;
 	stats->rxdata_octets = conn->rxdata_octets;
 	stats->dataout_pdus = conn->dataout_pdus_cnt;
@@ -1057,11 +846,7 @@ void beiscsi_conn_get_stats(struct iscsi_cls_conn *cls_conn,
 	stats->r2t_pdus = conn->r2t_pdus_cnt;
 	stats->digest_err = 0;
 	stats->timeout_err = 0;
-<<<<<<< HEAD
-	stats->custom_length = 0;
-=======
 	stats->custom_length = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(stats->custom[0].desc, "eh_abort_cnt");
 	stats->custom[0].value = conn->eh_abort_cnt;
 }
@@ -1094,10 +879,6 @@ static void  beiscsi_set_params_for_offld(struct beiscsi_conn *beiscsi_conn,
 		      session->initial_r2t_en);
 	AMAP_SET_BITS(struct amap_beiscsi_offload_params, imd, params,
 		      session->imm_data_en);
-<<<<<<< HEAD
-	AMAP_SET_BITS(struct amap_beiscsi_offload_params, exp_statsn, params,
-		      (conn->exp_statsn - 1));
-=======
 	AMAP_SET_BITS(struct amap_beiscsi_offload_params,
 		      data_seq_inorder, params,
 		      session->dataseq_inorder_en);
@@ -1112,7 +893,6 @@ static void  beiscsi_set_params_for_offld(struct beiscsi_conn *beiscsi_conn,
 		      max_recv_data_segment_length, params,
 		      conn->max_recv_dlength);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1125,14 +905,6 @@ int beiscsi_conn_start(struct iscsi_cls_conn *cls_conn)
 	struct beiscsi_conn *beiscsi_conn = conn->dd_data;
 	struct beiscsi_endpoint *beiscsi_ep;
 	struct beiscsi_offload_params params;
-<<<<<<< HEAD
-
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_conn_start\n");
-	memset(&params, 0, sizeof(struct beiscsi_offload_params));
-	beiscsi_ep = beiscsi_conn->ep;
-	if (!beiscsi_ep)
-		SE_DEBUG(DBG_LVL_1, "In beiscsi_conn_start , no beiscsi_ep\n");
-=======
 	struct beiscsi_hba *phba;
 
 	phba = ((struct beiscsi_conn *)conn->dd_data)->phba;
@@ -1151,7 +923,6 @@ int beiscsi_conn_start(struct iscsi_cls_conn *cls_conn)
 		beiscsi_log(beiscsi_conn->phba, KERN_ERR,
 			    BEISCSI_LOG_CONFIG,
 			    "BS_%d : In beiscsi_conn_start , no beiscsi_ep\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	beiscsi_conn->login_in_progress = 0;
 	beiscsi_set_params_for_offld(beiscsi_conn, &params);
@@ -1166,17 +937,6 @@ int beiscsi_conn_start(struct iscsi_cls_conn *cls_conn)
  */
 static int beiscsi_get_cid(struct beiscsi_hba *phba)
 {
-<<<<<<< HEAD
-	unsigned short cid = 0xFFFF;
-
-	if (!phba->avlbl_cids)
-		return cid;
-
-	cid = phba->cid_array[phba->cid_alloc++];
-	if (phba->cid_alloc == phba->params.cxns_per_ctrl)
-		phba->cid_alloc = 0;
-	phba->avlbl_cids--;
-=======
 	uint16_t cid_avlbl_ulp0, cid_avlbl_ulp1;
 	unsigned short cid, cid_from_ulp;
 	struct ulp_cid_info *cid_info;
@@ -1209,7 +969,6 @@ static int beiscsi_get_cid(struct beiscsi_hba *phba)
 	if (cid_info->cid_alloc == BEISCSI_GET_CID_COUNT(phba, cid_from_ulp))
 		cid_info->cid_alloc = 0;
 	cid_info->avlbl_cids--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cid;
 }
 
@@ -1220,12 +979,6 @@ static int beiscsi_get_cid(struct beiscsi_hba *phba)
  */
 static void beiscsi_put_cid(struct beiscsi_hba *phba, unsigned short cid)
 {
-<<<<<<< HEAD
-	phba->avlbl_cids++;
-	phba->cid_array[phba->cid_free++] = cid;
-	if (phba->cid_free == phba->params.cxns_per_ctrl)
-		phba->cid_free = 0;
-=======
 	uint16_t cri_index = BE_GET_CRI_FROM_CID(cid);
 	struct hwi_wrb_context *pwrb_context;
 	struct hwi_controller *phwi_ctrlr;
@@ -1248,25 +1001,15 @@ static void beiscsi_put_cid(struct beiscsi_hba *phba, unsigned short cid)
 	if (cid_info->cid_free == BEISCSI_GET_CID_COUNT(phba, cid_post_ulp))
 		cid_info->cid_free = 0;
 	cid_info->avlbl_cids++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * beiscsi_free_ep - free endpoint
-<<<<<<< HEAD
- * @ep:	pointer to iscsi endpoint structure
-=======
  * @beiscsi_ep: pointer to device endpoint struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void beiscsi_free_ep(struct beiscsi_endpoint *beiscsi_ep)
 {
 	struct beiscsi_hba *phba = beiscsi_ep->phba;
-<<<<<<< HEAD
-
-	beiscsi_put_cid(phba, beiscsi_ep->ep_cid);
-	beiscsi_ep->phba = NULL;
-=======
 	struct beiscsi_conn *beiscsi_conn;
 
 	beiscsi_put_cid(phba, beiscsi_ep->ep_cid);
@@ -1293,21 +1036,14 @@ static void beiscsi_free_ep(struct beiscsi_endpoint *beiscsi_ep)
 					       beiscsi_conn->task);
 		beiscsi_conn->login_in_progress = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * beiscsi_open_conn - Ask FW to open a TCP connection
-<<<<<<< HEAD
- * @ep:	endpoint to be used
- * @src_addr: The source IP address
- * @dst_addr: The Destination  IP address
-=======
  * @ep: pointer to device endpoint struct
  * @src_addr: The source IP address
  * @dst_addr: The Destination  IP address
  * @non_blocking: blocking or non-blocking call
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Asks the FW to open a TCP connection
  */
@@ -1317,86 +1053,6 @@ static int beiscsi_open_conn(struct iscsi_endpoint *ep,
 {
 	struct beiscsi_endpoint *beiscsi_ep = ep->dd_data;
 	struct beiscsi_hba *phba = beiscsi_ep->phba;
-<<<<<<< HEAD
-	struct be_queue_info *mccq = &phba->ctrl.mcc_obj.q;
-	struct be_mcc_wrb *wrb;
-	struct tcp_connect_and_offload_out *ptcpcnct_out;
-	unsigned short status, extd_status;
-	struct be_dma_mem nonemb_cmd;
-	unsigned int tag, wrb_num;
-	int ret = -ENOMEM;
-
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_open_conn\n");
-	beiscsi_ep->ep_cid = beiscsi_get_cid(phba);
-	if (beiscsi_ep->ep_cid == 0xFFFF) {
-		SE_DEBUG(DBG_LVL_1, "No free cid available\n");
-		return ret;
-	}
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_open_conn, ep_cid=%d\n",
-		 beiscsi_ep->ep_cid);
-	phba->ep_array[beiscsi_ep->ep_cid -
-		       phba->fw_config.iscsi_cid_start] = ep;
-	if (beiscsi_ep->ep_cid > (phba->fw_config.iscsi_cid_start +
-				  phba->params.cxns_per_ctrl * 2)) {
-		SE_DEBUG(DBG_LVL_1, "Failed in allocate iscsi cid\n");
-		goto free_ep;
-	}
-
-	beiscsi_ep->cid_vld = 0;
-	nonemb_cmd.va = pci_alloc_consistent(phba->ctrl.pdev,
-				sizeof(struct tcp_connect_and_offload_in),
-				&nonemb_cmd.dma);
-	if (nonemb_cmd.va == NULL) {
-		SE_DEBUG(DBG_LVL_1,
-			 "Failed to allocate memory for mgmt_open_connection"
-			 "\n");
-		beiscsi_put_cid(phba, beiscsi_ep->ep_cid);
-		return -ENOMEM;
-	}
-	nonemb_cmd.size = sizeof(struct tcp_connect_and_offload_in);
-	memset(nonemb_cmd.va, 0, nonemb_cmd.size);
-	tag = mgmt_open_connection(phba, dst_addr, beiscsi_ep, &nonemb_cmd);
-	if (!tag) {
-		SE_DEBUG(DBG_LVL_1,
-			 "mgmt_open_connection Failed for cid=%d\n",
-			 beiscsi_ep->ep_cid);
-		beiscsi_put_cid(phba, beiscsi_ep->ep_cid);
-		pci_free_consistent(phba->ctrl.pdev, nonemb_cmd.size,
-				    nonemb_cmd.va, nonemb_cmd.dma);
-		return -EAGAIN;
-	} else {
-		wait_event_interruptible(phba->ctrl.mcc_wait[tag],
-					 phba->ctrl.mcc_numtag[tag]);
-	}
-	wrb_num = (phba->ctrl.mcc_numtag[tag] & 0x00FF0000) >> 16;
-	extd_status = (phba->ctrl.mcc_numtag[tag] & 0x0000FF00) >> 8;
-	status = phba->ctrl.mcc_numtag[tag] & 0x000000FF;
-	if (status || extd_status) {
-		SE_DEBUG(DBG_LVL_1, "mgmt_open_connection Failed"
-				    " status = %d extd_status = %d\n",
-				    status, extd_status);
-		free_mcc_tag(&phba->ctrl, tag);
-		pci_free_consistent(phba->ctrl.pdev, nonemb_cmd.size,
-			    nonemb_cmd.va, nonemb_cmd.dma);
-		goto free_ep;
-	} else {
-		wrb = queue_get_wrb(mccq, wrb_num);
-		free_mcc_tag(&phba->ctrl, tag);
-
-		ptcpcnct_out = embedded_payload(wrb);
-		beiscsi_ep = ep->dd_data;
-		beiscsi_ep->fw_handle = ptcpcnct_out->connection_handle;
-		beiscsi_ep->cid_vld = 1;
-		SE_DEBUG(DBG_LVL_8, "mgmt_open_connection Success\n");
-	}
-	pci_free_consistent(phba->ctrl.pdev, nonemb_cmd.size,
-			    nonemb_cmd.va, nonemb_cmd.dma);
-	return 0;
-
-free_ep:
-	beiscsi_free_ep(beiscsi_ep);
-	return -EBUSY;
-=======
 	struct tcp_connect_and_offload_out *ptcpcnct_out;
 	struct be_dma_mem nonemb_cmd;
 	unsigned int tag, req_memsize;
@@ -1477,16 +1133,11 @@ free_ep:
 	dma_free_coherent(&phba->ctrl.pdev->dev, nonemb_cmd.size,
 			    nonemb_cmd.va, nonemb_cmd.dma);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * beiscsi_ep_connect - Ask chip to create TCP Conn
-<<<<<<< HEAD
- * @scsi_host: Pointer to scsi_host structure
-=======
  * @shost: Pointer to scsi_host structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dst_addr: The IP address of Target
  * @non_blocking: blocking or non-blocking call
  *
@@ -1501,20 +1152,6 @@ beiscsi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
 	struct iscsi_endpoint *ep;
 	int ret;
 
-<<<<<<< HEAD
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_ep_connect\n");
-	if (shost)
-		phba = iscsi_host_priv(shost);
-	else {
-		ret = -ENXIO;
-		SE_DEBUG(DBG_LVL_1, "shost is NULL\n");
-		return ERR_PTR(ret);
-	}
-
-	if (phba->state != BE_ADAPTER_UP) {
-		ret = -EBUSY;
-		SE_DEBUG(DBG_LVL_1, "The Adapter state is Not UP\n");
-=======
 	if (!shost) {
 		ret = -ENXIO;
 		pr_err("beiscsi_ep_connect shost is NULL\n");
@@ -1532,7 +1169,6 @@ beiscsi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
 		ret = -EBUSY;
 		beiscsi_log(phba, KERN_WARNING, BEISCSI_LOG_CONFIG,
 			    "BS_%d : The Adapter Port state is Down!!!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(ret);
 	}
 
@@ -1547,12 +1183,8 @@ beiscsi_ep_connect(struct Scsi_Host *shost, struct sockaddr *dst_addr,
 	beiscsi_ep->openiscsi_ep = ep;
 	ret = beiscsi_open_conn(ep, NULL, dst_addr, non_blocking);
 	if (ret) {
-<<<<<<< HEAD
-		SE_DEBUG(DBG_LVL_1, "Failed in beiscsi_open_conn\n");
-=======
 		beiscsi_log(phba, KERN_ERR, BEISCSI_LOG_CONFIG,
 			    "BS_%d : Failed in beiscsi_open_conn\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto free_ep;
 	}
 
@@ -1574,13 +1206,9 @@ int beiscsi_ep_poll(struct iscsi_endpoint *ep, int timeout_ms)
 {
 	struct beiscsi_endpoint *beiscsi_ep = ep->dd_data;
 
-<<<<<<< HEAD
-	SE_DEBUG(DBG_LVL_8, "In  beiscsi_ep_poll\n");
-=======
 	beiscsi_log(beiscsi_ep->phba, KERN_INFO, BEISCSI_LOG_CONFIG,
 		    "BS_%d : In  beiscsi_ep_poll\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (beiscsi_ep->cid_vld == 1)
 		return 1;
 	else
@@ -1588,45 +1216,6 @@ int beiscsi_ep_poll(struct iscsi_endpoint *ep, int timeout_ms)
 }
 
 /**
-<<<<<<< HEAD
- * beiscsi_close_conn - Upload the  connection
- * @ep: The iscsi endpoint
- * @flag: The type of connection closure
- */
-static int beiscsi_close_conn(struct  beiscsi_endpoint *beiscsi_ep, int flag)
-{
-	int ret = 0;
-	unsigned int tag;
-	struct beiscsi_hba *phba = beiscsi_ep->phba;
-
-	tag = mgmt_upload_connection(phba, beiscsi_ep->ep_cid, flag);
-	if (!tag) {
-		SE_DEBUG(DBG_LVL_8, "upload failed for cid 0x%x\n",
-			 beiscsi_ep->ep_cid);
-		ret = -EAGAIN;
-	} else {
-		wait_event_interruptible(phba->ctrl.mcc_wait[tag],
-					 phba->ctrl.mcc_numtag[tag]);
-		free_mcc_tag(&phba->ctrl, tag);
-	}
-	return ret;
-}
-
-/**
- * beiscsi_unbind_conn_to_cid - Unbind the beiscsi_conn from phba conn table
- * @phba: The phba instance
- * @cid: The cid to free
- */
-static int beiscsi_unbind_conn_to_cid(struct beiscsi_hba *phba,
-				      unsigned int cid)
-{
-	if (phba->conn_table[cid])
-		phba->conn_table[cid] = NULL;
-	else {
-		SE_DEBUG(DBG_LVL_8, "Connection table Not occupied.\n");
-		return -EINVAL;
-	}
-=======
  * beiscsi_flush_cq()- Flush the CQ created.
  * @phba: ptr device priv structure.
  *
@@ -1703,7 +1292,6 @@ static int beiscsi_conn_close(struct beiscsi_endpoint *beiscsi_ep)
 	if (attempts > 3)
 		return -1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1715,57 +1303,6 @@ static int beiscsi_conn_close(struct beiscsi_endpoint *beiscsi_ep)
  */
 void beiscsi_ep_disconnect(struct iscsi_endpoint *ep)
 {
-<<<<<<< HEAD
-	struct beiscsi_conn *beiscsi_conn;
-	struct beiscsi_endpoint *beiscsi_ep;
-	struct beiscsi_hba *phba;
-	unsigned int tag;
-	unsigned short savecfg_flag = CMD_ISCSI_SESSION_SAVE_CFG_ON_FLASH;
-
-	beiscsi_ep = ep->dd_data;
-	phba = beiscsi_ep->phba;
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_ep_disconnect for ep_cid = %d\n",
-			     beiscsi_ep->ep_cid);
-
-	if (!beiscsi_ep->conn) {
-		SE_DEBUG(DBG_LVL_8, "In beiscsi_ep_disconnect, no "
-			 "beiscsi_ep\n");
-		return;
-	}
-	beiscsi_conn = beiscsi_ep->conn;
-	iscsi_suspend_queue(beiscsi_conn->conn);
-
-	SE_DEBUG(DBG_LVL_8, "In beiscsi_ep_disconnect ep_cid = %d\n",
-		 beiscsi_ep->ep_cid);
-
-	tag = mgmt_invalidate_connection(phba, beiscsi_ep,
-					    beiscsi_ep->ep_cid, 1,
-					    savecfg_flag);
-	if (!tag) {
-		SE_DEBUG(DBG_LVL_1,
-			 "mgmt_invalidate_connection Failed for cid=%d\n",
-			  beiscsi_ep->ep_cid);
-	} else {
-		wait_event_interruptible(phba->ctrl.mcc_wait[tag],
-					 phba->ctrl.mcc_numtag[tag]);
-		free_mcc_tag(&phba->ctrl, tag);
-	}
-
-	beiscsi_close_conn(beiscsi_ep, CONNECTION_UPLOAD_GRACEFUL);
-	beiscsi_free_ep(beiscsi_ep);
-	beiscsi_unbind_conn_to_cid(phba, beiscsi_ep->ep_cid);
-	iscsi_destroy_endpoint(beiscsi_ep->openiscsi_ep);
-}
-
-umode_t be2iscsi_attr_is_visible(int param_type, int param)
-{
-	switch (param_type) {
-	case ISCSI_HOST_PARAM:
-		switch (param) {
-		case ISCSI_HOST_PARAM_HWADDRESS:
-		case ISCSI_HOST_PARAM_IPADDRESS:
-		case ISCSI_HOST_PARAM_INITIATOR_NAME:
-=======
 	struct beiscsi_endpoint *beiscsi_ep;
 	struct beiscsi_hba *phba;
 	uint16_t cri_index;
@@ -1832,7 +1369,6 @@ umode_t beiscsi_attr_is_visible(int param_type, int param)
 		case ISCSI_HOST_PARAM_INITIATOR_NAME:
 		case ISCSI_HOST_PARAM_PORT_STATE:
 		case ISCSI_HOST_PARAM_PORT_SPEED:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return S_IRUGO;
 		default:
 			return 0;

@@ -1,34 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * journal.c
  *
  * Defines functions of journalling api
  *
  * Copyright (C) 2003, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -38,11 +14,8 @@
 #include <linux/kthread.h>
 #include <linux/time.h>
 #include <linux/random.h>
-<<<<<<< HEAD
-=======
 #include <linux/delay.h>
 #include <linux/writeback.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <cluster/masklog.h>
 
@@ -62,11 +35,8 @@
 #include "sysfile.h"
 #include "uptodate.h"
 #include "quota.h"
-<<<<<<< HEAD
-=======
 #include "file.h"
 #include "namei.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "buffer_head_io.h"
 #include "ocfs2_trace.h"
@@ -86,23 +56,15 @@ static int ocfs2_journal_toggle_dirty(struct ocfs2_super *osb,
 static int ocfs2_trylock_journal(struct ocfs2_super *osb,
 				 int slot_num);
 static int ocfs2_recover_orphans(struct ocfs2_super *osb,
-<<<<<<< HEAD
-				 int slot);
-=======
 				 int slot,
 				 enum ocfs2_orphan_reco_type orphan_reco_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ocfs2_commit_thread(void *arg);
 static void ocfs2_queue_recovery_completion(struct ocfs2_journal *journal,
 					    int slot_num,
 					    struct ocfs2_dinode *la_dinode,
 					    struct ocfs2_dinode *tl_dinode,
-<<<<<<< HEAD
-					    struct ocfs2_quota_recovery *qrec);
-=======
 					    struct ocfs2_quota_recovery *qrec,
 					    enum ocfs2_orphan_reco_type orphan_reco_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int ocfs2_wait_on_mount(struct ocfs2_super *osb)
 {
@@ -128,17 +90,10 @@ enum ocfs2_replay_state {
 struct ocfs2_replay_map {
 	unsigned int rm_slots;
 	enum ocfs2_replay_state rm_state;
-<<<<<<< HEAD
-	unsigned char rm_replay_slots[0];
-};
-
-void ocfs2_replay_map_set_state(struct ocfs2_super *osb, int state)
-=======
 	unsigned char rm_replay_slots[] __counted_by(rm_slots);
 };
 
 static void ocfs2_replay_map_set_state(struct ocfs2_super *osb, int state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!osb->replay_map)
 		return;
@@ -159,15 +114,9 @@ int ocfs2_compute_replay_slots(struct ocfs2_super *osb)
 	if (osb->replay_map)
 		return 0;
 
-<<<<<<< HEAD
-	replay_map = kzalloc(sizeof(struct ocfs2_replay_map) +
-			     (osb->max_slots * sizeof(char)), GFP_KERNEL);
-
-=======
 	replay_map = kzalloc(struct_size(replay_map, rm_replay_slots,
 					 osb->max_slots),
 			     GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!replay_map) {
 		mlog_errno(-ENOMEM);
 		return -ENOMEM;
@@ -189,12 +138,8 @@ int ocfs2_compute_replay_slots(struct ocfs2_super *osb)
 	return 0;
 }
 
-<<<<<<< HEAD
-void ocfs2_queue_replay_slots(struct ocfs2_super *osb)
-=======
 static void ocfs2_queue_replay_slots(struct ocfs2_super *osb,
 		enum ocfs2_orphan_reco_type orphan_reco_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_replay_map *replay_map = osb->replay_map;
 	int i;
@@ -208,12 +153,8 @@ static void ocfs2_queue_replay_slots(struct ocfs2_super *osb,
 	for (i = 0; i < replay_map->rm_slots; i++)
 		if (replay_map->rm_replay_slots[i])
 			ocfs2_queue_recovery_completion(osb->journal, i, NULL,
-<<<<<<< HEAD
-							NULL, NULL);
-=======
 							NULL, NULL,
 							orphan_reco_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	replay_map->rm_state = REPLAY_DONE;
 }
 
@@ -237,23 +178,13 @@ int ocfs2_recovery_init(struct ocfs2_super *osb)
 	osb->recovery_thread_task = NULL;
 	init_waitqueue_head(&osb->recovery_event);
 
-<<<<<<< HEAD
-	rm = kzalloc(sizeof(struct ocfs2_recovery_map) +
-		     osb->max_slots * sizeof(unsigned int),
-=======
 	rm = kzalloc(struct_size(rm, rm_entries, osb->max_slots),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     GFP_KERNEL);
 	if (!rm) {
 		mlog_errno(-ENOMEM);
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	rm->rm_entries = (unsigned int *)((char *)rm +
-					  sizeof(struct ocfs2_recovery_map));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	osb->recovery_map = rm;
 
 	return 0;
@@ -282,12 +213,8 @@ void ocfs2_recovery_exit(struct ocfs2_super *osb)
 	/* At this point, we know that no more recovery threads can be
 	 * launched, so wait for any recovery completion work to
 	 * complete. */
-<<<<<<< HEAD
-	flush_workqueue(ocfs2_wq);
-=======
 	if (osb->ocfs2_wq)
 		flush_workqueue(osb->ocfs2_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now that recovery is shut down, and the osb is about to be
@@ -379,11 +306,7 @@ static int ocfs2_commit_cache(struct ocfs2_super *osb)
 	}
 
 	jbd2_journal_lock_updates(journal->j_journal);
-<<<<<<< HEAD
-	status = jbd2_journal_flush(journal->j_journal);
-=======
 	status = jbd2_journal_flush(journal->j_journal, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jbd2_journal_unlock_updates(journal->j_journal);
 	if (status < 0) {
 		up_write(&journal->j_trans_barrier);
@@ -422,29 +345,19 @@ handle_t *ocfs2_start_trans(struct ocfs2_super *osb, int max_buffs)
 	if (journal_current_handle())
 		return jbd2_journal_start(journal, max_buffs);
 
-<<<<<<< HEAD
-=======
 	sb_start_intwrite(osb->sb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	down_read(&osb->journal->j_trans_barrier);
 
 	handle = jbd2_journal_start(journal, max_buffs);
 	if (IS_ERR(handle)) {
 		up_read(&osb->journal->j_trans_barrier);
-<<<<<<< HEAD
-=======
 		sb_end_intwrite(osb->sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mlog_errno(PTR_ERR(handle));
 
 		if (is_journal_aborted(journal)) {
-<<<<<<< HEAD
-			ocfs2_abort(osb->sb, "Detected aborted journal");
-=======
 			ocfs2_abort(osb->sb, "Detected aborted journal\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handle = ERR_PTR(-EROFS);
 		}
 	} else {
@@ -468,15 +381,10 @@ int ocfs2_commit_trans(struct ocfs2_super *osb,
 	if (ret < 0)
 		mlog_errno(ret);
 
-<<<<<<< HEAD
-	if (!nested)
-		up_read(&journal->j_trans_barrier);
-=======
 	if (!nested) {
 		up_read(&journal->j_trans_barrier);
 		sb_end_intwrite(osb->sb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -508,22 +416,14 @@ int ocfs2_extend_trans(handle_t *handle, int nblocks)
 	if (!nblocks)
 		return 0;
 
-<<<<<<< HEAD
-	old_nblocks = handle->h_buffer_credits;
-=======
 	old_nblocks = jbd2_handle_buffer_credits(handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_extend_trans(old_nblocks, nblocks);
 
 #ifdef CONFIG_OCFS2_DEBUG_FS
 	status = 1;
 #else
-<<<<<<< HEAD
-	status = jbd2_journal_extend(handle, nblocks);
-=======
 	status = jbd2_journal_extend(handle, nblocks, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto bail;
@@ -545,8 +445,6 @@ bail:
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * If we have fewer than thresh credits, extend by OCFS2_MAX_TRANS_DATA.
  * If that fails, restart the transaction & regain write access for the
@@ -582,7 +480,6 @@ bail:
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ocfs2_triggers {
 	struct jbd2_buffer_trigger_type	ot_triggers;
 	int				ot_offset;
@@ -657,11 +554,6 @@ static void ocfs2_abort_trigger(struct jbd2_buffer_trigger_type *triggers,
 	     (unsigned long)bh,
 	     (unsigned long long)bh->b_blocknr);
 
-<<<<<<< HEAD
-	/* We aren't guaranteed to have the superblock here - but if we
-	 * don't, it'll just crash. */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_error(bh->b_assoc_map->host->i_sb,
 		    "JBD2 has aborted our journal, ocfs2 cannot continue\n");
 }
@@ -757,11 +649,6 @@ static int __ocfs2_journal_access(handle_t *handle,
 	/* we can safely remove this assertion after testing. */
 	if (!buffer_uptodate(bh)) {
 		mlog(ML_ERROR, "giving me a buffer that's not uptodate!\n");
-<<<<<<< HEAD
-		mlog(ML_ERROR, "b_blocknr=%llu\n",
-		     (unsigned long long)bh->b_blocknr);
-		BUG();
-=======
 		mlog(ML_ERROR, "b_blocknr=%llu, b_state=0x%lx\n",
 		     (unsigned long long)bh->b_blocknr, bh->b_state);
 
@@ -782,7 +669,6 @@ static int __ocfs2_journal_access(handle_t *handle,
 					"write this buffer head failed\n");
 		}
 		unlock_buffer(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set the current transaction information on the ci so
@@ -887,9 +773,6 @@ void ocfs2_journal_dirty(handle_t *handle, struct buffer_head *bh)
 	trace_ocfs2_journal_dirty((unsigned long long)bh->b_blocknr);
 
 	status = jbd2_journal_dirty_metadata(handle, bh);
-<<<<<<< HEAD
-	BUG_ON(status);
-=======
 	if (status) {
 		mlog_errno(status);
 		if (!is_handle_aborted(handle)) {
@@ -904,7 +787,6 @@ void ocfs2_journal_dirty(handle_t *handle, struct buffer_head *bh)
 				    "Journal already aborted.\n");
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define OCFS2_DEFAULT_COMMIT_INTERVAL	(HZ * JBD2_DEFAULT_MAX_COMMIT_AGE)
@@ -926,9 +808,6 @@ void ocfs2_set_journal_params(struct ocfs2_super *osb)
 	write_unlock(&journal->j_state_lock);
 }
 
-<<<<<<< HEAD
-int ocfs2_journal_init(struct ocfs2_journal *journal, int *dirty)
-=======
 /*
  * alloc & initialize skeleton for journal structure.
  * ocfs2_journal_init() will make fs have journal ability.
@@ -974,29 +853,16 @@ static int ocfs2_journal_submit_inode_data_buffers(struct jbd2_inode *jinode)
 }
 
 int ocfs2_journal_init(struct ocfs2_super *osb, int *dirty)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = -1;
 	struct inode *inode = NULL; /* the journal inode */
 	journal_t *j_journal = NULL;
-<<<<<<< HEAD
-	struct ocfs2_dinode *di = NULL;
-	struct buffer_head *bh = NULL;
-	struct ocfs2_super *osb;
-	int inode_lock = 0;
-
-	BUG_ON(!journal);
-
-	osb = journal->j_osb;
-
-=======
 	struct ocfs2_journal *journal = osb->journal;
 	struct ocfs2_dinode *di = NULL;
 	struct buffer_head *bh = NULL;
 	int inode_lock = 0;
 
 	BUG_ON(!journal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* already have the inode for our journal */
 	inode = ocfs2_get_system_file_inode(osb, JOURNAL_SYSTEM_INODE,
 					    osb->slot_num);
@@ -1029,38 +895,19 @@ int ocfs2_journal_init(struct ocfs2_super *osb, int *dirty)
 	inode_lock = 1;
 	di = (struct ocfs2_dinode *)bh->b_data;
 
-<<<<<<< HEAD
-	if (inode->i_size <  OCFS2_MIN_JOURNAL_SIZE) {
-		mlog(ML_ERROR, "Journal file size (%lld) is too small!\n",
-		     inode->i_size);
-=======
 	if (i_size_read(inode) <  OCFS2_MIN_JOURNAL_SIZE) {
 		mlog(ML_ERROR, "Journal file size (%lld) is too small!\n",
 		     i_size_read(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -EINVAL;
 		goto done;
 	}
 
-<<<<<<< HEAD
-	trace_ocfs2_journal_init(inode->i_size,
-=======
 	trace_ocfs2_journal_init(i_size_read(inode),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 (unsigned long long)inode->i_blocks,
 				 OCFS2_I(inode)->ip_clusters);
 
 	/* call the kernels journal init function now */
 	j_journal = jbd2_journal_init_inode(inode);
-<<<<<<< HEAD
-	if (j_journal == NULL) {
-		mlog(ML_ERROR, "Linux journal layer error\n");
-		status = -EINVAL;
-		goto done;
-	}
-
-	trace_ocfs2_journal_init_maxlen(j_journal->j_maxlen);
-=======
 	if (IS_ERR(j_journal)) {
 		mlog(ML_ERROR, "Linux journal layer error\n");
 		status = PTR_ERR(j_journal);
@@ -1068,19 +915,15 @@ int ocfs2_journal_init(struct ocfs2_super *osb, int *dirty)
 	}
 
 	trace_ocfs2_journal_init_maxlen(j_journal->j_total_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*dirty = (le32_to_cpu(di->id1.journal1.ij_flags) &
 		  OCFS2_JOURNAL_DIRTY_FL);
 
 	journal->j_journal = j_journal;
-<<<<<<< HEAD
-=======
 	journal->j_journal->j_submit_inode_data_buffers =
 		ocfs2_journal_submit_inode_data_buffers;
 	journal->j_journal->j_finish_inode_data_buffers =
 		jbd2_journal_finish_inode_data_buffers;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	journal->j_inode = inode;
 	journal->j_bh = bh;
 
@@ -1196,22 +1039,14 @@ void ocfs2_journal_shutdown(struct ocfs2_super *osb)
 
 	if (ocfs2_mount_local(osb)) {
 		jbd2_journal_lock_updates(journal->j_journal);
-<<<<<<< HEAD
-		status = jbd2_journal_flush(journal->j_journal);
-=======
 		status = jbd2_journal_flush(journal->j_journal, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jbd2_journal_unlock_updates(journal->j_journal);
 		if (status < 0)
 			mlog_errno(status);
 	}
 
-<<<<<<< HEAD
-	if (status == 0) {
-=======
 	/* Shutdown the kernel journal system */
 	if (!jbd2_journal_destroy(journal->j_journal) && !status) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Do not toggle if flush was unsuccessful otherwise
 		 * will leave dirty metadata in a "clean" journal
@@ -1220,12 +1055,6 @@ void ocfs2_journal_shutdown(struct ocfs2_super *osb)
 		if (status < 0)
 			mlog_errno(status);
 	}
-<<<<<<< HEAD
-
-	/* Shutdown the kernel journal system */
-	jbd2_journal_destroy(journal->j_journal);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	journal->j_journal = NULL;
 
 	OCFS2_I(inode)->ip_open_count--;
@@ -1238,17 +1067,10 @@ void ocfs2_journal_shutdown(struct ocfs2_super *osb)
 
 	journal->j_state = OCFS2_JOURNAL_FREE;
 
-<<<<<<< HEAD
-//	up_write(&journal->j_trans_barrier);
-done:
-	if (inode)
-		iput(inode);
-=======
 done:
 	iput(inode);
 	kfree(journal);
 	osb->journal = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ocfs2_clear_journal_error(struct super_block *sb,
@@ -1286,8 +1108,6 @@ int ocfs2_journal_load(struct ocfs2_journal *journal, int local, int replayed)
 
 	ocfs2_clear_journal_error(osb->sb, journal->j_journal, osb->slot_num);
 
-<<<<<<< HEAD
-=======
 	if (replayed) {
 		jbd2_journal_lock_updates(journal->j_journal);
 		status = jbd2_journal_flush(journal->j_journal, 0);
@@ -1296,7 +1116,6 @@ int ocfs2_journal_load(struct ocfs2_journal *journal, int local, int replayed)
 			mlog_errno(status);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_journal_toggle_dirty(osb, 1, replayed);
 	if (status < 0) {
 		mlog_errno(status);
@@ -1306,11 +1125,7 @@ int ocfs2_journal_load(struct ocfs2_journal *journal, int local, int replayed)
 	/* Launch the commit thread */
 	if (!local) {
 		osb->commit_task = kthread_run(ocfs2_commit_thread, osb,
-<<<<<<< HEAD
-					       "ocfs2cmt");
-=======
 				"ocfs2cmt-%s", osb->uuid_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(osb->commit_task)) {
 			status = PTR_ERR(osb->commit_task);
 			osb->commit_task = NULL;
@@ -1380,19 +1195,10 @@ static int ocfs2_force_read_journal(struct inode *inode)
 	int status = 0;
 	int i;
 	u64 v_blkno, p_blkno, p_blocks, num_blocks;
-<<<<<<< HEAD
-#define CONCURRENT_JOURNAL_FILL 32ULL
-	struct buffer_head *bhs[CONCURRENT_JOURNAL_FILL];
-
-	memset(bhs, 0, sizeof(struct buffer_head *) * CONCURRENT_JOURNAL_FILL);
-
-	num_blocks = ocfs2_blocks_for_bytes(inode->i_sb, inode->i_size);
-=======
 	struct buffer_head *bh = NULL;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
 	num_blocks = ocfs2_blocks_for_bytes(inode->i_sb, i_size_read(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v_blkno = 0;
 	while (v_blkno < num_blocks) {
 		status = ocfs2_extent_map_get_blocks(inode, v_blkno,
@@ -1402,23 +1208,6 @@ static int ocfs2_force_read_journal(struct inode *inode)
 			goto bail;
 		}
 
-<<<<<<< HEAD
-		if (p_blocks > CONCURRENT_JOURNAL_FILL)
-			p_blocks = CONCURRENT_JOURNAL_FILL;
-
-		/* We are reading journal data which should not
-		 * be put in the uptodate cache */
-		status = ocfs2_read_blocks_sync(OCFS2_SB(inode->i_sb),
-						p_blkno, p_blocks, bhs);
-		if (status < 0) {
-			mlog_errno(status);
-			goto bail;
-		}
-
-		for(i = 0; i < p_blocks; i++) {
-			brelse(bhs[i]);
-			bhs[i] = NULL;
-=======
 		for (i = 0; i < p_blocks; i++, p_blkno++) {
 			bh = __find_get_block(osb->sb->s_bdev, p_blkno,
 					osb->sb->s_blocksize);
@@ -1439,18 +1228,12 @@ static int ocfs2_force_read_journal(struct inode *inode)
 
 			brelse(bh);
 			bh = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		v_blkno += p_blocks;
 	}
 
 bail:
-<<<<<<< HEAD
-	for(i = 0; i < CONCURRENT_JOURNAL_FILL; i++)
-		brelse(bhs[i]);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -1460,10 +1243,7 @@ struct ocfs2_la_recovery_item {
 	struct ocfs2_dinode	*lri_la_dinode;
 	struct ocfs2_dinode	*lri_tl_dinode;
 	struct ocfs2_quota_recovery *lri_qrec;
-<<<<<<< HEAD
-=======
 	enum ocfs2_orphan_reco_type  lri_orphan_reco_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Does the second half of the recovery process. By this point, the
@@ -1485,10 +1265,7 @@ void ocfs2_complete_recovery(struct work_struct *work)
 	struct ocfs2_dinode *la_dinode, *tl_dinode;
 	struct ocfs2_la_recovery_item *item, *n;
 	struct ocfs2_quota_recovery *qrec;
-<<<<<<< HEAD
-=======
 	enum ocfs2_orphan_reco_type orphan_reco_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LIST_HEAD(tmp_la_list);
 
 	trace_ocfs2_complete_recovery(
@@ -1506,10 +1283,7 @@ void ocfs2_complete_recovery(struct work_struct *work)
 		la_dinode = item->lri_la_dinode;
 		tl_dinode = item->lri_tl_dinode;
 		qrec = item->lri_qrec;
-<<<<<<< HEAD
-=======
 		orphan_reco_type = item->lri_orphan_reco_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		trace_ocfs2_complete_recovery_slot(item->lri_slot,
 			la_dinode ? le64_to_cpu(la_dinode->i_blkno) : 0,
@@ -1534,12 +1308,8 @@ void ocfs2_complete_recovery(struct work_struct *work)
 			kfree(tl_dinode);
 		}
 
-<<<<<<< HEAD
-		ret = ocfs2_recover_orphans(osb, item->lri_slot);
-=======
 		ret = ocfs2_recover_orphans(osb, item->lri_slot,
 				orphan_reco_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			mlog_errno(ret);
 
@@ -1564,12 +1334,8 @@ static void ocfs2_queue_recovery_completion(struct ocfs2_journal *journal,
 					    int slot_num,
 					    struct ocfs2_dinode *la_dinode,
 					    struct ocfs2_dinode *tl_dinode,
-<<<<<<< HEAD
-					    struct ocfs2_quota_recovery *qrec)
-=======
 					    struct ocfs2_quota_recovery *qrec,
 					    enum ocfs2_orphan_reco_type orphan_reco_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_la_recovery_item *item;
 
@@ -1578,16 +1344,8 @@ static void ocfs2_queue_recovery_completion(struct ocfs2_journal *journal,
 		/* Though we wish to avoid it, we are in fact safe in
 		 * skipping local alloc cleanup as fsck.ocfs2 is more
 		 * than capable of reclaiming unused space. */
-<<<<<<< HEAD
-		if (la_dinode)
-			kfree(la_dinode);
-
-		if (tl_dinode)
-			kfree(tl_dinode);
-=======
 		kfree(la_dinode);
 		kfree(tl_dinode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (qrec)
 			ocfs2_free_quota_recovery(qrec);
@@ -1601,18 +1359,11 @@ static void ocfs2_queue_recovery_completion(struct ocfs2_journal *journal,
 	item->lri_slot = slot_num;
 	item->lri_tl_dinode = tl_dinode;
 	item->lri_qrec = qrec;
-<<<<<<< HEAD
-
-	spin_lock(&journal->j_lock);
-	list_add_tail(&item->lri_list, &journal->j_la_cleanups);
-	queue_work(ocfs2_wq, &journal->j_recovery_work);
-=======
 	item->lri_orphan_reco_type = orphan_reco_type;
 
 	spin_lock(&journal->j_lock);
 	list_add_tail(&item->lri_list, &journal->j_la_cleanups);
 	queue_work(journal->j_osb->ocfs2_wq, &journal->j_recovery_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&journal->j_lock);
 }
 
@@ -1628,17 +1379,6 @@ void ocfs2_complete_mount_recovery(struct ocfs2_super *osb)
 	/* No need to queue up our truncate_log as regular cleanup will catch
 	 * that */
 	ocfs2_queue_recovery_completion(journal, osb->slot_num,
-<<<<<<< HEAD
-					osb->local_alloc_copy, NULL, NULL);
-	ocfs2_schedule_truncate_log_flush(osb, 0);
-
-	osb->local_alloc_copy = NULL;
-	osb->dirty = 0;
-
-	/* queue to recover orphan slots for all offline slots */
-	ocfs2_replay_map_set_state(osb, REPLAY_NEEDED);
-	ocfs2_queue_replay_slots(osb);
-=======
 					osb->local_alloc_copy, NULL, NULL,
 					ORPHAN_NEED_TRUNCATE);
 	ocfs2_schedule_truncate_log_flush(osb, 0);
@@ -1648,7 +1388,6 @@ void ocfs2_complete_mount_recovery(struct ocfs2_super *osb)
 	/* queue to recover orphan slots for all offline slots */
 	ocfs2_replay_map_set_state(osb, REPLAY_NEEDED);
 	ocfs2_queue_replay_slots(osb, ORPHAN_NEED_TRUNCATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_free_replay_slots(osb);
 }
 
@@ -1659,12 +1398,8 @@ void ocfs2_complete_quota_recovery(struct ocfs2_super *osb)
 						osb->slot_num,
 						NULL,
 						NULL,
-<<<<<<< HEAD
-						osb->quota_rec);
-=======
 						osb->quota_rec,
 						ORPHAN_NEED_TRUNCATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		osb->quota_rec = NULL;
 	}
 }
@@ -1678,33 +1413,23 @@ static int __ocfs2_recovery_thread(void *arg)
 	int rm_quota_used = 0, i;
 	struct ocfs2_quota_recovery *qrec;
 
-<<<<<<< HEAD
-=======
 	/* Whether the quota supported. */
 	int quota_enabled = OCFS2_HAS_RO_COMPAT_FEATURE(osb->sb,
 			OCFS2_FEATURE_RO_COMPAT_USRQUOTA)
 		|| OCFS2_HAS_RO_COMPAT_FEATURE(osb->sb,
 			OCFS2_FEATURE_RO_COMPAT_GRPQUOTA);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_wait_on_mount(osb);
 	if (status < 0) {
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	rm_quota = kzalloc(osb->max_slots * sizeof(int), GFP_NOFS);
-	if (!rm_quota) {
-		status = -ENOMEM;
-		goto bail;
-=======
 	if (quota_enabled) {
 		rm_quota = kcalloc(osb->max_slots, sizeof(int), GFP_NOFS);
 		if (!rm_quota) {
 			status = -ENOMEM;
 			goto bail;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 restart:
 	status = ocfs2_super_lock(osb, 1);
@@ -1719,11 +1444,7 @@ restart:
 
 	/* queue recovery for our own slot */
 	ocfs2_queue_recovery_completion(osb->journal, osb->slot_num, NULL,
-<<<<<<< HEAD
-					NULL, NULL);
-=======
 					NULL, NULL, ORPHAN_NO_NEED_TRUNCATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&osb->osb_lock);
 	while (rm->rm_used) {
@@ -1744,11 +1465,6 @@ restart:
 		 * then quota usage would be out of sync until some node takes
 		 * the slot. So we remember which nodes need quota recovery
 		 * and when everything else is done, we recover quotas. */
-<<<<<<< HEAD
-		for (i = 0; i < rm_quota_used && rm_quota[i] != slot_num; i++);
-		if (i == rm_quota_used)
-			rm_quota[rm_quota_used++] = slot_num;
-=======
 		if (quota_enabled) {
 			for (i = 0; i < rm_quota_used
 					&& rm_quota[i] != slot_num; i++)
@@ -1757,7 +1473,6 @@ restart:
 			if (i == rm_quota_used)
 				rm_quota[rm_quota_used++] = slot_num;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = ocfs2_recover_node(osb, node_num, slot_num);
 skip_recovery:
@@ -1785,17 +1500,6 @@ skip_recovery:
 	/* Now it is right time to recover quotas... We have to do this under
 	 * superblock lock so that no one can start using the slot (and crash)
 	 * before we recover it */
-<<<<<<< HEAD
-	for (i = 0; i < rm_quota_used; i++) {
-		qrec = ocfs2_begin_quota_recovery(osb, rm_quota[i]);
-		if (IS_ERR(qrec)) {
-			status = PTR_ERR(qrec);
-			mlog_errno(status);
-			continue;
-		}
-		ocfs2_queue_recovery_completion(osb->journal, rm_quota[i],
-						NULL, NULL, qrec);
-=======
 	if (quota_enabled) {
 		for (i = 0; i < rm_quota_used; i++) {
 			qrec = ocfs2_begin_quota_recovery(osb, rm_quota[i]);
@@ -1809,17 +1513,12 @@ skip_recovery:
 					NULL, NULL, qrec,
 					ORPHAN_NEED_TRUNCATE);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ocfs2_super_unlock(osb, 1);
 
 	/* queue recovery for offline slots */
-<<<<<<< HEAD
-	ocfs2_queue_replay_slots(osb);
-=======
 	ocfs2_queue_replay_slots(osb, ORPHAN_NEED_TRUNCATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bail:
 	mutex_lock(&osb->recovery_lock);
@@ -1835,19 +1534,9 @@ bail:
 
 	mutex_unlock(&osb->recovery_lock);
 
-<<<<<<< HEAD
-	if (rm_quota)
-		kfree(rm_quota);
-
-	/* no one is callint kthread_stop() for us so the kthread() api
-	 * requires that we call do_exit().  And it isn't exported, but
-	 * complete_and_exit() seems to be a minimal wrapper around it. */
-	complete_and_exit(NULL, status);
-=======
 	if (quota_enabled)
 		kfree(rm_quota);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -1867,11 +1556,7 @@ void ocfs2_recovery_thread(struct ocfs2_super *osb, int node_num)
 		goto out;
 
 	osb->recovery_thread_task =  kthread_run(__ocfs2_recovery_thread, osb,
-<<<<<<< HEAD
-						 "ocfs2rec");
-=======
 			"ocfs2rec-%s", osb->uuid_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(osb->recovery_thread_task)) {
 		mlog_errno((int)PTR_ERR(osb->recovery_thread_task));
 		osb->recovery_thread_task = NULL;
@@ -1999,27 +1684,16 @@ static int ocfs2_replay_journal(struct ocfs2_super *osb,
 	}
 
 	journal = jbd2_journal_init_inode(inode);
-<<<<<<< HEAD
-	if (journal == NULL) {
-		mlog(ML_ERROR, "Linux journal layer error\n");
-		status = -EIO;
-=======
 	if (IS_ERR(journal)) {
 		mlog(ML_ERROR, "Linux journal layer error\n");
 		status = PTR_ERR(journal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
 	status = jbd2_journal_load(journal);
 	if (status < 0) {
 		mlog_errno(status);
-<<<<<<< HEAD
-		if (!igrab(inode))
-			BUG();
-=======
 		BUG_ON(!igrab(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jbd2_journal_destroy(journal);
 		goto done;
 	}
@@ -2028,11 +1702,7 @@ static int ocfs2_replay_journal(struct ocfs2_super *osb,
 
 	/* wipe the journal */
 	jbd2_journal_lock_updates(journal);
-<<<<<<< HEAD
-	status = jbd2_journal_flush(journal);
-=======
 	status = jbd2_journal_flush(journal, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jbd2_journal_unlock_updates(journal);
 	if (status < 0)
 		mlog_errno(status);
@@ -2052,12 +1722,7 @@ static int ocfs2_replay_journal(struct ocfs2_super *osb,
 	if (status < 0)
 		mlog_errno(status);
 
-<<<<<<< HEAD
-	if (!igrab(inode))
-		BUG();
-=======
 	BUG_ON(!igrab(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jbd2_journal_destroy(journal);
 
@@ -2069,13 +1734,7 @@ done:
 	if (got_lock)
 		ocfs2_inode_unlock(inode, 1);
 
-<<<<<<< HEAD
-	if (inode)
-		iput(inode);
-
-=======
 	iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 
 	return status;
@@ -2139,11 +1798,7 @@ static int ocfs2_recover_node(struct ocfs2_super *osb,
 
 	/* This will kfree the memory pointed to by la_copy and tl_copy */
 	ocfs2_queue_recovery_completion(osb->journal, slot_num, la_copy,
-<<<<<<< HEAD
-					tl_copy, NULL);
-=======
 					tl_copy, NULL, ORPHAN_NEED_TRUNCATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = 0;
 done:
@@ -2186,12 +1841,7 @@ static int ocfs2_trylock_journal(struct ocfs2_super *osb,
 
 	ocfs2_inode_unlock(inode, 1);
 bail:
-<<<<<<< HEAD
-	if (inode)
-		iput(inode);
-=======
 	iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return status;
 }
@@ -2305,11 +1955,7 @@ static inline unsigned long ocfs2_orphan_scan_timeout(void)
  * hasn't happened.  The node queues a scan and increments the
  * sequence number in the LVB.
  */
-<<<<<<< HEAD
-void ocfs2_queue_orphan_scan(struct ocfs2_super *osb)
-=======
 static void ocfs2_queue_orphan_scan(struct ocfs2_super *osb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_orphan_scan *os;
 	int status, i;
@@ -2341,22 +1987,14 @@ static void ocfs2_queue_orphan_scan(struct ocfs2_super *osb)
 
 	for (i = 0; i < osb->max_slots; i++)
 		ocfs2_queue_recovery_completion(osb->journal, i, NULL, NULL,
-<<<<<<< HEAD
-						NULL);
-=======
 						NULL, ORPHAN_NO_NEED_TRUNCATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We queued a recovery on orphan slots, increment the sequence
 	 * number and update LVB so other node will skip the scan for a while
 	 */
 	seqno++;
 	os->os_count++;
-<<<<<<< HEAD
-	os->os_scantime = CURRENT_TIME;
-=======
 	os->os_scantime = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unlock:
 	ocfs2_orphan_scan_unlock(osb, seqno);
 out:
@@ -2366,11 +2004,7 @@ out:
 }
 
 /* Worker task that gets fired every ORPHAN_SCAN_SCHEDULE_TIMEOUT millsec */
-<<<<<<< HEAD
-void ocfs2_orphan_scan_work(struct work_struct *work)
-=======
 static void ocfs2_orphan_scan_work(struct work_struct *work)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_orphan_scan *os;
 	struct ocfs2_super *osb;
@@ -2382,11 +2016,7 @@ static void ocfs2_orphan_scan_work(struct work_struct *work)
 	mutex_lock(&os->os_lock);
 	ocfs2_queue_orphan_scan(osb);
 	if (atomic_read(&os->os_state) == ORPHAN_SCAN_ACTIVE)
-<<<<<<< HEAD
-		queue_delayed_work(ocfs2_wq, &os->os_orphan_scan_work,
-=======
 		queue_delayed_work(osb->ocfs2_wq, &os->os_orphan_scan_work,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      ocfs2_orphan_scan_timeout());
 	mutex_unlock(&os->os_lock);
 }
@@ -2421,41 +2051,17 @@ void ocfs2_orphan_scan_start(struct ocfs2_super *osb)
 	struct ocfs2_orphan_scan *os;
 
 	os = &osb->osb_orphan_scan;
-<<<<<<< HEAD
-	os->os_scantime = CURRENT_TIME;
-=======
 	os->os_scantime = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ocfs2_is_hard_readonly(osb) || ocfs2_mount_local(osb))
 		atomic_set(&os->os_state, ORPHAN_SCAN_INACTIVE);
 	else {
 		atomic_set(&os->os_state, ORPHAN_SCAN_ACTIVE);
-<<<<<<< HEAD
-		queue_delayed_work(ocfs2_wq, &os->os_orphan_scan_work,
-=======
 		queue_delayed_work(osb->ocfs2_wq, &os->os_orphan_scan_work,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ocfs2_orphan_scan_timeout());
 	}
 }
 
 struct ocfs2_orphan_filldir_priv {
-<<<<<<< HEAD
-	struct inode		*head;
-	struct ocfs2_super	*osb;
-};
-
-static int ocfs2_orphan_filldir(void *priv, const char *name, int name_len,
-				loff_t pos, u64 ino, unsigned type)
-{
-	struct ocfs2_orphan_filldir_priv *p = priv;
-	struct inode *iter;
-
-	if (name_len == 1 && !strncmp(".", name, 1))
-		return 0;
-	if (name_len == 2 && !strncmp("..", name, 2))
-		return 0;
-=======
 	struct dir_context	ctx;
 	struct inode		*head;
 	struct ocfs2_super	*osb;
@@ -2480,15 +2086,11 @@ static bool ocfs2_orphan_filldir(struct dir_context *ctx, const char *name,
 			(!strncmp(name, OCFS2_DIO_ORPHAN_PREFIX,
 			OCFS2_DIO_ORPHAN_PREFIX_LEN)))
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Skip bad inodes so that recovery can continue */
 	iter = ocfs2_iget(p->osb, ino,
 			  OCFS2_FI_FLAG_ORPHAN_RECOVERY, 0);
 	if (IS_ERR(iter))
-<<<<<<< HEAD
-		return 0;
-=======
 		return true;
 
 	if (!strncmp(name, OCFS2_DIO_ORPHAN_PREFIX,
@@ -2501,7 +2103,6 @@ static bool ocfs2_orphan_filldir(struct dir_context *ctx, const char *name,
 		iput(iter);
 		return true;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_orphan_filldir((unsigned long long)OCFS2_I(iter)->ip_blkno);
 	/* No locking is required for the next_orphan queue as there
@@ -2509,26 +2110,11 @@ static bool ocfs2_orphan_filldir(struct dir_context *ctx, const char *name,
 	OCFS2_I(iter)->ip_next_orphan = p->head;
 	p->head = iter;
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 			       int slot,
-<<<<<<< HEAD
-			       struct inode **head)
-{
-	int status;
-	struct inode *orphan_dir_inode = NULL;
-	struct ocfs2_orphan_filldir_priv priv;
-	loff_t pos = 0;
-
-	priv.osb = osb;
-	priv.head = *head;
-=======
 			       struct inode **head,
 			       enum ocfs2_orphan_reco_type orphan_reco_type)
 {
@@ -2540,7 +2126,6 @@ static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 		.head = *head,
 		.orphan_reco_type = orphan_reco_type
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	orphan_dir_inode = ocfs2_get_system_file_inode(osb,
 						       ORPHAN_DIR_SYSTEM_INODE,
@@ -2551,23 +2136,14 @@ static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 		return status;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&orphan_dir_inode->i_mutex);
-=======
 	inode_lock(orphan_dir_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_inode_lock(orphan_dir_inode, NULL, 0);
 	if (status < 0) {
 		mlog_errno(status);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	status = ocfs2_dir_foreach(orphan_dir_inode, &pos, &priv,
-				   ocfs2_orphan_filldir);
-=======
 	status = ocfs2_dir_foreach(orphan_dir_inode, &priv.ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status) {
 		mlog_errno(status);
 		goto out_cluster;
@@ -2578,11 +2154,7 @@ static int ocfs2_queue_orphans(struct ocfs2_super *osb,
 out_cluster:
 	ocfs2_inode_unlock(orphan_dir_inode, 0);
 out:
-<<<<<<< HEAD
-	mutex_unlock(&orphan_dir_inode->i_mutex);
-=======
 	inode_unlock(orphan_dir_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(orphan_dir_inode);
 	return status;
 }
@@ -2642,31 +2214,20 @@ static void ocfs2_clear_recovering_orphan_dir(struct ocfs2_super *osb,
  *   advertising our state to ocfs2_delete_inode().
  */
 static int ocfs2_recover_orphans(struct ocfs2_super *osb,
-<<<<<<< HEAD
-				 int slot)
-=======
 				 int slot,
 				 enum ocfs2_orphan_reco_type orphan_reco_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct inode *inode = NULL;
 	struct inode *iter;
 	struct ocfs2_inode_info *oi;
-<<<<<<< HEAD
-=======
 	struct buffer_head *di_bh = NULL;
 	struct ocfs2_dinode *di = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_recover_orphans(slot);
 
 	ocfs2_mark_recovering_orphan_dir(osb, slot);
-<<<<<<< HEAD
-	ret = ocfs2_queue_orphans(osb, slot, &inode);
-=======
 	ret = ocfs2_queue_orphans(osb, slot, &inode, orphan_reco_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_clear_recovering_orphan_dir(osb, slot);
 
 	/* Error here should be noted, but we want to continue with as
@@ -2680,23 +2241,6 @@ static int ocfs2_recover_orphans(struct ocfs2_super *osb,
 					(unsigned long long)oi->ip_blkno);
 
 		iter = oi->ip_next_orphan;
-<<<<<<< HEAD
-
-		spin_lock(&oi->ip_lock);
-		/* The remote delete code may have set these on the
-		 * assumption that the other node would wipe them
-		 * successfully.  If they are still in the node's
-		 * orphan dir, we need to reset that state. */
-		oi->ip_flags &= ~(OCFS2_INODE_DELETED|OCFS2_INODE_SKIP_DELETE);
-
-		/* Set the proper information to get us going into
-		 * ocfs2_delete_inode. */
-		oi->ip_flags |= OCFS2_INODE_MAYBE_ORPHANED;
-		spin_unlock(&oi->ip_lock);
-
-		iput(inode);
-
-=======
 		oi->ip_next_orphan = NULL;
 
 		if (oi->ip_flags & OCFS2_INODE_DIO_ORPHAN_ENTRY) {
@@ -2752,7 +2296,6 @@ unlock_mutex:
 		}
 
 		iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode = iter;
 	}
 
@@ -2799,10 +2342,6 @@ static int ocfs2_commit_thread(void *arg)
 					 || kthread_should_stop());
 
 		status = ocfs2_commit_cache(osb);
-<<<<<<< HEAD
-		if (status < 0)
-			mlog_errno(status);
-=======
 		if (status < 0) {
 			static unsigned long abort_warn_time;
 
@@ -2817,7 +2356,6 @@ static int ocfs2_commit_thread(void *arg)
 			 */
 			msleep_interruptible(1000);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (kthread_should_stop() && atomic_read(&journal->j_num_trans)){
 			mlog(ML_KTHREAD,

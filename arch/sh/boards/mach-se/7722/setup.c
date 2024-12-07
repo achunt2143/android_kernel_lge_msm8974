@@ -1,37 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/se/7722/setup.c
  *
  * Copyright (C) 2007 Nobuhiro Iwamatsu
-<<<<<<< HEAD
- *
- * Hitachi UL SolutionEngine 7722 Support.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
-=======
  * Copyright (C) 2012 Paul Mundt
  *
  * Hitachi UL SolutionEngine 7722 Support.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/ata_platform.h>
 #include <linux/input.h>
 #include <linux/input/sh_keysc.h>
-<<<<<<< HEAD
-#include <linux/smc91x.h>
-=======
 #include <linux/irqdomain.h>
 #include <linux/smc91x.h>
 #include <linux/sh_intc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach-se/mach/se7722.h>
 #include <mach-se/mach/mrshpc.h>
 #include <asm/machvec.h>
@@ -130,11 +113,7 @@ static struct resource sh_keysc_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
-<<<<<<< HEAD
-		.start  = 79,
-=======
 		.start  = evt2irq(0xbe0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -162,17 +141,10 @@ static int __init se7722_devices_setup(void)
 
 	/* Wire-up dynamic vectors */
 	cf_ide_resources[2].start = cf_ide_resources[2].end =
-<<<<<<< HEAD
-		se7722_fpga_irq[SE7722_FPGA_IRQ_MRSHPC0];
-
-	smc91x_eth_resources[1].start = smc91x_eth_resources[1].end =
-		se7722_fpga_irq[SE7722_FPGA_IRQ_SMC];
-=======
 		irq_find_mapping(se7722_irq_domain, SE7722_FPGA_IRQ_MRSHPC0);
 
 	smc91x_eth_resources[1].start = smc91x_eth_resources[1].end =
 		irq_find_mapping(se7722_irq_domain, SE7722_FPGA_IRQ_SMC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return platform_add_devices(se7722_devices, ARRAY_SIZE(se7722_devices));
 }

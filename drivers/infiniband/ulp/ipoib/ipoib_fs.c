@@ -124,43 +124,14 @@ static int ipoib_mcg_seq_show(struct seq_file *file, void *iter_ptr)
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct seq_operations ipoib_mcg_seq_ops = {
-=======
 static const struct seq_operations ipoib_mcg_sops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = ipoib_mcg_seq_start,
 	.next  = ipoib_mcg_seq_next,
 	.stop  = ipoib_mcg_seq_stop,
 	.show  = ipoib_mcg_seq_show,
 };
 
-<<<<<<< HEAD
-static int ipoib_mcg_open(struct inode *inode, struct file *file)
-{
-	struct seq_file *seq;
-	int ret;
-
-	ret = seq_open(file, &ipoib_mcg_seq_ops);
-	if (ret)
-		return ret;
-
-	seq = file->private_data;
-	seq->private = inode->i_private;
-
-	return 0;
-}
-
-static const struct file_operations ipoib_mcg_fops = {
-	.owner   = THIS_MODULE,
-	.open    = ipoib_mcg_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release
-};
-=======
 DEFINE_SEQ_ATTRIBUTE(ipoib_mcg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void *ipoib_path_seq_start(struct seq_file *file, loff_t *pos)
 {
@@ -218,26 +189,16 @@ static int ipoib_path_seq_show(struct seq_file *file, void *iter_ptr)
 	seq_printf(file,
 		   "GID: %s\n"
 		   "  complete: %6s\n",
-<<<<<<< HEAD
-		   gid_buf, path.pathrec.dlid ? "yes" : "no");
-
-	if (path.pathrec.dlid) {
-=======
 		   gid_buf, sa_path_get_dlid(&path.pathrec) ? "yes" : "no");
 
 	if (sa_path_get_dlid(&path.pathrec)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rate = ib_rate_to_mbps(path.pathrec.rate);
 
 		seq_printf(file,
 			   "  DLID:     0x%04x\n"
 			   "  SL: %12d\n"
 			   "  rate: %8d.%d Gb/sec\n",
-<<<<<<< HEAD
-			   be16_to_cpu(path.pathrec.dlid),
-=======
 			   be32_to_cpu(sa_path_get_dlid(&path.pathrec)),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   path.pathrec.sl,
 			   rate / 1000, rate % 1000);
 	}
@@ -247,58 +208,13 @@ static int ipoib_path_seq_show(struct seq_file *file, void *iter_ptr)
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct seq_operations ipoib_path_seq_ops = {
-=======
 static const struct seq_operations ipoib_path_sops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = ipoib_path_seq_start,
 	.next  = ipoib_path_seq_next,
 	.stop  = ipoib_path_seq_stop,
 	.show  = ipoib_path_seq_show,
 };
 
-<<<<<<< HEAD
-static int ipoib_path_open(struct inode *inode, struct file *file)
-{
-	struct seq_file *seq;
-	int ret;
-
-	ret = seq_open(file, &ipoib_path_seq_ops);
-	if (ret)
-		return ret;
-
-	seq = file->private_data;
-	seq->private = inode->i_private;
-
-	return 0;
-}
-
-static const struct file_operations ipoib_path_fops = {
-	.owner   = THIS_MODULE,
-	.open    = ipoib_path_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release
-};
-
-void ipoib_create_debug_files(struct net_device *dev)
-{
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-	char name[IFNAMSIZ + sizeof "_path"];
-
-	snprintf(name, sizeof name, "%s_mcg", dev->name);
-	priv->mcg_dentry = debugfs_create_file(name, S_IFREG | S_IRUGO,
-					       ipoib_root, dev, &ipoib_mcg_fops);
-	if (!priv->mcg_dentry)
-		ipoib_warn(priv, "failed to create mcg debug file\n");
-
-	snprintf(name, sizeof name, "%s_path", dev->name);
-	priv->path_dentry = debugfs_create_file(name, S_IFREG | S_IRUGO,
-						ipoib_root, dev, &ipoib_path_fops);
-	if (!priv->path_dentry)
-		ipoib_warn(priv, "failed to create path debug file\n");
-=======
 DEFINE_SEQ_ATTRIBUTE(ipoib_path);
 
 void ipoib_create_debug_files(struct net_device *dev)
@@ -313,25 +229,10 @@ void ipoib_create_debug_files(struct net_device *dev)
 	snprintf(name, sizeof(name), "%s_path", dev->name);
 	priv->path_dentry = debugfs_create_file(name, S_IFREG | S_IRUGO,
 						ipoib_root, dev, &ipoib_path_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ipoib_delete_debug_files(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct ipoib_dev_priv *priv = netdev_priv(dev);
-
-	if (priv->mcg_dentry)
-		debugfs_remove(priv->mcg_dentry);
-	if (priv->path_dentry)
-		debugfs_remove(priv->path_dentry);
-}
-
-int ipoib_register_debugfs(void)
-{
-	ipoib_root = debugfs_create_dir("ipoib", NULL);
-	return ipoib_root ? 0 : -ENOMEM;
-=======
 	struct ipoib_dev_priv *priv = ipoib_priv(dev);
 
 	debugfs_remove(priv->mcg_dentry);
@@ -342,7 +243,6 @@ int ipoib_register_debugfs(void)
 void ipoib_register_debugfs(void)
 {
 	ipoib_root = debugfs_create_dir("ipoib", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ipoib_unregister_debugfs(void)

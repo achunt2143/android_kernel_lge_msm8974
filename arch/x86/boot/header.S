@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	header.S
  *
@@ -18,22 +15,12 @@
  * hex while segment addresses are written as segment:offset.
  *
  */
-<<<<<<< HEAD
-
-#include <asm/segment.h>
-#include <generated/utsrelease.h>
-#include <asm/boot.h>
-#include <asm/e820.h>
-#include <asm/page_types.h>
-#include <asm/setup.h>
-=======
 #include <linux/pe.h>
 #include <asm/segment.h>
 #include <asm/boot.h>
 #include <asm/page_types.h>
 #include <asm/setup.h>
 #include <asm/bootparam.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "boot.h"
 #include "voffset.h"
 #include "zoffset.h"
@@ -45,91 +32,10 @@ SYSSEG		= 0x1000		/* historical load address >> 4 */
 #define SVGA_MODE ASK_VGA
 #endif
 
-<<<<<<< HEAD
-#ifndef RAMDISK
-#define RAMDISK 0
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ROOT_RDONLY
 #define ROOT_RDONLY 1
 #endif
 
-<<<<<<< HEAD
-	.code16
-	.section ".bstext", "ax"
-
-	.global bootsect_start
-bootsect_start:
-#ifdef CONFIG_EFI_STUB
-	# "MZ", MS-DOS header
-	.byte 0x4d
-	.byte 0x5a
-#endif
-
-	# Normalize the start address
-	ljmp	$BOOTSEG, $start2
-
-start2:
-	movw	%cs, %ax
-	movw	%ax, %ds
-	movw	%ax, %es
-	movw	%ax, %ss
-	xorw	%sp, %sp
-	sti
-	cld
-
-	movw	$bugger_off_msg, %si
-
-msg_loop:
-	lodsb
-	andb	%al, %al
-	jz	bs_die
-	movb	$0xe, %ah
-	movw	$7, %bx
-	int	$0x10
-	jmp	msg_loop
-
-bs_die:
-	# Allow the user to press a key, then reboot
-	xorw	%ax, %ax
-	int	$0x16
-	int	$0x19
-
-	# int 0x19 should never return.  In case it does anyway,
-	# invoke the BIOS reset code...
-	ljmp	$0xf000,$0xfff0
-
-#ifdef CONFIG_EFI_STUB
-	.org	0x3c
-	#
-	# Offset to the PE header.
-	#
-	.long	pe_header
-#endif /* CONFIG_EFI_STUB */
-
-	.section ".bsdata", "a"
-bugger_off_msg:
-	.ascii	"Direct booting from floppy is no longer supported.\r\n"
-	.ascii	"Please use a boot loader program instead.\r\n"
-	.ascii	"\n"
-	.ascii	"Remove disk and press any key to reboot . . .\r\n"
-	.byte	0
-
-#ifdef CONFIG_EFI_STUB
-pe_header:
-	.ascii	"PE"
-	.word 	0
-
-coff_header:
-#ifdef CONFIG_X86_32
-	.word	0x14c				# i386
-#else
-	.word	0x8664				# x86-64
-#endif
-	.word	2				# nr_sections
-=======
 	.set	salign, 0x1000
 	.set	falign, 0x200
 
@@ -158,45 +64,10 @@ coff_header:
 	.word	IMAGE_FILE_MACHINE_AMD64
 #endif
 	.word	section_count			# nr_sections
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	0 				# TimeDateStamp
 	.long	0				# PointerToSymbolTable
 	.long	1				# NumberOfSymbols
 	.word	section_table - optional_header	# SizeOfOptionalHeader
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-	.word	0x306				# Characteristics.
-						# IMAGE_FILE_32BIT_MACHINE |
-						# IMAGE_FILE_DEBUG_STRIPPED |
-						# IMAGE_FILE_EXECUTABLE_IMAGE |
-						# IMAGE_FILE_LINE_NUMS_STRIPPED
-#else
-	.word	0x206				# Characteristics
-						# IMAGE_FILE_DEBUG_STRIPPED |
-						# IMAGE_FILE_EXECUTABLE_IMAGE |
-						# IMAGE_FILE_LINE_NUMS_STRIPPED
-#endif
-
-optional_header:
-#ifdef CONFIG_X86_32
-	.word	0x10b				# PE32 format
-#else
-	.word	0x20b 				# PE32+ format
-#endif
-	.byte	0x02				# MajorLinkerVersion
-	.byte	0x14				# MinorLinkerVersion
-
-	# Filled in by build.c
-	.long	0				# SizeOfCode
-
-	.long	0				# SizeOfInitializedData
-	.long	0				# SizeOfUninitializedData
-
-	# Filled in by build.c
-	.long	0x0000				# AddressOfEntryPoint
-
-	.long	0x0000				# BaseOfCode
-=======
 	.word	IMAGE_FILE_EXECUTABLE_IMAGE	| \
 		image_file_add_flags		| \
 		IMAGE_FILE_DEBUG_STRIPPED	| \
@@ -215,7 +86,6 @@ optional_header:
 	.long	setup_size + ZO_efi_pe_entry	# AddressOfEntryPoint
 
 	.long	setup_size			# BaseOfCode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_X86_32
 	.long	0				# data
 #endif
@@ -226,43 +96,22 @@ extra_header_fields:
 #else
 	.quad	0				# ImageBase
 #endif
-<<<<<<< HEAD
-	.long	0x1000				# SectionAlignment
-	.long	0x200				# FileAlignment
-	.word	0				# MajorOperatingSystemVersion
-	.word	0				# MinorOperatingSystemVersion
-	.word	0				# MajorImageVersion
-	.word	0				# MinorImageVersion
-=======
 	.long	salign				# SectionAlignment
 	.long	falign				# FileAlignment
 	.word	0				# MajorOperatingSystemVersion
 	.word	0				# MinorOperatingSystemVersion
 	.word	LINUX_EFISTUB_MAJOR_VERSION	# MajorImageVersion
 	.word	LINUX_EFISTUB_MINOR_VERSION	# MinorImageVersion
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.word	0				# MajorSubsystemVersion
 	.word	0				# MinorSubsystemVersion
 	.long	0				# Win32VersionValue
 
-<<<<<<< HEAD
-	#
-	# The size of the bzImage is written in tools/build.c
-	#
-	.long	0				# SizeOfImage
-
-	.long	0x200				# SizeOfHeaders
-	.long	0				# CheckSum
-	.word	0xa				# Subsystem (EFI application)
-	.word	0				# DllCharacteristics
-=======
 	.long	setup_size + ZO__end		# SizeOfImage
 
 	.long	salign				# SizeOfHeaders
 	.long	0				# CheckSum
 	.word	IMAGE_SUBSYSTEM_EFI_APPLICATION	# Subsystem (EFI application)
 	.word	IMAGE_DLL_CHARACTERISTICS_NX_COMPAT	# DllCharacteristics
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_X86_32
 	.long	0				# SizeOfStackReserve
 	.long	0				# SizeOfStackCommit
@@ -275,11 +124,7 @@ extra_header_fields:
 	.quad	0				# SizeOfHeapCommit
 #endif
 	.long	0				# LoaderFlags
-<<<<<<< HEAD
-	.long	0x1				# NumberOfRvaAndSizes
-=======
 	.long	(section_table - .) / 8		# NumberOfRvaAndSizes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.quad	0				# ExportTable
 	.quad	0				# ImportTable
@@ -290,8 +135,6 @@ extra_header_fields:
 
 	# Section table
 section_table:
-<<<<<<< HEAD
-=======
 	.ascii	".setup"
 	.byte	0
 	.byte	0
@@ -336,51 +179,19 @@ pecompat_fstart:
 #else
 	.set	pecompat_fstart, setup_size
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ascii	".text"
 	.byte	0
 	.byte	0
 	.byte	0
-<<<<<<< HEAD
-	.long	0
-	.long	0x0				# startup_{32,64}
-	.long	0				# Size of initialized data
-						# on disk
-	.long	0x0				# startup_{32,64}
-=======
 	.long	ZO__data
 	.long	setup_size
 	.long	ZO__data			# Size of initialized data
 						# on disk
 	.long	setup_size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	0				# PointerToRelocations
 	.long	0				# PointerToLineNumbers
 	.word	0				# NumberOfRelocations
 	.word	0				# NumberOfLineNumbers
-<<<<<<< HEAD
-	.long	0x60500020			# Characteristics (section flags)
-
-	#
-	# The EFI application loader requires a relocation section
-	# because EFI applications are relocatable and not having
-	# this section seems to confuse it. But since we don't need
-	# the loader to fixup any relocs for us just fill it with a
-	# single dummy reloc.
-	#
-	.ascii	".reloc"
-	.byte	0
-	.byte	0
-	.long	reloc_end - reloc_start
-	.long	reloc_start
-	.long	reloc_end - reloc_start		# SizeOfRawData
-	.long	reloc_start			# PointerToRawData
-	.long	0				# PointerToRelocations
-	.long	0				# PointerToLineNumbers
-	.word	0				# NumberOfRelocations
-	.word	0				# NumberOfLineNumbers
-	.long	0x42100040			# Characteristics (section flags)
-=======
 	.long	IMAGE_SCN_CNT_CODE		| \
 		IMAGE_SCN_MEM_READ		| \
 		IMAGE_SCN_MEM_EXECUTE		# Characteristics
@@ -397,23 +208,12 @@ pecompat_fstart:
 		IMAGE_SCN_MEM_WRITE		# Characteristics
 
 	.set	section_count, (. - section_table) / 40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_EFI_STUB */
 
 	# Kernel attributes; used by setup.  This is part 1 of the
 	# header, from the old boot sector.
 
 	.section ".header", "a"
-<<<<<<< HEAD
-	.globl	hdr
-hdr:
-setup_sects:	.byte 0			/* Filled in by build.c */
-root_flags:	.word ROOT_RDONLY
-syssize:	.long 0			/* Filled in by build.c */
-ram_size:	.word 0			/* Obsolete */
-vid_mode:	.word SVGA_MODE
-root_dev:	.word 0			/* Filled in by build.c */
-=======
 	.globl	sentinel
 sentinel:	.byte 0xff, 0xff        /* Used to detect broken loaders */
 
@@ -425,7 +225,6 @@ syssize:	.long ZO__edata / 16
 ram_size:	.word 0			/* Obsolete */
 vid_mode:	.word SVGA_MODE
 root_dev:	.word 0			/* Default to major/minor 0/0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 boot_flag:	.word 0xAA55
 
 	# offset 512, entry point
@@ -442,11 +241,7 @@ _start:
 	# Part 2 of the header, from the old setup.S
 
 		.ascii	"HdrS"		# header signature
-<<<<<<< HEAD
-		.word	0x020a		# header version number (>= 0x0105)
-=======
 		.word	0x020f		# header version number (>= 0x0105)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					# or else old loadlin-1.5 will fail)
 		.globl realmode_swtch
 realmode_swtch:	.word	0, 0		# default_switch, SETUPSEG
@@ -459,26 +254,12 @@ start_sys_seg:	.word	SYSSEG		# obsolete and meaningless, but just
 
 type_of_loader:	.byte	0		# 0 means ancient bootloader, newer
 					# bootloaders know to change this.
-<<<<<<< HEAD
-					# See Documentation/x86/boot.txt for
-=======
 					# See Documentation/arch/x86/boot.rst for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					# assigned ids
 
 # flags, unused bits must be zero (RFU) bit within loadflags
 loadflags:
-<<<<<<< HEAD
-LOADED_HIGH	= 1			# If set, the kernel is loaded high
-CAN_USE_HEAP	= 0x80			# If set, the loader also has set
-					# heap_end_ptr to tell how much
-					# space behind setup.S can be used for
-					# heap purposes.
-					# Only the loader knows what is free
-		.byte	LOADED_HIGH
-=======
 		.byte	LOADED_HIGH	# The kernel is to be loaded high
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 setup_move_size: .word  0x8000		# size to move, when setup is not
 					# loaded at 0x90000. We will move setup
@@ -527,11 +308,7 @@ cmd_line_ptr:	.long	0		# (Header version 0x0202 or later)
 					# can be located anywhere in
 					# low memory 0x10000 or higher.
 
-<<<<<<< HEAD
-ramdisk_max:	.long 0x7fffffff
-=======
 initrd_addr_max: .long 0x7fffffff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					# (Header version 0x0203 or later)
 					# The highest safe address for
 					# the contents of an initrd
@@ -548,9 +325,6 @@ relocatable_kernel:    .byte 1
 relocatable_kernel:    .byte 0
 #endif
 min_alignment:		.byte MIN_KERNEL_ALIGN_LG2	# minimum alignment
-<<<<<<< HEAD
-pad3:			.word 0
-=======
 
 xloadflags:
 #ifdef CONFIG_X86_64
@@ -597,7 +371,6 @@ xloadflags:
 #endif
 
 			.word XLF0 | XLF1 | XLF23 | XLF4 | XLF56
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 cmdline_size:   .long   COMMAND_LINE_SIZE-1     #length of the command line,
                                                 #added with boot protocol
@@ -617,16 +390,6 @@ setup_data:		.quad 0			# 64-bit physical pointer to
 
 pref_address:		.quad LOAD_PHYSICAL_ADDR	# preferred load addr
 
-<<<<<<< HEAD
-#define ZO_INIT_SIZE	(ZO__end - ZO_startup_32 + ZO_z_extract_offset)
-#define VO_INIT_SIZE	(VO__end - VO__text)
-#if ZO_INIT_SIZE > VO_INIT_SIZE
-#define INIT_SIZE ZO_INIT_SIZE
-#else
-#define INIT_SIZE VO_INIT_SIZE
-#endif
-init_size:		.long INIT_SIZE		# kernel initialization size
-=======
 #
 # Getting to provably safe in-place decompression is hard. Worst case
 # behaviours need to be analyzed. Here let's take the decompression of
@@ -768,22 +531,11 @@ init_size:		.long INIT_SIZE		# kernel initialization size
 init_size:		.long INIT_SIZE		# kernel initialization size
 handover_offset:	__handover_offset
 kernel_info_offset:	.long ZO_kernel_info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # End of setup header #####################################################
 
 	.section ".entrytext", "ax"
 start_of_setup:
-<<<<<<< HEAD
-#ifdef SAFE_RESET_DISK_CONTROLLER
-# Reset the disk controller.
-	movw	$0x0000, %ax		# Reset disk controller
-	movb	$0x80, %dl		# All disks
-	int	$0x13
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Force %es = %ds
 	movw	%ds, %ax
 	movw	%ax, %es
@@ -856,16 +608,3 @@ die:
 setup_corrupt:
 	.byte	7
 	.string	"No setup signature found...\n"
-<<<<<<< HEAD
-
-	.data
-dummy:	.long	0
-
-	.section .reloc
-reloc_start:
-	.long	dummy - reloc_start
-	.long	10
-	.word	0
-reloc_end:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

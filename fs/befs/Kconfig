@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-config BEFS_FS
-	tristate "BeOS file system (BeFS) support (read only) (EXPERIMENTAL)"
-	depends on BLOCK && EXPERIMENTAL
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config BEFS_FS
 	tristate "BeOS file system (BeFS) support (read only)"
 	depends on BLOCK
 	select BUFFER_HEAD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select NLS
 	help
 	  The BeOS File System (BeFS) is the native file system of Be, Inc's

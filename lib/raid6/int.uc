@@ -42,16 +42,6 @@ typedef u32 unative_t;
 
 
 /*
-<<<<<<< HEAD
- * IA-64 wants insane amounts of unrolling.  On other architectures that
- * is just a waste of space.
- */
-#if ($# <= 8) || defined(__ia64__)
-
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * These sub-operations are separate inlines since they can sometimes be
  * specially optimized using architecture-specific hacks.
  */
@@ -110,16 +100,6 @@ static void raid6_int$#_gen_syndrome(int disks, size_t bytes, void **ptrs)
 	}
 }
 
-<<<<<<< HEAD
-const struct raid6_calls raid6_intx$# = {
-	raid6_int$#_gen_syndrome,
-	NULL,		/* always valid */
-	"int" NSTRING "x$#",
-	0
-};
-
-#endif
-=======
 static void raid6_int$#_xor_syndrome(int disks, int start, int stop,
 				     size_t bytes, void **ptrs)
 {
@@ -165,4 +145,3 @@ const struct raid6_calls raid6_intx$# = {
 	"int" NSTRING "x$#",
 	0
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

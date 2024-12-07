@@ -1,40 +1,16 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Fuel gauge driver for Maxim 17042 / 8966 / 8997
  *  Note that Maxim 8966 and 8997 are mfd and this is its subdevice.
  *
  * Copyright (C) 2011 Samsung Electronics
  * MyungJoo Ham <myungjoo.ham@samsung.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MAX17042_BATTERY_H_
 #define __MAX17042_BATTERY_H_
 
 #define MAX17042_STATUS_BattAbsent	(1 << 3)
-<<<<<<< HEAD
-#define MAX17042_BATTERY_FULL	(100)
-#define MAX17042_DEFAULT_SNS_RESISTOR	(10000)
-=======
 #define MAX17042_BATTERY_FULL		(95)   /* Recommend. FullSOCThr value */
 #define MAX17042_DEFAULT_SNS_RESISTOR	(10000)
 #define MAX17042_DEFAULT_VMIN		(3000)
@@ -44,7 +20,6 @@
 
 /* Consider RepCap which is less then 10 units below FullCAP full */
 #define MAX17042_FULL_THRESHOLD		10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX17042_CHARACTERIZATION_DATA_SIZE 48
 
@@ -94,11 +69,7 @@ enum max17042_register {
 	MAX17042_RelaxCFG	= 0x2A,
 	MAX17042_MiscCFG	= 0x2B,
 	MAX17042_TGAIN		= 0x2C,
-<<<<<<< HEAD
-	MAx17042_TOFF		= 0x2D,
-=======
 	MAX17042_TOFF		= 0x2D,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MAX17042_CGAIN		= 0x2E,
 	MAX17042_COFF		= 0x2F,
 
@@ -107,11 +78,7 @@ enum max17042_register {
 	MAX17042_T_empty	= 0x34,
 
 	MAX17042_FullCAP0       = 0x35,
-<<<<<<< HEAD
-	MAX17042_LAvg_empty	= 0x36,
-=======
 	MAX17042_IAvg_empty	= 0x36,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MAX17042_FCTC		= 0x37,
 	MAX17042_RCOMP0		= 0x38,
 	MAX17042_TempCo		= 0x39,
@@ -138,17 +105,11 @@ enum max17042_register {
 
 	MAX17042_OCV		= 0xEE,
 
-<<<<<<< HEAD
-	MAX17042_OCVInternal	= 0xFB,
-=======
 	MAX17042_OCVInternal	= 0xFB,  /* MAX17055 VFOCV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MAX17042_VFSOC		= 0xFF,
 };
 
-<<<<<<< HEAD
-=======
 /* Registers specific to max17055 only */
 enum max17055_register {
 	MAX17055_QRes		= 0x0C,
@@ -216,7 +177,6 @@ enum max170xx_chip_type {
 	MAXIM_DEVICE_TYPE_NUM
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * used for setting a register to a desired value
  * addr : address for a register
@@ -245,10 +205,7 @@ struct max17042_config_data {
 	u16	shdntimer;	/* 0x03F */
 
 	/* App data */
-<<<<<<< HEAD
-=======
 	u16	full_soc_thresh;	/* 0x13 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16	design_cap;	/* 0x18 */
 	u16	ichgt_term;	/* 0x1E */
 
@@ -264,11 +221,6 @@ struct max17042_config_data {
 	u16	fullcap;	/* 0x10 */
 	u16	fullcapnom;	/* 0x23 */
 	u16	socempty;	/* 0x33 */
-<<<<<<< HEAD
-	u16	lavg_empty;	/* 0x36 */
-	u16	dqacc;		/* 0x45 */
-	u16	dpacc;		/* 0x46 */
-=======
 	u16	iavg_empty;	/* 0x36 */
 	u16	dqacc;		/* 0x45 */
 	u16	dpacc;		/* 0x46 */
@@ -276,7 +228,6 @@ struct max17042_config_data {
 	u16	qrtbl10;	/* 0x22 */
 	u16	qrtbl20;	/* 0x32 */
 	u16	qrtbl30;	/* 0x42 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cell technology from power_supply.h */
 	u16	cell_technology;
@@ -306,13 +257,10 @@ struct max17042_platform_data {
 	 * the datasheet although it can be changed by board designers.
 	 */
 	unsigned int r_sns;
-<<<<<<< HEAD
-=======
 	int         vmin;	/* in millivolts */
 	int         vmax;	/* in millivolts */
 	int         temp_min;	/* in tenths of degree Celsius */
 	int         temp_max;	/* in tenths of degree Celsius */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* __MAX17042_BATTERY_H_ */

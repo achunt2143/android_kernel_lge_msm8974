@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	arch/alpha/lib/callback_srm.S
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/console.h>
 
 .text
@@ -100,13 +94,10 @@ CALLBACK(reset_env, CCB_RESET_ENV, 4)
 CALLBACK(save_env, CCB_SAVE_ENV, 1)
 CALLBACK(pswitch, CCB_PSWITCH, 3)
 CALLBACK(bios_emul, CCB_BIOS_EMUL, 5)
-<<<<<<< HEAD
-=======
 
 EXPORT_SYMBOL(callback_getenv)
 EXPORT_SYMBOL(callback_setenv)
 EXPORT_SYMBOL(callback_save_env)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 .data
 __alpha_using_srm:		# For use by bootpheader

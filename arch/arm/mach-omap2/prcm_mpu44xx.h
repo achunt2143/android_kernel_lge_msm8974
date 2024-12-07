@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * OMAP44xx PRCM MPU instance offset macros
- *
- * Copyright (C) 2010 Texas Instruments, Inc.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * OMAP44xx PRCM MPU instance offset macros
  *
  * Copyright (C) 2010, 2012 Texas Instruments, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2010 Nokia Corporation
  *
  * Paul Walmsley (paul@pwsan.com)
@@ -22,13 +15,6 @@
  * authors above to ensure that the autogeneration scripts are kept
  * up-to-date with the file contents.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XXX This file needs to be updated to align on one of "OMAP4", "OMAP44XX",
  *     or "OMAP4430".
  */
@@ -36,11 +22,8 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_PRCM_MPU44XX_H
 #define __ARCH_ARM_MACH_OMAP2_PRCM_MPU44XX_H
 
-<<<<<<< HEAD
-=======
 #include "prcm_mpu_44xx_54xx.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP4430_PRCM_MPU_BASE			0x48243000
 
 #define OMAP44XX_PRCM_MPU_REGADDR(inst, reg)				\
@@ -108,15 +91,4 @@
 #define OMAP4_CM_CPU1_CLKSTCTRL_OFFSET		0x0018
 #define OMAP4430_CM_CPU1_CLKSTCTRL		OMAP44XX_PRCM_MPU_REGADDR(OMAP4430_PRCM_MPU_CPU1_INST, 0x0018)
 
-<<<<<<< HEAD
-/* Function prototypes */
-# ifndef __ASSEMBLER__
-extern u32 omap4_prcm_mpu_read_inst_reg(s16 inst, u16 idx);
-extern void omap4_prcm_mpu_write_inst_reg(u32 val, s16 inst, u16 idx);
-extern u32 omap4_prcm_mpu_rmw_inst_reg_bits(u32 mask, u32 bits, s16 inst,
-					    s16 idx);
-# endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

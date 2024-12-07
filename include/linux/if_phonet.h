@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: if_phonet.h
  *
@@ -12,18 +9,7 @@
 #ifndef LINUX_IF_PHONET_H
 #define LINUX_IF_PHONET_H
 
-<<<<<<< HEAD
-#define PHONET_MIN_MTU		6	/* pn_length = 0 */
-#define PHONET_MAX_MTU		65541	/* pn_length = 0xffff */
-#define PHONET_DEV_MTU		PHONET_MAX_MTU
-
-#ifdef __KERNEL__
-extern struct header_ops phonet_header_ops;
-#endif
-
-=======
 #include <uapi/linux/if_phonet.h>
 
 extern const struct header_ops phonet_header_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

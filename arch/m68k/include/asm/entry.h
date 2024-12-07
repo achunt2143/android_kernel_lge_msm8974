@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __M68K_ENTRY_H
 #define __M68K_ENTRY_H
 
@@ -39,17 +36,9 @@
 #if defined(MACH_ATARI_ONLY)
 	/* block out HSYNC = ipl 2 on the atari */
 #define ALLOWINT	(~0x500)
-<<<<<<< HEAD
-#define	MAX_NOINT_IPL	3
 #else
 	/* portable version */
 #define ALLOWINT	(~0x700)
-#define	MAX_NOINT_IPL	0
-=======
-#else
-	/* portable version */
-#define ALLOWINT	(~0x700)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* machine compilation types */
 
 #ifdef __ASSEMBLY__

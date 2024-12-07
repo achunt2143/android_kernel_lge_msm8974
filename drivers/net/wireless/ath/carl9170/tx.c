@@ -37,10 +37,6 @@
  *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -193,11 +189,7 @@ static void carl9170_tx_accounting_free(struct ar9170 *ar, struct sk_buff *skb)
 
 static int carl9170_alloc_dev_space(struct ar9170 *ar, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct _carl9170_tx_superframe *super = (void *) skb->data;
-=======
 	struct _carl9170_tx_superframe *super;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int chunks;
 	int cookie = -1;
 
@@ -254,13 +246,8 @@ static void carl9170_release_dev_space(struct ar9170 *ar, struct sk_buff *skb)
 	 *    of available memory blocks, so the number can
 	 *    never execeed the mem_blocks count.
 	 */
-<<<<<<< HEAD
-	if (unlikely(WARN_ON_ONCE(cookie == 0) ||
-	    WARN_ON_ONCE(cookie > ar->fw.mem_blocks)))
-=======
 	if (WARN_ON_ONCE(cookie == 0) ||
 	    WARN_ON_ONCE(cookie > ar->fw.mem_blocks))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	atomic_add(DIV_ROUND_UP(skb->len, ar->fw.mem_block_size),
@@ -288,21 +275,12 @@ static void carl9170_tx_release(struct kref *ref)
 	if (WARN_ON_ONCE(!ar))
 		return;
 
-<<<<<<< HEAD
-	BUILD_BUG_ON(
-	    offsetof(struct ieee80211_tx_info, status.ampdu_ack_len) != 23);
-
-	memset(&txinfo->status.ampdu_ack_len, 0,
-	       sizeof(struct ieee80211_tx_info) -
-	       offsetof(struct ieee80211_tx_info, status.ampdu_ack_len));
-=======
 	/*
 	 * This does not call ieee80211_tx_info_clear_status() because
 	 * carl9170_tx_fill_rateinfo() has filled the rate information
 	 * before we get to this point.
 	 */
 	memset_after(&txinfo->status, 0, rates);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&ar->tx_total_queued))
 		ar->tx_schedule = true;
@@ -408,12 +386,7 @@ static void carl9170_tx_status_process_ampdu(struct ar9170 *ar,
 	u8 tid;
 
 	if (!(txinfo->flags & IEEE80211_TX_CTL_AMPDU) ||
-<<<<<<< HEAD
-	    txinfo->flags & IEEE80211_TX_CTL_INJECTED ||
-	   (!(super->f.mac_control & cpu_to_le16(AR9170_TX_MAC_AGGR))))
-=======
 	    txinfo->flags & IEEE80211_TX_CTL_INJECTED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	rcu_read_lock();
@@ -421,11 +394,7 @@ static void carl9170_tx_status_process_ampdu(struct ar9170 *ar,
 	if (unlikely(!sta))
 		goto out_rcu;
 
-<<<<<<< HEAD
-	tid = get_tid_h(hdr);
-=======
 	tid = ieee80211_get_tid(hdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sta_info = (void *) sta->drv_priv;
 	tid_info = rcu_dereference(sta_info->agg[tid]);
@@ -465,8 +434,6 @@ out_rcu:
 	rcu_read_unlock();
 }
 
-<<<<<<< HEAD
-=======
 static void carl9170_tx_bar_status(struct ar9170 *ar, struct sk_buff *skb,
 	struct ieee80211_tx_info *tx_info)
 {
@@ -506,7 +473,6 @@ out:
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void carl9170_tx_status(struct ar9170 *ar, struct sk_buff *skb,
 			const bool success)
 {
@@ -516,11 +482,8 @@ void carl9170_tx_status(struct ar9170 *ar, struct sk_buff *skb,
 
 	txinfo = IEEE80211_SKB_CB(skb);
 
-<<<<<<< HEAD
-=======
 	carl9170_tx_bar_status(ar, skb, txinfo);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (success)
 		txinfo->flags |= IEEE80211_TX_STAT_ACK;
 	else
@@ -661,11 +624,7 @@ static void carl9170_tx_ampdu_timeout(struct ar9170 *ar)
 		    msecs_to_jiffies(CARL9170_QUEUE_TIMEOUT)))
 			goto unlock;
 
-<<<<<<< HEAD
-		sta = __carl9170_get_tx_sta(ar, skb);
-=======
 		sta = iter->sta;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (WARN_ON(!sta))
 			goto unlock;
 
@@ -704,11 +663,7 @@ static void __carl9170_tx_process_status(struct ar9170 *ar,
 	unsigned int r, t, q;
 	bool success = true;
 
-<<<<<<< HEAD
-	q = ar9170_qmap[info & CARL9170_TX_STATUS_QUEUE];
-=======
 	q = ar9170_qmap(info & CARL9170_TX_STATUS_QUEUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = carl9170_get_queued_skb(ar, cookie, &ar->tx_status[q]);
 	if (!skb) {
@@ -765,20 +720,12 @@ static void carl9170_tx_rate_tpc_chains(struct ar9170 *ar,
 			/* +1 dBm for HT40 */
 			*tpc += 2;
 
-<<<<<<< HEAD
-			if (info->band == IEEE80211_BAND_2GHZ)
-=======
 			if (info->band == NL80211_BAND_2GHZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				txpower = ar->power_2G_ht40;
 			else
 				txpower = ar->power_5G_ht40;
 		} else {
-<<<<<<< HEAD
-			if (info->band == IEEE80211_BAND_2GHZ)
-=======
 			if (info->band == NL80211_BAND_2GHZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				txpower = ar->power_2G_ht20;
 			else
 				txpower = ar->power_5G_ht20;
@@ -787,11 +734,7 @@ static void carl9170_tx_rate_tpc_chains(struct ar9170 *ar,
 		*phyrate = txrate->idx;
 		*tpc += txpower[idx & 7];
 	} else {
-<<<<<<< HEAD
-		if (info->band == IEEE80211_BAND_2GHZ) {
-=======
 		if (info->band == NL80211_BAND_2GHZ) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (idx < 4)
 				txpower = ar->power_2G_cck;
 			else
@@ -854,11 +797,7 @@ static __le32 carl9170_tx_physet(struct ar9170 *ar,
 		 * tmp |= cpu_to_le32(AR9170_TX_PHY_GREENFIELD);
 		 */
 	} else {
-<<<<<<< HEAD
-		if (info->band == IEEE80211_BAND_2GHZ) {
-=======
 		if (info->band == NL80211_BAND_2GHZ) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (txrate->idx <= AR9170_TX_PHY_RATE_CCK_11M)
 				tmp |= cpu_to_le32(AR9170_TX_PHY_MOD_CCK);
 			else
@@ -891,26 +830,17 @@ static bool carl9170_tx_rts_check(struct ar9170 *ar,
 	case CARL9170_ERP_AUTO:
 		if (ampdu)
 			break;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CARL9170_ERP_MAC80211:
 		if (!(rate->flags & IEEE80211_TX_RC_USE_RTS_CTS))
 			break;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CARL9170_ERP_RTS:
 		if (likely(!multi))
 			return true;
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		break;
@@ -927,10 +857,7 @@ static bool carl9170_tx_cts_check(struct ar9170 *ar,
 	case CARL9170_ERP_MAC80211:
 		if (!(rate->flags & IEEE80211_TX_RC_USE_CTS_PROTECT))
 			break;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CARL9170_ERP_CTS:
 		return true;
@@ -942,9 +869,6 @@ static bool carl9170_tx_cts_check(struct ar9170 *ar,
 	return false;
 }
 
-<<<<<<< HEAD
-static int carl9170_tx_prepare(struct ar9170 *ar, struct sk_buff *skb)
-=======
 static void carl9170_tx_get_rates(struct ar9170 *ar,
 				  struct ieee80211_vif *vif,
 				  struct ieee80211_sta *sta,
@@ -1035,27 +959,15 @@ static void carl9170_tx_apply_rateset(struct ar9170 *ar,
 static int carl9170_tx_prepare(struct ar9170 *ar,
 			       struct ieee80211_sta *sta,
 			       struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_hdr *hdr;
 	struct _carl9170_tx_superframe *txc;
 	struct carl9170_vif_info *cvif;
 	struct ieee80211_tx_info *info;
-<<<<<<< HEAD
-	struct ieee80211_tx_rate *txrate;
-	struct ieee80211_sta *sta;
-	struct carl9170_tx_info *arinfo;
-	unsigned int hw_queue;
-	int i;
-	__le16 mac_tmp;
-	u16 len;
-	bool ampdu, no_ack;
-=======
 	struct carl9170_tx_info *arinfo;
 	unsigned int hw_queue;
 	__le16 mac_tmp;
 	u16 len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUILD_BUG_ON(sizeof(*arinfo) > sizeof(info->rate_driver_data));
 	BUILD_BUG_ON(sizeof(struct _carl9170_tx_superdesc) !=
@@ -1064,20 +976,11 @@ static int carl9170_tx_prepare(struct ar9170 *ar,
 	BUILD_BUG_ON(sizeof(struct _ar9170_tx_hwdesc) !=
 		     AR9170_TX_HWDESC_LEN);
 
-<<<<<<< HEAD
-	BUILD_BUG_ON(IEEE80211_TX_MAX_RATES < CARL9170_TX_MAX_RATES);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUILD_BUG_ON(AR9170_MAX_VIRTUAL_MAC >
 		((CARL9170_TX_SUPER_MISC_VIF_ID >>
 		 CARL9170_TX_SUPER_MISC_VIF_ID_S) + 1));
 
-<<<<<<< HEAD
-	hw_queue = ar9170_qmap[carl9170_get_queue(ar, skb)];
-=======
 	hw_queue = ar9170_qmap(carl9170_get_queue(ar, skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdr = (void *)skb->data;
 	info = IEEE80211_SKB_CB(skb);
@@ -1092,13 +995,7 @@ static int carl9170_tx_prepare(struct ar9170 *ar,
 	else
 		cvif = NULL;
 
-<<<<<<< HEAD
-	sta = info->control.sta;
-
-	txc = (void *)skb_push(skb, sizeof(*txc));
-=======
 	txc = skb_push(skb, sizeof(*txc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(txc, 0, sizeof(*txc));
 
 	SET_VAL(CARL9170_TX_SUPER_MISC_QUEUE, txc->s.misc, hw_queue);
@@ -1120,12 +1017,7 @@ static int carl9170_tx_prepare(struct ar9170 *ar,
 	mac_tmp |= cpu_to_le16((hw_queue << AR9170_TX_MAC_QOS_S) &
 			       AR9170_TX_MAC_QOS);
 
-<<<<<<< HEAD
-	no_ack = !!(info->flags & IEEE80211_TX_CTL_NO_ACK);
-	if (unlikely(no_ack))
-=======
 	if (unlikely(info->flags & IEEE80211_TX_CTL_NO_ACK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_tmp |= cpu_to_le16(AR9170_TX_MAC_NO_ACK);
 
 	if (info->control.hw_key) {
@@ -1146,25 +1038,15 @@ static int carl9170_tx_prepare(struct ar9170 *ar,
 		}
 	}
 
-<<<<<<< HEAD
-	ampdu = !!(info->flags & IEEE80211_TX_CTL_AMPDU);
-	if (ampdu) {
-=======
 	if (info->flags & IEEE80211_TX_CTL_AMPDU) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int density, factor;
 
 		if (unlikely(!sta || !cvif))
 			goto err_out;
 
-<<<<<<< HEAD
-		factor = min_t(unsigned int, 1u, sta->ht_cap.ampdu_factor);
-		density = sta->ht_cap.ampdu_density;
-=======
 		factor = min_t(unsigned int, 1u,
 			       sta->deflink.ht_cap.ampdu_factor);
 		density = sta->deflink.ht_cap.ampdu_density;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (density) {
 			/*
@@ -1182,75 +1064,11 @@ static int carl9170_tx_prepare(struct ar9170 *ar,
 
 		SET_VAL(CARL9170_TX_SUPER_AMPDU_FACTOR,
 			txc->s.ampdu_settings, factor);
-<<<<<<< HEAD
-
-		for (i = 0; i < CARL9170_TX_MAX_RATES; i++) {
-			txrate = &info->control.rates[i];
-			if (txrate->idx >= 0) {
-				txc->s.ri[i] =
-					CARL9170_TX_SUPER_RI_AMPDU;
-
-				if (WARN_ON(!(txrate->flags &
-					      IEEE80211_TX_RC_MCS))) {
-					/*
-					 * Not sure if it's even possible
-					 * to aggregate non-ht rates with
-					 * this HW.
-					 */
-					goto err_out;
-				}
-				continue;
-			}
-
-			txrate->idx = 0;
-			txrate->count = ar->hw->max_rate_tries;
-		}
-
-		mac_tmp |= cpu_to_le16(AR9170_TX_MAC_AGGR);
-	}
-
-	/*
-	 * NOTE: For the first rate, the ERP & AMPDU flags are directly
-	 * taken from mac_control. For all fallback rate, the firmware
-	 * updates the mac_control flags from the rate info field.
-	 */
-	for (i = 1; i < CARL9170_TX_MAX_RATES; i++) {
-		txrate = &info->control.rates[i];
-		if (txrate->idx < 0)
-			break;
-
-		SET_VAL(CARL9170_TX_SUPER_RI_TRIES, txc->s.ri[i],
-			txrate->count);
-
-		if (carl9170_tx_rts_check(ar, txrate, ampdu, no_ack))
-			txc->s.ri[i] |= (AR9170_TX_MAC_PROT_RTS <<
-				CARL9170_TX_SUPER_RI_ERP_PROT_S);
-		else if (carl9170_tx_cts_check(ar, txrate))
-			txc->s.ri[i] |= (AR9170_TX_MAC_PROT_CTS <<
-				CARL9170_TX_SUPER_RI_ERP_PROT_S);
-
-		txc->s.rr[i - 1] = carl9170_tx_physet(ar, info, txrate);
-	}
-
-	txrate = &info->control.rates[0];
-	SET_VAL(CARL9170_TX_SUPER_RI_TRIES, txc->s.ri[0], txrate->count);
-
-	if (carl9170_tx_rts_check(ar, txrate, ampdu, no_ack))
-		mac_tmp |= cpu_to_le16(AR9170_TX_MAC_PROT_RTS);
-	else if (carl9170_tx_cts_check(ar, txrate))
-		mac_tmp |= cpu_to_le16(AR9170_TX_MAC_PROT_CTS);
-
-	txc->s.len = cpu_to_le16(skb->len);
-	txc->f.length = cpu_to_le16(len + FCS_LEN);
-	txc->f.mac_control = mac_tmp;
-	txc->f.phy_control = carl9170_tx_physet(ar, info, txrate);
-=======
 	}
 
 	txc->s.len = cpu_to_le16(skb->len);
 	txc->f.length = cpu_to_le16(len + FCS_LEN);
 	txc->f.mac_control = mac_tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	arinfo = (void *)info->rate_driver_data;
 	arinfo->timeout = jiffies;
@@ -1308,38 +1126,12 @@ static void carl9170_set_ampdu_params(struct ar9170 *ar, struct sk_buff *skb)
 	}
 }
 
-<<<<<<< HEAD
-static bool carl9170_tx_rate_check(struct ar9170 *ar, struct sk_buff *_dest,
-				   struct sk_buff *_src)
-{
-	struct _carl9170_tx_superframe *dest, *src;
-
-	dest = (void *) _dest->data;
-	src = (void *) _src->data;
-
-	/*
-	 * The mac80211 rate control algorithm expects that all MPDUs in
-	 * an AMPDU share the same tx vectors.
-	 * This is not really obvious right now, because the hardware
-	 * does the AMPDU setup according to its own rulebook.
-	 * Our nicely assembled, strictly monotonic increasing mpdu
-	 * chains will be broken up, mashed back together...
-	 */
-
-	return (dest->f.phy_control == src->f.phy_control);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void carl9170_tx_ampdu(struct ar9170 *ar)
 {
 	struct sk_buff_head agg;
 	struct carl9170_sta_tid *tid_info;
 	struct sk_buff *skb, *first;
-<<<<<<< HEAD
-=======
 	struct ieee80211_tx_info *tx_info_first;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i = 0, done_ampdus = 0;
 	u16 seq, queue, tmpssn;
 
@@ -1385,10 +1177,7 @@ retry:
 			goto processed;
 		}
 
-<<<<<<< HEAD
-=======
 		tx_info_first = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((skb = skb_peek(&tid_info->queue))) {
 			/* strict 0, 1, ..., n - 1, n frame sequence order */
 			if (unlikely(carl9170_get_seq(skb) != seq))
@@ -1399,10 +1188,6 @@ retry:
 			    (tid_info->max - 1)))
 				break;
 
-<<<<<<< HEAD
-			if (!carl9170_tx_rate_check(ar, skb, first))
-				break;
-=======
 			if (!tx_info_first) {
 				carl9170_tx_get_rates(ar, tid_info->vif,
 						      tid_info->sta, first);
@@ -1410,7 +1195,6 @@ retry:
 			}
 
 			carl9170_tx_apply_rateset(ar, tx_info_first, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			atomic_inc(&ar->tx_ampdu_upload);
 			tid_info->snx = seq = SEQ_NEXT(seq);
@@ -1425,12 +1209,7 @@ retry:
 		if (skb_queue_empty(&tid_info->queue) ||
 		    carl9170_get_seq(skb_peek(&tid_info->queue)) !=
 		    tid_info->snx) {
-<<<<<<< HEAD
-			/*
-			 * stop TID, if A-MPDU frames are still missing,
-=======
 			/* stop TID, if A-MPDU frames are still missing,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * or whenever the queue is empty.
 			 */
 
@@ -1502,11 +1281,7 @@ void carl9170_tx_drop(struct ar9170 *ar, struct sk_buff *skb)
 
 	super = (void *)skb->data;
 	SET_VAL(CARL9170_TX_SUPER_MISC_QUEUE, q,
-<<<<<<< HEAD
-		ar9170_qmap[carl9170_get_queue(ar, skb)]);
-=======
 		ar9170_qmap(carl9170_get_queue(ar, skb)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__carl9170_tx_process_status(ar, super->s.cookie, q);
 }
 
@@ -1543,8 +1318,6 @@ out_rcu:
 	return false;
 }
 
-<<<<<<< HEAD
-=======
 static void carl9170_bar_check(struct ar9170 *ar, struct sk_buff *skb)
 {
 	struct _carl9170_tx_superframe *super = (void *) skb->data;
@@ -1565,7 +1338,6 @@ static void carl9170_bar_check(struct ar9170 *ar, struct sk_buff *skb)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void carl9170_tx(struct ar9170 *ar)
 {
 	struct sk_buff *skb;
@@ -1588,11 +1360,8 @@ static void carl9170_tx(struct ar9170 *ar)
 			if (unlikely(carl9170_tx_ps_drop(ar, skb)))
 				continue;
 
-<<<<<<< HEAD
-=======
 			carl9170_bar_check(ar, skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_inc(&ar->tx_total_pending);
 
 			q = __carl9170_get_queue(ar, i);
@@ -1625,15 +1394,9 @@ static void carl9170_tx(struct ar9170 *ar)
 }
 
 static bool carl9170_tx_ampdu_queue(struct ar9170 *ar,
-<<<<<<< HEAD
-	struct ieee80211_sta *sta, struct sk_buff *skb)
-{
-	struct _carl9170_tx_superframe *super = (void *) skb->data;
-=======
 	struct ieee80211_sta *sta, struct sk_buff *skb,
 	struct ieee80211_tx_info *txinfo)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct carl9170_sta_info *sta_info;
 	struct carl9170_sta_tid *agg;
 	struct sk_buff *iter;
@@ -1700,23 +1463,12 @@ err_unlock:
 
 err_unlock_rcu:
 	rcu_read_unlock();
-<<<<<<< HEAD
-	super->f.mac_control &= ~cpu_to_le16(AR9170_TX_MAC_AGGR);
-=======
 	txinfo->flags &= ~IEEE80211_TX_CTL_AMPDU;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	carl9170_tx_status(ar, skb, false);
 	ar->tx_dropped++;
 	return false;
 }
 
-<<<<<<< HEAD
-void carl9170_op_tx(struct ieee80211_hw *hw, struct sk_buff *skb)
-{
-	struct ar9170 *ar = hw->priv;
-	struct ieee80211_tx_info *info;
-	struct ieee80211_sta *sta;
-=======
 void carl9170_op_tx(struct ieee80211_hw *hw,
 		    struct ieee80211_tx_control *control,
 		    struct sk_buff *skb)
@@ -1725,22 +1477,15 @@ void carl9170_op_tx(struct ieee80211_hw *hw,
 	struct ieee80211_tx_info *info;
 	struct ieee80211_sta *sta = control->sta;
 	struct ieee80211_vif *vif;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool run;
 
 	if (unlikely(!IS_STARTED(ar)))
 		goto err_free;
 
 	info = IEEE80211_SKB_CB(skb);
-<<<<<<< HEAD
-	sta = info->control.sta;
-
-	if (unlikely(carl9170_tx_prepare(ar, skb)))
-=======
 	vif = info->control.vif;
 
 	if (unlikely(carl9170_tx_prepare(ar, sta, skb)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 
 	carl9170_tx_accounting(ar, skb);
@@ -1755,9 +1500,6 @@ void carl9170_op_tx(struct ieee80211_hw *hw,
 	}
 
 	if (info->flags & IEEE80211_TX_CTL_AMPDU) {
-<<<<<<< HEAD
-		run = carl9170_tx_ampdu_queue(ar, sta, skb);
-=======
 		/* to static code analyzers and reviewers:
 		 * mac80211 guarantees that a valid "sta"
 		 * reference is present, if a frame is to
@@ -1766,18 +1508,14 @@ void carl9170_op_tx(struct ieee80211_hw *hw,
 		 * special case.
 		 */
 		run = carl9170_tx_ampdu_queue(ar, sta, skb, info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (run)
 			carl9170_tx_ampdu(ar);
 
 	} else {
 		unsigned int queue = skb_get_queue_mapping(skb);
 
-<<<<<<< HEAD
-=======
 		carl9170_tx_get_rates(ar, vif, sta, skb);
 		carl9170_tx_apply_rateset(ar, info, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_queue_tail(&ar->tx_pending[queue], skb);
 	}
 
@@ -1799,8 +1537,6 @@ void carl9170_tx_scheduler(struct ar9170 *ar)
 		carl9170_tx(ar);
 }
 
-<<<<<<< HEAD
-=======
 /* caller has to take rcu_read_lock */
 static struct carl9170_vif_info *carl9170_pick_beaconing_vif(struct ar9170 *ar)
 {
@@ -1877,41 +1613,10 @@ static bool carl9170_tx_beacon_physet(struct ar9170 *ar, struct sk_buff *skb,
 	return ht_rate;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int carl9170_update_beacon(struct ar9170 *ar, const bool submit)
 {
 	struct sk_buff *skb = NULL;
 	struct carl9170_vif_info *cvif;
-<<<<<<< HEAD
-	struct ieee80211_tx_info *txinfo;
-	struct ieee80211_tx_rate *rate;
-	__le32 *data, *old = NULL;
-	unsigned int plcp, power, chains;
-	u32 word, ht1, off, addr, len;
-	int i = 0, err = 0;
-
-	rcu_read_lock();
-	cvif = rcu_dereference(ar->beacon_iter);
-retry:
-	if (ar->vifs == 0 || !cvif)
-		goto out_unlock;
-
-	list_for_each_entry_continue_rcu(cvif, &ar->vif_list, list) {
-		if (cvif->active && cvif->enable_beacon)
-			goto found;
-	}
-
-	if (!ar->beacon_enabled || i++)
-		goto out_unlock;
-
-	goto retry;
-
-found:
-	rcu_assign_pointer(ar->beacon_iter, cvif);
-
-	skb = ieee80211_beacon_get_tim(ar->hw, carl9170_get_vif(cvif),
-		NULL, NULL);
-=======
 	__le32 *data, *old = NULL;
 	u32 word, ht1, plcp, off, addr, len;
 	int i = 0, err = 0;
@@ -1924,17 +1629,12 @@ found:
 
 	skb = ieee80211_beacon_get_tim(ar->hw, carl9170_get_vif(cvif),
 				       NULL, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!skb) {
 		err = -ENOMEM;
 		goto err_free;
 	}
 
-<<<<<<< HEAD
-	txinfo = IEEE80211_SKB_CB(skb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&ar->beacon_lock);
 	data = (__le32 *)skb->data;
 	if (cvif->beacon)
@@ -1964,45 +1664,6 @@ found:
 		goto err_unlock;
 	}
 
-<<<<<<< HEAD
-	ht1 = AR9170_MAC_BCN_HT1_TX_ANT0;
-	rate = &txinfo->control.rates[0];
-	carl9170_tx_rate_tpc_chains(ar, txinfo, rate, &plcp, &power, &chains);
-	if (!(txinfo->control.rates[0].flags & IEEE80211_TX_RC_MCS)) {
-		if (plcp <= AR9170_TX_PHY_RATE_CCK_11M)
-			plcp |= ((skb->len + FCS_LEN) << (3 + 16)) + 0x0400;
-		else
-			plcp |= ((skb->len + FCS_LEN) << 16) + 0x0010;
-	} else {
-		ht1 |= AR9170_MAC_BCN_HT1_HT_EN;
-		if (rate->flags & IEEE80211_TX_RC_SHORT_GI)
-			plcp |= AR9170_MAC_BCN_HT2_SGI;
-
-		if (rate->flags & IEEE80211_TX_RC_40_MHZ_WIDTH) {
-			ht1 |= AR9170_MAC_BCN_HT1_BWC_40M_SHARED;
-			plcp |= AR9170_MAC_BCN_HT2_BW40;
-		}
-		if (rate->flags & IEEE80211_TX_RC_DUP_DATA) {
-			ht1 |= AR9170_MAC_BCN_HT1_BWC_40M_DUP;
-			plcp |= AR9170_MAC_BCN_HT2_BW40;
-		}
-
-		SET_VAL(AR9170_MAC_BCN_HT2_LEN, plcp, skb->len + FCS_LEN);
-	}
-
-	SET_VAL(AR9170_MAC_BCN_HT1_PWR_CTRL, ht1, 7);
-	SET_VAL(AR9170_MAC_BCN_HT1_TPC, ht1, power);
-	SET_VAL(AR9170_MAC_BCN_HT1_CHAIN_MASK, ht1, chains);
-	if (chains == AR9170_TX_PHY_TXCHAIN_2)
-		ht1 |= AR9170_MAC_BCN_HT1_TX_ANT1;
-
-	carl9170_async_regwrite_begin(ar);
-	carl9170_async_regwrite(AR9170_MAC_REG_BCN_HT1, ht1);
-	if (!(txinfo->control.rates[0].flags & IEEE80211_TX_RC_MCS))
-		carl9170_async_regwrite(AR9170_MAC_REG_BCN_PLCP, plcp);
-	else
-		carl9170_async_regwrite(AR9170_MAC_REG_BCN_HT2, plcp);
-=======
 	ht_rate = carl9170_tx_beacon_physet(ar, skb, &ht1, &plcp);
 
 	carl9170_async_regwrite_begin(ar);
@@ -2011,7 +1672,6 @@ found:
 		carl9170_async_regwrite(AR9170_MAC_REG_BCN_HT2, plcp);
 	else
 		carl9170_async_regwrite(AR9170_MAC_REG_BCN_PLCP, plcp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < DIV_ROUND_UP(skb->len, 4); i++) {
 		/*

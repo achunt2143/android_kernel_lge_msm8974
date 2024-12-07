@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-if ARCH_NOMADIK
-
-menu "Nomadik boards"
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menuconfig ARCH_NOMADIK
 	bool "ST-Ericsson Nomadik"
@@ -22,27 +17,10 @@ menuconfig ARCH_NOMADIK
 	  Support for the Nomadik platform by ST-Ericsson
 
 if ARCH_NOMADIK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MACH_NOMADIK_8815NHK
 	bool "ST 8815 Nomadik Hardware Kit (evaluation board)"
 	select NOMADIK_8815
-<<<<<<< HEAD
-	select HAS_MTU
-
-endmenu
-
-config NOMADIK_8815
-	bool
-
-config I2C_BITBANG_8815NHK
-	tristate "Driver for bit-bang busses found on the 8815 NHK"
-	depends on I2C && MACH_NOMADIK_8815NHK
-	select I2C_ALGOBIT
-	default y
-
-endif
-=======
 	select I2C
 	select I2C_ALGOBIT
 	select I2C_NOMADIK
@@ -52,4 +30,3 @@ endif
 config NOMADIK_8815
 	depends on ARCH_NOMADIK
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

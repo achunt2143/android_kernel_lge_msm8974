@@ -21,30 +21,16 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/ptrace.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/swap.h>
-#include <linux/pagemap.h>
-=======
 #include <linux/memblock.h>
 #include <linux/swap.h>
 #include <linux/pagemap.h>
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/bootparam.h>
 #include <asm/mmu_context.h>
 #include <asm/tlb.h>
 #include <asm/tlbflush.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-
-//#define printd(x...) printk(x)
-#define printd(x...) do { } while(0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 
  * Note:
@@ -69,9 +55,6 @@
  *
  */
 
-<<<<<<< HEAD
-#if (DCACHE_WAY_SIZE > PAGE_SIZE) && XCHAL_DCACHE_IS_WRITEBACK
-=======
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
 static inline void kmap_invalidate_coherent(struct page *page,
 					    unsigned long vaddr)
@@ -131,7 +114,6 @@ void copy_user_highpage(struct page *dst, struct page *src,
 	preempt_enable();
 }
 EXPORT_SYMBOL(copy_user_highpage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Any time the kernel writes to a user page cache page, or it is about to
@@ -139,15 +121,9 @@ EXPORT_SYMBOL(copy_user_highpage);
  *
  */
 
-<<<<<<< HEAD
-void flush_dcache_page(struct page *page)
-{
-	struct address_space *mapping = page_mapping(page);
-=======
 void flush_dcache_folio(struct folio *folio)
 {
 	struct address_space *mapping = folio_flush_mapping(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we have a mapping but the page is not mapped to user-space
@@ -156,16 +132,6 @@ void flush_dcache_folio(struct folio *folio)
 	 */
 
 	if (mapping && !mapping_mapped(mapping)) {
-<<<<<<< HEAD
-		if (!test_bit(PG_arch_1, &page->flags))
-			set_bit(PG_arch_1, &page->flags);
-		return;
-
-	} else {
-
-		unsigned long phys = page_to_phys(page);
-		unsigned long temp = page->index << PAGE_SHIFT;
-=======
 		if (!test_bit(PG_arch_1, &folio->flags))
 			set_bit(PG_arch_1, &folio->flags);
 		return;
@@ -174,7 +140,6 @@ void flush_dcache_folio(struct folio *folio)
 		unsigned long phys = folio_pfn(folio) * PAGE_SIZE;
 		unsigned long temp = folio_pos(folio);
 		unsigned int i, nr = folio_nr_pages(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long alias = !(DCACHE_ALIAS_EQ(temp, phys));
 		unsigned long virt;
 
@@ -188,17 +153,6 @@ void flush_dcache_folio(struct folio *folio)
 		if (!alias && !mapping)
 			return;
 
-<<<<<<< HEAD
-		__flush_invalidate_dcache_page((long)page_address(page));
-
-		virt = TLBTEMP_BASE_1 + (temp & DCACHE_ALIAS_MASK);
-
-		if (alias)
-			__flush_invalidate_dcache_page_alias(virt, phys);
-
-		if (mapping)
-			__invalidate_icache_page_alias(virt, phys);
-=======
 		preempt_disable();
 		for (i = 0; i < nr; i++) {
 			virt = TLBTEMP_BASE_1 + (phys & DCACHE_ALIAS_MASK);
@@ -215,35 +169,23 @@ void flush_dcache_folio(struct folio *folio)
 			temp += PAGE_SIZE;
 		}
 		preempt_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* There shouldn't be an entry in the cache for this page anymore. */
 }
-<<<<<<< HEAD
-
-=======
 EXPORT_SYMBOL(flush_dcache_folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * For now, flush the whole cache. FIXME??
  */
 
-<<<<<<< HEAD
-void flush_cache_range(struct vm_area_struct* vma, 
-=======
 void local_flush_cache_range(struct vm_area_struct *vma,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       unsigned long start, unsigned long end)
 {
 	__flush_invalidate_dcache_all();
 	__invalidate_icache_all();
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(local_flush_cache_range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 
  * Remove any entry in the cache for this page. 
@@ -252,32 +194,14 @@ EXPORT_SYMBOL(local_flush_cache_range);
  * alias versions of the cache flush functions.
  */
 
-<<<<<<< HEAD
-void flush_cache_page(struct vm_area_struct* vma, unsigned long address,
-    		      unsigned long pfn)
-=======
 void local_flush_cache_page(struct vm_area_struct *vma, unsigned long address,
 		      unsigned long pfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Note that we have to use the 'alias' address to avoid multi-hit */
 
 	unsigned long phys = page_to_phys(pfn_to_page(pfn));
 	unsigned long virt = TLBTEMP_BASE_1 + (address & DCACHE_ALIAS_MASK);
 
-<<<<<<< HEAD
-	__flush_invalidate_dcache_page_alias(virt, phys);
-	__invalidate_icache_page_alias(virt, phys);
-}
-
-#endif
-
-void
-update_mmu_cache(struct vm_area_struct * vma, unsigned long addr, pte_t *ptep)
-{
-	unsigned long pfn = pte_pfn(*ptep);
-	struct page *page;
-=======
 	preempt_disable();
 	__flush_invalidate_dcache_page_alias(virt, phys);
 	__invalidate_icache_page_alias(virt, phys);
@@ -293,42 +217,10 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 	unsigned long pfn = pte_pfn(*ptep);
 	struct folio *folio;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pfn_valid(pfn))
 		return;
 
-<<<<<<< HEAD
-	page = pfn_to_page(pfn);
-
-	/* Invalidate old entry in TLBs */
-
-	invalidate_itlb_mapping(addr);
-	invalidate_dtlb_mapping(addr);
-
-#if (DCACHE_WAY_SIZE > PAGE_SIZE) && XCHAL_DCACHE_IS_WRITEBACK
-
-	if (!PageReserved(page) && test_bit(PG_arch_1, &page->flags)) {
-
-		unsigned long vaddr = TLBTEMP_BASE_1 + (addr & DCACHE_ALIAS_MASK);
-		unsigned long paddr = (unsigned long) page_address(page);
-		unsigned long phys = page_to_phys(page);
-
-		__flush_invalidate_dcache_page(paddr);
-
-		__flush_invalidate_dcache_page_alias(vaddr, phys);
-		__invalidate_icache_page_alias(vaddr, phys);
-
-		clear_bit(PG_arch_1, &page->flags);
-	}
-#else
-	if (!PageReserved(page) && !test_bit(PG_arch_1, &page->flags)
-	    && (vma->vm_flags & VM_EXEC) != 0) {
-	    	unsigned long paddr = (unsigned long) page_address(page);
-		__flush_dcache_page(paddr);
-		__invalidate_icache_page(paddr);
-		set_bit(PG_arch_1, &page->flags);
-=======
 	folio = page_folio(pfn_to_page(pfn));
 
 	/* Invalidate old entries in TLBs */
@@ -365,7 +257,6 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
 			kunmap_local(paddr);
 		}
 		set_bit(PG_arch_1, &folio->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 }
@@ -375,15 +266,9 @@ void update_mmu_cache_range(struct vm_fault *vmf, struct vm_area_struct *vma,
  * flush_dcache_page() on the page.
  */
 
-<<<<<<< HEAD
-#if (DCACHE_WAY_SIZE > PAGE_SIZE) && XCHAL_DCACHE_IS_WRITEBACK
-
-void copy_to_user_page(struct vm_area_struct *vma, struct page *page, 
-=======
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
 
 void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long vaddr, void *dst, const void *src,
 		unsigned long len)
 {
@@ -393,15 +278,10 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 	/* Flush and invalidate user page if aliased. */
 
 	if (alias) {
-<<<<<<< HEAD
-		unsigned long temp = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
-		__flush_invalidate_dcache_page_alias(temp, phys);
-=======
 		unsigned long t = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
 		preempt_disable();
 		__flush_invalidate_dcache_page_alias(t, phys);
 		preempt_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Copy data */
@@ -414,14 +294,6 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 	 */
 
 	if (alias) {
-<<<<<<< HEAD
-		unsigned long temp = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
-
-		__flush_invalidate_dcache_range((unsigned long) dst, len);
-		if ((vma->vm_flags & VM_EXEC) != 0) {
-			__invalidate_icache_page_alias(temp, phys);
-		}
-=======
 		unsigned long t = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
 
 		preempt_disable();
@@ -429,7 +301,6 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		if ((vma->vm_flags & VM_EXEC) != 0)
 			__invalidate_icache_page_alias(t, phys);
 		preempt_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if ((vma->vm_flags & VM_EXEC) != 0) {
 		__flush_dcache_range((unsigned long)dst,len);
@@ -450,15 +321,10 @@ extern void copy_from_user_page(struct vm_area_struct *vma, struct page *page,
 	 */
 
 	if (alias) {
-<<<<<<< HEAD
-		unsigned long temp = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
-		__flush_invalidate_dcache_page_alias(temp, phys);
-=======
 		unsigned long t = TLBTEMP_BASE_1 + (vaddr & DCACHE_ALIAS_MASK);
 		preempt_disable();
 		__flush_invalidate_dcache_page_alias(t, phys);
 		preempt_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memcpy(dst, src, len);

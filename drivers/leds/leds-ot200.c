@@ -8,10 +8,6 @@
  */
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/leds.h>
@@ -118,11 +114,7 @@ static void ot200_led_brightness_set(struct led_classdev *led_cdev,
 	spin_unlock_irqrestore(&value_lock, flags);
 }
 
-<<<<<<< HEAD
-static int __devinit ot200_led_probe(struct platform_device *pdev)
-=======
 static int ot200_led_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	int ret;
@@ -132,15 +124,9 @@ static int ot200_led_probe(struct platform_device *pdev)
 		leds[i].cdev.name = leds[i].name;
 		leds[i].cdev.brightness_set = ot200_led_brightness_set;
 
-<<<<<<< HEAD
-		ret = led_classdev_register(&pdev->dev, &leds[i].cdev);
-		if (ret < 0)
-			goto err;
-=======
 		ret = devm_led_classdev_register(&pdev->dev, &leds[i].cdev);
 		if (ret < 0)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	leds_front = 0;		/* turn off all front leds */
@@ -149,38 +135,12 @@ static int ot200_led_probe(struct platform_device *pdev)
 	outb(leds_back, 0x5a);
 
 	return 0;
-<<<<<<< HEAD
-
-err:
-	for (i = i - 1; i >= 0; i--)
-		led_classdev_unregister(&leds[i].cdev);
-
-	return ret;
-}
-
-static int __devexit ot200_led_remove(struct platform_device *pdev)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(leds); i++)
-		led_classdev_unregister(&leds[i].cdev);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ot200_led_driver = {
 	.probe		= ot200_led_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(ot200_led_remove),
 	.driver		= {
 		.name	= "leds-ot200",
-		.owner	= THIS_MODULE,
-=======
-	.driver		= {
-		.name	= "leds-ot200",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NV04_PFB_BOOT_0						0x00100000
 #	define NV04_PFB_BOOT_0_RAM_AMOUNT			0x00000003
@@ -76,11 +73,7 @@
 #    define NV_RAMHT_CONTEXT_VALID                         (1<<31)
 #    define NV_RAMHT_CONTEXT_CHANNEL_SHIFT                 24
 #    define NV_RAMHT_CONTEXT_ENGINE_SHIFT                  16
-<<<<<<< HEAD
-#        define NV_RAMHT_CONTEXT_ENGINE_SOFTWARE           0
-=======
 #        define NV_RAMHT_CONTEXT_ENGINE_SW           0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #        define NV_RAMHT_CONTEXT_ENGINE_GRAPHICS           1
 #    define NV_RAMHT_CONTEXT_INSTANCE_SHIFT                0
 #    define NV40_RAMHT_CONTEXT_CHANNEL_SHIFT               23

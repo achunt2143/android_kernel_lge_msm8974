@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/sound/oss/dmasound/dmasound_q40.c
  *
@@ -24,11 +21,7 @@
 #include <linux/soundcard.h>
 #include <linux/interrupt.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/q40ints.h>
 #include <asm/q40_master.h>
 

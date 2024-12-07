@@ -1,54 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2008 IBM Corporation
- * Author: Mimi Zohar <zohar@us.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2008 IBM Corporation
  * Author: Mimi Zohar <zohar@us.ibm.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_IMA_H
 #define _LINUX_IMA_H
 
-<<<<<<< HEAD
-#include <linux/fs.h>
-struct linux_binprm;
-
-#ifdef CONFIG_IMA
-extern int ima_bprm_check(struct linux_binprm *bprm);
-extern int ima_file_check(struct file *file, int mask);
-extern void ima_file_free(struct file *file);
-extern int ima_file_mmap(struct file *file, unsigned long prot);
-
-#else
-static inline int ima_bprm_check(struct linux_binprm *bprm)
-{
-	return 0;
-}
-
-static inline int ima_file_check(struct file *file, int mask)
-{
-	return 0;
-}
-
-static inline void ima_file_free(struct file *file)
-{
-	return;
-}
-
-static inline int ima_file_mmap(struct file *file, unsigned long prot)
-{
-	return 0;
-}
-#endif /* CONFIG_IMA_H */
-=======
 #include <linux/kernel_read_file.h>
 #include <linux/fs.h>
 #include <linux/security.h>
@@ -149,5 +107,4 @@ static inline bool ima_appraise_signature(enum kernel_read_file_id func)
 	return false;
 }
 #endif /* CONFIG_IMA_APPRAISE && CONFIG_INTEGRITY_TRUSTED_KEYRING */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_IMA_H */

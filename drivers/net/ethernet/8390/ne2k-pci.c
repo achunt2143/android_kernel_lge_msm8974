@@ -1,43 +1,3 @@
-<<<<<<< HEAD
-/* ne2k-pci.c: A NE2000 clone on PCI bus driver for Linux. */
-/*
-	A Linux device driver for PCI NE2000 clones.
-
-	Authors and other copyright holders:
-	1992-2000 by Donald Becker, NE2000 core and various modifications.
-	1995-1998 by Paul Gortmaker, core modifications and PCI support.
-	Copyright 1993 assigned to the United States Government as represented
-	by the Director, National Security Agency.
-
-	This software may be used and distributed according to the terms of
-	the GNU General Public License (GPL), incorporated herein by reference.
-	Drivers based on or derived from this code fall under the GPL and must
-	retain the authorship, copyright and license notice.  This file is not
-	a complete program and may only be used when the entire operating
-	system is licensed under the GPL.
-
-	The author may be reached as becker@scyld.com, or C/O
-	Scyld Computing Corporation
-	410 Severn Ave., Suite 210
-	Annapolis MD 21403
-
-	Issues remaining:
-	People are making PCI ne2000 clones! Oh the horror, the horror...
-	Limited full-duplex support.
-*/
-
-#define DRV_NAME	"ne2k-pci"
-#define DRV_VERSION	"1.03"
-#define DRV_RELDATE	"9/22/2003"
-
-
-/* The user-configurable values.
-   These may be modified when a driver module is loaded.*/
-
-static int debug = 1;			/* 1 normal messages, 0 quiet .. 7 verbose. */
-
-#define MAX_UNITS 8				/* More are supported, limit only on options */
-=======
 // SPDX-License-Identifier: GPL-1.0+
 /* A Linux device driver for PCI NE2000 clones.
  *
@@ -79,7 +39,6 @@ static int debug = 1;			/* 1 normal messages, 0 quiet .. 7 verbose. */
 /* More are supported, limit only on options */
 #define MAX_UNITS 8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Used to pass the full-duplex flag, etc. */
 static int full_duplex[MAX_UNITS];
 static int options[MAX_UNITS];
@@ -98,18 +57,6 @@ static int options[MAX_UNITS];
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 
-<<<<<<< HEAD
-#include <asm/io.h>
-#include <asm/irq.h>
-#include <asm/uaccess.h>
-
-#include "8390.h"
-
-/* These identify the driver base version and may not be removed. */
-static const char version[] __devinitconst =
-	KERN_INFO DRV_NAME ".c:v" DRV_VERSION " " DRV_RELDATE
-	" D. Becker/P. Gortmaker\n";
-=======
 #include <linux/io.h>
 #include <asm/irq.h>
 #include <linux/uaccess.h>
@@ -120,29 +67,12 @@ static int ne2k_msg_enable;
 
 static const int default_msg_level = (NETIF_MSG_DRV | NETIF_MSG_PROBE |
 				      NETIF_MSG_RX_ERR | NETIF_MSG_TX_ERR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(__powerpc__)
 #define inl_le(addr)  le32_to_cpu(inl(addr))
 #define inw_le(addr)  le16_to_cpu(inw(addr))
 #endif
 
-<<<<<<< HEAD
-#define PFX DRV_NAME ": "
-
-MODULE_AUTHOR("Donald Becker / Paul Gortmaker");
-MODULE_DESCRIPTION("PCI NE2000 clone driver");
-MODULE_LICENSE("GPL");
-
-module_param(debug, int, 0);
-module_param_array(options, int, NULL, 0);
-module_param_array(full_duplex, int, NULL, 0);
-MODULE_PARM_DESC(debug, "debug level (1-2)");
-MODULE_PARM_DESC(options, "Bit 5: full duplex");
-MODULE_PARM_DESC(full_duplex, "full duplex setting(s) (1)");
-
-/* Some defines that people can play with if so inclined. */
-=======
 MODULE_AUTHOR(DRV_AUTHOR);
 MODULE_DESCRIPTION(DRV_DESCRIPTION);
 MODULE_VERSION(DRV_VERSION);
@@ -157,7 +87,6 @@ MODULE_PARM_DESC(full_duplex, "full duplex setting(s) (1)");
 
 /* Some defines that people can play with if so inclined.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Use 32 bit data-movement operations instead of 16 bit. */
 #define USE_LONGIO
@@ -165,16 +94,6 @@ MODULE_PARM_DESC(full_duplex, "full duplex setting(s) (1)");
 /* Do we implement the read before write bugfix ? */
 /* #define NE_RW_BUGFIX */
 
-<<<<<<< HEAD
-/* Flags.  We rename an existing ei_status field to store flags! */
-/* Thus only the low 8 bits are usable for non-init-time flags. */
-#define ne2k_flags reg0
-enum {
-	ONLY_16BIT_IO=8, ONLY_32BIT_IO=4,	/* Chip can do only 16/32-bit xfers. */
-	FORCE_FDX=0x20,						/* User override. */
-	REALTEK_FDX=0x40, HOLTEK_FDX=0x80,
-	STOP_PG_0x60=0x100,
-=======
 /* Flags.  We rename an existing ei_status field to store flags!
  * Thus only the low 8 bits are usable for non-init-time flags.
  */
@@ -187,7 +106,6 @@ enum {
 	FORCE_FDX = 0x20,
 	REALTEK_FDX = 0x40, HOLTEK_FDX = 0x80,
 	STOP_PG_0x60 = 0x100,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ne2k_pci_chipsets {
@@ -208,13 +126,8 @@ enum ne2k_pci_chipsets {
 static struct {
 	char *name;
 	int flags;
-<<<<<<< HEAD
-} pci_clone_list[] __devinitdata = {
-	{"RealTek RTL-8029", REALTEK_FDX},
-=======
 } pci_clone_list[] = {
 	{"RealTek RTL-8029(AS)", REALTEK_FDX},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"Winbond 89C940", 0},
 	{"Compex RL2000", 0},
 	{"KTI ET32P2", 0},
@@ -229,11 +142,7 @@ static struct {
 };
 
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(ne2k_pci_tbl) = {
-=======
 static const struct pci_device_id ne2k_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10ec, 0x8029, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_RealTek_RTL_8029 },
 	{ 0x1050, 0x0940, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_Winbond_89C940 },
 	{ 0x11f6, 0x1401, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_Compex_RL2000 },
@@ -247,21 +156,14 @@ static const struct pci_device_id ne2k_pci_tbl[] = {
 	{ 0x8c4a, 0x1980, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_Winbond_89C940_8c4a },
 	{ 0, }
 };
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pci, ne2k_pci_tbl);
 
 
 /* ---- No user-serviceable parts below ---- */
 
 #define NE_BASE	 (dev->base_addr)
-<<<<<<< HEAD
-#define NE_CMD	 	0x00
-=======
 #define NE_CMD		0x00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NE_DATAPORT	0x10	/* NatSemi-defined port window offset. */
 #define NE_RESET	0x1f	/* Issue a read to reset, a write to clear. */
 #define NE_IO_EXTENT	0x20
@@ -274,14 +176,6 @@ static int ne2k_pci_open(struct net_device *dev);
 static int ne2k_pci_close(struct net_device *dev);
 
 static void ne2k_pci_reset_8390(struct net_device *dev);
-<<<<<<< HEAD
-static void ne2k_pci_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *hdr,
-			  int ring_page);
-static void ne2k_pci_block_input(struct net_device *dev, int count,
-			  struct sk_buff *skb, int ring_offset);
-static void ne2k_pci_block_output(struct net_device *dev, const int count,
-		const unsigned char *buf, const int start_page);
-=======
 static void ne2k_pci_get_8390_hdr(struct net_device *dev,
 				  struct e8390_pkt_hdr *hdr, int ring_page);
 static void ne2k_pci_block_input(struct net_device *dev, int count,
@@ -289,18 +183,13 @@ static void ne2k_pci_block_input(struct net_device *dev, int count,
 static void ne2k_pci_block_output(struct net_device *dev, const int count,
 				  const unsigned char *buf,
 				  const int start_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ethtool_ops ne2k_pci_ethtool_ops;
 
 
 
 /* There is no room in the standard 8390 structure for extra info we need,
-<<<<<<< HEAD
-   so we build a meta/outer-wrapper structure.. */
-=======
  * so we build a meta/outer-wrapper structure..
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ne2k_pci_card {
 	struct net_device *dev;
 	struct pci_dev *pci_dev;
@@ -308,20 +197,6 @@ struct ne2k_pci_card {
 
 
 
-<<<<<<< HEAD
-/*
-  NEx000-clone boards have a Station Address (SA) PROM (SAPROM) in the packet
-  buffer memory space.  By-the-spec NE2000 clones have 0x57,0x57 in bytes
-  0x0e,0x0f of the SAPROM, while other supposed NE2000 clones must be
-  detected by their SA prefix.
-
-  Reading the SAPROM from a word-wide card with the 8390 set in byte-wide
-  mode results in doubled values, which can be detected and compensated for.
-
-  The probe is also responsible for initializing the card and filling
-  in the 'dev' and 'ei_status' structures.
-*/
-=======
 /* NEx000-clone boards have a Station Address (SA) PROM (SAPROM) in the packet
  * buffer memory space.  By-the-spec NE2000 clones have 0x57,0x57 in bytes
  * 0x0e,0x0f of the SAPROM, while other supposed NE2000 clones must be
@@ -333,7 +208,6 @@ struct ne2k_pci_card {
  * The probe is also responsible for initializing the card and filling
  * in the 'dev' and 'ei_status' structures.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct net_device_ops ne2k_netdev_ops = {
 	.ndo_open		= ne2k_pci_open,
@@ -343,24 +217,14 @@ static const struct net_device_ops ne2k_netdev_ops = {
 	.ndo_get_stats		= ei_get_stats,
 	.ndo_set_rx_mode	= ei_set_multicast_list,
 	.ndo_validate_addr	= eth_validate_addr,
-<<<<<<< HEAD
-	.ndo_set_mac_address 	= eth_mac_addr,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_set_mac_address	= eth_mac_addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller = ei_poll,
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit ne2k_pci_init_one (struct pci_dev *pdev,
-				     const struct pci_device_id *ent)
-=======
 static int ne2k_pci_init_one(struct pci_dev *pdev,
 			     const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	int i;
@@ -370,34 +234,6 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 	static unsigned int fnd_cnt;
 	long ioaddr;
 	int flags = pci_clone_list[chip_idx].flags;
-<<<<<<< HEAD
-
-/* when built into the kernel, we only print version if device is found */
-#ifndef MODULE
-	static int printed_version;
-	if (!printed_version++)
-		printk(version);
-#endif
-
-	fnd_cnt++;
-
-	i = pci_enable_device (pdev);
-	if (i)
-		return i;
-
-	ioaddr = pci_resource_start (pdev, 0);
-	irq = pdev->irq;
-
-	if (!ioaddr || ((pci_resource_flags (pdev, 0) & IORESOURCE_IO) == 0)) {
-		dev_err(&pdev->dev, "no I/O resource at PCI BAR #0\n");
-		return -ENODEV;
-	}
-
-	if (request_region (ioaddr, NE_IO_EXTENT, DRV_NAME) == NULL) {
-		dev_err(&pdev->dev, "I/O resource 0x%x @ 0x%lx busy\n",
-			NE_IO_EXTENT, ioaddr);
-		return -EBUSY;
-=======
 	struct ei_device *ei_local;
 
 	fnd_cnt++;
@@ -418,7 +254,6 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 		dev_err(&pdev->dev, "I/O resource 0x%x @ 0x%lx busy\n",
 			NE_IO_EXTENT, ioaddr);
 		goto err_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	reg0 = inb(ioaddr);
@@ -428,16 +263,6 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 	/* Do a preliminary verification that we have a 8390. */
 	{
 		int regd;
-<<<<<<< HEAD
-		outb(E8390_NODMA+E8390_PAGE1+E8390_STOP, ioaddr + E8390_CMD);
-		regd = inb(ioaddr + 0x0d);
-		outb(0xff, ioaddr + 0x0d);
-		outb(E8390_NODMA+E8390_PAGE0, ioaddr + E8390_CMD);
-		inb(ioaddr + EN0_COUNTER0); /* Clear the counter by reading. */
-		if (inb(ioaddr + EN0_COUNTER0) != 0) {
-			outb(reg0, ioaddr);
-			outb(regd, ioaddr + 0x0d);	/* Restore the old values. */
-=======
 
 		outb(E8390_NODMA + E8390_PAGE1 + E8390_STOP, ioaddr + E8390_CMD);
 		regd = inb(ioaddr + 0x0d);
@@ -449,7 +274,6 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 			outb(reg0, ioaddr);
 			/*  Restore the old values. */
 			outb(regd, ioaddr + 0x0d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_out_free_res;
 		}
 	}
@@ -461,11 +285,8 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 		goto err_out_free_res;
 	}
 	dev->netdev_ops = &ne2k_netdev_ops;
-<<<<<<< HEAD
-=======
 	ei_local = netdev_priv(dev);
 	ei_local->msg_enable = netif_msg_init(ne2k_msg_enable, default_msg_level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
@@ -475,15 +296,9 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 
 		outb(inb(ioaddr + NE_RESET), ioaddr + NE_RESET);
 
-<<<<<<< HEAD
-		/* This looks like a horrible timing loop, but it should never take
-		   more than a few cycles.
-		*/
-=======
 		/* This looks like a horrible timing loop, but it should never
 		 * take more than a few cycles.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((inb(ioaddr + EN0_ISR) & ENISR_RESET) == 0)
 			/* Limit wait: '2' avoids jiffy roll-over. */
 			if (jiffies - reset_start_time > 2) {
@@ -491,29 +306,6 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 					"Card failure (no reset ack).\n");
 				goto err_out_free_netdev;
 			}
-<<<<<<< HEAD
-
-		outb(0xff, ioaddr + EN0_ISR);		/* Ack all intr. */
-	}
-
-	/* Read the 16 bytes of station address PROM.
-	   We must first initialize registers, similar to NS8390_init(eifdev, 0).
-	   We can't reliably read the SAPROM address without this.
-	   (I learned the hard way!). */
-	{
-		struct {unsigned char value, offset; } program_seq[] = {
-			{E8390_NODMA+E8390_PAGE0+E8390_STOP, E8390_CMD}, /* Select page 0*/
-			{0x49,	EN0_DCFG},	/* Set word-wide access. */
-			{0x00,	EN0_RCNTLO},	/* Clear the count regs. */
-			{0x00,	EN0_RCNTHI},
-			{0x00,	EN0_IMR},	/* Mask completion irq. */
-			{0xFF,	EN0_ISR},
-			{E8390_RXOFF, EN0_RXCR},	/* 0x20  Set to monitor */
-			{E8390_TXOFF, EN0_TXCR},	/* 0x02  and loopback mode. */
-			{32,	EN0_RCNTLO},
-			{0x00,	EN0_RCNTHI},
-			{0x00,	EN0_RSARLO},	/* DMA starting at 0x0000. */
-=======
 		/* Ack all intr. */
 		outb(0xff, ioaddr + EN0_ISR);
 	}
@@ -544,36 +336,23 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 			{0x00,	EN0_RCNTHI},
 			/* DMA starting at 0x0000 */
 			{0x00,	EN0_RSARLO},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			{0x00,	EN0_RSARHI},
 			{E8390_RREAD+E8390_START, E8390_CMD},
 		};
 		for (i = 0; i < ARRAY_SIZE(program_seq); i++)
-<<<<<<< HEAD
-			outb(program_seq[i].value, ioaddr + program_seq[i].offset);
-=======
 			outb(program_seq[i].value,
 			     ioaddr + program_seq[i].offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	}
 
 	/* Note: all PCI cards have at least 16 bit access, so we don't have
-<<<<<<< HEAD
-	   to check for 8 bit cards.  Most cards permit 32 bit access. */
-=======
 	 * to check for 8 bit cards.  Most cards permit 32 bit access.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (flags & ONLY_32BIT_IO) {
 		for (i = 0; i < 4 ; i++)
 			((u32 *)SA_prom)[i] = le32_to_cpu(inl(ioaddr + NE_DATAPORT));
 	} else
-<<<<<<< HEAD
-		for(i = 0; i < 32 /*sizeof(SA_prom)*/; i++)
-=======
 		for (i = 0; i < 32 /* sizeof(SA_prom )*/; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SA_prom[i] = inb(ioaddr + NE_DATAPORT);
 
 	/* We always set the 8390 registers for word mode. */
@@ -593,11 +372,7 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 	ei_status.word16 = 1;
 	ei_status.ne2k_flags = flags;
 	if (fnd_cnt < MAX_UNITS) {
-<<<<<<< HEAD
-		if (full_duplex[fnd_cnt] > 0  ||  (options[fnd_cnt] & FORCE_FDX))
-=======
 		if (full_duplex[fnd_cnt] > 0 || (options[fnd_cnt] & FORCE_FDX))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ei_status.ne2k_flags |= FORCE_FDX;
 	}
 
@@ -616,42 +391,19 @@ static int ne2k_pci_init_one(struct pci_dev *pdev,
 	dev->ethtool_ops = &ne2k_pci_ethtool_ops;
 	NS8390_init(dev, 0);
 
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, SA_prom, dev->addr_len);
-	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
-=======
 	eth_hw_addr_set(dev, SA_prom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i = register_netdev(dev);
 	if (i)
 		goto err_out_free_netdev;
 
-<<<<<<< HEAD
-	printk("%s: %s found at %#lx, IRQ %d, %pM.\n",
-	       dev->name, pci_clone_list[chip_idx].name, ioaddr, dev->irq,
-	       dev->dev_addr);
-=======
 	netdev_info(dev, "%s found at %#lx, IRQ %d, %pM.\n",
 		    pci_clone_list[chip_idx].name, ioaddr, dev->irq,
 		    dev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_out_free_netdev:
-<<<<<<< HEAD
-	free_netdev (dev);
-err_out_free_res:
-	release_region (ioaddr, NE_IO_EXTENT);
-	pci_set_drvdata (pdev, NULL);
-	return -ENODEV;
-
-}
-
-/*
- * Magic incantation sequence for full duplex on the supported cards.
-=======
 	free_netdev(dev);
 err_out_free_res:
 	release_region(ioaddr, NE_IO_EXTENT);
@@ -661,7 +413,6 @@ err_out:
 }
 
 /* Magic incantation sequence for full duplex on the supported cards.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int set_realtek_fdx(struct net_device *dev)
 {
@@ -695,13 +446,9 @@ static int ne2k_pci_set_fdx(struct net_device *dev)
 
 static int ne2k_pci_open(struct net_device *dev)
 {
-<<<<<<< HEAD
-	int ret = request_irq(dev->irq, ei_interrupt, IRQF_SHARED, dev->name, dev);
-=======
 	int ret = request_irq(dev->irq, ei_interrupt, IRQF_SHARED,
 			      dev->name, dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -720,15 +467,6 @@ static int ne2k_pci_close(struct net_device *dev)
 }
 
 /* Hard reset the card.  This used to pause for the same period that a
-<<<<<<< HEAD
-   8390 reset command required, but that shouldn't be necessary. */
-static void ne2k_pci_reset_8390(struct net_device *dev)
-{
-	unsigned long reset_start_time = jiffies;
-
-	if (debug > 1) printk("%s: Resetting the 8390 t=%ld...",
-						  dev->name, jiffies);
-=======
  * 8390 reset command required, but that shouldn't be necessary.
  */
 static void ne2k_pci_reset_8390(struct net_device *dev)
@@ -738,7 +476,6 @@ static void ne2k_pci_reset_8390(struct net_device *dev)
 
 	netif_dbg(ei_local, hw, dev, "resetting the 8390 t=%ld...\n",
 		  jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	outb(inb(NE_BASE + NE_RESET), NE_BASE + NE_RESET);
 
@@ -748,19 +485,6 @@ static void ne2k_pci_reset_8390(struct net_device *dev)
 	/* This check _should_not_ be necessary, omit eventually. */
 	while ((inb(NE_BASE+EN0_ISR) & ENISR_RESET) == 0)
 		if (jiffies - reset_start_time > 2) {
-<<<<<<< HEAD
-			printk("%s: ne2k_pci_reset_8390() did not complete.\n", dev->name);
-			break;
-		}
-	outb(ENISR_RESET, NE_BASE + EN0_ISR);	/* Ack intr. */
-}
-
-/* Grab the 8390 specific header. Similar to the block_input routine, but
-   we don't need to be concerned with ring wrap as the header will be at
-   the start of a page, so we optimize accordingly. */
-
-static void ne2k_pci_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *hdr, int ring_page)
-=======
 			netdev_err(dev, "%s did not complete.\n", __func__);
 			break;
 		}
@@ -775,33 +499,20 @@ static void ne2k_pci_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *
 
 static void ne2k_pci_get_8390_hdr(struct net_device *dev,
 				  struct e8390_pkt_hdr *hdr, int ring_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	long nic_base = dev->base_addr;
 
-<<<<<<< HEAD
-	/* This *shouldn't* happen. If it does, it's the last thing you'll see */
-	if (ei_status.dmaing) {
-		printk("%s: DMAing conflict in ne2k_pci_get_8390_hdr "
-			   "[DMAstat:%d][irqlock:%d].\n",
-			   dev->name, ei_status.dmaing, ei_status.irqlock);
-=======
 	/* This *shouldn't* happen. If it does, it's the last thing you'll see
 	 */
 	if (ei_status.dmaing) {
 		netdev_err(dev, "DMAing conflict in %s [DMAstat:%d][irqlock:%d].\n",
 			   __func__, ei_status.dmaing, ei_status.irqlock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	ei_status.dmaing |= 0x01;
-<<<<<<< HEAD
-	outb(E8390_NODMA+E8390_PAGE0+E8390_START, nic_base+ NE_CMD);
-=======
 	outb(E8390_NODMA + E8390_PAGE0 + E8390_START, nic_base + NE_CMD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(sizeof(struct e8390_pkt_hdr), nic_base + EN0_RCNTLO);
 	outb(0, nic_base + EN0_RCNTHI);
 	outb(0, nic_base + EN0_RSARLO);		/* On page boundary */
@@ -809,15 +520,6 @@ static void ne2k_pci_get_8390_hdr(struct net_device *dev,
 	outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
 
 	if (ei_status.ne2k_flags & ONLY_16BIT_IO) {
-<<<<<<< HEAD
-		insw(NE_BASE + NE_DATAPORT, hdr, sizeof(struct e8390_pkt_hdr)>>1);
-	} else {
-		*(u32*)hdr = le32_to_cpu(inl(NE_BASE + NE_DATAPORT));
-		le16_to_cpus(&hdr->count);
-	}
-
-	outb(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
-=======
 		insw(NE_BASE + NE_DATAPORT, hdr,
 		     sizeof(struct e8390_pkt_hdr) >> 1);
 	} else {
@@ -826,21 +528,14 @@ static void ne2k_pci_get_8390_hdr(struct net_device *dev,
 	}
 	/* Ack intr. */
 	outb(ENISR_RDC, nic_base + EN0_ISR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei_status.dmaing &= ~0x01;
 }
 
 /* Block input and output, similar to the Crynwr packet driver.  If you
-<<<<<<< HEAD
-   are porting to a new ethercard, look at the packet driver source for hints.
-   The NEx000 doesn't share the on-board packet memory -- you have to put
-   the packet out through the "remote DMA" dataport using outb. */
-=======
  *are porting to a new ethercard, look at the packet driver source for hints.
  *The NEx000 doesn't share the on-board packet memory -- you have to put
  *the packet out through the "remote DMA" dataport using outb.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ne2k_pci_block_input(struct net_device *dev, int count,
 				 struct sk_buff *skb, int ring_offset)
@@ -848,45 +543,22 @@ static void ne2k_pci_block_input(struct net_device *dev, int count,
 	long nic_base = dev->base_addr;
 	char *buf = skb->data;
 
-<<<<<<< HEAD
-	/* This *shouldn't* happen. If it does, it's the last thing you'll see */
-	if (ei_status.dmaing) {
-		printk("%s: DMAing conflict in ne2k_pci_block_input "
-			   "[DMAstat:%d][irqlock:%d].\n",
-			   dev->name, ei_status.dmaing, ei_status.irqlock);
-=======
 	/* This *shouldn't* happen.
 	 * If it does, it's the last thing you'll see.
 	 */
 	if (ei_status.dmaing) {
 		netdev_err(dev, "DMAing conflict in %s [DMAstat:%d][irqlock:%d]\n",
 			   __func__, ei_status.dmaing, ei_status.irqlock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ei_status.dmaing |= 0x01;
 	if (ei_status.ne2k_flags & ONLY_32BIT_IO)
 		count = (count + 3) & 0xFFFC;
-<<<<<<< HEAD
-	outb(E8390_NODMA+E8390_PAGE0+E8390_START, nic_base+ NE_CMD);
-=======
 	outb(E8390_NODMA + E8390_PAGE0 + E8390_START, nic_base + NE_CMD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(count & 0xff, nic_base + EN0_RCNTLO);
 	outb(count >> 8, nic_base + EN0_RCNTHI);
 	outb(ring_offset & 0xff, nic_base + EN0_RSARLO);
 	outb(ring_offset >> 8, nic_base + EN0_RSARHI);
-<<<<<<< HEAD
-	outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
-
-	if (ei_status.ne2k_flags & ONLY_16BIT_IO) {
-		insw(NE_BASE + NE_DATAPORT,buf,count>>1);
-		if (count & 0x01) {
-			buf[count-1] = inb(NE_BASE + NE_DATAPORT);
-		}
-	} else {
-		insl(NE_BASE + NE_DATAPORT, buf, count>>2);
-=======
 	outb(E8390_RREAD + E8390_START, nic_base + NE_CMD);
 
 	if (ei_status.ne2k_flags & ONLY_16BIT_IO) {
@@ -895,7 +567,6 @@ static void ne2k_pci_block_input(struct net_device *dev, int count,
 			buf[count-1] = inb(NE_BASE + NE_DATAPORT);
 	} else {
 		insl(NE_BASE + NE_DATAPORT, buf, count >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (count & 3) {
 			buf += count & ~3;
 			if (count & 2) {
@@ -908,73 +579,44 @@ static void ne2k_pci_block_input(struct net_device *dev, int count,
 				*buf = inb(NE_BASE + NE_DATAPORT);
 		}
 	}
-<<<<<<< HEAD
-
-	outb(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
-=======
 	/* Ack intr. */
 	outb(ENISR_RDC, nic_base + EN0_ISR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei_status.dmaing &= ~0x01;
 }
 
 static void ne2k_pci_block_output(struct net_device *dev, int count,
-<<<<<<< HEAD
-				  const unsigned char *buf, const int start_page)
-=======
 		const unsigned char *buf, const int start_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long nic_base = NE_BASE;
 	unsigned long dma_start;
 
 	/* On little-endian it's always safe to round the count up for
-<<<<<<< HEAD
-	   word writes. */
-=======
 	 * word writes.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ei_status.ne2k_flags & ONLY_32BIT_IO)
 		count = (count + 3) & 0xFFFC;
 	else
 		if (count & 0x01)
 			count++;
 
-<<<<<<< HEAD
-	/* This *shouldn't* happen. If it does, it's the last thing you'll see */
-	if (ei_status.dmaing) {
-		printk("%s: DMAing conflict in ne2k_pci_block_output."
-			   "[DMAstat:%d][irqlock:%d]\n",
-			   dev->name, ei_status.dmaing, ei_status.irqlock);
-=======
 	/* This *shouldn't* happen.
 	 * If it does, it's the last thing you'll see.
 	 */
 	if (ei_status.dmaing) {
 		netdev_err(dev, "DMAing conflict in %s [DMAstat:%d][irqlock:%d]\n",
 			   __func__, ei_status.dmaing, ei_status.irqlock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	ei_status.dmaing |= 0x01;
 	/* We should already be in page 0, but to be safe... */
 	outb(E8390_PAGE0+E8390_START+E8390_NODMA, nic_base + NE_CMD);
 
-<<<<<<< HEAD
-#ifdef NE8390_RW_BUGFIX
-	/* Handle the read-before-write bug the same way as the
-	   Crynwr packet driver -- the NatSemi method doesn't work.
-	   Actually this doesn't always work either, but if you have
-	   problems with your NEx000 this is better than nothing! */
-=======
 #ifdef NE_RW_BUGFIX
 	/* Handle the read-before-write bug the same way as the
 	 * Crynwr packet driver -- the NatSemi method doesn't work.
 	 * Actually this doesn't always work either, but if you have
 	 * problems with your NEx000 this is better than nothing!
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(0x42, nic_base + EN0_RCNTLO);
 	outb(0x00, nic_base + EN0_RCNTHI);
 	outb(0x42, nic_base + EN0_RSARLO);
@@ -983,26 +625,16 @@ static void ne2k_pci_block_output(struct net_device *dev, int count,
 #endif
 	outb(ENISR_RDC, nic_base + EN0_ISR);
 
-<<<<<<< HEAD
-   /* Now the normal output. */
-=======
 	/* Now the normal output. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(count & 0xff, nic_base + EN0_RCNTLO);
 	outb(count >> 8,   nic_base + EN0_RCNTHI);
 	outb(0x00, nic_base + EN0_RSARLO);
 	outb(start_page, nic_base + EN0_RSARHI);
 	outb(E8390_RWRITE+E8390_START, nic_base + NE_CMD);
 	if (ei_status.ne2k_flags & ONLY_16BIT_IO) {
-<<<<<<< HEAD
-		outsw(NE_BASE + NE_DATAPORT, buf, count>>1);
-	} else {
-		outsl(NE_BASE + NE_DATAPORT, buf, count>>2);
-=======
 		outsw(NE_BASE + NE_DATAPORT, buf, count >> 1);
 	} else {
 		outsl(NE_BASE + NE_DATAPORT, buf, count >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (count & 3) {
 			buf += count & ~3;
 			if (count & 2) {
@@ -1017,16 +649,6 @@ static void ne2k_pci_block_output(struct net_device *dev, int count,
 	dma_start = jiffies;
 
 	while ((inb(nic_base + EN0_ISR) & ENISR_RDC) == 0)
-<<<<<<< HEAD
-		if (jiffies - dma_start > 2) {			/* Avoid clock roll-over. */
-			printk(KERN_WARNING "%s: timeout waiting for Tx RDC.\n", dev->name);
-			ne2k_pci_reset_8390(dev);
-			NS8390_init(dev,1);
-			break;
-		}
-
-	outb(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
-=======
 		/* Avoid clock roll-over. */
 		if (jiffies - dma_start > 2) {
 			netdev_warn(dev, "timeout waiting for Tx RDC.\n");
@@ -1036,7 +658,6 @@ static void ne2k_pci_block_output(struct net_device *dev, int count,
 		}
 	/* Ack intr. */
 	outb(ENISR_RDC, nic_base + EN0_ISR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei_status.dmaing &= ~0x01;
 }
 
@@ -1046,11 +667,6 @@ static void ne2k_pci_get_drvinfo(struct net_device *dev,
 	struct ei_device *ei = netdev_priv(dev);
 	struct pci_dev *pci_dev = (struct pci_dev *) ei->priv;
 
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, pci_name(pci_dev), sizeof(info->bus_info));
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
 	strscpy(info->bus_info, pci_name(pci_dev), sizeof(info->bus_info));
@@ -1068,22 +684,15 @@ static void ne2k_pci_set_msglevel(struct net_device *dev, u32 v)
 	struct ei_device *ei_local = netdev_priv(dev);
 
 	ei_local->msg_enable = v;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops ne2k_pci_ethtool_ops = {
 	.get_drvinfo		= ne2k_pci_get_drvinfo,
-<<<<<<< HEAD
-};
-
-static void __devexit ne2k_pci_remove_one (struct pci_dev *pdev)
-=======
 	.get_msglevel		= ne2k_pci_get_msglevel,
 	.set_msglevel		= ne2k_pci_set_msglevel,
 };
 
 static void ne2k_pci_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 
@@ -1092,20 +701,6 @@ static void ne2k_pci_remove_one(struct pci_dev *pdev)
 	release_region(dev->base_addr, NE_IO_EXTENT);
 	free_netdev(dev);
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-}
-
-#ifdef CONFIG_PM
-static int ne2k_pci_suspend (struct pci_dev *pdev, pm_message_t state)
-{
-	struct net_device *dev = pci_get_drvdata (pdev);
-
-	netif_device_detach(dev);
-	pci_save_state(pdev);
-	pci_disable_device(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-=======
 }
 
 static int __maybe_unused ne2k_pci_suspend(struct device *dev_d)
@@ -1113,28 +708,13 @@ static int __maybe_unused ne2k_pci_suspend(struct device *dev_d)
 	struct net_device *dev = dev_get_drvdata(dev_d);
 
 	netif_device_detach(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ne2k_pci_resume (struct pci_dev *pdev)
-{
-	struct net_device *dev = pci_get_drvdata (pdev);
-	int rc;
-
-	pci_set_power_state(pdev, 0);
-	pci_restore_state(pdev);
-
-	rc = pci_enable_device(pdev);
-	if (rc)
-		return rc;
-=======
 static int __maybe_unused ne2k_pci_resume(struct device *dev_d)
 {
 	struct net_device *dev = dev_get_drvdata(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	NS8390_init(dev, 1);
 	netif_device_attach(dev);
@@ -1142,48 +722,13 @@ static int __maybe_unused ne2k_pci_resume(struct device *dev_d)
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-=======
 static SIMPLE_DEV_PM_OPS(ne2k_pci_pm_ops, ne2k_pci_suspend, ne2k_pci_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver ne2k_driver = {
 	.name		= DRV_NAME,
 	.probe		= ne2k_pci_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(ne2k_pci_remove_one),
-	.id_table	= ne2k_pci_tbl,
-#ifdef CONFIG_PM
-	.suspend	= ne2k_pci_suspend,
-	.resume		= ne2k_pci_resume,
-#endif /* CONFIG_PM */
-
-};
-
-
-static int __init ne2k_pci_init(void)
-{
-/* when a module, this is printed whether or not devices are found in probe */
-#ifdef MODULE
-	printk(version);
-#endif
-	return pci_register_driver(&ne2k_driver);
-}
-
-
-static void __exit ne2k_pci_cleanup(void)
-{
-	pci_unregister_driver (&ne2k_driver);
-}
-
-module_init(ne2k_pci_init);
-module_exit(ne2k_pci_cleanup);
-=======
 	.remove		= ne2k_pci_remove_one,
 	.id_table	= ne2k_pci_tbl,
 	.driver.pm	= &ne2k_pci_pm_ops,
 };
 module_pci_driver(ne2k_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

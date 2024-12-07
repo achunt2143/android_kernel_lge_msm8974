@@ -1,66 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dsinit - Object initialization namespace walk
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acdispat.h"
 #include "acnamesp.h"
 #include "actables.h"
-<<<<<<< HEAD
-=======
 #include "acinterp.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_DISPATCHER
 ACPI_MODULE_NAME("dsinit")
@@ -75,13 +27,8 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
  * FUNCTION:    acpi_ds_init_one_object
  *
  * PARAMETERS:  obj_handle      - Node for the object
-<<<<<<< HEAD
- *              Level           - Current nesting level
- *              Context         - Points to a init info struct
-=======
  *              level           - Current nesting level
  *              context         - Points to a init info struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_value    - Not used
  *
  * RETURN:      Status
@@ -103,13 +50,8 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 	    (struct acpi_init_walk_info *)context;
 	struct acpi_namespace_node *node =
 	    (struct acpi_namespace_node *)obj_handle;
-<<<<<<< HEAD
-	acpi_object_type type;
-	acpi_status status;
-=======
 	acpi_status status;
 	union acpi_operand_object *obj_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_ENTRY();
 
@@ -125,13 +67,7 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 
 	/* And even then, we are only interested in a few object types */
 
-<<<<<<< HEAD
-	type = acpi_ns_get_type(obj_handle);
-
-	switch (type) {
-=======
 	switch (acpi_ns_get_type(obj_handle)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ACPI_TYPE_REGION:
 
 		status = acpi_ds_initialize_region(obj_handle);
@@ -146,10 +82,6 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 		break;
 
 	case ACPI_TYPE_METHOD:
-<<<<<<< HEAD
-
-		info->method_count++;
-=======
 		/*
 		 * Auto-serialization support. We will examine each method that is
 		 * not_serialized to determine if it creates any Named objects. If
@@ -188,7 +120,6 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 		}
 
 		info->non_serial_method_count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_DEVICE:
@@ -197,10 +128,7 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -227,11 +155,7 @@ acpi_ds_init_one_object(acpi_handle obj_handle,
 
 acpi_status
 acpi_ds_initialize_objects(u32 table_index,
-<<<<<<< HEAD
-			   struct acpi_namespace_node * start_node)
-=======
 			   struct acpi_namespace_node *start_node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	struct acpi_init_walk_info info;
@@ -247,69 +171,33 @@ acpi_ds_initialize_objects(u32 table_index,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 			  "**** Starting initialization of namespace objects ****\n"));
-<<<<<<< HEAD
-	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT, "Parsing all Control Methods:"));
-
-	/* Set all init info to zero */
-
-	ACPI_MEMSET(&info, 0, sizeof(struct acpi_init_walk_info));
-=======
 
 	/* Set all init info to zero */
 
 	memset(&info, 0, sizeof(struct acpi_init_walk_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info.owner_id = owner_id;
 	info.table_index = table_index;
 
 	/* Walk entire namespace from the supplied root */
 
-<<<<<<< HEAD
-	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
-	if (ACPI_FAILURE(status)) {
-		return_ACPI_STATUS(status);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We don't use acpi_walk_namespace since we do not want to acquire
 	 * the namespace reader lock.
 	 */
 	status =
 	    acpi_ns_walk_namespace(ACPI_TYPE_ANY, start_node, ACPI_UINT32_MAX,
-<<<<<<< HEAD
-				   ACPI_NS_WALK_UNLOCK, acpi_ds_init_one_object,
-				   NULL, &info, NULL);
-	if (ACPI_FAILURE(status)) {
-		ACPI_EXCEPTION((AE_INFO, status, "During WalkNamespace"));
-	}
-	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
-=======
 				   ACPI_NS_WALK_NO_UNLOCK,
 				   acpi_ds_init_one_object, NULL, &info, NULL);
 	if (ACPI_FAILURE(status)) {
 		ACPI_EXCEPTION((AE_INFO, status, "During WalkNamespace"));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = acpi_get_table_by_index(table_index, &table);
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
-<<<<<<< HEAD
-	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
-			      "\nTable [%4.4s](id %4.4X) - %u Objects with %u Devices %u Methods %u Regions\n",
-			      table->signature, owner_id, info.object_count,
-			      info.device_count, info.method_count,
-			      info.op_region_count));
-
-	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
-			  "%u Methods, %u Regions\n", info.method_count,
-			  info.op_region_count));
-=======
 	/* DSDT is always the first AML table */
 
 	if (ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_DSDT)) {
@@ -331,7 +219,6 @@ acpi_ds_initialize_objects(u32 table_index,
 
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH, "%u Methods, %u Regions\n",
 			  info.method_count, info.op_region_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(AE_OK);
 }

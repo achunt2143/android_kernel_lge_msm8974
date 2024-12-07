@@ -8,11 +8,7 @@
 #include <linux/string.h>
 #include <linux/buffer_head.h>
 
-<<<<<<< HEAD
-#include <stdarg.h>
-=======
 #include <linux/stdarg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char error_buf[1024];
 static char fmt_buf[1024];
@@ -21,11 +17,7 @@ static char off_buf[80];
 static char *reiserfs_cpu_offset(struct cpu_key *key)
 {
 	if (cpu_key_k_type(key) == TYPE_DIRENTRY)
-<<<<<<< HEAD
-		sprintf(off_buf, "%Lu(%Lu)",
-=======
 		sprintf(off_buf, "%llu(%llu)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long long)
 			GET_HASH_VALUE(cpu_key_k_offset(key)),
 			(unsigned long long)
@@ -42,11 +34,7 @@ static char *le_offset(struct reiserfs_key *key)
 
 	version = le_key_version(key);
 	if (le_key_k_type(version, key) == TYPE_DIRENTRY)
-<<<<<<< HEAD
-		sprintf(off_buf, "%Lu(%Lu)",
-=======
 		sprintf(off_buf, "%llu(%llu)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long long)
 			GET_HASH_VALUE(le_key_k_offset(version, key)),
 			(unsigned long long)
@@ -88,55 +76,6 @@ static char *le_type(struct reiserfs_key *key)
 }
 
 /* %k */
-<<<<<<< HEAD
-static void sprintf_le_key(char *buf, struct reiserfs_key *key)
-{
-	if (key)
-		sprintf(buf, "[%d %d %s %s]", le32_to_cpu(key->k_dir_id),
-			le32_to_cpu(key->k_objectid), le_offset(key),
-			le_type(key));
-	else
-		sprintf(buf, "[NULL]");
-}
-
-/* %K */
-static void sprintf_cpu_key(char *buf, struct cpu_key *key)
-{
-	if (key)
-		sprintf(buf, "[%d %d %s %s]", key->on_disk_key.k_dir_id,
-			key->on_disk_key.k_objectid, reiserfs_cpu_offset(key),
-			cpu_type(key));
-	else
-		sprintf(buf, "[NULL]");
-}
-
-static void sprintf_de_head(char *buf, struct reiserfs_de_head *deh)
-{
-	if (deh)
-		sprintf(buf,
-			"[offset=%d dir_id=%d objectid=%d location=%d state=%04x]",
-			deh_offset(deh), deh_dir_id(deh), deh_objectid(deh),
-			deh_location(deh), deh_state(deh));
-	else
-		sprintf(buf, "[NULL]");
-
-}
-
-static void sprintf_item_head(char *buf, struct item_head *ih)
-{
-	if (ih) {
-		strcpy(buf,
-		       (ih_version(ih) == KEY_FORMAT_3_6) ? "*3.6* " : "*3.5*");
-		sprintf_le_key(buf + strlen(buf), &(ih->ih_key));
-		sprintf(buf + strlen(buf), ", item_len %d, item_location %d, "
-			"free_space(entry_count) %d",
-			ih_item_len(ih), ih_location(ih), ih_free_space(ih));
-	} else
-		sprintf(buf, "[NULL]");
-}
-
-static void sprintf_direntry(char *buf, struct reiserfs_dir_entry *de)
-=======
 static int scnprintf_le_key(char *buf, size_t size, struct reiserfs_key *key)
 {
 	if (key)
@@ -197,41 +136,11 @@ static int scnprintf_item_head(char *buf, size_t size, struct item_head *ih)
 
 static int scnprintf_direntry(char *buf, size_t size,
 			      struct reiserfs_dir_entry *de)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char name[20];
 
 	memcpy(name, de->de_name, de->de_namelen > 19 ? 19 : de->de_namelen);
 	name[de->de_namelen > 19 ? 19 : de->de_namelen] = 0;
-<<<<<<< HEAD
-	sprintf(buf, "\"%s\"==>[%d %d]", name, de->de_dir_id, de->de_objectid);
-}
-
-static void sprintf_block_head(char *buf, struct buffer_head *bh)
-{
-	sprintf(buf, "level=%d, nr_items=%d, free_space=%d rdkey ",
-		B_LEVEL(bh), B_NR_ITEMS(bh), B_FREE_SPACE(bh));
-}
-
-static void sprintf_buffer_head(char *buf, struct buffer_head *bh)
-{
-	char b[BDEVNAME_SIZE];
-
-	sprintf(buf,
-		"dev %s, size %zd, blocknr %llu, count %d, state 0x%lx, page %p, (%s, %s, %s)",
-		bdevname(bh->b_bdev, b), bh->b_size,
-		(unsigned long long)bh->b_blocknr, atomic_read(&(bh->b_count)),
-		bh->b_state, bh->b_page,
-		buffer_uptodate(bh) ? "UPTODATE" : "!UPTODATE",
-		buffer_dirty(bh) ? "DIRTY" : "CLEAN",
-		buffer_locked(bh) ? "LOCKED" : "UNLOCKED");
-}
-
-static void sprintf_disk_child(char *buf, struct disk_child *dc)
-{
-	sprintf(buf, "[dc_number=%d, dc_size=%u]", dc_block_number(dc),
-		dc_size(dc));
-=======
 	return scnprintf(buf, size, "\"%s\"==>[%d %d]",
 			 name, de->de_dir_id, de->de_objectid);
 }
@@ -260,7 +169,6 @@ static int scnprintf_disk_child(char *buf, size_t size, struct disk_child *dc)
 {
 	return scnprintf(buf, size, "[dc_number=%d, dc_size=%u]",
 			 dc_block_number(dc), dc_size(dc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static char *is_there_reiserfs_struct(char *fmt, int *what)
@@ -278,20 +186,6 @@ static char *is_there_reiserfs_struct(char *fmt, int *what)
 	return k;
 }
 
-<<<<<<< HEAD
-/* debugging reiserfs we used to print out a lot of different
-   variables, like keys, item headers, buffer heads etc. Values of
-   most fields matter. So it took a long time just to write
-   appropriative printk. With this reiserfs_warning you can use format
-   specification for complex structures like you used to do with
-   printfs for integers, doubles and pointers. For instance, to print
-   out key structure you have to write just:
-   reiserfs_warning ("bad key %k", key);
-   instead of
-   printk ("bad key %lu %lu %lu %lu", key->k_dir_id, key->k_objectid,
-           key->k_offset, key->k_uniqueness);
-*/
-=======
 /*
  * debugging reiserfs we used to print out a lot of different
  * variables, like keys, item headers, buffer heads etc. Values of
@@ -305,75 +199,25 @@ static char *is_there_reiserfs_struct(char *fmt, int *what)
  * printk ("bad key %lu %lu %lu %lu", key->k_dir_id, key->k_objectid,
  *         key->k_offset, key->k_uniqueness);
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(error_lock);
 static void prepare_error_buf(const char *fmt, va_list args)
 {
 	char *fmt1 = fmt_buf;
 	char *k;
 	char *p = error_buf;
-<<<<<<< HEAD
-=======
 	char * const end = &error_buf[sizeof(error_buf)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int what;
 
 	spin_lock(&error_lock);
 
-<<<<<<< HEAD
-	strcpy(fmt1, fmt);
-=======
 	if (WARN_ON(strscpy(fmt_buf, fmt, sizeof(fmt_buf)) < 0)) {
 		strscpy(error_buf, "format string too long", end - error_buf);
 		goto out_unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((k = is_there_reiserfs_struct(fmt1, &what)) != NULL) {
 		*k = 0;
 
-<<<<<<< HEAD
-		p += vsprintf(p, fmt1, args);
-
-		switch (what) {
-		case 'k':
-			sprintf_le_key(p, va_arg(args, struct reiserfs_key *));
-			break;
-		case 'K':
-			sprintf_cpu_key(p, va_arg(args, struct cpu_key *));
-			break;
-		case 'h':
-			sprintf_item_head(p, va_arg(args, struct item_head *));
-			break;
-		case 't':
-			sprintf_direntry(p,
-					 va_arg(args,
-						struct reiserfs_dir_entry *));
-			break;
-		case 'y':
-			sprintf_disk_child(p,
-					   va_arg(args, struct disk_child *));
-			break;
-		case 'z':
-			sprintf_block_head(p,
-					   va_arg(args, struct buffer_head *));
-			break;
-		case 'b':
-			sprintf_buffer_head(p,
-					    va_arg(args, struct buffer_head *));
-			break;
-		case 'a':
-			sprintf_de_head(p,
-					va_arg(args,
-					       struct reiserfs_de_head *));
-			break;
-		}
-
-		p += strlen(p);
-		fmt1 = k + 2;
-	}
-	vsprintf(p, fmt1, args);
-=======
 		p += vscnprintf(p, end - p, fmt1, args);
 
 		switch (what) {
@@ -415,22 +259,10 @@ static void prepare_error_buf(const char *fmt, va_list args)
 	}
 	p += vscnprintf(p, end - p, fmt1, args);
 out_unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&error_lock);
 
 }
 
-<<<<<<< HEAD
-/* in addition to usual conversion specifiers this accepts reiserfs
-   specific conversion specifiers:
-   %k to print little endian key,
-   %K to print cpu key,
-   %h to print item_head,
-   %t to print directory entry
-   %z to print block head (arg must be struct buffer_head *
-   %b to print buffer_head
-*/
-=======
 /*
  * in addition to usual conversion specifiers this accepts reiserfs
  * specific conversion specifiers:
@@ -441,7 +273,6 @@ out_unlock:
  * %z to print block head (arg must be struct buffer_head *
  * %b to print buffer_head
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define do_reiserfs_warning(fmt)\
 {\
@@ -494,52 +325,6 @@ void reiserfs_debug(struct super_block *s, int level, const char *fmt, ...)
 #endif
 }
 
-<<<<<<< HEAD
-/* The format:
-
-           maintainer-errorid: [function-name:] message
-
-    where errorid is unique to the maintainer and function-name is
-    optional, is recommended, so that anyone can easily find the bug
-    with a simple grep for the short to type string
-    maintainer-errorid.  Don't bother with reusing errorids, there are
-    lots of numbers out there.
-
-    Example:
-
-    reiserfs_panic(
-	p_sb, "reiser-29: reiserfs_new_blocknrs: "
-	"one of search_start or rn(%d) is equal to MAX_B_NUM,"
-	"which means that we are optimizing location based on the bogus location of a temp buffer (%p).",
-	rn, bh
-    );
-
-    Regular panic()s sometimes clear the screen before the message can
-    be read, thus the need for the while loop.
-
-    Numbering scheme for panic used by Vladimir and Anatoly( Hans completely ignores this scheme, and considers it
-    pointless complexity):
-
-    panics in reiserfs.h have numbers from 1000 to 1999
-    super.c				        2000 to 2999
-    preserve.c (unused)			    3000 to 3999
-    bitmap.c				    4000 to 4999
-    stree.c				        5000 to 5999
-    prints.c				    6000 to 6999
-    namei.c                     7000 to 7999
-    fix_nodes.c                 8000 to 8999
-    dir.c                       9000 to 9999
-	lbalance.c					10000 to 10999
-	ibalance.c		11000 to 11999 not ready
-	do_balan.c		12000 to 12999
-	inode.c			13000 to 13999
-	file.c			14000 to 14999
-    objectid.c                       15000 - 15999
-    buffer.c                         16000 - 16999
-    symlink.c                        17000 - 17999
-
-   .  */
-=======
 /*
  * The format:
  *
@@ -586,7 +371,6 @@ void reiserfs_debug(struct super_block *s, int level, const char *fmt, ...)
  *   symlink.c			17000 - 17999
  *
  *  .  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __reiserfs_panic(struct super_block *sb, const char *id,
 		      const char *function, const char *fmt, ...)
@@ -597,14 +381,6 @@ void __reiserfs_panic(struct super_block *sb, const char *id,
 	dump_stack();
 #endif
 	if (sb)
-<<<<<<< HEAD
-		panic(KERN_WARNING "REISERFS panic (device %s): %s%s%s: %s\n",
-		      sb->s_id, id ? id : "", id ? " " : "",
-		      function, error_buf);
-	else
-		panic(KERN_WARNING "REISERFS panic: %s%s%s: %s\n",
-		      id ? id : "", id ? " " : "", function, error_buf);
-=======
 		printk(KERN_WARNING "REISERFS panic (device %s): %s%s%s: %s\n",
 		      sb->s_id, id ? id : "", id ? " " : "",
 		      function, error_buf);
@@ -612,7 +388,6 @@ void __reiserfs_panic(struct super_block *sb, const char *id,
 		printk(KERN_WARNING "REISERFS panic: %s%s%s: %s\n",
 		      id ? id : "", id ? " " : "", function, error_buf);
 	BUG();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __reiserfs_error(struct super_block *sb, const char *id,
@@ -632,19 +407,11 @@ void __reiserfs_error(struct super_block *sb, const char *id,
 		printk(KERN_CRIT "REISERFS error (device %s): %s: %s\n",
 		       sb->s_id, function, error_buf);
 
-<<<<<<< HEAD
-	if (sb->s_flags & MS_RDONLY)
-		return;
-
-	reiserfs_info(sb, "Remounting filesystem read-only\n");
-	sb->s_flags |= MS_RDONLY;
-=======
 	if (sb_rdonly(sb))
 		return;
 
 	reiserfs_info(sb, "Remounting filesystem read-only\n");
 	sb->s_flags |= SB_RDONLY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reiserfs_abort_journal(sb, -EIO);
 }
 
@@ -663,15 +430,6 @@ void reiserfs_abort(struct super_block *sb, int errno, const char *fmt, ...)
 	printk(KERN_CRIT "REISERFS abort (device %s): %s\n", sb->s_id,
 	       error_buf);
 
-<<<<<<< HEAD
-	sb->s_flags |= MS_RDONLY;
-	reiserfs_abort_journal(sb, errno);
-}
-
-/* this prints internal nodes (4 keys/items in line) (dc_number,
-   dc_size)[k_dirid, k_objectid, k_offset, k_uniqueness](dc_number,
-   dc_size)...*/
-=======
 	sb->s_flags |= SB_RDONLY;
 	reiserfs_abort_journal(sb, errno);
 }
@@ -681,7 +439,6 @@ void reiserfs_abort(struct super_block *sb, int errno, const char *fmt, ...)
  * dc_size)[k_dirid, k_objectid, k_offset, k_uniqueness](dc_number,
  * dc_size)...
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int print_internal(struct buffer_head *bh, int first, int last)
 {
 	struct reiserfs_key *key;
@@ -699,11 +456,7 @@ static int print_internal(struct buffer_head *bh, int first, int last)
 		to = B_NR_ITEMS(bh);
 	} else {
 		from = first;
-<<<<<<< HEAD
-		to = last < B_NR_ITEMS(bh) ? last : B_NR_ITEMS(bh);
-=======
 		to = min_t(int, last, B_NR_ITEMS(bh));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	reiserfs_printk("INTERNAL NODE (%ld) contains %z\n", bh->b_blocknr, bh);
@@ -711,11 +464,7 @@ static int print_internal(struct buffer_head *bh, int first, int last)
 	dc = B_N_CHILD(bh, from);
 	reiserfs_printk("PTR %d: %y ", from, dc);
 
-<<<<<<< HEAD
-	for (i = from, key = B_N_PDELIM_KEY(bh, from), dc++; i < to;
-=======
 	for (i = from, key = internal_key(bh, from), dc++; i < to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     i++, key++, dc++) {
 		reiserfs_printk("KEY %d: %k PTR %d: %y ", i, key, i + 1, dc);
 		if (i && i % 4 == 0)
@@ -739,11 +488,7 @@ static int print_leaf(struct buffer_head *bh, int print_mode, int first,
 	check_leaf(bh);
 
 	blkh = B_BLK_HEAD(bh);
-<<<<<<< HEAD
-	ih = B_N_PITEM_HEAD(bh, 0);
-=======
 	ih = item_head(bh, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr = blkh_nr_item(blkh);
 
 	printk
@@ -776,11 +521,7 @@ static int print_leaf(struct buffer_head *bh, int print_mode, int first,
 		    ("-------------------------------------------------------------------------------\n");
 		reiserfs_printk("|%2d| %h |\n", i, ih);
 		if (print_mode & PRINT_LEAF_ITEMS)
-<<<<<<< HEAD
-			op_print_item(ih, B_I_PITEM(bh, ih));
-=======
 			op_print_item(ih, ih_item_body(bh, ih));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk
@@ -808,10 +549,6 @@ static int print_super_block(struct buffer_head *bh)
 	    (struct reiserfs_super_block *)(bh->b_data);
 	int skipped, data_blocks;
 	char *version;
-<<<<<<< HEAD
-	char b[BDEVNAME_SIZE];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_reiserfs_3_5(rs)) {
 		version = "3.5";
@@ -824,27 +561,17 @@ static int print_super_block(struct buffer_head *bh)
 		return 1;
 	}
 
-<<<<<<< HEAD
-	printk("%s\'s super block is in block %llu\n", bdevname(bh->b_bdev, b),
-=======
 	printk("%pg\'s super block is in block %llu\n", bh->b_bdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (unsigned long long)bh->b_blocknr);
 	printk("Reiserfs version %s\n", version);
 	printk("Block count %u\n", sb_block_count(rs));
 	printk("Blocksize %d\n", sb_blocksize(rs));
 	printk("Free blocks %u\n", sb_free_blocks(rs));
-<<<<<<< HEAD
-	// FIXME: this would be confusing if
-	// someone stores reiserfs super block in some data block ;)
-//    skipped = (bh->b_blocknr * bh->b_size) / sb_blocksize(rs);
-=======
 	/*
 	 * FIXME: this would be confusing if
 	 * someone stores reiserfs super block in some data block ;)
 //    skipped = (bh->b_blocknr * bh->b_size) / sb_blocksize(rs);
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skipped = bh->b_blocknr;
 	data_blocks = sb_block_count(rs) - skipped - 1 - sb_bmap_nr(rs) -
 	    (!is_reiserfs_jr(rs) ? sb_jp_journal_size(rs) +
@@ -880,13 +607,8 @@ static int print_desc_block(struct buffer_head *bh)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-void print_block(struct buffer_head *bh, ...)	//int print_mode, int first, int last)
-=======
 /* ..., int print_mode, int first, int last) */
 void print_block(struct buffer_head *bh, ...)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	va_list args;
 	int mode, first, last;
@@ -948,19 +670,11 @@ void store_print_tb(struct tree_balance *tb)
 			"* %d * %3lld(%2d) * %3lld(%2d) * %3lld(%2d) * %5lld * %5lld * %5lld * %5lld * %5lld *\n",
 			h,
 			(tbSh) ? (long long)(tbSh->b_blocknr) : (-1LL),
-<<<<<<< HEAD
-			(tbSh) ? atomic_read(&(tbSh->b_count)) : -1,
-			(tb->L[h]) ? (long long)(tb->L[h]->b_blocknr) : (-1LL),
-			(tb->L[h]) ? atomic_read(&(tb->L[h]->b_count)) : -1,
-			(tb->R[h]) ? (long long)(tb->R[h]->b_blocknr) : (-1LL),
-			(tb->R[h]) ? atomic_read(&(tb->R[h]->b_count)) : -1,
-=======
 			(tbSh) ? atomic_read(&tbSh->b_count) : -1,
 			(tb->L[h]) ? (long long)(tb->L[h]->b_blocknr) : (-1LL),
 			(tb->L[h]) ? atomic_read(&tb->L[h]->b_count) : -1,
 			(tb->R[h]) ? (long long)(tb->R[h]->b_blocknr) : (-1LL),
 			(tb->R[h]) ? atomic_read(&tb->R[h]->b_count) : -1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(tbFh) ? (long long)(tbFh->b_blocknr) : (-1LL),
 			(tb->FL[h]) ? (long long)(tb->FL[h]->
 						  b_blocknr) : (-1LL),
@@ -977,15 +691,9 @@ void store_print_tb(struct tree_balance *tb)
 		"* h * size * ln * lb * rn * rb * blkn * s0 * s1 * s1b * s2 * s2b * curb * lk * rk *\n"
 		"* 0 * %4d * %2d * %2d * %2d * %2d * %4d * %2d * %2d * %3d * %2d * %3d * %4d * %2d * %2d *\n",
 		tb->insert_size[0], tb->lnum[0], tb->lbytes, tb->rnum[0],
-<<<<<<< HEAD
-		tb->rbytes, tb->blknum[0], tb->s0num, tb->s1num, tb->s1bytes,
-		tb->s2num, tb->s2bytes, tb->cur_blknum, tb->lkey[0],
-		tb->rkey[0]);
-=======
 		tb->rbytes, tb->blknum[0], tb->s0num, tb->snum[0],
 		tb->sbytes[0], tb->snum[1], tb->sbytes[1],
 		tb->cur_blknum, tb->lkey[0], tb->rkey[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this prints balance parameters for non-leaf levels */
 	h = 0;
@@ -1008,11 +716,7 @@ void store_print_tb(struct tree_balance *tb)
 			"%p (%llu %d)%s", tb->FEB[i],
 			tb->FEB[i] ? (unsigned long long)tb->FEB[i]->
 			b_blocknr : 0ULL,
-<<<<<<< HEAD
-			tb->FEB[i] ? atomic_read(&(tb->FEB[i]->b_count)) : 0,
-=======
 			tb->FEB[i] ? atomic_read(&tb->FEB[i]->b_count) : 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(i == ARRAY_SIZE(tb->FEB) - 1) ? "\n" : ", ");
 
 	sprintf(print_tb_buf + strlen(print_tb_buf),
@@ -1042,12 +746,6 @@ static void check_leaf_block_head(struct buffer_head *bh)
 
 static void check_internal_block_head(struct buffer_head *bh)
 {
-<<<<<<< HEAD
-	struct block_head *blkh;
-
-	blkh = B_BLK_HEAD(bh);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(B_LEVEL(bh) > DISK_LEAF_NODE_LEVEL && B_LEVEL(bh) <= MAX_HEIGHT))
 		reiserfs_panic(NULL, "vs-6025", "invalid level %z", bh);
 
@@ -1069,13 +767,8 @@ void check_leaf(struct buffer_head *bh)
 	if (!bh)
 		return;
 	check_leaf_block_head(bh);
-<<<<<<< HEAD
-	for (i = 0, ih = B_N_PITEM_HEAD(bh, 0); i < B_NR_ITEMS(bh); i++, ih++)
-		op_check_item(ih, B_I_PITEM(bh, ih));
-=======
 	for (i = 0, ih = item_head(bh, 0); i < B_NR_ITEMS(bh); i++, ih++)
 		op_check_item(ih, ih_item_body(bh, ih));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void check_internal(struct buffer_head *bh)

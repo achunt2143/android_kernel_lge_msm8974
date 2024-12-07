@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     i2c Support for the Apple `Hydra' Mac I/O
 
@@ -10,22 +7,6 @@
     Based on i2c Support for Via Technologies 82C586B South Bridge
     Copyright (c) 1998, 1999 Kyösti Mälkki <kmalkki@cc.hut.fi>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/kernel.h>
@@ -34,10 +15,6 @@
 #include <linux/types.h>
 #include <linux/i2c.h>
 #include <linux/i2c-algo-bit.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <asm/hydra.h>
 
@@ -115,22 +92,14 @@ static struct i2c_adapter hydra_adap = {
 	.algo_data	= &hydra_bit_data,
 };
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(hydra_ids) = {
-=======
 static const struct pci_device_id hydra_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_APPLE, PCI_DEVICE_ID_APPLE_HYDRA) },
 	{ 0, }
 };
 
 MODULE_DEVICE_TABLE (pci, hydra_ids);
 
-<<<<<<< HEAD
-static int __devinit hydra_probe(struct pci_dev *dev,
-=======
 static int hydra_probe(struct pci_dev *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 const struct pci_device_id *id)
 {
 	unsigned long base = pci_resource_start(dev, 0);
@@ -157,11 +126,7 @@ static int hydra_probe(struct pci_dev *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit hydra_remove(struct pci_dev *dev)
-=======
 static void hydra_remove(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pdregw(hydra_bit_data.data, 0);		/* clear SCLK_OE and SDAT_OE */
 	i2c_del_adapter(&hydra_adap);
@@ -175,36 +140,11 @@ static struct pci_driver hydra_driver = {
 	.name		= "hydra_smbus",
 	.id_table	= hydra_ids,
 	.probe		= hydra_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(hydra_remove),
-};
-
-static int __init i2c_hydra_init(void)
-{
-	return pci_register_driver(&hydra_driver);
-}
-
-
-static void __exit i2c_hydra_exit(void)
-{
-	pci_unregister_driver(&hydra_driver);
-}
-
-
-=======
 	.remove		= hydra_remove,
 };
 
 module_pci_driver(hydra_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Geert Uytterhoeven <geert@linux-m68k.org>");
 MODULE_DESCRIPTION("i2c for Apple Hydra Mac I/O");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-
-module_init(i2c_hydra_init);
-module_exit(i2c_hydra_exit);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

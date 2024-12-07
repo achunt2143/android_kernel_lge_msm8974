@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-config BT_HIDP
-	tristate "HIDP protocol support"
-	depends on BT && INPUT && HID_SUPPORT
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config BT_HIDP
 	tristate "HIDP protocol support"
 	depends on BT_BREDR && INPUT && HID_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select HID
 	help
 	  HIDP (Human Interface Device Protocol) is a transport layer

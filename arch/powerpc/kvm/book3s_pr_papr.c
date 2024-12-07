@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011. Freescale Inc. All rights reserved.
  *
@@ -13,18 +10,6 @@
  *
  * Hypercall handling for running PAPR guests in PR KVM on Book 3S
  * processors.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- */
-
-#include <asm/uaccess.h>
-#include <asm/kvm_ppc.h>
-#include <asm/kvm_book3s.h>
-
-=======
  */
 
 #include <linux/anon_inodes.h>
@@ -35,7 +20,6 @@
 
 #define HPTE_SIZE	16		/* bytes per HPT entry */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long get_pteg_addr(struct kvm_vcpu *vcpu, long pte_index)
 {
 	struct kvmppc_vcpu_book3s *vcpu_book3s = to_book3s(vcpu);
@@ -53,23 +37,6 @@ static int kvmppc_h_pr_enter(struct kvm_vcpu *vcpu)
 {
 	long flags = kvmppc_get_gpr(vcpu, 4);
 	long pte_index = kvmppc_get_gpr(vcpu, 5);
-<<<<<<< HEAD
-	unsigned long pteg[2 * 8];
-	unsigned long pteg_addr, i, *hpte;
-
-	pte_index &= ~7UL;
-	pteg_addr = get_pteg_addr(vcpu, pte_index);
-
-	copy_from_user(pteg, (void __user *)pteg_addr, sizeof(pteg));
-	hpte = pteg;
-
-	if (likely((flags & H_EXACT) == 0)) {
-		pte_index &= ~7UL;
-		for (i = 0; ; ++i) {
-			if (i == 8)
-				return H_PTEG_FULL;
-			if ((*hpte & HPTE_V_VALID) == 0)
-=======
 	__be64 pteg[2 * 8];
 	__be64 *hpte;
 	unsigned long pteg_addr, i;
@@ -91,22 +58,10 @@ static int kvmppc_h_pr_enter(struct kvm_vcpu *vcpu)
 			if (i == 8)
 				goto done;
 			if ((be64_to_cpu(*hpte) & HPTE_V_VALID) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			hpte += 2;
 		}
 	} else {
-<<<<<<< HEAD
-		i = kvmppc_get_gpr(vcpu, 5) & 7UL;
-		hpte += i * 2;
-	}
-
-	hpte[0] = kvmppc_get_gpr(vcpu, 6);
-	hpte[1] = kvmppc_get_gpr(vcpu, 7);
-	copy_to_user((void __user *)pteg_addr, pteg, sizeof(pteg));
-	kvmppc_set_gpr(vcpu, 3, H_SUCCESS);
-	kvmppc_set_gpr(vcpu, 4, pte_index | i);
-=======
 		hpte += i * 2;
 		if (*hpte & HPTE_V_VALID)
 			goto done;
@@ -124,7 +79,6 @@ static int kvmppc_h_pr_enter(struct kvm_vcpu *vcpu)
  done:
 	mutex_unlock(&vcpu->kvm->arch.hpt_mutex);
 	kvmppc_set_gpr(vcpu, 3, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return EMULATE_DONE;
 }
@@ -136,20 +90,6 @@ static int kvmppc_h_pr_remove(struct kvm_vcpu *vcpu)
 	unsigned long avpn = kvmppc_get_gpr(vcpu, 6);
 	unsigned long v = 0, pteg, rb;
 	unsigned long pte[2];
-<<<<<<< HEAD
-
-	pteg = get_pteg_addr(vcpu, pte_index);
-	copy_from_user(pte, (void __user *)pteg, sizeof(pte));
-
-	if ((pte[0] & HPTE_V_VALID) == 0 ||
-	    ((flags & H_AVPN) && (pte[0] & ~0x7fUL) != avpn) ||
-	    ((flags & H_ANDCOND) && (pte[0] & avpn) != 0)) {
-		kvmppc_set_gpr(vcpu, 3, H_NOT_FOUND);
-		return EMULATE_DONE;
-	}
-
-	copy_to_user((void __user *)pteg, &v, sizeof(v));
-=======
 	long int ret;
 
 	pteg = get_pteg_addr(vcpu, pte_index);
@@ -169,17 +109,10 @@ static int kvmppc_h_pr_remove(struct kvm_vcpu *vcpu)
 	ret = H_FUNCTION;
 	if (copy_to_user((void __user *)pteg, &v, sizeof(v)))
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rb = compute_tlbie_rb(pte[0], pte[1], pte_index);
 	vcpu->arch.mmu.tlbie(vcpu, rb, rb & 1 ? true : false);
 
-<<<<<<< HEAD
-	kvmppc_set_gpr(vcpu, 3, H_SUCCESS);
-	kvmppc_set_gpr(vcpu, 4, pte[0]);
-	kvmppc_set_gpr(vcpu, 5, pte[1]);
-
-=======
 	ret = H_SUCCESS;
 	kvmppc_set_gpr(vcpu, 4, pte[0]);
 	kvmppc_set_gpr(vcpu, 5, pte[1]);
@@ -275,7 +208,6 @@ static int kvmppc_h_pr_bulk_remove(struct kvm_vcpu *vcpu)
 	mutex_unlock(&vcpu->kvm->arch.hpt_mutex);
 	kvmppc_set_gpr(vcpu, 3, ret);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return EMULATE_DONE;
 }
 
@@ -286,17 +218,6 @@ static int kvmppc_h_pr_protect(struct kvm_vcpu *vcpu)
 	unsigned long avpn = kvmppc_get_gpr(vcpu, 6);
 	unsigned long rb, pteg, r, v;
 	unsigned long pte[2];
-<<<<<<< HEAD
-
-	pteg = get_pteg_addr(vcpu, pte_index);
-	copy_from_user(pte, (void __user *)pteg, sizeof(pte));
-
-	if ((pte[0] & HPTE_V_VALID) == 0 ||
-	    ((flags & H_AVPN) && (pte[0] & ~0x7fUL) != avpn)) {
-		kvmppc_set_gpr(vcpu, 3, H_NOT_FOUND);
-		return EMULATE_DONE;
-	}
-=======
 	long int ret;
 
 	pteg = get_pteg_addr(vcpu, pte_index);
@@ -311,7 +232,6 @@ static int kvmppc_h_pr_protect(struct kvm_vcpu *vcpu)
 	if ((pte[0] & HPTE_V_VALID) == 0 ||
 	    ((flags & H_AVPN) && (pte[0] & ~0x7fUL) != avpn))
 		goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	v = pte[0];
 	r = pte[1];
@@ -325,11 +245,6 @@ static int kvmppc_h_pr_protect(struct kvm_vcpu *vcpu)
 
 	rb = compute_tlbie_rb(v, r, pte_index);
 	vcpu->arch.mmu.tlbie(vcpu, rb, rb & 1 ? true : false);
-<<<<<<< HEAD
-	copy_to_user((void __user *)pteg, pte, sizeof(pte));
-
-	kvmppc_set_gpr(vcpu, 3, H_SUCCESS);
-=======
 	pte[0] = (__force u64)cpu_to_be64(pte[0]);
 	pte[1] = (__force u64)cpu_to_be64(pte[1]);
 	ret = H_FUNCTION;
@@ -340,15 +255,10 @@ static int kvmppc_h_pr_protect(struct kvm_vcpu *vcpu)
  done:
 	mutex_unlock(&vcpu->kvm->arch.hpt_mutex);
 	kvmppc_set_gpr(vcpu, 3, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return EMULATE_DONE;
 }
 
-<<<<<<< HEAD
-int kvmppc_h_pr(struct kvm_vcpu *vcpu, unsigned long cmd)
-{
-=======
 static int kvmppc_h_pr_logical_ci_load(struct kvm_vcpu *vcpu)
 {
 	long rc;
@@ -465,7 +375,6 @@ int kvmppc_h_pr(struct kvm_vcpu *vcpu, unsigned long cmd)
 	    !test_bit(cmd/4, vcpu->kvm->arch.enabled_hcalls))
 		return EMULATE_FAIL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case H_ENTER:
 		return kvmppc_h_pr_enter(vcpu);
@@ -474,15 +383,6 @@ int kvmppc_h_pr(struct kvm_vcpu *vcpu, unsigned long cmd)
 	case H_PROTECT:
 		return kvmppc_h_pr_protect(vcpu);
 	case H_BULK_REMOVE:
-<<<<<<< HEAD
-		/* We just flush all PTEs, so user space can
-		   handle the HPT modifications */
-		kvmppc_mmu_pte_flush(vcpu, 0, 0);
-		break;
-	case H_CEDE:
-		kvm_vcpu_block(vcpu);
-		vcpu->stat.halt_wakeup++;
-=======
 		return kvmppc_h_pr_bulk_remove(vcpu);
 	case H_PUT_TCE:
 		return kvmppc_h_pr_put_tce(vcpu);
@@ -519,14 +419,11 @@ int kvmppc_h_pr(struct kvm_vcpu *vcpu, unsigned long cmd)
 		if (rc)
 			break;
 		kvmppc_set_gpr(vcpu, 3, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return EMULATE_DONE;
 	}
 
 	return EMULATE_FAIL;
 }
-<<<<<<< HEAD
-=======
 
 int kvmppc_hcall_impl_pr(unsigned long cmd)
 {
@@ -597,4 +494,3 @@ void kvmppc_pr_init_default_hcalls(struct kvm *kvm)
 		__set_bit(hcall / 4, kvm->arch.enabled_hcalls);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

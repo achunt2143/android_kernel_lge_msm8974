@@ -1,46 +1,19 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # PCI Express Port Bus Configuration
 #
 config PCIEPORTBUS
-<<<<<<< HEAD
-	bool "PCI Express support"
-	depends on PCI
-	help
-	  This automatically enables PCI Express Port Bus support. Users can
-	  choose Native Hot-Plug support, Advanced Error Reporting support,
-	  Power Management Event support and Virtual Channel support to run
-	  on PCI Express Ports (Root or Switch).
-=======
 	bool "PCI Express Port Bus support"
 	default y if USB4
 	help
 	  This enables PCI Express Port Bus support. Users can then enable
 	  support for Native Hot-Plug, Advanced Error Reporting, Power
 	  Management Events, and Downstream Port Containment.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Include service Kconfig here
 #
 config HOTPLUG_PCI_PCIE
-<<<<<<< HEAD
-	tristate "PCI Express Hotplug driver"
-	depends on HOTPLUG_PCI && PCIEPORTBUS
-	help
-	  Say Y here if you have a motherboard that supports PCI Express Native
-	  Hotplug
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called pciehp.
-
-	  When in doubt, say N.
-
-source "drivers/pci/pcie/aer/Kconfig"
-=======
 	bool "PCI Express Hotplug driver"
 	depends on HOTPLUG_PCI && PCIEPORTBUS
 	default y if USB4
@@ -96,17 +69,12 @@ config PCIE_ECRC
 	  (transaction layer end-to-end CRC checking).
 
 	  When in doubt, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # PCI Express ASPM
 #
 config PCIEASPM
 	bool "PCI Express ASPM control" if EXPERT
-<<<<<<< HEAD
-	depends on PCI && PCIEPORTBUS
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  This enables OS control over PCI Express ASPM (Active State
@@ -121,16 +89,6 @@ config PCIEASPM
 	  /sys/module/pcie_aspm/parameters/policy
 
 	  When in doubt, say Y.
-<<<<<<< HEAD
-config PCIEASPM_DEBUG
-	bool "Debug PCI Express ASPM"
-	depends on PCIEASPM
-	default n
-	help
-	  This enables PCI Express ASPM debug support. It will add per-device
-	  interface to control ASPM.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 choice
 	prompt "Default ASPM policy"
@@ -138,30 +96,18 @@ choice
 	depends on PCIEASPM
 
 config PCIEASPM_DEFAULT
-<<<<<<< HEAD
-        bool "BIOS default"
-=======
 	bool "BIOS default"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on PCIEASPM
 	help
 	  Use the BIOS defaults for PCI Express ASPM.
 
 config PCIEASPM_POWERSAVE
-<<<<<<< HEAD
-        bool "Powersave"
-=======
 	bool "Powersave"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on PCIEASPM
 	help
 	  Enable PCI Express ASPM L0s and L1 where possible, even if the
 	  BIOS did not.
 
-<<<<<<< HEAD
-config PCIEASPM_PERFORMANCE
-        bool "Performance"
-=======
 config PCIEASPM_POWER_SUPERSAVE
 	bool "Power Supersave"
 	depends on PCIEASPM
@@ -172,7 +118,6 @@ config PCIEASPM_POWER_SUPERSAVE
 
 config PCIEASPM_PERFORMANCE
 	bool "Performance"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on PCIEASPM
 	help
 	  Disable PCI Express ASPM L0s and L1, even if the BIOS enabled them.
@@ -180,9 +125,6 @@ endchoice
 
 config PCIE_PME
 	def_bool y
-<<<<<<< HEAD
-	depends on PCIEPORTBUS && PM_RUNTIME && EXPERIMENTAL && ACPI
-=======
 	depends on PCIEPORTBUS && PM
 
 config PCIE_DPC
@@ -213,4 +155,3 @@ config PCIE_EDR
 	  the PCI Firmware Specification r3.2.  Enable this if you want to
 	  support hybrid DPC model which uses both firmware and OS to
 	  implement DPC.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

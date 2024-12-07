@@ -1,34 +1,9 @@
-<<<<<<< HEAD
-/*
- *  linux/fs/9p/v9fs.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This file contains functions assisting in mapping VFS to 9P2000
  *
  *  Copyright (C) 2004-2008 by Eric Van Hensbergen <ericvh@gmail.com>
  *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to:
- *  Free Software Foundation
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02111-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -37,16 +12,10 @@
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/parser.h>
-#include <linux/idr.h>
-#include <linux/slab.h>
-=======
 #include <linux/cred.h>
 #include <linux/parser.h>
 #include <linux/slab.h>
 #include <linux/seq_file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
 #include <net/9p/transport.h>
@@ -67,15 +36,6 @@ enum {
 	/* Options that take integer arguments */
 	Opt_debug, Opt_dfltuid, Opt_dfltgid, Opt_afid,
 	/* String options */
-<<<<<<< HEAD
-	Opt_uname, Opt_remotename, Opt_trans, Opt_cache, Opt_cachetag,
-	/* Options that take no arguments */
-	Opt_nodevmap,
-	/* Cache options */
-	Opt_cache_loose, Opt_fscache,
-	/* Access options */
-	Opt_access, Opt_posixacl,
-=======
 	Opt_uname, Opt_remotename, Opt_cache, Opt_cachetag,
 	/* Options that take no arguments */
 	Opt_nodevmap, Opt_noxattr, Opt_directio, Opt_ignoreqv,
@@ -83,7 +43,6 @@ enum {
 	Opt_access, Opt_posixacl,
 	/* Lock timeout option */
 	Opt_locktimeout,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Error token */
 	Opt_err
 };
@@ -96,14 +55,6 @@ static const match_table_t tokens = {
 	{Opt_uname, "uname=%s"},
 	{Opt_remotename, "aname=%s"},
 	{Opt_nodevmap, "nodevmap"},
-<<<<<<< HEAD
-	{Opt_cache, "cache=%s"},
-	{Opt_cache_loose, "loose"},
-	{Opt_fscache, "fscache"},
-	{Opt_cachetag, "cachetag=%s"},
-	{Opt_access, "access=%s"},
-	{Opt_posixacl, "posixacl"},
-=======
 	{Opt_noxattr, "noxattr"},
 	{Opt_directio, "directio"},
 	{Opt_ignoreqv, "ignoreqv"},
@@ -112,7 +63,6 @@ static const match_table_t tokens = {
 	{Opt_access, "access=%s"},
 	{Opt_posixacl, "posixacl"},
 	{Opt_locktimeout, "locktimeout=%u"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{Opt_err, NULL}
 };
 
@@ -122,24 +72,6 @@ static int get_cache_mode(char *s)
 	int version = -EINVAL;
 
 	if (!strcmp(s, "loose")) {
-<<<<<<< HEAD
-		version = CACHE_LOOSE;
-		p9_debug(P9_DEBUG_9P, "Cache mode: loose\n");
-	} else if (!strcmp(s, "fscache")) {
-		version = CACHE_FSCACHE;
-		p9_debug(P9_DEBUG_9P, "Cache mode: fscache\n");
-	} else if (!strcmp(s, "none")) {
-		version = CACHE_NONE;
-		p9_debug(P9_DEBUG_9P, "Cache mode: none\n");
-	} else
-		pr_info("Unknown Cache mode %s\n", s);
-	return version;
-}
-
-/**
- * v9fs_parse_options - parse mount options into session structure
- * @v9ses: existing v9fs session information
-=======
 		version = CACHE_SC_LOOSE;
 		p9_debug(P9_DEBUG_9P, "Cache mode: loose\n");
 	} else if (!strcmp(s, "fscache")) {
@@ -224,7 +156,6 @@ int v9fs_show_options(struct seq_file *m, struct dentry *root)
  * v9fs_parse_options - parse mount options into session structure
  * @v9ses: existing v9fs session information
  * @opts: The mount option string
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return 0 upon success, -ERRNO upon failure.
  */
@@ -235,11 +166,7 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 	substring_t args[MAX_OPT_ARGS];
 	char *p;
 	int option = 0;
-<<<<<<< HEAD
-	char *s, *e;
-=======
 	char *s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	/* setup defaults */
@@ -249,10 +176,7 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 #ifdef CONFIG_9P_FSCACHE
 	v9ses->cachetag = NULL;
 #endif
-<<<<<<< HEAD
-=======
 	v9ses->session_lock_timeout = P9_LOCK_TIMEOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!opts)
 		return 0;
@@ -266,15 +190,10 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 
 	while ((p = strsep(&options, ",")) != NULL) {
 		int token, r;
-<<<<<<< HEAD
-		if (!*p)
-			continue;
-=======
 
 		if (!*p)
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		token = match_token(p, tokens, args);
 		switch (token) {
 		case Opt_debug:
@@ -283,21 +202,12 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 				p9_debug(P9_DEBUG_ERROR,
 					 "integer field, but no integer?\n");
 				ret = r;
-<<<<<<< HEAD
-				continue;
-			}
-			v9ses->debug = option;
-#ifdef CONFIG_NET_9P_DEBUG
-			p9_debug_level = option;
-#endif
-=======
 			} else {
 				v9ses->debug = option;
 #ifdef CONFIG_NET_9P_DEBUG
 				p9_debug_level = option;
 #endif
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case Opt_dfltuid:
@@ -308,16 +218,12 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 				ret = r;
 				continue;
 			}
-<<<<<<< HEAD
-			v9ses->dfltuid = option;
-=======
 			v9ses->dfltuid = make_kuid(current_user_ns(), option);
 			if (!uid_valid(v9ses->dfltuid)) {
 				p9_debug(P9_DEBUG_ERROR,
 					 "uid field, but not a uid?\n");
 				ret = -EINVAL;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case Opt_dfltgid:
 			r = match_int(&args[0], &option);
@@ -327,16 +233,12 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 				ret = r;
 				continue;
 			}
-<<<<<<< HEAD
-			v9ses->dfltgid = option;
-=======
 			v9ses->dfltgid = make_kgid(current_user_ns(), option);
 			if (!gid_valid(v9ses->dfltgid)) {
 				p9_debug(P9_DEBUG_ERROR,
 					 "gid field, but not a gid?\n");
 				ret = -EINVAL;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case Opt_afid:
 			r = match_int(&args[0], &option);
@@ -344,17 +246,6 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 				p9_debug(P9_DEBUG_ERROR,
 					 "integer field, but no integer?\n");
 				ret = r;
-<<<<<<< HEAD
-				continue;
-			}
-			v9ses->afid = option;
-			break;
-		case Opt_uname:
-			match_strlcpy(v9ses->uname, &args[0], PATH_MAX);
-			break;
-		case Opt_remotename:
-			match_strlcpy(v9ses->aname, &args[0], PATH_MAX);
-=======
 			} else {
 				v9ses->afid = option;
 			}
@@ -374,22 +265,10 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 				ret = -ENOMEM;
 				goto free_and_return;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case Opt_nodevmap:
 			v9ses->nodev = 1;
 			break;
-<<<<<<< HEAD
-		case Opt_cache_loose:
-			v9ses->cache = CACHE_LOOSE;
-			break;
-		case Opt_fscache:
-			v9ses->cache = CACHE_FSCACHE;
-			break;
-		case Opt_cachetag:
-#ifdef CONFIG_9P_FSCACHE
-			v9ses->cachetag = match_strdup(&args[0]);
-=======
 		case Opt_noxattr:
 			v9ses->flags |= V9FS_NO_XATTR;
 			break;
@@ -407,7 +286,6 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 				ret = -ENOMEM;
 				goto free_and_return;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			break;
 		case Opt_cache:
@@ -418,22 +296,12 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 					 "problem allocating copy of cache arg\n");
 				goto free_and_return;
 			}
-<<<<<<< HEAD
-			ret = get_cache_mode(s);
-			if (ret == -EINVAL) {
-				kfree(s);
-				goto free_and_return;
-			}
-
-			v9ses->cache = ret;
-=======
 			r = get_cache_mode(s);
 			if (r < 0)
 				ret = r;
 			else
 				v9ses->cache = r;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(s);
 			break;
 
@@ -454,16 +322,6 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 			else if (strcmp(s, "client") == 0) {
 				v9ses->flags |= V9FS_ACCESS_CLIENT;
 			} else {
-<<<<<<< HEAD
-				v9ses->flags |= V9FS_ACCESS_SINGLE;
-				v9ses->uid = simple_strtoul(s, &e, 10);
-				if (*e != '\0') {
-					ret = -EINVAL;
-					pr_info("Unknown access argument %s\n",
-						s);
-					kfree(s);
-					goto free_and_return;
-=======
 				uid_t uid;
 
 				v9ses->flags |= V9FS_ACCESS_SINGLE;
@@ -479,7 +337,6 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 				if (!uid_valid(v9ses->uid)) {
 					ret = -EINVAL;
 					pr_info("Unknown uid %s\n", s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 
@@ -495,8 +352,6 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 #endif
 			break;
 
-<<<<<<< HEAD
-=======
 		case Opt_locktimeout:
 			r = match_int(&args[0], &option);
 			if (r < 0) {
@@ -514,7 +369,6 @@ static int v9fs_parse_options(struct v9fs_session_info *v9ses, char *opts)
 			v9ses->session_lock_timeout = (long)option * HZ;
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			continue;
 		}
@@ -537,37 +391,6 @@ fail_option_alloc:
 struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 		  const char *dev_name, char *data)
 {
-<<<<<<< HEAD
-	int retval = -EINVAL;
-	struct p9_fid *fid;
-	int rc;
-
-	v9ses->uname = __getname();
-	if (!v9ses->uname)
-		return ERR_PTR(-ENOMEM);
-
-	v9ses->aname = __getname();
-	if (!v9ses->aname) {
-		__putname(v9ses->uname);
-		return ERR_PTR(-ENOMEM);
-	}
-	init_rwsem(&v9ses->rename_sem);
-
-	rc = bdi_setup_and_register(&v9ses->bdi, "9p", BDI_CAP_MAP_COPY);
-	if (rc) {
-		__putname(v9ses->aname);
-		__putname(v9ses->uname);
-		return ERR_PTR(rc);
-	}
-
-	spin_lock(&v9fs_sessionlist_lock);
-	list_add(&v9ses->slist, &v9fs_sessionlist);
-	spin_unlock(&v9fs_sessionlist_lock);
-
-	strcpy(v9ses->uname, V9FS_DEFUSER);
-	strcpy(v9ses->aname, V9FS_DEFANAME);
-	v9ses->uid = ~0;
-=======
 	struct p9_fid *fid;
 	int rc = -ENOMEM;
 
@@ -581,22 +404,14 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 	init_rwsem(&v9ses->rename_sem);
 
 	v9ses->uid = INVALID_UID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v9ses->dfltuid = V9FS_DEFUID;
 	v9ses->dfltgid = V9FS_DEFGID;
 
 	v9ses->clnt = p9_client_create(dev_name, data);
 	if (IS_ERR(v9ses->clnt)) {
-<<<<<<< HEAD
-		retval = PTR_ERR(v9ses->clnt);
-		v9ses->clnt = NULL;
-		p9_debug(P9_DEBUG_ERROR, "problem initializing 9p client\n");
-		goto error;
-=======
 		rc = PTR_ERR(v9ses->clnt);
 		p9_debug(P9_DEBUG_ERROR, "problem initializing 9p client\n");
 		goto err_names;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	v9ses->flags = V9FS_ACCESS_USER;
@@ -609,15 +424,8 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 	}
 
 	rc = v9fs_parse_options(v9ses, data);
-<<<<<<< HEAD
-	if (rc < 0) {
-		retval = rc;
-		goto error;
-	}
-=======
 	if (rc < 0)
 		goto err_clnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	v9ses->maxdata = v9ses->clnt->msize - P9_IOHDRSZ;
 
@@ -637,11 +445,7 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 
 		v9ses->flags &= ~V9FS_ACCESS_MASK;
 		v9ses->flags |= V9FS_ACCESS_ANY;
-<<<<<<< HEAD
-		v9ses->uid = ~0;
-=======
 		v9ses->uid = INVALID_UID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!v9fs_proto_dotl(v9ses) ||
 		!((v9ses->flags & V9FS_ACCESS_MASK) == V9FS_ACCESS_CLIENT)) {
@@ -652,41 +456,17 @@ struct p9_fid *v9fs_session_init(struct v9fs_session_info *v9ses,
 		v9ses->flags &= ~V9FS_ACL_MASK;
 	}
 
-<<<<<<< HEAD
-	fid = p9_client_attach(v9ses->clnt, NULL, v9ses->uname, ~0,
-							v9ses->aname);
-	if (IS_ERR(fid)) {
-		retval = PTR_ERR(fid);
-		fid = NULL;
-		p9_debug(P9_DEBUG_ERROR, "cannot attach\n");
-		goto error;
-=======
 	fid = p9_client_attach(v9ses->clnt, NULL, v9ses->uname, INVALID_UID,
 							v9ses->aname);
 	if (IS_ERR(fid)) {
 		rc = PTR_ERR(fid);
 		p9_debug(P9_DEBUG_ERROR, "cannot attach\n");
 		goto err_clnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((v9ses->flags & V9FS_ACCESS_MASK) == V9FS_ACCESS_SINGLE)
 		fid->uid = v9ses->uid;
 	else
-<<<<<<< HEAD
-		fid->uid = ~0;
-
-#ifdef CONFIG_9P_FSCACHE
-	/* register the session for caching */
-	v9fs_cache_session_get_cookie(v9ses);
-#endif
-
-	return fid;
-
-error:
-	bdi_destroy(&v9ses->bdi);
-	return ERR_PTR(retval);
-=======
 		fid->uid = INVALID_UID;
 
 #ifdef CONFIG_9P_FSCACHE
@@ -712,7 +492,6 @@ err_names:
 	kfree(v9ses->uname);
 	kfree(v9ses->aname);
 	return ERR_PTR(rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -729,23 +508,11 @@ void v9fs_session_close(struct v9fs_session_info *v9ses)
 	}
 
 #ifdef CONFIG_9P_FSCACHE
-<<<<<<< HEAD
-	if (v9ses->fscache) {
-		v9fs_cache_session_put_cookie(v9ses);
-		kfree(v9ses->cachetag);
-	}
-#endif
-	__putname(v9ses->uname);
-	__putname(v9ses->aname);
-
-	bdi_destroy(&v9ses->bdi);
-=======
 	fscache_relinquish_volume(v9fs_session_cache(v9ses), NULL, false);
 	kfree(v9ses->cachetag);
 #endif
 	kfree(v9ses->uname);
 	kfree(v9ses->aname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&v9fs_sessionlist_lock);
 	list_del(&v9ses->slist);
@@ -759,12 +526,8 @@ void v9fs_session_close(struct v9fs_session_info *v9ses)
  * mark transport as disconnected and cancel all pending requests.
  */
 
-<<<<<<< HEAD
-void v9fs_session_cancel(struct v9fs_session_info *v9ses) {
-=======
 void v9fs_session_cancel(struct v9fs_session_info *v9ses)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p9_debug(P9_DEBUG_ERROR, "cancel session %p\n", v9ses);
 	p9_client_disconnect(v9ses->clnt);
 }
@@ -782,26 +545,12 @@ void v9fs_session_begin_cancel(struct v9fs_session_info *v9ses)
 	p9_client_begin_disconnect(v9ses->clnt);
 }
 
-<<<<<<< HEAD
-extern int v9fs_error_init(void);
-
-static struct kobject *v9fs_kobj;
-
-#ifdef CONFIG_9P_FSCACHE
-/**
- * caches_show - list caches associated with a session
- *
- * Returns the size of buffer written.
- */
-
-=======
 static struct kobject *v9fs_kobj;
 
 #ifdef CONFIG_9P_FSCACHE
 /*
  * List caches associated with a session
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t caches_show(struct kobject *kobj,
 			   struct kobj_attribute *attr,
 			   char *buf)
@@ -837,11 +586,7 @@ static struct attribute *v9fs_attrs[] = {
 	NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group v9fs_attr_group = {
-=======
 static const struct attribute_group v9fs_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = v9fs_attrs,
 };
 
@@ -850,11 +595,7 @@ static const struct attribute_group v9fs_attr_group = {
  *
  */
 
-<<<<<<< HEAD
-static int v9fs_sysfs_init(void)
-=======
 static int __init v9fs_sysfs_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	v9fs_kobj = kobject_create_and_add("9p", fs_kobj);
 	if (!v9fs_kobj)
@@ -882,17 +623,9 @@ static void v9fs_sysfs_cleanup(void)
 static void v9fs_inode_init_once(void *foo)
 {
 	struct v9fs_inode *v9inode = (struct v9fs_inode *)foo;
-<<<<<<< HEAD
-#ifdef CONFIG_9P_FSCACHE
-	v9inode->fscache = NULL;
-#endif
-	memset(&v9inode->qid, 0, sizeof(v9inode->qid));
-	inode_init_once(&v9inode->vfs_inode);
-=======
 
 	memset(&v9inode->qid, 0, sizeof(v9inode->qid));
 	inode_init_once(&v9inode->netfs.inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -904,11 +637,7 @@ static int v9fs_init_inode_cache(void)
 	v9fs_inode_cache = kmem_cache_create("v9fs_inode_cache",
 					  sizeof(struct v9fs_inode),
 					  0, (SLAB_RECLAIM_ACCOUNT|
-<<<<<<< HEAD
-					      SLAB_MEM_SPREAD),
-=======
 					      SLAB_ACCOUNT),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  v9fs_inode_init_once);
 	if (!v9fs_inode_cache)
 		return -ENOMEM;
@@ -933,33 +662,16 @@ static void v9fs_destroy_inode_cache(void)
 static int v9fs_cache_register(void)
 {
 	int ret;
-<<<<<<< HEAD
-	ret = v9fs_init_inode_cache();
-	if (ret < 0)
-		return ret;
-#ifdef CONFIG_9P_FSCACHE
-	return fscache_register_netfs(&v9fs_cache_netfs);
-#else
-	return ret;
-#endif
-=======
 
 	ret = v9fs_init_inode_cache();
 	if (ret < 0)
 		return ret;
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void v9fs_cache_unregister(void)
 {
 	v9fs_destroy_inode_cache();
-<<<<<<< HEAD
-#ifdef CONFIG_9P_FSCACHE
-	fscache_unregister_netfs(&v9fs_cache_netfs);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -970,10 +682,7 @@ static void v9fs_cache_unregister(void)
 static int __init init_v9fs(void)
 {
 	int err;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("Installing v9fs 9p2000 file system support\n");
 	/* TODO: Setup list of registered trasnport modules */
 
@@ -1023,8 +732,5 @@ module_exit(exit_v9fs)
 MODULE_AUTHOR("Latchesar Ionkov <lucho@ionkov.net>");
 MODULE_AUTHOR("Eric Van Hensbergen <ericvh@gmail.com>");
 MODULE_AUTHOR("Ron Minnich <rminnich@lanl.gov>");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("9P Client File System");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

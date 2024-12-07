@@ -1,41 +1,16 @@
-<<<<<<< HEAD
-/*
- * SuperH FLCTL nand controller
- *
- * Copyright © 2008 Renesas Solutions Corp.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
  * SuperH FLCTL nand controller
  *
  * Copyright © 2008 Renesas Solutions Corp.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SH_FLCTL_H__
 #define __SH_FLCTL_H__
 
-<<<<<<< HEAD
-#include <linux/mtd/mtd.h>
-#include <linux/mtd/nand.h>
-=======
 #include <linux/completion.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/rawnand.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mtd/partitions.h>
 #include <linux/pm_qos.h>
 
@@ -63,10 +38,6 @@
 #define	FLERRADR(f)		(f->reg + 0x98)
 
 /* FLCMNCR control bits */
-<<<<<<< HEAD
-#define ECCPOS2		(0x1 << 25)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _4ECCCNTEN	(0x1 << 24)
 #define _4ECCEN		(0x1 << 23)
 #define _4ECCCORRECT	(0x1 << 22)
@@ -76,12 +47,6 @@
 #define QTSEL_E		(0x1 << 17)
 #define ENDIAN		(0x1 << 16)	/* 1 = little endian */
 #define FCKSEL_E	(0x1 << 15)
-<<<<<<< HEAD
-#define ECCPOS_00	(0x00 << 12)
-#define ECCPOS_01	(0x01 << 12)
-#define ECCPOS_02	(0x02 << 12)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACM_SACCES_MODE	(0x01 << 10)
 #define NANWF_E		(0x1 << 9)
 #define SE_D		(0x1 << 8)	/* Spare area disable */
@@ -127,8 +92,6 @@
 #define DOCMD2_E	(0x1 << 17)	/* 2nd cmd stage execute */
 #define DOCMD1_E	(0x1 << 16)	/* 1st cmd stage execute */
 
-<<<<<<< HEAD
-=======
 /* FLINTDMACR control bits */
 #define ESTERINTE	(0x1 << 24)	/* ECC error interrupt enable */
 #define AC1CLR		(0x1 << 19)	/* ECC FIFO clear */
@@ -138,7 +101,6 @@
 #define STERB		(0x1 << 8)	/* Status error */
 #define STERINTE	(0x1 << 4)	/* Status error enable */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FLTRCR control bits */
 #define TRSTRT		(0x1 << 0)	/* translation start */
 #define TREND		(0x1 << 1)	/* translation end */
@@ -157,13 +119,6 @@
 #define	_4ECCEND	(0x1 << 1)	/* 4 symbols end */
 #define	_4ECCEXST	(0x1 << 0)	/* 4 symbols exist */
 
-<<<<<<< HEAD
-#define INIT_FL4ECCRESULT_VAL	0x03FF03FF
-#define LOOP_TIMEOUT_MAX	0x00010000
-
-struct sh_flctl {
-	struct mtd_info		mtd;
-=======
 #define LOOP_TIMEOUT_MAX	0x00010000
 
 enum flctl_ecc_res_t {
@@ -176,23 +131,15 @@ enum flctl_ecc_res_t {
 struct dma_chan;
 
 struct sh_flctl {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nand_chip	chip;
 	struct platform_device	*pdev;
 	struct dev_pm_qos_request pm_qos;
 	void __iomem		*reg;
-<<<<<<< HEAD
-
-	uint8_t	done_buff[2048 + 64];	/* max size 2048 + 64 */
-	int	read_bytes;
-	int	index;
-=======
 	resource_size_t		fifo;
 
 	uint8_t	done_buff[2048 + 64];	/* max size 2048 + 64 */
 	int	read_bytes;
 	unsigned int index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	seqin_column;		/* column in SEQIN cmd */
 	int	seqin_page_addr;	/* page_addr in SEQIN cmd */
 	uint32_t seqin_read_cmd;		/* read cmd in SEQIN cmd */
@@ -200,25 +147,17 @@ struct sh_flctl {
 	uint32_t erase_ADRCNT;		/* bits of FLCMDCR in ERASE1 cmd */
 	uint32_t rw_ADRCNT;	/* bits of FLCMDCR in READ WRITE cmd */
 	uint32_t flcmncr_base;	/* base value of FLCMNCR */
-<<<<<<< HEAD
-
-	int	hwecc_cant_correct[4];
-=======
 	uint32_t flintdmacr_base;	/* irq enable bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned page_size:1;	/* NAND page size (0 = 512, 1 = 2048) */
 	unsigned hwecc:1;	/* Hardware ECC (0 = disabled, 1 = enabled) */
 	unsigned holden:1;	/* Hardware has FLHOLDCR and HOLDEN is set */
 	unsigned qos_request:1;	/* QoS request to prevent deep power shutdown */
-<<<<<<< HEAD
-=======
 
 	/* DMA related objects */
 	struct dma_chan		*chan_fifo0_rx;
 	struct dma_chan		*chan_fifo0_tx;
 	struct completion	dma_complete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sh_flctl_platform_data {
@@ -228,21 +167,14 @@ struct sh_flctl_platform_data {
 
 	unsigned has_hwecc:1;
 	unsigned use_holden:1;
-<<<<<<< HEAD
-=======
 
 	unsigned int            slave_id_fifo0_tx;
 	unsigned int            slave_id_fifo0_rx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct sh_flctl *mtd_to_flctl(struct mtd_info *mtdinfo)
 {
-<<<<<<< HEAD
-	return container_of(mtdinfo, struct sh_flctl, mtd);
-=======
 	return container_of(mtd_to_nand(mtdinfo), struct sh_flctl, chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif	/* __SH_FLCTL_H__ */

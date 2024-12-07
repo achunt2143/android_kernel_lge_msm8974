@@ -180,11 +180,6 @@
 #include <linux/types.h>
 #include <linux/dma-mapping.h>
 
-<<<<<<< HEAD
-#include <scsi/sg.h>
-#include "scsi.h"
-#include <scsi/scsi_host.h>
-=======
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
@@ -192,7 +187,6 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
 #include <scsi/sg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ips.h"
 
@@ -216,19 +210,9 @@ module_param(ips, charp, 0);
 #define IPS_VERSION_HIGH        IPS_VER_MAJOR_STRING "." IPS_VER_MINOR_STRING
 #define IPS_VERSION_LOW         "." IPS_VER_BUILD_STRING " "
 
-<<<<<<< HEAD
-#if !defined(__i386__) && !defined(__ia64__) && !defined(__x86_64__)
-#warning "This driver has only been tested on the x86/ia64/x86_64 platforms"
-#endif
-
-#define IPS_DMA_DIR(scb) ((!scb->scsi_cmd || ips_is_passthru(scb->scsi_cmd) || \
-                         DMA_NONE == scb->scsi_cmd->sc_data_direction) ? \
-                         PCI_DMA_BIDIRECTIONAL : \
-=======
 #define IPS_DMA_DIR(scb) ((!scb->scsi_cmd || ips_is_passthru(scb->scsi_cmd) || \
                          DMA_NONE == scb->scsi_cmd->sc_data_direction) ? \
                          DMA_BIDIRECTIONAL : \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                          scb->scsi_cmd->sc_data_direction)
 
 #ifdef IPS_DEBUG
@@ -244,11 +228,6 @@ module_param(ips, charp, 0);
 /*
  * Function prototypes
  */
-<<<<<<< HEAD
-static int ips_detect(struct scsi_host_template *);
-static int ips_release(struct Scsi_Host *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ips_eh_abort(struct scsi_cmnd *);
 static int ips_eh_reset(struct scsi_cmnd *);
 static int ips_queue(struct Scsi_Host *, struct scsi_cmnd *);
@@ -316,11 +295,7 @@ static void ips_freescb(ips_ha_t *, ips_scb_t *);
 static void ips_setup_funclist(ips_ha_t *);
 static void ips_statinit(ips_ha_t *);
 static void ips_statinit_memio(ips_ha_t *);
-<<<<<<< HEAD
-static void ips_fix_ffdc_time(ips_ha_t *, ips_scb_t *, time_t);
-=======
 static void ips_fix_ffdc_time(ips_ha_t *, ips_scb_t *, time64_t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ips_ffdc_reset(ips_ha_t *, int);
 static void ips_ffdc_time(ips_ha_t *);
 static uint32_t ips_statupd_copperhead(ips_ha_t *);
@@ -328,22 +303,13 @@ static uint32_t ips_statupd_copperhead_memio(ips_ha_t *);
 static uint32_t ips_statupd_morpheus(ips_ha_t *);
 static ips_scb_t *ips_getscb(ips_ha_t *);
 static void ips_putq_scb_head(ips_scb_queue_t *, ips_scb_t *);
-<<<<<<< HEAD
-static void ips_putq_wait_tail(ips_wait_queue_t *, struct scsi_cmnd *);
-=======
 static void ips_putq_wait_tail(ips_wait_queue_entry_t *, struct scsi_cmnd *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ips_putq_copp_tail(ips_copp_queue_t *,
 				      ips_copp_wait_item_t *);
 static ips_scb_t *ips_removeq_scb_head(ips_scb_queue_t *);
 static ips_scb_t *ips_removeq_scb(ips_scb_queue_t *, ips_scb_t *);
-<<<<<<< HEAD
-static struct scsi_cmnd *ips_removeq_wait_head(ips_wait_queue_t *);
-static struct scsi_cmnd *ips_removeq_wait(ips_wait_queue_t *,
-=======
 static struct scsi_cmnd *ips_removeq_wait_head(ips_wait_queue_entry_t *);
 static struct scsi_cmnd *ips_removeq_wait(ips_wait_queue_entry_t *,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  struct scsi_cmnd *);
 static ips_copp_wait_item_t *ips_removeq_copp(ips_copp_queue_t *,
 						     ips_copp_wait_item_t *);
@@ -358,16 +324,9 @@ static void ips_scmd_buf_write(struct scsi_cmnd * scmd, void *data,
 static void ips_scmd_buf_read(struct scsi_cmnd * scmd, void *data,
 			      unsigned int count);
 
-<<<<<<< HEAD
-static int ips_proc_info(struct Scsi_Host *, char *, char **, off_t, int, int);
-static int ips_host_info(ips_ha_t *, char *, off_t, int);
-static void copy_mem_info(IPS_INFOSTR *, char *, int);
-static int copy_info(IPS_INFOSTR *, char *, ...);
-=======
 static int ips_write_info(struct Scsi_Host *, char *, int);
 static int ips_show_info(struct seq_file *, struct Scsi_Host *);
 static int ips_host_info(ips_ha_t *, struct seq_file *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ips_abort_init(ips_ha_t * ha, int index);
 static int ips_init_phase2(int index);
 
@@ -398,32 +357,19 @@ static dma_addr_t ips_flashbusaddr;
 static long ips_FlashDataInUse;		/* CD Boot - Flash Data In Use Flag */
 static uint32_t MaxLiteCmds = 32;	/* Max Active Cmds for a Lite Adapter */
 static struct scsi_host_template ips_driver_template = {
-<<<<<<< HEAD
-	.detect			= ips_detect,
-	.release		= ips_release,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= ips_info,
 	.queuecommand		= ips_queue,
 	.eh_abort_handler	= ips_eh_abort,
 	.eh_host_reset_handler	= ips_eh_reset,
 	.proc_name		= "ips",
-<<<<<<< HEAD
-	.proc_info		= ips_proc_info,
-=======
 	.show_info		= ips_show_info,
 	.write_info		= ips_write_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.slave_configure	= ips_slave_configure,
 	.bios_param		= ips_biosparam,
 	.this_id		= -1,
 	.sg_tablesize		= IPS_MAX_SG,
 	.cmd_per_lun		= 3,
-<<<<<<< HEAD
-	.use_clustering		= ENABLE_CLUSTERING,
-=======
 	.no_write_same		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -439,23 +385,14 @@ MODULE_DEVICE_TABLE( pci, ips_pci_table );
 
 static char ips_hot_plug_name[] = "ips";
 
-<<<<<<< HEAD
-static int __devinit  ips_insert_device(struct pci_dev *pci_dev, const struct pci_device_id *ent);
-static void __devexit ips_remove_device(struct pci_dev *pci_dev);
-=======
 static int  ips_insert_device(struct pci_dev *pci_dev, const struct pci_device_id *ent);
 static void ips_remove_device(struct pci_dev *pci_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver ips_pci_driver = {
 	.name		= ips_hot_plug_name,
 	.id_table	= ips_pci_table,
 	.probe		= ips_insert_device,
-<<<<<<< HEAD
-	.remove		= __devexit_p(ips_remove_device),
-=======
 	.remove		= ips_remove_device,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -565,11 +502,7 @@ ips_setup(char *ips_str)
 	int i;
 	char *key;
 	char *value;
-<<<<<<< HEAD
-	IPS_OPTION options[] = {
-=======
 	static const IPS_OPTION options[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{"noi2o", &ips_force_i2o, 0},
 		{"nommap", &ips_force_memio, 0},
 		{"ioctlsize", &ips_ioctlsize, IPS_IOCTL_SIZE},
@@ -590,11 +523,7 @@ ips_setup(char *ips_str)
 		 * Update the variables
 		 */
 		for (i = 0; i < ARRAY_SIZE(options); i++) {
-<<<<<<< HEAD
-			if (strnicmp
-=======
 			if (strncasecmp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (key, options[i].option_name,
 			     strlen(options[i].option_name)) == 0) {
 				if (value)
@@ -713,12 +642,7 @@ ips_setup_funclist(ips_ha_t * ha)
 /*   Remove a driver                                                        */
 /*                                                                          */
 /****************************************************************************/
-<<<<<<< HEAD
-static int
-ips_release(struct Scsi_Host *sh)
-=======
 static void ips_release(struct Scsi_Host *sh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ips_scb_t *scb;
 	ips_ha_t *ha;
@@ -734,20 +658,12 @@ static void ips_release(struct Scsi_Host *sh)
 		printk(KERN_WARNING
 		       "(%s) release, invalid Scsi_Host pointer.\n", ips_name);
 		BUG();
-<<<<<<< HEAD
-		return (FALSE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ha = IPS_HA(sh);
 
 	if (!ha)
-<<<<<<< HEAD
-		return (FALSE);
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* flush the cache on the controller */
 	scb = &ha->scbs[ha->max_cmds - 1];
@@ -785,11 +701,6 @@ static void ips_release(struct Scsi_Host *sh)
 	scsi_host_put(sh);
 
 	ips_released_controllers++;
-<<<<<<< HEAD
-
-	return (FALSE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
@@ -924,10 +835,6 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 	int i;
 	ips_ha_t *ha;
 	ips_scb_t *scb;
-<<<<<<< HEAD
-	ips_copp_wait_item_t *item;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	METHOD_TRACE("ips_eh_reset", 1);
 
@@ -952,26 +859,6 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 	if (!ha->active)
 		return (FAILED);
 
-<<<<<<< HEAD
-	/* See if the command is on the copp queue */
-	item = ha->copp_waitlist.head;
-	while ((item) && (item->scsi_cmd != SC))
-		item = item->next;
-
-	if (item) {
-		/* Found it */
-		ips_removeq_copp(&ha->copp_waitlist, item);
-		return (SUCCESS);
-	}
-
-	/* See if the command is on the wait queue */
-	if (ips_removeq_wait(&ha->scb_waitlist, SC)) {
-		/* command not sent yet */
-		return (SUCCESS);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* An explanation for the casual observer:                              */
 	/* Part of the function of a RAID controller is automatic error         */
 	/* detection and recovery.  As such, the only problem that physically   */
@@ -1031,11 +918,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 
 		while ((scb = ips_removeq_scb_head(&ha->scb_activelist))) {
 			scb->scsi_cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-			scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 			scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ips_freescb(ha, scb);
 		}
 
@@ -1045,17 +928,10 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 
 		while ((scsi_cmd = ips_removeq_wait_head(&ha->scb_waitlist))) {
 			scsi_cmd->result = DID_ERROR;
-<<<<<<< HEAD
-			scsi_cmd->scsi_done(scsi_cmd);
-		}
-
-		ha->active = FALSE;
-=======
 			scsi_done(scsi_cmd);
 		}
 
 		ha->active = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (FAILED);
 	}
 
@@ -1071,11 +947,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 
 		while ((scb = ips_removeq_scb_head(&ha->scb_activelist))) {
 			scb->scsi_cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-			scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 			scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ips_freescb(ha, scb);
 		}
 
@@ -1085,30 +957,16 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 
 		while ((scsi_cmd = ips_removeq_wait_head(&ha->scb_waitlist))) {
 			scsi_cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-			scsi_cmd->scsi_done(scsi_cmd);
-		}
-
-		ha->active = FALSE;
-=======
 			scsi_done(scsi_cmd);
 		}
 
 		ha->active = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (FAILED);
 	}
 
 	/* FFDC */
 	if (le32_to_cpu(ha->subsys->param[3]) & 0x300000) {
-<<<<<<< HEAD
-		struct timeval tv;
-
-		do_gettimeofday(&tv);
-		ha->last_ffdc = tv.tv_sec;
-=======
 		ha->last_ffdc = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->reset_count++;
 		ips_ffdc_reset(ha, IPS_INTR_IORL);
 	}
@@ -1118,11 +976,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 
 	while ((scb = ips_removeq_scb_head(&ha->scb_activelist))) {
 		scb->scsi_cmd->result = DID_RESET << 16;
-<<<<<<< HEAD
-		scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 		scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ips_freescb(ha, scb);
 	}
 
@@ -1163,14 +1017,9 @@ static int ips_eh_reset(struct scsi_cmnd *SC)
 /*    Linux obtains io_request_lock before calling this function            */
 /*                                                                          */
 /****************************************************************************/
-<<<<<<< HEAD
-static int ips_queue_lck(struct scsi_cmnd *SC, void (*done) (struct scsi_cmnd *))
-{
-=======
 static int ips_queue_lck(struct scsi_cmnd *SC)
 {
 	void (*done)(struct scsi_cmnd *) = scsi_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ips_ha_t *ha;
 	ips_passthru_t *pt;
 
@@ -1179,17 +1028,10 @@ static int ips_queue_lck(struct scsi_cmnd *SC)
 	ha = (ips_ha_t *) SC->device->host->hostdata;
 
 	if (!ha)
-<<<<<<< HEAD
-		return (1);
-
-	if (!ha->active)
-		return (DID_ERROR);
-=======
 		goto out_error;
 
 	if (!ha->active)
 		goto out_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ips_is_passthru(SC)) {
 		if (ha->copp_waitlist.count == IPS_MAX_IOCTL_QUEUE) {
@@ -1205,11 +1047,6 @@ static int ips_queue_lck(struct scsi_cmnd *SC)
 		return (0);
 	}
 
-<<<<<<< HEAD
-	SC->scsi_done = done;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEBUG_VAR(2, "(%s%d): ips_queue: cmd 0x%X (%d %d %d)",
 		  ips_name,
 		  ha->host_num,
@@ -1243,11 +1080,7 @@ static int ips_queue_lck(struct scsi_cmnd *SC)
 			ha->ioctl_reset = 1;	/* This reset request is from an IOCTL */
 			__ips_eh_reset(SC);
 			SC->result = DID_OK << 16;
-<<<<<<< HEAD
-			SC->scsi_done(SC);
-=======
 			scsi_done(SC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (0);
 		}
 
@@ -1272,14 +1105,11 @@ static int ips_queue_lck(struct scsi_cmnd *SC)
 	ips_next(ha, IPS_INTR_IORL);
 
 	return (0);
-<<<<<<< HEAD
-=======
 out_error:
 	SC->result = DID_ERROR << 16;
 	done(SC);
 
 	return (0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEF_SCSI_QCMD(ips_queue)
@@ -1354,11 +1184,7 @@ ips_slave_configure(struct scsi_device * SDptr)
 		min = ha->max_cmds / 2;
 		if (ha->enq->ucLogDriveCount <= 2)
 			min = ha->max_cmds - 1;
-<<<<<<< HEAD
-		scsi_adjust_queue_depth(SDptr, MSG_ORDERED_TAG, min);
-=======
 		scsi_change_queue_depth(SDptr, min);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	SDptr->skip_ms_page_8 = 1;
@@ -1447,11 +1273,7 @@ ips_intr_copperhead(ips_ha_t * ha)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	while (TRUE) {
-=======
 	while (true) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sp = &ha->sp;
 
 		intrstatus = (*ha->func.isintr) (ha);
@@ -1515,11 +1337,7 @@ ips_intr_morpheus(ips_ha_t * ha)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	while (TRUE) {
-=======
 	while (true) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sp = &ha->sp;
 
 		intrstatus = (*ha->func.isintr) (ha);
@@ -1590,34 +1408,12 @@ ips_info(struct Scsi_Host *SH)
 	return (bp);
 }
 
-<<<<<<< HEAD
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_proc_info                                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   The passthru interface for the driver                                  */
-/*                                                                          */
-/****************************************************************************/
-static int
-ips_proc_info(struct Scsi_Host *host, char *buffer, char **start, off_t offset,
-	      int length, int func)
-{
-	int i;
-	int ret;
-	ips_ha_t *ha = NULL;
-
-	METHOD_TRACE("ips_proc_info", 1);
-
-=======
 static int
 ips_write_info(struct Scsi_Host *host, char *buffer, int length)
 {
 	int i;
 	ips_ha_t *ha = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Find our host structure */
 	for (i = 0; i < ips_next_controller; i++) {
 		if (ips_sh[i]) {
@@ -1631,20 +1427,6 @@ ips_write_info(struct Scsi_Host *host, char *buffer, int length)
 	if (!ha)
 		return (-EINVAL);
 
-<<<<<<< HEAD
-	if (func) {
-		/* write */
-		return (0);
-	} else {
-		/* read */
-		if (start)
-			*start = buffer;
-
-		ret = ips_host_info(ha, buffer, offset, length);
-
-		return (ret);
-	}
-=======
 	return 0;
 }
 
@@ -1668,7 +1450,6 @@ ips_show_info(struct seq_file *m, struct Scsi_Host *host)
 		return (-EINVAL);
 
 	return ips_host_info(ha, m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*--------------------------------------------------------------------------*/
@@ -1700,19 +1481,6 @@ static int ips_is_passthru(struct scsi_cmnd *SC)
                 struct scatterlist *sg = scsi_sglist(SC);
                 char  *buffer;
 
-<<<<<<< HEAD
-                /* kmap_atomic() ensures addressability of the user buffer.*/
-                /* local_irq_save() protects the KM_IRQ0 address slot.     */
-                local_irq_save(flags);
-                buffer = kmap_atomic(sg_page(sg)) + sg->offset;
-                if (buffer && buffer[0] == 'C' && buffer[1] == 'O' &&
-                    buffer[2] == 'P' && buffer[3] == 'P') {
-                        kunmap_atomic(buffer - sg->offset);
-                        local_irq_restore(flags);
-                        return 1;
-                }
-                kunmap_atomic(buffer - sg->offset);
-=======
                 /* local_irq_save() protects the KM_IRQ0 address slot.     */
                 local_irq_save(flags);
 		buffer = kmap_local_page(sg_page(sg)) + sg->offset;
@@ -1723,7 +1491,6 @@ static int ips_is_passthru(struct scsi_cmnd *SC)
                         return 1;
                 }
 		kunmap_local(buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 local_irq_restore(flags);
 	}
 	return 0;
@@ -1746,20 +1513,12 @@ ips_alloc_passthru_buffer(ips_ha_t * ha, int length)
 	if (ha->ioctl_data && length <= ha->ioctl_len)
 		return 0;
 	/* there is no buffer or it's not big enough, allocate a new one */
-<<<<<<< HEAD
-	bigger_buf = pci_alloc_consistent(ha->pcidev, length, &dma_busaddr);
-	if (bigger_buf) {
-		/* free the old memory */
-		pci_free_consistent(ha->pcidev, ha->ioctl_len, ha->ioctl_data,
-				    ha->ioctl_busaddr);
-=======
 	bigger_buf = dma_alloc_coherent(&ha->pcidev->dev, length, &dma_busaddr,
 			GFP_KERNEL);
 	if (bigger_buf) {
 		/* free the old memory */
 		dma_free_coherent(&ha->pcidev->dev, ha->ioctl_len,
 				  ha->ioctl_data, ha->ioctl_busaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* use the new memory */
 		ha->ioctl_data = (char *) bigger_buf;
 		ha->ioctl_len = length;
@@ -1904,14 +1663,8 @@ ips_flash_copperhead(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 		} else if (!ha->flash_data) {
 			datasize = pt->CoppCP.cmd.flashfw.total_packets *
 			    pt->CoppCP.cmd.flashfw.count;
-<<<<<<< HEAD
-			ha->flash_data = pci_alloc_consistent(ha->pcidev,
-					                      datasize,
-							      &ha->flash_busaddr);
-=======
 			ha->flash_data = dma_alloc_coherent(&ha->pcidev->dev,
 					datasize, &ha->flash_busaddr, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!ha->flash_data){
 				printk(KERN_WARNING "Unable to allocate a flash buffer\n");
 				return IPS_FAILURE;
@@ -2032,15 +1785,6 @@ ips_fill_scb_sg_single(ips_ha_t * ha, dma_addr_t busaddr,
 	}
 	if (IPS_USE_ENH_SGLIST(ha)) {
 		scb->sg_list.enh_list[indx].address_lo =
-<<<<<<< HEAD
-		    cpu_to_le32(pci_dma_lo32(busaddr));
-		scb->sg_list.enh_list[indx].address_hi =
-		    cpu_to_le32(pci_dma_hi32(busaddr));
-		scb->sg_list.enh_list[indx].length = cpu_to_le32(e_len);
-	} else {
-		scb->sg_list.std_list[indx].address =
-		    cpu_to_le32(pci_dma_lo32(busaddr));
-=======
 		    cpu_to_le32(lower_32_bits(busaddr));
 		scb->sg_list.enh_list[indx].address_hi =
 		    cpu_to_le32(upper_32_bits(busaddr));
@@ -2048,7 +1792,6 @@ ips_fill_scb_sg_single(ips_ha_t * ha, dma_addr_t busaddr,
 	} else {
 		scb->sg_list.std_list[indx].address =
 		    cpu_to_le32(lower_32_bits(busaddr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scb->sg_list.std_list[indx].length = cpu_to_le32(e_len);
 	}
 
@@ -2099,11 +1842,7 @@ ips_flash_firmware(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 
 	scb->data_len = ha->flash_datasize;
 	scb->data_busaddr =
-<<<<<<< HEAD
-	    pci_map_single(ha->pcidev, ha->flash_data, scb->data_len,
-=======
 	    dma_map_single(&ha->pcidev->dev, ha->flash_data, scb->data_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   IPS_DMA_DIR(scb));
 	scb->flags |= IPS_SCB_MAP_SINGLE;
 	scb->cmd.flashfw.command_id = IPS_COMMAND_ID(ha, scb);
@@ -2125,13 +1864,8 @@ ips_free_flash_copperhead(ips_ha_t * ha)
 	if (ha->flash_data == ips_FlashData)
 		test_and_clear_bit(0, &ips_FlashDataInUse);
 	else if (ha->flash_data)
-<<<<<<< HEAD
-		pci_free_consistent(ha->pcidev, ha->flash_len, ha->flash_data,
-				    ha->flash_busaddr);
-=======
 		dma_free_coherent(&ha->pcidev->dev, ha->flash_len,
 				  ha->flash_data, ha->flash_busaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->flash_data = NULL;
 }
 
@@ -2273,45 +2007,6 @@ ips_cleanup_passthru(ips_ha_t * ha, ips_scb_t * scb)
 /*                                                                          */
 /****************************************************************************/
 static int
-<<<<<<< HEAD
-ips_host_info(ips_ha_t * ha, char *ptr, off_t offset, int len)
-{
-	IPS_INFOSTR info;
-
-	METHOD_TRACE("ips_host_info", 1);
-
-	info.buffer = ptr;
-	info.length = len;
-	info.offset = offset;
-	info.pos = 0;
-	info.localpos = 0;
-
-	copy_info(&info, "\nIBM ServeRAID General Information:\n\n");
-
-	if ((le32_to_cpu(ha->nvram->signature) == IPS_NVRAM_P5_SIG) &&
-	    (le16_to_cpu(ha->nvram->adapter_type) != 0))
-		copy_info(&info, "\tController Type                   : %s\n",
-			  ips_adapter_name[ha->ad_type - 1]);
-	else
-		copy_info(&info,
-			  "\tController Type                   : Unknown\n");
-
-	if (ha->io_addr)
-		copy_info(&info,
-			  "\tIO region                         : 0x%lx (%d bytes)\n",
-			  ha->io_addr, ha->io_len);
-
-	if (ha->mem_addr) {
-		copy_info(&info,
-			  "\tMemory region                     : 0x%lx (%d bytes)\n",
-			  ha->mem_addr, ha->mem_len);
-		copy_info(&info,
-			  "\tShared memory address             : 0x%lx\n",
-			  ha->mem_ptr);
-	}
-
-	copy_info(&info, "\tIRQ number                        : %d\n", ha->pcidev->irq);
-=======
 ips_host_info(ips_ha_t *ha, struct seq_file *m)
 {
 	METHOD_TRACE("ips_host_info", 1);
@@ -2340,29 +2035,12 @@ ips_host_info(ips_ha_t *ha, struct seq_file *m)
 	}
 
 	seq_printf(m, "\tIRQ number                        : %d\n", ha->pcidev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* For the Next 3 lines Check for Binary 0 at the end and don't include it if it's there. */
     /* That keeps everything happy for "text" operations on the proc file.                    */
 
 	if (le32_to_cpu(ha->nvram->signature) == IPS_NVRAM_P5_SIG) {
 	if (ha->nvram->bios_low[3] == 0) {
-<<<<<<< HEAD
-            copy_info(&info,
-			          "\tBIOS Version                      : %c%c%c%c%c%c%c\n",
-			          ha->nvram->bios_high[0], ha->nvram->bios_high[1],
-			          ha->nvram->bios_high[2], ha->nvram->bios_high[3],
-			          ha->nvram->bios_low[0], ha->nvram->bios_low[1],
-			          ha->nvram->bios_low[2]);
-
-        } else {
-		    copy_info(&info,
-			          "\tBIOS Version                      : %c%c%c%c%c%c%c%c\n",
-			          ha->nvram->bios_high[0], ha->nvram->bios_high[1],
-			          ha->nvram->bios_high[2], ha->nvram->bios_high[3],
-			          ha->nvram->bios_low[0], ha->nvram->bios_low[1],
-			          ha->nvram->bios_low[2], ha->nvram->bios_low[3]);
-=======
 		seq_printf(m,
 			  "\tBIOS Version                      : %c%c%c%c%c%c%c\n",
 			  ha->nvram->bios_high[0], ha->nvram->bios_high[1],
@@ -2377,129 +2055,11 @@ ips_host_info(ips_ha_t *ha, struct seq_file *m)
 			  ha->nvram->bios_high[2], ha->nvram->bios_high[3],
 			  ha->nvram->bios_low[0], ha->nvram->bios_low[1],
 			  ha->nvram->bios_low[2], ha->nvram->bios_low[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         }
 
     }
 
     if (ha->enq->CodeBlkVersion[7] == 0) {
-<<<<<<< HEAD
-        copy_info(&info,
-		          "\tFirmware Version                  : %c%c%c%c%c%c%c\n",
-		          ha->enq->CodeBlkVersion[0], ha->enq->CodeBlkVersion[1],
-		          ha->enq->CodeBlkVersion[2], ha->enq->CodeBlkVersion[3],
-		          ha->enq->CodeBlkVersion[4], ha->enq->CodeBlkVersion[5],
-		          ha->enq->CodeBlkVersion[6]);
-    } else {
-        copy_info(&info,
-		          "\tFirmware Version                  : %c%c%c%c%c%c%c%c\n",
-		          ha->enq->CodeBlkVersion[0], ha->enq->CodeBlkVersion[1],
-		          ha->enq->CodeBlkVersion[2], ha->enq->CodeBlkVersion[3],
-		          ha->enq->CodeBlkVersion[4], ha->enq->CodeBlkVersion[5],
-		          ha->enq->CodeBlkVersion[6], ha->enq->CodeBlkVersion[7]);
-    }
-
-    if (ha->enq->BootBlkVersion[7] == 0) {
-        copy_info(&info,
-		          "\tBoot Block Version                : %c%c%c%c%c%c%c\n",
-		          ha->enq->BootBlkVersion[0], ha->enq->BootBlkVersion[1],
-		          ha->enq->BootBlkVersion[2], ha->enq->BootBlkVersion[3],
-		          ha->enq->BootBlkVersion[4], ha->enq->BootBlkVersion[5],
-		          ha->enq->BootBlkVersion[6]);
-    } else {
-        copy_info(&info,
-		          "\tBoot Block Version                : %c%c%c%c%c%c%c%c\n",
-		          ha->enq->BootBlkVersion[0], ha->enq->BootBlkVersion[1],
-		          ha->enq->BootBlkVersion[2], ha->enq->BootBlkVersion[3],
-		          ha->enq->BootBlkVersion[4], ha->enq->BootBlkVersion[5],
-		          ha->enq->BootBlkVersion[6], ha->enq->BootBlkVersion[7]);
-    }
-
-	copy_info(&info, "\tDriver Version                    : %s%s\n",
-		  IPS_VERSION_HIGH, IPS_VERSION_LOW);
-
-	copy_info(&info, "\tDriver Build                      : %d\n",
-		  IPS_BUILD_IDENT);
-
-	copy_info(&info, "\tMax Physical Devices              : %d\n",
-		  ha->enq->ucMaxPhysicalDevices);
-	copy_info(&info, "\tMax Active Commands               : %d\n",
-		  ha->max_cmds);
-	copy_info(&info, "\tCurrent Queued Commands           : %d\n",
-		  ha->scb_waitlist.count);
-	copy_info(&info, "\tCurrent Active Commands           : %d\n",
-		  ha->scb_activelist.count - ha->num_ioctl);
-	copy_info(&info, "\tCurrent Queued PT Commands        : %d\n",
-		  ha->copp_waitlist.count);
-	copy_info(&info, "\tCurrent Active PT Commands        : %d\n",
-		  ha->num_ioctl);
-
-	copy_info(&info, "\n");
-
-	return (info.localpos);
-}
-
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: copy_mem_info                                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Copy data into an IPS_INFOSTR structure                                */
-/*                                                                          */
-/****************************************************************************/
-static void
-copy_mem_info(IPS_INFOSTR * info, char *data, int len)
-{
-	METHOD_TRACE("copy_mem_info", 1);
-
-	if (info->pos + len < info->offset) {
-		info->pos += len;
-		return;
-	}
-
-	if (info->pos < info->offset) {
-		data += (info->offset - info->pos);
-		len -= (info->offset - info->pos);
-		info->pos += (info->offset - info->pos);
-	}
-
-	if (info->localpos + len > info->length)
-		len = info->length - info->localpos;
-
-	if (len > 0) {
-		memcpy(info->buffer + info->localpos, data, len);
-		info->pos += len;
-		info->localpos += len;
-	}
-}
-
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: copy_info                                                  */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   printf style wrapper for an info structure                             */
-/*                                                                          */
-/****************************************************************************/
-static int
-copy_info(IPS_INFOSTR * info, char *fmt, ...)
-{
-	va_list args;
-	char buf[128];
-	int len;
-
-	METHOD_TRACE("copy_info", 1);
-
-	va_start(args, fmt);
-	len = vsprintf(buf, fmt, args);
-	va_end(args);
-
-	copy_mem_info(info, buf, len);
-
-	return (len);
-=======
         seq_printf(m,
 		  "\tFirmware Version                  : %c%c%c%c%c%c%c\n",
 		  ha->enq->CodeBlkVersion[0], ha->enq->CodeBlkVersion[1],
@@ -2553,7 +2113,6 @@ copy_info(IPS_INFOSTR * info, char *fmt, ...)
 	seq_putc(m, '\n');
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
@@ -2659,23 +2218,13 @@ ips_get_bios_version(ips_ha_t * ha, int intr)
 	uint8_t minor;
 	uint8_t subminor;
 	uint8_t *buffer;
-<<<<<<< HEAD
-	char hexDigits[] =
-	    { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C',
-     'D', 'E', 'F' };
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	METHOD_TRACE("ips_get_bios_version", 1);
 
 	major = 0;
 	minor = 0;
 
-<<<<<<< HEAD
-	strncpy(ha->bios_version, "       ?", 8);
-=======
 	memcpy(ha->bios_version, "       ?", 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ha->pcidev->device == IPS_DEVICEID_COPPERHEAD) {
 		if (IPS_USE_MEMIO(ha)) {
@@ -2799,15 +2348,6 @@ ips_get_bios_version(ips_ha_t * ha, int intr)
 		}
 	}
 
-<<<<<<< HEAD
-	ha->bios_version[0] = hexDigits[(major & 0xF0) >> 4];
-	ha->bios_version[1] = '.';
-	ha->bios_version[2] = hexDigits[major & 0x0F];
-	ha->bios_version[3] = hexDigits[subminor];
-	ha->bios_version[4] = '.';
-	ha->bios_version[5] = hexDigits[(minor & 0xF0) >> 4];
-	ha->bios_version[6] = hexDigits[minor & 0x0F];
-=======
 	ha->bios_version[0] = hex_asc_upper_hi(major);
 	ha->bios_version[1] = '.';
 	ha->bios_version[2] = hex_asc_upper_lo(major);
@@ -2815,7 +2355,6 @@ ips_get_bios_version(ips_ha_t * ha, int intr)
 	ha->bios_version[4] = '.';
 	ha->bios_version[5] = hex_asc_upper_hi(minor);
 	ha->bios_version[6] = hex_asc_upper_lo(minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->bios_version[7] = 0;
 }
 
@@ -2834,10 +2373,6 @@ static int
 ips_hainit(ips_ha_t * ha)
 {
 	int i;
-<<<<<<< HEAD
-	struct timeval tv;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	METHOD_TRACE("ips_hainit", 1);
 
@@ -2852,12 +2387,7 @@ ips_hainit(ips_ha_t * ha)
 
 	/* Send FFDC */
 	ha->reset_count = 1;
-<<<<<<< HEAD
-	do_gettimeofday(&tv);
-	ha->last_ffdc = tv.tv_sec;
-=======
 	ha->last_ffdc = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ips_ffdc_reset(ha, IPS_INTR_IORL);
 
 	if (!ips_read_config(ha, IPS_INTR_IORL)) {
@@ -2997,18 +2527,9 @@ ips_next(ips_ha_t * ha, int intr)
 
 	if ((ha->subsys->param[3] & 0x300000)
 	    && (ha->scb_activelist.count == 0)) {
-<<<<<<< HEAD
-		struct timeval tv;
-
-		do_gettimeofday(&tv);
-
-		if (tv.tv_sec - ha->last_ffdc > IPS_SECS_8HOURS) {
-			ha->last_ffdc = tv.tv_sec;
-=======
 		time64_t now = ktime_get_real_seconds();
 		if (now - ha->last_ffdc > IPS_SECS_8HOURS) {
 			ha->last_ffdc = now;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ips_ffdc_time(ha);
 		}
 	}
@@ -3038,11 +2559,7 @@ ips_next(ips_ha_t * ha, int intr)
 		case IPS_FAILURE:
 			if (scb->scsi_cmd) {
 				scb->scsi_cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-				scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 				scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			ips_freescb(ha, scb);
@@ -3050,11 +2567,7 @@ ips_next(ips_ha_t * ha, int intr)
 		case IPS_SUCCESS_IMM:
 			if (scb->scsi_cmd) {
 				scb->scsi_cmd->result = DID_OK << 16;
-<<<<<<< HEAD
-				scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 				scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			ips_freescb(ha, scb);
@@ -3179,11 +2692,7 @@ ips_next(ips_ha_t * ha, int intr)
 		case IPS_FAILURE:
 			if (scb->scsi_cmd) {
 				scb->scsi_cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-				scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 				scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			if (scb->bus)
@@ -3194,11 +2703,7 @@ ips_next(ips_ha_t * ha, int intr)
 			break;
 		case IPS_SUCCESS_IMM:
 			if (scb->scsi_cmd)
-<<<<<<< HEAD
-				scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 				scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (scb->bus)
 				ha->dcdb_active[scb->bus - 1] &=
@@ -3338,11 +2843,7 @@ ips_removeq_scb(ips_scb_queue_t * queue, ips_scb_t * item)
 /* ASSUMED to be called from within the HA lock                             */
 /*                                                                          */
 /****************************************************************************/
-<<<<<<< HEAD
-static void ips_putq_wait_tail(ips_wait_queue_t *queue, struct scsi_cmnd *item)
-=======
 static void ips_putq_wait_tail(ips_wait_queue_entry_t *queue, struct scsi_cmnd *item)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	METHOD_TRACE("ips_putq_wait_tail", 1);
 
@@ -3373,11 +2874,7 @@ static void ips_putq_wait_tail(ips_wait_queue_entry_t *queue, struct scsi_cmnd *
 /* ASSUMED to be called from within the HA lock                             */
 /*                                                                          */
 /****************************************************************************/
-<<<<<<< HEAD
-static struct scsi_cmnd *ips_removeq_wait_head(ips_wait_queue_t *queue)
-=======
 static struct scsi_cmnd *ips_removeq_wait_head(ips_wait_queue_entry_t *queue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_cmnd *item;
 
@@ -3411,11 +2908,7 @@ static struct scsi_cmnd *ips_removeq_wait_head(ips_wait_queue_entry_t *queue)
 /* ASSUMED to be called from within the HA lock                             */
 /*                                                                          */
 /****************************************************************************/
-<<<<<<< HEAD
-static struct scsi_cmnd *ips_removeq_wait(ips_wait_queue_t *queue,
-=======
 static struct scsi_cmnd *ips_removeq_wait(ips_wait_queue_entry_t *queue,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  struct scsi_cmnd *item)
 {
 	struct scsi_cmnd *p;
@@ -3578,13 +3071,8 @@ ipsintr_blocking(ips_ha_t * ha, ips_scb_t * scb)
 	METHOD_TRACE("ipsintr_blocking", 2);
 
 	ips_freescb(ha, scb);
-<<<<<<< HEAD
-	if ((ha->waitflag == TRUE) && (ha->cmd_in_progress == scb->cdb[0])) {
-		ha->waitflag = FALSE;
-=======
 	if (ha->waitflag && ha->cmd_in_progress == scb->cdb[0]) {
 		ha->waitflag = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return;
 	}
@@ -3698,11 +3186,7 @@ ips_done(ips_ha_t * ha, ips_scb_t * scb)
 			case IPS_FAILURE:
 				if (scb->scsi_cmd) {
 					scb->scsi_cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-					scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 					scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				ips_freescb(ha, scb);
@@ -3710,11 +3194,7 @@ ips_done(ips_ha_t * ha, ips_scb_t * scb)
 			case IPS_SUCCESS_IMM:
 				if (scb->scsi_cmd) {
 					scb->scsi_cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-					scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 					scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				ips_freescb(ha, scb);
@@ -3731,11 +3211,7 @@ ips_done(ips_ha_t * ha, ips_scb_t * scb)
 		ha->dcdb_active[scb->bus - 1] &= ~(1 << scb->target_id);
 	}
 
-<<<<<<< HEAD
-	scb->scsi_cmd->scsi_done(scb->scsi_cmd);
-=======
 	scsi_done(scb->scsi_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ips_freescb(ha, scb);
 }
@@ -3848,15 +3324,6 @@ ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 					IPS_CMD_EXTENDED_DCDB_SG)) {
 					tapeDCDB =
 					    (IPS_DCDB_TABLE_TAPE *) & scb->dcdb;
-<<<<<<< HEAD
-					memcpy(scb->scsi_cmd->sense_buffer,
-					       tapeDCDB->sense_info,
-					       SCSI_SENSE_BUFFERSIZE);
-				} else {
-					memcpy(scb->scsi_cmd->sense_buffer,
-					       scb->dcdb.sense_info,
-					       SCSI_SENSE_BUFFERSIZE);
-=======
 					memcpy_and_pad(scb->scsi_cmd->sense_buffer,
 					       SCSI_SENSE_BUFFERSIZE,
 					       tapeDCDB->sense_info,
@@ -3866,7 +3333,6 @@ ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 					       SCSI_SENSE_BUFFERSIZE,
 					       scb->dcdb.sense_info,
 					       sizeof(scb->dcdb.sense_info), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				device_error = 2;	/* check condition */
 			}
@@ -3906,11 +3372,7 @@ ips_send_wait(ips_ha_t * ha, ips_scb_t * scb, int timeout, int intr)
 	METHOD_TRACE("ips_send_wait", 1);
 
 	if (intr != IPS_FFDC) {	/* Won't be Waiting if this is a Time Stamp */
-<<<<<<< HEAD
-		ha->waitflag = TRUE;
-=======
 		ha->waitflag = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ha->cmd_in_progress = scb->cdb[0];
 	}
 	scb->callback = ipsintr_blocking;
@@ -3987,15 +3449,8 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 		if (scb->bus > 0) {
 			/* Controller commands can't be issued */
 			/* to real devices -- fail them        */
-<<<<<<< HEAD
-			if ((ha->waitflag == TRUE) &&
-			    (ha->cmd_in_progress == scb->cdb[0])) {
-				ha->waitflag = FALSE;
-			}
-=======
 			if (ha->waitflag && ha->cmd_in_progress == scb->cdb[0])
 				ha->waitflag = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return (1);
 		}
@@ -4014,10 +3469,7 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 
 		case START_STOP:
 			scb->scsi_cmd->result = DID_OK << 16;
-<<<<<<< HEAD
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case TEST_UNIT_READY:
 		case INQUIRY:
@@ -4048,19 +3500,11 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 					inquiry.Flags[1] =
 					    IPS_SCSI_INQ_WBus16 |
 					    IPS_SCSI_INQ_Sync;
-<<<<<<< HEAD
-					strncpy(inquiry.VendorId, "IBM     ",
-						8);
-					strncpy(inquiry.ProductId,
-						"SERVERAID       ", 16);
-					strncpy(inquiry.ProductRevisionLevel,
-=======
 					memcpy(inquiry.VendorId, "IBM     ",
 						8);
 					memcpy(inquiry.ProductId,
 						"SERVERAID       ", 16);
 					memcpy(inquiry.ProductRevisionLevel,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"1.00", 4);
 
 					ips_scmd_buf_write(scb->scsi_cmd,
@@ -4269,11 +3713,7 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 		scb->cmd.dcdb.segment_4G = 0;
 		scb->cmd.dcdb.enhanced_sg = 0;
 
-<<<<<<< HEAD
-		TimeOut = scb->scsi_cmd->request->timeout;
-=======
 		TimeOut = scsi_cmd_to_rq(scb->scsi_cmd)->timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ha->subsys->param[4] & 0x00100000) {	/* If NEW Tape DCDB is Supported */
 			if (!scb->sg_len) {
@@ -4581,15 +4021,9 @@ ips_inquiry(ips_ha_t * ha, ips_scb_t * scb)
 	inquiry.Flags[0] = IPS_SCSI_INQ_Address16;
 	inquiry.Flags[1] =
 	    IPS_SCSI_INQ_WBus16 | IPS_SCSI_INQ_Sync | IPS_SCSI_INQ_CmdQue;
-<<<<<<< HEAD
-	strncpy(inquiry.VendorId, "IBM     ", 8);
-	strncpy(inquiry.ProductId, "SERVERAID       ", 16);
-	strncpy(inquiry.ProductRevisionLevel, "1.00", 4);
-=======
 	memcpy(inquiry.VendorId, "IBM     ", 8);
 	memcpy(inquiry.ProductId, "SERVERAID       ", 16);
 	memcpy(inquiry.ProductRevisionLevel, "1.00", 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ips_scmd_buf_write(scb->scsi_cmd, &inquiry, sizeof (inquiry));
 
@@ -4763,11 +4197,7 @@ ips_free(ips_ha_t * ha)
 
 	if (ha) {
 		if (ha->enq) {
-<<<<<<< HEAD
-			pci_free_consistent(ha->pcidev, sizeof(IPS_ENQ),
-=======
 			dma_free_coherent(&ha->pcidev->dev, sizeof(IPS_ENQ),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    ha->enq, ha->enq_busaddr);
 			ha->enq = NULL;
 		}
@@ -4776,11 +4206,7 @@ ips_free(ips_ha_t * ha)
 		ha->conf = NULL;
 
 		if (ha->adapt) {
-<<<<<<< HEAD
-			pci_free_consistent(ha->pcidev,
-=======
 			dma_free_coherent(&ha->pcidev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    sizeof (IPS_ADAPTER) +
 					    sizeof (IPS_IO_CMD), ha->adapt,
 					    ha->adapt->hw_status_start);
@@ -4788,11 +4214,7 @@ ips_free(ips_ha_t * ha)
 		}
 
 		if (ha->logical_drive_info) {
-<<<<<<< HEAD
-			pci_free_consistent(ha->pcidev,
-=======
 			dma_free_coherent(&ha->pcidev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    sizeof (IPS_LD_INFO),
 					    ha->logical_drive_info,
 					    ha->logical_drive_info_dma_addr);
@@ -4806,11 +4228,7 @@ ips_free(ips_ha_t * ha)
 		ha->subsys = NULL;
 
 		if (ha->ioctl_data) {
-<<<<<<< HEAD
-			pci_free_consistent(ha->pcidev, ha->ioctl_len,
-=======
 			dma_free_coherent(&ha->pcidev->dev, ha->ioctl_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    ha->ioctl_data, ha->ioctl_busaddr);
 			ha->ioctl_data = NULL;
 			ha->ioctl_datasize = 0;
@@ -4843,19 +4261,11 @@ static int
 ips_deallocatescbs(ips_ha_t * ha, int cmds)
 {
 	if (ha->scbs) {
-<<<<<<< HEAD
-		pci_free_consistent(ha->pcidev,
-				    IPS_SGLIST_SIZE(ha) * IPS_MAX_SG * cmds,
-				    ha->scbs->sg_list.list,
-				    ha->scbs->sg_busaddr);
-		pci_free_consistent(ha->pcidev, sizeof (ips_scb_t) * cmds,
-=======
 		dma_free_coherent(&ha->pcidev->dev,
 				    IPS_SGLIST_SIZE(ha) * IPS_MAX_SG * cmds,
 				    ha->scbs->sg_list.list,
 				    ha->scbs->sg_busaddr);
 		dma_free_coherent(&ha->pcidev->dev, sizeof (ips_scb_t) * cmds,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ha->scbs, ha->scbs->scb_busaddr);
 		ha->scbs = NULL;
 	}			/* end if */
@@ -4882,19 +4292,6 @@ ips_allocatescbs(ips_ha_t * ha)
 	METHOD_TRACE("ips_allocatescbs", 1);
 
 	/* Allocate memory for the SCBs */
-<<<<<<< HEAD
-	ha->scbs =
-	    pci_alloc_consistent(ha->pcidev, ha->max_cmds * sizeof (ips_scb_t),
-				 &command_dma);
-	if (ha->scbs == NULL)
-		return 0;
-	ips_sg.list =
-	    pci_alloc_consistent(ha->pcidev,
-				 IPS_SGLIST_SIZE(ha) * IPS_MAX_SG *
-				 ha->max_cmds, &sg_dma);
-	if (ips_sg.list == NULL) {
-		pci_free_consistent(ha->pcidev,
-=======
 	ha->scbs = dma_alloc_coherent(&ha->pcidev->dev,
 			ha->max_cmds * sizeof (ips_scb_t),
 			&command_dma, GFP_KERNEL);
@@ -4905,7 +4302,6 @@ ips_allocatescbs(ips_ha_t * ha)
 			&sg_dma, GFP_KERNEL);
 	if (ips_sg.list == NULL) {
 		dma_free_coherent(&ha->pcidev->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    ha->max_cmds * sizeof (ips_scb_t), ha->scbs,
 				    command_dma);
 		return 0;
@@ -5034,13 +4430,8 @@ ips_freescb(ips_ha_t * ha, ips_scb_t * scb)
 	if (scb->flags & IPS_SCB_MAP_SG)
                 scsi_dma_unmap(scb->scsi_cmd);
 	else if (scb->flags & IPS_SCB_MAP_SINGLE)
-<<<<<<< HEAD
-		pci_unmap_single(ha->pcidev, scb->data_busaddr, scb->data_len,
-				 IPS_DMA_DIR(scb));
-=======
 		dma_unmap_single(&ha->pcidev->dev, scb->data_busaddr,
 				 scb->data_len, IPS_DMA_DIR(scb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check to make sure this is not our "special" scb */
 	if (IPS_COMMAND_ID(ha, scb) < (ha->max_cmds - 1)) {
@@ -5152,12 +4543,8 @@ ips_flush_and_reset(ips_ha_t *ha)
 	dma_addr_t command_dma;
 
 	/* Create a usuable SCB */
-<<<<<<< HEAD
-	scb = pci_alloc_consistent(ha->pcidev, sizeof(ips_scb_t), &command_dma);
-=======
 	scb = dma_alloc_coherent(&ha->pcidev->dev, sizeof(ips_scb_t),
 			&command_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (scb) {
 	    memset(scb, 0, sizeof(ips_scb_t));
 	    ips_init_scb(ha, scb);
@@ -5192,11 +4579,7 @@ ips_flush_and_reset(ips_ha_t *ha)
 	/* Now RESET and INIT the adapter */
 	(*ha->func.reset) (ha);
 
-<<<<<<< HEAD
-	pci_free_consistent(ha->pcidev, sizeof(ips_scb_t), scb, command_dma);
-=======
 	dma_free_coherent(&ha->pcidev->dev, sizeof(ips_scb_t), scb, command_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -5215,11 +4598,7 @@ ips_poll_for_flush_complete(ips_ha_t * ha)
 {
 	IPS_STATUS cstatus;
 
-<<<<<<< HEAD
-	while (TRUE) {
-=======
 	while (true) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    cstatus.value = (*ha->func.statupd) (ha);
 
 	    if (cstatus.value == 0xffffffff)      /* If No Interrupt to process */
@@ -5303,10 +4682,6 @@ ips_init_copperhead(ips_ha_t * ha)
 	uint8_t Isr;
 	uint8_t Cbsp;
 	uint8_t PostByte[IPS_MAX_POST_BYTES];
-<<<<<<< HEAD
-	uint8_t ConfigByte[IPS_MAX_CONFIG_BYTES];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, j;
 
 	METHOD_TRACE("ips_init_copperhead", 1);
@@ -5351,11 +4726,7 @@ ips_init_copperhead(ips_ha_t * ha)
 			/* error occurred */
 			return (0);
 
-<<<<<<< HEAD
-		ConfigByte[i] = inb(ha->io_addr + IPS_REG_ISPR);
-=======
 		inb(ha->io_addr + IPS_REG_ISPR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outb(Isr, ha->io_addr + IPS_REG_HISR);
 	}
 
@@ -5404,10 +4775,6 @@ ips_init_copperhead_memio(ips_ha_t * ha)
 	uint8_t Isr = 0;
 	uint8_t Cbsp;
 	uint8_t PostByte[IPS_MAX_POST_BYTES];
-<<<<<<< HEAD
-	uint8_t ConfigByte[IPS_MAX_CONFIG_BYTES];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, j;
 
 	METHOD_TRACE("ips_init_copperhead_memio", 1);
@@ -5452,11 +4819,7 @@ ips_init_copperhead_memio(ips_ha_t * ha)
 			/* error occurred */
 			return (0);
 
-<<<<<<< HEAD
-		ConfigByte[i] = readb(ha->mem_ptr + IPS_REG_ISPR);
-=======
 		readb(ha->mem_ptr + IPS_REG_ISPR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writeb(Isr, ha->mem_ptr + IPS_REG_HISR);
 	}
 
@@ -6158,25 +5521,12 @@ ips_wait(ips_ha_t * ha, int time, int intr)
 	METHOD_TRACE("ips_wait", 1);
 
 	ret = IPS_FAILURE;
-<<<<<<< HEAD
-	done = FALSE;
-=======
 	done = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	time *= IPS_ONE_SEC;	/* convert seconds */
 
 	while ((time > 0) && (!done)) {
 		if (intr == IPS_INTR_ON) {
-<<<<<<< HEAD
-			if (ha->waitflag == FALSE) {
-				ret = IPS_SUCCESS;
-				done = TRUE;
-				break;
-			}
-		} else if (intr == IPS_INTR_IORL) {
-			if (ha->waitflag == FALSE) {
-=======
 			if (!ha->waitflag) {
 				ret = IPS_SUCCESS;
 				done = true;
@@ -6184,18 +5534,13 @@ ips_wait(ips_ha_t * ha, int time, int intr)
 			}
 		} else if (intr == IPS_INTR_IORL) {
 			if (!ha->waitflag) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * controller generated an interrupt to
 				 * acknowledge completion of the command
 				 * and ips_intr() has serviced the interrupt.
 				 */
 				ret = IPS_SUCCESS;
-<<<<<<< HEAD
-				done = TRUE;
-=======
 				done = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 
@@ -6230,11 +5575,7 @@ ips_write_driver_status(ips_ha_t * ha, int intr)
 {
 	METHOD_TRACE("ips_write_driver_status", 1);
 
-<<<<<<< HEAD
-	if (!ips_readwrite_page5(ha, FALSE, intr)) {
-=======
 	if (!ips_readwrite_page5(ha, false, intr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "unable to read NVRAM page 5.\n");
 
@@ -6264,26 +5605,15 @@ ips_write_driver_status(ips_ha_t * ha, int intr)
 	/* change values (as needed) */
 	ha->nvram->operating_system = IPS_OS_LINUX;
 	ha->nvram->adapter_type = ha->ad_type;
-<<<<<<< HEAD
-	strncpy((char *) ha->nvram->driver_high, IPS_VERSION_HIGH, 4);
-	strncpy((char *) ha->nvram->driver_low, IPS_VERSION_LOW, 4);
-	strncpy((char *) ha->nvram->bios_high, ha->bios_version, 4);
-	strncpy((char *) ha->nvram->bios_low, ha->bios_version + 4, 4);
-=======
 	memcpy((char *) ha->nvram->driver_high, IPS_VERSION_HIGH, 4);
 	memcpy((char *) ha->nvram->driver_low, IPS_VERSION_LOW, 4);
 	memcpy((char *) ha->nvram->bios_high, ha->bios_version, 4);
 	memcpy((char *) ha->nvram->bios_low, ha->bios_version + 4, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ha->nvram->versioning = 0;	/* Indicate the Driver Does Not Support Versioning */
 
 	/* now update the page */
-<<<<<<< HEAD
-	if (!ips_readwrite_page5(ha, TRUE, intr)) {
-=======
 	if (!ips_readwrite_page5(ha, true, intr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "unable to write NVRAM page 5.\n");
 
@@ -6633,61 +5963,6 @@ ips_ffdc_time(ips_ha_t * ha)
 /*                                                                          */
 /****************************************************************************/
 static void
-<<<<<<< HEAD
-ips_fix_ffdc_time(ips_ha_t * ha, ips_scb_t * scb, time_t current_time)
-{
-	long days;
-	long rem;
-	int i;
-	int year;
-	int yleap;
-	int year_lengths[2] = { IPS_DAYS_NORMAL_YEAR, IPS_DAYS_LEAP_YEAR };
-	int month_lengths[12][2] = { {31, 31},
-	{28, 29},
-	{31, 31},
-	{30, 30},
-	{31, 31},
-	{30, 30},
-	{31, 31},
-	{31, 31},
-	{30, 30},
-	{31, 31},
-	{30, 30},
-	{31, 31}
-	};
-
-	METHOD_TRACE("ips_fix_ffdc_time", 1);
-
-	days = current_time / IPS_SECS_DAY;
-	rem = current_time % IPS_SECS_DAY;
-
-	scb->cmd.ffdc.hour = (rem / IPS_SECS_HOUR);
-	rem = rem % IPS_SECS_HOUR;
-	scb->cmd.ffdc.minute = (rem / IPS_SECS_MIN);
-	scb->cmd.ffdc.second = (rem % IPS_SECS_MIN);
-
-	year = IPS_EPOCH_YEAR;
-	while (days < 0 || days >= year_lengths[yleap = IPS_IS_LEAP_YEAR(year)]) {
-		int newy;
-
-		newy = year + (days / IPS_DAYS_NORMAL_YEAR);
-		if (days < 0)
-			--newy;
-		days -= (newy - year) * IPS_DAYS_NORMAL_YEAR +
-		    IPS_NUM_LEAP_YEARS_THROUGH(newy - 1) -
-		    IPS_NUM_LEAP_YEARS_THROUGH(year - 1);
-		year = newy;
-	}
-
-	scb->cmd.ffdc.yearH = year / 100;
-	scb->cmd.ffdc.yearL = year % 100;
-
-	for (i = 0; days >= month_lengths[i][yleap]; ++i)
-		days -= month_lengths[i][yleap];
-
-	scb->cmd.ffdc.month = i + 1;
-	scb->cmd.ffdc.day = days + 1;
-=======
 ips_fix_ffdc_time(ips_ha_t * ha, ips_scb_t * scb, time64_t current_time)
 {
 	struct tm tm;
@@ -6703,7 +5978,6 @@ ips_fix_ffdc_time(ips_ha_t * ha, ips_scb_t * scb, time64_t current_time)
 	scb->cmd.ffdc.yearL  = tm.tm_year % 100;
 	scb->cmd.ffdc.month  = tm.tm_mon + 1;
 	scb->cmd.ffdc.day    = tm.tm_mday;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************
@@ -7386,10 +6660,6 @@ ips_register_scsi(int index)
 	sh->sg_tablesize = sh->hostt->sg_tablesize;
 	sh->can_queue = sh->hostt->can_queue;
 	sh->cmd_per_lun = sh->hostt->cmd_per_lun;
-<<<<<<< HEAD
-	sh->use_clustering = sh->hostt->use_clustering;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sh->max_sectors = 128;
 
 	sh->max_id = ha->ntargets;
@@ -7420,11 +6690,7 @@ err_out_sh:
 /*   Routine Description:                                                    */
 /*     Remove one Adapter ( Hot Plugging )                                   */
 /*---------------------------------------------------------------------------*/
-<<<<<<< HEAD
-static void __devexit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ips_remove_device(struct pci_dev *pci_dev)
 {
 	struct Scsi_Host *sh = pci_get_drvdata(pci_dev);
@@ -7447,14 +6713,11 @@ ips_remove_device(struct pci_dev *pci_dev)
 static int __init
 ips_module_init(void)
 {
-<<<<<<< HEAD
-=======
 #if !defined(__i386__) && !defined(__ia64__) && !defined(__x86_64__)
 	printk(KERN_ERR "ips: This driver has only been tested on the x86/ia64/x86_64 platforms\n");
 	add_taint(TAINT_CPU_OUT_OF_SPEC, LOCKDEP_STILL_OK);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_register_driver(&ips_pci_driver) < 0)
 		return -ENODEV;
 	ips_driver_template.module = THIS_MODULE;
@@ -7493,11 +6756,7 @@ module_exit(ips_module_exit);
 /*   Return Value:                                                           */
 /*     0 if Successful, else non-zero                                        */
 /*---------------------------------------------------------------------------*/
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ips_insert_device(struct pci_dev *pci_dev, const struct pci_device_id *ent)
 {
 	int index = -1;
@@ -7559,11 +6818,6 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	uint32_t mem_addr;
 	uint32_t io_len;
 	uint32_t mem_len;
-<<<<<<< HEAD
-	uint8_t bus;
-	uint8_t func;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int j;
 	int index;
 	dma_addr_t dma_address;
@@ -7583,13 +6837,6 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	if (index >= IPS_MAX_ADAPTERS)
 		return -1;
 
-<<<<<<< HEAD
-	/* stuff that we get in dev */
-	bus = pci_dev->bus->number;
-	func = pci_dev->devfn;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Init MEM/IO addresses to 0 */
 	mem_addr = 0;
 	io_addr = 0;
@@ -7654,53 +6901,31 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	 * it!  Also, don't use 64bit addressing if dma addresses
 	 * are guaranteed to be < 4G.
 	 */
-<<<<<<< HEAD
-	if (IPS_ENABLE_DMA64 && IPS_HAS_ENH_SGLIST(ha) &&
-	    !pci_set_dma_mask(ha->pcidev, DMA_BIT_MASK(64))) {
-		(ha)->flags |= IPS_HA_ENH_SG;
-	} else {
-		if (pci_set_dma_mask(ha->pcidev, DMA_BIT_MASK(32)) != 0) {
-=======
 	if (sizeof(dma_addr_t) > 4 && IPS_HAS_ENH_SGLIST(ha) &&
 	    !dma_set_mask(&ha->pcidev->dev, DMA_BIT_MASK(64))) {
 		(ha)->flags |= IPS_HA_ENH_SG;
 	} else {
 		if (dma_set_mask(&ha->pcidev->dev, DMA_BIT_MASK(32)) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_WARNING "Unable to set DMA Mask\n");
 			return ips_abort_init(ha, index);
 		}
 	}
 	if(ips_cd_boot && !ips_FlashData){
-<<<<<<< HEAD
-		ips_FlashData = pci_alloc_consistent(pci_dev, PAGE_SIZE << 7,
-						     &ips_flashbusaddr);
-	}
-
-	ha->enq = pci_alloc_consistent(pci_dev, sizeof (IPS_ENQ),
-				       &ha->enq_busaddr);
-=======
 		ips_FlashData = dma_alloc_coherent(&pci_dev->dev,
 				PAGE_SIZE << 7, &ips_flashbusaddr, GFP_KERNEL);
 	}
 
 	ha->enq = dma_alloc_coherent(&pci_dev->dev, sizeof (IPS_ENQ),
 			&ha->enq_busaddr, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ha->enq) {
 		IPS_PRINTK(KERN_WARNING, pci_dev,
 			   "Unable to allocate host inquiry structure\n");
 		return ips_abort_init(ha, index);
 	}
 
-<<<<<<< HEAD
-	ha->adapt = pci_alloc_consistent(pci_dev, sizeof (IPS_ADAPTER) +
-					 sizeof (IPS_IO_CMD), &dma_address);
-=======
 	ha->adapt = dma_alloc_coherent(&pci_dev->dev,
 			sizeof (IPS_ADAPTER) + sizeof (IPS_IO_CMD),
 			&dma_address, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ha->adapt) {
 		IPS_PRINTK(KERN_WARNING, pci_dev,
 			   "Unable to allocate host adapt & dummy structures\n");
@@ -7711,12 +6936,8 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 
 
 
-<<<<<<< HEAD
-	ha->logical_drive_info = pci_alloc_consistent(pci_dev, sizeof (IPS_LD_INFO), &dma_address);
-=======
 	ha->logical_drive_info = dma_alloc_coherent(&pci_dev->dev,
 			sizeof (IPS_LD_INFO), &dma_address, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ha->logical_drive_info) {
 		IPS_PRINTK(KERN_WARNING, pci_dev,
 			   "Unable to allocate logical drive info structure\n");
@@ -7754,13 +6975,8 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	if (ips_ioctlsize < PAGE_SIZE)
 		ips_ioctlsize = PAGE_SIZE;
 
-<<<<<<< HEAD
-	ha->ioctl_data = pci_alloc_consistent(pci_dev, ips_ioctlsize,
-					      &ha->ioctl_busaddr);
-=======
 	ha->ioctl_data = dma_alloc_coherent(&pci_dev->dev, ips_ioctlsize,
 			&ha->ioctl_busaddr, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ha->ioctl_len = ips_ioctlsize;
 	if (!ha->ioctl_data) {
 		IPS_PRINTK(KERN_WARNING, pci_dev,
@@ -7863,26 +7079,3 @@ ips_init_phase2(int index)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("IBM ServeRAID Adapter Driver " IPS_VER_STRING);
 MODULE_VERSION(IPS_VER_STRING);
-<<<<<<< HEAD
-
-
-/*
- * Overrides for Emacs so that we almost follow Linus's tabbing style.
- * Emacs will notice this stuff at the end of the file and automatically
- * adjust the settings for this buffer only.  This must remain at the end
- * of the file.
- * ---------------------------------------------------------------------------
- * Local variables:
- * c-indent-level: 2
- * c-brace-imaginary-offset: 0
- * c-brace-offset: -2
- * c-argdecl-indent: 2
- * c-label-offset: -2
- * c-continued-statement-offset: 2
- * c-continued-brace-offset: 0
- * indent-tabs-mode: nil
- * tab-width: 8
- * End:
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-/*
- *   Data definitions for channel report processing
- *    Copyright IBM Corp. 2000,2009
- *    Author(s): Ingo Adlung <adlung@de.ibm.com>,
- *		 Martin Schwidefsky <schwidefsky@de.ibm.com>,
- *		 Cornelia Huck <cornelia.huck@de.ibm.com>,
- *		 Heiko Carstens <heiko.carstens@de.ibm.com>,
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *   Data definitions for channel report processing
@@ -14,7 +5,6 @@
  *    Author(s): Ingo Adlung <adlung@de.ibm.com>,
  *		 Martin Schwidefsky <schwidefsky@de.ibm.com>,
  *		 Cornelia Huck <cornelia.huck@de.ibm.com>,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_S390_CRW_H
@@ -62,21 +52,4 @@ void crw_wait_for_channel_report(void);
 #define CRW_ERC_PERRI	 0x07 /* perm. error, facility init */
 #define CRW_ERC_PMOD	 0x08 /* installed parameters modified */
 
-<<<<<<< HEAD
-static inline int stcrw(struct crw *pcrw)
-{
-	int ccode;
-
-	asm volatile(
-		"	stcrw	0(%2)\n"
-		"	ipm	%0\n"
-		"	srl	%0,28\n"
-		: "=d" (ccode), "=m" (*pcrw)
-		: "a" (pcrw)
-		: "cc" );
-	return ccode;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_S390_CRW_H */

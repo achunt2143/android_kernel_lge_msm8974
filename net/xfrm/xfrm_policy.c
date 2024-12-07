@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm_policy.c
  *
@@ -28,41 +25,6 @@
 #include <linux/netfilter.h>
 #include <linux/module.h>
 #include <linux/cache.h>
-<<<<<<< HEAD
-#include <linux/audit.h>
-#include <net/dst.h>
-#include <net/xfrm.h>
-#include <net/ip.h>
-#ifdef CONFIG_XFRM_STATISTICS
-#include <net/snmp.h>
-#endif
-
-#include "xfrm_hash.h"
-
-DEFINE_MUTEX(xfrm_cfg_mutex);
-EXPORT_SYMBOL(xfrm_cfg_mutex);
-
-static DEFINE_SPINLOCK(xfrm_policy_sk_bundle_lock);
-static struct dst_entry *xfrm_policy_sk_bundles;
-static DEFINE_RWLOCK(xfrm_policy_lock);
-
-static DEFINE_RWLOCK(xfrm_policy_afinfo_lock);
-static struct xfrm_policy_afinfo *xfrm_policy_afinfo[NPROTO];
-
-static struct kmem_cache *xfrm_dst_cache __read_mostly;
-
-static struct xfrm_policy_afinfo *xfrm_policy_get_afinfo(unsigned short family);
-static void xfrm_policy_put_afinfo(struct xfrm_policy_afinfo *afinfo);
-static void xfrm_init_pmtu(struct dst_entry *dst);
-static int stale_bundle(struct dst_entry *dst);
-static int xfrm_bundle_ok(struct xfrm_dst *xdst);
-
-
-static struct xfrm_policy *__xfrm_policy_unlink(struct xfrm_policy *pol,
-						int dir);
-
-static inline int
-=======
 #include <linux/cpu.h>
 #include <linux/audit.h>
 #include <linux/rhashtable.h>
@@ -249,7 +211,6 @@ static inline bool xfrm_pol_hold_rcu(struct xfrm_policy *policy)
 }
 
 static inline bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __xfrm4_selector_match(const struct xfrm_selector *sel, const struct flowi *fl)
 {
 	const struct flowi4 *fl4 = &fl->u.ip4;
@@ -262,11 +223,7 @@ __xfrm4_selector_match(const struct xfrm_selector *sel, const struct flowi *fl)
 		(fl4->flowi4_oif == sel->ifindex || !sel->ifindex);
 }
 
-<<<<<<< HEAD
-static inline int
-=======
 static inline bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __xfrm6_selector_match(const struct xfrm_selector *sel, const struct flowi *fl)
 {
 	const struct flowi6 *fl6 = &fl->u.ip6;
@@ -279,13 +236,8 @@ __xfrm6_selector_match(const struct xfrm_selector *sel, const struct flowi *fl)
 		(fl6->flowi6_oif == sel->ifindex || !sel->ifindex);
 }
 
-<<<<<<< HEAD
-int xfrm_selector_match(const struct xfrm_selector *sel, const struct flowi *fl,
-			unsigned short family)
-=======
 bool xfrm_selector_match(const struct xfrm_selector *sel, const struct flowi *fl,
 			 unsigned short family)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (family) {
 	case AF_INET:
@@ -293,17 +245,6 @@ bool xfrm_selector_match(const struct xfrm_selector *sel, const struct flowi *fl
 	case AF_INET6:
 		return __xfrm6_selector_match(sel, fl);
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-static inline struct dst_entry *__xfrm_dst_lookup(struct net *net, int tos,
-						  const xfrm_address_t *saddr,
-						  const xfrm_address_t *daddr,
-						  int family)
-{
-	struct xfrm_policy_afinfo *afinfo;
-=======
 	return false;
 }
 
@@ -332,26 +273,12 @@ struct dst_entry *__xfrm_dst_lookup(struct net *net, int tos, int oif,
 				    int family, u32 mark)
 {
 	const struct xfrm_policy_afinfo *afinfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dst_entry *dst;
 
 	afinfo = xfrm_policy_get_afinfo(family);
 	if (unlikely(afinfo == NULL))
 		return ERR_PTR(-EAFNOSUPPORT);
 
-<<<<<<< HEAD
-	dst = afinfo->dst_lookup(net, tos, saddr, daddr);
-
-	xfrm_policy_put_afinfo(afinfo);
-
-	return dst;
-}
-
-static inline struct dst_entry *xfrm_dst_lookup(struct xfrm_state *x, int tos,
-						xfrm_address_t *prev_saddr,
-						xfrm_address_t *prev_daddr,
-						int family)
-=======
 	dst = afinfo->dst_lookup(net, tos, oif, saddr, daddr, mark);
 
 	rcu_read_unlock();
@@ -365,7 +292,6 @@ static inline struct dst_entry *xfrm_dst_lookup(struct xfrm_state *x,
 						xfrm_address_t *prev_saddr,
 						xfrm_address_t *prev_daddr,
 						int family, u32 mark)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = xs_net(x);
 	xfrm_address_t *saddr = &x->props.saddr;
@@ -381,11 +307,7 @@ static inline struct dst_entry *xfrm_dst_lookup(struct xfrm_state *x,
 		daddr = x->coaddr;
 	}
 
-<<<<<<< HEAD
-	dst = __xfrm_dst_lookup(net, tos, saddr, daddr, family);
-=======
 	dst = __xfrm_dst_lookup(net, tos, oif, saddr, daddr, family, mark);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_ERR(dst)) {
 		if (prev_saddr != saddr)
@@ -405,19 +327,11 @@ static inline unsigned long make_jiffies(long secs)
 		return secs*HZ;
 }
 
-<<<<<<< HEAD
-static void xfrm_policy_timer(unsigned long data)
-{
-	struct xfrm_policy *xp = (struct xfrm_policy*)data;
-	unsigned long now = get_seconds();
-	long next = LONG_MAX;
-=======
 static void xfrm_policy_timer(struct timer_list *t)
 {
 	struct xfrm_policy *xp = from_timer(xp, t, timer);
 	time64_t now = ktime_get_real_seconds();
 	time64_t next = TIME64_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int warn = 0;
 	int dir;
 
@@ -429,11 +343,7 @@ static void xfrm_policy_timer(struct timer_list *t)
 	dir = xfrm_policy_id2dir(xp->index);
 
 	if (xp->lft.hard_add_expires_seconds) {
-<<<<<<< HEAD
-		long tmo = xp->lft.hard_add_expires_seconds +
-=======
 		time64_t tmo = xp->lft.hard_add_expires_seconds +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xp->curlft.add_time - now;
 		if (tmo <= 0)
 			goto expired;
@@ -441,24 +351,15 @@ static void xfrm_policy_timer(struct timer_list *t)
 			next = tmo;
 	}
 	if (xp->lft.hard_use_expires_seconds) {
-<<<<<<< HEAD
-		long tmo = xp->lft.hard_use_expires_seconds +
-			(xp->curlft.use_time ? : xp->curlft.add_time) - now;
-=======
 		time64_t tmo = xp->lft.hard_use_expires_seconds +
 			(READ_ONCE(xp->curlft.use_time) ? : xp->curlft.add_time) - now;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmo <= 0)
 			goto expired;
 		if (tmo < next)
 			next = tmo;
 	}
 	if (xp->lft.soft_add_expires_seconds) {
-<<<<<<< HEAD
-		long tmo = xp->lft.soft_add_expires_seconds +
-=======
 		time64_t tmo = xp->lft.soft_add_expires_seconds +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xp->curlft.add_time - now;
 		if (tmo <= 0) {
 			warn = 1;
@@ -468,13 +369,8 @@ static void xfrm_policy_timer(struct timer_list *t)
 			next = tmo;
 	}
 	if (xp->lft.soft_use_expires_seconds) {
-<<<<<<< HEAD
-		long tmo = xp->lft.soft_use_expires_seconds +
-			(xp->curlft.use_time ? : xp->curlft.add_time) - now;
-=======
 		time64_t tmo = xp->lft.soft_use_expires_seconds +
 			(READ_ONCE(xp->curlft.use_time) ? : xp->curlft.add_time) - now;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmo <= 0) {
 			warn = 1;
 			tmo = XFRM_KM_TIMEOUT;
@@ -485,11 +381,7 @@ static void xfrm_policy_timer(struct timer_list *t)
 
 	if (warn)
 		km_policy_expired(xp, dir, 0, 0);
-<<<<<<< HEAD
-	if (next != LONG_MAX &&
-=======
 	if (next != TIME64_MAX &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !mod_timer(&xp->timer, jiffies + make_jiffies(next)))
 		xfrm_pol_hold(xp);
 
@@ -505,39 +397,6 @@ expired:
 	xfrm_pol_put(xp);
 }
 
-<<<<<<< HEAD
-static struct flow_cache_object *xfrm_policy_flo_get(struct flow_cache_object *flo)
-{
-	struct xfrm_policy *pol = container_of(flo, struct xfrm_policy, flo);
-
-	if (unlikely(pol->walk.dead))
-		flo = NULL;
-	else
-		xfrm_pol_hold(pol);
-
-	return flo;
-}
-
-static int xfrm_policy_flo_check(struct flow_cache_object *flo)
-{
-	struct xfrm_policy *pol = container_of(flo, struct xfrm_policy, flo);
-
-	return !pol->walk.dead;
-}
-
-static void xfrm_policy_flo_delete(struct flow_cache_object *flo)
-{
-	xfrm_pol_put(container_of(flo, struct xfrm_policy, flo));
-}
-
-static const struct flow_cache_ops xfrm_policy_fc_ops = {
-	.get = xfrm_policy_flo_get,
-	.check = xfrm_policy_flo_check,
-	.delete = xfrm_policy_flo_delete,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Allocate xfrm_policy. Not used here, it is supposed to be used by pfkeyv2
  * SPD calls.
  */
@@ -551,15 +410,6 @@ struct xfrm_policy *xfrm_policy_alloc(struct net *net, gfp_t gfp)
 	if (policy) {
 		write_pnet(&policy->xp_net, net);
 		INIT_LIST_HEAD(&policy->walk.all);
-<<<<<<< HEAD
-		INIT_HLIST_NODE(&policy->bydst);
-		INIT_HLIST_NODE(&policy->byidx);
-		rwlock_init(&policy->lock);
-		atomic_set(&policy->refcnt, 1);
-		setup_timer(&policy->timer, xfrm_policy_timer,
-				(unsigned long)policy);
-		policy->flo.ops = &xfrm_policy_fc_ops;
-=======
 		INIT_HLIST_NODE(&policy->bydst_inexact_list);
 		INIT_HLIST_NODE(&policy->bydst);
 		INIT_HLIST_NODE(&policy->byidx);
@@ -569,14 +419,11 @@ struct xfrm_policy *xfrm_policy_alloc(struct net *net, gfp_t gfp)
 		timer_setup(&policy->timer, xfrm_policy_timer, 0);
 		timer_setup(&policy->polq.hold_timer,
 			    xfrm_policy_queue_process, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return policy;
 }
 EXPORT_SYMBOL(xfrm_policy_alloc);
 
-<<<<<<< HEAD
-=======
 static void xfrm_policy_destroy_rcu(struct rcu_head *head)
 {
 	struct xfrm_policy *policy = container_of(head, struct xfrm_policy, rcu);
@@ -585,24 +432,12 @@ static void xfrm_policy_destroy_rcu(struct rcu_head *head)
 	kfree(policy);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Destroy xfrm_policy: descendant resources must be released to this moment. */
 
 void xfrm_policy_destroy(struct xfrm_policy *policy)
 {
 	BUG_ON(!policy->walk.dead);
 
-<<<<<<< HEAD
-	if (del_timer(&policy->timer))
-		BUG();
-
-	security_xfrm_policy_free(policy->security);
-	kfree(policy);
-}
-EXPORT_SYMBOL(xfrm_policy_destroy);
-
-/* Rule must be locked. Release descentant resources, announce
-=======
 	if (del_timer(&policy->timer) || del_timer(&policy->polq.hold_timer))
 		BUG();
 
@@ -612,18 +447,11 @@ EXPORT_SYMBOL(xfrm_policy_destroy);
 EXPORT_SYMBOL(xfrm_policy_destroy);
 
 /* Rule must be locked. Release descendant resources, announce
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * entry dead. The rule must be unlinked from lists to the moment.
  */
 
 static void xfrm_policy_kill(struct xfrm_policy *policy)
 {
-<<<<<<< HEAD
-	policy->walk.dead = 1;
-
-	atomic_inc(&policy->genid);
-
-=======
 	write_lock_bh(&policy->lock);
 	policy->walk.dead = 1;
 	write_unlock_bh(&policy->lock);
@@ -634,7 +462,6 @@ static void xfrm_policy_kill(struct xfrm_policy *policy)
 		xfrm_pol_put(policy);
 	skb_queue_purge(&policy->polq.hold_queue);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (del_timer(&policy->timer))
 		xfrm_pol_put(policy);
 
@@ -648,8 +475,6 @@ static inline unsigned int idx_hash(struct net *net, u32 index)
 	return __idx_hash(index, net->xfrm.policy_idx_hmask);
 }
 
-<<<<<<< HEAD
-=======
 /* calculate policy hash thresholds */
 static void __get_hash_thresh(struct net *net,
 			      unsigned short family, int dir,
@@ -672,19 +497,11 @@ static void __get_hash_thresh(struct net *net,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct hlist_head *policy_hash_bysel(struct net *net,
 					    const struct xfrm_selector *sel,
 					    unsigned short family, int dir)
 {
 	unsigned int hmask = net->xfrm.policy_bydst[dir].hmask;
-<<<<<<< HEAD
-	unsigned int hash = __sel_hash(sel, family, hmask);
-
-	return (hash == hmask + 1 ?
-		&net->xfrm.policy_inexact[dir] :
-		net->xfrm.policy_bydst[dir].table + hash);
-=======
 	unsigned int hash;
 	u8 dbits;
 	u8 sbits;
@@ -697,7 +514,6 @@ static struct hlist_head *policy_hash_bysel(struct net *net,
 
 	return rcu_dereference_check(net->xfrm.policy_bydst[dir].table,
 		     lockdep_is_held(&net->xfrm.xfrm_policy_lock)) + hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct hlist_head *policy_hash_direct(struct net *net,
@@ -706,30 +522,6 @@ static struct hlist_head *policy_hash_direct(struct net *net,
 					     unsigned short family, int dir)
 {
 	unsigned int hmask = net->xfrm.policy_bydst[dir].hmask;
-<<<<<<< HEAD
-	unsigned int hash = __addr_hash(daddr, saddr, family, hmask);
-
-	return net->xfrm.policy_bydst[dir].table + hash;
-}
-
-static void xfrm_dst_hash_transfer(struct hlist_head *list,
-				   struct hlist_head *ndsttable,
-				   unsigned int nhashmask)
-{
-	struct hlist_node *entry, *tmp, *entry0 = NULL;
-	struct xfrm_policy *pol;
-	unsigned int h0 = 0;
-
-redo:
-	hlist_for_each_entry_safe(pol, entry, tmp, list, bydst) {
-		unsigned int h;
-
-		h = __addr_hash(&pol->selector.daddr, &pol->selector.saddr,
-				pol->family, nhashmask);
-		if (!entry0) {
-			hlist_del(entry);
-			hlist_add_head(&pol->bydst, ndsttable+h);
-=======
 	unsigned int hash;
 	u8 dbits;
 	u8 sbits;
@@ -763,22 +555,14 @@ redo:
 		if (!entry0 || pol->xdo.type == XFRM_DEV_OFFLOAD_PACKET) {
 			hlist_del_rcu(&pol->bydst);
 			hlist_add_head_rcu(&pol->bydst, ndsttable + h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			h0 = h;
 		} else {
 			if (h != h0)
 				continue;
-<<<<<<< HEAD
-			hlist_del(entry);
-			hlist_add_after(entry0, &pol->bydst);
-		}
-		entry0 = entry;
-=======
 			hlist_del_rcu(&pol->bydst);
 			hlist_add_behind_rcu(&pol->bydst, entry0);
 		}
 		entry0 = &pol->bydst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!hlist_empty(list)) {
 		entry0 = NULL;
@@ -790,17 +574,10 @@ static void xfrm_idx_hash_transfer(struct hlist_head *list,
 				   struct hlist_head *nidxtable,
 				   unsigned int nhashmask)
 {
-<<<<<<< HEAD
-	struct hlist_node *entry, *tmp;
-	struct xfrm_policy *pol;
-
-	hlist_for_each_entry_safe(pol, entry, tmp, list, byidx) {
-=======
 	struct hlist_node *tmp;
 	struct xfrm_policy *pol;
 
 	hlist_for_each_entry_safe(pol, tmp, list, byidx) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int h;
 
 		h = __idx_hash(pol->index, nhashmask);
@@ -818,29 +595,13 @@ static void xfrm_bydst_resize(struct net *net, int dir)
 	unsigned int hmask = net->xfrm.policy_bydst[dir].hmask;
 	unsigned int nhashmask = xfrm_new_hash_mask(hmask);
 	unsigned int nsize = (nhashmask + 1) * sizeof(struct hlist_head);
-<<<<<<< HEAD
-	struct hlist_head *odst = net->xfrm.policy_bydst[dir].table;
-	struct hlist_head *ndst = xfrm_hash_alloc(nsize);
-=======
 	struct hlist_head *ndst = xfrm_hash_alloc(nsize);
 	struct hlist_head *odst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (!ndst)
 		return;
 
-<<<<<<< HEAD
-	write_lock_bh(&xfrm_policy_lock);
-
-	for (i = hmask; i >= 0; i--)
-		xfrm_dst_hash_transfer(odst + i, ndst, nhashmask);
-
-	net->xfrm.policy_bydst[dir].table = ndst;
-	net->xfrm.policy_bydst[dir].hmask = nhashmask;
-
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
 	write_seqcount_begin(&net->xfrm.xfrm_policy_hash_generation);
 
@@ -857,16 +618,11 @@ static void xfrm_bydst_resize(struct net *net, int dir)
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
 
 	synchronize_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xfrm_hash_free(odst, (hmask + 1) * sizeof(struct hlist_head));
 }
 
-<<<<<<< HEAD
-static void xfrm_byidx_resize(struct net *net, int total)
-=======
 static void xfrm_byidx_resize(struct net *net)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int hmask = net->xfrm.policy_idx_hmask;
 	unsigned int nhashmask = xfrm_new_hash_mask(hmask);
@@ -878,11 +634,7 @@ static void xfrm_byidx_resize(struct net *net)
 	if (!nidx)
 		return;
 
-<<<<<<< HEAD
-	write_lock_bh(&xfrm_policy_lock);
-=======
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = hmask; i >= 0; i--)
 		xfrm_idx_hash_transfer(oidx + i, nidx, nhashmask);
@@ -890,11 +642,7 @@ static void xfrm_byidx_resize(struct net *net)
 	net->xfrm.policy_byidx = nidx;
 	net->xfrm.policy_idx_hmask = nhashmask;
 
-<<<<<<< HEAD
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xfrm_hash_free(oidx, (hmask + 1) * sizeof(struct hlist_head));
 }
@@ -927,10 +675,6 @@ static inline int xfrm_byidx_should_resize(struct net *net, int total)
 
 void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si)
 {
-<<<<<<< HEAD
-	read_lock_bh(&xfrm_policy_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	si->incnt = net->xfrm.policy_count[XFRM_POLICY_IN];
 	si->outcnt = net->xfrm.policy_count[XFRM_POLICY_OUT];
 	si->fwdcnt = net->xfrm.policy_count[XFRM_POLICY_FWD];
@@ -939,10 +683,6 @@ void xfrm_spd_getinfo(struct net *net, struct xfrmk_spdinfo *si)
 	si->fwdscnt = net->xfrm.policy_count[XFRM_POLICY_FWD+XFRM_POLICY_MAX];
 	si->spdhcnt = net->xfrm.policy_idx_hmask;
 	si->spdhmcnt = xfrm_policy_hashmax;
-<<<<<<< HEAD
-	read_unlock_bh(&xfrm_policy_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(xfrm_spd_getinfo);
 
@@ -955,34 +695,16 @@ static void xfrm_hash_resize(struct work_struct *work)
 	mutex_lock(&hash_resize_mutex);
 
 	total = 0;
-<<<<<<< HEAD
-	for (dir = 0; dir < XFRM_POLICY_MAX * 2; dir++) {
-=======
 	for (dir = 0; dir < XFRM_POLICY_MAX; dir++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (xfrm_bydst_should_resize(net, dir, &total))
 			xfrm_bydst_resize(net, dir);
 	}
 	if (xfrm_byidx_should_resize(net, total))
-<<<<<<< HEAD
-		xfrm_byidx_resize(net, total);
-=======
 		xfrm_byidx_resize(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&hash_resize_mutex);
 }
 
-<<<<<<< HEAD
-/* Generate new index... KAME seems to generate them ordered by cost
- * of an absolute inpredictability of ordering of rules. This will not pass. */
-static u32 xfrm_gen_index(struct net *net, int dir)
-{
-	static u32 idx_generator;
-
-	for (;;) {
-		struct hlist_node *entry;
-=======
 /* Make sure *pol can be inserted into fastbin.
  * Useful to check that later insert requests will be successful
  * (provided xfrm_policy_lock is held throughout).
@@ -1670,16 +1392,11 @@ EXPORT_SYMBOL(xfrm_policy_hash_rebuild);
 static u32 xfrm_gen_index(struct net *net, int dir, u32 index)
 {
 	for (;;) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct hlist_head *list;
 		struct xfrm_policy *p;
 		u32 idx;
 		int found;
 
-<<<<<<< HEAD
-		idx = (idx_generator | dir);
-		idx_generator += 8;
-=======
 		if (!index) {
 			idx = (net->xfrm.idx_generator | dir);
 			net->xfrm.idx_generator += 8;
@@ -1688,16 +1405,11 @@ static u32 xfrm_gen_index(struct net *net, int dir, u32 index)
 			index = 0;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (idx == 0)
 			idx = 8;
 		list = net->xfrm.policy_byidx + idx_hash(net, idx);
 		found = 0;
-<<<<<<< HEAD
-		hlist_for_each_entry(p, entry, list, byidx) {
-=======
 		hlist_for_each_entry(p, list, byidx) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (p->index == idx) {
 				found = 1;
 				break;
@@ -1723,31 +1435,6 @@ static inline int selector_cmp(struct xfrm_selector *s1, struct xfrm_selector *s
 	return 0;
 }
 
-<<<<<<< HEAD
-int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
-{
-	struct net *net = xp_net(policy);
-	struct xfrm_policy *pol;
-	struct xfrm_policy *delpol;
-	struct hlist_head *chain;
-	struct hlist_node *entry, *newpos;
-	u32 mark = policy->mark.v & policy->mark.m;
-
-	write_lock_bh(&xfrm_policy_lock);
-	chain = policy_hash_bysel(net, &policy->selector, policy->family, dir);
-	delpol = NULL;
-	newpos = NULL;
-	hlist_for_each_entry(pol, entry, chain, bydst) {
-		if (pol->type == policy->type &&
-		    !selector_cmp(&pol->selector, &policy->selector) &&
-		    (mark & pol->mark.m) == pol->mark.v &&
-		    xfrm_sec_ctx_match(pol->security, policy->security) &&
-		    !WARN_ON(delpol)) {
-			if (excl) {
-				write_unlock_bh(&xfrm_policy_lock);
-				return -EEXIST;
-			}
-=======
 static void xfrm_policy_requeue(struct xfrm_policy *old,
 				struct xfrm_policy *new)
 {
@@ -1844,40 +1531,16 @@ static void xfrm_policy_insert_inexact_list(struct hlist_head *chain,
 		    xfrm_policy_mark_match(&policy->mark, pol) &&
 		    xfrm_sec_ctx_match(pol->security, policy->security) &&
 		    !WARN_ON(delpol)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			delpol = pol;
 			if (policy->priority > pol->priority)
 				continue;
 		} else if (policy->priority >= pol->priority) {
-<<<<<<< HEAD
-			newpos = &pol->bydst;
-=======
 			newpos = &pol->bydst_inexact_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		if (delpol)
 			break;
 	}
-<<<<<<< HEAD
-	if (newpos)
-		hlist_add_after(newpos, &policy->bydst);
-	else
-		hlist_add_head(&policy->bydst, chain);
-	xfrm_pol_hold(policy);
-	net->xfrm.policy_count[dir]++;
-	atomic_inc(&flow_cache_genid);
-	if (delpol)
-		__xfrm_policy_unlink(delpol, dir);
-	policy->index = delpol ? delpol->index : xfrm_gen_index(net, dir);
-	hlist_add_head(&policy->byidx, net->xfrm.policy_byidx+idx_hash(net, policy->index));
-	policy->curlft.add_time = get_seconds();
-	policy->curlft.use_time = 0;
-	if (!mod_timer(&policy->timer, jiffies + HZ))
-		xfrm_pol_hold(policy);
-	list_add(&policy->walk.all, &net->xfrm.policy_all);
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 
 	if (newpos && policy->xdo.type != XFRM_DEV_OFFLOAD_PACKET)
 		hlist_add_behind_rcu(&policy->bydst_inexact_list, newpos);
@@ -1964,7 +1627,6 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
 	if (!mod_timer(&policy->timer, jiffies + HZ))
 		xfrm_pol_hold(policy);
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (delpol)
 		xfrm_policy_kill(delpol);
@@ -1975,44 +1637,6 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
 }
 EXPORT_SYMBOL(xfrm_policy_insert);
 
-<<<<<<< HEAD
-struct xfrm_policy *xfrm_policy_bysel_ctx(struct net *net, u32 mark, u8 type,
-					  int dir, struct xfrm_selector *sel,
-					  struct xfrm_sec_ctx *ctx, int delete,
-					  int *err)
-{
-	struct xfrm_policy *pol, *ret;
-	struct hlist_head *chain;
-	struct hlist_node *entry;
-
-	*err = 0;
-	write_lock_bh(&xfrm_policy_lock);
-	chain = policy_hash_bysel(net, sel, sel->family, dir);
-	ret = NULL;
-	hlist_for_each_entry(pol, entry, chain, bydst) {
-		if (pol->type == type &&
-		    (mark & pol->mark.m) == pol->mark.v &&
-		    !selector_cmp(sel, &pol->selector) &&
-		    xfrm_sec_ctx_match(ctx, pol->security)) {
-			xfrm_pol_hold(pol);
-			if (delete) {
-				*err = security_xfrm_policy_delete(
-								pol->security);
-				if (*err) {
-					write_unlock_bh(&xfrm_policy_lock);
-					return pol;
-				}
-				__xfrm_policy_unlink(pol, dir);
-			}
-			ret = pol;
-			break;
-		}
-	}
-	write_unlock_bh(&xfrm_policy_lock);
-
-	if (ret && delete)
-		xfrm_policy_kill(ret);
-=======
 static struct xfrm_policy *
 __xfrm_policy_bysel_ctx(struct hlist_head *chain, const struct xfrm_mark *mark,
 			u32 if_id, u8 type, int dir, struct xfrm_selector *sel,
@@ -2101,57 +1725,34 @@ xfrm_policy_bysel_ctx(struct net *net, const struct xfrm_mark *mark, u32 if_id,
 		xfrm_policy_kill(ret);
 	if (bin && delete)
 		xfrm_policy_inexact_prune_bin(bin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(xfrm_policy_bysel_ctx);
 
-<<<<<<< HEAD
-struct xfrm_policy *xfrm_policy_byid(struct net *net, u32 mark, u8 type,
-				     int dir, u32 id, int delete, int *err)
-{
-	struct xfrm_policy *pol, *ret;
-	struct hlist_head *chain;
-	struct hlist_node *entry;
-=======
 struct xfrm_policy *
 xfrm_policy_byid(struct net *net, const struct xfrm_mark *mark, u32 if_id,
 		 u8 type, int dir, u32 id, int delete, int *err)
 {
 	struct xfrm_policy *pol, *ret;
 	struct hlist_head *chain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*err = -ENOENT;
 	if (xfrm_policy_id2dir(id) != dir)
 		return NULL;
 
 	*err = 0;
-<<<<<<< HEAD
-	write_lock_bh(&xfrm_policy_lock);
-	chain = net->xfrm.policy_byidx + idx_hash(net, id);
-	ret = NULL;
-	hlist_for_each_entry(pol, entry, chain, byidx) {
-		if (pol->type == type && pol->index == id &&
-		    (mark & pol->mark.m) == pol->mark.v) {
-=======
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
 	chain = net->xfrm.policy_byidx + idx_hash(net, id);
 	ret = NULL;
 	hlist_for_each_entry(pol, chain, byidx) {
 		if (pol->type == type && pol->index == id &&
 		    pol->if_id == if_id && xfrm_policy_mark_match(mark, pol)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xfrm_pol_hold(pol);
 			if (delete) {
 				*err = security_xfrm_policy_delete(
 								pol->security);
 				if (*err) {
-<<<<<<< HEAD
-					write_unlock_bh(&xfrm_policy_lock);
-=======
 					spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return pol;
 				}
 				__xfrm_policy_unlink(pol, dir);
@@ -2160,11 +1761,7 @@ xfrm_policy_byid(struct net *net, const struct xfrm_mark *mark, u32 if_id,
 			break;
 		}
 	}
-<<<<<<< HEAD
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret && delete)
 		xfrm_policy_kill(ret);
@@ -2174,46 +1771,6 @@ EXPORT_SYMBOL(xfrm_policy_byid);
 
 #ifdef CONFIG_SECURITY_NETWORK_XFRM
 static inline int
-<<<<<<< HEAD
-xfrm_policy_flush_secctx_check(struct net *net, u8 type, struct xfrm_audit *audit_info)
-{
-	int dir, err = 0;
-
-	for (dir = 0; dir < XFRM_POLICY_MAX; dir++) {
-		struct xfrm_policy *pol;
-		struct hlist_node *entry;
-		int i;
-
-		hlist_for_each_entry(pol, entry,
-				     &net->xfrm.policy_inexact[dir], bydst) {
-			if (pol->type != type)
-				continue;
-			err = security_xfrm_policy_delete(pol->security);
-			if (err) {
-				xfrm_audit_policy_delete(pol, 0,
-							 audit_info->loginuid,
-							 audit_info->sessionid,
-							 audit_info->secid);
-				return err;
-			}
-		}
-		for (i = net->xfrm.policy_bydst[dir].hmask; i >= 0; i--) {
-			hlist_for_each_entry(pol, entry,
-					     net->xfrm.policy_bydst[dir].table + i,
-					     bydst) {
-				if (pol->type != type)
-					continue;
-				err = security_xfrm_policy_delete(
-								pol->security);
-				if (err) {
-					xfrm_audit_policy_delete(pol, 0,
-							audit_info->loginuid,
-							audit_info->sessionid,
-							audit_info->secid);
-					return err;
-				}
-			}
-=======
 xfrm_policy_flush_secctx_check(struct net *net, u8 type, bool task_valid)
 {
 	struct xfrm_policy *pol;
@@ -2251,16 +1808,12 @@ static inline int xfrm_dev_policy_flush_secctx_check(struct net *net,
 		if (err) {
 			xfrm_audit_policy_delete(pol, 0, task_valid);
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return err;
 }
 #else
 static inline int
-<<<<<<< HEAD
-xfrm_policy_flush_secctx_check(struct net *net, u8 type, struct xfrm_audit *audit_info)
-=======
 xfrm_policy_flush_secctx_check(struct net *net, u8 type, bool task_valid)
 {
 	return 0;
@@ -2269,75 +1822,11 @@ xfrm_policy_flush_secctx_check(struct net *net, u8 type, bool task_valid)
 static inline int xfrm_dev_policy_flush_secctx_check(struct net *net,
 						     struct net_device *dev,
 						     bool task_valid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-int xfrm_policy_flush(struct net *net, u8 type, struct xfrm_audit *audit_info)
-{
-	int dir, err = 0, cnt = 0;
-
-	write_lock_bh(&xfrm_policy_lock);
-
-	err = xfrm_policy_flush_secctx_check(net, type, audit_info);
-	if (err)
-		goto out;
-
-	for (dir = 0; dir < XFRM_POLICY_MAX; dir++) {
-		struct xfrm_policy *pol;
-		struct hlist_node *entry;
-		int i;
-
-	again1:
-		hlist_for_each_entry(pol, entry,
-				     &net->xfrm.policy_inexact[dir], bydst) {
-			if (pol->type != type)
-				continue;
-			__xfrm_policy_unlink(pol, dir);
-			write_unlock_bh(&xfrm_policy_lock);
-			cnt++;
-
-			xfrm_audit_policy_delete(pol, 1, audit_info->loginuid,
-						 audit_info->sessionid,
-						 audit_info->secid);
-
-			xfrm_policy_kill(pol);
-
-			write_lock_bh(&xfrm_policy_lock);
-			goto again1;
-		}
-
-		for (i = net->xfrm.policy_bydst[dir].hmask; i >= 0; i--) {
-	again2:
-			hlist_for_each_entry(pol, entry,
-					     net->xfrm.policy_bydst[dir].table + i,
-					     bydst) {
-				if (pol->type != type)
-					continue;
-				__xfrm_policy_unlink(pol, dir);
-				write_unlock_bh(&xfrm_policy_lock);
-				cnt++;
-
-				xfrm_audit_policy_delete(pol, 1,
-							 audit_info->loginuid,
-							 audit_info->sessionid,
-							 audit_info->secid);
-				xfrm_policy_kill(pol);
-
-				write_lock_bh(&xfrm_policy_lock);
-				goto again2;
-			}
-		}
-
-	}
-	if (!cnt)
-		err = -ESRCH;
-out:
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 int xfrm_policy_flush(struct net *net, u8 type, bool task_valid)
 {
 	int dir, err = 0, cnt = 0;
@@ -2374,13 +1863,10 @@ again:
 		err = -ESRCH;
 out:
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(xfrm_policy_flush);
 
-<<<<<<< HEAD
-=======
 int xfrm_dev_policy_flush(struct net *net, struct net_device *dev,
 			  bool task_valid)
 {
@@ -2422,7 +1908,6 @@ out:
 }
 EXPORT_SYMBOL(xfrm_dev_policy_flush);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xfrm_policy_walk(struct net *net, struct xfrm_policy_walk *walk,
 		     int (*func)(struct xfrm_policy *, int, int, void*),
 		     void *data)
@@ -2438,13 +1923,6 @@ int xfrm_policy_walk(struct net *net, struct xfrm_policy_walk *walk,
 	if (list_empty(&walk->walk.all) && walk->seq != 0)
 		return 0;
 
-<<<<<<< HEAD
-	write_lock_bh(&xfrm_policy_lock);
-	if (list_empty(&walk->walk.all))
-		x = list_first_entry(&net->xfrm.policy_all, struct xfrm_policy_walk_entry, all);
-	else
-		x = list_entry(&walk->walk.all, struct xfrm_policy_walk_entry, all);
-=======
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
 	if (list_empty(&walk->walk.all))
 		x = list_first_entry(&net->xfrm.policy_all, struct xfrm_policy_walk_entry, all);
@@ -2452,7 +1930,6 @@ int xfrm_policy_walk(struct net *net, struct xfrm_policy_walk *walk,
 		x = list_first_entry(&walk->walk.all,
 				     struct xfrm_policy_walk_entry, all);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_from(x, &net->xfrm.policy_all, all) {
 		if (x->dead)
 			continue;
@@ -2474,11 +1951,7 @@ int xfrm_policy_walk(struct net *net, struct xfrm_policy_walk *walk,
 	}
 	list_del_init(&walk->walk.all);
 out:
-<<<<<<< HEAD
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 EXPORT_SYMBOL(xfrm_policy_walk);
@@ -2492,24 +1965,14 @@ void xfrm_policy_walk_init(struct xfrm_policy_walk *walk, u8 type)
 }
 EXPORT_SYMBOL(xfrm_policy_walk_init);
 
-<<<<<<< HEAD
-void xfrm_policy_walk_done(struct xfrm_policy_walk *walk)
-=======
 void xfrm_policy_walk_done(struct xfrm_policy_walk *walk, struct net *net)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (list_empty(&walk->walk.all))
 		return;
 
-<<<<<<< HEAD
-	write_lock_bh(&xfrm_policy_lock);
-	list_del(&walk->walk.all);
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock); /*FIXME where is net? */
 	list_del(&walk->walk.all);
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(xfrm_policy_walk_done);
 
@@ -2520,14 +1983,6 @@ EXPORT_SYMBOL(xfrm_policy_walk_done);
  */
 static int xfrm_policy_match(const struct xfrm_policy *pol,
 			     const struct flowi *fl,
-<<<<<<< HEAD
-			     u8 type, u16 family, int dir)
-{
-	const struct xfrm_selector *sel = &pol->selector;
-	int match, ret = -ESRCH;
-
-	if (pol->family != family ||
-=======
 			     u8 type, u16 family, u32 if_id)
 {
 	const struct xfrm_selector *sel = &pol->selector;
@@ -2536,31 +1991,12 @@ static int xfrm_policy_match(const struct xfrm_policy *pol,
 
 	if (pol->family != family ||
 	    pol->if_id != if_id ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (fl->flowi_mark & pol->mark.m) != pol->mark.v ||
 	    pol->type != type)
 		return ret;
 
 	match = xfrm_selector_match(sel, fl, family);
 	if (match)
-<<<<<<< HEAD
-		ret = security_xfrm_policy_lookup(pol->security, fl->flowi_secid,
-						  dir);
-
-	return ret;
-}
-
-static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
-						     const struct flowi *fl,
-						     u16 family, u8 dir)
-{
-	int err;
-	struct xfrm_policy *pol, *ret;
-	const xfrm_address_t *daddr, *saddr;
-	struct hlist_node *entry;
-	struct hlist_head *chain;
-	u32 priority = ~0U;
-=======
 		ret = security_xfrm_policy_lookup(pol->security, fl->flowi_secid);
 	return ret;
 }
@@ -2743,20 +2179,12 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
 	struct hlist_head *chain;
 	unsigned int sequence;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	daddr = xfrm_flowi_daddr(fl, family);
 	saddr = xfrm_flowi_saddr(fl, family);
 	if (unlikely(!daddr || !saddr))
 		return NULL;
 
-<<<<<<< HEAD
-	read_lock_bh(&xfrm_policy_lock);
-	chain = policy_hash_direct(net, daddr, saddr, family, dir);
-	ret = NULL;
-	hlist_for_each_entry(pol, entry, chain, bydst) {
-		err = xfrm_policy_match(pol, fl, type, family, dir);
-=======
 	rcu_read_lock();
  retry:
 	do {
@@ -2767,7 +2195,6 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
 	ret = NULL;
 	hlist_for_each_entry_rcu(pol, chain, bydst) {
 		err = xfrm_policy_match(pol, fl, type, family, if_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			if (err == -ESRCH)
 				continue;
@@ -2777,31 +2204,6 @@ static struct xfrm_policy *xfrm_policy_lookup_bytype(struct net *net, u8 type,
 			}
 		} else {
 			ret = pol;
-<<<<<<< HEAD
-			priority = ret->priority;
-			break;
-		}
-	}
-	chain = &net->xfrm.policy_inexact[dir];
-	hlist_for_each_entry(pol, entry, chain, bydst) {
-		err = xfrm_policy_match(pol, fl, type, family, dir);
-		if (err) {
-			if (err == -ESRCH)
-				continue;
-			else {
-				ret = ERR_PTR(err);
-				goto fail;
-			}
-		} else if (pol->priority < priority) {
-			ret = pol;
-			break;
-		}
-	}
-	if (ret)
-		xfrm_pol_hold(ret);
-fail:
-	read_unlock_bh(&xfrm_policy_lock);
-=======
 			break;
 		}
 	}
@@ -2829,82 +2231,17 @@ skip_inexact:
 		goto retry;
 fail:
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct xfrm_policy *
-__xfrm_policy_lookup(struct net *net, const struct flowi *fl, u16 family, u8 dir)
-=======
 static struct xfrm_policy *xfrm_policy_lookup(struct net *net,
 					      const struct flowi *fl,
 					      u16 family, u8 dir, u32 if_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_XFRM_SUB_POLICY
 	struct xfrm_policy *pol;
 
-<<<<<<< HEAD
-	pol = xfrm_policy_lookup_bytype(net, XFRM_POLICY_TYPE_SUB, fl, family, dir);
-	if (pol != NULL)
-		return pol;
-#endif
-	return xfrm_policy_lookup_bytype(net, XFRM_POLICY_TYPE_MAIN, fl, family, dir);
-}
-
-static struct flow_cache_object *
-xfrm_policy_lookup(struct net *net, const struct flowi *fl, u16 family,
-		   u8 dir, struct flow_cache_object *old_obj, void *ctx)
-{
-	struct xfrm_policy *pol;
-
-	if (old_obj)
-		xfrm_pol_put(container_of(old_obj, struct xfrm_policy, flo));
-
-	pol = __xfrm_policy_lookup(net, fl, family, dir);
-	if (IS_ERR_OR_NULL(pol))
-		return ERR_CAST(pol);
-
-	/* Resolver returns two references:
-	 * one for cache and one for caller of flow_cache_lookup() */
-	xfrm_pol_hold(pol);
-
-	return &pol->flo;
-}
-
-static inline int policy_to_flow_dir(int dir)
-{
-	if (XFRM_POLICY_IN == FLOW_DIR_IN &&
-	    XFRM_POLICY_OUT == FLOW_DIR_OUT &&
-	    XFRM_POLICY_FWD == FLOW_DIR_FWD)
-		return dir;
-	switch (dir) {
-	default:
-	case XFRM_POLICY_IN:
-		return FLOW_DIR_IN;
-	case XFRM_POLICY_OUT:
-		return FLOW_DIR_OUT;
-	case XFRM_POLICY_FWD:
-		return FLOW_DIR_FWD;
-	}
-}
-
-static struct xfrm_policy *xfrm_sk_policy_lookup(struct sock *sk, int dir,
-						 const struct flowi *fl)
-{
-	struct xfrm_policy *pol;
-
-	read_lock_bh(&xfrm_policy_lock);
-	if ((pol = sk->sk_policy[dir]) != NULL) {
-		int match = xfrm_selector_match(&pol->selector, fl,
-						sk->sk_family);
-		int err = 0;
-
-		if (match) {
-			if ((sk->sk_mark & pol->mark.m) != pol->mark.v) {
-=======
 	pol = xfrm_policy_lookup_bytype(net, XFRM_POLICY_TYPE_SUB, fl, family,
 					dir, if_id);
 	if (pol != NULL)
@@ -2936,21 +2273,10 @@ static struct xfrm_policy *xfrm_sk_policy_lookup(const struct sock *sk, int dir,
 		if (match) {
 			if ((READ_ONCE(sk->sk_mark) & pol->mark.m) != pol->mark.v ||
 			    pol->if_id != if_id) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pol = NULL;
 				goto out;
 			}
 			err = security_xfrm_policy_lookup(pol->security,
-<<<<<<< HEAD
-						      fl->flowi_secid,
-						      policy_to_flow_dir(dir));
-			if (!err)
-				xfrm_pol_hold(pol);
-			else if (err == -ESRCH)
-				pol = NULL;
-			else
-				pol = ERR_PTR(err);
-=======
 						      fl->flowi_secid);
 			if (!err) {
 				if (!xfrm_pol_hold_rcu(pol))
@@ -2960,40 +2286,21 @@ static struct xfrm_policy *xfrm_sk_policy_lookup(const struct sock *sk, int dir,
 			} else {
 				pol = ERR_PTR(err);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			pol = NULL;
 	}
 out:
-<<<<<<< HEAD
-	read_unlock_bh(&xfrm_policy_lock);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pol;
 }
 
 static void __xfrm_policy_link(struct xfrm_policy *pol, int dir)
 {
 	struct net *net = xp_net(pol);
-<<<<<<< HEAD
-	struct hlist_head *chain = policy_hash_bysel(net, &pol->selector,
-						     pol->family, dir);
-
-	list_add(&pol->walk.all, &net->xfrm.policy_all);
-	hlist_add_head(&pol->bydst, chain);
-	hlist_add_head(&pol->byidx, net->xfrm.policy_byidx+idx_hash(net, pol->index));
-	net->xfrm.policy_count[dir]++;
-	xfrm_pol_hold(pol);
-
-	if (xfrm_bydst_should_resize(net, dir, NULL))
-		schedule_work(&net->xfrm.policy_hash_work);
-=======
 
 	list_add(&pol->walk.all, &net->xfrm.policy_all);
 	net->xfrm.policy_count[dir]++;
 	xfrm_pol_hold(pol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xfrm_policy *__xfrm_policy_unlink(struct xfrm_policy *pol,
@@ -3001,14 +2308,6 @@ static struct xfrm_policy *__xfrm_policy_unlink(struct xfrm_policy *pol,
 {
 	struct net *net = xp_net(pol);
 
-<<<<<<< HEAD
-	if (hlist_unhashed(&pol->bydst))
-		return NULL;
-
-	hlist_del(&pol->bydst);
-	hlist_del(&pol->byidx);
-	list_del(&pol->walk.all);
-=======
 	if (list_empty(&pol->walk.all))
 		return NULL;
 
@@ -3020,20 +2319,11 @@ static struct xfrm_policy *__xfrm_policy_unlink(struct xfrm_policy *pol,
 	}
 
 	list_del_init(&pol->walk.all);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	net->xfrm.policy_count[dir]--;
 
 	return pol;
 }
 
-<<<<<<< HEAD
-int xfrm_policy_delete(struct xfrm_policy *pol, int dir)
-{
-	write_lock_bh(&xfrm_policy_lock);
-	pol = __xfrm_policy_unlink(pol, dir);
-	write_unlock_bh(&xfrm_policy_lock);
-	if (pol) {
-=======
 static void xfrm_sk_policy_link(struct xfrm_policy *pol, int dir)
 {
 	__xfrm_policy_link(pol, XFRM_POLICY_MAX + dir);
@@ -3053,7 +2343,6 @@ int xfrm_policy_delete(struct xfrm_policy *pol, int dir)
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
 	if (pol) {
 		xfrm_dev_policy_delete(pol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfrm_policy_kill(pol);
 		return 0;
 	}
@@ -3063,11 +2352,7 @@ EXPORT_SYMBOL(xfrm_policy_delete);
 
 int xfrm_sk_policy_insert(struct sock *sk, int dir, struct xfrm_policy *pol)
 {
-<<<<<<< HEAD
-	struct net *net = xp_net(pol);
-=======
 	struct net *net = sock_net(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct xfrm_policy *old_pol;
 
 #ifdef CONFIG_XFRM_SUB_POLICY
@@ -3075,22 +2360,6 @@ int xfrm_sk_policy_insert(struct sock *sk, int dir, struct xfrm_policy *pol)
 		return -EINVAL;
 #endif
 
-<<<<<<< HEAD
-	write_lock_bh(&xfrm_policy_lock);
-	old_pol = sk->sk_policy[dir];
-	sk->sk_policy[dir] = pol;
-	if (pol) {
-		pol->curlft.add_time = get_seconds();
-		pol->index = xfrm_gen_index(net, XFRM_POLICY_MAX+dir);
-		__xfrm_policy_link(pol, XFRM_POLICY_MAX+dir);
-	}
-	if (old_pol)
-		/* Unlinking succeeds always. This is the only function
-		 * allowed to delete or replace socket policy.
-		 */
-		__xfrm_policy_unlink(old_pol, XFRM_POLICY_MAX+dir);
-	write_unlock_bh(&xfrm_policy_lock);
-=======
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
 	old_pol = rcu_dereference_protected(sk->sk_policy[dir],
 				lockdep_is_held(&net->xfrm.xfrm_policy_lock));
@@ -3110,7 +2379,6 @@ int xfrm_sk_policy_insert(struct sock *sk, int dir, struct xfrm_policy *pol)
 		xfrm_sk_policy_unlink(old_pol, dir);
 	}
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (old_pol) {
 		xfrm_policy_kill(old_pol);
@@ -3121,10 +2389,7 @@ int xfrm_sk_policy_insert(struct sock *sk, int dir, struct xfrm_policy *pol)
 static struct xfrm_policy *clone_policy(const struct xfrm_policy *old, int dir)
 {
 	struct xfrm_policy *newp = xfrm_policy_alloc(xp_net(old), GFP_ATOMIC);
-<<<<<<< HEAD
-=======
 	struct net *net = xp_net(old);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (newp) {
 		newp->selector = old->selector;
@@ -3136,60 +2401,23 @@ static struct xfrm_policy *clone_policy(const struct xfrm_policy *old, int dir)
 		newp->lft = old->lft;
 		newp->curlft = old->curlft;
 		newp->mark = old->mark;
-<<<<<<< HEAD
-=======
 		newp->if_id = old->if_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		newp->action = old->action;
 		newp->flags = old->flags;
 		newp->xfrm_nr = old->xfrm_nr;
 		newp->index = old->index;
 		newp->type = old->type;
-<<<<<<< HEAD
-		memcpy(newp->xfrm_vec, old->xfrm_vec,
-		       newp->xfrm_nr*sizeof(struct xfrm_tmpl));
-		write_lock_bh(&xfrm_policy_lock);
-		__xfrm_policy_link(newp, XFRM_POLICY_MAX+dir);
-		write_unlock_bh(&xfrm_policy_lock);
-=======
 		newp->family = old->family;
 		memcpy(newp->xfrm_vec, old->xfrm_vec,
 		       newp->xfrm_nr*sizeof(struct xfrm_tmpl));
 		spin_lock_bh(&net->xfrm.xfrm_policy_lock);
 		xfrm_sk_policy_link(newp, dir);
 		spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfrm_pol_put(newp);
 	}
 	return newp;
 }
 
-<<<<<<< HEAD
-int __xfrm_sk_clone_policy(struct sock *sk)
-{
-	struct xfrm_policy *p0 = sk->sk_policy[0],
-			   *p1 = sk->sk_policy[1];
-
-	sk->sk_policy[0] = sk->sk_policy[1] = NULL;
-	if (p0 && (sk->sk_policy[0] = clone_policy(p0, 0)) == NULL)
-		return -ENOMEM;
-	if (p1 && (sk->sk_policy[1] = clone_policy(p1, 1)) == NULL)
-		return -ENOMEM;
-	return 0;
-}
-
-static int
-xfrm_get_saddr(struct net *net, xfrm_address_t *local, xfrm_address_t *remote,
-	       unsigned short family)
-{
-	int err;
-	struct xfrm_policy_afinfo *afinfo = xfrm_policy_get_afinfo(family);
-
-	if (unlikely(afinfo == NULL))
-		return -EINVAL;
-	err = afinfo->get_saddr(net, local, remote);
-	xfrm_policy_put_afinfo(afinfo);
-=======
 int __xfrm_sk_clone_policy(struct sock *sk, const struct sock *osk)
 {
 	const struct xfrm_policy *p;
@@ -3223,7 +2451,6 @@ xfrm_get_saddr(struct net *net, int oif, xfrm_address_t *local,
 		return -EINVAL;
 	err = afinfo->get_saddr(net, oif, local, remote, mark);
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -3240,11 +2467,7 @@ xfrm_tmpl_resolve_one(struct xfrm_policy *policy, const struct flowi *fl,
 	xfrm_address_t *saddr = xfrm_flowi_saddr(fl, family);
 	xfrm_address_t tmp;
 
-<<<<<<< HEAD
-	for (nx=0, i = 0; i < policy->xfrm_nr; i++) {
-=======
 	for (nx = 0, i = 0; i < policy->xfrm_nr; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xfrm_state *x;
 		xfrm_address_t *remote = daddr;
 		xfrm_address_t *local  = saddr;
@@ -3255,25 +2478,17 @@ xfrm_tmpl_resolve_one(struct xfrm_policy *policy, const struct flowi *fl,
 			remote = &tmpl->id.daddr;
 			local = &tmpl->saddr;
 			if (xfrm_addr_any(local, tmpl->encap_family)) {
-<<<<<<< HEAD
-				error = xfrm_get_saddr(net, &tmp, remote, tmpl->encap_family);
-=======
 				error = xfrm_get_saddr(net, fl->flowi_oif,
 						       &tmp, remote,
 						       tmpl->encap_family, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (error)
 					goto fail;
 				local = &tmp;
 			}
 		}
 
-<<<<<<< HEAD
-		x = xfrm_state_find(remote, local, fl, tmpl, policy, &error, family);
-=======
 		x = xfrm_state_find(remote, local, fl, tmpl, policy, &error,
 				    family, policy->if_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (x && x->km.state == XFRM_STATE_VALID) {
 			xfrm[nx++] = x;
@@ -3285,15 +2500,9 @@ xfrm_tmpl_resolve_one(struct xfrm_policy *policy, const struct flowi *fl,
 			error = (x->km.state == XFRM_STATE_ERROR ?
 				 -EINVAL : -EAGAIN);
 			xfrm_state_put(x);
-<<<<<<< HEAD
-		}
-		else if (error == -ESRCH)
-			error = -EAGAIN;
-=======
 		} else if (error == -ESRCH) {
 			error = -EAGAIN;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!tmpl->optional)
 			goto fail;
@@ -3301,11 +2510,7 @@ xfrm_tmpl_resolve_one(struct xfrm_policy *policy, const struct flowi *fl,
 	return nx;
 
 fail:
-<<<<<<< HEAD
-	for (nx--; nx>=0; nx--)
-=======
 	for (nx--; nx >= 0; nx--)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfrm_state_put(xfrm[nx]);
 	return error;
 }
@@ -3342,88 +2547,12 @@ xfrm_tmpl_resolve(struct xfrm_policy **pols, int npols, const struct flowi *fl,
 	return cnx;
 
  fail:
-<<<<<<< HEAD
-	for (cnx--; cnx>=0; cnx--)
-=======
 	for (cnx--; cnx >= 0; cnx--)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfrm_state_put(tpp[cnx]);
 	return error;
 
 }
 
-<<<<<<< HEAD
-/* Check that the bundle accepts the flow and its components are
- * still valid.
- */
-
-static inline int xfrm_get_tos(const struct flowi *fl, int family)
-{
-	struct xfrm_policy_afinfo *afinfo = xfrm_policy_get_afinfo(family);
-	int tos;
-
-	if (!afinfo)
-		return -EINVAL;
-
-	tos = afinfo->get_tos(fl);
-
-	xfrm_policy_put_afinfo(afinfo);
-
-	return tos;
-}
-
-static struct flow_cache_object *xfrm_bundle_flo_get(struct flow_cache_object *flo)
-{
-	struct xfrm_dst *xdst = container_of(flo, struct xfrm_dst, flo);
-	struct dst_entry *dst = &xdst->u.dst;
-
-	if (xdst->route == NULL) {
-		/* Dummy bundle - if it has xfrms we were not
-		 * able to build bundle as template resolution failed.
-		 * It means we need to try again resolving. */
-		if (xdst->num_xfrms > 0)
-			return NULL;
-	} else {
-		/* Real bundle */
-		if (stale_bundle(dst))
-			return NULL;
-	}
-
-	dst_hold(dst);
-	return flo;
-}
-
-static int xfrm_bundle_flo_check(struct flow_cache_object *flo)
-{
-	struct xfrm_dst *xdst = container_of(flo, struct xfrm_dst, flo);
-	struct dst_entry *dst = &xdst->u.dst;
-
-	if (!xdst->route)
-		return 0;
-	if (stale_bundle(dst))
-		return 0;
-
-	return 1;
-}
-
-static void xfrm_bundle_flo_delete(struct flow_cache_object *flo)
-{
-	struct xfrm_dst *xdst = container_of(flo, struct xfrm_dst, flo);
-	struct dst_entry *dst = &xdst->u.dst;
-
-	dst_free(dst);
-}
-
-static const struct flow_cache_ops xfrm_bundle_fc_ops = {
-	.get = xfrm_bundle_flo_get,
-	.check = xfrm_bundle_flo_check,
-	.delete = xfrm_bundle_flo_delete,
-};
-
-static inline struct xfrm_dst *xfrm_alloc_dst(struct net *net, int family)
-{
-	struct xfrm_policy_afinfo *afinfo = xfrm_policy_get_afinfo(family);
-=======
 static int xfrm_get_tos(const struct flowi *fl, int family)
 {
 	if (family == AF_INET)
@@ -3435,7 +2564,6 @@ static int xfrm_get_tos(const struct flowi *fl, int family)
 static inline struct xfrm_dst *xfrm_alloc_dst(struct net *net, int family)
 {
 	const struct xfrm_policy_afinfo *afinfo = xfrm_policy_get_afinfo(family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dst_ops *dst_ops;
 	struct xfrm_dst *xdst;
 
@@ -3454,18 +2582,6 @@ static inline struct xfrm_dst *xfrm_alloc_dst(struct net *net, int family)
 	default:
 		BUG();
 	}
-<<<<<<< HEAD
-	xdst = dst_alloc(dst_ops, NULL, 0, 0, 0);
-
-	if (likely(xdst)) {
-		memset(&xdst->u.rt6.rt6i_table, 0,
-			sizeof(*xdst) - sizeof(struct dst_entry));
-		xdst->flo.ops = &xfrm_bundle_fc_ops;
-	} else
-		xdst = ERR_PTR(-ENOBUFS);
-
-	xfrm_policy_put_afinfo(afinfo);
-=======
 	xdst = dst_alloc(dst_ops, NULL, DST_OBSOLETE_NONE, 0);
 
 	if (likely(xdst)) {
@@ -3474,28 +2590,10 @@ static inline struct xfrm_dst *xfrm_alloc_dst(struct net *net, int family)
 		xdst = ERR_PTR(-ENOBUFS);
 
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return xdst;
 }
 
-<<<<<<< HEAD
-static inline int xfrm_init_path(struct xfrm_dst *path, struct dst_entry *dst,
-				 int nfheader_len)
-{
-	struct xfrm_policy_afinfo *afinfo =
-		xfrm_policy_get_afinfo(dst->ops->family);
-	int err;
-
-	if (!afinfo)
-		return -EINVAL;
-
-	err = afinfo->init_path(path, dst, nfheader_len);
-
-	xfrm_policy_put_afinfo(afinfo);
-
-	return err;
-=======
 static void xfrm_init_path(struct xfrm_dst *path, struct dst_entry *dst,
 			   int nfheader_len)
 {
@@ -3504,17 +2602,12 @@ static void xfrm_init_path(struct xfrm_dst *path, struct dst_entry *dst,
 		path->path_cookie = rt6_get_cookie(rt);
 		path->u.rt6.rt6i_nfheader_len = nfheader_len;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int xfrm_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 				const struct flowi *fl)
 {
-<<<<<<< HEAD
-	struct xfrm_policy_afinfo *afinfo =
-=======
 	const struct xfrm_policy_afinfo *afinfo =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfrm_policy_get_afinfo(xdst->u.dst.ops->family);
 	int err;
 
@@ -3523,11 +2616,7 @@ static inline int xfrm_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
 
 	err = afinfo->fill_dst(xdst, dev, fl);
 
-<<<<<<< HEAD
-	xfrm_policy_put_afinfo(afinfo);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -3538,18 +2627,6 @@ static inline int xfrm_fill_dst(struct xfrm_dst *xdst, struct net_device *dev,
  */
 
 static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
-<<<<<<< HEAD
-					    struct xfrm_state **xfrm, int nx,
-					    const struct flowi *fl,
-					    struct dst_entry *dst)
-{
-	struct net *net = xp_net(policy);
-	unsigned long now = jiffies;
-	struct net_device *dev;
-	struct xfrm_mode *inner_mode;
-	struct dst_entry *dst_prev = NULL;
-	struct dst_entry *dst0 = NULL;
-=======
 					    struct xfrm_state **xfrm,
 					    struct xfrm_dst **bundle,
 					    int nx,
@@ -3563,7 +2640,6 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 	struct net_device *dev;
 	struct xfrm_dst *xdst_prev = NULL;
 	struct xfrm_dst *xdst0 = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = 0;
 	int err;
 	int header_len = 0;
@@ -3576,12 +2652,6 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 	xfrm_flowi_addr_get(fl, &saddr, &daddr, family);
 
 	tos = xfrm_get_tos(fl, family);
-<<<<<<< HEAD
-	err = tos;
-	if (tos < 0)
-		goto put_states;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dst_hold(dst);
 
@@ -3595,8 +2665,6 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 			goto put_states;
 		}
 
-<<<<<<< HEAD
-=======
 		bundle[i] = xdst;
 		if (!xdst_prev)
 			xdst0 = xdst;
@@ -3606,7 +2674,6 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 			 */
 			xfrm_dst_set_child(xdst_prev, &xdst->u.dst);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (xfrm[i]->sel.family == AF_UNSPEC) {
 			inner_mode = xfrm_ip2inner_mode(xfrm[i],
 							xfrm_af2proto(family));
@@ -3616,28 +2683,12 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 				goto put_states;
 			}
 		} else
-<<<<<<< HEAD
-			inner_mode = xfrm[i]->inner_mode;
-
-		if (!dst_prev)
-			dst0 = dst1;
-		else {
-			dst_prev->child = dst_clone(dst1);
-			dst1->flags |= DST_NOHASH;
-		}
-=======
 			inner_mode = &xfrm[i]->inner_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xdst->route = dst;
 		dst_copy_metrics(dst1, dst);
 
 		if (xfrm[i]->props.mode != XFRM_MODE_TRANSPORT) {
-<<<<<<< HEAD
-			family = xfrm[i]->props.family;
-			dst = xfrm_dst_lookup(xfrm[i], tos, &saddr, &daddr,
-					      family);
-=======
 			__u32 mark = 0;
 			int oif;
 
@@ -3650,7 +2701,6 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 			oif = fl->flowi_oif ? : fl->flowi_l3mdev;
 			dst = xfrm_dst_lookup(xfrm[i], tos, oif,
 					      &saddr, &daddr, family, mark);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = PTR_ERR(dst);
 			if (IS_ERR(dst))
 				goto put_states;
@@ -3660,17 +2710,6 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 		dst1->xfrm = xfrm[i];
 		xdst->xfrm_genid = xfrm[i]->genid;
 
-<<<<<<< HEAD
-		dst1->obsolete = -1;
-		dst1->flags |= DST_HOST;
-		dst1->lastuse = now;
-
-		dst1->input = dst_discard;
-		dst1->output = inner_mode->afinfo->output;
-
-		dst1->next = dst_prev;
-		dst_prev = dst1;
-=======
 		dst1->obsolete = DST_OBSOLETE_FORCE_CHK;
 		dst1->lastuse = now;
 
@@ -3685,7 +2724,6 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 		rcu_read_unlock();
 
 		xdst_prev = xdst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		header_len += xfrm[i]->props.header_len;
 		if (xfrm[i]->type->flags & XFRM_TYPE_NON_FRAGMENT)
@@ -3693,42 +2731,14 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
 		trailer_len += xfrm[i]->props.trailer_len;
 	}
 
-<<<<<<< HEAD
-	dst_prev->child = dst;
-	dst0->path = dst;
-=======
 	xfrm_dst_set_child(xdst_prev, dst);
 	xdst0->path = dst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -ENODEV;
 	dev = dst->dev;
 	if (!dev)
 		goto free_dst;
 
-<<<<<<< HEAD
-	/* Copy neighbour for reachability confirmation */
-	dst_set_neighbour(dst0, neigh_clone(dst_get_neighbour_noref(dst)));
-
-	xfrm_init_path((struct xfrm_dst *)dst0, dst, nfheader_len);
-	xfrm_init_pmtu(dst_prev);
-
-	for (dst_prev = dst0; dst_prev != dst; dst_prev = dst_prev->child) {
-		struct xfrm_dst *xdst = (struct xfrm_dst *)dst_prev;
-
-		err = xfrm_fill_dst(xdst, dev, fl);
-		if (err)
-			goto free_dst;
-
-		dst_prev->header_len = header_len;
-		dst_prev->trailer_len = trailer_len;
-		header_len -= xdst->u.dst.xfrm->props.header_len;
-		trailer_len -= xdst->u.dst.xfrm->props.trailer_len;
-	}
-
-out:
-	return dst0;
-=======
 	xfrm_init_path(xdst0, dst, nfheader_len);
 	xfrm_init_pmtu(bundle, nx);
 
@@ -3745,58 +2755,15 @@ out:
 	}
 
 	return &xdst0->u.dst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 put_states:
 	for (; i < nx; i++)
 		xfrm_state_put(xfrm[i]);
 free_dst:
-<<<<<<< HEAD
-	if (dst0)
-		dst_free(dst0);
-	dst0 = ERR_PTR(err);
-	goto out;
-}
-
-static int inline
-xfrm_dst_alloc_copy(void **target, const void *src, int size)
-{
-	if (!*target) {
-		*target = kmalloc(size, GFP_ATOMIC);
-		if (!*target)
-			return -ENOMEM;
-	}
-	memcpy(*target, src, size);
-	return 0;
-}
-
-static int inline
-xfrm_dst_update_parent(struct dst_entry *dst, const struct xfrm_selector *sel)
-{
-#ifdef CONFIG_XFRM_SUB_POLICY
-	struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
-	return xfrm_dst_alloc_copy((void **)&(xdst->partner),
-				   sel, sizeof(*sel));
-#else
-	return 0;
-#endif
-}
-
-static int inline
-xfrm_dst_update_origin(struct dst_entry *dst, const struct flowi *fl)
-{
-#ifdef CONFIG_XFRM_SUB_POLICY
-	struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
-	return xfrm_dst_alloc_copy((void **)&(xdst->origin), fl, sizeof(*fl));
-#else
-	return 0;
-#endif
-=======
 	if (xdst0)
 		dst_release_immediate(&xdst0->u.dst);
 
 	return ERR_PTR(err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_expand_policies(const struct flowi *fl, u16 family,
@@ -3810,37 +2777,19 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
 		*num_xfrms = 0;
 		return 0;
 	}
-<<<<<<< HEAD
-	if (IS_ERR(pols[0]))
-		return PTR_ERR(pols[0]);
-=======
 	if (IS_ERR(pols[0])) {
 		*num_pols = 0;
 		return PTR_ERR(pols[0]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*num_xfrms = pols[0]->xfrm_nr;
 
 #ifdef CONFIG_XFRM_SUB_POLICY
-<<<<<<< HEAD
-	if (pols[0] && pols[0]->action == XFRM_POLICY_ALLOW &&
-=======
 	if (pols[0]->action == XFRM_POLICY_ALLOW &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    pols[0]->type != XFRM_POLICY_TYPE_MAIN) {
 		pols[1] = xfrm_policy_lookup_bytype(xp_net(pols[0]),
 						    XFRM_POLICY_TYPE_MAIN,
 						    fl, family,
-<<<<<<< HEAD
-						    XFRM_POLICY_OUT);
-		if (pols[1]) {
-			if (IS_ERR(pols[1])) {
-				xfrm_pols_put(pols, *num_pols);
-				return PTR_ERR(pols[1]);
-			}
-			(*num_pols) ++;
-=======
 						    XFRM_POLICY_OUT,
 						    pols[0]->if_id);
 		if (pols[1]) {
@@ -3850,7 +2799,6 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
 				return PTR_ERR(pols[1]);
 			}
 			(*num_pols)++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(*num_xfrms) += pols[1]->xfrm_nr;
 		}
 	}
@@ -3873,36 +2821,23 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
 {
 	struct net *net = xp_net(pols[0]);
 	struct xfrm_state *xfrm[XFRM_MAX_DEPTH];
-<<<<<<< HEAD
-	struct dst_entry *dst;
-	struct xfrm_dst *xdst;
-=======
 	struct xfrm_dst *bundle[XFRM_MAX_DEPTH];
 	struct xfrm_dst *xdst;
 	struct dst_entry *dst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	/* Try to instantiate a bundle */
 	err = xfrm_tmpl_resolve(pols, num_pols, fl, xfrm, family);
 	if (err <= 0) {
-<<<<<<< HEAD
-		if (err != 0 && err != -EAGAIN)
-=======
 		if (err == 0)
 			return NULL;
 
 		if (err != -EAGAIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTPOLERROR);
 		return ERR_PTR(err);
 	}
 
-<<<<<<< HEAD
-	dst = xfrm_bundle_create(pols[0], xfrm, err, fl, dst_orig);
-=======
 	dst = xfrm_bundle_create(pols[0], xfrm, bundle, err, fl, dst_orig);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dst)) {
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTBUNDLEGENERROR);
 		return ERR_CAST(dst);
@@ -3910,103 +2845,13 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
 
 	xdst = (struct xfrm_dst *)dst;
 	xdst->num_xfrms = err;
-<<<<<<< HEAD
-	if (num_pols > 1)
-		err = xfrm_dst_update_parent(dst, &pols[1]->selector);
-	else
-		err = xfrm_dst_update_origin(dst, fl);
-	if (unlikely(err)) {
-		dst_free(dst);
-		XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTBUNDLECHECKERROR);
-		return ERR_PTR(err);
-	}
-
-	xdst->num_pols = num_pols;
-	memcpy(xdst->pols, pols, sizeof(struct xfrm_policy*) * num_pols);
-=======
 	xdst->num_pols = num_pols;
 	memcpy(xdst->pols, pols, sizeof(struct xfrm_policy *) * num_pols);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xdst->policy_genid = atomic_read(&pols[0]->genid);
 
 	return xdst;
 }
 
-<<<<<<< HEAD
-static struct flow_cache_object *
-xfrm_bundle_lookup(struct net *net, const struct flowi *fl, u16 family, u8 dir,
-		   struct flow_cache_object *oldflo, void *ctx)
-{
-	struct dst_entry *dst_orig = (struct dst_entry *)ctx;
-	struct xfrm_policy *pols[XFRM_POLICY_TYPE_MAX];
-	struct xfrm_dst *xdst, *new_xdst;
-	int num_pols = 0, num_xfrms = 0, i, err, pol_dead;
-
-	/* Check if the policies from old bundle are usable */
-	xdst = NULL;
-	if (oldflo) {
-		xdst = container_of(oldflo, struct xfrm_dst, flo);
-		num_pols = xdst->num_pols;
-		num_xfrms = xdst->num_xfrms;
-		pol_dead = 0;
-		for (i = 0; i < num_pols; i++) {
-			pols[i] = xdst->pols[i];
-			pol_dead |= pols[i]->walk.dead;
-		}
-		if (pol_dead) {
-			dst_free(&xdst->u.dst);
-			xdst = NULL;
-			num_pols = 0;
-			num_xfrms = 0;
-			oldflo = NULL;
-		}
-	}
-
-	/* Resolve policies to use if we couldn't get them from
-	 * previous cache entry */
-	if (xdst == NULL) {
-		num_pols = 1;
-		pols[0] = __xfrm_policy_lookup(net, fl, family, dir);
-		err = xfrm_expand_policies(fl, family, pols,
-					   &num_pols, &num_xfrms);
-		if (err < 0)
-			goto inc_error;
-		if (num_pols == 0)
-			return NULL;
-		if (num_xfrms <= 0)
-			goto make_dummy_bundle;
-	}
-
-	new_xdst = xfrm_resolve_and_create_bundle(pols, num_pols, fl, family, dst_orig);
-	if (IS_ERR(new_xdst)) {
-		err = PTR_ERR(new_xdst);
-		if (err != -EAGAIN)
-			goto error;
-		if (oldflo == NULL)
-			goto make_dummy_bundle;
-		dst_hold(&xdst->u.dst);
-		return oldflo;
-	} else if (new_xdst == NULL) {
-		num_xfrms = 0;
-		if (oldflo == NULL)
-			goto make_dummy_bundle;
-		xdst->num_xfrms = 0;
-		dst_hold(&xdst->u.dst);
-		return oldflo;
-	}
-
-	/* Kill the previous bundle */
-	if (xdst) {
-		/* The policies were stolen for newly generated bundle */
-		xdst->num_pols = 0;
-		dst_free(&xdst->u.dst);
-	}
-
-	/* Flow cache does not have reference, it dst_free()'s,
-	 * but we do need to return one reference for original caller */
-	dst_hold(&new_xdst->u.dst);
-	return &new_xdst->flo;
-=======
 static void xfrm_policy_queue_process(struct timer_list *t)
 {
 	struct sk_buff *skb;
@@ -4235,56 +3080,33 @@ static struct xfrm_dst *xfrm_bundle_lookup(struct net *net,
 	}
 
 	return xdst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 make_dummy_bundle:
 	/* We found policies, but there's no bundles to instantiate:
 	 * either because the policy blocks, has no transformations or
 	 * we could not build template (no xfrm_states).*/
-<<<<<<< HEAD
-	xdst = xfrm_alloc_dst(net, family);
-=======
 	xdst = xfrm_create_dummy_bundle(net, xflo, fl, num_xfrms, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(xdst)) {
 		xfrm_pols_put(pols, num_pols);
 		return ERR_CAST(xdst);
 	}
 	xdst->num_pols = num_pols;
 	xdst->num_xfrms = num_xfrms;
-<<<<<<< HEAD
-	memcpy(xdst->pols, pols, sizeof(struct xfrm_policy*) * num_pols);
-
-	dst_hold(&xdst->u.dst);
-	return &xdst->flo;
-=======
 	memcpy(xdst->pols, pols, sizeof(struct xfrm_policy *) * num_pols);
 
 	return xdst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 inc_error:
 	XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTPOLERROR);
 error:
-<<<<<<< HEAD
-	if (xdst != NULL)
-		dst_free(&xdst->u.dst);
-	else
-		xfrm_pols_put(pols, num_pols);
-=======
 	xfrm_pols_put(pols, num_pols);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(err);
 }
 
 static struct dst_entry *make_blackhole(struct net *net, u16 family,
 					struct dst_entry *dst_orig)
 {
-<<<<<<< HEAD
-	struct xfrm_policy_afinfo *afinfo = xfrm_policy_get_afinfo(family);
-=======
 	const struct xfrm_policy_afinfo *afinfo = xfrm_policy_get_afinfo(family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dst_entry *ret;
 
 	if (!afinfo) {
@@ -4293,35 +3115,11 @@ static struct dst_entry *make_blackhole(struct net *net, u16 family,
 	} else {
 		ret = afinfo->blackhole_route(net, dst_orig);
 	}
-<<<<<<< HEAD
-	xfrm_policy_put_afinfo(afinfo);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Main function: finds/creates a bundle for given flow.
- *
- * At the moment we eat a raw IP route. Mostly to speed up lookups
- * on interfaces with disabled IPsec.
- */
-struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
-			      const struct flowi *fl,
-			      struct sock *sk, int flags)
-{
-	struct xfrm_policy *pols[XFRM_POLICY_TYPE_MAX];
-	struct flow_cache_object *flo;
-	struct xfrm_dst *xdst;
-	struct dst_entry *dst, *route;
-	u16 family = dst_orig->ops->family;
-	u8 dir = policy_to_flow_dir(XFRM_POLICY_OUT);
-	int i, err, num_pols, num_xfrms = 0, drop_pols = 0;
-
-restart:
-=======
 /* Finds/creates a bundle for given flow and if_id
  *
  * At the moment we eat a raw IP route. Mostly to speed up lookups
@@ -4343,22 +3141,15 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 	u8 dir = XFRM_POLICY_OUT;
 	int i, err, num_pols, num_xfrms = 0, drop_pols = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst = NULL;
 	xdst = NULL;
 	route = NULL;
 
-<<<<<<< HEAD
-	if (sk && sk->sk_policy[XFRM_POLICY_OUT]) {
-		num_pols = 1;
-		pols[0] = xfrm_sk_policy_lookup(sk, XFRM_POLICY_OUT, fl);
-=======
 	sk = sk_const_to_full_sk(sk);
 	if (sk && sk->sk_policy[XFRM_POLICY_OUT]) {
 		num_pols = 1;
 		pols[0] = xfrm_sk_policy_lookup(sk, XFRM_POLICY_OUT, fl, family,
 						if_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = xfrm_expand_policies(fl, family, pols,
 					   &num_pols, &num_xfrms);
 		if (err < 0)
@@ -4373,11 +3164,6 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 			xdst = xfrm_resolve_and_create_bundle(
 					pols, num_pols, fl,
 					family, dst_orig);
-<<<<<<< HEAD
-			if (IS_ERR(xdst)) {
-				xfrm_pols_put(pols, num_pols);
-				err = PTR_ERR(xdst);
-=======
 
 			if (IS_ERR(xdst)) {
 				xfrm_pols_put(pols, num_pols);
@@ -4385,7 +3171,6 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 				if (err == -EREMOTE)
 					goto nopol;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto dropdst;
 			} else if (xdst == NULL) {
 				num_xfrms = 0;
@@ -4393,41 +3178,11 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 				goto no_transform;
 			}
 
-<<<<<<< HEAD
-			dst_hold(&xdst->u.dst);
-
-			spin_lock_bh(&xfrm_policy_sk_bundle_lock);
-			xdst->u.dst.next = xfrm_policy_sk_bundles;
-			xfrm_policy_sk_bundles = &xdst->u.dst;
-			spin_unlock_bh(&xfrm_policy_sk_bundle_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			route = xdst->route;
 		}
 	}
 
 	if (xdst == NULL) {
-<<<<<<< HEAD
-		/* To accelerate a bit...  */
-		if ((dst_orig->flags & DST_NOXFRM) ||
-		    !net->xfrm.policy_count[XFRM_POLICY_OUT])
-			goto nopol;
-
-		flo = flow_cache_lookup(net, fl, family, dir,
-					xfrm_bundle_lookup, dst_orig);
-		if (flo == NULL)
-			goto nopol;
-		if (IS_ERR(flo)) {
-			err = PTR_ERR(flo);
-			goto dropdst;
-		}
-		xdst = container_of(flo, struct xfrm_dst, flo);
-
-		num_pols = xdst->num_pols;
-		num_xfrms = xdst->num_xfrms;
-		memcpy(pols, xdst->pols, sizeof(struct xfrm_policy*) * num_pols);
-=======
 		struct xfrm_flo xflo;
 
 		xflo.dst_orig = dst_orig;
@@ -4449,7 +3204,6 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 		num_pols = xdst->num_pols;
 		num_xfrms = xdst->num_xfrms;
 		memcpy(pols, xdst->pols, sizeof(struct xfrm_policy *) * num_pols);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		route = xdst->route;
 	}
 
@@ -4462,40 +3216,12 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
 		 * have the xfrm_state's. We need to wait for KM to
 		 * negotiate new SA's or bail out with error.*/
 		if (net->xfrm.sysctl_larval_drop) {
-<<<<<<< HEAD
-			/* EREMOTE tells the caller to generate
-			 * a one-shot blackhole route. */
-			dst_release(dst);
-			xfrm_pols_put(pols, drop_pols);
-			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTNOSTATES);
-
-			return make_blackhole(net, family, dst_orig);
-		}
-		if (fl->flowi_flags & FLOWI_FLAG_CAN_SLEEP) {
-			DECLARE_WAITQUEUE(wait, current);
-
-			add_wait_queue(&net->xfrm.km_waitq, &wait);
-			set_current_state(TASK_INTERRUPTIBLE);
-			schedule();
-			set_current_state(TASK_RUNNING);
-			remove_wait_queue(&net->xfrm.km_waitq, &wait);
-
-			if (!signal_pending(current)) {
-				dst_release(dst);
-				goto restart;
-			}
-
-			err = -ERESTART;
-		} else
-			err = -EAGAIN;
-=======
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTNOSTATES);
 			err = -EREMOTE;
 			goto error;
 		}
 
 		err = -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTNOSTATES);
 		goto error;
@@ -4512,11 +3238,7 @@ no_transform:
 	}
 
 	for (i = 0; i < num_pols; i++)
-<<<<<<< HEAD
-		pols[i]->curlft.use_time = get_seconds();
-=======
 		WRITE_ONCE(pols[i]->curlft.use_time, ktime_get_real_seconds());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (num_xfrms < 0) {
 		/* Prohibit the flow */
@@ -4539,14 +3261,11 @@ ok:
 	return dst;
 
 nopol:
-<<<<<<< HEAD
-=======
 	if ((!dst_orig->dev || !(dst_orig->dev->flags & IFF_LOOPBACK)) &&
 	    net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
 		err = -EPERM;
 		goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(flags & XFRM_LOOKUP_ICMP)) {
 		dst = dst_orig;
 		goto ok;
@@ -4555,22 +3274,6 @@ nopol:
 error:
 	dst_release(dst);
 dropdst:
-<<<<<<< HEAD
-	dst_release(dst_orig);
-	xfrm_pols_put(pols, drop_pols);
-	return ERR_PTR(err);
-}
-EXPORT_SYMBOL(xfrm_lookup);
-
-static inline int
-xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
-{
-	struct xfrm_state *x;
-
-	if (!skb->sp || idx < 0 || idx >= skb->sp->len)
-		return 0;
-	x = skb->sp->xvec[idx];
-=======
 	if (!(flags & XFRM_LOOKUP_KEEP_DST_REF))
 		dst_release(dst_orig);
 	xfrm_pols_put(pols, drop_pols);
@@ -4621,7 +3324,6 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
 	if (!sp || idx < 0 || idx >= sp->len)
 		return 0;
 	x = sp->xvec[idx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!x->type->reject)
 		return 0;
 	return x->type->reject(x, skb, fl);
@@ -4635,11 +3337,7 @@ xfrm_secpath_reject(int idx, struct sk_buff *skb, const struct flowi *fl)
 
 static inline int
 xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
-<<<<<<< HEAD
-	      unsigned short family)
-=======
 	      unsigned short family, u32 if_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (xfrm_state_kern(x))
 		return tmpl->optional && !xfrm_state_addr_cmp(tmpl, x, tmpl->encap_family);
@@ -4650,32 +3348,20 @@ xfrm_state_ok(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x,
 		(tmpl->allalgs || (tmpl->aalgos & (1<<x->props.aalgo)) ||
 		 !(xfrm_id_proto_match(tmpl->id.proto, IPSEC_PROTO_ANY))) &&
 		!(x->props.mode != XFRM_MODE_TRANSPORT &&
-<<<<<<< HEAD
-		  xfrm_state_addr_cmp(tmpl, x, family));
-=======
 		  xfrm_state_addr_cmp(tmpl, x, family)) &&
 		(if_id == 0 || if_id == x->if_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * 0 or more than 0 is returned when validation is succeeded (either bypass
-<<<<<<< HEAD
- * because of optional transport mode, or next index of the mathced secpath
-=======
  * because of optional transport mode, or next index of the matched secpath
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * state with the template.
  * -1 is returned when no matching template is found.
  * Otherwise "-2 - errored_index" is returned.
  */
 static inline int
 xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int start,
-<<<<<<< HEAD
-	       unsigned short family)
-=======
 	       unsigned short family, u32 if_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx = start;
 
@@ -4685,11 +3371,6 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
 	} else
 		start = -1;
 	for (; idx < sp->len; idx++) {
-<<<<<<< HEAD
-		if (xfrm_state_ok(tmpl, sp->xvec[idx], family))
-			return ++idx;
-		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
-=======
 		if (xfrm_state_ok(tmpl, sp->xvec[idx], family, if_id))
 			return ++idx;
 		if (sp->xvec[idx]->props.mode != XFRM_MODE_TRANSPORT) {
@@ -4700,7 +3381,6 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
 				continue;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (start == -1)
 				start = -2-idx;
 			break;
@@ -4709,21 +3389,6 @@ xfrm_policy_ok(const struct xfrm_tmpl *tmpl, const struct sec_path *sp, int star
 	return start;
 }
 
-<<<<<<< HEAD
-int __xfrm_decode_session(struct sk_buff *skb, struct flowi *fl,
-			  unsigned int family, int reverse)
-{
-	struct xfrm_policy_afinfo *afinfo = xfrm_policy_get_afinfo(family);
-	int err;
-
-	if (unlikely(afinfo == NULL))
-		return -EAFNOSUPPORT;
-
-	afinfo->decode_session(skb, fl, reverse);
-	err = security_xfrm_decode_session(skb, &fl->flowi_secid);
-	xfrm_policy_put_afinfo(afinfo);
-	return err;
-=======
 static void
 decode_session4(const struct xfrm_flow_keys *flkeys, struct flowi *fl, bool reverse)
 {
@@ -4826,7 +3491,6 @@ int __xfrm_decode_session(struct net *net, struct sk_buff *skb, struct flowi *fl
 	}
 
 	return security_xfrm_decode_session(skb, &fl->flowi_secid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__xfrm_decode_session);
 
@@ -4842,8 +3506,6 @@ static inline int secpath_has_nontransport(const struct sec_path *sp, int k, int
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static bool icmp_err_packet(const struct flowi *fl, unsigned short family)
 {
 	const struct flowi4 *fl4 = &fl->u.ip4;
@@ -4968,7 +3630,6 @@ dst_entry *xfrm_out_fwd_icmp(struct sk_buff *skb, struct flowi *fl,
 	return dst;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 			unsigned short family)
 {
@@ -4980,16 +3641,6 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 	int pi;
 	int reverse;
 	struct flowi fl;
-<<<<<<< HEAD
-	u8 fl_dir;
-	int xerr_idx = -1;
-
-	reverse = dir & ~XFRM_POLICY_MASK;
-	dir &= XFRM_POLICY_MASK;
-	fl_dir = policy_to_flow_dir(dir);
-
-	if (__xfrm_decode_session(skb, &fl, family, reverse) < 0) {
-=======
 	int xerr_idx = -1;
 	const struct xfrm_if_cb *ifcb;
 	struct sec_path *sp;
@@ -5012,7 +3663,6 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 	dir &= XFRM_POLICY_MASK;
 
 	if (__xfrm_decode_session(net, skb, &fl, family, reverse) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINHDRERROR);
 		return 0;
 	}
@@ -5020,16 +3670,6 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 	nf_nat_decode_session(skb, &fl, family);
 
 	/* First, check used SA against their selectors. */
-<<<<<<< HEAD
-	if (skb->sp) {
-		int i;
-
-		for (i=skb->sp->len-1; i>=0; i--) {
-			struct xfrm_state *x = skb->sp->xvec[i];
-			if (!xfrm_selector_match(&x->sel, &fl, family)) {
-				XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMISMATCH);
-				return 0;
-=======
 	sp = skb_sec_path(skb);
 	if (sp) {
 		int i;
@@ -5047,51 +3687,28 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 					XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATEMISMATCH);
 					return 0;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
 	pol = NULL;
-<<<<<<< HEAD
-	if (sk && sk->sk_policy[dir]) {
-		pol = xfrm_sk_policy_lookup(sk, dir, &fl);
-=======
 	sk = sk_to_full_sk(sk);
 	if (sk && sk->sk_policy[dir]) {
 		pol = xfrm_sk_policy_lookup(sk, dir, &fl, family, if_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(pol)) {
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
 			return 0;
 		}
 	}
 
-<<<<<<< HEAD
-	if (!pol) {
-		struct flow_cache_object *flo;
-
-		flo = flow_cache_lookup(net, &fl, family, fl_dir,
-					xfrm_policy_lookup, NULL);
-		if (IS_ERR_OR_NULL(flo))
-			pol = ERR_CAST(flo);
-		else
-			pol = container_of(flo, struct xfrm_policy, flo);
-	}
-=======
 	if (!pol)
 		pol = xfrm_policy_lookup(net, &fl, family, dir, if_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(pol)) {
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
 		return 0;
 	}
 
-<<<<<<< HEAD
-	if (!pol) {
-		if (skb->sp && secpath_has_nontransport(skb->sp, 0, &xerr_idx)) {
-=======
 	if (!pol && dir == XFRM_POLICY_FWD)
 		pol = xfrm_in_fwd_icmp(skb, &fl, family, if_id);
 
@@ -5102,7 +3719,6 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 		}
 
 		if (sp && secpath_has_nontransport(sp, 0, &xerr_idx)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xfrm_secpath_reject(xerr_idx, skb, &fl);
 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
 			return 0;
@@ -5110,32 +3726,15 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 		return 1;
 	}
 
-<<<<<<< HEAD
-	pol->curlft.use_time = get_seconds();
-
-	pols[0] = pol;
-	npols ++;
-=======
 	/* This lockless write can happen from different cpus. */
 	WRITE_ONCE(pol->curlft.use_time, ktime_get_real_seconds());
 
 	pols[0] = pol;
 	npols++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_XFRM_SUB_POLICY
 	if (pols[0]->type != XFRM_POLICY_TYPE_MAIN) {
 		pols[1] = xfrm_policy_lookup_bytype(net, XFRM_POLICY_TYPE_MAIN,
 						    &fl, family,
-<<<<<<< HEAD
-						    XFRM_POLICY_IN);
-		if (pols[1]) {
-			if (IS_ERR(pols[1])) {
-				XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
-				return 0;
-			}
-			pols[1]->curlft.use_time = get_seconds();
-			npols ++;
-=======
 						    XFRM_POLICY_IN, if_id);
 		if (pols[1]) {
 			if (IS_ERR(pols[1])) {
@@ -5147,16 +3746,11 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 			WRITE_ONCE(pols[1]->curlft.use_time,
 				   ktime_get_real_seconds());
 			npols++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 #endif
 
 	if (pol->action == XFRM_POLICY_ALLOW) {
-<<<<<<< HEAD
-		struct sec_path *sp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		static struct sec_path dummy;
 		struct xfrm_tmpl *tp[XFRM_MAX_DEPTH];
 		struct xfrm_tmpl *stp[XFRM_MAX_DEPTH];
@@ -5164,12 +3758,8 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 		int ti = 0;
 		int i, k;
 
-<<<<<<< HEAD
-		if ((sp = skb->sp) == NULL)
-=======
 		sp = skb_sec_path(skb);
 		if (!sp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sp = &dummy;
 
 		for (pi = 0; pi < npols; pi++) {
@@ -5186,10 +3776,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 				tpp[ti++] = &pols[pi]->xfrm_vec[i];
 		}
 		xfrm_nr = ti;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (npols > 1) {
 			xfrm_tmpl_sort(stp, tpp, xfrm_nr, family);
 			tpp = stp;
@@ -5200,18 +3787,12 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 		 * Order is _important_. Later we will implement
 		 * some barriers, but at the moment barriers
 		 * are implied between each two transformations.
-<<<<<<< HEAD
-		 */
-		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
-			k = xfrm_policy_ok(tpp[i], sp, k, family);
-=======
 		 * Upon success, marks secpath entries as having been
 		 * verified to allow them to be skipped in future policy
 		 * checks (e.g. nested tunnels).
 		 */
 		for (i = xfrm_nr-1, k = 0; i >= 0; i--) {
 			k = xfrm_policy_ok(tpp[i], sp, k, family, if_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (k < 0) {
 				if (k < -1)
 					/* "-2 - errored_index" returned */
@@ -5227,11 +3808,8 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
 		}
 
 		xfrm_pols_put(pols, npols);
-<<<<<<< HEAD
-=======
 		sp->verified_cnt = k;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLBLOCK);
@@ -5251,38 +3829,26 @@ int __xfrm_route_forward(struct sk_buff *skb, unsigned short family)
 	struct dst_entry *dst;
 	int res = 1;
 
-<<<<<<< HEAD
-	if (xfrm_decode_session(skb, &fl, family) < 0) {
-=======
 	if (xfrm_decode_session(net, skb, &fl, family) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMFWDHDRERROR);
 		return 0;
 	}
 
 	skb_dst_force(skb);
-<<<<<<< HEAD
-
-	dst = xfrm_lookup(net, skb_dst(skb), &fl, NULL, 0);
-=======
 	if (!skb_dst(skb)) {
 		XFRM_INC_STATS(net, LINUX_MIB_XFRMFWDHDRERROR);
 		return 0;
 	}
 
 	dst = xfrm_lookup(net, skb_dst(skb), &fl, NULL, XFRM_LOOKUP_QUEUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dst)) {
 		res = 0;
 		dst = NULL;
 	}
-<<<<<<< HEAD
-=======
 
 	if (dst && !dst->xfrm)
 		dst = xfrm_out_fwd_icmp(skb, &fl, family, dst);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_dst_set(skb, dst);
 	return res;
 }
@@ -5293,14 +3859,6 @@ EXPORT_SYMBOL(__xfrm_route_forward);
 static struct dst_entry *xfrm_dst_check(struct dst_entry *dst, u32 cookie)
 {
 	/* Code (such as __xfrm4_bundle_create()) sets dst->obsolete
-<<<<<<< HEAD
-	 * to "-1" to force all XFRM destinations to get validated by
-	 * dst_ops->check on every use.  We do this because when a
-	 * normal route referenced by an XFRM dst is obsoleted we do
-	 * not go looking around for all parent referencing XFRM dsts
-	 * so that we can invalidate them.  It is just too much work.
-	 * Instead we make the checks here on every use.  For example:
-=======
 	 * to DST_OBSOLETE_FORCE_CHK to force all XFRM destinations to
 	 * get validated by dst_ops->check on every use.  We do this
 	 * because when a normal route referenced by an XFRM dst is
@@ -5308,7 +3866,6 @@ static struct dst_entry *xfrm_dst_check(struct dst_entry *dst, u32 cookie)
 	 * referencing XFRM dsts so that we can invalidate them.  It
 	 * is just too much work.  Instead we make the checks here on
 	 * every use.  For example:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 *	XFRM dst A --> IPv4 dst X
 	 *
@@ -5317,17 +3874,10 @@ static struct dst_entry *xfrm_dst_check(struct dst_entry *dst, u32 cookie)
 	 * notice.  That's what we are validating here via the
 	 * stale_bundle() check.
 	 *
-<<<<<<< HEAD
-	 * When a policy's bundle is pruned, we dst_free() the XFRM
-	 * dst which causes it's ->obsolete field to be set to a
-	 * positive non-zero integer.  If an XFRM dst has been pruned
-	 * like this, we want to force a new route lookup.
-=======
 	 * When a dst is removed from the fib tree, DST_OBSOLETE_DEAD will
 	 * be marked on it.
 	 * This will force stale_bundle() to fail on any xdst bundle with
 	 * this dst linked in it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (dst->obsolete < 0 && !stale_bundle(dst))
 		return dst;
@@ -5342,13 +3892,8 @@ static int stale_bundle(struct dst_entry *dst)
 
 void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev)
 {
-<<<<<<< HEAD
-	while ((dst = dst->child) && dst->xfrm && dst->dev == dev) {
-		dst->dev = dev_net(dev)->loopback_dev;
-=======
 	while ((dst = xfrm_dst_child(dst)) && dst->xfrm && dst->dev == dev) {
 		dst->dev = blackhole_netdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_hold(dst->dev);
 		dev_put(dev);
 	}
@@ -5371,43 +3916,6 @@ static struct dst_entry *xfrm_negative_advice(struct dst_entry *dst)
 	return dst;
 }
 
-<<<<<<< HEAD
-static void __xfrm_garbage_collect(struct net *net)
-{
-	struct dst_entry *head, *next;
-
-	spin_lock_bh(&xfrm_policy_sk_bundle_lock);
-	head = xfrm_policy_sk_bundles;
-	xfrm_policy_sk_bundles = NULL;
-	spin_unlock_bh(&xfrm_policy_sk_bundle_lock);
-
-	while (head) {
-		next = head->next;
-		dst_free(head);
-		head = next;
-	}
-}
-
-static void xfrm_garbage_collect(struct net *net)
-{
-	flow_cache_flush();
-	__xfrm_garbage_collect(net);
-}
-
-static void xfrm_garbage_collect_deferred(struct net *net)
-{
-	flow_cache_flush_deferred();
-	__xfrm_garbage_collect(net);
-}
-
-static void xfrm_init_pmtu(struct dst_entry *dst)
-{
-	do {
-		struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
-		u32 pmtu, route_mtu_cached;
-
-		pmtu = dst_mtu(dst->child);
-=======
 static void xfrm_init_pmtu(struct xfrm_dst **bundle, int nr)
 {
 	while (nr--) {
@@ -5417,7 +3925,6 @@ static void xfrm_init_pmtu(struct xfrm_dst **bundle, int nr)
 
 		dst = &xdst->u.dst;
 		pmtu = dst_mtu(xfrm_dst_child(dst));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xdst->child_mtu_cached = pmtu;
 
 		pmtu = xfrm_state_mtu(dst->xfrm, pmtu);
@@ -5429,11 +3936,7 @@ static void xfrm_init_pmtu(struct xfrm_dst **bundle, int nr)
 			pmtu = route_mtu_cached;
 
 		dst_metric_set(dst, RTAX_MTU, pmtu);
-<<<<<<< HEAD
-	} while ((dst = dst->next));
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Check that the bundle accepts the flow and its components are
@@ -5442,18 +3945,6 @@ static void xfrm_init_pmtu(struct xfrm_dst **bundle, int nr)
 
 static int xfrm_bundle_ok(struct xfrm_dst *first)
 {
-<<<<<<< HEAD
-	struct dst_entry *dst = &first->u.dst;
-	struct xfrm_dst *last;
-	u32 mtu;
-
-	if (!dst_check(dst->path, ((struct xfrm_dst *)dst)->path_cookie) ||
-	    (dst->dev && !netif_running(dst->dev)))
-		return 0;
-
-	last = NULL;
-
-=======
 	struct xfrm_dst *bundle[XFRM_MAX_DEPTH];
 	struct dst_entry *dst = &first->u.dst;
 	struct xfrm_dst *xdst;
@@ -5468,7 +3959,6 @@ static int xfrm_bundle_ok(struct xfrm_dst *first)
 		return 1;
 
 	start_from = nr = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
 
@@ -5480,17 +3970,11 @@ static int xfrm_bundle_ok(struct xfrm_dst *first)
 		    xdst->policy_genid != atomic_read(&xdst->pols[0]->genid))
 			return 0;
 
-<<<<<<< HEAD
-		mtu = dst_mtu(dst->child);
-		if (xdst->child_mtu_cached != mtu) {
-			last = xdst;
-=======
 		bundle[nr++] = xdst;
 
 		mtu = dst_mtu(xfrm_dst_child(dst));
 		if (xdst->child_mtu_cached != mtu) {
 			start_from = nr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xdst->child_mtu_cached = mtu;
 		}
 
@@ -5498,32 +3982,6 @@ static int xfrm_bundle_ok(struct xfrm_dst *first)
 			return 0;
 		mtu = dst_mtu(xdst->route);
 		if (xdst->route_mtu_cached != mtu) {
-<<<<<<< HEAD
-			last = xdst;
-			xdst->route_mtu_cached = mtu;
-		}
-
-		dst = dst->child;
-	} while (dst->xfrm);
-
-	if (likely(!last))
-		return 1;
-
-	mtu = last->child_mtu_cached;
-	for (;;) {
-		dst = &last->u.dst;
-
-		mtu = xfrm_state_mtu(dst->xfrm, mtu);
-		if (mtu > last->route_mtu_cached)
-			mtu = last->route_mtu_cached;
-		dst_metric_set(dst, RTAX_MTU, mtu);
-
-		if (last == first)
-			break;
-
-		last = (struct xfrm_dst *)last->u.dst.next;
-		last->child_mtu_cached = mtu;
-=======
 			start_from = nr;
 			xdst->route_mtu_cached = mtu;
 		}
@@ -5548,7 +4006,6 @@ static int xfrm_bundle_ok(struct xfrm_dst *first)
 
 		xdst = bundle[start_from - 1];
 		xdst->child_mtu_cached = mtu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 1;
@@ -5556,38 +4013,13 @@ static int xfrm_bundle_ok(struct xfrm_dst *first)
 
 static unsigned int xfrm_default_advmss(const struct dst_entry *dst)
 {
-<<<<<<< HEAD
-	return dst_metric_advmss(dst->path);
-=======
 	return dst_metric_advmss(xfrm_dst_path(dst));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int xfrm_mtu(const struct dst_entry *dst)
 {
 	unsigned int mtu = dst_metric_raw(dst, RTAX_MTU);
 
-<<<<<<< HEAD
-	return mtu ? : dst_mtu(dst->path);
-}
-
-static struct neighbour *xfrm_neigh_lookup(const struct dst_entry *dst, const void *daddr)
-{
-	return dst_neigh_lookup(dst->path, daddr);
-}
-
-int xfrm_policy_register_afinfo(struct xfrm_policy_afinfo *afinfo)
-{
-	struct net *net;
-	int err = 0;
-	if (unlikely(afinfo == NULL))
-		return -EINVAL;
-	if (unlikely(afinfo->family >= NPROTO))
-		return -EAFNOSUPPORT;
-	write_lock_bh(&xfrm_policy_afinfo_lock);
-	if (unlikely(xfrm_policy_afinfo[afinfo->family] != NULL))
-		err = -ENOBUFS;
-=======
 	return mtu ? : dst_mtu(xfrm_dst_path(dst));
 }
 
@@ -5638,7 +4070,6 @@ int xfrm_policy_register_afinfo(const struct xfrm_policy_afinfo *afinfo, int fam
 	spin_lock(&xfrm_policy_afinfo_lock);
 	if (unlikely(xfrm_policy_afinfo[family] != NULL))
 		err = -EEXIST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		struct dst_ops *dst_ops = afinfo->dst_ops;
 		if (likely(dst_ops->kmem_cachep == NULL))
@@ -5655,119 +4086,16 @@ int xfrm_policy_register_afinfo(const struct xfrm_policy_afinfo *afinfo, int fam
 			dst_ops->link_failure = xfrm_link_failure;
 		if (likely(dst_ops->neigh_lookup == NULL))
 			dst_ops->neigh_lookup = xfrm_neigh_lookup;
-<<<<<<< HEAD
-		if (likely(afinfo->garbage_collect == NULL))
-			afinfo->garbage_collect = xfrm_garbage_collect_deferred;
-		xfrm_policy_afinfo[afinfo->family] = afinfo;
-	}
-	write_unlock_bh(&xfrm_policy_afinfo_lock);
-
-	rtnl_lock();
-	for_each_net(net) {
-		struct dst_ops *xfrm_dst_ops;
-
-		switch (afinfo->family) {
-		case AF_INET:
-			xfrm_dst_ops = &net->xfrm.xfrm4_dst_ops;
-			break;
-#if IS_ENABLED(CONFIG_IPV6)
-		case AF_INET6:
-			xfrm_dst_ops = &net->xfrm.xfrm6_dst_ops;
-			break;
-#endif
-		default:
-			BUG();
-		}
-		*xfrm_dst_ops = *afinfo->dst_ops;
-	}
-	rtnl_unlock();
-=======
 		if (likely(!dst_ops->confirm_neigh))
 			dst_ops->confirm_neigh = xfrm_confirm_neigh;
 		rcu_assign_pointer(xfrm_policy_afinfo[family], afinfo);
 	}
 	spin_unlock(&xfrm_policy_afinfo_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 EXPORT_SYMBOL(xfrm_policy_register_afinfo);
 
-<<<<<<< HEAD
-int xfrm_policy_unregister_afinfo(struct xfrm_policy_afinfo *afinfo)
-{
-	int err = 0;
-	if (unlikely(afinfo == NULL))
-		return -EINVAL;
-	if (unlikely(afinfo->family >= NPROTO))
-		return -EAFNOSUPPORT;
-	write_lock_bh(&xfrm_policy_afinfo_lock);
-	if (likely(xfrm_policy_afinfo[afinfo->family] != NULL)) {
-		if (unlikely(xfrm_policy_afinfo[afinfo->family] != afinfo))
-			err = -EINVAL;
-		else {
-			struct dst_ops *dst_ops = afinfo->dst_ops;
-			xfrm_policy_afinfo[afinfo->family] = NULL;
-			dst_ops->kmem_cachep = NULL;
-			dst_ops->check = NULL;
-			dst_ops->negative_advice = NULL;
-			dst_ops->link_failure = NULL;
-			afinfo->garbage_collect = NULL;
-		}
-	}
-	write_unlock_bh(&xfrm_policy_afinfo_lock);
-	return err;
-}
-EXPORT_SYMBOL(xfrm_policy_unregister_afinfo);
-
-static void __net_init xfrm_dst_ops_init(struct net *net)
-{
-	struct xfrm_policy_afinfo *afinfo;
-
-	read_lock_bh(&xfrm_policy_afinfo_lock);
-	afinfo = xfrm_policy_afinfo[AF_INET];
-	if (afinfo)
-		net->xfrm.xfrm4_dst_ops = *afinfo->dst_ops;
-#if IS_ENABLED(CONFIG_IPV6)
-	afinfo = xfrm_policy_afinfo[AF_INET6];
-	if (afinfo)
-		net->xfrm.xfrm6_dst_ops = *afinfo->dst_ops;
-#endif
-	read_unlock_bh(&xfrm_policy_afinfo_lock);
-}
-
-static struct xfrm_policy_afinfo *xfrm_policy_get_afinfo(unsigned short family)
-{
-	struct xfrm_policy_afinfo *afinfo;
-	if (unlikely(family >= NPROTO))
-		return NULL;
-	read_lock(&xfrm_policy_afinfo_lock);
-	afinfo = xfrm_policy_afinfo[family];
-	if (unlikely(!afinfo))
-		read_unlock(&xfrm_policy_afinfo_lock);
-	return afinfo;
-}
-
-static void xfrm_policy_put_afinfo(struct xfrm_policy_afinfo *afinfo)
-{
-	read_unlock(&xfrm_policy_afinfo_lock);
-}
-
-static int xfrm_dev_event(struct notifier_block *this, unsigned long event, void *ptr)
-{
-	struct net_device *dev = ptr;
-
-	switch (event) {
-	case NETDEV_DOWN:
-		xfrm_garbage_collect(dev_net(dev));
-	}
-	return NOTIFY_DONE;
-}
-
-static struct notifier_block xfrm_dev_notifier = {
-	.notifier_call	= xfrm_dev_event,
-};
-=======
 void xfrm_policy_unregister_afinfo(const struct xfrm_policy_afinfo *afinfo)
 {
 	struct dst_ops *dst_ops = afinfo->dst_ops;
@@ -5803,40 +4131,24 @@ void xfrm_if_unregister_cb(void)
 	synchronize_rcu();
 }
 EXPORT_SYMBOL(xfrm_if_unregister_cb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_XFRM_STATISTICS
 static int __net_init xfrm_statistics_init(struct net *net)
 {
 	int rv;
-<<<<<<< HEAD
-
-	if (snmp_mib_init((void __percpu **)net->mib.xfrm_statistics,
-			  sizeof(struct linux_xfrm_mib),
-			  __alignof__(struct linux_xfrm_mib)) < 0)
-		return -ENOMEM;
-	rv = xfrm_proc_init(net);
-	if (rv < 0)
-		snmp_mib_free((void __percpu **)net->mib.xfrm_statistics);
-=======
 	net->mib.xfrm_statistics = alloc_percpu(struct linux_xfrm_mib);
 	if (!net->mib.xfrm_statistics)
 		return -ENOMEM;
 	rv = xfrm_proc_init(net);
 	if (rv < 0)
 		free_percpu(net->mib.xfrm_statistics);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv;
 }
 
 static void xfrm_statistics_fini(struct net *net)
 {
 	xfrm_proc_fini(net);
-<<<<<<< HEAD
-	snmp_mib_free((void __percpu **)net->mib.xfrm_statistics);
-=======
 	free_percpu(net->mib.xfrm_statistics);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static int __net_init xfrm_statistics_init(struct net *net)
@@ -5852,15 +4164,6 @@ static void xfrm_statistics_fini(struct net *net)
 static int __net_init xfrm_policy_init(struct net *net)
 {
 	unsigned int hmask, sz;
-<<<<<<< HEAD
-	int dir;
-
-	if (net_eq(net, &init_net))
-		xfrm_dst_cache = kmem_cache_create("xfrm_dst_cache",
-					   sizeof(struct xfrm_dst),
-					   0, SLAB_HWCACHE_ALIGN|SLAB_PANIC,
-					   NULL);
-=======
 	int dir, err;
 
 	if (net_eq(net, &init_net)) {
@@ -5869,7 +4172,6 @@ static int __net_init xfrm_policy_init(struct net *net)
 				      &xfrm_pol_inexact_params);
 		BUG_ON(err);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hmask = 8 - 1;
 	sz = (hmask+1) * sizeof(struct hlist_head);
@@ -5879,18 +4181,11 @@ static int __net_init xfrm_policy_init(struct net *net)
 		goto out_byidx;
 	net->xfrm.policy_idx_hmask = hmask;
 
-<<<<<<< HEAD
-	for (dir = 0; dir < XFRM_POLICY_MAX * 2; dir++) {
-		struct xfrm_policy_hash *htab;
-
-		net->xfrm.policy_count[dir] = 0;
-=======
 	for (dir = 0; dir < XFRM_POLICY_MAX; dir++) {
 		struct xfrm_policy_hash *htab;
 
 		net->xfrm.policy_count[dir] = 0;
 		net->xfrm.policy_count[XFRM_POLICY_MAX + dir] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_HLIST_HEAD(&net->xfrm.policy_inexact[dir]);
 
 		htab = &net->xfrm.policy_bydst[dir];
@@ -5898,14 +4193,6 @@ static int __net_init xfrm_policy_init(struct net *net)
 		if (!htab->table)
 			goto out_bydst;
 		htab->hmask = hmask;
-<<<<<<< HEAD
-	}
-
-	INIT_LIST_HEAD(&net->xfrm.policy_all);
-	INIT_WORK(&net->xfrm.policy_hash_work, xfrm_hash_resize);
-	if (net_eq(net, &init_net))
-		register_netdevice_notifier(&xfrm_dev_notifier);
-=======
 		htab->dbits4 = 32;
 		htab->sbits4 = 32;
 		htab->dbits6 = 128;
@@ -5922,7 +4209,6 @@ static int __net_init xfrm_policy_init(struct net *net)
 	INIT_LIST_HEAD(&net->xfrm.inexact_bins);
 	INIT_WORK(&net->xfrm.policy_hash_work, xfrm_hash_resize);
 	INIT_WORK(&net->xfrm.policy_hthresh.work, xfrm_hash_rebuild);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out_bydst:
@@ -5939,31 +4225,12 @@ out_byidx:
 
 static void xfrm_policy_fini(struct net *net)
 {
-<<<<<<< HEAD
-	struct xfrm_audit audit_info;
-=======
 	struct xfrm_pol_inexact_bin *b, *t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int sz;
 	int dir;
 
 	flush_work(&net->xfrm.policy_hash_work);
 #ifdef CONFIG_XFRM_SUB_POLICY
-<<<<<<< HEAD
-	audit_info.loginuid = -1;
-	audit_info.sessionid = -1;
-	audit_info.secid = 0;
-	xfrm_policy_flush(net, XFRM_POLICY_TYPE_SUB, &audit_info);
-#endif
-	audit_info.loginuid = -1;
-	audit_info.sessionid = -1;
-	audit_info.secid = 0;
-	xfrm_policy_flush(net, XFRM_POLICY_TYPE_MAIN, &audit_info);
-
-	WARN_ON(!list_empty(&net->xfrm.policy_all));
-
-	for (dir = 0; dir < XFRM_POLICY_MAX * 2; dir++) {
-=======
 	xfrm_policy_flush(net, XFRM_POLICY_TYPE_SUB, false);
 #endif
 	xfrm_policy_flush(net, XFRM_POLICY_TYPE_MAIN, false);
@@ -5971,17 +4238,12 @@ static void xfrm_policy_fini(struct net *net)
 	WARN_ON(!list_empty(&net->xfrm.policy_all));
 
 	for (dir = 0; dir < XFRM_POLICY_MAX; dir++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xfrm_policy_hash *htab;
 
 		WARN_ON(!hlist_empty(&net->xfrm.policy_inexact[dir]));
 
 		htab = &net->xfrm.policy_bydst[dir];
-<<<<<<< HEAD
-		sz = (htab->hmask + 1);
-=======
 		sz = (htab->hmask + 1) * sizeof(struct hlist_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		WARN_ON(!hlist_empty(htab->table));
 		xfrm_hash_free(htab->table, sz);
 	}
@@ -5989,22 +4251,17 @@ static void xfrm_policy_fini(struct net *net)
 	sz = (net->xfrm.policy_idx_hmask + 1) * sizeof(struct hlist_head);
 	WARN_ON(!hlist_empty(net->xfrm.policy_byidx));
 	xfrm_hash_free(net->xfrm.policy_byidx, sz);
-<<<<<<< HEAD
-=======
 
 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
 	list_for_each_entry_safe(b, t, &net->xfrm.inexact_bins, inexact_bins)
 		__xfrm_policy_inexact_prune_bin(b, true);
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __net_init xfrm_net_init(struct net *net)
 {
 	int rv;
 
-<<<<<<< HEAD
-=======
 	/* Initialize the per-net locks here */
 	spin_lock_init(&net->xfrm.xfrm_state_lock);
 	spin_lock_init(&net->xfrm.xfrm_policy_lock);
@@ -6014,7 +4271,6 @@ static int __net_init xfrm_net_init(struct net *net)
 	net->xfrm.policy_default[XFRM_POLICY_FWD] = XFRM_USERPOLICY_ACCEPT;
 	net->xfrm.policy_default[XFRM_POLICY_OUT] = XFRM_USERPOLICY_ACCEPT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rv = xfrm_statistics_init(net);
 	if (rv < 0)
 		goto out_statistics;
@@ -6024,17 +4280,10 @@ static int __net_init xfrm_net_init(struct net *net)
 	rv = xfrm_policy_init(net);
 	if (rv < 0)
 		goto out_policy;
-<<<<<<< HEAD
-	xfrm_dst_ops_init(net);
-	rv = xfrm_sysctl_init(net);
-	if (rv < 0)
-		goto out_sysctl;
-=======
 	rv = xfrm_sysctl_init(net);
 	if (rv < 0)
 		goto out_sysctl;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out_sysctl:
@@ -6060,12 +4309,6 @@ static struct pernet_operations __net_initdata xfrm_net_ops = {
 	.exit = xfrm_net_exit,
 };
 
-<<<<<<< HEAD
-void __init xfrm_init(void)
-{
-	register_pernet_subsys(&xfrm_net_ops);
-	xfrm_input_init();
-=======
 static const struct flow_dissector_key xfrm_flow_dissector_keys[] = {
 	{
 		.key_id = FLOW_DISSECTOR_KEY_CONTROL,
@@ -6116,7 +4359,6 @@ void __init xfrm_init(void)
 #endif
 
 	register_xfrm_state_bpf();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_AUDITSYSCALL
@@ -6130,11 +4372,7 @@ static void xfrm_audit_common_policyinfo(struct xfrm_policy *xp,
 		audit_log_format(audit_buf, " sec_alg=%u sec_doi=%u sec_obj=%s",
 				 ctx->ctx_alg, ctx->ctx_doi, ctx->ctx_str);
 
-<<<<<<< HEAD
-	switch(sel->family) {
-=======
 	switch (sel->family) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AF_INET:
 		audit_log_format(audit_buf, " src=%pI4", &sel->saddr.a4);
 		if (sel->prefixlen_s != 32)
@@ -6158,23 +4396,14 @@ static void xfrm_audit_common_policyinfo(struct xfrm_policy *xp,
 	}
 }
 
-<<<<<<< HEAD
-void xfrm_audit_policy_add(struct xfrm_policy *xp, int result,
-			   uid_t auid, u32 sessionid, u32 secid)
-=======
 void xfrm_audit_policy_add(struct xfrm_policy *xp, int result, bool task_valid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct audit_buffer *audit_buf;
 
 	audit_buf = xfrm_audit_start("SPD-add");
 	if (audit_buf == NULL)
 		return;
-<<<<<<< HEAD
-	xfrm_audit_helper_usrinfo(auid, sessionid, secid, audit_buf);
-=======
 	xfrm_audit_helper_usrinfo(task_valid, audit_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	audit_log_format(audit_buf, " res=%u", result);
 	xfrm_audit_common_policyinfo(xp, audit_buf);
 	audit_log_end(audit_buf);
@@ -6182,22 +4411,14 @@ void xfrm_audit_policy_add(struct xfrm_policy *xp, int result, bool task_valid)
 EXPORT_SYMBOL_GPL(xfrm_audit_policy_add);
 
 void xfrm_audit_policy_delete(struct xfrm_policy *xp, int result,
-<<<<<<< HEAD
-			      uid_t auid, u32 sessionid, u32 secid)
-=======
 			      bool task_valid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct audit_buffer *audit_buf;
 
 	audit_buf = xfrm_audit_start("SPD-delete");
 	if (audit_buf == NULL)
 		return;
-<<<<<<< HEAD
-	xfrm_audit_helper_usrinfo(auid, sessionid, secid, audit_buf);
-=======
 	xfrm_audit_helper_usrinfo(task_valid, audit_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	audit_log_format(audit_buf, " res=%u", result);
 	xfrm_audit_common_policyinfo(xp, audit_buf);
 	audit_log_end(audit_buf);
@@ -6206,41 +4427,6 @@ EXPORT_SYMBOL_GPL(xfrm_audit_policy_delete);
 #endif
 
 #ifdef CONFIG_XFRM_MIGRATE
-<<<<<<< HEAD
-static int xfrm_migrate_selector_match(const struct xfrm_selector *sel_cmp,
-				       const struct xfrm_selector *sel_tgt)
-{
-	if (sel_cmp->proto == IPSEC_ULPROTO_ANY) {
-		if (sel_tgt->family == sel_cmp->family &&
-		    xfrm_addr_cmp(&sel_tgt->daddr, &sel_cmp->daddr,
-				  sel_cmp->family) == 0 &&
-		    xfrm_addr_cmp(&sel_tgt->saddr, &sel_cmp->saddr,
-				  sel_cmp->family) == 0 &&
-		    sel_tgt->prefixlen_d == sel_cmp->prefixlen_d &&
-		    sel_tgt->prefixlen_s == sel_cmp->prefixlen_s) {
-			return 1;
-		}
-	} else {
-		if (memcmp(sel_tgt, sel_cmp, sizeof(*sel_tgt)) == 0) {
-			return 1;
-		}
-	}
-	return 0;
-}
-
-static struct xfrm_policy * xfrm_migrate_policy_find(const struct xfrm_selector *sel,
-						     u8 dir, u8 type)
-{
-	struct xfrm_policy *pol, *ret = NULL;
-	struct hlist_node *entry;
-	struct hlist_head *chain;
-	u32 priority = ~0U;
-
-	read_lock_bh(&xfrm_policy_lock);
-	chain = policy_hash_direct(&init_net, &sel->daddr, &sel->saddr, sel->family, dir);
-	hlist_for_each_entry(pol, entry, chain, bydst) {
-		if (xfrm_migrate_selector_match(sel, &pol->selector) &&
-=======
 static bool xfrm_migrate_selector_match(const struct xfrm_selector *sel_cmp,
 					const struct xfrm_selector *sel_tgt)
 {
@@ -6274,20 +4460,12 @@ static struct xfrm_policy *xfrm_migrate_policy_find(const struct xfrm_selector *
 	hlist_for_each_entry(pol, chain, bydst) {
 		if ((if_id == 0 || pol->if_id == if_id) &&
 		    xfrm_migrate_selector_match(sel, &pol->selector) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    pol->type == type) {
 			ret = pol;
 			priority = ret->priority;
 			break;
 		}
 	}
-<<<<<<< HEAD
-	chain = &init_net.xfrm.policy_inexact[dir];
-	hlist_for_each_entry(pol, entry, chain, bydst) {
-		if (xfrm_migrate_selector_match(sel, &pol->selector) &&
-		    pol->type == type &&
-		    pol->priority < priority) {
-=======
 	chain = &net->xfrm.policy_inexact[dir];
 	hlist_for_each_entry(pol, chain, bydst_inexact_list) {
 		if ((pol->priority >= priority) && ret)
@@ -6296,22 +4474,14 @@ static struct xfrm_policy *xfrm_migrate_policy_find(const struct xfrm_selector *
 		if ((if_id == 0 || pol->if_id == if_id) &&
 		    xfrm_migrate_selector_match(sel, &pol->selector) &&
 		    pol->type == type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = pol;
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (ret)
-		xfrm_pol_hold(ret);
-
-	read_unlock_bh(&xfrm_policy_lock);
-=======
 	xfrm_pol_hold(ret);
 
 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -6325,17 +4495,10 @@ static int migrate_tmpl_match(const struct xfrm_migrate *m, const struct xfrm_tm
 		switch (t->mode) {
 		case XFRM_MODE_TUNNEL:
 		case XFRM_MODE_BEET:
-<<<<<<< HEAD
-			if (xfrm_addr_cmp(&t->id.daddr, &m->old_daddr,
-					  m->old_family) == 0 &&
-			    xfrm_addr_cmp(&t->saddr, &m->old_saddr,
-					  m->old_family) == 0) {
-=======
 			if (xfrm_addr_equal(&t->id.daddr, &m->old_daddr,
 					    m->old_family) &&
 			    xfrm_addr_equal(&t->saddr, &m->old_saddr,
 					    m->old_family)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				match = 1;
 			}
 			break;
@@ -6354,12 +4517,8 @@ static int migrate_tmpl_match(const struct xfrm_migrate *m, const struct xfrm_tm
 
 /* update endpoint address(es) of template(s) */
 static int xfrm_policy_migrate(struct xfrm_policy *pol,
-<<<<<<< HEAD
-			       struct xfrm_migrate *m, int num_migrate)
-=======
 			       struct xfrm_migrate *m, int num_migrate,
 			       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_migrate *mp;
 	int i, j, n = 0;
@@ -6367,10 +4526,7 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
 	write_lock_bh(&pol->lock);
 	if (unlikely(pol->walk.dead)) {
 		/* target policy has been deleted */
-<<<<<<< HEAD
-=======
 		NL_SET_ERR_MSG(extack, "Target policy not found");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_unlock_bh(&pol->lock);
 		return -ENOENT;
 	}
@@ -6402,24 +4558,6 @@ static int xfrm_policy_migrate(struct xfrm_policy *pol,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate)
-{
-	int i, j;
-
-	if (num_migrate < 1 || num_migrate > XFRM_MAX_DEPTH)
-		return -EINVAL;
-
-	for (i = 0; i < num_migrate; i++) {
-		if ((xfrm_addr_cmp(&m[i].old_daddr, &m[i].new_daddr,
-				   m[i].old_family) == 0) &&
-		    (xfrm_addr_cmp(&m[i].old_saddr, &m[i].new_saddr,
-				   m[i].old_family) == 0))
-			return -EINVAL;
-		if (xfrm_addr_any(&m[i].new_daddr, m[i].new_family) ||
-		    xfrm_addr_any(&m[i].new_saddr, m[i].new_family))
-			return -EINVAL;
-=======
 static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate,
 			      struct netlink_ext_ack *extack)
 {
@@ -6436,7 +4574,6 @@ static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate,
 			NL_SET_ERR_MSG(extack, "Addresses in the MIGRATE attribute's list cannot be null");
 			return -EINVAL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* check if there is any duplicated entry */
 		for (j = i + 1; j < num_migrate; j++) {
@@ -6447,15 +4584,10 @@ static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate,
 			    m[i].proto == m[j].proto &&
 			    m[i].mode == m[j].mode &&
 			    m[i].reqid == m[j].reqid &&
-<<<<<<< HEAD
-			    m[i].old_family == m[j].old_family)
-				return -EINVAL;
-=======
 			    m[i].old_family == m[j].old_family) {
 				NL_SET_ERR_MSG(extack, "Entries in the MIGRATE attribute's list must be unique");
 				return -EINVAL;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -6464,13 +4596,9 @@ static int xfrm_migrate_check(const struct xfrm_migrate *m, int num_migrate,
 
 int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 		 struct xfrm_migrate *m, int num_migrate,
-<<<<<<< HEAD
-		 struct xfrm_kmaddress *k)
-=======
 		 struct xfrm_kmaddress *k, struct net *net,
 		 struct xfrm_encap_tmpl *encap, u32 if_id,
 		 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, err, nx_cur = 0, nx_new = 0;
 	struct xfrm_policy *pol = NULL;
@@ -6480,49 +4608,31 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 	struct xfrm_migrate *mp;
 
 	/* Stage 0 - sanity checks */
-<<<<<<< HEAD
-	if ((err = xfrm_migrate_check(m, num_migrate)) < 0)
-		goto out;
-
-	if (dir >= XFRM_POLICY_MAX) {
-=======
 	err = xfrm_migrate_check(m, num_migrate, extack);
 	if (err < 0)
 		goto out;
 
 	if (dir >= XFRM_POLICY_MAX) {
 		NL_SET_ERR_MSG(extack, "Invalid policy direction");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto out;
 	}
 
 	/* Stage 1 - find policy */
-<<<<<<< HEAD
-	if ((pol = xfrm_migrate_policy_find(sel, dir, type)) == NULL) {
-=======
 	pol = xfrm_migrate_policy_find(sel, dir, type, net, if_id);
 	if (!pol) {
 		NL_SET_ERR_MSG(extack, "Target policy not found");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOENT;
 		goto out;
 	}
 
 	/* Stage 2 - find and update state(s) */
 	for (i = 0, mp = m; i < num_migrate; i++, mp++) {
-<<<<<<< HEAD
-		if ((x = xfrm_migrate_state_find(mp))) {
-			x_cur[nx_cur] = x;
-			nx_cur++;
-			if ((xc = xfrm_state_migrate(x, mp))) {
-=======
 		if ((x = xfrm_migrate_state_find(mp, net, if_id))) {
 			x_cur[nx_cur] = x;
 			nx_cur++;
 			xc = xfrm_state_migrate(x, mp, encap);
 			if (xc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				x_new[nx_new] = xc;
 				nx_new++;
 			} else {
@@ -6533,12 +4643,8 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 	}
 
 	/* Stage 3 - update policy */
-<<<<<<< HEAD
-	if ((err = xfrm_policy_migrate(pol, m, num_migrate)) < 0)
-=======
 	err = xfrm_policy_migrate(pol, m, num_migrate, extack);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto restore_state;
 
 	/* Stage 4 - delete old state(s) */
@@ -6548,11 +4654,7 @@ int xfrm_migrate(const struct xfrm_selector *sel, u8 dir, u8 type,
 	}
 
 	/* Stage 5 - announce */
-<<<<<<< HEAD
-	km_migrate(sel, dir, type, m, num_migrate, k);
-=======
 	km_migrate(sel, dir, type, m, num_migrate, k, encap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xfrm_pol_put(pol);
 

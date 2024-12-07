@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -41,12 +38,8 @@
 #define	MCFINT_UART0		13		/* Interrupt number for UART0 */
 #define	MCFINT_UART1		14		/* Interrupt number for UART1 */
 #define	MCFINT_UART2		15		/* Interrupt number for UART2 */
-<<<<<<< HEAD
-#define MCFINT_QSPI		18		/* Interrupt number for QSPI */
-=======
 #define	MCFINT_I2C0		17		/* Interrupt number for I2C */
 #define	MCFINT_QSPI		18		/* Interrupt number for QSPI */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MCFINT_FECRX0		23		/* Interrupt number for FEC */
 #define	MCFINT_FECTX0		27		/* Interrupt number for FEC */
 #define	MCFINT_FECENTC0		29		/* Interrupt number for FEC */
@@ -61,11 +54,8 @@
 #define	MCF_IRQ_FECENTC0	(MCFINT_VECBASE + MCFINT_FECENTC0)
 
 #define	MCF_IRQ_QSPI		(MCFINT_VECBASE + MCFINT_QSPI)
-<<<<<<< HEAD
-=======
 #define MCF_IRQ_PIT1		(MCFINT_VECBASE + MCFINT_PIT1)
 #define	MCF_IRQ_I2C0		(MCFINT_VECBASE + MCFINT_I2C0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	SDRAM configuration registers.
@@ -189,17 +179,6 @@
 /*
  * Generic GPIO support
  */
-<<<<<<< HEAD
-#define MCFGPIO_PODR			MCFGPIO_PODR_ADDR
-#define MCFGPIO_PDDR			MCFGPIO_PDDR_ADDR
-#define MCFGPIO_PPDR			MCFGPIO_PPDSDR_ADDR
-#define MCFGPIO_SETR			MCFGPIO_PPDSDR_ADDR
-#define MCFGPIO_CLRR			MCFGPIO_PCLRR_ADDR
-
-#define MCFGPIO_PIN_MAX			107
-#define MCFGPIO_IRQ_MAX			8
-#define MCFGPIO_IRQ_VECBASE		MCFINT_VECBASE
-=======
 #define MCFGPIO_PODR		MCFGPIO_PODR_ADDR
 #define MCFGPIO_PDDR		MCFGPIO_PDDR_ADDR
 #define MCFGPIO_PPDR		MCFGPIO_PPDSDR_ADDR
@@ -209,15 +188,10 @@
 #define MCFGPIO_PIN_MAX		107
 #define MCFGPIO_IRQ_MAX		8
 #define MCFGPIO_IRQ_VECBASE	MCFINT_VECBASE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Pin Assignment
 */
-<<<<<<< HEAD
-#define	MCFGPIO_PAR_QSPI	(MCF_IPSBAR + 0x10004A)
-#define	MCFGPIO_PAR_TIMER	(MCF_IPSBAR + 0x10004C)
-=======
 #define	MCFGPIO_PAR_AD		(MCF_IPSBAR + 0x100040)
 #define	MCFGPIO_PAR_BUSCTL	(MCF_IPSBAR + 0x100042)
 #define	MCFGPIO_PAR_BS		(MCF_IPSBAR + 0x100044)
@@ -228,7 +202,6 @@
 #define	MCFGPIO_PAR_QSPI	(MCF_IPSBAR + 0x10004A)
 #define	MCFGPIO_PAR_TIMER	(MCF_IPSBAR + 0x10004C)
 #define	MCFGPIO_PAR_ETPU	(MCF_IPSBAR + 0x10004E)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DMA unit base addresses.
@@ -238,14 +211,11 @@
 #define	MCFDMA_BASE2		(MCF_IPSBAR + 0x180)
 #define	MCFDMA_BASE3		(MCF_IPSBAR + 0x1C0)
 
-<<<<<<< HEAD
-=======
 /*
  * I2C module.
  */
 #define	MCFI2C_BASE0		(MCF_IPSBAR + 0x300)
 #define	MCFI2C_SIZE0		0x40
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 #endif	/* m523xsim_h */

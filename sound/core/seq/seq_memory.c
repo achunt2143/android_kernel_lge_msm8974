@@ -1,41 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ALSA sequencer Memory Manager
  *  Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
  *                        Jaroslav Kysela <perex@perex.cz>
  *                2000 by Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/vmalloc.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 
 #include <sound/seq_kernel.h>
@@ -88,22 +63,13 @@ static int get_var_len(const struct snd_seq_event *event)
 	return event->data.ext.len & ~SNDRV_SEQ_EXT_MASK;
 }
 
-<<<<<<< HEAD
-int snd_seq_dump_var_event(const struct snd_seq_event *event,
-			   snd_seq_dump_func_t func, void *private_data)
-=======
 static int dump_var_event(const struct snd_seq_event *event,
 			  snd_seq_dump_func_t func, void *private_data,
 			  int offset, int maxlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len, err;
 	struct snd_seq_event_cell *cell;
 
-<<<<<<< HEAD
-	if ((len = get_var_len(event)) <= 0)
-		return len;
-=======
 	len = get_var_len(event);
 	if (len <= 0)
 		return len;
@@ -111,16 +77,12 @@ static int dump_var_event(const struct snd_seq_event *event,
 		return 0;
 	if (maxlen && len > offset + maxlen)
 		len = offset + maxlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event->data.ext.len & SNDRV_SEQ_EXT_USRPTR) {
 		char buf[32];
 		char __user *curptr = (char __force __user *)event->data.ext.ptr;
-<<<<<<< HEAD
-=======
 		curptr += offset;
 		len -= offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (len > 0) {
 			int size = sizeof(buf);
 			if (len < size)
@@ -134,27 +96,14 @@ static int dump_var_event(const struct snd_seq_event *event,
 			len -= size;
 		}
 		return 0;
-<<<<<<< HEAD
-	} if (! (event->data.ext.len & SNDRV_SEQ_EXT_CHAINED)) {
-		return func(private_data, event->data.ext.ptr, len);
-	}
-=======
 	}
 	if (!(event->data.ext.len & SNDRV_SEQ_EXT_CHAINED))
 		return func(private_data, event->data.ext.ptr + offset,
 			    len - offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cell = (struct snd_seq_event_cell *)event->data.ext.ptr;
 	for (; len > 0 && cell; cell = cell->next) {
 		int size = sizeof(struct snd_seq_event);
-<<<<<<< HEAD
-		if (len < size)
-			size = len;
-		err = func(private_data, &cell->event, size);
-		if (err < 0)
-			return err;
-=======
 		char *curptr = (char *)&cell->event;
 
 		if (offset >= size) {
@@ -168,20 +117,16 @@ static int dump_var_event(const struct snd_seq_event *event,
 		if (err < 0)
 			return err;
 		offset = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len -= size;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int snd_seq_dump_var_event(const struct snd_seq_event *event,
 			   snd_seq_dump_func_t func, void *private_data)
 {
 	return dump_var_event(event, func, private_data, 0, 0);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_seq_dump_var_event);
 
 
@@ -190,44 +135,25 @@ EXPORT_SYMBOL(snd_seq_dump_var_event);
  * expand the variable length event to linear buffer space.
  */
 
-<<<<<<< HEAD
-static int seq_copy_in_kernel(char **bufptr, const void *src, int size)
-{
-=======
 static int seq_copy_in_kernel(void *ptr, void *src, int size)
 {
 	char **bufptr = ptr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(*bufptr, src, size);
 	*bufptr += size;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int seq_copy_in_user(char __user **bufptr, const void *src, int size)
-{
-=======
 static int seq_copy_in_user(void *ptr, void *src, int size)
 {
 	char __user **bufptr = ptr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user(*bufptr, src, size))
 		return -EFAULT;
 	*bufptr += size;
 	return 0;
 }
 
-<<<<<<< HEAD
-int snd_seq_expand_var_event(const struct snd_seq_event *event, int count, char *buf,
-			     int in_kernel, int size_aligned)
-{
-	int len, newlen;
-	int err;
-
-	if ((len = get_var_len(event)) < 0)
-=======
 static int expand_var_event(const struct snd_seq_event *event,
 			    int offset, int size, char *buf, bool in_kernel)
 {
@@ -252,32 +178,12 @@ int snd_seq_expand_var_event(const struct snd_seq_event *event, int count, char 
 
 	len = get_var_len(event);
 	if (len < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return len;
 	newlen = len;
 	if (size_aligned > 0)
 		newlen = roundup(len, size_aligned);
 	if (count < newlen)
 		return -EAGAIN;
-<<<<<<< HEAD
-
-	if (event->data.ext.len & SNDRV_SEQ_EXT_USRPTR) {
-		if (! in_kernel)
-			return -EINVAL;
-		if (copy_from_user(buf, (void __force __user *)event->data.ext.ptr, len))
-			return -EFAULT;
-		return newlen;
-	}
-	err = snd_seq_dump_var_event(event,
-				     in_kernel ? (snd_seq_dump_func_t)seq_copy_in_kernel :
-				     (snd_seq_dump_func_t)seq_copy_in_user,
-				     &buf);
-	return err < 0 ? err : newlen;
-}
-
-EXPORT_SYMBOL(snd_seq_expand_var_event);
-
-=======
 	err = expand_var_event(event, 0, len, buf, in_kernel);
 	if (err < 0)
 		return err;
@@ -312,7 +218,6 @@ int snd_seq_expand_var_event_at(const struct snd_seq_event *event, int count,
 }
 EXPORT_SYMBOL_GPL(snd_seq_expand_var_event_at);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * release this cell, free extended data if available
  */
@@ -327,10 +232,6 @@ static inline void free_cell(struct snd_seq_pool *pool,
 
 void snd_seq_cell_free(struct snd_seq_event_cell * cell)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_seq_pool *pool;
 
 	if (snd_BUG_ON(!cell))
@@ -339,11 +240,7 @@ void snd_seq_cell_free(struct snd_seq_event_cell * cell)
 	if (snd_BUG_ON(!pool))
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&pool->lock, flags);
-=======
 	guard(spinlock_irqsave)(&pool->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_cell(pool, cell);
 	if (snd_seq_ev_is_variable(&cell->event)) {
 		if (cell->event.data.ext.len & SNDRV_SEQ_EXT_CHAINED) {
@@ -361,10 +258,6 @@ void snd_seq_cell_free(struct snd_seq_event_cell * cell)
 		if (snd_seq_output_ok(pool))
 			wake_up(&pool->output_sleep);
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&pool->lock, flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -373,21 +266,13 @@ void snd_seq_cell_free(struct snd_seq_event_cell * cell)
  */
 static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 			      struct snd_seq_event_cell **cellp,
-<<<<<<< HEAD
-			      int nonblock, struct file *file)
-=======
 			      int nonblock, struct file *file,
 			      struct mutex *mutexp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_seq_event_cell *cell;
 	unsigned long flags;
 	int err = -EAGAIN;
-<<<<<<< HEAD
-	wait_queue_t wait;
-=======
 	wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pool == NULL)
 		return -EINVAL;
@@ -397,11 +282,7 @@ static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 	init_waitqueue_entry(&wait, current);
 	spin_lock_irqsave(&pool->lock, flags);
 	if (pool->ptr == NULL) {	/* not initialized */
-<<<<<<< HEAD
-		snd_printd("seq: pool is not initialized\n");
-=======
 		pr_debug("ALSA: seq: pool is not initialized\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto __error;
 	}
@@ -409,11 +290,6 @@ static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 
 		set_current_state(TASK_INTERRUPTIBLE);
 		add_wait_queue(&pool->output_sleep, &wait);
-<<<<<<< HEAD
-		spin_unlock_irq(&pool->lock);
-		schedule();
-		spin_lock_irq(&pool->lock);
-=======
 		spin_unlock_irqrestore(&pool->lock, flags);
 		if (mutexp)
 			mutex_unlock(mutexp);
@@ -421,7 +297,6 @@ static int snd_seq_cell_alloc(struct snd_seq_pool *pool,
 		if (mutexp)
 			mutex_lock(mutexp);
 		spin_lock_irqsave(&pool->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		remove_wait_queue(&pool->output_sleep, &wait);
 		/* interrupted? */
 		if (signal_pending(current)) {
@@ -463,19 +338,12 @@ __error:
  */
 int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 		      struct snd_seq_event_cell **cellp, int nonblock,
-<<<<<<< HEAD
-		      struct file *file)
-=======
 		      struct file *file, struct mutex *mutexp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ncells, err;
 	unsigned int extlen;
 	struct snd_seq_event_cell *cell;
-<<<<<<< HEAD
-=======
 	int size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*cellp = NULL;
 
@@ -483,34 +351,22 @@ int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 	extlen = 0;
 	if (snd_seq_ev_is_variable(event)) {
 		extlen = event->data.ext.len & ~SNDRV_SEQ_EXT_MASK;
-<<<<<<< HEAD
-		ncells = (extlen + sizeof(struct snd_seq_event) - 1) / sizeof(struct snd_seq_event);
-=======
 		ncells = DIV_ROUND_UP(extlen, sizeof(struct snd_seq_event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ncells >= pool->total_elements)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	err = snd_seq_cell_alloc(pool, &cell, nonblock, file);
-=======
 	err = snd_seq_cell_alloc(pool, &cell, nonblock, file, mutexp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	/* copy the event */
-<<<<<<< HEAD
-	cell->event = *event;
-=======
 	size = snd_seq_event_packet_size(event);
 	memcpy(&cell->ump, event, size);
 #if IS_ENABLED(CONFIG_SND_SEQ_UMP)
 	if (size < sizeof(cell->event))
 		cell->ump.raw.extra = 0;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* decompose */
 	if (snd_seq_ev_is_variable(event)) {
@@ -528,18 +384,11 @@ int snd_seq_event_dup(struct snd_seq_pool *pool, struct snd_seq_event *event,
 		tail = NULL;
 
 		while (ncells-- > 0) {
-<<<<<<< HEAD
-			int size = sizeof(struct snd_seq_event);
-			if (len < size)
-				size = len;
-			err = snd_seq_cell_alloc(pool, &tmp, nonblock, file);
-=======
 			size = sizeof(struct snd_seq_event);
 			if (len < size)
 				size = len;
 			err = snd_seq_cell_alloc(pool, &tmp, nonblock, file,
 						 mutexp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err < 0)
 				goto __error;
 			if (cell->event.data.ext.ptr == NULL)
@@ -587,23 +436,6 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 {
 	int cell;
 	struct snd_seq_event_cell *cellptr;
-<<<<<<< HEAD
-	unsigned long flags;
-
-	if (snd_BUG_ON(!pool))
-		return -EINVAL;
-	if (pool->ptr)			/* should be atomic? */
-		return 0;
-
-	pool->ptr = vmalloc(sizeof(struct snd_seq_event_cell) * pool->size);
-	if (pool->ptr == NULL) {
-		snd_printd("seq: malloc for sequencer events failed\n");
-		return -ENOMEM;
-	}
-
-	/* add new cells to the free cell list */
-	spin_lock_irqsave(&pool->lock, flags);
-=======
 
 	if (snd_BUG_ON(!pool))
 		return -EINVAL;
@@ -622,7 +454,6 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 	}
 
 	pool->ptr = cellptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pool->free = NULL;
 
 	for (cell = 0; cell < pool->size; cell++) {
@@ -636,18 +467,6 @@ int snd_seq_pool_init(struct snd_seq_pool *pool)
 	/* init statistics */
 	pool->max_used = 0;
 	pool->total_elements = pool->size;
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&pool->lock, flags);
-	return 0;
-}
-
-/* remove events */
-int snd_seq_pool_done(struct snd_seq_pool *pool)
-{
-	unsigned long flags;
-	struct snd_seq_event_cell *ptr;
-	int max_count = 5 * HZ;
-=======
 	return 0;
 }
 
@@ -664,43 +483,11 @@ void snd_seq_pool_mark_closing(struct snd_seq_pool *pool)
 int snd_seq_pool_done(struct snd_seq_pool *pool)
 {
 	struct snd_seq_event_cell *ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_BUG_ON(!pool))
 		return -EINVAL;
 
 	/* wait for closing all threads */
-<<<<<<< HEAD
-	spin_lock_irqsave(&pool->lock, flags);
-	pool->closing = 1;
-	spin_unlock_irqrestore(&pool->lock, flags);
-
-	if (waitqueue_active(&pool->output_sleep))
-		wake_up(&pool->output_sleep);
-
-	while (atomic_read(&pool->counter) > 0) {
-		if (max_count == 0) {
-			snd_printk(KERN_WARNING "snd_seq_pool_done timeout: %d cells remain\n", atomic_read(&pool->counter));
-			break;
-		}
-		schedule_timeout_uninterruptible(1);
-		max_count--;
-	}
-	
-	/* release all resources */
-	spin_lock_irqsave(&pool->lock, flags);
-	ptr = pool->ptr;
-	pool->ptr = NULL;
-	pool->free = NULL;
-	pool->total_elements = 0;
-	spin_unlock_irqrestore(&pool->lock, flags);
-
-	vfree(ptr);
-
-	spin_lock_irqsave(&pool->lock, flags);
-	pool->closing = 0;
-	spin_unlock_irqrestore(&pool->lock, flags);
-=======
 	if (waitqueue_active(&pool->output_sleep))
 		wake_up(&pool->output_sleep);
 
@@ -719,7 +506,6 @@ int snd_seq_pool_done(struct snd_seq_pool *pool)
 
 	guard(spinlock_irq)(&pool->lock);
 	pool->closing = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -732,15 +518,8 @@ struct snd_seq_pool *snd_seq_pool_new(int poolsize)
 
 	/* create pool block */
 	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
-<<<<<<< HEAD
-	if (pool == NULL) {
-		snd_printd("seq: malloc failed for pool\n");
-		return NULL;
-	}
-=======
 	if (!pool)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&pool->lock);
 	pool->ptr = NULL;
 	pool->free = NULL;
@@ -764,30 +543,12 @@ int snd_seq_pool_delete(struct snd_seq_pool **ppool)
 	*ppool = NULL;
 	if (pool == NULL)
 		return 0;
-<<<<<<< HEAD
-=======
 	snd_seq_pool_mark_closing(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_seq_pool_done(pool);
 	kfree(pool);
 	return 0;
 }
 
-<<<<<<< HEAD
-/* initialize sequencer memory */
-int __init snd_sequencer_memory_init(void)
-{
-	return 0;
-}
-
-/* release sequencer memory */
-void __exit snd_sequencer_memory_done(void)
-{
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* exported to seq_clientmgr.c */
 void snd_seq_info_pool(struct snd_info_buffer *buffer,
 		       struct snd_seq_pool *pool, char *space)

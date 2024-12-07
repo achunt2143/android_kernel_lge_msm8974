@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfad_drv.h"
@@ -33,16 +15,6 @@
 #include "bfa_modules.h"
 
 BFA_TRC_FILE(HAL, FCXP);
-<<<<<<< HEAD
-BFA_MODULE(fcdiag);
-BFA_MODULE(fcxp);
-BFA_MODULE(sgpg);
-BFA_MODULE(lps);
-BFA_MODULE(fcport);
-BFA_MODULE(rport);
-BFA_MODULE(uf);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LPS related definitions
@@ -69,34 +41,6 @@ BFA_MODULE(uf);
 	(bfa_ioc_is_disabled(&bfa->ioc) == BFA_TRUE))
 
 /*
-<<<<<<< HEAD
- * BFA port state machine events
- */
-enum bfa_fcport_sm_event {
-	BFA_FCPORT_SM_START	= 1,	/*  start port state machine	*/
-	BFA_FCPORT_SM_STOP	= 2,	/*  stop port state machine	*/
-	BFA_FCPORT_SM_ENABLE	= 3,	/*  enable port		*/
-	BFA_FCPORT_SM_DISABLE	= 4,	/*  disable port state machine */
-	BFA_FCPORT_SM_FWRSP	= 5,	/*  firmware enable/disable rsp */
-	BFA_FCPORT_SM_LINKUP	= 6,	/*  firmware linkup event	*/
-	BFA_FCPORT_SM_LINKDOWN	= 7,	/*  firmware linkup down	*/
-	BFA_FCPORT_SM_QRESUME	= 8,	/*  CQ space available	*/
-	BFA_FCPORT_SM_HWFAIL	= 9,	/*  IOC h/w failure		*/
-};
-
-/*
- * BFA port link notification state machine events
- */
-
-enum bfa_fcport_ln_sm_event {
-	BFA_FCPORT_LN_SM_LINKUP		= 1,	/*  linkup event	*/
-	BFA_FCPORT_LN_SM_LINKDOWN	= 2,	/*  linkdown event	*/
-	BFA_FCPORT_LN_SM_NOTIFICATION	= 3	/*  done notification	*/
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * RPORT related definitions
  */
 #define bfa_rport_offline_cb(__rp) do {					\
@@ -132,18 +76,6 @@ static void	bfa_fcxp_queue(struct bfa_fcxp_s *fcxp,
 /*
  * forward declarations for LPS functions
  */
-<<<<<<< HEAD
-static void bfa_lps_meminfo(struct bfa_iocfc_cfg_s *cfg,
-		struct bfa_meminfo_s *minfo, struct bfa_s *bfa);
-static void bfa_lps_attach(struct bfa_s *bfa, void *bfad,
-				struct bfa_iocfc_cfg_s *cfg,
-				struct bfa_pcidev_s *pcidev);
-static void bfa_lps_detach(struct bfa_s *bfa);
-static void bfa_lps_start(struct bfa_s *bfa);
-static void bfa_lps_stop(struct bfa_s *bfa);
-static void bfa_lps_iocdisable(struct bfa_s *bfa);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bfa_lps_login_rsp(struct bfa_s *bfa,
 				struct bfi_lps_login_rsp_s *rsp);
 static void bfa_lps_no_res(struct bfa_lps_s *first_lps, u8 count);
@@ -217,15 +149,12 @@ static void     bfa_fcport_sm_iocdown(struct bfa_fcport_s *fcport,
 					enum bfa_fcport_sm_event event);
 static void     bfa_fcport_sm_iocfail(struct bfa_fcport_s *fcport,
 					enum bfa_fcport_sm_event event);
-<<<<<<< HEAD
-=======
 static void	bfa_fcport_sm_dport(struct bfa_fcport_s *fcport,
 					enum bfa_fcport_sm_event event);
 static void     bfa_fcport_sm_ddport(struct bfa_fcport_s *fcport,
 					enum bfa_fcport_sm_event event);
 static void	bfa_fcport_sm_faa_misconfig(struct bfa_fcport_s *fcport,
 					enum bfa_fcport_sm_event event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void     bfa_fcport_ln_sm_dn(struct bfa_fcport_ln_s *ln,
 					enum bfa_fcport_ln_sm_event event);
@@ -242,9 +171,6 @@ static void     bfa_fcport_ln_sm_up_dn_nf(struct bfa_fcport_ln_s *ln,
 static void     bfa_fcport_ln_sm_up_dn_up_nf(struct bfa_fcport_ln_s *ln,
 					enum bfa_fcport_ln_sm_event event);
 
-<<<<<<< HEAD
-static struct bfa_sm_table_s hal_port_sm_table[] = {
-=======
 struct bfa_fcport_sm_table_s {
 	bfa_fcport_sm_t sm;		/*  state machine function	*/
 	enum bfa_port_states state;	/*  state machine encoding	*/
@@ -262,7 +188,6 @@ bfa_fcport_sm_to_state(struct bfa_fcport_sm_table_s *smt, bfa_fcport_sm_t sm)
 }
 
 static struct bfa_fcport_sm_table_s hal_port_sm_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{BFA_SM(bfa_fcport_sm_uninit), BFA_PORT_ST_UNINIT},
 	{BFA_SM(bfa_fcport_sm_enabling_qwait), BFA_PORT_ST_ENABLING_QWAIT},
 	{BFA_SM(bfa_fcport_sm_enabling), BFA_PORT_ST_ENABLING},
@@ -275,12 +200,9 @@ static struct bfa_fcport_sm_table_s hal_port_sm_table[] = {
 	{BFA_SM(bfa_fcport_sm_stopped), BFA_PORT_ST_STOPPED},
 	{BFA_SM(bfa_fcport_sm_iocdown), BFA_PORT_ST_IOCDOWN},
 	{BFA_SM(bfa_fcport_sm_iocfail), BFA_PORT_ST_IOCDOWN},
-<<<<<<< HEAD
-=======
 	{BFA_SM(bfa_fcport_sm_dport), BFA_PORT_ST_DPORT},
 	{BFA_SM(bfa_fcport_sm_ddport), BFA_PORT_ST_DDPORT},
 	{BFA_SM(bfa_fcport_sm_faa_misconfig), BFA_PORT_ST_FAA_MISCONFIG},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -344,21 +266,6 @@ plkd_validate_logrec(struct bfa_plog_rec_s *pl_rec)
 	return 0;
 }
 
-<<<<<<< HEAD
-static u64
-bfa_get_log_time(void)
-{
-	u64 system_time = 0;
-	struct timeval tv;
-	do_gettimeofday(&tv);
-
-	/* We are interested in seconds only. */
-	system_time = tv.tv_sec;
-	return system_time;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bfa_plog_add(struct bfa_plog_s *plog, struct bfa_plog_rec_s *pl_rec)
 {
@@ -379,11 +286,7 @@ bfa_plog_add(struct bfa_plog_s *plog, struct bfa_plog_rec_s *pl_rec)
 
 	memcpy(pl_recp, pl_rec, sizeof(struct bfa_plog_rec_s));
 
-<<<<<<< HEAD
-	pl_recp->tv = bfa_get_log_time();
-=======
 	pl_recp->tv = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BFA_PL_LOG_REC_INCR(plog->tail);
 
 	if (plog->head == plog->tail)
@@ -413,13 +316,8 @@ bfa_plog_str(struct bfa_plog_s *plog, enum bfa_plog_mid mid,
 		lp.eid = event;
 		lp.log_type = BFA_PL_LOG_TYPE_STRING;
 		lp.misc = misc;
-<<<<<<< HEAD
-		strncpy(lp.log_entry.string_log, log_str,
-			BFA_PL_STRING_LOG_SZ - 1);
-=======
 		strscpy(lp.log_entry.string_log, log_str,
 			BFA_PL_STRING_LOG_SZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp.log_entry.string_log[BFA_PL_STRING_LOG_SZ - 1] = '\0';
 		bfa_plog_add(plog, &lp);
 	}
@@ -457,19 +355,10 @@ bfa_plog_fchdr(struct bfa_plog_s *plog, enum bfa_plog_mid mid,
 			enum bfa_plog_eid event,
 			u16 misc, struct fchs_s *fchdr)
 {
-<<<<<<< HEAD
-	struct bfa_plog_rec_s  lp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	*tmp_int = (u32 *) fchdr;
 	u32	ints[BFA_PL_INT_LOG_SZ];
 
 	if (plog->plog_enabled) {
-<<<<<<< HEAD
-		memset(&lp, 0, sizeof(struct bfa_plog_rec_s));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ints[0] = tmp_int[0];
 		ints[1] = tmp_int[1];
 		ints[2] = tmp_int[4];
@@ -483,19 +372,10 @@ bfa_plog_fchdr_and_pl(struct bfa_plog_s *plog, enum bfa_plog_mid mid,
 		      enum bfa_plog_eid event, u16 misc, struct fchs_s *fchdr,
 		      u32 pld_w0)
 {
-<<<<<<< HEAD
-	struct bfa_plog_rec_s  lp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	*tmp_int = (u32 *) fchdr;
 	u32	ints[BFA_PL_INT_LOG_SZ];
 
 	if (plog->plog_enabled) {
-<<<<<<< HEAD
-		memset(&lp, 0, sizeof(struct bfa_plog_rec_s));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ints[0] = tmp_int[0];
 		ints[1] = tmp_int[1];
 		ints[2] = tmp_int[4];
@@ -519,17 +399,11 @@ claim_fcxps_mem(struct bfa_fcxp_mod_s *mod)
 	fcxp = (struct bfa_fcxp_s *) bfa_mem_kva_curp(mod);
 	memset(fcxp, 0, sizeof(struct bfa_fcxp_s) * mod->num_fcxps);
 
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&mod->fcxp_free_q);
-	INIT_LIST_HEAD(&mod->fcxp_active_q);
-	INIT_LIST_HEAD(&mod->fcxp_unused_q);
-=======
 	INIT_LIST_HEAD(&mod->fcxp_req_free_q);
 	INIT_LIST_HEAD(&mod->fcxp_rsp_free_q);
 	INIT_LIST_HEAD(&mod->fcxp_active_q);
 	INIT_LIST_HEAD(&mod->fcxp_req_unused_q);
 	INIT_LIST_HEAD(&mod->fcxp_rsp_unused_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mod->fcxp_list = fcxp;
 
@@ -537,9 +411,6 @@ claim_fcxps_mem(struct bfa_fcxp_mod_s *mod)
 		fcxp->fcxp_mod = mod;
 		fcxp->fcxp_tag = i;
 
-<<<<<<< HEAD
-		list_add_tail(&fcxp->qe, &mod->fcxp_free_q);
-=======
 		if (i < (mod->num_fcxps / 2)) {
 			list_add_tail(&fcxp->qe, &mod->fcxp_req_free_q);
 			fcxp->req_rsp = BFA_TRUE;
@@ -548,7 +419,6 @@ claim_fcxps_mem(struct bfa_fcxp_mod_s *mod)
 			fcxp->req_rsp = BFA_FALSE;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_reqq_winit(&fcxp->reqq_wqe, bfa_fcxp_qresume, fcxp);
 		fcxp->reqq_waiting = BFA_FALSE;
 
@@ -558,11 +428,7 @@ claim_fcxps_mem(struct bfa_fcxp_mod_s *mod)
 	bfa_mem_kva_curp(mod) = (void *)fcxp;
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcxp_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
 {
@@ -600,11 +466,7 @@ bfa_fcxp_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		cfg->fwcfg.num_fcxp_reqs * sizeof(struct bfa_fcxp_s));
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcxp_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
 {
@@ -620,36 +482,13 @@ bfa_fcxp_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	if (!cfg->drvcfg.min_cfg)
 		mod->rsp_pld_sz = BFA_FCXP_MAX_LBUF_SZ;
 
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&mod->wait_q);
-=======
 	INIT_LIST_HEAD(&mod->req_wait_q);
 	INIT_LIST_HEAD(&mod->rsp_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	claim_fcxps_mem(mod);
 }
 
-<<<<<<< HEAD
-static void
-bfa_fcxp_detach(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_fcxp_start(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_fcxp_stop(struct bfa_s *bfa)
-{
-}
-
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcxp_iocdisable(struct bfa_s *bfa)
 {
 	struct bfa_fcxp_mod_s *mod = BFA_FCXP_MOD(bfa);
@@ -657,12 +496,8 @@ bfa_fcxp_iocdisable(struct bfa_s *bfa)
 	struct list_head	      *qe, *qen;
 
 	/* Enqueue unused fcxp resources to free_q */
-<<<<<<< HEAD
-	list_splice_tail_init(&mod->fcxp_unused_q, &mod->fcxp_free_q);
-=======
 	list_splice_tail_init(&mod->fcxp_req_unused_q, &mod->fcxp_req_free_q);
 	list_splice_tail_init(&mod->fcxp_rsp_unused_q, &mod->fcxp_rsp_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_safe(qe, qen, &mod->fcxp_active_q) {
 		fcxp = (struct bfa_fcxp_s *) qe;
@@ -679,13 +514,6 @@ bfa_fcxp_iocdisable(struct bfa_s *bfa)
 }
 
 static struct bfa_fcxp_s *
-<<<<<<< HEAD
-bfa_fcxp_get(struct bfa_fcxp_mod_s *fm)
-{
-	struct bfa_fcxp_s *fcxp;
-
-	bfa_q_deq(&fm->fcxp_free_q, &fcxp);
-=======
 bfa_fcxp_get(struct bfa_fcxp_mod_s *fm, bfa_boolean_t req)
 {
 	struct bfa_fcxp_s *fcxp;
@@ -694,7 +522,6 @@ bfa_fcxp_get(struct bfa_fcxp_mod_s *fm, bfa_boolean_t req)
 		bfa_q_deq(&fm->fcxp_req_free_q, &fcxp);
 	else
 		bfa_q_deq(&fm->fcxp_rsp_free_q, &fcxp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fcxp)
 		list_add_tail(&fcxp->qe, &fm->fcxp_active_q);
@@ -773,15 +600,11 @@ bfa_fcxp_put(struct bfa_fcxp_s *fcxp)
 	struct bfa_fcxp_mod_s *mod = fcxp->fcxp_mod;
 	struct bfa_fcxp_wqe_s *wqe;
 
-<<<<<<< HEAD
-	bfa_q_deq(&mod->wait_q, &wqe);
-=======
 	if (fcxp->req_rsp)
 		bfa_q_deq(&mod->req_wait_q, &wqe);
 	else
 		bfa_q_deq(&mod->rsp_wait_q, &wqe);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wqe) {
 		bfa_trc(mod->bfa, fcxp->fcxp_tag);
 
@@ -796,15 +619,11 @@ bfa_fcxp_put(struct bfa_fcxp_s *fcxp)
 
 	WARN_ON(!bfa_q_is_on_q(&mod->fcxp_active_q, fcxp));
 	list_del(&fcxp->qe);
-<<<<<<< HEAD
-	list_add_tail(&fcxp->qe, &mod->fcxp_free_q);
-=======
 
 	if (fcxp->req_rsp)
 		list_add_tail(&fcxp->qe, &mod->fcxp_req_free_q);
 	else
 		list_add_tail(&fcxp->qe, &mod->fcxp_rsp_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1047,38 +866,23 @@ bfa_fcxp_queue(struct bfa_fcxp_s *fcxp, struct bfi_fcxp_send_req_s *send_req)
  *				Address (given the sge index).
  * @param[in]	get_rsp_sglen	function ptr to be called to get a response SG
  *				len (given the sge index).
-<<<<<<< HEAD
-=======
  * @param[in]	req		Allocated FCXP is used to send req or rsp?
  *				request - BFA_TRUE, response - BFA_FALSE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @return FCXP instance. NULL on failure.
  */
 struct bfa_fcxp_s *
-<<<<<<< HEAD
-bfa_fcxp_alloc(void *caller, struct bfa_s *bfa, int nreq_sgles,
-	       int nrsp_sgles, bfa_fcxp_get_sgaddr_t req_sga_cbfn,
-	       bfa_fcxp_get_sglen_t req_sglen_cbfn,
-	       bfa_fcxp_get_sgaddr_t rsp_sga_cbfn,
-	       bfa_fcxp_get_sglen_t rsp_sglen_cbfn)
-=======
 bfa_fcxp_req_rsp_alloc(void *caller, struct bfa_s *bfa, int nreq_sgles,
 		int nrsp_sgles, bfa_fcxp_get_sgaddr_t req_sga_cbfn,
 		bfa_fcxp_get_sglen_t req_sglen_cbfn,
 		bfa_fcxp_get_sgaddr_t rsp_sga_cbfn,
 		bfa_fcxp_get_sglen_t rsp_sglen_cbfn, bfa_boolean_t req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bfa_fcxp_s *fcxp = NULL;
 
 	WARN_ON(bfa == NULL);
 
-<<<<<<< HEAD
-	fcxp = bfa_fcxp_get(BFA_FCXP_MOD(bfa));
-=======
 	fcxp = bfa_fcxp_get(BFA_FCXP_MOD(bfa), req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fcxp == NULL)
 		return NULL;
 
@@ -1235,23 +1039,12 @@ bfa_fcxp_abort(struct bfa_fcxp_s *fcxp)
 }
 
 void
-<<<<<<< HEAD
-bfa_fcxp_alloc_wait(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe,
-=======
 bfa_fcxp_req_rsp_alloc_wait(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       bfa_fcxp_alloc_cbfn_t alloc_cbfn, void *alloc_cbarg,
 	       void *caller, int nreq_sgles,
 	       int nrsp_sgles, bfa_fcxp_get_sgaddr_t req_sga_cbfn,
 	       bfa_fcxp_get_sglen_t req_sglen_cbfn,
 	       bfa_fcxp_get_sgaddr_t rsp_sga_cbfn,
-<<<<<<< HEAD
-	       bfa_fcxp_get_sglen_t rsp_sglen_cbfn)
-{
-	struct bfa_fcxp_mod_s *mod = BFA_FCXP_MOD(bfa);
-
-	WARN_ON(!list_empty(&mod->fcxp_free_q));
-=======
 	       bfa_fcxp_get_sglen_t rsp_sglen_cbfn, bfa_boolean_t req)
 {
 	struct bfa_fcxp_mod_s *mod = BFA_FCXP_MOD(bfa);
@@ -1260,7 +1053,6 @@ bfa_fcxp_req_rsp_alloc_wait(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe,
 		WARN_ON(!list_empty(&mod->fcxp_req_free_q));
 	else
 		WARN_ON(!list_empty(&mod->fcxp_rsp_free_q));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wqe->alloc_cbfn = alloc_cbfn;
 	wqe->alloc_cbarg = alloc_cbarg;
@@ -1273,14 +1065,10 @@ bfa_fcxp_req_rsp_alloc_wait(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe,
 	wqe->rsp_sga_cbfn = rsp_sga_cbfn;
 	wqe->rsp_sglen_cbfn = rsp_sglen_cbfn;
 
-<<<<<<< HEAD
-	list_add_tail(&wqe->qe, &mod->wait_q);
-=======
 	if (req)
 		list_add_tail(&wqe->qe, &mod->req_wait_q);
 	else
 		list_add_tail(&wqe->qe, &mod->rsp_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -1288,12 +1076,8 @@ bfa_fcxp_walloc_cancel(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe)
 {
 	struct bfa_fcxp_mod_s *mod = BFA_FCXP_MOD(bfa);
 
-<<<<<<< HEAD
-	WARN_ON(!bfa_q_is_on_q(&mod->wait_q, wqe));
-=======
 	WARN_ON(!bfa_q_is_on_q(&mod->req_wait_q, wqe) ||
 		!bfa_q_is_on_q(&mod->rsp_wait_q, wqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&wqe->qe);
 }
 
@@ -1344,10 +1128,6 @@ bfa_fcxp_res_recfg(struct bfa_s *bfa, u16 num_fcxp_fw)
 	int	i;
 
 	for (i = 0; i < (mod->num_fcxps - num_fcxp_fw); i++) {
-<<<<<<< HEAD
-		bfa_q_deq_tail(&mod->fcxp_free_q, &qe);
-		list_add_tail(qe, &mod->fcxp_unused_q);
-=======
 		if (i < ((mod->num_fcxps - num_fcxp_fw) / 2)) {
 			bfa_q_deq_tail(&mod->fcxp_req_free_q, &qe);
 			list_add_tail(qe, &mod->fcxp_req_unused_q);
@@ -1355,7 +1135,6 @@ bfa_fcxp_res_recfg(struct bfa_s *bfa, u16 num_fcxp_fw)
 			bfa_q_deq_tail(&mod->fcxp_rsp_free_q, &qe);
 			list_add_tail(qe, &mod->fcxp_rsp_unused_q);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1409,15 +1188,12 @@ bfa_lps_sm_init(struct bfa_lps_s *lps, enum bfa_lps_event event)
 		 * Just ignore
 		 */
 		break;
-<<<<<<< HEAD
-=======
 	case BFA_LPS_SM_SET_N2N_PID:
 		/*
 		 * When topology is set to loop, bfa_lps_set_n2n_pid() sends
 		 * this event. Ignore this event.
 		 */
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		bfa_sm_fault(lps->bfa, event);
@@ -1614,18 +1390,11 @@ bfa_lps_sm_logout(struct bfa_lps_s *lps, enum bfa_lps_event event)
 
 	switch (event) {
 	case BFA_LPS_SM_FWRSP:
-<<<<<<< HEAD
-=======
 	case BFA_LPS_SM_OFFLINE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_sm_set_state(lps, bfa_lps_sm_init);
 		bfa_lps_logout_comp(lps);
 		break;
 
-<<<<<<< HEAD
-	case BFA_LPS_SM_OFFLINE:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_LPS_SM_DELETE:
 		bfa_sm_set_state(lps, bfa_lps_sm_init);
 		break;
@@ -1670,11 +1439,7 @@ bfa_lps_sm_logowait(struct bfa_lps_s *lps, enum bfa_lps_event event)
 /*
  * return memory requirement
  */
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_lps_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
 {
@@ -1691,11 +1456,7 @@ bfa_lps_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 /*
  * bfa module attach at initialization time
  */
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_lps_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	struct bfa_pcidev_s *pcidev)
 {
@@ -1725,32 +1486,10 @@ bfa_lps_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	}
 }
 
-<<<<<<< HEAD
-static void
-bfa_lps_detach(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_lps_start(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_lps_stop(struct bfa_s *bfa)
-{
-}
-
-/*
- * IOC in disabled state -- consider all lps offline
- */
-static void
-=======
 /*
  * IOC in disabled state -- consider all lps offline
  */
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_lps_iocdisable(struct bfa_s *bfa)
 {
 	struct bfa_lps_mod_s	*mod = BFA_LPS_MOD(bfa);
@@ -1795,10 +1534,6 @@ bfa_lps_login_rsp(struct bfa_s *bfa, struct bfi_lps_login_rsp_s *rsp)
 		lps->lp_mac	= rsp->lp_mac;
 		lps->brcd_switch = rsp->brcd_switch;
 		lps->fcf_mac	= rsp->fcf_mac;
-<<<<<<< HEAD
-		lps->pr_bbscn	= rsp->bb_scn;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
@@ -1928,10 +1663,6 @@ bfa_lps_send_login(struct bfa_lps_s *lps)
 	m->nwwn		= lps->nwwn;
 	m->fdisc	= lps->fdisc;
 	m->auth_en	= lps->auth_en;
-<<<<<<< HEAD
-	m->bb_scn	= lps->bb_scn;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_reqq_produce(lps->bfa, lps->reqq, m->mh);
 	list_del(&lps->qe);
@@ -2024,11 +1755,8 @@ bfa_lps_logout_comp_cb(void *arg, bfa_boolean_t complete)
 
 	if (lps->fdisc)
 		bfa_cb_lps_fdisclogo_comp(lps->bfa->bfad, lps->uarg);
-<<<<<<< HEAD
-=======
 	else
 		bfa_cb_lps_flogo_comp(lps->bfa->bfad, lps->uarg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2130,11 +1858,7 @@ bfa_lps_delete(struct bfa_lps_s *lps)
  */
 void
 bfa_lps_flogi(struct bfa_lps_s *lps, void *uarg, u8 alpa, u16 pdusz,
-<<<<<<< HEAD
-	wwn_t pwwn, wwn_t nwwn, bfa_boolean_t auth_en, uint8_t bb_scn)
-=======
 	wwn_t pwwn, wwn_t nwwn, bfa_boolean_t auth_en)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	lps->uarg	= uarg;
 	lps->alpa	= alpa;
@@ -2143,10 +1867,6 @@ bfa_lps_flogi(struct bfa_lps_s *lps, void *uarg, u8 alpa, u16 pdusz,
 	lps->nwwn	= nwwn;
 	lps->fdisc	= BFA_FALSE;
 	lps->auth_en	= auth_en;
-<<<<<<< HEAD
-	lps->bb_scn	= bb_scn;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_sm_send_event(lps, BFA_LPS_SM_LOGIN);
 }
 
@@ -2381,15 +2101,12 @@ bfa_fcport_sm_enabling_qwait(struct bfa_fcport_s *fcport,
 		bfa_sm_set_state(fcport, bfa_fcport_sm_iocdown);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCPORT_SM_FAA_MISCONFIG:
 		bfa_fcport_reset_linkinfo(fcport);
 		bfa_fcport_aen_post(fcport, BFA_PORT_AEN_DISCONNECT);
 		bfa_sm_set_state(fcport, bfa_fcport_sm_faa_misconfig);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(fcport->bfa, event);
 	}
@@ -2446,15 +2163,12 @@ bfa_fcport_sm_enabling(struct bfa_fcport_s *fcport,
 		bfa_sm_set_state(fcport, bfa_fcport_sm_iocdown);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCPORT_SM_FAA_MISCONFIG:
 		bfa_fcport_reset_linkinfo(fcport);
 		bfa_fcport_aen_post(fcport, BFA_PORT_AEN_DISCONNECT);
 		bfa_sm_set_state(fcport, bfa_fcport_sm_faa_misconfig);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(fcport->bfa, event);
 	}
@@ -2480,19 +2194,11 @@ bfa_fcport_sm_linkdown(struct bfa_fcport_s *fcport,
 		if (!bfa_ioc_get_fcmode(&fcport->bfa->ioc)) {
 
 			bfa_trc(fcport->bfa,
-<<<<<<< HEAD
-				pevent->link_state.vc_fcf.fcf.fipenabled);
-			bfa_trc(fcport->bfa,
-				pevent->link_state.vc_fcf.fcf.fipfailed);
-
-			if (pevent->link_state.vc_fcf.fcf.fipfailed)
-=======
 				pevent->link_state.attr.vc_fcf.fcf.fipenabled);
 			bfa_trc(fcport->bfa,
 				pevent->link_state.attr.vc_fcf.fcf.fipfailed);
 
 			if (pevent->link_state.attr.vc_fcf.fcf.fipfailed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bfa_plog_str(fcport->bfa->plog, BFA_PL_MID_HAL,
 					BFA_PL_EID_FIP_FCF_DISC, 0,
 					"FIP FCF Discovery Failed");
@@ -2549,15 +2255,12 @@ bfa_fcport_sm_linkdown(struct bfa_fcport_s *fcport,
 		bfa_sm_set_state(fcport, bfa_fcport_sm_iocdown);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCPORT_SM_FAA_MISCONFIG:
 		bfa_fcport_reset_linkinfo(fcport);
 		bfa_fcport_aen_post(fcport, BFA_PORT_AEN_DISCONNECT);
 		bfa_sm_set_state(fcport, bfa_fcport_sm_faa_misconfig);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(fcport->bfa, event);
 	}
@@ -2651,15 +2354,12 @@ bfa_fcport_sm_linkup(struct bfa_fcport_s *fcport,
 		}
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCPORT_SM_FAA_MISCONFIG:
 		bfa_fcport_reset_linkinfo(fcport);
 		bfa_fcport_aen_post(fcport, BFA_PORT_AEN_DISCONNECT);
 		bfa_sm_set_state(fcport, bfa_fcport_sm_faa_misconfig);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(fcport->bfa, event);
 	}
@@ -2705,15 +2405,12 @@ bfa_fcport_sm_disabling_qwait(struct bfa_fcport_s *fcport,
 		bfa_reqq_wcancel(&fcport->reqq_wait);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCPORT_SM_FAA_MISCONFIG:
 		bfa_fcport_reset_linkinfo(fcport);
 		bfa_fcport_aen_post(fcport, BFA_PORT_AEN_DISCONNECT);
 		bfa_sm_set_state(fcport, bfa_fcport_sm_faa_misconfig);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(fcport->bfa, event);
 	}
@@ -2865,8 +2562,6 @@ bfa_fcport_sm_disabled(struct bfa_fcport_s *fcport,
 		bfa_sm_set_state(fcport, bfa_fcport_sm_iocfail);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_FCPORT_SM_DPORTENABLE:
 		bfa_sm_set_state(fcport, bfa_fcport_sm_dport);
 		break;
@@ -2875,7 +2570,6 @@ bfa_fcport_sm_disabled(struct bfa_fcport_s *fcport,
 		bfa_sm_set_state(fcport, bfa_fcport_sm_ddport);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_sm_fault(fcport->bfa, event);
 	}
@@ -2956,8 +2650,6 @@ bfa_fcport_sm_iocfail(struct bfa_fcport_s *fcport,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void
 bfa_fcport_sm_dport(struct bfa_fcport_s *fcport, enum bfa_fcport_sm_event event)
 {
@@ -3067,7 +2759,6 @@ bfa_fcport_sm_faa_misconfig(struct bfa_fcport_s *fcport,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Link state is down
  */
@@ -3278,11 +2969,7 @@ bfa_fcport_queue_cb(struct bfa_fcport_ln_s *ln, enum bfa_port_linkstate event)
 #define FCPORT_STATS_DMA_SZ (BFA_ROUNDUP(sizeof(union bfa_fcport_stats_u), \
 							BFA_CACHELINE_SZ))
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcport_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		   struct bfa_s *bfa)
 {
@@ -3313,21 +3000,13 @@ bfa_fcport_mem_claim(struct bfa_fcport_s *fcport)
 /*
  * Memory initialization.
  */
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
 	struct bfa_port_cfg_s *port_cfg = &fcport->cfg;
 	struct bfa_fcport_ln_s *ln = &fcport->ln;
-<<<<<<< HEAD
-	struct timeval tv;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fcport->bfa = bfa;
 	ln->fcport = fcport;
@@ -3340,13 +3019,8 @@ bfa_fcport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	/*
 	 * initialize time stamp for stats reset
 	 */
-<<<<<<< HEAD
-	do_gettimeofday(&tv);
-	fcport->stats_reset_time = tv.tv_sec;
-=======
 	fcport->stats_reset_time = ktime_get_seconds();
 	fcport->stats_dma_ready = BFA_FALSE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * initialize and set default configuration
@@ -3357,14 +3031,11 @@ bfa_fcport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	port_cfg->maxfrsize = 0;
 
 	port_cfg->trl_def_speed = BFA_PORT_SPEED_1GBPS;
-<<<<<<< HEAD
-=======
 	port_cfg->qos_bw.high = BFA_QOS_BW_HIGH;
 	port_cfg->qos_bw.med = BFA_QOS_BW_MED;
 	port_cfg->qos_bw.low = BFA_QOS_BW_LOW;
 
 	fcport->fec_state = BFA_FEC_OFFLINE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&fcport->stats_pending_q);
 	INIT_LIST_HEAD(&fcport->statsclr_pending_q);
@@ -3372,44 +3043,16 @@ bfa_fcport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	bfa_reqq_winit(&fcport->reqq_wait, bfa_fcport_qresume, fcport);
 }
 
-<<<<<<< HEAD
-static void
-bfa_fcport_detach(struct bfa_s *bfa)
-{
-}
-
-/*
- * Called when IOC is ready.
- */
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcport_start(struct bfa_s *bfa)
 {
 	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_START);
 }
 
 /*
-<<<<<<< HEAD
- * Called before IOC is stopped.
- */
-static void
-bfa_fcport_stop(struct bfa_s *bfa)
-{
-	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_STOP);
-	bfa_trunk_iocdisable(bfa);
-}
-
-/*
- * Called when IOC failure is detected.
- */
-static void
-=======
  * Called when IOC failure is detected.
  */
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcport_iocdisable(struct bfa_s *bfa)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
@@ -3418,8 +3061,6 @@ bfa_fcport_iocdisable(struct bfa_s *bfa)
 	bfa_trunk_iocdisable(bfa);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Update loop info in fcport for SCN online
  */
@@ -3435,7 +3076,6 @@ bfa_fcport_update_loop_info(struct bfa_fcport_s *fcport,
 			sizeof(struct fc_alpabm_s));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 bfa_fcport_update_linkinfo(struct bfa_fcport_s *fcport)
 {
@@ -3445,14 +3085,6 @@ bfa_fcport_update_linkinfo(struct bfa_fcport_s *fcport)
 	fcport->speed = pevent->link_state.speed;
 	fcport->topology = pevent->link_state.topology;
 
-<<<<<<< HEAD
-	if (fcport->topology == BFA_PORT_TOPOLOGY_LOOP)
-		fcport->myalpa = 0;
-
-	/* QoS Details */
-	fcport->qos_attr = pevent->link_state.qos_attr;
-	fcport->qos_vc_attr = pevent->link_state.vc_fcf.qos_vc_attr;
-=======
 	if (fcport->topology == BFA_PORT_TOPOLOGY_LOOP) {
 		bfa_fcport_update_loop_info(fcport,
 				&pevent->link_state.attr.loop_info);
@@ -3467,7 +3099,6 @@ bfa_fcport_update_linkinfo(struct bfa_fcport_s *fcport)
 		fcport->bbcr_attr = pevent->link_state.attr.bbcr_attr;
 
 	fcport->fec_state = pevent->link_state.fec_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * update trunk state if applicable
@@ -3476,12 +3107,8 @@ bfa_fcport_update_linkinfo(struct bfa_fcport_s *fcport)
 		trunk->attr.state = BFA_TRUNK_DISABLED;
 
 	/* update FCoE specific */
-<<<<<<< HEAD
-	fcport->fcoe_vlan = be16_to_cpu(pevent->link_state.vc_fcf.fcf.vlan);
-=======
 	fcport->fcoe_vlan =
 		be16_to_cpu(pevent->link_state.attr.vc_fcf.fcf.vlan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_trc(fcport->bfa, fcport->speed);
 	bfa_trc(fcport->bfa, fcport->topology);
@@ -3492,11 +3119,7 @@ bfa_fcport_reset_linkinfo(struct bfa_fcport_s *fcport)
 {
 	fcport->speed = BFA_PORT_SPEED_UNKNOWN;
 	fcport->topology = BFA_PORT_TOPOLOGY_NONE;
-<<<<<<< HEAD
-	fcport->bbsc_op_state = BFA_FALSE;
-=======
 	fcport->fec_state = BFA_FEC_OFFLINE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3530,11 +3153,7 @@ bfa_fcport_send_enable(struct bfa_fcport_s *fcport)
 	m->port_cfg = fcport->cfg;
 	m->msgtag = fcport->msgtag;
 	m->port_cfg.maxfrsize = cpu_to_be16(fcport->cfg.maxfrsize);
-<<<<<<< HEAD
-	 m->use_flash_cfg = fcport->use_flash_cfg;
-=======
 	m->use_flash_cfg = fcport->use_flash_cfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_dma_be_addr_set(m->stats_dma_addr, fcport->stats_pa);
 	bfa_trc(fcport->bfa, m->stats_dma_addr.a32.addr_lo);
 	bfa_trc(fcport->bfa, m->stats_dma_addr.a32.addr_hi);
@@ -3634,13 +3253,7 @@ __bfa_cb_fcport_stats_get(void *cbarg, bfa_boolean_t complete)
 	union bfa_fcport_stats_u *ret;
 
 	if (complete) {
-<<<<<<< HEAD
-		struct timeval tv;
-		if (fcport->stats_status == BFA_STATUS_OK)
-			do_gettimeofday(&tv);
-=======
 		time64_t time = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		list_for_each_safe(qe, qen, &fcport->stats_pending_q) {
 			bfa_q_deq(&fcport->stats_pending_q, &qe);
@@ -3655,11 +3268,7 @@ __bfa_cb_fcport_stats_get(void *cbarg, bfa_boolean_t complete)
 					bfa_fcport_fcoe_stats_swap(&ret->fcoe,
 							&fcport->stats->fcoe);
 					ret->fcoe.secs_reset =
-<<<<<<< HEAD
-					tv.tv_sec - fcport->stats_reset_time;
-=======
 						time - fcport->stats_reset_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 			bfa_cb_queue_status(fcport->bfa, &cb->hcb_qe,
@@ -3720,20 +3329,10 @@ __bfa_cb_fcport_stats_clr(void *cbarg, bfa_boolean_t complete)
 	struct list_head *qe, *qen;
 
 	if (complete) {
-<<<<<<< HEAD
-		struct timeval tv;
-
-		/*
-		 * re-initialize time stamp for stats reset
-		 */
-		do_gettimeofday(&tv);
-		fcport->stats_reset_time = tv.tv_sec;
-=======
 		/*
 		 * re-initialize time stamp for stats reset
 		 */
 		fcport->stats_reset_time = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_safe(qe, qen, &fcport->statsclr_pending_q) {
 			bfa_q_deq(&fcport->statsclr_pending_q, &qe);
 			cb = (struct bfa_cb_pending_q_s *)qe;
@@ -3932,20 +3531,13 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 	fcport->event_arg.i2hmsg = i2hmsg;
 
 	bfa_trc(bfa, msg->mhdr.msg_id);
-<<<<<<< HEAD
-	bfa_trc(bfa, bfa_sm_to_state(hal_port_sm_table, fcport->sm));
-=======
 	bfa_trc(bfa, bfa_fcport_sm_to_state(hal_port_sm_table, fcport->sm));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (msg->mhdr.msg_id) {
 	case BFI_FCPORT_I2H_ENABLE_RSP:
 		if (fcport->msgtag == i2hmsg.penable_rsp->msgtag) {
 
-<<<<<<< HEAD
-=======
 			fcport->stats_dma_ready = BFA_TRUE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (fcport->use_flash_cfg) {
 				fcport->cfg = i2hmsg.penable_rsp->port_cfg;
 				fcport->cfg.maxfrsize =
@@ -3961,11 +3553,8 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 				else
 					fcport->trunk.attr.state =
 						BFA_TRUNK_DISABLED;
-<<<<<<< HEAD
-=======
 				fcport->qos_attr.qos_bw =
 					i2hmsg.penable_rsp->port_cfg.qos_bw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fcport->use_flash_cfg = BFA_FALSE;
 			}
 
@@ -3974,8 +3563,6 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 			else
 				fcport->qos_attr.state = BFA_QOS_DISABLED;
 
-<<<<<<< HEAD
-=======
 			fcport->qos_attr.qos_bw_op =
 					i2hmsg.penable_rsp->port_cfg.qos_bw;
 
@@ -3984,7 +3571,6 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 			else
 				fcport->bbcr_attr.state = BFA_BBCR_DISABLED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bfa_sm_send_event(fcport, BFA_FCPORT_SM_FWRSP);
 		}
 		break;
@@ -3995,12 +3581,6 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 		break;
 
 	case BFI_FCPORT_I2H_EVENT:
-<<<<<<< HEAD
-		if (i2hmsg.event->link_state.linkstate == BFA_PORT_LINKUP)
-			bfa_sm_send_event(fcport, BFA_FCPORT_SM_LINKUP);
-		else
-			bfa_sm_send_event(fcport, BFA_FCPORT_SM_LINKDOWN);
-=======
 		if (fcport->cfg.bb_cr_enabled)
 			fcport->bbcr_attr.state = BFA_BBCR_OFFLINE;
 		else
@@ -4019,7 +3599,6 @@ bfa_fcport_isr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 		}
 		fcport->qos_attr.qos_bw_op =
 				i2hmsg.event->link_state.qos_attr.qos_bw_op;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFI_FCPORT_I2H_TRUNK_SCN:
@@ -4139,12 +3718,9 @@ bfa_fcport_cfg_speed(struct bfa_s *bfa, enum bfa_port_speed speed)
 
 	if (fcport->cfg.trunked == BFA_TRUE)
 		return BFA_STATUS_TRUNK_ENABLED;
-<<<<<<< HEAD
-=======
 	if ((fcport->cfg.topology == BFA_PORT_TOPOLOGY_LOOP) &&
 			(speed == BFA_PORT_SPEED_16GBPS))
 		return BFA_STATUS_UNSUPP_SPEED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((speed != BFA_PORT_SPEED_AUTO) && (speed > fcport->speed_sup)) {
 		bfa_trc(bfa, fcport->speed_sup);
 		return BFA_STATUS_UNSUPP_SPEED;
@@ -4199,9 +3775,6 @@ bfa_fcport_cfg_topology(struct bfa_s *bfa, enum bfa_port_topology topology)
 
 	switch (topology) {
 	case BFA_PORT_TOPOLOGY_P2P:
-<<<<<<< HEAD
-	case BFA_PORT_TOPOLOGY_LOOP:
-=======
 		break;
 
 	case BFA_PORT_TOPOLOGY_LOOP:
@@ -4224,7 +3797,6 @@ bfa_fcport_cfg_topology(struct bfa_s *bfa, enum bfa_port_topology topology)
 			return BFA_STATUS_DPORT_ERR;
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BFA_PORT_TOPOLOGY_AUTO:
 		break;
 
@@ -4247,8 +3819,6 @@ bfa_fcport_get_topology(struct bfa_s *bfa)
 	return fcport->topology;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Get config topology.
  */
@@ -4260,7 +3830,6 @@ bfa_fcport_get_cfg_topology(struct bfa_s *bfa)
 	return fcport->cfg.topology;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_status_t
 bfa_fcport_cfg_hardalpa(struct bfa_s *bfa, u8 alpa)
 {
@@ -4336,15 +3905,6 @@ bfa_fcport_get_maxfrsize(struct bfa_s *bfa)
 u8
 bfa_fcport_get_rx_bbcredit(struct bfa_s *bfa)
 {
-<<<<<<< HEAD
-	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
-
-	return fcport->cfg.rx_bbcredit;
-}
-
-void
-bfa_fcport_set_tx_bbcredit(struct bfa_s *bfa, u16 tx_bbcredit, u8 bb_scn)
-=======
 	if (bfa_fcport_get_topology(bfa) != BFA_PORT_TOPOLOGY_LOOP)
 		return (BFA_FCPORT_MOD(bfa))->cfg.rx_bbcredit;
 
@@ -4354,17 +3914,10 @@ bfa_fcport_set_tx_bbcredit(struct bfa_s *bfa, u16 tx_bbcredit, u8 bb_scn)
 
 void
 bfa_fcport_set_tx_bbcredit(struct bfa_s *bfa, u16 tx_bbcredit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
 
 	fcport->cfg.tx_bbcredit = (u8)tx_bbcredit;
-<<<<<<< HEAD
-	fcport->cfg.bb_scn = bb_scn;
-	if (bb_scn)
-		fcport->bbsc_op_state = BFA_TRUE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4413,14 +3966,9 @@ bfa_fcport_get_attr(struct bfa_s *bfa, struct bfa_port_attr_s *attr)
 
 	attr->pport_cfg.path_tov  = bfa_fcpim_path_tov_get(bfa);
 	attr->pport_cfg.q_depth  = bfa_fcpim_qdepth_get(bfa);
-<<<<<<< HEAD
-	attr->port_state = bfa_sm_to_state(hal_port_sm_table, fcport->sm);
-	attr->bbsc_op_status =  fcport->bbsc_op_state;
-=======
 	attr->port_state = bfa_fcport_sm_to_state(hal_port_sm_table, fcport->sm);
 
 	attr->fec_state = fcport->fec_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PBC Disabled State */
 	if (bfa_fcport_is_pbcdisabled(bfa))
@@ -4446,14 +3994,9 @@ bfa_fcport_get_stats(struct bfa_s *bfa, struct bfa_cb_pending_q_s *cb)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
 
-<<<<<<< HEAD
-	if (bfa_ioc_is_disabled(&bfa->ioc))
-		return BFA_STATUS_IOC_DISABLED;
-=======
 	if (!bfa_iocfc_is_operational(bfa) ||
 	    !fcport->stats_dma_ready)
 		return BFA_STATUS_IOC_NON_OP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!list_empty(&fcport->statsclr_pending_q))
 		return BFA_STATUS_DEVBUSY;
@@ -4478,13 +4021,10 @@ bfa_fcport_clear_stats(struct bfa_s *bfa, struct bfa_cb_pending_q_s *cb)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
 
-<<<<<<< HEAD
-=======
 	if (!bfa_iocfc_is_operational(bfa) ||
 	    !fcport->stats_dma_ready)
 		return BFA_STATUS_IOC_NON_OP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!list_empty(&fcport->stats_pending_q))
 		return BFA_STATUS_DEVBUSY;
 
@@ -4508,18 +4048,12 @@ bfa_fcport_is_disabled(struct bfa_s *bfa)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
 
-<<<<<<< HEAD
-	return bfa_sm_to_state(hal_port_sm_table, fcport->sm) ==
-=======
 	return bfa_fcport_sm_to_state(hal_port_sm_table, fcport->sm) ==
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BFA_PORT_ST_DISABLED;
 
 }
 
 bfa_boolean_t
-<<<<<<< HEAD
-=======
 bfa_fcport_is_dport(struct bfa_s *bfa)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
@@ -4563,7 +4097,6 @@ bfa_fcport_set_qos_bw(struct bfa_s *bfa, struct bfa_qos_bw_s *qos_bw)
 }
 
 bfa_boolean_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcport_is_ratelim(struct bfa_s *bfa)
 {
 	struct bfa_fcport_s *fcport = BFA_FCPORT_MOD(bfa);
@@ -4640,8 +4173,6 @@ bfa_fcport_is_trunk_enabled(struct bfa_s *bfa)
 	return fcport->cfg.trunked;
 }
 
-<<<<<<< HEAD
-=======
 bfa_status_t
 bfa_fcport_cfg_bbcr(struct bfa_s *bfa, bfa_boolean_t on_off, u8 bb_scn)
 {
@@ -4751,7 +4282,6 @@ bfa_fcport_ddportdisable(struct bfa_s *bfa)
 	bfa_sm_send_event(BFA_FCPORT_MOD(bfa), BFA_FCPORT_SM_DDPORTDISABLE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Rport State machine functions
  */
@@ -5046,13 +4576,10 @@ bfa_rport_sm_offline(struct bfa_rport_s *rp, enum bfa_rport_event event)
 		bfa_sm_set_state(rp, bfa_rport_sm_iocdisable);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFA_RPORT_SM_OFFLINE:
 		bfa_rport_offline_cb(rp);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_stats(rp, sm_off_unexp);
 		bfa_sm_fault(rp->bfa, event);
@@ -5169,10 +4696,7 @@ bfa_rport_sm_offline_pending(struct bfa_rport_s *rp,
 	case BFA_RPORT_SM_HWFAIL:
 		bfa_stats(rp, sm_offp_hwf);
 		bfa_sm_set_state(rp, bfa_rport_sm_iocdisable);
-<<<<<<< HEAD
-=======
 		bfa_rport_offline_cb(rp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -5251,11 +4775,7 @@ bfa_rport_qresume(void *cbarg)
 	bfa_sm_send_event(rp, BFA_RPORT_SM_QRESUME);
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_rport_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
 {
@@ -5269,11 +4789,7 @@ bfa_rport_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		cfg->fwcfg.num_rports * sizeof(struct bfa_rport_s));
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_rport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
 {
@@ -5313,26 +4829,7 @@ bfa_rport_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	bfa_mem_kva_curp(mod) = (u8 *) rp;
 }
 
-<<<<<<< HEAD
-static void
-bfa_rport_detach(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_rport_start(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_rport_stop(struct bfa_s *bfa)
-{
-}
-
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_rport_iocdisable(struct bfa_s *bfa)
 {
 	struct bfa_rport_mod_s *mod = BFA_RPORT_MOD(bfa);
@@ -5496,8 +4993,6 @@ bfa_rport_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 		bfa_sm_send_event(rp, BFA_RPORT_SM_QOS_SCN);
 		break;
 
-<<<<<<< HEAD
-=======
 	case BFI_RPORT_I2H_LIP_SCN_ONLINE:
 		bfa_fcport_update_loop_info(BFA_FCPORT_MOD(bfa),
 				&msg.lip_scn->loop_info);
@@ -5513,7 +5008,6 @@ bfa_rport_isr(struct bfa_s *bfa, struct bfi_msg_s *m)
 		bfa_cb_rport_scn_no_dev(rp->rport_drv);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_trc(bfa, m->mhdr.msg_id);
 		WARN_ON(1);
@@ -5581,15 +5075,10 @@ bfa_rport_speed(struct bfa_rport_s *rport, enum bfa_port_speed speed)
 	WARN_ON(speed == 0);
 	WARN_ON(speed == BFA_PORT_SPEED_AUTO);
 
-<<<<<<< HEAD
-	rport->rport_info.speed = speed;
-	bfa_sm_send_event(rport, BFA_RPORT_SM_SET_SPEED);
-=======
 	if (rport) {
 		rport->rport_info.speed = speed;
 		bfa_sm_send_event(rport, BFA_RPORT_SM_SET_SPEED);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Set Rport LUN Mask */
@@ -5631,11 +5120,7 @@ bfa_rport_unset_lunmask(struct bfa_s *bfa, struct bfa_rport_s *rp)
 /*
  * Compute and return memory needed by FCP(im) module.
  */
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_sgpg_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
 {
@@ -5670,11 +5155,7 @@ bfa_sgpg_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		cfg->drvcfg.num_sgpgs * sizeof(struct bfa_sgpg_s));
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_sgpg_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
 {
@@ -5737,29 +5218,6 @@ bfa_sgpg_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	bfa_mem_kva_curp(mod) = (u8 *) hsgpg;
 }
 
-<<<<<<< HEAD
-static void
-bfa_sgpg_detach(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_sgpg_start(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_sgpg_stop(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_sgpg_iocdisable(struct bfa_s *bfa)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_status_t
 bfa_sgpg_malloc(struct bfa_s *bfa, struct list_head *sgpg_q, int nsgpgs)
 {
@@ -5943,11 +5401,7 @@ uf_mem_claim(struct bfa_uf_mod_s *ufm)
 	claim_uf_post_msgs(ufm);
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_uf_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		struct bfa_s *bfa)
 {
@@ -5975,11 +5429,7 @@ bfa_uf_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *minfo,
 		(sizeof(struct bfa_uf_s) + sizeof(struct bfi_uf_buf_post_s)));
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_uf_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
 {
@@ -5994,14 +5444,6 @@ bfa_uf_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 	uf_mem_claim(ufm);
 }
 
-<<<<<<< HEAD
-static void
-bfa_uf_detach(struct bfa_s *bfa)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct bfa_uf_s *
 bfa_uf_get(struct bfa_uf_mod_s *uf_mod)
 {
@@ -6055,10 +5497,6 @@ uf_recv(struct bfa_s *bfa, struct bfi_uf_frm_rcvd_s *m)
 	struct bfa_uf_s *uf = &ufm->uf_list[uf_tag];
 	struct bfa_uf_buf_s *uf_buf;
 	uint8_t *buf;
-<<<<<<< HEAD
-	struct fchs_s *fchs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uf_buf = (struct bfa_uf_buf_s *)
 			bfa_mem_get_dmabuf_kva(ufm, uf_tag, uf->pb_len);
@@ -6067,11 +5505,6 @@ uf_recv(struct bfa_s *bfa, struct bfi_uf_frm_rcvd_s *m)
 	m->frm_len = be16_to_cpu(m->frm_len);
 	m->xfr_len = be16_to_cpu(m->xfr_len);
 
-<<<<<<< HEAD
-	fchs = (struct fchs_s *)uf_buf;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&uf->qe);	/* dequeue from posted queue */
 
 	uf->data_ptr = buf;
@@ -6095,16 +5528,7 @@ uf_recv(struct bfa_s *bfa, struct bfi_uf_frm_rcvd_s *m)
 		bfa_cb_queue(bfa, &uf->hcb_qe, __bfa_cb_uf_recv, uf);
 }
 
-<<<<<<< HEAD
-static void
-bfa_uf_stop(struct bfa_s *bfa)
-{
-}
-
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_uf_iocdisable(struct bfa_s *bfa)
 {
 	struct bfa_uf_mod_s *ufm = BFA_UF_MOD(bfa);
@@ -6121,11 +5545,7 @@ bfa_uf_iocdisable(struct bfa_s *bfa)
 	}
 }
 
-<<<<<<< HEAD
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_uf_start(struct bfa_s *bfa)
 {
 	bfa_uf_post_all(BFA_UF_MOD(bfa));
@@ -6196,8 +5616,6 @@ bfa_uf_res_recfg(struct bfa_s *bfa, u16 num_uf_fw)
 }
 
 /*
-<<<<<<< HEAD
-=======
  *	Dport forward declaration
  */
 
@@ -6236,7 +5654,6 @@ static void bfa_dport_scn(struct bfa_dport_s *dport,
 				struct bfi_diag_dport_scn_s *msg);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	BFA fcdiag module
  */
 #define BFA_DIAG_QTEST_TOV	1000    /* msec */
@@ -6255,32 +5672,11 @@ bfa_fcdiag_set_busy_status(struct bfa_fcdiag_s *fcdiag)
 		fcport->diag_busy = BFA_FALSE;
 }
 
-<<<<<<< HEAD
-static void
-bfa_fcdiag_meminfo(struct bfa_iocfc_cfg_s *cfg, struct bfa_meminfo_s *meminfo,
-		struct bfa_s *bfa)
-{
-}
-
-static void
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcdiag_attach(struct bfa_s *bfa, void *bfad, struct bfa_iocfc_cfg_s *cfg,
 		struct bfa_pcidev_s *pcidev)
 {
 	struct bfa_fcdiag_s *fcdiag = BFA_FCDIAG_MOD(bfa);
-<<<<<<< HEAD
-	fcdiag->bfa             = bfa;
-	fcdiag->trcmod  = bfa->trcmod;
-	/* The common DIAG attach bfa_diag_attach() will do all memory claim */
-}
-
-static void
-bfa_fcdiag_iocdisable(struct bfa_s *bfa)
-{
-	struct bfa_fcdiag_s *fcdiag = BFA_FCDIAG_MOD(bfa);
-=======
 	struct bfa_dport_s  *dport = &fcdiag->dport;
 
 	fcdiag->bfa             = bfa;
@@ -6301,7 +5697,6 @@ bfa_fcdiag_iocdisable(struct bfa_s *bfa)
 	struct bfa_fcdiag_s *fcdiag = BFA_FCDIAG_MOD(bfa);
 	struct bfa_dport_s *dport = &fcdiag->dport;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_trc(fcdiag, fcdiag->lb.lock);
 	if (fcdiag->lb.lock) {
 		fcdiag->lb.status = BFA_STATUS_IOC_FAILURE;
@@ -6309,26 +5704,8 @@ bfa_fcdiag_iocdisable(struct bfa_s *bfa)
 		fcdiag->lb.lock = 0;
 		bfa_fcdiag_set_busy_status(fcdiag);
 	}
-<<<<<<< HEAD
-}
-
-static void
-bfa_fcdiag_detach(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_fcdiag_start(struct bfa_s *bfa)
-{
-}
-
-static void
-bfa_fcdiag_stop(struct bfa_s *bfa)
-{
-=======
 
 	bfa_sm_send_event(dport, BFA_DPORT_SM_HWFAIL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -6498,8 +5875,6 @@ bfa_fcdiag_intr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 	case BFI_DIAG_I2H_QTEST:
 		bfa_fcdiag_queuetest_comp(fcdiag, (bfi_diag_qtest_rsp_t *)msg);
 		break;
-<<<<<<< HEAD
-=======
 	case BFI_DIAG_I2H_DPORT:
 		bfa_dport_req_comp(&fcdiag->dport,
 				(struct bfi_diag_dport_rsp_s *)msg);
@@ -6508,7 +5883,6 @@ bfa_fcdiag_intr(struct bfa_s *bfa, struct bfi_msg_s *msg)
 		bfa_dport_scn(&fcdiag->dport,
 				(struct bfi_diag_dport_scn_s *)msg);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bfa_trc(fcdiag, msg->mhdr.msg_id);
 		WARN_ON(1);
@@ -6578,14 +5952,6 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 		}
 	}
 
-<<<<<<< HEAD
-	/* For Mezz card, port speed entered needs to be checked */
-	if (bfa_mfg_is_mezz(bfa->ioc.attr->card_type)) {
-		if (bfa_ioc_get_type(&bfa->ioc) == BFA_IOC_TYPE_FC) {
-			if ((speed == BFA_PORT_SPEED_1GBPS) &&
-			    (bfa_asic_id_ct2(bfa->ioc.pcidev.device_id)))
-				return BFA_STATUS_UNSUPP_SPEED;
-=======
 	/*
 	 * For CT2, 1G is not supported
 	 */
@@ -6598,7 +5964,6 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 	/* For Mezz card, port speed entered needs to be checked */
 	if (bfa_mfg_is_mezz(bfa->ioc.attr->card_type)) {
 		if (bfa_ioc_get_type(&bfa->ioc) == BFA_IOC_TYPE_FC) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(speed == BFA_PORT_SPEED_1GBPS ||
 			      speed == BFA_PORT_SPEED_2GBPS ||
 			      speed == BFA_PORT_SPEED_4GBPS ||
@@ -6611,15 +5976,11 @@ bfa_fcdiag_loopback(struct bfa_s *bfa, enum bfa_port_opmode opmode,
 				return BFA_STATUS_UNSUPP_SPEED;
 		}
 	}
-<<<<<<< HEAD
-
-=======
 	/* check to see if fcport is dport */
 	if (bfa_fcport_is_dport(bfa)) {
 		bfa_trc(fcdiag, fcdiag->lb.lock);
 		return BFA_STATUS_DPORT_ENABLED;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check to see if there is another destructive diag cmd running */
 	if (fcdiag->lb.lock) {
 		bfa_trc(fcdiag, fcdiag->lb.lock);
@@ -6719,8 +6080,6 @@ bfa_fcdiag_lb_is_running(struct bfa_s *bfa)
 	struct bfa_fcdiag_s *fcdiag = BFA_FCDIAG_MOD(bfa);
 	return fcdiag->lb.lock ?  BFA_STATUS_DIAG_BUSY : BFA_STATUS_OK;
 }
-<<<<<<< HEAD
-=======
 
 /*
  *	D-port
@@ -7508,4 +6867,3 @@ bfa_dport_show(struct bfa_s *bfa, struct bfa_diag_dport_result_s *result)
 
 	return BFA_STATUS_OK;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

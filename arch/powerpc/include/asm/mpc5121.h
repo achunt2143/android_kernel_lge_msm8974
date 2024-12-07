@@ -1,14 +1,6 @@
-<<<<<<< HEAD
-/*
- * MPC5121 Prototypes and definitions
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * MPC5121 Prototypes and definitions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_POWERPC_MPC5121_H__
@@ -38,29 +30,6 @@ struct mpc512x_ccm {
 	u32	scfr2;	/* System Clock Frequency Register 2 */
 	u32	scfr2s;	/* System Clock Frequency Shadow Register 2 */
 	u32	bcr;	/* Bread Crumb Register */
-<<<<<<< HEAD
-	u32	p0ccr;	/* PSC0 Clock Control Register */
-	u32	p1ccr;	/* PSC1 CCR */
-	u32	p2ccr;	/* PSC2 CCR */
-	u32	p3ccr;	/* PSC3 CCR */
-	u32	p4ccr;	/* PSC4 CCR */
-	u32	p5ccr;	/* PSC5 CCR */
-	u32	p6ccr;	/* PSC6 CCR */
-	u32	p7ccr;	/* PSC7 CCR */
-	u32	p8ccr;	/* PSC8 CCR */
-	u32	p9ccr;	/* PSC9 CCR */
-	u32	p10ccr;	/* PSC10 CCR */
-	u32	p11ccr;	/* PSC11 CCR */
-	u32	spccr;	/* SPDIF Clock Control Register */
-	u32	cccr;	/* CFM Clock Control Register */
-	u32	dccr;	/* DIU Clock Control Register */
-	u32	m1ccr;	/* MSCAN1 CCR */
-	u32	m2ccr;	/* MSCAN2 CCR */
-	u32	m3ccr;	/* MSCAN3 CCR */
-	u32	m4ccr;	/* MSCAN4 CCR */
-	u8	res[0x98]; /* Reserved */
-};
-=======
 	u32	psc_ccr[12];	/* PSC Clock Control Registers */
 	u32	spccr;	/* SPDIF Clock Control Register */
 	u32	cccr;	/* CFM Clock Control Register */
@@ -148,5 +117,4 @@ struct mpc512x_lpbfifo_request {
 
 int mpc512x_lpbfifo_submit(struct mpc512x_lpbfifo_request *req);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_POWERPC_MPC5121_H__ */

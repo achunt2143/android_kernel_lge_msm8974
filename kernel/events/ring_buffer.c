@@ -1,56 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance events ring-buffer code:
  *
  *  Copyright (C) 2008 Thomas Gleixner <tglx@linutronix.de>
  *  Copyright (C) 2008-2011 Red Hat, Inc., Ingo Molnar
-<<<<<<< HEAD
- *  Copyright (C) 2008-2011 Red Hat, Inc., Peter Zijlstra <pzijlstr@redhat.com>
- *  Copyright  ©  2009 Paul Mackerras, IBM Corp. <paulus@au1.ibm.com>
- *
- * For licensing details see kernel-base/COPYING
-=======
  *  Copyright (C) 2008-2011 Red Hat, Inc., Peter Zijlstra
  *  Copyright  ©  2009 Paul Mackerras, IBM Corp. <paulus@au1.ibm.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/perf_event.h>
 #include <linux/vmalloc.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include "internal.h"
-
-static bool perf_output_space(struct ring_buffer *rb, unsigned long tail,
-			      unsigned long offset, unsigned long head)
-{
-	unsigned long mask;
-
-	if (!rb->writable)
-		return true;
-
-	mask = perf_data_size(rb) - 1;
-
-	offset = (offset - tail) & mask;
-	head   = (head   - tail) & mask;
-
-	if ((int)(head - offset) < 0)
-		return false;
-
-	return true;
-}
-
-static void perf_output_wakeup(struct perf_output_handle *handle)
-{
-	atomic_set(&handle->rb->poll, POLL_IN);
-
-	handle->event->pending_wakeup = 1;
-	irq_work_queue(&handle->event->pending);
-=======
 #include <linux/circ_buf.h>
 #include <linux/poll.h>
 #include <linux/nospec.h>
@@ -63,7 +23,6 @@ static void perf_output_wakeup(struct perf_output_handle *handle)
 
 	handle->event->pending_wakeup = 1;
 	irq_work_queue(&handle->event->pending_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -76,12 +35,6 @@ static void perf_output_wakeup(struct perf_output_handle *handle)
  */
 static void perf_output_get_handle(struct perf_output_handle *handle)
 {
-<<<<<<< HEAD
-	struct ring_buffer *rb = handle->rb;
-
-	preempt_disable();
-	local_inc(&rb->nest);
-=======
 	struct perf_buffer *rb = handle->rb;
 
 	preempt_disable();
@@ -91,27 +44,11 @@ static void perf_output_get_handle(struct perf_output_handle *handle)
 	 * can use them.
 	 */
 	(*(volatile unsigned int *)&rb->nest)++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handle->wakeup = local_read(&rb->wakeup);
 }
 
 static void perf_output_put_handle(struct perf_output_handle *handle)
 {
-<<<<<<< HEAD
-	struct ring_buffer *rb = handle->rb;
-	unsigned long head;
-
-again:
-	head = local_read(&rb->head);
-
-	/*
-	 * IRQ/NMI can happen here, which means we can miss a head update.
-	 */
-
-	if (!local_dec_and_test(&rb->nest))
-		goto out;
-
-=======
 	struct perf_buffer *rb = handle->rb;
 	unsigned long head;
 	unsigned int nest;
@@ -143,27 +80,11 @@ again:
 	 * load above to be stale.
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Since the mmap() consumer (userspace) can run on a different CPU:
 	 *
 	 *   kernel				user
 	 *
-<<<<<<< HEAD
-	 *   READ ->data_tail			READ ->data_head
-	 *   smp_mb()	(A)			smp_rmb()	(C)
-	 *   WRITE $data			READ $data
-	 *   smp_wmb()	(B)			smp_mb()	(D)
-	 *   STORE ->data_head			WRITE ->data_tail
-	 *
-	 * Where A pairs with D, and B pairs with C.
-	 *
-	 * I don't think A needs to be a full barrier because we won't in fact
-	 * write data until we see the store from userspace. So we simply don't
-	 * issue the data WRITE until we observe it. Be conservative for now.
-	 *
-	 * OTOH, D needs to be a full barrier since it separates the data READ
-=======
 	 *   if (LOAD ->data_tail) {		LOAD ->data_head
 	 *			(A)		smp_rmb()	(C)
 	 *	STORE $data			LOAD $data
@@ -178,7 +99,6 @@ again:
 	 * indicates there is no room in the buffer to store $data we do not.
 	 *
 	 * D needs to be a full barrier since it separates the data READ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * from the tail WRITE.
 	 *
 	 * For B a WMB is sufficient since it separates two WRITEs, and for C
@@ -186,17 +106,6 @@ again:
 	 *
 	 * See perf_output_begin().
 	 */
-<<<<<<< HEAD
-	smp_wmb();
-	rb->user_page->data_head = head;
-
-	/*
-	 * Now check if we missed an update, rely on the (compiler)
-	 * barrier in atomic_dec_and_test() to re-read rb->head.
-	 */
-	if (unlikely(head != local_read(&rb->head))) {
-		local_inc(&rb->nest);
-=======
 	smp_wmb(); /* B, matches C */
 	WRITE_ONCE(rb->user_page->data_head, head);
 
@@ -215,7 +124,6 @@ again:
 	barrier();
 	if (unlikely(head != local_read(&rb->head))) {
 		WRITE_ONCE(rb->nest, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto again;
 	}
 
@@ -226,15 +134,6 @@ out:
 	preempt_enable();
 }
 
-<<<<<<< HEAD
-int perf_output_begin(struct perf_output_handle *handle,
-		      struct perf_event *event, unsigned int size)
-{
-	struct ring_buffer *rb;
-	unsigned long tail, offset, head;
-	int have_lost;
-	struct perf_sample_data sample_data;
-=======
 static __always_inline bool
 ring_buffer_has_space(unsigned long head, unsigned long tail,
 		      unsigned long data_size, unsigned int size,
@@ -255,7 +154,6 @@ __perf_output_begin(struct perf_output_handle *handle,
 	struct perf_buffer *rb;
 	unsigned long tail, offset, head;
 	int have_lost, page_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		struct perf_event_header header;
 		u64			 id;
@@ -270,23 +168,6 @@ __perf_output_begin(struct perf_output_handle *handle,
 		event = event->parent;
 
 	rb = rcu_dereference(event->rb);
-<<<<<<< HEAD
-	if (!rb)
-		goto out;
-
-	handle->rb	= rb;
-	handle->event	= event;
-
-	if (!rb->nr_pages)
-		goto out;
-
-	have_lost = local_read(&rb->lost);
-	if (have_lost) {
-		lost_event.header.size = sizeof(lost_event);
-		perf_event_header__init_id(&lost_event.header, &sample_data,
-					   event);
-		size += lost_event.header.size;
-=======
 	if (unlikely(!rb))
 		goto out;
 
@@ -306,40 +187,10 @@ __perf_output_begin(struct perf_output_handle *handle,
 		size += sizeof(lost_event);
 		if (event->attr.sample_id_all)
 			size += event->id_header_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	perf_output_get_handle(handle);
 
-<<<<<<< HEAD
-	do {
-		/*
-		 * Userspace could choose to issue a mb() before updating the
-		 * tail pointer. So that all reads will be completed before the
-		 * write is issued.
-		 *
-		 * See perf_output_put_handle().
-		 */
-		tail = ACCESS_ONCE(rb->user_page->data_tail);
-		smp_mb();
-		offset = head = local_read(&rb->head);
-		head += size;
-		if (unlikely(!perf_output_space(rb, tail, offset, head)))
-			goto fail;
-	} while (local_cmpxchg(&rb->head, offset, head) != offset);
-
-	if (head - local_read(&rb->wakeup) > rb->watermark)
-		local_add(rb->watermark, &rb->wakeup);
-
-	handle->page = offset >> (PAGE_SHIFT + page_order(rb));
-	handle->page &= rb->nr_pages - 1;
-	handle->size = offset & ((PAGE_SIZE << page_order(rb)) - 1);
-	handle->addr = rb->data_pages[handle->page];
-	handle->addr += handle->size;
-	handle->size = (PAGE_SIZE << page_order(rb)) - handle->size;
-
-	if (have_lost) {
-=======
 	offset = local_read(&rb->head);
 	do {
 		head = offset;
@@ -391,31 +242,22 @@ __perf_output_begin(struct perf_output_handle *handle,
 
 	if (unlikely(have_lost)) {
 		lost_event.header.size = sizeof(lost_event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lost_event.header.type = PERF_RECORD_LOST;
 		lost_event.header.misc = 0;
 		lost_event.id          = event->id;
 		lost_event.lost        = local_xchg(&rb->lost, 0);
 
-<<<<<<< HEAD
-		perf_output_put(handle, lost_event);
-		perf_event__output_id_sample(event, handle, &sample_data);
-=======
 		/* XXX mostly redundant; @data is already fully initializes */
 		perf_event_header__init_id(&lost_event.header, data, event);
 		perf_output_put(handle, lost_event);
 		perf_event__output_id_sample(event, handle, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
 fail:
 	local_inc(&rb->lost);
-<<<<<<< HEAD
-=======
 	atomic64_inc(&event->lost_samples);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	perf_output_put_handle(handle);
 out:
 	rcu_read_unlock();
@@ -423,12 +265,6 @@ out:
 	return -ENOSPC;
 }
 
-<<<<<<< HEAD
-void perf_output_copy(struct perf_output_handle *handle,
-		      const void *buf, unsigned int len)
-{
-	__output_copy(handle, buf, len);
-=======
 int perf_output_begin_forward(struct perf_output_handle *handle,
 			      struct perf_sample_data *data,
 			      struct perf_event *event, unsigned int size)
@@ -462,7 +298,6 @@ unsigned int perf_output_skip(struct perf_output_handle *handle,
 			      unsigned int len)
 {
 	return __output_skip(handle, NULL, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void perf_output_end(struct perf_output_handle *handle)
@@ -472,11 +307,7 @@ void perf_output_end(struct perf_output_handle *handle)
 }
 
 static void
-<<<<<<< HEAD
-ring_buffer_init(struct ring_buffer *rb, long watermark, int flags)
-=======
 ring_buffer_init(struct perf_buffer *rb, long watermark, int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long max_size = perf_data_size(rb);
 
@@ -487,14 +318,6 @@ ring_buffer_init(struct perf_buffer *rb, long watermark, int flags)
 		rb->watermark = max_size / 2;
 
 	if (flags & RING_BUFFER_WRITABLE)
-<<<<<<< HEAD
-		rb->writable = 1;
-
-	atomic_set(&rb->refcount, 1);
-
-	INIT_LIST_HEAD(&rb->event_list);
-	spin_lock_init(&rb->event_lock);
-=======
 		rb->overwrite = 0;
 	else
 		rb->overwrite = 1;
@@ -948,7 +771,6 @@ void rb_free_aux(struct perf_buffer *rb)
 {
 	if (refcount_dec_and_test(&rb->aux_refcount))
 		__rb_free_aux(rb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef CONFIG_PERF_USE_VMALLOC
@@ -957,13 +779,8 @@ void rb_free_aux(struct perf_buffer *rb)
  * Back perf_mmap() with regular GFP_KERNEL-0 pages.
  */
 
-<<<<<<< HEAD
-struct page *
-perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff)
-=======
 static struct page *
 __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pgoff > rb->nr_pages)
 		return NULL;
@@ -987,18 +804,6 @@ static void *perf_mmap_alloc_page(int cpu)
 	return page_address(page);
 }
 
-<<<<<<< HEAD
-struct ring_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
-{
-	struct ring_buffer *rb;
-	unsigned long size;
-	int i;
-
-	size = sizeof(struct ring_buffer);
-	size += nr_pages * sizeof(void *);
-
-	rb = kzalloc(size, GFP_KERNEL);
-=======
 static void perf_mmap_free_page(void *addr)
 {
 	struct page *page = virt_to_page(addr);
@@ -1021,7 +826,6 @@ struct perf_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
 
 	node = (cpu == -1) ? cpu : cpu_to_node(cpu);
 	rb = kzalloc_node(size, GFP_KERNEL, node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rb)
 		goto fail;
 
@@ -1043,15 +847,9 @@ struct perf_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
 
 fail_data_pages:
 	for (i--; i >= 0; i--)
-<<<<<<< HEAD
-		free_page((unsigned long)rb->data_pages[i]);
-
-	free_page((unsigned long)rb->user_page);
-=======
 		perf_mmap_free_page(rb->data_pages[i]);
 
 	perf_mmap_free_page(rb->user_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 fail_user_page:
 	kfree(rb);
@@ -1060,23 +858,6 @@ fail:
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void perf_mmap_free_page(unsigned long addr)
-{
-	struct page *page = virt_to_page((void *)addr);
-
-	page->mapping = NULL;
-	__free_page(page);
-}
-
-void rb_free(struct ring_buffer *rb)
-{
-	int i;
-
-	perf_mmap_free_page((unsigned long)rb->user_page);
-	for (i = 0; i < rb->nr_pages; i++)
-		perf_mmap_free_page((unsigned long)rb->data_pages[i]);
-=======
 void rb_free(struct perf_buffer *rb)
 {
 	int i;
@@ -1084,24 +865,15 @@ void rb_free(struct perf_buffer *rb)
 	perf_mmap_free_page(rb->user_page);
 	for (i = 0; i < rb->nr_pages; i++)
 		perf_mmap_free_page(rb->data_pages[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rb);
 }
 
 #else
-<<<<<<< HEAD
-
-struct page *
-perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff)
-{
-	if (pgoff > (1UL << page_order(rb)))
-=======
 static struct page *
 __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
 {
 	/* The '>' counts in the user page. */
 	if (pgoff > data_page_nr(rb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return vmalloc_to_page((void *)rb->user_page + pgoff * PAGE_SIZE);
@@ -1116,17 +888,6 @@ static void perf_mmap_unmark_page(void *addr)
 
 static void rb_free_work(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct ring_buffer *rb;
-	void *base;
-	int i, nr;
-
-	rb = container_of(work, struct ring_buffer, work);
-	nr = 1 << page_order(rb);
-
-	base = rb->user_page;
-	for (i = 0; i < nr + 1; i++)
-=======
 	struct perf_buffer *rb;
 	void *base;
 	int i, nr;
@@ -1137,34 +898,17 @@ static void rb_free_work(struct work_struct *work)
 	base = rb->user_page;
 	/* The '<=' counts in the user page. */
 	for (i = 0; i <= nr; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		perf_mmap_unmark_page(base + (i * PAGE_SIZE));
 
 	vfree(base);
 	kfree(rb);
 }
 
-<<<<<<< HEAD
-void rb_free(struct ring_buffer *rb)
-=======
 void rb_free(struct perf_buffer *rb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	schedule_work(&rb->work);
 }
 
-<<<<<<< HEAD
-struct ring_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
-{
-	struct ring_buffer *rb;
-	unsigned long size;
-	void *all_buf;
-
-	size = sizeof(struct ring_buffer);
-	size += sizeof(void *);
-
-	rb = kzalloc(size, GFP_KERNEL);
-=======
 struct perf_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
 {
 	struct perf_buffer *rb;
@@ -1177,7 +921,6 @@ struct perf_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
 
 	node = (cpu == -1) ? cpu : cpu_to_node(cpu);
 	rb = kzalloc_node(size, GFP_KERNEL, node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rb)
 		goto fail;
 
@@ -1189,15 +932,10 @@ struct perf_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
 
 	rb->user_page = all_buf;
 	rb->data_pages[0] = all_buf + PAGE_SIZE;
-<<<<<<< HEAD
-	rb->page_order = ilog2(nr_pages);
-	rb->nr_pages = 1;
-=======
 	if (nr_pages) {
 		rb->nr_pages = 1;
 		rb->page_order = ilog2(nr_pages);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ring_buffer_init(rb, watermark, flags);
 
@@ -1211,8 +949,6 @@ fail:
 }
 
 #endif
-<<<<<<< HEAD
-=======
 
 struct page *
 perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
@@ -1231,4 +967,3 @@ perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
 
 	return __perf_mmap_to_page(rb, pgoff);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

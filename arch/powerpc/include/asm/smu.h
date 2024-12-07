@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SMU_H
 #define _SMU_H
 
@@ -111,11 +108,7 @@
  /*
   * i2c commands
   *
-<<<<<<< HEAD
-  * To issue an i2c command, first is to send a parameter block to the
-=======
   * To issue an i2c command, first is to send a parameter block to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   * the SMU. This is a command of type 0x9a with 9 bytes of header
   * eventually followed by data for a write:
   *
@@ -140,11 +133,7 @@
   *
   * At this point, the OF driver seems to have a limitation on transfer
   * sizes of 0xd bytes on reads and 0x5 bytes on writes. I do not know
-<<<<<<< HEAD
-  * wether this is just an OF limit due to some temporary buffer size
-=======
   * whether this is just an OF limit due to some temporary buffer size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   * or if this is an SMU imposed limit. This driver has the same limitation
   * for now as I use a 0x10 bytes temporary buffer as well
   *
@@ -166,11 +155,7 @@
   *
   * The Darwin I2C driver is less subtle though. On any non-success status
   * from the response command, it waits 5ms and tries again up to 20 times,
-<<<<<<< HEAD
-  * it doesn't differenciate between fatal errors or "busy" status.
-=======
   * it doesn't differentiate between fatal errors or "busy" status.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   *
   * This driver provides an asynchronous paramblock based i2c command
   * interface to be used either directly by low level code or by a higher
@@ -201,11 +186,7 @@
  *  x = processor mask
  *  y = op. point index
  *  z = processor freq. step index
-<<<<<<< HEAD
- * I haven't yet decyphered result codes
-=======
  * I haven't yet deciphered result codes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #define SMU_CMD_POWER_COMMAND			0xaa
@@ -256,11 +237,7 @@
  *   3 (optional): enable nmi? [0x00 or 0x01]
  *
  * Returns:
-<<<<<<< HEAD
- *   If parameter 2 is 0x00 and parameter 3 is not specified, returns wether
-=======
  *   If parameter 2 is 0x00 and parameter 3 is not specified, returns whether
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   NMI is enabled. Otherwise unknown.
  */
 #define   SMU_CMD_MISC_df_NMI_OPTION		0x04
@@ -479,11 +456,7 @@ extern void smu_poll(void);
 /*
  * Init routine, presence check....
  */
-<<<<<<< HEAD
-extern int smu_init(void);
-=======
 int __init smu_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int smu_present(void);
 struct platform_device;
 extern struct platform_device *smu_get_ofdev(void);
@@ -499,18 +472,7 @@ extern int smu_get_rtc_time(struct rtc_time *time, int spinwait);
 extern int smu_set_rtc_time(struct rtc_time *time, int spinwait);
 
 /*
-<<<<<<< HEAD
- * SMU command buffer absolute address, exported by pmac_setup,
- * this is allocated very early during boot.
- */
-extern unsigned long smu_cmdbuf_abs;
-
-
-/*
- * Kenrel asynchronous i2c interface
-=======
  * Kernel asynchronous i2c interface
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define SMU_I2C_READ_MAX	0x1d

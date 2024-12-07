@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Ported from IRIX to Linux by Kanoj Sarcar, 06/08/00.
  * Copyright 2000 - 2001 Silicon Graphics, Inc.
@@ -19,19 +16,11 @@
 #include <asm/sn/types.h>
 #include <asm/sn/arch.h>
 #include <asm/sn/gda.h>
-<<<<<<< HEAD
-#include <asm/sn/hub.h>
-#include <asm/sn/mapped_kernel.h>
-#include <asm/sn/sn_private.h>
-
-static cpumask_t ktext_repmask;
-=======
 #include <asm/sn/mapped_kernel.h>
 
 #include "ip27-common.h"
 
 static nodemask_t ktext_repmask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * XXX - This needs to be much smarter about where it puts copies of the
@@ -41,28 +30,14 @@ static nodemask_t ktext_repmask;
 void __init setup_replication_mask(void)
 {
 	/* Set only the master cnode's bit.  The master cnode is always 0. */
-<<<<<<< HEAD
-	cpus_clear(ktext_repmask);
-	cpu_set(0, ktext_repmask);
-=======
 	nodes_clear(ktext_repmask);
 	node_set(0, ktext_repmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_REPLICATE_KTEXT
 #ifndef CONFIG_MAPPED_KERNEL
 #error Kernel replication works with mapped kernel support. No calias support.
 #endif
 	{
-<<<<<<< HEAD
-		cnodeid_t	cnode;
-
-		for_each_online_node(cnode) {
-			if (cnode == 0)
-				continue;
-			/* Advertise that we have a copy of the kernel */
-			cpu_set(cnode, ktext_repmask);
-=======
 		nasid_t nasid;
 
 		for_each_online_node(nasid) {
@@ -70,7 +45,6 @@ void __init setup_replication_mask(void)
 				continue;
 			/* Advertise that we have a copy of the kernel */
 			node_set(nasid, ktext_repmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 #endif
@@ -109,14 +83,8 @@ static __init void copy_kernel(nasid_t dest_nasid)
 	memcpy((void *)dest_kern_start, (void *)source_start, kern_size);
 }
 
-<<<<<<< HEAD
-void __init replicate_kernel_text()
-{
-	cnodeid_t cnode;
-=======
 void __init replicate_kernel_text(void)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nasid_t client_nasid;
 	nasid_t server_nasid;
 
@@ -125,22 +93,12 @@ void __init replicate_kernel_text(void)
 	/* Record where the master node should get its kernel text */
 	set_ktext_source(master_nasid, master_nasid);
 
-<<<<<<< HEAD
-	for_each_online_node(cnode) {
-		if (cnode == 0)
-			continue;
-		client_nasid = COMPACT_TO_NASID_NODEID(cnode);
-
-		/* Check if this node should get a copy of the kernel */
-		if (cpu_isset(cnode, ktext_repmask)) {
-=======
 	for_each_online_node(client_nasid) {
 		if (client_nasid == 0)
 			continue;
 
 		/* Check if this node should get a copy of the kernel */
 		if (node_isset(client_nasid, ktext_repmask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			server_nasid = client_nasid;
 			copy_kernel(server_nasid);
 		}
@@ -155,32 +113,17 @@ void __init replicate_kernel_text(void)
  * data structures on the first couple of pages of the first slot of each
  * node. If this is the case, getfirstfree(node) > getslotstart(node, 0).
  */
-<<<<<<< HEAD
-pfn_t node_getfirstfree(cnodeid_t cnode)
-{
-	unsigned long loadbase = REP_BASE;
-	nasid_t nasid = COMPACT_TO_NASID_NODEID(cnode);
-=======
 unsigned long node_getfirstfree(nasid_t nasid)
 {
 	unsigned long loadbase = REP_BASE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long offset;
 
 #ifdef CONFIG_MAPPED_KERNEL
 	loadbase += 16777216;
 #endif
 	offset = PAGE_ALIGN((unsigned long)(&_end)) - loadbase;
-<<<<<<< HEAD
-	if ((cnode == 0) || (cpu_isset(cnode, ktext_repmask)))
-		return (TO_NODE(nasid, offset) >> PAGE_SHIFT);
-	else
-		return (KDM_TO_PHYS(PAGE_ALIGN(SYMMON_STK_ADDR(nasid, 0))) >>
-								PAGE_SHIFT);
-=======
 	if ((nasid == 0) || (node_isset(nasid, ktext_repmask)))
 		return TO_NODE(nasid, offset) >> PAGE_SHIFT;
 	else
 		return KDM_TO_PHYS(PAGE_ALIGN(SYMMON_STK_ADDR(nasid, 0))) >> PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

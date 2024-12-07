@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Memory mapped I/O tracing
  *
  * Copyright (C) 2008 Pekka Paalanen <pq@iki.fi>
  */
 
-<<<<<<< HEAD
-#define DEBUG 1
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mmiotrace.h>
 #include <linux/pci.h>
@@ -38,11 +30,7 @@ static void mmio_reset_data(struct trace_array *tr)
 	overrun_detected = false;
 	prev_overruns = 0;
 
-<<<<<<< HEAD
-	tracing_reset_online_cpus(tr);
-=======
 	tracing_reset_online_cpus(&tr->array_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mmio_trace_init(struct trace_array *tr)
@@ -70,65 +58,32 @@ static void mmio_trace_start(struct trace_array *tr)
 	mmio_reset_data(tr);
 }
 
-<<<<<<< HEAD
-static int mmio_print_pcidev(struct trace_seq *s, const struct pci_dev *dev)
-{
-	int ret = 0;
-=======
 static void mmio_print_pcidev(struct trace_seq *s, const struct pci_dev *dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	resource_size_t start, end;
 	const struct pci_driver *drv = pci_dev_driver(dev);
 
-<<<<<<< HEAD
-	/* XXX: incomplete checks for trace_seq_printf() return value */
-	ret += trace_seq_printf(s, "PCIDEV %02x%02x %04x%04x %x",
-				dev->bus->number, dev->devfn,
-				dev->vendor, dev->device, dev->irq);
-	/*
-	 * XXX: is pci_resource_to_user() appropriate, since we are
-	 * supposed to interpret the __ioremap() phys_addr argument based on
-	 * these printed values?
-	 */
-	for (i = 0; i < 7; i++) {
-		pci_resource_to_user(dev, i, &dev->resource[i], &start, &end);
-		ret += trace_seq_printf(s, " %llx",
-=======
 	trace_seq_printf(s, "PCIDEV %02x%02x %04x%04x %x",
 			 dev->bus->number, dev->devfn,
 			 dev->vendor, dev->device, dev->irq);
 	for (i = 0; i < 7; i++) {
 		start = dev->resource[i].start;
 		trace_seq_printf(s, " %llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned long long)(start |
 			(dev->resource[i].flags & PCI_REGION_FLAG_MASK)));
 	}
 	for (i = 0; i < 7; i++) {
-<<<<<<< HEAD
-		pci_resource_to_user(dev, i, &dev->resource[i], &start, &end);
-		ret += trace_seq_printf(s, " %llx",
-=======
 		start = dev->resource[i].start;
 		end = dev->resource[i].end;
 		trace_seq_printf(s, " %llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->resource[i].start < dev->resource[i].end ?
 			(unsigned long long)(end - start) + 1 : 0);
 	}
 	if (drv)
-<<<<<<< HEAD
-		ret += trace_seq_printf(s, " %s\n", drv->name);
-	else
-		ret += trace_seq_printf(s, " \n");
-	return ret;
-=======
 		trace_seq_printf(s, " %s\n", drv->name);
 	else
 		trace_seq_puts(s, " \n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void destroy_header_iter(struct header_iter *hiter)
@@ -144,11 +99,7 @@ static void mmio_pipe_open(struct trace_iterator *iter)
 	struct header_iter *hiter;
 	struct trace_seq *s = &iter->seq;
 
-<<<<<<< HEAD
-	trace_seq_printf(s, "VERSION 20070824\n");
-=======
 	trace_seq_puts(s, "VERSION 20070824\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hiter = kzalloc(sizeof(*hiter), GFP_KERNEL);
 	if (!hiter)
@@ -169,11 +120,7 @@ static void mmio_close(struct trace_iterator *iter)
 static unsigned long count_overruns(struct trace_iterator *iter)
 {
 	unsigned long cnt = atomic_xchg(&dropped_count, 0);
-<<<<<<< HEAD
-	unsigned long over = ring_buffer_overruns(iter->tr->buffer);
-=======
 	unsigned long over = ring_buffer_overruns(iter->array_buffer->buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (over > prev_overruns)
 		cnt += over - prev_overruns;
@@ -194,11 +141,7 @@ static ssize_t mmio_read(struct trace_iterator *iter, struct file *filp,
 		/* XXX: This is later than where events were lost. */
 		trace_seq_printf(s, "MARK 0.000000 Lost %lu events.\n", n);
 		if (!overrun_detected)
-<<<<<<< HEAD
-			pr_warning("mmiotrace has lost events.\n");
-=======
 			pr_warn("mmiotrace has lost events\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		overrun_detected = true;
 		goto print_out;
 	}
@@ -228,43 +171,27 @@ static enum print_line_t mmio_print_rw(struct trace_iterator *iter)
 	unsigned long long t	= ns2usecs(iter->ts);
 	unsigned long usec_rem	= do_div(t, USEC_PER_SEC);
 	unsigned secs		= (unsigned long)t;
-<<<<<<< HEAD
-	int ret = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_assign_type(field, entry);
 	rw = &field->rw;
 
 	switch (rw->opcode) {
 	case MMIO_READ:
-<<<<<<< HEAD
-		ret = trace_seq_printf(s,
-=======
 		trace_seq_printf(s,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"R %d %u.%06lu %d 0x%llx 0x%lx 0x%lx %d\n",
 			rw->width, secs, usec_rem, rw->map_id,
 			(unsigned long long)rw->phys,
 			rw->value, rw->pc, 0);
 		break;
 	case MMIO_WRITE:
-<<<<<<< HEAD
-		ret = trace_seq_printf(s,
-=======
 		trace_seq_printf(s,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"W %d %u.%06lu %d 0x%llx 0x%lx 0x%lx %d\n",
 			rw->width, secs, usec_rem, rw->map_id,
 			(unsigned long long)rw->phys,
 			rw->value, rw->pc, 0);
 		break;
 	case MMIO_UNKNOWN_OP:
-<<<<<<< HEAD
-		ret = trace_seq_printf(s,
-=======
 		trace_seq_printf(s,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"UNKNOWN %u.%06lu %d 0x%llx %02lx,%02lx,"
 			"%02lx 0x%lx %d\n",
 			secs, usec_rem, rw->map_id,
@@ -273,20 +200,11 @@ static enum print_line_t mmio_print_rw(struct trace_iterator *iter)
 			(rw->value >> 0) & 0xff, rw->pc, 0);
 		break;
 	default:
-<<<<<<< HEAD
-		ret = trace_seq_printf(s, "rw what?\n");
-		break;
-	}
-	if (ret)
-		return TRACE_TYPE_HANDLED;
-	return TRACE_TYPE_PARTIAL_LINE;
-=======
 		trace_seq_puts(s, "rw what?\n");
 		break;
 	}
 
 	return trace_handle_return(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t mmio_print_map(struct trace_iterator *iter)
@@ -298,50 +216,29 @@ static enum print_line_t mmio_print_map(struct trace_iterator *iter)
 	unsigned long long t	= ns2usecs(iter->ts);
 	unsigned long usec_rem	= do_div(t, USEC_PER_SEC);
 	unsigned secs		= (unsigned long)t;
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_assign_type(field, entry);
 	m = &field->map;
 
 	switch (m->opcode) {
 	case MMIO_PROBE:
-<<<<<<< HEAD
-		ret = trace_seq_printf(s,
-=======
 		trace_seq_printf(s,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"MAP %u.%06lu %d 0x%llx 0x%lx 0x%lx 0x%lx %d\n",
 			secs, usec_rem, m->map_id,
 			(unsigned long long)m->phys, m->virt, m->len,
 			0UL, 0);
 		break;
 	case MMIO_UNPROBE:
-<<<<<<< HEAD
-		ret = trace_seq_printf(s,
-=======
 		trace_seq_printf(s,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"UNMAP %u.%06lu %d 0x%lx %d\n",
 			secs, usec_rem, m->map_id, 0UL, 0);
 		break;
 	default:
-<<<<<<< HEAD
-		ret = trace_seq_printf(s, "map what?\n");
-		break;
-	}
-	if (ret)
-		return TRACE_TYPE_HANDLED;
-	return TRACE_TYPE_PARTIAL_LINE;
-=======
 		trace_seq_puts(s, "map what?\n");
 		break;
 	}
 
 	return trace_handle_return(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t mmio_print_mark(struct trace_iterator *iter)
@@ -353,22 +250,11 @@ static enum print_line_t mmio_print_mark(struct trace_iterator *iter)
 	unsigned long long t	= ns2usecs(iter->ts);
 	unsigned long usec_rem	= do_div(t, USEC_PER_SEC);
 	unsigned secs		= (unsigned long)t;
-<<<<<<< HEAD
-	int ret;
-
-	/* The trailing newline must be in the message. */
-	ret = trace_seq_printf(s, "MARK %u.%06lu %s", secs, usec_rem, msg);
-	if (!ret)
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-=======
 
 	/* The trailing newline must be in the message. */
 	trace_seq_printf(s, "MARK %u.%06lu %s", secs, usec_rem, msg);
 
 	return trace_handle_return(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t mmio_print_line(struct trace_iterator *iter)
@@ -395,10 +281,7 @@ static struct tracer mmio_tracer __read_mostly =
 	.close		= mmio_close,
 	.read		= mmio_read,
 	.print_line	= mmio_print_line,
-<<<<<<< HEAD
-=======
 	.noboot		= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 __init static int init_mmio_trace(void)
@@ -411,16 +294,6 @@ static void __trace_mmiotrace_rw(struct trace_array *tr,
 				struct trace_array_cpu *data,
 				struct mmiotrace_rw *rw)
 {
-<<<<<<< HEAD
-	struct ftrace_event_call *call = &event_mmiotrace_rw;
-	struct ring_buffer *buffer = tr->buffer;
-	struct ring_buffer_event *event;
-	struct trace_mmiotrace_rw *entry;
-	int pc = preempt_count();
-
-	event = trace_buffer_lock_reserve(buffer, TRACE_MMIO_RW,
-					  sizeof(*entry), 0, pc);
-=======
 	struct trace_event_call *call = &event_mmiotrace_rw;
 	struct trace_buffer *buffer = tr->array_buffer.buffer;
 	struct ring_buffer_event *event;
@@ -430,7 +303,6 @@ static void __trace_mmiotrace_rw(struct trace_array *tr,
 	trace_ctx = tracing_gen_ctx_flags(0);
 	event = trace_buffer_lock_reserve(buffer, TRACE_MMIO_RW,
 					  sizeof(*entry), trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!event) {
 		atomic_inc(&dropped_count);
 		return;
@@ -438,23 +310,14 @@ static void __trace_mmiotrace_rw(struct trace_array *tr,
 	entry	= ring_buffer_event_data(event);
 	entry->rw			= *rw;
 
-<<<<<<< HEAD
-	if (!filter_check_discard(call, entry, buffer, event))
-		trace_buffer_unlock_commit(buffer, event, 0, pc);
-=======
 	if (!call_filter_check_discard(call, entry, buffer, event))
 		trace_buffer_unlock_commit(tr, buffer, event, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mmio_trace_rw(struct mmiotrace_rw *rw)
 {
 	struct trace_array *tr = mmio_trace_array;
-<<<<<<< HEAD
-	struct trace_array_cpu *data = tr->data[smp_processor_id()];
-=======
 	struct trace_array_cpu *data = per_cpu_ptr(tr->array_buffer.data, smp_processor_id());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__trace_mmiotrace_rw(tr, data, rw);
 }
 
@@ -462,16 +325,6 @@ static void __trace_mmiotrace_map(struct trace_array *tr,
 				struct trace_array_cpu *data,
 				struct mmiotrace_map *map)
 {
-<<<<<<< HEAD
-	struct ftrace_event_call *call = &event_mmiotrace_map;
-	struct ring_buffer *buffer = tr->buffer;
-	struct ring_buffer_event *event;
-	struct trace_mmiotrace_map *entry;
-	int pc = preempt_count();
-
-	event = trace_buffer_lock_reserve(buffer, TRACE_MMIO_MAP,
-					  sizeof(*entry), 0, pc);
-=======
 	struct trace_event_call *call = &event_mmiotrace_map;
 	struct trace_buffer *buffer = tr->array_buffer.buffer;
 	struct ring_buffer_event *event;
@@ -481,7 +334,6 @@ static void __trace_mmiotrace_map(struct trace_array *tr,
 	trace_ctx = tracing_gen_ctx_flags(0);
 	event = trace_buffer_lock_reserve(buffer, TRACE_MMIO_MAP,
 					  sizeof(*entry), trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!event) {
 		atomic_inc(&dropped_count);
 		return;
@@ -489,13 +341,8 @@ static void __trace_mmiotrace_map(struct trace_array *tr,
 	entry	= ring_buffer_event_data(event);
 	entry->map			= *map;
 
-<<<<<<< HEAD
-	if (!filter_check_discard(call, entry, buffer, event))
-		trace_buffer_unlock_commit(buffer, event, 0, pc);
-=======
 	if (!call_filter_check_discard(call, entry, buffer, event))
 		trace_buffer_unlock_commit(tr, buffer, event, trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mmio_trace_mapping(struct mmiotrace_map *map)
@@ -504,11 +351,7 @@ void mmio_trace_mapping(struct mmiotrace_map *map)
 	struct trace_array_cpu *data;
 
 	preempt_disable();
-<<<<<<< HEAD
-	data = tr->data[smp_processor_id()];
-=======
 	data = per_cpu_ptr(tr->array_buffer.data, smp_processor_id());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__trace_mmiotrace_map(tr, data, map);
 	preempt_enable();
 }

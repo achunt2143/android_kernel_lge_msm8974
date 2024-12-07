@@ -1,46 +1,3 @@
-<<<<<<< HEAD
-#include <linux/compiler.h>
-#include <linux/file.h>
-#include <linux/fs.h>
-#include <linux/linkage.h>
-#include <linux/mount.h>
-#include <linux/namei.h>
-#include <linux/sched.h>
-#include <linux/stat.h>
-#include <linux/utime.h>
-#include <linux/syscalls.h>
-#include <asm/uaccess.h>
-#include <asm/unistd.h>
-
-#ifdef __ARCH_WANT_SYS_UTIME
-
-/*
- * sys_utime() can be implemented in user-level using sys_utimes().
- * Is this for backwards compatibility?  If so, why not move it
- * into the appropriate arch directory (for those architectures that
- * need it).
- */
-
-/* If times==NULL, set access and modification to current time,
- * must be owner or have write permission.
- * Else, update from *times, must be owner or super user.
- */
-SYSCALL_DEFINE2(utime, char __user *, filename, struct utimbuf __user *, times)
-{
-	struct timespec tv[2];
-
-	if (times) {
-		if (get_user(tv[0].tv_sec, &times->actime) ||
-		    get_user(tv[1].tv_sec, &times->modtime))
-			return -EFAULT;
-		tv[0].tv_nsec = 0;
-		tv[1].tv_nsec = 0;
-	}
-	return do_utimes(AT_FDCWD, filename, times ? tv : NULL, 0);
-}
-
-#endif
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/file.h>
 #include <linux/mount.h>
@@ -51,7 +8,6 @@ SYSCALL_DEFINE2(utime, char __user *, filename, struct utimbuf __user *, times)
 #include <linux/compat.h>
 #include <asm/unistd.h>
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool nsec_valid(long nsec)
 {
@@ -61,17 +17,11 @@ static bool nsec_valid(long nsec)
 	return nsec >= 0 && nsec <= 999999999;
 }
 
-<<<<<<< HEAD
-static int utimes_common(struct path *path, struct timespec *times)
-=======
 int vfs_utimes(const struct path *path, struct timespec64 *times)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	struct iattr newattrs;
 	struct inode *inode = path->dentry->d_inode;
-<<<<<<< HEAD
-=======
 	struct inode *delegated_inode = NULL;
 
 	if (times) {
@@ -82,77 +32,33 @@ int vfs_utimes(const struct path *path, struct timespec64 *times)
 		    times[1].tv_nsec == UTIME_NOW)
 			times = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = mnt_want_write(path->mnt);
 	if (error)
 		goto out;
 
-<<<<<<< HEAD
-	if (times && times[0].tv_nsec == UTIME_NOW &&
-		     times[1].tv_nsec == UTIME_NOW)
-		times = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	newattrs.ia_valid = ATTR_CTIME | ATTR_MTIME | ATTR_ATIME;
 	if (times) {
 		if (times[0].tv_nsec == UTIME_OMIT)
 			newattrs.ia_valid &= ~ATTR_ATIME;
 		else if (times[0].tv_nsec != UTIME_NOW) {
-<<<<<<< HEAD
-			newattrs.ia_atime.tv_sec = times[0].tv_sec;
-			newattrs.ia_atime.tv_nsec = times[0].tv_nsec;
-=======
 			newattrs.ia_atime = times[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			newattrs.ia_valid |= ATTR_ATIME_SET;
 		}
 
 		if (times[1].tv_nsec == UTIME_OMIT)
 			newattrs.ia_valid &= ~ATTR_MTIME;
 		else if (times[1].tv_nsec != UTIME_NOW) {
-<<<<<<< HEAD
-			newattrs.ia_mtime.tv_sec = times[1].tv_sec;
-			newattrs.ia_mtime.tv_nsec = times[1].tv_nsec;
-			newattrs.ia_valid |= ATTR_MTIME_SET;
-		}
-		/*
-		 * Tell inode_change_ok(), that this is an explicit time
-=======
 			newattrs.ia_mtime = times[1];
 			newattrs.ia_valid |= ATTR_MTIME_SET;
 		}
 		/*
 		 * Tell setattr_prepare(), that this is an explicit time
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * update, even if neither ATTR_ATIME_SET nor ATTR_MTIME_SET
 		 * were used.
 		 */
 		newattrs.ia_valid |= ATTR_TIMES_SET;
 	} else {
-<<<<<<< HEAD
-		/*
-		 * If times is NULL (or both times are UTIME_NOW),
-		 * then we need to check permissions, because
-		 * inode_change_ok() won't do it.
-		 */
-		error = -EACCES;
-                if (IS_IMMUTABLE(inode))
-			goto mnt_drop_write_and_out;
-
-		if (!inode_owner_or_capable(inode)) {
-			error = inode_permission2(path->mnt, inode, MAY_WRITE);
-			if (error)
-				goto mnt_drop_write_and_out;
-		}
-	}
-	mutex_lock(&inode->i_mutex);
-	error = notify_change2(path->mnt, path->dentry, &newattrs);
-	mutex_unlock(&inode->i_mutex);
-
-mnt_drop_write_and_out:
-=======
 		newattrs.ia_valid |= ATTR_TOUCH;
 	}
 retry_deleg:
@@ -166,14 +72,11 @@ retry_deleg:
 			goto retry_deleg;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mnt_drop_write(path->mnt);
 out:
 	return error;
 }
 
-<<<<<<< HEAD
-=======
 static int do_utimes_path(int dfd, const char __user *filename,
 		struct timespec64 *times, int flags)
 {
@@ -219,7 +122,6 @@ static int do_utimes_fd(int fd, struct timespec64 *times, int flags)
 	return error;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * do_utimes - change times on filename or file descriptor
  * @dfd: open file descriptor, -1 or AT_FDCWD
@@ -235,60 +137,6 @@ static int do_utimes_fd(int fd, struct timespec64 *times, int flags)
  * must be owner or have write permission.
  * Else, update from *times, must be owner or super user.
  */
-<<<<<<< HEAD
-long do_utimes(int dfd, const char __user *filename, struct timespec *times,
-	       int flags)
-{
-	int error = -EINVAL;
-
-	if (times && (!nsec_valid(times[0].tv_nsec) ||
-		      !nsec_valid(times[1].tv_nsec))) {
-		goto out;
-	}
-
-	if (flags & ~AT_SYMLINK_NOFOLLOW)
-		goto out;
-
-	if (filename == NULL && dfd != AT_FDCWD) {
-		struct file *file;
-
-		if (flags & AT_SYMLINK_NOFOLLOW)
-			goto out;
-
-		file = fget(dfd);
-		error = -EBADF;
-		if (!file)
-			goto out;
-
-		error = utimes_common(&file->f_path, times);
-		fput(file);
-	} else {
-		struct path path;
-		int lookup_flags = 0;
-
-		if (!(flags & AT_SYMLINK_NOFOLLOW))
-			lookup_flags |= LOOKUP_FOLLOW;
-
-		error = user_path_at(dfd, filename, lookup_flags, &path);
-		if (error)
-			goto out;
-
-		error = utimes_common(&path, times);
-		path_put(&path);
-	}
-
-out:
-	return error;
-}
-
-SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
-		struct timespec __user *, utimes, int, flags)
-{
-	struct timespec tstimes[2];
-
-	if (utimes) {
-		if (copy_from_user(&tstimes, utimes, sizeof(tstimes)))
-=======
 long do_utimes(int dfd, const char __user *filename, struct timespec64 *times,
 	       int flags)
 {
@@ -305,7 +153,6 @@ SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
 	if (utimes) {
 		if ((get_timespec64(&tstimes[0], &utimes[0]) ||
 			get_timespec64(&tstimes[1], &utimes[1])))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		/* Nothing to do, we must not even check the path.  */
@@ -317,13 +164,6 @@ SYSCALL_DEFINE4(utimensat, int, dfd, const char __user *, filename,
 	return do_utimes(dfd, filename, utimes ? tstimes : NULL, flags);
 }
 
-<<<<<<< HEAD
-SYSCALL_DEFINE3(futimesat, int, dfd, const char __user *, filename,
-		struct timeval __user *, utimes)
-{
-	struct timeval times[2];
-	struct timespec tstimes[2];
-=======
 #ifdef __ARCH_WANT_SYS_UTIME
 /*
  * futimesat(), utimes() and utime() are older versions of utimensat()
@@ -336,7 +176,6 @@ static long do_futimesat(int dfd, const char __user *filename,
 {
 	struct __kernel_old_timeval times[2];
 	struct timespec64 tstimes[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (utimes) {
 		if (copy_from_user(&times, utimes, sizeof(times)))
@@ -360,13 +199,6 @@ static long do_futimesat(int dfd, const char __user *filename,
 	return do_utimes(dfd, filename, utimes ? tstimes : NULL, 0);
 }
 
-<<<<<<< HEAD
-SYSCALL_DEFINE2(utimes, char __user *, filename,
-		struct timeval __user *, utimes)
-{
-	return sys_futimesat(AT_FDCWD, filename, utimes);
-}
-=======
 
 SYSCALL_DEFINE3(futimesat, int, dfd, const char __user *, filename,
 		struct __kernel_old_timeval __user *, utimes)
@@ -466,4 +298,3 @@ SYSCALL_DEFINE2(utimes_time32, const char __user *, filename, struct old_timeval
 }
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

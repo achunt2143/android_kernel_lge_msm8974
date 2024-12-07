@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mapping of DWARF debug register numbers into register names.
  *
  * Copyright (C) 2010 Ian Munsie, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-#include <stdlib.h>
-#ifndef __UCLIBC__
-#include <libio.h>
-#endif
-#include <dwarf-regs.h>
-
-=======
  */
 
 #include <stddef.h>
@@ -30,20 +12,10 @@
 #include <linux/ptrace.h>
 #include <linux/kernel.h>
 #include <linux/stringify.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pt_regs_dwarfnum {
 	const char *name;
 	unsigned int dwarfnum;
-<<<<<<< HEAD
-};
-
-#define STR(s) #s
-#define REG_DWARFNUM_NAME(r, num) {.name = r, .dwarfnum = num}
-#define GPR_DWARFNUM_NAME(num)	\
-	{.name = STR(%gpr##num), .dwarfnum = num}
-#define REG_DWARFNUM_END {.name = NULL, .dwarfnum = 0}
-=======
 	unsigned int ptregs_offset;
 };
 
@@ -54,7 +26,6 @@ struct pt_regs_dwarfnum {
 		{.name = __stringify(%gpr##num), .dwarfnum = num,		\
 		.ptregs_offset = offsetof(struct pt_regs, gpr[num])}
 #define REG_DWARFNUM_END {.name = NULL, .dwarfnum = 0, .ptregs_offset = 0}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Reference:
@@ -93,21 +64,12 @@ static const struct pt_regs_dwarfnum regdwarfnum_table[] = {
 	GPR_DWARFNUM_NAME(29),
 	GPR_DWARFNUM_NAME(30),
 	GPR_DWARFNUM_NAME(31),
-<<<<<<< HEAD
-	REG_DWARFNUM_NAME("%msr",   66),
-	REG_DWARFNUM_NAME("%ctr",   109),
-	REG_DWARFNUM_NAME("%link",  108),
-	REG_DWARFNUM_NAME("%xer",   101),
-	REG_DWARFNUM_NAME("%dar",   119),
-	REG_DWARFNUM_NAME("%dsisr", 118),
-=======
 	REG_DWARFNUM_NAME(msr,   66),
 	REG_DWARFNUM_NAME(ctr,   109),
 	REG_DWARFNUM_NAME(link,  108),
 	REG_DWARFNUM_NAME(xer,   101),
 	REG_DWARFNUM_NAME(dar,   119),
 	REG_DWARFNUM_NAME(dsisr, 118),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REG_DWARFNUM_END,
 };
 
@@ -127,8 +89,6 @@ const char *get_arch_regstr(unsigned int n)
 			return roff->name;
 	return NULL;
 }
-<<<<<<< HEAD
-=======
 
 int regs_query_register_offset(const char *name)
 {
@@ -138,4 +98,3 @@ int regs_query_register_offset(const char *name)
 			return roff->ptregs_offset;
 	return -EINVAL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

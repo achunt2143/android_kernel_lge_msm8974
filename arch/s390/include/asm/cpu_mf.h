@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * CPU-measurement facilities
- *
- *  Copyright IBM Corp. 2012
- *  Author(s): Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
- *	       Jan Glauber <jang@linux.vnet.ibm.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License (version 2 only)
- * as published by the Free Software Foundation.
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * CPU-measurement facilities
@@ -17,70 +5,43 @@
  *  Copyright IBM Corp. 2012, 2018
  *  Author(s): Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
  *	       Jan Glauber <jang@linux.vnet.ibm.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_S390_CPU_MF_H
 #define _ASM_S390_CPU_MF_H
 
-<<<<<<< HEAD
-#include <asm/facility.h>
-
-=======
 #include <linux/errno.h>
 #include <asm/asm-extable.h>
 #include <asm/facility.h>
 
 asm(".include \"asm/cpu_mf-insn.h\"\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CPU_MF_INT_SF_IAE	(1 << 31)	/* invalid entry address */
 #define CPU_MF_INT_SF_ISE	(1 << 30)	/* incorrect SDBT entry */
 #define CPU_MF_INT_SF_PRA	(1 << 29)	/* program request alert */
 #define CPU_MF_INT_SF_SACA	(1 << 23)	/* sampler auth. change alert */
 #define CPU_MF_INT_SF_LSDA	(1 << 22)	/* loss of sample data alert */
-<<<<<<< HEAD
-#define CPU_MF_INT_CF_CACA	(1 <<  7)	/* counter auth. change alert */
-#define CPU_MF_INT_CF_LCDA	(1 <<  6)	/* loss of counter data alert */
-
-#define CPU_MF_INT_CF_MASK	(CPU_MF_INT_CF_CACA|CPU_MF_INT_CF_LCDA)
-=======
 #define CPU_MF_INT_CF_MTDA	(1 << 15)	/* loss of MT ctr. data alert */
 #define CPU_MF_INT_CF_CACA	(1 <<  7)	/* counter auth. change alert */
 #define CPU_MF_INT_CF_LCDA	(1 <<  6)	/* loss of counter data alert */
 #define CPU_MF_INT_CF_MASK	(CPU_MF_INT_CF_MTDA|CPU_MF_INT_CF_CACA| \
 				 CPU_MF_INT_CF_LCDA)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CPU_MF_INT_SF_MASK	(CPU_MF_INT_SF_IAE|CPU_MF_INT_SF_ISE|	\
 				 CPU_MF_INT_SF_PRA|CPU_MF_INT_SF_SACA|	\
 				 CPU_MF_INT_SF_LSDA)
 
-<<<<<<< HEAD
-/* CPU measurement facility support */
-static inline int cpum_cf_avail(void)
-{
-	return MACHINE_HAS_SPP && test_facility(67);
-=======
 #define CPU_MF_SF_RIBM_NOTAV	0x1		/* Sampling unavailable */
 
 /* CPU measurement facility support */
 static inline int cpum_cf_avail(void)
 {
 	return test_facility(40) && test_facility(67);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int cpum_sf_avail(void)
 {
-<<<<<<< HEAD
-	return MACHINE_HAS_SPP && test_facility(68);
-}
-
-
-=======
 	return test_facility(40) && test_facility(68);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpumf_ctr_info {
 	u16   cfvn;
 	u16   auth_ctl;
@@ -93,8 +54,6 @@ struct cpumf_ctr_info {
 	u32   reserved2[12];
 } __packed;
 
-<<<<<<< HEAD
-=======
 /* QUERY SAMPLING INFORMATION block */
 struct hws_qsi_info_block {	    /* Bit(s) */
 	unsigned int b0_13:14;	    /* 0-13: zeros			 */
@@ -205,18 +164,13 @@ static inline void lpp(void *pp)
 	asm volatile("lpp 0(%0)\n" :: "a" (pp) : "memory");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Query counter information */
 static inline int qctri(struct cpumf_ctr_info *info)
 {
 	int rc = -EINVAL;
 
 	asm volatile (
-<<<<<<< HEAD
-		"0:	.insn	s,0xb28e0000,%1\n"
-=======
 		"0:	qctri	%1\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"1:	lhi	%0,0\n"
 		"2:\n"
 		EX_TABLE(1b, 2b)
@@ -230,12 +184,6 @@ static inline int lcctl(u64 ctl)
 	int cc;
 
 	asm volatile (
-<<<<<<< HEAD
-		"	.insn	s,0xb2840000,%1\n"
-		"	ipm	%0\n"
-		"	srl	%0,28\n"
-		: "=d" (cc) : "m" (ctl) : "cc");
-=======
 		"	lcctl	%1\n"
 		"	ipm	%0\n"
 		"	srl	%0,28\n"
@@ -255,35 +203,21 @@ static inline int __ecctr(u64 ctr, u64 *content)
 		"	srl	%1,28\n"
 		: "=d" (_content), "=d" (cc) : "d" (ctr) : "cc");
 	*content = _content;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cc;
 }
 
 /* Extract CPU counter */
 static inline int ecctr(u64 ctr, u64 *val)
 {
-<<<<<<< HEAD
-	register u64 content asm("4") = 0;
-	int cc;
-
-	asm volatile (
-		"	.insn	rre,0xb2e40000,%0,%2\n"
-		"	ipm	%1\n"
-		"	srl	%1,28\n"
-		: "=d" (content), "=d" (cc) : "d" (ctr) : "cc");
-=======
 	u64 content;
 	int cc;
 
 	cc = __ecctr(ctr, &content);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cc)
 		*val = content;
 	return cc;
 }
 
-<<<<<<< HEAD
-=======
 /* Store CPU counter multiple for a particular counter set */
 enum stcctm_ctr_set {
 	EXTENDED = 0,
@@ -340,5 +274,4 @@ static inline int lsctl(struct hws_lsctl_request_block *req)
 
 	return cc ? -EINVAL : 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_S390_CPU_MF_H */

@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-include include/asm-generic/Kbuild.asm
-
-header-y += compiler.h
-header-y += console.h
-header-y += fpu.h
-header-y += gentrap.h
-header-y += pal.h
-header-y += reg.h
-header-y += regdef.h
-header-y += sysinfo.h
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 generated-y += syscall_table.h
@@ -17,4 +5,3 @@ generic-y += agp.h
 generic-y += asm-offsets.h
 generic-y += kvm_para.h
 generic-y += mcs_spinlock.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

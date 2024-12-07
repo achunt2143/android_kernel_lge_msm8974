@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ultra45_env.c: Driver for Ultra45 PIC16F747 environmental monitor.
  *
@@ -12,16 +9,6 @@
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/io.h>
-#include <linux/hwmon.h>
-#include <linux/hwmon-sysfs.h>
-
-#define DRV_MODULE_VERSION	"0.1"
-
-MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
-=======
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
@@ -32,7 +19,6 @@ MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
 #define DRV_MODULE_VERSION	"0.1"
 
 MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Ultra45 environmental monitor driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
@@ -266,15 +252,9 @@ static const struct attribute_group env_group = {
 	.attrs = env_attributes,
 };
 
-<<<<<<< HEAD
-static int __devinit env_probe(struct platform_device *op)
-{
-	struct env *p = kzalloc(sizeof(*p), GFP_KERNEL);
-=======
 static int env_probe(struct platform_device *op)
 {
 	struct env *p = devm_kzalloc(&op->dev, sizeof(*p), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOMEM;
 
 	if (!p)
@@ -284,11 +264,7 @@ static int env_probe(struct platform_device *op)
 
 	p->regs = of_ioremap(&op->resource[0], 0, REG_SIZE, "pic16f747");
 	if (!p->regs)
-<<<<<<< HEAD
-		goto out_free;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sysfs_create_group(&op->dev.kobj, &env_group);
 	if (err)
@@ -312,19 +288,10 @@ out_sysfs_remove_group:
 out_iounmap:
 	of_iounmap(&op->resource[0], p->regs, REG_SIZE);
 
-<<<<<<< HEAD
-out_free:
-	kfree(p);
-	goto out;
-}
-
-static int __devexit env_remove(struct platform_device *op)
-=======
 	goto out;
 }
 
 static void env_remove(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct env *p = platform_get_drvdata(op);
 
@@ -332,14 +299,7 @@ static void env_remove(struct platform_device *op)
 		sysfs_remove_group(&op->dev.kobj, &env_group);
 		hwmon_device_unregister(p->hwmon_dev);
 		of_iounmap(&op->resource[0], p->regs, REG_SIZE);
-<<<<<<< HEAD
-		kfree(p);
 	}
-
-	return 0;
-=======
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id env_match[] = {
@@ -354,18 +314,10 @@ MODULE_DEVICE_TABLE(of, env_match);
 static struct platform_driver env_driver = {
 	.driver = {
 		.name = "ultra45_env",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = env_match,
-	},
-	.probe		= env_probe,
-	.remove		= __devexit_p(env_remove),
-=======
 		.of_match_table = env_match,
 	},
 	.probe		= env_probe,
 	.remove_new	= env_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(env_driver);

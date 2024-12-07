@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
  *		http://www.samsung.com
  *
  * Copyright (C) 2010 Samsung Electronics Co. Ltd.
  *	Jaswinder Singh <jassi.brar@samsung.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-
-=======
  */
 
 #include <linux/debugfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/io.h>
 #include <linux/init.h>
@@ -31,14 +18,6 @@
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-#include <linux/amba/bus.h>
-#include <linux/amba/pl330.h>
-#include <linux/pm_runtime.h>
-#include <linux/scatterlist.h>
-#include <linux/of.h>
-=======
 #include <linux/amba/bus.h>
 #include <linux/scatterlist.h>
 #include <linux/of.h>
@@ -47,35 +26,11 @@
 #include <linux/pm_runtime.h>
 #include <linux/bug.h>
 #include <linux/reset.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dmaengine.h"
 #define PL330_MAX_CHAN		8
 #define PL330_MAX_IRQS		32
 #define PL330_MAX_PERI		32
-<<<<<<< HEAD
-
-enum pl330_srccachectrl {
-	SCCTRL0,	/* Noncacheable and nonbufferable */
-	SCCTRL1,	/* Bufferable only */
-	SCCTRL2,	/* Cacheable, but do not allocate */
-	SCCTRL3,	/* Cacheable and bufferable, but do not allocate */
-	SINVALID1,
-	SINVALID2,
-	SCCTRL6,	/* Cacheable write-through, allocate on reads only */
-	SCCTRL7,	/* Cacheable write-back, allocate on reads only */
-};
-
-enum pl330_dstcachectrl {
-	DCCTRL0,	/* Noncacheable and nonbufferable */
-	DCCTRL1,	/* Bufferable only */
-	DCCTRL2,	/* Cacheable, but do not allocate */
-	DCCTRL3,	/* Cacheable and bufferable, but do not allocate */
-	DINVALID1,	/* AWCACHE = 0x1000 */
-	DINVALID2,
-	DCCTRL6,	/* Cacheable write-through, allocate on writes only */
-	DCCTRL7,	/* Cacheable write-back, allocate on writes only */
-=======
 #define PL330_MAX_BURST         16
 
 #define PL330_QUIRK_BROKEN_NO_FLUSHP	BIT(0)
@@ -90,7 +45,6 @@ enum pl330_cachectrl {
 	INVALID2,
 	CCTRL6,		/* Cacheable write-through, allocate on writes only */
 	CCTRL7,		/* Cacheable write-back, allocate on writes only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum pl330_byteswap {
@@ -101,16 +55,6 @@ enum pl330_byteswap {
 	SWAP_16,
 };
 
-<<<<<<< HEAD
-enum pl330_reqtype {
-	MEMTOMEM,
-	MEMTODEV,
-	DEVTOMEM,
-	DEVTODEV,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Register and Bit field Definitions */
 #define DS			0x0
 #define DS_ST_STOP		0x0
@@ -198,10 +142,6 @@ enum pl330_reqtype {
 #define PERIPH_REV_R0P0		0
 #define PERIPH_REV_R1P0		1
 #define PERIPH_REV_R1P1		2
-<<<<<<< HEAD
-#define PCELL_ID		0xff0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CR0_PERIPH_REQ_SET	(1 << 0)
 #define CR0_BOOT_EN_SET		(1 << 1)
@@ -237,11 +177,6 @@ enum pl330_reqtype {
 #define INTEG_CFG		0x0
 #define PERIPH_ID_VAL		((PART << 0) | (DESIGNER << 12))
 
-<<<<<<< HEAD
-#define PCELL_ID_VAL		0xb105f00d
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PL330_STATE_STOPPED		(1 << 0)
 #define PL330_STATE_EXECUTING		(1 << 1)
 #define PL330_STATE_WFE			(1 << 2)
@@ -313,12 +248,6 @@ enum pl330_reqtype {
  */
 #define MCODE_BUFF_PER_REQ	256
 
-<<<<<<< HEAD
-/* If the _pl330_req is available to the client */
-#define IS_FREE(req)	(*((u8 *)((req)->mc_cpu)) == CMD_DMAEND)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Use this _only_ to wait on transient states */
 #define UNTIL(t, s)	while (!(_state(t) & (s))) cpu_relax();
 
@@ -326,11 +255,7 @@ enum pl330_reqtype {
 static unsigned cmd_line;
 #define PL330_DBGCMD_DUMP(off, x...)	do { \
 						printk("%x:", cmd_line); \
-<<<<<<< HEAD
-						printk(x); \
-=======
 						printk(KERN_CONT x); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						cmd_line += off; \
 					} while (0)
 #define PL330_DBGMC_START(addr)		(cmd_line = addr)
@@ -343,16 +268,6 @@ static unsigned cmd_line;
 
 #define NR_DEFAULT_DESC	16
 
-<<<<<<< HEAD
-/* Populated by the PL330 core driver for DMA API driver's info */
-struct pl330_config {
-	u32	periph_id;
-	u32	pcell_id;
-#define DMAC_MODE_NS	(1 << 0)
-	unsigned int	mode;
-	unsigned int	data_bus_width:10; /* In number of bits */
-	unsigned int	data_buf_dep:10;
-=======
 /* Delay for runtime PM autosuspend, ms */
 #define PL330_AUTOSUSPEND_DELAY 20
 
@@ -363,7 +278,6 @@ struct pl330_config {
 	unsigned int	mode;
 	unsigned int	data_bus_width:10; /* In number of bits */
 	unsigned int	data_buf_dep:11;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	num_chan:4;
 	unsigned int	num_peri:6;
 	u32		peri_ns;
@@ -371,32 +285,7 @@ struct pl330_config {
 	u32		irq_ns;
 };
 
-<<<<<<< HEAD
-/* Handle to the DMAC provided to the PL330 core */
-struct pl330_info {
-	/* Owning device */
-	struct device *dev;
-	/* Size of MicroCode buffers for each channel. */
-	unsigned mcbufsz;
-	/* ioremap'ed address of PL330 registers. */
-	void __iomem	*base;
-	/* Client can freely use it. */
-	void	*client_data;
-	/* PL330 core data, Client must not touch it. */
-	void	*pl330_data;
-	/* Populated by the PL330 core driver during pl330_add */
-	struct pl330_config	pcfg;
-	/*
-	 * If the DMAC has some reset mechanism, then the
-	 * client may want to provide pointer to the method.
-	 */
-	void (*dmac_reset)(struct pl330_info *pi);
-};
-
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Request Configuration.
  * The PL330 core does not modify this and uses the last
  * working configuration if the request doesn't provide any.
@@ -419,13 +308,8 @@ struct pl330_reqcfg {
 	unsigned brst_len:5;
 	unsigned brst_size:3; /* in power of 2 */
 
-<<<<<<< HEAD
-	enum pl330_dstcachectrl dcctl;
-	enum pl330_srccachectrl scctl;
-=======
 	enum pl330_cachectrl dcctl;
 	enum pl330_cachectrl scctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum pl330_byteswap swap;
 	struct pl330_config *pcfg;
 };
@@ -439,14 +323,6 @@ struct pl330_xfer {
 	u32 dst_addr;
 	/* Size to xfer */
 	u32 bytes;
-<<<<<<< HEAD
-	/*
-	 * Pointer to next xfer in the list.
-	 * The last xfer in the req must point to NULL.
-	 */
-	struct pl330_xfer *next;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* The xfer callbacks are made with one of these arguments. */
@@ -459,68 +335,6 @@ enum pl330_op_err {
 	PL330_ERR_FAIL,
 };
 
-<<<<<<< HEAD
-/* A request defining Scatter-Gather List ending with NULL xfer. */
-struct pl330_req {
-	enum pl330_reqtype rqtype;
-	/* Index of peripheral for the xfer. */
-	unsigned peri:5;
-	/* Unique token for this xfer, set by the client. */
-	void *token;
-	/* Callback to be called after xfer. */
-	void (*xfer_cb)(void *token, enum pl330_op_err err);
-	/* If NULL, req will be done at last set parameters. */
-	struct pl330_reqcfg *cfg;
-	/* Pointer to first xfer in the request. */
-	struct pl330_xfer *x;
-};
-
-/*
- * To know the status of the channel and DMAC, the client
- * provides a pointer to this structure. The PL330 core
- * fills it with current information.
- */
-struct pl330_chanstatus {
-	/*
-	 * If the DMAC engine halted due to some error,
-	 * the client should remove-add DMAC.
-	 */
-	bool dmac_halted;
-	/*
-	 * If channel is halted due to some error,
-	 * the client should ABORT/FLUSH and START the channel.
-	 */
-	bool faulting;
-	/* Location of last load */
-	u32 src_addr;
-	/* Location of last store */
-	u32 dst_addr;
-	/*
-	 * Pointer to the currently active req, NULL if channel is
-	 * inactive, even though the requests may be present.
-	 */
-	struct pl330_req *top_req;
-	/* Pointer to req waiting second in the queue if any. */
-	struct pl330_req *wait_req;
-};
-
-enum pl330_chan_op {
-	/* Start the channel */
-	PL330_OP_START,
-	/* Abort the active xfer */
-	PL330_OP_ABORT,
-	/* Stop xfer and flush queue */
-	PL330_OP_FLUSH,
-};
-
-struct _xfer_spec {
-	u32 ccr;
-	struct pl330_req *r;
-	struct pl330_xfer *x;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum dmamov_dst {
 	SAR = 0,
 	CCR,
@@ -538,23 +352,12 @@ enum pl330_cond {
 	ALWAYS,
 };
 
-<<<<<<< HEAD
-struct _pl330_req {
-	u32 mc_bus;
-	void *mc_cpu;
-	/* Number of bytes taken to setup MC for the req */
-	u32 mc_len;
-	struct pl330_req *r;
-	/* Hook to attach to DMAC's list of reqs with due callback */
-	struct list_head rqd;
-=======
 struct dma_pl330_desc;
 
 struct _pl330_req {
 	u32 mc_bus;
 	void *mc_cpu;
 	struct dma_pl330_desc *desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* ToBeDone for tasklet */
@@ -586,42 +389,11 @@ enum pl330_dmac_state {
 	DYING,
 };
 
-<<<<<<< HEAD
-/* A DMAC */
-struct pl330_dmac {
-	spinlock_t		lock;
-	/* Holds list of reqs with due callbacks */
-	struct list_head	req_done;
-	/* Pointer to platform specific stuff */
-	struct pl330_info	*pinfo;
-	/* Maximum possible events/irqs */
-	int			events[32];
-	/* BUS address of MicroCode buffer */
-	u32			mcode_bus;
-	/* CPU address of MicroCode buffer */
-	void			*mcode_cpu;
-	/* List of all Channel threads */
-	struct pl330_thread	*channels;
-	/* Pointer to the MANAGER thread */
-	struct pl330_thread	*manager;
-	/* To handle bad news in interrupt */
-	struct tasklet_struct	tasks;
-	struct _pl330_tbd	dmac_tbd;
-	/* State of DMAC operation */
-	enum pl330_dmac_state	state;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum desc_status {
 	/* In the DMAC pool */
 	FREE,
 	/*
-<<<<<<< HEAD
-	 * Allocted to some channel during prep_xxx
-=======
 	 * Allocated to some channel during prep_xxx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Also may be sitting on the work_list.
 	 */
 	PREP,
@@ -632,15 +404,12 @@ enum desc_status {
 	 */
 	BUSY,
 	/*
-<<<<<<< HEAD
-=======
 	 * Pause was called while descriptor was BUSY. Due to hardware
 	 * limitations, only termination is possible for descriptors
 	 * that have been paused.
 	 */
 	PAUSED,
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Sitting on the channel work_list but xfer done
 	 * by PL330 core
 	 */
@@ -654,59 +423,32 @@ struct dma_pl330_chan {
 	/* DMA-Engine Channel */
 	struct dma_chan chan;
 
-<<<<<<< HEAD
-	/* List of to be xfered descriptors */
-	struct list_head work_list;
-=======
 	/* List of submitted descriptors */
 	struct list_head submitted_list;
 	/* List of issued descriptors */
 	struct list_head work_list;
 	/* List of completed descriptors */
 	struct list_head completed_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Pointer to the DMAC that manages this channel,
 	 * NULL if the channel is available to be acquired.
 	 * As the parent, this DMAC also provides descriptors
 	 * to the channel.
 	 */
-<<<<<<< HEAD
-	struct dma_pl330_dmac *dmac;
-=======
 	struct pl330_dmac *dmac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* To protect channel manipulation */
 	spinlock_t lock;
 
-<<<<<<< HEAD
-	/* Token of a hardware channel thread of PL330 DMAC
-	 * NULL if the channel is available to be acquired.
-	 */
-	void *pl330_chid;
-=======
 	/*
 	 * Hardware channel thread of PL330 DMAC. NULL if the channel is
 	 * available.
 	 */
 	struct pl330_thread *thread;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* For D-to-M and M-to-D channels */
 	int burst_sz; /* the peripheral fifo width */
 	int burst_len; /* the number of burst */
-<<<<<<< HEAD
-	dma_addr_t fifo_addr;
-
-	/* for cyclic capability */
-	bool cyclic;
-};
-
-struct dma_pl330_dmac {
-	struct pl330_info pif;
-
-=======
 	phys_addr_t fifo_addr;
 	/* DMA-mapped view of the FIFO; may differ if an IOMMU is present */
 	dma_addr_t fifo_dma;
@@ -721,7 +463,6 @@ struct dma_pl330_dmac {
 };
 
 struct pl330_dmac {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* DMA-Engine Device */
 	struct dma_device ddma;
 
@@ -730,12 +471,6 @@ struct pl330_dmac {
 	/* To protect desc_pool manipulation */
 	spinlock_t pool_lock;
 
-<<<<<<< HEAD
-	/* Peripheral channels connected to this DMAC */
-	struct dma_pl330_chan *peripherals; /* keep at end */
-
-	struct clk *clk;
-=======
 	/* Size of MicroCode buffers for each channel. */
 	unsigned mcbufsz;
 	/* ioremap'ed address of PL330 registers. */
@@ -783,7 +518,6 @@ static struct pl330_of_quirks {
 		.quirk = "arm,pl330-periph-burst",
 		.id = PL330_QUIRK_PERIPH_BURST,
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dma_pl330_desc {
@@ -797,32 +531,6 @@ struct dma_pl330_desc {
 	struct pl330_xfer px;
 
 	struct pl330_reqcfg rqcfg;
-<<<<<<< HEAD
-	struct pl330_req req;
-
-	enum desc_status status;
-
-	/* The channel which currently holds this desc */
-	struct dma_pl330_chan *pchan;
-};
-
-static inline void _callback(struct pl330_req *r, enum pl330_op_err err)
-{
-	if (r && r->xfer_cb)
-		r->xfer_cb(r->token, err);
-}
-
-static inline bool _queue_empty(struct pl330_thread *thrd)
-{
-	return (IS_FREE(&thrd->req[0]) && IS_FREE(&thrd->req[1]))
-		? true : false;
-}
-
-static inline bool _queue_full(struct pl330_thread *thrd)
-{
-	return (IS_FREE(&thrd->req[0]) || IS_FREE(&thrd->req[1]))
-		? false : true;
-=======
 
 	enum desc_status status;
 
@@ -851,47 +559,17 @@ static int pl330_config_write(struct dma_chan *chan,
 static inline bool _queue_full(struct pl330_thread *thrd)
 {
 	return thrd->req[0].desc != NULL && thrd->req[1].desc != NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool is_manager(struct pl330_thread *thrd)
 {
-<<<<<<< HEAD
-	struct pl330_dmac *pl330 = thrd->dmac;
-
-	/* MANAGER is indexed at the end */
-	if (thrd->id == pl330->pinfo->pcfg.num_chan)
-		return true;
-	else
-		return false;
-=======
 	return thrd->dmac->manager == thrd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* If manager of the thread is in Non-Secure mode */
 static inline bool _manager_ns(struct pl330_thread *thrd)
 {
-<<<<<<< HEAD
-	struct pl330_dmac *pl330 = thrd->dmac;
-
-	return (pl330->pinfo->pcfg.mode & DMAC_MODE_NS) ? true : false;
-}
-
-static inline u32 get_id(struct pl330_info *pi, u32 off)
-{
-	void __iomem *regs = pi->base;
-	u32 id = 0;
-
-	id |= (readb(regs + off + 0x0) << 0);
-	id |= (readb(regs + off + 0x4) << 8);
-	id |= (readb(regs + off + 0x8) << 16);
-	id |= (readb(regs + off + 0xc) << 24);
-
-	return id;
-=======
 	return (thrd->dmac->pcfg.mode & DMAC_MODE_NS) ? true : false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 get_revision(u32 periph_id)
@@ -899,25 +577,6 @@ static inline u32 get_revision(u32 periph_id)
 	return (periph_id >> PERIPH_REV_SHIFT) & PERIPH_REV_MASK;
 }
 
-<<<<<<< HEAD
-static inline u32 _emit_ADDH(unsigned dry_run, u8 buf[],
-		enum pl330_dst da, u16 val)
-{
-	if (dry_run)
-		return SZ_DMAADDH;
-
-	buf[0] = CMD_DMAADDH;
-	buf[0] |= (da << 1);
-	*((u16 *)&buf[1]) = val;
-
-	PL330_DBGCMD_DUMP(SZ_DMAADDH, "\tDMAADDH %s %u\n",
-		da == 1 ? "DA" : "SA", val);
-
-	return SZ_DMAADDH;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 _emit_END(unsigned dry_run, u8 buf[])
 {
 	if (dry_run)
@@ -1064,14 +723,10 @@ static inline u32 _emit_MOV(unsigned dry_run, u8 buf[],
 
 	buf[0] = CMD_DMAMOV;
 	buf[1] = dst;
-<<<<<<< HEAD
-	*((u32 *)&buf[2]) = val;
-=======
 	buf[2] = val;
 	buf[3] = val >> 8;
 	buf[4] = val >> 16;
 	buf[5] = val >> 24;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PL330_DBGCMD_DUMP(SZ_DMAMOV, "\tDMAMOV %s 0x%x\n",
 		dst == SAR ? "SAR" : (dst == DAR ? "DAR" : "CCR"), val);
@@ -1079,21 +734,6 @@ static inline u32 _emit_MOV(unsigned dry_run, u8 buf[],
 	return SZ_DMAMOV;
 }
 
-<<<<<<< HEAD
-static inline u32 _emit_NOP(unsigned dry_run, u8 buf[])
-{
-	if (dry_run)
-		return SZ_DMANOP;
-
-	buf[0] = CMD_DMANOP;
-
-	PL330_DBGCMD_DUMP(SZ_DMANOP, "\tDMANOP\n");
-
-	return SZ_DMANOP;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 _emit_RMB(unsigned dry_run, u8 buf[])
 {
 	if (dry_run)
@@ -1161,42 +801,6 @@ static inline u32 _emit_STP(unsigned dry_run, u8 buf[],
 	return SZ_DMASTP;
 }
 
-<<<<<<< HEAD
-static inline u32 _emit_STZ(unsigned dry_run, u8 buf[])
-{
-	if (dry_run)
-		return SZ_DMASTZ;
-
-	buf[0] = CMD_DMASTZ;
-
-	PL330_DBGCMD_DUMP(SZ_DMASTZ, "\tDMASTZ\n");
-
-	return SZ_DMASTZ;
-}
-
-static inline u32 _emit_WFE(unsigned dry_run, u8 buf[], u8 ev,
-		unsigned invalidate)
-{
-	if (dry_run)
-		return SZ_DMAWFE;
-
-	buf[0] = CMD_DMAWFE;
-
-	ev &= 0x1f;
-	ev <<= 3;
-	buf[1] = ev;
-
-	if (invalidate)
-		buf[1] |= (1 << 1);
-
-	PL330_DBGCMD_DUMP(SZ_DMAWFE, "\tDMAWFE %u%s\n",
-		ev >> 3, invalidate ? ", I" : "");
-
-	return SZ_DMAWFE;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 _emit_WFP(unsigned dry_run, u8 buf[],
 		enum pl330_cond cond, u8 peri)
 {
@@ -1252,18 +856,11 @@ static inline u32 _emit_GO(unsigned dry_run, u8 buf[],
 
 	buf[0] = CMD_DMAGO;
 	buf[0] |= (ns << 1);
-<<<<<<< HEAD
-
-	buf[1] = chan & 0x7;
-
-	*((u32 *)&buf[2]) = addr;
-=======
 	buf[1] = chan & 0x7;
 	buf[2] = addr;
 	buf[3] = addr >> 8;
 	buf[4] = addr >> 16;
 	buf[5] = addr >> 24;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return SZ_DMAGO;
 }
@@ -1273,11 +870,7 @@ static inline u32 _emit_GO(unsigned dry_run, u8 buf[],
 /* Returns Time-Out */
 static bool _until_dmac_idle(struct pl330_thread *thrd)
 {
-<<<<<<< HEAD
-	void __iomem *regs = thrd->dmac->pinfo->base;
-=======
 	void __iomem *regs = thrd->dmac->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long loops = msecs_to_loops(5);
 
 	do {
@@ -1297,11 +890,6 @@ static bool _until_dmac_idle(struct pl330_thread *thrd)
 static inline void _execute_DBGINSN(struct pl330_thread *thrd,
 		u8 insn[], bool as_manager)
 {
-<<<<<<< HEAD
-	void __iomem *regs = thrd->dmac->pinfo->base;
-	u32 val;
-
-=======
 	void __iomem *regs = thrd->dmac->base;
 	u32 val;
 
@@ -1311,7 +899,6 @@ static inline void _execute_DBGINSN(struct pl330_thread *thrd,
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = (insn[0] << 16) | (insn[1] << 24);
 	if (!as_manager) {
 		val |= (1 << 0);
@@ -1319,50 +906,16 @@ static inline void _execute_DBGINSN(struct pl330_thread *thrd,
 	}
 	writel(val, regs + DBGINST0);
 
-<<<<<<< HEAD
-	val = *((u32 *)&insn[2]);
-	writel(val, regs + DBGINST1);
-
-	/* If timed out due to halted state-machine */
-	if (_until_dmac_idle(thrd)) {
-		dev_err(thrd->dmac->pinfo->dev, "DMAC halted!\n");
-		return;
-	}
-
-=======
 	val = le32_to_cpu(*((__le32 *)&insn[2]));
 	writel(val, regs + DBGINST1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get going */
 	writel(0, regs + DBGCMD);
 }
 
-<<<<<<< HEAD
-/*
- * Mark a _pl330_req as free.
- * We do it by writing DMAEND as the first instruction
- * because no valid request is going to have DMAEND as
- * its first instruction to execute.
- */
-static void mark_free(struct pl330_thread *thrd, int idx)
-{
-	struct _pl330_req *req = &thrd->req[idx];
-
-	_emit_END(0, req->mc_cpu);
-	req->mc_len = 0;
-
-	thrd->req_running = -1;
-}
-
-static inline u32 _state(struct pl330_thread *thrd)
-{
-	void __iomem *regs = thrd->dmac->pinfo->base;
-=======
 static inline u32 _state(struct pl330_thread *thrd)
 {
 	void __iomem *regs = thrd->dmac->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	if (is_manager(thrd))
@@ -1420,14 +973,9 @@ static inline u32 _state(struct pl330_thread *thrd)
 
 static void _stop(struct pl330_thread *thrd)
 {
-<<<<<<< HEAD
-	void __iomem *regs = thrd->dmac->pinfo->base;
-	u8 insn[6] = {0, 0, 0, 0, 0, 0};
-=======
 	void __iomem *regs = thrd->dmac->base;
 	u8 insn[6] = {0, 0, 0, 0, 0, 0};
 	u32 inten = readl(regs + INTEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (_state(thrd) == PL330_STATE_FAULT_COMPLETING)
 		UNTIL(thrd, PL330_STATE_FAULTING | PL330_STATE_KILLING);
@@ -1440,12 +988,6 @@ static void _stop(struct pl330_thread *thrd)
 
 	_emit_KILL(0, insn);
 
-<<<<<<< HEAD
-	/* Stop generating interrupts for SEV */
-	writel(readl(regs + INTEN) & ~(1 << thrd->ev), regs + INTEN);
-
-	_execute_DBGINSN(thrd, insn, is_manager(thrd));
-=======
 	_execute_DBGINSN(thrd, insn, is_manager(thrd));
 
 	/* clear the event */
@@ -1453,21 +995,14 @@ static void _stop(struct pl330_thread *thrd)
 		writel(1 << thrd->ev, regs + INTCLR);
 	/* Stop generating interrupts for SEV */
 	writel(inten & ~(1 << thrd->ev), regs + INTEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Start doing req 'idx' of thread 'thrd' */
 static bool _trigger(struct pl330_thread *thrd)
 {
-<<<<<<< HEAD
-	void __iomem *regs = thrd->dmac->pinfo->base;
-	struct _pl330_req *req;
-	struct pl330_req *r;
-=======
 	void __iomem *regs = thrd->dmac->base;
 	struct _pl330_req *req;
 	struct dma_pl330_desc *desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _arg_GO go;
 	unsigned ns;
 	u8 insn[6] = {0, 0, 0, 0, 0, 0};
@@ -1478,42 +1013,17 @@ static bool _trigger(struct pl330_thread *thrd)
 		return true;
 
 	idx = 1 - thrd->lstenq;
-<<<<<<< HEAD
-	if (!IS_FREE(&thrd->req[idx]))
-		req = &thrd->req[idx];
-	else {
-		idx = thrd->lstenq;
-		if (!IS_FREE(&thrd->req[idx]))
-=======
 	if (thrd->req[idx].desc != NULL) {
 		req = &thrd->req[idx];
 	} else {
 		idx = thrd->lstenq;
 		if (thrd->req[idx].desc != NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			req = &thrd->req[idx];
 		else
 			req = NULL;
 	}
 
 	/* Return if no request */
-<<<<<<< HEAD
-	if (!req || !req->r)
-		return true;
-
-	r = req->r;
-
-	if (r->cfg)
-		ns = r->cfg->nonsecure ? 1 : 0;
-	else if (readl(regs + CS(thrd->id)) & CS_CNS)
-		ns = 1;
-	else
-		ns = 0;
-
-	/* See 'Abort Sources' point-4 at Page 2-25 */
-	if (_manager_ns(thrd) && !ns)
-		dev_info(thrd->dmac->pinfo->dev, "%s:%d Recipe for ABORT!\n",
-=======
 	if (!req)
 		return true;
 
@@ -1528,7 +1038,6 @@ static bool _trigger(struct pl330_thread *thrd)
 	/* See 'Abort Sources' point-4 at Page 2-25 */
 	if (_manager_ns(thrd) && !ns)
 		dev_info(thrd->dmac->ddma.dev, "%s:%d Recipe for ABORT!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __LINE__);
 
 	go.chan = thrd->id;
@@ -1547,11 +1056,7 @@ static bool _trigger(struct pl330_thread *thrd)
 	return true;
 }
 
-<<<<<<< HEAD
-static bool _start(struct pl330_thread *thrd)
-=======
 static bool pl330_start_thread(struct pl330_thread *thrd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (_state(thrd)) {
 	case PL330_STATE_FAULT_COMPLETING:
@@ -1559,25 +1064,16 @@ static bool pl330_start_thread(struct pl330_thread *thrd)
 
 		if (_state(thrd) == PL330_STATE_KILLING)
 			UNTIL(thrd, PL330_STATE_STOPPED)
-<<<<<<< HEAD
-
-	case PL330_STATE_FAULTING:
-		_stop(thrd);
-=======
 		fallthrough;
 
 	case PL330_STATE_FAULTING:
 		_stop(thrd);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PL330_STATE_KILLING:
 	case PL330_STATE_COMPLETING:
 		UNTIL(thrd, PL330_STATE_STOPPED)
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PL330_STATE_STOPPED:
 		return _trigger(thrd);
@@ -1600,11 +1096,7 @@ static inline int _ldst_memtomem(unsigned dry_run, u8 buf[],
 		const struct _xfer_spec *pxs, int cyc)
 {
 	int off = 0;
-<<<<<<< HEAD
-	struct pl330_config *pcfg = pxs->r->cfg->pcfg;
-=======
 	struct pl330_config *pcfg = pxs->desc->rqcfg.pcfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check lock-up free version */
 	if (get_revision(pcfg->periph_id) >= PERIPH_REV_R1P0) {
@@ -1624,18 +1116,6 @@ static inline int _ldst_memtomem(unsigned dry_run, u8 buf[],
 	return off;
 }
 
-<<<<<<< HEAD
-static inline int _ldst_devtomem(unsigned dry_run, u8 buf[],
-		const struct _xfer_spec *pxs, int cyc)
-{
-	int off = 0;
-
-	while (cyc--) {
-		off += _emit_WFP(dry_run, &buf[off], SINGLE, pxs->r->peri);
-		off += _emit_LDP(dry_run, &buf[off], SINGLE, pxs->r->peri);
-		off += _emit_ST(dry_run, &buf[off], ALWAYS);
-		off += _emit_FLUSHP(dry_run, &buf[off], pxs->r->peri);
-=======
 static u32 _emit_load(unsigned int dry_run, u8 buf[],
 	enum pl330_cond cond, enum dma_transfer_direction direction,
 	u8 peri)
@@ -1664,24 +1144,11 @@ static u32 _emit_load(unsigned int dry_run, u8 buf[],
 		/* this code should be unreachable */
 		WARN_ON(1);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return off;
 }
 
-<<<<<<< HEAD
-static inline int _ldst_memtodev(unsigned dry_run, u8 buf[],
-		const struct _xfer_spec *pxs, int cyc)
-{
-	int off = 0;
-
-	while (cyc--) {
-		off += _emit_WFP(dry_run, &buf[off], SINGLE, pxs->r->peri);
-		off += _emit_LD(dry_run, &buf[off], ALWAYS);
-		off += _emit_STP(dry_run, &buf[off], SINGLE, pxs->r->peri);
-		off += _emit_FLUSHP(dry_run, &buf[off], pxs->r->peri);
-=======
 static inline u32 _emit_store(unsigned int dry_run, u8 buf[],
 	enum pl330_cond cond, enum dma_transfer_direction direction,
 	u8 peri)
@@ -1710,31 +1177,11 @@ static inline u32 _emit_store(unsigned int dry_run, u8 buf[],
 		/* this code should be unreachable */
 		WARN_ON(1);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return off;
 }
 
-<<<<<<< HEAD
-static int _bursts(unsigned dry_run, u8 buf[],
-		const struct _xfer_spec *pxs, int cyc)
-{
-	int off = 0;
-
-	switch (pxs->r->rqtype) {
-	case MEMTODEV:
-		off += _ldst_memtodev(dry_run, &buf[off], pxs, cyc);
-		break;
-	case DEVTOMEM:
-		off += _ldst_devtomem(dry_run, &buf[off], pxs, cyc);
-		break;
-	case MEMTOMEM:
-		off += _ldst_memtomem(dry_run, &buf[off], pxs, cyc);
-		break;
-	default:
-		off += 0x40000000; /* Scare off the Client */
-=======
 static inline int _ldst_peripheral(struct pl330_dmac *pl330,
 				 unsigned dry_run, u8 buf[],
 				 const struct _xfer_spec *pxs, int cyc,
@@ -1833,7 +1280,6 @@ static int _dregs(struct pl330_dmac *pl330, unsigned int dry_run, u8 buf[],
 	default:
 		/* this code should be unreachable */
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1841,23 +1287,16 @@ static int _dregs(struct pl330_dmac *pl330, unsigned int dry_run, u8 buf[],
 }
 
 /* Returns bytes consumed and updates bursts */
-<<<<<<< HEAD
-static inline int _loop(unsigned dry_run, u8 buf[],
-=======
 static inline int _loop(struct pl330_dmac *pl330, unsigned dry_run, u8 buf[],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long *bursts, const struct _xfer_spec *pxs)
 {
 	int cyc, cycmax, szlp, szlpend, szbrst, off;
 	unsigned lcnt0, lcnt1, ljmp0, ljmp1;
 	struct _arg_LPEND lpend;
 
-<<<<<<< HEAD
-=======
 	if (*bursts == 1)
 		return _bursts(pl330, dry_run, buf, pxs, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Max iterations possible in DMALP is 256 */
 	if (*bursts >= 256*256) {
 		lcnt1 = 256;
@@ -1874,11 +1313,7 @@ static inline int _loop(struct pl330_dmac *pl330, unsigned dry_run, u8 buf[],
 	}
 
 	szlp = _emit_LP(1, buf, 0, 0);
-<<<<<<< HEAD
-	szbrst = _bursts(1, buf, pxs, 1);
-=======
 	szbrst = _bursts(pl330, 1, buf, pxs, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpend.cond = ALWAYS;
 	lpend.forever = false;
@@ -1910,11 +1345,7 @@ static inline int _loop(struct pl330_dmac *pl330, unsigned dry_run, u8 buf[],
 	off += _emit_LP(dry_run, &buf[off], 1, lcnt1);
 	ljmp1 = off;
 
-<<<<<<< HEAD
-	off += _bursts(dry_run, &buf[off], pxs, cyc);
-=======
 	off += _bursts(pl330, dry_run, &buf[off], pxs, cyc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpend.cond = ALWAYS;
 	lpend.forever = false;
@@ -1937,14 +1368,6 @@ static inline int _loop(struct pl330_dmac *pl330, unsigned dry_run, u8 buf[],
 	return off;
 }
 
-<<<<<<< HEAD
-static inline int _setup_loops(unsigned dry_run, u8 buf[],
-		const struct _xfer_spec *pxs)
-{
-	struct pl330_xfer *x = pxs->x;
-	u32 ccr = pxs->ccr;
-	unsigned long c, bursts = BYTE_TO_BURST(x->bytes, ccr);
-=======
 static inline int _setup_loops(struct pl330_dmac *pl330,
 			       unsigned dry_run, u8 buf[],
 			       const struct _xfer_spec *pxs)
@@ -1954,37 +1377,23 @@ static inline int _setup_loops(struct pl330_dmac *pl330,
 	unsigned long c, bursts = BYTE_TO_BURST(x->bytes, ccr);
 	int num_dregs = (x->bytes - BURST_TO_BYTE(bursts, ccr)) /
 		BRST_SIZE(ccr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int off = 0;
 
 	while (bursts) {
 		c = bursts;
-<<<<<<< HEAD
-		off += _loop(dry_run, &buf[off], &c, pxs);
-		bursts -= c;
-	}
-=======
 		off += _loop(pl330, dry_run, &buf[off], &c, pxs);
 		bursts -= c;
 	}
 	off += _dregs(pl330, dry_run, &buf[off], pxs, num_dregs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return off;
 }
 
-<<<<<<< HEAD
-static inline int _setup_xfer(unsigned dry_run, u8 buf[],
-		const struct _xfer_spec *pxs)
-{
-	struct pl330_xfer *x = pxs->x;
-=======
 static inline int _setup_xfer(struct pl330_dmac *pl330,
 			      unsigned dry_run, u8 buf[],
 			      const struct _xfer_spec *pxs)
 {
 	struct pl330_xfer *x = &pxs->desc->px;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int off = 0;
 
 	/* DMAMOV SAR, x->src_addr */
@@ -1993,11 +1402,7 @@ static inline int _setup_xfer(struct pl330_dmac *pl330,
 	off += _emit_MOV(dry_run, &buf[off], DAR, x->dst_addr);
 
 	/* Setup Loop(s) */
-<<<<<<< HEAD
-	off += _setup_loops(dry_run, &buf[off], pxs);
-=======
 	off += _setup_loops(pl330, dry_run, &buf[off], pxs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return off;
 }
@@ -2006,19 +1411,11 @@ static inline int _setup_xfer(struct pl330_dmac *pl330,
  * A req is a sequence of one or more xfer units.
  * Returns the number of bytes taken to setup the MC for the req.
  */
-<<<<<<< HEAD
-static int _setup_req(unsigned dry_run, struct pl330_thread *thrd,
-		unsigned index, struct _xfer_spec *pxs)
-{
-	struct _pl330_req *req = &thrd->req[index];
-	struct pl330_xfer *x;
-=======
 static int _setup_req(struct pl330_dmac *pl330, unsigned dry_run,
 		      struct pl330_thread *thrd, unsigned index,
 		      struct _xfer_spec *pxs)
 {
 	struct _pl330_req *req = &thrd->req[index];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *buf = req->mc_cpu;
 	int off = 0;
 
@@ -2027,21 +1424,7 @@ static int _setup_req(struct pl330_dmac *pl330, unsigned dry_run,
 	/* DMAMOV CCR, ccr */
 	off += _emit_MOV(dry_run, &buf[off], CCR, pxs->ccr);
 
-<<<<<<< HEAD
-	x = pxs->r->x;
-	do {
-		/* Error if xfer length is not aligned at burst size */
-		if (x->bytes % (BRST_SIZE(pxs->ccr) * BRST_LEN(pxs->ccr)))
-			return -EINVAL;
-
-		pxs->x = x;
-		off += _setup_xfer(dry_run, &buf[off], pxs);
-
-		x = x->next;
-	} while (x);
-=======
 	off += _setup_xfer(pl330, dry_run, &buf[off], pxs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DMASEV peripheral/event */
 	off += _emit_SEV(dry_run, &buf[off], thrd->ev);
@@ -2083,63 +1466,21 @@ static inline u32 _prepare_ccr(const struct pl330_reqcfg *rqc)
 	return ccr;
 }
 
-<<<<<<< HEAD
-static inline bool _is_valid(u32 ccr)
-{
-	enum pl330_dstcachectrl dcctl;
-	enum pl330_srccachectrl scctl;
-
-	dcctl = (ccr >> CC_DSTCCTRL_SHFT) & CC_DRCCCTRL_MASK;
-	scctl = (ccr >> CC_SRCCCTRL_SHFT) & CC_SRCCCTRL_MASK;
-
-	if (dcctl == DINVALID1 || dcctl == DINVALID2
-			|| scctl == SINVALID1 || scctl == SINVALID2)
-		return false;
-	else
-		return true;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Submit a list of xfers after which the client wants notification.
  * Client is not notified after each xfer unit, just once after all
  * xfer units are done or some error occurs.
  */
-<<<<<<< HEAD
-static int pl330_submit_req(void *ch_id, struct pl330_req *r)
-{
-	struct pl330_thread *thrd = ch_id;
-	struct pl330_dmac *pl330;
-	struct pl330_info *pi;
-	struct _xfer_spec xs;
-	unsigned long flags;
-	void __iomem *regs;
-=======
 static int pl330_submit_req(struct pl330_thread *thrd,
 	struct dma_pl330_desc *desc)
 {
 	struct pl330_dmac *pl330 = thrd->dmac;
 	struct _xfer_spec xs;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned idx;
 	u32 ccr;
 	int ret = 0;
 
-<<<<<<< HEAD
-	/* No Req or Unacquired Channel or DMAC */
-	if (!r || !thrd || thrd->free)
-		return -EINVAL;
-
-	pl330 = thrd->dmac;
-	pi = pl330->pinfo;
-	regs = pi->base;
-
-	if (pl330->state == DYING
-		|| pl330->dmac_tbd.reset_chan & (1 << thrd->id)) {
-		dev_info(thrd->dmac->pinfo->dev, "%s:%d\n",
-=======
 	switch (desc->rqtype) {
 	case DMA_MEM_TO_DEV:
 		break;
@@ -2157,24 +1498,16 @@ static int pl330_submit_req(struct pl330_thread *thrd,
 	if (pl330->state == DYING
 		|| pl330->dmac_tbd.reset_chan & (1 << thrd->id)) {
 		dev_info(thrd->dmac->ddma.dev, "%s:%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __LINE__);
 		return -EAGAIN;
 	}
 
 	/* If request for non-existing peripheral */
-<<<<<<< HEAD
-	if (r->rqtype != MEMTOMEM && r->peri >= pi->pcfg.num_peri) {
-		dev_info(thrd->dmac->pinfo->dev,
-				"%s:%d Invalid peripheral(%u)!\n",
-				__func__, __LINE__, r->peri);
-=======
 	if (desc->rqtype != DMA_MEM_TO_MEM &&
 	    desc->peri >= pl330->pcfg.num_peri) {
 		dev_info(thrd->dmac->ddma.dev,
 				"%s:%d Invalid peripheral(%u)!\n",
 				__func__, __LINE__, desc->peri);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2185,44 +1518,6 @@ static int pl330_submit_req(struct pl330_thread *thrd,
 		goto xfer_exit;
 	}
 
-<<<<<<< HEAD
-
-	/* Use last settings, if not provided */
-	if (r->cfg) {
-		/* Prefer Secure Channel */
-		if (!_manager_ns(thrd))
-			r->cfg->nonsecure = 0;
-		else
-			r->cfg->nonsecure = 1;
-
-		ccr = _prepare_ccr(r->cfg);
-	} else {
-		ccr = readl(regs + CC(thrd->id));
-	}
-
-	/* If this req doesn't have valid xfer settings */
-	if (!_is_valid(ccr)) {
-		ret = -EINVAL;
-		dev_info(thrd->dmac->pinfo->dev, "%s:%d Invalid CCR(%x)!\n",
-			__func__, __LINE__, ccr);
-		goto xfer_exit;
-	}
-
-	idx = IS_FREE(&thrd->req[0]) ? 0 : 1;
-
-	xs.ccr = ccr;
-	xs.r = r;
-
-	/* First dry run to check if req is acceptable */
-	ret = _setup_req(1, thrd, idx, &xs);
-	if (ret < 0)
-		goto xfer_exit;
-
-	if (ret > pi->mcbufsz / 2) {
-		dev_info(thrd->dmac->pinfo->dev,
-			"%s:%d Trying increasing mcbufsz\n",
-				__func__, __LINE__);
-=======
 	/* Prefer Secure Channel */
 	if (!_manager_ns(thrd))
 		desc->rqcfg.nonsecure = 0;
@@ -2242,20 +1537,14 @@ static int pl330_submit_req(struct pl330_thread *thrd,
 	if (ret > pl330->mcbufsz / 2) {
 		dev_info(pl330->ddma.dev, "%s:%d Try increasing mcbufsz (%i/%i)\n",
 				__func__, __LINE__, ret, pl330->mcbufsz / 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto xfer_exit;
 	}
 
 	/* Hook the request */
 	thrd->lstenq = idx;
-<<<<<<< HEAD
-	thrd->req[idx].mc_len = _setup_req(0, thrd, idx, &xs);
-	thrd->req[idx].r = r;
-=======
 	thrd->req[idx].desc = desc;
 	_setup_req(pl330, 0, thrd, idx, &xs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = 0;
 
@@ -2265,12 +1554,6 @@ xfer_exit:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void pl330_dotask(unsigned long data)
-{
-	struct pl330_dmac *pl330 = (struct pl330_dmac *) data;
-	struct pl330_info *pi = pl330->pinfo;
-=======
 static void dma_pl330_rqcb(struct dma_pl330_desc *desc, enum pl330_op_err err)
 {
 	struct dma_pl330_chan *pch;
@@ -2297,7 +1580,6 @@ static void dma_pl330_rqcb(struct dma_pl330_desc *desc, enum pl330_op_err err)
 static void pl330_dotask(struct tasklet_struct *t)
 {
 	struct pl330_dmac *pl330 = from_tasklet(pl330, t, tasks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int i;
 
@@ -2315,28 +1597,16 @@ static void pl330_dotask(struct tasklet_struct *t)
 	if (pl330->dmac_tbd.reset_mngr) {
 		_stop(pl330->manager);
 		/* Reset all channels */
-<<<<<<< HEAD
-		pl330->dmac_tbd.reset_chan = (1 << pi->pcfg.num_chan) - 1;
-=======
 		pl330->dmac_tbd.reset_chan = (1 << pl330->pcfg.num_chan) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Clear the reset flag */
 		pl330->dmac_tbd.reset_mngr = false;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < pi->pcfg.num_chan; i++) {
-
-		if (pl330->dmac_tbd.reset_chan & (1 << i)) {
-			struct pl330_thread *thrd = &pl330->channels[i];
-			void __iomem *regs = pi->base;
-=======
 	for (i = 0; i < pl330->pcfg.num_chan; i++) {
 
 		if (pl330->dmac_tbd.reset_chan & (1 << i)) {
 			struct pl330_thread *thrd = &pl330->channels[i];
 			void __iomem *regs = pl330->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			enum pl330_op_err err;
 
 			_stop(thrd);
@@ -2347,18 +1617,6 @@ static void pl330_dotask(struct tasklet_struct *t)
 				err = PL330_ERR_ABORT;
 
 			spin_unlock_irqrestore(&pl330->lock, flags);
-<<<<<<< HEAD
-
-			_callback(thrd->req[1 - thrd->lstenq].r, err);
-			_callback(thrd->req[thrd->lstenq].r, err);
-
-			spin_lock_irqsave(&pl330->lock, flags);
-
-			thrd->req[0].r = NULL;
-			thrd->req[1].r = NULL;
-			mark_free(thrd, 0);
-			mark_free(thrd, 1);
-=======
 			dma_pl330_rqcb(thrd->req[1 - thrd->lstenq].desc, err);
 			dma_pl330_rqcb(thrd->req[thrd->lstenq].desc, err);
 			spin_lock_irqsave(&pl330->lock, flags);
@@ -2366,7 +1624,6 @@ static void pl330_dotask(struct tasklet_struct *t)
 			thrd->req[0].desc = NULL;
 			thrd->req[1].desc = NULL;
 			thrd->req_running = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Clear the reset flag */
 			pl330->dmac_tbd.reset_chan &= ~(1 << i);
@@ -2379,30 +1636,15 @@ static void pl330_dotask(struct tasklet_struct *t)
 }
 
 /* Returns 1 if state was updated, 0 otherwise */
-<<<<<<< HEAD
-static int pl330_update(const struct pl330_info *pi)
-{
-	struct _pl330_req *rqdone;
-	struct pl330_dmac *pl330;
-=======
 static int pl330_update(struct pl330_dmac *pl330)
 {
 	struct dma_pl330_desc *descdone;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	void __iomem *regs;
 	u32 val;
 	int id, ev, ret = 0;
 
-<<<<<<< HEAD
-	if (!pi || !pi->pl330_data)
-		return 0;
-
-	regs = pi->base;
-	pl330 = pi->pl330_data;
-=======
 	regs = pl330->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pl330->lock, flags);
 
@@ -2412,15 +1654,6 @@ static int pl330_update(struct pl330_dmac *pl330)
 	else
 		pl330->dmac_tbd.reset_mngr = false;
 
-<<<<<<< HEAD
-	val = readl(regs + FSC) & ((1 << pi->pcfg.num_chan) - 1);
-	pl330->dmac_tbd.reset_chan |= val;
-	if (val) {
-		int i = 0;
-		while (i < pi->pcfg.num_chan) {
-			if (val & (1 << i)) {
-				dev_info(pi->dev,
-=======
 	val = readl(regs + FSC) & ((1 << pl330->pcfg.num_chan) - 1);
 	pl330->dmac_tbd.reset_chan |= val;
 	if (val) {
@@ -2428,7 +1661,6 @@ static int pl330_update(struct pl330_dmac *pl330)
 		while (i < pl330->pcfg.num_chan) {
 			if (val & (1 << i)) {
 				dev_info(pl330->ddma.dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Reset Channel-%d\t CS-%x FTC-%x\n",
 						i, readl(regs + CS(i)),
 						readl(regs + FTC(i)));
@@ -2440,27 +1672,16 @@ static int pl330_update(struct pl330_dmac *pl330)
 
 	/* Check which event happened i.e, thread notified */
 	val = readl(regs + ES);
-<<<<<<< HEAD
-	if (pi->pcfg.num_events < 32
-			&& val & ~((1 << pi->pcfg.num_events) - 1)) {
-		pl330->dmac_tbd.reset_dmac = true;
-		dev_err(pi->dev, "%s:%d Unexpected!\n", __func__, __LINE__);
-=======
 	if (pl330->pcfg.num_events < 32
 			&& val & ~((1 << pl330->pcfg.num_events) - 1)) {
 		pl330->dmac_tbd.reset_dmac = true;
 		dev_err(pl330->ddma.dev, "%s:%d Unexpected!\n", __func__,
 			__LINE__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 1;
 		goto updt_exit;
 	}
 
-<<<<<<< HEAD
-	for (ev = 0; ev < pi->pcfg.num_events; ev++) {
-=======
 	for (ev = 0; ev < pl330->pcfg.num_events; ev++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (val & (1 << ev)) { /* Event occurred */
 			struct pl330_thread *thrd;
 			u32 inten = readl(regs + INTEN);
@@ -2480,16 +1701,6 @@ static int pl330_update(struct pl330_dmac *pl330)
 			if (active == -1) /* Aborted */
 				continue;
 
-<<<<<<< HEAD
-			rqdone = &thrd->req[active];
-			mark_free(thrd, active);
-
-			/* Get going again ASAP */
-			_start(thrd);
-
-			/* For now, just make a list of callbacks to be done */
-			list_add_tail(&rqdone->rqd, &pl330->req_done);
-=======
 			/* Detach the req */
 			descdone = thrd->req[active].desc;
 			thrd->req[active].desc = NULL;
@@ -2501,33 +1712,16 @@ static int pl330_update(struct pl330_dmac *pl330)
 
 			/* For now, just make a list of callbacks to be done */
 			list_add_tail(&descdone->rqd, &pl330->req_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Now that we are in no hurry, do the callbacks */
 	while (!list_empty(&pl330->req_done)) {
-<<<<<<< HEAD
-		struct pl330_req *r;
-
-		rqdone = container_of(pl330->req_done.next,
-					struct _pl330_req, rqd);
-
-		list_del_init(&rqdone->rqd);
-
-		/* Detach the req */
-		r = rqdone->r;
-		rqdone->r = NULL;
-
-		spin_unlock_irqrestore(&pl330->lock, flags);
-		_callback(r, PL330_ERR_NONE);
-=======
 		descdone = list_first_entry(&pl330->req_done,
 					    struct dma_pl330_desc, rqd);
 		list_del(&descdone->rqd);
 		spin_unlock_irqrestore(&pl330->lock, flags);
 		dma_pl330_rqcb(descdone, PL330_ERR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&pl330->lock, flags);
 	}
 
@@ -2544,74 +1738,13 @@ updt_exit:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int pl330_chan_ctrl(void *ch_id, enum pl330_chan_op op)
-{
-	struct pl330_thread *thrd = ch_id;
-	struct pl330_dmac *pl330;
-	unsigned long flags;
-	int ret = 0, active;
-
-	if (!thrd || thrd->free || thrd->dmac->state == DYING)
-		return -EINVAL;
-
-	pl330 = thrd->dmac;
-	active = thrd->req_running;
-
-	spin_lock_irqsave(&pl330->lock, flags);
-
-	switch (op) {
-	case PL330_OP_FLUSH:
-		/* Make sure the channel is stopped */
-		_stop(thrd);
-
-		thrd->req[0].r = NULL;
-		thrd->req[1].r = NULL;
-		mark_free(thrd, 0);
-		mark_free(thrd, 1);
-		break;
-
-	case PL330_OP_ABORT:
-		/* Make sure the channel is stopped */
-		_stop(thrd);
-
-		/* ABORT is only for the active req */
-		if (active == -1)
-			break;
-
-		thrd->req[active].r = NULL;
-		mark_free(thrd, active);
-
-		/* Start the next */
-	case PL330_OP_START:
-		if ((active == -1) && !_start(thrd))
-			ret = -EIO;
-		break;
-
-	default:
-		ret = -EINVAL;
-	}
-
-	spin_unlock_irqrestore(&pl330->lock, flags);
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Reserve an event */
 static inline int _alloc_event(struct pl330_thread *thrd)
 {
 	struct pl330_dmac *pl330 = thrd->dmac;
-<<<<<<< HEAD
-	struct pl330_info *pi = pl330->pinfo;
-	int ev;
-
-	for (ev = 0; ev < pi->pcfg.num_events; ev++)
-=======
 	int ev;
 
 	for (ev = 0; ev < pl330->pcfg.num_events; ev++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pl330->events[ev] == -1) {
 			pl330->events[ev] = thrd->id;
 			return ev;
@@ -2620,40 +1753,14 @@ static inline int _alloc_event(struct pl330_thread *thrd)
 	return -1;
 }
 
-<<<<<<< HEAD
-static bool _chan_ns(const struct pl330_info *pi, int i)
-{
-	return pi->pcfg.irq_ns & (1 << i);
-=======
 static bool _chan_ns(const struct pl330_dmac *pl330, int i)
 {
 	return pl330->pcfg.irq_ns & (1 << i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Upon success, returns IdentityToken for the
  * allocated channel, NULL otherwise.
  */
-<<<<<<< HEAD
-static void *pl330_request_channel(const struct pl330_info *pi)
-{
-	struct pl330_thread *thrd = NULL;
-	struct pl330_dmac *pl330;
-	unsigned long flags;
-	int chans, i;
-
-	if (!pi || !pi->pl330_data)
-		return NULL;
-
-	pl330 = pi->pl330_data;
-
-	if (pl330->state == DYING)
-		return NULL;
-
-	chans = pi->pcfg.num_chan;
-
-	spin_lock_irqsave(&pl330->lock, flags);
-=======
 static struct pl330_thread *pl330_request_channel(struct pl330_dmac *pl330)
 {
 	struct pl330_thread *thrd = NULL;
@@ -2663,41 +1770,24 @@ static struct pl330_thread *pl330_request_channel(struct pl330_dmac *pl330)
 		return NULL;
 
 	chans = pl330->pcfg.num_chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < chans; i++) {
 		thrd = &pl330->channels[i];
 		if ((thrd->free) && (!_manager_ns(thrd) ||
-<<<<<<< HEAD
-					_chan_ns(pi, i))) {
-=======
 					_chan_ns(pl330, i))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			thrd->ev = _alloc_event(thrd);
 			if (thrd->ev >= 0) {
 				thrd->free = false;
 				thrd->lstenq = 1;
-<<<<<<< HEAD
-				thrd->req[0].r = NULL;
-				mark_free(thrd, 0);
-				thrd->req[1].r = NULL;
-				mark_free(thrd, 1);
-=======
 				thrd->req[0].desc = NULL;
 				thrd->req[1].desc = NULL;
 				thrd->req_running = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 		thrd = NULL;
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&pl330->lock, flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return thrd;
 }
 
@@ -2705,160 +1795,75 @@ static struct pl330_thread *pl330_request_channel(struct pl330_dmac *pl330)
 static inline void _free_event(struct pl330_thread *thrd, int ev)
 {
 	struct pl330_dmac *pl330 = thrd->dmac;
-<<<<<<< HEAD
-	struct pl330_info *pi = pl330->pinfo;
-
-	/* If the event is valid and was held by the thread */
-	if (ev >= 0 && ev < pi->pcfg.num_events
-=======
 
 	/* If the event is valid and was held by the thread */
 	if (ev >= 0 && ev < pl330->pcfg.num_events
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&& pl330->events[ev] == thrd->id)
 		pl330->events[ev] = -1;
 }
 
-<<<<<<< HEAD
-static void pl330_release_channel(void *ch_id)
-{
-	struct pl330_thread *thrd = ch_id;
-	struct pl330_dmac *pl330;
-	unsigned long flags;
-
-=======
 static void pl330_release_channel(struct pl330_thread *thrd)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!thrd || thrd->free)
 		return;
 
 	_stop(thrd);
 
-<<<<<<< HEAD
-	_callback(thrd->req[1 - thrd->lstenq].r, PL330_ERR_ABORT);
-	_callback(thrd->req[thrd->lstenq].r, PL330_ERR_ABORT);
-
-	pl330 = thrd->dmac;
-
-	spin_lock_irqsave(&pl330->lock, flags);
-	_free_event(thrd, thrd->ev);
-	thrd->free = true;
-	spin_unlock_irqrestore(&pl330->lock, flags);
-=======
 	dma_pl330_rqcb(thrd->req[1 - thrd->lstenq].desc, PL330_ERR_ABORT);
 	dma_pl330_rqcb(thrd->req[thrd->lstenq].desc, PL330_ERR_ABORT);
 
 	_free_event(thrd, thrd->ev);
 	thrd->free = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Initialize the structure for PL330 configuration, that can be used
  * by the client driver the make best use of the DMAC
  */
-<<<<<<< HEAD
-static void read_dmac_config(struct pl330_info *pi)
-{
-	void __iomem *regs = pi->base;
-=======
 static void read_dmac_config(struct pl330_dmac *pl330)
 {
 	void __iomem *regs = pl330->base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	val = readl(regs + CRD) >> CRD_DATA_WIDTH_SHIFT;
 	val &= CRD_DATA_WIDTH_MASK;
-<<<<<<< HEAD
-	pi->pcfg.data_bus_width = 8 * (1 << val);
-
-	val = readl(regs + CRD) >> CRD_DATA_BUFF_SHIFT;
-	val &= CRD_DATA_BUFF_MASK;
-	pi->pcfg.data_buf_dep = val + 1;
-=======
 	pl330->pcfg.data_bus_width = 8 * (1 << val);
 
 	val = readl(regs + CRD) >> CRD_DATA_BUFF_SHIFT;
 	val &= CRD_DATA_BUFF_MASK;
 	pl330->pcfg.data_buf_dep = val + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = readl(regs + CR0) >> CR0_NUM_CHANS_SHIFT;
 	val &= CR0_NUM_CHANS_MASK;
 	val += 1;
-<<<<<<< HEAD
-	pi->pcfg.num_chan = val;
-=======
 	pl330->pcfg.num_chan = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = readl(regs + CR0);
 	if (val & CR0_PERIPH_REQ_SET) {
 		val = (val >> CR0_NUM_PERIPH_SHIFT) & CR0_NUM_PERIPH_MASK;
 		val += 1;
-<<<<<<< HEAD
-		pi->pcfg.num_peri = val;
-		pi->pcfg.peri_ns = readl(regs + CR4);
-	} else {
-		pi->pcfg.num_peri = 0;
-=======
 		pl330->pcfg.num_peri = val;
 		pl330->pcfg.peri_ns = readl(regs + CR4);
 	} else {
 		pl330->pcfg.num_peri = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	val = readl(regs + CR0);
 	if (val & CR0_BOOT_MAN_NS)
-<<<<<<< HEAD
-		pi->pcfg.mode |= DMAC_MODE_NS;
-	else
-		pi->pcfg.mode &= ~DMAC_MODE_NS;
-=======
 		pl330->pcfg.mode |= DMAC_MODE_NS;
 	else
 		pl330->pcfg.mode &= ~DMAC_MODE_NS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = readl(regs + CR0) >> CR0_NUM_EVENTS_SHIFT;
 	val &= CR0_NUM_EVENTS_MASK;
 	val += 1;
-<<<<<<< HEAD
-	pi->pcfg.num_events = val;
-
-	pi->pcfg.irq_ns = readl(regs + CR3);
-
-	pi->pcfg.periph_id = get_id(pi, PERIPH_ID);
-	pi->pcfg.pcell_id = get_id(pi, PCELL_ID);
-=======
 	pl330->pcfg.num_events = val;
 
 	pl330->pcfg.irq_ns = readl(regs + CR3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void _reset_thread(struct pl330_thread *thrd)
 {
 	struct pl330_dmac *pl330 = thrd->dmac;
-<<<<<<< HEAD
-	struct pl330_info *pi = pl330->pinfo;
-
-	thrd->req[0].mc_cpu = pl330->mcode_cpu
-				+ (thrd->id * pi->mcbufsz);
-	thrd->req[0].mc_bus = pl330->mcode_bus
-				+ (thrd->id * pi->mcbufsz);
-	thrd->req[0].r = NULL;
-	mark_free(thrd, 0);
-
-	thrd->req[1].mc_cpu = thrd->req[0].mc_cpu
-				+ pi->mcbufsz / 2;
-	thrd->req[1].mc_bus = thrd->req[0].mc_bus
-				+ pi->mcbufsz / 2;
-	thrd->req[1].r = NULL;
-	mark_free(thrd, 1);
-=======
 
 	thrd->req[0].mc_cpu = pl330->mcode_cpu
 				+ (thrd->id * pl330->mcbufsz);
@@ -2873,26 +1878,16 @@ static inline void _reset_thread(struct pl330_thread *thrd)
 	thrd->req[1].desc = NULL;
 
 	thrd->req_running = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dmac_alloc_threads(struct pl330_dmac *pl330)
 {
-<<<<<<< HEAD
-	struct pl330_info *pi = pl330->pinfo;
-	int chans = pi->pcfg.num_chan;
-=======
 	int chans = pl330->pcfg.num_chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pl330_thread *thrd;
 	int i;
 
 	/* Allocate 1 Manager and 'chans' Channel threads */
-<<<<<<< HEAD
-	pl330->channels = kzalloc((1 + chans) * sizeof(*thrd),
-=======
 	pl330->channels = kcalloc(1 + chans, sizeof(*thrd),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					GFP_KERNEL);
 	if (!pl330->channels)
 		return -ENOMEM;
@@ -2918,87 +1913,37 @@ static int dmac_alloc_threads(struct pl330_dmac *pl330)
 
 static int dmac_alloc_resources(struct pl330_dmac *pl330)
 {
-<<<<<<< HEAD
-	struct pl330_info *pi = pl330->pinfo;
-	int chans = pi->pcfg.num_chan;
-=======
 	int chans = pl330->pcfg.num_chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
 	 * Alloc MicroCode buffer for 'chans' Channel threads.
 	 * A channel's buffer offset is (Channel_Id * MCODE_BUFF_PERCHAN)
 	 */
-<<<<<<< HEAD
-	pl330->mcode_cpu = dma_alloc_coherent(pi->dev,
-				chans * pi->mcbufsz,
-				&pl330->mcode_bus, GFP_KERNEL);
-	if (!pl330->mcode_cpu) {
-		dev_err(pi->dev, "%s:%d Can't allocate memory!\n",
-=======
 	pl330->mcode_cpu = dma_alloc_attrs(pl330->ddma.dev,
 				chans * pl330->mcbufsz,
 				&pl330->mcode_bus, GFP_KERNEL,
 				DMA_ATTR_PRIVILEGED);
 	if (!pl330->mcode_cpu) {
 		dev_err(pl330->ddma.dev, "%s:%d Can't allocate memory!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __LINE__);
 		return -ENOMEM;
 	}
 
 	ret = dmac_alloc_threads(pl330);
 	if (ret) {
-<<<<<<< HEAD
-		dev_err(pi->dev, "%s:%d Can't to create channels for DMAC!\n",
-			__func__, __LINE__);
-		dma_free_coherent(pi->dev,
-				chans * pi->mcbufsz,
-				pl330->mcode_cpu, pl330->mcode_bus);
-=======
 		dev_err(pl330->ddma.dev, "%s:%d Can't to create channels for DMAC!\n",
 			__func__, __LINE__);
 		dma_free_attrs(pl330->ddma.dev,
 				chans * pl330->mcbufsz,
 				pl330->mcode_cpu, pl330->mcode_bus,
 				DMA_ATTR_PRIVILEGED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int pl330_add(struct pl330_info *pi)
-{
-	struct pl330_dmac *pl330;
-	void __iomem *regs;
-	int i, ret;
-
-	if (!pi || !pi->dev)
-		return -EINVAL;
-
-	/* If already added */
-	if (pi->pl330_data)
-		return -EINVAL;
-
-	/*
-	 * If the SoC can perform reset on the DMAC, then do it
-	 * before reading its configuration.
-	 */
-	if (pi->dmac_reset)
-		pi->dmac_reset(pi);
-
-	regs = pi->base;
-
-	/* Check if we can handle this DMAC */
-	if ((get_id(pi, PERIPH_ID) & 0xfffff) != PERIPH_ID_VAL
-	   || get_id(pi, PCELL_ID) != PCELL_ID_VAL) {
-		dev_err(pi->dev, "PERIPH_ID 0x%x, PCELL_ID 0x%x !\n",
-			get_id(pi, PERIPH_ID), get_id(pi, PCELL_ID));
-=======
 static int pl330_add(struct pl330_dmac *pl330)
 {
 	int i, ret;
@@ -3007,77 +1952,38 @@ static int pl330_add(struct pl330_dmac *pl330)
 	if ((pl330->pcfg.periph_id & 0xfffff) != PERIPH_ID_VAL) {
 		dev_err(pl330->ddma.dev, "PERIPH_ID 0x%x !\n",
 			pl330->pcfg.periph_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* Read the configuration of the DMAC */
-<<<<<<< HEAD
-	read_dmac_config(pi);
-
-	if (pi->pcfg.num_events == 0) {
-		dev_err(pi->dev, "%s:%d Can't work without events!\n",
-=======
 	read_dmac_config(pl330);
 
 	if (pl330->pcfg.num_events == 0) {
 		dev_err(pl330->ddma.dev, "%s:%d Can't work without events!\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __LINE__);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	pl330 = kzalloc(sizeof(*pl330), GFP_KERNEL);
-	if (!pl330) {
-		dev_err(pi->dev, "%s:%d Can't allocate memory!\n",
-			__func__, __LINE__);
-		return -ENOMEM;
-	}
-
-	/* Assign the info structure and private data */
-	pl330->pinfo = pi;
-	pi->pl330_data = pl330;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&pl330->lock);
 
 	INIT_LIST_HEAD(&pl330->req_done);
 
 	/* Use default MC buffer size if not provided */
-<<<<<<< HEAD
-	if (!pi->mcbufsz)
-		pi->mcbufsz = MCODE_BUFF_PER_REQ * 2;
-
-	/* Mark all events as free */
-	for (i = 0; i < pi->pcfg.num_events; i++)
-=======
 	if (!pl330->mcbufsz)
 		pl330->mcbufsz = MCODE_BUFF_PER_REQ * 2;
 
 	/* Mark all events as free */
 	for (i = 0; i < pl330->pcfg.num_events; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pl330->events[i] = -1;
 
 	/* Allocate resources needed by the DMAC */
 	ret = dmac_alloc_resources(pl330);
 	if (ret) {
-<<<<<<< HEAD
-		dev_err(pi->dev, "Unable to create channels for DMAC\n");
-		kfree(pl330);
-		return ret;
-	}
-
-	tasklet_init(&pl330->tasks, pl330_dotask, (unsigned long) pl330);
-=======
 		dev_err(pl330->ddma.dev, "Unable to create channels for DMAC\n");
 		return ret;
 	}
 
 	tasklet_setup(&pl330->tasks, pl330_dotask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pl330->state = INIT;
 
@@ -3086,24 +1992,13 @@ static int pl330_add(struct pl330_dmac *pl330)
 
 static int dmac_free_threads(struct pl330_dmac *pl330)
 {
-<<<<<<< HEAD
-	struct pl330_info *pi = pl330->pinfo;
-	int chans = pi->pcfg.num_chan;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pl330_thread *thrd;
 	int i;
 
 	/* Release Channel threads */
-<<<<<<< HEAD
-	for (i = 0; i < chans; i++) {
-		thrd = &pl330->channels[i];
-		pl330_release_channel((void *)thrd);
-=======
 	for (i = 0; i < pl330->pcfg.num_chan; i++) {
 		thrd = &pl330->channels[i];
 		pl330_release_channel(thrd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Free memory */
@@ -3112,48 +2007,18 @@ static int dmac_free_threads(struct pl330_dmac *pl330)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void dmac_free_resources(struct pl330_dmac *pl330)
-{
-	struct pl330_info *pi = pl330->pinfo;
-	int chans = pi->pcfg.num_chan;
-
-	dmac_free_threads(pl330);
-
-	dma_free_coherent(pi->dev, chans * pi->mcbufsz,
-				pl330->mcode_cpu, pl330->mcode_bus);
-}
-
-static void pl330_del(struct pl330_info *pi)
-{
-	struct pl330_dmac *pl330;
-
-	if (!pi || !pi->pl330_data)
-		return;
-
-	pl330 = pi->pl330_data;
-
-=======
 static void pl330_del(struct pl330_dmac *pl330)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pl330->state = UNINIT;
 
 	tasklet_kill(&pl330->tasks);
 
 	/* Free DMAC resources */
-<<<<<<< HEAD
-	dmac_free_resources(pl330);
-
-	kfree(pl330);
-	pi->pl330_data = NULL;
-=======
 	dmac_free_threads(pl330);
 
 	dma_free_attrs(pl330->ddma.dev,
 		pl330->pcfg.num_chan * pl330->mcbufsz, pl330->mcode_cpu,
 		pl330->mcode_bus, DMA_ATTR_PRIVILEGED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* forward declaration */
@@ -3174,69 +2039,6 @@ to_desc(struct dma_async_tx_descriptor *tx)
 	return container_of(tx, struct dma_pl330_desc, txd);
 }
 
-<<<<<<< HEAD
-static inline void free_desc_list(struct list_head *list)
-{
-	struct dma_pl330_dmac *pdmac;
-	struct dma_pl330_desc *desc;
-	struct dma_pl330_chan *pch = NULL;
-	unsigned long flags;
-
-	/* Finish off the work list */
-	list_for_each_entry(desc, list, node) {
-		dma_async_tx_callback callback;
-		void *param;
-
-		/* All desc in a list belong to same channel */
-		pch = desc->pchan;
-		callback = desc->txd.callback;
-		param = desc->txd.callback_param;
-
-		if (callback)
-			callback(param);
-
-		desc->pchan = NULL;
-	}
-
-	/* pch will be unset if list was empty */
-	if (!pch)
-		return;
-
-	pdmac = pch->dmac;
-
-	spin_lock_irqsave(&pdmac->pool_lock, flags);
-	list_splice_tail_init(list, &pdmac->desc_pool);
-	spin_unlock_irqrestore(&pdmac->pool_lock, flags);
-}
-
-static inline void handle_cyclic_desc_list(struct list_head *list)
-{
-	struct dma_pl330_desc *desc;
-	struct dma_pl330_chan *pch = NULL;
-	unsigned long flags;
-
-	list_for_each_entry(desc, list, node) {
-		dma_async_tx_callback callback;
-
-		/* Change status to reload it */
-		desc->status = PREP;
-		pch = desc->pchan;
-		callback = desc->txd.callback;
-		if (callback)
-			callback(desc->txd.callback_param);
-	}
-
-	/* pch will be unset if list was empty */
-	if (!pch)
-		return;
-
-	spin_lock_irqsave(&pch->lock, flags);
-	list_splice_tail_init(list, &pch->work_list);
-	spin_unlock_irqrestore(&pch->lock, flags);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void fill_queue(struct dma_pl330_chan *pch)
 {
 	struct dma_pl330_desc *desc;
@@ -3245,55 +2047,31 @@ static inline void fill_queue(struct dma_pl330_chan *pch)
 	list_for_each_entry(desc, &pch->work_list, node) {
 
 		/* If already submitted */
-<<<<<<< HEAD
-		if (desc->status == BUSY)
-			break;
-
-		ret = pl330_submit_req(pch->pl330_chid,
-						&desc->req);
-		if (!ret) {
-			desc->status = BUSY;
-			break;
-=======
 		if (desc->status == BUSY || desc->status == PAUSED)
 			continue;
 
 		ret = pl330_submit_req(pch->thread, desc);
 		if (!ret) {
 			desc->status = BUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (ret == -EAGAIN) {
 			/* QFull or DMAC Dying */
 			break;
 		} else {
 			/* Unacceptable request */
 			desc->status = DONE;
-<<<<<<< HEAD
-			dev_err(pch->dmac->pif.dev, "%s:%d Bad Desc(%d)\n",
-=======
 			dev_err(pch->dmac->ddma.dev, "%s:%d Bad Desc(%d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					__func__, __LINE__, desc->txd.cookie);
 			tasklet_schedule(&pch->task);
 		}
 	}
 }
 
-<<<<<<< HEAD
-static void pl330_tasklet(unsigned long data)
-{
-	struct dma_pl330_chan *pch = (struct dma_pl330_chan *)data;
-	struct dma_pl330_desc *desc, *_dt;
-	unsigned long flags;
-	LIST_HEAD(list);
-=======
 static void pl330_tasklet(struct tasklet_struct *t)
 {
 	struct dma_pl330_chan *pch = from_tasklet(pch, t, task);
 	struct dma_pl330_desc *desc, *_dt;
 	unsigned long flags;
 	bool power_down = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pch->lock, flags);
 
@@ -3302,73 +2080,12 @@ static void pl330_tasklet(struct tasklet_struct *t)
 		if (desc->status == DONE) {
 			if (!pch->cyclic)
 				dma_cookie_complete(&desc->txd);
-<<<<<<< HEAD
-			list_move_tail(&desc->node, &list);
-=======
 			list_move_tail(&desc->node, &pch->completed_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	/* Try to submit a req imm. next to the last completed cookie */
 	fill_queue(pch);
 
-<<<<<<< HEAD
-	/* Make sure the PL330 Channel thread is active */
-	pl330_chan_ctrl(pch->pl330_chid, PL330_OP_START);
-
-	spin_unlock_irqrestore(&pch->lock, flags);
-
-	if (pch->cyclic)
-		handle_cyclic_desc_list(&list);
-	else
-		free_desc_list(&list);
-}
-
-static void dma_pl330_rqcb(void *token, enum pl330_op_err err)
-{
-	struct dma_pl330_desc *desc = token;
-	struct dma_pl330_chan *pch = desc->pchan;
-	unsigned long flags;
-
-	/* If desc aborted */
-	if (!pch)
-		return;
-
-	spin_lock_irqsave(&pch->lock, flags);
-
-	desc->status = DONE;
-
-	spin_unlock_irqrestore(&pch->lock, flags);
-
-	tasklet_schedule(&pch->task);
-}
-
-bool pl330_filter(struct dma_chan *chan, void *param)
-{
-	u8 *peri_id;
-
-	if (chan->device->dev->driver != &pl330_driver.drv)
-		return false;
-
-#ifdef CONFIG_OF
-	if (chan->device->dev->of_node) {
-		const __be32 *prop_value;
-		phandle phandle;
-		struct device_node *node;
-
-		prop_value = ((struct property *)param)->value;
-		phandle = be32_to_cpup(prop_value++);
-		node = of_find_node_by_phandle(phandle);
-		return ((chan->private == node) &&
-				(chan->chan_id == be32_to_cpup(prop_value)));
-	}
-#endif
-
-	peri_id = chan->private;
-	return *peri_id == (unsigned)param;
-}
-EXPORT_SYMBOL(pl330_filter);
-=======
 	if (list_empty(&pch->work_list)) {
 		spin_lock(&pch->thread->dmac->lock);
 		_stop(pch->thread);
@@ -3441,37 +2158,18 @@ static struct dma_chan *of_dma_pl330_xlate(struct of_phandle_args *dma_spec,
 
 	return dma_get_slave_channel(&pl330->peripherals[chan_id].chan);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pl330_alloc_chan_resources(struct dma_chan *chan)
 {
 	struct dma_pl330_chan *pch = to_pchan(chan);
-<<<<<<< HEAD
-	struct dma_pl330_dmac *pdmac = pch->dmac;
-	unsigned long flags;
-
-	spin_lock_irqsave(&pch->lock, flags);
-=======
 	struct pl330_dmac *pl330 = pch->dmac;
 	unsigned long flags;
 
 	spin_lock_irqsave(&pl330->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_cookie_init(chan);
 	pch->cyclic = false;
 
-<<<<<<< HEAD
-	pch->pl330_chid = pl330_request_channel(&pdmac->pif);
-	if (!pch->pl330_chid) {
-		spin_unlock_irqrestore(&pch->lock, flags);
-		return 0;
-	}
-
-	tasklet_init(&pch->task, pl330_tasklet, (unsigned long) pch);
-
-	spin_unlock_irqrestore(&pch->lock, flags);
-=======
 	pch->thread = pl330_request_channel(pl330);
 	if (!pch->thread) {
 		spin_unlock_irqrestore(&pl330->lock, flags);
@@ -3481,60 +2179,10 @@ static int pl330_alloc_chan_resources(struct dma_chan *chan)
 	tasklet_setup(&pch->task, pl330_tasklet);
 
 	spin_unlock_irqrestore(&pl330->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
 
-<<<<<<< HEAD
-static int pl330_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd, unsigned long arg)
-{
-	struct dma_pl330_chan *pch = to_pchan(chan);
-	struct dma_pl330_desc *desc, *_dt;
-	unsigned long flags;
-	struct dma_pl330_dmac *pdmac = pch->dmac;
-	struct dma_slave_config *slave_config;
-	LIST_HEAD(list);
-
-	switch (cmd) {
-	case DMA_TERMINATE_ALL:
-		spin_lock_irqsave(&pch->lock, flags);
-
-		/* FLUSH the PL330 Channel thread */
-		pl330_chan_ctrl(pch->pl330_chid, PL330_OP_FLUSH);
-
-		/* Mark all desc done */
-		list_for_each_entry_safe(desc, _dt, &pch->work_list , node) {
-			desc->status = DONE;
-			list_move_tail(&desc->node, &list);
-		}
-
-		list_splice_tail_init(&list, &pdmac->desc_pool);
-		spin_unlock_irqrestore(&pch->lock, flags);
-		break;
-	case DMA_SLAVE_CONFIG:
-		slave_config = (struct dma_slave_config *)arg;
-
-		if (slave_config->direction == DMA_MEM_TO_DEV) {
-			if (slave_config->dst_addr)
-				pch->fifo_addr = slave_config->dst_addr;
-			if (slave_config->dst_addr_width)
-				pch->burst_sz = __ffs(slave_config->dst_addr_width);
-			if (slave_config->dst_maxburst)
-				pch->burst_len = slave_config->dst_maxburst;
-		} else if (slave_config->direction == DMA_DEV_TO_MEM) {
-			if (slave_config->src_addr)
-				pch->fifo_addr = slave_config->src_addr;
-			if (slave_config->src_addr_width)
-				pch->burst_sz = __ffs(slave_config->src_addr_width);
-			if (slave_config->src_maxburst)
-				pch->burst_len = slave_config->src_maxburst;
-		}
-		break;
-	default:
-		dev_err(pch->dmac->pif.dev, "Not supported command.\n");
-		return -ENXIO;
-=======
 /*
  * We need the data direction between the DMAC (the dma-mapping "device") and
  * the FIFO (the dmaengine "dev"), from the FIFO's point of view. Confusing!
@@ -3614,17 +2262,11 @@ static int pl330_config_write(struct dma_chan *chan,
 			pch->burst_sz = __ffs(slave_config->src_addr_width);
 		pch->burst_len = fixup_burst_len(slave_config->src_maxburst,
 			pch->dmac->quirks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void pl330_free_chan_resources(struct dma_chan *chan)
-{
-	struct dma_pl330_chan *pch = to_pchan(chan);
-=======
 static int pl330_config(struct dma_chan *chan,
 			struct dma_slave_config *slave_config)
 {
@@ -3715,30 +2357,19 @@ static void pl330_free_chan_resources(struct dma_chan *chan)
 {
 	struct dma_pl330_chan *pch = to_pchan(chan);
 	struct pl330_dmac *pl330 = pch->dmac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	tasklet_kill(&pch->task);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&pch->lock, flags);
-
-	pl330_release_channel(pch->pl330_chid);
-	pch->pl330_chid = NULL;
-=======
 	pm_runtime_get_sync(pch->dmac->ddma.dev);
 	spin_lock_irqsave(&pl330->lock, flags);
 
 	pl330_release_channel(pch->thread);
 	pch->thread = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pch->cyclic)
 		list_splice_tail_init(&pch->work_list, &pch->dmac->desc_pool);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&pch->lock, flags);
-=======
 	spin_unlock_irqrestore(&pl330->lock, flags);
 	pm_runtime_mark_last_busy(pch->dmac->ddma.dev);
 	pm_runtime_put_autosuspend(pch->dmac->ddma.dev);
@@ -3770,16 +2401,12 @@ static int pl330_get_current_xferred_count(struct dma_pl330_chan *pch,
 		return 0;
 
 	return val - addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum dma_status
 pl330_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 		 struct dma_tx_state *txstate)
 {
-<<<<<<< HEAD
-	return dma_cookie_status(chan, cookie, txstate);
-=======
 	enum dma_status ret;
 	unsigned long flags;
 	struct dma_pl330_desc *desc, *running = NULL, *last_enq = NULL;
@@ -3848,14 +2475,10 @@ out:
 	dma_set_residue(txstate, residual);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pl330_issue_pending(struct dma_chan *chan)
 {
-<<<<<<< HEAD
-	pl330_tasklet((unsigned long) to_pchan(chan));
-=======
 	struct dma_pl330_chan *pch = to_pchan(chan);
 	unsigned long flags;
 
@@ -3874,7 +2497,6 @@ static void pl330_issue_pending(struct dma_chan *chan)
 	spin_unlock_irqrestore(&pch->lock, flags);
 
 	pl330_tasklet(&pch->task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3894,16 +2516,6 @@ static dma_cookie_t pl330_tx_submit(struct dma_async_tx_descriptor *tx)
 	/* Assign cookies to all nodes */
 	while (!list_empty(&last->node)) {
 		desc = list_entry(last->node.next, struct dma_pl330_desc, node);
-<<<<<<< HEAD
-
-		dma_cookie_assign(&desc->txd);
-
-		list_move_tail(&desc->node, &pch->work_list);
-	}
-
-	cookie = dma_cookie_assign(&last->txd);
-	list_add_tail(&last->node, &pch->work_list);
-=======
 		if (pch->cyclic) {
 			desc->txd.callback = last->txd.callback;
 			desc->txd.callback_param = last->txd.callback_param;
@@ -3918,7 +2530,6 @@ static dma_cookie_t pl330_tx_submit(struct dma_async_tx_descriptor *tx)
 	last->last = true;
 	cookie = dma_cookie_assign(&last->txd);
 	list_add_tail(&last->node, &pch->submitted_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&pch->lock, flags);
 
 	return cookie;
@@ -3926,56 +2537,22 @@ static dma_cookie_t pl330_tx_submit(struct dma_async_tx_descriptor *tx)
 
 static inline void _init_desc(struct dma_pl330_desc *desc)
 {
-<<<<<<< HEAD
-	desc->pchan = NULL;
-	desc->req.x = &desc->px;
-	desc->req.token = desc;
-	desc->rqcfg.swap = SWAP_NO;
-	desc->rqcfg.privileged = 0;
-	desc->rqcfg.insnaccess = 0;
-	desc->rqcfg.scctl = SCCTRL0;
-	desc->rqcfg.dcctl = DCCTRL0;
-	desc->req.cfg = &desc->rqcfg;
-	desc->req.xfer_cb = dma_pl330_rqcb;
-=======
 	desc->rqcfg.swap = SWAP_NO;
 	desc->rqcfg.scctl = CCTRL0;
 	desc->rqcfg.dcctl = CCTRL0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->txd.tx_submit = pl330_tx_submit;
 
 	INIT_LIST_HEAD(&desc->node);
 }
 
 /* Returns the number of descriptors added to the DMAC pool */
-<<<<<<< HEAD
-int add_desc(struct dma_pl330_dmac *pdmac, gfp_t flg, int count)
-=======
 static int add_desc(struct list_head *pool, spinlock_t *lock,
 		    gfp_t flg, int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dma_pl330_desc *desc;
 	unsigned long flags;
 	int i;
 
-<<<<<<< HEAD
-	if (!pdmac)
-		return 0;
-
-	desc = kmalloc(count * sizeof(*desc), flg);
-	if (!desc)
-		return 0;
-
-	spin_lock_irqsave(&pdmac->pool_lock, flags);
-
-	for (i = 0; i < count; i++) {
-		_init_desc(&desc[i]);
-		list_add_tail(&desc[i].node, &pdmac->desc_pool);
-	}
-
-	spin_unlock_irqrestore(&pdmac->pool_lock, flags);
-=======
 	desc = kcalloc(count, sizeof(*desc), flg);
 	if (!desc)
 		return 0;
@@ -3988,83 +2565,41 @@ static int add_desc(struct list_head *pool, spinlock_t *lock,
 	}
 
 	spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
 
-<<<<<<< HEAD
-static struct dma_pl330_desc *
-pluck_desc(struct dma_pl330_dmac *pdmac)
-=======
 static struct dma_pl330_desc *pluck_desc(struct list_head *pool,
 					 spinlock_t *lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dma_pl330_desc *desc = NULL;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	if (!pdmac)
-		return NULL;
-
-	spin_lock_irqsave(&pdmac->pool_lock, flags);
-
-	if (!list_empty(&pdmac->desc_pool)) {
-		desc = list_entry(pdmac->desc_pool.next,
-=======
 	spin_lock_irqsave(lock, flags);
 
 	if (!list_empty(pool)) {
 		desc = list_entry(pool->next,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct dma_pl330_desc, node);
 
 		list_del_init(&desc->node);
 
 		desc->status = PREP;
 		desc->txd.callback = NULL;
-<<<<<<< HEAD
-	}
-
-	spin_unlock_irqrestore(&pdmac->pool_lock, flags);
-=======
 		desc->txd.callback_result = NULL;
 	}
 
 	spin_unlock_irqrestore(lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return desc;
 }
 
 static struct dma_pl330_desc *pl330_get_desc(struct dma_pl330_chan *pch)
 {
-<<<<<<< HEAD
-	struct dma_pl330_dmac *pdmac = pch->dmac;
-=======
 	struct pl330_dmac *pl330 = pch->dmac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *peri_id = pch->chan.private;
 	struct dma_pl330_desc *desc;
 
 	/* Pluck one desc from the pool of DMAC */
-<<<<<<< HEAD
-	desc = pluck_desc(pdmac);
-
-	/* If the DMAC pool is empty, alloc new */
-	if (!desc) {
-		if (!add_desc(pdmac, GFP_ATOMIC, 1))
-			return NULL;
-
-		/* Try again */
-		desc = pluck_desc(pdmac);
-		if (!desc) {
-			dev_err(pch->dmac->pif.dev,
-				"%s:%d ALERT!\n", __func__, __LINE__);
-			return NULL;
-		}
-=======
 	desc = pluck_desc(&pl330->desc_pool, &pl330->pool_lock);
 
 	/* If the DMAC pool is empty, alloc new */
@@ -4077,7 +2612,6 @@ static struct dma_pl330_desc *pl330_get_desc(struct dma_pl330_chan *pch)
 
 		desc = pluck_desc(&pool, &lock);
 		WARN_ON(!desc || !list_empty(&pool));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Initialize the descriptor */
@@ -4085,13 +2619,8 @@ static struct dma_pl330_desc *pl330_get_desc(struct dma_pl330_chan *pch)
 	desc->txd.cookie = 0;
 	async_tx_ack(&desc->txd);
 
-<<<<<<< HEAD
-	desc->req.peri = peri_id ? pch->chan.chan_id : 0;
-	desc->rqcfg.pcfg = &pch->dmac->pif.pcfg;
-=======
 	desc->peri = peri_id ? pch->chan.chan_id : 0;
 	desc->rqcfg.pcfg = &pch->dmac->pcfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_async_tx_descriptor_init(&desc->txd, &pch->chan);
 
@@ -4101,10 +2630,6 @@ static struct dma_pl330_desc *pl330_get_desc(struct dma_pl330_chan *pch)
 static inline void fill_px(struct pl330_xfer *px,
 		dma_addr_t dst, dma_addr_t src, size_t len)
 {
-<<<<<<< HEAD
-	px->next = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	px->bytes = len;
 	px->dst_addr = dst;
 	px->src_addr = src;
@@ -4117,11 +2642,7 @@ __pl330_prep_dma_memcpy(struct dma_pl330_chan *pch, dma_addr_t dst,
 	struct dma_pl330_desc *desc = pl330_get_desc(pch);
 
 	if (!desc) {
-<<<<<<< HEAD
-		dev_err(pch->dmac->pif.dev, "%s:%d Unable to fetch desc\n",
-=======
 		dev_err(pch->dmac->ddma.dev, "%s:%d Unable to fetch desc\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __LINE__);
 		return NULL;
 	}
@@ -4145,24 +2666,6 @@ __pl330_prep_dma_memcpy(struct dma_pl330_chan *pch, dma_addr_t dst,
 static inline int get_burst_len(struct dma_pl330_desc *desc, size_t len)
 {
 	struct dma_pl330_chan *pch = desc->pchan;
-<<<<<<< HEAD
-	struct pl330_info *pi = &pch->dmac->pif;
-	int burst_len;
-
-	burst_len = pi->pcfg.data_bus_width / 8;
-	burst_len *= pi->pcfg.data_buf_dep;
-	burst_len >>= desc->rqcfg.brst_size;
-
-	/* src/dst_burst_len can't be more than 16 */
-	if (burst_len > 16)
-		burst_len = 16;
-
-	while (burst_len > 1) {
-		if (!(len % (burst_len << desc->rqcfg.brst_size)))
-			break;
-		burst_len--;
-	}
-=======
 	struct pl330_dmac *pl330 = pch->dmac;
 	int burst_len;
 
@@ -4173,7 +2676,6 @@ static inline int get_burst_len(struct dma_pl330_desc *desc, size_t len)
 	/* src/dst_burst_len can't be more than 16 */
 	if (burst_len > PL330_MAX_BURST)
 		burst_len = PL330_MAX_BURST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return burst_len;
 }
@@ -4181,39 +2683,6 @@ static inline int get_burst_len(struct dma_pl330_desc *desc, size_t len)
 static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 		struct dma_chan *chan, dma_addr_t dma_addr, size_t len,
 		size_t period_len, enum dma_transfer_direction direction,
-<<<<<<< HEAD
-		void *context)
-{
-	struct dma_pl330_desc *desc;
-	struct dma_pl330_chan *pch = to_pchan(chan);
-	dma_addr_t dst;
-	dma_addr_t src;
-
-	desc = pl330_get_desc(pch);
-	if (!desc) {
-		dev_err(pch->dmac->pif.dev, "%s:%d Unable to fetch desc\n",
-			__func__, __LINE__);
-		return NULL;
-	}
-
-	switch (direction) {
-	case DMA_MEM_TO_DEV:
-		desc->rqcfg.src_inc = 1;
-		desc->rqcfg.dst_inc = 0;
-		desc->req.rqtype = MEMTODEV;
-		src = dma_addr;
-		dst = pch->fifo_addr;
-		break;
-	case DMA_DEV_TO_MEM:
-		desc->rqcfg.src_inc = 0;
-		desc->rqcfg.dst_inc = 1;
-		desc->req.rqtype = DEVTOMEM;
-		src = pch->fifo_addr;
-		dst = dma_addr;
-		break;
-	default:
-		dev_err(pch->dmac->pif.dev, "%s:%d Invalid dma direction\n",
-=======
 		unsigned long flags)
 {
 	struct dma_pl330_desc *desc = NULL, *first = NULL;
@@ -4228,20 +2697,10 @@ static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 
 	if (!is_slave_direction(direction)) {
 		dev_err(pch->dmac->ddma.dev, "%s:%d Invalid dma direction\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__func__, __LINE__);
 		return NULL;
 	}
 
-<<<<<<< HEAD
-	desc->rqcfg.brst_size = pch->burst_sz;
-	desc->rqcfg.brst_len = 1;
-
-	pch->cyclic = true;
-
-	fill_px(&desc->px, dst, src, period_len);
-
-=======
 	pl330_config_write(chan, &pch->slave_config, direction);
 
 	if (!pl330_prep_slave_fifo(pch, direction))
@@ -4309,7 +2768,6 @@ static struct dma_async_tx_descriptor *pl330_prep_dma_cyclic(
 
 	pch->cyclic = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &desc->txd;
 }
 
@@ -4319,21 +2777,13 @@ pl330_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dst,
 {
 	struct dma_pl330_desc *desc;
 	struct dma_pl330_chan *pch = to_pchan(chan);
-<<<<<<< HEAD
-	struct pl330_info *pi;
-=======
 	struct pl330_dmac *pl330;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int burst;
 
 	if (unlikely(!pch || !len))
 		return NULL;
 
-<<<<<<< HEAD
-	pi = &pch->dmac->pif;
-=======
 	pl330 = pch->dmac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	desc = __pl330_prep_dma_memcpy(pch, dst, src, len);
 	if (!desc)
@@ -4341,18 +2791,6 @@ pl330_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dst,
 
 	desc->rqcfg.src_inc = 1;
 	desc->rqcfg.dst_inc = 1;
-<<<<<<< HEAD
-	desc->req.rqtype = MEMTOMEM;
-
-	/* Select max possible burst size */
-	burst = pi->pcfg.data_bus_width / 8;
-
-	while (burst > 1) {
-		if (!(len % burst))
-			break;
-		burst /= 2;
-	}
-=======
 	desc->rqtype = DMA_MEM_TO_MEM;
 
 	/* Select max possible burst size */
@@ -4365,17 +2803,12 @@ pl330_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dst,
 	 */
 	while ((src | dst | len) & (burst - 1))
 		burst /= 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	desc->rqcfg.brst_size = 0;
 	while (burst != (1 << desc->rqcfg.brst_size))
 		desc->rqcfg.brst_size++;
 
 	desc->rqcfg.brst_len = get_burst_len(desc, len);
-<<<<<<< HEAD
-
-	desc->txd.flags = flags;
-=======
 	/*
 	 * If burst size is smaller than bus width then make sure we only
 	 * transfer one at a time to avoid a burst stradling an MFIFO entry.
@@ -4384,13 +2817,10 @@ pl330_prep_dma_memcpy(struct dma_chan *chan, dma_addr_t dst,
 		desc->rqcfg.brst_len = 1;
 
 	desc->bytes_requested = len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &desc->txd;
 }
 
-<<<<<<< HEAD
-=======
 static void __pl330_giveback_desc(struct pl330_dmac *pl330,
 				  struct dma_pl330_desc *first)
 {
@@ -4413,7 +2843,6 @@ static void __pl330_giveback_desc(struct pl330_dmac *pl330,
 	spin_unlock_irqrestore(&pl330->pool_lock, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dma_async_tx_descriptor *
 pl330_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 		unsigned int sg_len, enum dma_transfer_direction direction,
@@ -4422,25 +2851,15 @@ pl330_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 	struct dma_pl330_desc *first, *desc = NULL;
 	struct dma_pl330_chan *pch = to_pchan(chan);
 	struct scatterlist *sg;
-<<<<<<< HEAD
-	unsigned long flags;
 	int i;
-	dma_addr_t addr;
-=======
-	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(!pch || !sgl || !sg_len))
 		return NULL;
 
-<<<<<<< HEAD
-	addr = pch->fifo_addr;
-=======
 	pl330_config_write(chan, &pch->slave_config, direction);
 
 	if (!pl330_prep_slave_fifo(pch, direction))
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	first = NULL;
 
@@ -4448,34 +2867,12 @@ pl330_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 
 		desc = pl330_get_desc(pch);
 		if (!desc) {
-<<<<<<< HEAD
-			struct dma_pl330_dmac *pdmac = pch->dmac;
-
-			dev_err(pch->dmac->pif.dev,
-				"%s:%d Unable to fetch desc\n",
-				__func__, __LINE__);
-			if (!first)
-				return NULL;
-
-			spin_lock_irqsave(&pdmac->pool_lock, flags);
-
-			while (!list_empty(&first->node)) {
-				desc = list_entry(first->node.next,
-						struct dma_pl330_desc, node);
-				list_move_tail(&desc->node, &pdmac->desc_pool);
-			}
-
-			list_move_tail(&first->node, &pdmac->desc_pool);
-
-			spin_unlock_irqrestore(&pdmac->pool_lock, flags);
-=======
 			struct pl330_dmac *pl330 = pch->dmac;
 
 			dev_err(pch->dmac->ddma.dev,
 				"%s:%d Unable to fetch desc\n",
 				__func__, __LINE__);
 			__pl330_giveback_desc(pl330, first);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return NULL;
 		}
@@ -4488,25 +2885,6 @@ pl330_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 		if (direction == DMA_MEM_TO_DEV) {
 			desc->rqcfg.src_inc = 1;
 			desc->rqcfg.dst_inc = 0;
-<<<<<<< HEAD
-			desc->req.rqtype = MEMTODEV;
-			fill_px(&desc->px,
-				addr, sg_dma_address(sg), sg_dma_len(sg));
-		} else {
-			desc->rqcfg.src_inc = 0;
-			desc->rqcfg.dst_inc = 1;
-			desc->req.rqtype = DEVTOMEM;
-			fill_px(&desc->px,
-				sg_dma_address(sg), addr, sg_dma_len(sg));
-		}
-
-		desc->rqcfg.brst_size = pch->burst_sz;
-		desc->rqcfg.brst_len = 1;
-	}
-
-	/* Return the last desc in the chain */
-	desc->txd.flags = flg;
-=======
 			fill_px(&desc->px, pch->fifo_dma, sg_dma_address(sg),
 				sg_dma_len(sg));
 		} else {
@@ -4523,7 +2901,6 @@ pl330_prep_slave_sg(struct dma_chan *chan, struct scatterlist *sgl,
 	}
 
 	/* Return the last desc in the chain */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &desc->txd;
 }
 
@@ -4535,15 +2912,6 @@ static irqreturn_t pl330_irq_handler(int irq, void *data)
 		return IRQ_NONE;
 }
 
-<<<<<<< HEAD
-static int __devinit
-pl330_probe(struct amba_device *adev, const struct amba_id *id)
-{
-	struct dma_pl330_platdata *pdat;
-	struct dma_pl330_dmac *pdmac;
-	struct dma_pl330_chan *pch;
-	struct pl330_info *pi;
-=======
 #define PL330_DMA_BUSWIDTHS \
 	BIT(DMA_SLAVE_BUSWIDTH_UNDEFINED) | \
 	BIT(DMA_SLAVE_BUSWIDTH_1_BYTE) | \
@@ -4640,96 +3008,10 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
 	struct pl330_config *pcfg;
 	struct pl330_dmac *pl330;
 	struct dma_pl330_chan *pch, *_p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_device *pd;
 	struct resource *res;
 	int i, ret, irq;
 	int num_chan;
-<<<<<<< HEAD
-
-	pdat = adev->dev.platform_data;
-
-	/* Allocate a new DMAC and its Channels */
-	pdmac = kzalloc(sizeof(*pdmac), GFP_KERNEL);
-	if (!pdmac) {
-		dev_err(&adev->dev, "unable to allocate mem\n");
-		return -ENOMEM;
-	}
-
-	pi = &pdmac->pif;
-	pi->dev = &adev->dev;
-	pi->pl330_data = NULL;
-	pi->mcbufsz = pdat ? pdat->mcbuf_sz : 0;
-
-	res = &adev->res;
-	request_mem_region(res->start, resource_size(res), "dma-pl330");
-
-	pi->base = ioremap(res->start, resource_size(res));
-	if (!pi->base) {
-		ret = -ENXIO;
-		goto probe_err1;
-	}
-
-	pdmac->clk = clk_get(&adev->dev, "dma");
-	if (IS_ERR(pdmac->clk)) {
-		dev_err(&adev->dev, "Cannot get operation clock.\n");
-		ret = -EINVAL;
-		goto probe_err2;
-	}
-
-	amba_set_drvdata(adev, pdmac);
-
-#ifndef CONFIG_PM_RUNTIME
-	/* enable dma clk */
-	clk_enable(pdmac->clk);
-#endif
-
-	irq = adev->irq[0];
-	ret = request_irq(irq, pl330_irq_handler, 0,
-			dev_name(&adev->dev), pi);
-	if (ret)
-		goto probe_err3;
-
-	ret = pl330_add(pi);
-	if (ret)
-		goto probe_err4;
-
-	INIT_LIST_HEAD(&pdmac->desc_pool);
-	spin_lock_init(&pdmac->pool_lock);
-
-	/* Create a descriptor pool of default size */
-	if (!add_desc(pdmac, GFP_KERNEL, NR_DEFAULT_DESC))
-		dev_warn(&adev->dev, "unable to allocate desc\n");
-
-	pd = &pdmac->ddma;
-	INIT_LIST_HEAD(&pd->channels);
-
-	/* Initialize channel parameters */
-	if (pdat)
-		num_chan = max_t(int, pdat->nr_valid_peri, pi->pcfg.num_chan);
-	else
-		num_chan = max_t(int, pi->pcfg.num_peri, pi->pcfg.num_chan);
-
-	pdmac->peripherals = kzalloc(num_chan * sizeof(*pch), GFP_KERNEL);
-	if (!pdmac->peripherals) {
-		ret = -ENOMEM;
-		dev_err(&adev->dev, "unable to allocate pdmac->peripherals\n");
-		goto probe_err5;
-	}
-
-	for (i = 0; i < num_chan; i++) {
-		pch = &pdmac->peripherals[i];
-		if (!adev->dev.of_node)
-			pch->chan.private = pdat ? &pdat->peri_id[i] : NULL;
-		else
-			pch->chan.private = adev->dev.of_node;
-
-		INIT_LIST_HEAD(&pch->work_list);
-		spin_lock_init(&pch->lock);
-		pch->pl330_chid = NULL;
-		pch->chan.device = pd;
-		pch->dmac = pdmac;
-=======
 	struct device_node *np = adev->dev.of_node;
 
 	ret = dma_set_mask_and_coherent(&adev->dev, DMA_BIT_MASK(32));
@@ -4834,29 +3116,16 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
 		pch->chan.device = pd;
 		pch->dmac = pl330;
 		pch->dir = DMA_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Add the channel to the DMAC list */
 		list_add_tail(&pch->chan.device_node, &pd->channels);
 	}
 
-<<<<<<< HEAD
-	pd->dev = &adev->dev;
-	if (pdat) {
-		pd->cap_mask = pdat->cap_mask;
-	} else {
-		dma_cap_set(DMA_MEMCPY, pd->cap_mask);
-		if (pi->pcfg.num_peri) {
-			dma_cap_set(DMA_SLAVE, pd->cap_mask);
-			dma_cap_set(DMA_CYCLIC, pd->cap_mask);
-		}
-=======
 	dma_cap_set(DMA_MEMCPY, pd->cap_mask);
 	if (pcfg->num_peri) {
 		dma_cap_set(DMA_SLAVE, pd->cap_mask);
 		dma_cap_set(DMA_CYCLIC, pd->cap_mask);
 		dma_cap_set(DMA_PRIVATE, pd->cap_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pd->device_alloc_chan_resources = pl330_alloc_chan_resources;
@@ -4865,10 +3134,6 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
 	pd->device_prep_dma_cyclic = pl330_prep_dma_cyclic;
 	pd->device_tx_status = pl330_tx_status;
 	pd->device_prep_slave_sg = pl330_prep_slave_sg;
-<<<<<<< HEAD
-	pd->device_control = pl330_control;
-	pd->device_issue_pending = pl330_issue_pending;
-=======
 	pd->device_config = pl330_config;
 	pd->device_pause = pl330_pause;
 	pd->device_terminate_all = pl330_terminate_all;
@@ -4878,59 +3143,10 @@ pl330_probe(struct amba_device *adev, const struct amba_id *id)
 	pd->directions = BIT(DMA_DEV_TO_MEM) | BIT(DMA_MEM_TO_DEV);
 	pd->residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
 	pd->max_burst = PL330_MAX_BURST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = dma_async_device_register(pd);
 	if (ret) {
 		dev_err(&adev->dev, "unable to register DMAC\n");
-<<<<<<< HEAD
-		goto probe_err5;
-	}
-
-	dev_info(&adev->dev,
-		"Loaded driver for PL330 DMAC-%d\n", adev->periphid);
-	dev_info(&adev->dev,
-		"\tDBUFF-%ux%ubytes Num_Chans-%u Num_Peri-%u Num_Events-%u\n",
-		pi->pcfg.data_buf_dep,
-		pi->pcfg.data_bus_width / 8, pi->pcfg.num_chan,
-		pi->pcfg.num_peri, pi->pcfg.num_events);
-
-	return 0;
-
-probe_err5:
-	pl330_del(pi);
-probe_err4:
-	free_irq(irq, pi);
-probe_err3:
-#ifndef CONFIG_PM_RUNTIME
-	clk_disable(pdmac->clk);
-#endif
-	clk_put(pdmac->clk);
-probe_err2:
-	iounmap(pi->base);
-probe_err1:
-	release_mem_region(res->start, resource_size(res));
-	kfree(pdmac);
-
-	return ret;
-}
-
-static int __devexit pl330_remove(struct amba_device *adev)
-{
-	struct dma_pl330_dmac *pdmac = amba_get_drvdata(adev);
-	struct dma_pl330_chan *pch, *_p;
-	struct pl330_info *pi;
-	struct resource *res;
-	int irq;
-
-	if (!pdmac)
-		return 0;
-
-	amba_set_drvdata(adev, NULL);
-
-	/* Idle the DMAC */
-	list_for_each_entry_safe(pch, _p, &pdmac->ddma.channels,
-=======
 		goto probe_err3;
 	}
 
@@ -4970,41 +3186,12 @@ static int __devexit pl330_remove(struct amba_device *adev)
 probe_err3:
 	/* Idle the DMAC */
 	list_for_each_entry_safe(pch, _p, &pl330->ddma.channels,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chan.device_node) {
 
 		/* Remove the channel */
 		list_del(&pch->chan.device_node);
 
 		/* Flush the channel */
-<<<<<<< HEAD
-		pl330_control(&pch->chan, DMA_TERMINATE_ALL, 0);
-		pl330_free_chan_resources(&pch->chan);
-	}
-
-	pi = &pdmac->pif;
-
-	pl330_del(pi);
-
-	irq = adev->irq[0];
-	free_irq(irq, pi);
-
-	iounmap(pi->base);
-
-	res = &adev->res;
-	release_mem_region(res->start, resource_size(res));
-
-#ifndef CONFIG_PM_RUNTIME
-	clk_disable(pdmac->clk);
-#endif
-
-	kfree(pdmac);
-
-	return 0;
-}
-
-static struct amba_id pl330_ids[] = {
-=======
 		if (pch->thread) {
 			pl330_terminate_all(&pch->chan);
 			pl330_free_chan_resources(&pch->chan);
@@ -5064,7 +3251,6 @@ static void pl330_remove(struct amba_device *adev)
 }
 
 static const struct amba_id pl330_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id	= 0x00041330,
 		.mask	= 0x000fffff,
@@ -5074,56 +3260,11 @@ static const struct amba_id pl330_ids[] = {
 
 MODULE_DEVICE_TABLE(amba, pl330_ids);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM_RUNTIME
-static int pl330_runtime_suspend(struct device *dev)
-{
-	struct dma_pl330_dmac *pdmac = dev_get_drvdata(dev);
-
-	if (!pdmac) {
-		dev_err(dev, "failed to get dmac\n");
-		return -ENODEV;
-	}
-
-	clk_disable(pdmac->clk);
-
-	return 0;
-}
-
-static int pl330_runtime_resume(struct device *dev)
-{
-	struct dma_pl330_dmac *pdmac = dev_get_drvdata(dev);
-
-	if (!pdmac) {
-		dev_err(dev, "failed to get dmac\n");
-		return -ENODEV;
-	}
-
-	clk_enable(pdmac->clk);
-
-	return 0;
-}
-#else
-#define pl330_runtime_suspend	NULL
-#define pl330_runtime_resume	NULL
-#endif /* CONFIG_PM_RUNTIME */
-
-static const struct dev_pm_ops pl330_pm_ops = {
-	.runtime_suspend = pl330_runtime_suspend,
-	.runtime_resume = pl330_runtime_resume,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct amba_driver pl330_driver = {
 	.drv = {
 		.owner = THIS_MODULE,
 		.name = "dma-pl330",
-<<<<<<< HEAD
-		.pm = &pl330_pm_ops,
-=======
 		.pm = &pl330_pm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table = pl330_ids,
 	.probe = pl330_probe,
@@ -5132,10 +3273,6 @@ static struct amba_driver pl330_driver = {
 
 module_amba_driver(pl330_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Jaswinder Singh <jassi.brar@samsung.com>");
-=======
 MODULE_AUTHOR("Jaswinder Singh <jassisinghbrar@gmail.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("API Driver for PL330 DMAC");
 MODULE_LICENSE("GPL");

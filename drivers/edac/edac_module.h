@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * edac_module.h
@@ -14,14 +11,10 @@
 #ifndef	__EDAC_MODULE_H__
 #define	__EDAC_MODULE_H__
 
-<<<<<<< HEAD
-#include "edac_core.h"
-=======
 #include <acpi/ghes.h>
 #include "edac_mc.h"
 #include "edac_pci.h"
 #include "edac_device.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * INTERNAL EDAC MODULE:
@@ -30,23 +23,6 @@
  *
  * edac_mc objects
  */
-<<<<<<< HEAD
-extern int edac_sysfs_setup_mc_kset(void);
-extern void edac_sysfs_teardown_mc_kset(void);
-extern int edac_mc_register_sysfs_main_kobj(struct mem_ctl_info *mci);
-extern void edac_mc_unregister_sysfs_main_kobj(struct mem_ctl_info *mci);
-extern int edac_create_sysfs_mci_device(struct mem_ctl_info *mci);
-extern void edac_remove_sysfs_mci_device(struct mem_ctl_info *mci);
-extern int edac_get_log_ue(void);
-extern int edac_get_log_ce(void);
-extern int edac_get_panic_on_ue(void);
-extern int edac_mc_get_log_ue(void);
-extern int edac_mc_get_log_ce(void);
-extern int edac_mc_get_panic_on_ue(void);
-extern int edac_get_poll_msec(void);
-extern int edac_mc_get_poll_msec(void);
-
-=======
 	/* on edac_mc_sysfs.c */
 int edac_mc_sysfs_init(void);
 void edac_mc_sysfs_exit(void);
@@ -62,7 +38,6 @@ unsigned edac_dimm_info_location(struct dimm_info *dimm, char *buf,
 				 unsigned len);
 
 	/* on edac_device.c */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int edac_device_register_sysfs_main_kobj(
 				struct edac_device_ctl_info *edac_dev);
 extern void edac_device_unregister_sysfs_main_kobj(
@@ -71,17 +46,6 @@ extern int edac_device_create_sysfs(struct edac_device_ctl_info *edac_dev);
 extern void edac_device_remove_sysfs(struct edac_device_ctl_info *edac_dev);
 
 /* edac core workqueue: single CPU mode */
-<<<<<<< HEAD
-extern struct workqueue_struct *edac_workqueue;
-extern void edac_device_workq_setup(struct edac_device_ctl_info *edac_dev,
-				    unsigned msec);
-extern void edac_device_workq_teardown(struct edac_device_ctl_info *edac_dev);
-extern void edac_device_reset_delay_period(struct edac_device_ctl_info
-					   *edac_dev, unsigned long value);
-extern void edac_mc_reset_delay_period(int value);
-
-extern void *edac_align_ptr(void *ptr, unsigned size);
-=======
 int edac_workqueue_setup(void);
 void edac_workqueue_teardown(void);
 bool edac_queue_work(struct delayed_work *work, unsigned long delay);
@@ -131,7 +95,6 @@ static inline void edac_debugfs_create_x16(const char *name, umode_t mode,
 static inline void edac_debugfs_create_x32(const char *name, umode_t mode,
 		       struct dentry *parent, u32 *value)			{ }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * EDAC PCI functions

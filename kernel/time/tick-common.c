@@ -1,42 +1,23 @@
-<<<<<<< HEAD
-/*
- * linux/kernel/time/tick-common.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains the base functions to manage periodic tick
  * related events.
  *
  * Copyright(C) 2005-2006, Thomas Gleixner <tglx@linutronix.de>
  * Copyright(C) 2005-2007, Red Hat, Inc., Ingo Molnar
  * Copyright(C) 2006-2007, Timesys Corp., Thomas Gleixner
-<<<<<<< HEAD
- *
- * This code is licenced under the GPL version 2. For details see
- * kernel-base/COPYING.
- */
-=======
  */
 #include <linux/compiler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpu.h>
 #include <linux/err.h>
 #include <linux/hrtimer.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/percpu.h>
-#include <linux/profile.h>
-#include <linux/sched.h>
-=======
 #include <linux/nmi.h>
 #include <linux/percpu.h>
 #include <linux/profile.h>
 #include <linux/sched.h>
 #include <linux/module.h>
 #include <trace/events/power.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq_regs.h>
 
@@ -47,14 +28,6 @@
  */
 DEFINE_PER_CPU(struct tick_device, tick_cpu_device);
 /*
-<<<<<<< HEAD
- * Tick next event: keeps track of the tick time
- */
-ktime_t tick_next_period;
-ktime_t tick_period;
-int tick_do_timer_cpu __read_mostly = TICK_DO_TIMER_BOOT;
-static DEFINE_RAW_SPINLOCK(tick_device_lock);
-=======
  * Tick next event: keeps track of the tick time. It's updated by the
  * CPU which handles the tick and protected by jiffies_lock. There is
  * no requirement to write hold the jiffies seqcount for it.
@@ -84,7 +57,6 @@ int tick_do_timer_cpu __read_mostly = TICK_DO_TIMER_BOOT;
  */
 static int tick_do_timer_boot_cpu __read_mostly = -1;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Debugging: see timer_list.c
@@ -113,16 +85,6 @@ int tick_is_oneshot_available(void)
  */
 static void tick_periodic(int cpu)
 {
-<<<<<<< HEAD
-	if (tick_do_timer_cpu == cpu) {
-		write_seqlock(&xtime_lock);
-
-		/* Keep track of the next tick event */
-		tick_next_period = ktime_add(tick_next_period, tick_period);
-
-		do_timer(1);
-		write_sequnlock(&xtime_lock);
-=======
 	if (READ_ONCE(tick_do_timer_cpu) == cpu) {
 		raw_spin_lock(&jiffies_lock);
 		write_seqcount_begin(&jiffies_seq);
@@ -134,7 +96,6 @@ static void tick_periodic(int cpu)
 		write_seqcount_end(&jiffies_seq);
 		raw_spin_unlock(&jiffies_lock);
 		update_wall_time();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	update_process_times(user_mode(get_irq_regs()));
@@ -147,20 +108,6 @@ static void tick_periodic(int cpu)
 void tick_handle_periodic(struct clock_event_device *dev)
 {
 	int cpu = smp_processor_id();
-<<<<<<< HEAD
-	ktime_t next;
-
-	tick_periodic(cpu);
-
-	if (dev->mode != CLOCK_EVT_MODE_ONESHOT)
-		return;
-	/*
-	 * Setup the next period for devices, which do not have
-	 * periodic mode:
-	 */
-	next = ktime_add(dev->next_event, tick_period);
-	for (;;) {
-=======
 	ktime_t next = dev->next_event;
 
 	tick_periodic(cpu);
@@ -182,7 +129,6 @@ void tick_handle_periodic(struct clock_event_device *dev)
 		 */
 		next = ktime_add_ns(next, TICK_NSEC);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!clockevents_program_event(dev, next, false))
 			return;
 		/*
@@ -191,19 +137,11 @@ void tick_handle_periodic(struct clock_event_device *dev)
 		 * to be sure we're using a real hardware clocksource.
 		 * Otherwise we could get trapped in an infinite
 		 * loop, as the tick_periodic() increments jiffies,
-<<<<<<< HEAD
-		 * when then will increment time, posibly causing
-=======
 		 * which then will increment time, possibly causing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * the loop to trigger again and again.
 		 */
 		if (timekeeping_valid_for_hres())
 			tick_periodic(cpu);
-<<<<<<< HEAD
-		next = ktime_add(next, tick_period);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -220,19 +158,6 @@ void tick_setup_periodic(struct clock_event_device *dev, int broadcast)
 
 	if ((dev->features & CLOCK_EVT_FEAT_PERIODIC) &&
 	    !tick_broadcast_oneshot_active()) {
-<<<<<<< HEAD
-		clockevents_set_mode(dev, CLOCK_EVT_MODE_PERIODIC);
-	} else {
-		unsigned long seq;
-		ktime_t next;
-
-		do {
-			seq = read_seqbegin(&xtime_lock);
-			next = tick_next_period;
-		} while (read_seqretry(&xtime_lock, seq));
-
-		clockevents_set_mode(dev, CLOCK_EVT_MODE_ONESHOT);
-=======
 		clockevents_switch_state(dev, CLOCK_EVT_STATE_PERIODIC);
 	} else {
 		unsigned int seq;
@@ -244,22 +169,15 @@ void tick_setup_periodic(struct clock_event_device *dev, int broadcast)
 		} while (read_seqcount_retry(&jiffies_seq, seq));
 
 		clockevents_switch_state(dev, CLOCK_EVT_STATE_ONESHOT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (;;) {
 			if (!clockevents_program_event(dev, next, false))
 				return;
-<<<<<<< HEAD
-			next = ktime_add(next, tick_period);
-=======
 			next = ktime_add_ns(next, TICK_NSEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_NO_HZ_FULL
 static void giveup_do_timer(void *info)
 {
@@ -280,7 +198,6 @@ static void tick_take_do_timer_from_boot(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup the tick device
  */
@@ -288,13 +205,8 @@ static void tick_setup_device(struct tick_device *td,
 			      struct clock_event_device *newdev, int cpu,
 			      const struct cpumask *cpumask)
 {
-<<<<<<< HEAD
-	ktime_t next_event;
-	void (*handler)(struct clock_event_device *) = NULL;
-=======
 	void (*handler)(struct clock_event_device *) = NULL;
 	ktime_t next_event = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First device setup ?
@@ -304,12 +216,6 @@ static void tick_setup_device(struct tick_device *td,
 		 * If no cpu took the do_timer update, assign it to
 		 * this cpu:
 		 */
-<<<<<<< HEAD
-		if (tick_do_timer_cpu == TICK_DO_TIMER_BOOT) {
-			tick_do_timer_cpu = cpu;
-			tick_next_period = ktime_get();
-			tick_period = ktime_set(0, NSEC_PER_SEC / HZ);
-=======
 		if (READ_ONCE(tick_do_timer_cpu) == TICK_DO_TIMER_BOOT) {
 			WRITE_ONCE(tick_do_timer_cpu, cpu);
 			tick_next_period = ktime_get();
@@ -329,7 +235,6 @@ static void tick_setup_device(struct tick_device *td,
 			tick_do_timer_boot_cpu = -1;
 			WARN_ON(READ_ONCE(tick_do_timer_cpu) != cpu);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -355,12 +260,8 @@ static void tick_setup_device(struct tick_device *td,
 	 * When global broadcasting is active, check if the current
 	 * device is registered as a placeholder for broadcast mode.
 	 * This allows us to handle this x86 misfeature in a generic
-<<<<<<< HEAD
-	 * way.
-=======
 	 * way. This function also returns !=0 when we keep the
 	 * current active broadcast state for this CPU.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (tick_device_uses_broadcast(newdev, cpu))
 		return;
@@ -371,62 +272,6 @@ static void tick_setup_device(struct tick_device *td,
 		tick_setup_oneshot(newdev, handler, next_event);
 }
 
-<<<<<<< HEAD
-/*
- * Check, if the new registered device should be used.
- */
-static int tick_check_new_device(struct clock_event_device *newdev)
-{
-	struct clock_event_device *curdev;
-	struct tick_device *td;
-	int cpu, ret = NOTIFY_OK;
-	unsigned long flags;
-
-	raw_spin_lock_irqsave(&tick_device_lock, flags);
-
-	cpu = smp_processor_id();
-	if (!cpumask_test_cpu(cpu, newdev->cpumask))
-		goto out_bc;
-
-	td = &per_cpu(tick_cpu_device, cpu);
-	curdev = td->evtdev;
-
-	/* cpu local device ? */
-	if (!cpumask_equal(newdev->cpumask, cpumask_of(cpu))) {
-
-		/*
-		 * If the cpu affinity of the device interrupt can not
-		 * be set, ignore it.
-		 */
-		if (!irq_can_set_affinity(newdev->irq))
-			goto out_bc;
-
-		/*
-		 * If we have a cpu local device already, do not replace it
-		 * by a non cpu local device
-		 */
-		if (curdev && cpumask_equal(curdev->cpumask, cpumask_of(cpu)))
-			goto out_bc;
-	}
-
-	/*
-	 * If we have an active device, then check the rating and the oneshot
-	 * feature.
-	 */
-	if (curdev) {
-		/*
-		 * Prefer one shot capable devices !
-		 */
-		if ((curdev->features & CLOCK_EVT_FEAT_ONESHOT) &&
-		    !(newdev->features & CLOCK_EVT_FEAT_ONESHOT))
-			goto out_bc;
-		/*
-		 * Check the rating
-		 */
-		if (curdev->rating >= newdev->rating)
-			goto out_bc;
-	}
-=======
 void tick_install_replacement(struct clock_event_device *newdev)
 {
 	struct tick_device *td = this_cpu_ptr(&tick_cpu_device);
@@ -506,7 +351,6 @@ void tick_check_new_device(struct clock_event_device *newdev)
 
 	if (!try_module_get(newdev->owner))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Replace the eventually existing device by the new
@@ -521,41 +365,12 @@ void tick_check_new_device(struct clock_event_device *newdev)
 	tick_setup_device(td, newdev, cpu, cpumask_of(cpu));
 	if (newdev->features & CLOCK_EVT_FEAT_ONESHOT)
 		tick_oneshot_notify();
-<<<<<<< HEAD
-
-	raw_spin_unlock_irqrestore(&tick_device_lock, flags);
-	return NOTIFY_STOP;
-=======
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_bc:
 	/*
 	 * Can the new device be used as a broadcast device ?
 	 */
-<<<<<<< HEAD
-	if (tick_check_broadcast_device(newdev))
-		ret = NOTIFY_STOP;
-
-	raw_spin_unlock_irqrestore(&tick_device_lock, flags);
-
-	return ret;
-}
-
-/*
- * Transfer the do_timer job away from a dying cpu.
- *
- * Called with interrupts disabled.
- */
-static void tick_handover_do_timer(int *cpup)
-{
-	if (*cpup == tick_do_timer_cpu) {
-		int cpu = cpumask_first(cpu_online_mask);
-
-		tick_do_timer_cpu = (cpu < nr_cpu_ids) ? cpu :
-			TICK_DO_TIMER_NONE;
-	}
-=======
 	tick_install_broadcast_device(newdev, cpu);
 }
 
@@ -607,7 +422,6 @@ int tick_cpu_dying(unsigned int dying_cpu)
 	tick_offline_cpu(dying_cpu);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -617,60 +431,22 @@ int tick_cpu_dying(unsigned int dying_cpu)
  * access the hardware device itself.
  * We just set the mode and remove it from the lists.
  */
-<<<<<<< HEAD
-static void tick_shutdown(unsigned int *cpup)
-{
-	struct tick_device *td = &per_cpu(tick_cpu_device, *cpup);
-	struct clock_event_device *dev = td->evtdev;
-	unsigned long flags;
-
-	raw_spin_lock_irqsave(&tick_device_lock, flags);
-=======
 void tick_shutdown(unsigned int cpu)
 {
 	struct tick_device *td = &per_cpu(tick_cpu_device, cpu);
 	struct clock_event_device *dev = td->evtdev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	td->mode = TICKDEV_MODE_PERIODIC;
 	if (dev) {
 		/*
 		 * Prevent that the clock events layer tries to call
 		 * the set mode function!
 		 */
-<<<<<<< HEAD
-		dev->mode = CLOCK_EVT_MODE_UNUSED;
-=======
 		clockevent_set_state(dev, CLOCK_EVT_STATE_DETACHED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clockevents_exchange_device(dev, NULL);
 		dev->event_handler = clockevents_handle_noop;
 		td->evtdev = NULL;
 	}
-<<<<<<< HEAD
-	raw_spin_unlock_irqrestore(&tick_device_lock, flags);
-}
-
-static void tick_suspend(void)
-{
-	struct tick_device *td = &__get_cpu_var(tick_cpu_device);
-	unsigned long flags;
-
-	raw_spin_lock_irqsave(&tick_device_lock, flags);
-	clockevents_shutdown(td->evtdev);
-	raw_spin_unlock_irqrestore(&tick_device_lock, flags);
-}
-
-static void tick_resume(void)
-{
-	struct tick_device *td = &__get_cpu_var(tick_cpu_device);
-	unsigned long flags;
-	int broadcast = tick_resume_broadcast();
-
-	raw_spin_lock_irqsave(&tick_device_lock, flags);
-	clockevents_set_mode(td->evtdev, CLOCK_EVT_MODE_RESUME);
-
-=======
 }
 #endif
 
@@ -701,78 +477,12 @@ void tick_resume_local(void)
 	bool broadcast = tick_resume_check_broadcast();
 
 	clockevents_tick_resume(td->evtdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!broadcast) {
 		if (td->mode == TICKDEV_MODE_PERIODIC)
 			tick_setup_periodic(td->evtdev, 0);
 		else
 			tick_resume_oneshot();
 	}
-<<<<<<< HEAD
-	raw_spin_unlock_irqrestore(&tick_device_lock, flags);
-}
-
-/*
- * Notification about clock event devices
- */
-static int tick_notify(struct notifier_block *nb, unsigned long reason,
-			       void *dev)
-{
-	switch (reason) {
-
-	case CLOCK_EVT_NOTIFY_ADD:
-		return tick_check_new_device(dev);
-
-	case CLOCK_EVT_NOTIFY_BROADCAST_ON:
-	case CLOCK_EVT_NOTIFY_BROADCAST_OFF:
-	case CLOCK_EVT_NOTIFY_BROADCAST_FORCE:
-		tick_broadcast_on_off(reason, dev);
-		break;
-
-	case CLOCK_EVT_NOTIFY_BROADCAST_ENTER:
-	case CLOCK_EVT_NOTIFY_BROADCAST_EXIT:
-		tick_broadcast_oneshot_control(reason);
-		break;
-
-	case CLOCK_EVT_NOTIFY_CPU_DYING:
-		tick_handover_do_timer(dev);
-		break;
-
-	case CLOCK_EVT_NOTIFY_CPU_DEAD:
-		tick_shutdown_broadcast_oneshot(dev);
-		tick_shutdown_broadcast(dev);
-		tick_shutdown(dev);
-		break;
-
-	case CLOCK_EVT_NOTIFY_SUSPEND:
-		tick_suspend();
-		tick_suspend_broadcast();
-		break;
-
-	case CLOCK_EVT_NOTIFY_RESUME:
-		tick_resume();
-		break;
-
-	default:
-		break;
-	}
-
-	return NOTIFY_OK;
-}
-
-static struct notifier_block tick_notifier = {
-	.notifier_call = tick_notify,
-};
-
-/**
- * tick_init - initialize the tick control
- *
- * Register the notifier with the clockevents framework
- */
-void __init tick_init(void)
-{
-	clockevents_register_notifier(&tick_notifier);
-=======
 
 	/*
 	 * Ensure that hrtimers are up to date and the clockevents device
@@ -879,5 +589,4 @@ void __init tick_init(void)
 {
 	tick_broadcast_init();
 	tick_nohz_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

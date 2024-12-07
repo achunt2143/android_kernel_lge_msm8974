@@ -1,22 +1,7 @@
-<<<<<<< HEAD
-/*
- * HighPoint RR3xxx/4xxx controller driver for Linux
- * Copyright (C) 2006-2009 HighPoint Technologies, Inc. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * HighPoint RR3xxx/4xxx controller driver for Linux
  * Copyright (C) 2006-2015 HighPoint Technologies, Inc. All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Please report bugs/comments/suggestions to linux@highpoint-tech.com
  *
@@ -82,8 +67,6 @@ struct hpt_iopmv_regs {
 	__le32 outbound_intmask;
 };
 
-<<<<<<< HEAD
-=======
 #pragma pack(1)
 struct hpt_iopmu_mvfrey {
 	__le32 reserved0[(0x4000 - 0) / 4];
@@ -123,7 +106,6 @@ struct mvfrey_outlist_entry {
 };
 #pragma pack()
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MVIOP_MU_QUEUE_ADDR_HOST_MASK   (~(0x1full))
 #define MVIOP_MU_QUEUE_ADDR_HOST_BIT    4
 
@@ -136,12 +118,9 @@ struct mvfrey_outlist_entry {
 #define MVIOP_MU_OUTBOUND_INT_MSG       1
 #define MVIOP_MU_OUTBOUND_INT_POSTQUEUE 2
 
-<<<<<<< HEAD
-=======
 #define CL_POINTER_TOGGLE        0x00004000
 #define CPU_TO_F0_DRBL_MSG_BIT   0x02000000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum hpt_iopmu_message {
 	/* host-to-iop messages */
 	IOPMU_INBOUND_MSG0_NOP = 0,
@@ -150,10 +129,7 @@ enum hpt_iopmu_message {
 	IOPMU_INBOUND_MSG0_SHUTDOWN,
 	IOPMU_INBOUND_MSG0_STOP_BACKGROUND_TASK,
 	IOPMU_INBOUND_MSG0_START_BACKGROUND_TASK,
-<<<<<<< HEAD
-=======
 	IOPMU_INBOUND_MSG0_RESET_COMM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IOPMU_INBOUND_MSG0_MAX = 0xff,
 	/* iop-to-host messages */
 	IOPMU_OUTBOUND_MSG0_REGISTER_DEVICE_0 = 0x100,
@@ -177,10 +153,7 @@ struct hpt_iop_request_header {
 #define IOP_REQUEST_FLAG_BIST_REQUEST 2
 #define IOP_REQUEST_FLAG_REMAPPED     4
 #define IOP_REQUEST_FLAG_OUTPUT_CONTEXT 8
-<<<<<<< HEAD
-=======
 #define IOP_REQUEST_FLAG_ADDR_BITS 0x40 /* flags[31:16] is phy_addr[47:32] */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum hpt_iop_request_type {
 	IOP_REQUEST_TYPE_GET_CONFIG = 0,
@@ -255,11 +228,7 @@ struct hpt_iop_request_scsi_command {
 	u8     pad1;
 	u8     cdb[16];
 	__le32 dataxfer_length;
-<<<<<<< HEAD
-	struct hpt_iopsg sg_list[1];
-=======
 	struct hpt_iopsg sg_list[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hpt_iop_request_ioctl_command {
@@ -268,11 +237,7 @@ struct hpt_iop_request_ioctl_command {
 	__le32 inbuf_size;
 	__le32 outbuf_size;
 	__le32 bytes_returned;
-<<<<<<< HEAD
-	u8     buf[1];
-=======
 	u8     buf[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* out data should be put at buf[(inbuf_size+3)&~3] */
 };
 
@@ -286,19 +251,12 @@ struct hptiop_request {
 	int                   index;
 };
 
-<<<<<<< HEAD
-struct hpt_scsi_pointer {
-=======
 struct hpt_cmd_priv {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mapped;
 	int sgcnt;
 	dma_addr_t dma_handle;
 };
 
-<<<<<<< HEAD
-#define HPT_SCP(scp) ((struct hpt_scsi_pointer *)&(scp)->SCp)
-=======
 #define HPT_SCP(scp) ((struct hpt_cmd_priv *)scsi_cmd_priv(scp))
 
 enum hptiop_family {
@@ -307,7 +265,6 @@ enum hptiop_family {
 	MV_BASED_IOP,
 	MVFREY_BASED_IOP
 } ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hptiop_hba {
 	struct hptiop_adapter_ops *ops;
@@ -322,8 +279,6 @@ struct hptiop_hba {
 			void *internal_req;
 			dma_addr_t internal_req_phy;
 		} mv;
-<<<<<<< HEAD
-=======
 		struct {
 			struct hpt_iop_request_get_config __iomem *config;
 			struct hpt_iopmu_mvfrey __iomem *mu;
@@ -340,7 +295,6 @@ struct hptiop_hba {
 			dma_addr_t outlist_cptr_phy;
 			__le32 outlist_rptr;
 		} mvfrey;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 
 	struct Scsi_Host *host;
@@ -365,13 +319,8 @@ struct hptiop_hba {
 	struct hptiop_request reqs[HPTIOP_MAX_REQUESTS];
 
 	/* used to free allocated dma area */
-<<<<<<< HEAD
-	void        *dma_coherent;
-	dma_addr_t  dma_coherent_handle;
-=======
 	void        *dma_coherent[HPTIOP_MAX_REQUESTS];
 	dma_addr_t  dma_coherent_handle[HPTIOP_MAX_REQUESTS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_t    reset_count;
 	atomic_t    resetting;
@@ -393,10 +342,7 @@ struct hpt_ioctl_k {
 };
 
 struct hptiop_adapter_ops {
-<<<<<<< HEAD
-=======
 	enum hptiop_family family;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int  (*iop_wait_ready)(struct hptiop_hba *hba, u32 millisec);
 	int  (*internal_memalloc)(struct hptiop_hba *hba);
 	int  (*internal_memfree)(struct hptiop_hba *hba);
@@ -411,12 +357,9 @@ struct hptiop_adapter_ops {
 	int  (*iop_intr)(struct hptiop_hba *hba);
 	void (*post_msg)(struct hptiop_hba *hba, u32 msg);
 	void (*post_req)(struct hptiop_hba *hba, struct hptiop_request *_req);
-<<<<<<< HEAD
-=======
 	int  hw_dma_bit_mask;
 	int  (*reset_comm)(struct hptiop_hba *hba);
 	__le64  host_phy_flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define HPT_IOCTL_RESULT_OK         0

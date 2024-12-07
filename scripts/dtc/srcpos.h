@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2007 Jon Loeliger, Freescale Semiconductor, Inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
- *                                                                   USA
- */
-
-#ifndef _SRCPOS_H_
-#define _SRCPOS_H_
-
-#include <stdio.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright 2007 Jon Loeliger, Freescale Semiconductor, Inc.
@@ -34,7 +9,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "util.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct srcfile_state {
 	FILE *f;
@@ -69,11 +43,7 @@ extern struct srcfile_state *current_srcfile; /* = NULL */
 FILE *srcfile_relative_open(const char *fname, char **fullnamep);
 
 void srcfile_push(const char *fname);
-<<<<<<< HEAD
-int srcfile_pop(void);
-=======
 bool srcfile_pop(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Add a new directory to the search path for input files
@@ -90,10 +60,7 @@ struct srcpos {
     int last_line;
     int last_column;
     struct srcfile_state *file;
-<<<<<<< HEAD
-=======
     struct srcpos *next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define YYLTYPE struct srcpos
@@ -113,33 +80,6 @@ struct srcpos {
 				YYRHSLOC(Rhs, 0).last_column;			\
 			(Current).file = YYRHSLOC (Rhs, 0).file;		\
 		}								\
-<<<<<<< HEAD
-	} while (0)
-
-
-/*
- * Fictional source position used for IR nodes that are
- * created without otherwise knowing a true source position.
- * For example,constant definitions from the command line.
- */
-extern struct srcpos srcpos_empty;
-
-extern void srcpos_update(struct srcpos *pos, const char *text, int len);
-extern struct srcpos *srcpos_copy(struct srcpos *pos);
-extern char *srcpos_string(struct srcpos *pos);
-extern void srcpos_dump(struct srcpos *pos);
-
-extern void srcpos_verror(struct srcpos *pos, char const *, va_list va)
-     __attribute__((format(printf, 2, 0)));
-extern void srcpos_error(struct srcpos *pos, char const *, ...)
-     __attribute__((format(printf, 2, 3)));
-extern void srcpos_warn(struct srcpos *pos, char const *, ...)
-     __attribute__((format(printf, 2, 3)));
-
-extern void srcpos_set_line(char *f, int l);
-
-#endif /* _SRCPOS_H_ */
-=======
 		(Current).next = NULL;						\
 	} while (0)
 
@@ -161,4 +101,3 @@ extern void PRINTF(3, 4) srcpos_error(struct srcpos *pos, const char *prefix,
 extern void srcpos_set_line(char *f, int l);
 
 #endif /* SRCPOS_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

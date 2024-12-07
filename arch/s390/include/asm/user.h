@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/user.h
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  S390 version
  *
  *  Derived from "include/asm-i386/usr.h"
@@ -73,12 +67,5 @@ struct user {
   unsigned long magic;		/* To uniquely identify a core file */
   char u_comm[32];		/* User command that was responsible */
 };
-<<<<<<< HEAD
-#define NBPG PAGE_SIZE
-#define UPAGES 1
-#define HOST_TEXT_START_ADDR (u.start_code)
-#define HOST_STACK_END_ADDR (u.start_stack + u.u_ssize * NBPG)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _S390_USER_H */

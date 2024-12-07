@@ -1,26 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SIP extension for IP connection tracking.
  *
  * (C) 2005 by Christian Hentschel <chentschel@arnet.com.ar>
  * based on RR's ip_conntrack_ftp.c and other modules.
  * (C) 2007 United Security Providers
  * (C) 2007, 2008 Patrick McHardy <kaber@trash.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/ctype.h>
 #include <linux/skbuff.h>
@@ -29,11 +17,8 @@
 #include <linux/udp.h>
 #include <linux/tcp.h>
 #include <linux/netfilter.h>
-<<<<<<< HEAD
-=======
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter_ipv6.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_core.h>
@@ -42,20 +27,13 @@
 #include <net/netfilter/nf_conntrack_zones.h>
 #include <linux/netfilter/nf_conntrack_sip.h>
 
-<<<<<<< HEAD
-=======
 #define HELPER_NAME "sip"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Christian Hentschel <chentschel@arnet.com.ar>");
 MODULE_DESCRIPTION("SIP connection tracking helper");
 MODULE_ALIAS("ip_conntrack_sip");
-<<<<<<< HEAD
-MODULE_ALIAS_NFCT_HELPER("sip");
-=======
 MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_PORTS	8
 static unsigned short ports[MAX_PORTS];
@@ -77,68 +55,6 @@ module_param(sip_direct_media, int, 0600);
 MODULE_PARM_DESC(sip_direct_media, "Expect Media streams between signalling "
 				   "endpoints only (default 1)");
 
-<<<<<<< HEAD
-unsigned int (*nf_nat_sip_hook)(struct sk_buff *skb, unsigned int protoff,
-				unsigned int dataoff, const char **dptr,
-				unsigned int *datalen) __read_mostly;
-EXPORT_SYMBOL_GPL(nf_nat_sip_hook);
-
-void (*nf_nat_sip_seq_adjust_hook)(struct sk_buff *skb, unsigned int protoff,
-				   s16 off) __read_mostly;
-EXPORT_SYMBOL_GPL(nf_nat_sip_seq_adjust_hook);
-
-unsigned int (*nf_nat_sip_expect_hook)(struct sk_buff *skb,
-				       unsigned int protoff,
-				       unsigned int dataoff,
-				       const char **dptr,
-				       unsigned int *datalen,
-				       struct nf_conntrack_expect *exp,
-				       unsigned int matchoff,
-				       unsigned int matchlen) __read_mostly;
-EXPORT_SYMBOL_GPL(nf_nat_sip_expect_hook);
-
-unsigned int (*nf_nat_sdp_addr_hook)(struct sk_buff *skb, unsigned int protoff,
-				     unsigned int dataoff,
-				     const char **dptr,
-				     unsigned int *datalen,
-				     unsigned int sdpoff,
-				     enum sdp_header_types type,
-				     enum sdp_header_types term,
-				     const union nf_inet_addr *addr)
-				     __read_mostly;
-EXPORT_SYMBOL_GPL(nf_nat_sdp_addr_hook);
-
-unsigned int (*nf_nat_sdp_port_hook)(struct sk_buff *skb, unsigned int protoff,
-				     unsigned int dataoff,
-				     const char **dptr,
-				     unsigned int *datalen,
-				     unsigned int matchoff,
-				     unsigned int matchlen,
-				     u_int16_t port) __read_mostly;
-EXPORT_SYMBOL_GPL(nf_nat_sdp_port_hook);
-
-unsigned int (*nf_nat_sdp_session_hook)(struct sk_buff *skb,
-					unsigned int protoff,
-					unsigned int dataoff,
-					const char **dptr,
-					unsigned int *datalen,
-					unsigned int sdpoff,
-					const union nf_inet_addr *addr)
-					__read_mostly;
-EXPORT_SYMBOL_GPL(nf_nat_sdp_session_hook);
-
-unsigned int (*nf_nat_sdp_media_hook)(struct sk_buff *skb, unsigned int protoff,
-				      unsigned int dataoff,
-				      const char **dptr,
-				      unsigned int *datalen,
-				      struct nf_conntrack_expect *rtp_exp,
-				      struct nf_conntrack_expect *rtcp_exp,
-				      unsigned int mediaoff,
-				      unsigned int medialen,
-				      union nf_inet_addr *rtp_addr)
-				      __read_mostly;
-EXPORT_SYMBOL_GPL(nf_nat_sdp_media_hook);
-=======
 static int sip_external_media __read_mostly = 0;
 module_param(sip_external_media, int, 0600);
 MODULE_PARM_DESC(sip_external_media, "Expect Media streams between external "
@@ -146,7 +62,6 @@ MODULE_PARM_DESC(sip_external_media, "Expect Media streams between external "
 
 const struct nf_nat_sip_hooks __rcu *nf_nat_sip_hooks;
 EXPORT_SYMBOL_GPL(nf_nat_sip_hooks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int string_len(const struct nf_conn *ct, const char *dptr,
 		      const char *limit, int *shift)
@@ -174,16 +89,10 @@ static int digits_len(const struct nf_conn *ct, const char *dptr,
 static int iswordc(const char c)
 {
 	if (isalnum(c) || c == '!' || c == '"' || c == '%' ||
-<<<<<<< HEAD
-	    (c >= '(' && c <= '/') || c == ':' || c == '<' || c == '>' ||
-	    c == '?' || (c >= '[' && c <= ']') || c == '_' || c == '`' ||
-	    c == '{' || c == '}' || c == '~')
-=======
 	    (c >= '(' && c <= '+') || c == ':' || c == '<' || c == '>' ||
 	    c == '?' || (c >= '[' && c <= ']') || c == '_' || c == '`' ||
 	    c == '{' || c == '}' || c == '~' || (c >= '-' && c <= '/') ||
 	    c == '\'')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return 0;
 }
@@ -347,11 +256,7 @@ int ct_sip_parse_request(const struct nf_conn *ct,
 	for (; dptr < limit - strlen("sip:"); dptr++) {
 		if (*dptr == '\r' || *dptr == '\n')
 			return -1;
-<<<<<<< HEAD
-		if (strnicmp(dptr, "sip:", strlen("sip:")) == 0) {
-=======
 		if (strncasecmp(dptr, "sip:", strlen("sip:")) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dptr += strlen("sip:");
 			break;
 		}
@@ -431,21 +336,12 @@ static const char *sip_follow_continuation(const char *dptr, const char *limit)
 static const char *sip_skip_whitespace(const char *dptr, const char *limit)
 {
 	for (; dptr < limit; dptr++) {
-<<<<<<< HEAD
-		if (*dptr == ' ')
-=======
 		if (*dptr == ' ' || *dptr == '\t')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (*dptr != '\r' && *dptr != '\n')
 			break;
 		dptr = sip_follow_continuation(dptr, limit);
-<<<<<<< HEAD
-		if (dptr == NULL)
-			return NULL;
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return dptr;
 }
@@ -462,11 +358,7 @@ static const char *ct_sip_header_search(const char *dptr, const char *limit,
 			continue;
 		}
 
-<<<<<<< HEAD
-		if (strnicmp(dptr, needle, len) == 0)
-=======
 		if (strncasecmp(dptr, needle, len) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return dptr;
 	}
 	return NULL;
@@ -499,17 +391,10 @@ int ct_sip_get_header(const struct nf_conn *ct, const char *dptr,
 		/* Find header. Compact headers must be followed by a
 		 * non-alphabetic character to avoid mismatches. */
 		if (limit - dptr >= hdr->len &&
-<<<<<<< HEAD
-		    strnicmp(dptr, hdr->name, hdr->len) == 0)
-			dptr += hdr->len;
-		else if (hdr->cname && limit - dptr >= hdr->clen + 1 &&
-			 strnicmp(dptr, hdr->cname, hdr->clen) == 0 &&
-=======
 		    strncasecmp(dptr, hdr->name, hdr->len) == 0)
 			dptr += hdr->len;
 		else if (hdr->cname && limit - dptr >= hdr->clen + 1 &&
 			 strncasecmp(dptr, hdr->cname, hdr->clen) == 0 &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 !isalpha(*(dptr + hdr->clen)))
 			dptr += hdr->clen;
 		else
@@ -592,11 +477,7 @@ static int ct_sip_walk_headers(const struct nf_conn *ct, const char *dptr,
 				return ret;
 			if (ret == 0)
 				break;
-<<<<<<< HEAD
-			dataoff += *matchoff;
-=======
 			dataoff = *matchoff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		*in_header = 0;
 	}
@@ -608,11 +489,7 @@ static int ct_sip_walk_headers(const struct nf_conn *ct, const char *dptr,
 			break;
 		if (ret == 0)
 			return ret;
-<<<<<<< HEAD
-		dataoff += *matchoff;
-=======
 		dataoff = *matchoff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (in_header)
@@ -734,11 +611,7 @@ int ct_sip_parse_numerical_param(const struct nf_conn *ct, const char *dptr,
 	start += strlen(name);
 	*val = simple_strtoul(start, &end, 0);
 	if (start == end)
-<<<<<<< HEAD
-		return 0;
-=======
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (matchoff && matchlen) {
 		*matchoff = start - dptr;
 		*matchlen = end - start;
@@ -755,15 +628,9 @@ static int ct_sip_parse_transport(struct nf_conn *ct, const char *dptr,
 
 	if (ct_sip_parse_param(ct, dptr, dataoff, datalen, "transport=",
 			       &matchoff, &matchlen)) {
-<<<<<<< HEAD
-		if (!strnicmp(dptr + matchoff, "TCP", strlen("TCP")))
-			*proto = IPPROTO_TCP;
-		else if (!strnicmp(dptr + matchoff, "UDP", strlen("UDP")))
-=======
 		if (!strncasecmp(dptr + matchoff, "TCP", strlen("TCP")))
 			*proto = IPPROTO_TCP;
 		else if (!strncasecmp(dptr + matchoff, "UDP", strlen("UDP")))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*proto = IPPROTO_UDP;
 		else
 			return 0;
@@ -884,17 +751,10 @@ int ct_sip_get_sdp_header(const struct nf_conn *ct, const char *dptr,
 
 		if (term != SDP_HDR_UNSPEC &&
 		    limit - dptr >= thdr->len &&
-<<<<<<< HEAD
-		    strnicmp(dptr, thdr->name, thdr->len) == 0)
-			break;
-		else if (limit - dptr >= hdr->len &&
-			 strnicmp(dptr, hdr->name, hdr->len) == 0)
-=======
 		    strncasecmp(dptr, thdr->name, thdr->len) == 0)
 			break;
 		else if (limit - dptr >= hdr->len &&
 			 strncasecmp(dptr, hdr->name, hdr->len) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dptr += hdr->len;
 		else
 			continue;
@@ -945,35 +805,16 @@ static int refresh_signalling_expectation(struct nf_conn *ct,
 {
 	struct nf_conn_help *help = nfct_help(ct);
 	struct nf_conntrack_expect *exp;
-<<<<<<< HEAD
-	struct hlist_node *n, *next;
-	int found = 0;
-
-	spin_lock_bh(&nf_conntrack_lock);
-	hlist_for_each_entry_safe(exp, n, next, &help->expectations, lnode) {
-=======
 	struct hlist_node *next;
 	int found = 0;
 
 	spin_lock_bh(&nf_conntrack_expect_lock);
 	hlist_for_each_entry_safe(exp, next, &help->expectations, lnode) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (exp->class != SIP_EXPECT_SIGNALLING ||
 		    !nf_inet_addr_cmp(&exp->tuple.dst.u3, addr) ||
 		    exp->tuple.dst.protonum != proto ||
 		    exp->tuple.dst.u.udp.port != port)
 			continue;
-<<<<<<< HEAD
-		if (!del_timer(&exp->timeout))
-			continue;
-		exp->flags &= ~NF_CT_EXPECT_INACTIVE;
-		exp->timeout.expires = jiffies + expires * HZ;
-		add_timer(&exp->timeout);
-		found = 1;
-		break;
-	}
-	spin_unlock_bh(&nf_conntrack_lock);
-=======
 		if (mod_timer_pending(&exp->timeout, jiffies + expires * HZ)) {
 			exp->flags &= ~NF_CT_EXPECT_INACTIVE;
 			found = 1;
@@ -981,7 +822,6 @@ static int refresh_signalling_expectation(struct nf_conn *ct,
 		}
 	}
 	spin_unlock_bh(&nf_conntrack_expect_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return found;
 }
 
@@ -989,22 +829,6 @@ static void flush_expectations(struct nf_conn *ct, bool media)
 {
 	struct nf_conn_help *help = nfct_help(ct);
 	struct nf_conntrack_expect *exp;
-<<<<<<< HEAD
-	struct hlist_node *n, *next;
-
-	spin_lock_bh(&nf_conntrack_lock);
-	hlist_for_each_entry_safe(exp, n, next, &help->expectations, lnode) {
-		if ((exp->class != SIP_EXPECT_SIGNALLING) ^ media)
-			continue;
-		if (!del_timer(&exp->timeout))
-			continue;
-		nf_ct_unlink_expect(exp);
-		nf_ct_expect_put(exp);
-		if (!media)
-			break;
-	}
-	spin_unlock_bh(&nf_conntrack_lock);
-=======
 	struct hlist_node *next;
 
 	spin_lock_bh(&nf_conntrack_expect_lock);
@@ -1017,7 +841,6 @@ static void flush_expectations(struct nf_conn *ct, bool media)
 			break;
 	}
 	spin_unlock_bh(&nf_conntrack_expect_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
@@ -1037,20 +860,13 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 	int direct_rtp = 0, skip_expect = 0, ret = NF_DROP;
 	u_int16_t base_port;
 	__be16 rtp_port, rtcp_port;
-<<<<<<< HEAD
-	typeof(nf_nat_sdp_port_hook) nf_nat_sdp_port;
-	typeof(nf_nat_sdp_media_hook) nf_nat_sdp_media;
-=======
 	const struct nf_nat_sip_hooks *hooks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	saddr = NULL;
 	if (sip_direct_media) {
 		if (!nf_inet_addr_cmp(daddr, &ct->tuplehash[dir].tuple.src.u3))
 			return NF_ACCEPT;
 		saddr = &ct->tuplehash[!dir].tuple.src.u3;
-<<<<<<< HEAD
-=======
 	} else if (sip_external_media) {
 		struct net_device *dev = skb_dst(skb)->dev;
 		struct net *net = dev_net(dev);
@@ -1081,7 +897,6 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 			if (external_media)
 				return NF_ACCEPT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* We need to check whether the registration exists before attempting
@@ -1105,10 +920,6 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 	tuple.dst.u3		= *daddr;
 	tuple.dst.u.udp.port	= port;
 
-<<<<<<< HEAD
-	rcu_read_lock();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		exp = __nf_ct_expect_find(net, nf_ct_zone(ct), &tuple);
 
@@ -1116,11 +927,7 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 		    nfct_help(exp->master)->helper != nfct_help(ct)->helper ||
 		    exp->class != class)
 			break;
-<<<<<<< HEAD
-#ifdef CONFIG_NF_NAT_NEEDED
-=======
 #if IS_ENABLED(CONFIG_NF_NAT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!direct_rtp &&
 		    (!nf_inet_addr_cmp(&exp->saved_addr, &exp->tuple.dst.u3) ||
 		     exp->saved_proto.udp.port != exp->tuple.dst.u.udp.port) &&
@@ -1133,25 +940,15 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 #endif
 			skip_expect = 1;
 	} while (!skip_expect);
-<<<<<<< HEAD
-	rcu_read_unlock();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base_port = ntohs(tuple.dst.u.udp.port) & ~1;
 	rtp_port = htons(base_port);
 	rtcp_port = htons(base_port + 1);
 
 	if (direct_rtp) {
-<<<<<<< HEAD
-		nf_nat_sdp_port = rcu_dereference(nf_nat_sdp_port_hook);
-		if (nf_nat_sdp_port &&
-		    !nf_nat_sdp_port(skb, protoff, dataoff, dptr, datalen,
-=======
 		hooks = rcu_dereference(nf_nat_sip_hooks);
 		if (hooks &&
 		    !hooks->sdp_port(skb, protoff, dataoff, dptr, datalen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     mediaoff, medialen, ntohs(rtp_port)))
 			goto err1;
 	}
@@ -1171,19 +968,6 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 	nf_ct_expect_init(rtcp_exp, class, nf_ct_l3num(ct), saddr, daddr,
 			  IPPROTO_UDP, NULL, &rtcp_port);
 
-<<<<<<< HEAD
-	nf_nat_sdp_media = rcu_dereference(nf_nat_sdp_media_hook);
-	if (nf_nat_sdp_media && ct->status & IPS_NAT_MASK && !direct_rtp)
-		ret = nf_nat_sdp_media(skb, protoff, dataoff, dptr, datalen,
-				       rtp_exp, rtcp_exp,
-				       mediaoff, medialen, daddr);
-	else {
-		if (nf_ct_expect_related(rtp_exp) == 0) {
-			if (nf_ct_expect_related(rtcp_exp) != 0)
-				nf_ct_unexpect_related(rtp_exp);
-			else
-				ret = NF_ACCEPT;
-=======
 	hooks = rcu_dereference(nf_nat_sip_hooks);
 	if (hooks && ct->status & IPS_NAT_MASK && !direct_rtp)
 		ret = hooks->sdp_media(skb, protoff, dataoff, dptr,
@@ -1207,7 +991,6 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 				ret = NF_ACCEPT;
 			else if (errp == 0)
 				nf_ct_unexpect_related(rtp_exp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	nf_ct_expect_put(rtcp_exp);
@@ -1253,22 +1036,12 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 	unsigned int caddr_len, maddr_len;
 	unsigned int i;
 	union nf_inet_addr caddr, maddr, rtp_addr;
-<<<<<<< HEAD
-	unsigned int port;
-	const struct sdp_media_type *t;
-	int ret = NF_ACCEPT;
-	typeof(nf_nat_sdp_addr_hook) nf_nat_sdp_addr;
-	typeof(nf_nat_sdp_session_hook) nf_nat_sdp_session;
-
-	nf_nat_sdp_addr = rcu_dereference(nf_nat_sdp_addr_hook);
-=======
 	const struct nf_nat_sip_hooks *hooks;
 	unsigned int port;
 	const struct sdp_media_type *t;
 	int ret = NF_ACCEPT;
 
 	hooks = rcu_dereference(nf_nat_sip_hooks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find beginning of session description */
 	if (ct_sip_get_sdp_header(ct, *dptr, 0, *datalen,
@@ -1306,15 +1079,10 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 		port = simple_strtoul(*dptr + mediaoff, NULL, 10);
 		if (port == 0)
 			continue;
-<<<<<<< HEAD
-		if (port < 1024 || port > 65535)
-			return NF_DROP;
-=======
 		if (port < 1024 || port > 65535) {
 			nf_ct_helper_log(skb, ct, "wrong port %u", port);
 			return NF_DROP;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* The media description overrides the session description. */
 		maddr_len = 0;
@@ -1325,33 +1093,15 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 			memcpy(&rtp_addr, &maddr, sizeof(rtp_addr));
 		} else if (caddr_len)
 			memcpy(&rtp_addr, &caddr, sizeof(rtp_addr));
-<<<<<<< HEAD
-		else
-			return NF_DROP;
-=======
 		else {
 			nf_ct_helper_log(skb, ct, "cannot parse SDP message");
 			return NF_DROP;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = set_expected_rtp_rtcp(skb, protoff, dataoff,
 					    dptr, datalen,
 					    &rtp_addr, htons(port), t->class,
 					    mediaoff, medialen);
-<<<<<<< HEAD
-		if (ret != NF_ACCEPT)
-			return ret;
-
-		/* Update media connection address if present */
-		if (maddr_len && nf_nat_sdp_addr && ct->status & IPS_NAT_MASK) {
-			ret = nf_nat_sdp_addr(skb, protoff, dataoff,
-					      dptr, datalen, mediaoff,
-					      SDP_HDR_CONNECTION, SDP_HDR_MEDIA,
-					      &rtp_addr);
-			if (ret != NF_ACCEPT)
-				return ret;
-=======
 		if (ret != NF_ACCEPT) {
 			nf_ct_helper_log(skb, ct,
 					 "cannot add expectation for voice");
@@ -1369,24 +1119,16 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 				nf_ct_helper_log(skb, ct, "cannot mangle SDP");
 				return ret;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		i++;
 	}
 
 	/* Update session connection and owner addresses */
-<<<<<<< HEAD
-	nf_nat_sdp_session = rcu_dereference(nf_nat_sdp_session_hook);
-	if (nf_nat_sdp_session && ct->status & IPS_NAT_MASK)
-		ret = nf_nat_sdp_session(skb, protoff, dataoff,
-					 dptr, datalen, sdpoff, &rtp_addr);
-=======
 	hooks = rcu_dereference(nf_nat_sip_hooks);
 	if (hooks && ct->status & IPS_NAT_MASK)
 		ret = hooks->sdp_session(skb, protoff, dataoff,
 					 dptr, datalen, sdpoff,
 					 &rtp_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1486,19 +1228,12 @@ static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 	unsigned int matchoff, matchlen;
 	struct nf_conntrack_expect *exp;
 	union nf_inet_addr *saddr, daddr;
-<<<<<<< HEAD
-=======
 	const struct nf_nat_sip_hooks *hooks;
 	struct nf_conntrack_helper *helper;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16 port;
 	u8 proto;
 	unsigned int expires = 0;
 	int ret;
-<<<<<<< HEAD
-	typeof(nf_nat_sip_expect_hook) nf_nat_sip_expect;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Expected connections can not register again. */
 	if (ct->status & IPS_EXPECTED)
@@ -1519,16 +1254,10 @@ static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 	ret = ct_sip_parse_header_uri(ct, *dptr, NULL, *datalen,
 				      SIP_HDR_CONTACT, NULL,
 				      &matchoff, &matchlen, &daddr, &port);
-<<<<<<< HEAD
-	if (ret < 0)
-		return NF_DROP;
-	else if (ret == 0)
-=======
 	if (ret < 0) {
 		nf_ct_helper_log(skb, ct, "cannot parse contact");
 		return NF_DROP;
 	} else if (ret == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_ACCEPT;
 
 	/* We don't support third-party registrations */
@@ -1541,15 +1270,10 @@ static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 
 	if (ct_sip_parse_numerical_param(ct, *dptr,
 					 matchoff + matchlen, *datalen,
-<<<<<<< HEAD
-					 "expires=", NULL, NULL, &expires) < 0)
-		return NF_DROP;
-=======
 					 "expires=", NULL, NULL, &expires) < 0) {
 		nf_ct_helper_log(skb, ct, "cannot parse expires");
 		return NF_DROP;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (expires == 0) {
 		ret = NF_ACCEPT;
@@ -1557,36 +1281,15 @@ static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 	}
 
 	exp = nf_ct_expect_alloc(ct);
-<<<<<<< HEAD
-	if (!exp)
-		return NF_DROP;
-=======
 	if (!exp) {
 		nf_ct_helper_log(skb, ct, "cannot alloc expectation");
 		return NF_DROP;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	saddr = NULL;
 	if (sip_direct_signalling)
 		saddr = &ct->tuplehash[!dir].tuple.src.u3;
 
-<<<<<<< HEAD
-	nf_ct_expect_init(exp, SIP_EXPECT_SIGNALLING, nf_ct_l3num(ct),
-			  saddr, &daddr, proto, NULL, &port);
-	exp->timeout.expires = sip_timeout * HZ;
-	exp->helper = nfct_help(ct)->helper;
-	exp->flags = NF_CT_EXPECT_PERMANENT | NF_CT_EXPECT_INACTIVE;
-
-	nf_nat_sip_expect = rcu_dereference(nf_nat_sip_expect_hook);
-	if (nf_nat_sip_expect && ct->status & IPS_NAT_MASK)
-		ret = nf_nat_sip_expect(skb, protoff, dataoff, dptr, datalen,
-					exp, matchoff, matchlen);
-	else {
-		if (nf_ct_expect_related(exp) != 0)
-			ret = NF_DROP;
-		else
-=======
 	helper = rcu_dereference(nfct_help(ct)->helper);
 	if (!helper)
 		return NF_DROP;
@@ -1606,7 +1309,6 @@ static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 			nf_ct_helper_log(skb, ct, "cannot add expectation");
 			ret = NF_DROP;
 		} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = NF_ACCEPT;
 	}
 	nf_ct_expect_put(exp);
@@ -1660,16 +1362,10 @@ static int process_register_response(struct sk_buff *skb, unsigned int protoff,
 					      SIP_HDR_CONTACT, &in_contact,
 					      &matchoff, &matchlen,
 					      &addr, &port);
-<<<<<<< HEAD
-		if (ret < 0)
-			return NF_DROP;
-		else if (ret == 0)
-=======
 		if (ret < 0) {
 			nf_ct_helper_log(skb, ct, "cannot parse contact");
 			return NF_DROP;
 		} else if (ret == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* We don't support third-party registrations */
@@ -1684,15 +1380,10 @@ static int process_register_response(struct sk_buff *skb, unsigned int protoff,
 						   matchoff + matchlen,
 						   *datalen, "expires=",
 						   NULL, NULL, &c_expires);
-<<<<<<< HEAD
-		if (ret < 0)
-			return NF_DROP;
-=======
 		if (ret < 0) {
 			nf_ct_helper_log(skb, ct, "cannot parse expires");
 			return NF_DROP;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (c_expires == 0)
 			break;
 		if (refresh_signalling_expectation(ct, &addr, proto, port,
@@ -1726,17 +1417,6 @@ static int process_sip_response(struct sk_buff *skb, unsigned int protoff,
 	if (*datalen < strlen("SIP/2.0 200"))
 		return NF_ACCEPT;
 	code = simple_strtoul(*dptr + strlen("SIP/2.0 "), NULL, 10);
-<<<<<<< HEAD
-	if (!code)
-		return NF_DROP;
-
-	if (ct_sip_get_header(ct, *dptr, 0, *datalen, SIP_HDR_CSEQ,
-			      &matchoff, &matchlen) <= 0)
-		return NF_DROP;
-	cseq = simple_strtoul(*dptr + matchoff, NULL, 10);
-	if (!cseq)
-		return NF_DROP;
-=======
 	if (!code) {
 		nf_ct_helper_log(skb, ct, "cannot get code");
 		return NF_DROP;
@@ -1752,7 +1432,6 @@ static int process_sip_response(struct sk_buff *skb, unsigned int protoff,
 		nf_ct_helper_log(skb, ct, "cannot get cseq");
 		return NF_DROP;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	matchend = matchoff + matchlen + 1;
 
 	for (i = 0; i < ARRAY_SIZE(sip_handlers); i++) {
@@ -1762,11 +1441,7 @@ static int process_sip_response(struct sk_buff *skb, unsigned int protoff,
 		if (handler->response == NULL)
 			continue;
 		if (*datalen < matchend + handler->len ||
-<<<<<<< HEAD
-		    strnicmp(*dptr + matchend, handler->method, handler->len))
-=======
 		    strncasecmp(*dptr + matchend, handler->method, handler->len))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		return handler->response(skb, protoff, dataoff, dptr, datalen,
 					 cseq, code);
@@ -1780,10 +1455,6 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 {
 	enum ip_conntrack_info ctinfo;
 	struct nf_conn *ct = nf_ct_get(skb, &ctinfo);
-<<<<<<< HEAD
-	unsigned int matchoff, matchlen;
-	unsigned int cseq, i;
-=======
 	struct nf_ct_sip_master *ct_sip_info = nfct_help_data(ct);
 	enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
 	unsigned int matchoff, matchlen;
@@ -1803,7 +1474,6 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 	    port != ct->tuplehash[dir].tuple.src.u.udp.port &&
 	    nf_inet_addr_cmp(&addr, &ct->tuplehash[dir].tuple.src.u3))
 		ct_sip_info->forced_dport = port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(sip_handlers); i++) {
 		const struct sip_handler *handler;
@@ -1811,18 +1481,6 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 		handler = &sip_handlers[i];
 		if (handler->request == NULL)
 			continue;
-<<<<<<< HEAD
-		if (*datalen < handler->len ||
-		    strnicmp(*dptr, handler->method, handler->len))
-			continue;
-
-		if (ct_sip_get_header(ct, *dptr, 0, *datalen, SIP_HDR_CSEQ,
-				      &matchoff, &matchlen) <= 0)
-			return NF_DROP;
-		cseq = simple_strtoul(*dptr + matchoff, NULL, 10);
-		if (!cseq)
-			return NF_DROP;
-=======
 		if (*datalen < handler->len + 2 ||
 		    strncasecmp(*dptr, handler->method, handler->len))
 			continue;
@@ -1840,7 +1498,6 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 			nf_ct_helper_log(skb, ct, "cannot get cseq");
 			return NF_DROP;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return handler->request(skb, protoff, dataoff, dptr, datalen,
 					cseq);
@@ -1852,35 +1509,21 @@ static int process_sip_msg(struct sk_buff *skb, struct nf_conn *ct,
 			   unsigned int protoff, unsigned int dataoff,
 			   const char **dptr, unsigned int *datalen)
 {
-<<<<<<< HEAD
-	typeof(nf_nat_sip_hook) nf_nat_sip;
-	int ret;
-
-	if (strnicmp(*dptr, "SIP/2.0 ", strlen("SIP/2.0 ")) != 0)
-=======
 	const struct nf_nat_sip_hooks *hooks;
 	int ret;
 
 	if (strncasecmp(*dptr, "SIP/2.0 ", strlen("SIP/2.0 ")) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = process_sip_request(skb, protoff, dataoff, dptr, datalen);
 	else
 		ret = process_sip_response(skb, protoff, dataoff, dptr, datalen);
 
 	if (ret == NF_ACCEPT && ct->status & IPS_NAT_MASK) {
-<<<<<<< HEAD
-		nf_nat_sip = rcu_dereference(nf_nat_sip_hook);
-		if (nf_nat_sip && !nf_nat_sip(skb, protoff, dataoff,
-					      dptr, datalen))
-			ret = NF_DROP;
-=======
 		hooks = rcu_dereference(nf_nat_sip_hooks);
 		if (hooks && !hooks->msg(skb, protoff, dataoff,
 					 dptr, datalen)) {
 			nf_ct_helper_log(skb, ct, "cannot NAT SIP message");
 			ret = NF_DROP;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -1897,10 +1540,6 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 	s16 diff, tdiff = 0;
 	int ret = NF_ACCEPT;
 	bool term;
-<<<<<<< HEAD
-	typeof(nf_nat_sip_seq_adjust_hook) nf_nat_sip_seq_adjust;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ctinfo != IP_CT_ESTABLISHED &&
 	    ctinfo != IP_CT_ESTABLISHED_REPLY)
@@ -1952,10 +1591,7 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 
 		ret = process_sip_msg(skb, ct, protoff, dataoff,
 				      &dptr, &msglen);
-<<<<<<< HEAD
-=======
 		/* process_sip_* functions report why this packet is dropped */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != NF_ACCEPT)
 			break;
 		diff     = msglen - origlen;
@@ -1967,17 +1603,11 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 	}
 
 	if (ret == NF_ACCEPT && ct->status & IPS_NAT_MASK) {
-<<<<<<< HEAD
-		nf_nat_sip_seq_adjust = rcu_dereference(nf_nat_sip_seq_adjust_hook);
-		if (nf_nat_sip_seq_adjust)
-			nf_nat_sip_seq_adjust(skb, protoff, tdiff);
-=======
 		const struct nf_nat_sip_hooks *hooks;
 
 		hooks = rcu_dereference(nf_nat_sip_hooks);
 		if (hooks)
 			hooks->seq_adjust(skb, protoff, tdiff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -2007,11 +1637,7 @@ static int sip_help_udp(struct sk_buff *skb, unsigned int protoff,
 	return process_sip_msg(skb, ct, protoff, dataoff, &dptr, &datalen);
 }
 
-<<<<<<< HEAD
-static struct nf_conntrack_helper sip[MAX_PORTS][4] __read_mostly;
-=======
 static struct nf_conntrack_helper sip[MAX_PORTS * 4] __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct nf_conntrack_expect_policy sip_exp_policy[SIP_EXPECT_MAX + 1] = {
 	[SIP_EXPECT_SIGNALLING] = {
@@ -2036,80 +1662,21 @@ static const struct nf_conntrack_expect_policy sip_exp_policy[SIP_EXPECT_MAX + 1
 	},
 };
 
-<<<<<<< HEAD
-static void nf_conntrack_sip_fini(void)
-{
-	int i, j;
-
-	for (i = 0; i < ports_c; i++) {
-		for (j = 0; j < ARRAY_SIZE(sip[i]); j++) {
-			if (sip[i][j].me == NULL)
-				continue;
-			nf_conntrack_helper_unregister(&sip[i][j]);
-		}
-	}
-=======
 static void __exit nf_conntrack_sip_fini(void)
 {
 	nf_conntrack_helpers_unregister(sip, ports_c * 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init nf_conntrack_sip_init(void)
 {
-<<<<<<< HEAD
-	int i, j, ret;
-=======
 	int i, ret;
 
 	NF_CT_HELPER_BUILD_BUG_ON(sizeof(struct nf_ct_sip_master));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ports_c == 0)
 		ports[ports_c++] = SIP_PORT;
 
 	for (i = 0; i < ports_c; i++) {
-<<<<<<< HEAD
-		memset(&sip[i], 0, sizeof(sip[i]));
-
-		sip[i][0].tuple.src.l3num = AF_INET;
-		sip[i][0].tuple.dst.protonum = IPPROTO_UDP;
-		sip[i][0].help = sip_help_udp;
-		sip[i][1].tuple.src.l3num = AF_INET;
-		sip[i][1].tuple.dst.protonum = IPPROTO_TCP;
-		sip[i][1].help = sip_help_tcp;
-
-		sip[i][2].tuple.src.l3num = AF_INET6;
-		sip[i][2].tuple.dst.protonum = IPPROTO_UDP;
-		sip[i][2].help = sip_help_udp;
-		sip[i][3].tuple.src.l3num = AF_INET6;
-		sip[i][3].tuple.dst.protonum = IPPROTO_TCP;
-		sip[i][3].help = sip_help_tcp;
-
-		for (j = 0; j < ARRAY_SIZE(sip[i]); j++) {
-			sip[i][j].data_len = sizeof(struct nf_ct_sip_master);
-			sip[i][j].tuple.src.u.udp.port = htons(ports[i]);
-			sip[i][j].expect_policy = sip_exp_policy;
-			sip[i][j].expect_class_max = SIP_EXPECT_MAX;
-			sip[i][j].me = THIS_MODULE;
-
-			if (ports[i] == SIP_PORT)
-				sprintf(sip[i][j].name, "sip");
-			else
-				sprintf(sip[i][j].name, "sip-%u", i);
-
-			pr_debug("port #%u: %u\n", i, ports[i]);
-
-			ret = nf_conntrack_helper_register(&sip[i][j]);
-			if (ret) {
-				printk(KERN_ERR "nf_ct_sip: failed to register"
-				       " helper for pf: %u port: %u\n",
-				       sip[i][j].tuple.src.l3num, ports[i]);
-				nf_conntrack_sip_fini();
-				return ret;
-			}
-		}
-=======
 		nf_ct_helper_init(&sip[4 * i], AF_INET, IPPROTO_UDP,
 				  HELPER_NAME, SIP_PORT, ports[i], i,
 				  sip_exp_policy, SIP_EXPECT_MAX, sip_help_udp,
@@ -2132,7 +1699,6 @@ static int __init nf_conntrack_sip_init(void)
 	if (ret < 0) {
 		pr_err("failed to register helpers\n");
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }

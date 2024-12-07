@@ -5,15 +5,6 @@
  *
  * Synthesize TLB refill handlers at runtime.
  *
-<<<<<<< HEAD
- * Copyright (C) 2004, 2005, 2006, 2008  Thiemo Seufer
- * Copyright (C) 2005, 2007, 2008, 2009  Maciej W. Rozycki
- * Copyright (C) 2006  Ralf Baechle (ralf@linux-mips.org)
- * Copyright (C) 2008, 2009 Cavium Networks, Inc.
- *
- * ... and the days got worse and worse and now you see
- * I've gone completly out of my mind.
-=======
  * Copyright (C) 2004, 2005, 2006, 2008	 Thiemo Seufer
  * Copyright (C) 2005, 2007, 2008, 2009	 Maciej W. Rozycki
  * Copyright (C) 2006  Ralf Baechle (ralf@linux-mips.org)
@@ -22,7 +13,6 @@
  *
  * ... and the days got worse and worse and now you see
  * I've gone completely out of my mind.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * They're coming to take me a away haha
  * they're coming to take me a away hoho hihi haha
@@ -32,24 +22,11 @@
  */
 
 #include <linux/bug.h>
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/smp.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/cache.h>
-
-#include <asm/cacheflush.h>
-#include <asm/pgtable.h>
-#include <asm/war.h>
-#include <asm/uasm.h>
-#include <asm/setup.h>
-=======
 #include <linux/cache.h>
 #include <linux/pgtable.h>
 
@@ -72,7 +49,6 @@ static int __init xpa_disable(char *s)
 }
 
 __setup("noxpa", xpa_disable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * TLB load/store/modify handlers.
@@ -108,11 +84,6 @@ static inline int r4k_250MHZhwbug(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int __maybe_unused bcm1250_m3_war(void)
-{
-	return BCM1250_M3_WAR;
-=======
 extern int sb1250_m3_workaround_needed(void);
 
 static inline int __maybe_unused bcm1250_m3_war(void)
@@ -120,16 +91,11 @@ static inline int __maybe_unused bcm1250_m3_war(void)
 	if (IS_ENABLED(CONFIG_SB1_PASS_2_WORKAROUNDS))
 		return sb1250_m3_workaround_needed();
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int __maybe_unused r10000_llsc_war(void)
 {
-<<<<<<< HEAD
-	return R10000_LLSC_WAR;
-=======
 	return IS_ENABLED(CONFIG_WAR_R10000_LLSC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int use_bbit_insns(void)
@@ -138,10 +104,7 @@ static int use_bbit_insns(void)
 	case CPU_CAVIUM_OCTEON:
 	case CPU_CAVIUM_OCTEON_PLUS:
 	case CPU_CAVIUM_OCTEON2:
-<<<<<<< HEAD
-=======
 	case CPU_CAVIUM_OCTEON3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	default:
 		return 0;
@@ -152,10 +115,7 @@ static int use_lwx_insns(void)
 {
 	switch (current_cpu_type()) {
 	case CPU_CAVIUM_OCTEON2:
-<<<<<<< HEAD
-=======
 	case CPU_CAVIUM_OCTEON3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	default:
 		return 0;
@@ -197,16 +157,9 @@ static int scratchpad_offset(int i)
  * why; it's not an issue caused by the core RTL.
  *
  */
-<<<<<<< HEAD
-static int __cpuinit m4kc_tlbp_war(void)
-{
-	return (current_cpu_data.processor_id & 0xffff00) ==
-	       (PRID_COMP_MIPS | PRID_IMP_4KC);
-=======
 static int m4kc_tlbp_war(void)
 {
 	return current_cpu_type() == CPU_4KC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Handle labels (which must be positive integers). */
@@ -215,13 +168,8 @@ enum label_id {
 	label_leave,
 	label_vmalloc,
 	label_vmalloc_done,
-<<<<<<< HEAD
-	label_tlbw_hazard,
-	label_split,
-=======
 	label_tlbw_hazard_0,
 	label_split = label_tlbw_hazard_0 + 8,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	label_tlbl_goaround1,
 	label_tlbl_goaround2,
 	label_nopage_tlbl,
@@ -230,11 +178,7 @@ enum label_id {
 	label_smp_pgtable_change,
 	label_r3000_write_probe_fail,
 	label_large_segbits_fault,
-<<<<<<< HEAD
-#ifdef CONFIG_HUGETLB_PAGE
-=======
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	label_tlb_huge_update,
 #endif
 };
@@ -243,11 +187,7 @@ UASM_L_LA(_second_part)
 UASM_L_LA(_leave)
 UASM_L_LA(_vmalloc)
 UASM_L_LA(_vmalloc_done)
-<<<<<<< HEAD
-UASM_L_LA(_tlbw_hazard)
-=======
 /* _tlbw_hazard_x is handled differently.  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UASM_L_LA(_split)
 UASM_L_LA(_tlbl_goaround1)
 UASM_L_LA(_tlbl_goaround2)
@@ -257,19 +197,6 @@ UASM_L_LA(_nopage_tlbm)
 UASM_L_LA(_smp_pgtable_change)
 UASM_L_LA(_r3000_write_probe_fail)
 UASM_L_LA(_large_segbits_fault)
-<<<<<<< HEAD
-#ifdef CONFIG_HUGETLB_PAGE
-UASM_L_LA(_tlb_huge_update)
-#endif
-
-/*
- * For debug purposes.
- */
-static inline void dump_handler(const u32 *handler, int count)
-{
-	int i;
-
-=======
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
 UASM_L_LA(_tlb_huge_update)
 #endif
@@ -340,34 +267,10 @@ static inline void dump_handler(const char *symbol, const void *start, const voi
 
 	pr_debug("LEAF(%s)\n", symbol);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("\t.set push\n");
 	pr_debug("\t.set noreorder\n");
 
 	for (i = 0; i < count; i++)
-<<<<<<< HEAD
-		pr_debug("\t%p\t.word 0x%08x\n", &handler[i], handler[i]);
-
-	pr_debug("\t.set pop\n");
-}
-
-/* The only general purpose registers allowed in TLB handlers. */
-#define K0		26
-#define K1		27
-
-/* Some CP0 registers */
-#define C0_INDEX	0, 0
-#define C0_ENTRYLO0	2, 0
-#define C0_TCBIND	2, 2
-#define C0_ENTRYLO1	3, 0
-#define C0_CONTEXT	4, 0
-#define C0_PAGEMASK	5, 0
-#define C0_BADVADDR	8, 0
-#define C0_ENTRYHI	10, 0
-#define C0_EPC		14, 0
-#define C0_XCONTEXT	20, 0
-
-=======
 		pr_debug("\t.word\t0x%08x\t\t# %p\n", handler[i], &handler[i]);
 
 	pr_debug("\t.set\tpop\n");
@@ -375,7 +278,6 @@ static inline void dump_handler(const char *symbol, const void *start, const voi
 	pr_debug("\tEND(%s)\n", symbol);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_64BIT
 # define GET_CONTEXT(buf, reg) UASM_i_MFC0(buf, reg, C0_XCONTEXT)
 #else
@@ -390,23 +292,6 @@ static inline void dump_handler(const char *symbol, const void *start, const voi
  * We deliberately chose a buffer size of 128, so we won't scribble
  * over anything important on overflow before we panic.
  */
-<<<<<<< HEAD
-static u32 tlb_handler[128] __cpuinitdata;
-
-/* simply assume worst case size for labels and relocs */
-static struct uasm_label labels[128] __cpuinitdata;
-static struct uasm_reloc relocs[128] __cpuinitdata;
-
-#ifdef CONFIG_64BIT
-static int check_for_high_segbits __cpuinitdata;
-#endif
-
-static int check_for_high_segbits __cpuinitdata;
-
-static unsigned int kscratch_used_mask __cpuinitdata;
-
-static int __cpuinit allocate_kscratch(void)
-=======
 static u32 tlb_handler[128];
 
 /* simply assume worst case size for labels and relocs */
@@ -424,7 +309,6 @@ static inline int __maybe_unused c0_kscratch(void)
 }
 
 static int allocate_kscratch(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	unsigned int a = cpu_data[0].kscratch_mask & ~kscratch_used_mask;
@@ -441,26 +325,6 @@ static int allocate_kscratch(void)
 	return r;
 }
 
-<<<<<<< HEAD
-static int scratch_reg __cpuinitdata;
-static int pgd_reg __cpuinitdata;
-enum vmalloc64_mode {not_refill, refill_scratch, refill_noscratch};
-
-static struct work_registers __cpuinit build_get_work_registers(u32 **p)
-{
-	struct work_registers r;
-
-	int smp_processor_id_reg;
-	int smp_processor_id_sel;
-	int smp_processor_id_shift;
-
-	if (scratch_reg > 0) {
-		/* Save in CPU local C0_KScratch? */
-		UASM_i_MTC0(p, 1, 31, scratch_reg);
-		r.r1 = K0;
-		r.r2 = K1;
-		r.r3 = 1;
-=======
 static int scratch_reg;
 int pgd_reg;
 EXPORT_SYMBOL_GPL(pgd_reg);
@@ -476,46 +340,10 @@ static struct work_registers build_get_work_registers(u32 **p)
 		r.r1 = GPR_K0;
 		r.r2 = GPR_K1;
 		r.r3 = GPR_AT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
 	if (num_possible_cpus() > 1) {
-<<<<<<< HEAD
-#ifdef CONFIG_MIPS_PGD_C0_CONTEXT
-		smp_processor_id_shift = 51;
-		smp_processor_id_reg = 20; /* XContext */
-		smp_processor_id_sel = 0;
-#else
-# ifdef CONFIG_32BIT
-		smp_processor_id_shift = 25;
-		smp_processor_id_reg = 4; /* Context */
-		smp_processor_id_sel = 0;
-# endif
-# ifdef CONFIG_64BIT
-		smp_processor_id_shift = 26;
-		smp_processor_id_reg = 4; /* Context */
-		smp_processor_id_sel = 0;
-# endif
-#endif
-		/* Get smp_processor_id */
-		UASM_i_MFC0(p, K0, smp_processor_id_reg, smp_processor_id_sel);
-		UASM_i_SRL_SAFE(p, K0, K0, smp_processor_id_shift);
-
-		/* handler_reg_save index in K0 */
-		UASM_i_SLL(p, K0, K0, ilog2(sizeof(struct tlb_reg_save)));
-
-		UASM_i_LA(p, K1, (long)&handler_reg_save);
-		UASM_i_ADDU(p, K0, K0, K1);
-	} else {
-		UASM_i_LA(p, K0, (long)&handler_reg_save);
-	}
-	/* K0 now points to save area, save $1 and $2  */
-	UASM_i_SW(p, 1, offsetof(struct tlb_reg_save, a), K0);
-	UASM_i_SW(p, 2, offsetof(struct tlb_reg_save, b), K0);
-
-	r.r1 = K1;
-=======
 		/* Get smp_processor_id */
 		UASM_i_CPUID_MFC0(p, GPR_K0, SMP_CPUID_REG);
 		UASM_i_SRL_SAFE(p, GPR_K0, GPR_K0, SMP_CPUID_REGSHIFT);
@@ -533,23 +361,11 @@ static struct work_registers build_get_work_registers(u32 **p)
 	UASM_i_SW(p, 2, offsetof(struct tlb_reg_save, b), GPR_K0);
 
 	r.r1 = GPR_K1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r.r2 = 1;
 	r.r3 = 2;
 	return r;
 }
 
-<<<<<<< HEAD
-static void __cpuinit build_restore_work_registers(u32 **p)
-{
-	if (scratch_reg > 0) {
-		UASM_i_MFC0(p, 1, 31, scratch_reg);
-		return;
-	}
-	/* K0 already points to save area, restore $1 and $2  */
-	UASM_i_LW(p, 1, offsetof(struct tlb_reg_save, a), K0);
-	UASM_i_LW(p, 2, offsetof(struct tlb_reg_save, b), K0);
-=======
 static void build_restore_work_registers(u32 **p)
 {
 	if (scratch_reg >= 0) {
@@ -560,7 +376,6 @@ static void build_restore_work_registers(u32 **p)
 	/* GPR_K0 already points to save area, restore $1 and $2  */
 	UASM_i_LW(p, 1, offsetof(struct tlb_reg_save, a), GPR_K0);
 	UASM_i_LW(p, 2, offsetof(struct tlb_reg_save, b), GPR_K0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef CONFIG_MIPS_PGD_C0_CONTEXT
@@ -569,21 +384,9 @@ static void build_restore_work_registers(u32 **p)
  * CONFIG_MIPS_PGD_C0_CONTEXT implies 64 bit and lack of pgd_current,
  * we cannot do r3000 under these circumstances.
  *
-<<<<<<< HEAD
- * Declare pgd_current here instead of including mmu_context.h to avoid type
- * conflicts for tlbmiss_handler_setup_pgd
- */
-extern unsigned long pgd_current[];
-
-/*
- * The R3000 TLB handler is simple.
- */
-static void __cpuinit build_r3000_tlb_refill_handler(void)
-=======
  * The R3000 TLB handler is simple.
  */
 static void build_r3000_tlb_refill_handler(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long pgdc = (long)pgd_current;
 	u32 *p;
@@ -591,24 +394,6 @@ static void build_r3000_tlb_refill_handler(void)
 	memset(tlb_handler, 0, sizeof(tlb_handler));
 	p = tlb_handler;
 
-<<<<<<< HEAD
-	uasm_i_mfc0(&p, K0, C0_BADVADDR);
-	uasm_i_lui(&p, K1, uasm_rel_hi(pgdc)); /* cp0 delay */
-	uasm_i_lw(&p, K1, uasm_rel_lo(pgdc), K1);
-	uasm_i_srl(&p, K0, K0, 22); /* load delay */
-	uasm_i_sll(&p, K0, K0, 2);
-	uasm_i_addu(&p, K1, K1, K0);
-	uasm_i_mfc0(&p, K0, C0_CONTEXT);
-	uasm_i_lw(&p, K1, 0, K1); /* cp0 delay */
-	uasm_i_andi(&p, K0, K0, 0xffc); /* load delay */
-	uasm_i_addu(&p, K1, K1, K0);
-	uasm_i_lw(&p, K0, 0, K1);
-	uasm_i_nop(&p); /* load delay */
-	uasm_i_mtc0(&p, K0, C0_ENTRYLO0);
-	uasm_i_mfc0(&p, K1, C0_EPC); /* cp0 delay */
-	uasm_i_tlbwr(&p); /* cp0 delay */
-	uasm_i_jr(&p, K1);
-=======
 	uasm_i_mfc0(&p, GPR_K0, C0_BADVADDR);
 	uasm_i_lui(&p, GPR_K1, uasm_rel_hi(pgdc)); /* cp0 delay */
 	uasm_i_lw(&p, GPR_K1, uasm_rel_lo(pgdc), GPR_K1);
@@ -625,7 +410,6 @@ static void build_r3000_tlb_refill_handler(void)
 	uasm_i_mfc0(&p, GPR_K1, C0_EPC); /* cp0 delay */
 	uasm_i_tlbwr(&p); /* cp0 delay */
 	uasm_i_jr(&p, GPR_K1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uasm_i_rfe(&p); /* branch delay */
 
 	if (p > tlb_handler + 32)
@@ -635,13 +419,8 @@ static void build_r3000_tlb_refill_handler(void)
 		 (unsigned int)(p - tlb_handler));
 
 	memcpy((void *)ebase, tlb_handler, 0x80);
-<<<<<<< HEAD
-
-	dump_handler((u32 *)ebase, 32);
-=======
 	local_flush_icache_range(ebase, ebase + 0x80);
 	dump_handler("r3000_tlb_refill", (u32 *)ebase, (u32 *)(ebase + 0x80));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_MIPS_PGD_C0_CONTEXT */
 
@@ -652,11 +431,7 @@ static void build_r3000_tlb_refill_handler(void)
  * other one.To keep things simple, we first assume linear space,
  * then we relocate it to the final handler layout as needed.
  */
-<<<<<<< HEAD
-static u32 final_handler[64] __cpuinitdata;
-=======
 static u32 final_handler[64];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Hazards
@@ -664,13 +439,8 @@ static u32 final_handler[64];
  * From the IDT errata for the QED RM5230 (Nevada), processor revision 1.0:
  * 2. A timing hazard exists for the TLBP instruction.
  *
-<<<<<<< HEAD
- *      stalling_instruction
- *      TLBP
-=======
  *	stalling_instruction
  *	TLBP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The JTLB is being read for the TLBP throughout the stall generated by the
  * previous instruction. This is not really correct as the stalling instruction
@@ -681,29 +451,17 @@ static u32 final_handler[64];
  * The software work-around is to not allow the instruction preceding the TLBP
  * to stall - make it an NOP or some other instruction guaranteed not to stall.
  *
-<<<<<<< HEAD
- * Errata 2 will not be fixed.  This errata is also on the R5000.
- *
- * As if we MIPS hackers wouldn't know how to nop pipelines happy ...
- */
-static void __cpuinit __maybe_unused build_tlb_probe_entry(u32 **p)
-=======
  * Errata 2 will not be fixed.	This errata is also on the R5000.
  *
  * As if we MIPS hackers wouldn't know how to nop pipelines happy ...
  */
 static void __maybe_unused build_tlb_probe_entry(u32 **p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (current_cpu_type()) {
 	/* Found by experiment: R4600 v2.0/R4700 needs this, too.  */
 	case CPU_R4600:
 	case CPU_R4700:
 	case CPU_R5000:
-<<<<<<< HEAD
-	case CPU_R5000A:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_NEVADA:
 		uasm_i_nop(p);
 		uasm_i_tlbp(p);
@@ -715,21 +473,9 @@ static void __maybe_unused build_tlb_probe_entry(u32 **p)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * Write random or indexed TLB entry, and care about the hazards from
- * the preceding mtc0 and for the following eret.
- */
-enum tlb_write_entry { tlb_random, tlb_indexed };
-
-static void __cpuinit build_tlb_write_entry(u32 **p, struct uasm_label **l,
-					 struct uasm_reloc **r,
-					 enum tlb_write_entry wmode)
-=======
 void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 			   struct uasm_reloc **r,
 			   enum tlb_write_entry wmode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void(*tlbw)(u32 **) = NULL;
 
@@ -738,11 +484,7 @@ void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 	case tlb_indexed: tlbw = uasm_i_tlbwi; break;
 	}
 
-<<<<<<< HEAD
-	if (cpu_has_mips_r2) {
-=======
 	if (cpu_has_mips_r2_r6) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cpu_has_mips_r2_exec_hazard)
 			uasm_i_ehb(p);
 		tlbw(p);
@@ -760,33 +502,20 @@ void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 		 * This branch uses up a mtc0 hazard nop slot and saves
 		 * two nops after the tlbw instruction.
 		 */
-<<<<<<< HEAD
-		uasm_il_bgezl(p, r, 0, label_tlbw_hazard);
-		tlbw(p);
-		uasm_l_tlbw_hazard(l, *p);
-=======
 		uasm_bgezl_hazard(p, r, hazard_instance);
 		tlbw(p);
 		uasm_bgezl_label(l, p, hazard_instance);
 		hazard_instance++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_i_nop(p);
 		break;
 
 	case CPU_R4600:
 	case CPU_R4700:
-<<<<<<< HEAD
-	case CPU_R5000:
-	case CPU_R5000A:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_i_nop(p);
 		tlbw(p);
 		uasm_i_nop(p);
 		break;
 
-<<<<<<< HEAD
-=======
 	case CPU_R5000:
 	case CPU_NEVADA:
 		uasm_i_nop(p); /* QED specifies 2 nops hazard */
@@ -794,15 +523,10 @@ void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 		tlbw(p);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_R4300:
 	case CPU_5KC:
 	case CPU_TX49XX:
 	case CPU_PR4450:
-<<<<<<< HEAD
-	case CPU_XLR:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_i_nop(p);
 		tlbw(p);
 		break;
@@ -810,16 +534,11 @@ void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 	case CPU_R10000:
 	case CPU_R12000:
 	case CPU_R14000:
-<<<<<<< HEAD
-	case CPU_4KC:
-	case CPU_4KEC:
-=======
 	case CPU_R16000:
 	case CPU_4KC:
 	case CPU_4KEC:
 	case CPU_M14KC:
 	case CPU_M14KEC:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_SB1:
 	case CPU_SB1A:
 	case CPU_4KSC:
@@ -830,37 +549,16 @@ void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 	case CPU_BMIPS4350:
 	case CPU_BMIPS4380:
 	case CPU_BMIPS5000:
-<<<<<<< HEAD
-	case CPU_LOONGSON2:
-	case CPU_R5500:
-		if (m4kc_tlbp_war())
-			uasm_i_nop(p);
-=======
 	case CPU_LOONGSON2EF:
 	case CPU_LOONGSON64:
 	case CPU_R5500:
 		if (m4kc_tlbp_war())
 			uasm_i_nop(p);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_ALCHEMY:
 		tlbw(p);
 		break;
 
-<<<<<<< HEAD
-	case CPU_NEVADA:
-		uasm_i_nop(p); /* QED specifies 2 nops hazard */
-		/*
-		 * This branch uses up a mtc0 hazard nop slot and saves
-		 * a nop after the tlbw instruction.
-		 */
-		uasm_il_bgezl(p, r, 0, label_tlbw_hazard);
-		tlbw(p);
-		uasm_l_tlbw_hazard(l, *p);
-		break;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPU_RM7000:
 		uasm_i_nop(p);
 		uasm_i_nop(p);
@@ -869,70 +567,13 @@ void build_tlb_write_entry(u32 **p, struct uasm_label **l,
 		tlbw(p);
 		break;
 
-<<<<<<< HEAD
-	case CPU_RM9000:
-		/*
-		 * When the JTLB is updated by tlbwi or tlbwr, a subsequent
-		 * use of the JTLB for instructions should not occur for 4
-		 * cpu cycles and use for data translations should not occur
-		 * for 3 cpu cycles.
-		 */
-		uasm_i_ssnop(p);
-		uasm_i_ssnop(p);
-		uasm_i_ssnop(p);
-		uasm_i_ssnop(p);
-		tlbw(p);
-		uasm_i_ssnop(p);
-		uasm_i_ssnop(p);
-		uasm_i_ssnop(p);
-		uasm_i_ssnop(p);
-		break;
-
-	case CPU_VR4111:
-	case CPU_VR4121:
-	case CPU_VR4122:
-	case CPU_VR4181:
-	case CPU_VR4181A:
-		uasm_i_nop(p);
-		uasm_i_nop(p);
-		tlbw(p);
-		uasm_i_nop(p);
-		uasm_i_nop(p);
-		break;
-
-	case CPU_VR4131:
-	case CPU_VR4133:
-	case CPU_R5432:
-		uasm_i_nop(p);
-		uasm_i_nop(p);
-		tlbw(p);
-		break;
-
-	case CPU_JZRISC:
-=======
 	case CPU_XBURST:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tlbw(p);
 		uasm_i_nop(p);
 		break;
 
 	default:
 		panic("No TLB refill handler yet (CPU type: %d)",
-<<<<<<< HEAD
-		      current_cpu_data.cputype);
-		break;
-	}
-}
-
-static __cpuinit __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
-								  unsigned int reg)
-{
-	if (kernel_uses_smartmips_rixi) {
-		UASM_i_SRL(p, reg, reg, ilog2(_PAGE_NO_EXEC));
-		UASM_i_ROTR(p, reg, reg, ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
-	} else {
-#ifdef CONFIG_64BIT_PHYS_ADDR
-=======
 		      current_cpu_type());
 		break;
 	}
@@ -957,7 +598,6 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
 		}
 	} else {
 #ifdef CONFIG_PHYS_ADDR_T_64BIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_i_dsrl_safe(p, reg, reg, ilog2(_PAGE_GLOBAL));
 #else
 		UASM_i_SRL(p, reg, reg, ilog2(_PAGE_GLOBAL));
@@ -965,17 +605,6 @@ static __maybe_unused void build_convert_pte_to_entrylo(u32 **p,
 	}
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_HUGETLB_PAGE
-
-static __cpuinit void build_restore_pagemask(u32 **p,
-					     struct uasm_reloc **r,
-					     unsigned int tmp,
-					     enum label_id lid,
-					     int restore_scratch)
-{
-	if (restore_scratch) {
-=======
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
 
 static void build_restore_pagemask(u32 **p, struct uasm_reloc **r,
@@ -990,7 +619,6 @@ static void build_restore_pagemask(u32 **p, struct uasm_reloc **r,
 		if (scratch_reg >= 0)
 			uasm_i_ehb(p);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Reset default page size */
 		if (PM_DEFAULT_MASK >> 16) {
 			uasm_i_lui(p, tmp, PM_DEFAULT_MASK >> 16);
@@ -1005,13 +633,8 @@ static void build_restore_pagemask(u32 **p, struct uasm_reloc **r,
 			uasm_i_mtc0(p, 0, C0_PAGEMASK);
 			uasm_il_b(p, r, lid);
 		}
-<<<<<<< HEAD
-		if (scratch_reg > 0)
-			UASM_i_MFC0(p, 1, 31, scratch_reg);
-=======
 		if (scratch_reg >= 0)
 			UASM_i_MFC0(p, 1, c0_kscratch(), scratch_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			UASM_i_LW(p, 1, scratchpad_offset(0), 0);
 	} else {
@@ -1032,20 +655,11 @@ static void build_restore_pagemask(u32 **p, struct uasm_reloc **r,
 	}
 }
 
-<<<<<<< HEAD
-static __cpuinit void build_huge_tlb_write_entry(u32 **p,
-						 struct uasm_label **l,
-						 struct uasm_reloc **r,
-						 unsigned int tmp,
-						 enum tlb_write_entry wmode,
-						 int restore_scratch)
-=======
 static void build_huge_tlb_write_entry(u32 **p, struct uasm_label **l,
 				       struct uasm_reloc **r,
 				       unsigned int tmp,
 				       enum tlb_write_entry wmode,
 				       int restore_scratch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Set huge page tlb entry size */
 	uasm_i_lui(p, tmp, PM_HUGE_MASK >> 16);
@@ -1060,15 +674,9 @@ static void build_huge_tlb_write_entry(u32 **p, struct uasm_label **l,
 /*
  * Check if Huge PTE is present, if so then jump to LABEL.
  */
-<<<<<<< HEAD
-static void __cpuinit
-build_is_huge_pte(u32 **p, struct uasm_reloc **r, unsigned int tmp,
-		unsigned int pmd, int lid)
-=======
 static void
 build_is_huge_pte(u32 **p, struct uasm_reloc **r, unsigned int tmp,
 		  unsigned int pmd, int lid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	UASM_i_LW(p, tmp, 0, pmd);
 	if (use_bbit_insns()) {
@@ -1079,14 +687,8 @@ build_is_huge_pte(u32 **p, struct uasm_reloc **r, unsigned int tmp,
 	}
 }
 
-<<<<<<< HEAD
-static __cpuinit void build_huge_update_entries(u32 **p,
-						unsigned int pte,
-						unsigned int tmp)
-=======
 static void build_huge_update_entries(u32 **p, unsigned int pte,
 				      unsigned int tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int small_sequence;
 
@@ -1101,11 +703,7 @@ static void build_huge_update_entries(u32 **p, unsigned int pte,
 	 */
 	small_sequence = (HPAGE_SIZE >> 7) < 0x10000;
 
-<<<<<<< HEAD
-	/* We can clobber tmp.  It isn't used after this.*/
-=======
 	/* We can clobber tmp.	It isn't used after this.*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!small_sequence)
 		uasm_i_lui(p, tmp, HPAGE_SIZE >> (7 + 16));
 
@@ -1120,19 +718,11 @@ static void build_huge_update_entries(u32 **p, unsigned int pte,
 	UASM_i_MTC0(p, pte, C0_ENTRYLO1); /* load it */
 }
 
-<<<<<<< HEAD
-static __cpuinit void build_huge_handler_tail(u32 **p,
-					      struct uasm_reloc **r,
-					      struct uasm_label **l,
-					      unsigned int pte,
-					      unsigned int ptr)
-=======
 static void build_huge_handler_tail(u32 **p, struct uasm_reloc **r,
 				    struct uasm_label **l,
 				    unsigned int pte,
 				    unsigned int ptr,
 				    unsigned int flush)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_SMP
 	UASM_i_SC(p, pte, 0, ptr);
@@ -1141,12 +731,6 @@ static void build_huge_handler_tail(u32 **p, struct uasm_reloc **r,
 #else
 	UASM_i_SW(p, pte, 0, ptr);
 #endif
-<<<<<<< HEAD
-	build_huge_update_entries(p, pte, ptr);
-	build_huge_tlb_write_entry(p, l, r, pte, tlb_indexed, 0);
-}
-#endif /* CONFIG_HUGETLB_PAGE */
-=======
 	if (cpu_has_ftlb && flush) {
 		BUG_ON(!cpu_has_tlbinv);
 
@@ -1167,21 +751,14 @@ static void build_huge_handler_tail(u32 **p, struct uasm_reloc **r,
 	build_huge_tlb_write_entry(p, l, r, pte, tlb_indexed, 0);
 }
 #endif /* CONFIG_MIPS_HUGE_TLB_SUPPORT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 /*
  * TMP and PTR are scratch.
  * TMP will be clobbered, PTR will hold the pmd entry.
  */
-<<<<<<< HEAD
-static void __cpuinit
-build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
-		 unsigned int tmp, unsigned int ptr)
-=======
 void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		      unsigned int tmp, unsigned int ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifndef CONFIG_MIPS_PGD_C0_CONTEXT
 	long pgdc = (long)pgd_current;
@@ -1193,11 +770,7 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 
 	if (check_for_high_segbits) {
 		/*
-<<<<<<< HEAD
-		 * The kernel currently implicitely assumes that the
-=======
 		 * The kernel currently implicitly assumes that the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * MIPS SEGBITS parameter for the processor is
 		 * (PGDIR_SHIFT+PGDIR_BITS) or less, and will never
 		 * allocate virtual addresses outside the maximum
@@ -1207,24 +780,13 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		 * everything but the lower xuseg addresses goes down
 		 * the module_alloc/vmalloc path.
 		 */
-<<<<<<< HEAD
-		uasm_i_dsrl_safe(p, ptr, tmp, PGDIR_SHIFT + PGD_ORDER + PAGE_SHIFT - 3);
-=======
 		uasm_i_dsrl_safe(p, ptr, tmp, PGDIR_SHIFT + PGD_TABLE_ORDER + PAGE_SHIFT - 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_il_bnez(p, r, ptr, label_vmalloc);
 	} else {
 		uasm_il_bltz(p, r, tmp, label_vmalloc);
 	}
 	/* No uasm_i_nop needed here, since the next insn doesn't touch TMP. */
 
-<<<<<<< HEAD
-#ifdef CONFIG_MIPS_PGD_C0_CONTEXT
-	if (pgd_reg != -1) {
-		/* pgd is in pgd_reg */
-		UASM_i_MFC0(p, ptr, 31, pgd_reg);
-	} else {
-=======
 	if (pgd_reg != -1) {
 		/* pgd is in pgd_reg */
 		if (cpu_has_ldpte)
@@ -1233,7 +795,6 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 			UASM_i_MFC0(p, ptr, c0_kscratch(), pgd_reg);
 	} else {
 #if defined(CONFIG_MIPS_PGD_C0_CONTEXT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * &pgd << 11 stored in CONTEXT [23..63].
 		 */
@@ -1242,35 +803,6 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		/* Clear lower 23 bits of context. */
 		uasm_i_dins(p, ptr, 0, 0, 23);
 
-<<<<<<< HEAD
-		/* 1 0  1 0 1  << 6  xkphys cached */
-		uasm_i_ori(p, ptr, ptr, 0x540);
-		uasm_i_drotr(p, ptr, ptr, 11);
-	}
-#elif defined(CONFIG_SMP)
-# ifdef  CONFIG_MIPS_MT_SMTC
-	/*
-	 * SMTC uses TCBind value as "CPU" index
-	 */
-	uasm_i_mfc0(p, ptr, C0_TCBIND);
-	uasm_i_dsrl_safe(p, ptr, ptr, 19);
-# else
-	/*
-	 * 64 bit SMP running in XKPHYS has smp_processor_id() << 3
-	 * stored in CONTEXT.
-	 */
-	uasm_i_dmfc0(p, ptr, C0_CONTEXT);
-	uasm_i_dsrl_safe(p, ptr, ptr, 23);
-# endif
-	UASM_i_LA_mostly(p, tmp, pgdc);
-	uasm_i_daddu(p, ptr, ptr, tmp);
-	uasm_i_dmfc0(p, tmp, C0_BADVADDR);
-	uasm_i_ld(p, ptr, uasm_rel_lo(pgdc), ptr);
-#else
-	UASM_i_LA_mostly(p, ptr, pgdc);
-	uasm_i_ld(p, ptr, uasm_rel_lo(pgdc), ptr);
-#endif
-=======
 		/* insert bit[63:59] of CAC_BASE into bit[11:6] of ptr */
 		uasm_i_ori(p, ptr, ptr, ((u64)(CAC_BASE) >> 53));
 		uasm_i_drotr(p, ptr, ptr, 11);
@@ -1286,7 +818,6 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		uasm_i_ld(p, ptr, uasm_rel_lo(pgdc), ptr);
 #endif
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uasm_l_vmalloc_done(l, *p);
 
@@ -1295,8 +826,6 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 
 	uasm_i_andi(p, tmp, tmp, (PTRS_PER_PGD - 1)<<3);
 	uasm_i_daddu(p, ptr, ptr, tmp); /* add in pgd offset */
-<<<<<<< HEAD
-=======
 #ifndef __PAGETABLE_PUD_FOLDED
 	uasm_i_dmfc0(p, tmp, C0_BADVADDR); /* get faulting address */
 	uasm_i_ld(p, ptr, 0, ptr); /* get pud pointer */
@@ -1304,7 +833,6 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 	uasm_i_andi(p, tmp, tmp, (PTRS_PER_PUD - 1) << 3);
 	uasm_i_daddu(p, ptr, ptr, tmp); /* add in pud offset */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __PAGETABLE_PMD_FOLDED
 	uasm_i_dmfc0(p, tmp, C0_BADVADDR); /* get faulting address */
 	uasm_i_ld(p, ptr, 0, ptr); /* get pmd pointer */
@@ -1313,20 +841,13 @@ void build_get_pmde64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 	uasm_i_daddu(p, ptr, ptr, tmp); /* add in pmd offset */
 #endif
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(build_get_pmde64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * BVADDR is the faulting address, PTR is scratch.
  * PTR will hold the pgd for vmalloc.
  */
-<<<<<<< HEAD
-static void __cpuinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 			unsigned int bvaddr, unsigned int ptr,
 			enum vmalloc64_mode mode)
@@ -1350,11 +871,7 @@ build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		}
 	}
 	if (!did_vmalloc_branch) {
-<<<<<<< HEAD
-		if (uasm_in_compat_space_p(swpd) && !uasm_rel_lo(swpd)) {
-=======
 		if (single_insn_swpd) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uasm_il_b(p, r, label_vmalloc_done);
 			uasm_i_lui(p, ptr, uasm_rel_hi(swpd));
 		} else {
@@ -1368,13 +885,10 @@ build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 	}
 	if (mode != not_refill && check_for_high_segbits) {
 		uasm_l_large_segbits_fault(l, *p);
-<<<<<<< HEAD
-=======
 
 		if (mode == refill_scratch && scratch_reg >= 0)
 			uasm_i_ehb(p);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We get here if we are an xsseg address, or if we are
 		 * an xuseg address above (PGDIR_SHIFT+PGDIR_BITS) boundary.
@@ -1387,22 +901,14 @@ build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
 		 * to mimic that here by taking a load/istream page
 		 * fault.
 		 */
-<<<<<<< HEAD
-=======
 		if (IS_ENABLED(CONFIG_CPU_LOONGSON3_WORKAROUNDS))
 			uasm_i_sync(p, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		UASM_i_LA(p, ptr, (unsigned long)tlb_do_page_fault_0);
 		uasm_i_jr(p, ptr);
 
 		if (mode == refill_scratch) {
-<<<<<<< HEAD
-			if (scratch_reg > 0)
-				UASM_i_MFC0(p, 1, 31, scratch_reg);
-=======
 			if (scratch_reg >= 0)
 				UASM_i_MFC0(p, 1, c0_kscratch(), scratch_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				UASM_i_LW(p, 1, scratchpad_offset(0), 0);
 		} else {
@@ -1417,36 +923,6 @@ build_get_pgd_vmalloc64(u32 **p, struct uasm_label **l, struct uasm_reloc **r,
  * TMP and PTR are scratch.
  * TMP will be clobbered, PTR will hold the pgd entry.
  */
-<<<<<<< HEAD
-static void __cpuinit __maybe_unused
-build_get_pgde32(u32 **p, unsigned int tmp, unsigned int ptr)
-{
-	long pgdc = (long)pgd_current;
-
-	/* 32 bit SMP has smp_processor_id() stored in CONTEXT. */
-#ifdef CONFIG_SMP
-#ifdef  CONFIG_MIPS_MT_SMTC
-	/*
-	 * SMTC uses TCBind value as "CPU" index
-	 */
-	uasm_i_mfc0(p, ptr, C0_TCBIND);
-	UASM_i_LA_mostly(p, tmp, pgdc);
-	uasm_i_srl(p, ptr, ptr, 19);
-#else
-	/*
-	 * smp_processor_id() << 3 is stored in CONTEXT.
-         */
-	uasm_i_mfc0(p, ptr, C0_CONTEXT);
-	UASM_i_LA_mostly(p, tmp, pgdc);
-	uasm_i_srl(p, ptr, ptr, 23);
-#endif
-	uasm_i_addu(p, ptr, tmp, ptr);
-#else
-	UASM_i_LA_mostly(p, ptr, pgdc);
-#endif
-	uasm_i_mfc0(p, tmp, C0_BADVADDR); /* get faulting address */
-	uasm_i_lw(p, ptr, uasm_rel_lo(pgdc), ptr);
-=======
 void build_get_pgde32(u32 **p, unsigned int tmp, unsigned int ptr)
 {
 	if (pgd_reg != -1) {
@@ -1468,56 +944,25 @@ void build_get_pgde32(u32 **p, unsigned int tmp, unsigned int ptr)
 		uasm_i_mfc0(p, tmp, C0_BADVADDR); /* get faulting address */
 		uasm_i_lw(p, ptr, uasm_rel_lo(pgdc), ptr);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uasm_i_srl(p, tmp, tmp, PGDIR_SHIFT); /* get pgd only bits */
 	uasm_i_sll(p, tmp, tmp, PGD_T_LOG2);
 	uasm_i_addu(p, ptr, ptr, tmp); /* add in pgd offset */
 }
-<<<<<<< HEAD
-
-#endif /* !CONFIG_64BIT */
-
-static void __cpuinit build_adjust_context(u32 **p, unsigned int ctx)
-=======
 EXPORT_SYMBOL_GPL(build_get_pgde32);
 
 #endif /* !CONFIG_64BIT */
 
 static void build_adjust_context(u32 **p, unsigned int ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int shift = 4 - (PTE_T_LOG2 + 1) + PAGE_SHIFT - 12;
 	unsigned int mask = (PTRS_PER_PTE / 2 - 1) << (PTE_T_LOG2 + 1);
 
-<<<<<<< HEAD
-	switch (current_cpu_type()) {
-	case CPU_VR41XX:
-	case CPU_VR4111:
-	case CPU_VR4121:
-	case CPU_VR4122:
-	case CPU_VR4131:
-	case CPU_VR4181:
-	case CPU_VR4181A:
-	case CPU_VR4133:
-		shift += 2;
-		break;
-
-	default:
-		break;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (shift)
 		UASM_i_SRL(p, ctx, ctx, shift);
 	uasm_i_andi(p, ctx, ctx, mask);
 }
 
-<<<<<<< HEAD
-static void __cpuinit build_get_ptep(u32 **p, unsigned int tmp, unsigned int ptr)
-=======
 void build_get_ptep(u32 **p, unsigned int tmp, unsigned int ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Bug workaround for the Nevada. It seems as if under certain
@@ -1541,69 +986,6 @@ void build_get_ptep(u32 **p, unsigned int tmp, unsigned int ptr)
 	build_adjust_context(p, tmp);
 	UASM_i_ADDU(p, ptr, ptr, tmp); /* add in offset */
 }
-<<<<<<< HEAD
-
-static void __cpuinit build_update_entries(u32 **p, unsigned int tmp,
-					unsigned int ptep)
-{
-	/*
-	 * 64bit address support (36bit on a 32bit CPU) in a 32bit
-	 * Kernel is a special case. Only a few CPUs use it.
-	 */
-#ifdef CONFIG_64BIT_PHYS_ADDR
-	if (cpu_has_64bits) {
-		uasm_i_ld(p, tmp, 0, ptep); /* get even pte */
-		uasm_i_ld(p, ptep, sizeof(pte_t), ptep); /* get odd pte */
-		if (kernel_uses_smartmips_rixi) {
-			UASM_i_SRL(p, tmp, tmp, ilog2(_PAGE_NO_EXEC));
-			UASM_i_SRL(p, ptep, ptep, ilog2(_PAGE_NO_EXEC));
-			UASM_i_ROTR(p, tmp, tmp, ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
-			UASM_i_MTC0(p, tmp, C0_ENTRYLO0); /* load it */
-			UASM_i_ROTR(p, ptep, ptep, ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
-		} else {
-			uasm_i_dsrl_safe(p, tmp, tmp, ilog2(_PAGE_GLOBAL)); /* convert to entrylo0 */
-			UASM_i_MTC0(p, tmp, C0_ENTRYLO0); /* load it */
-			uasm_i_dsrl_safe(p, ptep, ptep, ilog2(_PAGE_GLOBAL)); /* convert to entrylo1 */
-		}
-		UASM_i_MTC0(p, ptep, C0_ENTRYLO1); /* load it */
-	} else {
-		int pte_off_even = sizeof(pte_t) / 2;
-		int pte_off_odd = pte_off_even + sizeof(pte_t);
-
-		/* The pte entries are pre-shifted */
-		uasm_i_lw(p, tmp, pte_off_even, ptep); /* get even pte */
-		UASM_i_MTC0(p, tmp, C0_ENTRYLO0); /* load it */
-		uasm_i_lw(p, ptep, pte_off_odd, ptep); /* get odd pte */
-		UASM_i_MTC0(p, ptep, C0_ENTRYLO1); /* load it */
-	}
-#else
-	UASM_i_LW(p, tmp, 0, ptep); /* get even pte */
-	UASM_i_LW(p, ptep, sizeof(pte_t), ptep); /* get odd pte */
-	if (r45k_bvahwbug())
-		build_tlb_probe_entry(p);
-	if (kernel_uses_smartmips_rixi) {
-		UASM_i_SRL(p, tmp, tmp, ilog2(_PAGE_NO_EXEC));
-		UASM_i_SRL(p, ptep, ptep, ilog2(_PAGE_NO_EXEC));
-		UASM_i_ROTR(p, tmp, tmp, ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
-		if (r4k_250MHZhwbug())
-			UASM_i_MTC0(p, 0, C0_ENTRYLO0);
-		UASM_i_MTC0(p, tmp, C0_ENTRYLO0); /* load it */
-		UASM_i_ROTR(p, ptep, ptep, ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
-	} else {
-		UASM_i_SRL(p, tmp, tmp, ilog2(_PAGE_GLOBAL)); /* convert to entrylo0 */
-		if (r4k_250MHZhwbug())
-			UASM_i_MTC0(p, 0, C0_ENTRYLO0);
-		UASM_i_MTC0(p, tmp, C0_ENTRYLO0); /* load it */
-		UASM_i_SRL(p, ptep, ptep, ilog2(_PAGE_GLOBAL)); /* convert to entrylo1 */
-		if (r45k_bvahwbug())
-			uasm_i_mfc0(p, tmp, C0_INDEX);
-	}
-	if (r4k_250MHZhwbug())
-		UASM_i_MTC0(p, 0, C0_ENTRYLO1);
-	UASM_i_MTC0(p, ptep, C0_ENTRYLO1); /* load it */
-#endif
-}
-=======
 EXPORT_SYMBOL_GPL(build_get_ptep);
 
 void build_update_entries(u32 **p, unsigned int tmp, unsigned int ptep)
@@ -1656,7 +1038,6 @@ void build_update_entries(u32 **p, unsigned int tmp, unsigned int ptep)
 	UASM_i_MTC0(p, ptep, C0_ENTRYLO1); /* load it */
 }
 EXPORT_SYMBOL_GPL(build_update_entries);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mips_huge_tlb_info {
 	int huge_pte;
@@ -1664,17 +1045,10 @@ struct mips_huge_tlb_info {
 	bool need_reload_pte;
 };
 
-<<<<<<< HEAD
-static struct mips_huge_tlb_info __cpuinit
-build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
-			       struct uasm_reloc **r, unsigned int tmp,
-			       unsigned int ptr, int c0_scratch)
-=======
 static struct mips_huge_tlb_info
 build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 			       struct uasm_reloc **r, unsigned int tmp,
 			       unsigned int ptr, int c0_scratch_reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mips_huge_tlb_info rv;
 	unsigned int even, odd;
@@ -1689,30 +1063,17 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 		UASM_i_MFC0(p, tmp, C0_BADVADDR);
 
 		if (pgd_reg != -1)
-<<<<<<< HEAD
-			UASM_i_MFC0(p, ptr, 31, pgd_reg);
-		else
-			UASM_i_MFC0(p, ptr, C0_CONTEXT);
-
-		if (c0_scratch >= 0)
-			UASM_i_MTC0(p, scratch, 31, c0_scratch);
-=======
 			UASM_i_MFC0(p, ptr, c0_kscratch(), pgd_reg);
 		else
 			UASM_i_MFC0(p, ptr, C0_CONTEXT);
 
 		if (c0_scratch_reg >= 0)
 			UASM_i_MTC0(p, scratch, c0_kscratch(), c0_scratch_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			UASM_i_SW(p, scratch, scratchpad_offset(0), 0);
 
 		uasm_i_dsrl_safe(p, scratch, tmp,
-<<<<<<< HEAD
-				 PGDIR_SHIFT + PGD_ORDER + PAGE_SHIFT - 3);
-=======
 				 PGDIR_SHIFT + PGD_TABLE_ORDER + PAGE_SHIFT - 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_il_bnez(p, r, scratch, label_vmalloc);
 
 		if (pgd_reg == -1) {
@@ -1722,23 +1083,14 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 		}
 	} else {
 		if (pgd_reg != -1)
-<<<<<<< HEAD
-			UASM_i_MFC0(p, ptr, 31, pgd_reg);
-=======
 			UASM_i_MFC0(p, ptr, c0_kscratch(), pgd_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			UASM_i_MFC0(p, ptr, C0_CONTEXT);
 
 		UASM_i_MFC0(p, tmp, C0_BADVADDR);
 
-<<<<<<< HEAD
-		if (c0_scratch >= 0)
-			UASM_i_MTC0(p, scratch, 31, c0_scratch);
-=======
 		if (c0_scratch_reg >= 0)
 			UASM_i_MTC0(p, scratch, c0_kscratch(), c0_scratch_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			UASM_i_SW(p, scratch, scratchpad_offset(0), 0);
 
@@ -1751,14 +1103,9 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 
 	if (pgd_reg == -1) {
 		vmalloc_branch_delay_filled = 1;
-<<<<<<< HEAD
-		/* 1 0  1 0 1  << 6  xkphys cached */
-		uasm_i_ori(p, ptr, ptr, 0x540);
-=======
 		/* insert bit[63:59] of CAC_BASE into bit[11:6] of ptr */
 		uasm_i_ori(p, ptr, ptr, ((u64)(CAC_BASE) >> 53));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_i_drotr(p, ptr, ptr, 11);
 	}
 
@@ -1775,15 +1122,9 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 	uasm_l_vmalloc_done(l, *p);
 
 	/*
-<<<<<<< HEAD
-	 *                         tmp          ptr
-	 * fall-through case =   badvaddr  *pgd_current
-	 * vmalloc case      =   badvaddr  swapper_pg_dir
-=======
 	 *			   tmp		ptr
 	 * fall-through case =	 badvaddr  *pgd_current
 	 * vmalloc case	     =	 badvaddr  swapper_pg_dir
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	if (vmalloc_branch_delay_filled)
@@ -1802,8 +1143,6 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 		uasm_i_ld(p, LOC_PTEP, 0, ptr); /* get pmd pointer */
 	}
 
-<<<<<<< HEAD
-=======
 #ifndef __PAGETABLE_PUD_FOLDED
 	/* get pud offset in bytes */
 	uasm_i_dsrl_safe(p, scratch, tmp, PUD_SHIFT - 3);
@@ -1819,7 +1158,6 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 	/* tmp contains the address */
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __PAGETABLE_PMD_FOLDED
 	/* get pmd offset in bytes */
 	uasm_i_dsrl_safe(p, scratch, tmp, PMD_SHIFT - 3);
@@ -1836,28 +1174,16 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 	/* Adjust the context during the load latency. */
 	build_adjust_context(p, tmp);
 
-<<<<<<< HEAD
-#ifdef CONFIG_HUGETLB_PAGE
-	uasm_il_bbit1(p, r, scratch, ilog2(_PAGE_HUGE), label_tlb_huge_update);
-	/*
-	 * The in the LWX case we don't want to do the load in the
-	 * delay slot.  It cannot issue in the same cycle and may be
-=======
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
 	uasm_il_bbit1(p, r, scratch, ilog2(_PAGE_HUGE), label_tlb_huge_update);
 	/*
 	 * The in the LWX case we don't want to do the load in the
 	 * delay slot.	It cannot issue in the same cycle and may be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * speculative and unneeded.
 	 */
 	if (use_lwx_insns())
 		uasm_i_nop(p);
-<<<<<<< HEAD
-#endif /* CONFIG_HUGETLB_PAGE */
-=======
 #endif /* CONFIG_MIPS_HUGE_TLB_SUPPORT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* build_update_entries */
@@ -1874,21 +1200,10 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 		UASM_i_LW(p, even, 0, ptr); /* get even pte */
 		UASM_i_LW(p, odd, sizeof(pte_t), ptr); /* get odd pte */
 	}
-<<<<<<< HEAD
-	if (kernel_uses_smartmips_rixi) {
-		uasm_i_dsrl_safe(p, even, even, ilog2(_PAGE_NO_EXEC));
-		uasm_i_dsrl_safe(p, odd, odd, ilog2(_PAGE_NO_EXEC));
-		uasm_i_drotr(p, even, even,
-			     ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
-		UASM_i_MTC0(p, even, C0_ENTRYLO0); /* load it */
-		uasm_i_drotr(p, odd, odd,
-			     ilog2(_PAGE_GLOBAL) - ilog2(_PAGE_NO_EXEC));
-=======
 	if (cpu_has_rixi) {
 		uasm_i_drotr(p, even, even, ilog2(_PAGE_GLOBAL));
 		UASM_i_MTC0(p, even, C0_ENTRYLO0); /* load it */
 		uasm_i_drotr(p, odd, odd, ilog2(_PAGE_GLOBAL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		uasm_i_dsrl_safe(p, even, even, ilog2(_PAGE_GLOBAL));
 		UASM_i_MTC0(p, even, C0_ENTRYLO0); /* load it */
@@ -1896,14 +1211,9 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
 	}
 	UASM_i_MTC0(p, odd, C0_ENTRYLO1); /* load it */
 
-<<<<<<< HEAD
-	if (c0_scratch >= 0) {
-		UASM_i_MFC0(p, scratch, 31, c0_scratch);
-=======
 	if (c0_scratch_reg >= 0) {
 		uasm_i_ehb(p);
 		UASM_i_MFC0(p, scratch, c0_kscratch(), c0_scratch_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		build_tlb_write_entry(p, l, r, tlb_random);
 		uasm_l_leave(l, *p);
 		rv.restore_scratch = 1;
@@ -1931,11 +1241,7 @@ build_fast_tlb_refill_handler (u32 **p, struct uasm_label **l,
  */
 #define MIPS64_REFILL_INSNS 32
 
-<<<<<<< HEAD
-static void __cpuinit build_r4000_tlb_refill_handler(void)
-=======
 static void build_r4000_tlb_refill_handler(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 *p = tlb_handler;
 	struct uasm_label *l = labels;
@@ -1950,21 +1256,12 @@ static void build_r4000_tlb_refill_handler(void)
 	memset(relocs, 0, sizeof(relocs));
 	memset(final_handler, 0, sizeof(final_handler));
 
-<<<<<<< HEAD
-	if ((scratch_reg > 0 || scratchpad_available()) && use_bbit_insns()) {
-		htlb_info = build_fast_tlb_refill_handler(&p, &l, &r, K0, K1,
-							  scratch_reg);
-		vmalloc_mode = refill_scratch;
-	} else {
-		htlb_info.huge_pte = K0;
-=======
 	if (IS_ENABLED(CONFIG_64BIT) && (scratch_reg >= 0 || scratchpad_available()) && use_bbit_insns()) {
 		htlb_info = build_fast_tlb_refill_handler(&p, &l, &r, GPR_K0, GPR_K1,
 							  scratch_reg);
 		vmalloc_mode = refill_scratch;
 	} else {
 		htlb_info.huge_pte = GPR_K0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		htlb_info.restore_scratch = 0;
 		htlb_info.need_reload_pte = true;
 		vmalloc_mode = refill_noscratch;
@@ -1974,16 +1271,6 @@ static void build_r4000_tlb_refill_handler(void)
 		if (bcm1250_m3_war()) {
 			unsigned int segbits = 44;
 
-<<<<<<< HEAD
-			uasm_i_dmfc0(&p, K0, C0_BADVADDR);
-			uasm_i_dmfc0(&p, K1, C0_ENTRYHI);
-			uasm_i_xor(&p, K0, K0, K1);
-			uasm_i_dsrl_safe(&p, K1, K0, 62);
-			uasm_i_dsrl_safe(&p, K0, K0, 12 + 1);
-			uasm_i_dsll_safe(&p, K0, K0, 64 + 12 + 1 - segbits);
-			uasm_i_or(&p, K0, K0, K1);
-			uasm_il_bnez(&p, &r, K0, label_leave);
-=======
 			uasm_i_dmfc0(&p, GPR_K0, C0_BADVADDR);
 			uasm_i_dmfc0(&p, GPR_K1, C0_ENTRYHI);
 			uasm_i_xor(&p, GPR_K0, GPR_K0, GPR_K1);
@@ -1992,24 +1279,10 @@ static void build_r4000_tlb_refill_handler(void)
 			uasm_i_dsll_safe(&p, GPR_K0, GPR_K0, 64 + 12 + 1 - segbits);
 			uasm_i_or(&p, GPR_K0, GPR_K0, GPR_K1);
 			uasm_il_bnez(&p, &r, GPR_K0, label_leave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* No need for uasm_i_nop */
 		}
 
 #ifdef CONFIG_64BIT
-<<<<<<< HEAD
-		build_get_pmde64(&p, &l, &r, K0, K1); /* get pmd in K1 */
-#else
-		build_get_pgde32(&p, K0, K1); /* get pgd in K1 */
-#endif
-
-#ifdef CONFIG_HUGETLB_PAGE
-		build_is_huge_pte(&p, &r, K0, K1, label_tlb_huge_update);
-#endif
-
-		build_get_ptep(&p, K0, K1);
-		build_update_entries(&p, K0, K1);
-=======
 		build_get_pmde64(&p, &l, &r, GPR_K0, GPR_K1); /* get pmd in GPR_K1 */
 #else
 		build_get_pgde32(&p, GPR_K0, GPR_K1); /* get pgd in GPR_K1 */
@@ -2021,35 +1294,21 @@ static void build_r4000_tlb_refill_handler(void)
 
 		build_get_ptep(&p, GPR_K0, GPR_K1);
 		build_update_entries(&p, GPR_K0, GPR_K1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		build_tlb_write_entry(&p, &l, &r, tlb_random);
 		uasm_l_leave(&l, p);
 		uasm_i_eret(&p); /* return from trap */
 	}
-<<<<<<< HEAD
-#ifdef CONFIG_HUGETLB_PAGE
-	uasm_l_tlb_huge_update(&l, p);
-	if (htlb_info.need_reload_pte)
-		UASM_i_LW(&p, htlb_info.huge_pte, 0, K1);
-	build_huge_update_entries(&p, htlb_info.huge_pte, K1);
-	build_huge_tlb_write_entry(&p, &l, &r, K0, tlb_random,
-=======
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
 	uasm_l_tlb_huge_update(&l, p);
 	if (htlb_info.need_reload_pte)
 		UASM_i_LW(&p, htlb_info.huge_pte, 0, GPR_K1);
 	build_huge_update_entries(&p, htlb_info.huge_pte, GPR_K1);
 	build_huge_tlb_write_entry(&p, &l, &r, GPR_K0, tlb_random,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   htlb_info.restore_scratch);
 #endif
 
 #ifdef CONFIG_64BIT
-<<<<<<< HEAD
-	build_get_pgd_vmalloc64(&p, &l, &r, K0, K1, vmalloc_mode);
-=======
 	build_get_pgd_vmalloc64(&p, &l, &r, GPR_K0, GPR_K1, vmalloc_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/*
@@ -2059,97 +1318,6 @@ static void build_r4000_tlb_refill_handler(void)
 	 * need three, with the second nop'ed and the third being
 	 * unused.
 	 */
-<<<<<<< HEAD
-	/* Loongson2 ebase is different than r4k, we have more space */
-#if defined(CONFIG_32BIT) || defined(CONFIG_CPU_LOONGSON2)
-	if ((p - tlb_handler) > 64)
-		panic("TLB refill handler space exceeded");
-#else
-	if (((p - tlb_handler) > (MIPS64_REFILL_INSNS * 2) - 1)
-	    || (((p - tlb_handler) > (MIPS64_REFILL_INSNS * 2) - 3)
-		&& uasm_insn_has_bdelay(relocs,
-					tlb_handler + MIPS64_REFILL_INSNS - 3)))
-		panic("TLB refill handler space exceeded");
-#endif
-
-	/*
-	 * Now fold the handler in the TLB refill handler space.
-	 */
-#if defined(CONFIG_32BIT) || defined(CONFIG_CPU_LOONGSON2)
-	f = final_handler;
-	/* Simplest case, just copy the handler. */
-	uasm_copy_handler(relocs, labels, tlb_handler, p, f);
-	final_len = p - tlb_handler;
-#else /* CONFIG_64BIT */
-	f = final_handler + MIPS64_REFILL_INSNS;
-	if ((p - tlb_handler) <= MIPS64_REFILL_INSNS) {
-		/* Just copy the handler. */
-		uasm_copy_handler(relocs, labels, tlb_handler, p, f);
-		final_len = p - tlb_handler;
-	} else {
-#if defined(CONFIG_HUGETLB_PAGE)
-		const enum label_id ls = label_tlb_huge_update;
-#else
-		const enum label_id ls = label_vmalloc;
-#endif
-		u32 *split;
-		int ov = 0;
-		int i;
-
-		for (i = 0; i < ARRAY_SIZE(labels) && labels[i].lab != ls; i++)
-			;
-		BUG_ON(i == ARRAY_SIZE(labels));
-		split = labels[i].addr;
-
-		/*
-		 * See if we have overflown one way or the other.
-		 */
-		if (split > tlb_handler + MIPS64_REFILL_INSNS ||
-		    split < p - MIPS64_REFILL_INSNS)
-			ov = 1;
-
-		if (ov) {
-			/*
-			 * Split two instructions before the end.  One
-			 * for the branch and one for the instruction
-			 * in the delay slot.
-			 */
-			split = tlb_handler + MIPS64_REFILL_INSNS - 2;
-
-			/*
-			 * If the branch would fall in a delay slot,
-			 * we must back up an additional instruction
-			 * so that it is no longer in a delay slot.
-			 */
-			if (uasm_insn_has_bdelay(relocs, split - 1))
-				split--;
-		}
-		/* Copy first part of the handler. */
-		uasm_copy_handler(relocs, labels, tlb_handler, split, f);
-		f += split - tlb_handler;
-
-		if (ov) {
-			/* Insert branch. */
-			uasm_l_split(&l, final_handler);
-			uasm_il_b(&f, &r, label_split);
-			if (uasm_insn_has_bdelay(relocs, split))
-				uasm_i_nop(&f);
-			else {
-				uasm_copy_handler(relocs, labels,
-						  split, split + 1, f);
-				uasm_move_labels(labels, f, f + 1, -1);
-				f++;
-				split++;
-			}
-		}
-
-		/* Copy the rest of the handler. */
-		uasm_copy_handler(relocs, labels, split, p, final_handler);
-		final_len = (f - (final_handler + MIPS64_REFILL_INSNS)) +
-			    (p - split);
-	}
-#endif /* CONFIG_64BIT */
-=======
 	switch (boot_cpu_type()) {
 	default:
 		if (sizeof(long) == 4) {
@@ -2245,46 +1413,12 @@ static void build_r4000_tlb_refill_handler(void)
 		}
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uasm_resolve_relocs(relocs, labels);
 	pr_debug("Wrote TLB refill handler (%u instructions).\n",
 		 final_len);
 
 	memcpy((void *)ebase, final_handler, 0x100);
-<<<<<<< HEAD
-
-	dump_handler((u32 *)ebase, 64);
-}
-
-/*
- * 128 instructions for the fastpath handler is generous and should
- * never be exceeded.
- */
-#define FASTPATH_SIZE 128
-
-u32 handle_tlbl[FASTPATH_SIZE] __cacheline_aligned;
-u32 handle_tlbs[FASTPATH_SIZE] __cacheline_aligned;
-u32 handle_tlbm[FASTPATH_SIZE] __cacheline_aligned;
-#ifdef CONFIG_MIPS_PGD_C0_CONTEXT
-u32 tlbmiss_handler_setup_pgd[16] __cacheline_aligned;
-
-static void __cpuinit build_r4000_setup_pgd(void)
-{
-	const int a0 = 4;
-	const int a1 = 5;
-	u32 *p = tlbmiss_handler_setup_pgd;
-	struct uasm_label *l = labels;
-	struct uasm_reloc *r = relocs;
-
-	memset(tlbmiss_handler_setup_pgd, 0, sizeof(tlbmiss_handler_setup_pgd));
-	memset(labels, 0, sizeof(labels));
-	memset(relocs, 0, sizeof(relocs));
-
-	pgd_reg = allocate_kscratch();
-
-	if (pgd_reg == -1) {
-=======
 	local_flush_icache_range(ebase, ebase + 0x100);
 	dump_handler("r4000_tlb_refill", (u32 *)ebase, (u32 *)(ebase + 0x100));
 }
@@ -2415,7 +1549,6 @@ static void build_setup_pgd(void)
 		struct uasm_label *l = labels;
 		struct uasm_reloc *r = relocs;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* PGD << 11 in c0_Context */
 		/*
 		 * If it is a ckseg0 address, convert to a physical
@@ -2430,31 +1563,6 @@ static void build_setup_pgd(void)
 		uasm_i_dinsm(&p, a0, 0, 29, 64 - 29);
 		uasm_l_tlbl_goaround1(&l, p);
 		UASM_i_SLL(&p, a0, a0, 11);
-<<<<<<< HEAD
-		uasm_i_jr(&p, 31);
-		UASM_i_MTC0(&p, a0, C0_CONTEXT);
-	} else {
-		/* PGD in c0_KScratch */
-		uasm_i_jr(&p, 31);
-		UASM_i_MTC0(&p, a0, 31, pgd_reg);
-	}
-	if (p - tlbmiss_handler_setup_pgd > ARRAY_SIZE(tlbmiss_handler_setup_pgd))
-		panic("tlbmiss_handler_setup_pgd space exceeded");
-	uasm_resolve_relocs(relocs, labels);
-	pr_debug("Wrote tlbmiss_handler_setup_pgd (%u instructions).\n",
-		 (unsigned int)(p - tlbmiss_handler_setup_pgd));
-
-	dump_handler(tlbmiss_handler_setup_pgd,
-		     ARRAY_SIZE(tlbmiss_handler_setup_pgd));
-}
-#endif
-
-static void __cpuinit
-iPTE_LW(u32 **p, unsigned int pte, unsigned int ptr)
-{
-#ifdef CONFIG_SMP
-# ifdef CONFIG_64BIT_PHYS_ADDR
-=======
 		UASM_i_MTC0(&p, a0, C0_CONTEXT);
 		uasm_i_jr(&p, 31);
 		uasm_i_ehb(&p);
@@ -2508,18 +1616,13 @@ iPTE_LW(u32 **p, unsigned int pte, unsigned int ptr)
 	if (IS_ENABLED(CONFIG_CPU_LOONGSON3_WORKAROUNDS))
 		uasm_i_sync(p, 0);
 # ifdef CONFIG_PHYS_ADDR_T_64BIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_has_64bits)
 		uasm_i_lld(p, pte, 0, ptr);
 	else
 # endif
 		UASM_i_LL(p, pte, 0, ptr);
 #else
-<<<<<<< HEAD
-# ifdef CONFIG_64BIT_PHYS_ADDR
-=======
 # ifdef CONFIG_PHYS_ADDR_T_64BIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_has_64bits)
 		uasm_i_ld(p, pte, 0, ptr);
 	else
@@ -2528,19 +1631,6 @@ iPTE_LW(u32 **p, unsigned int pte, unsigned int ptr)
 #endif
 }
 
-<<<<<<< HEAD
-static void __cpuinit
-iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
-	unsigned int mode)
-{
-#ifdef CONFIG_64BIT_PHYS_ADDR
-	unsigned int hwmode = mode & (_PAGE_VALID | _PAGE_DIRTY);
-#endif
-
-	uasm_i_ori(p, pte, pte, mode);
-#ifdef CONFIG_SMP
-# ifdef CONFIG_64BIT_PHYS_ADDR
-=======
 static void
 iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 	unsigned int mode, unsigned int scratch)
@@ -2558,7 +1648,6 @@ iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 
 #ifdef CONFIG_SMP
 # ifdef CONFIG_PHYS_ADDR_T_64BIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_has_64bits)
 		uasm_i_scd(p, pte, 0, ptr);
 	else
@@ -2570,19 +1659,12 @@ iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 	else
 		uasm_il_beqz(p, r, pte, label_smp_pgtable_change);
 
-<<<<<<< HEAD
-# ifdef CONFIG_64BIT_PHYS_ADDR
-=======
 # ifdef CONFIG_PHYS_ADDR_T_64BIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cpu_has_64bits) {
 		/* no uasm_i_nop needed */
 		uasm_i_ll(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_i_ori(p, pte, pte, hwmode);
-<<<<<<< HEAD
-=======
 		BUG_ON(hwmode & ~0xffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_i_sc(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_il_beqz(p, r, pte, label_smp_pgtable_change);
 		/* no uasm_i_nop needed */
@@ -2593,29 +1675,18 @@ iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 	uasm_i_nop(p);
 # endif
 #else
-<<<<<<< HEAD
-# ifdef CONFIG_64BIT_PHYS_ADDR
-=======
 # ifdef CONFIG_PHYS_ADDR_T_64BIT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_has_64bits)
 		uasm_i_sd(p, pte, 0, ptr);
 	else
 # endif
 		UASM_i_SW(p, pte, 0, ptr);
 
-<<<<<<< HEAD
-# ifdef CONFIG_64BIT_PHYS_ADDR
-	if (!cpu_has_64bits) {
-		uasm_i_lw(p, pte, sizeof(pte_t) / 2, ptr);
-		uasm_i_ori(p, pte, pte, hwmode);
-=======
 # ifdef CONFIG_PHYS_ADDR_T_64BIT
 	if (!cpu_has_64bits) {
 		uasm_i_lw(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_i_ori(p, pte, pte, hwmode);
 		BUG_ON(hwmode & ~0xffff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_i_sw(p, pte, sizeof(pte_t) / 2, ptr);
 		uasm_i_lw(p, pte, 0, ptr);
 	}
@@ -2626,50 +1697,31 @@ iPTE_SW(u32 **p, struct uasm_reloc **r, unsigned int pte, unsigned int ptr,
 /*
  * Check if PTE is present, if not then jump to LABEL. PTR points to
  * the page table where this PTE is located, PTE will be re-loaded
-<<<<<<< HEAD
- * with it's original value.
- */
-static void __cpuinit
-=======
  * with its original value.
  */
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_pte_present(u32 **p, struct uasm_reloc **r,
 		  int pte, int ptr, int scratch, enum label_id lid)
 {
 	int t = scratch >= 0 ? scratch : pte;
-<<<<<<< HEAD
-
-	if (kernel_uses_smartmips_rixi) {
-=======
 	int cur = pte;
 
 	if (cpu_has_rixi) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (use_bbit_insns()) {
 			uasm_il_bbit0(p, r, pte, ilog2(_PAGE_PRESENT), lid);
 			uasm_i_nop(p);
 		} else {
-<<<<<<< HEAD
-			uasm_i_andi(p, t, pte, _PAGE_PRESENT);
-=======
 			if (_PAGE_PRESENT_SHIFT) {
 				uasm_i_srl(p, t, cur, _PAGE_PRESENT_SHIFT);
 				cur = t;
 			}
 			uasm_i_andi(p, t, cur, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uasm_il_beqz(p, r, t, lid);
 			if (pte == t)
 				/* You lose the SMP race :-(*/
 				iPTE_LW(p, pte, ptr);
 		}
 	} else {
-<<<<<<< HEAD
-		uasm_i_andi(p, t, pte, _PAGE_PRESENT | _PAGE_READ);
-		uasm_i_xori(p, t, t, _PAGE_PRESENT | _PAGE_READ);
-=======
 		if (_PAGE_PRESENT_SHIFT) {
 			uasm_i_srl(p, t, cur, _PAGE_PRESENT_SHIFT);
 			cur = t;
@@ -2677,7 +1729,6 @@ build_pte_present(u32 **p, struct uasm_reloc **r,
 		uasm_i_andi(p, t, cur,
 			(_PAGE_PRESENT | _PAGE_NO_READ) >> _PAGE_PRESENT_SHIFT);
 		uasm_i_xori(p, t, t, _PAGE_PRESENT >> _PAGE_PRESENT_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_il_bnez(p, r, t, lid);
 		if (pte == t)
 			/* You lose the SMP race :-(*/
@@ -2686,15 +1737,6 @@ build_pte_present(u32 **p, struct uasm_reloc **r,
 }
 
 /* Make PTE valid, store result in PTR. */
-<<<<<<< HEAD
-static void __cpuinit
-build_make_valid(u32 **p, struct uasm_reloc **r, unsigned int pte,
-		 unsigned int ptr)
-{
-	unsigned int mode = _PAGE_VALID | _PAGE_ACCESSED;
-
-	iPTE_SW(p, r, pte, ptr, mode);
-=======
 static void
 build_make_valid(u32 **p, struct uasm_reloc **r, unsigned int pte,
 		 unsigned int ptr, unsigned int scratch)
@@ -2702,28 +1744,18 @@ build_make_valid(u32 **p, struct uasm_reloc **r, unsigned int pte,
 	unsigned int mode = _PAGE_VALID | _PAGE_ACCESSED;
 
 	iPTE_SW(p, r, pte, ptr, mode, scratch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Check if PTE can be written to, if not branch to LABEL. Regardless
  * restore PTE with value from PTR when done.
  */
-<<<<<<< HEAD
-static void __cpuinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_pte_writable(u32 **p, struct uasm_reloc **r,
 		   unsigned int pte, unsigned int ptr, int scratch,
 		   enum label_id lid)
 {
 	int t = scratch >= 0 ? scratch : pte;
-<<<<<<< HEAD
-
-	uasm_i_andi(p, t, pte, _PAGE_PRESENT | _PAGE_WRITE);
-	uasm_i_xori(p, t, t, _PAGE_PRESENT | _PAGE_WRITE);
-=======
 	int cur = pte;
 
 	if (_PAGE_PRESENT_SHIFT) {
@@ -2734,7 +1766,6 @@ build_pte_writable(u32 **p, struct uasm_reloc **r,
 		    (_PAGE_PRESENT | _PAGE_WRITE) >> _PAGE_PRESENT_SHIFT);
 	uasm_i_xori(p, t, t,
 		    (_PAGE_PRESENT | _PAGE_WRITE) >> _PAGE_PRESENT_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uasm_il_bnez(p, r, t, lid);
 	if (pte == t)
 		/* You lose the SMP race :-(*/
@@ -2746,35 +1777,21 @@ build_pte_writable(u32 **p, struct uasm_reloc **r,
 /* Make PTE writable, update software status bits as well, then store
  * at PTR.
  */
-<<<<<<< HEAD
-static void __cpuinit
-build_make_write(u32 **p, struct uasm_reloc **r, unsigned int pte,
-		 unsigned int ptr)
-=======
 static void
 build_make_write(u32 **p, struct uasm_reloc **r, unsigned int pte,
 		 unsigned int ptr, unsigned int scratch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int mode = (_PAGE_ACCESSED | _PAGE_MODIFIED | _PAGE_VALID
 			     | _PAGE_DIRTY);
 
-<<<<<<< HEAD
-	iPTE_SW(p, r, pte, ptr, mode);
-=======
 	iPTE_SW(p, r, pte, ptr, mode, scratch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Check if PTE can be modified, if not branch to LABEL. Regardless
  * restore PTE with value from PTR when done.
  */
-<<<<<<< HEAD
-static void __cpuinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_pte_modifiable(u32 **p, struct uasm_reloc **r,
 		     unsigned int pte, unsigned int ptr, int scratch,
 		     enum label_id lid)
@@ -2784,12 +1801,8 @@ build_pte_modifiable(u32 **p, struct uasm_reloc **r,
 		uasm_i_nop(p);
 	} else {
 		int t = scratch >= 0 ? scratch : pte;
-<<<<<<< HEAD
-		uasm_i_andi(p, t, pte, _PAGE_WRITE);
-=======
 		uasm_i_srl(p, t, pte, _PAGE_WRITE_SHIFT);
 		uasm_i_andi(p, t, t, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uasm_il_beqz(p, r, t, lid);
 		if (pte == t)
 			/* You lose the SMP race :-(*/
@@ -2808,11 +1821,7 @@ build_pte_modifiable(u32 **p, struct uasm_reloc **r,
  * This places the pte into ENTRYLO0 and writes it with tlbwi.
  * Then it returns.
  */
-<<<<<<< HEAD
-static void __cpuinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_r3000_pte_reload_tlbwi(u32 **p, unsigned int pte, unsigned int tmp)
 {
 	uasm_i_mtc0(p, pte, C0_ENTRYLO0); /* cp0 delay */
@@ -2828,11 +1837,7 @@ build_r3000_pte_reload_tlbwi(u32 **p, unsigned int pte, unsigned int tmp)
  * may have the probe fail bit set as a result of a trap on a
  * kseg2 access, i.e. without refill.  Then it returns.
  */
-<<<<<<< HEAD
-static void __cpuinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_r3000_tlb_reload_write(u32 **p, struct uasm_label **l,
 			     struct uasm_reloc **r, unsigned int pte,
 			     unsigned int tmp)
@@ -2850,11 +1855,7 @@ build_r3000_tlb_reload_write(u32 **p, struct uasm_label **l,
 	uasm_i_rfe(p); /* branch delay */
 }
 
-<<<<<<< HEAD
-static void __cpuinit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_r3000_tlbchange_handler_head(u32 **p, unsigned int pte,
 				   unsigned int ptr)
 {
@@ -2874,23 +1875,6 @@ build_r3000_tlbchange_handler_head(u32 **p, unsigned int pte,
 	uasm_i_tlbp(p); /* load delay */
 }
 
-<<<<<<< HEAD
-static void __cpuinit build_r3000_tlb_load_handler(void)
-{
-	u32 *p = handle_tlbl;
-	struct uasm_label *l = labels;
-	struct uasm_reloc *r = relocs;
-
-	memset(handle_tlbl, 0, sizeof(handle_tlbl));
-	memset(labels, 0, sizeof(labels));
-	memset(relocs, 0, sizeof(relocs));
-
-	build_r3000_tlbchange_handler_head(&p, K0, K1);
-	build_pte_present(&p, &r, K0, K1, -1, label_nopage_tlbl);
-	uasm_i_nop(&p); /* load delay */
-	build_make_valid(&p, &r, K0, K1);
-	build_r3000_tlb_reload_write(&p, &l, &r, K0, K1);
-=======
 static void build_r3000_tlb_load_handler(void)
 {
 	u32 *p = (u32 *)handle_tlbl;
@@ -2906,43 +1890,16 @@ static void build_r3000_tlb_load_handler(void)
 	uasm_i_nop(&p); /* load delay */
 	build_make_valid(&p, &r, GPR_K0, GPR_K1, -1);
 	build_r3000_tlb_reload_write(&p, &l, &r, GPR_K0, GPR_K1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uasm_l_nopage_tlbl(&l, p);
 	uasm_i_j(&p, (unsigned long)tlb_do_page_fault_0 & 0x0fffffff);
 	uasm_i_nop(&p);
 
-<<<<<<< HEAD
-	if ((p - handle_tlbl) > FASTPATH_SIZE)
-=======
 	if (p >= (u32 *)handle_tlbl_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("TLB load handler fastpath space exceeded");
 
 	uasm_resolve_relocs(relocs, labels);
 	pr_debug("Wrote TLB load handler fastpath (%u instructions).\n",
-<<<<<<< HEAD
-		 (unsigned int)(p - handle_tlbl));
-
-	dump_handler(handle_tlbl, ARRAY_SIZE(handle_tlbl));
-}
-
-static void __cpuinit build_r3000_tlb_store_handler(void)
-{
-	u32 *p = handle_tlbs;
-	struct uasm_label *l = labels;
-	struct uasm_reloc *r = relocs;
-
-	memset(handle_tlbs, 0, sizeof(handle_tlbs));
-	memset(labels, 0, sizeof(labels));
-	memset(relocs, 0, sizeof(relocs));
-
-	build_r3000_tlbchange_handler_head(&p, K0, K1);
-	build_pte_writable(&p, &r, K0, K1, -1, label_nopage_tlbs);
-	uasm_i_nop(&p); /* load delay */
-	build_make_write(&p, &r, K0, K1);
-	build_r3000_tlb_reload_write(&p, &l, &r, K0, K1);
-=======
 		 (unsigned int)(p - (u32 *)handle_tlbl));
 
 	dump_handler("r3000_tlb_load", handle_tlbl, handle_tlbl_end);
@@ -2963,43 +1920,16 @@ static void build_r3000_tlb_store_handler(void)
 	uasm_i_nop(&p); /* load delay */
 	build_make_write(&p, &r, GPR_K0, GPR_K1, -1);
 	build_r3000_tlb_reload_write(&p, &l, &r, GPR_K0, GPR_K1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uasm_l_nopage_tlbs(&l, p);
 	uasm_i_j(&p, (unsigned long)tlb_do_page_fault_1 & 0x0fffffff);
 	uasm_i_nop(&p);
 
-<<<<<<< HEAD
-	if ((p - handle_tlbs) > FASTPATH_SIZE)
-=======
 	if (p >= (u32 *)handle_tlbs_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("TLB store handler fastpath space exceeded");
 
 	uasm_resolve_relocs(relocs, labels);
 	pr_debug("Wrote TLB store handler fastpath (%u instructions).\n",
-<<<<<<< HEAD
-		 (unsigned int)(p - handle_tlbs));
-
-	dump_handler(handle_tlbs, ARRAY_SIZE(handle_tlbs));
-}
-
-static void __cpuinit build_r3000_tlb_modify_handler(void)
-{
-	u32 *p = handle_tlbm;
-	struct uasm_label *l = labels;
-	struct uasm_reloc *r = relocs;
-
-	memset(handle_tlbm, 0, sizeof(handle_tlbm));
-	memset(labels, 0, sizeof(labels));
-	memset(relocs, 0, sizeof(relocs));
-
-	build_r3000_tlbchange_handler_head(&p, K0, K1);
-	build_pte_modifiable(&p, &r, K0, K1,  -1, label_nopage_tlbm);
-	uasm_i_nop(&p); /* load delay */
-	build_make_write(&p, &r, K0, K1);
-	build_r3000_pte_reload_tlbwi(&p, K0, K1);
-=======
 		 (unsigned int)(p - (u32 *)handle_tlbs));
 
 	dump_handler("r3000_tlb_store", handle_tlbs, handle_tlbs_end);
@@ -3020,33 +1950,16 @@ static void build_r3000_tlb_modify_handler(void)
 	uasm_i_nop(&p); /* load delay */
 	build_make_write(&p, &r, GPR_K0, GPR_K1, -1);
 	build_r3000_pte_reload_tlbwi(&p, GPR_K0, GPR_K1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uasm_l_nopage_tlbm(&l, p);
 	uasm_i_j(&p, (unsigned long)tlb_do_page_fault_1 & 0x0fffffff);
 	uasm_i_nop(&p);
 
-<<<<<<< HEAD
-	if ((p - handle_tlbm) > FASTPATH_SIZE)
-=======
 	if (p >= (u32 *)handle_tlbm_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("TLB modify handler fastpath space exceeded");
 
 	uasm_resolve_relocs(relocs, labels);
 	pr_debug("Wrote TLB modify handler fastpath (%u instructions).\n",
-<<<<<<< HEAD
-		 (unsigned int)(p - handle_tlbm));
-
-	dump_handler(handle_tlbm, ARRAY_SIZE(handle_tlbm));
-}
-#endif /* CONFIG_MIPS_PGD_C0_CONTEXT */
-
-/*
- * R4000 style TLB load/store/modify handlers.
- */
-static struct work_registers __cpuinit
-=======
 		 (unsigned int)(p - (u32 *)handle_tlbm));
 
 	dump_handler("r3000_tlb_modify", handle_tlbm, handle_tlbm_end);
@@ -3077,7 +1990,6 @@ static bool cpu_has_tlbex_tlbp_race(void)
  * R4000 style TLB load/store/modify handlers.
  */
 static struct work_registers
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_r4000_tlbchange_handler_head(u32 **p, struct uasm_label **l,
 				   struct uasm_reloc **r)
 {
@@ -3089,11 +2001,7 @@ build_r4000_tlbchange_handler_head(u32 **p, struct uasm_label **l,
 	build_get_pgde32(p, wr.r1, wr.r2); /* get pgd in ptr */
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_HUGETLB_PAGE
-=======
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * For huge tlb entries, pmd doesn't contain an address but
 	 * instead contains the tlb pte. Check the PAGE_HUGE bit and
@@ -3104,11 +2012,7 @@ build_r4000_tlbchange_handler_head(u32 **p, struct uasm_label **l,
 
 	UASM_i_MFC0(p, wr.r1, C0_BADVADDR);
 	UASM_i_LW(p, wr.r2, 0, wr.r2);
-<<<<<<< HEAD
-	UASM_i_SRL(p, wr.r1, wr.r1, PAGE_SHIFT + PTE_ORDER - PTE_T_LOG2);
-=======
 	UASM_i_SRL(p, wr.r1, wr.r1, PAGE_SHIFT - PTE_T_LOG2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uasm_i_andi(p, wr.r1, wr.r1, (PTRS_PER_PTE - 1) << PTE_T_LOG2);
 	UASM_i_ADDU(p, wr.r2, wr.r2, wr.r1);
 
@@ -3116,14 +2020,6 @@ build_r4000_tlbchange_handler_head(u32 **p, struct uasm_label **l,
 	uasm_l_smp_pgtable_change(l, *p);
 #endif
 	iPTE_LW(p, wr.r1, wr.r2); /* get even pte */
-<<<<<<< HEAD
-	if (!m4kc_tlbp_war())
-		build_tlb_probe_entry(p);
-	return wr;
-}
-
-static void __cpuinit
-=======
 	if (!m4kc_tlbp_war()) {
 		build_tlb_probe_entry(p);
 		if (cpu_has_tlbex_tlbp_race()) {
@@ -3138,7 +2034,6 @@ static void __cpuinit
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 build_r4000_tlbchange_handler_tail(u32 **p, struct uasm_label **l,
 				   struct uasm_reloc **r, unsigned int tmp,
 				   unsigned int ptr)
@@ -3156,40 +2051,20 @@ build_r4000_tlbchange_handler_tail(u32 **p, struct uasm_label **l,
 #endif
 }
 
-<<<<<<< HEAD
-static void __cpuinit build_r4000_tlb_load_handler(void)
-{
-	u32 *p = handle_tlbl;
-=======
 static void build_r4000_tlb_load_handler(void)
 {
 	u32 *p = (u32 *)msk_isa16_mode((ulong)handle_tlbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uasm_label *l = labels;
 	struct uasm_reloc *r = relocs;
 	struct work_registers wr;
 
-<<<<<<< HEAD
-	memset(handle_tlbl, 0, sizeof(handle_tlbl));
-=======
 	memset(p, 0, handle_tlbl_end - (char *)p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(labels, 0, sizeof(labels));
 	memset(relocs, 0, sizeof(relocs));
 
 	if (bcm1250_m3_war()) {
 		unsigned int segbits = 44;
 
-<<<<<<< HEAD
-		uasm_i_dmfc0(&p, K0, C0_BADVADDR);
-		uasm_i_dmfc0(&p, K1, C0_ENTRYHI);
-		uasm_i_xor(&p, K0, K0, K1);
-		uasm_i_dsrl_safe(&p, K1, K0, 62);
-		uasm_i_dsrl_safe(&p, K0, K0, 12 + 1);
-		uasm_i_dsll_safe(&p, K0, K0, 64 + 12 + 1 - segbits);
-		uasm_i_or(&p, K0, K0, K1);
-		uasm_il_bnez(&p, &r, K0, label_leave);
-=======
 		uasm_i_dmfc0(&p, GPR_K0, C0_BADVADDR);
 		uasm_i_dmfc0(&p, GPR_K1, C0_ENTRYHI);
 		uasm_i_xor(&p, GPR_K0, GPR_K0, GPR_K1);
@@ -3198,7 +2073,6 @@ static void build_r4000_tlb_load_handler(void)
 		uasm_i_dsll_safe(&p, GPR_K0, GPR_K0, 64 + 12 + 1 - segbits);
 		uasm_i_or(&p, GPR_K0, GPR_K0, GPR_K1);
 		uasm_il_bnez(&p, &r, GPR_K0, label_leave);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* No need for uasm_i_nop */
 	}
 
@@ -3207,11 +2081,7 @@ static void build_r4000_tlb_load_handler(void)
 	if (m4kc_tlbp_war())
 		build_tlb_probe_entry(&p);
 
-<<<<<<< HEAD
-	if (kernel_uses_smartmips_rixi) {
-=======
 	if (cpu_has_rixi && !cpu_has_rixiex) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If the page is not _PAGE_VALID, RI or XI could not
 		 * have triggered it.  Skip the expensive test..
@@ -3225,9 +2095,6 @@ static void build_r4000_tlb_load_handler(void)
 		}
 		uasm_i_nop(&p);
 
-<<<<<<< HEAD
-		uasm_i_tlbr(&p);
-=======
 		/*
 		 * Warn if something may race with us & replace the TLB entry
 		 * before we read it here. Everything with such races should
@@ -3241,7 +2108,6 @@ static void build_r4000_tlb_load_handler(void)
 		if (cpu_has_mips_r2_exec_hazard)
 			uasm_i_ehb(&p);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Examine  entrylo 0 or 1 based on ptr. */
 		if (use_bbit_insns()) {
 			uasm_i_bbit0(&p, wr.r2, ilog2(sizeof(pte_t)), 8);
@@ -3268,17 +2134,10 @@ static void build_r4000_tlb_load_handler(void)
 		}
 		uasm_l_tlbl_goaround1(&l, p);
 	}
-<<<<<<< HEAD
-	build_make_valid(&p, &r, wr.r1, wr.r2);
-	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
-
-#ifdef CONFIG_HUGETLB_PAGE
-=======
 	build_make_valid(&p, &r, wr.r1, wr.r2, wr.r3);
 	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
 
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This is the entry point when build_r4000_tlbchange_handler_head
 	 * spots a huge page.
@@ -3288,11 +2147,7 @@ static void build_r4000_tlb_load_handler(void)
 	build_pte_present(&p, &r, wr.r1, wr.r2, wr.r3, label_nopage_tlbl);
 	build_tlb_probe_entry(&p);
 
-<<<<<<< HEAD
-	if (kernel_uses_smartmips_rixi) {
-=======
 	if (cpu_has_rixi && !cpu_has_rixiex) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If the page is not _PAGE_VALID, RI or XI could not
 		 * have triggered it.  Skip the expensive test..
@@ -3306,9 +2161,6 @@ static void build_r4000_tlb_load_handler(void)
 		}
 		uasm_i_nop(&p);
 
-<<<<<<< HEAD
-		uasm_i_tlbr(&p);
-=======
 		/*
 		 * Warn if something may race with us & replace the TLB entry
 		 * before we read it here. Everything with such races should
@@ -3322,7 +2174,6 @@ static void build_r4000_tlb_load_handler(void)
 		if (cpu_has_mips_r2_exec_hazard)
 			uasm_i_ehb(&p);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Examine  entrylo 0 or 1 based on ptr. */
 		if (use_bbit_insns()) {
 			uasm_i_bbit0(&p, wr.r2, ilog2(sizeof(pte_t)), 8);
@@ -3355,17 +2206,6 @@ static void build_r4000_tlb_load_handler(void)
 		uasm_l_tlbl_goaround2(&l, p);
 	}
 	uasm_i_ori(&p, wr.r1, wr.r1, (_PAGE_ACCESSED | _PAGE_VALID));
-<<<<<<< HEAD
-	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2);
-#endif
-
-	uasm_l_nopage_tlbl(&l, p);
-	build_restore_work_registers(&p);
-	uasm_i_j(&p, (unsigned long)tlb_do_page_fault_0 & 0x0fffffff);
-	uasm_i_nop(&p);
-
-	if ((p - handle_tlbl) > FASTPATH_SIZE)
-=======
 	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2, 1);
 #endif
 
@@ -3384,21 +2224,10 @@ static void build_r4000_tlb_load_handler(void)
 	uasm_i_nop(&p);
 
 	if (p >= (u32 *)handle_tlbl_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("TLB load handler fastpath space exceeded");
 
 	uasm_resolve_relocs(relocs, labels);
 	pr_debug("Wrote TLB load handler fastpath (%u instructions).\n",
-<<<<<<< HEAD
-		 (unsigned int)(p - handle_tlbl));
-
-	dump_handler(handle_tlbl, ARRAY_SIZE(handle_tlbl));
-}
-
-static void __cpuinit build_r4000_tlb_store_handler(void)
-{
-	u32 *p = handle_tlbs;
-=======
 		 (unsigned int)(p - (u32 *)handle_tlbl));
 
 	dump_handler("r4000_tlb_load", handle_tlbl, handle_tlbl_end);
@@ -3407,16 +2236,11 @@ static void __cpuinit build_r4000_tlb_store_handler(void)
 static void build_r4000_tlb_store_handler(void)
 {
 	u32 *p = (u32 *)msk_isa16_mode((ulong)handle_tlbs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uasm_label *l = labels;
 	struct uasm_reloc *r = relocs;
 	struct work_registers wr;
 
-<<<<<<< HEAD
-	memset(handle_tlbs, 0, sizeof(handle_tlbs));
-=======
 	memset(p, 0, handle_tlbs_end - (char *)p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(labels, 0, sizeof(labels));
 	memset(relocs, 0, sizeof(relocs));
 
@@ -3424,17 +2248,10 @@ static void build_r4000_tlb_store_handler(void)
 	build_pte_writable(&p, &r, wr.r1, wr.r2, wr.r3, label_nopage_tlbs);
 	if (m4kc_tlbp_war())
 		build_tlb_probe_entry(&p);
-<<<<<<< HEAD
-	build_make_write(&p, &r, wr.r1, wr.r2);
-	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
-
-#ifdef CONFIG_HUGETLB_PAGE
-=======
 	build_make_write(&p, &r, wr.r1, wr.r2, wr.r3);
 	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
 
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This is the entry point when
 	 * build_r4000_tlbchange_handler_head spots a huge page.
@@ -3445,17 +2262,6 @@ static void build_r4000_tlb_store_handler(void)
 	build_tlb_probe_entry(&p);
 	uasm_i_ori(&p, wr.r1, wr.r1,
 		   _PAGE_ACCESSED | _PAGE_MODIFIED | _PAGE_VALID | _PAGE_DIRTY);
-<<<<<<< HEAD
-	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2);
-#endif
-
-	uasm_l_nopage_tlbs(&l, p);
-	build_restore_work_registers(&p);
-	uasm_i_j(&p, (unsigned long)tlb_do_page_fault_1 & 0x0fffffff);
-	uasm_i_nop(&p);
-
-	if ((p - handle_tlbs) > FASTPATH_SIZE)
-=======
 	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2, 1);
 #endif
 
@@ -3474,21 +2280,10 @@ static void build_r4000_tlb_store_handler(void)
 	uasm_i_nop(&p);
 
 	if (p >= (u32 *)handle_tlbs_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("TLB store handler fastpath space exceeded");
 
 	uasm_resolve_relocs(relocs, labels);
 	pr_debug("Wrote TLB store handler fastpath (%u instructions).\n",
-<<<<<<< HEAD
-		 (unsigned int)(p - handle_tlbs));
-
-	dump_handler(handle_tlbs, ARRAY_SIZE(handle_tlbs));
-}
-
-static void __cpuinit build_r4000_tlb_modify_handler(void)
-{
-	u32 *p = handle_tlbm;
-=======
 		 (unsigned int)(p - (u32 *)handle_tlbs));
 
 	dump_handler("r4000_tlb_store", handle_tlbs, handle_tlbs_end);
@@ -3497,16 +2292,11 @@ static void __cpuinit build_r4000_tlb_modify_handler(void)
 static void build_r4000_tlb_modify_handler(void)
 {
 	u32 *p = (u32 *)msk_isa16_mode((ulong)handle_tlbm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uasm_label *l = labels;
 	struct uasm_reloc *r = relocs;
 	struct work_registers wr;
 
-<<<<<<< HEAD
-	memset(handle_tlbm, 0, sizeof(handle_tlbm));
-=======
 	memset(p, 0, handle_tlbm_end - (char *)p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(labels, 0, sizeof(labels));
 	memset(relocs, 0, sizeof(relocs));
 
@@ -3515,17 +2305,10 @@ static void build_r4000_tlb_modify_handler(void)
 	if (m4kc_tlbp_war())
 		build_tlb_probe_entry(&p);
 	/* Present and writable bits set, set accessed and dirty bits. */
-<<<<<<< HEAD
-	build_make_write(&p, &r, wr.r1, wr.r2);
-	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
-
-#ifdef CONFIG_HUGETLB_PAGE
-=======
 	build_make_write(&p, &r, wr.r1, wr.r2, wr.r3);
 	build_r4000_tlbchange_handler_tail(&p, &l, &r, wr.r1, wr.r2);
 
 #ifdef CONFIG_MIPS_HUGE_TLB_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This is the entry point when
 	 * build_r4000_tlbchange_handler_head spots a huge page.
@@ -3536,17 +2319,6 @@ static void build_r4000_tlb_modify_handler(void)
 	build_tlb_probe_entry(&p);
 	uasm_i_ori(&p, wr.r1, wr.r1,
 		   _PAGE_ACCESSED | _PAGE_MODIFIED | _PAGE_VALID | _PAGE_DIRTY);
-<<<<<<< HEAD
-	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2);
-#endif
-
-	uasm_l_nopage_tlbm(&l, p);
-	build_restore_work_registers(&p);
-	uasm_i_j(&p, (unsigned long)tlb_do_page_fault_1 & 0x0fffffff);
-	uasm_i_nop(&p);
-
-	if ((p - handle_tlbm) > FASTPATH_SIZE)
-=======
 	build_huge_handler_tail(&p, &r, &l, wr.r1, wr.r2, 0);
 #endif
 
@@ -3565,19 +2337,10 @@ static void build_r4000_tlb_modify_handler(void)
 	uasm_i_nop(&p);
 
 	if (p >= (u32 *)handle_tlbm_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("TLB modify handler fastpath space exceeded");
 
 	uasm_resolve_relocs(relocs, labels);
 	pr_debug("Wrote TLB modify handler fastpath (%u instructions).\n",
-<<<<<<< HEAD
-		 (unsigned int)(p - handle_tlbm));
-
-	dump_handler(handle_tlbm, ARRAY_SIZE(handle_tlbm));
-}
-
-void __cpuinit build_tlb_refill_handler(void)
-=======
 		 (unsigned int)(p - (u32 *)handle_tlbm));
 
 	dump_handler("r4000_tlb_modify", handle_tlbm, handle_tlbm_end);
@@ -3764,7 +2527,6 @@ static void check_pabits(void)
 }
 
 void build_tlb_refill_handler(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * The refill handler is generated per-CPU, multi-node systems
@@ -3773,26 +2535,6 @@ void build_tlb_refill_handler(void)
 	 */
 	static int run_once = 0;
 
-<<<<<<< HEAD
-#ifdef CONFIG_64BIT
-	check_for_high_segbits = current_cpu_data.vmbits > (PGDIR_SHIFT + PGD_ORDER + PAGE_SHIFT - 3);
-#endif
-
-	switch (current_cpu_type()) {
-	case CPU_R2000:
-	case CPU_R3000:
-	case CPU_R3000A:
-	case CPU_R3081E:
-	case CPU_TX3912:
-	case CPU_TX3922:
-	case CPU_TX3927:
-#ifndef CONFIG_MIPS_PGD_C0_CONTEXT
-		build_r3000_tlb_refill_handler();
-		if (!run_once) {
-			build_r3000_tlb_load_handler();
-			build_r3000_tlb_store_handler();
-			build_r3000_tlb_modify_handler();
-=======
 	if (IS_ENABLED(CONFIG_XPA) && !cpu_has_rixi)
 		panic("Kernels supporting XPA currently require CPUs with RIXI");
 
@@ -3812,52 +2554,11 @@ void build_tlb_refill_handler(void)
 			build_r3000_tlb_store_handler();
 			build_r3000_tlb_modify_handler();
 			flush_tlb_handlers();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			run_once++;
 		}
 #else
 		panic("No R3000 TLB refill handler");
 #endif
-<<<<<<< HEAD
-		break;
-
-	case CPU_R6000:
-	case CPU_R6000A:
-		panic("No R6000 TLB refill handler yet");
-		break;
-
-	case CPU_R8000:
-		panic("No R8000 TLB refill handler yet");
-		break;
-
-	default:
-		if (!run_once) {
-			scratch_reg = allocate_kscratch();
-#ifdef CONFIG_MIPS_PGD_C0_CONTEXT
-			build_r4000_setup_pgd();
-#endif
-			build_r4000_tlb_load_handler();
-			build_r4000_tlb_store_handler();
-			build_r4000_tlb_modify_handler();
-			run_once++;
-		}
-		build_r4000_tlb_refill_handler();
-	}
-}
-
-void __cpuinit flush_tlb_handlers(void)
-{
-	local_flush_icache_range((unsigned long)handle_tlbl,
-			   (unsigned long)handle_tlbl + sizeof(handle_tlbl));
-	local_flush_icache_range((unsigned long)handle_tlbs,
-			   (unsigned long)handle_tlbs + sizeof(handle_tlbs));
-	local_flush_icache_range((unsigned long)handle_tlbm,
-			   (unsigned long)handle_tlbm + sizeof(handle_tlbm));
-#ifdef CONFIG_MIPS_PGD_C0_CONTEXT
-	local_flush_icache_range((unsigned long)tlbmiss_handler_setup_pgd,
-			   (unsigned long)tlbmiss_handler_setup_pgd + sizeof(handle_tlbm));
-#endif
-=======
 		return;
 	}
 
@@ -3881,5 +2582,4 @@ void __cpuinit flush_tlb_handlers(void)
 		config_xpa_params();
 	if (cpu_has_htw)
 		config_htw_params();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

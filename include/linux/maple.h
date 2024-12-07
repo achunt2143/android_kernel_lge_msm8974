@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_MAPLE_H
 #define __LINUX_MAPLE_H
 
 #include <mach/maple.h>
 
 struct device;
-<<<<<<< HEAD
-extern struct bus_type maple_bus_type;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maple Bus command and response codes */
 enum maple_code {

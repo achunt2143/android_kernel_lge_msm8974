@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AppArmor security module
  *
@@ -9,36 +6,11 @@
  *
  * Copyright (C) 1998-2008 Novell/SUSE
  * Copyright 2009-2010 Canonical Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __AA_APPARMORFS_H
 #define __AA_APPARMORFS_H
 
-<<<<<<< HEAD
-enum aa_fs_type {
-	AA_FS_TYPE_BOOLEAN,
-	AA_FS_TYPE_STRING,
-	AA_FS_TYPE_U64,
-	AA_FS_TYPE_FOPS,
-	AA_FS_TYPE_DIR,
-};
-
-struct aa_fs_entry;
-
-struct aa_fs_entry {
-	const char *name;
-	struct dentry *dentry;
-	umode_t mode;
-	enum aa_fs_type v_type;
-=======
 extern struct path aa_null;
 
 enum aa_sfs_type {
@@ -56,44 +28,15 @@ struct aa_sfs_entry {
 	struct dentry *dentry;
 	umode_t mode;
 	enum aa_sfs_type v_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		bool boolean;
 		char *string;
 		unsigned long u64;
-<<<<<<< HEAD
-		struct aa_fs_entry *files;
-=======
 		struct aa_sfs_entry *files;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} v;
 	const struct file_operations *file_ops;
 };
 
-<<<<<<< HEAD
-extern const struct file_operations aa_fs_seq_file_ops;
-
-#define AA_FS_FILE_BOOLEAN(_name, _value) \
-	{ .name = (_name), .mode = 0444, \
-	  .v_type = AA_FS_TYPE_BOOLEAN, .v.boolean = (_value), \
-	  .file_ops = &aa_fs_seq_file_ops }
-#define AA_FS_FILE_STRING(_name, _value) \
-	{ .name = (_name), .mode = 0444, \
-	  .v_type = AA_FS_TYPE_STRING, .v.string = (_value), \
-	  .file_ops = &aa_fs_seq_file_ops }
-#define AA_FS_FILE_U64(_name, _value) \
-	{ .name = (_name), .mode = 0444, \
-	  .v_type = AA_FS_TYPE_U64, .v.u64 = (_value), \
-	  .file_ops = &aa_fs_seq_file_ops }
-#define AA_FS_FILE_FOPS(_name, _mode, _fops) \
-	{ .name = (_name), .v_type = AA_FS_TYPE_FOPS, \
-	  .mode = (_mode), .file_ops = (_fops) }
-#define AA_FS_DIR(_name, _value) \
-	{ .name = (_name), .v_type = AA_FS_TYPE_DIR, .v.files = (_value) }
-
-extern void __init aa_destroy_aafs(void);
-
-=======
 extern const struct file_operations aa_sfs_seq_file_ops;
 
 #define AA_SFS_FILE_BOOLEAN(_name, _value) \
@@ -188,5 +131,4 @@ static inline int __aa_fs_create_rawdata(struct aa_ns *ns,
 }
 #endif /* CONFIG_SECURITY_APPARMOR_EXPORT_BINARY */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __AA_APPARMORFS_H */

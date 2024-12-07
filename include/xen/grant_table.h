@@ -45,8 +45,6 @@
 #include <asm/xen/hypervisor.h>
 
 #include <xen/features.h>
-<<<<<<< HEAD
-=======
 #include <xen/page.h>
 #include <linux/mm_types.h>
 #include <linux/page-flags.h>
@@ -58,7 +56,6 @@
  */
 #define INVALID_GRANT_REF          ((grant_ref_t)-1)
 #define INVALID_GRANT_HANDLE       ((grant_handle_t)-1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* NR_GRANT_FRAMES must be less than or equal to that configured in Xen */
 #define NR_GRANT_FRAMES 4
@@ -70,8 +67,6 @@ struct gnttab_free_callback {
 	u16 count;
 };
 
-<<<<<<< HEAD
-=======
 struct gntab_unmap_queue_data;
 
 typedef void (*gnttab_unmap_refs_done)(int result, struct gntab_unmap_queue_data *data);
@@ -88,63 +83,24 @@ struct gntab_unmap_queue_data
 	unsigned int age;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int gnttab_init(void);
 int gnttab_suspend(void);
 int gnttab_resume(void);
 
 int gnttab_grant_foreign_access(domid_t domid, unsigned long frame,
 				int readonly);
-<<<<<<< HEAD
-int gnttab_grant_foreign_access_subpage(domid_t domid, unsigned long frame,
-					int flags, unsigned page_off,
-					unsigned length);
-int gnttab_grant_foreign_access_trans(domid_t domid, int flags,
-				      domid_t trans_domid,
-				      grant_ref_t trans_gref);
-
-/*
- * Are sub-page grants available on this version of Xen?  Returns true if they
- * are, and false if they're not.
- */
-bool gnttab_subpage_grants_available(void);
-
-/*
- * Are transitive grants available on this version of Xen?  Returns true if they
- * are, and false if they're not.
- */
-bool gnttab_trans_grants_available(void);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * End access through the given grant reference, iff the grant entry is no
  * longer in use.  Return 1 if the grant entry was freed, 0 if it is still in
  * use.
  */
-<<<<<<< HEAD
-int gnttab_end_foreign_access_ref(grant_ref_t ref, int readonly);
-=======
 int gnttab_end_foreign_access_ref(grant_ref_t ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Eventually end access through the given grant reference, and once that
  * access has been ended, free the given page too.  Access will be ended
  * immediately iff the grant entry is not in use, otherwise it will happen
-<<<<<<< HEAD
- * some time later.  page may be 0, in which case no freeing will occur.
- */
-void gnttab_end_foreign_access(grant_ref_t ref, int readonly,
-			       unsigned long page);
-
-int gnttab_grant_foreign_transfer(domid_t domid, unsigned long pfn);
-
-unsigned long gnttab_end_foreign_transfer_ref(grant_ref_t ref);
-unsigned long gnttab_end_foreign_transfer(grant_ref_t ref);
-
-int gnttab_query_foreign_access(grant_ref_t ref);
-=======
  * some time later.  page may be NULL, in which case no freeing will occur.
  * Note that the granted page might still be accessed (read or write) by the
  * other side after gnttab_end_foreign_access() returns, so even if page was
@@ -165,27 +121,20 @@ void gnttab_end_foreign_access(grant_ref_t ref, struct page *page);
  * Return 1 if the grant entry was freed, 0 if it is still in use.
  */
 int gnttab_try_end_foreign_access(grant_ref_t ref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * operations on reserved batches of grant references
  */
 int gnttab_alloc_grant_references(u16 count, grant_ref_t *pprivate_head);
 
-<<<<<<< HEAD
-=======
 int gnttab_alloc_grant_reference_seq(unsigned int count, grant_ref_t *first);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void gnttab_free_grant_reference(grant_ref_t ref);
 
 void gnttab_free_grant_references(grant_ref_t head);
 
-<<<<<<< HEAD
-=======
 void gnttab_free_grant_reference_seq(grant_ref_t head, unsigned int count);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int gnttab_empty_grant_references(const grant_ref_t *pprivate_head);
 
 int gnttab_claim_grant_reference(grant_ref_t *pprivate_head);
@@ -199,18 +148,6 @@ void gnttab_cancel_free_callback(struct gnttab_free_callback *callback);
 
 void gnttab_grant_foreign_access_ref(grant_ref_t ref, domid_t domid,
 				     unsigned long frame, int readonly);
-<<<<<<< HEAD
-int gnttab_grant_foreign_access_subpage_ref(grant_ref_t ref, domid_t domid,
-					    unsigned long frame, int flags,
-					    unsigned page_off,
-					    unsigned length);
-int gnttab_grant_foreign_access_trans_ref(grant_ref_t ref, domid_t domid,
-					  int flags, domid_t trans_domid,
-					  grant_ref_t trans_gref);
-
-void gnttab_grant_foreign_transfer_ref(grant_ref_t, domid_t domid,
-				       unsigned long pfn);
-=======
 
 /* Give access to the first 4K of the page */
 static inline void gnttab_page_grant_foreign_access_ref_one(
@@ -220,7 +157,6 @@ static inline void gnttab_page_grant_foreign_access_ref_one(
 	gnttab_grant_foreign_access_ref(ref, domid, xen_page_to_gfn(page),
 					readonly);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void
 gnttab_set_map_op(struct gnttab_map_grant_ref *map, phys_addr_t addr,
@@ -236,10 +172,7 @@ gnttab_set_map_op(struct gnttab_map_grant_ref *map, phys_addr_t addr,
 	map->flags = flags;
 	map->ref = ref;
 	map->dom = domid;
-<<<<<<< HEAD
-=======
 	map->status = 1; /* arbitrary positive value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
@@ -257,12 +190,8 @@ gnttab_set_unmap_op(struct gnttab_unmap_grant_ref *unmap, phys_addr_t addr,
 	unmap->dev_bus_addr = 0;
 }
 
-<<<<<<< HEAD
-int arch_gnttab_map_shared(unsigned long *frames, unsigned long nr_gframes,
-=======
 int arch_gnttab_init(unsigned long nr_shared, unsigned long nr_status);
 int arch_gnttab_map_shared(xen_pfn_t *frames, unsigned long nr_gframes,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   unsigned long max_nr_gframes,
 			   void **__shared);
 int arch_gnttab_map_status(uint64_t *frames, unsigned long nr_gframes,
@@ -270,13 +199,6 @@ int arch_gnttab_map_status(uint64_t *frames, unsigned long nr_gframes,
 			   grant_status_t **__shared);
 void arch_gnttab_unmap(void *shared, unsigned long nr_gframes);
 
-<<<<<<< HEAD
-extern unsigned long xen_hvm_resume_frames;
-unsigned int gnttab_max_grant_frames(void);
-
-#define gnttab_map_vaddr(map) ((void *)(map.host_virt_addr))
-
-=======
 struct grant_frames {
 	xen_pfn_t *pfn;
 	unsigned int count;
@@ -330,15 +252,10 @@ int gnttab_dma_free_pages(struct gnttab_dma_alloc_args *args);
 int gnttab_pages_set_private(int nr_pages, struct page **pages);
 void gnttab_pages_clear_private(int nr_pages, struct page **pages);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int gnttab_map_refs(struct gnttab_map_grant_ref *map_ops,
 		    struct gnttab_map_grant_ref *kmap_ops,
 		    struct page **pages, unsigned int count);
 int gnttab_unmap_refs(struct gnttab_unmap_grant_ref *unmap_ops,
-<<<<<<< HEAD
-		      struct gnttab_map_grant_ref *kunmap_ops,
-		      struct page **pages, unsigned int count);
-=======
 		      struct gnttab_unmap_grant_ref *kunmap_ops,
 		      struct page **pages, unsigned int count);
 void gnttab_unmap_refs_async(struct gntab_unmap_queue_data* item);
@@ -420,6 +337,5 @@ static inline unsigned int gnttab_count_grant(unsigned int start,
 {
 	return XEN_PFN_UP(xen_offset_in_page(start) + len);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_GNTTAB_H__ */

@@ -4,13 +4,10 @@
  * Ryan Wilson <hap9@epoch.ncsc.mil>
  * Chris Bookholt <hap10@epoch.ncsc.mil>
  */
-<<<<<<< HEAD
-=======
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #define dev_fmt pr_fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/rwsem.h>
@@ -22,24 +19,16 @@
 #include <linux/sched.h>
 #include <linux/atomic.h>
 #include <xen/events.h>
-<<<<<<< HEAD
-#include <asm/xen/pci.h>
-#include <asm/xen/hypervisor.h>
-=======
 #include <xen/pci.h>
 #include <xen/xen.h>
 #include <asm/xen/hypervisor.h>
 #include <xen/interface/physdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pciback.h"
 #include "conf_space.h"
 #include "conf_space_quirks.h"
 
-<<<<<<< HEAD
-=======
 #define PCISTUB_DRIVER_NAME "pciback"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static char *pci_devs_to_hide;
 wait_queue_head_t xen_pcibk_aer_wait_queue;
 /*Add sem for sync AER handling and xen_pcibk remove/reconfigue ops,
@@ -84,11 +73,7 @@ static struct pcistub_device *pcistub_device_alloc(struct pci_dev *dev)
 
 	dev_dbg(&dev->dev, "pcistub_device_alloc\n");
 
-<<<<<<< HEAD
-	psdev = kzalloc(sizeof(*psdev), GFP_ATOMIC);
-=======
 	psdev = kzalloc(sizeof(*psdev), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!psdev)
 		return NULL;
 
@@ -108,16 +93,6 @@ static struct pcistub_device *pcistub_device_alloc(struct pci_dev *dev)
 static void pcistub_device_release(struct kref *kref)
 {
 	struct pcistub_device *psdev;
-<<<<<<< HEAD
-	struct xen_pcibk_dev_data *dev_data;
-
-	psdev = container_of(kref, struct pcistub_device, kref);
-	dev_data = pci_get_drvdata(psdev->dev);
-
-	dev_dbg(&psdev->dev->dev, "pcistub_device_release\n");
-
-	xen_unregister_device_domain_owner(psdev->dev);
-=======
 	struct pci_dev *dev;
 	struct xen_pcibk_dev_data *dev_data;
 
@@ -128,32 +103,10 @@ static void pcistub_device_release(struct kref *kref)
 	dev_dbg(&dev->dev, "pcistub_device_release\n");
 
 	xen_unregister_device_domain_owner(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Call the reset function which does not take lock as this
 	 * is called from "unbind" which takes a device_lock mutex.
 	 */
-<<<<<<< HEAD
-	__pci_reset_function_locked(psdev->dev);
-	if (pci_load_and_free_saved_state(psdev->dev,
-					  &dev_data->pci_saved_state)) {
-		dev_dbg(&psdev->dev->dev, "Could not reload PCI state\n");
-	} else
-		pci_restore_state(psdev->dev);
-
-	/* Disable the device */
-	xen_pcibk_reset_device(psdev->dev);
-
-	kfree(dev_data);
-	pci_set_drvdata(psdev->dev, NULL);
-
-	/* Clean-up the device */
-	xen_pcibk_config_free_dyn_fields(psdev->dev);
-	xen_pcibk_config_free_dev(psdev->dev);
-
-	psdev->dev->dev_flags &= ~PCI_DEV_FLAGS_ASSIGNED;
-	pci_dev_put(psdev->dev);
-=======
 	__pci_reset_function_locked(dev);
 	if (dev_data &&
 	    pci_load_and_free_saved_state(dev, &dev_data->pci_saved_state))
@@ -187,7 +140,6 @@ static void pcistub_device_release(struct kref *kref)
 
 	pci_clear_dev_assigned(dev);
 	pci_dev_put(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(psdev);
 }
@@ -202,37 +154,15 @@ static inline void pcistub_device_put(struct pcistub_device *psdev)
 	kref_put(&psdev->kref, pcistub_device_release);
 }
 
-<<<<<<< HEAD
-static struct pcistub_device *pcistub_device_find(int domain, int bus,
-						  int slot, int func)
-{
-	struct pcistub_device *psdev = NULL;
-	unsigned long flags;
-
-	spin_lock_irqsave(&pcistub_devices_lock, flags);
-=======
 static struct pcistub_device *pcistub_device_find_locked(int domain, int bus,
 							 int slot, int func)
 {
 	struct pcistub_device *psdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(psdev, &pcistub_devices, dev_list) {
 		if (psdev->dev != NULL
 		    && domain == pci_domain_nr(psdev->dev->bus)
 		    && bus == psdev->dev->bus->number
-<<<<<<< HEAD
-		    && PCI_DEVFN(slot, func) == psdev->dev->devfn) {
-			pcistub_device_get(psdev);
-			goto out;
-		}
-	}
-
-	/* didn't find it */
-	psdev = NULL;
-
-out:
-=======
 		    && slot == PCI_SLOT(psdev->dev->devfn)
 		    && func == PCI_FUNC(psdev->dev->devfn)) {
 			return psdev;
@@ -254,7 +184,6 @@ static struct pcistub_device *pcistub_device_find(int domain, int bus,
 	if (psdev)
 		pcistub_device_get(psdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 	return psdev;
 }
@@ -265,11 +194,6 @@ static struct pci_dev *pcistub_device_get_pci_dev(struct xen_pcibk_device *pdev,
 	struct pci_dev *pci_dev = NULL;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	pcistub_device_get(psdev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&psdev->lock, flags);
 	if (!psdev->pdev) {
 		psdev->pdev = pdev;
@@ -277,13 +201,8 @@ static struct pci_dev *pcistub_device_get_pci_dev(struct xen_pcibk_device *pdev,
 	}
 	spin_unlock_irqrestore(&psdev->lock, flags);
 
-<<<<<<< HEAD
-	if (!pci_dev)
-		pcistub_device_put(psdev);
-=======
 	if (pci_dev)
 		pcistub_device_get(psdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pci_dev;
 }
@@ -298,21 +217,9 @@ struct pci_dev *pcistub_get_pci_dev_by_slot(struct xen_pcibk_device *pdev,
 
 	spin_lock_irqsave(&pcistub_devices_lock, flags);
 
-<<<<<<< HEAD
-	list_for_each_entry(psdev, &pcistub_devices, dev_list) {
-		if (psdev->dev != NULL
-		    && domain == pci_domain_nr(psdev->dev->bus)
-		    && bus == psdev->dev->bus->number
-		    && PCI_DEVFN(slot, func) == psdev->dev->devfn) {
-			found_dev = pcistub_device_get_pci_dev(pdev, psdev);
-			break;
-		}
-	}
-=======
 	psdev = pcistub_device_find_locked(domain, bus, slot, func);
 	if (psdev)
 		found_dev = pcistub_device_get_pci_dev(pdev, psdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 	return found_dev;
@@ -338,8 +245,6 @@ struct pci_dev *pcistub_get_pci_dev(struct xen_pcibk_device *pdev,
 	return found_dev;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Called when:
  *  - XenBus state has been reconfigure (pci unplug). See xen_pcibk_remove_device
@@ -351,16 +256,12 @@ struct pci_dev *pcistub_get_pci_dev(struct xen_pcibk_device *pdev,
  *
  *  To make this easier, the caller has to hold the device lock.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void pcistub_put_pci_dev(struct pci_dev *dev)
 {
 	struct pcistub_device *psdev, *found_psdev = NULL;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	struct xen_pcibk_dev_data *dev_data;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pcistub_devices_lock, flags);
 
@@ -382,23 +283,6 @@ void pcistub_put_pci_dev(struct pci_dev *dev)
 	/* Cleanup our device
 	 * (so it's ready for the next domain)
 	 */
-<<<<<<< HEAD
-
-	/* This is OK - we are running from workqueue context
-	 * and want to inhibit the user from fiddling with 'reset'
-	 */
-	pci_reset_function(dev);
-	pci_restore_state(psdev->dev);
-
-	/* This disables the device. */
-	xen_pcibk_reset_device(found_psdev->dev);
-
-	/* And cleanup up our emulated fields. */
-	xen_pcibk_config_free_dyn_fields(found_psdev->dev);
-	xen_pcibk_config_reset_dev(found_psdev->dev);
-
-	xen_unregister_device_domain_owner(found_psdev->dev);
-=======
 	device_lock_assert(&dev->dev);
 	__pci_reset_function_locked(dev);
 
@@ -423,7 +307,6 @@ void pcistub_put_pci_dev(struct pci_dev *dev)
 	dev_data->allow_interrupt_control = 0;
 
 	xen_unregister_device_domain_owner(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&found_psdev->lock, flags);
 	found_psdev->pdev = NULL;
@@ -433,13 +316,8 @@ void pcistub_put_pci_dev(struct pci_dev *dev)
 	up_write(&pcistub_sem);
 }
 
-<<<<<<< HEAD
-static int __devinit pcistub_match_one(struct pci_dev *dev,
-				       struct pcistub_device_id *pdev_id)
-=======
 static int pcistub_match_one(struct pci_dev *dev,
 			     struct pcistub_device_id *pdev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Match the specified device by domain, bus, slot, func and also if
 	 * any of the device's parent bridges match.
@@ -458,11 +336,7 @@ static int pcistub_match_one(struct pci_dev *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit pcistub_match(struct pci_dev *dev)
-=======
 static int pcistub_match(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcistub_device_id *pdev_id;
 	unsigned long flags;
@@ -480,11 +354,7 @@ static int pcistub_match(struct pci_dev *dev)
 	return found;
 }
 
-<<<<<<< HEAD
-static int __devinit pcistub_init_device(struct pci_dev *dev)
-=======
 static int pcistub_init_device(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xen_pcibk_dev_data *dev_data;
 	int err = 0;
@@ -497,11 +367,7 @@ static int pcistub_init_device(struct pci_dev *dev)
 	 * here and then to call kfree(pci_get_drvdata(psdev->dev)).
 	 */
 	dev_data = kzalloc(sizeof(*dev_data) +  strlen(DRV_NAME "[]")
-<<<<<<< HEAD
-				+ strlen(pci_name(dev)) + 1, GFP_ATOMIC);
-=======
 				+ strlen(pci_name(dev)) + 1, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev_data) {
 		err = -ENOMEM;
 		goto out;
@@ -533,8 +399,6 @@ static int pcistub_init_device(struct pci_dev *dev)
 	if (err)
 		goto config_release;
 
-<<<<<<< HEAD
-=======
 	if (dev->msix_cap) {
 		struct physdev_pci_device ppdev = {
 			.seg = pci_domain_nr(dev->bus),
@@ -548,7 +412,6 @@ static int pcistub_init_device(struct pci_dev *dev)
 				err);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We need the device active to save the state. */
 	dev_dbg(&dev->dev, "save state of device\n");
 	pci_save_state(dev);
@@ -556,14 +419,9 @@ static int pcistub_init_device(struct pci_dev *dev)
 	if (!dev_data->pci_saved_state)
 		dev_err(&dev->dev, "Could not store PCI conf saved state!\n");
 	else {
-<<<<<<< HEAD
-		dev_dbg(&dev->dev, "reseting (FLR, D3, etc) the device\n");
-		__pci_reset_function_locked(dev);
-=======
 		dev_dbg(&dev->dev, "resetting (FLR, D3, etc) the device\n");
 		__pci_reset_function_locked(dev);
 		pci_restore_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Now disable the device (this also ensures some private device
 	 * data is setup before we export)
@@ -571,11 +429,7 @@ static int pcistub_init_device(struct pci_dev *dev)
 	dev_dbg(&dev->dev, "reset device\n");
 	xen_pcibk_reset_device(dev);
 
-<<<<<<< HEAD
-	dev->dev_flags |= PCI_DEV_FLAGS_ASSIGNED;
-=======
 	pci_set_dev_assigned(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 config_release:
@@ -599,11 +453,6 @@ static int __init pcistub_init_devices_late(void)
 	unsigned long flags;
 	int err = 0;
 
-<<<<<<< HEAD
-	pr_debug(DRV_NAME ": pcistub_init_devices_late\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pcistub_devices_lock, flags);
 
 	while (!list_empty(&seized_devices)) {
@@ -634,9 +483,6 @@ static int __init pcistub_init_devices_late(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit pcistub_seize(struct pci_dev *dev)
-=======
 static void pcistub_device_id_add_list(struct pcistub_device_id *new,
 				       int domain, int bus, unsigned int devfn)
 {
@@ -669,22 +515,16 @@ static void pcistub_device_id_add_list(struct pcistub_device_id *new,
 
 static int pcistub_seize(struct pci_dev *dev,
 			 struct pcistub_device_id *pci_dev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcistub_device *psdev;
 	unsigned long flags;
 	int err = 0;
 
 	psdev = pcistub_device_alloc(dev);
-<<<<<<< HEAD
-	if (!psdev)
-		return -ENOMEM;
-=======
 	if (!psdev) {
 		kfree(pci_dev_id);
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pcistub_devices_lock, flags);
 
@@ -705,31 +545,16 @@ static int pcistub_seize(struct pci_dev *dev,
 
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 
-<<<<<<< HEAD
-	if (err)
-		pcistub_device_put(psdev);
-=======
 	if (err) {
 		kfree(pci_dev_id);
 		pcistub_device_put(psdev);
 	} else if (pci_dev_id)
 		pcistub_device_id_add_list(pci_dev_id, pci_domain_nr(dev->bus),
 					   dev->bus->number, dev->devfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit pcistub_probe(struct pci_dev *dev,
-				   const struct pci_device_id *id)
-{
-	int err = 0;
-
-	dev_dbg(&dev->dev, "probing...\n");
-
-	if (pcistub_match(dev)) {
-=======
 /* Called when 'bind'. This means we must _NOT_ call pci_reset_function or
  * other functions that take the sysfs lock. */
 static int pcistub_probe(struct pci_dev *dev, const struct pci_device_id *id)
@@ -744,7 +569,6 @@ static int pcistub_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if ((dev->driver_override &&
 	     !strcmp(dev->driver_override, PCISTUB_DRIVER_NAME)) ||
 	    match) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (dev->hdr_type != PCI_HEADER_TYPE_NORMAL
 		    && dev->hdr_type != PCI_HEADER_TYPE_BRIDGE) {
@@ -755,10 +579,6 @@ static int pcistub_probe(struct pci_dev *dev, const struct pci_device_id *id)
 			goto out;
 		}
 
-<<<<<<< HEAD
-		dev_info(&dev->dev, "seizing device\n");
-		err = pcistub_seize(dev);
-=======
 		if (!match) {
 			pci_dev_id = kmalloc(sizeof(*pci_dev_id), GFP_KERNEL);
 			if (!pci_dev_id) {
@@ -769,7 +589,6 @@ static int pcistub_probe(struct pci_dev *dev, const struct pci_device_id *id)
 
 		dev_info(&dev->dev, "seizing device\n");
 		err = pcistub_seize(dev, pci_dev_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		/* Didn't find the device */
 		err = -ENODEV;
@@ -778,11 +597,8 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 /* Called when 'unbind'. This means we must _NOT_ call pci_reset_function or
  * other functions that take the sysfs lock. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pcistub_remove(struct pci_dev *dev)
 {
 	struct pcistub_device *psdev, *found_psdev = NULL;
@@ -804,24 +620,6 @@ static void pcistub_remove(struct pci_dev *dev)
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 
 	if (found_psdev) {
-<<<<<<< HEAD
-		dev_dbg(&dev->dev, "found device to remove - in use? %p\n",
-			found_psdev->pdev);
-
-		if (found_psdev->pdev) {
-			printk(KERN_WARNING DRV_NAME ": ****** removing device "
-			       "%s while still in-use! ******\n",
-			       pci_name(found_psdev->dev));
-			printk(KERN_WARNING DRV_NAME ": ****** driver domain may"
-			       " still access this device's i/o resources!\n");
-			printk(KERN_WARNING DRV_NAME ": ****** shutdown driver "
-			       "domain before binding device\n");
-			printk(KERN_WARNING DRV_NAME ": ****** to other drivers "
-			       "or domains\n");
-
-			xen_pcibk_release_pci_dev(found_psdev->pdev,
-						found_psdev->dev);
-=======
 		dev_dbg(&dev->dev, "found device to remove %s\n",
 			found_psdev->pdev ? "- in-use" : "");
 
@@ -839,7 +637,6 @@ static void pcistub_remove(struct pci_dev *dev)
 			xen_pcibk_release_pci_dev(found_psdev->pdev,
 						found_psdev->dev,
 						false /* caller holds the lock. */);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		spin_lock_irqsave(&pcistub_devices_lock, flags);
@@ -851,11 +648,7 @@ static void pcistub_remove(struct pci_dev *dev)
 	}
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(pcistub_ids) = {
-=======
 static const struct pci_device_id pcistub_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .vendor = PCI_ANY_ID,
 	 .device = PCI_ANY_ID,
@@ -905,19 +698,12 @@ static pci_ers_result_t common_process(struct pcistub_device *psdev,
 {
 	pci_ers_result_t res = result;
 	struct xen_pcie_aer_op *aer_op;
-<<<<<<< HEAD
-	int ret;
-
-	/*with PV AER drivers*/
-	aer_op = &(psdev->pdev->sh_info->aer_op);
-=======
 	struct xen_pcibk_device *pdev = psdev->pdev;
 	struct xen_pci_sharedinfo *sh_info = pdev->sh_info;
 	int ret;
 
 	/*with PV AER drivers*/
 	aer_op = &(sh_info->aer_op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aer_op->cmd = aer_cmd ;
 	/*useful for error_detected callback*/
 	aer_op->err = state;
@@ -925,55 +711,24 @@ static pci_ers_result_t common_process(struct pcistub_device *psdev,
 	ret = xen_pcibk_get_pcifront_dev(psdev->dev, psdev->pdev,
 		&aer_op->domain, &aer_op->bus, &aer_op->devfn);
 	if (!ret) {
-<<<<<<< HEAD
-		dev_err(&psdev->dev->dev,
-			DRV_NAME ": failed to get pcifront device\n");
-=======
 		dev_err(&psdev->dev->dev, "failed to get pcifront device\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PCI_ERS_RESULT_NONE;
 	}
 	wmb();
 
-<<<<<<< HEAD
-	dev_dbg(&psdev->dev->dev,
-			DRV_NAME ": aer_op %x dom %x bus %x devfn %x\n",
-=======
 	dev_dbg(&psdev->dev->dev, "aer_op %x dom %x bus %x devfn %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			aer_cmd, aer_op->domain, aer_op->bus, aer_op->devfn);
 	/*local flag to mark there's aer request, xen_pcibk callback will use
 	* this flag to judge whether we need to check pci-front give aer
 	* service ack signal
 	*/
-<<<<<<< HEAD
-	set_bit(_PCIB_op_pending, (unsigned long *)&psdev->pdev->flags);
-=======
 	set_bit(_PCIB_op_pending, (unsigned long *)&pdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*It is possible that a pcifront conf_read_write ops request invokes
 	* the callback which cause the spurious execution of wake_up.
 	* Yet it is harmless and better than a spinlock here
 	*/
 	set_bit(_XEN_PCIB_active,
-<<<<<<< HEAD
-		(unsigned long *)&psdev->pdev->sh_info->flags);
-	wmb();
-	notify_remote_via_irq(psdev->pdev->evtchn_irq);
-
-	ret = wait_event_timeout(xen_pcibk_aer_wait_queue,
-				 !(test_bit(_XEN_PCIB_active, (unsigned long *)
-				 &psdev->pdev->sh_info->flags)), 300*HZ);
-
-	if (!ret) {
-		if (test_bit(_XEN_PCIB_active,
-			(unsigned long *)&psdev->pdev->sh_info->flags)) {
-			dev_err(&psdev->dev->dev,
-				"pcifront aer process not responding!\n");
-			clear_bit(_XEN_PCIB_active,
-			  (unsigned long *)&psdev->pdev->sh_info->flags);
-=======
 		(unsigned long *)&sh_info->flags);
 	wmb();
 	notify_remote_via_irq(pdev->evtchn_irq);
@@ -996,23 +751,11 @@ static pci_ers_result_t common_process(struct pcistub_device *psdev,
 				"pcifront aer process not responding!\n");
 			clear_bit(_XEN_PCIB_active,
 			  (unsigned long *)&sh_info->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			aer_op->err = PCI_ERS_RESULT_NONE;
 			return res;
 		}
 	}
-<<<<<<< HEAD
-	clear_bit(_PCIB_op_pending, (unsigned long *)&psdev->pdev->flags);
-
-	if (test_bit(_XEN_PCIF_active,
-		(unsigned long *)&psdev->pdev->sh_info->flags)) {
-		dev_dbg(&psdev->dev->dev,
-			"schedule pci_conf service in " DRV_NAME "\n");
-		xen_pcibk_test_and_schedule_op(psdev->pdev);
-	}
-=======
 	clear_bit(_PCIB_op_pending, (unsigned long *)&pdev->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = (pci_ers_result_t)aer_op->err;
 	return res;
@@ -1041,42 +784,24 @@ static pci_ers_result_t xen_pcibk_slot_reset(struct pci_dev *dev)
 				PCI_FUNC(dev->devfn));
 
 	if (!psdev || !psdev->pdev) {
-<<<<<<< HEAD
-		dev_err(&dev->dev,
-			DRV_NAME " device is not found/assigned\n");
-=======
 		dev_err(&dev->dev, "device is not found/assigned\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end;
 	}
 
 	if (!psdev->pdev->sh_info) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, DRV_NAME " device is not connected or owned"
-			" by HVM, kill it\n");
-		kill_domain_by_device(psdev);
-		goto release;
-=======
 		dev_err(&dev->dev, "device is not connected or owned"
 			" by HVM, kill it\n");
 		kill_domain_by_device(psdev);
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!test_bit(_XEN_PCIB_AERHANDLER,
 		(unsigned long *)&psdev->pdev->sh_info->flags)) {
 		dev_err(&dev->dev,
 			"guest with no AER driver should have been killed\n");
-<<<<<<< HEAD
-		goto release;
-	}
-	result = common_process(psdev, 1, XEN_PCI_OP_aer_slotreset, result);
-=======
 		goto end;
 	}
 	result = common_process(psdev, pci_channel_io_normal, XEN_PCI_OP_aer_slotreset, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (result == PCI_ERS_RESULT_NONE ||
 		result == PCI_ERS_RESULT_DISCONNECT) {
@@ -1084,15 +809,9 @@ static pci_ers_result_t xen_pcibk_slot_reset(struct pci_dev *dev)
 			"No AER slot_reset service or disconnected!\n");
 		kill_domain_by_device(psdev);
 	}
-<<<<<<< HEAD
-release:
-	pcistub_device_put(psdev);
-end:
-=======
 end:
 	if (psdev)
 		pcistub_device_put(psdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&pcistub_sem);
 	return result;
 
@@ -1122,42 +841,24 @@ static pci_ers_result_t xen_pcibk_mmio_enabled(struct pci_dev *dev)
 				PCI_FUNC(dev->devfn));
 
 	if (!psdev || !psdev->pdev) {
-<<<<<<< HEAD
-		dev_err(&dev->dev,
-			DRV_NAME " device is not found/assigned\n");
-=======
 		dev_err(&dev->dev, "device is not found/assigned\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end;
 	}
 
 	if (!psdev->pdev->sh_info) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, DRV_NAME " device is not connected or owned"
-			" by HVM, kill it\n");
-		kill_domain_by_device(psdev);
-		goto release;
-=======
 		dev_err(&dev->dev, "device is not connected or owned"
 			" by HVM, kill it\n");
 		kill_domain_by_device(psdev);
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!test_bit(_XEN_PCIB_AERHANDLER,
 		(unsigned long *)&psdev->pdev->sh_info->flags)) {
 		dev_err(&dev->dev,
 			"guest with no AER driver should have been killed\n");
-<<<<<<< HEAD
-		goto release;
-	}
-	result = common_process(psdev, 1, XEN_PCI_OP_aer_mmio, result);
-=======
 		goto end;
 	}
 	result = common_process(psdev, pci_channel_io_normal, XEN_PCI_OP_aer_mmio, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (result == PCI_ERS_RESULT_NONE ||
 		result == PCI_ERS_RESULT_DISCONNECT) {
@@ -1165,15 +866,9 @@ static pci_ers_result_t xen_pcibk_mmio_enabled(struct pci_dev *dev)
 			"No AER mmio_enabled service or disconnected!\n");
 		kill_domain_by_device(psdev);
 	}
-<<<<<<< HEAD
-release:
-	pcistub_device_put(psdev);
-end:
-=======
 end:
 	if (psdev)
 		pcistub_device_put(psdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&pcistub_sem);
 	return result;
 }
@@ -1203,27 +898,15 @@ static pci_ers_result_t xen_pcibk_error_detected(struct pci_dev *dev,
 				PCI_FUNC(dev->devfn));
 
 	if (!psdev || !psdev->pdev) {
-<<<<<<< HEAD
-		dev_err(&dev->dev,
-			DRV_NAME " device is not found/assigned\n");
-=======
 		dev_err(&dev->dev, "device is not found/assigned\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end;
 	}
 
 	if (!psdev->pdev->sh_info) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, DRV_NAME " device is not connected or owned"
-			" by HVM, kill it\n");
-		kill_domain_by_device(psdev);
-		goto release;
-=======
 		dev_err(&dev->dev, "device is not connected or owned"
 			" by HVM, kill it\n");
 		kill_domain_by_device(psdev);
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*Guest owns the device yet no aer handler regiested, kill guest*/
@@ -1231,11 +914,7 @@ static pci_ers_result_t xen_pcibk_error_detected(struct pci_dev *dev,
 		(unsigned long *)&psdev->pdev->sh_info->flags)) {
 		dev_dbg(&dev->dev, "guest may have no aer driver, kill it\n");
 		kill_domain_by_device(psdev);
-<<<<<<< HEAD
-		goto release;
-=======
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	result = common_process(psdev, error, XEN_PCI_OP_aer_detected, result);
 
@@ -1245,15 +924,9 @@ static pci_ers_result_t xen_pcibk_error_detected(struct pci_dev *dev,
 			"No AER error_detected service or disconnected!\n");
 		kill_domain_by_device(psdev);
 	}
-<<<<<<< HEAD
-release:
-	pcistub_device_put(psdev);
-end:
-=======
 end:
 	if (psdev)
 		pcistub_device_put(psdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&pcistub_sem);
 	return result;
 }
@@ -1278,27 +951,15 @@ static void xen_pcibk_error_resume(struct pci_dev *dev)
 				PCI_FUNC(dev->devfn));
 
 	if (!psdev || !psdev->pdev) {
-<<<<<<< HEAD
-		dev_err(&dev->dev,
-			DRV_NAME " device is not found/assigned\n");
-=======
 		dev_err(&dev->dev, "device is not found/assigned\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto end;
 	}
 
 	if (!psdev->pdev->sh_info) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, DRV_NAME " device is not connected or owned"
-			" by HVM, kill it\n");
-		kill_domain_by_device(psdev);
-		goto release;
-=======
 		dev_err(&dev->dev, "device is not connected or owned"
 			" by HVM, kill it\n");
 		kill_domain_by_device(psdev);
 		goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!test_bit(_XEN_PCIB_AERHANDLER,
@@ -1306,15 +967,6 @@ static void xen_pcibk_error_resume(struct pci_dev *dev)
 		dev_err(&dev->dev,
 			"guest with no AER driver should have been killed\n");
 		kill_domain_by_device(psdev);
-<<<<<<< HEAD
-		goto release;
-	}
-	common_process(psdev, 1, XEN_PCI_OP_aer_resume,
-		       PCI_ERS_RESULT_RECOVERED);
-release:
-	pcistub_device_put(psdev);
-end:
-=======
 		goto end;
 	}
 	common_process(psdev, pci_channel_io_normal, XEN_PCI_OP_aer_resume,
@@ -1322,17 +974,12 @@ end:
 end:
 	if (psdev)
 		pcistub_device_put(psdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&pcistub_sem);
 	return;
 }
 
 /*add xen_pcibk AER handling*/
-<<<<<<< HEAD
-static struct pci_error_handlers xen_pcibk_error_handler = {
-=======
 static const struct pci_error_handlers xen_pcibk_error_handler = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected = xen_pcibk_error_detected,
 	.mmio_enabled = xen_pcibk_mmio_enabled,
 	.slot_reset = xen_pcibk_slot_reset,
@@ -1347,11 +994,7 @@ static const struct pci_error_handlers xen_pcibk_error_handler = {
 static struct pci_driver xen_pcibk_pci_driver = {
 	/* The name should be xen_pciback, but until the tools are updated
 	 * we will keep it as pciback. */
-<<<<<<< HEAD
-	.name = "pciback",
-=======
 	.name = PCISTUB_DRIVER_NAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = pcistub_ids,
 	.probe = pcistub_probe,
 	.remove = pcistub_remove,
@@ -1361,20 +1004,6 @@ static struct pci_driver xen_pcibk_pci_driver = {
 static inline int str_to_slot(const char *buf, int *domain, int *bus,
 			      int *slot, int *func)
 {
-<<<<<<< HEAD
-	int err;
-
-	err = sscanf(buf, " %x:%x:%x.%x", domain, bus, slot, func);
-	if (err == 4)
-		return 0;
-	else if (err < 0)
-		return -EINVAL;
-
-	/* try again without domain */
-	*domain = 0;
-	err = sscanf(buf, " %x:%x.%x", bus, slot, func);
-	if (err == 3)
-=======
 	int parsed = 0;
 
 	switch (sscanf(buf, " %x:%x:%x.%x %n", domain, bus, slot, func,
@@ -1404,7 +1033,6 @@ static inline int str_to_slot(const char *buf, int *domain, int *bus,
 		break;
 	}
 	if (parsed && !buf[parsed])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return -EINVAL;
@@ -1413,15 +1041,6 @@ static inline int str_to_slot(const char *buf, int *domain, int *bus,
 static inline int str_to_quirk(const char *buf, int *domain, int *bus, int
 			       *slot, int *func, int *reg, int *size, int *mask)
 {
-<<<<<<< HEAD
-	int err;
-
-	err =
-	    sscanf(buf, " %04x:%02x:%02x.%d-%08x:%1x:%08x", domain, bus, slot,
-		   func, reg, size, mask);
-	if (err == 7)
-		return 0;
-=======
 	int parsed = 0;
 
 	sscanf(buf, " %x:%x:%x.%x-%x:%x:%x %n", domain, bus, slot, func,
@@ -1436,16 +1055,12 @@ static inline int str_to_quirk(const char *buf, int *domain, int *bus, int
 	if (parsed && !buf[parsed])
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 static int pcistub_device_id_add(int domain, int bus, int slot, int func)
 {
 	struct pcistub_device_id *pci_dev_id;
-<<<<<<< HEAD
-	unsigned long flags;
-=======
 	int rc = 0, devfn = PCI_DEVFN(slot, func);
 
 	if (slot < 0) {
@@ -1470,29 +1085,15 @@ static int pcistub_device_id_add(int domain, int bus, int slot, int func)
 	    || PCI_SLOT(devfn) != slot
 	    || PCI_FUNC(devfn) != func)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_dev_id = kmalloc(sizeof(*pci_dev_id), GFP_KERNEL);
 	if (!pci_dev_id)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	pci_dev_id->domain = domain;
-	pci_dev_id->bus = bus;
-	pci_dev_id->devfn = PCI_DEVFN(slot, func);
-
-	pr_debug(DRV_NAME ": wants to seize %04x:%02x:%02x.%d\n",
-		 domain, bus, slot, func);
-
-	spin_lock_irqsave(&device_ids_lock, flags);
-	list_add_tail(&pci_dev_id->slot_list, &pcistub_device_ids);
-	spin_unlock_irqrestore(&device_ids_lock, flags);
-=======
 	pr_debug("wants to seize %04x:%02x:%02x.%d\n",
 		 domain, bus, slot, func);
 
 	pcistub_device_id_add_list(pci_dev_id, domain, bus, devfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1500,24 +1101,15 @@ static int pcistub_device_id_add(int domain, int bus, int slot, int func)
 static int pcistub_device_id_remove(int domain, int bus, int slot, int func)
 {
 	struct pcistub_device_id *pci_dev_id, *t;
-<<<<<<< HEAD
-	int devfn = PCI_DEVFN(slot, func);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOENT;
 	unsigned long flags;
 
 	spin_lock_irqsave(&device_ids_lock, flags);
 	list_for_each_entry_safe(pci_dev_id, t, &pcistub_device_ids,
 				 slot_list) {
-<<<<<<< HEAD
-		if (pci_dev_id->domain == domain
-		    && pci_dev_id->bus == bus && pci_dev_id->devfn == devfn) {
-=======
 		if (pci_dev_id->domain == domain && pci_dev_id->bus == bus
 		    && (slot < 0 || PCI_SLOT(pci_dev_id->devfn) == slot)
 		    && (func < 0 || PCI_FUNC(pci_dev_id->devfn) == func)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Don't break; here because it's possible the same
 			 * slot could be in the list more than once
 			 */
@@ -1526,13 +1118,8 @@ static int pcistub_device_id_remove(int domain, int bus, int slot, int func)
 
 			err = 0;
 
-<<<<<<< HEAD
-			pr_debug(DRV_NAME ": removed %04x:%02x:%02x.%d from "
-				 "seize list\n", domain, bus, slot, func);
-=======
 			pr_debug("removed %04x:%02x:%02x.%d from seize list\n",
 				 domain, bus, slot, func);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock_irqrestore(&device_ids_lock, flags);
@@ -1540,40 +1127,26 @@ static int pcistub_device_id_remove(int domain, int bus, int slot, int func)
 	return err;
 }
 
-<<<<<<< HEAD
-static int pcistub_reg_add(int domain, int bus, int slot, int func, int reg,
-			   int size, int mask)
-=======
 static int pcistub_reg_add(int domain, int bus, int slot, int func,
 			   unsigned int reg, unsigned int size,
 			   unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	struct pcistub_device *psdev;
 	struct pci_dev *dev;
 	struct config_field *field;
 
-<<<<<<< HEAD
-	psdev = pcistub_device_find(domain, bus, slot, func);
-	if (!psdev || !psdev->dev) {
-=======
 	if (reg > 0xfff || (size < 4 && (mask >> (size * 8))))
 		return -EINVAL;
 
 	psdev = pcistub_device_find(domain, bus, slot, func);
 	if (!psdev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto out;
 	}
 	dev = psdev->dev;
 
-<<<<<<< HEAD
-	field = kzalloc(sizeof(*field), GFP_ATOMIC);
-=======
 	field = kzalloc(sizeof(*field), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!field) {
 		err = -ENOMEM;
 		goto out;
@@ -1591,13 +1164,6 @@ static int pcistub_reg_add(int domain, int bus, int slot, int func,
 	if (err)
 		kfree(field);
 out:
-<<<<<<< HEAD
-	return err;
-}
-
-static ssize_t pcistub_slot_add(struct device_driver *drv, const char *buf,
-				size_t count)
-=======
 	if (psdev)
 		pcistub_device_put(psdev);
 	return err;
@@ -1605,7 +1171,6 @@ static ssize_t pcistub_slot_add(struct device_driver *drv, const char *buf,
 
 static ssize_t new_slot_store(struct device_driver *drv, const char *buf,
 			      size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int domain, bus, slot, func;
 	int err;
@@ -1621,17 +1186,10 @@ out:
 		err = count;
 	return err;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(new_slot, S_IWUSR, NULL, pcistub_slot_add);
-
-static ssize_t pcistub_slot_remove(struct device_driver *drv, const char *buf,
-				   size_t count)
-=======
 static DRIVER_ATTR_WO(new_slot);
 
 static ssize_t remove_slot_store(struct device_driver *drv, const char *buf,
 				 size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int domain, bus, slot, func;
 	int err;
@@ -1647,15 +1205,9 @@ out:
 		err = count;
 	return err;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(remove_slot, S_IWUSR, NULL, pcistub_slot_remove);
-
-static ssize_t pcistub_slot_show(struct device_driver *drv, char *buf)
-=======
 static DRIVER_ATTR_WO(remove_slot);
 
 static ssize_t slots_show(struct device_driver *drv, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcistub_device_id *pci_dev_id;
 	size_t count = 0;
@@ -1676,15 +1228,9 @@ static ssize_t slots_show(struct device_driver *drv, char *buf)
 
 	return count;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(slots, S_IRUSR, pcistub_slot_show, NULL);
-
-static ssize_t pcistub_irq_handler_show(struct device_driver *drv, char *buf)
-=======
 static DRIVER_ATTR_RO(slots);
 
 static ssize_t irq_handlers_show(struct device_driver *drv, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcistub_device *psdev;
 	struct xen_pcibk_dev_data *dev_data;
@@ -1711,38 +1257,14 @@ static ssize_t irq_handlers_show(struct device_driver *drv, char *buf)
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 	return count;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(irq_handlers, S_IRUSR, pcistub_irq_handler_show, NULL);
-
-static ssize_t pcistub_irq_handler_switch(struct device_driver *drv,
-					  const char *buf,
-					  size_t count)
-=======
 static DRIVER_ATTR_RO(irq_handlers);
 
 static ssize_t irq_handler_state_store(struct device_driver *drv,
 				       const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcistub_device *psdev;
 	struct xen_pcibk_dev_data *dev_data;
 	int domain, bus, slot, func;
-<<<<<<< HEAD
-	int err = -ENOENT;
-
-	err = str_to_slot(buf, &domain, &bus, &slot, &func);
-	if (err)
-		goto out;
-
-	psdev = pcistub_device_find(domain, bus, slot, func);
-
-	if (!psdev)
-		goto out;
-
-	dev_data = pci_get_drvdata(psdev->dev);
-	if (!dev_data)
-		goto out;
-=======
 	int err;
 
 	err = str_to_slot(buf, &domain, &bus, &slot, &func);
@@ -1760,7 +1282,6 @@ static ssize_t irq_handler_state_store(struct device_driver *drv,
 		err = -ENOENT;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&psdev->dev->dev, "%s fake irq handler: %d->%d\n",
 		dev_data->irq_name, dev_data->isr_on,
@@ -1770,27 +1291,16 @@ static ssize_t irq_handler_state_store(struct device_driver *drv,
 	if (dev_data->isr_on)
 		dev_data->ack_intr = 1;
 out:
-<<<<<<< HEAD
-=======
 	if (psdev)
 		pcistub_device_put(psdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		err = count;
 	return err;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(irq_handler_state, S_IWUSR, NULL,
-		   pcistub_irq_handler_switch);
-
-static ssize_t pcistub_quirk_add(struct device_driver *drv, const char *buf,
-				 size_t count)
-=======
 static DRIVER_ATTR_WO(irq_handler_state);
 
 static ssize_t quirks_store(struct device_driver *drv, const char *buf,
 			    size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int domain, bus, slot, func, reg, size, mask;
 	int err;
@@ -1808,11 +1318,7 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static ssize_t pcistub_quirk_show(struct device_driver *drv, char *buf)
-=======
 static ssize_t quirks_show(struct device_driver *drv, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int count = 0;
 	unsigned long flags;
@@ -1855,47 +1361,26 @@ out:
 
 	return count;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(quirks, S_IRUSR | S_IWUSR, pcistub_quirk_show,
-		   pcistub_quirk_add);
-
-static ssize_t permissive_add(struct device_driver *drv, const char *buf,
-			      size_t count)
-=======
 static DRIVER_ATTR_RW(quirks);
 
 static ssize_t permissive_store(struct device_driver *drv, const char *buf,
 				size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int domain, bus, slot, func;
 	int err;
 	struct pcistub_device *psdev;
 	struct xen_pcibk_dev_data *dev_data;
-<<<<<<< HEAD
-	err = str_to_slot(buf, &domain, &bus, &slot, &func);
-	if (err)
-		goto out;
-=======
 
 	err = str_to_slot(buf, &domain, &bus, &slot, &func);
 	if (err)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psdev = pcistub_device_find(domain, bus, slot, func);
 	if (!psdev) {
 		err = -ENODEV;
 		goto out;
 	}
-<<<<<<< HEAD
-	if (!psdev->dev) {
-		err = -ENODEV;
-		goto release;
-	}
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_data = pci_get_drvdata(psdev->dev);
 	/* the driver data for a device should never be null at this point */
 	if (!dev_data) {
@@ -1940,10 +1425,6 @@ static ssize_t permissive_show(struct device_driver *drv, char *buf)
 	spin_unlock_irqrestore(&pcistub_devices_lock, flags);
 	return count;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(permissive, S_IRUSR | S_IWUSR, permissive_show,
-		   permissive_add);
-=======
 static DRIVER_ATTR_RW(permissive);
 
 static ssize_t allow_interrupt_control_store(struct device_driver *drv,
@@ -2004,7 +1485,6 @@ static ssize_t allow_interrupt_control_show(struct device_driver *drv,
 	return count;
 }
 static DRIVER_ATTR_RW(allow_interrupt_control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pcistub_exit(void)
 {
@@ -2016,11 +1496,8 @@ static void pcistub_exit(void)
 	driver_remove_file(&xen_pcibk_pci_driver.driver,
 			   &driver_attr_permissive);
 	driver_remove_file(&xen_pcibk_pci_driver.driver,
-<<<<<<< HEAD
-=======
 			   &driver_attr_allow_interrupt_control);
 	driver_remove_file(&xen_pcibk_pci_driver.driver,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   &driver_attr_irq_handlers);
 	driver_remove_file(&xen_pcibk_pci_driver.driver,
 			   &driver_attr_irq_handler_state);
@@ -2041,9 +1518,6 @@ static int __init pcistub_init(void)
 			err = sscanf(pci_devs_to_hide + pos,
 				     " (%x:%x:%x.%x) %n",
 				     &domain, &bus, &slot, &func, &parsed);
-<<<<<<< HEAD
-			if (err != 4) {
-=======
 			switch (err) {
 			case 3:
 				func = -1;
@@ -2060,17 +1534,10 @@ static int __init pcistub_init(void)
 			}
 
 			if (!parsed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				domain = 0;
 				err = sscanf(pci_devs_to_hide + pos,
 					     " (%x:%x.%x) %n",
 					     &bus, &slot, &func, &parsed);
-<<<<<<< HEAD
-				if (err != 3)
-					goto parse_error;
-			}
-
-=======
 				switch (err) {
 				case 2:
 					func = -1;
@@ -2090,19 +1557,12 @@ static int __init pcistub_init(void)
 			if (parsed <= 0)
 				goto parse_error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = pcistub_device_id_add(domain, bus, slot, func);
 			if (err)
 				goto out;
 
-<<<<<<< HEAD
-			/* if parsed<=0, we've reached the end of the string */
-			pos += parsed;
-		} while (parsed > 0 && pci_devs_to_hide[pos]);
-=======
 			pos += parsed;
 		} while (pci_devs_to_hide[pos]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If we're the first PCI Device Driver to register, we're the
@@ -2127,12 +1587,9 @@ static int __init pcistub_init(void)
 	if (!err)
 		err = driver_create_file(&xen_pcibk_pci_driver.driver,
 					 &driver_attr_permissive);
-<<<<<<< HEAD
-=======
 	if (!err)
 		err = driver_create_file(&xen_pcibk_pci_driver.driver,
 					 &driver_attr_allow_interrupt_control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!err)
 		err = driver_create_file(&xen_pcibk_pci_driver.driver,
@@ -2147,11 +1604,7 @@ out:
 	return err;
 
 parse_error:
-<<<<<<< HEAD
-	printk(KERN_ERR DRV_NAME ": Error parsing pci_devs_to_hide at \"%s\"\n",
-=======
 	pr_err("Error parsing pci_devs_to_hide at \"%s\"\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       pci_devs_to_hide + pos);
 	return -EINVAL;
 }
@@ -2167,8 +1620,6 @@ parse_error:
 fs_initcall(pcistub_init);
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PCI_IOV
 static struct pcistub_device *find_vfs(const struct pci_dev *pdev)
 {
@@ -2216,7 +1667,6 @@ static struct notifier_block pci_stub_nb = {
 };
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init xen_pcibk_init(void)
 {
 	int err;
@@ -2238,25 +1688,19 @@ static int __init xen_pcibk_init(void)
 	err = xen_pcibk_xenbus_register();
 	if (err)
 		pcistub_exit();
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PCI_IOV
 	else
 		bus_register_notifier(&pci_bus_type, &pci_stub_nb);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
 static void __exit xen_pcibk_cleanup(void)
 {
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PCI_IOV
 	bus_unregister_notifier(&pci_bus_type, &pci_stub_nb);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xen_pcibk_xenbus_unregister();
 	pcistub_exit();
 }

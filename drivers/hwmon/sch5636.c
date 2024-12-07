@@ -1,36 +1,13 @@
-<<<<<<< HEAD
-/***************************************************************************
- *   Copyright (C) 2011-2012 Hans de Goede <hdegoede@redhat.com>           *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /***************************************************************************
  *   Copyright (C) 2011-2012 Hans de Goede <hdegoede@redhat.com>           *
  *                                                                         *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ***************************************************************************/
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/mod_devicetable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/jiffies.h>
@@ -78,16 +55,9 @@ static const u16 SCH5636_REG_FAN_VAL[SCH5636_NO_FANS] = {
 struct sch5636_data {
 	unsigned short addr;
 	struct device *hwmon_dev;
-<<<<<<< HEAD
-	struct sch56xx_watchdog_data *watchdog;
-
-	struct mutex update_lock;
-	char valid;			/* !=0 if following fields are valid */
-=======
 
 	struct mutex update_lock;
 	bool valid;			/* true if following fields are valid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 	u8 in[SCH5636_NO_INS];
 	u8 temp_val[SCH5636_NO_TEMPS];
@@ -171,11 +141,7 @@ static struct sch5636_data *sch5636_update_device(struct device *dev)
 	}
 
 	data->last_updated = jiffies;
-<<<<<<< HEAD
-	data->valid = 1;
-=======
 	data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 abort:
 	mutex_unlock(&data->update_lock);
 	return ret;
@@ -191,16 +157,6 @@ static int reg_to_rpm(u16 reg)
 	return 5400540 / reg;
 }
 
-<<<<<<< HEAD
-static ssize_t show_name(struct device *dev, struct device_attribute *devattr,
-	char *buf)
-{
-	return snprintf(buf, PAGE_SIZE, "%s\n", DEVNAME);
-}
-
-static ssize_t show_in_value(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-=======
 static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 			 char *buf)
 {
@@ -209,7 +165,6 @@ static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
 
 static ssize_t in_value_show(struct device *dev,
 			     struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
@@ -221,22 +176,6 @@ static ssize_t in_value_show(struct device *dev,
 	val = DIV_ROUND_CLOSEST(
 		data->in[attr->index] * SCH5636_REG_IN_FACTORS[attr->index],
 		255);
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", val);
-}
-
-static ssize_t show_in_label(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
-
-	return snprintf(buf, PAGE_SIZE, "%s\n",
-			SCH5636_IN_LABELS[attr->index]);
-}
-
-static ssize_t show_temp_value(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-=======
 	return sysfs_emit(buf, "%d\n", val);
 }
 
@@ -251,7 +190,6 @@ static ssize_t in_label_show(struct device *dev,
 
 static ssize_t temp_value_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
@@ -261,19 +199,11 @@ static ssize_t temp_value_show(struct device *dev,
 		return PTR_ERR(data);
 
 	val = (data->temp_val[attr->index] - 64) * 1000;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", val);
-}
-
-static ssize_t show_temp_fault(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-=======
 	return sysfs_emit(buf, "%d\n", val);
 }
 
 static ssize_t temp_fault_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
@@ -283,19 +213,11 @@ static ssize_t temp_fault_show(struct device *dev,
 		return PTR_ERR(data);
 
 	val = (data->temp_ctrl[attr->index] & SCH5636_TEMP_WORKING) ? 0 : 1;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", val);
-}
-
-static ssize_t show_temp_alarm(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-=======
 	return sysfs_emit(buf, "%d\n", val);
 }
 
 static ssize_t temp_alarm_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
@@ -305,19 +227,11 @@ static ssize_t temp_alarm_show(struct device *dev,
 		return PTR_ERR(data);
 
 	val = (data->temp_ctrl[attr->index] & SCH5636_TEMP_ALARM) ? 1 : 0;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", val);
-}
-
-static ssize_t show_fan_value(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-=======
 	return sysfs_emit(buf, "%d\n", val);
 }
 
 static ssize_t fan_value_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
@@ -330,19 +244,11 @@ static ssize_t fan_value_show(struct device *dev,
 	if (val < 0)
 		return val;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", val);
-}
-
-static ssize_t show_fan_fault(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-=======
 	return sysfs_emit(buf, "%d\n", val);
 }
 
 static ssize_t fan_fault_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
@@ -352,19 +258,11 @@ static ssize_t fan_fault_show(struct device *dev,
 		return PTR_ERR(data);
 
 	val = (data->fan_ctrl[attr->index] & SCH5636_FAN_NOT_PRESENT) ? 1 : 0;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", val);
-}
-
-static ssize_t show_fan_alarm(struct device *dev, struct device_attribute
-	*devattr, char *buf)
-=======
 	return sysfs_emit(buf, "%d\n", val);
 }
 
 static ssize_t fan_alarm_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct sch5636_data *data = sch5636_update_device(dev);
@@ -374,104 +272,6 @@ static ssize_t fan_alarm_show(struct device *dev,
 		return PTR_ERR(data);
 
 	val = (data->fan_ctrl[attr->index] & SCH5636_FAN_ALARM) ? 1 : 0;
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", val);
-}
-
-static struct sensor_device_attribute sch5636_attr[] = {
-	SENSOR_ATTR(name, 0444, show_name, NULL, 0),
-	SENSOR_ATTR(in0_input, 0444, show_in_value, NULL, 0),
-	SENSOR_ATTR(in0_label, 0444, show_in_label, NULL, 0),
-	SENSOR_ATTR(in1_input, 0444, show_in_value, NULL, 1),
-	SENSOR_ATTR(in1_label, 0444, show_in_label, NULL, 1),
-	SENSOR_ATTR(in2_input, 0444, show_in_value, NULL, 2),
-	SENSOR_ATTR(in2_label, 0444, show_in_label, NULL, 2),
-	SENSOR_ATTR(in3_input, 0444, show_in_value, NULL, 3),
-	SENSOR_ATTR(in3_label, 0444, show_in_label, NULL, 3),
-	SENSOR_ATTR(in4_input, 0444, show_in_value, NULL, 4),
-	SENSOR_ATTR(in4_label, 0444, show_in_label, NULL, 4),
-};
-
-static struct sensor_device_attribute sch5636_temp_attr[] = {
-	SENSOR_ATTR(temp1_input, 0444, show_temp_value, NULL, 0),
-	SENSOR_ATTR(temp1_fault, 0444, show_temp_fault, NULL, 0),
-	SENSOR_ATTR(temp1_alarm, 0444, show_temp_alarm, NULL, 0),
-	SENSOR_ATTR(temp2_input, 0444, show_temp_value, NULL, 1),
-	SENSOR_ATTR(temp2_fault, 0444, show_temp_fault, NULL, 1),
-	SENSOR_ATTR(temp2_alarm, 0444, show_temp_alarm, NULL, 1),
-	SENSOR_ATTR(temp3_input, 0444, show_temp_value, NULL, 2),
-	SENSOR_ATTR(temp3_fault, 0444, show_temp_fault, NULL, 2),
-	SENSOR_ATTR(temp3_alarm, 0444, show_temp_alarm, NULL, 2),
-	SENSOR_ATTR(temp4_input, 0444, show_temp_value, NULL, 3),
-	SENSOR_ATTR(temp4_fault, 0444, show_temp_fault, NULL, 3),
-	SENSOR_ATTR(temp4_alarm, 0444, show_temp_alarm, NULL, 3),
-	SENSOR_ATTR(temp5_input, 0444, show_temp_value, NULL, 4),
-	SENSOR_ATTR(temp5_fault, 0444, show_temp_fault, NULL, 4),
-	SENSOR_ATTR(temp5_alarm, 0444, show_temp_alarm, NULL, 4),
-	SENSOR_ATTR(temp6_input, 0444, show_temp_value, NULL, 5),
-	SENSOR_ATTR(temp6_fault, 0444, show_temp_fault, NULL, 5),
-	SENSOR_ATTR(temp6_alarm, 0444, show_temp_alarm, NULL, 5),
-	SENSOR_ATTR(temp7_input, 0444, show_temp_value, NULL, 6),
-	SENSOR_ATTR(temp7_fault, 0444, show_temp_fault, NULL, 6),
-	SENSOR_ATTR(temp7_alarm, 0444, show_temp_alarm, NULL, 6),
-	SENSOR_ATTR(temp8_input, 0444, show_temp_value, NULL, 7),
-	SENSOR_ATTR(temp8_fault, 0444, show_temp_fault, NULL, 7),
-	SENSOR_ATTR(temp8_alarm, 0444, show_temp_alarm, NULL, 7),
-	SENSOR_ATTR(temp9_input, 0444, show_temp_value, NULL, 8),
-	SENSOR_ATTR(temp9_fault, 0444, show_temp_fault, NULL, 8),
-	SENSOR_ATTR(temp9_alarm, 0444, show_temp_alarm, NULL, 8),
-	SENSOR_ATTR(temp10_input, 0444, show_temp_value, NULL, 9),
-	SENSOR_ATTR(temp10_fault, 0444, show_temp_fault, NULL, 9),
-	SENSOR_ATTR(temp10_alarm, 0444, show_temp_alarm, NULL, 9),
-	SENSOR_ATTR(temp11_input, 0444, show_temp_value, NULL, 10),
-	SENSOR_ATTR(temp11_fault, 0444, show_temp_fault, NULL, 10),
-	SENSOR_ATTR(temp11_alarm, 0444, show_temp_alarm, NULL, 10),
-	SENSOR_ATTR(temp12_input, 0444, show_temp_value, NULL, 11),
-	SENSOR_ATTR(temp12_fault, 0444, show_temp_fault, NULL, 11),
-	SENSOR_ATTR(temp12_alarm, 0444, show_temp_alarm, NULL, 11),
-	SENSOR_ATTR(temp13_input, 0444, show_temp_value, NULL, 12),
-	SENSOR_ATTR(temp13_fault, 0444, show_temp_fault, NULL, 12),
-	SENSOR_ATTR(temp13_alarm, 0444, show_temp_alarm, NULL, 12),
-	SENSOR_ATTR(temp14_input, 0444, show_temp_value, NULL, 13),
-	SENSOR_ATTR(temp14_fault, 0444, show_temp_fault, NULL, 13),
-	SENSOR_ATTR(temp14_alarm, 0444, show_temp_alarm, NULL, 13),
-	SENSOR_ATTR(temp15_input, 0444, show_temp_value, NULL, 14),
-	SENSOR_ATTR(temp15_fault, 0444, show_temp_fault, NULL, 14),
-	SENSOR_ATTR(temp15_alarm, 0444, show_temp_alarm, NULL, 14),
-	SENSOR_ATTR(temp16_input, 0444, show_temp_value, NULL, 15),
-	SENSOR_ATTR(temp16_fault, 0444, show_temp_fault, NULL, 15),
-	SENSOR_ATTR(temp16_alarm, 0444, show_temp_alarm, NULL, 15),
-};
-
-static struct sensor_device_attribute sch5636_fan_attr[] = {
-	SENSOR_ATTR(fan1_input, 0444, show_fan_value, NULL, 0),
-	SENSOR_ATTR(fan1_fault, 0444, show_fan_fault, NULL, 0),
-	SENSOR_ATTR(fan1_alarm, 0444, show_fan_alarm, NULL, 0),
-	SENSOR_ATTR(fan2_input, 0444, show_fan_value, NULL, 1),
-	SENSOR_ATTR(fan2_fault, 0444, show_fan_fault, NULL, 1),
-	SENSOR_ATTR(fan2_alarm, 0444, show_fan_alarm, NULL, 1),
-	SENSOR_ATTR(fan3_input, 0444, show_fan_value, NULL, 2),
-	SENSOR_ATTR(fan3_fault, 0444, show_fan_fault, NULL, 2),
-	SENSOR_ATTR(fan3_alarm, 0444, show_fan_alarm, NULL, 2),
-	SENSOR_ATTR(fan4_input, 0444, show_fan_value, NULL, 3),
-	SENSOR_ATTR(fan4_fault, 0444, show_fan_fault, NULL, 3),
-	SENSOR_ATTR(fan4_alarm, 0444, show_fan_alarm, NULL, 3),
-	SENSOR_ATTR(fan5_input, 0444, show_fan_value, NULL, 4),
-	SENSOR_ATTR(fan5_fault, 0444, show_fan_fault, NULL, 4),
-	SENSOR_ATTR(fan5_alarm, 0444, show_fan_alarm, NULL, 4),
-	SENSOR_ATTR(fan6_input, 0444, show_fan_value, NULL, 5),
-	SENSOR_ATTR(fan6_fault, 0444, show_fan_fault, NULL, 5),
-	SENSOR_ATTR(fan6_alarm, 0444, show_fan_alarm, NULL, 5),
-	SENSOR_ATTR(fan7_input, 0444, show_fan_value, NULL, 6),
-	SENSOR_ATTR(fan7_fault, 0444, show_fan_fault, NULL, 6),
-	SENSOR_ATTR(fan7_alarm, 0444, show_fan_alarm, NULL, 6),
-	SENSOR_ATTR(fan8_input, 0444, show_fan_value, NULL, 7),
-	SENSOR_ATTR(fan8_fault, 0444, show_fan_fault, NULL, 7),
-	SENSOR_ATTR(fan8_alarm, 0444, show_fan_alarm, NULL, 7),
-};
-
-static int sch5636_remove(struct platform_device *pdev)
-=======
 	return sysfs_emit(buf, "%d\n", val);
 }
 
@@ -568,17 +368,10 @@ static struct sensor_device_attribute sch5636_fan_attr[] = {
 };
 
 static void sch5636_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sch5636_data *data = platform_get_drvdata(pdev);
 	int i;
 
-<<<<<<< HEAD
-	if (data->watchdog)
-		sch56xx_watchdog_unregister(data->watchdog);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->hwmon_dev)
 		hwmon_device_unregister(data->hwmon_dev);
 
@@ -592,31 +385,16 @@ static void sch5636_remove(struct platform_device *pdev)
 	for (i = 0; i < SCH5636_NO_FANS * 3; i++)
 		device_remove_file(&pdev->dev,
 				   &sch5636_fan_attr[i].dev_attr);
-<<<<<<< HEAD
-
-	platform_set_drvdata(pdev, NULL);
-	kfree(data);
-
-	return 0;
-}
-
-static int __devinit sch5636_probe(struct platform_device *pdev)
-=======
 }
 
 static int sch5636_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sch5636_data *data;
 	int i, err, val, revision[2];
 	char id[4];
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(struct sch5636_data), GFP_KERNEL);
-=======
 	data = devm_kzalloc(&pdev->dev, sizeof(struct sch5636_data),
 			    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		return -ENOMEM;
 
@@ -653,11 +431,7 @@ static int sch5636_probe(struct platform_device *pdev)
 		}
 		revision[i] = val;
 	}
-<<<<<<< HEAD
-	pr_info("Found %s chip at %#hx, revison: %d.%02d\n", DEVNAME,
-=======
 	pr_info("Found %s chip at %#hx, revision: %d.%02d\n", DEVNAME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->addr, revision[0], revision[1]);
 
 	/* Read all temp + fan ctrl registers to determine which are active */
@@ -716,14 +490,8 @@ static int sch5636_probe(struct platform_device *pdev)
 	}
 
 	/* Note failing to register the watchdog is not a fatal error */
-<<<<<<< HEAD
-	data->watchdog = sch56xx_watchdog_register(data->addr,
-					(revision[0] << 8) | revision[1],
-					&data->update_lock, 0);
-=======
 	sch56xx_watchdog_register(&pdev->dev, data->addr, (revision[0] << 8) | revision[1],
 				  &data->update_lock, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -732,15 +500,6 @@ error:
 	return err;
 }
 
-<<<<<<< HEAD
-static struct platform_driver sch5636_driver = {
-	.driver = {
-		.owner	= THIS_MODULE,
-		.name	= DRVNAME,
-	},
-	.probe		= sch5636_probe,
-	.remove		= sch5636_remove,
-=======
 static const struct platform_device_id sch5636_device_id[] = {
 	{
 		.name = "sch5636",
@@ -756,7 +515,6 @@ static struct platform_driver sch5636_driver = {
 	.probe		= sch5636_probe,
 	.remove_new	= sch5636_remove,
 	.id_table	= sch5636_device_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sch5636_driver);

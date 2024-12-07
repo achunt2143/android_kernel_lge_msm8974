@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PPC_BOOT_PLANETCORE_H_
 #define _PPC_BOOT_PLANETCORE_H_
 
@@ -47,10 +44,4 @@ void planetcore_set_mac_addrs(const char *table);
  */
 void planetcore_set_stdout_path(const char *table);
 
-<<<<<<< HEAD
-/* Sets the current-speed property in the serial node. */
-void planetcore_set_serial_speed(const char *table);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

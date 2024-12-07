@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/*
- * include/linux/node.h - generic node definition
- *
- * This is mainly for topological representation. We define the 
- * basic 'struct node' here, which can be embedded in per-arch 
- * definitions of processors.
- *
- * Basic handling of the devices is done in drivers/base/node.c
- * and system devices are handled in drivers/base/sys.c. 
- *
- * Nodes are exported via driverfs in the class/node/devices/
- * directory. 
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * include/linux/node.h - generic node definition
@@ -25,22 +11,12 @@
  *
  * Nodes are exported via driverfs in the class/node/devices/
  * directory.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_NODE_H_
 #define _LINUX_NODE_H_
 
 #include <linux/device.h>
 #include <linux/cpumask.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-
-struct node {
-	struct device	dev;
-
-#if defined(CONFIG_MEMORY_HOTPLUG_SPARSE) && defined(CONFIG_HUGETLBFS)
-	struct work_struct	node_work;
-=======
 #include <linux/list.h>
 
 /**
@@ -122,33 +98,10 @@ struct node {
 #ifdef CONFIG_HMEM_REPORTING
 	struct list_head cache_attrs;
 	struct device *cache_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 struct memory_block;
-<<<<<<< HEAD
-extern struct node node_devices[];
-typedef  void (*node_registration_func_t)(struct node *);
-
-extern int register_node(struct node *, int, struct node *);
-extern void unregister_node(struct node *node);
-#ifdef CONFIG_NUMA
-extern int register_one_node(int nid);
-extern void unregister_one_node(int nid);
-extern int register_cpu_under_node(unsigned int cpu, unsigned int nid);
-extern int unregister_cpu_under_node(unsigned int cpu, unsigned int nid);
-extern int register_mem_sect_under_node(struct memory_block *mem_blk,
-						int nid);
-extern int unregister_mem_sect_under_nodes(struct memory_block *mem_blk,
-					   unsigned long phys_index);
-
-#ifdef CONFIG_HUGETLBFS
-extern void register_hugetlbfs_with_node(node_registration_func_t doregister,
-					 node_registration_func_t unregister);
-#endif
-#else
-=======
 extern struct node *node_devices[];
 
 #if defined(CONFIG_MEMORY_HOTPLUG) && defined(CONFIG_NUMA)
@@ -205,7 +158,6 @@ static inline int __register_one_node(int nid)
 {
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int register_one_node(int nid)
 {
 	return 0;
@@ -222,23 +174,7 @@ static inline int unregister_cpu_under_node(unsigned int cpu, unsigned int nid)
 {
 	return 0;
 }
-<<<<<<< HEAD
-static inline int register_mem_sect_under_node(struct memory_block *mem_blk,
-							int nid)
-{
-	return 0;
-}
-static inline int unregister_mem_sect_under_nodes(struct memory_block *mem_blk,
-						  unsigned long phys_index)
-{
-	return 0;
-}
-
-static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
-						node_registration_func_t unreg)
-=======
 static inline void unregister_memory_block_under_nodes(struct memory_block *mem_blk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif

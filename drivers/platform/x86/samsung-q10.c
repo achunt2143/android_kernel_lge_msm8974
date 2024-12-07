@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for Samsung Q10 and related laptops: controls the backlight
  *
  *  Copyright (c) 2011 Frederick van der Wyck <fvanderwyck@gmail.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -21,25 +10,12 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/backlight.h>
-<<<<<<< HEAD
-#include <linux/i8042.h>
-#include <linux/dmi.h>
-
-#define SAMSUNGQ10_BL_MAX_INTENSITY      255
-#define SAMSUNGQ10_BL_DEFAULT_INTENSITY  185
-
-#define SAMSUNGQ10_BL_8042_CMD           0xbe
-#define SAMSUNGQ10_BL_8042_DATA          { 0x89, 0x91 }
-
-static int samsungq10_bl_brightness;
-=======
 #include <linux/dmi.h>
 #include <linux/acpi.h>
 
 #define SAMSUNGQ10_BL_MAX_INTENSITY 7
 
 static acpi_handle ec_handle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool force;
 module_param(force, bool, 0);
@@ -49,16 +25,6 @@ MODULE_PARM_DESC(force,
 static int samsungq10_bl_set_intensity(struct backlight_device *bd)
 {
 
-<<<<<<< HEAD
-	int brightness = bd->props.brightness;
-	unsigned char c[3] = SAMSUNGQ10_BL_8042_DATA;
-
-	c[2] = (unsigned char)brightness;
-	i8042_lock_chip();
-	i8042_command(c, (0x30 << 8) | SAMSUNGQ10_BL_8042_CMD);
-	i8042_unlock_chip();
-	samsungq10_bl_brightness = brightness;
-=======
 	acpi_status status;
 	int i;
 
@@ -72,52 +38,15 @@ static int samsungq10_bl_set_intensity(struct backlight_device *bd)
 		if (ACPI_FAILURE(status))
 			return -EIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int samsungq10_bl_get_intensity(struct backlight_device *bd)
-{
-	return samsungq10_bl_brightness;
-}
-
-static const struct backlight_ops samsungq10_bl_ops = {
-	.get_brightness = samsungq10_bl_get_intensity,
-	.update_status	= samsungq10_bl_set_intensity,
-};
-
-#ifdef CONFIG_PM_SLEEP
-static int samsungq10_suspend(struct device *dev)
-{
-	return 0;
-}
-
-static int samsungq10_resume(struct device *dev)
-{
-
-	struct backlight_device *bd = dev_get_drvdata(dev);
-
-	samsungq10_bl_set_intensity(bd);
-	return 0;
-}
-#else
-#define samsungq10_suspend NULL
-#define samsungq10_resume  NULL
-#endif
-
-static SIMPLE_DEV_PM_OPS(samsungq10_pm_ops,
-			  samsungq10_suspend, samsungq10_resume);
-
-static int __devinit samsungq10_probe(struct platform_device *pdev)
-=======
 static const struct backlight_ops samsungq10_bl_ops = {
 	.update_status	= samsungq10_bl_set_intensity,
 };
 
 static int samsungq10_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct backlight_properties props;
@@ -133,50 +62,23 @@ static int samsungq10_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, bd);
 
-<<<<<<< HEAD
-	bd->props.brightness = SAMSUNGQ10_BL_DEFAULT_INTENSITY;
-	samsungq10_bl_set_intensity(bd);
-
-	return 0;
-}
-
-static int __devexit samsungq10_remove(struct platform_device *pdev)
-=======
 	return 0;
 }
 
 static void samsungq10_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct backlight_device *bd = platform_get_drvdata(pdev);
 
-<<<<<<< HEAD
-	bd->props.brightness = SAMSUNGQ10_BL_DEFAULT_INTENSITY;
-	samsungq10_bl_set_intensity(bd);
-
 	backlight_device_unregister(bd);
-
-	return 0;
-=======
-	backlight_device_unregister(bd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver samsungq10_driver = {
 	.driver		= {
 		.name	= KBUILD_MODNAME,
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.pm	= &samsungq10_pm_ops,
-	},
-	.probe		= samsungq10_probe,
-	.remove		= __devexit_p(samsungq10_remove),
-=======
 	},
 	.probe		= samsungq10_probe,
 	.remove_new	= samsungq10_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device *samsungq10_device;
@@ -187,11 +89,7 @@ static int __init dmi_check_callback(const struct dmi_system_id *id)
 	return 1;
 }
 
-<<<<<<< HEAD
-static struct dmi_system_id __initdata samsungq10_dmi_table[] = {
-=======
 static const struct dmi_system_id samsungq10_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Samsung Q10",
 		.matches = {
@@ -233,26 +131,16 @@ static int __init samsungq10_init(void)
 	if (!force && !dmi_check_system(samsungq10_dmi_table))
 		return -ENODEV;
 
-<<<<<<< HEAD
-=======
 	ec_handle = ec_get_handle();
 
 	if (!ec_handle)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	samsungq10_device = platform_create_bundle(&samsungq10_driver,
 						   samsungq10_probe,
 						   NULL, 0, NULL, 0);
 
-<<<<<<< HEAD
-	if (IS_ERR(samsungq10_device))
-		return PTR_ERR(samsungq10_device);
-
-	return 0;
-=======
 	return PTR_ERR_OR_ZERO(samsungq10_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit samsungq10_exit(void)

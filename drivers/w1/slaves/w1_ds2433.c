@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-/*
- *	w1_ds2433.c - w1 family 23 (DS2433) driver
- *
- * Copyright (c) 2005 Ben Gardner <bgardner@wabtec.com>
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2. See the file COPYING for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *	w1_ds2433.c - w1 family 23 (DS2433) & 43 (DS28EC20) eeprom driver
  *
  * Copyright (c) 2005 Ben Gardner <bgardner@wabtec.com>
  * Copyright (c) 2023 Marc Ferland <marc.ferland@sonatest.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -31,23 +21,6 @@
 
 #endif
 
-<<<<<<< HEAD
-#include "../w1.h"
-#include "../w1_int.h"
-#include "../w1_family.h"
-
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Ben Gardner <bgardner@wabtec.com>");
-MODULE_DESCRIPTION("w1 family 23 driver for DS2433, 4kb EEPROM");
-
-#define W1_EEPROM_SIZE		512
-#define W1_PAGE_COUNT		16
-#define W1_PAGE_SIZE		32
-#define W1_PAGE_BITS		5
-#define W1_PAGE_MASK		0x1F
-
-#define W1_F23_TIME		300
-=======
 #include <linux/w1.h>
 
 #define W1_EEPROM_DS2433	0x23
@@ -60,21 +33,12 @@ MODULE_DESCRIPTION("w1 family 23 driver for DS2433, 4kb EEPROM");
 #define W1_PAGE_BITS		5
 #define W1_PAGE_MASK		0x1F
 #define W1_VALIDCRC_MAX		96
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define W1_F23_READ_EEPROM	0xF0
 #define W1_F23_WRITE_SCRATCH	0x0F
 #define W1_F23_READ_SCRATCH	0xAA
 #define W1_F23_COPY_SCRATCH	0x55
 
-<<<<<<< HEAD
-struct w1_f23_data {
-	u8	memory[W1_EEPROM_SIZE];
-	u32	validcrc;
-};
-
-/**
-=======
 struct ds2433_config {
 	size_t eeprom_size;		/* eeprom size in bytes */
 	unsigned int page_count;	/* number of 256 bits pages */
@@ -102,7 +66,6 @@ struct w1_f23_data {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Check the file size bounds and adjusts count as needed.
  * This would not be needed if the file size didn't reset to 0 after a write.
  */
@@ -124,19 +87,11 @@ static int w1_f23_refresh_block(struct w1_slave *sl, struct w1_f23_data *data,
 	u8	wrbuf[3];
 	int	off = block * W1_PAGE_SIZE;
 
-<<<<<<< HEAD
-	if (data->validcrc & (1 << block))
-		return 0;
-
-	if (w1_reset_select_slave(sl)) {
-		data->validcrc = 0;
-=======
 	if (test_bit(block, data->validcrc))
 		return 0;
 
 	if (w1_reset_select_slave(sl)) {
 		bitmap_zero(data->validcrc, data->cfg->page_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -148,25 +103,15 @@ static int w1_f23_refresh_block(struct w1_slave *sl, struct w1_f23_data *data,
 
 	/* cache the block if the CRC is valid */
 	if (crc16(CRC16_INIT, &data->memory[off], W1_PAGE_SIZE) == CRC16_VALID)
-<<<<<<< HEAD
-		data->validcrc |= (1 << block);
-=======
 		set_bit(block, data->validcrc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 #endif	/* CONFIG_W1_SLAVE_DS2433_CRC */
 
-<<<<<<< HEAD
-static ssize_t w1_f23_read_bin(struct file *filp, struct kobject *kobj,
-			       struct bin_attribute *bin_attr,
-			       char *buf, loff_t off, size_t count)
-=======
 static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 			   struct bin_attribute *bin_attr, char *buf,
 			   loff_t off, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 #ifdef CONFIG_W1_SLAVE_DS2433_CRC
@@ -176,18 +121,11 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 	u8 wrbuf[3];
 #endif
 
-<<<<<<< HEAD
-	if ((count = w1_f23_fix_count(off, count, W1_EEPROM_SIZE)) == 0)
-		return 0;
-
-	mutex_lock(&sl->master->mutex);
-=======
 	count = w1_f23_fix_count(off, count, bin_attr->size);
 	if (!count)
 		return 0;
 
 	mutex_lock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_W1_SLAVE_DS2433_CRC
 
@@ -201,11 +139,7 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 	}
 	memcpy(buf, &data->memory[off], count);
 
-<<<<<<< HEAD
-#else 	/* CONFIG_W1_SLAVE_DS2433_CRC */
-=======
 #else	/* CONFIG_W1_SLAVE_DS2433_CRC */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read directly from the EEPROM */
 	if (w1_reset_select_slave(sl)) {
@@ -222,49 +156,27 @@ static ssize_t eeprom_read(struct file *filp, struct kobject *kobj,
 #endif	/* CONFIG_W1_SLAVE_DS2433_CRC */
 
 out_up:
-<<<<<<< HEAD
-	mutex_unlock(&sl->master->mutex);
-=======
 	mutex_unlock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
 
 /**
-<<<<<<< HEAD
- * Writes to the scratchpad and reads it back for verification.
-=======
  * w1_f23_write() - Writes to the scratchpad and reads it back for verification.
  * @sl:		The slave structure
  * @addr:	Address for the write
  * @len:	length must be <= (W1_PAGE_SIZE - (addr & W1_PAGE_MASK))
  * @data:	The data to write
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Then copies the scratchpad to EEPROM.
  * The data must be on one page.
  * The master must be locked.
  *
-<<<<<<< HEAD
- * @param sl	The slave structure
- * @param addr	Address for the write
- * @param len   length must be <= (W1_PAGE_SIZE - (addr & W1_PAGE_MASK))
- * @param data	The data to write
- * @return	0=Success -1=failure
- */
-static int w1_f23_write(struct w1_slave *sl, int addr, int len, const u8 *data)
-{
-#ifdef CONFIG_W1_SLAVE_DS2433_CRC
-	struct w1_f23_data *f23 = sl->family_data;
-#endif
-=======
  * Return:	0=Success, -1=failure
  */
 static int w1_f23_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 {
 	struct w1_f23_data *f23 = sl->family_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 wrbuf[4];
 	u8 rdbuf[W1_PAGE_SIZE + 3];
 	u8 es = (addr + len - 1) & 0x1f;
@@ -300,45 +212,26 @@ static int w1_f23_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 	wrbuf[3] = es;
 	w1_write_block(sl->master, wrbuf, 4);
 
-<<<<<<< HEAD
-	/* Sleep for 5 ms to wait for the write to complete */
-	msleep(5);
-=======
 	/* Sleep for tprog ms to wait for the write to complete */
 	msleep(f23->cfg->tprog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset the bus to wake up the EEPROM (this may not be needed) */
 	w1_reset_bus(sl->master);
 #ifdef CONFIG_W1_SLAVE_DS2433_CRC
-<<<<<<< HEAD
-	f23->validcrc &= ~(1 << (addr >> W1_PAGE_BITS));
-=======
 	clear_bit(addr >> W1_PAGE_BITS, f23->validcrc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 }
 
-<<<<<<< HEAD
-static ssize_t w1_f23_write_bin(struct file *filp, struct kobject *kobj,
-				struct bin_attribute *bin_attr,
-				char *buf, loff_t off, size_t count)
-=======
 static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 			    struct bin_attribute *bin_attr, char *buf,
 			    loff_t off, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int addr, len, idx;
 
-<<<<<<< HEAD
-	if ((count = w1_f23_fix_count(off, count, W1_EEPROM_SIZE)) == 0)
-=======
 	count = w1_f23_fix_count(off, count, bin_attr->size);
 	if (!count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 #ifdef CONFIG_W1_SLAVE_DS2433_CRC
@@ -358,11 +251,7 @@ static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 	}
 #endif	/* CONFIG_W1_SLAVE_DS2433_CRC */
 
-<<<<<<< HEAD
-	mutex_lock(&sl->master->mutex);
-=======
 	mutex_lock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Can only write data to one page at a time */
 	idx = 0;
@@ -380,25 +269,11 @@ static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 	}
 
 out_up:
-<<<<<<< HEAD
-	mutex_unlock(&sl->master->mutex);
-=======
 	mutex_unlock(&sl->master->bus_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
 
-<<<<<<< HEAD
-static struct bin_attribute w1_f23_bin_attr = {
-	.attr = {
-		.name = "eeprom",
-		.mode = S_IRUGO | S_IWUSR,
-	},
-	.size = W1_EEPROM_SIZE,
-	.read = w1_f23_read_bin,
-	.write = w1_f23_write_bin,
-=======
 static struct bin_attribute bin_attr_f23_eeprom = {
 	.attr = { .name = "eeprom", .mode = 0644 },
 	.read = eeprom_read,
@@ -439,35 +314,15 @@ static const struct attribute_group w1_f43_group = {
 static const struct attribute_group *w1_f43_groups[] = {
 	&w1_f43_group,
 	NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int w1_f23_add_slave(struct w1_slave *sl)
 {
-<<<<<<< HEAD
-	int err;
-#ifdef CONFIG_W1_SLAVE_DS2433_CRC
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct w1_f23_data *data;
 
 	data = kzalloc(sizeof(struct w1_f23_data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
-<<<<<<< HEAD
-	sl->family_data = data;
-
-#endif	/* CONFIG_W1_SLAVE_DS2433_CRC */
-
-	err = sysfs_create_bin_file(&sl->dev.kobj, &w1_f23_bin_attr);
-
-#ifdef CONFIG_W1_SLAVE_DS2433_CRC
-	if (err)
-		kfree(data);
-#endif	/* CONFIG_W1_SLAVE_DS2433_CRC */
-
-	return err;
-=======
 
 	switch (sl->family->fid) {
 	case W1_EEPROM_DS2433:
@@ -494,23 +349,10 @@ static int w1_f23_add_slave(struct w1_slave *sl)
 	sl->family_data = data;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void w1_f23_remove_slave(struct w1_slave *sl)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_W1_SLAVE_DS2433_CRC
-	kfree(sl->family_data);
-	sl->family_data = NULL;
-#endif	/* CONFIG_W1_SLAVE_DS2433_CRC */
-	sysfs_remove_bin_file(&sl->dev.kobj, &w1_f23_bin_attr);
-}
-
-static struct w1_family_ops w1_f23_fops = {
-	.add_slave      = w1_f23_add_slave,
-	.remove_slave   = w1_f23_remove_slave,
-=======
 	struct w1_f23_data *data = sl->family_data;
 	sl->family_data = NULL;
 #ifdef CONFIG_W1_SLAVE_DS2433_CRC
@@ -529,7 +371,6 @@ static const struct w1_family_ops w1_f43_fops = {
 	.add_slave      = w1_f23_add_slave,
 	.remove_slave   = w1_f23_remove_slave,
 	.groups         = w1_f43_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct w1_family w1_family_23 = {
@@ -537,20 +378,6 @@ static struct w1_family w1_family_23 = {
 	.fops = &w1_f23_fops,
 };
 
-<<<<<<< HEAD
-static int __init w1_f23_init(void)
-{
-	return w1_register_family(&w1_family_23);
-}
-
-static void __exit w1_f23_fini(void)
-{
-	w1_unregister_family(&w1_family_23);
-}
-
-module_init(w1_f23_init);
-module_exit(w1_f23_fini);
-=======
 static struct w1_family w1_family_43 = {
 	.fid = W1_EEPROM_DS28EC20,
 	.fops = &w1_f43_fops,
@@ -590,4 +417,3 @@ MODULE_DESCRIPTION("w1 family 23/43 driver for DS2433 (4kb) and DS28EC20 (20kb)"
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("w1-family-" __stringify(W1_EEPROM_DS2433));
 MODULE_ALIAS("w1-family-" __stringify(W1_EEPROM_DS28EC20));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

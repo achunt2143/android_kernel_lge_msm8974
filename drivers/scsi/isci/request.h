@@ -61,33 +61,6 @@
 #include "scu_task_context.h"
 
 /**
-<<<<<<< HEAD
- * struct isci_request_status - This enum defines the possible states of an I/O
- *    request.
- *
- *
- */
-enum isci_request_status {
-	unallocated = 0x00,
-	allocated   = 0x01,
-	started     = 0x02,
-	completed   = 0x03,
-	aborting    = 0x04,
-	aborted     = 0x05,
-	terminating = 0x06,
-	dead        = 0x07
-};
-
-enum sci_request_protocol {
-	SCIC_NO_PROTOCOL,
-	SCIC_SMP_PROTOCOL,
-	SCIC_SSP_PROTOCOL,
-	SCIC_STP_PROTOCOL
-}; /* XXX remove me, use sas_task.{dev|task_proto} instead */;
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * isci_stp_request - extra request infrastructure to handle pio/atapi protocol
  * @pio_len - number of bytes requested at PIO setup
  * @status - pio setup ending status value to tell us if we need
@@ -107,21 +80,14 @@ struct isci_stp_request {
 };
 
 struct isci_request {
-<<<<<<< HEAD
-	enum isci_request_status status;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#define IREQ_COMPLETE_IN_TARGET 0
 	#define IREQ_TERMINATED 1
 	#define IREQ_TMF 2
 	#define IREQ_ACTIVE 3
-<<<<<<< HEAD
-=======
 	#define IREQ_PENDING_ABORT 4 /* Set == device was not suspended yet */
 	#define IREQ_TC_ABORT_POSTED 5
 	#define IREQ_ABORT_PATH_ACTIVE 6
 	#define IREQ_NO_AUTO_FREE_TAG 7 /* Set when being explicitly managed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	/* XXX kill ttype and ttype_ptr, allocate full sas_task */
 	union ttype_ptr_union {
@@ -129,14 +95,6 @@ struct isci_request {
 		struct isci_tmf *tmf_task_ptr;  /* When ttype==tmf_task */
 	} ttype_ptr;
 	struct isci_host *isci_host;
-<<<<<<< HEAD
-	/* For use in the requests_to_{complete|abort} lists: */
-	struct list_head completed_node;
-	/* For use in the reqs_in_process list: */
-	struct list_head dev_node;
-	spinlock_t state_lock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t request_daddr;
 	dma_addr_t zero_scatter_daddr;
 	unsigned int num_sg_entries;
@@ -156,11 +114,7 @@ struct isci_request {
 	struct isci_host *owning_controller;
 	struct isci_remote_device *target_device;
 	u16 io_tag;
-<<<<<<< HEAD
-	enum sci_request_protocol protocol;
-=======
 	enum sas_protocol protocol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 scu_status; /* hardware result */
 	u32 sci_status; /* upper layer disposition */
 	u32 post_context;
@@ -329,95 +283,6 @@ sci_io_request_get_dma_addr(struct isci_request *ireq, void *virt_addr)
 	return ireq->request_daddr + (requested_addr - base_addr);
 }
 
-<<<<<<< HEAD
-/**
- * isci_request_change_state() - This function sets the status of the request
- *    object.
- * @request: This parameter points to the isci_request object
- * @status: This Parameter is the new status of the object
- *
- */
-static inline enum isci_request_status
-isci_request_change_state(struct isci_request *isci_request,
-			  enum isci_request_status status)
-{
-	enum isci_request_status old_state;
-	unsigned long flags;
-
-	dev_dbg(&isci_request->isci_host->pdev->dev,
-		"%s: isci_request = %p, state = 0x%x\n",
-		__func__,
-		isci_request,
-		status);
-
-	BUG_ON(isci_request == NULL);
-
-	spin_lock_irqsave(&isci_request->state_lock, flags);
-	old_state = isci_request->status;
-	isci_request->status = status;
-	spin_unlock_irqrestore(&isci_request->state_lock, flags);
-
-	return old_state;
-}
-
-/**
- * isci_request_change_started_to_newstate() - This function sets the status of
- *    the request object.
- * @request: This parameter points to the isci_request object
- * @status: This Parameter is the new status of the object
- *
- * state previous to any change.
- */
-static inline enum isci_request_status
-isci_request_change_started_to_newstate(struct isci_request *isci_request,
-					struct completion *completion_ptr,
-					enum isci_request_status newstate)
-{
-	enum isci_request_status old_state;
-	unsigned long flags;
-
-	spin_lock_irqsave(&isci_request->state_lock, flags);
-
-	old_state = isci_request->status;
-
-	if (old_state == started || old_state == aborting) {
-		BUG_ON(isci_request->io_request_completion != NULL);
-
-		isci_request->io_request_completion = completion_ptr;
-		isci_request->status = newstate;
-	}
-
-	spin_unlock_irqrestore(&isci_request->state_lock, flags);
-
-	dev_dbg(&isci_request->isci_host->pdev->dev,
-		"%s: isci_request = %p, old_state = 0x%x\n",
-		__func__,
-		isci_request,
-		old_state);
-
-	return old_state;
-}
-
-/**
- * isci_request_change_started_to_aborted() - This function sets the status of
- *    the request object.
- * @request: This parameter points to the isci_request object
- * @completion_ptr: This parameter is saved as the kernel completion structure
- *    signalled when the old request completes.
- *
- * state previous to any change.
- */
-static inline enum isci_request_status
-isci_request_change_started_to_aborted(struct isci_request *isci_request,
-				       struct completion *completion_ptr)
-{
-	return isci_request_change_started_to_newstate(isci_request,
-						       completion_ptr,
-						       aborted);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define isci_request_access_task(req) ((req)->ttype_ptr.io_task_ptr)
 
 #define isci_request_access_tmf(req) ((req)->ttype_ptr.tmf_task_ptr)
@@ -426,26 +291,16 @@ struct isci_request *isci_tmf_request_from_tag(struct isci_host *ihost,
 					       struct isci_tmf *isci_tmf,
 					       u16 tag);
 int isci_request_execute(struct isci_host *ihost, struct isci_remote_device *idev,
-<<<<<<< HEAD
-			 struct sas_task *task, u16 tag);
-void isci_terminate_pending_requests(struct isci_host *ihost,
-				     struct isci_remote_device *idev);
-=======
 			 struct sas_task *task, struct isci_request *ireq);
 struct isci_request *isci_io_request_from_tag(struct isci_host *ihost,
 					      struct sas_task *task,
 					      u16 tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum sci_status
 sci_task_request_construct(struct isci_host *ihost,
 			    struct isci_remote_device *idev,
 			    u16 io_tag,
 			    struct isci_request *ireq);
-<<<<<<< HEAD
-enum sci_status sci_task_request_construct_ssp(struct isci_request *ireq);
-=======
 void sci_task_request_construct_ssp(struct isci_request *ireq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sci_smp_request_copy_response(struct isci_request *ireq);
 
 static inline int isci_task_is_ncq_recovery(struct sas_task *task)
@@ -455,8 +310,4 @@ static inline int isci_task_is_ncq_recovery(struct sas_task *task)
 		task->ata_task.fis.lbal == ATA_LOG_SATA_NCQ);
 
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !defined(_ISCI_REQUEST_H_) */

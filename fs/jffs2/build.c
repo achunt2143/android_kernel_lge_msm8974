@@ -17,10 +17,7 @@
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
 #include <linux/mtd/mtd.h>
-<<<<<<< HEAD
-=======
 #include <linux/mm.h> /* kvfree() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "nodelist.h"
 
 static void jffs2_build_remove_unlinked_inode(struct jffs2_sb_info *,
@@ -53,12 +50,8 @@ next_inode(int *i, struct jffs2_inode_cache *ic, struct jffs2_sb_info *c)
 
 
 static void jffs2_build_inode_pass1(struct jffs2_sb_info *c,
-<<<<<<< HEAD
-				    struct jffs2_inode_cache *ic)
-=======
 				    struct jffs2_inode_cache *ic,
 				    int *dir_hardlinks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jffs2_full_dirent *fd;
 
@@ -77,21 +70,6 @@ static void jffs2_build_inode_pass1(struct jffs2_sb_info *c,
 			dbg_fsbuild("child \"%s\" (ino #%u) of dir ino #%u doesn't exist!\n",
 				  fd->name, fd->ino, ic->ino);
 			jffs2_mark_node_obsolete(c, fd->raw);
-<<<<<<< HEAD
-			continue;
-		}
-
-		if (fd->type == DT_DIR) {
-			if (child_ic->pino_nlink) {
-				JFFS2_ERROR("child dir \"%s\" (ino #%u) of dir ino #%u appears to be a hard link\n",
-					    fd->name, fd->ino, ic->ino);
-				/* TODO: What do we do about it? */
-			} else {
-				child_ic->pino_nlink = ic->ino;
-			}
-		} else
-			child_ic->pino_nlink++;
-=======
 			/* Clear the ic/raw union so it doesn't cause problems later. */
 			fd->ic = NULL;
 			continue;
@@ -107,7 +85,6 @@ static void jffs2_build_inode_pass1(struct jffs2_sb_info *c,
 			if (child_ic->pino_nlink > 1)
 				*dir_hardlinks = 1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dbg_fsbuild("increased nlink for child \"%s\" (ino #%u)\n", fd->name, fd->ino);
 		/* Can't free scan_dents so far. We might need them in pass 2 */
@@ -121,12 +98,7 @@ static void jffs2_build_inode_pass1(struct jffs2_sb_info *c,
 */
 static int jffs2_build_filesystem(struct jffs2_sb_info *c)
 {
-<<<<<<< HEAD
-	int ret;
-	int i;
-=======
 	int ret, i, dir_hardlinks = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jffs2_inode_cache *ic;
 	struct jffs2_full_dirent *fd;
 	struct jffs2_full_dirent *dead_fds = NULL;
@@ -150,11 +122,7 @@ static int jffs2_build_filesystem(struct jffs2_sb_info *c)
 	/* Now scan the directory tree, increasing nlink according to every dirent found. */
 	for_each_inode(i, c, ic) {
 		if (ic->scan_dents) {
-<<<<<<< HEAD
-			jffs2_build_inode_pass1(c, ic);
-=======
 			jffs2_build_inode_pass1(c, ic, &dir_hardlinks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cond_resched();
 		}
 	}
@@ -190,8 +158,6 @@ static int jffs2_build_filesystem(struct jffs2_sb_info *c)
 	}
 
 	dbg_fsbuild("pass 2a complete\n");
-<<<<<<< HEAD
-=======
 
 	if (dir_hardlinks) {
 		/* If we detected directory hardlinks earlier, *hopefully*
@@ -206,7 +172,6 @@ static int jffs2_build_filesystem(struct jffs2_sb_info *c)
 				ic->pino_nlink = 0;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg_fsbuild("freeing temporary data structures\n");
 
 	/* Finally, we can scan again and free the dirent structs */
@@ -214,8 +179,6 @@ static int jffs2_build_filesystem(struct jffs2_sb_info *c)
 		while(ic->scan_dents) {
 			fd = ic->scan_dents;
 			ic->scan_dents = fd->next;
-<<<<<<< HEAD
-=======
 			/* We do use the pino_nlink field to count nlink of
 			 * directories during fs build, so set it to the
 			 * parent ino# now. Now that there's hopefully only
@@ -243,20 +206,15 @@ static int jffs2_build_filesystem(struct jffs2_sb_info *c)
 				/* For directories, ic->pino_nlink holds that parent inode # */
 				fd->ic->pino_nlink = ic->ino;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			jffs2_free_full_dirent(fd);
 		}
 		ic->scan_dents = NULL;
 		cond_resched();
 	}
-<<<<<<< HEAD
-	jffs2_build_xattr_subsystem(c);
-=======
 	ret = jffs2_build_xattr_subsystem(c);
 	if (ret)
 		goto exit;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->flags &= ~JFFS2_SB_FLAG_BUILDING;
 
 	dbg_fsbuild("FS build complete\n");
@@ -329,15 +287,7 @@ static void jffs2_build_remove_unlinked_inode(struct jffs2_sb_info *c,
 
 			/* Reduce nlink of the child. If it's now zero, stick it on the
 			   dead_fds list to be cleaned up later. Else just free the fd */
-<<<<<<< HEAD
-
-			if (fd->type == DT_DIR)
-				child_ic->pino_nlink = 0;
-			else
-				child_ic->pino_nlink--;
-=======
 			child_ic->pino_nlink--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!child_ic->pino_nlink) {
 				dbg_fsbuild("inode #%u (\"%s\") now has no links; adding to dead_fds list.\n",
@@ -468,31 +418,17 @@ int jffs2_do_mount_fs(struct jffs2_sb_info *c)
 		jffs2_free_ino_caches(c);
 		jffs2_free_raw_node_refs(c);
 		ret = -EIO;
-<<<<<<< HEAD
-		goto out_free;
-=======
 		goto out_sum_exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	jffs2_calc_trigger_levels(c);
 
 	return 0;
 
-<<<<<<< HEAD
- out_free:
-#ifndef __ECOS
-	if (jffs2_blocks_use_vmalloc(c))
-		vfree(c->blocks);
-	else
-#endif
-		kfree(c->blocks);
-=======
  out_sum_exit:
 	jffs2_sum_exit(c);
  out_free:
 	kvfree(c->blocks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }

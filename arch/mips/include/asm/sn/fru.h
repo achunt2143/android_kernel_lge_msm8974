@@ -21,39 +21,24 @@ typedef struct kf_mem_s {
 				     * is this necessary ?
 				     */
 	confidence_t km_dimm[MAX_DIMMS];
-<<<<<<< HEAD
-	                            /* confidence level that dimm[i] is bad
-=======
 				    /* confidence level that dimm[i] is bad
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     *I think this is the right number
 				     */
 
 } kf_mem_t;
 
 typedef struct kf_cpu_s {
-<<<<<<< HEAD
-	confidence_t  	kc_confidence; /* confidence level that cpu is bad */
-	confidence_t  	kc_icache; /* confidence level that instr. cache is bad */
-	confidence_t  	kc_dcache; /* confidence level that data   cache is bad */
-	confidence_t  	kc_scache; /* confidence level that sec.   cache is bad */
-=======
 	confidence_t	kc_confidence; /* confidence level that cpu is bad */
 	confidence_t	kc_icache; /* confidence level that instr. cache is bad */
 	confidence_t	kc_dcache; /* confidence level that data   cache is bad */
 	confidence_t	kc_scache; /* confidence level that sec.   cache is bad */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	confidence_t	kc_sysbus; /* confidence level that sysad/cmd/state bus is bad */
 } kf_cpu_t;
 
 typedef struct kf_pci_bus_s {
 	confidence_t	kpb_belief;	/* confidence level  that the  pci bus is bad */
 	confidence_t	kpb_pcidev_belief[MAX_PCIDEV];
-<<<<<<< HEAD
-	                                /* confidence level that the pci dev is bad */
-=======
 					/* confidence level that the pci dev is bad */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } kf_pci_bus_t;
 
 #endif /* __ASM_SN_FRU_H */

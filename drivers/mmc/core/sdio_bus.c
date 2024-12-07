@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/core/sdio_bus.c
  *
  *  Copyright 2007 Pierre Ossman
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SDIO function driver model
  */
 
@@ -23,28 +12,13 @@
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/pm_runtime.h>
-<<<<<<< HEAD
-=======
 #include <linux/pm_domain.h>
 #include <linux/acpi.h>
 #include <linux/sysfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mmc/card.h>
 #include <linux/mmc/host.h>
 #include <linux/mmc/sdio_func.h>
-<<<<<<< HEAD
-
-#include "sdio_cis.h"
-#include "sdio_bus.h"
-
-#ifdef CONFIG_MMC_EMBEDDED_SDIO
-#include <linux/mmc/host.h>
-#endif
-
-/* show configuration fields */
-#define sdio_config_attr(field, format_string)				\
-=======
 #include <linux/of.h>
 
 #include "core.h"
@@ -56,37 +30,12 @@
 
 /* show configuration fields */
 #define sdio_config_attr(field, format_string, args...)			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t								\
 field##_show(struct device *dev, struct device_attribute *attr, char *buf)				\
 {									\
 	struct sdio_func *func;						\
 									\
 	func = dev_to_sdio_func (dev);					\
-<<<<<<< HEAD
-	return sprintf (buf, format_string, func->field);		\
-}
-
-sdio_config_attr(class, "0x%02x\n");
-sdio_config_attr(vendor, "0x%04x\n");
-sdio_config_attr(device, "0x%04x\n");
-
-static ssize_t modalias_show(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	struct sdio_func *func = dev_to_sdio_func (dev);
-
-	return sprintf(buf, "sdio:c%02Xv%04Xd%04X\n",
-			func->class, func->vendor, func->device);
-}
-
-static struct device_attribute sdio_dev_attrs[] = {
-	__ATTR_RO(class),
-	__ATTR_RO(vendor),
-	__ATTR_RO(device),
-	__ATTR_RO(modalias),
-	__ATTR_NULL,
-};
-=======
 	return sysfs_emit(buf, format_string, args);			\
 }									\
 static DEVICE_ATTR_RO(field)
@@ -128,7 +77,6 @@ static struct attribute *sdio_dev_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(sdio_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct sdio_device_id *sdio_match_one(struct sdio_func *func,
 	const struct sdio_device_id *id)
@@ -172,16 +120,10 @@ static int sdio_bus_match(struct device *dev, struct device_driver *drv)
 }
 
 static int
-<<<<<<< HEAD
-sdio_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	struct sdio_func *func = dev_to_sdio_func(dev);
-=======
 sdio_bus_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct sdio_func *func = dev_to_sdio_func(dev);
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (add_uevent_var(env,
 			"SDIO_CLASS=%02X", func->class))
@@ -192,8 +134,6 @@ sdio_bus_uevent(const struct device *dev, struct kobj_uevent_env *env)
 		return -ENOMEM;
 
 	if (add_uevent_var(env,
-<<<<<<< HEAD
-=======
 			"SDIO_REVISION=%u.%u", func->major_rev, func->minor_rev))
 		return -ENOMEM;
 
@@ -203,7 +143,6 @@ sdio_bus_uevent(const struct device *dev, struct kobj_uevent_env *env)
 	}
 
 	if (add_uevent_var(env,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"MODALIAS=sdio:c%02Xv%04Xd%04X",
 			func->class, func->vendor, func->device))
 		return -ENOMEM;
@@ -222,15 +161,12 @@ static int sdio_bus_probe(struct device *dev)
 	if (!id)
 		return -ENODEV;
 
-<<<<<<< HEAD
-=======
 	ret = dev_pm_domain_attach(dev, false);
 	if (ret)
 		return ret;
 
 	atomic_inc(&func->card->sdio_funcs_probed);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Unbound SDIO functions are always suspended.
 	 * During probe, the function is set active and the usage count
 	 * is incremented.  If the driver supports runtime PM,
@@ -240,24 +176,16 @@ static int sdio_bus_probe(struct device *dev)
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD) {
 		ret = pm_runtime_get_sync(dev);
 		if (ret < 0)
-<<<<<<< HEAD
-			goto out;
-=======
 			goto disable_runtimepm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set the default block size so the driver is sure it's something
 	 * sensible. */
 	sdio_claim_host(func);
-<<<<<<< HEAD
-	ret = sdio_set_block_size(func, 0);
-=======
 	if (mmc_card_removed(func->card))
 		ret = -ENOMEDIUM;
 	else
 		ret = sdio_set_block_size(func, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdio_release_host(func);
 	if (ret)
 		goto disable_runtimepm;
@@ -269,19 +197,6 @@ static int sdio_bus_probe(struct device *dev)
 	return 0;
 
 disable_runtimepm:
-<<<<<<< HEAD
-	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
-		pm_runtime_put_noidle(dev);
-out:
-	return ret;
-}
-
-static int sdio_bus_remove(struct device *dev)
-{
-	struct sdio_driver *drv = to_sdio_driver(dev->driver);
-	struct sdio_func *func = dev_to_sdio_func(dev);
-	int ret = 0;
-=======
 	atomic_dec(&func->card->sdio_funcs_probed);
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_put_noidle(dev);
@@ -293,25 +208,17 @@ static void sdio_bus_remove(struct device *dev)
 {
 	struct sdio_driver *drv = to_sdio_driver(dev->driver);
 	struct sdio_func *func = dev_to_sdio_func(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure card is powered before invoking ->remove() */
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_get_sync(dev);
 
 	drv->remove(func);
-<<<<<<< HEAD
-
-	if (func->irq_handler) {
-		pr_warning("WARNING: driver %s did not remove "
-			"its interrupt handler!\n", drv->name);
-=======
 	atomic_dec(&func->card->sdio_funcs_probed);
 
 	if (func->irq_handler) {
 		pr_warn("WARNING: driver %s did not remove its interrupt handler!\n",
 			drv->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sdio_claim_host(func);
 		sdio_release_irq(func);
 		sdio_release_host(func);
@@ -325,38 +232,6 @@ static void sdio_bus_remove(struct device *dev)
 	if (func->card->host->caps & MMC_CAP_POWER_OFF_CARD)
 		pm_runtime_put_sync(dev);
 
-<<<<<<< HEAD
-	return ret;
-}
-
-#ifdef CONFIG_PM
-
-static int pm_no_operation(struct device *dev)
-{
-	return 0;
-}
-
-static const struct dev_pm_ops sdio_bus_pm_ops = {
-	SET_SYSTEM_SLEEP_PM_OPS(pm_no_operation, pm_no_operation)
-	SET_RUNTIME_PM_OPS(
-		pm_generic_runtime_suspend,
-		pm_generic_runtime_resume,
-		pm_generic_runtime_idle
-	)
-};
-
-#define SDIO_PM_OPS_PTR	(&sdio_bus_pm_ops)
-
-#else /* !CONFIG_PM */
-
-#define SDIO_PM_OPS_PTR	NULL
-
-#endif /* !CONFIG_PM */
-
-static struct bus_type sdio_bus_type = {
-	.name		= "sdio",
-	.dev_attrs	= sdio_dev_attrs,
-=======
 	dev_pm_domain_detach(dev, false);
 }
 
@@ -372,16 +247,11 @@ static const struct dev_pm_ops sdio_bus_pm_ops = {
 static const struct bus_type sdio_bus_type = {
 	.name		= "sdio",
 	.dev_groups	= sdio_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match		= sdio_bus_match,
 	.uevent		= sdio_bus_uevent,
 	.probe		= sdio_bus_probe,
 	.remove		= sdio_bus_remove,
-<<<<<<< HEAD
-	.pm		= SDIO_PM_OPS_PTR,
-=======
 	.pm		= &sdio_bus_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int sdio_register_bus(void)
@@ -421,20 +291,6 @@ static void sdio_release_func(struct device *dev)
 {
 	struct sdio_func *func = dev_to_sdio_func(dev);
 
-<<<<<<< HEAD
-#ifdef CONFIG_MMC_EMBEDDED_SDIO
-	/*
-	 * If this device is embedded then we never allocated
-	 * cis tables for this func
-	 */
-	if (!func->card->host->embedded_sdio_data.funcs)
-#endif
-		sdio_free_func_cis(func);
-
-	if (func->info)
-		kfree(func->info);
-
-=======
 	if (!(func->card->quirks & MMC_QUIRK_NONSTD_SDIO))
 		sdio_free_func_cis(func);
 
@@ -446,7 +302,6 @@ static void sdio_release_func(struct device *dev)
 
 	kfree(func->info);
 	kfree(func->tmpbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(func);
 }
 
@@ -461,8 +316,6 @@ struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 	if (!func)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * allocate buffer separately to make sure it's properly aligned for
 	 * DMA usage (incl. 64 bit DMA)
@@ -473,20 +326,16 @@ struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 		return ERR_PTR(-ENOMEM);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	func->card = card;
 
 	device_initialize(&func->dev);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * We may link to tuples in the card structure,
 	 * we need make sure we have a reference to it.
 	 */
 	get_device(&func->card->dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	func->dev.parent = &card->dev;
 	func->dev.bus = &sdio_bus_type;
 	func->dev.release = sdio_release_func;
@@ -494,8 +343,6 @@ struct sdio_func *sdio_alloc_func(struct mmc_card *card)
 	return func;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_ACPI
 static void sdio_acpi_set_handle(struct sdio_func *func)
 {
@@ -515,7 +362,6 @@ static void sdio_set_of_node(struct sdio_func *func)
 	func->dev.of_node = mmc_of_find_child_device(host, func->num);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Register a new SDIO function with the driver model.
  */
@@ -525,12 +371,9 @@ int sdio_add_func(struct sdio_func *func)
 
 	dev_set_name(&func->dev, "%s:%d", mmc_card_id(func->card), func->num);
 
-<<<<<<< HEAD
-=======
 	sdio_set_of_node(func);
 	sdio_acpi_set_handle(func);
 	device_enable_async_suspend(&func->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = device_add(&func->dev);
 	if (ret == 0)
 		sdio_func_set_present(func);
@@ -546,17 +389,10 @@ int sdio_add_func(struct sdio_func *func)
  */
 void sdio_remove_func(struct sdio_func *func)
 {
-<<<<<<< HEAD
-	if (!sdio_func_present(func))
-		return;
-
-	device_del(&func->dev);
-=======
 	if (sdio_func_present(func))
 		device_del(&func->dev);
 
 	of_node_put(func->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_device(&func->dev);
 }
 

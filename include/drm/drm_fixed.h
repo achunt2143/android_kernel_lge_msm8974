@@ -20,20 +20,14 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  *
  * Authors: Dave Airlie
-<<<<<<< HEAD
-=======
  *          Christian König
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef DRM_FIXED_H
 #define DRM_FIXED_H
 
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
 #include <linux/math64.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef union dfixed {
 	u32 full;
 } fixed20_12;
@@ -47,10 +41,7 @@ typedef union dfixed {
 #define dfixed_init(A) { .full = dfixed_const((A)) }
 #define dfixed_init_half(A) { .full = dfixed_const_half((A)) }
 #define dfixed_trunc(A) ((A).full >> 12)
-<<<<<<< HEAD
-=======
 #define dfixed_frac(A) ((A).full & ((1 << 12) - 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 dfixed_floor(fixed20_12 A)
 {
@@ -78,8 +69,6 @@ static inline u32 dfixed_div(fixed20_12 A, fixed20_12 B)
 	tmp /= 2;
 	return lower_32_bits(tmp);
 }
-<<<<<<< HEAD
-=======
 
 #define DRM_FIXED_POINT		32
 #define DRM_FIXED_ONE		(1ULL << DRM_FIXED_POINT)
@@ -225,5 +214,4 @@ static inline s64 drm_fixp_exp(s64 x)
 	return sum;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

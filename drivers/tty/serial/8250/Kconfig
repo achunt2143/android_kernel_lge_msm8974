@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # The 8250/16550 serial drivers.  You shouldn't be in this list unless
 # you somehow have an implicit or explicit dependency on SERIAL_8250.
@@ -9,27 +6,16 @@
 
 config SERIAL_8250
 	tristate "8250/16550 and compatible serial support"
-<<<<<<< HEAD
-	select SERIAL_CORE
-	---help---
-=======
 	depends on !S390
 	select SERIAL_CORE
 	select SERIAL_MCTRL_GPIO if GPIOLIB
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This selects whether you want to include the driver for the standard
 	  serial ports.  The standard answer is Y.  People who might say N
 	  here are those that are setting up dedicated Ethernet WWW/FTP
 	  servers, or users that have one of the various bus mice instead of a
 	  serial mouse and don't intend to use their machine's standard serial
-<<<<<<< HEAD
-	  port for anything.  (Note that the Cyclades and Stallion multi
-	  serial port drivers do not need this driver built in for them to
-	  work.)
-=======
 	  port for anything.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called 8250.
@@ -48,8 +34,6 @@ config SERIAL_8250
 	  Most people will say Y or M here, so that they can use serial mice,
 	  modems and similar devices connecting to the standard serial ports.
 
-<<<<<<< HEAD
-=======
 config SERIAL_8250_DEPRECATED_OPTIONS
 	bool "Support 8250_core.* kernel options (DEPRECATED)"
 	depends on SERIAL_8250
@@ -100,17 +84,12 @@ config SERIAL_8250_FINTEK
 
 	  If unsure, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SERIAL_8250_CONSOLE
 	bool "Console on 8250/16550 and compatible serial port"
 	depends on SERIAL_8250=y
 	select SERIAL_CORE_CONSOLE
-<<<<<<< HEAD
-	---help---
-=======
 	select SERIAL_EARLYCON
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here, it will be possible to use a serial port as the
 	  system console (the system console is the device which receives all
 	  kernel messages and warnings and which allows logins in single user
@@ -139,21 +118,6 @@ config SERIAL_8250_CONSOLE
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config FIX_EARLYCON_MEM
-	bool
-	depends on X86
-	default y
-
-config SERIAL_8250_GSC
-	tristate
-	depends on SERIAL_8250 && GSC
-	default SERIAL_8250
-
-config SERIAL_8250_PCI
-	tristate "8250/16550 PCI device support" if EXPERT
-	depends on SERIAL_8250 && PCI
-=======
 config SERIAL_8250_PARISC
 	tristate
 	depends on SERIAL_8250 && PARISC
@@ -174,22 +138,11 @@ config SERIAL_8250_PCI
 	tristate "8250/16550 PCI device support"
 	depends on SERIAL_8250 && PCI
 	select SERIAL_8250_PCILIB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default SERIAL_8250
 	help
 	  This builds standard PCI serial support. You may be able to
 	  disable this feature if you only need legacy serial support.
 	  Saves about 9K.
-<<<<<<< HEAD
-
-config SERIAL_8250_PNP
-	tristate "8250/16550 PNP device support" if EXPERT
-	depends on SERIAL_8250 && PNP
-	default SERIAL_8250
-	help
-	  This builds standard PNP serial support. You may be able to
-	  disable this feature if you only need legacy serial support.
-=======
 	  Note that serial ports on NetMos 9835 Multi-I/O cards are handled
 	  by the parport_serial driver, enabled with CONFIG_PARPORT_SERIAL.
 
@@ -202,7 +155,6 @@ config SERIAL_8250_EXAR
 	  This builds support for XR17C1xx, XR17V3xx and some Commtech
 	  422x PCIe serial cards that are not covered by the more generic
 	  SERIAL_8250_PCI option.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SERIAL_8250_HP300
 	tristate
@@ -212,11 +164,7 @@ config SERIAL_8250_HP300
 config SERIAL_8250_CS
 	tristate "8250/16550 PCMCIA device support"
 	depends on PCMCIA && SERIAL_8250
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to enable support for 16-bit PCMCIA serial devices,
 	  including serial port cards, modems, and the modem functions of
 	  multi-function Ethernet/modem cards. (PCMCIA- or PC-cards are
@@ -227,8 +175,6 @@ config SERIAL_8250_CS
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 config SERIAL_8250_MEN_MCB
 	tristate "MEN MCB UART device support"
 	depends on MCB && SERIAL_8250
@@ -241,7 +187,6 @@ config SERIAL_8250_MEN_MCB
 	  module will be called 8250_men_mcb.
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SERIAL_8250_NR_UARTS
 	int "Maximum number of 8250/16550 serial ports"
 	depends on SERIAL_8250
@@ -278,28 +223,16 @@ config SERIAL_8250_EXTENDED
 
 config SERIAL_8250_MANY_PORTS
 	bool "Support more than 4 legacy serial ports"
-<<<<<<< HEAD
-	depends on SERIAL_8250_EXTENDED && !IA64
-=======
 	depends on SERIAL_8250_EXTENDED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have dumb serial boards other than the four
 	  standard COM 1/2/3/4 ports. This may happen if you have an AST
 	  FourPort, Accent Async, Boca (read the Boca mini-HOWTO, available
-<<<<<<< HEAD
-	  from <http://www.tldp.org/docs.html#howto>), or other custom
-	  serial port hardware which acts similar to standard serial port
-	  hardware. If you only use the standard COM 1/2/3/4 ports, you can
-	  say N here to save some memory. You can also say Y if you have an
-	  "intelligent" multiport card such as Cyclades, Digiboards, etc.
-=======
 	  from <https://www.tldp.org/docs.html#howto>), or other custom
 	  serial port hardware which acts similar to standard serial port
 	  hardware. If you only use the standard COM 1/2/3/4 ports, you can
 	  say N here to save some memory. You can also say Y if you have an
 	  "intelligent" multiport card such as Digiboards, etc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Multi-port serial cards
@@ -323,8 +256,6 @@ config SERIAL_8250_ACCENT
 	  To compile this driver as a module, choose M here: the module
 	  will be called 8250_accent.
 
-<<<<<<< HEAD
-=======
 config SERIAL_8250_ASPEED_VUART
 	tristate "Aspeed Virtual UART"
 	depends on SERIAL_8250
@@ -338,17 +269,12 @@ config SERIAL_8250_ASPEED_VUART
 	  compatible device on the local LPC bus, giving a UART device
 	  with no physical RS232 connections.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SERIAL_8250_BOCA
 	tristate "Support Boca cards"
 	depends on SERIAL_8250 != n && ISA && SERIAL_8250_MANY_PORTS
 	help
 	  Say Y here if you have a Boca serial board.  Please read the Boca
-<<<<<<< HEAD
-	  mini-HOWTO, available from <http://www.tldp.org/docs.html#howto>
-=======
 	  mini-HOWTO, available from <https://www.tldp.org/docs.html#howto>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called 8250_boca.
@@ -373,8 +299,6 @@ config SERIAL_8250_HUB6
 	  To compile this driver as a module, choose M here: the module
 	  will be called 8250_hub6.
 
-<<<<<<< HEAD
-=======
 config SERIAL_8250_PCI1XXXX
 	tristate "Microchip 8250 based serial port"
 	depends on SERIAL_8250 && PCI
@@ -385,7 +309,6 @@ config SERIAL_8250_PCI1XXXX
 	 serial driver for the serial interface. This driver support
 	 will ensure to support baud rates upto 1.5Mpbs.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Misc. options/drivers.
 #
@@ -414,18 +337,6 @@ config SERIAL_8250_RSA
 	bool "Support RSA serial ports"
 	depends on SERIAL_8250_EXTENDED
 	help
-<<<<<<< HEAD
-	  ::: To be written :::
-
-config SERIAL_8250_MCA
-	tristate "Support 8250-type ports on MCA buses"
-	depends on SERIAL_8250 != n && MCA
-	help
-	  Say Y here if you have a MCA serial ports.
-
-	  To compile this driver as a module, choose M here: the module
-	  will be called 8250_mca.
-=======
 	  Say Y here if you have a IODATA RSA-DV II/S ISA card and
 	  would like to use its >115kbps speeds.
 	  You will need to provide module parameter "probe_rsa", or boot-time
@@ -435,7 +346,6 @@ config SERIAL_8250_MCA
 
 config SERIAL_8250_DWLIB
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SERIAL_8250_ACORN
 	tristate "Acorn expansion card serial port support"
@@ -445,28 +355,6 @@ config SERIAL_8250_ACORN
 	  system, say Y to this option.  The driver can handle 1, 2, or 3 port
 	  cards.  If unsure, say N.
 
-<<<<<<< HEAD
-config SERIAL_8250_RM9K
-	bool "Support for MIPS RM9xxx integrated serial port"
-	depends on SERIAL_8250 != n && SERIAL_RM9000
-	select SERIAL_8250_SHARE_IRQ
-	help
-	  Selecting this option will add support for the integrated serial
-	  port hardware found on MIPS RM9122 and similar processors.
-	  If unsure, say N.
-
-config SERIAL_8250_FSL
-	bool
-	depends on SERIAL_8250_CONSOLE && PPC_UDBG_16550
-	default PPC
-
-config SERIAL_8250_DW
-	tristate "Support for Synopsys DesignWare 8250 quirks"
-	depends on SERIAL_8250 && OF
-	help
-	  Selecting this option will enable handling of the extra features
-	  present in the Synopsys DesignWare APB UART.
-=======
 config SERIAL_8250_BCM2835AUX
 	tristate "BCM2835 auxiliar mini UART support"
 	depends on ARCH_BCM2835 || COMPILE_TEST
@@ -688,4 +576,3 @@ config SERIAL_OF_PLATFORM
 	  are probed through devicetree, including Open Firmware based
 	  PowerPC systems and embedded systems on architectures using the
 	  flattened device tree format.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

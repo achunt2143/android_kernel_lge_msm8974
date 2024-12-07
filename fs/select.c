@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains the procedures for the handling of select and poll
  *
@@ -18,15 +15,10 @@
  *     of fds to overcome nfds < 16390 descriptors limit (Tigran Aivazian).
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/sched.h>
-=======
 #include <linux/compat.h>
 #include <linux/kernel.h>
 #include <linux/sched/signal.h>
 #include <linux/sched/rt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscalls.h>
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -37,16 +29,11 @@
 #include <linux/fs.h>
 #include <linux/rcupdate.h>
 #include <linux/hrtimer.h>
-<<<<<<< HEAD
-
-#include <asm/uaccess.h>
-=======
 #include <linux/freezer.h>
 #include <net/busy_poll.h>
 #include <linux/vmalloc.h>
 
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -63,11 +50,7 @@
 
 #define MAX_SLACK	(100 * NSEC_PER_MSEC)
 
-<<<<<<< HEAD
-static long __estimate_accuracy(struct timespec *tv)
-=======
 static long __estimate_accuracy(struct timespec64 *tv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long slack;
 	int divfactor = 1000;
@@ -90,17 +73,10 @@ static long __estimate_accuracy(struct timespec64 *tv)
 	return slack;
 }
 
-<<<<<<< HEAD
-long select_estimate_accuracy(struct timespec *tv)
-{
-	unsigned long ret;
-	struct timespec now;
-=======
 u64 select_estimate_accuracy(struct timespec64 *tv)
 {
 	u64 ret;
 	struct timespec64 now;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Realtime tasks get a slack of 0 for obvious reasons.
@@ -109,13 +85,8 @@ u64 select_estimate_accuracy(struct timespec64 *tv)
 	if (rt_task(current))
 		return 0;
 
-<<<<<<< HEAD
-	ktime_get_ts(&now);
-	now = timespec_sub(*tv, now);
-=======
 	ktime_get_ts64(&now);
 	now = timespec64_sub(*tv, now);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = __estimate_accuracy(&now);
 	if (ret < current->timer_slack_ns)
 		return current->timer_slack_ns;
@@ -127,11 +98,7 @@ u64 select_estimate_accuracy(struct timespec64 *tv)
 struct poll_table_page {
 	struct poll_table_page * next;
 	struct poll_table_entry * entry;
-<<<<<<< HEAD
-	struct poll_table_entry entries[0];
-=======
 	struct poll_table_entry entries[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define POLL_TABLE_FULL(table) \
@@ -215,11 +182,7 @@ static struct poll_table_entry *poll_get_entry(struct poll_wqueues *p)
 	return table->entry++;
 }
 
-<<<<<<< HEAD
-static int __pollwake(wait_queue_t *wait, unsigned mode, int sync, void *key)
-=======
 static int __pollwake(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct poll_wqueues *pwq = wait->private;
 	DECLARE_WAITQUEUE(dummy_wait, pwq->polling_task);
@@ -229,11 +192,7 @@ static int __pollwake(wait_queue_entry_t *wait, unsigned mode, int sync, void *k
 	 * doesn't imply write barrier and the users expect write
 	 * barrier semantics on wakeup functions.  The following
 	 * smp_wmb() is equivalent to smp_wmb() in try_to_wake_up()
-<<<<<<< HEAD
-	 * and is paired with set_mb() in poll_schedule_timeout.
-=======
 	 * and is paired with smp_store_mb() in poll_schedule_timeout.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	smp_wmb();
 	pwq->triggered = 1;
@@ -249,20 +208,12 @@ static int __pollwake(wait_queue_entry_t *wait, unsigned mode, int sync, void *k
 	return default_wake_function(&dummy_wait, mode, sync, key);
 }
 
-<<<<<<< HEAD
-static int pollwake(wait_queue_t *wait, unsigned mode, int sync, void *key)
-=======
 static int pollwake(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct poll_table_entry *entry;
 
 	entry = container_of(wait, struct poll_table_entry, wait);
-<<<<<<< HEAD
-	if (key && !((unsigned long)key & entry->key))
-=======
 	if (key && !(key_to_poll(key) & entry->key))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return __pollwake(wait, mode, sync, key);
 }
@@ -275,12 +226,7 @@ static void __pollwait(struct file *filp, wait_queue_head_t *wait_address,
 	struct poll_table_entry *entry = poll_get_entry(pwq);
 	if (!entry)
 		return;
-<<<<<<< HEAD
-	get_file(filp);
-	entry->filp = filp;
-=======
 	entry->filp = get_file(filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->wait_address = wait_address;
 	entry->key = p->_key;
 	init_waitqueue_func_entry(&entry->wait, pollwake);
@@ -288,11 +234,7 @@ static void __pollwait(struct file *filp, wait_queue_head_t *wait_address,
 	add_wait_queue(wait_address, &entry->wait);
 }
 
-<<<<<<< HEAD
-int poll_schedule_timeout(struct poll_wqueues *pwq, int state,
-=======
 static int poll_schedule_timeout(struct poll_wqueues *pwq, int state,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ktime_t *expires, unsigned long slack)
 {
 	int rc = -EINTR;
@@ -305,11 +247,7 @@ static int poll_schedule_timeout(struct poll_wqueues *pwq, int state,
 	/*
 	 * Prepare for the next iteration.
 	 *
-<<<<<<< HEAD
-	 * The following set_mb() serves two purposes.  First, it's
-=======
 	 * The following smp_store_mb() serves two purposes.  First, it's
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the counterpart rmb of the wmb in pollwake() such that data
 	 * written before wake up is always visible after wake up.
 	 * Second, the full barrier guarantees that triggered clearing
@@ -317,17 +255,6 @@ static int poll_schedule_timeout(struct poll_wqueues *pwq, int state,
 	 * this problem doesn't exist for the first iteration as
 	 * add_wait_queue() has full barrier semantics.
 	 */
-<<<<<<< HEAD
-	set_mb(pwq->triggered, 0);
-
-	return rc;
-}
-EXPORT_SYMBOL(poll_schedule_timeout);
-
-/**
- * poll_select_set_timeout - helper function to setup the timeout value
- * @to:		pointer to timespec variable for the final timeout
-=======
 	smp_store_mb(pwq->triggered, 0);
 
 	return rc;
@@ -336,7 +263,6 @@ EXPORT_SYMBOL(poll_schedule_timeout);
 /**
  * poll_select_set_timeout - helper function to setup the timeout value
  * @to:		pointer to timespec64 variable for the final timeout
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sec:	seconds (from user space)
  * @nsec:	nanoseconds (from user space)
  *
@@ -345,43 +271,23 @@ EXPORT_SYMBOL(poll_schedule_timeout);
  *
  * Returns -EINVAL if sec/nsec are not normalized. Otherwise 0.
  */
-<<<<<<< HEAD
-int poll_select_set_timeout(struct timespec *to, long sec, long nsec)
-{
-	struct timespec ts = {.tv_sec = sec, .tv_nsec = nsec};
-
-	if (!timespec_valid(&ts))
-=======
 int poll_select_set_timeout(struct timespec64 *to, time64_t sec, long nsec)
 {
 	struct timespec64 ts = {.tv_sec = sec, .tv_nsec = nsec};
 
 	if (!timespec64_valid(&ts))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Optimize for the zero timeout value here */
 	if (!sec && !nsec) {
 		to->tv_sec = to->tv_nsec = 0;
 	} else {
-<<<<<<< HEAD
-		ktime_get_ts(to);
-		*to = timespec_add_safe(*to, ts);
-=======
 		ktime_get_ts64(to);
 		*to = timespec64_add_safe(*to, ts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int poll_select_copy_remaining(struct timespec *end_time, void __user *p,
-				      int timeval, int ret)
-{
-	struct timespec rts;
-	struct timeval rtv;
-=======
 enum poll_time_type {
 	PT_TIMEVAL = 0,
 	PT_OLD_TIMEVAL = 1,
@@ -396,7 +302,6 @@ static int poll_select_finish(struct timespec64 *end_time,
 	struct timespec64 rts;
 
 	restore_saved_sigmask_unless(ret == -ERESTARTNOHAND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!p)
 		return ret;
@@ -408,25 +313,6 @@ static int poll_select_finish(struct timespec64 *end_time,
 	if (!end_time->tv_sec && !end_time->tv_nsec)
 		return ret;
 
-<<<<<<< HEAD
-	ktime_get_ts(&rts);
-	rts = timespec_sub(*end_time, rts);
-	if (rts.tv_sec < 0)
-		rts.tv_sec = rts.tv_nsec = 0;
-
-	if (timeval) {
-		if (sizeof(rtv) > sizeof(rtv.tv_sec) + sizeof(rtv.tv_usec))
-			memset(&rtv, 0, sizeof(rtv));
-		rtv.tv_sec = rts.tv_sec;
-		rtv.tv_usec = rts.tv_nsec / NSEC_PER_USEC;
-
-		if (!copy_to_user(p, &rtv, sizeof(rtv)))
-			return ret;
-
-	} else if (!copy_to_user(p, &rts, sizeof(rts)))
-		return ret;
-
-=======
 	ktime_get_ts64(&rts);
 	rts = timespec64_sub(*end_time, rts);
 	if (rts.tv_sec < 0)
@@ -467,7 +353,6 @@ static int poll_select_finish(struct timespec64 *end_time,
 	default:
 		BUG();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If an application puts its timeval in read-only memory, we
 	 * don't want the Linux-specific update to the timeval to
@@ -482,8 +367,6 @@ sticky:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Scalable version of the fd_set.
  */
@@ -528,7 +411,6 @@ void zero_fd_set(unsigned long nr, unsigned long *fdset)
 	memset(fdset, 0, FDS_BYTES(nr));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FDS_IN(fds, n)		(fds->in + n)
 #define FDS_OUT(fds, n)		(fds->out + n)
 #define FDS_EX(fds, n)		(fds->ex + n)
@@ -577,16 +459,6 @@ get_max:
 	return max;
 }
 
-<<<<<<< HEAD
-#define POLLIN_SET (POLLRDNORM | POLLRDBAND | POLLIN | POLLHUP | POLLERR)
-#define POLLOUT_SET (POLLWRBAND | POLLWRNORM | POLLOUT | POLLERR)
-#define POLLEX_SET (POLLPRI)
-
-static inline void wait_key_set(poll_table *wait, unsigned long in,
-				unsigned long out, unsigned long bit)
-{
-	wait->_key = POLLEX_SET;
-=======
 #define POLLIN_SET (EPOLLRDNORM | EPOLLRDBAND | EPOLLIN | EPOLLHUP | EPOLLERR |\
 			EPOLLNVAL)
 #define POLLOUT_SET (EPOLLWRBAND | EPOLLWRNORM | EPOLLOUT | EPOLLERR |\
@@ -598,30 +470,21 @@ static inline void wait_key_set(poll_table *wait, unsigned long in,
 				__poll_t ll_flag)
 {
 	wait->_key = POLLEX_SET | ll_flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (in & bit)
 		wait->_key |= POLLIN_SET;
 	if (out & bit)
 		wait->_key |= POLLOUT_SET;
 }
 
-<<<<<<< HEAD
-int do_select(int n, fd_set_bits *fds, struct timespec *end_time)
-=======
 static noinline_for_stack int do_select(int n, fd_set_bits *fds, struct timespec64 *end_time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ktime_t expire, *to = NULL;
 	struct poll_wqueues table;
 	poll_table *wait;
 	int retval, i, timed_out = 0;
-<<<<<<< HEAD
-	unsigned long slack = 0;
-=======
 	u64 slack = 0;
 	__poll_t busy_flag = net_busy_loop_on() ? POLL_BUSY_LOOP : 0;
 	unsigned long busy_start = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	retval = max_select_fd(n, fds);
@@ -644,25 +507,15 @@ static noinline_for_stack int do_select(int n, fd_set_bits *fds, struct timespec
 	retval = 0;
 	for (;;) {
 		unsigned long *rinp, *routp, *rexp, *inp, *outp, *exp;
-<<<<<<< HEAD
-=======
 		bool can_busy_loop = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		inp = fds->in; outp = fds->out; exp = fds->ex;
 		rinp = fds->res_in; routp = fds->res_out; rexp = fds->res_ex;
 
 		for (i = 0; i < n; ++rinp, ++routp, ++rexp) {
-<<<<<<< HEAD
-			unsigned long in, out, ex, all_bits, bit = 1, mask, j;
-			unsigned long res_in = 0, res_out = 0, res_ex = 0;
-			const struct file_operations *f_op = NULL;
-			struct file *file = NULL;
-=======
 			unsigned long in, out, ex, all_bits, bit = 1, j;
 			unsigned long res_in = 0, res_out = 0, res_ex = 0;
 			__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			in = *inp++; out = *outp++; ex = *exp++;
 			all_bits = in | out | ex;
@@ -672,42 +525,11 @@ static noinline_for_stack int do_select(int n, fd_set_bits *fds, struct timespec
 			}
 
 			for (j = 0; j < BITS_PER_LONG; ++j, ++i, bit <<= 1) {
-<<<<<<< HEAD
-				int fput_needed;
-=======
 				struct fd f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (i >= n)
 					break;
 				if (!(bit & all_bits))
 					continue;
-<<<<<<< HEAD
-				file = fget_light(i, &fput_needed);
-				if (file) {
-					f_op = file->f_op;
-					mask = DEFAULT_POLLMASK;
-					if (f_op && f_op->poll) {
-						wait_key_set(wait, in, out, bit);
-						mask = (*f_op->poll)(file, wait);
-					}
-					fput_light(file, fput_needed);
-					if ((mask & POLLIN_SET) && (in & bit)) {
-						res_in |= bit;
-						retval++;
-						wait->_qproc = NULL;
-					}
-					if ((mask & POLLOUT_SET) && (out & bit)) {
-						res_out |= bit;
-						retval++;
-						wait->_qproc = NULL;
-					}
-					if ((mask & POLLEX_SET) && (ex & bit)) {
-						res_ex |= bit;
-						retval++;
-						wait->_qproc = NULL;
-					}
-				}
-=======
 				mask = EPOLLNVAL;
 				f = fdget(i);
 				if (f.file) {
@@ -744,7 +566,6 @@ static noinline_for_stack int do_select(int n, fd_set_bits *fds, struct timespec
 				} else if (busy_flag & mask)
 					can_busy_loop = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (res_in)
 				*rinp = res_in;
@@ -762,8 +583,6 @@ static noinline_for_stack int do_select(int n, fd_set_bits *fds, struct timespec
 			break;
 		}
 
-<<<<<<< HEAD
-=======
 		/* only if found POLL_BUSY_LOOP sockets && not out of time */
 		if (can_busy_loop && !need_resched()) {
 			if (!busy_start) {
@@ -775,18 +594,13 @@ static noinline_for_stack int do_select(int n, fd_set_bits *fds, struct timespec
 		}
 		busy_flag = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If this is the first loop and we have a timeout
 		 * given, then we convert to ktime_t and set the to
 		 * pointer to the expiry value.
 		 */
 		if (end_time && !to) {
-<<<<<<< HEAD
-			expire = timespec_to_ktime(*end_time);
-=======
 			expire = timespec64_to_ktime(*end_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to = &expire;
 		}
 
@@ -809,20 +623,12 @@ static noinline_for_stack int do_select(int n, fd_set_bits *fds, struct timespec
  * I'm trying ERESTARTNOHAND which restart only when you want to.
  */
 int core_sys_select(int n, fd_set __user *inp, fd_set __user *outp,
-<<<<<<< HEAD
-			   fd_set __user *exp, struct timespec *end_time)
-=======
 			   fd_set __user *exp, struct timespec64 *end_time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	fd_set_bits fds;
 	void *bits;
 	int ret, max_fds;
-<<<<<<< HEAD
-	unsigned int size;
-=======
 	size_t size, alloc_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fdtable *fdt;
 	/* Allocate small arguments on the stack to save memory and be faster */
 	long stack_fds[SELECT_STACK_ALLOC/sizeof(long)];
@@ -849,15 +655,11 @@ int core_sys_select(int n, fd_set __user *inp, fd_set __user *outp,
 	if (size > sizeof(stack_fds) / 6) {
 		/* Not enough space in on-stack array; must use kmalloc */
 		ret = -ENOMEM;
-<<<<<<< HEAD
-		bits = kmalloc(6 * size, GFP_KERNEL);
-=======
 		if (size > (SIZE_MAX / 6))
 			goto out_nofds;
 
 		alloc_size = 6 * size;
 		bits = kvmalloc(alloc_size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!bits)
 			goto out_nofds;
 	}
@@ -894,28 +696,16 @@ int core_sys_select(int n, fd_set __user *inp, fd_set __user *outp,
 
 out:
 	if (bits != stack_fds)
-<<<<<<< HEAD
-		kfree(bits);
-=======
 		kvfree(bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_nofds:
 	return ret;
 }
 
-<<<<<<< HEAD
-SYSCALL_DEFINE5(select, int, n, fd_set __user *, inp, fd_set __user *, outp,
-		fd_set __user *, exp, struct timeval __user *, tvp)
-{
-	struct timespec end_time, *to = NULL;
-	struct timeval tv;
-=======
 static int kern_select(int n, fd_set __user *inp, fd_set __user *outp,
 		       fd_set __user *exp, struct __kernel_old_timeval __user *tvp)
 {
 	struct timespec64 end_time, *to = NULL;
 	struct __kernel_old_timeval tv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (tvp) {
@@ -930,25 +720,6 @@ static int kern_select(int n, fd_set __user *inp, fd_set __user *outp,
 	}
 
 	ret = core_sys_select(n, inp, outp, exp, to);
-<<<<<<< HEAD
-	ret = poll_select_copy_remaining(&end_time, tvp, 1, ret);
-
-	return ret;
-}
-
-#ifdef HAVE_SET_RESTORE_SIGMASK
-static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
-		       fd_set __user *exp, struct timespec __user *tsp,
-		       const sigset_t __user *sigmask, size_t sigsetsize)
-{
-	sigset_t ksigmask, sigsaved;
-	struct timespec ts, end_time, *to = NULL;
-	int ret;
-
-	if (tsp) {
-		if (copy_from_user(&ts, tsp, sizeof(ts)))
-			return -EFAULT;
-=======
 	return poll_select_finish(&end_time, tvp, PT_TIMEVAL, ret);
 }
 
@@ -979,51 +750,18 @@ static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
 		default:
 			BUG();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		to = &end_time;
 		if (poll_select_set_timeout(to, ts.tv_sec, ts.tv_nsec))
 			return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (sigmask) {
-		/* XXX: Don't preclude handling different sized sigset_t's.  */
-		if (sigsetsize != sizeof(sigset_t))
-			return -EINVAL;
-		if (copy_from_user(&ksigmask, sigmask, sizeof(ksigmask)))
-			return -EFAULT;
-
-		sigdelsetmask(&ksigmask, sigmask(SIGKILL)|sigmask(SIGSTOP));
-		sigprocmask(SIG_SETMASK, &ksigmask, &sigsaved);
-	}
-
-	ret = core_sys_select(n, inp, outp, exp, to);
-	ret = poll_select_copy_remaining(&end_time, tsp, 0, ret);
-
-	if (ret == -ERESTARTNOHAND) {
-		/*
-		 * Don't restore the signal mask yet. Let do_signal() deliver
-		 * the signal on the way back to userspace, before the signal
-		 * mask is restored.
-		 */
-		if (sigmask) {
-			memcpy(&current->saved_sigmask, &sigsaved,
-					sizeof(sigsaved));
-			set_restore_sigmask();
-		}
-	} else if (sigmask)
-		sigprocmask(SIG_SETMASK, &sigsaved, NULL);
-
-	return ret;
-=======
 	ret = set_user_sigmask(sigmask, sigsetsize);
 	if (ret)
 		return ret;
 
 	ret = core_sys_select(n, inp, outp, exp, to);
 	return poll_select_finish(&end_time, tsp, type, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1032,26 +770,6 @@ static long do_pselect(int n, fd_set __user *inp, fd_set __user *outp,
  * which has a pointer to the sigset_t itself followed by a size_t containing
  * the sigset size.
  */
-<<<<<<< HEAD
-SYSCALL_DEFINE6(pselect6, int, n, fd_set __user *, inp, fd_set __user *, outp,
-		fd_set __user *, exp, struct timespec __user *, tsp,
-		void __user *, sig)
-{
-	size_t sigsetsize = 0;
-	sigset_t __user *up = NULL;
-
-	if (sig) {
-		if (!access_ok(VERIFY_READ, sig, sizeof(void *)+sizeof(size_t))
-		    || __get_user(up, (sigset_t __user * __user *)sig)
-		    || __get_user(sigsetsize,
-				(size_t __user *)(sig+sizeof(void *))))
-			return -EFAULT;
-	}
-
-	return do_pselect(n, inp, outp, exp, tsp, up, sigsetsize);
-}
-#endif /* HAVE_SET_RESTORE_SIGMASK */
-=======
 struct sigset_argpack {
 	sigset_t __user *p;
 	size_t size;
@@ -1101,17 +819,12 @@ SYSCALL_DEFINE6(pselect6_time32, int, n, fd_set __user *, inp, fd_set __user *, 
 }
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __ARCH_WANT_SYS_OLD_SELECT
 struct sel_arg_struct {
 	unsigned long n;
 	fd_set __user *inp, *outp, *exp;
-<<<<<<< HEAD
-	struct timeval __user *tvp;
-=======
 	struct __kernel_old_timeval __user *tvp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 SYSCALL_DEFINE1(old_select, struct sel_arg_struct __user *, arg)
@@ -1120,23 +833,14 @@ SYSCALL_DEFINE1(old_select, struct sel_arg_struct __user *, arg)
 
 	if (copy_from_user(&a, arg, sizeof(a)))
 		return -EFAULT;
-<<<<<<< HEAD
-	return sys_select(a.n, a.inp, a.outp, a.exp, a.tvp);
-=======
 	return kern_select(a.n, a.inp, a.outp, a.exp, a.tvp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 struct poll_list {
 	struct poll_list *next;
-<<<<<<< HEAD
-	int len;
-	struct pollfd entries[0];
-=======
 	unsigned int len;
 	struct pollfd entries[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define POLLFD_PER_PAGE  ((PAGE_SIZE-sizeof(struct poll_list)) / sizeof(struct pollfd))
@@ -1148,39 +852,6 @@ struct poll_list {
  * pwait poll_table will be used by the fd-provided poll handler for waiting,
  * if pwait->_qproc is non-NULL.
  */
-<<<<<<< HEAD
-static inline unsigned int do_pollfd(struct pollfd *pollfd, poll_table *pwait)
-{
-	unsigned int mask;
-	int fd;
-
-	mask = 0;
-	fd = pollfd->fd;
-	if (fd >= 0) {
-		int fput_needed;
-		struct file * file;
-
-		file = fget_light(fd, &fput_needed);
-		mask = POLLNVAL;
-		if (file != NULL) {
-			mask = DEFAULT_POLLMASK;
-			if (file->f_op && file->f_op->poll) {
-				pwait->_key = pollfd->events|POLLERR|POLLHUP;
-				mask = file->f_op->poll(file, pwait);
-			}
-			/* Mask out unneeded events. */
-			mask &= pollfd->events | POLLERR | POLLHUP;
-			fput_light(file, fput_needed);
-		}
-	}
-	pollfd->revents = mask;
-
-	return mask;
-}
-
-static int do_poll(unsigned int nfds,  struct poll_list *list,
-		   struct poll_wqueues *wait, struct timespec *end_time)
-=======
 static inline __poll_t do_pollfd(struct pollfd *pollfd, poll_table *pwait,
 				     bool *can_busy_poll,
 				     __poll_t busy_flag)
@@ -1213,18 +884,13 @@ out:
 
 static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 		   struct timespec64 *end_time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	poll_table* pt = &wait->pt;
 	ktime_t expire, *to = NULL;
 	int timed_out = 0, count = 0;
-<<<<<<< HEAD
-	unsigned long slack = 0;
-=======
 	u64 slack = 0;
 	__poll_t busy_flag = net_busy_loop_on() ? POLL_BUSY_LOOP : 0;
 	unsigned long busy_start = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Optimise the no-wait case */
 	if (end_time && !end_time->tv_sec && !end_time->tv_nsec) {
@@ -1237,10 +903,7 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 
 	for (;;) {
 		struct poll_list *walk;
-<<<<<<< HEAD
-=======
 		bool can_busy_loop = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (walk = list; walk != NULL; walk = walk->next) {
 			struct pollfd * pfd, * pfd_end;
@@ -1255,11 +918,6 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 				 * this. They'll get immediately deregistered
 				 * when we break out and return.
 				 */
-<<<<<<< HEAD
-				if (do_pollfd(pfd, pt)) {
-					count++;
-					pt->_qproc = NULL;
-=======
 				if (do_pollfd(pfd, pt, &can_busy_loop,
 					      busy_flag)) {
 					count++;
@@ -1267,7 +925,6 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 					/* found something, stop busy polling */
 					busy_flag = 0;
 					can_busy_loop = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 		}
@@ -1279,17 +936,11 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 		if (!count) {
 			count = wait->error;
 			if (signal_pending(current))
-<<<<<<< HEAD
-				count = -EINTR;
-=======
 				count = -ERESTARTNOHAND;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (count || timed_out)
 			break;
 
-<<<<<<< HEAD
-=======
 		/* only if found POLL_BUSY_LOOP sockets && not out of time */
 		if (can_busy_loop && !need_resched()) {
 			if (!busy_start) {
@@ -1301,18 +952,13 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 		}
 		busy_flag = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If this is the first loop and we have a timeout
 		 * given, then we convert to ktime_t and set the to
 		 * pointer to the expiry value.
 		 */
 		if (end_time && !to) {
-<<<<<<< HEAD
-			expire = timespec_to_ktime(*end_time);
-=======
 			expire = timespec64_to_ktime(*end_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to = &expire;
 		}
 
@@ -1325,31 +971,19 @@ static int do_poll(struct poll_list *list, struct poll_wqueues *wait,
 #define N_STACK_PPS ((sizeof(stack_pps) - sizeof(struct poll_list))  / \
 			sizeof(struct pollfd))
 
-<<<<<<< HEAD
-int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
-		struct timespec *end_time)
-{
-	struct poll_wqueues table;
- 	int err = -EFAULT, fdcount, len, size;
-=======
 static int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
 		struct timespec64 *end_time)
 {
 	struct poll_wqueues table;
 	int err = -EFAULT, fdcount;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allocate small arguments on the stack to save memory and be
 	   faster - use long to make sure the buffer is aligned properly
 	   on 64 bit archs to avoid unaligned access */
 	long stack_pps[POLL_STACK_ALLOC/sizeof(long)];
 	struct poll_list *const head = (struct poll_list *)stack_pps;
  	struct poll_list *walk = head;
-<<<<<<< HEAD
- 	unsigned long todo = nfds;
-=======
 	unsigned int todo = nfds;
 	unsigned int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nfds > rlimit(RLIMIT_NOFILE))
 		return -EINVAL;
@@ -1365,15 +999,6 @@ static int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
 					sizeof(struct pollfd) * walk->len))
 			goto out_fds;
 
-<<<<<<< HEAD
-		todo -= walk->len;
-		if (!todo)
-			break;
-
-		len = min(todo, POLLFD_PER_PAGE);
-		size = sizeof(struct poll_list) + sizeof(struct pollfd) * len;
-		walk = walk->next = kmalloc(size, GFP_KERNEL);
-=======
 		if (walk->len >= todo)
 			break;
 		todo -= walk->len;
@@ -1381,7 +1006,6 @@ static int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
 		len = min(todo, POLLFD_PER_PAGE);
 		walk = walk->next = kmalloc(struct_size(walk, entries, len),
 					    GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!walk) {
 			err = -ENOMEM;
 			goto out_fds;
@@ -1389,19 +1013,6 @@ static int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
 	}
 
 	poll_initwait(&table);
-<<<<<<< HEAD
-	fdcount = do_poll(nfds, head, &table, end_time);
-	poll_freewait(&table);
-
-	for (walk = head; walk; walk = walk->next) {
-		struct pollfd *fds = walk->entries;
-		int j;
-
-		for (j = 0; j < walk->len; j++, ufds++)
-			if (__put_user(fds[j].revents, &ufds->revents))
-				goto out_fds;
-  	}
-=======
 	fdcount = do_poll(head, &table, end_time);
 	poll_freewait(&table);
 
@@ -1416,7 +1027,6 @@ static int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
 			unsafe_put_user(fds->revents, &ufds->revents, Efault);
   	}
 	user_write_access_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = fdcount;
 out_fds:
@@ -1428,25 +1038,18 @@ out_fds:
 	}
 
 	return err;
-<<<<<<< HEAD
-=======
 
 Efault:
 	user_write_access_end();
 	err = -EFAULT;
 	goto out_fds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long do_restart_poll(struct restart_block *restart_block)
 {
 	struct pollfd __user *ufds = restart_block->poll.ufds;
 	int nfds = restart_block->poll.nfds;
-<<<<<<< HEAD
-	struct timespec *to = NULL, end_time;
-=======
 	struct timespec64 *to = NULL, end_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (restart_block->poll.has_timeout) {
@@ -1457,27 +1060,16 @@ static long do_restart_poll(struct restart_block *restart_block)
 
 	ret = do_sys_poll(ufds, nfds, to);
 
-<<<<<<< HEAD
-	if (ret == -EINTR) {
-		restart_block->fn = do_restart_poll;
-		ret = -ERESTART_RESTARTBLOCK;
-	}
-=======
 	if (ret == -ERESTARTNOHAND)
 		ret = set_restart_fn(restart_block, do_restart_poll);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 SYSCALL_DEFINE3(poll, struct pollfd __user *, ufds, unsigned int, nfds,
 		int, timeout_msecs)
 {
-<<<<<<< HEAD
-	struct timespec end_time, *to = NULL;
-=======
 	struct timespec64 end_time, *to = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (timeout_msecs >= 0) {
@@ -1488,18 +1080,10 @@ SYSCALL_DEFINE3(poll, struct pollfd __user *, ufds, unsigned int, nfds,
 
 	ret = do_sys_poll(ufds, nfds, to);
 
-<<<<<<< HEAD
-	if (ret == -EINTR) {
-		struct restart_block *restart_block;
-
-		restart_block = &current_thread_info()->restart_block;
-		restart_block->fn = do_restart_poll;
-=======
 	if (ret == -ERESTARTNOHAND) {
 		struct restart_block *restart_block;
 
 		restart_block = &current->restart_block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		restart_block->poll.ufds = ufds;
 		restart_block->poll.nfds = nfds;
 
@@ -1510,28 +1094,11 @@ SYSCALL_DEFINE3(poll, struct pollfd __user *, ufds, unsigned int, nfds,
 		} else
 			restart_block->poll.has_timeout = 0;
 
-<<<<<<< HEAD
-		ret = -ERESTART_RESTARTBLOCK;
-=======
 		ret = set_restart_fn(restart_block, do_restart_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-#ifdef HAVE_SET_RESTORE_SIGMASK
-SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
-		struct timespec __user *, tsp, const sigset_t __user *, sigmask,
-		size_t, sigsetsize)
-{
-	sigset_t ksigmask, sigsaved;
-	struct timespec ts, end_time, *to = NULL;
-	int ret;
-
-	if (tsp) {
-		if (copy_from_user(&ts, tsp, sizeof(ts)))
-=======
 SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 		struct __kernel_timespec __user *, tsp, const sigset_t __user *, sigmask,
 		size_t, sigsetsize)
@@ -1541,7 +1108,6 @@ SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 
 	if (tsp) {
 		if (get_timespec64(&ts, tsp))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 
 		to = &end_time;
@@ -1549,42 +1115,6 @@ SYSCALL_DEFINE5(ppoll, struct pollfd __user *, ufds, unsigned int, nfds,
 			return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (sigmask) {
-		/* XXX: Don't preclude handling different sized sigset_t's.  */
-		if (sigsetsize != sizeof(sigset_t))
-			return -EINVAL;
-		if (copy_from_user(&ksigmask, sigmask, sizeof(ksigmask)))
-			return -EFAULT;
-
-		sigdelsetmask(&ksigmask, sigmask(SIGKILL)|sigmask(SIGSTOP));
-		sigprocmask(SIG_SETMASK, &ksigmask, &sigsaved);
-	}
-
-	ret = do_sys_poll(ufds, nfds, to);
-
-	/* We can restart this syscall, usually */
-	if (ret == -EINTR) {
-		/*
-		 * Don't restore the signal mask yet. Let do_signal() deliver
-		 * the signal on the way back to userspace, before the signal
-		 * mask is restored.
-		 */
-		if (sigmask) {
-			memcpy(&current->saved_sigmask, &sigsaved,
-					sizeof(sigsaved));
-			set_restore_sigmask();
-		}
-		ret = -ERESTARTNOHAND;
-	} else if (sigmask)
-		sigprocmask(SIG_SETMASK, &sigsaved, NULL);
-
-	ret = poll_select_copy_remaining(&end_time, tsp, 0, ret);
-
-	return ret;
-}
-#endif /* HAVE_SET_RESTORE_SIGMASK */
-=======
 	ret = set_user_sigmask(sigmask, sigsetsize);
 	if (ret)
 		return ret;
@@ -1918,4 +1448,3 @@ COMPAT_SYSCALL_DEFINE5(ppoll_time64, struct pollfd __user *, ufds,
 }
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

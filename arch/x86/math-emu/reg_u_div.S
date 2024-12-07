@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file	"reg_u_div.S"
 /*---------------------------------------------------------------------------+
  |  reg_u_div.S                                                              |
@@ -78,11 +75,7 @@ FPU_ovfl_flag:
 #define DEST	PARAM3
 
 .text
-<<<<<<< HEAD
-ENTRY(FPU_u_div)
-=======
 SYM_FUNC_START(FPU_u_div)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 #ifndef NON_REENTRANT_FPU
@@ -475,12 +468,7 @@ L_exit:
 	popl	%esi
 
 	leave
-<<<<<<< HEAD
-	ret
-#endif /* PARANOID */ 
-=======
 	RET
 #endif /* PARANOID */ 
 
 SYM_FUNC_END(FPU_u_div)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

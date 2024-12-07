@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sparc64/math-emu/math.c
  *
@@ -19,11 +16,7 @@
 
 #include <asm/fpumacro.h>
 #include <asm/ptrace.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 
 #include "sfp-util_64.h"
@@ -171,11 +164,7 @@ typedef union {
 	u64 q[2];
 } *argp;
 
-<<<<<<< HEAD
-int do_mathemu(struct pt_regs *regs, struct fpustate *f)
-=======
 int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pc = regs->tpc;
 	unsigned long tstate = regs->tstate;
@@ -230,11 +219,7 @@ int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap)
 			case FSQRTS: {
 				unsigned long x = current_thread_info()->xfsr[0];
 
-<<<<<<< HEAD
-				x = (x >> 14) & 0xf;
-=======
 				x = (x >> 14) & 0x7;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				TYPE(x,1,1,1,1,0,0);
 				break;
 			}
@@ -242,11 +227,7 @@ int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap)
 			case FSQRTD: {
 				unsigned long x = current_thread_info()->xfsr[0];
 
-<<<<<<< HEAD
-				x = (x >> 14) & 0xf;
-=======
 				x = (x >> 14) & 0x7;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				TYPE(x,2,1,2,1,0,0);
 				break;
 			}
@@ -340,11 +321,7 @@ int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap)
 					XR = 0;
 				else if (freg < 16)
 					XR = regs->u_regs[freg];
-<<<<<<< HEAD
-				else if (test_thread_flag(TIF_32BIT)) {
-=======
 				else if (!test_thread_64bit_stack(regs->u_regs[UREG_FP])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct reg_window32 __user *win32;
 					flushw_user ();
 					win32 = (struct reg_window32 __user *)((unsigned long)((u32)regs->u_regs[UREG_FP]));
@@ -381,11 +358,6 @@ int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap)
 	if (type) {
 		argp rs1 = NULL, rs2 = NULL, rd = NULL;
 		
-<<<<<<< HEAD
-		freg = (current_thread_info()->xfsr[0] >> 14) & 0xf;
-		if (freg != (type >> 9))
-			goto err;
-=======
 		/* Starting with UltraSPARC-T2, the cpu does not set the FP Trap
 		 * Type field in the %fsr to unimplemented_FPop.  Nor does it
 		 * use the fp_exception_other trap.  Instead it signals an
@@ -397,7 +369,6 @@ int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap)
 			if (ftt != (type >> 9))
 				goto err;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		current_thread_info()->xfsr[0] &= ~0x1c000;
 		freg = ((insn >> 14) & 0x1f);
 		switch (type & 0x3) {

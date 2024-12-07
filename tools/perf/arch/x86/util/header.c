@@ -1,34 +1,10 @@
-<<<<<<< HEAD
-#include <sys/types.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <sys/types.h>
 #include <errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-<<<<<<< HEAD
-
-#include "../../util/header.h"
-
-static inline void
-cpuid(unsigned int op, unsigned int *a, unsigned int *b, unsigned int *c,
-      unsigned int *d)
-{
-	__asm__ __volatile__ (".byte 0x53\n\tcpuid\n\t"
-			      "movl %%ebx, %%esi\n\t.byte 0x5b"
-			: "=a" (*a),
-			"=S" (*b),
-			"=c" (*c),
-			"=d" (*d)
-			: "a" (op));
-}
-
-int
-get_cpuid(char *buffer, size_t sz)
-=======
 #include <regex.h>
 
 #include "../../../util/debug.h"
@@ -48,28 +24,16 @@ void get_cpuid_0(char *vendor, unsigned int *lvl)
 
 static int
 __get_cpuid(char *buffer, size_t sz, const char *fmt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int a, b, c, d, lvl;
 	int family = -1, model = -1, step = -1;
 	int nb;
 	char vendor[16];
 
-<<<<<<< HEAD
-	cpuid(0, &lvl, &b, &c, &d);
-	strncpy(&vendor[0], (char *)(&b), 4);
-	strncpy(&vendor[4], (char *)(&d), 4);
-	strncpy(&vendor[8], (char *)(&c), 4);
-	vendor[12] = '\0';
-
-	if (lvl >= 1) {
-		cpuid(1, &a, &b, &c, &d);
-=======
 	get_cpuid_0(vendor, &lvl);
 
 	if (lvl >= 1) {
 		cpuid(1, 0, &a, &b, &c, &d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		family = (a >> 8) & 0xf;  /* bits 11 - 8 */
 		model  = (a >> 4) & 0xf;  /* Bits  7 - 4 */
@@ -83,20 +47,13 @@ __get_cpuid(char *buffer, size_t sz, const char *fmt)
 		if (family >= 0x6)
 			model += ((a >> 16) & 0xf) << 4;
 	}
-<<<<<<< HEAD
-	nb = scnprintf(buffer, sz, "%s,%u,%u,%u$", vendor, family, model, step);
-=======
 	nb = scnprintf(buffer, sz, fmt, vendor, family, model, step);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* look for end marker to ensure the entire data fit */
 	if (strchr(buffer, '$')) {
 		buffer[nb-1] = '\0';
 		return 0;
 	}
-<<<<<<< HEAD
-	return -1;
-=======
 	return ENOBUFS;
 }
 
@@ -179,5 +136,4 @@ int strcmp_cpuid_str(const char *mapcpuid, const char *id)
 	}
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

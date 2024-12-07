@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-config SCSI_QLA_FC
-	tristate "QLogic QLA2XXX Fibre Channel Support"
-	depends on PCI && SCSI
-	select SCSI_FC_ATTRS
-	select FW_LOADER
-	---help---
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config SCSI_QLA_FC
 	tristate "QLogic QLA2XXX Fibre Channel Support"
@@ -15,7 +7,6 @@ config SCSI_QLA_FC
 	select FW_LOADER
 	select BTREE
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	This qla2xxx driver supports all QLogic Fibre Channel
 	PCI and PCIe host adapters.
 
@@ -36,9 +27,6 @@ config SCSI_QLA_FC
 
 	Firmware images can be retrieved from:
 
-<<<<<<< HEAD
-		ftp://ftp.qlogic.com/outgoing/linux/firmware/
-=======
 		http://ldriver.qlogic.com/firmware/
 
 	They are also included in the linux-firmware tree as well.
@@ -60,4 +48,3 @@ config TCM_QLA2XXX_DEBUG
 	Say Y here to enable the TCM_QLA2XXX fabric module DEBUG for QLogic 24xx+ series target mode HBAs
 	This will include code to enable the SCSI command jammer
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

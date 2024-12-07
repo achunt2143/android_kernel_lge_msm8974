@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 1996-2005 Paul Mackerras.
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
-#include <linux/string.h>
-#include <asm/time.h>
-#include "nonstdio.h"
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 1996-2005 Paul Mackerras.
@@ -94,7 +80,6 @@ static int xmon_write(const char *ptr, int nb)
 	return rv + udbg_write(p, nb - (p - ptr));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xmon_putchar(int c)
 {
 	char ch = c;
@@ -108,38 +93,7 @@ static char line[256];
 static char *lineptr;
 static int lineleft;
 
-<<<<<<< HEAD
-int xmon_expect(const char *str, unsigned long timeout)
-{
-	int c;
-	unsigned long t0;
-
-	/* assume 25MHz default timebase if tb_ticks_per_sec not set yet */
-	timeout *= tb_ticks_per_sec? tb_ticks_per_sec: 25000000;
-	t0 = get_tbl();
-	do {
-		lineptr = line;
-		for (;;) {
-			c = xmon_read_poll();
-			if (c == -1) {
-				if (get_tbl() - t0 > timeout)
-					return 0;
-				continue;
-			}
-			if (c == '\n')
-				break;
-			if (c != '\r' && lineptr < &line[sizeof(line) - 1])
-				*lineptr++ = c;
-		}
-		*lineptr = 0;
-	} while (strstr(line, str) == NULL);
-	return 1;
-}
-
-int xmon_getchar(void)
-=======
 static int xmon_getchar(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int c;
 
@@ -213,20 +167,12 @@ char *xmon_gets(char *str, int nb)
 void xmon_printf(const char *format, ...)
 {
 	va_list args;
-<<<<<<< HEAD
-	int n;
-	static char xmon_outbuf[1024];
-=======
 	static char xmon_outbuf[1024];
 	int rc, n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_start(args, format);
 	n = vsnprintf(xmon_outbuf, sizeof(xmon_outbuf), format, args);
 	va_end(args);
-<<<<<<< HEAD
-	xmon_write(xmon_outbuf, n);
-=======
 
 	rc = xmon_write(xmon_outbuf, n);
 
@@ -234,7 +180,6 @@ void xmon_printf(const char *format, ...)
 		/* No udbg hooks, fallback to printk() - dangerous */
 		pr_cont("%s", xmon_outbuf);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void xmon_puts(const char *str)

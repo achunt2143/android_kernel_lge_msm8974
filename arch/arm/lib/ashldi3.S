@@ -27,10 +27,7 @@ Boston, MA 02110-1301, USA.  */
 
 
 #include <linux/linkage.h>
-<<<<<<< HEAD
-=======
 #include <asm/assembler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __ARMEB__
 #define al r1
@@ -51,11 +48,7 @@ ENTRY(__aeabi_llsl)
  THUMB(	lsrmi	r3, al, ip		)
  THUMB(	orrmi	ah, ah, r3		)
 	mov	al, al, lsl r2
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENDPROC(__ashldi3)
 ENDPROC(__aeabi_llsl)

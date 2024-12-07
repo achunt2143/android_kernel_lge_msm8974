@@ -1,35 +1,10 @@
-<<<<<<< HEAD
-/*
- * include/net/9p/9p.h
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 9P protocol definitions.
  *
  *  Copyright (C) 2005 by Latchesar Ionkov <lucho@ionkov.net>
  *  Copyright (C) 2004 by Eric Van Hensbergen <ericvh@gmail.com>
  *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to:
- *  Free Software Foundation
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02111-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef NET_9P_H
@@ -55,32 +30,20 @@
  */
 
 enum p9_debug_flags {
-<<<<<<< HEAD
-	P9_DEBUG_ERROR = 	(1<<0),
-	P9_DEBUG_9P = 		(1<<2),
-=======
 	P9_DEBUG_ERROR =	(1<<0),
 	P9_DEBUG_9P =		(1<<2),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	P9_DEBUG_VFS =		(1<<3),
 	P9_DEBUG_CONV =		(1<<4),
 	P9_DEBUG_MUX =		(1<<5),
 	P9_DEBUG_TRANS =	(1<<6),
-<<<<<<< HEAD
-	P9_DEBUG_SLABS =      	(1<<7),
-=======
 	P9_DEBUG_SLABS =	(1<<7),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	P9_DEBUG_FCALL =	(1<<8),
 	P9_DEBUG_FID =		(1<<9),
 	P9_DEBUG_PKT =		(1<<10),
 	P9_DEBUG_FSC =		(1<<11),
 	P9_DEBUG_VPKT =		(1<<12),
-<<<<<<< HEAD
-=======
 	P9_DEBUG_CACHE =	(1<<13),
 	P9_DEBUG_MMAP =		(1<<14),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_NET_9P_DEBUG
@@ -252,13 +215,10 @@ enum p9_open_mode_t {
 	P9_ORCLOSE = 0x40,
 	P9_OAPPEND = 0x80,
 	P9_OEXCL = 0x1000,
-<<<<<<< HEAD
-=======
 	P9L_MODE_MASK = 0x1FFF, /* don't send anything under this to server */
 	P9L_DIRECT = 0x2000, /* cache disabled */
 	P9L_NOWRITECACHE = 0x4000, /* no write caching  */
 	P9L_LOOSE = 0x8000, /* loose cache */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -361,12 +321,6 @@ enum p9_qid_t {
 };
 
 /* 9P Magic Numbers */
-<<<<<<< HEAD
-#define P9_NOTAG	(u16)(~0)
-#define P9_NOFID	(u32)(~0)
-#define P9_MAXWELEM	16
-
-=======
 #define P9_NOTAG	((u16)(~0))
 #define P9_NOFID	((u32)(~0))
 #define P9_MAXWELEM	16
@@ -374,7 +328,6 @@ enum p9_qid_t {
 /* Minimal header size: size[4] type[1] tag[2] */
 #define P9_HDRSZ	7
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ample room for Twrite/Rread header */
 #define P9_IOHDRSZ	24
 
@@ -384,12 +337,9 @@ enum p9_qid_t {
 /* size of header for zero copy read/write */
 #define P9_ZC_HDR_SZ 4096
 
-<<<<<<< HEAD
-=======
 /* maximum length of an error string */
 #define P9_ERRMAX 128
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct p9_qid - file system entity information
  * @type: 8-bit type &p9_qid_t
@@ -447,16 +397,6 @@ struct p9_wstat {
 	u32 atime;
 	u32 mtime;
 	u64 length;
-<<<<<<< HEAD
-	char *name;
-	char *uid;
-	char *gid;
-	char *muid;
-	char *extension;	/* 9p2000.u extensions */
-	u32 n_uid;		/* 9p2000.u extensions */
-	u32 n_gid;		/* 9p2000.u extensions */
-	u32 n_muid;		/* 9p2000.u extensions */
-=======
 	const char *name;
 	const char *uid;
 	const char *gid;
@@ -465,20 +405,14 @@ struct p9_wstat {
 	kuid_t n_uid;		/* 9p2000.u extensions */
 	kgid_t n_gid;		/* 9p2000.u extensions */
 	kuid_t n_muid;		/* 9p2000.u extensions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct p9_stat_dotl {
 	u64 st_result_mask;
 	struct p9_qid qid;
 	u32 st_mode;
-<<<<<<< HEAD
-	u32 st_uid;
-	u32 st_gid;
-=======
 	kuid_t st_uid;
 	kgid_t st_gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 st_nlink;
 	u64 st_rdev;
 	u64 st_size;
@@ -532,13 +466,8 @@ struct p9_stat_dotl {
 struct p9_iattr_dotl {
 	u32 valid;
 	u32 mode;
-<<<<<<< HEAD
-	u32 uid;
-	u32 gid;
-=======
 	kuid_t uid;
 	kgid_t gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 size;
 	u64 atime_sec;
 	u64 atime_nsec;
@@ -608,10 +537,7 @@ struct p9_rstatfs {
  * @offset: used by marshalling routines to track current position in buffer
  * @capacity: used by marshalling routines to track total malloc'd capacity
  * @sdata: payload
-<<<<<<< HEAD
-=======
  * @zc: whether zero-copy is used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * &p9_fcall represents the structure for all 9P RPC
  * transactions.  Requests are packaged into fcalls, and reponses
@@ -628,24 +554,6 @@ struct p9_fcall {
 	size_t offset;
 	size_t capacity;
 
-<<<<<<< HEAD
-	u8 *sdata;
-};
-
-struct p9_idpool;
-
-int p9_errstr2errno(char *errstr, int len);
-
-struct p9_idpool *p9_idpool_create(void);
-void p9_idpool_destroy(struct p9_idpool *);
-int p9_idpool_get(struct p9_idpool *p);
-void p9_idpool_put(int id, struct p9_idpool *p);
-int p9_idpool_check(int id, struct p9_idpool *p);
-
-int p9_error_init(void);
-int p9_trans_fd_init(void);
-void p9_trans_fd_exit(void);
-=======
 	struct kmem_cache *cache;
 	u8 *sdata;
 	bool zc;
@@ -654,5 +562,4 @@ void p9_trans_fd_exit(void);
 int p9_errstr2errno(char *errstr, int len);
 
 int p9_error_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* NET_9P_H */

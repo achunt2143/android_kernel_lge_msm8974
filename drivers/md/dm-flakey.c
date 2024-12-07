@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 Sistina Software (UK) Limited.
  * Copyright (C) 2004, 2010-2011 Red Hat, Inc. All rights reserved.
@@ -19,15 +16,10 @@
 
 #define DM_MSG_PREFIX "flakey"
 
-<<<<<<< HEAD
-#define all_corrupt_bio_flags_match(bio, fc)	\
-	(((bio)->bi_rw & (fc)->corrupt_bio_flags) == (fc)->corrupt_bio_flags)
-=======
 #define PROBABILITY_BASE	1000000000
 
 #define all_corrupt_bio_flags_match(bio, fc)	\
 	(((bio)->bi_opf & (fc)->corrupt_bio_flags) == (fc)->corrupt_bio_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Flakey: Used for testing only, simulates intermittent,
@@ -37,19 +29,6 @@ struct flakey_c {
 	struct dm_dev *dev;
 	unsigned long start_time;
 	sector_t start;
-<<<<<<< HEAD
-	unsigned up_interval;
-	unsigned down_interval;
-	unsigned long flags;
-	unsigned corrupt_bio_byte;
-	unsigned corrupt_bio_rw;
-	unsigned corrupt_bio_value;
-	unsigned corrupt_bio_flags;
-};
-
-enum feature_flag_bits {
-	DROP_WRITES
-=======
 	unsigned int up_interval;
 	unsigned int down_interval;
 	unsigned long flags;
@@ -69,23 +48,12 @@ enum feature_flag_bits {
 
 struct per_bio_data {
 	bool bio_submitted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			  struct dm_target *ti)
 {
 	int r;
-<<<<<<< HEAD
-	unsigned argc;
-	const char *arg_name;
-
-	static struct dm_arg _args[] = {
-		{0, 6, "Invalid number of feature args"},
-		{1, UINT_MAX, "Invalid corrupt bio byte"},
-		{0, 255, "Invalid corrupt value to write into bio byte (0-255)"},
-		{0, UINT_MAX, "Invalid corrupt bio flags mask"},
-=======
 	unsigned int argc;
 	const char *arg_name;
 
@@ -95,7 +63,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 		{0, 255, "Invalid corrupt value to write into bio byte (0-255)"},
 		{0, UINT_MAX, "Invalid corrupt bio flags mask"},
 		{0, PROBABILITY_BASE, "Invalid random corrupt argument"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* No feature arguments supplied. */
@@ -110,8 +77,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 		arg_name = dm_shift_arg(as);
 		argc--;
 
-<<<<<<< HEAD
-=======
 		if (!arg_name) {
 			ti->error = "Insufficient feature arguments";
 			return -EINVAL;
@@ -128,7 +93,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * drop_writes
 		 */
@@ -136,8 +100,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			if (test_and_set_bit(DROP_WRITES, &fc->flags)) {
 				ti->error = "Feature drop_writes duplicated";
 				return -EINVAL;
-<<<<<<< HEAD
-=======
 			} else if (test_bit(ERROR_WRITES, &fc->flags)) {
 				ti->error = "Feature drop_writes conflicts with feature error_writes";
 				return -EINVAL;
@@ -157,7 +119,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			} else if (test_bit(DROP_WRITES, &fc->flags)) {
 				ti->error = "Feature error_writes conflicts with feature drop_writes";
 				return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			continue;
@@ -181,15 +142,9 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			 * Direction r or w?
 			 */
 			arg_name = dm_shift_arg(as);
-<<<<<<< HEAD
-			if (!strcasecmp(arg_name, "w"))
-				fc->corrupt_bio_rw = WRITE;
-			else if (!strcasecmp(arg_name, "r"))
-=======
 			if (arg_name && !strcasecmp(arg_name, "w"))
 				fc->corrupt_bio_rw = WRITE;
 			else if (arg_name && !strcasecmp(arg_name, "r"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fc->corrupt_bio_rw = READ;
 			else {
 				ti->error = "Invalid corrupt bio direction (r or w)";
@@ -208,9 +163,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 			/*
 			 * Only corrupt bios with these flags set.
 			 */
-<<<<<<< HEAD
-			r = dm_read_arg(_args + 3, as, &fc->corrupt_bio_flags, &ti->error);
-=======
 			BUILD_BUG_ON(sizeof(fc->corrupt_bio_flags) !=
 				     sizeof(unsigned int));
 			r = dm_read_arg(_args + 3, as,
@@ -242,7 +194,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 				return -EINVAL;
 			}
 			r = dm_read_arg(_args + 4, as, &fc->random_write_corrupt, &ti->error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r)
 				return r;
 			argc--;
@@ -257,8 +208,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 	if (test_bit(DROP_WRITES, &fc->flags) && (fc->corrupt_bio_rw == WRITE)) {
 		ti->error = "drop_writes is incompatible with corrupt_bio_byte with the WRITE flag set";
 		return -EINVAL;
-<<<<<<< HEAD
-=======
 
 	} else if (test_bit(ERROR_WRITES, &fc->flags) && (fc->corrupt_bio_rw == WRITE)) {
 		ti->error = "error_writes is incompatible with corrupt_bio_byte with the WRITE flag set";
@@ -270,7 +219,6 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
 	    !fc->random_read_corrupt && !fc->random_write_corrupt) {
 		set_bit(ERROR_WRITES, &fc->flags);
 		set_bit(ERROR_READS, &fc->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -290,11 +238,7 @@ static int parse_features(struct dm_arg_set *as, struct flakey_c *fc,
  */
 static int flakey_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
-<<<<<<< HEAD
-	static struct dm_arg _args[] = {
-=======
 	static const struct dm_arg _args[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{0, UINT_MAX, "Invalid up interval"},
 		{0, UINT_MAX, "Invalid down interval"},
 	};
@@ -316,23 +260,15 @@ static int flakey_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	fc = kzalloc(sizeof(*fc), GFP_KERNEL);
 	if (!fc) {
-<<<<<<< HEAD
-		ti->error = "Cannot allocate linear context";
-=======
 		ti->error = "Cannot allocate context";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	fc->start_time = jiffies;
 
 	devname = dm_shift_arg(&as);
 
-<<<<<<< HEAD
-	if (sscanf(dm_shift_arg(&as), "%llu%c", &tmpll, &dummy) != 1) {
-=======
 	r = -EINVAL;
 	if (sscanf(dm_shift_arg(&as), "%llu%c", &tmpll, &dummy) != 1 || tmpll != (sector_t)tmpll) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ti->error = "Invalid device sector";
 		goto bad;
 	}
@@ -348,19 +284,13 @@ static int flakey_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	if (!(fc->up_interval + fc->down_interval)) {
 		ti->error = "Total (up + down) interval is zero";
-<<<<<<< HEAD
-=======
 		r = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	if (fc->up_interval + fc->down_interval < fc->up_interval) {
 		ti->error = "Interval overflow";
-<<<<<<< HEAD
-=======
 		r = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
@@ -368,34 +298,21 @@ static int flakey_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	if (r)
 		goto bad;
 
-<<<<<<< HEAD
-	if (dm_get_device(ti, devname, dm_table_get_mode(ti->table), &fc->dev)) {
-=======
 	r = dm_get_device(ti, devname, dm_table_get_mode(ti->table), &fc->dev);
 	if (r) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ti->error = "Device lookup failed";
 		goto bad;
 	}
 
-<<<<<<< HEAD
-	ti->num_flush_requests = 1;
-	ti->num_discard_requests = 1;
-=======
 	ti->num_flush_bios = 1;
 	ti->num_discard_bios = 1;
 	ti->per_io_data_size = sizeof(struct per_bio_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ti->private = fc;
 	return 0;
 
 bad:
 	kfree(fc);
-<<<<<<< HEAD
-	return -EINVAL;
-=======
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void flakey_dtr(struct dm_target *ti)
@@ -417,11 +334,6 @@ static void flakey_map_bio(struct dm_target *ti, struct bio *bio)
 {
 	struct flakey_c *fc = ti->private;
 
-<<<<<<< HEAD
-	bio->bi_bdev = fc->dev->bdev;
-	if (bio_sectors(bio))
-		bio->bi_sector = flakey_map_sector(ti, bio->bi_sector);
-=======
 	bio_set_dev(bio, fc->dev->bdev);
 	bio->bi_iter.bi_sector = flakey_map_sector(ti, bio->bi_iter.bi_sector);
 }
@@ -451,35 +363,10 @@ static void corrupt_bio_common(struct bio *bio, unsigned int corrupt_bio_byte,
 		}
 		corrupt_bio_byte -= bio_iter_len(bio, iter);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void corrupt_bio_data(struct bio *bio, struct flakey_c *fc)
 {
-<<<<<<< HEAD
-	unsigned bio_bytes = bio_cur_bytes(bio);
-	char *data = bio_data(bio);
-
-	/*
-	 * Overwrite the Nth byte of the data returned.
-	 */
-	if (data && bio_bytes >= fc->corrupt_bio_byte) {
-		data[fc->corrupt_bio_byte - 1] = fc->corrupt_bio_value;
-
-		DMDEBUG("Corrupting data bio=%p by writing %u to byte %u "
-			"(rw=%c bi_rw=%lu bi_sector=%llu cur_bytes=%u)\n",
-			bio, fc->corrupt_bio_value, fc->corrupt_bio_byte,
-			(bio_data_dir(bio) == WRITE) ? 'w' : 'r',
-			bio->bi_rw, (unsigned long long)bio->bi_sector, bio_bytes);
-	}
-}
-
-static int flakey_map(struct dm_target *ti, struct bio *bio,
-		      union map_info *map_context)
-{
-	struct flakey_c *fc = ti->private;
-	unsigned elapsed;
-=======
 	unsigned int corrupt_bio_byte = fc->corrupt_bio_byte - 1;
 
 	if (!bio_has_data(bio))
@@ -598,29 +485,10 @@ static int flakey_map(struct dm_target *ti, struct bio *bio)
 
 	if (op_is_zone_mgmt(bio_op(bio)))
 		goto map_bio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Are we alive ? */
 	elapsed = (jiffies - fc->start_time) / HZ;
 	if (elapsed % (fc->up_interval + fc->down_interval) >= fc->up_interval) {
-<<<<<<< HEAD
-		/*
-		 * Flag this bio as submitted while down.
-		 */
-		map_context->ll = 1;
-
-		/*
-		 * Map reads as normal.
-		 */
-		if (bio_data_dir(bio) == READ)
-			goto map_bio;
-
-		/*
-		 * Drop writes?
-		 */
-		if (test_bit(DROP_WRITES, &fc->flags)) {
-			bio_endio(bio, 0);
-=======
 		bool corrupt_fixed, corrupt_random;
 		/*
 		 * Flag this bio as submitted while down.
@@ -645,25 +513,12 @@ static int flakey_map(struct dm_target *ti, struct bio *bio)
 			return DM_MAPIO_SUBMITTED;
 		} else if (test_bit(ERROR_WRITES, &fc->flags)) {
 			bio_io_error(bio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return DM_MAPIO_SUBMITTED;
 		}
 
 		/*
 		 * Corrupt matching writes.
 		 */
-<<<<<<< HEAD
-		if (fc->corrupt_bio_byte && (fc->corrupt_bio_rw == WRITE)) {
-			if (all_corrupt_bio_flags_match(bio, fc))
-				corrupt_bio_data(bio, fc);
-			goto map_bio;
-		}
-
-		/*
-		 * By default, error all I/O.
-		 */
-		return -EIO;
-=======
 		corrupt_fixed = false;
 		corrupt_random = false;
 		if (fc->corrupt_bio_byte && fc->corrupt_bio_rw == WRITE) {
@@ -687,7 +542,6 @@ static int flakey_map(struct dm_target *ti, struct bio *bio)
 				return DM_MAPIO_SUBMITTED;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 map_bio:
@@ -697,31 +551,6 @@ map_bio:
 }
 
 static int flakey_end_io(struct dm_target *ti, struct bio *bio,
-<<<<<<< HEAD
-			 int error, union map_info *map_context)
-{
-	struct flakey_c *fc = ti->private;
-	unsigned bio_submitted_while_down = map_context->ll;
-
-	/*
-	 * Corrupt successful READs while in down state.
-	 * If flags were specified, only corrupt those that match.
-	 */
-	if (fc->corrupt_bio_byte && !error && bio_submitted_while_down &&
-	    (bio_data_dir(bio) == READ) && (fc->corrupt_bio_rw == READ) &&
-	    all_corrupt_bio_flags_match(bio, fc))
-		corrupt_bio_data(bio, fc);
-
-	return error;
-}
-
-static void flakey_status(struct dm_target *ti, status_type_t type,
-			  char *result, unsigned int maxlen)
-{
-	unsigned sz = 0;
-	struct flakey_c *fc = ti->private;
-	unsigned drop_writes;
-=======
 			 blk_status_t *error)
 {
 	struct flakey_c *fc = ti->private;
@@ -764,7 +593,6 @@ static void flakey_status(struct dm_target *ti, status_type_t type,
 	unsigned int sz = 0;
 	struct flakey_c *fc = ti->private;
 	unsigned int error_reads, drop_writes, error_writes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case STATUSTYPE_INFO:
@@ -772,20 +600,6 @@ static void flakey_status(struct dm_target *ti, status_type_t type,
 		break;
 
 	case STATUSTYPE_TABLE:
-<<<<<<< HEAD
-		DMEMIT("%s %llu %u %u ", fc->dev->name,
-		       (unsigned long long)fc->start, fc->up_interval,
-		       fc->down_interval);
-
-		drop_writes = test_bit(DROP_WRITES, &fc->flags);
-		DMEMIT("%u ", drop_writes + (fc->corrupt_bio_byte > 0) * 5);
-
-		if (drop_writes)
-			DMEMIT("drop_writes ");
-
-		if (fc->corrupt_bio_byte)
-			DMEMIT("corrupt_bio_byte %u %c %u %u ",
-=======
 		DMEMIT("%s %llu %u %u", fc->dev->name,
 		       (unsigned long long)fc->start, fc->up_interval,
 		       fc->down_interval);
@@ -807,13 +621,10 @@ static void flakey_status(struct dm_target *ti, status_type_t type,
 
 		if (fc->corrupt_bio_byte)
 			DMEMIT(" corrupt_bio_byte %u %c %u %u",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       fc->corrupt_bio_byte,
 			       (fc->corrupt_bio_rw == WRITE) ? 'w' : 'r',
 			       fc->corrupt_bio_value, fc->corrupt_bio_flags);
 
-<<<<<<< HEAD
-=======
 		if (fc->random_read_corrupt > 0)
 			DMEMIT(" random_read_corrupt %u", fc->random_read_corrupt);
 		if (fc->random_write_corrupt > 0)
@@ -823,51 +634,19 @@ static void flakey_status(struct dm_target *ti, status_type_t type,
 
 	case STATUSTYPE_IMA:
 		result[0] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static int flakey_ioctl(struct dm_target *ti, unsigned int cmd, unsigned long arg)
-{
-	struct flakey_c *fc = ti->private;
-	struct dm_dev *dev = fc->dev;
-	int r = 0;
-=======
 static int flakey_prepare_ioctl(struct dm_target *ti, struct block_device **bdev)
 {
 	struct flakey_c *fc = ti->private;
 
 	*bdev = fc->dev->bdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Only pass ioctls through if the device sizes match exactly.
 	 */
-<<<<<<< HEAD
-	if (fc->start ||
-	    ti->len != i_size_read(dev->bdev->bd_inode) >> SECTOR_SHIFT)
-		r = scsi_verify_blk_ioctl(NULL, cmd);
-
-	return r ? : __blkdev_driver_ioctl(dev->bdev, dev->mode, cmd, arg);
-}
-
-static int flakey_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
-			struct bio_vec *biovec, int max_size)
-{
-	struct flakey_c *fc = ti->private;
-	struct request_queue *q = bdev_get_queue(fc->dev->bdev);
-
-	if (!q->merge_bvec_fn)
-		return max_size;
-
-	bvm->bi_bdev = fc->dev->bdev;
-	bvm->bi_sector = flakey_map_sector(ti, bvm->bi_sector);
-
-	return min(max_size, q->merge_bvec_fn(q, bvm, biovec));
-}
-=======
 	if (fc->start || ti->len != bdev_nr_sectors((*bdev)))
 		return 1;
 	return 0;
@@ -886,7 +665,6 @@ static int flakey_report_zones(struct dm_target *ti,
 #else
 #define flakey_report_zones NULL
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int flakey_iterate_devices(struct dm_target *ti, iterate_devices_callout_fn fn, void *data)
 {
@@ -897,47 +675,15 @@ static int flakey_iterate_devices(struct dm_target *ti, iterate_devices_callout_
 
 static struct target_type flakey_target = {
 	.name   = "flakey",
-<<<<<<< HEAD
-	.version = {1, 2, 0},
-=======
 	.version = {1, 5, 0},
 	.features = DM_TARGET_ZONED_HM | DM_TARGET_PASSES_CRYPTO,
 	.report_zones = flakey_report_zones,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module = THIS_MODULE,
 	.ctr    = flakey_ctr,
 	.dtr    = flakey_dtr,
 	.map    = flakey_map,
 	.end_io = flakey_end_io,
 	.status = flakey_status,
-<<<<<<< HEAD
-	.ioctl	= flakey_ioctl,
-	.merge	= flakey_merge,
-	.iterate_devices = flakey_iterate_devices,
-};
-
-static int __init dm_flakey_init(void)
-{
-	int r = dm_register_target(&flakey_target);
-
-	if (r < 0)
-		DMERR("register failed %d", r);
-
-	return r;
-}
-
-static void __exit dm_flakey_exit(void)
-{
-	dm_unregister_target(&flakey_target);
-}
-
-/* Module hooks */
-module_init(dm_flakey_init);
-module_exit(dm_flakey_exit);
-
-MODULE_DESCRIPTION(DM_NAME " flakey target");
-MODULE_AUTHOR("Joe Thornber <dm-devel@redhat.com>");
-=======
 	.prepare_ioctl = flakey_prepare_ioctl,
 	.iterate_devices = flakey_iterate_devices,
 };
@@ -945,5 +691,4 @@ module_dm(flakey);
 
 MODULE_DESCRIPTION(DM_NAME " flakey target");
 MODULE_AUTHOR("Joe Thornber <dm-devel@lists.linux.dev>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

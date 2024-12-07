@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Libata driver for the highpoint 366 and 368 UDMA66 ATA controllers.
  *
@@ -17,30 +14,16 @@
  * TODO
  *	Look into engine reset on timeout errors. Should not be required.
  */
-<<<<<<< HEAD
-
-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-#include <linux/init.h>
-=======
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/pci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
 #include <linux/libata.h>
 
 #define DRV_NAME	"pata_hpt366"
-<<<<<<< HEAD
-#define DRV_VERSION	"0.6.11"
-=======
 #define DRV_VERSION	"0.6.13"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hpt_clock {
 	u8	xfer_mode;
@@ -191,19 +174,6 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 			       const char * const list[])
 {
 	unsigned char model_num[ATA_ID_PROD_LEN + 1];
-<<<<<<< HEAD
-	int i = 0;
-
-	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
-
-	while (list[i] != NULL) {
-		if (!strcmp(list[i], model_num)) {
-			pr_warn("%s is not supported for %s\n",
-				modestr, list[i]);
-			return 1;
-		}
-		i++;
-=======
 	int i;
 
 	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
@@ -212,7 +182,6 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 	if (i >= 0) {
 		ata_dev_warn(dev, "%s is not supported for %s\n", modestr, list[i]);
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -220,19 +189,12 @@ static int hpt_dma_blacklisted(const struct ata_device *dev, char *modestr,
 /**
  *	hpt366_filter	-	mode selection filter
  *	@adev: ATA device
-<<<<<<< HEAD
-=======
  *	@mask: Current mask to manipulate and pass back
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Block UDMA on devices that cause trouble with this controller.
  */
 
-<<<<<<< HEAD
-static unsigned long hpt366_filter(struct ata_device *adev, unsigned long mask)
-=======
 static unsigned int hpt366_filter(struct ata_device *adev, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (adev->class == ATA_DEV_ATA) {
 		if (hpt_dma_blacklisted(adev, "UDMA",  bad_ata33))
@@ -316,9 +278,6 @@ static void hpt366_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	hpt366_set_mode(ap, adev, adev->dma_mode);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template hpt36x_sht = {
-=======
 /**
  *	hpt366_prereset		-	reset the hpt36x bus
  *	@link: ATA link to reset
@@ -354,7 +313,6 @@ static int hpt366_prereset(struct ata_link *link, unsigned long deadline)
 }
 
 static const struct scsi_host_template hpt36x_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -364,10 +322,7 @@ static const struct scsi_host_template hpt36x_sht = {
 
 static struct ata_port_operations hpt366_port_ops = {
 	.inherits	= &ata_bmdma_port_ops,
-<<<<<<< HEAD
-=======
 	.prereset	= hpt366_prereset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cable_detect	= hpt36x_cable_detect,
 	.mode_filter	= hpt366_filter,
 	.set_piomode	= hpt366_set_piomode,
@@ -384,22 +339,13 @@ static struct ata_port_operations hpt366_port_ops = {
 
 static void hpt36x_init_chipset(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	u8 drive_fast;
-=======
 	u8 mcr1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_write_config_byte(dev, PCI_CACHE_LINE_SIZE, (L1_CACHE_BYTES / 4));
 	pci_write_config_byte(dev, PCI_LATENCY_TIMER, 0x78);
 	pci_write_config_byte(dev, PCI_MIN_GNT, 0x08);
 	pci_write_config_byte(dev, PCI_MAX_LAT, 0x08);
 
-<<<<<<< HEAD
-	pci_read_config_byte(dev, 0x51, &drive_fast);
-	if (drive_fast & 0x80)
-		pci_write_config_byte(dev, 0x51, drive_fast & ~0x80);
-=======
 	/*
 	 * Now we'll have to force both channels enabled if at least one
 	 * of them has been enabled by BIOS...
@@ -407,7 +353,6 @@ static void hpt36x_init_chipset(struct pci_dev *dev)
 	pci_read_config_byte(dev, 0x50, &mcr1);
 	if (mcr1 & 0x30)
 		pci_write_config_byte(dev, 0x50, mcr1 | 0x30);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -442,11 +387,7 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 	};
 	const struct ata_port_info *ppi[] = { &info_hpt366, NULL };
 
-<<<<<<< HEAD
-	void *hpriv = NULL;
-=======
 	const void *hpriv = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 reg1;
 	int rc;
 
@@ -465,11 +406,7 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 
 	/* PCI clocking determines the ATA timing values to use */
 	/* info_hpt366 is safe against re-entry so we can scribble on it */
-<<<<<<< HEAD
-	switch ((reg1 & 0x700) >> 8) {
-=======
 	switch ((reg1 & 0xf00) >> 8) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 9:
 		hpriv = &hpt366_40;
 		break;
@@ -481,15 +418,6 @@ static int hpt36x_init_one(struct pci_dev *dev, const struct pci_device_id *id)
 		break;
 	}
 	/* Now kick off ATA set up */
-<<<<<<< HEAD
-	return ata_pci_bmdma_init_one(dev, ppi, &hpt36x_sht, hpriv, 0);
-}
-
-#ifdef CONFIG_PM
-static int hpt36x_reinit_one(struct pci_dev *dev)
-{
-	struct ata_host *host = dev_get_drvdata(&dev->dev);
-=======
 	return ata_pci_bmdma_init_one(dev, ppi, &hpt36x_sht, (void *)hpriv, 0);
 }
 
@@ -497,7 +425,6 @@ static int hpt36x_reinit_one(struct pci_dev *dev)
 static int hpt36x_reinit_one(struct pci_dev *dev)
 {
 	struct ata_host *host = pci_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(dev);
@@ -519,38 +446,16 @@ static struct pci_driver hpt36x_pci_driver = {
 	.id_table	= hpt36x,
 	.probe		= hpt36x_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= hpt36x_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init hpt36x_init(void)
-{
-	return pci_register_driver(&hpt36x_pci_driver);
-}
-
-static void __exit hpt36x_exit(void)
-{
-	pci_unregister_driver(&hpt36x_pci_driver);
-}
-=======
 module_pci_driver(hpt36x_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for the Highpoint HPT366/368");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, hpt36x);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(hpt36x_init);
-module_exit(hpt36x_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

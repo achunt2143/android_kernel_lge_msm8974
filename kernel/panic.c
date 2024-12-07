@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/kernel/panic.c
  *
@@ -13,24 +10,6 @@
  * to indicate a major problem.
  */
 #include <linux/debug_locks.h>
-<<<<<<< HEAD
-#include <linux/interrupt.h>
-#include <linux/kmsg_dump.h>
-#include <linux/kallsyms.h>
-#include <linux/notifier.h>
-#include <linux/module.h>
-#include <linux/random.h>
-#include <linux/reboot.h>
-#include <linux/delay.h>
-#include <linux/kexec.h>
-#include <linux/sched.h>
-#include <linux/sysrq.h>
-#include <linux/init.h>
-#include <linux/nmi.h>
-#include <linux/dmi.h>
-#include <linux/coresight.h>
-#include <linux/console.h>
-=======
 #include <linux/sched/debug.h>
 #include <linux/interrupt.h>
 #include <linux/kgdb.h>
@@ -58,28 +37,10 @@
 #include <linux/context_tracking.h>
 #include <trace/events/error_report.h>
 #include <asm/sections.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PANIC_TIMER_STEP 100
 #define PANIC_BLINK_SPD 18
 
-<<<<<<< HEAD
-/* Machine specific panic information string */
-char *mach_panic_string;
-
-int panic_on_oops;
-static unsigned long tainted_mask;
-static int pause_on_oops;
-static int pause_on_oops_flag;
-static DEFINE_SPINLOCK(pause_on_oops_lock);
-
-#ifndef CONFIG_PANIC_TIMEOUT
-#define CONFIG_PANIC_TIMEOUT 0
-#endif
-int panic_timeout = CONFIG_PANIC_TIMEOUT;
-EXPORT_SYMBOL_GPL(panic_timeout);
-
-=======
 #ifdef CONFIG_SMP
 /*
  * Should we dump all CPUs backtraces in an oops event?
@@ -115,13 +76,10 @@ EXPORT_SYMBOL_GPL(panic_timeout);
 #define PANIC_PRINT_BLOCKED_TASKS	0x00000080
 unsigned long panic_print;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ATOMIC_NOTIFIER_HEAD(panic_notifier_list);
 
 EXPORT_SYMBOL(panic_notifier_list);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SYSCTL
 static struct ctl_table kern_panic_table[] = {
 #ifdef CONFIG_SMP
@@ -172,7 +130,6 @@ static __init int kernel_panic_sysfs_init(void)
 late_initcall(kernel_panic_sysfs_init);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long no_blink(int state)
 {
 	return 0;
@@ -185,18 +142,12 @@ EXPORT_SYMBOL(panic_blink);
 /*
  * Stop ourself in panic -- architecture code may override this
  */
-<<<<<<< HEAD
-void __weak panic_smp_self_stop(void)
-=======
 void __weak __noreturn panic_smp_self_stop(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (1)
 		cpu_relax();
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Stop ourselves in NMI context if another CPU has already panicked. Arch code
  * may override this to prepare for crash dumping, e.g. save regs info.
@@ -319,7 +270,6 @@ static void panic_other_cpus_shutdown(bool crash_kexec)
 		crash_smp_send_stop();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	panic - halt the system
  *	@fmt: The text string to print
@@ -330,22 +280,6 @@ static void panic_other_cpus_shutdown(bool crash_kexec)
  */
 void panic(const char *fmt, ...)
 {
-<<<<<<< HEAD
-	static DEFINE_SPINLOCK(panic_lock);
-	static char buf[1024];
-	va_list args;
-	long i, i_next = 0;
-	int state = 0;
-
-	coresight_abort();
-	/*
-	 * Disable local interrupts. This will prevent panic_smp_self_stop
-	 * from deadlocking the first cpu that invokes the panic, since
-	 * there is nothing to prevent an interrupt handler (that runs
-	 * after the panic_lock is acquired) from invoking panic again.
-	 */
-	local_irq_disable();
-=======
 	static char buf[1024];
 	va_list args;
 	long i, i_next = 0, len;
@@ -362,22 +296,15 @@ void panic(const char *fmt, ...)
 		 */
 		panic_on_warn = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Disable local interrupts. This will prevent panic_smp_self_stop
 	 * from deadlocking the first cpu that invokes the panic, since
 	 * there is nothing to prevent an interrupt handler (that runs
-<<<<<<< HEAD
-	 * after the panic_lock is acquired) from invoking panic again.
-	 */
-	local_irq_disable();
-=======
 	 * after setting panic_cpu) from invoking panic() again.
 	 */
 	local_irq_disable();
 	preempt_disable_notrace();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * It's possible to come here directly from a panic-assertion and
@@ -388,10 +315,6 @@ void panic(const char *fmt, ...)
 	 * multiple parallel invocations of panic, all other CPUs either
 	 * stop themself or will wait until they are stopped by the 1st CPU
 	 * with smp_send_stop().
-<<<<<<< HEAD
-	 */
-	if (!spin_trylock(&panic_lock))
-=======
 	 *
 	 * cmpxchg success means this is the 1st CPU which comes here,
 	 * so go ahead.
@@ -405,17 +328,11 @@ void panic(const char *fmt, ...)
 	if (atomic_try_cmpxchg(&panic_cpu, &old_cpu, this_cpu)) {
 		/* go ahead */
 	} else if (old_cpu != this_cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic_smp_self_stop();
 
 	console_verbose();
 	bust_spinlocks(1);
 	va_start(args, fmt);
-<<<<<<< HEAD
-	vsnprintf(buf, sizeof(buf), fmt, args);
-	va_end(args);
-	printk(KERN_EMERG "Kernel panic - not syncing: %s\n",buf);
-=======
 	len = vscnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
@@ -423,7 +340,6 @@ void panic(const char *fmt, ...)
 		buf[len - 1] = '\0';
 
 	pr_emerg("Kernel panic - not syncing: %s\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_BUGVERBOSE
 	/*
 	 * Avoid nested stack-dumping if a panic occurs during oops processing
@@ -433,29 +349,6 @@ void panic(const char *fmt, ...)
 #endif
 
 	/*
-<<<<<<< HEAD
-	 * If we have crashed and we have a crash kernel loaded let it handle
-	 * everything else.
-	 * Do we want to call this before we try to display a message?
-	 */
-	crash_kexec(NULL);
-
-	/*
-	 * Note smp_send_stop is the usual smp shutdown function, which
-	 * unfortunately means it may not be hardened to work in a panic
-	 * situation.
-	 */
-	smp_send_stop();
-
-	kmsg_dump(KMSG_DUMP_PANIC);
-
-	if (is_console_locked())
-		console_unlock();
-
-	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
-
-	bust_spinlocks(0);
-=======
 	 * If kgdb is enabled, give it a chance to run before we stop all
 	 * the other CPUs or else we won't be able to debug processes left
 	 * running on them.
@@ -511,7 +404,6 @@ void panic(const char *fmt, ...)
 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
 
 	panic_print_sys_info(true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!panic_blink)
 		panic_blink = no_blink;
@@ -521,11 +413,7 @@ void panic(const char *fmt, ...)
 		 * Delay timeout seconds before rebooting the machine.
 		 * We can't use the "normal" timers since we just panicked.
 		 */
-<<<<<<< HEAD
-		printk(KERN_EMERG "Rebooting in %d seconds..", panic_timeout);
-=======
 		pr_emerg("Rebooting in %d seconds..\n", panic_timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < panic_timeout * 1000; i += PANIC_TIMER_STEP) {
 			touch_nmi_watchdog();
@@ -542,11 +430,8 @@ void panic(const char *fmt, ...)
 		 * shutting down.  But if there is a chance of
 		 * rebooting the system it will be rebooted.
 		 */
-<<<<<<< HEAD
-=======
 		if (panic_reboot_mode != REBOOT_UNDEFINED)
 			reboot_mode = panic_reboot_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		emergency_restart();
 	}
 #ifdef __sparc__
@@ -554,19 +439,6 @@ void panic(const char *fmt, ...)
 		extern int stop_a_enabled;
 		/* Make sure the user can actually press Stop-A (L1-A) */
 		stop_a_enabled = 1;
-<<<<<<< HEAD
-		printk(KERN_EMERG "Press Stop-A (L1-A) to return to the boot prom\n");
-	}
-#endif
-#if defined(CONFIG_S390)
-	{
-		unsigned long caller;
-
-		caller = (unsigned long)__builtin_return_address(0);
-		disabled_wait(caller);
-	}
-#endif
-=======
 		pr_emerg("Press Stop-A (L1-A) from sun keyboard or send break\n"
 			 "twice on console to return to the boot prom\n");
 	}
@@ -586,7 +458,6 @@ void panic(const char *fmt, ...)
 	 */
 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_enable();
 	for (i = 0; ; i += PANIC_TIMER_STEP) {
 		touch_softlockup_watchdog();
@@ -600,53 +471,6 @@ void panic(const char *fmt, ...)
 
 EXPORT_SYMBOL(panic);
 
-<<<<<<< HEAD
-
-struct tnt {
-	u8	bit;
-	char	true;
-	char	false;
-};
-
-static const struct tnt tnts[] = {
-	{ TAINT_PROPRIETARY_MODULE,	'P', 'G' },
-	{ TAINT_FORCED_MODULE,		'F', ' ' },
-	{ TAINT_UNSAFE_SMP,		'S', ' ' },
-	{ TAINT_FORCED_RMMOD,		'R', ' ' },
-	{ TAINT_MACHINE_CHECK,		'M', ' ' },
-	{ TAINT_BAD_PAGE,		'B', ' ' },
-	{ TAINT_USER,			'U', ' ' },
-	{ TAINT_DIE,			'D', ' ' },
-	{ TAINT_OVERRIDDEN_ACPI_TABLE,	'A', ' ' },
-	{ TAINT_WARN,			'W', ' ' },
-	{ TAINT_CRAP,			'C', ' ' },
-	{ TAINT_FIRMWARE_WORKAROUND,	'I', ' ' },
-	{ TAINT_OOT_MODULE,		'O', ' ' },
-};
-
-/**
- *	print_tainted - return a string to represent the kernel taint state.
- *
- *  'P' - Proprietary module has been loaded.
- *  'F' - Module has been forcibly loaded.
- *  'S' - SMP with CPUs not designed for SMP.
- *  'R' - User forced a module unload.
- *  'M' - System experienced a machine check exception.
- *  'B' - System has hit bad_page.
- *  'U' - Userspace-defined naughtiness.
- *  'D' - Kernel has oopsed before
- *  'A' - ACPI table overridden.
- *  'W' - Taint on warning.
- *  'C' - modules from drivers/staging are loaded.
- *  'I' - Working around severe firmware bug.
- *  'O' - Out-of-tree module has been loaded.
- *
- *	The string is overwritten by the next call to print_tainted().
- */
-const char *print_tainted(void)
-{
-	static char buf[ARRAY_SIZE(tnts) + sizeof("Tainted: ") + 1];
-=======
 /*
  * TAINT_FORCED_RMMOD could be a per-module flag but the module
  * is being removed anyway.
@@ -686,24 +510,16 @@ const char *print_tainted(void)
 	static char buf[TAINT_FLAGS_COUNT + sizeof("Tainted: ")];
 
 	BUILD_BUG_ON(ARRAY_SIZE(taint_flags) != TAINT_FLAGS_COUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tainted_mask) {
 		char *s;
 		int i;
 
 		s = buf + sprintf(buf, "Tainted: ");
-<<<<<<< HEAD
-		for (i = 0; i < ARRAY_SIZE(tnts); i++) {
-			const struct tnt *t = &tnts[i];
-			*s++ = test_bit(t->bit, &tainted_mask) ?
-					t->true : t->false;
-=======
 		for (i = 0; i < TAINT_FLAGS_COUNT; i++) {
 			const struct taint_flag *t = &taint_flags[i];
 			*s++ = test_bit(i, &tainted_mask) ?
 					t->c_true : t->c_false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		*s = 0;
 	} else
@@ -723,30 +539,6 @@ unsigned long get_taint(void)
 	return tainted_mask;
 }
 
-<<<<<<< HEAD
-void add_taint(unsigned flag)
-{
-	/*
-	 * Can't trust the integrity of the kernel anymore.
-	 * We don't call directly debug_locks_off() because the issue
-	 * is not necessarily serious enough to set oops_in_progress to 1
-	 * Also we want to keep up lockdep for staging/out-of-tree
-	 * development and post-warning case.
-	 */
-	switch (flag) {
-	case TAINT_CRAP:
-	case TAINT_OOT_MODULE:
-	case TAINT_WARN:
-	case TAINT_FIRMWARE_WORKAROUND:
-		break;
-
-	default:
-		if (__debug_locks_off())
-			printk(KERN_WARNING "Disabling lock debugging due to kernel taint\n");
-	}
-
-	set_bit(flag, &tainted_mask);
-=======
 /**
  * add_taint: add a taint flag if not already set.
  * @flag: one of the TAINT_* constants.
@@ -766,7 +558,6 @@ void add_taint(unsigned flag, enum lockdep_ok lockdep_ok)
 		panic_on_taint = 0;
 		panic("panic_on_taint set ...");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(add_taint);
 
@@ -823,11 +614,7 @@ static void do_oops_enter_exit(void)
  * Return true if the calling CPU is allowed to print oops-related info.
  * This is a bit racy..
  */
-<<<<<<< HEAD
-int oops_may_print(void)
-=======
 bool oops_may_print(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return pause_on_oops_flag == 0;
 }
@@ -852,36 +639,6 @@ void oops_enter(void)
 	/* can't trust the integrity of the kernel anymore: */
 	debug_locks_off();
 	do_oops_enter_exit();
-<<<<<<< HEAD
-}
-
-/*
- * 64-bit random ID for oopses:
- */
-static u64 oops_id;
-
-static int init_oops_id(void)
-{
-	if (!oops_id)
-		get_random_bytes(&oops_id, sizeof(oops_id));
-	else
-		oops_id++;
-
-	return 0;
-}
-late_initcall(init_oops_id);
-
-void print_oops_end_marker(void)
-{
-	init_oops_id();
-
-	if (mach_panic_string)
-		printk(KERN_WARNING "Board Information: %s\n",
-		       mach_panic_string);
-
-	printk(KERN_WARNING "---[ end trace %016llx ]---\n",
-		(unsigned long long)oops_id);
-=======
 
 	if (sysctl_oops_all_cpu_backtrace)
 		trigger_all_cpu_backtrace();
@@ -890,7 +647,6 @@ void print_oops_end_marker(void)
 static void print_oops_end_marker(void)
 {
 	pr_warn("---[ end trace %016llx ]---\n", 0ULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -904,72 +660,11 @@ void oops_exit(void)
 	kmsg_dump(KMSG_DUMP_OOPS);
 }
 
-<<<<<<< HEAD
-#ifdef WANT_WARN_ON_SLOWPATH
-struct slowpath_args {
-=======
 struct warn_args {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *fmt;
 	va_list args;
 };
 
-<<<<<<< HEAD
-static void warn_slowpath_common(const char *file, int line, void *caller,
-				 unsigned taint, struct slowpath_args *args)
-{
-	const char *board;
-
-	printk(KERN_WARNING "------------[ cut here ]------------\n");
-	printk(KERN_WARNING "WARNING: at %s:%d %pS()\n", file, line, caller);
-	board = dmi_get_system_info(DMI_PRODUCT_NAME);
-	if (board)
-		printk(KERN_WARNING "Hardware name: %s\n", board);
-
-	if (args)
-		vprintk(args->fmt, args->args);
-
-	print_modules();
-	dump_stack();
-	print_oops_end_marker();
-	add_taint(taint);
-}
-
-void warn_slowpath_fmt(const char *file, int line, const char *fmt, ...)
-{
-	struct slowpath_args args;
-
-	args.fmt = fmt;
-	va_start(args.args, fmt);
-	warn_slowpath_common(file, line, __builtin_return_address(0),
-			     TAINT_WARN, &args);
-	va_end(args.args);
-}
-EXPORT_SYMBOL(warn_slowpath_fmt);
-
-void warn_slowpath_fmt_taint(const char *file, int line,
-			     unsigned taint, const char *fmt, ...)
-{
-	struct slowpath_args args;
-
-	args.fmt = fmt;
-	va_start(args.args, fmt);
-	warn_slowpath_common(file, line, __builtin_return_address(0),
-			     taint, &args);
-	va_end(args.args);
-}
-EXPORT_SYMBOL(warn_slowpath_fmt_taint);
-
-void warn_slowpath_null(const char *file, int line)
-{
-	warn_slowpath_common(file, line, __builtin_return_address(0),
-			     TAINT_WARN, NULL);
-}
-EXPORT_SYMBOL(warn_slowpath_null);
-#endif
-
-#ifdef CONFIG_CC_STACKPROTECTOR
-=======
 void __warn(const char *file, int line, void *caller, unsigned taint,
 	    struct pt_regs *regs, struct warn_args *args)
 {
@@ -1074,39 +769,27 @@ device_initcall(register_warn_debugfs);
 #endif
 
 #ifdef CONFIG_STACKPROTECTOR
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called when gcc's -fstack-protector feature is used, and
  * gcc detects corruption of the on-stack canary value
  */
-<<<<<<< HEAD
-void __stack_chk_fail(void)
-{
-	panic("stack-protector: Kernel stack is corrupted in: %p\n",
-		__builtin_return_address(0));
-=======
 __visible noinstr void __stack_chk_fail(void)
 {
 	instrumentation_begin();
 	panic("stack-protector: Kernel stack is corrupted in: %pB",
 		__builtin_return_address(0));
 	instrumentation_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__stack_chk_fail);
 
 #endif
 
 core_param(panic, panic_timeout, int, 0644);
-<<<<<<< HEAD
-core_param(pause_on_oops, pause_on_oops, int, 0644);
-=======
 core_param(panic_print, panic_print, ulong, 0644);
 core_param(pause_on_oops, pause_on_oops, int, 0644);
 core_param(panic_on_warn, panic_on_warn, int, 0644);
 core_param(crash_kexec_post_notifiers, crash_kexec_post_notifiers, bool, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init oops_setup(char *s)
 {
@@ -1117,8 +800,6 @@ static int __init oops_setup(char *s)
 	return 0;
 }
 early_param("oops", oops_setup);
-<<<<<<< HEAD
-=======
 
 static int __init panic_on_taint_setup(char *s)
 {
@@ -1146,4 +827,3 @@ static int __init panic_on_taint_setup(char *s)
 	return 0;
 }
 early_param("panic_on_taint", panic_on_taint_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

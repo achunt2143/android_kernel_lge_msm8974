@@ -34,13 +34,6 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/nfs_fs.h>
-#include <linux/export.h>
-#include "acl.h"
-
-=======
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include <linux/posix_acl.h>
@@ -53,7 +46,6 @@
 #define NFS4_ACL_TYPE_DEFAULT	0x01
 #define NFS4_ACL_DIR		0x02
 #define NFS4_ACL_OWNER		0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* mode bit translations: */
 #define NFS4_READ_MODE (NFS4_ACE_READ_DATA)
@@ -62,13 +54,6 @@
 #define NFS4_ANYONE_MODE (NFS4_ACE_READ_ATTRIBUTES | NFS4_ACE_READ_ACL | NFS4_ACE_SYNCHRONIZE)
 #define NFS4_OWNER_MODE (NFS4_ACE_WRITE_ATTRIBUTES | NFS4_ACE_WRITE_ACL)
 
-<<<<<<< HEAD
-/* We don't support these bits; insist they be neither allowed nor denied */
-#define NFS4_MASK_UNSUPP (NFS4_ACE_DELETE | NFS4_ACE_WRITE_OWNER \
-		| NFS4_ACE_READ_NAMED_ATTRS | NFS4_ACE_WRITE_NAMED_ATTRS)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* flags used to simulate posix default ACLs */
 #define NFS4_INHERITANCE_FLAGS (NFS4_ACE_FILE_INHERIT_ACE \
 		| NFS4_ACE_DIRECTORY_INHERIT_ACE)
@@ -77,12 +62,6 @@
 		| NFS4_ACE_INHERIT_ONLY_ACE \
 		| NFS4_ACE_IDENTIFIER_GROUP)
 
-<<<<<<< HEAD
-#define MASK_EQUAL(mask1, mask2) \
-	( ((mask1) & NFS4_ACE_MASK_ALL) == ((mask2) & NFS4_ACE_MASK_ALL) )
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32
 mask_from_posix(unsigned short perm, unsigned int flags)
 {
@@ -123,11 +102,7 @@ deny_mask_from_posix(unsigned short perm, u32 flags)
 /* We only map from NFSv4 to POSIX ACLs when setting ACLs, when we err on the
  * side of being more restrictive, so the mode bit mapping below is
  * pessimistic.  An optimistic version would be needed to handle DENY's,
-<<<<<<< HEAD
- * but we espect to coalesce all ALLOWs and DENYs before mapping to mode
-=======
  * but we expect to coalesce all ALLOWs and DENYs before mapping to mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * bits. */
 
 static void
@@ -146,50 +121,10 @@ low_mode_from_nfs4(u32 perm, unsigned short *mode, unsigned int flags)
 		*mode |= ACL_EXECUTE;
 }
 
-<<<<<<< HEAD
-struct ace_container {
-	struct nfs4_ace  *ace;
-	struct list_head  ace_l;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static short ace2type(struct nfs4_ace *);
 static void _posix_to_nfsv4_one(struct posix_acl *, struct nfs4_acl *,
 				unsigned int);
 
-<<<<<<< HEAD
-struct nfs4_acl *
-nfs4_acl_posix_to_nfsv4(struct posix_acl *pacl, struct posix_acl *dpacl,
-			unsigned int flags)
-{
-	struct nfs4_acl *acl;
-	int size = 0;
-
-	if (pacl) {
-		if (posix_acl_valid(pacl) < 0)
-			return ERR_PTR(-EINVAL);
-		size += 2*pacl->a_count;
-	}
-	if (dpacl) {
-		if (posix_acl_valid(dpacl) < 0)
-			return ERR_PTR(-EINVAL);
-		size += 2*dpacl->a_count;
-	}
-
-	/* Allocate for worst case: one (deny, allow) pair each: */
-	acl = nfs4_acl_new(size);
-	if (acl == NULL)
-		return ERR_PTR(-ENOMEM);
-
-	if (pacl)
-		_posix_to_nfsv4_one(pacl, acl, flags & ~NFS4_ACL_TYPE_DEFAULT);
-
-	if (dpacl)
-		_posix_to_nfsv4_one(dpacl, acl, flags | NFS4_ACL_TYPE_DEFAULT);
-
-	return acl;
-=======
 int
 nfsd4_get_nfs4_acl(struct svc_rqst *rqstp, struct dentry *dentry,
 		struct nfs4_acl **acl)
@@ -239,7 +174,6 @@ out:
 rel_pacl:
 	posix_acl_release(pacl);
 	return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct posix_acl_summary {
@@ -344,11 +278,7 @@ _posix_to_nfsv4_one(struct posix_acl *pacl, struct nfs4_acl *acl,
 			ace->flag = eflag;
 			ace->access_mask = deny_mask_from_posix(deny, flags);
 			ace->whotype = NFS4_ACL_WHO_NAMED;
-<<<<<<< HEAD
-			ace->who = pa->e_id;
-=======
 			ace->who_uid = pa->e_uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ace++;
 			acl->naces++;
 		}
@@ -357,11 +287,7 @@ _posix_to_nfsv4_one(struct posix_acl *pacl, struct nfs4_acl *acl,
 		ace->access_mask = mask_from_posix(pa->e_perm & pas.mask,
 						   flags);
 		ace->whotype = NFS4_ACL_WHO_NAMED;
-<<<<<<< HEAD
-		ace->who = pa->e_id;
-=======
 		ace->who_uid = pa->e_uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ace++;
 		acl->naces++;
 		pa++;
@@ -388,11 +314,7 @@ _posix_to_nfsv4_one(struct posix_acl *pacl, struct nfs4_acl *acl,
 		ace->access_mask = mask_from_posix(pa->e_perm & pas.mask,
 						   flags);
 		ace->whotype = NFS4_ACL_WHO_NAMED;
-<<<<<<< HEAD
-		ace->who = pa->e_id;
-=======
 		ace->who_gid = pa->e_gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ace++;
 		acl->naces++;
 		pa++;
@@ -421,11 +343,7 @@ _posix_to_nfsv4_one(struct posix_acl *pacl, struct nfs4_acl *acl,
 			ace->flag = eflag | NFS4_ACE_IDENTIFIER_GROUP;
 			ace->access_mask = deny_mask_from_posix(deny, flags);
 			ace->whotype = NFS4_ACL_WHO_NAMED;
-<<<<<<< HEAD
-			ace->who = pa->e_id;
-=======
 			ace->who_gid = pa->e_gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ace++;
 			acl->naces++;
 		}
@@ -441,12 +359,6 @@ _posix_to_nfsv4_one(struct posix_acl *pacl, struct nfs4_acl *acl,
 	acl->naces++;
 }
 
-<<<<<<< HEAD
-static void
-sort_pacl_range(struct posix_acl *pacl, int start, int end) {
-	int sorted = 0, i;
-	struct posix_acl_entry tmp;
-=======
 static bool
 pace_gt(struct posix_acl_entry *pace1, struct posix_acl_entry *pace2)
 {
@@ -462,27 +374,17 @@ pace_gt(struct posix_acl_entry *pace1, struct posix_acl_entry *pace2)
 static void
 sort_pacl_range(struct posix_acl *pacl, int start, int end) {
 	int sorted = 0, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We just do a bubble sort; easy to do in place, and we're not
 	 * expecting acl's to be long enough to justify anything more. */
 	while (!sorted) {
 		sorted = 1;
 		for (i = start; i < end; i++) {
-<<<<<<< HEAD
-			if (pacl->a_entries[i].e_id
-					> pacl->a_entries[i+1].e_id) {
-				sorted = 0;
-				tmp = pacl->a_entries[i];
-				pacl->a_entries[i] = pacl->a_entries[i+1];
-				pacl->a_entries[i+1] = tmp;
-=======
 			if (pace_gt(&pacl->a_entries[i],
 				    &pacl->a_entries[i+1])) {
 				sorted = 0;
 				swap(pacl->a_entries[i],
 				     pacl->a_entries[i + 1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -522,14 +424,10 @@ struct posix_ace_state {
 };
 
 struct posix_user_ace_state {
-<<<<<<< HEAD
-	uid_t uid;
-=======
 	union {
 		kuid_t uid;
 		kgid_t gid;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct posix_ace_state perms;
 };
 
@@ -543,11 +441,7 @@ struct posix_ace_state_array {
  * calculated so far: */
 
 struct posix_acl_state {
-<<<<<<< HEAD
-	int empty;
-=======
 	unsigned char valid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct posix_ace_state owner;
 	struct posix_ace_state group;
 	struct posix_ace_state other;
@@ -563,16 +457,9 @@ init_state(struct posix_acl_state *state, int cnt)
 	int alloc;
 
 	memset(state, 0, sizeof(struct posix_acl_state));
-<<<<<<< HEAD
-	state->empty = 1;
-	/*
-	 * In the worst case, each individual acl could be for a distinct
-	 * named user or group, but we don't no which, so we allocate
-=======
 	/*
 	 * In the worst case, each individual acl could be for a distinct
 	 * named user or group, but we don't know which, so we allocate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * enough space for either:
 	 */
 	alloc = sizeof(struct posix_ace_state_array)
@@ -599,61 +486,20 @@ static inline void add_to_mask(struct posix_acl_state *state, struct posix_ace_s
 	state->mask.allow |= astate->allow;
 }
 
-<<<<<<< HEAD
-/*
- * Certain bits (SYNCHRONIZE, DELETE, WRITE_OWNER, READ/WRITE_NAMED_ATTRS,
- * READ_ATTRIBUTES, READ_ACL) are currently unenforceable and don't translate
- * to traditional read/write/execute permissions.
- *
- * It's problematic to reject acls that use certain mode bits, because it
- * places the burden on users to learn the rules about which bits one
- * particular server sets, without giving the user a lot of help--we return an
- * error that could mean any number of different things.  To make matters
- * worse, the problematic bits might be introduced by some application that's
- * automatically mapping from some other acl model.
- *
- * So wherever possible we accept anything, possibly erring on the side of
- * denying more permissions than necessary.
- *
- * However we do reject *explicit* DENY's of a few bits representing
- * permissions we could never deny:
- */
-
-static inline int check_deny(u32 mask, int isowner)
-{
-	if (mask & (NFS4_ACE_READ_ATTRIBUTES | NFS4_ACE_READ_ACL))
-		return -EINVAL;
-	if (!isowner)
-		return 0;
-	if (mask & (NFS4_ACE_WRITE_ATTRIBUTES | NFS4_ACE_WRITE_ACL))
-		return -EINVAL;
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct posix_acl *
 posix_state_to_acl(struct posix_acl_state *state, unsigned int flags)
 {
 	struct posix_acl_entry *pace;
 	struct posix_acl *pacl;
 	int nace;
-<<<<<<< HEAD
-	int i, error = 0;
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ACLs with no ACEs are treated differently in the inheritable
 	 * and effective cases: when there are no inheritable ACEs,
 	 * calls ->set_acl with a NULL ACL structure.
 	 */
-<<<<<<< HEAD
-	if (state->empty && (flags & NFS4_ACL_TYPE_DEFAULT))
-=======
 	if (!state->valid && (flags & NFS4_ACL_TYPE_DEFAULT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	/*
@@ -661,92 +507,35 @@ posix_state_to_acl(struct posix_acl_state *state, unsigned int flags)
 	 * up setting a 3-element effective posix ACL with all
 	 * permissions zero.
 	 */
-<<<<<<< HEAD
-	nace = 4 + state->users->n + state->groups->n;
-=======
 	if (!state->users->n && !state->groups->n)
 		nace = 3;
 	else /* Note we also include a MASK ACE in this case: */
 		nace = 4 + state->users->n + state->groups->n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pacl = posix_acl_alloc(nace, GFP_KERNEL);
 	if (!pacl)
 		return ERR_PTR(-ENOMEM);
 
 	pace = pacl->a_entries;
 	pace->e_tag = ACL_USER_OBJ;
-<<<<<<< HEAD
-	error = check_deny(state->owner.deny, 1);
-	if (error)
-		goto out_err;
 	low_mode_from_nfs4(state->owner.allow, &pace->e_perm, flags);
-	pace->e_id = ACL_UNDEFINED_ID;
-=======
-	low_mode_from_nfs4(state->owner.allow, &pace->e_perm, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i=0; i < state->users->n; i++) {
 		pace++;
 		pace->e_tag = ACL_USER;
-<<<<<<< HEAD
-		error = check_deny(state->users->aces[i].perms.deny, 0);
-		if (error)
-			goto out_err;
-		low_mode_from_nfs4(state->users->aces[i].perms.allow,
-					&pace->e_perm, flags);
-		pace->e_id = state->users->aces[i].uid;
-=======
 		low_mode_from_nfs4(state->users->aces[i].perms.allow,
 					&pace->e_perm, flags);
 		pace->e_uid = state->users->aces[i].uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_to_mask(state, &state->users->aces[i].perms);
 	}
 
 	pace++;
 	pace->e_tag = ACL_GROUP_OBJ;
-<<<<<<< HEAD
-	error = check_deny(state->group.deny, 0);
-	if (error)
-		goto out_err;
 	low_mode_from_nfs4(state->group.allow, &pace->e_perm, flags);
-	pace->e_id = ACL_UNDEFINED_ID;
-=======
-	low_mode_from_nfs4(state->group.allow, &pace->e_perm, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_to_mask(state, &state->group);
 
 	for (i=0; i < state->groups->n; i++) {
 		pace++;
 		pace->e_tag = ACL_GROUP;
-<<<<<<< HEAD
-		error = check_deny(state->groups->aces[i].perms.deny, 0);
-		if (error)
-			goto out_err;
-		low_mode_from_nfs4(state->groups->aces[i].perms.allow,
-					&pace->e_perm, flags);
-		pace->e_id = state->groups->aces[i].uid;
-		add_to_mask(state, &state->groups->aces[i].perms);
-	}
-
-	pace++;
-	pace->e_tag = ACL_MASK;
-	low_mode_from_nfs4(state->mask.allow, &pace->e_perm, flags);
-	pace->e_id = ACL_UNDEFINED_ID;
-
-	pace++;
-	pace->e_tag = ACL_OTHER;
-	error = check_deny(state->other.deny, 0);
-	if (error)
-		goto out_err;
-	low_mode_from_nfs4(state->other.allow, &pace->e_perm, flags);
-	pace->e_id = ACL_UNDEFINED_ID;
-
-	return pacl;
-out_err:
-	posix_acl_release(pacl);
-	return ERR_PTR(error);
-=======
 		low_mode_from_nfs4(state->groups->aces[i].perms.allow,
 					&pace->e_perm, flags);
 		pace->e_gid = state->groups->aces[i].gid;
@@ -764,7 +553,6 @@ out_err:
 	low_mode_from_nfs4(state->other.allow, &pace->e_perm, flags);
 
 	return pacl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void allow_bits(struct posix_ace_state *astate, u32 mask)
@@ -779,14 +567,6 @@ static inline void deny_bits(struct posix_ace_state *astate, u32 mask)
 	astate->deny |= mask & ~astate->allow;
 }
 
-<<<<<<< HEAD
-static int find_uid(struct posix_acl_state *state, struct posix_ace_state_array *a, uid_t uid)
-{
-	int i;
-
-	for (i = 0; i < a->n; i++)
-		if (a->aces[i].uid == uid)
-=======
 static int find_uid(struct posix_acl_state *state, kuid_t uid)
 {
 	struct posix_ace_state_array *a = state->users;
@@ -794,7 +574,6 @@ static int find_uid(struct posix_acl_state *state, kuid_t uid)
 
 	for (i = 0; i < a->n; i++)
 		if (uid_eq(a->aces[i].uid, uid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return i;
 	/* Not found: */
 	a->n++;
@@ -805,8 +584,6 @@ static int find_uid(struct posix_acl_state *state, kuid_t uid)
 	return i;
 }
 
-<<<<<<< HEAD
-=======
 static int find_gid(struct posix_acl_state *state, kgid_t gid)
 {
 	struct posix_ace_state_array *a = state->groups;
@@ -824,7 +601,6 @@ static int find_gid(struct posix_acl_state *state, kgid_t gid)
 	return i;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void deny_bits_array(struct posix_ace_state_array *a, u32 mask)
 {
 	int i;
@@ -845,20 +621,12 @@ static void process_one_v4_ace(struct posix_acl_state *state,
 				struct nfs4_ace *ace)
 {
 	u32 mask = ace->access_mask;
-<<<<<<< HEAD
-	int i;
-
-	state->empty = 0;
-
-	switch (ace2type(ace)) {
-=======
 	short type = ace2type(ace);
 	int i;
 
 	state->valid |= type;
 
 	switch (type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ACL_USER_OBJ:
 		if (ace->type == NFS4_ACE_ACCESS_ALLOWED_ACE_TYPE) {
 			allow_bits(&state->owner, mask);
@@ -867,11 +635,7 @@ static void process_one_v4_ace(struct posix_acl_state *state,
 		}
 		break;
 	case ACL_USER:
-<<<<<<< HEAD
-		i = find_uid(state, state->users, ace->who);
-=======
 		i = find_uid(state, ace->who_uid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ace->type == NFS4_ACE_ACCESS_ALLOWED_ACE_TYPE) {
 			allow_bits(&state->users->aces[i].perms, mask);
 		} else {
@@ -893,11 +657,7 @@ static void process_one_v4_ace(struct posix_acl_state *state,
 		}
 		break;
 	case ACL_GROUP:
-<<<<<<< HEAD
-		i = find_uid(state, state->groups, ace->who);
-=======
 		i = find_gid(state, ace->who_gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ace->type == NFS4_ACE_ACCESS_ALLOWED_ACE_TYPE) {
 			allow_bits(&state->groups->aces[i].perms, mask);
 		} else {
@@ -929,14 +689,9 @@ static void process_one_v4_ace(struct posix_acl_state *state,
 	}
 }
 
-<<<<<<< HEAD
-int nfs4_acl_nfsv4_to_posix(struct nfs4_acl *acl, struct posix_acl **pacl,
-			    struct posix_acl **dpacl, unsigned int flags)
-=======
 static int nfs4_acl_nfsv4_to_posix(struct nfs4_acl *acl,
 		struct posix_acl **pacl, struct posix_acl **dpacl,
 		unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_acl_state effective_acl_state, default_acl_state;
 	struct nfs4_ace *ace;
@@ -971,8 +726,6 @@ static int nfs4_acl_nfsv4_to_posix(struct nfs4_acl *acl,
 		if (!(ace->flag & NFS4_ACE_INHERIT_ONLY_ACE))
 			process_one_v4_ace(&effective_acl_state, ace);
 	}
-<<<<<<< HEAD
-=======
 
 	/*
 	 * At this point, the default ACL may have zeroed-out entries for owner,
@@ -997,7 +750,6 @@ static int nfs4_acl_nfsv4_to_posix(struct nfs4_acl *acl,
 			default_acl_state.other = effective_acl_state.other;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*pacl = posix_state_to_acl(&effective_acl_state, flags);
 	if (IS_ERR(*pacl)) {
 		ret = PTR_ERR(*pacl);
@@ -1023,8 +775,6 @@ out_estate:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 __be32 nfsd4_acl_to_attr(enum nfs_ftype4 type, struct nfs4_acl *acl,
 			 struct nfsd_attrs *attr)
 {
@@ -1045,7 +795,6 @@ __be32 nfsd4_acl_to_attr(enum nfs_ftype4 type, struct nfs4_acl *acl,
 		return nfserrno(host_error);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static short
 ace2type(struct nfs4_ace *ace)
 {
@@ -1064,21 +813,6 @@ ace2type(struct nfs4_ace *ace)
 	return -1;
 }
 
-<<<<<<< HEAD
-EXPORT_SYMBOL(nfs4_acl_posix_to_nfsv4);
-EXPORT_SYMBOL(nfs4_acl_nfsv4_to_posix);
-
-struct nfs4_acl *
-nfs4_acl_new(int n)
-{
-	struct nfs4_acl *acl;
-
-	acl = kmalloc(sizeof(*acl) + n*sizeof(struct nfs4_ace), GFP_KERNEL);
-	if (acl == NULL)
-		return NULL;
-	acl->naces = 0;
-	return acl;
-=======
 /*
  * return the size of the struct nfs4_acl required to represent an acl
  * with @entries entries.
@@ -1086,7 +820,6 @@ nfs4_acl_new(int n)
 int nfs4_acl_bytes(int entries)
 {
 	return sizeof(struct nfs4_acl) + entries * sizeof(struct nfs4_ace);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct {
@@ -1124,26 +857,6 @@ nfs4_acl_get_whotype(char *p, u32 len)
 	return NFS4_ACL_WHO_NAMED;
 }
 
-<<<<<<< HEAD
-int
-nfs4_acl_write_who(int who, char *p)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(s2t_map); i++) {
-		if (s2t_map[i].type == who) {
-			memcpy(p, s2t_map[i].string, s2t_map[i].stringlen);
-			return s2t_map[i].stringlen;
-		}
-	}
-	BUG();
-	return -1;
-}
-
-EXPORT_SYMBOL(nfs4_acl_new);
-EXPORT_SYMBOL(nfs4_acl_get_whotype);
-EXPORT_SYMBOL(nfs4_acl_write_who);
-=======
 __be32 nfs4_acl_write_who(struct xdr_stream *xdr, int who)
 {
 	__be32 *p;
@@ -1162,4 +875,3 @@ __be32 nfs4_acl_write_who(struct xdr_stream *xdr, int who)
 	WARN_ON_ONCE(1);
 	return nfserr_serverfault;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

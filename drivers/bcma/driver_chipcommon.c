@@ -4,22 +4,15 @@
  *
  * Copyright 2005, Broadcom Corporation
  * Copyright 2006, 2007, Michael Buesch <m@bues.ch>
-<<<<<<< HEAD
-=======
  * Copyright 2012, Hauke Mehrtens <hauke@hauke-m.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
 #include "bcma_private.h"
-<<<<<<< HEAD
-#include <linux/export.h>
-=======
 #include <linux/bcm47xx_wdt.h>
 #include <linux/export.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bcma/bcma.h>
 
 static inline u32 bcma_cc_write32_masked(struct bcma_drv_cc *cc, u16 offset,
@@ -32,8 +25,6 @@ static inline u32 bcma_cc_write32_masked(struct bcma_drv_cc *cc, u16 offset,
 	return value;
 }
 
-<<<<<<< HEAD
-=======
 u32 bcma_chipco_get_alp_clock(struct bcma_drv_cc *cc)
 {
 	if (cc->capabilities & BCMA_CC_CAP_PMU)
@@ -199,7 +190,6 @@ void bcma_core_chipcommon_early_init(struct bcma_drv_cc *cc)
 	cc->early_setup_done = true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bcma_core_chipcommon_init(struct bcma_drv_cc *cc)
 {
 	u32 leddc_on = 10;
@@ -208,17 +198,6 @@ void bcma_core_chipcommon_init(struct bcma_drv_cc *cc)
 	if (cc->setup_done)
 		return;
 
-<<<<<<< HEAD
-	if (cc->core->id.rev >= 11)
-		cc->status = bcma_cc_read32(cc, BCMA_CC_CHIPSTAT);
-	cc->capabilities = bcma_cc_read32(cc, BCMA_CC_CAP);
-	if (cc->core->id.rev >= 35)
-		cc->capabilities_ext = bcma_cc_read32(cc, BCMA_CC_CAP_EXT);
-
-	if (cc->core->id.rev >= 20) {
-		bcma_cc_write32(cc, BCMA_CC_GPIOPULLUP, 0);
-		bcma_cc_write32(cc, BCMA_CC_GPIOPULLDOWN, 0);
-=======
 	bcma_core_chipcommon_early_init(cc);
 
 	if (cc->core->id.rev >= 20) {
@@ -231,17 +210,12 @@ void bcma_core_chipcommon_init(struct bcma_drv_cc *cc)
 
 		bcma_cc_write32(cc, BCMA_CC_GPIOPULLUP, pullup);
 		bcma_cc_write32(cc, BCMA_CC_GPIOPULLDOWN, pulldown);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (cc->capabilities & BCMA_CC_CAP_PMU)
 		bcma_pmu_init(cc);
 	if (cc->capabilities & BCMA_CC_CAP_PCTL)
-<<<<<<< HEAD
-		pr_err("Power control not implemented!\n");
-=======
 		bcma_err(cc->core->bus, "Power control not implemented!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cc->core->id.rev >= 16) {
 		if (cc->core->bus->sprom.leddc_on_time &&
@@ -253,21 +227,12 @@ void bcma_core_chipcommon_init(struct bcma_drv_cc *cc)
 			((leddc_on << BCMA_CC_GPIOTIMER_ONTIME_SHIFT) |
 			 (leddc_off << BCMA_CC_GPIOTIMER_OFFTIME_SHIFT)));
 	}
-<<<<<<< HEAD
-=======
 	cc->ticks_per_ms = bcma_chipco_watchdog_ticks_per_ms(cc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cc->setup_done = true;
 }
 
 /* Set chip watchdog reset timer to fire in 'ticks' backplane cycles */
-<<<<<<< HEAD
-void bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc, u32 ticks)
-{
-	/* instant NMI */
-	bcma_cc_write32(cc, BCMA_CC_WATCHDOG, ticks);
-=======
 u32 bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc, u32 ticks)
 {
 	u32 maxt;
@@ -294,7 +259,6 @@ u32 bcma_chipco_watchdog_timer_set(struct bcma_drv_cc *cc, u32 ticks)
 		bcma_cc_write32(cc, BCMA_CC_WATCHDOG, ticks);
 	}
 	return ticks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bcma_chipco_irq_mask(struct bcma_drv_cc *cc, u32 mask, u32 value)
@@ -314,19 +278,6 @@ u32 bcma_chipco_gpio_in(struct bcma_drv_cc *cc, u32 mask)
 
 u32 bcma_chipco_gpio_out(struct bcma_drv_cc *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return bcma_cc_write32_masked(cc, BCMA_CC_GPIOOUT, mask, value);
-}
-
-u32 bcma_chipco_gpio_outen(struct bcma_drv_cc *cc, u32 mask, u32 value)
-{
-	return bcma_cc_write32_masked(cc, BCMA_CC_GPIOOUTEN, mask, value);
-}
-
-u32 bcma_chipco_gpio_control(struct bcma_drv_cc *cc, u32 mask, u32 value)
-{
-	return bcma_cc_write32_masked(cc, BCMA_CC_GPIOCTL, mask, value);
-=======
 	unsigned long flags;
 	u32 res;
 
@@ -365,15 +316,11 @@ u32 bcma_chipco_gpio_control(struct bcma_drv_cc *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(bcma_chipco_gpio_control);
 
 u32 bcma_chipco_gpio_intmask(struct bcma_drv_cc *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return bcma_cc_write32_masked(cc, BCMA_CC_GPIOIRQ, mask, value);
-=======
 	unsigned long flags;
 	u32 res;
 
@@ -382,14 +329,10 @@ u32 bcma_chipco_gpio_intmask(struct bcma_drv_cc *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 bcma_chipco_gpio_polarity(struct bcma_drv_cc *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return bcma_cc_write32_masked(cc, BCMA_CC_GPIOPOL, mask, value);
-=======
 	unsigned long flags;
 	u32 res;
 
@@ -428,7 +371,6 @@ u32 bcma_chipco_gpio_pulldown(struct bcma_drv_cc *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_BCMA_DRIVER_MIPS
@@ -441,12 +383,7 @@ void bcma_chipco_serial_init(struct bcma_drv_cc *cc)
 	struct bcma_serial_port *ports = cc->serial_ports;
 
 	if (ccrev >= 11 && ccrev != 15) {
-<<<<<<< HEAD
-		/* Fixed ALP clock */
-		baud_base = bcma_pmu_alp_clock(cc);
-=======
 		baud_base = bcma_chipco_get_alp_clock(cc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ccrev >= 21) {
 			/* Turn off UART clock before switching clocksource. */
 			bcma_cc_write32(cc, BCMA_CC_CORECTL,
@@ -464,21 +401,12 @@ void bcma_chipco_serial_init(struct bcma_drv_cc *cc)
 				       | BCMA_CC_CORECTL_UARTCLKEN);
 		}
 	} else {
-<<<<<<< HEAD
-		pr_err("serial not supported on this device ccrev: 0x%x\n",
-		       ccrev);
-		return;
-	}
-
-	irq = bcma_core_mips_irq(cc->core);
-=======
 		bcma_err(cc->core->bus, "serial not supported on this device ccrev: 0x%x\n",
 			 ccrev);
 		return;
 	}
 
 	irq = bcma_core_irq(cc->core, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine the registers of the UARTs */
 	cc->nr_serial_ports = (cc->capabilities & BCMA_CC_CAP_NRUART);

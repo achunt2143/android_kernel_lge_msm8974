@@ -11,10 +11,6 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/io.h>
-#include <plat/irq.h>
-=======
 #include <linux/irqdomain.h>
 #include <linux/io.h>
 #include <linux/of_address.h>
@@ -22,7 +18,6 @@
 #include <asm/exception.h>
 #include <plat/irq.h>
 #include <plat/orion-gpio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init orion_irq_init(unsigned int irq_start, void __iomem *maskaddr)
 {

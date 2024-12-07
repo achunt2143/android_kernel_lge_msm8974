@@ -1,40 +1,19 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __USBAUDIO_CARD_H
 #define __USBAUDIO_CARD_H
 
 #define MAX_NR_RATES	1024
-<<<<<<< HEAD
-#define MAX_PACKS	20
-#define MAX_PACKS_HS	(MAX_PACKS * 8)	/* in high speed mode */
-#define MAX_URBS	16	/*8*/
-#define SYNC_URBS	4	/* always four urbs for sync */
-#define MAX_QUEUE	24	/* try not to exceed this queue length, in ms */
-=======
 #define MAX_PACKS	6		/* per URB */
 #define MAX_PACKS_HS	(MAX_PACKS * 8)	/* in high speed mode */
 #define MAX_URBS	12
 #define SYNC_URBS	4	/* always four urbs for sync */
 #define MAX_QUEUE	18	/* try not to exceed this queue length, in ms */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct audioformat {
 	struct list_head list;
 	u64 formats;			/* ALSA format bits */
 	unsigned int channels;		/* # channels */
 	unsigned int fmt_type;		/* USB audio format type (1-3) */
-<<<<<<< HEAD
-	unsigned int frame_size;	/* samples per frame for non-audio */
-	int iface;			/* interface number */
-	unsigned char altsetting;	/* corresponding alternate setting */
-	unsigned char altset_idx;	/* array index of altenate setting */
-	unsigned char attributes;	/* corresponding attributes of cs endpoint */
-	unsigned char endpoint;		/* endpoint */
-	unsigned char ep_attr;		/* endpoint attributes */
-	unsigned char datainterval;	/* log_2 of data packet interval */
-=======
 	unsigned int fmt_bits;		/* number of significant bits */
 	unsigned int frame_size;	/* samples per frame for non-audio */
 	unsigned char iface;		/* interface number */
@@ -51,18 +30,12 @@ struct audioformat {
 	unsigned char sync_ep_idx;	/* sync EP array index */
 	unsigned char datainterval;	/* log_2 of data packet interval */
 	unsigned char protocol;		/* UAC_VERSION_1/2/3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int maxpacksize;	/* max. packet size */
 	unsigned int rates;		/* rate bitmasks */
 	unsigned int rate_min, rate_max;	/* min/max rates */
 	unsigned int nr_rates;		/* number of rate table entries */
 	unsigned int *rate_table;	/* rate table */
 	unsigned char clock;		/* associated clock */
-<<<<<<< HEAD
-};
-
-struct snd_usb_substream;
-=======
 	struct snd_pcm_chmap_elem *chmap; /* (optional) channel map */
 	bool dsd_dop;			/* add DOP headers in case of DSD samples */
 	bool dsd_bitrev;		/* reverse the bits of each DSD sample */
@@ -74,25 +47,11 @@ struct snd_usb_iface_ref;
 struct snd_usb_clock_ref;
 struct snd_usb_endpoint;
 struct snd_usb_power_domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_urb_ctx {
 	struct urb *urb;
 	unsigned int buffer_size;	/* size of data buffer, if data URB */
 	struct snd_usb_substream *subs;
-<<<<<<< HEAD
-	int index;	/* index for urb array */
-	int packets;	/* number of packets per urb */
-};
-
-struct snd_urb_ops {
-	int (*prepare)(struct snd_usb_substream *subs, struct snd_pcm_runtime *runtime, struct urb *u);
-	int (*retire)(struct snd_usb_substream *subs, struct snd_pcm_runtime *runtime, struct urb *u);
-	int (*prepare_sync)(struct snd_usb_substream *subs, struct snd_pcm_runtime *runtime, struct urb *u);
-	int (*retire_sync)(struct snd_usb_substream *subs, struct snd_pcm_runtime *runtime, struct urb *u);
-};
-
-=======
 	struct snd_usb_endpoint *ep;
 	int index;	/* index for urb array */
 	int packets;	/* number of packets per urb */
@@ -190,52 +149,11 @@ struct snd_usb_endpoint {
 
 struct media_ctl;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_usb_substream {
 	struct snd_usb_stream *stream;
 	struct usb_device *dev;
 	struct snd_pcm_substream *pcm_substream;
 	int direction;	/* playback or capture */
-<<<<<<< HEAD
-	int interface;	/* current interface */
-	int endpoint;	/* assigned endpoint */
-	struct audioformat *cur_audiofmt;	/* current audioformat pointer (for hw_params callback) */
-	unsigned int cur_rate;		/* current rate (for hw_params callback) */
-	unsigned int period_bytes;	/* current period bytes (for hw_params callback) */
-	unsigned int altset_idx;     /* USB data format: index of alternate setting */
-	unsigned int datapipe;   /* the data i/o pipe */
-	unsigned int syncpipe;   /* 1 - async out or adaptive in */
-	unsigned int datainterval;	/* log_2 of data packet interval */
-	unsigned int syncinterval;  /* P for adaptive mode, 0 otherwise */
-	unsigned int freqn;      /* nominal sampling rate in fs/fps in Q16.16 format */
-	unsigned int freqm;      /* momentary sampling rate in fs/fps in Q16.16 format */
-	int          freqshift;  /* how much to shift the feedback value to get Q16.16 */
-	unsigned int freqmax;    /* maximum sampling rate, used for buffer management */
-	unsigned int phase;      /* phase accumulator */
-	unsigned int maxpacksize;	/* max packet size in bytes */
-	unsigned int maxframesize;	/* max packet size in frames */
-	unsigned int curpacksize;	/* current packet size in bytes (for capture) */
-	unsigned int curframesize;	/* current packet size in frames (for capture) */
-	unsigned int syncmaxsize;	/* sync endpoint packet size */
-	unsigned int fill_max: 1;	/* fill max packet size always */
-	unsigned int udh01_fb_quirk:1;	/* corrupted feedback data */
-	unsigned int txfr_quirk:1;	/* allow sub-frame alignment */
-	unsigned int fmt_type;		/* USB audio format type (1-3) */
-	unsigned int pkt_offset_adj;	/* Bytes to drop from beginning of packets (for non-compliant devices) */
-
-	unsigned int running: 1;	/* running status */
-
-	unsigned int hwptr_done;	/* processed byte position in the buffer */
-	unsigned int transfer_done;		/* processed frames since last period update */
-	unsigned long active_mask;	/* bitmask of active urbs */
-	unsigned long unlink_mask;	/* bitmask of unlinked urbs */
-
-	unsigned int nurbs;			/* # urbs */
-	struct snd_urb_ctx dataurb[MAX_URBS];	/* data urb table */
-	struct snd_urb_ctx syncurb[SYNC_URBS];	/* sync urb table */
-	char *syncbuf;				/* sync buffer for all sync URBs */
-	dma_addr_t sync_dma;			/* DMA address of syncbuf */
-=======
 	int endpoint;	/* assigned endpoint */
 	const struct audioformat *cur_audiofmt;	/* current audioformat pointer (for hw_params callback) */
 	struct snd_usb_power_domain *str_pd;	/* UAC3 Power Domain for streaming path */
@@ -260,20 +178,11 @@ struct snd_usb_substream {
 	struct snd_usb_endpoint *data_endpoint;
 	struct snd_usb_endpoint *sync_endpoint;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int speed;		/* USB_SPEED_XXX */
 
 	u64 formats;			/* format bitmasks (all or'ed) */
 	unsigned int num_formats;		/* number of supported audio formats (list) */
 	struct list_head fmt_list;	/* format list */
-<<<<<<< HEAD
-	struct snd_pcm_hw_constraint_list rate_list;	/* limited rates */
-	spinlock_t lock;
-
-	struct snd_urb_ops ops;		/* callbacks (must be filled at init) */
-	int last_frame_number;          /* stored frame number */
-	int last_delay;                 /* stored delay */
-=======
 	spinlock_t lock;
 
 	unsigned int last_frame_number;	/* stored frame number */
@@ -287,7 +196,6 @@ struct snd_usb_substream {
 	bool trigger_tstamp_pending_update; /* trigger timestamp being updated from initial estimate */
 	bool lowlatency_playback;	/* low-latency playback mode */
 	struct media_ctl *media_ctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct snd_usb_stream {

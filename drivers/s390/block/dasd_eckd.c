@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_eckd.c
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
  *		    Horst Hummel <Horst.Hummel@de.ibm.com>
  *		    Carsten Otte <Cotte@de.ibm.com>
@@ -15,11 +10,6 @@
  * Author.........: Nigel Hislop <hislop_nigel@emc.com>
  */
 
-<<<<<<< HEAD
-#define KMSG_COMPONENT "dasd-eckd"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stddef.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -28,41 +18,6 @@
 #include <linux/module.h>
 #include <linux/compat.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-
-#include <asm/debug.h>
-#include <asm/idals.h>
-#include <asm/ebcdic.h>
-#include <asm/io.h>
-#include <asm/uaccess.h>
-#include <asm/cio.h>
-#include <asm/ccwdev.h>
-#include <asm/itcw.h>
-
-#include "dasd_int.h"
-#include "dasd_eckd.h"
-#include "../cio/chsc.h"
-
-
-#ifdef PRINTK_HEADER
-#undef PRINTK_HEADER
-#endif				/* PRINTK_HEADER */
-#define PRINTK_HEADER "dasd(eckd):"
-
-#define ECKD_C0(i) (i->home_bytes)
-#define ECKD_F(i) (i->formula)
-#define ECKD_F1(i) (ECKD_F(i)==0x01?(i->factors.f_0x01.f1):\
-		    (i->factors.f_0x02.f1))
-#define ECKD_F2(i) (ECKD_F(i)==0x01?(i->factors.f_0x01.f2):\
-		    (i->factors.f_0x02.f2))
-#define ECKD_F3(i) (ECKD_F(i)==0x01?(i->factors.f_0x01.f3):\
-		    (i->factors.f_0x02.f3))
-#define ECKD_F4(i) (ECKD_F(i)==0x02?(i->factors.f_0x02.f4):0)
-#define ECKD_F5(i) (ECKD_F(i)==0x02?(i->factors.f_0x02.f5):0)
-#define ECKD_F6(i) (i->factor6)
-#define ECKD_F7(i) (i->factor7)
-#define ECKD_F8(i) (i->factor8)
-=======
 #include <linux/seq_file.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
@@ -79,7 +34,6 @@
 
 #include "dasd_int.h"
 #include "dasd_eckd.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * raw track access always map to 64k in memory
@@ -114,11 +68,8 @@ MODULE_DEVICE_TABLE(ccw, dasd_eckd_ids);
 
 static struct ccw_driver dasd_eckd_driver; /* see below */
 
-<<<<<<< HEAD
-=======
 static void *rawpadpage;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INIT_CQR_OK 0
 #define INIT_CQR_UNFORMATTED 1
 #define INIT_CQR_ERROR 2
@@ -131,10 +82,6 @@ static struct {
 } *dasd_reserve_req;
 static DEFINE_MUTEX(dasd_reserve_mutex);
 
-<<<<<<< HEAD
-/* definitions for the path verification worker */
-struct path_verification_work_data {
-=======
 static struct {
 	struct dasd_ccw_req cqr;
 	struct ccw1 ccw[2];
@@ -150,7 +97,6 @@ struct ext_pool_exhaust_work_data {
 
 /* definitions for the path verification worker */
 struct pe_handler_work_data {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct worker;
 	struct dasd_device *device;
 	struct dasd_ccw_req cqr;
@@ -158,11 +104,6 @@ struct pe_handler_work_data {
 	__u8 rcd_buffer[DASD_ECKD_RCD_DATA_SIZE];
 	int isglobal;
 	__u8 tbvpm;
-<<<<<<< HEAD
-};
-static struct path_verification_work_data *path_verification_worker;
-static DEFINE_MUTEX(dasd_path_verification_mutex);
-=======
 	__u8 fcsecpm;
 };
 static struct pe_handler_work_data *pe_handler_worker;
@@ -181,7 +122,6 @@ static int prepare_itcw(struct itcw *, unsigned int, unsigned int, int,
 			unsigned int, unsigned int);
 static int dasd_eckd_query_pprc_status(struct dasd_device *,
 				       struct dasd_pprc_data_sc4 *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* initial attempt at a probe function. this can be simplified once
  * the other detection code is gone */
@@ -199,11 +139,7 @@ dasd_eckd_probe (struct ccw_device *cdev)
 				"ccw-device options");
 		return ret;
 	}
-<<<<<<< HEAD
-	ret = dasd_generic_probe(cdev, &dasd_eckd_discipline);
-=======
 	ret = dasd_generic_probe(cdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -216,18 +152,9 @@ dasd_eckd_set_online(struct ccw_device *cdev)
 static const int sizes_trk0[] = { 28, 148, 84 };
 #define LABEL_SIZE 140
 
-<<<<<<< HEAD
-static inline unsigned int
-round_up_multiple(unsigned int no, unsigned int mult)
-{
-	int rem = no % mult;
-	return (rem ? no - rem + mult : no);
-}
-=======
 /* head and record addresses of count_area read in analysis ccw */
 static const int count_area_head[] = { 0, 0, 0, 0, 1 };
 static const int count_area_rec[] = { 1, 2, 3, 4, 1 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned int
 ceil_quot(unsigned int d1, unsigned int d2)
@@ -276,31 +203,6 @@ static void set_ch_t(struct ch_t *geo, __u32 cyl, __u8 head)
 	geo->head |= head;
 }
 
-<<<<<<< HEAD
-static int
-check_XRC (struct ccw1         *de_ccw,
-           struct DE_eckd_data *data,
-           struct dasd_device  *device)
-{
-        struct dasd_eckd_private *private;
-	int rc;
-
-        private = (struct dasd_eckd_private *) device->private;
-	if (!private->rdc_data.facilities.XRC_supported)
-		return 0;
-
-        /* switch on System Time Stamp - needed for XRC Support */
-	data->ga_extended |= 0x08; /* switch on 'Time Stamp Valid'   */
-	data->ga_extended |= 0x02; /* switch on 'Extended Parameter' */
-
-	rc = get_sync_clock(&data->ep_sys_time);
-	/* Ignore return code if sync clock is switched off. */
-	if (rc == -ENOSYS || rc == -EACCES)
-		rc = 0;
-
-	de_ccw->count = sizeof(struct DE_eckd_data);
-	de_ccw->flags |= CCW_FLAG_SLI;
-=======
 /*
  * calculate failing track from sense data depending if
  * it is an EAV device or not
@@ -364,27 +266,11 @@ static int set_timestamp(struct ccw1 *ccw, struct DE_eckd_data *data,
 		ccw->flags |= CCW_FLAG_SLI;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 static int
 define_extent(struct ccw1 *ccw, struct DE_eckd_data *data, unsigned int trk,
-<<<<<<< HEAD
-	      unsigned int totrk, int cmd, struct dasd_device *device)
-{
-	struct dasd_eckd_private *private;
-	u32 begcyl, endcyl;
-	u16 heads, beghead, endhead;
-	int rc = 0;
-
-	private = (struct dasd_eckd_private *) device->private;
-
-	ccw->cmd_code = DASD_ECKD_CCW_DEFINE_EXTENT;
-	ccw->flags = 0;
-	ccw->count = 16;
-	ccw->cda = (__u32) __pa(data);
-=======
 	      unsigned int totrk, int cmd, struct dasd_device *device,
 	      int blksize)
 {
@@ -399,7 +285,6 @@ define_extent(struct ccw1 *ccw, struct DE_eckd_data *data, unsigned int trk,
 		ccw->count = 16;
 		ccw->cda = virt_to_dma32(data);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(data, 0, sizeof(struct DE_eckd_data));
 	switch (cmd) {
@@ -411,12 +296,6 @@ define_extent(struct ccw1 *ccw, struct DE_eckd_data *data, unsigned int trk,
 	case DASD_ECKD_CCW_READ_CKD_MT:
 	case DASD_ECKD_CCW_READ_KD:
 	case DASD_ECKD_CCW_READ_KD_MT:
-<<<<<<< HEAD
-	case DASD_ECKD_CCW_READ_COUNT:
-		data->mask.perm = 0x1;
-		data->attributes.operation = private->attrib.operation;
-		break;
-=======
 		data->mask.perm = 0x1;
 		data->attributes.operation = private->attrib.operation;
 		break;
@@ -430,27 +309,18 @@ define_extent(struct ccw1 *ccw, struct DE_eckd_data *data, unsigned int trk,
 		data->attributes.operation = private->attrib.operation;
 		data->blk_size = 0;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DASD_ECKD_CCW_WRITE:
 	case DASD_ECKD_CCW_WRITE_MT:
 	case DASD_ECKD_CCW_WRITE_KD:
 	case DASD_ECKD_CCW_WRITE_KD_MT:
 		data->mask.perm = 0x02;
 		data->attributes.operation = private->attrib.operation;
-<<<<<<< HEAD
-		rc = check_XRC (ccw, data, device);
-=======
 		rc = set_timestamp(ccw, data, device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DASD_ECKD_CCW_WRITE_CKD:
 	case DASD_ECKD_CCW_WRITE_CKD_MT:
 		data->attributes.operation = DASD_BYPASS_CACHE;
-<<<<<<< HEAD
-		rc = check_XRC (ccw, data, device);
-=======
 		rc = set_timestamp(ccw, data, device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DASD_ECKD_CCW_ERASE:
 	case DASD_ECKD_CCW_WRITE_HOME_ADDRESS:
@@ -458,9 +328,6 @@ define_extent(struct ccw1 *ccw, struct DE_eckd_data *data, unsigned int trk,
 		data->mask.perm = 0x3;
 		data->mask.auth = 0x1;
 		data->attributes.operation = DASD_BYPASS_CACHE;
-<<<<<<< HEAD
-		rc = check_XRC (ccw, data, device);
-=======
 		rc = set_timestamp(ccw, data, device);
 		break;
 	case DASD_ECKD_CCW_WRITE_FULL_TRACK:
@@ -473,7 +340,6 @@ define_extent(struct ccw1 *ccw, struct DE_eckd_data *data, unsigned int trk,
 		data->attributes.operation = private->attrib.operation;
 		data->blk_size = blksize;
 		rc = set_timestamp(ccw, data, device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(&device->cdev->dev,
@@ -510,40 +376,6 @@ define_extent(struct ccw1 *ccw, struct DE_eckd_data *data, unsigned int trk,
 	return rc;
 }
 
-<<<<<<< HEAD
-static int check_XRC_on_prefix(struct PFX_eckd_data *pfxdata,
-			       struct dasd_device  *device)
-{
-	struct dasd_eckd_private *private;
-	int rc;
-
-	private = (struct dasd_eckd_private *) device->private;
-	if (!private->rdc_data.facilities.XRC_supported)
-		return 0;
-
-	/* switch on System Time Stamp - needed for XRC Support */
-	pfxdata->define_extent.ga_extended |= 0x08; /* 'Time Stamp Valid'   */
-	pfxdata->define_extent.ga_extended |= 0x02; /* 'Extended Parameter' */
-	pfxdata->validity.time_stamp = 1;	    /* 'Time Stamp Valid'   */
-
-	rc = get_sync_clock(&pfxdata->define_extent.ep_sys_time);
-	/* Ignore return code if sync clock is switched off. */
-	if (rc == -ENOSYS || rc == -EACCES)
-		rc = 0;
-	return rc;
-}
-
-static void fill_LRE_data(struct LRE_eckd_data *data, unsigned int trk,
-			  unsigned int rec_on_trk, int count, int cmd,
-			  struct dasd_device *device, unsigned int reclen,
-			  unsigned int tlf)
-{
-	struct dasd_eckd_private *private;
-	int sector;
-	int dn, d;
-
-	private = (struct dasd_eckd_private *) device->private;
-=======
 
 static void locate_record_ext(struct ccw1 *ccw, struct LRE_eckd_data *data,
 			      unsigned int trk, unsigned int rec_on_trk,
@@ -563,7 +395,6 @@ static void locate_record_ext(struct ccw1 *ccw, struct LRE_eckd_data *data,
 			ccw->count = 20;
 		ccw->cda = virt_to_dma32(data);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(data, 0, sizeof(*data));
 	sector = 0;
@@ -691,20 +522,6 @@ static void locate_record_ext(struct ccw1 *ccw, struct LRE_eckd_data *data,
 static int prefix_LRE(struct ccw1 *ccw, struct PFX_eckd_data *pfxdata,
 		      unsigned int trk, unsigned int totrk, int cmd,
 		      struct dasd_device *basedev, struct dasd_device *startdev,
-<<<<<<< HEAD
-		      unsigned char format, unsigned int rec_on_trk, int count,
-		      unsigned int blksize, unsigned int tlf)
-{
-	struct dasd_eckd_private *basepriv, *startpriv;
-	struct DE_eckd_data *dedata;
-	struct LRE_eckd_data *lredata;
-	u32 begcyl, endcyl;
-	u16 heads, beghead, endhead;
-	int rc = 0;
-
-	basepriv = (struct dasd_eckd_private *) basedev->private;
-	startpriv = (struct dasd_eckd_private *) startdev->private;
-=======
 		      unsigned int format, unsigned int rec_on_trk, int count,
 		      unsigned int blksize, unsigned int tlf)
 {
@@ -715,7 +532,6 @@ static int prefix_LRE(struct ccw1 *ccw, struct PFX_eckd_data *pfxdata,
 
 	basepriv = basedev->private;
 	startpriv = startdev->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dedata = &pfxdata->define_extent;
 	lredata = &pfxdata->locate_record;
 
@@ -723,19 +539,11 @@ static int prefix_LRE(struct ccw1 *ccw, struct PFX_eckd_data *pfxdata,
 	ccw->flags = 0;
 	if (cmd == DASD_ECKD_CCW_WRITE_FULL_TRACK) {
 		ccw->count = sizeof(*pfxdata) + 2;
-<<<<<<< HEAD
-		ccw->cda = (__u32) __pa(pfxdata);
-		memset(pfxdata, 0, sizeof(*pfxdata) + 2);
-	} else {
-		ccw->count = sizeof(*pfxdata);
-		ccw->cda = (__u32) __pa(pfxdata);
-=======
 		ccw->cda = virt_to_dma32(pfxdata);
 		memset(pfxdata, 0, sizeof(*pfxdata) + 2);
 	} else {
 		ccw->count = sizeof(*pfxdata);
 		ccw->cda = virt_to_dma32(pfxdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(pfxdata, 0, sizeof(*pfxdata));
 	}
 
@@ -747,108 +555,6 @@ static int prefix_LRE(struct ccw1 *ccw, struct PFX_eckd_data *pfxdata,
 		return -EINVAL;
 	}
 	pfxdata->format = format;
-<<<<<<< HEAD
-	pfxdata->base_address = basepriv->ned->unit_addr;
-	pfxdata->base_lss = basepriv->ned->ID;
-	pfxdata->validity.define_extent = 1;
-
-	/* private uid is kept up to date, conf_data may be outdated */
-	if (startpriv->uid.type != UA_BASE_DEVICE) {
-		pfxdata->validity.verify_base = 1;
-		if (startpriv->uid.type == UA_HYPER_PAV_ALIAS)
-			pfxdata->validity.hyper_pav = 1;
-	}
-
-	/* define extend data (mostly)*/
-	switch (cmd) {
-	case DASD_ECKD_CCW_READ_HOME_ADDRESS:
-	case DASD_ECKD_CCW_READ_RECORD_ZERO:
-	case DASD_ECKD_CCW_READ:
-	case DASD_ECKD_CCW_READ_MT:
-	case DASD_ECKD_CCW_READ_CKD:
-	case DASD_ECKD_CCW_READ_CKD_MT:
-	case DASD_ECKD_CCW_READ_KD:
-	case DASD_ECKD_CCW_READ_KD_MT:
-	case DASD_ECKD_CCW_READ_COUNT:
-		dedata->mask.perm = 0x1;
-		dedata->attributes.operation = basepriv->attrib.operation;
-		break;
-	case DASD_ECKD_CCW_READ_TRACK:
-	case DASD_ECKD_CCW_READ_TRACK_DATA:
-		dedata->mask.perm = 0x1;
-		dedata->attributes.operation = basepriv->attrib.operation;
-		dedata->blk_size = 0;
-		break;
-	case DASD_ECKD_CCW_WRITE:
-	case DASD_ECKD_CCW_WRITE_MT:
-	case DASD_ECKD_CCW_WRITE_KD:
-	case DASD_ECKD_CCW_WRITE_KD_MT:
-		dedata->mask.perm = 0x02;
-		dedata->attributes.operation = basepriv->attrib.operation;
-		rc = check_XRC_on_prefix(pfxdata, basedev);
-		break;
-	case DASD_ECKD_CCW_WRITE_CKD:
-	case DASD_ECKD_CCW_WRITE_CKD_MT:
-		dedata->attributes.operation = DASD_BYPASS_CACHE;
-		rc = check_XRC_on_prefix(pfxdata, basedev);
-		break;
-	case DASD_ECKD_CCW_ERASE:
-	case DASD_ECKD_CCW_WRITE_HOME_ADDRESS:
-	case DASD_ECKD_CCW_WRITE_RECORD_ZERO:
-		dedata->mask.perm = 0x3;
-		dedata->mask.auth = 0x1;
-		dedata->attributes.operation = DASD_BYPASS_CACHE;
-		rc = check_XRC_on_prefix(pfxdata, basedev);
-		break;
-	case DASD_ECKD_CCW_WRITE_FULL_TRACK:
-		dedata->mask.perm = 0x03;
-		dedata->attributes.operation = basepriv->attrib.operation;
-		dedata->blk_size = 0;
-		break;
-	case DASD_ECKD_CCW_WRITE_TRACK_DATA:
-		dedata->mask.perm = 0x02;
-		dedata->attributes.operation = basepriv->attrib.operation;
-		dedata->blk_size = blksize;
-		rc = check_XRC_on_prefix(pfxdata, basedev);
-		break;
-	default:
-		DBF_DEV_EVENT(DBF_ERR, basedev,
-			    "PFX LRE unknown opcode 0x%x", cmd);
-		BUG();
-		return -EINVAL;
-	}
-
-	dedata->attributes.mode = 0x3;	/* ECKD */
-
-	if ((basepriv->rdc_data.cu_type == 0x2105 ||
-	     basepriv->rdc_data.cu_type == 0x2107 ||
-	     basepriv->rdc_data.cu_type == 0x1750)
-	    && !(basepriv->uses_cdl && trk < 2))
-		dedata->ga_extended |= 0x40; /* Regular Data Format Mode */
-
-	heads = basepriv->rdc_data.trk_per_cyl;
-	begcyl = trk / heads;
-	beghead = trk % heads;
-	endcyl = totrk / heads;
-	endhead = totrk % heads;
-
-	/* check for sequential prestage - enhance cylinder range */
-	if (dedata->attributes.operation == DASD_SEQ_PRESTAGE ||
-	    dedata->attributes.operation == DASD_SEQ_ACCESS) {
-
-		if (endcyl + basepriv->attrib.nr_cyl < basepriv->real_cyl)
-			endcyl += basepriv->attrib.nr_cyl;
-		else
-			endcyl = (basepriv->real_cyl - 1);
-	}
-
-	set_ch_t(&dedata->beg_ext, begcyl, beghead);
-	set_ch_t(&dedata->end_ext, endcyl, endhead);
-
-	if (format == 1) {
-		fill_LRE_data(lredata, trk, rec_on_trk, count, cmd,
-			      basedev, blksize, tlf);
-=======
 	pfxdata->base_address = basepriv->conf.ned->unit_addr;
 	pfxdata->base_lss = basepriv->conf.ned->ID;
 	pfxdata->validity.define_extent = 1;
@@ -875,7 +581,6 @@ static int prefix_LRE(struct ccw1 *ccw, struct PFX_eckd_data *pfxdata,
 	if (format == 1) {
 		locate_record_ext(NULL, lredata, trk, rec_on_trk, count, cmd,
 				  basedev, blksize, tlf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -894,19 +599,10 @@ locate_record(struct ccw1 *ccw, struct LO_eckd_data *data, unsigned int trk,
 	      unsigned int rec_on_trk, int no_rec, int cmd,
 	      struct dasd_device * device, int reclen)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-	int sector;
-	int dn, d;
-
-	private = (struct dasd_eckd_private *) device->private;
-
-=======
 	struct dasd_eckd_private *private = device->private;
 	int sector;
 	int dn, d;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBF_DEV_EVENT(DBF_INFO, device,
 		  "Locate: trk %d, rec %d, no_rec %d, cmd %d, reclen %d",
 		  trk, rec_on_trk, no_rec, cmd, reclen);
@@ -914,11 +610,7 @@ locate_record(struct ccw1 *ccw, struct LO_eckd_data *data, unsigned int trk,
 	ccw->cmd_code = DASD_ECKD_CCW_LOCATE_RECORD;
 	ccw->flags = 0;
 	ccw->count = 16;
-<<<<<<< HEAD
-	ccw->cda = (__u32) __pa(data);
-=======
 	ccw->cda = virt_to_dma32(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(data, 0, sizeof(struct LO_eckd_data));
 	sector = 0;
@@ -1039,34 +731,6 @@ dasd_eckd_cdl_reclen(int recid)
 	return LABEL_SIZE;
 }
 /* create unique id from private structure. */
-<<<<<<< HEAD
-static void create_uid(struct dasd_eckd_private *private)
-{
-	int count;
-	struct dasd_uid *uid;
-
-	uid = &private->uid;
-	memset(uid, 0, sizeof(struct dasd_uid));
-	memcpy(uid->vendor, private->ned->HDA_manufacturer,
-	       sizeof(uid->vendor) - 1);
-	EBCASC(uid->vendor, sizeof(uid->vendor) - 1);
-	memcpy(uid->serial, private->ned->HDA_location,
-	       sizeof(uid->serial) - 1);
-	EBCASC(uid->serial, sizeof(uid->serial) - 1);
-	uid->ssid = private->gneq->subsystemID;
-	uid->real_unit_addr = private->ned->unit_addr;
-	if (private->sneq) {
-		uid->type = private->sneq->sua_flags;
-		if (uid->type == UA_BASE_PAV_ALIAS)
-			uid->base_unit_addr = private->sneq->base_unit_addr;
-	} else {
-		uid->type = UA_BASE_DEVICE;
-	}
-	if (private->vdsneq) {
-		for (count = 0; count < 16; count++) {
-			sprintf(uid->vduit+2*count, "%02x",
-				private->vdsneq->uit[count]);
-=======
 static void create_uid(struct dasd_conf *conf, struct dasd_uid *uid)
 {
 	int count;
@@ -1091,7 +755,6 @@ static void create_uid(struct dasd_conf *conf, struct dasd_uid *uid)
 		for (count = 0; count < 16; count++) {
 			sprintf(uid->vduit+2*count, "%02x",
 				conf->vdsneq->uit[count]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1101,18 +764,6 @@ static void create_uid(struct dasd_conf *conf, struct dasd_uid *uid)
  */
 static int dasd_eckd_generate_uid(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-	unsigned long flags;
-
-	private = (struct dasd_eckd_private *) device->private;
-	if (!private)
-		return -ENODEV;
-	if (!private->ned || !private->gneq)
-		return -ENODEV;
-	spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
-	create_uid(private);
-=======
 	struct dasd_eckd_private *private = device->private;
 	unsigned long flags;
 
@@ -1122,25 +773,16 @@ static int dasd_eckd_generate_uid(struct dasd_device *device)
 		return -ENODEV;
 	spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
 	create_uid(&private->conf, &private->uid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
 	return 0;
 }
 
 static int dasd_eckd_get_uid(struct dasd_device *device, struct dasd_uid *uid)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-	unsigned long flags;
-
-	if (device->private) {
-		private = (struct dasd_eckd_private *)device->private;
-=======
 	struct dasd_eckd_private *private = device->private;
 	unsigned long flags;
 
 	if (private) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
 		*uid = private->uid;
 		spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
@@ -1154,16 +796,6 @@ static int dasd_eckd_get_uid(struct dasd_device *device, struct dasd_uid *uid)
  * return 0 for match
  */
 static int dasd_eckd_compare_path_uid(struct dasd_device *device,
-<<<<<<< HEAD
-				      struct dasd_eckd_private *private)
-{
-	struct dasd_uid device_uid;
-
-	create_uid(private);
-	dasd_eckd_get_uid(device, &device_uid);
-
-	return memcmp(&device_uid, &private->uid, sizeof(struct dasd_uid));
-=======
 				      struct dasd_conf *path_conf)
 {
 	struct dasd_uid device_uid;
@@ -1173,7 +805,6 @@ static int dasd_eckd_compare_path_uid(struct dasd_device *device,
 	dasd_eckd_get_uid(device, &device_uid);
 
 	return memcmp(&device_uid, &path_uid, sizeof(struct dasd_uid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dasd_eckd_fill_rcd_cqr(struct dasd_device *device,
@@ -1194,11 +825,7 @@ static void dasd_eckd_fill_rcd_cqr(struct dasd_device *device,
 	ccw = cqr->cpaddr;
 	ccw->cmd_code = DASD_ECKD_CCW_RCD;
 	ccw->flags = 0;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t)rcd_buffer;
-=======
 	ccw->cda = virt_to_dma32(rcd_buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ccw->count = DASD_ECKD_RCD_DATA_SIZE;
 	cqr->magic = DASD_ECKD_MAGIC;
 
@@ -1208,11 +835,7 @@ static void dasd_eckd_fill_rcd_cqr(struct dasd_device *device,
 	cqr->expires = 10*HZ;
 	cqr->lpm = lpm;
 	cqr->retries = 256;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-=======
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 	set_bit(DASD_CQR_VERIFY_PATH, &cqr->flags);
 }
@@ -1230,11 +853,7 @@ static void read_conf_cb(struct dasd_ccw_req *cqr, void *data)
 
 	if (cqr->status !=  DASD_CQR_DONE) {
 		ccw = cqr->cpaddr;
-<<<<<<< HEAD
-		rcd_buffer = (__u8 *)((addr_t) ccw->cda);
-=======
 		rcd_buffer = dma32_to_virt(ccw->cda);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(rcd_buffer, 0, sizeof(*rcd_buffer));
 
 		rcd_buffer[0] = 0xE5;
@@ -1294,11 +913,7 @@ static int dasd_eckd_read_conf_lpm(struct dasd_device *device,
 	}
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1 /* RCD */,
 				   0, /* use rcd_buf as data ara */
-<<<<<<< HEAD
-				   device);
-=======
 				   device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		DBF_DEV_EVENT(DBF_WARNING, device, "%s",
 			      "Could not allocate RCD request");
@@ -1325,40 +940,12 @@ out_error:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int dasd_eckd_identify_conf_parts(struct dasd_eckd_private *private)
-=======
 static int dasd_eckd_identify_conf_parts(struct dasd_conf *conf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct dasd_sneq *sneq;
 	int i, count;
 
-<<<<<<< HEAD
-	private->ned = NULL;
-	private->sneq = NULL;
-	private->vdsneq = NULL;
-	private->gneq = NULL;
-	count = private->conf_len / sizeof(struct dasd_sneq);
-	sneq = (struct dasd_sneq *)private->conf_data;
-	for (i = 0; i < count; ++i) {
-		if (sneq->flags.identifier == 1 && sneq->format == 1)
-			private->sneq = sneq;
-		else if (sneq->flags.identifier == 1 && sneq->format == 4)
-			private->vdsneq = (struct vd_sneq *)sneq;
-		else if (sneq->flags.identifier == 2)
-			private->gneq = (struct dasd_gneq *)sneq;
-		else if (sneq->flags.identifier == 3 && sneq->res1 == 1)
-			private->ned = (struct dasd_ned *)sneq;
-		sneq++;
-	}
-	if (!private->ned || !private->gneq) {
-		private->ned = NULL;
-		private->sneq = NULL;
-		private->vdsneq = NULL;
-		private->gneq = NULL;
-=======
 	conf->ned = NULL;
 	conf->sneq = NULL;
 	conf->vdsneq = NULL;
@@ -1381,7 +968,6 @@ static int dasd_eckd_identify_conf_parts(struct dasd_conf *conf)
 		conf->sneq = NULL;
 		conf->vdsneq = NULL;
 		conf->gneq = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;
@@ -1409,8 +995,6 @@ static unsigned char dasd_eckd_path_access(void *conf_data, int conf_len)
 		return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void dasd_eckd_store_conf_data(struct dasd_device *device,
 				      struct dasd_conf_data *conf_data, int chp)
 {
@@ -1515,24 +1099,10 @@ static int dasd_eckd_check_cabling(struct dasd_device *device,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dasd_eckd_read_conf(struct dasd_device *device)
 {
 	void *conf_data;
 	int conf_len, conf_data_saved;
-<<<<<<< HEAD
-	int rc;
-	__u8 lpm, opm;
-	struct dasd_eckd_private *private, path_private;
-	struct dasd_path *path_data;
-	struct dasd_uid *uid;
-	char print_path_uid[60], print_device_uid[60];
-
-	private = (struct dasd_eckd_private *) device->private;
-	path_data = &device->path_data;
-	opm = ccw_device_get_path_mask(device->cdev);
-	conf_data_saved = 0;
-=======
 	int rc, path_err, pos;
 	__u8 lpm, opm;
 	struct dasd_eckd_private *private;
@@ -1541,7 +1111,6 @@ static int dasd_eckd_read_conf(struct dasd_device *device)
 	opm = ccw_device_get_path_mask(device->cdev);
 	conf_data_saved = 0;
 	path_err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* get configuration data per operational path */
 	for (lpm = 0x80; lpm; lpm>>= 1) {
 		if (!(lpm & opm))
@@ -1559,23 +1128,11 @@ static int dasd_eckd_read_conf(struct dasd_device *device)
 					"No configuration data "
 					"retrieved");
 			/* no further analysis possible */
-<<<<<<< HEAD
-			path_data->opm |= lpm;
-=======
 			dasd_path_add_opm(device, opm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;	/* no error */
 		}
 		/* save first valid configuration data */
 		if (!conf_data_saved) {
-<<<<<<< HEAD
-			kfree(private->conf_data);
-			private->conf_data = conf_data;
-			private->conf_len = conf_len;
-			if (dasd_eckd_identify_conf_parts(private)) {
-				private->conf_data = NULL;
-				private->conf_len = 0;
-=======
 			/* initially clear previously stored conf_data */
 			dasd_eckd_clear_conf_data(device);
 			private->conf.data = conf_data;
@@ -1583,7 +1140,6 @@ static int dasd_eckd_read_conf(struct dasd_device *device)
 			if (dasd_eckd_identify_conf_parts(&private->conf)) {
 				private->conf.data = NULL;
 				private->conf.len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(conf_data);
 				continue;
 			}
@@ -1593,77 +1149,6 @@ static int dasd_eckd_read_conf(struct dasd_device *device)
 			 */
 			dasd_eckd_generate_uid(device);
 			conf_data_saved++;
-<<<<<<< HEAD
-		} else {
-			path_private.conf_data = conf_data;
-			path_private.conf_len = DASD_ECKD_RCD_DATA_SIZE;
-			if (dasd_eckd_identify_conf_parts(
-				    &path_private)) {
-				path_private.conf_data = NULL;
-				path_private.conf_len = 0;
-				kfree(conf_data);
-				continue;
-			}
-
-			if (dasd_eckd_compare_path_uid(
-				    device, &path_private)) {
-				uid = &path_private.uid;
-				if (strlen(uid->vduit) > 0)
-					snprintf(print_path_uid,
-						 sizeof(print_path_uid),
-						 "%s.%s.%04x.%02x.%s",
-						 uid->vendor, uid->serial,
-						 uid->ssid, uid->real_unit_addr,
-						 uid->vduit);
-				else
-					snprintf(print_path_uid,
-						 sizeof(print_path_uid),
-						 "%s.%s.%04x.%02x",
-						 uid->vendor, uid->serial,
-						 uid->ssid,
-						 uid->real_unit_addr);
-				uid = &private->uid;
-				if (strlen(uid->vduit) > 0)
-					snprintf(print_device_uid,
-						 sizeof(print_device_uid),
-						 "%s.%s.%04x.%02x.%s",
-						 uid->vendor, uid->serial,
-						 uid->ssid, uid->real_unit_addr,
-						 uid->vduit);
-				else
-					snprintf(print_device_uid,
-						 sizeof(print_device_uid),
-						 "%s.%s.%04x.%02x",
-						 uid->vendor, uid->serial,
-						 uid->ssid,
-						 uid->real_unit_addr);
-				dev_err(&device->cdev->dev,
-					"Not all channel paths lead to "
-					"the same device, path %02X leads to "
-					"device %s instead of %s\n", lpm,
-					print_path_uid, print_device_uid);
-				return -EINVAL;
-			}
-
-			path_private.conf_data = NULL;
-			path_private.conf_len = 0;
-		}
-		switch (dasd_eckd_path_access(conf_data, conf_len)) {
-		case 0x02:
-			path_data->npm |= lpm;
-			break;
-		case 0x03:
-			path_data->ppm |= lpm;
-			break;
-		}
-		path_data->opm |= lpm;
-
-		if (conf_data != private->conf_data)
-			kfree(conf_data);
-	}
-
-	return 0;
-=======
 		} else if (dasd_eckd_check_cabling(device, conf_data, lpm)) {
 			dasd_path_add_cablepm(device, lpm);
 			path_err = -EINVAL;
@@ -1718,21 +1203,10 @@ static u32 get_fcx_max_data(struct dasd_device *device)
 	} else {
 		return (u32)mdc * FCX_MAX_DATA_FACTOR;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int verify_fcx_max_data(struct dasd_device *device, __u8 lpm)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-	int mdc;
-	u32 fcx_max_data;
-
-	private = (struct dasd_eckd_private *) device->private;
-	if (private->fcx_max_data) {
-		mdc = ccw_device_get_mdc(device->cdev, lpm);
-		if ((mdc < 0)) {
-=======
 	struct dasd_eckd_private *private = device->private;
 	unsigned int mdc;
 	u32 fcx_max_data;
@@ -1740,18 +1214,13 @@ static int verify_fcx_max_data(struct dasd_device *device, __u8 lpm)
 	if (private->fcx_max_data) {
 		mdc = ccw_device_get_mdc(device->cdev, lpm);
 		if (mdc == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_warn(&device->cdev->dev,
 				 "Detecting the maximum data size for zHPF "
 				 "requests failed (rc=%d) for a new path %x\n",
 				 mdc, lpm);
 			return mdc;
 		}
-<<<<<<< HEAD
-		fcx_max_data = mdc * FCX_MAX_DATA_FACTOR;
-=======
 		fcx_max_data = (u32)mdc * FCX_MAX_DATA_FACTOR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fcx_max_data < private->fcx_max_data) {
 			dev_warn(&device->cdev->dev,
 				 "The maximum data size for zHPF requests %u "
@@ -1765,25 +1234,11 @@ static int verify_fcx_max_data(struct dasd_device *device, __u8 lpm)
 }
 
 static int rebuild_device_uid(struct dasd_device *device,
-<<<<<<< HEAD
-			      struct path_verification_work_data *data)
-{
-	struct dasd_eckd_private *private;
-	struct dasd_path *path_data;
-	__u8 lpm, opm;
-	int rc;
-
-	rc = -ENODEV;
-	private = (struct dasd_eckd_private *) device->private;
-	path_data = &device->path_data;
-	opm = device->path_data.opm;
-=======
 			      struct pe_handler_work_data *data)
 {
 	struct dasd_eckd_private *private = device->private;
 	__u8 lpm, opm = dasd_path_get_opm(device);
 	int rc = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (lpm = 0x80; lpm; lpm >>= 1) {
 		if (!(lpm & opm))
@@ -1803,15 +1258,9 @@ static int rebuild_device_uid(struct dasd_device *device,
 					"returned error %d", rc);
 			break;
 		}
-<<<<<<< HEAD
-		memcpy(private->conf_data, data->rcd_buffer,
-		       DASD_ECKD_RCD_DATA_SIZE);
-		if (dasd_eckd_identify_conf_parts(private)) {
-=======
 		memcpy(private->conf.data, data->rcd_buffer,
 		       DASD_ECKD_RCD_DATA_SIZE);
 		if (dasd_eckd_identify_conf_parts(&private->conf)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENODEV;
 		} else /* first valid path is enough */
 			break;
@@ -1823,28 +1272,6 @@ static int rebuild_device_uid(struct dasd_device *device,
 	return rc;
 }
 
-<<<<<<< HEAD
-static void do_path_verification_work(struct work_struct *work)
-{
-	struct path_verification_work_data *data;
-	struct dasd_device *device;
-	struct dasd_eckd_private path_private;
-	struct dasd_uid *uid;
-	__u8 path_rcd_buf[DASD_ECKD_RCD_DATA_SIZE];
-	__u8 lpm, opm, npm, ppm, epm;
-	unsigned long flags;
-	char print_uid[60];
-	int rc;
-
-	data = container_of(work, struct path_verification_work_data, worker);
-	device = data->device;
-
-	/* delay path verification until device was resumed */
-	if (test_bit(DASD_FLAG_SUSPENDED, &device->flags)) {
-		schedule_work(work);
-		return;
-	}
-=======
 static void dasd_eckd_path_available_action(struct dasd_device *device,
 					    struct pe_handler_work_data *data)
 {
@@ -1855,18 +1282,14 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 	struct dasd_conf path_conf;
 	unsigned long flags;
 	int rc, pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	opm = 0;
 	npm = 0;
 	ppm = 0;
 	epm = 0;
-<<<<<<< HEAD
-=======
 	hpfpm = 0;
 	cablepm = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (lpm = 0x80; lpm; lpm >>= 1) {
 		if (!(lpm & data->tbvpm))
 			continue;
@@ -1908,10 +1331,7 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 			opm &= ~lpm;
 			npm &= ~lpm;
 			ppm &= ~lpm;
-<<<<<<< HEAD
-=======
 			hpfpm |= lpm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -1922,19 +1342,11 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 		 */
 		memcpy(&path_rcd_buf, data->rcd_buffer,
 		       DASD_ECKD_RCD_DATA_SIZE);
-<<<<<<< HEAD
-		path_private.conf_data = (void *) &path_rcd_buf;
-		path_private.conf_len = DASD_ECKD_RCD_DATA_SIZE;
-		if (dasd_eckd_identify_conf_parts(&path_private)) {
-			path_private.conf_data = NULL;
-			path_private.conf_len = 0;
-=======
 		path_conf.data = (void *)&path_rcd_buf;
 		path_conf.len = DASD_ECKD_RCD_DATA_SIZE;
 		if (dasd_eckd_identify_conf_parts(&path_conf)) {
 			path_conf.data = NULL;
 			path_conf.len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -1944,13 +1356,8 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 		 * in other case the device UID may have changed and
 		 * the first working path UID will be used as device UID
 		 */
-<<<<<<< HEAD
-		if (device->path_data.opm &&
-		    dasd_eckd_compare_path_uid(device, &path_private)) {
-=======
 		if (dasd_path_get_opm(device) &&
 		    dasd_eckd_compare_path_uid(device, &path_conf)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * the comparison was not successful
 			 * rebuild the device UID with at least one
@@ -1964,25 +1371,8 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 			 */
 			if (rebuild_device_uid(device, data) ||
 			    dasd_eckd_compare_path_uid(
-<<<<<<< HEAD
-				    device, &path_private)) {
-				uid = &path_private.uid;
-				if (strlen(uid->vduit) > 0)
-					snprintf(print_uid, sizeof(print_uid),
-						 "%s.%s.%04x.%02x.%s",
-						 uid->vendor, uid->serial,
-						 uid->ssid, uid->real_unit_addr,
-						 uid->vduit);
-				else
-					snprintf(print_uid, sizeof(print_uid),
-						 "%s.%s.%04x.%02x",
-						 uid->vendor, uid->serial,
-						 uid->ssid,
-						 uid->real_unit_addr);
-=======
 				    device, &path_conf)) {
 				dasd_eckd_get_uid_string(&path_conf, print_uid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_err(&device->cdev->dev,
 					"The newly added channel path %02X "
 					"will not be used because it leads "
@@ -1991,16 +1381,11 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 				opm &= ~lpm;
 				npm &= ~lpm;
 				ppm &= ~lpm;
-<<<<<<< HEAD
-=======
 				cablepm |= lpm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		}
 
-<<<<<<< HEAD
-=======
 		conf_data = kzalloc(DASD_ECKD_RCD_DATA_SIZE, GFP_KERNEL);
 		if (conf_data) {
 			memcpy(conf_data, data->rcd_buffer,
@@ -2017,7 +1402,6 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 		pos = pathmask_to_pos(lpm);
 		dasd_eckd_store_conf_data(device, conf_data, pos);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * There is a small chance that a path is lost again between
 		 * above path verification and the following modification of
@@ -2026,22 +1410,6 @@ static void dasd_eckd_path_available_action(struct dasd_device *device,
 		 * situation in dasd_start_IO.
 		 */
 		spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
-<<<<<<< HEAD
-		if (!device->path_data.opm && opm) {
-			device->path_data.opm = opm;
-			dasd_generic_path_operational(device);
-		} else
-			device->path_data.opm |= opm;
-		device->path_data.npm |= npm;
-		device->path_data.ppm |= ppm;
-		device->path_data.tbvpm |= epm;
-		spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
-	}
-
-	dasd_put_device(device);
-	if (data->isglobal)
-		mutex_unlock(&dasd_path_verification_mutex);
-=======
 		if (!dasd_path_get_opm(device) && opm) {
 			dasd_path_set_opm(device, opm);
 			dasd_generic_path_operational(device);
@@ -2090,32 +1458,10 @@ static void do_pe_handler_work(struct work_struct *work)
 	dasd_put_device(device);
 	if (data->isglobal)
 		mutex_unlock(&dasd_pe_handler_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		kfree(data);
 }
 
-<<<<<<< HEAD
-static int dasd_eckd_verify_path(struct dasd_device *device, __u8 lpm)
-{
-	struct path_verification_work_data *data;
-
-	data = kmalloc(sizeof(*data), GFP_ATOMIC | GFP_DMA);
-	if (!data) {
-		if (mutex_trylock(&dasd_path_verification_mutex)) {
-			data = path_verification_worker;
-			data->isglobal = 1;
-		} else
-			return -ENOMEM;
-	} else {
-		memset(data, 0, sizeof(*data));
-		data->isglobal = 0;
-	}
-	INIT_WORK(&data->worker, do_path_verification_work);
-	dasd_get_device(device);
-	data->device = device;
-	data->tbvpm = lpm;
-=======
 static int dasd_eckd_pe_handler(struct dasd_device *device,
 				__u8 tbvpm, __u8 fcsecpm)
 {
@@ -2135,15 +1481,10 @@ static int dasd_eckd_pe_handler(struct dasd_device *device,
 	data->device = device;
 	data->tbvpm = tbvpm;
 	data->fcsecpm = fcsecpm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	schedule_work(&data->worker);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int dasd_eckd_read_features(struct dasd_device *device)
-{
-=======
 static void dasd_eckd_reset_path(struct dasd_device *device, __u8 pm)
 {
 	struct dasd_eckd_private *private = device->private;
@@ -2160,28 +1501,17 @@ static void dasd_eckd_reset_path(struct dasd_device *device, __u8 pm)
 static int dasd_eckd_read_features(struct dasd_device *device)
 {
 	struct dasd_eckd_private *private = device->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dasd_psf_prssd_data *prssdp;
 	struct dasd_rssd_features *features;
 	struct dasd_ccw_req *cqr;
 	struct ccw1 *ccw;
 	int rc;
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
 
-	private = (struct dasd_eckd_private *) device->private;
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&private->features, 0, sizeof(struct dasd_rssd_features));
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1 /* PSF */	+ 1 /* RSSD */,
 				   (sizeof(struct dasd_psf_prssd_data) +
 				    sizeof(struct dasd_rssd_features)),
-<<<<<<< HEAD
-				   device);
-=======
 				   device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		DBF_EVENT_DEVID(DBF_WARNING, device->cdev, "%s", "Could not "
 				"allocate initialization request");
@@ -2204,11 +1534,7 @@ static int dasd_eckd_read_features(struct dasd_device *device)
 	ccw->cmd_code = DASD_ECKD_CCW_PSF;
 	ccw->count = sizeof(struct dasd_psf_prssd_data);
 	ccw->flags |= CCW_FLAG_CC;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) prssdp;
-=======
 	ccw->cda = virt_to_dma32(prssdp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read Subsystem Data - feature codes */
 	features = (struct dasd_rssd_features *) (prssdp + 1);
@@ -2217,15 +1543,9 @@ static int dasd_eckd_read_features(struct dasd_device *device)
 	ccw++;
 	ccw->cmd_code = DASD_ECKD_CCW_RSSD;
 	ccw->count = sizeof(struct dasd_rssd_features);
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) features;
-
-	cqr->buildclk = get_clock();
-=======
 	ccw->cda = virt_to_dma32(features);
 
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 	rc = dasd_sleep_on(cqr);
 	if (rc == 0) {
@@ -2240,8 +1560,6 @@ static int dasd_eckd_read_features(struct dasd_device *device)
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 /* Read Volume Information - Volume Storage Query */
 static int dasd_eckd_read_vol_info(struct dasd_device *device)
 {
@@ -2547,7 +1865,6 @@ static int dasd_eckd_ext_pool_oos(struct dasd_device *device)
 
 	return private->eps.flags.pool_oos;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Build CP for Perform Subsystem Function - SSC.
@@ -2561,11 +1878,7 @@ static struct dasd_ccw_req *dasd_eckd_build_psf_ssc(struct dasd_device *device,
 
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1 /* PSF */ ,
 				  sizeof(struct dasd_psf_ssc_data),
-<<<<<<< HEAD
-				  device);
-=======
 				   device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(cqr)) {
 		DBF_DEV_EVENT(DBF_WARNING, device, "%s",
@@ -2581,11 +1894,7 @@ static struct dasd_ccw_req *dasd_eckd_build_psf_ssc(struct dasd_device *device,
 	}
 	ccw = cqr->cpaddr;
 	ccw->cmd_code = DASD_ECKD_CCW_PSF;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t)psf_ssc_data;
-=======
 	ccw->cda = virt_to_dma32(psf_ssc_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ccw->count = 66;
 
 	cqr->startdev = device;
@@ -2593,11 +1902,7 @@ static struct dasd_ccw_req *dasd_eckd_build_psf_ssc(struct dasd_device *device,
 	cqr->block = NULL;
 	cqr->retries = 256;
 	cqr->expires = 10*HZ;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-=======
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 	return cqr;
 }
@@ -2608,12 +1913,8 @@ static struct dasd_ccw_req *dasd_eckd_build_psf_ssc(struct dasd_device *device,
  * call might change behaviour of DASD devices.
  */
 static int
-<<<<<<< HEAD
-dasd_eckd_psf_ssc(struct dasd_device *device, int enable_pav)
-=======
 dasd_eckd_psf_ssc(struct dasd_device *device, int enable_pav,
 		  unsigned long flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dasd_ccw_req *cqr;
 	int rc;
@@ -2622,25 +1923,19 @@ dasd_eckd_psf_ssc(struct dasd_device *device, int enable_pav,
 	if (IS_ERR(cqr))
 		return PTR_ERR(cqr);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * set flags e.g. turn on failfast, to prevent blocking
 	 * the calling function should handle failed requests
 	 */
 	cqr->flags |= flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = dasd_sleep_on(cqr);
 	if (!rc)
 		/* trigger CIO to reprobe devices */
 		css_schedule_reprobe();
-<<<<<<< HEAD
-=======
 	else if (cqr->intrc == -EAGAIN)
 		rc = -EAGAIN;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_sfree_request(cqr, cqr->memdev);
 	return rc;
 }
@@ -2648,18 +1943,6 @@ dasd_eckd_psf_ssc(struct dasd_device *device, int enable_pav,
 /*
  * Valide storage server of current device.
  */
-<<<<<<< HEAD
-static void dasd_eckd_validate_server(struct dasd_device *device)
-{
-	int rc;
-	struct dasd_eckd_private *private;
-	int enable_pav;
-
-	private = (struct dasd_eckd_private *) device->private;
-	if (private->uid.type == UA_BASE_PAV_ALIAS ||
-	    private->uid.type == UA_HYPER_PAV_ALIAS)
-		return;
-=======
 static int dasd_eckd_validate_server(struct dasd_device *device,
 				     unsigned long flags)
 {
@@ -2669,25 +1952,17 @@ static int dasd_eckd_validate_server(struct dasd_device *device,
 	if (private->uid.type == UA_BASE_PAV_ALIAS ||
 	    private->uid.type == UA_HYPER_PAV_ALIAS)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dasd_nopav || MACHINE_IS_VM)
 		enable_pav = 0;
 	else
 		enable_pav = 1;
-<<<<<<< HEAD
-	rc = dasd_eckd_psf_ssc(device, enable_pav);
-=======
 	rc = dasd_eckd_psf_ssc(device, enable_pav, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* may be requested feature is not available on server,
 	 * therefore just report error and go ahead */
 	DBF_EVENT_DEVID(DBF_WARNING, device->cdev, "PSF-SSC for SSID %04x "
 			"returned rc=%d", private->uid.ssid, rc);
-<<<<<<< HEAD
-=======
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2697,9 +1972,6 @@ static void dasd_eckd_do_validate_server(struct work_struct *work)
 {
 	struct dasd_device *device = container_of(work, struct dasd_device,
 						  kick_validate);
-<<<<<<< HEAD
-	dasd_eckd_validate_server(device);
-=======
 	unsigned long flags = 0;
 
 	set_bit(DASD_CQR_FLAGS_FAILFAST, &flags);
@@ -2710,7 +1982,6 @@ static void dasd_eckd_do_validate_server(struct work_struct *work)
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dasd_put_device(device);
 }
 
@@ -2724,40 +1995,6 @@ static void dasd_eckd_kick_validate_server(struct dasd_device *device)
 		return;
 	}
 	/* queue call to do_validate_server to the kernel event daemon. */
-<<<<<<< HEAD
-	schedule_work(&device->kick_validate);
-}
-
-static u32 get_fcx_max_data(struct dasd_device *device)
-{
-#if defined(CONFIG_64BIT)
-	int tpm, mdc;
-	int fcx_in_css, fcx_in_gneq, fcx_in_features;
-	struct dasd_eckd_private *private;
-
-	if (dasd_nofcx)
-		return 0;
-	/* is transport mode supported? */
-	private = (struct dasd_eckd_private *) device->private;
-	fcx_in_css = css_general_characteristics.fcx;
-	fcx_in_gneq = private->gneq->reserved2[7] & 0x04;
-	fcx_in_features = private->features.feature[40] & 0x80;
-	tpm = fcx_in_css && fcx_in_gneq && fcx_in_features;
-
-	if (!tpm)
-		return 0;
-
-	mdc = ccw_device_get_mdc(device->cdev, 0);
-	if (mdc < 0) {
-		dev_warn(&device->cdev->dev, "Detecting the maximum supported"
-			 " data size for zHPF requests failed\n");
-		return 0;
-	} else
-		return mdc * FCX_MAX_DATA_FACTOR;
-#else
-	return 0;
-#endif
-=======
 	if (!schedule_work(&device->kick_validate))
 		dasd_put_device(device);
 }
@@ -2803,7 +2040,6 @@ static bool dasd_eckd_pprc_enabled(struct dasd_device *device)
 	struct dasd_eckd_private *private = device->private;
 
 	return private->rdc_data.facilities.PPRC_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2813,24 +2049,15 @@ static bool dasd_eckd_pprc_enabled(struct dasd_device *device)
 static int
 dasd_eckd_check_characteristics(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-	struct dasd_block *block;
-	struct dasd_uid temp_uid;
-=======
 	struct dasd_eckd_private *private = device->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc, i;
 	int readonly;
 	unsigned long value;
 
 	/* setup work queue for validate server*/
 	INIT_WORK(&device->kick_validate, dasd_eckd_do_validate_server);
-<<<<<<< HEAD
-=======
 	/* setup work queue for summary unit check */
 	INIT_WORK(&device->suc_work, dasd_alias_handle_summary_unit_check);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ccw_device_is_pathgroup(device->cdev)) {
 		dev_warn(&device->cdev->dev,
@@ -2841,10 +2068,6 @@ dasd_eckd_check_characteristics(struct dasd_device *device)
 		dev_info(&device->cdev->dev,
 			 "The DASD is not operating in multipath mode\n");
 	}
-<<<<<<< HEAD
-	private = (struct dasd_eckd_private *) device->private;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!private) {
 		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA);
 		if (!private) {
@@ -2853,11 +2076,7 @@ dasd_eckd_check_characteristics(struct dasd_device *device)
 				 "failed\n");
 			return -ENOMEM;
 		}
-<<<<<<< HEAD
-		device->private = (void *) private;
-=======
 		device->private = private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		memset(private, 0, sizeof(*private));
 	}
@@ -2872,15 +2091,6 @@ dasd_eckd_check_characteristics(struct dasd_device *device)
 	if (rc)
 		goto out_err1;
 
-<<<<<<< HEAD
-	/* set default timeout */
-	device->default_expires = DASD_EXPIRES;
-	if (private->gneq) {
-		value = 1;
-		for (i = 0; i < private->gneq->timeout.value; i++)
-			value = 10 * value;
-		value = value * private->gneq->timeout.number;
-=======
 	/* set some default values */
 	device->default_expires = DASD_EXPIRES;
 	device->default_retries = DASD_RETRIES;
@@ -2893,55 +2103,17 @@ dasd_eckd_check_characteristics(struct dasd_device *device)
 		for (i = 0; i < private->conf.gneq->timeout.value; i++)
 			value = 10 * value;
 		value = value * private->conf.gneq->timeout.number;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* do not accept useless values */
 		if (value != 0 && value <= DASD_EXPIRES_MAX)
 			device->default_expires = value;
 	}
 
-<<<<<<< HEAD
-	dasd_eckd_get_uid(device, &temp_uid);
-	if (temp_uid.type == UA_BASE_DEVICE) {
-		block = dasd_alloc_block();
-		if (IS_ERR(block)) {
-			DBF_EVENT_DEVID(DBF_WARNING, device->cdev, "%s",
-					"could not allocate dasd "
-					"block structure");
-			rc = PTR_ERR(block);
-			goto out_err1;
-		}
-		device->block = block;
-		block->base = device;
-	}
-
-	/* register lcu with alias handling, enable PAV */
-	rc = dasd_alias_make_device_known_to_lcu(device);
-	if (rc)
-		goto out_err2;
-
-	dasd_eckd_validate_server(device);
-
-	/* device may report different configuration data after LCU setup */
-	rc = dasd_eckd_read_conf(device);
-	if (rc)
-		goto out_err3;
-
-	/* Read Feature Codes */
-	dasd_eckd_read_features(device);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read Device Characteristics */
 	rc = dasd_generic_read_dev_chars(device, DASD_ECKD_MAGIC,
 					 &private->rdc_data, 64);
 	if (rc) {
 		DBF_EVENT_DEVID(DBF_WARNING, device->cdev,
 				"Read device characteristic failed, rc=%d", rc);
-<<<<<<< HEAD
-		goto out_err3;
-	}
-
-=======
 		goto out_err1;
 	}
 
@@ -2983,7 +2155,6 @@ dasd_eckd_check_characteristics(struct dasd_device *device)
 	/* Read Extent Pool Information */
 	dasd_eckd_read_ext_pool_info(device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((device->features & DASD_FEATURE_USERAW) &&
 	    !(private->rdc_data.facilities.RT_in_LR)) {
 		dev_err(&device->cdev->dev, "The storage server does not "
@@ -3023,12 +2194,8 @@ out_err2:
 	dasd_free_block(device->block);
 	device->block = NULL;
 out_err1:
-<<<<<<< HEAD
-	kfree(private->conf_data);
-=======
 	dasd_eckd_clear_conf_data(device);
 	dasd_path_remove_kobjects(device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(device->private);
 	device->private = NULL;
 	return rc;
@@ -3036,19 +2203,6 @@ out_err1:
 
 static void dasd_eckd_uncheck_device(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-
-	private = (struct dasd_eckd_private *) device->private;
-	dasd_alias_disconnect_device_from_lcu(device);
-	private->ned = NULL;
-	private->sneq = NULL;
-	private->vdsneq = NULL;
-	private->gneq = NULL;
-	private->conf_len = 0;
-	kfree(private->conf_data);
-	private->conf_data = NULL;
-=======
 	struct dasd_eckd_private *private = device->private;
 
 	if (!private)
@@ -3061,17 +2215,12 @@ static void dasd_eckd_uncheck_device(struct dasd_device *device)
 	private->conf.gneq = NULL;
 	dasd_eckd_clear_conf_data(device);
 	dasd_path_remove_kobjects(device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dasd_ccw_req *
 dasd_eckd_analysis_ccw(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-=======
 	struct dasd_eckd_private *private = device->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct eckd_count *count_data;
 	struct LO_eckd_data *LO_data;
 	struct dasd_ccw_req *cqr;
@@ -3079,19 +2228,6 @@ dasd_eckd_analysis_ccw(struct dasd_device *device)
 	int cplength, datasize;
 	int i;
 
-<<<<<<< HEAD
-	private = (struct dasd_eckd_private *) device->private;
-
-	cplength = 8;
-	datasize = sizeof(struct DE_eckd_data) + 2*sizeof(struct LO_eckd_data);
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, cplength, datasize, device);
-	if (IS_ERR(cqr))
-		return cqr;
-	ccw = cqr->cpaddr;
-	/* Define extent for the first 3 tracks. */
-	define_extent(ccw++, cqr->data, 0, 2,
-		      DASD_ECKD_CCW_READ_COUNT, device);
-=======
 	cplength = 8;
 	datasize = sizeof(struct DE_eckd_data) + 2*sizeof(struct LO_eckd_data);
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, cplength, datasize, device,
@@ -3102,7 +2238,6 @@ dasd_eckd_analysis_ccw(struct dasd_device *device)
 	/* Define extent for the first 2 tracks. */
 	define_extent(ccw++, cqr->data, 0, 1,
 		      DASD_ECKD_CCW_READ_COUNT, device, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LO_data = cqr->data + sizeof(struct DE_eckd_data);
 	/* Locate record for the first 4 records on track 0. */
 	ccw[-1].flags |= CCW_FLAG_CC;
@@ -3115,50 +2250,31 @@ dasd_eckd_analysis_ccw(struct dasd_device *device)
 		ccw->cmd_code = DASD_ECKD_CCW_READ_COUNT;
 		ccw->flags = 0;
 		ccw->count = 8;
-<<<<<<< HEAD
-		ccw->cda = (__u32)(addr_t) count_data;
-=======
 		ccw->cda = virt_to_dma32(count_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ccw++;
 		count_data++;
 	}
 
-<<<<<<< HEAD
-	/* Locate record for the first record on track 2. */
-	ccw[-1].flags |= CCW_FLAG_CC;
-	locate_record(ccw++, LO_data++, 2, 0, 1,
-=======
 	/* Locate record for the first record on track 1. */
 	ccw[-1].flags |= CCW_FLAG_CC;
 	locate_record(ccw++, LO_data++, 1, 0, 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      DASD_ECKD_CCW_READ_COUNT, device, 0);
 	/* Read count ccw. */
 	ccw[-1].flags |= CCW_FLAG_CC;
 	ccw->cmd_code = DASD_ECKD_CCW_READ_COUNT;
 	ccw->flags = 0;
 	ccw->count = 8;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) count_data;
-=======
 	ccw->cda = virt_to_dma32(count_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cqr->block = NULL;
 	cqr->startdev = device;
 	cqr->memdev = device;
 	cqr->retries = 255;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-	cqr->status = DASD_CQR_FILLED;
-=======
 	cqr->buildclk = get_tod_clock();
 	cqr->status = DASD_CQR_FILLED;
 	/* Set flags to suppress output for expected errors */
 	set_bit(DASD_CQR_SUPPRESS_NRF, &cqr->flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cqr;
 }
 
@@ -3189,17 +2305,9 @@ static int dasd_eckd_analysis_evaluation(struct dasd_ccw_req *init_cqr)
 static void dasd_eckd_analysis_callback(struct dasd_ccw_req *init_cqr,
 					void *data)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-	struct dasd_device *device;
-
-	device = init_cqr->startdev;
-	private = (struct dasd_eckd_private *) device->private;
-=======
 	struct dasd_device *device = init_cqr->startdev;
 	struct dasd_eckd_private *private = device->private;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	private->init_cqr_status = dasd_eckd_analysis_evaluation(init_cqr);
 	dasd_sfree_request(init_cqr, device);
 	dasd_kick_device(device);
@@ -3226,23 +2334,13 @@ static int dasd_eckd_start_analysis(struct dasd_block *block)
 
 static int dasd_eckd_end_analysis(struct dasd_block *block)
 {
-<<<<<<< HEAD
-	struct dasd_device *device;
-	struct dasd_eckd_private *private;
-=======
 	struct dasd_device *device = block->base;
 	struct dasd_eckd_private *private = device->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct eckd_count *count_area;
 	unsigned int sb, blk_per_trk;
 	int status, i;
 	struct dasd_ccw_req *init_cqr;
 
-<<<<<<< HEAD
-	device = block->base;
-	private = (struct dasd_eckd_private *) device->private;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = private->init_cqr_status;
 	private->init_cqr_status = -1;
 	if (status == INIT_CQR_ERROR) {
@@ -3275,37 +2373,25 @@ static int dasd_eckd_end_analysis(struct dasd_block *block)
 	count_area = NULL;
 	for (i = 0; i < 3; i++) {
 		if (private->count_area[i].kl != 4 ||
-<<<<<<< HEAD
-		    private->count_area[i].dl != dasd_eckd_cdl_reclen(i) - 4) {
-=======
 		    private->count_area[i].dl != dasd_eckd_cdl_reclen(i) - 4 ||
 		    private->count_area[i].cyl != 0 ||
 		    private->count_area[i].head != count_area_head[i] ||
 		    private->count_area[i].record != count_area_rec[i]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			private->uses_cdl = 0;
 			break;
 		}
 	}
 	if (i == 3)
-<<<<<<< HEAD
-		count_area = &private->count_area[4];
-=======
 		count_area = &private->count_area[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (private->uses_cdl == 0) {
 		for (i = 0; i < 5; i++) {
 			if ((private->count_area[i].kl != 0) ||
 			    (private->count_area[i].dl !=
-<<<<<<< HEAD
-			     private->count_area[0].dl))
-=======
 			     private->count_area[0].dl) ||
 			    private->count_area[i].cyl !=  0 ||
 			    private->count_area[i].head != count_area_head[i] ||
 			    private->count_area[i].record != count_area_rec[i])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 		if (i == 5)
@@ -3333,24 +2419,14 @@ static int dasd_eckd_end_analysis(struct dasd_block *block)
 	blk_per_trk = recs_per_track(&private->rdc_data, 0, block->bp_block);
 
 raw:
-<<<<<<< HEAD
-	block->blocks = (private->real_cyl *
-=======
 	block->blocks = ((unsigned long) private->real_cyl *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  private->rdc_data.trk_per_cyl *
 			  blk_per_trk);
 
 	dev_info(&device->cdev->dev,
-<<<<<<< HEAD
-		 "DASD with %d KB/block, %d KB total size, %d KB/track, "
-		 "%s\n", (block->bp_block >> 10),
-		 ((private->real_cyl *
-=======
 		 "DASD with %u KB/block, %lu KB total size, %u KB/track, "
 		 "%s\n", (block->bp_block >> 10),
 		 (((unsigned long) private->real_cyl *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   private->rdc_data.trk_per_cyl *
 		   blk_per_trk * (block->bp_block >> 9)) >> 1),
 		 ((blk_per_trk * block->bp_block) >> 10),
@@ -3362,35 +2438,21 @@ raw:
 
 static int dasd_eckd_do_analysis(struct dasd_block *block)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-
-	private = (struct dasd_eckd_private *) block->base->private;
-=======
 	struct dasd_eckd_private *private = block->base->private;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (private->init_cqr_status < 0)
 		return dasd_eckd_start_analysis(block);
 	else
 		return dasd_eckd_end_analysis(block);
 }
 
-<<<<<<< HEAD
-static int dasd_eckd_ready_to_online(struct dasd_device *device)
-=======
 static int dasd_eckd_basic_to_ready(struct dasd_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dasd_alias_add_device(device);
 };
 
 static int dasd_eckd_online_to_ready(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	cancel_work_sync(&device->reload_device);
-	cancel_work_sync(&device->kick_validate);
-=======
 	if (cancel_work_sync(&device->reload_device))
 		dasd_put_device(device);
 	if (cancel_work_sync(&device->kick_validate))
@@ -3401,21 +2463,14 @@ static int dasd_eckd_online_to_ready(struct dasd_device *device)
 
 static int dasd_eckd_basic_to_known(struct dasd_device *device)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dasd_alias_remove_device(device);
 };
 
 static int
 dasd_eckd_fill_geometry(struct dasd_block *block, struct hd_geometry *geo)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-
-	private = (struct dasd_eckd_private *) block->base->private;
-=======
 	struct dasd_eckd_private *private = block->base->private;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dasd_check_blocksize(block->bp_block) == 0) {
 		geo->sectors = recs_per_track(&private->rdc_data,
 					      0, block->bp_block);
@@ -3425,48 +2480,6 @@ dasd_eckd_fill_geometry(struct dasd_block *block, struct hd_geometry *geo)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dasd_ccw_req *
-dasd_eckd_format_device(struct dasd_device * device,
-			struct format_data_t * fdata)
-{
-	struct dasd_eckd_private *private;
-	struct dasd_ccw_req *fcp;
-	struct eckd_count *ect;
-	struct ccw1 *ccw;
-	void *data;
-	int rpt;
-	struct ch_t address;
-	int cplength, datasize;
-	int i;
-	int intensity = 0;
-	int r0_perm;
-
-	private = (struct dasd_eckd_private *) device->private;
-	rpt = recs_per_track(&private->rdc_data, 0, fdata->blksize);
-	set_ch_t(&address,
-		 fdata->start_unit / private->rdc_data.trk_per_cyl,
-		 fdata->start_unit % private->rdc_data.trk_per_cyl);
-
-	/* Sanity checks. */
-	if (fdata->start_unit >=
-	    (private->real_cyl * private->rdc_data.trk_per_cyl)) {
-		dev_warn(&device->cdev->dev, "Start track number %d used in "
-			 "formatting is too big\n", fdata->start_unit);
-		return ERR_PTR(-EINVAL);
-	}
-	if (fdata->start_unit > fdata->stop_unit) {
-		dev_warn(&device->cdev->dev, "Start track %d used in "
-			 "formatting exceeds end track\n", fdata->start_unit);
-		return ERR_PTR(-EINVAL);
-	}
-	if (dasd_check_blocksize(fdata->blksize) != 0) {
-		dev_warn(&device->cdev->dev,
-			 "The DASD cannot be formatted with block size %d\n",
-			 fdata->blksize);
-		return ERR_PTR(-EINVAL);
-	}
-=======
 /*
  * Build the TCW request for the format check
  */
@@ -3671,7 +2684,6 @@ dasd_eckd_build_format(struct dasd_device *base, struct dasd_device *startdev,
 	rpt = recs_per_track(&base_priv->rdc_data, 0, fdata->blksize);
 
 	nr_tracks = fdata->stop_unit - fdata->start_unit + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * fdata->intensity is a bit string that tells us what to do:
@@ -3689,23 +2701,6 @@ dasd_eckd_build_format(struct dasd_device *base, struct dasd_device *startdev,
 		r0_perm = 1;
 		intensity = fdata->intensity;
 	}
-<<<<<<< HEAD
-	switch (intensity) {
-	case 0x00:	/* Normal format */
-	case 0x08:	/* Normal format, use cdl. */
-		cplength = 2 + rpt;
-		datasize = sizeof(struct DE_eckd_data) +
-			sizeof(struct LO_eckd_data) +
-			rpt * sizeof(struct eckd_count);
-		break;
-	case 0x01:	/* Write record zero and format track. */
-	case 0x09:	/* Write record zero and format track, use cdl. */
-		cplength = 3 + rpt;
-		datasize = sizeof(struct DE_eckd_data) +
-			sizeof(struct LO_eckd_data) +
-			sizeof(struct eckd_count) +
-			rpt * sizeof(struct eckd_count);
-=======
 
 	use_prefix = base_priv->features.feature[8] & 0x01;
 
@@ -3735,27 +2730,10 @@ dasd_eckd_build_format(struct dasd_device *base, struct dasd_device *startdev,
 				sizeof(struct LO_eckd_data) +
 				sizeof(struct eckd_count) +
 				rpt * nr_tracks * sizeof(struct eckd_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 0x04:	/* Invalidate track. */
 	case 0x0c:	/* Invalidate track, use cdl. */
 		cplength = 3;
-<<<<<<< HEAD
-		datasize = sizeof(struct DE_eckd_data) +
-			sizeof(struct LO_eckd_data) +
-			sizeof(struct eckd_count);
-		break;
-	default:
-		dev_warn(&device->cdev->dev, "An I/O control call used "
-			 "incorrect flags 0x%x\n", fdata->intensity);
-		return ERR_PTR(-EINVAL);
-	}
-	/* Allocate the format ccw request. */
-	fcp = dasd_smalloc_request(DASD_ECKD_MAGIC, cplength, datasize, device);
-	if (IS_ERR(fcp))
-		return fcp;
-
-=======
 		if (use_prefix)
 			datasize = sizeof(struct PFX_eckd_data) +
 				sizeof(struct LO_eckd_data) +
@@ -3777,25 +2755,11 @@ dasd_eckd_build_format(struct dasd_device *base, struct dasd_device *startdev,
 		return fcp;
 
 	start_priv->count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = fcp->data;
 	ccw = fcp->cpaddr;
 
 	switch (intensity & ~0x08) {
 	case 0x00: /* Normal format. */
-<<<<<<< HEAD
-		define_extent(ccw++, (struct DE_eckd_data *) data,
-			      fdata->start_unit, fdata->start_unit,
-			      DASD_ECKD_CCW_WRITE_CKD, device);
-		/* grant subsystem permission to format R0 */
-		if (r0_perm)
-			((struct DE_eckd_data *)data)->ga_extended |= 0x04;
-		data += sizeof(struct DE_eckd_data);
-		ccw[-1].flags |= CCW_FLAG_CC;
-		locate_record(ccw++, (struct LO_eckd_data *) data,
-			      fdata->start_unit, 0, rpt,
-			      DASD_ECKD_CCW_WRITE_CKD, device,
-=======
 		if (use_prefix) {
 			prefix(ccw++, (struct PFX_eckd_data *) data,
 			       fdata->start_unit, fdata->stop_unit,
@@ -3819,67 +2783,10 @@ dasd_eckd_build_format(struct dasd_device *base, struct dasd_device *startdev,
 		locate_record(ccw++, (struct LO_eckd_data *) data,
 			      fdata->start_unit, 0, rpt*nr_tracks,
 			      DASD_ECKD_CCW_WRITE_CKD, base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      fdata->blksize);
 		data += sizeof(struct LO_eckd_data);
 		break;
 	case 0x01: /* Write record zero + format track. */
-<<<<<<< HEAD
-		define_extent(ccw++, (struct DE_eckd_data *) data,
-			      fdata->start_unit, fdata->start_unit,
-			      DASD_ECKD_CCW_WRITE_RECORD_ZERO,
-			      device);
-		data += sizeof(struct DE_eckd_data);
-		ccw[-1].flags |= CCW_FLAG_CC;
-		locate_record(ccw++, (struct LO_eckd_data *) data,
-			      fdata->start_unit, 0, rpt + 1,
-			      DASD_ECKD_CCW_WRITE_RECORD_ZERO, device,
-			      device->block->bp_block);
-		data += sizeof(struct LO_eckd_data);
-		break;
-	case 0x04: /* Invalidate track. */
-		define_extent(ccw++, (struct DE_eckd_data *) data,
-			      fdata->start_unit, fdata->start_unit,
-			      DASD_ECKD_CCW_WRITE_CKD, device);
-		data += sizeof(struct DE_eckd_data);
-		ccw[-1].flags |= CCW_FLAG_CC;
-		locate_record(ccw++, (struct LO_eckd_data *) data,
-			      fdata->start_unit, 0, 1,
-			      DASD_ECKD_CCW_WRITE_CKD, device, 8);
-		data += sizeof(struct LO_eckd_data);
-		break;
-	}
-	if (intensity & 0x01) {	/* write record zero */
-		ect = (struct eckd_count *) data;
-		data += sizeof(struct eckd_count);
-		ect->cyl = address.cyl;
-		ect->head = address.head;
-		ect->record = 0;
-		ect->kl = 0;
-		ect->dl = 8;
-		ccw[-1].flags |= CCW_FLAG_CC;
-		ccw->cmd_code = DASD_ECKD_CCW_WRITE_RECORD_ZERO;
-		ccw->flags = CCW_FLAG_SLI;
-		ccw->count = 8;
-		ccw->cda = (__u32)(addr_t) ect;
-		ccw++;
-	}
-	if ((intensity & ~0x08) & 0x04) {	/* erase track */
-		ect = (struct eckd_count *) data;
-		data += sizeof(struct eckd_count);
-		ect->cyl = address.cyl;
-		ect->head = address.head;
-		ect->record = 1;
-		ect->kl = 0;
-		ect->dl = 0;
-		ccw[-1].flags |= CCW_FLAG_CC;
-		ccw->cmd_code = DASD_ECKD_CCW_WRITE_CKD;
-		ccw->flags = CCW_FLAG_SLI;
-		ccw->count = 8;
-		ccw->cda = (__u32)(addr_t) ect;
-	} else {		/* write remaining records */
-		for (i = 0; i < rpt; i++) {
-=======
 		if (use_prefix) {
 			prefix(ccw++, (struct PFX_eckd_data *) data,
 			       fdata->start_unit, fdata->stop_unit,
@@ -3927,29 +2834,10 @@ dasd_eckd_build_format(struct dasd_device *base, struct dasd_device *startdev,
 			 (fdata->start_unit + j) %
 			 base_priv->rdc_data.trk_per_cyl);
 		if (intensity & 0x01) {	/* write record zero */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ect = (struct eckd_count *) data;
 			data += sizeof(struct eckd_count);
 			ect->cyl = address.cyl;
 			ect->head = address.head;
-<<<<<<< HEAD
-			ect->record = i + 1;
-			ect->kl = 0;
-			ect->dl = fdata->blksize;
-			/* Check for special tracks 0-1 when formatting CDL */
-			if ((intensity & 0x08) &&
-			    fdata->start_unit == 0) {
-				if (i < 3) {
-					ect->kl = 4;
-					ect->dl = sizes_trk0[i] - 4;
-				}
-			}
-			if ((intensity & 0x08) &&
-			    fdata->start_unit == 1) {
-				ect->kl = 44;
-				ect->dl = LABEL_SIZE - 44;
-			}
-=======
 			ect->record = 0;
 			ect->kl = 0;
 			ect->dl = 8;
@@ -3968,27 +2856,10 @@ dasd_eckd_build_format(struct dasd_device *base, struct dasd_device *startdev,
 			ect->record = 1;
 			ect->kl = 0;
 			ect->dl = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ccw[-1].flags |= CCW_FLAG_CC;
 			ccw->cmd_code = DASD_ECKD_CCW_WRITE_CKD;
 			ccw->flags = CCW_FLAG_SLI;
 			ccw->count = 8;
-<<<<<<< HEAD
-			ccw->cda = (__u32)(addr_t) ect;
-			ccw++;
-		}
-	}
-	fcp->startdev = device;
-	fcp->memdev = device;
-	fcp->retries = 256;
-	fcp->buildclk = get_clock();
-	fcp->status = DASD_CQR_FILLED;
-	return fcp;
-}
-
-static void dasd_eckd_handle_terminated_request(struct dasd_ccw_req *cqr)
-{
-=======
 			ccw->cda = virt_to_dma32(ect);
 		} else {		/* write remaining records */
 			for (i = 0; i < rpt; i++) {
@@ -4674,16 +3545,11 @@ static void dasd_eckd_handle_terminated_request(struct dasd_ccw_req *cqr)
 		cqr->status = DASD_CQR_FAILED;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 	if (cqr->block && (cqr->startdev != cqr->block->base)) {
 		dasd_eckd_reset_ccw_to_base_io(cqr);
 		cqr->startdev = cqr->block->base;
-<<<<<<< HEAD
-		cqr->lpm = cqr->block->base->path_data.opm;
-=======
 		cqr->lpm = dasd_path_get_opm(cqr->block->base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -4718,14 +3584,8 @@ static void dasd_eckd_check_for_device_change(struct dasd_device *device,
 {
 	char mask;
 	char *sense = NULL;
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-
-	private = (struct dasd_eckd_private *) device->private;
-=======
 	struct dasd_eckd_private *private = device->private;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* first of all check for state change pending interrupt */
 	mask = DEV_STAT_ATTENTION | DEV_STAT_DEV_END | DEV_STAT_UNIT_EXCEP;
 	if ((scsw_dstat(&irb->scsw) & mask) == mask) {
@@ -4737,17 +3597,6 @@ static void dasd_eckd_check_for_device_change(struct dasd_device *device,
 		    device->state == DASD_STATE_ONLINE &&
 		    !test_bit(DASD_FLAG_OFFLINE, &device->flags) &&
 		    !test_bit(DASD_FLAG_SUSPENDED, &device->flags)) {
-<<<<<<< HEAD
-			/*
-			 * the state change could be caused by an alias
-			 * reassignment remove device from alias handling
-			 * to prevent new requests from being scheduled on
-			 * the wrong alias device
-			 */
-			dasd_alias_remove_device(device);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* schedule worker to reload device */
 			dasd_reload_device(device);
 		}
@@ -4762,9 +3611,6 @@ static void dasd_eckd_check_for_device_change(struct dasd_device *device,
 	/* summary unit check */
 	if ((sense[27] & DASD_SENSE_BIT_0) && (sense[7] == 0x0D) &&
 	    (scsw_dstat(&irb->scsw) & DEV_STAT_UNIT_CHECK)) {
-<<<<<<< HEAD
-		dasd_alias_handle_summary_unit_check(device, irb);
-=======
 		if (test_and_set_bit(DASD_FLAG_SUC, &device->flags)) {
 			DBF_DEV_EVENT(DBF_WARNING, device, "%s",
 				      "eckd suc: device already notified");
@@ -4786,7 +3632,6 @@ static void dasd_eckd_check_for_device_change(struct dasd_device *device,
 		if (!schedule_work(&device->suc_work))
 			dasd_put_device(device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -4812,8 +3657,6 @@ static void dasd_eckd_check_for_device_change(struct dasd_device *device,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int dasd_eckd_ras_sanity_checks(struct dasd_device *device,
 				       unsigned int first_trk,
 				       unsigned int last_trk)
@@ -5104,7 +3947,6 @@ static int dasd_eckd_release_space(struct dasd_device *device,
 		return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 					       struct dasd_device *startdev,
 					       struct dasd_block *block,
@@ -5119,20 +3961,12 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 					       unsigned int blksize)
 {
 	struct dasd_eckd_private *private;
-<<<<<<< HEAD
-	unsigned long *idaws;
-=======
 	dma64_t *idaws;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct LO_eckd_data *LO_data;
 	struct dasd_ccw_req *cqr;
 	struct ccw1 *ccw;
 	struct req_iterator iter;
-<<<<<<< HEAD
-	struct bio_vec *bv;
-=======
 	struct bio_vec bv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dst;
 	unsigned int off;
 	int count, cidaw, cplength, datasize;
@@ -5142,11 +3976,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 	struct dasd_device *basedev;
 
 	basedev = block->base;
-<<<<<<< HEAD
-	private = (struct dasd_eckd_private *) basedev->private;
-=======
 	private = basedev->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rq_data_dir(req) == READ)
 		cmd = DASD_ECKD_CCW_READ_MT;
 	else if (rq_data_dir(req) == WRITE)
@@ -5158,23 +3988,12 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 	count = 0;
 	cidaw = 0;
 	rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-		if (bv->bv_len & (blksize - 1))
-			/* Eckd can only do full blocks. */
-			return ERR_PTR(-EINVAL);
-		count += bv->bv_len >> (block->s2b_shift + 9);
-#if defined(CONFIG_64BIT)
-		if (idal_is_needed (page_address(bv->bv_page), bv->bv_len))
-			cidaw += bv->bv_len >> (block->s2b_shift + 9);
-#endif
-=======
 		if (bv.bv_len & (blksize - 1))
 			/* Eckd can only do full blocks. */
 			return ERR_PTR(-EINVAL);
 		count += bv.bv_len >> (block->s2b_shift + 9);
 		if (idal_is_needed (page_address(bv.bv_page), bv.bv_len))
 			cidaw += bv.bv_len >> (block->s2b_shift + 9);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Paranoia. */
 	if (count != last_rec - first_rec + 1)
@@ -5206,11 +4025,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 	}
 	/* Allocate the ccw request. */
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, cplength, datasize,
-<<<<<<< HEAD
-				   startdev);
-=======
 				   startdev, blk_mq_rq_to_pdu(req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr))
 		return cqr;
 	ccw = cqr->cpaddr;
@@ -5224,30 +4039,17 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 			dasd_sfree_request(cqr, startdev);
 			return ERR_PTR(-EAGAIN);
 		}
-<<<<<<< HEAD
-		idaws = (unsigned long *) (cqr->data +
-					   sizeof(struct PFX_eckd_data));
-	} else {
-		if (define_extent(ccw++, cqr->data, first_trk,
-				  last_trk, cmd, basedev) == -EAGAIN) {
-=======
 		idaws = (dma64_t *)(cqr->data + sizeof(struct PFX_eckd_data));
 	} else {
 		if (define_extent(ccw++, cqr->data, first_trk,
 				  last_trk, cmd, basedev, 0) == -EAGAIN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Clock not in sync and XRC is enabled.
 			 * Try again later.
 			 */
 			dasd_sfree_request(cqr, startdev);
 			return ERR_PTR(-EAGAIN);
 		}
-<<<<<<< HEAD
-		idaws = (unsigned long *) (cqr->data +
-					   sizeof(struct DE_eckd_data));
-=======
 		idaws = (dma64_t *)(cqr->data + sizeof(struct DE_eckd_data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Build locate_record+read/write/ccws. */
 	LO_data = (struct LO_eckd_data *) (idaws + cidaw);
@@ -5259,28 +4061,16 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 			      last_rec - recid + 1, cmd, basedev, blksize);
 	}
 	rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-		dst = page_address(bv->bv_page) + bv->bv_offset;
-=======
 		dst = bvec_virt(&bv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dasd_page_cache) {
 			char *copy = kmem_cache_alloc(dasd_page_cache,
 						      GFP_DMA | __GFP_NOWARN);
 			if (copy && rq_data_dir(req) == WRITE)
-<<<<<<< HEAD
-				memcpy(copy + bv->bv_offset, dst, bv->bv_len);
-			if (copy)
-				dst = copy + bv->bv_offset;
-		}
-		for (off = 0; off < bv->bv_len; off += blksize) {
-=======
 				memcpy(copy + bv.bv_offset, dst, bv.bv_len);
 			if (copy)
 				dst = copy + bv.bv_offset;
 		}
 		for (off = 0; off < bv.bv_len; off += blksize) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sector_t trkid = recid;
 			unsigned int recoffs = sector_div(trkid, blk_per_trk);
 			rcmd = cmd;
@@ -5313,19 +4103,11 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 			ccw->cmd_code = rcmd;
 			ccw->count = count;
 			if (idal_is_needed(dst, blksize)) {
-<<<<<<< HEAD
-				ccw->cda = (__u32)(addr_t) idaws;
-				ccw->flags = CCW_FLAG_IDA;
-				idaws = idal_create_words(idaws, dst, blksize);
-			} else {
-				ccw->cda = (__u32)(addr_t) dst;
-=======
 				ccw->cda = virt_to_dma32(idaws);
 				ccw->flags = CCW_FLAG_IDA;
 				idaws = idal_create_words(idaws, dst, blksize);
 			} else {
 				ccw->cda = virt_to_dma32(dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ccw->flags = 0;
 			}
 			ccw++;
@@ -5340,12 +4122,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 	cqr->memdev = startdev;
 	cqr->block = block;
 	cqr->expires = startdev->default_expires * HZ;	/* default 5 minutes */
-<<<<<<< HEAD
-	cqr->lpm = startdev->path_data.ppm;
-	cqr->retries = 256;
-	cqr->buildclk = get_clock();
-	cqr->status = DASD_CQR_FILLED;
-=======
 	cqr->lpm = dasd_path_get_ppm(startdev);
 	cqr->retries = startdev->default_retries;
 	cqr->buildclk = get_tod_clock();
@@ -5358,7 +4134,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_single(
 		set_bit(DASD_CQR_SUPPRESS_NRF, &cqr->flags);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cqr;
 }
 
@@ -5375,19 +4150,11 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 					       unsigned int blk_per_trk,
 					       unsigned int blksize)
 {
-<<<<<<< HEAD
-	unsigned long *idaws;
-	struct dasd_ccw_req *cqr;
-	struct ccw1 *ccw;
-	struct req_iterator iter;
-	struct bio_vec *bv;
-=======
 	dma64_t *idaws;
 	struct dasd_ccw_req *cqr;
 	struct ccw1 *ccw;
 	struct req_iterator iter;
 	struct bio_vec bv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dst, *idaw_dst;
 	unsigned int cidaw, cplength, datasize;
 	unsigned int tlf;
@@ -5419,23 +4186,11 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 	/* 1x prefix + one read/write ccw per track */
 	cplength = 1 + trkcount;
 
-<<<<<<< HEAD
-	/* on 31-bit we need space for two 32 bit addresses per page
-	 * on 64-bit one 64 bit address
-	 */
-	datasize = sizeof(struct PFX_eckd_data) +
-		cidaw * sizeof(unsigned long long);
-
-	/* Allocate the ccw request. */
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, cplength, datasize,
-				   startdev);
-=======
 	datasize = sizeof(struct PFX_eckd_data) + cidaw * sizeof(unsigned long);
 
 	/* Allocate the ccw request. */
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, cplength, datasize,
 				   startdev, blk_mq_rq_to_pdu(req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr))
 		return cqr;
 	ccw = cqr->cpaddr;
@@ -5465,11 +4220,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 	 *   (or 2K blocks on 31-bit)
 	 * - the scope of a ccw and it's idal ends with the track boundaries
 	 */
-<<<<<<< HEAD
-	idaws = (unsigned long *) (cqr->data + sizeof(struct PFX_eckd_data));
-=======
 	idaws = (dma64_t *)(cqr->data + sizeof(struct PFX_eckd_data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	recid = first_rec;
 	new_track = 1;
 	end_idaw = 0;
@@ -5477,13 +4228,8 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 	idaw_dst = NULL;
 	idaw_len = 0;
 	rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-		dst = page_address(bv->bv_page) + bv->bv_offset;
-		seg_len = bv->bv_len;
-=======
 		dst = bvec_virt(&bv);
 		seg_len = bv.bv_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (seg_len) {
 			if (new_track) {
 				trkid = recid;
@@ -5495,11 +4241,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 				ccw[-1].flags |= CCW_FLAG_CC;
 				ccw->cmd_code = cmd;
 				ccw->count = len_to_track_end;
-<<<<<<< HEAD
-				ccw->cda = (__u32)(addr_t)idaws;
-=======
 				ccw->cda = virt_to_dma32(idaws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ccw->flags = CCW_FLAG_IDA;
 				ccw++;
 				recid += count;
@@ -5515,11 +4257,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 			 * idaw ends
 			 */
 			if (!idaw_dst) {
-<<<<<<< HEAD
-				if (__pa(dst) & (IDA_BLOCK_SIZE-1)) {
-=======
 				if ((unsigned long)(dst) & (IDA_BLOCK_SIZE - 1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					dasd_sfree_request(cqr, startdev);
 					return ERR_PTR(-ERANGE);
 				} else
@@ -5539,11 +4277,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 			 * idal_create_words will handle cases where idaw_len
 			 * is larger then IDA_BLOCK_SIZE
 			 */
-<<<<<<< HEAD
-			if (!(__pa(idaw_dst + idaw_len) & (IDA_BLOCK_SIZE-1)))
-=======
 			if (!((unsigned long)(idaw_dst + idaw_len) & (IDA_BLOCK_SIZE - 1)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				end_idaw = 1;
 			/* We also need to end the idaw at track end */
 			if (!len_to_track_end) {
@@ -5567,12 +4301,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 	cqr->memdev = startdev;
 	cqr->block = block;
 	cqr->expires = startdev->default_expires * HZ;	/* default 5 minutes */
-<<<<<<< HEAD
-	cqr->lpm = startdev->path_data.ppm;
-	cqr->retries = 256;
-	cqr->buildclk = get_clock();
-	cqr->status = DASD_CQR_FILLED;
-=======
 	cqr->lpm = dasd_path_get_ppm(startdev);
 	cqr->retries = startdev->default_retries;
 	cqr->buildclk = get_tod_clock();
@@ -5582,7 +4310,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_cmd_track(
 	if (dasd_eckd_is_ese(basedev))
 		set_bit(DASD_CQR_SUPPRESS_NRF, &cqr->flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cqr;
 }
 
@@ -5612,29 +4339,13 @@ static int prepare_itcw(struct itcw *itcw,
 
 
 	/* setup prefix data */
-<<<<<<< HEAD
-	basepriv = (struct dasd_eckd_private *) basedev->private;
-	startpriv = (struct dasd_eckd_private *) startdev->private;
-=======
 	basepriv = basedev->private;
 	startpriv = startdev->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dedata = &pfxdata.define_extent;
 	lredata = &pfxdata.locate_record;
 
 	memset(&pfxdata, 0, sizeof(pfxdata));
 	pfxdata.format = 1; /* PFX with LRE */
-<<<<<<< HEAD
-	pfxdata.base_address = basepriv->ned->unit_addr;
-	pfxdata.base_lss = basepriv->ned->ID;
-	pfxdata.validity.define_extent = 1;
-
-	/* private uid is kept up to date, conf_data may be outdated */
-	if (startpriv->uid.type != UA_BASE_DEVICE) {
-		pfxdata.validity.verify_base = 1;
-		if (startpriv->uid.type == UA_HYPER_PAV_ALIAS)
-			pfxdata.validity.hyper_pav = 1;
-=======
 	pfxdata.base_address = basepriv->conf.ned->unit_addr;
 	pfxdata.base_lss = basepriv->conf.ned->ID;
 	pfxdata.validity.define_extent = 1;
@@ -5646,7 +4357,6 @@ static int prepare_itcw(struct itcw *itcw,
 	if (startpriv->uid.type == UA_HYPER_PAV_ALIAS) {
 		pfxdata.validity.verify_base = 1;
 		pfxdata.validity.hyper_pav = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (cmd) {
@@ -5664,20 +4374,12 @@ static int prepare_itcw(struct itcw *itcw,
 		dedata->mask.perm = 0x02;
 		dedata->attributes.operation = basepriv->attrib.operation;
 		dedata->blk_size = blksize;
-<<<<<<< HEAD
-		rc = check_XRC_on_prefix(&pfxdata, basedev);
-=======
 		rc = set_timestamp(NULL, dedata, basedev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dedata->ga_extended |= 0x42;
 		lredata->operation.orientation = 0x0;
 		lredata->operation.operation = 0x3F;
 		lredata->extended_operation = 0x23;
 		lredata->auxiliary.check_bytes = 0x2;
-<<<<<<< HEAD
-		pfx_cmd = DASD_ECKD_CCW_PFX;
-		break;
-=======
 		/*
 		 * If XRC is supported the System Time Stamp is set. The
 		 * validity of the time stamp must be reflected in the prefix
@@ -5697,7 +4399,6 @@ static int prepare_itcw(struct itcw *itcw,
 		lredata->auxiliary.check_bytes = 0x01;
 		pfx_cmd = DASD_ECKD_CCW_PFX_READ;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		DBF_DEV_EVENT(DBF_ERR, basedev,
 			      "prepare itcw, unknown opcode 0x%x", cmd);
@@ -5745,10 +4446,6 @@ static int prepare_itcw(struct itcw *itcw,
 		}
 	}
 
-<<<<<<< HEAD
-	lredata->auxiliary.length_valid = 1;
-	lredata->auxiliary.length_scope = 1;
-=======
 	if (cmd == DASD_ECKD_CCW_READ_COUNT_MT) {
 		lredata->auxiliary.length_valid = 0;
 		lredata->auxiliary.length_scope = 0;
@@ -5758,15 +4455,10 @@ static int prepare_itcw(struct itcw *itcw,
 		lredata->auxiliary.length_scope = 1;
 		lredata->sector = sector;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lredata->auxiliary.imbedded_ccw_valid = 1;
 	lredata->length = tlf;
 	lredata->imbedded_ccw = cmd;
 	lredata->count = count;
-<<<<<<< HEAD
-	lredata->sector = sector;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_ch_t(&lredata->seek_addr, begcyl, beghead);
 	lredata->search_arg.cyl = lredata->seek_addr.cyl;
 	lredata->search_arg.head = lredata->seek_addr.head;
@@ -5774,11 +4466,7 @@ static int prepare_itcw(struct itcw *itcw,
 
 	dcw = itcw_add_dcw(itcw, pfx_cmd, 0,
 		     &pfxdata, sizeof(pfxdata), total_data_size);
-<<<<<<< HEAD
-	return IS_ERR(dcw) ? PTR_ERR(dcw) : 0;
-=======
 	return PTR_ERR_OR_ZERO(dcw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dasd_ccw_req *dasd_eckd_build_cp_tpm_track(
@@ -5796,11 +4484,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_tpm_track(
 {
 	struct dasd_ccw_req *cqr;
 	struct req_iterator iter;
-<<<<<<< HEAD
-	struct bio_vec *bv;
-=======
 	struct bio_vec bv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dst;
 	unsigned int trkcount, ctidaw;
 	unsigned char cmd;
@@ -5844,12 +4528,8 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_tpm_track(
 
 	/* Allocate the ccw request. */
 	itcw_size = itcw_calc_size(0, ctidaw, 0);
-<<<<<<< HEAD
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 0, itcw_size, startdev);
-=======
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 0, itcw_size, startdev,
 				   blk_mq_rq_to_pdu(req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr))
 		return cqr;
 
@@ -5891,13 +4571,8 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_tpm_track(
 		new_track = 1;
 		recid = first_rec;
 		rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-			dst = page_address(bv->bv_page) + bv->bv_offset;
-			seg_len = bv->bv_len;
-=======
 			dst = bvec_virt(&bv);
 			seg_len = bv.bv_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			while (seg_len) {
 				if (new_track) {
 					trkid = recid;
@@ -5929,15 +4604,9 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_tpm_track(
 		}
 	} else {
 		rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-			dst = page_address(bv->bv_page) + bv->bv_offset;
-			last_tidaw = itcw_add_tidaw(itcw, 0x00,
-						    dst, bv->bv_len);
-=======
 			dst = bvec_virt(&bv);
 			last_tidaw = itcw_add_tidaw(itcw, 0x00,
 						    dst, bv.bv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(last_tidaw)) {
 				ret = -EINVAL;
 				goto out_error;
@@ -5956,12 +4625,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_tpm_track(
 	cqr->memdev = startdev;
 	cqr->block = block;
 	cqr->expires = startdev->default_expires * HZ;	/* default 5 minutes */
-<<<<<<< HEAD
-	cqr->lpm = startdev->path_data.ppm;
-	cqr->retries = 256;
-	cqr->buildclk = get_clock();
-	cqr->status = DASD_CQR_FILLED;
-=======
 	cqr->lpm = dasd_path_get_ppm(startdev);
 	cqr->retries = startdev->default_retries;
 	cqr->buildclk = get_tod_clock();
@@ -5974,7 +4637,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_tpm_track(
 		set_bit(DASD_CQR_SUPPRESS_NRF, &cqr->flags);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cqr;
 out_error:
 	dasd_sfree_request(cqr, startdev);
@@ -5999,11 +4661,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp(struct dasd_device *startdev,
 	struct dasd_ccw_req *cqr;
 
 	basedev = block->base;
-<<<<<<< HEAD
-	private = (struct dasd_eckd_private *) basedev->private;
-=======
 	private = basedev->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Calculate number of blocks/records per track. */
 	blksize = block->bp_block;
@@ -6020,11 +4678,8 @@ static struct dasd_ccw_req *dasd_eckd_build_cp(struct dasd_device *startdev,
 
 	fcx_multitrack = private->features.feature[40] & 0x20;
 	data_size = blk_rq_bytes(req);
-<<<<<<< HEAD
-=======
 	if (data_size % blksize)
 		return ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* tpm write request add CBC data on each track boundary */
 	if (rq_data_dir(req) == WRITE)
 		data_size += (last_trk - first_trk) * 4;
@@ -6068,38 +4723,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp(struct dasd_device *startdev,
 	return cqr;
 }
 
-<<<<<<< HEAD
-static struct dasd_ccw_req *dasd_raw_build_cp(struct dasd_device *startdev,
-					       struct dasd_block *block,
-					       struct request *req)
-{
-	unsigned long *idaws;
-	struct dasd_device *basedev;
-	struct dasd_ccw_req *cqr;
-	struct ccw1 *ccw;
-	struct req_iterator iter;
-	struct bio_vec *bv;
-	char *dst;
-	unsigned char cmd;
-	unsigned int trkcount;
-	unsigned int seg_len, len_to_track_end;
-	unsigned int first_offs;
-	unsigned int cidaw, cplength, datasize;
-	sector_t first_trk, last_trk;
-	unsigned int pfx_datasize;
-
-	/*
-	 * raw track access needs to be mutiple of 64k and on 64k boundary
-	 */
-	if ((blk_rq_pos(req) % DASD_RAW_SECTORS_PER_TRACK) != 0) {
-		cqr = ERR_PTR(-EINVAL);
-		goto out;
-	}
-	if (((blk_rq_pos(req) + blk_rq_sectors(req)) %
-	     DASD_RAW_SECTORS_PER_TRACK) != 0) {
-		cqr = ERR_PTR(-EINVAL);
-		goto out;
-=======
 static struct dasd_ccw_req *dasd_eckd_build_cp_raw(struct dasd_device *startdev,
 						   struct dasd_block *block,
 						   struct request *req)
@@ -6139,32 +4762,19 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_raw(struct dasd_device *startdev,
 			      "raw write not track aligned (%llu,%llu) req %p",
 			      start_padding_sectors, end_padding_sectors, req);
 		return ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	first_trk = blk_rq_pos(req) / DASD_RAW_SECTORS_PER_TRACK;
 	last_trk = (blk_rq_pos(req) + blk_rq_sectors(req) - 1) /
 		DASD_RAW_SECTORS_PER_TRACK;
 	trkcount = last_trk - first_trk + 1;
-<<<<<<< HEAD
-	first_offs = 0;
-	basedev = block->base;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rq_data_dir(req) == READ)
 		cmd = DASD_ECKD_CCW_READ_TRACK;
 	else if (rq_data_dir(req) == WRITE)
 		cmd = DASD_ECKD_CCW_WRITE_FULL_TRACK;
-<<<<<<< HEAD
-	else {
-		cqr = ERR_PTR(-EINVAL);
-		goto out;
-	}
-=======
 	else
 		return ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Raw track based I/O needs IDAWs for each page,
@@ -6172,46 +4782,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_raw(struct dasd_device *startdev,
 	 */
 	cidaw = trkcount * DASD_RAW_BLOCK_PER_TRACK;
 
-<<<<<<< HEAD
-	/* 1x prefix + one read/write ccw per track */
-	cplength = 1 + trkcount;
-
-	/*
-	 * struct PFX_eckd_data has up to 2 byte as extended parameter
-	 * this is needed for write full track and has to be mentioned
-	 * separately
-	 * add 8 instead of 2 to keep 8 byte boundary
-	 */
-	pfx_datasize = sizeof(struct PFX_eckd_data) + 8;
-
-	datasize = pfx_datasize + cidaw * sizeof(unsigned long long);
-
-	/* Allocate the ccw request. */
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, cplength,
-				   datasize, startdev);
-	if (IS_ERR(cqr))
-		goto out;
-	ccw = cqr->cpaddr;
-
-	if (prefix_LRE(ccw++, cqr->data, first_trk, last_trk, cmd,
-		       basedev, startdev, 1 /* format */, first_offs + 1,
-		       trkcount, 0, 0) == -EAGAIN) {
-		/* Clock not in sync and XRC is enabled.
-		 * Try again later.
-		 */
-		dasd_sfree_request(cqr, startdev);
-		cqr = ERR_PTR(-EAGAIN);
-		goto out;
-	}
-
-	idaws = (unsigned long *)(cqr->data + pfx_datasize);
-
-	len_to_track_end = 0;
-
-	rq_for_each_segment(bv, req, iter) {
-		dst = page_address(bv->bv_page) + bv->bv_offset;
-		seg_len = bv->bv_len;
-=======
 	/*
 	 * struct PFX_eckd_data and struct LRE_eckd_data can have up to 2 bytes
 	 * of extended parameter. This is needed for write full track.
@@ -6272,7 +4842,6 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_raw(struct dasd_device *startdev,
 		seg_len = bv.bv_len;
 		if (cmd == DASD_ECKD_CCW_READ_TRACK)
 			memset(dst, 0, seg_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!len_to_track_end) {
 			ccw[-1].flags |= CCW_FLAG_CC;
 			ccw->cmd_code = cmd;
@@ -6280,11 +4849,7 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_raw(struct dasd_device *startdev,
 			ccw->count = 57326;
 			/* 64k map to one track */
 			len_to_track_end = 65536;
-<<<<<<< HEAD
-			ccw->cda = (__u32)(addr_t)idaws;
-=======
 			ccw->cda = virt_to_dma32(idaws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ccw->flags |= CCW_FLAG_IDA;
 			ccw->flags |= CCW_FLAG_SLI;
 			ccw++;
@@ -6292,12 +4857,8 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_raw(struct dasd_device *startdev,
 		len_to_track_end -= seg_len;
 		idaws = idal_create_words(idaws, dst, seg_len);
 	}
-<<<<<<< HEAD
-
-=======
 	for (sectors = 0; sectors < end_padding_sectors; sectors += 8)
 		idaws = idal_create_words(idaws, rawpadpage, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (blk_noretry_request(req) ||
 	    block->base->features & DASD_FEATURE_FAILFAST)
 		set_bit(DASD_CQR_FLAGS_FAILFAST, &cqr->flags);
@@ -6305,22 +4866,11 @@ static struct dasd_ccw_req *dasd_eckd_build_cp_raw(struct dasd_device *startdev,
 	cqr->memdev = startdev;
 	cqr->block = block;
 	cqr->expires = startdev->default_expires * HZ;
-<<<<<<< HEAD
-	cqr->lpm = startdev->path_data.ppm;
-	cqr->retries = 256;
-	cqr->buildclk = get_clock();
-	cqr->status = DASD_CQR_FILLED;
-
-	if (IS_ERR(cqr) && PTR_ERR(cqr) != -EAGAIN)
-		cqr = NULL;
-out:
-=======
 	cqr->lpm = dasd_path_get_ppm(startdev);
 	cqr->retries = startdev->default_retries;
 	cqr->buildclk = get_tod_clock();
 	cqr->status = DASD_CQR_FILLED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cqr;
 }
 
@@ -6331,11 +4881,7 @@ dasd_eckd_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 	struct dasd_eckd_private *private;
 	struct ccw1 *ccw;
 	struct req_iterator iter;
-<<<<<<< HEAD
-	struct bio_vec *bv;
-=======
 	struct bio_vec bv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dst, *cda;
 	unsigned int blksize, blk_per_trk, off;
 	sector_t recid;
@@ -6343,11 +4889,7 @@ dasd_eckd_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 
 	if (!dasd_page_cache)
 		goto out;
-<<<<<<< HEAD
-	private = (struct dasd_eckd_private *) cqr->block->base->private;
-=======
 	private = cqr->block->base->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blksize = cqr->block->bp_block;
 	blk_per_trk = recs_per_track(&private->rdc_data, 0, blksize);
 	recid = blk_rq_pos(req) >> cqr->block->s2b_shift;
@@ -6357,33 +4899,19 @@ dasd_eckd_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 	if (private->uses_cdl == 0 || recid > 2*blk_per_trk)
 		ccw++;
 	rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-		dst = page_address(bv->bv_page) + bv->bv_offset;
-		for (off = 0; off < bv->bv_len; off += blksize) {
-=======
 		dst = bvec_virt(&bv);
 		for (off = 0; off < bv.bv_len; off += blksize) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Skip locate record. */
 			if (private->uses_cdl && recid <= 2*blk_per_trk)
 				ccw++;
 			if (dst) {
 				if (ccw->flags & CCW_FLAG_IDA)
-<<<<<<< HEAD
-					cda = *((char **)((addr_t) ccw->cda));
-				else
-					cda = (char *)((addr_t) ccw->cda);
-				if (dst != cda) {
-					if (rq_data_dir(req) == READ)
-						memcpy(dst, cda, bv->bv_len);
-=======
 					cda = *((char **)dma32_to_virt(ccw->cda));
 				else
 					cda = dma32_to_virt(ccw->cda);
 				if (dst != cda) {
 					if (rq_data_dir(req) == READ)
 						memcpy(dst, cda, bv.bv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kmem_cache_free(dasd_page_cache,
 					    (void *)((addr_t)cda & PAGE_MASK));
 				}
@@ -6445,22 +4973,14 @@ static struct dasd_ccw_req *dasd_eckd_build_alias_cp(struct dasd_device *base,
 	startdev = dasd_alias_get_start_dev(base);
 	if (!startdev)
 		startdev = base;
-<<<<<<< HEAD
-	private = (struct dasd_eckd_private *) startdev->private;
-=======
 	private = startdev->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (private->count >= DASD_ECKD_CHANQ_MAX_SIZE)
 		return ERR_PTR(-EBUSY);
 
 	spin_lock_irqsave(get_ccwdev_lock(startdev->cdev), flags);
 	private->count++;
 	if ((base->features & DASD_FEATURE_USERAW))
-<<<<<<< HEAD
-		cqr = dasd_raw_build_cp(startdev, block, req);
-=======
 		cqr = dasd_eckd_build_cp_raw(startdev, block, req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		cqr = dasd_eckd_build_cp(startdev, block, req);
 	if (IS_ERR(cqr))
@@ -6476,11 +4996,7 @@ static int dasd_eckd_free_alias_cp(struct dasd_ccw_req *cqr,
 	unsigned long flags;
 
 	spin_lock_irqsave(get_ccwdev_lock(cqr->memdev->cdev), flags);
-<<<<<<< HEAD
-	private = (struct dasd_eckd_private *) cqr->memdev->private;
-=======
 	private = cqr->memdev->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	private->count--;
 	spin_unlock_irqrestore(get_ccwdev_lock(cqr->memdev->cdev), flags);
 	return dasd_eckd_free_cp(cqr, req);
@@ -6490,20 +5006,6 @@ static int
 dasd_eckd_fill_info(struct dasd_device * device,
 		    struct dasd_information2_t * info)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-
-	private = (struct dasd_eckd_private *) device->private;
-	info->label_block = 2;
-	info->FBA_layout = private->uses_cdl ? 0 : 1;
-	info->format = private->uses_cdl ? DASD_FORMAT_CDL : DASD_FORMAT_LDL;
-	info->characteristics_size = sizeof(struct dasd_eckd_characteristics);
-	memcpy(info->characteristics, &private->rdc_data,
-	       sizeof(struct dasd_eckd_characteristics));
-	info->confdata_size = min((unsigned long)private->conf_len,
-				  sizeof(info->configuration_data));
-	memcpy(info->configuration_data, private->conf_data,
-=======
 	struct dasd_eckd_private *private = device->private;
 
 	info->label_block = 2;
@@ -6515,7 +5017,6 @@ dasd_eckd_fill_info(struct dasd_device * device,
 	info->confdata_size = min_t(unsigned long, private->conf.len,
 				    sizeof(info->configuration_data));
 	memcpy(info->configuration_data, private->conf.data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       info->confdata_size);
 	return 0;
 }
@@ -6541,11 +5042,7 @@ dasd_eckd_release(struct dasd_device *device)
 		return -EACCES;
 
 	useglobal = 0;
-<<<<<<< HEAD
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1, 32, device);
-=======
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1, 32, device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		mutex_lock(&dasd_reserve_mutex);
 		useglobal = 1;
@@ -6561,22 +5058,14 @@ dasd_eckd_release(struct dasd_device *device)
 	ccw->cmd_code = DASD_ECKD_CCW_RELEASE;
 	ccw->flags |= CCW_FLAG_SLI;
 	ccw->count = 32;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) cqr->data;
-=======
 	ccw->cda = virt_to_dma32(cqr->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->startdev = device;
 	cqr->memdev = device;
 	clear_bit(DASD_CQR_FLAGS_USE_ERP, &cqr->flags);
 	set_bit(DASD_CQR_FLAGS_FAILFAST, &cqr->flags);
 	cqr->retries = 2;	/* set retry counter to enable basic ERP */
 	cqr->expires = 2 * HZ;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-=======
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 
 	rc = dasd_sleep_on_immediatly(cqr);
@@ -6608,11 +5097,7 @@ dasd_eckd_reserve(struct dasd_device *device)
 		return -EACCES;
 
 	useglobal = 0;
-<<<<<<< HEAD
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1, 32, device);
-=======
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1, 32, device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		mutex_lock(&dasd_reserve_mutex);
 		useglobal = 1;
@@ -6628,22 +5113,14 @@ dasd_eckd_reserve(struct dasd_device *device)
 	ccw->cmd_code = DASD_ECKD_CCW_RESERVE;
 	ccw->flags |= CCW_FLAG_SLI;
 	ccw->count = 32;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) cqr->data;
-=======
 	ccw->cda = virt_to_dma32(cqr->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->startdev = device;
 	cqr->memdev = device;
 	clear_bit(DASD_CQR_FLAGS_USE_ERP, &cqr->flags);
 	set_bit(DASD_CQR_FLAGS_FAILFAST, &cqr->flags);
 	cqr->retries = 2;	/* set retry counter to enable basic ERP */
 	cqr->expires = 2 * HZ;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-=======
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 
 	rc = dasd_sleep_on_immediatly(cqr);
@@ -6674,11 +5151,7 @@ dasd_eckd_steal_lock(struct dasd_device *device)
 		return -EACCES;
 
 	useglobal = 0;
-<<<<<<< HEAD
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1, 32, device);
-=======
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1, 32, device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		mutex_lock(&dasd_reserve_mutex);
 		useglobal = 1;
@@ -6694,22 +5167,14 @@ dasd_eckd_steal_lock(struct dasd_device *device)
 	ccw->cmd_code = DASD_ECKD_CCW_SLCK;
 	ccw->flags |= CCW_FLAG_SLI;
 	ccw->count = 32;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) cqr->data;
-=======
 	ccw->cda = virt_to_dma32(cqr->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->startdev = device;
 	cqr->memdev = device;
 	clear_bit(DASD_CQR_FLAGS_USE_ERP, &cqr->flags);
 	set_bit(DASD_CQR_FLAGS_FAILFAST, &cqr->flags);
 	cqr->retries = 2;	/* set retry counter to enable basic ERP */
 	cqr->expires = 2 * HZ;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-=======
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 
 	rc = dasd_sleep_on_immediatly(cqr);
@@ -6746,12 +5211,8 @@ static int dasd_eckd_snid(struct dasd_device *device,
 
 	useglobal = 0;
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1,
-<<<<<<< HEAD
-				   sizeof(struct dasd_snid_data), device);
-=======
 				   sizeof(struct dasd_snid_data), device,
 				   NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		mutex_lock(&dasd_reserve_mutex);
 		useglobal = 1;
@@ -6767,11 +5228,7 @@ static int dasd_eckd_snid(struct dasd_device *device,
 	ccw->cmd_code = DASD_ECKD_CCW_SNID;
 	ccw->flags |= CCW_FLAG_SLI;
 	ccw->count = 12;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) cqr->data;
-=======
 	ccw->cda = virt_to_dma32(cqr->data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->startdev = device;
 	cqr->memdev = device;
 	clear_bit(DASD_CQR_FLAGS_USE_ERP, &cqr->flags);
@@ -6779,11 +5236,7 @@ static int dasd_eckd_snid(struct dasd_device *device,
 	set_bit(DASD_CQR_ALLOW_SLOCK, &cqr->flags);
 	cqr->retries = 5;
 	cqr->expires = 10 * HZ;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-=======
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 	cqr->lpm = usrparm.path_mask;
 
@@ -6819,11 +5272,7 @@ dasd_eckd_performance(struct dasd_device *device, void __user *argp)
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 1 /* PSF */  + 1 /* RSSD */,
 				   (sizeof(struct dasd_psf_prssd_data) +
 				    sizeof(struct dasd_rssd_perf_stats_t)),
-<<<<<<< HEAD
-				   device);
-=======
 				   device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		DBF_DEV_EVENT(DBF_WARNING, device, "%s",
 			    "Could not allocate initialization request");
@@ -6846,11 +5295,7 @@ dasd_eckd_performance(struct dasd_device *device, void __user *argp)
 	ccw->cmd_code = DASD_ECKD_CCW_PSF;
 	ccw->count = sizeof(struct dasd_psf_prssd_data);
 	ccw->flags |= CCW_FLAG_CC;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) prssdp;
-=======
 	ccw->cda = virt_to_dma32(prssdp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read Subsystem Data - Performance Statistics */
 	stats = (struct dasd_rssd_perf_stats_t *) (prssdp + 1);
@@ -6859,15 +5304,9 @@ dasd_eckd_performance(struct dasd_device *device, void __user *argp)
 	ccw++;
 	ccw->cmd_code = DASD_ECKD_CCW_RSSD;
 	ccw->count = sizeof(struct dasd_rssd_perf_stats_t);
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) stats;
-
-	cqr->buildclk = get_clock();
-=======
 	ccw->cda = virt_to_dma32(stats);
 
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 	rc = dasd_sleep_on(cqr);
 	if (rc == 0) {
@@ -6888,12 +5327,7 @@ dasd_eckd_performance(struct dasd_device *device, void __user *argp)
 static int
 dasd_eckd_get_attrib(struct dasd_device *device, void __user *argp)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private =
-		(struct dasd_eckd_private *)device->private;
-=======
 	struct dasd_eckd_private *private = device->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct attrib_data_t attrib = private->attrib;
 	int rc;
 
@@ -6917,12 +5351,7 @@ dasd_eckd_get_attrib(struct dasd_device *device, void __user *argp)
 static int
 dasd_eckd_set_attrib(struct dasd_device *device, void __user *argp)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private =
-		(struct dasd_eckd_private *)device->private;
-=======
 	struct dasd_eckd_private *private = device->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct attrib_data_t attrib;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -6961,11 +5390,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 	rc = -EFAULT;
 	if (copy_from_user(&usrparm, argp, sizeof(usrparm)))
 		goto out;
-<<<<<<< HEAD
-	if (is_compat_task() || sizeof(long) == 4) {
-=======
 	if (is_compat_task()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Make sure pointers are sane even on 31 bit. */
 		rc = -EINVAL;
 		if ((usrparm.psf_data >> 32) != 0)
@@ -6975,8 +5400,6 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 		usrparm.psf_data &= 0x7fffffffULL;
 		usrparm.rssd_result &= 0x7fffffffULL;
 	}
-<<<<<<< HEAD
-=======
 	/* at least 2 bytes are accessed and should be allocated */
 	if (usrparm.psf_data_len < 2) {
 		DBF_DEV_EVENT(DBF_WARNING, device,
@@ -6985,7 +5408,6 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 		rc = -EINVAL;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* alloc I/O data area */
 	psf_data = kzalloc(usrparm.psf_data_len, GFP_KERNEL | GFP_DMA);
 	rssd_result = kzalloc(usrparm.rssd_result_len, GFP_KERNEL | GFP_DMA);
@@ -7004,11 +5426,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 	psf1 = psf_data[1];
 
 	/* setup CCWs for PSF + RSSD */
-<<<<<<< HEAD
-	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 2 , 0, device);
-=======
 	cqr = dasd_smalloc_request(DASD_ECKD_MAGIC, 2, 0, device, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr)) {
 		DBF_DEV_EVENT(DBF_WARNING, device, "%s",
 			"Could not allocate initialization request");
@@ -7020,11 +5438,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 	cqr->memdev = device;
 	cqr->retries = 3;
 	cqr->expires = 10 * HZ;
-<<<<<<< HEAD
-	cqr->buildclk = get_clock();
-=======
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 
 	/* Build the ccws */
@@ -7034,11 +5448,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 	ccw->cmd_code = DASD_ECKD_CCW_PSF;
 	ccw->count = usrparm.psf_data_len;
 	ccw->flags |= CCW_FLAG_CC;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) psf_data;
-=======
 	ccw->cda = virt_to_dma32(psf_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ccw++;
 
@@ -7046,11 +5456,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
 	ccw->cmd_code = DASD_ECKD_CCW_RSSD;
 	ccw->count = usrparm.rssd_result_len;
 	ccw->flags = CCW_FLAG_SLI ;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) rssd_result;
-=======
 	ccw->cda = virt_to_dma32(rssd_result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = dasd_sleep_on(cqr);
 	if (rc)
@@ -7097,11 +5503,7 @@ dasd_eckd_ioctl(struct dasd_block *block, unsigned int cmd, void __user *argp)
 	case BIODASDSYMMIO:
 		return dasd_symm_io(device, argp);
 	default:
-<<<<<<< HEAD
-		return -ENOIOCTLCMD;
-=======
 		return -ENOTTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -7109,40 +5511,20 @@ dasd_eckd_ioctl(struct dasd_block *block, unsigned int cmd, void __user *argp)
  * Dump the range of CCWs into 'page' buffer
  * and return number of printed chars.
  */
-<<<<<<< HEAD
-static int
-dasd_eckd_dump_ccw_range(struct ccw1 *from, struct ccw1 *to, char *page)
-=======
 static void
 dasd_eckd_dump_ccw_range(struct dasd_device *device, struct ccw1 *from,
 			 struct ccw1 *to, char *page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len, count;
 	char *datap;
 
 	len = 0;
 	while (from <= to) {
-<<<<<<< HEAD
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " CCW %p: %08X %08X DAT:",
-=======
 		len += sprintf(page + len, "CCW %px: %08X %08X DAT:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       from, ((int *) from)[0], ((int *) from)[1]);
 
 		/* get pointer to data (consider IDALs) */
 		if (from->flags & CCW_FLAG_IDA)
-<<<<<<< HEAD
-			datap = (char *) *((addr_t *) (addr_t) from->cda);
-		else
-			datap = (char *) ((addr_t) from->cda);
-
-		/* dump data (max 32 bytes) */
-		for (count = 0; count < from->count && count < 32; count++) {
-			if (count % 8 == 0) len += sprintf(page + len, " ");
-			if (count % 4 == 0) len += sprintf(page + len, " ");
-=======
 			datap = (char *)*((addr_t *)dma32_to_virt(from->cda));
 		else
 			datap = dma32_to_virt(from->cda);
@@ -7155,18 +5537,13 @@ dasd_eckd_dump_ccw_range(struct dasd_device *device, struct ccw1 *from,
 				len += sprintf(page + len, " ");
 			if (count % 4 == 0)
 				len += sprintf(page + len, " ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			len += sprintf(page + len, "%02x", datap[count]);
 		}
 		len += sprintf(page + len, "\n");
 		from++;
 	}
-<<<<<<< HEAD
-	return len;
-=======
 	if (len > 0)
 		dev_err(&device->cdev->dev, "%s", page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -7197,18 +5574,12 @@ dasd_eckd_dump_sense_dbf(struct dasd_device *device, struct irb *irb,
 static void dasd_eckd_dump_sense_ccw(struct dasd_device *device,
 				 struct dasd_ccw_req *req, struct irb *irb)
 {
-<<<<<<< HEAD
-	char *page;
-	struct ccw1 *first, *last, *fail, *from, *to;
-	int len, sl, sct;
-=======
 	struct ccw1 *first, *last, *fail, *from, *to;
 	struct device *dev;
 	int len, sl, sct;
 	char *page;
 
 	dev = &device->cdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	page = (char *) get_zeroed_page(GFP_ATOMIC);
 	if (page == NULL) {
@@ -7217,38 +5588,18 @@ static void dasd_eckd_dump_sense_ccw(struct dasd_device *device,
 		return;
 	}
 	/* dump the sense data */
-<<<<<<< HEAD
-	len = sprintf(page,  KERN_ERR PRINTK_HEADER
-		      " I/O status report for device %s:\n",
-		      dev_name(&device->cdev->dev));
-	len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-		       " in req: %p CC:%02X FC:%02X AC:%02X SC:%02X DS:%02X "
-		       "CS:%02X RC:%d\n",
-=======
 	len = sprintf(page, "I/O status report:\n");
 	len += sprintf(page + len,
 		       "in req: %px CC:%02X FC:%02X AC:%02X SC:%02X DS:%02X CS:%02X RC:%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       req, scsw_cc(&irb->scsw), scsw_fctl(&irb->scsw),
 		       scsw_actl(&irb->scsw), scsw_stctl(&irb->scsw),
 		       scsw_dstat(&irb->scsw), scsw_cstat(&irb->scsw),
 		       req ? req->intrc : 0);
-<<<<<<< HEAD
-	len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-		       " device %s: Failing CCW: %p\n",
-		       dev_name(&device->cdev->dev),
-		       (void *) (addr_t) irb->scsw.cmd.cpa);
-	if (irb->esw.esw0.erw.cons) {
-		for (sl = 0; sl < 4; sl++) {
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-				       " Sense(hex) %2d-%2d:",
-=======
 	len += sprintf(page + len, "Failing CCW: %px\n",
 		       dma32_to_virt(irb->scsw.cmd.cpa));
 	if (irb->esw.esw0.erw.cons) {
 		for (sl = 0; sl < 4; sl++) {
 			len += sprintf(page + len, "Sense(hex) %2d-%2d:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       (8 * sl), ((8 * sl) + 7));
 
 			for (sct = 0; sct < 8; sct++) {
@@ -7260,30 +5611,12 @@ static void dasd_eckd_dump_sense_ccw(struct dasd_device *device,
 
 		if (irb->ecw[27] & DASD_SENSE_BIT_0) {
 			/* 24 Byte Sense Data */
-<<<<<<< HEAD
-			sprintf(page + len, KERN_ERR PRINTK_HEADER
-				" 24 Byte: %x MSG %x, "
-				"%s MSGb to SYSOP\n",
-=======
 			sprintf(page + len,
 				"24 Byte: %x MSG %x, %s MSGb to SYSOP\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				irb->ecw[7] >> 4, irb->ecw[7] & 0x0f,
 				irb->ecw[1] & 0x10 ? "" : "no");
 		} else {
 			/* 32 Byte Sense Data */
-<<<<<<< HEAD
-			sprintf(page + len, KERN_ERR PRINTK_HEADER
-				" 32 Byte: Format: %x "
-				"Exception class %x\n",
-				irb->ecw[6] & 0x0f, irb->ecw[22] >> 4);
-		}
-	} else {
-		sprintf(page + len, KERN_ERR PRINTK_HEADER
-			" SORRY - NO VALID SENSE AVAILABLE\n");
-	}
-	printk("%s", page);
-=======
 			sprintf(page + len,
 				"32 Byte: Format: %x Exception class %x\n",
 				irb->ecw[6] & 0x0f, irb->ecw[22] >> 4);
@@ -7292,44 +5625,10 @@ static void dasd_eckd_dump_sense_ccw(struct dasd_device *device,
 		sprintf(page + len, "SORRY - NO VALID SENSE AVAILABLE\n");
 	}
 	dev_err(dev, "%s", page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (req) {
 		/* req == NULL for unsolicited interrupts */
 		/* dump the Channel Program (max 140 Bytes per line) */
-<<<<<<< HEAD
-		/* Count CCW and print first CCWs (maximum 1024 % 140 = 7) */
-		first = req->cpaddr;
-		for (last = first; last->flags & (CCW_FLAG_CC | CCW_FLAG_DC); last++);
-		to = min(first + 6, last);
-		len = sprintf(page,  KERN_ERR PRINTK_HEADER
-			      " Related CP in req: %p\n", req);
-		dasd_eckd_dump_ccw_range(first, to, page + len);
-		printk("%s", page);
-
-		/* print failing CCW area (maximum 4) */
-		/* scsw->cda is either valid or zero  */
-		len = 0;
-		from = ++to;
-		fail = (struct ccw1 *)(addr_t)
-				irb->scsw.cmd.cpa; /* failing CCW */
-		if (from <  fail - 2) {
-			from = fail - 2;     /* there is a gap - print header */
-			len += sprintf(page, KERN_ERR PRINTK_HEADER "......\n");
-		}
-		to = min(fail + 1, last);
-		len += dasd_eckd_dump_ccw_range(from, to, page + len);
-
-		/* print last CCWs (maximum 2) */
-		from = max(from, ++to);
-		if (from < last - 1) {
-			from = last - 1;     /* there is a gap - print header */
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER "......\n");
-		}
-		len += dasd_eckd_dump_ccw_range(from, last, page + len);
-		if (len > 0)
-			printk("%s", page);
-=======
 		/* Count CCW and print first CCWs (maximum 7) */
 		first = req->cpaddr;
 		for (last = first; last->flags & (CCW_FLAG_CC | CCW_FLAG_DC); last++);
@@ -7356,7 +5655,6 @@ static void dasd_eckd_dump_sense_ccw(struct dasd_device *device,
 			dev_err(dev, "......\n");
 		}
 		dasd_eckd_dump_ccw_range(device, from, last, page + len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	free_page((unsigned long) page);
 }
@@ -7380,73 +5678,22 @@ static void dasd_eckd_dump_sense_tcw(struct dasd_device *device,
 		return;
 	}
 	/* dump the sense data */
-<<<<<<< HEAD
-	len = sprintf(page,  KERN_ERR PRINTK_HEADER
-		      " I/O status report for device %s:\n",
-		      dev_name(&device->cdev->dev));
-	len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-		       " in req: %p CC:%02X FC:%02X AC:%02X SC:%02X DS:%02X "
-=======
 	len = sprintf(page, "I/O status report:\n");
 	len += sprintf(page + len,
 		       "in req: %px CC:%02X FC:%02X AC:%02X SC:%02X DS:%02X "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "CS:%02X fcxs:%02X schxs:%02X RC:%d\n",
 		       req, scsw_cc(&irb->scsw), scsw_fctl(&irb->scsw),
 		       scsw_actl(&irb->scsw), scsw_stctl(&irb->scsw),
 		       scsw_dstat(&irb->scsw), scsw_cstat(&irb->scsw),
-<<<<<<< HEAD
-		       irb->scsw.tm.fcxs, irb->scsw.tm.schxs,
-		       req ? req->intrc : 0);
-	len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-		       " device %s: Failing TCW: %p\n",
-		       dev_name(&device->cdev->dev),
-		       (void *) (addr_t) irb->scsw.tm.tcw);
-=======
 		       irb->scsw.tm.fcxs,
 		       (irb->scsw.tm.ifob << 7) | irb->scsw.tm.sesq,
 		       req ? req->intrc : 0);
 	len += sprintf(page + len, "Failing TCW: %px\n",
 		       dma32_to_virt(irb->scsw.tm.tcw));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tsb = NULL;
 	sense = NULL;
 	if (irb->scsw.tm.tcw && (irb->scsw.tm.fcxs & 0x01))
-<<<<<<< HEAD
-		tsb = tcw_get_tsb(
-			(struct tcw *)(unsigned long)irb->scsw.tm.tcw);
-
-	if (tsb) {
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->length %d\n", tsb->length);
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->flags %x\n", tsb->flags);
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->dcw_offset %d\n", tsb->dcw_offset);
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->count %d\n", tsb->count);
-		residual = tsb->count - 28;
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " residual %d\n", residual);
-
-		switch (tsb->flags & 0x07) {
-		case 1:	/* tsa_iostat */
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->tsa.iostat.dev_time %d\n",
-				       tsb->tsa.iostat.dev_time);
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->tsa.iostat.def_time %d\n",
-				       tsb->tsa.iostat.def_time);
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->tsa.iostat.queue_time %d\n",
-				       tsb->tsa.iostat.queue_time);
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->tsa.iostat.dev_busy_time %d\n",
-				       tsb->tsa.iostat.dev_busy_time);
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->tsa.iostat.dev_act_time %d\n",
-=======
 		tsb = tcw_get_tsb(dma32_to_virt(irb->scsw.tm.tcw));
 
 	if (tsb) {
@@ -7468,23 +5715,10 @@ static void dasd_eckd_dump_sense_tcw(struct dasd_device *device,
 			len += sprintf(page + len, "tsb->tsa.iostat.dev_busy_time %d\n",
 				       tsb->tsa.iostat.dev_busy_time);
 			len += sprintf(page + len, "tsb->tsa.iostat.dev_act_time %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       tsb->tsa.iostat.dev_act_time);
 			sense = tsb->tsa.iostat.sense;
 			break;
 		case 2: /* ts_ddpc */
-<<<<<<< HEAD
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " tsb->tsa.ddpc.rc %d\n", tsb->tsa.ddpc.rc);
-			for (sl = 0; sl < 2; sl++) {
-				len += sprintf(page + len,
-					       KERN_ERR PRINTK_HEADER
-					       " tsb->tsa.ddpc.rcq %2d-%2d: ",
-					       (8 * sl), ((8 * sl) + 7));
-				rcq = tsb->tsa.ddpc.rcq;
-				for (sct = 0; sct < 8; sct++) {
-					len += sprintf(page + len, " %02x",
-=======
 			len += sprintf(page + len, "tsb->tsa.ddpc.rc %d\n",
 				       tsb->tsa.ddpc.rc);
 			for (sl = 0; sl < 2; sl++) {
@@ -7494,7 +5728,6 @@ static void dasd_eckd_dump_sense_tcw(struct dasd_device *device,
 				rcq = tsb->tsa.ddpc.rcq;
 				for (sct = 0; sct < 8; sct++) {
 					len += sprintf(page + len, "%02x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						       rcq[8 * sl + sct]);
 				}
 				len += sprintf(page + len, "\n");
@@ -7502,25 +5735,15 @@ static void dasd_eckd_dump_sense_tcw(struct dasd_device *device,
 			sense = tsb->tsa.ddpc.sense;
 			break;
 		case 3: /* tsa_intrg */
-<<<<<<< HEAD
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-				      " tsb->tsa.intrg.: not supportet yet \n");
-=======
 			len += sprintf(page + len,
 				      "tsb->tsa.intrg.: not supported yet\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		if (sense) {
 			for (sl = 0; sl < 4; sl++) {
 				len += sprintf(page + len,
-<<<<<<< HEAD
-					       KERN_ERR PRINTK_HEADER
-					       " Sense(hex) %2d-%2d:",
-=======
 					       "Sense(hex) %2d-%2d:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       (8 * sl), ((8 * sl) + 7));
 				for (sct = 0; sct < 8; sct++) {
 					len += sprintf(page + len, " %02x",
@@ -7531,34 +5754,12 @@ static void dasd_eckd_dump_sense_tcw(struct dasd_device *device,
 
 			if (sense[27] & DASD_SENSE_BIT_0) {
 				/* 24 Byte Sense Data */
-<<<<<<< HEAD
-				sprintf(page + len, KERN_ERR PRINTK_HEADER
-					" 24 Byte: %x MSG %x, "
-					"%s MSGb to SYSOP\n",
-=======
 				sprintf(page + len,
 					"24 Byte: %x MSG %x, %s MSGb to SYSOP\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sense[7] >> 4, sense[7] & 0x0f,
 					sense[1] & 0x10 ? "" : "no");
 			} else {
 				/* 32 Byte Sense Data */
-<<<<<<< HEAD
-				sprintf(page + len, KERN_ERR PRINTK_HEADER
-					" 32 Byte: Format: %x "
-					"Exception class %x\n",
-					sense[6] & 0x0f, sense[22] >> 4);
-			}
-		} else {
-			sprintf(page + len, KERN_ERR PRINTK_HEADER
-				" SORRY - NO VALID SENSE AVAILABLE\n");
-		}
-	} else {
-		sprintf(page + len, KERN_ERR PRINTK_HEADER
-			" SORRY - NO TSB DATA AVAILABLE\n");
-	}
-	printk("%s", page);
-=======
 				sprintf(page + len,
 					"32 Byte: Format: %x Exception class %x\n",
 					sense[6] & 0x0f, sense[22] >> 4);
@@ -7570,93 +5771,12 @@ static void dasd_eckd_dump_sense_tcw(struct dasd_device *device,
 		sprintf(page + len, "SORRY - NO TSB DATA AVAILABLE\n");
 	}
 	dev_err(&device->cdev->dev, "%s", page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_page((unsigned long) page);
 }
 
 static void dasd_eckd_dump_sense(struct dasd_device *device,
 				 struct dasd_ccw_req *req, struct irb *irb)
 {
-<<<<<<< HEAD
-	if (scsw_is_tm(&irb->scsw))
-		dasd_eckd_dump_sense_tcw(device, req, irb);
-	else
-		dasd_eckd_dump_sense_ccw(device, req, irb);
-}
-
-static int dasd_eckd_pm_freeze(struct dasd_device *device)
-{
-	/*
-	 * the device should be disconnected from our LCU structure
-	 * on restore we will reconnect it and reread LCU specific
-	 * information like PAV support that might have changed
-	 */
-	dasd_alias_remove_device(device);
-	dasd_alias_disconnect_device_from_lcu(device);
-
-	return 0;
-}
-
-static int dasd_eckd_restore_device(struct dasd_device *device)
-{
-	struct dasd_eckd_private *private;
-	struct dasd_eckd_characteristics temp_rdc_data;
-	int rc;
-	struct dasd_uid temp_uid;
-	unsigned long flags;
-
-	private = (struct dasd_eckd_private *) device->private;
-
-	/* Read Configuration Data */
-	rc = dasd_eckd_read_conf(device);
-	if (rc)
-		goto out_err;
-
-	dasd_eckd_get_uid(device, &temp_uid);
-	/* Generate device unique id */
-	rc = dasd_eckd_generate_uid(device);
-	spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
-	if (memcmp(&private->uid, &temp_uid, sizeof(struct dasd_uid)) != 0)
-		dev_err(&device->cdev->dev, "The UID of the DASD has "
-			"changed\n");
-	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
-	if (rc)
-		goto out_err;
-
-	/* register lcu with alias handling, enable PAV if this is a new lcu */
-	rc = dasd_alias_make_device_known_to_lcu(device);
-	if (rc)
-		return rc;
-	dasd_eckd_validate_server(device);
-
-	/* RE-Read Configuration Data */
-	rc = dasd_eckd_read_conf(device);
-	if (rc)
-		goto out_err;
-
-	/* Read Feature Codes */
-	dasd_eckd_read_features(device);
-
-	/* Read Device Characteristics */
-	rc = dasd_generic_read_dev_chars(device, DASD_ECKD_MAGIC,
-					 &temp_rdc_data, 64);
-	if (rc) {
-		DBF_EVENT_DEVID(DBF_WARNING, device->cdev,
-				"Read device characteristic failed, rc=%d", rc);
-		goto out_err;
-	}
-	spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
-	memcpy(&private->rdc_data, &temp_rdc_data, sizeof(temp_rdc_data));
-	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
-
-	/* add device to alias management */
-	dasd_alias_add_device(device);
-
-	return 0;
-
-out_err:
-	return -1;
-=======
 	u8 *sense = dasd_get_sense(irb);
 
 	if (scsw_is_tm(&irb->scsw)) {
@@ -7689,20 +5809,10 @@ out_err:
 
 		dasd_eckd_dump_sense_ccw(device, req, irb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dasd_eckd_reload_device(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	struct dasd_eckd_private *private;
-	int rc, old_base;
-	char print_uid[60];
-	struct dasd_uid uid;
-	unsigned long flags;
-
-	private = (struct dasd_eckd_private *) device->private;
-=======
 	struct dasd_eckd_private *private = device->private;
 	char print_uid[DASD_UID_STRLEN];
 	int rc, old_base;
@@ -7714,7 +5824,6 @@ static int dasd_eckd_reload_device(struct dasd_device *device)
 	 * from being scheduled on the wrong alias device
 	 */
 	dasd_alias_remove_device(device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
 	old_base = private->uid.base_unit_addr;
@@ -7725,11 +5834,8 @@ static int dasd_eckd_reload_device(struct dasd_device *device)
 	if (rc)
 		goto out_err;
 
-<<<<<<< HEAD
-=======
 	dasd_eckd_read_fc_security(device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = dasd_eckd_generate_uid(device);
 	if (rc)
 		goto out_err;
@@ -7742,19 +5848,7 @@ static int dasd_eckd_reload_device(struct dasd_device *device)
 	dasd_eckd_get_uid(device, &uid);
 
 	if (old_base != uid.base_unit_addr) {
-<<<<<<< HEAD
-		if (strlen(uid.vduit) > 0)
-			snprintf(print_uid, sizeof(print_uid),
-				 "%s.%s.%04x.%02x.%s", uid.vendor, uid.serial,
-				 uid.ssid, uid.base_unit_addr, uid.vduit);
-		else
-			snprintf(print_uid, sizeof(print_uid),
-				 "%s.%s.%04x.%02x", uid.vendor, uid.serial,
-				 uid.ssid, uid.base_unit_addr);
-
-=======
 		dasd_eckd_get_uid_string(&private->conf, print_uid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_info(&device->cdev->dev,
 			 "An Alias device was reassigned to a new base device "
 			 "with UID: %s\n", print_uid);
@@ -7765,8 +5859,6 @@ out_err:
 	return -1;
 }
 
-<<<<<<< HEAD
-=======
 static int dasd_eckd_read_message_buffer(struct dasd_device *device,
 					 struct dasd_rssd_messages *messages,
 					 __u8 lpum)
@@ -8748,15 +6840,11 @@ static unsigned int dasd_eckd_max_sectors(struct dasd_block *block)
 	return DASD_ECKD_MAX_BLOCKS << block->s2b_shift;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ccw_driver dasd_eckd_driver = {
 	.driver = {
 		.name	= "dasd-eckd",
 		.owner	= THIS_MODULE,
-<<<<<<< HEAD
-=======
 		.dev_groups = dasd_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.ids	     = dasd_eckd_ids,
 	.probe	     = dasd_eckd_probe,
@@ -8765,47 +6853,15 @@ static struct ccw_driver dasd_eckd_driver = {
 	.set_online  = dasd_eckd_set_online,
 	.notify      = dasd_generic_notify,
 	.path_event  = dasd_generic_path_event,
-<<<<<<< HEAD
-	.freeze      = dasd_generic_pm_freeze,
-	.thaw	     = dasd_generic_restore_device,
-	.restore     = dasd_generic_restore_device,
-	.uc_handler  = dasd_generic_uc_handler,
-	.int_class   = IOINT_DAS,
-};
-
-/*
- * max_blocks is dependent on the amount of storage that is available
- * in the static io buffer for each device. Currently each device has
- * 8192 bytes (=2 pages). For 64 bit one dasd_mchunkt_t structure has
- * 24 bytes, the struct dasd_ccw_req has 136 bytes and each block can use
- * up to 16 bytes (8 for the ccw and 8 for the idal pointer). In
- * addition we have one define extent ccw + 16 bytes of data and one
- * locate record ccw + 16 bytes of data. That makes:
- * (8192 - 24 - 136 - 8 - 16 - 8 - 16) / 16 = 499 blocks at maximum.
- * We want to fit two into the available memory so that we can immediately
- * start the next request if one finishes off. That makes 249.5 blocks
- * for one request. Give a little safety and the result is 240.
- */
-=======
 	.shutdown    = dasd_generic_shutdown,
 	.uc_handler  = dasd_generic_uc_handler,
 	.int_class   = IRQIO_DAS,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dasd_discipline dasd_eckd_discipline = {
 	.owner = THIS_MODULE,
 	.name = "ECKD",
 	.ebcname = "ECKD",
-<<<<<<< HEAD
-	.max_blocks = 190,
-	.check_device = dasd_eckd_check_characteristics,
-	.uncheck_device = dasd_eckd_uncheck_device,
-	.do_analysis = dasd_eckd_do_analysis,
-	.verify_path = dasd_eckd_verify_path,
-	.ready_to_online = dasd_eckd_ready_to_online,
-	.online_to_ready = dasd_eckd_online_to_ready,
-=======
 	.check_device = dasd_eckd_check_characteristics,
 	.uncheck_device = dasd_eckd_uncheck_device,
 	.do_analysis = dasd_eckd_do_analysis,
@@ -8814,16 +6870,12 @@ static struct dasd_discipline dasd_eckd_discipline = {
 	.online_to_ready = dasd_eckd_online_to_ready,
 	.basic_to_known = dasd_eckd_basic_to_known,
 	.max_sectors = dasd_eckd_max_sectors,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fill_geometry = dasd_eckd_fill_geometry,
 	.start_IO = dasd_start_IO,
 	.term_IO = dasd_term_IO,
 	.handle_terminated_request = dasd_eckd_handle_terminated_request,
 	.format_device = dasd_eckd_format_device,
-<<<<<<< HEAD
-=======
 	.check_device_format = dasd_eckd_check_device_format,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.erp_action = dasd_eckd_erp_action,
 	.erp_postaction = dasd_eckd_erp_postaction,
 	.check_for_device_change = dasd_eckd_check_for_device_change,
@@ -8833,13 +6885,6 @@ static struct dasd_discipline dasd_eckd_discipline = {
 	.dump_sense_dbf = dasd_eckd_dump_sense_dbf,
 	.fill_info = dasd_eckd_fill_info,
 	.ioctl = dasd_eckd_ioctl,
-<<<<<<< HEAD
-	.freeze = dasd_eckd_pm_freeze,
-	.restore = dasd_eckd_restore_device,
-	.reload = dasd_eckd_reload_device,
-	.get_uid = dasd_eckd_get_uid,
-	.kick_validate = dasd_eckd_kick_validate_server,
-=======
 	.reload = dasd_eckd_reload_device,
 	.get_uid = dasd_eckd_get_uid,
 	.kick_validate = dasd_eckd_kick_validate_server,
@@ -8867,7 +6912,6 @@ static struct dasd_discipline dasd_eckd_discipline = {
 	.pprc_enabled = dasd_eckd_pprc_enabled,
 	.copy_pair_swap = dasd_eckd_copy_pair_swap,
 	.device_ping = dasd_eckd_device_ping,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init
@@ -8880,14 +6924,6 @@ dasd_eckd_init(void)
 				   GFP_KERNEL | GFP_DMA);
 	if (!dasd_reserve_req)
 		return -ENOMEM;
-<<<<<<< HEAD
-	path_verification_worker = kmalloc(sizeof(*path_verification_worker),
-				   GFP_KERNEL | GFP_DMA);
-	if (!path_verification_worker) {
-		kfree(dasd_reserve_req);
-		return -ENOMEM;
-	}
-=======
 	dasd_vol_info_req = kmalloc(sizeof(*dasd_vol_info_req),
 				    GFP_KERNEL | GFP_DMA);
 	if (!dasd_vol_info_req) {
@@ -8908,20 +6944,14 @@ dasd_eckd_init(void)
 		kfree(dasd_vol_info_req);
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ccw_driver_register(&dasd_eckd_driver);
 	if (!ret)
 		wait_for_device_probe();
 	else {
-<<<<<<< HEAD
-		kfree(path_verification_worker);
-		kfree(dasd_reserve_req);
-=======
 		kfree(pe_handler_worker);
 		kfree(dasd_reserve_req);
 		kfree(dasd_vol_info_req);
 		free_page((unsigned long)rawpadpage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -8930,14 +6960,9 @@ static void __exit
 dasd_eckd_cleanup(void)
 {
 	ccw_driver_unregister(&dasd_eckd_driver);
-<<<<<<< HEAD
-	kfree(path_verification_worker);
-	kfree(dasd_reserve_req);
-=======
 	kfree(pe_handler_worker);
 	kfree(dasd_reserve_req);
 	free_page((unsigned long)rawpadpage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(dasd_eckd_init);

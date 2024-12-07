@@ -30,17 +30,6 @@
 #ifndef RADEON_MODE_H
 #define RADEON_MODE_H
 
-<<<<<<< HEAD
-#include <drm_crtc.h>
-#include <drm_mode.h>
-#include <drm_edid.h>
-#include <drm_dp_helper.h>
-#include <drm_fixed.h>
-#include <drm_crtc_helper.h>
-#include <linux/i2c.h>
-#include <linux/i2c-algo-bit.h>
-
-=======
 #include <drm/display/drm_dp_helper.h>
 #include <drm/drm_crtc.h>
 #include <drm/drm_encoder.h>
@@ -50,21 +39,16 @@
 #include <linux/i2c-algo-bit.h>
 
 struct edid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct radeon_bo;
 struct radeon_device;
 
 #define to_radeon_crtc(x) container_of(x, struct radeon_crtc, base)
 #define to_radeon_connector(x) container_of(x, struct radeon_connector, base)
 #define to_radeon_encoder(x) container_of(x, struct radeon_encoder, base)
-<<<<<<< HEAD
-#define to_radeon_framebuffer(x) container_of(x, struct radeon_framebuffer, base)
-=======
 
 #define RADEON_MAX_HPD_PINS 7
 #define RADEON_MAX_CRTCS 6
 #define RADEON_MAX_AFMT_BLOCKS 7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum radeon_rmx_type {
 	RMX_OFF,
@@ -101,8 +85,6 @@ enum radeon_hpd_id {
 	RADEON_HPD_NONE = 0xff,
 };
 
-<<<<<<< HEAD
-=======
 enum radeon_output_csc {
 	RADEON_OUTPUT_CSC_BYPASS = 0,
 	RADEON_OUTPUT_CSC_TVRGB = 1,
@@ -110,7 +92,6 @@ enum radeon_output_csc {
 	RADEON_OUTPUT_CSC_YCBCR709 = 3,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RADEON_MAX_I2C_BUS 16
 
 /* radeon gpio-based i2c
@@ -217,19 +198,11 @@ struct radeon_pll {
 struct radeon_i2c_chan {
 	struct i2c_adapter adapter;
 	struct drm_device *dev;
-<<<<<<< HEAD
-	union {
-		struct i2c_algo_bit_data bit;
-		struct i2c_algo_dp_aux_data dp;
-	} algo;
-	struct radeon_i2c_bus_rec rec;
-=======
 	struct i2c_algo_bit_data bit;
 	struct radeon_i2c_bus_rec rec;
 	struct drm_dp_aux aux;
 	bool has_aux;
 	struct mutex mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* mostly for macs, but really any system without connector tables */
@@ -256,28 +229,20 @@ enum radeon_dvo_chip {
 	DVO_SIL1178,
 };
 
-<<<<<<< HEAD
-struct radeon_fbdev;
-=======
 struct radeon_afmt {
 	bool enabled;
 	int offset;
 	bool last_buffer_filled_status;
 	int id;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct radeon_mode_info {
 	struct atom_context *atom_context;
 	struct card_info *atom_card_info;
 	enum radeon_connector_table connector_table;
 	bool mode_config_initialized;
-<<<<<<< HEAD
-	struct radeon_crtc *crtcs[6];
-=======
 	struct radeon_crtc *crtcs[RADEON_MAX_CRTCS];
 	struct radeon_afmt *afmt[RADEON_MAX_AFMT_BLOCKS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* DVI-I properties */
 	struct drm_property *coherent_mode_property;
 	/* DAC enable load detect */
@@ -290,23 +255,16 @@ struct radeon_mode_info {
 	struct drm_property *underscan_property;
 	struct drm_property *underscan_hborder_property;
 	struct drm_property *underscan_vborder_property;
-<<<<<<< HEAD
-=======
 	/* audio */
 	struct drm_property *audio_property;
 	/* FMT dithering */
 	struct drm_property *dither_property;
 	/* Output CSC */
 	struct drm_property *output_csc_property;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* hardcoded DFP edid from BIOS */
 	struct edid *bios_hardcoded_edid;
 	int bios_hardcoded_edid_size;
 
-<<<<<<< HEAD
-	/* pointer to fbdev info structure */
-	struct radeon_fbdev *rfbdev;
-=======
 	/* firmware flags */
 	u16 firmware_flags;
 	/* pointer to backlight encoder */
@@ -321,7 +279,6 @@ struct radeon_mode_info {
 struct radeon_backlight_privdata {
 	struct radeon_encoder *encoder;
 	uint8_t negative;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MAX_H_CODE_TIMING_LEN 32
@@ -339,22 +296,6 @@ struct radeon_tv_regs {
 	uint16_t v_code_timing[MAX_V_CODE_TIMING_LEN];
 };
 
-<<<<<<< HEAD
-struct radeon_crtc {
-	struct drm_crtc base;
-	int crtc_id;
-	u16 lut_r[256], lut_g[256], lut_b[256];
-	bool enabled;
-	bool can_tile;
-	bool in_mode_set;
-	uint32_t crtc_offset;
-	struct drm_gem_object *cursor_bo;
-	uint64_t cursor_addr;
-	int cursor_width;
-	int cursor_height;
-	uint32_t legacy_display_base_addr;
-	uint32_t legacy_cursor_offset;
-=======
 struct radeon_atom_ss {
 	uint16_t percentage;
 	uint16_t percentage_divider;
@@ -392,7 +333,6 @@ struct radeon_crtc {
 	int max_cursor_width;
 	int max_cursor_height;
 	uint32_t legacy_display_base_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum radeon_rmx_type rmx_type;
 	u8 h_border;
 	u8 v_border;
@@ -401,10 +341,6 @@ struct radeon_crtc {
 	struct drm_display_mode native_mode;
 	int pll_id;
 	/* page flipping */
-<<<<<<< HEAD
-	struct radeon_unpin_work *unpin_work;
-	int deferred_flip_completion;
-=======
 	struct workqueue_struct *flip_queue;
 	struct radeon_flip_work *flip_work;
 	enum radeon_flip_status flip_status;
@@ -425,7 +361,6 @@ struct radeon_crtc {
 	u32 lb_vblank_lead_lines;
 	struct drm_display_mode hw_mode;
 	enum radeon_output_csc output_csc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct radeon_encoder_primary_dac {
@@ -479,21 +414,6 @@ struct radeon_encoder_ext_tmds {
 };
 
 /* spread spectrum */
-<<<<<<< HEAD
-struct radeon_atom_ss {
-	uint16_t percentage;
-	uint8_t type;
-	uint16_t step;
-	uint8_t delay;
-	uint8_t range;
-	uint8_t refdiv;
-	/* asic_ss */
-	uint16_t rate;
-	uint16_t amount;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct radeon_encoder_atom_dig {
 	bool linkb;
 	/* atom dig */
@@ -509,11 +429,8 @@ struct radeon_encoder_atom_dig {
 	int dpms_mode;
 	uint8_t backlight_level;
 	int panel_mode;
-<<<<<<< HEAD
-=======
 	struct radeon_afmt *afmt;
 	struct r600_audio_pin *pin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct radeon_encoder_atom_dac {
@@ -535,32 +452,18 @@ struct radeon_encoder {
 	struct drm_display_mode native_mode;
 	void *enc_priv;
 	int audio_polling_active;
-<<<<<<< HEAD
-	int hdmi_offset;
-	int hdmi_config_offset;
-	int hdmi_audio_workaround;
-	int hdmi_buffer_status;
-	bool is_ext_encoder;
-	u16 caps;
-=======
 	bool is_ext_encoder;
 	u16 caps;
 	struct radeon_audio_funcs *audio;
 	enum radeon_output_csc output_csc;
 	bool can_mst;
 	uint32_t offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct radeon_connector_atom_dig {
 	uint32_t igp_lane_info;
 	/* displayport */
-<<<<<<< HEAD
-	struct radeon_i2c_chan *dp_i2c_bus;
-	u8 dpcd[8];
-=======
 	u8 dpcd[DP_RECEIVER_CAP_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 dp_sink_type;
 	int dp_clock;
 	int dp_lane_count;
@@ -572,10 +475,7 @@ struct radeon_gpio_rec {
 	u8 id;
 	u32 reg;
 	u32 mask;
-<<<<<<< HEAD
-=======
 	u32 shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct radeon_hpd {
@@ -600,8 +500,6 @@ struct radeon_router {
 	u8 cd_mux_state;
 };
 
-<<<<<<< HEAD
-=======
 enum radeon_connector_audio {
 	RADEON_AUDIO_DISABLE = 0,
 	RADEON_AUDIO_ENABLE = 1,
@@ -613,7 +511,6 @@ enum radeon_connector_dither {
 	RADEON_FMT_DITHER_ENABLE = 1,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct radeon_connector {
 	struct drm_connector base;
 	uint32_t connector_id;
@@ -628,32 +525,19 @@ struct radeon_connector {
 	void *con_priv;
 	bool dac_load_detect;
 	bool detected_by_load; /* if the connection status was determined by load */
-<<<<<<< HEAD
-=======
 	bool detected_hpd_without_ddc; /* if an HPD signal was detected on DVI, but ddc probing failed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t connector_object_id;
 	struct radeon_hpd hpd;
 	struct radeon_router router;
 	struct radeon_i2c_chan *router_bus;
-<<<<<<< HEAD
-};
-
-struct radeon_framebuffer {
-	struct drm_framebuffer base;
-	struct drm_gem_object *obj;
-=======
 	enum radeon_connector_audio audio;
 	enum radeon_connector_dither dither;
 	int pixelclock_for_modeset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ENCODER_MODE_IS_DP(em) (((em) == ATOM_ENCODER_MODE_DP) || \
 				((em) == ATOM_ENCODER_MODE_DP_MST))
 
-<<<<<<< HEAD
-=======
 struct atom_clock_dividers {
 	u32 post_div;
 	union {
@@ -789,13 +673,10 @@ radeon_get_encoder_enum(struct drm_device *dev, uint32_t supported_device,
 			uint8_t dac);
 extern void radeon_link_encoder_connector(struct drm_device *dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern enum radeon_tv_std
 radeon_combios_get_tv_info(struct radeon_device *rdev);
 extern enum radeon_tv_std
 radeon_atombios_get_tv_info(struct radeon_device *rdev);
-<<<<<<< HEAD
-=======
 extern void radeon_atombios_get_default_voltages(struct radeon_device *rdev,
 						 u16 *vddc, u16 *vddci, u16 *mvdd);
 
@@ -807,7 +688,6 @@ extern void
 radeon_atombios_connected_scratch_regs(struct drm_connector *connector,
 				       struct drm_encoder *encoder,
 				       bool connected);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct drm_connector *
 radeon_get_connector_for_encoder(struct drm_encoder *encoder);
@@ -818,25 +698,16 @@ extern bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
 
 extern u16 radeon_encoder_get_dp_bridge_encoder_id(struct drm_encoder *encoder);
 extern u16 radeon_connector_encoder_get_dp_bridge_encoder_id(struct drm_connector *connector);
-<<<<<<< HEAD
-extern bool radeon_connector_encoder_is_hbr2(struct drm_connector *connector);
-extern bool radeon_connector_is_dp12_capable(struct drm_connector *connector);
-=======
 extern bool radeon_connector_is_dp12_capable(struct drm_connector *connector);
 extern int radeon_get_monitor_bpc(struct drm_connector *connector);
 
 extern struct edid *radeon_connector_edid(struct drm_connector *connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void radeon_connector_hotplug(struct drm_connector *connector);
 extern int radeon_dp_mode_valid_helper(struct drm_connector *connector,
 				       struct drm_display_mode *mode);
 extern void radeon_dp_set_link_config(struct drm_connector *connector,
-<<<<<<< HEAD
-				      struct drm_display_mode *mode);
-=======
 				      const struct drm_display_mode *mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void radeon_dp_link_train(struct drm_encoder *encoder,
 				 struct drm_connector *connector);
 extern bool radeon_dp_needs_link_train(struct radeon_connector *radeon_connector);
@@ -844,9 +715,6 @@ extern u8 radeon_dp_getsinktype(struct radeon_connector *radeon_connector);
 extern bool radeon_dp_getdpcd(struct radeon_connector *radeon_connector);
 extern int radeon_dp_get_panel_mode(struct drm_encoder *encoder,
 				    struct drm_connector *connector);
-<<<<<<< HEAD
-extern void atombios_dig_encoder_setup(struct drm_encoder *encoder, int action, int panel_mode);
-=======
 extern void radeon_dp_set_rx_power_state(struct drm_connector *connector,
 					 u8 power_state);
 extern void radeon_dp_aux_init(struct radeon_connector *radeon_connector);
@@ -855,25 +723,17 @@ radeon_dp_aux_transfer_native(struct drm_dp_aux *aux, struct drm_dp_aux_msg *msg
 
 extern void atombios_dig_encoder_setup(struct drm_encoder *encoder, int action, int panel_mode);
 extern void atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_mode, int enc_override);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void radeon_atom_encoder_init(struct radeon_device *rdev);
 extern void radeon_atom_disp_eng_pll_init(struct radeon_device *rdev);
 extern void atombios_dig_transmitter_setup(struct drm_encoder *encoder,
 					   int action, uint8_t lane_num,
 					   uint8_t lane_set);
-<<<<<<< HEAD
-extern void radeon_atom_ext_encoder_setup_ddc(struct drm_encoder *encoder);
-extern struct drm_encoder *radeon_get_external_encoder(struct drm_encoder *encoder);
-extern int radeon_dp_i2c_aux_ch(struct i2c_adapter *adapter, int mode,
-				u8 write_byte, u8 *read_byte);
-=======
 extern void atombios_dig_transmitter_setup2(struct drm_encoder *encoder,
 					    int action, uint8_t lane_num,
 					    uint8_t lane_set, int fe);
 extern void radeon_atom_ext_encoder_setup_ddc(struct drm_encoder *encoder);
 extern struct drm_encoder *radeon_get_external_encoder(struct drm_encoder *encoder);
 void radeon_atom_copy_swap(u8 *dst, u8 *src, u8 num_bytes, bool to_le);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void radeon_i2c_init(struct radeon_device *rdev);
 extern void radeon_i2c_fini(struct radeon_device *rdev);
@@ -884,12 +744,6 @@ extern void radeon_i2c_add(struct radeon_device *rdev,
 			   const char *name);
 extern struct radeon_i2c_chan *radeon_i2c_lookup(struct radeon_device *rdev,
 						 struct radeon_i2c_bus_rec *i2c_bus);
-<<<<<<< HEAD
-extern struct radeon_i2c_chan *radeon_i2c_create_dp(struct drm_device *dev,
-						    struct radeon_i2c_bus_rec *rec,
-						    const char *name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct radeon_i2c_chan *radeon_i2c_create(struct drm_device *dev,
 						 struct radeon_i2c_bus_rec *rec,
 						 const char *name);
@@ -905,12 +759,6 @@ extern void radeon_i2c_put_byte(struct radeon_i2c_chan *i2c,
 extern void radeon_router_select_ddc_port(struct radeon_connector *radeon_connector);
 extern void radeon_router_select_cd_port(struct radeon_connector *radeon_connector);
 extern bool radeon_ddc_probe(struct radeon_connector *radeon_connector, bool use_aux);
-<<<<<<< HEAD
-extern int radeon_ddc_get_modes(struct radeon_connector *radeon_connector);
-
-extern struct drm_encoder *radeon_best_encoder(struct drm_connector *connector);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern bool radeon_atombios_get_ppll_ss_info(struct radeon_device *rdev,
 					     struct radeon_atom_ss *ss,
@@ -918,11 +766,8 @@ extern bool radeon_atombios_get_ppll_ss_info(struct radeon_device *rdev,
 extern bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 					     struct radeon_atom_ss *ss,
 					     int id, u32 clock);
-<<<<<<< HEAD
-=======
 extern struct radeon_gpio_rec radeon_atombios_lookup_gpio(struct radeon_device *rdev,
 							  u8 id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void radeon_compute_pll_legacy(struct radeon_pll *pll,
 				      uint64_t freq,
@@ -952,10 +797,7 @@ extern void atombios_digital_setup(struct drm_encoder *encoder, int action);
 extern int atombios_get_encoder_mode(struct drm_encoder *encoder);
 extern bool atombios_set_edp_panel_power(struct drm_connector *connector, int action);
 extern void radeon_encoder_set_active_device(struct drm_encoder *encoder);
-<<<<<<< HEAD
-=======
 extern bool radeon_encoder_is_digital(struct drm_encoder *encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void radeon_crtc_load_lut(struct drm_crtc *crtc);
 extern int atombios_crtc_set_base(struct drm_crtc *crtc, int x, int y,
@@ -980,18 +822,6 @@ extern int radeon_crtc_set_base_atomic(struct drm_crtc *crtc,
 extern int radeon_crtc_do_set_base(struct drm_crtc *crtc,
 				   struct drm_framebuffer *fb,
 				   int x, int y, int atomic);
-<<<<<<< HEAD
-extern int radeon_crtc_cursor_set(struct drm_crtc *crtc,
-				  struct drm_file *file_priv,
-				  uint32_t handle,
-				  uint32_t width,
-				  uint32_t height);
-extern int radeon_crtc_cursor_move(struct drm_crtc *crtc,
-				   int x, int y);
-
-extern int radeon_get_crtc_scanoutpos(struct drm_device *dev, int crtc,
-				      int *vpos, int *hpos);
-=======
 extern int radeon_crtc_cursor_set2(struct drm_crtc *crtc,
 				   struct drm_file *file_priv,
 				   uint32_t handle,
@@ -1013,7 +843,6 @@ radeon_get_crtc_scanout_position(struct drm_crtc *crtc, bool in_vblank_irq,
 				 int *vpos, int *hpos,
 				 ktime_t *stime, ktime_t *etime,
 				 const struct drm_display_mode *mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern bool radeon_combios_check_hardcoded_edid(struct radeon_device *rdev);
 extern struct edid *
@@ -1038,10 +867,6 @@ extern struct radeon_encoder_tv_dac *
 radeon_atombios_get_tv_dac_info(struct radeon_encoder *encoder);
 extern struct radeon_encoder_lvds *
 radeon_combios_get_lvds_info(struct radeon_encoder *encoder);
-<<<<<<< HEAD
-extern void radeon_combios_get_ext_tmds_info(struct radeon_encoder *encoder);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct radeon_encoder_tv_dac *
 radeon_combios_get_tv_dac_info(struct radeon_encoder *encoder);
 extern struct radeon_encoder_primary_dac *
@@ -1062,19 +887,9 @@ extern void
 radeon_combios_encoder_crtc_scratch_regs(struct drm_encoder *encoder, int crtc);
 extern void
 radeon_combios_encoder_dpms_scratch_regs(struct drm_encoder *encoder, bool on);
-<<<<<<< HEAD
-extern void radeon_crtc_fb_gamma_set(struct drm_crtc *crtc, u16 red, u16 green,
-				     u16 blue, int regno);
-extern void radeon_crtc_fb_gamma_get(struct drm_crtc *crtc, u16 *red, u16 *green,
-				     u16 *blue, int regno);
-int radeon_framebuffer_init(struct drm_device *dev,
-			     struct radeon_framebuffer *rfb,
-			     struct drm_mode_fb_cmd2 *mode_cmd,
-=======
 int radeon_framebuffer_init(struct drm_device *dev,
 			     struct drm_framebuffer *rfb,
 			     const struct drm_mode_fb_cmd2 *mode_cmd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct drm_gem_object *obj);
 
 int radeonfb_remove(struct drm_device *dev, struct drm_framebuffer *fb);
@@ -1094,11 +909,7 @@ void radeon_enc_destroy(struct drm_encoder *encoder);
 void radeon_copy_fb(struct drm_device *dev, struct drm_gem_object *dst_obj);
 void radeon_combios_asic_init(struct drm_device *dev);
 bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
-<<<<<<< HEAD
-					struct drm_display_mode *mode,
-=======
 					const struct drm_display_mode *mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct drm_display_mode *adjusted_mode);
 void radeon_panel_mode_fixup(struct drm_encoder *encoder,
 			     struct drm_display_mode *adjusted_mode);
@@ -1118,20 +929,6 @@ void radeon_legacy_tv_mode_set(struct drm_encoder *encoder,
 			       struct drm_display_mode *mode,
 			       struct drm_display_mode *adjusted_mode);
 
-<<<<<<< HEAD
-/* fbdev layer */
-int radeon_fbdev_init(struct radeon_device *rdev);
-void radeon_fbdev_fini(struct radeon_device *rdev);
-void radeon_fbdev_set_suspend(struct radeon_device *rdev, int state);
-int radeon_fbdev_total_size(struct radeon_device *rdev);
-bool radeon_fbdev_robj_is_fb(struct radeon_device *rdev, struct radeon_bo *robj);
-
-void radeon_fb_output_poll_changed(struct radeon_device *rdev);
-
-void radeon_crtc_handle_flip(struct radeon_device *rdev, int crtc_id);
-
-int radeon_align_pitch(struct radeon_device *rdev, int width, int bpp, bool tiled);
-=======
 /* fmt blocks */
 void avivo_program_fmt(struct drm_encoder *encoder);
 void dce3_program_fmt(struct drm_encoder *encoder);
@@ -1160,5 +957,4 @@ void radeon_crtc_handle_flip(struct radeon_device *rdev, int crtc_id);
 
 int radeon_atom_pick_dig_encoder(struct drm_encoder *encoder, int fe_idx);
 void radeon_atom_release_dig_encoder(struct radeon_device *rdev, int enc_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

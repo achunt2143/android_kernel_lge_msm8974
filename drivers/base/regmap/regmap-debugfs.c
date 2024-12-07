@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * Register map access API - debugfs
- *
- * Copyright 2011 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // Register map access API - debugfs
@@ -18,22 +5,12 @@
 // Copyright 2011 Wolfson Microelectronics plc
 //
 // Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/debugfs.h>
 #include <linux/uaccess.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-
-#include "internal.h"
-
-static struct dentry *regmap_debugfs_root;
-
-/* Calculate the length of a fixed format  */
-static size_t regmap_calc_reg_len(int max_val, char *buf, size_t buf_size)
-=======
 #include <linux/list.h>
 
 #include "internal.h"
@@ -50,7 +27,6 @@ static DEFINE_MUTEX(regmap_debugfs_early_lock);
 
 /* Calculate the length of a fixed format  */
 static size_t regmap_calc_reg_len(int max_val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return snprintf(NULL, 0, "%x", max_val);
 }
@@ -60,10 +36,7 @@ static ssize_t regmap_name_read_file(struct file *file,
 				     loff_t *ppos)
 {
 	struct regmap *map = file->private_data;
-<<<<<<< HEAD
-=======
 	const char *name = "nodev";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	char *buf;
 
@@ -71,16 +44,11 @@ static ssize_t regmap_name_read_file(struct file *file,
 	if (!buf)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ret = snprintf(buf, PAGE_SIZE, "%s\n", map->dev->driver->name);
-	if (ret < 0) {
-=======
 	if (map->dev && map->dev->driver)
 		name = map->dev->driver->name;
 
 	ret = snprintf(buf, PAGE_SIZE, "%s\n", name);
 	if (ret >= PAGE_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(buf);
 		return ret;
 	}
@@ -96,19 +64,6 @@ static const struct file_operations regmap_name_fops = {
 	.llseek = default_llseek,
 };
 
-<<<<<<< HEAD
-static ssize_t regmap_map_read_file(struct file *file, char __user *user_buf,
-				    size_t count, loff_t *ppos)
-{
-	int reg_len, val_len, tot_len;
-	size_t buf_pos = 0;
-	loff_t p = 0;
-	ssize_t ret;
-	int i;
-	struct regmap *map = file->private_data;
-	char *buf;
-	unsigned int val;
-=======
 static void regmap_debugfs_free_dump_cache(struct regmap *map)
 {
 	struct regmap_debugfs_off_cache *c;
@@ -267,34 +222,17 @@ static ssize_t regmap_read_debugfs(struct regmap *map, unsigned int from,
 	int i;
 	char *buf;
 	unsigned int val, start_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*ppos < 0 || !count)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if (count > (PAGE_SIZE << MAX_PAGE_ORDER))
 		count = PAGE_SIZE << MAX_PAGE_ORDER;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = kmalloc(count, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	/* Calculate the length of a fixed format  */
-	reg_len = regmap_calc_reg_len(map->max_register, buf, count);
-	val_len = 2 * map->format.val_bytes;
-	tot_len = reg_len + val_len + 3;      /* : \n */
-
-	for (i = 0; i < map->max_register + 1; i++) {
-		if (!regmap_readable(map, i))
-			continue;
-
-		if (regmap_precious(map, i))
-			continue;
-=======
 	regmap_calc_tot_len(map, buf, count);
 
 	/* Work out which register we're starting at */
@@ -302,51 +240,31 @@ static ssize_t regmap_read_debugfs(struct regmap *map, unsigned int from,
 
 	for (i = start_reg; i >= 0 && i <= to;
 	     i = regmap_next_readable_reg(map, i)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* If we're in the region the user is trying to read */
 		if (p >= *ppos) {
 			/* ...but not beyond it */
-<<<<<<< HEAD
-			if (buf_pos + 1 + tot_len >= count)
-=======
 			if (buf_pos + map->debugfs_tot_len > count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			/* Format the register */
 			snprintf(buf + buf_pos, count - buf_pos, "%.*x: ",
-<<<<<<< HEAD
-				 reg_len, i);
-			buf_pos += reg_len + 2;
-=======
 				 map->debugfs_reg_len, i - from);
 			buf_pos += map->debugfs_reg_len + 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Format the value, write all X if we can't read */
 			ret = regmap_read(map, i, &val);
 			if (ret == 0)
 				snprintf(buf + buf_pos, count - buf_pos,
-<<<<<<< HEAD
-					 "%.*x", val_len, val);
-			else
-				memset(buf + buf_pos, 'X', val_len);
-=======
 					 "%.*x", map->debugfs_val_len, val);
 			else
 				memset(buf + buf_pos, 'X',
 				       map->debugfs_val_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			buf_pos += 2 * map->format.val_bytes;
 
 			buf[buf_pos++] = '\n';
 		}
-<<<<<<< HEAD
-		p += tot_len;
-=======
 		p += map->debugfs_tot_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = buf_pos;
@@ -363,8 +281,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t regmap_map_read_file(struct file *file, char __user *user_buf,
 				    size_t count, loff_t *ppos)
 {
@@ -374,7 +290,6 @@ static ssize_t regmap_map_read_file(struct file *file, char __user *user_buf,
 				   count, ppos);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef REGMAP_ALLOW_WRITE_DEBUGFS
 #ifdef REGMAP_ALLOW_WRITE_DEBUGFS
 /*
@@ -392,10 +307,7 @@ static ssize_t regmap_map_write_file(struct file *file,
 	char *start = buf;
 	unsigned long reg, value;
 	struct regmap *map = file->private_data;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf_size = min(count, (sizeof(buf)-1));
 	if (copy_from_user(buf, user_buf, buf_size))
@@ -407,15 +319,6 @@ static ssize_t regmap_map_write_file(struct file *file,
 	reg = simple_strtoul(start, &start, 16);
 	while (*start == ' ')
 		start++;
-<<<<<<< HEAD
-	if (strict_strtoul(start, 16, &value))
-		return -EINVAL;
-
-	/* Userspace has been fiddling around behind the kernel's back */
-	add_taint(TAINT_USER);
-
-	regmap_write(map, reg, value);
-=======
 	if (kstrtoul(start, 16, &value))
 		return -EINVAL;
 
@@ -425,7 +328,6 @@ static ssize_t regmap_map_write_file(struct file *file,
 	ret = regmap_write(map, reg, value);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return buf_size;
 }
 #else
@@ -439,19 +341,6 @@ static const struct file_operations regmap_map_fops = {
 	.llseek = default_llseek,
 };
 
-<<<<<<< HEAD
-static ssize_t regmap_access_read_file(struct file *file,
-				       char __user *user_buf, size_t count,
-				       loff_t *ppos)
-{
-	int reg_len, tot_len;
-	size_t buf_pos = 0;
-	loff_t p = 0;
-	ssize_t ret;
-	int i;
-	struct regmap *map = file->private_data;
-	char *buf;
-=======
 static ssize_t regmap_range_read_file(struct file *file, char __user *user_buf,
 				      size_t count, loff_t *ppos)
 {
@@ -480,52 +369,17 @@ static ssize_t regmap_reg_ranges_read_file(struct file *file,
 	char *entry;
 	int ret;
 	unsigned int entry_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*ppos < 0 || !count)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if (count > (PAGE_SIZE << MAX_PAGE_ORDER))
 		count = PAGE_SIZE << MAX_PAGE_ORDER;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = kmalloc(count, GFP_KERNEL);
 	if (!buf)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	/* Calculate the length of a fixed format  */
-	reg_len = regmap_calc_reg_len(map->max_register, buf, count);
-	tot_len = reg_len + 10; /* ': R W V P\n' */
-
-	for (i = 0; i < map->max_register + 1; i++) {
-		/* Ignore registers which are neither readable nor writable */
-		if (!regmap_readable(map, i) && !regmap_writeable(map, i))
-			continue;
-
-		/* If we're in the region the user is trying to read */
-		if (p >= *ppos) {
-			/* ...but not beyond it */
-			if (buf_pos + tot_len + 1 >= count)
-				break;
-
-			/* Format the register */
-			snprintf(buf + buf_pos, count - buf_pos,
-				 "%.*x: %c %c %c %c\n",
-				 reg_len, i,
-				 regmap_readable(map, i) ? 'y' : 'n',
-				 regmap_writeable(map, i) ? 'y' : 'n',
-				 regmap_volatile(map, i) ? 'y' : 'n',
-				 regmap_precious(map, i) ? 'y' : 'n');
-
-			buf_pos += tot_len;
-		}
-		p += tot_len;
-	}
-
-=======
 	entry = kmalloc(PAGE_SIZE, GFP_KERNEL);
 	if (!entry) {
 		kfree(buf);
@@ -558,40 +412,19 @@ static ssize_t regmap_reg_ranges_read_file(struct file *file,
 	mutex_unlock(&map->cache_lock);
 
 	kfree(entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = buf_pos;
 
 	if (copy_to_user(user_buf, buf, buf_pos)) {
 		ret = -EFAULT;
-<<<<<<< HEAD
-		goto out;
-	}
-
-	*ppos += buf_pos;
-
-out:
-=======
 		goto out_buf;
 	}
 
 	*ppos += buf_pos;
 out_buf:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 	return ret;
 }
 
-<<<<<<< HEAD
-static const struct file_operations regmap_access_fops = {
-	.open = simple_open,
-	.read = regmap_access_read_file,
-	.llseek = default_llseek,
-};
-
-void regmap_debugfs_init(struct regmap *map)
-{
-	const char *devname = "dummy";
-=======
 static const struct file_operations regmap_reg_ranges_fops = {
 	.open = simple_open,
 	.read = regmap_reg_ranges_read_file,
@@ -744,25 +577,10 @@ void regmap_debugfs_init(struct regmap *map)
 
 	INIT_LIST_HEAD(&map->debugfs_off_cache);
 	mutex_init(&map->cache_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (map->dev)
 		devname = dev_name(map->dev);
 
-<<<<<<< HEAD
-	map->debugfs = debugfs_create_dir(devname,
-					  regmap_debugfs_root);
-	if (!map->debugfs) {
-		dev_warn(map->dev, "Failed to create debugfs directory\n");
-		return;
-	}
-
-	debugfs_create_file("name", 0400, map->debugfs,
-			    map, &regmap_name_fops);
-
-	if (map->max_register) {
-		debugfs_create_file("registers", 0400, map->debugfs,
-=======
 	if (name) {
 		if (!map->debugfs_name) {
 			map->debugfs_name = kasprintf(GFP_KERNEL, "%s-%s",
@@ -803,22 +621,12 @@ void regmap_debugfs_init(struct regmap *map)
 #endif
 
 		debugfs_create_file("registers", registers_mode, map->debugfs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    map, &regmap_map_fops);
 		debugfs_create_file("access", 0400, map->debugfs,
 				    map, &regmap_access_fops);
 	}
 
 	if (map->cache_type) {
-<<<<<<< HEAD
-		debugfs_create_bool("cache_only", 0400, map->debugfs,
-				    &map->cache_only);
-		debugfs_create_bool("cache_dirty", 0400, map->debugfs,
-				    &map->cache_dirty);
-		debugfs_create_bool("cache_bypass", 0400, map->debugfs,
-				    &map->cache_bypass);
-	}
-=======
 		debugfs_create_file("cache_only", 0600, map->debugfs,
 				    &map->cache_only, &regmap_cache_only_fops);
 		debugfs_create_bool("cache_dirty", 0400, map->debugfs,
@@ -853,14 +661,10 @@ void regmap_debugfs_init(struct regmap *map)
 
 	if (map->cache_ops && map->cache_ops->debugfs_init)
 		map->cache_ops->debugfs_init(map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void regmap_debugfs_exit(struct regmap *map)
 {
-<<<<<<< HEAD
-	debugfs_remove_recursive(map->debugfs);
-=======
 	if (map->debugfs) {
 		debugfs_remove_recursive(map->debugfs);
 		mutex_lock(&map->cache_lock);
@@ -881,18 +685,10 @@ void regmap_debugfs_exit(struct regmap *map)
 		}
 		mutex_unlock(&regmap_debugfs_early_lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void regmap_debugfs_initcall(void)
 {
-<<<<<<< HEAD
-	regmap_debugfs_root = debugfs_create_dir("regmap", NULL);
-	if (!regmap_debugfs_root) {
-		pr_warn("regmap: Failed to create debugfs root\n");
-		return;
-	}
-=======
 	struct regmap_debugfs_node *node, *tmp;
 
 	regmap_debugfs_root = debugfs_create_dir("regmap", NULL);
@@ -904,5 +700,4 @@ void regmap_debugfs_initcall(void)
 		kfree(node);
 	}
 	mutex_unlock(&regmap_debugfs_early_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

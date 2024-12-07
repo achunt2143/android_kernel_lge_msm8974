@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * SuperH KGDB support
- *
- * Copyright (C) 2008 - 2009  Paul Mundt
- *
- * Single stepping taken from the old stub by Henry Bell and Jeremy Siegel.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * SuperH KGDB support
@@ -17,18 +5,14 @@
  * Copyright (C) 2008 - 2012  Paul Mundt
  *
  * Single stepping taken from the old stub by Henry Bell and Jeremy Siegel.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kgdb.h>
 #include <linux/kdebug.h>
 #include <linux/irq.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched.h>
 #include <linux/sched/task_stack.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 #include <asm/traps.h>
 
@@ -180,38 +164,6 @@ static void undo_single_step(struct pt_regs *linux_regs)
 	stepped_opcode = 0;
 }
 
-<<<<<<< HEAD
-void pt_regs_to_gdb_regs(unsigned long *gdb_regs, struct pt_regs *regs)
-{
-	int i;
-
-	for (i = 0; i < 16; i++)
-		gdb_regs[GDB_R0 + i] = regs->regs[i];
-
-	gdb_regs[GDB_PC] = regs->pc;
-	gdb_regs[GDB_PR] = regs->pr;
-	gdb_regs[GDB_SR] = regs->sr;
-	gdb_regs[GDB_GBR] = regs->gbr;
-	gdb_regs[GDB_MACH] = regs->mach;
-	gdb_regs[GDB_MACL] = regs->macl;
-
-	__asm__ __volatile__ ("stc vbr, %0" : "=r" (gdb_regs[GDB_VBR]));
-}
-
-void gdb_regs_to_pt_regs(unsigned long *gdb_regs, struct pt_regs *regs)
-{
-	int i;
-
-	for (i = 0; i < 16; i++)
-		regs->regs[GDB_R0 + i] = gdb_regs[GDB_R0 + i];
-
-	regs->pc = gdb_regs[GDB_PC];
-	regs->pr = gdb_regs[GDB_PR];
-	regs->sr = gdb_regs[GDB_SR];
-	regs->gbr = gdb_regs[GDB_GBR];
-	regs->mach = gdb_regs[GDB_MACH];
-	regs->macl = gdb_regs[GDB_MACL];
-=======
 struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] = {
 	{ "r0",		GDB_SIZEOF_REG, offsetof(struct pt_regs, regs[0]) },
 	{ "r1",		GDB_SIZEOF_REG, offsetof(struct pt_regs, regs[1]) },
@@ -266,15 +218,10 @@ char *dbg_get_reg(int regno, void *mem, struct pt_regs *regs)
 	}
 
 	return dbg_reg_def[regno].name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 {
-<<<<<<< HEAD
-	gdb_regs[GDB_R15] = p->thread.sp;
-	gdb_regs[GDB_PC] = p->thread.pc;
-=======
 	struct pt_regs *thread_regs = task_pt_regs(p);
 	int reg;
 
@@ -300,7 +247,6 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 	 */
 	gdb_regs[GDB_PR] = thread_regs->pr;
 	gdb_regs[GDB_GBR] = thread_regs->gbr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kgdb_arch_handle_exception(int e_vector, int signo, int err_code,
@@ -320,10 +266,7 @@ int kgdb_arch_handle_exception(int e_vector, int signo, int err_code,
 		ptr = &remcomInBuffer[1];
 		if (kgdb_hex2long(&ptr, &addr))
 			linux_regs->pc = addr;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 'D':
 	case 'k':
 		atomic_set(&kgdb_cpu_doing_single_step, -1);
@@ -425,11 +368,7 @@ void kgdb_arch_exit(void)
 	unregister_die_notifier(&kgdb_notifier);
 }
 
-<<<<<<< HEAD
-struct kgdb_arch arch_kgdb_ops = {
-=======
 const struct kgdb_arch arch_kgdb_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Breakpoint instruction: trapa #0x3c */
 #ifdef CONFIG_CPU_LITTLE_ENDIAN
 	.gdb_bpt_instr		= { 0x3c, 0xc3 },

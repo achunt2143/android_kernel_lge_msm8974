@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2007-2012 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2024 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.  *
  * Copyright (C) 2007-2015 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -37,19 +31,13 @@
 #include <linux/pci.h>
 #include <linux/spinlock.h>
 #include <linux/ctype.h>
-<<<<<<< HEAD
-=======
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport_fc.h>
-<<<<<<< HEAD
-=======
 #include <scsi/fc/fc_fs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "lpfc_hw4.h"
 #include "lpfc_hw.h"
@@ -57,14 +45,9 @@
 #include "lpfc_sli4.h"
 #include "lpfc_nl.h"
 #include "lpfc_disc.h"
-<<<<<<< HEAD
-#include "lpfc_scsi.h"
-#include "lpfc.h"
-=======
 #include "lpfc.h"
 #include "lpfc_scsi.h"
 #include "lpfc_nvme.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lpfc_logmsg.h"
 #include "lpfc_crtn.h"
 #include "lpfc_vport.h"
@@ -121,15 +104,12 @@ module_param(lpfc_debugfs_max_slow_ring_trc, int, S_IRUGO);
 MODULE_PARM_DESC(lpfc_debugfs_max_slow_ring_trc,
 	"Set debugfs slow ring trace depth");
 
-<<<<<<< HEAD
-=======
 /* This MUST be a power of 2 */
 static int lpfc_debugfs_max_nvmeio_trc;
 module_param(lpfc_debugfs_max_nvmeio_trc, int, 0444);
 MODULE_PARM_DESC(lpfc_debugfs_max_nvmeio_trc,
 		 "Set debugfs NVME IO trace depth");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int lpfc_debugfs_mask_disc_trc;
 module_param(lpfc_debugfs_mask_disc_trc, int, S_IRUGO);
 MODULE_PARM_DESC(lpfc_debugfs_mask_disc_trc,
@@ -188,11 +168,7 @@ lpfc_debugfs_disc_trc_data(struct lpfc_vport *vport, char *buf, int size)
 		snprintf(buffer,
 			LPFC_DEBUG_TRC_ENTRY_SIZE, "%010d:%010d ms:%s\n",
 			dtp->seq_cnt, ms, dtp->fmt);
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len, buffer,
-=======
 		len +=  scnprintf(buf+len, size-len, buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dtp->data1, dtp->data2, dtp->data3);
 	}
 	for (i = 0; i < index; i++) {
@@ -203,11 +179,7 @@ lpfc_debugfs_disc_trc_data(struct lpfc_vport *vport, char *buf, int size)
 		snprintf(buffer,
 			LPFC_DEBUG_TRC_ENTRY_SIZE, "%010d:%010d ms:%s\n",
 			dtp->seq_cnt, ms, dtp->fmt);
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len, buffer,
-=======
 		len +=  scnprintf(buf+len, size-len, buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dtp->data1, dtp->data2, dtp->data3);
 	}
 
@@ -262,11 +234,7 @@ lpfc_debugfs_slow_ring_trc_data(struct lpfc_hba *phba, char *buf, int size)
 		snprintf(buffer,
 			LPFC_DEBUG_TRC_ENTRY_SIZE, "%010d:%010d ms:%s\n",
 			dtp->seq_cnt, ms, dtp->fmt);
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len, buffer,
-=======
 		len +=  scnprintf(buf+len, size-len, buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dtp->data1, dtp->data2, dtp->data3);
 	}
 	for (i = 0; i < index; i++) {
@@ -277,11 +245,7 @@ lpfc_debugfs_slow_ring_trc_data(struct lpfc_hba *phba, char *buf, int size)
 		snprintf(buffer,
 			LPFC_DEBUG_TRC_ENTRY_SIZE, "%010d:%010d ms:%s\n",
 			dtp->seq_cnt, ms, dtp->fmt);
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len, buffer,
-=======
 		len +=  scnprintf(buf+len, size-len, buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dtp->data1, dtp->data2, dtp->data3);
 	}
 
@@ -316,11 +280,7 @@ static int
 lpfc_debugfs_hbqinfo_data(struct lpfc_hba *phba, char *buf, int size)
 {
 	int len = 0;
-<<<<<<< HEAD
-	int cnt, i, j, found, posted, low;
-=======
 	int i, j, found, posted, low;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t phys, raw_index, getidx;
 	struct lpfc_hbq_init *hip;
 	struct hbq_s *hbqs;
@@ -330,11 +290,7 @@ lpfc_debugfs_hbqinfo_data(struct lpfc_hba *phba, char *buf, int size)
 
 	if (phba->sli_rev != 3)
 		return 0;
-<<<<<<< HEAD
-	cnt = LPFC_HBQINFO_SIZE;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&phba->hbalock);
 
 	/* toggle between multiple hbqs, if any */
@@ -349,11 +305,7 @@ lpfc_debugfs_hbqinfo_data(struct lpfc_hba *phba, char *buf, int size)
 
 	i = lpfc_debugfs_last_hbq;
 
-<<<<<<< HEAD
-	len +=  snprintf(buf+len, size-len, "HBQ %d Info\n", i);
-=======
 	len +=  scnprintf(buf+len, size-len, "HBQ %d Info\n", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hbqs =  &phba->hbqs[i];
 	posted = 0;
@@ -361,34 +313,21 @@ lpfc_debugfs_hbqinfo_data(struct lpfc_hba *phba, char *buf, int size)
 		posted++;
 
 	hip =  lpfc_hbq_defs[i];
-<<<<<<< HEAD
-	len +=  snprintf(buf+len, size-len,
-=======
 	len +=  scnprintf(buf+len, size-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"idx:%d prof:%d rn:%d bufcnt:%d icnt:%d acnt:%d posted %d\n",
 		hip->hbq_index, hip->profile, hip->rn,
 		hip->buffer_count, hip->init_count, hip->add_count, posted);
 
 	raw_index = phba->hbq_get[i];
 	getidx = le32_to_cpu(raw_index);
-<<<<<<< HEAD
-	len +=  snprintf(buf+len, size-len,
-		"entrys:%d bufcnt:%d Put:%d nPut:%d localGet:%d hbaGet:%d\n",
-=======
 	len +=  scnprintf(buf+len, size-len,
 		"entries:%d bufcnt:%d Put:%d nPut:%d localGet:%d hbaGet:%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hbqs->entry_count, hbqs->buffer_count, hbqs->hbqPutIdx,
 		hbqs->next_hbqPutIdx, hbqs->local_hbqGetIdx, getidx);
 
 	hbqe = (struct lpfc_hbq_entry *) phba->hbqs[i].hbq_virt;
 	for (j=0; j<hbqs->entry_count; j++) {
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len,
-=======
 		len +=  scnprintf(buf+len, size-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"%03d: %08x %04x %05x ", j,
 			le32_to_cpu(hbqe->bde.addrLow),
 			le32_to_cpu(hbqe->bde.tus.w),
@@ -400,24 +339,16 @@ lpfc_debugfs_hbqinfo_data(struct lpfc_hba *phba, char *buf, int size)
 		low = hbqs->hbqPutIdx - posted;
 		if (low >= 0) {
 			if ((j >= hbqs->hbqPutIdx) || (j < low)) {
-<<<<<<< HEAD
-				len +=  snprintf(buf+len, size-len, "Unused\n");
-=======
 				len +=  scnprintf(buf + len, size - len,
 						"Unused\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto skipit;
 			}
 		}
 		else {
 			if ((j >= hbqs->hbqPutIdx) &&
 				(j < (hbqs->entry_count+low))) {
-<<<<<<< HEAD
-				len +=  snprintf(buf+len, size-len, "Unused\n");
-=======
 				len +=  scnprintf(buf + len, size - len,
 						"Unused\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto skipit;
 			}
 		}
@@ -427,13 +358,8 @@ lpfc_debugfs_hbqinfo_data(struct lpfc_hba *phba, char *buf, int size)
 			hbq_buf = container_of(d_buf, struct hbq_dmabuf, dbuf);
 			phys = ((uint64_t)hbq_buf->dbuf.phys & 0xffffffff);
 			if (phys == le32_to_cpu(hbqe->bde.addrLow)) {
-<<<<<<< HEAD
-				len +=  snprintf(buf+len, size-len,
-					"Buf%d: %p %06x\n", i,
-=======
 				len +=  scnprintf(buf+len, size-len,
 					"Buf%d: x%px %06x\n", i,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hbq_buf->dbuf.virt, hbq_buf->tag);
 				found = 1;
 				break;
@@ -441,11 +367,7 @@ lpfc_debugfs_hbqinfo_data(struct lpfc_hba *phba, char *buf, int size)
 			i++;
 		}
 		if (!found) {
-<<<<<<< HEAD
-			len +=  snprintf(buf+len, size-len, "No DMAinfo?\n");
-=======
 			len +=  scnprintf(buf+len, size-len, "No DMAinfo?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 skipit:
 		hbqe++;
@@ -456,8 +378,6 @@ skipit:
 	return len;
 }
 
-<<<<<<< HEAD
-=======
 static int lpfc_debugfs_last_xripool;
 
 /**
@@ -719,7 +639,6 @@ lpfc_debugfs_lockstat_data(struct lpfc_hba *phba, char *buf, int size)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int lpfc_debugfs_last_hba_slim_off;
 
 /**
@@ -755,11 +674,7 @@ lpfc_debugfs_dumpHBASlim_data(struct lpfc_hba *phba, char *buf, int size)
 	off = 0;
 	spin_lock_irq(&phba->hbalock);
 
-<<<<<<< HEAD
-	len +=  snprintf(buf+len, size-len, "HBA SLIM\n");
-=======
 	len +=  scnprintf(buf+len, size-len, "HBA SLIM\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_memcpy_from_slim(buffer,
 		phba->MBslimaddr + lpfc_debugfs_last_hba_slim_off, 1024);
 
@@ -773,11 +688,7 @@ lpfc_debugfs_dumpHBASlim_data(struct lpfc_hba *phba, char *buf, int size)
 
 	i = 1024;
 	while (i > 0) {
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len,
-=======
 		len +=  scnprintf(buf+len, size-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"%08x: %08x %08x %08x %08x %08x %08x %08x %08x\n",
 		off, *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4),
 		*(ptr+5), *(ptr+6), *(ptr+7));
@@ -821,19 +732,11 @@ lpfc_debugfs_dumpHostSlim_data(struct lpfc_hba *phba, char *buf, int size)
 	off = 0;
 	spin_lock_irq(&phba->hbalock);
 
-<<<<<<< HEAD
-	len +=  snprintf(buf+len, size-len, "SLIM Mailbox\n");
-	ptr = (uint32_t *)phba->slim2p.virt;
-	i = sizeof(MAILBOX_t);
-	while (i > 0) {
-		len +=  snprintf(buf+len, size-len,
-=======
 	len +=  scnprintf(buf+len, size-len, "SLIM Mailbox\n");
 	ptr = (uint32_t *)phba->slim2p.virt;
 	i = sizeof(MAILBOX_t);
 	while (i > 0) {
 		len +=  scnprintf(buf+len, size-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"%08x: %08x %08x %08x %08x %08x %08x %08x %08x\n",
 		off, *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4),
 		*(ptr+5), *(ptr+6), *(ptr+7));
@@ -842,19 +745,11 @@ lpfc_debugfs_dumpHostSlim_data(struct lpfc_hba *phba, char *buf, int size)
 		off += (8 * sizeof(uint32_t));
 	}
 
-<<<<<<< HEAD
-	len +=  snprintf(buf+len, size-len, "SLIM PCB\n");
-	ptr = (uint32_t *)phba->pcb;
-	i = sizeof(PCB_t);
-	while (i > 0) {
-		len +=  snprintf(buf+len, size-len,
-=======
 	len +=  scnprintf(buf+len, size-len, "SLIM PCB\n");
 	ptr = (uint32_t *)phba->pcb;
 	i = sizeof(PCB_t);
 	while (i > 0) {
 		len +=  scnprintf(buf+len, size-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"%08x: %08x %08x %08x %08x %08x %08x %08x %08x\n",
 		off, *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4),
 		*(ptr+5), *(ptr+6), *(ptr+7));
@@ -863,20 +758,6 @@ lpfc_debugfs_dumpHostSlim_data(struct lpfc_hba *phba, char *buf, int size)
 		off += (8 * sizeof(uint32_t));
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < 4; i++) {
-		pgpp = &phba->port_gp[i];
-		pring = &psli->ring[i];
-		len +=  snprintf(buf+len, size-len,
-				 "Ring %d: CMD GetInx:%d (Max:%d Next:%d "
-				 "Local:%d flg:x%x)  RSP PutInx:%d Max:%d\n",
-				 i, pgpp->cmdGetInx, pring->numCiocb,
-				 pring->next_cmdidx, pring->local_getidx,
-				 pring->flag, pgpp->rspPutInx, pring->numRiocb);
-	}
-
-	if (phba->sli_rev <= LPFC_SLI_REV3) {
-=======
 	if (phba->sli_rev <= LPFC_SLI_REV3) {
 		for (i = 0; i < 4; i++) {
 			pgpp = &phba->port_gp[i];
@@ -894,16 +775,11 @@ lpfc_debugfs_dumpHostSlim_data(struct lpfc_hba *phba, char *buf, int size)
 					 pring->sli.sli3.numRiocb);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		word0 = readl(phba->HAregaddr);
 		word1 = readl(phba->CAregaddr);
 		word2 = readl(phba->HSregaddr);
 		word3 = readl(phba->HCregaddr);
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len, "HA:%08x CA:%08x HS:%08x "
-=======
 		len +=  scnprintf(buf+len, size-len, "HA:%08x CA:%08x HS:%08x "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "HC:%08x\n", word0, word1, word2, word3);
 	}
 	spin_unlock_irq(&phba->hbalock);
@@ -929,19 +805,6 @@ static int
 lpfc_debugfs_nodelist_data(struct lpfc_vport *vport, char *buf, int size)
 {
 	int len = 0;
-<<<<<<< HEAD
-	int cnt;
-	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
-	struct lpfc_nodelist *ndlp;
-	unsigned char *statep, *name;
-
-	cnt = (LPFC_NODELIST_SIZE / LPFC_NODELIST_ENTRY_SIZE);
-
-	spin_lock_irq(shost->host_lock);
-	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp) {
-		if (!cnt) {
-			len +=  snprintf(buf+len, size-len,
-=======
 	int i, iocnt, outio, cnt;
 	struct lpfc_hba  *phba = vport->phba;
 	struct lpfc_nodelist *ndlp;
@@ -960,7 +823,6 @@ lpfc_debugfs_nodelist_data(struct lpfc_vport *vport, char *buf, int size)
 		iocnt = 0;
 		if (!cnt) {
 			len +=  scnprintf(buf+len, size-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Missing Nodelist Entries\n");
 			break;
 		}
@@ -981,13 +843,6 @@ lpfc_debugfs_nodelist_data(struct lpfc_vport *vport, char *buf, int size)
 		case NLP_STE_PRLI_ISSUE:
 			statep = "PRLI  ";
 			break;
-<<<<<<< HEAD
-		case NLP_STE_UNMAPPED_NODE:
-			statep = "UNMAP ";
-			break;
-		case NLP_STE_MAPPED_NODE:
-			statep = "MAPPED";
-=======
 		case NLP_STE_LOGO_ISSUE:
 			statep = "LOGO  ";
 			break;
@@ -998,7 +853,6 @@ lpfc_debugfs_nodelist_data(struct lpfc_vport *vport, char *buf, int size)
 		case NLP_STE_MAPPED_NODE:
 			statep = "MAPPED";
 			iocnt = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case NLP_STE_NPR_NODE:
 			statep = "NPR   ";
@@ -1006,42 +860,6 @@ lpfc_debugfs_nodelist_data(struct lpfc_vport *vport, char *buf, int size)
 		default:
 			statep = "UNKNOWN";
 		}
-<<<<<<< HEAD
-		len +=  snprintf(buf+len, size-len, "%s DID:x%06x ",
-			statep, ndlp->nlp_DID);
-		name = (unsigned char *)&ndlp->nlp_portname;
-		len +=  snprintf(buf+len, size-len,
-			"WWPN %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x ",
-			*name, *(name+1), *(name+2), *(name+3),
-			*(name+4), *(name+5), *(name+6), *(name+7));
-		name = (unsigned char *)&ndlp->nlp_nodename;
-		len +=  snprintf(buf+len, size-len,
-			"WWNN %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x ",
-			*name, *(name+1), *(name+2), *(name+3),
-			*(name+4), *(name+5), *(name+6), *(name+7));
-		len +=  snprintf(buf+len, size-len, "RPI:%03d flag:x%08x ",
-			ndlp->nlp_rpi, ndlp->nlp_flag);
-		if (!ndlp->nlp_type)
-			len +=  snprintf(buf+len, size-len, "UNKNOWN_TYPE ");
-		if (ndlp->nlp_type & NLP_FC_NODE)
-			len +=  snprintf(buf+len, size-len, "FC_NODE ");
-		if (ndlp->nlp_type & NLP_FABRIC)
-			len +=  snprintf(buf+len, size-len, "FABRIC ");
-		if (ndlp->nlp_type & NLP_FCP_TARGET)
-			len +=  snprintf(buf+len, size-len, "FCP_TGT sid:%d ",
-				ndlp->nlp_sid);
-		if (ndlp->nlp_type & NLP_FCP_INITIATOR)
-			len +=  snprintf(buf+len, size-len, "FCP_INITIATOR ");
-		len += snprintf(buf+len, size-len, "usgmap:%x ",
-			ndlp->nlp_usg_map);
-		len += snprintf(buf+len, size-len, "refcnt:%x",
-			atomic_read(&ndlp->kref.refcount));
-		len +=  snprintf(buf+len, size-len, "\n");
-	}
-	spin_unlock_irq(shost->host_lock);
-	return len;
-}
-=======
 		len += scnprintf(buf+len, size-len, "%s DID:x%06x ",
 				statep, ndlp->nlp_DID);
 		len += scnprintf(buf+len, size-len,
@@ -1979,7 +1797,6 @@ buffer_done:
 	return len;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /**
@@ -2064,8 +1881,6 @@ lpfc_debugfs_slow_ring_trc(struct lpfc_hba *phba, char *fmt,
 	return;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * lpfc_debugfs_nvme_trc - Store NVME/NVMET trace log
  * @phba: The phba to associate this trace string with for retrieval.
@@ -2100,7 +1915,6 @@ lpfc_debugfs_nvme_trc(struct lpfc_hba *phba, char *fmt,
 #endif
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SCSI_LPFC_DEBUG_FS
 /**
  * lpfc_debugfs_disc_trc_open - Open the discovery trace log
@@ -2114,11 +1928,7 @@ lpfc_debugfs_nvme_trc(struct lpfc_hba *phba, char *fmt,
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
-<<<<<<< HEAD
- * This function returns zero if successful. On error it will return an negative
-=======
  * This function returns zero if successful. On error it will return a negative
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error value.
  **/
 static int
@@ -2130,11 +1940,7 @@ lpfc_debugfs_disc_trc_open(struct inode *inode, struct file *file)
 	int rc = -ENOMEM;
 
 	if (!lpfc_debugfs_max_disc_trc) {
-<<<<<<< HEAD
-		 rc = -ENOSPC;
-=======
 		rc = -ENOSPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2172,11 +1978,7 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
-<<<<<<< HEAD
- * This function returns zero if successful. On error it will return an negative
-=======
  * This function returns zero if successful. On error it will return a negative
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error value.
  **/
 static int
@@ -2188,11 +1990,7 @@ lpfc_debugfs_slow_ring_trc_open(struct inode *inode, struct file *file)
 	int rc = -ENOMEM;
 
 	if (!lpfc_debugfs_max_slow_ring_trc) {
-<<<<<<< HEAD
-		 rc = -ENOSPC;
-=======
 		rc = -ENOSPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2230,11 +2028,7 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
-<<<<<<< HEAD
- * This function returns zero if successful. On error it will return an negative
-=======
  * This function returns zero if successful. On error it will return a negative
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error value.
  **/
 static int
@@ -2265,8 +2059,6 @@ out:
 }
 
 /**
-<<<<<<< HEAD
-=======
  * lpfc_debugfs_multixripools_open - Open the multixripool debugfs buffer
  * @inode: The inode pointer that contains a hba pointer.
  * @file: The file pointer to attach the log output.
@@ -2496,7 +2288,6 @@ out:
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lpfc_debugfs_dumpHBASlim_open - Open the Dump HBA SLIM debugfs buffer
  * @inode: The inode pointer that contains a vport pointer.
  * @file: The file pointer to attach the log output.
@@ -2508,11 +2299,7 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
-<<<<<<< HEAD
- * This function returns zero if successful. On error it will return an negative
-=======
  * This function returns zero if successful. On error it will return a negative
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error value.
  **/
 static int
@@ -2554,11 +2341,7 @@ out:
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
-<<<<<<< HEAD
- * This function returns zero if successful. On error it will return an negative
-=======
  * This function returns zero if successful. On error it will return a negative
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error value.
  **/
 static int
@@ -2588,131 +2371,17 @@ out:
 	return rc;
 }
 
-<<<<<<< HEAD
-static int
-lpfc_debugfs_dumpData_open(struct inode *inode, struct file *file)
-{
-	struct lpfc_debug *debug;
-	int rc = -ENOMEM;
-
-	if (!_dump_buf_data)
-		return -EBUSY;
-
-	debug = kmalloc(sizeof(*debug), GFP_KERNEL);
-	if (!debug)
-		goto out;
-
-	/* Round to page boundary */
-	printk(KERN_ERR "9059 BLKGRD:  %s: _dump_buf_data=0x%p\n",
-			__func__, _dump_buf_data);
-	debug->buffer = _dump_buf_data;
-	if (!debug->buffer) {
-		kfree(debug);
-		goto out;
-	}
-
-	debug->len = (1 << _dump_buf_data_order) << PAGE_SHIFT;
-	file->private_data = debug;
-
-	rc = 0;
-out:
-	return rc;
-}
-
-static int
-lpfc_debugfs_dumpDif_open(struct inode *inode, struct file *file)
-{
-	struct lpfc_debug *debug;
-	int rc = -ENOMEM;
-
-	if (!_dump_buf_dif)
-		return -EBUSY;
-
-	debug = kmalloc(sizeof(*debug), GFP_KERNEL);
-	if (!debug)
-		goto out;
-
-	/* Round to page boundary */
-	printk(KERN_ERR	"9060 BLKGRD: %s: _dump_buf_dif=0x%p file=%s\n",
-		__func__, _dump_buf_dif, file->f_dentry->d_name.name);
-	debug->buffer = _dump_buf_dif;
-	if (!debug->buffer) {
-		kfree(debug);
-		goto out;
-	}
-
-	debug->len = (1 << _dump_buf_dif_order) << PAGE_SHIFT;
-	file->private_data = debug;
-
-	rc = 0;
-out:
-	return rc;
-}
-
-static ssize_t
-lpfc_debugfs_dumpDataDif_write(struct file *file, const char __user *buf,
-		  size_t nbytes, loff_t *ppos)
-{
-	/*
-	 * The Data/DIF buffers only save one failing IO
-	 * The write op is used as a reset mechanism after an IO has
-	 * already been saved to the next one can be saved
-	 */
-	spin_lock(&_dump_buf_lock);
-
-	memset((void *)_dump_buf_data, 0,
-			((1 << PAGE_SHIFT) << _dump_buf_data_order));
-	memset((void *)_dump_buf_dif, 0,
-			((1 << PAGE_SHIFT) << _dump_buf_dif_order));
-
-	_dump_buf_done = 0;
-
-	spin_unlock(&_dump_buf_lock);
-
-	return nbytes;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 lpfc_debugfs_dif_err_read(struct file *file, char __user *buf,
 	size_t nbytes, loff_t *ppos)
 {
-<<<<<<< HEAD
-	struct dentry *dent = file->f_dentry;
-=======
 	struct dentry *dent = file->f_path.dentry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_hba *phba = file->private_data;
 	char cbuf[32];
 	uint64_t tmp = 0;
 	int cnt = 0;
 
 	if (dent == phba->debug_writeGuard)
-<<<<<<< HEAD
-		cnt = snprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_wgrd_cnt);
-	else if (dent == phba->debug_writeApp)
-		cnt = snprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_wapp_cnt);
-	else if (dent == phba->debug_writeRef)
-		cnt = snprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_wref_cnt);
-	else if (dent == phba->debug_readGuard)
-		cnt = snprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_rgrd_cnt);
-	else if (dent == phba->debug_readApp)
-		cnt = snprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_rapp_cnt);
-	else if (dent == phba->debug_readRef)
-		cnt = snprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_rref_cnt);
-	else if (dent == phba->debug_InjErrNPortID)
-		cnt = snprintf(cbuf, 32, "0x%06x\n", phba->lpfc_injerr_nportid);
-	else if (dent == phba->debug_InjErrWWPN) {
-		memcpy(&tmp, &phba->lpfc_injerr_wwpn, sizeof(struct lpfc_name));
-		tmp = cpu_to_be64(tmp);
-		cnt = snprintf(cbuf, 32, "0x%016llx\n", tmp);
-	} else if (dent == phba->debug_InjErrLBA) {
-		if (phba->lpfc_injerr_lba == (sector_t)(-1))
-			cnt = snprintf(cbuf, 32, "off\n");
-		else
-			cnt = snprintf(cbuf, 32, "0x%llx\n",
-=======
 		cnt = scnprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_wgrd_cnt);
 	else if (dent == phba->debug_writeApp)
 		cnt = scnprintf(cbuf, 32, "%u\n", phba->lpfc_injerr_wapp_cnt);
@@ -2736,7 +2405,6 @@ lpfc_debugfs_dif_err_read(struct file *file, char __user *buf,
 			cnt = scnprintf(cbuf, 32, "off\n");
 		else
 			cnt = scnprintf(cbuf, 32, "0x%llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 (uint64_t) phba->lpfc_injerr_lba);
 	} else
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
@@ -2749,21 +2417,6 @@ static ssize_t
 lpfc_debugfs_dif_err_write(struct file *file, const char __user *buf,
 	size_t nbytes, loff_t *ppos)
 {
-<<<<<<< HEAD
-	struct dentry *dent = file->f_dentry;
-	struct lpfc_hba *phba = file->private_data;
-	char dstbuf[32];
-	uint64_t tmp = 0;
-	int size;
-
-	memset(dstbuf, 0, 32);
-	size = (nbytes < 32) ? nbytes : 32;
-	if (copy_from_user(dstbuf, buf, size))
-		return 0;
-
-	if (dent == phba->debug_InjErrLBA) {
-		if ((buf[0] == 'o') && (buf[1] == 'f') && (buf[2] == 'f'))
-=======
 	struct dentry *dent = file->f_path.dentry;
 	struct lpfc_hba *phba = file->private_data;
 	char dstbuf[33];
@@ -2778,16 +2431,11 @@ lpfc_debugfs_dif_err_write(struct file *file, const char __user *buf,
 	if (dent == phba->debug_InjErrLBA) {
 		if ((dstbuf[0] == 'o') && (dstbuf[1] == 'f') &&
 		    (dstbuf[2] == 'f'))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp = (uint64_t)(-1);
 	}
 
 	if ((tmp == 0) && (kstrtoull(dstbuf, 0, &tmp)))
-<<<<<<< HEAD
-		return 0;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dent == phba->debug_writeGuard)
 		phba->lpfc_injerr_wgrd_cnt = (uint32_t)tmp;
@@ -2833,11 +2481,7 @@ lpfc_debugfs_dif_err_release(struct inode *inode, struct file *file)
  * returns a pointer to that log in the private_data field in @file.
  *
  * Returns:
-<<<<<<< HEAD
- * This function returns zero if successful. On error it will return an negative
-=======
  * This function returns zero if successful. On error it will return a negative
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error value.
  **/
 static int
@@ -2887,27 +2531,8 @@ out:
 static loff_t
 lpfc_debugfs_lseek(struct file *file, loff_t off, int whence)
 {
-<<<<<<< HEAD
-	struct lpfc_debug *debug;
-	loff_t pos = -1;
-
-	debug = file->private_data;
-
-	switch (whence) {
-	case 0:
-		pos = off;
-		break;
-	case 1:
-		pos = file->f_pos + off;
-		break;
-	case 2:
-		pos = debug->len - off;
-	}
-	return (pos < 0 || pos > debug->len) ? -EINVAL : (file->f_pos = pos);
-=======
 	struct lpfc_debug *debug = file->private_data;
 	return fixed_size_llseek(file, off, whence, debug->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2959,17 +2584,6 @@ lpfc_debugfs_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-lpfc_debugfs_dumpDataDif_release(struct inode *inode, struct file *file)
-{
-	struct lpfc_debug *debug = file->private_data;
-
-	debug->buffer = NULL;
-	kfree(debug);
-
-	return 0;
-=======
 /**
  * lpfc_debugfs_multixripools_write - Clear multi-XRI pools statistics
  * @file: The file pointer to read from.
@@ -3499,7 +3113,6 @@ lpfc_debugfs_hdwqstat_write(struct file *file, const char __user *buf,
 		return strlen(pbuf);
 	}
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3534,13 +3147,6 @@ static int lpfc_idiag_cmd_get(const char __user *buf, size_t nbytes,
 	int i;
 	size_t bsize;
 
-<<<<<<< HEAD
-	/* Protect copy from user */
-	if (!access_ok(VERIFY_READ, buf, nbytes))
-		return -EFAULT;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(mybuf, 0, sizeof(mybuf));
 	memset(idiag_cmd, 0, sizeof(*idiag_cmd));
 	bsize = min(nbytes, (sizeof(mybuf)-1));
@@ -3723,37 +3329,21 @@ lpfc_idiag_pcicfg_read(struct file *file, char __user *buf, size_t nbytes,
 	switch (count) {
 	case SIZE_U8: /* byte (8 bits) */
 		pci_read_config_byte(pdev, where, &u8val);
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%03x: %02x\n", where, u8val);
 		break;
 	case SIZE_U16: /* word (16 bits) */
 		pci_read_config_word(pdev, where, &u16val);
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%03x: %04x\n", where, u16val);
 		break;
 	case SIZE_U32: /* double word (32 bits) */
 		pci_read_config_dword(pdev, where, &u32val);
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%03x: %08x\n", where, u32val);
 		break;
 	case LPFC_PCI_CFG_BROWSE: /* browse all */
 		goto pcicfg_browse;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* illegal count */
 		len = 0;
@@ -3768,17 +3358,6 @@ pcicfg_browse:
 	offset = offset_label;
 
 	/* Read PCI config space */
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
-			"%03x: ", offset_label);
-	while (index > 0) {
-		pci_read_config_dword(pdev, offset, &u32val);
-		len += snprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
-				"%08x ", u32val);
-		offset += sizeof(uint32_t);
-		if (offset >= LPFC_PCI_CFG_SIZE) {
-			len += snprintf(pbuffer+len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
 			"%03x: ", offset_label);
 	while (index > 0) {
@@ -3788,25 +3367,16 @@ pcicfg_browse:
 		offset += sizeof(uint32_t);
 		if (offset >= LPFC_PCI_CFG_SIZE) {
 			len += scnprintf(pbuffer+len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					LPFC_PCI_CFG_SIZE-len, "\n");
 			break;
 		}
 		index -= sizeof(uint32_t);
 		if (!index)
-<<<<<<< HEAD
-			len += snprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
-					"\n");
-		else if (!(index % (8 * sizeof(uint32_t)))) {
-			offset_label += (8 * sizeof(uint32_t));
-			len += snprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
-=======
 			len += scnprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
 					"\n");
 		else if (!(index % (8 * sizeof(uint32_t)))) {
 			offset_label += (8 * sizeof(uint32_t));
 			len += scnprintf(pbuffer+len, LPFC_PCI_CFG_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"\n%03x: ", offset_label);
 		}
 	}
@@ -4077,11 +3647,7 @@ lpfc_idiag_baracc_read(struct file *file, char __user *buf, size_t nbytes,
 	if (acc_range == SINGLE_WORD) {
 		offset_run = offset;
 		u32val = readl(mem_mapped_bar + offset_run);
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_PCI_BAR_RD_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_PCI_BAR_RD_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%05x: %08x\n", offset_run, u32val);
 	} else
 		goto baracc_browse;
@@ -4095,59 +3661,35 @@ baracc_browse:
 	offset_run = offset_label;
 
 	/* Read PCI bar memory mapped space */
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_PCI_BAR_RD_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_PCI_BAR_RD_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"%05x: ", offset_label);
 	index = LPFC_PCI_BAR_RD_SIZE;
 	while (index > 0) {
 		u32val = readl(mem_mapped_bar + offset_run);
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_PCI_BAR_RD_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_PCI_BAR_RD_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%08x ", u32val);
 		offset_run += sizeof(uint32_t);
 		if (acc_range == LPFC_PCI_BAR_BROWSE) {
 			if (offset_run >= bar_size) {
-<<<<<<< HEAD
-				len += snprintf(pbuffer+len,
-=======
 				len += scnprintf(pbuffer+len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					LPFC_PCI_BAR_RD_BUF_SIZE-len, "\n");
 				break;
 			}
 		} else {
 			if (offset_run >= offset +
 			    (acc_range * sizeof(uint32_t))) {
-<<<<<<< HEAD
-				len += snprintf(pbuffer+len,
-=======
 				len += scnprintf(pbuffer+len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					LPFC_PCI_BAR_RD_BUF_SIZE-len, "\n");
 				break;
 			}
 		}
 		index -= sizeof(uint32_t);
 		if (!index)
-<<<<<<< HEAD
-			len += snprintf(pbuffer+len,
-					LPFC_PCI_BAR_RD_BUF_SIZE-len, "\n");
-		else if (!(index % (8 * sizeof(uint32_t)))) {
-			offset_label += (8 * sizeof(uint32_t));
-			len += snprintf(pbuffer+len,
-=======
 			len += scnprintf(pbuffer+len,
 					LPFC_PCI_BAR_RD_BUF_SIZE-len, "\n");
 		else if (!(index % (8 * sizeof(uint32_t)))) {
 			offset_label += (8 * sizeof(uint32_t));
 			len += scnprintf(pbuffer+len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					LPFC_PCI_BAR_RD_BUF_SIZE-len,
 					"\n%05x: ", offset_label);
 		}
@@ -4313,8 +3855,6 @@ error_out:
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static int
 __lpfc_idiag_print_wq(struct lpfc_queue *qp, char *wqtype,
 			char *pbuffer, int len)
@@ -4482,7 +4022,6 @@ __lpfc_idiag_print_eq(struct lpfc_queue *qp, char *eqtype,
 	return len;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_idiag_queinfo_read - idiag debugfs read queue information
  * @file: The file pointer to read from.
@@ -4493,12 +4032,9 @@ __lpfc_idiag_print_eq(struct lpfc_queue *qp, char *eqtype,
  * Description:
  * This routine reads data from the @phba SLI4 PCI function queue information,
  * and copies to user @buf.
-<<<<<<< HEAD
-=======
  * This routine only returns 1 EQs worth of information. It remembers the last
  * EQ read and jumps to the next EQ. Thus subsequent calls to queInfo will
  * retrieve all EQs allocated for the phba.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns:
  * This function returns the amount of data that was read (this could be less
@@ -4510,219 +4046,20 @@ lpfc_idiag_queinfo_read(struct file *file, char __user *buf, size_t nbytes,
 {
 	struct lpfc_debug *debug = file->private_data;
 	struct lpfc_hba *phba = (struct lpfc_hba *)debug->i_private;
-<<<<<<< HEAD
-	int len = 0, fcp_qidx;
-	char *pbuffer;
-=======
 	char *pbuffer;
 	int max_cnt, rc, x, len = 0;
 	struct lpfc_queue *qp = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!debug->buffer)
 		debug->buffer = kmalloc(LPFC_QUE_INFO_GET_BUF_SIZE, GFP_KERNEL);
 	if (!debug->buffer)
 		return 0;
 	pbuffer = debug->buffer;
-<<<<<<< HEAD
-=======
 	max_cnt = LPFC_QUE_INFO_GET_BUF_SIZE - 256;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*ppos)
 		return 0;
 
-<<<<<<< HEAD
-	/* Get slow-path event queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Slow-path EQ information:\n");
-	if (phba->sli4_hba.sp_eq) {
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"\tEQID[%02d], "
-			"QE-COUNT[%04d], QE-SIZE[%04d], "
-			"HOST-INDEX[%04d], PORT-INDEX[%04d]\n\n",
-			phba->sli4_hba.sp_eq->queue_id,
-			phba->sli4_hba.sp_eq->entry_count,
-			phba->sli4_hba.sp_eq->entry_size,
-			phba->sli4_hba.sp_eq->host_index,
-			phba->sli4_hba.sp_eq->hba_index);
-	}
-
-	/* Get fast-path event queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Fast-path EQ information:\n");
-	if (phba->sli4_hba.fp_eq) {
-		for (fcp_qidx = 0; fcp_qidx < phba->cfg_fcp_eq_count;
-		     fcp_qidx++) {
-			if (phba->sli4_hba.fp_eq[fcp_qidx]) {
-				len += snprintf(pbuffer+len,
-					LPFC_QUE_INFO_GET_BUF_SIZE-len,
-				"\tEQID[%02d], "
-				"QE-COUNT[%04d], QE-SIZE[%04d], "
-				"HOST-INDEX[%04d], PORT-INDEX[%04d]\n",
-				phba->sli4_hba.fp_eq[fcp_qidx]->queue_id,
-				phba->sli4_hba.fp_eq[fcp_qidx]->entry_count,
-				phba->sli4_hba.fp_eq[fcp_qidx]->entry_size,
-				phba->sli4_hba.fp_eq[fcp_qidx]->host_index,
-				phba->sli4_hba.fp_eq[fcp_qidx]->hba_index);
-			}
-		}
-	}
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len, "\n");
-
-	/* Get mailbox complete queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Slow-path MBX CQ information:\n");
-	if (phba->sli4_hba.mbx_cq) {
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Associated EQID[%02d]:\n",
-			phba->sli4_hba.mbx_cq->assoc_qid);
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"\tCQID[%02d], "
-			"QE-COUNT[%04d], QE-SIZE[%04d], "
-			"HOST-INDEX[%04d], PORT-INDEX[%04d]\n\n",
-			phba->sli4_hba.mbx_cq->queue_id,
-			phba->sli4_hba.mbx_cq->entry_count,
-			phba->sli4_hba.mbx_cq->entry_size,
-			phba->sli4_hba.mbx_cq->host_index,
-			phba->sli4_hba.mbx_cq->hba_index);
-	}
-
-	/* Get slow-path complete queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Slow-path ELS CQ information:\n");
-	if (phba->sli4_hba.els_cq) {
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Associated EQID[%02d]:\n",
-			phba->sli4_hba.els_cq->assoc_qid);
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"\tCQID [%02d], "
-			"QE-COUNT[%04d], QE-SIZE[%04d], "
-			"HOST-INDEX[%04d], PORT-INDEX[%04d]\n\n",
-			phba->sli4_hba.els_cq->queue_id,
-			phba->sli4_hba.els_cq->entry_count,
-			phba->sli4_hba.els_cq->entry_size,
-			phba->sli4_hba.els_cq->host_index,
-			phba->sli4_hba.els_cq->hba_index);
-	}
-
-	/* Get fast-path complete queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Fast-path FCP CQ information:\n");
-	fcp_qidx = 0;
-	if (phba->sli4_hba.fcp_cq) {
-		do {
-			if (phba->sli4_hba.fcp_cq[fcp_qidx]) {
-				len += snprintf(pbuffer+len,
-					LPFC_QUE_INFO_GET_BUF_SIZE-len,
-				"Associated EQID[%02d]:\n",
-				phba->sli4_hba.fcp_cq[fcp_qidx]->assoc_qid);
-				len += snprintf(pbuffer+len,
-					LPFC_QUE_INFO_GET_BUF_SIZE-len,
-				"\tCQID[%02d], "
-				"QE-COUNT[%04d], QE-SIZE[%04d], "
-				"HOST-INDEX[%04d], PORT-INDEX[%04d]\n",
-				phba->sli4_hba.fcp_cq[fcp_qidx]->queue_id,
-				phba->sli4_hba.fcp_cq[fcp_qidx]->entry_count,
-				phba->sli4_hba.fcp_cq[fcp_qidx]->entry_size,
-				phba->sli4_hba.fcp_cq[fcp_qidx]->host_index,
-				phba->sli4_hba.fcp_cq[fcp_qidx]->hba_index);
-			}
-		} while (++fcp_qidx < phba->cfg_fcp_eq_count);
-		len += snprintf(pbuffer+len,
-				LPFC_QUE_INFO_GET_BUF_SIZE-len, "\n");
-	}
-
-	/* Get mailbox queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Slow-path MBX MQ information:\n");
-	if (phba->sli4_hba.mbx_wq) {
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Associated CQID[%02d]:\n",
-			phba->sli4_hba.mbx_wq->assoc_qid);
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"\tWQID[%02d], "
-			"QE-COUNT[%04d], QE-SIZE[%04d], "
-			"HOST-INDEX[%04d], PORT-INDEX[%04d]\n\n",
-			phba->sli4_hba.mbx_wq->queue_id,
-			phba->sli4_hba.mbx_wq->entry_count,
-			phba->sli4_hba.mbx_wq->entry_size,
-			phba->sli4_hba.mbx_wq->host_index,
-			phba->sli4_hba.mbx_wq->hba_index);
-	}
-
-	/* Get slow-path work queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Slow-path ELS WQ information:\n");
-	if (phba->sli4_hba.els_wq) {
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Associated CQID[%02d]:\n",
-			phba->sli4_hba.els_wq->assoc_qid);
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"\tWQID[%02d], "
-			"QE-COUNT[%04d], QE-SIZE[%04d], "
-			"HOST-INDEX[%04d], PORT-INDEX[%04d]\n\n",
-			phba->sli4_hba.els_wq->queue_id,
-			phba->sli4_hba.els_wq->entry_count,
-			phba->sli4_hba.els_wq->entry_size,
-			phba->sli4_hba.els_wq->host_index,
-			phba->sli4_hba.els_wq->hba_index);
-	}
-
-	/* Get fast-path work queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Fast-path FCP WQ information:\n");
-	if (phba->sli4_hba.fcp_wq) {
-		for (fcp_qidx = 0; fcp_qidx < phba->cfg_fcp_wq_count;
-		     fcp_qidx++) {
-			if (!phba->sli4_hba.fcp_wq[fcp_qidx])
-				continue;
-			len += snprintf(pbuffer+len,
-					LPFC_QUE_INFO_GET_BUF_SIZE-len,
-				"Associated CQID[%02d]:\n",
-				phba->sli4_hba.fcp_wq[fcp_qidx]->assoc_qid);
-			len += snprintf(pbuffer+len,
-					LPFC_QUE_INFO_GET_BUF_SIZE-len,
-				"\tWQID[%02d], "
-				"QE-COUNT[%04d], WQE-SIZE[%04d], "
-				"HOST-INDEX[%04d], PORT-INDEX[%04d]\n",
-				phba->sli4_hba.fcp_wq[fcp_qidx]->queue_id,
-				phba->sli4_hba.fcp_wq[fcp_qidx]->entry_count,
-				phba->sli4_hba.fcp_wq[fcp_qidx]->entry_size,
-				phba->sli4_hba.fcp_wq[fcp_qidx]->host_index,
-				phba->sli4_hba.fcp_wq[fcp_qidx]->hba_index);
-		}
-		len += snprintf(pbuffer+len,
-				LPFC_QUE_INFO_GET_BUF_SIZE-len, "\n");
-	}
-
-	/* Get receive queue information */
-	len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Slow-path RQ information:\n");
-	if (phba->sli4_hba.hdr_rq && phba->sli4_hba.dat_rq) {
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"Associated CQID[%02d]:\n",
-			phba->sli4_hba.hdr_rq->assoc_qid);
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"\tHQID[%02d], "
-			"QE-COUNT[%04d], QE-SIZE[%04d], "
-			"HOST-INDEX[%04d], PORT-INDEX[%04d]\n",
-			phba->sli4_hba.hdr_rq->queue_id,
-			phba->sli4_hba.hdr_rq->entry_count,
-			phba->sli4_hba.hdr_rq->entry_size,
-			phba->sli4_hba.hdr_rq->host_index,
-			phba->sli4_hba.hdr_rq->hba_index);
-		len += snprintf(pbuffer+len, LPFC_QUE_INFO_GET_BUF_SIZE-len,
-			"\tDQID[%02d], "
-			"QE-COUNT[%04d], QE-SIZE[%04d], "
-			"HOST-INDEX[%04d], PORT-INDEX[%04d]\n",
-			phba->sli4_hba.dat_rq->queue_id,
-			phba->sli4_hba.dat_rq->entry_count,
-			phba->sli4_hba.dat_rq->entry_size,
-			phba->sli4_hba.dat_rq->host_index,
-			phba->sli4_hba.dat_rq->hba_index);
-	}
-=======
 	spin_lock_irq(&phba->hbalock);
 
 	/* Fast-path event queue */
@@ -4822,7 +4159,6 @@ too_big:
 		LPFC_QUE_INFO_GET_BUF_SIZE - len, "Truncated ...\n");
 out:
 	spin_unlock_irq(&phba->hbalock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return simple_read_from_buffer(buf, nbytes, ppos, pbuffer, len);
 }
 
@@ -4853,10 +4189,7 @@ lpfc_idiag_que_param_check(struct lpfc_queue *q, int index, int count)
 /**
  * lpfc_idiag_queacc_read_qe - read a single entry from the given queue index
  * @pbuffer: The pointer to buffer to copy the read data into.
-<<<<<<< HEAD
-=======
  * @len: Length of the buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pque: The pointer to the queue to be read.
  * @index: The index into the queue entry.
  *
@@ -4879,15 +4212,6 @@ lpfc_idiag_queacc_read_qe(char *pbuffer, int len, struct lpfc_queue *pque,
 		return 0;
 
 	esize = pque->entry_size;
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_QUE_ACC_BUF_SIZE-len,
-			"QE-INDEX[%04d]:\n", index);
-
-	offset = 0;
-	pentry = pque->qe[index].address;
-	while (esize > 0) {
-		len += snprintf(pbuffer+len, LPFC_QUE_ACC_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_QUE_ACC_BUF_SIZE-len,
 			"QE-INDEX[%04d]:\n", index);
 
@@ -4895,23 +4219,15 @@ lpfc_idiag_queacc_read_qe(char *pbuffer, int len, struct lpfc_queue *pque,
 	pentry = lpfc_sli4_qe(pque, index);
 	while (esize > 0) {
 		len += scnprintf(pbuffer+len, LPFC_QUE_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%08x ", *pentry);
 		pentry++;
 		offset += sizeof(uint32_t);
 		esize -= sizeof(uint32_t);
 		if (esize > 0 && !(offset % (4 * sizeof(uint32_t))))
-<<<<<<< HEAD
-			len += snprintf(pbuffer+len,
-					LPFC_QUE_ACC_BUF_SIZE-len, "\n");
-	}
-	len += snprintf(pbuffer+len, LPFC_QUE_ACC_BUF_SIZE-len, "\n");
-=======
 			len += scnprintf(pbuffer+len,
 					LPFC_QUE_ACC_BUF_SIZE-len, "\n");
 	}
 	len += scnprintf(pbuffer+len, LPFC_QUE_ACC_BUF_SIZE-len, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len;
 }
@@ -5018,11 +4334,7 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 	struct lpfc_hba *phba = (struct lpfc_hba *)debug->i_private;
 	uint32_t qidx, quetp, queid, index, count, offset, value;
 	uint32_t *pentry;
-<<<<<<< HEAD
-	struct lpfc_queue *pque;
-=======
 	struct lpfc_queue *pque, *qp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/* This is a user write operation */
@@ -5056,33 +4368,6 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 
 	switch (quetp) {
 	case LPFC_IDIAG_EQ:
-<<<<<<< HEAD
-		/* Slow-path event queue */
-		if (phba->sli4_hba.sp_eq &&
-		    phba->sli4_hba.sp_eq->queue_id == queid) {
-			/* Sanity check */
-			rc = lpfc_idiag_que_param_check(
-					phba->sli4_hba.sp_eq, index, count);
-			if (rc)
-				goto error_out;
-			idiag.ptr_private = phba->sli4_hba.sp_eq;
-			goto pass_check;
-		}
-		/* Fast-path event queue */
-		if (phba->sli4_hba.fp_eq) {
-			for (qidx = 0; qidx < phba->cfg_fcp_eq_count; qidx++) {
-				if (phba->sli4_hba.fp_eq[qidx] &&
-				    phba->sli4_hba.fp_eq[qidx]->queue_id ==
-				    queid) {
-					/* Sanity check */
-					rc = lpfc_idiag_que_param_check(
-						phba->sli4_hba.fp_eq[qidx],
-						index, count);
-					if (rc)
-						goto error_out;
-					idiag.ptr_private =
-						phba->sli4_hba.fp_eq[qidx];
-=======
 		/* HBA event queue */
 		if (phba->sli4_hba.hdwq) {
 			for (qidx = 0; qidx < phba->cfg_hdw_queue; qidx++) {
@@ -5094,17 +4379,12 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 					if (rc)
 						goto error_out;
 					idiag.ptr_private = qp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto pass_check;
 				}
 			}
 		}
 		goto error_out;
-<<<<<<< HEAD
-		break;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case LPFC_IDIAG_CQ:
 		/* MBX complete queue */
 		if (phba->sli4_hba.mbx_cq &&
@@ -5128,29 +4408,6 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 			idiag.ptr_private = phba->sli4_hba.els_cq;
 			goto pass_check;
 		}
-<<<<<<< HEAD
-		/* FCP complete queue */
-		if (phba->sli4_hba.fcp_cq) {
-			qidx = 0;
-			do {
-				if (phba->sli4_hba.fcp_cq[qidx] &&
-				    phba->sli4_hba.fcp_cq[qidx]->queue_id ==
-				    queid) {
-					/* Sanity check */
-					rc = lpfc_idiag_que_param_check(
-						phba->sli4_hba.fcp_cq[qidx],
-						index, count);
-					if (rc)
-						goto error_out;
-					idiag.ptr_private =
-						phba->sli4_hba.fcp_cq[qidx];
-					goto pass_check;
-				}
-			} while (++qidx < phba->cfg_fcp_eq_count);
-		}
-		goto error_out;
-		break;
-=======
 		/* NVME LS complete queue */
 		if (phba->sli4_hba.nvmels_cq &&
 		    phba->sli4_hba.nvmels_cq->queue_id == queid) {
@@ -5180,7 +4437,6 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 		}
 		goto error_out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case LPFC_IDIAG_MQ:
 		/* MBX work queue */
 		if (phba->sli4_hba.mbx_wq &&
@@ -5194,11 +4450,7 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 			goto pass_check;
 		}
 		goto error_out;
-<<<<<<< HEAD
-		break;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case LPFC_IDIAG_WQ:
 		/* ELS work queue */
 		if (phba->sli4_hba.els_wq &&
@@ -5211,23 +4463,6 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 			idiag.ptr_private = phba->sli4_hba.els_wq;
 			goto pass_check;
 		}
-<<<<<<< HEAD
-		/* FCP work queue */
-		if (phba->sli4_hba.fcp_wq) {
-			for (qidx = 0; qidx < phba->cfg_fcp_wq_count; qidx++) {
-				if (!phba->sli4_hba.fcp_wq[qidx])
-					continue;
-				if (phba->sli4_hba.fcp_wq[qidx]->queue_id ==
-				    queid) {
-					/* Sanity check */
-					rc = lpfc_idiag_que_param_check(
-						phba->sli4_hba.fcp_wq[qidx],
-						index, count);
-					if (rc)
-						goto error_out;
-					idiag.ptr_private =
-						phba->sli4_hba.fcp_wq[qidx];
-=======
 		/* NVME LS work queue */
 		if (phba->sli4_hba.nvmels_wq &&
 		    phba->sli4_hba.nvmels_wq->queue_id == queid) {
@@ -5251,17 +4486,12 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 					if (rc)
 						goto error_out;
 					idiag.ptr_private = qp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto pass_check;
 				}
 			}
 		}
 		goto error_out;
-<<<<<<< HEAD
-		break;
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case LPFC_IDIAG_RQ:
 		/* HDR queue */
 		if (phba->sli4_hba.hdr_rq &&
@@ -5286,15 +4516,8 @@ lpfc_idiag_queacc_write(struct file *file, const char __user *buf,
 			goto pass_check;
 		}
 		goto error_out;
-<<<<<<< HEAD
-		break;
 	default:
 		goto error_out;
-		break;
-=======
-	default:
-		goto error_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 pass_check:
@@ -5311,11 +4534,7 @@ pass_check:
 		pque = (struct lpfc_queue *)idiag.ptr_private;
 		if (offset > pque->entry_size/sizeof(uint32_t) - 1)
 			goto error_out;
-<<<<<<< HEAD
-		pentry = pque->qe[index].address;
-=======
 		pentry = lpfc_sli4_qe(pque, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pentry += offset;
 		if (idiag.cmd.opcode == LPFC_IDIAG_CMD_QUEACC_WR)
 			*pentry = value;
@@ -5336,11 +4555,7 @@ error_out:
  * lpfc_idiag_drbacc_read_reg - idiag debugfs read a doorbell register
  * @phba: The pointer to hba structure.
  * @pbuffer: The pointer to the buffer to copy the data to.
-<<<<<<< HEAD
- * @len: The lenght of bytes to copied.
-=======
  * @len: The length of bytes to copied.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @drbregid: The id to doorbell registers.
  *
  * Description:
@@ -5359,15 +4574,6 @@ lpfc_idiag_drbacc_read_reg(struct lpfc_hba *phba, char *pbuffer,
 		return 0;
 
 	switch (drbregid) {
-<<<<<<< HEAD
-	case LPFC_DRB_EQCQ:
-		len += snprintf(pbuffer+len, LPFC_DRB_ACC_BUF_SIZE-len,
-				"EQCQ-DRB-REG: 0x%08x\n",
-				readl(phba->sli4_hba.EQCQDBregaddr));
-		break;
-	case LPFC_DRB_MQ:
-		len += snprintf(pbuffer+len, LPFC_DRB_ACC_BUF_SIZE-len,
-=======
 	case LPFC_DRB_EQ:
 		len += scnprintf(pbuffer + len, LPFC_DRB_ACC_BUF_SIZE-len,
 				"EQ-DRB-REG: 0x%08x\n",
@@ -5380,25 +4586,16 @@ lpfc_idiag_drbacc_read_reg(struct lpfc_hba *phba, char *pbuffer,
 		break;
 	case LPFC_DRB_MQ:
 		len += scnprintf(pbuffer+len, LPFC_DRB_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"MQ-DRB-REG:   0x%08x\n",
 				readl(phba->sli4_hba.MQDBregaddr));
 		break;
 	case LPFC_DRB_WQ:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_DRB_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_DRB_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"WQ-DRB-REG:   0x%08x\n",
 				readl(phba->sli4_hba.WQDBregaddr));
 		break;
 	case LPFC_DRB_RQ:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_DRB_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_DRB_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"RQ-DRB-REG:   0x%08x\n",
 				readl(phba->sli4_hba.RQDBregaddr));
 		break;
@@ -5524,16 +4721,11 @@ lpfc_idiag_drbacc_write(struct file *file, const char __user *buf,
 	    idiag.cmd.opcode == LPFC_IDIAG_CMD_DRBACC_ST ||
 	    idiag.cmd.opcode == LPFC_IDIAG_CMD_DRBACC_CL) {
 		switch (drb_reg_id) {
-<<<<<<< HEAD
-		case LPFC_DRB_EQCQ:
-			drb_reg = phba->sli4_hba.EQCQDBregaddr;
-=======
 		case LPFC_DRB_EQ:
 			drb_reg = phba->sli4_hba.EQDBregaddr;
 			break;
 		case LPFC_DRB_CQ:
 			drb_reg = phba->sli4_hba.CQDBregaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case LPFC_DRB_MQ:
 			drb_reg = phba->sli4_hba.MQDBregaddr;
@@ -5573,13 +4765,8 @@ error_out:
  * lpfc_idiag_ctlacc_read_reg - idiag debugfs read a control registers
  * @phba: The pointer to hba structure.
  * @pbuffer: The pointer to the buffer to copy the data to.
-<<<<<<< HEAD
- * @len: The lenght of bytes to copied.
- * @drbregid: The id to doorbell registers.
-=======
  * @len: The length of bytes to copied.
  * @ctlregid: The id to doorbell registers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  * This routine reads a control register and copies its content to the
@@ -5598,61 +4785,37 @@ lpfc_idiag_ctlacc_read_reg(struct lpfc_hba *phba, char *pbuffer,
 
 	switch (ctlregid) {
 	case LPFC_CTL_PORT_SEM:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Port SemReg:   0x%08x\n",
 				readl(phba->sli4_hba.conf_regs_memmap_p +
 				      LPFC_CTL_PORT_SEM_OFFSET));
 		break;
 	case LPFC_CTL_PORT_STA:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Port StaReg:   0x%08x\n",
 				readl(phba->sli4_hba.conf_regs_memmap_p +
 				      LPFC_CTL_PORT_STA_OFFSET));
 		break;
 	case LPFC_CTL_PORT_CTL:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Port CtlReg:   0x%08x\n",
 				readl(phba->sli4_hba.conf_regs_memmap_p +
 				      LPFC_CTL_PORT_CTL_OFFSET));
 		break;
 	case LPFC_CTL_PORT_ER1:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Port Er1Reg:   0x%08x\n",
 				readl(phba->sli4_hba.conf_regs_memmap_p +
 				      LPFC_CTL_PORT_ER1_OFFSET));
 		break;
 	case LPFC_CTL_PORT_ER2:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Port Er2Reg:   0x%08x\n",
 				readl(phba->sli4_hba.conf_regs_memmap_p +
 				      LPFC_CTL_PORT_ER2_OFFSET));
 		break;
 	case LPFC_CTL_PDEV_CTL:
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_CTL_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"PDev CtlReg:   0x%08x\n",
 				readl(phba->sli4_hba.conf_regs_memmap_p +
 				      LPFC_CTL_PDEV_CTL_OFFSET));
@@ -5845,15 +5008,6 @@ lpfc_idiag_mbxacc_get_setup(struct lpfc_hba *phba, char *pbuffer)
 	mbx_dump_cnt = idiag.cmd.data[IDIAG_MBXACC_DPCNT_INDX];
 	mbx_word_cnt = idiag.cmd.data[IDIAG_MBXACC_WDCNT_INDX];
 
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
-			"mbx_dump_map: 0x%08x\n", mbx_dump_map);
-	len += snprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
-			"mbx_dump_cnt: %04d\n", mbx_dump_cnt);
-	len += snprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
-			"mbx_word_cnt: %04d\n", mbx_word_cnt);
-	len += snprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
 			"mbx_dump_map: 0x%08x\n", mbx_dump_map);
 	len += scnprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
@@ -5861,7 +5015,6 @@ lpfc_idiag_mbxacc_get_setup(struct lpfc_hba *phba, char *pbuffer)
 	len += scnprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
 			"mbx_word_cnt: %04d\n", mbx_word_cnt);
 	len += scnprintf(pbuffer+len, LPFC_MBX_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"mbx_mbox_cmd: 0x%02x\n", mbx_mbox_cmd);
 
 	return len;
@@ -6003,48 +5156,11 @@ error_out:
  * This routine is to get the available extent information.
  *
  * Returns:
-<<<<<<< HEAD
- * overall lenth of the data read into the internal buffer.
-=======
  * overall length of the data read into the internal buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int
 lpfc_idiag_extacc_avail_get(struct lpfc_hba *phba, char *pbuffer, int len)
 {
-<<<<<<< HEAD
-	uint16_t ext_cnt, ext_size;
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\nAvailable Extents Information:\n");
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\tPort Available VPI extents: ");
-	lpfc_sli4_get_avail_extnt_rsrc(phba, LPFC_RSC_TYPE_FCOE_VPI,
-				       &ext_cnt, &ext_size);
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"Count %3d, Size %3d\n", ext_cnt, ext_size);
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\tPort Available VFI extents: ");
-	lpfc_sli4_get_avail_extnt_rsrc(phba, LPFC_RSC_TYPE_FCOE_VFI,
-				       &ext_cnt, &ext_size);
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"Count %3d, Size %3d\n", ext_cnt, ext_size);
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\tPort Available RPI extents: ");
-	lpfc_sli4_get_avail_extnt_rsrc(phba, LPFC_RSC_TYPE_FCOE_RPI,
-				       &ext_cnt, &ext_size);
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"Count %3d, Size %3d\n", ext_cnt, ext_size);
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\tPort Available XRI extents: ");
-	lpfc_sli4_get_avail_extnt_rsrc(phba, LPFC_RSC_TYPE_FCOE_XRI,
-				       &ext_cnt, &ext_size);
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 	uint16_t ext_cnt = 0, ext_size = 0;
 
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
@@ -6076,7 +5192,6 @@ lpfc_idiag_extacc_avail_get(struct lpfc_hba *phba, char *pbuffer, int len)
 	lpfc_sli4_get_avail_extnt_rsrc(phba, LPFC_RSC_TYPE_FCOE_XRI,
 				       &ext_cnt, &ext_size);
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Count %3d, Size %3d\n", ext_cnt, ext_size);
 
 	return len;
@@ -6092,11 +5207,7 @@ lpfc_idiag_extacc_avail_get(struct lpfc_hba *phba, char *pbuffer, int len)
  * This routine is to get the allocated extent information.
  *
  * Returns:
-<<<<<<< HEAD
- * overall lenth of the data read into the internal buffer.
-=======
  * overall length of the data read into the internal buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int
 lpfc_idiag_extacc_alloc_get(struct lpfc_hba *phba, char *pbuffer, int len)
@@ -6104,31 +5215,14 @@ lpfc_idiag_extacc_alloc_get(struct lpfc_hba *phba, char *pbuffer, int len)
 	uint16_t ext_cnt, ext_size;
 	int rc;
 
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\nAllocated Extents Information:\n");
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
 			"\nAllocated Extents Information:\n");
 
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tHost Allocated VPI extents: ");
 	rc = lpfc_sli4_get_allocated_extnts(phba, LPFC_RSC_TYPE_FCOE_VPI,
 					    &ext_cnt, &ext_size);
 	if (!rc)
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-				"Port %d Extent %3d, Size %3d\n",
-				phba->brd_no, ext_cnt, ext_size);
-	else
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-				"N/A\n");
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
 				"Port %d Extent %3d, Size %3d\n",
 				phba->brd_no, ext_cnt, ext_size);
@@ -6137,21 +5231,10 @@ lpfc_idiag_extacc_alloc_get(struct lpfc_hba *phba, char *pbuffer, int len)
 				"N/A\n");
 
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tHost Allocated VFI extents: ");
 	rc = lpfc_sli4_get_allocated_extnts(phba, LPFC_RSC_TYPE_FCOE_VFI,
 					    &ext_cnt, &ext_size);
 	if (!rc)
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-				"Port %d Extent %3d, Size %3d\n",
-				phba->brd_no, ext_cnt, ext_size);
-	else
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-				"N/A\n");
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
 				"Port %d Extent %3d, Size %3d\n",
 				phba->brd_no, ext_cnt, ext_size);
@@ -6160,21 +5243,10 @@ lpfc_idiag_extacc_alloc_get(struct lpfc_hba *phba, char *pbuffer, int len)
 				"N/A\n");
 
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tHost Allocated RPI extents: ");
 	rc = lpfc_sli4_get_allocated_extnts(phba, LPFC_RSC_TYPE_FCOE_RPI,
 					    &ext_cnt, &ext_size);
 	if (!rc)
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-				"Port %d Extent %3d, Size %3d\n",
-				phba->brd_no, ext_cnt, ext_size);
-	else
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-				"N/A\n");
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
 				"Port %d Extent %3d, Size %3d\n",
 				phba->brd_no, ext_cnt, ext_size);
@@ -6183,24 +5255,15 @@ lpfc_idiag_extacc_alloc_get(struct lpfc_hba *phba, char *pbuffer, int len)
 				"N/A\n");
 
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tHost Allocated XRI extents: ");
 	rc = lpfc_sli4_get_allocated_extnts(phba, LPFC_RSC_TYPE_FCOE_XRI,
 					    &ext_cnt, &ext_size);
 	if (!rc)
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-				"Port %d Extent %3d, Size %3d\n",
-				phba->brd_no, ext_cnt, ext_size);
-	else
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
 				"Port %d Extent %3d, Size %3d\n",
 				phba->brd_no, ext_cnt, ext_size);
 	else
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"N/A\n");
 
 	return len;
@@ -6216,11 +5279,7 @@ lpfc_idiag_extacc_alloc_get(struct lpfc_hba *phba, char *pbuffer, int len)
  * This routine is to get the driver extent information.
  *
  * Returns:
-<<<<<<< HEAD
- * overall lenth of the data read into the internal buffer.
-=======
  * overall length of the data read into the internal buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static int
 lpfc_idiag_extacc_drivr_get(struct lpfc_hba *phba, char *pbuffer, int len)
@@ -6228,16 +5287,6 @@ lpfc_idiag_extacc_drivr_get(struct lpfc_hba *phba, char *pbuffer, int len)
 	struct lpfc_rsrc_blks *rsrc_blks;
 	int index;
 
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\nDriver Extents Information:\n");
-
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-			"\tVPI extents:\n");
-	index = 0;
-	list_for_each_entry(rsrc_blks, &phba->lpfc_vpi_blk_list, list) {
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
 			"\nDriver Extents Information:\n");
 
@@ -6246,66 +5295,41 @@ lpfc_idiag_extacc_drivr_get(struct lpfc_hba *phba, char *pbuffer, int len)
 	index = 0;
 	list_for_each_entry(rsrc_blks, &phba->lpfc_vpi_blk_list, list) {
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"\t\tBlock %3d: Start %4d, Count %4d\n",
 				index, rsrc_blks->rsrc_start,
 				rsrc_blks->rsrc_size);
 		index++;
 	}
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tVFI extents:\n");
 	index = 0;
 	list_for_each_entry(rsrc_blks, &phba->sli4_hba.lpfc_vfi_blk_list,
 			    list) {
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"\t\tBlock %3d: Start %4d, Count %4d\n",
 				index, rsrc_blks->rsrc_start,
 				rsrc_blks->rsrc_size);
 		index++;
 	}
 
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tRPI extents:\n");
 	index = 0;
 	list_for_each_entry(rsrc_blks, &phba->sli4_hba.lpfc_rpi_blk_list,
 			    list) {
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"\t\tBlock %3d: Start %4d, Count %4d\n",
 				index, rsrc_blks->rsrc_start,
 				rsrc_blks->rsrc_size);
 		index++;
 	}
 
-<<<<<<< HEAD
-	len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 	len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tXRI extents:\n");
 	index = 0;
 	list_for_each_entry(rsrc_blks, &phba->sli4_hba.lpfc_xri_blk_list,
 			    list) {
-<<<<<<< HEAD
-		len += snprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
-=======
 		len += scnprintf(pbuffer+len, LPFC_EXT_ACC_BUF_SIZE-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"\t\tBlock %3d: Start %4d, Count %4d\n",
 				index, rsrc_blks->rsrc_start,
 				rsrc_blks->rsrc_size);
@@ -6410,8 +5434,6 @@ lpfc_idiag_extacc_read(struct file *file, char __user *buf, size_t nbytes,
 	return simple_read_from_buffer(buf, nbytes, ppos, pbuffer, len);
 }
 
-<<<<<<< HEAD
-=======
 static int
 lpfc_cgn_buffer_open(struct inode *inode, struct file *file)
 {
@@ -6560,7 +5582,6 @@ lpfc_rx_monitor_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef lpfc_debugfs_op_disc_trc
 static const struct file_operations lpfc_debugfs_op_disc_trc = {
 	.owner =        THIS_MODULE,
@@ -6579,8 +5600,6 @@ static const struct file_operations lpfc_debugfs_op_nodelist = {
 	.release =      lpfc_debugfs_release,
 };
 
-<<<<<<< HEAD
-=======
 #undef lpfc_debugfs_op_multixripools
 static const struct file_operations lpfc_debugfs_op_multixripools = {
 	.owner =        THIS_MODULE,
@@ -6591,7 +5610,6 @@ static const struct file_operations lpfc_debugfs_op_multixripools = {
 	.release =      lpfc_debugfs_release,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef lpfc_debugfs_op_hbqinfo
 static const struct file_operations lpfc_debugfs_op_hbqinfo = {
 	.owner =        THIS_MODULE,
@@ -6601,8 +5619,6 @@ static const struct file_operations lpfc_debugfs_op_hbqinfo = {
 	.release =      lpfc_debugfs_release,
 };
 
-<<<<<<< HEAD
-=======
 #ifdef LPFC_HDWQ_LOCK_STAT
 #undef lpfc_debugfs_op_lockstat
 static const struct file_operations lpfc_debugfs_op_lockstat = {
@@ -6624,7 +5640,6 @@ static const struct file_operations lpfc_debugfs_ras_log = {
 	.release =      lpfc_debugfs_ras_log_release,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef lpfc_debugfs_op_dumpHBASlim
 static const struct file_operations lpfc_debugfs_op_dumpHBASlim = {
 	.owner =        THIS_MODULE,
@@ -6643,26 +5658,6 @@ static const struct file_operations lpfc_debugfs_op_dumpHostSlim = {
 	.release =      lpfc_debugfs_release,
 };
 
-<<<<<<< HEAD
-#undef lpfc_debugfs_op_dumpData
-static const struct file_operations lpfc_debugfs_op_dumpData = {
-	.owner =        THIS_MODULE,
-	.open =         lpfc_debugfs_dumpData_open,
-	.llseek =       lpfc_debugfs_lseek,
-	.read =         lpfc_debugfs_read,
-	.write =	lpfc_debugfs_dumpDataDif_write,
-	.release =      lpfc_debugfs_dumpDataDif_release,
-};
-
-#undef lpfc_debugfs_op_dumpDif
-static const struct file_operations lpfc_debugfs_op_dumpDif = {
-	.owner =        THIS_MODULE,
-	.open =         lpfc_debugfs_dumpDif_open,
-	.llseek =       lpfc_debugfs_lseek,
-	.read =         lpfc_debugfs_read,
-	.write =	lpfc_debugfs_dumpDataDif_write,
-	.release =      lpfc_debugfs_dumpDataDif_release,
-=======
 #undef lpfc_debugfs_op_nvmestat
 static const struct file_operations lpfc_debugfs_op_nvmestat = {
 	.owner =        THIS_MODULE,
@@ -6711,7 +5706,6 @@ static const struct file_operations lpfc_debugfs_op_hdwqstat = {
 	.read =         lpfc_debugfs_read,
 	.write =	lpfc_debugfs_hdwqstat_write,
 	.release =      lpfc_debugfs_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #undef lpfc_debugfs_op_dif_err
@@ -6816,9 +5810,6 @@ static const struct file_operations lpfc_idiag_op_extAcc = {
 	.write =        lpfc_idiag_extacc_write,
 	.release =      lpfc_idiag_cmd_release,
 };
-<<<<<<< HEAD
-
-=======
 #undef lpfc_cgn_buffer_op
 static const struct file_operations lpfc_cgn_buffer_op = {
 	.owner =        THIS_MODULE,
@@ -6836,7 +5827,6 @@ static const struct file_operations lpfc_rx_monitor_op = {
 	.read =         lpfc_rx_monitor_read,
 	.release =      lpfc_rx_monitor_release,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* lpfc_idiag_mbxacc_dump_bsg_mbox - idiag debugfs dump bsg mailbox command
@@ -6880,11 +5870,7 @@ lpfc_idiag_mbxacc_dump_bsg_mbox(struct lpfc_hba *phba, enum nemb_type nemb_tp,
 	if ((mbox_tp == mbox_rd) && (dma_tp == dma_mbox)) {
 		if (*mbx_dump_map & LPFC_BSG_DMP_MBX_RD_MBX) {
 			do_dump |= LPFC_BSG_DMP_MBX_RD_MBX;
-<<<<<<< HEAD
-			printk(KERN_ERR "\nRead mbox command (x%x), "
-=======
 			pr_err("\nRead mbox command (x%x), "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "nemb:0x%x, extbuf_cnt:%d:\n",
 			       sta_tp, nemb_tp, ext_buf);
 		}
@@ -6892,11 +5878,7 @@ lpfc_idiag_mbxacc_dump_bsg_mbox(struct lpfc_hba *phba, enum nemb_type nemb_tp,
 	if ((mbox_tp == mbox_rd) && (dma_tp == dma_ebuf)) {
 		if (*mbx_dump_map & LPFC_BSG_DMP_MBX_RD_BUF) {
 			do_dump |= LPFC_BSG_DMP_MBX_RD_BUF;
-<<<<<<< HEAD
-			printk(KERN_ERR "\nRead mbox buffer (x%x), "
-=======
 			pr_err("\nRead mbox buffer (x%x), "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "nemb:0x%x, extbuf_seq:%d:\n",
 			       sta_tp, nemb_tp, ext_buf);
 		}
@@ -6904,11 +5886,7 @@ lpfc_idiag_mbxacc_dump_bsg_mbox(struct lpfc_hba *phba, enum nemb_type nemb_tp,
 	if ((mbox_tp == mbox_wr) && (dma_tp == dma_mbox)) {
 		if (*mbx_dump_map & LPFC_BSG_DMP_MBX_WR_MBX) {
 			do_dump |= LPFC_BSG_DMP_MBX_WR_MBX;
-<<<<<<< HEAD
-			printk(KERN_ERR "\nWrite mbox command (x%x), "
-=======
 			pr_err("\nWrite mbox command (x%x), "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "nemb:0x%x, extbuf_cnt:%d:\n",
 			       sta_tp, nemb_tp, ext_buf);
 		}
@@ -6916,11 +5894,7 @@ lpfc_idiag_mbxacc_dump_bsg_mbox(struct lpfc_hba *phba, enum nemb_type nemb_tp,
 	if ((mbox_tp == mbox_wr) && (dma_tp == dma_ebuf)) {
 		if (*mbx_dump_map & LPFC_BSG_DMP_MBX_WR_BUF) {
 			do_dump |= LPFC_BSG_DMP_MBX_WR_BUF;
-<<<<<<< HEAD
-			printk(KERN_ERR "\nWrite mbox buffer (x%x), "
-=======
 			pr_err("\nWrite mbox buffer (x%x), "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "nemb:0x%x, extbuf_seq:%d:\n",
 			       sta_tp, nemb_tp, ext_buf);
 		}
@@ -6932,15 +5906,6 @@ lpfc_idiag_mbxacc_dump_bsg_mbox(struct lpfc_hba *phba, enum nemb_type nemb_tp,
 		for (i = 0; i < *mbx_word_cnt; i++) {
 			if (!(i % 8)) {
 				if (i != 0)
-<<<<<<< HEAD
-					printk(KERN_ERR "%s\n", line_buf);
-				len = 0;
-				len += snprintf(line_buf+len,
-						LPFC_MBX_ACC_LBUF_SZ-len,
-						"%03d: ", i);
-			}
-			len += snprintf(line_buf+len, LPFC_MBX_ACC_LBUF_SZ-len,
-=======
 					pr_err("%s\n", line_buf);
 				len = 0;
 				len += scnprintf(line_buf+len,
@@ -6948,16 +5913,11 @@ lpfc_idiag_mbxacc_dump_bsg_mbox(struct lpfc_hba *phba, enum nemb_type nemb_tp,
 						"%03d: ", i);
 			}
 			len += scnprintf(line_buf+len, LPFC_MBX_ACC_LBUF_SZ-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"%08x ", (uint32_t)*pword);
 			pword++;
 		}
 		if ((i - 1) % 8)
-<<<<<<< HEAD
-			printk(KERN_ERR "%s\n", line_buf);
-=======
 			pr_err("%s\n", line_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(*mbx_dump_cnt)--;
 	}
 
@@ -7006,26 +5966,12 @@ lpfc_idiag_mbxacc_dump_issue_mbox(struct lpfc_hba *phba, MAILBOX_t *pmbox)
 
 	/* dump buffer content */
 	if (*mbx_dump_map & LPFC_MBX_DMP_MBX_WORD) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Mailbox command:0x%x dump by word:\n",
-=======
 		pr_err("Mailbox command:0x%x dump by word:\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       pmbox->mbxCommand);
 		pword = (uint32_t *)pmbox;
 		for (i = 0; i < *mbx_word_cnt; i++) {
 			if (!(i % 8)) {
 				if (i != 0)
-<<<<<<< HEAD
-					printk(KERN_ERR "%s\n", line_buf);
-				len = 0;
-				memset(line_buf, 0, LPFC_MBX_ACC_LBUF_SZ);
-				len += snprintf(line_buf+len,
-						LPFC_MBX_ACC_LBUF_SZ-len,
-						"%03d: ", i);
-			}
-			len += snprintf(line_buf+len, LPFC_MBX_ACC_LBUF_SZ-len,
-=======
 					pr_err("%s\n", line_buf);
 				len = 0;
 				memset(line_buf, 0, LPFC_MBX_ACC_LBUF_SZ);
@@ -7034,70 +5980,41 @@ lpfc_idiag_mbxacc_dump_issue_mbox(struct lpfc_hba *phba, MAILBOX_t *pmbox)
 						"%03d: ", i);
 			}
 			len += scnprintf(line_buf+len, LPFC_MBX_ACC_LBUF_SZ-len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"%08x ",
 					((uint32_t)*pword) & 0xffffffff);
 			pword++;
 		}
 		if ((i - 1) % 8)
-<<<<<<< HEAD
-			printk(KERN_ERR "%s\n", line_buf);
-		printk(KERN_ERR "\n");
-	}
-	if (*mbx_dump_map & LPFC_MBX_DMP_MBX_BYTE) {
-		printk(KERN_ERR "Mailbox command:0x%x dump by byte:\n",
-=======
 			pr_err("%s\n", line_buf);
 		pr_err("\n");
 	}
 	if (*mbx_dump_map & LPFC_MBX_DMP_MBX_BYTE) {
 		pr_err("Mailbox command:0x%x dump by byte:\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       pmbox->mbxCommand);
 		pbyte = (uint8_t *)pmbox;
 		for (i = 0; i < *mbx_word_cnt; i++) {
 			if (!(i % 8)) {
 				if (i != 0)
-<<<<<<< HEAD
-					printk(KERN_ERR "%s\n", line_buf);
-				len = 0;
-				memset(line_buf, 0, LPFC_MBX_ACC_LBUF_SZ);
-				len += snprintf(line_buf+len,
-=======
 					pr_err("%s\n", line_buf);
 				len = 0;
 				memset(line_buf, 0, LPFC_MBX_ACC_LBUF_SZ);
 				len += scnprintf(line_buf+len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						LPFC_MBX_ACC_LBUF_SZ-len,
 						"%03d: ", i);
 			}
 			for (j = 0; j < 4; j++) {
-<<<<<<< HEAD
-				len += snprintf(line_buf+len,
-=======
 				len += scnprintf(line_buf+len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						LPFC_MBX_ACC_LBUF_SZ-len,
 						"%02x",
 						((uint8_t)*pbyte) & 0xff);
 				pbyte++;
 			}
-<<<<<<< HEAD
-			len += snprintf(line_buf+len,
-					LPFC_MBX_ACC_LBUF_SZ-len, " ");
-		}
-		if ((i - 1) % 8)
-			printk(KERN_ERR "%s\n", line_buf);
-		printk(KERN_ERR "\n");
-=======
 			len += scnprintf(line_buf+len,
 					LPFC_MBX_ACC_LBUF_SZ-len, " ");
 		}
 		if ((i - 1) % 8)
 			pr_err("%s\n", line_buf);
 		pr_err("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	(*mbx_dump_cnt)--;
 
@@ -7125,10 +6042,7 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 	struct lpfc_hba   *phba = vport->phba;
 	char name[64];
 	uint32_t num, i;
-<<<<<<< HEAD
-=======
 	bool pport_setup = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!lpfc_debugfs_enable)
 		return;
@@ -7137,14 +6051,6 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 	if (!lpfc_debugfs_root) {
 		lpfc_debugfs_root = debugfs_create_dir("lpfc", NULL);
 		atomic_set(&lpfc_debugfs_hba_count, 0);
-<<<<<<< HEAD
-		if (!lpfc_debugfs_root) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "0408 Cannot create debugfs root\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!lpfc_debugfs_start_time)
 		lpfc_debugfs_start_time = jiffies;
@@ -7152,29 +6058,6 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 	/* Setup funcX directory for specific HBA PCI function */
 	snprintf(name, sizeof(name), "fn%d", phba->brd_no);
 	if (!phba->hba_debugfs_root) {
-<<<<<<< HEAD
-		phba->hba_debugfs_root =
-			debugfs_create_dir(name, lpfc_debugfs_root);
-		if (!phba->hba_debugfs_root) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "0412 Cannot create debugfs hba\n");
-			goto debug_failed;
-		}
-		atomic_inc(&lpfc_debugfs_hba_count);
-		atomic_set(&phba->debugfs_vport_count, 0);
-
-		/* Setup hbqinfo */
-		snprintf(name, sizeof(name), "hbqinfo");
-		phba->debug_hbqinfo =
-			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
-				 phba->hba_debugfs_root,
-				 phba, &lpfc_debugfs_op_hbqinfo);
-		if (!phba->debug_hbqinfo) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0411 Cannot create debugfs hbqinfo\n");
-			goto debug_failed;
-		}
-=======
 		pport_setup = true;
 		phba->hba_debugfs_root =
 			debugfs_create_dir(name, lpfc_debugfs_root);
@@ -7253,7 +6136,6 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 			goto debug_failed;
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Setup dumpHBASlim */
 		if (phba->sli_rev < LPFC_SLI_REV4) {
@@ -7263,15 +6145,6 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 					S_IFREG|S_IRUGO|S_IWUSR,
 					phba->hba_debugfs_root,
 					phba, &lpfc_debugfs_op_dumpHBASlim);
-<<<<<<< HEAD
-			if (!phba->debug_dumpHBASlim) {
-				lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-						 "0413 Cannot create debugfs "
-						"dumpHBASlim\n");
-				goto debug_failed;
-			}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			phba->debug_dumpHBASlim = NULL;
 
@@ -7283,43 +6156,8 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 					S_IFREG|S_IRUGO|S_IWUSR,
 					phba->hba_debugfs_root,
 					phba, &lpfc_debugfs_op_dumpHostSlim);
-<<<<<<< HEAD
-			if (!phba->debug_dumpHostSlim) {
-				lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-						 "0414 Cannot create debugfs "
-						 "dumpHostSlim\n");
-				goto debug_failed;
-			}
-		} else
-			phba->debug_dumpHBASlim = NULL;
-
-		/* Setup dumpData */
-		snprintf(name, sizeof(name), "dumpData");
-		phba->debug_dumpData =
-			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
-				 phba->hba_debugfs_root,
-				 phba, &lpfc_debugfs_op_dumpData);
-		if (!phba->debug_dumpData) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0800 Cannot create debugfs dumpData\n");
-			goto debug_failed;
-		}
-
-		/* Setup dumpDif */
-		snprintf(name, sizeof(name), "dumpDif");
-		phba->debug_dumpDif =
-			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
-				 phba->hba_debugfs_root,
-				 phba, &lpfc_debugfs_op_dumpDif);
-		if (!phba->debug_dumpDif) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0801 Cannot create debugfs dumpDif\n");
-			goto debug_failed;
-		}
-=======
 		} else
 			phba->debug_dumpHostSlim = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Setup DIF Error Injections */
 		snprintf(name, sizeof(name), "InjErrLBA");
@@ -7327,14 +6165,6 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_InjErrLBA) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0807 Cannot create debugfs InjErrLBA\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phba->lpfc_injerr_lba = LPFC_INJERR_LBA_OFF;
 
 		snprintf(name, sizeof(name), "InjErrNPortID");
@@ -7342,112 +6172,48 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_InjErrNPortID) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0809 Cannot create debugfs InjErrNPortID\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snprintf(name, sizeof(name), "InjErrWWPN");
 		phba->debug_InjErrWWPN =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_InjErrWWPN) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0810 Cannot create debugfs InjErrWWPN\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snprintf(name, sizeof(name), "writeGuardInjErr");
 		phba->debug_writeGuard =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_writeGuard) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0802 Cannot create debugfs writeGuard\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snprintf(name, sizeof(name), "writeAppInjErr");
 		phba->debug_writeApp =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_writeApp) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0803 Cannot create debugfs writeApp\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snprintf(name, sizeof(name), "writeRefInjErr");
 		phba->debug_writeRef =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_writeRef) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0804 Cannot create debugfs writeRef\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snprintf(name, sizeof(name), "readGuardInjErr");
 		phba->debug_readGuard =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_readGuard) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0808 Cannot create debugfs readGuard\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snprintf(name, sizeof(name), "readAppInjErr");
 		phba->debug_readApp =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_readApp) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0805 Cannot create debugfs readApp\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snprintf(name, sizeof(name), "readRefInjErr");
 		phba->debug_readRef =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 			phba->hba_debugfs_root,
 			phba, &lpfc_debugfs_op_dif_err);
-<<<<<<< HEAD
-		if (!phba->debug_readRef) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				"0806 Cannot create debugfs readApp\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Setup slow ring trace */
 		if (lpfc_debugfs_max_slow_ring_trc) {
@@ -7461,12 +6227,7 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 					i++;
 				}
 				lpfc_debugfs_max_slow_ring_trc = (1 << i);
-<<<<<<< HEAD
-				printk(KERN_ERR
-				       "lpfc_debugfs_max_disc_trc changed to "
-=======
 				pr_err("lpfc_debugfs_max_disc_trc changed to "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "%d\n", lpfc_debugfs_max_disc_trc);
 			}
 		}
@@ -7476,23 +6237,10 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				 phba->hba_debugfs_root,
 				 phba, &lpfc_debugfs_op_slow_ring_trc);
-<<<<<<< HEAD
-		if (!phba->debug_slow_ring_trc) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "0415 Cannot create debugfs "
-					 "slow_ring_trace\n");
-			goto debug_failed;
-		}
-		if (!phba->slow_ring_trc) {
-			phba->slow_ring_trc = kmalloc(
-				(sizeof(struct lpfc_debugfs_trc) *
-				lpfc_debugfs_max_slow_ring_trc),
-=======
 		if (!phba->slow_ring_trc) {
 			phba->slow_ring_trc = kcalloc(
 				lpfc_debugfs_max_slow_ring_trc,
 				sizeof(struct lpfc_debugfs_trc),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				GFP_KERNEL);
 			if (!phba->slow_ring_trc) {
 				lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
@@ -7501,11 +6249,6 @@ lpfc_debugfs_initialize(struct lpfc_vport *vport)
 				goto debug_failed;
 			}
 			atomic_set(&phba->slow_ring_trc_cnt, 0);
-<<<<<<< HEAD
-			memset(phba->slow_ring_trc, 0,
-				(sizeof(struct lpfc_debugfs_trc) *
-				lpfc_debugfs_max_slow_ring_trc));
-=======
 		}
 
 		snprintf(name, sizeof(name), "nvmeio_trc");
@@ -7553,7 +6296,6 @@ nvmeio_off:
 			phba->nvmeio_trc_on = 0;
 			phba->nvmeio_trc_output_idx = 0;
 			phba->nvmeio_trc = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -7561,14 +6303,6 @@ nvmeio_off:
 	if (!vport->vport_debugfs_root) {
 		vport->vport_debugfs_root =
 			debugfs_create_dir(name, phba->hba_debugfs_root);
-<<<<<<< HEAD
-		if (!vport->vport_debugfs_root) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "0417 Can't create debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&phba->debugfs_vport_count);
 	}
 
@@ -7583,12 +6317,7 @@ nvmeio_off:
 				i++;
 			}
 			lpfc_debugfs_max_disc_trc = (1 << i);
-<<<<<<< HEAD
-			printk(KERN_ERR
-			       "lpfc_debugfs_max_disc_trc changed to %d\n",
-=======
 			pr_err("lpfc_debugfs_max_disc_trc changed to %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       lpfc_debugfs_max_disc_trc);
 		}
 	}
@@ -7610,28 +6339,11 @@ nvmeio_off:
 		debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				 vport->vport_debugfs_root,
 				 vport, &lpfc_debugfs_op_disc_trc);
-<<<<<<< HEAD
-	if (!vport->debug_disc_trc) {
-		lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				 "0419 Cannot create debugfs "
-				 "discovery_trace\n");
-		goto debug_failed;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(name, sizeof(name), "nodelist");
 	vport->debug_nodelist =
 		debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				 vport->vport_debugfs_root,
 				 vport, &lpfc_debugfs_op_nodelist);
-<<<<<<< HEAD
-	if (!vport->debug_nodelist) {
-		lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-				 "2985 Can't create debugfs nodelist\n");
-		goto debug_failed;
-	}
-
-=======
 
 	snprintf(name, sizeof(name), "nvmestat");
 	vport->debug_nvmestat =
@@ -7675,7 +6387,6 @@ nvmeio_off:
 	if (!pport_setup)
 		goto debug_failed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * iDiag debugfs root entry points for SLI4 device only
 	 */
@@ -7686,14 +6397,6 @@ nvmeio_off:
 	if (!phba->idiag_root) {
 		phba->idiag_root =
 			debugfs_create_dir(name, phba->hba_debugfs_root);
-<<<<<<< HEAD
-		if (!phba->idiag_root) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "2922 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Initialize iDiag data structure */
 		memset(&idiag, 0, sizeof(idiag));
 	}
@@ -7704,14 +6407,6 @@ nvmeio_off:
 		phba->idiag_pci_cfg =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				phba->idiag_root, phba, &lpfc_idiag_op_pciCfg);
-<<<<<<< HEAD
-		if (!phba->idiag_pci_cfg) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "2923 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idiag.offset.last_rd = 0;
 	}
 
@@ -7721,14 +6416,6 @@ nvmeio_off:
 		phba->idiag_bar_acc =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				phba->idiag_root, phba, &lpfc_idiag_op_barAcc);
-<<<<<<< HEAD
-		if (!phba->idiag_bar_acc) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					"3056 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idiag.offset.last_rd = 0;
 	}
 
@@ -7738,14 +6425,6 @@ nvmeio_off:
 		phba->idiag_que_info =
 			debugfs_create_file(name, S_IFREG|S_IRUGO,
 			phba->idiag_root, phba, &lpfc_idiag_op_queInfo);
-<<<<<<< HEAD
-		if (!phba->idiag_que_info) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "2924 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* iDiag access PCI function queue */
@@ -7754,14 +6433,6 @@ nvmeio_off:
 		phba->idiag_que_acc =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				phba->idiag_root, phba, &lpfc_idiag_op_queAcc);
-<<<<<<< HEAD
-		if (!phba->idiag_que_acc) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "2926 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* iDiag access PCI function doorbell registers */
@@ -7770,14 +6441,6 @@ nvmeio_off:
 		phba->idiag_drb_acc =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				phba->idiag_root, phba, &lpfc_idiag_op_drbAcc);
-<<<<<<< HEAD
-		if (!phba->idiag_drb_acc) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "2927 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* iDiag access PCI function control registers */
@@ -7786,14 +6449,6 @@ nvmeio_off:
 		phba->idiag_ctl_acc =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				phba->idiag_root, phba, &lpfc_idiag_op_ctlAcc);
-<<<<<<< HEAD
-		if (!phba->idiag_ctl_acc) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					 "2981 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* iDiag access mbox commands */
@@ -7802,14 +6457,6 @@ nvmeio_off:
 		phba->idiag_mbx_acc =
 			debugfs_create_file(name, S_IFREG|S_IRUGO|S_IWUSR,
 				phba->idiag_root, phba, &lpfc_idiag_op_mbxAcc);
-<<<<<<< HEAD
-		if (!phba->idiag_mbx_acc) {
-			lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-					"2980 Can't create idiag debugfs\n");
-			goto debug_failed;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* iDiag extents access commands */
@@ -7821,15 +6468,6 @@ nvmeio_off:
 						    S_IFREG|S_IRUGO|S_IWUSR,
 						    phba->idiag_root, phba,
 						    &lpfc_idiag_op_extAcc);
-<<<<<<< HEAD
-			if (!phba->idiag_ext_acc) {
-				lpfc_printf_vlog(vport, KERN_ERR, LOG_INIT,
-						"2986 Cant create "
-						"idiag debugfs\n");
-				goto debug_failed;
-			}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -7855,20 +6493,6 @@ lpfc_debugfs_terminate(struct lpfc_vport *vport)
 #ifdef CONFIG_SCSI_LPFC_DEBUG_FS
 	struct lpfc_hba   *phba = vport->phba;
 
-<<<<<<< HEAD
-	if (vport->disc_trc) {
-		kfree(vport->disc_trc);
-		vport->disc_trc = NULL;
-	}
-	if (vport->debug_disc_trc) {
-		debugfs_remove(vport->debug_disc_trc); /* discovery_trace */
-		vport->debug_disc_trc = NULL;
-	}
-	if (vport->debug_nodelist) {
-		debugfs_remove(vport->debug_nodelist); /* nodelist */
-		vport->debug_nodelist = NULL;
-	}
-=======
 	kfree(vport->disc_trc);
 	vport->disc_trc = NULL;
 
@@ -7890,83 +6514,11 @@ lpfc_debugfs_terminate(struct lpfc_vport *vport)
 	debugfs_remove(vport->debug_hdwqstat); /* hdwqstat */
 	vport->debug_hdwqstat = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vport->vport_debugfs_root) {
 		debugfs_remove(vport->vport_debugfs_root); /* vportX */
 		vport->vport_debugfs_root = NULL;
 		atomic_dec(&phba->debugfs_vport_count);
 	}
-<<<<<<< HEAD
-	if (atomic_read(&phba->debugfs_vport_count) == 0) {
-
-		if (phba->debug_hbqinfo) {
-			debugfs_remove(phba->debug_hbqinfo); /* hbqinfo */
-			phba->debug_hbqinfo = NULL;
-		}
-		if (phba->debug_dumpHBASlim) {
-			debugfs_remove(phba->debug_dumpHBASlim); /* HBASlim */
-			phba->debug_dumpHBASlim = NULL;
-		}
-		if (phba->debug_dumpHostSlim) {
-			debugfs_remove(phba->debug_dumpHostSlim); /* HostSlim */
-			phba->debug_dumpHostSlim = NULL;
-		}
-		if (phba->debug_dumpData) {
-			debugfs_remove(phba->debug_dumpData); /* dumpData */
-			phba->debug_dumpData = NULL;
-		}
-
-		if (phba->debug_dumpDif) {
-			debugfs_remove(phba->debug_dumpDif); /* dumpDif */
-			phba->debug_dumpDif = NULL;
-		}
-		if (phba->debug_InjErrLBA) {
-			debugfs_remove(phba->debug_InjErrLBA); /* InjErrLBA */
-			phba->debug_InjErrLBA = NULL;
-		}
-		if (phba->debug_InjErrNPortID) {	 /* InjErrNPortID */
-			debugfs_remove(phba->debug_InjErrNPortID);
-			phba->debug_InjErrNPortID = NULL;
-		}
-		if (phba->debug_InjErrWWPN) {
-			debugfs_remove(phba->debug_InjErrWWPN); /* InjErrWWPN */
-			phba->debug_InjErrWWPN = NULL;
-		}
-		if (phba->debug_writeGuard) {
-			debugfs_remove(phba->debug_writeGuard); /* writeGuard */
-			phba->debug_writeGuard = NULL;
-		}
-		if (phba->debug_writeApp) {
-			debugfs_remove(phba->debug_writeApp); /* writeApp */
-			phba->debug_writeApp = NULL;
-		}
-		if (phba->debug_writeRef) {
-			debugfs_remove(phba->debug_writeRef); /* writeRef */
-			phba->debug_writeRef = NULL;
-		}
-		if (phba->debug_readGuard) {
-			debugfs_remove(phba->debug_readGuard); /* readGuard */
-			phba->debug_readGuard = NULL;
-		}
-		if (phba->debug_readApp) {
-			debugfs_remove(phba->debug_readApp); /* readApp */
-			phba->debug_readApp = NULL;
-		}
-		if (phba->debug_readRef) {
-			debugfs_remove(phba->debug_readRef); /* readRef */
-			phba->debug_readRef = NULL;
-		}
-
-		if (phba->slow_ring_trc) {
-			kfree(phba->slow_ring_trc);
-			phba->slow_ring_trc = NULL;
-		}
-		if (phba->debug_slow_ring_trc) {
-			/* slow_ring_trace */
-			debugfs_remove(phba->debug_slow_ring_trc);
-			phba->debug_slow_ring_trc = NULL;
-		}
-=======
 
 	if (atomic_read(&phba->debugfs_vport_count) == 0) {
 
@@ -8034,61 +6586,11 @@ lpfc_debugfs_terminate(struct lpfc_vport *vport)
 
 		kfree(phba->nvmeio_trc);
 		phba->nvmeio_trc = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * iDiag release
 		 */
 		if (phba->sli_rev == LPFC_SLI_REV4) {
-<<<<<<< HEAD
-			if (phba->idiag_ext_acc) {
-				/* iDiag extAcc */
-				debugfs_remove(phba->idiag_ext_acc);
-				phba->idiag_ext_acc = NULL;
-			}
-			if (phba->idiag_mbx_acc) {
-				/* iDiag mbxAcc */
-				debugfs_remove(phba->idiag_mbx_acc);
-				phba->idiag_mbx_acc = NULL;
-			}
-			if (phba->idiag_ctl_acc) {
-				/* iDiag ctlAcc */
-				debugfs_remove(phba->idiag_ctl_acc);
-				phba->idiag_ctl_acc = NULL;
-			}
-			if (phba->idiag_drb_acc) {
-				/* iDiag drbAcc */
-				debugfs_remove(phba->idiag_drb_acc);
-				phba->idiag_drb_acc = NULL;
-			}
-			if (phba->idiag_que_acc) {
-				/* iDiag queAcc */
-				debugfs_remove(phba->idiag_que_acc);
-				phba->idiag_que_acc = NULL;
-			}
-			if (phba->idiag_que_info) {
-				/* iDiag queInfo */
-				debugfs_remove(phba->idiag_que_info);
-				phba->idiag_que_info = NULL;
-			}
-			if (phba->idiag_bar_acc) {
-				/* iDiag barAcc */
-				debugfs_remove(phba->idiag_bar_acc);
-				phba->idiag_bar_acc = NULL;
-			}
-			if (phba->idiag_pci_cfg) {
-				/* iDiag pciCfg */
-				debugfs_remove(phba->idiag_pci_cfg);
-				phba->idiag_pci_cfg = NULL;
-			}
-
-			/* Finally remove the iDiag debugfs root */
-			if (phba->idiag_root) {
-				/* iDiag root */
-				debugfs_remove(phba->idiag_root);
-				phba->idiag_root = NULL;
-			}
-=======
 			/* iDiag extAcc */
 			debugfs_remove(phba->idiag_ext_acc);
 			phba->idiag_ext_acc = NULL;
@@ -8124,7 +6626,6 @@ lpfc_debugfs_terminate(struct lpfc_vport *vport)
 			/* Finally remove the iDiag debugfs root */
 			debugfs_remove(phba->idiag_root);
 			phba->idiag_root = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (phba->hba_debugfs_root) {
@@ -8141,8 +6642,6 @@ lpfc_debugfs_terminate(struct lpfc_vport *vport)
 #endif
 	return;
 }
-<<<<<<< HEAD
-=======
 
 /*
  * Driver debug utility routines outside of debugfs. The debug utility
@@ -8189,4 +6688,3 @@ lpfc_debug_dump_all_queues(struct lpfc_hba *phba)
 	for (idx = 0; idx < phba->cfg_hdw_queue; idx++)
 		lpfc_debug_dump_hba_eq(phba, idx);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

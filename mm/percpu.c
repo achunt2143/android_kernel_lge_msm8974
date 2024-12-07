@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mm/percpu.c - percpu memory allocator
  *
  * Copyright (C) 2009		SUSE Linux Products GmbH
  * Copyright (C) 2009		Tejun Heo <tj@kernel.org>
  *
-<<<<<<< HEAD
- * This file is released under the GPLv2.
- *
- * This is percpu allocator which can handle both static and dynamic
- * areas.  Percpu areas are allocated in chunks.  Each chunk is
- * consisted of boot-time determined number of units and the first
- * chunk is used for static percpu variables in the kernel image
- * (special boot time alloc/init handling necessary as these areas
- * need to be brought up before allocation services are running).
- * Unit grows as necessary and all units grow or shrink in unison.
- * When a chunk is filled up, another chunk is allocated.
-=======
  * Copyright (C) 2017		Facebook Inc.
  * Copyright (C) 2017		Dennis Zhou <dennis@kernel.org>
  *
@@ -27,39 +12,12 @@
  * areas are allocated in chunks which are divided into units.  There is
  * a 1-to-1 mapping for units to possible cpus.  These units are grouped
  * based on NUMA properties of the machine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  c0                           c1                         c2
  *  -------------------          -------------------        ------------
  * | u0 | u1 | u2 | u3 |        | u0 | u1 | u2 | u3 |      | u0 | u1 | u
  *  -------------------  ......  -------------------  ....  ------------
  *
-<<<<<<< HEAD
- * Allocation is done in offset-size areas of single unit space.  Ie,
- * an area of 512 bytes at 6k in c1 occupies 512 bytes at 6k of c1:u0,
- * c1:u1, c1:u2 and c1:u3.  On UMA, units corresponds directly to
- * cpus.  On NUMA, the mapping can be non-linear and even sparse.
- * Percpu access can be done by configuring percpu base registers
- * according to cpu to unit mapping and pcpu_unit_size.
- *
- * There are usually many small percpu allocations many of them being
- * as small as 4 bytes.  The allocator organizes chunks into lists
- * according to free size and tries to allocate from the fullest one.
- * Each chunk keeps the maximum contiguous area size hint which is
- * guaranteed to be equal to or larger than the maximum contiguous
- * area in the chunk.  This helps the allocator not to iterate the
- * chunk maps unnecessarily.
- *
- * Allocation state in each chunk is kept using an array of integers
- * on chunk->map.  A positive value in the map represents a free
- * region and negative allocated.  Allocation inside a chunk is done
- * by scanning this map sequentially and serving the first matching
- * entry.  This is mostly copied from the percpu_modalloc() allocator.
- * Chunks can be determined from the address using the index field
- * in the page struct. The index field contains a pointer to the chunk.
- *
- * To use this allocator, arch code should do the followings.
-=======
  * Allocation is done by offsets into a unit's address space.  Ie., an
  * area of 512 bytes at 6k in c1 occupies 512 bytes at 6k in c1:u0,
  * c1:u1, c1:u2, etc.  On NUMA machines, the mapping may be non-linear
@@ -99,7 +57,6 @@
  * All hints are managed in bits unless explicitly stated.
  *
  * To use this allocator, arch code should do the following:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * - define __addr_to_pcpu_ptr() and __pcpu_ptr_to_addr() to translate
  *   regular address to percpu pointer and back if they need to be
@@ -109,16 +66,11 @@
  *   setup the first chunk containing the kernel static percpu area
  */
 
-<<<<<<< HEAD
-#include <linux/bitmap.h>
-#include <linux/bootmem.h>
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/bitmap.h>
 #include <linux/cpumask.h>
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/list.h>
 #include <linux/log2.h>
@@ -132,22 +84,15 @@
 #include <linux/vmalloc.h>
 #include <linux/workqueue.h>
 #include <linux/kmemleak.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched.h>
 #include <linux/sched/mm.h>
 #include <linux/memcontrol.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cacheflush.h>
 #include <asm/sections.h>
 #include <asm/tlbflush.h>
 #include <asm/io.h>
 
-<<<<<<< HEAD
-#define PCPU_SLOT_BASE_SHIFT		5	/* 1-31 shares the same slot */
-#define PCPU_DFL_MAP_ALLOC		16	/* start a map with 16 ents */
-=======
 #define CREATE_TRACE_POINTS
 #include <trace/events/percpu.h>
 
@@ -163,7 +108,6 @@
 
 #define PCPU_EMPTY_POP_PAGES_LOW	2
 #define PCPU_EMPTY_POP_PAGES_HIGH	4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 /* default addr <-> pcpu_ptr mapping, override in asm/percpu.h if necessary */
@@ -185,43 +129,6 @@
 #define __pcpu_ptr_to_addr(ptr)		(void __force *)(ptr)
 #endif	/* CONFIG_SMP */
 
-<<<<<<< HEAD
-struct pcpu_chunk {
-	struct list_head	list;		/* linked to pcpu_slot lists */
-	int			free_size;	/* free bytes in the chunk */
-	int			contig_hint;	/* max contiguous size hint */
-	void			*base_addr;	/* base address of this chunk */
-	int			map_used;	/* # of map entries used */
-	int			map_alloc;	/* # of map entries allocated */
-	int			*map;		/* allocation map */
-	void			*data;		/* chunk data */
-	bool			immutable;	/* no [de]population allowed */
-	unsigned long		populated[];	/* populated bitmap */
-};
-
-static int pcpu_unit_pages __read_mostly;
-static int pcpu_unit_size __read_mostly;
-static int pcpu_nr_units __read_mostly;
-static int pcpu_atom_size __read_mostly;
-static int pcpu_nr_slots __read_mostly;
-static size_t pcpu_chunk_struct_size __read_mostly;
-
-/* cpus with the lowest and highest unit addresses */
-static unsigned int pcpu_low_unit_cpu __read_mostly;
-static unsigned int pcpu_high_unit_cpu __read_mostly;
-
-/* the address of the first chunk which starts with the kernel static area */
-void *pcpu_base_addr __read_mostly;
-EXPORT_SYMBOL_GPL(pcpu_base_addr);
-
-static const int *pcpu_unit_map __read_mostly;		/* cpu -> unit */
-const unsigned long *pcpu_unit_offsets __read_mostly;	/* cpu -> unit offset */
-
-/* group information, used for vm allocation */
-static int pcpu_nr_groups __read_mostly;
-static const unsigned long *pcpu_group_offsets __read_mostly;
-static const size_t *pcpu_group_sizes __read_mostly;
-=======
 static int pcpu_unit_pages __ro_after_init;
 static int pcpu_unit_size __ro_after_init;
 static int pcpu_nr_units __ro_after_init;
@@ -246,73 +153,12 @@ const unsigned long *pcpu_unit_offsets __ro_after_init;	/* cpu -> unit offset */
 static int pcpu_nr_groups __ro_after_init;
 static const unsigned long *pcpu_group_offsets __ro_after_init;
 static const size_t *pcpu_group_sizes __ro_after_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The first chunk which always exists.  Note that unlike other
  * chunks, this one can be allocated and mapped in several different
  * ways and thus often doesn't live in the vmalloc area.
  */
-<<<<<<< HEAD
-static struct pcpu_chunk *pcpu_first_chunk;
-
-/*
- * Optional reserved chunk.  This chunk reserves part of the first
- * chunk and serves it for reserved allocations.  The amount of
- * reserved offset is in pcpu_reserved_chunk_limit.  When reserved
- * area doesn't exist, the following variables contain NULL and 0
- * respectively.
- */
-static struct pcpu_chunk *pcpu_reserved_chunk;
-static int pcpu_reserved_chunk_limit;
-
-/*
- * Synchronization rules.
- *
- * There are two locks - pcpu_alloc_mutex and pcpu_lock.  The former
- * protects allocation/reclaim paths, chunks, populated bitmap and
- * vmalloc mapping.  The latter is a spinlock and protects the index
- * data structures - chunk slots, chunks and area maps in chunks.
- *
- * During allocation, pcpu_alloc_mutex is kept locked all the time and
- * pcpu_lock is grabbed and released as necessary.  All actual memory
- * allocations are done using GFP_KERNEL with pcpu_lock released.  In
- * general, percpu memory can't be allocated with irq off but
- * irqsave/restore are still used in alloc path so that it can be used
- * from early init path - sched_init() specifically.
- *
- * Free path accesses and alters only the index data structures, so it
- * can be safely called from atomic context.  When memory needs to be
- * returned to the system, free path schedules reclaim_work which
- * grabs both pcpu_alloc_mutex and pcpu_lock, unlinks chunks to be
- * reclaimed, release both locks and frees the chunks.  Note that it's
- * necessary to grab both locks to remove a chunk from circulation as
- * allocation path might be referencing the chunk with only
- * pcpu_alloc_mutex locked.
- */
-static DEFINE_MUTEX(pcpu_alloc_mutex);	/* protects whole alloc and reclaim */
-static DEFINE_SPINLOCK(pcpu_lock);	/* protects index data structures */
-
-static struct list_head *pcpu_slot __read_mostly; /* chunk list slots */
-
-/* reclaim work to release fully free chunks, scheduled from free path */
-static void pcpu_reclaim(struct work_struct *work);
-static DECLARE_WORK(pcpu_reclaim_work, pcpu_reclaim);
-
-static bool pcpu_addr_in_first_chunk(void *addr)
-{
-	void *first_start = pcpu_first_chunk->base_addr;
-
-	return addr >= first_start && addr < first_start + pcpu_unit_size;
-}
-
-static bool pcpu_addr_in_reserved_chunk(void *addr)
-{
-	void *first_start = pcpu_first_chunk->base_addr;
-
-	return addr >= first_start &&
-		addr < first_start + pcpu_reserved_chunk_limit;
-=======
 struct pcpu_chunk *pcpu_first_chunk __ro_after_init;
 
 /*
@@ -378,7 +224,6 @@ static bool pcpu_addr_in_chunk(struct pcpu_chunk *chunk, void *addr)
 		   chunk->end_offset;
 
 	return addr >= start_addr && addr < end_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __pcpu_size_to_slot(int size)
@@ -390,22 +235,12 @@ static int __pcpu_size_to_slot(int size)
 static int pcpu_size_to_slot(int size)
 {
 	if (size == pcpu_unit_size)
-<<<<<<< HEAD
-		return pcpu_nr_slots - 1;
-=======
 		return pcpu_free_slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return __pcpu_size_to_slot(size);
 }
 
 static int pcpu_chunk_slot(const struct pcpu_chunk *chunk)
 {
-<<<<<<< HEAD
-	if (chunk->free_size < sizeof(int) || chunk->contig_hint < sizeof(int))
-		return 0;
-
-	return pcpu_size_to_slot(chunk->free_size);
-=======
 	const struct pcpu_block_md *chunk_md = &chunk->chunk_md;
 
 	if (chunk->free_bytes < PCPU_MIN_ALLOC_SIZE ||
@@ -413,7 +248,6 @@ static int pcpu_chunk_slot(const struct pcpu_chunk *chunk)
 		return 0;
 
 	return pcpu_size_to_slot(chunk_md->contig_hint * PCPU_MIN_ALLOC_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* set the pointer to a chunk in a page struct */
@@ -433,44 +267,6 @@ static int __maybe_unused pcpu_page_idx(unsigned int cpu, int page_idx)
 	return pcpu_unit_map[cpu] * pcpu_unit_pages + page_idx;
 }
 
-<<<<<<< HEAD
-static unsigned long pcpu_chunk_addr(struct pcpu_chunk *chunk,
-				     unsigned int cpu, int page_idx)
-{
-	return (unsigned long)chunk->base_addr + pcpu_unit_offsets[cpu] +
-		(page_idx << PAGE_SHIFT);
-}
-
-static void __maybe_unused pcpu_next_unpop(struct pcpu_chunk *chunk,
-					   int *rs, int *re, int end)
-{
-	*rs = find_next_zero_bit(chunk->populated, end, *rs);
-	*re = find_next_bit(chunk->populated, end, *rs + 1);
-}
-
-static void __maybe_unused pcpu_next_pop(struct pcpu_chunk *chunk,
-					 int *rs, int *re, int end)
-{
-	*rs = find_next_bit(chunk->populated, end, *rs);
-	*re = find_next_zero_bit(chunk->populated, end, *rs + 1);
-}
-
-/*
- * (Un)populated page region iterators.  Iterate over (un)populated
- * page regions between @start and @end in @chunk.  @rs and @re should
- * be integer variables and will be set to start and end page index of
- * the current region.
- */
-#define pcpu_for_each_unpop_region(chunk, rs, re, start, end)		    \
-	for ((rs) = (start), pcpu_next_unpop((chunk), &(rs), &(re), (end)); \
-	     (rs) < (re);						    \
-	     (rs) = (re) + 1, pcpu_next_unpop((chunk), &(rs), &(re), (end)))
-
-#define pcpu_for_each_pop_region(chunk, rs, re, start, end)		    \
-	for ((rs) = (start), pcpu_next_pop((chunk), &(rs), &(re), (end));   \
-	     (rs) < (re);						    \
-	     (rs) = (re) + 1, pcpu_next_pop((chunk), &(rs), &(re), (end)))
-=======
 static unsigned long pcpu_unit_page_offset(unsigned int cpu, int page_idx)
 {
 	return pcpu_unit_offsets[cpu] + (page_idx << PAGE_SHIFT);
@@ -691,67 +487,34 @@ static void pcpu_next_fit_region(struct pcpu_chunk *chunk, int alloc_bits,
 	     (bit_off) += (bits),					      \
 	     pcpu_next_fit_region((chunk), (alloc_bits), (align), &(bit_off), \
 				  &(bits)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pcpu_mem_zalloc - allocate memory
  * @size: bytes to allocate
-<<<<<<< HEAD
- *
- * Allocate @size bytes.  If @size is smaller than PAGE_SIZE,
- * kzalloc() is used; otherwise, vzalloc() is used.  The returned
- * memory is always zeroed.
- *
- * CONTEXT:
- * Does GFP_KERNEL allocation.
-=======
  * @gfp: allocation flags
  *
  * Allocate @size bytes.  If @size is smaller than PAGE_SIZE,
  * kzalloc() is used; otherwise, the equivalent of vzalloc() is used.
  * This is to facilitate passing through whitelisted flags.  The
  * returned memory is always zeroed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURNS:
  * Pointer to the allocated area on success, NULL on failure.
  */
-<<<<<<< HEAD
-static void *pcpu_mem_zalloc(size_t size)
-=======
 static void *pcpu_mem_zalloc(size_t size, gfp_t gfp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (WARN_ON_ONCE(!slab_is_available()))
 		return NULL;
 
 	if (size <= PAGE_SIZE)
-<<<<<<< HEAD
-		return kzalloc(size, GFP_KERNEL);
-	else
-		return vzalloc(size);
-=======
 		return kzalloc(size, gfp);
 	else
 		return __vmalloc(size, gfp | __GFP_ZERO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * pcpu_mem_free - free memory
  * @ptr: memory to free
-<<<<<<< HEAD
- * @size: size of the area
- *
- * Free @ptr.  @ptr should have been allocated using pcpu_mem_zalloc().
- */
-static void pcpu_mem_free(void *ptr, size_t size)
-{
-	if (size <= PAGE_SIZE)
-		kfree(ptr);
-	else
-		vfree(ptr);
-=======
  *
  * Free @ptr.  @ptr should have been allocated using pcpu_mem_zalloc().
  */
@@ -774,7 +537,6 @@ static void __pcpu_chunk_move(struct pcpu_chunk *chunk, int slot,
 static void pcpu_chunk_move(struct pcpu_chunk *chunk, int slot)
 {
 	__pcpu_chunk_move(chunk, slot, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -794,302 +556,6 @@ static void pcpu_chunk_relocate(struct pcpu_chunk *chunk, int oslot)
 {
 	int nslot = pcpu_chunk_slot(chunk);
 
-<<<<<<< HEAD
-	if (chunk != pcpu_reserved_chunk && oslot != nslot) {
-		if (oslot < nslot)
-			list_move(&chunk->list, &pcpu_slot[nslot]);
-		else
-			list_move_tail(&chunk->list, &pcpu_slot[nslot]);
-	}
-}
-
-/**
- * pcpu_need_to_extend - determine whether chunk area map needs to be extended
- * @chunk: chunk of interest
- *
- * Determine whether area map of @chunk needs to be extended to
- * accommodate a new allocation.
- *
- * CONTEXT:
- * pcpu_lock.
- *
- * RETURNS:
- * New target map allocation length if extension is necessary, 0
- * otherwise.
- */
-static int pcpu_need_to_extend(struct pcpu_chunk *chunk)
-{
-	int new_alloc;
-
-	if (chunk->map_alloc >= chunk->map_used + 2)
-		return 0;
-
-	new_alloc = PCPU_DFL_MAP_ALLOC;
-	while (new_alloc < chunk->map_used + 2)
-		new_alloc *= 2;
-
-	return new_alloc;
-}
-
-/**
- * pcpu_extend_area_map - extend area map of a chunk
- * @chunk: chunk of interest
- * @new_alloc: new target allocation length of the area map
- *
- * Extend area map of @chunk to have @new_alloc entries.
- *
- * CONTEXT:
- * Does GFP_KERNEL allocation.  Grabs and releases pcpu_lock.
- *
- * RETURNS:
- * 0 on success, -errno on failure.
- */
-static int pcpu_extend_area_map(struct pcpu_chunk *chunk, int new_alloc)
-{
-	int *old = NULL, *new = NULL;
-	size_t old_size = 0, new_size = new_alloc * sizeof(new[0]);
-	unsigned long flags;
-
-	new = pcpu_mem_zalloc(new_size);
-	if (!new)
-		return -ENOMEM;
-
-	/* acquire pcpu_lock and switch to new area map */
-	spin_lock_irqsave(&pcpu_lock, flags);
-
-	if (new_alloc <= chunk->map_alloc)
-		goto out_unlock;
-
-	old_size = chunk->map_alloc * sizeof(chunk->map[0]);
-	old = chunk->map;
-
-	memcpy(new, old, old_size);
-
-	chunk->map_alloc = new_alloc;
-	chunk->map = new;
-	new = NULL;
-
-out_unlock:
-	spin_unlock_irqrestore(&pcpu_lock, flags);
-
-	/*
-	 * pcpu_mem_free() might end up calling vfree() which uses
-	 * IRQ-unsafe lock and thus can't be called under pcpu_lock.
-	 */
-	pcpu_mem_free(old, old_size);
-	pcpu_mem_free(new, new_size);
-
-	return 0;
-}
-
-/**
- * pcpu_split_block - split a map block
- * @chunk: chunk of interest
- * @i: index of map block to split
- * @head: head size in bytes (can be 0)
- * @tail: tail size in bytes (can be 0)
- *
- * Split the @i'th map block into two or three blocks.  If @head is
- * non-zero, @head bytes block is inserted before block @i moving it
- * to @i+1 and reducing its size by @head bytes.
- *
- * If @tail is non-zero, the target block, which can be @i or @i+1
- * depending on @head, is reduced by @tail bytes and @tail byte block
- * is inserted after the target block.
- *
- * @chunk->map must have enough free slots to accommodate the split.
- *
- * CONTEXT:
- * pcpu_lock.
- */
-static void pcpu_split_block(struct pcpu_chunk *chunk, int i,
-			     int head, int tail)
-{
-	int nr_extra = !!head + !!tail;
-
-	BUG_ON(chunk->map_alloc < chunk->map_used + nr_extra);
-
-	/* insert new subblocks */
-	memmove(&chunk->map[i + nr_extra], &chunk->map[i],
-		sizeof(chunk->map[0]) * (chunk->map_used - i));
-	chunk->map_used += nr_extra;
-
-	if (head) {
-		chunk->map[i + 1] = chunk->map[i] - head;
-		chunk->map[i++] = head;
-	}
-	if (tail) {
-		chunk->map[i++] -= tail;
-		chunk->map[i] = tail;
-	}
-}
-
-/**
- * pcpu_alloc_area - allocate area from a pcpu_chunk
- * @chunk: chunk of interest
- * @size: wanted size in bytes
- * @align: wanted align
- *
- * Try to allocate @size bytes area aligned at @align from @chunk.
- * Note that this function only allocates the offset.  It doesn't
- * populate or map the area.
- *
- * @chunk->map must have at least two free slots.
- *
- * CONTEXT:
- * pcpu_lock.
- *
- * RETURNS:
- * Allocated offset in @chunk on success, -1 if no matching area is
- * found.
- */
-static int pcpu_alloc_area(struct pcpu_chunk *chunk, int size, int align)
-{
-	int oslot = pcpu_chunk_slot(chunk);
-	int max_contig = 0;
-	int i, off;
-
-	for (i = 0, off = 0; i < chunk->map_used; off += abs(chunk->map[i++])) {
-		bool is_last = i + 1 == chunk->map_used;
-		int head, tail;
-
-		/* extra for alignment requirement */
-		head = ALIGN(off, align) - off;
-		BUG_ON(i == 0 && head != 0);
-
-		if (chunk->map[i] < 0)
-			continue;
-		if (chunk->map[i] < head + size) {
-			max_contig = max(chunk->map[i], max_contig);
-			continue;
-		}
-
-		/*
-		 * If head is small or the previous block is free,
-		 * merge'em.  Note that 'small' is defined as smaller
-		 * than sizeof(int), which is very small but isn't too
-		 * uncommon for percpu allocations.
-		 */
-		if (head && (head < sizeof(int) || chunk->map[i - 1] > 0)) {
-			if (chunk->map[i - 1] > 0)
-				chunk->map[i - 1] += head;
-			else {
-				chunk->map[i - 1] -= head;
-				chunk->free_size -= head;
-			}
-			chunk->map[i] -= head;
-			off += head;
-			head = 0;
-		}
-
-		/* if tail is small, just keep it around */
-		tail = chunk->map[i] - head - size;
-		if (tail < sizeof(int))
-			tail = 0;
-
-		/* split if warranted */
-		if (head || tail) {
-			pcpu_split_block(chunk, i, head, tail);
-			if (head) {
-				i++;
-				off += head;
-				max_contig = max(chunk->map[i - 1], max_contig);
-			}
-			if (tail)
-				max_contig = max(chunk->map[i + 1], max_contig);
-		}
-
-		/* update hint and mark allocated */
-		if (is_last)
-			chunk->contig_hint = max_contig; /* fully scanned */
-		else
-			chunk->contig_hint = max(chunk->contig_hint,
-						 max_contig);
-
-		chunk->free_size -= chunk->map[i];
-		chunk->map[i] = -chunk->map[i];
-
-		pcpu_chunk_relocate(chunk, oslot);
-		return off;
-	}
-
-	chunk->contig_hint = max_contig;	/* fully scanned */
-	pcpu_chunk_relocate(chunk, oslot);
-
-	/* tell the upper layer that this chunk has no matching area */
-	return -1;
-}
-
-/**
- * pcpu_free_area - free area to a pcpu_chunk
- * @chunk: chunk of interest
- * @freeme: offset of area to free
- *
- * Free area starting from @freeme to @chunk.  Note that this function
- * only modifies the allocation map.  It doesn't depopulate or unmap
- * the area.
- *
- * CONTEXT:
- * pcpu_lock.
- */
-static void pcpu_free_area(struct pcpu_chunk *chunk, int freeme)
-{
-	int oslot = pcpu_chunk_slot(chunk);
-	int i, off;
-
-	for (i = 0, off = 0; i < chunk->map_used; off += abs(chunk->map[i++]))
-		if (off == freeme)
-			break;
-	BUG_ON(off != freeme);
-	BUG_ON(chunk->map[i] > 0);
-
-	chunk->map[i] = -chunk->map[i];
-	chunk->free_size += chunk->map[i];
-
-	/* merge with previous? */
-	if (i > 0 && chunk->map[i - 1] >= 0) {
-		chunk->map[i - 1] += chunk->map[i];
-		chunk->map_used--;
-		memmove(&chunk->map[i], &chunk->map[i + 1],
-			(chunk->map_used - i) * sizeof(chunk->map[0]));
-		i--;
-	}
-	/* merge with next? */
-	if (i + 1 < chunk->map_used && chunk->map[i + 1] >= 0) {
-		chunk->map[i] += chunk->map[i + 1];
-		chunk->map_used--;
-		memmove(&chunk->map[i + 1], &chunk->map[i + 2],
-			(chunk->map_used - (i + 1)) * sizeof(chunk->map[0]));
-	}
-
-	chunk->contig_hint = max(chunk->map[i], chunk->contig_hint);
-	pcpu_chunk_relocate(chunk, oslot);
-}
-
-static struct pcpu_chunk *pcpu_alloc_chunk(void)
-{
-	struct pcpu_chunk *chunk;
-
-	chunk = pcpu_mem_zalloc(pcpu_chunk_struct_size);
-	if (!chunk)
-		return NULL;
-
-	chunk->map = pcpu_mem_zalloc(PCPU_DFL_MAP_ALLOC *
-						sizeof(chunk->map[0]));
-	if (!chunk->map) {
-		pcpu_mem_free(chunk, pcpu_chunk_struct_size);
-		return NULL;
-	}
-
-	chunk->map_alloc = PCPU_DFL_MAP_ALLOC;
-	chunk->map[chunk->map_used++] = pcpu_unit_size;
-
-	INIT_LIST_HEAD(&chunk->list);
-	chunk->free_size = pcpu_unit_size;
-	chunk->contig_hint = pcpu_unit_size;
-
-	return chunk;
-=======
 	/* leave isolated chunks in-place */
 	if (chunk->isolated)
 		return;
@@ -2026,17 +1492,12 @@ alloc_map_fail:
 	pcpu_mem_free(chunk);
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pcpu_free_chunk(struct pcpu_chunk *chunk)
 {
 	if (!chunk)
 		return;
-<<<<<<< HEAD
-	pcpu_mem_free(chunk->map, chunk->map_alloc * sizeof(chunk->map[0]));
-	kfree(chunk);
-=======
 #ifdef CONFIG_MEMCG_KMEM
 	pcpu_mem_free(chunk->obj_cgroups);
 #endif
@@ -2092,7 +1553,6 @@ static void pcpu_chunk_depopulated(struct pcpu_chunk *chunk,
 	pcpu_nr_populated -= nr;
 
 	pcpu_update_empty_pages(chunk, -nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2105,20 +1565,12 @@ static void pcpu_chunk_depopulated(struct pcpu_chunk *chunk,
  *
  * pcpu_populate_chunk		- populate the specified range of a chunk
  * pcpu_depopulate_chunk	- depopulate the specified range of a chunk
-<<<<<<< HEAD
-=======
  * pcpu_post_unmap_tlb_flush	- flush tlb for the specified range of a chunk
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcpu_create_chunk		- create a new chunk
  * pcpu_destroy_chunk		- destroy a chunk, always preceded by full depop
  * pcpu_addr_to_page		- translate address to physical address
  * pcpu_verify_alloc_info	- check alloc_info is acceptable during init
  */
-<<<<<<< HEAD
-static int pcpu_populate_chunk(struct pcpu_chunk *chunk, int off, int size);
-static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size);
-static struct pcpu_chunk *pcpu_create_chunk(void);
-=======
 static int pcpu_populate_chunk(struct pcpu_chunk *chunk,
 			       int page_start, int page_end, gfp_t gfp);
 static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
@@ -2126,7 +1578,6 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
 static void pcpu_post_unmap_tlb_flush(struct pcpu_chunk *chunk,
 				      int page_start, int page_end);
 static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pcpu_destroy_chunk(struct pcpu_chunk *chunk);
 static struct page *pcpu_addr_to_page(void *addr);
 static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai);
@@ -2141,26 +1592,14 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai);
  * pcpu_chunk_addr_search - determine chunk containing specified address
  * @addr: address for which the chunk needs to be determined.
  *
-<<<<<<< HEAD
-=======
  * This is an internal function that handles all but static allocations.
  * Static percpu address values should never be passed into the allocator.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * RETURNS:
  * The address of the found chunk.
  */
 static struct pcpu_chunk *pcpu_chunk_addr_search(void *addr)
 {
-<<<<<<< HEAD
-	/* is it in the first chunk? */
-	if (pcpu_addr_in_first_chunk(addr)) {
-		/* is it in the reserved area? */
-		if (pcpu_addr_in_reserved_chunk(addr))
-			return pcpu_reserved_chunk;
-		return pcpu_first_chunk;
-	}
-=======
 	/* is it in the dynamic region (first chunk)? */
 	if (pcpu_addr_in_chunk(pcpu_first_chunk, addr))
 		return pcpu_first_chunk;
@@ -2168,7 +1607,6 @@ static struct pcpu_chunk *pcpu_chunk_addr_search(void *addr)
 	/* is it in the reserved region? */
 	if (pcpu_addr_in_chunk(pcpu_reserved_chunk, addr))
 		return pcpu_reserved_chunk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The address is relative to unit0 which might be unused and
@@ -2181,8 +1619,6 @@ static struct pcpu_chunk *pcpu_chunk_addr_search(void *addr)
 	return pcpu_get_page_chunk(pcpu_addr_to_page(addr));
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MEMCG_KMEM
 static bool pcpu_memcg_pre_alloc_hook(size_t size, gfp_t gfp,
 				      struct obj_cgroup **objcgp)
@@ -2263,48 +1699,21 @@ static void pcpu_memcg_free_hook(struct pcpu_chunk *chunk, int off, size_t size)
 }
 #endif /* CONFIG_MEMCG_KMEM */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pcpu_alloc - the percpu allocator
  * @size: size of area to allocate in bytes
  * @align: alignment of area (max PAGE_SIZE)
  * @reserved: allocate from the reserved chunk if available
-<<<<<<< HEAD
- *
- * Allocate percpu area of @size bytes aligned at @align.
- *
- * CONTEXT:
- * Does GFP_KERNEL allocation.
-=======
  * @gfp: allocation flags
  *
  * Allocate percpu area of @size bytes aligned at @align.  If @gfp doesn't
  * contain %GFP_KERNEL, the allocation is atomic. If @gfp has __GFP_NOWARN
  * then no warning will be triggered on invalid or failed allocation
  * requests.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURNS:
  * Percpu pointer to the allocated area on success, NULL on failure.
  */
-<<<<<<< HEAD
-static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved)
-{
-	static int warn_limit = 10;
-	struct pcpu_chunk *chunk;
-	const char *err;
-	int slot, off, new_alloc;
-	unsigned long flags;
-	void __percpu *ptr;
-
-	if (unlikely(!size || size > PCPU_MIN_UNIT_SIZE || align > PAGE_SIZE)) {
-		WARN(true, "illegal size (%zu) or align (%zu) for "
-		     "percpu allocation\n", size, align);
-		return NULL;
-	}
-
-	mutex_lock(&pcpu_alloc_mutex);
-=======
 static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
 				 gfp_t gfp)
 {
@@ -2363,37 +1772,19 @@ static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pcpu_lock, flags);
 
 	/* serve reserved allocations from the reserved chunk if available */
 	if (reserved && pcpu_reserved_chunk) {
 		chunk = pcpu_reserved_chunk;
 
-<<<<<<< HEAD
-		if (size > chunk->contig_hint) {
-=======
 		off = pcpu_find_block_fit(chunk, bits, bit_align, is_atomic);
 		if (off < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = "alloc from reserved chunk failed";
 			goto fail_unlock;
 		}
 
-<<<<<<< HEAD
-		while ((new_alloc = pcpu_need_to_extend(chunk))) {
-			spin_unlock_irqrestore(&pcpu_lock, flags);
-			if (pcpu_extend_area_map(chunk, new_alloc) < 0) {
-				err = "failed to extend area map of reserved chunk";
-				goto fail_unlock_mutex;
-			}
-			spin_lock_irqsave(&pcpu_lock, flags);
-		}
-
-		off = pcpu_alloc_area(chunk, size, align);
-=======
 		off = pcpu_alloc_area(chunk, bits, bit_align, off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (off >= 0)
 			goto area_found;
 
@@ -2403,64 +1794,6 @@ static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
 
 restart:
 	/* search through normal chunks */
-<<<<<<< HEAD
-	for (slot = pcpu_size_to_slot(size); slot < pcpu_nr_slots; slot++) {
-		list_for_each_entry(chunk, &pcpu_slot[slot], list) {
-			if (size > chunk->contig_hint)
-				continue;
-
-			new_alloc = pcpu_need_to_extend(chunk);
-			if (new_alloc) {
-				spin_unlock_irqrestore(&pcpu_lock, flags);
-				if (pcpu_extend_area_map(chunk,
-							 new_alloc) < 0) {
-					err = "failed to extend area map";
-					goto fail_unlock_mutex;
-				}
-				spin_lock_irqsave(&pcpu_lock, flags);
-				/*
-				 * pcpu_lock has been dropped, need to
-				 * restart cpu_slot list walking.
-				 */
-				goto restart;
-			}
-
-			off = pcpu_alloc_area(chunk, size, align);
-			if (off >= 0)
-				goto area_found;
-		}
-	}
-
-	/* hmmm... no space left, create a new chunk */
-	spin_unlock_irqrestore(&pcpu_lock, flags);
-
-	chunk = pcpu_create_chunk();
-	if (!chunk) {
-		err = "failed to allocate new chunk";
-		goto fail_unlock_mutex;
-	}
-
-	spin_lock_irqsave(&pcpu_lock, flags);
-	pcpu_chunk_relocate(chunk, -1);
-	goto restart;
-
-area_found:
-	spin_unlock_irqrestore(&pcpu_lock, flags);
-
-	/* populate, map and clear the area */
-	if (pcpu_populate_chunk(chunk, off, size)) {
-		spin_lock_irqsave(&pcpu_lock, flags);
-		pcpu_free_area(chunk, off);
-		err = "failed to populate";
-		goto fail_unlock;
-	}
-
-	mutex_unlock(&pcpu_alloc_mutex);
-
-	/* return address relative to base address */
-	ptr = __addr_to_pcpu_ptr(chunk->base_addr + off);
-	kmemleak_alloc_percpu(ptr, size);
-=======
 	for (slot = pcpu_size_to_slot(size); slot <= pcpu_free_slot; slot++) {
 		list_for_each_entry_safe(chunk, next, &pcpu_chunk_lists[slot],
 					 list) {
@@ -2548,22 +1881,10 @@ area_found:
 
 	pcpu_memcg_post_alloc_hook(objcg, chunk, off, size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ptr;
 
 fail_unlock:
 	spin_unlock_irqrestore(&pcpu_lock, flags);
-<<<<<<< HEAD
-fail_unlock_mutex:
-	mutex_unlock(&pcpu_alloc_mutex);
-	if (warn_limit) {
-		pr_warning("PERCPU: allocation failed, size=%zu align=%zu, "
-			   "%s\n", size, align, err);
-		dump_stack();
-		if (!--warn_limit)
-			pr_info("PERCPU: limit reached, disable warning\n");
-	}
-=======
 fail:
 	trace_percpu_alloc_percpu_fail(reserved, is_atomic, size, align);
 
@@ -2586,13 +1907,10 @@ fail:
 
 	pcpu_memcg_post_alloc_hook(objcg, NULL, 0, size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * __alloc_percpu_gfp - allocate dynamic percpu area
  * @size: size of area to allocate in bytes
  * @align: alignment of area (max PAGE_SIZE)
@@ -2614,31 +1932,15 @@ void __percpu *__alloc_percpu_gfp(size_t size, size_t align, gfp_t gfp)
 EXPORT_SYMBOL_GPL(__alloc_percpu_gfp);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * __alloc_percpu - allocate dynamic percpu area
  * @size: size of area to allocate in bytes
  * @align: alignment of area (max PAGE_SIZE)
  *
-<<<<<<< HEAD
- * Allocate zero-filled percpu area of @size bytes aligned at @align.
- * Might sleep.  Might trigger writeouts.
- *
- * CONTEXT:
- * Does GFP_KERNEL allocation.
- *
- * RETURNS:
- * Percpu pointer to the allocated area on success, NULL on failure.
- */
-void __percpu *__alloc_percpu(size_t size, size_t align)
-{
-	return pcpu_alloc(size, align, false);
-=======
  * Equivalent to __alloc_percpu_gfp(size, align, %GFP_KERNEL).
  */
 void __percpu *__alloc_percpu(size_t size, size_t align)
 {
 	return pcpu_alloc(size, align, false, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(__alloc_percpu);
 
@@ -2660,46 +1962,6 @@ EXPORT_SYMBOL_GPL(__alloc_percpu);
  */
 void __percpu *__alloc_reserved_percpu(size_t size, size_t align)
 {
-<<<<<<< HEAD
-	return pcpu_alloc(size, align, true);
-}
-
-/**
- * pcpu_reclaim - reclaim fully free chunks, workqueue function
- * @work: unused
- *
- * Reclaim all fully free chunks except for the first one.
- *
- * CONTEXT:
- * workqueue context.
- */
-static void pcpu_reclaim(struct work_struct *work)
-{
-	LIST_HEAD(todo);
-	struct list_head *head = &pcpu_slot[pcpu_nr_slots - 1];
-	struct pcpu_chunk *chunk, *next;
-
-	mutex_lock(&pcpu_alloc_mutex);
-	spin_lock_irq(&pcpu_lock);
-
-	list_for_each_entry_safe(chunk, next, head, list) {
-		WARN_ON(chunk->immutable);
-
-		/* spare the first one */
-		if (chunk == list_first_entry(head, struct pcpu_chunk, list))
-			continue;
-
-		list_move(&chunk->list, &todo);
-	}
-
-	spin_unlock_irq(&pcpu_lock);
-
-	list_for_each_entry_safe(chunk, next, &todo, list) {
-		pcpu_depopulate_chunk(chunk, 0, pcpu_unit_size);
-		pcpu_destroy_chunk(chunk);
-	}
-
-=======
 	return pcpu_alloc(size, align, true, GFP_KERNEL);
 }
 
@@ -2977,13 +2239,10 @@ static void pcpu_balance_workfn(struct work_struct *work)
 	pcpu_balance_free(true);
 
 	spin_unlock_irq(&pcpu_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&pcpu_alloc_mutex);
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pcpu_alloc_size - the size of the dynamic percpu area
  * @ptr: pointer to the dynamic percpu area
  *
@@ -3015,7 +2274,6 @@ size_t pcpu_alloc_size(void __percpu *ptr)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * free_percpu - free percpu area
  * @ptr: pointer to area to free
  *
@@ -3029,12 +2287,8 @@ void free_percpu(void __percpu *ptr)
 	void *addr;
 	struct pcpu_chunk *chunk;
 	unsigned long flags;
-<<<<<<< HEAD
-	int off;
-=======
 	int size, off;
 	bool need_balance = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ptr)
 		return;
@@ -3042,31 +2296,6 @@ void free_percpu(void __percpu *ptr)
 	kmemleak_free_percpu(ptr);
 
 	addr = __pcpu_ptr_to_addr(ptr);
-<<<<<<< HEAD
-
-	spin_lock_irqsave(&pcpu_lock, flags);
-
-	chunk = pcpu_chunk_addr_search(addr);
-	off = addr - chunk->base_addr;
-
-	pcpu_free_area(chunk, off);
-
-	/* if there are more than one fully free chunks, wake up grim reaper */
-	if (chunk->free_size == pcpu_unit_size) {
-		struct pcpu_chunk *pos;
-
-		list_for_each_entry(pos, &pcpu_slot[pcpu_nr_slots - 1], list)
-			if (pos != chunk) {
-				schedule_work(&pcpu_reclaim_work);
-				break;
-			}
-	}
-
-	spin_unlock_irqrestore(&pcpu_lock, flags);
-}
-EXPORT_SYMBOL_GPL(free_percpu);
-
-=======
 	chunk = pcpu_chunk_addr_search(addr);
 	off = addr - chunk->base_addr;
 
@@ -3127,7 +2356,6 @@ bool __is_kernel_percpu_address(unsigned long addr, unsigned long *can_addr)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * is_kernel_percpu_address - test whether address is from static percpu area
  * @addr: address to test
@@ -3141,24 +2369,7 @@ bool __is_kernel_percpu_address(unsigned long addr, unsigned long *can_addr)
  */
 bool is_kernel_percpu_address(unsigned long addr)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	const size_t static_size = __per_cpu_end - __per_cpu_start;
-	void __percpu *base = __addr_to_pcpu_ptr(pcpu_base_addr);
-	unsigned int cpu;
-
-	for_each_possible_cpu(cpu) {
-		void *start = per_cpu_ptr(base, cpu);
-
-		if ((void *)addr >= start && (void *)addr < start + static_size)
-			return true;
-        }
-#endif
-	/* on UP, can't distinguish from other static vars, always false */
-	return false;
-=======
 	return __is_kernel_percpu_address(addr, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3175,11 +2386,7 @@ bool is_kernel_percpu_address(unsigned long addr)
  * and, from the second one, the backing allocator (currently either vm or
  * km) provides translation.
  *
-<<<<<<< HEAD
- * The addr can be tranlated simply without checking if it falls into the
-=======
  * The addr can be translated simply without checking if it falls into the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * first chunk. But the current code reflects better how percpu allocator
  * actually works, and the verification can discover both bugs in percpu
  * allocator itself and per_cpu_ptr_to_phys() callers. So we keep current
@@ -3199,12 +2406,6 @@ phys_addr_t per_cpu_ptr_to_phys(void *addr)
 	 * The following test on unit_low/high isn't strictly
 	 * necessary but will speed up lookups of addresses which
 	 * aren't in the first chunk.
-<<<<<<< HEAD
-	 */
-	first_low = pcpu_chunk_addr(pcpu_first_chunk, pcpu_low_unit_cpu, 0);
-	first_high = pcpu_chunk_addr(pcpu_first_chunk, pcpu_high_unit_cpu,
-				     pcpu_unit_pages);
-=======
 	 *
 	 * The address check is against full chunk sizes.  pcpu_base_addr
 	 * points to the beginning of the first chunk including the
@@ -3215,7 +2416,6 @@ phys_addr_t per_cpu_ptr_to_phys(void *addr)
 		    pcpu_unit_page_offset(pcpu_low_unit_cpu, 0);
 	first_high = (unsigned long)pcpu_base_addr +
 		     pcpu_unit_page_offset(pcpu_high_unit_cpu, pcpu_unit_pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((unsigned long)addr >= first_low &&
 	    (unsigned long)addr < first_high) {
 		for_each_possible_cpu(cpu) {
@@ -3262,19 +2462,11 @@ struct pcpu_alloc_info * __init pcpu_alloc_alloc_info(int nr_groups,
 	void *ptr;
 	int unit;
 
-<<<<<<< HEAD
-	base_size = ALIGN(sizeof(*ai) + nr_groups * sizeof(ai->groups[0]),
-			  __alignof__(ai->groups[0].cpu_map[0]));
-	ai_size = base_size + nr_units * sizeof(ai->groups[0].cpu_map[0]);
-
-	ptr = alloc_bootmem_nopanic(PFN_ALIGN(ai_size));
-=======
 	base_size = ALIGN(struct_size(ai, groups, nr_groups),
 			  __alignof__(ai->groups[0].cpu_map[0]));
 	ai_size = base_size + nr_units * sizeof(ai->groups[0].cpu_map[0]);
 
 	ptr = memblock_alloc(PFN_ALIGN(ai_size), PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ptr)
 		return NULL;
 	ai = ptr;
@@ -3299,11 +2491,7 @@ struct pcpu_alloc_info * __init pcpu_alloc_alloc_info(int nr_groups,
  */
 void __init pcpu_free_alloc_info(struct pcpu_alloc_info *ai)
 {
-<<<<<<< HEAD
-	free_bootmem(__pa(ai), ai->__ai_size);
-=======
 	memblock_free(ai, ai->__ai_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3347,22 +2535,6 @@ static void pcpu_dump_alloc_info(const char *lvl,
 		for (alloc_end += gi->nr_units / upa;
 		     alloc < alloc_end; alloc++) {
 			if (!(alloc % apl)) {
-<<<<<<< HEAD
-				printk(KERN_CONT "\n");
-				printk("%spcpu-alloc: ", lvl);
-			}
-			printk(KERN_CONT "[%0*d] ", group_width, group);
-
-			for (unit_end += upa; unit < unit_end; unit++)
-				if (gi->cpu_map[unit] != NR_CPUS)
-					printk(KERN_CONT "%0*d ", cpu_width,
-					       gi->cpu_map[unit]);
-				else
-					printk(KERN_CONT "%s ", empty_str);
-		}
-	}
-	printk(KERN_CONT "\n");
-=======
 				pr_cont("\n");
 				printk("%spcpu-alloc: ", lvl);
 			}
@@ -3377,7 +2549,6 @@ static void pcpu_dump_alloc_info(const char *lvl,
 		}
 	}
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3386,11 +2557,7 @@ static void pcpu_dump_alloc_info(const char *lvl,
  * @base_addr: mapped address
  *
  * Initialize the first percpu chunk which contains the kernel static
-<<<<<<< HEAD
- * perpcu area.  This function is to be called from arch percpu area
-=======
  * percpu area.  This function is to be called from arch percpu area
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * setup path.
  *
  * @ai contains all information necessary to initialize the first
@@ -3430,27 +2597,6 @@ static void pcpu_dump_alloc_info(const char *lvl,
  * The caller should have mapped the first chunk at @base_addr and
  * copied static data to each unit.
  *
-<<<<<<< HEAD
- * If the first chunk ends up with both reserved and dynamic areas, it
- * is served by two chunks - one to serve the core static and reserved
- * areas and the other for the dynamic area.  They share the same vm
- * and page map but uses different area allocation map to stay away
- * from each other.  The latter chunk is circulated in the chunk slots
- * and available for dynamic allocation like any other chunks.
- *
- * RETURNS:
- * 0 on success, -errno on failure.
- */
-int __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
-				  void *base_addr)
-{
-	static char cpus_buf[4096] __initdata;
-	static int smap[PERCPU_DYNAMIC_EARLY_SLOTS] __initdata;
-	static int dmap[PERCPU_DYNAMIC_EARLY_SLOTS] __initdata;
-	size_t dyn_size = ai->dyn_size;
-	size_t size_sum = ai->static_size + ai->reserved_size + dyn_size;
-	struct pcpu_chunk *schunk, *dchunk = NULL;
-=======
  * The first chunk will always contain a static and a dynamic region.
  * However, the static region is not managed by any chunk.  If the first
  * chunk also contains a reserved region, it is served by two chunks -
@@ -3464,22 +2610,12 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 {
 	size_t size_sum = ai->static_size + ai->reserved_size + ai->dyn_size;
 	size_t static_size, dyn_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *group_offsets;
 	size_t *group_sizes;
 	unsigned long *unit_off;
 	unsigned int cpu;
 	int *unit_map;
 	int group, unit, i;
-<<<<<<< HEAD
-
-	cpumask_scnprintf(cpus_buf, sizeof(cpus_buf), cpu_possible_mask);
-
-#define PCPU_SETUP_BUG_ON(cond)	do {					\
-	if (unlikely(cond)) {						\
-		pr_emerg("PERCPU: failed to initialize, %s", #cond);	\
-		pr_emerg("PERCPU: cpu_possible_mask=%s\n", cpus_buf);	\
-=======
 	unsigned long tmp_addr;
 	size_t alloc_size;
 
@@ -3488,7 +2624,6 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 		pr_emerg("failed to initialize, %s\n", #cond);		\
 		pr_emerg("cpu_possible_mask=%*pb\n",			\
 			 cpumask_pr_args(cpu_possible_mask));		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcpu_dump_alloc_info(KERN_EMERG, ai);			\
 		BUG();							\
 	}								\
@@ -3498,23 +2633,6 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	PCPU_SETUP_BUG_ON(ai->nr_groups <= 0);
 #ifdef CONFIG_SMP
 	PCPU_SETUP_BUG_ON(!ai->static_size);
-<<<<<<< HEAD
-	PCPU_SETUP_BUG_ON((unsigned long)__per_cpu_start & ~PAGE_MASK);
-#endif
-	PCPU_SETUP_BUG_ON(!base_addr);
-	PCPU_SETUP_BUG_ON((unsigned long)base_addr & ~PAGE_MASK);
-	PCPU_SETUP_BUG_ON(ai->unit_size < size_sum);
-	PCPU_SETUP_BUG_ON(ai->unit_size & ~PAGE_MASK);
-	PCPU_SETUP_BUG_ON(ai->unit_size < PCPU_MIN_UNIT_SIZE);
-	PCPU_SETUP_BUG_ON(ai->dyn_size < PERCPU_DYNAMIC_EARLY_SIZE);
-	PCPU_SETUP_BUG_ON(pcpu_verify_alloc_info(ai) < 0);
-
-	/* process group information and build config tables accordingly */
-	group_offsets = alloc_bootmem(ai->nr_groups * sizeof(group_offsets[0]));
-	group_sizes = alloc_bootmem(ai->nr_groups * sizeof(group_sizes[0]));
-	unit_map = alloc_bootmem(nr_cpu_ids * sizeof(unit_map[0]));
-	unit_off = alloc_bootmem(nr_cpu_ids * sizeof(unit_off[0]));
-=======
 	PCPU_SETUP_BUG_ON(offset_in_page(__per_cpu_start));
 #endif
 	PCPU_SETUP_BUG_ON(!base_addr);
@@ -3553,7 +2671,6 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	if (!unit_off)
 		panic("%s: Failed to allocate %zu bytes\n", __func__,
 		      alloc_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (cpu = 0; cpu < nr_cpu_ids; cpu++)
 		unit_map[cpu] = UINT_MAX;
@@ -3572,11 +2689,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 			if (cpu == NR_CPUS)
 				continue;
 
-<<<<<<< HEAD
-			PCPU_SETUP_BUG_ON(cpu > nr_cpu_ids);
-=======
 			PCPU_SETUP_BUG_ON(cpu >= nr_cpu_ids);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			PCPU_SETUP_BUG_ON(!cpu_possible(cpu));
 			PCPU_SETUP_BUG_ON(unit_map[cpu] != UINT_MAX);
 
@@ -3611,71 +2724,6 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 	pcpu_unit_pages = ai->unit_size >> PAGE_SHIFT;
 	pcpu_unit_size = pcpu_unit_pages << PAGE_SHIFT;
 	pcpu_atom_size = ai->atom_size;
-<<<<<<< HEAD
-	pcpu_chunk_struct_size = sizeof(struct pcpu_chunk) +
-		BITS_TO_LONGS(pcpu_unit_pages) * sizeof(unsigned long);
-
-	/*
-	 * Allocate chunk slots.  The additional last slot is for
-	 * empty chunks.
-	 */
-	pcpu_nr_slots = __pcpu_size_to_slot(pcpu_unit_size) + 2;
-	pcpu_slot = alloc_bootmem(pcpu_nr_slots * sizeof(pcpu_slot[0]));
-	for (i = 0; i < pcpu_nr_slots; i++)
-		INIT_LIST_HEAD(&pcpu_slot[i]);
-
-	/*
-	 * Initialize static chunk.  If reserved_size is zero, the
-	 * static chunk covers static area + dynamic allocation area
-	 * in the first chunk.  If reserved_size is not zero, it
-	 * covers static area + reserved area (mostly used for module
-	 * static percpu allocation).
-	 */
-	schunk = alloc_bootmem(pcpu_chunk_struct_size);
-	INIT_LIST_HEAD(&schunk->list);
-	schunk->base_addr = base_addr;
-	schunk->map = smap;
-	schunk->map_alloc = ARRAY_SIZE(smap);
-	schunk->immutable = true;
-	bitmap_fill(schunk->populated, pcpu_unit_pages);
-
-	if (ai->reserved_size) {
-		schunk->free_size = ai->reserved_size;
-		pcpu_reserved_chunk = schunk;
-		pcpu_reserved_chunk_limit = ai->static_size + ai->reserved_size;
-	} else {
-		schunk->free_size = dyn_size;
-		dyn_size = 0;			/* dynamic area covered */
-	}
-	schunk->contig_hint = schunk->free_size;
-
-	schunk->map[schunk->map_used++] = -ai->static_size;
-	if (schunk->free_size)
-		schunk->map[schunk->map_used++] = schunk->free_size;
-
-	/* init dynamic chunk if necessary */
-	if (dyn_size) {
-		dchunk = alloc_bootmem(pcpu_chunk_struct_size);
-		INIT_LIST_HEAD(&dchunk->list);
-		dchunk->base_addr = base_addr;
-		dchunk->map = dmap;
-		dchunk->map_alloc = ARRAY_SIZE(dmap);
-		dchunk->immutable = true;
-		bitmap_fill(dchunk->populated, pcpu_unit_pages);
-
-		dchunk->contig_hint = dchunk->free_size = dyn_size;
-		dchunk->map[dchunk->map_used++] = -pcpu_reserved_chunk_limit;
-		dchunk->map[dchunk->map_used++] = dchunk->free_size;
-	}
-
-	/* link the first chunk in */
-	pcpu_first_chunk = dchunk ?: schunk;
-	pcpu_chunk_relocate(pcpu_first_chunk, -1);
-
-	/* we're done */
-	pcpu_base_addr = base_addr;
-	return 0;
-=======
 	pcpu_chunk_struct_size = struct_size((struct pcpu_chunk *)0, populated,
 					     BITS_TO_LONGS(pcpu_unit_pages));
 
@@ -3741,16 +2789,11 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
 
 	/* we're done */
 	pcpu_base_addr = base_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SMP
 
-<<<<<<< HEAD
-const char *pcpu_fc_names[PCPU_FC_NR] __initdata = {
-=======
 const char * const pcpu_fc_names[PCPU_FC_NR] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[PCPU_FC_AUTO]	= "auto",
 	[PCPU_FC_EMBED]	= "embed",
 	[PCPU_FC_PAGE]	= "page",
@@ -3760,12 +2803,9 @@ enum pcpu_fc pcpu_chosen_fc __initdata = PCPU_FC_AUTO;
 
 static int __init percpu_alloc_setup(char *str)
 {
-<<<<<<< HEAD
-=======
 	if (!str)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (0)
 		/* nada */;
 #ifdef CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK
@@ -3777,11 +2817,7 @@ static int __init percpu_alloc_setup(char *str)
 		pcpu_chosen_fc = PCPU_FC_PAGE;
 #endif
 	else
-<<<<<<< HEAD
-		pr_warning("PERCPU: unknown allocator %s specified\n", str);
-=======
 		pr_warn("unknown allocator %s specified\n", str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3815,11 +2851,7 @@ early_param("percpu_alloc", percpu_alloc_setup);
  * and other parameters considering needed percpu size, allocation
  * atom size and distances between CPUs.
  *
-<<<<<<< HEAD
- * Groups are always mutliples of atom size and CPUs which are of
-=======
  * Groups are always multiples of atom size and CPUs which are of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LOCAL_DISTANCE both ways are grouped together and share space for
  * units in the same group.  The returned configuration is guaranteed
  * to have CPUs on different nodes on different groups and >=75% usage
@@ -3829,29 +2861,18 @@ early_param("percpu_alloc", percpu_alloc_setup);
  * On success, pointer to the new allocation_info is returned.  On
  * failure, ERR_PTR value is returned.
  */
-<<<<<<< HEAD
-static struct pcpu_alloc_info * __init pcpu_build_alloc_info(
-=======
 static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				size_t reserved_size, size_t dyn_size,
 				size_t atom_size,
 				pcpu_fc_cpu_distance_fn_t cpu_distance_fn)
 {
 	static int group_map[NR_CPUS] __initdata;
 	static int group_cnt[NR_CPUS] __initdata;
-<<<<<<< HEAD
-	const size_t static_size = __per_cpu_end - __per_cpu_start;
-	int nr_groups = 1, nr_units = 0;
-	size_t size_sum, min_unit_size, alloc_size;
-	int upa, max_upa, uninitialized_var(best_upa);	/* units_per_alloc */
-=======
 	static struct cpumask mask __initdata;
 	const size_t static_size = __per_cpu_end - __per_cpu_start;
 	int nr_groups = 1, nr_units = 0;
 	size_t size_sum, min_unit_size, alloc_size;
 	int upa, max_upa, best_upa;	/* units_per_alloc */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int last_allocs, group, unit;
 	unsigned int cpu, tcpu;
 	struct pcpu_alloc_info *ai;
@@ -3860,10 +2881,7 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	/* this function may be called multiple times */
 	memset(group_map, 0, sizeof(group_map));
 	memset(group_cnt, 0, sizeof(group_cnt));
-<<<<<<< HEAD
-=======
 	cpumask_clear(&mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* calculate size_sum and ensure dyn_size is enough for early alloc */
 	size_sum = PFN_ALIGN(static_size + reserved_size +
@@ -3878,43 +2896,6 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	 */
 	min_unit_size = max_t(size_t, size_sum, PCPU_MIN_UNIT_SIZE);
 
-<<<<<<< HEAD
-	alloc_size = roundup(min_unit_size, atom_size);
-	upa = alloc_size / min_unit_size;
-	while (alloc_size % upa || ((alloc_size / upa) & ~PAGE_MASK))
-		upa--;
-	max_upa = upa;
-
-	/* group cpus according to their proximity */
-	for_each_possible_cpu(cpu) {
-		group = 0;
-	next_group:
-		for_each_possible_cpu(tcpu) {
-			if (cpu == tcpu)
-				break;
-			if (group_map[tcpu] == group && cpu_distance_fn &&
-			    (cpu_distance_fn(cpu, tcpu) > LOCAL_DISTANCE ||
-			     cpu_distance_fn(tcpu, cpu) > LOCAL_DISTANCE)) {
-				group++;
-				nr_groups = max(nr_groups, group + 1);
-				goto next_group;
-			}
-		}
-		group_map[cpu] = group;
-		group_cnt[group]++;
-	}
-
-	/*
-	 * Expand unit size until address space usage goes over 75%
-	 * and then as much as possible without using more address
-	 * space.
-	 */
-	last_allocs = INT_MAX;
-	for (upa = max_upa; upa; upa--) {
-		int allocs = 0, wasted = 0;
-
-		if (alloc_size % upa || ((alloc_size / upa) & ~PAGE_MASK))
-=======
 	/* determine the maximum # of units that can fit in an allocation */
 	alloc_size = roundup(min_unit_size, atom_size);
 	upa = alloc_size / min_unit_size;
@@ -3955,7 +2936,6 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 		int allocs = 0, wasted = 0;
 
 		if (alloc_size % upa || (offset_in_page(alloc_size / upa)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		for (group = 0; group < nr_groups; group++) {
@@ -3978,10 +2958,7 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 		last_allocs = allocs;
 		best_upa = upa;
 	}
-<<<<<<< HEAD
-=======
 	BUG_ON(!best_upa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	upa = best_upa;
 
 	/* allocate and fill alloc_info */
@@ -4005,11 +2982,7 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 	ai->atom_size = atom_size;
 	ai->alloc_size = alloc_size;
 
-<<<<<<< HEAD
-	for (group = 0, unit = 0; group_cnt[group]; group++) {
-=======
 	for (group = 0, unit = 0; group < nr_groups; group++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct pcpu_group_info *gi = &ai->groups[group];
 
 		/*
@@ -4029,8 +3002,6 @@ static struct pcpu_alloc_info * __init __flatten pcpu_build_alloc_info(
 
 	return ai;
 }
-<<<<<<< HEAD
-=======
 
 static void * __init pcpu_fc_alloc(unsigned int cpu, size_t size, size_t align,
 				   pcpu_fc_cpu_to_node_fn_t cpu_to_nd_fn)
@@ -4067,7 +3038,6 @@ static void __init pcpu_fc_free(void *ptr, size_t size)
 {
 	memblock_free(ptr, size);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* BUILD_EMBED_FIRST_CHUNK || BUILD_PAGE_FIRST_CHUNK */
 
 #if defined(BUILD_EMBED_FIRST_CHUNK)
@@ -4077,22 +3047,13 @@ static void __init pcpu_fc_free(void *ptr, size_t size)
  * @dyn_size: minimum free size for dynamic allocation in bytes
  * @atom_size: allocation atom size
  * @cpu_distance_fn: callback to determine distance between cpus, optional
-<<<<<<< HEAD
- * @alloc_fn: function to allocate percpu page
- * @free_fn: function to free percpu page
-=======
  * @cpu_to_nd_fn: callback to convert cpu to it's node, optional
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is a helper to ease setting up embedded first percpu chunk and
  * can be called where pcpu_setup_first_chunk() is expected.
  *
  * If this function is used to setup the first chunk, it is allocated
-<<<<<<< HEAD
- * by calling @alloc_fn and used as-is without being mapped into
-=======
  * by calling pcpu_fc_alloc and used as-is without being mapped into
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vmalloc area.  Allocations are always whole multiples of @atom_size
  * aligned to @atom_size.
  *
@@ -4106,11 +3067,7 @@ static void __init pcpu_fc_free(void *ptr, size_t size)
  * @dyn_size specifies the minimum dynamic area size.
  *
  * If the needed size is smaller than the minimum or specified unit
-<<<<<<< HEAD
- * size, the leftover is returned using @free_fn.
-=======
  * size, the leftover is returned using pcpu_fc_free.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURNS:
  * 0 on success, -errno on failure.
@@ -4118,24 +3075,14 @@ static void __init pcpu_fc_free(void *ptr, size_t size)
 int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 				  size_t atom_size,
 				  pcpu_fc_cpu_distance_fn_t cpu_distance_fn,
-<<<<<<< HEAD
-				  pcpu_fc_alloc_fn_t alloc_fn,
-				  pcpu_fc_free_fn_t free_fn)
-=======
 				  pcpu_fc_cpu_to_node_fn_t cpu_to_nd_fn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *base = (void *)ULONG_MAX;
 	void **areas = NULL;
 	struct pcpu_alloc_info *ai;
-<<<<<<< HEAD
-	size_t size_sum, areas_size, max_distance;
-	int group, i, rc;
-=======
 	size_t size_sum, areas_size;
 	unsigned long max_distance;
 	int group, i, highest_group, rc = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ai = pcpu_build_alloc_info(reserved_size, dyn_size, atom_size,
 				   cpu_distance_fn);
@@ -4145,22 +3092,14 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 	size_sum = ai->static_size + ai->reserved_size + ai->dyn_size;
 	areas_size = PFN_ALIGN(ai->nr_groups * sizeof(void *));
 
-<<<<<<< HEAD
-	areas = alloc_bootmem_nopanic(areas_size);
-=======
 	areas = memblock_alloc(areas_size, SMP_CACHE_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!areas) {
 		rc = -ENOMEM;
 		goto out_free;
 	}
 
-<<<<<<< HEAD
-	/* allocate, copy and determine base address */
-=======
 	/* allocate, copy and determine base address & max_distance */
 	highest_group = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (group = 0; group < ai->nr_groups; group++) {
 		struct pcpu_group_info *gi = &ai->groups[group];
 		unsigned int cpu = NR_CPUS;
@@ -4171,22 +3110,12 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 		BUG_ON(cpu == NR_CPUS);
 
 		/* allocate space for the whole group */
-<<<<<<< HEAD
-		ptr = alloc_fn(cpu, gi->nr_units * ai->unit_size, atom_size);
-=======
 		ptr = pcpu_fc_alloc(cpu, gi->nr_units * ai->unit_size, atom_size, cpu_to_nd_fn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ptr) {
 			rc = -ENOMEM;
 			goto out_free_areas;
 		}
 		/* kmemleak tracks the percpu allocations separately */
-<<<<<<< HEAD
-		kmemleak_free(ptr);
-		areas[group] = ptr;
-
-		base = min(ptr, base);
-=======
 		kmemleak_ignore_phys(__pa(ptr));
 		areas[group] = ptr;
 
@@ -4206,7 +3135,6 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 		rc = -EINVAL;
 		goto out_free_areas;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -4221,51 +3149,16 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 		for (i = 0; i < gi->nr_units; i++, ptr += ai->unit_size) {
 			if (gi->cpu_map[i] == NR_CPUS) {
 				/* unused unit, free whole */
-<<<<<<< HEAD
-				free_fn(ptr, ai->unit_size);
-=======
 				pcpu_fc_free(ptr, ai->unit_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 			/* copy and return the unused part */
 			memcpy(ptr, __per_cpu_load, ai->static_size);
-<<<<<<< HEAD
-			free_fn(ptr + size_sum, ai->unit_size - size_sum);
-=======
 			pcpu_fc_free(ptr + size_sum, ai->unit_size - size_sum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* base address is now known, determine group base offsets */
-<<<<<<< HEAD
-	max_distance = 0;
-	for (group = 0; group < ai->nr_groups; group++) {
-		ai->groups[group].base_offset = areas[group] - base;
-		max_distance = max_t(size_t, max_distance,
-				     ai->groups[group].base_offset);
-	}
-	max_distance += ai->unit_size;
-
-	/* warn if maximum distance is further than 75% of vmalloc space */
-	if (max_distance > (VMALLOC_END - VMALLOC_START) * 3 / 4) {
-		pr_warning("PERCPU: max_distance=0x%zx too large for vmalloc "
-			   "space 0x%lx\n", max_distance,
-			   (unsigned long)(VMALLOC_END - VMALLOC_START));
-#ifdef CONFIG_NEED_PER_CPU_PAGE_FIRST_CHUNK
-		/* and fail if we have fallback */
-		rc = -EINVAL;
-		goto out_free;
-#endif
-	}
-
-	pr_info("PERCPU: Embedded %zu pages/cpu @%p s%zu r%zu d%zu u%zu\n",
-		PFN_DOWN(size_sum), base, ai->static_size, ai->reserved_size,
-		ai->dyn_size, ai->unit_size);
-
-	rc = pcpu_setup_first_chunk(ai, base);
-=======
 	for (group = 0; group < ai->nr_groups; group++) {
 		ai->groups[group].base_offset = areas[group] - base;
 	}
@@ -4275,19 +3168,10 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
 		ai->dyn_size, ai->unit_size);
 
 	pcpu_setup_first_chunk(ai, base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out_free;
 
 out_free_areas:
 	for (group = 0; group < ai->nr_groups; group++)
-<<<<<<< HEAD
-		free_fn(areas[group],
-			ai->groups[group].nr_units * ai->unit_size);
-out_free:
-	pcpu_free_alloc_info(ai);
-	if (areas)
-		free_bootmem(__pa(areas), areas_size);
-=======
 		if (areas[group])
 			pcpu_fc_free(areas[group],
 				ai->groups[group].nr_units * ai->unit_size);
@@ -4295,20 +3179,11 @@ out_free:
 	pcpu_free_alloc_info(ai);
 	if (areas)
 		memblock_free(areas, areas_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 #endif /* BUILD_EMBED_FIRST_CHUNK */
 
 #ifdef BUILD_PAGE_FIRST_CHUNK
-<<<<<<< HEAD
-/**
- * pcpu_page_first_chunk - map the first chunk using PAGE_SIZE pages
- * @reserved_size: the size of reserved percpu area in bytes
- * @alloc_fn: function to allocate percpu page, always called with PAGE_SIZE
- * @free_fn: function to free percpu page, always called with PAGE_SIZE
- * @populate_pte_fn: function to populate pte
-=======
 #include <asm/pgalloc.h>
 
 #ifndef P4D_TABLE_SIZE
@@ -4376,7 +3251,6 @@ err_alloc:
  * pcpu_page_first_chunk - map the first chunk using PAGE_SIZE pages
  * @reserved_size: the size of reserved percpu area in bytes
  * @cpu_to_nd_fn: callback to convert cpu to it's node, optional
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is a helper to ease setting up page-remapped first percpu
  * chunk and can be called where pcpu_setup_first_chunk() is expected.
@@ -4387,14 +3261,7 @@ err_alloc:
  * RETURNS:
  * 0 on success, -errno on failure.
  */
-<<<<<<< HEAD
-int __init pcpu_page_first_chunk(size_t reserved_size,
-				 pcpu_fc_alloc_fn_t alloc_fn,
-				 pcpu_fc_free_fn_t free_fn,
-				 pcpu_fc_populate_pte_fn_t populate_pte_fn)
-=======
 int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t cpu_to_nd_fn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static struct vm_struct vm;
 	struct pcpu_alloc_info *ai;
@@ -4402,13 +3269,9 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 	int unit_pages;
 	size_t pages_size;
 	struct page **pages;
-<<<<<<< HEAD
-	int unit, i, j, rc;
-=======
 	int unit, i, j, rc = 0;
 	int upa;
 	int nr_g0_units;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snprintf(psize_str, sizeof(psize_str), "%luK", PAGE_SIZE >> 10);
 
@@ -4416,43 +3279,18 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 	if (IS_ERR(ai))
 		return PTR_ERR(ai);
 	BUG_ON(ai->nr_groups != 1);
-<<<<<<< HEAD
-	BUG_ON(ai->groups[0].nr_units != num_possible_cpus());
-=======
 	upa = ai->alloc_size/ai->unit_size;
 	nr_g0_units = roundup(num_possible_cpus(), upa);
 	if (WARN_ON(ai->groups[0].nr_units != nr_g0_units)) {
 		pcpu_free_alloc_info(ai);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unit_pages = ai->unit_size >> PAGE_SHIFT;
 
 	/* unaligned allocations can't be freed, round up to page size */
 	pages_size = PFN_ALIGN(unit_pages * num_possible_cpus() *
 			       sizeof(pages[0]));
-<<<<<<< HEAD
-	pages = alloc_bootmem(pages_size);
-
-	/* allocate pages */
-	j = 0;
-	for (unit = 0; unit < num_possible_cpus(); unit++)
-		for (i = 0; i < unit_pages; i++) {
-			unsigned int cpu = ai->groups[0].cpu_map[unit];
-			void *ptr;
-
-			ptr = alloc_fn(cpu, PAGE_SIZE, PAGE_SIZE);
-			if (!ptr) {
-				pr_warning("PERCPU: failed to allocate %s page "
-					   "for cpu%u\n", psize_str, cpu);
-				goto enomem;
-			}
-			/* kmemleak tracks the percpu allocations separately */
-			kmemleak_free(ptr);
-			pages[j++] = virt_to_page(ptr);
-		}
-=======
 	pages = memblock_alloc(pages_size, SMP_CACHE_BYTES);
 	if (!pages)
 		panic("%s: Failed to allocate %zu bytes\n", __func__,
@@ -4476,7 +3314,6 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 			pages[j++] = virt_to_page(ptr);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate vm area, map the pages and copy static data */
 	vm.flags = VM_ALLOC;
@@ -4488,11 +3325,7 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 			(unsigned long)vm.addr + unit * ai->unit_size;
 
 		for (i = 0; i < unit_pages; i++)
-<<<<<<< HEAD
-			populate_pte_fn(unit_addr + (i << PAGE_SHIFT));
-=======
 			pcpu_populate_pte(unit_addr + (i << PAGE_SHIFT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* pte already populated, the following shouldn't fail */
 		rc = __pcpu_map_pages(unit_addr, &pages[unit * unit_pages],
@@ -4500,51 +3333,26 @@ int __init pcpu_page_first_chunk(size_t reserved_size, pcpu_fc_cpu_to_node_fn_t 
 		if (rc < 0)
 			panic("failed to map percpu area, err=%d\n", rc);
 
-<<<<<<< HEAD
-		/*
-		 * FIXME: Archs with virtual cache should flush local
-		 * cache for the linear mapping here - something
-		 * equivalent to flush_cache_vmap() on the local cpu.
-		 * flush_cache_vmap() can't be used as most supporting
-		 * data structures are not set up yet.
-		 */
-=======
 		flush_cache_vmap_early(unit_addr, unit_addr + ai->unit_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* copy static data */
 		memcpy((void *)unit_addr, __per_cpu_load, ai->static_size);
 	}
 
 	/* we're ready, commit */
-<<<<<<< HEAD
-	pr_info("PERCPU: %d %s pages/cpu @%p s%zu r%zu d%zu\n",
-		unit_pages, psize_str, vm.addr, ai->static_size,
-		ai->reserved_size, ai->dyn_size);
-
-	rc = pcpu_setup_first_chunk(ai, vm.addr);
-=======
 	pr_info("%d %s pages/cpu s%zu r%zu d%zu\n",
 		unit_pages, psize_str, ai->static_size,
 		ai->reserved_size, ai->dyn_size);
 
 	pcpu_setup_first_chunk(ai, vm.addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out_free_ar;
 
 enomem:
 	while (--j >= 0)
-<<<<<<< HEAD
-		free_fn(page_address(pages[j]), PAGE_SIZE);
-	rc = -ENOMEM;
-out_free_ar:
-	free_bootmem(__pa(pages), pages_size);
-=======
 		pcpu_fc_free(page_address(pages[j]), PAGE_SIZE);
 	rc = -ENOMEM;
 out_free_ar:
 	memblock_free(pages, pages_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcpu_free_alloc_info(ai);
 	return rc;
 }
@@ -4566,20 +3374,6 @@ out_free_ar:
 unsigned long __per_cpu_offset[NR_CPUS] __read_mostly;
 EXPORT_SYMBOL(__per_cpu_offset);
 
-<<<<<<< HEAD
-static void * __init pcpu_dfl_fc_alloc(unsigned int cpu, size_t size,
-				       size_t align)
-{
-	return __alloc_bootmem_nopanic(size, align, __pa(MAX_DMA_ADDRESS));
-}
-
-static void __init pcpu_dfl_fc_free(void *ptr, size_t size)
-{
-	free_bootmem(__pa(ptr), size);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init setup_per_cpu_areas(void)
 {
 	unsigned long delta;
@@ -4590,14 +3384,8 @@ void __init setup_per_cpu_areas(void)
 	 * Always reserve area for module percpu variables.  That's
 	 * what the legacy allocator did.
 	 */
-<<<<<<< HEAD
-	rc = pcpu_embed_first_chunk(PERCPU_MODULE_RESERVE,
-				    PERCPU_DYNAMIC_RESERVE, PAGE_SIZE, NULL,
-				    pcpu_dfl_fc_alloc, pcpu_dfl_fc_free);
-=======
 	rc = pcpu_embed_first_chunk(PERCPU_MODULE_RESERVE, PERCPU_DYNAMIC_RESERVE,
 				    PAGE_SIZE, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		panic("Failed to initialize percpu areas.");
 
@@ -4625,19 +3413,11 @@ void __init setup_per_cpu_areas(void)
 	void *fc;
 
 	ai = pcpu_alloc_alloc_info(1, 1);
-<<<<<<< HEAD
-	fc = __alloc_bootmem(unit_size, PAGE_SIZE, __pa(MAX_DMA_ADDRESS));
-	if (!ai || !fc)
-		panic("Failed to allocate memory for percpu areas.");
-	/* kmemleak tracks the percpu allocations separately */
-	kmemleak_free(fc);
-=======
 	fc = memblock_alloc_from(unit_size, PAGE_SIZE, __pa(MAX_DMA_ADDRESS));
 	if (!ai || !fc)
 		panic("Failed to allocate memory for percpu areas.");
 	/* kmemleak tracks the percpu allocations separately */
 	kmemleak_ignore_phys(__pa(fc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ai->dyn_size = unit_size;
 	ai->unit_size = unit_size;
@@ -4646,48 +3426,13 @@ void __init setup_per_cpu_areas(void)
 	ai->groups[0].nr_units = 1;
 	ai->groups[0].cpu_map[0] = 0;
 
-<<<<<<< HEAD
-	if (pcpu_setup_first_chunk(ai, fc) < 0)
-		panic("Failed to initialize percpu areas.");
-=======
 	pcpu_setup_first_chunk(ai, fc);
 	pcpu_free_alloc_info(ai);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif	/* CONFIG_SMP */
 
 /*
-<<<<<<< HEAD
- * First and reserved chunks are initialized with temporary allocation
- * map in initdata so that they can be used before slab is online.
- * This function is called after slab is brought up and replaces those
- * with properly allocated maps.
- */
-void __init percpu_init_late(void)
-{
-	struct pcpu_chunk *target_chunks[] =
-		{ pcpu_first_chunk, pcpu_reserved_chunk, NULL };
-	struct pcpu_chunk *chunk;
-	unsigned long flags;
-	int i;
-
-	for (i = 0; (chunk = target_chunks[i]); i++) {
-		int *map;
-		const size_t size = PERCPU_DYNAMIC_EARLY_SLOTS * sizeof(map[0]);
-
-		BUILD_BUG_ON(size > PAGE_SIZE);
-
-		map = pcpu_mem_zalloc(size);
-		BUG_ON(!map);
-
-		spin_lock_irqsave(&pcpu_lock, flags);
-		memcpy(map, chunk->map, size);
-		chunk->map = map;
-		spin_unlock_irqrestore(&pcpu_lock, flags);
-	}
-}
-=======
  * pcpu_nr_pages - calculate total number of populated backing pages
  *
  * This reflects the number of pages populated to back chunks.  Metadata is
@@ -4714,4 +3459,3 @@ static int __init percpu_enable_async(void)
 	return 0;
 }
 subsys_initcall(percpu_enable_async);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

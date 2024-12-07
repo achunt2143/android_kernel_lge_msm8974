@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * seq_oss_readq.c - MIDI input queue
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "seq_oss_readq.h"
@@ -54,22 +34,12 @@ snd_seq_oss_readq_new(struct seq_oss_devinfo *dp, int maxlen)
 {
 	struct seq_oss_readq *q;
 
-<<<<<<< HEAD
-	if ((q = kzalloc(sizeof(*q), GFP_KERNEL)) == NULL) {
-		snd_printk(KERN_ERR "can't malloc read queue\n");
-		return NULL;
-	}
-
-	if ((q->q = kcalloc(maxlen, sizeof(union evrec), GFP_KERNEL)) == NULL) {
-		snd_printk(KERN_ERR "can't malloc read queue buffer\n");
-=======
 	q = kzalloc(sizeof(*q), GFP_KERNEL);
 	if (!q)
 		return NULL;
 
 	q->q = kcalloc(maxlen, sizeof(union evrec), GFP_KERNEL);
 	if (!q->q) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(q);
 		return NULL;
 	}
@@ -108,12 +78,7 @@ snd_seq_oss_readq_clear(struct seq_oss_readq *q)
 		q->head = q->tail = 0;
 	}
 	/* if someone sleeping, wake'em up */
-<<<<<<< HEAD
-	if (waitqueue_active(&q->midi_sleep))
-		wake_up(&q->midi_sleep);
-=======
 	wake_up(&q->midi_sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->input_time = (unsigned long)-1;
 }
 
@@ -140,8 +105,6 @@ snd_seq_oss_readq_puts(struct seq_oss_readq *q, int dev, unsigned char *data, in
 }
 
 /*
-<<<<<<< HEAD
-=======
  * put MIDI sysex bytes; the event buffer may be chained, thus it has
  * to be expanded via snd_seq_dump_var_event().
  */
@@ -171,7 +134,6 @@ int snd_seq_oss_readq_sysex(struct seq_oss_readq *q, int dev,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * copy an event to input queue:
  * return zero if enqueued
  */
@@ -191,12 +153,7 @@ snd_seq_oss_readq_put_event(struct seq_oss_readq *q, union evrec *ev)
 	q->qlen++;
 
 	/* wake up sleeper */
-<<<<<<< HEAD
-	if (waitqueue_active(&q->midi_sleep))
-		wake_up(&q->midi_sleep);
-=======
 	wake_up(&q->midi_sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&q->lock, flags);
 
@@ -279,11 +236,7 @@ snd_seq_oss_readq_put_timestamp(struct seq_oss_readq *q, unsigned long curt, int
 }
 
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-=======
 #ifdef CONFIG_SND_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * proc interface
  */
@@ -294,8 +247,4 @@ snd_seq_oss_readq_info_read(struct seq_oss_readq *q, struct snd_info_buffer *buf
 		    (waitqueue_active(&q->midi_sleep) ? "sleeping":"running"),
 		    q->qlen, q->input_time);
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PROC_FS */
-=======
 #endif /* CONFIG_SND_PROC_FS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

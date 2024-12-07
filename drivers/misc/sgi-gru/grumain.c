@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SN Platform GRU Driver
  *
  *            DRIVER TABLE MANAGER + GRU CONTEXT LOAD/UNLOAD
  *
  *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -61,22 +41,12 @@ struct device *grudev = &gru_device;
  */
 int gru_cpu_fault_map_id(void)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_IA64
-	return uv_blade_processor_id() % GRU_NUM_TFM;
-#else
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cpu = smp_processor_id();
 	int id, core;
 
 	core = uv_cpu_core_number(cpu);
 	id = core + UV_MAX_INT_CORES * uv_cpu_socket_number(cpu);
 	return id;
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*--------- ASID Management -------------------------------------------
@@ -178,11 +148,7 @@ static int gru_assign_asid(struct gru_state *gru)
  * Optionally, build an array of chars that contain the bit numbers allocated.
  */
 static unsigned long reserve_resources(unsigned long *p, int n, int mmax,
-<<<<<<< HEAD
-				       char *idx)
-=======
 				       signed char *idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long bits = 0;
 	int i;
@@ -200,22 +166,14 @@ static unsigned long reserve_resources(unsigned long *p, int n, int mmax,
 }
 
 unsigned long gru_reserve_cb_resources(struct gru_state *gru, int cbr_au_count,
-<<<<<<< HEAD
-				       char *cbmap)
-=======
 				       signed char *cbmap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return reserve_resources(&gru->gs_cbr_map, cbr_au_count, GRU_CBR_AU,
 				 cbmap);
 }
 
 unsigned long gru_reserve_ds_resources(struct gru_state *gru, int dsr_au_count,
-<<<<<<< HEAD
-				       char *dsmap)
-=======
 				       signed char *dsmap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return reserve_resources(&gru->gs_dsr_map, dsr_au_count, GRU_DSR_AU,
 				 dsmap);
@@ -308,11 +266,7 @@ static void gru_unload_mm_tracker(struct gru_state *gru,
 	spin_lock(&gru->gs_asid_lock);
 	BUG_ON((asids->mt_ctxbitmap & ctxbitmap) != ctxbitmap);
 	asids->mt_ctxbitmap ^= ctxbitmap;
-<<<<<<< HEAD
-	gru_dbg(grudev, "gid %d, gts %p, gms %p, ctxnum 0x%d, asidmap 0x%lx\n",
-=======
 	gru_dbg(grudev, "gid %d, gts %p, gms %p, ctxnum %d, asidmap 0x%lx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gru->gs_gid, gts, gms, gts->ts_ctxnum, gms->ms_asidmap[0]);
 	spin_unlock(&gru->gs_asid_lock);
 	spin_unlock(&gms->ms_asid_lock);
@@ -324,11 +278,7 @@ static void gru_unload_mm_tracker(struct gru_state *gru,
  */
 void gts_drop(struct gru_thread_state *gts)
 {
-<<<<<<< HEAD
-	if (gts && atomic_dec_return(&gts->ts_refcnt) == 0) {
-=======
 	if (gts && refcount_dec_and_test(&gts->ts_refcnt)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (gts->ts_gms)
 			gru_drop_mmu_notifier(gts->ts_gms);
 		kfree(gts);
@@ -369,11 +319,7 @@ struct gru_thread_state *gru_alloc_gts(struct vm_area_struct *vma,
 
 	STAT(gts_alloc);
 	memset(gts, 0, sizeof(struct gru_thread_state)); /* zero out header */
-<<<<<<< HEAD
-	atomic_set(&gts->ts_refcnt, 1);
-=======
 	refcount_set(&gts->ts_refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&gts->ts_ctxlock);
 	gts->ts_cbr_au_count = cbr_au_count;
 	gts->ts_dsr_au_count = dsr_au_count;
@@ -766,16 +712,10 @@ static int gru_check_chiplet_assignment(struct gru_state *gru,
  * chiplet. Misassignment can occur if the process migrates to a different
  * blade or if the user changes the selected blade/chiplet.
  */
-<<<<<<< HEAD
-void gru_check_context_placement(struct gru_thread_state *gts)
-{
-	struct gru_state *gru;
-=======
 int gru_check_context_placement(struct gru_thread_state *gts)
 {
 	struct gru_state *gru;
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the current task is the context owner, verify that the
@@ -783,17 +723,6 @@ int gru_check_context_placement(struct gru_thread_state *gts)
 	 * references. Pthread apps use non-owner references to the CBRs.
 	 */
 	gru = gts->ts_gru;
-<<<<<<< HEAD
-	if (!gru || gts->ts_tgid_owner != current->tgid)
-		return;
-
-	if (!gru_check_chiplet_assignment(gru, gts)) {
-		STAT(check_context_unload);
-		gru_unload_context(gts, 1);
-	} else if (gru_retarget_intr(gts)) {
-		STAT(check_context_retarget_intr);
-	}
-=======
 	/*
 	 * If gru or gts->ts_tgid_owner isn't initialized properly, return
 	 * success to indicate that the caller does not need to unload the
@@ -811,7 +740,6 @@ int gru_check_context_placement(struct gru_thread_state *gts)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -965,11 +893,7 @@ again:
 		gts->ts_gru = gru;
 		gts->ts_blade = gru->gs_blade_id;
 		gts->ts_ctxnum = gru_assign_context_number(gru);
-<<<<<<< HEAD
-		atomic_inc(&gts->ts_refcnt);
-=======
 		refcount_inc(&gts->ts_refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gru->gs_gts[gts->ts_ctxnum] = gts;
 		spin_unlock(&gru->gs_lock);
 
@@ -994,14 +918,6 @@ again:
  *
  * 	Note: gru segments alway mmaped on GRU_GSEG_PAGESIZE boundaries.
  */
-<<<<<<< HEAD
-int gru_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
-{
-	struct gru_thread_state *gts;
-	unsigned long paddr, vaddr;
-
-	vaddr = (unsigned long)vmf->virtual_address;
-=======
 vm_fault_t gru_fault(struct vm_fault *vmf)
 {
 	struct vm_area_struct *vma = vmf->vma;
@@ -1010,7 +926,6 @@ vm_fault_t gru_fault(struct vm_fault *vmf)
 	unsigned long expires;
 
 	vaddr = vmf->address;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gru_dbg(grudev, "vma %p, vaddr 0x%lx (0x%lx)\n",
 		vma, vaddr, GSEG_BASE(vaddr));
 	STAT(nopfn);
@@ -1024,16 +939,12 @@ again:
 	mutex_lock(&gts->ts_ctxlock);
 	preempt_disable();
 
-<<<<<<< HEAD
-	gru_check_context_placement(gts);
-=======
 	if (gru_check_context_placement(gts)) {
 		preempt_enable();
 		mutex_unlock(&gts->ts_ctxlock);
 		gru_unload_context(gts, 1);
 		return VM_FAULT_NOPAGE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!gts->ts_gru) {
 		STAT(load_user_context);
@@ -1042,12 +953,8 @@ again:
 			mutex_unlock(&gts->ts_ctxlock);
 			set_current_state(TASK_INTERRUPTIBLE);
 			schedule_timeout(GRU_ASSIGN_DELAY);  /* true hack ZZZ */
-<<<<<<< HEAD
-			if (gts->ts_steal_jiffies + GRU_STEAL_DELAY < jiffies)
-=======
 			expires = gts->ts_steal_jiffies + GRU_STEAL_DELAY;
 			if (time_before(expires, jiffies))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				gru_steal_context(gts);
 			goto again;
 		}

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/nfs/nfs4_fs.h
  *
@@ -13,9 +10,6 @@
 #ifndef __LINUX_FS_NFS_NFS4_FS_H
 #define __LINUX_FS_NFS_NFS4_FS_H
 
-<<<<<<< HEAD
-#ifdef CONFIG_NFS_V4
-=======
 #if defined(CONFIG_NFS_V4_2)
 #define NFS4_MAX_MINOR_VERSION 2
 #elif defined(CONFIG_NFS_V4_1)
@@ -30,7 +24,6 @@
 
 #include <linux/seqlock.h>
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct idmap;
 
@@ -42,16 +35,6 @@ enum nfs4_client_state {
 	NFS4CLNT_RECLAIM_NOGRACE,
 	NFS4CLNT_DELEGRETURN,
 	NFS4CLNT_SESSION_RESET,
-<<<<<<< HEAD
-	NFS4CLNT_RECALL_SLOT,
-	NFS4CLNT_LEASE_CONFIRM,
-	NFS4CLNT_SERVER_SCOPE_MISMATCH,
-};
-
-enum nfs4_session_state {
-	NFS4_SESSION_INITING,
-	NFS4_SESSION_DRAINING,
-=======
 	NFS4CLNT_LEASE_CONFIRM,
 	NFS4CLNT_SERVER_SCOPE_MISMATCH,
 	NFS4CLNT_PURGE_STATE,
@@ -65,23 +48,11 @@ enum nfs4_session_state {
 	NFS4CLNT_RECALL_ANY_LAYOUT_READ,
 	NFS4CLNT_RECALL_ANY_LAYOUT_RW,
 	NFS4CLNT_DELEGRETURN_DELAYED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define NFS4_RENEW_TIMEOUT		0x01
 #define NFS4_RENEW_DELEGATION_CB	0x02
 
-<<<<<<< HEAD
-struct nfs4_minor_version_ops {
-	u32	minor_version;
-
-	int	(*call_sync)(struct rpc_clnt *clnt,
-			struct nfs_server *server,
-			struct rpc_message *msg,
-			struct nfs4_sequence_args *args,
-			struct nfs4_sequence_res *res,
-			int cache_reply);
-=======
 struct nfs_seqid_counter;
 struct nfs4_minor_version_ops {
 	u32	minor_version;
@@ -89,21 +60,10 @@ struct nfs4_minor_version_ops {
 
 	int	(*init_client)(struct nfs_client *);
 	void	(*shutdown_client)(struct nfs_client *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool	(*match_stateid)(const nfs4_stateid *,
 			const nfs4_stateid *);
 	int	(*find_root_sec)(struct nfs_server *, struct nfs_fh *,
 			struct nfs_fsinfo *);
-<<<<<<< HEAD
-	const struct nfs4_state_recovery_ops *reboot_recovery_ops;
-	const struct nfs4_state_recovery_ops *nograce_recovery_ops;
-	const struct nfs4_state_maintenance_ops *state_renewal_ops;
-};
-
-struct nfs_unique_id {
-	struct rb_node rb_node;
-	__u64 id;
-=======
 	void	(*free_lock_state)(struct nfs_server *,
 			struct nfs4_lock_state *);
 	int	(*test_and_free_expired)(struct nfs_server *,
@@ -117,7 +77,6 @@ struct nfs_unique_id {
 	const struct nfs4_state_recovery_ops *nograce_recovery_ops;
 	const struct nfs4_state_maintenance_ops *state_renewal_ops;
 	const struct nfs4_mig_recovery_ops *mig_recovery_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define NFS_SEQID_CONFIRMED 1
@@ -154,21 +113,14 @@ struct nfs4_state_owner {
 	unsigned long        so_expires;
 	struct rb_node	     so_server_node;
 
-<<<<<<< HEAD
-	struct rpc_cred	     *so_cred;	 /* Associated cred */
-=======
 	const struct cred    *so_cred;	 /* Associated cred */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t	     so_lock;
 	atomic_t	     so_count;
 	unsigned long	     so_flags;
 	struct list_head     so_states;
 	struct nfs_seqid_counter so_seqid;
-<<<<<<< HEAD
-=======
 	struct mutex	     so_delegreturn_mutex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -192,28 +144,6 @@ enum {
  * LOCK: one nfs4_state (LOCK) to hold the lock stateid nfs4_state(OPEN)
  */
 
-<<<<<<< HEAD
-struct nfs4_lock_owner {
-	unsigned int lo_type;
-#define NFS4_ANY_LOCK_TYPE	(0U)
-#define NFS4_FLOCK_LOCK_TYPE	(1U << 0)
-#define NFS4_POSIX_LOCK_TYPE	(1U << 1)
-	union {
-		fl_owner_t posix_owner;
-		pid_t flock_owner;
-	} lo_u;
-};
-
-struct nfs4_lock_state {
-	struct list_head	ls_locks;	/* Other lock stateids */
-	struct nfs4_state *	ls_state;	/* Pointer to open state */
-#define NFS_LOCK_INITIALIZED 1
-	int			ls_flags;
-	struct nfs_seqid_counter	ls_seqid;
-	nfs4_stateid		ls_stateid;
-	atomic_t		ls_count;
-	struct nfs4_lock_owner	ls_owner;
-=======
 struct nfs4_lock_state {
 	struct list_head	ls_locks;	/* Other lock stateids */
 	struct nfs4_state *	ls_state;	/* Pointer to open state */
@@ -225,32 +155,25 @@ struct nfs4_lock_state {
 	nfs4_stateid		ls_stateid;
 	refcount_t		ls_count;
 	fl_owner_t		ls_owner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* bits for nfs4_state->flags */
 enum {
 	LK_STATE_IN_USE,
 	NFS_DELEGATED_STATE,		/* Current stateid is delegation */
-<<<<<<< HEAD
-=======
 	NFS_OPEN_STATE,			/* OPEN stateid is set */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NFS_O_RDONLY_STATE,		/* OPEN stateid has read-only state */
 	NFS_O_WRONLY_STATE,		/* OPEN stateid has write-only state */
 	NFS_O_RDWR_STATE,		/* OPEN stateid has read/write state */
 	NFS_STATE_RECLAIM_REBOOT,	/* OPEN stateid server rebooted */
 	NFS_STATE_RECLAIM_NOGRACE,	/* OPEN stateid needs to recover state */
 	NFS_STATE_POSIX_LOCKS,		/* Posix locks are supported */
-<<<<<<< HEAD
-=======
 	NFS_STATE_RECOVERY_FAILED,	/* OPEN stateid state recovery failed */
 	NFS_STATE_MAY_NOTIFY_LOCK,	/* server may CB_NOTIFY_LOCK */
 	NFS_STATE_CHANGE_WAIT,		/* A state changing operation is outstanding */
 	NFS_CLNT_DST_SSC_COPY_STATE,    /* dst server open state on client*/
 	NFS_CLNT_SRC_SSC_COPY_STATE,    /* src server open state on client*/
 	NFS_SRV_SSC_COPY_STATE,		/* ssc state on the dst server */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfs4_state {
@@ -273,24 +196,14 @@ struct nfs4_state {
 	unsigned int n_wronly;		/* Number of write-only references */
 	unsigned int n_rdwr;		/* Number of read/write references */
 	fmode_t state;			/* State on the server (R,W, or RW) */
-<<<<<<< HEAD
-	atomic_t count;
-=======
 	refcount_t count;
 
 	wait_queue_head_t waitq;
 	struct rcu_head rcu_head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 struct nfs4_exception {
-<<<<<<< HEAD
-	long timeout;
-	int retry;
-	struct nfs4_state *state;
-	struct inode *inode;
-=======
 	struct nfs4_state *state;
 	struct inode *inode;
 	nfs4_stateid *stateid;
@@ -301,7 +214,6 @@ struct nfs4_exception {
 		      recovering : 1,
 		      retry : 1;
 	bool interruptible;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfs4_state_recovery_ops {
@@ -309,63 +221,6 @@ struct nfs4_state_recovery_ops {
 	int state_flag_bit;
 	int (*recover_open)(struct nfs4_state_owner *, struct nfs4_state *);
 	int (*recover_lock)(struct nfs4_state *, struct file_lock *);
-<<<<<<< HEAD
-	int (*establish_clid)(struct nfs_client *, struct rpc_cred *);
-	struct rpc_cred * (*get_clid_cred)(struct nfs_client *);
-	int (*reclaim_complete)(struct nfs_client *);
-};
-
-struct nfs4_state_maintenance_ops {
-	int (*sched_state_renewal)(struct nfs_client *, struct rpc_cred *, unsigned);
-	struct rpc_cred * (*get_state_renewal_cred_locked)(struct nfs_client *);
-	int (*renew_lease)(struct nfs_client *, struct rpc_cred *);
-};
-
-extern const struct dentry_operations nfs4_dentry_operations;
-extern const struct inode_operations nfs4_dir_inode_operations;
-
-/* nfs4namespace.c */
-struct rpc_clnt *nfs4_create_sec_client(struct rpc_clnt *, struct inode *, struct qstr *);
-
-/* nfs4proc.c */
-extern int nfs4_proc_setclientid(struct nfs_client *, u32, unsigned short, struct rpc_cred *, struct nfs4_setclientid_res *);
-extern int nfs4_proc_setclientid_confirm(struct nfs_client *, struct nfs4_setclientid_res *arg, struct rpc_cred *);
-extern int nfs4_proc_exchange_id(struct nfs_client *clp, struct rpc_cred *cred);
-extern int nfs4_init_clientid(struct nfs_client *, struct rpc_cred *);
-extern int nfs41_init_clientid(struct nfs_client *, struct rpc_cred *);
-extern int nfs4_do_close(struct nfs4_state *state, gfp_t gfp_mask, int wait, bool roc);
-extern int nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *fhandle);
-extern int nfs4_proc_fs_locations(struct rpc_clnt *, struct inode *, const struct qstr *,
-				  struct nfs4_fs_locations *, struct page *);
-extern struct rpc_clnt *nfs4_proc_lookup_mountpoint(struct inode *, struct qstr *,
-			    struct nfs_fh *, struct nfs_fattr *);
-extern int nfs4_proc_secinfo(struct inode *, const struct qstr *, struct nfs4_secinfo_flavors *);
-extern int nfs4_release_lockowner(struct nfs4_lock_state *);
-extern const struct xattr_handler *nfs4_xattr_handlers[];
-
-#if defined(CONFIG_NFS_V4_1)
-static inline struct nfs4_session *nfs4_get_session(const struct nfs_server *server)
-{
-	return server->nfs_client->cl_session;
-}
-
-extern bool nfs4_set_task_privileged(struct rpc_task *task, void *dummy);
-extern int nfs4_setup_sequence(const struct nfs_server *server,
-		struct nfs4_sequence_args *args, struct nfs4_sequence_res *res,
-		struct rpc_task *task);
-extern int nfs41_setup_sequence(struct nfs4_session *session,
-		struct nfs4_sequence_args *args, struct nfs4_sequence_res *res,
-		struct rpc_task *task);
-extern void nfs4_destroy_session(struct nfs4_session *session);
-extern struct nfs4_session *nfs4_alloc_session(struct nfs_client *clp);
-extern int nfs4_proc_create_session(struct nfs_client *);
-extern int nfs4_proc_destroy_session(struct nfs4_session *);
-extern int nfs4_init_session(struct nfs_server *server);
-extern int nfs4_proc_get_lease_time(struct nfs_client *clp,
-		struct nfs_fsinfo *fsinfo);
-extern int nfs4_proc_layoutcommit(struct nfs4_layoutcommit_data *data,
-				  bool sync);
-=======
 	int (*establish_clid)(struct nfs_client *, const struct cred *);
 	int (*reclaim_complete)(struct nfs_client *, const struct cred *);
 	int (*detect_trunking)(struct nfs_client *, struct nfs_client **,
@@ -492,7 +347,6 @@ extern int nfs4_proc_layoutcommit(struct nfs4_layoutcommit_data *data,
 				  bool sync);
 extern int nfs4_detect_session_trunking(struct nfs_client *clp,
 		struct nfs41_exchange_id_res *res, struct rpc_xprt *xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool
 is_ds_only_client(struct nfs_client *clp)
@@ -506,26 +360,6 @@ is_ds_client(struct nfs_client *clp)
 {
 	return clp->cl_exchange_flags & EXCHGID4_FLAG_USE_PNFS_DS;
 }
-<<<<<<< HEAD
-#else /* CONFIG_NFS_v4_1 */
-static inline struct nfs4_session *nfs4_get_session(const struct nfs_server *server)
-{
-	return NULL;
-}
-
-static inline int nfs4_setup_sequence(const struct nfs_server *server,
-		struct nfs4_sequence_args *args, struct nfs4_sequence_res *res,
-		struct rpc_task *task)
-{
-	return 0;
-}
-
-static inline int nfs4_init_session(struct nfs_server *server)
-{
-	return 0;
-}
-
-=======
 
 static inline bool
 _nfs4_state_protect(struct nfs_client *clp, unsigned long sp4_mode,
@@ -584,7 +418,6 @@ nfs4_state_protect_write(struct nfs_client *clp, struct rpc_clnt **clntp,
 		hdr->args.stable = NFS_FILE_SYNC;
 }
 #else /* CONFIG_NFS_v4_1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool
 is_ds_only_client(struct nfs_client *clp)
 {
@@ -596,33 +429,6 @@ is_ds_client(struct nfs_client *clp)
 {
 	return false;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_NFS_V4_1 */
-
-extern const struct nfs4_minor_version_ops *nfs_v4_minor_ops[];
-
-extern const u32 nfs4_fattr_bitmap[2];
-extern const u32 nfs4_statfs_bitmap[2];
-extern const u32 nfs4_pathconf_bitmap[2];
-extern const u32 nfs4_fsinfo_bitmap[3];
-extern const u32 nfs4_fs_locations_bitmap[2];
-
-/* nfs4renewd.c */
-extern void nfs4_schedule_state_renewal(struct nfs_client *);
-extern void nfs4_renewd_prepare_shutdown(struct nfs_server *);
-extern void nfs4_kill_renewd(struct nfs_client *);
-extern void nfs4_renew_state(struct work_struct *);
-
-/* nfs4state.c */
-struct rpc_cred *nfs4_get_setclientid_cred(struct nfs_client *clp);
-struct rpc_cred *nfs4_get_renew_cred_locked(struct nfs_client *clp);
-#if defined(CONFIG_NFS_V4_1)
-struct rpc_cred *nfs4_get_machine_cred_locked(struct nfs_client *clp);
-struct rpc_cred *nfs4_get_exchange_id_cred(struct nfs_client *clp);
-extern void nfs4_schedule_session_recovery(struct nfs4_session *);
-#else
-static inline void nfs4_schedule_session_recovery(struct nfs4_session *session)
-=======
 
 static inline void
 nfs4_state_protect(struct nfs_client *clp, unsigned long sp4_flags,
@@ -633,16 +439,10 @@ nfs4_state_protect(struct nfs_client *clp, unsigned long sp4_flags,
 static inline void
 nfs4_state_protect_write(struct nfs_client *clp, struct rpc_clnt **clntp,
 			 struct rpc_message *msg, struct nfs_pgio_header *hdr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif /* CONFIG_NFS_V4_1 */
 
-<<<<<<< HEAD
-extern struct nfs4_state_owner *nfs4_get_state_owner(struct nfs_server *, struct rpc_cred *, gfp_t);
-extern void nfs4_put_state_owner(struct nfs4_state_owner *);
-extern void nfs4_purge_state_owners(struct nfs_server *);
-=======
 extern const struct nfs4_minor_version_ops *nfs_v4_minor_ops[];
 
 extern const u32 nfs4_fattr_bitmap[3];
@@ -693,7 +493,6 @@ extern struct nfs4_state_owner *nfs4_get_state_owner(struct nfs_server *, const 
 extern void nfs4_put_state_owner(struct nfs4_state_owner *);
 extern void nfs4_purge_state_owners(struct nfs_server *, struct list_head *);
 extern void nfs4_free_state_owners(struct list_head *head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct nfs4_state * nfs4_get_open_state(struct inode *, struct nfs4_state_owner *);
 extern void nfs4_put_open_state(struct nfs4_state *);
 extern void nfs4_close_state(struct nfs4_state *, fmode_t);
@@ -701,20 +500,6 @@ extern void nfs4_close_sync(struct nfs4_state *, fmode_t);
 extern void nfs4_state_set_mode_locked(struct nfs4_state *, fmode_t);
 extern void nfs_inode_find_state_and_recover(struct inode *inode,
 		const nfs4_stateid *stateid);
-<<<<<<< HEAD
-extern void nfs4_schedule_lease_recovery(struct nfs_client *);
-extern void nfs4_schedule_state_manager(struct nfs_client *);
-extern void nfs4_schedule_path_down_recovery(struct nfs_client *clp);
-extern void nfs4_schedule_stateid_recovery(const struct nfs_server *, struct nfs4_state *);
-extern void nfs41_handle_sequence_flag_errors(struct nfs_client *clp, u32 flags);
-extern void nfs41_handle_recall_slot(struct nfs_client *clp);
-extern void nfs41_handle_server_scope(struct nfs_client *,
-				      struct server_scope **);
-extern void nfs4_put_lock_state(struct nfs4_lock_state *lsp);
-extern int nfs4_set_lock_state(struct nfs4_state *state, struct file_lock *fl);
-extern void nfs4_select_rw_stateid(nfs4_stateid *, struct nfs4_state *,
-		fmode_t, fl_owner_t, pid_t);
-=======
 extern int nfs4_state_mark_reclaim_nograce(struct nfs_client *, struct nfs4_state *);
 extern void nfs4_schedule_lease_recovery(struct nfs_client *);
 extern int nfs4_wait_clnt_recover(struct nfs_client *clp);
@@ -734,7 +519,6 @@ extern int nfs4_select_rw_stateid(struct nfs4_state *, fmode_t,
 		const struct cred **);
 extern bool nfs4_copy_open_stateid(nfs4_stateid *dst,
 		struct nfs4_state *state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct nfs_seqid *nfs_alloc_seqid(struct nfs_seqid_counter *counter, gfp_t gfp_mask);
 extern int nfs_wait_on_sequence(struct nfs_seqid *seqid, struct rpc_task *task);
@@ -742,15 +526,6 @@ extern void nfs_increment_open_seqid(int status, struct nfs_seqid *seqid);
 extern void nfs_increment_lock_seqid(int status, struct nfs_seqid *seqid);
 extern void nfs_release_seqid(struct nfs_seqid *seqid);
 extern void nfs_free_seqid(struct nfs_seqid *seqid);
-<<<<<<< HEAD
-
-extern void nfs4_free_lock_state(struct nfs_server *server, struct nfs4_lock_state *lsp);
-
-extern const nfs4_stateid zero_stateid;
-
-/* nfs4xdr.c */
-extern struct rpc_procinfo nfs4_procedures[];
-=======
 extern int nfs4_setup_sequence(struct nfs_client *client,
 				struct nfs4_sequence_args *args,
 				struct nfs4_sequence_res *res,
@@ -802,19 +577,10 @@ extern const u32 nfs42_maxsetxattr_overhead;
 extern const u32 nfs42_maxgetxattr_overhead;
 extern const u32 nfs42_maxlistxattrs_overhead;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfs4_mount_data;
 
 /* callback_xdr.c */
-<<<<<<< HEAD
-extern struct svc_version nfs4_callback_version1;
-extern struct svc_version nfs4_callback_version4;
-
-static inline void nfs4_stateid_copy(nfs4_stateid *dst, const nfs4_stateid *src)
-{
-	memcpy(dst, src, sizeof(*dst));
-=======
 extern const struct svc_version nfs4_callback_version1;
 extern const struct svc_version nfs4_callback_version4;
 
@@ -822,20 +588,10 @@ static inline void nfs4_stateid_copy(nfs4_stateid *dst, const nfs4_stateid *src)
 {
 	memcpy(dst->data, src->data, sizeof(dst->data));
 	dst->type = src->type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool nfs4_stateid_match(const nfs4_stateid *dst, const nfs4_stateid *src)
 {
-<<<<<<< HEAD
-	return memcmp(dst, src, sizeof(*dst)) == 0;
-}
-
-#else
-
-#define nfs4_close_state(a, b) do { } while (0)
-#define nfs4_close_sync(a, b) do { } while (0)
-=======
 	if (dst->type != src->type)
 		return false;
 	return memcmp(dst->data, src->data, sizeof(dst->data)) == 0;
@@ -914,7 +670,6 @@ static inline void nfs4_xattr_cache_zap(struct inode *inode)
 #define nfs4_state_protect(a, b, c, d) do { } while (0)
 #define nfs4_state_protect_write(a, b, c, d) do { } while (0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_NFS_V4 */
 #endif /* __LINUX_FS_NFS_NFS4_FS.H */

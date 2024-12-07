@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2010 DENX Software Engineering
  *
  * Anatolij Gustschin, <agust@denx.de>
  *
  * PDM360NG board setup
-<<<<<<< HEAD
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/io.h>
-#include <linux/of_platform.h>
-=======
  */
 
 #include <linux/device.h>
@@ -29,7 +13,6 @@
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_fdt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/machdep.h>
 #include <asm/ipic.h>
@@ -118,11 +101,7 @@ static inline void __init pdm360ng_touchscreen_init(void)
 }
 #endif /* CONFIG_TOUCHSCREEN_ADS7846 */
 
-<<<<<<< HEAD
-void __init pdm360ng_init(void)
-=======
 static void __init pdm360ng_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mpc512x_init();
 	pdm360ng_touchscreen_init();
@@ -130,34 +109,18 @@ static void __init pdm360ng_init(void)
 
 static int __init pdm360ng_probe(void)
 {
-<<<<<<< HEAD
-	unsigned long root = of_get_flat_dt_root();
-
-	return of_flat_dt_is_compatible(root, "ifm,pdm360ng");
-=======
 	mpc512x_init_early();
 
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 define_machine(pdm360ng) {
 	.name			= "PDM360NG",
-<<<<<<< HEAD
-	.probe			= pdm360ng_probe,
-	.setup_arch		= mpc512x_setup_diu,
-	.init			= pdm360ng_init,
-	.init_early		= mpc512x_init_diu,
-	.init_IRQ		= mpc512x_init_IRQ,
-	.get_irq		= ipic_get_irq,
-	.calibrate_decr		= generic_calibrate_decr,
-=======
 	.compatible		= "ifm,pdm360ng",
 	.probe			= pdm360ng_probe,
 	.setup_arch		= mpc512x_setup_arch,
 	.init			= pdm360ng_init,
 	.init_IRQ		= mpc512x_init_IRQ,
 	.get_irq		= ipic_get_irq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart		= mpc512x_restart,
 };

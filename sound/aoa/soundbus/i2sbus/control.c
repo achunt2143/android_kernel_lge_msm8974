@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * i2sbus driver -- bus control routines
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- *
- * GPL v2, can be found in COPYING.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/io.h>
-#include <asm/prom.h>
-=======
 #include <linux/io.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/macio.h>
 #include <asm/pmac_feature.h>
 #include <asm/pmac_pfunc.h>

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file define the new driver API for Wireless Extensions
  *
@@ -367,11 +364,7 @@ struct iw_handler_def {
  * defined in struct iw_priv_args.
  *
  * For standard IOCTLs, things are quite different and we need to
-<<<<<<< HEAD
- * use the stuctures below. Actually, this struct is also more
-=======
  * use the structures below. Actually, this struct is also more
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * efficient, but that's another story...
  */
 
@@ -433,25 +426,6 @@ struct iw_public_data {
 
 /**************************** PROTOTYPES ****************************/
 /*
-<<<<<<< HEAD
- * Functions part of the Wireless Extensions (defined in net/core/wireless.c).
- * Those may be called only within the kernel.
- */
-
-/* First : function strictly used inside the kernel */
-
-/* Handle /proc/net/wireless, called in net/code/dev.c */
-extern int dev_get_wireless_info(char * buffer, char **start, off_t offset,
-				 int length);
-
-/* Second : functions that may be called by driver modules */
-
-/* Send a single event to user space */
-extern void wireless_send_event(struct net_device *	dev,
-				unsigned int		cmd,
-				union iwreq_data *	wrqu,
-				const char *		extra);
-=======
  * Functions part of the Wireless Extensions (defined in net/wireless/wext-core.c).
  * Those may be called by driver modules.
  */
@@ -465,37 +439,11 @@ void wireless_nlevent_flush(void);
 #else
 static inline void wireless_nlevent_flush(void) {}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* We may need a function to send a stream of events to user space.
  * More on that later... */
 
 /* Standard handler for SIOCSIWSPY */
-<<<<<<< HEAD
-extern int iw_handler_set_spy(struct net_device *	dev,
-			      struct iw_request_info *	info,
-			      union iwreq_data *	wrqu,
-			      char *			extra);
-/* Standard handler for SIOCGIWSPY */
-extern int iw_handler_get_spy(struct net_device *	dev,
-			      struct iw_request_info *	info,
-			      union iwreq_data *	wrqu,
-			      char *			extra);
-/* Standard handler for SIOCSIWTHRSPY */
-extern int iw_handler_set_thrspy(struct net_device *	dev,
-				 struct iw_request_info *info,
-				 union iwreq_data *	wrqu,
-				 char *			extra);
-/* Standard handler for SIOCGIWTHRSPY */
-extern int iw_handler_get_thrspy(struct net_device *	dev,
-				 struct iw_request_info *info,
-				 union iwreq_data *	wrqu,
-				 char *			extra);
-/* Driver call to update spy records */
-extern void wireless_spy_update(struct net_device *	dev,
-				unsigned char *		address,
-				struct iw_quality *	wstats);
-=======
 int iw_handler_set_spy(struct net_device *dev, struct iw_request_info *info,
 		       union iwreq_data *wrqu, char *extra);
 /* Standard handler for SIOCGIWSPY */
@@ -510,7 +458,6 @@ int iw_handler_get_thrspy(struct net_device *dev, struct iw_request_info *info,
 /* Driver call to update spy records */
 void wireless_spy_update(struct net_device *dev, unsigned char *address,
 			 struct iw_quality *wstats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /************************* INLINE FUNTIONS *************************/
 /*
@@ -552,26 +499,6 @@ static inline int iwe_stream_event_len_adjust(struct iw_request_info *info,
 /*
  * Wrapper to add an Wireless Event to a stream of events.
  */
-<<<<<<< HEAD
-static inline char *
-iwe_stream_add_event(struct iw_request_info *info, char *stream, char *ends,
-		     struct iw_event *iwe, int event_len)
-{
-	int lcp_len = iwe_stream_lcp_len(info);
-
-	event_len = iwe_stream_event_len_adjust(info, event_len);
-
-	/* Check if it's possible */
-	if(likely((stream + event_len) < ends)) {
-		iwe->len = event_len;
-		/* Beware of alignement issues on 64 bits */
-		memcpy(stream, (char *) iwe, IW_EV_LCP_PK_LEN);
-		memcpy(stream + lcp_len, &iwe->u,
-		       event_len - lcp_len);
-		stream += event_len;
-	}
-	return stream;
-=======
 char *iwe_stream_add_event(struct iw_request_info *info, char *stream,
 			   char *ends, struct iw_event *iwe, int event_len);
 
@@ -584,7 +511,6 @@ iwe_stream_add_event_check(struct iw_request_info *info, char *stream,
 	if (res == stream)
 		return ERR_PTR(-E2BIG);
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*------------------------------------------------------------------*/
@@ -592,27 +518,6 @@ iwe_stream_add_event_check(struct iw_request_info *info, char *stream,
  * Wrapper to add an short Wireless Event containing a pointer to a
  * stream of events.
  */
-<<<<<<< HEAD
-static inline char *
-iwe_stream_add_point(struct iw_request_info *info, char *stream, char *ends,
-		     struct iw_event *iwe, char *extra)
-{
-	int event_len = iwe_stream_point_len(info) + iwe->u.data.length;
-	int point_len = iwe_stream_point_len(info);
-	int lcp_len   = iwe_stream_lcp_len(info);
-
-	/* Check if it's possible */
-	if(likely((stream + event_len) < ends)) {
-		iwe->len = event_len;
-		memcpy(stream, (char *) iwe, IW_EV_LCP_PK_LEN);
-		memcpy(stream + lcp_len,
-		       ((char *) &iwe->u) + IW_EV_POINT_OFF,
-		       IW_EV_POINT_PK_LEN - IW_EV_LCP_PK_LEN);
-		memcpy(stream + point_len, extra, iwe->u.data.length);
-		stream += event_len;
-	}
-	return stream;
-=======
 char *iwe_stream_add_point(struct iw_request_info *info, char *stream,
 			   char *ends, struct iw_event *iwe, char *extra);
 
@@ -625,7 +530,6 @@ iwe_stream_add_point_check(struct iw_request_info *info, char *stream,
 	if (res == stream)
 		return ERR_PTR(-E2BIG);
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*------------------------------------------------------------------*/
@@ -634,31 +538,8 @@ iwe_stream_add_point_check(struct iw_request_info *info, char *stream,
  * Be careful, this one is tricky to use properly :
  * At the first run, you need to have (value = event + IW_EV_LCP_LEN).
  */
-<<<<<<< HEAD
-static inline char *
-iwe_stream_add_value(struct iw_request_info *info, char *event, char *value,
-		     char *ends, struct iw_event *iwe, int event_len)
-{
-	int lcp_len = iwe_stream_lcp_len(info);
-
-	/* Don't duplicate LCP */
-	event_len -= IW_EV_LCP_LEN;
-
-	/* Check if it's possible */
-	if(likely((value + event_len) < ends)) {
-		/* Add new value */
-		memcpy(value, &iwe->u, event_len);
-		value += event_len;
-		/* Patch LCP */
-		iwe->len = value - event;
-		memcpy(event, (char *) iwe, lcp_len);
-	}
-	return value;
-}
-=======
 char *iwe_stream_add_value(struct iw_request_info *info, char *event,
 			   char *value, char *ends, struct iw_event *iwe,
 			   int event_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _IW_HANDLER_H */

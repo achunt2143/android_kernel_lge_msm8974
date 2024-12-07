@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_GENERIC_PAGE_H
 #define __ASM_GENERIC_PAGE_H
 /*
@@ -10,11 +7,7 @@
  */
 
 #ifdef CONFIG_MMU
-<<<<<<< HEAD
-#error need to prove a real asm/page.h
-=======
 #error need to provide a real asm/page.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -32,12 +25,6 @@
 
 #ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-#define get_user_page(vaddr)		__get_free_page(GFP_KERNEL)
-#define free_user_page(page, addr)	free_page(addr)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define clear_page(page)	memset((page), 0, PAGE_SIZE)
 #define copy_page(to,from)	memcpy((to), (from), PAGE_SIZE)
 
@@ -76,15 +63,7 @@ extern unsigned long memory_end;
 
 #endif /* !__ASSEMBLY__ */
 
-<<<<<<< HEAD
-#ifdef CONFIG_KERNEL_RAM_BASE_ADDRESS
-#define PAGE_OFFSET		(CONFIG_KERNEL_RAM_BASE_ADDRESS)
-#else
 #define PAGE_OFFSET		(0)
-#endif
-=======
-#define PAGE_OFFSET		(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef ARCH_PFN_OFFSET
 #define ARCH_PFN_OFFSET		(PAGE_OFFSET >> PAGE_SHIFT)
@@ -95,10 +74,6 @@ extern unsigned long memory_end;
 #define __va(x) ((void *)((unsigned long) (x)))
 #define __pa(x) ((unsigned long) (x))
 
-<<<<<<< HEAD
-#define virt_to_pfn(kaddr)	(__pa(kaddr) >> PAGE_SHIFT)
-#define pfn_to_virt(pfn)	__va((pfn) << PAGE_SHIFT)
-=======
 static inline unsigned long virt_to_pfn(const void *kaddr)
 {
 	return __pa(kaddr) >> PAGE_SHIFT;
@@ -109,7 +84,6 @@ static inline void *pfn_to_virt(unsigned long pfn)
 	return __va(pfn) << PAGE_SHIFT;
 }
 #define pfn_to_virt pfn_to_virt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define virt_to_page(addr)	pfn_to_page(virt_to_pfn(addr))
 #define page_to_virt(page)	pfn_to_virt(page_to_pfn(page))
@@ -118,11 +92,6 @@ static inline void *pfn_to_virt(unsigned long pfn)
 #define page_to_phys(page)      ((dma_addr_t)page_to_pfn(page) << PAGE_SHIFT)
 #endif
 
-<<<<<<< HEAD
-#define pfn_valid(pfn)		((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	virt_addr_valid(kaddr)	(((void *)(kaddr) >= (void *)PAGE_OFFSET) && \
 				((void *)(kaddr) < (void *)memory_end))
 

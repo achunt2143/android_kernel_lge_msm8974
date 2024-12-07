@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-obj-y += msm/
-=======
 # SPDX-License-Identifier: GPL-2.0
 #
 # Makefile for the video capture/playback device drivers.
@@ -38,4 +35,3 @@ obj-y += xilinx/
 # (e. g. LC_ALL=C sort Makefile)
 obj-$(CONFIG_VIDEO_MEM2MEM_DEINTERLACE)	+= m2m-deinterlace.o
 obj-$(CONFIG_VIDEO_MUX)			+= video-mux.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
 **  Copyright (C) 2004-2011 Red Hat, Inc.  All rights reserved.
 **
-<<<<<<< HEAD
-**  This copyrighted material is made available to anyone wishing to use,
-**  modify, copy, or redistribute it subject to the terms and conditions
-**  of the GNU General Public License v.2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -48,10 +39,7 @@ static int enable_locking(struct dlm_ls *ls, uint64_t seq)
 		set_bit(LSFL_RUNNING, &ls->ls_flags);
 		/* unblocks processes waiting to enter the dlm */
 		up_write(&ls->ls_in_recovery);
-<<<<<<< HEAD
-=======
 		clear_bit(LSFL_RECOVER_LOCK, &ls->ls_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = 0;
 	}
 	spin_unlock(&ls->ls_recover_lock);
@@ -65,26 +53,13 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 	unsigned long start;
 	int error, neg = 0;
 
-<<<<<<< HEAD
-	log_debug(ls, "dlm_recover %llx", (unsigned long long)rv->seq);
-=======
 	log_rinfo(ls, "dlm_recover %llu", (unsigned long long)rv->seq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ls->ls_recoverd_active);
 
 	dlm_callback_suspend(ls);
 
-<<<<<<< HEAD
-	/*
-	 * Free non-master tossed rsb's.  Master rsb's are kept on toss
-	 * list and put on root list to be included in resdir recovery.
-	 */
-
-	dlm_clear_toss_list(ls);
-=======
 	dlm_clear_toss(ls);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This list of root rsb's will be the basis of most of the recovery
@@ -95,28 +70,14 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 
 	/*
 	 * Add or remove nodes from the lockspace's ls_nodes list.
-<<<<<<< HEAD
-=======
 	 *
 	 * Due to the fact that we must report all membership changes to lsops
 	 * or midcomms layer, it is not permitted to abort ls_recover() until
 	 * this is done.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	error = dlm_recover_members(ls, rv, &neg);
 	if (error) {
-<<<<<<< HEAD
-		log_debug(ls, "dlm_recover_members error %d", error);
-		goto fail;
-	}
-
-	dlm_set_recover_status(ls, DLM_RS_NODES);
-
-	error = dlm_recover_members_wait(ls);
-	if (error) {
-		log_debug(ls, "dlm_recover_members_wait error %d", error);
-=======
 		log_rinfo(ls, "dlm_recover_members error %d", error);
 		goto fail;
 	}
@@ -132,7 +93,6 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 	error = dlm_recover_members_wait(ls, rv->seq);
 	if (error) {
 		log_rinfo(ls, "dlm_recover_members_wait error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
@@ -143,28 +103,14 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 	 * nodes their master rsb names that hash to us.
 	 */
 
-<<<<<<< HEAD
-	error = dlm_recover_directory(ls);
-	if (error) {
-		log_debug(ls, "dlm_recover_directory error %d", error);
-=======
 	error = dlm_recover_directory(ls, rv->seq);
 	if (error) {
 		log_rinfo(ls, "dlm_recover_directory error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	dlm_set_recover_status(ls, DLM_RS_DIR);
 
-<<<<<<< HEAD
-	error = dlm_recover_directory_wait(ls);
-	if (error) {
-		log_debug(ls, "dlm_recover_directory_wait error %d", error);
-		goto fail;
-	}
-
-=======
 	error = dlm_recover_directory_wait(ls, rv->seq);
 	if (error) {
 		log_rinfo(ls, "dlm_recover_directory_wait error %d", error);
@@ -174,7 +120,6 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 	log_rinfo(ls, "dlm_recover_directory %u out %u messages",
 		  ls->ls_recover_dir_sent_res, ls->ls_recover_dir_sent_msg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We may have outstanding operations that are waiting for a reply from
 	 * a failed node.  Mark these to be resent after recovery.  Unlock and
@@ -183,42 +128,26 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 
 	dlm_recover_waiters_pre(ls);
 
-<<<<<<< HEAD
-	error = dlm_recovery_stopped(ls);
-	if (error)
-		goto fail;
-=======
 	if (dlm_recovery_stopped(ls)) {
 		error = -EINTR;
 		goto fail;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (neg || dlm_no_directory(ls)) {
 		/*
 		 * Clear lkb's for departed nodes.
 		 */
 
-<<<<<<< HEAD
-		dlm_purge_locks(ls);
-=======
 		dlm_recover_purge(ls);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Get new master nodeid's for rsb's that were mastered on
 		 * departed nodes.
 		 */
 
-<<<<<<< HEAD
-		error = dlm_recover_masters(ls);
-		if (error) {
-			log_debug(ls, "dlm_recover_masters error %d", error);
-=======
 		error = dlm_recover_masters(ls, rv->seq);
 		if (error) {
 			log_rinfo(ls, "dlm_recover_masters error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail;
 		}
 
@@ -226,28 +155,14 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 		 * Send our locks on remastered rsb's to the new masters.
 		 */
 
-<<<<<<< HEAD
-		error = dlm_recover_locks(ls);
-		if (error) {
-			log_debug(ls, "dlm_recover_locks error %d", error);
-=======
 		error = dlm_recover_locks(ls, rv->seq);
 		if (error) {
 			log_rinfo(ls, "dlm_recover_locks error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail;
 		}
 
 		dlm_set_recover_status(ls, DLM_RS_LOCKS);
 
-<<<<<<< HEAD
-		error = dlm_recover_locks_wait(ls);
-		if (error) {
-			log_debug(ls, "dlm_recover_locks_wait error %d", error);
-			goto fail;
-		}
-
-=======
 		error = dlm_recover_locks_wait(ls, rv->seq);
 		if (error) {
 			log_rinfo(ls, "dlm_recover_locks_wait error %d", error);
@@ -257,7 +172,6 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 		log_rinfo(ls, "dlm_recover_locks %u in",
 			  ls->ls_recover_locks_in);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Finalize state in master rsb's now that all locks can be
 		 * checked.  This includes conversion resolution and lvb
@@ -273,15 +187,9 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 		 */
 		dlm_set_recover_status(ls, DLM_RS_LOCKS);
 
-<<<<<<< HEAD
-		error = dlm_recover_locks_wait(ls);
-		if (error) {
-			log_debug(ls, "dlm_recover_locks_wait error %d", error);
-=======
 		error = dlm_recover_locks_wait(ls, rv->seq);
 		if (error) {
 			log_rinfo(ls, "dlm_recover_locks_wait error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail;
 		}
 	}
@@ -298,58 +206,30 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 
 	dlm_set_recover_status(ls, DLM_RS_DONE);
 
-<<<<<<< HEAD
-	error = dlm_recover_done_wait(ls);
-	if (error) {
-		log_debug(ls, "dlm_recover_done_wait error %d", error);
-=======
 	error = dlm_recover_done_wait(ls, rv->seq);
 	if (error) {
 		log_rinfo(ls, "dlm_recover_done_wait error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	dlm_clear_members_gone(ls);
 
-<<<<<<< HEAD
-	dlm_adjust_timeouts(ls);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_callback_resume(ls);
 
 	error = enable_locking(ls, rv->seq);
 	if (error) {
-<<<<<<< HEAD
-		log_debug(ls, "enable_locking error %d", error);
-=======
 		log_rinfo(ls, "enable_locking error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	error = dlm_process_requestqueue(ls);
 	if (error) {
-<<<<<<< HEAD
-		log_debug(ls, "dlm_process_requestqueue error %d", error);
-=======
 		log_rinfo(ls, "dlm_process_requestqueue error %d", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	error = dlm_recover_waiters_post(ls);
 	if (error) {
-<<<<<<< HEAD
-		log_debug(ls, "dlm_recover_waiters_post error %d", error);
-		goto fail;
-	}
-
-	dlm_grant_after_purge(ls);
-
-	log_debug(ls, "dlm_recover %llx generation %u done: %u ms",
-=======
 		log_rinfo(ls, "dlm_recover_waiters_post error %d", error);
 		goto fail;
 	}
@@ -357,27 +237,16 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 	dlm_recover_grant(ls);
 
 	log_rinfo(ls, "dlm_recover %llu generation %u done: %u ms",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  (unsigned long long)rv->seq, ls->ls_generation,
 		  jiffies_to_msecs(jiffies - start));
 	mutex_unlock(&ls->ls_recoverd_active);
 
-<<<<<<< HEAD
-	dlm_lsop_recover_done(ls);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  fail:
 	dlm_release_root_list(ls);
-<<<<<<< HEAD
-	log_debug(ls, "dlm_recover %llx error %d",
-		  (unsigned long long)rv->seq, error);
-	mutex_unlock(&ls->ls_recoverd_active);
-=======
 	mutex_unlock(&ls->ls_recoverd_active);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -388,22 +257,12 @@ static int ls_recover(struct dlm_ls *ls, struct dlm_recover *rv)
 static void do_ls_recovery(struct dlm_ls *ls)
 {
 	struct dlm_recover *rv = NULL;
-<<<<<<< HEAD
-=======
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&ls->ls_recover_lock);
 	rv = ls->ls_recover_args;
 	ls->ls_recover_args = NULL;
 	if (rv && ls->ls_recover_seq == rv->seq)
-<<<<<<< HEAD
-		clear_bit(LSFL_RECOVERY_STOP, &ls->ls_flags);
-	spin_unlock(&ls->ls_recover_lock);
-
-	if (rv) {
-		ls_recover(ls, rv);
-=======
 		clear_bit(LSFL_RECOVER_STOP, &ls->ls_flags);
 	spin_unlock(&ls->ls_recover_lock);
 
@@ -433,7 +292,6 @@ static void do_ls_recovery(struct dlm_ls *ls)
 			break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(rv->nodes);
 		kfree(rv);
 	}
@@ -449,18 +307,6 @@ static int dlm_recoverd(void *arg)
 		return -1;
 	}
 
-<<<<<<< HEAD
-	while (!kthread_should_stop()) {
-		set_current_state(TASK_INTERRUPTIBLE);
-		if (!test_bit(LSFL_WORK, &ls->ls_flags))
-			schedule();
-		set_current_state(TASK_RUNNING);
-
-		if (test_and_clear_bit(LSFL_WORK, &ls->ls_flags))
-			do_ls_recovery(ls);
-	}
-
-=======
 	down_write(&ls->ls_in_recovery);
 	set_bit(LSFL_RECOVER_LOCK, &ls->ls_flags);
 	wake_up(&ls->ls_recover_lock_wait);
@@ -497,20 +343,10 @@ static int dlm_recoverd(void *arg)
 	if (test_bit(LSFL_RECOVER_LOCK, &ls->ls_flags))
 		up_write(&ls->ls_in_recovery);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_put_lockspace(ls);
 	return 0;
 }
 
-<<<<<<< HEAD
-void dlm_recoverd_kick(struct dlm_ls *ls)
-{
-	set_bit(LSFL_WORK, &ls->ls_flags);
-	wake_up_process(ls->ls_recoverd_task);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dlm_recoverd_start(struct dlm_ls *ls)
 {
 	struct task_struct *p;

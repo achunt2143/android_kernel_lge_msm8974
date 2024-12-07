@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef _PSMOUSE_H
-#define _PSMOUSE_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PSMOUSE_H
 #define _PSMOUSE_H
@@ -10,7 +5,6 @@
 #define PSMOUSE_OOB_NONE	0x00
 #define PSMOUSE_OOB_EXTRA_BTNS	0x01
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PSMOUSE_CMD_SETSCALE11	0x00e6
 #define PSMOUSE_CMD_SETSCALE21	0x00e7
 #define PSMOUSE_CMD_SETRES	0x10e8
@@ -46,51 +40,9 @@ typedef enum {
 	PSMOUSE_FULL_PACKET
 } psmouse_ret_t;
 
-<<<<<<< HEAD
-struct psmouse {
-	void *private;
-	struct input_dev *dev;
-	struct ps2dev ps2dev;
-	struct delayed_work resync_work;
-	char *vendor;
-	char *name;
-	unsigned char packet[8];
-	unsigned char badbyte;
-	unsigned char pktcnt;
-	unsigned char pktsize;
-	unsigned char type;
-	bool ignore_parity;
-	bool acks_disable_command;
-	unsigned int model;
-	unsigned long last;
-	unsigned long out_of_sync_cnt;
-	unsigned long num_resyncs;
-	enum psmouse_state state;
-	char devname[64];
-	char phys[32];
-
-	unsigned int rate;
-	unsigned int resolution;
-	unsigned int resetafter;
-	unsigned int resync_time;
-	bool smartscroll;	/* Logitech only */
-
-	psmouse_ret_t (*protocol_handler)(struct psmouse *psmouse);
-	void (*set_rate)(struct psmouse *psmouse, unsigned int rate);
-	void (*set_resolution)(struct psmouse *psmouse, unsigned int resolution);
-
-	int (*reconnect)(struct psmouse *psmouse);
-	void (*disconnect)(struct psmouse *psmouse);
-	void (*cleanup)(struct psmouse *psmouse);
-	int (*poll)(struct psmouse *psmouse);
-
-	void (*pt_activate)(struct psmouse *psmouse);
-	void (*pt_deactivate)(struct psmouse *psmouse);
-=======
 enum psmouse_scale {
 	PSMOUSE_SCALE11,
 	PSMOUSE_SCALE21
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum psmouse_type {
@@ -111,14 +63,6 @@ enum psmouse_type {
 	PSMOUSE_ELANTECH,
 	PSMOUSE_FSP,
 	PSMOUSE_SYNAPTICS_RELATIVE,
-<<<<<<< HEAD
-	PSMOUSE_AUTO		/* This one should always be last */
-};
-
-void psmouse_queue_work(struct psmouse *psmouse, struct delayed_work *work,
-		unsigned long delay);
-int psmouse_sliced_command(struct psmouse *psmouse, unsigned char command);
-=======
 	PSMOUSE_CYPRESS,
 	PSMOUSE_FOCALTECH,
 	PSMOUSE_VMMOUSE,
@@ -190,21 +134,17 @@ struct psmouse *psmouse_from_serio(struct serio *serio);
 
 void psmouse_queue_work(struct psmouse *psmouse, struct delayed_work *work,
 		unsigned long delay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int psmouse_reset(struct psmouse *psmouse);
 void psmouse_set_state(struct psmouse *psmouse, enum psmouse_state new_state);
 void psmouse_set_resolution(struct psmouse *psmouse, unsigned int resolution);
 psmouse_ret_t psmouse_process_byte(struct psmouse *psmouse);
 int psmouse_activate(struct psmouse *psmouse);
 int psmouse_deactivate(struct psmouse *psmouse);
-<<<<<<< HEAD
-=======
 bool psmouse_matches_pnp_id(struct psmouse *psmouse, const char * const ids[]);
 
 void psmouse_report_standard_buttons(struct input_dev *, u8 buttons);
 void psmouse_report_standard_motion(struct input_dev *, u8 *packet);
 void psmouse_report_standard_packet(struct input_dev *, u8 *packet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct psmouse_attribute {
 	struct device_attribute dattr;
@@ -277,8 +217,6 @@ static struct psmouse_attribute psmouse_attr_##_name = {			\
 		   &(psmouse)->ps2dev.serio->dev,	\
 		   psmouse_fmt(format), ##__VA_ARGS__)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MOUSE_PS2_SMBUS
 
 int psmouse_smbus_module_init(void);
@@ -309,6 +247,5 @@ static inline void psmouse_smbus_cleanup(struct psmouse *psmouse)
 }
 
 #endif /* CONFIG_MOUSE_PS2_SMBUS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _PSMOUSE_H */

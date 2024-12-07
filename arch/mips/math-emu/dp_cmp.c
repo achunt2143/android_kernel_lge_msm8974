@@ -1,39 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * double precision: common utilities
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
-<<<<<<< HEAD
- *
- * ########################################################################
- *
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
- *
- * ########################################################################
- */
-
-
-#include "ieee754dp.h"
-
-int ieee754dp_cmp(ieee754dp x, ieee754dp y, int cmp, int sig)
-{
-=======
  */
 
 #include "ieee754dp.h"
@@ -43,7 +14,6 @@ int ieee754dp_cmp(union ieee754dp x, union ieee754dp y, int cmp, int sig)
 	s64 vx;
 	s64 vy;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	COMPXDP;
 	COMPYDP;
 
@@ -51,23 +21,6 @@ int ieee754dp_cmp(union ieee754dp x, union ieee754dp y, int cmp, int sig)
 	EXPLODEYDP;
 	FLUSHXDP;
 	FLUSHYDP;
-<<<<<<< HEAD
-	CLEARCX;	/* Even clear inexact flag here */
-
-	if (ieee754dp_isnan(x) || ieee754dp_isnan(y)) {
-		if (sig || xc == IEEE754_CLASS_SNAN || yc == IEEE754_CLASS_SNAN)
-			SETCX(IEEE754_INVALID_OPERATION);
-		if (cmp & IEEE754_CUN)
-			return 1;
-		if (cmp & (IEEE754_CLT | IEEE754_CGT)) {
-			if (sig && SETANDTESTCX(IEEE754_INVALID_OPERATION))
-				return ieee754si_xcpt(0, "fcmpf", x);
-		}
-		return 0;
-	} else {
-		s64 vx = x.bits;
-		s64 vy = y.bits;
-=======
 	ieee754_clearcx();	/* Even clear inexact flag here */
 
 	if (ieee754_class_nan(xc) || ieee754_class_nan(yc)) {
@@ -78,7 +31,6 @@ int ieee754dp_cmp(union ieee754dp x, union ieee754dp y, int cmp, int sig)
 	} else {
 		vx = x.bits;
 		vy = y.bits;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (vx < 0)
 			vx = -vx ^ DP_SIGN_BIT;

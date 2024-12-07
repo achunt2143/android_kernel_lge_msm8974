@@ -1,37 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Author	Karsten Keil <kkeil@novell.com>
  *
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <linux/mISDNif.h>
 #include <linux/kthread.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched.h>
 #include <linux/sched/cputime.h>
 #include <linux/signal.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "core.h"
 
 static u_int	*debug;
@@ -77,27 +58,15 @@ unlock:
 static void
 send_socklist(struct mISDN_sock_list *sl, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct hlist_node	*node;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock		*sk;
 	struct sk_buff		*cskb = NULL;
 
 	read_lock(&sl->lock);
-<<<<<<< HEAD
-	sk_for_each(sk, node, &sl->head) {
-		if (sk->sk_state != MISDN_BOUND)
-			continue;
-		if (!cskb)
-			cskb = skb_copy(skb, GFP_KERNEL);
-=======
 	sk_for_each(sk, &sl->head) {
 		if (sk->sk_state != MISDN_BOUND)
 			continue;
 		if (!cskb)
 			cskb = skb_copy(skb, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!cskb) {
 			printk(KERN_WARNING "%s no skb\n", __func__);
 			break;
@@ -106,12 +75,7 @@ send_socklist(struct mISDN_sock_list *sl, struct sk_buff *skb)
 			cskb = NULL;
 	}
 	read_unlock(&sl->lock);
-<<<<<<< HEAD
-	if (cskb)
-		dev_kfree_skb(cskb);
-=======
 	dev_kfree_skb(cskb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -164,22 +128,12 @@ send_layer2(struct mISDNstack *st, struct sk_buff *skb)
 			skb = NULL;
 		else if (*debug & DEBUG_SEND_ERR)
 			printk(KERN_DEBUG
-<<<<<<< HEAD
-			       "%s ch%d mgr prim(%x) addr(%x) err %d\n",
-			       __func__, ch->nr, hh->prim, ch->addr, ret);
-	}
-out:
-	mutex_unlock(&st->lmutex);
-	if (skb)
-		dev_kfree_skb(skb);
-=======
 			       "%s mgr prim(%x) err %d\n",
 			       __func__, hh->prim, ret);
 	}
 out:
 	mutex_unlock(&st->lmutex);
 	dev_kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int
@@ -240,12 +194,9 @@ static int
 mISDNStackd(void *data)
 {
 	struct mISDNstack *st = data;
-<<<<<<< HEAD
-=======
 #ifdef MISDN_MSG_STATS
 	u64 utime, stime;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	sigfillset(&current->blocked);
@@ -347,16 +298,10 @@ mISDNStackd(void *data)
 	       "msg %d sleep %d stopped\n",
 	       dev_name(&st->dev->dev), st->msg_cnt, st->sleep_cnt,
 	       st->stopped_cnt);
-<<<<<<< HEAD
-	printk(KERN_DEBUG
-	       "mISDNStackd daemon for %s utime(%ld) stime(%ld)\n",
-	       dev_name(&st->dev->dev), st->thread->utime, st->thread->stime);
-=======
 	task_cputime(st->thread, &utime, &stime);
 	printk(KERN_DEBUG
 	       "mISDNStackd daemon for %s utime(%llu) stime(%llu)\n",
 	       dev_name(&st->dev->dev), utime, stime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_DEBUG
 	       "mISDNStackd daemon for %s nvcsw(%ld) nivcsw(%ld)\n",
 	       dev_name(&st->dev->dev), st->thread->nvcsw, st->thread->nivcsw);
@@ -583,10 +528,7 @@ create_l2entity(struct mISDNdevice *dev, struct mISDNchannel *ch,
 		rq.protocol = ISDN_P_NT_S0;
 		if (dev->Dprotocols & (1 << ISDN_P_NT_E1))
 			rq.protocol = ISDN_P_NT_E1;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ISDN_P_LAPD_TE:
 		ch->recv = mISDN_queue_message;
 		ch->peer = &dev->D.st->own;

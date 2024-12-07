@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Network device driver for Cell Processor-Based Blade and Celleb platform
  *
@@ -10,23 +7,6 @@
  *
  * Authors : Utz Bacher <utz.bacher@de.ibm.com>
  *           Jens Osterkamp <Jens.Osterkamp@de.ibm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SPIDER_NET_H
@@ -36,13 +16,8 @@
 
 #include <linux/sungem_phy.h>
 
-<<<<<<< HEAD
-extern int spider_net_stop(struct net_device *netdev);
-extern int spider_net_open(struct net_device *netdev);
-=======
 int spider_net_stop(struct net_device *netdev);
 int spider_net_open(struct net_device *netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct ethtool_ops spider_net_ethtool_ops;
 
@@ -69,10 +44,6 @@ extern char spider_net_driver_name[];
 #define SPIDER_NET_RX_CSUM_DEFAULT		1
 
 #define SPIDER_NET_WATCHDOG_TIMEOUT		50*HZ
-<<<<<<< HEAD
-#define SPIDER_NET_NAPI_WEIGHT			64
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SPIDER_NET_FIRMWARE_SEQS	6
 #define SPIDER_NET_FIRMWARE_SEQWORDS	1024
@@ -498,11 +469,7 @@ struct spider_net_card {
 	struct spider_net_extra_stats spider_stats;
 
 	/* Must be last item in struct */
-<<<<<<< HEAD
-	struct spider_net_descr darray[0];
-=======
 	struct spider_net_descr darray[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

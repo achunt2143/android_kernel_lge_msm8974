@@ -1,30 +1,14 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC85xx/86xx PCI Express structure define
  *
  * Copyright 2007,2011 Freescale Semiconductor, Inc
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifdef __KERNEL__
 #ifndef __POWERPC_FSL_PCI_H
 #define __POWERPC_FSL_PCI_H
 
-<<<<<<< HEAD
-#define PCIE_LTSSM	0x0404		/* PCIE Link Training and Status */
-#define PCIE_LTSSM_L0	0x16		/* L0 state */
-=======
 struct platform_device;
 
 
@@ -37,7 +21,6 @@ struct platform_device;
 #define PCIE_FSL_CSR_CLASSCODE	0x474	/* FSL GPEX CSR */
 #define PCIE_IP_REV_2_2		0x02080202 /* PCIE IP block version Rev2.2 */
 #define PCIE_IP_REV_3_0		0x02080300 /* PCIE IP block version Rev3.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PIWAR_EN		0x80000000	/* Enable */
 #define PIWAR_PF		0x20000000	/* prefetch */
 #define PIWAR_TGI_LOCAL		0x00f00000	/* target - local memory */
@@ -45,8 +28,6 @@ struct platform_device;
 #define PIWAR_WRITE_SNOOP	0x00005000
 #define PIWAR_SZ_MASK          0x0000003f
 
-<<<<<<< HEAD
-=======
 #define PEX_PMCR_PTOMR		0x1
 #define PEX_PMCR_EXL2S		0x2
 
@@ -54,7 +35,6 @@ struct platform_device;
 #define PME_DISR_EN_ENL23D	0x00002000
 #define PME_DISR_EN_EXL23D	0x00001000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCI/PCI Express outbound window reg */
 struct pci_outbound_window_regs {
 	__be32	potar;	/* 0x.0 - Outbound translation address register */
@@ -89,13 +69,9 @@ struct ccsr_pci {
 	__be32	pex_pme_mes_disr;	/* 0x.024 - PCIE PME and message disable register */
 	__be32	pex_pme_mes_ier;	/* 0x.028 - PCIE PME and message interrupt enable register */
 	__be32	pex_pmcr;		/* 0x.02c - PCIE power management command register */
-<<<<<<< HEAD
-	u8	res3[3024];
-=======
 	u8	res3[3016];
 	__be32	block_rev1;	/* 0x.bf8 - PCIE Block Revision register 1 */
 	__be32	block_rev2;	/* 0x.bfc - PCIE Block Revision register 2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PCI/PCI Express outbound window 0-4
  * Window 0 is the default window and is the only window enabled upon reset.
@@ -124,15 +100,6 @@ struct ccsr_pci {
 	__be32	pex_err_cap_r1;		/* 0x.e2c - PCIE error capture register 0 */
 	__be32	pex_err_cap_r2;		/* 0x.e30 - PCIE error capture register 0 */
 	__be32	pex_err_cap_r3;		/* 0x.e34 - PCIE error capture register 0 */
-<<<<<<< HEAD
-};
-
-extern int fsl_add_bridge(struct device_node *dev, int is_primary);
-extern void fsl_pcibios_fixup_bus(struct pci_bus *bus);
-extern int mpc83xx_add_bridge(struct device_node *dev);
-u64 fsl_pci_immrbar_base(struct pci_controller *hose);
-
-=======
 	u8	res_e38[200];
 	__be32	pdb_stat;		/* 0x.f00 - PCIE Debug Status */
 	u8	res_f04[16];
@@ -164,6 +131,5 @@ extern int fsl_pci_mcheck_exception(struct pt_regs *);
 static inline int fsl_pci_mcheck_exception(struct pt_regs *regs) {return 0; }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __POWERPC_FSL_PCI_H */
 #endif /* __KERNEL__ */

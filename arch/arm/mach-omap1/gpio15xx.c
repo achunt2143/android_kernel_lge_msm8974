@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/*
- * OMAP15xx specific gpio init
- *
- * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com/
- *
- * Author:
- *	Charulatha V <charu@ti.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
-#include <linux/gpio.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMAP15xx specific gpio init
@@ -34,17 +13,12 @@
 #include <asm/irq.h>
 
 #include "irqs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define OMAP1_MPUIO_VBASE		OMAP1_MPUIO_BASE
 #define OMAP1510_GPIO_BASE		0xFFFCE000
 
 /* gpio1 */
-<<<<<<< HEAD
-static struct __initdata resource omap15xx_mpu_gpio_resources[] = {
-=======
 static struct resource omap15xx_mpu_gpio_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start	= OMAP1_MPUIO_VBASE,
 		.end	= OMAP1_MPUIO_VBASE + SZ_2K - 1,
@@ -67,12 +41,7 @@ static struct omap_gpio_reg_offs omap15xx_mpuio_regs = {
 	.irqctrl	= OMAP_MPUIO_GPIO_INT_EDGE,
 };
 
-<<<<<<< HEAD
-static struct __initdata omap_gpio_platform_data omap15xx_mpu_gpio_config = {
-	.virtual_irq_start	= IH_MPUIO_BASE,
-=======
 static struct omap_gpio_platform_data omap15xx_mpu_gpio_config = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.is_mpuio		= true,
 	.bank_width		= 16,
 	.bank_stride		= 1,
@@ -90,11 +59,7 @@ static struct platform_device omap15xx_mpu_gpio = {
 };
 
 /* gpio2 */
-<<<<<<< HEAD
-static struct __initdata resource omap15xx_gpio_resources[] = {
-=======
 static struct resource omap15xx_gpio_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start	= OMAP1510_GPIO_BASE,
 		.end	= OMAP1510_GPIO_BASE + SZ_2K - 1,
@@ -118,12 +83,7 @@ static struct omap_gpio_reg_offs omap15xx_gpio_regs = {
 	.pinctrl	= OMAP1510_GPIO_PIN_CONTROL,
 };
 
-<<<<<<< HEAD
-static struct __initdata omap_gpio_platform_data omap15xx_gpio_config = {
-	.virtual_irq_start	= IH_GPIO_BASE,
-=======
 static struct omap_gpio_platform_data omap15xx_gpio_config = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bank_width		= 16,
 	.regs                   = &omap15xx_gpio_regs,
 };

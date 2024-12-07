@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ufs/inode.c
  *
@@ -29,11 +26,7 @@
  *        David S. Miller (davem@caip.rutgers.edu), 1995
  */
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/errno.h>
 #include <linux/fs.h>
@@ -42,26 +35,16 @@
 #include <linux/string.h>
 #include <linux/mm.h>
 #include <linux/buffer_head.h>
-<<<<<<< HEAD
-#include <linux/writeback.h>
-=======
 #include <linux/mpage.h>
 #include <linux/writeback.h>
 #include <linux/iversion.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ufs_fs.h"
 #include "ufs.h"
 #include "swab.h"
 #include "util.h"
 
-<<<<<<< HEAD
-static u64 ufs_frag_map(struct inode *inode, sector_t frag, bool needs_lock);
-
-static int ufs_block_to_path(struct inode *inode, sector_t i_block, sector_t offsets[4])
-=======
 static int ufs_block_to_path(struct inode *inode, sector_t i_block, unsigned offsets[4])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ufs_sb_private_info *uspi = UFS_SB(inode->i_sb)->s_uspi;
 	int ptrs = uspi->s_apb;
@@ -93,8 +76,6 @@ static int ufs_block_to_path(struct inode *inode, sector_t i_block, unsigned off
 	return n;
 }
 
-<<<<<<< HEAD
-=======
 typedef struct {
 	void	*p;
 	union {
@@ -136,119 +117,28 @@ static inline int grow_chain64(struct ufs_inode_info *ufsi,
 	return (p > to);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Returns the location of the fragment from
  * the beginning of the filesystem.
  */
 
-<<<<<<< HEAD
-static u64 ufs_frag_map(struct inode *inode, sector_t frag, bool needs_lock)
-=======
 static u64 ufs_frag_map(struct inode *inode, unsigned offsets[4], int depth)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ufs_inode_info *ufsi = UFS_I(inode);
 	struct super_block *sb = inode->i_sb;
 	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
 	u64 mask = (u64) uspi->s_apbmask>>uspi->s_fpbshift;
 	int shift = uspi->s_apbshift-uspi->s_fpbshift;
-<<<<<<< HEAD
-	sector_t offsets[4], *p;
-	int depth = ufs_block_to_path(inode, frag >> uspi->s_fpbshift, offsets);
-	u64  ret = 0L;
-	__fs32 block;
-	__fs64 u2_block = 0L;
-	unsigned flags = UFS_SB(sb)->s_flags;
-	u64 temp = 0L;
-
-	UFSD(": frag = %llu  depth = %d\n", (unsigned long long)frag, depth);
-=======
 	Indirect chain[4], *q = chain;
 	unsigned *p;
 	unsigned flags = UFS_SB(sb)->s_flags;
 	u64 res = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UFSD(": uspi->s_fpbshift = %d ,uspi->s_apbmask = %x, mask=%llx\n",
 		uspi->s_fpbshift, uspi->s_apbmask,
 		(unsigned long long)mask);
 
 	if (depth == 0)
-<<<<<<< HEAD
-		return 0;
-
-	p = offsets;
-
-	if (needs_lock)
-		lock_ufs(sb);
-	if ((flags & UFS_TYPE_MASK) == UFS_TYPE_UFS2)
-		goto ufs2;
-
-	block = ufsi->i_u1.i_data[*p++];
-	if (!block)
-		goto out;
-	while (--depth) {
-		struct buffer_head *bh;
-		sector_t n = *p++;
-
-		bh = sb_bread(sb, uspi->s_sbbase + fs32_to_cpu(sb, block)+(n>>shift));
-		if (!bh)
-			goto out;
-		block = ((__fs32 *) bh->b_data)[n & mask];
-		brelse (bh);
-		if (!block)
-			goto out;
-	}
-	ret = (u64) (uspi->s_sbbase + fs32_to_cpu(sb, block) + (frag & uspi->s_fpbmask));
-	goto out;
-ufs2:
-	u2_block = ufsi->i_u1.u2_i_data[*p++];
-	if (!u2_block)
-		goto out;
-
-
-	while (--depth) {
-		struct buffer_head *bh;
-		sector_t n = *p++;
-
-
-		temp = (u64)(uspi->s_sbbase) + fs64_to_cpu(sb, u2_block);
-		bh = sb_bread(sb, temp +(u64) (n>>shift));
-		if (!bh)
-			goto out;
-		u2_block = ((__fs64 *)bh->b_data)[n & mask];
-		brelse(bh);
-		if (!u2_block)
-			goto out;
-	}
-	temp = (u64)uspi->s_sbbase + fs64_to_cpu(sb, u2_block);
-	ret = temp + (u64) (frag & uspi->s_fpbmask);
-
-out:
-	if (needs_lock)
-		unlock_ufs(sb);
-	return ret;
-}
-
-/**
- * ufs_inode_getfrag() - allocate new fragment(s)
- * @inode - pointer to inode
- * @fragment - number of `fragment' which hold pointer
- *   to new allocated fragment(s)
- * @new_fragment - number of new allocated fragment(s)
- * @required - how many fragment(s) we require
- * @err - we set it if something wrong
- * @phys - pointer to where we save physical number of new allocated fragments,
- *   NULL if we allocate not data(indirect blocks for example).
- * @new - we set it if we allocate new block
- * @locked_page - for ufs_new_fragments()
- */
-static struct buffer_head *
-ufs_inode_getfrag(struct inode *inode, u64 fragment,
-		  sector_t new_fragment, unsigned int required, int *err,
-		  long *phys, int *new, struct page *locked_page)
-=======
 		goto no_block;
 
 again:
@@ -331,21 +221,10 @@ changed:
 static bool
 ufs_extend_tail(struct inode *inode, u64 writes_to,
 		  int *err, struct page *locked_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ufs_inode_info *ufsi = UFS_I(inode);
 	struct super_block *sb = inode->i_sb;
 	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
-<<<<<<< HEAD
-	struct buffer_head * result;
-	unsigned blockoff, lastblockoff;
-	u64 tmp, goal, lastfrag, block, lastblock;
-	void *p, *p2;
-
-	UFSD("ENTER, ino %lu, fragment %llu, new_fragment %llu, required %u, "
-	     "metadata %d\n", inode->i_ino, (unsigned long long)fragment,
-	     (unsigned long long)new_fragment, required, !phys);
-=======
 	unsigned lastfrag = ufsi->i_lastfrag;	/* it's a short file, so unsigned is enough */
 	unsigned block = ufs_fragstoblks(lastfrag);
 	unsigned new_size;
@@ -384,120 +263,12 @@ ufs_inode_getfrag(struct inode *inode, unsigned index,
 	u64 tmp, goal, lastfrag;
 	unsigned nfrags = uspi->s_fpb;
 	void *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         /* TODO : to be done for write support
         if ( (flags & UFS_TYPE_MASK) == UFS_TYPE_UFS2)
              goto ufs2;
          */
 
-<<<<<<< HEAD
-	block = ufs_fragstoblks (fragment);
-	blockoff = ufs_fragnum (fragment);
-	p = ufs_get_direct_data_ptr(uspi, ufsi, block);
-
-	goal = 0;
-
-repeat:
-	tmp = ufs_data_ptr_to_cpu(sb, p);
-
-	lastfrag = ufsi->i_lastfrag;
-	if (tmp && fragment < lastfrag) {
-		if (!phys) {
-			result = sb_getblk(sb, uspi->s_sbbase + tmp + blockoff);
-			if (tmp == ufs_data_ptr_to_cpu(sb, p)) {
-				UFSD("EXIT, result %llu\n",
-				     (unsigned long long)tmp + blockoff);
-				return result;
-			}
-			brelse (result);
-			goto repeat;
-		} else {
-			*phys = uspi->s_sbbase + tmp + blockoff;
-			return NULL;
-		}
-	}
-
-	lastblock = ufs_fragstoblks (lastfrag);
-	lastblockoff = ufs_fragnum (lastfrag);
-	/*
-	 * We will extend file into new block beyond last allocated block
-	 */
-	if (lastblock < block) {
-		/*
-		 * We must reallocate last allocated block
-		 */
-		if (lastblockoff) {
-			p2 = ufs_get_direct_data_ptr(uspi, ufsi, lastblock);
-			tmp = ufs_new_fragments(inode, p2, lastfrag,
-						ufs_data_ptr_to_cpu(sb, p2),
-						uspi->s_fpb - lastblockoff,
-						err, locked_page);
-			if (!tmp) {
-				if (lastfrag != ufsi->i_lastfrag)
-					goto repeat;
-				else
-					return NULL;
-			}
-			lastfrag = ufsi->i_lastfrag;
-			
-		}
-		tmp = ufs_data_ptr_to_cpu(sb,
-					 ufs_get_direct_data_ptr(uspi, ufsi,
-								 lastblock));
-		if (tmp)
-			goal = tmp + uspi->s_fpb;
-		tmp = ufs_new_fragments (inode, p, fragment - blockoff, 
-					 goal, required + blockoff,
-					 err,
-					 phys != NULL ? locked_page : NULL);
-	} else if (lastblock == block) {
-	/*
-	 * We will extend last allocated block
-	 */
-		tmp = ufs_new_fragments(inode, p, fragment -
-					(blockoff - lastblockoff),
-					ufs_data_ptr_to_cpu(sb, p),
-					required +  (blockoff - lastblockoff),
-					err, phys != NULL ? locked_page : NULL);
-	} else /* (lastblock > block) */ {
-	/*
-	 * We will allocate new block before last allocated block
-	 */
-		if (block) {
-			tmp = ufs_data_ptr_to_cpu(sb,
-						 ufs_get_direct_data_ptr(uspi, ufsi, block - 1));
-			if (tmp)
-				goal = tmp + uspi->s_fpb;
-		}
-		tmp = ufs_new_fragments(inode, p, fragment - blockoff,
-					goal, uspi->s_fpb, err,
-					phys != NULL ? locked_page : NULL);
-	}
-	if (!tmp) {
-		if ((!blockoff && ufs_data_ptr_to_cpu(sb, p)) ||
-		    (blockoff && lastfrag != ufsi->i_lastfrag))
-			goto repeat;
-		*err = -ENOSPC;
-		return NULL;
-	}
-
-	if (!phys) {
-		result = sb_getblk(sb, uspi->s_sbbase + tmp + blockoff);
-	} else {
-		*phys = uspi->s_sbbase + tmp + blockoff;
-		result = NULL;
-		*err = 0;
-		*new = 1;
-	}
-
-	inode->i_ctime = CURRENT_TIME_SEC;
-	if (IS_SYNC(inode))
-		ufs_sync_inode (inode);
-	mark_inode_dirty(inode);
-	UFSD("EXIT, result %llu\n", (unsigned long long)tmp + blockoff);
-	return result;
-=======
 	p = ufs_get_direct_data_ptr(uspi, ufsi, index);
 	tmp = ufs_data_ptr_to_cpu(sb, p);
 	if (tmp)
@@ -532,7 +303,6 @@ repeat:
 	mark_inode_dirty(inode);
 out:
 	return tmp + uspi->s_sbbase;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
      /* This part : To be implemented ....
         Required only for writing, not required for READ-ONLY.
@@ -552,69 +322,6 @@ repeat2:
 
 /**
  * ufs_inode_getblock() - allocate new block
-<<<<<<< HEAD
- * @inode - pointer to inode
- * @bh - pointer to block which hold "pointer" to new allocated block
- * @fragment - number of `fragment' which hold pointer
- *   to new allocated block
- * @new_fragment - number of new allocated fragment
- *  (block will hold this fragment and also uspi->s_fpb-1)
- * @err - see ufs_inode_getfrag()
- * @phys - see ufs_inode_getfrag()
- * @new - see ufs_inode_getfrag()
- * @locked_page - see ufs_inode_getfrag()
- */
-static struct buffer_head *
-ufs_inode_getblock(struct inode *inode, struct buffer_head *bh,
-		  u64 fragment, sector_t new_fragment, int *err,
-		  long *phys, int *new, struct page *locked_page)
-{
-	struct super_block *sb = inode->i_sb;
-	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
-	struct buffer_head * result;
-	unsigned blockoff;
-	u64 tmp, goal, block;
-	void *p;
-
-	block = ufs_fragstoblks (fragment);
-	blockoff = ufs_fragnum (fragment);
-
-	UFSD("ENTER, ino %lu, fragment %llu, new_fragment %llu, metadata %d\n",
-	     inode->i_ino, (unsigned long long)fragment,
-	     (unsigned long long)new_fragment, !phys);
-
-	result = NULL;
-	if (!bh)
-		goto out;
-	if (!buffer_uptodate(bh)) {
-		ll_rw_block (READ, 1, &bh);
-		wait_on_buffer (bh);
-		if (!buffer_uptodate(bh))
-			goto out;
-	}
-	if (uspi->fs_magic == UFS2_MAGIC)
-		p = (__fs64 *)bh->b_data + block;
-	else
-		p = (__fs32 *)bh->b_data + block;
-repeat:
-	tmp = ufs_data_ptr_to_cpu(sb, p);
-	if (tmp) {
-		if (!phys) {
-			result = sb_getblk(sb, uspi->s_sbbase + tmp + blockoff);
-			if (tmp == ufs_data_ptr_to_cpu(sb, p))
-				goto out;
-			brelse (result);
-			goto repeat;
-		} else {
-			*phys = uspi->s_sbbase + tmp + blockoff;
-			goto out;
-		}
-	}
-
-	if (block && (uspi->fs_magic == UFS2_MAGIC ?
-		      (tmp = fs64_to_cpu(sb, ((__fs64 *)bh->b_data)[block-1])) :
-		      (tmp = fs32_to_cpu(sb, ((__fs32 *)bh->b_data)[block-1]))))
-=======
  * @inode: pointer to inode
  * @ind_block: block number of the indirect block
  * @index: number of pointer within the indirect block
@@ -658,46 +365,20 @@ ufs_inode_getblock(struct inode *inode, u64 ind_block,
 	if (index && (uspi->fs_magic == UFS2_MAGIC ?
 		      (tmp = fs64_to_cpu(sb, ((__fs64 *)bh->b_data)[index-1])) :
 		      (tmp = fs32_to_cpu(sb, ((__fs32 *)bh->b_data)[index-1]))))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goal = tmp + uspi->s_fpb;
 	else
 		goal = bh->b_blocknr + uspi->s_fpb;
 	tmp = ufs_new_fragments(inode, p, ufs_blknum(new_fragment), goal,
 				uspi->s_fpb, err, locked_page);
-<<<<<<< HEAD
-	if (!tmp) {
-		if (ufs_data_ptr_to_cpu(sb, p))
-			goto repeat;
-		goto out;
-	}		
-
-
-	if (!phys) {
-		result = sb_getblk(sb, uspi->s_sbbase + tmp + blockoff);
-	} else {
-		*phys = uspi->s_sbbase + tmp + blockoff;
-		*new = 1;
-	}
-=======
 	if (!tmp)
 		goto out;
 
 	if (new)
 		*new = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mark_buffer_dirty(bh);
 	if (IS_SYNC(inode))
 		sync_dirty_buffer(bh);
-<<<<<<< HEAD
-	inode->i_ctime = CURRENT_TIME_SEC;
-	mark_inode_dirty(inode);
-	UFSD("result %llu\n", (unsigned long long)tmp + blockoff);
-out:
-	brelse (bh);
-	UFSD("EXIT\n");
-	return result;
-=======
 	inode_set_ctime_current(inode);
 	mark_inode_dirty(inode);
 out:
@@ -706,123 +387,10 @@ out:
 	if (tmp)
 		tmp += uspi->s_sbbase;
 	return tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ufs_getfrag_block() - `get_block_t' function, interface between UFS and
-<<<<<<< HEAD
- * readpage, writepage and so on
- */
-
-int ufs_getfrag_block(struct inode *inode, sector_t fragment, struct buffer_head *bh_result, int create)
-{
-	struct super_block * sb = inode->i_sb;
-	struct ufs_sb_info * sbi = UFS_SB(sb);
-	struct ufs_sb_private_info * uspi = sbi->s_uspi;
-	struct buffer_head * bh;
-	int ret, err, new;
-	unsigned long ptr,phys;
-	u64 phys64 = 0;
-	bool needs_lock = (sbi->mutex_owner != current);
-	
-	if (!create) {
-		phys64 = ufs_frag_map(inode, fragment, needs_lock);
-		UFSD("phys64 = %llu\n", (unsigned long long)phys64);
-		if (phys64)
-			map_bh(bh_result, sb, phys64);
-		return 0;
-	}
-
-        /* This code entered only while writing ....? */
-
-	err = -EIO;
-	new = 0;
-	ret = 0;
-	bh = NULL;
-
-	if (needs_lock)
-		lock_ufs(sb);
-
-	UFSD("ENTER, ino %lu, fragment %llu\n", inode->i_ino, (unsigned long long)fragment);
-	if (fragment >
-	    ((UFS_NDADDR + uspi->s_apb + uspi->s_2apb + uspi->s_3apb)
-	     << uspi->s_fpbshift))
-		goto abort_too_big;
-
-	err = 0;
-	ptr = fragment;
-	  
-	/*
-	 * ok, these macros clean the logic up a bit and make
-	 * it much more readable:
-	 */
-#define GET_INODE_DATABLOCK(x) \
-	ufs_inode_getfrag(inode, x, fragment, 1, &err, &phys, &new,\
-			  bh_result->b_page)
-#define GET_INODE_PTR(x) \
-	ufs_inode_getfrag(inode, x, fragment, uspi->s_fpb, &err, NULL, NULL,\
-			  bh_result->b_page)
-#define GET_INDIRECT_DATABLOCK(x) \
-	ufs_inode_getblock(inode, bh, x, fragment,	\
-			  &err, &phys, &new, bh_result->b_page)
-#define GET_INDIRECT_PTR(x) \
-	ufs_inode_getblock(inode, bh, x, fragment,	\
-			  &err, NULL, NULL, NULL)
-
-	if (ptr < UFS_NDIR_FRAGMENT) {
-		bh = GET_INODE_DATABLOCK(ptr);
-		goto out;
-	}
-	ptr -= UFS_NDIR_FRAGMENT;
-	if (ptr < (1 << (uspi->s_apbshift + uspi->s_fpbshift))) {
-		bh = GET_INODE_PTR(UFS_IND_FRAGMENT + (ptr >> uspi->s_apbshift));
-		goto get_indirect;
-	}
-	ptr -= 1 << (uspi->s_apbshift + uspi->s_fpbshift);
-	if (ptr < (1 << (uspi->s_2apbshift + uspi->s_fpbshift))) {
-		bh = GET_INODE_PTR(UFS_DIND_FRAGMENT + (ptr >> uspi->s_2apbshift));
-		goto get_double;
-	}
-	ptr -= 1 << (uspi->s_2apbshift + uspi->s_fpbshift);
-	bh = GET_INODE_PTR(UFS_TIND_FRAGMENT + (ptr >> uspi->s_3apbshift));
-	bh = GET_INDIRECT_PTR((ptr >> uspi->s_2apbshift) & uspi->s_apbmask);
-get_double:
-	bh = GET_INDIRECT_PTR((ptr >> uspi->s_apbshift) & uspi->s_apbmask);
-get_indirect:
-	bh = GET_INDIRECT_DATABLOCK(ptr & uspi->s_apbmask);
-
-#undef GET_INODE_DATABLOCK
-#undef GET_INODE_PTR
-#undef GET_INDIRECT_DATABLOCK
-#undef GET_INDIRECT_PTR
-
-out:
-	if (err)
-		goto abort;
-	if (new)
-		set_buffer_new(bh_result);
-	map_bh(bh_result, sb, phys);
-abort:
-	if (needs_lock)
-		unlock_ufs(sb);
-
-	return err;
-
-abort_too_big:
-	ufs_warning(sb, "ufs_get_block", "block > big");
-	goto abort;
-}
-
-static int ufs_writepage(struct page *page, struct writeback_control *wbc)
-{
-	return block_write_full_page(page,ufs_getfrag_block,wbc);
-}
-
-static int ufs_readpage(struct file *file, struct page *page)
-{
-	return block_read_full_page(page,ufs_getfrag_block);
-=======
  * read_folio, writepages and so on
  */
 
@@ -909,7 +477,6 @@ static int ufs_writepages(struct address_space *mapping,
 static int ufs_read_folio(struct file *file, struct folio *folio)
 {
 	return block_read_full_folio(folio, ufs_getfrag_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ufs_prepare_chunk(struct page *page, loff_t pos, unsigned len)
@@ -917,10 +484,6 @@ int ufs_prepare_chunk(struct page *page, loff_t pos, unsigned len)
 	return __block_write_begin(page, pos, len, ufs_getfrag_block);
 }
 
-<<<<<<< HEAD
-static int ufs_write_begin(struct file *file, struct address_space *mapping,
-			loff_t pos, unsigned len, unsigned flags,
-=======
 static void ufs_truncate_blocks(struct inode *);
 
 static void ufs_write_failed(struct address_space *mapping, loff_t to)
@@ -935,30 +498,17 @@ static void ufs_write_failed(struct address_space *mapping, loff_t to)
 
 static int ufs_write_begin(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page **pagep, void **fsdata)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = block_write_begin(mapping, pos, len, flags, pagep,
-				ufs_getfrag_block);
-	if (unlikely(ret)) {
-		loff_t isize = mapping->host->i_size;
-		if (pos + len > isize)
-			vmtruncate(mapping->host, isize);
-	}
-=======
 	ret = block_write_begin(mapping, pos, len, pagep, ufs_getfrag_block);
 	if (unlikely(ret))
 		ufs_write_failed(mapping, pos + len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int ufs_write_end(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned copied,
 			struct page *page, void *fsdata)
@@ -971,19 +521,12 @@ static int ufs_write_end(struct file *file, struct address_space *mapping,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static sector_t ufs_bmap(struct address_space *mapping, sector_t block)
 {
 	return generic_block_bmap(mapping,block,ufs_getfrag_block);
 }
 
 const struct address_space_operations ufs_aops = {
-<<<<<<< HEAD
-	.readpage = ufs_readpage,
-	.writepage = ufs_writepage,
-	.write_begin = ufs_write_begin,
-	.write_end = generic_write_end,
-=======
 	.dirty_folio = block_dirty_folio,
 	.invalidate_folio = block_invalidate_folio,
 	.read_folio = ufs_read_folio,
@@ -991,7 +534,6 @@ const struct address_space_operations ufs_aops = {
 	.write_begin = ufs_write_begin,
 	.write_end = ufs_write_end,
 	.migrate_folio = buffer_migrate_folio,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bmap = ufs_bmap
 };
 
@@ -1006,13 +548,6 @@ static void ufs_set_inode_ops(struct inode *inode)
 		inode->i_fop = &ufs_dir_operations;
 		inode->i_mapping->a_ops = &ufs_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
-<<<<<<< HEAD
-		if (!inode->i_blocks)
-			inode->i_op = &ufs_fast_symlink_inode_operations;
-		else {
-			inode->i_op = &ufs_symlink_inode_operations;
-			inode->i_mapping->a_ops = &ufs_aops;
-=======
 		if (!inode->i_blocks) {
 			inode->i_link = (char *)UFS_I(inode)->i_u1.i_symlink;
 			inode->i_op = &simple_symlink_inode_operations;
@@ -1020,7 +555,6 @@ static void ufs_set_inode_ops(struct inode *inode)
 			inode->i_mapping->a_ops = &ufs_aops;
 			inode->i_op = &page_symlink_inode_operations;
 			inode_nohighmem(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		init_special_inode(inode, inode->i_mode,
@@ -1038,26 +572,6 @@ static int ufs1_read_inode(struct inode *inode, struct ufs_inode *ufs_inode)
 	 */
 	inode->i_mode = mode = fs16_to_cpu(sb, ufs_inode->ui_mode);
 	set_nlink(inode, fs16_to_cpu(sb, ufs_inode->ui_nlink));
-<<<<<<< HEAD
-	if (inode->i_nlink == 0) {
-		ufs_error (sb, "ufs_read_inode", "inode %lu has zero nlink\n", inode->i_ino);
-		return -1;
-	}
-	
-	/*
-	 * Linux now has 32-bit uid and gid, so we can support EFT.
-	 */
-	inode->i_uid = ufs_get_inode_uid(sb, ufs_inode);
-	inode->i_gid = ufs_get_inode_gid(sb, ufs_inode);
-
-	inode->i_size = fs64_to_cpu(sb, ufs_inode->ui_size);
-	inode->i_atime.tv_sec = fs32_to_cpu(sb, ufs_inode->ui_atime.tv_sec);
-	inode->i_ctime.tv_sec = fs32_to_cpu(sb, ufs_inode->ui_ctime.tv_sec);
-	inode->i_mtime.tv_sec = fs32_to_cpu(sb, ufs_inode->ui_mtime.tv_sec);
-	inode->i_mtime.tv_nsec = 0;
-	inode->i_atime.tv_nsec = 0;
-	inode->i_ctime.tv_nsec = 0;
-=======
 	if (inode->i_nlink == 0)
 		return -ESTALE;
 
@@ -1077,18 +591,13 @@ static int ufs1_read_inode(struct inode *inode, struct ufs_inode *ufs_inode)
 	inode_set_mtime(inode,
 			(signed)fs32_to_cpu(sb, ufs_inode->ui_mtime.tv_sec),
 			0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks = fs32_to_cpu(sb, ufs_inode->ui_blocks);
 	inode->i_generation = fs32_to_cpu(sb, ufs_inode->ui_gen);
 	ufsi->i_flags = fs32_to_cpu(sb, ufs_inode->ui_flags);
 	ufsi->i_shadow = fs32_to_cpu(sb, ufs_inode->ui_u3.ui_sun.ui_shadow);
 	ufsi->i_oeftflag = fs32_to_cpu(sb, ufs_inode->ui_u3.ui_sun.ui_oeftflag);
 
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (S_ISCHR(mode) || S_ISBLK(mode) || inode->i_blocks) {
 		memcpy(ufsi->i_u1.i_data, &ufs_inode->ui_u2.ui_addr,
 		       sizeof(ufs_inode->ui_u2.ui_addr));
@@ -1112,31 +621,12 @@ static int ufs2_read_inode(struct inode *inode, struct ufs2_inode *ufs2_inode)
 	 */
 	inode->i_mode = mode = fs16_to_cpu(sb, ufs2_inode->ui_mode);
 	set_nlink(inode, fs16_to_cpu(sb, ufs2_inode->ui_nlink));
-<<<<<<< HEAD
-	if (inode->i_nlink == 0) {
-		ufs_error (sb, "ufs_read_inode", "inode %lu has zero nlink\n", inode->i_ino);
-		return -1;
-	}
-=======
 	if (inode->i_nlink == 0)
 		return -ESTALE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         /*
          * Linux now has 32-bit uid and gid, so we can support EFT.
          */
-<<<<<<< HEAD
-	inode->i_uid = fs32_to_cpu(sb, ufs2_inode->ui_uid);
-	inode->i_gid = fs32_to_cpu(sb, ufs2_inode->ui_gid);
-
-	inode->i_size = fs64_to_cpu(sb, ufs2_inode->ui_size);
-	inode->i_atime.tv_sec = fs64_to_cpu(sb, ufs2_inode->ui_atime);
-	inode->i_ctime.tv_sec = fs64_to_cpu(sb, ufs2_inode->ui_ctime);
-	inode->i_mtime.tv_sec = fs64_to_cpu(sb, ufs2_inode->ui_mtime);
-	inode->i_atime.tv_nsec = fs32_to_cpu(sb, ufs2_inode->ui_atimensec);
-	inode->i_ctime.tv_nsec = fs32_to_cpu(sb, ufs2_inode->ui_ctimensec);
-	inode->i_mtime.tv_nsec = fs32_to_cpu(sb, ufs2_inode->ui_mtimensec);
-=======
 	i_uid_write(inode, fs32_to_cpu(sb, ufs2_inode->ui_uid));
 	i_gid_write(inode, fs32_to_cpu(sb, ufs2_inode->ui_gid));
 
@@ -1147,7 +637,6 @@ static int ufs2_read_inode(struct inode *inode, struct ufs2_inode *ufs2_inode)
 			fs32_to_cpu(sb, ufs2_inode->ui_ctimensec));
 	inode_set_mtime(inode, fs64_to_cpu(sb, ufs2_inode->ui_mtime),
 			fs32_to_cpu(sb, ufs2_inode->ui_mtimensec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks = fs64_to_cpu(sb, ufs2_inode->ui_blocks);
 	inode->i_generation = fs32_to_cpu(sb, ufs2_inode->ui_gen);
 	ufsi->i_flags = fs32_to_cpu(sb, ufs2_inode->ui_flags);
@@ -1173,11 +662,7 @@ struct inode *ufs_iget(struct super_block *sb, unsigned long ino)
 	struct ufs_sb_private_info *uspi = UFS_SB(sb)->s_uspi;
 	struct buffer_head * bh;
 	struct inode *inode;
-<<<<<<< HEAD
-	int err;
-=======
 	int err = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	UFSD("ENTER, ino %lu\n", ino);
 
@@ -1212,18 +697,11 @@ struct inode *ufs_iget(struct super_block *sb, unsigned long ino)
 		err = ufs1_read_inode(inode,
 				      ufs_inode + ufs_inotofsbo(inode->i_ino));
 	}
-<<<<<<< HEAD
-
-	if (err)
-		goto bad_inode;
-	inode->i_version++;
-=======
 	brelse(bh);
 	if (err)
 		goto bad_inode;
 
 	inode_inc_iversion(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ufsi->i_lastfrag =
 		(inode->i_size + uspi->s_fsize - 1) >> uspi->s_fshift;
 	ufsi->i_dir_start_lookup = 0;
@@ -1231,22 +709,13 @@ struct inode *ufs_iget(struct super_block *sb, unsigned long ino)
 
 	ufs_set_inode_ops(inode);
 
-<<<<<<< HEAD
-	brelse(bh);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UFSD("EXIT\n");
 	unlock_new_inode(inode);
 	return inode;
 
 bad_inode:
 	iget_failed(inode);
-<<<<<<< HEAD
-	return ERR_PTR(-EIO);
-=======
 	return ERR_PTR(err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ufs1_update_inode(struct inode *inode, struct ufs_inode *ufs_inode)
@@ -1257,17 +726,6 @@ static void ufs1_update_inode(struct inode *inode, struct ufs_inode *ufs_inode)
 	ufs_inode->ui_mode = cpu_to_fs16(sb, inode->i_mode);
 	ufs_inode->ui_nlink = cpu_to_fs16(sb, inode->i_nlink);
 
-<<<<<<< HEAD
-	ufs_set_inode_uid(sb, ufs_inode, inode->i_uid);
-	ufs_set_inode_gid(sb, ufs_inode, inode->i_gid);
-		
-	ufs_inode->ui_size = cpu_to_fs64(sb, inode->i_size);
-	ufs_inode->ui_atime.tv_sec = cpu_to_fs32(sb, inode->i_atime.tv_sec);
-	ufs_inode->ui_atime.tv_usec = 0;
-	ufs_inode->ui_ctime.tv_sec = cpu_to_fs32(sb, inode->i_ctime.tv_sec);
-	ufs_inode->ui_ctime.tv_usec = 0;
-	ufs_inode->ui_mtime.tv_sec = cpu_to_fs32(sb, inode->i_mtime.tv_sec);
-=======
 	ufs_set_inode_uid(sb, ufs_inode, i_uid_read(inode));
 	ufs_set_inode_gid(sb, ufs_inode, i_gid_read(inode));
 
@@ -1280,7 +738,6 @@ static void ufs1_update_inode(struct inode *inode, struct ufs_inode *ufs_inode)
 	ufs_inode->ui_ctime.tv_usec = 0;
 	ufs_inode->ui_mtime.tv_sec = cpu_to_fs32(sb,
 						 inode_get_mtime_sec(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ufs_inode->ui_mtime.tv_usec = 0;
 	ufs_inode->ui_blocks = cpu_to_fs32(sb, inode->i_blocks);
 	ufs_inode->ui_flags = cpu_to_fs32(sb, ufsi->i_flags);
@@ -1316,18 +773,6 @@ static void ufs2_update_inode(struct inode *inode, struct ufs2_inode *ufs_inode)
 	ufs_inode->ui_mode = cpu_to_fs16(sb, inode->i_mode);
 	ufs_inode->ui_nlink = cpu_to_fs16(sb, inode->i_nlink);
 
-<<<<<<< HEAD
-	ufs_inode->ui_uid = cpu_to_fs32(sb, inode->i_uid);
-	ufs_inode->ui_gid = cpu_to_fs32(sb, inode->i_gid);
-
-	ufs_inode->ui_size = cpu_to_fs64(sb, inode->i_size);
-	ufs_inode->ui_atime = cpu_to_fs64(sb, inode->i_atime.tv_sec);
-	ufs_inode->ui_atimensec = cpu_to_fs32(sb, inode->i_atime.tv_nsec);
-	ufs_inode->ui_ctime = cpu_to_fs64(sb, inode->i_ctime.tv_sec);
-	ufs_inode->ui_ctimensec = cpu_to_fs32(sb, inode->i_ctime.tv_nsec);
-	ufs_inode->ui_mtime = cpu_to_fs64(sb, inode->i_mtime.tv_sec);
-	ufs_inode->ui_mtimensec = cpu_to_fs32(sb, inode->i_mtime.tv_nsec);
-=======
 	ufs_inode->ui_uid = cpu_to_fs32(sb, i_uid_read(inode));
 	ufs_inode->ui_gid = cpu_to_fs32(sb, i_gid_read(inode));
 
@@ -1341,7 +786,6 @@ static void ufs2_update_inode(struct inode *inode, struct ufs2_inode *ufs_inode)
 	ufs_inode->ui_mtime = cpu_to_fs64(sb, inode_get_mtime_sec(inode));
 	ufs_inode->ui_mtimensec = cpu_to_fs32(sb,
 					      inode_get_mtime_nsec(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ufs_inode->ui_blocks = cpu_to_fs64(sb, inode->i_blocks);
 	ufs_inode->ui_flags = cpu_to_fs32(sb, ufsi->i_flags);
@@ -1392,35 +836,19 @@ static int ufs_update_inode(struct inode * inode, int do_sync)
 
 		ufs1_update_inode(inode, ufs_inode + ufs_inotofsbo(inode->i_ino));
 	}
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_buffer_dirty(bh);
 	if (do_sync)
 		sync_dirty_buffer(bh);
 	brelse (bh);
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UFSD("EXIT\n");
 	return 0;
 }
 
 int ufs_write_inode(struct inode *inode, struct writeback_control *wbc)
 {
-<<<<<<< HEAD
-	int ret;
-	lock_ufs(inode->i_sb);
-	ret = ufs_update_inode(inode, wbc->sync_mode == WB_SYNC_ALL);
-	unlock_ufs(inode->i_sb);
-	return ret;
-=======
 	return ufs_update_inode(inode, wbc->sync_mode == WB_SYNC_ALL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ufs_sync_inode (struct inode *inode)
@@ -1435,31 +863,6 @@ void ufs_evict_inode(struct inode * inode)
 	if (!inode->i_nlink && !is_bad_inode(inode))
 		want_delete = 1;
 
-<<<<<<< HEAD
-	truncate_inode_pages(&inode->i_data, 0);
-	if (want_delete) {
-		loff_t old_i_size;
-		/*UFS_I(inode)->i_dtime = CURRENT_TIME;*/
-		lock_ufs(inode->i_sb);
-		mark_inode_dirty(inode);
-		ufs_update_inode(inode, IS_SYNC(inode));
-		old_i_size = inode->i_size;
-		inode->i_size = 0;
-		if (inode->i_blocks && ufs_truncate(inode, old_i_size))
-			ufs_warning(inode->i_sb, __func__, "ufs_truncate failed\n");
-		unlock_ufs(inode->i_sb);
-	}
-
-	invalidate_inode_buffers(inode);
-	end_writeback(inode);
-
-	if (want_delete) {
-		lock_ufs(inode->i_sb);
-		ufs_free_inode (inode);
-		unlock_ufs(inode->i_sb);
-	}
-}
-=======
 	truncate_inode_pages_final(&inode->i_data);
 	if (want_delete) {
 		inode->i_size = 0;
@@ -1845,4 +1248,3 @@ int ufs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 const struct inode_operations ufs_file_inode_operations = {
 	.setattr = ufs_setattr,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

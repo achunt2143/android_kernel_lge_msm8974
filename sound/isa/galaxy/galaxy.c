@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Aztech AZT1605/AZT2316 Driver
- * Copyright (C) 2007,2010  Rene Herman
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Aztech AZT1605/AZT2316 Driver
  * Copyright (C) 2007,2010  Rene Herman
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -60,23 +40,6 @@ static int mpu_irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;
 static int dma1[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;
 static int dma2[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;
 
-<<<<<<< HEAD
-module_param_array(port, long, NULL, 0444);
-MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
-module_param_array(wss_port, long, NULL, 0444);
-MODULE_PARM_DESC(wss_port, "WSS port # for " CRD_NAME " driver.");
-module_param_array(mpu_port, long, NULL, 0444);
-MODULE_PARM_DESC(mpu_port, "MPU-401 port # for " CRD_NAME " driver.");
-module_param_array(fm_port, long, NULL, 0444);
-MODULE_PARM_DESC(fm_port, "FM port # for " CRD_NAME " driver.");
-module_param_array(irq, int, NULL, 0444);
-MODULE_PARM_DESC(irq, "IRQ # for " CRD_NAME " driver.");
-module_param_array(mpu_irq, int, NULL, 0444);
-MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for " CRD_NAME " driver.");
-module_param_array(dma1, int, NULL, 0444);
-MODULE_PARM_DESC(dma1, "Playback DMA # for " CRD_NAME " driver.");
-module_param_array(dma2, int, NULL, 0444);
-=======
 module_param_hw_array(port, long, ioport, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
 module_param_hw_array(wss_port, long, ioport, NULL, 0444);
@@ -92,7 +55,6 @@ MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for " CRD_NAME " driver.");
 module_param_hw_array(dma1, int, dma, NULL, 0444);
 MODULE_PARM_DESC(dma1, "Playback DMA # for " CRD_NAME " driver.");
 module_param_hw_array(dma2, int, dma, NULL, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma2, "Capture DMA # for " CRD_NAME " driver.");
 
 /*
@@ -109,11 +71,7 @@ MODULE_PARM_DESC(dma2, "Capture DMA # for " CRD_NAME " driver.");
 
 #define DSP_COMMAND_GET_VERSION	0xe1
 
-<<<<<<< HEAD
-static int __devinit dsp_get_byte(void __iomem *port, u8 *val)
-=======
 static int dsp_get_byte(void __iomem *port, u8 *val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int loops = 1000;
 
@@ -126,11 +84,7 @@ static int dsp_get_byte(void __iomem *port, u8 *val)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit dsp_reset(void __iomem *port)
-=======
 static int dsp_reset(void __iomem *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 val;
 
@@ -144,11 +98,7 @@ static int dsp_reset(void __iomem *port)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit dsp_command(void __iomem *port, u8 cmd)
-=======
 static int dsp_command(void __iomem *port, u8 cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int loops = 1000;
 
@@ -161,11 +111,7 @@ static int dsp_command(void __iomem *port, u8 cmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit dsp_get_version(void __iomem *port, u8 *major, u8 *minor)
-=======
 static int dsp_get_version(void __iomem *port, u8 *major, u8 *minor)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -202,11 +148,7 @@ static int dsp_get_version(void __iomem *port, u8 *major, u8 *minor)
 
 #define WSS_SIGNATURE		4
 
-<<<<<<< HEAD
-static int __devinit wss_detect(void __iomem *wss_port)
-=======
 static int wss_detect(void __iomem *wss_port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((ioread8(wss_port + WSS_PORT_SIGNATURE) & 0x3f) != WSS_SIGNATURE)
 		return -ENODEV;
@@ -249,11 +191,7 @@ struct snd_galaxy {
 static u32 config[SNDRV_CARDS];
 static u8 wss_config[SNDRV_CARDS];
 
-<<<<<<< HEAD
-static int __devinit snd_galaxy_match(struct device *dev, unsigned int n)
-=======
 static int snd_galaxy_match(struct device *dev, unsigned int n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[n])
 		return 0;
@@ -309,10 +247,7 @@ static int snd_galaxy_match(struct device *dev, unsigned int n)
 		break;
 	case 2:
 		irq[n] = 9;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 9:
 		wss_config[n] |= WSS_CONFIG_IRQ_9;
 		break;
@@ -357,10 +292,7 @@ static int snd_galaxy_match(struct device *dev, unsigned int n)
 	case 1:
 		if (dma1[n] == 0)
 			break;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		dev_err(dev, "invalid capture DMA %d\n", dma2[n]);
 		return 0;
@@ -390,10 +322,7 @@ mpu:
 		break;
 	case 2:
 		mpu_irq[n] = 9;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 9:
 		config[n] |= GALAXY_CONFIG_MPUIRQ_2;
 		break;
@@ -440,11 +369,7 @@ fm:
 	return 1;
 }
 
-<<<<<<< HEAD
-static int __devinit galaxy_init(struct snd_galaxy *galaxy, u8 *type)
-=======
 static int galaxy_init(struct snd_galaxy *galaxy, u8 *type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 major;
 	u8 minor;
@@ -476,11 +401,7 @@ static int galaxy_init(struct snd_galaxy *galaxy, u8 *type)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit galaxy_set_mode(struct snd_galaxy *galaxy, u8 mode)
-=======
 static int galaxy_set_mode(struct snd_galaxy *galaxy, u8 mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -518,11 +439,7 @@ static void galaxy_set_config(struct snd_galaxy *galaxy, u32 config)
 	msleep(10);
 }
 
-<<<<<<< HEAD
-static void __devinit galaxy_config(struct snd_galaxy *galaxy, u32 config)
-=======
 static void galaxy_config(struct snd_galaxy *galaxy, u32 config)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -534,11 +451,7 @@ static void galaxy_config(struct snd_galaxy *galaxy, u32 config)
 	galaxy_set_config(galaxy, config);
 }
 
-<<<<<<< HEAD
-static int __devinit galaxy_wss_config(struct snd_galaxy *galaxy, u8 wss_config)
-=======
 static int galaxy_wss_config(struct snd_galaxy *galaxy, u8 wss_config)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -559,25 +472,6 @@ static void snd_galaxy_free(struct snd_card *card)
 {
 	struct snd_galaxy *galaxy = card->private_data;
 
-<<<<<<< HEAD
-	if (galaxy->wss_port) {
-		wss_set_config(galaxy->wss_port, 0);
-		ioport_unmap(galaxy->wss_port);
-		release_and_free_resource(galaxy->res_wss_port);
-	}
-	if (galaxy->config_port) {
-		galaxy_set_config(galaxy, galaxy->config);
-		ioport_unmap(galaxy->config_port);
-		release_and_free_resource(galaxy->res_config_port);
-	}
-	if (galaxy->port) {
-		ioport_unmap(galaxy->port);
-		release_and_free_resource(galaxy->res_port);
-	}
-}
-
-static int __devinit snd_galaxy_probe(struct device *dev, unsigned int n)
-=======
 	if (galaxy->wss_port)
 		wss_set_config(galaxy->wss_port, 0);
 	if (galaxy->config_port)
@@ -585,7 +479,6 @@ static int __devinit snd_galaxy_probe(struct device *dev, unsigned int n)
 }
 
 static int __snd_galaxy_probe(struct device *dev, unsigned int n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_galaxy *galaxy;
 	struct snd_wss *chip;
@@ -593,26 +486,6 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 	u8 type;
 	int err;
 
-<<<<<<< HEAD
-	err = snd_card_create(index[n], id[n], THIS_MODULE, sizeof *galaxy,
-			      &card);
-	if (err < 0)
-		return err;
-
-	snd_card_set_dev(card, dev);
-
-	card->private_free = snd_galaxy_free;
-	galaxy = card->private_data;
-
-	galaxy->res_port = request_region(port[n], 16, DRV_NAME);
-	if (!galaxy->res_port) {
-		dev_err(dev, "could not grab ports %#lx-%#lx\n", port[n],
-			port[n] + 15);
-		err = -EBUSY;
-		goto error;
-	}
-	galaxy->port = ioport_map(port[n], 16);
-=======
 	err = snd_devm_card_new(dev, index[n], id[n], THIS_MODULE,
 				sizeof(*galaxy), &card);
 	if (err < 0)
@@ -630,19 +503,10 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 	galaxy->port = devm_ioport_map(dev, port[n], 16);
 	if (!galaxy->port)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = galaxy_init(galaxy, &type);
 	if (err < 0) {
 		dev_err(dev, "did not find a Sound Galaxy at %#lx\n", port[n]);
-<<<<<<< HEAD
-		goto error;
-	}
-	dev_info(dev, "Sound Galaxy (type %d) found at %#lx\n", type, port[n]);
-
-	galaxy->res_config_port = request_region(port[n] + GALAXY_PORT_CONFIG,
-						 16, DRV_NAME);
-=======
 		return err;
 	}
 	dev_info(dev, "Sound Galaxy (type %d) found at %#lx\n", type, port[n]);
@@ -650,28 +514,10 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 	galaxy->res_config_port =
 		devm_request_region(dev, port[n] + GALAXY_PORT_CONFIG, 16,
 				    DRV_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!galaxy->res_config_port) {
 		dev_err(dev, "could not grab ports %#lx-%#lx\n",
 			port[n] + GALAXY_PORT_CONFIG,
 			port[n] + GALAXY_PORT_CONFIG + 15);
-<<<<<<< HEAD
-		err = -EBUSY;
-		goto error;
-	}
-	galaxy->config_port = ioport_map(port[n] + GALAXY_PORT_CONFIG, 16);
-
-	galaxy_config(galaxy, config[n]);
-
-	galaxy->res_wss_port = request_region(wss_port[n], 4, DRV_NAME);
-	if (!galaxy->res_wss_port)  {
-		dev_err(dev, "could not grab ports %#lx-%#lx\n", wss_port[n],
-			wss_port[n] + 3);
-		err = -EBUSY;
-		goto error;
-	}
-	galaxy->wss_port = ioport_map(wss_port[n], 4);
-=======
 		return -EBUSY;
 	}
 	galaxy->config_port =
@@ -689,16 +535,11 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 	galaxy->wss_port = devm_ioport_map(dev, wss_port[n], 4);
 	if (!galaxy->wss_port)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = galaxy_wss_config(galaxy, wss_config[n]);
 	if (err < 0) {
 		dev_err(dev, "could not configure WSS\n");
-<<<<<<< HEAD
-		goto error;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	strcpy(card->driver, DRV_NAME);
@@ -710,21 +551,6 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 	err = snd_wss_create(card, wss_port[n] + 4, -1, irq[n], dma1[n],
 			     dma2[n], WSS_HW_DETECT, 0, &chip);
 	if (err < 0)
-<<<<<<< HEAD
-		goto error;
-
-	err = snd_wss_pcm(chip, 0, NULL);
-	if (err < 0)
-		goto error;
-
-	err = snd_wss_mixer(chip);
-	if (err < 0)
-		goto error;
-
-	err = snd_wss_timer(chip, 0, NULL);
-	if (err < 0)
-		goto error;
-=======
 		return err;
 
 	err = snd_wss_pcm(chip, 0);
@@ -738,17 +564,12 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 	err = snd_wss_timer(chip, 0);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mpu_port[n] >= 0) {
 		err = snd_mpu401_uart_new(card, 0, MPU401_HW_MPU401,
 					  mpu_port[n], 0, mpu_irq[n], NULL);
 		if (err < 0)
-<<<<<<< HEAD
-			goto error;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (fm_port[n] >= 0) {
@@ -758,17 +579,6 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 				      OPL3_HW_AUTO, 0, &opl3);
 		if (err < 0) {
 			dev_err(dev, "no OPL device at %#lx\n", fm_port[n]);
-<<<<<<< HEAD
-			goto error;
-		}
-		err = snd_opl3_timer_new(opl3, 1, 2);
-		if (err < 0)
-			goto error;
-
-		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
-		if (err < 0)
-			goto error;
-=======
 			return err;
 		}
 		err = snd_opl3_timer_new(opl3, 1, 2);
@@ -778,28 +588,10 @@ static int __snd_galaxy_probe(struct device *dev, unsigned int n)
 		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = snd_card_register(card);
 	if (err < 0)
-<<<<<<< HEAD
-		goto error;
-
-	dev_set_drvdata(dev, card);
-	return 0;
-
-error:
-	snd_card_free(card);
-	return err;
-}
-
-static int __devexit snd_galaxy_remove(struct device *dev, unsigned int n)
-{
-	snd_card_free(dev_get_drvdata(dev));
-	dev_set_drvdata(dev, NULL);
-	return 0;
-=======
 		return err;
 
 	dev_set_drvdata(dev, card);
@@ -809,35 +601,15 @@ static int __devexit snd_galaxy_remove(struct device *dev, unsigned int n)
 static int snd_galaxy_probe(struct device *dev, unsigned int n)
 {
 	return snd_card_free_on_error(dev, __snd_galaxy_probe(dev, n));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isa_driver snd_galaxy_driver = {
 	.match		= snd_galaxy_match,
 	.probe		= snd_galaxy_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(snd_galaxy_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.driver		= {
 		.name	= DEV_NAME
 	}
 };
 
-<<<<<<< HEAD
-static int __init alsa_card_galaxy_init(void)
-{
-	return isa_register_driver(&snd_galaxy_driver, SNDRV_CARDS);
-}
-
-static void __exit alsa_card_galaxy_exit(void)
-{
-	isa_unregister_driver(&snd_galaxy_driver);
-}
-
-module_init(alsa_card_galaxy_init);
-module_exit(alsa_card_galaxy_exit);
-=======
 module_isa_driver(snd_galaxy_driver, SNDRV_CARDS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

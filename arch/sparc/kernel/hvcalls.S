@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0: devhandle
 	 * %o1:	devino
 	 *
@@ -110,8 +107,6 @@ ENTRY(sun4v_cpu_yield)
 	 nop
 ENDPROC(sun4v_cpu_yield)
 
-<<<<<<< HEAD
-=======
 	/* %o0: cpuid
 	 *
 	 * returns %o0:	status
@@ -123,7 +118,6 @@ ENTRY(sun4v_cpu_poke)
 	 nop
 ENDPROC(sun4v_cpu_poke)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0:	type
 	 * %o1:	queue paddr
 	 * %o2:	num queue entries
@@ -356,19 +350,12 @@ ENTRY(sun4v_mach_set_watchdog)
 	mov	%o1, %o4
 	mov	HV_FAST_MACH_SET_WATCHDOG, %o5
 	ta	HV_FAST_TRAP
-<<<<<<< HEAD
-	stx	%o1, [%o4]
-	retl
-	 nop
-ENDPROC(sun4v_mach_set_watchdog)
-=======
 	brnz,a,pn %o4, 0f
 	stx	%o1, [%o4]
 0:	retl
 	 nop
 ENDPROC(sun4v_mach_set_watchdog)
 EXPORT_SYMBOL(sun4v_mach_set_watchdog)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* No inputs and does not return.  */
 ENTRY(sun4v_mach_sir)
@@ -802,10 +789,7 @@ ENTRY(sun4v_niagara_getperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara_getperf)
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(sun4v_niagara_getperf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_niagara_setperf)
 	mov	HV_FAST_SET_PERFREG, %o5
@@ -813,10 +797,7 @@ ENTRY(sun4v_niagara_setperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara_setperf)
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(sun4v_niagara_setperf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_niagara2_getperf)
 	mov	%o0, %o4
@@ -826,10 +807,7 @@ ENTRY(sun4v_niagara2_getperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara2_getperf)
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(sun4v_niagara2_getperf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_niagara2_setperf)
 	mov	HV_FAST_N2_SET_PERFREG, %o5
@@ -837,10 +815,7 @@ ENTRY(sun4v_niagara2_setperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara2_setperf)
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(sun4v_niagara2_setperf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_reboot_data_set)
 	mov	HV_FAST_REBOOT_DATA_SET, %o5
@@ -848,8 +823,6 @@ ENTRY(sun4v_reboot_data_set)
 	retl
 	 nop
 ENDPROC(sun4v_reboot_data_set)
-<<<<<<< HEAD
-=======
 
 ENTRY(sun4v_vt_get_perfreg)
 	mov	%o1, %o4
@@ -955,4 +928,3 @@ ENTRY(sun4v_ccb_kill)
 	 sth	%o1, [%g1]
 ENDPROC(sun4v_ccb_kill)
 EXPORT_SYMBOL(sun4v_ccb_kill)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

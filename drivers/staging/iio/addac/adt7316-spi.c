@@ -1,17 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * API bus driver for ADT7316/7/8 ADT7516/7/9 digital temperature
  * sensor, ADC and DAC
  *
  * Copyright 2010 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -34,11 +26,7 @@ static int adt7316_spi_multi_read(void *client, u8 reg, u8 count, u8 *data)
 {
 	struct spi_device *spi_dev = client;
 	u8 cmd[2];
-<<<<<<< HEAD
-	int ret = 0;
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (count > ADT7316_REG_MAX_ADDR)
 		count = ADT7316_REG_MAX_ADDR;
@@ -67,11 +55,7 @@ static int adt7316_spi_multi_write(void *client, u8 reg, u8 count, u8 *data)
 {
 	struct spi_device *spi_dev = client;
 	u8 buf[ADT7316_REG_MAX_ADDR + 2];
-<<<<<<< HEAD
-	int i, ret = 0;
-=======
 	int i, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (count > ADT7316_REG_MAX_ADDR)
 		count = ADT7316_REG_MAX_ADDR;
@@ -104,19 +88,11 @@ static int adt7316_spi_write(void *client, u8 reg, u8 val)
  * device probe and remove
  */
 
-<<<<<<< HEAD
-static int __devinit adt7316_spi_probe(struct spi_device *spi_dev)
-=======
 static int adt7316_spi_probe(struct spi_device *spi_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adt7316_bus bus = {
 		.client = spi_dev,
 		.irq = spi_dev->irq,
-<<<<<<< HEAD
-		.irq_flags = IRQF_TRIGGER_LOW,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.read = adt7316_spi_read,
 		.write = adt7316_spi_write,
 		.multi_read = adt7316_spi_multi_read,
@@ -138,14 +114,6 @@ static int adt7316_spi_probe(struct spi_device *spi_dev)
 	return adt7316_probe(&spi_dev->dev, &bus, spi_dev->modalias);
 }
 
-<<<<<<< HEAD
-static int __devexit adt7316_spi_remove(struct spi_device *spi_dev)
-{
-	return adt7316_remove(&spi_dev->dev);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct spi_device_id adt7316_spi_id[] = {
 	{ "adt7316", 0 },
 	{ "adt7317", 0 },
@@ -158,16 +126,6 @@ static const struct spi_device_id adt7316_spi_id[] = {
 
 MODULE_DEVICE_TABLE(spi, adt7316_spi_id);
 
-<<<<<<< HEAD
-static struct spi_driver adt7316_driver = {
-	.driver = {
-		.name = "adt7316",
-		.pm = ADT7316_PM_OPS,
-		.owner = THIS_MODULE,
-	},
-	.probe = adt7316_spi_probe,
-	.remove = __devexit_p(adt7316_spi_remove),
-=======
 static const struct of_device_id adt7316_of_spi_match[] = {
 	{ .compatible = "adi,adt7316" },
 	{ .compatible = "adi,adt7317" },
@@ -187,16 +145,10 @@ static struct spi_driver adt7316_driver = {
 		.pm = ADT7316_PM_OPS,
 	},
 	.probe = adt7316_spi_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = adt7316_spi_id,
 };
 module_spi_driver(adt7316_driver);
 
 MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("SPI bus driver for Analog Devices ADT7316/7/8 and"
-			"ADT7516/7/9 digital temperature sensor, ADC and DAC");
-=======
 MODULE_DESCRIPTION("SPI bus driver for Analog Devices ADT7316/7/8 and ADT7516/7/9 digital temperature sensor, ADC and DAC");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");

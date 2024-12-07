@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/attr.c
  *
@@ -13,22 +10,6 @@
 #include <linux/time.h>
 #include <linux/mm.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/capability.h>
-#include <linux/fsnotify.h>
-#include <linux/fcntl.h>
-#include <linux/security.h>
-#include <linux/evm.h>
-
-/**
- * inode_change_ok - check if attribute changes to an inode are allowed
- * @inode:	inode to check
- * @attr:	attributes to change
- *
- * Check if we are allowed to change the attributes contained in @attr
- * in the given inode.  This includes the normal unix access permission
- * checks, as well as checks for rlimits and others.
-=======
 #include <linux/sched/signal.h>
 #include <linux/capability.h>
 #include <linux/fsnotify.h>
@@ -175,20 +156,14 @@ static bool chgrp_ok(struct mnt_idmap *idmap,
  * take care to map the inode according to @idmap before checking
  * permissions. On non-idmapped mounts or if permission checking is to be
  * performed on the raw inode simply pass @nop_mnt_idmap.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should be called as the first thing in ->setattr implementations,
  * possibly after taking additional locks.
  */
-<<<<<<< HEAD
-int inode_change_ok(const struct inode *inode, struct iattr *attr)
-{
-=======
 int setattr_prepare(struct mnt_idmap *idmap, struct dentry *dentry,
 		    struct iattr *attr)
 {
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ia_valid = attr->ia_valid;
 
 	/*
@@ -203,42 +178,20 @@ int setattr_prepare(struct mnt_idmap *idmap, struct dentry *dentry,
 
 	/* If force is set do it anyway. */
 	if (ia_valid & ATTR_FORCE)
-<<<<<<< HEAD
-		return 0;
-
-	/* Make sure a caller can chown. */
-	if ((ia_valid & ATTR_UID) &&
-	    (current_fsuid() != inode->i_uid ||
-	     attr->ia_uid != inode->i_uid) && !capable(CAP_CHOWN))
-=======
 		goto kill_priv;
 
 	/* Make sure a caller can chown. */
 	if ((ia_valid & ATTR_UID) &&
 	    !chown_ok(idmap, inode, attr->ia_vfsuid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 
 	/* Make sure caller can chgrp. */
 	if ((ia_valid & ATTR_GID) &&
-<<<<<<< HEAD
-	    (current_fsuid() != inode->i_uid ||
-	    (!in_group_p(attr->ia_gid) && attr->ia_gid != inode->i_gid)) &&
-	    !capable(CAP_CHOWN))
-=======
 	    !chgrp_ok(idmap, inode, attr->ia_vfsgid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 
 	/* Make sure a caller can chmod. */
 	if (ia_valid & ATTR_MODE) {
-<<<<<<< HEAD
-		if (!inode_owner_or_capable(inode))
-			return -EPERM;
-		/* Also check the setgid bit! */
-		if (!in_group_p((ia_valid & ATTR_GID) ? attr->ia_gid :
-				inode->i_gid) && !capable(CAP_FSETID))
-=======
 		vfsgid_t vfsgid;
 
 		if (!inode_owner_or_capable(idmap, inode))
@@ -251,21 +204,11 @@ int setattr_prepare(struct mnt_idmap *idmap, struct dentry *dentry,
 
 		/* Also check the setgid bit! */
 		if (!in_group_or_capable(idmap, inode, vfsgid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			attr->ia_mode &= ~S_ISGID;
 	}
 
 	/* Check for setting the inode time. */
 	if (ia_valid & (ATTR_MTIME_SET | ATTR_ATIME_SET | ATTR_TIMES_SET)) {
-<<<<<<< HEAD
-		if (!inode_owner_or_capable(inode))
-			return -EPERM;
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL(inode_change_ok);
-=======
 		if (!inode_owner_or_capable(idmap, inode))
 			return -EPERM;
 	}
@@ -283,16 +226,11 @@ kill_priv:
 	return 0;
 }
 EXPORT_SYMBOL(setattr_prepare);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * inode_newsize_ok - may this inode be truncated to a given size
  * @inode:	the inode to be truncated
  * @offset:	the new size to assign to the inode
-<<<<<<< HEAD
- * @Returns:	0 on success, -ve errno on failure
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * inode_newsize_ok must be called with i_mutex held.
  *
@@ -302,11 +240,6 @@ EXPORT_SYMBOL(setattr_prepare);
  * returned. @inode must be a file (not directory), with appropriate
  * permissions to allow truncate (inode_newsize_ok does NOT check these
  * conditions).
-<<<<<<< HEAD
- */
-int inode_newsize_ok(const struct inode *inode, loff_t offset)
-{
-=======
  *
  * Return: 0 on success, -ve errno on failure
  */
@@ -314,7 +247,6 @@ int inode_newsize_ok(const struct inode *inode, loff_t offset)
 {
 	if (offset < 0)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (inode->i_size < offset) {
 		unsigned long limit;
 
@@ -343,21 +275,13 @@ EXPORT_SYMBOL(inode_newsize_ok);
 
 /**
  * setattr_copy - copy simple metadata updates into the generic inode
-<<<<<<< HEAD
-=======
  * @idmap:	idmap of the mount the inode was found from
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @inode:	the inode to be updated
  * @attr:	the new attributes
  *
  * setattr_copy must be called with i_mutex held.
  *
  * setattr_copy updates the inode's metadata with that specified
-<<<<<<< HEAD
- * in attr. Noticeably missing is inode size update, which is more complex
- * as it requires pagecache updates.
- *
-=======
  * in attr on idmapped mounts. Necessary permission checks to determine
  * whether or not the S_ISGID property needs to be removed are performed with
  * the correct idmapped mount permission helpers.
@@ -370,34 +294,10 @@ EXPORT_SYMBOL(inode_newsize_ok);
  * permissions. On non-idmapped mounts or if permission checking is to be
  * performed on the raw inode simply pass @nop_mnt_idmap.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The inode is not marked as dirty after this operation. The rationale is
  * that for "simple" filesystems, the struct inode is the inode storage.
  * The caller is free to mark the inode dirty afterwards if needed.
  */
-<<<<<<< HEAD
-void setattr_copy(struct inode *inode, const struct iattr *attr)
-{
-	unsigned int ia_valid = attr->ia_valid;
-
-	if (ia_valid & ATTR_UID)
-		inode->i_uid = attr->ia_uid;
-	if (ia_valid & ATTR_GID)
-		inode->i_gid = attr->ia_gid;
-	if (ia_valid & ATTR_ATIME)
-		inode->i_atime = timespec_trunc(attr->ia_atime,
-						inode->i_sb->s_time_gran);
-	if (ia_valid & ATTR_MTIME)
-		inode->i_mtime = timespec_trunc(attr->ia_mtime,
-						inode->i_sb->s_time_gran);
-	if (ia_valid & ATTR_CTIME)
-		inode->i_ctime = timespec_trunc(attr->ia_ctime,
-						inode->i_sb->s_time_gran);
-	if (ia_valid & ATTR_MODE) {
-		umode_t mode = attr->ia_mode;
-
-		if (!in_group_p(inode->i_gid) && !capable(CAP_FSETID))
-=======
 void setattr_copy(struct mnt_idmap *idmap, struct inode *inode,
 		  const struct iattr *attr)
 {
@@ -415,48 +315,22 @@ void setattr_copy(struct mnt_idmap *idmap, struct inode *inode,
 		umode_t mode = attr->ia_mode;
 		if (!in_group_or_capable(idmap, inode,
 					 i_gid_into_vfsgid(idmap, inode)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mode &= ~S_ISGID;
 		inode->i_mode = mode;
 	}
 }
 EXPORT_SYMBOL(setattr_copy);
 
-<<<<<<< HEAD
-int notify_change2(struct vfsmount *mnt, struct dentry * dentry, struct iattr * attr)
-{
-	struct inode *inode = dentry->d_inode;
-	umode_t mode = inode->i_mode;
-	int error;
-	struct timespec now;
-	unsigned int ia_valid = attr->ia_valid;
-=======
 int may_setattr(struct mnt_idmap *idmap, struct inode *inode,
 		unsigned int ia_valid)
 {
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ia_valid & (ATTR_MODE | ATTR_UID | ATTR_GID | ATTR_TIMES_SET)) {
 		if (IS_IMMUTABLE(inode) || IS_APPEND(inode))
 			return -EPERM;
 	}
 
-<<<<<<< HEAD
-	if ((ia_valid & ATTR_SIZE) && IS_I_VERSION(inode)) {
-		if (attr->ia_size != inode->i_size)
-			inode_inc_iversion(inode);
-	}
-
-	if ((ia_valid & ATTR_MODE)) {
-		umode_t amode = attr->ia_mode;
-		/* Flag setting protected by i_mutex */
-		if (is_sxid(amode))
-			inode->i_flags &= ~S_NOSEC;
-	}
-
-	now = current_fs_time(inode->i_sb);
-=======
 	/*
 	 * If utimes(2) and friends are called with times == NULL (or both
 	 * times are UTIME_NOW), then we need to check for write permission
@@ -541,23 +415,10 @@ int notify_change(struct mnt_idmap *idmap, struct dentry *dentry,
 	}
 
 	now = current_time(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	attr->ia_ctime = now;
 	if (!(ia_valid & ATTR_ATIME_SET))
 		attr->ia_atime = now;
-<<<<<<< HEAD
-	if (!(ia_valid & ATTR_MTIME_SET))
-		attr->ia_mtime = now;
-	if (ia_valid & ATTR_KILL_PRIV) {
-		attr->ia_valid &= ~ATTR_KILL_PRIV;
-		ia_valid &= ~ATTR_KILL_PRIV;
-		error = security_inode_need_killpriv(dentry);
-		if (error > 0)
-			error = security_inode_killpriv(dentry);
-		if (error)
-			return error;
-=======
 	else
 		attr->ia_atime = timestamp_truncate(attr->ia_atime, inode);
 	if (!(ia_valid & ATTR_MTIME_SET))
@@ -571,7 +432,6 @@ int notify_change(struct mnt_idmap *idmap, struct dentry *dentry,
 			return error;
 		if (error == 0)
 			ia_valid = attr->ia_valid &= ~ATTR_KILL_PRIV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -592,11 +452,7 @@ int notify_change(struct mnt_idmap *idmap, struct dentry *dentry,
 		}
 	}
 	if (ia_valid & ATTR_KILL_SGID) {
-<<<<<<< HEAD
-		if ((mode & (S_ISGID | S_IXGRP)) == (S_ISGID | S_IXGRP)) {
-=======
 		if (mode & S_ISGID) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(ia_valid & ATTR_MODE)) {
 				ia_valid = attr->ia_valid |= ATTR_MODE;
 				attr->ia_mode = inode->i_mode;
@@ -607,22 +463,6 @@ int notify_change(struct mnt_idmap *idmap, struct dentry *dentry,
 	if (!(attr->ia_valid & ~(ATTR_KILL_SUID | ATTR_KILL_SGID)))
 		return 0;
 
-<<<<<<< HEAD
-	error = security_inode_setattr(dentry, attr);
-	if (error)
-		return error;
-
-	if (mnt && inode->i_op->setattr2)
-		error = inode->i_op->setattr2(mnt, dentry, attr);
-	else if (inode->i_op->setattr)
-		error = inode->i_op->setattr(dentry, attr);
-	else
-		error = simple_setattr(dentry, attr);
-
-	if (!error) {
-		fsnotify_change(dentry, ia_valid);
-		evm_inode_post_setattr(dentry, ia_valid);
-=======
 	/*
 	 * Verify that uid/gid changes are valid in the target
 	 * namespace of the superblock.
@@ -661,18 +501,8 @@ int notify_change(struct mnt_idmap *idmap, struct dentry *dentry,
 	if (!error) {
 		fsnotify_change(dentry, ia_valid);
 		security_inode_post_setattr(idmap, dentry, ia_valid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return error;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(notify_change2);
-
-int notify_change(struct dentry * dentry, struct iattr * attr)
-{
-	return notify_change2(NULL, dentry, attr);
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(notify_change);

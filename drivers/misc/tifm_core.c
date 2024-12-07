@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  tifm_core.c - TI FlashMedia driver
  *
  *  Copyright (C) 2006 Alex Dubov <oakad@yahoo.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/tifm.h>
@@ -66,15 +55,9 @@ static int tifm_bus_match(struct device *dev, struct device_driver *drv)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int tifm_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	struct tifm_dev *sock = container_of(dev, struct tifm_dev, dev);
-=======
 static int tifm_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct tifm_dev *sock = container_of_const(dev, struct tifm_dev, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (add_uevent_var(env, "TIFM_CARD_TYPE=%s", tifm_media_type_name(sock->type, 1)))
 		return -ENOMEM;
@@ -104,11 +87,7 @@ static void tifm_dummy_event(struct tifm_dev *sock)
 	return;
 }
 
-<<<<<<< HEAD
-static int tifm_device_remove(struct device *dev)
-=======
 static void tifm_device_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tifm_dev *sock = container_of(dev, struct tifm_dev, dev);
 	struct tifm_driver *drv = container_of(dev->driver, struct tifm_driver,
@@ -122,10 +101,6 @@ static void tifm_device_remove(struct device *dev)
 	}
 
 	put_device(dev);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -165,17 +140,6 @@ static ssize_t type_show(struct device *dev, struct device_attribute *attr,
 	struct tifm_dev *sock = container_of(dev, struct tifm_dev, dev);
 	return sprintf(buf, "%x", sock->type);
 }
-<<<<<<< HEAD
-
-static struct device_attribute tifm_dev_attrs[] = {
-	__ATTR(type, S_IRUGO, type_show, NULL),
-	__ATTR_NULL
-};
-
-static struct bus_type tifm_bus_type = {
-	.name      = "tifm",
-	.dev_attrs = tifm_dev_attrs,
-=======
 static DEVICE_ATTR_RO(type);
 
 static struct attribute *tifm_dev_attrs[] = {
@@ -187,7 +151,6 @@ ATTRIBUTE_GROUPS(tifm_dev);
 static struct bus_type tifm_bus_type = {
 	.name      = "tifm",
 	.dev_groups = tifm_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match     = tifm_bus_match,
 	.uevent    = tifm_uevent,
 	.probe     = tifm_device_probe,
@@ -203,11 +166,7 @@ static void tifm_free(struct device *dev)
 	kfree(fm);
 }
 
-<<<<<<< HEAD
-static struct class tifm_adapter_class = {
-=======
 static const struct class tifm_adapter_class = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name    = "tifm_adapter",
 	.dev_release = tifm_free
 };
@@ -217,12 +176,7 @@ struct tifm_adapter *tifm_alloc_adapter(unsigned int num_sockets,
 {
 	struct tifm_adapter *fm;
 
-<<<<<<< HEAD
-	fm = kzalloc(sizeof(struct tifm_adapter)
-		     + sizeof(struct tifm_dev*) * num_sockets, GFP_KERNEL);
-=======
 	fm = kzalloc(struct_size(fm, sockets, num_sockets), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fm) {
 		fm->dev.class = &tifm_adapter_class;
 		fm->dev.parent = dev;
@@ -238,15 +192,6 @@ int tifm_add_adapter(struct tifm_adapter *fm)
 {
 	int rc;
 
-<<<<<<< HEAD
-	if (!idr_pre_get(&tifm_adapter_idr, GFP_KERNEL))
-		return -ENOMEM;
-
-	spin_lock(&tifm_adapter_lock);
-	rc = idr_get_new(&tifm_adapter_idr, fm, &fm->id);
-	spin_unlock(&tifm_adapter_lock);
-	if (rc)
-=======
 	idr_preload(GFP_KERNEL);
 	spin_lock(&tifm_adapter_lock);
 	rc = idr_alloc(&tifm_adapter_idr, fm, 0, 0, GFP_NOWAIT);
@@ -255,7 +200,6 @@ int tifm_add_adapter(struct tifm_adapter *fm)
 	spin_unlock(&tifm_adapter_lock);
 	idr_preload_end();
 	if (rc < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 
 	dev_set_name(&fm->dev, "tifm%u", fm->id);
@@ -348,23 +292,15 @@ EXPORT_SYMBOL(tifm_has_ms_pif);
 int tifm_map_sg(struct tifm_dev *sock, struct scatterlist *sg, int nents,
 		int direction)
 {
-<<<<<<< HEAD
-	return pci_map_sg(to_pci_dev(sock->dev.parent), sg, nents, direction);
-=======
 	return dma_map_sg(&to_pci_dev(sock->dev.parent)->dev, sg, nents,
 			  direction);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tifm_map_sg);
 
 void tifm_unmap_sg(struct tifm_dev *sock, struct scatterlist *sg, int nents,
 		   int direction)
 {
-<<<<<<< HEAD
-	pci_unmap_sg(to_pci_dev(sock->dev.parent), sg, nents, direction);
-=======
 	dma_unmap_sg(&to_pci_dev(sock->dev.parent)->dev, sg, nents, direction);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tifm_unmap_sg);
 

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core IEEE1394 transaction logic
  *
  * Copyright (C) 2004-2006 Kristian Hoegsberg <krh@bitplanet.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bug.h>
@@ -38,10 +18,7 @@
 #include <linux/kernel.h>
 #include <linux/list.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/rculist.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/string.h>
@@ -93,23 +70,6 @@ static int try_cancel_split_timeout(struct fw_transaction *t)
 		return 1;
 }
 
-<<<<<<< HEAD
-static int close_transaction(struct fw_transaction *transaction,
-			     struct fw_card *card, int rcode)
-{
-	struct fw_transaction *t;
-	unsigned long flags;
-
-	spin_lock_irqsave(&card->lock, flags);
-	list_for_each_entry(t, &card->transaction_list, link) {
-		if (t == transaction) {
-			if (!try_cancel_split_timeout(t)) {
-				spin_unlock_irqrestore(&card->lock, flags);
-				goto timed_out;
-			}
-			list_del_init(&t->link);
-			card->tlabel_mask &= ~(1ULL << t->tlabel);
-=======
 static int close_transaction(struct fw_transaction *transaction, struct fw_card *card, int rcode,
 			     u32 response_tstamp)
 {
@@ -126,16 +86,11 @@ static int close_transaction(struct fw_transaction *transaction, struct fw_card 
 			list_del_init(&iter->link);
 			card->tlabel_mask &= ~(1ULL << iter->tlabel);
 			t = iter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	spin_unlock_irqrestore(&card->lock, flags);
 
-<<<<<<< HEAD
-	if (&t->link != &card->transaction_list) {
-		t->callback(card, rcode, NULL, 0, t->callback_data);
-=======
 	if (t) {
 		if (!t->with_tstamp) {
 			t->callback.without_tstamp(card, rcode, NULL, 0, t->callback_data);
@@ -143,7 +98,6 @@ static int close_transaction(struct fw_transaction *transaction, struct fw_card 
 			t->callback.with_tstamp(card, rcode, t->packet.timestamp, response_tstamp,
 						NULL, 0, t->callback_data);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -158,11 +112,8 @@ static int close_transaction(struct fw_transaction *transaction, struct fw_card 
 int fw_cancel_transaction(struct fw_card *card,
 			  struct fw_transaction *transaction)
 {
-<<<<<<< HEAD
-=======
 	u32 tstamp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Cancel the packet transmission if it's still queued.  That
 	 * will call the packet transmission callback which cancels
@@ -177,15 +128,6 @@ int fw_cancel_transaction(struct fw_card *card,
 	 * if the transaction is still pending and remove it in that case.
 	 */
 
-<<<<<<< HEAD
-	return close_transaction(transaction, card, RCODE_CANCELLED);
-}
-EXPORT_SYMBOL(fw_cancel_transaction);
-
-static void split_transaction_timeout_callback(unsigned long data)
-{
-	struct fw_transaction *t = (struct fw_transaction *)data;
-=======
 	if (transaction->packet.ack == 0) {
 		// The timestamp is reused since it was just read now.
 		tstamp = transaction->packet.timestamp;
@@ -203,7 +145,6 @@ EXPORT_SYMBOL(fw_cancel_transaction);
 static void split_transaction_timeout_callback(struct timer_list *timer)
 {
 	struct fw_transaction *t = from_timer(t, timer, split_timeout_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fw_card *card = t->card;
 	unsigned long flags;
 
@@ -216,16 +157,12 @@ static void split_transaction_timeout_callback(struct timer_list *timer)
 	card->tlabel_mask &= ~(1ULL << t->tlabel);
 	spin_unlock_irqrestore(&card->lock, flags);
 
-<<<<<<< HEAD
-	t->callback(card, RCODE_CANCELLED, NULL, 0, t->callback_data);
-=======
 	if (!t->with_tstamp) {
 		t->callback.without_tstamp(card, RCODE_CANCELLED, NULL, 0, t->callback_data);
 	} else {
 		t->callback.with_tstamp(card, RCODE_CANCELLED, t->packet.timestamp,
 					t->split_timeout_cycle, NULL, 0, t->callback_data);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void start_split_transaction_timeout(struct fw_transaction *t,
@@ -247,11 +184,8 @@ static void start_split_transaction_timeout(struct fw_transaction *t,
 	spin_unlock_irqrestore(&card->lock, flags);
 }
 
-<<<<<<< HEAD
-=======
 static u32 compute_split_timeout_timestamp(struct fw_card *card, u32 request_timestamp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void transmit_complete_callback(struct fw_packet *packet,
 				       struct fw_card *card, int status)
 {
@@ -260,23 +194,6 @@ static void transmit_complete_callback(struct fw_packet *packet,
 
 	switch (status) {
 	case ACK_COMPLETE:
-<<<<<<< HEAD
-		close_transaction(t, card, RCODE_COMPLETE);
-		break;
-	case ACK_PENDING:
-		start_split_transaction_timeout(t, card);
-		break;
-	case ACK_BUSY_X:
-	case ACK_BUSY_A:
-	case ACK_BUSY_B:
-		close_transaction(t, card, RCODE_BUSY);
-		break;
-	case ACK_DATA_ERROR:
-		close_transaction(t, card, RCODE_DATA_ERROR);
-		break;
-	case ACK_TYPE_ERROR:
-		close_transaction(t, card, RCODE_TYPE_ERROR);
-=======
 		close_transaction(t, card, RCODE_COMPLETE, packet->timestamp);
 		break;
 	case ACK_PENDING:
@@ -296,18 +213,13 @@ static void transmit_complete_callback(struct fw_packet *packet,
 		break;
 	case ACK_TYPE_ERROR:
 		close_transaction(t, card, RCODE_TYPE_ERROR, packet->timestamp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		/*
 		 * In this case the ack is really a juju specific
 		 * rcode, so just forward that to the callback.
 		 */
-<<<<<<< HEAD
-		close_transaction(t, card, status);
-=======
 		close_transaction(t, card, status, packet->timestamp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -404,12 +316,8 @@ static int allocate_tlabel(struct fw_card *card)
 }
 
 /**
-<<<<<<< HEAD
- * fw_send_request() - submit a request packet for transmission
-=======
  * __fw_send_request() - submit a request packet for transmission to generate callback for response
  *			 subaction with or without time stamp.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @card:		interface to send the request at
  * @t:			transaction instance to which the request belongs
  * @tcode:		transaction code
@@ -419,13 +327,9 @@ static int allocate_tlabel(struct fw_card *card)
  * @offset:		48bit wide offset into destination's address space
  * @payload:		data payload for the request subaction
  * @length:		length of the payload, in bytes
-<<<<<<< HEAD
- * @callback:		function to be called when the transaction is completed
-=======
  * @callback:		union of two functions whether to receive time stamp or not for response
  *			subaction.
  * @with_tstamp:	Whether to receive time stamp or not for response subaction.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @callback_data:	data to be passed to the transaction completion callback
  *
  * Submit a request packet into the asynchronous request transmission queue.
@@ -462,17 +366,10 @@ static int allocate_tlabel(struct fw_card *card)
  * transaction completion and hence execution of @callback may happen even
  * before fw_send_request() returns.
  */
-<<<<<<< HEAD
-void fw_send_request(struct fw_card *card, struct fw_transaction *t, int tcode,
-		     int destination_id, int generation, int speed,
-		     unsigned long long offset, void *payload, size_t length,
-		     fw_transaction_callback_t callback, void *callback_data)
-=======
 void __fw_send_request(struct fw_card *card, struct fw_transaction *t, int tcode,
 		int destination_id, int generation, int speed, unsigned long long offset,
 		void *payload, size_t length, union fw_transaction_callback callback,
 		bool with_tstamp, void *callback_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int tlabel;
@@ -487,9 +384,6 @@ void __fw_send_request(struct fw_card *card, struct fw_transaction *t, int tcode
 	tlabel = allocate_tlabel(card);
 	if (tlabel < 0) {
 		spin_unlock_irqrestore(&card->lock, flags);
-<<<<<<< HEAD
-		callback(card, RCODE_SEND_ERROR, NULL, 0, callback_data);
-=======
 		if (!with_tstamp) {
 			callback.without_tstamp(card, RCODE_SEND_ERROR, NULL, 0, callback_data);
 		} else {
@@ -503,7 +397,6 @@ void __fw_send_request(struct fw_card *card, struct fw_transaction *t, int tcode
 			callback.with_tstamp(card, RCODE_SEND_ERROR, tstamp, tstamp, NULL, 0,
 					     callback_data);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -511,22 +404,12 @@ void __fw_send_request(struct fw_card *card, struct fw_transaction *t, int tcode
 	t->tlabel = tlabel;
 	t->card = card;
 	t->is_split_transaction = false;
-<<<<<<< HEAD
-	setup_timer(&t->split_timeout_timer,
-		    split_transaction_timeout_callback, (unsigned long)t);
-	t->callback = callback;
-	t->callback_data = callback_data;
-
-	fw_fill_request(&t->packet, tcode, t->tlabel,
-			destination_id, card->node_id, generation,
-=======
 	timer_setup(&t->split_timeout_timer, split_transaction_timeout_callback, 0);
 	t->callback = callback;
 	t->with_tstamp = with_tstamp;
 	t->callback_data = callback_data;
 
 	fw_fill_request(&t->packet, tcode, t->tlabel, destination_id, card->node_id, generation,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			speed, offset, payload, length);
 	t->packet.callback = transmit_complete_callback;
 
@@ -536,11 +419,7 @@ void __fw_send_request(struct fw_card *card, struct fw_transaction *t, int tcode
 
 	card->driver->send_request(card, &t->packet);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(fw_send_request);
-=======
 EXPORT_SYMBOL_GPL(__fw_send_request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct transaction_callback_data {
 	struct completion done;
@@ -561,8 +440,6 @@ static void transaction_callback(struct fw_card *card, int rcode,
 
 /**
  * fw_run_transaction() - send request and sleep until transaction is completed
-<<<<<<< HEAD
-=======
  * @card:		card interface for this request
  * @tcode:		transaction code
  * @destination_id:	destination node ID, consisting of bus_ID and phy_ID
@@ -571,7 +448,6 @@ static void transaction_callback(struct fw_card *card, int rcode,
  * @offset:		48bit wide offset into destination's address space
  * @payload:		data payload for the request subaction
  * @length:		length of the payload, in bytes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the RCODE.  See fw_send_request() for parameter documentation.
  * Unlike fw_send_request(), @data points to the payload of the request or/and
@@ -585,11 +461,7 @@ int fw_run_transaction(struct fw_card *card, int tcode, int destination_id,
 	struct transaction_callback_data d;
 	struct fw_transaction t;
 
-<<<<<<< HEAD
-	init_timer_on_stack(&t.split_timeout_timer);
-=======
 	timer_setup_on_stack(&t.split_timeout_timer, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_completion(&d.done);
 	d.payload = payload;
 	fw_send_request(card, &t, tcode, destination_id, generation, speed,
@@ -643,11 +515,7 @@ void fw_send_phy_config(struct fw_card *card,
 	phy_config_packet.header[1] = data;
 	phy_config_packet.header[2] = ~data;
 	phy_config_packet.generation = generation;
-<<<<<<< HEAD
-	INIT_COMPLETION(phy_config_done);
-=======
 	reinit_completion(&phy_config_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card->driver->send_request(card, &phy_config_packet);
 	wait_for_completion_timeout(&phy_config_done, timeout);
@@ -660,11 +528,7 @@ static struct fw_address_handler *lookup_overlapping_address_handler(
 {
 	struct fw_address_handler *handler;
 
-<<<<<<< HEAD
-	list_for_each_entry(handler, list, link) {
-=======
 	list_for_each_entry_rcu(handler, list, link) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (handler->offset < offset + length &&
 		    offset < handler->offset + handler->length)
 			return handler;
@@ -685,11 +549,7 @@ static struct fw_address_handler *lookup_enclosing_address_handler(
 {
 	struct fw_address_handler *handler;
 
-<<<<<<< HEAD
-	list_for_each_entry(handler, list, link) {
-=======
 	list_for_each_entry_rcu(handler, list, link) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (is_enclosing_handler(handler, offset, length))
 			return handler;
 	}
@@ -697,18 +557,6 @@ static struct fw_address_handler *lookup_enclosing_address_handler(
 	return NULL;
 }
 
-<<<<<<< HEAD
-static DEFINE_SPINLOCK(address_handler_lock);
-static LIST_HEAD(address_handler_list);
-
-const struct fw_address_region fw_high_memory_region =
-	{ .start = 0x000100000000ULL, .end = 0xffffe0000000ULL,  };
-EXPORT_SYMBOL(fw_high_memory_region);
-
-#if 0
-const struct fw_address_region fw_low_memory_region =
-	{ .start = 0x000000000000ULL, .end = 0x000100000000ULL,  };
-=======
 static DEFINE_SPINLOCK(address_handler_list_lock);
 static LIST_HEAD(address_handler_list);
 
@@ -720,7 +568,6 @@ static const struct fw_address_region low_memory_region =
 	{ .start = 0x000000000000ULL, .end = FW_MAX_PHYSICAL_RANGE, };
 
 #if 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct fw_address_region fw_private_region =
 	{ .start = 0xffffe0000000ULL, .end = 0xfffff0000000ULL,  };
 const struct fw_address_region fw_csr_region =
@@ -730,15 +577,6 @@ const struct fw_address_region fw_unit_space_region =
 	{ .start = 0xfffff0000900ULL, .end = 0x1000000000000ULL, };
 #endif  /*  0  */
 
-<<<<<<< HEAD
-static bool is_in_fcp_region(u64 offset, size_t length)
-{
-	return offset >= (CSR_REGISTER_BASE | CSR_FCP_COMMAND) &&
-		offset + length <= (CSR_REGISTER_BASE | CSR_FCP_END);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * fw_core_add_address_handler() - register for incoming requests
  * @handler:	callback
@@ -750,10 +588,7 @@ static bool is_in_fcp_region(u64 offset, size_t length)
  * the specified callback is invoked.  The parameters passed to the callback
  * give the details of the particular request.
  *
-<<<<<<< HEAD
-=======
  * To be called in process context.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return value:  0 on success, non-zero otherwise.
  *
  * The start offset of the handler's address region is determined by
@@ -774,11 +609,7 @@ int fw_core_add_address_handler(struct fw_address_handler *handler,
 	    handler->length == 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	spin_lock_bh(&address_handler_lock);
-=======
 	spin_lock(&address_handler_list_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	handler->offset = region->start;
 	while (handler->offset + handler->length <= region->end) {
@@ -791,21 +622,13 @@ int fw_core_add_address_handler(struct fw_address_handler *handler,
 		if (other != NULL) {
 			handler->offset += other->length;
 		} else {
-<<<<<<< HEAD
-			list_add_tail(&handler->link, &address_handler_list);
-=======
 			list_add_tail_rcu(&handler->link, &address_handler_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = 0;
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	spin_unlock_bh(&address_handler_lock);
-=======
 	spin_unlock(&address_handler_list_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -813,48 +636,23 @@ EXPORT_SYMBOL(fw_core_add_address_handler);
 
 /**
  * fw_core_remove_address_handler() - unregister an address handler
-<<<<<<< HEAD
-=======
  * @handler: callback
  *
  * To be called in process context.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * When fw_core_remove_address_handler() returns, @handler->callback() is
  * guaranteed to not run on any CPU anymore.
  */
 void fw_core_remove_address_handler(struct fw_address_handler *handler)
 {
-<<<<<<< HEAD
-	spin_lock_bh(&address_handler_lock);
-	list_del(&handler->link);
-	spin_unlock_bh(&address_handler_lock);
-=======
 	spin_lock(&address_handler_list_lock);
 	list_del_rcu(&handler->link);
 	spin_unlock(&address_handler_list_lock);
 	synchronize_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(fw_core_remove_address_handler);
 
 struct fw_request {
-<<<<<<< HEAD
-	struct fw_packet response;
-	u32 request_header[4];
-	int ack;
-	u32 length;
-	u32 data[0];
-};
-
-static void free_response_callback(struct fw_packet *packet,
-				   struct fw_card *card, int status)
-{
-	struct fw_request *request;
-
-	request = container_of(packet, struct fw_request, response);
-	kfree(request);
-=======
 	struct kref kref;
 	struct fw_packet response;
 	u32 request_header[4];
@@ -891,7 +689,6 @@ static void free_response_callback(struct fw_packet *packet,
 
 	// Decrease the reference count to release the object.
 	fw_request_put(request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fw_get_response_length(struct fw_request *r)
@@ -1042,10 +839,7 @@ static struct fw_request *allocate_request(struct fw_card *card,
 	request = kmalloc(sizeof(*request) + length, GFP_ATOMIC);
 	if (request == NULL)
 		return NULL;
-<<<<<<< HEAD
-=======
 	kref_init(&request->kref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	request->response.speed = p->speed;
 	request->response.timestamp =
@@ -1054,10 +848,7 @@ static struct fw_request *allocate_request(struct fw_card *card,
 	request->response.ack = 0;
 	request->response.callback = free_response_callback;
 	request->ack = p->ack;
-<<<<<<< HEAD
-=======
 	request->timestamp = p->timestamp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	request->length = length;
 	if (data)
 		memcpy(request->data, data, length);
@@ -1067,18 +858,6 @@ static struct fw_request *allocate_request(struct fw_card *card,
 	return request;
 }
 
-<<<<<<< HEAD
-void fw_send_response(struct fw_card *card,
-		      struct fw_request *request, int rcode)
-{
-	if (WARN_ONCE(!request, "invalid for FCP address handlers"))
-		return;
-
-	/* unified transaction or broadcast transaction: don't respond */
-	if (request->ack != ACK_PENDING ||
-	    HEADER_DESTINATION_IS_BROADCAST(request->request_header[0])) {
-		kfree(request);
-=======
 /**
  * fw_send_response: - send response packet for asynchronous transaction.
  * @card:	interface to send the response at.
@@ -1095,7 +874,6 @@ void fw_send_response(struct fw_card *card,
 	if (request->ack != ACK_PENDING ||
 	    HEADER_DESTINATION_IS_BROADCAST(request->request_header[0])) {
 		fw_request_put(request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1107,18 +885,13 @@ void fw_send_response(struct fw_card *card,
 		fw_fill_response(&request->response, request->request_header,
 				 rcode, NULL, 0);
 
-<<<<<<< HEAD
-=======
 	// Increase the reference count so that the object is kept during in-flight.
 	fw_request_get(request);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card->driver->send_response(card, &request->response);
 }
 EXPORT_SYMBOL(fw_send_response);
 
-<<<<<<< HEAD
-=======
 /**
  * fw_get_request_speed() - returns speed at which the @request was received
  * @request: firewire request data
@@ -1145,7 +918,6 @@ u32 fw_request_get_timestamp(const struct fw_request *request)
 }
 EXPORT_SYMBOL_GPL(fw_request_get_timestamp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void handle_exclusive_region_request(struct fw_card *card,
 					    struct fw_packet *p,
 					    struct fw_request *request,
@@ -1160,11 +932,7 @@ static void handle_exclusive_region_request(struct fw_card *card,
 	if (tcode == TCODE_LOCK_REQUEST)
 		tcode = 0x10 + HEADER_GET_EXTENDED_TCODE(p->header[3]);
 
-<<<<<<< HEAD
-	spin_lock_bh(&address_handler_lock);
-=======
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handler = lookup_enclosing_address_handler(&address_handler_list,
 						   offset, request->length);
 	if (handler)
@@ -1173,11 +941,7 @@ static void handle_exclusive_region_request(struct fw_card *card,
 					  p->generation, offset,
 					  request->data, request->length,
 					  handler->callback_data);
-<<<<<<< HEAD
-	spin_unlock_bh(&address_handler_lock);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!handler)
 		fw_send_response(card, request, RCODE_ADDRESS_ERROR);
@@ -1210,28 +974,17 @@ static void handle_fcp_region_request(struct fw_card *card,
 		return;
 	}
 
-<<<<<<< HEAD
-	spin_lock_bh(&address_handler_lock);
-	list_for_each_entry(handler, &address_handler_list, link) {
-		if (is_enclosing_handler(handler, offset, request->length))
-			handler->address_callback(card, NULL, tcode,
-=======
 	rcu_read_lock();
 	list_for_each_entry_rcu(handler, &address_handler_list, link) {
 		if (is_enclosing_handler(handler, offset, request->length))
 			handler->address_callback(card, request, tcode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  destination, source,
 						  p->generation, offset,
 						  request->data,
 						  request->length,
 						  handler->callback_data);
 	}
-<<<<<<< HEAD
-	spin_unlock_bh(&address_handler_lock);
-=======
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fw_send_response(card, request, RCODE_COMPLETE);
 }
@@ -1268,11 +1021,7 @@ EXPORT_SYMBOL(fw_core_handle_request);
 
 void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
 {
-<<<<<<< HEAD
-	struct fw_transaction *t;
-=======
 	struct fw_transaction *t = NULL, *iter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 *data;
 	size_t data_length;
@@ -1284,16 +1033,6 @@ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
 	rcode	= HEADER_GET_RCODE(p->header[1]);
 
 	spin_lock_irqsave(&card->lock, flags);
-<<<<<<< HEAD
-	list_for_each_entry(t, &card->transaction_list, link) {
-		if (t->node_id == source && t->tlabel == tlabel) {
-			if (!try_cancel_split_timeout(t)) {
-				spin_unlock_irqrestore(&card->lock, flags);
-				goto timed_out;
-			}
-			list_del_init(&t->link);
-			card->tlabel_mask &= ~(1ULL << t->tlabel);
-=======
 	list_for_each_entry(iter, &card->transaction_list, link) {
 		if (iter->node_id == source && iter->tlabel == tlabel) {
 			if (!try_cancel_split_timeout(iter)) {
@@ -1303,17 +1042,12 @@ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
 			list_del_init(&iter->link);
 			card->tlabel_mask &= ~(1ULL << iter->tlabel);
 			t = iter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	spin_unlock_irqrestore(&card->lock, flags);
 
-<<<<<<< HEAD
-	if (&t->link == &card->transaction_list) {
-=======
 	if (!t) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  timed_out:
 		fw_notice(card, "unsolicited response (source %x, tlabel %x)\n",
 			  source, tlabel);
@@ -1355,12 +1089,6 @@ void fw_core_handle_response(struct fw_card *card, struct fw_packet *p)
 	 */
 	card->driver->cancel_packet(card, &t->packet);
 
-<<<<<<< HEAD
-	t->callback(card, rcode, data, data_length, t->callback_data);
-}
-EXPORT_SYMBOL(fw_core_handle_response);
-
-=======
 	if (!t->with_tstamp) {
 		t->callback.without_tstamp(card, rcode, data, data_length, t->callback_data);
 	} else {
@@ -1396,7 +1124,6 @@ const char *fw_rcode_string(int rcode)
 }
 EXPORT_SYMBOL(fw_rcode_string);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct fw_address_region topology_map_region =
 	{ .start = CSR_REGISTER_BASE | CSR_TOPOLOGY_MAP,
 	  .end   = CSR_REGISTER_BASE | CSR_TOPOLOGY_MAP_END, };
@@ -1462,22 +1189,14 @@ static void handle_registers(struct fw_card *card, struct fw_request *request,
 			rcode = RCODE_ADDRESS_ERROR;
 			break;
 		}
-<<<<<<< HEAD
-		/* else fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CSR_NODE_IDS:
 		/*
 		 * per IEEE 1394-2008 8.3.22.3, not IEEE 1394.1-2004 3.2.8
 		 * and 9.6, but interoperable with IEEE 1394.1-2004 bridges
 		 */
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CSR_STATE_CLEAR:
 	case CSR_STATE_SET:
@@ -1574,8 +1293,6 @@ static struct fw_address_handler registers = {
 	.address_callback	= handle_registers,
 };
 
-<<<<<<< HEAD
-=======
 static void handle_low_memory(struct fw_card *card, struct fw_request *request,
 		int tcode, int destination, int source, int generation,
 		unsigned long long offset, void *payload, size_t length,
@@ -1593,7 +1310,6 @@ static struct fw_address_handler low_memory = {
 	.address_callback	= handle_low_memory,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Kristian Hoegsberg <krh@bitplanet.net>");
 MODULE_DESCRIPTION("Core IEEE1394 transaction logic");
 MODULE_LICENSE("GPL");
@@ -1619,22 +1335,14 @@ static const u32 model_textual_descriptor[] = {
 
 static struct fw_descriptor vendor_id_descriptor = {
 	.length = ARRAY_SIZE(vendor_textual_descriptor),
-<<<<<<< HEAD
-	.immediate = 0x03d00d1e,
-=======
 	.immediate = 0x03001f11,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.key = 0x81000000,
 	.data = vendor_textual_descriptor,
 };
 
 static struct fw_descriptor model_id_descriptor = {
 	.length = ARRAY_SIZE(model_textual_descriptor),
-<<<<<<< HEAD
-	.immediate = 0x17000001,
-=======
 	.immediate = 0x17023901,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.key = 0x81000000,
 	.data = model_textual_descriptor,
 };
@@ -1643,12 +1351,7 @@ static int __init fw_core_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	fw_workqueue = alloc_workqueue("firewire",
-				       WQ_NON_REENTRANT | WQ_MEM_RECLAIM, 0);
-=======
 	fw_workqueue = alloc_workqueue("firewire", WQ_MEM_RECLAIM, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fw_workqueue)
 		return -ENOMEM;
 
@@ -1667,10 +1370,7 @@ static int __init fw_core_init(void)
 
 	fw_core_add_address_handler(&topology_map, &topology_map_region);
 	fw_core_add_address_handler(&registers, &registers_region);
-<<<<<<< HEAD
-=======
 	fw_core_add_address_handler(&low_memory, &low_memory_region);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fw_core_add_descriptor(&vendor_id_descriptor);
 	fw_core_add_descriptor(&model_id_descriptor);
 

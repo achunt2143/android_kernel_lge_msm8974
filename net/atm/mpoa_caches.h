@@ -1,23 +1,14 @@
-<<<<<<< HEAD
-#ifndef MPOA_CACHES_H
-#define MPOA_CACHES_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef MPOA_CACHES_H
 #define MPOA_CACHES_H
 
 #include <linux/time64.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/types.h>
 #include <linux/atm.h>
 #include <linux/atmdev.h>
 #include <linux/atmmpc.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mpoa_client;
 
@@ -26,15 +17,9 @@ void atm_mpoa_init_cache(struct mpoa_client *mpc);
 typedef struct in_cache_entry {
 	struct in_cache_entry *next;
 	struct in_cache_entry *prev;
-<<<<<<< HEAD
-	struct timeval  tv;
-	struct timeval  reply_wait;
-	struct timeval  hold_down;
-=======
 	time64_t  time;
 	time64_t  reply_wait;
 	time64_t  hold_down;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t  packets_fwded;
 	uint16_t  entry_state;
 	uint32_t retry_time;
@@ -43,11 +28,7 @@ typedef struct in_cache_entry {
 	struct   atm_vcc *shortcut;
 	uint8_t  MPS_ctrl_ATM_addr[ATM_ESA_LEN];
 	struct   in_ctrl_info ctrl_info;
-<<<<<<< HEAD
-	atomic_t use;
-=======
 	refcount_t use;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } in_cache_entry;
 
 struct in_cache_ops{
@@ -73,22 +54,14 @@ struct in_cache_ops{
 typedef struct eg_cache_entry{
 	struct               eg_cache_entry *next;
 	struct               eg_cache_entry *prev;
-<<<<<<< HEAD
-	struct               timeval  tv;
-=======
 	time64_t	     time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t              MPS_ctrl_ATM_addr[ATM_ESA_LEN];
 	struct atm_vcc       *shortcut;
 	uint32_t             packets_rcvd;
 	uint16_t             entry_state;
 	__be32             latest_ip_addr;    /* The src IP address of the last packet */
 	struct eg_ctrl_info  ctrl_info;
-<<<<<<< HEAD
-	atomic_t             use;
-=======
 	refcount_t             use;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } eg_cache_entry;
 
 struct eg_cache_ops{

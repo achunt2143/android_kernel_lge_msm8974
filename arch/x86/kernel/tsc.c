@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/sched.h>
-#include <linux/init.h>
-#include <linux/module.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -12,7 +6,6 @@
 #include <linux/sched/clock.h>
 #include <linux/init.h>
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/acpi_pmtmr.h>
 #include <linux/cpufreq.h>
@@ -20,11 +13,8 @@
 #include <linux/clocksource.h>
 #include <linux/percpu.h>
 #include <linux/timex.h>
-<<<<<<< HEAD
-=======
 #include <linux/static_key.h>
 #include <linux/static_call.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/hpet.h>
 #include <asm/timer.h>
@@ -35,13 +25,10 @@
 #include <asm/nmi.h>
 #include <asm/x86_init.h>
 #include <asm/geode.h>
-<<<<<<< HEAD
-=======
 #include <asm/apic.h>
 #include <asm/intel-family.h>
 #include <asm/i8259.h>
 #include <asm/uv/uv.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned int __read_mostly cpu_khz;	/* TSC clocks / usec, not used here */
 EXPORT_SYMBOL(cpu_khz);
@@ -49,30 +36,12 @@ EXPORT_SYMBOL(cpu_khz);
 unsigned int __read_mostly tsc_khz;
 EXPORT_SYMBOL(tsc_khz);
 
-<<<<<<< HEAD
-=======
 #define KHZ	1000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TSC can be unstable due to cpufreq or due to unsynced TSCs
  */
 static int __read_mostly tsc_unstable;
-<<<<<<< HEAD
-
-/* native_sched_clock() is called before tsc_init(), so
-   we must start with the TSC soft disabled to prevent
-   erroneous rdtsc usage on !cpu_has_tsc processors */
-static int __read_mostly tsc_disabled = -1;
-
-int tsc_clocksource_reliable;
-/*
- * Scheduler clock - returns current time in nanosec units.
- */
-u64 native_sched_clock(void)
-{
-	u64 this_offset;
-=======
 static unsigned int __initdata tsc_early_khz;
 
 static DEFINE_STATIC_KEY_FALSE(__use_tsc);
@@ -267,7 +236,6 @@ noinstr u64 native_sched_clock(void)
 		/* return the value in ns */
 		return __cycles_2_ns(tsc_now);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fall back to jiffies if there's no TSC available:
@@ -277,18 +245,6 @@ noinstr u64 native_sched_clock(void)
 	 *   very important for it to be as fast as the platform
 	 *   can achieve it. )
 	 */
-<<<<<<< HEAD
-	if (unlikely(tsc_disabled)) {
-		/* No locking but a rare wrong value is not a big deal: */
-		return (jiffies_64 - INITIAL_JIFFIES) * (1000000000 / HZ);
-	}
-
-	/* read the Time Stamp Counter: */
-	rdtscll(this_offset);
-
-	/* return the value in ns */
-	return __cycles_2_ns(this_offset);
-=======
 
 	/* No locking but a rare wrong value is not a big deal: */
 	return (jiffies_64 - INITIAL_JIFFIES) * (1000000000 / HZ);
@@ -300,23 +256,11 @@ noinstr u64 native_sched_clock(void)
 u64 native_sched_clock_from_tsc(u64 tsc)
 {
 	return cycles_2_ns(tsc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* We need to define a real function for sched_clock, to override the
    weak default version */
 #ifdef CONFIG_PARAVIRT
-<<<<<<< HEAD
-unsigned long long sched_clock(void)
-{
-	return paravirt_sched_clock();
-}
-#else
-unsigned long long
-sched_clock(void) __attribute__((alias("native_sched_clock")));
-#endif
-
-=======
 noinstr u64 sched_clock_noinstr(void)
 {
 	return paravirt_sched_clock();
@@ -341,7 +285,6 @@ notrace u64 sched_clock(void)
 	return now;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int check_tsc_unstable(void)
 {
 	return tsc_unstable;
@@ -351,13 +294,7 @@ EXPORT_SYMBOL_GPL(check_tsc_unstable);
 #ifdef CONFIG_X86_TSC
 int __init notsc_setup(char *str)
 {
-<<<<<<< HEAD
-	printk(KERN_WARNING "notsc: Kernel compiled with CONFIG_X86_TSC, "
-			"cannot disable TSC completely.\n");
-	tsc_disabled = 1;
-=======
 	mark_tsc_unstable("boot parameter notsc");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 #else
@@ -375,11 +312,8 @@ int __init notsc_setup(char *str)
 __setup("notsc", notsc_setup);
 
 static int no_sched_irq_time;
-<<<<<<< HEAD
-=======
 static int no_tsc_watchdog;
 static int tsc_as_watchdog;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init tsc_setup(char *str)
 {
@@ -387,8 +321,6 @@ static int __init tsc_setup(char *str)
 		tsc_clocksource_reliable = 1;
 	if (!strncmp(str, "noirqtime", 9))
 		no_sched_irq_time = 1;
-<<<<<<< HEAD
-=======
 	if (!strcmp(str, "unstable"))
 		mark_tsc_unstable("boot parameter");
 	if (!strcmp(str, "nowatchdog")) {
@@ -407,33 +339,21 @@ static int __init tsc_setup(char *str)
 		else
 			tsc_as_watchdog = 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
 __setup("tsc=", tsc_setup);
 
-<<<<<<< HEAD
-#define MAX_RETRIES     5
-#define SMI_TRESHOLD    50000
-
-/*
- * Read TSC and the reference counters. Take care of SMI disturbance
-=======
 #define MAX_RETRIES		5
 #define TSC_DEFAULT_THRESHOLD	0x20000
 
 /*
  * Read TSC and the reference counters. Take care of any disturbances
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static u64 tsc_read_refs(u64 *p, int hpet)
 {
 	u64 t1, t2;
-<<<<<<< HEAD
-=======
 	u64 thresh = tsc_khz ? tsc_khz >> 5 : TSC_DEFAULT_THRESHOLD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < MAX_RETRIES; i++) {
@@ -443,11 +363,7 @@ static u64 tsc_read_refs(u64 *p, int hpet)
 		else
 			*p = acpi_pm_read_early();
 		t2 = get_cycles();
-<<<<<<< HEAD
-		if ((t2 - t1) < SMI_TRESHOLD)
-=======
 		if ((t2 - t1) < thresh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return t2;
 	}
 	return ULLONG_MAX;
@@ -465,11 +381,7 @@ static unsigned long calc_hpet_ref(u64 deltatsc, u64 hpet1, u64 hpet2)
 	hpet2 -= hpet1;
 	tmp = ((u64)hpet2 * hpet_readl(HPET_PERIOD));
 	do_div(tmp, 1000000);
-<<<<<<< HEAD
-	do_div(deltatsc, tmp);
-=======
 	deltatsc = div64_u64(deltatsc, tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (unsigned long) deltatsc;
 }
@@ -516,8 +428,6 @@ static unsigned long pit_calibrate_tsc(u32 latch, unsigned long ms, int loopmin)
 	unsigned long tscmin, tscmax;
 	int pitcnt;
 
-<<<<<<< HEAD
-=======
 	if (!has_legacy_pic()) {
 		/*
 		 * Relies on tsc_early_delay_calibrate() to have given us semi
@@ -532,7 +442,6 @@ static unsigned long pit_calibrate_tsc(u32 latch, unsigned long ms, int loopmin)
 		return ULONG_MAX;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the Gate high, disable speaker */
 	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
 
@@ -612,11 +521,7 @@ static unsigned long pit_calibrate_tsc(u32 latch, unsigned long ms, int loopmin)
  * transition from one expected value to another with a fairly
  * high accuracy, and we didn't miss any events. We can thus
  * use the TSC value at the transitions to calculate a pretty
-<<<<<<< HEAD
- * good value for the TSC frequencty.
-=======
  * good value for the TSC frequency.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int pit_verify_msb(unsigned char val)
 {
@@ -661,12 +566,9 @@ static unsigned long quick_pit_calibrate(void)
 	u64 tsc, delta;
 	unsigned long d1, d2;
 
-<<<<<<< HEAD
-=======
 	if (!has_legacy_pic())
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the Gate high, disable speaker */
 	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
 
@@ -698,12 +600,6 @@ static unsigned long quick_pit_calibrate(void)
 			if (!pit_expect_msb(0xff-i, &delta, &d2))
 				break;
 
-<<<<<<< HEAD
-			/*
-			 * Iterate until the error is less than 500 ppm
-			 */
-			delta -= tsc;
-=======
 			delta -= tsc;
 
 			/*
@@ -717,7 +613,6 @@ static unsigned long quick_pit_calibrate(void)
 			/*
 			 * Iterate until the error is less than 500 ppm
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (d1+d2 >= delta >> 11)
 				continue;
 
@@ -733,11 +628,7 @@ static unsigned long quick_pit_calibrate(void)
 			goto success;
 		}
 	}
-<<<<<<< HEAD
-	printk("Fast TSC calibration failed\n");
-=======
 	pr_info("Fast TSC calibration failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 success:
@@ -756,32 +647,11 @@ success:
 	 */
 	delta *= PIT_TICK_RATE;
 	do_div(delta, i*256*1000);
-<<<<<<< HEAD
-	printk("Fast TSC calibration using PIT\n");
-=======
 	pr_info("Fast TSC calibration using PIT\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return delta;
 }
 
 /**
-<<<<<<< HEAD
- * native_calibrate_tsc - calibrate the tsc on boot
- */
-unsigned long native_calibrate_tsc(void)
-{
-	u64 tsc1, tsc2, delta, ref1, ref2;
-	unsigned long tsc_pit_min = ULONG_MAX, tsc_ref_min = ULONG_MAX;
-	unsigned long flags, latch, ms, fast_calibrate;
-	int hpet = is_hpet_enabled(), i, loopmin;
-
-	local_irq_save(flags);
-	fast_calibrate = quick_pit_calibrate();
-	local_irq_restore(flags);
-	if (fast_calibrate)
-		return fast_calibrate;
-
-=======
  * native_calibrate_tsc - determine TSC frequency
  * Determine TSC frequency via CPUID, else return 0.
  */
@@ -887,7 +757,6 @@ static unsigned long pit_hpet_ptimer_calibrate_cpu(void)
 	unsigned long flags, latch, ms;
 	int hpet = is_hpet_enabled(), i, loopmin;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Run 5 calibration loops to get the lowest frequency value
 	 * (the best estimate). We use two different calibration modes
@@ -899,24 +768,15 @@ static unsigned long pit_hpet_ptimer_calibrate_cpu(void)
 	 * zero. In each wait loop iteration we read the TSC and check
 	 * the delta to the previous read. We keep track of the min
 	 * and max values of that delta. The delta is mostly defined
-<<<<<<< HEAD
-	 * by the IO time of the PIT access, so we can detect when a
-	 * SMI/SMM disturbance happened between the two reads. If the
-=======
 	 * by the IO time of the PIT access, so we can detect when
 	 * any disturbance happened between the two reads. If the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * maximum time is significantly larger than the minimum time,
 	 * then we discard the result and have another try.
 	 *
 	 * 2) Reference counter. If available we use the HPET or the
 	 * PMTIMER as a reference to check the sanity of that value.
 	 * We use separate TSC readouts and check inside of the
-<<<<<<< HEAD
-	 * reference read for a SMI/SMM disturbance. We dicard
-=======
 	 * reference read for any possible disturbance. We discard
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * disturbed values here as well. We do that around the PIT
 	 * calibration delay loop as we have to wait for a certain
 	 * amount of time anyway.
@@ -949,11 +809,7 @@ static unsigned long pit_hpet_ptimer_calibrate_cpu(void)
 		if (ref1 == ref2)
 			continue;
 
-<<<<<<< HEAD
-		/* Check, whether the sampling was disturbed by an SMI */
-=======
 		/* Check, whether the sampling was disturbed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tsc1 == ULLONG_MAX || tsc2 == ULLONG_MAX)
 			continue;
 
@@ -976,14 +832,8 @@ static unsigned long pit_hpet_ptimer_calibrate_cpu(void)
 		 * use the reference value, as it is more precise.
 		 */
 		if (delta >= 90 && delta <= 110) {
-<<<<<<< HEAD
-			printk(KERN_INFO
-			       "TSC: PIT calibration matches %s. %d loops\n",
-			       hpet ? "HPET" : "PMTIMER", i + 1);
-=======
 			pr_info("PIT calibration matches %s. %d loops\n",
 				hpet ? "HPET" : "PMTIMER", i + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return tsc_ref_min;
 		}
 
@@ -1005,63 +855,36 @@ static unsigned long pit_hpet_ptimer_calibrate_cpu(void)
 	 */
 	if (tsc_pit_min == ULONG_MAX) {
 		/* PIT gave no useful value */
-<<<<<<< HEAD
-		printk(KERN_WARNING "TSC: Unable to calibrate against PIT\n");
-
-		/* We don't have an alternative source, disable TSC */
-		if (!hpet && !ref1 && !ref2) {
-			printk("TSC: No reference (HPET/PMTIMER) available\n");
-=======
 		pr_warn("Unable to calibrate against PIT\n");
 
 		/* We don't have an alternative source, disable TSC */
 		if (!hpet && !ref1 && !ref2) {
 			pr_notice("No reference (HPET/PMTIMER) available\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
 		/* The alternative source failed as well, disable TSC */
 		if (tsc_ref_min == ULONG_MAX) {
-<<<<<<< HEAD
-			printk(KERN_WARNING "TSC: HPET/PMTIMER calibration "
-			       "failed.\n");
-=======
 			pr_warn("HPET/PMTIMER calibration failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
 		/* Use the alternative source */
-<<<<<<< HEAD
-		printk(KERN_INFO "TSC: using %s reference calibration\n",
-		       hpet ? "HPET" : "PMTIMER");
-=======
 		pr_info("using %s reference calibration\n",
 			hpet ? "HPET" : "PMTIMER");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return tsc_ref_min;
 	}
 
 	/* We don't have an alternative source, use the PIT calibration value */
 	if (!hpet && !ref1 && !ref2) {
-<<<<<<< HEAD
-		printk(KERN_INFO "TSC: Using PIT calibration value\n");
-=======
 		pr_info("Using PIT calibration value\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return tsc_pit_min;
 	}
 
 	/* The alternative source failed, use the PIT calibration value */
 	if (tsc_ref_min == ULONG_MAX) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "TSC: HPET/PMTIMER calibration failed. "
-		       "Using PIT calibration\n");
-=======
 		pr_warn("HPET/PMTIMER calibration failed. Using PIT calibration.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return tsc_pit_min;
 	}
 
@@ -1070,15 +893,6 @@ static unsigned long pit_hpet_ptimer_calibrate_cpu(void)
 	 * the PIT value as we know that there are PMTIMERs around
 	 * running at double speed. At least we let the user know:
 	 */
-<<<<<<< HEAD
-	printk(KERN_WARNING "TSC: PIT calibration deviates from %s: %lu %lu.\n",
-	       hpet ? "HPET" : "PMTIMER", tsc_pit_min, tsc_ref_min);
-	printk(KERN_INFO "TSC: Using PIT calibration value\n");
-	return tsc_pit_min;
-}
-
-int recalibrate_cpu_khz(void)
-=======
 	pr_warn("PIT calibration deviates from %s: %lu %lu\n",
 		hpet ? "HPET" : "PMTIMER", tsc_pit_min, tsc_ref_min);
 	pr_info("Using PIT calibration value\n");
@@ -1117,78 +931,10 @@ static unsigned long native_calibrate_cpu(void)
 }
 
 void recalibrate_cpu_khz(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifndef CONFIG_SMP
 	unsigned long cpu_khz_old = cpu_khz;
 
-<<<<<<< HEAD
-	if (cpu_has_tsc) {
-		tsc_khz = x86_platform.calibrate_tsc();
-		cpu_khz = tsc_khz;
-		cpu_data(0).loops_per_jiffy =
-			cpufreq_scale(cpu_data(0).loops_per_jiffy,
-					cpu_khz_old, cpu_khz);
-		return 0;
-	} else
-		return -ENODEV;
-#else
-	return -ENODEV;
-#endif
-}
-
-EXPORT_SYMBOL(recalibrate_cpu_khz);
-
-
-/* Accelerators for sched_clock()
- * convert from cycles(64bits) => nanoseconds (64bits)
- *  basic equation:
- *              ns = cycles / (freq / ns_per_sec)
- *              ns = cycles * (ns_per_sec / freq)
- *              ns = cycles * (10^9 / (cpu_khz * 10^3))
- *              ns = cycles * (10^6 / cpu_khz)
- *
- *      Then we use scaling math (suggested by george@mvista.com) to get:
- *              ns = cycles * (10^6 * SC / cpu_khz) / SC
- *              ns = cycles * cyc2ns_scale / SC
- *
- *      And since SC is a constant power of two, we can convert the div
- *  into a shift.
- *
- *  We can use khz divisor instead of mhz to keep a better precision, since
- *  cyc2ns_scale is limited to 10^6 * 2^10, which fits in 32 bits.
- *  (mathieu.desnoyers@polymtl.ca)
- *
- *                      -johnstul@us.ibm.com "math is hard, lets go shopping!"
- */
-
-DEFINE_PER_CPU(unsigned long, cyc2ns);
-DEFINE_PER_CPU(unsigned long long, cyc2ns_offset);
-
-static void set_cyc2ns_scale(unsigned long cpu_khz, int cpu)
-{
-	unsigned long long tsc_now, ns_now, *offset;
-	unsigned long flags, *scale;
-
-	local_irq_save(flags);
-	sched_clock_idle_sleep_event();
-
-	scale = &per_cpu(cyc2ns, cpu);
-	offset = &per_cpu(cyc2ns_offset, cpu);
-
-	rdtscll(tsc_now);
-	ns_now = __cycles_2_ns(tsc_now);
-
-	if (cpu_khz) {
-		*scale = (NSEC_PER_MSEC << CYC2NS_SCALE_FACTOR)/cpu_khz;
-		*offset = ns_now - mult_frac(tsc_now, *scale,
-					     (1UL << CYC2NS_SCALE_FACTOR));
-	}
-
-	sched_clock_idle_wakeup_event(0);
-	local_irq_restore(flags);
-}
-=======
 	if (!boot_cpu_has(X86_FEATURE_TSC))
 		return;
 
@@ -1204,17 +950,12 @@ static void set_cyc2ns_scale(unsigned long cpu_khz, int cpu)
 }
 EXPORT_SYMBOL_GPL(recalibrate_cpu_khz);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long long cyc2ns_suspend;
 
 void tsc_save_sched_clock_state(void)
 {
-<<<<<<< HEAD
-	if (!sched_clock_stable)
-=======
 	if (!sched_clock_stable())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	cyc2ns_suspend = sched_clock();
@@ -1234,22 +975,11 @@ void tsc_restore_sched_clock_state(void)
 	unsigned long flags;
 	int cpu;
 
-<<<<<<< HEAD
-	if (!sched_clock_stable)
-=======
 	if (!sched_clock_stable())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	local_irq_save(flags);
 
-<<<<<<< HEAD
-	__this_cpu_write(cyc2ns_offset, 0);
-	offset = cyc2ns_suspend - sched_clock();
-
-	for_each_possible_cpu(cpu)
-		per_cpu(cyc2ns_offset, cpu) = offset;
-=======
 	/*
 	 * We're coming out of suspend, there's no concurrency yet; don't
 	 * bother being nice about the RCU stuff, just write to both
@@ -1265,28 +995,17 @@ void tsc_restore_sched_clock_state(void)
 		per_cpu(cyc2ns.data[0].cyc2ns_offset, cpu) = offset;
 		per_cpu(cyc2ns.data[1].cyc2ns_offset, cpu) = offset;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_restore(flags);
 }
 
 #ifdef CONFIG_CPU_FREQ
-<<<<<<< HEAD
-
-/* Frequency scaling support. Adjust the TSC based timer when the cpu frequency
- * changes.
- *
- * RED-PEN: On SMP we assume all CPUs run with the same frequency.  It's
- * not that important because current Opteron setups do not support
- * scaling on SMP anyroads.
-=======
 /*
  * Frequency scaling support. Adjust the TSC based timer when the CPU frequency
  * changes.
  *
  * NOTE: On SMP the situation is not fixable in general, so simply mark the TSC
  * as unstable and give up in those cases.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should fix up last_tsc too. Currently gettimeofday in the
  * first tick after the change will be slightly wrong.
@@ -1300,28 +1019,6 @@ static int time_cpufreq_notifier(struct notifier_block *nb, unsigned long val,
 				void *data)
 {
 	struct cpufreq_freqs *freq = data;
-<<<<<<< HEAD
-	unsigned long *lpj;
-
-	if (cpu_has(&cpu_data(freq->cpu), X86_FEATURE_CONSTANT_TSC))
-		return 0;
-
-	lpj = &boot_cpu_data.loops_per_jiffy;
-#ifdef CONFIG_SMP
-	if (!(freq->flags & CPUFREQ_CONST_LOOPS))
-		lpj = &cpu_data(freq->cpu).loops_per_jiffy;
-#endif
-
-	if (!ref_freq) {
-		ref_freq = freq->old;
-		loops_per_jiffy_ref = *lpj;
-		tsc_khz_ref = tsc_khz;
-	}
-	if ((val == CPUFREQ_PRECHANGE  && freq->old < freq->new) ||
-			(val == CPUFREQ_POSTCHANGE && freq->old > freq->new) ||
-			(val == CPUFREQ_RESUMECHANGE)) {
-		*lpj = cpufreq_scale(loops_per_jiffy_ref, ref_freq, freq->new);
-=======
 
 	if (num_online_cpus() > 1) {
 		mark_tsc_unstable("cpufreq changes on SMP");
@@ -1338,20 +1035,13 @@ static int time_cpufreq_notifier(struct notifier_block *nb, unsigned long val,
 	    (val == CPUFREQ_POSTCHANGE && freq->old > freq->new)) {
 		boot_cpu_data.loops_per_jiffy =
 			cpufreq_scale(loops_per_jiffy_ref, ref_freq, freq->new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tsc_khz = cpufreq_scale(tsc_khz_ref, ref_freq, freq->new);
 		if (!(freq->flags & CPUFREQ_CONST_LOOPS))
 			mark_tsc_unstable("cpufreq changes");
-<<<<<<< HEAD
-	}
-
-	set_cyc2ns_scale(tsc_khz, freq->cpu);
-=======
 
 		set_cyc2ns_scale(tsc_khz, freq->policy->cpu, rdtsc());
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1360,15 +1050,9 @@ static struct notifier_block time_cpufreq_notifier_block = {
 	.notifier_call  = time_cpufreq_notifier
 };
 
-<<<<<<< HEAD
-static int __init cpufreq_tsc(void)
-{
-	if (!cpu_has_tsc)
-=======
 static int __init cpufreq_register_tsc_scaling(void)
 {
 	if (!boot_cpu_has(X86_FEATURE_TSC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	if (boot_cpu_has(X86_FEATURE_CONSTANT_TSC))
 		return 0;
@@ -1377,18 +1061,6 @@ static int __init cpufreq_register_tsc_scaling(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-core_initcall(cpufreq_tsc);
-
-#endif /* CONFIG_CPU_FREQ */
-
-/* clocksource code */
-
-static struct clocksource clocksource_tsc;
-
-/*
- * We compare the TSC to the cycle_last value in the clocksource
-=======
 core_initcall(cpufreq_register_tsc_scaling);
 
 #endif /* CONFIG_CPU_FREQ */
@@ -1439,47 +1111,15 @@ static void tsc_resume(struct clocksource *cs)
 
 /*
  * We used to compare the TSC to the cycle_last value in the clocksource
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * structure to avoid a nasty time-warp. This can be observed in a
  * very small window right after one CPU updated cycle_last under
  * xtime/vsyscall_gtod lock and the other CPU reads a TSC value which
  * is smaller than the cycle_last reference value due to a TSC which
-<<<<<<< HEAD
- * is slighty behind. This delta is nowhere else observable, but in
-=======
  * is slightly behind. This delta is nowhere else observable, but in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * that case it results in a forward time jump in the range of hours
  * due to the unsigned delta calculation of the time keeping core
  * code, which is necessary to support wrapping clocksources like pm
  * timer.
-<<<<<<< HEAD
- */
-static cycle_t read_tsc(struct clocksource *cs)
-{
-	cycle_t ret = (cycle_t)get_cycles();
-
-	return ret >= clocksource_tsc.cycle_last ?
-		ret : clocksource_tsc.cycle_last;
-}
-
-static void resume_tsc(struct clocksource *cs)
-{
-	clocksource_tsc.cycle_last = 0;
-}
-
-static struct clocksource clocksource_tsc = {
-	.name                   = "tsc",
-	.rating                 = 300,
-	.read                   = read_tsc,
-	.resume			= resume_tsc,
-	.mask                   = CLOCKSOURCE_MASK(64),
-	.flags                  = CLOCK_SOURCE_IS_CONTINUOUS |
-				  CLOCK_SOURCE_MUST_VERIFY,
-#ifdef CONFIG_X86_64
-	.archdata               = { .vclock_mode = VCLOCK_TSC },
-#endif
-=======
  *
  * This sanity check is now done in the core timekeeping code.
  * checking the result of read_tsc() - cycle_last for being negative.
@@ -1558,26 +1198,10 @@ static struct clocksource clocksource_tsc = {
 	.mark_unstable		= tsc_cs_mark_unstable,
 	.tick_stable		= tsc_cs_tick_stable,
 	.list			= LIST_HEAD_INIT(clocksource_tsc.list),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void mark_tsc_unstable(char *reason)
 {
-<<<<<<< HEAD
-	if (!tsc_unstable) {
-		tsc_unstable = 1;
-		sched_clock_stable = 0;
-		disable_sched_clock_irqtime();
-		printk(KERN_INFO "Marking TSC unstable due to %s\n", reason);
-		/* Change only the rating, when not registered */
-		if (clocksource_tsc.mult)
-			clocksource_mark_unstable(&clocksource_tsc);
-		else {
-			clocksource_tsc.flags |= CLOCK_SOURCE_UNSTABLE;
-			clocksource_tsc.rating = 0;
-		}
-	}
-=======
 	if (tsc_unstable)
 		return;
 
@@ -1589,13 +1213,10 @@ void mark_tsc_unstable(char *reason)
 
 	clocksource_mark_unstable(&clocksource_tsc_early);
 	clocksource_mark_unstable(&clocksource_tsc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL_GPL(mark_tsc_unstable);
 
-<<<<<<< HEAD
-=======
 static void __init tsc_disable_clocksource_watchdog(void)
 {
 	clocksource_tsc_early.flags &= ~CLOCK_SOURCE_MUST_VERIFY;
@@ -1608,7 +1229,6 @@ bool tsc_clocksource_watchdog_disabled(void)
 	       tsc_as_watchdog && !no_tsc_watchdog;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init check_system_tsc_reliable(void)
 {
 #if defined(CONFIG_MGEODEGX1) || defined(CONFIG_MGEODE_LX) || defined(CONFIG_X86_GENERIC)
@@ -1625,8 +1245,6 @@ static void __init check_system_tsc_reliable(void)
 #endif
 	if (boot_cpu_has(X86_FEATURE_TSC_RELIABLE))
 		tsc_clocksource_reliable = 1;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Disable the clocksource watchdog when the system has:
@@ -1644,22 +1262,15 @@ static void __init check_system_tsc_reliable(void)
 	    boot_cpu_has(X86_FEATURE_TSC_ADJUST) &&
 	    nr_online_nodes <= 4)
 		tsc_disable_clocksource_watchdog();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Make an educated guess if the TSC is trustworthy and synchronized
  * over all CPUs.
  */
-<<<<<<< HEAD
-__cpuinit int unsynchronized_tsc(void)
-{
-	if (!cpu_has_tsc || tsc_unstable)
-=======
 int unsynchronized_tsc(void)
 {
 	if (!boot_cpu_has(X86_FEATURE_TSC) || tsc_unstable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 #ifdef CONFIG_SMP
@@ -1685,8 +1296,6 @@ int unsynchronized_tsc(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Convert ART to TSC given numerator/denominator found in detect_art()
  */
@@ -1747,17 +1356,12 @@ struct system_counterval_t convert_art_ns_to_tsc(u64 art_ns)
 }
 EXPORT_SYMBOL(convert_art_ns_to_tsc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void tsc_refine_calibration_work(struct work_struct *work);
 static DECLARE_DELAYED_WORK(tsc_irqwork, tsc_refine_calibration_work);
 /**
  * tsc_refine_calibration_work - Further refine tsc freq calibration
-<<<<<<< HEAD
- * @work - ignored.
-=======
  * @work: ignored.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This functions uses delayed work over a period of a
  * second to further refine the TSC freq value. Since this is
@@ -1771,16 +1375,6 @@ static DECLARE_DELAYED_WORK(tsc_irqwork, tsc_refine_calibration_work);
  */
 static void tsc_refine_calibration_work(struct work_struct *work)
 {
-<<<<<<< HEAD
-	static u64 tsc_start = -1, ref_start;
-	static int hpet;
-	u64 tsc_stop, ref_stop, delta;
-	unsigned long freq;
-
-	/* Don't bother refining TSC on unstable systems */
-	if (check_tsc_unstable())
-		goto out;
-=======
 	static u64 tsc_start = ULLONG_MAX, ref_start;
 	static int hpet;
 	u64 tsc_stop, ref_stop, delta;
@@ -1790,31 +1384,21 @@ static void tsc_refine_calibration_work(struct work_struct *work)
 	/* Don't bother refining TSC on unstable systems */
 	if (tsc_unstable)
 		goto unreg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Since the work is started early in boot, we may be
 	 * delayed the first time we expire. So set the workqueue
 	 * again once we know timers are working.
 	 */
-<<<<<<< HEAD
-	if (tsc_start == -1) {
-=======
 	if (tsc_start == ULLONG_MAX) {
 restart:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Only set hpet once, to avoid mixing hardware
 		 * if the hpet becomes enabled later.
 		 */
 		hpet = is_hpet_enabled();
-<<<<<<< HEAD
-		schedule_delayed_work(&tsc_irqwork, HZ);
-		tsc_start = tsc_read_refs(&ref_start, hpet);
-=======
 		tsc_start = tsc_read_refs(&ref_start, hpet);
 		schedule_delayed_work(&tsc_irqwork, HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1824,15 +1408,9 @@ restart:
 	if (ref_start == ref_stop)
 		goto out;
 
-<<<<<<< HEAD
-	/* Check, whether the sampling was disturbed by an SMI */
-	if (tsc_start == ULLONG_MAX || tsc_stop == ULLONG_MAX)
-		goto out;
-=======
 	/* Check, whether the sampling was disturbed */
 	if (tsc_stop == ULLONG_MAX)
 		goto restart;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	delta = tsc_stop - tsc_start;
 	delta *= 1000000LL;
@@ -1841,8 +1419,6 @@ restart:
 	else
 		freq = calc_pmtimer_ref(delta, ref_start, ref_stop);
 
-<<<<<<< HEAD
-=======
 	/* Will hit this only if tsc_force_recalibrate has been set */
 	if (boot_cpu_has(X86_FEATURE_TSC_KNOWN_FREQ)) {
 
@@ -1862,20 +1438,11 @@ restart:
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Make sure we're within 1% */
 	if (abs(tsc_khz - freq) > tsc_khz/100)
 		goto out;
 
 	tsc_khz = freq;
-<<<<<<< HEAD
-	printk(KERN_INFO "Refined TSC clocksource calibration: "
-		"%lu.%03lu MHz.\n", (unsigned long)tsc_khz / 1000,
-					(unsigned long)tsc_khz % 1000);
-
-out:
-	clocksource_register_khz(&clocksource_tsc, tsc_khz);
-=======
 	pr_info("Refined TSC clocksource calibration: %lu.%03lu MHz\n",
 		(unsigned long)tsc_khz / 1000,
 		(unsigned long)tsc_khz % 1000);
@@ -1896,32 +1463,11 @@ out:
 	clocksource_register_khz(&clocksource_tsc, tsc_khz);
 unreg:
 	clocksource_unregister(&clocksource_tsc_early);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int __init init_tsc_clocksource(void)
 {
-<<<<<<< HEAD
-	if (!cpu_has_tsc || tsc_disabled > 0 || !tsc_khz)
-		return 0;
-
-	if (tsc_clocksource_reliable)
-		clocksource_tsc.flags &= ~CLOCK_SOURCE_MUST_VERIFY;
-	/* lower the rating if we already know its unstable: */
-	if (check_tsc_unstable()) {
-		clocksource_tsc.rating = 0;
-		clocksource_tsc.flags &= ~CLOCK_SOURCE_IS_CONTINUOUS;
-	}
-
-	/*
-	 * Trust the results of the earlier calibration on systems
-	 * exporting a reliable TSC.
-	 */
-	if (boot_cpu_has(X86_FEATURE_TSC_RELIABLE)) {
-		clocksource_register_khz(&clocksource_tsc, tsc_khz);
-		return 0;
-=======
 	if (!boot_cpu_has(X86_FEATURE_TSC) || !tsc_khz)
 		return 0;
 
@@ -1945,7 +1491,6 @@ static int __init init_tsc_clocksource(void)
 
 		if (!tsc_force_recalibrate)
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	schedule_delayed_work(&tsc_irqwork, 0);
@@ -1957,47 +1502,6 @@ static int __init init_tsc_clocksource(void)
  */
 device_initcall(init_tsc_clocksource);
 
-<<<<<<< HEAD
-void __init tsc_init(void)
-{
-	u64 lpj;
-	int cpu;
-
-	x86_init.timers.tsc_pre_init();
-
-	if (!cpu_has_tsc) {
-		setup_clear_cpu_cap(X86_FEATURE_TSC_DEADLINE_TIMER);
-		return;
-	}
-
-	tsc_khz = x86_platform.calibrate_tsc();
-	cpu_khz = tsc_khz;
-
-	if (!tsc_khz) {
-		mark_tsc_unstable("could not calculate TSC khz");
-		setup_clear_cpu_cap(X86_FEATURE_TSC_DEADLINE_TIMER);
-		return;
-	}
-
-	printk("Detected %lu.%03lu MHz processor.\n",
-			(unsigned long)cpu_khz / 1000,
-			(unsigned long)cpu_khz % 1000);
-
-	/*
-	 * Secondary CPUs do not run through tsc_init(), so set up
-	 * all the scale factors for all CPUs, assuming the same
-	 * speed as the bootup CPU. (cpufreq notifiers will fix this
-	 * up if their speed diverges)
-	 */
-	for_each_possible_cpu(cpu)
-		set_cyc2ns_scale(cpu_khz, cpu);
-
-	if (tsc_disabled > 0)
-		return;
-
-	/* now allow native_sched_clock() to use rdtsc */
-	tsc_disabled = 0;
-=======
 static bool __init determine_cpu_tsc_frequencies(bool early)
 {
 	/* Make sure that cpu and tsc are not already calibrated */
@@ -2096,23 +1600,10 @@ void __init tsc_init(void)
 	}
 
 	cyc2ns_init_secondary_cpus();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!no_sched_irq_time)
 		enable_sched_clock_irqtime();
 
-<<<<<<< HEAD
-	lpj = ((u64)tsc_khz * 1000);
-	do_div(lpj, HZ);
-	lpj_fine = lpj;
-
-	use_tsc_delay();
-
-	if (unsynchronized_tsc())
-		mark_tsc_unstable("TSCs unsynchronized");
-
-	check_system_tsc_reliable();
-=======
 	lpj_fine = get_loops_per_jiffy();
 
 	check_system_tsc_reliable();
@@ -2127,28 +1618,10 @@ void __init tsc_init(void)
 
 	clocksource_register_khz(&clocksource_tsc_early, tsc_khz);
 	detect_art();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SMP
 /*
-<<<<<<< HEAD
- * If we have a constant TSC and are using the TSC for the delay loop,
- * we can skip clock calibration if another cpu in the same socket has already
- * been calibrated. This assumes that CONSTANT_TSC applies to all
- * cpus in the socket - this should be a safe assumption.
- */
-unsigned long __cpuinit calibrate_delay_is_known(void)
-{
-	int i, cpu = smp_processor_id();
-
-	if (!tsc_disabled && !cpu_has(&cpu_data(cpu), X86_FEATURE_CONSTANT_TSC))
-		return 0;
-
-	for_each_online_cpu(i)
-		if (cpu_data(i).phys_proc_id == cpu_data(cpu).phys_proc_id)
-			return cpu_data(i).loops_per_jiffy;
-=======
  * Check whether existing calibration data can be reused.
  */
 unsigned long calibrate_delay_is_known(void)
@@ -2178,7 +1651,6 @@ unsigned long calibrate_delay_is_known(void)
 	sibling = cpumask_any_but(mask, cpu);
 	if (sibling < nr_cpu_ids)
 		return cpu_data(sibling).loops_per_jiffy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif

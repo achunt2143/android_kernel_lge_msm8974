@@ -1,30 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------------------- */
 /* i2c-elektor.c i2c-hw access for PCF8584 style isa bus adaptes             */
 /* ------------------------------------------------------------------------- */
 /*   Copyright (C) 1995-97 Simon G. Vogl
                    1998-99 Hans Berglund
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.		     */
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------------------- */
 
 /* With some changes from Kyösti Mälkki <kmalkki@cc.hut.fi> and even
@@ -68,11 +49,7 @@ static int mmapped;
 
 static wait_queue_head_t pcf_wait;
 static int pcf_pending;
-<<<<<<< HEAD
-static spinlock_t lock;
-=======
 static DEFINE_SPINLOCK(lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_adapter pcf_isa_ops;
 
@@ -155,10 +132,6 @@ static irqreturn_t pcf_isa_handler(int this_irq, void *dev_id) {
 
 static int pcf_isa_init(void)
 {
-<<<<<<< HEAD
-	spin_lock_init(&lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mmapped) {
 		if (!request_region(base, 2, pcf_isa_ops.name)) {
 			printk(KERN_ERR "%s: requested I/O region (%#x:2) is "
@@ -215,20 +188,12 @@ static struct i2c_algo_pcf_data pcf_isa_data = {
 
 static struct i2c_adapter pcf_isa_ops = {
 	.owner		= THIS_MODULE,
-<<<<<<< HEAD
-	.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
-=======
 	.class		= I2C_CLASS_HWMON,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.algo_data	= &pcf_isa_data,
 	.name		= "i2c-elektor",
 };
 
-<<<<<<< HEAD
-static int __devinit elektor_match(struct device *dev, unsigned int id)
-=======
 static int elektor_match(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef __alpha__
 	/* check to see we have memory mapped PCF8584 connected to the
@@ -287,11 +252,7 @@ static int elektor_match(struct device *dev, unsigned int id)
 	return 1;
 }
 
-<<<<<<< HEAD
-static int __devinit elektor_probe(struct device *dev, unsigned int id)
-=======
 static int elektor_probe(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	init_waitqueue_head(&pcf_wait);
 	if (pcf_isa_init())
@@ -320,11 +281,7 @@ static int elektor_probe(struct device *dev, unsigned int id)
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devexit elektor_remove(struct device *dev, unsigned int id)
-=======
 static void elektor_remove(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i2c_del_adapter(&pcf_isa_ops);
 
@@ -340,58 +297,25 @@ static void elektor_remove(struct device *dev, unsigned int id)
 		iounmap(base_iomem);
 		release_mem_region(base, 2);
 	}
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isa_driver i2c_elektor_driver = {
 	.match		= elektor_match,
 	.probe		= elektor_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(elektor_remove),
-=======
 	.remove		= elektor_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.owner	= THIS_MODULE,
 		.name	= "i2c-elektor",
 	},
 };
 
-<<<<<<< HEAD
-static int __init i2c_pcfisa_init(void)
-{
-	return isa_register_driver(&i2c_elektor_driver, 1);
-}
-
-static void __exit i2c_pcfisa_exit(void)
-{
-	isa_unregister_driver(&i2c_elektor_driver);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Hans Berglund <hb@spacetec.no>");
 MODULE_DESCRIPTION("I2C-Bus adapter routines for PCF8584 ISA bus adapter");
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-module_param(base, int, 0);
-module_param(irq, int, 0);
-module_param(clock, int, 0);
-module_param(own, int, 0);
-module_param(mmapped, int, 0);
-
-module_init(i2c_pcfisa_init);
-module_exit(i2c_pcfisa_exit);
-=======
 module_param_hw(base, int, ioport_or_iomem, 0);
 module_param_hw(irq, int, irq, 0);
 module_param(clock, int, 0);
 module_param(own, int, 0);
 module_param_hw(mmapped, int, other, 0);
 module_isa_driver(i2c_elektor_driver, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

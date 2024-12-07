@@ -4,85 +4,19 @@
 #ifndef _ASM_POWERPC_PPC_ASM_H
 #define _ASM_POWERPC_PPC_ASM_H
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stringify.h>
 #include <asm/asm-compat.h>
 #include <asm/processor.h>
 #include <asm/ppc-opcode.h>
 #include <asm/firmware.h>
-<<<<<<< HEAD
-
-#ifndef __ASSEMBLY__
-#error __FILE__ should only be used in assembler files
-#else
-=======
 #include <asm/feature-fixups.h>
 #include <asm/extable.h>
 
 #ifdef __ASSEMBLY__
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SZL			(BITS_PER_LONG/8)
 
 /*
-<<<<<<< HEAD
- * Stuff for accurate CPU time accounting.
- * These macros handle transitions between user and system state
- * in exception entry and exit and accumulate time to the
- * user_time and system_time fields in the paca.
- */
-
-#ifndef CONFIG_VIRT_CPU_ACCOUNTING
-#define ACCOUNT_CPU_USER_ENTRY(ra, rb)
-#define ACCOUNT_CPU_USER_EXIT(ra, rb)
-#define ACCOUNT_STOLEN_TIME
-#else
-#define ACCOUNT_CPU_USER_ENTRY(ra, rb)					\
-	beq	2f;			/* if from kernel mode */	\
-	MFTB(ra);			/* get timebase */		\
-	ld	rb,PACA_STARTTIME_USER(r13);				\
-	std	ra,PACA_STARTTIME(r13);					\
-	subf	rb,rb,ra;		/* subtract start value */	\
-	ld	ra,PACA_USER_TIME(r13);					\
-	add	ra,ra,rb;		/* add on to user time */	\
-	std	ra,PACA_USER_TIME(r13);					\
-2:
-
-#define ACCOUNT_CPU_USER_EXIT(ra, rb)					\
-	MFTB(ra);			/* get timebase */		\
-	ld	rb,PACA_STARTTIME(r13);					\
-	std	ra,PACA_STARTTIME_USER(r13);				\
-	subf	rb,rb,ra;		/* subtract start value */	\
-	ld	ra,PACA_SYSTEM_TIME(r13);				\
-	add	ra,ra,rb;		/* add on to system time */	\
-	std	ra,PACA_SYSTEM_TIME(r13)
-
-#ifdef CONFIG_PPC_SPLPAR
-#define ACCOUNT_STOLEN_TIME						\
-BEGIN_FW_FTR_SECTION;							\
-	beq	33f;							\
-	/* from user - see if there are any DTL entries to process */	\
-	ld	r10,PACALPPACAPTR(r13);	/* get ptr to VPA */		\
-	ld	r11,PACA_DTL_RIDX(r13);	/* get log read index */	\
-	ld	r10,LPPACA_DTLIDX(r10);	/* get log write index */	\
-	cmpd	cr1,r11,r10;						\
-	beq+	cr1,33f;						\
-	bl	.accumulate_stolen_time;				\
-	ld	r12,_MSR(r1);						\
-	andi.	r10,r12,MSR_PR;		/* Restore cr0 (coming from user) */ \
-33:									\
-END_FW_FTR_SECTION_IFSET(FW_FEATURE_SPLPAR)
-
-#else  /* CONFIG_PPC_SPLPAR */
-#define ACCOUNT_STOLEN_TIME
-
-#endif /* CONFIG_PPC_SPLPAR */
-
-#endif /* CONFIG_VIRT_CPU_ACCOUNTING */
-=======
  * This expands to a sequence of operations with reg incrementing from
  * start to end inclusive, of this form:
  *
@@ -112,38 +46,12 @@ END_FW_FTR_SECTION_IFSET(FW_FEATURE_SPLPAR)
 	.Lreg=.Lreg+1
 	.endr
 .endm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Macros for storing registers into and loading registers from
  * exception frames.
  */
 #ifdef __powerpc64__
-<<<<<<< HEAD
-#define SAVE_GPR(n, base)	std	n,GPR0+8*(n)(base)
-#define REST_GPR(n, base)	ld	n,GPR0+8*(n)(base)
-#define SAVE_NVGPRS(base)	SAVE_8GPRS(14, base); SAVE_10GPRS(22, base)
-#define REST_NVGPRS(base)	REST_8GPRS(14, base); REST_10GPRS(22, base)
-#else
-#define SAVE_GPR(n, base)	stw	n,GPR0+4*(n)(base)
-#define REST_GPR(n, base)	lwz	n,GPR0+4*(n)(base)
-#define SAVE_NVGPRS(base)	SAVE_GPR(13, base); SAVE_8GPRS(14, base); \
-				SAVE_10GPRS(22, base)
-#define REST_NVGPRS(base)	REST_GPR(13, base); REST_8GPRS(14, base); \
-				REST_10GPRS(22, base)
-#endif
-
-#define SAVE_2GPRS(n, base)	SAVE_GPR(n, base); SAVE_GPR(n+1, base)
-#define SAVE_4GPRS(n, base)	SAVE_2GPRS(n, base); SAVE_2GPRS(n+2, base)
-#define SAVE_8GPRS(n, base)	SAVE_4GPRS(n, base); SAVE_4GPRS(n+4, base)
-#define SAVE_10GPRS(n, base)	SAVE_8GPRS(n, base); SAVE_2GPRS(n+8, base)
-#define REST_2GPRS(n, base)	REST_GPR(n, base); REST_GPR(n+1, base)
-#define REST_4GPRS(n, base)	REST_2GPRS(n, base); REST_2GPRS(n+2, base)
-#define REST_8GPRS(n, base)	REST_4GPRS(n, base); REST_4GPRS(n+4, base)
-#define REST_10GPRS(n, base)	REST_8GPRS(n, base); REST_2GPRS(n+8, base)
-
-#define SAVE_FPR(n, base)	stfd	n,THREAD_FPR0+8*TS_FPRWIDTH*(n)(base)
-=======
 #define SAVE_GPRS(start, end, base)	OP_REGS std, 8, start, end, base, GPR0
 #define REST_GPRS(start, end, base)	OP_REGS ld, 8, start, end, base, GPR0
 #define SAVE_NVGPRS(base)		SAVE_GPRS(14, 31, base)
@@ -186,48 +94,31 @@ END_FW_FTR_SECTION_IFSET(FW_FEATURE_SPLPAR)
 #endif /* CONFIG_INTERRUPT_SANITIZE_REGISTERS */
 
 #define SAVE_FPR(n, base)	stfd	n,8*TS_FPRWIDTH*(n)(base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SAVE_2FPRS(n, base)	SAVE_FPR(n, base); SAVE_FPR(n+1, base)
 #define SAVE_4FPRS(n, base)	SAVE_2FPRS(n, base); SAVE_2FPRS(n+2, base)
 #define SAVE_8FPRS(n, base)	SAVE_4FPRS(n, base); SAVE_4FPRS(n+4, base)
 #define SAVE_16FPRS(n, base)	SAVE_8FPRS(n, base); SAVE_8FPRS(n+8, base)
 #define SAVE_32FPRS(n, base)	SAVE_16FPRS(n, base); SAVE_16FPRS(n+16, base)
-<<<<<<< HEAD
-#define REST_FPR(n, base)	lfd	n,THREAD_FPR0+8*TS_FPRWIDTH*(n)(base)
-=======
 #define REST_FPR(n, base)	lfd	n,8*TS_FPRWIDTH*(n)(base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REST_2FPRS(n, base)	REST_FPR(n, base); REST_FPR(n+1, base)
 #define REST_4FPRS(n, base)	REST_2FPRS(n, base); REST_2FPRS(n+2, base)
 #define REST_8FPRS(n, base)	REST_4FPRS(n, base); REST_4FPRS(n+4, base)
 #define REST_16FPRS(n, base)	REST_8FPRS(n, base); REST_8FPRS(n+8, base)
 #define REST_32FPRS(n, base)	REST_16FPRS(n, base); REST_16FPRS(n+16, base)
 
-<<<<<<< HEAD
-#define SAVE_VR(n,b,base)	li b,THREAD_VR0+(16*(n));  stvx n,base,b
-=======
 #define SAVE_VR(n,b,base)	li b,16*(n);  stvx n,base,b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SAVE_2VRS(n,b,base)	SAVE_VR(n,b,base); SAVE_VR(n+1,b,base)
 #define SAVE_4VRS(n,b,base)	SAVE_2VRS(n,b,base); SAVE_2VRS(n+2,b,base)
 #define SAVE_8VRS(n,b,base)	SAVE_4VRS(n,b,base); SAVE_4VRS(n+4,b,base)
 #define SAVE_16VRS(n,b,base)	SAVE_8VRS(n,b,base); SAVE_8VRS(n+8,b,base)
 #define SAVE_32VRS(n,b,base)	SAVE_16VRS(n,b,base); SAVE_16VRS(n+16,b,base)
-<<<<<<< HEAD
-#define REST_VR(n,b,base)	li b,THREAD_VR0+(16*(n)); lvx n,base,b
-=======
 #define REST_VR(n,b,base)	li b,16*(n); lvx n,base,b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REST_2VRS(n,b,base)	REST_VR(n,b,base); REST_VR(n+1,b,base)
 #define REST_4VRS(n,b,base)	REST_2VRS(n,b,base); REST_2VRS(n+2,b,base)
 #define REST_8VRS(n,b,base)	REST_4VRS(n,b,base); REST_4VRS(n+4,b,base)
 #define REST_16VRS(n,b,base)	REST_8VRS(n,b,base); REST_8VRS(n+8,b,base)
 #define REST_32VRS(n,b,base)	REST_16VRS(n,b,base); REST_16VRS(n+16,b,base)
 
-<<<<<<< HEAD
-/* Save the lower 32 VSRs in the thread VSR region */
-#define SAVE_VSR(n,b,base)	li b,THREAD_VSR0+(16*(n));  STXVD2X(n,base,b)
-=======
 #ifdef __BIG_ENDIAN__
 #define STXVD2X_ROT(n,b,base)		STXVD2X(n,b,base)
 #define LXVD2X_ROT(n,b,base)		LXVD2X(n,b,base)
@@ -241,38 +132,17 @@ END_FW_FTR_SECTION_IFSET(FW_FEATURE_SPLPAR)
 #endif
 /* Save the lower 32 VSRs in the thread VSR region */
 #define SAVE_VSR(n,b,base)	li b,16*(n);  STXVD2X_ROT(n,R##base,R##b)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SAVE_2VSRS(n,b,base)	SAVE_VSR(n,b,base); SAVE_VSR(n+1,b,base)
 #define SAVE_4VSRS(n,b,base)	SAVE_2VSRS(n,b,base); SAVE_2VSRS(n+2,b,base)
 #define SAVE_8VSRS(n,b,base)	SAVE_4VSRS(n,b,base); SAVE_4VSRS(n+4,b,base)
 #define SAVE_16VSRS(n,b,base)	SAVE_8VSRS(n,b,base); SAVE_8VSRS(n+8,b,base)
 #define SAVE_32VSRS(n,b,base)	SAVE_16VSRS(n,b,base); SAVE_16VSRS(n+16,b,base)
-<<<<<<< HEAD
-#define REST_VSR(n,b,base)	li b,THREAD_VSR0+(16*(n)); LXVD2X(n,base,b)
-=======
 #define REST_VSR(n,b,base)	li b,16*(n); LXVD2X_ROT(n,R##base,R##b)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REST_2VSRS(n,b,base)	REST_VSR(n,b,base); REST_VSR(n+1,b,base)
 #define REST_4VSRS(n,b,base)	REST_2VSRS(n,b,base); REST_2VSRS(n+2,b,base)
 #define REST_8VSRS(n,b,base)	REST_4VSRS(n,b,base); REST_4VSRS(n+4,b,base)
 #define REST_16VSRS(n,b,base)	REST_8VSRS(n,b,base); REST_8VSRS(n+8,b,base)
 #define REST_32VSRS(n,b,base)	REST_16VSRS(n,b,base); REST_16VSRS(n+16,b,base)
-<<<<<<< HEAD
-/* Save the upper 32 VSRs (32-63) in the thread VSX region (0-31) */
-#define SAVE_VSRU(n,b,base)	li b,THREAD_VR0+(16*(n));  STXVD2X(n+32,base,b)
-#define SAVE_2VSRSU(n,b,base)	SAVE_VSRU(n,b,base); SAVE_VSRU(n+1,b,base)
-#define SAVE_4VSRSU(n,b,base)	SAVE_2VSRSU(n,b,base); SAVE_2VSRSU(n+2,b,base)
-#define SAVE_8VSRSU(n,b,base)	SAVE_4VSRSU(n,b,base); SAVE_4VSRSU(n+4,b,base)
-#define SAVE_16VSRSU(n,b,base)	SAVE_8VSRSU(n,b,base); SAVE_8VSRSU(n+8,b,base)
-#define SAVE_32VSRSU(n,b,base)	SAVE_16VSRSU(n,b,base); SAVE_16VSRSU(n+16,b,base)
-#define REST_VSRU(n,b,base)	li b,THREAD_VR0+(16*(n)); LXVD2X(n+32,base,b)
-#define REST_2VSRSU(n,b,base)	REST_VSRU(n,b,base); REST_VSRU(n+1,b,base)
-#define REST_4VSRSU(n,b,base)	REST_2VSRSU(n,b,base); REST_2VSRSU(n+2,b,base)
-#define REST_8VSRSU(n,b,base)	REST_4VSRSU(n,b,base); REST_4VSRSU(n+4,b,base)
-#define REST_16VSRSU(n,b,base)	REST_8VSRSU(n,b,base); REST_8VSRSU(n+8,b,base)
-#define REST_32VSRSU(n,b,base)	REST_16VSRSU(n,b,base); REST_16VSRSU(n+16,b,base)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * b = base register for addressing, o = base offset from register of 1st EVR
@@ -300,10 +170,6 @@ END_FW_FTR_SECTION_IFSET(FW_FEATURE_SPLPAR)
 #define HMT_HIGH	or	3,3,3
 #define HMT_EXTRA_HIGH	or	7,7,7		# power7 only
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-#ifdef CONFIG_PPC64
-=======
 #ifdef CONFIG_PPC64
 #define ULONG_SIZE 	8
 #else
@@ -368,105 +234,19 @@ name: \
 #define DOTSYM(a)	a
 
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define XGLUE(a,b) a##b
 #define GLUE(a,b) XGLUE(a,b)
 
 #define _GLOBAL(name) \
-<<<<<<< HEAD
-	.section ".text"; \
-	.align 2 ; \
-	.globl name; \
-	.globl GLUE(.,name); \
-	.section ".opd","aw"; \
-=======
 	.align 2 ; \
 	.globl name; \
 	.globl GLUE(.,name); \
 	.pushsection ".opd","aw"; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 name: \
 	.quad GLUE(.,name); \
 	.quad .TOC.@tocbase; \
 	.quad 0; \
-<<<<<<< HEAD
-	.previous; \
-	.type GLUE(.,name),@function; \
-GLUE(.,name):
-
-#define _INIT_GLOBAL(name) \
-	__REF; \
-	.align 2 ; \
-	.globl name; \
-	.globl GLUE(.,name); \
-	.section ".opd","aw"; \
-name: \
-	.quad GLUE(.,name); \
-	.quad .TOC.@tocbase; \
-	.quad 0; \
-	.previous; \
-	.type GLUE(.,name),@function; \
-GLUE(.,name):
-
-#define _KPROBE(name) \
-	.section ".kprobes.text","a"; \
-	.align 2 ; \
-	.globl name; \
-	.globl GLUE(.,name); \
-	.section ".opd","aw"; \
-name: \
-	.quad GLUE(.,name); \
-	.quad .TOC.@tocbase; \
-	.quad 0; \
-	.previous; \
-	.type GLUE(.,name),@function; \
-GLUE(.,name):
-
-#define _STATIC(name) \
-	.section ".text"; \
-	.align 2 ; \
-	.section ".opd","aw"; \
-name: \
-	.quad GLUE(.,name); \
-	.quad .TOC.@tocbase; \
-	.quad 0; \
-	.previous; \
-	.type GLUE(.,name),@function; \
-GLUE(.,name):
-
-#define _INIT_STATIC(name) \
-	__REF; \
-	.align 2 ; \
-	.section ".opd","aw"; \
-name: \
-	.quad GLUE(.,name); \
-	.quad .TOC.@tocbase; \
-	.quad 0; \
-	.previous; \
-	.type GLUE(.,name),@function; \
-GLUE(.,name):
-
-#else /* 32-bit */
-
-#define _ENTRY(n)	\
-	.globl n;	\
-n:
-
-#define _GLOBAL(n)	\
-	.text;		\
-	.stabs __stringify(n:F-1),N_FUN,0,0,n;\
-	.globl n;	\
-n:
-
-#define _KPROBE(n)	\
-	.section ".kprobes.text","a";	\
-	.globl	n;	\
-n:
-
-#endif
-
-=======
 	.popsection; \
 	.type GLUE(.,name),@function; \
 GLUE(.,name):
@@ -510,7 +290,6 @@ n:
 #define FUNC_START(name)	_GLOBAL(name)
 #define FUNC_END(name)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * LOAD_REG_IMMEDIATE(rn, expr)
  *   Loads the value of the constant expression 'expr' into register 'rn'
@@ -525,14 +304,11 @@ n:
  *   you want to access various offsets within it).  On ppc32 this is
  *   identical to LOAD_REG_IMMEDIATE.
  *
-<<<<<<< HEAD
-=======
  * LOAD_REG_ADDR_PIC(rn, name)
  *   Loads the address of label 'name' into register 'run'. Use this when
  *   the kernel doesn't run at the linked or relocated address. Please
  *   note that this macro will clobber the lr register.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LOAD_REG_ADDRBASE(rn, name)
  * ADDROFF(name)
  *   LOAD_REG_ADDRBASE loads part of the address of label 'name' into
@@ -543,10 +319,6 @@ n:
  *      LOAD_REG_ADDRBASE(rX, name)
  *      ld	rY,ADDROFF(name)(rX)
  */
-<<<<<<< HEAD
-#ifdef __powerpc64__
-#ifdef HAVE_AS_ATHIGH
-=======
 
 /* Be careful, this will clobber the lr register. */
 #define LOAD_REG_ADDR_PIC(reg, name)		\
@@ -556,22 +328,10 @@ n:
 	addi	reg,reg,(name - 0b)@l;
 
 #if defined(__powerpc64__) && defined(HAVE_AS_ATHIGH)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __AS_ATHIGH high
 #else
 #define __AS_ATHIGH h
 #endif
-<<<<<<< HEAD
-#define LOAD_REG_IMMEDIATE(reg,expr)		\
-	lis     (reg),(expr)@highest;		\
-	ori     (reg),(reg),(expr)@higher;	\
-	rldicr  (reg),(reg),32,31;		\
-	oris    (reg),(reg),(expr)@__AS_ATHIGH;	\
-	ori     (reg),(reg),(expr)@l;
-
-#define LOAD_REG_ADDR(reg,name)			\
-	ld	(reg),name@got(r2)
-=======
 
 .macro __LOAD_REG_IMMEDIATE_32 r, x
 	.if (\x) >= 0x8000 || (\x) < -0x8000
@@ -641,7 +401,6 @@ n:
 #define LOAD_REG_ADDR_ALTTOC(reg,tocreg,name)	\
 	ld	reg,name@got(tocreg)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LOAD_REG_ADDRBASE(reg,name)	LOAD_REG_ADDR(reg,name)
 #define ADDROFF(name)			0
@@ -649,17 +408,6 @@ n:
 /* offsets for stack frame layout */
 #define LRSAVE	16
 
-<<<<<<< HEAD
-#else /* 32-bit */
-
-#define LOAD_REG_IMMEDIATE(reg,expr)		\
-	lis	(reg),(expr)@ha;		\
-	addi	(reg),(reg),(expr)@l;
-
-#define LOAD_REG_ADDR(reg,name)		LOAD_REG_IMMEDIATE(reg, name)
-
-#define LOAD_REG_ADDRBASE(reg, name)	lis	(reg),name@ha
-=======
 /*
  * GCC stack frames follow a different pattern on 32 vs 64. This can be used
  * to make asm frames be consistent with C.
@@ -680,40 +428,11 @@ n:
 #define LOAD_REG_ADDR(reg,name)		LOAD_REG_IMMEDIATE_SYM(reg, name)
 
 #define LOAD_REG_ADDRBASE(reg, name)	lis	reg,name@ha
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADDROFF(name)			name@l
 
 /* offsets for stack frame layout */
 #define LRSAVE	4
 
-<<<<<<< HEAD
-#endif
-
-/* various errata or part fixups */
-#ifdef CONFIG_PPC601_SYNC_FIX
-#define SYNC				\
-BEGIN_FTR_SECTION			\
-	sync;				\
-	isync;				\
-END_FTR_SECTION_IFSET(CPU_FTR_601)
-#define SYNC_601			\
-BEGIN_FTR_SECTION			\
-	sync;				\
-END_FTR_SECTION_IFSET(CPU_FTR_601)
-#define ISYNC_601			\
-BEGIN_FTR_SECTION			\
-	isync;				\
-END_FTR_SECTION_IFSET(CPU_FTR_601)
-#else
-#define	SYNC
-#define SYNC_601
-#define ISYNC_601
-#endif
-
-#ifdef CONFIG_PPC_CELL
-#define MFTB(dest)			\
-90:	mftb  dest;			\
-=======
 #define PPC_CREATE_STACK_FRAME(size)			\
 	stwu		r1,-(size)(r1);			\
 	mflr		r0;				\
@@ -725,15 +444,11 @@ END_FTR_SECTION_IFSET(CPU_FTR_601)
 #if defined(CONFIG_PPC_CELL) || defined(CONFIG_PPC_E500)
 #define MFTB(dest)			\
 90:	mfspr dest, SPRN_TBRL;		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BEGIN_FTR_SECTION_NESTED(96);		\
 	cmpwi dest,0;			\
 	beq-  90b;			\
 END_FTR_SECTION_NESTED(CPU_FTR_CELL_TB_BUG, CPU_FTR_CELL_TB_BUG, 96)
 #else
-<<<<<<< HEAD
-#define MFTB(dest)			mftb dest
-=======
 #define MFTB(dest)			MFTBL(dest)
 #endif
 
@@ -743,23 +458,10 @@ END_FTR_SECTION_NESTED(CPU_FTR_CELL_TB_BUG, CPU_FTR_CELL_TB_BUG, 96)
 #else
 #define MFTBL(dest)			mfspr dest, SPRN_TBRL
 #define MFTBU(dest)			mfspr dest, SPRN_TBRU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef CONFIG_SMP
 #define TLBSYNC
-<<<<<<< HEAD
-#else /* CONFIG_SMP */
-/* tlbsync is not implemented on 601 */
-#define TLBSYNC				\
-BEGIN_FTR_SECTION			\
-	tlbsync;			\
-	sync;				\
-END_FTR_SECTION_IFCLR(CPU_FTR_601)
-#endif
-
-	
-=======
 #else
 #define TLBSYNC		tlbsync; sync
 #endif
@@ -773,7 +475,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 	ALT_FTR_SECTION_END_NESTED_IFCLR(CPU_FTR_NOEXECUTE, 848)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This instruction is not implemented on the PPC 603 or 601; however, on
  * the 403GCX and 405GP tlbia IS defined and tlbie is not.
@@ -781,23 +482,15 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
  * and they must be used.
  */
 
-<<<<<<< HEAD
-#if !defined(CONFIG_4xx) && !defined(CONFIG_8xx)
-=======
 #if !defined(CONFIG_4xx) && !defined(CONFIG_PPC_8xx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define tlbia					\
 	li	r4,1024;			\
 	mtctr	r4;				\
 	lis	r4,KERNELBASE@h;		\
-<<<<<<< HEAD
-0:	tlbie	r4;				\
-=======
 	.machine push;				\
 	.machine "power4";			\
 0:	tlbie	r4;				\
 	.machine pop;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r4,r4,0x1000;			\
 	bdnz	0b
 #endif
@@ -809,8 +502,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 #define PPC440EP_ERR42
 #endif
 
-<<<<<<< HEAD
-=======
 /* The following stops all load and store data streams associated with stream
  * ID (ie. streams created explicitly).  The embedded and server mnemonics for
  * dcbt are different so this must only be used for server.
@@ -837,7 +528,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 	dcbt	0,scratch,0b01010;	/* all streams GO */		\
 	.machine pop;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * toreal/fromreal/tophys/tovirt macros. 32-bit BookE makes them
  * keep the address intact to be compatible with code shared with
@@ -874,42 +564,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 	ori	rd,rd,((KERNELBASE>>48)&0xFFFF);\
 	rotldi	rd,rd,48
 #else
-<<<<<<< HEAD
-/*
- * On APUS (Amiga PowerPC cpu upgrade board), we don't know the
- * physical base address of RAM at compile time.
- */
-#define toreal(rd)	tophys(rd,rd)
-#define fromreal(rd)	tovirt(rd,rd)
-
-#define tophys(rd,rs)				\
-0:	addis	rd,rs,-PAGE_OFFSET@h;		\
-	.section ".vtop_fixup","aw";		\
-	.align  1;				\
-	.long   0b;				\
-	.previous
-
-#define tovirt(rd,rs)				\
-0:	addis	rd,rs,PAGE_OFFSET@h;		\
-	.section ".ptov_fixup","aw";		\
-	.align  1;				\
-	.long   0b;				\
-	.previous
-#endif
-
-#ifdef CONFIG_PPC_BOOK3S_64
-#define RFI		rfid
-#define MTMSRD(r)	mtmsrd	r
-#else
-#define FIX_SRR1(ra, rb)
-#ifndef CONFIG_40x
-#define	RFI		rfi
-#else
-#define RFI		rfi; b .	/* Prevent prefetch past rfi */
-#endif
-#define MTMSRD(r)	mtmsr	r
-#define CLR_TOP32(r)
-=======
 #define toreal(rd)	tophys(rd,rd)
 #define fromreal(rd)	tovirt(rd,rd)
 
@@ -923,7 +577,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 #else
 #define MTMSRD(r)	mtmsr	r
 #define MTMSR_EERI(reg)	mtmsr	reg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __KERNEL__ */
@@ -942,42 +595,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 #define	cr7	7
 
 
-<<<<<<< HEAD
-/* General Purpose Registers (GPRs) */
-
-#define	r0	0
-#define	r1	1
-#define	r2	2
-#define	r3	3
-#define	r4	4
-#define	r5	5
-#define	r6	6
-#define	r7	7
-#define	r8	8
-#define	r9	9
-#define	r10	10
-#define	r11	11
-#define	r12	12
-#define	r13	13
-#define	r14	14
-#define	r15	15
-#define	r16	16
-#define	r17	17
-#define	r18	18
-#define	r19	19
-#define	r20	20
-#define	r21	21
-#define	r22	22
-#define	r23	23
-#define	r24	24
-#define	r25	25
-#define	r26	26
-#define	r27	27
-#define	r28	28
-#define	r29	29
-#define	r30	30
-#define	r31	31
-=======
 /*
  * General Purpose Registers (GPRs)
  *
@@ -1018,7 +635,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 #define	r29	%r29
 #define	r30	%r30
 #define	r31	%r31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Floating Point Registers (FPRs) */
@@ -1058,107 +674,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 
 /* AltiVec Registers (VPRs) */
 
-<<<<<<< HEAD
-#define	vr0	0
-#define	vr1	1
-#define	vr2	2
-#define	vr3	3
-#define	vr4	4
-#define	vr5	5
-#define	vr6	6
-#define	vr7	7
-#define	vr8	8
-#define	vr9	9
-#define	vr10	10
-#define	vr11	11
-#define	vr12	12
-#define	vr13	13
-#define	vr14	14
-#define	vr15	15
-#define	vr16	16
-#define	vr17	17
-#define	vr18	18
-#define	vr19	19
-#define	vr20	20
-#define	vr21	21
-#define	vr22	22
-#define	vr23	23
-#define	vr24	24
-#define	vr25	25
-#define	vr26	26
-#define	vr27	27
-#define	vr28	28
-#define	vr29	29
-#define	vr30	30
-#define	vr31	31
-
-/* VSX Registers (VSRs) */
-
-#define	vsr0	0
-#define	vsr1	1
-#define	vsr2	2
-#define	vsr3	3
-#define	vsr4	4
-#define	vsr5	5
-#define	vsr6	6
-#define	vsr7	7
-#define	vsr8	8
-#define	vsr9	9
-#define	vsr10	10
-#define	vsr11	11
-#define	vsr12	12
-#define	vsr13	13
-#define	vsr14	14
-#define	vsr15	15
-#define	vsr16	16
-#define	vsr17	17
-#define	vsr18	18
-#define	vsr19	19
-#define	vsr20	20
-#define	vsr21	21
-#define	vsr22	22
-#define	vsr23	23
-#define	vsr24	24
-#define	vsr25	25
-#define	vsr26	26
-#define	vsr27	27
-#define	vsr28	28
-#define	vsr29	29
-#define	vsr30	30
-#define	vsr31	31
-#define	vsr32	32
-#define	vsr33	33
-#define	vsr34	34
-#define	vsr35	35
-#define	vsr36	36
-#define	vsr37	37
-#define	vsr38	38
-#define	vsr39	39
-#define	vsr40	40
-#define	vsr41	41
-#define	vsr42	42
-#define	vsr43	43
-#define	vsr44	44
-#define	vsr45	45
-#define	vsr46	46
-#define	vsr47	47
-#define	vsr48	48
-#define	vsr49	49
-#define	vsr50	50
-#define	vsr51	51
-#define	vsr52	52
-#define	vsr53	53
-#define	vsr54	54
-#define	vsr55	55
-#define	vsr56	56
-#define	vsr57	57
-#define	vsr58	58
-#define	vsr59	59
-#define	vsr60	60
-#define	vsr61	61
-#define	vsr62	62
-#define	vsr63	63
-=======
 #define	v0	0
 #define	v1	1
 #define	v2	2
@@ -1258,7 +773,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 #define	vs61	61
 #define	vs62	62
 #define	vs63	63
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SPE Registers (EVPRs) */
 
@@ -1295,16 +809,6 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 #define	evr30	30
 #define	evr31	31
 
-<<<<<<< HEAD
-/* some stab codes */
-#define N_FUN	36
-#define N_RSYM	64
-#define N_SLINE	68
-#define N_SO	100
-
-#endif /*  __ASSEMBLY__ */
-
-=======
 #define RFSCV	.long 0x4c0000a4
 
 /*
@@ -1399,5 +903,4 @@ END_FTR_SECTION_IFCLR(CPU_FTR_601)
 #define STACK_FRAME_PARAMS 8
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_POWERPC_PPC_ASM_H */

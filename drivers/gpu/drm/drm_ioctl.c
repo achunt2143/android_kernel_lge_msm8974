@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/**
- * \file drm_ioctl.c
- * IOCTL processing for DRM
- *
- * \author Rickard E. (Rik) Faith <faith@valinux.com>
- * \author Gareth Hughes <gareth@valinux.com>
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Created: Fri Jan  8 09:01:26 1999 by faith@valinux.com
  *
@@ -16,12 +5,9 @@
  * Copyright 2000 VA Linux Systems, Inc., Sunnyvale, California.
  * All Rights Reserved.
  *
-<<<<<<< HEAD
-=======
  * Author Rickard E. (Rik) Faith <faith@valinux.com>
  * Author Gareth Hughes <gareth@valinux.com>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
  * to deal in the Software without restriction, including without limitation
@@ -42,15 +28,6 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm_core.h"
-
-#include "linux/pci.h"
-#include "linux/export.h"
-
-/**
-=======
 #include <linux/export.h>
 #include <linux/nospec.h>
 #include <linux/pci.h>
@@ -125,7 +102,6 @@
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Get the bus id.
  *
  * \param inode device inode.
@@ -140,15 +116,6 @@ int drm_getunique(struct drm_device *dev, void *data,
 		  struct drm_file *file_priv)
 {
 	struct drm_unique *u = data;
-<<<<<<< HEAD
-	struct drm_master *master = file_priv->master;
-
-	if (u->unique_len >= master->unique_len) {
-		if (copy_to_user(u->unique, master->unique, master->unique_len))
-			return -EFAULT;
-	}
-	u->unique_len = master->unique_len;
-=======
 	struct drm_master *master;
 
 	mutex_lock(&dev->master_mutex);
@@ -161,7 +128,6 @@ int drm_getunique(struct drm_device *dev, void *data,
 	}
 	u->unique_len = master->unique_len;
 	mutex_unlock(&dev->master_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -170,60 +136,9 @@ static void
 drm_unset_busid(struct drm_device *dev,
 		struct drm_master *master)
 {
-<<<<<<< HEAD
-	kfree(dev->devname);
-	dev->devname = NULL;
-
 	kfree(master->unique);
 	master->unique = NULL;
 	master->unique_len = 0;
-	master->unique_size = 0;
-}
-
-/**
- * Set the bus id.
- *
- * \param inode device inode.
- * \param file_priv DRM file private.
- * \param cmd command.
- * \param arg user argument, pointing to a drm_unique structure.
- * \return zero on success or a negative number on failure.
- *
- * Copies the bus id from userspace into drm_device::unique, and verifies that
- * it matches the device this DRM is attached to (EINVAL otherwise).  Deprecated
- * in interface version 1.1 and will return EBUSY when setversion has requested
- * version 1.1 or greater.
- */
-int drm_setunique(struct drm_device *dev, void *data,
-		  struct drm_file *file_priv)
-{
-	struct drm_unique *u = data;
-	struct drm_master *master = file_priv->master;
-	int ret;
-
-	if (master->unique_len || master->unique)
-		return -EBUSY;
-
-	if (!u->unique_len || u->unique_len > 1024)
-		return -EINVAL;
-
-	if (!dev->driver->bus->set_unique)
-		return -EINVAL;
-
-	ret = dev->driver->bus->set_unique(dev, master, u);
-	if (ret)
-		goto err;
-
-	return 0;
-
-err:
-	drm_unset_busid(dev, master);
-	return ret;
-=======
-	kfree(master->unique);
-	master->unique = NULL;
-	master->unique_len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int drm_set_busid(struct drm_device *dev, struct drm_file *file_priv)
@@ -234,64 +149,6 @@ static int drm_set_busid(struct drm_device *dev, struct drm_file *file_priv)
 	if (master->unique != NULL)
 		drm_unset_busid(dev, master);
 
-<<<<<<< HEAD
-	ret = dev->driver->bus->set_busid(dev, master);
-	if (ret)
-		goto err;
-	return 0;
-err:
-	drm_unset_busid(dev, master);
-	return ret;
-}
-
-/**
- * Get a mapping information.
- *
- * \param inode device inode.
- * \param file_priv DRM file private.
- * \param cmd command.
- * \param arg user argument, pointing to a drm_map structure.
- *
- * \return zero on success or a negative number on failure.
- *
- * Searches for the mapping with the specified offset and copies its information
- * into userspace
- */
-int drm_getmap(struct drm_device *dev, void *data,
-	       struct drm_file *file_priv)
-{
-	struct drm_map *map = data;
-	struct drm_map_list *r_list = NULL;
-	struct list_head *list;
-	int idx;
-	int i;
-
-	idx = map->offset;
-	if (idx < 0)
-		return -EINVAL;
-
-	i = 0;
-	mutex_lock(&dev->struct_mutex);
-	list_for_each(list, &dev->maplist) {
-		if (i == idx) {
-			r_list = list_entry(list, struct drm_map_list, head);
-			break;
-		}
-		i++;
-	}
-	if (!r_list || !r_list->map) {
-		mutex_unlock(&dev->struct_mutex);
-		return -EINVAL;
-	}
-
-	map->offset = r_list->map->offset;
-	map->size = r_list->map->size;
-	map->type = r_list->map->type;
-	map->flags = r_list->map->flags;
-	map->handle = (void *)(unsigned long) r_list->user_token;
-	map->mtrr = r_list->map->mtrr;
-	mutex_unlock(&dev->struct_mutex);
-=======
 	if (dev->dev && dev_is_pci(dev->dev)) {
 		ret = drm_pci_set_busid(dev, master);
 		if (ret) {
@@ -304,16 +161,11 @@ int drm_getmap(struct drm_device *dev, void *data,
 		if (master->unique)
 			master->unique_len = strlen(dev->unique);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Get client information.
  *
  * \param inode device inode.
@@ -330,34 +182,6 @@ int drm_getclient(struct drm_device *dev, void *data,
 		  struct drm_file *file_priv)
 {
 	struct drm_client *client = data;
-<<<<<<< HEAD
-	struct drm_file *pt;
-	int idx;
-	int i;
-
-	idx = client->idx;
-	i = 0;
-
-	mutex_lock(&dev->struct_mutex);
-	list_for_each_entry(pt, &dev->filelist, lhead) {
-		if (i++ >= idx) {
-			client->auth = pt->authenticated;
-			client->pid = pt->pid;
-			client->uid = pt->uid;
-			client->magic = pt->magic;
-			client->iocs = pt->ioctl_count;
-			mutex_unlock(&dev->struct_mutex);
-
-			return 0;
-		}
-	}
-	mutex_unlock(&dev->struct_mutex);
-
-	return -EINVAL;
-}
-
-/**
-=======
 
 	/*
 	 * Hollowed-out getclient ioctl to keep some dead old drm tests/tools
@@ -384,7 +208,6 @@ int drm_getclient(struct drm_device *dev, void *data,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Get statistics information.
  *
  * \param inode device inode.
@@ -394,38 +217,6 @@ int drm_getclient(struct drm_device *dev, void *data,
  *
  * \return zero on success or a negative number on failure.
  */
-<<<<<<< HEAD
-int drm_getstats(struct drm_device *dev, void *data,
-		 struct drm_file *file_priv)
-{
-	struct drm_stats *stats = data;
-	int i;
-
-	memset(stats, 0, sizeof(*stats));
-
-	for (i = 0; i < dev->counters; i++) {
-		if (dev->types[i] == _DRM_STAT_LOCK)
-			stats->data[i].value =
-			    (file_priv->master->lock.hw_lock ? file_priv->master->lock.hw_lock->lock : 0);
-		else
-			stats->data[i].value = atomic_read(&dev->counts[i]);
-		stats->data[i].type = dev->types[i];
-	}
-
-	stats->count = dev->counters;
-
-	return 0;
-}
-
-/**
- * Get device/driver capabilities
- */
-int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
-{
-	struct drm_get_cap *req = data;
-
-	req->value = 0;
-=======
 static int drm_getstats(struct drm_device *dev, void *data,
 		 struct drm_file *file_priv)
 {
@@ -467,7 +258,6 @@ static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_
 	if (!drm_core_check_feature(dev, DRIVER_MODESET))
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (req->capability) {
 	case DRM_CAP_DUMB_BUFFER:
 		if (dev->driver->dumb_create)
@@ -482,8 +272,6 @@ static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_
 	case DRM_CAP_DUMB_PREFER_SHADOW:
 		req->value = dev->mode_config.prefer_shadow;
 		break;
-<<<<<<< HEAD
-=======
 	case DRM_CAP_ASYNC_PAGE_FLIP:
 		req->value = dev->mode_config.async_page_flip;
 		break;
@@ -516,16 +304,12 @@ static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_
 		req->value = drm_core_check_feature(dev, DRIVER_ATOMIC) &&
 			     dev->mode_config.async_page_flip;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
  * Set device/driver capabilities
  */
@@ -597,7 +381,6 @@ drm_setclientcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Setversion ioctl.
  *
  * \param inode device inode.
@@ -608,19 +391,12 @@ drm_setclientcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
  *
  * Sets the requested interface version
  */
-<<<<<<< HEAD
-int drm_setversion(struct drm_device *dev, void *data, struct drm_file *file_priv)
-=======
 static int drm_setversion(struct drm_device *dev, void *data, struct drm_file *file_priv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_set_version *sv = data;
 	int if_version, retcode = 0;
 
-<<<<<<< HEAD
-=======
 	mutex_lock(&dev->master_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sv->drm_di_major != -1) {
 		if (sv->drm_di_major != DRM_IF_MAJOR ||
 		    sv->drm_di_minor < 0 || sv->drm_di_minor > DRM_IF_MINOR) {
@@ -648,12 +424,6 @@ static int drm_setversion(struct drm_device *dev, void *data, struct drm_file *f
 			retcode = -EINVAL;
 			goto done;
 		}
-<<<<<<< HEAD
-
-		if (dev->driver->set_version)
-			dev->driver->set_version(dev, sv);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 done:
@@ -661,24 +431,11 @@ done:
 	sv->drm_di_minor = DRM_IF_MINOR;
 	sv->drm_dd_major = dev->driver->major;
 	sv->drm_dd_minor = dev->driver->minor;
-<<<<<<< HEAD
-=======
 	mutex_unlock(&dev->master_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retcode;
 }
 
-<<<<<<< HEAD
-/** No-op ioctl. */
-int drm_noop(struct drm_device *dev, void *data,
-	     struct drm_file *file_priv)
-{
-	DRM_DEBUG("\n");
-	return 0;
-}
-EXPORT_SYMBOL(drm_noop);
-=======
 /**
  * drm_noop - DRM no-op ioctl implementation
  * @dev: DRM device for the ioctl
@@ -1127,4 +884,3 @@ bool drm_ioctl_flags(unsigned int nr, unsigned int *flags)
 	return true;
 }
 EXPORT_SYMBOL(drm_ioctl_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

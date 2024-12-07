@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Uros Bizjak <uros@kss-loka.si>
  *
  *  Midi synth routines for OPL2/OPL3/OPL4 FM
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG_ALLOC
@@ -32,13 +11,6 @@
 #include "opl3_voice.h"
 #include <sound/asoundef.h>
 
-<<<<<<< HEAD
-extern char snd_opl3_regmap[MAX_OPL2_VOICES][4];
-
-extern bool use_internal_drums;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_opl3_note_off_unsafe(void *p, int note, int vel,
 				     struct snd_midi_channel *chan);
 /*
@@ -51,11 +23,7 @@ static void snd_opl3_note_off_unsafe(void *p, int note, int vel,
  * it saves a lot of log() calculations. (Rob Hooft <hooft@chem.ruu.nl>)
  */
 
-<<<<<<< HEAD
-static char opl3_volume_table[128] =
-=======
 static const char opl3_volume_table[128] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	-63, -48, -40, -35, -32, -29, -27, -26,
 	-24, -23, -21, -20, -19, -18, -18, -17,
@@ -101,11 +69,7 @@ void snd_opl3_calc_volume(unsigned char *volbyte, int vel,
 /*
  * Converts the note frequency to block and fnum values for the FM chip
  */
-<<<<<<< HEAD
-static short opl3_note_table[16] =
-=======
 static const short opl3_note_table[16] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	305, 323,	/* for pitch bending, -2 semitones */
 	343, 363, 385, 408, 432, 458, 485, 514, 544, 577, 611, 647,
@@ -123,11 +87,8 @@ static void snd_opl3_calc_pitch(unsigned char *fnum, unsigned char *blocknum,
 		int pitchbend = chan->midi_pitchbend;
 		int segment;
 
-<<<<<<< HEAD
-=======
 		if (pitchbend < -0x2000)
 			pitchbend = -0x2000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pitchbend > 0x1FFF)
 			pitchbend = 0x1FFF;
 
@@ -152,13 +113,8 @@ static void debug_alloc(struct snd_opl3 *opl3, char *s, int voice) {
 
 	printk(KERN_DEBUG "time %.5i: %s [%.2i]: ", opl3->use_time, s, voice);
 	for (i = 0; i < opl3->max_voices; i++)
-<<<<<<< HEAD
-		printk("%c", *(str + opl3->voices[i].state + 1));
-	printk("\n");
-=======
 		printk(KERN_CONT "%c", *(str + opl3->voices[i].state + 1));
 	printk(KERN_CONT "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -191,11 +147,7 @@ static int opl3_get_voice(struct snd_opl3 *opl3, int instr_4op,
 	struct best *bp;
 
 	for (i = 0; i < END; i++) {
-<<<<<<< HEAD
-		best[i].time = (unsigned int)(-1); /* XXX MAX_?INT really */;
-=======
 		best[i].time = (unsigned int)(-1); /* XXX MAX_?INT really */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		best[i].voice = -1;
 	}
 
@@ -228,12 +180,7 @@ static int opl3_get_voice(struct snd_opl3 *opl3, int instr_4op,
 			if (vp2->state == SNDRV_OPL3_ST_ON_2OP) {
 				/* kill two voices, EXPENSIVE */
 				bp++;
-<<<<<<< HEAD
-				voice_time = (voice_time > vp->time) ?
-					voice_time : vp->time;
-=======
 				voice_time = max(voice_time, vp2->time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			/* allocate 2op voice */
@@ -272,17 +219,10 @@ static int opl3_get_voice(struct snd_opl3 *opl3, int instr_4op,
 /*
  * System timer interrupt function
  */
-<<<<<<< HEAD
-void snd_opl3_timer_func(unsigned long data)
-{
-
-	struct snd_opl3 *opl3 = (struct snd_opl3 *)data;
-=======
 void snd_opl3_timer_func(struct timer_list *t)
 {
 
 	struct snd_opl3 *opl3 = from_timer(opl3, t, tlist);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int again = 0;
 	int i;
@@ -301,19 +241,10 @@ void snd_opl3_timer_func(struct timer_list *t)
 	spin_unlock_irqrestore(&opl3->voice_lock, flags);
 
 	spin_lock_irqsave(&opl3->sys_timer_lock, flags);
-<<<<<<< HEAD
-	if (again) {
-		opl3->tlist.expires = jiffies + 1;	/* invoke again */
-		add_timer(&opl3->tlist);
-	} else {
-		opl3->sys_timer_status = 0;
-	}
-=======
 	if (again)
 		mod_timer(&opl3->tlist, jiffies + 1);	/* invoke again */
 	else
 		opl3->sys_timer_status = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&opl3->sys_timer_lock, flags);
 }
 
@@ -325,12 +256,7 @@ static void snd_opl3_start_timer(struct snd_opl3 *opl3)
 	unsigned long flags;
 	spin_lock_irqsave(&opl3->sys_timer_lock, flags);
 	if (! opl3->sys_timer_status) {
-<<<<<<< HEAD
-		opl3->tlist.expires = jiffies + 1;
-		add_timer(&opl3->tlist);
-=======
 		mod_timer(&opl3->tlist, jiffies + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		opl3->sys_timer_status = 1;
 	}
 	spin_unlock_irqrestore(&opl3->sys_timer_lock, flags);
@@ -339,11 +265,7 @@ static void snd_opl3_start_timer(struct snd_opl3 *opl3)
 /* ------------------------------ */
 
 
-<<<<<<< HEAD
-static int snd_opl3_oss_map[MAX_OPL3_VOICES] = {
-=======
 static const int snd_opl3_oss_map[MAX_OPL3_VOICES] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, 1, 2, 9, 10, 11, 6, 7, 8, 15, 16, 17, 3, 4 ,5, 12, 13, 14
 };
 
@@ -431,10 +353,7 @@ void snd_opl3_note_on(void *p, int note, int vel, struct snd_midi_channel *chan)
 			instr_4op = 1;
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		spin_unlock_irqrestore(&opl3->voice_lock, flags);
 		return;
@@ -452,14 +371,11 @@ void snd_opl3_note_on(void *p, int note, int vel, struct snd_midi_channel *chan)
 		voice = snd_opl3_oss_map[chan->number];		
 	}
 
-<<<<<<< HEAD
-=======
 	if (voice < 0) {
 		spin_unlock_irqrestore(&opl3->voice_lock, flags);
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (voice < MAX_OPL2_VOICES) {
 		/* Left register block for voices 0 .. 8 */
 		reg_side = OPL3_LEFT;
@@ -481,11 +397,7 @@ void snd_opl3_note_on(void *p, int note, int vel, struct snd_midi_channel *chan)
 	}
 	if (instr_4op) {
 		vp2 = &opl3->voices[voice + 3];
-<<<<<<< HEAD
-		if (vp->state > 0) {
-=======
 		if (vp2->state > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			opl3_reg = reg_side | (OPL3_REG_KEYON_BLOCK +
 					       voice_offset + 3);
 			reg_val = vp->keyon_reg & ~OPL3_KEYON_BIT;
@@ -530,11 +442,7 @@ void snd_opl3_note_on(void *p, int note, int vel, struct snd_midi_channel *chan)
 		switch (connection) {
 		case 0x03:
 			snd_opl3_calc_volume(&vol_op[2], vel, chan);
-<<<<<<< HEAD
-			/* fallthru */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x02:
 			snd_opl3_calc_volume(&vol_op[0], vel, chan);
 			break;
@@ -795,12 +703,6 @@ void snd_opl3_note_off(void *p, int note, int vel,
  */
 void snd_opl3_key_press(void *p, int note, int vel, struct snd_midi_channel *chan)
 {
-<<<<<<< HEAD
-  	struct snd_opl3 *opl3;
-
-	opl3 = p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_MIDI
 	snd_printk(KERN_DEBUG "Key pressure, ch#: %i, inst#: %i\n",
 		   chan->number, chan->midi_program);
@@ -812,12 +714,6 @@ void snd_opl3_key_press(void *p, int note, int vel, struct snd_midi_channel *cha
  */
 void snd_opl3_terminate_note(void *p, int note, struct snd_midi_channel *chan)
 {
-<<<<<<< HEAD
-  	struct snd_opl3 *opl3;
-
-	opl3 = p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_MIDI
 	snd_printk(KERN_DEBUG "Terminate note, ch#: %i, inst#: %i\n",
 		   chan->number, chan->midi_program);
@@ -941,12 +837,6 @@ void snd_opl3_control(void *p, int type, struct snd_midi_channel *chan)
 void snd_opl3_nrpn(void *p, struct snd_midi_channel *chan,
 		   struct snd_midi_channel_set *chset)
 {
-<<<<<<< HEAD
-  	struct snd_opl3 *opl3;
-
-	opl3 = p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_MIDI
 	snd_printk(KERN_DEBUG "NRPN, ch#: %i, inst#: %i\n",
 		   chan->number, chan->midi_program);
@@ -959,12 +849,6 @@ void snd_opl3_nrpn(void *p, struct snd_midi_channel *chan,
 void snd_opl3_sysex(void *p, unsigned char *buf, int len,
 		    int parsed, struct snd_midi_channel_set *chset)
 {
-<<<<<<< HEAD
-  	struct snd_opl3 *opl3;
-
-	opl3 = p;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_MIDI
 	snd_printk(KERN_DEBUG "SYSEX\n");
 #endif

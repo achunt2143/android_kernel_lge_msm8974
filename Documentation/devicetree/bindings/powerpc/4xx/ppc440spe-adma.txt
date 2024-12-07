@@ -38,10 +38,6 @@ DMA devices.
 			   2 sources: DMAx CS FIFO Needs Service IRQ (on UIC0)
 			   and DMA Error IRQ (on UIC1). The latter is common
 			   for both DMA engines>.
-<<<<<<< HEAD
- - interrupt-parent	: needed for interrupt mapping
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  Example:
 
@@ -68,10 +64,6 @@ DMA devices.
  - compatible		: "amcc,xor-accelerator";
  - reg			: <registers mapping>
  - interrupts		: <interrupt mapping for XOR interrupt source>
-<<<<<<< HEAD
- - interrupt-parent	: for interrupt mapping
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  Example:
 

@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight driver for Wolfson Microelectronics WM831x PMICs
  *
  * Copyright 2009 Wolfson Microelectonics plc
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -101,31 +91,13 @@ err:
 
 static int wm831x_backlight_update_status(struct backlight_device *bl)
 {
-<<<<<<< HEAD
-	int brightness = bl->props.brightness;
-
-	if (bl->props.power != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	if (bl->props.state & BL_CORE_SUSPENDED)
-		brightness = 0;
-
-	return wm831x_backlight_set(bl, brightness);
-=======
 	return wm831x_backlight_set(bl, backlight_get_brightness(bl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm831x_backlight_get_brightness(struct backlight_device *bl)
 {
 	struct wm831x_backlight_data *data = bl_get_data(bl);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return data->current_brightness;
 }
 
@@ -138,11 +110,7 @@ static const struct backlight_ops wm831x_backlight_ops = {
 static int wm831x_backlight_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-<<<<<<< HEAD
-	struct wm831x_pdata *wm831x_pdata;
-=======
 	struct wm831x_pdata *wm831x_pdata = dev_get_platdata(pdev->dev.parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm831x_backlight_pdata *pdata;
 	struct wm831x_backlight_data *data;
 	struct backlight_device *bl;
@@ -150,19 +118,10 @@ static int wm831x_backlight_probe(struct platform_device *pdev)
 	int ret, i, max_isel, isink_reg, dcdc_cfg;
 
 	/* We need platform data */
-<<<<<<< HEAD
-	if (pdev->dev.parent->platform_data) {
-		wm831x_pdata = pdev->dev.parent->platform_data;
-		pdata = wm831x_pdata->backlight;
-	} else {
-		pdata = NULL;
-	}
-=======
 	if (wm831x_pdata)
 		pdata = wm831x_pdata->backlight;
 	else
 		pdata = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pdata) {
 		dev_err(&pdev->dev, "No platform data supplied\n");
@@ -220,18 +179,11 @@ static int wm831x_backlight_probe(struct platform_device *pdev)
 	data->current_brightness = 0;
 	data->isink_reg = isink_reg;
 
-<<<<<<< HEAD
-	props.type = BACKLIGHT_RAW;
-	props.max_brightness = max_isel;
-	bl = backlight_device_register("wm831x", &pdev->dev, data,
-				       &wm831x_backlight_ops, &props);
-=======
 	memset(&props, 0, sizeof(props));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = max_isel;
 	bl = devm_backlight_device_register(&pdev->dev, "wm831x", &pdev->dev,
 					data, &wm831x_backlight_ops, &props);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
 		return PTR_ERR(bl);
@@ -249,29 +201,11 @@ static int wm831x_backlight_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm831x_backlight_remove(struct platform_device *pdev)
-{
-	struct backlight_device *bl = platform_get_drvdata(pdev);
-
-	backlight_device_unregister(bl);
-	return 0;
-}
-
-static struct platform_driver wm831x_backlight_driver = {
-	.driver		= {
-		.name	= "wm831x-backlight",
-		.owner	= THIS_MODULE,
-	},
-	.probe		= wm831x_backlight_probe,
-	.remove		= wm831x_backlight_remove,
-=======
 static struct platform_driver wm831x_backlight_driver = {
 	.driver		= {
 		.name	= "wm831x-backlight",
 	},
 	.probe		= wm831x_backlight_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(wm831x_backlight_driver);

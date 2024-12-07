@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2006 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *
- */
-
-#ifndef _I830_BIOS_H_
-#define _I830_BIOS_H_
-
-#include <drm/drmP.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2006 Intel Corporation
@@ -37,7 +10,6 @@
 #define _INTEL_BIOS_H_
 
 struct drm_device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct vbt_header {
 	u8 signature[20];		/**< Always starts with 'VBT$' */
@@ -48,11 +20,7 @@ struct vbt_header {
 	u8 reserved0;
 	u32 bdb_offset;			/**< from beginning of VBT */
 	u32 aim_offset[4];		/**< from beginning of VBT */
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 struct bdb_header {
@@ -79,11 +47,7 @@ struct vbios_data {
 	u8 rsvd4; /* popup memory size */
 	u8 resize_pci_bios;
 	u8 rsvd5; /* is crt already on ddc2 */
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * There are several types of BIOS data blocks (BDBs), each block has
@@ -116,10 +80,7 @@ struct vbios_data {
 #define BDB_SDVO_LVDS_PNP_IDS	 24
 #define BDB_SDVO_LVDS_POWER_SEQ	 25
 #define BDB_TV_OPTIONS		 26
-<<<<<<< HEAD
-=======
 #define BDB_EDP			 27
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BDB_LVDS_OPTIONS	 40
 #define BDB_LVDS_LFP_DATA_PTRS	 41
 #define BDB_LVDS_LFP_DATA	 42
@@ -154,10 +115,6 @@ struct bdb_general_features {
 	/* bits 5 */
 	u8 int_crt_support:1;
 	u8 int_tv_support:1;
-<<<<<<< HEAD
-	u8 rsvd11:6; /* finish byte */
-} __attribute__((packed));
-=======
 	u8 int_efp_support:1;
 	u8 dp_ssc_enb:1;	/* PCH attached eDP supports SSC */
 	u8 dp_ssc_freq:1;	/* SSC freq for PCH attached eDP */
@@ -244,7 +201,6 @@ struct child_device_config {
 	u8  dvo_function;
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bdb_general_definitions {
 	/* DDC GPIO */
@@ -260,15 +216,6 @@ struct bdb_general_definitions {
 	u8 boot_display[2];
 	u8 child_dev_size;
 
-<<<<<<< HEAD
-	/* device info */
-	u8 tv_or_lvds_info[33];
-	u8 dev1[33];
-	u8 dev2[33];
-	u8 dev3[33];
-	u8 dev4[33];
-	/* may be another device block here on some platforms */
-=======
 	/*
 	 * Device info:
 	 * If TV is present, it'll be at devices[0].
@@ -281,7 +228,6 @@ struct bdb_general_definitions {
 	 *	     sizeof(child_device_config);
 	 */
 	struct child_device_config devices[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bdb_lvds_options {
@@ -296,11 +242,7 @@ struct bdb_lvds_options {
 	u8 lvds_edid:1;
 	u8 rsvd2:1;
 	u8 rsvd4;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bdb_lvds_backlight {
 	u8 type:2;
@@ -312,11 +254,7 @@ struct bdb_lvds_backlight {
 	u8 i2caddr;
 	u8 brightnesscmd;
 	/*FIXME: more...*/
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* LFP pointer table contains entries to the struct below */
 struct bdb_lvds_lfp_data_ptr {
@@ -326,20 +264,12 @@ struct bdb_lvds_lfp_data_ptr {
 	u8 dvo_table_size;
 	u16 panel_pnp_id_offset;
 	u8 pnp_table_size;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bdb_lvds_lfp_data_ptrs {
 	u8 lvds_entries; /* followed by one or more lvds_data_ptr structs */
 	struct bdb_lvds_lfp_data_ptr ptr[16];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* LFP data has 3 blocks per entry */
 struct lvds_fp_timing {
@@ -356,11 +286,7 @@ struct lvds_fp_timing {
 	u32 pfit_reg;
 	u32 pfit_reg_val;
 	u16 terminator;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct lvds_dvo_timing {
 	u16 clock;		/**< In 10khz */
@@ -388,11 +314,7 @@ struct lvds_dvo_timing {
 	u8 vsync_positive:1;
 	u8 hsync_positive:1;
 	u8 rsvd2:1;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct lvds_pnp_id {
 	u16 mfg_name;
@@ -400,29 +322,17 @@ struct lvds_pnp_id {
 	u32 serial;
 	u8 mfg_week;
 	u8 mfg_year;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bdb_lvds_lfp_data_entry {
 	struct lvds_fp_timing fp_timing;
 	struct lvds_dvo_timing dvo_timing;
 	struct lvds_pnp_id pnp_id;
-<<<<<<< HEAD
-} __attribute__((packed));
-
-struct bdb_lvds_lfp_data {
-	struct bdb_lvds_lfp_data_entry data[16];
-} __attribute__((packed));
-=======
 } __packed;
 
 struct bdb_lvds_lfp_data {
 	struct bdb_lvds_lfp_data_entry data[16];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct aimdb_header {
 	char signature[16];
@@ -430,20 +340,12 @@ struct aimdb_header {
 	u16 aimdb_version;
 	u16 aimdb_header_size;
 	u16 aimdb_size;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct aimdb_block {
 	u8 aimdb_id;
 	u16 aimdb_size;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct vch_panel_data {
 	u16 fp_timing_offset;
@@ -454,20 +356,12 @@ struct vch_panel_data {
 	u8 text_fitting_size;
 	u16 graphics_fitting_offset;
 	u8 graphics_fitting_size;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct vch_bdb_22 {
 	struct aimdb_block aimdb_block;
 	struct vch_panel_data panels[16];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bdb_sdvo_lvds_options {
 	u8 panel_backlight;
@@ -483,12 +377,6 @@ struct bdb_sdvo_lvds_options {
 	u8 panel_misc_bits_2;
 	u8 panel_misc_bits_3;
 	u8 panel_misc_bits_4;
-<<<<<<< HEAD
-} __attribute__((packed));
-
-
-extern bool psb_intel_init_bios(struct drm_device *dev);
-=======
 } __packed;
 
 #define BDB_DRIVER_FEATURE_NO_LVDS		0
@@ -576,7 +464,6 @@ struct bdb_edp {
 } __attribute__ ((packed));
 
 extern int psb_intel_init_bios(struct drm_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void psb_intel_destroy_bios(struct drm_device *dev);
 
 /*
@@ -700,9 +587,6 @@ extern void psb_intel_destroy_bios(struct drm_device *dev);
 #define   SWF14_APM_STANDBY	0x1
 #define   SWF14_APM_RESTORE	0x0
 
-<<<<<<< HEAD
-#endif /* _I830_BIOS_H_ */
-=======
 /* Add the device class for LFP, TV, HDMI */
 #define	 DEVICE_TYPE_INT_LFP	0x1022
 #define	 DEVICE_TYPE_INT_TV	0x1009
@@ -721,4 +605,3 @@ extern void psb_intel_destroy_bios(struct drm_device *dev);
 #define		PORT_IDPD	9
 
 #endif /* _INTEL_BIOS_H_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

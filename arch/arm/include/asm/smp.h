@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/smp.h
  *
  *  Copyright (C) 2004-2005 ARM Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_ARM_SMP_H
 #define __ASM_ARM_SMP_H
@@ -35,14 +25,6 @@ struct seq_file;
 extern void show_ipi_list(struct seq_file *, int);
 
 /*
-<<<<<<< HEAD
- * Called from assembly code, this handles an IPI.
- */
-asmlinkage void do_IPI(int ipinr, struct pt_regs *regs);
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Called from C code, this handles an IPI.
  */
 void handle_IPI(int ipinr, struct pt_regs *regs);
@@ -52,97 +34,22 @@ void handle_IPI(int ipinr, struct pt_regs *regs);
  */
 extern void smp_init_cpus(void);
 
-<<<<<<< HEAD
-
-/*
- * Provide a function to raise an IPI cross call on CPUs in callmap.
- */
-extern void set_smp_cross_call(void (*)(const struct cpumask *, unsigned int));
-
-/*
- * Boot a secondary CPU, and assign it the specified idle task.
- * This also gives us the initial stack to use for this CPU.
- */
-extern int boot_secondary(unsigned int cpu, struct task_struct *);
-=======
 /*
  * Register IPI interrupts with the arch SMP code
  */
 extern void set_smp_ipi_range(int ipi_base, int nr_ipi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called from platform specific assembly code, this is the
  * secondary CPU entry point.
  */
-<<<<<<< HEAD
-asmlinkage void secondary_start_kernel(void);
-
-/*
- * Perform platform specific initialisation of the specified CPU.
- */
-extern void platform_secondary_init(unsigned int cpu);
-
-/*
- * Initialize cpu_possible map, and enable coherency
- */
-extern void platform_smp_prepare_cpus(unsigned int);
-=======
 asmlinkage void secondary_start_kernel(struct task_struct *task);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initial data for bringing up a secondary CPU.
  */
 struct secondary_data {
-<<<<<<< HEAD
-	unsigned long pgdir;
-	unsigned long swapper_pg_dir;
-	void *stack;
-};
-extern struct secondary_data secondary_data;
-
-extern int __cpu_disable(void);
-extern int platform_cpu_disable(unsigned int cpu);
-
-extern void __cpu_die(unsigned int cpu);
-extern void cpu_die(void);
-
-extern void platform_cpu_die(unsigned int cpu);
-extern int platform_cpu_kill(unsigned int cpu);
-extern void platform_cpu_enable(unsigned int cpu);
-
-extern void arch_send_call_function_single_ipi(int cpu);
-extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
-
-extern void smp_send_all_cpu_backtrace(void);
-
-struct smp_operations {
-#ifdef CONFIG_SMP
-/*
- * Setup the set of possible CPUs (via set_cpu_possible)
- */
-void (*smp_init_cpus)(void);
-/*
- * Initialize cpu_possible map, and enable coherency
- */
-void (*smp_prepare_cpus)(unsigned int max_cpus);
-
-/*
- * Perform platform specific initialisation of the specified CPU.
- */
-void (*smp_secondary_init)(unsigned int cpu);
-/*
- * Boot a secondary CPU, and assign it the specified idle task.
- * This also gives us the initial stack to use for this CPU.
- */
-int  (*smp_boot_secondary)(unsigned int cpu, struct task_struct *idle);
-#ifdef CONFIG_HOTPLUG_CPU
-int  (*cpu_kill)(unsigned int cpu);
-void (*cpu_die)(unsigned int cpu);
-int  (*cpu_disable)(unsigned int cpu);
-=======
 	union {
 		struct mpu_rgn_info *mpu_rgn_info;
 		u64 pgdir;
@@ -190,17 +97,10 @@ struct smp_operations {
 	void (*cpu_die)(unsigned int cpu);
 	bool  (*cpu_can_disable)(unsigned int cpu);
 	int  (*cpu_disable)(unsigned int cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #endif
 };
 
-<<<<<<< HEAD
-/*
- * set platform specific SMP operations
- */
-extern void smp_set_ops(struct smp_operations *);
-=======
 struct of_cpu_method {
 	const char *method;
 	const struct smp_operations *ops;
@@ -214,6 +114,5 @@ struct of_cpu_method {
  * set platform specific SMP operations
  */
 extern void smp_set_ops(const struct smp_operations *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* ifndef __ASM_ARM_SMP_H */

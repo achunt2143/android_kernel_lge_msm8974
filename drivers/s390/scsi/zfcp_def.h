@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * Global definitions for the zfcp device driver.
  *
-<<<<<<< HEAD
- * Copyright IBM Corporation 2002, 2010
-=======
  * Copyright IBM Corp. 2002, 2020
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef ZFCP_DEF_H
@@ -48,35 +41,16 @@
 #include "zfcp_fc.h"
 #include "zfcp_qdio.h"
 
-<<<<<<< HEAD
-struct zfcp_reqlist;
-
-/********************* SCSI SPECIFIC DEFINES *********************************/
-#define ZFCP_SCSI_ER_TIMEOUT                    (10*HZ)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /********************* FSF SPECIFIC DEFINES *********************************/
 
 /* ATTENTION: value must not be used by hardware */
 #define FSF_QTCB_UNSOLICITED_STATUS		0x6305
 
-<<<<<<< HEAD
-/* timeout value for "default timer" for fsf requests */
-#define ZFCP_FSF_REQUEST_TIMEOUT (60*HZ)
-
-/*************** ADAPTER/PORT/UNIT AND FSF_REQ STATUS FLAGS ******************/
-
-/*
- * Note, the leftmost status byte is common among adapter, port
- * and unit
-=======
 /*************** ADAPTER/PORT/UNIT AND FSF_REQ STATUS FLAGS ******************/
 
 /*
  * Note, the leftmost 12 status bits (3 nibbles) are common among adapter, port
  * and unit. This is a mask for bitwise 'and' with status values.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ZFCP_COMMON_FLAGS			0xfff00000
 
@@ -96,10 +70,6 @@ struct zfcp_reqlist;
 #define ZFCP_STATUS_ADAPTER_SIOSL_ISSUED	0x00000004
 #define ZFCP_STATUS_ADAPTER_XCONFIG_OK		0x00000008
 #define ZFCP_STATUS_ADAPTER_HOST_CON_INIT	0x00000010
-<<<<<<< HEAD
-#define ZFCP_STATUS_ADAPTER_SUSPENDED		0x00000040
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ZFCP_STATUS_ADAPTER_ERP_PENDING		0x00000100
 #define ZFCP_STATUS_ADAPTER_LINK_UNPLUGGED	0x00000200
 #define ZFCP_STATUS_ADAPTER_DATA_DIV_ENABLED	0x00000400
@@ -108,13 +78,6 @@ struct zfcp_reqlist;
 #define ZFCP_STATUS_PORT_PHYS_OPEN		0x00000001
 #define ZFCP_STATUS_PORT_LINK_TEST		0x00000002
 
-<<<<<<< HEAD
-/* logical unit status */
-#define ZFCP_STATUS_LUN_SHARED			0x00000004
-#define ZFCP_STATUS_LUN_READONLY		0x00000008
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FSF request status (this does not have a common part) */
 #define ZFCP_STATUS_FSFREQ_ERROR		0x00000008
 #define ZFCP_STATUS_FSFREQ_CLEANUP		0x00000010
@@ -122,12 +85,6 @@ struct zfcp_reqlist;
 #define ZFCP_STATUS_FSFREQ_ABORTNOTNEEDED       0x00000080
 #define ZFCP_STATUS_FSFREQ_TMFUNCFAILED         0x00000200
 #define ZFCP_STATUS_FSFREQ_DISMISSED            0x00001000
-<<<<<<< HEAD
-
-/************************* STRUCTURE DEFINITIONS *****************************/
-
-struct zfcp_fsf_req;
-=======
 #define ZFCP_STATUS_FSFREQ_XDATAINCOMPLETE	0x00020000
 
 /************************* STRUCTURE DEFINITIONS *****************************/
@@ -175,7 +132,6 @@ struct zfcp_erp_action {
 	u64			fsf_req_id;
 	struct timer_list timer;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* holds various memory pools of an adapter */
 struct zfcp_adapter_mempool {
@@ -189,40 +145,6 @@ struct zfcp_adapter_mempool {
 	mempool_t *qtcb_pool;
 };
 
-<<<<<<< HEAD
-struct zfcp_erp_action {
-	struct list_head list;
-	int action;	              /* requested action code */
-	struct zfcp_adapter *adapter; /* device which should be recovered */
-	struct zfcp_port *port;
-	struct scsi_device *sdev;
-	u32		status;	      /* recovery status */
-	u32 step;	              /* active step of this erp action */
-	unsigned long		fsf_req_id;
-	struct timer_list timer;
-};
-
-struct fsf_latency_record {
-	u32 min;
-	u32 max;
-	u64 sum;
-};
-
-struct latency_cont {
-	struct fsf_latency_record channel;
-	struct fsf_latency_record fabric;
-	u64 counter;
-};
-
-struct zfcp_latencies {
-	struct latency_cont read;
-	struct latency_cont write;
-	struct latency_cont cmd;
-	spinlock_t lock;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct zfcp_adapter {
 	struct kref		ref;
 	u64			peer_wwnn;	   /* P2P peer WWNN */
@@ -234,22 +156,14 @@ struct zfcp_adapter {
 	u32			fsf_lic_version;
 	u32			adapter_features;  /* FCP channel features */
 	u32			connection_features; /* host connection features */
-<<<<<<< HEAD
-        u32			hardware_version;  /* of FCP channel */
-=======
 	u32			hardware_version;  /* of FCP channel */
 	u32			fc_security_algorithms; /* of FCP channel */
 	u32			fc_security_algorithms_old; /* of FCP channel */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16			timer_ticks;       /* time int for a tick */
 	struct Scsi_Host	*scsi_host;	   /* Pointer to mid-layer */
 	struct list_head	port_list;	   /* remote port list */
 	rwlock_t		port_list_lock;    /* port list lock */
-<<<<<<< HEAD
-	unsigned long		req_no;		   /* unique FSF req number */
-=======
 	u64			req_no;		   /* unique FSF req number */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zfcp_reqlist	*req_list;
 	u32			fsf_req_seq_no;	   /* FSF cmnd seq number */
 	rwlock_t		abort_lock;        /* Protects against SCSI
@@ -266,11 +180,7 @@ struct zfcp_adapter {
 	rwlock_t		erp_lock;
 	wait_queue_head_t	erp_done_wqh;
 	struct zfcp_erp_action	erp_action;	   /* pending error recovery */
-<<<<<<< HEAD
-        atomic_t                erp_counter;
-=======
 	atomic_t		erp_counter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			erp_total_count;   /* total nr of enqueued erp
 						      actions */
 	u32			erp_low_mem_count; /* nr of erp actions waiting
@@ -282,22 +192,15 @@ struct zfcp_adapter {
 	struct fc_host_statistics *fc_stats;
 	struct fsf_qtcb_bottom_port *stats_reset_data;
 	unsigned long		stats_reset;
-<<<<<<< HEAD
-	struct work_struct	scan_work;
-=======
 	struct delayed_work	scan_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct	ns_up_work;
 	struct service_level	service_level;
 	struct workqueue_struct	*work_queue;
 	struct device_dma_parameters dma_parms;
 	struct zfcp_fc_events events;
-<<<<<<< HEAD
-=======
 	unsigned long		next_port_scan;
 	struct zfcp_diag_adapter	*diagnostics;
 	struct work_struct	version_change_lost_work;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct zfcp_port {
@@ -314,17 +217,11 @@ struct zfcp_port {
 	u32		       d_id;	       /* D_ID */
 	u32		       handle;	       /* handle assigned by FSF */
 	struct zfcp_erp_action erp_action;     /* pending error recovery */
-<<<<<<< HEAD
-        atomic_t               erp_counter;
-	u32                    maxframe_size;
-	u32                    supported_classes;
-=======
 	atomic_t	       erp_counter;
 	u32                    maxframe_size;
 	u32                    supported_classes;
 	u32                    connection_info;
 	u32                    connection_info_old;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct     gid_pn_work;
 	struct work_struct     test_link_work;
 	struct work_struct     rport_work;
@@ -332,8 +229,6 @@ struct zfcp_port {
 	unsigned int		starget_id;
 };
 
-<<<<<<< HEAD
-=======
 struct zfcp_latency_record {
 	u32 min;
 	u32 max;
@@ -353,7 +248,6 @@ struct zfcp_latencies {
 	spinlock_t lock;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct zfcp_unit - LUN configured via zfcp sysfs
  * @dev: struct device for sysfs representation and reference counting
@@ -421,13 +315,7 @@ static inline u64 zfcp_scsi_dev_lun(struct scsi_device *sdev)
  * @qdio_req: qdio queue related values
  * @completion: used to signal the completion of the request
  * @status: status of the request
-<<<<<<< HEAD
- * @fsf_command: FSF command issued
  * @qtcb: associated QTCB
- * @seq_no: sequence number of this request
-=======
- * @qtcb: associated QTCB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @data: private data
  * @timer: timer data of this request
  * @erp_action: reference to erp action if request issued on behalf of ERP
@@ -437,22 +325,12 @@ static inline u64 zfcp_scsi_dev_lun(struct scsi_device *sdev)
  */
 struct zfcp_fsf_req {
 	struct list_head	list;
-<<<<<<< HEAD
-	unsigned long		req_id;
-=======
 	u64			req_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zfcp_adapter	*adapter;
 	struct zfcp_qdio_req	qdio_req;
 	struct completion	completion;
 	u32			status;
-<<<<<<< HEAD
-	u32			fsf_command;
 	struct fsf_qtcb		*qtcb;
-	u32			seq_no;
-=======
-	struct fsf_qtcb		*qtcb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			*data;
 	struct timer_list	timer;
 	struct zfcp_erp_action	*erp_action;
@@ -467,12 +345,9 @@ int zfcp_adapter_multi_buffer_active(struct zfcp_adapter *adapter)
 	return atomic_read(&adapter->status) & ZFCP_STATUS_ADAPTER_MB_ACT;
 }
 
-<<<<<<< HEAD
-=======
 static inline bool zfcp_fsf_req_is_status_read_buffer(struct zfcp_fsf_req *req)
 {
 	return req->qtcb == NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ZFCP_DEF_H */

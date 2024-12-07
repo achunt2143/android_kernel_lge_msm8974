@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUSBCRequest_SetBaudRateParityAndStopBits       1
 #define SUSBCR_SBR_MASK				0xFF00
 #define SUSBCR_SBR_1200				0x0100

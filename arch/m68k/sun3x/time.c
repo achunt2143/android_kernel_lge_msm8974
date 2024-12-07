@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/m68k/sun3x/time.c
  *
@@ -19,17 +16,10 @@
 
 #include <asm/irq.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/traps.h>
-#include <asm/sun3x.h>
-#include <asm/sun3ints.h>
-#include <asm/rtc.h>
-=======
 #include <asm/machdep.h>
 #include <asm/traps.h>
 #include <asm/sun3x.h>
 #include <asm/sun3ints.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "time.h"
 
@@ -62,13 +52,8 @@ int sun3x_hwclk(int set, struct rtc_time *t)
 		h->hour = bin2bcd(t->tm_hour);
 		h->wday = bin2bcd(t->tm_wday);
 		h->mday = bin2bcd(t->tm_mday);
-<<<<<<< HEAD
-		h->month = bin2bcd(t->tm_mon);
-		h->year = bin2bcd(t->tm_year);
-=======
 		h->month = bin2bcd(t->tm_mon + 1);
 		h->year = bin2bcd(t->tm_year % 100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		h->csr &= ~C_WRITE;
 	} else {
 		h->csr |= C_READ;
@@ -77,45 +62,17 @@ int sun3x_hwclk(int set, struct rtc_time *t)
 		t->tm_hour = bcd2bin(h->hour);
 		t->tm_wday = bcd2bin(h->wday);
 		t->tm_mday = bcd2bin(h->mday);
-<<<<<<< HEAD
-		t->tm_mon = bcd2bin(h->month);
-		t->tm_year = bcd2bin(h->year);
-		h->csr &= ~C_READ;
-=======
 		t->tm_mon = bcd2bin(h->month) - 1;
 		t->tm_year = bcd2bin(h->year);
 		h->csr &= ~C_READ;
 		if (t->tm_year < 70)
 			t->tm_year += 100;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	local_irq_restore(flags);
 
 	return 0;
 }
-<<<<<<< HEAD
-/* Not much we can do here */
-unsigned long sun3x_gettimeoffset (void)
-{
-    return 0L;
-}
-
-#if 0
-static void sun3x_timer_tick(int irq, void *dev_id, struct pt_regs *regs)
-{
-    void (*vector)(int, void *, struct pt_regs *) = dev_id;
-
-    /* Clear the pending interrupt - pulse the enable line low */
-    disable_irq(5);
-    enable_irq(5);
-
-    vector(irq, NULL, regs);
-}
-#endif
-
-void __init sun3x_sched_init(irq_handler_t vector)
-=======
 
 #if 0
 static irqreturn_t sun3x_timer_tick(int irq, void *dev_id)
@@ -134,7 +91,6 @@ static irqreturn_t sun3x_timer_tick(int irq, void *dev_id)
 #endif
 
 void __init sun3x_sched_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	sun3_disable_interrupts();

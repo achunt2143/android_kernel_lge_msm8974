@@ -12,25 +12,13 @@
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/smp.h>
 #include <linux/errno.h>
 #include <linux/ptrace.h>
 #include <linux/user.h>
 #include <linux/signal.h>
-<<<<<<< HEAD
-#include <linux/tracehook.h>
-
-#include <asm/uaccess.h>
-#include <asm/page.h>
-#include <asm/pgtable.h>
-#include <asm/processor.h>
-
-=======
 #include <linux/regset.h>
 #include <linux/elf.h>
 #include <linux/seccomp.h>
@@ -40,7 +28,6 @@
 
 #include "ptrace.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * does not yet catch signals sent when the child dies.
  * in exit.c or in signal.c.
@@ -287,50 +274,22 @@ out_eio:
 	return -EIO;
 }
 
-<<<<<<< HEAD
-asmlinkage void syscall_trace(void)
-{
-	ptrace_notify(SIGTRAP | ((current->ptrace & PT_TRACESYSGOOD)
-				 ? 0x80 : 0));
-	/*
-	 * this isn't the same as continuing with a signal, but it will do
-	 * for normal use.  strace only continues with a signal if the
-	 * stopping signal is not SIGTRAP.  -brl
-	 */
-	if (current->exit_code) {
-		send_sig(current->exit_code, current, 1);
-		current->exit_code = 0;
-	}
-}
-
-#ifdef CONFIG_COLDFIRE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 asmlinkage int syscall_trace_enter(void)
 {
 	int ret = 0;
 
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
-<<<<<<< HEAD
-		ret = tracehook_report_syscall_entry(task_pt_regs(current));
-=======
 		ret = ptrace_report_syscall_entry(task_pt_regs(current));
 
 	if (secure_computing() == -1)
 		return -1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 asmlinkage void syscall_trace_leave(void)
 {
 	if (test_thread_flag(TIF_SYSCALL_TRACE))
-<<<<<<< HEAD
-		tracehook_report_syscall_exit(task_pt_regs(current), 0);
-}
-#endif /* CONFIG_COLDFIRE */
-=======
 		ptrace_report_syscall_exit(task_pt_regs(current), 0);
 }
 
@@ -389,4 +348,3 @@ const struct user_regset_view *task_user_regset_view(struct task_struct *task)
 	return &user_m68k_view;
 }
 #endif /* CONFIG_BINFMT_ELF_FDPIC && CONFIG_ELF_CORE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

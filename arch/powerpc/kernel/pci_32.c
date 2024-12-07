@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common pmac/prep/chrp pci routines. -- Cort
  */
@@ -14,12 +11,8 @@
 #include <linux/capability.h>
 #include <linux/sched.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
 #include <linux/syscalls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irq.h>
 #include <linux/list.h>
 #include <linux/of.h>
@@ -28,19 +21,11 @@
 
 #include <asm/processor.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sections.h>
 #include <asm/pci-bridge.h>
 #include <asm/ppc-pci.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 
 #undef DEBUG
@@ -48,29 +33,16 @@
 unsigned long isa_io_base     = 0;
 unsigned long pci_dram_offset = 0;
 int pcibios_assign_bus_offset = 1;
-<<<<<<< HEAD
-
-void pcibios_make_OF_bus_map(void);
-
-static void fixup_cpc710_pci64(struct pci_dev* dev);
-static u8* pci_to_OF_bus_map;
-=======
 EXPORT_SYMBOL(isa_io_base);
 EXPORT_SYMBOL(pci_dram_offset);
 
 static void fixup_cpc710_pci64(struct pci_dev* dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* By default, we don't re-assign bus numbers. We do this only on
  * some pmacs
  */
 static int pci_assign_all_buses;
 
-<<<<<<< HEAD
-static int pci_bus_count;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This will remain NULL for now, until isa-bridge.c is made common
  * to both 32-bit and 64-bit.
  */
@@ -90,14 +62,11 @@ fixup_cpc710_pci64(struct pci_dev* dev)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_IBM,	PCI_DEVICE_ID_IBM_CPC710_PCI64,	fixup_cpc710_pci64);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_PCI_OF_BUS_MAP
 
 static u8* pci_to_OF_bus_map;
 static int pci_bus_count;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions below are used on OpenFirmware machines.
  */
@@ -111,13 +80,8 @@ make_one_node_map(struct device_node* node, u8 pci_bus)
 		return;
 	bus_range = of_get_property(node, "bus-range", &len);
 	if (bus_range == NULL || len < 2 * sizeof(int)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Can't get bus-range for %s, "
-		       "assuming it starts at 0\n", node->full_name);
-=======
 		printk(KERN_WARNING "Can't get bus-range for %pOF, "
 		       "assuming it starts at 0\n", node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_to_OF_bus_map[pci_bus] = 0;
 	} else
 		pci_to_OF_bus_map[pci_bus] = bus_range[0];
@@ -133,12 +97,8 @@ make_one_node_map(struct device_node* node, u8 pci_bus)
 		reg = of_get_property(node, "reg", NULL);
 		if (!reg)
 			continue;
-<<<<<<< HEAD
-		dev = pci_get_bus_and_slot(pci_bus, ((reg[0] >> 8) & 0xff));
-=======
 		dev = pci_get_domain_bus_and_slot(0, pci_bus,
 						  ((reg[0] >> 8) & 0xff));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dev || !dev->subordinate) {
 			pci_dev_put(dev);
 			continue;
@@ -148,11 +108,7 @@ make_one_node_map(struct device_node* node, u8 pci_bus)
 	}
 }
 	
-<<<<<<< HEAD
-void
-=======
 static void __init
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pcibios_make_OF_bus_map(void)
 {
 	int i;
@@ -196,27 +152,18 @@ pcibios_make_OF_bus_map(void)
 	}
 #endif
 }
-<<<<<<< HEAD
-
-
-=======
 #endif // CONFIG_PPC_PCI_OF_BUS_MAP
 
 
 #ifdef CONFIG_PPC_PMAC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Returns the PCI device matching a given OF node
  */
 int pci_device_from_OF_node(struct device_node *node, u8 *bus, u8 *devfn)
 {
-<<<<<<< HEAD
-	struct pci_dev *dev = NULL;
-=======
 #ifdef CONFIG_PPC_PCI_OF_BUS_MAP
 	struct pci_dev *dev = NULL;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const __be32 *reg;
 	int size;
 
@@ -231,12 +178,9 @@ int pci_device_from_OF_node(struct device_node *node, u8 *bus, u8 *devfn)
 	*bus = (be32_to_cpup(&reg[0]) >> 16) & 0xff;
 	*devfn = (be32_to_cpup(&reg[0]) >> 8) & 0xff;
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_PPC_PCI_OF_BUS_MAP
 	return 0;
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Ok, here we need some tweak. If we have already renumbered
 	 * all busses, we can't rely on the OF bus number any more.
 	 * the pci_to_OF_bus_map is not enough as several PCI busses
@@ -254,18 +198,12 @@ int pci_device_from_OF_node(struct device_node *node, u8 *bus, u8 *devfn)
 		}
 
 	return -ENODEV;
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL(pci_device_from_OF_node);
-
-=======
 #endif // CONFIG_PPC_PCI_OF_BUS_MAP
 }
 EXPORT_SYMBOL(pci_device_from_OF_node);
 #endif
 
 #ifdef CONFIG_PPC_PCI_OF_BUS_MAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* We create the "pci-OF-bus-map" property now so it appears in the
  * /proc device tree
  */
@@ -275,31 +213,17 @@ pci_create_OF_bus_map(void)
 	struct property* of_prop;
 	struct device_node *dn;
 
-<<<<<<< HEAD
-	of_prop = (struct property*) alloc_bootmem(sizeof(struct property) + 256);
-	if (!of_prop)
-		return;
-=======
 	of_prop = memblock_alloc(sizeof(struct property) + 256,
 				 SMP_CACHE_BYTES);
 	if (!of_prop)
 		panic("%s: Failed to allocate %zu bytes\n", __func__,
 		      sizeof(struct property) + 256);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dn = of_find_node_by_path("/");
 	if (dn) {
 		memset(of_prop, -1, sizeof(struct property) + 256);
 		of_prop->name = "pci-OF-bus-map";
 		of_prop->length = 256;
 		of_prop->value = &of_prop[1];
-<<<<<<< HEAD
-		prom_add_property(dn, of_prop);
-		of_node_put(dn);
-	}
-}
-
-void __devinit pcibios_setup_phb_io_space(struct pci_controller *hose)
-=======
 		of_add_property(dn, of_prop);
 		of_node_put(dn);
 	}
@@ -307,7 +231,6 @@ void __devinit pcibios_setup_phb_io_space(struct pci_controller *hose)
 #endif // CONFIG_PPC_PCI_OF_BUS_MAP
 
 void pcibios_setup_phb_io_space(struct pci_controller *hose)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long io_offset;
 	struct resource *res = &hose->io_resource;
@@ -321,12 +244,6 @@ void pcibios_setup_phb_io_space(struct pci_controller *hose)
 static int __init pcibios_init(void)
 {
 	struct pci_controller *hose, *tmp;
-<<<<<<< HEAD
-	int next_busno = 0;
-
-	printk(KERN_INFO "PCI: Probing PCI hardware\n");
-
-=======
 #ifndef CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
 	int next_busno = 0;
 #endif
@@ -342,22 +259,11 @@ static int __init pcibios_init(void)
 	pci_add_flags(PCI_ENABLE_PROC_DOMAINS | PCI_COMPAT_DOMAIN_0);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_has_flag(PCI_REASSIGN_ALL_BUS))
 		pci_assign_all_buses = 1;
 
 	/* Scan all of the recorded PCI controllers.  */
 	list_for_each_entry_safe(hose, tmp, &hose_list, list_node) {
-<<<<<<< HEAD
-		if (pci_assign_all_buses)
-			hose->first_busno = next_busno;
-		hose->last_busno = 0xff;
-		pcibios_scan_phb(hose);
-		pci_bus_add_devices(hose->bus);
-		if (pci_assign_all_buses || next_busno <= hose->last_busno)
-			next_busno = hose->last_busno + pcibios_assign_bus_offset;
-	}
-=======
 #ifndef CONFIG_PPC_PCI_BUS_NUM_DOMAIN_DEPENDENT
 		if (pci_assign_all_buses)
 			hose->first_busno = next_busno;
@@ -373,7 +279,6 @@ static int __init pcibios_init(void)
 
 #if defined(CONFIG_PPC_PMAC) || defined(CONFIG_PPC_CHRP)
 #ifdef CONFIG_PPC_PCI_OF_BUS_MAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_bus_count = next_busno;
 
 	/* OpenFirmware based machines need a map of OF bus
@@ -382,22 +287,16 @@ static int __init pcibios_init(void)
 	 */
 	if (pci_assign_all_buses)
 		pcibios_make_OF_bus_map();
-<<<<<<< HEAD
-=======
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Call common code to handle resource allocation */
 	pcibios_resource_survey();
 
-<<<<<<< HEAD
-=======
 	/* Call machine dependent fixup */
 	if (ppc_md.pcibios_fixup)
 		ppc_md.pcibios_fixup();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Call machine dependent post-init code */
 	if (ppc_md.pcibios_after_init)
 		ppc_md.pcibios_after_init();
@@ -424,12 +323,8 @@ pci_bus_to_hose(int bus)
  * Note that the returned IO or memory base is a physical address
  */
 
-<<<<<<< HEAD
-long sys_pciconfig_iobase(long which, unsigned long bus, unsigned long devfn)
-=======
 SYSCALL_DEFINE3(pciconfig_iobase, long, which,
 		unsigned long, bus, unsigned long, devfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_controller* hose;
 	long result = -EOPNOTSUPP;
@@ -442,11 +337,7 @@ SYSCALL_DEFINE3(pciconfig_iobase, long, which,
 	case IOBASE_BRIDGE_NUMBER:
 		return (long)hose->first_busno;
 	case IOBASE_MEMORY:
-<<<<<<< HEAD
-		return (long)hose->pci_mem_offset;
-=======
 		return (long)hose->mem_offset[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOBASE_IO:
 		return (long)hose->io_base_phys;
 	case IOBASE_ISA_IO:
@@ -457,8 +348,3 @@ SYSCALL_DEFINE3(pciconfig_iobase, long, which,
 
 	return result;
 }
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

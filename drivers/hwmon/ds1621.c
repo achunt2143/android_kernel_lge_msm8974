@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ds1621.c - Part of lm_sensors, Linux kernel modules for hardware
  *	      monitoring
  * Christian W. Zuckschwerdt  <zany@triq.net>  2000-11-23
  * based on lm75.c by Frodo Looijaard <frodol@dds.nl>
  * Ported to Linux 2.6 by Aurelien Jarno <aurelien@aurel32.net> with
-<<<<<<< HEAD
- * the help of Jean Delvare <khali@linux-fr.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  * the help of Jean Delvare <jdelvare@suse.de>
  *
  * The DS1621 device is a digital temperature/thermometer with 9-bit
@@ -39,7 +19,6 @@
  * Since the DS1621 was the first chipset supported by this driver,
  * most comments will refer to this chipset, but are actually general
  * and concern all supported chipsets, unless mentioned otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -52,31 +31,16 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 #include <linux/sysfs.h>
-<<<<<<< HEAD
-#include "lm75.h"
-
-/* Addresses to scan */
-static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b, 0x4c,
-					0x4d, 0x4e, 0x4f, I2C_CLIENT_END };
-=======
 #include <linux/kernel.h>
 
 /* Supported devices */
 enum chips { ds1621, ds1625, ds1631, ds1721, ds1731 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Insmod parameters */
 static int polarity = -1;
 module_param(polarity, int, 0);
 MODULE_PARM_DESC(polarity, "Output's polarity: 0 = active high, 1 = active low");
 
-<<<<<<< HEAD
-/* Many DS1621 constants specified below */
-/* Config register used for detection         */
-/*  7    6    5    4    3    2    1    0      */
-/* |Done|THF |TLF |NVB | X  | X  |POL |1SHOT| */
-#define DS1621_REG_CONFIG_NVB		0x10
-=======
 /*
  * The Configuration/Status register
  *
@@ -102,14 +66,10 @@ MODULE_PARM_DESC(polarity, "Output's polarity: 0 = active high, 1 = active low")
  */
 #define DS1621_REG_CONFIG_NVB		0x10
 #define DS1621_REG_CONFIG_RESOL		0x0C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DS1621_REG_CONFIG_POLARITY	0x02
 #define DS1621_REG_CONFIG_1SHOT		0x01
 #define DS1621_REG_CONFIG_DONE		0x80
 
-<<<<<<< HEAD
-/* The DS1621 registers */
-=======
 #define DS1621_REG_CONFIG_RESOL_SHIFT	2
 
 /* ds1721 conversion rates: {C/LSB, time(ms), resolution bit setting} */
@@ -127,7 +87,6 @@ static const unsigned short ds1721_convrates[] = {
 #define DS1621_TEMP_MIN	(-55000)
 
 /* The DS1621 temperature registers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u8 DS1621_REG_TEMP[3] = {
 	0xAA,		/* input, word, RO */
 	0xA2,		/* min, word, RW */
@@ -135,10 +94,7 @@ static const u8 DS1621_REG_TEMP[3] = {
 };
 #define DS1621_REG_CONF			0xAC /* byte, RW */
 #define DS1621_COM_START		0xEE /* no data */
-<<<<<<< HEAD
-=======
 #define DS1721_COM_START		0x51 /* no data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DS1621_COM_STOP			0x22 /* no data */
 
 /* The DS1621 configuration register */
@@ -151,20 +107,6 @@ static const u8 DS1621_REG_TEMP[3] = {
 
 /* Each client has this additional data */
 struct ds1621_data {
-<<<<<<< HEAD
-	struct device *hwmon_dev;
-	struct mutex update_lock;
-	char valid;			/* !=0 if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
-
-	u16 temp[3];			/* Register values, word */
-	u8 conf;			/* Register encoding, combined */
-};
-
-static void ds1621_init_client(struct i2c_client *client)
-{
-	u8 conf, new_conf;
-=======
 	struct i2c_client *client;
 	struct mutex update_lock;
 	bool valid;			/* true if following fields are valid */
@@ -200,7 +142,6 @@ static void ds1621_init_client(struct ds1621_data *data,
 			       struct i2c_client *client)
 {
 	u8 conf, new_conf, sreg, resol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_conf = conf = i2c_smbus_read_byte_data(client, DS1621_REG_CONF);
 	/* switch to continuous conversion mode */
@@ -215,10 +156,6 @@ static void ds1621_init_client(struct ds1621_data *data,
 	if (conf != new_conf)
 		i2c_smbus_write_byte_data(client, DS1621_REG_CONF, new_conf);
 
-<<<<<<< HEAD
-	/* start conversion */
-	i2c_smbus_write_byte(client, DS1621_COM_START);
-=======
 	switch (data->kind) {
 	case ds1625:
 		data->update_interval = DS1625_CONVERSION_MAX;
@@ -243,29 +180,18 @@ static void ds1621_init_client(struct ds1621_data *data,
 
 	/* start conversion */
 	i2c_smbus_write_byte(client, sreg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ds1621_data *ds1621_update_client(struct device *dev)
 {
-<<<<<<< HEAD
-	struct i2c_client *client = to_i2c_client(dev);
-	struct ds1621_data *data = i2c_get_clientdata(client);
-=======
 	struct ds1621_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 new_conf;
 
 	mutex_lock(&data->update_lock);
 
-<<<<<<< HEAD
-	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
-	    || !data->valid) {
-=======
 	if (time_after(jiffies, data->last_updated + data->update_interval) ||
 	    !data->valid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int i;
 
 		dev_dbg(&client->dev, "Starting ds1621 update\n");
@@ -287,11 +213,7 @@ static struct ds1621_data *ds1621_update_client(struct device *dev)
 						  new_conf);
 
 		data->last_updated = jiffies;
-<<<<<<< HEAD
-		data->valid = 1;
-=======
 		data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -299,27 +221,12 @@ static struct ds1621_data *ds1621_update_client(struct device *dev)
 	return data;
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp(struct device *dev, struct device_attribute *da,
-=======
 static ssize_t temp_show(struct device *dev, struct device_attribute *da,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	struct ds1621_data *data = ds1621_update_client(dev);
 	return sprintf(buf, "%d\n",
-<<<<<<< HEAD
-		       LM75_TEMP_FROM_REG(data->temp[attr->index]));
-}
-
-static ssize_t set_temp(struct device *dev, struct device_attribute *da,
-			const char *buf, size_t count)
-{
-	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
-	struct i2c_client *client = to_i2c_client(dev);
-	struct ds1621_data *data = i2c_get_clientdata(client);
-=======
 		       DS1621_TEMP_FROM_REG(data->temp[attr->index]));
 }
 
@@ -328,7 +235,6 @@ static ssize_t temp_store(struct device *dev, struct device_attribute *da,
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	struct ds1621_data *data = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -337,34 +243,21 @@ static ssize_t temp_store(struct device *dev, struct device_attribute *da,
 		return err;
 
 	mutex_lock(&data->update_lock);
-<<<<<<< HEAD
-	data->temp[attr->index] = LM75_TEMP_TO_REG(val);
-	i2c_smbus_write_word_swapped(client, DS1621_REG_TEMP[attr->index],
-=======
 	data->temp[attr->index] = DS1621_TEMP_TO_REG(val, data->zbits);
 	i2c_smbus_write_word_swapped(data->client, DS1621_REG_TEMP[attr->index],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     data->temp[attr->index]);
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_alarms(struct device *dev, struct device_attribute *da,
-=======
 static ssize_t alarms_show(struct device *dev, struct device_attribute *da,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct ds1621_data *data = ds1621_update_client(dev);
 	return sprintf(buf, "%d\n", ALARMS_FROM_REG(data->conf));
 }
 
-<<<<<<< HEAD
-static ssize_t show_alarm(struct device *dev, struct device_attribute *da,
-=======
 static ssize_t alarm_show(struct device *dev, struct device_attribute *da,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
@@ -372,16 +265,6 @@ static ssize_t alarm_show(struct device *dev, struct device_attribute *da,
 	return sprintf(buf, "%d\n", !!(data->conf & attr->index));
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(alarms, S_IRUGO, show_alarms, NULL);
-static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_temp, NULL, 0);
-static SENSOR_DEVICE_ATTR(temp1_min, S_IWUSR | S_IRUGO, show_temp, set_temp, 1);
-static SENSOR_DEVICE_ATTR(temp1_max, S_IWUSR | S_IRUGO, show_temp, set_temp, 2);
-static SENSOR_DEVICE_ATTR(temp1_min_alarm, S_IRUGO, show_alarm, NULL,
-		DS1621_ALARM_TEMP_LOW);
-static SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL,
-		DS1621_ALARM_TEMP_HIGH);
-=======
 static ssize_t update_interval_show(struct device *dev,
 				    struct device_attribute *da, char *buf)
 {
@@ -428,7 +311,6 @@ static SENSOR_DEVICE_ATTR_RW(temp1_min, temp, 1);
 static SENSOR_DEVICE_ATTR_RW(temp1_max, temp, 2);
 static SENSOR_DEVICE_ATTR_RO(temp1_min_alarm, alarm, DS1621_ALARM_TEMP_LOW);
 static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, alarm, DS1621_ALARM_TEMP_HIGH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *ds1621_attributes[] = {
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
@@ -437,104 +319,6 @@ static struct attribute *ds1621_attributes[] = {
 	&sensor_dev_attr_temp1_min_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp1_max_alarm.dev_attr.attr,
 	&dev_attr_alarms.attr,
-<<<<<<< HEAD
-	NULL
-};
-
-static const struct attribute_group ds1621_group = {
-	.attrs = ds1621_attributes,
-};
-
-
-/* Return 0 if detection is successful, -ENODEV otherwise */
-static int ds1621_detect(struct i2c_client *client,
-			 struct i2c_board_info *info)
-{
-	struct i2c_adapter *adapter = client->adapter;
-	int conf, temp;
-	int i;
-
-	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA
-				     | I2C_FUNC_SMBUS_WORD_DATA
-				     | I2C_FUNC_SMBUS_WRITE_BYTE))
-		return -ENODEV;
-
-	/*
-	 * Now, we do the remaining detection. It is lousy.
-	 *
-	 * The NVB bit should be low if no EEPROM write has been requested
-	 * during the latest 10ms, which is highly improbable in our case.
-	 */
-	conf = i2c_smbus_read_byte_data(client, DS1621_REG_CONF);
-	if (conf < 0 || conf & DS1621_REG_CONFIG_NVB)
-		return -ENODEV;
-	/* The 7 lowest bits of a temperature should always be 0. */
-	for (i = 0; i < ARRAY_SIZE(DS1621_REG_TEMP); i++) {
-		temp = i2c_smbus_read_word_data(client, DS1621_REG_TEMP[i]);
-		if (temp < 0 || (temp & 0x7f00))
-			return -ENODEV;
-	}
-
-	strlcpy(info->type, "ds1621", I2C_NAME_SIZE);
-
-	return 0;
-}
-
-static int ds1621_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
-{
-	struct ds1621_data *data;
-	int err;
-
-	data = kzalloc(sizeof(struct ds1621_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit;
-	}
-
-	i2c_set_clientdata(client, data);
-	mutex_init(&data->update_lock);
-
-	/* Initialize the DS1621 chip */
-	ds1621_init_client(client);
-
-	/* Register sysfs hooks */
-	err = sysfs_create_group(&client->dev.kobj, &ds1621_group);
-	if (err)
-		goto exit_free;
-
-	data->hwmon_dev = hwmon_device_register(&client->dev);
-	if (IS_ERR(data->hwmon_dev)) {
-		err = PTR_ERR(data->hwmon_dev);
-		goto exit_remove_files;
-	}
-
-	return 0;
-
- exit_remove_files:
-	sysfs_remove_group(&client->dev.kobj, &ds1621_group);
- exit_free:
-	kfree(data);
- exit:
-	return err;
-}
-
-static int ds1621_remove(struct i2c_client *client)
-{
-	struct ds1621_data *data = i2c_get_clientdata(client);
-
-	hwmon_device_unregister(data->hwmon_dev);
-	sysfs_remove_group(&client->dev.kobj, &ds1621_group);
-
-	kfree(data);
-
-	return 0;
-}
-
-static const struct i2c_device_id ds1621_id[] = {
-	{ "ds1621", 0 },
-	{ "ds1625", 0 },
-=======
 	&dev_attr_update_interval.attr,
 	NULL
 };
@@ -590,29 +374,17 @@ static const struct i2c_device_id ds1621_id[] = {
 	{ "ds1631", ds1631 },
 	{ "ds1721", ds1721 },
 	{ "ds1731", ds1731 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, ds1621_id);
 
 /* This is the driver that will be inserted */
 static struct i2c_driver ds1621_driver = {
-<<<<<<< HEAD
-	.class		= I2C_CLASS_HWMON,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name	= "ds1621",
 	},
 	.probe		= ds1621_probe,
-<<<<<<< HEAD
-	.remove		= ds1621_remove,
 	.id_table	= ds1621_id,
-	.detect		= ds1621_detect,
-	.address_list	= normal_i2c,
-=======
-	.id_table	= ds1621_id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_i2c_driver(ds1621_driver);

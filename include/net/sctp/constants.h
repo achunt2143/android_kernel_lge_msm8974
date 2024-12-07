@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -10,35 +7,9 @@
  *
  * This file is part of the SCTP kernel implementation
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *   La Monte H.P. Yarroll <piggy@acm.org>
@@ -49,12 +20,6 @@
  *   Xingang Guo           <xingang.guo@intel.com>
  *   Sridhar Samudrala     <samudrala@us.ibm.com>
  *   Daisy Chang           <daisyc@us.ibm.com>
-<<<<<<< HEAD
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __sctp_constants_h__
@@ -62,12 +27,7 @@
 
 #include <linux/sctp.h>
 #include <linux/ipv6.h> /* For ipv6hdr. */
-<<<<<<< HEAD
-#include <net/sctp/user.h>
-#include <net/tcp_states.h>  /* For TCP states used in sctp_sock_state_t */
-=======
 #include <net/tcp_states.h>  /* For TCP states used in enum sctp_sock_state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Value used for stream negotiation. */
 enum { SCTP_MAX_STREAM = 0xffff };
@@ -85,49 +45,29 @@ enum { SCTP_DEFAULT_INSTREAMS = SCTP_MAX_STREAM };
 
 #define SCTP_NUM_PRSCTP_CHUNK_TYPES	1
 
-<<<<<<< HEAD
-=======
 #define SCTP_NUM_RECONF_CHUNK_TYPES	1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SCTP_NUM_AUTH_CHUNK_TYPES	1
 
 #define SCTP_NUM_CHUNK_TYPES		(SCTP_NUM_BASE_CHUNK_TYPES + \
 					 SCTP_NUM_ADDIP_CHUNK_TYPES +\
 					 SCTP_NUM_PRSCTP_CHUNK_TYPES +\
-<<<<<<< HEAD
-					 SCTP_NUM_AUTH_CHUNK_TYPES)
-
-/* These are the different flavours of event.  */
-typedef enum {
-
-=======
 					 SCTP_NUM_RECONF_CHUNK_TYPES +\
 					 SCTP_NUM_AUTH_CHUNK_TYPES)
 
 /* These are the different flavours of event.  */
 enum sctp_event_type {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_EVENT_T_CHUNK = 1,
 	SCTP_EVENT_T_TIMEOUT,
 	SCTP_EVENT_T_OTHER,
 	SCTP_EVENT_T_PRIMITIVE
-<<<<<<< HEAD
-
-} sctp_event_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* As a convenience for the state machine, we append SCTP_EVENT_* and
  * SCTP_ULP_* to the list of possible chunks.
  */
 
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_event_timeout {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_EVENT_TIMEOUT_NONE = 0,
 	SCTP_EVENT_TIMEOUT_T1_COOKIE,
 	SCTP_EVENT_TIMEOUT_T1_INIT,
@@ -136,96 +76,40 @@ enum sctp_event_timeout {
 	SCTP_EVENT_TIMEOUT_T4_RTO,
 	SCTP_EVENT_TIMEOUT_T5_SHUTDOWN_GUARD,
 	SCTP_EVENT_TIMEOUT_HEARTBEAT,
-<<<<<<< HEAD
-	SCTP_EVENT_TIMEOUT_SACK,
-	SCTP_EVENT_TIMEOUT_AUTOCLOSE,
-} sctp_event_timeout_t;
-=======
 	SCTP_EVENT_TIMEOUT_RECONF,
 	SCTP_EVENT_TIMEOUT_PROBE,
 	SCTP_EVENT_TIMEOUT_SACK,
 	SCTP_EVENT_TIMEOUT_AUTOCLOSE,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SCTP_EVENT_TIMEOUT_MAX		SCTP_EVENT_TIMEOUT_AUTOCLOSE
 #define SCTP_NUM_TIMEOUT_TYPES		(SCTP_EVENT_TIMEOUT_MAX + 1)
 
-<<<<<<< HEAD
-typedef enum {
-	SCTP_EVENT_NO_PENDING_TSN = 0,
-	SCTP_EVENT_ICMP_PROTO_UNREACH,
-} sctp_event_other_t;
-=======
 enum sctp_event_other {
 	SCTP_EVENT_NO_PENDING_TSN = 0,
 	SCTP_EVENT_ICMP_PROTO_UNREACH,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SCTP_EVENT_OTHER_MAX		SCTP_EVENT_ICMP_PROTO_UNREACH
 #define SCTP_NUM_OTHER_TYPES		(SCTP_EVENT_OTHER_MAX + 1)
 
 /* These are primitive requests from the ULP.  */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_event_primitive {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_PRIMITIVE_ASSOCIATE = 0,
 	SCTP_PRIMITIVE_SHUTDOWN,
 	SCTP_PRIMITIVE_ABORT,
 	SCTP_PRIMITIVE_SEND,
 	SCTP_PRIMITIVE_REQUESTHEARTBEAT,
 	SCTP_PRIMITIVE_ASCONF,
-<<<<<<< HEAD
-} sctp_event_primitive_t;
-
-#define SCTP_EVENT_PRIMITIVE_MAX	SCTP_PRIMITIVE_ASCONF
-=======
 	SCTP_PRIMITIVE_RECONF,
 };
 
 #define SCTP_EVENT_PRIMITIVE_MAX	SCTP_PRIMITIVE_RECONF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SCTP_NUM_PRIMITIVE_TYPES	(SCTP_EVENT_PRIMITIVE_MAX + 1)
 
 /* We define here a utility type for manipulating subtypes.
  * The subtype constructors all work like this:
  *
-<<<<<<< HEAD
- * 	sctp_subtype_t foo = SCTP_ST_CHUNK(SCTP_CID_INIT);
- */
-
-typedef union {
-	sctp_cid_t chunk;
-	sctp_event_timeout_t timeout;
-	sctp_event_other_t other;
-	sctp_event_primitive_t primitive;
-} sctp_subtype_t;
-
-#define SCTP_SUBTYPE_CONSTRUCTOR(_name, _type, _elt) \
-static inline sctp_subtype_t	\
-SCTP_ST_## _name (_type _arg)		\
-{ sctp_subtype_t _retval; _retval._elt = _arg; return _retval; }
-
-SCTP_SUBTYPE_CONSTRUCTOR(CHUNK,		sctp_cid_t,		chunk)
-SCTP_SUBTYPE_CONSTRUCTOR(TIMEOUT,	sctp_event_timeout_t,	timeout)
-SCTP_SUBTYPE_CONSTRUCTOR(OTHER,		sctp_event_other_t,	other)
-SCTP_SUBTYPE_CONSTRUCTOR(PRIMITIVE,	sctp_event_primitive_t,	primitive)
-
-
-#define sctp_chunk_is_data(a) (a->chunk_hdr->type == SCTP_CID_DATA)
-
-/* Calculate the actual data size in a data chunk */
-#define SCTP_DATA_SNDSIZE(c) ((int)((unsigned long)(c->chunk_end)\
-		       		- (unsigned long)(c->chunk_hdr)\
-				- sizeof(sctp_data_chunk_t)))
-
-/* Internal error codes */
-typedef enum {
-
-=======
  *   union sctp_subtype foo = SCTP_ST_CHUNK(SCTP_CID_INIT);
  */
 
@@ -252,7 +136,6 @@ SCTP_SUBTYPE_CONSTRUCTOR(PRIMITIVE,	enum sctp_event_primitive, primitive)
 
 /* Internal error codes */
 enum sctp_ierror {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_IERROR_NO_ERROR	        = 0,
 	SCTP_IERROR_BASE		= 1000,
 	SCTP_IERROR_NO_COOKIE,
@@ -273,20 +156,12 @@ enum sctp_ierror {
 	SCTP_IERROR_PROTO_VIOLATION,
 	SCTP_IERROR_ERROR,
 	SCTP_IERROR_ABORT,
-<<<<<<< HEAD
-} sctp_ierror_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
 /* SCTP state defines for internal state machine */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_state {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SCTP_STATE_CLOSED		= 0,
 	SCTP_STATE_COOKIE_WAIT		= 1,
@@ -297,11 +172,7 @@ enum sctp_state {
 	SCTP_STATE_SHUTDOWN_RECEIVED	= 6,
 	SCTP_STATE_SHUTDOWN_ACK_SENT	= 7,
 
-<<<<<<< HEAD
-} sctp_state_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SCTP_STATE_MAX			SCTP_STATE_SHUTDOWN_ACK_SENT
 #define SCTP_STATE_NUM_STATES		(SCTP_STATE_MAX + 1)
@@ -322,25 +193,11 @@ enum sctp_state {
  * - A socket in SCTP_SS_ESTABLISHED state indicates that it has a single 
  *   association.
  */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_sock_state {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_SS_CLOSED         = TCP_CLOSE,
 	SCTP_SS_LISTENING      = TCP_LISTEN,
 	SCTP_SS_ESTABLISHING   = TCP_SYN_SENT,
 	SCTP_SS_ESTABLISHED    = TCP_ESTABLISHED,
-<<<<<<< HEAD
-	SCTP_SS_CLOSING        = TCP_CLOSING,
-} sctp_sock_state_t;
-
-/* These functions map various type to printable names.  */
-const char *sctp_cname(const sctp_subtype_t);	/* chunk types */
-const char *sctp_oname(const sctp_subtype_t);	/* other events */
-const char *sctp_tname(const sctp_subtype_t);	/* timeouts */
-const char *sctp_pname(const sctp_subtype_t);	/* primitives */
-=======
 	SCTP_SS_CLOSING        = TCP_CLOSE_WAIT,
 };
 
@@ -366,7 +223,6 @@ const char *sctp_cname(const union sctp_subtype id);	/* chunk types */
 const char *sctp_oname(const union sctp_subtype id);	/* other events */
 const char *sctp_tname(const union sctp_subtype id);	/* timeouts */
 const char *sctp_pname(const union sctp_subtype id);	/* primitives */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This is a table of printable names of sctp_state_t's.  */
 extern const char *const sctp_state_tbl[];
@@ -396,18 +252,10 @@ enum { SCTP_ARBITRARY_COOKIE_ECHO_LEN = 200 };
 #define SCTP_TSN_MAP_SIZE 4096
 
 /* We will not record more than this many duplicate TSNs between two
-<<<<<<< HEAD
- * SACKs.  The minimum PMTU is 576.  Remove all the headers and there
- * is enough room for 131 duplicate reports.  Round down to the
- * nearest power of 2.
- */
-enum { SCTP_MIN_PMTU = 576 };
-=======
  * SACKs.  The minimum PMTU is 512.  Remove all the headers and there
  * is enough room for 117 duplicate reports.  Round down to the
  * nearest power of 2.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum { SCTP_MAX_DUP_TSNS = 16 };
 enum { SCTP_MAX_GABS = 16 };
 
@@ -447,11 +295,7 @@ enum { SCTP_MAX_GABS = 16 };
                                          * to which we will raise the P-MTU.
 					 */
 #define SCTP_DEFAULT_MINSEGMENT 512	/* MTU size ... if no mtu disc */
-<<<<<<< HEAD
-#define SCTP_HOW_MANY_SECRETS 2		/* How many secrets I keep */
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SCTP_SECRET_SIZE 32		/* Number of octets in a 256 bits. */
 
 #define SCTP_SIGNATURE_SIZE 20	        /* size of a SLA-1 signature */
@@ -460,15 +304,6 @@ enum { SCTP_MAX_GABS = 16 };
 				 * functions simpler to write.
 				 */
 
-<<<<<<< HEAD
-#if defined (CONFIG_SCTP_HMAC_MD5)
-#define SCTP_COOKIE_HMAC_ALG "hmac(md5)"
-#elif defined (CONFIG_SCTP_HMAC_SHA1)
-#define SCTP_COOKIE_HMAC_ALG "hmac(sha1)"
-#else
-#define SCTP_COOKIE_HMAC_ALG NULL
-#endif
-=======
 #define SCTP_DEFAULT_UDP_PORT 9899	/* default UDP tunneling port */
 
 /* These are the values for pf exposure, UNUSED is to keep compatible with old
@@ -482,25 +317,10 @@ enum {
 #define SCTP_PF_EXPOSE_MAX	SCTP_PF_EXPOSE_ENABLE
 
 #define SCTP_PS_RETRANS_MAX	0xffff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These return values describe the success or failure of a number of
  * routines which form the lower interface to SCTP_outqueue.
  */
-<<<<<<< HEAD
-typedef enum {
-	SCTP_XMIT_OK,
-	SCTP_XMIT_PMTU_FULL,
-	SCTP_XMIT_RWND_FULL,
-	SCTP_XMIT_NAGLE_DELAY,
-} sctp_xmit_t;
-
-/* These are the commands for manipulating transports.  */
-typedef enum {
-	SCTP_TRANSPORT_UP,
-	SCTP_TRANSPORT_DOWN,
-} sctp_transport_cmd_t;
-=======
 enum sctp_xmit {
 	SCTP_XMIT_OK,
 	SCTP_XMIT_PMTU_FULL,
@@ -514,7 +334,6 @@ enum sctp_transport_cmd {
 	SCTP_TRANSPORT_DOWN,
 	SCTP_TRANSPORT_PF,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These are the address scopes defined mainly for IPv4 addresses
  * based on draft of SCTP IPv4 scoping <draft-stewart-tsvwg-sctp-ipv4-00.txt>.
@@ -523,43 +342,25 @@ enum sctp_transport_cmd {
  * At this point, the IPv6 scopes will be mapped to these internal scopes
  * as much as possible.
  */
-<<<<<<< HEAD
-typedef enum {
-=======
 enum sctp_scope {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_SCOPE_GLOBAL,		/* IPv4 global addresses */
 	SCTP_SCOPE_PRIVATE,		/* IPv4 private addresses */
 	SCTP_SCOPE_LINK,		/* IPv4 link local address */
 	SCTP_SCOPE_LOOPBACK,		/* IPv4 loopback address */
 	SCTP_SCOPE_UNUSABLE,		/* IPv4 unusable addresses */
-<<<<<<< HEAD
-} sctp_scope_t;
-
-typedef enum {
-=======
 };
 
 enum {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_SCOPE_POLICY_DISABLE,	/* Disable IPv4 address scoping */
 	SCTP_SCOPE_POLICY_ENABLE,	/* Enable IPv4 address scoping */
 	SCTP_SCOPE_POLICY_PRIVATE,	/* Follow draft but allow IPv4 private addresses */
 	SCTP_SCOPE_POLICY_LINK,		/* Follow draft but allow IPv4 link local addresses */
-<<<<<<< HEAD
-} sctp_scope_policy_t;
-
-/* Based on IPv4 scoping <draft-stewart-tsvwg-sctp-ipv4-00.txt>,
- * SCTP IPv4 unusable addresses: 0.0.0.0/8, 224.0.0.0/4, 198.18.0.0/24,
- * 192.88.99.0/24.
-=======
 };
 
 #define SCTP_SCOPE_POLICY_MAX	SCTP_SCOPE_POLICY_LINK
 
 /* Based on IPv4 scoping <draft-stewart-tsvwg-sctp-ipv4-00.txt>,
  * SCTP IPv4 unusable addresses: 0.0.0.0/8, 224.0.0.0/4, 192.88.99.0/24.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Also, RFC 8.4, non-unicast addresses are not considered valid SCTP
  * addresses.
  */
@@ -567,21 +368,6 @@ enum {
 	((htonl(INADDR_BROADCAST) == a) ||  \
 	 ipv4_is_multicast(a) ||	    \
 	 ipv4_is_zeronet(a) ||		    \
-<<<<<<< HEAD
-	 ipv4_is_test_198(a) ||		    \
-	 ipv4_is_anycast_6to4(a))
-
-/* Flags used for the bind address copy functions.  */
-#define SCTP_ADDR6_ALLOWED	0x00000001	/* IPv6 address is allowed by
-						   local sock family */
-#define SCTP_ADDR4_PEERSUPP	0x00000002	/* IPv4 address is supported by
-						   peer */
-#define SCTP_ADDR6_PEERSUPP	0x00000004	/* IPv6 address is supported by
-						   peer */
-
-/* Reasons to retransmit. */
-typedef enum {
-=======
 	 ipv4_is_anycast_6to4(a))
 
 /* Flags used for the bind address copy functions.  */
@@ -596,31 +382,19 @@ typedef enum {
 
 /* Reasons to retransmit. */
 enum sctp_retransmit_reason {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_RTXR_T3_RTX,
 	SCTP_RTXR_FAST_RTX,
 	SCTP_RTXR_PMTUD,
 	SCTP_RTXR_T1_RTX,
-<<<<<<< HEAD
-} sctp_retransmit_reason_t;
-
-/* Reasons to lower cwnd. */
-typedef enum {
-=======
 };
 
 /* Reasons to lower cwnd. */
 enum sctp_lower_cwnd {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_LOWER_CWND_T3_RTX,
 	SCTP_LOWER_CWND_FAST_RTX,
 	SCTP_LOWER_CWND_ECNE,
 	SCTP_LOWER_CWND_INACTIVE,
-<<<<<<< HEAD
-} sctp_lower_cwnd_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* SCTP-AUTH Necessary constants */
@@ -666,9 +440,6 @@ enum {
  */
 #define SCTP_AUTH_RANDOM_LENGTH 32
 
-<<<<<<< HEAD
-=======
 #define SCTP_PROBE_TIMER_MIN	5000
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __sctp_constants_h__ */

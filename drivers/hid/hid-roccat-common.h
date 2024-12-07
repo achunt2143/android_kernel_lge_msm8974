@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HID_ROCCAT_COMMON_H
 #define __HID_ROCCAT_COMMON_H
 
@@ -10,24 +7,11 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/usb.h>
 #include <linux/types.h>
 
-<<<<<<< HEAD
-int roccat_common_receive(struct usb_device *usb_dev, uint report_id,
-		void *data, uint size);
-int roccat_common_send(struct usb_device *usb_dev, uint report_id,
-		void const *data, uint size);
-=======
 enum roccat_common2_commands {
 	ROCCAT_COMMON_COMMAND_CONTROL = 0x4,
 };
@@ -106,6 +90,5 @@ static struct bin_attribute bin_attr_ ## thingy = { \
 	.size = SIZE, \
 	.write = roccat_common2_sysfs_write_ ## thingy \
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

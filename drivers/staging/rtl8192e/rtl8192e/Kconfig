@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config RTL8192E
 	tristate "RealTek RTL8192E Wireless LAN NIC driver"
 	depends on PCI && WLAN && RTLLIB
 	depends on m
-<<<<<<< HEAD
-	select WIRELESS_EXT
-	select WEXT_PRIV
-	select CRYPTO
-	default N
-	---help---
-=======
 	select CFG80211
 	select WIRELESS_EXT
 	select WEXT_PRIV
 	select CRYPTO
 	select FW_LOADER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

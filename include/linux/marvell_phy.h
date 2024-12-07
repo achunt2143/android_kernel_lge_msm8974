@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _MARVELL_PHY_H
 #define _MARVELL_PHY_H
 
@@ -18,8 +15,6 @@
 #define MARVELL_PHY_ID_88E1149R		0x01410e50
 #define MARVELL_PHY_ID_88E1240		0x01410e30
 #define MARVELL_PHY_ID_88E1318S		0x01410e90
-<<<<<<< HEAD
-=======
 #define MARVELL_PHY_ID_88E1340S		0x01410dc0
 #define MARVELL_PHY_ID_88E1116R		0x01410e40
 #define MARVELL_PHY_ID_88E1510		0x01410dd0
@@ -45,14 +40,10 @@
 #define MARVELL_PHY_ID_88E6393_FAMILY	0x002b0b9b
 
 #define MARVELL_PHY_FAMILY_ID(id)	((id) >> 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* struct phy_device dev_flags definitions */
 #define MARVELL_PHY_M1145_FLAGS_RESISTANCE	0x00000001
 #define MARVELL_PHY_M1118_DNS323_LEDS		0x00000002
-<<<<<<< HEAD
-=======
 #define MARVELL_PHY_LED0_LINK_LED1_ACTIVE	0x00000004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _MARVELL_PHY_H */

@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -97,20 +78,6 @@ struct RT_PMKID_LIST {
 
 struct security_priv {
 	u32 AuthAlgrthm;		/* 802.11 auth, could be open, shared,
-<<<<<<< HEAD
-					 * 8021x and authswitch */
-	u32 PrivacyAlgrthm;		/* This specify the privacy for shared
-					 * auth. algorithm. */
-	u32 PrivacyKeyIndex;		/* this is only valid for legendary
-					 * wep, 0~3 for key id. */
-	union Keytype DefKey[4];	/* this is only valid for def. key */
-	u32 DefKeylen[4];
-	u32 XGrpPrivacy;		/* This specify the privacy algthm.
-					 * used for Grp key */
-	u32 XGrpKeyid;			/* key id used for Grp Key */
-	union Keytype	XGrpKey[2];	/* 802.1x Group Key, for
-					 * inx0 and inx1 */
-=======
 					 * 8021x and authswitch
 					 */
 	u32 PrivacyAlgrthm;		/* This specify the privacy for shared
@@ -128,18 +95,13 @@ struct security_priv {
 	union Keytype	XGrpKey[2];	/* 802.1x Group Key, for
 					 * inx0 and inx1
 					 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union Keytype	XGrptxmickey[2];
 	union Keytype	XGrprxmickey[2];
 	union pn48 Grptxpn;		/* PN48 used for Grp Key xmit. */
 	union pn48 Grprxpn;		/* PN48 used for Grp Key recv. */
 	u8 wps_hw_pbc_pressed;/*for hw pbc pressed*/
 	u8 wps_phase;/*for wps*/
-<<<<<<< HEAD
-	u8 wps_ie[MAX_WPA_IE_LEN<<2];
-=======
 	u8 wps_ie[MAX_WPA_IE_LEN << 2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int wps_ie_len;
 	u8	binstallGrpkey;
 	u8	busetkipkey;
@@ -149,17 +111,11 @@ struct security_priv {
 	s32	sw_encrypt;	/* from registry_priv */
 	s32	sw_decrypt;	/* from registry_priv */
 	s32	hw_decrypted;	/* if the rx packets is hw_decrypted==false,
-<<<<<<< HEAD
-				 * it means the hw has not been ready. */
-	u32 ndisauthtype;	/* keeps the auth_type & enc_status from upper
-				 * layer ioctl(wpa_supplicant or wzc) */
-=======
 				 * it means the hw has not been ready.
 				 */
 	u32 ndisauthtype;	/* keeps the auth_type & enc_status from upper
 				 * layer ioctl(wpa_supplicant or wzc)
 				 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ndisencryptstatus;
 	struct wlan_bssid_ex sec_bss;  /* for joinbss (h2c buffer) usage */
 	struct NDIS_802_11_WEP ndiswep;
@@ -175,12 +131,8 @@ struct security_priv {
 	u32 btkip_countermeasure_time;
 	/*-------------------------------------------------------------------
 	 * For WPA2 Pre-Authentication.
-<<<<<<< HEAD
-	 *------------------------------------------------------------------ */
-=======
 	 *------------------------------------------------------------------
 	 **/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct RT_PMKID_LIST		PMKIDList[NUM_PMKID_CACHE];
 	u8				PMKIDIndex;
 };
@@ -233,11 +185,7 @@ do {\
 	txpn._byte_.TSC5 = iv[7];\
 } while (0)
 
-<<<<<<< HEAD
-#define ROL32(A, n) (((A) << (n)) | (((A)>>(32-(n)))  & ((1UL << (n)) - 1)))
-=======
 #define ROL32(A, n) (((A) << (n)) | (((A) >> (32 - (n)))  & ((1UL << (n)) - 1)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ROR32(A, n) ROL32((A), 32 - (n))
 
 struct mic_data {
@@ -255,18 +203,6 @@ void seccalctkipmic(
 	u8  *Miccode,
 	u8   priority);
 
-<<<<<<< HEAD
-void r8712_secmicsetkey(struct mic_data *pmicdata, u8 * key);
-void r8712_secmicappend(struct mic_data *pmicdata, u8 * src, u32 nBytes);
-void r8712_secgetmic(struct mic_data *pmicdata, u8 * dst);
-u32 r8712_aes_encrypt(struct _adapter *padapter, u8 *pxmitframe);
-u32 r8712_tkip_encrypt(struct _adapter *padapter, u8 *pxmitframe);
-void r8712_wep_encrypt(struct _adapter *padapter, u8  *pxmitframe);
-u32 r8712_aes_decrypt(struct _adapter *padapter, u8  *precvframe);
-u32 r8712_tkip_decrypt(struct _adapter *padapter, u8  *precvframe);
-void r8712_wep_decrypt(struct _adapter *padapter, u8  *precvframe);
-void r8712_use_tkipkey_handler(void *FunctionContext);
-=======
 void r8712_secmicsetkey(struct mic_data *pmicdata, u8 *key);
 void r8712_secmicappend(struct mic_data *pmicdata, u8 *src, u32 nBytes);
 void r8712_secgetmic(struct mic_data *pmicdata, u8 *dst);
@@ -277,7 +213,6 @@ void r8712_aes_decrypt(struct _adapter *padapter, u8  *precvframe);
 void r8712_tkip_decrypt(struct _adapter *padapter, u8  *precvframe);
 void r8712_wep_decrypt(struct _adapter *padapter, u8  *precvframe);
 void r8712_use_tkipkey_handler(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/*__RTL871X_SECURITY_H_ */
 

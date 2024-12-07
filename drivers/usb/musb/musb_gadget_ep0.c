@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MUSB OTG peripheral driver ep0 handling
  *
@@ -9,35 +6,6 @@
  * Copyright (C) 2005-2006 by Texas Instruments
  * Copyright (C) 2006-2007 Nokia Corporation
  * Copyright (C) 2008-2009 MontaVista Software, Inc. <source@mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN
- * NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -92,11 +60,7 @@ static int service_tx_status_request(
 
 	switch (recip) {
 	case USB_RECIP_DEVICE:
-<<<<<<< HEAD
-		result[0] = musb->is_self_powered << USB_DEVICE_SELF_POWERED;
-=======
 		result[0] = musb->g.is_selfpowered << USB_DEVICE_SELF_POWERED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result[0] |= musb->may_wakeup << USB_DEVICE_REMOTE_WAKEUP;
 		if (musb->g.is_otg) {
 			result[0] |= musb->g.b_hnp_enable
@@ -125,17 +89,6 @@ static int service_tx_status_request(
 		}
 
 		is_in = epnum & USB_DIR_IN;
-<<<<<<< HEAD
-		if (is_in) {
-			epnum &= 0x0f;
-			ep = &musb->endpoints[epnum].ep_in;
-		} else {
-			ep = &musb->endpoints[epnum].ep_out;
-		}
-		regs = musb->endpoints[epnum].regs;
-
-		if (epnum >= MUSB_C_NUM_EPS || !ep->desc) {
-=======
 		epnum &= 0x0f;
 		if (epnum >= MUSB_C_NUM_EPS) {
 			handled = -EINVAL;
@@ -149,7 +102,6 @@ static int service_tx_status_request(
 		regs = musb->endpoints[epnum].regs;
 
 		if (!ep->desc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handled = -EINVAL;
 			break;
 		}
@@ -233,11 +185,7 @@ static inline void musb_try_b_hnp_enable(struct musb *musb)
 	void __iomem	*mbase = musb->mregs;
 	u8		devctl;
 
-<<<<<<< HEAD
-	dev_dbg(musb->controller, "HNP: Setting HR\n");
-=======
 	musb_dbg(musb, "HNP: Setting HR");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devctl = musb_readb(mbase, MUSB_DEVCTL);
 	musb_writeb(mbase, MUSB_DEVCTL, devctl | MUSB_DEVCTL_HR);
 }
@@ -334,11 +282,7 @@ __acquires(musb->lock)
 				/* Maybe start the first request in the queue */
 				request = next_request(musb_ep);
 				if (!musb_ep->busy && request) {
-<<<<<<< HEAD
-					dev_dbg(musb->controller, "restarting the request\n");
-=======
 					musb_dbg(musb, "restarting the request");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					musb_ep_restart(musb, request);
 				}
 
@@ -367,29 +311,6 @@ __acquires(musb->lock)
 						goto stall;
 
 					switch (ctrlrequest->wIndex >> 8) {
-<<<<<<< HEAD
-					case 1:
-						pr_debug("TEST_J\n");
-						/* TEST_J */
-						musb->test_mode_nr =
-							MUSB_TEST_J;
-						break;
-					case 2:
-						/* TEST_K */
-						pr_debug("TEST_K\n");
-						musb->test_mode_nr =
-							MUSB_TEST_K;
-						break;
-					case 3:
-						/* TEST_SE0_NAK */
-						pr_debug("TEST_SE0_NAK\n");
-						musb->test_mode_nr =
-							MUSB_TEST_SE0_NAK;
-						break;
-					case 4:
-						/* TEST_PACKET */
-						pr_debug("TEST_PACKET\n");
-=======
 					case USB_TEST_J:
 						pr_debug("USB_TEST_J\n");
 						musb->test_mode_nr =
@@ -407,7 +328,6 @@ __acquires(musb->lock)
 						break;
 					case USB_TEST_PACKET:
 						pr_debug("USB_TEST_PACKET\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						musb->test_mode_nr =
 							MUSB_TEST_PACKET;
 						break;
@@ -560,15 +480,10 @@ static void ep0_rxstate(struct musb *musb)
 			req->status = -EOVERFLOW;
 			count = len;
 		}
-<<<<<<< HEAD
-		musb_read_fifo(&musb->endpoints[0], count, buf);
-		req->actual += count;
-=======
 		if (count > 0) {
 			musb_read_fifo(&musb->endpoints[0], count, buf);
 			req->actual += count;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		csr = MUSB_CSR0_P_SVDRXPKTRDY;
 		if (count < 64 || req->actual == req->length) {
 			musb->ep0_state = MUSB_EP0_STAGE_STATUSIN;
@@ -610,11 +525,7 @@ static void ep0_txstate(struct musb *musb)
 
 	if (!req) {
 		/* WARN_ON(1); */
-<<<<<<< HEAD
-		dev_dbg(musb->controller, "odd; csr0 %04x\n", musb_readw(regs, MUSB_CSR0));
-=======
 		musb_dbg(musb, "odd; csr0 %04x", musb_readw(regs, MUSB_CSR0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -671,11 +582,7 @@ musb_read_setup(struct musb *musb, struct usb_ctrlrequest *req)
 	/* NOTE:  earlier 2.6 versions changed setup packets to host
 	 * order, but now USB packets always stay in USB byte order.
 	 */
-<<<<<<< HEAD
-	dev_dbg(musb->controller, "SETUP req%02x.%02x v%04x i%04x l%d\n",
-=======
 	musb_dbg(musb, "SETUP req%02x.%02x v%04x i%04x l%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->bRequestType,
 		req->bRequest,
 		le16_to_cpu(req->wValue),
@@ -743,15 +650,8 @@ irqreturn_t musb_g_ep0_irq(struct musb *musb)
 	csr = musb_readw(regs, MUSB_CSR0);
 	len = musb_readb(regs, MUSB_COUNT0);
 
-<<<<<<< HEAD
-	dev_dbg(musb->controller, "csr %04x, count %d, myaddr %d, ep0stage %s\n",
-			csr, len,
-			musb_readb(mbase, MUSB_FADDR),
-			decode_ep0stage(musb->ep0_state));
-=======
 	musb_dbg(musb, "csr %04x, count %d, ep0stage %s",
 			csr, len, decode_ep0stage(musb->ep0_state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (csr & MUSB_CSR0_P_DATAEND) {
 		/*
@@ -827,11 +727,7 @@ irqreturn_t musb_g_ep0_irq(struct musb *musb)
 
 		/* enter test mode if needed (exit by reset) */
 		else if (musb->test_mode) {
-<<<<<<< HEAD
-			dev_dbg(musb->controller, "entering TESTMODE\n");
-=======
 			musb_dbg(musb, "entering TESTMODE");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (MUSB_TEST_PACKET == musb->test_mode_nr)
 				musb_load_testpacket(musb);
@@ -839,11 +735,7 @@ irqreturn_t musb_g_ep0_irq(struct musb *musb)
 			musb_writeb(mbase, MUSB_TESTMODE,
 					musb->test_mode_nr);
 		}
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MUSB_EP0_STAGE_STATUSOUT:
 		/* end of sequence #1: write to host (TX state) */
@@ -875,11 +767,7 @@ irqreturn_t musb_g_ep0_irq(struct musb *musb)
 		 */
 		retval = IRQ_HANDLED;
 		musb->ep0_state = MUSB_EP0_STAGE_SETUP;
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MUSB_EP0_STAGE_SETUP:
 setup:
@@ -951,11 +839,7 @@ setup:
 				break;
 			}
 
-<<<<<<< HEAD
-			dev_dbg(musb->controller, "handled %d, csr %04x, ep0stage %s\n",
-=======
 			musb_dbg(musb, "handled %d, csr %04x, ep0stage %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				handled, csr,
 				decode_ep0stage(musb->ep0_state));
 
@@ -972,11 +856,7 @@ setup:
 			if (handled < 0) {
 				musb_ep_select(mbase, 0);
 stall:
-<<<<<<< HEAD
-				dev_dbg(musb->controller, "stall (%d)\n", handled);
-=======
 				musb_dbg(musb, "stall (%d)", handled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				musb->ackpend |= MUSB_CSR0_P_SENDSTALL;
 				musb->ep0_state = MUSB_EP0_STAGE_IDLE;
 finish:
@@ -1056,11 +936,7 @@ musb_g_ep0_queue(struct usb_ep *e, struct usb_request *r, gfp_t gfp_flags)
 		status = 0;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_dbg(musb->controller, "ep0 request queued in state %d\n",
-=======
 		musb_dbg(musb, "ep0 request queued in state %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				musb->ep0_state);
 		status = -EINVAL;
 		goto cleanup;
@@ -1069,11 +945,7 @@ musb_g_ep0_queue(struct usb_ep *e, struct usb_request *r, gfp_t gfp_flags)
 	/* add request to the list */
 	list_add_tail(&req->list, &ep->req_list);
 
-<<<<<<< HEAD
-	dev_dbg(musb->controller, "queue to %s (%s), length=%d\n",
-=======
 	musb_dbg(musb, "queue to %s (%s), length=%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ep->name, ep->is_in ? "IN/TX" : "OUT/RX",
 			req->request.length);
 
@@ -1152,11 +1024,7 @@ static int musb_g_ep0_halt(struct usb_ep *e, int value)
 	case MUSB_EP0_STAGE_ACKWAIT:	/* STALL for zero-length data */
 	case MUSB_EP0_STAGE_RX:		/* control-OUT data */
 		csr = musb_readw(regs, MUSB_CSR0);
-<<<<<<< HEAD
-		/* FALLTHROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* It's also OK to issue stalls during callbacks when a non-empty
 	 * DATA stage buffer has been read (or even written).
@@ -1170,11 +1038,7 @@ static int musb_g_ep0_halt(struct usb_ep *e, int value)
 		musb->ackpend = 0;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_dbg(musb->controller, "ep0 can't halt in state %d\n", musb->ep0_state);
-=======
 		musb_dbg(musb, "ep0 can't halt in state %d", musb->ep0_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -EINVAL;
 	}
 

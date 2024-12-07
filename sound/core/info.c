@@ -1,29 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Information interface for ALSA driver
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Information interface for ALSA driver
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -35,22 +13,6 @@
 #include <sound/core.h>
 #include <sound/minors.h>
 #include <sound/info.h>
-<<<<<<< HEAD
-#include <sound/version.h>
-#include <linux/proc_fs.h>
-#include <linux/mutex.h>
-#include <stdarg.h>
-
-/*
- *
- */
-
-#ifdef CONFIG_PROC_FS
-
-int snd_info_check_reserved_words(const char *str)
-{
-	static char *reserved[] =
-=======
 #include <linux/utsname.h>
 #include <linux/proc_fs.h>
 #include <linux/mutex.h>
@@ -58,7 +20,6 @@ int snd_info_check_reserved_words(const char *str)
 int snd_info_check_reserved_words(const char *str)
 {
 	static const char * const reserved[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		"version",
 		"meminfo",
@@ -73,11 +34,7 @@ int snd_info_check_reserved_words(const char *str)
 		"seq",
 		NULL
 	};
-<<<<<<< HEAD
-	char **xstr = reserved;
-=======
 	const char * const *xstr = reserved;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (*xstr) {
 		if (!strcmp(*xstr, str))
@@ -99,82 +56,13 @@ struct snd_info_private_data {
 };
 
 static int snd_info_version_init(void);
-<<<<<<< HEAD
-static int snd_info_version_done(void);
-static void snd_info_disconnect(struct snd_info_entry *entry);
-
-
-/* resize the proc r/w buffer */
-static int resize_info_buffer(struct snd_info_buffer *buffer,
-			      unsigned int nsize)
-{
-	char *nbuf;
-
-	nsize = PAGE_ALIGN(nsize);
-	nbuf = krealloc(buffer->buffer, nsize, GFP_KERNEL);
-	if (! nbuf)
-		return -ENOMEM;
-
-	buffer->buffer = nbuf;
-	buffer->len = nsize;
-	return 0;
-}
-
-/**
- * snd_iprintf - printf on the procfs buffer
- * @buffer: the procfs buffer
- * @fmt: the printf format
- *
- * Outputs the string on the procfs buffer just like printf().
- *
- * Returns the size of output string.
- */
-int snd_iprintf(struct snd_info_buffer *buffer, const char *fmt, ...)
-{
-	va_list args;
-	int len, res;
-	int err = 0;
-
-	might_sleep();
-	if (buffer->stop || buffer->error)
-		return 0;
-	len = buffer->len - buffer->size;
-	va_start(args, fmt);
-	for (;;) {
-		va_list ap;
-		va_copy(ap, args);
-		res = vsnprintf(buffer->buffer + buffer->curr, len, fmt, ap);
-		va_end(ap);
-		if (res < len)
-			break;
-		err = resize_info_buffer(buffer, buffer->len + PAGE_SIZE);
-		if (err < 0)
-			break;
-		len = buffer->len - buffer->size;
-	}
-	va_end(args);
-
-	if (err < 0)
-		return err;
-	buffer->curr += res;
-	buffer->size += res;
-	return res;
-}
-
-EXPORT_SYMBOL(snd_iprintf);
-=======
 static void snd_info_clear_entries(struct snd_info_entry *entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 
  */
 
-<<<<<<< HEAD
-static struct proc_dir_entry *snd_proc_root;
-=======
 static struct snd_info_entry *snd_proc_root;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_info_entry *snd_seq_root;
 EXPORT_SYMBOL(snd_seq_root);
 
@@ -182,15 +70,6 @@ EXPORT_SYMBOL(snd_seq_root);
 struct snd_info_entry *snd_oss_root;
 #endif
 
-<<<<<<< HEAD
-static void snd_remove_proc_entry(struct proc_dir_entry *parent,
-				  struct proc_dir_entry *de)
-{
-	if (de)
-		remove_proc_entry(de->name, parent);
-}
-
-=======
 static int alloc_info_private(struct snd_info_entry *entry,
 			      struct snd_info_private_data **ret)
 {
@@ -222,29 +101,10 @@ static bool valid_pos(loff_t pos, size_t count)
 /*
  * file ops for binary proc files
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static loff_t snd_info_entry_llseek(struct file *file, loff_t offset, int orig)
 {
 	struct snd_info_private_data *data;
 	struct snd_info_entry *entry;
-<<<<<<< HEAD
-	loff_t ret = -EINVAL, size;
-
-	data = file->private_data;
-	entry = data->entry;
-	mutex_lock(&entry->access);
-	if (entry->content == SNDRV_INFO_CONTENT_DATA &&
-	    entry->c.ops->llseek) {
-		offset = entry->c.ops->llseek(entry,
-					      data->file_private_data,
-					      file, offset, orig);
-		goto out;
-	}
-	if (entry->content == SNDRV_INFO_CONTENT_DATA)
-		size = entry->size;
-	else
-		size = 0;
-=======
 	loff_t size;
 
 	data = file->private_data;
@@ -256,7 +116,6 @@ static loff_t snd_info_entry_llseek(struct file *file, loff_t offset, int orig)
 					    file, offset, orig);
 
 	size = entry->size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (orig) {
 	case SEEK_SET:
 		break;
@@ -265,23 +124,6 @@ static loff_t snd_info_entry_llseek(struct file *file, loff_t offset, int orig)
 		break;
 	case SEEK_END:
 		if (!size)
-<<<<<<< HEAD
-			goto out;
-		offset += size;
-		break;
-	default:
-		goto out;
-	}
-	if (offset < 0)
-		goto out;
-	if (size && offset > size)
-		offset = size;
-	file->f_pos = offset;
-	ret = offset;
- out:
-	mutex_unlock(&entry->access);
-	return ret;
-=======
 			return -EINVAL;
 		offset += size;
 		break;
@@ -294,53 +136,11 @@ static loff_t snd_info_entry_llseek(struct file *file, loff_t offset, int orig)
 		offset = size;
 	file->f_pos = offset;
 	return offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t snd_info_entry_read(struct file *file, char __user *buffer,
 				   size_t count, loff_t * offset)
 {
-<<<<<<< HEAD
-	struct snd_info_private_data *data;
-	struct snd_info_entry *entry;
-	struct snd_info_buffer *buf;
-	size_t size = 0;
-	loff_t pos;
-
-	data = file->private_data;
-	if (snd_BUG_ON(!data))
-		return -ENXIO;
-	pos = *offset;
-	if (pos < 0 || (long) pos != pos || (ssize_t) count < 0)
-		return -EIO;
-	if ((unsigned long) pos + (unsigned long) count < (unsigned long) pos)
-		return -EIO;
-	entry = data->entry;
-	switch (entry->content) {
-	case SNDRV_INFO_CONTENT_TEXT:
-		buf = data->rbuffer;
-		if (buf == NULL)
-			return -EIO;
-		if (pos >= buf->size)
-			return 0;
-		size = buf->size - pos;
-		size = min(count, size);
-		if (copy_to_user(buffer, buf->buffer + pos, size))
-			return -EFAULT;
-		break;
-	case SNDRV_INFO_CONTENT_DATA:
-		if (pos >= entry->size)
-			return 0;
-		if (entry->c.ops->read) {
-			size = entry->size - pos;
-			size = min(count, size);
-			size = entry->c.ops->read(entry,
-						  data->file_private_data,
-						  file, buffer, size, pos);
-		}
-		break;
-	}
-=======
 	struct snd_info_private_data *data = file->private_data;
 	struct snd_info_entry *entry = data->entry;
 	size_t size;
@@ -355,7 +155,6 @@ static ssize_t snd_info_entry_read(struct file *file, char __user *buffer,
 	size = min(count, size);
 	size = entry->c.ops->read(entry, data->file_private_data,
 				  file, buffer, size, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((ssize_t) size > 0)
 		*offset = pos + size;
 	return size;
@@ -364,56 +163,6 @@ static ssize_t snd_info_entry_read(struct file *file, char __user *buffer,
 static ssize_t snd_info_entry_write(struct file *file, const char __user *buffer,
 				    size_t count, loff_t * offset)
 {
-<<<<<<< HEAD
-	struct snd_info_private_data *data;
-	struct snd_info_entry *entry;
-	struct snd_info_buffer *buf;
-	ssize_t size = 0;
-	loff_t pos;
-	unsigned long realloc_size;
-
-	data = file->private_data;
-	if (snd_BUG_ON(!data))
-		return -ENXIO;
-	entry = data->entry;
-	pos = *offset;
-	if (pos < 0 || (long) pos != pos || (ssize_t) count < 0)
-		return -EIO;
-	realloc_size = (unsigned long) pos + (unsigned long) count;
-	if (realloc_size < (unsigned long) pos || realloc_size > UINT_MAX)
-		return -EIO;
-	switch (entry->content) {
-	case SNDRV_INFO_CONTENT_TEXT:
-		buf = data->wbuffer;
-		if (buf == NULL)
-			return -EIO;
-		mutex_lock(&entry->access);
-		if (pos + count >= buf->len) {
-			if (resize_info_buffer(buf, pos + count)) {
-				mutex_unlock(&entry->access);
-				return -ENOMEM;
-			}
-		}
-		if (copy_from_user(buf->buffer + pos, buffer, count)) {
-			mutex_unlock(&entry->access);
-			return -EFAULT;
-		}
-		buf->size = pos + count;
-		mutex_unlock(&entry->access);
-		size = count;
-		break;
-	case SNDRV_INFO_CONTENT_DATA:
-		if (entry->c.ops->write && count > 0) {
-			size_t maxsize = entry->size - pos;
-			count = min(count, maxsize);
-			size = entry->c.ops->write(entry,
-						   data->file_private_data,
-						   file, buffer, count, pos);
-		}
-		break;
-	}
-	if ((ssize_t) size > 0)
-=======
 	struct snd_info_private_data *data = file->private_data;
 	struct snd_info_entry *entry = data->entry;
 	ssize_t size = 0;
@@ -429,178 +178,10 @@ static ssize_t snd_info_entry_write(struct file *file, const char __user *buffer
 					   file, buffer, count, pos);
 	}
 	if (size > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*offset = pos + size;
 	return size;
 }
 
-<<<<<<< HEAD
-static int snd_info_entry_open(struct inode *inode, struct file *file)
-{
-	struct snd_info_entry *entry;
-	struct snd_info_private_data *data;
-	struct snd_info_buffer *buffer;
-	struct proc_dir_entry *p;
-	int mode, err;
-
-	mutex_lock(&info_mutex);
-	p = PDE(inode);
-	entry = p == NULL ? NULL : (struct snd_info_entry *)p->data;
-	if (entry == NULL || ! entry->p) {
-		mutex_unlock(&info_mutex);
-		return -ENODEV;
-	}
-	if (!try_module_get(entry->module)) {
-		err = -EFAULT;
-		goto __error1;
-	}
-	mode = file->f_flags & O_ACCMODE;
-	if (mode == O_RDONLY || mode == O_RDWR) {
-		if ((entry->content == SNDRV_INFO_CONTENT_DATA &&
-		     entry->c.ops->read == NULL)) {
-		    	err = -ENODEV;
-		    	goto __error;
-		}
-	}
-	if (mode == O_WRONLY || mode == O_RDWR) {
-		if ((entry->content == SNDRV_INFO_CONTENT_DATA &&
-		     entry->c.ops->write == NULL)) {
-		    	err = -ENODEV;
-		    	goto __error;
-		}
-	}
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-	if (data == NULL) {
-		err = -ENOMEM;
-		goto __error;
-	}
-	data->entry = entry;
-	switch (entry->content) {
-	case SNDRV_INFO_CONTENT_TEXT:
-		if (mode == O_RDONLY || mode == O_RDWR) {
-			buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
-			if (buffer == NULL)
-				goto __nomem;
-			data->rbuffer = buffer;
-			buffer->len = PAGE_SIZE;
-			buffer->buffer = kmalloc(buffer->len, GFP_KERNEL);
-			if (buffer->buffer == NULL)
-				goto __nomem;
-		}
-		if (mode == O_WRONLY || mode == O_RDWR) {
-			buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
-			if (buffer == NULL)
-				goto __nomem;
-			data->wbuffer = buffer;
-			buffer->len = PAGE_SIZE;
-			buffer->buffer = kmalloc(buffer->len, GFP_KERNEL);
-			if (buffer->buffer == NULL)
-				goto __nomem;
-		}
-		break;
-	case SNDRV_INFO_CONTENT_DATA:	/* data */
-		if (entry->c.ops->open) {
-			if ((err = entry->c.ops->open(entry, mode,
-						      &data->file_private_data)) < 0) {
-				kfree(data);
-				goto __error;
-			}
-		}
-		break;
-	}
-	file->private_data = data;
-	mutex_unlock(&info_mutex);
-	if (entry->content == SNDRV_INFO_CONTENT_TEXT &&
-	    (mode == O_RDONLY || mode == O_RDWR)) {
-		if (entry->c.text.read) {
-			mutex_lock(&entry->access);
-			entry->c.text.read(entry, data->rbuffer);
-			mutex_unlock(&entry->access);
-		}
-	}
-	return 0;
-
- __nomem:
-	if (data->rbuffer) {
-		kfree(data->rbuffer->buffer);
-		kfree(data->rbuffer);
-	}
-	if (data->wbuffer) {
-		kfree(data->wbuffer->buffer);
-		kfree(data->wbuffer);
-	}
-	kfree(data);
-	err = -ENOMEM;
-      __error:
-	module_put(entry->module);
-      __error1:
-	mutex_unlock(&info_mutex);
-	return err;
-}
-
-static int snd_info_entry_release(struct inode *inode, struct file *file)
-{
-	struct snd_info_entry *entry;
-	struct snd_info_private_data *data;
-	int mode;
-
-	mode = file->f_flags & O_ACCMODE;
-	data = file->private_data;
-	entry = data->entry;
-	switch (entry->content) {
-	case SNDRV_INFO_CONTENT_TEXT:
-		if (data->rbuffer) {
-			kfree(data->rbuffer->buffer);
-			kfree(data->rbuffer);
-		}
-		if (data->wbuffer) {
-			if (entry->c.text.write) {
-				entry->c.text.write(entry, data->wbuffer);
-				if (data->wbuffer->error) {
-					snd_printk(KERN_WARNING "data write error to %s (%i)\n",
-						entry->name,
-						data->wbuffer->error);
-				}
-			}
-			kfree(data->wbuffer->buffer);
-			kfree(data->wbuffer);
-		}
-		break;
-	case SNDRV_INFO_CONTENT_DATA:
-		if (entry->c.ops->release)
-			entry->c.ops->release(entry, mode,
-					      data->file_private_data);
-		break;
-	}
-	module_put(entry->module);
-	kfree(data);
-	return 0;
-}
-
-static unsigned int snd_info_entry_poll(struct file *file, poll_table * wait)
-{
-	struct snd_info_private_data *data;
-	struct snd_info_entry *entry;
-	unsigned int mask;
-
-	data = file->private_data;
-	if (data == NULL)
-		return 0;
-	entry = data->entry;
-	mask = 0;
-	switch (entry->content) {
-	case SNDRV_INFO_CONTENT_DATA:
-		if (entry->c.ops->poll)
-			return entry->c.ops->poll(entry,
-						  data->file_private_data,
-						  file, wait);
-		if (entry->c.ops->read)
-			mask |= POLLIN | POLLRDNORM;
-		if (entry->c.ops->write)
-			mask |= POLLOUT | POLLWRNORM;
-		break;
-	}
-=======
 static __poll_t snd_info_entry_poll(struct file *file, poll_table *wait)
 {
 	struct snd_info_private_data *data = file->private_data;
@@ -615,31 +196,12 @@ static __poll_t snd_info_entry_poll(struct file *file, poll_table *wait)
 		mask |= EPOLLIN | EPOLLRDNORM;
 	if (entry->c.ops->write)
 		mask |= EPOLLOUT | EPOLLWRNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mask;
 }
 
 static long snd_info_entry_ioctl(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {
-<<<<<<< HEAD
-	struct snd_info_private_data *data;
-	struct snd_info_entry *entry;
-
-	data = file->private_data;
-	if (data == NULL)
-		return 0;
-	entry = data->entry;
-	switch (entry->content) {
-	case SNDRV_INFO_CONTENT_DATA:
-		if (entry->c.ops->ioctl)
-			return entry->c.ops->ioctl(entry,
-						   data->file_private_data,
-						   file, cmd, arg);
-		break;
-	}
-	return -ENOTTY;
-=======
 	struct snd_info_private_data *data = file->private_data;
 	struct snd_info_entry *entry = data->entry;
 
@@ -647,16 +209,11 @@ static long snd_info_entry_ioctl(struct file *file, unsigned int cmd,
 		return -ENOTTY;
 	return entry->c.ops->ioctl(entry, data->file_private_data,
 				   file, cmd, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_info_entry_mmap(struct file *file, struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-=======
 	struct inode *inode = file_inode(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_info_private_data *data;
 	struct snd_info_entry *entry;
 
@@ -664,71 +221,6 @@ static int snd_info_entry_mmap(struct file *file, struct vm_area_struct *vma)
 	if (data == NULL)
 		return 0;
 	entry = data->entry;
-<<<<<<< HEAD
-	switch (entry->content) {
-	case SNDRV_INFO_CONTENT_DATA:
-		if (entry->c.ops->mmap)
-			return entry->c.ops->mmap(entry,
-						  data->file_private_data,
-						  inode, file, vma);
-		break;
-	}
-	return -ENXIO;
-}
-
-static const struct file_operations snd_info_entry_operations =
-{
-	.owner =		THIS_MODULE,
-	.llseek =		snd_info_entry_llseek,
-	.read =			snd_info_entry_read,
-	.write =		snd_info_entry_write,
-	.poll =			snd_info_entry_poll,
-	.unlocked_ioctl =	snd_info_entry_ioctl,
-	.mmap =			snd_info_entry_mmap,
-	.open =			snd_info_entry_open,
-	.release =		snd_info_entry_release,
-};
-
-int __init snd_info_init(void)
-{
-	struct proc_dir_entry *p;
-
-	p = proc_mkdir("asound", NULL);
-	if (p == NULL)
-		return -ENOMEM;
-	snd_proc_root = p;
-#ifdef CONFIG_SND_OSSEMUL
-	{
-		struct snd_info_entry *entry;
-		if ((entry = snd_info_create_module_entry(THIS_MODULE, "oss", NULL)) == NULL)
-			return -ENOMEM;
-		entry->mode = S_IFDIR | S_IRUGO | S_IXUGO;
-		if (snd_info_register(entry) < 0) {
-			snd_info_free_entry(entry);
-			return -ENOMEM;
-		}
-		snd_oss_root = entry;
-	}
-#endif
-#if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
-	{
-		struct snd_info_entry *entry;
-		if ((entry = snd_info_create_module_entry(THIS_MODULE, "seq", NULL)) == NULL)
-			return -ENOMEM;
-		entry->mode = S_IFDIR | S_IRUGO | S_IXUGO;
-		if (snd_info_register(entry) < 0) {
-			snd_info_free_entry(entry);
-			return -ENOMEM;
-		}
-		snd_seq_root = entry;
-	}
-#endif
-	snd_info_version_init();
-	snd_minor_info_init();
-	snd_minor_info_oss_init();
-	snd_card_info_init();
-	return 0;
-=======
 	if (!entry->c.ops->mmap)
 		return -ENXIO;
 	return entry->c.ops->mmap(entry, data->file_private_data,
@@ -964,33 +456,10 @@ int __init snd_info_init(void)
  error:
 	snd_info_free_entry(snd_proc_root);
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __exit snd_info_done(void)
 {
-<<<<<<< HEAD
-	snd_card_info_done();
-	snd_minor_info_oss_done();
-	snd_minor_info_done();
-	snd_info_version_done();
-	if (snd_proc_root) {
-#if defined(CONFIG_SND_SEQUENCER) || defined(CONFIG_SND_SEQUENCER_MODULE)
-		snd_info_free_entry(snd_seq_root);
-#endif
-#ifdef CONFIG_SND_OSSEMUL
-		snd_info_free_entry(snd_oss_root);
-#endif
-		snd_remove_proc_entry(NULL, snd_proc_root);
-	}
-	return 0;
-}
-
-/*
-
- */
-
-=======
 	snd_info_free_entry(snd_proc_root);
 	return 0;
 }
@@ -1002,7 +471,6 @@ static void snd_card_id_read(struct snd_info_entry *entry,
 
 	snd_iprintf(buffer, "%s\n", card->id);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * create a card proc file
@@ -1017,52 +485,27 @@ int snd_info_card_create(struct snd_card *card)
 		return -ENXIO;
 
 	sprintf(str, "card%i", card->number);
-<<<<<<< HEAD
-	if ((entry = snd_info_create_module_entry(card->module, str, NULL)) == NULL)
-		return -ENOMEM;
-	entry->mode = S_IFDIR | S_IRUGO | S_IXUGO;
-	if (snd_info_register(entry) < 0) {
-		snd_info_free_entry(entry);
-		return -ENOMEM;
-	}
-	card->proc_root = entry;
-	return 0;
-=======
 	entry = create_subdir(card->module, str);
 	if (!entry)
 		return -ENOMEM;
 	card->proc_root = entry;
 
 	return snd_card_ro_proc_new(card, "id", card, snd_card_id_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * register the card proc file
  * called from init.c
-<<<<<<< HEAD
-=======
  * can be called multiple times for reinitialization
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_info_card_register(struct snd_card *card)
 {
 	struct proc_dir_entry *p;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_BUG_ON(!card))
 		return -ENXIO;
 
-<<<<<<< HEAD
-	if (!strcmp(card->id, card->proc_root->name))
-		return 0;
-
-	p = proc_symlink(card->id, snd_proc_root, card->proc_root->name);
-	if (p == NULL)
-=======
 	err = snd_info_register(card->proc_root);
 	if (err < 0)
 		return err;
@@ -1074,7 +517,6 @@ int snd_info_card_register(struct snd_card *card)
 		return 0;
 	p = proc_symlink(card->id, snd_proc_root->p, card->proc_root->name);
 	if (!p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	card->proc_root_link = p;
 	return 0;
@@ -1085,27 +527,15 @@ int snd_info_card_register(struct snd_card *card)
  */
 void snd_info_card_id_change(struct snd_card *card)
 {
-<<<<<<< HEAD
-	mutex_lock(&info_mutex);
-	if (card->proc_root_link) {
-		snd_remove_proc_entry(snd_proc_root, card->proc_root_link);
-=======
 	guard(mutex)(&info_mutex);
 	if (card->proc_root_link) {
 		proc_remove(card->proc_root_link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		card->proc_root_link = NULL;
 	}
 	if (strcmp(card->id, card->proc_root->name))
 		card->proc_root_link = proc_symlink(card->id,
-<<<<<<< HEAD
-						    snd_proc_root,
-						    card->proc_root->name);
-	mutex_unlock(&info_mutex);
-=======
 						    snd_proc_root->p,
 						    card->proc_root->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1116,16 +546,6 @@ void snd_info_card_disconnect(struct snd_card *card)
 {
 	if (!card)
 		return;
-<<<<<<< HEAD
-	mutex_lock(&info_mutex);
-	if (card->proc_root_link) {
-		snd_remove_proc_entry(snd_proc_root, card->proc_root_link);
-		card->proc_root_link = NULL;
-	}
-	if (card->proc_root)
-		snd_info_disconnect(card->proc_root);
-	mutex_unlock(&info_mutex);
-=======
 
 	proc_remove(card->proc_root_link);
 	if (card->proc_root)
@@ -1136,7 +556,6 @@ void snd_info_card_disconnect(struct snd_card *card)
 		snd_info_clear_entries(card->proc_root);
 	card->proc_root_link = NULL;
 	card->proc_root = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1157,37 +576,6 @@ int snd_info_card_free(struct snd_card *card)
  * snd_info_get_line - read one line from the procfs buffer
  * @buffer: the procfs buffer
  * @line: the buffer to store
-<<<<<<< HEAD
- * @len: the max. buffer size - 1
- *
- * Reads one line from the buffer and stores the string.
- *
- * Returns zero if successful, or 1 if error or EOF.
- */
-int snd_info_get_line(struct snd_info_buffer *buffer, char *line, int len)
-{
-	int c = -1;
-
-	if (len <= 0 || buffer->stop || buffer->error)
-		return 1;
-	while (--len > 0) {
-		c = buffer->buffer[buffer->curr++];
-		if (c == '\n') {
-			if (buffer->curr >= buffer->size)
-				buffer->stop = 1;
-			break;
-		}
-		*line++ = c;
-		if (buffer->curr >= buffer->size) {
-			buffer->stop = 1;
-			break;
-		}
-	}
-	while (c != '\n' && !buffer->stop) {
-		c = buffer->buffer[buffer->curr++];
-		if (buffer->curr >= buffer->size)
-			buffer->stop = 1;
-=======
  * @len: the max. buffer size
  *
  * Reads one line from the buffer and stores the string.
@@ -1214,15 +602,10 @@ int snd_info_get_line(struct snd_info_buffer *buffer, char *line, int len)
 			len--;
 			*line++ = c;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	*line = '\0';
 	return 0;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_info_get_line);
 
 /**
@@ -1234,11 +617,7 @@ EXPORT_SYMBOL(snd_info_get_line);
  * Parses the original string and copy a token to the given
  * string buffer.
  *
-<<<<<<< HEAD
- * Returns the updated pointer of the original string so that
-=======
  * Return: The updated pointer of the original string so that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * it can be used for the next call.
  */
 const char *snd_info_get_str(char *dest, const char *src, int len)
@@ -1264,21 +643,12 @@ const char *snd_info_get_str(char *dest, const char *src, int len)
 		src++;
 	return src;
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(snd_info_get_str);
-
-/**
- * snd_info_create_entry - create an info entry
- * @name: the proc file name
-=======
 EXPORT_SYMBOL(snd_info_get_str);
 
 /*
  * snd_info_create_entry - create an info entry
  * @name: the proc file name
  * @parent: the parent directory
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Creates an info entry with the given file name and initializes as
  * the default state.
@@ -1286,17 +656,11 @@ EXPORT_SYMBOL(snd_info_get_str);
  * Usually called from other functions such as
  * snd_info_create_card_entry().
  *
-<<<<<<< HEAD
- * Returns the pointer of the new instance, or NULL on failure.
- */
-static struct snd_info_entry *snd_info_create_entry(const char *name)
-=======
  * Return: The pointer of the new instance, or %NULL on failure.
  */
 static struct snd_info_entry *
 snd_info_create_entry(const char *name, struct snd_info_entry *parent,
 		      struct module *module)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_info_entry *entry;
 	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
@@ -1307,24 +671,17 @@ snd_info_create_entry(const char *name, struct snd_info_entry *parent,
 		kfree(entry);
 		return NULL;
 	}
-<<<<<<< HEAD
-	entry->mode = S_IFREG | S_IRUGO;
-=======
 	entry->mode = S_IFREG | 0444;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->content = SNDRV_INFO_CONTENT_TEXT;
 	mutex_init(&entry->access);
 	INIT_LIST_HEAD(&entry->children);
 	INIT_LIST_HEAD(&entry->list);
-<<<<<<< HEAD
-=======
 	entry->parent = parent;
 	entry->module = module;
 	if (parent) {
 		guard(mutex)(&parent->access);
 		list_add_tail(&entry->list, &parent->children);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return entry;
 }
 
@@ -1336,31 +693,16 @@ snd_info_create_entry(const char *name, struct snd_info_entry *parent,
  *
  * Creates a new info entry and assigns it to the given module.
  *
-<<<<<<< HEAD
- * Returns the pointer of the new instance, or NULL on failure.
-=======
  * Return: The pointer of the new instance, or %NULL on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct snd_info_entry *snd_info_create_module_entry(struct module * module,
 					       const char *name,
 					       struct snd_info_entry *parent)
 {
-<<<<<<< HEAD
-	struct snd_info_entry *entry = snd_info_create_entry(name);
-	if (entry) {
-		entry->module = module;
-		entry->parent = parent;
-	}
-	return entry;
-}
-
-=======
 	if (!parent)
 		parent = snd_proc_root;
 	return snd_info_create_entry(name, parent, module);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_info_create_module_entry);
 
 /**
@@ -1371,105 +713,12 @@ EXPORT_SYMBOL(snd_info_create_module_entry);
  *
  * Creates a new info entry and assigns it to the given card.
  *
-<<<<<<< HEAD
- * Returns the pointer of the new instance, or NULL on failure.
-=======
  * Return: The pointer of the new instance, or %NULL on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct snd_info_entry *snd_info_create_card_entry(struct snd_card *card,
 					     const char *name,
 					     struct snd_info_entry * parent)
 {
-<<<<<<< HEAD
-	struct snd_info_entry *entry = snd_info_create_entry(name);
-	if (entry) {
-		entry->module = card->module;
-		entry->card = card;
-		entry->parent = parent;
-	}
-	return entry;
-}
-
-EXPORT_SYMBOL(snd_info_create_card_entry);
-
-static void snd_info_disconnect(struct snd_info_entry *entry)
-{
-	struct list_head *p, *n;
-	struct proc_dir_entry *root;
-
-	list_for_each_safe(p, n, &entry->children) {
-		snd_info_disconnect(list_entry(p, struct snd_info_entry, list));
-	}
-
-	if (! entry->p)
-		return;
-	list_del_init(&entry->list);
-	root = entry->parent == NULL ? snd_proc_root : entry->parent->p;
-	snd_BUG_ON(!root);
-	snd_remove_proc_entry(root, entry->p);
-	entry->p = NULL;
-}
-
-static int snd_info_dev_free_entry(struct snd_device *device)
-{
-	struct snd_info_entry *entry = device->device_data;
-	snd_info_free_entry(entry);
-	return 0;
-}
-
-static int snd_info_dev_register_entry(struct snd_device *device)
-{
-	struct snd_info_entry *entry = device->device_data;
-	return snd_info_register(entry);
-}
-
-/**
- * snd_card_proc_new - create an info entry for the given card
- * @card: the card instance
- * @name: the file name
- * @entryp: the pointer to store the new info entry
- *
- * Creates a new info entry and assigns it to the given card.
- * Unlike snd_info_create_card_entry(), this function registers the
- * info entry as an ALSA device component, so that it can be
- * unregistered/released without explicit call.
- * Also, you don't have to register this entry via snd_info_register(),
- * since this will be registered by snd_card_register() automatically.
- *
- * The parent is assumed as card->proc_root.
- *
- * For releasing this entry, use snd_device_free() instead of
- * snd_info_free_entry(). 
- *
- * Returns zero if successful, or a negative error code on failure.
- */
-int snd_card_proc_new(struct snd_card *card, const char *name,
-		      struct snd_info_entry **entryp)
-{
-	static struct snd_device_ops ops = {
-		.dev_free = snd_info_dev_free_entry,
-		.dev_register =	snd_info_dev_register_entry,
-		/* disconnect is done via snd_info_card_disconnect() */
-	};
-	struct snd_info_entry *entry;
-	int err;
-
-	entry = snd_info_create_card_entry(card, name, card->proc_root);
-	if (! entry)
-		return -ENOMEM;
-	if ((err = snd_device_new(card, SNDRV_DEV_INFO, entry, &ops)) < 0) {
-		snd_info_free_entry(entry);
-		return err;
-	}
-	if (entryp)
-		*entryp = entry;
-	return 0;
-}
-
-EXPORT_SYMBOL(snd_card_proc_new);
-
-=======
 	if (!parent)
 		parent = card->proc_root;
 	return snd_info_create_entry(name, parent, card->module);
@@ -1487,23 +736,10 @@ static void snd_info_clear_entries(struct snd_info_entry *entry)
 	entry->p = NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_info_free_entry - release the info entry
  * @entry: the info entry
  *
-<<<<<<< HEAD
- * Releases the info entry.  Don't call this after registered.
- */
-void snd_info_free_entry(struct snd_info_entry * entry)
-{
-	if (entry == NULL)
-		return;
-	if (entry->p) {
-		mutex_lock(&info_mutex);
-		snd_info_disconnect(entry);
-		mutex_unlock(&info_mutex);
-=======
  * Releases the info entry.
  */
 void snd_info_free_entry(struct snd_info_entry * entry)
@@ -1526,18 +762,12 @@ void snd_info_free_entry(struct snd_info_entry * entry)
 	if (p) {
 		guard(mutex)(&p->access);
 		list_del(&entry->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(entry->name);
 	if (entry->private_free)
 		entry->private_free(entry);
 	kfree(entry);
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(snd_info_free_entry);
-
-=======
 EXPORT_SYMBOL(snd_info_free_entry);
 
 static int __snd_info_register(struct snd_info_entry *entry)
@@ -1570,43 +800,11 @@ static int __snd_info_register(struct snd_info_entry *entry)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_info_register - register the info entry
  * @entry: the info entry
  *
  * Registers the proc info entry.
-<<<<<<< HEAD
- *
- * Returns zero if successful, or a negative error code on failure.
- */
-int snd_info_register(struct snd_info_entry * entry)
-{
-	struct proc_dir_entry *root, *p = NULL;
-
-	if (snd_BUG_ON(!entry))
-		return -ENXIO;
-	root = entry->parent == NULL ? snd_proc_root : entry->parent->p;
-	mutex_lock(&info_mutex);
-	p = create_proc_entry(entry->name, entry->mode, root);
-	if (!p) {
-		mutex_unlock(&info_mutex);
-		return -ENOMEM;
-	}
-	if (!S_ISDIR(entry->mode))
-		p->proc_fops = &snd_info_entry_operations;
-	p->size = entry->size;
-	p->data = entry;
-	entry->p = p;
-	if (entry->parent)
-		list_add_tail(&entry->list, &entry->parent->children);
-	mutex_unlock(&info_mutex);
-	return 0;
-}
-
-EXPORT_SYMBOL(snd_info_register);
-
-=======
  * The all children entries are registered recursively.
  *
  * Return: Zero if successful, or a negative error code on failure.
@@ -1666,27 +864,15 @@ int snd_card_rw_proc_new(struct snd_card *card, const char *name,
 }
 EXPORT_SYMBOL_GPL(snd_card_rw_proc_new);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 
  */
 
-<<<<<<< HEAD
-static struct snd_info_entry *snd_info_version_entry;
-
-static void snd_info_version_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
-{
-	snd_iprintf(buffer,
-		    "Advanced Linux Sound Architecture Driver Version "
-		    CONFIG_SND_VERSION CONFIG_SND_DATE ".\n"
-		   );
-=======
 static void snd_info_version_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer)
 {
 	snd_iprintf(buffer,
 		    "Advanced Linux Sound Architecture Driver Version k%s.\n",
 		    init_utsname()->release);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init snd_info_version_init(void)
@@ -1697,23 +883,5 @@ static int __init snd_info_version_init(void)
 	if (entry == NULL)
 		return -ENOMEM;
 	entry->c.text.read = snd_info_version_read;
-<<<<<<< HEAD
-	if (snd_info_register(entry) < 0) {
-		snd_info_free_entry(entry);
-		return -ENOMEM;
-	}
-	snd_info_version_entry = entry;
-	return 0;
-}
-
-static int __exit snd_info_version_done(void)
-{
-	snd_info_free_entry(snd_info_version_entry);
-	return 0;
-}
-
-#endif /* CONFIG_PROC_FS */
-=======
 	return snd_info_register(entry); /* freed in error path */
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

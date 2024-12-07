@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # RDC network device configuration
 #
@@ -10,15 +7,8 @@ config NET_VENDOR_RDC
 	bool "RDC devices"
 	default y
 	depends on PCI
-<<<<<<< HEAD
-	---help---
-	  If you have a network (Ethernet) card belonging to this class, say Y
-	  and read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 	help
 	  If you have a network (Ethernet) card belonging to this class, say Y.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -31,16 +21,9 @@ config R6040
 	tristate "RDC R6040 Fast Ethernet Adapter support"
 	depends on PCI
 	select CRC32
-<<<<<<< HEAD
-	select NET_CORE
-	select MII
-	select PHYLIB
-	---help---
-=======
 	select MII
 	select PHYLIB
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is a driver for the R6040 Fast Ethernet MACs found in the
 	  the RDC R-321x System-on-chips.
 

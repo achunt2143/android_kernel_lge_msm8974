@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_MLD_H
 #define LINUX_MLD_H
 
@@ -27,20 +24,12 @@ struct mld2_grec {
 	__u8		grec_auxwords;
 	__be16		grec_nsrcs;
 	struct in6_addr	grec_mca;
-<<<<<<< HEAD
-	struct in6_addr	grec_src[0];
-=======
 	struct in6_addr	grec_src[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mld2_report {
 	struct icmp6hdr		mld2r_hdr;
-<<<<<<< HEAD
-	struct mld2_grec	mld2r_grec[0];
-=======
 	struct mld2_grec	mld2r_grec[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define mld2r_type		mld2r_hdr.icmp6_type
@@ -66,11 +55,7 @@ struct mld2_query {
 #endif
 	__u8			mld2q_qqic;
 	__be16			mld2q_nsrcs;
-<<<<<<< HEAD
-	struct in6_addr		mld2q_srcs[0];
-=======
 	struct in6_addr		mld2q_srcs[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define mld2q_type		mld2q_hdr.icmp6_type
@@ -79,16 +64,6 @@ struct mld2_query {
 #define mld2q_mrc		mld2q_hdr.icmp6_maxdelay
 #define mld2q_resv1		mld2q_hdr.icmp6_dataun.un_data16[1]
 
-<<<<<<< HEAD
-/* Max Response Code */
-#define MLDV2_MASK(value, nb) ((nb)>=32 ? (value) : ((1<<(nb))-1) & (value))
-#define MLDV2_EXP(thresh, nbmant, nbexp, value) \
-	((value) < (thresh) ? (value) : \
-	((MLDV2_MASK(value, nbmant) | (1<<(nbmant))) << \
-	(MLDV2_MASK((value) >> (nbmant), nbexp) + (nbexp))))
-
-#define MLDV2_MRC(value) MLDV2_EXP(0x8000, 12, 3, value)
-=======
 /* RFC3810, 5.1.3. Maximum Response Code:
  *
  * If Maximum Response Code >= 32768, Maximum Response Code represents a
@@ -138,6 +113,5 @@ static inline unsigned long mldv2_mrc(const struct mld2_query *mlh2)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

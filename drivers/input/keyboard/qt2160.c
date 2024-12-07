@@ -1,36 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  qt2160.c - Atmel AT42QT2160 Touch Sense Controller
  *
  *  Copyright (C) 2009 Raphael Derosso Pereira <raphaelpereira@gmail.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-#include <linux/kernel.h>
-#include <linux/init.h>
-=======
  */
 
 #include <linux/kernel.h>
 #include <linux/leds.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/jiffies.h>
@@ -50,10 +26,6 @@
 #define QT2160_CMD_GPIOS      6
 #define QT2160_CMD_SUBVER     7
 #define QT2160_CMD_CALIBRATE  10
-<<<<<<< HEAD
-
-#define QT2160_CYCLE_INTERVAL	(2*HZ)
-=======
 #define QT2160_CMD_DRIVE_X    70
 #define QT2160_CMD_PWMEN_X    74
 #define QT2160_CMD_PWM_DUTY   76
@@ -61,7 +33,6 @@
 #define QT2160_NUM_LEDS_X	8
 
 #define QT2160_CYCLE_INTERVAL	2000 /* msec - 2 sec */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned char qt2160_key2code[] = {
 	KEY_0, KEY_1, KEY_2, KEY_3,
@@ -70,17 +41,6 @@ static unsigned char qt2160_key2code[] = {
 	KEY_C, KEY_D, KEY_E, KEY_F,
 };
 
-<<<<<<< HEAD
-struct qt2160_data {
-	struct i2c_client *client;
-	struct input_dev *input;
-	struct delayed_work dwork;
-	spinlock_t lock;        /* Protects canceling/rescheduling of dwork */
-	unsigned short keycodes[ARRAY_SIZE(qt2160_key2code)];
-	u16 key_matrix;
-};
-
-=======
 #ifdef CONFIG_LEDS_CLASS
 struct qt2160_led {
 	struct qt2160_data *qt2160;
@@ -143,7 +103,6 @@ static int qt2160_led_set(struct led_classdev *cdev,
 
 #endif /* CONFIG_LEDS_CLASS */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int qt2160_read_block(struct i2c_client *client,
 			     u8 inireg, u8 *buffer, unsigned int count)
 {
@@ -195,17 +154,10 @@ static int qt2160_read_block(struct i2c_client *client,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int qt2160_get_key_matrix(struct qt2160_data *qt2160)
-{
-	struct i2c_client *client = qt2160->client;
-	struct input_dev *input = qt2160->input;
-=======
 static void qt2160_get_key_matrix(struct input_dev *input)
 {
 	struct qt2160_data *qt2160 = input_get_drvdata(input);
 	struct i2c_client *client = qt2160->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 regs[6];
 	u16 old_matrix, new_matrix;
 	int ret, i, mask;
@@ -220,11 +172,7 @@ static void qt2160_get_key_matrix(struct input_dev *input)
 	if (ret) {
 		dev_err(&client->dev,
 			"could not perform chip read.\n");
-<<<<<<< HEAD
-		return ret;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	old_matrix = qt2160->key_matrix;
@@ -242,23 +190,6 @@ static void qt2160_get_key_matrix(struct input_dev *input)
 	}
 
 	input_sync(input);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static irqreturn_t qt2160_irq(int irq, void *_qt2160)
-{
-	struct qt2160_data *qt2160 = _qt2160;
-	unsigned long flags;
-
-	spin_lock_irqsave(&qt2160->lock, flags);
-
-	__cancel_delayed_work(&qt2160->dwork);
-	schedule_delayed_work(&qt2160->dwork, 0);
-
-	spin_unlock_irqrestore(&qt2160->lock, flags);
-=======
 }
 
 static irqreturn_t qt2160_irq(int irq, void *data)
@@ -266,36 +197,11 @@ static irqreturn_t qt2160_irq(int irq, void *data)
 	struct input_dev *input = data;
 
 	qt2160_get_key_matrix(input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static void qt2160_schedule_read(struct qt2160_data *qt2160)
-{
-	spin_lock_irq(&qt2160->lock);
-	schedule_delayed_work(&qt2160->dwork, QT2160_CYCLE_INTERVAL);
-	spin_unlock_irq(&qt2160->lock);
-}
-
-static void qt2160_worker(struct work_struct *work)
-{
-	struct qt2160_data *qt2160 =
-		container_of(work, struct qt2160_data, dwork.work);
-
-	dev_dbg(&qt2160->client->dev, "worker\n");
-
-	qt2160_get_key_matrix(qt2160);
-
-	/* Avoid device lock up by checking every so often */
-	qt2160_schedule_read(qt2160);
-}
-
-static int __devinit qt2160_read(struct i2c_client *client, u8 reg)
-=======
 static int qt2160_read(struct i2c_client *client, u8 reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -316,31 +222,6 @@ static int qt2160_read(struct i2c_client *client, u8 reg)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devinit qt2160_write(struct i2c_client *client, u8 reg, u8 data)
-{
-	int error;
-
-	error = i2c_smbus_write_byte(client, reg);
-	if (error) {
-		dev_err(&client->dev,
-			"couldn't send request. Returned %d\n", error);
-		return error;
-	}
-
-	error = i2c_smbus_write_byte(client, data);
-	if (error) {
-		dev_err(&client->dev,
-			"couldn't write data. Returned %d\n", error);
-		return error;
-	}
-
-	return error;
-}
-
-
-static bool __devinit qt2160_identify(struct i2c_client *client)
-=======
 static int qt2160_write(struct i2c_client *client, u8 reg, u8 data)
 {
 	int ret;
@@ -394,7 +275,6 @@ static inline int qt2160_register_leds(struct qt2160_data *qt2160)
 #endif
 
 static bool qt2160_identify(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int id, ver, rev;
 
@@ -425,30 +305,16 @@ static bool qt2160_identify(struct i2c_client *client)
 	return true;
 }
 
-<<<<<<< HEAD
-static int __devinit qt2160_probe(struct i2c_client *client,
-				  const struct i2c_device_id *id)
-=======
 static int qt2160_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qt2160_data *qt2160;
 	struct input_dev *input;
 	int i;
 	int error;
 
-<<<<<<< HEAD
-	/* Check functionality */
-	error = i2c_check_functionality(client->adapter,
-			I2C_FUNC_SMBUS_BYTE);
-	if (!error) {
-		dev_err(&client->dev, "%s adapter not supported\n",
-				dev_driver_string(&client->adapter->dev));
-=======
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE)) {
 		dev_err(&client->dev, "%s adapter not supported\n",
 			dev_driver_string(&client->adapter->dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -456,20 +322,6 @@ static int qt2160_probe(struct i2c_client *client)
 		return -ENODEV;
 
 	/* Chip is valid and active. Allocate structure */
-<<<<<<< HEAD
-	qt2160 = kzalloc(sizeof(struct qt2160_data), GFP_KERNEL);
-	input = input_allocate_device();
-	if (!qt2160 || !input) {
-		dev_err(&client->dev, "insufficient memory\n");
-		error = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	qt2160->client = client;
-	qt2160->input = input;
-	INIT_DELAYED_WORK(&qt2160->dwork, qt2160_worker);
-	spin_lock_init(&qt2160->lock);
-=======
 	qt2160 = devm_kzalloc(&client->dev, sizeof(*qt2160), GFP_KERNEL);
 	if (!qt2160)
 		return -ENOMEM;
@@ -480,7 +332,6 @@ static int qt2160_probe(struct i2c_client *client)
 
 	qt2160->client = client;
 	qt2160->input = input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input->name = "AT42QT2160 Touch Sense Keyboard";
 	input->id.bustype = BUS_I2C;
@@ -497,28 +348,12 @@ static int qt2160_probe(struct i2c_client *client)
 	}
 	__clear_bit(KEY_RESERVED, input->keybit);
 
-<<<<<<< HEAD
-=======
 	input_set_drvdata(input, qt2160);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Calibrate device */
 	error = qt2160_write(client, QT2160_CMD_CALIBRATE, 1);
 	if (error) {
 		dev_err(&client->dev, "failed to calibrate device\n");
-<<<<<<< HEAD
-		goto err_free_mem;
-	}
-
-	if (client->irq) {
-		error = request_irq(client->irq, qt2160_irq,
-				    IRQF_TRIGGER_FALLING, "qt2160", qt2160);
-		if (error) {
-			dev_err(&client->dev,
-				"failed to allocate irq %d\n", client->irq);
-			goto err_free_mem;
-		}
-=======
 		return error;
 	}
 
@@ -545,49 +380,15 @@ static int qt2160_probe(struct i2c_client *client)
 	if (error) {
 		dev_err(&client->dev, "Failed to register leds\n");
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(qt2160->input);
 	if (error) {
 		dev_err(&client->dev,
 			"Failed to register input device\n");
-<<<<<<< HEAD
-		goto err_free_irq;
-	}
-
-	i2c_set_clientdata(client, qt2160);
-	qt2160_schedule_read(qt2160);
-
-	return 0;
-
-err_free_irq:
-	if (client->irq)
-		free_irq(client->irq, qt2160);
-err_free_mem:
-	input_free_device(input);
-	kfree(qt2160);
-	return error;
-}
-
-static int __devexit qt2160_remove(struct i2c_client *client)
-{
-	struct qt2160_data *qt2160 = i2c_get_clientdata(client);
-
-	/* Release IRQ so no queue will be scheduled */
-	if (client->irq)
-		free_irq(client->irq, qt2160);
-
-	cancel_delayed_work_sync(&qt2160->dwork);
-
-	input_unregister_device(qt2160->input);
-	kfree(qt2160);
-
-=======
 		return error;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -601,18 +402,10 @@ MODULE_DEVICE_TABLE(i2c, qt2160_idtable);
 static struct i2c_driver qt2160_driver = {
 	.driver = {
 		.name	= "qt2160",
-<<<<<<< HEAD
-		.owner  = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	.id_table	= qt2160_idtable,
 	.probe		= qt2160_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(qt2160_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_i2c_driver(qt2160_driver);

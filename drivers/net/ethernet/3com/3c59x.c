@@ -92,11 +92,7 @@ static int vortex_debug = 1;
 #include <linux/gfp.h>
 #include <asm/irq.h>			/* For nr_irqs only. */
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Kernel compatibility defines, some common to David Hinds' PCMCIA package.
    This is only in the support-all-kernels source code. */
@@ -106,11 +102,7 @@ static int vortex_debug = 1;
 #include <linux/delay.h>
 
 
-<<<<<<< HEAD
-static const char version[] __devinitconst =
-=======
 static const char version[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DRV_NAME ": Donald Becker and others.\n";
 
 MODULE_AUTHOR("Donald Becker <becker@scyld.com>");
@@ -285,11 +277,7 @@ static struct vortex_chip_info {
 	int flags;
 	int drv_flags;
 	int io_size;
-<<<<<<< HEAD
-} vortex_info_tbl[] __devinitdata = {
-=======
 } vortex_info_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"3c590 Vortex 10Mbps",
 	 PCI_USES_MASTER, IS_VORTEX, 32, },
 	{"3c592 EISA 10Mbps Demon/Vortex",					/* AKPM: from Don's 3c59x_cb.c 0.49H */
@@ -387,11 +375,7 @@ static struct vortex_chip_info {
 };
 
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(vortex_pci_tbl) = {
-=======
 static const struct pci_device_id vortex_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10B7, 0x5900, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_3C590 },
 	{ 0x10B7, 0x5920, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_3C592 },
 	{ 0x10B7, 0x5970, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CH_3C597 },
@@ -618,11 +602,7 @@ struct vortex_private {
 	struct sk_buff* rx_skbuff[RX_RING_SIZE];
 	struct sk_buff* tx_skbuff[TX_RING_SIZE];
 	unsigned int cur_rx, cur_tx;		/* The next free ring entry */
-<<<<<<< HEAD
-	unsigned int dirty_rx, dirty_tx;	/* The ring entries to be free()ed. */
-=======
 	unsigned int dirty_tx;	/* The ring entries to be free()ed. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vortex_extra_stats xstats;	/* NIC-specific extra stats */
 	struct sk_buff *tx_skb;				/* Packet being eaten by bus master ctrl.  */
 	dma_addr_t tx_skb_dma;				/* Allocated DMA address for bus master ctrl DMA.   */
@@ -638,10 +618,6 @@ struct vortex_private {
 
 	/* The remainder are related to chip state, mostly media selection. */
 	struct timer_list timer;			/* Media selection timer. */
-<<<<<<< HEAD
-	struct timer_list rx_oom_timer;		/* Rx skb allocation retry timer */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int options;						/* User-settable misc. driver options. */
 	unsigned int media_override:4, 		/* Passed-in media type. */
 		default_media:4,				/* Read from the EEPROM/Wn3_Config. */
@@ -716,11 +692,7 @@ DEFINE_WINDOW_IO(16)
 DEFINE_WINDOW_IO(32)
 
 #ifdef CONFIG_PCI
-<<<<<<< HEAD
-#define DEVICE_PCI(dev) (((dev)->bus == &pci_bus_type) ? to_pci_dev((dev)) : NULL)
-=======
 #define DEVICE_PCI(dev) ((dev_is_pci(dev)) ? to_pci_dev((dev)) : NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define DEVICE_PCI(dev) NULL
 #endif
@@ -786,26 +758,16 @@ static int vortex_open(struct net_device *dev);
 static void mdio_sync(struct vortex_private *vp, int bits);
 static int mdio_read(struct net_device *dev, int phy_id, int location);
 static void mdio_write(struct net_device *vp, int phy_id, int location, int value);
-<<<<<<< HEAD
-static void vortex_timer(unsigned long arg);
-static void rx_oom_timer(unsigned long arg);
-=======
 static void vortex_timer(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static netdev_tx_t vortex_start_xmit(struct sk_buff *skb,
 				     struct net_device *dev);
 static netdev_tx_t boomerang_start_xmit(struct sk_buff *skb,
 					struct net_device *dev);
 static int vortex_rx(struct net_device *dev);
 static int boomerang_rx(struct net_device *dev);
-<<<<<<< HEAD
-static irqreturn_t vortex_interrupt(int irq, void *dev_id);
-static irqreturn_t boomerang_interrupt(int irq, void *dev_id);
-=======
 static irqreturn_t vortex_boomerang_interrupt(int irq, void *dev_id);
 static irqreturn_t _vortex_interrupt(int irq, struct net_device *dev);
 static irqreturn_t _boomerang_interrupt(int irq, struct net_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vortex_close(struct net_device *dev);
 static void dump_tx_ring(struct net_device *dev);
 static void update_stats(void __iomem *ioaddr, struct net_device *dev);
@@ -814,11 +776,7 @@ static void set_rx_mode(struct net_device *dev);
 #ifdef CONFIG_PCI
 static int vortex_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 #endif
-<<<<<<< HEAD
-static void vortex_tx_timeout(struct net_device *dev);
-=======
 static void vortex_tx_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void acpi_set_WOL(struct net_device *dev);
 static const struct ethtool_ops vortex_ethtool_ops;
 static void set_8021q_mode(struct net_device *dev, int enable);
@@ -854,13 +812,8 @@ module_param(global_enable_wol, int, 0);
 module_param_array(enable_wol, int, NULL, 0);
 module_param(rx_copybreak, int, 0);
 module_param(max_interrupt_work, int, 0);
-<<<<<<< HEAD
-module_param(compaq_ioaddr, int, 0);
-module_param(compaq_irq, int, 0);
-=======
 module_param_hw(compaq_ioaddr, int, ioport, 0);
 module_param_hw(compaq_irq, int, irq, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(compaq_device_id, int, 0);
 module_param(watchdog, int, 0);
 module_param(global_use_mmio, int, 0);
@@ -886,15 +839,7 @@ MODULE_PARM_DESC(use_mmio, "3c59x: use memory-mapped PCI I/O resource (0-1)");
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void poll_vortex(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct vortex_private *vp = netdev_priv(dev);
-	unsigned long flags;
-	local_irq_save(flags);
-	(vp->full_bus_master_rx ? boomerang_interrupt:vortex_interrupt)(dev->irq,dev);
-	local_irq_restore(flags);
-=======
 	vortex_boomerang_interrupt(dev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -902,12 +847,7 @@ static void poll_vortex(struct net_device *dev)
 
 static int vortex_suspend(struct device *dev)
 {
-<<<<<<< HEAD
-	struct pci_dev *pdev = to_pci_dev(dev);
-	struct net_device *ndev = pci_get_drvdata(pdev);
-=======
 	struct net_device *ndev = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ndev || !netif_running(ndev))
 		return 0;
@@ -920,12 +860,7 @@ static int vortex_suspend(struct device *dev)
 
 static int vortex_resume(struct device *dev)
 {
-<<<<<<< HEAD
-	struct pci_dev *pdev = to_pci_dev(dev);
-	struct net_device *ndev = pci_get_drvdata(pdev);
-=======
 	struct net_device *ndev = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!ndev || !netif_running(ndev))
@@ -958,22 +893,14 @@ static const struct dev_pm_ops vortex_pm_ops = {
 #endif /* !CONFIG_PM */
 
 #ifdef CONFIG_EISA
-<<<<<<< HEAD
-static struct eisa_device_id vortex_eisa_ids[] = {
-=======
 static const struct eisa_device_id vortex_eisa_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "TCM5920", CH_3C592 },
 	{ "TCM5970", CH_3C597 },
 	{ "" }
 };
 MODULE_DEVICE_TABLE(eisa, vortex_eisa_ids);
 
-<<<<<<< HEAD
-static int __init vortex_eisa_probe(struct device *device)
-=======
 static int vortex_eisa_probe(struct device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *ioaddr;
 	struct eisa_device *edev;
@@ -996,11 +923,7 @@ static int vortex_eisa_probe(struct device *device)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit vortex_eisa_remove(struct device *device)
-=======
 static int vortex_eisa_remove(struct device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct eisa_device *edev;
 	struct net_device *dev;
@@ -1031,11 +954,7 @@ static struct eisa_driver vortex_eisa_driver = {
 	.driver   = {
 		.name    = "3c59x",
 		.probe   = vortex_eisa_probe,
-<<<<<<< HEAD
-		.remove  = __devexit_p(vortex_eisa_remove)
-=======
 		.remove  = vortex_eisa_remove
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -1073,13 +992,8 @@ static int __init vortex_eisa_init(void)
 }
 
 /* returns count (>= 0), or negative on error */
-<<<<<<< HEAD
-static int __devinit vortex_init_one(struct pci_dev *pdev,
-				      const struct pci_device_id *ent)
-=======
 static int vortex_init_one(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc, unit, pci_bar;
 	struct vortex_chip_info *vci;
@@ -1091,15 +1005,8 @@ static int vortex_init_one(struct pci_dev *pdev,
 		goto out;
 
 	rc = pci_request_regions(pdev, DRV_NAME);
-<<<<<<< HEAD
-	if (rc < 0) {
-		pci_disable_device(pdev);
-		goto out;
-	}
-=======
 	if (rc < 0)
 		goto out_disable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unit = vortex_cards_found;
 
@@ -1116,30 +1023,12 @@ static int vortex_init_one(struct pci_dev *pdev,
 	if (!ioaddr) /* If mapping fails, fall-back to BAR 0... */
 		ioaddr = pci_iomap(pdev, 0, 0);
 	if (!ioaddr) {
-<<<<<<< HEAD
-		pci_release_regions(pdev);
-		pci_disable_device(pdev);
-		rc = -ENOMEM;
-		goto out;
-=======
 		rc = -ENOMEM;
 		goto out_release;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rc = vortex_probe1(&pdev->dev, ioaddr, pdev->irq,
 			   ent->driver_data, unit);
-<<<<<<< HEAD
-	if (rc < 0) {
-		pci_iounmap(pdev, ioaddr);
-		pci_release_regions(pdev);
-		pci_disable_device(pdev);
-		goto out;
-	}
-
-	vortex_cards_found++;
-
-=======
 	if (rc < 0)
 		goto out_iounmap;
 
@@ -1152,7 +1041,6 @@ out_release:
 	pci_release_regions(pdev);
 out_disable:
 	pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return rc;
 }
@@ -1164,16 +1052,9 @@ static const struct net_device_ops boomrang_netdev_ops = {
 	.ndo_tx_timeout		= vortex_tx_timeout,
 	.ndo_get_stats		= vortex_get_stats,
 #ifdef CONFIG_PCI
-<<<<<<< HEAD
-	.ndo_do_ioctl 		= vortex_ioctl,
-#endif
-	.ndo_set_rx_mode	= set_rx_mode,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= vortex_ioctl,
 #endif
 	.ndo_set_rx_mode	= set_rx_mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -1188,16 +1069,9 @@ static const struct net_device_ops vortex_netdev_ops = {
 	.ndo_tx_timeout		= vortex_tx_timeout,
 	.ndo_get_stats		= vortex_get_stats,
 #ifdef CONFIG_PCI
-<<<<<<< HEAD
-	.ndo_do_ioctl 		= vortex_ioctl,
-#endif
-	.ndo_set_rx_mode	= set_rx_mode,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= vortex_ioctl,
 #endif
 	.ndo_set_rx_mode	= set_rx_mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -1211,22 +1085,13 @@ static const struct net_device_ops vortex_netdev_ops = {
  *
  * NOTE: pdev can be NULL, for the case of a Compaq device
  */
-<<<<<<< HEAD
-static int __devinit vortex_probe1(struct device *gendev,
-				   void __iomem *ioaddr, int irq,
-				   int chip_idx, int card_idx)
-=======
 static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
 			 int chip_idx, int card_idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vortex_private *vp;
 	int option;
 	unsigned int eeprom[0x40], checksum = 0;		/* EEPROM contents */
-<<<<<<< HEAD
-=======
 	__be16 addr[ETH_ALEN / 2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, step;
 	struct net_device *dev;
 	static int printed_version;
@@ -1285,11 +1150,7 @@ static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
 
 	print_info = (vortex_debug > 1);
 	if (print_info)
-<<<<<<< HEAD
-		pr_info("See Documentation/networking/vortex.txt\n");
-=======
 		pr_info("See Documentation/networking/device_drivers/ethernet/3com/vortex.rst\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("%s: 3Com %s %s at %p.\n",
 	       print_name,
@@ -1347,15 +1208,9 @@ static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
 	vp->mii.reg_num_mask = 0x1f;
 
 	/* Makes sure rings are at least 16 byte aligned. */
-<<<<<<< HEAD
-	vp->rx_ring = pci_alloc_consistent(pdev, sizeof(struct boom_rx_desc) * RX_RING_SIZE
-					   + sizeof(struct boom_tx_desc) * TX_RING_SIZE,
-					   &vp->rx_ring_dma);
-=======
 	vp->rx_ring = dma_alloc_coherent(gendev, sizeof(struct boom_rx_desc) * RX_RING_SIZE
 					   + sizeof(struct boom_tx_desc) * TX_RING_SIZE,
 					   &vp->rx_ring_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = -ENOMEM;
 	if (!vp->rx_ring)
 		goto free_device;
@@ -1430,13 +1285,8 @@ static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
 	if ((checksum != 0x00) && !(vci->drv_flags & IS_TORNADO))
 		pr_cont(" ***INVALID CHECKSUM %4.4x*** ", checksum);
 	for (i = 0; i < 3; i++)
-<<<<<<< HEAD
-		((__be16 *)dev->dev_addr)[i] = htons(eeprom[i + 10]);
-	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
-=======
 		addr[i] = htons(eeprom[i + 10]);
 	eth_hw_addr_set(dev, (u8 *)addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (print_info)
 		pr_cont(" %pM", dev->dev_addr);
 	/* Unfortunately an all zero eeprom passes the checksum and this
@@ -1453,13 +1303,8 @@ static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
 		pr_cont(", IRQ %d\n", dev->irq);
 	/* Tell them about an invalid IRQ. */
 	if (dev->irq <= 0 || dev->irq >= nr_irqs)
-<<<<<<< HEAD
-		pr_warning(" *** Warning: IRQ %d is unlikely to work! ***\n",
-			   dev->irq);
-=======
 		pr_warn(" *** Warning: IRQ %d is unlikely to work! ***\n",
 			dev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	step = (window_read8(vp, 4, Wn4_NetDiag) & 0x1e) >> 1;
 	if (print_info) {
@@ -1573,11 +1418,7 @@ static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
 		}
 		mii_preamble_required--;
 		if (phy_idx == 0) {
-<<<<<<< HEAD
-			pr_warning("  ***WARNING*** No MII transceivers found!\n");
-=======
 			pr_warn("  ***WARNING*** No MII transceivers found!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vp->phys[0] = 24;
 		} else {
 			vp->advertising = mdio_read(dev, vp->phys[0], MII_ADVERTISE);
@@ -1624,31 +1465,18 @@ static int vortex_probe1(struct device *gendev, void __iomem *ioaddr, int irq,
 
 	if (pdev) {
 		vp->pm_state_valid = 1;
-<<<<<<< HEAD
- 		pci_save_state(VORTEX_PCI(vp));
- 		acpi_set_WOL(dev);
-=======
 		pci_save_state(pdev);
 		acpi_set_WOL(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	retval = register_netdev(dev);
 	if (retval == 0)
 		return 0;
 
 free_ring:
-<<<<<<< HEAD
-	pci_free_consistent(pdev,
-						sizeof(struct boom_rx_desc) * RX_RING_SIZE
-							+ sizeof(struct boom_tx_desc) * TX_RING_SIZE,
-						vp->rx_ring,
-						vp->rx_ring_dma);
-=======
 	dma_free_coherent(&pdev->dev,
 		sizeof(struct boom_rx_desc) * RX_RING_SIZE +
 		sizeof(struct boom_tx_desc) * TX_RING_SIZE,
 		vp->rx_ring, vp->rx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_device:
 	free_netdev(dev);
 	pr_err(PFX "vortex_probe1 fails.  Returns %d\n", retval);
@@ -1722,11 +1550,7 @@ vortex_up(struct net_device *dev)
 	struct vortex_private *vp = netdev_priv(dev);
 	void __iomem *ioaddr = vp->ioaddr;
 	unsigned int config;
-<<<<<<< HEAD
-	int i, mii_reg1, mii_reg5, err = 0;
-=======
 	int i, mii_reg5, err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (VORTEX_PCI(vp)) {
 		pci_set_power_state(VORTEX_PCI(vp), PCI_D0);	/* Go active */
@@ -1734,12 +1558,7 @@ vortex_up(struct net_device *dev)
 			pci_restore_state(VORTEX_PCI(vp));
 		err = pci_enable_device(VORTEX_PCI(vp));
 		if (err) {
-<<<<<<< HEAD
-			pr_warning("%s: Could not enable device\n",
-				dev->name);
-=======
 			pr_warn("%s: Could not enable device\n", dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_out;
 		}
 	}
@@ -1774,20 +1593,8 @@ vortex_up(struct net_device *dev)
 				dev->name, media_tbl[dev->if_port].name);
 	}
 
-<<<<<<< HEAD
-	init_timer(&vp->timer);
-	vp->timer.expires = RUN_AT(media_tbl[dev->if_port].wait);
-	vp->timer.data = (unsigned long)dev;
-	vp->timer.function = vortex_timer;		/* timer handler */
-	add_timer(&vp->timer);
-
-	init_timer(&vp->rx_oom_timer);
-	vp->rx_oom_timer.data = (unsigned long)dev;
-	vp->rx_oom_timer.function = rx_oom_timer;
-=======
 	timer_setup(&vp->timer, vortex_timer, 0);
 	mod_timer(&vp->timer, RUN_AT(media_tbl[dev->if_port].wait));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vortex_debug > 1)
 		pr_debug("%s: Initial media type %s.\n",
@@ -1800,11 +1607,7 @@ vortex_up(struct net_device *dev)
 	window_write32(vp, config, 3, Wn3_Config);
 
 	if (dev->if_port == XCVR_MII || dev->if_port == XCVR_NWAY) {
-<<<<<<< HEAD
-		mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
-=======
 		mdio_read(dev, vp->phys[0], MII_BMSR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mii_reg5 = mdio_read(dev, vp->phys[0], MII_LPA);
 		vp->partner_flow_ctrl = ((mii_reg5 & 0x0400) != 0);
 		vp->mii.full_duplex = vp->full_duplex;
@@ -1866,11 +1669,7 @@ vortex_up(struct net_device *dev)
 	window_write16(vp, 0x0040, 4, Wn4_NetDiag);
 
 	if (vp->full_bus_master_rx) { /* Boomerang bus master. */
-<<<<<<< HEAD
-		vp->cur_rx = vp->dirty_rx = 0;
-=======
 		vp->cur_rx = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Initialize the RxEarly register as recommended. */
 		iowrite16(SetRxThreshold + (1536>>2), ioaddr + EL3_CMD);
 		iowrite32(0x0020, ioaddr + PktStatus);
@@ -1912,10 +1711,7 @@ vortex_up(struct net_device *dev)
 	if (vp->cb_fn_base)			/* The PCMCIA people are idiots.  */
 		iowrite32(0x8000, vp->cb_fn_base + 4);
 	netif_start_queue (dev);
-<<<<<<< HEAD
-=======
 	netdev_reset_queue(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	return err;
 }
@@ -1926,17 +1722,10 @@ vortex_open(struct net_device *dev)
 	struct vortex_private *vp = netdev_priv(dev);
 	int i;
 	int retval;
-<<<<<<< HEAD
-
-	/* Use the now-standard shared IRQ implementation. */
-	if ((retval = request_irq(dev->irq, vp->full_bus_master_rx ?
-				boomerang_interrupt : vortex_interrupt, IRQF_SHARED, dev->name, dev))) {
-=======
 	dma_addr_t dma;
 
 	/* Use the now-standard shared IRQ implementation. */
 	if ((retval = request_irq(dev->irq, vortex_boomerang_interrupt, IRQF_SHARED, dev->name, dev))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("%s: Could not reserve IRQ %d\n", dev->name, dev->irq);
 		goto err;
 	}
@@ -1957,21 +1746,6 @@ vortex_open(struct net_device *dev)
 				break;			/* Bad news!  */
 
 			skb_reserve(skb, NET_IP_ALIGN);	/* Align IP on 16 byte boundaries */
-<<<<<<< HEAD
-			vp->rx_ring[i].addr = cpu_to_le32(pci_map_single(VORTEX_PCI(vp), skb->data, PKT_BUF_SZ, PCI_DMA_FROMDEVICE));
-		}
-		if (i != RX_RING_SIZE) {
-			int j;
-			pr_emerg("%s: no memory for rx ring\n", dev->name);
-			for (j = 0; j < i; j++) {
-				if (vp->rx_skbuff[j]) {
-					dev_kfree_skb(vp->rx_skbuff[j]);
-					vp->rx_skbuff[j] = NULL;
-				}
-			}
-			retval = -ENOMEM;
-			goto err_free_irq;
-=======
 			dma = dma_map_single(vp->gendev, skb->data,
 					     PKT_BUF_SZ, DMA_FROM_DEVICE);
 			if (dma_mapping_error(vp->gendev, dma))
@@ -1982,7 +1756,6 @@ vortex_open(struct net_device *dev)
 			pr_emerg("%s: no memory for rx ring\n", dev->name);
 			retval = -ENOMEM;
 			goto err_free_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Wrap the ring. */
 		vp->rx_ring[i-1].next = cpu_to_le32(vp->rx_ring_dma);
@@ -1992,9 +1765,6 @@ vortex_open(struct net_device *dev)
 	if (!retval)
 		goto out;
 
-<<<<<<< HEAD
-err_free_irq:
-=======
 err_free_skb:
 	for (i = 0; i < RX_RING_SIZE; i++) {
 		if (vp->rx_skbuff[i]) {
@@ -2002,7 +1772,6 @@ err_free_skb:
 			vp->rx_skbuff[i] = NULL;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_irq(dev->irq, dev);
 err:
 	if (vortex_debug > 1)
@@ -2012,17 +1781,10 @@ out:
 }
 
 static void
-<<<<<<< HEAD
-vortex_timer(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *)data;
-	struct vortex_private *vp = netdev_priv(dev);
-=======
 vortex_timer(struct timer_list *t)
 {
 	struct vortex_private *vp = from_timer(vp, t, timer);
 	struct net_device *dev = vp->mii.dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = vp->ioaddr;
 	int next_tick = 60*HZ;
 	int ok = 0;
@@ -2117,11 +1879,7 @@ leave_media_alone:
 		iowrite16(FakeIntr, ioaddr + EL3_CMD);
 }
 
-<<<<<<< HEAD
-static void vortex_tx_timeout(struct net_device *dev)
-=======
 static void vortex_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vortex_private *vp = netdev_priv(dev);
 	void __iomem *ioaddr = vp->ioaddr;
@@ -2142,22 +1900,7 @@ static void vortex_tx_timeout(struct net_device *dev, unsigned int txqueue)
 		pr_err("%s: Interrupt posted but not delivered --"
 			   " IRQ blocked by another device?\n", dev->name);
 		/* Bad idea here.. but we might as well handle a few events. */
-<<<<<<< HEAD
-		{
-			/*
-			 * Block interrupts because vortex_interrupt does a bare spin_lock()
-			 */
-			unsigned long flags;
-			local_irq_save(flags);
-			if (vp->full_bus_master_tx)
-				boomerang_interrupt(dev->irq, dev);
-			else
-				vortex_interrupt(dev->irq, dev);
-			local_irq_restore(flags);
-		}
-=======
 		vortex_boomerang_interrupt(dev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (vortex_debug > 0)
@@ -2171,34 +1914,21 @@ static void vortex_tx_timeout(struct net_device *dev, unsigned int txqueue)
 		if (vp->cur_tx - vp->dirty_tx > 0  &&  ioread32(ioaddr + DownListPtr) == 0)
 			iowrite32(vp->tx_ring_dma + (vp->dirty_tx % TX_RING_SIZE) * sizeof(struct boom_tx_desc),
 				 ioaddr + DownListPtr);
-<<<<<<< HEAD
-		if (vp->cur_tx - vp->dirty_tx < TX_RING_SIZE)
-			netif_wake_queue (dev);
-=======
 		if (vp->cur_tx - vp->dirty_tx < TX_RING_SIZE) {
 			netif_wake_queue (dev);
 			netdev_reset_queue (dev);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (vp->drv_flags & IS_BOOMERANG)
 			iowrite8(PKT_BUF_SZ>>8, ioaddr + TxFreeThreshold);
 		iowrite16(DownUnstall, ioaddr + EL3_CMD);
 	} else {
 		dev->stats.tx_dropped++;
 		netif_wake_queue(dev);
-<<<<<<< HEAD
-	}
-
-	/* Issue Tx Enable */
-	iowrite16(TxEnable, ioaddr + EL3_CMD);
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 		netdev_reset_queue(dev);
 	}
 	/* Issue Tx Enable */
 	iowrite16(TxEnable, ioaddr + EL3_CMD);
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2226,11 +1956,7 @@ vortex_error(struct net_device *dev, int status)
 				   dev->name, tx_status);
 			if (tx_status == 0x82) {
 				pr_err("Probably a duplex mismatch.  See "
-<<<<<<< HEAD
-						"Documentation/networking/vortex.txt\n");
-=======
 						"Documentation/networking/device_drivers/ethernet/3com/vortex.rst\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			dump_tx_ring(dev);
 		}
@@ -2260,13 +1986,8 @@ vortex_error(struct net_device *dev, int status)
 		/* This occurs when we have the wrong media type! */
 		if (DoneDidThat == 0  &&
 			ioread16(ioaddr + EL3_STATUS) & StatsFull) {
-<<<<<<< HEAD
-			pr_warning("%s: Updating statistics failed, disabling "
-				   "stats as an interrupt source.\n", dev->name);
-=======
 			pr_warn("%s: Updating statistics failed, disabling stats as an interrupt source\n",
 				dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iowrite16(SetIntrEnb |
 				  (window_read16(vp, 5, 10) & ~StatsFull),
 				  ioaddr + EL3_CMD);
@@ -2323,20 +2044,13 @@ vortex_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct vortex_private *vp = netdev_priv(dev);
 	void __iomem *ioaddr = vp->ioaddr;
-<<<<<<< HEAD
-=======
 	int skblen = skb->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Put out the doubleword header... */
 	iowrite32(skb->len, ioaddr + TX_FIFO);
 	if (vp->bus_master) {
 		/* Set the bus-master controller to transfer the packet. */
 		int len = (skb->len + 3) & ~3;
-<<<<<<< HEAD
-		vp->tx_skb_dma = pci_map_single(VORTEX_PCI(vp), skb->data, len,
-						PCI_DMA_TODEVICE);
-=======
 		vp->tx_skb_dma = dma_map_single(vp->gendev, skb->data, len,
 						DMA_TO_DEVICE);
 		if (dma_mapping_error(vp->gendev, vp->tx_skb_dma)) {
@@ -2345,29 +2059,20 @@ vortex_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			return NETDEV_TX_OK;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irq(&vp->window_lock);
 		window_set(vp, 7);
 		iowrite32(vp->tx_skb_dma, ioaddr + Wn7_MasterAddr);
 		iowrite16(len, ioaddr + Wn7_MasterLen);
 		spin_unlock_irq(&vp->window_lock);
 		vp->tx_skb = skb;
-<<<<<<< HEAD
-=======
 		skb_tx_timestamp(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iowrite16(StartDMADown, ioaddr + EL3_CMD);
 		/* netif_wake_queue() will be called at the DMADone interrupt. */
 	} else {
 		/* ... and the packet rounded to a doubleword. */
-<<<<<<< HEAD
-		iowrite32_rep(ioaddr + TX_FIFO, skb->data, (skb->len + 3) >> 2);
-		dev_kfree_skb (skb);
-=======
 		skb_tx_timestamp(skb);
 		iowrite32_rep(ioaddr + TX_FIFO, skb->data, (skb->len + 3) >> 2);
 		dev_consume_skb_any (skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ioread16(ioaddr + TxFree) > 1536) {
 			netif_start_queue (dev);	/* AKPM: redundant? */
 		} else {
@@ -2377,10 +2082,7 @@ vortex_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	netdev_sent_queue(dev, skblen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the Tx status stack. */
 	{
@@ -2412,15 +2114,10 @@ boomerang_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	void __iomem *ioaddr = vp->ioaddr;
 	/* Calculate the next Tx descriptor entry. */
 	int entry = vp->cur_tx % TX_RING_SIZE;
-<<<<<<< HEAD
-	struct boom_tx_desc *prev_entry = &vp->tx_ring[(vp->cur_tx-1) % TX_RING_SIZE];
-	unsigned long flags;
-=======
 	int skblen = skb->len;
 	struct boom_tx_desc *prev_entry = &vp->tx_ring[(vp->cur_tx-1) % TX_RING_SIZE];
 	unsigned long flags;
 	dma_addr_t dma_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vortex_debug > 6) {
 		pr_debug("boomerang_start_xmit()\n");
@@ -2439,13 +2136,8 @@ boomerang_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	if (vp->cur_tx - vp->dirty_tx >= TX_RING_SIZE) {
 		if (vortex_debug > 0)
-<<<<<<< HEAD
-			pr_warning("%s: BUG! Tx Ring full, refusing to send buffer.\n",
-				   dev->name);
-=======
 			pr_warn("%s: BUG! Tx Ring full, refusing to send buffer\n",
 				dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_stop_queue(dev);
 		return NETDEV_TX_BUSY;
 	}
@@ -2460,44 +2152,27 @@ boomerang_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			vp->tx_ring[entry].status = cpu_to_le32(skb->len | TxIntrUploaded | AddTCPChksum | AddUDPChksum);
 
 	if (!skb_shinfo(skb)->nr_frags) {
-<<<<<<< HEAD
-		vp->tx_ring[entry].frag[0].addr = cpu_to_le32(pci_map_single(VORTEX_PCI(vp), skb->data,
-										skb->len, PCI_DMA_TODEVICE));
-=======
 		dma_addr = dma_map_single(vp->gendev, skb->data, skb->len,
 					  DMA_TO_DEVICE);
 		if (dma_mapping_error(vp->gendev, dma_addr))
 			goto out_dma_err;
 
 		vp->tx_ring[entry].frag[0].addr = cpu_to_le32(dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vp->tx_ring[entry].frag[0].length = cpu_to_le32(skb->len | LAST_FRAG);
 	} else {
 		int i;
 
-<<<<<<< HEAD
-		vp->tx_ring[entry].frag[0].addr = cpu_to_le32(pci_map_single(VORTEX_PCI(vp), skb->data,
-										skb_headlen(skb), PCI_DMA_TODEVICE));
-=======
 		dma_addr = dma_map_single(vp->gendev, skb->data,
 					  skb_headlen(skb), DMA_TO_DEVICE);
 		if (dma_mapping_error(vp->gendev, dma_addr))
 			goto out_dma_err;
 
 		vp->tx_ring[entry].frag[0].addr = cpu_to_le32(dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vp->tx_ring[entry].frag[0].length = cpu_to_le32(skb_headlen(skb));
 
 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 			skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 
-<<<<<<< HEAD
-			vp->tx_ring[entry].frag[i+1].addr =
-					cpu_to_le32(pci_map_single(
-						VORTEX_PCI(vp),
-						(void *)skb_frag_address(frag),
-						skb_frag_size(frag), PCI_DMA_TODEVICE));
-=======
 			dma_addr = skb_frag_dma_map(vp->gendev, frag,
 						    0,
 						    skb_frag_size(frag),
@@ -2519,7 +2194,6 @@ boomerang_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 			vp->tx_ring[entry].frag[i+1].addr =
 						cpu_to_le32(dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (i == skb_shinfo(skb)->nr_frags-1)
 					vp->tx_ring[entry].frag[i+1].length = cpu_to_le32(skb_frag_size(frag)|LAST_FRAG);
@@ -2528,14 +2202,10 @@ boomerang_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		}
 	}
 #else
-<<<<<<< HEAD
-	vp->tx_ring[entry].addr = cpu_to_le32(pci_map_single(VORTEX_PCI(vp), skb->data, skb->len, PCI_DMA_TODEVICE));
-=======
 	dma_addr = dma_map_single(vp->gendev, skb->data, skb->len, DMA_TO_DEVICE);
 	if (dma_mapping_error(vp->gendev, dma_addr))
 		goto out_dma_err;
 	vp->tx_ring[entry].addr = cpu_to_le32(dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vp->tx_ring[entry].length = cpu_to_le32(skb->len | LAST_FRAG);
 	vp->tx_ring[entry].status = cpu_to_le32(skb->len | TxIntrUploaded);
 #endif
@@ -2550,11 +2220,8 @@ boomerang_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	vp->cur_tx++;
-<<<<<<< HEAD
-=======
 	netdev_sent_queue(dev, skblen);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vp->cur_tx - vp->dirty_tx > TX_RING_SIZE - 1) {
 		netif_stop_queue (dev);
 	} else {					/* Clear previous interrupt enable. */
@@ -2565,11 +2232,6 @@ boomerang_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		prev_entry->status &= cpu_to_le32(~TxIntrUploaded);
 #endif
 	}
-<<<<<<< HEAD
-	iowrite16(DownUnstall, ioaddr + EL3_CMD);
-	spin_unlock_irqrestore(&vp->lock, flags);
-	return NETDEV_TX_OK;
-=======
 	skb_tx_timestamp(skb);
 	iowrite16(DownUnstall, ioaddr + EL3_CMD);
 	spin_unlock_irqrestore(&vp->lock, flags);
@@ -2578,7 +2240,6 @@ out:
 out_dma_err:
 	dev_err(vp->gendev, "Error mapping dma buffer\n");
 	goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The interrupt handler does all of the Rx thread work and cleans up
@@ -2590,28 +2251,16 @@ out_dma_err:
  */
 
 static irqreturn_t
-<<<<<<< HEAD
-vortex_interrupt(int irq, void *dev_id)
-{
-	struct net_device *dev = dev_id;
-=======
 _vortex_interrupt(int irq, struct net_device *dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vortex_private *vp = netdev_priv(dev);
 	void __iomem *ioaddr;
 	int status;
 	int work_done = max_interrupt_work;
 	int handled = 0;
-<<<<<<< HEAD
-
-	ioaddr = vp->ioaddr;
-	spin_lock(&vp->lock);
-=======
 	unsigned int bytes_compl = 0, pkts_compl = 0;
 
 	ioaddr = vp->ioaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ioread16(ioaddr + EL3_STATUS);
 
@@ -2655,15 +2304,10 @@ _vortex_interrupt(int irq, struct net_device *dev)
 		if (status & DMADone) {
 			if (ioread16(ioaddr + Wn7_MasterStatus) & 0x1000) {
 				iowrite16(0x1000, ioaddr + Wn7_MasterStatus); /* Ack the event. */
-<<<<<<< HEAD
-				pci_unmap_single(VORTEX_PCI(vp), vp->tx_skb_dma, (vp->tx_skb->len + 3) & ~3, PCI_DMA_TODEVICE);
-				dev_kfree_skb_irq(vp->tx_skb); /* Release the transferred buffer */
-=======
 				dma_unmap_single(vp->gendev, vp->tx_skb_dma, (vp->tx_skb->len + 3) & ~3, DMA_TO_DEVICE);
 				pkts_compl++;
 				bytes_compl += vp->tx_skb->len;
 				dev_consume_skb_irq(vp->tx_skb); /* Release the transferred buffer */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ioread16(ioaddr + TxFree) > 1536) {
 					/*
 					 * AKPM: FIXME: I don't think we need this.  If the queue was stopped due to
@@ -2690,11 +2334,7 @@ _vortex_interrupt(int irq, struct net_device *dev)
 		}
 
 		if (--work_done < 0) {
-<<<<<<< HEAD
-			pr_warning("%s: Too much work in interrupt, status %4.4x.\n",
-=======
 			pr_warn("%s: Too much work in interrupt, status %4.4x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->name, status);
 			/* Disable all pending interrupts. */
 			do {
@@ -2711,20 +2351,13 @@ _vortex_interrupt(int irq, struct net_device *dev)
 		iowrite16(AckIntr | IntReq | IntLatch, ioaddr + EL3_CMD);
 	} while ((status = ioread16(ioaddr + EL3_STATUS)) & (IntLatch | RxComplete));
 
-<<<<<<< HEAD
-=======
 	netdev_completed_queue(dev, pkts_compl, bytes_compl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&vp->window_lock);
 
 	if (vortex_debug > 4)
 		pr_debug("%s: exiting interrupt, status %4.4x.\n",
 			   dev->name, status);
 handler_exit:
-<<<<<<< HEAD
-	spin_unlock(&vp->lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_RETVAL(handled);
 }
 
@@ -2734,35 +2367,17 @@ handler_exit:
  */
 
 static irqreturn_t
-<<<<<<< HEAD
-boomerang_interrupt(int irq, void *dev_id)
-{
-	struct net_device *dev = dev_id;
-=======
 _boomerang_interrupt(int irq, struct net_device *dev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vortex_private *vp = netdev_priv(dev);
 	void __iomem *ioaddr;
 	int status;
 	int work_done = max_interrupt_work;
-<<<<<<< HEAD
-
-	ioaddr = vp->ioaddr;
-
-
-	/*
-	 * It seems dopey to put the spinlock this early, but we could race against vortex_tx_timeout
-	 * and boomerang_start_xmit
-	 */
-	spin_lock(&vp->lock);
-=======
 	int handled = 0;
 	unsigned int bytes_compl = 0, pkts_compl = 0;
 
 	ioaddr = vp->ioaddr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vp->handling_irq = 1;
 
 	status = ioread16(ioaddr + EL3_STATUS);
@@ -2772,10 +2387,7 @@ _boomerang_interrupt(int irq, struct net_device *dev)
 
 	if ((status & IntLatch) == 0)
 		goto handler_exit;		/* No interrupt: shared IRQs can cause this */
-<<<<<<< HEAD
-=======
 	handled = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status == 0xffff) {		/* h/w no longer present (hotplug)? */
 		if (vortex_debug > 1)
@@ -2821,18 +2433,6 @@ _boomerang_interrupt(int irq, struct net_device *dev)
 					struct sk_buff *skb = vp->tx_skbuff[entry];
 #if DO_ZEROCOPY
 					int i;
-<<<<<<< HEAD
-					for (i=0; i<=skb_shinfo(skb)->nr_frags; i++)
-							pci_unmap_single(VORTEX_PCI(vp),
-											 le32_to_cpu(vp->tx_ring[entry].frag[i].addr),
-											 le32_to_cpu(vp->tx_ring[entry].frag[i].length)&0xFFF,
-											 PCI_DMA_TODEVICE);
-#else
-					pci_unmap_single(VORTEX_PCI(vp),
-						le32_to_cpu(vp->tx_ring[entry].addr), skb->len, PCI_DMA_TODEVICE);
-#endif
-					dev_kfree_skb_irq(skb);
-=======
 					dma_unmap_single(vp->gendev,
 							le32_to_cpu(vp->tx_ring[entry].frag[0].addr),
 							le32_to_cpu(vp->tx_ring[entry].frag[0].length)&0xFFF,
@@ -2850,7 +2450,6 @@ _boomerang_interrupt(int irq, struct net_device *dev)
 					pkts_compl++;
 					bytes_compl += skb->len;
 					dev_consume_skb_irq(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					vp->tx_skbuff[entry] = NULL;
 				} else {
 					pr_debug("boomerang_interrupt: no skb!\n");
@@ -2871,11 +2470,7 @@ _boomerang_interrupt(int irq, struct net_device *dev)
 			vortex_error(dev, status);
 
 		if (--work_done < 0) {
-<<<<<<< HEAD
-			pr_warning("%s: Too much work in interrupt, status %4.4x.\n",
-=======
 			pr_warn("%s: Too much work in interrupt, status %4.4x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->name, status);
 			/* Disable all pending interrupts. */
 			do {
@@ -2894,20 +2489,13 @@ _boomerang_interrupt(int irq, struct net_device *dev)
 			iowrite32(0x8000, vp->cb_fn_base + 4);
 
 	} while ((status = ioread16(ioaddr + EL3_STATUS)) & IntLatch);
-<<<<<<< HEAD
-=======
 	netdev_completed_queue(dev, pkts_compl, bytes_compl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vortex_debug > 4)
 		pr_debug("%s: exiting interrupt, status %4.4x.\n",
 			   dev->name, status);
 handler_exit:
 	vp->handling_irq = 0;
-<<<<<<< HEAD
-	spin_unlock(&vp->lock);
-	return IRQ_HANDLED;
-=======
 	return IRQ_RETVAL(handled);
 }
 
@@ -2929,7 +2517,6 @@ vortex_boomerang_interrupt(int irq, void *dev_id)
 	spin_unlock_irqrestore(&vp->lock, flags);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vortex_rx(struct net_device *dev)
@@ -2967,23 +2554,14 @@ static int vortex_rx(struct net_device *dev)
 				/* 'skb_put()' points to the start of sk_buff data area. */
 				if (vp->bus_master &&
 					! (ioread16(ioaddr + Wn7_MasterStatus) & 0x8000)) {
-<<<<<<< HEAD
-					dma_addr_t dma = pci_map_single(VORTEX_PCI(vp), skb_put(skb, pkt_len),
-									   pkt_len, PCI_DMA_FROMDEVICE);
-=======
 					dma_addr_t dma = dma_map_single(vp->gendev, skb_put(skb, pkt_len),
 									   pkt_len, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					iowrite32(dma, ioaddr + Wn7_MasterAddr);
 					iowrite16((skb->len + 3) & ~3, ioaddr + Wn7_MasterLen);
 					iowrite16(StartDMAUp, ioaddr + EL3_CMD);
 					while (ioread16(ioaddr + Wn7_MasterStatus) & 0x8000)
 						;
-<<<<<<< HEAD
-					pci_unmap_single(VORTEX_PCI(vp), dma, pkt_len, PCI_DMA_FROMDEVICE);
-=======
 					dma_unmap_single(vp->gendev, dma, pkt_len, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else {
 					ioread32_rep(ioaddr + RX_FIFO,
 					             skb_put(skb, pkt_len),
@@ -3016,11 +2594,7 @@ boomerang_rx(struct net_device *dev)
 	int entry = vp->cur_rx % RX_RING_SIZE;
 	void __iomem *ioaddr = vp->ioaddr;
 	int rx_status;
-<<<<<<< HEAD
-	int rx_work_limit = vp->dirty_rx + RX_RING_SIZE - vp->cur_rx;
-=======
 	int rx_work_limit = RX_RING_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vortex_debug > 5)
 		pr_debug("boomerang_rx(): status %4.4x\n", ioread16(ioaddr+EL3_STATUS));
@@ -3041,12 +2615,8 @@ boomerang_rx(struct net_device *dev)
 		} else {
 			/* The packet length: up to 4.5K!. */
 			int pkt_len = rx_status & 0x1fff;
-<<<<<<< HEAD
-			struct sk_buff *skb;
-=======
 			struct sk_buff *skb, *newskb;
 			dma_addr_t newdma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dma_addr_t dma = le32_to_cpu(vp->rx_ring[entry].addr);
 
 			if (vortex_debug > 4)
@@ -3058,21 +2628,6 @@ boomerang_rx(struct net_device *dev)
 			if (pkt_len < rx_copybreak &&
 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
 				skb_reserve(skb, 2);	/* Align IP on 16 byte boundaries */
-<<<<<<< HEAD
-				pci_dma_sync_single_for_cpu(VORTEX_PCI(vp), dma, PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-				/* 'skb_put()' points to the start of sk_buff data area. */
-				memcpy(skb_put(skb, pkt_len),
-					   vp->rx_skbuff[entry]->data,
-					   pkt_len);
-				pci_dma_sync_single_for_device(VORTEX_PCI(vp), dma, PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-				vp->rx_copy++;
-			} else {
-				/* Pass up the skbuff already on the Rx ring. */
-				skb = vp->rx_skbuff[entry];
-				vp->rx_skbuff[entry] = NULL;
-				skb_put(skb, pkt_len);
-				pci_unmap_single(VORTEX_PCI(vp), dma, PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-=======
 				dma_sync_single_for_cpu(vp->gendev, dma, PKT_BUF_SZ, DMA_FROM_DEVICE);
 				/* 'skb_put()' points to the start of sk_buff data area. */
 				skb_put_data(skb, vp->rx_skbuff[entry]->data,
@@ -3103,7 +2658,6 @@ boomerang_rx(struct net_device *dev)
 				vp->rx_ring[entry].addr = cpu_to_le32(newdma);
 				skb_put(skb, pkt_len);
 				dma_unmap_single(vp->gendev, dma, PKT_BUF_SZ, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				vp->rx_nocopy++;
 			}
 			skb->protocol = eth_type_trans(skb, dev);
@@ -3119,80 +2673,24 @@ boomerang_rx(struct net_device *dev)
 			netif_rx(skb);
 			dev->stats.rx_packets++;
 		}
-<<<<<<< HEAD
-		entry = (++vp->cur_rx) % RX_RING_SIZE;
-	}
-	/* Refill the Rx ring buffers. */
-	for (; vp->cur_rx - vp->dirty_rx > 0; vp->dirty_rx++) {
-		struct sk_buff *skb;
-		entry = vp->dirty_rx % RX_RING_SIZE;
-		if (vp->rx_skbuff[entry] == NULL) {
-			skb = netdev_alloc_skb_ip_align(dev, PKT_BUF_SZ);
-			if (skb == NULL) {
-				static unsigned long last_jif;
-				if (time_after(jiffies, last_jif + 10 * HZ)) {
-					pr_warning("%s: memory shortage\n", dev->name);
-					last_jif = jiffies;
-				}
-				if ((vp->cur_rx - vp->dirty_rx) == RX_RING_SIZE)
-					mod_timer(&vp->rx_oom_timer, RUN_AT(HZ * 1));
-				break;			/* Bad news!  */
-			}
-
-			vp->rx_ring[entry].addr = cpu_to_le32(pci_map_single(VORTEX_PCI(vp), skb->data, PKT_BUF_SZ, PCI_DMA_FROMDEVICE));
-			vp->rx_skbuff[entry] = skb;
-		}
-		vp->rx_ring[entry].status = 0;	/* Clear complete bit. */
-		iowrite16(UpUnstall, ioaddr + EL3_CMD);
-=======
 
 clear_complete:
 		vp->rx_ring[entry].status = 0;	/* Clear complete bit. */
 		iowrite16(UpUnstall, ioaddr + EL3_CMD);
 		entry = (++vp->cur_rx) % RX_RING_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * If we've hit a total OOM refilling the Rx ring we poll once a second
- * for some memory.  Otherwise there is no way to restart the rx process.
- */
-static void
-rx_oom_timer(unsigned long arg)
-{
-	struct net_device *dev = (struct net_device *)arg;
-	struct vortex_private *vp = netdev_priv(dev);
-
-	spin_lock_irq(&vp->lock);
-	if ((vp->cur_rx - vp->dirty_rx) == RX_RING_SIZE)	/* This test is redundant, but makes me feel good */
-		boomerang_rx(dev);
-	if (vortex_debug > 1) {
-		pr_debug("%s: rx_oom_timer %s\n", dev->name,
-			((vp->cur_rx - vp->dirty_rx) != RX_RING_SIZE) ? "succeeded" : "retrying");
-	}
-	spin_unlock_irq(&vp->lock);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 vortex_down(struct net_device *dev, int final_down)
 {
 	struct vortex_private *vp = netdev_priv(dev);
 	void __iomem *ioaddr = vp->ioaddr;
 
-<<<<<<< HEAD
-	netif_stop_queue (dev);
-
-	del_timer_sync(&vp->rx_oom_timer);
-=======
 	netdev_reset_queue(dev);
 	netif_stop_queue(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	del_timer_sync(&vp->timer);
 
 	/* Turn off statistics ASAP.  We update dev->stats below. */
@@ -3246,12 +2744,8 @@ vortex_close(struct net_device *dev)
 	if (vp->rx_csumhits &&
 	    (vp->drv_flags & HAS_HWCKSM) == 0 &&
 	    (vp->card_idx >= MAX_UNITS || hw_checksums[vp->card_idx] == -1)) {
-<<<<<<< HEAD
-		pr_warning("%s supports hardware checksums, and we're not using them!\n", dev->name);
-=======
 		pr_warn("%s supports hardware checksums, and we're not using them!\n",
 			dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -3260,13 +2754,8 @@ vortex_close(struct net_device *dev)
 	if (vp->full_bus_master_rx) { /* Free Boomerang bus master Rx buffers. */
 		for (i = 0; i < RX_RING_SIZE; i++)
 			if (vp->rx_skbuff[i]) {
-<<<<<<< HEAD
-				pci_unmap_single(	VORTEX_PCI(vp), le32_to_cpu(vp->rx_ring[i].addr),
-									PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-=======
 				dma_unmap_single(vp->gendev, le32_to_cpu(vp->rx_ring[i].addr),
 									PKT_BUF_SZ, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb(vp->rx_skbuff[i]);
 				vp->rx_skbuff[i] = NULL;
 			}
@@ -3279,21 +2768,12 @@ vortex_close(struct net_device *dev)
 				int k;
 
 				for (k=0; k<=skb_shinfo(skb)->nr_frags; k++)
-<<<<<<< HEAD
-						pci_unmap_single(VORTEX_PCI(vp),
-										 le32_to_cpu(vp->tx_ring[i].frag[k].addr),
-										 le32_to_cpu(vp->tx_ring[i].frag[k].length)&0xFFF,
-										 PCI_DMA_TODEVICE);
-#else
-				pci_unmap_single(VORTEX_PCI(vp), le32_to_cpu(vp->tx_ring[i].addr), skb->len, PCI_DMA_TODEVICE);
-=======
 						dma_unmap_single(vp->gendev,
 										 le32_to_cpu(vp->tx_ring[i].frag[k].addr),
 										 le32_to_cpu(vp->tx_ring[i].frag[k].length)&0xFFF,
 										 DMA_TO_DEVICE);
 #else
 				dma_unmap_single(vp->gendev, le32_to_cpu(vp->tx_ring[i].addr), skb->len, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 				dev_kfree_skb(skb);
 				vp->tx_skbuff[i] = NULL;
@@ -3308,11 +2788,7 @@ static void
 dump_tx_ring(struct net_device *dev)
 {
 	if (vortex_debug > 0) {
-<<<<<<< HEAD
-	struct vortex_private *vp = netdev_priv(dev);
-=======
 		struct vortex_private *vp = netdev_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void __iomem *ioaddr = vp->ioaddr;
 
 		if (vp->full_bus_master_tx) {
@@ -3409,20 +2885,6 @@ static int vortex_nway_reset(struct net_device *dev)
 	return mii_nway_restart(&vp->mii);
 }
 
-<<<<<<< HEAD
-static int vortex_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct vortex_private *vp = netdev_priv(dev);
-
-	return mii_ethtool_gset(&vp->mii, cmd);
-}
-
-static int vortex_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct vortex_private *vp = netdev_priv(dev);
-
-	return mii_ethtool_sset(&vp->mii, cmd);
-=======
 static int vortex_get_link_ksettings(struct net_device *dev,
 				     struct ethtool_link_ksettings *cmd)
 {
@@ -3439,7 +2901,6 @@ static int vortex_set_link_ksettings(struct net_device *dev,
 	struct vortex_private *vp = netdev_priv(dev);
 
 	return mii_ethtool_set_link_ksettings(&vp->mii, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 vortex_get_msglevel(struct net_device *dev)
@@ -3498,15 +2959,6 @@ static void vortex_get_drvinfo(struct net_device *dev,
 {
 	struct vortex_private *vp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	if (VORTEX_PCI(vp)) {
-		strlcpy(info->bus_info, pci_name(VORTEX_PCI(vp)),
-			sizeof(info->bus_info));
-	} else {
-		if (VORTEX_EISA(vp))
-			strlcpy(info->bus_info, dev_name(vp->gendev),
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	if (VORTEX_PCI(vp)) {
 		strscpy(info->bus_info, pci_name(VORTEX_PCI(vp)),
@@ -3514,7 +2966,6 @@ static void vortex_get_drvinfo(struct net_device *dev,
 	} else {
 		if (VORTEX_EISA(vp))
 			strscpy(info->bus_info, dev_name(vp->gendev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sizeof(info->bus_info));
 		else
 			snprintf(info->bus_info, sizeof(info->bus_info),
@@ -3562,21 +3013,13 @@ static const struct ethtool_ops vortex_ethtool_ops = {
 	.set_msglevel           = vortex_set_msglevel,
 	.get_ethtool_stats      = vortex_get_ethtool_stats,
 	.get_sset_count		= vortex_get_sset_count,
-<<<<<<< HEAD
-	.get_settings           = vortex_get_settings,
-	.set_settings           = vortex_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link               = ethtool_op_get_link,
 	.nway_reset             = vortex_nway_reset,
 	.get_wol                = vortex_get_wol,
 	.set_wol                = vortex_set_wol,
-<<<<<<< HEAD
-=======
 	.get_ts_info		= ethtool_op_get_ts_info,
 	.get_link_ksettings     = vortex_get_link_ksettings,
 	.set_link_ksettings     = vortex_set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_PCI
@@ -3626,11 +3069,7 @@ static void set_rx_mode(struct net_device *dev)
 	iowrite16(new_mode, ioaddr + EL3_CMD);
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
-=======
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Setup the card so that it can receive frames with an 802.1q VLAN tag.
    Note that this must be done after each RxReset due to some backwards
    compatibility logic in the Cyclone and Tornado ASICs */
@@ -3814,11 +3253,7 @@ static void acpi_set_WOL(struct net_device *dev)
 }
 
 
-<<<<<<< HEAD
-static void __devexit vortex_remove_one(struct pci_dev *pdev)
-=======
 static void vortex_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct vortex_private *vp;
@@ -3831,18 +3266,6 @@ static void vortex_remove_one(struct pci_dev *pdev)
 	vp = netdev_priv(dev);
 
 	if (vp->cb_fn_base)
-<<<<<<< HEAD
-		pci_iounmap(VORTEX_PCI(vp), vp->cb_fn_base);
-
-	unregister_netdev(dev);
-
-	if (VORTEX_PCI(vp)) {
-		pci_set_power_state(VORTEX_PCI(vp), PCI_D0);	/* Go active */
-		if (vp->pm_state_valid)
-			pci_restore_state(VORTEX_PCI(vp));
-		pci_disable_device(VORTEX_PCI(vp));
-	}
-=======
 		pci_iounmap(pdev, vp->cb_fn_base);
 
 	unregister_netdev(dev);
@@ -3852,27 +3275,16 @@ static void vortex_remove_one(struct pci_dev *pdev)
 		pci_restore_state(pdev);
 	pci_disable_device(pdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Should really use issue_and_wait() here */
 	iowrite16(TotalReset | ((vp->drv_flags & EEPROM_RESET) ? 0x04 : 0x14),
 	     vp->ioaddr + EL3_CMD);
 
-<<<<<<< HEAD
-	pci_iounmap(VORTEX_PCI(vp), vp->ioaddr);
-
-	pci_free_consistent(pdev,
-						sizeof(struct boom_rx_desc) * RX_RING_SIZE
-							+ sizeof(struct boom_tx_desc) * TX_RING_SIZE,
-						vp->rx_ring,
-						vp->rx_ring_dma);
-=======
 	pci_iounmap(pdev, vp->ioaddr);
 
 	dma_free_coherent(&pdev->dev,
 			sizeof(struct boom_rx_desc) * RX_RING_SIZE +
 			sizeof(struct boom_tx_desc) * TX_RING_SIZE,
 			vp->rx_ring, vp->rx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_release_regions(pdev);
 
@@ -3883,11 +3295,7 @@ static void vortex_remove_one(struct pci_dev *pdev)
 static struct pci_driver vortex_driver = {
 	.name		= "3c59x",
 	.probe		= vortex_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(vortex_remove_one),
-=======
 	.remove		= vortex_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= vortex_pci_tbl,
 	.driver.pm	= VORTEX_PM_OPS,
 };
@@ -3915,10 +3323,6 @@ static int __init vortex_init(void)
 
 static void __exit vortex_eisa_cleanup(void)
 {
-<<<<<<< HEAD
-	struct vortex_private *vp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr;
 
 #ifdef CONFIG_EISA
@@ -3927,10 +3331,6 @@ static void __exit vortex_eisa_cleanup(void)
 #endif
 
 	if (compaq_net_device) {
-<<<<<<< HEAD
-		vp = netdev_priv(compaq_net_device);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioaddr = ioport_map(compaq_net_device->base_addr,
 		                    VORTEX_TOTAL_SIZE);
 

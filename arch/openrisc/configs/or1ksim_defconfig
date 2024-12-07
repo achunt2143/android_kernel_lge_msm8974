@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-CONFIG_CROSS_COMPILE="or32-linux-"
-=======
 CONFIG_NO_HZ=y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_LOG_BUF_SHIFT=14
 CONFIG_BLK_DEV_INITRD=y
 # CONFIG_RD_GZIP is not set
 CONFIG_EXPERT=y
-<<<<<<< HEAD
-# CONFIG_SYSCTL_SYSCALL is not set
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_KALLSYMS is not set
 # CONFIG_EPOLL is not set
 # CONFIG_TIMERFD is not set
@@ -18,19 +10,11 @@ CONFIG_EXPERT=y
 # CONFIG_AIO is not set
 # CONFIG_VM_EVENT_COUNTERS is not set
 # CONFIG_COMPAT_BRK is not set
-<<<<<<< HEAD
-CONFIG_SLOB=y
-CONFIG_MODULES=y
-# CONFIG_BLOCK is not set
-CONFIG_OPENRISC_BUILTIN_DTB="or1ksim"
-CONFIG_NO_HZ=y
-=======
 CONFIG_SLUB=y
 CONFIG_SLUB_TINY=y
 CONFIG_MODULES=y
 # CONFIG_BLOCK is not set
 CONFIG_OPENRISC_BUILTIN_DTB="or1ksim"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_HZ_100=y
 CONFIG_NET=y
 CONFIG_PACKET=y
@@ -39,10 +23,6 @@ CONFIG_INET=y
 # CONFIG_INET_XFRM_MODE_TRANSPORT is not set
 # CONFIG_INET_XFRM_MODE_TUNNEL is not set
 # CONFIG_INET_XFRM_MODE_BEET is not set
-<<<<<<< HEAD
-# CONFIG_INET_LRO is not set
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_INET_DIAG is not set
 CONFIG_TCP_CONG_ADVANCED=y
 # CONFIG_TCP_CONG_BIC is not set
@@ -57,41 +37,20 @@ CONFIG_DEVTMPFS_MOUNT=y
 # CONFIG_FW_LOADER is not set
 CONFIG_PROC_DEVICETREE=y
 CONFIG_NETDEVICES=y
-<<<<<<< HEAD
-CONFIG_MICREL_PHY=y
-CONFIG_NET_ETHERNET=y
-CONFIG_ETHOC=y
-# CONFIG_NETDEV_1000 is not set
-# CONFIG_NETDEV_10000 is not set
-=======
 CONFIG_ETHOC=y
 CONFIG_MICREL_PHY=y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_WLAN is not set
 # CONFIG_INPUT is not set
 # CONFIG_SERIO is not set
 # CONFIG_VT is not set
 # CONFIG_LEGACY_PTYS is not set
-<<<<<<< HEAD
-# CONFIG_DEVKMEM is not set
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_SERIAL_8250=y
 CONFIG_SERIAL_8250_CONSOLE=y
 CONFIG_SERIAL_OF_PLATFORM=y
 # CONFIG_HW_RANDOM is not set
 # CONFIG_HWMON is not set
-<<<<<<< HEAD
-# CONFIG_MFD_SUPPORT is not set
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_USB_SUPPORT is not set
 # CONFIG_DNOTIFY is not set
 CONFIG_TMPFS=y
 CONFIG_NFS_FS=y
-<<<<<<< HEAD
-CONFIG_NFS_V3=y
-# CONFIG_ENABLE_WARN_DEPRECATED is not set
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # CONFIG_ENABLE_MUST_CHECK is not set

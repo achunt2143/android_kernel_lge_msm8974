@@ -76,12 +76,9 @@ static const char *const rds_stat_names[] = {
 	"cong_update_received",
 	"cong_send_error",
 	"cong_send_blocked",
-<<<<<<< HEAD
-=======
 	"recv_bytes_added_to_sock",
 	"recv_bytes_freed_fromsock",
 	"send_stuck_rm",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void rds_stats_info_copy(struct rds_info_iterator *iter,
@@ -93,10 +90,7 @@ void rds_stats_info_copy(struct rds_info_iterator *iter,
 	for (i = 0; i < nr; i++) {
 		BUG_ON(strlen(names[i]) >= sizeof(ctr.name));
 		strncpy(ctr.name, names[i], sizeof(ctr.name) - 1);
-<<<<<<< HEAD
-=======
 		ctr.name[sizeof(ctr.name) - 1] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctr.value = values[i];
 
 		rds_info_copy(iter, &ctr, sizeof(ctr));

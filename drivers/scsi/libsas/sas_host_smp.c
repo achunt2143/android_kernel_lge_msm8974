@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Serial Attached SCSI (SAS) Expander discovery and configuration
  *
  * Copyright (C) 2007 James E.J. Bottomley
  *		<James.Bottomley@HansenPartnership.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 only.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/scatterlist.h>
 #include <linux/blkdev.h>
@@ -24,11 +14,7 @@
 
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_transport_sas.h>
-<<<<<<< HEAD
-#include "../scsi_sas_internal.h"
-=======
 #include "scsi_sas_internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void sas_host_smp_discover(struct sas_ha_struct *sas_ha, u8 *resp_data,
 				  u8 phy_id)
@@ -128,11 +114,7 @@ static int sas_host_smp_write_gpio(struct sas_ha_struct *sas_ha, u8 *resp_data,
 				   u8 reg_type, u8 reg_index, u8 reg_count,
 				   u8 *req_data)
 {
-<<<<<<< HEAD
-	struct sas_internal *i = to_sas_internal(sas_ha->core.shost->transportt);
-=======
 	struct sas_internal *i = to_sas_internal(sas_ha->shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int written;
 
 	if (i->dft->lldd_write_gpio == NULL) {
@@ -200,11 +182,7 @@ static void sas_phy_control(struct sas_ha_struct *sas_ha, u8 phy_id,
 			    enum sas_linkrate max, u8 *resp_data)
 {
 	struct sas_internal *i =
-<<<<<<< HEAD
-		to_sas_internal(sas_ha->core.shost->transportt);
-=======
 		to_sas_internal(sas_ha->shost->transportt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sas_phy_linkrates rates;
 	struct asd_sas_phy *asd_phy;
 
@@ -244,49 +222,6 @@ static void sas_phy_control(struct sas_ha_struct *sas_ha, u8 phy_id,
 		resp_data[2] = SMP_RESP_FUNC_ACC;
 }
 
-<<<<<<< HEAD
-int sas_smp_host_handler(struct Scsi_Host *shost, struct request *req,
-			 struct request *rsp)
-{
-	u8 *req_data = NULL, *resp_data = NULL, *buf;
-	struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
-	int error = -EINVAL;
-
-	/* eight is the minimum size for request and response frames */
-	if (blk_rq_bytes(req) < 8 || blk_rq_bytes(rsp) < 8)
-		goto out;
-
-	if (bio_offset(req->bio) + blk_rq_bytes(req) > PAGE_SIZE ||
-	    bio_offset(rsp->bio) + blk_rq_bytes(rsp) > PAGE_SIZE) {
-		shost_printk(KERN_ERR, shost,
-			"SMP request/response frame crosses page boundary");
-		goto out;
-	}
-
-	req_data = kzalloc(blk_rq_bytes(req), GFP_KERNEL);
-
-	/* make sure frame can always be built ... we copy
-	 * back only the requested length */
-	resp_data = kzalloc(max(blk_rq_bytes(rsp), 128U), GFP_KERNEL);
-
-	if (!req_data || !resp_data) {
-		error = -ENOMEM;
-		goto out;
-	}
-
-	local_irq_disable();
-	buf = kmap_atomic(bio_page(req->bio));
-	memcpy(req_data, buf, blk_rq_bytes(req));
-	kunmap_atomic(buf - bio_offset(req->bio));
-	local_irq_enable();
-
-	if (req_data[0] != SMP_REQUEST)
-		goto out;
-
-	/* always succeeds ... even if we can't process the request
-	 * the result is in the response frame */
-	error = 0;
-=======
 void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 {
 	struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
@@ -317,7 +252,6 @@ void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 	error = -EINVAL;
 	if (req_data[0] != SMP_REQUEST)
 		goto out_free_resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set up default don't know response */
 	resp_data[0] = SMP_RESPONSE;
@@ -326,33 +260,18 @@ void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 
 	switch (req_data[1]) {
 	case SMP_REPORT_GENERAL:
-<<<<<<< HEAD
-		req->resid_len -= 8;
-		rsp->resid_len -= 32;
-		resp_data[2] = SMP_RESP_FUNC_ACC;
-		resp_data[9] = sas_ha->num_phys;
-		break;
-
-	case SMP_REPORT_MANUF_INFO:
-		req->resid_len -= 8;
-		rsp->resid_len -= 64;
-=======
 		resp_data[2] = SMP_RESP_FUNC_ACC;
 		resp_data[9] = sas_ha->num_phys;
 		reslen = 32;
 		break;
 
 	case SMP_REPORT_MANUF_INFO:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resp_data[2] = SMP_RESP_FUNC_ACC;
 		memcpy(resp_data + 12, shost->hostt->name,
 		       SAS_EXPANDER_VENDOR_ID_LEN);
 		memcpy(resp_data + 20, "libsas virt phy",
 		       SAS_EXPANDER_PRODUCT_ID_LEN);
-<<<<<<< HEAD
-=======
 		reslen = 64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SMP_READ_GPIO_REG:
@@ -360,21 +279,10 @@ void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 		break;
 
 	case SMP_DISCOVER:
-<<<<<<< HEAD
-		req->resid_len -= 16;
-		if ((int)req->resid_len < 0) {
-			req->resid_len = 0;
-			error = -EINVAL;
-			goto out;
-		}
-		rsp->resid_len -= 56;
-		sas_host_smp_discover(sas_ha, resp_data, req_data[9]);
-=======
 		if (job->request_payload.payload_len < 16)
 			goto out_free_resp;
 		sas_host_smp_discover(sas_ha, resp_data, req_data[9]);
 		reslen = 56;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SMP_REPORT_PHY_ERR_LOG:
@@ -383,21 +291,10 @@ void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 		break;
 
 	case SMP_REPORT_PHY_SATA:
-<<<<<<< HEAD
-		req->resid_len -= 16;
-		if ((int)req->resid_len < 0) {
-			req->resid_len = 0;
-			error = -EINVAL;
-			goto out;
-		}
-		rsp->resid_len -= 60;
-		sas_report_phy_sata(sas_ha, resp_data, req_data[9]);
-=======
 		if (job->request_payload.payload_len < 16)
 			goto out_free_resp;
 		sas_report_phy_sata(sas_ha, resp_data, req_data[9]);
 		reslen = 60;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SMP_REPORT_ROUTE_INFO:
@@ -409,25 +306,15 @@ void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 		const int base_frame_size = 11;
 		int to_write = req_data[4];
 
-<<<<<<< HEAD
-		if (blk_rq_bytes(req) < base_frame_size + to_write * 4 ||
-		    req->resid_len < base_frame_size + to_write * 4) {
-=======
 		if (job->request_payload.payload_len <
 				base_frame_size + to_write * 4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			resp_data[2] = SMP_RESP_INV_FRM_LEN;
 			break;
 		}
 
 		to_write = sas_host_smp_write_gpio(sas_ha, resp_data, req_data[2],
 						   req_data[3], to_write, &req_data[8]);
-<<<<<<< HEAD
-		req->resid_len -= base_frame_size + to_write * 4;
-		rsp->resid_len -= 8;
-=======
 		reslen = 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -436,25 +323,12 @@ void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 		break;
 
 	case SMP_PHY_CONTROL:
-<<<<<<< HEAD
-		req->resid_len -= 44;
-		if ((int)req->resid_len < 0) {
-			req->resid_len = 0;
-			error = -EINVAL;
-			goto out;
-		}
-		rsp->resid_len -= 8;
-		sas_phy_control(sas_ha, req_data[9], req_data[10],
-				req_data[32] >> 4, req_data[33] >> 4,
-				resp_data);
-=======
 		if (job->request_payload.payload_len < 44)
 			goto out_free_resp;
 		sas_phy_control(sas_ha, req_data[9], req_data[10],
 				req_data[32] >> 4, req_data[33] >> 4,
 				resp_data);
 		reslen = 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SMP_PHY_TEST_FUNCTION:
@@ -466,19 +340,6 @@ void sas_smp_host_handler(struct bsg_job *job, struct Scsi_Host *shost)
 		break;
 	}
 
-<<<<<<< HEAD
-	local_irq_disable();
-	buf = kmap_atomic(bio_page(rsp->bio));
-	memcpy(buf, resp_data, blk_rq_bytes(rsp));
-	flush_kernel_dcache_page(bio_page(rsp->bio));
-	kunmap_atomic(buf - bio_offset(rsp->bio));
-	local_irq_enable();
-
- out:
-	kfree(req_data);
-	kfree(resp_data);
-	return error;
-=======
 	sg_copy_from_buffer(job->reply_payload.sg_list,
 			    job->reply_payload.sg_cnt, resp_data,
 			    job->reply_payload.payload_len);
@@ -490,5 +351,4 @@ out_free_req:
 	kfree(req_data);
 out:
 	bsg_job_done(job, error, reslen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

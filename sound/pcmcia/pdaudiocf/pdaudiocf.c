@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Sound Core PDAudioCF soundcard
  *
  * Copyright (c) 2003 by Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/core.h>
@@ -42,10 +22,6 @@
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Sound Core " CARD_NAME);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Sound Core," CARD_NAME "}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -71,10 +47,7 @@ static void snd_pdacf_detach(struct pcmcia_device *p_dev);
 
 static void pdacf_release(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-=======
 	free_irq(link->irq, link->priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcmcia_disable_device(link);
 }
 
@@ -108,11 +81,7 @@ static int snd_pdacf_probe(struct pcmcia_device *link)
 	int i, err;
 	struct snd_pdacf *pdacf;
 	struct snd_card *card;
-<<<<<<< HEAD
-	static struct snd_device_ops ops = {
-=======
 	static const struct snd_device_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free =	snd_pdacf_dev_free,
 	};
 
@@ -130,12 +99,8 @@ static int snd_pdacf_probe(struct pcmcia_device *link)
 		return -ENODEV; /* disabled explicitly */
 
 	/* ok, create a card instance */
-<<<<<<< HEAD
-	err = snd_card_create(index[i], id[i], THIS_MODULE, 0, &card);
-=======
 	err = snd_card_new(&link->dev, index[i], id[i], THIS_MODULE,
 			   0, &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		snd_printk(KERN_ERR "pdacf: cannot create a card instance\n");
 		return err;
@@ -154,11 +119,6 @@ static int snd_pdacf_probe(struct pcmcia_device *link)
 		return err;
 	}
 
-<<<<<<< HEAD
-	snd_card_set_dev(card, &link->dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdacf->index = i;
 	card_list[i] = card;
 
@@ -178,10 +138,7 @@ static int snd_pdacf_probe(struct pcmcia_device *link)
 
 /**
  * snd_pdacf_assign_resources - initialize the hardware and card instance.
-<<<<<<< HEAD
-=======
  * @pdacf: context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @port: i/o port for the card
  * @irq: irq number for the card
  *
@@ -213,12 +170,8 @@ static int snd_pdacf_assign_resources(struct snd_pdacf *pdacf, int port, int irq
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	if ((err = snd_card_register(card)) < 0)
-=======
 	err = snd_card_register(card);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	return 0;
@@ -256,13 +209,6 @@ static int pdacf_config(struct pcmcia_device *link)
 
 	ret = pcmcia_request_io(link);
 	if (ret)
-<<<<<<< HEAD
-		goto failed;
-
-	ret = pcmcia_request_irq(link, pdacf_interrupt);
-	if (ret)
-		goto failed;
-=======
 		goto failed_preirq;
 
 	ret = request_threaded_irq(link->irq, pdacf_interrupt,
@@ -270,7 +216,6 @@ static int pdacf_config(struct pcmcia_device *link)
 				   IRQF_SHARED, link->devname, link->priv);
 	if (ret)
 		goto failed_preirq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = pcmcia_enable_device(link);
 	if (ret)
@@ -280,18 +225,12 @@ static int pdacf_config(struct pcmcia_device *link)
 					link->irq) < 0)
 		goto failed;
 
-<<<<<<< HEAD
-	return 0;
-
-failed:
-=======
 	pdacf->card->sync_irq = link->irq;
 	return 0;
 
  failed:
 	free_irq(link->irq, link->priv);
 failed_preirq:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcmcia_disable_device(link);
 	return -ENODEV;
 }
@@ -305,11 +244,7 @@ static int pdacf_suspend(struct pcmcia_device *link)
 	snd_printdd(KERN_DEBUG "SUSPEND\n");
 	if (chip) {
 		snd_printdd(KERN_DEBUG "snd_pdacf_suspend calling\n");
-<<<<<<< HEAD
-		snd_pdacf_suspend(chip, PMSG_SUSPEND);
-=======
 		snd_pdacf_suspend(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -353,23 +288,5 @@ static struct pcmcia_driver pdacf_cs_driver = {
 	.suspend	= pdacf_suspend,
 	.resume		= pdacf_resume,
 #endif
-<<<<<<< HEAD
-
-};
-
-static int __init init_pdacf(void)
-{
-	return pcmcia_register_driver(&pdacf_cs_driver);
-}
-
-static void __exit exit_pdacf(void)
-{
-	pcmcia_unregister_driver(&pdacf_cs_driver);
-}
-
-module_init(init_pdacf);
-module_exit(exit_pdacf);
-=======
 };
 module_pcmcia_driver(pdacf_cs_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

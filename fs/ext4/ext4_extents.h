@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2003-2006, Cluster File Systems, Inc, info@clusterfs.com
- * Written by Alex Tomas <alex@clusterfs.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public Licens
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2003-2006, Cluster File Systems, Inc, info@clusterfs.com
  * Written by Alex Tomas <alex@clusterfs.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _EXT4_EXTENTS
@@ -50,19 +31,6 @@
 #define CHECK_BINSEARCH__
 
 /*
-<<<<<<< HEAD
- * Turn on EXT_DEBUG to get lots of info about extents operations.
- */
-#define EXT_DEBUG__
-#ifdef EXT_DEBUG
-#define ext_debug(fmt, ...)	printk(fmt, ##__VA_ARGS__)
-#else
-#define ext_debug(fmt, ...)	no_printk(fmt, ##__VA_ARGS__)
-#endif
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If EXT_STATS is defined then stats numbers are collected.
  * These number will be displayed at umount time.
  */
@@ -125,8 +93,6 @@ struct ext4_extent_header {
 #define EXT4_EXT_MAGIC		cpu_to_le16(0xf30a)
 #define EXT4_MAX_EXTENT_DEPTH 5
 
-<<<<<<< HEAD
-=======
 #define EXT4_EXTENT_TAIL_OFFSET(hdr) \
 	(sizeof(struct ext4_extent_header) + \
 	 (sizeof(struct ext4_extent) * le16_to_cpu((hdr)->eh_max)))
@@ -138,7 +104,6 @@ find_ext4_extent_tail(struct ext4_extent_header *eh)
 					   EXT4_EXTENT_TAIL_OFFSET(eh));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Array of ext4_ext_path contains path to some extent.
  * Creation/lookup routines use it for traversal/splitting/etc.
@@ -147,10 +112,7 @@ find_ext4_extent_tail(struct ext4_extent_header *eh)
 struct ext4_ext_path {
 	ext4_fsblk_t			p_block;
 	__u16				p_depth;
-<<<<<<< HEAD
-=======
 	__u16				p_maxdepth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_extent		*p_ext;
 	struct ext4_extent_idx		*p_idx;
 	struct ext4_extent_header	*p_hdr;
@@ -158,8 +120,6 @@ struct ext4_ext_path {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * Used to record a portion of a cluster found at the beginning or end
  * of an extent while traversing the extent tree during space removal.
  * A partial cluster may be removed if it does not contain blocks shared
@@ -173,51 +133,10 @@ struct partial_cluster {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * structure for external API
  */
 
 /*
-<<<<<<< HEAD
- * to be called by ext4_ext_walk_space()
- * negative retcode - error
- * positive retcode - signal for ext4_ext_walk_space(), see below
- * callback must return valid extent (passed or newly created)
- */
-typedef int (*ext_prepare_callback)(struct inode *, ext4_lblk_t,
-					struct ext4_ext_cache *,
-					struct ext4_extent *, void *);
-
-#define EXT_CONTINUE   0
-#define EXT_BREAK      1
-#define EXT_REPEAT     2
-
-/*
- * Maximum number of logical blocks in a file; ext4_extent's ee_block is
- * __le32.
- */
-#define EXT_MAX_BLOCKS	0xffffffff
-
-/*
- * EXT_INIT_MAX_LEN is the maximum number of blocks we can have in an
- * initialized extent. This is 2^15 and not (2^16 - 1), since we use the
- * MSB of ee_len field in the extent datastructure to signify if this
- * particular extent is an initialized extent or an uninitialized (i.e.
- * preallocated).
- * EXT_UNINIT_MAX_LEN is the maximum number of blocks we can have in an
- * uninitialized extent.
- * If ee_len is <= 0x8000, it is an initialized extent. Otherwise, it is an
- * uninitialized one. In other words, if MSB of ee_len is set, it is an
- * uninitialized extent with only one special scenario when ee_len = 0x8000.
- * In this case we can not have an uninitialized extent of zero length and
- * thus we make it as a special case of initialized extent with 0x8000 length.
- * This way we get better extent-to-group alignment for initialized extents.
- * Hence, the maximum number of blocks we can have in an *initialized*
- * extent is 2^15 (32768) and in an *uninitialized* extent is 2^15-1 (32767).
- */
-#define EXT_INIT_MAX_LEN	(1UL << 15)
-#define EXT_UNINIT_MAX_LEN	(EXT_INIT_MAX_LEN - 1)
-=======
  * EXT_INIT_MAX_LEN is the maximum number of blocks we can have in an
  * initialized extent. This is 2^15 and not (2^16 - 1), since we use the
  * MSB of ee_len field in the extent datastructure to signify if this
@@ -236,7 +155,6 @@ typedef int (*ext_prepare_callback)(struct inode *, ext4_lblk_t,
  */
 #define EXT_INIT_MAX_LEN	(1UL << 15)
 #define EXT_UNWRITTEN_MAX_LEN	(EXT_INIT_MAX_LEN - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define EXT_FIRST_EXTENT(__hdr__) \
@@ -252,12 +170,6 @@ typedef int (*ext_prepare_callback)(struct inode *, ext4_lblk_t,
 	(EXT_FIRST_EXTENT((__hdr__)) + le16_to_cpu((__hdr__)->eh_entries) - 1)
 #define EXT_LAST_INDEX(__hdr__) \
 	(EXT_FIRST_INDEX((__hdr__)) + le16_to_cpu((__hdr__)->eh_entries) - 1)
-<<<<<<< HEAD
-#define EXT_MAX_EXTENT(__hdr__) \
-	(EXT_FIRST_EXTENT((__hdr__)) + le16_to_cpu((__hdr__)->eh_max) - 1)
-#define EXT_MAX_INDEX(__hdr__) \
-	(EXT_FIRST_INDEX((__hdr__)) + le16_to_cpu((__hdr__)->eh_max) - 1)
-=======
 #define EXT_MAX_EXTENT(__hdr__)	\
 	((le16_to_cpu((__hdr__)->eh_max)) ? \
 	((EXT_FIRST_EXTENT((__hdr__)) + le16_to_cpu((__hdr__)->eh_max) - 1)) \
@@ -266,7 +178,6 @@ typedef int (*ext_prepare_callback)(struct inode *, ext4_lblk_t,
 	((le16_to_cpu((__hdr__)->eh_max)) ? \
 	((EXT_FIRST_INDEX((__hdr__)) + le16_to_cpu((__hdr__)->eh_max) - 1)) \
 					: NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct ext4_extent_header *ext_inode_hdr(struct inode *inode)
 {
@@ -283,30 +194,14 @@ static inline unsigned short ext_depth(struct inode *inode)
 	return le16_to_cpu(ext_inode_hdr(inode)->eh_depth);
 }
 
-<<<<<<< HEAD
-static inline void
-ext4_ext_invalidate_cache(struct inode *inode)
-{
-	EXT4_I(inode)->i_cached_extent.ec_len = 0;
-}
-
-static inline void ext4_ext_mark_uninitialized(struct ext4_extent *ext)
-{
-	/* We can not have an uninitialized extent of zero length! */
-=======
 static inline void ext4_ext_mark_unwritten(struct ext4_extent *ext)
 {
 	/* We can not have an unwritten extent of zero length! */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON((le16_to_cpu(ext->ee_len) & ~EXT_INIT_MAX_LEN) == 0);
 	ext->ee_len |= cpu_to_le16(EXT_INIT_MAX_LEN);
 }
 
-<<<<<<< HEAD
-static inline int ext4_ext_is_uninitialized(struct ext4_extent *ext)
-=======
 static inline int ext4_ext_is_unwritten(struct ext4_extent *ext)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Extent with ee_len of 0x8000 is treated as an initialized extent */
 	return (le16_to_cpu(ext->ee_len) > EXT_INIT_MAX_LEN);
@@ -376,24 +271,5 @@ static inline void ext4_idx_store_pblock(struct ext4_extent_idx *ix,
 				     0xffff);
 }
 
-<<<<<<< HEAD
-extern int ext4_ext_calc_metadata_amount(struct inode *inode,
-					 ext4_lblk_t lblocks);
-extern int ext4_extent_tree_init(handle_t *, struct inode *);
-extern int ext4_ext_calc_credits_for_single_extent(struct inode *inode,
-						   int num,
-						   struct ext4_ext_path *path);
-extern int ext4_can_extents_be_merged(struct inode *inode,
-				      struct ext4_extent *ex1,
-				      struct ext4_extent *ex2);
-extern int ext4_ext_insert_extent(handle_t *, struct inode *, struct ext4_ext_path *, struct ext4_extent *, int);
-extern struct ext4_ext_path *ext4_ext_find_extent(struct inode *, ext4_lblk_t,
-							struct ext4_ext_path *);
-extern void ext4_ext_drop_refs(struct ext4_ext_path *);
-extern int ext4_ext_check_inode(struct inode *inode);
-extern int ext4_find_delalloc_cluster(struct inode *inode, ext4_lblk_t lblk,
-				      int search_hint_reverse);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _EXT4_EXTENTS */
 

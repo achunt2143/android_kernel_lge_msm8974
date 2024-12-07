@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GE IMP3A Board Setup
  *
@@ -9,14 +6,6 @@
  *
  * Copyright 2010 GE Intelligent Platforms Embedded Systems, Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on: mpc85xx_ds.c (MPC85xx DS Board Setup)
  * Copyright 2007 Freescale Semiconductor Inc.
  */
@@ -28,22 +17,13 @@
 #include <linux/delay.h>
 #include <linux/seq_file.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-#include <linux/memblock.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <mm/mmu_decl.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/mpic.h>
 #include <asm/swiotlb.h>
@@ -58,23 +38,13 @@
 
 void __iomem *imp3a_regs;
 
-<<<<<<< HEAD
-void __init ge_imp3a_pic_init(void)
-=======
 static void __init ge_imp3a_pic_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpic *mpic;
 	struct device_node *np;
 	struct device_node *cascade_node = NULL;
-<<<<<<< HEAD
-	unsigned long root = of_get_flat_dt_root();
-
-	if (of_flat_dt_is_compatible(root, "fsl,MPC8572DS-CAMP")) {
-=======
 
 	if (of_machine_is_compatible("fsl,MPC8572DS-CAMP")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mpic = mpic_alloc(NULL, 0,
 			MPIC_NO_RESET |
 			MPIC_BIG_ENDIAN |
@@ -108,11 +78,6 @@ static void __init ge_imp3a_pic_init(void)
 	of_node_put(cascade_node);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-static int primary_phb_addr;
-#endif	/* CONFIG_PCI */
-=======
 static void __init ge_imp3a_pci_assign_primary(void)
 {
 #ifdef CONFIG_PCI
@@ -132,7 +97,6 @@ static void __init ge_imp3a_pci_assign_primary(void)
 	}
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Setup the architecture
@@ -140,54 +104,15 @@ static void __init ge_imp3a_pci_assign_primary(void)
 static void __init ge_imp3a_setup_arch(void)
 {
 	struct device_node *regs;
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-	struct device_node *np;
-	struct pci_controller *hose;
-#endif
-	dma_addr_t max = 0xffffffff;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ppc_md.progress)
 		ppc_md.progress("ge_imp3a_setup_arch()", 0);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-	for_each_node_by_type(np, "pci") {
-		if (of_device_is_compatible(np, "fsl,mpc8540-pci") ||
-		    of_device_is_compatible(np, "fsl,mpc8548-pcie") ||
-		    of_device_is_compatible(np, "fsl,p2020-pcie")) {
-			struct resource rsrc;
-			of_address_to_resource(np, 0, &rsrc);
-			if ((rsrc.start & 0xfffff) == primary_phb_addr)
-				fsl_add_bridge(np, 1);
-			else
-				fsl_add_bridge(np, 0);
-
-			hose = pci_find_hose_for_OF_device(np);
-			max = min(max, hose->dma_window_base_cur +
-					hose->dma_window_size);
-		}
-	}
-#endif
-
-	mpc85xx_smp_init();
-
-#ifdef CONFIG_SWIOTLB
-	if (memblock_end_of_DRAM() > max) {
-		ppc_swiotlb_enable = 1;
-		set_pci_dma_ops(&swiotlb_dma_ops);
-		ppc_md.pci_dma_dev_setup = pci_dma_dev_setup_swiotlb;
-	}
-#endif
-=======
 	mpc85xx_smp_init();
 
 	ge_imp3a_pci_assign_primary();
 
 	swiotlb_detect_4g();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remap basic board registers */
 	regs = of_find_compatible_node(NULL, NULL, "ge,imp3a-fpga-regs");
@@ -265,52 +190,18 @@ static void ge_imp3a_show_cpuinfo(struct seq_file *m)
 		ge_imp3a_get_cpci_is_syscon() ? "yes" : "no");
 }
 
-<<<<<<< HEAD
-/*
- * Called very early, device-tree isn't unflattened
- */
-static int __init ge_imp3a_probe(void)
-{
-	unsigned long root = of_get_flat_dt_root();
-
-	if (of_flat_dt_is_compatible(root, "ge,IMP3A")) {
-#ifdef CONFIG_PCI
-		primary_phb_addr = 0x9000;
-#endif
-		return 1;
-	}
-
-	return 0;
-}
-
-machine_device_initcall(ge_imp3a, mpc85xx_common_publish_devices);
-
-machine_arch_initcall(ge_imp3a, swiotlb_setup_bus_notifier);
-
-define_machine(ge_imp3a) {
-	.name			= "GE_IMP3A",
-	.probe			= ge_imp3a_probe,
-=======
 machine_arch_initcall(ge_imp3a, mpc85xx_common_publish_devices);
 
 define_machine(ge_imp3a) {
 	.name			= "GE_IMP3A",
 	.compatible		= "ge,IMP3A",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= ge_imp3a_setup_arch,
 	.init_IRQ		= ge_imp3a_pic_init,
 	.show_cpuinfo		= ge_imp3a_show_cpuinfo,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
-<<<<<<< HEAD
-#endif
-	.get_irq		= mpic_get_irq,
-	.restart		= fsl_rstcr_restart,
-	.calibrate_decr		= generic_calibrate_decr,
-=======
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 	.get_irq		= mpic_get_irq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };

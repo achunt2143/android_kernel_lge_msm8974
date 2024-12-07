@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-/**
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * AMCC SoC PPC4xx Crypto Driver
  *
  * Copyright (c) 2008 Applied Micro Circuits Corporation.
  * All rights reserved. James Hsiao <jhsiao@amcc.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file defines the security context
  * associate format.
  */
@@ -31,11 +14,7 @@
 
 #define AES_IV_SIZE				16
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contents of Dynamic Security Association (SA) with all possible fields
  */
 union dynamic_sa_contents {
@@ -67,11 +46,8 @@ union dynamic_sa_contents {
 #define SA_OP_GROUP_BASIC			0
 #define SA_OPCODE_ENCRYPT			0
 #define SA_OPCODE_DECRYPT			0
-<<<<<<< HEAD
-=======
 #define SA_OPCODE_ENCRYPT_HASH			1
 #define SA_OPCODE_HASH_DECRYPT			1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SA_OPCODE_HASH				3
 #define SA_CIPHER_ALG_DES			0
 #define SA_CIPHER_ALG_3DES			1
@@ -82,11 +58,8 @@ union dynamic_sa_contents {
 
 #define SA_HASH_ALG_MD5				0
 #define SA_HASH_ALG_SHA1			1
-<<<<<<< HEAD
-=======
 #define SA_HASH_ALG_GHASH			12
 #define SA_HASH_ALG_CBC_MAC			14
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SA_HASH_ALG_NULL			15
 #define SA_HASH_ALG_SHA1_DIGEST_SIZE		20
 
@@ -134,12 +107,9 @@ union sa_command_0 {
 
 #define CRYPTO_MODE_ECB				0
 #define CRYPTO_MODE_CBC				1
-<<<<<<< HEAD
-=======
 #define CRYPTO_MODE_OFB				2
 #define CRYPTO_MODE_CFB				3
 #define CRYPTO_MODE_CTR				4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CRYPTO_FEEDBACK_MODE_NO_FB		0
 #define CRYPTO_FEEDBACK_MODE_64BIT_OFB		0
@@ -152,11 +122,7 @@ union sa_command_0 {
 #define SA_AES_KEY_LEN_256			4
 
 #define SA_REV2					1
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The follow defines bits sa_command_1
  * In Basic hash mode  this bit define simple hash or hmac.
  * In IPsec mode, this bit define muting control.
@@ -201,27 +167,11 @@ union sa_command_1 {
 } __attribute__((packed));
 
 struct dynamic_sa_ctl {
-<<<<<<< HEAD
-	u32 sa_contents;
-=======
 	union dynamic_sa_contents sa_contents;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union sa_command_0 sa_command_0;
 	union sa_command_1 sa_command_1;
 } __attribute__((packed));
 
-<<<<<<< HEAD
-/**
- * State Record for Security Association (SA)
- */
-struct  sa_state_record {
-	u32 save_iv[4];
-	u32 save_hash_byte_cnt[2];
-	u32 save_digest[16];
-} __attribute__((packed));
-
-/**
-=======
 /*
  * State Record for Security Association (SA)
  */
@@ -235,19 +185,13 @@ struct  sa_state_record {
 } __attribute__((packed));
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Security Association (SA) for AES128
  *
  */
 struct dynamic_sa_aes128 {
 	struct dynamic_sa_ctl	ctrl;
-<<<<<<< HEAD
-	u32 key[4];
-	u32 iv[4]; /* for CBC, OFC, and CFB mode */
-=======
 	__le32 key[4];
 	__le32 iv[4]; /* for CBC, OFC, and CFB mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 state_ptr;
 	u32 reserved;
 } __attribute__((packed));
@@ -260,13 +204,8 @@ struct dynamic_sa_aes128 {
  */
 struct dynamic_sa_aes192 {
 	struct dynamic_sa_ctl ctrl;
-<<<<<<< HEAD
-	u32 key[6];
-	u32 iv[4]; /* for CBC, OFC, and CFB mode */
-=======
 	__le32 key[6];
 	__le32 iv[4]; /* for CBC, OFC, and CFB mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 state_ptr;
 	u32 reserved;
 } __attribute__((packed));
@@ -274,22 +213,13 @@ struct dynamic_sa_aes192 {
 #define SA_AES192_LEN		(sizeof(struct dynamic_sa_aes192)/4)
 #define SA_AES192_CONTENTS	0x3e000062
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Security Association (SA) for AES256
  */
 struct dynamic_sa_aes256 {
 	struct dynamic_sa_ctl ctrl;
-<<<<<<< HEAD
-	u32 key[8];
-	u32 iv[4]; /* for CBC, OFC, and CFB mode */
-=======
 	__le32 key[8];
 	__le32 iv[4]; /* for CBC, OFC, and CFB mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 state_ptr;
 	u32 reserved;
 } __attribute__((packed));
@@ -298,9 +228,6 @@ struct dynamic_sa_aes256 {
 #define SA_AES256_CONTENTS	0x3e000082
 #define SA_AES_CONTENTS		0x3e000002
 
-<<<<<<< HEAD
-/**
-=======
 /*
  * Security Association (SA) for AES128 CCM
  */
@@ -332,26 +259,18 @@ struct dynamic_sa_aes128_gcm {
 #define SA_AES_GCM_CONTENTS	0x3e000402
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Security Association (SA) for HASH160: HMAC-SHA1
  */
 struct dynamic_sa_hash160 {
 	struct dynamic_sa_ctl ctrl;
-<<<<<<< HEAD
-	u32 inner_digest[5];
-	u32 outer_digest[5];
-=======
 	__le32 inner_digest[5];
 	__le32 outer_digest[5];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 state_ptr;
 	u32 reserved;
 } __attribute__((packed));
 #define SA_HASH160_LEN		(sizeof(struct dynamic_sa_hash160)/4)
 #define SA_HASH160_CONTENTS     0x2000a502
 
-<<<<<<< HEAD
-=======
 static inline u32
 get_dynamic_sa_offset_state_ptr_field(struct dynamic_sa_ctl *cts)
 {
@@ -387,5 +306,4 @@ static inline __le32 *get_dynamic_sa_inner_digest(struct dynamic_sa_ctl *cts)
 		cts->sa_contents.bf.key_size * 4);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

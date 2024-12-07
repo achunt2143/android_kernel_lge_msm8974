@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/sysv/balloc.c
  *
@@ -64,20 +61,12 @@ void sysv_free_block(struct super_block * sb, sysv_zone_t nr)
 		return;
 	}
 
-<<<<<<< HEAD
-	lock_super(sb);
-=======
 	mutex_lock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	count = fs16_to_cpu(sbi, *sbi->s_bcache_count);
 
 	if (count > sbi->s_flc_size) {
 		printk("sysv_free_block: flc_count > flc_size\n");
-<<<<<<< HEAD
-		unlock_super(sb);
-=======
 		mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/* If the free list head in super-block is full, it is copied
@@ -89,11 +78,7 @@ void sysv_free_block(struct super_block * sb, sysv_zone_t nr)
 		bh = sb_getblk(sb, block);
 		if (!bh) {
 			printk("sysv_free_block: getblk() failed\n");
-<<<<<<< HEAD
-			unlock_super(sb);
-=======
 			mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		memset(bh->b_data, 0, sb->s_blocksize);
@@ -109,11 +94,7 @@ void sysv_free_block(struct super_block * sb, sysv_zone_t nr)
 	*sbi->s_bcache_count = cpu_to_fs16(sbi, count);
 	fs32_add(sbi, sbi->s_free_blocks, 1);
 	dirty_sb(sb);
-<<<<<<< HEAD
-	unlock_super(sb);
-=======
 	mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 sysv_zone_t sysv_new_block(struct super_block * sb)
@@ -124,11 +105,7 @@ sysv_zone_t sysv_new_block(struct super_block * sb)
 	struct buffer_head * bh;
 	unsigned count;
 
-<<<<<<< HEAD
-	lock_super(sb);
-=======
 	mutex_lock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	count = fs16_to_cpu(sbi, *sbi->s_bcache_count);
 
 	if (count == 0) /* Applies only to Coherent FS */
@@ -171,19 +148,11 @@ sysv_zone_t sysv_new_block(struct super_block * sb)
 	/* Now the free list head in the superblock is valid again. */
 	fs32_add(sbi, sbi->s_free_blocks, -1);
 	dirty_sb(sb);
-<<<<<<< HEAD
-	unlock_super(sb);
-	return nr;
-
-Enospc:
-	unlock_super(sb);
-=======
 	mutex_unlock(&sbi->s_lock);
 	return nr;
 
 Enospc:
 	mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -205,11 +174,7 @@ unsigned long sysv_count_free_blocks(struct super_block * sb)
 	if (sbi->s_type == FSTYPE_AFS)
 		return 0;
 
-<<<<<<< HEAD
-	lock_super(sb);
-=======
 	mutex_lock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb_count = fs32_to_cpu(sbi, *sbi->s_free_blocks);
 
 	if (0)
@@ -247,11 +212,7 @@ unsigned long sysv_count_free_blocks(struct super_block * sb)
 	if (count != sb_count)
 		goto Ecount;
 done:
-<<<<<<< HEAD
-	unlock_super(sb);
-=======
 	mutex_unlock(&sbi->s_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 
 Einval:
@@ -271,11 +232,7 @@ trust_sb:
 Ecount:
 	printk("sysv_count_free_blocks: free block count was %d, "
 		"correcting to %d\n", sb_count, count);
-<<<<<<< HEAD
-	if (!(sb->s_flags & MS_RDONLY)) {
-=======
 	if (!sb_rdonly(sb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*sbi->s_free_blocks = cpu_to_fs32(sbi, count);
 		dirty_sb(sb);
 	}

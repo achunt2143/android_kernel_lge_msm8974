@@ -1,24 +1,12 @@
-<<<<<<< HEAD
-/*
- *  Character device driver for extended error reporting.
- *
- *  Copyright (C) 2005 IBM Corporation
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *  Character device driver for extended error reporting.
  *
  *  Copyright IBM Corp. 2005
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  extended error reporting for DASD ECKD devices
  *  Author(s): Stefan Weinhuber <wein@de.ibm.com>
  */
 
-<<<<<<< HEAD
-#define KMSG_COMPONENT "dasd-eckd"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/kernel.h>
@@ -31,25 +19,13 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <asm/ebcdic.h>
 
 #include "dasd_int.h"
 #include "dasd_eckd.h"
 
-<<<<<<< HEAD
-#ifdef PRINTK_HEADER
-#undef PRINTK_HEADER
-#endif				/* PRINTK_HEADER */
-#define PRINTK_HEADER "dasd(eer):"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SECTION: the internal buffer
  */
@@ -313,11 +289,7 @@ static void dasd_eer_write_standard_trigger(struct dasd_device *device,
 {
 	struct dasd_ccw_req *temp_cqr;
 	int data_size;
-<<<<<<< HEAD
-	struct timeval tv;
-=======
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dasd_eer_header header;
 	unsigned long flags;
 	struct eerbuffer *eerb;
@@ -331,17 +303,10 @@ static void dasd_eer_write_standard_trigger(struct dasd_device *device,
 
 	header.total_size = sizeof(header) + data_size + 4; /* "EOR" */
 	header.trigger = trigger;
-<<<<<<< HEAD
-	do_gettimeofday(&tv);
-	header.tv_sec = tv.tv_sec;
-	header.tv_usec = tv.tv_usec;
-	strncpy(header.busid, dev_name(&device->cdev->dev),
-=======
 	ktime_get_real_ts64(&ts);
 	header.tv_sec = ts.tv_sec;
 	header.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
 	strscpy(header.busid, dev_name(&device->cdev->dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DASD_EER_BUSID_SIZE);
 
 	spin_lock_irqsave(&bufferlock, flags);
@@ -368,11 +333,7 @@ static void dasd_eer_write_snss_trigger(struct dasd_device *device,
 {
 	int data_size;
 	int snss_rc;
-<<<<<<< HEAD
-	struct timeval tv;
-=======
 	struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dasd_eer_header header;
 	unsigned long flags;
 	struct eerbuffer *eerb;
@@ -385,17 +346,10 @@ static void dasd_eer_write_snss_trigger(struct dasd_device *device,
 
 	header.total_size = sizeof(header) + data_size + 4; /* "EOR" */
 	header.trigger = DASD_EER_STATECHANGE;
-<<<<<<< HEAD
-	do_gettimeofday(&tv);
-	header.tv_sec = tv.tv_sec;
-	header.tv_usec = tv.tv_usec;
-	strncpy(header.busid, dev_name(&device->cdev->dev),
-=======
 	ktime_get_real_ts64(&ts);
 	header.tv_sec = ts.tv_sec;
 	header.tv_usec = ts.tv_nsec / NSEC_PER_USEC;
 	strscpy(header.busid, dev_name(&device->cdev->dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DASD_EER_BUSID_SIZE);
 
 	spin_lock_irqsave(&bufferlock, flags);
@@ -425,11 +379,8 @@ void dasd_eer_write(struct dasd_device *device, struct dasd_ccw_req *cqr,
 		dasd_eer_write_standard_trigger(device, cqr, id);
 		break;
 	case DASD_EER_NOPATH:
-<<<<<<< HEAD
-=======
 	case DASD_EER_NOSPC:
 	case DASD_EER_AUTOQUIESCE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dasd_eer_write_standard_trigger(device, NULL, id);
 		break;
 	case DASD_EER_STATECHANGE:
@@ -491,11 +442,7 @@ static void dasd_eer_snss_cb(struct dasd_ccw_req *cqr, void *data)
 		 * is a new ccw in device->eer_cqr. Free the "old"
 		 * snss request now.
 		 */
-<<<<<<< HEAD
-		dasd_kfree_request(cqr, device);
-=======
 		dasd_sfree_request(cqr, device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -503,22 +450,6 @@ static void dasd_eer_snss_cb(struct dasd_ccw_req *cqr, void *data)
  */
 int dasd_eer_enable(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	struct dasd_ccw_req *cqr;
-	unsigned long flags;
-	struct ccw1 *ccw;
-
-	if (device->eer_cqr)
-		return 0;
-
-	if (!device->discipline || strcmp(device->discipline->name, "ECKD"))
-		return -EPERM;	/* FIXME: -EMEDIUMTYPE ? */
-
-	cqr = dasd_kmalloc_request(DASD_ECKD_MAGIC, 1 /* SNSS */,
-				   SNSS_DATA_SIZE, device);
-	if (IS_ERR(cqr))
-		return -ENOMEM;
-=======
 	struct dasd_ccw_req *cqr = NULL;
 	unsigned long flags;
 	struct ccw1 *ccw;
@@ -543,7 +474,6 @@ int dasd_eer_enable(struct dasd_device *device)
 		cqr = NULL;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cqr->startdev = device;
 	cqr->retries = 255;
@@ -555,32 +485,16 @@ int dasd_eer_enable(struct dasd_device *device)
 	ccw->cmd_code = DASD_ECKD_CCW_SNSS;
 	ccw->count = SNSS_DATA_SIZE;
 	ccw->flags = 0;
-<<<<<<< HEAD
-	ccw->cda = (__u32)(addr_t) cqr->data;
-
-	cqr->buildclk = get_clock();
-	cqr->status = DASD_CQR_FILLED;
-	cqr->callback = dasd_eer_snss_cb;
-
-	spin_lock_irqsave(get_ccwdev_lock(device->cdev), flags);
-=======
 	ccw->cda = virt_to_dma32(cqr->data);
 
 	cqr->buildclk = get_tod_clock();
 	cqr->status = DASD_CQR_FILLED;
 	cqr->callback = dasd_eer_snss_cb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!device->eer_cqr) {
 		device->eer_cqr = cqr;
 		cqr = NULL;
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
-	if (cqr)
-		dasd_kfree_request(cqr, device);
-	return 0;
-=======
 
 out:
 	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
@@ -589,7 +503,6 @@ out:
 		dasd_sfree_request(cqr, device);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -610,11 +523,7 @@ void dasd_eer_disable(struct dasd_device *device)
 	in_use = test_and_clear_bit(DASD_FLAG_EER_IN_USE, &device->flags);
 	spin_unlock_irqrestore(get_ccwdev_lock(device->cdev), flags);
 	if (cqr && !in_use)
-<<<<<<< HEAD
-		dasd_kfree_request(cqr, device);
-=======
 		dasd_sfree_request(cqr, device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -647,13 +556,8 @@ static int dasd_eer_open(struct inode *inp, struct file *filp)
 		return -EINVAL;
 	}
 	eerb->buffersize = eerb->buffer_page_count * PAGE_SIZE;
-<<<<<<< HEAD
-	eerb->buffer = kmalloc(eerb->buffer_page_count * sizeof(char *),
-			       GFP_KERNEL);
-=======
 	eerb->buffer = kmalloc_array(eerb->buffer_page_count, sizeof(char *),
 				     GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         if (!eerb->buffer) {
 		kfree(eerb);
                 return -ENOMEM;
@@ -752,15 +656,9 @@ static ssize_t dasd_eer_read(struct file *filp, char __user *buf,
 	return effective_count;
 }
 
-<<<<<<< HEAD
-static unsigned int dasd_eer_poll(struct file *filp, poll_table *ptable)
-{
-	unsigned int mask;
-=======
 static __poll_t dasd_eer_poll(struct file *filp, poll_table *ptable)
 {
 	__poll_t mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct eerbuffer *eerb;
 
@@ -768,11 +666,7 @@ static __poll_t dasd_eer_poll(struct file *filp, poll_table *ptable)
 	poll_wait(filp, &dasd_eer_read_wait_queue, ptable);
 	spin_lock_irqsave(&bufferlock, flags);
 	if (eerb->head != eerb->tail)
-<<<<<<< HEAD
-		mask = POLLIN | POLLRDNORM ;
-=======
 		mask = EPOLLIN | EPOLLRDNORM ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		mask = 0;
 	spin_unlock_irqrestore(&bufferlock, flags);

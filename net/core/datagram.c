@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	SUCS NET3:
  *
@@ -40,11 +37,7 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/errno.h>
@@ -56,12 +49,9 @@
 #include <linux/highmem.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/pagemap.h>
 #include <linux/iov_iter.h>
 #include <linux/indirect_call_wrapper.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/protocol.h>
 #include <linux/skbuff.h>
@@ -70,11 +60,8 @@
 #include <net/sock.h>
 #include <net/tcp_states.h>
 #include <trace/events/skb.h>
-<<<<<<< HEAD
-=======
 #include <net/busy_poll.h>
 #include <crypto/hash.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Is a socket 'connection oriented' ?
@@ -84,17 +71,6 @@ static inline int connection_based(struct sock *sk)
 	return sk->sk_type == SOCK_SEQPACKET || sk->sk_type == SOCK_STREAM;
 }
 
-<<<<<<< HEAD
-static int receiver_wake_function(wait_queue_t *wait, unsigned mode, int sync,
-				  void *key)
-{
-	unsigned long bits = (unsigned long)key;
-
-	/*
-	 * Avoid a wakeup if event not interesting for us
-	 */
-	if (bits && !(bits & (POLLIN | POLLERR)))
-=======
 static int receiver_wake_function(wait_queue_entry_t *wait, unsigned int mode, int sync,
 				  void *key)
 {
@@ -102,22 +78,15 @@ static int receiver_wake_function(wait_queue_entry_t *wait, unsigned int mode, i
 	 * Avoid a wakeup if event not interesting for us
 	 */
 	if (key && !(key_to_poll(key) & (EPOLLIN | EPOLLERR)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return autoremove_wake_function(wait, mode, sync, key);
 }
 /*
-<<<<<<< HEAD
- * Wait for a packet..
- */
-static int wait_for_packet(struct sock *sk, int *err, long *timeo_p)
-=======
  * Wait for the last received packet to be different from skb
  */
 int __skb_wait_for_more_packets(struct sock *sk, struct sk_buff_head *queue,
 				int *err, long *timeo_p,
 				const struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	DEFINE_WAIT_FUNC(wait, receiver_wake_function);
@@ -129,11 +98,7 @@ int __skb_wait_for_more_packets(struct sock *sk, struct sk_buff_head *queue,
 	if (error)
 		goto out_err;
 
-<<<<<<< HEAD
-	if (!skb_queue_empty(&sk->sk_receive_queue))
-=======
 	if (READ_ONCE(queue->prev) != skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	/* Socket shut down? */
@@ -167,23 +132,14 @@ out_noerr:
 	error = 1;
 	goto out;
 }
-<<<<<<< HEAD
-
-static int skb_set_peeked(struct sk_buff *skb)
-=======
 EXPORT_SYMBOL(__skb_wait_for_more_packets);
 
 static struct sk_buff *skb_set_peeked(struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *nskb;
 
 	if (skb->peeked)
-<<<<<<< HEAD
-		return 0;
-=======
 		return skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We have to unshare an skb before modifying it. */
 	if (!skb_shared(skb))
@@ -191,11 +147,7 @@ static struct sk_buff *skb_set_peeked(struct sk_buff *skb)
 
 	nskb = skb_clone(skb, GFP_ATOMIC);
 	if (!nskb)
-<<<<<<< HEAD
-		return -ENOMEM;
-=======
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb->prev->next = nskb;
 	skb->next->prev = nskb;
@@ -208,19 +160,6 @@ static struct sk_buff *skb_set_peeked(struct sk_buff *skb)
 done:
 	skb->peeked = 1;
 
-<<<<<<< HEAD
-	return 0;
-}
-
-/**
- *	__skb_recv_datagram - Receive a datagram skbuff
- *	@sk: socket
- *	@flags: MSG_ flags
- *	@off: an offset in bytes to peek skb from. Returns an offset
- *	      within an skb where data actually starts
- *	@peeked: returns non-zero if this packet has been seen before
- *	@err: error code returned
-=======
 	return skb;
 }
 
@@ -274,7 +213,6 @@ struct sk_buff *__skb_try_recv_from_queue(struct sock *sk,
  *	@err: error code returned
  *	@last: set to last peeked message to inform the wait function
  *	       what to look for when peeking
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Get a datagram skbuff, understands the peeking, nonblocking wakeups
  *	and possible races. This replaces identical code in packet, raw and
@@ -282,17 +220,11 @@ struct sk_buff *__skb_try_recv_from_queue(struct sock *sk,
  *	the long standing peek and read race for datagram sockets. If you
  *	alter this routine remember it must be re-entrant.
  *
-<<<<<<< HEAD
- *	This function will lock the socket if a skb is returned, so the caller
- *	needs to unlock the socket in that case (usually by calling
- *	skb_free_datagram)
-=======
  *	This function will lock the socket if a skb is returned, so
  *	the caller needs to unlock the socket in that case (usually by
  *	calling skb_free_datagram). Returns NULL with @err set to
  *	-EAGAIN if no data was available or to some other value if an
  *	error was detected.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	* It does not lock socket since today. This function is
  *	* free of race conditions. This measure should/can improve
@@ -306,15 +238,6 @@ struct sk_buff *__skb_try_recv_from_queue(struct sock *sk,
  *	quite explicitly by POSIX 1003.1g, don't change them without having
  *	the standard around please.
  */
-<<<<<<< HEAD
-struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned flags,
-				    int *peeked, int *off, int *err)
-{
-	struct sk_buff_head *queue = &sk->sk_receive_queue;
-	struct sk_buff *skb;
-	unsigned long cpu_flags;
-	long timeo;
-=======
 struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
 					struct sk_buff_head *queue,
 					unsigned int flags, int *off, int *err,
@@ -322,7 +245,6 @@ struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
 {
 	struct sk_buff *skb;
 	unsigned long cpu_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Caller is allowed not to check sk->sk_err before skb_recv_datagram()
 	 */
@@ -331,11 +253,6 @@ struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
 	if (error)
 		goto no_packet;
 
-<<<<<<< HEAD
-	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		/* Again only user level code calls this function, so nothing
 		 * interrupt level will suddenly eat the receive_queue.
@@ -343,42 +260,6 @@ struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
 		 * Look at current nfs client by the way...
 		 * However, this function was correct in any case. 8)
 		 */
-<<<<<<< HEAD
-
-		spin_lock_irqsave(&queue->lock, cpu_flags);
-		skb_queue_walk(queue, skb) {
-			*peeked = skb->peeked;
-			if (flags & MSG_PEEK) {
-				if (*off >= skb->len && skb->len) {
-					*off -= skb->len;
-					continue;
-				}
-
-				error = skb_set_peeked(skb);
-				if (error)
-					goto unlock_err;
-
-				atomic_inc(&skb->users);
-			} else
-				__skb_unlink(skb, queue);
-
-			spin_unlock_irqrestore(&queue->lock, cpu_flags);
-			return skb;
-		}
-		spin_unlock_irqrestore(&queue->lock, cpu_flags);
-
-		/* User doesn't want to wait */
-		error = -EAGAIN;
-		if (!timeo)
-			goto no_packet;
-
-	} while (!wait_for_packet(sk, err, &timeo));
-
-	return NULL;
-
-unlock_err:
-	spin_unlock_irqrestore(&queue->lock, cpu_flags);
-=======
 		spin_lock_irqsave(&queue->lock, cpu_flags);
 		skb = __skb_try_recv_from_queue(sk, queue, flags, off, &error,
 						last);
@@ -396,22 +277,10 @@ unlock_err:
 
 	error = -EAGAIN;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 no_packet:
 	*err = error;
 	return NULL;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(__skb_recv_datagram);
-
-struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned flags,
-				  int noblock, int *err)
-{
-	int peeked, off = 0;
-
-	return __skb_recv_datagram(sk, flags | (noblock ? MSG_DONTWAIT : 0),
-				   &peeked, &off, err);
-=======
 EXPORT_SYMBOL(__skb_try_recv_datagram);
 
 struct sk_buff *__skb_recv_datagram(struct sock *sk,
@@ -446,38 +315,12 @@ struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned int flags,
 
 	return __skb_recv_datagram(sk, &sk->sk_receive_queue, flags,
 				   &off, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(skb_recv_datagram);
 
 void skb_free_datagram(struct sock *sk, struct sk_buff *skb)
 {
 	consume_skb(skb);
-<<<<<<< HEAD
-	sk_mem_reclaim_partial(sk);
-}
-EXPORT_SYMBOL(skb_free_datagram);
-
-void skb_free_datagram_locked(struct sock *sk, struct sk_buff *skb)
-{
-	bool slow;
-
-	if (likely(atomic_read(&skb->users) == 1))
-		smp_rmb();
-	else if (likely(!atomic_dec_and_test(&skb->users)))
-		return;
-
-	slow = lock_sock_fast(sk);
-	skb_orphan(skb);
-	sk_mem_reclaim_partial(sk);
-	unlock_sock_fast(sk, slow);
-
-	/* skb is now orphaned, can be freed outside of locked section */
-	trace_kfree_skb(skb, skb_free_datagram_locked);
-	__kfree_skb(skb);
-}
-EXPORT_SYMBOL(skb_free_datagram_locked);
-=======
 }
 EXPORT_SYMBOL(skb_free_datagram);
 
@@ -524,17 +367,12 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
 	return err;
 }
 EXPORT_SYMBOL(__sk_queue_drop_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	skb_kill_datagram - Free a datagram skbuff forcibly
  *	@sk: socket
  *	@skb: datagram skbuff
-<<<<<<< HEAD
- *	@flags: MSG_ flags
-=======
  *	@flags: MSG\_ flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This function frees a datagram skbuff that was received by
  *	skb_recv_datagram.  The flags argument must match the one
@@ -553,222 +391,14 @@ EXPORT_SYMBOL(__sk_queue_drop_skb);
 
 int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags)
 {
-<<<<<<< HEAD
-	int err = 0;
-
-	if (flags & MSG_PEEK) {
-		err = -ENOENT;
-		spin_lock_bh(&sk->sk_receive_queue.lock);
-		if (skb == skb_peek(&sk->sk_receive_queue)) {
-			__skb_unlink(skb, &sk->sk_receive_queue);
-			atomic_dec(&skb->users);
-			err = 0;
-		}
-		spin_unlock_bh(&sk->sk_receive_queue.lock);
-	}
-
-	kfree_skb(skb);
-	atomic_inc(&sk->sk_drops);
-	sk_mem_reclaim_partial(sk);
-
-=======
 	int err = __sk_queue_drop_skb(sk, &sk->sk_receive_queue, skb, flags,
 				      NULL);
 
 	kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(skb_kill_datagram);
 
-<<<<<<< HEAD
-/**
- *	skb_copy_datagram_iovec - Copy a datagram to an iovec.
- *	@skb: buffer to copy
- *	@offset: offset in the buffer to start copying from
- *	@to: io vector to copy to
- *	@len: amount of data to copy from buffer to iovec
- *
- *	Note: the iovec is modified during the copy.
- */
-int skb_copy_datagram_iovec(const struct sk_buff *skb, int offset,
-			    struct iovec *to, int len)
-{
-	int start = skb_headlen(skb);
-	int i, copy = start - offset;
-	struct sk_buff *frag_iter;
-
-	trace_skb_copy_datagram_iovec(skb, len);
-
-	/* Copy header. */
-	if (copy > 0) {
-		if (copy > len)
-			copy = len;
-		if (memcpy_toiovec(to, skb->data + offset, copy))
-			goto fault;
-		if ((len -= copy) == 0)
-			return 0;
-		offset += copy;
-	}
-
-	/* Copy paged appendix. Hmm... why does this look so complicated? */
-	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-		int end;
-		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-
-		WARN_ON(start > offset + len);
-
-		end = start + skb_frag_size(frag);
-		if ((copy = end - offset) > 0) {
-			int err;
-			u8  *vaddr;
-			struct page *page = skb_frag_page(frag);
-
-			if (copy > len)
-				copy = len;
-			vaddr = kmap(page);
-			err = memcpy_toiovec(to, vaddr + frag->page_offset +
-					     offset - start, copy);
-			kunmap(page);
-			if (err)
-				goto fault;
-			if (!(len -= copy))
-				return 0;
-			offset += copy;
-		}
-		start = end;
-	}
-
-	skb_walk_frags(skb, frag_iter) {
-		int end;
-
-		WARN_ON(start > offset + len);
-
-		end = start + frag_iter->len;
-		if ((copy = end - offset) > 0) {
-			if (copy > len)
-				copy = len;
-			if (skb_copy_datagram_iovec(frag_iter,
-						    offset - start,
-						    to, copy))
-				goto fault;
-			if ((len -= copy) == 0)
-				return 0;
-			offset += copy;
-		}
-		start = end;
-	}
-	if (!len)
-		return 0;
-
-fault:
-	return -EFAULT;
-}
-EXPORT_SYMBOL(skb_copy_datagram_iovec);
-
-/**
- *	skb_copy_datagram_const_iovec - Copy a datagram to an iovec.
- *	@skb: buffer to copy
- *	@offset: offset in the buffer to start copying from
- *	@to: io vector to copy to
- *	@to_offset: offset in the io vector to start copying to
- *	@len: amount of data to copy from buffer to iovec
- *
- *	Returns 0 or -EFAULT.
- *	Note: the iovec is not modified during the copy.
- */
-int skb_copy_datagram_const_iovec(const struct sk_buff *skb, int offset,
-				  const struct iovec *to, int to_offset,
-				  int len)
-{
-	int start = skb_headlen(skb);
-	int i, copy = start - offset;
-	struct sk_buff *frag_iter;
-
-	/* Copy header. */
-	if (copy > 0) {
-		if (copy > len)
-			copy = len;
-		if (memcpy_toiovecend(to, skb->data + offset, to_offset, copy))
-			goto fault;
-		if ((len -= copy) == 0)
-			return 0;
-		offset += copy;
-		to_offset += copy;
-	}
-
-	/* Copy paged appendix. Hmm... why does this look so complicated? */
-	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-		int end;
-		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-
-		WARN_ON(start > offset + len);
-
-		end = start + skb_frag_size(frag);
-		if ((copy = end - offset) > 0) {
-			int err;
-			u8  *vaddr;
-			struct page *page = skb_frag_page(frag);
-
-			if (copy > len)
-				copy = len;
-			vaddr = kmap(page);
-			err = memcpy_toiovecend(to, vaddr + frag->page_offset +
-						offset - start, to_offset, copy);
-			kunmap(page);
-			if (err)
-				goto fault;
-			if (!(len -= copy))
-				return 0;
-			offset += copy;
-			to_offset += copy;
-		}
-		start = end;
-	}
-
-	skb_walk_frags(skb, frag_iter) {
-		int end;
-
-		WARN_ON(start > offset + len);
-
-		end = start + frag_iter->len;
-		if ((copy = end - offset) > 0) {
-			if (copy > len)
-				copy = len;
-			if (skb_copy_datagram_const_iovec(frag_iter,
-							  offset - start,
-							  to, to_offset,
-							  copy))
-				goto fault;
-			if ((len -= copy) == 0)
-				return 0;
-			offset += copy;
-			to_offset += copy;
-		}
-		start = end;
-	}
-	if (!len)
-		return 0;
-
-fault:
-	return -EFAULT;
-}
-EXPORT_SYMBOL(skb_copy_datagram_const_iovec);
-
-/**
- *	skb_copy_datagram_from_iovec - Copy a datagram from an iovec.
- *	@skb: buffer to copy
- *	@offset: offset in the buffer to start copying to
- *	@from: io vector to copy to
- *	@from_offset: offset in the io vector to start copying from
- *	@len: amount of data to copy to buffer from iovec
- *
- *	Returns 0 or -EFAULT.
- *	Note: the iovec is not modified during the copy.
- */
-int skb_copy_datagram_from_iovec(struct sk_buff *skb, int offset,
-				 const struct iovec *from, int from_offset,
-=======
 INDIRECT_CALLABLE_DECLARE(static size_t simple_copy_to_iter(const void *addr,
 						size_t bytes,
 						void *data __always_unused,
@@ -929,7 +559,6 @@ EXPORT_SYMBOL(skb_copy_datagram_iter);
  */
 int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 				 struct iov_iter *from,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 int len)
 {
 	int start = skb_headlen(skb);
@@ -940,20 +569,11 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 	if (copy > 0) {
 		if (copy > len)
 			copy = len;
-<<<<<<< HEAD
-		if (memcpy_fromiovecend(skb->data + offset, from, from_offset,
-					copy))
-=======
 		if (copy_from_iter(skb->data + offset, copy, from) != copy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fault;
 		if ((len -= copy) == 0)
 			return 0;
 		offset += copy;
-<<<<<<< HEAD
-		from_offset += copy;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Copy paged appendix. Hmm... why does this look so complicated? */
@@ -965,20 +585,6 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 
 		end = start + skb_frag_size(frag);
 		if ((copy = end - offset) > 0) {
-<<<<<<< HEAD
-			int err;
-			u8  *vaddr;
-			struct page *page = skb_frag_page(frag);
-
-			if (copy > len)
-				copy = len;
-			vaddr = kmap(page);
-			err = memcpy_fromiovecend(vaddr + frag->page_offset +
-						  offset - start,
-						  from, from_offset, copy);
-			kunmap(page);
-			if (err)
-=======
 			size_t copied;
 
 			if (copy > len)
@@ -987,16 +593,11 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 					  skb_frag_off(frag) + offset - start,
 					  copy, from);
 			if (copied != copy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto fault;
 
 			if (!(len -= copy))
 				return 0;
 			offset += copy;
-<<<<<<< HEAD
-			from_offset += copy;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		start = end;
 	}
@@ -1010,108 +611,6 @@ int skb_copy_datagram_from_iter(struct sk_buff *skb, int offset,
 		if ((copy = end - offset) > 0) {
 			if (copy > len)
 				copy = len;
-<<<<<<< HEAD
-			if (skb_copy_datagram_from_iovec(frag_iter,
-							 offset - start,
-							 from,
-							 from_offset,
-							 copy))
-				goto fault;
-			if ((len -= copy) == 0)
-				return 0;
-			offset += copy;
-			from_offset += copy;
-		}
-		start = end;
-	}
-	if (!len)
-		return 0;
-
-fault:
-	return -EFAULT;
-}
-EXPORT_SYMBOL(skb_copy_datagram_from_iovec);
-
-static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
-				      u8 __user *to, int len,
-				      __wsum *csump)
-{
-	int start = skb_headlen(skb);
-	int i, copy = start - offset;
-	struct sk_buff *frag_iter;
-	int pos = 0;
-
-	/* Copy header. */
-	if (copy > 0) {
-		int err = 0;
-		if (copy > len)
-			copy = len;
-		*csump = csum_and_copy_to_user(skb->data + offset, to, copy,
-					       *csump, &err);
-		if (err)
-			goto fault;
-		if ((len -= copy) == 0)
-			return 0;
-		offset += copy;
-		to += copy;
-		pos = copy;
-	}
-
-	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-		int end;
-		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-
-		WARN_ON(start > offset + len);
-
-		end = start + skb_frag_size(frag);
-		if ((copy = end - offset) > 0) {
-			__wsum csum2;
-			int err = 0;
-			u8  *vaddr;
-			struct page *page = skb_frag_page(frag);
-
-			if (copy > len)
-				copy = len;
-			vaddr = kmap(page);
-			csum2 = csum_and_copy_to_user(vaddr +
-							frag->page_offset +
-							offset - start,
-						      to, copy, 0, &err);
-			kunmap(page);
-			if (err)
-				goto fault;
-			*csump = csum_block_add(*csump, csum2, pos);
-			if (!(len -= copy))
-				return 0;
-			offset += copy;
-			to += copy;
-			pos += copy;
-		}
-		start = end;
-	}
-
-	skb_walk_frags(skb, frag_iter) {
-		int end;
-
-		WARN_ON(start > offset + len);
-
-		end = start + frag_iter->len;
-		if ((copy = end - offset) > 0) {
-			__wsum csum2 = 0;
-			if (copy > len)
-				copy = len;
-			if (skb_copy_and_csum_datagram(frag_iter,
-						       offset - start,
-						       to, copy,
-						       &csum2))
-				goto fault;
-			*csump = csum_block_add(*csump, csum2, pos);
-			if ((len -= copy) == 0)
-				return 0;
-			offset += copy;
-			to += copy;
-			pos += copy;
-=======
 			if (skb_copy_datagram_from_iter(frag_iter,
 							offset - start,
 							from, copy))
@@ -1119,7 +618,6 @@ static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
 			if ((len -= copy) == 0)
 				return 0;
 			offset += copy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		start = end;
 	}
@@ -1129,36 +627,6 @@ static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
 fault:
 	return -EFAULT;
 }
-<<<<<<< HEAD
-
-__sum16 __skb_checksum_complete_head(struct sk_buff *skb, int len)
-{
-	__sum16 sum;
-
-	sum = csum_fold(skb_checksum(skb, 0, len, skb->csum));
-	if (likely(!sum)) {
-		if (unlikely(skb->ip_summed == CHECKSUM_COMPLETE))
-			netdev_rx_csum_fault(skb->dev);
-		if (!skb_shared(skb))
-			skb->ip_summed = CHECKSUM_UNNECESSARY;
-	}
-	return sum;
-}
-EXPORT_SYMBOL(__skb_checksum_complete_head);
-
-__sum16 __skb_checksum_complete(struct sk_buff *skb)
-{
-	return __skb_checksum_complete_head(skb, skb->len);
-}
-EXPORT_SYMBOL(__skb_checksum_complete);
-
-/**
- *	skb_copy_and_csum_datagram_iovec - Copy and checkum skb to user iovec.
- *	@skb: skbuff
- *	@hlen: hardware length
- *	@iov: io vector
- *	@len: amount of data to copy from skb to iov
-=======
 EXPORT_SYMBOL(skb_copy_datagram_from_iter);
 
 int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
@@ -1351,66 +819,19 @@ static int skb_copy_and_csum_datagram(const struct sk_buff *skb, int offset,
  *	@skb: skbuff
  *	@hlen: hardware length
  *	@msg: destination
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Caller _must_ check that skb will fit to this iovec.
  *
  *	Returns: 0       - success.
  *		 -EINVAL - checksum failure.
-<<<<<<< HEAD
- *		 -EFAULT - fault during copy. Beware, in this case iovec
- *			   can be modified!
- */
-int skb_copy_and_csum_datagram_iovec(struct sk_buff *skb,
-				     int hlen, struct iovec *iov, int len)
-=======
  *		 -EFAULT - fault during copy.
  */
 int skb_copy_and_csum_datagram_msg(struct sk_buff *skb,
 				   int hlen, struct msghdr *msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__wsum csum;
 	int chunk = skb->len - hlen;
 
-<<<<<<< HEAD
-	if (chunk > len)
-		chunk = len;
-
-	if (!chunk)
-		return 0;
-
-	/* Skip filled elements.
-	 * Pretty silly, look at memcpy_toiovec, though 8)
-	 */
-	while (!iov->iov_len)
-		iov++;
-
-	if (iov->iov_len < chunk) {
-		if (__skb_checksum_complete(skb))
-			goto csum_error;
-		if (skb_copy_datagram_iovec(skb, hlen, iov, chunk))
-			goto fault;
-	} else {
-		csum = csum_partial(skb->data, hlen, skb->csum);
-		if (skb_copy_and_csum_datagram(skb, hlen, iov->iov_base,
-					       chunk, &csum))
-			goto fault;
-		if (csum_fold(csum))
-			goto csum_error;
-		if (unlikely(skb->ip_summed == CHECKSUM_COMPLETE))
-			netdev_rx_csum_fault(skb->dev);
-		iov->iov_len -= chunk;
-		iov->iov_base += chunk;
-	}
-	return 0;
-csum_error:
-	return -EINVAL;
-fault:
-	return -EFAULT;
-}
-EXPORT_SYMBOL(skb_copy_and_csum_datagram_iovec);
-=======
 	if (!chunk)
 		return 0;
 
@@ -1439,7 +860,6 @@ fault:
 	return -EFAULT;
 }
 EXPORT_SYMBOL(skb_copy_and_csum_datagram_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * 	datagram_poll - generic datagram poll
@@ -1451,39 +871,6 @@ EXPORT_SYMBOL(skb_copy_and_csum_datagram_msg);
  *	sequenced packet sockets providing the socket receive queue
  *	is only ever holding data ready to receive.
  *
-<<<<<<< HEAD
- *	Note: when you _don't_ use this routine for this protocol,
- *	and you use a different write policy from sock_writeable()
- *	then please supply your own write_space callback.
- */
-unsigned int datagram_poll(struct file *file, struct socket *sock,
-			   poll_table *wait)
-{
-	struct sock *sk = sock->sk;
-	unsigned int mask;
-
-	sock_poll_wait(file, sk_sleep(sk), wait);
-	mask = 0;
-
-	/* exceptional events? */
-	if (sk->sk_err || !skb_queue_empty(&sk->sk_error_queue))
-		mask |= POLLERR;
-	if (sk->sk_shutdown & RCV_SHUTDOWN)
-		mask |= POLLRDHUP | POLLIN | POLLRDNORM;
-	if (sk->sk_shutdown == SHUTDOWN_MASK)
-		mask |= POLLHUP;
-
-	/* readable? */
-	if (!skb_queue_empty(&sk->sk_receive_queue))
-		mask |= POLLIN | POLLRDNORM;
-
-	/* Connection-based need to check for termination and startup */
-	if (connection_based(sk)) {
-		if (sk->sk_state == TCP_CLOSE)
-			mask |= POLLHUP;
-		/* connection hasn't started yet? */
-		if (sk->sk_state == TCP_SYN_SENT)
-=======
  *	Note: when you *don't* use this routine for this protocol,
  *	and you use a different write policy from sock_writeable()
  *	then please supply your own write_space callback.
@@ -1522,21 +909,14 @@ __poll_t datagram_poll(struct file *file, struct socket *sock,
 			mask |= EPOLLHUP;
 		/* connection hasn't started yet? */
 		if (state == TCP_SYN_SENT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return mask;
 	}
 
 	/* writable? */
 	if (sock_writeable(sk))
-<<<<<<< HEAD
-		mask |= POLLOUT | POLLWRNORM | POLLWRBAND;
-	else
-		set_bit(SOCK_ASYNC_NOSPACE, &sk->sk_socket->flags);
-=======
 		mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
 	else
 		sk_set_bit(SOCKWQ_ASYNC_NOSPACE, sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }

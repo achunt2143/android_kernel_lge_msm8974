@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ifndef _I8042_SPARCIO_H
-#define _I8042_SPARCIO_H
-
-#include <linux/of_device.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _I8042_SPARCIO_H
 #define _I8042_SPARCIO_H
@@ -12,7 +6,6 @@
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/oplib.h>
@@ -28,10 +21,6 @@ static int i8042_aux_irq = -1;
 #define I8042_MUX_PHYS_DESC "sparcps2/serio%d"
 
 static void __iomem *kbd_iobase;
-<<<<<<< HEAD
-static struct resource *kbd_res;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define I8042_COMMAND_REG	(kbd_iobase + 0x64UL)
 #define I8042_DATA_REG		(kbd_iobase + 0x60UL)
@@ -58,26 +47,13 @@ static inline void i8042_write_command(int val)
 
 #ifdef CONFIG_PCI
 
-<<<<<<< HEAD
-=======
 static struct resource *kbd_res;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OBP_PS2KBD_NAME1	"kb_ps2"
 #define OBP_PS2KBD_NAME2	"keyboard"
 #define OBP_PS2MS_NAME1		"kdmouse"
 #define OBP_PS2MS_NAME2		"mouse"
 
-<<<<<<< HEAD
-static int __devinit sparc_i8042_probe(struct platform_device *op)
-{
-	struct device_node *dp = op->dev.of_node;
-
-	dp = dp->child;
-	while (dp) {
-		if (!strcmp(dp->name, OBP_PS2KBD_NAME1) ||
-		    !strcmp(dp->name, OBP_PS2KBD_NAME2)) {
-=======
 static int sparc_i8042_probe(struct platform_device *op)
 {
 	struct device_node *dp;
@@ -85,7 +61,6 @@ static int sparc_i8042_probe(struct platform_device *op)
 	for_each_child_of_node(op->dev.of_node, dp) {
 		if (of_node_name_eq(dp, OBP_PS2KBD_NAME1) ||
 		    of_node_name_eq(dp, OBP_PS2KBD_NAME2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct platform_device *kbd = of_find_device_by_node(dp);
 			unsigned int irq = kbd->archdata.irqs[0];
 			if (irq == 0xffffffff)
@@ -94,40 +69,22 @@ static int sparc_i8042_probe(struct platform_device *op)
 			kbd_iobase = of_ioremap(&kbd->resource[0],
 						0, 8, "kbd");
 			kbd_res = &kbd->resource[0];
-<<<<<<< HEAD
-		} else if (!strcmp(dp->name, OBP_PS2MS_NAME1) ||
-			   !strcmp(dp->name, OBP_PS2MS_NAME2)) {
-=======
 		} else if (of_node_name_eq(dp, OBP_PS2MS_NAME1) ||
 			   of_node_name_eq(dp, OBP_PS2MS_NAME2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct platform_device *ms = of_find_device_by_node(dp);
 			unsigned int irq = ms->archdata.irqs[0];
 			if (irq == 0xffffffff)
 				irq = op->archdata.irqs[0];
 			i8042_aux_irq = irq;
 		}
-<<<<<<< HEAD
-
-		dp = dp->sibling;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit sparc_i8042_remove(struct platform_device *op)
-{
-	of_iounmap(kbd_res, kbd_iobase, 8);
-
-	return 0;
-=======
 static void sparc_i8042_remove(struct platform_device *op)
 {
 	of_iounmap(kbd_res, kbd_iobase, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id sparc_i8042_match[] = {
@@ -141,20 +98,6 @@ MODULE_DEVICE_TABLE(of, sparc_i8042_match);
 static struct platform_driver sparc_i8042_driver = {
 	.driver = {
 		.name = "i8042",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = sparc_i8042_match,
-	},
-	.probe		= sparc_i8042_probe,
-	.remove		= __devexit_p(sparc_i8042_remove),
-};
-
-static int __init i8042_platform_init(void)
-{
-	struct device_node *root = of_find_node_by_path("/");
-
-	if (!strcmp(root->name, "SUNW,JavaStation-1")) {
-=======
 		.of_match_table = sparc_i8042_match,
 	},
 	.probe		= sparc_i8042_probe,
@@ -180,7 +123,6 @@ static bool i8042_is_mr_coffee(void)
 static int __init i8042_platform_init(void)
 {
 	if (i8042_is_mr_coffee()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Hardcoded values for MrCoffee.  */
 		i8042_kbd_irq = i8042_aux_irq = 13 | 0x20;
 		kbd_iobase = ioremap(0x71300060, 8);
@@ -201,24 +143,14 @@ static int __init i8042_platform_init(void)
 		}
 	}
 
-<<<<<<< HEAD
-	i8042_reset = 1;
-=======
 	i8042_reset = I8042_RESET_ALWAYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static inline void i8042_platform_exit(void)
 {
-<<<<<<< HEAD
-	struct device_node *root = of_find_node_by_path("/");
-
-	if (strcmp(root->name, "SUNW,JavaStation-1"))
-=======
 	if (!i8042_is_mr_coffee())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		platform_driver_unregister(&sparc_i8042_driver);
 }
 

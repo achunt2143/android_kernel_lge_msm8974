@@ -1,15 +1,10 @@
 /*
-<<<<<<< HEAD
- * Modified to interface to the Linux kernel
- * Copyright (c) 2009, Intel Corporation.
-=======
  * VMAC: Message Authentication Code using Universal Hashing
  *
  * Reference: https://tools.ietf.org/html/draft-krovetz-vmac-01
  *
  * Copyright (c) 2009, Intel Corporation.
  * Copyright (c) 2018, Google Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -25,16 +20,6 @@
  * Place - Suite 330, Boston, MA 02111-1307 USA.
  */
 
-<<<<<<< HEAD
-/* --------------------------------------------------------------------------
- * VMAC and VHASH Implementation by Ted Krovetz (tdk@acm.org) and Wei Dai.
- * This implementation is herby placed in the public domain.
- * The authors offers no warranty. Use at your own risk.
- * Please send bug reports to the authors.
- * Last modified: 17 APR 08, 1700 PDT
- * ----------------------------------------------------------------------- */
-
-=======
 /*
  * Derived from:
  *	VMAC and VHASH Implementation by Ted Krovetz (tdk@acm.org) and Wei Dai.
@@ -44,7 +29,6 @@
  */
 
 #include <asm/unaligned.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/crypto.h>
@@ -52,20 +36,6 @@
 #include <linux/scatterlist.h>
 #include <asm/byteorder.h>
 #include <crypto/scatterwalk.h>
-<<<<<<< HEAD
-#include <crypto/vmac.h>
-#include <crypto/internal/hash.h>
-
-/*
- * Constants and masks
- */
-#define UINT64_C(x) x##ULL
-const u64 p64   = UINT64_C(0xfffffffffffffeff);  /* 2^64 - 257 prime  */
-const u64 m62   = UINT64_C(0x3fffffffffffffff);  /* 62-bit mask       */
-const u64 m63   = UINT64_C(0x7fffffffffffffff);  /* 63-bit mask       */
-const u64 m64   = UINT64_C(0xffffffffffffffff);  /* 64-bit mask       */
-const u64 mpoly = UINT64_C(0x1fffffff1fffffff);  /* Poly key mask     */
-=======
 #include <crypto/internal/cipher.h>
 #include <crypto/internal/hash.h>
 
@@ -111,7 +81,6 @@ static const u64 m62   = UINT64_C(0x3fffffffffffffff);	/* 62-bit mask       */
 static const u64 m63   = UINT64_C(0x7fffffffffffffff);	/* 63-bit mask       */
 static const u64 m64   = UINT64_C(0xffffffffffffffff);	/* 64-bit mask       */
 static const u64 mpoly = UINT64_C(0x1fffffff1fffffff);	/* Poly key mask     */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pe64_to_cpup le64_to_cpup		/* Prefer little endian */
 
@@ -387,16 +356,6 @@ static void poly_step_func(u64 *ahi, u64 *alo,
 	} while (0)
 #endif
 
-<<<<<<< HEAD
-static void vhash_abort(struct vmac_ctx *ctx)
-{
-	ctx->polytmp[0] = ctx->polykey[0] ;
-	ctx->polytmp[1] = ctx->polykey[1] ;
-	ctx->first_block_processed = 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u64 l3hash(u64 p1, u64 p2, u64 k1, u64 k2, u64 len)
 {
 	u64 rh, rl, t, z = 0;
@@ -436,27 +395,6 @@ static u64 l3hash(u64 p1, u64 p2, u64 k1, u64 k2, u64 len)
 	return rl;
 }
 
-<<<<<<< HEAD
-static void vhash_update(const unsigned char *m,
-			unsigned int mbytes, /* Pos multiple of VMAC_NHBYTES */
-			struct vmac_ctx *ctx)
-{
-	u64 rh, rl, *mptr;
-	const u64 *kptr = (u64 *)ctx->nhkey;
-	int i;
-	u64 ch, cl;
-	u64 pkh = ctx->polykey[0];
-	u64 pkl = ctx->polykey[1];
-
-	mptr = (u64 *)m;
-	i = mbytes / VMAC_NHBYTES;  /* Must be non-zero */
-
-	ch = ctx->polytmp[0];
-	cl = ctx->polytmp[1];
-
-	if (!ctx->first_block_processed) {
-		ctx->first_block_processed = 1;
-=======
 /* L1 and L2-hash one or more VMAC_NHBYTES-byte blocks */
 static void vhash_blocks(const struct vmac_tfm_ctx *tctx,
 			 struct vmac_desc_ctx *dctx,
@@ -471,119 +409,20 @@ static void vhash_blocks(const struct vmac_tfm_ctx *tctx,
 
 	if (!dctx->first_block_processed) {
 		dctx->first_block_processed = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nh_vmac_nhbytes(mptr, kptr, VMAC_NHBYTES/8, rh, rl);
 		rh &= m62;
 		ADD128(ch, cl, rh, rl);
 		mptr += (VMAC_NHBYTES/sizeof(u64));
-<<<<<<< HEAD
-		i--;
-	}
-
-	while (i--) {
-=======
 		blocks--;
 	}
 
 	while (blocks--) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nh_vmac_nhbytes(mptr, kptr, VMAC_NHBYTES/8, rh, rl);
 		rh &= m62;
 		poly_step(ch, cl, pkh, pkl, rh, rl);
 		mptr += (VMAC_NHBYTES/sizeof(u64));
 	}
 
-<<<<<<< HEAD
-	ctx->polytmp[0] = ch;
-	ctx->polytmp[1] = cl;
-}
-
-static u64 vhash(unsigned char m[], unsigned int mbytes,
-			u64 *tagl, struct vmac_ctx *ctx)
-{
-	u64 rh, rl, *mptr;
-	const u64 *kptr = (u64 *)ctx->nhkey;
-	int i, remaining;
-	u64 ch, cl;
-	u64 pkh = ctx->polykey[0];
-	u64 pkl = ctx->polykey[1];
-
-	mptr = (u64 *)m;
-	i = mbytes / VMAC_NHBYTES;
-	remaining = mbytes % VMAC_NHBYTES;
-
-	if (ctx->first_block_processed) {
-		ch = ctx->polytmp[0];
-		cl = ctx->polytmp[1];
-	} else if (i) {
-		nh_vmac_nhbytes(mptr, kptr, VMAC_NHBYTES/8, ch, cl);
-		ch &= m62;
-		ADD128(ch, cl, pkh, pkl);
-		mptr += (VMAC_NHBYTES/sizeof(u64));
-		i--;
-	} else if (remaining) {
-		nh_16(mptr, kptr, 2*((remaining+15)/16), ch, cl);
-		ch &= m62;
-		ADD128(ch, cl, pkh, pkl);
-		mptr += (VMAC_NHBYTES/sizeof(u64));
-		goto do_l3;
-	} else {/* Empty String */
-		ch = pkh; cl = pkl;
-		goto do_l3;
-	}
-
-	while (i--) {
-		nh_vmac_nhbytes(mptr, kptr, VMAC_NHBYTES/8, rh, rl);
-		rh &= m62;
-		poly_step(ch, cl, pkh, pkl, rh, rl);
-		mptr += (VMAC_NHBYTES/sizeof(u64));
-	}
-	if (remaining) {
-		nh_16(mptr, kptr, 2*((remaining+15)/16), rh, rl);
-		rh &= m62;
-		poly_step(ch, cl, pkh, pkl, rh, rl);
-	}
-
-do_l3:
-	vhash_abort(ctx);
-	remaining *= 8;
-	return l3hash(ch, cl, ctx->l3key[0], ctx->l3key[1], remaining);
-}
-
-static u64 vmac(unsigned char m[], unsigned int mbytes,
-			unsigned char n[16], u64 *tagl,
-			struct vmac_ctx_t *ctx)
-{
-	u64 *in_n, *out_p;
-	u64 p, h;
-	int i;
-
-	in_n = ctx->__vmac_ctx.cached_nonce;
-	out_p = ctx->__vmac_ctx.cached_aes;
-
-	i = n[15] & 1;
-	if ((*(u64 *)(n+8) != in_n[1]) || (*(u64 *)(n) != in_n[0])) {
-		in_n[0] = *(u64 *)(n);
-		in_n[1] = *(u64 *)(n+8);
-		((unsigned char *)in_n)[15] &= 0xFE;
-		crypto_cipher_encrypt_one(ctx->child,
-			(unsigned char *)out_p, (unsigned char *)in_n);
-
-		((unsigned char *)in_n)[15] |= (unsigned char)(1-i);
-	}
-	p = be64_to_cpup(out_p + i);
-	h = vhash(m, mbytes, (u64 *)0, &ctx->__vmac_ctx);
-	return le64_to_cpu(p + h);
-}
-
-static int vmac_set_key(unsigned char user_key[], struct vmac_ctx_t *ctx)
-{
-	u64 in[2] = {0}, out[2];
-	unsigned i;
-	int err = 0;
-
-	err = crypto_cipher_setkey(ctx->child, user_key, VMAC_KEY_LEN);
-=======
 	dctx->polytmp[0] = ch;
 	dctx->polytmp[1] = cl;
 }
@@ -601,99 +440,10 @@ static int vmac_setkey(struct crypto_shash *tfm,
 		return -EINVAL;
 
 	err = crypto_cipher_setkey(tctx->cipher, key, keylen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
 	/* Fill nh key */
-<<<<<<< HEAD
-	((unsigned char *)in)[0] = 0x80;
-	for (i = 0; i < sizeof(ctx->__vmac_ctx.nhkey)/8; i += 2) {
-		crypto_cipher_encrypt_one(ctx->child,
-			(unsigned char *)out, (unsigned char *)in);
-		ctx->__vmac_ctx.nhkey[i] = be64_to_cpup(out);
-		ctx->__vmac_ctx.nhkey[i+1] = be64_to_cpup(out+1);
-		((unsigned char *)in)[15] += 1;
-	}
-
-	/* Fill poly key */
-	((unsigned char *)in)[0] = 0xC0;
-	in[1] = 0;
-	for (i = 0; i < sizeof(ctx->__vmac_ctx.polykey)/8; i += 2) {
-		crypto_cipher_encrypt_one(ctx->child,
-			(unsigned char *)out, (unsigned char *)in);
-		ctx->__vmac_ctx.polytmp[i] =
-			ctx->__vmac_ctx.polykey[i] =
-				be64_to_cpup(out) & mpoly;
-		ctx->__vmac_ctx.polytmp[i+1] =
-			ctx->__vmac_ctx.polykey[i+1] =
-				be64_to_cpup(out+1) & mpoly;
-		((unsigned char *)in)[15] += 1;
-	}
-
-	/* Fill ip key */
-	((unsigned char *)in)[0] = 0xE0;
-	in[1] = 0;
-	for (i = 0; i < sizeof(ctx->__vmac_ctx.l3key)/8; i += 2) {
-		do {
-			crypto_cipher_encrypt_one(ctx->child,
-				(unsigned char *)out, (unsigned char *)in);
-			ctx->__vmac_ctx.l3key[i] = be64_to_cpup(out);
-			ctx->__vmac_ctx.l3key[i+1] = be64_to_cpup(out+1);
-			((unsigned char *)in)[15] += 1;
-		} while (ctx->__vmac_ctx.l3key[i] >= p64
-			|| ctx->__vmac_ctx.l3key[i+1] >= p64);
-	}
-
-	/* Invalidate nonce/aes cache and reset other elements */
-	ctx->__vmac_ctx.cached_nonce[0] = (u64)-1; /* Ensure illegal nonce */
-	ctx->__vmac_ctx.cached_nonce[1] = (u64)0;  /* Ensure illegal nonce */
-	ctx->__vmac_ctx.first_block_processed = 0;
-
-	return err;
-}
-
-static int vmac_setkey(struct crypto_shash *parent,
-		const u8 *key, unsigned int keylen)
-{
-	struct vmac_ctx_t *ctx = crypto_shash_ctx(parent);
-
-	if (keylen != VMAC_KEY_LEN) {
-		crypto_shash_set_flags(parent, CRYPTO_TFM_RES_BAD_KEY_LEN);
-		return -EINVAL;
-	}
-
-	return vmac_set_key((u8 *)key, ctx);
-}
-
-static int vmac_init(struct shash_desc *pdesc)
-{
-	return 0;
-}
-
-static int vmac_update(struct shash_desc *pdesc, const u8 *p,
-		unsigned int len)
-{
-	struct crypto_shash *parent = pdesc->tfm;
-	struct vmac_ctx_t *ctx = crypto_shash_ctx(parent);
-
-	vhash_update(p, len, &ctx->__vmac_ctx);
-
-	return 0;
-}
-
-static int vmac_final(struct shash_desc *pdesc, u8 *out)
-{
-	struct crypto_shash *parent = pdesc->tfm;
-	struct vmac_ctx_t *ctx = crypto_shash_ctx(parent);
-	vmac_t mac;
-	u8 nonce[16] = {};
-
-	mac = vmac(NULL, 0, nonce, NULL, ctx);
-	memcpy(out, &mac, sizeof(vmac_t));
-	memset(&mac, 0, sizeof(vmac_t));
-	memset(&ctx->__vmac_ctx, 0, sizeof(struct vmac_ctx));
-=======
 	in[0] = 0x80;
 	for (i = 0; i < ARRAY_SIZE(tctx->nhkey); i += 2) {
 		crypto_cipher_encrypt_one(tctx->cipher, (u8 *)out, in);
@@ -841,85 +591,34 @@ static int vmac_final(struct shash_desc *desc, u8 *out)
 
 	/* The VMAC is the sum of VHASH and the pseudorandom pad */
 	put_unaligned_be64(hash + pad, out);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int vmac_init_tfm(struct crypto_tfm *tfm)
 {
-<<<<<<< HEAD
-	struct crypto_cipher *cipher;
-	struct crypto_instance *inst = (void *)tfm->__crt_alg;
-	struct crypto_spawn *spawn = crypto_instance_ctx(inst);
-	struct vmac_ctx_t *ctx = crypto_tfm_ctx(tfm);
-=======
 	struct crypto_instance *inst = crypto_tfm_alg_instance(tfm);
 	struct crypto_cipher_spawn *spawn = crypto_instance_ctx(inst);
 	struct vmac_tfm_ctx *tctx = crypto_tfm_ctx(tfm);
 	struct crypto_cipher *cipher;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cipher = crypto_spawn_cipher(spawn);
 	if (IS_ERR(cipher))
 		return PTR_ERR(cipher);
 
-<<<<<<< HEAD
-	ctx->child = cipher;
-=======
 	tctx->cipher = cipher;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void vmac_exit_tfm(struct crypto_tfm *tfm)
 {
-<<<<<<< HEAD
-	struct vmac_ctx_t *ctx = crypto_tfm_ctx(tfm);
-	crypto_free_cipher(ctx->child);
-=======
 	struct vmac_tfm_ctx *tctx = crypto_tfm_ctx(tfm);
 
 	crypto_free_cipher(tctx->cipher);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vmac_create(struct crypto_template *tmpl, struct rtattr **tb)
 {
 	struct shash_instance *inst;
-<<<<<<< HEAD
-	struct crypto_alg *alg;
-	int err;
-
-	err = crypto_check_attr_type(tb, CRYPTO_ALG_TYPE_SHASH);
-	if (err)
-		return err;
-
-	alg = crypto_get_attr_alg(tb, CRYPTO_ALG_TYPE_CIPHER,
-			CRYPTO_ALG_TYPE_MASK);
-	if (IS_ERR(alg))
-		return PTR_ERR(alg);
-
-	inst = shash_alloc_instance("vmac", alg);
-	err = PTR_ERR(inst);
-	if (IS_ERR(inst))
-		goto out_put_alg;
-
-	err = crypto_init_spawn(shash_instance_ctx(inst), alg,
-			shash_crypto_instance(inst),
-			CRYPTO_ALG_TYPE_MASK);
-	if (err)
-		goto out_free_inst;
-
-	inst->alg.base.cra_priority = alg->cra_priority;
-	inst->alg.base.cra_blocksize = alg->cra_blocksize;
-	inst->alg.base.cra_alignmask = alg->cra_alignmask;
-
-	inst->alg.digestsize = sizeof(vmac_t);
-	inst->alg.base.cra_ctxsize = sizeof(struct vmac_ctx_t);
-	inst->alg.base.cra_init = vmac_init_tfm;
-	inst->alg.base.cra_exit = vmac_exit_tfm;
-
-=======
 	struct crypto_cipher_spawn *spawn;
 	struct crypto_alg *alg;
 	u32 mask;
@@ -957,29 +656,11 @@ static int vmac_create(struct crypto_template *tmpl, struct rtattr **tb)
 
 	inst->alg.descsize = sizeof(struct vmac_desc_ctx);
 	inst->alg.digestsize = VMAC_TAG_LEN / 8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inst->alg.init = vmac_init;
 	inst->alg.update = vmac_update;
 	inst->alg.final = vmac_final;
 	inst->alg.setkey = vmac_setkey;
 
-<<<<<<< HEAD
-	err = shash_register_instance(tmpl, inst);
-	if (err) {
-out_free_inst:
-		shash_free_instance(shash_crypto_instance(inst));
-	}
-
-out_put_alg:
-	crypto_mod_put(alg);
-	return err;
-}
-
-static struct crypto_template vmac_tmpl = {
-	.name = "vmac",
-	.create = vmac_create,
-	.free = shash_free_instance,
-=======
 	inst->free = shash_free_singlespawn_instance;
 
 	err = shash_register_instance(tmpl, inst);
@@ -993,39 +674,23 @@ err_free_inst:
 static struct crypto_template vmac64_tmpl = {
 	.name = "vmac64",
 	.create = vmac_create,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module = THIS_MODULE,
 };
 
 static int __init vmac_module_init(void)
 {
-<<<<<<< HEAD
-	return crypto_register_template(&vmac_tmpl);
-=======
 	return crypto_register_template(&vmac64_tmpl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit vmac_module_exit(void)
 {
-<<<<<<< HEAD
-	crypto_unregister_template(&vmac_tmpl);
-}
-
-module_init(vmac_module_init);
-=======
 	crypto_unregister_template(&vmac64_tmpl);
 }
 
 subsys_initcall(vmac_module_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(vmac_module_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("VMAC hash algorithm");
-<<<<<<< HEAD
-
-=======
 MODULE_ALIAS_CRYPTO("vmac64");
 MODULE_IMPORT_NS(CRYPTO_INTERNAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

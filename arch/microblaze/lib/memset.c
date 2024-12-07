@@ -24,30 +24,6 @@
  * not any responsibility to update it.
  */
 
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/stddef.h>
-#include <linux/compiler.h>
-#include <linux/module.h>
-#include <linux/string.h>
-
-#ifdef __HAVE_ARCH_MEMSET
-#ifndef CONFIG_OPT_LIB_FUNCTION
-void *memset(void *v_src, int c, __kernel_size_t n)
-{
-	char *src = v_src;
-
-	/* Truncate c to 8 bits */
-	c = (c & 0xFF);
-
-	/* Simple, byte oriented memset or the rest of count. */
-	while (n--)
-		*src++ = c;
-
-	return v_src;
-}
-#else /* CONFIG_OPT_LIB_FUNCTION */
-=======
 #include <linux/export.h>
 #include <linux/types.h>
 #include <linux/stddef.h>
@@ -55,7 +31,6 @@ void *memset(void *v_src, int c, __kernel_size_t n)
 #include <linux/string.h>
 
 #ifdef CONFIG_OPT_LIB_FUNCTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *memset(void *v_src, int c, __kernel_size_t n)
 {
 	char *src = v_src;
@@ -79,17 +54,11 @@ void *memset(void *v_src, int c, __kernel_size_t n)
 		case 1:
 			*src++ = c;
 			--n;
-<<<<<<< HEAD
-		case 2:
-			*src++ = c;
-			--n;
-=======
 			fallthrough;
 		case 2:
 			*src++ = c;
 			--n;
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 3:
 			*src++ = c;
 			--n;
@@ -105,16 +74,6 @@ void *memset(void *v_src, int c, __kernel_size_t n)
 	}
 
 	/* Simple, byte oriented memset or the rest of count. */
-<<<<<<< HEAD
-	while (n--)
-		*src++ = c;
-
-	return v_src;
-}
-#endif /* CONFIG_OPT_LIB_FUNCTION */
-EXPORT_SYMBOL(memset);
-#endif /* __HAVE_ARCH_MEMSET */
-=======
 	switch (n) {
 	case 3:
 		*src++ = c;
@@ -133,4 +92,3 @@ EXPORT_SYMBOL(memset);
 }
 EXPORT_SYMBOL(memset);
 #endif /* CONFIG_OPT_LIB_FUNCTION */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

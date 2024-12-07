@@ -1,13 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACPI_VIDEO_H
 #define __ACPI_VIDEO_H
 
 #include <linux/errno.h> /* for ENODEV */
-<<<<<<< HEAD
-=======
 #include <linux/types.h> /* for bool */
 
 struct acpi_video_brightness_flags {
@@ -22,7 +17,6 @@ struct acpi_video_device_brightness {
 	int *levels;
 	struct acpi_video_brightness_flags flags;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct acpi_device;
 
@@ -37,16 +31,6 @@ struct acpi_device;
 #define ACPI_VIDEO_DISPLAY_LEGACY_PANEL   0x0110
 #define ACPI_VIDEO_DISPLAY_LEGACY_TV      0x0200
 
-<<<<<<< HEAD
-#if (defined CONFIG_ACPI_VIDEO || defined CONFIG_ACPI_VIDEO_MODULE)
-extern int acpi_video_register(void);
-extern void acpi_video_unregister(void);
-extern int acpi_video_get_edid(struct acpi_device *device, int type,
-			       int device_id, void **edid);
-#else
-static inline int acpi_video_register(void) { return 0; }
-static inline void acpi_video_unregister(void) { return; }
-=======
 #define ACPI_VIDEO_NOTIFY_SWITCH		0x80
 #define ACPI_VIDEO_NOTIFY_PROBE			0x81
 #define ACPI_VIDEO_NOTIFY_CYCLE			0x82
@@ -108,14 +92,11 @@ static inline bool acpi_video_backlight_use_native(void)
 static inline int acpi_video_register(void) { return -ENODEV; }
 static inline void acpi_video_unregister(void) { return; }
 static inline void acpi_video_register_backlight(void) { return; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int acpi_video_get_edid(struct acpi_device *device, int type,
 				      int device_id, void **edid)
 {
 	return -ENODEV;
 }
-<<<<<<< HEAD
-=======
 static inline enum acpi_backlight_type acpi_video_get_backlight_type(void)
 {
 	return acpi_backlight_vendor;
@@ -134,7 +115,6 @@ static inline int acpi_video_get_levels(struct acpi_device *device,
 {
 	return -ENODEV;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

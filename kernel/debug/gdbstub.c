@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel Debug Core
  *
@@ -26,17 +23,6 @@
  *
  * Original KGDB stub: David Grothe <dave@gcom.com>,
  * Tigran Aivazian <tigran@sco.com>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
-
-#include <linux/kernel.h>
-#include <linux/kgdb.h>
-#include <linux/kdb.h>
-=======
  */
 
 #include <linux/kernel.h>
@@ -44,7 +30,6 @@
 #include <linux/kgdb.h>
 #include <linux/kdb.h>
 #include <linux/serial_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/reboot.h>
 #include <linux/uaccess.h>
 #include <asm/cacheflush.h>
@@ -259,11 +244,7 @@ char *kgdb_mem2hex(char *mem, char *buf, int count)
 	 */
 	tmp = buf + count;
 
-<<<<<<< HEAD
-	err = probe_kernel_read(tmp, mem, count);
-=======
 	err = copy_from_kernel_nofault(tmp, mem, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return NULL;
 	while (count > 0) {
@@ -299,11 +280,7 @@ int kgdb_hex2mem(char *buf, char *mem, int count)
 		*tmp_raw |= hex_to_bin(*tmp_hex--) << 4;
 	}
 
-<<<<<<< HEAD
-	return probe_kernel_write(mem, tmp_raw, count);
-=======
 	return copy_to_kernel_nofault(mem, tmp_raw, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -341,11 +318,7 @@ int kgdb_hex2long(char **ptr, unsigned long *long_val)
 /*
  * Copy the binary array pointed to by buf into mem.  Fix $, #, and
  * 0x7d escaped with 0x7d. Return -EFAULT on failure or 0 on success.
-<<<<<<< HEAD
- * The input buf is overwitten with the result to write to mem.
-=======
  * The input buf is overwritten with the result to write to mem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int kgdb_ebin2mem(char *buf, char *mem, int count)
 {
@@ -359,11 +332,7 @@ static int kgdb_ebin2mem(char *buf, char *mem, int count)
 		size++;
 	}
 
-<<<<<<< HEAD
-	return probe_kernel_write(mem, c, size);
-=======
 	return copy_to_kernel_nofault(mem, c, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if DBG_MAX_REG_NUM > 0
@@ -623,11 +592,7 @@ static char *gdb_hex_reg_helper(int regnum, char *out)
 			    dbg_reg_def[i].size);
 }
 
-<<<<<<< HEAD
-/* Handle the 'p' individual regster get */
-=======
 /* Handle the 'p' individual register get */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gdb_cmd_reg_get(struct kgdb_state *ks)
 {
 	unsigned long regnum;
@@ -642,11 +607,7 @@ static void gdb_cmd_reg_get(struct kgdb_state *ks)
 	gdb_hex_reg_helper(regnum, remcom_out_buffer);
 }
 
-<<<<<<< HEAD
-/* Handle the 'P' individual regster set */
-=======
 /* Handle the 'P' individual register set */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gdb_cmd_reg_set(struct kgdb_state *ks)
 {
 	unsigned long regnum;
@@ -761,11 +722,7 @@ static void gdb_cmd_query(struct kgdb_state *ks)
 			}
 		}
 
-<<<<<<< HEAD
-		do_each_thread(g, p) {
-=======
 		for_each_process_thread(g, p) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i >= ks->thr_query && !finished) {
 				int_to_threadref(thref, p->pid);
 				ptr = pack_threadid(ptr, thref);
@@ -775,11 +732,7 @@ static void gdb_cmd_query(struct kgdb_state *ks)
 					finished = 1;
 			}
 			i++;
-<<<<<<< HEAD
-		} while_each_thread(g, p);
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*(--ptr) = '\0';
 		break;
@@ -828,20 +781,14 @@ static void gdb_cmd_query(struct kgdb_state *ks)
 			len = len / 2;
 			remcom_out_buffer[len++] = 0;
 
-<<<<<<< HEAD
-			kdb_parse(remcom_out_buffer);
-=======
 			kdb_common_init_state(ks);
 			kdb_parse(remcom_out_buffer);
 			kdb_common_deinit_state();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strcpy(remcom_out_buffer, "OK");
 		}
 		break;
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAVE_ARCH_KGDB_QXFER_PKT
 	case 'S':
 		if (!strncmp(remcom_in_buffer, "qSupported:", 11))
@@ -855,7 +802,6 @@ static void gdb_cmd_query(struct kgdb_state *ks)
 #endif
 	default:
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1003,11 +949,7 @@ static int gdb_cmd_exception_pass(struct kgdb_state *ks)
 }
 
 /*
-<<<<<<< HEAD
- * This function performs all gdbserial command procesing
-=======
  * This function performs all gdbserial command processing
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int gdb_serial_stub(struct kgdb_state *ks)
 {
@@ -1100,10 +1042,7 @@ int gdb_serial_stub(struct kgdb_state *ks)
 				gdb_cmd_detachkill(ks);
 				return DBG_PASS_EVENT;
 			}
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		case 'C': /* Exception passing */
 			tmp = gdb_cmd_exception_pass(ks);
@@ -1111,11 +1050,7 @@ int gdb_serial_stub(struct kgdb_state *ks)
 				goto default_handle;
 			if (tmp == 0)
 				break;
-<<<<<<< HEAD
-			/* Fall through on tmp < 0 */
-=======
 			fallthrough;	/* on tmp < 0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 'c': /* Continue packet */
 		case 's': /* Single step packet */
 			if (kgdb_contthread && kgdb_contthread != current) {
@@ -1123,12 +1058,7 @@ int gdb_serial_stub(struct kgdb_state *ks)
 				error_packet(remcom_out_buffer, -EINVAL);
 				break;
 			}
-<<<<<<< HEAD
-			dbg_activate_sw_breakpoints();
-			/* Fall through to default processing */
-=======
 			fallthrough;	/* to default processing */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 default_handle:
 			error = kgdb_arch_handle_exception(ks->ex_vector,
@@ -1174,17 +1104,10 @@ int gdbstub_state(struct kgdb_state *ks, char *cmd)
 		return error;
 	case 's':
 	case 'c':
-<<<<<<< HEAD
-		strcpy(remcom_in_buffer, cmd);
-		return 0;
-	case '$':
-		strcpy(remcom_in_buffer, cmd);
-=======
 		strscpy(remcom_in_buffer, cmd, sizeof(remcom_in_buffer));
 		return 0;
 	case '$':
 		strscpy(remcom_in_buffer, cmd, sizeof(remcom_in_buffer));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gdbstub_use_prev_in_buf = strlen(remcom_in_buffer);
 		gdbstub_prev_in_buf_pos = 0;
 		return 0;

@@ -11,8 +11,6 @@
 
 #include <linux/notifier.h>
 
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_CPU_CAVIUM_OCTEON)
 
 extern void octeon_cop2_save(struct octeon_cop2_state *);
@@ -39,7 +37,6 @@ extern void octeon_cop2_restore(struct octeon_cop2_state *);
 #define cop2_restore(r)		do { (void)(r); } while (0)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum cu2_ops {
 	CU2_EXCEPTION,
 	CU2_LWC2_OP,

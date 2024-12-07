@@ -1,44 +1,20 @@
-<<<<<<< HEAD
-/**
-
-    AudioScience HPI driver
-    Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of version 2 of the GNU General Public License as
-    published by the Free Software Foundation;
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
 
     AudioScience HPI driver
     Copyright (C) 1997-2014  AudioScience Inc. <support@audioscience.com>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 */
 
 struct hpi_adapter_obj;
 
 /* a function that takes an adapter obj and returns an int */
-<<<<<<< HEAD
-typedef int adapter_int_func(struct hpi_adapter_obj *pao);
-=======
 typedef int adapter_int_func(struct hpi_adapter_obj *pao, u32 message);
 
 #define HPI_IRQ_NONE		(0)
 #define HPI_IRQ_MESSAGE		(1)
 #define HPI_IRQ_MIXER		(2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hpi_adapter_obj {
 	struct hpi_pci pci;	/* PCI info - bus#,dev#,address etc */
@@ -50,12 +26,9 @@ struct hpi_adapter_obj {
 	u16 dsp_crashed;
 	u16 has_control_cache;
 	void *priv;
-<<<<<<< HEAD
-=======
 	adapter_int_func *irq_query_and_clear;
 	struct hpi_hostbuffer_status *instream_host_buffer_status;
 	struct hpi_hostbuffer_status *outstream_host_buffer_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hpi_control_cache {
@@ -78,10 +51,6 @@ void hpi_delete_adapter(struct hpi_adapter_obj *pao);
 
 short hpi_check_control_cache(struct hpi_control_cache *pC,
 	struct hpi_message *phm, struct hpi_response *phr);
-<<<<<<< HEAD
-struct hpi_control_cache *hpi_alloc_control_cache(const u32
-	number_of_controls, const u32 size_in_bytes, u8 *pDSP_control_buffer);
-=======
 
 short hpi_check_control_cache_single(struct hpi_control_cache_single *pC,
 	struct hpi_message *phm, struct hpi_response *phr);
@@ -89,18 +58,14 @@ short hpi_check_control_cache_single(struct hpi_control_cache_single *pC,
 struct hpi_control_cache *hpi_alloc_control_cache(const u32
 	number_of_controls, const u32 size_in_bytes, u8 *pDSP_control_buffer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void hpi_free_control_cache(struct hpi_control_cache *p_cache);
 
 void hpi_cmn_control_cache_sync_to_msg(struct hpi_control_cache *pC,
 	struct hpi_message *phm, struct hpi_response *phr);
 
-<<<<<<< HEAD
-=======
 void hpi_cmn_control_cache_sync_to_msg_single(struct hpi_control_cache_single
 	*pC, struct hpi_message *phm, struct hpi_response *phr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u16 hpi_validate_response(struct hpi_message *phm, struct hpi_response *phr);
 
 hpi_handler_func HPI_COMMON;

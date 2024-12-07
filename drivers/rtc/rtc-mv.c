@@ -1,33 +1,18 @@
-<<<<<<< HEAD
-/*
- * Driver for the RTC in Marvell SoCs.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Driver for the RTC in Marvell SoCs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/rtc.h>
 #include <linux/bcd.h>
-<<<<<<< HEAD
-=======
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-=======
 #include <linux/clk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gfp.h>
 #include <linux/module.h>
 
@@ -37,11 +22,7 @@
 #define RTC_MINUTES_OFFS	8
 #define RTC_HOURS_OFFS		16
 #define RTC_WDAY_OFFS		24
-<<<<<<< HEAD
-#define RTC_HOURS_12H_MODE		(1 << 22) /* 12 hours mode */
-=======
 #define RTC_HOURS_12H_MODE	BIT(22) /* 12 hour mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RTC_DATE_REG_OFFS	4
 #define RTC_MDAY_OFFS		0
@@ -50,11 +31,7 @@
 
 #define RTC_ALARM_TIME_REG_OFFS	8
 #define RTC_ALARM_DATE_REG_OFFS	0xc
-<<<<<<< HEAD
-#define RTC_ALARM_VALID		(1 << 7)
-=======
 #define RTC_ALARM_VALID		BIT(7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RTC_ALARM_INTERRUPT_MASK_REG_OFFS	0x10
 #define RTC_ALARM_INTERRUPT_CASUE_REG_OFFS	0x14
@@ -63,10 +40,7 @@ struct rtc_plat_data {
 	struct rtc_device *rtc;
 	void __iomem *ioaddr;
 	int		irq;
-<<<<<<< HEAD
-=======
 	struct clk	*clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mv_rtc_set_time(struct device *dev, struct rtc_time *tm)
@@ -83,11 +57,7 @@ static int mv_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	rtc_reg = (bin2bcd(tm->tm_mday) << RTC_MDAY_OFFS) |
 		(bin2bcd(tm->tm_mon + 1) << RTC_MONTH_OFFS) |
-<<<<<<< HEAD
-		(bin2bcd(tm->tm_year % 100) << RTC_YEAR_OFFS);
-=======
 		(bin2bcd(tm->tm_year - 100) << RTC_YEAR_OFFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(rtc_reg, ioaddr + RTC_DATE_REG_OFFS);
 
 	return 0;
@@ -105,11 +75,7 @@ static int mv_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	second = rtc_time & 0x7f;
 	minute = (rtc_time >> RTC_MINUTES_OFFS) & 0x7f;
-<<<<<<< HEAD
-	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hours mode */
-=======
 	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hour mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wday = (rtc_time >> RTC_WDAY_OFFS) & 0x7;
 
 	day = rtc_date & 0x3f;
@@ -125,11 +91,7 @@ static int mv_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	/* hw counts from year 2000, but tm_year is relative to 1900 */
 	tm->tm_year = bcd2bin(year) + 100;
 
-<<<<<<< HEAD
-	return rtc_valid_tm(tm);
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mv_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
@@ -144,11 +106,7 @@ static int mv_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 
 	second = rtc_time & 0x7f;
 	minute = (rtc_time >> RTC_MINUTES_OFFS) & 0x7f;
-<<<<<<< HEAD
-	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hours mode */
-=======
 	hour = (rtc_time >> RTC_HOURS_OFFS) & 0x3f; /* assume 24 hour mode */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wday = (rtc_time >> RTC_WDAY_OFFS) & 0x7;
 
 	day = rtc_date & 0x3f;
@@ -164,19 +122,9 @@ static int mv_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	/* hw counts from year 2000, but tm_year is relative to 1900 */
 	alm->time.tm_year = bcd2bin(year) + 100;
 
-<<<<<<< HEAD
-	if (rtc_valid_tm(&alm->time) < 0) {
-		dev_err(dev, "retrieved alarm date/time is not valid.\n");
-		rtc_time_to_tm(0, &alm->time);
-	}
-
-	alm->enabled = !!readl(ioaddr + RTC_ALARM_INTERRUPT_MASK_REG_OFFS);
-	return 0;
-=======
 	alm->enabled = !!readl(ioaddr + RTC_ALARM_INTERRUPT_MASK_REG_OFFS);
 
 	return rtc_valid_tm(&alm->time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mv_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
@@ -208,11 +156,7 @@ static int mv_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 			<< RTC_MONTH_OFFS;
 
 	if (alm->time.tm_year >= 0)
-<<<<<<< HEAD
-		rtc_reg |= (RTC_ALARM_VALID | bin2bcd(alm->time.tm_year % 100))
-=======
 		rtc_reg |= (RTC_ALARM_VALID | bin2bcd(alm->time.tm_year - 100))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			<< RTC_YEAR_OFFS;
 
 	writel(rtc_reg, ioaddr + RTC_ALARM_DATE_REG_OFFS);
@@ -225,12 +169,7 @@ static int mv_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 
 static int mv_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(dev);
-	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
-=======
 	struct rtc_plat_data *pdata = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = pdata->ioaddr;
 
 	if (pdata->irq < 0)
@@ -261,58 +200,21 @@ static irqreturn_t mv_rtc_interrupt(int irq, void *data)
 static const struct rtc_class_ops mv_rtc_ops = {
 	.read_time	= mv_rtc_read_time,
 	.set_time	= mv_rtc_set_time,
-<<<<<<< HEAD
-};
-
-static const struct rtc_class_ops mv_rtc_alarm_ops = {
-	.read_time	= mv_rtc_read_time,
-	.set_time	= mv_rtc_set_time,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_alarm	= mv_rtc_read_alarm,
 	.set_alarm	= mv_rtc_set_alarm,
 	.alarm_irq_enable = mv_rtc_alarm_irq_enable,
 };
 
-<<<<<<< HEAD
-static int __devinit mv_rtc_probe(struct platform_device *pdev)
-{
-	struct resource *res;
-	struct rtc_plat_data *pdata;
-	resource_size_t size;
-	u32 rtc_time;
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res)
-		return -ENODEV;
-=======
 static int __init mv_rtc_probe(struct platform_device *pdev)
 {
 	struct rtc_plat_data *pdata;
 	u32 rtc_time;
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	size = resource_size(res);
-	if (!devm_request_mem_region(&pdev->dev, res->start, size,
-				     pdev->name))
-		return -EBUSY;
-
-	pdata->ioaddr = devm_ioremap(&pdev->dev, res->start, size);
-	if (!pdata->ioaddr)
-		return -ENOMEM;
-
-	/* make sure the 24 hours mode is enabled */
-	rtc_time = readl(pdata->ioaddr + RTC_TIME_REG_OFFS);
-	if (rtc_time & RTC_HOURS_12H_MODE) {
-		dev_err(&pdev->dev, "24 Hours mode not supported.\n");
-		return -EINVAL;
-=======
 	pdata->ioaddr = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(pdata->ioaddr))
 		return PTR_ERR(pdata->ioaddr);
@@ -328,7 +230,6 @@ static int __init mv_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "12 Hour mode is enabled but not supported.\n");
 		ret = -EINVAL;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* make sure it is actually functional */
@@ -337,12 +238,8 @@ static int __init mv_rtc_probe(struct platform_device *pdev)
 		rtc_time = readl(pdata->ioaddr + RTC_TIME_REG_OFFS);
 		if (rtc_time == 0x01000000) {
 			dev_err(&pdev->dev, "internal RTC not ticking\n");
-<<<<<<< HEAD
-			return -ENODEV;
-=======
 			ret = -ENODEV;
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -350,24 +247,11 @@ static int __init mv_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, pdata);
 
-<<<<<<< HEAD
-	if (pdata->irq >= 0) {
-		device_init_wakeup(&pdev->dev, 1);
-		pdata->rtc = rtc_device_register(pdev->name, &pdev->dev,
-						 &mv_rtc_alarm_ops,
-						 THIS_MODULE);
-	} else
-		pdata->rtc = rtc_device_register(pdev->name, &pdev->dev,
-						 &mv_rtc_ops, THIS_MODULE);
-	if (IS_ERR(pdata->rtc))
-		return PTR_ERR(pdata->rtc);
-=======
 	pdata->rtc = devm_rtc_allocate_device(&pdev->dev);
 	if (IS_ERR(pdata->rtc)) {
 		ret = PTR_ERR(pdata->rtc);
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->irq >= 0) {
 		writel(0, pdata->ioaddr + RTC_ALARM_INTERRUPT_MASK_REG_OFFS);
@@ -379,12 +263,6 @@ static int __init mv_rtc_probe(struct platform_device *pdev)
 		}
 	}
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int __exit mv_rtc_remove(struct platform_device *pdev)
-=======
 	if (pdata->irq >= 0)
 		device_init_wakeup(&pdev->dev, 1);
 	else
@@ -405,31 +283,12 @@ out:
 }
 
 static void __exit mv_rtc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_plat_data *pdata = platform_get_drvdata(pdev);
 
 	if (pdata->irq >= 0)
 		device_init_wakeup(&pdev->dev, 0);
 
-<<<<<<< HEAD
-	rtc_device_unregister(pdata->rtc);
-	return 0;
-}
-
-#ifdef CONFIG_OF
-static struct of_device_id rtc_mv_of_match_table[] = {
-	{ .compatible = "mrvl,orion-rtc", },
-	{}
-};
-#endif
-
-static struct platform_driver mv_rtc_driver = {
-	.remove		= __exit_p(mv_rtc_remove),
-	.driver		= {
-		.name	= "rtc-mv",
-		.owner	= THIS_MODULE,
-=======
 	if (!IS_ERR(pdata->clk))
 		clk_disable_unprepare(pdata->clk);
 }
@@ -452,27 +311,11 @@ static struct platform_driver mv_rtc_driver __refdata = {
 	.remove_new	= __exit_p(mv_rtc_remove),
 	.driver		= {
 		.name	= "rtc-mv",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = of_match_ptr(rtc_mv_of_match_table),
 	},
 };
 
-<<<<<<< HEAD
-static __init int mv_init(void)
-{
-	return platform_driver_probe(&mv_rtc_driver, mv_rtc_probe);
-}
-
-static __exit void mv_exit(void)
-{
-	platform_driver_unregister(&mv_rtc_driver);
-}
-
-module_init(mv_init);
-module_exit(mv_exit);
-=======
 module_platform_driver_probe(mv_rtc_driver, mv_rtc_probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Saeed Bishara <saeed@marvell.com>");
 MODULE_DESCRIPTION("Marvell RTC driver");

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -12,13 +9,6 @@
 #include <linux/module.h>
 
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/amigaints.h>
-#include <asm/amigahw.h>
-
-#include "scsi.h"
-=======
 #include <asm/amigaints.h>
 #include <asm/amigahw.h>
 
@@ -27,7 +17,6 @@
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_eh.h>
 #include <scsi/scsi_tcq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "wd33c93.h"
 #include "a2091.h"
 
@@ -35,16 +24,11 @@
 struct a2091_hostdata {
 	struct WD33C93_hostdata wh;
 	struct a2091_scsiregs *regs;
-<<<<<<< HEAD
-};
-
-=======
 	struct device *dev;
 };
 
 #define DMA_DIR(d)   ((d == DATA_OUT_DIR) ? DMA_TO_DEVICE : DMA_FROM_DEVICE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t a2091_intr(int irq, void *data)
 {
 	struct Scsi_Host *instance = data;
@@ -63,23 +47,13 @@ static irqreturn_t a2091_intr(int irq, void *data)
 
 static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 {
-<<<<<<< HEAD
-=======
 	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
 	unsigned long len = scsi_pointer->this_residual;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *instance = cmd->device->host;
 	struct a2091_hostdata *hdata = shost_priv(instance);
 	struct WD33C93_hostdata *wh = &hdata->wh;
 	struct a2091_scsiregs *regs = hdata->regs;
 	unsigned short cntr = CNTR_PDMD | CNTR_INTEN;
-<<<<<<< HEAD
-	unsigned long addr = virt_to_bus(cmd->SCp.ptr);
-
-	/* don't allow DMA if the physical address is bad */
-	if (addr & A2091_XFER_MASK) {
-		wh->dma_bounce_len = (cmd->SCp.this_residual + 511) & ~0x1ff;
-=======
 	dma_addr_t addr;
 
 	addr = dma_map_single(hdata->dev, scsi_pointer->ptr,
@@ -100,7 +74,6 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 		scsi_pointer->dma_handle = (dma_addr_t) NULL;
 
 		wh->dma_bounce_len = (scsi_pointer->this_residual + 511) & ~0x1ff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wh->dma_bounce_buffer = kmalloc(wh->dma_bounce_len,
 						GFP_KERNEL);
 
@@ -110,10 +83,6 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 			return 1;
 		}
 
-<<<<<<< HEAD
-		/* get the physical address of the bounce buffer */
-		addr = virt_to_bus(wh->dma_bounce_buffer);
-=======
 		if (!dir_in) {
 			/* copy to bounce buffer for a write */
 			memcpy(wh->dma_bounce_buffer, scsi_pointer->ptr,
@@ -129,7 +98,6 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 				 wh->dma_bounce_buffer);
 			return 1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* the bounce buffer may not be in the first 16M of physmem */
 		if (addr & A2091_XFER_MASK) {
@@ -140,15 +108,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 			return 1;
 		}
 
-<<<<<<< HEAD
-		if (!dir_in) {
-			/* copy to bounce buffer for a write */
-			memcpy(wh->dma_bounce_buffer, cmd->SCp.ptr,
-			       cmd->SCp.this_residual);
-		}
-=======
 		scsi_pointer->dma_handle = addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* setup dma direction */
@@ -163,18 +123,8 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 	/* setup DMA *physical* address */
 	regs->ACR = addr;
 
-<<<<<<< HEAD
-	if (dir_in) {
-		/* invalidate any cache */
-		cache_clear(addr, cmd->SCp.this_residual);
-	} else {
-		/* push any dirty cache */
-		cache_push(addr, cmd->SCp.this_residual);
-	}
-=======
 	/* no more cache flush here - dma_map_single() takes care */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* start DMA */
 	regs->ST_DMA = 1;
 
@@ -185,10 +135,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 		     int status)
 {
-<<<<<<< HEAD
-=======
 	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(SCpnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct a2091_hostdata *hdata = shost_priv(instance);
 	struct WD33C93_hostdata *wh = &hdata->wh;
 	struct a2091_scsiregs *regs = hdata->regs;
@@ -218,13 +165,6 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 	/* restore the CONTROL bits (minus the direction flag) */
 	regs->CNTR = CNTR_PDMD | CNTR_INTEN;
 
-<<<<<<< HEAD
-	/* copy from a bounce buffer, if necessary */
-	if (status && wh->dma_bounce_buffer) {
-		if (wh->dma_dir)
-			memcpy(SCpnt->SCp.ptr, wh->dma_bounce_buffer,
-			       SCpnt->SCp.this_residual);
-=======
 	dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
 			 scsi_pointer->this_residual,
 			 DMA_DIR(wh->dma_dir));
@@ -234,39 +174,12 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 		if (wh->dma_dir)
 			memcpy(scsi_pointer->ptr, wh->dma_bounce_buffer,
 			       scsi_pointer->this_residual);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(wh->dma_bounce_buffer);
 		wh->dma_bounce_buffer = NULL;
 		wh->dma_bounce_len = 0;
 	}
 }
 
-<<<<<<< HEAD
-static int a2091_bus_reset(struct scsi_cmnd *cmd)
-{
-	struct Scsi_Host *instance = cmd->device->host;
-
-	/* FIXME perform bus-specific reset */
-
-	/* FIXME 2: kill this function, and let midlayer fall back
-	   to the same action, calling wd33c93_host_reset() */
-
-	spin_lock_irq(instance->host_lock);
-	wd33c93_host_reset(cmd);
-	spin_unlock_irq(instance->host_lock);
-
-	return SUCCESS;
-}
-
-static struct scsi_host_template a2091_scsi_template = {
-	.module			= THIS_MODULE,
-	.name			= "Commodore A2091/A590 SCSI",
-	.proc_info		= wd33c93_proc_info,
-	.proc_name		= "A2901",
-	.queuecommand		= wd33c93_queuecommand,
-	.eh_abort_handler	= wd33c93_abort,
-	.eh_bus_reset_handler	= a2091_bus_reset,
-=======
 static const struct scsi_host_template a2091_scsi_template = {
 	.module			= THIS_MODULE,
 	.name			= "Commodore A2091/A590 SCSI",
@@ -275,25 +188,16 @@ static const struct scsi_host_template a2091_scsi_template = {
 	.proc_name		= "A2901",
 	.queuecommand		= wd33c93_queuecommand,
 	.eh_abort_handler	= wd33c93_abort,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_host_reset_handler	= wd33c93_host_reset,
 	.can_queue		= CAN_QUEUE,
 	.this_id		= 7,
 	.sg_tablesize		= SG_ALL,
 	.cmd_per_lun		= CMD_PER_LUN,
-<<<<<<< HEAD
-	.use_clustering		= DISABLE_CLUSTERING
-};
-
-static int __devinit a2091_probe(struct zorro_dev *z,
-				 const struct zorro_device_id *ent)
-=======
 	.dma_boundary		= PAGE_SIZE - 1,
 	.cmd_size		= sizeof(struct scsi_pointer),
 };
 
 static int a2091_probe(struct zorro_dev *z, const struct zorro_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *instance;
 	int error;
@@ -301,14 +205,11 @@ static int a2091_probe(struct zorro_dev *z, const struct zorro_device_id *ent)
 	wd33c93_regs wdregs;
 	struct a2091_hostdata *hdata;
 
-<<<<<<< HEAD
-=======
 	if (dma_set_mask_and_coherent(&z->dev, DMA_BIT_MASK(24))) {
 		dev_warn(&z->dev, "cannot use 24 bit DMA\n");
 		return -ENODEV;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!request_mem_region(z->resource.start, 256, "wd33c93"))
 		return -EBUSY;
 
@@ -322,21 +223,14 @@ static int a2091_probe(struct zorro_dev *z, const struct zorro_device_id *ent)
 	instance->irq = IRQ_AMIGA_PORTS;
 	instance->unique_id = z->slotaddr;
 
-<<<<<<< HEAD
-	regs = (struct a2091_scsiregs *)ZTWO_VADDR(z->resource.start);
-=======
 	regs = ZTWO_VADDR(z->resource.start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->DAWR = DAWR_A2091;
 
 	wdregs.SASR = &regs->SASR;
 	wdregs.SCMD = &regs->SCMD;
 
 	hdata = shost_priv(instance);
-<<<<<<< HEAD
-=======
 	hdata->dev = &z->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdata->wh.no_sync = 0xff;
 	hdata->wh.fast = 0;
 	hdata->wh.dma_mode = CTRL_DMA;
@@ -368,11 +262,7 @@ fail_alloc:
 	return error;
 }
 
-<<<<<<< HEAD
-static void __devexit a2091_remove(struct zorro_dev *z)
-=======
 static void a2091_remove(struct zorro_dev *z)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *instance = zorro_get_drvdata(z);
 	struct a2091_hostdata *hdata = shost_priv(instance);
@@ -384,11 +274,7 @@ static void a2091_remove(struct zorro_dev *z)
 	release_mem_region(z->resource.start, 256);
 }
 
-<<<<<<< HEAD
-static struct zorro_device_id a2091_zorro_tbl[] __devinitdata = {
-=======
 static struct zorro_device_id a2091_zorro_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ZORRO_PROD_CBM_A590_A2091_1 },
 	{ ZORRO_PROD_CBM_A590_A2091_2 },
 	{ 0 }
@@ -399,11 +285,7 @@ static struct zorro_driver a2091_driver = {
 	.name		= "a2091",
 	.id_table	= a2091_zorro_tbl,
 	.probe		= a2091_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(a2091_remove),
-=======
 	.remove		= a2091_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init a2091_init(void)

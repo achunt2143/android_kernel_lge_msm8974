@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-#!/usr/bin/perl -w
-=======
 #!/usr/bin/env perl
 # SPDX-License-Identifier: GPL-2.0
 #
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # (c) 2001, Dave Jones. (the file handling bit)
 # (c) 2005, Joel Schopp <jschopp@austin.ibm.com> (the ugly bit)
 # (c) 2007,2008, Andy Whitcroft <apw@uk.ibm.com> (new conditions, test suite)
 # (c) 2008-2010 Andy Whitcroft <apw@canonical.com>
-<<<<<<< HEAD
-# Licensed under the terms of the GNU GPL License version 2
-
-use strict;
-
-use constant BEFORE_SHORTTEXT => 0;
-use constant IN_SHORTTEXT_BLANKLINE => 1;
-use constant IN_SHORTTEXT => 2;
-use constant AFTER_SHORTTEXT => 3;
-use constant CHECK_NEXT_SHORTTEXT => 4;
-use constant SHORTTEXT_LIMIT => 75;
-
-my $P = $0;
-$P =~ s@.*/@@g;
-=======
 # (c) 2010-2018 Joe Perches <joe@perches.com>
 
 use strict;
@@ -36,44 +17,31 @@ use Encode qw(decode encode);
 
 my $P = $0;
 my $D = dirname(abs_path($P));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 my $V = '0.32';
 
 use Getopt::Long qw(:config no_auto_abbrev);
 
 my $quiet = 0;
-<<<<<<< HEAD
-=======
 my $verbose = 0;
 my %verbose_messages = ();
 my %verbose_emitted = ();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $tree = 1;
 my $chk_signoff = 1;
 my $chk_patch = 1;
 my $tst_only;
 my $emacs = 0;
 my $terse = 0;
-<<<<<<< HEAD
-my $file = 0;
-my $check = 0;
-=======
 my $showfile = 0;
 my $file = 0;
 my $git = 0;
 my %git_commits = ();
 my $check = 0;
 my $check_orig = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $summary = 1;
 my $mailback = 0;
 my $summary_file = 0;
 my $show_types = 0;
-<<<<<<< HEAD
-my $root;
-my %debug;
-=======
 my $list_types = 0;
 my $fix = 0;
 my $fix_inplace = 0;
@@ -84,13 +52,10 @@ my %debug;
 my %camelcase = ();
 my %use_type = ();
 my @use = ();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my %ignore_type = ();
 my @ignore = ();
 my $help = 0;
 my $configuration_file = ".checkpatch.conf";
-<<<<<<< HEAD
-=======
 my $max_line_length = 100;
 my $ignore_perl_version = 0;
 my $minimum_perl_version = 5.10.0;
@@ -110,7 +75,6 @@ my $tabsize = 8;
 my ${CONFIG_} = "CONFIG_";
 
 my %maybe_linker_symbol; # for externs in c exceptions, when seen in *vmlinux.lds.h
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sub help {
 	my ($exitcode) = @_;
@@ -121,21 +85,12 @@ Version: $V
 
 Options:
   -q, --quiet                quiet
-<<<<<<< HEAD
-=======
   -v, --verbose              verbose mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   --no-tree                  run without a kernel tree
   --no-signoff               do not check for 'Signed-off-by' line
   --patch                    treat FILE as patchfile (default)
   --emacs                    emacs compile window format
   --terse                    one line per report
-<<<<<<< HEAD
-  -f, --file                 treat FILE as regular source file
-  --subjective, --strict     enable more subjective tests
-  --ignore TYPE(,TYPE2...)   ignore various comma separated message types
-  --show-types               show the message "types" in the output
-=======
   --showfile                 emit diffed file position, not input file position
   -g, --git                  treat FILE as a single commit or git revision range
                              single git commit with:
@@ -158,7 +113,6 @@ Options:
                              requires --strict for use with --file
   --min-conf-desc-length=n   set the min description length, if shorter, warn
   --tab-size=n               set the number of spaces for tab (default $tabsize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   --root=PATH                PATH to the kernel tree root
   --no-summary               suppress the per-file summary
   --mailback                 only produce a report in case of warnings/errors
@@ -168,8 +122,6 @@ Options:
                              is all off)
   --test-only=WORD           report only warnings/errors containing WORD
                              literally
-<<<<<<< HEAD
-=======
   --fix                      EXPERIMENTAL - may create horrible results
                              If correctable single-line errors exist, create
                              "<inputfile>.EXPERIMENTAL-checkpatch-fixes"
@@ -188,7 +140,6 @@ Options:
                              is a terminal ('auto'). Default is 'auto'.
   --kconfig-prefix=WORD      use WORD as a prefix for Kconfig symbols (default
                              ${CONFIG_})
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   -h, --help, --version      display this help and exit
 
 When FILE is - read standard input.
@@ -197,8 +148,6 @@ EOM
 	exit($exitcode);
 }
 
-<<<<<<< HEAD
-=======
 sub uniq {
 	my %seen;
 	return grep { !$seen{$_}++ } @_;
@@ -267,7 +216,6 @@ sub list_types {
 	exit($exitcode);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $conf = which_conf($configuration_file);
 if (-f $conf) {
 	my @conf_args;
@@ -294,10 +242,6 @@ if (-f $conf) {
 	unshift(@ARGV, @conf_args) if @conf_args;
 }
 
-<<<<<<< HEAD
-GetOptions(
-	'q|quiet+'	=> \$quiet,
-=======
 sub load_docs {
 	open(my $docs, '<', "$docsfile")
 	    or warn "$P: Can't read the documentation file $docsfile $!\n";
@@ -349,19 +293,11 @@ foreach (@ARGV) {
 GetOptions(
 	'q|quiet+'	=> \$quiet,
 	'v|verbose!'	=> \$verbose,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	'tree!'		=> \$tree,
 	'signoff!'	=> \$chk_signoff,
 	'patch!'	=> \$chk_patch,
 	'emacs!'	=> \$emacs,
 	'terse!'	=> \$terse,
-<<<<<<< HEAD
-	'f|file!'	=> \$file,
-	'subjective!'	=> \$check,
-	'strict!'	=> \$check,
-	'ignore=s'	=> \@ignore,
-	'show-types!'	=> \$show_types,
-=======
 	'showfile!'	=> \$showfile,
 	'f|file!'	=> \$file,
 	'g|git!'	=> \$git,
@@ -374,42 +310,10 @@ GetOptions(
 	'max-line-length=i' => \$max_line_length,
 	'min-conf-desc-length=i' => \$min_conf_desc_length,
 	'tab-size=i'	=> \$tabsize,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	'root=s'	=> \$root,
 	'summary!'	=> \$summary,
 	'mailback!'	=> \$mailback,
 	'summary-file!'	=> \$summary_file,
-<<<<<<< HEAD
-
-	'debug=s'	=> \%debug,
-	'test-only=s'	=> \$tst_only,
-	'h|help'	=> \$help,
-	'version'	=> \$help
-) or help(1);
-
-help(0) if ($help);
-
-my $exit = 0;
-
-if ($#ARGV < 0) {
-	print "$P: no input files\n";
-	exit(1);
-}
-
-@ignore = split(/,/, join(',',@ignore));
-foreach my $word (@ignore) {
-	$word =~ s/\s*\n?$//g;
-	$word =~ s/^\s*//g;
-	$word =~ s/\s+/ /g;
-	$word =~ tr/[a-z]/[A-Z]/;
-
-	next if ($word =~ m/^\s*#/);
-	next if ($word =~ m/^\s*$/);
-
-	$ignore_type{$word}++;
-}
-
-=======
 	'fix!'		=> \$fix,
 	'fix-inplace!'	=> \$fix_inplace,
 	'ignore-perl-version!' => \$ignore_perl_version,
@@ -521,7 +425,6 @@ sub hash_show_words {
 hash_save_array_words(\%ignore_type, \@ignore);
 hash_save_array_words(\%use_type, \@use);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my $dbg_values = 0;
 my $dbg_possible = 0;
 my $dbg_type = 0;
@@ -572,13 +475,6 @@ our $Sparse	= qr{
 			__force|
 			__iomem|
 			__must_check|
-<<<<<<< HEAD
-			__init_refok|
-			__kprobes|
-			__ref|
-			__rcu
-		}x;
-=======
 			__kprobes|
 			__ref|
 			__refconst|
@@ -591,24 +487,16 @@ our $InitAttributeData = qr{$InitAttributePrefix(?:initdata\b)};
 our $InitAttributeConst = qr{$InitAttributePrefix(?:initconst\b)};
 our $InitAttributeInit = qr{$InitAttributePrefix(?:init\b)};
 our $InitAttribute = qr{$InitAttributeData|$InitAttributeConst|$InitAttributeInit};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Notes to $Attribute:
 # We need \b after 'init' otherwise 'initconst' will cause a false positive in a check
 our $Attribute	= qr{
 			const|
-<<<<<<< HEAD
-			__percpu|
-			__nocast|
-			__safe|
-			__bitwise__|
-=======
 			volatile|
 			__percpu|
 			__nocast|
 			__safe|
 			__bitwise|
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__packed__|
 			__packed2__|
 			__naked|
@@ -617,35 +505,6 @@ our $Attribute	= qr{
 			__noreturn|
 			__used|
 			__cold|
-<<<<<<< HEAD
-			__noclone|
-			__deprecated|
-			__read_mostly|
-			__kprobes|
-			__(?:mem|cpu|dev|)(?:initdata|initconst|init\b)|
-			____cacheline_aligned|
-			____cacheline_aligned_in_smp|
-			____cacheline_internodealigned_in_smp|
-			__weak
-		  }x;
-our $Modifier;
-our $Inline	= qr{inline|__always_inline|noinline};
-our $Member	= qr{->$Ident|\.$Ident|\[[^]]*\]};
-our $Lval	= qr{$Ident(?:$Member)*};
-
-our $Constant	= qr{(?i:(?:[0-9]+|0x[0-9a-f]+)[ul]*)};
-our $Assignment	= qr{(?:\*\=|/=|%=|\+=|-=|<<=|>>=|&=|\^=|\|=|=)};
-our $Compare    = qr{<=|>=|==|!=|<|>};
-our $Operators	= qr{
-			<=|>=|==|!=|
-			=>|->|<<|>>|<|>|!|~|
-			&&|\|\||,|\^|\+\+|--|&|\||\+|-|\*|\/|%
-		  }x;
-
-our $NonptrType;
-our $Type;
-our $Declare;
-=======
 			__pure|
 			__noclone|
 			__deprecated|
@@ -695,7 +554,6 @@ our $Type;
 our $TypeMisordered;
 our $Declare;
 our $DeclareMisordered;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 our $NON_ASCII_UTF8	= qr{
 	[\xC2-\xDF][\x80-\xBF]               # non-overlong 2-byte
@@ -712,19 +570,6 @@ our $UTF8	= qr{
 	| $NON_ASCII_UTF8
 }x;
 
-<<<<<<< HEAD
-our $typeTypedefs = qr{(?x:
-	(?:__)?(?:u|s|be|le)(?:8|16|32|64)|
-	atomic_t
-)};
-
-our $logFunctions = qr{(?x:
-	printk(?:_ratelimited|_once|)|
-	[a-z0-9]+_(?:printk|emerg|alert|crit|err|warning|warn|notice|info|debug|dbg|vdbg|devel|cont|WARN)(?:_ratelimited|_once|)|
-	WARN(?:_RATELIMIT|_ONCE|)|
-	panic|
-	MODULE_[A-Z_]+
-=======
 our $typeC99Typedefs = qr{(?:__)?(?:[us]_?)?int_?(?:8|16|32|64)_t};
 our $typeOtherOSTypedefs = qr{(?x:
 	u_(?:char|short|int|long) |          # bsd
@@ -764,39 +609,20 @@ our $allocFunctions = qr{(?x:
 	(?:\w+)?alloc_skb(?:_ip_align)? |
 				# dev_alloc_skb/netdev_alloc_skb, et al
 	dma_alloc_coherent
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 )};
 
 our $signature_tags = qr{(?xi:
 	Signed-off-by:|
-<<<<<<< HEAD
-=======
 	Co-developed-by:|
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Acked-by:|
 	Tested-by:|
 	Reviewed-by:|
 	Reported-by:|
-<<<<<<< HEAD
-=======
 	Suggested-by:|
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	To:|
 	Cc:
 )};
 
-<<<<<<< HEAD
-our @typeList = (
-	qr{void},
-	qr{(?:unsigned\s+)?char},
-	qr{(?:unsigned\s+)?short},
-	qr{(?:unsigned\s+)?int},
-	qr{(?:unsigned\s+)?long},
-	qr{(?:unsigned\s+)?long\s+int},
-	qr{(?:unsigned\s+)?long\s+long},
-	qr{(?:unsigned\s+)?long\s+long\s+int},
-	qr{unsigned},
-=======
 our @link_tags = qw(Link Closes);
 
 #Create a search and print patterns for all these strings to be used directly below
@@ -936,7 +762,6 @@ our @typeList = (
 	qr{(?:(?:un)?signed\s+)?long\s+long},
 	qr{(?:(?:un)?signed\s+)?long},
 	qr{(?:un)?signed},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qr{float},
 	qr{double},
 	qr{bool},
@@ -946,23 +771,6 @@ our @typeList = (
 	qr{${Ident}_t},
 	qr{${Ident}_handler},
 	qr{${Ident}_handler_fn},
-<<<<<<< HEAD
-);
-our @modifierList = (
-	qr{fastcall},
-);
-
-our $allowed_asm_includes = qr{(?x:
-	irq|
-	memory
-)};
-# memory.h: ARM has a custom one
-
-sub build_types {
-	my $mods = "(?x:  \n" . join("|\n  ", @modifierList) . "\n)";
-	my $all = "(?x:  \n" . join("|\n  ", @typeList) . "\n)";
-	$Modifier	= qr{(?:$Attribute|$Sparse|$mods)};
-=======
 	@typeListMisordered,
 );
 
@@ -1219,7 +1027,6 @@ sub build_types {
 				(?:$typeTypedefs\b)|
 				(?:${all}\b)
 		}x;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$NonptrType	= qr{
 			(?:$Modifier\s+|const\s+)*
 			(?:
@@ -1229,18 +1036,6 @@ sub build_types {
 			)
 			(?:\s+$Modifier|\s+const)*
 		  }x;
-<<<<<<< HEAD
-	$Type	= qr{
-			$NonptrType
-			(?:(?:\s|\*|\[\])+\s*const|(?:\s|\*|\[\])+|(?:\s*\[\s*\])+)?
-			(?:\s+$Inline|\s+$Modifier)*
-		  }x;
-	$Declare	= qr{(?:$Storage\s+)?$Type};
-}
-build_types();
-
-
-=======
 	$NonptrTypeMisordered	= qr{
 			(?:$Modifier\s+|const\s+)*
 			(?:
@@ -1272,7 +1067,6 @@ build_types();
 }
 build_types();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 our $Typecast	= qr{\s*(\(\s*$NonptrType\s*\)){0,1}\s*};
 
 # Using $balanced_parens, $LvalOrFunc, or $FuncArg
@@ -1280,10 +1074,6 @@ our $Typecast	= qr{\s*(\(\s*$NonptrType\s*\)){0,1}\s*};
 # Any use must be runtime checked with $^V
 
 our $balanced_parens = qr/(\((?:[^\(\)]++|(?-1))*\))/;
-<<<<<<< HEAD
-our $LvalOrFunc	= qr{($Lval)\s*($balanced_parens{0,1})\s*};
-our $FuncArg = qr{$Typecast{0,1}($LvalOrFunc|$Constant)};
-=======
 our $LvalOrFunc	= qr{((?:[\&\*]\s*)?$Lval)\s*($balanced_parens{0,1})\s*};
 our $FuncArg = qr{$Typecast{0,1}($LvalOrFunc|$Constant|$String)};
 
@@ -1300,48 +1090,10 @@ our %allow_repeated_words = (
 	bad => '',
 	be => '',
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sub deparenthesize {
 	my ($string) = @_;
 	return "" if (!defined($string));
-<<<<<<< HEAD
-	$string =~ s@^\s*\(\s*@@g;
-	$string =~ s@\s*\)\s*$@@g;
-	$string =~ s@\s+@ @g;
-	return $string;
-}
-
-$chk_signoff = 0 if ($file);
-
-my @dep_includes = ();
-my @dep_functions = ();
-my $removal = "Documentation/feature-removal-schedule.txt";
-if ($tree && -f "$root/$removal") {
-	open(my $REMOVE, '<', "$root/$removal") ||
-				die "$P: $removal: open failed - $!\n";
-	while (<$REMOVE>) {
-		if (/^Check:\s+(.*\S)/) {
-			for my $entry (split(/[, ]+/, $1)) {
-				if ($entry =~ m@include/(.*)@) {
-					push(@dep_includes, $1);
-
-				} elsif ($entry !~ m@/@) {
-					push(@dep_functions, $entry);
-				}
-			}
-		}
-	}
-	close($REMOVE);
-}
-
-my @rawlines = ();
-my @lines = ();
-my $vname;
-for my $filename (@ARGV) {
-	my $FILE;
-	if ($file) {
-=======
 
 	while ($string =~ /^\s*\(.*\)\s*$/) {
 		$string =~ s@^\s*\(\s*@@;
@@ -1553,7 +1305,6 @@ for my $filename (@ARGV) {
 		open($FILE, '-|', "git format-patch -M --stdout -1 $filename") ||
 			die "$P: $filename: git format-patch failed - $!\n";
 	} elsif ($file) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		open($FILE, '-|', "diff -u /dev/null $filename") ||
 			die "$P: $filename: diff failed - $!\n";
 	} elsif ($filename eq '-') {
@@ -1564,21 +1315,14 @@ for my $filename (@ARGV) {
 	}
 	if ($filename eq '-') {
 		$vname = 'Your patch';
-<<<<<<< HEAD
-=======
 	} elsif ($git) {
 		$vname = "Commit " . substr($filename, 0, 12) . ' ("' . $git_commits{$filename} . '")';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		$vname = $filename;
 	}
 	while (<$FILE>) {
 		chomp;
 		push(@rawlines, $_);
-<<<<<<< HEAD
-	}
-	close($FILE);
-=======
 		$vname = qq("$1") if ($filename eq '-' && $_ =~ m/^Subject:\s+(.+)/i);
 	}
 	close($FILE);
@@ -1589,14 +1333,11 @@ for my $filename (@ARGV) {
 		print '-' x length($vname) . "\n";
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!process($filename)) {
 		$exit = 1;
 	}
 	@rawlines = ();
 	@lines = ();
-<<<<<<< HEAD
-=======
 	@fixed = ();
 	@fixed_inserted = ();
 	@fixed_deleted = ();
@@ -1625,7 +1366,6 @@ NOTE: If any of the errors are false positives, please report
       them to the maintainer, see CHECKPATCH in MAINTAINERS.
 EOM
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 exit($exit);
@@ -1645,21 +1385,14 @@ sub top_of_kernel_tree {
 		}
 	}
 	return 1;
-<<<<<<< HEAD
-    }
-=======
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sub parse_email {
 	my ($formatted_email) = @_;
 
 	my $name = "";
-<<<<<<< HEAD
-=======
 	my $quoted = "";
 	my $name_comment = "";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	my $address = "";
 	my $comment = "";
 
@@ -1673,15 +1406,9 @@ sub parse_email {
 	} elsif ($formatted_email =~ /(\S+\@\S+)(.*)$/) {
 		$address = $1;
 		$comment = $2 if defined $2;
-<<<<<<< HEAD
-		$formatted_email =~ s/$address.*$//;
-		$name = $formatted_email;
-		$name =~ s/^\s+|\s+$//g;
-=======
 		$formatted_email =~ s/\Q$address\E.*$//;
 		$name = $formatted_email;
 		$name = trim($name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		$name =~ s/^\"|\"$//g;
 		# If there's a name left after stripping spaces and
 		# leading quotes, and the address doesn't have both
@@ -1696,12 +1423,6 @@ sub parse_email {
 		}
 	}
 
-<<<<<<< HEAD
-	$name =~ s/^\s+|\s+$//g;
-	$name =~ s/^\"|\"$//g;
-	$address =~ s/^\s+|\s+$//g;
-	$address =~ s/^\<|\>$//g;
-=======
 	# Extract comments from names excluding quoted parts
 	# "John D. (Doe)" - Do not extract
 	if ($name =~ s/\"(.+)\"//) {
@@ -1716,26 +1437,12 @@ sub parse_email {
 	$address = trim($address);
 	$address =~ s/^\<|\>$//g;
 	$comment = trim($comment);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ($name =~ /[^\w \-]/i) { ##has "must quote" chars
 		$name =~ s/(?<!\\)"/\\"/g; ##escape quotes
 		$name = "\"$name\"";
 	}
 
-<<<<<<< HEAD
-	return ($name, $address, $comment);
-}
-
-sub format_email {
-	my ($name, $address) = @_;
-
-	my $formatted_email;
-
-	$name =~ s/^\s+|\s+$//g;
-	$name =~ s/^\"|\"$//g;
-	$address =~ s/^\s+|\s+$//g;
-=======
 	return ($name, $name_comment, $address, $comment);
 }
 
@@ -1747,22 +1454,12 @@ sub format_email {
 	$name =~ s/^[ \"]+|[ \"]+$//g;
 	$address = trim($address);
 	$address =~ s/(?:\.|\,|\")+$//; ##trailing commas, dots or quotes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ($name =~ /[^\w \-]/i) { ##has "must quote" chars
 		$name =~ s/(?<!\\)"/\\"/g; ##escape quotes
 		$name = "\"$name\"";
 	}
 
-<<<<<<< HEAD
-	if ("$name" eq "") {
-		$formatted_email = "$address";
-	} else {
-		$formatted_email = "$name <$address>";
-	}
-
-	return $formatted_email;
-=======
 	$name_comment = trim($name_comment);
 	$name_comment = " $name_comment" if ($name_comment ne "");
 	$comment = trim($comment);
@@ -1806,7 +1503,6 @@ sub which {
 	}
 
 	return "";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 sub which_conf {
@@ -1830,11 +1526,7 @@ sub expand_tabs {
 		if ($c eq "\t") {
 			$res .= ' ';
 			$n++;
-<<<<<<< HEAD
-			for (; ($n % 8) != 0; $n++) {
-=======
 			for (; ($n % $tabsize) != 0; $n++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				$res .= ' ';
 			}
 			next;
@@ -1890,11 +1582,7 @@ sub sanitise_line {
 	for ($off = 1; $off < length($line); $off++) {
 		$c = substr($line, $off, 1);
 
-<<<<<<< HEAD
-		# Comments we are wacking completly including the begin
-=======
 		# Comments we are whacking completely including the begin
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		# and end, all to $;.
 		if ($sanitise_quote eq '' && substr($line, $off, 2) eq '/*') {
 			$sanitise_quote = '*/';
@@ -1963,11 +1651,6 @@ sub sanitise_line {
 		$res =~ s@(\#\s*(?:error|warning)\s+).*@$1$clean@;
 	}
 
-<<<<<<< HEAD
-	return $res;
-}
-
-=======
 	if ($allow_c99_comments && $res =~ m@(//.*$)@) {
 		my $match = $1;
 		$res =~ s/\Q$match\E/"$;" x length($match)/e;
@@ -1984,7 +1667,6 @@ sub get_quoted_string {
 	return substr($rawline, $-[0], $+[0] - $-[0]);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub ctx_statement_block {
 	my ($linenr, $remain, $off) = @_;
 	my $line = $linenr - 1;
@@ -2273,10 +1955,6 @@ sub ctx_statement_level {
 sub ctx_locate_comment {
 	my ($first_line, $end_line) = @_;
 
-<<<<<<< HEAD
-	# Catch a comment on the end of the line itself.
-	my ($current_comment) = ($rawlines[$end_line - 1] =~ m@.*(/\*.*\*/)\s*(?:\\\s*)?$@);
-=======
 	# If c99 comment on the current line, or the line before or after
 	my ($current_comment) = ($rawlines[$end_line - 1] =~ m@^\+.*(//.*$)@);
 	return $current_comment if (defined $current_comment);
@@ -2287,7 +1965,6 @@ sub ctx_locate_comment {
 
 	# Catch a comment on the end of the line itself.
 	($current_comment) = ($rawlines[$end_line - 1] =~ m@.*(/\*.*\*/)\s*(?:\\\s*)?$@);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return $current_comment if (defined $current_comment);
 
 	# Look through the context and try and figure out if there is a
@@ -2341,8 +2018,6 @@ sub raw_line {
 	return $line;
 }
 
-<<<<<<< HEAD
-=======
 sub get_stat_real {
 	my ($linenr, $lc) = @_;
 
@@ -2365,7 +2040,6 @@ sub get_stat_here {
 	return $herectx;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub cat_vet {
 	my ($vet) = @_;
 	my ($res, $coded);
@@ -2628,21 +2302,13 @@ sub possible {
 			for my $modifier (split(' ', $possible)) {
 				if ($modifier !~ $notPermitted) {
 					warn "MODIFIER: $modifier ($possible) ($line)\n" if ($dbg_possible);
-<<<<<<< HEAD
-					push(@modifierList, $modifier);
-=======
 					push(@modifierListFile, $modifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 
 		} else {
 			warn "POSSIBLE: $possible ($line)\n" if ($dbg_possible);
-<<<<<<< HEAD
-			push(@typeList, $possible);
-=======
 			push(@typeListFile, $possible);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		build_types();
 	} else {
@@ -2653,28 +2319,6 @@ sub possible {
 my $prefix = '';
 
 sub show_type {
-<<<<<<< HEAD
-       return !defined $ignore_type{$_[0]};
-}
-
-sub report {
-	if (!show_type($_[1]) ||
-	    (defined $tst_only && $_[2] !~ /\Q$tst_only\E/)) {
-		return 0;
-	}
-	my $line;
-	if ($show_types) {
-		$line = "$prefix$_[0]:$_[1]: $_[2]\n";
-	} else {
-		$line = "$prefix$_[0]: $_[2]\n";
-	}
-	$line = (split('\n', $line))[0] . "\n" if ($terse);
-
-	push(our @report, $line);
-
-	return 1;
-}
-=======
 	my ($type) = @_;
 
 	$type =~ tr/[a-z]/[A-Z]/;
@@ -2730,30 +2374,10 @@ sub report {
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sub report_dump {
 	our @report;
 }
 
-<<<<<<< HEAD
-sub ERROR {
-	if (report("ERROR", $_[0], $_[1])) {
-		our $clean = 0;
-		our $cnt_error++;
-	}
-}
-sub WARN {
-	if (report("WARNING", $_[0], $_[1])) {
-		our $clean = 0;
-		our $cnt_warn++;
-	}
-}
-sub CHK {
-	if ($check && report("CHECK", $_[0], $_[1])) {
-		our $clean = 0;
-		our $cnt_chk++;
-	}
-=======
 sub fixup_current_range {
 	my ($lineRef, $offset, $length) = @_;
 
@@ -2867,7 +2491,6 @@ sub CHK {
 		return 1;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 sub check_absolute_file {
@@ -2898,33 +2521,6 @@ sub check_absolute_file {
 	}
 }
 
-<<<<<<< HEAD
-sub cleanup_continuation_headers {
-	# Collapse any header-continuation lines into a single line so they
-	# can be parsed meaningfully, as the parser only has one line
-	# of context to work with.
-	my $again;
-	do {
-		$again = 0;
-		foreach my $n (0 .. scalar(@rawlines) - 2) {
-			if ($rawlines[$n]=~/^\s*$/) {
-				# A blank line means there's no more chance
-				# of finding headers.  Shortcut to done.
-				return;
-			}
-			if ($rawlines[$n]=~/^[\x21-\x39\x3b-\x7e]+:/ &&
-			    $rawlines[$n+1]=~/^\s+/) {
-				# Continuation header.  Collapse it.
-				my $line = splice @rawlines, $n+1, 1;
-				$line=~s/^\s+/ /;
-				$rawlines[$n] .= $line;
-				# We've 'destabilized' the list, so restart.
-				$again = 1;
-				last;
-			}
-		}
-	} while ($again);
-=======
 sub trim {
 	my ($string) = @_;
 
@@ -2970,7 +2566,6 @@ sub tabify {
 	1 while $leading =~ s@^([\t]*)( {1,$max_spaces_before_tab})\t@$1\t@g;
 
 	return "$leading";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 sub pos_last_openparen {
@@ -3000,9 +2595,6 @@ sub pos_last_openparen {
 		}
 	}
 
-<<<<<<< HEAD
-	return $last_openparen + 1;
-=======
 	return length(expand_tabs(substr($line, 0, $last_openparen))) + 1;
 }
 
@@ -3026,7 +2618,6 @@ sub exclude_global_initialisers {
 	return $realfile =~ m@^tools/testing/selftests/bpf/progs/.*\.c$@ ||
 		$realfile =~ m@^samples/bpf/.*_kern\.c$@ ||
 		$realfile =~ m@/bpf/.*\.bpf\.c$@;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 sub process {
@@ -3037,11 +2628,6 @@ sub process {
 	my $prevrawline="";
 	my $stashline="";
 	my $stashrawline="";
-<<<<<<< HEAD
-	my $subjectline="";
-	my $sublinenr="";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	my $length;
 	my $indent;
@@ -3050,12 +2636,6 @@ sub process {
 
 	our $clean = 1;
 	my $signoff = 0;
-<<<<<<< HEAD
-	my $is_patch = 0;
-
-	my $in_header_lines = 1;
-	my $in_commit_log = 0;		#Scanning lines before patch
-=======
 	my $author = '';
 	my $authorsignoff = 0;
 	my $author_sob = '';
@@ -3076,7 +2656,6 @@ sub process {
 
 	my $last_blank_line = 0;
 	my $last_coalesced_string_linenr = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	our @report = ();
 	our $cnt_lines = 0;
@@ -3089,10 +2668,7 @@ sub process {
 	my $realline = 0;
 	my $realcnt = 0;
 	my $here = '';
-<<<<<<< HEAD
-=======
 	my $context_function;		#undef'd unless there's a known function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	my $in_comment = 0;
 	my $comment_edge = 0;
 	my $first_line = 0;
@@ -3106,60 +2682,34 @@ sub process {
 	my %suppress_export;
 	my $suppress_statement = 0;
 
-<<<<<<< HEAD
-=======
 	my %signatures = ();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	# Pre-scan the patch sanitizing the lines.
 	# Pre-scan the patch looking for any __setup documentation.
 	#
 	my @setup_docs = ();
 	my $setup_docs = 0;
 
-<<<<<<< HEAD
-	my $exec_file = "";
-
-	my $shorttext = BEFORE_SHORTTEXT;
-	my $shorttext_exspc = 0;
-	my $commit_text_present = 0;
-
-	sanitise_line_reset();
-	cleanup_continuation_headers();
-	my $line;
-
-=======
 	my $camelcase_file_seeded = 0;
 
 	my $checklicenseline = 1;
 
 	sanitise_line_reset();
 	my $line;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	foreach my $rawline (@rawlines) {
 		$linenr++;
 		$line = $rawline;
 
-<<<<<<< HEAD
-		if ($rawline=~/^\+\+\+\s+(\S+)/) {
-			$setup_docs = 0;
-			if ($1 =~ m@Documentation/kernel-parameters.txt$@) {
-=======
 		push(@fixed, $rawline) if ($fix);
 
 		if ($rawline=~/^\+\+\+\s+(\S+)/) {
 			$setup_docs = 0;
 			if ($1 =~ m@Documentation/admin-guide/kernel-parameters.txt$@) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				$setup_docs = 1;
 			}
 			#next;
 		}
-<<<<<<< HEAD
-		if ($rawline=~/^\@\@ -\d+(?:,\d+)? \+(\d+)(,(\d+))? \@\@/) {
-=======
 		if ($rawline =~ /^\@\@ -\d+(?:,\d+)? \+(\d+)(,(\d+))? \@\@/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			$realline=$1-1;
 			if (defined $2) {
 				$realcnt=$3+1;
@@ -3227,15 +2777,6 @@ sub process {
 
 	$realcnt = 0;
 	$linenr = 0;
-<<<<<<< HEAD
-	foreach my $line (@lines) {
-		$linenr++;
-
-		my $rawline = $rawlines[$linenr - 1];
-
-#extract the line range in the file after the patch is applied
-		if ($line=~/^\@\@ -\d+(?:,\d+)? \+(\d+)(,(\d+))? \@\@/) {
-=======
 	$fixlinenr = -1;
 	foreach my $line (@lines) {
 		$linenr++;
@@ -3258,7 +2799,6 @@ sub process {
 		if (!$in_commit_log &&
 		    $line =~ /^\@\@ -\d+(?:,\d+)? \+(\d+)(,(\d+))? \@\@(.*)/) {
 			my $context = $4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			$is_patch = 1;
 			$first_line = $linenr + 1;
 			$realline=$1-1;
@@ -3274,14 +2814,11 @@ sub process {
 			%suppress_whiletrailers = ();
 			%suppress_export = ();
 			$suppress_statement = 0;
-<<<<<<< HEAD
-=======
 			if ($context =~ /\b(\w+)\s*\(/) {
 				$context_function = $1;
 			} else {
 				undef $context_function;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			next;
 
 # track the line number as we move through the hunk, note that
@@ -3307,24 +2844,6 @@ sub process {
 
 		my $hunk_line = ($realcnt != 0);
 
-<<<<<<< HEAD
-#make up the handle for any error we report on this line
-		$prefix = "$filename:$realline: " if ($emacs && $file);
-		$prefix = "$filename:$linenr: " if ($emacs && !$file);
-
-		$here = "#$linenr: " if (!$file);
-		$here = "#$realline: " if ($file);
-
-		# extract the filename as it passes
-		if ($line =~ /^diff --git.*?(\S+)$/) {
-			$realfile = $1;
-			$realfile =~ s@^([^/]*)/@@;
-			$in_commit_log = 0;
-			$exec_file = $realfile;
-		} elsif ($line =~ /^\+\+\+\s+(\S+)/) {
-			$realfile = $1;
-			$realfile =~ s@^([^/]*)/@@;
-=======
 		$here = "#$linenr: " if (!$file);
 		$here = "#$realline: " if ($file);
 
@@ -3338,7 +2857,6 @@ sub process {
 		} elsif ($line =~ /^\+\+\+\s+(\S+)/) {
 			$realfile = $1;
 			$realfile =~ s@^([^/]*)/@@ if (!$file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			$in_commit_log = 0;
 
 			$p1_prefix = $1;
@@ -3352,31 +2870,6 @@ sub process {
 				ERROR("MODIFIED_INCLUDE_ASM",
 				      "do not modify files in include/asm, change architecture specific files in include/asm-<architecture>\n" . "$here$rawline\n");
 			}
-<<<<<<< HEAD
-			$exec_file = "";
-			next;
-		}
-		elsif ($rawline =~ /^diff.+a\/(.+)\sb\/.+$/) {
-			$exec_file = $1;
-		}
-		#Check state to make sure we aren't in code block.
-		elsif  (($exec_file =~ /^.+\.[chS]$/ or
-			 $exec_file =~ /^.+\.txt$/ or
-			 $exec_file =~ /^.+\.ihex$/ or
-			 $exec_file =~ /^.+\.hex$/ or
-			 $exec_file =~ /^.+\.HEX$/ or
-			 $exec_file =~ /^.+\.dts$/ or
-			 $exec_file =~ /^.+\.dtsi$/ or
-			 $exec_file =~ /^.+defconfig$/ or
-			 $exec_file =~ /^Makefile$/ or
-			 $exec_file =~ /^Kconfig$/) &&
-			$rawline =~ /^new (file )?mode\s([0-9]+)$/ &&
-			(oct($2) & 0111))  {
-			    ERROR("EXECUTE_PERMISSIONS",
-				  "Source file has +x permissions: " .
-			    "$exec_file\n");
-		}
-=======
 			$found_file = 1;
 		}
 
@@ -3418,119 +2911,12 @@ sub process {
 			next;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		$here .= "FILE: $realfile:$realline:" if ($realcnt != 0);
 
 		my $hereline = "$here\n$rawline\n";
 		my $herecurr = "$here\n$rawline\n";
 		my $hereprev = "$here\n$prevrawline\n$rawline\n";
 
-<<<<<<< HEAD
-		if ($shorttext != AFTER_SHORTTEXT) {
-			if ($shorttext == IN_SHORTTEXT_BLANKLINE && $line=~/\S/) {
-				# the subject line was just processed,
-				# a blank line must be next
-				WARN("NONBLANK_AFTER_SUMMARY",
-				     "non-blank line after summary line\n" . $herecurr);
-				$shorttext = IN_SHORTTEXT;
-				# this non-blank line may or may not be commit text -
-				# a warning has been generated so assume it is commit
-				# text and move on
-				$commit_text_present = 1;
-				# fall through and treat this line as IN_SHORTTEXT
-			}
-			if ($shorttext == IN_SHORTTEXT) {
-				if ($line=~/^---/ || $line=~/^diff.*/) {
-					if ($commit_text_present == 0) {
-						WARN("NO_COMMIT_TEXT",
-						     "please add commit text explaining " .
-						     "*why* the change is needed\n" .
-						     $herecurr);
-					}
-					$shorttext = AFTER_SHORTTEXT;
-				} elsif (length($line) > (SHORTTEXT_LIMIT +
-							  $shorttext_exspc)
-					 && $line !~ /^:([0-7]{6}\s){2}
-						      ([[:xdigit:]]+\.*
-						       \s){2}\w+\s\w+/xms) {
-					WARN("LONG_COMMIT_TEXT",
-					     "commit text line over " .
-					     SHORTTEXT_LIMIT .
-					     " characters\n" . $herecurr);
-				} elsif ($line=~/^\s*change-id:/i ||
-					 $line=~/^\s*signed-off-by:/i ||
-					 $line=~/^\s*crs-fixed:/i ||
-					 $line=~/^\s*acked-by:/i) {
-					# this is a tag, there must be commit
-					# text by now
-					if ($commit_text_present == 0) {
-						WARN("NO_COMMIT_TEXT",
-						     "please add commit text explaining " .
-						     "*why* the change is needed\n" .
-						     $herecurr);
-						# prevent duplicate warnings
-						$commit_text_present = 1;
-					}
-				} elsif ($line=~/\S/) {
-					$commit_text_present = 1;
-				}
-			} elsif ($shorttext == IN_SHORTTEXT_BLANKLINE) {
-				# case of non-blank line in this state handled above
-				$shorttext = IN_SHORTTEXT;
-			} elsif ($shorttext == CHECK_NEXT_SHORTTEXT) {
-# The Subject line doesn't have to be the last header in the patch.
-# Avoid moving to the IN_SHORTTEXT state until clear of all headers.
-# Per RFC5322, continuation lines must be folded, so any left-justified
-# text which looks like a header is definitely a header.
-				if ($line!~/^[\x21-\x39\x3b-\x7e]+:/) {
-					$shorttext = IN_SHORTTEXT;
-					# Check for Subject line followed by a blank line.
-					if (length($line) != 0) {
-						WARN("NONBLANK_AFTER_SUMMARY",
-						     "non-blank line after " .
-						     "summary line\n" .
-						     $sublinenr . $here .
-						     "\n" . $subjectline .
-						     "\n" . $line . "\n");
-						# this non-blank line may or may not
-						# be commit text - a warning has been
-						# generated so assume it is commit
-						# text and move on
-						$commit_text_present = 1;
-					}
-				}
-			# The next two cases are BEFORE_SHORTTEXT.
-			} elsif ($line=~/^Subject: \[[^\]]*\] (.*)/) {
-				# This is the subject line. Go to
-				# CHECK_NEXT_SHORTTEXT to wait for the commit
-				# text to show up.
-				$shorttext = CHECK_NEXT_SHORTTEXT;
-				$subjectline = $line;
-				$sublinenr = "#$linenr & ";
-# Check for Subject line less than line limit
-				if (length($1) > SHORTTEXT_LIMIT && !($1 =~ m/Revert\ \"/)) {
-					WARN("LONG_SUMMARY_LINE",
-					     "summary line over " .
-					     SHORTTEXT_LIMIT .
-					     " characters\n" . $herecurr);
-				}
-			} elsif ($line=~/^    (.*)/) {
-				# Indented format, this must be the summary
-				# line (i.e. git show). There will be no more
-				# headers so we are now in the shorttext.
-				$shorttext = IN_SHORTTEXT_BLANKLINE;
-				$shorttext_exspc = 4;
-				if (length($1) > SHORTTEXT_LIMIT && !($1 =~ m/Revert\ \"/)) {
-					WARN("LONG_SUMMARY_LINE",
-					     "summary line over " .
-					     SHORTTEXT_LIMIT .
-					     " characters\n" . $herecurr);
-				}
-			}
-		}
-
-		$cnt_lines++ if ($realcnt != 0);
-=======
 		$cnt_lines++ if ($realcnt != 0);
 
 # Verify the existence of a commit log if appropriate
@@ -3555,28 +2941,17 @@ sub process {
 			      "Avoid using diff content in the commit message - patch(1) might not work\n" . $herecurr);
 			$commit_log_has_diff = 1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Check for incorrect file permissions
 		if ($line =~ /^new (file )?mode.*[7531]\d{0,2}$/) {
 			my $permhere = $here . "FILE: $realfile\n";
-<<<<<<< HEAD
-			if ($realfile =~ /(Makefile|Kconfig|\.c|\.h|\.S|\.tmpl)$/) {
-=======
 			if ($realfile !~ m@scripts/@ &&
 			    $realfile !~ /\.(py|pl|awk|sh)$/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ERROR("EXECUTE_PERMISSIONS",
 				      "do not set execute permissions for source files\n" . $permhere);
 			}
 		}
 
-<<<<<<< HEAD
-# Check the patch for a signoff:
-		if ($line =~ /^\s*signed-off-by:/i) {
-			$signoff++;
-			$in_commit_log = 0;
-=======
 # Check the patch for a From:
 		if (decode("MIME-Header", $line) =~ /^From:\s*(.*)/) {
 			$author = $1;
@@ -3638,39 +3013,17 @@ sub process {
 # emit the "does MAINTAINERS need updating?" message on file add/move/delete
 		if ($line =~ /^\s*MAINTAINERS\s*\|/) {
 			$reported_maintainer_file = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # Check signature styles
 		if (!$in_header_lines &&
-<<<<<<< HEAD
-		    $line =~ /^(\s*)($signature_tags)(\s*)(.*)/) {
-=======
 		    $line =~ /^(\s*)([a-z0-9_-]+by:|$signature_tags)(\s*)(.*)/i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			my $space_before = $1;
 			my $sign_off = $2;
 			my $space_after = $3;
 			my $email = $4;
 			my $ucfirst_sign_off = ucfirst(lc($sign_off));
 
-<<<<<<< HEAD
-			if (defined $space_before && $space_before ne "") {
-				WARN("BAD_SIGN_OFF",
-				     "Do not use whitespace before $ucfirst_sign_off\n" . $herecurr);
-			}
-			if ($sign_off =~ /-by:$/i && $sign_off ne $ucfirst_sign_off) {
-				WARN("BAD_SIGN_OFF",
-				     "'$ucfirst_sign_off' is the preferred signature form\n" . $herecurr);
-			}
-			if (!defined $space_after || $space_after ne " ") {
-				WARN("BAD_SIGN_OFF",
-				     "Use a single space after $ucfirst_sign_off\n" . $herecurr);
-			}
-
-			my ($email_name, $email_address, $comment) = parse_email($email);
-			my $suggested_email = format_email(($email_name, $email_address));
-=======
 			if ($sign_off !~ /$signature_tags/) {
 				my $suggested_signature = find_standard_signature($sign_off);
 				if ($suggested_signature eq "") {
@@ -3712,7 +3065,6 @@ sub process {
 
 			my ($email_name, $name_comment, $email_address, $comment) = parse_email($email);
 			my $suggested_email = format_email(($email_name, $name_comment, $email_address, $comment));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ($suggested_email eq "") {
 				ERROR("BAD_SIGN_OFF",
 				      "Unrecognized email address: '$email'\n" . $herecurr);
@@ -3722,24 +3074,6 @@ sub process {
 				$dequoted =~ s/" </ </;
 				# Don't force email to have quotes
 				# Allow just an angle bracketed address
-<<<<<<< HEAD
-				if ("$dequoted$comment" ne $email &&
-				    "<$email_address>$comment" ne $email &&
-				    "$suggested_email$comment" ne $email) {
-					WARN("BAD_SIGN_OFF",
-					     "email address '$email' might be better as '$suggested_email$comment'\n" . $herecurr);
-				}
-			}
-			if ($line =~ /^\s*signed-off-by:.*(quicinc|qualcomm)\.com/i) {
-				WARN("BAD_SIGN_OFF",
-				     "invalid Signed-off-by identity\n" . $line );
-			}
-		}
-
-#check the patch for invalid author credentials
-		if ($line =~ /^From:.*(quicinc|qualcomm)\.com/) {
-			WARN("BAD_AUTHOR", "invalid author identity\n" . $line );
-=======
 				if (!same_email_addresses($email, $suggested_email)) {
 					if (WARN("BAD_SIGN_OFF",
 						 "email address '$email' might be better as '$suggested_email'\n" . $herecurr) &&
@@ -4081,7 +3415,6 @@ sub process {
 		    ($realfile =~ m@^Documentation/devicetree/bindings/.*\.txt$@)) {
 			WARN("DT_SCHEMA_BINDING_PATCH",
 			     "DT bindings should be in DT schema format. See: Documentation/devicetree/bindings/writing-schema.rst\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # Check for wrappage within a valid hunk of the file
@@ -4091,23 +3424,6 @@ sub process {
 				$herecurr) if (!$emitted_corrupt++);
 		}
 
-<<<<<<< HEAD
-# Check for absolute kernel paths.
-		if ($tree) {
-			while ($line =~ m{(?:^|\s)(/\S*)}g) {
-				my $file = $1;
-
-				if ($file =~ m{^(.*?)(?::\d+)+:?$} &&
-				    check_absolute_file($1, $herecurr)) {
-					#
-				} else {
-					check_absolute_file($file, $herecurr);
-				}
-			}
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # UTF-8 regex found at http://www.w3.org/International/questions/qa-forms-utf-8.en.php
 		if (($realfile =~ /^$/ || $line =~ /^\+/) &&
 		    $rawline !~ m/^$UTF8*$/) {
@@ -4124,20 +3440,6 @@ sub process {
 # Check if it's the start of a commit log
 # (not a header line and we haven't seen the patch filename)
 		if ($in_header_lines && $realfile =~ /^$/ &&
-<<<<<<< HEAD
-		    $rawline !~ /^(commit\b|from\b|[\w-]+:).+$/i) {
-			$in_header_lines = 0;
-			$in_commit_log = 1;
-		}
-
-# Still not yet in a patch, check for any UTF-8
-		if ($in_commit_log && $realfile =~ /^$/ &&
-		    $rawline =~ /$NON_ASCII_UTF8/) {
-			CHK("UTF8_BEFORE_PATCH",
-			    "8-bit UTF-8 used in possible commit log\n" . $herecurr);
-		}
-
-=======
 		    !($rawline =~ /^\s+(?:\S|$)/ ||
 		      $rawline =~ /^(?:commit\b|from\b|[\w-]+:)/i)) {
 			$in_header_lines = 0;
@@ -4259,25 +3561,12 @@ sub process {
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ignore non-hunk lines and lines being removed
 		next if (!$hunk_line || $line =~ /^-/);
 
 #trailing whitespace
 		if ($line =~ /^\+.*\015/) {
 			my $herevet = "$here\n" . cat_vet($rawline) . "\n";
-<<<<<<< HEAD
-			ERROR("DOS_LINE_ENDINGS",
-			      "DOS line endings\n" . $herevet);
-
-		} elsif ($rawline =~ /^\+.*\S\s+$/ || $rawline =~ /^\+\s+$/) {
-			my $herevet = "$here\n" . cat_vet($rawline) . "\n";
-			ERROR("TRAILING_WHITESPACE",
-			      "trailing whitespace\n" . $herevet);
-			$rpt_cleaners = 1;
-		}
-
-=======
 			if (ERROR("DOS_LINE_ENDINGS",
 				  "DOS line endings\n" . $herevet) &&
 			    $fix) {
@@ -4306,46 +3595,10 @@ sub process {
 				      "Do not include the paragraph about writing to the Free Software Foundation's mailing address from the sample GPL notice. The FSF has changed addresses in the past, and may do so again. Linux already includes a copy of the GPL.\n" . $herevet)
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # check for Kconfig help text having a real description
 # Only applies when adding the entry originally, after that we do not have
 # sufficient context to determine whether it is indeed long enough.
 		if ($realfile =~ /Kconfig/ &&
-<<<<<<< HEAD
-		    $line =~ /.\s*config\s+/) {
-			my $length = 0;
-			my $cnt = $realcnt;
-			my $ln = $linenr + 1;
-			my $f;
-			my $is_start = 0;
-			my $is_end = 0;
-			for (; $cnt > 0 && defined $lines[$ln - 1]; $ln++) {
-				$f = $lines[$ln - 1];
-				$cnt-- if ($lines[$ln - 1] !~ /^-/);
-				$is_end = $lines[$ln - 1] =~ /^\+/;
-
-				next if ($f =~ /^-/);
-
-				if ($lines[$ln - 1] =~ /.\s*(?:bool|tristate)\s*\"/) {
-					$is_start = 1;
-				} elsif ($lines[$ln - 1] =~ /.\s*(?:---)?help(?:---)?$/) {
-					$length = -1;
-				}
-
-				$f =~ s/^.//;
-				$f =~ s/#.*//;
-				$f =~ s/^\s+//;
-				next if ($f =~ /^$/);
-				if ($f =~ /^\s*config\s/) {
-					$is_end = 1;
-					last;
-				}
-				$length++;
-			}
-			WARN("CONFIG_DESCRIPTION",
-			     "please write a paragraph that describes the config symbol fully\n" . $herecurr) if ($is_start && $is_end && $length < 4);
-			#print "is_start<$is_start> is_end<$is_end> length<$length>\n";
-=======
 		    # 'choice' is usually the last thing on the line (though
 		    # Kconfig supports named choices), so use a word boundary
 		    # (\b) rather than a whitespace character (\s)
@@ -4431,7 +3684,6 @@ sub process {
 					}
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (($realfile =~ /Makefile.*/ || $realfile =~ /Kbuild.*/) &&
@@ -4448,42 +3700,6 @@ sub process {
 			     "Use of $flag is deprecated, please use \`$replacement->{$flag} instead.\n" . $herecurr) if ($replacement->{$flag});
 		}
 
-<<<<<<< HEAD
-# check we are in a valid source file if not then ignore this hunk
-		next if ($realfile !~ /\.(h|c|s|S|pl|sh)$/);
-
-#80 column limit
-		if ($line =~ /^\+/ && $prevrawline !~ /\/\*\*/ &&
-		    $rawline !~ /^.\s*\*\s*\@$Ident\s/ &&
-		    !($line =~ /^\+\s*$logFunctions\s*\(\s*(?:(KERN_\S+\s*|[^"]*))?"[X\t]*"\s*(?:|,|\)\s*;)\s*$/ ||
-		    $line =~ /^\+\s*"[^"]*"\s*(?:\s*|,|\)\s*;)\s*$/) &&
-		    $realfile ne "scripts/checkpatch.pl" &&
-		    $length > 80)
-		{
-			WARN("LONG_LINE",
-			     "line over 80 characters\n" . $herecurr);
-		}
-
-# Check for user-visible strings broken across lines, which breaks the ability
-# to grep for the string.  Limited to strings used as parameters (those
-# following an open parenthesis), which almost completely eliminates false
-# positives, as well as warning only once per parameter rather than once per
-# line of the string.  Make an exception when the previous string ends in a
-# newline (multiple lines in one string constant) or \n\t (common in inline
-# assembly to indent the instruction on the following line).
-		if ($line =~ /^\+\s*"/ &&
-		    $prevline =~ /"\s*$/ &&
-		    $prevline =~ /\(/ &&
-		    $prevrawline !~ /\\n(?:\\t)*"\s*$/) {
-			WARN("SPLIT_STRING",
-			     "quoted string split across lines\n" . $hereprev);
-		}
-
-# check for spaces before a quoted newline
-		if ($rawline =~ /^.*\".*\s\\n/) {
-			WARN("QUOTED_WHITESPACE_BEFORE_NEWLINE",
-			     "unnecessary whitespace before a quoted newline\n" . $herecurr);
-=======
 # check for DT compatible documentation
 		if (defined $root &&
 			(($realfile =~ /\.dtsi?$/ && $line =~ /^\+\s*compatible\s*=\s*\"/) ||
@@ -4648,42 +3864,10 @@ sub process {
 				&{$msg_level}($msg_type,
 					      "line length of $length exceeds $max_line_length columns\n" . $herecurr);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for adding lines without a newline.
 		if ($line =~ /^\+/ && defined $lines[$linenr] && $lines[$linenr] =~ /^\\ No newline at end of file/) {
-<<<<<<< HEAD
-			WARN("MISSING_EOF_NEWLINE",
-			     "adding a line without newline at end of file\n" . $herecurr);
-		}
-
-# Blackfin: use hi/lo macros
-		if ($realfile =~ m@arch/blackfin/.*\.S$@) {
-			if ($line =~ /\.[lL][[:space:]]*=.*&[[:space:]]*0x[fF][fF][fF][fF]/) {
-				my $herevet = "$here\n" . cat_vet($line) . "\n";
-				ERROR("LO_MACRO",
-				      "use the LO() macro, not (... & 0xFFFF)\n" . $herevet);
-			}
-			if ($line =~ /\.[hH][[:space:]]*=.*>>[[:space:]]*16/) {
-				my $herevet = "$here\n" . cat_vet($line) . "\n";
-				ERROR("HI_MACRO",
-				      "use the HI() macro, not (... >> 16)\n" . $herevet);
-			}
-		}
-
-# check we are in a valid source file C or perl if not then ignore this hunk
-		next if ($realfile !~ /\.(h|c|pl)$/);
-
-# at the beginning of a line any tabs must come first and anything
-# more than 8 must use tabs.
-		if ($rawline =~ /^\+\s* \t\s*\S/ ||
-		    $rawline =~ /^\+\s*        \s*/) {
-			my $herevet = "$here\n" . cat_vet($rawline) . "\n";
-			ERROR("CODE_INDENT",
-			      "code indent should use tabs where possible\n" . $herevet);
-			$rpt_cleaners = 1;
-=======
 			if (WARN("MISSING_EOF_NEWLINE",
 			         "adding a line without newline at end of file\n" . $herecurr) &&
 			    $fix) {
@@ -4712,16 +3896,11 @@ sub process {
 			    $fix) {
 				$fixed[$fixlinenr] =~ s/^\+([ \t]+)/"\+" . tabify($1)/e;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for space before tabs.
 		if ($rawline =~ /^\+/ && $rawline =~ / \t/) {
 			my $herevet = "$here\n" . cat_vet($rawline) . "\n";
-<<<<<<< HEAD
-			WARN("SPACE_BEFORE_TAB",
-			     "please, no space before tabs\n" . $herevet);
-=======
 			if (WARN("SPACE_BEFORE_TAB",
 				"please, no space before tabs\n" . $herevet) &&
 			    $fix) {
@@ -4742,20 +3921,10 @@ sub process {
 				$fixed[$fixlinenr - 1] .= " $operator";
 				$fixed[$fixlinenr] =~ s/\Q$operator\E\s*//;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for && or || at the start of a line
 		if ($rawline =~ /^\+\s*(&&|\|\|)/) {
-<<<<<<< HEAD
-			CHK("LOGICAL_CONTINUATIONS",
-			    "Logical continuations should be on the previous line\n" . $hereprev);
-		}
-
-# check multi-line statement indentation matches previous line
-		if ($^V && $^V ge 5.10.0 &&
-		    $prevline =~ /^\+(\t*)(if \(|$Ident\().*(\&\&|\|\||,)\s*$/) {
-=======
 			my $operator = $1;
 			if (CHK("LOGICAL_CONTINUATIONS",
 				"Logical continuations should be on the previous line\n" . $hereprev) &&
@@ -4784,36 +3953,22 @@ sub process {
 # check multi-line statement indentation matches previous line
 		if ($perl_version_ok &&
 		    $prevline =~ /^\+([ \t]*)((?:$c90_Keywords(?:\s+if)\s*)|(?:$Declare\s*)?(?:$Ident|\(\s*\*\s*$Ident\s*\))\s*|(?:\*\s*)*$Lval\s*=\s*$Ident\s*)\(.*(\&\&|\|\||,)\s*$/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			$prevline =~ /^\+(\t*)(.*)$/;
 			my $oldindent = $1;
 			my $rest = $2;
 
 			my $pos = pos_last_openparen($rest);
 			if ($pos >= 0) {
-<<<<<<< HEAD
-				$line =~ /^\+([ \t]*)/;
-				my $newindent = $1;
-
-				my $goodtabindent = $oldindent .
-					"\t" x ($pos / 8) .
-					" "  x ($pos % 8);
-=======
 				$line =~ /^(\+| )([ \t]*)/;
 				my $newindent = $2;
 
 				my $goodtabindent = $oldindent .
 					"\t" x ($pos / $tabsize) .
 					" "  x ($pos % $tabsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				my $goodspaceindent = $oldindent . " "  x $pos;
 
 				if ($newindent ne $goodtabindent &&
 				    $newindent ne $goodspaceindent) {
-<<<<<<< HEAD
-					CHK("PARENTHESIS_ALIGNMENT",
-					    "Alignment should match open parenthesis\n" . $hereprev);
-=======
 
 					if (CHK("PARENTHESIS_ALIGNMENT",
 						"Alignment should match open parenthesis\n" . $hereprev) &&
@@ -4821,16 +3976,10 @@ sub process {
 						$fixed[$fixlinenr] =~
 						    s/^\+[ \t]*/\+$goodtabindent/;
 					}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 		}
 
-<<<<<<< HEAD
-		if ($line =~ /^\+.*\*[ \t]*\)[ \t]+/) {
-			CHK("SPACING",
-			    "No space is necessary after a cast\n" . $hereprev);
-=======
 # check for space after cast like "(int) foo" or "(struct foo) bar"
 # avoid checking a few false positives:
 #   "sizeof(<type>)" or "__alignof__(<type>)"
@@ -4978,7 +4127,6 @@ sub process {
 					fix_insert_line($fixlinenr, "\+");
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for spaces at the beginning of a line.
@@ -4986,12 +4134,6 @@ sub process {
 #  1) within comments
 #  2) indented preprocessor commands
 #  3) hanging labels
-<<<<<<< HEAD
-		if ($rawline =~ /^\+ / && $line !~ /\+ *(?:$;|#|$Ident:)/)  {
-			my $herevet = "$here\n" . cat_vet($rawline) . "\n";
-			WARN("LEADING_SPACE",
-			     "please, no spaces at the start of a line\n" . $herevet);
-=======
 		if ($rawline =~ /^\+ / && $line !~ /^\+ *(?:$;|#|$Ident:)/)  {
 			my $herevet = "$here\n" . cat_vet($rawline) . "\n";
 			if (WARN("LEADING_SPACE",
@@ -4999,14 +4141,11 @@ sub process {
 			    $fix) {
 				$fixed[$fixlinenr] =~ s/^\+([ \t]+)/"\+" . tabify($1)/e;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check we are in a valid C source file if not then ignore this hunk
 		next if ($realfile !~ /\.(h|c)$/);
 
-<<<<<<< HEAD
-=======
 # check for unusual line ending [ or (
 		if ($line =~ /^\+.*([\[\(])\s*$/) {
 			CHK("OPEN_ENDED_LINE",
@@ -5052,43 +4191,24 @@ sub process {
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # check for RCS/CVS revision markers
 		if ($rawline =~ /^\+.*\$(Revision|Log|Id)(?:\$|)/) {
 			WARN("CVS_KEYWORD",
 			     "CVS style keyword markers, these will _not_ be updated\n". $herecurr);
 		}
 
-<<<<<<< HEAD
-# Blackfin: don't use __builtin_bfin_[cs]sync
-		if ($line =~ /__builtin_bfin_csync/) {
-			my $herevet = "$here\n" . cat_vet($line) . "\n";
-			ERROR("CSYNC",
-			      "use the CSYNC() macro in asm/blackfin.h\n" . $herevet);
-		}
-		if ($line =~ /__builtin_bfin_ssync/) {
-			my $herevet = "$here\n" . cat_vet($line) . "\n";
-			ERROR("SSYNC",
-			      "use the SSYNC() macro in asm/blackfin.h\n" . $herevet);
-=======
 # check for old HOTPLUG __dev<foo> section markings
 		if ($line =~ /\b(__dev(init|exit)(data|const|))\b/) {
 			WARN("HOTPLUG_SECTION",
 			     "Using $1 is unnecessary\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # Check for potential 'bare' types
 		my ($stat, $cond, $line_nr_next, $remain_next, $off_next,
 		    $realline_next);
 #print "LINE<$line>\n";
-<<<<<<< HEAD
-		if ($linenr >= $suppress_statement &&
-		    $realcnt && $line =~ /.\s*\S/) {
-=======
 		if ($linenr > $suppress_statement &&
 		    $realcnt && $sline =~ /.\s*\S/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			($stat, $cond, $line_nr_next, $remain_next, $off_next) =
 				ctx_statement_block($linenr, $realcnt, 0);
 			$stat =~ s/\n./\n /g;
@@ -5188,11 +4308,7 @@ sub process {
 
 # if/while/etc brace do not go on next line, unless defining a do while loop,
 # or if that brace on the next line is for something else
-<<<<<<< HEAD
-		if ($line =~ /(.*)\b((?:if|while|for|switch)\s*\(|do\b|else\b)/ && $line !~ /^.\s*\#/) {
-=======
 		if ($line =~ /(.*)\b((?:if|while|for|switch|(?:[a-z_]+|)for_each[a-z_]+)\s*\(|do\b|else\b)/ && $line !~ /^.\s*\#/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			my $pre_ctx = "$1$2";
 
 			my ($level, @ctx) = ctx_statement_level($linenr, $realcnt, 0);
@@ -5219,11 +4335,7 @@ sub process {
 			#print "realcnt<$realcnt> ctx_cnt<$ctx_cnt>\n";
 			#print "pre<$pre_ctx>\nline<$line>\nctx<$ctx>\nnext<$lines[$ctx_ln - 1]>\n";
 
-<<<<<<< HEAD
-			if ($ctx !~ /{\s*/ && defined($lines[$ctx_ln -1]) && $lines[$ctx_ln - 1] =~ /^\+\s*{/) {
-=======
 			if ($ctx !~ /{\s*/ && defined($lines[$ctx_ln - 1]) && $lines[$ctx_ln - 1] =~ /^\+\s*{/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ERROR("OPEN_BRACE",
 				      "that open brace { should be on the previous line\n" .
 					"$here\n$ctx\n$rawlines[$ctx_ln - 1]\n");
@@ -5242,11 +4354,7 @@ sub process {
 		}
 
 # Check relative indent for conditionals and blocks.
-<<<<<<< HEAD
-		if ($line =~ /\b(?:(?:if|while|for)\s*\(|do\b)/ && $line !~ /^.\s*#/ && $line !~ /\}\s*while\s*/) {
-=======
 		if ($line =~ /\b(?:(?:if|while|for|(?:[a-z_]+|)for_each[a-z_]+)\s*\(|(?:do|else)\b)/ && $line !~ /^.\s*#/ && $line !~ /\}\s*while\s*/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			($stat, $cond, $line_nr_next, $remain_next, $off_next) =
 				ctx_statement_block($linenr, $realcnt, 0)
 					if (!defined $stat);
@@ -5254,23 +4362,14 @@ sub process {
 
 			substr($s, 0, length($c), '');
 
-<<<<<<< HEAD
-			# Make sure we remove the line prefixes as we have
-			# none on the first line, and are going to readd them
-			# where necessary.
-			$s =~ s/\n./\n/gs;
-=======
 			# remove inline comments
 			$s =~ s/$;/ /g;
 			$c =~ s/$;/ /g;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			# Find out how long the conditional actually is.
 			my @newlines = ($c =~ /\n/gs);
 			my $cond_lines = 1 + $#newlines;
 
-<<<<<<< HEAD
-=======
 			# Make sure we remove the line prefixes as we have
 			# none on the first line, and are going to readd them
 			# where necessary.
@@ -5279,7 +4378,6 @@ sub process {
 				$cond_lines += $s =~ s/\n\s+\\\n/\n/g;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			# We want to check the first line inside the block
 			# starting at the end of the conditional, so remove:
 			#  1) any blank line termination
@@ -5345,17 +4443,12 @@ sub process {
 
 			#print "line<$line> prevline<$prevline> indent<$indent> sindent<$sindent> check<$check> continuation<$continuation> s<$s> cond_lines<$cond_lines> stat_real<$stat_real> stat<$stat>\n";
 
-<<<<<<< HEAD
-			if ($check && (($sindent % 8) != 0 ||
-			    ($sindent <= $indent && $s ne ''))) {
-=======
 			if ($check && $s ne '' &&
 			    (($sindent % $tabsize) != 0 ||
 			     ($sindent < $indent) ||
 			     ($sindent == $indent &&
 			      ($s !~ /^\s*(?:\}|\{|else\b)/)) ||
 			     ($sindent > $indent + $tabsize))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				WARN("SUSPECT_CODE_INDENT",
 				     "suspect code indent for conditional statements ($indent, $sindent)\n" . $herecurr . "$stat_real\n");
 			}
@@ -5375,9 +4468,6 @@ sub process {
 		$prev_values = substr($curr_values, -1);
 
 #ignore lines not being added
-<<<<<<< HEAD
-		if ($line=~/^[^\+]/) {next;}
-=======
 		next if ($line =~ /^[^\+]/);
 
 # check for self assignments used to avoid compiler warnings
@@ -5426,7 +4516,6 @@ sub process {
 				}
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # TEST: allow direct testing of the type matcher.
 		if ($dbg_type) {
@@ -5454,10 +4543,6 @@ sub process {
 # check for initialisation to aggregates open brace on the next line
 		if ($line =~ /^.\s*{/ &&
 		    $prevline =~ /(?:^|[^=])=\s*$/) {
-<<<<<<< HEAD
-			ERROR("OPEN_BRACE",
-			      "that open brace { should be on the previous line\n" . $hereprev);
-=======
 			if (ERROR("OPEN_BRACE",
 				  "that open brace { should be on the previous line\n" . $hereprev) &&
 			    $fix && $prevline =~ /^\+/ && $line =~ /^\+/) {
@@ -5470,7 +4555,6 @@ sub process {
 				$fixedline =~ s/^(.\s*)\{\s*/$1/;
 				fix_insert_line($fixlinenr, $fixedline);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 #
@@ -5482,25 +4566,16 @@ sub process {
 			my $path = $1;
 			if ($path =~ m{//}) {
 				ERROR("MALFORMED_INCLUDE",
-<<<<<<< HEAD
-				      "malformed #include filename\n" .
-					$herecurr);
-=======
 				      "malformed #include filename\n" . $herecurr);
 			}
 			if ($path =~ "^uapi/" && $realfile =~ m@\binclude/uapi/@) {
 				ERROR("UAPI_INCLUDE",
 				      "No #include in ...include/uapi/... should use a uapi/ path prefix\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 # no C99 // comments
 		if ($line =~ m{//}) {
-<<<<<<< HEAD
-			ERROR("C99_COMMENTS",
-			      "do not use C99 // comments\n" . $herecurr);
-=======
 			if (ERROR("C99_COMMENTS",
 				  "do not use C99 // comments\n" . $herecurr) &&
 			    $fix) {
@@ -5510,7 +4585,6 @@ sub process {
 					$fixed[$fixlinenr] =~ s@\/\/(.*)$@/\* $comment \*/@;
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		# Remove C99 comments.
 		$line =~ s@//.*@@;
@@ -5522,21 +4596,13 @@ sub process {
 		if (defined $realline_next &&
 		    exists $lines[$realline_next - 1] &&
 		    !defined $suppress_export{$realline_next} &&
-<<<<<<< HEAD
-		    ($lines[$realline_next - 1] =~ /EXPORT_SYMBOL.*\((.*)\)/ ||
-		     $lines[$realline_next - 1] =~ /EXPORT_UNUSED_SYMBOL.*\((.*)\)/)) {
-=======
 		    ($lines[$realline_next - 1] =~ /EXPORT_SYMBOL.*\((.*)\)/)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			# Handle definitions which produce identifiers with
 			# a prefix:
 			#   XXX(foo);
 			#   EXPORT_SYMBOL(something_foo);
 			my $name = $1;
-<<<<<<< HEAD
-=======
 			$name =~ s/^\s*($Ident).*/$1/;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ($stat =~ /^(?:.\s*}\s*\n)?.([A-Z_]+)\s*\(\s*($Ident)/ &&
 			    $name =~ /^${Ident}_$2/) {
 #print "FOO C name<$name>\n";
@@ -5558,12 +4624,7 @@ sub process {
 		}
 		if (!defined $suppress_export{$linenr} &&
 		    $prevline =~ /^.\s*$/ &&
-<<<<<<< HEAD
-		    ($line =~ /EXPORT_SYMBOL.*\((.*)\)/ ||
-		     $line =~ /EXPORT_UNUSED_SYMBOL.*\((.*)\)/)) {
-=======
 		    ($line =~ /EXPORT_SYMBOL.*\((.*)\)/)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #print "FOO B <$lines[$linenr - 1]>\n";
 			$suppress_export{$linenr} = 2;
 		}
@@ -5574,18 +4635,6 @@ sub process {
 		}
 
 # check for global initialisers.
-<<<<<<< HEAD
-		if ($line =~ /^.$Type\s*$Ident\s*(?:\s+$Modifier)*\s*=\s*(0|NULL|false)\s*;/) {
-			ERROR("GLOBAL_INITIALISERS",
-			      "do not initialise globals to 0 or NULL\n" .
-				$herecurr);
-		}
-# check for static initialisers.
-		if ($line =~ /\bstatic\s.*=\s*(0|NULL|false)\s*;/) {
-			ERROR("INITIALISED_STATIC",
-			      "do not initialise statics to 0 or NULL\n" .
-				$herecurr);
-=======
 		if ($line =~ /^\+$Type\s*$Ident(?:\s+$Modifier)*\s*=\s*($zero_initializer)\s*;/ &&
 		    !exclude_global_initialisers($realfile)) {
 			if (ERROR("GLOBAL_INITIALISERS",
@@ -5629,7 +4678,6 @@ sub process {
 			    $fix) {
 				$fixed[$fixlinenr] =~ s/\b\Q$type\E\b/$new_type/;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for static const char * arrays.
@@ -5637,9 +4685,6 @@ sub process {
 			WARN("STATIC_CONST_CHAR_ARRAY",
 			     "static const char * array should probably be static const char * const\n" .
 				$herecurr);
-<<<<<<< HEAD
-               }
-=======
 		}
 
 # check for initialized const char arrays that should be static const
@@ -5650,21 +4695,12 @@ sub process {
 				$fixed[$fixlinenr] =~ s/(^.\s*)const\b/${1}static const/;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # check for static char foo[] = "bar" declarations.
 		if ($line =~ /\bstatic\s+char\s+(\w+)\s*\[\s*\]\s*=\s*"/) {
 			WARN("STATIC_CONST_CHAR_ARRAY",
 			     "static char array declaration should probably be static const char\n" .
 				$herecurr);
-<<<<<<< HEAD
-               }
-
-# check for declarations of struct pci_device_id
-		if ($line =~ /\bstruct\s+pci_device_id\s+\w+\s*\[\s*\]\s*\=\s*\{/) {
-			WARN("DEFINE_PCI_DEVICE_TABLE",
-			     "Use DEFINE_PCI_DEVICE_TABLE for struct pci_device_id\n" . $herecurr);
-=======
 		}
 
 # check for const <foo> const where <foo> is not a pointer or array type
@@ -5718,7 +4754,6 @@ sub process {
 			    $fix) {
 				$fixed[$fixlinenr] =~ s/(\b($Type)\s+($Ident))\s*\(\s*\)/$2 $3(void)/;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for new typedefs, only function parameters and sparse annotations
@@ -5727,11 +4762,7 @@ sub process {
 		    $line !~ /\btypedef\s+$Type\s*\(\s*\*?$Ident\s*\)\s*\(/ &&
 		    $line !~ /\btypedef\s+$Type\s+$Ident\s*\(/ &&
 		    $line !~ /\b$typeTypedefs\b/ &&
-<<<<<<< HEAD
-		    $line !~ /\b__bitwise(?:__|)\b/) {
-=======
 		    $line !~ /\b__bitwise\b/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			WARN("NEW_TYPEDEFS",
 			     "do not add new typedefs\n" . $herecurr);
 		}
@@ -5740,11 +4771,7 @@ sub process {
 		# (char*[ const])
 		while ($line =~ m{(\($NonptrType(\s*(?:$Modifier\b\s*|\*\s*)+)\))}g) {
 			#print "AA<$1>\n";
-<<<<<<< HEAD
-			my ($from, $to) = ($2, $2);
-=======
 			my ($ident, $from, $to) = ($1, $2, $2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			# Should start with a space.
 			$to =~ s/^(\S)/ $1/;
@@ -5754,12 +4781,6 @@ sub process {
 			while ($to =~ s/\*\s+\*/\*\*/) {
 			}
 
-<<<<<<< HEAD
-			#print "from<$from> to<$to>\n";
-			if ($from ne $to) {
-				ERROR("POINTER_LOCATION",
-				      "\"(foo$from)\" should be \"(foo$to)\"\n" .  $herecurr);
-=======
 ##			print "1: from<$from> to<$to> ident<$ident>\n";
 			if ($from ne $to) {
 				if (ERROR("POINTER_LOCATION",
@@ -5771,16 +4792,11 @@ sub process {
 					$fixed[$fixlinenr] =~
 					    s@\Q$sub_from\E@$sub_to@;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		while ($line =~ m{(\b$NonptrType(\s*(?:$Modifier\b\s*|\*\s*)+)($Ident))}g) {
 			#print "BB<$1>\n";
-<<<<<<< HEAD
-			my ($from, $to, $ident) = ($2, $2, $3);
-=======
 			my ($match, $from, $to, $ident) = ($1, $2, $2, $3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			# Should start with a space.
 			$to =~ s/^(\S)/ $1/;
@@ -5792,22 +4808,6 @@ sub process {
 			# Modifiers should have spaces.
 			$to =~ s/(\b$Modifier$)/$1 /;
 
-<<<<<<< HEAD
-			#print "from<$from> to<$to> ident<$ident>\n";
-			if ($from ne $to && $ident !~ /^$Modifier$/) {
-				ERROR("POINTER_LOCATION",
-				      "\"foo${from}bar\" should be \"foo${to}bar\"\n" .  $herecurr);
-			}
-		}
-
-# # no BUG() or BUG_ON()
-# 		if ($line =~ /\b(BUG|BUG_ON)\b/) {
-# 			print "Try to use WARN_ON & Recovery code rather than BUG() or BUG_ON()\n";
-# 			print "$herecurr";
-# 			$clean = 0;
-# 		}
-
-=======
 ##			print "2: from<$from> to<$to> ident<$ident>\n";
 			if ($from ne $to && $ident !~ /^$Modifier$/) {
 				if (ERROR("POINTER_LOCATION",
@@ -5832,7 +4832,6 @@ sub process {
 		}
 
 # avoid LINUX_VERSION_CODE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ($line =~ /\bLINUX_VERSION_CODE\b/) {
 			WARN("LINUX_VERSION_CODE",
 			     "LINUX_VERSION_CODE should be avoided, code should be for the version to which it is merged\n" . $herecurr);
@@ -5841,32 +4840,6 @@ sub process {
 # check for uses of printk_ratelimit
 		if ($line =~ /\bprintk_ratelimit\s*\(/) {
 			WARN("PRINTK_RATELIMITED",
-<<<<<<< HEAD
-"Prefer printk_ratelimited or pr_<level>_ratelimited to printk_ratelimit\n" . $herecurr);
-		}
-
-# printk should use KERN_* levels.  Note that follow on printk's on the
-# same line do not need a level, so we use the current block context
-# to try and find and validate the current printk.  In summary the current
-# printk includes all preceding printk's which have no newline on the end.
-# we assume the first bad printk is the one to report.
-		if ($line =~ /\bprintk\((?!KERN_)\s*"/) {
-			my $ok = 0;
-			for (my $ln = $linenr - 1; $ln >= $first_line; $ln--) {
-				#print "CHECK<$lines[$ln - 1]\n";
-				# we have a preceding printk if it ends
-				# with "\n" ignore it, else it is to blame
-				if ($lines[$ln - 1] =~ m{\bprintk\(}) {
-					if ($rawlines[$ln - 1] !~ m{\\n"}) {
-						$ok = 1;
-					}
-					last;
-				}
-			}
-			if ($ok == 0) {
-				WARN("PRINTK_WITHOUT_KERN_LEVEL",
-				     "printk() should include KERN_ facility level\n" . $herecurr);
-=======
 			     "Prefer printk_ratelimited or pr_<level>_ratelimited to printk_ratelimit\n" . $herecurr);
 		}
 
@@ -5924,18 +4897,11 @@ sub process {
 				 "ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP\n" . $herecurr) &&
 			    $fix) {
 				$fixed[$fixlinenr] =~ s/\bENOTSUPP\b/EOPNOTSUPP/;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 # function brace can't be on same line, except for #defines of do while,
 # or if closed on same line
-<<<<<<< HEAD
-		if (($line=~/$Type\s*$Ident\(.*\).*\s{/) and
-		    !($line=~/\#\s*define.*do\s{/) and !($line=~/}/)) {
-			ERROR("OPEN_BRACE",
-			      "open brace '{' following function declarations go on the next line\n" . $herecurr);
-=======
 		if ($perl_version_ok &&
 		    $sline =~ /$Type\s*$Ident\s*$balanced_parens\s*\{/ &&
 		    $sline !~ /\#\s*define\b.*do\s*\{/ &&
@@ -5954,22 +4920,11 @@ sub process {
 					fix_insert_line($fixlinenr, "\+\t" . trim($line2));
 				}
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # open braces for enum, union and struct go on the same line.
 		if ($line =~ /^.\s*{/ &&
 		    $prevline =~ /^.\s*(?:typedef\s+)?(enum|union|struct)(?:\s+$Ident)?\s*$/) {
-<<<<<<< HEAD
-			ERROR("OPEN_BRACE",
-			      "open brace '{' following $1 go on the same line\n" . $hereprev);
-		}
-
-# missing space after union, struct or enum definition
-		if ($line =~ /^.\s*(?:typedef\s+)?(enum|union|struct)(?:\s+$Ident)?(?:\s+$Ident)?[=\{]/) {
-		    WARN("SPACING",
-			 "missing space after $1 definition\n" . $herecurr);
-=======
 			if (ERROR("OPEN_BRACE",
 				  "open brace '{' following $1 go on the same line\n" . $hereprev) &&
 			    $fix && $prevline =~ /^\+/ && $line =~ /^\+/) {
@@ -6063,7 +5018,6 @@ sub process {
 				$fixed[$fixlinenr] =~
 				    s/^(.\s*)$Declare\s*\(\s*\*\s*$Ident\s*\)\s*\(/$1 . $declare . $post_declare_space . '(*' . $funcname . ')('/ex;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for spacing round square brackets; allowed:
@@ -6074,11 +5028,6 @@ sub process {
 			my ($where, $prefix) = ($-[1], $1);
 			if ($prefix !~ /$Type\s+$/ &&
 			    ($where != 0 || $prefix !~ /^.\s+$/) &&
-<<<<<<< HEAD
-			    $prefix !~ /[{,]\s+$/) {
-				ERROR("BRACKET_SPACE",
-				      "space prohibited before open square bracket '['\n" . $herecurr);
-=======
 			    $prefix !~ /[{,:]\s+$/) {
 				if (ERROR("BRACKET_SPACE",
 					  "space prohibited before open square bracket '['\n" . $herecurr) &&
@@ -6086,7 +5035,6 @@ sub process {
 				    $fixed[$fixlinenr] =~
 					s/^(\+.*?)\s+\[/$1\[/;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -6101,14 +5049,8 @@ sub process {
 				if|for|while|switch|return|case|
 				volatile|__volatile__|
 				__attribute__|format|__extension__|
-<<<<<<< HEAD
-				asm|__asm__)$/x)
-			{
-
-=======
 				asm|__asm__|scoped_guard)$/x)
 			{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			# cpp #define statements have non-optional spaces, ie
 			# if there is a space between the name and the open
 			# parenthesis it is simply not a parameter group.
@@ -6122,14 +5064,6 @@ sub process {
 			} elsif ($ctx =~ /$Type$/) {
 
 			} else {
-<<<<<<< HEAD
-				WARN("SPACING",
-				     "space prohibited between function name and open parenthesis '('\n" . $herecurr);
-			}
-		}
-# Check operator spacing.
-		if (!($line=~/\#\s*include/)) {
-=======
 				if (WARN("SPACING",
 					 "space prohibited between function name and open parenthesis '('\n" . $herecurr) &&
 					     $fix) {
@@ -6144,22 +5078,11 @@ sub process {
 			my $fixed_line = "";
 			my $line_fixed = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			my $ops = qr{
 				<<=|>>=|<=|>=|==|!=|
 				\+=|-=|\*=|\/=|%=|\^=|\|=|&=|
 				=>|->|<<|>>|<|>|=|!|~|
 				&&|\|\||,|\^|\+\+|--|&|\||\+|-|\*|\/|%|
-<<<<<<< HEAD
-				\?|:
-			}x;
-			my @elements = split(/($ops|;)/, $opline);
-			my $off = 0;
-
-			my $blank = copy_spacing($opline);
-
-			for (my $n = 0; $n < $#elements; $n += 2) {
-=======
 				\?:|\?|:
 			}x;
 			my @elements = split(/($ops|;)/, $opline);
@@ -6188,7 +5111,6 @@ sub process {
 
 ##				print("n: <$n> good: <$good>\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				$off += length($elements[$n]);
 
 				# Pick up the preceding and succeeding characters.
@@ -6236,11 +5158,7 @@ sub process {
 
 				# Ignore operators passed as parameters.
 				if ($op_type ne 'V' &&
-<<<<<<< HEAD
-				    $ca =~ /\s$/ && $cc =~ /^\s*,/) {
-=======
 				    $ca =~ /\s$/ && $cc =~ /^\s*[,\)]/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #				# Ignore comments
 #				} elsif ($op =~ /^$;+$/) {
@@ -6249,37 +5167,16 @@ sub process {
 				} elsif ($op eq ';') {
 					if ($ctx !~ /.x[WEBC]/ &&
 					    $cc !~ /^\\/ && $cc !~ /^;/) {
-<<<<<<< HEAD
-						ERROR("SPACING",
-						      "space required after that '$op' $at\n" . $hereptr);
-=======
 						if (ERROR("SPACING",
 							  "space required after that '$op' $at\n" . $hereptr)) {
 							$good = $fix_elements[$n] . trim($fix_elements[$n + 1]) . " ";
 							$line_fixed = 1;
 						}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 
 				# // is a comment
 				} elsif ($op eq '//') {
 
-<<<<<<< HEAD
-				# No spaces for:
-				#   ->
-				#   :   when part of a bitfield
-				} elsif ($op eq '->' || $opv eq ':B') {
-					if ($ctx =~ /Wx.|.xW/) {
-						ERROR("SPACING",
-						      "spaces prohibited around that '$op' $at\n" . $hereptr);
-					}
-
-				# , must have a space on the right.
-				} elsif ($op eq ',') {
-					if ($ctx !~ /.x[WEC]/ && $cc !~ /^}/) {
-						ERROR("SPACING",
-						      "space required after that '$op' $at\n" . $hereptr);
-=======
 				#   :   when part of a bitfield
 				} elsif ($opv eq ':B') {
 					# skip the bitfield test for now
@@ -6326,7 +5223,6 @@ sub process {
 						if ($space_after) {
 							$good .= " ";
 						}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 
 				# '*' as part of a type definition -- reported already.
@@ -6340,10 +5236,6 @@ sub process {
 					 $opv eq '*U' || $opv eq '-U' ||
 					 $opv eq '&U' || $opv eq '&&U') {
 					if ($ctx !~ /[WEBC]x./ && $ca !~ /(?:\)|!|~|\*|-|\&|\||\+\+|\-\-|\{)$/) {
-<<<<<<< HEAD
-						ERROR("SPACING",
-						      "space required before that '$op' $at\n" . $hereptr);
-=======
 						if (ERROR("SPACING",
 							  "space required before that '$op' $at\n" . $hereptr)) {
 							if ($n != $last_after + 2) {
@@ -6351,16 +5243,11 @@ sub process {
 								$line_fixed = 1;
 							}
 						}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 					if ($op eq '*' && $cc =~/\s*$Modifier\b/) {
 						# A unary '*' may be const
 
 					} elsif ($ctx =~ /.xW/) {
-<<<<<<< HEAD
-						ERROR("SPACING",
-						      "space prohibited after that '$op' $at\n" . $hereptr);
-=======
 						if (ERROR("SPACING",
 							  "space prohibited after that '$op' $at\n" . $hereptr)) {
 							$good = $fix_elements[$n] . rtrim($fix_elements[$n + 1]);
@@ -6369,28 +5256,11 @@ sub process {
 							}
 							$line_fixed = 1;
 						}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 
 				# unary ++ and unary -- are allowed no space on one side.
 				} elsif ($op eq '++' or $op eq '--') {
 					if ($ctx !~ /[WEOBC]x[^W]/ && $ctx !~ /[^W]x[WOBEC]/) {
-<<<<<<< HEAD
-						ERROR("SPACING",
-						      "space required one side of that '$op' $at\n" . $hereptr);
-					}
-					if ($ctx =~ /Wx[BE]/ ||
-					    ($ctx =~ /Wx./ && $cc =~ /^;/)) {
-						ERROR("SPACING",
-						      "space prohibited before that '$op' $at\n" . $hereptr);
-					}
-					if ($ctx =~ /ExW/) {
-						ERROR("SPACING",
-						      "space prohibited after that '$op' $at\n" . $hereptr);
-					}
-
-
-=======
 						if (ERROR("SPACING",
 							  "space required one side of that '$op' $at\n" . $hereptr)) {
 							$good = $fix_elements[$n] . trim($fix_elements[$n + 1]) . " ";
@@ -6416,7 +5286,6 @@ sub process {
 						}
 					}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				# << and >> may either have or not have spaces both sides
 				} elsif ($op eq '<<' or $op eq '>>' or
 					 $op eq '&' or $op eq '^' or $op eq '|' or
@@ -6424,12 +5293,6 @@ sub process {
 					 $op eq '*' or $op eq '/' or
 					 $op eq '%')
 				{
-<<<<<<< HEAD
-					if ($ctx =~ /Wx[^WCE]|[^WCE]xW/) {
-						ERROR("SPACING",
-						      "need consistent spacing around '$op' $at\n" .
-							$hereptr);
-=======
 					if ($check) {
 						if (defined $fix_elements[$n + 2] && $ctx !~ /[EW]x[EW]/) {
 							if (CHK("SPACING",
@@ -6454,24 +5317,17 @@ sub process {
 							}
 							$line_fixed = 1;
 						}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 
 				# A colon needs no spaces before when it is
 				# terminating a case value or a label.
 				} elsif ($opv eq ':C' || $opv eq ':L') {
-<<<<<<< HEAD
-					if ($ctx =~ /Wx./) {
-						ERROR("SPACING",
-						      "space prohibited before that '$op' $at\n" . $hereptr);
-=======
 					if ($ctx =~ /Wx./ and $realfile !~ m@.*\.lds\.h$@) {
 						if (ERROR("SPACING",
 							  "space prohibited before that '$op' $at\n" . $hereptr)) {
 							$good = rtrim($fix_elements[$n]) . trim($fix_elements[$n + 1]);
 							$line_fixed = 1;
 						}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 
 				# All the others need spaces both sides.
@@ -6484,23 +5340,6 @@ sub process {
 					    ($op eq '>' &&
 					     $ca =~ /<\S+\@\S+$/))
 					{
-<<<<<<< HEAD
-					    	$ok = 1;
-					}
-
-					# Ignore ?:
-					if (($opv eq ':O' && $ca =~ /\?$/) ||
-					    ($op eq '?' && $cc =~ /^:/)) {
-					    	$ok = 1;
-					}
-
-					if ($ok == 0) {
-						ERROR("SPACING",
-						      "spaces required around that '$op' $at\n" . $hereptr);
-					}
-				}
-				$off += length($elements[$n + 1]);
-=======
 						$ok = 1;
 					}
 
@@ -6552,7 +5391,6 @@ sub process {
 			    $fix) {
 				1 while $fixed[$fixlinenr] =~
 				    s/^(\+.*\S)\s+;/$1;/;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -6568,11 +5406,7 @@ sub process {
 ## 		    $line !~ /^.\s*$Type\s+$Ident(?:\s*=[^,{]*)?\s*,\s*$Type\s*$Ident.*/) {
 ##
 ## 			# Remove any bracketed sections to ensure we do not
-<<<<<<< HEAD
-## 			# falsly report the parameters of functions.
-=======
 ## 			# falsely report the parameters of functions.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ## 			my $ln = $line;
 ## 			while ($ln =~ s/\([^\(\)]*\)//g) {
 ## 			}
@@ -6583,19 +5417,6 @@ sub process {
 ## 		}
 
 #need space before brace following if, while, etc
-<<<<<<< HEAD
-		if (($line =~ /\(.*\){/ && $line !~ /\($Type\){/) ||
-		    $line =~ /do{/) {
-			ERROR("SPACING",
-			      "space required before the open brace '{'\n" . $herecurr);
-		}
-
-# closing brace should have a space following it when it has anything
-# on the line
-		if ($line =~ /}(?!(?:,|;|\)))\S/) {
-			ERROR("SPACING",
-			      "space required after that close brace '}'\n" . $herecurr);
-=======
 		if (($line =~ /\(.*\)\{/ && $line !~ /\($Type\)\{/) ||
 		    $line =~ /\b(?:else|do)\{/) {
 			if (ERROR("SPACING",
@@ -6622,19 +5443,10 @@ sub process {
 				$fixed[$fixlinenr] =~
 				    s/}((?!(?:,|;|\)))\S)/} $1/;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check spacing on square brackets
 		if ($line =~ /\[\s/ && $line !~ /\[\s*$/) {
-<<<<<<< HEAD
-			ERROR("SPACING",
-			      "space prohibited after that open square bracket '['\n" . $herecurr);
-		}
-		if ($line =~ /\s\]/) {
-			ERROR("SPACING",
-			      "space prohibited before that close square bracket ']'\n" . $herecurr);
-=======
 			if (ERROR("SPACING",
 				  "space prohibited after that open square bracket '['\n" . $herecurr) &&
 			    $fix) {
@@ -6649,16 +5461,10 @@ sub process {
 				$fixed[$fixlinenr] =~
 				    s/\s+\]/\]/;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check spacing on parentheses
 		if ($line =~ /\(\s/ && $line !~ /\(\s*(?:\\)?$/ &&
-<<<<<<< HEAD
-		    $line !~ /for\s*\(\s+;/ && $line !~ /^\+\s*[A-Z_][A-Z\d_]*\(\s*\d+(\,.*)?\)\,?$/) {
-			ERROR("SPACING",
-				  "space prohibited after that open parenthesis '('\n" . $herecurr);
-=======
 		    $line !~ /for\s*\(\s+;/) {
 			if (ERROR("SPACING",
 				  "space prohibited after that open parenthesis '('\n" . $herecurr) &&
@@ -6666,43 +5472,10 @@ sub process {
 				$fixed[$fixlinenr] =~
 				    s/\(\s+/\(/;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if ($line =~ /(\s+)\)/ && $line !~ /^.\s*\)/ &&
 		    $line !~ /for\s*\(.*;\s+\)/ &&
 		    $line !~ /:\s+\)/) {
-<<<<<<< HEAD
-			ERROR("SPACING",
-			      "space prohibited before that close parenthesis ')'\n" . $herecurr);
-		}
-
-#goto labels aren't indented, allow a single space however
-		if ($line=~/^.\s+[A-Za-z\d_]+:(?![0-9]+)/ and
-		   !($line=~/^. [A-Za-z\d_]+:/) and !($line=~/^.\s+default:/)) {
-			WARN("INDENTED_LABEL",
-			     "labels should not be indented\n" . $herecurr);
-		}
-
-# Return is not a function.
-		if (defined($stat) && $stat =~ /^.\s*return(\s*)(\(.*);/s) {
-			my $spacing = $1;
-			my $value = $2;
-
-			# Flatten any parentheses
-			$value =~ s/\(/ \(/g;
-			$value =~ s/\)/\) /g;
-			while ($value =~ s/\[[^\[\]]*\]/1/ ||
-			       $value !~ /(?:$Ident|-?$Constant)\s*
-					     $Compare\s*
-					     (?:$Ident|-?$Constant)/x &&
-			       $value =~ s/\([^\(\)]*\)/1/) {
-			}
-#print "value<$value>\n";
-			if ($value =~ /^\s*(?:$Ident|-?$Constant)\s*$/) {
-				ERROR("RETURN_PARENTHESES",
-				      "return is not a function, parentheses are not required\n" . $herecurr);
-
-=======
 			if (ERROR("SPACING",
 				  "space prohibited before that close parenthesis ')'\n" . $herecurr) &&
 			    $fix) {
@@ -6800,20 +5573,11 @@ sub process {
 					ERROR("RETURN_PARENTHESES",
 					      "return is not a function, parentheses are not required\n" . $herecurr);
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} elsif ($spacing !~ /\s+/) {
 				ERROR("SPACING",
 				      "space required before the open parenthesis '('\n" . $herecurr);
 			}
 		}
-<<<<<<< HEAD
-# Return of what appears to be an errno should normally be -'ve
-		if ($line =~ /^.\s*return\s*(E[A-Z]*)\s*;/) {
-			my $name = $1;
-			if ($name ne 'EOF' && $name ne 'ERROR') {
-				WARN("USE_NEGATIVE_ERRNO",
-				     "return of an errno should typically be -ve (return -$1)\n" . $herecurr);
-=======
 
 # unnecessary return in a void function
 # at end-of-function, with the previous line a single leading tab, then return;
@@ -6876,15 +5640,10 @@ sub process {
 			if ($name ne 'EOF' && $name ne 'ERROR' && $name !~ /^EPOLL/) {
 				WARN("USE_NEGATIVE_ERRNO",
 				     "return of an errno should typically be negative (ie: return -$1)\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 # Need a space before open parenthesis after if, while etc
-<<<<<<< HEAD
-		if ($line=~/\b(if|while|for|switch)\(/) {
-			ERROR("SPACING", "space required before the open parenthesis '('\n" . $herecurr);
-=======
 		if ($line =~ /\b(if|while|for|switch)\(/) {
 			if (ERROR("SPACING",
 				  "space required before the open parenthesis '('\n" . $herecurr) &&
@@ -6892,7 +5651,6 @@ sub process {
 				$fixed[$fixlinenr] =~
 				    s/\b(if|while|for|switch)\(/$1 \(/;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # Check for illegal assignment in if conditional -- and check for trailing
@@ -6919,14 +5677,6 @@ sub process {
 			}
 		}
 		if (!defined $suppress_whiletrailers{$linenr} &&
-<<<<<<< HEAD
-		    $line =~ /\b(?:if|while|for)\s*\(/ && $line !~ /^.\s*#/) {
-			my ($s, $c) = ($stat, $cond);
-
-			if ($c =~ /\bif\s*\(.*[^<>!=]=[^=].*/s) {
-				ERROR("ASSIGN_IN_IF",
-				      "do not use assignment in if condition\n" . $herecurr);
-=======
 		    defined($stat) && defined($cond) &&
 		    $line =~ /\b(?:if|while|for)\s*\(/ && $line !~ /^.\s*#/) {
 			my ($s, $c) = ($stat, $cond);
@@ -6958,18 +5708,13 @@ sub process {
 						$fixed_assign_in_if = 1;
 					}
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			# Find out what is on the end of the line after the
 			# conditional.
 			substr($s, 0, length($c), '');
 			$s =~ s/\n.*//g;
-<<<<<<< HEAD
-			$s =~ s/$;//g; 	# Remove any comments
-=======
 			$s =~ s/$;//g;	# Remove any comments
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (length($c) && $s !~ /^\s*{?\s*\\*\s*$/ &&
 			    $c !~ /}\s*while\s*/)
 			{
@@ -6984,10 +5729,6 @@ sub process {
 					$stat_real = "[...]\n$stat_real";
 				}
 
-<<<<<<< HEAD
-				ERROR("TRAILING_STATEMENTS",
-				      "trailing statements should be on next line\n" . $herecurr . $stat_real);
-=======
 				if (ERROR("TRAILING_STATEMENTS",
 					  "trailing statements should be on next line\n" . $herecurr . $stat_real) &&
 				    !$fixed_assign_in_if &&
@@ -7002,7 +5743,6 @@ sub process {
 						fix_insert_line($fixlinenr + 1, "$indent\t$rest");
 					}
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -7025,11 +5765,7 @@ sub process {
 # if and else should not have general statements after it
 		if ($line =~ /^.\s*(?:}\s*)?else\b(.*)/) {
 			my $s = $1;
-<<<<<<< HEAD
-			$s =~ s/$;//g; 	# Remove any comments
-=======
 			$s =~ s/$;//g;	# Remove any comments
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ($s !~ /^\s*(?:\sif|(?:{|)\s*\\?\s*$)/) {
 				ERROR("TRAILING_STATEMENTS",
 				      "trailing statements should be on next line\n" . $herecurr);
@@ -7038,11 +5774,7 @@ sub process {
 # if should not continue a brace
 		if ($line =~ /}\s*if\b/) {
 			ERROR("TRAILING_STATEMENTS",
-<<<<<<< HEAD
-			      "trailing statements should be on next line\n" .
-=======
 			      "trailing statements should be on next line (or did you mean 'else if'?)\n" .
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				$herecurr);
 		}
 # case and default should not have general statements after them
@@ -7058,16 +5790,6 @@ sub process {
 
 		# Check for }<nl>else {, these must be at the same
 		# indent level to be relevant to each other.
-<<<<<<< HEAD
-		if ($prevline=~/}\s*$/ and $line=~/^.\s*else\s*/ and
-						$previndent == $indent) {
-			ERROR("ELSE_AFTER_BRACE",
-			      "else should follow close brace '}'\n" . $hereprev);
-		}
-
-		if ($prevline=~/}\s*$/ and $line=~/^.\s*while\s*/ and
-						$previndent == $indent) {
-=======
 		if ($prevline=~/}\s*$/ and $line=~/^.\s*else\s*/ &&
 		    $previndent == $indent) {
 			if (ERROR("ELSE_AFTER_BRACE",
@@ -7088,7 +5810,6 @@ sub process {
 
 		if ($prevline=~/}\s*$/ and $line=~/^.\s*while\s*/ &&
 		    $previndent == $indent) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			my ($s, $c) = ctx_statement_block($linenr, $realcnt, 0);
 
 			# Find out what is on the end of the line after the
@@ -7097,27 +5818,6 @@ sub process {
 			$s =~ s/\n.*//g;
 
 			if ($s =~ /^\s*;/) {
-<<<<<<< HEAD
-				ERROR("WHILE_AFTER_BRACE",
-				      "while should follow close brace '}'\n" . $hereprev);
-			}
-		}
-
-#studly caps, commented out until figure out how to distinguish between use of existing and adding new
-#		if (($line=~/[\w_][a-z\d]+[A-Z]/) and !($line=~/print/)) {
-#		    print "No studly caps, use _\n";
-#		    print "$herecurr";
-#		    $clean = 0;
-#		}
-
-#no spaces allowed after \ in define
-		if ($line=~/\#\s*define.*\\\s$/) {
-			WARN("WHITESPACE_AFTER_LINE_CONTINUATION",
-			     "Whitepspace after \\ makes next lines useless\n" . $herecurr);
-		}
-
-#warn if <asm/foo.h> is #included and <linux/foo.h> is available (uses RAW line)
-=======
 				if (ERROR("WHILE_AFTER_BRACE",
 					  "while should follow close brace '}'\n" . $hereprev) &&
 				    $fix && $prevline =~ /^\+/ && $line =~ /^\+/) {
@@ -7181,7 +5881,6 @@ sub process {
 
 # warn if <asm/foo.h> is #included and <linux/foo.h> is available and includes
 # itself <asm/foo.h> (uses RAW line)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ($tree && $rawline =~ m{^.\s*\#\s*include\s*\<asm\/(.*)\.h\>}) {
 			my $file = "$1.h";
 			my $checkfile = "include/linux/$file";
@@ -7189,14 +5888,6 @@ sub process {
 			    $realfile ne $checkfile &&
 			    $1 !~ /$allowed_asm_includes/)
 			{
-<<<<<<< HEAD
-				if ($realfile =~ m{^arch/}) {
-					CHK("ARCH_INCLUDE_LINUX",
-					    "Consider using #include <linux/$file> instead of <asm/$file>\n" . $herecurr);
-				} else {
-					WARN("INCLUDE_LINUX",
-					     "Use #include <linux/$file> instead of <asm/$file>\n" . $herecurr);
-=======
 				my $asminclude = `grep -Ec "#include\\s+<asm/$file>" $root/$checkfile`;
 				if ($asminclude > 0) {
 					if ($realfile =~ m{^arch/}) {
@@ -7206,7 +5897,6 @@ sub process {
 						WARN("INCLUDE_LINUX",
 						     "Use #include <linux/$file> instead of <asm/$file>\n" . $herecurr);
 					}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 		}
@@ -7217,26 +5907,17 @@ sub process {
 		if ($realfile !~ m@/vmlinux.lds.h$@ &&
 		    $line =~ /^.\s*\#\s*define\s*$Ident(\()?/) {
 			my $ln = $linenr;
-<<<<<<< HEAD
-			my $cnt = $realcnt - 1;
-			my ($off, $dstat, $dcond, $rest);
-			my $ctx = '';
-=======
 			my $cnt = $realcnt;
 			my ($off, $dstat, $dcond, $rest);
 			my $ctx = '';
 			my $has_flow_statement = 0;
 			my $has_arg_concat = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			($dstat, $dcond, $ln, $cnt, $off) =
 				ctx_statement_block($linenr, $realcnt, 0);
 			$ctx = $dstat;
 			#print "dstat<$dstat> dcond<$dcond> cnt<$cnt> off<$off>\n";
 			#print "LINE<$lines[$ln-1]> len<" . length($lines[$ln-1]) . "\n";
 
-<<<<<<< HEAD
-			$dstat =~ s/^.\s*\#\s*define\s+$Ident(?:\([^\)]*\))?\s*//;
-=======
 			$has_flow_statement = 1 if ($ctx =~ /\b(goto|return)\b/);
 			$has_arg_concat = 1 if ($ctx =~ /\#\#/ && $ctx !~ /\#\#\s*(?:__VA_ARGS__|args)\b/);
 
@@ -7252,40 +5933,12 @@ sub process {
 				@def_args = split(",", $define_args);
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			$dstat =~ s/$;//g;
 			$dstat =~ s/\\\n.//g;
 			$dstat =~ s/^\s*//s;
 			$dstat =~ s/\s*$//s;
 
 			# Flatten any parentheses and braces
-<<<<<<< HEAD
-			while ($dstat =~ s/\([^\(\)]*\)/1/ ||
-			       $dstat =~ s/\{[^\{\}]*\}/1/ ||
-			       $dstat =~ s/\[[^\[\]]*\]/1/)
-			{
-			}
-
-			# Extremely long macros may fall off the end of the
-			# available context without closing.  Give a dangling
-			# backslash the benefit of the doubt and allow it
-			# to gobble any hanging open-parens.
-			$dstat =~ s/\(.+\\$/1/;
-
-			# Flatten any obvious string concatentation.
-			while ($dstat =~ s/("X*")\s*$Ident/$1/ ||
-			       $dstat =~ s/$Ident\s*("X*")/$1/)
-			{
-			}
-
-			my $exceptions = qr{
-				$Declare|
-				module_param_named|
-				MODULE_PARAM_DESC|
-				DECLARE_PER_CPU|
-				DEFINE_PER_CPU|
-				CLK_[A-Z\d_]+|
-=======
 			while ($dstat =~ s/\([^\(\)]*\)/1u/ ||
 			       $dstat =~ s/\{[^\{\}]*\}/1u/ ||
 			       $dstat =~ s/.\[[^\[\]]*\]/1u/)
@@ -7307,38 +5960,10 @@ sub process {
 				MODULE_PARM_DESC|
 				DECLARE_PER_CPU|
 				DEFINE_PER_CPU|
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__typeof__\(|
 				union|
 				struct|
 				\.$Ident\s*=\s*|
-<<<<<<< HEAD
-				^\"|\"$
-			}x;
-			#print "REST<$rest> dstat<$dstat> ctx<$ctx>\n";
-			if ($dstat ne '' &&
-			    $dstat !~ /^(?:$Ident|-?$Constant),$/ &&			# 10, // foo(),
-			    $dstat !~ /^(?:$Ident|-?$Constant);$/ &&			# foo();
-			    $dstat !~ /^[!~-]?(?:$Ident|$Constant)$/ &&		# 10 // foo() // !foo // ~foo // -foo
-			    $dstat !~ /^'X'$/ &&					# character constants
-			    $dstat !~ /$exceptions/ &&
-			    $dstat !~ /^\.$Ident\s*=/ &&				# .foo =
-			    $dstat !~ /^do\s*$Constant\s*while\s*$Constant;?$/ &&	# do {...} while (...); // do {...} while (...)
-			    $dstat !~ /^for\s*$Constant$/ &&				# for (...)
-			    $dstat !~ /^for\s*$Constant\s+(?:$Ident|-?$Constant)$/ &&	# for (...) bar()
-			    $dstat !~ /^do\s*{/ &&					# do {...
-			    $dstat !~ /^\({/)						# ({...
-			{
-				$ctx =~ s/\n*$//;
-				my $herectx = $here . "\n";
-				my $cnt = statement_rawlines($ctx);
-
-				for (my $n = 0; $n < $cnt; $n++) {
-					$herectx .= raw_line($linenr, $n) . "\n";
-				}
-
-				if ($dstat =~ /;/) {
-=======
 				^\"|\"$|
 				^\[
 			}x;
@@ -7369,26 +5994,10 @@ sub process {
 					ERROR("MULTISTATEMENT_MACRO_USE_DO_WHILE",
 					      "Macros starting with if should be enclosed by a do - while loop to avoid possible if/else logic defects\n" . "$herectx");
 				} elsif ($dstat =~ /;/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ERROR("MULTISTATEMENT_MACRO_USE_DO_WHILE",
 					      "Macros with multiple statements should be enclosed in a do - while loop\n" . "$herectx");
 				} else {
 					ERROR("COMPLEX_MACRO",
-<<<<<<< HEAD
-					      "Macros with complex values should be enclosed in parenthesis\n" . "$herectx");
-				}
-			}
-		}
-
-# make sure symbols are always wrapped with VMLINUX_SYMBOL() ...
-# all assignments may have only one of the following with an assignment:
-#	.
-#	ALIGN(...)
-#	VMLINUX_SYMBOL(...)
-		if ($realfile eq 'vmlinux.lds.h' && $line =~ /(?:(?:^|\s)$Ident\s*=|=\s*$Ident(?:\s|$))/) {
-			WARN("MISSING_VMLINUX_SYMBOL",
-			     "vmlinux.lds.h needs VMLINUX_SYMBOL() around C-visible symbols\n" . $herecurr);
-=======
 					      "Macros with complex values should be enclosed in parentheses\n" . "$herectx");
 				}
 
@@ -7500,7 +6109,6 @@ sub process {
 				WARN("TRAILING_SEMICOLON",
 				     "macros should not use a trailing semicolon\n" . "$herectx");
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for redundant bracing round if etc
@@ -7609,38 +6217,14 @@ sub process {
 				}
 			}
 			if ($level == 0 && $block =~ /^\s*\{/ && !$allowed) {
-<<<<<<< HEAD
-				my $herectx = $here . "\n";
-				my $cnt = statement_rawlines($block);
-
-				for (my $n = 0; $n < $cnt; $n++) {
-					$herectx .= raw_line($linenr, $n) . "\n";
-				}
-=======
 				my $cnt = statement_rawlines($block);
 				my $herectx = get_stat_here($linenr, $cnt, $here);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				WARN("BRACES",
 				     "braces {} are not necessary for single statement blocks\n" . $herectx);
 			}
 		}
 
-<<<<<<< HEAD
-# don't include deprecated include files (uses RAW line)
-		for my $inc (@dep_includes) {
-			if ($rawline =~ m@^.\s*\#\s*include\s*\<$inc>@) {
-				ERROR("DEPRECATED_INCLUDE",
-				      "Don't use <$inc>: see Documentation/feature-removal-schedule.txt\n" . $herecurr);
-			}
-		}
-
-# don't use deprecated functions
-		for my $func (@dep_functions) {
-			if ($line =~ /\b$func\b/) {
-				ERROR("DEPRECATED_FUNCTION",
-				      "Don't use $func(): see Documentation/feature-removal-schedule.txt\n" . $herecurr);
-=======
 # check for single line unbalanced braces
 		if ($sline =~ /^.\s*\}\s*else\s*$/ ||
 		    $sline =~ /^.\s*else\s*\{\s*$/) {
@@ -7660,7 +6244,6 @@ sub process {
 				"Blank lines aren't necessary after an open brace '{'\n" . $hereprev) &&
 			    $fix) {
 				fix_delete_line($fixlinenr, $rawline);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -7668,89 +6251,6 @@ sub process {
 		my $asm_volatile = qr{\b(__asm__|asm)\s+(__volatile__|volatile)\b};
 		if ($line =~ /\bvolatile\b/ && $line !~ /$asm_volatile/) {
 			WARN("VOLATILE",
-<<<<<<< HEAD
-			     "Use of volatile is usually wrong: see Documentation/volatile-considered-harmful.txt\n" . $herecurr);
-		}
-
-# sys_open/read/write/close are not allowed in the kernel
-		if ($line =~ /\b(sys_(?:open|read|write|close))\b/) {
-			ERROR("FILE_OPS", "$1 is inappropriate in kernel code.\n" .
-			      $herecurr);
-		}
-
-# filp_open is a backdoor for sys_open
-		if ($line =~ /\b(filp_open)\b/) {
-			ERROR("FILE_OPS", "$1 is inappropriate in kernel code.\n" .
-			      $herecurr);
-		}
-
-# read[bwl] & write[bwl] use too many barriers, use the _relaxed variants
-		if ($line =~ /\b((?:read|write)[bwl])\b/) {
-			ERROR("NON_RELAXED_IO",
-			      "Use of $1 is deprecated: use $1_relaxed\n\t" .
-			      "with appropriate memory barriers instead.\n" .
-			      $herecurr);
-		}
-
-# likewise, in/out[bwl] should be __raw_read/write[bwl]...
-		if ($line =~ /\b((in|out)([bwl]))\b/) {
-			my ($all, $pref, $suf) = ($1, $2, $3);
-			$pref =~ s/in/read/;
-			$pref =~ s/out/write/;
-			ERROR("NON_RELAXED_IO",
-			      "Use of $all is deprecated: use " .
-			      "__raw_$pref$suf\n\t" .
-			      "with appropriate memory barriers instead.\n" .
-			      $herecurr);
-		}
-
-# dsb is too ARMish, and should usually be mb.
-		if ($line =~ /\bdsb\b/) {
-			WARN("ARM_BARRIER",
-			     "Use of dsb is discouranged: prefer mb.\n" .
-			     $herecurr);
-		}
-
-# MSM - check if a non board-gpiomux file has any gpiomux declarations
-	if ($realfile =~ /\/mach-msm\/board-[0-9]+/ &&
-	    $realfile !~ /camera/ && $realfile !~ /gpiomux/ &&
-	    $line =~ /\s*struct msm_gpiomux_config\s*/ ) {
-		WARN("GPIOMUX_IN_BOARD",
-		     "Non gpiomux board file cannot have a gpiomux config declarations. Please declare gpiomux configs in board-*-gpiomux.c file.\n" . $herecurr);
-	}
-
-# MSM - check if vreg_xxx function are used
-	if ($line =~ /\b(vreg_(get|put|set_level|enable|disable))\b/) {
-		WARN("DEPRECATED_VREG_APIS", "Use of $1 API is deprecated: " .
-			"use regulator APIs\n" . $herecurr);
-	}
-
-# unbounded string functions are overflow risks
-		my %str_fns = (
-			"sprintf" => "snprintf",
-			"strcpy"  => "strlcpy",
-			"strncpy"  => "strlcpy",
-			"strcat"  => "strlcat",
-			"strncat"  => "strlcat",
-			"vsprintf"  => "vsnprintf",
-			"strchr" => "strnchr",
-			"strstr" => "strnstr",
-		);
-		foreach my $k (keys %str_fns) {
-			if ($line =~ /\b$k\b/) {
-				ERROR("UNBOUNDED_STRING_FNS",
-				      "Use of $k is deprecated: " .
-				      "use $str_fns{$k} instead.\n" .
-				      $herecurr);
-			}
-		}
-
-# warn about #if 0
-		if ($line =~ /^.\s*\#\s*if\s+0\b/) {
-			WARN("IF_0",
-			     "if this code is redundant consider removing it\n"
-				.  $herecurr);
-=======
 			     "Use of volatile is usually wrong: see Documentation/process/volatile-considered-harmful.rst\n" . $herecurr);
 		}
 
@@ -7887,32 +6387,11 @@ sub process {
 		if ($line =~ /^.\s*\#\s*if\s+0\b/) {
 			WARN("IF_0",
 			     "Consider removing the code enclosed by this #if 0 and its #endif\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # warn about #if 1
 		if ($line =~ /^.\s*\#\s*if\s+1\b/) {
 			WARN("IF_1",
-<<<<<<< HEAD
-			     "if this code is required consider removing"
-				. " #if 1\n" .  $herecurr);
-		}
-
-# check for needless kfree() checks
-		if ($prevline =~ /\bif\s*\(([^\)]*)\)/) {
-			my $expr = $1;
-			if ($line =~ /\bkfree\(\Q$expr\E\);/) {
-				WARN("NEEDLESS_KFREE",
-				     "kfree(NULL) is safe this check is probably not required\n" . $hereprev);
-			}
-		}
-# check for needless usb_free_urb() checks
-		if ($prevline =~ /\bif\s*\(([^\)]*)\)/) {
-			my $expr = $1;
-			if ($line =~ /\busb_free_urb\(\Q$expr\E\);/) {
-				WARN("NEEDLESS_USB_FREE_URB",
-				     "usb_free_urb(NULL) is safe this check is probably not required\n" . $hereprev);
-=======
 			     "Consider removing the #if 1 and its #endif\n" . $herecurr);
 		}
 
@@ -8095,18 +6574,10 @@ sub process {
 				 "$constant_func should be $func\n" . $herecurr) &&
 			    $fix) {
 				$fixed[$fixlinenr] =~ s/\b$constant_func\b/$func/g;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 # prefer usleep_range over udelay
-<<<<<<< HEAD
-		if ($line =~ /\budelay\s*\(\s*(\w+)\s*\)/) {
-			# ignore udelay's < 10, however
-			if (! (($1 =~ /(\d+)/) && ($1 < 10)) ) {
-				CHK("USLEEP_RANGE",
-				    "usleep_range is preferred over udelay; see Documentation/timers/timers-howto.txt\n" . $line);
-=======
 		if ($line =~ /\budelay\s*\(\s*(\d+)\s*\)/) {
 			my $delay = $1;
 			# ignore udelay's < 10, however
@@ -8117,7 +6588,6 @@ sub process {
 			if ($delay > 2000) {
 				WARN("LONG_UDELAY",
 				     "long udelay - prefer mdelay; see arch/arm/include/asm/delay.h\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -8125,16 +6595,6 @@ sub process {
 		if ($line =~ /\bmsleep\s*\((\d+)\);/) {
 			if ($1 < 20) {
 				WARN("MSLEEP",
-<<<<<<< HEAD
-				     "msleep < 20ms can sleep for up to 20ms; see Documentation/timers/timers-howto.txt\n" . $line);
-			}
-		}
-
-# check the patch for use of mdelay
-		if ($line =~ /\bmdelay\s*\(/) {
-			WARN("MDELAY",
-			     "use of mdelay() found: msleep() is the preferred API.\n" . $line );
-=======
 				     "msleep < 20ms can sleep for up to 20ms; see Documentation/timers/timers-howto.rst\n" . $herecurr);
 			}
 		}
@@ -8149,7 +6609,6 @@ sub process {
 		if ($line =~ /\bget_jiffies_64\s*\(\s*\)\s*$Compare|$Compare\s*get_jiffies_64\s*\(\s*\)/) {
 			WARN("JIFFIES_COMPARISON",
 			     "Comparing get_jiffies_64() is almost always wrong; prefer time_after64, time_before64 and friends\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # warn about #ifdefs in C files
@@ -8161,10 +6620,6 @@ sub process {
 
 # warn about spacing in #ifdefs
 		if ($line =~ /^.\s*\#\s*(ifdef|ifndef|elif)\s\s+/) {
-<<<<<<< HEAD
-			ERROR("SPACING",
-			      "exactly one space required after that #$1\n" . $herecurr);
-=======
 			if (ERROR("SPACING",
 				  "exactly one space required after that #$1\n" . $herecurr) &&
 			    $fix) {
@@ -8172,7 +6627,6 @@ sub process {
 				    s/^(.\s*\#\s*(ifdef|ifndef|elif))\s{2,}/$1 /;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for spinlock_t definitions without a comment.
@@ -8185,14 +6639,6 @@ sub process {
 			}
 		}
 # check for memory barriers without a comment.
-<<<<<<< HEAD
-		if ($line =~ /\b(mb|rmb|wmb|read_barrier_depends|smp_mb|smp_rmb|smp_wmb|smp_read_barrier_depends)\(/) {
-			if (!ctx_has_comment($first_line, $linenr)) {
-				CHK("MEMORY_BARRIER",
-				    "memory barrier without comment\n" . $herecurr);
-			}
-		}
-=======
 
 		my $barriers = qr{
 			mb|
@@ -8246,19 +6692,12 @@ sub process {
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # check of hardware specific defines
 		if ($line =~ m@^.\s*\#\s*if.*\b(__i386__|__powerpc64__|__sun__|__s390x__)\b@ && $realfile !~ m@include/asm-@) {
 			CHK("ARCH_DEFINES",
 			    "architecture specific defines should be avoided\n" .  $herecurr);
 		}
 
-<<<<<<< HEAD
-# Check that the storage class is at the beginning of a declaration
-		if ($line =~ /\b$Storage\b/ && $line !~ /^.\s*$Storage\b/) {
-			WARN("STORAGE_CLASS",
-			     "storage class should be at the beginning of the declaration\n" . $herecurr)
-=======
 # check that the storage class is not after a type
 		if ($line =~ /\b($Type)\s+($Storage)\b/) {
 			WARN("STORAGE_CLASS",
@@ -8271,7 +6710,6 @@ sub process {
 		    $1 !~ /[\,\)]\s*$/) {
 			WARN("STORAGE_CLASS",
 			     "storage class should be at the beginning of the declaration\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check the location of the inline attribute, that it is between
@@ -8283,35 +6721,6 @@ sub process {
 		}
 
 # Check for __inline__ and __inline, prefer inline
-<<<<<<< HEAD
-		if ($line =~ /\b(__inline__|__inline)\b/) {
-			WARN("INLINE",
-			     "plain inline is preferred over $1\n" . $herecurr);
-		}
-
-# Check for __attribute__ packed, prefer __packed
-		if ($line =~ /\b__attribute__\s*\(\s*\(.*\bpacked\b/) {
-			WARN("PREFER_PACKED",
-			     "__packed is preferred over __attribute__((packed))\n" . $herecurr);
-		}
-
-# Check for __attribute__ aligned, prefer __aligned
-		if ($line =~ /\b__attribute__\s*\(\s*\(.*aligned/) {
-			WARN("PREFER_ALIGNED",
-			     "__aligned(size) is preferred over __attribute__((aligned(size)))\n" . $herecurr);
-		}
-
-# Check for __attribute__ format(printf, prefer __printf
-		if ($line =~ /\b__attribute__\s*\(\s*\(\s*format\s*\(\s*printf/) {
-			WARN("PREFER_PRINTF",
-			     "__printf(string-index, first-to-check) is preferred over __attribute__((format(printf, string-index, first-to-check)))\n" . $herecurr);
-		}
-
-# Check for __attribute__ format(scanf, prefer __scanf
-		if ($line =~ /\b__attribute__\s*\(\s*\(\s*format\s*\(\s*scanf\b/) {
-			WARN("PREFER_SCANF",
-			     "__scanf(string-index, first-to-check) is preferred over __attribute__((format(scanf, string-index, first-to-check)))\n" . $herecurr);
-=======
 		if ($realfile !~ m@\binclude/uapi/@ &&
 		    $line =~ /\b(__inline__|__inline)\b/) {
 			if (WARN("INLINE",
@@ -8433,7 +6842,6 @@ sub process {
 			    $fix) {
 				$fixed[$fixlinenr] =~ s/\Q$cast\E$const\b/$newconst$suffix/;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for sizeof(&)
@@ -8442,18 +6850,6 @@ sub process {
 			     "sizeof(& should be avoided\n" . $herecurr);
 		}
 
-<<<<<<< HEAD
-# check for line continuations in quoted strings with odd counts of "
-		if ($rawline =~ /\\$/ && $rawline =~ tr/"/"/ % 2) {
-			WARN("LINE_CONTINUATIONS",
-			     "Avoid line continuations in quoted strings\n" . $herecurr);
-		}
-
-# Check for misused memsets
-		if ($^V && $^V ge 5.10.0 &&
-		    defined $stat &&
-		    $stat =~ /^\+(?:.*?)\bmemset\s*\(\s*$FuncArg\s*,\s*$FuncArg\s*\,\s*$FuncArg\s*\)/s) {
-=======
 # check for sizeof without parenthesis
 		if ($line =~ /\bsizeof\s+((?:\*\s*|)$Lval|$Type(?:\s+$Lval|))/) {
 			if (WARN("SIZEOF_PARENTHESIS",
@@ -8542,7 +6938,6 @@ sub process {
 		if ($perl_version_ok &&
 		    defined $stat &&
 		    $stat =~ /^\+(?:.*?)\bmemset\s*\(\s*$FuncArg\s*,\s*$FuncArg\s*\,\s*$FuncArg\s*\)/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			my $ms_addr = $2;
 			my $ms_val = $7;
@@ -8557,10 +6952,6 @@ sub process {
 			}
 		}
 
-<<<<<<< HEAD
-# typecasts on min/max could be min_t/max_t
-		if ($^V && $^V ge 5.10.0 &&
-=======
 # Check for memcpy(foo, bar, ETH_ALEN) that could be ether_addr_copy(foo, bar)
 #		if ($perl_version_ok &&
 #		    defined $stat &&
@@ -8642,7 +7033,6 @@ sub process {
 
 # typecasts on min/max could be min_t/max_t
 		if ($perl_version_ok &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    defined $stat &&
 		    $stat =~ /^\+(?:.*?)\b(min|max)\s*\(\s*$FuncArg\s*,\s*$FuncArg\s*\)/) {
 			if (defined $2 || defined $7) {
@@ -8665,8 +7055,6 @@ sub process {
 			}
 		}
 
-<<<<<<< HEAD
-=======
 # check usleep_range arguments
 		if ($perl_version_ok &&
 		    defined $stat &&
@@ -8725,7 +7113,6 @@ sub process {
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # check for new externs in .c files.
 		if ($realfile =~ /\.c$/ && defined $stat &&
 		    $stat =~ /^.\s*(?:extern\s+)?$Type\s+($Ident)(\s*)\(/s)
@@ -8737,12 +7124,7 @@ sub process {
 			if (defined $cond) {
 				substr($s, 0, length($cond), '');
 			}
-<<<<<<< HEAD
-			if ($s =~ /^\s*;/ &&
-			    $function_name ne 'uninitialized_var')
-=======
 			if ($s =~ /^\s*;/)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			{
 				WARN("AVOID_EXTERNS",
 				     "externs should be avoided in .c files\n" .  $herecurr);
@@ -8754,8 +7136,6 @@ sub process {
 			}
 
 		} elsif ($realfile =~ /\.c$/ && defined $stat &&
-<<<<<<< HEAD
-=======
 		    $stat =~ /^\+extern struct\s+(\w+)\s+(\w+)\[\];/)
 		{
 			my ($st_type, $st_name) = ($1, $2);
@@ -8771,15 +7151,12 @@ sub process {
 		  LIKELY_LINKER_SYMBOL:
 
 		} elsif ($realfile =~ /\.c$/ && defined $stat &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    $stat =~ /^.\s*extern\s+/)
 		{
 			WARN("AVOID_EXTERNS",
 			     "externs should be avoided in .c files\n" .  $herecurr);
 		}
 
-<<<<<<< HEAD
-=======
 # check for function declarations that have arguments without identifier names
 		if (defined $stat &&
 		    $stat =~ /^.\s*(?:extern\s+)?$Type\s*(?:$Ident|\(\s*\*\s*$Ident\s*\))\s*\(\s*([^{]+)\s*\)\s*;/s &&
@@ -8817,50 +7194,22 @@ sub process {
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # checks for new __setup's
 		if ($rawline =~ /\b__setup\("([^"]*)"/) {
 			my $name = $1;
 
 			if (!grep(/$name/, @setup_docs)) {
 				CHK("UNDOCUMENTED_SETUP",
-<<<<<<< HEAD
-				    "__setup appears un-documented -- check Documentation/kernel-parameters.txt\n" . $herecurr);
-			}
-		}
-
-# check for pointless casting of kmalloc return
-		if ($line =~ /\*\s*\)\s*[kv][czm]alloc(_node){0,1}\b/) {
-=======
 				    "__setup appears un-documented -- check Documentation/admin-guide/kernel-parameters.txt\n" . $herecurr);
 			}
 		}
 
 # check for pointless casting of alloc functions
 		if ($line =~ /\*\s*\)\s*$allocFunctions\b/) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			WARN("UNNECESSARY_CASTS",
 			     "unnecessary cast may hide bugs, see http://c-faq.com/malloc/mallocnocast.html\n" . $herecurr);
 		}
 
-<<<<<<< HEAD
-# check for multiple semicolons
-		if ($line =~ /;\s*;\s*$/) {
-		    WARN("ONE_SEMICOLON",
-			 "Statements terminations use 1 semicolon\n" . $herecurr);
-		}
-
-# check for return codes on error paths
-		if ($line =~ /\breturn\s+-\d+/) {
-			ERROR("NO_ERROR_CODE",
-			      "illegal return value, please use an error code\n" . $herecurr);
-		}
-
-# check for gcc specific __FUNCTION__
-		if ($line =~ /__FUNCTION__/) {
-			WARN("USE_FUNC",
-			     "__func__ should be used instead of gcc specific __FUNCTION__\n"  . $herecurr);
-=======
 # alloc style
 # p = alloc(sizeof(struct foo), ...) should be p = alloc(sizeof(*p), ...)
 		if ($perl_version_ok &&
@@ -8997,7 +7346,6 @@ sub process {
 		while ($line =~ /\b(__(?:DATE|TIME|TIMESTAMP)__)\b/g) {
 			ERROR("DATE_TIME",
 			      "Use of the '$1' macro makes the build non-deterministic\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # check for use of yield()
@@ -9006,8 +7354,6 @@ sub process {
 			     "Using yield() is generally wrong. See yield() kernel-doc (sched/core.c)\n"  . $herecurr);
 		}
 
-<<<<<<< HEAD
-=======
 # check for comparisons against true and false
 		if ($line =~ /\+\s*(.*?)\b(true|false|$Lval)\s*(==|\!=)\s*(true|false|$Lval)\b(.*)$/i) {
 			my $lead = $1;
@@ -9035,7 +7381,6 @@ sub process {
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # check for semaphores initialized locked
 		if ($line =~ /^.\s*sema_init.+,\W?0\W?\)/) {
 			WARN("CONSIDER_COMPLETION",
@@ -9048,57 +7393,6 @@ sub process {
 			     "$1 is obsolete, use k$3 instead\n" . $herecurr);
 		}
 
-<<<<<<< HEAD
-# check for __initcall(), use device_initcall() explicitly please
-		if ($line =~ /^.\s*__initcall\s*\(/) {
-			WARN("USE_DEVICE_INITCALL",
-			     "please use device_initcall() instead of __initcall()\n" . $herecurr);
-		}
-
-# check for various ops structs, ensure they are const.
-		my $struct_ops = qr{acpi_dock_ops|
-				address_space_operations|
-				backlight_ops|
-				block_device_operations|
-				dentry_operations|
-				dev_pm_ops|
-				dma_map_ops|
-				extent_io_ops|
-				file_lock_operations|
-				file_operations|
-				hv_ops|
-				ide_dma_ops|
-				intel_dvo_dev_ops|
-				item_operations|
-				iwl_ops|
-				kgdb_arch|
-				kgdb_io|
-				kset_uevent_ops|
-				lock_manager_operations|
-				microcode_ops|
-				mtrr_ops|
-				neigh_ops|
-				nlmsvc_binding|
-				pci_raw_ops|
-				pipe_buf_operations|
-				platform_hibernation_ops|
-				platform_suspend_ops|
-				proto_ops|
-				rpc_pipe_ops|
-				seq_operations|
-				snd_ac97_build_ops|
-				soc_pcmcia_socket_ops|
-				stacktrace_ops|
-				sysfs_ops|
-				tty_operations|
-				usb_mon_operations|
-				wd_ops}x;
-		if ($line !~ /\bconst\b/ &&
-		    $line =~ /\bstruct\s+($struct_ops)\b/) {
-			WARN("CONST_STRUCT",
-			     "struct $1 should normally be const\n" .
-				$herecurr);
-=======
 # check for __initcall(), use device_initcall() explicitly or more appropriate function please
 		if ($line =~ /^.\s*__initcall\s*\(/) {
 			WARN("USE_DEVICE_INITCALL",
@@ -9126,45 +7420,23 @@ sub process {
 		    $line =~ /\bstruct\s+($const_structs)\b(?!\s*\{)/) {
 			WARN("CONST_STRUCT",
 			     "struct $1 should normally be const\n" . $herecurr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 # use of NR_CPUS is usually wrong
 # ignore definitions of NR_CPUS and usage to define arrays as likely right
-<<<<<<< HEAD
-=======
 # ignore designated initializers using NR_CPUS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ($line =~ /\bNR_CPUS\b/ &&
 		    $line !~ /^.\s*\s*#\s*if\b.*\bNR_CPUS\b/ &&
 		    $line !~ /^.\s*\s*#\s*define\b.*\bNR_CPUS\b/ &&
 		    $line !~ /^.\s*$Declare\s.*\[[^\]]*NR_CPUS[^\]]*\]/ &&
 		    $line !~ /\[[^\]]*\.\.\.[^\]]*NR_CPUS[^\]]*\]/ &&
-<<<<<<< HEAD
-		    $line !~ /\[[^\]]*NR_CPUS[^\]]*\.\.\.[^\]]*\]/)
-=======
 		    $line !~ /\[[^\]]*NR_CPUS[^\]]*\.\.\.[^\]]*\]/ &&
 		    $line !~ /^.\s*\.\w+\s*=\s*.*\bNR_CPUS\b/)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			WARN("NR_CPUS",
 			     "usage of NR_CPUS is often wrong - consider using cpu_possible(), num_possible_cpus(), for_each_possible_cpu(), etc\n" . $herecurr);
 		}
 
-<<<<<<< HEAD
-# check for %L{u,d,i} in strings
-		my $string;
-		while ($line =~ /(?:^|")([X\t]*)(?:"|$)/g) {
-			$string = substr($rawline, $-[1], $+[1] - $-[1]);
-			$string =~ s/%%/__/g;
-			if ($string =~ /(?<!%)%L[udi]/) {
-				WARN("PRINTF_L",
-				     "\%Ld/%Lu are not-standard C, use %lld/%llu\n" . $herecurr);
-				last;
-			}
-		}
-
-=======
 # Use of __ARCH_HAS_<FOO> or ARCH_HAVE_<BAR> is wrong.
 		if ($line =~ /\+\s*#\s*define\s+((?:__)?ARCH_(?:HAS|HAVE)\w*)\b/) {
 			ERROR("DEFINE_ARCH_HAS",
@@ -9205,7 +7477,6 @@ sub process {
 			     "nested (un)?likely() calls, $1 already uses unlikely() internally\n" . $herecurr);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # whine mightly about in_atomic
 		if ($line =~ /\bin_atomic\s*\(/) {
 			if ($realfile =~ m@^drivers/@) {
@@ -9217,8 +7488,6 @@ sub process {
 			}
 		}
 
-<<<<<<< HEAD
-=======
 # Complain about RCU Tasks Trace used outside of BPF (and of course, RCU).
 		our $rcu_trace_funcs = qr{(?x:
 			rcu_read_lock_trace |
@@ -9243,7 +7512,6 @@ sub process {
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # check for lockdep_set_novalidate_class
 		if ($line =~ /^.\s*lockdep_set_novalidate_class\s*\(/ ||
 		    $line =~ /__lockdep_no_validate__\s*\)/ ) {
@@ -9255,13 +7523,6 @@ sub process {
 			}
 		}
 
-<<<<<<< HEAD
-		if ($line =~ /debugfs_create_file.*S_IWUGO/ ||
-		    $line =~ /DEVICE_ATTR.*S_IWUGO/ ) {
-			WARN("EXPORTED_WORLD_WRITABLE",
-			     "Exporting world writable files is usually an error. Consider more restrictive permissions.\n" . $herecurr);
-		}
-=======
 		if ($line =~ /debugfs_create_\w+.*\b$mode_perms_world_writable\b/ ||
 		    $line =~ /DEVICE_ATTR.*\b$mode_perms_world_writable\b/) {
 			WARN("EXPORTED_WORLD_WRITABLE",
@@ -9406,7 +7667,6 @@ sub process {
 			WARN("DUPLICATED_SYSCTL_CONST",
 				"duplicated sysctl range checking value '$1', consider using the shared one in include/linux/sysctl.h\n" . $herecurr);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	# If we have no input at all, then there is nothing to report on
@@ -9421,25 +7681,12 @@ sub process {
 		exit(0);
 	}
 
-<<<<<<< HEAD
-	# This is not a patch, and we are are in 'no-patch' mode so
-=======
 	# This is not a patch, and we are in 'no-patch' mode so
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	# just keep quiet.
 	if (!$chk_patch && !$is_patch) {
 		exit(0);
 	}
 
-<<<<<<< HEAD
-	if (!$is_patch) {
-		ERROR("NOT_UNIFIED_DIFF",
-		      "Does not appear to be a unified-diff format patch\n");
-	}
-	if ($is_patch && $chk_signoff && $signoff == 0) {
-		ERROR("MISSING_SIGN_OFF",
-		      "Missing Signed-off-by: line(s)\n");
-=======
 	if (!$is_patch && $filename !~ /cover-letter\.patch$/) {
 		ERROR("NOT_UNIFIED_DIFF",
 		      "Does not appear to be a unified-diff format patch\n");
@@ -9476,7 +7723,6 @@ sub process {
 				     "From:/Signed-off-by: email subaddress mismatch: $sob_msg\n");
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	print report_dump();
@@ -9485,47 +7731,6 @@ sub process {
 		print "total: $cnt_error errors, $cnt_warn warnings, " .
 			(($check)? "$cnt_chk checks, " : "") .
 			"$cnt_lines lines checked\n";
-<<<<<<< HEAD
-		print "\n" if ($quiet == 0);
-	}
-
-	if ($quiet == 0) {
-
-		if ($^V lt 5.10.0) {
-			print("NOTE: perl $^V is not modern enough to detect all possible issues.\n");
-			print("An upgrade to at least perl v5.10.0 is suggested.\n\n");
-		}
-
-		# If there were whitespace errors which cleanpatch can fix
-		# then suggest that.
-		if ($rpt_cleaners) {
-			print "NOTE: whitespace errors detected, you may wish to use scripts/cleanpatch or\n";
-			print "      scripts/cleanfile\n\n";
-			$rpt_cleaners = 0;
-		}
-	}
-
-	if ($quiet == 0 && keys %ignore_type) {
-	    print "NOTE: Ignored message types:";
-	    foreach my $ignore (sort keys %ignore_type) {
-		print " $ignore";
-	    }
-	    print "\n\n";
-	}
-
-	if ($clean == 1 && $quiet == 0) {
-		print "$vname has no obvious style problems and is ready for submission.\n"
-	}
-	if ($clean == 0 && $quiet == 0) {
-		print << "EOM";
-$vname has style problems, please review.
-
-If any of these errors are false positives, please report
-them to the maintainer, see CHECKPATCH in MAINTAINERS.
-EOM
-	}
-
-=======
 	}
 
 	if ($quiet == 0) {
@@ -9596,6 +7801,5 @@ EOM
 			print "$vname has style problems, please review.\n";
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return $clean;
 }

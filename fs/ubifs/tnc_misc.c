@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Adrian Hunter
  *          Artem Bityutskiy (Битюцкий Артём)
  */
@@ -38,32 +19,21 @@
 
 /**
  * ubifs_tnc_levelorder_next - next TNC tree element in levelorder traversal.
-<<<<<<< HEAD
-=======
  * @c: UBIFS file-system description object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @zr: root of the subtree to traverse
  * @znode: previous znode
  *
  * This function implements levelorder TNC traversal. The LNC is ignored.
  * Returns the next element or %NULL if @znode is already the last one.
  */
-<<<<<<< HEAD
-struct ubifs_znode *ubifs_tnc_levelorder_next(struct ubifs_znode *zr,
-=======
 struct ubifs_znode *ubifs_tnc_levelorder_next(const struct ubifs_info *c,
 					      struct ubifs_znode *zr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      struct ubifs_znode *znode)
 {
 	int level, iip, level_search = 0;
 	struct ubifs_znode *zn;
 
-<<<<<<< HEAD
-	ubifs_assert(zr);
-=======
 	ubifs_assert(c, zr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(!znode))
 		return zr;
@@ -78,11 +48,7 @@ struct ubifs_znode *ubifs_tnc_levelorder_next(const struct ubifs_info *c,
 
 	iip = znode->iip;
 	while (1) {
-<<<<<<< HEAD
-		ubifs_assert(znode->level <= zr->level);
-=======
 		ubifs_assert(c, znode->level <= zr->level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * First walk up until there is a znode with next branch to
@@ -109,11 +75,7 @@ struct ubifs_znode *ubifs_tnc_levelorder_next(const struct ubifs_info *c,
 			level_search = 1;
 			iip = -1;
 			znode = ubifs_tnc_find_child(zr, 0);
-<<<<<<< HEAD
-			ubifs_assert(znode);
-=======
 			ubifs_assert(c, znode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Switch to the next index */
@@ -139,11 +101,7 @@ struct ubifs_znode *ubifs_tnc_levelorder_next(const struct ubifs_info *c,
 		}
 
 		if (zn) {
-<<<<<<< HEAD
-			ubifs_assert(zn->level >= 0);
-=======
 			ubifs_assert(c, zn->level >= 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return zn;
 		}
 	}
@@ -168,19 +126,11 @@ int ubifs_search_zbranch(const struct ubifs_info *c,
 			 const struct ubifs_znode *znode,
 			 const union ubifs_key *key, int *n)
 {
-<<<<<<< HEAD
-	int beg = 0, end = znode->child_cnt, uninitialized_var(mid);
-	int uninitialized_var(cmp);
-	const struct ubifs_zbranch *zbr = &znode->zbranch[0];
-
-	ubifs_assert(end > beg);
-=======
 	int beg = 0, end = znode->child_cnt, mid;
 	int cmp;
 	const struct ubifs_zbranch *zbr = &znode->zbranch[0];
 
 	ubifs_assert(c, end > beg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (end > beg) {
 		mid = (beg + end) >> 1;
@@ -198,15 +148,6 @@ int ubifs_search_zbranch(const struct ubifs_info *c,
 	*n = end - 1;
 
 	/* The insert point is after *n */
-<<<<<<< HEAD
-	ubifs_assert(*n >= -1 && *n < znode->child_cnt);
-	if (*n == -1)
-		ubifs_assert(keys_cmp(c, key, &zbr[0].key) < 0);
-	else
-		ubifs_assert(keys_cmp(c, key, &zbr[*n].key) > 0);
-	if (*n + 1 < znode->child_cnt)
-		ubifs_assert(keys_cmp(c, key, &zbr[*n + 1].key) < 0);
-=======
 	ubifs_assert(c, *n >= -1 && *n < znode->child_cnt);
 	if (*n == -1)
 		ubifs_assert(c, keys_cmp(c, key, &zbr[0].key) < 0);
@@ -214,7 +155,6 @@ int ubifs_search_zbranch(const struct ubifs_info *c,
 		ubifs_assert(c, keys_cmp(c, key, &zbr[*n].key) > 0);
 	if (*n + 1 < znode->child_cnt)
 		ubifs_assert(c, keys_cmp(c, key, &zbr[*n + 1].key) < 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -245,29 +185,18 @@ struct ubifs_znode *ubifs_tnc_postorder_first(struct ubifs_znode *znode)
 
 /**
  * ubifs_tnc_postorder_next - next TNC tree element in postorder traversal.
-<<<<<<< HEAD
-=======
  * @c: UBIFS file-system description object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @znode: previous znode
  *
  * This function implements postorder TNC traversal. The LNC is ignored.
  * Returns the next element or %NULL if @znode is already the last one.
  */
-<<<<<<< HEAD
-struct ubifs_znode *ubifs_tnc_postorder_next(struct ubifs_znode *znode)
-{
-	struct ubifs_znode *zn;
-
-	ubifs_assert(znode);
-=======
 struct ubifs_znode *ubifs_tnc_postorder_next(const struct ubifs_info *c,
 					     struct ubifs_znode *znode)
 {
 	struct ubifs_znode *zn;
 
 	ubifs_assert(c, znode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!znode->parent))
 		return NULL;
 
@@ -283,31 +212,20 @@ struct ubifs_znode *ubifs_tnc_postorder_next(const struct ubifs_info *c,
 
 /**
  * ubifs_destroy_tnc_subtree - destroy all znodes connected to a subtree.
-<<<<<<< HEAD
-=======
  * @c: UBIFS file-system description object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @znode: znode defining subtree to destroy
  *
  * This function destroys subtree of the TNC tree. Returns number of clean
  * znodes in the subtree.
  */
-<<<<<<< HEAD
-long ubifs_destroy_tnc_subtree(struct ubifs_znode *znode)
-=======
 long ubifs_destroy_tnc_subtree(const struct ubifs_info *c,
 			       struct ubifs_znode *znode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ubifs_znode *zn = ubifs_tnc_postorder_first(znode);
 	long clean_freed = 0;
 	int n;
 
-<<<<<<< HEAD
-	ubifs_assert(zn);
-=======
 	ubifs_assert(c, zn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1) {
 		for (n = 0; n < zn->child_cnt; n++) {
 			if (!zn->zbranch[n].znode)
@@ -328,22 +246,11 @@ long ubifs_destroy_tnc_subtree(const struct ubifs_info *c,
 			return clean_freed;
 		}
 
-<<<<<<< HEAD
-		zn = ubifs_tnc_postorder_next(zn);
-=======
 		zn = ubifs_tnc_postorder_next(c, zn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
-<<<<<<< HEAD
- * read_znode - read an indexing node from flash and fill znode.
- * @c: UBIFS file-system description object
- * @lnum: LEB of the indexing node to read
- * @offs: node offset
- * @len: node length
-=======
  * ubifs_destroy_tnc_tree - destroy all znodes connected to the TNC tree.
  * @c: UBIFS file-system description object
  *
@@ -369,7 +276,6 @@ void ubifs_destroy_tnc_tree(struct ubifs_info *c)
  * read_znode - read an indexing node from flash and fill znode.
  * @c: UBIFS file-system description object
  * @zzbr: the zbranch describing the node to read
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @znode: znode to read to
  *
  * This function reads an indexing node from the flash media and fills znode
@@ -378,18 +284,12 @@ void ubifs_destroy_tnc_tree(struct ubifs_info *c)
  * is wrong with it, this function prints complaint messages and returns
  * %-EINVAL.
  */
-<<<<<<< HEAD
-static int read_znode(struct ubifs_info *c, int lnum, int offs, int len,
-		      struct ubifs_znode *znode)
-{
-=======
 static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 		      struct ubifs_znode *znode)
 {
 	int lnum = zzbr->lnum;
 	int offs = zzbr->offs;
 	int len = zzbr->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, err, type, cmp;
 	struct ubifs_idx_node *idx;
 
@@ -403,8 +303,6 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 		return err;
 	}
 
-<<<<<<< HEAD
-=======
 	err = ubifs_node_check_hash(c, idx, zzbr->hash);
 	if (err) {
 		ubifs_bad_hash(c, idx, zzbr->hash, lnum, offs);
@@ -412,7 +310,6 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 		return err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	znode->child_cnt = le16_to_cpu(idx->child_cnt);
 	znode->level = le16_to_cpu(idx->level);
 
@@ -420,37 +317,23 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 		lnum, offs, znode->level, znode->child_cnt);
 
 	if (znode->child_cnt > c->fanout || znode->level > UBIFS_MAX_LEVELS) {
-<<<<<<< HEAD
-		dbg_err("current fanout %d, branch count %d",
-			c->fanout, znode->child_cnt);
-		dbg_err("max levels %d, znode level %d",
-			UBIFS_MAX_LEVELS, znode->level);
-=======
 		ubifs_err(c, "current fanout %d, branch count %d",
 			  c->fanout, znode->child_cnt);
 		ubifs_err(c, "max levels %d, znode level %d",
 			  UBIFS_MAX_LEVELS, znode->level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 1;
 		goto out_dump;
 	}
 
 	for (i = 0; i < znode->child_cnt; i++) {
-<<<<<<< HEAD
-		const struct ubifs_branch *br = ubifs_idx_branch(c, idx, i);
-=======
 		struct ubifs_branch *br = ubifs_idx_branch(c, idx, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ubifs_zbranch *zbr = &znode->zbranch[i];
 
 		key_read(c, &br->key, &zbr->key);
 		zbr->lnum = le32_to_cpu(br->lnum);
 		zbr->offs = le32_to_cpu(br->offs);
 		zbr->len  = le32_to_cpu(br->len);
-<<<<<<< HEAD
-=======
 		ubifs_copy_hash(c, ubifs_branch_hash(c, br), zbr->hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		zbr->znode = NULL;
 
 		/* Validate branch */
@@ -458,11 +341,7 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 		if (zbr->lnum < c->main_first ||
 		    zbr->lnum >= c->leb_cnt || zbr->offs < 0 ||
 		    zbr->offs + zbr->len > c->leb_size || zbr->offs & 7) {
-<<<<<<< HEAD
-			dbg_err("bad branch %d", i);
-=======
 			ubifs_err(c, "bad branch %d", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = 2;
 			goto out_dump;
 		}
@@ -474,13 +353,8 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 		case UBIFS_XENT_KEY:
 			break;
 		default:
-<<<<<<< HEAD
-			dbg_msg("bad key type at slot %d: %d",
-				i, key_type(c, &zbr->key));
-=======
 			ubifs_err(c, "bad key type at slot %d: %d",
 				  i, key_type(c, &zbr->key));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = 3;
 			goto out_dump;
 		}
@@ -491,33 +365,19 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 		type = key_type(c, &zbr->key);
 		if (c->ranges[type].max_len == 0) {
 			if (zbr->len != c->ranges[type].len) {
-<<<<<<< HEAD
-				dbg_err("bad target node (type %d) length (%d)",
-					type, zbr->len);
-				dbg_err("have to be %d", c->ranges[type].len);
-=======
 				ubifs_err(c, "bad target node (type %d) length (%d)",
 					  type, zbr->len);
 				ubifs_err(c, "have to be %d", c->ranges[type].len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = 4;
 				goto out_dump;
 			}
 		} else if (zbr->len < c->ranges[type].min_len ||
 			   zbr->len > c->ranges[type].max_len) {
-<<<<<<< HEAD
-			dbg_err("bad target node (type %d) length (%d)",
-				type, zbr->len);
-			dbg_err("have to be in range of %d-%d",
-				c->ranges[type].min_len,
-				c->ranges[type].max_len);
-=======
 			ubifs_err(c, "bad target node (type %d) length (%d)",
 				  type, zbr->len);
 			ubifs_err(c, "have to be in range of %d-%d",
 				  c->ranges[type].min_len,
 				  c->ranges[type].max_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = 5;
 			goto out_dump;
 		}
@@ -535,22 +395,13 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 
 		cmp = keys_cmp(c, key1, key2);
 		if (cmp > 0) {
-<<<<<<< HEAD
-			dbg_err("bad key order (keys %d and %d)", i, i + 1);
-=======
 			ubifs_err(c, "bad key order (keys %d and %d)", i, i + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = 6;
 			goto out_dump;
 		} else if (cmp == 0 && !is_hash_key(c, key1)) {
 			/* These can only be keys with colliding hash */
-<<<<<<< HEAD
-			dbg_err("keys %d and %d are not hashed but equivalent",
-				i, i + 1);
-=======
 			ubifs_err(c, "keys %d and %d are not hashed but equivalent",
 				  i, i + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = 7;
 			goto out_dump;
 		}
@@ -560,13 +411,8 @@ static int read_znode(struct ubifs_info *c, struct ubifs_zbranch *zzbr,
 	return 0;
 
 out_dump:
-<<<<<<< HEAD
-	ubifs_err("bad indexing node at LEB %d:%d, error %d", lnum, offs, err);
-	dbg_dump_node(c, idx);
-=======
 	ubifs_err(c, "bad indexing node at LEB %d:%d, error %d", lnum, offs, err);
 	ubifs_dump_node(c, idx, c->max_idx_node_sz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(idx);
 	return -EINVAL;
 }
@@ -589,11 +435,7 @@ struct ubifs_znode *ubifs_load_znode(struct ubifs_info *c,
 	int err;
 	struct ubifs_znode *znode;
 
-<<<<<<< HEAD
-	ubifs_assert(!zbr->znode);
-=======
 	ubifs_assert(c, !zbr->znode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * A slab cache is not presently used for znodes because the znode size
 	 * depends on the fanout which is stored in the superblock.
@@ -602,11 +444,7 @@ struct ubifs_znode *ubifs_load_znode(struct ubifs_info *c,
 	if (!znode)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-	err = read_znode(c, zbr->lnum, zbr->offs, zbr->len, znode);
-=======
 	err = read_znode(c, zbr, znode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -622,11 +460,7 @@ struct ubifs_znode *ubifs_load_znode(struct ubifs_info *c,
 
 	zbr->znode = znode;
 	znode->parent = parent;
-<<<<<<< HEAD
-	znode->time = get_seconds();
-=======
 	znode->time = ktime_get_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	znode->iip = iip;
 
 	return znode;
@@ -643,12 +477,7 @@ out:
  * @node: node is returned here
  *
  * This function reads a node defined by @zbr from the flash media. Returns
-<<<<<<< HEAD
- * zero in case of success or a negative negative error code in case of
- * failure.
-=======
  * zero in case of success or a negative error code in case of failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ubifs_tnc_read_node(struct ubifs_info *c, struct ubifs_zbranch *zbr,
 			void *node)
@@ -677,16 +506,6 @@ int ubifs_tnc_read_node(struct ubifs_info *c, struct ubifs_zbranch *zbr,
 	/* Make sure the key of the read node is correct */
 	key_read(c, node + UBIFS_KEY_OFFSET, &key1);
 	if (!keys_eq(c, key, &key1)) {
-<<<<<<< HEAD
-		ubifs_err("bad key in node at LEB %d:%d",
-			  zbr->lnum, zbr->offs);
-		dbg_tnck(key, "looked for key ");
-		dbg_tnck(&key1, "but found node's key ");
-		dbg_dump_node(c, node);
-		return -EINVAL;
-	}
-
-=======
 		ubifs_err(c, "bad key in node at LEB %d:%d",
 			  zbr->lnum, zbr->offs);
 		dbg_tnck(key, "looked for key ");
@@ -701,6 +520,5 @@ int ubifs_tnc_read_node(struct ubifs_info *c, struct ubifs_zbranch *zbr,
 		return err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

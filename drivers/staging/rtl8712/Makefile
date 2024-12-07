@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 r8712u-y :=				\
 		rtl871x_cmd.o		\
 		rtl8712_cmd.o		\

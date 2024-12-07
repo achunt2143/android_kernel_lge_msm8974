@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_ip
  *
@@ -23,11 +20,6 @@
 #include <linux/netfilter_bridge/ebtables.h>
 #include <linux/netfilter_bridge/ebt_ip.h>
 
-<<<<<<< HEAD
-struct tcpudphdr {
-	__be16 src;
-	__be16 dst;
-=======
 union pkthdr {
 	struct {
 		__be16 src;
@@ -40,7 +32,6 @@ union pkthdr {
 	struct {
 		u8 type;
 	} igmphdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static bool
@@ -49,56 +40,12 @@ ebt_ip_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	const struct ebt_ip_info *info = par->matchinfo;
 	const struct iphdr *ih;
 	struct iphdr _iph;
-<<<<<<< HEAD
-	const struct tcpudphdr *pptr;
-	struct tcpudphdr _ports;
-=======
 	const union pkthdr *pptr;
 	union pkthdr _pkthdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ih = skb_header_pointer(skb, 0, sizeof(_iph), &_iph);
 	if (ih == NULL)
 		return false;
-<<<<<<< HEAD
-	if (info->bitmask & EBT_IP_TOS &&
-	   FWINV(info->tos != ih->tos, EBT_IP_TOS))
-		return false;
-	if (info->bitmask & EBT_IP_SOURCE &&
-	   FWINV((ih->saddr & info->smsk) !=
-	   info->saddr, EBT_IP_SOURCE))
-		return false;
-	if ((info->bitmask & EBT_IP_DEST) &&
-	   FWINV((ih->daddr & info->dmsk) !=
-	   info->daddr, EBT_IP_DEST))
-		return false;
-	if (info->bitmask & EBT_IP_PROTO) {
-		if (FWINV(info->protocol != ih->protocol, EBT_IP_PROTO))
-			return false;
-		if (!(info->bitmask & EBT_IP_DPORT) &&
-		    !(info->bitmask & EBT_IP_SPORT))
-			return true;
-		if (ntohs(ih->frag_off) & IP_OFFSET)
-			return false;
-		pptr = skb_header_pointer(skb, ih->ihl*4,
-					  sizeof(_ports), &_ports);
-		if (pptr == NULL)
-			return false;
-		if (info->bitmask & EBT_IP_DPORT) {
-			u32 dst = ntohs(pptr->dst);
-			if (FWINV(dst < info->dport[0] ||
-				  dst > info->dport[1],
-				  EBT_IP_DPORT))
-			return false;
-		}
-		if (info->bitmask & EBT_IP_SPORT) {
-			u32 src = ntohs(pptr->src);
-			if (FWINV(src < info->sport[0] ||
-				  src > info->sport[1],
-				  EBT_IP_SPORT))
-			return false;
-		}
-=======
 	if ((info->bitmask & EBT_IP_TOS) &&
 	    NF_INVF(info, EBT_IP_TOS, info->tos != ih->tos))
 		return false;
@@ -150,7 +97,6 @@ ebt_ip_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			    pptr->igmphdr.type < info->igmp_type[0] ||
 			    pptr->igmphdr.type > info->igmp_type[1]))
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return true;
 }
@@ -179,8 +125,6 @@ static int ebt_ip_mt_check(const struct xt_mtchk_param *par)
 		return -EINVAL;
 	if (info->bitmask & EBT_IP_SPORT && info->sport[0] > info->sport[1])
 		return -EINVAL;
-<<<<<<< HEAD
-=======
 	if (info->bitmask & EBT_IP_ICMP) {
 		if ((info->invflags & EBT_IP_PROTO) ||
 		    info->protocol != IPPROTO_ICMP)
@@ -196,7 +140,6 @@ static int ebt_ip_mt_check(const struct xt_mtchk_param *par)
 		if (info->igmp_type[0] > info->igmp_type[1])
 			return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

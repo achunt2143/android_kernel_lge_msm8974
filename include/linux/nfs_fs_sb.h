@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NFS_FS_SB
 #define _NFS_FS_SB
 
@@ -13,10 +10,7 @@
 #include <linux/sunrpc/xprt.h>
 
 #include <linux/atomic.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfs4_session;
 struct nfs_iostats;
@@ -25,23 +19,15 @@ struct nfs4_sequence_args;
 struct nfs4_sequence_res;
 struct nfs_server;
 struct nfs4_minor_version_ops;
-<<<<<<< HEAD
-struct server_scope;
-=======
 struct nfs41_server_scope;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfs41_impl_id;
 
 /*
  * The nfs_client identifies our client state to the server.
  */
 struct nfs_client {
-<<<<<<< HEAD
-	atomic_t		cl_count;
-=======
 	refcount_t		cl_count;
 	atomic_t		cl_mds_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			cl_cons_state;	/* current construction state (-ve: init error) */
 #define NFS_CS_READY		0		/* ready to be used */
 #define NFS_CS_INITING		1		/* busy initialising */
@@ -52,11 +38,6 @@ struct nfs_client {
 #define NFS_CS_RENEWD		3		/* - renewd started */
 #define NFS_CS_STOP_RENEW	4		/* no more state to renew */
 #define NFS_CS_CHECK_LEASE_TIME	5		/* need to check lease time */
-<<<<<<< HEAD
-	struct sockaddr_storage	cl_addr;	/* server identifier */
-	size_t			cl_addrlen;
-	char *			cl_hostname;	/* hostname of server */
-=======
 	unsigned long		cl_flags;	/* behavior switches */
 #define NFS_CS_NORESVPORT	0		/* - use ephemeral src port */
 #define NFS_CS_DISCRTRY		1		/* - disconnect on RPC retry */
@@ -72,20 +53,12 @@ struct nfs_client {
 	size_t			cl_addrlen;
 	char *			cl_hostname;	/* hostname of server */
 	char *			cl_acceptor;	/* GSSAPI acceptor name */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	cl_share_link;	/* link in global client list */
 	struct list_head	cl_superblocks;	/* List of nfs_server structs */
 
 	struct rpc_clnt *	cl_rpcclient;
 	const struct nfs_rpc_ops *rpc_ops;	/* NFS protocol vector */
 	int			cl_proto;	/* Network transport protocol */
-<<<<<<< HEAD
-
-	u32			cl_minorversion;/* NFSv4 minorversion */
-	struct rpc_cred		*cl_machine_cred;
-
-#ifdef CONFIG_NFS_V4
-=======
 	struct nfs_subversion *	cl_nfs_mod;	/* pointer to nfs version module */
 
 	u32			cl_minorversion;/* NFSv4 minorversion */
@@ -96,7 +69,6 @@ struct nfs_client {
 
 #if IS_ENABLED(CONFIG_NFS_V4)
 	struct list_head	cl_ds_clients; /* auth flavor data servers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64			cl_clientid;	/* constant */
 	nfs4_verifier		cl_confirm;	/* Clientid verifier */
 	unsigned long		cl_state;
@@ -109,21 +81,6 @@ struct nfs_client {
 
 	struct rpc_wait_queue	cl_rpcwaitq;
 
-<<<<<<< HEAD
-	/* used for the setclientid verifier */
-	struct timespec		cl_boot_time;
-
-	/* idmapper */
-	struct idmap *		cl_idmap;
-
-	/* Our own IP address, as a null-terminated string.
-	 * This is used to generate the clientid, and the callback address.
-	 */
-	char			cl_ipaddr[48];
-	unsigned char		cl_id_uniquifier;
-	u32			cl_cb_ident;	/* v4.0 callback identifier */
-	const struct nfs4_minor_version_ops *cl_mvops;
-=======
 	/* idmapper */
 	struct idmap *		cl_idmap;
 
@@ -136,24 +93,11 @@ struct nfs_client {
 
 	/* NFSv4.0 transport blocking */
 	struct nfs4_slot_table	*cl_slot_tbl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The sequence id to use for the next CREATE_SESSION */
 	u32			cl_seqid;
 	/* The flags used for obtaining the clientid during EXCHANGE_ID */
 	u32			cl_exchange_flags;
-<<<<<<< HEAD
-	struct nfs4_session	*cl_session; 	/* sharred session */
-#endif /* CONFIG_NFS_V4 */
-
-#ifdef CONFIG_NFS_FSCACHE
-	struct fscache_cookie	*fscache;	/* client index cache cookie */
-#endif
-
-	struct server_scope	*server_scope;	/* from exchange_id */
-	struct nfs41_impl_id	*impl_id;	/* from exchange_id */
-	struct net		*net;
-=======
 	struct nfs4_session	*cl_session;	/* shared session */
 	bool			cl_preserve_clid;
 	struct nfs41_server_owner *cl_serverowner;
@@ -181,7 +125,6 @@ struct nfs_client {
 	struct net		*cl_net;
 	struct list_head	pending_cb_stateids;
 	struct rcu_head		rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -197,11 +140,6 @@ struct nfs_server {
 	struct rpc_clnt *	client_acl;	/* ACL RPC client handle */
 	struct nlm_host		*nlm_host;	/* NLM client handle */
 	struct nfs_iostats __percpu *io_stats;	/* I/O statistics */
-<<<<<<< HEAD
-	struct backing_dev_info	backing_dev_info;
-	atomic_long_t		writeback;	/* number of writeback pages */
-	int			flags;		/* various flags */
-=======
 	atomic_long_t		writeback;	/* number of writeback pages */
 	unsigned int		write_congested;/* flag set when writeback gets too high */
 	unsigned int		flags;		/* various flags */
@@ -221,7 +159,6 @@ struct nfs_server {
 #define NFS_MOUNT_SHUTDOWN			0x08000000
 
 	unsigned int		fattr_valid;	/* Valid attributes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		caps;		/* server capabilities */
 	unsigned int		rsize;		/* read size */
 	unsigned int		rpages;		/* read size (in pages) */
@@ -231,41 +168,17 @@ struct nfs_server {
 	unsigned int		dtsize;		/* readdir size */
 	unsigned short		port;		/* "port=" setting */
 	unsigned int		bsize;		/* server block size */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_NFS_V4_2
 	unsigned int		gxasize;	/* getxattr size */
 	unsigned int		sxasize;	/* setxattr size */
 	unsigned int		lxasize;	/* listxattr size */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		acregmin;	/* attr cache timeouts */
 	unsigned int		acregmax;
 	unsigned int		acdirmin;
 	unsigned int		acdirmax;
 	unsigned int		namelen;
 	unsigned int		options;	/* extra options enabled by mount */
-<<<<<<< HEAD
-#define NFS_OPTION_FSCACHE	0x00000001	/* - local caching enabled */
-
-	struct nfs_fsid		fsid;
-	__u64			maxfilesize;	/* maximum file size */
-	struct timespec		time_delta;	/* smallest time granularity */
-	unsigned long		mount_time;	/* when this fs was mounted */
-	dev_t			s_dev;		/* superblock dev numbers */
-
-#ifdef CONFIG_NFS_FSCACHE
-	struct nfs_fscache_key	*fscache_key;	/* unique key for superblock */
-	struct fscache_cookie	*fscache;	/* superblock cookie */
-#endif
-
-	u32			pnfs_blksize;	/* layout_blksize attr */
-#ifdef CONFIG_NFS_V4
-	u32			attr_bitmask[3];/* V4 bitmask representing the set
-						   of attributes supported on this
-						   filesystem */
-	u32			cache_consistency_bitmask[2];
-=======
 	unsigned int		clone_blksize;	/* granularity of a CLONE operation */
 #define NFS_OPTION_FSCACHE	0x00000001	/* - local caching enabled */
 #define NFS_OPTION_MIGRATION	0x00000002	/* - NFSv4 migration enabled */
@@ -303,7 +216,6 @@ struct nfs_server {
 						   on this filesystem for the
 						   exclusive create. */
 	u32			cache_consistency_bitmask[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						/* V4 bitmask representing the subset
 						   of change attribute, size, ctime
 						   and mtime attributes supported by
@@ -326,8 +238,6 @@ struct nfs_server {
 	struct list_head	state_owners_lru;
 	struct list_head	layouts;
 	struct list_head	delegations;
-<<<<<<< HEAD
-=======
 	struct list_head	ss_copies;
 
 	unsigned long		delegation_gen;
@@ -337,7 +247,6 @@ struct nfs_server {
 #define NFS_MIG_FAILED			(2)
 #define NFS_MIG_TSM_POSSIBLE		(3)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*destroy)(struct nfs_server *);
 
 	atomic_t active; /* Keep trace of any activity to this server */
@@ -348,8 +257,6 @@ struct nfs_server {
 	u32			mountd_version;
 	unsigned short		mountd_port;
 	unsigned short		mountd_protocol;
-<<<<<<< HEAD
-=======
 	struct rpc_wait_queue	uoc_rpcwaitq;
 
 	/* XDR related information */
@@ -360,7 +267,6 @@ struct nfs_server {
 	bool			has_sec_mnt_opts;
 	struct kobject		kobj;
 	struct rcu_head		rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Server capabilities */
@@ -369,67 +275,6 @@ struct nfs_server {
 #define NFS_CAP_SYMLINKS	(1U << 2)
 #define NFS_CAP_ACLS		(1U << 3)
 #define NFS_CAP_ATOMIC_OPEN	(1U << 4)
-<<<<<<< HEAD
-#define NFS_CAP_CHANGE_ATTR	(1U << 5)
-#define NFS_CAP_FILEID		(1U << 6)
-#define NFS_CAP_MODE		(1U << 7)
-#define NFS_CAP_NLINK		(1U << 8)
-#define NFS_CAP_OWNER		(1U << 9)
-#define NFS_CAP_OWNER_GROUP	(1U << 10)
-#define NFS_CAP_ATIME		(1U << 11)
-#define NFS_CAP_CTIME		(1U << 12)
-#define NFS_CAP_MTIME		(1U << 13)
-#define NFS_CAP_POSIX_LOCK	(1U << 14)
-#define NFS_CAP_UIDGID_NOMAP	(1U << 15)
-
-
-/* maximum number of slots to use */
-#define NFS4_DEF_SLOT_TABLE_SIZE (16U)
-#define NFS4_MAX_SLOT_TABLE (256U)
-#define NFS4_NO_SLOT ((u32)-1)
-
-#if defined(CONFIG_NFS_V4)
-
-/* Sessions */
-#define SLOT_TABLE_SZ DIV_ROUND_UP(NFS4_MAX_SLOT_TABLE, 8*sizeof(long))
-struct nfs4_slot_table {
-	struct nfs4_slot *slots;		/* seqid per slot */
-	unsigned long   used_slots[SLOT_TABLE_SZ]; /* used/unused bitmap */
-	spinlock_t	slot_tbl_lock;
-	struct rpc_wait_queue	slot_tbl_waitq;	/* allocators may wait here */
-	u32		max_slots;		/* # slots in table */
-	u32		highest_used_slotid;	/* sent to server on each SEQ.
-						 * op for dynamic resizing */
-	u32		target_max_slots;	/* Set by CB_RECALL_SLOT as
-						 * the new max_slots */
-	struct completion complete;
-};
-
-static inline int slot_idx(struct nfs4_slot_table *tbl, struct nfs4_slot *sp)
-{
-	return sp - tbl->slots;
-}
-
-/*
- * Session related parameters
- */
-struct nfs4_session {
-	struct nfs4_sessionid		sess_id;
-	u32				flags;
-	unsigned long			session_state;
-	u32				hash_alg;
-	u32				ssv_len;
-
-	/* The fore and back channel */
-	struct nfs4_channel_attrs	fc_attrs;
-	struct nfs4_slot_table		fc_slot_table;
-	struct nfs4_channel_attrs	bc_attrs;
-	struct nfs4_slot_table		bc_slot_table;
-	struct nfs_client		*clp;
-};
-
-#endif /* CONFIG_NFS_V4 */
-=======
 #define NFS_CAP_LGOPEN		(1U << 5)
 #define NFS_CAP_CASE_INSENSITIVE	(1U << 6)
 #define NFS_CAP_CASE_PRESERVING	(1U << 7)
@@ -451,5 +296,4 @@ struct nfs4_session {
 #define NFS_CAP_READ_PLUS	(1U << 29)
 #define NFS_CAP_FS_LOCATIONS	(1U << 30)
 #define NFS_CAP_MOVEABLE	(1U << 31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -14,20 +14,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
 #include <linux/ath9k_platform.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#include "ath9k.h"
-
-=======
 #include <linux/of.h>
 #include <linux/of_net.h>
 #include <linux/nvmem-consumer.h>
@@ -42,15 +34,10 @@ struct ath9k_eeprom_ctx {
 	struct ath_hw *ah;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static char *dev_info = "ath9k";
 
 MODULE_AUTHOR("Atheros Communications");
 MODULE_DESCRIPTION("Support for Atheros 802.11n wireless LAN cards.");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("Atheros 802.11n WLAN cards");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("Dual BSD/GPL");
 
 static unsigned int ath9k_debug = ATH_DBG_DEFAULT;
@@ -61,12 +48,6 @@ int ath9k_modparam_nohwcrypt;
 module_param_named(nohwcrypt, ath9k_modparam_nohwcrypt, int, 0444);
 MODULE_PARM_DESC(nohwcrypt, "Disable hardware encryption");
 
-<<<<<<< HEAD
-int led_blink;
-module_param_named(blink, led_blink, int, 0444);
-MODULE_PARM_DESC(blink, "Enable LED blink on activity");
-
-=======
 int ath9k_led_blink;
 module_param_named(blink, ath9k_led_blink, int, 0444);
 MODULE_PARM_DESC(blink, "Enable LED blink on activity");
@@ -75,111 +56,10 @@ static int ath9k_led_active_high = -1;
 module_param_named(led_active_high, ath9k_led_active_high, int, 0444);
 MODULE_PARM_DESC(led_active_high, "Invert LED polarity");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath9k_btcoex_enable;
 module_param_named(btcoex_enable, ath9k_btcoex_enable, int, 0444);
 MODULE_PARM_DESC(btcoex_enable, "Enable wifi-BT coexistence");
 
-<<<<<<< HEAD
-bool is_ath9k_unloaded;
-/* We use the hw_value as an index into our private channel structure */
-
-#define CHAN2G(_freq, _idx)  { \
-	.band = IEEE80211_BAND_2GHZ, \
-	.center_freq = (_freq), \
-	.hw_value = (_idx), \
-	.max_power = 20, \
-}
-
-#define CHAN5G(_freq, _idx) { \
-	.band = IEEE80211_BAND_5GHZ, \
-	.center_freq = (_freq), \
-	.hw_value = (_idx), \
-	.max_power = 20, \
-}
-
-/* Some 2 GHz radios are actually tunable on 2312-2732
- * on 5 MHz steps, we support the channels which we know
- * we have calibration data for all cards though to make
- * this static */
-static const struct ieee80211_channel ath9k_2ghz_chantable[] = {
-	CHAN2G(2412, 0), /* Channel 1 */
-	CHAN2G(2417, 1), /* Channel 2 */
-	CHAN2G(2422, 2), /* Channel 3 */
-	CHAN2G(2427, 3), /* Channel 4 */
-	CHAN2G(2432, 4), /* Channel 5 */
-	CHAN2G(2437, 5), /* Channel 6 */
-	CHAN2G(2442, 6), /* Channel 7 */
-	CHAN2G(2447, 7), /* Channel 8 */
-	CHAN2G(2452, 8), /* Channel 9 */
-	CHAN2G(2457, 9), /* Channel 10 */
-	CHAN2G(2462, 10), /* Channel 11 */
-	CHAN2G(2467, 11), /* Channel 12 */
-	CHAN2G(2472, 12), /* Channel 13 */
-	CHAN2G(2484, 13), /* Channel 14 */
-};
-
-/* Some 5 GHz radios are actually tunable on XXXX-YYYY
- * on 5 MHz steps, we support the channels which we know
- * we have calibration data for all cards though to make
- * this static */
-static const struct ieee80211_channel ath9k_5ghz_chantable[] = {
-	/* _We_ call this UNII 1 */
-	CHAN5G(5180, 14), /* Channel 36 */
-	CHAN5G(5200, 15), /* Channel 40 */
-	CHAN5G(5220, 16), /* Channel 44 */
-	CHAN5G(5240, 17), /* Channel 48 */
-	/* _We_ call this UNII 2 */
-	CHAN5G(5260, 18), /* Channel 52 */
-	CHAN5G(5280, 19), /* Channel 56 */
-	CHAN5G(5300, 20), /* Channel 60 */
-	CHAN5G(5320, 21), /* Channel 64 */
-	/* _We_ call this "Middle band" */
-	CHAN5G(5500, 22), /* Channel 100 */
-	CHAN5G(5520, 23), /* Channel 104 */
-	CHAN5G(5540, 24), /* Channel 108 */
-	CHAN5G(5560, 25), /* Channel 112 */
-	CHAN5G(5580, 26), /* Channel 116 */
-	CHAN5G(5600, 27), /* Channel 120 */
-	CHAN5G(5620, 28), /* Channel 124 */
-	CHAN5G(5640, 29), /* Channel 128 */
-	CHAN5G(5660, 30), /* Channel 132 */
-	CHAN5G(5680, 31), /* Channel 136 */
-	CHAN5G(5700, 32), /* Channel 140 */
-	/* _We_ call this UNII 3 */
-	CHAN5G(5745, 33), /* Channel 149 */
-	CHAN5G(5765, 34), /* Channel 153 */
-	CHAN5G(5785, 35), /* Channel 157 */
-	CHAN5G(5805, 36), /* Channel 161 */
-	CHAN5G(5825, 37), /* Channel 165 */
-};
-
-/* Atheros hardware rate code addition for short premble */
-#define SHPCHECK(__hw_rate, __flags) \
-	((__flags & IEEE80211_RATE_SHORT_PREAMBLE) ? (__hw_rate | 0x04 ) : 0)
-
-#define RATE(_bitrate, _hw_rate, _flags) {              \
-	.bitrate        = (_bitrate),                   \
-	.flags          = (_flags),                     \
-	.hw_value       = (_hw_rate),                   \
-	.hw_value_short = (SHPCHECK(_hw_rate, _flags))  \
-}
-
-static struct ieee80211_rate ath9k_legacy_rates[] = {
-	RATE(10, 0x1b, 0),
-	RATE(20, 0x1a, IEEE80211_RATE_SHORT_PREAMBLE),
-	RATE(55, 0x19, IEEE80211_RATE_SHORT_PREAMBLE),
-	RATE(110, 0x18, IEEE80211_RATE_SHORT_PREAMBLE),
-	RATE(60, 0x0b, 0),
-	RATE(90, 0x0f, 0),
-	RATE(120, 0x0a, 0),
-	RATE(180, 0x0e, 0),
-	RATE(240, 0x09, 0),
-	RATE(360, 0x0d, 0),
-	RATE(480, 0x08, 0),
-	RATE(540, 0x0c, 0),
-};
-=======
 static int ath9k_bt_ant_diversity;
 module_param_named(bt_ant_diversity, ath9k_bt_ant_diversity, int, 0444);
 MODULE_PARM_DESC(bt_ant_diversity, "Enable WLAN/BT RX antenna diversity");
@@ -201,7 +81,6 @@ module_param_named(use_msi, ath9k_use_msi, int, 0444);
 MODULE_PARM_DESC(use_msi, "Use MSI instead of INTx if possible");
 
 bool is_ath9k_unloaded;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MAC80211_LEDS
 static const struct ieee80211_tpt_blink ath9k_tpt_blink[] = {
@@ -218,10 +97,6 @@ static const struct ieee80211_tpt_blink ath9k_tpt_blink[] = {
 };
 #endif
 
-<<<<<<< HEAD
-static void ath9k_deinit_softc(struct ath_softc *sc);
-
-=======
 static int __init set_use_msi(const struct dmi_system_id *dmi)
 {
 	ath9k_use_msi = 1;
@@ -289,7 +164,6 @@ static const struct ath_ps_ops ath9k_ps_ops = {
 	.restore = ath9k_op_ps_restore,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read and write, they both share the same lock. We do this to serialize
  * reads and writes on Atheros 802.11n PCI devices only. This is required
@@ -298,15 +172,9 @@ static const struct ath_ps_ops ath9k_ps_ops = {
 
 static void ath9k_iowrite32(void *hw_priv, u32 val, u32 reg_offset)
 {
-<<<<<<< HEAD
-	struct ath_hw *ah = (struct ath_hw *) hw_priv;
-	struct ath_common *common = ath9k_hw_common(ah);
-	struct ath_softc *sc = (struct ath_softc *) common->priv;
-=======
 	struct ath_hw *ah = hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath_softc *sc = common->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (NR_CPUS > 1 && ah->config.serialize_regmode == SER_REG_MODE_ON) {
 		unsigned long flags;
@@ -319,15 +187,9 @@ static void ath9k_iowrite32(void *hw_priv, u32 val, u32 reg_offset)
 
 static unsigned int ath9k_ioread32(void *hw_priv, u32 reg_offset)
 {
-<<<<<<< HEAD
-	struct ath_hw *ah = (struct ath_hw *) hw_priv;
-	struct ath_common *common = ath9k_hw_common(ah);
-	struct ath_softc *sc = (struct ath_softc *) common->priv;
-=======
 	struct ath_hw *ah = hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath_softc *sc = common->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	if (NR_CPUS > 1 && ah->config.serialize_regmode == SER_REG_MODE_ON) {
@@ -340,8 +202,6 @@ static unsigned int ath9k_ioread32(void *hw_priv, u32 reg_offset)
 	return val;
 }
 
-<<<<<<< HEAD
-=======
 static void ath9k_multi_ioread32(void *hw_priv, u32 *addr,
                                 u32 *val, u16 count)
 {
@@ -352,7 +212,6 @@ static void ath9k_multi_ioread32(void *hw_priv, u32 *addr,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int __ath9k_reg_rmw(struct ath_softc *sc, u32 reg_offset,
 				    u32 set, u32 clr)
 {
@@ -368,17 +227,10 @@ static unsigned int __ath9k_reg_rmw(struct ath_softc *sc, u32 reg_offset,
 
 static unsigned int ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 clr)
 {
-<<<<<<< HEAD
-	struct ath_hw *ah = (struct ath_hw *) hw_priv;
-	struct ath_common *common = ath9k_hw_common(ah);
-	struct ath_softc *sc = (struct ath_softc *) common->priv;
-	unsigned long uninitialized_var(flags);
-=======
 	struct ath_hw *ah = hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath_softc *sc = common->priv;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	if (NR_CPUS > 1 && ah->config.serialize_regmode == SER_REG_MODE_ON) {
@@ -395,92 +247,13 @@ static unsigned int ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 cl
 /*     Initialization     */
 /**************************/
 
-<<<<<<< HEAD
-static void setup_ht_cap(struct ath_softc *sc,
-			 struct ieee80211_sta_ht_cap *ht_info)
-{
-	struct ath_hw *ah = sc->sc_ah;
-	struct ath_common *common = ath9k_hw_common(ah);
-	u8 tx_streams, rx_streams;
-	int i, max_streams;
-
-	ht_info->ht_supported = true;
-	ht_info->cap = IEEE80211_HT_CAP_SUP_WIDTH_20_40 |
-		       IEEE80211_HT_CAP_SM_PS |
-		       IEEE80211_HT_CAP_SGI_40 |
-		       IEEE80211_HT_CAP_DSSSCCK40;
-
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_LDPC)
-		ht_info->cap |= IEEE80211_HT_CAP_LDPC_CODING;
-
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_SGI_20)
-		ht_info->cap |= IEEE80211_HT_CAP_SGI_20;
-
-	ht_info->ampdu_factor = IEEE80211_HT_MAX_AMPDU_64K;
-	ht_info->ampdu_density = IEEE80211_HT_MPDU_DENSITY_8;
-
-	if (AR_SREV_9330(ah) || AR_SREV_9485(ah))
-		max_streams = 1;
-	else if (AR_SREV_9462(ah))
-		max_streams = 2;
-	else if (AR_SREV_9300_20_OR_LATER(ah))
-		max_streams = 3;
-	else
-		max_streams = 2;
-
-	if (AR_SREV_9280_20_OR_LATER(ah)) {
-		if (max_streams >= 2)
-			ht_info->cap |= IEEE80211_HT_CAP_TX_STBC;
-		ht_info->cap |= (1 << IEEE80211_HT_CAP_RX_STBC_SHIFT);
-	}
-
-	/* set up supported mcs set */
-	memset(&ht_info->mcs, 0, sizeof(ht_info->mcs));
-	tx_streams = ath9k_cmn_count_streams(ah->txchainmask, max_streams);
-	rx_streams = ath9k_cmn_count_streams(ah->rxchainmask, max_streams);
-
-	ath_dbg(common, CONFIG, "TX streams %d, RX streams: %d\n",
-		tx_streams, rx_streams);
-
-	if (tx_streams != rx_streams) {
-		ht_info->mcs.tx_params |= IEEE80211_HT_MCS_TX_RX_DIFF;
-		ht_info->mcs.tx_params |= ((tx_streams - 1) <<
-				IEEE80211_HT_MCS_TX_MAX_STREAMS_SHIFT);
-	}
-
-	for (i = 0; i < rx_streams; i++)
-		ht_info->mcs.rx_mask[i] = 0xff;
-
-	ht_info->mcs.tx_params |= IEEE80211_HT_MCS_TX_DEFINED;
-}
-
-static int ath9k_reg_notifier(struct wiphy *wiphy,
-			      struct regulatory_request *request)
-=======
 static void ath9k_reg_notifier(struct wiphy *wiphy,
 			       struct regulatory_request *request)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_hw *hw = wiphy_to_ieee80211_hw(wiphy);
 	struct ath_softc *sc = hw->priv;
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_regulatory *reg = ath9k_hw_regulatory(ah);
-<<<<<<< HEAD
-	int ret;
-
-	ret = ath_reg_notifier_apply(wiphy, request, reg);
-
-	/* Set tx power */
-	if (ah->curchan) {
-		sc->config.txpowlimit = 2 * ah->curchan->chan->max_power;
-		ath9k_ps_wakeup(sc);
-		ath9k_hw_set_txpowerlimit(ah, sc->config.txpowlimit, false);
-		sc->curtxpow = ath9k_hw_regulatory(ah)->power_limit;
-		ath9k_ps_restore(sc);
-	}
-
-	return ret;
-=======
 
 	ath_reg_notifier_apply(wiphy, request, reg);
 
@@ -500,7 +273,6 @@ static void ath9k_reg_notifier(struct wiphy *wiphy,
 			       sc->cur_chan->txpower,
 			       &sc->cur_chan->cur_txpower);
 	ath9k_ps_restore(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -514,12 +286,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	u8 *ds;
-<<<<<<< HEAD
-	struct ath_buf *bf;
-	int i, bsize, error, desc_len;
-=======
 	int i, bsize, desc_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath_dbg(common, CONFIG, "%s DMA: %u buffers %u desc/buf\n",
 		name, nbuf, ndesc);
@@ -535,12 +302,7 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 	if ((desc_len % 4) != 0) {
 		ath_err(common, "ath_desc not DWORD aligned\n");
 		BUG_ON((desc_len % 4) != 0);
-<<<<<<< HEAD
-		error = -ENOMEM;
-		goto fail;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dd->dd_desc_len = desc_len * nbuf * ndesc;
@@ -564,67 +326,17 @@ int ath_descdma_setup(struct ath_softc *sc, struct ath_descdma *dd,
 	}
 
 	/* allocate descriptors */
-<<<<<<< HEAD
-	dd->dd_desc = dma_alloc_coherent(sc->dev, dd->dd_desc_len,
-					 &dd->dd_desc_paddr, GFP_KERNEL);
-	if (dd->dd_desc == NULL) {
-		error = -ENOMEM;
-		goto fail;
-	}
-	ds = (u8 *) dd->dd_desc;
-=======
 	dd->dd_desc = dmam_alloc_coherent(sc->dev, dd->dd_desc_len,
 					  &dd->dd_desc_paddr, GFP_KERNEL);
 	if (!dd->dd_desc)
 		return -ENOMEM;
 
 	ds = dd->dd_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath_dbg(common, CONFIG, "%s DMA map: %p (%u) -> %llx (%u)\n",
 		name, ds, (u32) dd->dd_desc_len,
 		ito64(dd->dd_desc_paddr), /*XXX*/(u32) dd->dd_desc_len);
 
 	/* allocate buffers */
-<<<<<<< HEAD
-	bsize = sizeof(struct ath_buf) * nbuf;
-	bf = kzalloc(bsize, GFP_KERNEL);
-	if (bf == NULL) {
-		error = -ENOMEM;
-		goto fail2;
-	}
-	dd->dd_bufptr = bf;
-
-	for (i = 0; i < nbuf; i++, bf++, ds += (desc_len * ndesc)) {
-		bf->bf_desc = ds;
-		bf->bf_daddr = DS2PHYS(dd, ds);
-
-		if (!(sc->sc_ah->caps.hw_caps &
-		      ATH9K_HW_CAP_4KB_SPLITTRANS)) {
-			/*
-			 * Skip descriptor addresses which can cause 4KB
-			 * boundary crossing (addr + length) with a 32 dword
-			 * descriptor fetch.
-			 */
-			while (ATH_DESC_4KB_BOUND_CHECK(bf->bf_daddr)) {
-				BUG_ON((caddr_t) bf->bf_desc >=
-				       ((caddr_t) dd->dd_desc +
-					dd->dd_desc_len));
-
-				ds += (desc_len * ndesc);
-				bf->bf_desc = ds;
-				bf->bf_daddr = DS2PHYS(dd, ds);
-			}
-		}
-		list_add_tail(&bf->list, head);
-	}
-	return 0;
-fail2:
-	dma_free_coherent(sc->dev, dd->dd_desc_len, dd->dd_desc,
-			  dd->dd_desc_paddr);
-fail:
-	memset(dd, 0, sizeof(*dd));
-	return error;
-=======
 	if (is_tx) {
 		struct ath_buf *bf;
 
@@ -689,7 +401,6 @@ fail:
 		}
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath9k_init_queues(struct ath_softc *sc)
@@ -698,98 +409,33 @@ static int ath9k_init_queues(struct ath_softc *sc)
 
 	sc->beacon.beaconq = ath9k_hw_beaconq_setup(sc->sc_ah);
 	sc->beacon.cabq = ath_txq_setup(sc, ATH9K_TX_QUEUE_CAB, 0);
-<<<<<<< HEAD
-
-	sc->config.cabqReadytime = ATH_CABQ_READY_TIME;
-	ath_cabq_update(sc);
-
-	for (i = 0; i < WME_NUM_AC; i++) {
-=======
 	ath_cabq_update(sc);
 
 	sc->tx.uapsdq = ath_txq_setup(sc, ATH9K_TX_QUEUE_UAPSD, 0);
 
 	for (i = 0; i < IEEE80211_NUM_ACS; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sc->tx.txq_map[i] = ath_txq_setup(sc, ATH9K_TX_QUEUE_DATA, i);
 		sc->tx.txq_map[i]->mac80211_qnum = i;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ath9k_init_channels_rates(struct ath_softc *sc)
-{
-	void *channels;
-
-	BUILD_BUG_ON(ARRAY_SIZE(ath9k_2ghz_chantable) +
-		     ARRAY_SIZE(ath9k_5ghz_chantable) !=
-		     ATH9K_NUM_CHANNELS);
-
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ) {
-		channels = kmemdup(ath9k_2ghz_chantable,
-			sizeof(ath9k_2ghz_chantable), GFP_KERNEL);
-		if (!channels)
-		    return -ENOMEM;
-
-		sc->sbands[IEEE80211_BAND_2GHZ].channels = channels;
-		sc->sbands[IEEE80211_BAND_2GHZ].band = IEEE80211_BAND_2GHZ;
-		sc->sbands[IEEE80211_BAND_2GHZ].n_channels =
-			ARRAY_SIZE(ath9k_2ghz_chantable);
-		sc->sbands[IEEE80211_BAND_2GHZ].bitrates = ath9k_legacy_rates;
-		sc->sbands[IEEE80211_BAND_2GHZ].n_bitrates =
-			ARRAY_SIZE(ath9k_legacy_rates);
-	}
-
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ) {
-		channels = kmemdup(ath9k_5ghz_chantable,
-			sizeof(ath9k_5ghz_chantable), GFP_KERNEL);
-		if (!channels) {
-			if (sc->sbands[IEEE80211_BAND_2GHZ].channels)
-				kfree(sc->sbands[IEEE80211_BAND_2GHZ].channels);
-			return -ENOMEM;
-		}
-
-		sc->sbands[IEEE80211_BAND_5GHZ].channels = channels;
-		sc->sbands[IEEE80211_BAND_5GHZ].band = IEEE80211_BAND_5GHZ;
-		sc->sbands[IEEE80211_BAND_5GHZ].n_channels =
-			ARRAY_SIZE(ath9k_5ghz_chantable);
-		sc->sbands[IEEE80211_BAND_5GHZ].bitrates =
-			ath9k_legacy_rates + 4;
-		sc->sbands[IEEE80211_BAND_5GHZ].n_bitrates =
-			ARRAY_SIZE(ath9k_legacy_rates) - 4;
-	}
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ath9k_init_misc(struct ath_softc *sc)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	int i = 0;
 
-<<<<<<< HEAD
-	setup_timer(&common->ani.timer, ath_ani_calibrate, (unsigned long)sc);
-
-	sc->config.txpowlimit = ATH_TXPOWER_MAX;
-	memcpy(common->bssidmask, ath_bcast_mac, ETH_ALEN);
-	sc->beacon.slottime = ATH9K_SLOT_TIME_9;
-=======
 	timer_setup(&common->ani.timer, ath_ani_calibrate, 0);
 
 	common->last_rssi = ATH_RSSI_DUMMY_MARKER;
 	eth_broadcast_addr(common->bssidmask);
 	sc->beacon.slottime = 9;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(sc->beacon.bslot); i++)
 		sc->beacon.bslot[i] = NULL;
 
 	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB)
 		sc->ant_comb.count = ATH_ANT_DIV_COMB_INIT_COUNT;
-<<<<<<< HEAD
-=======
 
 	sc->spec_priv.ah = sc->sc_ah;
 	sc->spec_priv.spec_config.enabled = 0;
@@ -1048,52 +694,17 @@ static int ath9k_of_init(struct ath_softc *sc)
 	of_get_mac_address(np, common->macaddr);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 			    const struct ath_bus_ops *bus_ops)
 {
-<<<<<<< HEAD
-	struct ath9k_platform_data *pdata = sc->dev->platform_data;
-	struct ath_hw *ah = NULL;
-=======
 	struct ath_hw *ah = NULL;
 	struct ath9k_hw_capabilities *pCap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath_common *common;
 	int ret = 0, i;
 	int csz = 0;
 
-<<<<<<< HEAD
-	ah = kzalloc(sizeof(struct ath_hw), GFP_KERNEL);
-	if (!ah)
-		return -ENOMEM;
-
-	ah->hw = sc->hw;
-	ah->hw_version.devid = devid;
-	ah->reg_ops.read = ath9k_ioread32;
-	ah->reg_ops.write = ath9k_iowrite32;
-	ah->reg_ops.rmw = ath9k_reg_rmw;
-	atomic_set(&ah->intr_ref_cnt, -1);
-	sc->sc_ah = ah;
-
-	if (!pdata) {
-		ah->ah_flags |= AH_USE_EEPROM;
-		sc->sc_ah->led_pin = -1;
-	} else {
-		sc->sc_ah->gpio_mask = pdata->gpio_mask;
-		sc->sc_ah->gpio_val = pdata->gpio_val;
-		sc->sc_ah->led_pin = pdata->led_pin;
-		ah->is_clk_25mhz = pdata->is_clk_25mhz;
-		ah->get_mac_revision = pdata->get_mac_revision;
-		ah->external_reset = pdata->external_reset;
-	}
-
-	common = ath9k_hw_common(ah);
-	common->ops = &ah->reg_ops;
-	common->bus_ops = bus_ops;
-=======
 	ah = devm_kzalloc(sc->dev, sizeof(struct ath_hw), GFP_KERNEL);
 	if (!ah)
 		return -ENOMEM;
@@ -1125,30 +736,12 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 	common->ops = &ah->reg_ops;
 	common->bus_ops = bus_ops;
 	common->ps_ops = &ath9k_ps_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	common->ah = ah;
 	common->hw = sc->hw;
 	common->priv = sc;
 	common->debug_mask = ath9k_debug;
 	common->btcoex_enabled = ath9k_btcoex_enable == 1;
 	common->disable_ani = false;
-<<<<<<< HEAD
-	spin_lock_init(&common->cc_lock);
-
-	spin_lock_init(&sc->sc_serial_rw);
-	spin_lock_init(&sc->sc_pm_lock);
-	mutex_init(&sc->mutex);
-#ifdef CONFIG_ATH9K_DEBUGFS
-	spin_lock_init(&sc->nodes_lock);
-	INIT_LIST_HEAD(&sc->nodes);
-#endif
-#ifdef CONFIG_ATH9K_MAC_DEBUG
-	spin_lock_init(&sc->debug.samp_lock);
-#endif
-	tasklet_init(&sc->intr_tq, ath9k_tasklet, (unsigned long)sc);
-	tasklet_init(&sc->bcon_tasklet, ath_beacon_tasklet,
-		     (unsigned long)sc);
-=======
 
 	/*
 	 * Platform quirks.
@@ -1197,7 +790,6 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 	INIT_DELAYED_WORK(&sc->hw_check_work, ath_hw_check_work);
 
 	ath9k_init_channel_context(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Cache line size is used to size and align various
@@ -1211,12 +803,6 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 	if (ret)
 		goto err_hw;
 
-<<<<<<< HEAD
-	if (pdata && pdata->macaddr)
-		memcpy(common->macaddr, pdata->macaddr, ETH_ALEN);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ath9k_init_queues(sc);
 	if (ret)
 		goto err_queues;
@@ -1225,28 +811,21 @@ static int ath9k_init_softc(u16 devid, struct ath_softc *sc,
 	if (ret)
 		goto err_btcoex;
 
-<<<<<<< HEAD
-	ret = ath9k_init_channels_rates(sc);
-=======
 	ret = ath9k_cmn_init_channels_rates(common);
 	if (ret)
 		goto err_btcoex;
 
 	ret = ath9k_init_p2p(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto err_btcoex;
 
 	ath9k_cmn_init_crypto(sc->sc_ah);
 	ath9k_init_misc(sc);
-<<<<<<< HEAD
-=======
 	ath_chanctx_init(sc);
 	ath9k_offchannel_init(sc);
 
 	if (common->bus_ops->aspm_init)
 		common->bus_ops->aspm_init(common);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1257,15 +836,8 @@ err_btcoex:
 err_queues:
 	ath9k_hw_deinit(ah);
 err_hw:
-<<<<<<< HEAD
-
-	kfree(ah);
-	sc->sc_ah = NULL;
-
-=======
 	ath9k_eeprom_release(sc);
 	dev_kfree_skb_any(sc->tx99_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1274,16 +846,6 @@ static void ath9k_init_band_txpower(struct ath_softc *sc, int band)
 	struct ieee80211_supported_band *sband;
 	struct ieee80211_channel *chan;
 	struct ath_hw *ah = sc->sc_ah;
-<<<<<<< HEAD
-	int i;
-
-	sband = &sc->sbands[band];
-	for (i = 0; i < sband->n_channels; i++) {
-		chan = &sband->channels[i];
-		ah->curchan = &ah->channels[chan->hw_value];
-		ath9k_cmn_update_ichannel(ah->curchan, chan, NL80211_CHAN_HT20);
-		ath9k_hw_set_txpowerlimit(ah, MAX_RATE_POWER, true);
-=======
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct cfg80211_chan_def chandef;
 	int i;
@@ -1295,7 +857,6 @@ static void ath9k_init_band_txpower(struct ath_softc *sc, int band)
 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_HT20);
 		ath9k_cmn_get_channel(sc->hw, ah, &chandef);
 		ath9k_hw_set_txpowerlimit(ah, MAX_COMBINED_POWER, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1305,34 +866,13 @@ static void ath9k_init_txpower_limits(struct ath_softc *sc)
 	struct ath9k_channel *curchan = ah->curchan;
 
 	if (ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ)
-<<<<<<< HEAD
-		ath9k_init_band_txpower(sc, IEEE80211_BAND_2GHZ);
-	if (ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
-		ath9k_init_band_txpower(sc, IEEE80211_BAND_5GHZ);
-=======
 		ath9k_init_band_txpower(sc, NL80211_BAND_2GHZ);
 	if (ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
 		ath9k_init_band_txpower(sc, NL80211_BAND_5GHZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ah->curchan = curchan;
 }
 
-<<<<<<< HEAD
-void ath9k_reload_chainmask_settings(struct ath_softc *sc)
-{
-	if (!(sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_HT))
-		return;
-
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ)
-		setup_ht_cap(sc, &sc->sbands[IEEE80211_BAND_2GHZ].ht_cap);
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
-		setup_ht_cap(sc, &sc->sbands[IEEE80211_BAND_5GHZ].ht_cap);
-}
-
-
-void ath9k_set_hw_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
-=======
 static const struct ieee80211_iface_limit if_limits[] = {
 	{ .max = 2048,	.types = BIT(NL80211_IFTYPE_STATION) },
 	{ .max = 8,	.types =
@@ -1384,35 +924,10 @@ static const struct ieee80211_iface_combination if_comb[] = {
 
 #ifdef CONFIG_ATH9K_CHANNEL_CONTEXT
 static void ath9k_set_mcc_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 
-<<<<<<< HEAD
-	hw->flags = IEEE80211_HW_RX_INCLUDES_FCS |
-		IEEE80211_HW_HOST_BROADCAST_PS_BUFFERING |
-		IEEE80211_HW_SIGNAL_DBM |
-		IEEE80211_HW_SUPPORTS_PS |
-		IEEE80211_HW_PS_NULLFUNC_STACK |
-		IEEE80211_HW_SPECTRUM_MGMT |
-		IEEE80211_HW_REPORTS_TX_ACK_STATUS;
-
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_HT)
-		 hw->flags |= IEEE80211_HW_AMPDU_AGGREGATION;
-
-	if (AR_SREV_9160_10_OR_LATER(sc->sc_ah) || ath9k_modparam_nohwcrypt)
-		hw->flags |= IEEE80211_HW_MFP_CAPABLE;
-
-	hw->wiphy->interface_modes =
-		BIT(NL80211_IFTYPE_P2P_GO) |
-		BIT(NL80211_IFTYPE_P2P_CLIENT) |
-		BIT(NL80211_IFTYPE_AP) |
-		BIT(NL80211_IFTYPE_WDS) |
-		BIT(NL80211_IFTYPE_STATION) |
-		BIT(NL80211_IFTYPE_ADHOC) |
-		BIT(NL80211_IFTYPE_MESH_POINT);
-=======
 	if (!ath9k_is_chanctx_enabled())
 		return;
 
@@ -1483,22 +998,11 @@ static void ath9k_set_hw_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
 		hw->wiphy->iface_combinations = if_comb;
 		hw->wiphy->n_iface_combinations = ARRAY_SIZE(if_comb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hw->wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
 
 	hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN;
 	hw->wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS;
-<<<<<<< HEAD
-
-	hw->queues = 4;
-	hw->max_rates = 4;
-	hw->channel_change_time = 5000;
-	hw->max_listen_interval = 1;
-	hw->max_rate_tries = 10;
-	hw->sta_data_size = sizeof(struct ath_node);
-	hw->vif_data_size = sizeof(struct ath_vif);
-=======
 	hw->wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL;
 	hw->wiphy->flags |= WIPHY_FLAG_SUPPORTS_5_10_MHZ;
 	hw->wiphy->flags |= WIPHY_FLAG_HAS_CHANNEL_SWITCH;
@@ -1511,7 +1015,6 @@ static void ath9k_set_hw_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
 	hw->sta_data_size = sizeof(struct ath_node);
 	hw->vif_data_size = sizeof(struct ath_vif);
 	hw->txq_data_size = sizeof(struct ath_atx_tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->extra_tx_headroom = 4;
 
 	hw->wiphy->available_antennas_rx = BIT(ah->caps.max_rxchains) - 1;
@@ -1525,17 +1028,6 @@ static void ath9k_set_hw_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
 	sc->ant_tx = hw->wiphy->available_antennas_tx;
 
 	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ)
-<<<<<<< HEAD
-		hw->wiphy->bands[IEEE80211_BAND_2GHZ] =
-			&sc->sbands[IEEE80211_BAND_2GHZ];
-	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
-		hw->wiphy->bands[IEEE80211_BAND_5GHZ] =
-			&sc->sbands[IEEE80211_BAND_5GHZ];
-
-	ath9k_reload_chainmask_settings(sc);
-
-	SET_IEEE80211_PERM_ADDR(hw, common->macaddr);
-=======
 		hw->wiphy->bands[NL80211_BAND_2GHZ] =
 			&common->sbands[NL80211_BAND_2GHZ];
 	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
@@ -1555,7 +1047,6 @@ static void ath9k_set_hw_capab(struct ath_softc *sc, struct ieee80211_hw *hw)
 	wiphy_ext_feature_set(hw->wiphy,
 			      NL80211_EXT_FEATURE_MULTICAST_REGISTRATIONS);
 	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_CAN_REPLACE_PTK0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ath9k_init_device(u16 devid, struct ath_softc *sc,
@@ -1569,13 +1060,8 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 
 	/* Bring up device */
 	error = ath9k_init_softc(devid, sc, bus_ops);
-<<<<<<< HEAD
-	if (error != 0)
-		goto error_init;
-=======
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ah = sc->sc_ah;
 	common = ath9k_hw_common(ah);
@@ -1585,31 +1071,19 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 	error = ath_regd_init(&common->regulatory, sc->hw->wiphy,
 			      ath9k_reg_notifier);
 	if (error)
-<<<<<<< HEAD
-		goto error_regd;
-=======
 		goto deinit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reg = &common->regulatory;
 
 	/* Setup TX DMA */
 	error = ath_tx_init(sc, ATH_TXBUF);
 	if (error != 0)
-<<<<<<< HEAD
-		goto error_tx;
-=======
 		goto deinit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup RX DMA */
 	error = ath_rx_init(sc, ATH_RXBUF);
 	if (error != 0)
-<<<<<<< HEAD
-		goto error_rx;
-=======
 		goto deinit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath9k_init_txpower_limits(sc);
 
@@ -1620,67 +1094,31 @@ int ath9k_init_device(u16 devid, struct ath_softc *sc,
 		ARRAY_SIZE(ath9k_tpt_blink));
 #endif
 
-<<<<<<< HEAD
-	INIT_WORK(&sc->hw_reset_work, ath_reset_work);
-	INIT_WORK(&sc->hw_check_work, ath_hw_check);
-	INIT_WORK(&sc->paprd_work, ath_paprd_calibrate);
-	INIT_DELAYED_WORK(&sc->hw_pll_work, ath_hw_pll_work);
-=======
 	wiphy_read_of_freq_limits(hw->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register with mac80211 */
 	error = ieee80211_register_hw(hw);
 	if (error)
-<<<<<<< HEAD
-		goto error_register;
-=======
 		goto rx_cleanup;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = ath9k_init_debug(ah);
 	if (error) {
 		ath_err(common, "Unable to create debugfs files\n");
-<<<<<<< HEAD
-		goto error_world;
-=======
 		goto unregister;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Handle world regulatory */
 	if (!ath_is_world_regd(reg)) {
 		error = regulatory_hint(hw->wiphy, reg->alpha2);
 		if (error)
-<<<<<<< HEAD
-			goto error_world;
-	}
-
-	sc->last_rssi = ATH_RSSI_DUMMY_MARKER;
-
-=======
 			goto debug_cleanup;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath_init_leds(sc);
 	ath_start_rfkill_poll(sc);
 
 	return 0;
 
-<<<<<<< HEAD
-error_world:
-	ieee80211_unregister_hw(hw);
-error_register:
-	ath_rx_cleanup(sc);
-error_rx:
-	ath_tx_cleanup(sc);
-error_tx:
-	/* Nothing */
-error_regd:
-	ath9k_deinit_softc(sc);
-error_init:
-=======
 debug_cleanup:
 	ath9k_deinit_debug(sc);
 unregister:
@@ -1689,7 +1127,6 @@ rx_cleanup:
 	ath_rx_cleanup(sc);
 deinit:
 	ath9k_deinit_softc(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1701,35 +1138,19 @@ static void ath9k_deinit_softc(struct ath_softc *sc)
 {
 	int i = 0;
 
-<<<<<<< HEAD
-	if (sc->sbands[IEEE80211_BAND_2GHZ].channels)
-		kfree(sc->sbands[IEEE80211_BAND_2GHZ].channels);
-
-	if (sc->sbands[IEEE80211_BAND_5GHZ].channels)
-		kfree(sc->sbands[IEEE80211_BAND_5GHZ].channels);
-
-=======
 	ath9k_deinit_p2p(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath9k_deinit_btcoex(sc);
 
 	for (i = 0; i < ATH9K_NUM_TX_QUEUES; i++)
 		if (ATH_TXQ_SETUP(sc, i))
 			ath_tx_cleanupq(sc, &sc->tx.txq[i]);
 
-<<<<<<< HEAD
-	ath9k_hw_deinit(sc->sc_ah);
-
-	kfree(sc->sc_ah);
-	sc->sc_ah = NULL;
-=======
 	del_timer_sync(&sc->sleep_timer);
 	ath9k_hw_deinit(sc->sc_ah);
 	if (sc->dfs_detector != NULL)
 		sc->dfs_detector->exit(sc->dfs_detector);
 
 	ath9k_eeprom_release(sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath9k_deinit_device(struct ath_softc *sc)
@@ -1743,26 +1164,6 @@ void ath9k_deinit_device(struct ath_softc *sc)
 
 	ath9k_ps_restore(sc);
 
-<<<<<<< HEAD
-	ieee80211_unregister_hw(hw);
-	ath_rx_cleanup(sc);
-	ath_tx_cleanup(sc);
-	ath9k_deinit_softc(sc);
-}
-
-void ath_descdma_cleanup(struct ath_softc *sc,
-			 struct ath_descdma *dd,
-			 struct list_head *head)
-{
-	dma_free_coherent(sc->dev, dd->dd_desc_len, dd->dd_desc,
-			  dd->dd_desc_paddr);
-
-	INIT_LIST_HEAD(head);
-	kfree(dd->dd_bufptr);
-	memset(dd, 0, sizeof(*dd));
-}
-
-=======
 	ath9k_deinit_debug(sc);
 	ath9k_deinit_wow(hw);
 	ieee80211_unregister_hw(hw);
@@ -1770,7 +1171,6 @@ void ath_descdma_cleanup(struct ath_softc *sc,
 	ath9k_deinit_softc(sc);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************/
 /*     Module Hooks     */
 /************************/
@@ -1779,30 +1179,11 @@ static int __init ath9k_init(void)
 {
 	int error;
 
-<<<<<<< HEAD
-	/* Register rate control algorithm */
-	error = ath_rate_control_register();
-	if (error != 0) {
-		printk(KERN_ERR
-			"ath9k: Unable to register rate control "
-			"algorithm: %d\n",
-			error);
-		goto err_out;
-	}
-
-	error = ath_pci_init();
-	if (error < 0) {
-		printk(KERN_ERR
-			"ath9k: No PCI devices found, driver not installed.\n");
-		error = -ENODEV;
-		goto err_rate_unregister;
-=======
 	error = ath_pci_init();
 	if (error < 0) {
 		pr_err("No PCI devices found, driver not installed\n");
 		error = -ENODEV;
 		goto err_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = ath_ahb_init();
@@ -1811,21 +1192,12 @@ static int __init ath9k_init(void)
 		goto err_pci_exit;
 	}
 
-<<<<<<< HEAD
-=======
 	dmi_check_system(ath9k_quirks);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  err_pci_exit:
 	ath_pci_exit();
-<<<<<<< HEAD
-
- err_rate_unregister:
-	ath_rate_control_unregister();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_out:
 	return error;
 }
@@ -1836,11 +1208,6 @@ static void __exit ath9k_exit(void)
 	is_ath9k_unloaded = true;
 	ath_ahb_exit();
 	ath_pci_exit();
-<<<<<<< HEAD
-	ath_rate_control_unregister();
-	printk(KERN_INFO "%s: Driver unloaded\n", dev_info);
-=======
 	pr_info("%s: Driver unloaded\n", dev_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(ath9k_exit);

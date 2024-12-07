@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/qnx4_fs.h>
 
@@ -14,11 +11,6 @@
 #endif
 
 struct qnx4_sb_info {
-<<<<<<< HEAD
-	struct buffer_head	*sb_buf;	/* superblock buffer */
-	struct qnx4_super_block	*sb;		/* our superblock */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		Version;	/* may be useful */
 	struct qnx4_inode_entry	*BitMap;	/* useful */
 };
@@ -52,8 +44,6 @@ static inline struct qnx4_inode_entry *qnx4_raw_inode(struct inode *inode)
 {
 	return &qnx4_i(inode)->raw;
 }
-<<<<<<< HEAD
-=======
 
 /*
  * A qnx4 directory entry is an inode entry or link info
@@ -114,4 +104,3 @@ static inline const char *get_entry_fname(union qnx4_directory_entry *de,
 
 	return de->de_name;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

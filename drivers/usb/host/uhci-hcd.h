@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_UHCI_HCD_H
 #define __LINUX_UHCI_HCD_H
 
 #include <linux/list.h>
 #include <linux/usb.h>
-<<<<<<< HEAD
-=======
 #include <linux/clk.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define usb_packetid(pipe)	(usb_pipein(pipe) ? USB_PID_IN : USB_PID_OUT)
 #define PIPE_DEVEP_MASK		0x0007ff00
@@ -56,11 +50,8 @@
 /* USB port status and control registers */
 #define USBPORTSC1	16
 #define USBPORTSC2	18
-<<<<<<< HEAD
-=======
 #define USBPORTSC3	20
 #define USBPORTSC4	22
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define   USBPORTSC_CCS		0x0001	/* Current Connect Status
 					 * ("device present") */
 #define   USBPORTSC_CSC		0x0002	/* Connect Status Change */
@@ -197,11 +188,7 @@ struct uhci_qh {
  * We need a special accessor for the element pointer because it is
  * subject to asynchronous updates by the controller.
  */
-<<<<<<< HEAD
-#define qh_element(qh)		ACCESS_ONCE((qh)->element)
-=======
 #define qh_element(qh)		READ_ONCE((qh)->element)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LINK_TO_QH(uhci, qh)	(UHCI_PTR_QH((uhci)) | \
 				cpu_to_hc32((uhci), (qh)->dma_handle))
@@ -229,13 +216,6 @@ struct uhci_qh {
 #define TD_CTRL_BITSTUFF	(1 << 17)	/* Bit Stuff Error */
 #define TD_CTRL_ACTLEN_MASK	0x7FF	/* actual length, encoded as n - 1 */
 
-<<<<<<< HEAD
-#define TD_CTRL_ANY_ERROR	(TD_CTRL_STALLED | TD_CTRL_DBUFERR | \
-				 TD_CTRL_BABBLE | TD_CTRL_CRCTIME | \
-				 TD_CTRL_BITSTUFF)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define uhci_maxerr(err)		((err) << TD_CTRL_C_ERR_SHIFT)
 #define uhci_status_bits(ctrl_sts)	((ctrl_sts) & 0xF60000)
 #define uhci_actual_length(ctrl_sts)	(((ctrl_sts) + 1) & \
@@ -296,11 +276,7 @@ struct uhci_td {
  * subject to asynchronous updates by the controller.
  */
 #define td_status(uhci, td)		hc32_to_cpu((uhci), \
-<<<<<<< HEAD
-						ACCESS_ONCE((td)->status))
-=======
 						READ_ONCE((td)->status))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LINK_TO_TD(uhci, td)		(cpu_to_hc32((uhci), (td)->dma_handle))
 
@@ -338,11 +314,7 @@ struct uhci_td {
  *
  * There's a special skeleton QH for Isochronous QHs which never appears
  * on the schedule.  Isochronous TDs go on the schedule before the
-<<<<<<< HEAD
- * the skeleton QHs.  The hardware accesses them directly rather than
-=======
  * skeleton QHs.  The hardware accesses them directly rather than
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * through their QH, which is used only for bookkeeping purposes.
  * While the UHCI spec doesn't forbid the use of QHs for Isochronous,
  * it doesn't use them either.  And the spec says that queues never
@@ -409,13 +381,6 @@ enum uhci_rh_state {
  * The full UHCI controller information:
  */
 struct uhci_hcd {
-<<<<<<< HEAD
-
-	/* debugfs */
-	struct dentry *dentry;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Grabbed from PCI */
 	unsigned long io_addr;
 
@@ -462,10 +427,7 @@ struct uhci_hcd {
 	unsigned int wait_for_hp:1;		/* Wait for HP port reset */
 	unsigned int big_endian_mmio:1;		/* Big endian registers */
 	unsigned int big_endian_desc:1;		/* Big endian descriptors */
-<<<<<<< HEAD
-=======
 	unsigned int is_aspeed:1;		/* Aspeed impl. workarounds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Support for port suspend/resume/reset */
 	unsigned long port_c_suspend;		/* Bit-arrays of ports */
@@ -482,11 +444,8 @@ struct uhci_hcd {
 	int total_load;				/* Sum of array values */
 	short load[MAX_PHASE];			/* Periodic allocations */
 
-<<<<<<< HEAD
-=======
 	struct clk *clk;			/* (optional) clock source */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset host controller */
 	void	(*reset_hc) (struct uhci_hcd *uhci);
 	int	(*check_and_reset_hc) (struct uhci_hcd *uhci);
@@ -534,23 +493,18 @@ struct urb_priv {
 #define PCI_VENDOR_ID_GENESYS		0x17a0
 #define PCI_DEVICE_ID_GL880S_UHCI	0x8083
 
-<<<<<<< HEAD
-=======
 /* Aspeed SoC needs some quirks */
 static inline bool uhci_is_aspeed(const struct uhci_hcd *uhci)
 {
 	return IS_ENABLED(CONFIG_USB_UHCI_ASPEED) && uhci->is_aspeed;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions used to access controller registers. The UCHI spec says that host
  * controller I/O registers are mapped into PCI I/O space. For non-PCI hosts
  * we use memory mapped registers.
  */
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAS_IOPORT
 #define UHCI_IN(x)	x
 #define UHCI_OUT(x)	x
@@ -559,7 +513,6 @@ static inline bool uhci_is_aspeed(const struct uhci_hcd *uhci)
 #define UHCI_OUT(x)	do { } while (0)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_USB_UHCI_SUPPORT_NON_PCI_HC
 /* Support PCI only */
 static inline u32 uhci_readl(const struct uhci_hcd *uhci, int reg)
@@ -594,11 +547,7 @@ static inline void uhci_writeb(const struct uhci_hcd *uhci, u8 val, int reg)
 
 #else
 /* Support non-PCI host controllers */
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-=======
 #if defined(CONFIG_USB_PCI) && defined(HAS_IOPORT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Support PCI and non-PCI host controllers */
 #define uhci_has_pci_registers(u)	((u)->io_addr != 0)
 #else
@@ -613,12 +562,6 @@ static inline void uhci_writeb(const struct uhci_hcd *uhci, u8 val, int reg)
 #define uhci_big_endian_mmio(u)		0
 #endif
 
-<<<<<<< HEAD
-static inline u32 uhci_readl(const struct uhci_hcd *uhci, int reg)
-{
-	if (uhci_has_pci_registers(uhci))
-		return inl(uhci->io_addr + reg);
-=======
 static inline int uhci_aspeed_reg(unsigned int reg)
 {
 	switch (reg) {
@@ -655,7 +598,6 @@ static inline u32 uhci_readl(const struct uhci_hcd *uhci, int reg)
 		return UHCI_IN(inl(uhci->io_addr + reg));
 	else if (uhci_is_aspeed(uhci))
 		return readl(uhci->regs + uhci_aspeed_reg(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_UHCI_BIG_ENDIAN_MMIO
 	else if (uhci_big_endian_mmio(uhci))
 		return readl_be(uhci->regs + reg);
@@ -667,13 +609,9 @@ static inline u32 uhci_readl(const struct uhci_hcd *uhci, int reg)
 static inline void uhci_writel(const struct uhci_hcd *uhci, u32 val, int reg)
 {
 	if (uhci_has_pci_registers(uhci))
-<<<<<<< HEAD
-		outl(val, uhci->io_addr + reg);
-=======
 		UHCI_OUT(outl(val, uhci->io_addr + reg));
 	else if (uhci_is_aspeed(uhci))
 		writel(val, uhci->regs + uhci_aspeed_reg(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_UHCI_BIG_ENDIAN_MMIO
 	else if (uhci_big_endian_mmio(uhci))
 		writel_be(val, uhci->regs + reg);
@@ -685,13 +623,9 @@ static inline void uhci_writel(const struct uhci_hcd *uhci, u32 val, int reg)
 static inline u16 uhci_readw(const struct uhci_hcd *uhci, int reg)
 {
 	if (uhci_has_pci_registers(uhci))
-<<<<<<< HEAD
-		return inw(uhci->io_addr + reg);
-=======
 		return UHCI_IN(inw(uhci->io_addr + reg));
 	else if (uhci_is_aspeed(uhci))
 		return readl(uhci->regs + uhci_aspeed_reg(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_UHCI_BIG_ENDIAN_MMIO
 	else if (uhci_big_endian_mmio(uhci))
 		return readw_be(uhci->regs + reg);
@@ -703,13 +637,9 @@ static inline u16 uhci_readw(const struct uhci_hcd *uhci, int reg)
 static inline void uhci_writew(const struct uhci_hcd *uhci, u16 val, int reg)
 {
 	if (uhci_has_pci_registers(uhci))
-<<<<<<< HEAD
-		outw(val, uhci->io_addr + reg);
-=======
 		UHCI_OUT(outw(val, uhci->io_addr + reg));
 	else if (uhci_is_aspeed(uhci))
 		writel(val, uhci->regs + uhci_aspeed_reg(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_UHCI_BIG_ENDIAN_MMIO
 	else if (uhci_big_endian_mmio(uhci))
 		writew_be(val, uhci->regs + reg);
@@ -721,13 +651,9 @@ static inline void uhci_writew(const struct uhci_hcd *uhci, u16 val, int reg)
 static inline u8 uhci_readb(const struct uhci_hcd *uhci, int reg)
 {
 	if (uhci_has_pci_registers(uhci))
-<<<<<<< HEAD
-		return inb(uhci->io_addr + reg);
-=======
 		return UHCI_IN(inb(uhci->io_addr + reg));
 	else if (uhci_is_aspeed(uhci))
 		return readl(uhci->regs + uhci_aspeed_reg(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_UHCI_BIG_ENDIAN_MMIO
 	else if (uhci_big_endian_mmio(uhci))
 		return readb_be(uhci->regs + reg);
@@ -739,13 +665,9 @@ static inline u8 uhci_readb(const struct uhci_hcd *uhci, int reg)
 static inline void uhci_writeb(const struct uhci_hcd *uhci, u8 val, int reg)
 {
 	if (uhci_has_pci_registers(uhci))
-<<<<<<< HEAD
-		outb(val, uhci->io_addr + reg);
-=======
 		UHCI_OUT(outb(val, uhci->io_addr + reg));
 	else if (uhci_is_aspeed(uhci))
 		writel(val, uhci->regs + uhci_aspeed_reg(reg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_UHCI_BIG_ENDIAN_MMIO
 	else if (uhci_big_endian_mmio(uhci))
 		writeb_be(val, uhci->regs + reg);
@@ -754,11 +676,8 @@ static inline void uhci_writeb(const struct uhci_hcd *uhci, u8 val, int reg)
 		writeb(val, uhci->regs + reg);
 }
 #endif /* CONFIG_USB_UHCI_SUPPORT_NON_PCI_HC */
-<<<<<<< HEAD
-=======
 #undef UHCI_IN
 #undef UHCI_OUT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The GRLIB GRUSBHC controller can use big endian format for its descriptors.

@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
- */
-
-#include <linux/module.h>
-#include <linux/bootmem.h>
-#include <linux/mm.h>
-#include <linux/pfn.h>
-#include <asm/page.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
@@ -21,7 +9,6 @@
 #include <linux/pfn.h>
 #include <asm/page.h>
 #include <asm/sections.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <as-layout.h>
 #include <init.h>
 #include <kern.h>
@@ -36,41 +23,6 @@ EXPORT_SYMBOL(high_physmem);
 
 extern unsigned long long physmem_size;
 
-<<<<<<< HEAD
-int __init init_maps(unsigned long physmem, unsigned long iomem,
-		     unsigned long highmem)
-{
-	struct page *p, *map;
-	unsigned long phys_len, phys_pages, highmem_len, highmem_pages;
-	unsigned long iomem_len, iomem_pages, total_len, total_pages;
-	int i;
-
-	phys_pages = physmem >> PAGE_SHIFT;
-	phys_len = phys_pages * sizeof(struct page);
-
-	iomem_pages = iomem >> PAGE_SHIFT;
-	iomem_len = iomem_pages * sizeof(struct page);
-
-	highmem_pages = highmem >> PAGE_SHIFT;
-	highmem_len = highmem_pages * sizeof(struct page);
-
-	total_pages = phys_pages + iomem_pages + highmem_pages;
-	total_len = phys_len + iomem_len + highmem_len;
-
-	map = alloc_bootmem_low_pages(total_len);
-	if (map == NULL)
-		return -ENOMEM;
-
-	for (i = 0; i < total_pages; i++) {
-		p = &map[i];
-		memset(p, 0, sizeof(struct page));
-		SetPageReserved(p);
-		INIT_LIST_HEAD(&p->lru);
-	}
-
-	max_mapnr = total_pages;
-	return 0;
-=======
 void __init mem_total_pages(unsigned long physmem, unsigned long iomem,
 		     unsigned long highmem)
 {
@@ -84,7 +36,6 @@ void __init mem_total_pages(unsigned long physmem, unsigned long iomem,
 	total_pages   = phys_pages + iomem_pages + highmem_pages;
 
 	max_mapnr = total_pages;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void map_memory(unsigned long virt, unsigned long phys, unsigned long len,
@@ -105,10 +56,6 @@ void map_memory(unsigned long virt, unsigned long phys, unsigned long len,
 	}
 }
 
-<<<<<<< HEAD
-extern int __syscall_stub_start;
-
-=======
 /**
  * setup_physmem() - Setup physical memory for UML
  * @start:	Start address of the physical kernel memory,
@@ -129,26 +76,10 @@ extern int __syscall_stub_start;
  * The memory mapped memory of the temporary file is used as backing memory
  * of all user space processes/kernel tasks.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init setup_physmem(unsigned long start, unsigned long reserve_end,
 			  unsigned long len, unsigned long long highmem)
 {
 	unsigned long reserve = reserve_end - start;
-<<<<<<< HEAD
-	int pfn = PFN_UP(__pa(reserve_end));
-	int delta = (len - reserve) >> PAGE_SHIFT;
-	int err, offset, bootmap_size;
-
-	physmem_fd = create_mem_file(len + highmem);
-
-	offset = uml_reserved - uml_physmem;
-	err = os_map_memory((void *) uml_reserved, physmem_fd, offset,
-			    len - offset, 1, 1, 1);
-	if (err < 0) {
-		printf("setup_physmem - mapping %ld bytes of memory at 0x%p "
-		       "failed - errno = %d\n", len - offset,
-		       (void *) uml_reserved, err);
-=======
 	long map_size = len - reserve;
 	int err;
 
@@ -166,7 +97,6 @@ void __init setup_physmem(unsigned long start, unsigned long reserve_end,
 		os_warn("setup_physmem - mapping %ld bytes of memory at 0x%p "
 			"failed - errno = %d\n", map_size,
 			(void *) reserve_end, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exit(1);
 	}
 
@@ -174,14 +104,6 @@ void __init setup_physmem(unsigned long start, unsigned long reserve_end,
 	 * Special kludge - This page will be mapped in to userspace processes
 	 * from physmem_fd, so it needs to be written out there.
 	 */
-<<<<<<< HEAD
-	os_seek_file(physmem_fd, __pa(&__syscall_stub_start));
-	os_write_file(physmem_fd, &__syscall_stub_start, PAGE_SIZE);
-
-	bootmap_size = init_bootmem(pfn, pfn + delta);
-	free_bootmem(__pa(reserve_end) + bootmap_size,
-		     len - bootmap_size - reserve);
-=======
 	os_seek_file(physmem_fd, __pa(__syscall_stub_start));
 	os_write_file(physmem_fd, __syscall_stub_start, PAGE_SIZE);
 	os_fsync_file(physmem_fd);
@@ -191,7 +113,6 @@ void __init setup_physmem(unsigned long start, unsigned long reserve_end,
 
 	min_low_pfn = PFN_UP(__pa(reserve_end));
 	max_low_pfn = min_low_pfn + (map_size >> PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int phys_mapping(unsigned long phys, unsigned long long *offset_out)
@@ -222,10 +143,7 @@ int phys_mapping(unsigned long phys, unsigned long long *offset_out)
 
 	return fd;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(phys_mapping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init uml_mem_setup(char *line, int *add)
 {
@@ -251,11 +169,7 @@ __uml_setup("iomem=", parse_iomem,
 );
 
 /*
-<<<<<<< HEAD
- * This list is constructed in parse_iomem and addresses filled in in
-=======
  * This list is constructed in parse_iomem and addresses filled in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * setup_iomem, both of which run during early boot.  Afterwards, it's
  * unchanged.
  */

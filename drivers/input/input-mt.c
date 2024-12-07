@@ -1,28 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Input Multitouch Library
  *
  * Copyright (c) 2008-2010 Henrik Rydberg
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input/mt.h>
 #include <linux/export.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#define TRKID_SGN	((TRKID_MAX + 1) >> 1)
-
-=======
 #include "input-core-private.h"
 
 #define TRKID_SGN	((TRKID_MAX + 1) >> 1)
@@ -36,26 +21,15 @@ static void copy_abs(struct input_dev *dev, unsigned int dst, unsigned int src)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * input_mt_init_slots() - initialize MT input slots
  * @dev: input device supporting MT events and finger tracking
  * @num_slots: number of slots used by the device
-<<<<<<< HEAD
-=======
  * @flags: mt tasks to handle in core
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function allocates all necessary memory for MT slot handling
  * in the input device, prepares the ABS_MT_SLOT and
  * ABS_MT_TRACKING_ID events for use and sets up appropriate buffers.
-<<<<<<< HEAD
- * May be called repeatedly. Returns -EINVAL if attempting to
- * reinitialize with a different number of slots.
- */
-int input_mt_init_slots(struct input_dev *dev, unsigned int num_slots)
-{
-=======
  * Depending on the flags set, it also performs pointer emulation and
  * frame synchronization.
  *
@@ -66,30 +40,10 @@ int input_mt_init_slots(struct input_dev *dev, unsigned int num_slots,
 			unsigned int flags)
 {
 	struct input_mt *mt = dev->mt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (!num_slots)
 		return 0;
-<<<<<<< HEAD
-	if (dev->mt)
-		return dev->mtsize != num_slots ? -EINVAL : 0;
-
-	dev->mt = kcalloc(num_slots, sizeof(struct input_mt_slot), GFP_KERNEL);
-	if (!dev->mt)
-		return -ENOMEM;
-
-	dev->mtsize = num_slots;
-	input_set_abs_params(dev, ABS_MT_SLOT, 0, num_slots - 1, 0, 0);
-	input_set_abs_params(dev, ABS_MT_TRACKING_ID, 0, TRKID_MAX, 0, 0);
-	input_set_events_per_packet(dev, 6 * num_slots);
-
-	/* Mark slots as 'unused' */
-	for (i = 0; i < num_slots; i++)
-		input_mt_set_value(&dev->mt[i], ABS_MT_TRACKING_ID, -1);
-
-	return 0;
-=======
 	if (mt)
 		return mt->num_slots != num_slots ? -EINVAL : 0;
 
@@ -144,7 +98,6 @@ int input_mt_init_slots(struct input_dev *dev, unsigned int num_slots,
 err_mem:
 	kfree(mt);
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(input_mt_init_slots);
 
@@ -157,19 +110,11 @@ EXPORT_SYMBOL(input_mt_init_slots);
  */
 void input_mt_destroy_slots(struct input_dev *dev)
 {
-<<<<<<< HEAD
-	kfree(dev->mt);
-	dev->mt = NULL;
-	dev->mtsize = 0;
-	dev->slot = 0;
-	dev->trkid = 0;
-=======
 	if (dev->mt) {
 		kfree(dev->mt->red);
 		kfree(dev->mt);
 	}
 	dev->mt = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(input_mt_destroy_slots);
 
@@ -184,27 +129,6 @@ EXPORT_SYMBOL(input_mt_destroy_slots);
  * inactive, or if the tool type is changed, a new tracking id is
  * assigned to the slot. The tool type is only reported if the
  * corresponding absbit field is set.
-<<<<<<< HEAD
- */
-void input_mt_report_slot_state(struct input_dev *dev,
-				unsigned int tool_type, bool active)
-{
-	struct input_mt_slot *mt;
-	int id;
-
-	if (!dev->mt || !active) {
-		input_event(dev, EV_ABS, ABS_MT_TRACKING_ID, -1);
-		return;
-	}
-
-	mt = &dev->mt[dev->slot];
-	id = input_mt_get_value(mt, ABS_MT_TRACKING_ID);
-	if (id < 0 || input_mt_get_value(mt, ABS_MT_TOOL_TYPE) != tool_type)
-		id = input_mt_new_trkid(dev);
-
-	input_event(dev, EV_ABS, ABS_MT_TRACKING_ID, id);
-	input_event(dev, EV_ABS, ABS_MT_TOOL_TYPE, tool_type);
-=======
  *
  * Returns true if contact is active.
  */
@@ -234,7 +158,6 @@ bool input_mt_report_slot_state(struct input_dev *dev,
 	input_event(dev, EV_ABS, ABS_MT_TOOL_TYPE, tool_type);
 
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(input_mt_report_slot_state);
 
@@ -272,15 +195,6 @@ EXPORT_SYMBOL(input_mt_report_finger_count);
  */
 void input_mt_report_pointer_emulation(struct input_dev *dev, bool use_count)
 {
-<<<<<<< HEAD
-	struct input_mt_slot *oldest = 0;
-	int oldid = dev->trkid;
-	int count = 0;
-	int i;
-
-	for (i = 0; i < dev->mtsize; ++i) {
-		struct input_mt_slot *ps = &dev->mt[i];
-=======
 	struct input_mt *mt = dev->mt;
 	struct input_mt_slot *oldest;
 	int oldid, count, i;
@@ -294,7 +208,6 @@ void input_mt_report_pointer_emulation(struct input_dev *dev, bool use_count)
 
 	for (i = 0; i < mt->num_slots; ++i) {
 		struct input_mt_slot *ps = &mt->slots[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int id = input_mt_get_value(ps, ABS_MT_TRACKING_ID);
 
 		if (id < 0)
@@ -307,10 +220,6 @@ void input_mt_report_pointer_emulation(struct input_dev *dev, bool use_count)
 	}
 
 	input_event(dev, EV_KEY, BTN_TOUCH, count > 0);
-<<<<<<< HEAD
-	if (use_count)
-		input_mt_report_finger_count(dev, count);
-=======
 
 	if (use_count) {
 		if (count == 0 &&
@@ -328,23 +237,10 @@ void input_mt_report_pointer_emulation(struct input_dev *dev, bool use_count)
 
 		input_mt_report_finger_count(dev, count);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (oldest) {
 		int x = input_mt_get_value(oldest, ABS_MT_POSITION_X);
 		int y = input_mt_get_value(oldest, ABS_MT_POSITION_Y);
-<<<<<<< HEAD
-		int p = input_mt_get_value(oldest, ABS_MT_PRESSURE);
-
-		input_event(dev, EV_ABS, ABS_X, x);
-		input_event(dev, EV_ABS, ABS_Y, y);
-		input_event(dev, EV_ABS, ABS_PRESSURE, p);
-	} else {
-		input_event(dev, EV_ABS, ABS_PRESSURE, 0);
-	}
-}
-EXPORT_SYMBOL(input_mt_report_pointer_emulation);
-=======
 
 		input_event(dev, EV_ABS, ABS_X, x);
 		input_event(dev, EV_ABS, ABS_Y, y);
@@ -637,4 +533,3 @@ int input_mt_get_slot_by_key(struct input_dev *dev, int key)
 	return -1;
 }
 EXPORT_SYMBOL(input_mt_get_slot_by_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

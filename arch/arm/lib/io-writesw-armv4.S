@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/io-writesw-armv4.S
  *
  *  Copyright (C) 1995-2000 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
@@ -38,11 +28,7 @@
 
 ENTRY(__raw_writesw)
 		teq	r2, #0
-<<<<<<< HEAD
-		moveq	pc, lr
-=======
 		reteq	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ands	r3, r1, #3
 		bne	.Loutsw_align
 
@@ -72,13 +58,8 @@ ENTRY(__raw_writesw)
 		ldr	r3, [r1], #4
 		outword	r3
 
-<<<<<<< HEAD
-.Lno_outsw_2:	ldrneh	r3, [r1]
-		strneh	r3, [r0]
-=======
 .Lno_outsw_2:	ldrhne	r3, [r1]
 		strhne	r3, [r0]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ldmfd	sp!, {r4, r5, pc}
 
@@ -111,11 +92,6 @@ ENTRY(__raw_writesw)
 
 		tst	r2, #1
 3:		movne	ip, r3, lsr #8
-<<<<<<< HEAD
-		strneh	ip, [r0]
-		mov	pc, lr
-=======
 		strhne	ip, [r0]
 		ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__raw_writesw)

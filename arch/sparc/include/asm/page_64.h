@@ -1,24 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_PAGE_H
 #define _SPARC64_PAGE_H
 
 #include <linux/const.h>
 
-<<<<<<< HEAD
-#if defined(CONFIG_SPARC64_PAGE_SIZE_8KB)
-#define PAGE_SHIFT   13
-#elif defined(CONFIG_SPARC64_PAGE_SIZE_64KB)
-#define PAGE_SHIFT   16
-#else
-#error No page size specified in kernel configuration
-#endif
-
-=======
 #define PAGE_SHIFT   CONFIG_PAGE_SHIFT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PAGE_SIZE    (_AC(1,UL) << PAGE_SHIFT)
 #define PAGE_MASK    (~(PAGE_SIZE-1))
 
@@ -29,17 +15,6 @@
 #define DCACHE_ALIASING_POSSIBLE
 #endif
 
-<<<<<<< HEAD
-#if defined(CONFIG_HUGETLB_PAGE_SIZE_4MB)
-#define HPAGE_SHIFT		22
-#elif defined(CONFIG_HUGETLB_PAGE_SIZE_512K)
-#define HPAGE_SHIFT		19
-#elif defined(CONFIG_HUGETLB_PAGE_SIZE_64K)
-#define HPAGE_SHIFT		16
-#endif
-
-#ifdef CONFIG_HUGETLB_PAGE
-=======
 #define HPAGE_SHIFT		23
 #define REAL_HPAGE_SHIFT	22
 #define HPAGE_16GB_SHIFT	34
@@ -49,30 +24,16 @@
 #define REAL_HPAGE_SIZE		(_AC(1,UL) << REAL_HPAGE_SHIFT)
 
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPAGE_SIZE		(_AC(1,UL) << HPAGE_SHIFT)
 #define HPAGE_MASK		(~(HPAGE_SIZE - 1UL))
 #define HUGETLB_PAGE_ORDER	(HPAGE_SHIFT - PAGE_SHIFT)
 #define HAVE_ARCH_HUGETLB_UNMAPPED_AREA
-<<<<<<< HEAD
-=======
 #define REAL_HPAGE_PER_HPAGE	(_AC(1,UL) << (HPAGE_SHIFT - REAL_HPAGE_SHIFT))
 #define HUGE_MAX_HSTATE		5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-#define WANT_PAGE_VIRTUAL
-
-extern void _clear_page(void *page);
-#define clear_page(X)	_clear_page((void *)(X))
-struct page;
-extern void clear_user_page(void *addr, unsigned long vaddr, struct page *page);
-#define copy_page(X,Y)	memcpy((void *)(X), (void *)(Y), PAGE_SIZE)
-extern void copy_user_page(void *to, void *from, unsigned long vaddr, struct page *topage);
-=======
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
 struct pt_regs;
 void hugetlb_setup(struct pt_regs *regs);
@@ -92,7 +53,6 @@ void copy_user_highpage(struct page *to, struct page *from,
 			unsigned long vaddr, struct vm_area_struct *vma);
 #define __HAVE_ARCH_COPY_HIGHPAGE
 void copy_highpage(struct page *to, struct page *from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Unlike sparc32, sparc64's parameter passing API is more
  * sane in that structures which as small enough are passed
@@ -107,33 +67,22 @@ void copy_highpage(struct page *to, struct page *from);
 /* These are used to make use of C type-checking.. */
 typedef struct { unsigned long pte; } pte_t;
 typedef struct { unsigned long iopte; } iopte_t;
-<<<<<<< HEAD
-typedef struct { unsigned int pmd; } pmd_t;
-typedef struct { unsigned int pgd; } pgd_t;
-=======
 typedef struct { unsigned long pmd; } pmd_t;
 typedef struct { unsigned long pud; } pud_t;
 typedef struct { unsigned long pgd; } pgd_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct { unsigned long pgprot; } pgprot_t;
 
 #define pte_val(x)	((x).pte)
 #define iopte_val(x)	((x).iopte)
 #define pmd_val(x)      ((x).pmd)
-<<<<<<< HEAD
-=======
 #define pud_val(x)      ((x).pud)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pgd_val(x)	((x).pgd)
 #define pgprot_val(x)	((x).pgprot)
 
 #define __pte(x)	((pte_t) { (x) } )
 #define __iopte(x)	((iopte_t) { (x) } )
 #define __pmd(x)        ((pmd_t) { (x) } )
-<<<<<<< HEAD
-=======
 #define __pud(x)        ((pud_t) { (x) } )
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __pgd(x)	((pgd_t) { (x) } )
 #define __pgprot(x)	((pgprot_t) { (x) } )
 
@@ -141,54 +90,27 @@ typedef struct { unsigned long pgprot; } pgprot_t;
 /* .. while these make it easier on the compiler */
 typedef unsigned long pte_t;
 typedef unsigned long iopte_t;
-<<<<<<< HEAD
-typedef unsigned int pmd_t;
-typedef unsigned int pgd_t;
-=======
 typedef unsigned long pmd_t;
 typedef unsigned long pud_t;
 typedef unsigned long pgd_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef unsigned long pgprot_t;
 
 #define pte_val(x)	(x)
 #define iopte_val(x)	(x)
 #define pmd_val(x)      (x)
-<<<<<<< HEAD
-=======
 #define pud_val(x)      (x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pgd_val(x)	(x)
 #define pgprot_val(x)	(x)
 
 #define __pte(x)	(x)
 #define __iopte(x)	(x)
 #define __pmd(x)        (x)
-<<<<<<< HEAD
-=======
 #define __pud(x)        (x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __pgd(x)	(x)
 #define __pgprot(x)	(x)
 
 #endif /* (STRICT_MM_TYPECHECKS) */
 
-<<<<<<< HEAD
-typedef struct page *pgtable_t;
-
-#define TASK_UNMAPPED_BASE	(test_thread_flag(TIF_32BIT) ? \
-				 (_AC(0x0000000070000000,UL)) : \
-				 (_AC(0xfffff80000000000,UL) + (1UL << 32UL)))
-
-#include <asm-generic/memory_model.h>
-
-#endif /* !(__ASSEMBLY__) */
-
-/* We used to stick this into a hard-coded global register (%g4)
- * but that does not make sense anymore.
- */
-#define PAGE_OFFSET		_AC(0xFFFFF80000000000,UL)
-=======
 typedef pte_t *pgtable_t;
 
 extern unsigned long sparc64_va_hole_top;
@@ -218,7 +140,6 @@ extern unsigned long PAGE_OFFSET;
 
 #define ILOG2_4MB		22
 #define ILOG2_256MB		28
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 
@@ -236,12 +157,6 @@ extern unsigned long PAGE_OFFSET;
 
 #endif /* !(__ASSEMBLY__) */
 
-<<<<<<< HEAD
-#define VM_DATA_DEFAULT_FLAGS	(VM_READ | VM_WRITE | VM_EXEC | \
-				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/getorder.h>
 
 #endif /* _SPARC64_PAGE_H */

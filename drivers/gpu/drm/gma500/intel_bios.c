@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2006 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *
- */
-#include <drm/drmP.h>
-#include <drm/drm.h>
-#include "gma_drm.h"
-#include "psb_drv.h"
-#include "psb_intel_drv.h"
-#include "psb_intel_reg.h"
-#include "intel_bios.h"
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2006 Intel Corporation
@@ -46,7 +16,6 @@
 
 #define	SLAVE_ADDR1	0x70
 #define	SLAVE_ADDR2	0x72
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void *find_section(struct bdb_header *bdb, int section_id)
 {
@@ -73,8 +42,6 @@ static void *find_section(struct bdb_header *bdb, int section_id)
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static void
 parse_edp(struct drm_psb_private *dev_priv, struct bdb_header *bdb)
 {
@@ -177,7 +144,6 @@ get_blocksize(void *p)
 	return block_size;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fill_detail_timing_data(struct drm_display_mode *panel_fixed_mode,
 			struct lvds_dvo_timing *dvo_timing)
 {
@@ -201,8 +167,6 @@ static void fill_detail_timing_data(struct drm_display_mode *panel_fixed_mode,
 	panel_fixed_mode->clock = dvo_timing->clock * 10;
 	panel_fixed_mode->type = DRM_MODE_TYPE_PREFERRED;
 
-<<<<<<< HEAD
-=======
 	if (dvo_timing->hsync_positive)
 		panel_fixed_mode->flags |= DRM_MODE_FLAG_PHSYNC;
 	else
@@ -213,7 +177,6 @@ static void fill_detail_timing_data(struct drm_display_mode *panel_fixed_mode,
 	else
 		panel_fixed_mode->flags |= DRM_MODE_FLAG_NVSYNC;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Some VBTs have bogus h/vtotal values */
 	if (panel_fixed_mode->hsync_end > panel_fixed_mode->htotal)
 		panel_fixed_mode->htotal = panel_fixed_mode->hsync_end + 1;
@@ -243,20 +206,11 @@ static void parse_backlight_data(struct drm_psb_private *dev_priv,
 	bl_start = find_section(bdb, BDB_LVDS_BACKLIGHT);
 	vbt_lvds_bl = (struct bdb_lvds_backlight *)(bl_start + 1) + p_type;
 
-<<<<<<< HEAD
-	lvds_bl = kzalloc(sizeof(*vbt_lvds_bl), GFP_KERNEL);
-	if (!lvds_bl) {
-		dev_err(dev_priv->dev->dev, "out of memory for backlight data\n");
-		return;
-	}
-	memcpy(lvds_bl, vbt_lvds_bl, sizeof(*vbt_lvds_bl));
-=======
 	lvds_bl = kmemdup(vbt_lvds_bl, sizeof(*vbt_lvds_bl), GFP_KERNEL);
 	if (!lvds_bl) {
 		dev_err(dev_priv->dev.dev, "out of memory for backlight data\n");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_priv->lvds_bl = lvds_bl;
 }
 
@@ -279,11 +233,8 @@ static void parse_lfp_panel_data(struct drm_psb_private *dev_priv,
 		return;
 
 	dev_priv->lvds_dither = lvds_options->pixel_dither;
-<<<<<<< HEAD
-=======
 	dev_priv->panel_type = lvds_options->panel_type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lvds_options->panel_type == 0xff)
 		return;
 
@@ -298,11 +249,7 @@ static void parse_lfp_panel_data(struct drm_psb_private *dev_priv,
 	panel_fixed_mode = kzalloc(sizeof(*panel_fixed_mode),
 				      GFP_KERNEL);
 	if (panel_fixed_mode == NULL) {
-<<<<<<< HEAD
-		dev_err(dev_priv->dev->dev, "out of memory for fixed panel mode\n");
-=======
 		dev_err(dev_priv->dev.dev, "out of memory for fixed panel mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -313,11 +260,7 @@ static void parse_lfp_panel_data(struct drm_psb_private *dev_priv,
 		dev_priv->lfp_lvds_vbt_mode = panel_fixed_mode;
 		drm_mode_debug_printmodeline(panel_fixed_mode);
 	} else {
-<<<<<<< HEAD
-		dev_dbg(dev_priv->dev->dev, "ignoring invalid LVDS VBT\n");
-=======
 		dev_dbg(dev_priv->dev.dev, "ignoring invalid LVDS VBT\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_priv->lvds_vbt = 0;
 		kfree(panel_fixed_mode);
 	}
@@ -377,8 +320,6 @@ static void parse_general_features(struct drm_psb_private *dev_priv,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void
 parse_sdvo_device_mapping(struct drm_psb_private *dev_priv,
 			  struct bdb_header *bdb)
@@ -559,7 +500,6 @@ parse_device_mapping(struct drm_psb_private *dev_priv,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * psb_intel_init_bios - initialize VBIOS settings & find VBT
  * @dev: DRM device
@@ -574,45 +514,6 @@ parse_device_mapping(struct drm_psb_private *dev_priv,
  *
  * Returns 0 on success, nonzero on failure.
  */
-<<<<<<< HEAD
-bool psb_intel_init_bios(struct drm_device *dev)
-{
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct pci_dev *pdev = dev->pdev;
-	struct vbt_header *vbt = NULL;
-	struct bdb_header *bdb;
-	u8 __iomem *bios;
-	size_t size;
-	int i;
-
-	bios = pci_map_rom(pdev, &size);
-	if (!bios)
-		return -1;
-
-	/* Scour memory looking for the VBT signature */
-	for (i = 0; i + 4 < size; i++) {
-		if (!memcmp(bios + i, "$VBT", 4)) {
-			vbt = (struct vbt_header *)(bios + i);
-			break;
-		}
-	}
-
-	if (!vbt) {
-		dev_err(dev->dev, "VBT signature missing\n");
-		pci_unmap_rom(pdev, bios);
-		return -1;
-	}
-
-	bdb = (struct bdb_header *)(bios + i + vbt->bdb_offset);
-
-	/* Grab useful general definitions */
-	parse_general_features(dev_priv, bdb);
-	parse_lfp_panel_data(dev_priv, bdb);
-	parse_sdvo_panel_data(dev_priv, bdb);
-	parse_backlight_data(dev_priv, bdb);
-
-	pci_unmap_rom(pdev, bios);
-=======
 int psb_intel_init_bios(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -670,49 +571,18 @@ int psb_intel_init_bios(struct drm_device *dev)
 
 	if (bios)
 		pci_unmap_rom(pdev, bios);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Destroy and free VBT data
  */
 void psb_intel_destroy_bios(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct drm_psb_private *dev_priv = dev->dev_private;
-	struct drm_display_mode *sdvo_lvds_vbt_mode =
-				dev_priv->sdvo_lvds_vbt_mode;
-	struct drm_display_mode *lfp_lvds_vbt_mode =
-				dev_priv->lfp_lvds_vbt_mode;
-	struct bdb_lvds_backlight *lvds_bl =
-				dev_priv->lvds_bl;
-
-	/*free sdvo panel mode*/
-	if (sdvo_lvds_vbt_mode) {
-		dev_priv->sdvo_lvds_vbt_mode = NULL;
-		kfree(sdvo_lvds_vbt_mode);
-	}
-
-	if (lfp_lvds_vbt_mode) {
-		dev_priv->lfp_lvds_vbt_mode = NULL;
-		kfree(lfp_lvds_vbt_mode);
-	}
-
-	if (lvds_bl) {
-		dev_priv->lvds_bl = NULL;
-		kfree(lvds_bl);
-	}
-=======
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
 
 	kfree(dev_priv->sdvo_lvds_vbt_mode);
 	kfree(dev_priv->lfp_lvds_vbt_mode);
 	kfree(dev_priv->lvds_bl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

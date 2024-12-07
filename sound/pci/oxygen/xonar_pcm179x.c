@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * card driver for models with PCM1796 DACs (Xonar D2/D2X/HDAV1.3/ST/STX)
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
-<<<<<<< HEAD
- *
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License, version 2.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this driver; if not, see <http://www.gnu.org/licenses/>.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -107,13 +89,8 @@
  */
 
 /*
-<<<<<<< HEAD
- * Xonar Essence ST (Deluxe)/STX
- * -----------------------------
-=======
  * Xonar Essence ST (Deluxe)/STX (II)
  * ----------------------------------
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * CMI8788:
  *
@@ -224,12 +201,9 @@
 #define GPIO_ST_MAGIC		0x0040
 #define GPIO_ST_HP		0x0080
 
-<<<<<<< HEAD
-=======
 #define GPIO_XENSE_OUTPUT_ENABLE	(0x0001 | 0x0010 | 0x0020)
 #define GPIO_XENSE_SPEAKERS		0x0080
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define I2C_DEVICE_PCM1796(i)	(0x98 + ((i) << 1))	/* 10011, ii, /W=0 */
 #define I2C_DEVICE_CS2000	0x9c			/* 100111, 0, /W=0 */
 
@@ -346,11 +320,7 @@ static void pcm1796_init(struct oxygen *chip)
 	struct xonar_pcm179x *data = chip->model_data;
 
 	data->pcm1796_regs[0][18 - PCM1796_REG_BASE] =
-<<<<<<< HEAD
-		PCM1796_DMF_DISABLED | PCM1796_FMT_24_I2S | PCM1796_ATLD;
-=======
 		PCM1796_FMT_24_I2S | PCM1796_ATLD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data->broken_i2c)
 		data->pcm1796_regs[0][18 - PCM1796_REG_BASE] |= PCM1796_MUTE;
 	data->pcm1796_regs[0][19 - PCM1796_REG_BASE] =
@@ -441,10 +411,7 @@ static void xonar_st_init_common(struct oxygen *chip)
 
 	data->generic.output_enable_bit = GPIO_ST_OUTPUT_ENABLE;
 	data->dacs = chip->model.dac_channels_mixer / 2;
-<<<<<<< HEAD
-=======
 	data->h6 = chip->model.dac_channels_mixer > 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->hp_gain_offset = 2*-18;
 
 	pcm1796_init(chip);
@@ -493,11 +460,7 @@ static void xonar_st_init(struct oxygen *chip)
 
 	data->generic.anti_pop_delay = 100;
 	data->h6 = chip->model.dac_channels_mixer > 2;
-<<<<<<< HEAD
-	data->has_cs2000 = 1;
-=======
 	data->has_cs2000 = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->cs2000_regs[CS2000_FUN_CFG_1] = CS2000_REF_CLK_DIV_1;
 	data->broken_i2c = true;
 
@@ -529,8 +492,6 @@ static void xonar_stx_init(struct oxygen *chip)
 	xonar_st_init_common(chip);
 }
 
-<<<<<<< HEAD
-=======
 static void xonar_xense_init(struct oxygen *chip)
 {
 	struct xonar_pcm179x *data = chip->model_data;
@@ -576,7 +537,6 @@ static void xonar_xense_init(struct oxygen *chip)
 	snd_component_add(chip->card, "CS2000");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void xonar_d2_cleanup(struct oxygen *chip)
 {
 	xonar_disable_output(chip);
@@ -650,8 +610,6 @@ static void update_pcm1796_oversampling(struct oxygen *chip)
 		pcm1796_write_cached(chip, i, 20, reg);
 }
 
-<<<<<<< HEAD
-=======
 static void update_pcm1796_deemph(struct oxygen *chip)
 {
 	struct xonar_pcm179x *data = chip->model_data;
@@ -669,7 +627,6 @@ static void update_pcm1796_deemph(struct oxygen *chip)
 		pcm1796_write_cached(chip, i, 18, reg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void set_pcm1796_params(struct oxygen *chip,
 			       struct snd_pcm_hw_params *params)
 {
@@ -678,10 +635,7 @@ static void set_pcm1796_params(struct oxygen *chip,
 	msleep(1);
 	data->current_rate = params_rate(params);
 	update_pcm1796_oversampling(chip);
-<<<<<<< HEAD
-=======
 	update_pcm1796_deemph(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void update_pcm1796_volume(struct oxygen *chip)
@@ -706,17 +660,11 @@ static void update_pcm1796_mute(struct oxygen *chip)
 	unsigned int i;
 	u8 value;
 
-<<<<<<< HEAD
-	value = PCM1796_DMF_DISABLED | PCM1796_FMT_24_I2S | PCM1796_ATLD;
-	if (chip->dac_mute)
-		value |= PCM1796_MUTE;
-=======
 	value = data->pcm1796_regs[0][18 - PCM1796_REG_BASE];
 	if (chip->dac_mute)
 		value |= PCM1796_MUTE;
 	else
 		value &= ~PCM1796_MUTE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < data->dacs; ++i)
 		pcm1796_write_cached(chip, i, 18, value);
 }
@@ -838,8 +786,6 @@ static const struct snd_kcontrol_new rolloff_control = {
 	.put = rolloff_put,
 };
 
-<<<<<<< HEAD
-=======
 static int deemph_get(struct snd_kcontrol *ctl,
 		       struct snd_ctl_elem_value *value)
 {
@@ -883,7 +829,6 @@ static const struct snd_kcontrol_new deemph_control = {
 	.put = deemph_put,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_kcontrol_new hdav_hdmi_control = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "HDMI Playback Switch",
@@ -951,19 +896,11 @@ static int st_output_switch_put(struct snd_kcontrol *ctl,
 static int st_hp_volume_offset_info(struct snd_kcontrol *ctl,
 				    struct snd_ctl_elem_info *info)
 {
-<<<<<<< HEAD
-	static const char *const names[3] = {
-		"< 64 ohms", "64-300 ohms", "300-600 ohms"
-	};
-
-	return snd_ctl_enum_info(info, 1, 3, names);
-=======
 	static const char *const names[4] = {
 		"< 32 ohms", "32-64 ohms", "64-300 ohms", "300-600 ohms"
 	};
 
 	return snd_ctl_enum_info(info, 1, 4, names);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int st_hp_volume_offset_get(struct snd_kcontrol *ctl,
@@ -973,14 +910,6 @@ static int st_hp_volume_offset_get(struct snd_kcontrol *ctl,
 	struct xonar_pcm179x *data = chip->model_data;
 
 	mutex_lock(&chip->mutex);
-<<<<<<< HEAD
-	if (data->hp_gain_offset < 2*-6)
-		value->value.enumerated.item[0] = 0;
-	else if (data->hp_gain_offset < 0)
-		value->value.enumerated.item[0] = 1;
-	else
-		value->value.enumerated.item[0] = 2;
-=======
 	if (data->hp_gain_offset < 2*-12)
 		value->value.enumerated.item[0] = 0;
 	else if (data->hp_gain_offset < 2*-6)
@@ -989,7 +918,6 @@ static int st_hp_volume_offset_get(struct snd_kcontrol *ctl,
 		value->value.enumerated.item[0] = 2;
 	else
 		value->value.enumerated.item[0] = 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&chip->mutex);
 	return 0;
 }
@@ -998,21 +926,13 @@ static int st_hp_volume_offset_get(struct snd_kcontrol *ctl,
 static int st_hp_volume_offset_put(struct snd_kcontrol *ctl,
 				   struct snd_ctl_elem_value *value)
 {
-<<<<<<< HEAD
-	static const s8 offsets[] = { 2*-18, 2*-6, 0 };
-=======
 	static const s8 offsets[] = { 2*-18, 2*-12, 2*-6, 0 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct oxygen *chip = ctl->private_data;
 	struct xonar_pcm179x *data = chip->model_data;
 	s8 offset;
 	int changed;
 
-<<<<<<< HEAD
-	if (value->value.enumerated.item[0] > 2)
-=======
 	if (value->value.enumerated.item[0] > 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	offset = offsets[value->value.enumerated.item[0]];
 	mutex_lock(&chip->mutex);
@@ -1042,8 +962,6 @@ static const struct snd_kcontrol_new st_controls[] = {
 	},
 };
 
-<<<<<<< HEAD
-=======
 static int xense_output_switch_get(struct snd_kcontrol *ctl,
 				   struct snd_ctl_elem_value *value)
 {
@@ -1105,7 +1023,6 @@ static const struct snd_kcontrol_new xense_controls[] = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void xonar_line_mic_ac97_switch(struct oxygen *chip,
 				       unsigned int reg, unsigned int mute)
 {
@@ -1146,13 +1063,10 @@ static int add_pcm1796_controls(struct oxygen *chip)
 				  snd_ctl_new1(&rolloff_control, chip));
 		if (err < 0)
 			return err;
-<<<<<<< HEAD
-=======
 		err = snd_ctl_add(chip->card,
 				  snd_ctl_new1(&deemph_control, chip));
 		if (err < 0)
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1200,8 +1114,6 @@ static int xonar_st_mixer_init(struct oxygen *chip)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int xonar_xense_mixer_init(struct oxygen *chip)
 {
 	unsigned int i;
@@ -1219,7 +1131,6 @@ static int xonar_xense_mixer_init(struct oxygen *chip)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dump_pcm1796_registers(struct oxygen *chip,
 				   struct snd_info_buffer *buffer)
 {
@@ -1361,13 +1272,8 @@ static const struct oxygen_model model_xonar_st = {
 	.adc_i2s_format = OXYGEN_I2S_FORMAT_LJUST,
 };
 
-<<<<<<< HEAD
-int __devinit get_xonar_pcm179x_model(struct oxygen *chip,
-				      const struct pci_device_id *id)
-=======
 int get_xonar_pcm179x_model(struct oxygen *chip,
 			    const struct pci_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (id->subdevice) {
 	case 0x8269:
@@ -1417,8 +1323,6 @@ int get_xonar_pcm179x_model(struct oxygen *chip,
 		chip->model.resume = xonar_stx_resume;
 		chip->model.set_dac_params = set_pcm1796_params;
 		break;
-<<<<<<< HEAD
-=======
 	case 0x85f4:
 		chip->model = model_xonar_st;
 		oxygen_clear_bits16(chip, OXYGEN_GPIO_CONTROL, GPIO_DB_MASK);
@@ -1444,7 +1348,6 @@ int get_xonar_pcm179x_model(struct oxygen *chip,
 		chip->model.init = xonar_xense_init;
 		chip->model.mixer_init = xonar_xense_mixer_init;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EINVAL;
 	}

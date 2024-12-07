@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-omap1/clock.c
  *
@@ -10,43 +7,15 @@
  *
  *  Modified to use omap shared clock framework by
  *  Tony Lindgren <tony@atomide.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/kernel.h>
-=======
  */
 #include <linux/kernel.h>
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/errno.h>
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/clkdev.h>
-<<<<<<< HEAD
-
-#include <asm/mach-types.h>
-
-#include <plat/cpu.h>
-#include <plat/usb.h>
-#include <plat/clock.h>
-#include <plat/sram.h>
-#include <plat/clkdev_omap.h>
-
-#include <mach/hardware.h>
-
-#include "iomap.h"
-#include "clock.h"
-#include "opp.h"
-
-__u32 arm_idlect1_mask;
-struct clk *api_ck_p, *ck_dpll1_p, *ck_ref_p;
-=======
 #include <linux/clk-provider.h>
 #include <linux/soc/ti/omap1-io.h>
 #include <linux/spinlock.h>
@@ -70,21 +39,11 @@ static DEFINE_SPINLOCK(arm_idlect2_lock);
 static DEFINE_SPINLOCK(mod_conf_ctrl_0_lock);
 static DEFINE_SPINLOCK(mod_conf_ctrl_1_lock);
 static DEFINE_SPINLOCK(swd_clk_div_ctrl_sel_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Omap1 specific clock functions
  */
 
-<<<<<<< HEAD
-unsigned long omap1_uart_recalc(struct clk *clk)
-{
-	unsigned int val = __raw_readl(clk->enable_reg);
-	return val & clk->enable_bit ? 48000000 : 12000000;
-}
-
-unsigned long omap1_sossi_recalc(struct clk *clk)
-=======
 unsigned long omap1_uart_recalc(struct omap1_clk *clk, unsigned long p_rate)
 {
 	unsigned int val = __raw_readl(clk->enable_reg);
@@ -92,24 +51,16 @@ unsigned long omap1_uart_recalc(struct omap1_clk *clk, unsigned long p_rate)
 }
 
 unsigned long omap1_sossi_recalc(struct omap1_clk *clk, unsigned long p_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 div = omap_readl(MOD_CONF_CTRL_1);
 
 	div = (div >> 17) & 0x7;
 	div++;
 
-<<<<<<< HEAD
-	return clk->parent->rate / div;
-}
-
-static void omap1_clk_allow_idle(struct clk *clk)
-=======
 	return p_rate / div;
 }
 
 static void omap1_clk_allow_idle(struct omap1_clk *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct arm_idlect1_clk * iclk = (struct arm_idlect1_clk *)clk;
 
@@ -120,11 +71,7 @@ static void omap1_clk_allow_idle(struct omap1_clk *clk)
 		arm_idlect1_mask |= 1 << iclk->idlect_shift;
 }
 
-<<<<<<< HEAD
-static void omap1_clk_deny_idle(struct clk *clk)
-=======
 static void omap1_clk_deny_idle(struct omap1_clk *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct arm_idlect1_clk * iclk = (struct arm_idlect1_clk *)clk;
 
@@ -188,11 +135,7 @@ static __u16 verify_ckctl_value(__u16 newval)
 	return newval;
 }
 
-<<<<<<< HEAD
-static int calc_dsor_exp(struct clk *clk, unsigned long rate)
-=======
 static int calc_dsor_exp(unsigned long rate, unsigned long realrate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Note: If target frequency is too low, this function will return 4,
 	 * which is invalid value. Caller must check for this value and act
@@ -205,23 +148,11 @@ static int calc_dsor_exp(unsigned long rate, unsigned long realrate)
 	 * DSP_CK >= TC_CK
 	 * DSPMMU_CK >= TC_CK
 	 */
-<<<<<<< HEAD
-	unsigned long realrate;
-	struct clk * parent;
-	unsigned  dsor_exp;
-
-	parent = clk->parent;
-	if (unlikely(parent == NULL))
-		return -EIO;
-
-	realrate = parent->rate;
-=======
 	unsigned  dsor_exp;
 
 	if (unlikely(realrate == 0))
 		return -EIO;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (dsor_exp=0; dsor_exp<4; dsor_exp++) {
 		if (realrate <= rate)
 			break;
@@ -232,22 +163,11 @@ static int calc_dsor_exp(unsigned long rate, unsigned long realrate)
 	return dsor_exp;
 }
 
-<<<<<<< HEAD
-unsigned long omap1_ckctl_recalc(struct clk *clk)
-=======
 unsigned long omap1_ckctl_recalc(struct omap1_clk *clk, unsigned long p_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Calculate divisor encoded as 2-bit exponent */
 	int dsor = 1 << (3 & (omap_readw(ARM_CKCTL) >> clk->rate_offset));
 
-<<<<<<< HEAD
-	return clk->parent->rate / dsor;
-}
-
-unsigned long omap1_ckctl_recalc_dsp_domain(struct clk *clk)
-{
-=======
 	/* update locally maintained rate, required by arm_ck for omap1_show_rates() */
 	clk->rate = p_rate / dsor;
 	return clk->rate;
@@ -287,7 +207,6 @@ static int omap1_clk_is_enabled(struct clk_hw *hw)
 unsigned long omap1_ckctl_recalc_dsp_domain(struct omap1_clk *clk, unsigned long p_rate)
 {
 	bool api_ck_was_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dsor;
 
 	/* Calculate divisor encoded as 2-bit exponent
@@ -297,23 +216,6 @@ unsigned long omap1_ckctl_recalc_dsp_domain(struct omap1_clk *clk, unsigned long
 	 * Note that DSP_CKCTL virt addr = phys addr, so
 	 * we must use __raw_readw() instead of omap_readw().
 	 */
-<<<<<<< HEAD
-	omap1_clk_enable(api_ck_p);
-	dsor = 1 << (3 & (__raw_readw(DSP_CKCTL) >> clk->rate_offset));
-	omap1_clk_disable(api_ck_p);
-
-	return clk->parent->rate / dsor;
-}
-
-/* MPU virtual clock functions */
-int omap1_select_table_rate(struct clk *clk, unsigned long rate)
-{
-	/* Find the highest supported frequency <= rate and switch to it */
-	struct mpu_rate * ptr;
-	unsigned long dpll1_rate, ref_rate;
-
-	dpll1_rate = ck_dpll1_p->rate;
-=======
 	api_ck_was_enabled = omap1_clk_is_enabled(&api_ck_p->hw);
 	if (!api_ck_was_enabled)
 		api_ck_p->ops->enable(api_ck_p);
@@ -331,7 +233,6 @@ int omap1_select_table_rate(struct omap1_clk *clk, unsigned long rate, unsigned 
 	struct mpu_rate * ptr;
 	unsigned long ref_rate;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ref_rate = ck_ref_p->rate;
 
 	for (ptr = omap1_rate_table; ptr->rate; ptr++) {
@@ -361,20 +262,12 @@ int omap1_select_table_rate(struct omap1_clk *clk, unsigned long rate, unsigned 
 	return 0;
 }
 
-<<<<<<< HEAD
-int omap1_clk_set_rate_dsp_domain(struct clk *clk, unsigned long rate)
-=======
 int omap1_clk_set_rate_dsp_domain(struct omap1_clk *clk, unsigned long rate, unsigned long p_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int dsor_exp;
 	u16 regval;
 
-<<<<<<< HEAD
-	dsor_exp = calc_dsor_exp(clk, rate);
-=======
 	dsor_exp = calc_dsor_exp(rate, p_rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dsor_exp > 3)
 		dsor_exp = -EINVAL;
 	if (dsor_exp < 0)
@@ -384,41 +277,20 @@ int omap1_clk_set_rate_dsp_domain(struct omap1_clk *clk, unsigned long rate, uns
 	regval &= ~(3 << clk->rate_offset);
 	regval |= dsor_exp << clk->rate_offset;
 	__raw_writew(regval, DSP_CKCTL);
-<<<<<<< HEAD
-	clk->rate = clk->parent->rate / (1 << dsor_exp);
-=======
 	clk->rate = p_rate / (1 << dsor_exp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-long omap1_clk_round_rate_ckctl_arm(struct clk *clk, unsigned long rate)
-{
-	int dsor_exp = calc_dsor_exp(clk, rate);
-=======
 long omap1_clk_round_rate_ckctl_arm(struct omap1_clk *clk, unsigned long rate,
 				    unsigned long *p_rate)
 {
 	int dsor_exp = calc_dsor_exp(rate, *p_rate);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dsor_exp < 0)
 		return dsor_exp;
 	if (dsor_exp > 3)
 		dsor_exp = 3;
-<<<<<<< HEAD
-	return clk->parent->rate / (1 << dsor_exp);
-}
-
-int omap1_clk_set_rate_ckctl_arm(struct clk *clk, unsigned long rate)
-{
-	int dsor_exp;
-	u16 regval;
-
-	dsor_exp = calc_dsor_exp(clk, rate);
-=======
 	return *p_rate / (1 << dsor_exp);
 }
 
@@ -429,30 +301,19 @@ int omap1_clk_set_rate_ckctl_arm(struct omap1_clk *clk, unsigned long rate, unsi
 	u16 regval;
 
 	dsor_exp = calc_dsor_exp(rate, p_rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dsor_exp > 3)
 		dsor_exp = -EINVAL;
 	if (dsor_exp < 0)
 		return dsor_exp;
 
-<<<<<<< HEAD
-=======
 	/* protect ARM_CKCTL register from concurrent access via clk_enable/disable() */
 	spin_lock_irqsave(&arm_ckctl_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regval = omap_readw(ARM_CKCTL);
 	regval &= ~(3 << clk->rate_offset);
 	regval |= dsor_exp << clk->rate_offset;
 	regval = verify_ckctl_value(regval);
 	omap_writew(regval, ARM_CKCTL);
-<<<<<<< HEAD
-	clk->rate = clk->parent->rate / (1 << dsor_exp);
-	return 0;
-}
-
-long omap1_round_to_table_rate(struct clk *clk, unsigned long rate)
-=======
 	clk->rate = p_rate / (1 << dsor_exp);
 
 	spin_unlock_irqrestore(&arm_ckctl_lock, flags);
@@ -461,7 +322,6 @@ long omap1_round_to_table_rate(struct clk *clk, unsigned long rate)
 }
 
 long omap1_round_to_table_rate(struct omap1_clk *clk, unsigned long rate, unsigned long *p_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Find the highest supported frequency <= rate */
 	struct mpu_rate * ptr;
@@ -512,20 +372,6 @@ static unsigned calc_ext_dsor(unsigned long rate)
 }
 
 /* XXX Only needed on 1510 */
-<<<<<<< HEAD
-int omap1_set_uart_rate(struct clk *clk, unsigned long rate)
-{
-	unsigned int val;
-
-	val = __raw_readl(clk->enable_reg);
-	if (rate == 12000000)
-		val &= ~(1 << clk->enable_bit);
-	else if (rate == 48000000)
-		val |= (1 << clk->enable_bit);
-	else
-		return -EINVAL;
-	__raw_writel(val, clk->enable_reg);
-=======
 long omap1_round_uart_rate(struct omap1_clk *clk, unsigned long rate, unsigned long *p_rate)
 {
 	return rate > 24000000 ? 48000000 : 12000000;
@@ -551,21 +397,15 @@ int omap1_set_uart_rate(struct omap1_clk *clk, unsigned long rate, unsigned long
 
 	spin_unlock_irqrestore(&mod_conf_ctrl_0_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clk->rate = rate;
 
 	return 0;
 }
 
 /* External clock (MCLK & BCLK) functions */
-<<<<<<< HEAD
-int omap1_set_ext_clk_rate(struct clk *clk, unsigned long rate)
-{
-=======
 int omap1_set_ext_clk_rate(struct omap1_clk *clk, unsigned long rate, unsigned long p_rate)
 {
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned dsor;
 	__u16 ratio_bits;
 
@@ -576,27 +416,6 @@ int omap1_set_ext_clk_rate(struct omap1_clk *clk, unsigned long rate, unsigned l
 	else
 		ratio_bits = (dsor - 2) << 2;
 
-<<<<<<< HEAD
-	ratio_bits |= __raw_readw(clk->enable_reg) & ~0xfd;
-	__raw_writew(ratio_bits, clk->enable_reg);
-
-	return 0;
-}
-
-int omap1_set_sossi_rate(struct clk *clk, unsigned long rate)
-{
-	u32 l;
-	int div;
-	unsigned long p_rate;
-
-	p_rate = clk->parent->rate;
-	/* Round towards slower frequency */
-	div = (p_rate + rate - 1) / rate;
-	div--;
-	if (div < 0 || div > 7)
-		return -EINVAL;
-
-=======
 	/* protect SWD_CLK_DIV_CTRL_SEL register from concurrent access via clk_enable/disable() */
 	spin_lock_irqsave(&swd_clk_div_ctrl_sel_lock, flags);
 
@@ -644,7 +463,6 @@ int omap1_set_sossi_rate(struct omap1_clk *clk, unsigned long rate, unsigned lon
 	/* protect MOD_CONF_CTRL_1 register from concurrent access via clk_enable/disable() */
 	spin_lock_irqsave(&mod_conf_ctrl_1_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l = omap_readl(MOD_CONF_CTRL_1);
 	l &= ~(7 << 17);
 	l |= div << 17;
@@ -652,28 +470,17 @@ int omap1_set_sossi_rate(struct omap1_clk *clk, unsigned long rate, unsigned lon
 
 	clk->rate = p_rate / (div + 1);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-long omap1_round_ext_clk_rate(struct clk *clk, unsigned long rate)
-=======
 	spin_unlock_irqrestore(&mod_conf_ctrl_1_lock, flags);
 
 	return 0;
 }
 
 long omap1_round_ext_clk_rate(struct omap1_clk *clk, unsigned long rate, unsigned long *p_rate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 96000000 / calc_ext_dsor(rate);
 }
 
-<<<<<<< HEAD
-void omap1_init_ext_clk(struct clk *clk)
-=======
 int omap1_init_ext_clk(struct omap1_clk *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned dsor;
 	__u16 ratio_bits;
@@ -689,52 +496,6 @@ int omap1_init_ext_clk(struct omap1_clk *clk)
 		dsor = ratio_bits + 2;
 
 	clk-> rate = 96000000 / dsor;
-<<<<<<< HEAD
-}
-
-int omap1_clk_enable(struct clk *clk)
-{
-	int ret = 0;
-
-	if (clk->usecount++ == 0) {
-		if (clk->parent) {
-			ret = omap1_clk_enable(clk->parent);
-			if (ret)
-				goto err;
-
-			if (clk->flags & CLOCK_NO_IDLE_PARENT)
-				omap1_clk_deny_idle(clk->parent);
-		}
-
-		ret = clk->ops->enable(clk);
-		if (ret) {
-			if (clk->parent)
-				omap1_clk_disable(clk->parent);
-			goto err;
-		}
-	}
-	return ret;
-
-err:
-	clk->usecount--;
-	return ret;
-}
-
-void omap1_clk_disable(struct clk *clk)
-{
-	if (clk->usecount > 0 && !(--clk->usecount)) {
-		clk->ops->disable(clk);
-		if (likely(clk->parent)) {
-			omap1_clk_disable(clk->parent);
-			if (clk->flags & CLOCK_NO_IDLE_PARENT)
-				omap1_clk_allow_idle(clk->parent);
-		}
-	}
-}
-
-static int omap1_clk_enable_generic(struct clk *clk)
-{
-=======
 
 	return 0;
 }
@@ -767,18 +528,11 @@ static void omap1_clk_disable(struct clk_hw *hw)
 static int omap1_clk_enable_generic(struct omap1_clk *clk)
 {
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u16 regval16;
 	__u32 regval32;
 
 	if (unlikely(clk->enable_reg == NULL)) {
 		printk(KERN_ERR "clock.c: Enable for %s without enable code\n",
-<<<<<<< HEAD
-		       clk->name);
-		return -EINVAL;
-	}
-
-=======
 		       clk_hw_get_name(&clk->hw));
 		return -EINVAL;
 	}
@@ -795,7 +549,6 @@ static int omap1_clk_enable_generic(struct omap1_clk *clk)
 	else if (clk->enable_reg == OMAP1_IO_ADDRESS(SWD_CLK_DIV_CTRL_SEL))
 		spin_lock_irqsave(&swd_clk_div_ctrl_sel_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (clk->flags & ENABLE_REG_32BIT) {
 		regval32 = __raw_readl(clk->enable_reg);
 		regval32 |= (1 << clk->enable_bit);
@@ -806,13 +559,6 @@ static int omap1_clk_enable_generic(struct omap1_clk *clk)
 		__raw_writew(regval16, clk->enable_reg);
 	}
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static void omap1_clk_disable_generic(struct clk *clk)
-{
-=======
 	if (clk->enable_reg == OMAP1_IO_ADDRESS(ARM_CKCTL))
 		spin_unlock_irqrestore(&arm_ckctl_lock, flags);
 	else if (clk->enable_reg == OMAP1_IO_ADDRESS(ARM_IDLECT2))
@@ -830,15 +576,12 @@ static void omap1_clk_disable_generic(struct clk *clk)
 static void omap1_clk_disable_generic(struct omap1_clk *clk)
 {
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u16 regval16;
 	__u32 regval32;
 
 	if (clk->enable_reg == NULL)
 		return;
 
-<<<<<<< HEAD
-=======
 	/* protect clk->enable_reg from concurrent access via clk_set_rate() */
 	if (clk->enable_reg == OMAP1_IO_ADDRESS(ARM_CKCTL))
 		spin_lock_irqsave(&arm_ckctl_lock, flags);
@@ -851,7 +594,6 @@ static void omap1_clk_disable_generic(struct omap1_clk *clk)
 	else if (clk->enable_reg == OMAP1_IO_ADDRESS(SWD_CLK_DIV_CTRL_SEL))
 		spin_lock_irqsave(&swd_clk_div_ctrl_sel_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (clk->flags & ENABLE_REG_32BIT) {
 		regval32 = __raw_readl(clk->enable_reg);
 		regval32 &= ~(1 << clk->enable_bit);
@@ -861,8 +603,6 @@ static void omap1_clk_disable_generic(struct omap1_clk *clk)
 		regval16 &= ~(1 << clk->enable_bit);
 		__raw_writew(regval16, clk->enable_reg);
 	}
-<<<<<<< HEAD
-=======
 
 	if (clk->enable_reg == OMAP1_IO_ADDRESS(ARM_CKCTL))
 		spin_unlock_irqrestore(&arm_ckctl_lock, flags);
@@ -874,7 +614,6 @@ static void omap1_clk_disable_generic(struct omap1_clk *clk)
 		spin_unlock_irqrestore(&mod_conf_ctrl_1_lock, flags);
 	else if (clk->enable_reg == OMAP1_IO_ADDRESS(SWD_CLK_DIV_CTRL_SEL))
 		spin_unlock_irqrestore(&swd_clk_div_ctrl_sel_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct clkops clkops_generic = {
@@ -882,16 +621,6 @@ const struct clkops clkops_generic = {
 	.disable	= omap1_clk_disable_generic,
 };
 
-<<<<<<< HEAD
-static int omap1_clk_enable_dsp_domain(struct clk *clk)
-{
-	int retval;
-
-	retval = omap1_clk_enable(api_ck_p);
-	if (!retval) {
-		retval = omap1_clk_enable_generic(clk);
-		omap1_clk_disable(api_ck_p);
-=======
 static int omap1_clk_enable_dsp_domain(struct omap1_clk *clk)
 {
 	bool api_ck_was_enabled;
@@ -906,20 +635,11 @@ static int omap1_clk_enable_dsp_domain(struct omap1_clk *clk)
 
 		if (!api_ck_was_enabled)
 			api_ck_p->ops->disable(api_ck_p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return retval;
 }
 
-<<<<<<< HEAD
-static void omap1_clk_disable_dsp_domain(struct clk *clk)
-{
-	if (omap1_clk_enable(api_ck_p) == 0) {
-		omap1_clk_disable_generic(clk);
-		omap1_clk_disable(api_ck_p);
-	}
-=======
 static void omap1_clk_disable_dsp_domain(struct omap1_clk *clk)
 {
 	bool api_ck_was_enabled;
@@ -933,7 +653,6 @@ static void omap1_clk_disable_dsp_domain(struct omap1_clk *clk)
 
 	if (!api_ck_was_enabled)
 		api_ck_p->ops->disable(api_ck_p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct clkops clkops_dspck = {
@@ -942,11 +661,7 @@ const struct clkops clkops_dspck = {
 };
 
 /* XXX SYSC register handling does not belong in the clock framework */
-<<<<<<< HEAD
-static int omap1_clk_enable_uart_functional_16xx(struct clk *clk)
-=======
 static int omap1_clk_enable_uart_functional_16xx(struct omap1_clk *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct uart_clk *uclk;
@@ -963,11 +678,7 @@ static int omap1_clk_enable_uart_functional_16xx(struct omap1_clk *clk)
 }
 
 /* XXX SYSC register handling does not belong in the clock framework */
-<<<<<<< HEAD
-static void omap1_clk_disable_uart_functional_16xx(struct clk *clk)
-=======
 static void omap1_clk_disable_uart_functional_16xx(struct omap1_clk *clk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_clk *uclk;
 
@@ -984,31 +695,16 @@ const struct clkops clkops_uart_16xx = {
 	.disable	= omap1_clk_disable_uart_functional_16xx,
 };
 
-<<<<<<< HEAD
-long omap1_clk_round_rate(struct clk *clk, unsigned long rate)
-{
-	if (clk->round_rate != NULL)
-		return clk->round_rate(clk, rate);
-=======
 static unsigned long omap1_clk_recalc_rate(struct clk_hw *hw, unsigned long p_rate)
 {
 	struct omap1_clk *clk = to_omap1_clk(hw);
 
 	if (clk->recalc)
 		return clk->recalc(clk, p_rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return clk->rate;
 }
 
-<<<<<<< HEAD
-int omap1_clk_set_rate(struct clk *clk, unsigned long rate)
-{
-	int  ret = -EINVAL;
-
-	if (clk->set_rate)
-		ret = clk->set_rate(clk, rate);
-=======
 static long omap1_clk_round_rate(struct clk_hw *hw, unsigned long rate, unsigned long *p_rate)
 {
 	struct omap1_clk *clk = to_omap1_clk(hw);
@@ -1026,7 +722,6 @@ static int omap1_clk_set_rate(struct clk_hw *hw, unsigned long rate, unsigned lo
 
 	if (clk->set_rate)
 		ret = clk->set_rate(clk, rate, p_rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1034,13 +729,6 @@ static int omap1_clk_set_rate(struct clk_hw *hw, unsigned long rate, unsigned lo
  * Omap1 clock reset and init functions
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_OMAP_RESET_CLOCKS
-
-void omap1_clk_disable_unused(struct clk *clk)
-{
-	__u32 regval32;
-=======
 static int omap1_clk_init_op(struct clk_hw *hw)
 {
 	struct omap1_clk *clk = to_omap1_clk(hw);
@@ -1057,42 +745,20 @@ static void omap1_clk_disable_unused(struct clk_hw *hw)
 {
 	struct omap1_clk *clk = to_omap1_clk(hw);
 	const char *name = clk_hw_get_name(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clocks in the DSP domain need api_ck. Just assume bootloader
 	 * has not enabled any DSP clocks */
 	if (clk->enable_reg == DSP_IDLECT2) {
-<<<<<<< HEAD
-		printk(KERN_INFO "Skipping reset check for DSP domain "
-		       "clock \"%s\"\n", clk->name);
-		return;
-	}
-
-	/* Is the clock already disabled? */
-	if (clk->flags & ENABLE_REG_32BIT)
-		regval32 = __raw_readl(clk->enable_reg);
-	else
-		regval32 = __raw_readw(clk->enable_reg);
-
-	if ((regval32 & (1 << clk->enable_bit)) == 0)
-		return;
-
-	printk(KERN_INFO "Disabling unused clock \"%s\"... ", clk->name);
-	clk->ops->disable(clk);
-=======
 		pr_info("Skipping reset check for DSP domain clock \"%s\"\n", name);
 		return;
 	}
 
 	pr_info("Disabling unused clock \"%s\"... ", name);
 	omap1_clk_disable(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(" done\n");
 }
 
 #endif
-<<<<<<< HEAD
-=======
 
 const struct clk_ops omap1_clk_gate_ops = {
 	.enable		= omap1_clk_enable,
@@ -1172,4 +838,3 @@ const struct clk_ops omap1_clk_null_ops = {
 struct omap1_clk dummy_ck __refdata = {
 	.hw.init	= CLK_HW_INIT_NO_PARENT("dummy", &omap1_clk_null_ops, 0),
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

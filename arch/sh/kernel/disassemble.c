@@ -1,29 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Disassemble SuperH instructions.
  *
  * Copyright (C) 1999 kaz Kojima
  * Copyright (C) 2008 Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/uaccess.h>
 
-<<<<<<< HEAD
-=======
 #include <asm/ptrace.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Format of an instruction in memory.
  */
@@ -389,57 +376,11 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 		}
 
 	ok:
-<<<<<<< HEAD
-		printk("%-8s  ", op->name);
-=======
 		pr_cont("%-8s  ", op->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lastsp = (op->arg[0] == A_END);
 		disp_pc = 0;
 		for (n = 0; n < 6 && op->arg[n] != A_END; n++) {
 			if (n && op->arg[1] != A_END)
-<<<<<<< HEAD
-				printk(", ");
-			switch (op->arg[n]) {
-			case A_IMM:
-				printk("#%d", (char)(imm));
-				break;
-			case A_R0:
-				printk("r0");
-				break;
-			case A_REG_N:
-				printk("r%d", rn);
-				break;
-			case A_INC_N:
-				printk("@r%d+", rn);
-				break;
-			case A_DEC_N:
-				printk("@-r%d", rn);
-				break;
-			case A_IND_N:
-				printk("@r%d", rn);
-				break;
-			case A_DISP_REG_N:
-				printk("@(%d,r%d)", imm, rn);
-				break;
-			case A_REG_M:
-				printk("r%d", rm);
-				break;
-			case A_INC_M:
-				printk("@r%d+", rm);
-				break;
-			case A_DEC_M:
-				printk("@-r%d", rm);
-				break;
-			case A_IND_M:
-				printk("@r%d", rm);
-				break;
-			case A_DISP_REG_M:
-				printk("@(%d,r%d)", imm, rm);
-				break;
-			case A_REG_B:
-				printk("r%d_bank", rb);
-=======
 				pr_cont(", ");
 			switch (op->arg[n]) {
 			case A_IMM:
@@ -480,107 +421,10 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 				break;
 			case A_REG_B:
 				pr_cont("r%d_bank", rb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case A_DISP_PC:
 				disp_pc = 1;
 				disp_pc_addr = imm + 4 + (memaddr & relmask);
-<<<<<<< HEAD
-				printk("%08x <%pS>", disp_pc_addr,
-				       (void *)disp_pc_addr);
-				break;
-			case A_IND_R0_REG_N:
-				printk("@(r0,r%d)", rn);
-				break;
-			case A_IND_R0_REG_M:
-				printk("@(r0,r%d)", rm);
-				break;
-			case A_DISP_GBR:
-				printk("@(%d,gbr)",imm);
-				break;
-			case A_R0_GBR:
-				printk("@(r0,gbr)");
-				break;
-			case A_BDISP12:
-			case A_BDISP8:
-				printk("%08x", imm + memaddr);
-				break;
-			case A_SR:
-				printk("sr");
-				break;
-			case A_GBR:
-				printk("gbr");
-				break;
-			case A_VBR:
-				printk("vbr");
-				break;
-			case A_SSR:
-				printk("ssr");
-				break;
-			case A_SPC:
-				printk("spc");
-				break;
-			case A_MACH:
-				printk("mach");
-				break;
-			case A_MACL:
-				printk("macl");
-				break;
-			case A_PR:
-				printk("pr");
-				break;
-			case A_SGR:
-				printk("sgr");
-				break;
-			case A_DBR:
-				printk("dbr");
-				break;
-			case FD_REG_N:
-				if (0)
-					goto d_reg_n;
-			case F_REG_N:
-				printk("fr%d", rn);
-				break;
-			case F_REG_M:
-				printk("fr%d", rm);
-				break;
-			case DX_REG_N:
-				if (rn & 1) {
-					printk("xd%d", rn & ~1);
-					break;
-				}
-			d_reg_n:
-			case D_REG_N:
-				printk("dr%d", rn);
-				break;
-			case DX_REG_M:
-				if (rm & 1) {
-					printk("xd%d", rm & ~1);
-					break;
-				}
-			case D_REG_M:
-				printk("dr%d", rm);
-				break;
-			case FPSCR_M:
-			case FPSCR_N:
-				printk("fpscr");
-				break;
-			case FPUL_M:
-			case FPUL_N:
-				printk("fpul");
-				break;
-			case F_FR0:
-				printk("fr0");
-				break;
-			case V_REG_N:
-				printk("fv%d", rn*4);
-				break;
-			case V_REG_M:
-				printk("fv%d", rm*4);
-				break;
-			case XMTRX_M4:
-				printk("xmtrx");
-=======
 				pr_cont("%08x <%pS>", disp_pc_addr,
 					(void *)disp_pc_addr);
 				break;
@@ -674,7 +518,6 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 				break;
 			case XMTRX_M4:
 				pr_cont("xmtrx");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			default:
 				return;
@@ -689,11 +532,7 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 			else
 				__get_user(val, (u32 *)disp_pc_addr);
 
-<<<<<<< HEAD
-			printk("  ! %08x <%pS>", val, (void *)val);
-=======
 			pr_cont("  ! %08x <%pS>", val, (void *)val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		return;
@@ -702,11 +541,7 @@ static void print_sh_insn(u32 memaddr, u16 insn)
 
 	}
 
-<<<<<<< HEAD
-	printk(".word 0x%x%x%x%x", nibs[0], nibs[1], nibs[2], nibs[3]);
-=======
 	pr_info(".word 0x%x%x%x%x", nibs[0], nibs[1], nibs[2], nibs[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void show_code(struct pt_regs *regs)
@@ -717,28 +552,12 @@ void show_code(struct pt_regs *regs)
 	if (regs->pc & 0x1)
 		return;
 
-<<<<<<< HEAD
-	printk("Code:\n");
-=======
 	pr_info("Code:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = -3 ; i < 6 ; i++) {
 		unsigned short insn;
 
 		if (__get_user(insn, pc + i)) {
-<<<<<<< HEAD
-			printk(" (Bad address in pc)\n");
-			break;
-		}
-
-		printk("%s%08lx:  ", (i ? "  ": "->"), (unsigned long)(pc + i));
-		print_sh_insn((unsigned long)(pc + i), insn);
-		printk("\n");
-	}
-
-	printk("\n");
-=======
 			pr_err(" (Bad address in pc)\n");
 			break;
 		}
@@ -750,5 +569,4 @@ void show_code(struct pt_regs *regs)
 	}
 
 	pr_info("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

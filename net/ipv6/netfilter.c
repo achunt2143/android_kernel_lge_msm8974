@@ -1,12 +1,9 @@
-<<<<<<< HEAD
-=======
 /*
  * IPv6 specific functions of netfilter core
  *
  * Rusty Russell (C) 2000 -- This code is GPL.
  * Patrick McHardy (C) 2006-2012
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/ipv6.h>
@@ -18,31 +15,6 @@
 #include <net/ipv6.h>
 #include <net/ip6_route.h>
 #include <net/xfrm.h>
-<<<<<<< HEAD
-#include <net/ip6_checksum.h>
-#include <net/netfilter/nf_queue.h>
-
-int ip6_route_me_harder(struct sk_buff *skb)
-{
-	struct net *net = dev_net(skb_dst(skb)->dev);
-	const struct ipv6hdr *iph = ipv6_hdr(skb);
-	unsigned int hh_len;
-	struct dst_entry *dst;
-	struct flowi6 fl6 = {
-		.flowi6_oif = skb->sk ? skb->sk->sk_bound_dev_if : 0,
-		.flowi6_mark = skb->mark,
-		.flowi6_uid = sock_net_uid(net, skb->sk),
-		.daddr = iph->daddr,
-		.saddr = iph->saddr,
-	};
-
-	dst = ip6_route_output(net, skb->sk, &fl6);
-	if (dst->error) {
-		IP6_INC_STATS(net, ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
-		LIMIT_NETDEBUG(KERN_DEBUG "ip6_route_me_harder: No more route.\n");
-		dst_release(dst);
-		return dst->error;
-=======
 #include <net/netfilter/nf_queue.h>
 #include <net/netfilter/nf_conntrack_bridge.h>
 #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
@@ -80,7 +52,6 @@ int ip6_route_me_harder(struct net *net, struct sock *sk_partial, struct sk_buff
 		net_dbg_ratelimited("ip6_route_me_harder: No more route\n");
 		dst_release(dst);
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Drop old route. */
@@ -90,15 +61,9 @@ int ip6_route_me_harder(struct net *net, struct sock *sk_partial, struct sk_buff
 
 #ifdef CONFIG_XFRM
 	if (!(IP6CB(skb)->flags & IP6SKB_XFRM_TRANSFORMED) &&
-<<<<<<< HEAD
-	    xfrm_decode_session(skb, flowi6_to_flowi(&fl6), AF_INET6) == 0) {
-		skb_dst_set(skb, NULL);
-		dst = xfrm_lookup(net, dst, flowi6_to_flowi(&fl6), skb->sk, 0);
-=======
 	    xfrm_decode_session(net, skb, flowi6_to_flowi(&fl6), AF_INET6) == 0) {
 		skb_dst_set(skb, NULL);
 		dst = xfrm_lookup(net, dst, flowi6_to_flowi(&fl6), sk, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(dst))
 			return PTR_ERR(dst);
 		skb_dst_set(skb, dst);
@@ -116,64 +81,23 @@ int ip6_route_me_harder(struct net *net, struct sock *sk_partial, struct sk_buff
 }
 EXPORT_SYMBOL(ip6_route_me_harder);
 
-<<<<<<< HEAD
-/*
- * Extra routing may needed on local out, as the QUEUE target never
- * returns control to the table.
- */
-
-struct ip6_rt_info {
-	struct in6_addr daddr;
-	struct in6_addr saddr;
-	u_int32_t mark;
-};
-
-static void nf_ip6_saveroute(const struct sk_buff *skb,
-			     struct nf_queue_entry *entry)
-{
-	struct ip6_rt_info *rt_info = nf_queue_entry_reroute(entry);
-
-	if (entry->hook == NF_INET_LOCAL_OUT) {
-		const struct ipv6hdr *iph = ipv6_hdr(skb);
-
-		rt_info->daddr = iph->daddr;
-		rt_info->saddr = iph->saddr;
-		rt_info->mark = skb->mark;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nf_ip6_reroute(struct sk_buff *skb,
 			  const struct nf_queue_entry *entry)
 {
 	struct ip6_rt_info *rt_info = nf_queue_entry_reroute(entry);
 
-<<<<<<< HEAD
-	if (entry->hook == NF_INET_LOCAL_OUT) {
-=======
 	if (entry->state.hook == NF_INET_LOCAL_OUT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct ipv6hdr *iph = ipv6_hdr(skb);
 		if (!ipv6_addr_equal(&iph->daddr, &rt_info->daddr) ||
 		    !ipv6_addr_equal(&iph->saddr, &rt_info->saddr) ||
 		    skb->mark != rt_info->mark)
-<<<<<<< HEAD
-			return ip6_route_me_harder(skb);
-=======
 			return ip6_route_me_harder(entry->state.net, entry->state.sk, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int nf_ip6_route(struct net *net, struct dst_entry **dst,
-			struct flowi *fl, bool strict)
-=======
 int __nf_ip6_route(struct net *net, struct dst_entry **dst,
 		   struct flowi *fl, bool strict)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const struct ipv6_pinfo fake_pinfo;
 	static const struct inet_sock fake_sk = {
@@ -193,76 +117,6 @@ int __nf_ip6_route(struct net *net, struct dst_entry **dst,
 		*dst = result;
 	return err;
 }
-<<<<<<< HEAD
-
-__sum16 nf_ip6_checksum(struct sk_buff *skb, unsigned int hook,
-			     unsigned int dataoff, u_int8_t protocol)
-{
-	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-	__sum16 csum = 0;
-
-	switch (skb->ip_summed) {
-	case CHECKSUM_COMPLETE:
-		if (hook != NF_INET_PRE_ROUTING && hook != NF_INET_LOCAL_IN)
-			break;
-		if (!csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
-				     skb->len - dataoff, protocol,
-				     csum_sub(skb->csum,
-					      skb_checksum(skb, 0,
-							   dataoff, 0)))) {
-			skb->ip_summed = CHECKSUM_UNNECESSARY;
-			break;
-		}
-		/* fall through */
-	case CHECKSUM_NONE:
-		skb->csum = ~csum_unfold(
-				csum_ipv6_magic(&ip6h->saddr, &ip6h->daddr,
-					     skb->len - dataoff,
-					     protocol,
-					     csum_sub(0,
-						      skb_checksum(skb, 0,
-								   dataoff, 0))));
-		csum = __skb_checksum_complete(skb);
-	}
-	return csum;
-}
-EXPORT_SYMBOL(nf_ip6_checksum);
-
-static __sum16 nf_ip6_checksum_partial(struct sk_buff *skb, unsigned int hook,
-				       unsigned int dataoff, unsigned int len,
-				       u_int8_t protocol)
-{
-	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
-	__wsum hsum;
-	__sum16 csum = 0;
-
-	switch (skb->ip_summed) {
-	case CHECKSUM_COMPLETE:
-		if (len == skb->len - dataoff)
-			return nf_ip6_checksum(skb, hook, dataoff, protocol);
-		/* fall through */
-	case CHECKSUM_NONE:
-		hsum = skb_checksum(skb, 0, dataoff, 0);
-		skb->csum = ~csum_unfold(csum_ipv6_magic(&ip6h->saddr,
-							 &ip6h->daddr,
-							 skb->len - dataoff,
-							 protocol,
-							 csum_sub(0, hsum)));
-		skb->ip_summed = CHECKSUM_NONE;
-		return __skb_checksum_complete_head(skb, dataoff + len);
-	}
-	return csum;
-};
-
-static const struct nf_afinfo nf_ip6_afinfo = {
-	.family			= AF_INET6,
-	.checksum		= nf_ip6_checksum,
-	.checksum_partial	= nf_ip6_checksum_partial,
-	.route			= nf_ip6_route,
-	.saveroute		= nf_ip6_saveroute,
-	.reroute		= nf_ip6_reroute,
-	.route_key_size		= sizeof(struct ip6_rt_info),
-=======
 EXPORT_SYMBOL_GPL(__nf_ip6_route);
 
 int br_ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
@@ -402,17 +256,12 @@ static const struct nf_ipv6_ops ipv6ops = {
 #if IS_MODULE(CONFIG_IPV6)
 	.br_fragment		= br_ip6_fragment,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init ipv6_netfilter_init(void)
 {
-<<<<<<< HEAD
-	return nf_register_afinfo(&nf_ip6_afinfo);
-=======
 	RCU_INIT_POINTER(nf_ipv6_ops, &ipv6ops);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This can be called from inet6_init() on errors, so it cannot
@@ -420,9 +269,5 @@ int __init ipv6_netfilter_init(void)
  */
 void ipv6_netfilter_fini(void)
 {
-<<<<<<< HEAD
-	nf_unregister_afinfo(&nf_ip6_afinfo);
-=======
 	RCU_INIT_POINTER(nf_ipv6_ops, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

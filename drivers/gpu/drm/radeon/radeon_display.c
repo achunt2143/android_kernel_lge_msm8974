@@ -23,17 +23,6 @@
  * Authors: Dave Airlie
  *          Alex Deucher
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon_drm.h"
-#include "radeon.h"
-
-#include "atom.h"
-#include <asm/div64.h>
-
-#include "drm_crtc_helper.h"
-#include "drm_edid.h"
-=======
 
 #include <linux/pci.h>
 #include <linux/pm_runtime.h>
@@ -56,17 +45,13 @@
 #include "atom.h"
 #include "radeon.h"
 #include "radeon_kms.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void avivo_crtc_load_lut(struct drm_crtc *crtc)
 {
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
 	struct drm_device *dev = crtc->dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-=======
 	u16 *r, *g, *b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	DRM_DEBUG_KMS("%d\n", radeon_crtc->crtc_id);
@@ -85,16 +70,6 @@ static void avivo_crtc_load_lut(struct drm_crtc *crtc)
 	WREG32(AVIVO_DC_LUT_WRITE_EN_MASK, 0x0000003f);
 
 	WREG8(AVIVO_DC_LUT_RW_INDEX, 0);
-<<<<<<< HEAD
-	for (i = 0; i < 256; i++) {
-		WREG32(AVIVO_DC_LUT_30_COLOR,
-			     (radeon_crtc->lut_r[i] << 20) |
-			     (radeon_crtc->lut_g[i] << 10) |
-			     (radeon_crtc->lut_b[i] << 0));
-	}
-
-	WREG32(AVIVO_D1GRPH_LUT_SEL + radeon_crtc->crtc_offset, radeon_crtc->crtc_id);
-=======
 	r = crtc->gamma_store;
 	g = r + crtc->gamma_size;
 	b = g + crtc->gamma_size;
@@ -107,7 +82,6 @@ static void avivo_crtc_load_lut(struct drm_crtc *crtc)
 
 	/* Only change bit 0 of LUT_SEL, other bits are set elsewhere */
 	WREG32_P(AVIVO_D1GRPH_LUT_SEL + radeon_crtc->crtc_offset, radeon_crtc->crtc_id, ~1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dce4_crtc_load_lut(struct drm_crtc *crtc)
@@ -115,10 +89,7 @@ static void dce4_crtc_load_lut(struct drm_crtc *crtc)
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
 	struct drm_device *dev = crtc->dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-=======
 	u16 *r, *g, *b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	DRM_DEBUG_KMS("%d\n", radeon_crtc->crtc_id);
@@ -136,13 +107,6 @@ static void dce4_crtc_load_lut(struct drm_crtc *crtc)
 	WREG32(EVERGREEN_DC_LUT_WRITE_EN_MASK + radeon_crtc->crtc_offset, 0x00000007);
 
 	WREG32(EVERGREEN_DC_LUT_RW_INDEX + radeon_crtc->crtc_offset, 0);
-<<<<<<< HEAD
-	for (i = 0; i < 256; i++) {
-		WREG32(EVERGREEN_DC_LUT_30_COLOR + radeon_crtc->crtc_offset,
-		       (radeon_crtc->lut_r[i] << 20) |
-		       (radeon_crtc->lut_g[i] << 10) |
-		       (radeon_crtc->lut_b[i] << 0));
-=======
 	r = crtc->gamma_store;
 	g = r + crtc->gamma_size;
 	b = g + crtc->gamma_size;
@@ -151,7 +115,6 @@ static void dce4_crtc_load_lut(struct drm_crtc *crtc)
 		       ((*r++ & 0xffc0) << 14) |
 		       ((*g++ & 0xffc0) << 4) |
 		       (*b++ >> 6));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -160,19 +123,13 @@ static void dce5_crtc_load_lut(struct drm_crtc *crtc)
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
 	struct drm_device *dev = crtc->dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-=======
 	u16 *r, *g, *b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	DRM_DEBUG_KMS("%d\n", radeon_crtc->crtc_id);
 
-<<<<<<< HEAD
-=======
 	msleep(10);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(NI_INPUT_CSC_CONTROL + radeon_crtc->crtc_offset,
 	       (NI_INPUT_CSC_GRPH_MODE(NI_INPUT_CSC_BYPASS) |
 		NI_INPUT_CSC_OVL_MODE(NI_INPUT_CSC_BYPASS)));
@@ -198,13 +155,6 @@ static void dce5_crtc_load_lut(struct drm_crtc *crtc)
 	WREG32(EVERGREEN_DC_LUT_WRITE_EN_MASK + radeon_crtc->crtc_offset, 0x00000007);
 
 	WREG32(EVERGREEN_DC_LUT_RW_INDEX + radeon_crtc->crtc_offset, 0);
-<<<<<<< HEAD
-	for (i = 0; i < 256; i++) {
-		WREG32(EVERGREEN_DC_LUT_30_COLOR + radeon_crtc->crtc_offset,
-		       (radeon_crtc->lut_r[i] << 20) |
-		       (radeon_crtc->lut_g[i] << 10) |
-		       (radeon_crtc->lut_b[i] << 0));
-=======
 	r = crtc->gamma_store;
 	g = r + crtc->gamma_size;
 	b = g + crtc->gamma_size;
@@ -213,7 +163,6 @@ static void dce5_crtc_load_lut(struct drm_crtc *crtc)
 		       ((*r++ & 0xffc0) << 14) |
 		       ((*g++ & 0xffc0) << 4) |
 		       (*b++ >> 6));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	WREG32(NI_DEGAMMA_CONTROL + radeon_crtc->crtc_offset,
@@ -228,13 +177,6 @@ static void dce5_crtc_load_lut(struct drm_crtc *crtc)
 	       (NI_GRPH_REGAMMA_MODE(NI_REGAMMA_BYPASS) |
 		NI_OVL_REGAMMA_MODE(NI_REGAMMA_BYPASS)));
 	WREG32(NI_OUTPUT_CSC_CONTROL + radeon_crtc->crtc_offset,
-<<<<<<< HEAD
-	       (NI_OUTPUT_CSC_GRPH_MODE(NI_OUTPUT_CSC_BYPASS) |
-		NI_OUTPUT_CSC_OVL_MODE(NI_OUTPUT_CSC_BYPASS)));
-	/* XXX match this to the depth of the crtc fmt block, move to modeset? */
-	WREG32(0x6940 + radeon_crtc->crtc_offset, 0);
-
-=======
 	       (NI_OUTPUT_CSC_GRPH_MODE(radeon_crtc->output_csc) |
 		NI_OUTPUT_CSC_OVL_MODE(NI_OUTPUT_CSC_BYPASS)));
 	/* XXX match this to the depth of the crtc fmt block, move to modeset? */
@@ -246,7 +188,6 @@ static void dce5_crtc_load_lut(struct drm_crtc *crtc)
 		WREG32(CIK_ALPHA_CONTROL + radeon_crtc->crtc_offset,
 		       CIK_CURSOR_ALPHA_BLND_ENA);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void legacy_crtc_load_lut(struct drm_crtc *crtc)
@@ -254,10 +195,7 @@ static void legacy_crtc_load_lut(struct drm_crtc *crtc)
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
 	struct drm_device *dev = crtc->dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-=======
 	u16 *r, *g, *b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	uint32_t dac2_cntl;
 
@@ -269,13 +207,6 @@ static void legacy_crtc_load_lut(struct drm_crtc *crtc)
 	WREG32(RADEON_DAC_CNTL2, dac2_cntl);
 
 	WREG8(RADEON_PALETTE_INDEX, 0);
-<<<<<<< HEAD
-	for (i = 0; i < 256; i++) {
-		WREG32(RADEON_PALETTE_30_DATA,
-			     (radeon_crtc->lut_r[i] << 20) |
-			     (radeon_crtc->lut_g[i] << 10) |
-			     (radeon_crtc->lut_b[i] << 0));
-=======
 	r = crtc->gamma_store;
 	g = r + crtc->gamma_size;
 	b = g + crtc->gamma_size;
@@ -284,7 +215,6 @@ static void legacy_crtc_load_lut(struct drm_crtc *crtc)
 		       ((*r++ & 0xffc0) << 14) |
 		       ((*g++ & 0xffc0) << 4) |
 		       (*b++ >> 6));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -306,43 +236,6 @@ void radeon_crtc_load_lut(struct drm_crtc *crtc)
 		legacy_crtc_load_lut(crtc);
 }
 
-<<<<<<< HEAD
-/** Sets the color ramps on behalf of fbcon */
-void radeon_crtc_fb_gamma_set(struct drm_crtc *crtc, u16 red, u16 green,
-			      u16 blue, int regno)
-{
-	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
-
-	radeon_crtc->lut_r[regno] = red >> 6;
-	radeon_crtc->lut_g[regno] = green >> 6;
-	radeon_crtc->lut_b[regno] = blue >> 6;
-}
-
-/** Gets the color ramps on behalf of fbcon */
-void radeon_crtc_fb_gamma_get(struct drm_crtc *crtc, u16 *red, u16 *green,
-			      u16 *blue, int regno)
-{
-	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
-
-	*red = radeon_crtc->lut_r[regno] << 6;
-	*green = radeon_crtc->lut_g[regno] << 6;
-	*blue = radeon_crtc->lut_b[regno] << 6;
-}
-
-static void radeon_crtc_gamma_set(struct drm_crtc *crtc, u16 *red, u16 *green,
-				  u16 *blue, uint32_t start, uint32_t size)
-{
-	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
-	int end = (start + size > 256) ? 256 : start + size, i;
-
-	/* userspace palettes are always correct as is */
-	for (i = start; i < end; i++) {
-		radeon_crtc->lut_r[i] = red[i] >> 6;
-		radeon_crtc->lut_g[i] = green[i] >> 6;
-		radeon_crtc->lut_b[i] = blue[i] >> 6;
-	}
-	radeon_crtc_load_lut(crtc);
-=======
 static int radeon_crtc_gamma_set(struct drm_crtc *crtc, u16 *red, u16 *green,
 				 u16 *blue, uint32_t size,
 				 struct drm_modeset_acquire_ctx *ctx)
@@ -350,7 +243,6 @@ static int radeon_crtc_gamma_set(struct drm_crtc *crtc, u16 *red, u16 *green,
 	radeon_crtc_load_lut(crtc);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void radeon_crtc_destroy(struct drm_crtc *crtc)
@@ -358,18 +250,6 @@ static void radeon_crtc_destroy(struct drm_crtc *crtc)
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
 
 	drm_crtc_cleanup(crtc);
-<<<<<<< HEAD
-	kfree(radeon_crtc);
-}
-
-/*
- * Handle unpin events outside the interrupt handler proper.
- */
-static void radeon_unpin_work_func(struct work_struct *__work)
-{
-	struct radeon_unpin_work *work =
-		container_of(__work, struct radeon_unpin_work, work);
-=======
 	destroy_workqueue(radeon_crtc->flip_queue);
 	kfree(radeon_crtc);
 }
@@ -385,36 +265,16 @@ static void radeon_unpin_work_func(struct work_struct *__work)
 {
 	struct radeon_flip_work *work =
 		container_of(__work, struct radeon_flip_work, unpin_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	/* unpin of the old buffer */
 	r = radeon_bo_reserve(work->old_rbo, false);
 	if (likely(r == 0)) {
-<<<<<<< HEAD
-		r = radeon_bo_unpin(work->old_rbo);
-		if (unlikely(r != 0)) {
-			DRM_ERROR("failed to unpin buffer after flip\n");
-		}
-=======
 		radeon_bo_unpin(work->old_rbo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_bo_unreserve(work->old_rbo);
 	} else
 		DRM_ERROR("failed to reserve buffer after flip\n");
 
-<<<<<<< HEAD
-	drm_gem_object_unreference_unlocked(&work->old_rbo->gem_base);
-	kfree(work);
-}
-
-void radeon_crtc_handle_flip(struct radeon_device *rdev, int crtc_id)
-{
-	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
-	struct radeon_unpin_work *work;
-	struct drm_pending_vblank_event *e;
-	struct timeval now;
-=======
 	drm_gem_object_put(&work->old_rbo->tbo.base);
 	kfree(work);
 }
@@ -422,41 +282,10 @@ void radeon_crtc_handle_flip(struct radeon_device *rdev, int crtc_id)
 void radeon_crtc_handle_vblank(struct radeon_device *rdev, int crtc_id)
 {
 	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 update_pending;
 	int vpos, hpos;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&rdev->ddev->event_lock, flags);
-	work = radeon_crtc->unpin_work;
-	if (work == NULL ||
-	    (work->fence && !radeon_fence_signaled(work->fence))) {
-		spin_unlock_irqrestore(&rdev->ddev->event_lock, flags);
-		return;
-	}
-	/* New pageflip, or just completion of a previous one? */
-	if (!radeon_crtc->deferred_flip_completion) {
-		/* do the flip (mmio) */
-		update_pending = radeon_page_flip(rdev, crtc_id, work->new_crtc_base);
-	} else {
-		/* This is just a completion of a flip queued in crtc
-		 * at last invocation. Make sure we go directly to
-		 * completion routine.
-		 */
-		update_pending = 0;
-		radeon_crtc->deferred_flip_completion = 0;
-	}
-
-	/* Has the pageflip already completed in crtc, or is it certain
-	 * to complete in this vblank?
-	 */
-	if (update_pending &&
-	    (DRM_SCANOUTPOS_VALID & radeon_get_crtc_scanoutpos(rdev->ddev, crtc_id,
-							       &vpos, &hpos)) &&
-	    ((vpos >= (99 * rdev->mode_info.crtcs[crtc_id]->base.hwmode.crtc_vdisplay)/100) ||
-	     (vpos < 0 && !ASIC_IS_AVIVO(rdev)))) {
-=======
 	/* can happen during initialization */
 	if (radeon_crtc == NULL)
 		return;
@@ -510,7 +339,6 @@ void radeon_crtc_handle_vblank(struct radeon_device *rdev, int crtc_id)
 					&vpos, &hpos, NULL, NULL,
 					&rdev->mode_info.crtcs[crtc_id]->base.hwmode)) &&
 	    ((vpos >= 0 && hpos < 0) || (hpos >= 0 && !ASIC_IS_AVIVO(rdev)))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* crtc didn't flip in this target vblank interval,
 		 * but flip is pending in crtc. Based on the current
 		 * scanout position we know that the current frame is
@@ -519,15 +347,6 @@ void radeon_crtc_handle_vblank(struct radeon_device *rdev, int crtc_id)
 		 */
 		update_pending = 0;
 	}
-<<<<<<< HEAD
-	if (update_pending) {
-		/* crtc didn't flip in this target vblank interval,
-		 * but flip is pending in crtc. It will complete it
-		 * in next vblank interval, so complete the flip at
-		 * next vblank irq.
-		 */
-		radeon_crtc->deferred_flip_completion = 1;
-=======
 	spin_unlock_irqrestore(&rdev->ddev->event_lock, flags);
 	if (!update_pending)
 		radeon_crtc_handle_flip(rdev, crtc_id);
@@ -558,36 +377,10 @@ void radeon_crtc_handle_flip(struct radeon_device *rdev, int crtc_id)
 				 "RADEON_FLIP_SUBMITTED(%d)\n",
 				 radeon_crtc->flip_status,
 				 RADEON_FLIP_SUBMITTED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&rdev->ddev->event_lock, flags);
 		return;
 	}
 
-<<<<<<< HEAD
-	/* Pageflip (will be) certainly completed in this vblank. Clean up. */
-	radeon_crtc->unpin_work = NULL;
-
-	/* wakeup userspace */
-	if (work->event) {
-		e = work->event;
-		e->event.sequence = drm_vblank_count_and_time(rdev->ddev, crtc_id, &now);
-		e->event.tv_sec = now.tv_sec;
-		e->event.tv_usec = now.tv_usec;
-		list_add_tail(&e->base.link, &e->base.file_priv->event_list);
-		wake_up_interruptible(&e->base.file_priv->event_wait);
-	}
-	spin_unlock_irqrestore(&rdev->ddev->event_lock, flags);
-
-	drm_vblank_put(rdev->ddev, radeon_crtc->crtc_id);
-	radeon_fence_unref(&work->fence);
-	radeon_post_page_flip(work->rdev, work->crtc_id);
-	schedule_work(&work->work);
-}
-
-static int radeon_crtc_page_flip(struct drm_crtc *crtc,
-				 struct drm_framebuffer *fb,
-				 struct drm_pending_vblank_event *event)
-=======
 	/* Pageflip completed. Clean up. */
 	radeon_crtc->flip_status = RADEON_FLIP_NONE;
 	radeon_crtc->flip_work = NULL;
@@ -688,84 +481,22 @@ static int radeon_crtc_page_flip_target(struct drm_crtc *crtc,
 					uint32_t page_flip_flags,
 					uint32_t target,
 					struct drm_modeset_acquire_ctx *ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_device *dev = crtc->dev;
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
-<<<<<<< HEAD
-	struct radeon_framebuffer *old_radeon_fb;
-	struct radeon_framebuffer *new_radeon_fb;
-	struct drm_gem_object *obj;
-	struct radeon_bo *rbo;
-	struct radeon_unpin_work *work;
-	unsigned long flags;
-	u32 tiling_flags, pitch_pixels;
-	u64 base;
-=======
 	struct drm_gem_object *obj;
 	struct radeon_flip_work *work;
 	struct radeon_bo *new_rbo;
 	uint32_t tiling_flags, pitch_pixels;
 	uint64_t base;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	work = kzalloc(sizeof *work, GFP_KERNEL);
 	if (work == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	work->event = event;
-	work->rdev = rdev;
-	work->crtc_id = radeon_crtc->crtc_id;
-	old_radeon_fb = to_radeon_framebuffer(crtc->fb);
-	new_radeon_fb = to_radeon_framebuffer(fb);
-	/* schedule unpin of the old buffer */
-	obj = old_radeon_fb->obj;
-	/* take a reference to the old object */
-	drm_gem_object_reference(obj);
-	rbo = gem_to_radeon_bo(obj);
-	work->old_rbo = rbo;
-	obj = new_radeon_fb->obj;
-	rbo = gem_to_radeon_bo(obj);
-	if (rbo->tbo.sync_obj)
-		work->fence = radeon_fence_ref(rbo->tbo.sync_obj);
-	INIT_WORK(&work->work, radeon_unpin_work_func);
-
-	/* We borrow the event spin lock for protecting unpin_work */
-	spin_lock_irqsave(&dev->event_lock, flags);
-	if (radeon_crtc->unpin_work) {
-		DRM_DEBUG_DRIVER("flip queue: crtc already busy\n");
-		r = -EBUSY;
-		goto unlock_free;
-	}
-	radeon_crtc->unpin_work = work;
-	radeon_crtc->deferred_flip_completion = 0;
-	spin_unlock_irqrestore(&dev->event_lock, flags);
-
-	/* pin the new buffer */
-	DRM_DEBUG_DRIVER("flip-ioctl() cur_fbo = %p, cur_bbo = %p\n",
-			 work->old_rbo, rbo);
-
-	r = radeon_bo_reserve(rbo, false);
-	if (unlikely(r != 0)) {
-		DRM_ERROR("failed to reserve new rbo buffer before flip\n");
-		goto pflip_cleanup;
-	}
-	/* Only 27 bit offset for legacy CRTC */
-	r = radeon_bo_pin_restricted(rbo, RADEON_GEM_DOMAIN_VRAM,
-				     ASIC_IS_AVIVO(rdev) ? 0 : 1 << 27, &base);
-	if (unlikely(r != 0)) {
-		radeon_bo_unreserve(rbo);
-		r = -EINVAL;
-		DRM_ERROR("failed to pin new rbo buffer before flip\n");
-		goto pflip_cleanup;
-	}
-	radeon_bo_get_tiling_flags(rbo, &tiling_flags, NULL);
-	radeon_bo_unreserve(rbo);
-=======
 	INIT_WORK(&work->flip_work, radeon_flip_work_func);
 	INIT_WORK(&work->unpin_work, radeon_unpin_work_func);
 
@@ -811,36 +542,23 @@ static int radeon_crtc_page_flip_target(struct drm_crtc *crtc,
 	}
 	radeon_bo_get_tiling_flags(new_rbo, &tiling_flags, NULL);
 	radeon_bo_unreserve(new_rbo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ASIC_IS_AVIVO(rdev)) {
 		/* crtc offset is from display base addr not FB location */
 		base -= radeon_crtc->legacy_display_base_addr;
-<<<<<<< HEAD
-		pitch_pixels = fb->pitches[0] / (fb->bits_per_pixel / 8);
-=======
 		pitch_pixels = fb->pitches[0] / fb->format->cpp[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (tiling_flags & RADEON_TILING_MACRO) {
 			if (ASIC_IS_R300(rdev)) {
 				base &= ~0x7ff;
 			} else {
-<<<<<<< HEAD
-				int byteshift = fb->bits_per_pixel >> 4;
-=======
 				int byteshift = fb->format->cpp[0] * 8 >> 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int tile_addr = (((crtc->y >> 3) * pitch_pixels +  crtc->x) >> (8 - byteshift)) << 11;
 				base += tile_addr + ((crtc->x << byteshift) % 256) + ((crtc->y % 8) << 8);
 			}
 		} else {
 			int offset = crtc->y * pitch_pixels + crtc->x;
-<<<<<<< HEAD
-			switch (fb->bits_per_pixel) {
-=======
 			switch (fb->format->cpp[0] * 8) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 8:
 			default:
 				offset *= 1;
@@ -860,56 +578,6 @@ static int radeon_crtc_page_flip_target(struct drm_crtc *crtc,
 		}
 		base &= ~7;
 	}
-<<<<<<< HEAD
-
-	spin_lock_irqsave(&dev->event_lock, flags);
-	work->new_crtc_base = base;
-	spin_unlock_irqrestore(&dev->event_lock, flags);
-
-	/* update crtc fb */
-	crtc->fb = fb;
-
-	r = drm_vblank_get(dev, radeon_crtc->crtc_id);
-	if (r) {
-		DRM_ERROR("failed to get vblank before flip\n");
-		goto pflip_cleanup1;
-	}
-
-	/* set the proper interrupt */
-	radeon_pre_page_flip(rdev, radeon_crtc->crtc_id);
-
-	return 0;
-
-pflip_cleanup1:
-	if (unlikely(radeon_bo_reserve(rbo, false) != 0)) {
-		DRM_ERROR("failed to reserve new rbo in error path\n");
-		goto pflip_cleanup;
-	}
-	if (unlikely(radeon_bo_unpin(rbo) != 0)) {
-		DRM_ERROR("failed to unpin new rbo in error path\n");
-	}
-	radeon_bo_unreserve(rbo);
-
-pflip_cleanup:
-	spin_lock_irqsave(&dev->event_lock, flags);
-	radeon_crtc->unpin_work = NULL;
-unlock_free:
-	spin_unlock_irqrestore(&dev->event_lock, flags);
-	drm_gem_object_unreference_unlocked(old_radeon_fb->obj);
-	radeon_fence_unref(&work->fence);
-	kfree(work);
-
-	return r;
-}
-
-static const struct drm_crtc_funcs radeon_crtc_funcs = {
-	.cursor_set = radeon_crtc_cursor_set,
-	.cursor_move = radeon_crtc_cursor_move,
-	.gamma_set = radeon_crtc_gamma_set,
-	.set_config = drm_crtc_helper_set_config,
-	.destroy = radeon_crtc_destroy,
-	.page_flip = radeon_crtc_page_flip,
-=======
 	work->base = base;
 	work->target_vblank = target - (uint32_t)drm_crtc_vblank_count(crtc) +
 		crtc->funcs->get_vblank_counter(crtc);
@@ -1008,39 +676,29 @@ static const struct drm_crtc_funcs radeon_crtc_funcs = {
 	.enable_vblank = radeon_enable_vblank_kms,
 	.disable_vblank = radeon_disable_vblank_kms,
 	.get_vblank_timestamp = drm_crtc_vblank_helper_get_vblank_timestamp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void radeon_crtc_init(struct drm_device *dev, int index)
 {
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_crtc *radeon_crtc;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	radeon_crtc = kzalloc(sizeof(struct radeon_crtc) + (RADEONFB_CONN_LIMIT * sizeof(struct drm_connector *)), GFP_KERNEL);
 	if (radeon_crtc == NULL)
 		return;
 
-<<<<<<< HEAD
-=======
 	radeon_crtc->flip_queue = alloc_workqueue("radeon-crtc", WQ_HIGHPRI, 0);
 	if (!radeon_crtc->flip_queue) {
 		kfree(radeon_crtc);
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drm_crtc_init(dev, &radeon_crtc->base, &radeon_crtc_funcs);
 
 	drm_mode_crtc_set_gamma_size(&radeon_crtc->base, 256);
 	radeon_crtc->crtc_id = index;
 	rdev->mode_info.crtcs[index] = radeon_crtc;
 
-<<<<<<< HEAD
-=======
 	if (rdev->family >= CHIP_BONAIRE) {
 		radeon_crtc->max_cursor_width = CIK_CURSOR_WIDTH;
 		radeon_crtc->max_cursor_height = CIK_CURSOR_HEIGHT;
@@ -1051,33 +709,19 @@ static void radeon_crtc_init(struct drm_device *dev, int index)
 	dev->mode_config.cursor_width = radeon_crtc->max_cursor_width;
 	dev->mode_config.cursor_height = radeon_crtc->max_cursor_height;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0
 	radeon_crtc->mode_set.crtc = &radeon_crtc->base;
 	radeon_crtc->mode_set.connectors = (struct drm_connector **)(radeon_crtc + 1);
 	radeon_crtc->mode_set.num_connectors = 0;
 #endif
 
-<<<<<<< HEAD
-	for (i = 0; i < 256; i++) {
-		radeon_crtc->lut_r[i] = i << 2;
-		radeon_crtc->lut_g[i] = i << 2;
-		radeon_crtc->lut_b[i] = i << 2;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->is_atom_bios && (ASIC_IS_AVIVO(rdev) || radeon_r4xx_atom))
 		radeon_atombios_init_crtc(dev, radeon_crtc);
 	else
 		radeon_legacy_init_crtc(dev, radeon_crtc);
 }
 
-<<<<<<< HEAD
-static const char *encoder_names[37] = {
-=======
 static const char *encoder_names[38] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"NONE",
 	"INTERNAL_LVDS",
 	"INTERNAL_TMDS1",
@@ -1114,30 +758,8 @@ static const char *encoder_names[38] = {
 	"INTERNAL_UNIPHY2",
 	"NUTMEG",
 	"TRAVIS",
-<<<<<<< HEAD
-	"INTERNAL_VCE"
-};
-
-static const char *connector_names[15] = {
-	"Unknown",
-	"VGA",
-	"DVI-I",
-	"DVI-D",
-	"DVI-A",
-	"Composite",
-	"S-video",
-	"LVDS",
-	"Component",
-	"DIN",
-	"DisplayPort",
-	"HDMI-A",
-	"HDMI-B",
-	"TV",
-	"eDP",
-=======
 	"INTERNAL_VCE",
 	"INTERNAL_UNIPHY3",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char *hpd_names[6] = {
@@ -1162,11 +784,7 @@ static void radeon_print_display_setup(struct drm_device *dev)
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
 		radeon_connector = to_radeon_connector(connector);
 		DRM_INFO("Connector %d:\n", i);
-<<<<<<< HEAD
-		DRM_INFO("  %s\n", connector_names[connector->connector_type]);
-=======
 		DRM_INFO("  %s\n", connector->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (radeon_connector->hpd.hpd != RADEON_HPD_NONE)
 			DRM_INFO("  %s\n", hpd_names[radeon_connector->hpd.hpd]);
 		if (radeon_connector->ddc_bus) {
@@ -1237,19 +855,11 @@ static bool radeon_setup_enc_conn(struct drm_device *dev)
 	if (rdev->bios) {
 		if (rdev->is_atom_bios) {
 			ret = radeon_get_atom_connector_info_from_supported_devices_table(dev);
-<<<<<<< HEAD
-			if (ret == false)
-				ret = radeon_get_atom_connector_info_from_object_table(dev);
-		} else {
-			ret = radeon_get_legacy_connector_info_from_bios(dev);
-			if (ret == false)
-=======
 			if (!ret)
 				ret = radeon_get_atom_connector_info_from_object_table(dev);
 		} else {
 			ret = radeon_get_legacy_connector_info_from_bios(dev);
 			if (!ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = radeon_get_legacy_connector_info_from_table(dev);
 		}
 	} else {
@@ -1264,128 +874,6 @@ static bool radeon_setup_enc_conn(struct drm_device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-int radeon_ddc_get_modes(struct radeon_connector *radeon_connector)
-{
-	struct drm_device *dev = radeon_connector->base.dev;
-	struct radeon_device *rdev = dev->dev_private;
-	int ret = 0;
-
-	/* don't leak the edid if we already fetched it in detect() */
-	if (radeon_connector->edid)
-		goto got_edid;
-
-	/* on hw with routers, select right port */
-	if (radeon_connector->router.ddc_valid)
-		radeon_router_select_ddc_port(radeon_connector);
-
-	if (radeon_connector_encoder_get_dp_bridge_encoder_id(&radeon_connector->base) !=
-	    ENCODER_OBJECT_ID_NONE) {
-		struct radeon_connector_atom_dig *dig = radeon_connector->con_priv;
-
-		if (dig->dp_i2c_bus)
-			radeon_connector->edid = drm_get_edid(&radeon_connector->base,
-							      &dig->dp_i2c_bus->adapter);
-	} else if ((radeon_connector->base.connector_type == DRM_MODE_CONNECTOR_DisplayPort) ||
-		   (radeon_connector->base.connector_type == DRM_MODE_CONNECTOR_eDP)) {
-		struct radeon_connector_atom_dig *dig = radeon_connector->con_priv;
-
-		if ((dig->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT ||
-		     dig->dp_sink_type == CONNECTOR_OBJECT_ID_eDP) && dig->dp_i2c_bus)
-			radeon_connector->edid = drm_get_edid(&radeon_connector->base,
-							      &dig->dp_i2c_bus->adapter);
-		else if (radeon_connector->ddc_bus && !radeon_connector->edid)
-			radeon_connector->edid = drm_get_edid(&radeon_connector->base,
-							      &radeon_connector->ddc_bus->adapter);
-	} else {
-		if (radeon_connector->ddc_bus && !radeon_connector->edid)
-			radeon_connector->edid = drm_get_edid(&radeon_connector->base,
-							      &radeon_connector->ddc_bus->adapter);
-	}
-
-	if (!radeon_connector->edid) {
-		if (rdev->is_atom_bios) {
-			/* some laptops provide a hardcoded edid in rom for LCDs */
-			if (((radeon_connector->base.connector_type == DRM_MODE_CONNECTOR_LVDS) ||
-			     (radeon_connector->base.connector_type == DRM_MODE_CONNECTOR_eDP)))
-				radeon_connector->edid = radeon_bios_get_hardcoded_edid(rdev);
-		} else
-			/* some servers provide a hardcoded edid in rom for KVMs */
-			radeon_connector->edid = radeon_bios_get_hardcoded_edid(rdev);
-	}
-	if (radeon_connector->edid) {
-got_edid:
-		drm_mode_connector_update_edid_property(&radeon_connector->base, radeon_connector->edid);
-		ret = drm_add_edid_modes(&radeon_connector->base, radeon_connector->edid);
-		drm_edid_to_eld(&radeon_connector->base, radeon_connector->edid);
-		return ret;
-	}
-	drm_mode_connector_update_edid_property(&radeon_connector->base, NULL);
-	return 0;
-}
-
-/* avivo */
-static void avivo_get_fb_div(struct radeon_pll *pll,
-			     u32 target_clock,
-			     u32 post_div,
-			     u32 ref_div,
-			     u32 *fb_div,
-			     u32 *frac_fb_div)
-{
-	u32 tmp = post_div * ref_div;
-
-	tmp *= target_clock;
-	*fb_div = tmp / pll->reference_freq;
-	*frac_fb_div = tmp % pll->reference_freq;
-
-        if (*fb_div > pll->max_feedback_div)
-		*fb_div = pll->max_feedback_div;
-        else if (*fb_div < pll->min_feedback_div)
-                *fb_div = pll->min_feedback_div;
-}
-
-static u32 avivo_get_post_div(struct radeon_pll *pll,
-			      u32 target_clock)
-{
-	u32 vco, post_div, tmp;
-
-	if (pll->flags & RADEON_PLL_USE_POST_DIV)
-		return pll->post_div;
-
-	if (pll->flags & RADEON_PLL_PREFER_MINM_OVER_MAXP) {
-		if (pll->flags & RADEON_PLL_IS_LCD)
-			vco = pll->lcd_pll_out_min;
-		else
-			vco = pll->pll_out_min;
-	} else {
-		if (pll->flags & RADEON_PLL_IS_LCD)
-			vco = pll->lcd_pll_out_max;
-		else
-			vco = pll->pll_out_max;
-	}
-
-	post_div = vco / target_clock;
-	tmp = vco % target_clock;
-
-	if (pll->flags & RADEON_PLL_PREFER_MINM_OVER_MAXP) {
-		if (tmp)
-			post_div++;
-	} else {
-		if (!tmp)
-			post_div--;
-	}
-
-	if (post_div > pll->max_post_div)
-		post_div = pll->max_post_div;
-	else if (post_div < pll->min_post_div)
-		post_div = pll->min_post_div;
-
-	return post_div;
-}
-
-#define MAX_TOLERANCE 10
-
-=======
 /* avivo */
 
 /**
@@ -1471,7 +959,6 @@ static void avivo_get_fb_ref_div(unsigned nom, unsigned den, unsigned post_div,
  * Try to calculate the PLL parameters to generate the given frequency:
  * dot_clock = (ref_freq * feedback_div) / (ref_div * post_div)
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_compute_pll_avivo(struct radeon_pll *pll,
 			      u32 freq,
 			      u32 *dot_clock_p,
@@ -1480,55 +967,6 @@ void radeon_compute_pll_avivo(struct radeon_pll *pll,
 			      u32 *ref_div_p,
 			      u32 *post_div_p)
 {
-<<<<<<< HEAD
-	u32 target_clock = freq / 10;
-	u32 post_div = avivo_get_post_div(pll, target_clock);
-	u32 ref_div = pll->min_ref_div;
-	u32 fb_div = 0, frac_fb_div = 0, tmp;
-
-	if (pll->flags & RADEON_PLL_USE_REF_DIV)
-		ref_div = pll->reference_div;
-
-	if (pll->flags & RADEON_PLL_USE_FRAC_FB_DIV) {
-		avivo_get_fb_div(pll, target_clock, post_div, ref_div, &fb_div, &frac_fb_div);
-		frac_fb_div = (100 * frac_fb_div) / pll->reference_freq;
-		if (frac_fb_div >= 5) {
-			frac_fb_div -= 5;
-			frac_fb_div = frac_fb_div / 10;
-			frac_fb_div++;
-		}
-		if (frac_fb_div >= 10) {
-			fb_div++;
-			frac_fb_div = 0;
-		}
-	} else {
-		while (ref_div <= pll->max_ref_div) {
-			avivo_get_fb_div(pll, target_clock, post_div, ref_div,
-					 &fb_div, &frac_fb_div);
-			if (frac_fb_div >= (pll->reference_freq / 2))
-				fb_div++;
-			frac_fb_div = 0;
-			tmp = (pll->reference_freq * fb_div) / (post_div * ref_div);
-			tmp = (tmp * 10000) / target_clock;
-
-			if (tmp > (10000 + MAX_TOLERANCE))
-				ref_div++;
-			else if (tmp >= (10000 - MAX_TOLERANCE))
-				break;
-			else
-				ref_div++;
-		}
-	}
-
-	*dot_clock_p = ((pll->reference_freq * fb_div * 10) + (pll->reference_freq * frac_fb_div)) /
-		(ref_div * post_div * 10);
-	*fb_div_p = fb_div;
-	*frac_fb_div_p = frac_fb_div;
-	*ref_div_p = ref_div;
-	*post_div_p = post_div;
-	DRM_DEBUG_KMS("%d, pll dividers - fb: %d.%d ref: %d, post %d\n",
-		      *dot_clock_p, fb_div, frac_fb_div, ref_div, post_div);
-=======
 	unsigned target_clock = pll->flags & RADEON_PLL_USE_FRAC_FB_DIV ?
 		freq : freq / 10;
 
@@ -1661,23 +1099,14 @@ void radeon_compute_pll_avivo(struct radeon_pll *pll,
 	DRM_DEBUG_KMS("%d - %d, pll dividers - fb: %d.%d ref: %d, post %d\n",
 		      freq, *dot_clock_p * 10, *fb_div_p, *frac_fb_div_p,
 		      ref_div, post_div);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* pre-avivo */
 static inline uint32_t radeon_div(uint64_t n, uint32_t d)
 {
-<<<<<<< HEAD
-	uint64_t mod;
-
-	n += d / 2;
-
-	mod = do_div(n, d);
-=======
 	n += d / 2;
 
 	do_div(n, d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return n;
 }
 
@@ -1866,53 +1295,13 @@ void radeon_compute_pll_legacy(struct radeon_pll *pll,
 
 }
 
-<<<<<<< HEAD
-static void radeon_user_framebuffer_destroy(struct drm_framebuffer *fb)
-{
-	struct radeon_framebuffer *radeon_fb = to_radeon_framebuffer(fb);
-
-	if (radeon_fb->obj) {
-		drm_gem_object_unreference_unlocked(radeon_fb->obj);
-	}
-	drm_framebuffer_cleanup(fb);
-	kfree(radeon_fb);
-}
-
-static int radeon_user_framebuffer_create_handle(struct drm_framebuffer *fb,
-						  struct drm_file *file_priv,
-						  unsigned int *handle)
-{
-	struct radeon_framebuffer *radeon_fb = to_radeon_framebuffer(fb);
-
-	return drm_gem_handle_create(file_priv, radeon_fb->obj, handle);
-}
-
-static const struct drm_framebuffer_funcs radeon_fb_funcs = {
-	.destroy = radeon_user_framebuffer_destroy,
-	.create_handle = radeon_user_framebuffer_create_handle,
-=======
 static const struct drm_framebuffer_funcs radeon_fb_funcs = {
 	.destroy = drm_gem_fb_destroy,
 	.create_handle = drm_gem_fb_create_handle,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int
 radeon_framebuffer_init(struct drm_device *dev,
-<<<<<<< HEAD
-			struct radeon_framebuffer *rfb,
-			struct drm_mode_fb_cmd2 *mode_cmd,
-			struct drm_gem_object *obj)
-{
-	int ret;
-	rfb->obj = obj;
-	ret = drm_framebuffer_init(dev, &rfb->base, &radeon_fb_funcs);
-	if (ret) {
-		rfb->obj = NULL;
-		return ret;
-	}
-	drm_helper_mode_fill_fb_struct(&rfb->base, mode_cmd);
-=======
 			struct drm_framebuffer *fb,
 			const struct drm_mode_fb_cmd2 *mode_cmd,
 			struct drm_gem_object *obj)
@@ -1925,24 +1314,12 @@ radeon_framebuffer_init(struct drm_device *dev,
 		fb->obj[0] = NULL;
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct drm_framebuffer *
 radeon_user_framebuffer_create(struct drm_device *dev,
 			       struct drm_file *file_priv,
-<<<<<<< HEAD
-			       struct drm_mode_fb_cmd2 *mode_cmd)
-{
-	struct drm_gem_object *obj;
-	struct radeon_framebuffer *radeon_fb;
-	int ret;
-
-	obj = drm_gem_object_lookup(dev, file_priv, mode_cmd->handles[0]);
-	if (obj ==  NULL) {
-		dev_err(&dev->pdev->dev, "No GEM object associated to handle 0x%08X, "
-=======
 			       const struct drm_mode_fb_cmd2 *mode_cmd)
 {
 	struct drm_gem_object *obj;
@@ -1952,33 +1329,10 @@ radeon_user_framebuffer_create(struct drm_device *dev,
 	obj = drm_gem_object_lookup(file_priv, mode_cmd->handles[0]);
 	if (obj ==  NULL) {
 		dev_err(dev->dev, "No GEM object associated to handle 0x%08X, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"can't create framebuffer\n", mode_cmd->handles[0]);
 		return ERR_PTR(-ENOENT);
 	}
 
-<<<<<<< HEAD
-	radeon_fb = kzalloc(sizeof(*radeon_fb), GFP_KERNEL);
-	if (radeon_fb == NULL) {
-		drm_gem_object_unreference_unlocked(obj);
-		return ERR_PTR(-ENOMEM);
-	}
-
-	ret = radeon_framebuffer_init(dev, radeon_fb, mode_cmd, obj);
-	if (ret) {
-		kfree(radeon_fb);
-		drm_gem_object_unreference_unlocked(obj);
-		return ERR_PTR(ret);
-	}
-
-	return &radeon_fb->base;
-}
-
-static void radeon_output_poll_changed(struct drm_device *dev)
-{
-	struct radeon_device *rdev = dev->dev_private;
-	radeon_fb_output_poll_changed(rdev);
-=======
 	/* Handle is imported dma-buf, so cannot be migrated to VRAM for scanout */
 	if (obj->import_attach) {
 		DRM_DEBUG_KMS("Cannot create framebuffer from imported dma_buf\n");
@@ -2000,30 +1354,18 @@ static void radeon_output_poll_changed(struct drm_device *dev)
 	}
 
 	return fb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct drm_mode_config_funcs radeon_mode_funcs = {
 	.fb_create = radeon_user_framebuffer_create,
-<<<<<<< HEAD
-	.output_poll_changed = radeon_output_poll_changed
-};
-
-static struct drm_prop_enum_list radeon_tmds_pll_enum_list[] =
-=======
 };
 
 static const struct drm_prop_enum_list radeon_tmds_pll_enum_list[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {	{ 0, "driver" },
 	{ 1, "bios" },
 };
 
-<<<<<<< HEAD
-static struct drm_prop_enum_list radeon_tv_std_enum_list[] =
-=======
 static const struct drm_prop_enum_list radeon_tv_std_enum_list[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {	{ TV_STD_NTSC, "ntsc" },
 	{ TV_STD_PAL, "pal" },
 	{ TV_STD_PAL_M, "pal-m" },
@@ -2034,18 +1376,12 @@ static const struct drm_prop_enum_list radeon_tv_std_enum_list[] =
 	{ TV_STD_SECAM, "secam" },
 };
 
-<<<<<<< HEAD
-static struct drm_prop_enum_list radeon_underscan_enum_list[] =
-=======
 static const struct drm_prop_enum_list radeon_underscan_enum_list[] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {	{ UNDERSCAN_OFF, "off" },
 	{ UNDERSCAN_ON, "on" },
 	{ UNDERSCAN_AUTO, "auto" },
 };
 
-<<<<<<< HEAD
-=======
 static const struct drm_prop_enum_list radeon_audio_enum_list[] =
 {	{ RADEON_AUDIO_DISABLE, "off" },
 	{ RADEON_AUDIO_ENABLE, "on" },
@@ -2065,7 +1401,6 @@ static const struct drm_prop_enum_list radeon_output_csc_enum_list[] =
 	{ RADEON_OUTPUT_CSC_YCBCR709, "ycbcr709" },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int radeon_modeset_create_props(struct radeon_device *rdev)
 {
 	int sz;
@@ -2116,8 +1451,6 @@ static int radeon_modeset_create_props(struct radeon_device *rdev)
 	if (!rdev->mode_info.underscan_vborder_property)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	sz = ARRAY_SIZE(radeon_audio_enum_list);
 	rdev->mode_info.audio_property =
 		drm_property_create_enum(rdev->ddev, 0,
@@ -2136,7 +1469,6 @@ static int radeon_modeset_create_props(struct radeon_device *rdev)
 					 "output_csc",
 					 radeon_output_csc_enum_list, sz);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2160,8 +1492,6 @@ void radeon_update_display_priority(struct radeon_device *rdev)
 
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Allocate hdmi structs and determine register offsets
  */
@@ -2249,7 +1579,6 @@ static void radeon_afmt_fini(struct radeon_device *rdev)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_modeset_init(struct radeon_device *rdev)
 {
 	int i;
@@ -2258,14 +1587,10 @@ int radeon_modeset_init(struct radeon_device *rdev)
 	drm_mode_config_init(rdev->ddev);
 	rdev->mode_info.mode_config_initialized = true;
 
-<<<<<<< HEAD
-	rdev->ddev->mode_config.funcs = (void *)&radeon_mode_funcs;
-=======
 	rdev->ddev->mode_config.funcs = &radeon_mode_funcs;
 
 	if (radeon_use_pflipirq == 2 && rdev->family >= CHIP_R600)
 		rdev->ddev->mode_config.async_page_flip = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ASIC_IS_DCE5(rdev)) {
 		rdev->ddev->mode_config.max_width = 16384;
@@ -2281,11 +1606,7 @@ int radeon_modeset_init(struct radeon_device *rdev)
 	rdev->ddev->mode_config.preferred_depth = 24;
 	rdev->ddev->mode_config.prefer_shadow = 1;
 
-<<<<<<< HEAD
-	rdev->ddev->mode_config.fb_base = rdev->mc.aper_base;
-=======
 	rdev->ddev->mode_config.fb_modifiers_not_supported = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = radeon_modeset_create_props(rdev);
 	if (ret) {
@@ -2321,14 +1642,6 @@ int radeon_modeset_init(struct radeon_device *rdev)
 	/* initialize hpd */
 	radeon_hpd_init(rdev);
 
-<<<<<<< HEAD
-	/* Initialize power management */
-	radeon_pm_init(rdev);
-
-	radeon_fbdev_init(rdev);
-	drm_kms_helper_poll_init(rdev->ddev);
-
-=======
 	/* setup afmt */
 	radeon_afmt_init(rdev);
 
@@ -2337,24 +1650,11 @@ int radeon_modeset_init(struct radeon_device *rdev)
 	/* do pm late init */
 	ret = radeon_pm_late_init(rdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 void radeon_modeset_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	radeon_fbdev_fini(rdev);
-	kfree(rdev->mode_info.bios_hardcoded_edid);
-	radeon_pm_fini(rdev);
-
-	if (rdev->mode_info.mode_config_initialized) {
-		drm_kms_helper_poll_fini(rdev->ddev);
-		radeon_hpd_fini(rdev);
-		drm_mode_config_cleanup(rdev->ddev);
-		rdev->mode_info.mode_config_initialized = false;
-	}
-=======
 	if (rdev->mode_info.mode_config_initialized) {
 		drm_kms_helper_poll_fini(rdev->ddev);
 		radeon_hpd_fini(rdev);
@@ -2366,16 +1666,11 @@ void radeon_modeset_fini(struct radeon_device *rdev)
 
 	kfree(rdev->mode_info.bios_hardcoded_edid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* free i2c buses */
 	radeon_i2c_fini(rdev);
 }
 
-<<<<<<< HEAD
-static bool is_hdtv_mode(struct drm_display_mode *mode)
-=======
 static bool is_hdtv_mode(const struct drm_display_mode *mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* try and guess if this is a tv or a monitor */
 	if ((mode->vdisplay == 480 && mode->hdisplay == 720) || /* 480p */
@@ -2388,11 +1683,7 @@ static bool is_hdtv_mode(const struct drm_display_mode *mode)
 }
 
 bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
-<<<<<<< HEAD
-				struct drm_display_mode *mode,
-=======
 				const struct drm_display_mode *mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct drm_display_mode *adjusted_mode)
 {
 	struct drm_device *dev = crtc->dev;
@@ -2401,10 +1692,6 @@ bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(crtc);
 	struct radeon_encoder *radeon_encoder;
 	struct drm_connector *connector;
-<<<<<<< HEAD
-	struct radeon_connector *radeon_connector;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool first = true;
 	u32 src_v = 1, dst_v = 1;
 	u32 src_h = 1, dst_h = 1;
@@ -2417,10 +1704,6 @@ bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
 			continue;
 		radeon_encoder = to_radeon_encoder(encoder);
 		connector = radeon_get_connector_for_encoder(encoder);
-<<<<<<< HEAD
-		radeon_connector = to_radeon_connector(connector);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (first) {
 			/* set scaling */
@@ -2445,11 +1728,7 @@ bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
 			    (!(mode->flags & DRM_MODE_FLAG_INTERLACE)) &&
 			    ((radeon_encoder->underscan_type == UNDERSCAN_ON) ||
 			     ((radeon_encoder->underscan_type == UNDERSCAN_AUTO) &&
-<<<<<<< HEAD
-			      drm_detect_hdmi_monitor(radeon_connector->edid) &&
-=======
 			      drm_detect_hdmi_monitor(radeon_connector_edid(connector)) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      is_hdtv_mode(mode)))) {
 				if (radeon_encoder->underscan_hborder != 0)
 					radeon_crtc->h_border = radeon_encoder->underscan_hborder;
@@ -2495,14 +1774,6 @@ bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
 }
 
 /*
-<<<<<<< HEAD
- * Retrieve current video scanout position of crtc on a given gpu.
- *
- * \param dev Device to query.
- * \param crtc Crtc to query.
- * \param *vpos Location where vertical scanout position should be stored.
- * \param *hpos Location where horizontal scanout position should go.
-=======
  * Retrieve current video scanout position of crtc on a given gpu, and
  * an optional accurate timestamp of when query happened.
  *
@@ -2524,7 +1795,6 @@ bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
  *               scanout position query. Can be NULL to skip timestamp.
  * \param *etime Target location for timestamp taken immediately after
  *               scanout position query. Can be NULL to skip timestamp.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns vpos as a positive number while in active scanout area.
  * Returns vpos as a negative number inside vblank, counting the number
@@ -2540,14 +1810,10 @@ bool radeon_crtc_scaling_mode_fixup(struct drm_crtc *crtc,
  * unknown small number of scanlines wrt. real scanout position.
  *
  */
-<<<<<<< HEAD
-int radeon_get_crtc_scanoutpos(struct drm_device *dev, int crtc, int *vpos, int *hpos)
-=======
 int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 			       unsigned int flags, int *vpos, int *hpos,
 			       ktime_t *stime, ktime_t *etime,
 			       const struct drm_display_mode *mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 stat_crtc = 0, vbl = 0, position = 0;
 	int vbl_start, vbl_end, vtotal, ret = 0;
@@ -2555,10 +1821,6 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 
 	struct radeon_device *rdev = dev->dev_private;
 
-<<<<<<< HEAD
-	if (ASIC_IS_DCE4(rdev)) {
-		if (crtc == 0) {
-=======
 	/* preempt_disable_rt() should go right here in PREEMPT_RT patchset. */
 
 	/* Get optional system timestamp before query. */
@@ -2567,62 +1829,41 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 
 	if (ASIC_IS_DCE4(rdev)) {
 		if (pipe == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(EVERGREEN_CRTC_V_BLANK_START_END +
 				     EVERGREEN_CRTC0_REGISTER_OFFSET);
 			position = RREG32(EVERGREEN_CRTC_STATUS_POSITION +
 					  EVERGREEN_CRTC0_REGISTER_OFFSET);
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
-<<<<<<< HEAD
-		if (crtc == 1) {
-=======
 		if (pipe == 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(EVERGREEN_CRTC_V_BLANK_START_END +
 				     EVERGREEN_CRTC1_REGISTER_OFFSET);
 			position = RREG32(EVERGREEN_CRTC_STATUS_POSITION +
 					  EVERGREEN_CRTC1_REGISTER_OFFSET);
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
-<<<<<<< HEAD
-		if (crtc == 2) {
-=======
 		if (pipe == 2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(EVERGREEN_CRTC_V_BLANK_START_END +
 				     EVERGREEN_CRTC2_REGISTER_OFFSET);
 			position = RREG32(EVERGREEN_CRTC_STATUS_POSITION +
 					  EVERGREEN_CRTC2_REGISTER_OFFSET);
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
-<<<<<<< HEAD
-		if (crtc == 3) {
-=======
 		if (pipe == 3) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(EVERGREEN_CRTC_V_BLANK_START_END +
 				     EVERGREEN_CRTC3_REGISTER_OFFSET);
 			position = RREG32(EVERGREEN_CRTC_STATUS_POSITION +
 					  EVERGREEN_CRTC3_REGISTER_OFFSET);
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
-<<<<<<< HEAD
-		if (crtc == 4) {
-=======
 		if (pipe == 4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(EVERGREEN_CRTC_V_BLANK_START_END +
 				     EVERGREEN_CRTC4_REGISTER_OFFSET);
 			position = RREG32(EVERGREEN_CRTC_STATUS_POSITION +
 					  EVERGREEN_CRTC4_REGISTER_OFFSET);
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
-<<<<<<< HEAD
-		if (crtc == 5) {
-=======
 		if (pipe == 5) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(EVERGREEN_CRTC_V_BLANK_START_END +
 				     EVERGREEN_CRTC5_REGISTER_OFFSET);
 			position = RREG32(EVERGREEN_CRTC_STATUS_POSITION +
@@ -2630,31 +1871,19 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
 	} else if (ASIC_IS_AVIVO(rdev)) {
-<<<<<<< HEAD
-		if (crtc == 0) {
-=======
 		if (pipe == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(AVIVO_D1CRTC_V_BLANK_START_END);
 			position = RREG32(AVIVO_D1CRTC_STATUS_POSITION);
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
-<<<<<<< HEAD
-		if (crtc == 1) {
-=======
 		if (pipe == 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = RREG32(AVIVO_D2CRTC_V_BLANK_START_END);
 			position = RREG32(AVIVO_D2CRTC_STATUS_POSITION);
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
 	} else {
 		/* Pre-AVIVO: Different encoding of scanout pos and vblank interval. */
-<<<<<<< HEAD
-		if (crtc == 0) {
-=======
 		if (pipe == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Assume vbl_end == 0, get vbl_start from
 			 * upper 16 bits.
 			 */
@@ -2668,11 +1897,7 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 
 			ret |= DRM_SCANOUTPOS_VALID;
 		}
-<<<<<<< HEAD
-		if (crtc == 1) {
-=======
 		if (pipe == 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbl = (RREG32(RADEON_CRTC2_V_TOTAL_DISP) &
 				RADEON_CRTC_V_DISP) >> RADEON_CRTC_V_DISP_SHIFT;
 			position = (RREG32(RADEON_CRTC2_VLINE_CRNT_VLINE) >> 16) & RADEON_CRTC_V_TOTAL;
@@ -2684,15 +1909,12 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	/* Get optional system timestamp after query. */
 	if (etime)
 		*etime = ktime_get();
 
 	/* preempt_enable_rt() should go right here in PREEMPT_RT patchset. */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Decode into vertical and horizontal scanout position. */
 	*vpos = position & 0x1fff;
 	*hpos = (position >> 16) & 0x1fff;
@@ -2706,12 +1928,6 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 	}
 	else {
 		/* No: Fake something reasonable which gives at least ok results. */
-<<<<<<< HEAD
-		vbl_start = rdev->mode_info.crtcs[crtc]->base.hwmode.crtc_vdisplay;
-		vbl_end = 0;
-	}
-
-=======
 		vbl_start = mode->crtc_vdisplay;
 		vbl_end = 0;
 	}
@@ -2735,13 +1951,10 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 	if (!(flags & USE_REAL_VBLANKSTART))
 		vbl_start -= rdev->mode_info.crtcs[pipe]->lb_vblank_lead_lines;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Test scanout position against vblank region. */
 	if ((*vpos < vbl_start) && (*vpos >= vbl_end))
 		in_vbl = false;
 
-<<<<<<< HEAD
-=======
 	/* In vblank? */
 	if (in_vbl)
 	    ret |= DRM_SCANOUTPOS_IN_VBLANK;
@@ -2753,7 +1966,6 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 		return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check if inside vblank area and apply corrective offsets:
 	 * vpos will then be >=0 in video scanout area, but negative
 	 * within vblank area, counting down the number of lines until
@@ -2762,25 +1974,13 @@ int radeon_get_crtc_scanoutpos(struct drm_device *dev, unsigned int pipe,
 
 	/* Inside "upper part" of vblank area? Apply corrective offset if so: */
 	if (in_vbl && (*vpos >= vbl_start)) {
-<<<<<<< HEAD
-		vtotal = rdev->mode_info.crtcs[crtc]->base.hwmode.crtc_vtotal;
-=======
 		vtotal = mode->crtc_vtotal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*vpos = *vpos - vtotal;
 	}
 
 	/* Correct for shifted end of vbl at vbl_end. */
 	*vpos = *vpos - vbl_end;
 
-<<<<<<< HEAD
-	/* In vblank? */
-	if (in_vbl)
-		ret |= DRM_SCANOUTPOS_INVBL;
-
-	return ret;
-}
-=======
 	return ret;
 }
 
@@ -2796,4 +1996,3 @@ radeon_get_crtc_scanout_position(struct drm_crtc *crtc,
 	return radeon_get_crtc_scanoutpos(dev, pipe, 0, vpos, hpos,
 					  stime, etime, mode);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

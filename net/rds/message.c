@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2020 Oracle and/or its affiliates.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -37,12 +33,9 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/skbuff.h>
 #include <linux/list.h>
 #include <linux/errqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "rds.h"
 
@@ -51,18 +44,6 @@ static unsigned int	rds_exthdr_size[__RDS_EXTHDR_MAX] = {
 [RDS_EXTHDR_VERSION]	= sizeof(struct rds_ext_header_version),
 [RDS_EXTHDR_RDMA]	= sizeof(struct rds_ext_header_rdma),
 [RDS_EXTHDR_RDMA_DEST]	= sizeof(struct rds_ext_header_rdma_dest),
-<<<<<<< HEAD
-};
-
-
-void rds_message_addref(struct rds_message *rm)
-{
-	rdsdebug("addref rm %p ref %d\n", rm, atomic_read(&rm->m_refcount));
-	atomic_inc(&rm->m_refcount);
-}
-EXPORT_SYMBOL_GPL(rds_message_addref);
-
-=======
 [RDS_EXTHDR_NPATHS]	= sizeof(u16),
 [RDS_EXTHDR_GEN_NUM]	= sizeof(u32),
 };
@@ -143,28 +124,17 @@ static void rds_rm_zerocopy_callback(struct rds_sock *rs,
 	/* caller invokes rds_wake_sk_sleep() */
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This relies on dma_map_sg() not touching sg[].page during merging.
  */
 static void rds_message_purge(struct rds_message *rm)
 {
-<<<<<<< HEAD
-	unsigned long i;
-=======
 	unsigned long i, flags;
 	bool zcopy = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(test_bit(RDS_MSG_PAGEVEC, &rm->m_flags)))
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < rm->data.op_nents; i++) {
-		rdsdebug("putting data page %p\n", (void *)sg_page(&rm->data.op_sg[i]));
-		/* XXX will have to put_page for page refs */
-		__free_page(sg_page(&rm->data.op_sg[i]));
-=======
 	spin_lock_irqsave(&rm->m_rs_lock, flags);
 	if (rm->m_rs) {
 		struct rds_sock *rs = rm->m_rs;
@@ -186,43 +156,25 @@ static void rds_message_purge(struct rds_message *rm)
 			__free_page(sg_page(&rm->data.op_sg[i]));
 		else
 			put_page(sg_page(&rm->data.op_sg[i]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	rm->data.op_nents = 0;
 
 	if (rm->rdma.op_active)
 		rds_rdma_free_op(&rm->rdma);
 	if (rm->rdma.op_rdma_mr)
-<<<<<<< HEAD
-		rds_mr_put(rm->rdma.op_rdma_mr);
-=======
 		kref_put(&rm->rdma.op_rdma_mr->r_kref, __rds_put_mr_final);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rm->atomic.op_active)
 		rds_atomic_free_op(&rm->atomic);
 	if (rm->atomic.op_rdma_mr)
-<<<<<<< HEAD
-		rds_mr_put(rm->atomic.op_rdma_mr);
-=======
 		kref_put(&rm->atomic.op_rdma_mr->r_kref, __rds_put_mr_final);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rds_message_put(struct rds_message *rm)
 {
-<<<<<<< HEAD
-	rdsdebug("put rm %p ref %d\n", rm, atomic_read(&rm->m_refcount));
-	if (atomic_read(&rm->m_refcount) == 0) {
-printk(KERN_CRIT "danger refcount zero on %p\n", rm);
-WARN_ON(1);
-	}
-	if (atomic_dec_and_test(&rm->m_refcount)) {
-=======
 	rdsdebug("put rm %p ref %d\n", rm, refcount_read(&rm->m_refcount));
 	WARN(!refcount_read(&rm->m_refcount), "danger refcount zero on %p\n", rm);
 	if (refcount_dec_and_test(&rm->m_refcount)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!list_empty(&rm->m_sock_item));
 		BUG_ON(!list_empty(&rm->m_conn_item));
 		rds_message_purge(rm);
@@ -343,11 +295,7 @@ struct rds_message *rds_message_alloc(unsigned int extra_len, gfp_t gfp)
 	rm->m_used_sgs = 0;
 	rm->m_total_sgs = extra_len / sizeof(struct scatterlist);
 
-<<<<<<< HEAD
-	atomic_set(&rm->m_refcount, 1);
-=======
 	refcount_set(&rm->m_refcount, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&rm->m_sock_item);
 	INIT_LIST_HEAD(&rm->m_conn_item);
 	spin_lock_init(&rm->m_rs_lock);
@@ -365,13 +313,6 @@ struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents)
 	struct scatterlist *sg_first = (struct scatterlist *) &rm[1];
 	struct scatterlist *sg_ret;
 
-<<<<<<< HEAD
-	WARN_ON(rm->m_used_sgs + nents > rm->m_total_sgs);
-	WARN_ON(!nents);
-
-	if (rm->m_used_sgs + nents > rm->m_total_sgs)
-		return NULL;
-=======
 	if (nents <= 0) {
 		pr_warn("rds: alloc sgs failed! nents <= 0\n");
 		return ERR_PTR(-EINVAL);
@@ -382,7 +323,6 @@ struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents)
 			rm->m_total_sgs, rm->m_used_sgs, nents);
 		return ERR_PTR(-ENOMEM);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg_ret = &sg_first[rm->m_used_sgs];
 	sg_init_table(sg_ret, nents);
@@ -395,11 +335,7 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
 {
 	struct rds_message *rm;
 	unsigned int i;
-<<<<<<< HEAD
-	int num_sgs = ceil(total_len, PAGE_SIZE);
-=======
 	int num_sgs = DIV_ROUND_UP(total_len, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int extra_bytes = num_sgs * sizeof(struct scatterlist);
 
 	rm = rds_message_alloc(extra_bytes, GFP_NOWAIT);
@@ -408,48 +344,23 @@ struct rds_message *rds_message_map_pages(unsigned long *page_addrs, unsigned in
 
 	set_bit(RDS_MSG_PAGEVEC, &rm->m_flags);
 	rm->m_inc.i_hdr.h_len = cpu_to_be32(total_len);
-<<<<<<< HEAD
-	rm->data.op_nents = ceil(total_len, PAGE_SIZE);
-	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
-	if (!rm->data.op_sg) {
-		rds_message_put(rm);
-		return ERR_PTR(-ENOMEM);
-=======
 	rm->data.op_nents = DIV_ROUND_UP(total_len, PAGE_SIZE);
 	rm->data.op_sg = rds_message_alloc_sgs(rm, num_sgs);
 	if (IS_ERR(rm->data.op_sg)) {
 		void *err = ERR_CAST(rm->data.op_sg);
 		rds_message_put(rm);
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < rm->data.op_nents; ++i) {
 		sg_set_page(&rm->data.op_sg[i],
-<<<<<<< HEAD
-				virt_to_page(page_addrs[i]),
-=======
 				virt_to_page((void *)page_addrs[i]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PAGE_SIZE, 0);
 	}
 
 	return rm;
 }
 
-<<<<<<< HEAD
-int rds_message_copy_from_user(struct rds_message *rm, struct iovec *first_iov,
-					       size_t total_len)
-{
-	unsigned long to_copy;
-	unsigned long iov_off;
-	unsigned long sg_off;
-	struct iovec *iov;
-	struct scatterlist *sg;
-	int ret = 0;
-
-	rm->m_inc.i_hdr.h_len = cpu_to_be32(total_len);
-=======
 static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *from)
 {
 	struct scatterlist *sg;
@@ -458,24 +369,11 @@ static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *
 	struct rds_msg_zcopy_info *info;
 
 	rm->m_inc.i_hdr.h_len = cpu_to_be32(iov_iter_count(from));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * now allocate and copy in the data payload.
 	 */
 	sg = rm->data.op_sg;
-<<<<<<< HEAD
-	iov = first_iov;
-	iov_off = 0;
-	sg_off = 0; /* Dear gcc, sg->page will be null from kzalloc. */
-
-	while (total_len) {
-		if (!sg_page(sg)) {
-			ret = rds_page_remainder_alloc(sg, total_len,
-						       GFP_HIGHUSER);
-			if (ret)
-				goto out;
-=======
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (!info)
@@ -541,34 +439,10 @@ int rds_message_copy_from_user(struct rds_message *rm, struct iov_iter *from,
 						       GFP_HIGHUSER);
 			if (ret)
 				return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rm->data.op_nents++;
 			sg_off = 0;
 		}
 
-<<<<<<< HEAD
-		while (iov_off == iov->iov_len) {
-			iov_off = 0;
-			iov++;
-		}
-
-		to_copy = min(iov->iov_len - iov_off, sg->length - sg_off);
-		to_copy = min_t(size_t, to_copy, total_len);
-
-		rdsdebug("copying %lu bytes from user iov [%p, %zu] + %lu to "
-			 "sg [%p, %u, %u] + %lu\n",
-			 to_copy, iov->iov_base, iov->iov_len, iov_off,
-			 (void *)sg_page(sg), sg->offset, sg->length, sg_off);
-
-		ret = rds_page_copy_from_user(sg_page(sg), sg->offset + sg_off,
-					      iov->iov_base + iov_off,
-					      to_copy);
-		if (ret)
-			goto out;
-
-		iov_off += to_copy;
-		total_len -= to_copy;
-=======
 		to_copy = min_t(unsigned long, iov_iter_count(from),
 				sg->length - sg_off);
 
@@ -578,27 +452,12 @@ int rds_message_copy_from_user(struct rds_message *rm, struct iov_iter *from,
 		if (nbytes != to_copy)
 			return -EFAULT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sg_off += to_copy;
 
 		if (sg_off == sg->length)
 			sg++;
 	}
 
-<<<<<<< HEAD
-out:
-	return ret;
-}
-
-int rds_message_inc_copy_to_user(struct rds_incoming *inc,
-				 struct iovec *first_iov, size_t size)
-{
-	struct rds_message *rm;
-	struct iovec *iov;
-	struct scatterlist *sg;
-	unsigned long to_copy;
-	unsigned long iov_off;
-=======
 	return ret;
 }
 
@@ -607,7 +466,6 @@ int rds_message_inc_copy_to_user(struct rds_incoming *inc, struct iov_iter *to)
 	struct rds_message *rm;
 	struct scatterlist *sg;
 	unsigned long to_copy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long vec_off;
 	int copied;
 	int ret;
@@ -616,41 +474,10 @@ int rds_message_inc_copy_to_user(struct rds_incoming *inc, struct iov_iter *to)
 	rm = container_of(inc, struct rds_message, m_inc);
 	len = be32_to_cpu(rm->m_inc.i_hdr.h_len);
 
-<<<<<<< HEAD
-	iov = first_iov;
-	iov_off = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg = rm->data.op_sg;
 	vec_off = 0;
 	copied = 0;
 
-<<<<<<< HEAD
-	while (copied < size && copied < len) {
-		while (iov_off == iov->iov_len) {
-			iov_off = 0;
-			iov++;
-		}
-
-		to_copy = min(iov->iov_len - iov_off, sg->length - vec_off);
-		to_copy = min_t(size_t, to_copy, size - copied);
-		to_copy = min_t(unsigned long, to_copy, len - copied);
-
-		rdsdebug("copying %lu bytes to user iov [%p, %zu] + %lu to "
-			 "sg [%p, %u, %u] + %lu\n",
-			 to_copy, iov->iov_base, iov->iov_len, iov_off,
-			 sg_page(sg), sg->offset, sg->length, vec_off);
-
-		ret = rds_page_copy_to_user(sg_page(sg), sg->offset + vec_off,
-					    iov->iov_base + iov_off,
-					    to_copy);
-		if (ret) {
-			copied = ret;
-			break;
-		}
-
-		iov_off += to_copy;
-=======
 	while (iov_iter_count(to) && copied < len) {
 		to_copy = min_t(unsigned long, iov_iter_count(to),
 				sg->length - vec_off);
@@ -662,7 +489,6 @@ int rds_message_inc_copy_to_user(struct rds_incoming *inc, struct iov_iter *to)
 		if (ret != to_copy)
 			return -EFAULT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vec_off += to_copy;
 		copied += to_copy;
 
@@ -691,7 +517,3 @@ void rds_message_unmapped(struct rds_message *rm)
 	wake_up_interruptible(&rm->m_flush_wait);
 }
 EXPORT_SYMBOL_GPL(rds_message_unmapped);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

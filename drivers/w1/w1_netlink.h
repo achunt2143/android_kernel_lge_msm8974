@@ -1,28 +1,6 @@
-<<<<<<< HEAD
-/*
- * w1_netlink.h
- *
- * Copyright (c) 2003 Evgeniy Polyakov <zbr@ioremap.net>
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (c) 2003 Evgeniy Polyakov <zbr@ioremap.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __W1_NETLINK_H
@@ -31,10 +9,6 @@
 #include <asm/types.h>
 #include <linux/connector.h>
 
-<<<<<<< HEAD
-#include "w1.h"
-
-=======
 #include "w1_internal.h"
 
 /**
@@ -60,7 +34,6 @@ enum w1_cn_msg_flags {
  * operation
  * @W1_LIST_MASTERS: used to determine the bus master identifiers
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum w1_netlink_message_types {
 	W1_SLAVE_ADD = 0,
 	W1_SLAVE_REMOVE,
@@ -71,8 +44,6 @@ enum w1_netlink_message_types {
 	W1_LIST_MASTERS,
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct w1_netlink_msg - holds w1 message type, id, and result
  *
@@ -90,7 +61,6 @@ enum w1_netlink_message_types {
  * The netlink connector data sequence is, struct nlmsghdr, struct cn_msg,
  * then one or more struct w1_netlink_msg (each with optional data).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct w1_netlink_msg
 {
 	__u8				type;
@@ -103,11 +73,6 @@ struct w1_netlink_msg
 			__u32		res;
 		} mst;
 	} id;
-<<<<<<< HEAD
-	__u8				data[0];
-};
-
-=======
 	__u8				data[];
 };
 
@@ -128,7 +93,6 @@ struct w1_netlink_msg
  * @W1_CMD_LIST_SLAVES: list of slaves registered on this master
  * @W1_CMD_MAX: number of available commands
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum w1_commands {
 	W1_CMD_READ = 0,
 	W1_CMD_WRITE,
@@ -136,11 +100,6 @@ enum w1_commands {
 	W1_CMD_ALARM_SEARCH,
 	W1_CMD_TOUCH,
 	W1_CMD_RESET,
-<<<<<<< HEAD
-	W1_CMD_MAX,
-};
-
-=======
 	W1_CMD_SLAVE_ADD,
 	W1_CMD_SLAVE_REMOVE,
 	W1_CMD_LIST_SLAVES,
@@ -158,17 +117,12 @@ enum w1_commands {
  * One or more struct w1_netlink_cmd is placed starting at w1_netlink_msg.data
  * each with optional data.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct w1_netlink_cmd
 {
 	__u8				cmd;
 	__u8				res;
 	__u16				len;
-<<<<<<< HEAD
-	__u8				data[0];
-=======
 	__u8				data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef __KERNEL__

@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/flush.c
  *
  *  Copyright (C) 1995-2002 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/mm.h>
@@ -24,11 +14,6 @@
 #include <asm/highmem.h>
 #include <asm/smp_plat.h>
 #include <asm/tlbflush.h>
-<<<<<<< HEAD
-
-#include "mm.h"
-
-=======
 #include <linux/hugetlb.h>
 
 #include "mm.h"
@@ -48,7 +33,6 @@ void arm_heavy_mb(void)
 EXPORT_SYMBOL(arm_heavy_mb);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_CACHE_VIPT
 
 static void flush_pfn_alias(unsigned long pfn, unsigned long vaddr)
@@ -61,11 +45,7 @@ static void flush_pfn_alias(unsigned long pfn, unsigned long vaddr)
 	asm(	"mcrr	p15, 0, %1, %0, c14\n"
 	"	mcr	p15, 0, %2, c7, c10, 4"
 	    :
-<<<<<<< HEAD
-	    : "r" (to), "r" (to + PAGE_SIZE - L1_CACHE_BYTES), "r" (zero)
-=======
 	    : "r" (to), "r" (to + PAGE_SIZE - 1), "r" (zero)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    : "cc");
 }
 
@@ -115,17 +95,10 @@ void flush_cache_range(struct vm_area_struct *vma, unsigned long start, unsigned
 		__flush_icache_all();
 }
 
-<<<<<<< HEAD
-void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr, unsigned long pfn)
-{
-	if (cache_is_vivt()) {
-		vivt_flush_cache_page(vma, user_addr, pfn);
-=======
 void flush_cache_pages(struct vm_area_struct *vma, unsigned long user_addr, unsigned long pfn, unsigned int nr)
 {
 	if (cache_is_vivt()) {
 		vivt_flush_cache_pages(vma, user_addr, pfn, nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -143,32 +116,20 @@ void flush_cache_pages(struct vm_area_struct *vma, unsigned long user_addr, unsi
 #define flush_icache_alias(pfn,vaddr,len)	do { } while (0)
 #endif
 
-<<<<<<< HEAD
-=======
 #define FLAG_PA_IS_EXEC 1
 #define FLAG_PA_CORE_IN_MM 2
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void flush_ptrace_access_other(void *args)
 {
 	__flush_icache_all();
 }
 
-<<<<<<< HEAD
-static
-void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
-			 unsigned long uaddr, void *kaddr, unsigned long len)
-{
-	if (cache_is_vivt()) {
-		if (cpumask_test_cpu(smp_processor_id(), mm_cpumask(vma->vm_mm))) {
-=======
 static inline
 void __flush_ptrace_access(struct page *page, unsigned long uaddr, void *kaddr,
 			   unsigned long len, unsigned int flags)
 {
 	if (cache_is_vivt()) {
 		if (flags & FLAG_PA_CORE_IN_MM) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long addr = (unsigned long)kaddr;
 			__cpuc_coherent_kern_range(addr, addr + len);
 		}
@@ -182,11 +143,7 @@ void __flush_ptrace_access(struct page *page, unsigned long uaddr, void *kaddr,
 	}
 
 	/* VIPT non-aliasing D-cache */
-<<<<<<< HEAD
-	if (vma->vm_flags & VM_EXEC) {
-=======
 	if (flags & FLAG_PA_IS_EXEC) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long addr = (unsigned long)kaddr;
 		if (icache_is_vipt_aliasing())
 			flush_icache_alias(page_to_pfn(page), uaddr, len);
@@ -198,8 +155,6 @@ void __flush_ptrace_access(struct page *page, unsigned long uaddr, void *kaddr,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static
 void flush_ptrace_access(struct vm_area_struct *vma, struct page *page,
 			 unsigned long uaddr, void *kaddr, unsigned long len)
@@ -220,7 +175,6 @@ void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
 	__flush_ptrace_access(page, uaddr, kaddr, len, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copy user data from/to a page which is mapped into a different
  * processes address space.  Really, we want to allow our "user
@@ -242,33 +196,13 @@ void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 #endif
 }
 
-<<<<<<< HEAD
-void __flush_dcache_page(struct address_space *mapping, struct page *page)
-=======
 void __flush_dcache_folio(struct address_space *mapping, struct folio *folio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Writeback any data associated with the kernel mapping of this
 	 * page.  This ensures that data in the physical page is mutually
 	 * coherent with the kernels mapping.
 	 */
-<<<<<<< HEAD
-	if (!PageHighMem(page)) {
-		__cpuc_flush_dcache_area(page_address(page), PAGE_SIZE);
-	} else {
-		void *addr;
-
-		if (cache_is_vipt_nonaliasing()) {
-			addr = kmap_atomic(page);
-			__cpuc_flush_dcache_area(addr, PAGE_SIZE);
-			kunmap_atomic(addr);
-		} else {
-			addr = kmap_high_get(page);
-			if (addr) {
-				__cpuc_flush_dcache_area(addr, PAGE_SIZE);
-				kunmap_high(page);
-=======
 	if (!folio_test_highmem(folio)) {
 		__cpuc_flush_dcache_area(folio_address(folio),
 					folio_size(folio));
@@ -288,7 +222,6 @@ void __flush_dcache_folio(struct address_space *mapping, struct folio *folio)
 					__cpuc_flush_dcache_area(addr, PAGE_SIZE);
 					kunmap_high(folio_page(folio, i));
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -299,18 +232,6 @@ void __flush_dcache_folio(struct address_space *mapping, struct folio *folio)
 	 * userspace colour, which is congruent with page->index.
 	 */
 	if (mapping && cache_is_vipt_aliasing())
-<<<<<<< HEAD
-		flush_pfn_alias(page_to_pfn(page),
-				page->index << PAGE_CACHE_SHIFT);
-}
-
-static void __flush_dcache_aliases(struct address_space *mapping, struct page *page)
-{
-	struct mm_struct *mm = current->active_mm;
-	struct vm_area_struct *mpnt;
-	struct prio_tree_iter iter;
-	pgoff_t pgoff;
-=======
 		flush_pfn_alias(folio_pfn(folio), folio_pos(folio));
 }
 
@@ -319,7 +240,6 @@ static void __flush_dcache_aliases(struct address_space *mapping, struct folio *
 	struct mm_struct *mm = current->active_mm;
 	struct vm_area_struct *vma;
 	pgoff_t pgoff, pgoff_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * There are possible user space mappings of this page:
@@ -327,13 +247,6 @@ static void __flush_dcache_aliases(struct address_space *mapping, struct folio *
 	 *   data in the current VM view associated with this page.
 	 * - aliasing VIPT: we only need to find one mapping of this page.
 	 */
-<<<<<<< HEAD
-	pgoff = page->index << (PAGE_CACHE_SHIFT - PAGE_SHIFT);
-
-	flush_dcache_mmap_lock(mapping);
-	vma_prio_tree_foreach(mpnt, &iter, &mapping->i_mmap, pgoff, pgoff) {
-		unsigned long offset;
-=======
 	pgoff = folio->index;
 	pgoff_end = pgoff + folio_nr_pages(folio) - 1;
 
@@ -341,19 +254,10 @@ static void __flush_dcache_aliases(struct address_space *mapping, struct folio *
 	vma_interval_tree_foreach(vma, &mapping->i_mmap, pgoff, pgoff_end) {
 		unsigned long start, offset, pfn;
 		unsigned int nr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * If this VMA is not in our MM, we can ignore it.
 		 */
-<<<<<<< HEAD
-		if (mpnt->vm_mm != mm)
-			continue;
-		if (!(mpnt->vm_flags & VM_MAYSHARE))
-			continue;
-		offset = (pgoff - mpnt->vm_pgoff) << PAGE_SHIFT;
-		flush_cache_page(mpnt, mpnt->vm_start + offset, page_to_pfn(page));
-=======
 		if (vma->vm_mm != mm)
 			continue;
 		if (!(vma->vm_flags & VM_MAYSHARE))
@@ -373,7 +277,6 @@ static void __flush_dcache_aliases(struct address_space *mapping, struct folio *
 			nr = (vma->vm_end - start) / PAGE_SIZE;
 
 		flush_cache_pages(vma, start, pfn, nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	flush_dcache_mmap_unlock(mapping);
 }
@@ -382,11 +285,7 @@ static void __flush_dcache_aliases(struct address_space *mapping, struct folio *
 void __sync_icache_dcache(pte_t pteval)
 {
 	unsigned long pfn;
-<<<<<<< HEAD
-	struct page *page;
-=======
 	struct folio *folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct address_space *mapping;
 
 	if (cache_is_vipt_nonaliasing() && !pte_exec(pteval))
@@ -396,16 +295,6 @@ void __sync_icache_dcache(pte_t pteval)
 	if (!pfn_valid(pfn))
 		return;
 
-<<<<<<< HEAD
-	page = pfn_to_page(pfn);
-	if (cache_is_vipt_aliasing())
-		mapping = page_mapping(page);
-	else
-		mapping = NULL;
-
-	if (!test_and_set_bit(PG_dcache_clean, &page->flags))
-		__flush_dcache_page(mapping, page);
-=======
 	folio = page_folio(pfn_to_page(pfn));
 	if (folio_test_reserved(folio))
 		return;
@@ -417,7 +306,6 @@ void __sync_icache_dcache(pte_t pteval)
 
 	if (!test_and_set_bit(PG_dcache_clean, &folio->flags))
 		__flush_dcache_folio(mapping, folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pte_exec(pteval))
 		__flush_icache_all();
@@ -443,11 +331,7 @@ void __sync_icache_dcache(pte_t pteval)
  * Note that we disable the lazy flush for SMP configurations where
  * the cache maintenance operations are not automatically broadcasted.
  */
-<<<<<<< HEAD
-void flush_dcache_page(struct page *page)
-=======
 void flush_dcache_folio(struct folio *folio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct address_space *mapping;
 
@@ -455,60 +339,6 @@ void flush_dcache_folio(struct folio *folio)
 	 * The zero page is never written to, so never has any dirty
 	 * cache lines, and therefore never needs to be flushed.
 	 */
-<<<<<<< HEAD
-	if (page == ZERO_PAGE(0))
-		return;
-
-	mapping = page_mapping(page);
-
-	if (!cache_ops_need_broadcast() &&
-	    mapping && !mapping_mapped(mapping))
-		clear_bit(PG_dcache_clean, &page->flags);
-	else {
-		__flush_dcache_page(mapping, page);
-		if (mapping && cache_is_vivt())
-			__flush_dcache_aliases(mapping, page);
-		else if (mapping)
-			__flush_icache_all();
-		set_bit(PG_dcache_clean, &page->flags);
-	}
-}
-EXPORT_SYMBOL(flush_dcache_page);
-
-/*
- * Ensure cache coherency for the kernel mapping of this page. We can
- * assume that the page is pinned via kmap.
- *
- * If the page only exists in the page cache and there are no user
- * space mappings, this is a no-op since the page was already marked
- * dirty at creation.  Otherwise, we need to flush the dirty kernel
- * cache lines directly.
- */
-void flush_kernel_dcache_page(struct page *page)
-{
-	if (cache_is_vivt() || cache_is_vipt_aliasing()) {
-		struct address_space *mapping;
-
-		mapping = page_mapping(page);
-
-		if (!mapping || mapping_mapped(mapping)) {
-			void *addr;
-
-			addr = page_address(page);
-			/*
-			 * kmap_atomic() doesn't set the page virtual
-			 * address for highmem pages, and
-			 * kunmap_atomic() takes care of cache
-			 * flushing already.
-			 */
-			if (!IS_ENABLED(CONFIG_HIGHMEM) || addr)
-				__cpuc_flush_dcache_area(addr, PAGE_SIZE);
-		}
-	}
-}
-EXPORT_SYMBOL(flush_kernel_dcache_page);
-
-=======
 	if (is_zero_pfn(folio_pfn(folio)))
 		return;
 
@@ -539,7 +369,6 @@ void flush_dcache_page(struct page *page)
 	flush_dcache_folio(page_folio(page));
 }
 EXPORT_SYMBOL(flush_dcache_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Flush an anonymous page so that users of get_user_pages()
  * can safely access the data.  The expected sequence is:
@@ -549,10 +378,7 @@ EXPORT_SYMBOL(flush_dcache_page);
  *  memcpy() to/from page
  *  if written to page, flush_dcache_page()
  */
-<<<<<<< HEAD
-=======
 void __flush_anon_page(struct vm_area_struct *vma, struct page *page, unsigned long vmaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __flush_anon_page(struct vm_area_struct *vma, struct page *page, unsigned long vmaddr)
 {
 	unsigned long pfn;

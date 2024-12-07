@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 #include <linux/seq_file.h>
 #include <linux/uaccess.h>
 #include <linux/proc_fs.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ctype.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -50,11 +43,7 @@ mtrr_file_add(unsigned long base, unsigned long size,
 
 	max = num_var_ranges;
 	if (fcount == NULL) {
-<<<<<<< HEAD
-		fcount = kzalloc(max * sizeof *fcount, GFP_KERNEL);
-=======
 		fcount = kcalloc(max, sizeof(*fcount), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!fcount)
 			return -ENOMEM;
 		FILE_FCOUNT(file) = fcount;
@@ -112,31 +101,12 @@ mtrr_write(struct file *file, const char __user *buf, size_t len, loff_t * ppos)
 	int length;
 	size_t linelen;
 
-<<<<<<< HEAD
-	if (!capable(CAP_SYS_ADMIN))
-		return -EPERM;
-
-	memset(line, 0, LINE_SIZE);
-
-	length = len;
-	length--;
-
-	if (length > LINE_SIZE - 1)
-		length = LINE_SIZE - 1;
-
-	if (length < 0)
-		return -EINVAL;
-
-	if (copy_from_user(line, buf, length))
-		return -EFAULT;
-=======
 	memset(line, 0, LINE_SIZE);
 
 	len = min_t(size_t, len, LINE_SIZE - 1);
 	length = strncpy_from_user(line, buf, len);
 	if (length < 0)
 		return length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	linelen = strlen(line);
 	ptr = line + linelen - 1;
@@ -169,19 +139,6 @@ mtrr_write(struct file *file, const char __user *buf, size_t len, loff_t * ppos)
 		return -EINVAL;
 	ptr = skip_spaces(ptr + 5);
 
-<<<<<<< HEAD
-	for (i = 0; i < MTRR_NUM_TYPES; ++i) {
-		if (strcmp(ptr, mtrr_strings[i]))
-			continue;
-		base >>= PAGE_SHIFT;
-		size >>= PAGE_SHIFT;
-		err = mtrr_add_page((unsigned long)base, (unsigned long)size, i, true);
-		if (err < 0)
-			return err;
-		return len;
-	}
-	return -EINVAL;
-=======
 	i = match_string(mtrr_strings, MTRR_NUM_TYPES, ptr);
 	if (i < 0)
 		return i;
@@ -192,7 +149,6 @@ mtrr_write(struct file *file, const char __user *buf, size_t len, loff_t * ppos)
 	if (err < 0)
 		return err;
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long
@@ -206,11 +162,8 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 	struct mtrr_gentry gentry;
 	void __user *arg = (void __user *) __arg;
 
-<<<<<<< HEAD
-=======
 	memset(&gentry, 0, sizeof(gentry));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case MTRRIOC_ADD_ENTRY:
 	case MTRRIOC_SET_ENTRY:
@@ -220,20 +173,12 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 	case MTRRIOC_SET_PAGE_ENTRY:
 	case MTRRIOC_DEL_PAGE_ENTRY:
 	case MTRRIOC_KILL_PAGE_ENTRY:
-<<<<<<< HEAD
-		if (copy_from_user(&sentry, arg, sizeof sentry))
-=======
 		if (copy_from_user(&sentry, arg, sizeof(sentry)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		break;
 	case MTRRIOC_GET_ENTRY:
 	case MTRRIOC_GET_PAGE_ENTRY:
-<<<<<<< HEAD
-		if (copy_from_user(&gentry, arg, sizeof gentry))
-=======
 		if (copy_from_user(&gentry, arg, sizeof(gentry)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		break;
 #ifdef CONFIG_COMPAT
@@ -278,11 +223,6 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_ADD_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err =
 		    mtrr_file_add(sentry.base, sentry.size, sentry.type, true,
 				  file, 0);
@@ -291,33 +231,18 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_SET_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = mtrr_add(sentry.base, sentry.size, sentry.type, false);
 		break;
 	case MTRRIOC_DEL_ENTRY:
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_DEL_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = mtrr_file_del(sentry.base, sentry.size, file, 0);
 		break;
 	case MTRRIOC_KILL_ENTRY:
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_KILL_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = mtrr_del(-1, sentry.base, sentry.size);
 		break;
 	case MTRRIOC_GET_ENTRY:
@@ -343,11 +268,6 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_ADD_PAGE_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err =
 		    mtrr_file_add(sentry.base, sentry.size, sentry.type, true,
 				  file, 1);
@@ -356,11 +276,6 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_SET_PAGE_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err =
 		    mtrr_add_page(sentry.base, sentry.size, sentry.type, false);
 		break;
@@ -368,22 +283,12 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_DEL_PAGE_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = mtrr_file_del(sentry.base, sentry.size, file, 1);
 		break;
 	case MTRRIOC_KILL_PAGE_ENTRY:
 #ifdef CONFIG_COMPAT
 	case MTRRIOC32_KILL_PAGE_ENTRY:
 #endif
-<<<<<<< HEAD
-		if (!capable(CAP_SYS_ADMIN))
-			return -EPERM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = mtrr_del_page(-1, sentry.base, sentry.size);
 		break;
 	case MTRRIOC_GET_PAGE_ENTRY:
@@ -410,11 +315,7 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 	switch (cmd) {
 	case MTRRIOC_GET_ENTRY:
 	case MTRRIOC_GET_PAGE_ENTRY:
-<<<<<<< HEAD
-		if (copy_to_user(arg, &gentry, sizeof gentry))
-=======
 		if (copy_to_user(arg, &gentry, sizeof(gentry)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EFAULT;
 		break;
 #ifdef CONFIG_COMPAT
@@ -453,38 +354,6 @@ static int mtrr_close(struct inode *ino, struct file *file)
 	return single_release(ino, file);
 }
 
-<<<<<<< HEAD
-static int mtrr_seq_show(struct seq_file *seq, void *offset);
-
-static int mtrr_open(struct inode *inode, struct file *file)
-{
-	if (!mtrr_if)
-		return -EIO;
-	if (!mtrr_if->get)
-		return -ENXIO;
-	return single_open(file, mtrr_seq_show, NULL);
-}
-
-static const struct file_operations mtrr_fops = {
-	.owner			= THIS_MODULE,
-	.open			= mtrr_open,
-	.read			= seq_read,
-	.llseek			= seq_lseek,
-	.write			= mtrr_write,
-	.unlocked_ioctl		= mtrr_ioctl,
-	.compat_ioctl		= mtrr_ioctl,
-	.release		= mtrr_close,
-};
-
-static int mtrr_seq_show(struct seq_file *seq, void *offset)
-{
-	char factor;
-	int i, max, len;
-	mtrr_type type;
-	unsigned long base, size;
-
-	len = 0;
-=======
 static int mtrr_seq_show(struct seq_file *seq, void *offset)
 {
 	char factor;
@@ -492,7 +361,6 @@ static int mtrr_seq_show(struct seq_file *seq, void *offset)
 	mtrr_type type;
 	unsigned long base, size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max = num_var_ranges;
 	for (i = 0; i < max; i++) {
 		mtrr_if->get(i, &base, &size, &type);
@@ -509,24 +377,14 @@ static int mtrr_seq_show(struct seq_file *seq, void *offset)
 			size >>= 20 - PAGE_SHIFT;
 		}
 		/* Base can be > 32bit */
-<<<<<<< HEAD
-		len += seq_printf(seq, "reg%02i: base=0x%06lx000 "
-			"(%5luMB), size=%5lu%cB, count=%d: %s\n",
-			i, base, base >> (20 - PAGE_SHIFT), size,
-			factor, mtrr_usage_table[i],
-			mtrr_attrib_to_str(type));
-=======
 		seq_printf(seq, "reg%02i: base=0x%06lx000 (%5luMB), size=%5lu%cB, count=%d: %s\n",
 			   i, base, base >> (20 - PAGE_SHIFT),
 			   size, factor,
 			   mtrr_usage_table[i], mtrr_attrib_to_str(type));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int mtrr_open(struct inode *inode, struct file *file)
 {
 	if (!mtrr_if)
@@ -550,7 +408,6 @@ static const struct proc_ops mtrr_proc_ops = {
 	.proc_release		= mtrr_close,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init mtrr_if_init(void)
 {
 	struct cpuinfo_x86 *c = &boot_cpu_data;
@@ -561,11 +418,7 @@ static int __init mtrr_if_init(void)
 	    (!cpu_has(c, X86_FEATURE_CENTAUR_MCR)))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	proc_create("mtrr", S_IWUSR | S_IRUGO, NULL, &mtrr_fops);
-=======
 	proc_create("mtrr", S_IWUSR | S_IRUGO, NULL, &mtrr_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 arch_initcall(mtrr_if_init);

@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-/*
- * af_can.c - Protocol family CAN core module
- *            (used by different CAN protocol modules)
- *
- * Copyright (c) 2002-2007 Volkswagen Group Electronic Research
-=======
 // SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
 /* af_can.c - Protocol family CAN core module
  *            (used by different CAN protocol modules)
  *
  * Copyright (c) 2002-2017 Volkswagen Group Electronic Research
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,10 +41,7 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/stddef.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/kmod.h>
 #include <linux/slab.h>
@@ -68,23 +57,14 @@
 #include <linux/skbuff.h>
 #include <linux/can.h>
 #include <linux/can/core.h>
-<<<<<<< HEAD
-=======
 #include <linux/can/skb.h>
 #include <linux/can/can-ml.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ratelimit.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
 
 #include "af_can.h"
 
-<<<<<<< HEAD
-static __initdata const char banner[] = KERN_INFO
-	"can: controller area network core (" CAN_VERSION_STRING ")\n";
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Controller Area Network PF_CAN core");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>, "
@@ -93,48 +73,6 @@ MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>, "
 MODULE_ALIAS_NETPROTO(PF_CAN);
 
 static int stats_timer __read_mostly = 1;
-<<<<<<< HEAD
-module_param(stats_timer, int, S_IRUGO);
-MODULE_PARM_DESC(stats_timer, "enable timer for statistics (default:on)");
-
-/* receive filters subscribed for 'all' CAN devices */
-struct dev_rcv_lists can_rx_alldev_list;
-static DEFINE_SPINLOCK(can_rcvlists_lock);
-
-static struct kmem_cache *rcv_cache __read_mostly;
-
-/* table of registered CAN protocols */
-static const struct can_proto *proto_tab[CAN_NPROTO] __read_mostly;
-static DEFINE_MUTEX(proto_tab_lock);
-
-struct timer_list can_stattimer;   /* timer for statistics update */
-struct s_stats    can_stats;       /* packet statistics */
-struct s_pstats   can_pstats;      /* receive list statistics */
-
-/*
- * af_can socket functions
- */
-
-int can_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
-{
-	struct sock *sk = sock->sk;
-
-	switch (cmd) {
-
-	case SIOCGSTAMP:
-		return sock_get_timestamp(sk, (struct timeval __user *)arg);
-
-	default:
-		return -ENOIOCTLCMD;
-	}
-}
-EXPORT_SYMBOL(can_ioctl);
-
-static void can_sock_destruct(struct sock *sk)
-{
-	skb_queue_purge(&sk->sk_receive_queue);
-}
-=======
 module_param(stats_timer, int, 0444);
 MODULE_PARM_DESC(stats_timer, "enable timer for statistics (default:on)");
 
@@ -154,7 +92,6 @@ void can_sock_destruct(struct sock *sk)
 	skb_queue_purge(&sk->sk_error_queue);
 }
 EXPORT_SYMBOL(can_sock_destruct);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct can_proto *can_get_proto(int protocol)
 {
@@ -186,12 +123,6 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
 	if (protocol < 0 || protocol >= CAN_NPROTO)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!net_eq(net, &init_net))
-		return -EAFNOSUPPORT;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cp = can_get_proto(protocol);
 
 #ifdef CONFIG_MODULES
@@ -200,23 +131,13 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
 
 		err = request_module("can-proto-%d", protocol);
 
-<<<<<<< HEAD
-		/*
-		 * In case of error we only print a message but don't
-=======
 		/* In case of error we only print a message but don't
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * return the error code immediately.  Below we will
 		 * return -EPROTONOSUPPORT
 		 */
 		if (err)
-<<<<<<< HEAD
-			printk_ratelimited(KERN_ERR "can: request_module "
-			       "(can-proto-%d) failed.\n", protocol);
-=======
 			pr_err_ratelimited("can: request_module (can-proto-%d) failed.\n",
 					   protocol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cp = can_get_proto(protocol);
 	}
@@ -234,11 +155,7 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
 
 	sock->ops = cp->ops;
 
-<<<<<<< HEAD
-	sk = sk_alloc(net, PF_CAN, GFP_KERNEL, cp->prot);
-=======
 	sk = sk_alloc(net, PF_CAN, GFP_KERNEL, cp->prot, kern);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk) {
 		err = -ENOMEM;
 		goto errout;
@@ -261,13 +178,7 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
 	return err;
 }
 
-<<<<<<< HEAD
-/*
- * af_can tx path
- */
-=======
 /* af_can tx path */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * can_send - transmit a CAN frame (optional with local loopback)
@@ -282,36 +193,12 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
  *  -ENOBUFS on full driver queue (see net_xmit_errno())
  *  -ENOMEM when local loopback failed at calling skb_clone()
  *  -EPERM when trying to send on a non-CAN interface
-<<<<<<< HEAD
-=======
  *  -EMSGSIZE CAN frame size is bigger than CAN interface MTU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  -EINVAL when the skb->data does not contain a valid CAN frame
  */
 int can_send(struct sk_buff *skb, int loop)
 {
 	struct sk_buff *newskb = NULL;
-<<<<<<< HEAD
-	struct can_frame *cf = (struct can_frame *)skb->data;
-	int err;
-
-	if (skb->len != sizeof(struct can_frame) || cf->can_dlc > 8) {
-		kfree_skb(skb);
-		return -EINVAL;
-	}
-
-	if (skb->dev->type != ARPHRD_CAN) {
-		kfree_skb(skb);
-		return -EPERM;
-	}
-
-	if (!(skb->dev->flags & IFF_UP)) {
-		kfree_skb(skb);
-		return -ENETDOWN;
-	}
-
-	skb->protocol = htons(ETH_P_CAN);
-=======
 	struct can_pkg_stats *pkg_stats = dev_net(skb->dev)->can.pkg_stats;
 	int err = -EINVAL;
 
@@ -346,7 +233,6 @@ int can_send(struct sk_buff *skb, int loop)
 		goto inval_skb;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
 
 	skb_reset_mac_header(skb);
@@ -359,12 +245,7 @@ int can_send(struct sk_buff *skb, int loop)
 		/* indication for the CAN driver: do loopback */
 		skb->pkt_type = PACKET_LOOPBACK;
 
-<<<<<<< HEAD
-		/*
-		 * The reference to the originating sock may be required
-=======
 		/* The reference to the originating sock may be required
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * by the receiving socket to check whether the frame is
 		 * its own. Example: can_raw sockopt CAN_RAW_RECV_OWN_MSGS
 		 * Therefore we have to ensure that skb->sk remains the
@@ -373,12 +254,7 @@ int can_send(struct sk_buff *skb, int loop)
 		 */
 
 		if (!(skb->dev->flags & IFF_ECHO)) {
-<<<<<<< HEAD
-			/*
-			 * If the interface is not capable to do loopback
-=======
 			/* If the interface is not capable to do loopback
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * itself, we do it here.
 			 */
 			newskb = skb_clone(skb, GFP_ATOMIC);
@@ -387,11 +263,7 @@ int can_send(struct sk_buff *skb, int loop)
 				return -ENOMEM;
 			}
 
-<<<<<<< HEAD
-			newskb->sk = skb->sk;
-=======
 			can_skb_set_owner(newskb, skb->sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			newskb->ip_summed = CHECKSUM_UNNECESSARY;
 			newskb->pkt_type = PACKET_BROADCAST;
 		}
@@ -411,35 +283,6 @@ int can_send(struct sk_buff *skb, int loop)
 	}
 
 	if (newskb)
-<<<<<<< HEAD
-		netif_rx_ni(newskb);
-
-	/* update statistics */
-	can_stats.tx_frames++;
-	can_stats.tx_frames_delta++;
-
-	return 0;
-}
-EXPORT_SYMBOL(can_send);
-
-/*
- * af_can rx path
- */
-
-static struct dev_rcv_lists *find_dev_rcv_lists(struct net_device *dev)
-{
-	if (!dev)
-		return &can_rx_alldev_list;
-	else
-		return (struct dev_rcv_lists *)dev->ml_priv;
-}
-
-/**
- * find_rcv_list - determine optimal filterlist inside device filter struct
- * @can_id: pointer to CAN identifier of a given can_filter
- * @mask: pointer to CAN mask of a given can_filter
- * @d: pointer to the device filter struct
-=======
 		netif_rx(newskb);
 
 	/* update statistics */
@@ -495,7 +338,6 @@ static unsigned int effhash(canid_t can_id)
  * @can_id: pointer to CAN identifier of a given can_filter
  * @mask: pointer to CAN mask of a given can_filter
  * @dev_rcv_lists: pointer to the device filter struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  *  Returns the optimal filterlist to reduce the filter handling in the
@@ -510,26 +352,6 @@ static unsigned int effhash(canid_t can_id)
  *  relevant bits for the filter.
  *
  *  The filter can be inverted (CAN_INV_FILTER bit set in can_id) or it can
-<<<<<<< HEAD
- *  filter for error frames (CAN_ERR_FLAG bit set in mask). For error frames
- *  there is a special filterlist and a special rx path filter handling.
- *
- * Return:
- *  Pointer to optimal filterlist for the given can_id/mask pair.
- *  Constistency checked mask.
- *  Reduced can_id to have a preprocessed filter compare value.
- */
-static struct hlist_head *find_rcv_list(canid_t *can_id, canid_t *mask,
-					struct dev_rcv_lists *d)
-{
-	canid_t inv = *can_id & CAN_INV_FILTER; /* save flag before masking */
-
-	/* filter for error frames in extra filterlist */
-	if (*mask & CAN_ERR_FLAG) {
-		/* clear CAN_ERR_FLAG in filter entry */
-		*mask &= CAN_ERR_MASK;
-		return &d->rx[RX_ERR];
-=======
  *  filter for error messages (CAN_ERR_FLAG bit set in mask). For error msg
  *  frames there is a special filterlist and a special rx path filter handling.
  *
@@ -548,7 +370,6 @@ static struct hlist_head *can_rcv_list_find(canid_t *can_id, canid_t *mask,
 		/* clear CAN_ERR_FLAG in filter entry */
 		*mask &= CAN_ERR_MASK;
 		return &dev_rcv_lists->rx[RX_ERR];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* with cleared CAN_ERR_FLAG we have a simple mask/value filterpair */
@@ -564,70 +385,38 @@ static struct hlist_head *can_rcv_list_find(canid_t *can_id, canid_t *mask,
 
 	/* inverse can_id/can_mask filter */
 	if (inv)
-<<<<<<< HEAD
-		return &d->rx[RX_INV];
-
-	/* mask == 0 => no condition testing at receive time */
-	if (!(*mask))
-		return &d->rx[RX_ALL];
-=======
 		return &dev_rcv_lists->rx[RX_INV];
 
 	/* mask == 0 => no condition testing at receive time */
 	if (!(*mask))
 		return &dev_rcv_lists->rx[RX_ALL];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* extra filterlists for the subscription of a single non-RTR can_id */
 	if (((*mask & CAN_EFF_RTR_FLAGS) == CAN_EFF_RTR_FLAGS) &&
 	    !(*can_id & CAN_RTR_FLAG)) {
-<<<<<<< HEAD
-
-		if (*can_id & CAN_EFF_FLAG) {
-			if (*mask == (CAN_EFF_MASK | CAN_EFF_RTR_FLAGS)) {
-				/* RFC: a future use-case for hash-tables? */
-				return &d->rx[RX_EFF];
-			}
-		} else {
-			if (*mask == (CAN_SFF_MASK | CAN_EFF_RTR_FLAGS))
-				return &d->rx_sff[*can_id];
-=======
 		if (*can_id & CAN_EFF_FLAG) {
 			if (*mask == (CAN_EFF_MASK | CAN_EFF_RTR_FLAGS))
 				return &dev_rcv_lists->rx_eff[effhash(*can_id)];
 		} else {
 			if (*mask == (CAN_SFF_MASK | CAN_EFF_RTR_FLAGS))
 				return &dev_rcv_lists->rx_sff[*can_id];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* default: filter via can_id/can_mask */
-<<<<<<< HEAD
-	return &d->rx[RX_FIL];
-=======
 	return &dev_rcv_lists->rx[RX_FIL];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * can_rx_register - subscribe CAN frames from a specific interface
-<<<<<<< HEAD
- * @dev: pointer to netdevice (NULL => subcribe from 'all' CAN devices list)
-=======
  * @net: the applicable net namespace
  * @dev: pointer to netdevice (NULL => subscribe from 'all' CAN devices list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @can_id: CAN identifier (see description)
  * @mask: CAN mask (see description)
  * @func: callback function on filter match
  * @data: returned parameter for callback function
-<<<<<<< HEAD
- * @ident: string for calling module indentification
-=======
  * @ident: string for calling module identification
  * @sk: socket pointer (might be NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  *  Invokes the callback function with the received sk_buff and the given
@@ -636,11 +425,7 @@ static struct hlist_head *can_rcv_list_find(canid_t *can_id, canid_t *mask,
  *          <received_can_id> & mask == can_id & mask
  *
  *  The filter can be inverted (CAN_INV_FILTER bit set in can_id) or it can
-<<<<<<< HEAD
- *  filter for error frames (CAN_ERR_FLAG bit set in mask).
-=======
  *  filter for error message frames (CAN_ERR_FLAG bit set in mask).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  The provided pointer to the sk_buff is guaranteed to be valid as long as
  *  the callback function is running. The callback function must *not* free
@@ -653,64 +438,6 @@ static struct hlist_head *can_rcv_list_find(canid_t *can_id, canid_t *mask,
  *  -ENOMEM on missing cache mem to create subscription entry
  *  -ENODEV unknown device
  */
-<<<<<<< HEAD
-int can_rx_register(struct net_device *dev, canid_t can_id, canid_t mask,
-		    void (*func)(struct sk_buff *, void *), void *data,
-		    char *ident)
-{
-	struct receiver *r;
-	struct hlist_head *rl;
-	struct dev_rcv_lists *d;
-	int err = 0;
-
-	/* insert new receiver  (dev,canid,mask) -> (func,data) */
-
-	if (dev && dev->type != ARPHRD_CAN)
-		return -ENODEV;
-
-	r = kmem_cache_alloc(rcv_cache, GFP_KERNEL);
-	if (!r)
-		return -ENOMEM;
-
-	spin_lock(&can_rcvlists_lock);
-
-	d = find_dev_rcv_lists(dev);
-	if (d) {
-		rl = find_rcv_list(&can_id, &mask, d);
-
-		r->can_id  = can_id;
-		r->mask    = mask;
-		r->matches = 0;
-		r->func    = func;
-		r->data    = data;
-		r->ident   = ident;
-
-		hlist_add_head_rcu(&r->list, rl);
-		d->entries++;
-
-		can_pstats.rcv_entries++;
-		if (can_pstats.rcv_entries_max < can_pstats.rcv_entries)
-			can_pstats.rcv_entries_max = can_pstats.rcv_entries;
-	} else {
-		kmem_cache_free(rcv_cache, r);
-		err = -ENODEV;
-	}
-
-	spin_unlock(&can_rcvlists_lock);
-
-	return err;
-}
-EXPORT_SYMBOL(can_rx_register);
-
-/*
- * can_rx_delete_receiver - rcu callback for single receiver entry removal
- */
-static void can_rx_delete_receiver(struct rcu_head *rp)
-{
-	struct receiver *r = container_of(rp, struct receiver, rcu);
-
-	kmem_cache_free(rcv_cache, r);
-=======
 int can_rx_register(struct net *net, struct net_device *dev, canid_t can_id,
 		    canid_t mask, void (*func)(struct sk_buff *, void *),
 		    void *data, char *ident, struct sock *sk)
@@ -766,17 +493,12 @@ static void can_rx_delete_receiver(struct rcu_head *rp)
 	kmem_cache_free(rcv_cache, rcv);
 	if (sk)
 		sock_put(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * can_rx_unregister - unsubscribe CAN frames from a specific interface
-<<<<<<< HEAD
- * @dev: pointer to netdevice (NULL => unsubcribe from 'all' CAN devices list)
-=======
  * @net: the applicable net namespace
  * @dev: pointer to netdevice (NULL => unsubscribe from 'all' CAN devices list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @can_id: CAN identifier
  * @mask: CAN mask
  * @func: callback function on filter match
@@ -785,15 +507,6 @@ static void can_rx_delete_receiver(struct rcu_head *rp)
  * Description:
  *  Removes subscription entry depending on given (subscription) values.
  */
-<<<<<<< HEAD
-void can_rx_unregister(struct net_device *dev, canid_t can_id, canid_t mask,
-		       void (*func)(struct sk_buff *, void *), void *data)
-{
-	struct receiver *r = NULL;
-	struct hlist_head *rl;
-	struct hlist_node *next;
-	struct dev_rcv_lists *d;
-=======
 void can_rx_unregister(struct net *net, struct net_device *dev, canid_t can_id,
 		       canid_t mask, void (*func)(struct sk_buff *, void *),
 		       void *data)
@@ -802,82 +515,10 @@ void can_rx_unregister(struct net *net, struct net_device *dev, canid_t can_id,
 	struct hlist_head *rcv_list;
 	struct can_rcv_lists_stats *rcv_lists_stats = net->can.rcv_lists_stats;
 	struct can_dev_rcv_lists *dev_rcv_lists;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev && dev->type != ARPHRD_CAN)
 		return;
 
-<<<<<<< HEAD
-	spin_lock(&can_rcvlists_lock);
-
-	d = find_dev_rcv_lists(dev);
-	if (!d) {
-		printk(KERN_ERR "BUG: receive list not found for "
-		       "dev %s, id %03X, mask %03X\n",
-		       DNAME(dev), can_id, mask);
-		goto out;
-	}
-
-	rl = find_rcv_list(&can_id, &mask, d);
-
-	/*
-	 * Search the receiver list for the item to delete.  This should
-	 * exist, since no receiver may be unregistered that hasn't
-	 * been registered before.
-	 */
-
-	hlist_for_each_entry_rcu(r, next, rl, list) {
-		if (r->can_id == can_id && r->mask == mask &&
-		    r->func == func && r->data == data)
-			break;
-	}
-
-	/*
-	 * Check for bugs in CAN protocol implementations:
-	 * If no matching list item was found, the list cursor variable next
-	 * will be NULL, while r will point to the last item of the list.
-	 */
-
-	if (!next) {
-		printk(KERN_ERR "BUG: receive list entry not found for "
-		       "dev %s, id %03X, mask %03X\n",
-		       DNAME(dev), can_id, mask);
-		r = NULL;
-		goto out;
-	}
-
-	hlist_del_rcu(&r->list);
-	d->entries--;
-
-	if (can_pstats.rcv_entries > 0)
-		can_pstats.rcv_entries--;
-
-	/* remove device structure requested by NETDEV_UNREGISTER */
-	if (d->remove_on_zero_entries && !d->entries) {
-		kfree(d);
-		dev->ml_priv = NULL;
-	}
-
- out:
-	spin_unlock(&can_rcvlists_lock);
-
-	/* schedule the receiver item for deletion */
-	if (r)
-		call_rcu(&r->rcu, can_rx_delete_receiver);
-}
-EXPORT_SYMBOL(can_rx_unregister);
-
-static inline void deliver(struct sk_buff *skb, struct receiver *r)
-{
-	r->func(skb, r->data);
-	r->matches++;
-}
-
-static int can_rcv_filter(struct dev_rcv_lists *d, struct sk_buff *skb)
-{
-	struct receiver *r;
-	struct hlist_node *n;
-=======
 	if (dev && !net_eq(net, dev_net(dev)))
 		return;
 
@@ -935,21 +576,10 @@ static inline void deliver(struct sk_buff *skb, struct receiver *rcv)
 static int can_rcv_filter(struct can_dev_rcv_lists *dev_rcv_lists, struct sk_buff *skb)
 {
 	struct receiver *rcv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int matches = 0;
 	struct can_frame *cf = (struct can_frame *)skb->data;
 	canid_t can_id = cf->can_id;
 
-<<<<<<< HEAD
-	if (d->entries == 0)
-		return 0;
-
-	if (can_id & CAN_ERR_FLAG) {
-		/* check for error frame entries only */
-		hlist_for_each_entry_rcu(r, n, &d->rx[RX_ERR], list) {
-			if (can_id & r->mask) {
-				deliver(skb, r);
-=======
 	if (dev_rcv_lists->entries == 0)
 		return 0;
 
@@ -958,7 +588,6 @@ static int can_rcv_filter(struct can_dev_rcv_lists *dev_rcv_lists, struct sk_buf
 		hlist_for_each_entry_rcu(rcv, &dev_rcv_lists->rx[RX_ERR], list) {
 			if (can_id & rcv->mask) {
 				deliver(skb, rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				matches++;
 			}
 		}
@@ -966,40 +595,23 @@ static int can_rcv_filter(struct can_dev_rcv_lists *dev_rcv_lists, struct sk_buf
 	}
 
 	/* check for unfiltered entries */
-<<<<<<< HEAD
-	hlist_for_each_entry_rcu(r, n, &d->rx[RX_ALL], list) {
-		deliver(skb, r);
-=======
 	hlist_for_each_entry_rcu(rcv, &dev_rcv_lists->rx[RX_ALL], list) {
 		deliver(skb, rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		matches++;
 	}
 
 	/* check for can_id/mask entries */
-<<<<<<< HEAD
-	hlist_for_each_entry_rcu(r, n, &d->rx[RX_FIL], list) {
-		if ((can_id & r->mask) == r->can_id) {
-			deliver(skb, r);
-=======
 	hlist_for_each_entry_rcu(rcv, &dev_rcv_lists->rx[RX_FIL], list) {
 		if ((can_id & rcv->mask) == rcv->can_id) {
 			deliver(skb, rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			matches++;
 		}
 	}
 
 	/* check for inverted can_id/mask entries */
-<<<<<<< HEAD
-	hlist_for_each_entry_rcu(r, n, &d->rx[RX_INV], list) {
-		if ((can_id & r->mask) != r->can_id) {
-			deliver(skb, r);
-=======
 	hlist_for_each_entry_rcu(rcv, &dev_rcv_lists->rx[RX_INV], list) {
 		if ((can_id & rcv->mask) != rcv->can_id) {
 			deliver(skb, rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			matches++;
 		}
 	}
@@ -1009,27 +621,16 @@ static int can_rcv_filter(struct can_dev_rcv_lists *dev_rcv_lists, struct sk_buf
 		return matches;
 
 	if (can_id & CAN_EFF_FLAG) {
-<<<<<<< HEAD
-		hlist_for_each_entry_rcu(r, n, &d->rx[RX_EFF], list) {
-			if (r->can_id == can_id) {
-				deliver(skb, r);
-=======
 		hlist_for_each_entry_rcu(rcv, &dev_rcv_lists->rx_eff[effhash(can_id)], list) {
 			if (rcv->can_id == can_id) {
 				deliver(skb, rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				matches++;
 			}
 		}
 	} else {
 		can_id &= CAN_SFF_MASK;
-<<<<<<< HEAD
-		hlist_for_each_entry_rcu(r, n, &d->rx_sff[can_id], list) {
-			deliver(skb, r);
-=======
 		hlist_for_each_entry_rcu(rcv, &dev_rcv_lists->rx_sff[can_id], list) {
 			deliver(skb, rcv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			matches++;
 		}
 	}
@@ -1037,29 +638,6 @@ static int can_rcv_filter(struct can_dev_rcv_lists *dev_rcv_lists, struct sk_buf
 	return matches;
 }
 
-<<<<<<< HEAD
-static int can_rcv(struct sk_buff *skb, struct net_device *dev,
-		   struct packet_type *pt, struct net_device *orig_dev)
-{
-	struct dev_rcv_lists *d;
-	struct can_frame *cf = (struct can_frame *)skb->data;
-	int matches;
-
-	if (!net_eq(dev_net(dev), &init_net))
-		goto drop;
-
-	if (WARN_ONCE(dev->type != ARPHRD_CAN ||
-		      skb->len != sizeof(struct can_frame) ||
-		      cf->can_dlc > 8,
-		      "PF_CAN: dropped non conform skbuf: "
-		      "dev type %d, len %d, can_dlc %d\n",
-		      dev->type, skb->len, cf->can_dlc))
-		goto drop;
-
-	/* update statistics */
-	can_stats.rx_frames++;
-	can_stats.rx_frames_delta++;
-=======
 static void can_receive(struct sk_buff *skb, struct net_device *dev)
 {
 	struct can_dev_rcv_lists *dev_rcv_lists;
@@ -1074,25 +652,15 @@ static void can_receive(struct sk_buff *skb, struct net_device *dev)
 	/* create non-zero unique skb identifier together with *skb */
 	while (!(can_skb_prv(skb)->skbcnt))
 		can_skb_prv(skb)->skbcnt = atomic_inc_return(&skbcounter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 
 	/* deliver the packet to sockets listening on all devices */
-<<<<<<< HEAD
-	matches = can_rcv_filter(&can_rx_alldev_list, skb);
-
-	/* find receive list for this device */
-	d = find_dev_rcv_lists(dev);
-	if (d)
-		matches += can_rcv_filter(d, skb);
-=======
 	matches = can_rcv_filter(net->can.rx_alldev_list, skb);
 
 	/* find receive list for this device */
 	dev_rcv_lists = can_dev_rcv_lists_find(net, dev);
 	matches += can_rcv_filter(dev_rcv_lists, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_unlock();
 
@@ -1100,22 +668,6 @@ static void can_receive(struct sk_buff *skb, struct net_device *dev)
 	consume_skb(skb);
 
 	if (matches > 0) {
-<<<<<<< HEAD
-		can_stats.matches++;
-		can_stats.matches_delta++;
-	}
-
-	return NET_RX_SUCCESS;
-
-drop:
-	kfree_skb(skb);
-	return NET_RX_DROP;
-}
-
-/*
- * af_can protocol functions
- */
-=======
 		pkg_stats->matches++;
 		pkg_stats->matches_delta++;
 	}
@@ -1167,7 +719,6 @@ static int canxl_rcv(struct sk_buff *skb, struct net_device *dev,
 }
 
 /* af_can protocol functions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * can_proto_register - register CAN transport protocol
@@ -1185,12 +736,7 @@ int can_proto_register(const struct can_proto *cp)
 	int err = 0;
 
 	if (proto < 0 || proto >= CAN_NPROTO) {
-<<<<<<< HEAD
-		printk(KERN_ERR "can: protocol number %d out of range\n",
-		       proto);
-=======
 		pr_err("can: protocol number %d out of range\n", proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1200,21 +746,12 @@ int can_proto_register(const struct can_proto *cp)
 
 	mutex_lock(&proto_tab_lock);
 
-<<<<<<< HEAD
-	if (proto_tab[proto]) {
-		printk(KERN_ERR "can: protocol %d already registered\n",
-		       proto);
-		err = -EBUSY;
-	} else
-		RCU_INIT_POINTER(proto_tab[proto], cp);
-=======
 	if (rcu_access_pointer(proto_tab[proto])) {
 		pr_err("can: protocol %d already registered\n", proto);
 		err = -EBUSY;
 	} else {
 		RCU_INIT_POINTER(proto_tab[proto], cp);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&proto_tab_lock);
 
@@ -1234,11 +771,7 @@ void can_proto_unregister(const struct can_proto *cp)
 	int proto = cp->protocol;
 
 	mutex_lock(&proto_tab_lock);
-<<<<<<< HEAD
-	BUG_ON(proto_tab[proto] != cp);
-=======
 	BUG_ON(rcu_access_pointer(proto_tab[proto]) != cp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RCU_INIT_POINTER(proto_tab[proto], NULL);
 	mutex_unlock(&proto_tab_lock);
 
@@ -1248,72 +781,6 @@ void can_proto_unregister(const struct can_proto *cp)
 }
 EXPORT_SYMBOL(can_proto_unregister);
 
-<<<<<<< HEAD
-/*
- * af_can notifier to create/remove CAN netdevice specific structs
- */
-static int can_notifier(struct notifier_block *nb, unsigned long msg,
-			void *data)
-{
-	struct net_device *dev = (struct net_device *)data;
-	struct dev_rcv_lists *d;
-
-	if (!net_eq(dev_net(dev), &init_net))
-		return NOTIFY_DONE;
-
-	if (dev->type != ARPHRD_CAN)
-		return NOTIFY_DONE;
-
-	switch (msg) {
-
-	case NETDEV_REGISTER:
-
-		/* create new dev_rcv_lists for this device */
-		d = kzalloc(sizeof(*d), GFP_KERNEL);
-		if (!d) {
-			printk(KERN_ERR
-			       "can: allocation of receive list failed\n");
-			return NOTIFY_DONE;
-		}
-		BUG_ON(dev->ml_priv);
-		dev->ml_priv = d;
-
-		break;
-
-	case NETDEV_UNREGISTER:
-		spin_lock(&can_rcvlists_lock);
-
-		d = dev->ml_priv;
-		if (d) {
-			if (d->entries)
-				d->remove_on_zero_entries = 1;
-			else {
-				kfree(d);
-				dev->ml_priv = NULL;
-			}
-		} else
-			printk(KERN_ERR "can: notifier: receive list not "
-			       "found for dev %s\n", dev->name);
-
-		spin_unlock(&can_rcvlists_lock);
-
-		break;
-	}
-
-	return NOTIFY_DONE;
-}
-
-/*
- * af_can module init/exit functions
- */
-
-static struct packet_type can_packet __read_mostly = {
-	.type = cpu_to_be16(ETH_P_CAN),
-	.dev  = NULL,
-	.func = can_rcv,
-};
-
-=======
 static int can_pernet_init(struct net *net)
 {
 	spin_lock_init(&net->can.rcvlists_lock);
@@ -1380,31 +847,19 @@ static struct packet_type canxl_packet __read_mostly = {
 	.func = canxl_rcv,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_proto_family can_family_ops = {
 	.family = PF_CAN,
 	.create = can_create,
 	.owner  = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-/* notifier block for netdevice event */
-static struct notifier_block can_netdev_notifier __read_mostly = {
-	.notifier_call = can_notifier,
-=======
 static struct pernet_operations can_pernet_ops __read_mostly = {
 	.init = can_pernet_init,
 	.exit = can_pernet_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static __init int can_init(void)
 {
-<<<<<<< HEAD
-	printk(banner);
-
-	memset(&can_rx_alldev_list, 0, sizeof(can_rx_alldev_list));
-=======
 	int err;
 
 	/* check for correct padding to be able to use the structs similarly */
@@ -1416,30 +871,12 @@ static __init int can_init(void)
 		     offsetof(struct canfd_frame, data));
 
 	pr_info("can: controller area network core\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcv_cache = kmem_cache_create("can_receiver", sizeof(struct receiver),
 				      0, 0, NULL);
 	if (!rcv_cache)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	if (stats_timer) {
-		/* the statistics are updated every second (timer triggered) */
-		setup_timer(&can_stattimer, can_stat_update, 0);
-		mod_timer(&can_stattimer, round_jiffies(jiffies + HZ));
-	} else
-		can_stattimer.function = NULL;
-
-	can_init_proc();
-
-	/* protocol register */
-	sock_register(&can_family_ops);
-	register_netdevice_notifier(&can_netdev_notifier);
-	dev_add_pack(&can_packet);
-
-	return 0;
-=======
 	err = register_pernet_subsys(&can_pernet_ops);
 	if (err)
 		goto out_pernet;
@@ -1461,38 +898,10 @@ out_pernet:
 	kmem_cache_destroy(rcv_cache);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __exit void can_exit(void)
 {
-<<<<<<< HEAD
-	struct net_device *dev;
-
-	if (stats_timer)
-		del_timer_sync(&can_stattimer);
-
-	can_remove_proc();
-
-	/* protocol unregister */
-	dev_remove_pack(&can_packet);
-	unregister_netdevice_notifier(&can_netdev_notifier);
-	sock_unregister(PF_CAN);
-
-	/* remove created dev_rcv_lists from still registered CAN devices */
-	rcu_read_lock();
-	for_each_netdev_rcu(&init_net, dev) {
-		if (dev->type == ARPHRD_CAN && dev->ml_priv){
-
-			struct dev_rcv_lists *d = dev->ml_priv;
-
-			BUG_ON(d->entries);
-			kfree(d);
-			dev->ml_priv = NULL;
-		}
-	}
-	rcu_read_unlock();
-=======
 	/* protocol unregister */
 	dev_remove_pack(&canxl_packet);
 	dev_remove_pack(&canfd_packet);
@@ -1500,7 +909,6 @@ static __exit void can_exit(void)
 	sock_unregister(PF_CAN);
 
 	unregister_pernet_subsys(&can_pernet_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_barrier(); /* Wait for completion of call_rcu()'s */
 

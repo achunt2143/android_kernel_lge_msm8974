@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for Open vSwitch.
 #
@@ -13,11 +10,6 @@ openvswitch-y := \
 	datapath.o \
 	dp_notify.o \
 	flow.o \
-<<<<<<< HEAD
-	vport.o \
-	vport-internal_dev.o \
-	vport-netdev.o \
-=======
 	flow_netlink.o \
 	flow_table.o \
 	meter.o \
@@ -35,4 +27,3 @@ obj-$(CONFIG_OPENVSWITCH_GENEVE)+= vport-geneve.o
 obj-$(CONFIG_OPENVSWITCH_GRE)	+= vport-gre.o
 
 CFLAGS_openvswitch_trace.o = -I$(src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

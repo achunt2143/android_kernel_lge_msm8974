@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/if_arp.h>
 #include <linux/init.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-#include "net_kern.h"
-=======
 #include <net_kern.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "slip.h"
 
 struct slip_init {

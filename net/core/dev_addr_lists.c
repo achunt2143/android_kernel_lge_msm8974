@@ -1,43 +1,23 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * net/core/dev_addr_lists.c - Functions for handling net device lists
  * Copyright (c) 2010 Jiri Pirko <jpirko@redhat.com>
  *
  * This file contains functions for working with unicast, multicast and device
  * addresses lists.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/netdevice.h>
 #include <linux/rtnetlink.h>
 #include <linux/export.h>
 #include <linux/list.h>
-<<<<<<< HEAD
-#include <linux/proc_fs.h>
-=======
 
 #include "dev.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * General list handling functions
  */
 
-<<<<<<< HEAD
-static int __hw_addr_add_ex(struct netdev_hw_addr_list *list,
-			    unsigned char *addr, int addr_len,
-			    unsigned char addr_type, bool global)
-=======
 static int __hw_addr_insert(struct netdev_hw_addr_list *list,
 			    struct netdev_hw_addr *new, int addr_len)
 {
@@ -70,19 +50,10 @@ static int __hw_addr_insert(struct netdev_hw_addr_list *list,
 static struct netdev_hw_addr*
 __hw_addr_create(const unsigned char *addr, int addr_len,
 		 unsigned char addr_type, bool global, bool sync)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_hw_addr *ha;
 	int alloc_size;
 
-<<<<<<< HEAD
-	if (addr_len > MAX_ADDR_LEN)
-		return -EINVAL;
-
-	list_for_each_entry(ha, &list->list, list) {
-		if (!memcmp(ha->addr, addr, addr_len) &&
-		    ha->type == addr_type) {
-=======
 	alloc_size = sizeof(*ha);
 	if (alloc_size < L1_CACHE_BYTES)
 		alloc_size = L1_CACHE_BYTES;
@@ -126,7 +97,6 @@ static int __hw_addr_add_ex(struct netdev_hw_addr_list *list,
 		} else {
 			if (exclusive)
 				return -EEXIST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (global) {
 				/* check if addr is already used as global */
 				if (ha->global_use)
@@ -134,118 +104,17 @@ static int __hw_addr_add_ex(struct netdev_hw_addr_list *list,
 				else
 					ha->global_use = true;
 			}
-<<<<<<< HEAD
-=======
 			if (sync) {
 				if (ha->synced && sync_count)
 					return -EEXIST;
 				else
 					ha->synced++;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ha->refcount++;
 			return 0;
 		}
 	}
 
-<<<<<<< HEAD
-
-	alloc_size = sizeof(*ha);
-	if (alloc_size < L1_CACHE_BYTES)
-		alloc_size = L1_CACHE_BYTES;
-	ha = kmalloc(alloc_size, GFP_ATOMIC);
-	if (!ha)
-		return -ENOMEM;
-	memcpy(ha->addr, addr, addr_len);
-	ha->type = addr_type;
-	ha->refcount = 1;
-	ha->global_use = global;
-	ha->synced = 0;
-	list_add_tail_rcu(&ha->list, &list->list);
-	list->count++;
-	return 0;
-}
-
-static int __hw_addr_add(struct netdev_hw_addr_list *list, unsigned char *addr,
-			 int addr_len, unsigned char addr_type)
-{
-	return __hw_addr_add_ex(list, addr, addr_len, addr_type, false);
-}
-
-static int __hw_addr_del_ex(struct netdev_hw_addr_list *list,
-			    unsigned char *addr, int addr_len,
-			    unsigned char addr_type, bool global)
-{
-	struct netdev_hw_addr *ha;
-
-	list_for_each_entry(ha, &list->list, list) {
-		if (!memcmp(ha->addr, addr, addr_len) &&
-		    (ha->type == addr_type || !addr_type)) {
-			if (global) {
-				if (!ha->global_use)
-					break;
-				else
-					ha->global_use = false;
-			}
-			if (--ha->refcount)
-				return 0;
-			list_del_rcu(&ha->list);
-			kfree_rcu(ha, rcu_head);
-			list->count--;
-			return 0;
-		}
-	}
-	return -ENOENT;
-}
-
-static int __hw_addr_del(struct netdev_hw_addr_list *list, unsigned char *addr,
-			 int addr_len, unsigned char addr_type)
-{
-	return __hw_addr_del_ex(list, addr, addr_len, addr_type, false);
-}
-
-int __hw_addr_add_multiple(struct netdev_hw_addr_list *to_list,
-			   struct netdev_hw_addr_list *from_list,
-			   int addr_len, unsigned char addr_type)
-{
-	int err;
-	struct netdev_hw_addr *ha, *ha2;
-	unsigned char type;
-
-	list_for_each_entry(ha, &from_list->list, list) {
-		type = addr_type ? addr_type : ha->type;
-		err = __hw_addr_add(to_list, ha->addr, addr_len, type);
-		if (err)
-			goto unroll;
-	}
-	return 0;
-
-unroll:
-	list_for_each_entry(ha2, &from_list->list, list) {
-		if (ha2 == ha)
-			break;
-		type = addr_type ? addr_type : ha2->type;
-		__hw_addr_del(to_list, ha2->addr, addr_len, type);
-	}
-	return err;
-}
-EXPORT_SYMBOL(__hw_addr_add_multiple);
-
-void __hw_addr_del_multiple(struct netdev_hw_addr_list *to_list,
-			    struct netdev_hw_addr_list *from_list,
-			    int addr_len, unsigned char addr_type)
-{
-	struct netdev_hw_addr *ha;
-	unsigned char type;
-
-	list_for_each_entry(ha, &from_list->list, list) {
-		type = addr_type ? addr_type : ha->type;
-		__hw_addr_del(to_list, ha->addr, addr_len, type);
-	}
-}
-EXPORT_SYMBOL(__hw_addr_del_multiple);
-
-=======
 	ha = __hw_addr_create(addr, addr_len, addr_type, global, sync);
 	if (!ha)
 		return -ENOMEM;
@@ -397,7 +266,6 @@ static int __hw_addr_sync_multiple(struct netdev_hw_addr_list *to_list,
  * sync addresses to more then 1 destination, you need to use
  * __hw_addr_sync_multiple().
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __hw_addr_sync(struct netdev_hw_addr_list *to_list,
 		   struct netdev_hw_addr_list *from_list,
 		   int addr_len)
@@ -406,26 +274,12 @@ int __hw_addr_sync(struct netdev_hw_addr_list *to_list,
 	struct netdev_hw_addr *ha, *tmp;
 
 	list_for_each_entry_safe(ha, tmp, &from_list->list, list) {
-<<<<<<< HEAD
-		if (!ha->synced) {
-			err = __hw_addr_add(to_list, ha->addr,
-					    addr_len, ha->type);
-			if (err)
-				break;
-			ha->synced++;
-			ha->refcount++;
-		} else if (ha->refcount == 1) {
-			__hw_addr_del(to_list, ha->addr, addr_len, ha->type);
-			__hw_addr_del(from_list, ha->addr, addr_len, ha->type);
-		}
-=======
 		if (!ha->sync_cnt) {
 			err = __hw_addr_sync_one(to_list, ha, addr_len);
 			if (err)
 				break;
 		} else if (ha->refcount == 1)
 			__hw_addr_unsync_one(to_list, from_list, ha, addr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
@@ -438,25 +292,12 @@ void __hw_addr_unsync(struct netdev_hw_addr_list *to_list,
 	struct netdev_hw_addr *ha, *tmp;
 
 	list_for_each_entry_safe(ha, tmp, &from_list->list, list) {
-<<<<<<< HEAD
-		if (ha->synced) {
-			__hw_addr_del(to_list, ha->addr,
-				      addr_len, ha->type);
-			ha->synced--;
-			__hw_addr_del(from_list, ha->addr,
-				      addr_len, ha->type);
-		}
-=======
 		if (ha->sync_cnt)
 			__hw_addr_unsync_one(to_list, from_list, ha, addr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL(__hw_addr_unsync);
 
-<<<<<<< HEAD
-void __hw_addr_flush(struct netdev_hw_addr_list *list)
-=======
 /**
  *  __hw_addr_sync_dev - Synchonize device's multicast list
  *  @list: address list to syncronize
@@ -588,13 +429,10 @@ void __hw_addr_ref_unsync_dev(struct netdev_hw_addr_list *list,
 			      struct net_device *dev,
 			      int (*unsync)(struct net_device *,
 					    const unsigned char *, int))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_hw_addr *ha, *tmp;
 
 	list_for_each_entry_safe(ha, tmp, &list->list, list) {
-<<<<<<< HEAD
-=======
 		if (!ha->sync_cnt)
 			continue;
 
@@ -648,25 +486,17 @@ static void __hw_addr_flush(struct netdev_hw_addr_list *list)
 
 	list->tree = RB_ROOT;
 	list_for_each_entry_safe(ha, tmp, &list->list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del_rcu(&ha->list);
 		kfree_rcu(ha, rcu_head);
 	}
 	list->count = 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(__hw_addr_flush);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __hw_addr_init(struct netdev_hw_addr_list *list)
 {
 	INIT_LIST_HEAD(&list->list);
 	list->count = 0;
-<<<<<<< HEAD
-=======
 	list->tree = RB_ROOT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__hw_addr_init);
 
@@ -674,8 +504,6 @@ EXPORT_SYMBOL(__hw_addr_init);
  * Device addresses handling functions
  */
 
-<<<<<<< HEAD
-=======
 /* Check that netdev->dev_addr is not written to directly as this would
  * break the rbtree layout. All changes should go thru dev_addr_set() and co.
  * Remove this check in mid-2024.
@@ -691,7 +519,6 @@ void dev_addr_check(struct net_device *dev)
 	netdev_WARN(dev, "Incorrect netdev->dev_addr\n");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	dev_addr_flush - Flush device address list
  *	@dev: device
@@ -703,18 +530,11 @@ void dev_addr_check(struct net_device *dev)
 void dev_addr_flush(struct net_device *dev)
 {
 	/* rtnl_mutex must be held here */
-<<<<<<< HEAD
-=======
 	dev_addr_check(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__hw_addr_flush(&dev->dev_addrs);
 	dev->dev_addr = NULL;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(dev_addr_flush);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	dev_addr_init - Init device address list
@@ -748,9 +568,6 @@ int dev_addr_init(struct net_device *dev)
 	}
 	return err;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(dev_addr_init);
-=======
 
 void dev_addr_mod(struct net_device *dev, unsigned int offset,
 		  const void *addr, size_t len)
@@ -766,7 +583,6 @@ void dev_addr_mod(struct net_device *dev, unsigned int offset,
 	WARN_ON(__hw_addr_insert(&dev->dev_addrs, ha, dev->addr_len));
 }
 EXPORT_SYMBOL(dev_addr_mod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	dev_addr_add - Add a device address
@@ -779,23 +595,16 @@ EXPORT_SYMBOL(dev_addr_mod);
  *
  *	The caller must hold the rtnl_mutex.
  */
-<<<<<<< HEAD
-int dev_addr_add(struct net_device *dev, unsigned char *addr,
-=======
 int dev_addr_add(struct net_device *dev, const unsigned char *addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 unsigned char addr_type)
 {
 	int err;
 
 	ASSERT_RTNL();
 
-<<<<<<< HEAD
-=======
 	err = dev_pre_changeaddr_notify(dev, addr, NULL);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = __hw_addr_add(&dev->dev_addrs, addr, dev->addr_len, addr_type);
 	if (!err)
 		call_netdevice_notifiers(NETDEV_CHANGEADDR, dev);
@@ -814,11 +623,7 @@ EXPORT_SYMBOL(dev_addr_add);
  *
  *	The caller must hold the rtnl_mutex.
  */
-<<<<<<< HEAD
-int dev_addr_del(struct net_device *dev, unsigned char *addr,
-=======
 int dev_addr_del(struct net_device *dev, const unsigned char *addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 unsigned char addr_type)
 {
 	int err;
@@ -844,69 +649,11 @@ int dev_addr_del(struct net_device *dev, const unsigned char *addr,
 }
 EXPORT_SYMBOL(dev_addr_del);
 
-<<<<<<< HEAD
-/**
- *	dev_addr_add_multiple - Add device addresses from another device
- *	@to_dev: device to which addresses will be added
- *	@from_dev: device from which addresses will be added
- *	@addr_type: address type - 0 means type will be used from from_dev
- *
- *	Add device addresses of the one device to another.
- **
- *	The caller must hold the rtnl_mutex.
- */
-int dev_addr_add_multiple(struct net_device *to_dev,
-			  struct net_device *from_dev,
-			  unsigned char addr_type)
-{
-	int err;
-
-	ASSERT_RTNL();
-
-	if (from_dev->addr_len != to_dev->addr_len)
-		return -EINVAL;
-	err = __hw_addr_add_multiple(&to_dev->dev_addrs, &from_dev->dev_addrs,
-				     to_dev->addr_len, addr_type);
-	if (!err)
-		call_netdevice_notifiers(NETDEV_CHANGEADDR, to_dev);
-	return err;
-}
-EXPORT_SYMBOL(dev_addr_add_multiple);
-
-/**
- *	dev_addr_del_multiple - Delete device addresses by another device
- *	@to_dev: device where the addresses will be deleted
- *	@from_dev: device supplying the addresses to be deleted
- *	@addr_type: address type - 0 means type will be used from from_dev
- *
- *	Deletes addresses in to device by the list of addresses in from device.
- *
- *	The caller must hold the rtnl_mutex.
- */
-int dev_addr_del_multiple(struct net_device *to_dev,
-			  struct net_device *from_dev,
-			  unsigned char addr_type)
-{
-	ASSERT_RTNL();
-
-	if (from_dev->addr_len != to_dev->addr_len)
-		return -EINVAL;
-	__hw_addr_del_multiple(&to_dev->dev_addrs, &from_dev->dev_addrs,
-			       to_dev->addr_len, addr_type);
-	call_netdevice_notifiers(NETDEV_CHANGEADDR, to_dev);
-	return 0;
-}
-EXPORT_SYMBOL(dev_addr_del_multiple);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Unicast list handling functions
  */
 
 /**
-<<<<<<< HEAD
-=======
  *	dev_uc_add_excl - Add a global secondary unicast address
  *	@dev: device
  *	@addr: address to add
@@ -927,7 +674,6 @@ int dev_uc_add_excl(struct net_device *dev, const unsigned char *addr)
 EXPORT_SYMBOL(dev_uc_add_excl);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	dev_uc_add - Add a secondary unicast address
  *	@dev: device
  *	@addr: address to add
@@ -935,11 +681,7 @@ EXPORT_SYMBOL(dev_uc_add_excl);
  *	Add a secondary unicast address to the device or increase
  *	the reference count if it already exists.
  */
-<<<<<<< HEAD
-int dev_uc_add(struct net_device *dev, unsigned char *addr)
-=======
 int dev_uc_add(struct net_device *dev, const unsigned char *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -961,11 +703,7 @@ EXPORT_SYMBOL(dev_uc_add);
  *	Release reference to a secondary unicast address and remove it
  *	from the device if the reference count drops to zero.
  */
-<<<<<<< HEAD
-int dev_uc_del(struct net_device *dev, unsigned char *addr)
-=======
 int dev_uc_del(struct net_device *dev, const unsigned char *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -989,12 +727,8 @@ EXPORT_SYMBOL(dev_uc_del);
  *	locked by netif_addr_lock_bh.
  *
  *	This function is intended to be called from the dev->set_rx_mode
-<<<<<<< HEAD
- *	function of layered software devices.
-=======
  *	function of layered software devices.  This function assumes that
  *	addresses will only ever be synced to the @to devices and no other.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int dev_uc_sync(struct net_device *to, struct net_device *from)
 {
@@ -1003,11 +737,7 @@ int dev_uc_sync(struct net_device *to, struct net_device *from)
 	if (to->addr_len != from->addr_len)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	netif_addr_lock_nested(to);
-=======
 	netif_addr_lock(to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = __hw_addr_sync(&to->uc, &from->uc, to->addr_len);
 	if (!err)
 		__dev_set_rx_mode(to);
@@ -1017,8 +747,6 @@ int dev_uc_sync(struct net_device *to, struct net_device *from)
 EXPORT_SYMBOL(dev_uc_sync);
 
 /**
-<<<<<<< HEAD
-=======
  *	dev_uc_sync_multiple - Synchronize device's unicast list to another
  *	device, but allow for multiple calls to sync to multiple devices.
  *	@to: destination device
@@ -1049,7 +777,6 @@ int dev_uc_sync_multiple(struct net_device *to, struct net_device *from)
 EXPORT_SYMBOL(dev_uc_sync_multiple);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	dev_uc_unsync - Remove synchronized addresses from the destination device
  *	@to: destination device
  *	@from: source device
@@ -1063,10 +790,6 @@ void dev_uc_unsync(struct net_device *to, struct net_device *from)
 	if (to->addr_len != from->addr_len)
 		return;
 
-<<<<<<< HEAD
-	netif_addr_lock_bh(from);
-	netif_addr_lock_nested(to);
-=======
 	/* netif_addr_lock_bh() uses lockdep subclass 0, this is okay for two
 	 * reasons:
 	 * 1) This is always called without any addr_list_lock, so as the
@@ -1078,7 +801,6 @@ void dev_uc_unsync(struct net_device *to, struct net_device *from)
 	 */
 	netif_addr_lock_bh(from);
 	netif_addr_lock(to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__hw_addr_unsync(&to->uc, &from->uc, to->addr_len);
 	__dev_set_rx_mode(to);
 	netif_addr_unlock(to);
@@ -1101,11 +823,7 @@ void dev_uc_flush(struct net_device *dev)
 EXPORT_SYMBOL(dev_uc_flush);
 
 /**
-<<<<<<< HEAD
- *	dev_uc_flush - Init unicast address list
-=======
  *	dev_uc_init - Init unicast address list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@dev: device
  *
  *	Init unicast address list.
@@ -1120,9 +838,6 @@ EXPORT_SYMBOL(dev_uc_init);
  * Multicast list handling functions
  */
 
-<<<<<<< HEAD
-static int __dev_mc_add(struct net_device *dev, unsigned char *addr,
-=======
 /**
  *	dev_mc_add_excl - Add a global secondary multicast address
  *	@dev: device
@@ -1144,19 +859,14 @@ int dev_mc_add_excl(struct net_device *dev, const unsigned char *addr)
 EXPORT_SYMBOL(dev_mc_add_excl);
 
 static int __dev_mc_add(struct net_device *dev, const unsigned char *addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bool global)
 {
 	int err;
 
 	netif_addr_lock_bh(dev);
 	err = __hw_addr_add_ex(&dev->mc, addr, dev->addr_len,
-<<<<<<< HEAD
-			       NETDEV_HW_ADDR_T_MULTICAST, global);
-=======
 			       NETDEV_HW_ADDR_T_MULTICAST, global, false,
 			       0, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		__dev_set_rx_mode(dev);
 	netif_addr_unlock_bh(dev);
@@ -1170,11 +880,7 @@ static int __dev_mc_add(struct net_device *dev, const unsigned char *addr,
  *	Add a multicast address to the device or increase
  *	the reference count if it already exists.
  */
-<<<<<<< HEAD
-int dev_mc_add(struct net_device *dev, unsigned char *addr)
-=======
 int dev_mc_add(struct net_device *dev, const unsigned char *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __dev_mc_add(dev, addr, false);
 }
@@ -1187,32 +893,20 @@ EXPORT_SYMBOL(dev_mc_add);
  *
  *	Add a global multicast address to the device.
  */
-<<<<<<< HEAD
-int dev_mc_add_global(struct net_device *dev, unsigned char *addr)
-=======
 int dev_mc_add_global(struct net_device *dev, const unsigned char *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __dev_mc_add(dev, addr, true);
 }
 EXPORT_SYMBOL(dev_mc_add_global);
 
-<<<<<<< HEAD
-static int __dev_mc_del(struct net_device *dev, unsigned char *addr,
-=======
 static int __dev_mc_del(struct net_device *dev, const unsigned char *addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bool global)
 {
 	int err;
 
 	netif_addr_lock_bh(dev);
 	err = __hw_addr_del_ex(&dev->mc, addr, dev->addr_len,
-<<<<<<< HEAD
-			       NETDEV_HW_ADDR_T_MULTICAST, global);
-=======
 			       NETDEV_HW_ADDR_T_MULTICAST, global, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		__dev_set_rx_mode(dev);
 	netif_addr_unlock_bh(dev);
@@ -1227,11 +921,7 @@ static int __dev_mc_del(struct net_device *dev, const unsigned char *addr,
  *	Release reference to a multicast address and remove it
  *	from the device if the reference count drops to zero.
  */
-<<<<<<< HEAD
-int dev_mc_del(struct net_device *dev, unsigned char *addr)
-=======
 int dev_mc_del(struct net_device *dev, const unsigned char *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __dev_mc_del(dev, addr, false);
 }
@@ -1245,22 +935,14 @@ EXPORT_SYMBOL(dev_mc_del);
  *	Release reference to a multicast address and remove it
  *	from the device if the reference count drops to zero.
  */
-<<<<<<< HEAD
-int dev_mc_del_global(struct net_device *dev, unsigned char *addr)
-=======
 int dev_mc_del_global(struct net_device *dev, const unsigned char *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __dev_mc_del(dev, addr, true);
 }
 EXPORT_SYMBOL(dev_mc_del_global);
 
 /**
-<<<<<<< HEAD
- *	dev_mc_sync - Synchronize device's unicast list to another device
-=======
  *	dev_mc_sync - Synchronize device's multicast list to another device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@to: destination device
  *	@from: source device
  *
@@ -1278,11 +960,7 @@ int dev_mc_sync(struct net_device *to, struct net_device *from)
 	if (to->addr_len != from->addr_len)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	netif_addr_lock_nested(to);
-=======
 	netif_addr_lock(to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = __hw_addr_sync(&to->mc, &from->mc, to->addr_len);
 	if (!err)
 		__dev_set_rx_mode(to);
@@ -1292,8 +970,6 @@ int dev_mc_sync(struct net_device *to, struct net_device *from)
 EXPORT_SYMBOL(dev_mc_sync);
 
 /**
-<<<<<<< HEAD
-=======
  *	dev_mc_sync_multiple - Synchronize device's multicast list to another
  *	device, but allow for multiple calls to sync to multiple devices.
  *	@to: destination device
@@ -1324,7 +1000,6 @@ int dev_mc_sync_multiple(struct net_device *to, struct net_device *from)
 EXPORT_SYMBOL(dev_mc_sync_multiple);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	dev_mc_unsync - Remove synchronized addresses from the destination device
  *	@to: destination device
  *	@from: source device
@@ -1338,14 +1013,9 @@ void dev_mc_unsync(struct net_device *to, struct net_device *from)
 	if (to->addr_len != from->addr_len)
 		return;
 
-<<<<<<< HEAD
-	netif_addr_lock_bh(from);
-	netif_addr_lock_nested(to);
-=======
 	/* See the above comments inside dev_uc_unsync(). */
 	netif_addr_lock_bh(from);
 	netif_addr_lock(to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__hw_addr_unsync(&to->mc, &from->mc, to->addr_len);
 	__dev_set_rx_mode(to);
 	netif_addr_unlock(to);
@@ -1368,11 +1038,7 @@ void dev_mc_flush(struct net_device *dev)
 EXPORT_SYMBOL(dev_mc_flush);
 
 /**
-<<<<<<< HEAD
- *	dev_mc_flush - Init multicast address list
-=======
  *	dev_mc_init - Init multicast address list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@dev: device
  *
  *	Init multicast address list.
@@ -1382,79 +1048,3 @@ void dev_mc_init(struct net_device *dev)
 	__hw_addr_init(&dev->mc);
 }
 EXPORT_SYMBOL(dev_mc_init);
-<<<<<<< HEAD
-
-#ifdef CONFIG_PROC_FS
-#include <linux/seq_file.h>
-
-static int dev_mc_seq_show(struct seq_file *seq, void *v)
-{
-	struct netdev_hw_addr *ha;
-	struct net_device *dev = v;
-
-	if (v == SEQ_START_TOKEN)
-		return 0;
-
-	netif_addr_lock_bh(dev);
-	netdev_for_each_mc_addr(ha, dev) {
-		int i;
-
-		seq_printf(seq, "%-4d %-15s %-5d %-5d ", dev->ifindex,
-			   dev->name, ha->refcount, ha->global_use);
-
-		for (i = 0; i < dev->addr_len; i++)
-			seq_printf(seq, "%02x", ha->addr[i]);
-
-		seq_putc(seq, '\n');
-	}
-	netif_addr_unlock_bh(dev);
-	return 0;
-}
-
-static const struct seq_operations dev_mc_seq_ops = {
-	.start = dev_seq_start,
-	.next  = dev_seq_next,
-	.stop  = dev_seq_stop,
-	.show  = dev_mc_seq_show,
-};
-
-static int dev_mc_seq_open(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &dev_mc_seq_ops,
-			    sizeof(struct seq_net_private));
-}
-
-static const struct file_operations dev_mc_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open    = dev_mc_seq_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_net,
-};
-
-#endif
-
-static int __net_init dev_mc_net_init(struct net *net)
-{
-	if (!proc_net_fops_create(net, "dev_mcast", 0, &dev_mc_seq_fops))
-		return -ENOMEM;
-	return 0;
-}
-
-static void __net_exit dev_mc_net_exit(struct net *net)
-{
-	proc_net_remove(net, "dev_mcast");
-}
-
-static struct pernet_operations __net_initdata dev_mc_net_ops = {
-	.init = dev_mc_net_init,
-	.exit = dev_mc_net_exit,
-};
-
-void __init dev_mcast_init(void)
-{
-	register_pernet_subsys(&dev_mc_net_ops);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

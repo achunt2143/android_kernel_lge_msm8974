@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-#ifndef __USBAUDIO_ENDPOINT_H
-#define __USBAUDIO_ENDPOINT_H
-
-void snd_usb_init_substream(struct snd_usb_stream *as,
-			    int stream,
-			    struct audioformat *fp);
-
-int snd_usb_init_substream_urbs(struct snd_usb_substream *subs,
-				unsigned int period_bytes,
-				unsigned int rate,
-				unsigned int frame_bits);
-
-void snd_usb_release_substream_urbs(struct snd_usb_substream *subs, int force);
-
-int snd_usb_substream_prepare(struct snd_usb_substream *subs,
-			      struct snd_pcm_runtime *runtime);
-
-int snd_usb_substream_playback_trigger(struct snd_pcm_substream *substream, int cmd);
-int snd_usb_substream_capture_trigger(struct snd_pcm_substream *substream, int cmd);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __USBAUDIO_ENDPOINT_H
 #define __USBAUDIO_ENDPOINT_H
@@ -74,6 +53,5 @@ int snd_usb_endpoint_next_packet_size(struct snd_usb_endpoint *ep,
 				      unsigned int avail);
 int snd_usb_queue_pending_output_urbs(struct snd_usb_endpoint *ep,
 				      bool in_stream_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __USBAUDIO_ENDPOINT_H */

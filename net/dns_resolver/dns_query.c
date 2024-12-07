@@ -1,11 +1,7 @@
 /* Upcall routine, designed to work as a key type and working through
  * /sbin/request-key to contact userspace when handling DNS queries.
  *
-<<<<<<< HEAD
- * See Documentation/networking/dns_resolver.txt
-=======
  * See Documentation/networking/dns_resolver.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   Copyright (c) 2007 Igor Mammedov
  *   Author(s): Igor Mammedov (niallain@gmail.com)
@@ -36,26 +32,16 @@
  *   the GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public License
-<<<<<<< HEAD
- *   along with this library; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
  *   along with this library; if not, see <http://www.gnu.org/licenses/>.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/dns_resolver.h>
-#include <linux/err.h>
-=======
 #include <linux/cred.h>
 #include <linux/dns_resolver.h>
 #include <linux/err.h>
 #include <net/net_namespace.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <keys/dns_resolver-type.h>
 #include <keys/user-type.h>
 
@@ -63,28 +49,17 @@
 
 /**
  * dns_query - Query the DNS
-<<<<<<< HEAD
-=======
  * @net: The network namespace to operate in.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @type: Query type (or NULL for straight host->IP lookup)
  * @name: Name to look up
  * @namelen: Length of name
  * @options: Request options (or NULL if no options)
-<<<<<<< HEAD
- * @_result: Where to place the returned data.
- * @_expiry: Where to store the result expiry time (or NULL)
- *
- * The data will be returned in the pointer at *result, and the caller is
- * responsible for freeing it.
-=======
  * @_result: Where to place the returned data (or NULL)
  * @_expiry: Where to store the result expiry time (or NULL)
  * @invalidate: Always invalidate the key after use
  *
  * The data will be returned in the pointer at *result, if provided, and the
  * caller is responsible for freeing it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The description should be of the form "[<query_type>:]<domain_name>", and
  * the options need to be appropriate for the query type requested.  If no
@@ -96,15 +71,10 @@
  *
  * Returns the size of the result on success, -ve error code otherwise.
  */
-<<<<<<< HEAD
-int dns_query(const char *type, const char *name, size_t namelen,
-	      const char *options, char **_result, time_t *_expiry)
-=======
 int dns_query(struct net *net,
 	      const char *type, const char *name, size_t namelen,
 	      const char *options, char **_result, time64_t *_expiry,
 	      bool invalidate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct key *rkey;
 	struct user_key_payload *upayload;
@@ -116,11 +86,7 @@ int dns_query(struct net *net,
 	kenter("%s,%*.*s,%zu,%s",
 	       type, (int)namelen, (int)namelen, name, namelen, options);
 
-<<<<<<< HEAD
-	if (!name || namelen == 0 || !_result)
-=======
 	if (!name || namelen == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* construct the query key description as "[<type>:]<name>" */
@@ -133,13 +99,7 @@ int dns_query(struct net *net,
 		desclen += typelen + 1;
 	}
 
-<<<<<<< HEAD
-	if (!namelen)
-		namelen = strlen(name);
-	if (namelen < 3)
-=======
 	if (namelen < 3 || namelen > 255)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	desclen += namelen + 1;
 
@@ -165,11 +125,7 @@ int dns_query(struct net *net,
 	 * add_key() to preinstall malicious redirections
 	 */
 	saved_cred = override_creds(dns_resolver_cache);
-<<<<<<< HEAD
-	rkey = request_key(&key_type_dns_resolver, desc, options);
-=======
 	rkey = request_key_net(&key_type_dns_resolver, desc, net, options);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	revert_creds(saved_cred);
 	kfree(desc);
 	if (IS_ERR(rkey)) {
@@ -178,10 +134,7 @@ int dns_query(struct net *net,
 	}
 
 	down_read(&rkey->sem);
-<<<<<<< HEAD
-=======
 	set_bit(KEY_FLAG_ROOT_CAN_INVAL, &rkey->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rkey->perm |= KEY_USR_VIEW;
 
 	ret = key_validate(rkey);
@@ -189,23 +142,6 @@ int dns_query(struct net *net,
 		goto put;
 
 	/* If the DNS server gave an error, return that to the caller */
-<<<<<<< HEAD
-	ret = rkey->type_data.x[0];
-	if (ret)
-		goto put;
-
-	upayload = rcu_dereference_protected(rkey->payload.data,
-					     lockdep_is_held(&rkey->sem));
-	len = upayload->datalen;
-
-	ret = -ENOMEM;
-	*_result = kmalloc(len + 1, GFP_KERNEL);
-	if (!*_result)
-		goto put;
-
-	memcpy(*_result, upayload->data, len);
-	(*_result)[len] = '\0';
-=======
 	ret = PTR_ERR(rkey->payload.data[dns_key_error]);
 	if (ret)
 		goto put;
@@ -219,7 +155,6 @@ int dns_query(struct net *net,
 		if (!*_result)
 			goto put;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (_expiry)
 		*_expiry = rkey->expiry;
@@ -227,11 +162,8 @@ int dns_query(struct net *net,
 	ret = len;
 put:
 	up_read(&rkey->sem);
-<<<<<<< HEAD
-=======
 	if (invalidate)
 		key_invalidate(rkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_put(rkey);
 out:
 	kleave(" = %d", ret);

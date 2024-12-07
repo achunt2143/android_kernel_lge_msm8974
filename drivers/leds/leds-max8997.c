@@ -1,29 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * leds-max8997.c - LED class driver for MAX8997 LEDs.
  *
  * Copyright (C) 2011 Samsung Electronics
  * Donggeun Kim <dg77.kim@samsung.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/err.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/leds.h>
 #include <linux/mfd/max8997.h>
 #include <linux/mfd/max8997-private.h>
@@ -59,100 +44,37 @@ struct max8997_led {
 	struct mutex mutex;
 };
 
-<<<<<<< HEAD
-static void max8997_led_clear_mode(struct max8997_led *led,
-			enum max8997_led_mode mode)
-{
-	struct i2c_client *client = led->iodev->i2c;
-	u8 val = 0, mask = 0;
-	int ret;
-
-	switch (mode) {
-	case MAX8997_FLASH_MODE:
-		mask = led->id ?
-		      MAX8997_LED1_FLASH_MASK : MAX8997_LED0_FLASH_MASK;
-		break;
-	case MAX8997_MOVIE_MODE:
-		mask = led->id ?
-		      MAX8997_LED1_MOVIE_MASK : MAX8997_LED0_MOVIE_MASK;
-		break;
-	case MAX8997_FLASH_PIN_CONTROL_MODE:
-		mask = led->id ?
-		      MAX8997_LED1_FLASH_PIN_MASK : MAX8997_LED0_FLASH_PIN_MASK;
-		break;
-	case MAX8997_MOVIE_PIN_CONTROL_MODE:
-		mask = led->id ?
-		      MAX8997_LED1_MOVIE_PIN_MASK : MAX8997_LED0_MOVIE_PIN_MASK;
-		break;
-	default:
-		break;
-	}
-
-	if (mask) {
-		ret = max8997_update_reg(client,
-				MAX8997_REG_LEN_CNTL, val, mask);
-		if (ret)
-			dev_err(led->iodev->dev,
-				"failed to update register(%d)\n", ret);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void max8997_led_set_mode(struct max8997_led *led,
 			enum max8997_led_mode mode)
 {
 	int ret;
 	struct i2c_client *client = led->iodev->i2c;
-<<<<<<< HEAD
-	u8 mask = 0;
-
-	/* First, clear the previous mode */
-	max8997_led_clear_mode(led, led->led_mode);
-
-	switch (mode) {
-	case MAX8997_FLASH_MODE:
-		mask = led->id ?
-=======
 	u8 mask = 0, val;
 
 	switch (mode) {
 	case MAX8997_FLASH_MODE:
 		mask = MAX8997_LED1_FLASH_MASK | MAX8997_LED0_FLASH_MASK;
 		val = led->id ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      MAX8997_LED1_FLASH_MASK : MAX8997_LED0_FLASH_MASK;
 		led->cdev.max_brightness = MAX8997_LED_FLASH_MAX_BRIGHTNESS;
 		break;
 	case MAX8997_MOVIE_MODE:
-<<<<<<< HEAD
-		mask = led->id ?
-=======
 		mask = MAX8997_LED1_MOVIE_MASK | MAX8997_LED0_MOVIE_MASK;
 		val = led->id ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      MAX8997_LED1_MOVIE_MASK : MAX8997_LED0_MOVIE_MASK;
 		led->cdev.max_brightness = MAX8997_LED_MOVIE_MAX_BRIGHTNESS;
 		break;
 	case MAX8997_FLASH_PIN_CONTROL_MODE:
-<<<<<<< HEAD
-		mask = led->id ?
-=======
 		mask = MAX8997_LED1_FLASH_PIN_MASK |
 		       MAX8997_LED0_FLASH_PIN_MASK;
 		val = led->id ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      MAX8997_LED1_FLASH_PIN_MASK : MAX8997_LED0_FLASH_PIN_MASK;
 		led->cdev.max_brightness = MAX8997_LED_FLASH_MAX_BRIGHTNESS;
 		break;
 	case MAX8997_MOVIE_PIN_CONTROL_MODE:
-<<<<<<< HEAD
-		mask = led->id ?
-=======
 		mask = MAX8997_LED1_MOVIE_PIN_MASK |
 		       MAX8997_LED0_MOVIE_PIN_MASK;
 		val = led->id ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      MAX8997_LED1_MOVIE_PIN_MASK : MAX8997_LED0_MOVIE_PIN_MASK;
 		led->cdev.max_brightness = MAX8997_LED_MOVIE_MAX_BRIGHTNESS;
 		break;
@@ -162,13 +84,8 @@ static void max8997_led_set_mode(struct max8997_led *led,
 	}
 
 	if (mask) {
-<<<<<<< HEAD
-		ret = max8997_update_reg(client,
-				MAX8997_REG_LEN_CNTL, mask, mask);
-=======
 		ret = max8997_update_reg(client, MAX8997_REG_LEN_CNTL, val,
 					 mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			dev_err(led->iodev->dev,
 				"failed to update register(%d)\n", ret);
@@ -243,13 +160,8 @@ static void max8997_led_brightness_set(struct led_classdev *led_cdev,
 	}
 }
 
-<<<<<<< HEAD
-static ssize_t max8997_led_show_mode(struct device *dev,
-				struct device_attribute *attr, char *buf)
-=======
 static ssize_t mode_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	struct max8997_led *led =
@@ -281,15 +193,9 @@ static ssize_t mode_show(struct device *dev,
 	return ret;
 }
 
-<<<<<<< HEAD
-static ssize_t max8997_led_store_mode(struct device *dev,
-				struct device_attribute *attr,
-				const char *buf, size_t size)
-=======
 static ssize_t mode_store(struct device *dev,
 			  struct device_attribute *attr,
 			  const char *buf, size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	struct max8997_led *led =
@@ -316,11 +222,6 @@ static ssize_t mode_store(struct device *dev,
 	return size;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(mode, 0644, max8997_led_show_mode, max8997_led_store_mode);
-
-static int __devinit max8997_led_probe(struct platform_device *pdev)
-=======
 static DEVICE_ATTR_RW(mode);
 
 static struct attribute *max8997_attrs[] = {
@@ -330,7 +231,6 @@ static struct attribute *max8997_attrs[] = {
 ATTRIBUTE_GROUPS(max8997);
 
 static int max8997_led_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max8997_dev *iodev = dev_get_drvdata(pdev->dev.parent);
 	struct max8997_platform_data *pdata = dev_get_platdata(iodev->dev);
@@ -338,22 +238,9 @@ static int max8997_led_probe(struct platform_device *pdev)
 	char name[20];
 	int ret = 0;
 
-<<<<<<< HEAD
-	if (pdata == NULL) {
-		dev_err(&pdev->dev, "no platform data\n");
-		return -ENODEV;
-	}
-
-	led = kzalloc(sizeof(*led), GFP_KERNEL);
-	if (led == NULL) {
-		ret = -ENOMEM;
-		goto err_mem;
-	}
-=======
 	led = devm_kzalloc(&pdev->dev, sizeof(*led), GFP_KERNEL);
 	if (led == NULL)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	led->id = pdev->id;
 	snprintf(name, sizeof(name), "max8997-led%d", pdev->id);
@@ -362,28 +249,17 @@ static int max8997_led_probe(struct platform_device *pdev)
 	led->cdev.brightness_set = max8997_led_brightness_set;
 	led->cdev.flags |= LED_CORE_SUSPENDRESUME;
 	led->cdev.brightness = 0;
-<<<<<<< HEAD
-	led->iodev = iodev;
-
-	/* initialize mode and brightness according to platform_data */
-	if (pdata->led_pdata) {
-=======
 	led->cdev.groups = max8997_groups;
 	led->iodev = iodev;
 
 	/* initialize mode and brightness according to platform_data */
 	if (pdata && pdata->led_pdata) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 mode = 0, brightness = 0;
 
 		mode = pdata->led_pdata->mode[led->id];
 		brightness = pdata->led_pdata->brightness[led->id];
 
-<<<<<<< HEAD
-		max8997_led_set_mode(led, pdata->led_pdata->mode[led->id]);
-=======
 		max8997_led_set_mode(led, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (brightness > led->cdev.max_brightness)
 			brightness = led->cdev.max_brightness;
@@ -396,42 +272,9 @@ static int max8997_led_probe(struct platform_device *pdev)
 
 	mutex_init(&led->mutex);
 
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, led);
-
-	ret = led_classdev_register(&pdev->dev, &led->cdev);
-	if (ret < 0)
-		goto err_led;
-
-	ret = device_create_file(led->cdev.dev, &dev_attr_mode);
-	if (ret != 0) {
-		dev_err(&pdev->dev,
-			"failed to create file: %d\n", ret);
-		goto err_file;
-	}
-
-	return 0;
-
-err_file:
-	led_classdev_unregister(&led->cdev);
-err_led:
-	kfree(led);
-err_mem:
-	return ret;
-}
-
-static int __devexit max8997_led_remove(struct platform_device *pdev)
-{
-	struct max8997_led *led = platform_get_drvdata(pdev);
-
-	device_remove_file(led->cdev.dev, &dev_attr_mode);
-	led_classdev_unregister(&led->cdev);
-	kfree(led);
-=======
 	ret = devm_led_classdev_register(&pdev->dev, &led->cdev);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -439,31 +282,11 @@ static int __devexit max8997_led_remove(struct platform_device *pdev)
 static struct platform_driver max8997_led_driver = {
 	.driver = {
 		.name  = "max8997-led",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe  = max8997_led_probe,
-	.remove = __devexit_p(max8997_led_remove),
-};
-
-static int __init max8997_led_init(void)
-{
-	return platform_driver_register(&max8997_led_driver);
-}
-module_init(max8997_led_init);
-
-static void __exit max8997_led_exit(void)
-{
-	platform_driver_unregister(&max8997_led_driver);
-}
-module_exit(max8997_led_exit);
-=======
 	},
 	.probe  = max8997_led_probe,
 };
 
 module_platform_driver(max8997_led_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Donggeun Kim <dg77.kim@samsung.com>");
 MODULE_DESCRIPTION("MAX8997 LED driver");

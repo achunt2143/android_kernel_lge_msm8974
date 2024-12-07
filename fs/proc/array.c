@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/proc/array.c
  *
@@ -59,20 +56,12 @@
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/time.h>
-<<<<<<< HEAD
-=======
 #include <linux/time_namespace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/kernel_stat.h>
 #include <linux/tty.h>
 #include <linux/string.h>
 #include <linux/mman.h>
-<<<<<<< HEAD
-#include <linux/proc_fs.h>
-#include <linux/ioport.h>
-#include <linux/uaccess.h>
-=======
 #include <linux/sched/mm.h>
 #include <linux/sched/numa_balancing.h>
 #include <linux/sched/task_stack.h>
@@ -80,7 +69,6 @@
 #include <linux/sched/cputime.h>
 #include <linux/proc_fs.h>
 #include <linux/ioport.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/mm.h>
 #include <linux/hugetlb.h>
@@ -97,52 +85,6 @@
 #include <linux/delayacct.h>
 #include <linux/seq_file.h>
 #include <linux/pid_namespace.h>
-<<<<<<< HEAD
-#include <linux/ptrace.h>
-#include <linux/tracehook.h>
-
-#include <asm/pgtable.h>
-#include <asm/processor.h>
-#include "internal.h"
-
-static inline void task_name(struct seq_file *m, struct task_struct *p)
-{
-	int i;
-	char *buf, *end;
-	char *name;
-	char tcomm[sizeof(p->comm)];
-
-	get_task_comm(tcomm, p);
-
-	seq_puts(m, "Name:\t");
-	end = m->buf + m->size;
-	buf = m->buf + m->count;
-	name = tcomm;
-	i = sizeof(tcomm);
-	while (i && (buf < end)) {
-		unsigned char c = *name;
-		name++;
-		i--;
-		*buf = c;
-		if (!c)
-			break;
-		if (c == '\\') {
-			buf++;
-			if (buf < end)
-				*buf++ = c;
-			continue;
-		}
-		if (c == '\n') {
-			*buf++ = '\\';
-			if (buf < end)
-				*buf++ = 'n';
-			continue;
-		}
-		buf++;
-	}
-	m->count = buf - m->buf;
-	seq_putc(m, '\n');
-=======
 #include <linux/prctl.h>
 #include <linux/ptrace.h>
 #include <linux/string_helpers.h>
@@ -173,7 +115,6 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
 		seq_escape_str(m, tcomm, ESCAPE_SPACE | ESCAPE_SPECIAL, "\n\\");
 	else
 		seq_printf(m, "%.64s", tcomm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -183,18 +124,6 @@ void proc_task_name(struct seq_file *m, struct task_struct *p, bool escape)
  * simple bit tests.
  */
 static const char * const task_state_array[] = {
-<<<<<<< HEAD
-	"R (running)",		/*   0 */
-	"S (sleeping)",		/*   1 */
-	"D (disk sleep)",	/*   2 */
-	"T (stopped)",		/*   4 */
-	"t (tracing stop)",	/*   8 */
-	"Z (zombie)",		/*  16 */
-	"X (dead)",		/*  32 */
-	"x (dead)",		/*  64 */
-	"K (wakekill)",		/* 128 */
-	"W (waking)",		/* 256 */
-=======
 
 	/* states in TASK_REPORT: */
 	"R (running)",		/* 0x00 */
@@ -208,84 +137,17 @@ static const char * const task_state_array[] = {
 
 	/* states beyond TASK_REPORT: */
 	"I (idle)",		/* 0x80 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline const char *get_task_state(struct task_struct *tsk)
 {
-<<<<<<< HEAD
-	unsigned int state = (tsk->state & TASK_REPORT) | tsk->exit_state;
-	const char * const *p = &task_state_array[0];
-
-	BUILD_BUG_ON(1 + ilog2(TASK_STATE_MAX) != ARRAY_SIZE(task_state_array));
-
-	while (state) {
-		p++;
-		state >>= 1;
-	}
-	return *p;
-=======
 	BUILD_BUG_ON(1 + ilog2(TASK_REPORT_MAX) != ARRAY_SIZE(task_state_array));
 	return task_state_array[task_state_index(tsk)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void task_state(struct seq_file *m, struct pid_namespace *ns,
 				struct pid *pid, struct task_struct *p)
 {
-<<<<<<< HEAD
-	struct group_info *group_info;
-	int g;
-	struct fdtable *fdt = NULL;
-	const struct cred *cred;
-	pid_t ppid = 0, tpid = 0;
-	struct task_struct *leader = NULL;
-
-	rcu_read_lock();
-	if (pid_alive(p)) {
-		struct task_struct *tracer = ptrace_parent(p);
-		if (tracer)
-			tpid = task_pid_nr_ns(tracer, ns);
-		ppid = task_tgid_nr_ns(rcu_dereference(p->real_parent), ns);
-		leader = p->group_leader;
-	}
-	cred = get_task_cred(p);
-	seq_printf(m,
-		"State:\t%s\n"
-		"Tgid:\t%d\n"
-		"Pid:\t%d\n"
-		"PPid:\t%d\n"
-		"TracerPid:\t%d\n"
-		"Uid:\t%d\t%d\t%d\t%d\n"
-		"Gid:\t%d\t%d\t%d\t%d\n",
-		get_task_state(p),
-		leader ? task_pid_nr_ns(leader, ns) : 0,
-		pid_nr_ns(pid, ns),
-		ppid, tpid,
-		cred->uid, cred->euid, cred->suid, cred->fsuid,
-		cred->gid, cred->egid, cred->sgid, cred->fsgid);
-
-	task_lock(p);
-	if (p->files)
-		fdt = files_fdtable(p->files);
-	seq_printf(m,
-		"FDSize:\t%d\n"
-		"Groups:\t",
-		fdt ? fdt->max_fds : 0);
-	rcu_read_unlock();
-
-	group_info = cred->group_info;
-	task_unlock(p);
-
-	for (g = 0; g < group_info->ngroups; g++)
-		seq_printf(m, "%d ", GROUP_AT(group_info, g));
-	put_cred(cred);
-
-	seq_putc(m, '\n');
-}
-
-static void render_sigset_t(struct seq_file *m, const char *header,
-=======
 	struct user_namespace *user_ns = seq_user_ns(m);
 	struct group_info *group_info;
 	int g, umask = -1;
@@ -363,7 +225,6 @@ static void render_sigset_t(struct seq_file *m, const char *header,
 }
 
 void render_sigset_t(struct seq_file *m, const char *header,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sigset_t *set)
 {
 	int i;
@@ -379,23 +240,14 @@ void render_sigset_t(struct seq_file *m, const char *header,
 		if (sigismember(set, i+2)) x |= 2;
 		if (sigismember(set, i+3)) x |= 4;
 		if (sigismember(set, i+4)) x |= 8;
-<<<<<<< HEAD
-		seq_printf(m, "%x", x);
-=======
 		seq_putc(m, hex_asc[x]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (i >= 4);
 
 	seq_putc(m, '\n');
 }
 
-<<<<<<< HEAD
-static void collect_sigign_sigcatch(struct task_struct *p, sigset_t *ign,
-				    sigset_t *catch)
-=======
 static void collect_sigign_sigcatch(struct task_struct *p, sigset_t *sigign,
 				    sigset_t *sigcatch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct k_sigaction *k;
 	int i;
@@ -403,15 +255,9 @@ static void collect_sigign_sigcatch(struct task_struct *p, sigset_t *sigign,
 	k = p->sighand->action;
 	for (i = 1; i <= _NSIG; ++i, ++k) {
 		if (k->sa.sa_handler == SIG_IGN)
-<<<<<<< HEAD
-			sigaddset(ign, i);
-		else if (k->sa.sa_handler != SIG_DFL)
-			sigaddset(catch, i);
-=======
 			sigaddset(sigign, i);
 		else if (k->sa.sa_handler != SIG_DFL)
 			sigaddset(sigcatch, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -420,11 +266,7 @@ static inline void task_sig(struct seq_file *m, struct task_struct *p)
 	unsigned long flags;
 	sigset_t pending, shpending, blocked, ignored, caught;
 	int num_threads = 0;
-<<<<<<< HEAD
-	unsigned long qsize = 0;
-=======
 	unsigned int qsize = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long qlim = 0;
 
 	sigemptyset(&pending);
@@ -440,30 +282,18 @@ static inline void task_sig(struct seq_file *m, struct task_struct *p)
 		collect_sigign_sigcatch(p, &ignored, &caught);
 		num_threads = get_nr_threads(p);
 		rcu_read_lock();  /* FIXME: is this correct? */
-<<<<<<< HEAD
-		qsize = atomic_read(&__task_cred(p)->user->sigpending);
-=======
 		qsize = get_rlimit_value(task_ucounts(p), UCOUNT_RLIMIT_SIGPENDING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_unlock();
 		qlim = task_rlimit(p, RLIMIT_SIGPENDING);
 		unlock_task_sighand(p, &flags);
 	}
 
-<<<<<<< HEAD
-	seq_printf(m, "Threads:\t%d\n", num_threads);
-	seq_printf(m, "SigQ:\t%lu/%lu\n", qsize, qlim);
-
-	/* render them all */
-	render_sigset_t(m, "SigPnd:\t", &pending);
-=======
 	seq_put_decimal_ull(m, "Threads:\t", num_threads);
 	seq_put_decimal_ull(m, "\nSigQ:\t", qsize);
 	seq_put_decimal_ull(m, "/", qlim);
 
 	/* render them all */
 	render_sigset_t(m, "\nSigPnd:\t", &pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	render_sigset_t(m, "ShdPnd:\t", &shpending);
 	render_sigset_t(m, "SigBlk:\t", &blocked);
 	render_sigset_t(m, "SigIgn:\t", &ignored);
@@ -473,18 +303,8 @@ static inline void task_sig(struct seq_file *m, struct task_struct *p)
 static void render_cap_t(struct seq_file *m, const char *header,
 			kernel_cap_t *a)
 {
-<<<<<<< HEAD
-	unsigned __capi;
-
-	seq_puts(m, header);
-	CAP_FOR_EACH_U32(__capi) {
-		seq_printf(m, "%08x",
-			   a->cap[(_KERNEL_CAPABILITY_U32S-1) - __capi]);
-	}
-=======
 	seq_puts(m, header);
 	seq_put_hex_ll(m, NULL, a->val, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_putc(m, '\n');
 }
 
@@ -512,11 +332,6 @@ static inline void task_cap(struct seq_file *m, struct task_struct *p)
 
 static inline void task_seccomp(struct seq_file *m, struct task_struct *p)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_SECCOMP
-	seq_printf(m, "Seccomp:\t%d\n", p->seccomp.mode);
-#endif
-=======
 	seq_put_decimal_ull(m, "NoNewPrivs:\t", task_no_new_privs(p));
 #ifdef CONFIG_SECCOMP
 	seq_put_decimal_ull(m, "\nSeccomp:\t", p->seccomp.mode);
@@ -578,36 +393,18 @@ static inline void task_seccomp(struct seq_file *m, struct task_struct *p)
 		break;
 	}
 	seq_putc(m, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void task_context_switch_counts(struct seq_file *m,
 						struct task_struct *p)
 {
-<<<<<<< HEAD
-	seq_printf(m,	"voluntary_ctxt_switches:\t%lu\n"
-			"nonvoluntary_ctxt_switches:\t%lu\n",
-			p->nvcsw,
-			p->nivcsw);
-=======
 	seq_put_decimal_ull(m, "voluntary_ctxt_switches:\t", p->nvcsw);
 	seq_put_decimal_ull(m, "\nnonvoluntary_ctxt_switches:\t", p->nivcsw);
 	seq_putc(m, '\n');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void task_cpus_allowed(struct seq_file *m, struct task_struct *task)
 {
-<<<<<<< HEAD
-	seq_puts(m, "Cpus_allowed:\t");
-	seq_cpumask(m, &task->cpus_allowed);
-	seq_putc(m, '\n');
-	seq_puts(m, "Cpus_allowed_list:\t");
-	seq_cpumask_list(m, &task->cpus_allowed);
-	seq_putc(m, '\n');
-}
-
-=======
 	seq_printf(m, "Cpus_allowed:\t%*pb\n",
 		   cpumask_pr_args(&task->cpus_mask));
 	seq_printf(m, "Cpus_allowed_list:\t%*pbl\n",
@@ -639,30 +436,22 @@ __weak void arch_proc_pid_thread_features(struct seq_file *m,
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int proc_pid_status(struct seq_file *m, struct pid_namespace *ns,
 			struct pid *pid, struct task_struct *task)
 {
 	struct mm_struct *mm = get_task_mm(task);
 
-<<<<<<< HEAD
-	task_name(m, task);
-=======
 	seq_puts(m, "Name:\t");
 	proc_task_name(m, task, true);
 	seq_putc(m, '\n');
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task_state(m, ns, pid, task);
 
 	if (mm) {
 		task_mem(m, mm);
-<<<<<<< HEAD
-=======
 		task_core_dumping(m, task);
 		task_thp_status(m, mm);
 		task_untag_mask(m, mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mmput(mm);
 	}
 	task_sig(m, task);
@@ -671,23 +460,15 @@ int proc_pid_status(struct seq_file *m, struct pid_namespace *ns,
 	task_cpus_allowed(m, task);
 	cpuset_task_status_allowed(m, task);
 	task_context_switch_counts(m, task);
-<<<<<<< HEAD
-=======
 	arch_proc_pid_thread_features(m, task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 			struct pid *pid, struct task_struct *task, int whole)
 {
-<<<<<<< HEAD
-	unsigned long vsize, eip, esp, wchan = ~0UL;
-	long priority, nice;
-=======
 	unsigned long vsize, eip, esp, wchan = 0;
 	int priority, nice;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tty_pgrp = -1, tty_nr = 0;
 	sigset_t sigign, sigcatch;
 	char state;
@@ -696,38 +477,6 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	int permitted;
 	struct mm_struct *mm;
 	unsigned long long start_time;
-<<<<<<< HEAD
-	unsigned long cmin_flt = 0, cmaj_flt = 0;
-	unsigned long  min_flt = 0,  maj_flt = 0;
-	cputime_t cutime, cstime, utime, stime;
-	cputime_t cgtime, gtime;
-	unsigned long rsslim = 0;
-	char tcomm[sizeof(task->comm)];
-	unsigned long flags;
-
-	state = *get_task_state(task);
-	vsize = eip = esp = 0;
-	permitted = ptrace_may_access(task, PTRACE_MODE_READ | PTRACE_MODE_NOAUDIT);
-	mm = get_task_mm(task);
-	if (mm) {
-		vsize = task_vsize(mm);
-		if (permitted) {
-			eip = KSTK_EIP(task);
-			esp = KSTK_ESP(task);
-		}
-	}
-
-	get_task_comm(tcomm, task);
-
-	sigemptyset(&sigign);
-	sigemptyset(&sigcatch);
-	cutime = cstime = utime = stime = 0;
-	cgtime = gtime = 0;
-
-	if (lock_task_sighand(task, &flags)) {
-		struct signal_struct *sig = task->signal;
-
-=======
 	unsigned long cmin_flt, cmaj_flt, min_flt, maj_flt;
 	u64 cutime, cstime, cgtime, utime, stime, gtime;
 	unsigned long rsslim = 0;
@@ -764,7 +513,6 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	sigemptyset(&sigcatch);
 
 	if (lock_task_sighand(task, &flags)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sig->tty) {
 			struct pid *pgrp = tty_get_pgrp(sig->tty);
 			tty_pgrp = pid_nr_ns(pgrp, ns);
@@ -775,35 +523,11 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 		num_threads = get_nr_threads(task);
 		collect_sigign_sigcatch(task, &sigign, &sigcatch);
 
-<<<<<<< HEAD
-		cmin_flt = sig->cmin_flt;
-		cmaj_flt = sig->cmaj_flt;
-		cutime = sig->cutime;
-		cstime = sig->cstime;
-		cgtime = sig->cgtime;
-		rsslim = ACCESS_ONCE(sig->rlim[RLIMIT_RSS].rlim_cur);
-
-		/* add up live thread stats at the group level */
-		if (whole) {
-			struct task_struct *t = task;
-			do {
-				min_flt += t->min_flt;
-				maj_flt += t->maj_flt;
-				gtime += t->gtime;
-				t = next_thread(t);
-			} while (t != task);
-
-			min_flt += sig->min_flt;
-			maj_flt += sig->maj_flt;
-			thread_group_times(task, &utime, &stime);
-			gtime += sig->gtime;
-=======
 		rsslim = READ_ONCE(sig->rlim[RLIMIT_RSS].rlim_cur);
 
 		if (whole) {
 			if (sig->flags & (SIGNAL_GROUP_EXIT | SIGNAL_STOP_STOPPED))
 				exit_code = sig->group_exit_code;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		sid = task_session_nr_ns(task, ns);
@@ -814,14 +538,6 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	}
 
 	if (permitted && (!whole || num_threads < 2))
-<<<<<<< HEAD
-		wchan = get_wchan(task);
-	if (!whole) {
-		min_flt = task->min_flt;
-		maj_flt = task->maj_flt;
-		task_times(task, &utime, &stime);
-		gtime = task->gtime;
-=======
 		wchan = !task_is_running(task);
 
 	do {
@@ -859,7 +575,6 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 		min_flt = task->min_flt;
 		maj_flt = task->maj_flt;
 		gtime = task_gtime(task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* scale priority and nice values from timeslices to -20..20 */
@@ -867,44 +582,6 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	priority = task_prio(task);
 	nice = task_nice(task);
 
-<<<<<<< HEAD
-	/* Temporary variable needed for gcc-2.96 */
-	/* convert timespec -> nsec*/
-	start_time =
-		(unsigned long long)task->real_start_time.tv_sec * NSEC_PER_SEC
-				+ task->real_start_time.tv_nsec;
-	/* convert nsec -> ticks */
-	start_time = nsec_to_clock_t(start_time);
-
-	seq_printf(m, "%d (%s) %c", pid_nr_ns(pid, ns), tcomm, state);
-	seq_put_decimal_ll(m, ' ', ppid);
-	seq_put_decimal_ll(m, ' ', pgid);
-	seq_put_decimal_ll(m, ' ', sid);
-	seq_put_decimal_ll(m, ' ', tty_nr);
-	seq_put_decimal_ll(m, ' ', tty_pgrp);
-	seq_put_decimal_ull(m, ' ', task->flags);
-	seq_put_decimal_ull(m, ' ', min_flt);
-	seq_put_decimal_ull(m, ' ', cmin_flt);
-	seq_put_decimal_ull(m, ' ', maj_flt);
-	seq_put_decimal_ull(m, ' ', cmaj_flt);
-	seq_put_decimal_ull(m, ' ', cputime_to_clock_t(utime));
-	seq_put_decimal_ull(m, ' ', cputime_to_clock_t(stime));
-	seq_put_decimal_ll(m, ' ', cputime_to_clock_t(cutime));
-	seq_put_decimal_ll(m, ' ', cputime_to_clock_t(cstime));
-	seq_put_decimal_ll(m, ' ', priority);
-	seq_put_decimal_ll(m, ' ', nice);
-	seq_put_decimal_ll(m, ' ', num_threads);
-	seq_put_decimal_ull(m, ' ', 0);
-	seq_put_decimal_ull(m, ' ', start_time);
-	seq_put_decimal_ull(m, ' ', vsize);
-	seq_put_decimal_ll(m, ' ', mm ? get_mm_rss(mm) : 0);
-	seq_put_decimal_ull(m, ' ', rsslim);
-	seq_put_decimal_ull(m, ' ', mm ? (permitted ? mm->start_code : 1) : 0);
-	seq_put_decimal_ull(m, ' ', mm ? (permitted ? mm->end_code : 1) : 0);
-	seq_put_decimal_ull(m, ' ', (permitted && mm) ? mm->start_stack : 0);
-	seq_put_decimal_ull(m, ' ', esp);
-	seq_put_decimal_ull(m, ' ', eip);
-=======
 	/* apply timens offset for boottime and convert nsec -> ticks */
 	start_time =
 		nsec_to_clock_t(timens_add_boottime_ns(task->start_boottime));
@@ -941,30 +618,10 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	seq_put_decimal_ull(m, " ", (permitted && mm) ? mm->start_stack : 0);
 	seq_put_decimal_ull(m, " ", esp);
 	seq_put_decimal_ull(m, " ", eip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The signal information here is obsolete.
 	 * It must be decimal for Linux 2.0 compatibility.
 	 * Use /proc/#/status for real-time signals.
 	 */
-<<<<<<< HEAD
-	seq_put_decimal_ull(m, ' ', task->pending.signal.sig[0] & 0x7fffffffUL);
-	seq_put_decimal_ull(m, ' ', task->blocked.sig[0] & 0x7fffffffUL);
-	seq_put_decimal_ull(m, ' ', sigign.sig[0] & 0x7fffffffUL);
-	seq_put_decimal_ull(m, ' ', sigcatch.sig[0] & 0x7fffffffUL);
-	seq_put_decimal_ull(m, ' ', wchan);
-	seq_put_decimal_ull(m, ' ', 0);
-	seq_put_decimal_ull(m, ' ', 0);
-	seq_put_decimal_ll(m, ' ', task->exit_signal);
-	seq_put_decimal_ll(m, ' ', task_cpu(task));
-	seq_put_decimal_ull(m, ' ', task->rt_priority);
-	seq_put_decimal_ull(m, ' ', task->policy);
-	seq_put_decimal_ull(m, ' ', delayacct_blkio_ticks(task));
-	seq_put_decimal_ull(m, ' ', cputime_to_clock_t(gtime));
-	seq_put_decimal_ll(m, ' ', cputime_to_clock_t(cgtime));
-	seq_put_decimal_ull(m, ' ', (mm && permitted) ? mm->start_data : 0);
-	seq_put_decimal_ull(m, ' ', (mm && permitted) ? mm->end_data : 0);
-	seq_put_decimal_ull(m, ' ', (mm && permitted) ? mm->start_brk : 0);
-=======
 	seq_put_decimal_ull(m, " ", task->pending.signal.sig[0] & 0x7fffffffUL);
 	seq_put_decimal_ull(m, " ", task->blocked.sig[0] & 0x7fffffffUL);
 	seq_put_decimal_ull(m, " ", sigign.sig[0] & 0x7fffffffUL);
@@ -1005,7 +662,6 @@ static int do_task_stat(struct seq_file *m, struct pid_namespace *ns,
 	else
 		seq_puts(m, " 0");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_putc(m, '\n');
 	if (mm)
 		mmput(mm);
@@ -1027,32 +683,6 @@ int proc_tgid_stat(struct seq_file *m, struct pid_namespace *ns,
 int proc_pid_statm(struct seq_file *m, struct pid_namespace *ns,
 			struct pid *pid, struct task_struct *task)
 {
-<<<<<<< HEAD
-	unsigned long size = 0, resident = 0, shared = 0, text = 0, data = 0;
-	struct mm_struct *mm = get_task_mm(task);
-
-	if (mm) {
-		size = task_statm(mm, &shared, &text, &data, &resident);
-		mmput(mm);
-	}
-	/*
-	 * For quick read, open code by putting numbers directly
-	 * expected format is
-	 * seq_printf(m, "%lu %lu %lu %lu 0 %lu 0\n",
-	 *               size, resident, shared, text, data);
-	 */
-	seq_put_decimal_ull(m, 0, size);
-	seq_put_decimal_ull(m, ' ', resident);
-	seq_put_decimal_ull(m, ' ', shared);
-	seq_put_decimal_ull(m, ' ', text);
-	seq_put_decimal_ull(m, ' ', 0);
-	seq_put_decimal_ull(m, ' ', data);
-	seq_put_decimal_ull(m, ' ', 0);
-	seq_putc(m, '\n');
-
-	return 0;
-}
-=======
 	struct mm_struct *mm = get_task_mm(task);
 
 	if (mm) {
@@ -1190,4 +820,3 @@ const struct file_operations proc_tid_children_operations = {
 	.release = seq_release,
 };
 #endif /* CONFIG_PROC_CHILDREN */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-config BE2ISCSI
-	tristate "ServerEngines' 10Gbps iSCSI - BladeEngine 2"
-	depends on PCI && SCSI && NET
-	select SCSI_ISCSI_ATTRS
-	select ISCSI_BOOT_SYSFS
-
-	help
-	This driver implements the iSCSI functionality for ServerEngines'
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config BE2ISCSI
 	tristate "Emulex 10Gbps iSCSI - BladeEngine 2"
@@ -18,5 +8,4 @@ config BE2ISCSI
 
 	help
 	This driver implements the iSCSI functionality for Emulex
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	10Gbps Storage adapter - BladeEngine 2.

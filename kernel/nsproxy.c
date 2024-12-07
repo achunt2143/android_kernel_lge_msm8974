@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2006 IBM Corporation
  *
  *  Author: Serge Hallyn <serue@us.ibm.com>
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation, version 2 of the
- *  License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Jun 2006 - namespaces support
  *             OpenVZ, SWsoft Inc.
  *             Pavel Emelianov <xemul@openvz.org>
@@ -29,11 +18,6 @@
 #include <linux/pid_namespace.h>
 #include <net/net_namespace.h>
 #include <linux/ipc_namespace.h>
-<<<<<<< HEAD
-#include <linux/proc_fs.h>
-#include <linux/file.h>
-#include <linux/syscalls.h>
-=======
 #include <linux/time_namespace.h>
 #include <linux/fs_struct.h>
 #include <linux/proc_fs.h>
@@ -42,22 +26,10 @@
 #include <linux/syscalls.h>
 #include <linux/cgroup.h>
 #include <linux/perf_event.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct kmem_cache *nsproxy_cachep;
 
 struct nsproxy init_nsproxy = {
-<<<<<<< HEAD
-	.count	= ATOMIC_INIT(1),
-	.uts_ns	= &init_uts_ns,
-#if defined(CONFIG_POSIX_MQUEUE) || defined(CONFIG_SYSVIPC)
-	.ipc_ns	= &init_ipc_ns,
-#endif
-	.mnt_ns	= NULL,
-	.pid_ns	= &init_pid_ns,
-#ifdef CONFIG_NET
-	.net_ns	= &init_net,
-=======
 	.count			= REFCOUNT_INIT(1),
 	.uts_ns			= &init_uts_ns,
 #if defined(CONFIG_POSIX_MQUEUE) || defined(CONFIG_SYSVIPC)
@@ -74,7 +46,6 @@ struct nsproxy init_nsproxy = {
 #ifdef CONFIG_TIME_NS
 	.time_ns		= &init_time_ns,
 	.time_ns_for_children	= &init_time_ns,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -84,11 +55,7 @@ static inline struct nsproxy *create_nsproxy(void)
 
 	nsproxy = kmem_cache_alloc(nsproxy_cachep, GFP_KERNEL);
 	if (nsproxy)
-<<<<<<< HEAD
-		atomic_set(&nsproxy->count, 1);
-=======
 		refcount_set(&nsproxy->count, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nsproxy;
 }
 
@@ -98,12 +65,8 @@ static inline struct nsproxy *create_nsproxy(void)
  * leave it to the caller to do proper locking and attach it to task.
  */
 static struct nsproxy *create_new_namespaces(unsigned long flags,
-<<<<<<< HEAD
-			struct task_struct *tsk, struct fs_struct *new_fs)
-=======
 	struct task_struct *tsk, struct user_namespace *user_ns,
 	struct fs_struct *new_fs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nsproxy *new_nsp;
 	int err;
@@ -112,45 +75,24 @@ static struct nsproxy *create_new_namespaces(unsigned long flags,
 	if (!new_nsp)
 		return ERR_PTR(-ENOMEM);
 
-<<<<<<< HEAD
-	new_nsp->mnt_ns = copy_mnt_ns(flags, tsk->nsproxy->mnt_ns, task_cred_xxx(tsk, user_ns), new_fs);
-=======
 	new_nsp->mnt_ns = copy_mnt_ns(flags, tsk->nsproxy->mnt_ns, user_ns, new_fs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(new_nsp->mnt_ns)) {
 		err = PTR_ERR(new_nsp->mnt_ns);
 		goto out_ns;
 	}
 
-<<<<<<< HEAD
-	new_nsp->uts_ns = copy_utsname(flags, tsk);
-=======
 	new_nsp->uts_ns = copy_utsname(flags, user_ns, tsk->nsproxy->uts_ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(new_nsp->uts_ns)) {
 		err = PTR_ERR(new_nsp->uts_ns);
 		goto out_uts;
 	}
 
-<<<<<<< HEAD
-	new_nsp->ipc_ns = copy_ipcs(flags, tsk);
-=======
 	new_nsp->ipc_ns = copy_ipcs(flags, user_ns, tsk->nsproxy->ipc_ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(new_nsp->ipc_ns)) {
 		err = PTR_ERR(new_nsp->ipc_ns);
 		goto out_ipc;
 	}
 
-<<<<<<< HEAD
-	new_nsp->pid_ns = copy_pid_ns(flags, task_active_pid_ns(tsk));
-	if (IS_ERR(new_nsp->pid_ns)) {
-		err = PTR_ERR(new_nsp->pid_ns);
-		goto out_pid;
-	}
-
-	new_nsp->net_ns = copy_net_ns(flags, task_cred_xxx(tsk, user_ns), tsk->nsproxy->net_ns);
-=======
 	new_nsp->pid_ns_for_children =
 		copy_pid_ns(flags, user_ns, tsk->nsproxy->pid_ns_for_children);
 	if (IS_ERR(new_nsp->pid_ns_for_children)) {
@@ -166,19 +108,11 @@ static struct nsproxy *create_new_namespaces(unsigned long flags,
 	}
 
 	new_nsp->net_ns = copy_net_ns(flags, user_ns, tsk->nsproxy->net_ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(new_nsp->net_ns)) {
 		err = PTR_ERR(new_nsp->net_ns);
 		goto out_net;
 	}
 
-<<<<<<< HEAD
-	return new_nsp;
-
-out_net:
-	if (new_nsp->pid_ns)
-		put_pid_ns(new_nsp->pid_ns);
-=======
 	new_nsp->time_ns_for_children = copy_time_ns(flags, user_ns,
 					tsk->nsproxy->time_ns_for_children);
 	if (IS_ERR(new_nsp->time_ns_for_children)) {
@@ -196,7 +130,6 @@ out_net:
 out_cgroup:
 	if (new_nsp->pid_ns_for_children)
 		put_pid_ns(new_nsp->pid_ns_for_children);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_pid:
 	if (new_nsp->ipc_ns)
 		put_ipc_ns(new_nsp->ipc_ns);
@@ -218,24 +151,6 @@ out_ns:
 int copy_namespaces(unsigned long flags, struct task_struct *tsk)
 {
 	struct nsproxy *old_ns = tsk->nsproxy;
-<<<<<<< HEAD
-	struct nsproxy *new_ns;
-	int err = 0;
-
-	if (!old_ns)
-		return 0;
-
-	get_nsproxy(old_ns);
-
-	if (!(flags & (CLONE_NEWNS | CLONE_NEWUTS | CLONE_NEWIPC |
-				CLONE_NEWPID | CLONE_NEWNET)))
-		return 0;
-
-	if (!capable(CAP_SYS_ADMIN)) {
-		err = -EPERM;
-		goto out;
-	}
-=======
 	struct user_namespace *user_ns = task_cred_xxx(tsk, user_ns);
 	struct nsproxy *new_ns;
 
@@ -249,7 +164,6 @@ int copy_namespaces(unsigned long flags, struct task_struct *tsk)
 		}
 	} else if (!ns_capable(user_ns, CAP_SYS_ADMIN))
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * CLONE_NEWIPC must detach from the undolist: after switching
@@ -258,24 +172,6 @@ int copy_namespaces(unsigned long flags, struct task_struct *tsk)
 	 * means share undolist with parent, so we must forbid using
 	 * it along with CLONE_NEWIPC.
 	 */
-<<<<<<< HEAD
-	if ((flags & CLONE_NEWIPC) && (flags & CLONE_SYSVSEM)) {
-		err = -EINVAL;
-		goto out;
-	}
-
-	new_ns = create_new_namespaces(flags, tsk, tsk->fs);
-	if (IS_ERR(new_ns)) {
-		err = PTR_ERR(new_ns);
-		goto out;
-	}
-
-	tsk->nsproxy = new_ns;
-
-out:
-	put_nsproxy(old_ns);
-	return err;
-=======
 	if ((flags & (CLONE_NEWIPC | CLONE_SYSVSEM)) ==
 		(CLONE_NEWIPC | CLONE_SYSVSEM))
 		return -EINVAL;
@@ -289,7 +185,6 @@ out:
 
 	tsk->nsproxy = new_ns;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void free_nsproxy(struct nsproxy *ns)
@@ -300,10 +195,6 @@ void free_nsproxy(struct nsproxy *ns)
 		put_uts_ns(ns->uts_ns);
 	if (ns->ipc_ns)
 		put_ipc_ns(ns->ipc_ns);
-<<<<<<< HEAD
-	if (ns->pid_ns)
-		put_pid_ns(ns->pid_ns);
-=======
 	if (ns->pid_ns_for_children)
 		put_pid_ns(ns->pid_ns_for_children);
 	if (ns->time_ns)
@@ -311,7 +202,6 @@ void free_nsproxy(struct nsproxy *ns)
 	if (ns->time_ns_for_children)
 		put_time_ns(ns->time_ns_for_children);
 	put_cgroup_ns(ns->cgroup_ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_net(ns->net_ns);
 	kmem_cache_free(nsproxy_cachep, ns);
 }
@@ -321,21 +211,6 @@ void free_nsproxy(struct nsproxy *ns)
  * On success, returns the new nsproxy.
  */
 int unshare_nsproxy_namespaces(unsigned long unshare_flags,
-<<<<<<< HEAD
-		struct nsproxy **new_nsp, struct fs_struct *new_fs)
-{
-	int err = 0;
-
-	if (!(unshare_flags & (CLONE_NEWNS | CLONE_NEWUTS | CLONE_NEWIPC |
-			       CLONE_NEWNET)))
-		return 0;
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EPERM;
-
-	*new_nsp = create_new_namespaces(unshare_flags, current,
-				new_fs ? new_fs : current->fs);
-=======
 	struct nsproxy **new_nsp, struct cred *new_cred, struct fs_struct *new_fs)
 {
 	struct user_namespace *user_ns;
@@ -352,7 +227,6 @@ int unshare_nsproxy_namespaces(unsigned long unshare_flags,
 
 	*new_nsp = create_new_namespaces(unshare_flags, current, user_ns,
 					 new_fs ? new_fs : current->fs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(*new_nsp)) {
 		err = PTR_ERR(*new_nsp);
 		goto out;
@@ -368,22 +242,6 @@ void switch_task_namespaces(struct task_struct *p, struct nsproxy *new)
 
 	might_sleep();
 
-<<<<<<< HEAD
-	ns = p->nsproxy;
-
-	rcu_assign_pointer(p->nsproxy, new);
-
-	if (ns && atomic_dec_and_test(&ns->count)) {
-		/*
-		 * wait for others to get what they want from this nsproxy.
-		 *
-		 * cannot release this nsproxy via the call_rcu() since
-		 * put_mnt_ns() will want to sleep
-		 */
-		synchronize_rcu();
-		free_nsproxy(ns);
-	}
-=======
 	task_lock(p);
 	ns = p->nsproxy;
 	p->nsproxy = new;
@@ -391,7 +249,6 @@ void switch_task_namespaces(struct task_struct *p, struct nsproxy *new)
 
 	if (ns)
 		put_nsproxy(ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void exit_task_namespaces(struct task_struct *p)
@@ -399,44 +256,6 @@ void exit_task_namespaces(struct task_struct *p)
 	switch_task_namespaces(p, NULL);
 }
 
-<<<<<<< HEAD
-SYSCALL_DEFINE2(setns, int, fd, int, nstype)
-{
-	const struct proc_ns_operations *ops;
-	struct task_struct *tsk = current;
-	struct nsproxy *new_nsproxy;
-	struct proc_inode *ei;
-	struct file *file;
-	int err;
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EPERM;
-
-	file = proc_ns_fget(fd);
-	if (IS_ERR(file))
-		return PTR_ERR(file);
-
-	err = -EINVAL;
-	ei = PROC_I(file->f_dentry->d_inode);
-	ops = ei->ns_ops;
-	if (nstype && (ops->type != nstype))
-		goto out;
-
-	new_nsproxy = create_new_namespaces(0, tsk, tsk->fs);
-	if (IS_ERR(new_nsproxy)) {
-		err = PTR_ERR(new_nsproxy);
-		goto out;
-	}
-
-	err = ops->install(new_nsproxy, ei->ns);
-	if (err) {
-		free_nsproxy(new_nsproxy);
-		goto out;
-	}
-	switch_task_namespaces(tsk, new_nsproxy);
-out:
-	fput(file);
-=======
 int exec_task_namespaces(void)
 {
 	struct task_struct *tsk = current;
@@ -762,16 +581,11 @@ SYSCALL_DEFINE2(setns, int, fd, int, flags)
 	put_nsset(&nsset);
 out:
 	fdput(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 int __init nsproxy_cache_init(void)
 {
-<<<<<<< HEAD
-	nsproxy_cachep = KMEM_CACHE(nsproxy, SLAB_PANIC);
-=======
 	nsproxy_cachep = KMEM_CACHE(nsproxy, SLAB_PANIC|SLAB_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

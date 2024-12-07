@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-/*
- * Littlemill audio support
- *
- * Copyright 2011 Wolfson Microelectronics
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // Littlemill audio support
 //
 // Copyright 2011 Wolfson Microelectronics
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -31,12 +18,6 @@ static int littlemill_set_bias_level(struct snd_soc_card *card,
 					  struct snd_soc_dapm_context *dapm,
 					  enum snd_soc_bias_level level)
 {
-<<<<<<< HEAD
-	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
-	int ret;
-
-	if (dapm->dev != codec_dai->dev)
-=======
 	struct snd_soc_pcm_runtime *rtd;
 	struct snd_soc_dai *aif1_dai;
 	int ret;
@@ -45,7 +26,6 @@ static int littlemill_set_bias_level(struct snd_soc_card *card,
 	aif1_dai = snd_soc_rtd_to_codec(rtd, 0);
 
 	if (dapm->dev != aif1_dai->dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	switch (level) {
@@ -55,11 +35,7 @@ static int littlemill_set_bias_level(struct snd_soc_card *card,
 		 * then do so now, otherwise these are noops.
 		 */
 		if (dapm->bias_level == SND_SOC_BIAS_STANDBY) {
-<<<<<<< HEAD
-			ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL1,
-=======
 			ret = snd_soc_dai_set_pll(aif1_dai, WM8994_FLL1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  WM8994_FLL_SRC_MCLK2, 32768,
 						  sample_rate * 512);
 			if (ret < 0) {
@@ -67,11 +43,7 @@ static int littlemill_set_bias_level(struct snd_soc_card *card,
 				return ret;
 			}
 
-<<<<<<< HEAD
-			ret = snd_soc_dai_set_sysclk(codec_dai,
-=======
 			ret = snd_soc_dai_set_sysclk(aif1_dai,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     WM8994_SYSCLK_FLL1,
 						     sample_rate * 512,
 						     SND_SOC_CLOCK_IN);
@@ -93,12 +65,6 @@ static int littlemill_set_bias_level_post(struct snd_soc_card *card,
 					       struct snd_soc_dapm_context *dapm,
 					       enum snd_soc_bias_level level)
 {
-<<<<<<< HEAD
-	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
-	int ret;
-
-	if (dapm->dev != codec_dai->dev)
-=======
 	struct snd_soc_pcm_runtime *rtd;
 	struct snd_soc_dai *aif1_dai;
 	int ret;
@@ -107,24 +73,10 @@ static int littlemill_set_bias_level_post(struct snd_soc_card *card,
 	aif1_dai = snd_soc_rtd_to_codec(rtd, 0);
 
 	if (dapm->dev != aif1_dai->dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	switch (level) {
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK2,
-					     32768, SND_SOC_CLOCK_IN);
-		if (ret < 0) {
-			pr_err("Failed to switch away from FLL: %d\n", ret);
-			return ret;
-		}
-
-		ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL1,
-					  0, 0, 0);
-		if (ret < 0) {
-			pr_err("Failed to stop FLL: %d\n", ret);
-=======
 		ret = snd_soc_dai_set_sysclk(aif1_dai, WM8994_SYSCLK_MCLK2,
 					     32768, SND_SOC_CLOCK_IN);
 		if (ret < 0) {
@@ -136,7 +88,6 @@ static int littlemill_set_bias_level_post(struct snd_soc_card *card,
 					  0, 0, 0);
 		if (ret < 0) {
 			pr_err("Failed to stop FLL1: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 		break;
@@ -153,13 +104,8 @@ static int littlemill_set_bias_level_post(struct snd_soc_card *card,
 static int littlemill_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_dai *codec_dai = rtd->codec_dai;
-=======
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
 	struct snd_soc_dai *codec_dai = snd_soc_rtd_to_codec(rtd, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	sample_rate = params_rate(params);
@@ -184,12 +130,6 @@ static int littlemill_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_soc_ops littlemill_ops = {
-	.hw_params = littlemill_hw_params,
-};
-
-=======
 static const struct snd_soc_ops littlemill_ops = {
 	.hw_params = littlemill_hw_params,
 };
@@ -212,31 +152,10 @@ SND_SOC_DAILINK_DEFS(baseband,
 	DAILINK_COMP_ARRAY(COMP_CODEC("wm1250-ev1.1-0027",
 				      "wm1250-ev1")));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_link littlemill_dai[] = {
 	{
 		.name = "CPU",
 		.stream_name = "CPU",
-<<<<<<< HEAD
-		.cpu_dai_name = "samsung-i2s.0",
-		.codec_dai_name = "wm8994-aif1",
-		.platform_name = "samsung-audio",
-		.codec_name = "wm8994-codec",
-		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
-				| SND_SOC_DAIFMT_CBM_CFM,
-		.ops = &littlemill_ops,
-	},
-};
-
-static struct snd_soc_dapm_widget widgets[] = {
-	SND_SOC_DAPM_HP("Headphone", NULL),
-
-	SND_SOC_DAPM_MIC("AMIC", NULL),
-	SND_SOC_DAPM_MIC("DMIC", NULL),
-};
-
-static struct snd_soc_dapm_route audio_paths[] = {
-=======
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF
 				| SND_SOC_DAIFMT_CBM_CFM,
 		.ops = &littlemill_ops,
@@ -325,7 +244,6 @@ static const struct snd_soc_dapm_widget widgets[] = {
 };
 
 static const struct snd_soc_dapm_route audio_paths[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Headphone", NULL, "HPOUT1L" },
 	{ "Headphone", NULL, "HPOUT1R" },
 
@@ -335,19 +253,6 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 	{ "DMIC", NULL, "MICBIAS2" },   /* Default for DMICBIAS jumper */
 	{ "DMIC1DAT", NULL, "DMIC" },
 	{ "DMIC2DAT", NULL, "DMIC" },
-<<<<<<< HEAD
-};
-
-static struct snd_soc_jack littlemill_headset;
-
-static int littlemill_late_probe(struct snd_soc_card *card)
-{
-	struct snd_soc_codec *codec = card->rtd[0].codec;
-	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
-	int ret;
-
-	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK2,
-=======
 
 	{ "AIF2CLK", NULL, "Baseband Clock" },
 };
@@ -380,19 +285,10 @@ static int littlemill_late_probe(struct snd_soc_card *card)
 	aif2_dai = snd_soc_rtd_to_cpu(rtd, 0);
 
 	ret = snd_soc_dai_set_sysclk(aif1_dai, WM8994_SYSCLK_MCLK2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     32768, SND_SOC_CLOCK_IN);
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	ret = snd_soc_jack_new(codec, "Headset",
-			       SND_JACK_HEADSET | SND_JACK_MECHANICAL |
-			       SND_JACK_BTN_0 | SND_JACK_BTN_1 |
-			       SND_JACK_BTN_2 | SND_JACK_BTN_3 |
-			       SND_JACK_BTN_4 | SND_JACK_BTN_5,
-			       &littlemill_headset);
-=======
 	ret = snd_soc_dai_set_sysclk(aif2_dai, WM8994_SYSCLK_MCLK2,
 				     32768, SND_SOC_CLOCK_IN);
 	if (ret < 0)
@@ -406,22 +302,14 @@ static int littlemill_late_probe(struct snd_soc_card *card)
 					 &littlemill_headset,
 					 littlemill_headset_pins,
 					 ARRAY_SIZE(littlemill_headset_pins));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
 	/* This will check device compatibility itself */
-<<<<<<< HEAD
-	wm8958_mic_detect(codec, &littlemill_headset, NULL, NULL);
-
-	/* As will this */
-	wm8994_mic_detect(codec, &littlemill_headset, 1);
-=======
 	wm8958_mic_detect(component, &littlemill_headset, NULL, NULL, NULL, NULL);
 
 	/* As will this */
 	wm8994_mic_detect(component, &littlemill_headset, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -435,11 +323,8 @@ static struct snd_soc_card littlemill = {
 	.set_bias_level = littlemill_set_bias_level,
 	.set_bias_level_post = littlemill_set_bias_level_post,
 
-<<<<<<< HEAD
-=======
 	.controls = controls,
 	.num_controls = ARRAY_SIZE(controls),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dapm_widgets = widgets,
 	.num_dapm_widgets = ARRAY_SIZE(widgets),
 	.dapm_routes = audio_paths,
@@ -448,58 +333,26 @@ static struct snd_soc_card littlemill = {
 	.late_probe = littlemill_late_probe,
 };
 
-<<<<<<< HEAD
-static __devinit int littlemill_probe(struct platform_device *pdev)
-=======
 static int littlemill_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_soc_card *card = &littlemill;
 	int ret;
 
 	card->dev = &pdev->dev;
 
-<<<<<<< HEAD
-	ret = snd_soc_register_card(card);
-	if (ret) {
-		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
-			ret);
-		return ret;
-	}
-
-	return 0;
-}
-
-static int __devexit littlemill_remove(struct platform_device *pdev)
-{
-	struct snd_soc_card *card = platform_get_drvdata(pdev);
-
-	snd_soc_unregister_card(card);
-
-	return 0;
-=======
 	ret = devm_snd_soc_register_card(&pdev->dev, card);
 	if (ret)
 		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card() failed\n");
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver littlemill_driver = {
 	.driver = {
 		.name = "littlemill",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe = littlemill_probe,
-	.remove = __devexit_p(littlemill_remove),
-=======
-		.pm = &snd_soc_pm_ops,
-	},
-	.probe = littlemill_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(littlemill_driver);

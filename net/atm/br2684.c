@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Ethernet netdevice using ATM AAL5 as underlying carrier
  * (RFC1483 obsoleted by RFC2684) for Linux
@@ -72,22 +69,15 @@ struct br2684_vcc {
 	/* keep old push, pop functions for chaining */
 	void (*old_push)(struct atm_vcc *vcc, struct sk_buff *skb);
 	void (*old_pop)(struct atm_vcc *vcc, struct sk_buff *skb);
-<<<<<<< HEAD
-=======
 	void (*old_release_cb)(struct atm_vcc *vcc);
 	struct module *old_owner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum br2684_encaps encaps;
 	struct list_head brvccs;
 #ifdef CONFIG_ATM_BR2684_IPFILTER
 	struct br2684_filter filter;
 #endif /* CONFIG_ATM_BR2684_IPFILTER */
-<<<<<<< HEAD
-	unsigned copies_needed, copies_failed;
-=======
 	unsigned int copies_needed, copies_failed;
 	atomic_t qspace;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct br2684_dev {
@@ -103,13 +93,8 @@ struct br2684_dev {
  * This lock should be held for writing any time the list of devices or
  * their attached vcc's could be altered.  It should be held for reading
  * any time these are being queried.  Note that we sometimes need to
-<<<<<<< HEAD
- * do read-locking under interrupt context, so write locking must block
- * the current CPU's interrupts
-=======
  * do read-locking under interrupting context, so write locking must block
  * the current CPU's interrupts.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static DEFINE_RWLOCK(devs_lock);
 
@@ -200,20 +185,6 @@ static struct notifier_block atm_dev_notifier = {
 static void br2684_pop(struct atm_vcc *vcc, struct sk_buff *skb)
 {
 	struct br2684_vcc *brvcc = BR2684_VCC(vcc);
-<<<<<<< HEAD
-	struct net_device *net_dev = skb->dev;
-
-	pr_debug("(vcc %p ; net_dev %p )\n", vcc, net_dev);
-	brvcc->old_pop(vcc, skb);
-
-	if (!net_dev)
-		return;
-
-	if (atm_may_send(vcc, 0))
-		netif_wake_queue(net_dev);
-
-}
-=======
 
 	pr_debug("(vcc %p ; net_dev %p )\n", vcc, brvcc->device);
 	brvcc->old_pop(vcc, skb);
@@ -223,7 +194,6 @@ static void br2684_pop(struct atm_vcc *vcc, struct sk_buff *skb)
 		netif_wake_queue(brvcc->device);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Send a packet out a particular vcc.  Not to useful right now, but paves
  * the way for multiple vcc's per itf.  Returns true if we can send,
@@ -283,22 +253,6 @@ static int br2684_xmit_vcc(struct sk_buff *skb, struct net_device *dev,
 
 	ATM_SKB(skb)->vcc = atmvcc = brvcc->atmvcc;
 	pr_debug("atm_skb(%p)->vcc(%p)->dev(%p)\n", skb, atmvcc, atmvcc->dev);
-<<<<<<< HEAD
-	atomic_add(skb->truesize, &sk_atm(atmvcc)->sk_wmem_alloc);
-	ATM_SKB(skb)->atm_options = atmvcc->atm_options;
-	dev->stats.tx_packets++;
-	dev->stats.tx_bytes += skb->len;
-	atmvcc->send(atmvcc, skb);
-
-	if (!atm_may_send(atmvcc, 0)) {
-		netif_stop_queue(brvcc->device);
-		/*check for race with br2684_pop*/
-		if (atm_may_send(atmvcc, 0))
-			netif_start_queue(brvcc->device);
-	}
-
-	return 1;
-=======
 	atm_account_tx(atmvcc, skb);
 	dev->stats.tx_packets++;
 	dev->stats.tx_bytes += skb->len;
@@ -326,7 +280,6 @@ static void br2684_release_cb(struct atm_vcc *atmvcc)
 
 	if (brvcc->old_release_cb)
 		brvcc->old_release_cb(atmvcc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct br2684_vcc *pick_outgoing_vcc(const struct sk_buff *skb,
@@ -340,11 +293,8 @@ static netdev_tx_t br2684_start_xmit(struct sk_buff *skb,
 {
 	struct br2684_dev *brdev = BRPRIV(dev);
 	struct br2684_vcc *brvcc;
-<<<<<<< HEAD
-=======
 	struct atm_vcc *atmvcc;
 	netdev_tx_t ret = NETDEV_TX_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("skb_dst(skb)=%p\n", skb_dst(skb));
 	read_lock(&devs_lock);
@@ -355,11 +305,6 @@ static netdev_tx_t br2684_start_xmit(struct sk_buff *skb,
 		dev->stats.tx_carrier_errors++;
 		/* netif_stop_queue(dev); */
 		dev_kfree_skb(skb);
-<<<<<<< HEAD
-		read_unlock(&devs_lock);
-		return NETDEV_TX_OK;
-	}
-=======
 		goto out_devs;
 	}
 	atmvcc = brvcc->atmvcc;
@@ -380,7 +325,6 @@ static netdev_tx_t br2684_start_xmit(struct sk_buff *skb,
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!br2684_xmit_vcc(skb, dev, brvcc)) {
 		/*
 		 * We should probably use netif_*_queue() here, but that
@@ -392,16 +336,11 @@ static netdev_tx_t br2684_start_xmit(struct sk_buff *skb,
 		dev->stats.tx_errors++;
 		dev->stats.tx_fifo_errors++;
 	}
-<<<<<<< HEAD
-	read_unlock(&devs_lock);
-	return NETDEV_TX_OK;
-=======
  out:
 	bh_unlock_sock(sk_atm(atmvcc));
  out_devs:
 	read_unlock(&devs_lock);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -474,16 +413,10 @@ static void br2684_close_vcc(struct br2684_vcc *brvcc)
 	list_del(&brvcc->brvccs);
 	write_unlock_irq(&devs_lock);
 	brvcc->atmvcc->user_back = NULL;	/* what about vcc->recvq ??? */
-<<<<<<< HEAD
-	brvcc->old_push(brvcc->atmvcc, NULL);	/* pass on the bad news */
-	kfree(brvcc);
-	module_put(THIS_MODULE);
-=======
 	brvcc->atmvcc->release_cb = brvcc->old_release_cb;
 	brvcc->old_push(brvcc->atmvcc, NULL);	/* pass on the bad news */
 	module_put(brvcc->old_owner);
 	kfree(brvcc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* when AAL5 PDU comes in: */
@@ -608,8 +541,6 @@ static int br2684_regvcc(struct atm_vcc *atmvcc, void __user * arg)
 	brvcc = kzalloc(sizeof(struct br2684_vcc), GFP_KERNEL);
 	if (!brvcc)
 		return -ENOMEM;
-<<<<<<< HEAD
-=======
 	/*
 	 * Allow two packets in the ATM queue. One actually being sent, and one
 	 * for the ATM 'TX done' handler to send. It shouldn't take long to get
@@ -617,7 +548,6 @@ static int br2684_regvcc(struct atm_vcc *atmvcc, void __user * arg)
 	 * would be bufferbloat.
 	 */
 	atomic_set(&brvcc->qspace, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_lock_irq(&devs_lock);
 	net_dev = br2684_find_dev(&be.ifspec);
 	if (net_dev == NULL) {
@@ -647,19 +577,12 @@ static int br2684_regvcc(struct atm_vcc *atmvcc, void __user * arg)
 	pr_debug("vcc=%p, encaps=%d, brvcc=%p\n", atmvcc, be.encaps, brvcc);
 	if (list_empty(&brdev->brvccs) && !brdev->mac_was_set) {
 		unsigned char *esi = atmvcc->dev->esi;
-<<<<<<< HEAD
-		if (esi[0] | esi[1] | esi[2] | esi[3] | esi[4] | esi[5])
-			memcpy(net_dev->dev_addr, esi, net_dev->addr_len);
-		else
-			net_dev->dev_addr[2] = 1;
-=======
 		const u8 one = 1;
 
 		if (esi[0] | esi[1] | esi[2] | esi[3] | esi[4] | esi[5])
 			dev_addr_set(net_dev, esi);
 		else
 			dev_addr_mod(net_dev, 2, &one, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	list_add(&brvcc->brvccs, &brdev->brvccs);
 	write_unlock_irq(&devs_lock);
@@ -669,11 +592,6 @@ static int br2684_regvcc(struct atm_vcc *atmvcc, void __user * arg)
 	brvcc->encaps = (enum br2684_encaps)be.encaps;
 	brvcc->old_push = atmvcc->push;
 	brvcc->old_pop = atmvcc->pop;
-<<<<<<< HEAD
-	barrier();
-	atmvcc->push = br2684_push;
-	atmvcc->pop = br2684_pop;
-=======
 	brvcc->old_release_cb = atmvcc->release_cb;
 	brvcc->old_owner = atmvcc->owner;
 	barrier();
@@ -681,7 +599,6 @@ static int br2684_regvcc(struct atm_vcc *atmvcc, void __user * arg)
 	atmvcc->pop = br2684_pop;
 	atmvcc->release_cb = br2684_release_cb;
 	atmvcc->owner = THIS_MODULE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize netdev carrier state */
 	if (atmvcc->dev->signal == ATM_PHY_SIG_LOST)
@@ -705,20 +622,12 @@ error:
 static const struct net_device_ops br2684_netdev_ops = {
 	.ndo_start_xmit 	= br2684_start_xmit,
 	.ndo_set_mac_address	= br2684_mac_addr,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
 static const struct net_device_ops br2684_netdev_ops_routed = {
 	.ndo_start_xmit 	= br2684_start_xmit,
 	.ndo_set_mac_address	= br2684_mac_addr,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void br2684_setup(struct net_device *netdev)
@@ -742,13 +651,9 @@ static void br2684_setup_routed(struct net_device *netdev)
 	netdev->hard_header_len = sizeof(llc_oui_ipv4); /* worst case */
 	netdev->netdev_ops = &br2684_netdev_ops_routed;
 	netdev->addr_len = 0;
-<<<<<<< HEAD
-	netdev->mtu = 1500;
-=======
 	netdev->mtu = ETH_DATA_LEN;
 	netdev->min_mtu = 0;
 	netdev->max_mtu = ETH_MAX_MTU;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev->type = ARPHRD_PPP;
 	netdev->flags = IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
 	netdev->tx_queue_len = 100;
@@ -779,13 +684,8 @@ static int br2684_create(void __user *arg)
 
 	netdev = alloc_netdev(sizeof(struct br2684_dev),
 			      ni.ifname[0] ? ni.ifname : "nas%d",
-<<<<<<< HEAD
-			      (payload == p_routed) ?
-			      br2684_setup_routed : br2684_setup);
-=======
 			      NET_NAME_UNKNOWN,
 			      (payload == p_routed) ? br2684_setup_routed : br2684_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netdev)
 		return -ENOMEM;
 
@@ -837,12 +737,6 @@ static int br2684_ioctl(struct socket *sock, unsigned int cmd,
 			return -ENOIOCTLCMD;
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
-<<<<<<< HEAD
-		if (cmd == ATM_SETBACKEND)
-			return br2684_regvcc(atmvcc, argp);
-		else
-			return br2684_create(argp);
-=======
 		if (cmd == ATM_SETBACKEND) {
 			if (sock->state != SS_CONNECTED)
 				return -EINVAL;
@@ -850,7 +744,6 @@ static int br2684_ioctl(struct socket *sock, unsigned int cmd,
 		} else {
 			return br2684_create(argp);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ATM_BR2684_IPFILTER
 	case BR2684_SETFILT:
 		if (atmvcc->push != br2684_push)
@@ -911,20 +804,10 @@ static int br2684_seq_show(struct seq_file *seq, void *v)
 			   (brdev->payload == p_bridged) ? "bridged" : "routed",
 			   brvcc->copies_failed, brvcc->copies_needed);
 #ifdef CONFIG_ATM_BR2684_IPFILTER
-<<<<<<< HEAD
-#define b1(var, byte)	((u8 *) &brvcc->filter.var)[byte]
-#define bs(var)		b1(var, 0), b1(var, 1), b1(var, 2), b1(var, 3)
-		if (brvcc->filter.netmask != 0)
-			seq_printf(seq, "    filter=%d.%d.%d.%d/"
-				   "%d.%d.%d.%d\n", bs(prefix), bs(netmask));
-#undef bs
-#undef b1
-=======
 		if (brvcc->filter.netmask != 0)
 			seq_printf(seq, "    filter=%pI4/%pI4\n",
 				   &brvcc->filter.prefix,
 				   &brvcc->filter.netmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_ATM_BR2684_IPFILTER */
 	}
 	return 0;
@@ -937,22 +820,6 @@ static const struct seq_operations br2684_seq_ops = {
 	.show = br2684_seq_show,
 };
 
-<<<<<<< HEAD
-static int br2684_proc_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &br2684_seq_ops);
-}
-
-static const struct file_operations br2684_proc_ops = {
-	.owner = THIS_MODULE,
-	.open = br2684_proc_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = seq_release,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct proc_dir_entry *atm_proc_root;	/* from proc.c */
 #endif /* CONFIG_PROC_FS */
 
@@ -960,11 +827,7 @@ static int __init br2684_init(void)
 {
 #ifdef CONFIG_PROC_FS
 	struct proc_dir_entry *p;
-<<<<<<< HEAD
-	p = proc_create("br2684", 0, atm_proc_root, &br2684_proc_ops);
-=======
 	p = proc_create_seq("br2684", 0, atm_proc_root, &br2684_seq_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == NULL)
 		return -ENOMEM;
 #endif

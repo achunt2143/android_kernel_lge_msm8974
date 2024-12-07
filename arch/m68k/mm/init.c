@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef CONFIG_MMU
-#include "init_mm.c"
-#else
-#include "init_no.c"
-#endif
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *  linux/arch/m68k/mm/init.c
@@ -135,4 +128,3 @@ void __init mem_init(void)
 	memblock_free_all();
 	init_pointer_tables();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

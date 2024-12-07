@@ -1,35 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  GPIO driven matrix keyboard driver
  *
  *  Copyright (c) 2008 Marek Vasut <marek.vasut@gmail.com>
-<<<<<<< HEAD
- *  Copyright (c) 2012, The Linux Foundation. All rights reserved.
  *
  *  Based on corgikbd.c
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
- *
-=======
- *
- *  Based on corgikbd.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/platform_device.h>
-#include <linux/init.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/irq.h>
 #include <linux/interrupt.h>
@@ -38,26 +19,13 @@
 #include <linux/gpio.h>
 #include <linux/input/matrix_keypad.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/of_gpio.h>
 #include <linux/of_platform.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct matrix_keypad {
 	const struct matrix_keypad_platform_data *pdata;
 	struct input_dev *input_dev;
-<<<<<<< HEAD
-	unsigned short *keycodes;
-	unsigned int row_shift;
-
-	DECLARE_BITMAP(disabled_gpios, MATRIX_MAX_ROWS);
-
-	uint32_t last_key_state[MATRIX_MAX_COLS];
-	struct delayed_work work;
-	struct mutex lock;
-=======
 	unsigned int row_shift;
 
 	unsigned int row_irqs[MATRIX_MAX_ROWS];
@@ -67,23 +35,16 @@ struct matrix_keypad {
 	uint32_t last_key_state[MATRIX_MAX_COLS];
 	struct delayed_work work;
 	spinlock_t lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool scan_pending;
 	bool stopped;
 	bool gpio_all_disabled;
 };
 
 /*
-<<<<<<< HEAD
- * NOTE: normally the GPIO has to be put into HiZ when de-activated to cause
- * minmal side effect when scanning other columns, here it is configured to
- * be input, and it should work on most platforms.
-=======
  * NOTE: If drive_inactive_cols is false, then the GPIO has to be put into
  * HiZ when de-activated to cause minmal side effect when scanning other
  * columns. In that case it is configured here to be input, otherwise it is
  * driven with the inactive value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void __activate_col(const struct matrix_keypad_platform_data *pdata,
 			   int col, bool on)
@@ -94,12 +55,8 @@ static void __activate_col(const struct matrix_keypad_platform_data *pdata,
 		gpio_direction_output(pdata->col_gpios[col], level_on);
 	} else {
 		gpio_set_value_cansleep(pdata->col_gpios[col], !level_on);
-<<<<<<< HEAD
-		gpio_direction_input(pdata->col_gpios[col]);
-=======
 		if (!pdata->drive_inactive_cols)
 			gpio_direction_input(pdata->col_gpios[col]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -130,42 +87,18 @@ static bool row_asserted(const struct matrix_keypad_platform_data *pdata,
 
 static void enable_row_irqs(struct matrix_keypad *keypad)
 {
-<<<<<<< HEAD
-	const struct matrix_keypad_platform_data *pdata = keypad->pdata;
-	int i;
-
-	if (pdata->clustered_irq > 0)
-		enable_irq(pdata->clustered_irq);
-	else {
-		for (i = 0; i < pdata->num_row_gpios; i++)
-			enable_irq(gpio_to_irq(pdata->row_gpios[i]));
-	}
-=======
 	int i;
 
 	for (i = 0; i < keypad->num_row_irqs; i++)
 		enable_irq(keypad->row_irqs[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void disable_row_irqs(struct matrix_keypad *keypad)
 {
-<<<<<<< HEAD
-	const struct matrix_keypad_platform_data *pdata = keypad->pdata;
-	int i;
-
-	if (pdata->clustered_irq > 0)
-		disable_irq_nosync(pdata->clustered_irq);
-	else {
-		for (i = 0; i < pdata->num_row_gpios; i++)
-			disable_irq_nosync(gpio_to_irq(pdata->row_gpios[i]));
-	}
-=======
 	int i;
 
 	for (i = 0; i < keypad->num_row_irqs; i++)
 		disable_irq_nosync(keypad->row_irqs[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -176,10 +109,7 @@ static void matrix_keypad_scan(struct work_struct *work)
 	struct matrix_keypad *keypad =
 		container_of(work, struct matrix_keypad, work.work);
 	struct input_dev *input_dev = keypad->input_dev;
-<<<<<<< HEAD
-=======
 	const unsigned short *keycodes = input_dev->keycode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct matrix_keypad_platform_data *pdata = keypad->pdata;
 	uint32_t new_state[MATRIX_MAX_COLS];
 	int row, col, code;
@@ -189,12 +119,9 @@ static void matrix_keypad_scan(struct work_struct *work)
 
 	memset(new_state, 0, sizeof(new_state));
 
-<<<<<<< HEAD
-=======
 	for (row = 0; row < pdata->num_row_gpios; row++)
 		gpio_direction_input(pdata->row_gpios[row]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* assert each column and read the row status out */
 	for (col = 0; col < pdata->num_col_gpios; col++) {
 
@@ -221,11 +148,7 @@ static void matrix_keypad_scan(struct work_struct *work)
 			code = MATRIX_SCAN_CODE(row, col, keypad->row_shift);
 			input_event(input_dev, EV_MSC, MSC_SCAN, code);
 			input_report_key(input_dev,
-<<<<<<< HEAD
-					 keypad->keycodes[code],
-=======
 					 keycodes[code],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 new_state[col] & (1 << row));
 		}
 	}
@@ -235,31 +158,19 @@ static void matrix_keypad_scan(struct work_struct *work)
 
 	activate_all_cols(pdata, true);
 
-<<<<<<< HEAD
-	mutex_lock(&keypad->lock);
-	keypad->scan_pending = false;
-	enable_row_irqs(keypad);
-	mutex_unlock(&keypad->lock);
-=======
 	/* Enable IRQs again */
 	spin_lock_irq(&keypad->lock);
 	keypad->scan_pending = false;
 	enable_row_irqs(keypad);
 	spin_unlock_irq(&keypad->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t matrix_keypad_interrupt(int irq, void *id)
 {
 	struct matrix_keypad *keypad = id;
-<<<<<<< HEAD
-
-	mutex_lock(&keypad->lock);
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&keypad->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * See if another IRQ beaten us to it and scheduled the
@@ -275,11 +186,7 @@ static irqreturn_t matrix_keypad_interrupt(int irq, void *id)
 		msecs_to_jiffies(keypad->pdata->debounce_ms));
 
 out:
-<<<<<<< HEAD
-	mutex_unlock(&keypad->lock);
-=======
 	spin_unlock_irqrestore(&keypad->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -303,17 +210,11 @@ static void matrix_keypad_stop(struct input_dev *dev)
 {
 	struct matrix_keypad *keypad = input_get_drvdata(dev);
 
-<<<<<<< HEAD
-	keypad->stopped = true;
-	mb();
-	flush_work(&keypad->work.work);
-=======
 	spin_lock_irq(&keypad->lock);
 	keypad->stopped = true;
 	spin_unlock_irq(&keypad->lock);
 
 	flush_delayed_work(&keypad->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * matrix_keypad_scan() will leave IRQs enabled;
 	 * we should disable them now.
@@ -321,29 +222,6 @@ static void matrix_keypad_stop(struct input_dev *dev)
 	disable_row_irqs(keypad);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static void matrix_keypad_enable_wakeup(struct matrix_keypad *keypad)
-{
-	const struct matrix_keypad_platform_data *pdata = keypad->pdata;
-	unsigned int gpio;
-	int i;
-
-	if (pdata->clustered_irq > 0) {
-		if (enable_irq_wake(pdata->clustered_irq) == 0)
-			keypad->gpio_all_disabled = true;
-	} else {
-
-		for (i = 0; i < pdata->num_row_gpios; i++) {
-			if (!test_bit(i, keypad->disabled_gpios)) {
-				gpio = pdata->row_gpios[i];
-
-				if (enable_irq_wake(gpio_to_irq(gpio)) == 0)
-					__set_bit(i, keypad->disabled_gpios);
-			}
-		}
-	}
-=======
 static void matrix_keypad_enable_wakeup(struct matrix_keypad *keypad)
 {
 	int i;
@@ -351,35 +229,15 @@ static void matrix_keypad_enable_wakeup(struct matrix_keypad *keypad)
 	for_each_clear_bit(i, keypad->wakeup_enabled_irqs, keypad->num_row_irqs)
 		if (enable_irq_wake(keypad->row_irqs[i]) == 0)
 			__set_bit(i, keypad->wakeup_enabled_irqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void matrix_keypad_disable_wakeup(struct matrix_keypad *keypad)
 {
-<<<<<<< HEAD
-	const struct matrix_keypad_platform_data *pdata = keypad->pdata;
-	unsigned int gpio;
-	int i;
-
-	if (pdata->clustered_irq > 0) {
-		if (keypad->gpio_all_disabled) {
-			disable_irq_wake(pdata->clustered_irq);
-			keypad->gpio_all_disabled = false;
-		}
-	} else {
-		for (i = 0; i < pdata->num_row_gpios; i++) {
-			if (test_and_clear_bit(i, keypad->disabled_gpios)) {
-				gpio = pdata->row_gpios[i];
-				disable_irq_wake(gpio_to_irq(gpio));
-			}
-		}
-=======
 	int i;
 
 	for_each_set_bit(i, keypad->wakeup_enabled_irqs, keypad->num_row_irqs) {
 		disable_irq_wake(keypad->row_irqs[i]);
 		__clear_bit(i, keypad->wakeup_enabled_irqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -409,21 +267,6 @@ static int matrix_keypad_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static const SIMPLE_DEV_PM_OPS(matrix_keypad_pm_ops,
-				matrix_keypad_suspend, matrix_keypad_resume);
-#endif
-
-static int __devinit init_matrix_gpio(struct platform_device *pdev,
-					struct matrix_keypad *keypad)
-{
-	const struct matrix_keypad_platform_data *pdata = keypad->pdata;
-	int i, err = -EINVAL;
-
-	/* initialized strobe lines as outputs, activated */
-	for (i = 0; i < pdata->num_col_gpios; i++) {
-		err = gpio_request(pdata->col_gpios[i], "matrix_kbd_col");
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(matrix_keypad_pm_ops,
 				matrix_keypad_suspend, matrix_keypad_resume);
 
@@ -437,77 +280,38 @@ static int matrix_keypad_init_gpio(struct platform_device *pdev,
 	for (i = 0; i < pdata->num_col_gpios; i++) {
 		err = devm_gpio_request(&pdev->dev,
 					pdata->col_gpios[i], "matrix_kbd_col");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			dev_err(&pdev->dev,
 				"failed to request GPIO%d for COL%d\n",
 				pdata->col_gpios[i], i);
-<<<<<<< HEAD
-			goto err_free_cols;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		gpio_direction_output(pdata->col_gpios[i], !pdata->active_low);
 	}
 
 	for (i = 0; i < pdata->num_row_gpios; i++) {
-<<<<<<< HEAD
-		err = gpio_request(pdata->row_gpios[i], "matrix_kbd_row");
-=======
 		err = devm_gpio_request(&pdev->dev,
 					pdata->row_gpios[i], "matrix_kbd_row");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			dev_err(&pdev->dev,
 				"failed to request GPIO%d for ROW%d\n",
 				pdata->row_gpios[i], i);
-<<<<<<< HEAD
-			goto err_free_rows;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		gpio_direction_input(pdata->row_gpios[i]);
 	}
 
 	if (pdata->clustered_irq > 0) {
-<<<<<<< HEAD
-		err = request_irq(pdata->clustered_irq,
-=======
 		err = devm_request_any_context_irq(&pdev->dev,
 				pdata->clustered_irq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				matrix_keypad_interrupt,
 				pdata->clustered_irq_flags,
 				"matrix-keypad", keypad);
 		if (err < 0) {
 			dev_err(&pdev->dev,
 				"Unable to acquire clustered interrupt\n");
-<<<<<<< HEAD
-			goto err_free_rows;
-		}
-	} else {
-		for (i = 0; i < pdata->num_row_gpios; i++) {
-			err = request_threaded_irq(
-					gpio_to_irq(pdata->row_gpios[i]),
-					NULL,
-					matrix_keypad_interrupt,
-					IRQF_DISABLED | IRQF_ONESHOT |
-					IRQF_TRIGGER_RISING |
-					IRQF_TRIGGER_FALLING,
-					"matrix-keypad", keypad);
-			if (err < 0) {
-				dev_err(&pdev->dev,
-					"Unable to acquire interrupt "
-					"for GPIO line %i\n",
-					pdata->row_gpios[i]);
-				goto err_free_irqs;
-			}
-		}
-=======
 			return err;
 		}
 
@@ -541,48 +345,10 @@ static int matrix_keypad_init_gpio(struct platform_device *pdev,
 		}
 
 		keypad->num_row_irqs = pdata->num_row_gpios;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* initialized as disabled - enabled by input->open */
 	disable_row_irqs(keypad);
-<<<<<<< HEAD
-	return 0;
-
-err_free_irqs:
-	while (--i >= 0)
-		free_irq(gpio_to_irq(pdata->row_gpios[i]), keypad);
-	i = pdata->num_row_gpios;
-err_free_rows:
-	while (--i >= 0)
-		gpio_free(pdata->row_gpios[i]);
-	i = pdata->num_col_gpios;
-err_free_cols:
-	while (--i >= 0)
-		gpio_free(pdata->col_gpios[i]);
-
-	return err;
-}
-
-static int __devinit matrix_keypad_probe(struct platform_device *pdev)
-{
-	const struct matrix_keypad_platform_data *pdata;
-	const struct matrix_keymap_data *keymap_data;
-	struct matrix_keypad *keypad;
-	struct input_dev *input_dev;
-	unsigned short *keycodes;
-	unsigned int row_shift;
-	int err;
-
-	pdata = pdev->dev.platform_data;
-	if (!pdata) {
-		dev_err(&pdev->dev, "no platform data defined\n");
-		return -EINVAL;
-	}
-
-	keymap_data = pdata->keymap_data;
-	if (!keymap_data) {
-=======
 
 	return 0;
 }
@@ -679,59 +445,10 @@ static int matrix_keypad_probe(struct platform_device *pdev)
 		if (IS_ERR(pdata))
 			return PTR_ERR(pdata);
 	} else if (!pdata->keymap_data) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "no keymap data defined\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	row_shift = get_count_order(pdata->num_col_gpios);
-
-	keypad = kzalloc(sizeof(struct matrix_keypad), GFP_KERNEL);
-	keycodes = kzalloc((pdata->num_row_gpios << row_shift) *
-				sizeof(*keycodes),
-			   GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!keypad || !keycodes || !input_dev) {
-		err = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	keypad->input_dev = input_dev;
-	keypad->pdata = pdata;
-	keypad->keycodes = keycodes;
-	keypad->row_shift = row_shift;
-	keypad->stopped = true;
-	INIT_DELAYED_WORK(&keypad->work, matrix_keypad_scan);
-	mutex_init(&keypad->lock);
-
-	input_dev->name		= pdev->name;
-	input_dev->id.bustype	= BUS_HOST;
-	input_dev->dev.parent	= &pdev->dev;
-	input_dev->evbit[0]	= BIT_MASK(EV_KEY);
-	if (!pdata->no_autorepeat)
-		input_dev->evbit[0] |= BIT_MASK(EV_REP);
-	input_dev->open		= matrix_keypad_start;
-	input_dev->close	= matrix_keypad_stop;
-
-	input_dev->keycode	= keycodes;
-	input_dev->keycodesize	= sizeof(*keycodes);
-	input_dev->keycodemax	= pdata->num_row_gpios << row_shift;
-
-	matrix_keypad_build_keymap(keymap_data, row_shift,
-				   input_dev->keycode, input_dev->keybit);
-
-	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
-	input_set_drvdata(input_dev, keypad);
-
-	err = init_matrix_gpio(pdev, keypad);
-	if (err)
-		goto err_free_mem;
-
-	err = input_register_device(keypad->input_dev);
-	if (err)
-		goto err_free_mem;
-=======
 	keypad = devm_kzalloc(&pdev->dev, sizeof(*keypad), GFP_KERNEL);
 	if (!keypad)
 		return -ENOMEM;
@@ -773,61 +490,11 @@ static int matrix_keypad_probe(struct platform_device *pdev)
 	err = input_register_device(keypad->input_dev);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	device_init_wakeup(&pdev->dev, pdata->wakeup);
 	platform_set_drvdata(pdev, keypad);
 
 	return 0;
-<<<<<<< HEAD
-
-err_free_mem:
-	input_free_device(input_dev);
-	kfree(keycodes);
-	kfree(keypad);
-	return err;
-}
-
-static int __devexit matrix_keypad_remove(struct platform_device *pdev)
-{
-	struct matrix_keypad *keypad = platform_get_drvdata(pdev);
-	const struct matrix_keypad_platform_data *pdata = keypad->pdata;
-	int i;
-
-	device_init_wakeup(&pdev->dev, 0);
-
-	if (pdata->clustered_irq > 0) {
-		free_irq(pdata->clustered_irq, keypad);
-	} else {
-		for (i = 0; i < pdata->num_row_gpios; i++)
-			free_irq(gpio_to_irq(pdata->row_gpios[i]), keypad);
-	}
-
-	for (i = 0; i < pdata->num_row_gpios; i++)
-		gpio_free(pdata->row_gpios[i]);
-
-	for (i = 0; i < pdata->num_col_gpios; i++)
-		gpio_free(pdata->col_gpios[i]);
-
-	mutex_destroy(&keypad->lock);
-	input_unregister_device(keypad->input_dev);
-	platform_set_drvdata(pdev, NULL);
-	kfree(keypad->keycodes);
-	kfree(keypad);
-
-	return 0;
-}
-
-static struct platform_driver matrix_keypad_driver = {
-	.probe		= matrix_keypad_probe,
-	.remove		= __devexit_p(matrix_keypad_remove),
-	.driver		= {
-		.name	= "matrix-keypad",
-		.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-		.pm	= &matrix_keypad_pm_ops,
-#endif
-=======
 }
 
 #ifdef CONFIG_OF
@@ -844,7 +511,6 @@ static struct platform_driver matrix_keypad_driver = {
 		.name	= "matrix-keypad",
 		.pm	= pm_sleep_ptr(&matrix_keypad_pm_ops),
 		.of_match_table = of_match_ptr(matrix_keypad_dt_match),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(matrix_keypad_driver);

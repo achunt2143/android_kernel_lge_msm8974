@@ -1,29 +1,3 @@
-<<<<<<< HEAD
-/**
- * Marvell Bluetooth driver
- *
- * Copyright (C) 2009, Marvell International Ltd.
- *
- * This software file (the "File") is distributed by Marvell International
- * Ltd. under the terms of the GNU General Public License Version 2, June 1991
- * (the "License").  You may use, redistribute and/or modify this File in
- * accordance with the terms and conditions of the License, a copy of which
- * is available by writing to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA or on the
- * worldwide web at http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
- *
- *
- * THE FILE IS DISTRIBUTED AS-IS, WITHOUT WARRANTY OF ANY KIND, AND THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE
- * ARE EXPRESSLY DISCLAIMED.  The License provides additional details about
- * this warranty disclaimer.
- **/
-
-#include <net/bluetooth/bluetooth.h>
-#include <net/bluetooth/hci_core.h>
-
-#include "btmrvl_drv.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Marvell Bluetooth driver
@@ -39,7 +13,6 @@
 
 #include "btmrvl_drv.h"
 #include "btmrvl_sdio.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VERSION "1.0"
 
@@ -56,37 +29,15 @@ void btmrvl_interrupt(struct btmrvl_private *priv)
 
 	priv->adapter->int_count++;
 
-<<<<<<< HEAD
-=======
 	if (priv->adapter->hs_state == HS_ACTIVATED) {
 		BT_DBG("BT: HS DEACTIVATED in ISR!");
 		priv->adapter->hs_state = HS_DEACTIVATED;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_interruptible(&priv->main_thread.wait_q);
 }
 EXPORT_SYMBOL_GPL(btmrvl_interrupt);
 
-<<<<<<< HEAD
-void btmrvl_check_evtpkt(struct btmrvl_private *priv, struct sk_buff *skb)
-{
-	struct hci_event_hdr *hdr = (void *) skb->data;
-	struct hci_ev_cmd_complete *ec;
-	u16 opcode, ocf;
-
-	if (hdr->evt == HCI_EV_CMD_COMPLETE) {
-		ec = (void *) (skb->data + HCI_EVENT_HDR_SIZE);
-		opcode = __le16_to_cpu(ec->opcode);
-		ocf = hci_opcode_ocf(opcode);
-		if (ocf == BT_CMD_MODULE_CFG_REQ &&
-					priv->btmrvl_dev.sendcmdflag) {
-			priv->btmrvl_dev.sendcmdflag = false;
-			priv->adapter->cmd_complete = true;
-			wake_up_interruptible(&priv->adapter->cmd_wait_q);
-		}
-	}
-=======
 bool btmrvl_check_evtpkt(struct btmrvl_private *priv, struct sk_buff *skb)
 {
 	struct hci_event_hdr *hdr = (void *) skb->data;
@@ -113,7 +64,6 @@ bool btmrvl_check_evtpkt(struct btmrvl_private *priv, struct sk_buff *skb)
 	}
 
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(btmrvl_check_evtpkt);
 
@@ -131,11 +81,7 @@ int btmrvl_process_event(struct btmrvl_private *priv, struct sk_buff *skb)
 	}
 
 	switch (event->data[0]) {
-<<<<<<< HEAD
-	case BT_CMD_AUTO_SLEEP_MODE:
-=======
 	case BT_EVENT_AUTO_SLEEP_MODE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!event->data[2]) {
 			if (event->data[1] == BT_PS_ENABLE)
 				adapter->psmode = 1;
@@ -148,11 +94,7 @@ int btmrvl_process_event(struct btmrvl_private *priv, struct sk_buff *skb)
 		}
 		break;
 
-<<<<<<< HEAD
-	case BT_CMD_HOST_SLEEP_CONFIG:
-=======
 	case BT_EVENT_HOST_SLEEP_CONFIG:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!event->data[3])
 			BT_DBG("gpio=%x, gap=%x", event->data[1],
 							event->data[2]);
@@ -160,31 +102,19 @@ int btmrvl_process_event(struct btmrvl_private *priv, struct sk_buff *skb)
 			BT_DBG("HSCFG command failed");
 		break;
 
-<<<<<<< HEAD
-	case BT_CMD_HOST_SLEEP_ENABLE:
-=======
 	case BT_EVENT_HOST_SLEEP_ENABLE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!event->data[1]) {
 			adapter->hs_state = HS_ACTIVATED;
 			if (adapter->psmode)
 				adapter->ps_state = PS_SLEEP;
-<<<<<<< HEAD
-			wake_up_interruptible(&adapter->cmd_wait_q);
-=======
 			wake_up_interruptible(&adapter->event_hs_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BT_DBG("HS ACTIVATED!");
 		} else {
 			BT_DBG("HS Enable failed");
 		}
 		break;
 
-<<<<<<< HEAD
-	case BT_CMD_MODULE_CFG_REQ:
-=======
 	case BT_EVENT_MODULE_CFG_REQ:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (priv->btmrvl_dev.sendcmdflag &&
 				event->data[1] == MODULE_BRINGUP_REQ) {
 			BT_DBG("EVENT:%s",
@@ -195,11 +125,7 @@ int btmrvl_process_event(struct btmrvl_private *priv, struct sk_buff *skb)
 			if (event->length > 3 && event->data[3])
 				priv->btmrvl_dev.dev_type = HCI_AMP;
 			else
-<<<<<<< HEAD
-				priv->btmrvl_dev.dev_type = HCI_BREDR;
-=======
 				priv->btmrvl_dev.dev_type = HCI_PRIMARY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			BT_DBG("dev_type: %d", priv->btmrvl_dev.dev_type);
 		} else if (priv->btmrvl_dev.sendcmdflag &&
@@ -233,16 +159,6 @@ exit:
 }
 EXPORT_SYMBOL_GPL(btmrvl_process_event);
 
-<<<<<<< HEAD
-int btmrvl_send_module_cfg_cmd(struct btmrvl_private *priv, int subcmd)
-{
-	struct sk_buff *skb;
-	struct btmrvl_cmd *cmd;
-	int ret = 0;
-
-	skb = bt_skb_alloc(sizeof(*cmd), GFP_ATOMIC);
-	if (skb == NULL) {
-=======
 static int btmrvl_send_sync_cmd(struct btmrvl_private *priv, u16 opcode,
 				const void *param, u8 len)
 {
@@ -256,21 +172,10 @@ static int btmrvl_send_sync_cmd(struct btmrvl_private *priv, u16 opcode,
 
 	skb = bt_skb_alloc(HCI_COMMAND_HDR_SIZE + len, GFP_KERNEL);
 	if (!skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BT_ERR("No free skb");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	cmd = (struct btmrvl_cmd *) skb_put(skb, sizeof(*cmd));
-	cmd->ocf_ogf = cpu_to_le16(hci_opcode_pack(OGF, BT_CMD_MODULE_CFG_REQ));
-	cmd->length = 1;
-	cmd->data[0] = subcmd;
-
-	bt_cb(skb)->pkt_type = MRVL_VENDOR_PKT;
-
-	skb->dev = (void *) priv->btmrvl_dev.hcidev;
-=======
 	hdr = skb_put(skb, HCI_COMMAND_HDR_SIZE);
 	hdr->opcode = cpu_to_le16(opcode);
 	hdr->plen = len;
@@ -280,28 +185,12 @@ static int btmrvl_send_sync_cmd(struct btmrvl_private *priv, u16 opcode,
 
 	hci_skb_pkt_type(skb) = MRVL_VENDOR_PKT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_head(&priv->adapter->tx_queue, skb);
 
 	priv->btmrvl_dev.sendcmdflag = true;
 
 	priv->adapter->cmd_complete = false;
 
-<<<<<<< HEAD
-	BT_DBG("Queue module cfg Command");
-
-	wake_up_interruptible(&priv->main_thread.wait_q);
-
-	if (!wait_event_interruptible_timeout(priv->adapter->cmd_wait_q,
-				priv->adapter->cmd_complete,
-				msecs_to_jiffies(WAIT_UNTIL_CMD_RESP))) {
-		ret = -ETIMEDOUT;
-		BT_ERR("module_cfg_cmd(%x): timeout: %d",
-					subcmd, priv->btmrvl_dev.sendcmdflag);
-	}
-
-	BT_DBG("module cfg Command done");
-=======
 	wake_up_interruptible(&priv->main_thread.wait_q);
 
 	if (!wait_event_interruptible_timeout(priv->adapter->cmd_wait_q,
@@ -323,41 +212,11 @@ int btmrvl_send_module_cfg_cmd(struct btmrvl_private *priv, u8 subcmd)
 	ret = btmrvl_send_sync_cmd(priv, BT_CMD_MODULE_CFG_REQ, &subcmd, 1);
 	if (ret)
 		BT_ERR("module_cfg_cmd(%x) failed", subcmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(btmrvl_send_module_cfg_cmd);
 
-<<<<<<< HEAD
-int btmrvl_enable_ps(struct btmrvl_private *priv)
-{
-	struct sk_buff *skb;
-	struct btmrvl_cmd *cmd;
-
-	skb = bt_skb_alloc(sizeof(*cmd), GFP_ATOMIC);
-	if (skb == NULL) {
-		BT_ERR("No free skb");
-		return -ENOMEM;
-	}
-
-	cmd = (struct btmrvl_cmd *) skb_put(skb, sizeof(*cmd));
-	cmd->ocf_ogf = cpu_to_le16(hci_opcode_pack(OGF,
-					BT_CMD_AUTO_SLEEP_MODE));
-	cmd->length = 1;
-
-	if (priv->btmrvl_dev.psmode)
-		cmd->data[0] = BT_PS_ENABLE;
-	else
-		cmd->data[0] = BT_PS_DISABLE;
-
-	bt_cb(skb)->pkt_type = MRVL_VENDOR_PKT;
-
-	skb->dev = (void *) priv->btmrvl_dev.hcidev;
-	skb_queue_head(&priv->adapter->tx_queue, skb);
-
-	BT_DBG("Queue PSMODE Command:%d", cmd->data[0]);
-=======
 static int btmrvl_enable_sco_routing_to_host(struct btmrvl_private *priv)
 {
 	int ret;
@@ -419,46 +278,11 @@ int btmrvl_enable_ps(struct btmrvl_private *priv)
 	ret = btmrvl_send_sync_cmd(priv, BT_CMD_AUTO_SLEEP_MODE, &param, 1);
 	if (ret)
 		BT_ERR("PSMODE command failed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(btmrvl_enable_ps);
 
-<<<<<<< HEAD
-static int btmrvl_enable_hs(struct btmrvl_private *priv)
-{
-	struct sk_buff *skb;
-	struct btmrvl_cmd *cmd;
-	int ret = 0;
-
-	skb = bt_skb_alloc(sizeof(*cmd), GFP_ATOMIC);
-	if (skb == NULL) {
-		BT_ERR("No free skb");
-		return -ENOMEM;
-	}
-
-	cmd = (struct btmrvl_cmd *) skb_put(skb, sizeof(*cmd));
-	cmd->ocf_ogf = cpu_to_le16(hci_opcode_pack(OGF, BT_CMD_HOST_SLEEP_ENABLE));
-	cmd->length = 0;
-
-	bt_cb(skb)->pkt_type = MRVL_VENDOR_PKT;
-
-	skb->dev = (void *) priv->btmrvl_dev.hcidev;
-	skb_queue_head(&priv->adapter->tx_queue, skb);
-
-	BT_DBG("Queue hs enable Command");
-
-	wake_up_interruptible(&priv->main_thread.wait_q);
-
-	if (!wait_event_interruptible_timeout(priv->adapter->cmd_wait_q,
-			priv->adapter->hs_state,
-			msecs_to_jiffies(WAIT_UNTIL_HS_STATE_CHANGED))) {
-		ret = -ETIMEDOUT;
-		BT_ERR("timeout: %d, %d,%d", priv->adapter->hs_state,
-						priv->adapter->ps_state,
-						priv->adapter->wakeup_tries);
-=======
 int btmrvl_enable_hs(struct btmrvl_private *priv)
 {
 	struct btmrvl_adapter *adapter = priv->adapter;
@@ -486,51 +310,19 @@ int btmrvl_enable_hs(struct btmrvl_private *priv)
 		BT_DBG("host sleep enabled: %d,%d,%d", adapter->hs_state,
 		       adapter->ps_state, adapter->wakeup_tries);
 		ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
-<<<<<<< HEAD
-
-int btmrvl_prepare_command(struct btmrvl_private *priv)
-{
-	struct sk_buff *skb = NULL;
-	struct btmrvl_cmd *cmd;
-=======
 EXPORT_SYMBOL_GPL(btmrvl_enable_hs);
 
 int btmrvl_prepare_command(struct btmrvl_private *priv)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	if (priv->btmrvl_dev.hscfgcmd) {
 		priv->btmrvl_dev.hscfgcmd = 0;
-<<<<<<< HEAD
-
-		skb = bt_skb_alloc(sizeof(*cmd), GFP_ATOMIC);
-		if (skb == NULL) {
-			BT_ERR("No free skb");
-			return -ENOMEM;
-		}
-
-		cmd = (struct btmrvl_cmd *) skb_put(skb, sizeof(*cmd));
-		cmd->ocf_ogf = cpu_to_le16(hci_opcode_pack(OGF, BT_CMD_HOST_SLEEP_CONFIG));
-		cmd->length = 2;
-		cmd->data[0] = (priv->btmrvl_dev.gpio_gap & 0xff00) >> 8;
-		cmd->data[1] = (u8) (priv->btmrvl_dev.gpio_gap & 0x00ff);
-
-		bt_cb(skb)->pkt_type = MRVL_VENDOR_PKT;
-
-		skb->dev = (void *) priv->btmrvl_dev.hcidev;
-		skb_queue_head(&priv->adapter->tx_queue, skb);
-
-		BT_DBG("Queue HSCFG Command, gpio=0x%x, gap=0x%x",
-						cmd->data[0], cmd->data[1]);
-=======
 		btmrvl_send_hscfg_cmd(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (priv->btmrvl_dev.pscmd) {
@@ -546,10 +338,7 @@ int btmrvl_prepare_command(struct btmrvl_private *priv)
 		} else {
 			ret = priv->hw_wakeup_firmware(priv);
 			priv->adapter->hs_state = HS_DEACTIVATED;
-<<<<<<< HEAD
-=======
 			BT_DBG("BT: HS DEACTIVATED due to host activity!");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -569,23 +358,6 @@ static int btmrvl_tx_pkt(struct btmrvl_private *priv, struct sk_buff *skb)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (skb_headroom(skb) < BTM_HEADER_LEN) {
-		struct sk_buff *tmp = skb;
-
-		skb = skb_realloc_headroom(skb, BTM_HEADER_LEN);
-		if (!skb) {
-			BT_ERR("Tx Error: realloc_headroom failed %d",
-				BTM_HEADER_LEN);
-			skb = tmp;
-			return -EINVAL;
-		}
-
-		kfree_skb(tmp);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_push(skb, BTM_HEADER_LEN);
 
 	/* header type: byte[3]
@@ -596,11 +368,7 @@ static int btmrvl_tx_pkt(struct btmrvl_private *priv, struct sk_buff *skb)
 	skb->data[0] = (skb->len & 0x0000ff);
 	skb->data[1] = (skb->len & 0x00ff00) >> 8;
 	skb->data[2] = (skb->len & 0xff0000) >> 16;
-<<<<<<< HEAD
-	skb->data[3] = bt_cb(skb)->pkt_type;
-=======
 	skb->data[3] = hci_skb_pkt_type(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (priv->hw_host_to_card)
 		ret = priv->hw_host_to_card(priv, skb->data, skb->len);
@@ -610,18 +378,12 @@ static int btmrvl_tx_pkt(struct btmrvl_private *priv, struct sk_buff *skb)
 
 static void btmrvl_init_adapter(struct btmrvl_private *priv)
 {
-<<<<<<< HEAD
-=======
 	int buf_size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_head_init(&priv->adapter->tx_queue);
 
 	priv->adapter->ps_state = PS_AWAKE;
 
-<<<<<<< HEAD
-	init_waitqueue_head(&priv->adapter->cmd_wait_q);
-=======
 	buf_size = ALIGN_SZ(SDIO_BLOCK_SIZE, BTSDIO_DMA_ALIGN);
 	priv->adapter->hw_regs_buf = kzalloc(buf_size, GFP_KERNEL);
 	if (!priv->adapter->hw_regs_buf) {
@@ -637,55 +399,18 @@ static void btmrvl_init_adapter(struct btmrvl_private *priv)
 
 	init_waitqueue_head(&priv->adapter->cmd_wait_q);
 	init_waitqueue_head(&priv->adapter->event_hs_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void btmrvl_free_adapter(struct btmrvl_private *priv)
 {
 	skb_queue_purge(&priv->adapter->tx_queue);
 
-<<<<<<< HEAD
-=======
 	kfree(priv->adapter->hw_regs_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv->adapter);
 
 	priv->adapter = NULL;
 }
 
-<<<<<<< HEAD
-static int btmrvl_ioctl(struct hci_dev *hdev,
-				unsigned int cmd, unsigned long arg)
-{
-	return -ENOIOCTLCMD;
-}
-
-static void btmrvl_destruct(struct hci_dev *hdev)
-{
-}
-
-static int btmrvl_send_frame(struct sk_buff *skb)
-{
-	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
-	struct btmrvl_private *priv = NULL;
-
-	BT_DBG("type=%d, len=%d", skb->pkt_type, skb->len);
-
-	if (!hdev || !hdev->driver_data) {
-		BT_ERR("Frame for unknown HCI device");
-		return -ENODEV;
-	}
-
-	priv = (struct btmrvl_private *) hdev->driver_data;
-	if (!test_bit(HCI_RUNNING, &hdev->flags)) {
-		BT_ERR("Failed testing HCI_RUNING, flags=%lx", hdev->flags);
-		print_hex_dump_bytes("data: ", DUMP_PREFIX_OFFSET,
-							skb->data, skb->len);
-		return -EBUSY;
-	}
-
-	switch (bt_cb(skb)->pkt_type) {
-=======
 static int btmrvl_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct btmrvl_private *priv = hci_get_drvdata(hdev);
@@ -698,7 +423,6 @@ static int btmrvl_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	}
 
 	switch (hci_skb_pkt_type(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		break;
@@ -714,23 +438,15 @@ static int btmrvl_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 
 	skb_queue_tail(&priv->adapter->tx_queue, skb);
 
-<<<<<<< HEAD
-	wake_up_interruptible(&priv->main_thread.wait_q);
-=======
 	if (!priv->adapter->is_suspended)
 		wake_up_interruptible(&priv->main_thread.wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int btmrvl_flush(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	struct btmrvl_private *priv = hdev->driver_data;
-=======
 	struct btmrvl_private *priv = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_purge(&priv->adapter->tx_queue);
 
@@ -739,14 +455,7 @@ static int btmrvl_flush(struct hci_dev *hdev)
 
 static int btmrvl_close(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	struct btmrvl_private *priv = hdev->driver_data;
-
-	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
-		return 0;
-=======
 	struct btmrvl_private *priv = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_purge(&priv->adapter->tx_queue);
 
@@ -755,9 +464,6 @@ static int btmrvl_close(struct hci_dev *hdev)
 
 static int btmrvl_open(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	set_bit(HCI_RUNNING, &hdev->flags);
-=======
 	return 0;
 }
 
@@ -778,13 +484,10 @@ static int btmrvl_download_cal_data(struct btmrvl_private *priv,
 				   BT_CAL_HDR_LEN + len);
 	if (ret)
 		BT_ERR("Failed to download calibration data");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int btmrvl_check_device_tree(struct btmrvl_private *priv)
 {
 	struct device_node *dt_node;
@@ -879,7 +582,6 @@ static bool btmrvl_wakeup(struct hci_dev *hdev)
 	return device_may_wakeup(&card->func->dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This function handles the event generated by firmware, rx data
  * received from firmware, and tx data sent from kernel.
@@ -889,32 +591,20 @@ static int btmrvl_service_main_thread(void *data)
 	struct btmrvl_thread *thread = data;
 	struct btmrvl_private *priv = thread->priv;
 	struct btmrvl_adapter *adapter = priv->adapter;
-<<<<<<< HEAD
-	wait_queue_t wait;
-=======
 	wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	ulong flags;
 
 	init_waitqueue_entry(&wait, current);
 
-<<<<<<< HEAD
-	current->flags |= PF_NOFREEZE;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (;;) {
 		add_wait_queue(&thread->wait_q, &wait);
 
 		set_current_state(TASK_INTERRUPTIBLE);
-<<<<<<< HEAD
-=======
 		if (kthread_should_stop() || priv->surprise_removed) {
 			BT_DBG("main_thread: break from main thread");
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (adapter->wakeup_tries ||
 				((!adapter->int_count) &&
@@ -930,11 +620,7 @@ static int btmrvl_service_main_thread(void *data)
 
 		BT_DBG("main_thread woke up");
 
-<<<<<<< HEAD
-		if (kthread_should_stop()) {
-=======
 		if (kthread_should_stop() || priv->surprise_removed) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BT_DBG("main_thread: break from main thread");
 			break;
 		}
@@ -957,12 +643,8 @@ static int btmrvl_service_main_thread(void *data)
 		if (adapter->ps_state == PS_SLEEP)
 			continue;
 
-<<<<<<< HEAD
-		if (!priv->btmrvl_dev.tx_dnld_rdy)
-=======
 		if (!priv->btmrvl_dev.tx_dnld_rdy ||
 		    priv->adapter->is_suspended)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		skb = skb_dequeue(&adapter->tx_queue);
@@ -982,10 +664,7 @@ static int btmrvl_service_main_thread(void *data)
 int btmrvl_register_hdev(struct btmrvl_private *priv)
 {
 	struct hci_dev *hdev = NULL;
-<<<<<<< HEAD
-=======
 	struct btmrvl_sdio_card *card = priv->btmrvl_dev.card;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	hdev = hci_alloc_dev();
@@ -995,20 +674,6 @@ int btmrvl_register_hdev(struct btmrvl_private *priv)
 	}
 
 	priv->btmrvl_dev.hcidev = hdev;
-<<<<<<< HEAD
-	hdev->driver_data = priv;
-
-	hdev->bus = HCI_SDIO;
-	hdev->open = btmrvl_open;
-	hdev->close = btmrvl_close;
-	hdev->flush = btmrvl_flush;
-	hdev->send = btmrvl_send_frame;
-	hdev->destruct = btmrvl_destruct;
-	hdev->ioctl = btmrvl_ioctl;
-	hdev->owner = THIS_MODULE;
-
-	btmrvl_send_module_cfg_cmd(priv, MODULE_BRINGUP_REQ);
-=======
 	hci_set_drvdata(hdev, priv);
 
 	hdev->bus   = HCI_SDIO;
@@ -1020,7 +685,6 @@ int btmrvl_register_hdev(struct btmrvl_private *priv)
 	hdev->set_bdaddr = btmrvl_set_bdaddr;
 	hdev->wakeup = btmrvl_wakeup;
 	SET_HCIDEV_DEV(hdev, &card->func->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdev->dev_type = priv->btmrvl_dev.dev_type;
 
@@ -1075,23 +739,17 @@ struct btmrvl_private *btmrvl_add_card(void *card)
 	init_waitqueue_head(&priv->main_thread.wait_q);
 	priv->main_thread.task = kthread_run(btmrvl_service_main_thread,
 				&priv->main_thread, "btmrvl_main_service");
-<<<<<<< HEAD
-=======
 	if (IS_ERR(priv->main_thread.task))
 		goto err_thread;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->btmrvl_dev.card = card;
 	priv->btmrvl_dev.tx_dnld_rdy = true;
 
 	return priv;
 
-<<<<<<< HEAD
-=======
 err_thread:
 	btmrvl_free_adapter(priv);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_adapter:
 	kfree(priv);
 
@@ -1107,10 +765,7 @@ int btmrvl_remove_card(struct btmrvl_private *priv)
 	hdev = priv->btmrvl_dev.hcidev;
 
 	wake_up_interruptible(&priv->adapter->cmd_wait_q);
-<<<<<<< HEAD
-=======
 	wake_up_interruptible(&priv->adapter->event_hs_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kthread_stop(priv->main_thread.task);
 

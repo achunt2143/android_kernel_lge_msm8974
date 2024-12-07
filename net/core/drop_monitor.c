@@ -1,18 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Monitoring code for network dropped packet alerts
  *
  * Copyright (C) 2009 Neil Horman <nhorman@tuxdriver.com>
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/string.h>
@@ -27,21 +21,11 @@
 #include <linux/workqueue.h>
 #include <linux/netlink.h>
 #include <linux/net_dropmon.h>
-<<<<<<< HEAD
-=======
 #include <linux/bitfield.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/percpu.h>
 #include <linux/timer.h>
 #include <linux/bitops.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <net/genetlink.h>
-#include <net/netevent.h>
-
-#include <trace/events/skb.h>
-#include <trace/events/napi.h>
-=======
 #include <linux/module.h>
 #include <net/genetlink.h>
 #include <net/netevent.h>
@@ -52,7 +36,6 @@
 #include <trace/events/skb.h>
 #include <trace/events/napi.h>
 #include <trace/events/devlink.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/unaligned.h>
 
@@ -65,33 +48,6 @@
  * netlink alerts
  */
 static int trace_state = TRACE_OFF;
-<<<<<<< HEAD
-static DEFINE_MUTEX(trace_state_mutex);
-
-struct per_cpu_dm_data {
-	spinlock_t		lock;
-	struct sk_buff		*skb;
-	struct work_struct	dm_alert_work;
-	struct timer_list	send_timer;
-};
-
-struct dm_hw_stat_delta {
-	struct net_device *dev;
-	unsigned long last_rx;
-	struct list_head list;
-	struct rcu_head rcu;
-	unsigned long last_drop_val;
-};
-
-static struct genl_family net_drop_monitor_family = {
-	.id             = GENL_ID_GENERATE,
-	.hdrsize        = 0,
-	.name           = "NET_DM",
-	.version        = 2,
-};
-
-static DEFINE_PER_CPU(struct per_cpu_dm_data, dm_cpu_data);
-=======
 static bool monitor_hw;
 
 /* net_dm_mutex
@@ -141,14 +97,10 @@ static struct genl_family net_drop_monitor_family;
 
 static DEFINE_PER_CPU(struct per_cpu_dm_data, dm_cpu_data);
 static DEFINE_PER_CPU(struct per_cpu_dm_data, dm_hw_cpu_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int dm_hit_limit = 64;
 static int dm_delay = 1;
 static unsigned long dm_hw_check_delta = 2*HZ;
-<<<<<<< HEAD
-static LIST_HEAD(hw_stats_list);
-=======
 
 static enum net_dm_alert_mode net_dm_alert_mode = NET_DM_ALERT_MODE_SUMMARY;
 static u32 net_dm_trunc_len;
@@ -176,7 +128,6 @@ struct net_dm_skb_cb {
 };
 
 #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct sk_buff *reset_per_cpu_data(struct per_cpu_dm_data *data)
 {
@@ -185,10 +136,7 @@ static struct sk_buff *reset_per_cpu_data(struct per_cpu_dm_data *data)
 	struct nlattr *nla;
 	struct sk_buff *skb;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	void *msg_header;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	al = sizeof(struct net_dm_alert_msg);
 	al += dm_hit_limit * sizeof(struct net_dm_drop_point);
@@ -196,19 +144,6 @@ static struct sk_buff *reset_per_cpu_data(struct per_cpu_dm_data *data)
 
 	skb = genlmsg_new(al, GFP_KERNEL);
 
-<<<<<<< HEAD
-	if (skb) {
-		genlmsg_put(skb, 0, 0, &net_drop_monitor_family,
-				0, NET_DM_CMD_ALERT);
-		nla = nla_reserve(skb, NLA_UNSPEC,
-				  sizeof(struct net_dm_alert_msg));
-		msg = nla_data(nla);
-		memset(msg, 0, al);
-	} else {
-		mod_timer(&data->send_timer, jiffies + HZ / 10);
-	}
-
-=======
 	if (!skb)
 		goto err;
 
@@ -233,16 +168,10 @@ static struct sk_buff *reset_per_cpu_data(struct per_cpu_dm_data *data)
 err:
 	mod_timer(&data->send_timer, jiffies + HZ / 10);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&data->lock, flags);
 	swap(data->skb, skb);
 	spin_unlock_irqrestore(&data->lock, flags);
 
-<<<<<<< HEAD
-	return skb;
-}
-
-=======
 	if (skb) {
 		struct nlmsghdr *nlh = (struct nlmsghdr *)skb->data;
 		struct genlmsghdr *gnlh = (struct genlmsghdr *)nlmsg_data(nlh);
@@ -257,7 +186,6 @@ static const struct genl_multicast_group dropmon_mcgrps[] = {
 	{ .name = "events", .flags = GENL_MCAST_CAP_SYS_ADMIN, },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void send_dm_alert(struct work_struct *work)
 {
 	struct sk_buff *skb;
@@ -268,12 +196,8 @@ static void send_dm_alert(struct work_struct *work)
 	skb = reset_per_cpu_data(data);
 
 	if (skb)
-<<<<<<< HEAD
-		genlmsg_multicast(skb, 0, NET_DM_GRP_ALERT, GFP_KERNEL);
-=======
 		genlmsg_multicast(&net_drop_monitor_family, skb, 0,
 				  0, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -281,15 +205,9 @@ static void send_dm_alert(struct work_struct *work)
  * in the event that more drops will arrive during the
  * hysteresis period.
  */
-<<<<<<< HEAD
-static void sched_send_work(unsigned long _data)
-{
-	struct per_cpu_dm_data *data = (struct per_cpu_dm_data *)_data;
-=======
 static void sched_send_work(struct timer_list *t)
 {
 	struct per_cpu_dm_data *data = from_timer(data, t, send_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_work(&data->dm_alert_work);
 }
@@ -297,10 +215,7 @@ static void sched_send_work(struct timer_list *t)
 static void trace_drop_common(struct sk_buff *skb, void *location)
 {
 	struct net_dm_alert_msg *msg;
-<<<<<<< HEAD
-=======
 	struct net_dm_drop_point *point;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlmsghdr *nlh;
 	struct nlattr *nla;
 	int i;
@@ -309,11 +224,7 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
 	unsigned long flags;
 
 	local_irq_save(flags);
-<<<<<<< HEAD
-	data = &__get_cpu_var(dm_cpu_data);
-=======
 	data = this_cpu_ptr(&dm_cpu_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&data->lock);
 	dskb = data->skb;
 
@@ -323,13 +234,6 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
 	nlh = (struct nlmsghdr *)dskb->data;
 	nla = genlmsg_data(nlmsg_data(nlh));
 	msg = nla_data(nla);
-<<<<<<< HEAD
-	for (i = 0; i < msg->entries; i++) {
-		if (!memcmp(&location, msg->points[i].pc, sizeof(void *))) {
-			msg->points[i].count++;
-			goto out;
-		}
-=======
 	point = msg->points;
 	for (i = 0; i < msg->entries; i++) {
 		if (!memcmp(&location, &point->pc, sizeof(void *))) {
@@ -337,7 +241,6 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
 			goto out;
 		}
 		point++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (msg->entries == dm_hit_limit)
 		goto out;
@@ -346,13 +249,8 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
 	 */
 	__nla_reserve_nohdr(dskb, sizeof(struct net_dm_drop_point));
 	nla->nla_len += NLA_ALIGN(sizeof(struct net_dm_drop_point));
-<<<<<<< HEAD
-	memcpy(msg->points[msg->entries].pc, &location, sizeof(void *));
-	msg->points[msg->entries].count = 1;
-=======
 	memcpy(point->pc, &location, sizeof(void *));
 	point->count = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg->entries++;
 
 	if (!timer_pending(&data->send_timer)) {
@@ -364,44 +262,13 @@ out:
 	spin_unlock_irqrestore(&data->lock, flags);
 }
 
-<<<<<<< HEAD
-static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
-=======
 static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb,
 				void *location,
 				enum skb_drop_reason reason)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	trace_drop_common(skb, location);
 }
 
-<<<<<<< HEAD
-static void trace_napi_poll_hit(void *ignore, struct napi_struct *napi)
-{
-	struct dm_hw_stat_delta *new_stat;
-
-	/*
-	 * Don't check napi structures with no associated device
-	 */
-	if (!napi->dev)
-		return;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(new_stat, &hw_stats_list, list) {
-		/*
-		 * only add a note to our monitor buffer if:
-		 * 1) this is the dev we received on
-		 * 2) its after the last_rx delta
-		 * 3) our rx_dropped count has gone up
-		 */
-		if ((new_stat->dev == napi->dev)  &&
-		    (time_after(jiffies, new_stat->last_rx + dm_hw_check_delta)) &&
-		    (napi->dev->stats.rx_dropped != new_stat->last_drop_val)) {
-			trace_drop_common(NULL, NULL);
-			new_stat->last_drop_val = napi->dev->stats.rx_dropped;
-			new_stat->last_rx = jiffies;
-			break;
-=======
 static void trace_napi_poll_hit(void *ignore, struct napi_struct *napi,
 				int work, int budget)
 {
@@ -426,25 +293,11 @@ static void trace_napi_poll_hit(void *ignore, struct napi_struct *napi,
 			trace_drop_common(NULL, NULL);
 			stat->last_drop_val = dev->stats.rx_dropped;
 			stat->last_rx = jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	rcu_read_unlock();
 }
 
-<<<<<<< HEAD
-static int set_all_monitor_traces(int state)
-{
-	int rc = 0;
-	struct dm_hw_stat_delta *new_stat = NULL;
-	struct dm_hw_stat_delta *temp;
-
-	mutex_lock(&trace_state_mutex);
-
-	if (state == trace_state) {
-		rc = -EAGAIN;
-		goto out_unlock;
-=======
 static struct net_dm_hw_entries *
 net_dm_hw_reset_per_cpu_data(struct per_cpu_dm_data *hw_data)
 {
@@ -1371,36 +1224,14 @@ static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
 	if (state == trace_state) {
 		NL_SET_ERR_MSG_MOD(extack, "Trace state already set to requested state");
 		return -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (state) {
 	case TRACE_ON:
-<<<<<<< HEAD
-		rc |= register_trace_kfree_skb(trace_kfree_skb_hit, NULL);
-		rc |= register_trace_napi_poll(trace_napi_poll_hit, NULL);
-		break;
-	case TRACE_OFF:
-		rc |= unregister_trace_kfree_skb(trace_kfree_skb_hit, NULL);
-		rc |= unregister_trace_napi_poll(trace_napi_poll_hit, NULL);
-
-		tracepoint_synchronize_unregister();
-
-		/*
-		 * Clean the device list
-		 */
-		list_for_each_entry_safe(new_stat, temp, &hw_stats_list, list) {
-			if (new_stat->dev == NULL) {
-				list_del_rcu(&new_stat->list);
-				kfree_rcu(new_stat, rcu);
-			}
-		}
-=======
 		rc = net_dm_trace_on_set(extack);
 		break;
 	case TRACE_OFF:
 		net_dm_trace_off_set();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		rc = 1;
@@ -1412,14 +1243,6 @@ static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
 	else
 		rc = -EINPROGRESS;
 
-<<<<<<< HEAD
-out_unlock:
-	mutex_unlock(&trace_state_mutex);
-
-	return rc;
-}
-
-=======
 	return rc;
 }
 
@@ -1482,14 +1305,10 @@ static void net_dm_queue_len_set(struct genl_info *info)
 
 	net_dm_queue_len = nla_get_u32(info->attrs[NET_DM_ATTR_QUEUE_LEN]);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int net_dm_cmd_config(struct sk_buff *skb,
 			struct genl_info *info)
 {
-<<<<<<< HEAD
-	return -ENOTSUPP;
-=======
 	struct netlink_ext_ack *extack = info->extack;
 	int rc;
 
@@ -1543,78 +1362,11 @@ static void net_dm_monitor_stop(bool set_sw, bool set_hw,
 		net_dm_hw_monitor_stop(extack);
 	if (set_sw)
 		set_all_monitor_traces(TRACE_OFF, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int net_dm_cmd_trace(struct sk_buff *skb,
 			struct genl_info *info)
 {
-<<<<<<< HEAD
-	switch (info->genlhdr->cmd) {
-	case NET_DM_CMD_START:
-		return set_all_monitor_traces(TRACE_ON);
-		break;
-	case NET_DM_CMD_STOP:
-		return set_all_monitor_traces(TRACE_OFF);
-		break;
-	}
-
-	return -ENOTSUPP;
-}
-
-static int dropmon_net_event(struct notifier_block *ev_block,
-			unsigned long event, void *ptr)
-{
-	struct net_device *dev = ptr;
-	struct dm_hw_stat_delta *new_stat = NULL;
-	struct dm_hw_stat_delta *tmp;
-
-	switch (event) {
-	case NETDEV_REGISTER:
-		new_stat = kzalloc(sizeof(struct dm_hw_stat_delta), GFP_KERNEL);
-
-		if (!new_stat)
-			goto out;
-
-		new_stat->dev = dev;
-		new_stat->last_rx = jiffies;
-		mutex_lock(&trace_state_mutex);
-		list_add_rcu(&new_stat->list, &hw_stats_list);
-		mutex_unlock(&trace_state_mutex);
-		break;
-	case NETDEV_UNREGISTER:
-		mutex_lock(&trace_state_mutex);
-		list_for_each_entry_safe(new_stat, tmp, &hw_stats_list, list) {
-			if (new_stat->dev == dev) {
-				new_stat->dev = NULL;
-				if (trace_state == TRACE_OFF) {
-					list_del_rcu(&new_stat->list);
-					kfree_rcu(new_stat, rcu);
-					break;
-				}
-			}
-		}
-		mutex_unlock(&trace_state_mutex);
-		break;
-	}
-out:
-	return NOTIFY_DONE;
-}
-
-static struct genl_ops dropmon_ops[] = {
-	{
-		.cmd = NET_DM_CMD_CONFIG,
-		.doit = net_dm_cmd_config,
-	},
-	{
-		.cmd = NET_DM_CMD_START,
-		.doit = net_dm_cmd_trace,
-	},
-	{
-		.cmd = NET_DM_CMD_STOP,
-		.doit = net_dm_cmd_trace,
-	},
-=======
 	bool set_sw = !!info->attrs[NET_DM_ATTR_SW_DROPS];
 	bool set_hw = !!info->attrs[NET_DM_ATTR_HW_DROPS];
 	struct netlink_ext_ack *extack = info->extack;
@@ -1913,38 +1665,12 @@ static struct genl_family net_drop_monitor_family __ro_after_init = {
 	.resv_start_op	= NET_DM_CMD_STATS_GET + 1,
 	.mcgrps		= dropmon_mcgrps,
 	.n_mcgrps	= ARRAY_SIZE(dropmon_mcgrps),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct notifier_block dropmon_net_notifier = {
 	.notifier_call = dropmon_net_event
 };
 
-<<<<<<< HEAD
-static int __init init_net_drop_monitor(void)
-{
-	struct per_cpu_dm_data *data;
-	int cpu, rc;
-
-	printk(KERN_INFO "Initializing network drop monitor service\n");
-
-	if (sizeof(void *) > 8) {
-		printk(KERN_ERR "Unable to store program counters on this arch, Drop monitor failed\n");
-		return -ENOSPC;
-	}
-
-	rc = genl_register_family_with_ops(&net_drop_monitor_family,
-					   dropmon_ops,
-					   ARRAY_SIZE(dropmon_ops));
-	if (rc) {
-		printk(KERN_ERR "Could not create drop monitor netlink family\n");
-		return rc;
-	}
-
-	rc = register_netdevice_notifier(&dropmon_net_notifier);
-	if (rc < 0) {
-		printk(KERN_CRIT "Failed to register netdevice notifier\n");
-=======
 static void __net_dm_cpu_data_init(struct per_cpu_dm_data *data)
 {
 	spin_lock_init(&data->lock);
@@ -2015,31 +1741,16 @@ static int __init init_net_drop_monitor(void)
 	rc = register_netdevice_notifier(&dropmon_net_notifier);
 	if (rc < 0) {
 		pr_crit("Failed to register netdevice notifier\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unreg;
 	}
 
 	rc = 0;
 
-<<<<<<< HEAD
-	for_each_present_cpu(cpu) {
-		data = &per_cpu(dm_cpu_data, cpu);
-		INIT_WORK(&data->dm_alert_work, send_dm_alert);
-		init_timer(&data->send_timer);
-		data->send_timer.data = (unsigned long)data;
-		data->send_timer.function = sched_send_work;
-		spin_lock_init(&data->lock);
-		reset_per_cpu_data(data);
-	}
-
-
-=======
 	for_each_possible_cpu(cpu) {
 		net_dm_cpu_data_init(cpu);
 		net_dm_hw_cpu_data_init(cpu);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 
 out_unreg:
@@ -2048,9 +1759,6 @@ out:
 	return rc;
 }
 
-<<<<<<< HEAD
-late_initcall(init_net_drop_monitor);
-=======
 static void exit_net_drop_monitor(void)
 {
 	int cpu;
@@ -2077,4 +1785,3 @@ MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Neil Horman <nhorman@tuxdriver.com>");
 MODULE_ALIAS_GENL_FAMILY("NET_DM");
 MODULE_DESCRIPTION("Monitoring code for network dropped packet alerts");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

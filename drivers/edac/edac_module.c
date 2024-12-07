@@ -12,21 +12,6 @@
  */
 #include <linux/edac.h>
 
-<<<<<<< HEAD
-#include "edac_core.h"
-#include "edac_module.h"
-
-#define EDAC_VERSION "Ver: 2.1.0"
-
-#ifdef CONFIG_EDAC_DEBUG
-/* Values of 0 to 4 will generate output */
-int edac_debug_level = 2;
-EXPORT_SYMBOL_GPL(edac_debug_level);
-#endif
-
-/* scope is to module level only */
-struct workqueue_struct *edac_workqueue;
-=======
 #include "edac_mc.h"
 #include "edac_module.h"
 
@@ -58,7 +43,6 @@ module_param_call(edac_debug_level, edac_set_debug_level, param_get_int,
 		  &edac_debug_level, 0644);
 MODULE_PARM_DESC(edac_debug_level, "EDAC debug level: [0-4], default: 2");
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * edac_op_state_to_string()
@@ -80,33 +64,6 @@ char *edac_op_state_to_string(int opstate)
 }
 
 /*
-<<<<<<< HEAD
- * edac_workqueue_setup
- *	initialize the edac work queue for polling operations
- */
-static int edac_workqueue_setup(void)
-{
-	edac_workqueue = create_singlethread_workqueue("edac-poller");
-	if (edac_workqueue == NULL)
-		return -ENODEV;
-	else
-		return 0;
-}
-
-/*
- * edac_workqueue_teardown
- *	teardown the edac workqueue
- */
-static void edac_workqueue_teardown(void)
-{
-	if (edac_workqueue) {
-		flush_workqueue(edac_workqueue);
-		destroy_workqueue(edac_workqueue);
-		edac_workqueue = NULL;
-	}
-}
-
-=======
  * sysfs object: /sys/devices/system/edac
  *	need to export to other files
  */
@@ -138,7 +95,6 @@ const struct bus_type *edac_get_sysfs_subsys(void)
 	return &edac_subsys;
 }
 EXPORT_SYMBOL_GPL(edac_get_sysfs_subsys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * edac_init
  *      module initialization entry point
@@ -149,13 +105,10 @@ static int __init edac_init(void)
 
 	edac_printk(KERN_INFO, EDAC_MC, EDAC_VERSION "\n");
 
-<<<<<<< HEAD
-=======
 	err = edac_subsys_init();
 	if (err)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Harvest and clear any boot/initialization PCI parity errors
 	 *
@@ -165,20 +118,6 @@ static int __init edac_init(void)
 	 */
 	edac_pci_clear_parity_errors();
 
-<<<<<<< HEAD
-	/*
-	 * now set up the mc_kset under the edac class object
-	 */
-	err = edac_sysfs_setup_mc_kset();
-	if (err)
-		goto error;
-
-	/* Setup/Initialize the workq for this core */
-	err = edac_workqueue_setup();
-	if (err) {
-		edac_printk(KERN_ERR, EDAC_MC, "init WorkQueue failure\n");
-		goto workq_fail;
-=======
 	err = edac_mc_sysfs_init();
 	if (err)
 		goto err_sysfs;
@@ -189,18 +128,10 @@ static int __init edac_init(void)
 	if (err) {
 		edac_printk(KERN_ERR, EDAC_MC, "Failure initializing workqueue\n");
 		goto err_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
-<<<<<<< HEAD
-	/* Error teardown stack */
-workq_fail:
-	edac_sysfs_teardown_mc_kset();
-
-error:
-=======
 err_wq:
 	edac_debugfs_exit();
 	edac_mc_sysfs_exit();
@@ -208,7 +139,6 @@ err_wq:
 err_sysfs:
 	edac_subsys_exit();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -218,13 +148,6 @@ err_sysfs:
  */
 static void __exit edac_exit(void)
 {
-<<<<<<< HEAD
-	debugf0("%s()\n", __func__);
-
-	/* tear down the various subsystems */
-	edac_workqueue_teardown();
-	edac_sysfs_teardown_mc_kset();
-=======
 	edac_dbg(0, "\n");
 
 	/* tear down the various subsystems */
@@ -232,29 +155,14 @@ static void __exit edac_exit(void)
 	edac_mc_sysfs_exit();
 	edac_debugfs_exit();
 	edac_subsys_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Inform the kernel of our entry and exit points
  */
-<<<<<<< HEAD
-module_init(edac_init);
-=======
 subsys_initcall(edac_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(edac_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Doug Thompson www.softwarebitmaker.com, et al");
 MODULE_DESCRIPTION("Core library routines for EDAC reporting");
-<<<<<<< HEAD
-
-/* refer to *_sysfs.c files for parameters that are exported via sysfs */
-
-#ifdef CONFIG_EDAC_DEBUG
-module_param(edac_debug_level, int, 0644);
-MODULE_PARM_DESC(edac_debug_level, "Debug level");
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

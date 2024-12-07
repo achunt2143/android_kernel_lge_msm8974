@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Adrian Hunter
  *          Artem Bityutskiy (Битюцкий Артём)
  */
@@ -45,10 +26,7 @@ static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 			 struct ubifs_znode *znode, int lnum, int offs, int len)
 {
 	struct ubifs_znode *zp;
-<<<<<<< HEAD
-=======
 	u8 hash[UBIFS_HASH_ARR_SZ];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, err;
 
 	/* Make index node */
@@ -63,22 +41,6 @@ static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 		br->lnum = cpu_to_le32(zbr->lnum);
 		br->offs = cpu_to_le32(zbr->offs);
 		br->len = cpu_to_le32(zbr->len);
-<<<<<<< HEAD
-		if (!zbr->lnum || !zbr->len) {
-			ubifs_err("bad ref in znode");
-			dbg_dump_znode(c, znode);
-			if (zbr->znode)
-				dbg_dump_znode(c, zbr->znode);
-		}
-	}
-	ubifs_prepare_node(c, idx, len, 0);
-
-#ifdef CONFIG_UBIFS_FS_DEBUG
-	znode->lnum = lnum;
-	znode->offs = offs;
-	znode->len = len;
-#endif
-=======
 		ubifs_copy_hash(c, zbr->hash, ubifs_branch_hash(c, br));
 		if (!zbr->lnum || !zbr->len) {
 			ubifs_err(c, "bad ref in znode");
@@ -95,7 +57,6 @@ static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 	znode->lnum = lnum;
 	znode->offs = offs;
 	znode->len = len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = insert_old_idx_znode(c, znode);
 
@@ -108,30 +69,19 @@ static int make_idx_node(struct ubifs_info *c, struct ubifs_idx_node *idx,
 		zbr->lnum = lnum;
 		zbr->offs = offs;
 		zbr->len = len;
-<<<<<<< HEAD
-=======
 		ubifs_copy_hash(c, hash, zbr->hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		c->zroot.lnum = lnum;
 		c->zroot.offs = offs;
 		c->zroot.len = len;
-<<<<<<< HEAD
-=======
 		ubifs_copy_hash(c, hash, c->zroot.hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	c->calc_idx_sz += ALIGN(len, 8);
 
 	atomic_long_dec(&c->dirty_zn_cnt);
 
-<<<<<<< HEAD
-	ubifs_assert(ubifs_zn_dirty(znode));
-	ubifs_assert(ubifs_zn_cow(znode));
-=======
 	ubifs_assert(c, ubifs_zn_dirty(znode));
 	ubifs_assert(c, ubifs_zn_cow(znode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Note, unlike 'write_index()' we do not add memory barriers here
@@ -158,15 +108,9 @@ static int fill_gap(struct ubifs_info *c, int lnum, int gap_start, int gap_end,
 {
 	int len, gap_remains, gap_pos, written, pad_len;
 
-<<<<<<< HEAD
-	ubifs_assert((gap_start & 7) == 0);
-	ubifs_assert((gap_end & 7) == 0);
-	ubifs_assert(gap_end >= gap_start);
-=======
 	ubifs_assert(c, (gap_start & 7) == 0);
 	ubifs_assert(c, (gap_end & 7) == 0);
 	ubifs_assert(c, gap_end >= gap_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gap_remains = gap_end - gap_start;
 	if (!gap_remains)
@@ -180,11 +124,7 @@ static int fill_gap(struct ubifs_info *c, int lnum, int gap_start, int gap_end,
 			const int alen = ALIGN(len, 8);
 			int err;
 
-<<<<<<< HEAD
-			ubifs_assert(alen <= gap_remains);
-=======
 			ubifs_assert(c, alen <= gap_remains);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = make_idx_node(c, c->ileb_buf + gap_pos, znode,
 					    lnum, gap_pos, len);
 			if (err)
@@ -272,11 +212,7 @@ static int is_idx_node_in_use(struct ubifs_info *c, union ubifs_key *key,
 /**
  * layout_leb_in_gaps - layout index nodes using in-the-gaps method.
  * @c: UBIFS file-system description object
-<<<<<<< HEAD
- * @p: return LEB number here
-=======
  * @p: return LEB number in @c->gap_lebs[p]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function lays out new index nodes for dirty znodes using in-the-gaps
  * method of TNC commit.
@@ -285,11 +221,7 @@ static int is_idx_node_in_use(struct ubifs_info *c, union ubifs_key *key,
  * This function returns the number of index nodes written into the gaps, or a
  * negative error code on failure.
  */
-<<<<<<< HEAD
-static int layout_leb_in_gaps(struct ubifs_info *c, int *p)
-=======
 static int layout_leb_in_gaps(struct ubifs_info *c, int p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ubifs_scan_leb *sleb;
 	struct ubifs_scan_node *snod;
@@ -304,11 +236,7 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 		 * filled, however we do not check there at present.
 		 */
 		return lnum; /* Error code */
-<<<<<<< HEAD
-	*p = lnum;
-=======
 	c->gap_lebs[p] = lnum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg_gc("LEB %d", lnum);
 	/*
 	 * Scan the index LEB.  We use the generic scan for this even though
@@ -324,11 +252,7 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 		struct ubifs_idx_node *idx;
 		int in_use, level;
 
-<<<<<<< HEAD
-		ubifs_assert(snod->type == UBIFS_IDX_NODE);
-=======
 		ubifs_assert(c, snod->type == UBIFS_IDX_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idx = snod->node;
 		key_read(c, ubifs_idx_key(c, idx), &snod->key);
 		level = le16_to_cpu(idx->level);
@@ -391,12 +315,7 @@ static int layout_leb_in_gaps(struct ubifs_info *c, int p)
 				  0, 0, 0);
 	if (err)
 		return err;
-<<<<<<< HEAD
-	err = ubifs_leb_change(c, lnum, c->ileb_buf, c->ileb_len,
-			       UBI_SHORTTERM);
-=======
 	err = ubifs_leb_change(c, lnum, c->ileb_buf, c->ileb_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 	dbg_gc("LEB %d wrote %d index nodes", lnum, tot_written);
@@ -436,19 +355,6 @@ static int get_leb_cnt(struct ubifs_info *c, int cnt)
  */
 static int layout_in_gaps(struct ubifs_info *c, int cnt)
 {
-<<<<<<< HEAD
-	int err, leb_needed_cnt, written, *p;
-
-	dbg_gc("%d znodes to write", cnt);
-
-	c->gap_lebs = kmalloc(sizeof(int) * (c->lst.idx_lebs + 1), GFP_NOFS);
-	if (!c->gap_lebs)
-		return -ENOMEM;
-
-	p = c->gap_lebs;
-	do {
-		ubifs_assert(p < c->gap_lebs + sizeof(int) * c->lst.idx_lebs);
-=======
 	int err, leb_needed_cnt, written, p = 0, old_idx_lebs, *gap_lebs;
 
 	dbg_gc("%d znodes to write", cnt);
@@ -461,7 +367,6 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 	old_idx_lebs = c->lst.idx_lebs;
 	do {
 		ubifs_assert(c, p < c->lst.idx_lebs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		written = layout_leb_in_gaps(c, p);
 		if (written < 0) {
 			err = written;
@@ -475,20 +380,11 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 				 * Do not print scary warnings if the debugging
 				 * option which forces in-the-gaps is enabled.
 				 */
-<<<<<<< HEAD
-				ubifs_warn("out of space");
-				dbg_dump_budg(c, &c->bi);
-				dbg_dump_lprops(c);
-			}
-			/* Try to commit anyway */
-			err = 0;
-=======
 				ubifs_warn(c, "out of space");
 				ubifs_dump_budg(c, &c->bi);
 				ubifs_dump_lprops(c);
 			}
 			/* Try to commit anyway */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		p++;
@@ -496,11 +392,6 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 		leb_needed_cnt = get_leb_cnt(c, cnt);
 		dbg_gc("%d znodes remaining, need %d LEBs, have %d", cnt,
 		       leb_needed_cnt, c->ileb_cnt);
-<<<<<<< HEAD
-	} while (leb_needed_cnt > c->ileb_cnt);
-
-	*p = -1;
-=======
 		/*
 		 * Dynamically change the size of @c->gap_lebs to prevent
 		 * oob, because @c->lst.idx_lebs could be increased by
@@ -524,7 +415,6 @@ static int layout_in_gaps(struct ubifs_info *c, int cnt)
 	} while (leb_needed_cnt > c->ileb_cnt);
 
 	c->gap_lebs[p] = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -567,11 +457,7 @@ static int layout_in_empty_space(struct ubifs_info *c)
 		/* Determine the index node position */
 		if (lnum == -1) {
 			if (c->ileb_nxt >= c->ileb_cnt) {
-<<<<<<< HEAD
-				ubifs_err("out of space");
-=======
 				ubifs_err(c, "out of space");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOSPC;
 			}
 			lnum = c->ilebs[c->ileb_nxt++];
@@ -582,17 +468,9 @@ static int layout_in_empty_space(struct ubifs_info *c)
 
 		offs = buf_offs + used;
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
 		znode->lnum = lnum;
 		znode->offs = offs;
 		znode->len = len;
-#endif
-=======
-		znode->lnum = lnum;
-		znode->offs = offs;
-		znode->len = len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Update the parent */
 		zp = znode->parent;
@@ -668,15 +546,8 @@ static int layout_in_empty_space(struct ubifs_info *c)
 		break;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
 	c->dbg->new_ihead_lnum = lnum;
 	c->dbg->new_ihead_offs = buf_offs;
-#endif
-=======
-	c->dbg->new_ihead_lnum = lnum;
-	c->dbg->new_ihead_offs = buf_offs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -781,11 +652,7 @@ static int get_znodes_to_commit(struct ubifs_info *c)
 	}
 	cnt += 1;
 	while (1) {
-<<<<<<< HEAD
-		ubifs_assert(!ubifs_zn_cow(znode));
-=======
 		ubifs_assert(c, !ubifs_zn_cow(znode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__set_bit(COW_ZNODE, &znode->flags);
 		znode->alt = 0;
 		cnext = find_next_dirty(znode);
@@ -793,21 +660,14 @@ static int get_znodes_to_commit(struct ubifs_info *c)
 			znode->cnext = c->cnext;
 			break;
 		}
-<<<<<<< HEAD
-=======
 		znode->cparent = znode->parent;
 		znode->ciip = znode->iip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		znode->cnext = cnext;
 		znode = cnext;
 		cnt += 1;
 	}
 	dbg_cmt("committing %d znodes", cnt);
-<<<<<<< HEAD
-	ubifs_assert(cnt == atomic_long_read(&c->dirty_zn_cnt));
-=======
 	ubifs_assert(c, cnt == atomic_long_read(&c->dirty_zn_cnt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cnt;
 }
 
@@ -830,11 +690,7 @@ static int alloc_idx_lebs(struct ubifs_info *c, int cnt)
 	dbg_cmt("need about %d empty LEBS for TNC commit", leb_cnt);
 	if (!leb_cnt)
 		return 0;
-<<<<<<< HEAD
-	c->ilebs = kmalloc(leb_cnt * sizeof(int), GFP_NOFS);
-=======
 	c->ilebs = kmalloc_array(leb_cnt, sizeof(int), GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c->ilebs)
 		return -ENOMEM;
 	for (i = 0; i < leb_cnt; i++) {
@@ -844,11 +700,7 @@ static int alloc_idx_lebs(struct ubifs_info *c, int cnt)
 		c->ilebs[c->ileb_cnt++] = lnum;
 		dbg_cmt("LEB %d", lnum);
 	}
-<<<<<<< HEAD
-	if (dbg_is_chk_index(c) && !(random32() & 7))
-=======
 	if (dbg_is_chk_index(c) && !get_random_u32_below(8))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSPC;
 	return 0;
 }
@@ -923,11 +775,7 @@ int ubifs_tnc_start_commit(struct ubifs_info *c, struct ubifs_zbranch *zroot)
 		err = layout_commit(c, no_space, cnt);
 		if (err)
 			goto out_free;
-<<<<<<< HEAD
-		ubifs_assert(atomic_long_read(&c->dirty_zn_cnt) == 0);
-=======
 		ubifs_assert(c, atomic_long_read(&c->dirty_zn_cnt) == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = free_unused_idx_lebs(c);
 		if (err)
 			goto out;
@@ -948,11 +796,7 @@ int ubifs_tnc_start_commit(struct ubifs_info *c, struct ubifs_zbranch *zroot)
 	 * budgeting subsystem to assume the index is already committed,
 	 * even though it is not.
 	 */
-<<<<<<< HEAD
-	ubifs_assert(c->bi.min_idx_lebs == ubifs_calc_min_idx_lebs(c));
-=======
 	ubifs_assert(c, c->bi.min_idx_lebs == ubifs_calc_min_idx_lebs(c));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->bi.old_idx_sz = c->calc_idx_sz;
 	c->bi.uncommitted_idx = 0;
 	c->bi.min_idx_lebs = ubifs_calc_min_idx_lebs(c);
@@ -1011,11 +855,8 @@ static int write_index(struct ubifs_info *c)
 	}
 
 	while (1) {
-<<<<<<< HEAD
-=======
 		u8 hash[UBIFS_HASH_ARR_SZ];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cond_resched();
 
 		znode = cnext;
@@ -1033,13 +874,6 @@ static int write_index(struct ubifs_info *c)
 			br->lnum = cpu_to_le32(zbr->lnum);
 			br->offs = cpu_to_le32(zbr->offs);
 			br->len = cpu_to_le32(zbr->len);
-<<<<<<< HEAD
-			if (!zbr->lnum || !zbr->len) {
-				ubifs_err("bad ref in znode");
-				dbg_dump_znode(c, znode);
-				if (zbr->znode)
-					dbg_dump_znode(c, zbr->znode);
-=======
 			ubifs_copy_hash(c, zbr->hash, ubifs_branch_hash(c, br));
 			if (!zbr->lnum || !zbr->len) {
 				ubifs_err(c, "bad ref in znode");
@@ -1048,13 +882,10 @@ static int write_index(struct ubifs_info *c)
 					ubifs_dump_znode(c, zbr->znode);
 
 				return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		len = ubifs_idx_node_sz(c, znode->child_cnt);
 		ubifs_prepare_node(c, idx, len, 0);
-<<<<<<< HEAD
-=======
 		ubifs_node_calc_hash(c, idx, hash);
 
 		mutex_lock(&c->tnc_mutex);
@@ -1072,7 +903,6 @@ static int write_index(struct ubifs_info *c)
 		}
 
 		mutex_unlock(&c->tnc_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Determine the index node position */
 		if (lnum == -1) {
@@ -1083,47 +913,23 @@ static int write_index(struct ubifs_info *c)
 		}
 		offs = buf_offs + used;
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
-		if (lnum != znode->lnum || offs != znode->offs ||
-		    len != znode->len) {
-			ubifs_err("inconsistent znode posn");
-			return -EINVAL;
-		}
-#endif
-=======
 		if (lnum != znode->lnum || offs != znode->offs ||
 		    len != znode->len) {
 			ubifs_err(c, "inconsistent znode posn");
 			return -EINVAL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Grab some stuff from znode while we still can */
 		cnext = znode->cnext;
 
-<<<<<<< HEAD
-		ubifs_assert(ubifs_zn_dirty(znode));
-		ubifs_assert(ubifs_zn_cow(znode));
-=======
 		ubifs_assert(c, ubifs_zn_dirty(znode));
 		ubifs_assert(c, ubifs_zn_cow(znode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * It is important that other threads should see %DIRTY_ZNODE
 		 * flag cleared before %COW_ZNODE. Specifically, it matters in
 		 * the 'dirty_cow_znode()' function. This is the reason for the
 		 * first barrier. Also, we want the bit changes to be seen to
-<<<<<<< HEAD
-		 * other threads ASAP, to avoid unnecesarry copying, which is
-		 * the reason for the second barrier.
-		 */
-		clear_bit(DIRTY_ZNODE, &znode->flags);
-		smp_mb__before_clear_bit();
-		clear_bit(COW_ZNODE, &znode->flags);
-		smp_mb__after_clear_bit();
-=======
 		 * other threads ASAP, to avoid unnecessary copying, which is
 		 * the reason for the second barrier.
 		 */
@@ -1131,7 +937,6 @@ static int write_index(struct ubifs_info *c)
 		smp_mb__before_atomic();
 		clear_bit(COW_ZNODE, &znode->flags);
 		smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We have marked the znode as clean but have not updated the
@@ -1184,12 +989,7 @@ static int write_index(struct ubifs_info *c)
 		}
 
 		/* The buffer is full or there are no more znodes to do */
-<<<<<<< HEAD
-		err = ubifs_leb_write(c, lnum, c->cbuf, buf_offs, blen,
-				      UBI_SHORTTERM);
-=======
 		err = ubifs_leb_write(c, lnum, c->cbuf, buf_offs, blen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 		buf_offs += blen;
@@ -1211,21 +1011,11 @@ static int write_index(struct ubifs_info *c)
 		break;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_UBIFS_FS_DEBUG
-	if (lnum != c->dbg->new_ihead_lnum ||
-	    buf_offs != c->dbg->new_ihead_offs) {
-		ubifs_err("inconsistent ihead");
-		return -EINVAL;
-	}
-#endif
-=======
 	if (lnum != c->dbg->new_ihead_lnum ||
 	    buf_offs != c->dbg->new_ihead_offs) {
 		ubifs_err(c, "inconsistent ihead");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->ihead_lnum = lnum;
 	c->ihead_offs = buf_offs;

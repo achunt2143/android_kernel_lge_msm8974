@@ -14,19 +14,13 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 
 #include "ath.h"
-<<<<<<< HEAD
-=======
 #include "trace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Atheros Communications");
 MODULE_DESCRIPTION("Shared library for Atheros wireless LAN cards.");
@@ -58,11 +52,7 @@ struct sk_buff *ath_rxbuf_alloc(struct ath_common *common,
 		if (off != 0)
 			skb_reserve(skb, common->cachelsz - off);
 	} else {
-<<<<<<< HEAD
-		printk(KERN_ERR "skbuff alloc of size %u failed\n", len);
-=======
 		pr_err("skbuff alloc of size %u failed\n", len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -70,8 +60,6 @@ struct sk_buff *ath_rxbuf_alloc(struct ath_common *common,
 }
 EXPORT_SYMBOL(ath_rxbuf_alloc);
 
-<<<<<<< HEAD
-=======
 bool ath_is_mybeacon(struct ath_common *common, struct ieee80211_hdr *hdr)
 {
 	return ieee80211_is_beacon(hdr->frame_control) &&
@@ -80,7 +68,6 @@ bool ath_is_mybeacon(struct ath_common *common, struct ieee80211_hdr *hdr)
 }
 EXPORT_SYMBOL(ath_is_mybeacon);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath_printk(const char *level, const struct ath_common* common,
 		const char *fmt, ...)
 {
@@ -92,13 +79,6 @@ void ath_printk(const char *level, const struct ath_common* common,
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
-<<<<<<< HEAD
-	if (common && common->hw && common->hw->wiphy)
-		printk("%sath: %s: %pV",
-		       level, wiphy_name(common->hw->wiphy), &vaf);
-	else
-		printk("%sath: %pV", level, &vaf);
-=======
 	if (common && common->hw && common->hw->wiphy) {
 		printk("%sath: %s: %pV",
 		       level, wiphy_name(common->hw->wiphy), &vaf);
@@ -106,13 +86,10 @@ void ath_printk(const char *level, const struct ath_common* common,
 	} else {
 		printk("%sath: %pV", level, &vaf);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_end(args);
 }
 EXPORT_SYMBOL(ath_printk);
-<<<<<<< HEAD
-=======
 
 const char *ath_bus_type_strings[] = {
 	[ATH_PCI] = "pci",
@@ -120,4 +97,3 @@ const char *ath_bus_type_strings[] = {
 	[ATH_USB] = "usb",
 };
 EXPORT_SYMBOL(ath_bus_type_strings);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

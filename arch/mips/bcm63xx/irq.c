@@ -10,13 +10,8 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/irq.h>
-=======
 #include <linux/irq.h>
 #include <linux/spinlock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq_cpu.h>
 #include <asm/mipsregs.h>
 #include <bcm63xx_cpu.h>
@@ -24,92 +19,6 @@
 #include <bcm63xx_io.h>
 #include <bcm63xx_irq.h>
 
-<<<<<<< HEAD
-static void __dispatch_internal(void) __maybe_unused;
-static void __dispatch_internal_64(void) __maybe_unused;
-static void __internal_irq_mask_32(unsigned int irq) __maybe_unused;
-static void __internal_irq_mask_64(unsigned int irq) __maybe_unused;
-static void __internal_irq_unmask_32(unsigned int irq) __maybe_unused;
-static void __internal_irq_unmask_64(unsigned int irq) __maybe_unused;
-
-#ifndef BCMCPU_RUNTIME_DETECT
-#ifdef CONFIG_BCM63XX_CPU_6338
-#define irq_stat_reg		PERF_IRQSTAT_6338_REG
-#define irq_mask_reg		PERF_IRQMASK_6338_REG
-#define irq_bits		32
-#define is_ext_irq_cascaded	0
-#define ext_irq_start		0
-#define ext_irq_end		0
-#define ext_irq_count		4
-#define ext_irq_cfg_reg1	PERF_EXTIRQ_CFG_REG_6338
-#define ext_irq_cfg_reg2	0
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6345
-#define irq_stat_reg		PERF_IRQSTAT_6345_REG
-#define irq_mask_reg		PERF_IRQMASK_6345_REG
-#define irq_bits		32
-#define is_ext_irq_cascaded	0
-#define ext_irq_start		0
-#define ext_irq_end		0
-#define ext_irq_count		0
-#define ext_irq_cfg_reg1	0
-#define ext_irq_cfg_reg2	0
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6348
-#define irq_stat_reg		PERF_IRQSTAT_6348_REG
-#define irq_mask_reg		PERF_IRQMASK_6348_REG
-#define irq_bits		32
-#define is_ext_irq_cascaded	0
-#define ext_irq_start		0
-#define ext_irq_end		0
-#define ext_irq_count		4
-#define ext_irq_cfg_reg1	PERF_EXTIRQ_CFG_REG_6348
-#define ext_irq_cfg_reg2	0
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6358
-#define irq_stat_reg		PERF_IRQSTAT_6358_REG
-#define irq_mask_reg		PERF_IRQMASK_6358_REG
-#define irq_bits		32
-#define is_ext_irq_cascaded	1
-#define ext_irq_start		(BCM_6358_EXT_IRQ0 - IRQ_INTERNAL_BASE)
-#define ext_irq_end		(BCM_6358_EXT_IRQ3 - IRQ_INTERNAL_BASE)
-#define ext_irq_count		4
-#define ext_irq_cfg_reg1	PERF_EXTIRQ_CFG_REG_6358
-#define ext_irq_cfg_reg2	0
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6368
-#define irq_stat_reg		PERF_IRQSTAT_6368_REG
-#define irq_mask_reg		PERF_IRQMASK_6368_REG
-#define irq_bits		64
-#define is_ext_irq_cascaded	1
-#define ext_irq_start		(BCM_6368_EXT_IRQ0 - IRQ_INTERNAL_BASE)
-#define ext_irq_end		(BCM_6368_EXT_IRQ5 - IRQ_INTERNAL_BASE)
-#define ext_irq_count		6
-#define ext_irq_cfg_reg1	PERF_EXTIRQ_CFG_REG_6368
-#define ext_irq_cfg_reg2	PERF_EXTIRQ_CFG_REG2_6368
-#endif
-
-#if irq_bits == 32
-#define dispatch_internal			__dispatch_internal
-#define internal_irq_mask			__internal_irq_mask_32
-#define internal_irq_unmask			__internal_irq_unmask_32
-#else
-#define dispatch_internal			__dispatch_internal_64
-#define internal_irq_mask			__internal_irq_mask_64
-#define internal_irq_unmask			__internal_irq_unmask_64
-#endif
-
-#define irq_stat_addr	(bcm63xx_regset_address(RSET_PERF) + irq_stat_reg)
-#define irq_mask_addr	(bcm63xx_regset_address(RSET_PERF) + irq_mask_reg)
-
-static inline void bcm63xx_init_irq(void)
-{
-}
-#else /* ! BCMCPU_RUNTIME_DETECT */
-
-static u32 irq_stat_addr, irq_mask_addr;
-static void (*dispatch_internal)(void);
-=======
 
 static DEFINE_SPINLOCK(ipic_lock);
 static DEFINE_SPINLOCK(epic_lock);
@@ -117,81 +26,13 @@ static DEFINE_SPINLOCK(epic_lock);
 static u32 irq_stat_addr[2];
 static u32 irq_mask_addr[2];
 static void (*dispatch_internal)(int cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int is_ext_irq_cascaded;
 static unsigned int ext_irq_count;
 static unsigned int ext_irq_start, ext_irq_end;
 static unsigned int ext_irq_cfg_reg1, ext_irq_cfg_reg2;
-<<<<<<< HEAD
-static void (*internal_irq_mask)(unsigned int irq);
-static void (*internal_irq_unmask)(unsigned int irq);
-
-static void bcm63xx_init_irq(void)
-{
-	int irq_bits;
-
-	irq_stat_addr = bcm63xx_regset_address(RSET_PERF);
-	irq_mask_addr = bcm63xx_regset_address(RSET_PERF);
-
-	switch (bcm63xx_get_cpu_id()) {
-	case BCM6338_CPU_ID:
-		irq_stat_addr += PERF_IRQSTAT_6338_REG;
-		irq_mask_addr += PERF_IRQMASK_6338_REG;
-		irq_bits = 32;
-		break;
-	case BCM6345_CPU_ID:
-		irq_stat_addr += PERF_IRQSTAT_6345_REG;
-		irq_mask_addr += PERF_IRQMASK_6345_REG;
-		irq_bits = 32;
-		break;
-	case BCM6348_CPU_ID:
-		irq_stat_addr += PERF_IRQSTAT_6348_REG;
-		irq_mask_addr += PERF_IRQMASK_6348_REG;
-		irq_bits = 32;
-		ext_irq_count = 4;
-		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6348;
-		break;
-	case BCM6358_CPU_ID:
-		irq_stat_addr += PERF_IRQSTAT_6358_REG;
-		irq_mask_addr += PERF_IRQMASK_6358_REG;
-		irq_bits = 32;
-		ext_irq_count = 4;
-		is_ext_irq_cascaded = 1;
-		ext_irq_start = BCM_6358_EXT_IRQ0 - IRQ_INTERNAL_BASE;
-		ext_irq_end = BCM_6358_EXT_IRQ3 - IRQ_INTERNAL_BASE;
-		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6358;
-		break;
-	case BCM6368_CPU_ID:
-		irq_stat_addr += PERF_IRQSTAT_6368_REG;
-		irq_mask_addr += PERF_IRQMASK_6368_REG;
-		irq_bits = 64;
-		ext_irq_count = 6;
-		is_ext_irq_cascaded = 1;
-		ext_irq_start = BCM_6368_EXT_IRQ0 - IRQ_INTERNAL_BASE;
-		ext_irq_end = BCM_6368_EXT_IRQ5 - IRQ_INTERNAL_BASE;
-		ext_irq_cfg_reg1 = PERF_EXTIRQ_CFG_REG_6368;
-		ext_irq_cfg_reg2 = PERF_EXTIRQ_CFG_REG2_6368;
-		break;
-	default:
-		BUG();
-	}
-
-	if (irq_bits == 32) {
-		dispatch_internal = __dispatch_internal;
-		internal_irq_mask = __internal_irq_mask_32;
-		internal_irq_unmask = __internal_irq_unmask_32;
-	} else {
-		dispatch_internal = __dispatch_internal_64;
-		internal_irq_mask = __internal_irq_mask_64;
-		internal_irq_unmask = __internal_irq_unmask_64;
-	}
-}
-#endif /* ! BCMCPU_RUNTIME_DETECT */
-=======
 static void (*internal_irq_mask)(struct irq_data *d);
 static void (*internal_irq_unmask)(struct irq_data *d, const struct cpumask *m);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u32 get_ext_irq_perf_reg(int irq)
 {
@@ -209,8 +50,6 @@ static inline void handle_internal(int intbit)
 		do_IRQ(intbit + IRQ_INTERNAL_BASE);
 }
 
-<<<<<<< HEAD
-=======
 static inline int enable_irq_for_cpu(int cpu, struct irq_data *d,
 				     const struct cpumask *m)
 {
@@ -225,56 +64,12 @@ static inline int enable_irq_for_cpu(int cpu, struct irq_data *d,
 	return enable;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dispatch internal devices IRQ (uart, enet, watchdog, ...). do not
  * prioritize any interrupt relatively to another. the static counter
  * will resume the loop where it ended the last time we left this
  * function.
  */
-<<<<<<< HEAD
-static void __dispatch_internal(void)
-{
-	u32 pending;
-	static int i;
-
-	pending = bcm_readl(irq_stat_addr) & bcm_readl(irq_mask_addr);
-
-	if (!pending)
-		return ;
-
-	while (1) {
-		int to_call = i;
-
-		i = (i + 1) & 0x1f;
-		if (pending & (1 << to_call)) {
-			handle_internal(to_call);
-			break;
-		}
-	}
-}
-
-static void __dispatch_internal_64(void)
-{
-	u64 pending;
-	static int i;
-
-	pending = bcm_readq(irq_stat_addr) & bcm_readq(irq_mask_addr);
-
-	if (!pending)
-		return ;
-
-	while (1) {
-		int to_call = i;
-
-		i = (i + 1) & 0x3f;
-		if (pending & (1ull << to_call)) {
-			handle_internal(to_call);
-			break;
-		}
-	}
-}
-=======
 
 #define BUILD_IPIC_INTERNAL(width)					\
 static void __dispatch_internal_##width(int cpu)			\
@@ -362,7 +157,6 @@ static void __internal_irq_unmask_##width(struct irq_data *d,		\
 
 BUILD_IPIC_INTERNAL(32);
 BUILD_IPIC_INTERNAL(64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 asmlinkage void plat_irq_dispatch(void)
 {
@@ -376,11 +170,6 @@ asmlinkage void plat_irq_dispatch(void)
 
 		if (cause & CAUSEF_IP7)
 			do_IRQ(7);
-<<<<<<< HEAD
-		if (cause & CAUSEF_IP2)
-			dispatch_internal();
-		if (!is_ext_irq_cascaded) {
-=======
 		if (cause & CAUSEF_IP0)
 			do_IRQ(0);
 		if (cause & CAUSEF_IP1)
@@ -391,7 +180,6 @@ asmlinkage void plat_irq_dispatch(void)
 			if (cause & CAUSEF_IP3)
 				dispatch_internal(1);
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cause & CAUSEF_IP3)
 				do_IRQ(IRQ_EXT_0);
 			if (cause & CAUSEF_IP4)
@@ -408,60 +196,14 @@ asmlinkage void plat_irq_dispatch(void)
  * internal IRQs operations: only mask/unmask on PERF irq mask
  * register.
  */
-<<<<<<< HEAD
-static void __internal_irq_mask_32(unsigned int irq)
-{
-	u32 mask;
-
-	mask = bcm_readl(irq_mask_addr);
-	mask &= ~(1 << irq);
-	bcm_writel(mask, irq_mask_addr);
-}
-
-static void __internal_irq_mask_64(unsigned int irq)
-{
-	u64 mask;
-
-	mask = bcm_readq(irq_mask_addr);
-	mask &= ~(1ull << irq);
-	bcm_writeq(mask, irq_mask_addr);
-}
-
-static void __internal_irq_unmask_32(unsigned int irq)
-{
-	u32 mask;
-
-	mask = bcm_readl(irq_mask_addr);
-	mask |= (1 << irq);
-	bcm_writel(mask, irq_mask_addr);
-}
-
-static void __internal_irq_unmask_64(unsigned int irq)
-{
-	u64 mask;
-
-	mask = bcm_readq(irq_mask_addr);
-	mask |= (1ull << irq);
-	bcm_writeq(mask, irq_mask_addr);
-}
-
-static void bcm63xx_internal_irq_mask(struct irq_data *d)
-{
-	internal_irq_mask(d->irq - IRQ_INTERNAL_BASE);
-=======
 static void bcm63xx_internal_irq_mask(struct irq_data *d)
 {
 	internal_irq_mask(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcm63xx_internal_irq_unmask(struct irq_data *d)
 {
-<<<<<<< HEAD
-	internal_irq_unmask(d->irq - IRQ_INTERNAL_BASE);
-=======
 	internal_irq_unmask(d, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -472,15 +214,10 @@ static void bcm63xx_external_irq_mask(struct irq_data *d)
 {
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
-<<<<<<< HEAD
-
-	regaddr = get_ext_irq_perf_reg(irq);
-=======
 	unsigned long flags;
 
 	regaddr = get_ext_irq_perf_reg(irq);
 	spin_lock_irqsave(&epic_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = bcm_perf_readl(regaddr);
 
 	if (BCMCPU_IS_6348())
@@ -489,30 +226,20 @@ static void bcm63xx_external_irq_mask(struct irq_data *d)
 		reg &= ~EXTIRQ_CFG_MASK(irq % 4);
 
 	bcm_perf_writel(reg, regaddr);
-<<<<<<< HEAD
-	if (is_ext_irq_cascaded)
-		internal_irq_mask(irq + ext_irq_start);
-=======
 	spin_unlock_irqrestore(&epic_lock, flags);
 
 	if (is_ext_irq_cascaded)
 		internal_irq_mask(irq_get_irq_data(irq + ext_irq_start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcm63xx_external_irq_unmask(struct irq_data *d)
 {
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
-<<<<<<< HEAD
-
-	regaddr = get_ext_irq_perf_reg(irq);
-=======
 	unsigned long flags;
 
 	regaddr = get_ext_irq_perf_reg(irq);
 	spin_lock_irqsave(&epic_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = bcm_perf_readl(regaddr);
 
 	if (BCMCPU_IS_6348())
@@ -521,32 +248,21 @@ static void bcm63xx_external_irq_unmask(struct irq_data *d)
 		reg |= EXTIRQ_CFG_MASK(irq % 4);
 
 	bcm_perf_writel(reg, regaddr);
-<<<<<<< HEAD
-
-	if (is_ext_irq_cascaded)
-		internal_irq_unmask(irq + ext_irq_start);
-=======
 	spin_unlock_irqrestore(&epic_lock, flags);
 
 	if (is_ext_irq_cascaded)
 		internal_irq_unmask(irq_get_irq_data(irq + ext_irq_start),
 				    NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcm63xx_external_irq_clear(struct irq_data *d)
 {
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
-<<<<<<< HEAD
-
-	regaddr = get_ext_irq_perf_reg(irq);
-=======
 	unsigned long flags;
 
 	regaddr = get_ext_irq_perf_reg(irq);
 	spin_lock_irqsave(&epic_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = bcm_perf_readl(regaddr);
 
 	if (BCMCPU_IS_6348())
@@ -555,10 +271,7 @@ static void bcm63xx_external_irq_clear(struct irq_data *d)
 		reg |= EXTIRQ_CFG_CLEAR(irq % 4);
 
 	bcm_perf_writel(reg, regaddr);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&epic_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int bcm63xx_external_irq_set_type(struct irq_data *d,
@@ -567,10 +280,7 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 	unsigned int irq = d->irq - IRQ_EXTERNAL_BASE;
 	u32 reg, regaddr;
 	int levelsense, sense, bothedge;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flow_type &= IRQ_TYPE_SENSE_MASK;
 
@@ -600,28 +310,17 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 		break;
 
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "bogus flow type combination given !\n");
-=======
 		pr_err("bogus flow type combination given !\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	regaddr = get_ext_irq_perf_reg(irq);
-<<<<<<< HEAD
-	reg = bcm_perf_readl(regaddr);
-	irq %= 4;
-
-	if (BCMCPU_IS_6348()) {
-=======
 	spin_lock_irqsave(&epic_lock, flags);
 	reg = bcm_perf_readl(regaddr);
 	irq %= 4;
 
 	switch (bcm63xx_get_cpu_id()) {
 	case BCM6348_CPU_ID:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (levelsense)
 			reg |= EXTIRQ_CFG_LEVELSENSE_6348(irq);
 		else
@@ -634,11 +333,6 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 			reg |= EXTIRQ_CFG_BOTHEDGE_6348(irq);
 		else
 			reg &= ~EXTIRQ_CFG_BOTHEDGE_6348(irq);
-<<<<<<< HEAD
-	}
-
-	if (BCMCPU_IS_6338() || BCMCPU_IS_6358() || BCMCPU_IS_6368()) {
-=======
 		break;
 
 	case BCM3368_CPU_ID:
@@ -648,7 +342,6 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 	case BCM6358_CPU_ID:
 	case BCM6362_CPU_ID:
 	case BCM6368_CPU_ID:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (levelsense)
 			reg |= EXTIRQ_CFG_LEVELSENSE(irq);
 		else
@@ -661,17 +354,6 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 			reg |= EXTIRQ_CFG_BOTHEDGE(irq);
 		else
 			reg &= ~EXTIRQ_CFG_BOTHEDGE(irq);
-<<<<<<< HEAD
-	}
-
-	bcm_perf_writel(reg, regaddr);
-
-	irqd_set_trigger_type(d, flow_type);
-	if (flow_type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
-		__irq_set_handler_locked(d->irq, handle_level_irq);
-	else
-		__irq_set_handler_locked(d->irq, handle_edge_irq);
-=======
 		break;
 	default:
 		BUG();
@@ -685,13 +367,10 @@ static int bcm63xx_external_irq_set_type(struct irq_data *d,
 		irq_set_handler_locked(d, handle_level_irq);
 	else
 		irq_set_handler_locked(d, handle_edge_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_SET_MASK_OK_NOCOPY;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SMP
 static int bcm63xx_internal_set_affinity(struct irq_data *data,
 					 const struct cpumask *dest,
@@ -704,7 +383,6 @@ static int bcm63xx_internal_set_affinity(struct irq_data *data,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct irq_chip bcm63xx_internal_irq_chip = {
 	.name		= "bcm63xx_ipic",
 	.irq_mask	= bcm63xx_internal_irq_mask,
@@ -721,23 +399,6 @@ static struct irq_chip bcm63xx_external_irq_chip = {
 	.irq_set_type	= bcm63xx_external_irq_set_type,
 };
 
-<<<<<<< HEAD
-static struct irqaction cpu_ip2_cascade_action = {
-	.handler	= no_action,
-	.name		= "cascade_ip2",
-	.flags		= IRQF_NO_THREAD,
-};
-
-static struct irqaction cpu_ext_cascade_action = {
-	.handler	= no_action,
-	.name		= "cascade_extirq",
-	.flags		= IRQF_NO_THREAD,
-};
-
-void __init arch_init_irq(void)
-{
-	int i;
-=======
 static void bcm63xx_init_irq(void)
 {
 	int irq_bits;
@@ -851,7 +512,6 @@ static void bcm63xx_init_irq(void)
 void __init arch_init_irq(void)
 {
 	int i, irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bcm63xx_init_irq();
 	mips_cpu_irq_init();
@@ -864,13 +524,6 @@ void __init arch_init_irq(void)
 					 handle_edge_irq);
 
 	if (!is_ext_irq_cascaded) {
-<<<<<<< HEAD
-		for (i = 3; i < 3 + ext_irq_count; ++i)
-			setup_irq(MIPS_CPU_IRQ_BASE + i, &cpu_ext_cascade_action);
-	}
-
-	setup_irq(MIPS_CPU_IRQ_BASE + 2, &cpu_ip2_cascade_action);
-=======
 		for (i = 3; i < 3 + ext_irq_count; ++i) {
 			irq = MIPS_CPU_IRQ_BASE + i;
 			if (request_irq(irq, no_action, IRQF_NO_THREAD,
@@ -897,5 +550,4 @@ void __init arch_init_irq(void)
 		cpumask_set_cpu(smp_processor_id(), irq_default_affinity);
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

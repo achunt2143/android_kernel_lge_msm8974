@@ -1,32 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for TI BQ32000 RTC.
  *
  * Copyright (C) 2009 Semihalf.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  * Copyright (C) 2014 Pavel Machek <pavel@denx.de>
  *
  * You can get hardware description at
  * https://www.ti.com/lit/ds/symlink/bq32000.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/rtc.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/kstrtox.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/bcd.h>
 
@@ -42,8 +29,6 @@
 #define BQ32K_CENT		0x40	/* Century flag */
 #define BQ32K_CENT_EN		0x80	/* Century flag enable bit */
 
-<<<<<<< HEAD
-=======
 #define BQ32K_CALIBRATION	0x07	/* CAL_CFG1, calibration and control */
 #define BQ32K_TCH2		0x08	/* Trickle charge enable */
 #define BQ32K_CFG2		0x09	/* Trickle charger control */
@@ -53,7 +38,6 @@
 					 * register for this particular RTC.
 					 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bq32k_regs {
 	uint8_t		seconds;
 	uint8_t		minutes;
@@ -92,11 +76,7 @@ static int bq32k_read(struct device *dev, void *data, uint8_t off, uint8_t len)
 static int bq32k_write(struct device *dev, void *data, uint8_t off, uint8_t len)
 {
 	struct i2c_client *client = to_i2c_client(dev);
-<<<<<<< HEAD
-	uint8_t buffer[len + 1];
-=======
 	uint8_t buffer[MAX_LEN + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buffer[0] = off;
 	memcpy(&buffer[1], data, len);
@@ -116,10 +96,6 @@ static int bq32k_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	tm->tm_sec = bcd2bin(regs.seconds & BQ32K_SECONDS_MASK);
-	tm->tm_min = bcd2bin(regs.minutes & BQ32K_SECONDS_MASK);
-=======
 	/*
 	 * In case of oscillator failure, the register contents should be
 	 * considered invalid. The flag is cleared the next time the RTC is set.
@@ -129,7 +105,6 @@ static int bq32k_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	tm->tm_sec = bcd2bin(regs.seconds & BQ32K_SECONDS_MASK);
 	tm->tm_min = bcd2bin(regs.minutes & BQ32K_MINUTES_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tm->tm_hour = bcd2bin(regs.cent_hours & BQ32K_HOURS_MASK);
 	tm->tm_mday = bcd2bin(regs.date);
 	tm->tm_wday = bcd2bin(regs.day) - 1;
@@ -137,11 +112,7 @@ static int bq32k_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_year = bcd2bin(regs.years) +
 				((regs.cent_hours & BQ32K_CENT) ? 100 : 0);
 
-<<<<<<< HEAD
-	return rtc_valid_tm(tm);
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int bq32k_rtc_set_time(struct device *dev, struct rtc_time *tm)
@@ -169,10 +140,6 @@ static const struct rtc_class_ops bq32k_rtc_ops = {
 	.set_time	= bq32k_rtc_set_time,
 };
 
-<<<<<<< HEAD
-static int bq32k_probe(struct i2c_client *client,
-				const struct i2c_device_id *id)
-=======
 static int trickle_charger_of_init(struct device *dev, struct device_node *node)
 {
 	unsigned char reg;
@@ -284,7 +251,6 @@ static void bq32k_sysfs_unregister(struct device *dev)
 }
 
 static int bq32k_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &client->dev;
 	struct rtc_device *rtc;
@@ -306,17 +272,6 @@ static int bq32k_probe(struct i2c_client *client)
 
 	/* Check Oscillator Failure flag */
 	error = bq32k_read(dev, &reg, BQ32K_MINUTES, 1);
-<<<<<<< HEAD
-	if (!error && (reg & BQ32K_OF)) {
-		dev_warn(dev, "Oscillator Failure. Check RTC battery.\n");
-		reg &= ~BQ32K_OF;
-		error = bq32k_write(dev, &reg, BQ32K_MINUTES, 1);
-	}
-	if (error)
-		return error;
-
-	rtc = rtc_device_register(bq32k_driver.driver.name, &client->dev,
-=======
 	if (error)
 		return error;
 	if (reg & BQ32K_OF)
@@ -326,13 +281,10 @@ static int bq32k_probe(struct i2c_client *client)
 		trickle_charger_of_init(dev, client->dev.of_node);
 
 	rtc = devm_rtc_device_register(&client->dev, bq32k_driver.driver.name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						&bq32k_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
-<<<<<<< HEAD
-=======
 	error = bq32k_sysfs_register(&client->dev);
 	if (error) {
 		dev_err(&client->dev,
@@ -341,24 +293,14 @@ static int bq32k_probe(struct i2c_client *client)
 	}
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_set_clientdata(client, rtc);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit bq32k_remove(struct i2c_client *client)
-{
-	struct rtc_device *rtc = i2c_get_clientdata(client);
-
-	rtc_device_unregister(rtc);
-	return 0;
-=======
 static void bq32k_remove(struct i2c_client *client)
 {
 	bq32k_sysfs_unregister(&client->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id bq32k_id[] = {
@@ -367,15 +309,6 @@ static const struct i2c_device_id bq32k_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, bq32k_id);
 
-<<<<<<< HEAD
-static struct i2c_driver bq32k_driver = {
-	.driver = {
-		.name	= "bq32k",
-		.owner	= THIS_MODULE,
-	},
-	.probe		= bq32k_probe,
-	.remove		= __devexit_p(bq32k_remove),
-=======
 static const __maybe_unused struct of_device_id bq32k_of_match[] = {
 	{ .compatible = "ti,bq32000" },
 	{ }
@@ -389,7 +322,6 @@ static struct i2c_driver bq32k_driver = {
 	},
 	.probe		= bq32k_probe,
 	.remove		= bq32k_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= bq32k_id,
 };
 

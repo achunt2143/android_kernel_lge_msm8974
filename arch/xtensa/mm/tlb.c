@@ -17,10 +17,7 @@
 #include <linux/mm.h>
 #include <asm/processor.h>
 #include <asm/mmu_context.h>
-<<<<<<< HEAD
-=======
 #include <asm/tlb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbflush.h>
 #include <asm/cacheflush.h>
 
@@ -52,11 +49,7 @@ static inline void __flush_dtlb_all (void)
 }
 
 
-<<<<<<< HEAD
-void flush_tlb_all (void)
-=======
 void local_flush_tlb_all(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__flush_itlb_all();
 	__flush_dtlb_all();
@@ -68,21 +61,6 @@ void local_flush_tlb_all(void)
  * a new context will be assigned to it.
  */
 
-<<<<<<< HEAD
-void flush_tlb_mm(struct mm_struct *mm)
-{
-	if (mm == current->active_mm) {
-		int flags;
-		local_save_flags(flags);
-		__get_new_mmu_context(mm);
-		__load_mmu_context(mm);
-		local_irq_restore(flags);
-	}
-	else
-		mm->context = 0;
-}
-
-=======
 void local_flush_tlb_mm(struct mm_struct *mm)
 {
 	int cpu = smp_processor_id();
@@ -100,7 +78,6 @@ void local_flush_tlb_mm(struct mm_struct *mm)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _ITLB_ENTRIES (ITLB_ARF_WAYS << XCHAL_ITLB_ARF_ENTRIES_LOG2)
 #define _DTLB_ENTRIES (DTLB_ARF_WAYS << XCHAL_DTLB_ARF_ENTRIES_LOG2)
 #if _ITLB_ENTRIES > _DTLB_ENTRIES
@@ -109,28 +86,6 @@ void local_flush_tlb_mm(struct mm_struct *mm)
 # define _TLB_ENTRIES _DTLB_ENTRIES
 #endif
 
-<<<<<<< HEAD
-void flush_tlb_range (struct vm_area_struct *vma,
-    		      unsigned long start, unsigned long end)
-{
-	struct mm_struct *mm = vma->vm_mm;
-	unsigned long flags;
-
-	if (mm->context == NO_CONTEXT)
-		return;
-
-#if 0
-	printk("[tlbrange<%02lx,%08lx,%08lx>]\n",
-			(unsigned long)mm->context, start, end);
-#endif
-	local_save_flags(flags);
-
-	if (end-start + (PAGE_SIZE-1) <= _TLB_ENTRIES << PAGE_SHIFT) {
-		int oldpid = get_rasid_register();
-		set_rasid_register (ASID_INSERT(mm->context));
-		start &= PAGE_MASK;
- 		if (vma->vm_flags & VM_EXEC)
-=======
 void local_flush_tlb_range(struct vm_area_struct *vma,
 		unsigned long start, unsigned long end)
 {
@@ -151,7 +106,6 @@ void local_flush_tlb_range(struct vm_area_struct *vma,
 		set_rasid_register(ASID_INSERT(mm->context.asid[cpu]));
 		start &= PAGE_MASK;
 		if (vma->vm_flags & VM_EXEC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			while(start < end) {
 				invalidate_itlb_mapping(start);
 				invalidate_dtlb_mapping(start);
@@ -165,35 +119,18 @@ void local_flush_tlb_range(struct vm_area_struct *vma,
 
 		set_rasid_register(oldpid);
 	} else {
-<<<<<<< HEAD
-		flush_tlb_mm(mm);
-=======
 		local_flush_tlb_mm(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-void flush_tlb_page (struct vm_area_struct *vma, unsigned long page)
-{
-=======
 void local_flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 {
 	int cpu = smp_processor_id();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mm_struct* mm = vma->vm_mm;
 	unsigned long flags;
 	int oldpid;
 
-<<<<<<< HEAD
-	if(mm->context == NO_CONTEXT)
-		return;
-
-	local_save_flags(flags);
-
-       	oldpid = get_rasid_register();
-=======
 	if (mm->context.asid[cpu] == NO_CONTEXT)
 		return;
 
@@ -201,7 +138,6 @@ void local_flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 
 	oldpid = get_rasid_register();
 	set_rasid_register(ASID_INSERT(mm->context.asid[cpu]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vma->vm_flags & VM_EXEC)
 		invalidate_itlb_mapping(page);
@@ -212,8 +148,6 @@ void local_flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-=======
 void local_flush_tlb_kernel_range(unsigned long start, unsigned long end)
 {
 	if (end > start && start >= TASK_SIZE && end <= PAGE_OFFSET &&
@@ -358,4 +292,3 @@ void check_tlb_sanity(void)
 }
 
 #endif /* CONFIG_DEBUG_TLB_SANITY */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

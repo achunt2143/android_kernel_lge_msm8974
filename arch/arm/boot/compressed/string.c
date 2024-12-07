@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/boot/compressed/string.c
  *
  * Small subset of simple string routines
  */
 
-<<<<<<< HEAD
-#include <linux/string.h>
-
-=======
 #define __NO_FORTIFY
 #include <linux/string.h>
 
@@ -34,7 +27,6 @@ void *__memmove(void *__dest, __const void *__src, size_t count) __alias(memmove
 void *__memset(void *s, int c, size_t count) __alias(memset);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *memcpy(void *__dest, __const void *__src, size_t __n)
 {
 	int i = 0;
@@ -94,8 +86,6 @@ size_t strlen(const char *s)
 	return sc - s;
 }
 
-<<<<<<< HEAD
-=======
 size_t strnlen(const char *s, size_t count)
 {
 	const char *sc;
@@ -105,7 +95,6 @@ size_t strnlen(const char *s, size_t count)
 	return sc - s;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int memcmp(const void *cs, const void *ct, size_t count)
 {
 	const unsigned char *su1 = cs, *su2 = ct, *end = su1 + count;
@@ -152,8 +141,6 @@ char *strchr(const char *s, int c)
 	return (char *)s;
 }
 
-<<<<<<< HEAD
-=======
 char *strrchr(const char *s, int c)
 {
 	const char *last = NULL;
@@ -164,7 +151,6 @@ char *strrchr(const char *s, int c)
 	return (char *)last;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef memset
 
 void *memset(void *s, int c, size_t count)
@@ -174,11 +160,3 @@ void *memset(void *s, int c, size_t count)
 		*xs++ = c;
 	return s;
 }
-<<<<<<< HEAD
-
-void __memzero(void *s, size_t count)
-{
-	memset(s, 0, count);
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

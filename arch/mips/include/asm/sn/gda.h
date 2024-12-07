@@ -8,11 +8,7 @@
  * Copyright (C) 1992 - 1997, 2000 Silicon Graphics, Inc.
  *
  * gda.h -- Contains the data structure for the global data area,
-<<<<<<< HEAD
- * 	The GDA contains information communicated between the
-=======
  *	The GDA contains information communicated between the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	PROM, SYMMON, and the kernel.
  */
 #ifndef _ASM_SN_GDA_H
@@ -20,23 +16,13 @@
 
 #include <asm/sn/addrs.h>
 
-<<<<<<< HEAD
-#define GDA_MAGIC	0x58464552
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GDA Version History
  *
  * Version #	| Change
  * -------------+-------------------------------------------------------
-<<<<<<< HEAD
- * 	1	| Initial SN0 version
- * 	2	| Prom sets g_partid field to the partition number. 0 IS
-=======
  *	1	| Initial SN0 version
  *	2	| Prom sets g_partid field to the partition number. 0 IS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		| a valid partition #.
  */
 
@@ -72,13 +58,7 @@ typedef struct gda {
 				/* Pointer to a mask of nodes with copies
 				 * of the kernel. */
 	char	g_padding[56];	/* pad out to 128 bytes */
-<<<<<<< HEAD
-	nasid_t	g_nasidtable[MAX_COMPACT_NODES]; /* NASID of each node,
-						  * indexed by cnodeid.
-						  */
-=======
 	nasid_t g_nasidtable[MAX_NUMNODES]; /* NASID of each node */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } gda_t;
 
 #define GDA ((gda_t*) GDA_ADDR(get_nasid()))
@@ -90,11 +70,7 @@ typedef struct gda {
  *		revisions assume GDA is NOT set up, and read partition
  *		information from the board info.
  */
-<<<<<<< HEAD
-#define	PART_GDA_VERSION	2
-=======
 #define PART_GDA_VERSION	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following requests can be sent to the PROM during startup.
@@ -103,30 +79,17 @@ typedef struct gda {
 #define PROMOP_MAGIC		0x0ead0000
 #define PROMOP_MAGIC_MASK	0x0fff0000
 
-<<<<<<< HEAD
-#define PROMOP_BIST_SHIFT       11
-#define PROMOP_BIST_MASK        (0x3 << 11)
-=======
 #define PROMOP_BIST_SHIFT	11
 #define PROMOP_BIST_MASK	(0x3 << 11)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PROMOP_REG		PI_ERR_STACK_ADDR_A
 
 #define PROMOP_INVALID		(PROMOP_MAGIC | 0x00)
-<<<<<<< HEAD
-#define PROMOP_HALT             (PROMOP_MAGIC | 0x10)
-#define PROMOP_POWERDOWN        (PROMOP_MAGIC | 0x20)
-#define PROMOP_RESTART          (PROMOP_MAGIC | 0x30)
-#define PROMOP_REBOOT           (PROMOP_MAGIC | 0x40)
-#define PROMOP_IMODE            (PROMOP_MAGIC | 0x50)
-=======
 #define PROMOP_HALT		(PROMOP_MAGIC | 0x10)
 #define PROMOP_POWERDOWN	(PROMOP_MAGIC | 0x20)
 #define PROMOP_RESTART		(PROMOP_MAGIC | 0x30)
 #define PROMOP_REBOOT		(PROMOP_MAGIC | 0x40)
 #define PROMOP_IMODE		(PROMOP_MAGIC | 0x50)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PROMOP_CMD_MASK		0x00f0
 #define PROMOP_OPTIONS_MASK	0xfff0

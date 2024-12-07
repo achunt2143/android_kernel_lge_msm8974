@@ -5,12 +5,8 @@
  * This software may be used and distributed according to the terms
  * of the GNU General Public License, incorporated herein by reference.
  *
-<<<<<<< HEAD
- * Usage: nm -n vmlinux | scripts/kallsyms [--all-symbols] > symbols.S
-=======
  * Usage: kallsyms [--all-symbols] [--absolute-percpu]
  *                         [--base-relative] [--lto-clang] in.map > out.S
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *      Table compression uses all the unused char codes on the symbols and
  *  maps these to the most used substrings (tokens). For instance, it might
@@ -23,42 +19,22 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #include <errno.h>
 #include <getopt.h>
 #include <stdbool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-<<<<<<< HEAD
-
-#ifndef ARRAY_SIZE
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-#endif
-
-#define KSYM_NAME_LEN		128
-=======
 #include <limits.h>
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 
 #define KSYM_NAME_LEN		512
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sym_entry {
 	unsigned long long addr;
 	unsigned int len;
-<<<<<<< HEAD
-	unsigned int start_pos;
-	unsigned char *sym;
-};
-
-struct text_range {
-	const char *stext, *etext;
-=======
 	unsigned int seq;
 	unsigned int start_pos;
 	unsigned int percpu_absolute;
@@ -67,40 +43,18 @@ struct text_range {
 
 struct addr_range {
 	const char *start_sym, *end_sym;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long start, end;
 };
 
 static unsigned long long _text;
-<<<<<<< HEAD
-static struct text_range text_ranges[] = {
-	{ "_stext",     "_etext"     },
-	{ "_sinittext", "_einittext" },
-	{ "_stext_l1",  "_etext_l1"  },	/* Blackfin on-chip L1 inst SRAM */
-	{ "_stext_l2",  "_etext_l2"  },	/* Blackfin on-chip L2 SRAM */
-=======
 static unsigned long long relative_base;
 static struct addr_range text_ranges[] = {
 	{ "_stext",     "_etext"     },
 	{ "_sinittext", "_einittext" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define text_range_text     (&text_ranges[0])
 #define text_range_inittext (&text_ranges[1])
 
-<<<<<<< HEAD
-static struct sym_entry *table;
-static unsigned int table_size, table_cnt;
-static int all_symbols = 0;
-static char symbol_prefix_char = '\0';
-static unsigned long long kernel_start_addr = 0;
-
-int token_profit[0x10000];
-
-/* the table that holds the result of the compression */
-unsigned char best_table[256][2];
-unsigned char best_table_len[256];
-=======
 static struct addr_range percpu_range = {
 	"__per_cpu_start", "__per_cpu_end", -1ULL, 0
 };
@@ -117,98 +71,10 @@ static int token_profit[0x10000];
 /* the table that holds the result of the compression */
 static unsigned char best_table[256][2];
 static unsigned char best_table_len[256];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static void usage(void)
 {
-<<<<<<< HEAD
-	fprintf(stderr, "Usage: kallsyms [--all-symbols] "
-			"[--symbol-prefix=<prefix char>] "
-			"[--page-offset=<CONFIG_PAGE_OFFSET>] "
-			"< in.map > out.S\n");
-	exit(1);
-}
-
-/*
- * This ignores the intensely annoying "mapping symbols" found
- * in ARM ELF files: $a, $t and $d.
- */
-static inline int is_arm_mapping_symbol(const char *str)
-{
-	return str[0] == '$' && strchr("atd", str[1])
-	       && (str[2] == '\0' || str[2] == '.');
-}
-
-static int read_symbol_tr(const char *sym, unsigned long long addr)
-{
-	size_t i;
-	struct text_range *tr;
-
-	for (i = 0; i < ARRAY_SIZE(text_ranges); ++i) {
-		tr = &text_ranges[i];
-
-		if (strcmp(sym, tr->stext) == 0) {
-			tr->start = addr;
-			return 0;
-		} else if (strcmp(sym, tr->etext) == 0) {
-			tr->end = addr;
-			return 0;
-		}
-	}
-
-	return 1;
-}
-
-static int read_symbol(FILE *in, struct sym_entry *s)
-{
-	char str[500];
-	char *sym, stype;
-	int rc;
-
-	rc = fscanf(in, "%llx %c %499s\n", &s->addr, &stype, str);
-	if (rc != 3) {
-		if (rc != EOF && fgets(str, 500, in) == NULL)
-			fprintf(stderr, "Read error or end of file.\n");
-		return -1;
-	}
-
-	sym = str;
-	/* skip prefix char */
-	if (symbol_prefix_char && str[0] == symbol_prefix_char)
-		sym++;
-
-	/* Ignore most absolute/undefined (?) symbols. */
-	if (strcmp(sym, "_text") == 0)
-		_text = s->addr;
-	else if (read_symbol_tr(sym, s->addr) == 0)
-		/* nothing to do */;
-	else if (toupper(stype) == 'A')
-	{
-		/* Keep these useful absolute symbols */
-		if (strcmp(sym, "__kernel_syscall_via_break") &&
-		    strcmp(sym, "__kernel_syscall_via_epc") &&
-		    strcmp(sym, "__kernel_sigtramp") &&
-		    strcmp(sym, "__gp"))
-			return -1;
-
-	}
-	else if (toupper(stype) == 'U' ||
-		 is_arm_mapping_symbol(sym))
-		return -1;
-	/* exclude also MIPS ELF local symbols ($L123 instead of .L123) */
-	else if (str[0] == '$')
-		return -1;
-	/* exclude debugging symbols */
-	else if (stype == 'N')
-		return -1;
-
-	/* include the type field in the symbol name, so that it gets
-	 * compressed together */
-	s->len = strlen(str) + 1;
-	s->sym = malloc(s->len + 1);
-	if (!s->sym) {
-=======
 	fprintf(stderr, "Usage: kallsyms [--all-symbols] [--absolute-percpu] "
 			"[--base-relative] [--lto-clang] in.map > out.S\n");
 	exit(1);
@@ -309,28 +175,10 @@ static struct sym_entry *read_symbol(FILE *in, char **buf, size_t *buf_len)
 
 	sym = malloc(sizeof(*sym) + len + 1);
 	if (!sym) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fprintf(stderr, "kallsyms failure: "
 			"unable to allocate required amount of memory\n");
 		exit(EXIT_FAILURE);
 	}
-<<<<<<< HEAD
-	strcpy((char *)s->sym + 1, str);
-	s->sym[0] = stype;
-
-	return 0;
-}
-
-static int symbol_valid_tr(struct sym_entry *s)
-{
-	size_t i;
-	struct text_range *tr;
-
-	for (i = 0; i < ARRAY_SIZE(text_ranges); ++i) {
-		tr = &text_ranges[i];
-
-		if (s->addr >= tr->start && s->addr <= tr->end)
-=======
 	sym->addr = addr;
 	sym->len = len;
 	sym->sym[0] = type;
@@ -350,57 +198,21 @@ static int symbol_in_range(const struct sym_entry *s,
 		ar = &ranges[i];
 
 		if (s->addr >= ar->start && s->addr <= ar->end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int symbol_valid(struct sym_entry *s)
-{
-	/* Symbols which vary between passes.  Passes 1 and 2 must have
-	 * identical symbol lists.  The kallsyms_* symbols below are only added
-	 * after pass 1, they would be included in pass 2 when --all-symbols is
-	 * specified so exclude them to get a stable symbol list.
-	 */
-	static char *special_symbols[] = {
-		"kallsyms_addresses",
-		"kallsyms_num_syms",
-		"kallsyms_names",
-		"kallsyms_markers",
-		"kallsyms_token_table",
-		"kallsyms_token_index",
-
-	/* Exclude linker generated symbols which vary between passes */
-		"_SDA_BASE_",		/* ppc */
-		"_SDA2_BASE_",		/* ppc */
-		NULL };
-	int i;
-	int offset = 1;
-
-	if (s->addr < kernel_start_addr)
-		return 0;
-
-	/* skip prefix char */
-	if (symbol_prefix_char && *(s->sym + 1) == symbol_prefix_char)
-		offset++;
-=======
 static int symbol_valid(const struct sym_entry *s)
 {
 	const char *name = sym_name(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if --all-symbols is not specified, then symbols outside the text
 	 * and inittext sections are discarded */
 	if (!all_symbols) {
-<<<<<<< HEAD
-		if (symbol_valid_tr(s) == 0)
-=======
 		if (symbol_in_range(s, text_ranges,
 				    ARRAY_SIZE(text_ranges)) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		/* Corner case.  Discard any symbols with the same value as
 		 * _etext _einittext; they can move between pass 1 and 2 when
@@ -409,28 +221,6 @@ static int symbol_valid(const struct sym_entry *s)
 		 * rules.
 		 */
 		if ((s->addr == text_range_text->end &&
-<<<<<<< HEAD
-				strcmp((char *)s->sym + offset, text_range_text->etext)) ||
-		    (s->addr == text_range_inittext->end &&
-				strcmp((char *)s->sym + offset, text_range_inittext->etext)))
-			return 0;
-	}
-
-	/* Exclude symbols which vary between passes. */
-	if (strstr((char *)s->sym + offset, "_compiled."))
-		return 0;
-
-	for (i = 0; special_symbols[i]; i++)
-		if( strcmp((char *)s->sym + offset, special_symbols[i]) == 0 )
-			return 0;
-
-	return 1;
-}
-
-static void read_map(FILE *in)
-{
-	while (!feof(in)) {
-=======
 		     strcmp(name, text_range_text->end_sym)) ||
 		    (s->addr == text_range_inittext->end &&
 		     strcmp(name, text_range_inittext->end_sym)))
@@ -484,35 +274,11 @@ static void read_map(const char *in)
 
 		sym->start_pos = table_cnt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (table_cnt >= table_size) {
 			table_size += 10000;
 			table = realloc(table, sizeof(*table) * table_size);
 			if (!table) {
 				fprintf(stderr, "out of memory\n");
-<<<<<<< HEAD
-				exit (1);
-			}
-		}
-		if (read_symbol(in, &table[table_cnt]) == 0) {
-			table[table_cnt].start_pos = table_cnt;
-			table_cnt++;
-		}
-	}
-}
-
-static void output_label(char *label)
-{
-	if (symbol_prefix_char)
-		printf(".globl %c%s\n", symbol_prefix_char, label);
-	else
-		printf(".globl %s\n", label);
-	printf("\tALGN\n");
-	if (symbol_prefix_char)
-		printf("%c%s:\n", symbol_prefix_char, label);
-	else
-		printf("%s:\n", label);
-=======
 				fclose(fp);
 				exit (1);
 			}
@@ -539,16 +305,11 @@ static void output_address(unsigned long long addr)
 		printf("\tPTR\t_text + %#llx\n", addr - _text);
 	else
 		printf("\tPTR\t_text - %#llx\n", _text - addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* uncompress a compressed symbol. When this function is called, the best table
  * might still be compressed itself, so the function needs to be recursive */
-<<<<<<< HEAD
-static int expand_symbol(unsigned char *data, int len, char *result)
-=======
 static int expand_symbol(const unsigned char *data, int len, char *result)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int c, rlen, total=0;
 
@@ -573,8 +334,6 @@ static int expand_symbol(const unsigned char *data, int len, char *result)
 	return total;
 }
 
-<<<<<<< HEAD
-=======
 static int symbol_absolute(const struct sym_entry *s)
 {
 	return s->percpu_absolute;
@@ -624,7 +383,6 @@ static void sort_symbols_by_name(void)
 	qsort(table, table_cnt, sizeof(table[0]), compare_names);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void write_src(void)
 {
 	unsigned int i, k, off;
@@ -632,15 +390,6 @@ static void write_src(void)
 	unsigned int *markers;
 	char buf[KSYM_NAME_LEN];
 
-<<<<<<< HEAD
-	printf("#include <asm/types.h>\n");
-	printf("#if BITS_PER_LONG == 64\n");
-	printf("#define PTR .quad\n");
-	printf("#define ALGN .align 8\n");
-	printf("#else\n");
-	printf("#define PTR .long\n");
-	printf("#define ALGN .align 4\n");
-=======
 	printf("#include <asm/bitsperlong.h>\n");
 	printf("#if BITS_PER_LONG == 64\n");
 	printf("#define PTR .quad\n");
@@ -648,40 +397,12 @@ static void write_src(void)
 	printf("#else\n");
 	printf("#define PTR .long\n");
 	printf("#define ALGN .balign 4\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printf("#endif\n");
 
 	printf("\t.section .rodata, \"a\"\n");
 
-<<<<<<< HEAD
-	/* Provide proper symbols relocatability by their '_text'
-	 * relativeness.  The symbol names cannot be used to construct
-	 * normal symbol references as the list of symbols contains
-	 * symbols that are declared static and are private to their
-	 * .o files.  This prevents .tmp_kallsyms.o or any other
-	 * object from referencing them.
-	 */
-	output_label("kallsyms_addresses");
-	for (i = 0; i < table_cnt; i++) {
-		if (toupper(table[i].sym[0]) != 'A') {
-			if (_text <= table[i].addr)
-				printf("\tPTR\t_text + %#llx\n",
-					table[i].addr - _text);
-			else
-				printf("\tPTR\t_text - %#llx\n",
-					_text - table[i].addr);
-		} else {
-			printf("\tPTR\t%#llx\n", table[i].addr);
-		}
-	}
-	printf("\n");
-
-	output_label("kallsyms_num_syms");
-	printf("\tPTR\t%d\n", table_cnt);
-=======
 	output_label("kallsyms_num_syms");
 	printf("\t.long\t%u\n", table_cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printf("\n");
 
 	/* table of offset markers, that give the offset in the compressed stream
@@ -698,21 +419,6 @@ static void write_src(void)
 	for (i = 0; i < table_cnt; i++) {
 		if ((i & 0xFF) == 0)
 			markers[i >> 8] = off;
-<<<<<<< HEAD
-
-		printf("\t.byte 0x%02x", table[i].len);
-		for (k = 0; k < table[i].len; k++)
-			printf(", 0x%02x", table[i].sym[k]);
-		printf("\n");
-
-		off += table[i].len + 1;
-	}
-	printf("\n");
-
-	output_label("kallsyms_markers");
-	for (i = 0; i < ((table_cnt + 255) >> 8); i++)
-		printf("\tPTR\t%d\n", markers[i]);
-=======
 		table[i]->seq = i;
 
 		/* There cannot be any symbol of length zero. */
@@ -759,7 +465,6 @@ static void write_src(void)
 	output_label("kallsyms_markers");
 	for (i = 0; i < ((table_cnt + 255) >> 8); i++)
 		printf("\t.long\t%u\n", markers[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printf("\n");
 
 	free(markers);
@@ -778,8 +483,6 @@ static void write_src(void)
 	for (i = 0; i < 256; i++)
 		printf("\t.short\t%d\n", best_idx[i]);
 	printf("\n");
-<<<<<<< HEAD
-=======
 
 	if (!base_relative)
 		output_label("kallsyms_addresses");
@@ -842,18 +545,13 @@ static void write_src(void)
 			(unsigned char)(table[i]->seq >> 8),
 			(unsigned char)(table[i]->seq >> 0));
 	printf("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /* table lookup compression functions */
 
 /* count all the possible tokens in a symbol */
-<<<<<<< HEAD
-static void learn_symbol(unsigned char *symbol, int len)
-=======
 static void learn_symbol(const unsigned char *symbol, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -862,11 +560,7 @@ static void learn_symbol(const unsigned char *symbol, int len)
 }
 
 /* decrease the count for all the possible tokens in a symbol */
-<<<<<<< HEAD
-static void forget_symbol(unsigned char *symbol, int len)
-=======
 static void forget_symbol(const unsigned char *symbol, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -874,26 +568,6 @@ static void forget_symbol(const unsigned char *symbol, int len)
 		token_profit[ symbol[i] + (symbol[i + 1] << 8) ]--;
 }
 
-<<<<<<< HEAD
-/* remove all the invalid symbols from the table and do the initial token count */
-static void build_initial_tok_table(void)
-{
-	unsigned int i, pos;
-
-	pos = 0;
-	for (i = 0; i < table_cnt; i++) {
-		if ( symbol_valid(&table[i]) ) {
-			if (pos != i)
-				table[pos] = table[i];
-			learn_symbol(table[pos].sym, table[pos].len);
-			pos++;
-		}
-	}
-	table_cnt = pos;
-}
-
-static void *find_token(unsigned char *str, int len, unsigned char *token)
-=======
 /* do the initial token count */
 static void build_initial_token_table(void)
 {
@@ -905,7 +579,6 @@ static void build_initial_token_table(void)
 
 static unsigned char *find_token(unsigned char *str, int len,
 				 const unsigned char *token)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -918,35 +591,22 @@ static unsigned char *find_token(unsigned char *str, int len,
 
 /* replace a given token in all the valid symbols. Use the sampled symbols
  * to update the counts */
-<<<<<<< HEAD
-static void compress_symbols(unsigned char *str, int idx)
-=======
 static void compress_symbols(const unsigned char *str, int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i, len, size;
 	unsigned char *p1, *p2;
 
 	for (i = 0; i < table_cnt; i++) {
 
-<<<<<<< HEAD
-		len = table[i].len;
-		p1 = table[i].sym;
-=======
 		len = table[i]->len;
 		p1 = table[i]->sym;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* find the token on the symbol */
 		p2 = find_token(p1, len, str);
 		if (!p2) continue;
 
 		/* decrease the counts for this symbol's tokens */
-<<<<<<< HEAD
-		forget_symbol(table[i].sym, len);
-=======
 		forget_symbol(table[i]->sym, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		size = len;
 
@@ -965,17 +625,10 @@ static void compress_symbols(const unsigned char *str, int idx)
 
 		} while (p2);
 
-<<<<<<< HEAD
-		table[i].len = len;
-
-		/* increase the counts for this symbol's new tokens */
-		learn_symbol(table[i].sym, len);
-=======
 		table[i]->len = len;
 
 		/* increase the counts for this symbol's new tokens */
 		learn_symbol(table[i]->sym, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1009,11 +662,7 @@ static void optimize_result(void)
 		 * original char code */
 		if (!best_table_len[i]) {
 
-<<<<<<< HEAD
-			/* find the token with the breates profit value */
-=======
 			/* find the token with the best profit value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			best = find_best_token();
 			if (token_profit[best] == 0)
 				break;
@@ -1034,18 +683,9 @@ static void insert_real_symbols_in_table(void)
 {
 	unsigned int i, j, c;
 
-<<<<<<< HEAD
-	memset(best_table, 0, sizeof(best_table));
-	memset(best_table_len, 0, sizeof(best_table_len));
-
-	for (i = 0; i < table_cnt; i++) {
-		for (j = 0; j < table[i].len; j++) {
-			c = table[i].sym[j];
-=======
 	for (i = 0; i < table_cnt; i++) {
 		for (j = 0; j < table[i]->len; j++) {
 			c = table[i]->sym[j];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			best_table[c][0]=c;
 			best_table_len[c]=1;
 		}
@@ -1054,34 +694,17 @@ static void insert_real_symbols_in_table(void)
 
 static void optimize_token_table(void)
 {
-<<<<<<< HEAD
-	build_initial_tok_table();
-
-	insert_real_symbols_in_table();
-
-	/* When valid symbol is not registered, exit to error */
-	if (!table_cnt) {
-		fprintf(stderr, "No valid symbol.\n");
-		exit(1);
-	}
-
-=======
 	build_initial_token_table();
 
 	insert_real_symbols_in_table();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	optimize_result();
 }
 
 /* guess for "linker script provide" symbol */
 static int may_be_linker_script_provide_symbol(const struct sym_entry *se)
 {
-<<<<<<< HEAD
-	const char *symbol = (char *)se->sym + 1;
-=======
 	const char *symbol = sym_name(se);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int len = se->len - 1;
 
 	if (len < 8)
@@ -1113,34 +736,12 @@ static int may_be_linker_script_provide_symbol(const struct sym_entry *se)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int prefix_underscores_count(const char *str)
-{
-	const char *tail = str;
-
-	while (*tail == '_')
-		tail++;
-
-	return tail - str;
-}
-
-static int compare_symbols(const void *a, const void *b)
-{
-	const struct sym_entry *sa;
-	const struct sym_entry *sb;
-	int wa, wb;
-
-	sa = a;
-	sb = b;
-
-=======
 static int compare_symbols(const void *a, const void *b)
 {
 	const struct sym_entry *sa = *(const struct sym_entry **)a;
 	const struct sym_entry *sb = *(const struct sym_entry **)b;
 	int wa, wb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* sort by address first */
 	if (sa->addr > sb->addr)
 		return 1;
@@ -1160,13 +761,8 @@ static int compare_symbols(const void *a, const void *b)
 		return wa - wb;
 
 	/* sort by the number of prefix underscores */
-<<<<<<< HEAD
-	wa = prefix_underscores_count((const char *)sa->sym + 1);
-	wb = prefix_underscores_count((const char *)sb->sym + 1);
-=======
 	wa = strspn(sym_name(sa), "_");
 	wb = strspn(sym_name(sb), "_");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wa != wb)
 		return wa - wb;
 
@@ -1176,9 +772,6 @@ static int compare_symbols(const void *a, const void *b)
 
 static void sort_symbols(void)
 {
-<<<<<<< HEAD
-	qsort(table, table_cnt, sizeof(struct sym_entry), compare_symbols);
-=======
 	qsort(table, table_cnt, sizeof(table[0]), compare_symbols);
 }
 
@@ -1212,35 +805,10 @@ static void record_relative_base(void)
 			relative_base = table[i]->addr;
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int main(int argc, char **argv)
 {
-<<<<<<< HEAD
-	if (argc >= 2) {
-		int i;
-		for (i = 1; i < argc; i++) {
-			if(strcmp(argv[i], "--all-symbols") == 0)
-				all_symbols = 1;
-			else if (strncmp(argv[i], "--symbol-prefix=", 16) == 0) {
-				char *p = &argv[i][16];
-				/* skip quote */
-				if ((*p == '"' && *(p+2) == '"') || (*p == '\'' && *(p+2) == '\''))
-					p++;
-				symbol_prefix_char = *p;
-			} else if (strncmp(argv[i], "--page-offset=", 14) == 0) {
-				const char *p = &argv[i][14];
-				kernel_start_addr = strtoull(p, NULL, 16);
-			} else
-				usage();
-		}
-	} else if (argc != 1)
-		usage();
-
-	read_map(stdin);
-	sort_symbols();
-=======
 	while (1) {
 		static const struct option long_options[] = {
 			{"all-symbols",     no_argument, &all_symbols,     1},
@@ -1268,7 +836,6 @@ int main(int argc, char **argv)
 	sort_symbols();
 	if (base_relative)
 		record_relative_base();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	optimize_token_table();
 	write_src();
 

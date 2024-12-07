@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * jump label support
  *
  * Copyright (C) 2009 Jason Baron <jbaron@redhat.com>
-<<<<<<< HEAD
- * Copyright (C) 2011 Peter Zijlstra <pzijlstr@redhat.com>
-=======
  * Copyright (C) 2011 Peter Zijlstra
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #include <linux/memory.h>
@@ -21,19 +14,12 @@
 #include <linux/sort.h>
 #include <linux/err.h>
 #include <linux/static_key.h>
-<<<<<<< HEAD
-
-#ifdef HAVE_JUMP_LABEL
-
-/* mutex to protect coming/going of the the jump_label table */
-=======
 #include <linux/jump_label_ratelimit.h>
 #include <linux/bug.h>
 #include <linux/cpu.h>
 #include <asm/sections.h>
 
 /* mutex to protect coming/going of the jump_label table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_MUTEX(jump_label_mutex);
 
 void jump_label_lock(void)
@@ -51,12 +37,6 @@ static int jump_label_cmp(const void *a, const void *b)
 	const struct jump_entry *jea = a;
 	const struct jump_entry *jeb = b;
 
-<<<<<<< HEAD
-	if (jea->key < jeb->key)
-		return -1;
-
-	if (jea->key > jeb->key)
-=======
 	/*
 	 * Entrires are sorted by key.
 	 */
@@ -75,14 +55,11 @@ static int jump_label_cmp(const void *a, const void *b)
 		return -1;
 
 	if (jump_entry_code(jea) > jump_entry_code(jeb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void jump_label_swap(void *a, void *b, int size)
 {
 	long delta = (unsigned long)a - (unsigned long)b;
@@ -99,77 +76,10 @@ static void jump_label_swap(void *a, void *b, int size)
 	jeb->key	= tmp.key + delta;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 jump_label_sort_entries(struct jump_entry *start, struct jump_entry *stop)
 {
 	unsigned long size;
-<<<<<<< HEAD
-
-	size = (((unsigned long)stop - (unsigned long)start)
-					/ sizeof(struct jump_entry));
-	sort(start, size, sizeof(struct jump_entry), jump_label_cmp, NULL);
-}
-
-static void jump_label_update(struct static_key *key, int enable);
-
-void static_key_slow_inc(struct static_key *key)
-{
-	if (atomic_inc_not_zero(&key->enabled))
-		return;
-
-	jump_label_lock();
-	if (atomic_read(&key->enabled) == 0) {
-		if (!jump_label_get_branch_default(key))
-			jump_label_update(key, JUMP_LABEL_ENABLE);
-		else
-			jump_label_update(key, JUMP_LABEL_DISABLE);
-	}
-	atomic_inc(&key->enabled);
-	jump_label_unlock();
-}
-EXPORT_SYMBOL_GPL(static_key_slow_inc);
-
-static void __static_key_slow_dec(struct static_key *key,
-		unsigned long rate_limit, struct delayed_work *work)
-{
-	if (!atomic_dec_and_mutex_lock(&key->enabled, &jump_label_mutex)) {
-		WARN(atomic_read(&key->enabled) < 0,
-		     "jump label: negative count!\n");
-		return;
-	}
-
-	if (rate_limit) {
-		atomic_inc(&key->enabled);
-		schedule_delayed_work(work, rate_limit);
-	} else {
-		if (!jump_label_get_branch_default(key))
-			jump_label_update(key, JUMP_LABEL_DISABLE);
-		else
-			jump_label_update(key, JUMP_LABEL_ENABLE);
-	}
-	jump_label_unlock();
-}
-
-static void jump_label_update_timeout(struct work_struct *work)
-{
-	struct static_key_deferred *key =
-		container_of(work, struct static_key_deferred, work.work);
-	__static_key_slow_dec(&key->key, 0, NULL);
-}
-
-void static_key_slow_dec(struct static_key *key)
-{
-	__static_key_slow_dec(key, 0, NULL);
-}
-EXPORT_SYMBOL_GPL(static_key_slow_dec);
-
-void static_key_slow_dec_deferred(struct static_key_deferred *key)
-{
-	__static_key_slow_dec(&key->key, key->timeout, &key->work);
-}
-EXPORT_SYMBOL_GPL(static_key_slow_dec_deferred);
-=======
 	void *swapfn = NULL;
 
 	if (IS_ENABLED(CONFIG_HAVE_ARCH_JUMP_LABEL_RELATIVE))
@@ -414,21 +324,10 @@ void __static_key_deferred_flush(void *key, struct delayed_work *work)
 	flush_delayed_work(work);
 }
 EXPORT_SYMBOL_GPL(__static_key_deferred_flush);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void jump_label_rate_limit(struct static_key_deferred *key,
 		unsigned long rl)
 {
-<<<<<<< HEAD
-	key->timeout = rl;
-	INIT_DELAYED_WORK(&key->work, jump_label_update_timeout);
-}
-
-static int addr_conflict(struct jump_entry *entry, void *start, void *end)
-{
-	if (entry->code <= (unsigned long)end &&
-		entry->code + JUMP_LABEL_NOP_SIZE > (unsigned long)start)
-=======
 	STATIC_KEY_CHECK_USE(key);
 	key->timeout = rl;
 	INIT_DELAYED_WORK(&key->work, jump_label_update_timeout);
@@ -439,79 +338,28 @@ static int addr_conflict(struct jump_entry *entry, void *start, void *end)
 {
 	if (jump_entry_code(entry) <= (unsigned long)end &&
 	    jump_entry_code(entry) + jump_entry_size(entry) > (unsigned long)start)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
 }
 
 static int __jump_label_text_reserved(struct jump_entry *iter_start,
-<<<<<<< HEAD
-		struct jump_entry *iter_stop, void *start, void *end)
-=======
 		struct jump_entry *iter_stop, void *start, void *end, bool init)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jump_entry *iter;
 
 	iter = iter_start;
 	while (iter < iter_stop) {
-<<<<<<< HEAD
-		if (addr_conflict(iter, start, end))
-			return 1;
-=======
 		if (init || !jump_entry_is_init(iter)) {
 			if (addr_conflict(iter, start, end))
 				return 1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iter++;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* 
- * Update code which is definitely not currently executing.
- * Architectures which need heavyweight synchronization to modify
- * running code can override this to make the non-live update case
- * cheaper.
- */
-void __weak __init_or_module arch_jump_label_transform_static(struct jump_entry *entry,
-					    enum jump_label_type type)
-{
-	arch_jump_label_transform(entry, type);	
-}
-
-static void __jump_label_update(struct static_key *key,
-				struct jump_entry *entry,
-				struct jump_entry *stop, int enable)
-{
-	for (; (entry < stop) &&
-	      (entry->key == (jump_label_t)(unsigned long)key);
-	      entry++) {
-		/*
-		 * entry->code set to 0 invalidates module init text sections
-		 * kernel_text_address() verifies we are not in core kernel
-		 * init code, see jump_label_invalidate_module_init().
-		 */
-		if (entry->code && kernel_text_address(entry->code))
-			arch_jump_label_transform(entry, enable);
-	}
-}
-
-static enum jump_label_type jump_label_type(struct static_key *key)
-{
-	bool true_branch = jump_label_get_branch_default(key);
-	bool state = static_key_enabled(key);
-
-	if ((!true_branch && state) || (true_branch && !state))
-		return JUMP_LABEL_ENABLE;
-
-	return JUMP_LABEL_DISABLE;
-}
-=======
 #ifndef arch_jump_label_transform_static
 static void arch_jump_label_transform_static(struct jump_entry *entry,
 					     enum jump_label_type type)
@@ -635,7 +483,6 @@ static void __jump_label_update(struct static_key *key,
 	arch_jump_label_transform_apply();
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init jump_label_init(void)
 {
@@ -644,8 +491,6 @@ void __init jump_label_init(void)
 	struct static_key *key = NULL;
 	struct jump_entry *iter;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Since we are initializing the static_key.enabled field with
 	 * with the 'raw' int values (to avoid pulling in atomic.h) in
@@ -659,17 +504,11 @@ void __init jump_label_init(void)
 		return;
 
 	cpus_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jump_label_lock();
 	jump_label_sort_entries(iter_start, iter_stop);
 
 	for (iter = iter_start; iter < iter_stop; iter++) {
 		struct static_key *iterk;
-<<<<<<< HEAD
-
-		iterk = (struct static_key *)(unsigned long)iter->key;
-		arch_jump_label_transform_static(iter, jump_label_type(iterk));
-=======
 		bool in_init;
 
 		/* rewrite NOPs */
@@ -680,34 +519,19 @@ void __init jump_label_init(void)
 		jump_entry_set_init(iter, in_init);
 
 		iterk = jump_entry_key(iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (iterk == key)
 			continue;
 
 		key = iterk;
-<<<<<<< HEAD
-		/*
-		 * Set key->entries to iter, but preserve JUMP_LABEL_TRUE_BRANCH.
-		 */
-		*((unsigned long *)&key->entries) += (unsigned long)iter;
-#ifdef CONFIG_MODULES
-		key->next = NULL;
-#endif
-	}
-	jump_label_unlock();
-=======
 		static_key_set_entries(key, iter);
 	}
 	static_key_initialized = true;
 	jump_label_unlock();
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_MODULES
 
-<<<<<<< HEAD
-=======
 enum jump_label_type jump_label_init_type(struct jump_entry *entry)
 {
 	struct static_key *key = jump_entry_key(entry);
@@ -718,64 +542,12 @@ enum jump_label_type jump_label_init_type(struct jump_entry *entry)
 	return type ^ branch;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct static_key_mod {
 	struct static_key_mod *next;
 	struct jump_entry *entries;
 	struct module *mod;
 };
 
-<<<<<<< HEAD
-static int __jump_label_mod_text_reserved(void *start, void *end)
-{
-	struct module *mod;
-
-	mod = __module_text_address((unsigned long)start);
-	if (!mod)
-		return 0;
-
-	WARN_ON_ONCE(__module_text_address((unsigned long)end) != mod);
-
-	return __jump_label_text_reserved(mod->jump_entries,
-				mod->jump_entries + mod->num_jump_entries,
-				start, end);
-}
-
-static void __jump_label_mod_update(struct static_key *key, int enable)
-{
-	struct static_key_mod *mod = key->next;
-
-	while (mod) {
-		struct module *m = mod->mod;
-
-		__jump_label_update(key, mod->entries,
-				    m->jump_entries + m->num_jump_entries,
-				    enable);
-		mod = mod->next;
-	}
-}
-
-/***
- * apply_jump_label_nops - patch module jump labels with arch_get_jump_label_nop()
- * @mod: module to patch
- *
- * Allow for run-time selection of the optimal nops. Before the module
- * loads patch these with arch_get_jump_label_nop(), which is specified by
- * the arch specific jump label code.
- */
-void jump_label_apply_nops(struct module *mod)
-{
-	struct jump_entry *iter_start = mod->jump_entries;
-	struct jump_entry *iter_stop = iter_start + mod->num_jump_entries;
-	struct jump_entry *iter;
-
-	/* if the module doesn't have jump label entries, just return */
-	if (iter_start == iter_stop)
-		return;
-
-	for (iter = iter_start; iter < iter_stop; iter++) {
-		arch_jump_label_transform_static(iter, JUMP_LABEL_DISABLE);
-=======
 static inline struct static_key_mod *static_key_mod(struct static_key *key)
 {
 	WARN_ON_ONCE(!static_key_linked(key));
@@ -845,7 +617,6 @@ static void __jump_label_mod_update(struct static_key *key)
 			stop = m->jump_entries + m->num_jump_entries;
 		__jump_label_update(key, mod->entries, stop,
 				    m && m->state == MODULE_STATE_COMING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -855,11 +626,7 @@ static int jump_label_add_module(struct module *mod)
 	struct jump_entry *iter_stop = iter_start + mod->num_jump_entries;
 	struct jump_entry *iter;
 	struct static_key *key = NULL;
-<<<<<<< HEAD
-	struct static_key_mod *jlm;
-=======
 	struct static_key_mod *jlm, *jlm2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if the module doesn't have jump label entries, just return */
 	if (iter_start == iter_stop)
@@ -869,46 +636,23 @@ static int jump_label_add_module(struct module *mod)
 
 	for (iter = iter_start; iter < iter_stop; iter++) {
 		struct static_key *iterk;
-<<<<<<< HEAD
-
-		iterk = (struct static_key *)(unsigned long)iter->key;
-=======
 		bool in_init;
 
 		in_init = within_module_init(jump_entry_code(iter), mod);
 		jump_entry_set_init(iter, in_init);
 
 		iterk = jump_entry_key(iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (iterk == key)
 			continue;
 
 		key = iterk;
-<<<<<<< HEAD
-		if (__module_address(iter->key) == mod) {
-			/*
-			 * Set key->entries to iter, but preserve JUMP_LABEL_TRUE_BRANCH.
-			 */
-			*((unsigned long *)&key->entries) += (unsigned long)iter;
-			key->next = NULL;
-=======
 		if (within_module((unsigned long)key, mod)) {
 			static_key_set_entries(key, iter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		jlm = kzalloc(sizeof(struct static_key_mod), GFP_KERNEL);
 		if (!jlm)
 			return -ENOMEM;
-<<<<<<< HEAD
-		jlm->mod = mod;
-		jlm->entries = iter;
-		jlm->next = key->next;
-		key->next = jlm;
-
-		if (jump_label_type(key) == JUMP_LABEL_ENABLE)
-			__jump_label_update(key, iter, iter_stop, JUMP_LABEL_ENABLE);
-=======
 		if (!static_key_linked(key)) {
 			jlm2 = kzalloc(sizeof(struct static_key_mod),
 				       GFP_KERNEL);
@@ -933,7 +677,6 @@ static int jump_label_add_module(struct module *mod)
 		/* Only update if we've changed from our initial state */
 		if (jump_label_type(iter) != jump_label_init_type(iter))
 			__jump_label_update(key, iter, iter_stop, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -948,18 +691,6 @@ static void jump_label_del_module(struct module *mod)
 	struct static_key_mod *jlm, **prev;
 
 	for (iter = iter_start; iter < iter_stop; iter++) {
-<<<<<<< HEAD
-		if (iter->key == (jump_label_t)(unsigned long)key)
-			continue;
-
-		key = (struct static_key *)(unsigned long)iter->key;
-
-		if (__module_address(iter->key) == mod)
-			continue;
-
-		prev = &key->next;
-		jlm = key->next;
-=======
 		if (jump_entry_key(iter) == key)
 			continue;
 
@@ -974,17 +705,12 @@ static void jump_label_del_module(struct module *mod)
 
 		prev = &key->next;
 		jlm = static_key_mod(key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (jlm && jlm->mod != mod) {
 			prev = &jlm->next;
 			jlm = jlm->next;
 		}
 
-<<<<<<< HEAD
-		if (jlm) {
-			*prev = jlm->next;
-=======
 		/* No memory during module load */
 		if (WARN_ON(!jlm))
 			continue;
@@ -1001,27 +727,11 @@ static void jump_label_del_module(struct module *mod)
 		if (jlm->next == NULL) {
 			static_key_set_entries(key, jlm->entries);
 			static_key_clear_linked(key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(jlm);
 		}
 	}
 }
 
-<<<<<<< HEAD
-static void jump_label_invalidate_module_init(struct module *mod)
-{
-	struct jump_entry *iter_start = mod->jump_entries;
-	struct jump_entry *iter_stop = iter_start + mod->num_jump_entries;
-	struct jump_entry *iter;
-
-	for (iter = iter_start; iter < iter_stop; iter++) {
-		if (within_module_init(iter->code, mod))
-			iter->code = 0;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 jump_label_module_notify(struct notifier_block *self, unsigned long val,
 			 void *data)
@@ -1029,32 +739,6 @@ jump_label_module_notify(struct notifier_block *self, unsigned long val,
 	struct module *mod = data;
 	int ret = 0;
 
-<<<<<<< HEAD
-	switch (val) {
-	case MODULE_STATE_COMING:
-		jump_label_lock();
-		ret = jump_label_add_module(mod);
-		if (ret)
-			jump_label_del_module(mod);
-		jump_label_unlock();
-		break;
-	case MODULE_STATE_GOING:
-		jump_label_lock();
-		jump_label_del_module(mod);
-		jump_label_unlock();
-		break;
-	case MODULE_STATE_LIVE:
-		jump_label_lock();
-		jump_label_invalidate_module_init(mod);
-		jump_label_unlock();
-		break;
-	}
-
-	return notifier_from_errno(ret);
-}
-
-struct notifier_block jump_label_module_nb = {
-=======
 	cpus_read_lock();
 	jump_label_lock();
 
@@ -1078,7 +762,6 @@ struct notifier_block jump_label_module_nb = {
 }
 
 static struct notifier_block jump_label_module_nb = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.notifier_call = jump_label_module_notify,
 	.priority = 1, /* higher than tracepoints */
 };
@@ -1106,14 +789,9 @@ early_initcall(jump_label_init_module);
  */
 int jump_label_text_reserved(void *start, void *end)
 {
-<<<<<<< HEAD
-	int ret = __jump_label_text_reserved(__start___jump_table,
-			__stop___jump_table, start, end);
-=======
 	bool init = system_state < SYSTEM_RUNNING;
 	int ret = __jump_label_text_reserved(__start___jump_table,
 			__stop___jump_table, start, end, init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret)
 		return ret;
@@ -1124,27 +802,6 @@ int jump_label_text_reserved(void *start, void *end)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void jump_label_update(struct static_key *key, int enable)
-{
-	struct jump_entry *stop = __stop___jump_table;
-	struct jump_entry *entry = jump_label_get_entries(key);
-
-#ifdef CONFIG_MODULES
-	struct module *mod = __module_address((unsigned long)key);
-
-	__jump_label_mod_update(key, enable);
-
-	if (mod)
-		stop = mod->jump_entries + mod->num_jump_entries;
-#endif
-	/* if there are no users, entry can be NULL */
-	if (entry)
-		__jump_label_update(key, entry, stop, enable);
-}
-
-#endif
-=======
 static void jump_label_update(struct static_key *key)
 {
 	struct jump_entry *stop = __stop___jump_table;
@@ -1208,4 +865,3 @@ static __init int jump_label_test(void)
 }
 early_initcall(jump_label_test);
 #endif /* STATIC_KEYS_SELFTEST */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

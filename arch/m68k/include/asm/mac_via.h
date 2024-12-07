@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	6522 Versatile Interface Adapter (VIA)
  *
@@ -258,36 +255,18 @@
 extern volatile __u8 *via1,*via2;
 extern int rbv_present,via_alt_mapping;
 
-<<<<<<< HEAD
-=======
 struct irq_desc;
 
 extern void via_l2_flush(int writeback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void via_register_interrupts(void);
 extern void via_irq_enable(int);
 extern void via_irq_disable(int);
 extern void via_nubus_irq_startup(int irq);
 extern void via_nubus_irq_shutdown(int irq);
-<<<<<<< HEAD
-extern void via1_irq(unsigned int irq, struct irq_desc *desc);
-extern void via1_set_head(int);
-extern int via2_scsi_drq_pending(void);
-
-static inline int rbv_set_video_bpp(int bpp)
-{
-	char val = (bpp==1)?0:(bpp==2)?1:(bpp==4)?2:(bpp==8)?3:-1;
-	if (!rbv_present || val<0) return -1;
-	via2[rMonP] = (via2[rMonP] & ~RBV_DEPTH) | val;
-	return 0;
-}
-
-=======
 extern void via1_irq(struct irq_desc *desc);
 extern void via1_set_head(int);
 extern int via2_scsi_drq_pending(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 
 #endif /* _ASM_MAC_VIA_H_ */

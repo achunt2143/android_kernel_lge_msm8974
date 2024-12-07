@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interface for Dynamic Logical Partitioning of I/O Slots on
  * RPA-compliant PPC64 platform.
@@ -10,30 +7,14 @@
  * October 2003
  *
  * Copyright (C) 2003 IBM.
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _RPADLPAR_IO_H_
 #define _RPADLPAR_IO_H_
 
-<<<<<<< HEAD
-extern int dlpar_sysfs_init(void);
-extern void dlpar_sysfs_exit(void);
-
-extern int dlpar_add_slot(char *drc_name);
-extern int dlpar_remove_slot(char *drc_name);
-=======
 int dlpar_sysfs_init(void);
 void dlpar_sysfs_exit(void);
 
 int dlpar_add_slot(char *drc_name);
 int dlpar_remove_slot(char *drc_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

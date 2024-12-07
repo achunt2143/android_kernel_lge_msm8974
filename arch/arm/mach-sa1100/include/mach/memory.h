@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-sa1100/include/mach/memory.h
  *
@@ -11,16 +8,7 @@
 #ifndef __ASM_ARCH_MEMORY_H
 #define __ASM_ARCH_MEMORY_H
 
-<<<<<<< HEAD
-#include <asm/sizes.h>
-
-/*
- * Physical DRAM offset is 0xc0000000 on the SA1100
- */
-#define PLAT_PHYS_OFFSET	UL(0xc0000000)
-=======
 #include <linux/sizes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Because of the wide memory address space between physical RAM banks on the

@@ -1,79 +1,24 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
 #include "actables.h"
-<<<<<<< HEAD
-=======
 #include "acnamesp.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_PARSER
 ACPI_MODULE_NAME("psxface")
 
 /* Local Prototypes */
-<<<<<<< HEAD
-static void acpi_ps_start_trace(struct acpi_evaluate_info *info);
-
-static void acpi_ps_stop_trace(struct acpi_evaluate_info *info);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 acpi_ps_update_parameter_list(struct acpi_evaluate_info *info, u16 action);
 
@@ -84,11 +29,7 @@ acpi_ps_update_parameter_list(struct acpi_evaluate_info *info, u16 action);
  * PARAMETERS:  method_name     - Valid ACPI name string
  *              debug_level     - Optional level mask. 0 to use default
  *              debug_layer     - Optional layer mask. 0 to use default
-<<<<<<< HEAD
- *              Flags           - bit 1: one shot(1) or persistent(0)
-=======
  *              flags           - bit 1: one shot(1) or persistent(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -98,11 +39,7 @@ acpi_ps_update_parameter_list(struct acpi_evaluate_info *info, u16 action);
  ******************************************************************************/
 
 acpi_status
-<<<<<<< HEAD
-acpi_debug_trace(char *name, u32 debug_level, u32 debug_layer, u32 flags)
-=======
 acpi_debug_trace(const char *name, u32 debug_level, u32 debug_layer, u32 flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -111,110 +48,6 @@ acpi_debug_trace(const char *name, u32 debug_level, u32 debug_layer, u32 flags)
 		return (status);
 	}
 
-<<<<<<< HEAD
-	/* TBDs: Validate name, allow full path or just nameseg */
-
-	acpi_gbl_trace_method_name = *ACPI_CAST_PTR(u32, name);
-	acpi_gbl_trace_flags = flags;
-
-	if (debug_level) {
-		acpi_gbl_trace_dbg_level = debug_level;
-	}
-	if (debug_layer) {
-		acpi_gbl_trace_dbg_layer = debug_layer;
-	}
-
-	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
-	return (AE_OK);
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ps_start_trace
- *
- * PARAMETERS:  Info        - Method info struct
- *
- * RETURN:      None
- *
- * DESCRIPTION: Start control method execution trace
- *
- ******************************************************************************/
-
-static void acpi_ps_start_trace(struct acpi_evaluate_info *info)
-{
-	acpi_status status;
-
-	ACPI_FUNCTION_ENTRY();
-
-	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
-	if (ACPI_FAILURE(status)) {
-		return;
-	}
-
-	if ((!acpi_gbl_trace_method_name) ||
-	    (acpi_gbl_trace_method_name != info->resolved_node->name.integer)) {
-		goto exit;
-	}
-
-	acpi_gbl_original_dbg_level = acpi_dbg_level;
-	acpi_gbl_original_dbg_layer = acpi_dbg_layer;
-
-	acpi_dbg_level = 0x00FFFFFF;
-	acpi_dbg_layer = ACPI_UINT32_MAX;
-
-	if (acpi_gbl_trace_dbg_level) {
-		acpi_dbg_level = acpi_gbl_trace_dbg_level;
-	}
-	if (acpi_gbl_trace_dbg_layer) {
-		acpi_dbg_layer = acpi_gbl_trace_dbg_layer;
-	}
-
-      exit:
-	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
-}
-
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ps_stop_trace
- *
- * PARAMETERS:  Info        - Method info struct
- *
- * RETURN:      None
- *
- * DESCRIPTION: Stop control method execution trace
- *
- ******************************************************************************/
-
-static void acpi_ps_stop_trace(struct acpi_evaluate_info *info)
-{
-	acpi_status status;
-
-	ACPI_FUNCTION_ENTRY();
-
-	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
-	if (ACPI_FAILURE(status)) {
-		return;
-	}
-
-	if ((!acpi_gbl_trace_method_name) ||
-	    (acpi_gbl_trace_method_name != info->resolved_node->name.integer)) {
-		goto exit;
-	}
-
-	/* Disable further tracing if type is one-shot */
-
-	if (acpi_gbl_trace_flags & 1) {
-		acpi_gbl_trace_method_name = 0;
-		acpi_gbl_trace_dbg_level = 0;
-		acpi_gbl_trace_dbg_layer = 0;
-	}
-
-	acpi_dbg_level = acpi_gbl_original_dbg_level;
-	acpi_dbg_layer = acpi_gbl_original_dbg_layer;
-
-      exit:
-	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
-=======
 	acpi_gbl_trace_method_name = name;
 	acpi_gbl_trace_flags = flags;
 	acpi_gbl_trace_dbg_level = debug_level;
@@ -223,24 +56,16 @@ static void acpi_ps_stop_trace(struct acpi_evaluate_info *info)
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return (status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ps_execute_method
  *
-<<<<<<< HEAD
- * PARAMETERS:  Info            - Method info block, contains:
- *                  Node            - Method Node to execute
- *                  obj_desc        - Method object
- *                  Parameters      - List of parameters to pass to the method,
-=======
  * PARAMETERS:  info            - Method info block, contains:
  *                  node            - Method Node to execute
  *                  obj_desc        - Method object
  *                  parameters      - List of parameters to pass to the method,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                    terminated by NULL. Params itself may be
  *                                    NULL if no parameters are being passed.
  *                  return_object   - Where to put method's return value (if
@@ -270,23 +95,14 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 
 	/* Validate the Info and method Node */
 
-<<<<<<< HEAD
-	if (!info || !info->resolved_node) {
-=======
 	if (!info || !info->node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_NULL_ENTRY);
 	}
 
 	/* Init for new method, wait on concurrency semaphore */
 
 	status =
-<<<<<<< HEAD
-	    acpi_ds_begin_method_execution(info->resolved_node, info->obj_desc,
-					   NULL);
-=======
 	    acpi_ds_begin_method_execution(info->node, info->obj_desc, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -296,32 +112,16 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 	 */
 	acpi_ps_update_parameter_list(info, REF_INCREMENT);
 
-<<<<<<< HEAD
-	/* Begin tracing if requested */
-
-	acpi_ps_start_trace(info);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Execute the method. Performs parse simultaneously
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
 			  "**** Begin Method Parse/Execute [%4.4s] **** Node=%p Obj=%p\n",
-<<<<<<< HEAD
-			  info->resolved_node->name.ascii, info->resolved_node,
-			  info->obj_desc));
-
-	/* Create and init a Root Node */
-
-	op = acpi_ps_create_scope_op();
-=======
 			  info->node->name.ascii, info->node, info->obj_desc));
 
 	/* Create and init a Root Node */
 
 	op = acpi_ps_create_scope_op(info->obj_desc->method.aml_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!op) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
@@ -338,11 +138,7 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-	status = acpi_ds_init_aml_walk(walk_state, op, info->resolved_node,
-=======
 	status = acpi_ds_init_aml_walk(walk_state, op, info->node,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       info->obj_desc->method.aml_start,
 				       info->obj_desc->method.aml_length, info,
 				       info->pass_number);
@@ -351,12 +147,9 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-=======
 	walk_state->method_pathname = info->full_pathname;
 	walk_state->method_is_nested = FALSE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->obj_desc->method.info_flags & ACPI_METHOD_MODULE_LEVEL) {
 		walk_state->parse_flags |= ACPI_PARSE_MODULE_LEVEL;
 	}
@@ -398,19 +191,9 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 
 	/* walk_state was deleted by parse_aml */
 
-<<<<<<< HEAD
-      cleanup:
-	acpi_ps_delete_parse_tree(op);
-
-	/* End optional tracing */
-
-	acpi_ps_stop_trace(info);
-
-=======
 cleanup:
 	acpi_ps_delete_parse_tree(op);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Take away the extra reference that we gave the parameters above */
 
 	acpi_ps_update_parameter_list(info, REF_DECREMENT);
@@ -438,13 +221,6 @@ cleanup:
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_ps_update_parameter_list
- *
- * PARAMETERS:  Info            - See struct acpi_evaluate_info
- *                                (Used: parameter_type and Parameters)
- *              Action          - Add or Remove reference
-=======
  * FUNCTION:    acpi_ps_execute_table
  *
  * PARAMETERS:  info            - Method info block, contains:
@@ -537,7 +313,6 @@ cleanup:
  * PARAMETERS:  info            - See struct acpi_evaluate_info
  *                                (Used: parameter_type and Parameters)
  *              action          - Add or Remove reference
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *

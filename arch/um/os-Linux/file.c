@@ -1,43 +1,26 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
 #include <unistd.h>
-<<<<<<< HEAD
-#include <errno.h>
-#include <fcntl.h>
-#include <signal.h>
-=======
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <linux/falloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
-<<<<<<< HEAD
-#include <sys/un.h>
-#include "os.h"
-=======
 #include <sys/sysmacros.h>
 #include <sys/un.h>
 #include <sys/types.h>
 #include <sys/eventfd.h>
 #include <poll.h>
 #include <os.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void copy_stat(struct uml_stat *dst, const struct stat64 *src)
 {
@@ -261,15 +244,12 @@ void os_close_file(int fd)
 {
 	close(fd);
 }
-<<<<<<< HEAD
-=======
 int os_fsync_file(int fd)
 {
 	if (fsync(fd) < 0)
 	    return -errno;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int os_seek_file(int fd, unsigned long long offset)
 {
@@ -290,8 +270,6 @@ int os_read_file(int fd, void *buf, int len)
 	return n;
 }
 
-<<<<<<< HEAD
-=======
 int os_pread_file(int fd, void *buf, int len, unsigned long long offset)
 {
 	int n = pread(fd, buf, len, offset);
@@ -301,7 +279,6 @@ int os_pread_file(int fd, void *buf, int len, unsigned long long offset)
 	return n;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int os_write_file(int fd, const void *buf, int len)
 {
 	int n = write(fd, (void *) buf, len);
@@ -311,8 +288,6 @@ int os_write_file(int fd, const void *buf, int len)
 	return n;
 }
 
-<<<<<<< HEAD
-=======
 int os_sync_file(int fd)
 {
 	int n = fdatasync(fd);
@@ -332,7 +307,6 @@ int os_pwrite_file(int fd, const void *buf, int len, unsigned long long offset)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int os_file_size(const char *file, unsigned long long *size_out)
 {
 	struct uml_stat buf;
@@ -371,11 +345,7 @@ int os_file_size(const char *file, unsigned long long *size_out)
 	return 0;
 }
 
-<<<<<<< HEAD
-int os_file_modtime(const char *file, unsigned long *modtime)
-=======
 int os_file_modtime(const char *file, long long *modtime)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uml_stat buf;
 	int err;
@@ -645,8 +615,6 @@ unsigned long long os_makedev(unsigned major, unsigned minor)
 {
 	return makedev(major, minor);
 }
-<<<<<<< HEAD
-=======
 
 int os_falloc_punch(int fd, unsigned long long offset, int len)
 {
@@ -737,4 +705,3 @@ int os_poll(unsigned int n, const int *fds)
 
 	return -EIO;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

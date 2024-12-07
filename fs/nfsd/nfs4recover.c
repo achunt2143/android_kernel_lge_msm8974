@@ -32,17 +32,10 @@
 *
 */
 
-<<<<<<< HEAD
-#include <linux/file.h>
-#include <linux/slab.h>
-#include <linux/namei.h>
-#include <linux/crypto.h>
-=======
 #include <crypto/hash.h>
 #include <linux/file.h>
 #include <linux/slab.h>
 #include <linux/namei.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -65,15 +58,6 @@ struct nfsd4_client_tracking_ops {
 	void (*create)(struct nfs4_client *);
 	void (*remove)(struct nfs4_client *);
 	int (*check)(struct nfs4_client *);
-<<<<<<< HEAD
-	void (*grace_done)(struct net *, time_t);
-};
-
-/* Globals */
-static struct file *rec_file;
-static char user_recovery_dirname[PATH_MAX] = "/var/lib/nfs/v4recovery";
-static struct nfsd4_client_tracking_ops *client_tracking_ops;
-=======
 	void (*grace_done)(struct nfsd_net *);
 	uint8_t version;
 	size_t msglen;
@@ -85,7 +69,6 @@ static const struct nfsd4_client_tracking_ops nfsd4_cld_tracking_ops_v2;
 #ifdef CONFIG_NFSD_LEGACY_CLIENT_TRACKING
 /* Globals */
 static char user_recovery_dirname[PATH_MAX] = "/var/lib/nfs/v4recovery";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 nfs4_save_creds(const struct cred **original_creds)
@@ -96,13 +79,8 @@ nfs4_save_creds(const struct cred **original_creds)
 	if (!new)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	new->fsuid = 0;
-	new->fsgid = 0;
-=======
 	new->fsuid = GLOBAL_ROOT_UID;
 	new->fsgid = GLOBAL_ROOT_GID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*original_creds = override_creds(new);
 	put_cred(new);
 	return 0;
@@ -128,30 +106,6 @@ md5_to_hex(char *out, char *md5)
 	*out = '\0';
 }
 
-<<<<<<< HEAD
-__be32
-nfs4_make_rec_clidname(char *dname, struct xdr_netobj *clname)
-{
-	struct xdr_netobj cksum;
-	struct hash_desc desc;
-	struct scatterlist sg;
-	__be32 status = nfserr_jukebox;
-
-	dprintk("NFSD: nfs4_make_rec_clidname for %.*s\n",
-			clname->len, clname->data);
-	desc.flags = CRYPTO_TFM_REQ_MAY_SLEEP;
-	desc.tfm = crypto_alloc_hash("md5", 0, CRYPTO_ALG_ASYNC);
-	if (IS_ERR(desc.tfm))
-		goto out_no_tfm;
-	cksum.len = crypto_hash_digestsize(desc.tfm);
-	cksum.data = kmalloc(cksum.len, GFP_KERNEL);
-	if (cksum.data == NULL)
- 		goto out;
-
-	sg_init_one(&sg, clname->data, clname->len);
-
-	if (crypto_hash_digest(&desc, &sg, sg.length, cksum.data))
-=======
 static int
 nfs4_make_rec_clidname(char *dname, const struct xdr_netobj *clname)
 {
@@ -177,28 +131,18 @@ nfs4_make_rec_clidname(char *dname, const struct xdr_netobj *clname)
 	status = crypto_shash_tfm_digest(tfm, clname->data, clname->len,
 					 cksum.data);
 	if (status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	md5_to_hex(dname, cksum.data);
 
-<<<<<<< HEAD
-	status = nfs_ok;
-out:
-	kfree(cksum.data);
-	crypto_free_hash(desc.tfm);
-=======
 	status = 0;
 out:
 	kfree(cksum.data);
 	crypto_free_shash(tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_no_tfm:
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * If we had an error generating the recdir name for the legacy tracker
  * then warn the admin. If the error doesn't appear to be transient,
@@ -245,23 +189,10 @@ __nfsd4_create_reclaim_record_grace(struct nfs4_client *clp,
 	crp->cr_clp = clp;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 nfsd4_create_clid_dir(struct nfs4_client *clp)
 {
 	const struct cred *original_cred;
-<<<<<<< HEAD
-	char *dname = clp->cl_recdir;
-	struct dentry *dir, *dentry;
-	int status;
-
-	dprintk("NFSD: nfsd4_create_clid_dir for \"%s\"\n", dname);
-
-	if (test_and_set_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags))
-		return;
-	if (!rec_file)
-		return;
-=======
 	char dname[HEXDIR_LEN];
 	struct dentry *dir, *dentry;
 	int status;
@@ -276,16 +207,10 @@ nfsd4_create_clid_dir(struct nfs4_client *clp)
 	if (status)
 		return legacy_recdir_name_error(clp, status);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = nfs4_save_creds(&original_cred);
 	if (status < 0)
 		return;
 
-<<<<<<< HEAD
-	dir = rec_file->f_path.dentry;
-	/* lock the parent */
-	mutex_lock(&dir->d_inode->i_mutex);
-=======
 	status = mnt_want_write_file(nn->rec_file);
 	if (status)
 		goto out_creds;
@@ -293,18 +218,13 @@ nfsd4_create_clid_dir(struct nfs4_client *clp)
 	dir = nn->rec_file->f_path.dentry;
 	/* lock the parent */
 	inode_lock(d_inode(dir));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dentry = lookup_one_len(dname, dir, HEXDIR_LEN-1);
 	if (IS_ERR(dentry)) {
 		status = PTR_ERR(dentry);
 		goto out_unlock;
 	}
-<<<<<<< HEAD
-	if (dentry->d_inode)
-=======
 	if (d_really_is_positive(dentry))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * In the 4.1 case, where we're called from
 		 * reclaim_complete(), records from the previous reboot
@@ -314,20 +234,6 @@ nfsd4_create_clid_dir(struct nfs4_client *clp)
 		 * as well be forgiving and just succeed silently.
 		 */
 		goto out_put;
-<<<<<<< HEAD
-	status = mnt_want_write_file(rec_file);
-	if (status)
-		goto out_put;
-	status = vfs_mkdir(dir->d_inode, dentry, S_IRWXU);
-	mnt_drop_write_file(rec_file);
-out_put:
-	dput(dentry);
-out_unlock:
-	mutex_unlock(&dir->d_inode->i_mutex);
-	if (status == 0)
-		vfs_fsync(rec_file, 0);
-	else
-=======
 	status = vfs_mkdir(&nop_mnt_idmap, d_inode(dir), dentry, S_IRWXU);
 out_put:
 	dput(dentry);
@@ -339,17 +245,10 @@ out_unlock:
 					HEXDIR_LEN, nn);
 		vfs_fsync(nn->rec_file, 0);
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "NFSD: failed to write recovery record"
 				" (err %d); please check that %s exists"
 				" and is writeable", status,
 				user_recovery_dirname);
-<<<<<<< HEAD
-	nfs4_reset_creds(original_cred);
-}
-
-typedef int (recdir_func)(struct dentry *, struct dentry *);
-=======
 	}
 	mnt_drop_write_file(nn->rec_file);
 out_creds:
@@ -357,39 +256,12 @@ out_creds:
 }
 
 typedef int (recdir_func)(struct dentry *, struct dentry *, struct nfsd_net *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct name_list {
 	char name[HEXDIR_LEN];
 	struct list_head list;
 };
 
-<<<<<<< HEAD
-static int
-nfsd4_build_namelist(void *arg, const char *name, int namlen,
-		loff_t offset, u64 ino, unsigned int d_type)
-{
-	struct list_head *names = arg;
-	struct name_list *entry;
-
-	if (namlen != HEXDIR_LEN - 1)
-		return 0;
-	entry = kmalloc(sizeof(struct name_list), GFP_KERNEL);
-	if (entry == NULL)
-		return -ENOMEM;
-	memcpy(entry->name, name, HEXDIR_LEN - 1);
-	entry->name[HEXDIR_LEN - 1] = '\0';
-	list_add(&entry->list, names);
-	return 0;
-}
-
-static int
-nfsd4_list_rec_dir(recdir_func *f)
-{
-	const struct cred *original_cred;
-	struct dentry *dir = rec_file->f_path.dentry;
-	LIST_HEAD(names);
-=======
 struct nfs4_dir_ctx {
 	struct dir_context ctx;
 	struct list_head names;
@@ -424,35 +296,22 @@ nfsd4_list_rec_dir(recdir_func *f, struct nfsd_net *nn)
 		.names = LIST_HEAD_INIT(ctx.names)
 	};
 	struct name_list *entry, *tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	status = nfs4_save_creds(&original_cred);
 	if (status < 0)
 		return status;
 
-<<<<<<< HEAD
-	status = vfs_llseek(rec_file, 0, SEEK_SET);
-=======
 	status = vfs_llseek(nn->rec_file, 0, SEEK_SET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		nfs4_reset_creds(original_cred);
 		return status;
 	}
 
-<<<<<<< HEAD
-	status = vfs_readdir(rec_file, nfsd4_build_namelist, &names);
-	mutex_lock_nested(&dir->d_inode->i_mutex, I_MUTEX_PARENT);
-	while (!list_empty(&names)) {
-		struct name_list *entry;
-		entry = list_entry(names.next, struct name_list, list);
-=======
 	status = iterate_dir(nn->rec_file, &ctx.ctx);
 	inode_lock_nested(d_inode(dir), I_MUTEX_PARENT);
 
 	list_for_each_entry_safe(entry, tmp, &ctx.names, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!status) {
 			struct dentry *dentry;
 			dentry = lookup_one_len(entry->name, dir, HEXDIR_LEN-1);
@@ -460,20 +319,12 @@ nfsd4_list_rec_dir(recdir_func *f, struct nfsd_net *nn)
 				status = PTR_ERR(dentry);
 				break;
 			}
-<<<<<<< HEAD
-			status = f(dir, dentry);
-=======
 			status = f(dir, dentry, nn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dput(dentry);
 		}
 		list_del(&entry->list);
 		kfree(entry);
 	}
-<<<<<<< HEAD
-	mutex_unlock(&dir->d_inode->i_mutex);
-	nfs4_reset_creds(original_cred);
-=======
 	inode_unlock(d_inode(dir));
 	nfs4_reset_creds(original_cred);
 
@@ -482,44 +333,25 @@ nfsd4_list_rec_dir(recdir_func *f, struct nfsd_net *nn)
 		list_del(&entry->list);
 		kfree(entry);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 static int
-<<<<<<< HEAD
-nfsd4_unlink_clid_dir(char *name, int namlen)
-=======
 nfsd4_unlink_clid_dir(char *name, int namlen, struct nfsd_net *nn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dentry *dir, *dentry;
 	int status;
 
 	dprintk("NFSD: nfsd4_unlink_clid_dir. name %.*s\n", namlen, name);
 
-<<<<<<< HEAD
-	dir = rec_file->f_path.dentry;
-	mutex_lock_nested(&dir->d_inode->i_mutex, I_MUTEX_PARENT);
-=======
 	dir = nn->rec_file->f_path.dentry;
 	inode_lock_nested(d_inode(dir), I_MUTEX_PARENT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dentry = lookup_one_len(name, dir, namlen);
 	if (IS_ERR(dentry)) {
 		status = PTR_ERR(dentry);
 		goto out_unlock;
 	}
 	status = -ENOENT;
-<<<<<<< HEAD
-	if (!dentry->d_inode)
-		goto out;
-	status = vfs_rmdir(dir->d_inode, dentry);
-out:
-	dput(dentry);
-out_unlock:
-	mutex_unlock(&dir->d_inode->i_mutex);
-=======
 	if (d_really_is_negative(dentry))
 		goto out;
 	status = vfs_rmdir(&nop_mnt_idmap, d_inode(dir), dentry);
@@ -527,22 +359,10 @@ out:
 	dput(dentry);
 out_unlock:
 	inode_unlock(d_inode(dir));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 static void
-<<<<<<< HEAD
-nfsd4_remove_clid_dir(struct nfs4_client *clp)
-{
-	const struct cred *original_cred;
-	int status;
-
-	if (!rec_file || !test_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags))
-		return;
-
-	status = mnt_want_write_file(rec_file);
-=======
 __nfsd4_remove_reclaim_record_grace(const char *dname, int len,
 		struct nfsd_net *nn)
 {
@@ -578,40 +398,12 @@ nfsd4_remove_clid_dir(struct nfs4_client *clp)
 		return legacy_recdir_name_error(clp, status);
 
 	status = mnt_want_write_file(nn->rec_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status)
 		goto out;
 	clear_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags);
 
 	status = nfs4_save_creds(&original_cred);
 	if (status < 0)
-<<<<<<< HEAD
-		goto out;
-
-	status = nfsd4_unlink_clid_dir(clp->cl_recdir, HEXDIR_LEN-1);
-	nfs4_reset_creds(original_cred);
-	if (status == 0)
-		vfs_fsync(rec_file, 0);
-	mnt_drop_write_file(rec_file);
-out:
-	if (status)
-		printk("NFSD: Failed to remove expired client state directory"
-				" %.*s\n", HEXDIR_LEN, clp->cl_recdir);
-}
-
-static int
-purge_old(struct dentry *parent, struct dentry *child)
-{
-	int status;
-
-	if (nfs4_has_reclaimed_state(child->d_name.name, false))
-		return 0;
-
-	status = vfs_rmdir(parent->d_inode, child);
-	if (status)
-		printk("failed to remove client recovery directory %s\n",
-				child->d_name.name);
-=======
 		goto out_drop_write;
 
 	status = nfsd4_unlink_clid_dir(dname, HEXDIR_LEN-1, nn);
@@ -659,43 +451,11 @@ purge_old(struct dentry *parent, struct dentry *child, struct nfsd_net *nn)
 out_free:
 	kfree(name.data);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Keep trying, success or failure: */
 	return 0;
 }
 
 static void
-<<<<<<< HEAD
-nfsd4_recdir_purge_old(struct net *net, time_t boot_time)
-{
-	int status;
-
-	if (!rec_file)
-		return;
-	status = mnt_want_write_file(rec_file);
-	if (status)
-		goto out;
-	status = nfsd4_list_rec_dir(purge_old);
-	if (status == 0)
-		vfs_fsync(rec_file, 0);
-	mnt_drop_write_file(rec_file);
-out:
-	if (status)
-		printk("nfsd4: failed to purge old clients from recovery"
-			" directory %s\n", rec_file->f_path.dentry->d_name.name);
-}
-
-static int
-load_recdir(struct dentry *parent, struct dentry *child)
-{
-	if (child->d_name.len != HEXDIR_LEN - 1) {
-		printk("nfsd4: illegal name %s in recovery directory\n",
-				child->d_name.name);
-		/* Keep trying; maybe the others are OK: */
-		return 0;
-	}
-	nfs4_client_to_reclaim(child->d_name.name);
-=======
 nfsd4_recdir_purge_old(struct nfsd_net *nn)
 {
 	int status;
@@ -739,23 +499,10 @@ load_recdir(struct dentry *parent, struct dentry *child, struct nfsd_net *nn)
 	if (!nfs4_client_to_reclaim(name, princhash, nn))
 		kfree(name.data);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-nfsd4_recdir_load(void) {
-	int status;
-
-	if (!rec_file)
-		return 0;
-
-	status = nfsd4_list_rec_dir(load_recdir);
-	if (status)
-		printk("nfsd4: failed loading clients from recovery"
-			" directory %s\n", rec_file->f_path.dentry->d_name.name);
-=======
 nfsd4_recdir_load(struct net *net) {
 	int status;
 	struct nfsd_net *nn =  net_generic(net, nfsd_net_id);
@@ -767,7 +514,6 @@ nfsd4_recdir_load(struct net *net) {
 	if (status)
 		printk("nfsd4: failed loading clients from recovery"
 			" directory %pD\n", nn->rec_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -776,25 +522,16 @@ nfsd4_recdir_load(struct net *net) {
  */
 
 static int
-<<<<<<< HEAD
-nfsd4_init_recdir(void)
-{
-=======
 nfsd4_init_recdir(struct net *net)
 {
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct cred *original_cred;
 	int status;
 
 	printk("NFSD: Using %s as the NFSv4 state recovery directory\n",
 			user_recovery_dirname);
 
-<<<<<<< HEAD
-	BUG_ON(rec_file);
-=======
 	BUG_ON(nn->rec_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = nfs4_save_creds(&original_cred);
 	if (status < 0) {
@@ -804,20 +541,6 @@ nfsd4_init_recdir(struct net *net)
 		return status;
 	}
 
-<<<<<<< HEAD
-	rec_file = filp_open(user_recovery_dirname, O_RDONLY | O_DIRECTORY, 0);
-	if (IS_ERR(rec_file)) {
-		printk("NFSD: unable to find recovery directory %s\n",
-				user_recovery_dirname);
-		status = PTR_ERR(rec_file);
-		rec_file = NULL;
-	}
-
-	nfs4_reset_creds(original_cred);
-	return status;
-}
-
-=======
 	nn->rec_file = filp_open(user_recovery_dirname, O_RDONLY | O_DIRECTORY, 0);
 	if (IS_ERR(nn->rec_file)) {
 		printk("NFSD: unable to find recovery directory %s\n",
@@ -870,38 +593,11 @@ nfs4_legacy_state_shutdown(struct net *net)
 	kfree(nn->reclaim_str_hashtbl);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 nfsd4_load_reboot_recovery_data(struct net *net)
 {
 	int status;
 
-<<<<<<< HEAD
-	/* XXX: The legacy code won't work in a container */
-	if (net != &init_net) {
-		WARN(1, KERN_ERR "NFSD: attempt to initialize legacy client "
-			"tracking in a container!\n");
-		return -EINVAL;
-	}
-
-	nfs4_lock_state();
-	status = nfsd4_init_recdir();
-	if (!status)
-		status = nfsd4_recdir_load();
-	nfs4_unlock_state();
-	if (status)
-		printk(KERN_ERR "NFSD: Failure reading reboot recovery data\n");
-	return status;
-}
-
-static void
-nfsd4_shutdown_recdir(void)
-{
-	if (!rec_file)
-		return;
-	fput(rec_file);
-	rec_file = NULL;
-=======
 	status = nfsd4_init_recdir(net);
 	if (status)
 		return status;
@@ -937,22 +633,16 @@ nfsd4_legacy_tracking_init(struct net *net)
 err:
 	nfs4_legacy_state_shutdown(net);
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 nfsd4_legacy_tracking_exit(struct net *net)
 {
-<<<<<<< HEAD
-	nfs4_release_reclaim();
-	nfsd4_shutdown_recdir();
-=======
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
 
 	nfs4_release_reclaim(nn);
 	nfsd4_shutdown_recdir(net);
 	nfs4_legacy_state_shutdown(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -968,11 +658,7 @@ nfs4_reset_recoverydir(char *recdir)
 	if (status)
 		return status;
 	status = -ENOTDIR;
-<<<<<<< HEAD
-	if (S_ISDIR(path.dentry->d_inode->i_mode)) {
-=======
 	if (d_is_dir(path.dentry)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		strcpy(user_recovery_dirname, recdir);
 		status = 0;
 	}
@@ -989,32 +675,16 @@ nfs4_recoverydir(void)
 static int
 nfsd4_check_legacy_client(struct nfs4_client *clp)
 {
-<<<<<<< HEAD
-=======
 	int status;
 	char dname[HEXDIR_LEN];
 	struct nfs4_client_reclaim *crp;
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
 	struct xdr_netobj name;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* did we already find that this client is stable? */
 	if (test_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags))
 		return 0;
 
-<<<<<<< HEAD
-	/* look for it in the reclaim hashtable otherwise */
-	if (nfsd4_find_reclaim_client(clp)) {
-		set_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags);
-		return 0;
-	}
-
-	return -ENOENT;
-}
-
-static struct nfsd4_client_tracking_ops nfsd4_legacy_tracking_ops = {
-	.init		= nfsd4_load_reboot_recovery_data,
-=======
 	status = nfs4_make_rec_clidname(dname, &clp->cl_name);
 	if (status) {
 		legacy_recdir_name_error(clp, status);
@@ -1043,20 +713,15 @@ out_enoent:
 
 static const struct nfsd4_client_tracking_ops nfsd4_legacy_tracking_ops = {
 	.init		= nfsd4_legacy_tracking_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.exit		= nfsd4_legacy_tracking_exit,
 	.create		= nfsd4_create_clid_dir,
 	.remove		= nfsd4_remove_clid_dir,
 	.check		= nfsd4_check_legacy_client,
 	.grace_done	= nfsd4_recdir_purge_old,
-<<<<<<< HEAD
-};
-=======
 	.version	= 1,
 	.msglen		= 0,
 };
 #endif /* CONFIG_NFSD_LEGACY_CLIENT_TRACKING */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Globals */
 #define NFSD_PIPE_DIR		"nfsd"
@@ -1068,47 +733,15 @@ struct cld_net {
 	spinlock_t		 cn_lock;
 	struct list_head	 cn_list;
 	unsigned int		 cn_xid;
-<<<<<<< HEAD
-=======
 	struct crypto_shash	*cn_tfm;
 #ifdef CONFIG_NFSD_LEGACY_CLIENT_TRACKING
 	bool			 cn_has_legacy;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cld_upcall {
 	struct list_head	 cu_list;
 	struct cld_net		*cu_net;
-<<<<<<< HEAD
-	struct task_struct	*cu_task;
-	struct cld_msg		 cu_msg;
-};
-
-static int
-__cld_pipe_upcall(struct rpc_pipe *pipe, struct cld_msg *cmsg)
-{
-	int ret;
-	struct rpc_pipe_msg msg;
-
-	memset(&msg, 0, sizeof(msg));
-	msg.data = cmsg;
-	msg.len = sizeof(*cmsg);
-
-	/*
-	 * Set task state before we queue the upcall. That prevents
-	 * wake_up_process in the downcall from racing with schedule.
-	 */
-	set_current_state(TASK_UNINTERRUPTIBLE);
-	ret = rpc_queue_upcall(pipe, &msg);
-	if (ret < 0) {
-		set_current_state(TASK_RUNNING);
-		goto out;
-	}
-
-	schedule();
-	set_current_state(TASK_RUNNING);
-=======
 	struct completion	 cu_done;
 	union {
 		struct cld_msg_hdr	 cu_hdr;
@@ -1134,7 +767,6 @@ __cld_pipe_upcall(struct rpc_pipe *pipe, void *cmsg, struct nfsd_net *nn)
 	}
 
 	wait_for_completion(&cup->cu_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (msg.errno < 0)
 		ret = msg.errno;
@@ -1143,11 +775,7 @@ out:
 }
 
 static int
-<<<<<<< HEAD
-cld_pipe_upcall(struct rpc_pipe *pipe, struct cld_msg *cmsg)
-=======
 cld_pipe_upcall(struct rpc_pipe *pipe, void *cmsg, struct nfsd_net *nn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -1156,31 +784,13 @@ cld_pipe_upcall(struct rpc_pipe *pipe, void *cmsg, struct nfsd_net *nn)
 	 *  upcalls queued.
 	 */
 	do {
-<<<<<<< HEAD
-		ret = __cld_pipe_upcall(pipe, cmsg);
-=======
 		ret = __cld_pipe_upcall(pipe, cmsg, nn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (ret == -EAGAIN);
 
 	return ret;
 }
 
 static ssize_t
-<<<<<<< HEAD
-cld_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
-{
-	struct cld_upcall *tmp, *cup;
-	struct cld_msg *cmsg = (struct cld_msg *)src;
-	uint32_t xid;
-	struct nfsd_net *nn = net_generic(filp->f_dentry->d_sb->s_fs_info,
-						nfsd_net_id);
-	struct cld_net *cn = nn->cld_net;
-
-	if (mlen != sizeof(*cmsg)) {
-		dprintk("%s: got %zu bytes, expected %zu\n", __func__, mlen,
-			sizeof(*cmsg));
-=======
 __cld_pipe_inprogress_downcall(const struct cld_msg_v2 __user *cmsg,
 		struct nfsd_net *nn)
 {
@@ -1260,22 +870,15 @@ cld_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
 	if (mlen != nn->client_tracking_ops->msglen) {
 		dprintk("%s: got %zu bytes, expected %zu\n", __func__, mlen,
 			nn->client_tracking_ops->msglen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* copy just the xid so we can try to find that */
-<<<<<<< HEAD
-	if (copy_from_user(&xid, &cmsg->cm_xid, sizeof(xid)) != 0) {
-=======
 	if (copy_from_user(&xid, &hdr->cm_xid, sizeof(xid)) != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk("%s: error when copying xid from userspace", __func__);
 		return -EFAULT;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * copy the status so we know whether to remove the upcall from the
 	 * list (for -EINPROGRESS, we just want to make sure the xid is
@@ -1286,21 +889,14 @@ cld_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
 		return -EFAULT;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* walk the list and find corresponding xid */
 	cup = NULL;
 	spin_lock(&cn->cn_lock);
 	list_for_each_entry(tmp, &cn->cn_list, cu_list) {
-<<<<<<< HEAD
-		if (get_unaligned(&tmp->cu_msg.cm_xid) == xid) {
-			cup = tmp;
-			list_del_init(&cup->cu_list);
-=======
 		if (get_unaligned(&tmp->cu_u.cu_hdr.cm_xid) == xid) {
 			cup = tmp;
 			if (status != -EINPROGRESS)
 				list_del_init(&cup->cu_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1312,12 +908,6 @@ cld_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (copy_from_user(&cup->cu_msg, src, mlen) != 0)
-		return -EFAULT;
-
-	wake_up_process(cup->cu_task);
-=======
 	if (status == -EINPROGRESS)
 		return __cld_pipe_inprogress_downcall(cmsg, nn);
 
@@ -1325,7 +915,6 @@ cld_pipe_downcall(struct file *filp, const char __user *src, size_t mlen)
 		return -EFAULT;
 
 	complete(&cup->cu_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mlen;
 }
 
@@ -1334,21 +923,13 @@ cld_pipe_destroy_msg(struct rpc_pipe_msg *msg)
 {
 	struct cld_msg *cmsg = msg->data;
 	struct cld_upcall *cup = container_of(cmsg, struct cld_upcall,
-<<<<<<< HEAD
-						 cu_msg);
-=======
 						 cu_u.cu_msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* errno >= 0 means we got a downcall */
 	if (msg->errno >= 0)
 		return;
 
-<<<<<<< HEAD
-	wake_up_process(cup->cu_task);
-=======
 	complete(&cup->cu_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rpc_pipe_ops cld_upcall_ops = {
@@ -1405,11 +986,7 @@ nfsd4_cld_unregister_net(struct net *net, struct rpc_pipe *pipe)
 
 /* Initialize rpc_pipefs pipe for communication with client tracking daemon */
 static int
-<<<<<<< HEAD
-nfsd4_init_cld_pipe(struct net *net)
-=======
 __nfsd4_init_cld_pipe(struct net *net)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct dentry *dentry;
@@ -1440,12 +1017,9 @@ __nfsd4_init_cld_pipe(struct net *net)
 	}
 
 	cn->cn_pipe->dentry = dentry;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_NFSD_LEGACY_CLIENT_TRACKING
 	cn->cn_has_legacy = false;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nn->cld_net = cn;
 	return 0;
 
@@ -1458,8 +1032,6 @@ err:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int
 nfsd4_init_cld_pipe(struct net *net)
 {
@@ -1471,7 +1043,6 @@ nfsd4_init_cld_pipe(struct net *net)
 	return status;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 nfsd4_remove_cld_pipe(struct net *net)
 {
@@ -1480,26 +1051,17 @@ nfsd4_remove_cld_pipe(struct net *net)
 
 	nfsd4_cld_unregister_net(net, cn->cn_pipe);
 	rpc_destroy_pipe_data(cn->cn_pipe);
-<<<<<<< HEAD
-=======
 	if (cn->cn_tfm)
 		crypto_free_shash(cn->cn_tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(nn->cld_net);
 	nn->cld_net = NULL;
 }
 
 static struct cld_upcall *
-<<<<<<< HEAD
-alloc_cld_upcall(struct cld_net *cn)
-{
-	struct cld_upcall *new, *tmp;
-=======
 alloc_cld_upcall(struct nfsd_net *nn)
 {
 	struct cld_upcall *new, *tmp;
 	struct cld_net *cn = nn->cld_net;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new = kzalloc(sizeof(*new), GFP_KERNEL);
 	if (!new)
@@ -1509,34 +1071,20 @@ alloc_cld_upcall(struct nfsd_net *nn)
 restart_search:
 	spin_lock(&cn->cn_lock);
 	list_for_each_entry(tmp, &cn->cn_list, cu_list) {
-<<<<<<< HEAD
-		if (tmp->cu_msg.cm_xid == cn->cn_xid) {
-=======
 		if (tmp->cu_u.cu_msg.cm_xid == cn->cn_xid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cn->cn_xid++;
 			spin_unlock(&cn->cn_lock);
 			goto restart_search;
 		}
 	}
-<<<<<<< HEAD
-	new->cu_task = current;
-	new->cu_msg.cm_vers = CLD_UPCALL_VERSION;
-	put_unaligned(cn->cn_xid++, &new->cu_msg.cm_xid);
-=======
 	init_completion(&new->cu_done);
 	new->cu_u.cu_msg.cm_vers = nn->client_tracking_ops->version;
 	put_unaligned(cn->cn_xid++, &new->cu_u.cu_msg.cm_xid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->cu_net = cn;
 	list_add(&new->cu_list, &cn->cn_list);
 	spin_unlock(&cn->cn_lock);
 
-<<<<<<< HEAD
-	dprintk("%s: allocated xid %u\n", __func__, new->cu_msg.cm_xid);
-=======
 	dprintk("%s: allocated xid %u\n", __func__, new->cu_u.cu_msg.cm_xid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return new;
 }
@@ -1558,38 +1106,19 @@ nfsd4_cld_create(struct nfs4_client *clp)
 {
 	int ret;
 	struct cld_upcall *cup;
-<<<<<<< HEAD
-	/* FIXME: determine net from clp */
-	struct nfsd_net *nn = net_generic(&init_net, nfsd_net_id);
-=======
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cld_net *cn = nn->cld_net;
 
 	/* Don't upcall if it's already stored */
 	if (test_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags))
 		return;
 
-<<<<<<< HEAD
-	cup = alloc_cld_upcall(cn);
-=======
 	cup = alloc_cld_upcall(nn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cup) {
 		ret = -ENOMEM;
 		goto out_err;
 	}
 
-<<<<<<< HEAD
-	cup->cu_msg.cm_cmd = Cld_Create;
-	cup->cu_msg.cm_u.cm_name.cn_len = clp->cl_name.len;
-	memcpy(cup->cu_msg.cm_u.cm_name.cn_id, clp->cl_name.data,
-			clp->cl_name.len);
-
-	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_msg);
-	if (!ret) {
-		ret = cup->cu_msg.cm_status;
-=======
 	cup->cu_u.cu_msg.cm_cmd = Cld_Create;
 	cup->cu_u.cu_msg.cm_u.cm_name.cn_len = clp->cl_name.len;
 	memcpy(cup->cu_u.cu_msg.cm_u.cm_name.cn_id, clp->cl_name.data,
@@ -1598,7 +1127,6 @@ nfsd4_cld_create(struct nfs4_client *clp)
 	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_u.cu_msg, nn);
 	if (!ret) {
 		ret = cup->cu_u.cu_msg.cm_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags);
 	}
 
@@ -1611,8 +1139,6 @@ out_err:
 
 /* Ask daemon to create a new record */
 static void
-<<<<<<< HEAD
-=======
 nfsd4_cld_create_v2(struct nfs4_client *clp)
 {
 	int ret;
@@ -1679,43 +1205,23 @@ out_err:
 
 /* Ask daemon to create a new record */
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nfsd4_cld_remove(struct nfs4_client *clp)
 {
 	int ret;
 	struct cld_upcall *cup;
-<<<<<<< HEAD
-	/* FIXME: determine net from clp */
-	struct nfsd_net *nn = net_generic(&init_net, nfsd_net_id);
-=======
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cld_net *cn = nn->cld_net;
 
 	/* Don't upcall if it's already removed */
 	if (!test_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags))
 		return;
 
-<<<<<<< HEAD
-	cup = alloc_cld_upcall(cn);
-=======
 	cup = alloc_cld_upcall(nn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cup) {
 		ret = -ENOMEM;
 		goto out_err;
 	}
 
-<<<<<<< HEAD
-	cup->cu_msg.cm_cmd = Cld_Remove;
-	cup->cu_msg.cm_u.cm_name.cn_len = clp->cl_name.len;
-	memcpy(cup->cu_msg.cm_u.cm_name.cn_id, clp->cl_name.data,
-			clp->cl_name.len);
-
-	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_msg);
-	if (!ret) {
-		ret = cup->cu_msg.cm_status;
-=======
 	cup->cu_u.cu_msg.cm_cmd = Cld_Remove;
 	cup->cu_u.cu_msg.cm_u.cm_name.cn_len = clp->cl_name.len;
 	memcpy(cup->cu_u.cu_msg.cm_u.cm_name.cn_id, clp->cl_name.data,
@@ -1724,7 +1230,6 @@ nfsd4_cld_remove(struct nfs4_client *clp)
 	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_u.cu_msg, nn);
 	if (!ret) {
 		ret = cup->cu_u.cu_msg.cm_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags);
 	}
 
@@ -1735,16 +1240,6 @@ out_err:
 				"record from stable storage: %d\n", ret);
 }
 
-<<<<<<< HEAD
-/* Check for presence of a record, and update its timestamp */
-static int
-nfsd4_cld_check(struct nfs4_client *clp)
-{
-	int ret;
-	struct cld_upcall *cup;
-	/* FIXME: determine net from clp */
-	struct nfsd_net *nn = net_generic(&init_net, nfsd_net_id);
-=======
 /*
  * For older nfsdcld's that do not allow us to "slurp" the clients
  * from the tracking database during startup.
@@ -1757,34 +1252,19 @@ nfsd4_cld_check_v0(struct nfs4_client *clp)
 	int ret;
 	struct cld_upcall *cup;
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cld_net *cn = nn->cld_net;
 
 	/* Don't upcall if one was already stored during this grace pd */
 	if (test_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags))
 		return 0;
 
-<<<<<<< HEAD
-	cup = alloc_cld_upcall(cn);
-=======
 	cup = alloc_cld_upcall(nn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cup) {
 		printk(KERN_ERR "NFSD: Unable to check client record on "
 				"stable storage: %d\n", -ENOMEM);
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	cup->cu_msg.cm_cmd = Cld_Check;
-	cup->cu_msg.cm_u.cm_name.cn_len = clp->cl_name.len;
-	memcpy(cup->cu_msg.cm_u.cm_name.cn_id, clp->cl_name.data,
-			clp->cl_name.len);
-
-	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_msg);
-	if (!ret) {
-		ret = cup->cu_msg.cm_status;
-=======
 	cup->cu_u.cu_msg.cm_cmd = Cld_Check;
 	cup->cu_u.cu_msg.cm_u.cm_name.cn_len = clp->cl_name.len;
 	memcpy(cup->cu_u.cu_msg.cm_u.cm_name.cn_id, clp->cl_name.data,
@@ -1793,7 +1273,6 @@ nfsd4_cld_check_v0(struct nfs4_client *clp)
 	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_u.cu_msg, nn);
 	if (!ret) {
 		ret = cup->cu_u.cu_msg.cm_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(NFSD4_CLIENT_STABLE, &clp->cl_flags);
 	}
 
@@ -1801,17 +1280,6 @@ nfsd4_cld_check_v0(struct nfs4_client *clp)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void
-nfsd4_cld_grace_done(struct net *net, time_t boot_time)
-{
-	int ret;
-	struct cld_upcall *cup;
-	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
-	struct cld_net *cn = nn->cld_net;
-
-	cup = alloc_cld_upcall(cn);
-=======
 /*
  * For newer nfsdcld's that allow us to "slurp" the clients
  * from the tracking database during startup.
@@ -1944,19 +1412,11 @@ nfsd4_cld_grace_start(struct nfsd_net *nn)
 	struct cld_net *cn = nn->cld_net;
 
 	cup = alloc_cld_upcall(nn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cup) {
 		ret = -ENOMEM;
 		goto out_err;
 	}
 
-<<<<<<< HEAD
-	cup->cu_msg.cm_cmd = Cld_GraceDone;
-	cup->cu_msg.cm_u.cm_gracetime = (int64_t)boot_time;
-	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_msg);
-	if (!ret)
-		ret = cup->cu_msg.cm_status;
-=======
 	cup->cu_u.cu_msg.cm_cmd = Cld_GraceStart;
 	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_u.cu_msg, nn);
 	if (!ret)
@@ -1989,7 +1449,6 @@ nfsd4_cld_grace_done_v0(struct nfsd_net *nn)
 	ret = cld_pipe_upcall(cn->cn_pipe, &cup->cu_u.cu_msg, nn);
 	if (!ret)
 		ret = cup->cu_u.cu_msg.cm_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	free_cld_upcall(cup);
 out_err:
@@ -1997,9 +1456,6 @@ out_err:
 		printk(KERN_ERR "NFSD: Unable to end grace period: %d\n", ret);
 }
 
-<<<<<<< HEAD
-static struct nfsd4_client_tracking_ops nfsd4_cld_tracking_ops = {
-=======
 /*
  * For newer nfsdcld's that do not need cm_gracetime.  We also need to call
  * nfs4_release_reclaim() to clear out the reclaim_str_hashtbl.
@@ -2187,39 +1643,10 @@ nfsd4_cld_tracking_exit(struct net *net)
 
 /* For older nfsdcld's */
 static const struct nfsd4_client_tracking_ops nfsd4_cld_tracking_ops_v0 = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		= nfsd4_init_cld_pipe,
 	.exit		= nfsd4_remove_cld_pipe,
 	.create		= nfsd4_cld_create,
 	.remove		= nfsd4_cld_remove,
-<<<<<<< HEAD
-	.check		= nfsd4_cld_check,
-	.grace_done	= nfsd4_cld_grace_done,
-};
-
-int
-nfsd4_client_tracking_init(struct net *net)
-{
-	int status;
-	struct path path;
-
-	if (!client_tracking_ops) {
-		client_tracking_ops = &nfsd4_cld_tracking_ops;
-		status = kern_path(nfs4_recoverydir(), LOOKUP_FOLLOW, &path);
-		if (!status) {
-			if (S_ISDIR(path.dentry->d_inode->i_mode))
-				client_tracking_ops =
-						&nfsd4_legacy_tracking_ops;
-			path_put(&path);
-		}
-	}
-
-	status = client_tracking_ops->init(net);
-	if (status) {
-		printk(KERN_WARNING "NFSD: Unable to initialize client "
-				    "recovery tracking! (%d)\n", status);
-		client_tracking_ops = NULL;
-=======
 	.check		= nfsd4_cld_check_v0,
 	.grace_done	= nfsd4_cld_grace_done_v0,
 	.version	= 1,
@@ -2662,7 +2089,6 @@ out:
 		printk(KERN_WARNING "NFSD: Unable to initialize client "
 				    "recovery tracking! (%d)\n", status);
 		nn->client_tracking_ops = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
@@ -2670,77 +2096,49 @@ out:
 void
 nfsd4_client_tracking_exit(struct net *net)
 {
-<<<<<<< HEAD
-	if (client_tracking_ops) {
-		client_tracking_ops->exit(net);
-		client_tracking_ops = NULL;
-=======
 	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
 
 	if (nn->client_tracking_ops) {
 		if (nn->client_tracking_ops->exit)
 			nn->client_tracking_ops->exit(net);
 		nn->client_tracking_ops = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void
 nfsd4_client_record_create(struct nfs4_client *clp)
 {
-<<<<<<< HEAD
-	if (client_tracking_ops)
-		client_tracking_ops->create(clp);
-=======
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
 
 	if (nn->client_tracking_ops)
 		nn->client_tracking_ops->create(clp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
 nfsd4_client_record_remove(struct nfs4_client *clp)
 {
-<<<<<<< HEAD
-	if (client_tracking_ops)
-		client_tracking_ops->remove(clp);
-=======
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
 
 	if (nn->client_tracking_ops)
 		nn->client_tracking_ops->remove(clp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
 nfsd4_client_record_check(struct nfs4_client *clp)
 {
-<<<<<<< HEAD
-	if (client_tracking_ops)
-		return client_tracking_ops->check(clp);
-=======
 	struct nfsd_net *nn = net_generic(clp->net, nfsd_net_id);
 
 	if (nn->client_tracking_ops)
 		return nn->client_tracking_ops->check(clp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EOPNOTSUPP;
 }
 
 void
-<<<<<<< HEAD
-nfsd4_record_grace_done(struct net *net, time_t boot_time)
-{
-	if (client_tracking_ops)
-		client_tracking_ops->grace_done(net, boot_time);
-=======
 nfsd4_record_grace_done(struct nfsd_net *nn)
 {
 	if (nn->client_tracking_ops)
 		nn->client_tracking_ops->grace_done(nn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -2782,21 +2180,14 @@ rpc_pipefs_event(struct notifier_block *nb, unsigned long event, void *ptr)
 	return ret;
 }
 
-<<<<<<< HEAD
-struct notifier_block nfsd4_cld_block = {
-=======
 static struct notifier_block nfsd4_cld_block = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.notifier_call = rpc_pipefs_event,
 };
 
 int
 register_cld_notifier(void)
 {
-<<<<<<< HEAD
-=======
 	WARN_ON(!nfsd_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rpc_pipefs_notifier_register(&nfsd4_cld_block);
 }
 

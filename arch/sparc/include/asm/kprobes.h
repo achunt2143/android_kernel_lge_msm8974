@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef _SPARC64_KPROBES_H
-#define _SPARC64_KPROBES_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _SPARC64_KPROBES_H
 #define _SPARC64_KPROBES_H
@@ -13,17 +8,11 @@
 #define BREAKPOINT_INSTRUCTION_2 0x91d02071 /* ta 0x71 */
 
 #ifdef CONFIG_KPROBES
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/percpu.h>
 
 typedef u32 kprobe_opcode_t;
 
-<<<<<<< HEAD
-#define BREAKPOINT_INSTRUCTION   0x91d02070 /* ta 0x70 */
-#define BREAKPOINT_INSTRUCTION_2 0x91d02071 /* ta 0x71 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_INSN_SIZE 2
 
 #define kretprobe_blacklist_size 0
@@ -35,11 +24,7 @@ do { 	flushi(&(p)->ainsn.insn[0]);	\
 	flushi(&(p)->ainsn.insn[1]);	\
 } while (0)
 
-<<<<<<< HEAD
-void kretprobe_trampoline(void);
-=======
 void __kretprobe_trampoline(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Architecture specific copy of original instruction*/
 struct arch_specific_insn {
@@ -59,15 +44,6 @@ struct kprobe_ctlblk {
 	unsigned long kprobe_status;
 	unsigned long kprobe_orig_tnpc;
 	unsigned long kprobe_orig_tstate_pil;
-<<<<<<< HEAD
-	struct pt_regs jprobe_saved_regs;
-	struct prev_kprobe prev_kprobe;
-};
-
-extern int kprobe_exceptions_notify(struct notifier_block *self,
-				    unsigned long val, void *data);
-extern int kprobe_fault_handler(struct pt_regs *regs, int trapnr);
-=======
 	struct prev_kprobe prev_kprobe;
 };
 
@@ -76,5 +52,4 @@ asmlinkage void __kprobes kprobe_trap(unsigned long trap_level,
 				      struct pt_regs *regs);
 
 #endif /* CONFIG_KPROBES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _SPARC64_KPROBES_H */

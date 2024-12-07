@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2009-2011, Frederic Weisbecker <fweisbec@gmail.com>
  *
@@ -13,34 +10,12 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #include <inttypes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <errno.h>
 #include <math.h>
-<<<<<<< HEAD
-
-#include "util.h"
-#include "callchain.h"
-
-bool ip_callchain__valid(struct ip_callchain *chain,
-			 const union perf_event *event)
-{
-	unsigned int chain_size = event->header.size;
-	chain_size -= (unsigned long)&event->ip.__more_data - (unsigned long)event;
-	return chain->nr * sizeof(u64) <= chain_size;
-}
-
-#define chain_for_each_child(child, parent)	\
-	list_for_each_entry(child, &parent->children, siblings)
-
-#define chain_for_each_child_safe(child, next, parent)	\
-	list_for_each_entry_safe(child, next, &parent->children, siblings)
-=======
 #include <linux/string.h>
 #include <linux/zalloc.h>
 
@@ -399,7 +374,6 @@ int perf_callchain_config(const char *var, const char *value)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 rb_insert_callchain(struct rb_root *root, struct callchain_node *chain,
@@ -419,10 +393,7 @@ rb_insert_callchain(struct rb_root *root, struct callchain_node *chain,
 
 		switch (mode) {
 		case CHAIN_FLAT:
-<<<<<<< HEAD
-=======
 		case CHAIN_FOLDED:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rnode->hit < chain->hit)
 				p = &(*p)->rb_left;
 			else
@@ -449,12 +420,6 @@ static void
 __sort_chain_flat(struct rb_root *rb_root, struct callchain_node *node,
 		  u64 min_hit)
 {
-<<<<<<< HEAD
-	struct callchain_node *child;
-
-	chain_for_each_child(child, node)
-		__sort_chain_flat(rb_root, child, min_hit);
-=======
 	struct rb_node *n;
 	struct callchain_node *child;
 
@@ -465,7 +430,6 @@ __sort_chain_flat(struct rb_root *rb_root, struct callchain_node *node,
 
 		__sort_chain_flat(rb_root, child, min_hit);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (node->hit && node->hit >= min_hit)
 		rb_insert_callchain(rb_root, node, CHAIN_FLAT);
@@ -477,27 +441,15 @@ __sort_chain_flat(struct rb_root *rb_root, struct callchain_node *node,
  */
 static void
 sort_chain_flat(struct rb_root *rb_root, struct callchain_root *root,
-<<<<<<< HEAD
-		u64 min_hit, struct callchain_param *param __used)
-{
-=======
 		u64 min_hit, struct callchain_param *param __maybe_unused)
 {
 	*rb_root = RB_ROOT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__sort_chain_flat(rb_root, &root->node, min_hit);
 }
 
 static void __sort_chain_graph_abs(struct callchain_node *node,
 				   u64 min_hit)
 {
-<<<<<<< HEAD
-	struct callchain_node *child;
-
-	node->rb_root = RB_ROOT;
-
-	chain_for_each_child(child, node) {
-=======
 	struct rb_node *n;
 	struct callchain_node *child;
 
@@ -508,7 +460,6 @@ static void __sort_chain_graph_abs(struct callchain_node *node,
 		child = rb_entry(n, struct callchain_node, rb_node_in);
 		n = rb_next(n);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sort_chain_graph_abs(child, min_hit);
 		if (callchain_cumul_hits(child) >= min_hit)
 			rb_insert_callchain(&node->rb_root, child,
@@ -518,11 +469,7 @@ static void __sort_chain_graph_abs(struct callchain_node *node,
 
 static void
 sort_chain_graph_abs(struct rb_root *rb_root, struct callchain_root *chain_root,
-<<<<<<< HEAD
-		     u64 min_hit, struct callchain_param *param __used)
-=======
 		     u64 min_hit, struct callchain_param *param __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__sort_chain_graph_abs(&chain_root->node, min_hit);
 	rb_root->rb_node = chain_root->node.rb_root.rb_node;
@@ -531,25 +478,18 @@ sort_chain_graph_abs(struct rb_root *rb_root, struct callchain_root *chain_root,
 static void __sort_chain_graph_rel(struct callchain_node *node,
 				   double min_percent)
 {
-<<<<<<< HEAD
-=======
 	struct rb_node *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct callchain_node *child;
 	u64 min_hit;
 
 	node->rb_root = RB_ROOT;
 	min_hit = ceil(node->children_hit * min_percent);
 
-<<<<<<< HEAD
-	chain_for_each_child(child, node) {
-=======
 	n = rb_first(&node->rb_root_in);
 	while (n) {
 		child = rb_entry(n, struct callchain_node, rb_node_in);
 		n = rb_next(n);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__sort_chain_graph_rel(child, min_percent);
 		if (callchain_cumul_hits(child) >= min_hit)
 			rb_insert_callchain(&node->rb_root, child,
@@ -559,11 +499,7 @@ static void __sort_chain_graph_rel(struct callchain_node *node,
 
 static void
 sort_chain_graph_rel(struct rb_root *rb_root, struct callchain_root *chain_root,
-<<<<<<< HEAD
-		     u64 min_hit __used, struct callchain_param *param)
-=======
 		     u64 min_hit __maybe_unused, struct callchain_param *param)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__sort_chain_graph_rel(&chain_root->node, param->min_percent / 100.0);
 	rb_root->rb_node = chain_root->node.rb_root.rb_node;
@@ -579,10 +515,7 @@ int callchain_register_param(struct callchain_param *param)
 		param->sort = sort_chain_graph_rel;
 		break;
 	case CHAIN_FLAT:
-<<<<<<< HEAD
-=======
 	case CHAIN_FOLDED:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		param->sort = sort_chain_flat;
 		break;
 	case CHAIN_NONE:
@@ -607,21 +540,6 @@ create_child(struct callchain_node *parent, bool inherit_children)
 		return NULL;
 	}
 	new->parent = parent;
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&new->children);
-	INIT_LIST_HEAD(&new->val);
-
-	if (inherit_children) {
-		struct callchain_node *next;
-
-		list_splice(&parent->children, &new->children);
-		INIT_LIST_HEAD(&parent->children);
-
-		chain_for_each_child(next, new)
-			next->parent = new;
-	}
-	list_add_tail(&new->siblings, &parent->children);
-=======
 	INIT_LIST_HEAD(&new->val);
 	INIT_LIST_HEAD(&new->parent_val);
 
@@ -643,7 +561,6 @@ create_child(struct callchain_node *parent, bool inherit_children)
 		rb_link_node(&new->rb_node_in, NULL, &parent->rb_root_in.rb_node);
 		rb_insert_color(&new->rb_node_in, &parent->rb_root_in);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return new;
 }
@@ -652,11 +569,7 @@ create_child(struct callchain_node *parent, bool inherit_children)
 /*
  * Fill the node with callchain values
  */
-<<<<<<< HEAD
-static void
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fill_node(struct callchain_node *node, struct callchain_cursor *cursor)
 {
 	struct callchain_cursor_node *cursor_node;
@@ -673,13 +586,6 @@ fill_node(struct callchain_node *node, struct callchain_cursor *cursor)
 		call = zalloc(sizeof(*call));
 		if (!call) {
 			perror("not enough memory for the code path tree");
-<<<<<<< HEAD
-			return;
-		}
-		call->ip = cursor_node->ip;
-		call->ms.sym = cursor_node->sym;
-		call->ms.map = cursor_node->map;
-=======
 			return -ENOMEM;
 		}
 		call->ip = cursor_node->ip;
@@ -729,22 +635,15 @@ fill_node(struct callchain_node *node, struct callchain_cursor *cursor)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&call->list, &node->val);
 
 		callchain_cursor_advance(cursor);
 		cursor_node = callchain_cursor_current(cursor);
 	}
-<<<<<<< HEAD
-}
-
-static void
-=======
 	return 0;
 }
 
 static struct callchain_node *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 add_child(struct callchain_node *parent,
 	  struct callchain_cursor *cursor,
 	  u64 period)
@@ -752,12 +651,6 @@ add_child(struct callchain_node *parent,
 	struct callchain_node *new;
 
 	new = create_child(parent, false);
-<<<<<<< HEAD
-	fill_node(new, cursor);
-
-	new->children_hit = 0;
-	new->hit = period;
-=======
 	if (new == NULL)
 		return NULL;
 
@@ -911,7 +804,6 @@ static enum match_result match_chain(struct callchain_cursor_node *node,
 	}
 
 	return match;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -919,11 +811,7 @@ static enum match_result match_chain(struct callchain_cursor_node *node,
  * give a part of its callchain to the created child.
  * Then create another child to host the given callchain of new branch
  */
-<<<<<<< HEAD
-static void
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 split_add_child(struct callchain_node *parent,
 		struct callchain_cursor *cursor,
 		struct callchain_list *to_split,
@@ -935,11 +823,8 @@ split_add_child(struct callchain_node *parent,
 
 	/* split */
 	new = create_child(parent, true);
-<<<<<<< HEAD
-=======
 	if (new == NULL)
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* split the callchain and move a part to the new child */
 	old_tail = parent->val.prev;
@@ -955,20 +840,6 @@ split_add_child(struct callchain_node *parent,
 	parent->children_hit = callchain_cumul_hits(new);
 	new->val_nr = parent->val_nr - idx_local;
 	parent->val_nr = idx_local;
-<<<<<<< HEAD
-
-	/* create a new child for the new branch if any */
-	if (idx_total < cursor->nr) {
-		parent->hit = 0;
-		add_child(parent, cursor, period);
-		parent->children_hit += period;
-	} else {
-		parent->hit = period;
-	}
-}
-
-static int
-=======
 	new->count = parent->count;
 	new->children_count = parent->children_count;
 	parent->children_count = callchain_cumul_counts(new);
@@ -1014,39 +885,16 @@ static int
 }
 
 static enum match_result
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 append_chain(struct callchain_node *root,
 	     struct callchain_cursor *cursor,
 	     u64 period);
 
-<<<<<<< HEAD
-static void
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 append_chain_children(struct callchain_node *root,
 		      struct callchain_cursor *cursor,
 		      u64 period)
 {
 	struct callchain_node *rnode;
-<<<<<<< HEAD
-
-	/* lookup in childrens */
-	chain_for_each_child(rnode, root) {
-		unsigned int ret = append_chain(rnode, cursor, period);
-
-		if (!ret)
-			goto inc_children_hit;
-	}
-	/* nothing in children, add to the current node */
-	add_child(root, cursor, period);
-
-inc_children_hit:
-	root->children_hit += period;
-}
-
-static int
-=======
 	struct callchain_cursor_node *node;
 	struct rb_node **p = &root->rb_root_in.rb_node;
 	struct rb_node *parent = NULL;
@@ -1089,109 +937,58 @@ inc_children_hit:
 }
 
 static enum match_result
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 append_chain(struct callchain_node *root,
 	     struct callchain_cursor *cursor,
 	     u64 period)
 {
-<<<<<<< HEAD
-	struct callchain_cursor_node *curr_snap = cursor->curr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct callchain_list *cnode;
 	u64 start = cursor->pos;
 	bool found = false;
 	u64 matches;
-<<<<<<< HEAD
-=======
 	enum match_result cmp = MATCH_ERROR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Lookup in the current node
 	 * If we have a symbol, then compare the start to match
-<<<<<<< HEAD
-	 * anywhere inside a function.
-	 */
-	list_for_each_entry(cnode, &root->val, list) {
-		struct callchain_cursor_node *node;
-		struct symbol *sym;
-=======
 	 * anywhere inside a function, unless function
 	 * mode is disabled.
 	 */
 	list_for_each_entry(cnode, &root->val, list) {
 		struct callchain_cursor_node *node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		node = callchain_cursor_current(cursor);
 		if (!node)
 			break;
 
-<<<<<<< HEAD
-		sym = node->sym;
-
-		if (cnode->ms.sym && sym) {
-			if (cnode->ms.sym->start != sym->start)
-				break;
-		} else if (cnode->ip != node->ip)
-			break;
-
-		if (!found)
-			found = true;
-=======
 		cmp = match_chain(node, cnode);
 		if (cmp != MATCH_EQ)
 			break;
 
 		found = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		callchain_cursor_advance(cursor);
 	}
 
-<<<<<<< HEAD
-	/* matches not, relay on the parent */
-	if (!found) {
-		cursor->curr = curr_snap;
-		cursor->pos = start;
-		return -1;
-=======
 	/* matches not, relay no the parent */
 	if (!found) {
 		WARN_ONCE(cmp == MATCH_ERROR, "Chain comparison error\n");
 		return cmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	matches = cursor->pos - start;
 
 	/* we match only a part of the node. Split it and add the new chain */
 	if (matches < root->val_nr) {
-<<<<<<< HEAD
-		split_add_child(root, cursor, cnode, start, matches, period);
-		return 0;
-=======
 		if (split_add_child(root, cursor, cnode, start, matches,
 				    period) < 0)
 			return MATCH_ERROR;
 
 		return MATCH_EQ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* we match 100% of the path, increment the hit */
 	if (matches == root->val_nr && cursor->pos == cursor->nr) {
 		root->hit += period;
-<<<<<<< HEAD
-		return 0;
-	}
-
-	/* We match the node and still have a part remaining */
-	append_chain_children(root, cursor, period);
-
-	return 0;
-=======
 		root->count++;
 		return MATCH_EQ;
 	}
@@ -1201,30 +998,22 @@ append_chain(struct callchain_node *root,
 		return MATCH_ERROR;
 
 	return MATCH_EQ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int callchain_append(struct callchain_root *root,
 		     struct callchain_cursor *cursor,
 		     u64 period)
 {
-<<<<<<< HEAD
-=======
 	if (cursor == NULL)
 		return -1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cursor->nr)
 		return 0;
 
 	callchain_cursor_commit(cursor);
 
-<<<<<<< HEAD
-	append_chain_children(&root->node, cursor, period);
-=======
 	if (append_chain_children(&root->node, cursor, period) < 0)
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cursor->nr > root->max_depth)
 		root->max_depth = cursor->nr;
@@ -1237,23 +1026,13 @@ merge_chain_branch(struct callchain_cursor *cursor,
 		   struct callchain_node *dst, struct callchain_node *src)
 {
 	struct callchain_cursor_node **old_last = cursor->last;
-<<<<<<< HEAD
-	struct callchain_node *child, *next_child;
-	struct callchain_list *list, *next_list;
-=======
 	struct callchain_node *child;
 	struct callchain_list *list, *next_list;
 	struct rb_node *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_pos = cursor->nr;
 	int err = 0;
 
 	list_for_each_entry_safe(list, next_list, &src->val, list) {
-<<<<<<< HEAD
-		callchain_cursor_append(cursor, list->ip,
-					list->ms.map, list->ms.sym);
-		list_del(&list->list);
-=======
 		struct map_symbol ms = {
 			.maps = maps__get(list->ms.maps),
 			.map = map__get(list->ms.map),
@@ -1263,18 +1042,11 @@ merge_chain_branch(struct callchain_cursor *cursor,
 		map_symbol__exit(&ms);
 		map_symbol__exit(&list->ms);
 		zfree(&list->brtype_stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free(list);
 	}
 
 	if (src->hit) {
 		callchain_cursor_commit(cursor);
-<<<<<<< HEAD
-		append_chain_children(dst, cursor, src->hit);
-	}
-
-	chain_for_each_child_safe(child, next_child, src) {
-=======
 		if (append_chain_children(dst, cursor, src->hit) < 0)
 			return -1;
 	}
@@ -1285,15 +1057,10 @@ merge_chain_branch(struct callchain_cursor *cursor,
 		n = rb_next(n);
 		rb_erase(&child->rb_node_in, &src->rb_root_in);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = merge_chain_branch(cursor, dst, child);
 		if (err)
 			break;
 
-<<<<<<< HEAD
-		list_del(&child->siblings);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free(child);
 	}
 
@@ -1310,23 +1077,15 @@ int callchain_merge(struct callchain_cursor *cursor,
 }
 
 int callchain_cursor_append(struct callchain_cursor *cursor,
-<<<<<<< HEAD
-			    u64 ip, struct map *map, struct symbol *sym)
-=======
 			    u64 ip, struct map_symbol *ms,
 			    bool branch, struct branch_flags *flags,
 			    int nr_loop_iter, u64 iter_cycles, u64 branch_from,
 			    const char *srcline)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct callchain_cursor_node *node = *cursor->last;
 
 	if (!node) {
-<<<<<<< HEAD
-		node = calloc(sizeof(*node), 1);
-=======
 		node = calloc(1, sizeof(*node));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!node)
 			return -ENOMEM;
 
@@ -1334,11 +1093,6 @@ int callchain_cursor_append(struct callchain_cursor *cursor,
 	}
 
 	node->ip = ip;
-<<<<<<< HEAD
-	node->map = map;
-	node->sym = sym;
-
-=======
 	map_symbol__exit(&node->ms);
 	node->ms = *ms;
 	node->ms.maps = maps__get(ms->maps);
@@ -1353,15 +1107,12 @@ int callchain_cursor_append(struct callchain_cursor *cursor,
 			sizeof(struct branch_flags));
 
 	node->branch_from = branch_from;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cursor->nr++;
 
 	cursor->last = &node->next;
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 int sample__resolve_callchain(struct perf_sample *sample,
 			      struct callchain_cursor *cursor, struct symbol **parent,
@@ -2046,4 +1797,3 @@ s64 callchain_avg_cycles(struct callchain_node *cnode)
 
 	return cycles;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

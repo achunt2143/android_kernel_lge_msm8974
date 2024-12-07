@@ -1,48 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright 2007 Hewlett-Packard Development Company, L.P.
  *
  * This file is part of the SCTP kernel implementation
  *
-<<<<<<< HEAD
- * This SCTP implementation is free software;
- * you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This SCTP implementation is distributed in the hope that it
- * will be useful, but WITHOUT ANY WARRANTY; without even the implied
- *                 ************************
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GNU CC; see the file COPYING.  If not, write to
- * the Free Software Foundation, 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <lksctp-developers@lists.sourceforge.net>
- *
- * Or submit a bug report through the following website:
- *    http://www.sf.net/projects/lksctp
- *
- * Written or modified by:
- *   Vlad Yasevich     <vladislav.yasevich@hp.com>
- *
- * Any bugs reported given to us we will try to fix... any fixes shared will
- * be incorporated into the next SCTP release.
- */
-
-#include <linux/slab.h>
-#include <linux/types.h>
-#include <linux/crypto.h>
-=======
  * Please send any bug reports or fixes you make to the
  * email address(es):
  *    lksctp developers <linux-sctp@vger.kernel.org>
@@ -54,7 +15,6 @@
 #include <crypto/hash.h>
 #include <linux/slab.h>
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/scatterlist.h>
 #include <net/sctp/sctp.h>
 #include <net/sctp/auth.h>
@@ -66,28 +26,17 @@ static struct sctp_hmac sctp_hmac_list[SCTP_AUTH_NUM_HMACS] = {
 	},
 	{
 		.hmac_id = SCTP_AUTH_HMAC_ID_SHA1,
-<<<<<<< HEAD
-		.hmac_name="hmac(sha1)",
-=======
 		.hmac_name = "hmac(sha1)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hmac_len = SCTP_SHA1_SIG_SIZE,
 	},
 	{
 		/* id 2 is reserved as well */
 		.hmac_id = SCTP_AUTH_HMAC_ID_RESERVED_2,
 	},
-<<<<<<< HEAD
-#if defined (CONFIG_CRYPTO_SHA256) || defined (CONFIG_CRYPTO_SHA256_MODULE)
-	{
-		.hmac_id = SCTP_AUTH_HMAC_ID_SHA256,
-		.hmac_name="hmac(sha256)",
-=======
 #if IS_ENABLED(CONFIG_CRYPTO_SHA256)
 	{
 		.hmac_id = SCTP_AUTH_HMAC_ID_SHA256,
 		.hmac_name = "hmac(sha256)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hmac_len = SCTP_SHA256_SIG_SIZE,
 	}
 #endif
@@ -99,13 +48,8 @@ void sctp_auth_key_put(struct sctp_auth_bytes *key)
 	if (!key)
 		return;
 
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&key->refcnt)) {
-		kzfree(key);
-=======
 	if (refcount_dec_and_test(&key->refcnt)) {
 		kfree_sensitive(key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SCTP_DBG_OBJCNT_DEC(keys);
 	}
 }
@@ -125,11 +69,7 @@ static struct sctp_auth_bytes *sctp_auth_create_key(__u32 key_len, gfp_t gfp)
 		return NULL;
 
 	key->len = key_len;
-<<<<<<< HEAD
-	atomic_set(&key->refcnt, 1);
-=======
 	refcount_set(&key->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_DBG_OBJCNT_INC(keys);
 
 	return key;
@@ -146,21 +86,14 @@ struct sctp_shared_key *sctp_auth_shkey_create(__u16 key_id, gfp_t gfp)
 		return NULL;
 
 	INIT_LIST_HEAD(&new->key_list);
-<<<<<<< HEAD
-=======
 	refcount_set(&new->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->key_id = key_id;
 
 	return new;
 }
 
 /* Free the shared key structure */
-<<<<<<< HEAD
-static void sctp_auth_shkey_free(struct sctp_shared_key *sh_key)
-=======
 static void sctp_auth_shkey_destroy(struct sctp_shared_key *sh_key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG_ON(!list_empty(&sh_key->key_list));
 	sctp_auth_key_put(sh_key->key);
@@ -168,8 +101,6 @@ static void sctp_auth_shkey_destroy(struct sctp_shared_key *sh_key)
 	kfree(sh_key);
 }
 
-<<<<<<< HEAD
-=======
 void sctp_auth_shkey_release(struct sctp_shared_key *sh_key)
 {
 	if (refcount_dec_and_test(&sh_key->refcnt))
@@ -181,7 +112,6 @@ void sctp_auth_shkey_hold(struct sctp_shared_key *sh_key)
 	refcount_inc(&sh_key->refcnt);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Destroy the entire key list.  This is done during the
  * associon and endpoint free process.
  */
@@ -195,11 +125,7 @@ void sctp_auth_destroy_keys(struct list_head *keys)
 
 	key_for_each_safe(ep_key, tmp, keys) {
 		list_del_init(&ep_key->key_list);
-<<<<<<< HEAD
-		sctp_auth_shkey_free(ep_key);
-=======
 		sctp_auth_shkey_release(ep_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -234,11 +160,7 @@ static int sctp_auth_compare_vectors(struct sctp_auth_bytes *vector1,
 		 * lead-zero padded.  If it is not, it
 		 * is automatically larger numerically.
 		 */
-<<<<<<< HEAD
-		for (i = 0; i < abs(diff); i++ ) {
-=======
 		for (i = 0; i < abs(diff); i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (longer[i] != 0)
 				return diff;
 		}
@@ -260,43 +182,14 @@ static int sctp_auth_compare_vectors(struct sctp_auth_bytes *vector1,
  *    are called the two key vectors.
  */
 static struct sctp_auth_bytes *sctp_auth_make_key_vector(
-<<<<<<< HEAD
-			sctp_random_param_t *random,
-			sctp_chunks_param_t *chunks,
-			sctp_hmac_algo_param_t *hmacs,
-=======
 			struct sctp_random_param *random,
 			struct sctp_chunks_param *chunks,
 			struct sctp_hmac_algo_param *hmacs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gfp_t gfp)
 {
 	struct sctp_auth_bytes *new;
 	__u32	len;
 	__u32	offset = 0;
-<<<<<<< HEAD
-
-	len = ntohs(random->param_hdr.length) + ntohs(hmacs->param_hdr.length);
-        if (chunks)
-		len += ntohs(chunks->param_hdr.length);
-
-	new = kmalloc(sizeof(struct sctp_auth_bytes) + len, gfp);
-	if (!new)
-		return NULL;
-
-	new->len = len;
-
-	memcpy(new->data, random, ntohs(random->param_hdr.length));
-	offset += ntohs(random->param_hdr.length);
-
-	if (chunks) {
-		memcpy(new->data + offset, chunks,
-			ntohs(chunks->param_hdr.length));
-		offset += ntohs(chunks->param_hdr.length);
-	}
-
-	memcpy(new->data + offset, hmacs, ntohs(hmacs->param_hdr.length));
-=======
 	__u16	random_len, hmacs_len, chunks_len = 0;
 
 	random_len = ntohs(random->param_hdr.length);
@@ -319,7 +212,6 @@ static struct sctp_auth_bytes *sctp_auth_make_key_vector(
 	}
 
 	memcpy(new->data + offset, hmacs, hmacs_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return new;
 }
@@ -331,16 +223,9 @@ static struct sctp_auth_bytes *sctp_auth_make_local_vector(
 				    gfp_t gfp)
 {
 	return sctp_auth_make_key_vector(
-<<<<<<< HEAD
-				    (sctp_random_param_t*)asoc->c.auth_random,
-				    (sctp_chunks_param_t*)asoc->c.auth_chunks,
-				    (sctp_hmac_algo_param_t*)asoc->c.auth_hmacs,
-				    gfp);
-=======
 			(struct sctp_random_param *)asoc->c.auth_random,
 			(struct sctp_chunks_param *)asoc->c.auth_chunks,
 			(struct sctp_hmac_algo_param *)asoc->c.auth_hmacs, gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Make a key vector based on peer's parameters */
@@ -455,13 +340,8 @@ static struct sctp_auth_bytes *sctp_auth_asoc_create_secret(
 	secret = sctp_auth_asoc_set_secret(ep_key, first_vector, last_vector,
 					    gfp);
 out:
-<<<<<<< HEAD
-	kfree(local_key_vector);
-	kfree(peer_key_vector);
-=======
 	sctp_auth_key_put(local_key_vector);
 	sctp_auth_key_put(peer_key_vector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return secret;
 }
@@ -497,30 +377,19 @@ nomem:
 }
 
 
-<<<<<<< HEAD
-/* Public interface to creat the association shared key.
-=======
 /* Public interface to create the association shared key.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * See code above for the algorithm.
  */
 int sctp_auth_asoc_init_active_key(struct sctp_association *asoc, gfp_t gfp)
 {
 	struct sctp_auth_bytes	*secret;
 	struct sctp_shared_key *ep_key;
-<<<<<<< HEAD
-=======
 	struct sctp_chunk *chunk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we don't support AUTH, or peer is not capable
 	 * we don't need to do anything.
 	 */
-<<<<<<< HEAD
-	if (!sctp_auth_enable || !asoc->peer.auth_capable)
-=======
 	if (!asoc->peer.auth_capable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* If the key_id is non-zero and we couldn't find an
@@ -537,8 +406,6 @@ int sctp_auth_asoc_init_active_key(struct sctp_association *asoc, gfp_t gfp)
 
 	sctp_auth_key_put(asoc->asoc_shared_key);
 	asoc->asoc_shared_key = secret;
-<<<<<<< HEAD
-=======
 	asoc->shkey = ep_key;
 
 	/* Update send queue in case any chunk already in there now
@@ -553,7 +420,6 @@ int sctp_auth_asoc_init_active_key(struct sctp_association *asoc, gfp_t gfp)
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -568,27 +434,18 @@ struct sctp_shared_key *sctp_auth_get_shkey(
 
 	/* First search associations set of endpoint pair shared keys */
 	key_for_each(key, &asoc->endpoint_shared_keys) {
-<<<<<<< HEAD
-		if (key->key_id == key_id)
-			return key;
-=======
 		if (key->key_id == key_id) {
 			if (!key->deactivated)
 				return key;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NULL;
 }
 
 /*
-<<<<<<< HEAD
- * Initialize all the possible digest transforms that we can use.  Right now
-=======
  * Initialize all the possible digest transforms that we can use.  Right
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * now, the supported digests are SHA1 and SHA256.  We do this here once
  * because of the restrictiong that transforms may only be allocated in
  * user context.  This forces us to pre-allocated all possible transforms
@@ -596,35 +453,17 @@ struct sctp_shared_key *sctp_auth_get_shkey(
  */
 int sctp_auth_init_hmacs(struct sctp_endpoint *ep, gfp_t gfp)
 {
-<<<<<<< HEAD
-	struct crypto_hash *tfm = NULL;
-	__u16   id;
-
-	/* if the transforms are already allocted, we are done */
-	if (!sctp_auth_enable) {
-		ep->auth_hmacs = NULL;
-		return 0;
-	}
-
-=======
 	struct crypto_shash *tfm = NULL;
 	__u16   id;
 
 	/* If the transforms are already allocated, we are done */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ep->auth_hmacs)
 		return 0;
 
 	/* Allocated the array of pointers to transorms */
-<<<<<<< HEAD
-	ep->auth_hmacs = kzalloc(
-			    sizeof(struct crypto_hash *) * SCTP_AUTH_NUM_HMACS,
-			    gfp);
-=======
 	ep->auth_hmacs = kcalloc(SCTP_AUTH_NUM_HMACS,
 				 sizeof(struct crypto_shash *),
 				 gfp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ep->auth_hmacs)
 		return -ENOMEM;
 
@@ -643,12 +482,7 @@ int sctp_auth_init_hmacs(struct sctp_endpoint *ep, gfp_t gfp)
 			continue;
 
 		/* Allocate the ID */
-<<<<<<< HEAD
-		tfm = crypto_alloc_hash(sctp_hmac_list[id].hmac_name, 0,
-					CRYPTO_ALG_ASYNC);
-=======
 		tfm = crypto_alloc_shash(sctp_hmac_list[id].hmac_name, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(tfm))
 			goto out_err;
 
@@ -660,34 +494,20 @@ int sctp_auth_init_hmacs(struct sctp_endpoint *ep, gfp_t gfp)
 out_err:
 	/* Clean up any successful allocations */
 	sctp_auth_destroy_hmacs(ep->auth_hmacs);
-<<<<<<< HEAD
-=======
 	ep->auth_hmacs = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 /* Destroy the hmac tfm array */
-<<<<<<< HEAD
-void sctp_auth_destroy_hmacs(struct crypto_hash *auth_hmacs[])
-=======
 void sctp_auth_destroy_hmacs(struct crypto_shash *auth_hmacs[])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	if (!auth_hmacs)
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < SCTP_AUTH_NUM_HMACS; i++)
-	{
-		if (auth_hmacs[i])
-			crypto_free_hash(auth_hmacs[i]);
-=======
 	for (i = 0; i < SCTP_AUTH_NUM_HMACS; i++) {
 		crypto_free_shash(auth_hmacs[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(auth_hmacs);
 }
@@ -719,24 +539,6 @@ struct sctp_hmac *sctp_auth_asoc_get_hmac(const struct sctp_association *asoc)
 	if (!hmacs)
 		return NULL;
 
-<<<<<<< HEAD
-	n_elt = (ntohs(hmacs->param_hdr.length) - sizeof(sctp_paramhdr_t)) >> 1;
-	for (i = 0; i < n_elt; i++) {
-		id = ntohs(hmacs->hmac_ids[i]);
-
-		/* Check the id is in the supported range */
-		if (id > SCTP_AUTH_HMAC_ID_MAX) {
-			id = 0;
-			continue;
-		}
-
-		/* See is we support the id.  Supported IDs have name and
-		 * length fields set, so that we can allocated and use
-		 * them.  We can safely just check for name, for without the
-		 * name, we can't allocate the TFM.
-		 */
-		if (!sctp_hmac_list[id].hmac_name) {
-=======
 	n_elt = (ntohs(hmacs->param_hdr.length) -
 		 sizeof(struct sctp_paramhdr)) >> 1;
 	for (i = 0; i < n_elt; i++) {
@@ -750,7 +552,6 @@ struct sctp_hmac *sctp_auth_asoc_get_hmac(const struct sctp_association *asoc)
 		 */
 		if (id > SCTP_AUTH_HMAC_ID_MAX ||
 		    !sctp_hmac_list[id].hmac_name) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			id = 0;
 			continue;
 		}
@@ -790,12 +591,8 @@ int sctp_auth_asoc_verify_hmac_id(const struct sctp_association *asoc,
 		return 0;
 
 	hmacs = (struct sctp_hmac_algo_param *)asoc->c.auth_hmacs;
-<<<<<<< HEAD
-	n_elt = (ntohs(hmacs->param_hdr.length) - sizeof(sctp_paramhdr_t)) >> 1;
-=======
 	n_elt = (ntohs(hmacs->param_hdr.length) -
 		 sizeof(struct sctp_paramhdr)) >> 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return __sctp_auth_find_hmacid(hmacs->hmac_ids, n_elt, hmac_id);
 }
@@ -818,13 +615,8 @@ void sctp_auth_asoc_set_default_hmac(struct sctp_association *asoc,
 	if (asoc->default_hmac_id)
 		return;
 
-<<<<<<< HEAD
-	n_params = (ntohs(hmacs->param_hdr.length)
-				- sizeof(sctp_paramhdr_t)) >> 1;
-=======
 	n_params = (ntohs(hmacs->param_hdr.length) -
 		    sizeof(struct sctp_paramhdr)) >> 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep = asoc->ep;
 	for (i = 0; i < n_params; i++) {
 		id = ntohs(hmacs->hmac_ids[i]);
@@ -843,11 +635,7 @@ void sctp_auth_asoc_set_default_hmac(struct sctp_association *asoc,
 
 
 /* Check to see if the given chunk is supposed to be authenticated */
-<<<<<<< HEAD
-static int __sctp_auth_cid(sctp_cid_t chunk, struct sctp_chunks_param *param)
-=======
 static int __sctp_auth_cid(enum sctp_cid chunk, struct sctp_chunks_param *param)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned short len;
 	int found = 0;
@@ -856,11 +644,7 @@ static int __sctp_auth_cid(enum sctp_cid chunk, struct sctp_chunks_param *param)
 	if (!param || param->param_hdr.length == 0)
 		return 0;
 
-<<<<<<< HEAD
-	len = ntohs(param->param_hdr.length) - sizeof(sctp_paramhdr_t);
-=======
 	len = ntohs(param->param_hdr.length) - sizeof(struct sctp_paramhdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SCTP-AUTH, Section 3.2
 	 *    The chunk types for INIT, INIT-ACK, SHUTDOWN-COMPLETE and AUTH
@@ -870,17 +654,6 @@ static int __sctp_auth_cid(enum sctp_cid chunk, struct sctp_chunks_param *param)
 	 */
 	for (i = 0; !found && i < len; i++) {
 		switch (param->chunks[i]) {
-<<<<<<< HEAD
-		    case SCTP_CID_INIT:
-		    case SCTP_CID_INIT_ACK:
-		    case SCTP_CID_SHUTDOWN_COMPLETE:
-		    case SCTP_CID_AUTH:
-			break;
-
-		    default:
-			if (param->chunks[i] == chunk)
-			    found = 1;
-=======
 		case SCTP_CID_INIT:
 		case SCTP_CID_INIT_ACK:
 		case SCTP_CID_SHUTDOWN_COMPLETE:
@@ -890,7 +663,6 @@ static int __sctp_auth_cid(enum sctp_cid chunk, struct sctp_chunks_param *param)
 		default:
 			if (param->chunks[i] == chunk)
 				found = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -899,36 +671,24 @@ static int __sctp_auth_cid(enum sctp_cid chunk, struct sctp_chunks_param *param)
 }
 
 /* Check if peer requested that this chunk is authenticated */
-<<<<<<< HEAD
-int sctp_auth_send_cid(sctp_cid_t chunk, const struct sctp_association *asoc)
-{
-	if (!sctp_auth_enable || !asoc || !asoc->peer.auth_capable)
-=======
 int sctp_auth_send_cid(enum sctp_cid chunk, const struct sctp_association *asoc)
 {
 	if (!asoc)
 		return 0;
 
 	if (!asoc->peer.auth_capable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return __sctp_auth_cid(chunk, asoc->peer.peer_chunks);
 }
 
 /* Check if we requested that peer authenticate this chunk. */
-<<<<<<< HEAD
-int sctp_auth_recv_cid(sctp_cid_t chunk, const struct sctp_association *asoc)
-{
-	if (!sctp_auth_enable || !asoc)
-=======
 int sctp_auth_recv_cid(enum sctp_cid chunk, const struct sctp_association *asoc)
 {
 	if (!asoc)
 		return 0;
 
 	if (!asoc->peer.auth_capable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return __sctp_auth_cid(chunk,
@@ -945,19 +705,6 @@ int sctp_auth_recv_cid(enum sctp_cid chunk, const struct sctp_association *asoc)
  *    after the AUTH chunk in the SCTP packet.
  */
 void sctp_auth_calculate_hmac(const struct sctp_association *asoc,
-<<<<<<< HEAD
-			      struct sk_buff *skb,
-			      struct sctp_auth_chunk *auth,
-			      gfp_t gfp)
-{
-	struct scatterlist sg;
-	struct hash_desc desc;
-	struct sctp_auth_bytes *asoc_key;
-	__u16 key_id, hmac_id;
-	__u8 *digest;
-	unsigned char *end;
-	int free_key = 0;
-=======
 			      struct sk_buff *skb, struct sctp_auth_chunk *auth,
 			      struct sctp_shared_key *ep_key, gfp_t gfp)
 {
@@ -967,7 +714,6 @@ void sctp_auth_calculate_hmac(const struct sctp_association *asoc,
 	unsigned char *end;
 	int free_key = 0;
 	__u8 *digest;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Extract the info we need:
 	 * - hmac id
@@ -979,16 +725,7 @@ void sctp_auth_calculate_hmac(const struct sctp_association *asoc,
 	if (key_id == asoc->active_key_id)
 		asoc_key = asoc->asoc_shared_key;
 	else {
-<<<<<<< HEAD
-		struct sctp_shared_key *ep_key;
-
-		ep_key = sctp_auth_get_shkey(asoc, key_id);
-		if (!ep_key)
-			return;
-
-=======
 		/* ep_key can't be NULL here */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asoc_key = sctp_auth_asoc_create_secret(asoc, ep_key, gfp);
 		if (!asoc_key)
 			return;
@@ -998,18 +735,6 @@ void sctp_auth_calculate_hmac(const struct sctp_association *asoc,
 
 	/* set up scatter list */
 	end = skb_tail_pointer(skb);
-<<<<<<< HEAD
-	sg_init_one(&sg, auth, end - (unsigned char *)auth);
-
-	desc.tfm = asoc->ep->auth_hmacs[hmac_id];
-	desc.flags = 0;
-
-	digest = auth->auth_hdr.hmac;
-	if (crypto_hash_setkey(desc.tfm, &asoc_key->data[0], asoc_key->len))
-		goto free;
-
-	crypto_hash_digest(&desc, &sg, sg.length, digest);
-=======
 
 	tfm = asoc->ep->auth_hmacs[hmac_id];
 
@@ -1019,7 +744,6 @@ void sctp_auth_calculate_hmac(const struct sctp_association *asoc,
 
 	crypto_shash_tfm_digest(tfm, (u8 *)auth, end - (unsigned char *)auth,
 				digest);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 free:
 	if (free_key)
@@ -1041,11 +765,7 @@ int sctp_auth_ep_add_chunkid(struct sctp_endpoint *ep, __u8 chunk_id)
 
 	/* Check if we can add this chunk to the array */
 	param_len = ntohs(p->param_hdr.length);
-<<<<<<< HEAD
-	nchunks = param_len - sizeof(sctp_paramhdr_t);
-=======
 	nchunks = param_len - sizeof(struct sctp_paramhdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nchunks == SCTP_NUM_CHUNK_TYPES)
 		return -EINVAL;
 
@@ -1082,37 +802,23 @@ int sctp_auth_ep_set_hmacs(struct sctp_endpoint *ep,
 		return -EINVAL;
 
 	for (i = 0; i < hmacs->shmac_num_idents; i++)
-<<<<<<< HEAD
-		ep->auth_hmacs_list->hmac_ids[i] = htons(hmacs->shmac_idents[i]);
-	ep->auth_hmacs_list->param_hdr.length = htons(sizeof(sctp_paramhdr_t) +
-				hmacs->shmac_num_idents * sizeof(__u16));
-=======
 		ep->auth_hmacs_list->hmac_ids[i] =
 				htons(hmacs->shmac_idents[i]);
 	ep->auth_hmacs_list->param_hdr.length =
 			htons(sizeof(struct sctp_paramhdr) +
 			hmacs->shmac_num_idents * sizeof(__u16));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* Set a new shared key on either endpoint or association.  If the
-<<<<<<< HEAD
- * the key with a same ID already exists, replace the key (remove the
-=======
  * key with a same ID already exists, replace the key (remove the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * old key and add a new one).
  */
 int sctp_auth_set_key(struct sctp_endpoint *ep,
 		      struct sctp_association *asoc,
 		      struct sctp_authkey *auth_key)
 {
-<<<<<<< HEAD
-	struct sctp_shared_key *cur_key = NULL;
-=======
 	struct sctp_shared_key *cur_key, *shkey;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_auth_bytes *key;
 	struct list_head *sh_keys;
 	int replace = 0;
@@ -1120,15 +826,6 @@ int sctp_auth_set_key(struct sctp_endpoint *ep,
 	/* Try to find the given key id to see if
 	 * we are doing a replace, or adding a new key
 	 */
-<<<<<<< HEAD
-	if (asoc)
-		sh_keys = &asoc->endpoint_shared_keys;
-	else
-		sh_keys = &ep->endpoint_shared_keys;
-
-	key_for_each(cur_key, sh_keys) {
-		if (cur_key->key_id == auth_key->sca_keynumber) {
-=======
 	if (asoc) {
 		if (!asoc->peer.auth_capable)
 			return -EACCES;
@@ -1141,49 +838,11 @@ int sctp_auth_set_key(struct sctp_endpoint *ep,
 
 	key_for_each(shkey, sh_keys) {
 		if (shkey->key_id == auth_key->sca_keynumber) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			replace = 1;
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	/* If we are not replacing a key id, we need to allocate
-	 * a shared key.
-	 */
-	if (!replace) {
-		cur_key = sctp_auth_shkey_create(auth_key->sca_keynumber,
-						 GFP_KERNEL);
-		if (!cur_key)
-			return -ENOMEM;
-	}
-
-	/* Create a new key data based on the info passed in */
-	key = sctp_auth_create_key(auth_key->sca_keylength, GFP_KERNEL);
-	if (!key)
-		goto nomem;
-
-	memcpy(key->data, &auth_key->sca_key[0], auth_key->sca_keylength);
-
-	/* If we are replacing, remove the old keys data from the
-	 * key id.  If we are adding new key id, add it to the
-	 * list.
-	 */
-	if (replace)
-		sctp_auth_key_put(cur_key->key);
-	else
-		list_add(&cur_key->key_list, sh_keys);
-
-	cur_key->key = key;
-	sctp_auth_key_hold(key);
-
-	return 0;
-nomem:
-	if (!replace)
-		sctp_auth_shkey_free(cur_key);
-
-	return -ENOMEM;
-=======
 	cur_key = sctp_auth_shkey_create(auth_key->sca_keynumber, GFP_KERNEL);
 	if (!cur_key)
 		return -ENOMEM;
@@ -1216,7 +875,6 @@ nomem:
 
 	sctp_auth_shkey_release(shkey);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sctp_auth_set_active_key(struct sctp_endpoint *ep,
@@ -1228,12 +886,6 @@ int sctp_auth_set_active_key(struct sctp_endpoint *ep,
 	int found = 0;
 
 	/* The key identifier MUST correst to an existing key */
-<<<<<<< HEAD
-	if (asoc)
-		sh_keys = &asoc->endpoint_shared_keys;
-	else
-		sh_keys = &ep->endpoint_shared_keys;
-=======
 	if (asoc) {
 		if (!asoc->peer.auth_capable)
 			return -EACCES;
@@ -1243,7 +895,6 @@ int sctp_auth_set_active_key(struct sctp_endpoint *ep,
 			return -EACCES;
 		sh_keys = &ep->endpoint_shared_keys;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	key_for_each(key, sh_keys) {
 		if (key->key_id == key_id) {
@@ -1252,14 +903,6 @@ int sctp_auth_set_active_key(struct sctp_endpoint *ep,
 		}
 	}
 
-<<<<<<< HEAD
-	if (!found)
-		return -EINVAL;
-
-	if (asoc) {
-		asoc->active_key_id = key_id;
-		sctp_auth_asoc_init_active_key(asoc, GFP_KERNEL);
-=======
 	if (!found || key->deactivated)
 		return -EINVAL;
 
@@ -1271,7 +914,6 @@ int sctp_auth_set_active_key(struct sctp_endpoint *ep,
 			asoc->active_key_id = active_key_id;
 			return -ENOMEM;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ep->active_key_id = key_id;
 
@@ -1290,21 +932,15 @@ int sctp_auth_del_key_id(struct sctp_endpoint *ep,
 	 * The key identifier MUST correst to an existing key
 	 */
 	if (asoc) {
-<<<<<<< HEAD
-=======
 		if (!asoc->peer.auth_capable)
 			return -EACCES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (asoc->active_key_id == key_id)
 			return -EINVAL;
 
 		sh_keys = &asoc->endpoint_shared_keys;
 	} else {
-<<<<<<< HEAD
-=======
 		if (!ep->auth_enable)
 			return -EACCES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ep->active_key_id == key_id)
 			return -EINVAL;
 
@@ -1323,12 +959,6 @@ int sctp_auth_del_key_id(struct sctp_endpoint *ep,
 
 	/* Delete the shared key */
 	list_del_init(&key->key_list);
-<<<<<<< HEAD
-	sctp_auth_shkey_free(key);
-
-	return 0;
-}
-=======
 	sctp_auth_shkey_release(key);
 
 	return 0;
@@ -1457,4 +1087,3 @@ void sctp_auth_free(struct sctp_endpoint *ep)
 	sctp_auth_destroy_hmacs(ep->auth_hmacs);
 	ep->auth_hmacs = NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

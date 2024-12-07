@@ -4,18 +4,10 @@
  * for more details.
  *
  * Copyright (C) 2005 Thiemo Seufer
-<<<<<<< HEAD
- * Copyright (C) 2005  MIPS Technologies, Inc.  All rights reserved.
- *	Author: Maciej W. Rozycki <macro@mips.com>
- */
-
-#include <linux/init.h>
-=======
  * Copyright (C) 2005  MIPS Technologies, Inc.	All rights reserved.
  *	Author: Maciej W. Rozycki <macro@mips.com>
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/addrspace.h>
 #include <asm/bug.h>
@@ -43,14 +35,6 @@
  * values, so we can avoid sharing the same stack area between a cached
  * and the uncached mode.
  */
-<<<<<<< HEAD
-unsigned long __cpuinit run_uncached(void *func)
-{
-	register long sp __asm__("$sp");
-	register long ret __asm__("$2");
-	long lfunc = (long)func, ufunc;
-	long usp;
-=======
 unsigned long run_uncached(void *func)
 {
 	register long ret __asm__("$2");
@@ -59,7 +43,6 @@ unsigned long run_uncached(void *func)
 	long sp;
 
 	__asm__("move %0, $sp" : "=r" (sp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sp >= (long)CKSEG0 && sp < (long)CKSEG2)
 		usp = CKSEG1ADDR(sp);

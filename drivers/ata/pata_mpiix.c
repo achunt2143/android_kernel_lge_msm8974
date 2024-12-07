@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_mpiix.c 	- Intel MPIIX PATA for new ATA layer
  *			  (C) 2005-2006 Red Hat Inc
@@ -32,10 +29,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -143,11 +136,7 @@ static unsigned int mpiix_qc_issue(struct ata_queued_cmd *qc)
 	return ata_sff_qc_issue(qc);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template mpiix_sht = {
-=======
 static const struct scsi_host_template mpiix_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_PIO_SHT(DRV_NAME),
 };
 
@@ -235,38 +224,16 @@ static struct pci_driver mpiix_pci_driver = {
 	.id_table	= mpiix,
 	.probe 		= mpiix_init_one,
 	.remove		= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init mpiix_init(void)
-{
-	return pci_register_driver(&mpiix_pci_driver);
-}
-
-static void __exit mpiix_exit(void)
-{
-	pci_unregister_driver(&mpiix_pci_driver);
-}
-=======
 module_pci_driver(mpiix_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Intel MPIIX");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, mpiix);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(mpiix_init);
-module_exit(mpiix_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

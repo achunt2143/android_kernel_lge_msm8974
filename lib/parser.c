@@ -1,31 +1,16 @@
-<<<<<<< HEAD
-/*
- * lib/parser.c - simple parser for mount, etc. options.
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2.  See the file COPYING for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * lib/parser.c - simple parser for mount, etc. options.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/ctype.h>
 #include <linux/types.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/kstrtox.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/parser.h>
 #include <linux/slab.h>
 #include <linux/string.h>
 
-<<<<<<< HEAD
-/**
- * match_one: - Determines if a string matches a simple pattern
-=======
 /*
  * max size needed by different bases to express U64
  * HEX: "0xFFFFFFFFFFFFFFFF" --> 18
@@ -37,7 +22,6 @@
 
 /**
  * match_one - Determines if a string matches a simple pattern
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @s: the string to examine for presence of the pattern
  * @p: the string containing the pattern
  * @args: array of %MAX_OPT_ARGS &substring_t elements. Used to return match
@@ -115,11 +99,7 @@ static int match_one(char *s, const char *p, substring_t args[])
 }
 
 /**
-<<<<<<< HEAD
- * match_token: - Find a token (and optional args) in a string
-=======
  * match_token - Find a token (and optional args) in a string
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @s: the string to examine for token/argument pairs
  * @table: match_table_t describing the set of allowed option tokens and the
  * arguments that may be associated with them. Must be terminated with a
@@ -128,11 +108,7 @@ static int match_one(char *s, const char *p, substring_t args[])
  * locations.
  *
  * Description: Detects which if any of a set of token strings has been passed
-<<<<<<< HEAD
- * to it. Tokens can include up to MAX_OPT_ARGS instances of basic c-style
-=======
  * to it. Tokens can include up to %MAX_OPT_ARGS instances of basic c-style
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * format identifiers which will be taken into account when matching the
  * tokens, and whose locations will be returned in the @args array.
  */
@@ -145,50 +121,23 @@ int match_token(char *s, const match_table_t table, substring_t args[])
 
 	return p->token;
 }
-<<<<<<< HEAD
-
-/**
- * match_number: scan a number in the given base from a substring_t
-=======
 EXPORT_SYMBOL(match_token);
 
 /**
  * match_number - scan a number in the given base from a substring_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @s: substring to be scanned
  * @result: resulting integer on success
  * @base: base to use when converting string
  *
  * Description: Given a &substring_t and a base, attempts to parse the substring
-<<<<<<< HEAD
- * as a number in that base. On success, sets @result to the integer represented
- * by the string and returns 0. Returns either -ENOMEM or -EINVAL on failure.
-=======
  * as a number in that base.
  *
  * Return: On success, sets @result to the integer represented by the
  * string and returns 0. Returns -EINVAL or -ERANGE on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int match_number(substring_t *s, int *result, int base)
 {
 	char *endp;
-<<<<<<< HEAD
-	char *buf;
-	int ret;
-	size_t len = s->to - s->from;
-
-	buf = kmalloc(len + 1, GFP_KERNEL);
-	if (!buf)
-		return -ENOMEM;
-	memcpy(buf, s->from, len);
-	buf[len] = '\0';
-	*result = simple_strtol(buf, &endp, base);
-	ret = 0;
-	if (endp == buf)
-		ret = -EINVAL;
-	kfree(buf);
-=======
 	char buf[NUMBER_BUF_LEN];
 	int ret;
 	long val;
@@ -203,20 +152,10 @@ static int match_number(substring_t *s, int *result, int base)
 		ret = -ERANGE;
 	else
 		*result = (int) val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
- * match_int: - scan a decimal representation of an integer from a substring_t
- * @s: substring_t to be scanned
- * @result: resulting integer on success
- *
- * Description: Attempts to parse the &substring_t @s as a decimal integer. On
- * success, sets @result to the integer represented by the string and returns 0.
- * Returns either -ENOMEM or -EINVAL on failure.
-=======
  * match_u64int - scan a number in the given base from a substring_t
  * @s: substring to be scanned
  * @result: resulting u64 on success
@@ -251,23 +190,11 @@ static int match_u64int(substring_t *s, u64 *result, int base)
  *
  * Return: On success, sets @result to the integer represented by the string
  * and returns 0. Returns -EINVAL or -ERANGE on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int match_int(substring_t *s, int *result)
 {
 	return match_number(s, result, 0);
 }
-<<<<<<< HEAD
-
-/**
- * match_octal: - scan an octal representation of an integer from a substring_t
- * @s: substring_t to be scanned
- * @result: resulting integer on success
- *
- * Description: Attempts to parse the &substring_t @s as an octal integer. On
- * success, sets @result to the integer represented by the string and returns
- * 0. Returns either -ENOMEM or -EINVAL on failure.
-=======
 EXPORT_SYMBOL(match_int);
 
 /**
@@ -318,44 +245,27 @@ EXPORT_SYMBOL(match_u64);
  *
  * Return: On success, sets @result to the integer represented by the string
  * and returns 0. Returns -EINVAL or -ERANGE on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int match_octal(substring_t *s, int *result)
 {
 	return match_number(s, result, 8);
 }
-<<<<<<< HEAD
-
-/**
- * match_hex: - scan a hex representation of an integer from a substring_t
-=======
 EXPORT_SYMBOL(match_octal);
 
 /**
  * match_hex - scan a hex representation of an integer from a substring_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @s: substring_t to be scanned
  * @result: resulting integer on success
  *
  * Description: Attempts to parse the &substring_t @s as a hexadecimal integer.
-<<<<<<< HEAD
- * On success, sets @result to the integer represented by the string and
- * returns 0. Returns either -ENOMEM or -EINVAL on failure.
-=======
  *
  * Return: On success, sets @result to the integer represented by the string
  * and returns 0. Returns -EINVAL or -ERANGE on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int match_hex(substring_t *s, int *result)
 {
 	return match_number(s, result, 16);
 }
-<<<<<<< HEAD
-
-/**
- * match_strlcpy: - Copy the characters from a substring_t to a sized buffer
-=======
 EXPORT_SYMBOL(match_hex);
 
 /**
@@ -412,20 +322,15 @@ EXPORT_SYMBOL(match_wildcard);
 
 /**
  * match_strlcpy - Copy the characters from a substring_t to a sized buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dest: where to copy to
  * @src: &substring_t to copy
  * @size: size of destination buffer
  *
  * Description: Copy the characters in &substring_t @src to the
  * c-style string @dest.  Copy no more than @size - 1 characters, plus
-<<<<<<< HEAD
- * the terminating NUL.  Return length of @src.
-=======
  * the terminating NUL.
  *
  * Return: length of @src.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 size_t match_strlcpy(char *dest, const substring_t *src, size_t size)
 {
@@ -438,38 +343,15 @@ size_t match_strlcpy(char *dest, const substring_t *src, size_t size)
 	}
 	return ret;
 }
-<<<<<<< HEAD
-
-/**
- * match_strdup: - allocate a new string with the contents of a substring_t
-=======
 EXPORT_SYMBOL(match_strlcpy);
 
 /**
  * match_strdup - allocate a new string with the contents of a substring_t
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @s: &substring_t to copy
  *
  * Description: Allocates and returns a string filled with the contents of
  * the &substring_t @s. The caller is responsible for freeing the returned
  * string with kfree().
-<<<<<<< HEAD
- */
-char *match_strdup(const substring_t *s)
-{
-	size_t sz = s->to - s->from + 1;
-	char *p = kmalloc(sz, GFP_KERNEL);
-	if (p)
-		match_strlcpy(p, s, sz);
-	return p;
-}
-
-EXPORT_SYMBOL(match_token);
-EXPORT_SYMBOL(match_int);
-EXPORT_SYMBOL(match_octal);
-EXPORT_SYMBOL(match_hex);
-EXPORT_SYMBOL(match_strlcpy);
-=======
  *
  * Return: the address of the newly allocated NUL-terminated string or
  * %NULL on error.
@@ -478,5 +360,4 @@ char *match_strdup(const substring_t *s)
 {
 	return kmemdup_nul(s->from, s->to - s->from, GFP_KERNEL);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(match_strdup);

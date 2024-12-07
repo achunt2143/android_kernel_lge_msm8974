@@ -1,33 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/power/clock_ops.c - Generic clock manipulation PM callbacks
  *
  * Copyright (c) 2011 Rafael J. Wysocki <rjw@sisk.pl>, Renesas Electronics Corp.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
  */
 
-#include <linux/init.h>
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/device.h>
 #include <linux/io.h>
 #include <linux/pm.h>
 #include <linux/pm_clock.h>
 #include <linux/clk.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/err.h>
-
-#ifdef CONFIG_PM
-=======
 #include <linux/clkdev.h>
 #include <linux/of_clk.h>
 #include <linux/slab.h>
@@ -36,15 +19,11 @@
 #include <linux/pm_runtime.h>
 
 #ifdef CONFIG_PM_CLK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum pce_status {
 	PCE_STATUS_NONE = 0,
 	PCE_STATUS_ACQUIRED,
-<<<<<<< HEAD
-=======
 	PCE_STATUS_PREPARED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCE_STATUS_ENABLED,
 	PCE_STATUS_ERROR,
 };
@@ -54,11 +33,6 @@ struct pm_clock_entry {
 	char *con_id;
 	struct clk *clk;
 	enum pce_status status;
-<<<<<<< HEAD
-};
-
-/**
-=======
 	bool enabled_when_prepared;
 };
 
@@ -192,22 +166,12 @@ static inline void __pm_clk_enable(struct device *dev, struct pm_clock_entry *ce
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pm_clk_acquire - Acquire a device clock.
  * @dev: Device whose clock is to be acquired.
  * @ce: PM clock entry corresponding to the clock.
  */
 static void pm_clk_acquire(struct device *dev, struct pm_clock_entry *ce)
 {
-<<<<<<< HEAD
-	ce->clk = clk_get(dev, ce->con_id);
-	if (IS_ERR(ce->clk)) {
-		ce->status = PCE_STATUS_ERROR;
-	} else {
-		ce->status = PCE_STATUS_ACQUIRED;
-		dev_dbg(dev, "Clock %s managed by runtime PM.\n", ce->con_id);
-	}
-=======
 	if (!ce->clk)
 		ce->clk = clk_get(dev, ce->con_id);
 	if (IS_ERR(ce->clk)) {
@@ -263,7 +227,6 @@ static int __pm_clk_add(struct device *dev, const char *con_id,
 		psd->clock_op_might_sleep++;
 	pm_clk_list_unlock(psd);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -276,37 +239,6 @@ static int __pm_clk_add(struct device *dev, const char *con_id,
  */
 int pm_clk_add(struct device *dev, const char *con_id)
 {
-<<<<<<< HEAD
-	struct pm_subsys_data *psd = dev_to_psd(dev);
-	struct pm_clock_entry *ce;
-
-	if (!psd)
-		return -EINVAL;
-
-	ce = kzalloc(sizeof(*ce), GFP_KERNEL);
-	if (!ce) {
-		dev_err(dev, "Not enough memory for clock entry.\n");
-		return -ENOMEM;
-	}
-
-	if (con_id) {
-		ce->con_id = kstrdup(con_id, GFP_KERNEL);
-		if (!ce->con_id) {
-			dev_err(dev,
-				"Not enough memory for clock connection ID.\n");
-			kfree(ce);
-			return -ENOMEM;
-		}
-	}
-
-	pm_clk_acquire(dev, ce);
-
-	spin_lock_irq(&psd->lock);
-	list_add_tail(&ce->node, &psd->clock_list);
-	spin_unlock_irq(&psd->lock);
-	return 0;
-}
-=======
 	return __pm_clk_add(dev, con_id, NULL);
 }
 EXPORT_SYMBOL_GPL(pm_clk_add);
@@ -414,7 +346,6 @@ error:
 	return ret;
 }
 EXPORT_SYMBOL_GPL(of_pm_clk_add_clks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __pm_clk_remove - Destroy PM clock entry.
@@ -425,14 +356,6 @@ static void __pm_clk_remove(struct pm_clock_entry *ce)
 	if (!ce)
 		return;
 
-<<<<<<< HEAD
-	if (ce->status < PCE_STATUS_ERROR) {
-		if (ce->status == PCE_STATUS_ENABLED)
-			clk_disable(ce->clk);
-
-		if (ce->status >= PCE_STATUS_ACQUIRED)
-			clk_put(ce->clk);
-=======
 	switch (ce->status) {
 	case PCE_STATUS_ENABLED:
 		clk_disable(ce->clk);
@@ -447,7 +370,6 @@ static void __pm_clk_remove(struct pm_clock_entry *ce)
 		break;
 	default:
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(ce->con_id);
@@ -470,11 +392,7 @@ void pm_clk_remove(struct device *dev, const char *con_id)
 	if (!psd)
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irq(&psd->lock);
-=======
 	pm_clk_list_lock(psd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(ce, &psd->clock_list, node) {
 		if (!con_id && !ce->con_id)
@@ -485,21 +403,11 @@ void pm_clk_remove(struct device *dev, const char *con_id)
 			goto remove;
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irq(&psd->lock);
-=======
 	pm_clk_list_unlock(psd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
  remove:
 	list_del(&ce->node);
-<<<<<<< HEAD
-	spin_unlock_irq(&psd->lock);
-
-	__pm_clk_remove(ce);
-}
-=======
 	if (ce->enabled_when_prepared)
 		psd->clock_op_might_sleep--;
 	pm_clk_list_unlock(psd);
@@ -543,27 +451,17 @@ void pm_clk_remove_clk(struct device *dev, struct clk *clk)
 	__pm_clk_remove(ce);
 }
 EXPORT_SYMBOL_GPL(pm_clk_remove_clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_clk_init - Initialize a device's list of power management clocks.
  * @dev: Device to initialize the list of PM clocks for.
  *
  * Initialize the lock and clock_list members of the device's pm_subsys_data
-<<<<<<< HEAD
- * object.
-=======
  * object, set the count of clocks that might sleep to 0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void pm_clk_init(struct device *dev)
 {
 	struct pm_subsys_data *psd = dev_to_psd(dev);
-<<<<<<< HEAD
-	if (psd)
-		INIT_LIST_HEAD(&psd->clock_list);
-}
-=======
 	if (psd) {
 		INIT_LIST_HEAD(&psd->clock_list);
 		mutex_init(&psd->clock_mutex);
@@ -571,7 +469,6 @@ void pm_clk_init(struct device *dev)
 	}
 }
 EXPORT_SYMBOL_GPL(pm_clk_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_clk_create - Create and initialize a device's list of PM clocks.
@@ -582,15 +479,9 @@ EXPORT_SYMBOL_GPL(pm_clk_init);
  */
 int pm_clk_create(struct device *dev)
 {
-<<<<<<< HEAD
-	int ret = dev_pm_get_subsys_data(dev);
-	return ret < 0 ? ret : 0;
-}
-=======
 	return dev_pm_get_subsys_data(dev);
 }
 EXPORT_SYMBOL_GPL(pm_clk_create);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_clk_destroy - Destroy a device's list of power management clocks.
@@ -611,14 +502,6 @@ void pm_clk_destroy(struct device *dev)
 
 	INIT_LIST_HEAD(&list);
 
-<<<<<<< HEAD
-	spin_lock_irq(&psd->lock);
-
-	list_for_each_entry_safe_reverse(ce, c, &psd->clock_list, node)
-		list_move(&ce->node, &list);
-
-	spin_unlock_irq(&psd->lock);
-=======
 	pm_clk_list_lock(psd);
 
 	list_for_each_entry_safe_reverse(ce, c, &psd->clock_list, node)
@@ -626,7 +509,6 @@ void pm_clk_destroy(struct device *dev)
 	psd->clock_op_might_sleep = 0;
 
 	pm_clk_list_unlock(psd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_pm_put_subsys_data(dev);
 
@@ -635,12 +517,6 @@ void pm_clk_destroy(struct device *dev)
 		__pm_clk_remove(ce);
 	}
 }
-<<<<<<< HEAD
-
-#endif /* CONFIG_PM */
-
-#ifdef CONFIG_PM_RUNTIME
-=======
 EXPORT_SYMBOL_GPL(pm_clk_destroy);
 
 static void pm_clk_destroy_action(void *data)
@@ -659,7 +535,6 @@ int devm_pm_clk_create(struct device *dev)
 	return devm_add_action_or_reset(dev, pm_clk_destroy_action, dev);
 }
 EXPORT_SYMBOL_GPL(devm_pm_clk_create);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_clk_suspend - Disable clocks in a device's PM clock list.
@@ -670,32 +545,13 @@ int pm_clk_suspend(struct device *dev)
 	struct pm_subsys_data *psd = dev_to_psd(dev);
 	struct pm_clock_entry *ce;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(dev, "%s()\n", __func__);
 
 	if (!psd)
 		return 0;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&psd->lock, flags);
-
-	list_for_each_entry_reverse(ce, &psd->clock_list, node) {
-		if (ce->status < PCE_STATUS_ERROR) {
-			if (ce->status == PCE_STATUS_ENABLED)
-				clk_disable(ce->clk);
-			ce->status = PCE_STATUS_ACQUIRED;
-		}
-	}
-
-	spin_unlock_irqrestore(&psd->lock, flags);
-
-	return 0;
-}
-=======
 	ret = pm_clk_op_lock(psd, &flags, __func__);
 	if (ret)
 		return ret;
@@ -717,7 +573,6 @@ int pm_clk_suspend(struct device *dev)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pm_clk_suspend);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_clk_resume - Enable clocks in a device's PM clock list.
@@ -728,31 +583,13 @@ int pm_clk_resume(struct device *dev)
 	struct pm_subsys_data *psd = dev_to_psd(dev);
 	struct pm_clock_entry *ce;
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(dev, "%s()\n", __func__);
 
 	if (!psd)
 		return 0;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&psd->lock, flags);
-
-	list_for_each_entry(ce, &psd->clock_list, node) {
-		if (ce->status < PCE_STATUS_ERROR) {
-			clk_enable(ce->clk);
-			ce->status = PCE_STATUS_ENABLED;
-		}
-	}
-
-	spin_unlock_irqrestore(&psd->lock, flags);
-
-	return 0;
-}
-=======
 	ret = pm_clk_op_lock(psd, &flags, __func__);
 	if (ret)
 		return ret;
@@ -765,7 +602,6 @@ int pm_clk_resume(struct device *dev)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pm_clk_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_clk_notify - Notify routine for device addition and removal.
@@ -804,11 +640,7 @@ static int pm_clk_notify(struct notifier_block *nb,
 		if (error)
 			break;
 
-<<<<<<< HEAD
-		dev->pm_domain = clknb->pm_domain;
-=======
 		dev_pm_domain_set(dev, clknb->pm_domain);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (clknb->con_ids[0]) {
 			for (con_id = clknb->con_ids; *con_id; con_id++)
 				pm_clk_add(dev, *con_id);
@@ -821,11 +653,7 @@ static int pm_clk_notify(struct notifier_block *nb,
 		if (dev->pm_domain != clknb->pm_domain)
 			break;
 
-<<<<<<< HEAD
-		dev->pm_domain = NULL;
-=======
 		dev_pm_domain_set(dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pm_clk_destroy(dev);
 		break;
 	}
@@ -833,65 +661,6 @@ static int pm_clk_notify(struct notifier_block *nb,
 	return 0;
 }
 
-<<<<<<< HEAD
-#else /* !CONFIG_PM_RUNTIME */
-
-#ifdef CONFIG_PM
-
-/**
- * pm_clk_suspend - Disable clocks in a device's PM clock list.
- * @dev: Device to disable the clocks for.
- */
-int pm_clk_suspend(struct device *dev)
-{
-	struct pm_subsys_data *psd = dev_to_psd(dev);
-	struct pm_clock_entry *ce;
-	unsigned long flags;
-
-	dev_dbg(dev, "%s()\n", __func__);
-
-	/* If there is no driver, the clocks are already disabled. */
-	if (!psd || !dev->driver)
-		return 0;
-
-	spin_lock_irqsave(&psd->lock, flags);
-
-	list_for_each_entry_reverse(ce, &psd->clock_list, node)
-		clk_disable(ce->clk);
-
-	spin_unlock_irqrestore(&psd->lock, flags);
-
-	return 0;
-}
-
-/**
- * pm_clk_resume - Enable clocks in a device's PM clock list.
- * @dev: Device to enable the clocks for.
- */
-int pm_clk_resume(struct device *dev)
-{
-	struct pm_subsys_data *psd = dev_to_psd(dev);
-	struct pm_clock_entry *ce;
-	unsigned long flags;
-
-	dev_dbg(dev, "%s()\n", __func__);
-
-	/* If there is no driver, the clocks should remain disabled. */
-	if (!psd || !dev->driver)
-		return 0;
-
-	spin_lock_irqsave(&psd->lock, flags);
-
-	list_for_each_entry(ce, &psd->clock_list, node)
-		clk_enable(ce->clk);
-
-	spin_unlock_irqrestore(&psd->lock, flags);
-
-	return 0;
-}
-
-#endif /* CONFIG_PM */
-=======
 int pm_clk_runtime_suspend(struct device *dev)
 {
 	int ret;
@@ -932,7 +701,6 @@ int pm_clk_runtime_resume(struct device *dev)
 EXPORT_SYMBOL_GPL(pm_clk_runtime_resume);
 
 #else /* !CONFIG_PM_CLK */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * enable_clock - Enable a device clock.
@@ -945,11 +713,7 @@ static void enable_clock(struct device *dev, const char *con_id)
 
 	clk = clk_get(dev, con_id);
 	if (!IS_ERR(clk)) {
-<<<<<<< HEAD
-		clk_enable(clk);
-=======
 		clk_prepare_enable(clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clk_put(clk);
 		dev_info(dev, "Runtime PM disabled, clock forced on.\n");
 	}
@@ -966,11 +730,7 @@ static void disable_clock(struct device *dev, const char *con_id)
 
 	clk = clk_get(dev, con_id);
 	if (!IS_ERR(clk)) {
-<<<<<<< HEAD
-		clk_disable(clk);
-=======
 		clk_disable_unprepare(clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clk_put(clk);
 		dev_info(dev, "Runtime PM disabled, clock forced off.\n");
 	}
@@ -1007,10 +767,7 @@ static int pm_clk_notify(struct notifier_block *nb,
 			enable_clock(dev, NULL);
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case BUS_NOTIFY_DRIVER_NOT_BOUND:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BUS_NOTIFY_UNBOUND_DRIVER:
 		if (clknb->con_ids[0]) {
 			for (con_id = clknb->con_ids; *con_id; con_id++)
@@ -1024,11 +781,7 @@ static int pm_clk_notify(struct notifier_block *nb,
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* !CONFIG_PM_RUNTIME */
-=======
 #endif /* !CONFIG_PM_CLK */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_clk_add_notifier - Add bus type notifier for power management clocks.
@@ -1040,11 +793,7 @@ static int pm_clk_notify(struct notifier_block *nb,
  * the remaining members of @clknb should be populated prior to calling this
  * routine.
  */
-<<<<<<< HEAD
-void pm_clk_add_notifier(struct bus_type *bus,
-=======
 void pm_clk_add_notifier(const struct bus_type *bus,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct pm_clk_notifier_block *clknb)
 {
 	if (!bus || !clknb)
@@ -1053,7 +802,4 @@ void pm_clk_add_notifier(const struct bus_type *bus,
 	clknb->nb.notifier_call = pm_clk_notify;
 	bus_register_notifier(bus, &clknb->nb);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(pm_clk_add_notifier);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

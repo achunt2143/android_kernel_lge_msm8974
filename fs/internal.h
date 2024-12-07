@@ -1,36 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* fs/ internal definitions
  *
  * Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-#include <linux/lglock.h>
-
-struct super_block;
-struct file_system_type;
-struct linux_binprm;
-struct path;
-struct mount;
-
-/*
- * block_dev.c
- */
-#ifdef CONFIG_BLOCK
-extern void __init bdev_cache_init(void);
-
-extern int __sync_blockdev(struct block_device *bdev, int wait);
-
-=======
  */
 
 struct super_block;
@@ -51,19 +23,10 @@ struct mnt_idmap;
  */
 #ifdef CONFIG_BLOCK
 extern void __init bdev_cache_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void bdev_cache_init(void)
 {
 }
-<<<<<<< HEAD
-
-static inline int __sync_blockdev(struct block_device *bdev, int wait)
-{
-	return 0;
-}
-#endif
-=======
 #endif /* CONFIG_BLOCK */
 
 /*
@@ -71,7 +34,6 @@ static inline int __sync_blockdev(struct block_device *bdev, int wait)
  */
 int __block_write_begin_int(struct folio *folio, loff_t pos, unsigned len,
 		get_block_t *get_block, const struct iomap *iomap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * char_dev.c
@@ -79,15 +41,6 @@ int __block_write_begin_int(struct folio *folio, loff_t pos, unsigned len,
 extern void __init chrdev_init(void);
 
 /*
-<<<<<<< HEAD
- * namespace.c
- */
-extern int copy_mount_options(const void __user *, unsigned long *);
-extern int copy_mount_string(const void __user *, char **);
-
-extern struct vfsmount *lookup_mnt(struct path *);
-extern int finish_automount(struct vfsmount *, struct path *);
-=======
  * fs_context.c
  */
 extern const struct fs_context_operations legacy_fs_context_ops;
@@ -115,16 +68,11 @@ int do_linkat(int olddfd, struct filename *old, int newdfd,
  */
 extern struct vfsmount *lookup_mnt(const struct path *);
 extern int finish_automount(struct vfsmount *, const struct path *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int sb_prepare_remount_readonly(struct super_block *);
 
 extern void __init mnt_init(void);
 
-<<<<<<< HEAD
-extern struct lglock vfsmount_lock;
-
-=======
 int mnt_get_write_access_file(struct file *file);
 void mnt_put_write_access_file(struct file *file);
 
@@ -136,23 +84,15 @@ int path_mount(const char *dev_name, struct path *path,
 int path_umount(struct path *path, int flags);
 
 int show_path(struct seq_file *m, struct dentry *root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fs_struct.c
  */
-<<<<<<< HEAD
-extern void chroot_fs_refs(struct path *, struct path *);
-=======
 extern void chroot_fs_refs(const struct path *, const struct path *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * file_table.c
  */
-<<<<<<< HEAD
-extern struct file *get_empty_filp(void);
-=======
 struct file *alloc_empty_file(int flags, const struct cred *cred);
 struct file *alloc_empty_file_noaccount(int flags, const struct cred *cred);
 struct file *alloc_empty_backing_file(int flags, const struct cred *cred);
@@ -173,20 +113,10 @@ static inline void put_file_access(struct file *file)
 		file_put_write_access(file);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * super.c
  */
-<<<<<<< HEAD
-extern int do_remount_sb(struct super_block *, int, void *, int);
-extern int do_remount_sb2(struct vfsmount *, struct super_block *, int,
-								void *, int);
-extern bool grab_super_passive(struct super_block *sb);
-extern struct dentry *mount_fs(struct file_system_type *,
-			       int, const char *, struct vfsmount *, void *);
-extern struct super_block *user_get_super(dev_t);
-=======
 extern int reconfigure_super(struct fs_context *);
 extern bool super_trylock_shared(struct super_block *sb);
 struct super_block *user_get_super(dev_t, bool excl);
@@ -234,7 +164,6 @@ static inline void sb_end_ro_state_change(struct super_block *sb)
 	smp_wmb();
 	WRITE_ONCE(sb->s_readonly_remount, 0);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * open.c
@@ -244,17 +173,6 @@ struct open_flags {
 	umode_t mode;
 	int acc_mode;
 	int intent;
-<<<<<<< HEAD
-};
-extern struct file *do_filp_open(int dfd, struct filename *pathname,
-		const struct open_flags *op, int flags);
-extern struct file *do_file_open_root(struct dentry *, struct vfsmount *,
-		const char *, const struct open_flags *, int lookup_flags);
-
-extern long do_handle_open(int mountdirfd,
-			   struct file_handle __user *ufh, int open_flag);
-extern int open_check_o_direct(struct file *f);
-=======
 	int lookup_flags;
 };
 extern struct file *do_filp_open(int dfd, struct filename *pathname,
@@ -272,40 +190,24 @@ int do_fchownat(int dfd, const char __user *filename, uid_t user, gid_t group,
 		int flag);
 int chown_common(const struct path *path, uid_t user, gid_t group);
 extern int vfs_open(const struct path *, struct file *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * inode.c
  */
-<<<<<<< HEAD
-extern spinlock_t inode_sb_list_lock;
-=======
 extern long prune_icache_sb(struct super_block *sb, struct shrink_control *sc);
 int dentry_needs_remove_privs(struct mnt_idmap *, struct dentry *dentry);
 bool in_group_or_capable(struct mnt_idmap *idmap,
 			 const struct inode *inode, vfsgid_t vfsgid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fs-writeback.c
  */
-<<<<<<< HEAD
-extern void inode_wb_list_del(struct inode *inode);
-
-extern int get_nr_dirty_inodes(void);
-extern void evict_inodes(struct super_block *);
-extern int invalidate_inodes(struct super_block *, bool);
-=======
 extern long get_nr_dirty_inodes(void);
 void invalidate_inodes(struct super_block *sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * dcache.c
  */
-<<<<<<< HEAD
-extern struct dentry *__d_alloc(struct super_block *, const struct qstr *);
-=======
 extern int d_set_mounted(struct dentry *dentry);
 extern long prune_dcache_sb(struct super_block *sb, struct shrink_control *sc);
 extern struct dentry *d_alloc_cursor(struct dentry *);
@@ -416,4 +318,3 @@ struct stashed_operations {
 int path_from_stashed(struct dentry **stashed, struct vfsmount *mnt, void *data,
 		      struct path *path);
 void stashed_dentry_prune(struct dentry *dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

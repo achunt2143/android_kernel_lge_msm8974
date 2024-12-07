@@ -1,34 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Cobalt button interface driver.
  *
  *  Copyright (C) 2007-2008  Yoichi Yuasa <yuasa@linux-mips.org>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-#include <linux/init.h>
-#include <linux/input-polldev.h>
-=======
  */
 #include <linux/input.h>
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -50,25 +27,14 @@ static const unsigned short cobalt_map[] = {
 };
 
 struct buttons_dev {
-<<<<<<< HEAD
-	struct input_polled_dev *poll_dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short keymap[ARRAY_SIZE(cobalt_map)];
 	int count[ARRAY_SIZE(cobalt_map)];
 	void __iomem *reg;
 };
 
-<<<<<<< HEAD
-static void handle_buttons(struct input_polled_dev *dev)
-{
-	struct buttons_dev *bdev = dev->private;
-	struct input_dev *input = dev->input;
-=======
 static void handle_buttons(struct input_dev *input)
 {
 	struct buttons_dev *bdev = input_get_drvdata(input);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t status;
 	int i;
 
@@ -92,40 +58,13 @@ static void handle_buttons(struct input_dev *input)
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit cobalt_buttons_probe(struct platform_device *pdev)
-{
-	struct buttons_dev *bdev;
-	struct input_polled_dev *poll_dev;
-=======
 static int cobalt_buttons_probe(struct platform_device *pdev)
 {
 	struct buttons_dev *bdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input;
 	struct resource *res;
 	int error, i;
 
-<<<<<<< HEAD
-	bdev = kzalloc(sizeof(struct buttons_dev), GFP_KERNEL);
-	poll_dev = input_allocate_polled_device();
-	if (!bdev || !poll_dev) {
-		error = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	memcpy(bdev->keymap, cobalt_map, sizeof(bdev->keymap));
-
-	poll_dev->private = bdev;
-	poll_dev->poll = handle_buttons;
-	poll_dev->poll_interval = BUTTONS_POLL_INTERVAL;
-
-	input = poll_dev->input;
-	input->name = "Cobalt buttons";
-	input->phys = "cobalt/input0";
-	input->id.bustype = BUS_HOST;
-	input->dev.parent = &pdev->dev;
-=======
 	bdev = devm_kzalloc(&pdev->dev, sizeof(*bdev), GFP_KERNEL);
 	if (!bdev)
 		return -ENOMEM;
@@ -149,7 +88,6 @@ static int cobalt_buttons_probe(struct platform_device *pdev)
 	input->name = "Cobalt buttons";
 	input->phys = "cobalt/input0";
 	input->id.bustype = BUS_HOST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input->keycode = bdev->keymap;
 	input->keycodemax = ARRAY_SIZE(bdev->keymap);
@@ -161,43 +99,6 @@ static int cobalt_buttons_probe(struct platform_device *pdev)
 		__set_bit(bdev->keymap[i], input->keybit);
 	__clear_bit(KEY_RESERVED, input->keybit);
 
-<<<<<<< HEAD
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		error = -EBUSY;
-		goto err_free_mem;
-	}
-
-	bdev->poll_dev = poll_dev;
-	bdev->reg = ioremap(res->start, resource_size(res));
-	dev_set_drvdata(&pdev->dev, bdev);
-
-	error = input_register_polled_device(poll_dev);
-	if (error)
-		goto err_iounmap;
-
-	return 0;
-
- err_iounmap:
-	iounmap(bdev->reg);
- err_free_mem:
-	input_free_polled_device(poll_dev);
-	kfree(bdev);
-	dev_set_drvdata(&pdev->dev, NULL);
-	return error;
-}
-
-static int __devexit cobalt_buttons_remove(struct platform_device *pdev)
-{
-	struct device *dev = &pdev->dev;
-	struct buttons_dev *bdev = dev_get_drvdata(dev);
-
-	input_unregister_polled_device(bdev->poll_dev);
-	input_free_polled_device(bdev->poll_dev);
-	iounmap(bdev->reg);
-	kfree(bdev);
-	dev_set_drvdata(dev, NULL);
-=======
 
 	error = input_setup_polling(input, handle_buttons);
 	if (error)
@@ -208,7 +109,6 @@ static int __devexit cobalt_buttons_remove(struct platform_device *pdev)
 	error = input_register_device(input);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -221,15 +121,8 @@ MODULE_ALIAS("platform:Cobalt buttons");
 
 static struct platform_driver cobalt_buttons_driver = {
 	.probe	= cobalt_buttons_probe,
-<<<<<<< HEAD
-	.remove	= __devexit_p(cobalt_buttons_remove),
 	.driver	= {
 		.name	= "Cobalt buttons",
-		.owner	= THIS_MODULE,
-=======
-	.driver	= {
-		.name	= "Cobalt buttons",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(cobalt_buttons_driver);

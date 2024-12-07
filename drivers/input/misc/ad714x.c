@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AD714X CapTouch Programmable Controller driver supporting AD7142/3/7/8/7A
  *
  * Copyright 2009-2011 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
  */
 
 #include <linux/device.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -971,19 +959,6 @@ static irqreturn_t ad714x_interrupt_thread(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-#define MAX_DEVICE_NUM 8
-struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
-				 ad714x_read_t read, ad714x_write_t write)
-{
-	int i, alloc_idx;
-	int error;
-	struct input_dev *input[MAX_DEVICE_NUM];
-
-	struct ad714x_platform_data *plat_data = dev->platform_data;
-	struct ad714x_chip *ad714x;
-	void *drv_mem;
-=======
 struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 				 ad714x_read_t read, ad714x_write_t write)
 {
@@ -995,7 +970,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 	struct ad714x_chip *ad714x;
 	void *drv_mem;
 	unsigned long irqflags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ad714x_button_drv *bt_drv;
 	struct ad714x_slider_drv *sd_drv;
@@ -1006,27 +980,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 	if (irq <= 0) {
 		dev_err(dev, "IRQ not configured!\n");
 		error = -EINVAL;
-<<<<<<< HEAD
-		goto err_out;
-	}
-
-	if (dev->platform_data == NULL) {
-		dev_err(dev, "platform data for ad714x doesn't exist\n");
-		error = -EINVAL;
-		goto err_out;
-	}
-
-	ad714x = kzalloc(sizeof(*ad714x) + sizeof(*ad714x->sw) +
-			 sizeof(*sd_drv) * plat_data->slider_num +
-			 sizeof(*wl_drv) * plat_data->wheel_num +
-			 sizeof(*tp_drv) * plat_data->touchpad_num +
-			 sizeof(*bt_drv) * plat_data->button_num, GFP_KERNEL);
-	if (!ad714x) {
-		error = -ENOMEM;
-		goto err_out;
-	}
-
-=======
 		return ERR_PTR(error);
 	}
 
@@ -1046,7 +999,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 		error = -ENOMEM;
 		return ERR_PTR(error);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ad714x->hw = plat_data;
 
 	drv_mem = ad714x + 1;
@@ -1068,56 +1020,18 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 
 	error = ad714x_hw_detect(ad714x);
 	if (error)
-<<<<<<< HEAD
-		goto err_free_mem;
-=======
 		return ERR_PTR(error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize and request sw/hw resources */
 
 	ad714x_hw_init(ad714x);
 	mutex_init(&ad714x->mutex);
 
-<<<<<<< HEAD
-	/*
-	 * Allocate and register AD714X input device
-	 */
-	alloc_idx = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* a slider uses one input_dev instance */
 	if (ad714x->hw->slider_num > 0) {
 		struct ad714x_slider_plat *sd_plat = ad714x->hw->slider;
 
 		for (i = 0; i < ad714x->hw->slider_num; i++) {
-<<<<<<< HEAD
-			sd_drv[i].input = input[alloc_idx] = input_allocate_device();
-			if (!input[alloc_idx]) {
-				error = -ENOMEM;
-				goto err_free_dev;
-			}
-
-			__set_bit(EV_ABS, input[alloc_idx]->evbit);
-			__set_bit(EV_KEY, input[alloc_idx]->evbit);
-			__set_bit(ABS_X, input[alloc_idx]->absbit);
-			__set_bit(BTN_TOUCH, input[alloc_idx]->keybit);
-			input_set_abs_params(input[alloc_idx],
-				ABS_X, 0, sd_plat->max_coord, 0, 0);
-
-			input[alloc_idx]->id.bustype = bus_type;
-			input[alloc_idx]->id.product = ad714x->product;
-			input[alloc_idx]->id.version = ad714x->version;
-			input[alloc_idx]->name = "ad714x_captouch_slider";
-			input[alloc_idx]->dev.parent = dev;
-
-			error = input_register_device(input[alloc_idx]);
-			if (error)
-				goto err_free_dev;
-
-			alloc_idx++;
-=======
 			input = devm_input_allocate_device(dev);
 			if (!input)
 				return ERR_PTR(-ENOMEM);
@@ -1140,7 +1054,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 				return ERR_PTR(error);
 
 			sd_drv[i].input = input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1149,32 +1062,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 		struct ad714x_wheel_plat *wl_plat = ad714x->hw->wheel;
 
 		for (i = 0; i < ad714x->hw->wheel_num; i++) {
-<<<<<<< HEAD
-			wl_drv[i].input = input[alloc_idx] = input_allocate_device();
-			if (!input[alloc_idx]) {
-				error = -ENOMEM;
-				goto err_free_dev;
-			}
-
-			__set_bit(EV_KEY, input[alloc_idx]->evbit);
-			__set_bit(EV_ABS, input[alloc_idx]->evbit);
-			__set_bit(ABS_WHEEL, input[alloc_idx]->absbit);
-			__set_bit(BTN_TOUCH, input[alloc_idx]->keybit);
-			input_set_abs_params(input[alloc_idx],
-				ABS_WHEEL, 0, wl_plat->max_coord, 0, 0);
-
-			input[alloc_idx]->id.bustype = bus_type;
-			input[alloc_idx]->id.product = ad714x->product;
-			input[alloc_idx]->id.version = ad714x->version;
-			input[alloc_idx]->name = "ad714x_captouch_wheel";
-			input[alloc_idx]->dev.parent = dev;
-
-			error = input_register_device(input[alloc_idx]);
-			if (error)
-				goto err_free_dev;
-
-			alloc_idx++;
-=======
 			input = devm_input_allocate_device(dev);
 			if (!input)
 				return ERR_PTR(-ENOMEM);
@@ -1197,7 +1084,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 				return ERR_PTR(error);
 
 			wl_drv[i].input = input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1206,35 +1092,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 		struct ad714x_touchpad_plat *tp_plat = ad714x->hw->touchpad;
 
 		for (i = 0; i < ad714x->hw->touchpad_num; i++) {
-<<<<<<< HEAD
-			tp_drv[i].input = input[alloc_idx] = input_allocate_device();
-			if (!input[alloc_idx]) {
-				error = -ENOMEM;
-				goto err_free_dev;
-			}
-
-			__set_bit(EV_ABS, input[alloc_idx]->evbit);
-			__set_bit(EV_KEY, input[alloc_idx]->evbit);
-			__set_bit(ABS_X, input[alloc_idx]->absbit);
-			__set_bit(ABS_Y, input[alloc_idx]->absbit);
-			__set_bit(BTN_TOUCH, input[alloc_idx]->keybit);
-			input_set_abs_params(input[alloc_idx],
-				ABS_X, 0, tp_plat->x_max_coord, 0, 0);
-			input_set_abs_params(input[alloc_idx],
-				ABS_Y, 0, tp_plat->y_max_coord, 0, 0);
-
-			input[alloc_idx]->id.bustype = bus_type;
-			input[alloc_idx]->id.product = ad714x->product;
-			input[alloc_idx]->id.version = ad714x->version;
-			input[alloc_idx]->name = "ad714x_captouch_pad";
-			input[alloc_idx]->dev.parent = dev;
-
-			error = input_register_device(input[alloc_idx]);
-			if (error)
-				goto err_free_dev;
-
-			alloc_idx++;
-=======
 			input = devm_input_allocate_device(dev);
 			if (!input)
 				return ERR_PTR(-ENOMEM);
@@ -1260,7 +1117,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 				return ERR_PTR(error);
 
 			tp_drv[i].input = input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1268,86 +1124,6 @@ struct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,
 	if (ad714x->hw->button_num > 0) {
 		struct ad714x_button_plat *bt_plat = ad714x->hw->button;
 
-<<<<<<< HEAD
-		input[alloc_idx] = input_allocate_device();
-		if (!input[alloc_idx]) {
-			error = -ENOMEM;
-			goto err_free_dev;
-		}
-
-		__set_bit(EV_KEY, input[alloc_idx]->evbit);
-		for (i = 0; i < ad714x->hw->button_num; i++) {
-			bt_drv[i].input = input[alloc_idx];
-			__set_bit(bt_plat[i].keycode, input[alloc_idx]->keybit);
-		}
-
-		input[alloc_idx]->id.bustype = bus_type;
-		input[alloc_idx]->id.product = ad714x->product;
-		input[alloc_idx]->id.version = ad714x->version;
-		input[alloc_idx]->name = "ad714x_captouch_button";
-		input[alloc_idx]->dev.parent = dev;
-
-		error = input_register_device(input[alloc_idx]);
-		if (error)
-			goto err_free_dev;
-
-		alloc_idx++;
-	}
-
-	error = request_threaded_irq(ad714x->irq, NULL, ad714x_interrupt_thread,
-				plat_data->irqflags ?
-					plat_data->irqflags : IRQF_TRIGGER_FALLING,
-				"ad714x_captouch", ad714x);
-	if (error) {
-		dev_err(dev, "can't allocate irq %d\n", ad714x->irq);
-		goto err_unreg_dev;
-	}
-
-	return ad714x;
-
- err_free_dev:
-	dev_err(dev, "failed to setup AD714x input device %i\n", alloc_idx);
-	input_free_device(input[alloc_idx]);
- err_unreg_dev:
-	while (--alloc_idx >= 0)
-		input_unregister_device(input[alloc_idx]);
- err_free_mem:
-	kfree(ad714x);
- err_out:
-	return ERR_PTR(error);
-}
-EXPORT_SYMBOL(ad714x_probe);
-
-void ad714x_remove(struct ad714x_chip *ad714x)
-{
-	struct ad714x_platform_data *hw = ad714x->hw;
-	struct ad714x_driver_data *sw = ad714x->sw;
-	int i;
-
-	free_irq(ad714x->irq, ad714x);
-
-	/* unregister and free all input devices */
-
-	for (i = 0; i < hw->slider_num; i++)
-		input_unregister_device(sw->slider[i].input);
-
-	for (i = 0; i < hw->wheel_num; i++)
-		input_unregister_device(sw->wheel[i].input);
-
-	for (i = 0; i < hw->touchpad_num; i++)
-		input_unregister_device(sw->touchpad[i].input);
-
-	if (hw->button_num)
-		input_unregister_device(sw->button[0].input);
-
-	kfree(ad714x);
-}
-EXPORT_SYMBOL(ad714x_remove);
-
-#ifdef CONFIG_PM
-int ad714x_disable(struct ad714x_chip *ad714x)
-{
-=======
 		input = devm_input_allocate_device(dev);
 		if (!input) {
 			error = -ENOMEM;
@@ -1389,7 +1165,6 @@ EXPORT_SYMBOL(ad714x_probe);
 static int ad714x_suspend(struct device *dev)
 {
 	struct ad714x_chip *ad714x = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short data;
 
 	dev_dbg(ad714x->dev, "%s enter\n", __func__);
@@ -1403,17 +1178,10 @@ static int ad714x_suspend(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(ad714x_disable);
-
-int ad714x_enable(struct ad714x_chip *ad714x)
-{
-=======
 
 static int ad714x_resume(struct device *dev)
 {
 	struct ad714x_chip *ad714x = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(ad714x->dev, "%s enter\n", __func__);
 
 	mutex_lock(&ad714x->mutex);
@@ -1433,13 +1201,8 @@ static int ad714x_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(ad714x_enable);
-#endif
-=======
 
 EXPORT_SIMPLE_DEV_PM_OPS(ad714x_pm, ad714x_suspend, ad714x_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Analog Devices AD714X Capacitance Touch Sensor Driver");
 MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");

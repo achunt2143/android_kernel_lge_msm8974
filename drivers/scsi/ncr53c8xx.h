@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 **  Device driver for the PCI-SCSI NCR538XX controller family.
 **
 **  Copyright (C) 1994  Wolfgang Stanglmeier
 **  Copyright (C) 1998-2001  Gerard Roudier <groudier@free.fr>
 **
-<<<<<<< HEAD
-**  This program is free software; you can redistribute it and/or modify
-**  it under the terms of the GNU General Public License as published by
-**  the Free Software Foundation; either version 2 of the License, or
-**  (at your option) any later version.
-**
-**  This program is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**  GNU General Public License for more details.
-**
-**  You should have received a copy of the GNU General Public License
-**  along with this program; if not, write to the Free Software
-**  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 **-----------------------------------------------------------------------------
 **
@@ -271,15 +252,7 @@
 #define SCSI_NCR_SG_TABLESIZE	(SCSI_NCR_MAX_SCATTER)
 #define SCSI_NCR_TIMER_INTERVAL	(HZ)
 
-<<<<<<< HEAD
-#if 1 /* defined CONFIG_SCSI_MULTI_LUN */
 #define SCSI_NCR_MAX_LUN	(16)
-#else
-#define SCSI_NCR_MAX_LUN	(1)
-#endif
-=======
-#define SCSI_NCR_MAX_LUN	(16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  IO functions definition for big/little endian CPU support.
@@ -1266,25 +1239,6 @@ struct scr_tblsel {
 */
 
 /*
-<<<<<<< HEAD
-**	Status
-*/
-
-#define	S_GOOD		(0x00)
-#define	S_CHECK_COND	(0x02)
-#define	S_COND_MET	(0x04)
-#define	S_BUSY		(0x08)
-#define	S_INT		(0x10)
-#define	S_INT_COND_MET	(0x14)
-#define	S_CONFLICT	(0x18)
-#define	S_TERMINATED	(0x20)
-#define	S_QUEUE_FULL	(0x28)
-#define	S_ILLEGAL	(0xff)
-#define	S_SENSE		(0x80)
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * End of ncrreg from FreeBSD
  */
 
@@ -1334,15 +1288,12 @@ struct ncr_device {
 	u8 differential;
 };
 
-<<<<<<< HEAD
-=======
 /* To keep track of the dma mapping (sg/single) that has been set */
 struct ncr_cmd_priv {
 	int	data_mapped;
 	int	data_mapping;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct Scsi_Host *ncr_attach(struct scsi_host_template *tpnt, int unit, struct ncr_device *device);
 extern void ncr53c8xx_release(struct Scsi_Host *host);
 irqreturn_t ncr53c8xx_intr(int irq, void *dev_id);

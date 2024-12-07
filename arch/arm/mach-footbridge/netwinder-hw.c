@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-footbridge/netwinder-hw.c
  *
@@ -16,16 +13,10 @@
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-
-#include <asm/hardware/dec21285.h>
-#include <asm/leds.h>
-=======
 #include <linux/slab.h>
 #include <linux/leds.h>
 
 #include <asm/hardware/dec21285.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-types.h>
 #include <asm/setup.h>
 #include <asm/system_misc.h>
@@ -38,16 +29,6 @@
 #define GP1_IO_BASE		0x338
 #define GP2_IO_BASE		0x33a
 
-<<<<<<< HEAD
-
-#ifdef CONFIG_LEDS
-#define DEFAULT_LEDS	0
-#else
-#define DEFAULT_LEDS	GPIO_GREEN_LED
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Winbond WB83977F accessibility stuff
  */
@@ -625,21 +606,9 @@ static void __init rwa010_init(void)
 static int __init nw_hw_init(void)
 {
 	if (machine_is_netwinder()) {
-<<<<<<< HEAD
-		unsigned long flags;
-
 		wb977_init();
 		cpld_init();
 		rwa010_init();
-
-		raw_spin_lock_irqsave(&nw_gpio_lock, flags);
-		nw_gpio_modify_op(GPIO_RED_LED|GPIO_GREEN_LED, DEFAULT_LEDS);
-		raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
-=======
-		wb977_init();
-		cpld_init();
-		rwa010_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -652,11 +621,7 @@ __initcall(nw_hw_init);
  * the parameter page.
  */
 static void __init
-<<<<<<< HEAD
-fixup_netwinder(struct tag *tags, char **cmdline, struct meminfo *mi)
-=======
 fixup_netwinder(struct tag *tags, char **cmdline)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_ISAPNP
 	extern int isapnp_disable;
@@ -670,15 +635,9 @@ fixup_netwinder(struct tag *tags, char **cmdline)
 #endif
 }
 
-<<<<<<< HEAD
-static void netwinder_restart(char mode, const char *cmd)
-{
-	if (mode == 's') {
-=======
 static void netwinder_restart(enum reboot_mode mode, const char *cmd)
 {
 	if (mode == REBOOT_SOFT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Jump into the ROM */
 		soft_restart(0x41000000);
 	} else {
@@ -702,8 +661,6 @@ static void netwinder_restart(enum reboot_mode mode, const char *cmd)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /* LEDs */
 #if defined(CONFIG_NEW_LEDS) && defined(CONFIG_LEDS_CLASS)
 struct netwinder_led {
@@ -800,7 +757,6 @@ static int __init netwinder_leds_init(void)
 fs_initcall(netwinder_leds_init);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MACHINE_START(NETWINDER, "Rebel-NetWinder")
 	/* Maintainer: Russell King/Rebel.com */
 	.atag_offset	= 0x100,
@@ -811,10 +767,6 @@ MACHINE_START(NETWINDER, "Rebel-NetWinder")
 	.fixup		= fixup_netwinder,
 	.map_io		= footbridge_map_io,
 	.init_irq	= footbridge_init_irq,
-<<<<<<< HEAD
-	.timer		= &isa_timer,
-=======
 	.init_time	= isa_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= netwinder_restart,
 MACHINE_END

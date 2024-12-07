@@ -1,14 +1,6 @@
-<<<<<<< HEAD
-/*
- *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
- *
- *  Licensed under the terms of the GNU GPL License version 2.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __CPUIDLE_INFO_HW__
@@ -21,12 +13,6 @@
 
 #define MONITORS_MAX 20
 #define MONITOR_NAME_LEN 20
-<<<<<<< HEAD
-#define CSTATE_NAME_LEN 5
-#define CSTATE_DESC_LEN 60
-
-int cpu_count;
-=======
 
 /* CSTATE_NAME_LEN is limited by header field width defined
  * in cpupower-monitor.c. Header field width is defined to be
@@ -40,7 +26,6 @@ int cpu_count;
 #define CSTATE_DESC_LEN 60
 
 extern int cpu_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Hard to define the right names ...: */
 enum power_range_e {
@@ -75,14 +60,10 @@ struct cpuidle_monitor {
 	struct cpuidle_monitor* (*do_register) (void);
 	void (*unregister)(void);
 	unsigned int overflow_s;
-<<<<<<< HEAD
-	int needs_root;
-=======
 	struct {
 		unsigned int needs_root:1;
 		unsigned int per_cpu_schedule:1;
 	} flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern long long timespec_diff_us(struct timespec start, struct timespec end);
@@ -94,8 +75,6 @@ extern long long timespec_diff_us(struct timespec start, struct timespec end);
 				"could be inaccurate\n"), mes, ov);		\
 }
 
-<<<<<<< HEAD
-=======
 
 /* Taken over from x86info project sources  -> return 0 on success */
 #include <sched.h>
@@ -113,5 +92,4 @@ static inline int bind_cpu(int cpu)
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __CPUIDLE_INFO_HW__ */

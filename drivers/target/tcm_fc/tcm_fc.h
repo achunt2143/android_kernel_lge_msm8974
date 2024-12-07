@@ -1,43 +1,19 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2010 Cisco Systems, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2010 Cisco Systems, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __TCM_FC_H__
 #define __TCM_FC_H__
 
-<<<<<<< HEAD
-=======
 #include <linux/types.h>
 #include <target/target_core_base.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FT_VERSION "0.4"
 
 #define FT_NAMELEN 32		/* length of ASCII WWPNs including pad */
 #define FT_TPG_NAMELEN 32	/* max length of TPG name */
 #define FT_LUN_NAMELEN 32	/* max length of LUN name */
-<<<<<<< HEAD
-=======
 #define TCM_FC_DEFAULT_TAGS 512	/* tags used for per-session preallocation */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ft_transport_id {
 	__u8	format;
@@ -95,13 +71,8 @@ struct ft_node_auth {
  * Node ACL for FC remote port session.
  */
 struct ft_node_acl {
-<<<<<<< HEAD
-	struct ft_node_auth node_auth;
-	struct se_node_acl se_node_acl;
-=======
 	struct se_node_acl se_node_acl;
 	struct ft_node_auth node_auth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ft_lun {
@@ -114,34 +85,19 @@ struct ft_lun {
  */
 struct ft_tpg {
 	u32 index;
-<<<<<<< HEAD
-	struct ft_lport_acl *lport_acl;
-	struct ft_tport *tport;		/* active tport or NULL */
-	struct list_head list;		/* linkage in ft_lport_acl tpg_list */
-=======
 	struct ft_lport_wwn *lport_wwn;
 	struct ft_tport *tport;		/* active tport or NULL */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head lun_list;	/* head of LUNs */
 	struct se_portal_group se_tpg;
 	struct workqueue_struct *workqueue;
 };
 
-<<<<<<< HEAD
-struct ft_lport_acl {
-	u64 wwpn;
-	char name[FT_NAMELEN];
-	struct list_head list;
-	struct list_head tpg_list;
-	struct se_wwn fc_lport_wwn;
-=======
 struct ft_lport_wwn {
 	u64 wwpn;
 	char name[FT_NAMELEN];
 	struct list_head ft_wwn_node;
 	struct ft_tpg *tpg;
 	struct se_wwn se_wwn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -162,16 +118,9 @@ struct ft_cmd {
 	u32 sg_cnt;			/* No. of item in scatterlist */
 };
 
-<<<<<<< HEAD
-extern struct list_head ft_lport_list;
-extern struct mutex ft_lport_lock;
-extern struct fc4_prov ft_prov;
-extern struct target_fabric_configfs *ft_configfs;
-=======
 extern struct mutex ft_lport_lock;
 extern struct fc4_prov ft_prov;
 extern unsigned int ft_debug_logging;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Fabric methods.
@@ -181,10 +130,6 @@ extern unsigned int ft_debug_logging;
  * Session ops.
  */
 void ft_sess_put(struct ft_sess *);
-<<<<<<< HEAD
-int ft_sess_shutdown(struct se_session *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ft_sess_close(struct se_session *);
 u32 ft_sess_get_index(struct se_session *);
 u32 ft_sess_get_port_name(struct se_session *, unsigned char *, u32);
@@ -201,25 +146,14 @@ void ft_release_cmd(struct se_cmd *);
 int ft_queue_status(struct se_cmd *);
 int ft_queue_data_in(struct se_cmd *);
 int ft_write_pending(struct se_cmd *);
-<<<<<<< HEAD
-int ft_write_pending_status(struct se_cmd *);
-u32 ft_get_task_tag(struct se_cmd *);
-int ft_get_cmd_state(struct se_cmd *);
-int ft_queue_tm_resp(struct se_cmd *);
-=======
 void ft_queue_tm_resp(struct se_cmd *);
 void ft_aborted_task(struct se_cmd *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * other internal functions.
  */
 void ft_recv_req(struct ft_sess *, struct fc_frame *);
 struct ft_tpg *ft_lport_find_tpg(struct fc_lport *);
-<<<<<<< HEAD
-struct ft_node_acl *ft_acl_get(struct ft_tpg *, struct fc_rport_priv *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ft_recv_write_data(struct ft_cmd *, struct fc_frame *);
 void ft_dump_cmd(struct ft_cmd *, const char *caller);

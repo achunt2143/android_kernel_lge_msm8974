@@ -21,11 +21,7 @@
  *
  * Authors: Jerome Glisse
  */
-<<<<<<< HEAD
-#include <drm/drmP.h>
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <drm/radeon_drm.h>
 #include "radeon_reg.h"
 #include "radeon.h"
@@ -38,12 +34,8 @@
 
 static int radeon_benchmark_do_move(struct radeon_device *rdev, unsigned size,
 				    uint64_t saddr, uint64_t daddr,
-<<<<<<< HEAD
-				    int flag, int n)
-=======
 				    int flag, int n,
 				    struct dma_resv *resv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long start_jiffies;
 	unsigned long end_jiffies;
@@ -54,41 +46,6 @@ static int radeon_benchmark_do_move(struct radeon_device *rdev, unsigned size,
 	for (i = 0; i < n; i++) {
 		switch (flag) {
 		case RADEON_BENCHMARK_COPY_DMA:
-<<<<<<< HEAD
-			r = radeon_fence_create(rdev, &fence, radeon_copy_dma_ring_index(rdev));
-			if (r)
-				return r;
-			r = radeon_copy_dma(rdev, saddr, daddr,
-					    size / RADEON_GPU_PAGE_SIZE,
-					    fence);
-			break;
-		case RADEON_BENCHMARK_COPY_BLIT:
-			r = radeon_fence_create(rdev, &fence, radeon_copy_blit_ring_index(rdev));
-			if (r)
-				return r;
-			r = radeon_copy_blit(rdev, saddr, daddr,
-					     size / RADEON_GPU_PAGE_SIZE,
-					     fence);
-			break;
-		default:
-			DRM_ERROR("Unknown copy method\n");
-			r = -EINVAL;
-		}
-		if (r)
-			goto exit_do_move;
-		r = radeon_fence_wait(fence, false);
-		if (r)
-			goto exit_do_move;
-		radeon_fence_unref(&fence);
-	}
-	end_jiffies = jiffies;
-	r = jiffies_to_msecs(end_jiffies - start_jiffies);
-
-exit_do_move:
-	if (fence)
-		radeon_fence_unref(&fence);
-	return r;
-=======
 			fence = radeon_copy_dma(rdev, saddr, daddr,
 						size / RADEON_GPU_PAGE_SIZE,
 						resv);
@@ -112,7 +69,6 @@ exit_do_move:
 	}
 	end_jiffies = jiffies;
 	return jiffies_to_msecs(end_jiffies - start_jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -138,11 +94,7 @@ static void radeon_benchmark_move(struct radeon_device *rdev, unsigned size,
 	int time;
 
 	n = RADEON_BENCHMARK_ITERATIONS;
-<<<<<<< HEAD
-	r = radeon_bo_create(rdev, size, PAGE_SIZE, true, sdomain, &sobj);
-=======
 	r = radeon_bo_create(rdev, size, PAGE_SIZE, true, sdomain, 0, NULL, NULL, &sobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		goto out_cleanup;
 	}
@@ -154,11 +106,7 @@ static void radeon_benchmark_move(struct radeon_device *rdev, unsigned size,
 	if (r) {
 		goto out_cleanup;
 	}
-<<<<<<< HEAD
-	r = radeon_bo_create(rdev, size, PAGE_SIZE, true, ddomain, &dobj);
-=======
 	r = radeon_bo_create(rdev, size, PAGE_SIZE, true, ddomain, 0, NULL, NULL, &dobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		goto out_cleanup;
 	}
@@ -171,19 +119,10 @@ static void radeon_benchmark_move(struct radeon_device *rdev, unsigned size,
 		goto out_cleanup;
 	}
 
-<<<<<<< HEAD
-	/* r100 doesn't have dma engine so skip the test */
-	/* also, VRAM-to-VRAM test doesn't make much sense for DMA */
-	/* skip it as well if domains are the same */
-	if ((rdev->asic->copy.dma) && (sdomain != ddomain)) {
-		time = radeon_benchmark_do_move(rdev, size, saddr, daddr,
-						RADEON_BENCHMARK_COPY_DMA, n);
-=======
 	if (rdev->asic->copy.dma) {
 		time = radeon_benchmark_do_move(rdev, size, saddr, daddr,
 						RADEON_BENCHMARK_COPY_DMA, n,
 						dobj->tbo.base.resv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (time < 0)
 			goto out_cleanup;
 		if (time > 0)
@@ -193,12 +132,8 @@ static void radeon_benchmark_move(struct radeon_device *rdev, unsigned size,
 
 	if (rdev->asic->copy.blit) {
 		time = radeon_benchmark_do_move(rdev, size, saddr, daddr,
-<<<<<<< HEAD
-						RADEON_BENCHMARK_COPY_BLIT, n);
-=======
 						RADEON_BENCHMARK_COPY_BLIT, n,
 						dobj->tbo.base.resv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (time < 0)
 			goto out_cleanup;
 		if (time > 0)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -10,14 +7,6 @@
  *		PF_INET6 protocol dispatch tables.
  *
  * Authors:	Pedro Roque	<roque@di.fc.ul.pt>
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -32,15 +21,6 @@
 #include <linux/spinlock.h>
 #include <net/protocol.h>
 
-<<<<<<< HEAD
-const struct inet6_protocol __rcu *inet6_protos[MAX_INET_PROTOS] __read_mostly;
-
-int inet6_add_protocol(const struct inet6_protocol *prot, unsigned char protocol)
-{
-	int hash = protocol & (MAX_INET_PROTOS - 1);
-
-	return !cmpxchg((const struct inet6_protocol **)&inet6_protos[hash],
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 struct inet6_protocol __rcu *inet6_protos[MAX_INET_PROTOS] __read_mostly;
 EXPORT_SYMBOL(inet6_protos);
@@ -48,28 +28,15 @@ EXPORT_SYMBOL(inet6_protos);
 int inet6_add_protocol(const struct inet6_protocol *prot, unsigned char protocol)
 {
 	return !cmpxchg((const struct inet6_protocol **)&inet6_protos[protocol],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			NULL, prot) ? 0 : -1;
 }
 EXPORT_SYMBOL(inet6_add_protocol);
 
-<<<<<<< HEAD
-/*
- *	Remove a protocol from the hash tables.
- */
-
-int inet6_del_protocol(const struct inet6_protocol *prot, unsigned char protocol)
-{
-	int ret, hash = protocol & (MAX_INET_PROTOS - 1);
-
-	ret = (cmpxchg((const struct inet6_protocol **)&inet6_protos[hash],
-=======
 int inet6_del_protocol(const struct inet6_protocol *prot, unsigned char protocol)
 {
 	int ret;
 
 	ret = (cmpxchg((const struct inet6_protocol **)&inet6_protos[protocol],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       prot, NULL) == prot) ? 0 : -1;
 
 	synchronize_net();
@@ -77,8 +44,6 @@ int inet6_del_protocol(const struct inet6_protocol *prot, unsigned char protocol
 	return ret;
 }
 EXPORT_SYMBOL(inet6_del_protocol);
-<<<<<<< HEAD
-=======
 #endif
 
 const struct net_offload __rcu *inet6_offloads[MAX_INET_PROTOS] __read_mostly;
@@ -103,4 +68,3 @@ int inet6_del_offload(const struct net_offload *prot, unsigned char protocol)
 	return ret;
 }
 EXPORT_SYMBOL(inet6_del_offload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

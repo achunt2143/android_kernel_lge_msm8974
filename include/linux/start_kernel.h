@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_START_KERNEL_H
 #define _LINUX_START_KERNEL_H
 
@@ -11,10 +8,6 @@
 /* Define the prototype for start_kernel here, rather than cluttering
    up something else. */
 
-<<<<<<< HEAD
-extern asmlinkage void __init start_kernel(void);
-=======
 extern asmlinkage void __init __noreturn start_kernel(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_START_KERNEL_H */

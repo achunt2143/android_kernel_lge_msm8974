@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-# include "suspend_32.h"
-#else
-# include "suspend_64.h"
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifdef CONFIG_X86_32
 # include <asm/suspend_32.h>
@@ -19,4 +12,3 @@ extern unsigned long relocated_restore_code __visible;
 extern int relocate_restore_code(void);
 /* Defined in hibernate_asm_32/64.S */
 extern asmlinkage __visible int restore_image(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1992, 1998-2006 Linus Torvalds, Ingo Molnar
  * Copyright (C) 2005-2006, Thomas Gleixner, Russell King
  *
-<<<<<<< HEAD
- * This file contains the interrupt descriptor management code
- *
- * Detailed information is available in Documentation/DocBook/genericirq
-=======
  * This file contains the interrupt descriptor management code. Detailed
  * information is available in Documentation/core-api/genericirq.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #include <linux/irq.h>
@@ -21,14 +12,9 @@
 #include <linux/export.h>
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
-<<<<<<< HEAD
-#include <linux/radix-tree.h>
-#include <linux/bitmap.h>
-=======
 #include <linux/maple_tree.h>
 #include <linux/irqdomain.h>
 #include <linux/sysfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "internals.h"
 
@@ -38,12 +24,6 @@
 static struct lock_class_key irq_desc_lock_class;
 
 #if defined(CONFIG_SMP)
-<<<<<<< HEAD
-static void __init init_irq_default_affinity(void)
-{
-	alloc_cpumask_var(&irq_default_affinity, GFP_NOWAIT);
-	cpumask_setall(irq_default_affinity);
-=======
 static int __init irq_affinity_setup(char *str)
 {
 	alloc_bootmem_cpumask_var(&irq_default_affinity);
@@ -63,7 +43,6 @@ static void __init init_irq_default_affinity(void)
 		zalloc_cpumask_var(&irq_default_affinity, GFP_NOWAIT);
 	if (cpumask_empty(irq_default_affinity))
 		cpumask_setall(irq_default_affinity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static void __init init_irq_default_affinity(void)
@@ -72,16 +51,6 @@ static void __init init_irq_default_affinity(void)
 #endif
 
 #ifdef CONFIG_SMP
-<<<<<<< HEAD
-static int alloc_masks(struct irq_desc *desc, gfp_t gfp, int node)
-{
-	if (!zalloc_cpumask_var_node(&desc->irq_data.affinity, gfp, node))
-		return -ENOMEM;
-
-#ifdef CONFIG_GENERIC_PENDING_IRQ
-	if (!zalloc_cpumask_var_node(&desc->pending_mask, gfp, node)) {
-		free_cpumask_var(desc->irq_data.affinity);
-=======
 static int alloc_masks(struct irq_desc *desc, int node)
 {
 	if (!zalloc_cpumask_var_node(&desc->irq_common_data.affinity,
@@ -102,27 +71,12 @@ static int alloc_masks(struct irq_desc *desc, int node)
 		free_cpumask_var(desc->irq_common_data.effective_affinity);
 #endif
 		free_cpumask_var(desc->irq_common_data.affinity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 #endif
 	return 0;
 }
 
-<<<<<<< HEAD
-static void desc_smp_init(struct irq_desc *desc, int node)
-{
-	desc->irq_data.node = node;
-	cpumask_copy(desc->irq_data.affinity, irq_default_affinity);
-#ifdef CONFIG_GENERIC_PENDING_IRQ
-	cpumask_clear(desc->pending_mask);
-#endif
-}
-
-static inline int desc_node(struct irq_desc *desc)
-{
-	return desc->irq_data.node;
-=======
 static void desc_smp_init(struct irq_desc *desc, int node,
 			  const struct cpumask *affinity)
 {
@@ -147,30 +101,10 @@ static void free_masks(struct irq_desc *desc)
 #ifdef CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK
 	free_cpumask_var(desc->irq_common_data.effective_affinity);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
 static inline int
-<<<<<<< HEAD
-alloc_masks(struct irq_desc *desc, gfp_t gfp, int node) { return 0; }
-static inline void desc_smp_init(struct irq_desc *desc, int node) { }
-static inline int desc_node(struct irq_desc *desc) { return 0; }
-#endif
-
-static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
-		struct module *owner)
-{
-	int cpu;
-
-	desc->irq_data.irq = irq;
-	desc->irq_data.chip = &no_irq_chip;
-	desc->irq_data.chip_data = NULL;
-	desc->irq_data.handler_data = NULL;
-	desc->irq_data.msi_desc = NULL;
-	irq_settings_clr_and_set(desc, ~0, _IRQ_DEFAULT_INIT_FLAGS);
-	irqd_set(&desc->irq_data, IRQD_IRQ_DISABLED);
-=======
 alloc_masks(struct irq_desc *desc, int node) { return 0; }
 static inline void
 desc_smp_init(struct irq_desc *desc, int node, const struct cpumask *affinity) { }
@@ -192,64 +126,22 @@ static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
 	irq_settings_clr_and_set(desc, ~0, _IRQ_DEFAULT_INIT_FLAGS);
 	irqd_set(&desc->irq_data, IRQD_IRQ_DISABLED);
 	irqd_set(&desc->irq_data, IRQD_IRQ_MASKED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->handle_irq = handle_bad_irq;
 	desc->depth = 1;
 	desc->irq_count = 0;
 	desc->irqs_unhandled = 0;
-<<<<<<< HEAD
-=======
 	desc->tot_count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->name = NULL;
 	desc->owner = owner;
 	for_each_possible_cpu(cpu)
 		*per_cpu_ptr(desc->kstat_irqs, cpu) = 0;
-<<<<<<< HEAD
-	desc_smp_init(desc, node);
-=======
 	desc_smp_init(desc, node, affinity);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int nr_irqs = NR_IRQS;
 EXPORT_SYMBOL_GPL(nr_irqs);
 
 static DEFINE_MUTEX(sparse_irq_lock);
-<<<<<<< HEAD
-static DECLARE_BITMAP(allocated_irqs, IRQ_BITMAP_BITS);
-
-#ifdef CONFIG_SPARSE_IRQ
-
-static RADIX_TREE(irq_desc_tree, GFP_KERNEL);
-
-static void irq_insert_desc(unsigned int irq, struct irq_desc *desc)
-{
-	radix_tree_insert(&irq_desc_tree, irq, desc);
-}
-
-struct irq_desc *irq_to_desc(unsigned int irq)
-{
-	return radix_tree_lookup(&irq_desc_tree, irq);
-}
-EXPORT_SYMBOL(irq_to_desc);
-
-static void delete_irq_desc(unsigned int irq)
-{
-	radix_tree_delete(&irq_desc_tree, irq);
-}
-
-#ifdef CONFIG_SMP
-static void free_masks(struct irq_desc *desc)
-{
-#ifdef CONFIG_GENERIC_PENDING_IRQ
-	free_cpumask_var(desc->pending_mask);
-#endif
-	free_cpumask_var(desc->irq_data.affinity);
-}
-#else
-static inline void free_masks(struct irq_desc *desc) { }
-=======
 static struct maple_tree sparse_irqs = MTREE_INIT_EXT(sparse_irqs,
 					MT_FLAGS_ALLOC_RANGE |
 					MT_FLAGS_LOCK_EXTERN |
@@ -535,7 +427,6 @@ struct irq_desc *irq_to_desc(unsigned int irq)
 }
 #ifdef CONFIG_KVM_BOOK3S_64_HV_MODULE
 EXPORT_SYMBOL_GPL(irq_to_desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 void irq_lock_sparse(void)
@@ -548,36 +439,6 @@ void irq_unlock_sparse(void)
 	mutex_unlock(&sparse_irq_lock);
 }
 
-<<<<<<< HEAD
-static struct irq_desc *alloc_desc(int irq, int node, struct module *owner)
-{
-	struct irq_desc *desc;
-	gfp_t gfp = GFP_KERNEL;
-
-	desc = kzalloc_node(sizeof(*desc), gfp, node);
-	if (!desc)
-		return NULL;
-	/* allocate based on nr_cpu_ids */
-	desc->kstat_irqs = alloc_percpu(unsigned int);
-	if (!desc->kstat_irqs)
-		goto err_desc;
-
-	if (alloc_masks(desc, gfp, node))
-		goto err_kstat;
-
-	raw_spin_lock_init(&desc->lock);
-	lockdep_set_class(&desc->lock, &irq_desc_lock_class);
-
-	desc_set_defaults(irq, desc, node, owner);
-
-	return desc;
-
-err_kstat:
-	free_percpu(desc->kstat_irqs);
-err_desc:
-	kfree(desc);
-	return NULL;
-=======
 static struct irq_desc *alloc_desc(int irq, int node, unsigned int flags,
 				   const struct cpumask *affinity,
 				   struct module *owner)
@@ -612,17 +473,13 @@ static void delayed_free_desc(struct rcu_head *rhp)
 	struct irq_desc *desc = container_of(rhp, struct irq_desc, rcu);
 
 	kobject_put(&desc->kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void free_desc(unsigned int irq)
 {
 	struct irq_desc *desc = irq_to_desc(irq);
 
-<<<<<<< HEAD
-=======
 	irq_remove_debugfs_entry(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_irq_proc(irq, desc);
 
 	/*
@@ -630,19 +487,6 @@ static void free_desc(unsigned int irq)
 	 * kstat_irq_usr(). Once we deleted the descriptor from the
 	 * sparse tree we can free it. Access in proc will fail to
 	 * lookup the descriptor.
-<<<<<<< HEAD
-	 */
-	mutex_lock(&sparse_irq_lock);
-	delete_irq_desc(irq);
-	mutex_unlock(&sparse_irq_lock);
-
-	free_masks(desc);
-	free_percpu(desc->kstat_irqs);
-	kfree(desc);
-}
-
-static int alloc_descs(unsigned int start, unsigned int cnt, int node,
-=======
 	 *
 	 * The sysfs entry must be serialized against a concurrent
 	 * irq_sysfs_init() as well.
@@ -661,21 +505,11 @@ static int alloc_descs(unsigned int start, unsigned int cnt, int node,
 
 static int alloc_descs(unsigned int start, unsigned int cnt, int node,
 		       const struct irq_affinity_desc *affinity,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct module *owner)
 {
 	struct irq_desc *desc;
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < cnt; i++) {
-		desc = alloc_desc(start + i, node, owner);
-		if (!desc)
-			goto err;
-		mutex_lock(&sparse_irq_lock);
-		irq_insert_desc(start + i, desc);
-		mutex_unlock(&sparse_irq_lock);
-=======
 	/* Validate affinity mask(s) */
 	if (affinity) {
 		for (i = 0; i < cnt; i++) {
@@ -704,30 +538,18 @@ static int alloc_descs(unsigned int start, unsigned int cnt, int node,
 		irq_insert_desc(start + i, desc);
 		irq_sysfs_add(start + i, desc);
 		irq_add_debugfs_entry(start + i, desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return start;
 
 err:
 	for (i--; i >= 0; i--)
 		free_desc(start + i);
-<<<<<<< HEAD
-
-	mutex_lock(&sparse_irq_lock);
-	bitmap_clear(allocated_irqs, start, cnt);
-	mutex_unlock(&sparse_irq_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 static int irq_expand_nr_irqs(unsigned int nr)
 {
-<<<<<<< HEAD
-	if (nr > IRQ_BITMAP_BITS)
-=======
 	if (nr > MAX_SPARSE_IRQS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	nr_irqs = nr;
 	return 0;
@@ -742,15 +564,6 @@ int __init early_irq_init(void)
 
 	/* Let arch update nr_irqs and return the nr of preallocated irqs */
 	initcnt = arch_probe_nr_irqs();
-<<<<<<< HEAD
-	printk(KERN_INFO "NR_IRQS:%d nr_irqs:%d %d\n", NR_IRQS, nr_irqs, initcnt);
-
-	if (WARN_ON(nr_irqs > IRQ_BITMAP_BITS))
-		nr_irqs = IRQ_BITMAP_BITS;
-
-	if (WARN_ON(initcnt > IRQ_BITMAP_BITS))
-		initcnt = IRQ_BITMAP_BITS;
-=======
 	printk(KERN_INFO "NR_IRQS: %d, nr_irqs: %d, preallocated irqs: %d\n",
 	       NR_IRQS, nr_irqs, initcnt);
 
@@ -759,18 +572,12 @@ int __init early_irq_init(void)
 
 	if (WARN_ON(initcnt > MAX_SPARSE_IRQS))
 		initcnt = MAX_SPARSE_IRQS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (initcnt > nr_irqs)
 		nr_irqs = initcnt;
 
 	for (i = 0; i < initcnt; i++) {
-<<<<<<< HEAD
-		desc = alloc_desc(i, node, NULL);
-		set_bit(i, allocated_irqs);
-=======
 		desc = alloc_desc(i, node, 0, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_insert_desc(i, desc);
 	}
 	return arch_early_irq_init();
@@ -789,25 +596,6 @@ struct irq_desc irq_desc[NR_IRQS] __cacheline_aligned_in_smp = {
 int __init early_irq_init(void)
 {
 	int count, i, node = first_online_node;
-<<<<<<< HEAD
-	struct irq_desc *desc;
-
-	init_irq_default_affinity();
-
-	printk(KERN_INFO "NR_IRQS:%d\n", NR_IRQS);
-
-	desc = irq_desc;
-	count = ARRAY_SIZE(irq_desc);
-
-	for (i = 0; i < count; i++) {
-		desc[i].kstat_irqs = alloc_percpu(unsigned int);
-		alloc_masks(&desc[i], GFP_KERNEL, node);
-		raw_spin_lock_init(&desc[i].lock);
-		lockdep_set_class(&desc[i].lock, &irq_desc_lock_class);
-		desc_set_defaults(i, &desc[i], node, NULL);
-	}
-	return arch_early_irq_init();
-=======
 	int ret;
 
 	init_irq_default_affinity();
@@ -831,7 +619,6 @@ __free_desc_res:
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct irq_desc *irq_to_desc(unsigned int irq)
@@ -842,12 +629,6 @@ EXPORT_SYMBOL(irq_to_desc);
 
 static void free_desc(unsigned int irq)
 {
-<<<<<<< HEAD
-	dynamic_irq_cleanup(irq);
-}
-
-static inline int alloc_descs(unsigned int start, unsigned int cnt, int node,
-=======
 	struct irq_desc *desc = irq_to_desc(irq);
 	unsigned long flags;
 
@@ -859,7 +640,6 @@ static inline int alloc_descs(unsigned int start, unsigned int cnt, int node,
 
 static inline int alloc_descs(unsigned int start, unsigned int cnt, int node,
 			      const struct irq_affinity_desc *affinity,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct module *owner)
 {
 	u32 i;
@@ -868,10 +648,7 @@ static inline int alloc_descs(unsigned int start, unsigned int cnt, int node,
 		struct irq_desc *desc = irq_to_desc(start + i);
 
 		desc->owner = owner;
-<<<<<<< HEAD
-=======
 		irq_insert_desc(start + i, desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return start;
 }
@@ -881,10 +658,6 @@ static int irq_expand_nr_irqs(unsigned int nr)
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-#endif /* !CONFIG_SPARSE_IRQ */
-
-=======
 void irq_mark_irq(unsigned int irq)
 {
 	mutex_lock(&sparse_irq_lock);
@@ -916,25 +689,10 @@ int handle_irq_desc(struct irq_desc *desc)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * generic_handle_irq - Invoke the handler for a particular irq
  * @irq:	The irq number to handle
  *
-<<<<<<< HEAD
- */
-int generic_handle_irq(unsigned int irq)
-{
-	struct irq_desc *desc = irq_to_desc(irq);
-
-	if (!desc)
-		return -EINVAL;
-	generic_handle_irq_desc(irq, desc);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(generic_handle_irq);
-
-=======
  * Returns:	0 on success, or -EINVAL if conversion has failed
  *
  * 		This function must be called from an IRQ context with irq regs
@@ -1029,7 +787,6 @@ int generic_handle_domain_nmi(struct irq_domain *domain, unsigned int hwirq)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Dynamic interrupt handling */
 
 /**
@@ -1044,49 +801,30 @@ void irq_free_descs(unsigned int from, unsigned int cnt)
 	if (from >= nr_irqs || (from + cnt) > nr_irqs)
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < cnt; i++)
-		free_desc(from + i);
-
-	mutex_lock(&sparse_irq_lock);
-	bitmap_clear(allocated_irqs, from, cnt);
-=======
 	mutex_lock(&sparse_irq_lock);
 	for (i = 0; i < cnt; i++)
 		free_desc(from + i);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&sparse_irq_lock);
 }
 EXPORT_SYMBOL_GPL(irq_free_descs);
 
 /**
-<<<<<<< HEAD
- * irq_alloc_descs - allocate and initialize a range of irq descriptors
-=======
  * __irq_alloc_descs - allocate and initialize a range of irq descriptors
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @irq:	Allocate for specific irq number if irq >= 0
  * @from:	Start the search from this irq number
  * @cnt:	Number of consecutive irqs to allocate.
  * @node:	Preferred node on which the irq descriptor should be allocated
  * @owner:	Owning module (can be NULL)
-<<<<<<< HEAD
-=======
  * @affinity:	Optional pointer to an affinity mask array of size @cnt which
  *		hints where the irq descriptors should be allocated and which
  *		default affinities to use
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the first irq number or error code
  */
 int __ref
 __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
-<<<<<<< HEAD
-		  struct module *owner)
-=======
 		  struct module *owner, const struct irq_affinity_desc *affinity)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int start, ret;
 
@@ -1097,8 +835,6 @@ __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
 		if (from > irq)
 			return -EINVAL;
 		from = irq;
-<<<<<<< HEAD
-=======
 	} else {
 		/*
 		 * For interrupts which are freely allocated the
@@ -1106,76 +842,28 @@ __irq_alloc_descs(int irq, unsigned int from, unsigned int cnt, int node,
 		 * argument. x86 uses this to exclude the GSI space.
 		 */
 		from = arch_dynirq_lower_bound(from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_lock(&sparse_irq_lock);
 
-<<<<<<< HEAD
-	start = bitmap_find_next_zero_area(allocated_irqs, IRQ_BITMAP_BITS,
-					   from, cnt, 0);
-	ret = -EEXIST;
-	if (irq >=0 && start != irq)
-		goto err;
-=======
 	start = irq_find_free_area(from, cnt);
 	ret = -EEXIST;
 	if (irq >=0 && start != irq)
 		goto unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (start + cnt > nr_irqs) {
 		ret = irq_expand_nr_irqs(start + cnt);
 		if (ret)
-<<<<<<< HEAD
-			goto err;
-	}
-
-	bitmap_set(allocated_irqs, start, cnt);
-	mutex_unlock(&sparse_irq_lock);
-	return alloc_descs(start, cnt, node, owner);
-
-err:
-=======
 			goto unlock;
 	}
 	ret = alloc_descs(start, cnt, node, affinity, owner);
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&sparse_irq_lock);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(__irq_alloc_descs);
 
 /**
-<<<<<<< HEAD
- * irq_reserve_irqs - mark irqs allocated
- * @from:	mark from irq number
- * @cnt:	number of irqs to mark
- *
- * Returns 0 on success or an appropriate error code
- */
-int irq_reserve_irqs(unsigned int from, unsigned int cnt)
-{
-	unsigned int start;
-	int ret = 0;
-
-	if (!cnt || (from + cnt) > nr_irqs)
-		return -EINVAL;
-
-	mutex_lock(&sparse_irq_lock);
-	start = bitmap_find_next_zero_area(allocated_irqs, nr_irqs, from, cnt, 0);
-	if (start == from)
-		bitmap_set(allocated_irqs, start, cnt);
-	else
-		ret = -EEXIST;
-	mutex_unlock(&sparse_irq_lock);
-	return ret;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * irq_get_next_irq - get next allocated irq number
  * @offset:	where to start the search
  *
@@ -1183,11 +871,7 @@ int irq_reserve_irqs(unsigned int from, unsigned int cnt)
  */
 unsigned int irq_get_next_irq(unsigned int offset)
 {
-<<<<<<< HEAD
-	return find_next_bit(allocated_irqs, nr_irqs, offset);
-=======
 	return irq_find_at_or_after(offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct irq_desc *
@@ -1215,22 +899,15 @@ __irq_get_desc_lock(unsigned int irq, unsigned long *flags, bool bus,
 }
 
 void __irq_put_desc_unlock(struct irq_desc *desc, unsigned long flags, bool bus)
-<<<<<<< HEAD
-=======
 	__releases(&desc->lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 	if (bus)
 		chip_bus_sync_unlock(desc);
 }
 
-<<<<<<< HEAD
-int irq_set_percpu_devid(unsigned int irq)
-=======
 int irq_set_percpu_devid_partition(unsigned int irq,
 				   const struct cpumask *affinity)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_desc *desc = irq_to_desc(irq);
 
@@ -1245,32 +922,15 @@ int irq_set_percpu_devid_partition(unsigned int irq,
 	if (!desc->percpu_enabled)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	if (affinity)
 		desc->percpu_affinity = affinity;
 	else
 		desc->percpu_affinity = cpu_possible_mask;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_set_percpu_devid_flags(irq);
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * dynamic_irq_cleanup - cleanup a dynamically allocated irq
- * @irq:	irq number to initialize
- */
-void dynamic_irq_cleanup(unsigned int irq)
-{
-	struct irq_desc *desc = irq_to_desc(irq);
-	unsigned long flags;
-
-	raw_spin_lock_irqsave(&desc->lock, flags);
-	desc_set_defaults(irq, desc, desc_node(desc), NULL);
-	raw_spin_unlock_irqrestore(&desc->lock, flags);
-=======
 int irq_set_percpu_devid(unsigned int irq)
 {
 	return irq_set_percpu_devid_partition(irq, NULL);
@@ -1293,7 +953,6 @@ EXPORT_SYMBOL_GPL(irq_get_percpu_devid_partition);
 void kstat_incr_irq_this_cpu(unsigned int irq)
 {
 	kstat_incr_irqs_this_cpu(irq_to_desc(irq));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1313,26 +972,6 @@ unsigned int kstat_irqs_cpu(unsigned int irq, int cpu)
 			*per_cpu_ptr(desc->kstat_irqs, cpu) : 0;
 }
 
-<<<<<<< HEAD
-/**
- * kstat_irqs - Get the statistics for an interrupt
- * @irq:	The interrupt number
- *
- * Returns the sum of interrupt counts on all cpus since boot for
- * @irq. The caller must ensure that the interrupt is not removed
- * concurrently.
- */
-unsigned int kstat_irqs(unsigned int irq)
-{
-	struct irq_desc *desc = irq_to_desc(irq);
-	int cpu;
-	int sum = 0;
-
-	if (!desc || !desc->kstat_irqs)
-		return 0;
-	for_each_possible_cpu(cpu)
-		sum += *per_cpu_ptr(desc->kstat_irqs, cpu);
-=======
 static bool irq_is_nmi(struct irq_desc *desc)
 {
 	return desc->istate & IRQS_NMI;
@@ -1353,30 +992,10 @@ static unsigned int kstat_irqs(unsigned int irq)
 
 	for_each_possible_cpu(cpu)
 		sum += data_race(*per_cpu_ptr(desc->kstat_irqs, cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sum;
 }
 
 /**
-<<<<<<< HEAD
- * kstat_irqs_usr - Get the statistics for an interrupt
- * @irq:	The interrupt number
- *
- * Returns the sum of interrupt counts on all cpus since boot for
- * @irq. Contrary to kstat_irqs() this can be called from any
- * preemptible context. It's protected against concurrent removal of
- * an interrupt descriptor when sparse irqs are enabled.
- */
-unsigned int kstat_irqs_usr(unsigned int irq)
-{
-	int sum;
-
-	irq_lock_sparse();
-	sum = kstat_irqs(irq);
-	irq_unlock_sparse();
-	return sum;
-}
-=======
  * kstat_irqs_usr - Get the statistics for an interrupt from thread context
  * @irq:	The interrupt number
  *
@@ -1409,4 +1028,3 @@ void __irq_set_lockdep_class(unsigned int irq, struct lock_class_key *lock_class
 }
 EXPORT_SYMBOL_GPL(__irq_set_lockdep_class);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

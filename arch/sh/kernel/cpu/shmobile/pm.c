@@ -1,31 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/shmobile/pm.c
  *
  * Power management support code for SuperH Mobile
  *
  *  Copyright (C) 2009 Magnus Damm
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/io.h>
 #include <linux/suspend.h>
 #include <asm/suspend.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 #include <asm/bl_bit.h>
 
@@ -161,12 +147,7 @@ static const struct platform_suspend_ops sh_pm_ops = {
 static int __init sh_pm_init(void)
 {
 	suspend_set_ops(&sh_pm_ops);
-<<<<<<< HEAD
-	sh_mobile_setup_cpuidle();
-	return 0;
-=======
 	return sh_mobile_setup_cpuidle();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 late_initcall(sh_pm_init);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sock
 
@@ -9,9 +6,6 @@
 #define _TRACE_SOCK_H
 
 #include <net/sock.h>
-<<<<<<< HEAD
-#include <linux/tracepoint.h>
-=======
 #include <net/ipv6.h>
 #include <linux/tracepoint.h>
 #include <linux/ipv6.h>
@@ -73,7 +67,6 @@ skmem_kind_names
 
 #define show_skmem_kind_names(val)	\
 	__print_symbolic(val, skmem_kind_names)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(sock_rcvqueue_full,
 
@@ -90,11 +83,7 @@ TRACE_EVENT(sock_rcvqueue_full,
 	TP_fast_assign(
 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
 		__entry->truesize   = skb->truesize;
-<<<<<<< HEAD
-		__entry->sk_rcvbuf  = sk->sk_rcvbuf;
-=======
 		__entry->sk_rcvbuf  = READ_ONCE(sk->sk_rcvbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("rmem_alloc=%d truesize=%u sk_rcvbuf=%d",
@@ -103,18 +92,6 @@ TRACE_EVENT(sock_rcvqueue_full,
 
 TRACE_EVENT(sock_exceed_buf_limit,
 
-<<<<<<< HEAD
-	TP_PROTO(struct sock *sk, struct proto *prot, long allocated),
-
-	TP_ARGS(sk, prot, allocated),
-
-	TP_STRUCT__entry(
-		__array(char, name, 32)
-		__field(long *, sysctl_mem)
-		__field(long, allocated)
-		__field(int, sysctl_rmem)
-		__field(int, rmem_alloc)
-=======
 	TP_PROTO(struct sock *sk, struct proto *prot, long allocated, int kind),
 
 	TP_ARGS(sk, prot, allocated, kind),
@@ -129,21 +106,10 @@ TRACE_EVENT(sock_exceed_buf_limit,
 		__field(int, wmem_alloc)
 		__field(int, wmem_queued)
 		__field(int, kind)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		strncpy(__entry->name, prot->name, 32);
-<<<<<<< HEAD
-		__entry->sysctl_mem = prot->sysctl_mem;
-		__entry->allocated = allocated;
-		__entry->sysctl_rmem = prot->sysctl_rmem[0];
-		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
-	),
-
-	TP_printk("proto:%s sysctl_mem=%ld,%ld,%ld allocated=%ld "
-		"sysctl_rmem=%d rmem_alloc=%d",
-=======
 		__entry->sysctl_mem[0] = READ_ONCE(prot->sysctl_mem[0]);
 		__entry->sysctl_mem[1] = READ_ONCE(prot->sysctl_mem[1]);
 		__entry->sysctl_mem[2] = READ_ONCE(prot->sysctl_mem[2]);
@@ -157,18 +123,12 @@ TRACE_EVENT(sock_exceed_buf_limit,
 	),
 
 	TP_printk("proto:%s sysctl_mem=%ld,%ld,%ld allocated=%ld sysctl_rmem=%d rmem_alloc=%d sysctl_wmem=%d wmem_alloc=%d wmem_queued=%d kind=%s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->name,
 		__entry->sysctl_mem[0],
 		__entry->sysctl_mem[1],
 		__entry->sysctl_mem[2],
 		__entry->allocated,
 		__entry->sysctl_rmem,
-<<<<<<< HEAD
-		__entry->rmem_alloc)
-);
-
-=======
 		__entry->rmem_alloc,
 		__entry->sysctl_wmem,
 		__entry->wmem_alloc,
@@ -372,7 +332,6 @@ DEFINE_EVENT(sock_msg_length, sock_recv_length,
 
 	TP_ARGS(sk, ret, flags)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_SOCK_H */
 
 /* This part must be outside protection */

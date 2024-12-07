@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/sh4/sq.c
  *
@@ -9,13 +6,6 @@
  *
  * Copyright (C) 2001 - 2006  Paul Mundt
  * Copyright (C) 2001, 2002  M. R. Brown
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/cpu.h>
@@ -113,12 +103,8 @@ static int __sq_remap(struct sq_mapping *map, pgprot_t prot)
 #if defined(CONFIG_MMU)
 	struct vm_struct *vma;
 
-<<<<<<< HEAD
-	vma = __get_vm_area(map->size, VM_ALLOC, map->sq_addr, SQ_ADDRMAX);
-=======
 	vma = __get_vm_area_caller(map->size, VM_IOREMAP, map->sq_addr,
 			SQ_ADDRMAX, __builtin_return_address(0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vma)
 		return -ENOMEM;
 
@@ -338,10 +324,7 @@ static struct attribute *sq_sysfs_attrs[] = {
 	&mapping_attr.attr,
 	NULL,
 };
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(sq_sysfs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct sysfs_ops sq_sysfs_ops = {
 	.show	= sq_sysfs_show,
@@ -350,11 +333,7 @@ static const struct sysfs_ops sq_sysfs_ops = {
 
 static struct kobj_type ktype_percpu_entry = {
 	.sysfs_ops	= &sq_sysfs_ops,
-<<<<<<< HEAD
-	.default_attrs	= sq_sysfs_attrs,
-=======
 	.default_groups	= sq_sysfs_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int sq_dev_add(struct device *dev, struct subsys_interface *sif)
@@ -375,20 +354,12 @@ static int sq_dev_add(struct device *dev, struct subsys_interface *sif)
 	return error;
 }
 
-<<<<<<< HEAD
-static int sq_dev_remove(struct device *dev, struct subsys_interface *sif)
-=======
 static void sq_dev_remove(struct device *dev, struct subsys_interface *sif)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu = dev->id;
 	struct kobject *kobj = sq_kobject[cpu];
 
 	kobject_put(kobj);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct subsys_interface sq_interface = {
@@ -401,10 +372,6 @@ static struct subsys_interface sq_interface = {
 static int __init sq_api_init(void)
 {
 	unsigned int nr_pages = 0x04000000 >> PAGE_SHIFT;
-<<<<<<< HEAD
-	unsigned int size = (nr_pages + (BITS_PER_LONG - 1)) / BITS_PER_LONG;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -ENOMEM;
 
 	printk(KERN_NOTICE "sq: Registering store queue API.\n");
@@ -414,11 +381,7 @@ static int __init sq_api_init(void)
 	if (unlikely(!sq_cache))
 		return ret;
 
-<<<<<<< HEAD
-	sq_bitmap = kzalloc(size, GFP_KERNEL);
-=======
 	sq_bitmap = bitmap_zalloc(nr_pages, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!sq_bitmap))
 		goto out;
 
@@ -429,11 +392,7 @@ static int __init sq_api_init(void)
 	return 0;
 
 out:
-<<<<<<< HEAD
-	kfree(sq_bitmap);
-=======
 	bitmap_free(sq_bitmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(sq_cache);
 
 	return ret;
@@ -442,11 +401,7 @@ out:
 static void __exit sq_api_exit(void)
 {
 	subsys_interface_unregister(&sq_interface);
-<<<<<<< HEAD
-	kfree(sq_bitmap);
-=======
 	bitmap_free(sq_bitmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(sq_cache);
 }
 

@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API.
  *
  * RNG operations.
  *
  * Copyright (c) 2008 Neil Horman <nhorman@tuxdriver.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- */
-
-#include <linux/atomic.h>
-#include <crypto/internal/rng.h>
-#include <linux/err.h>
-=======
  * Copyright (c) 2015 Herbert Xu <herbert@gondor.apana.org.au>
  */
 
@@ -29,108 +13,21 @@
 #include <linux/cryptouser.h>
 #include <linux/err.h>
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/random.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/cryptouser.h>
-#include <net/netlink.h>
-
-=======
 #include <net/netlink.h>
 
 #include "internal.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_MUTEX(crypto_default_rng_lock);
 struct crypto_rng *crypto_default_rng;
 EXPORT_SYMBOL_GPL(crypto_default_rng);
 static int crypto_default_rng_refcnt;
 
-<<<<<<< HEAD
-static int rngapi_reset(struct crypto_rng *tfm, u8 *seed, unsigned int slen)
-{
-	u8 *buf = NULL;
-	int err;
-
-	if (!seed && slen) {
-		buf = kmalloc(slen, GFP_KERNEL);
-		if (!buf)
-			return -ENOMEM;
-
-		get_random_bytes(buf, slen);
-		seed = buf;
-	}
-
-	err = crypto_rng_alg(tfm)->rng_reset(tfm, seed, slen);
-
-	kfree(buf);
-	return err;
-}
-
-static int crypto_init_rng_ops(struct crypto_tfm *tfm, u32 type, u32 mask)
-{
-	struct rng_alg *alg = &tfm->__crt_alg->cra_rng;
-	struct rng_tfm *ops = &tfm->crt_rng;
-
-	ops->rng_gen_random = alg->rng_make_random;
-	ops->rng_reset = rngapi_reset;
-
-	return 0;
-}
-
-#ifdef CONFIG_NET
-static int crypto_rng_report(struct sk_buff *skb, struct crypto_alg *alg)
-{
-	struct crypto_report_rng rrng;
-
-	strncpy(rrng.type, "rng", sizeof(rrng.type));
-
-	rrng.seedsize = alg->cra_rng.seedsize;
-
-	NLA_PUT(skb, CRYPTOCFGA_REPORT_RNG,
-		sizeof(struct crypto_report_rng), &rrng);
-
-	return 0;
-
-nla_put_failure:
-	return -EMSGSIZE;
-}
-#else
-static int crypto_rng_report(struct sk_buff *skb, struct crypto_alg *alg)
-{
-	return -ENOSYS;
-}
-#endif
-
-static void crypto_rng_show(struct seq_file *m, struct crypto_alg *alg)
-	__attribute__ ((unused));
-static void crypto_rng_show(struct seq_file *m, struct crypto_alg *alg)
-{
-	seq_printf(m, "type         : rng\n");
-	seq_printf(m, "seedsize     : %u\n", alg->cra_rng.seedsize);
-}
-
-static unsigned int crypto_rng_ctxsize(struct crypto_alg *alg, u32 type,
-				       u32 mask)
-{
-	return alg->cra_ctxsize;
-}
-
-const struct crypto_type crypto_rng_type = {
-	.ctxsize = crypto_rng_ctxsize,
-	.init = crypto_init_rng_ops,
-#ifdef CONFIG_PROC_FS
-	.show = crypto_rng_show,
-#endif
-	.report = crypto_rng_report,
-};
-EXPORT_SYMBOL_GPL(crypto_rng_type);
-=======
 int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
 {
 	struct rng_alg *alg = crypto_rng_alg(tfm);
@@ -238,7 +135,6 @@ struct crypto_rng *crypto_alloc_rng(const char *alg_name, u32 type, u32 mask)
 	return crypto_alloc_tfm(alg_name, &crypto_rng_type, type, mask);
 }
 EXPORT_SYMBOL_GPL(crypto_alloc_rng);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int crypto_get_default_rng(void)
 {
@@ -274,20 +170,11 @@ EXPORT_SYMBOL_GPL(crypto_get_default_rng);
 void crypto_put_default_rng(void)
 {
 	mutex_lock(&crypto_default_rng_lock);
-<<<<<<< HEAD
-	if (!--crypto_default_rng_refcnt) {
-		crypto_free_rng(crypto_default_rng);
-		crypto_default_rng = NULL;
-	}
-=======
 	crypto_default_rng_refcnt--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&crypto_default_rng_lock);
 }
 EXPORT_SYMBOL_GPL(crypto_put_default_rng);
 
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_CRYPTO_RNG) || defined(CONFIG_CRYPTO_RNG_MODULE)
 int crypto_del_default_rng(void)
 {
@@ -364,6 +251,5 @@ void crypto_unregister_rngs(struct rng_alg *algs, int count)
 }
 EXPORT_SYMBOL_GPL(crypto_unregister_rngs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Random Number Generator");

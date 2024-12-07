@@ -1,46 +1,21 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stack_user.c
  *
  * Code which interfaces ocfs2 with fs/dlm and a userspace stack.
  *
  * Copyright (C) 2007 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, version 2.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/filelock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/miscdevice.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <linux/reboot.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/sched.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "stackglue.h"
 
@@ -119,15 +94,12 @@
 #define OCFS2_TEXT_UUID_LEN			32
 #define OCFS2_CONTROL_MESSAGE_VERNUM_LEN	2
 #define OCFS2_CONTROL_MESSAGE_NODENUM_LEN	8
-<<<<<<< HEAD
-=======
 #define VERSION_LOCK				"version_lock"
 
 enum ocfs2_connection_type {
 	WITH_CONTROLD,
 	NO_CONTROLD
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ocfs2_live_connection is refcounted because the filesystem and
@@ -136,8 +108,6 @@ enum ocfs2_connection_type {
 struct ocfs2_live_connection {
 	struct list_head		oc_list;
 	struct ocfs2_cluster_connection	*oc_conn;
-<<<<<<< HEAD
-=======
 	enum ocfs2_connection_type	oc_type;
 	atomic_t                        oc_this_node;
 	int                             oc_our_slot;
@@ -145,7 +115,6 @@ struct ocfs2_live_connection {
 	char                            oc_lvb[DLM_LVB_LEN];
 	struct completion               oc_sync_wait;
 	wait_queue_head_t		oc_wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ocfs2_control_private {
@@ -234,31 +203,15 @@ static struct ocfs2_live_connection *ocfs2_connection_find(const char *name)
  * mount path.  Since the VFS prevents multiple calls to
  * fill_super(), we can't get dupes here.
  */
-<<<<<<< HEAD
-static int ocfs2_live_connection_new(struct ocfs2_cluster_connection *conn,
-				     struct ocfs2_live_connection **c_ret)
-{
-	int rc = 0;
-	struct ocfs2_live_connection *c;
-
-	c = kzalloc(sizeof(struct ocfs2_live_connection), GFP_KERNEL);
-	if (!c)
-		return -ENOMEM;
-=======
 static int ocfs2_live_connection_attach(struct ocfs2_cluster_connection *conn,
 				     struct ocfs2_live_connection *c)
 {
 	int rc = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ocfs2_control_lock);
 	c->oc_conn = conn;
 
-<<<<<<< HEAD
-	if (atomic_read(&ocfs2_control_opened))
-=======
 	if ((c->oc_type == NO_CONTROLD) || atomic_read(&ocfs2_control_opened))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add(&c->oc_list, &ocfs2_live_connection_list);
 	else {
 		printk(KERN_ERR
@@ -267,15 +220,6 @@ static int ocfs2_live_connection_attach(struct ocfs2_cluster_connection *conn,
 	}
 
 	mutex_unlock(&ocfs2_control_lock);
-<<<<<<< HEAD
-
-	if (!rc)
-		*c_ret = c;
-	else
-		kfree(c);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -445,11 +389,7 @@ static int ocfs2_control_do_setnode_msg(struct file *file,
 
 static int ocfs2_control_do_setversion_msg(struct file *file,
 					   struct ocfs2_control_message_setv *msg)
-<<<<<<< HEAD
- {
-=======
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long major, minor;
 	char *ptr = NULL;
 	struct ocfs2_control_private *p = file->private_data;
@@ -642,11 +582,7 @@ static int ocfs2_control_release(struct inode *inode, struct file *file)
 		 */
 		ocfs2_control_this_node = -1;
 		running_proto.pv_major = 0;
-<<<<<<< HEAD
-		running_proto.pv_major = 0;
-=======
 		running_proto.pv_minor = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -710,18 +646,7 @@ static int ocfs2_control_init(void)
 
 static void ocfs2_control_exit(void)
 {
-<<<<<<< HEAD
-	int rc;
-
-	rc = misc_deregister(&ocfs2_control_device);
-	if (rc)
-		printk(KERN_ERR
-		       "ocfs2: Unable to deregister ocfs2_control device "
-		       "(errno %d)\n",
-		       -rc);
-=======
 	misc_deregister(&ocfs2_control_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fsdlm_lock_ast_wrapper(void *astarg)
@@ -759,43 +684,22 @@ static int user_dlm_lock(struct ocfs2_cluster_connection *conn,
 			 void *name,
 			 unsigned int namelen)
 {
-<<<<<<< HEAD
-	int ret;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lksb->lksb_fsdlm.sb_lvbptr)
 		lksb->lksb_fsdlm.sb_lvbptr = (char *)lksb +
 					     sizeof(struct dlm_lksb);
 
-<<<<<<< HEAD
-	ret = dlm_lock(conn->cc_lockspace, mode, &lksb->lksb_fsdlm,
-		       flags|DLM_LKF_NODLCKWT, name, namelen, 0,
-		       fsdlm_lock_ast_wrapper, lksb,
-		       fsdlm_blocking_ast_wrapper);
-	return ret;
-=======
 	return dlm_lock(conn->cc_lockspace, mode, &lksb->lksb_fsdlm,
 			flags|DLM_LKF_NODLCKWT, name, namelen, 0,
 			fsdlm_lock_ast_wrapper, lksb,
 			fsdlm_blocking_ast_wrapper);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int user_dlm_unlock(struct ocfs2_cluster_connection *conn,
 			   struct ocfs2_dlm_lksb *lksb,
 			   u32 flags)
 {
-<<<<<<< HEAD
-	int ret;
-
-	ret = dlm_unlock(conn->cc_lockspace, lksb->lksb_fsdlm.sb_lkid,
-			 flags, &lksb->lksb_fsdlm, lksb);
-	return ret;
-=======
 	return dlm_unlock(conn->cc_lockspace, lksb->lksb_fsdlm.sb_lkid,
 			  flags, &lksb->lksb_fsdlm, lksb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int user_dlm_lock_status(struct ocfs2_dlm_lksb *lksb)
@@ -834,22 +738,6 @@ static int user_plock(struct ocfs2_cluster_connection *conn,
 	 *
 	 * Internally, fs/dlm will pass these to a misc device, which
 	 * a userspace daemon will read and write to.
-<<<<<<< HEAD
-	 *
-	 * For now, cancel requests (which happen internally only),
-	 * are turned into unlocks. Most of this function taken from
-	 * gfs2_lock.
-	 */
-
-	if (cmd == F_CANCELLK) {
-		cmd = F_SETLK;
-		fl->fl_type = F_UNLCK;
-	}
-
-	if (IS_GETLK(cmd))
-		return dlm_posix_get(conn->cc_lockspace, ino, file, fl);
-	else if (fl->fl_type == F_UNLCK)
-=======
 	 */
 
 	if (cmd == F_CANCELLK)
@@ -857,7 +745,6 @@ static int user_plock(struct ocfs2_cluster_connection *conn,
 	else if (IS_GETLK(cmd))
 		return dlm_posix_get(conn->cc_lockspace, ino, file, fl);
 	else if (lock_is_unlock(fl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return dlm_posix_unlock(conn->cc_lockspace, ino, file, fl);
 	else
 		return dlm_posix_lock(conn->cc_lockspace, ino, file, cmd, fl);
@@ -886,20 +773,6 @@ static int fs_protocol_compare(struct ocfs2_protocol_version *existing,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int user_cluster_connect(struct ocfs2_cluster_connection *conn)
-{
-	dlm_lockspace_t *fsdlm;
-	struct ocfs2_live_connection *uninitialized_var(control);
-	int rc = 0;
-
-	BUG_ON(conn == NULL);
-
-	rc = ocfs2_live_connection_new(conn, &control);
-	if (rc)
-		goto out;
-
-=======
 static void lvb_to_version(char *lvb, struct ocfs2_protocol_version *ver)
 {
 	struct ocfs2_protocol_version *pv =
@@ -1150,7 +1023,6 @@ static int user_cluster_connect(struct ocfs2_cluster_connection *conn)
 		wait_event(lc->oc_wait, (atomic_read(&lc->oc_this_node) > 0));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * running_proto must have been set before we allowed any mounts
 	 * to proceed.
@@ -1158,44 +1030,6 @@ static int user_cluster_connect(struct ocfs2_cluster_connection *conn)
 	if (fs_protocol_compare(&running_proto, &conn->cc_version)) {
 		printk(KERN_ERR
 		       "Unable to mount with fs locking protocol version "
-<<<<<<< HEAD
-		       "%u.%u because the userspace control daemon has "
-		       "negotiated %u.%u\n",
-		       conn->cc_version.pv_major, conn->cc_version.pv_minor,
-		       running_proto.pv_major, running_proto.pv_minor);
-		rc = -EPROTO;
-		ocfs2_live_connection_drop(control);
-		goto out;
-	}
-
-	rc = dlm_new_lockspace(conn->cc_name, NULL, DLM_LSFL_FS, DLM_LVB_LEN,
-			       NULL, NULL, NULL, &fsdlm);
-	if (rc) {
-		ocfs2_live_connection_drop(control);
-		goto out;
-	}
-
-	conn->cc_private = control;
-	conn->cc_lockspace = fsdlm;
-out:
-	return rc;
-}
-
-static int user_cluster_disconnect(struct ocfs2_cluster_connection *conn)
-{
-	dlm_release_lockspace(conn->cc_lockspace, 2);
-	conn->cc_lockspace = NULL;
-	ocfs2_live_connection_drop(conn->cc_private);
-	conn->cc_private = NULL;
-	return 0;
-}
-
-static int user_cluster_this_node(unsigned int *this_node)
-{
-	int rc;
-
-	rc = ocfs2_control_get_this_node();
-=======
 		       "%u.%u because negotiated protocol is %u.%u\n",
 		       conn->cc_version.pv_major, conn->cc_version.pv_minor,
 		       running_proto.pv_major, running_proto.pv_minor);
@@ -1224,7 +1058,6 @@ static int user_cluster_this_node(struct ocfs2_cluster_connection *conn,
 	else
 		rc = -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		return rc;
 

@@ -845,11 +845,7 @@ struct scu_task_context {
 
 	/**
 	 * This field is used by the SCU TL to determine when to take a snapshot when
-<<<<<<< HEAD
-	 * tranmitting read data frames.
-=======
 	 * transmitting read data frames.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *    - 0x00 The entire IO
 	 *    - 0x01 32k
 	 *    - 0x02 64k

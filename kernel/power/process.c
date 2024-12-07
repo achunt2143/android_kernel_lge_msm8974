@@ -1,48 +1,22 @@
-<<<<<<< HEAD
-/*
- * drivers/power/process.c - Functions for starting/stopping processes on 
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * drivers/power/process.c - Functions for starting/stopping processes on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                           suspend transitions.
  *
  * Originally from swsusp.
  */
 
-<<<<<<< HEAD
-
-#undef DEBUG
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/oom.h>
 #include <linux/suspend.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/debug.h>
 #include <linux/sched/task.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscalls.h>
 #include <linux/freezer.h>
 #include <linux/delay.h>
 #include <linux/workqueue.h>
 #include <linux/kmod.h>
-<<<<<<< HEAD
-#include <linux/wakelock.h>
-#include "power.h"
-
-/* 
- * Timeout for stopping processes
- */
-#define TIMEOUT	(20 * HZ)
-
-static int try_to_freeze_tasks(bool user_only)
-{
-=======
 #include <trace/events/power.h>
 #include <linux/cpuset.h>
 
@@ -55,22 +29,10 @@ static int try_to_freeze_tasks(bool user_only)
 {
 	const char *what = user_only ? "user space processes" :
 					"remaining freezable tasks";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct task_struct *g, *p;
 	unsigned long end_time;
 	unsigned int todo;
 	bool wq_busy = false;
-<<<<<<< HEAD
-	struct timeval start, end;
-	u64 elapsed_csecs64;
-	unsigned int elapsed_csecs;
-	bool wakeup = false;
-	int sleep_usecs = USEC_PER_MSEC;
-
-	do_gettimeofday(&start);
-
-	end_time = jiffies + TIMEOUT;
-=======
 	ktime_t start, end, elapsed;
 	unsigned int elapsed_msecs;
 	bool wakeup = false;
@@ -81,7 +43,6 @@ static int try_to_freeze_tasks(bool user_only)
 	start = ktime_get_boottime();
 
 	end_time = jiffies + msecs_to_jiffies(freeze_timeout_msecs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!user_only)
 		freeze_workqueues_begin();
@@ -89,33 +50,12 @@ static int try_to_freeze_tasks(bool user_only)
 	while (true) {
 		todo = 0;
 		read_lock(&tasklist_lock);
-<<<<<<< HEAD
-		do_each_thread(g, p) {
-			if (p == current || !freeze_task(p))
-				continue;
-
-			/*
-			 * Now that we've done set_freeze_flag, don't
-			 * perturb a task in TASK_STOPPED or TASK_TRACED.
-			 * It is "frozen enough".  If the task does wake
-			 * up, it will immediately call try_to_freeze.
-			 *
-			 * Because freeze_task() goes through p's scheduler lock, it's
-			 * guaranteed that TASK_STOPPED/TRACED -> TASK_RUNNING
-			 * transition can't race with task state testing here.
-			 */
-			if (!task_is_stopped_or_traced(p) &&
-			    !freezer_should_skip(p))
-				todo++;
-		} while_each_thread(g, p);
-=======
 		for_each_process_thread(g, p) {
 			if (p == current || !freeze_task(p))
 				continue;
 
 			todo++;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		read_unlock(&tasklist_lock);
 
 		if (!user_only) {
@@ -141,46 +81,6 @@ static int try_to_freeze_tasks(bool user_only)
 			sleep_usecs *= 2;
 	}
 
-<<<<<<< HEAD
-	do_gettimeofday(&end);
-	elapsed_csecs64 = timeval_to_ns(&end) - timeval_to_ns(&start);
-	do_div(elapsed_csecs64, NSEC_PER_SEC / 100);
-	elapsed_csecs = elapsed_csecs64;
-
-	if (todo) {
-		/* This does not unfreeze processes that are already frozen
-		 * (we have slightly ugly calling convention in that respect,
-		 * and caller must call thaw_processes() if something fails),
-		 * but it cleans up leftover PF_FREEZE requests.
-		 */
-		if(wakeup) {
-			printk("\n");
-			printk(KERN_ERR "Freezing of %s aborted\n",
-					user_only ? "user space " : "tasks ");
-		}
-		else {
-			printk("\n");
-			printk(KERN_ERR "Freezing of tasks %s after %d.%02d seconds "
-			       "(%d tasks refusing to freeze, wq_busy=%d):\n",
-			       wakeup ? "aborted" : "failed",
-			       elapsed_csecs / 100, elapsed_csecs % 100,
-			       todo - wq_busy, wq_busy);
-		}
-
-		if (!wakeup) {
-			read_lock(&tasklist_lock);
-			do_each_thread(g, p) {
-				if (p != current && !freezer_should_skip(p)
-				    && freezing(p) && !frozen(p) &&
-				    elapsed_csecs > 100)
-					sched_show_task(p);
-			} while_each_thread(g, p);
-			read_unlock(&tasklist_lock);
-		}
-	} else {
-		printk("(elapsed %d.%02d seconds) ", elapsed_csecs / 100,
-			elapsed_csecs % 100);
-=======
 	end = ktime_get_boottime();
 	elapsed = ktime_sub(end, start);
 	elapsed_msecs = ktime_to_ms(elapsed);
@@ -206,89 +106,26 @@ static int try_to_freeze_tasks(bool user_only)
 	} else {
 		pr_info("Freezing %s completed (elapsed %d.%03d seconds)\n",
 			what, elapsed_msecs / 1000, elapsed_msecs % 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return todo ? -EBUSY : 0;
 }
 
-<<<<<<< HEAD
-/*
- * Returns true if all freezable tasks (except for current) are frozen already
- */
-static bool check_frozen_processes(void)
-{
-	struct task_struct *g, *p;
-	bool ret = true;
-
-	read_lock(&tasklist_lock);
-	for_each_process_thread(g, p) {
-		if (p != current && !freezer_should_skip(p) &&
-		    !frozen(p)) {
-			ret = false;
-			goto done;
-		}
-	}
-done:
-	read_unlock(&tasklist_lock);
-
-	return ret;
-}
-
-/**
- * freeze_processes - Signal user space processes to enter the refrigerator.
-=======
 /**
  * freeze_processes - Signal user space processes to enter the refrigerator.
  * The current thread will not be frozen.  The same process that calls
  * freeze_processes must later call thaw_processes.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * On success, returns 0.  On failure, -errno and system is fully thawed.
  */
 int freeze_processes(void)
 {
 	int error;
-<<<<<<< HEAD
-	int oom_kills_saved;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = __usermodehelper_disable(UMH_FREEZING);
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	if (!pm_freezing)
-		atomic_inc(&system_freezing_cnt);
-
-	printk("Freezing user space processes ... ");
-	pm_freezing = true;
-	oom_kills_saved = oom_kills_count();
-	error = try_to_freeze_tasks(true);
-	if (!error) {
-		__usermodehelper_set_disable_depth(UMH_DISABLED);
-		oom_killer_disable();
-
-		/*
-		 * There might have been an OOM kill while we were
-		 * freezing tasks and the killed task might be still
-		 * on the way out so we have to double check for race.
-		 */
-		if (oom_kills_count() != oom_kills_saved &&
-				!check_frozen_processes()) {
-			__usermodehelper_set_disable_depth(UMH_ENABLED);
-			printk("OOM in progress.");
-			error = -EBUSY;
-			goto done;
-		}
-		printk("done.");
-	}
-done:
-	printk("\n");
-	BUG_ON(in_atomic());
-
-=======
 	/* Make sure this task doesn't get frozen */
 	current->flags |= PF_SUSPEND_TASK;
 
@@ -312,7 +149,6 @@ done:
 	if (!error && !oom_killer_disable(msecs_to_jiffies(freeze_timeout_msecs)))
 		error = -EBUSY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		thaw_processes();
 	return error;
@@ -330,19 +166,9 @@ int freeze_kernel_threads(void)
 {
 	int error;
 
-<<<<<<< HEAD
-	printk("Freezing remaining freezable tasks ... ");
-	pm_nosig_freezing = true;
-	error = try_to_freeze_tasks(false);
-	if (!error)
-		printk("done.");
-
-	printk("\n");
-=======
 	pm_nosig_freezing = true;
 	error = try_to_freeze_tasks(false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(in_atomic());
 
 	if (error)
@@ -353,43 +179,21 @@ int freeze_kernel_threads(void)
 void thaw_processes(void)
 {
 	struct task_struct *g, *p;
-<<<<<<< HEAD
-
-	if (pm_freezing)
-		atomic_dec(&system_freezing_cnt);
-=======
 	struct task_struct *curr = current;
 
 	trace_suspend_resume(TPS("thaw_processes"), 0, true);
 	if (pm_freezing)
 		static_branch_dec(&freezer_active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_freezing = false;
 	pm_nosig_freezing = false;
 
 	oom_killer_enable();
 
-<<<<<<< HEAD
-	printk("Restarting tasks ... ");
-=======
 	pr_info("Restarting tasks ... ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__usermodehelper_set_disable_depth(UMH_FREEZING);
 	thaw_workqueues();
 
-<<<<<<< HEAD
-	read_lock(&tasklist_lock);
-	do_each_thread(g, p) {
-		__thaw_task(p);
-	} while_each_thread(g, p);
-	read_unlock(&tasklist_lock);
-
-	usermodehelper_enable();
-
-	schedule();
-	printk("done.\n");
-=======
 	cpuset_wait_for_hotplug();
 
 	read_lock(&tasklist_lock);
@@ -408,7 +212,6 @@ void thaw_processes(void)
 	schedule();
 	pr_cont("done.\n");
 	trace_suspend_resume(TPS("thaw_processes"), 0, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void thaw_kernel_threads(void)
@@ -416,25 +219,11 @@ void thaw_kernel_threads(void)
 	struct task_struct *g, *p;
 
 	pm_nosig_freezing = false;
-<<<<<<< HEAD
-	printk("Restarting kernel threads ... ");
-=======
 	pr_info("Restarting kernel threads ... ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	thaw_workqueues();
 
 	read_lock(&tasklist_lock);
-<<<<<<< HEAD
-	do_each_thread(g, p) {
-		if (p->flags & (PF_KTHREAD | PF_WQ_WORKER))
-			__thaw_task(p);
-	} while_each_thread(g, p);
-	read_unlock(&tasklist_lock);
-
-	schedule();
-	printk("done.\n");
-=======
 	for_each_process_thread(g, p) {
 		if (p->flags & PF_KTHREAD)
 			__thaw_task(p);
@@ -443,5 +232,4 @@ void thaw_kernel_threads(void)
 
 	schedule();
 	pr_cont("done.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

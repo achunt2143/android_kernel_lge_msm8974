@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_DEFS_H__
@@ -56,10 +38,7 @@ enum {
 	BFA_MFG_TYPE_PROWLER_C = 1710,   /*  Prowler CNA only cards	*/
 	BFA_MFG_TYPE_PROWLER_D = 1860,   /*  Prowler Dual cards		*/
 	BFA_MFG_TYPE_CHINOOK   = 1867,   /*  Chinook cards		*/
-<<<<<<< HEAD
-=======
 	BFA_MFG_TYPE_CHINOOK2   = 1869,	 /*!< Chinook2 cards		*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BFA_MFG_TYPE_INVALID = 0,        /*  Invalid card type		*/
 };
 
@@ -74,12 +53,8 @@ enum {
 	(type) == BFA_MFG_TYPE_ASTRA || \
 	(type) == BFA_MFG_TYPE_LIGHTNING_P0 || \
 	(type) == BFA_MFG_TYPE_LIGHTNING || \
-<<<<<<< HEAD
-	(type) == BFA_MFG_TYPE_CHINOOK))
-=======
 	(type) == BFA_MFG_TYPE_CHINOOK || \
 	(type) == BFA_MFG_TYPE_CHINOOK2))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Check if the card having old wwn/mac handling
@@ -150,10 +125,7 @@ enum bfa_status {
 	BFA_STATUS_ETIMER	= 5,	/*  Timer expired - Retry, if persists,
 					 *  contact support */
 	BFA_STATUS_EPROTOCOL	= 6,	/*  Protocol error */
-<<<<<<< HEAD
-=======
 	BFA_STATUS_BADFLASH	= 9,	/*  Flash is bad */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BFA_STATUS_SFP_UNSUPP	= 10,	/*  Unsupported SFP - Replace SFP */
 	BFA_STATUS_UNKNOWN_VFID = 11,	/*  VF_ID not found */
 	BFA_STATUS_DATACORRUPTED = 12,  /*  Diag returned data corrupted */
@@ -183,19 +155,13 @@ enum bfa_status {
 	BFA_STATUS_BEACON_ON    = 72,   /* Port Beacon already on */
 	BFA_STATUS_ENOFSAVE	= 78,	/*  No saved firmware trace */
 	BFA_STATUS_IOC_DISABLED = 82,   /* IOC is already disabled */
-<<<<<<< HEAD
-=======
 	BFA_STATUS_ERROR_TRL_ENABLED  = 87,   /* TRL is enabled */
 	BFA_STATUS_ERROR_QOS_ENABLED  = 88,   /* QoS is enabled */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BFA_STATUS_NO_SFP_DEV = 89,	/* No SFP device check or replace SFP */
 	BFA_STATUS_MEMTEST_FAILED = 90, /* Memory test failed contact support */
 	BFA_STATUS_LEDTEST_OP = 109, /* LED test is operating */
 	BFA_STATUS_INVALID_MAC  = 134, /*  Invalid MAC address */
-<<<<<<< HEAD
-=======
 	BFA_STATUS_CMD_NOTSUPP_CNA = 146, /* Command not supported for CNA */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BFA_STATUS_PBC		= 154, /*  Operation not allowed for pre-boot
 					*  configuration */
 	BFA_STATUS_BAD_FWCFG = 156,	/* Bad firmware configuration */
@@ -215,10 +181,6 @@ enum bfa_status {
 	BFA_STATUS_FAA_DISABLED = 198,	/* FAA is already disabled */
 	BFA_STATUS_FAA_ACQUIRED = 199,	/* FAA is already acquired */
 	BFA_STATUS_FAA_ACQ_ADDR = 200,	/* Acquiring addr */
-<<<<<<< HEAD
-	BFA_STATUS_ERROR_TRUNK_ENABLED = 203,	/* Trunk enabled on adapter */
-	BFA_STATUS_MAX_ENTRY_REACHED = 212,	/* MAX entry reached */
-=======
 	BFA_STATUS_BBCR_FC_ONLY = 201, /*!< BBCredit Recovery is supported for *
 					* FC mode only */
 	BFA_STATUS_ERROR_TRUNK_ENABLED = 203,	/* Trunk enabled on adapter */
@@ -261,7 +223,6 @@ enum bfa_status {
 	BFA_STATUS_DPORT_INV_SFP = 271, /* Invalid SFP for D-PORT mode. */
 	BFA_STATUS_DPORT_CMD_NOTSUPP    = 273, /* Dport is not supported by
 					* remote port */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BFA_STATUS_MAX_VAL		/* Unknown error code */
 };
 #define bfa_status_t enum bfa_status
@@ -298,10 +259,7 @@ enum {
 	BFA_ADAPTER_MFG_NAME_LEN    = 8,   /*  manufacturer name length */
 	BFA_ADAPTER_SYM_NAME_LEN    = 64,  /*  adapter symbolic name length */
 	BFA_ADAPTER_OS_TYPE_LEN	    = 64,  /*  adapter os type length */
-<<<<<<< HEAD
-=======
 	BFA_ADAPTER_UUID_LEN	    = 16,  /* adapter uuid length */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bfa_adapter_attr_s {
@@ -331,14 +289,11 @@ struct bfa_adapter_attr_s {
 
 	u8		is_mezz;
 	u8		trunk_capable;
-<<<<<<< HEAD
-=======
 	u8		mfg_day;	/* manufacturing day */
 	u8		mfg_month;	/* manufacturing month */
 	u16		mfg_year;	/* manufacturing year */
 	u16		rsvd;
 	u8		uuid[BFA_ADAPTER_UUID_LEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -452,12 +407,8 @@ struct bfa_ioc_attr_s {
 	u8				port_mode;	/*  bfa_mode_s	*/
 	u8				cap_bm;		/*  capability	*/
 	u8				port_mode_cfg;	/*  bfa_mode_s	*/
-<<<<<<< HEAD
-	u8				rsvd[4];	/*  64bit align	*/
-=======
 	u8				def_fn;		/* 1 if default fn */
 	u8				rsvd[3];	/*  64bit align	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -680,10 +631,7 @@ enum {
 	BFA_PCI_DEVICE_ID_CT		= 0x14,
 	BFA_PCI_DEVICE_ID_CT_FC		= 0x21,
 	BFA_PCI_DEVICE_ID_CT2		= 0x22,
-<<<<<<< HEAD
-=======
 	BFA_PCI_DEVICE_ID_CT2_QUAD	= 0x23,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define bfa_asic_id_cb(__d)			\
@@ -692,13 +640,9 @@ enum {
 #define bfa_asic_id_ct(__d)			\
 	((__d) == BFA_PCI_DEVICE_ID_CT ||	\
 	 (__d) == BFA_PCI_DEVICE_ID_CT_FC)
-<<<<<<< HEAD
-#define bfa_asic_id_ct2(__d)	((__d) == BFA_PCI_DEVICE_ID_CT2)
-=======
 #define bfa_asic_id_ct2(__d)			\
 	((__d) == BFA_PCI_DEVICE_ID_CT2 ||	\
 	(__d) == BFA_PCI_DEVICE_ID_CT2_QUAD)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define bfa_asic_id_ctc(__d)	\
 	(bfa_asic_id_ct(__d) || bfa_asic_id_ct2(__d))
 
@@ -827,12 +771,8 @@ struct bfa_ablk_cfg_pf_s {
 	u8	rsvd[1];
 	u16	num_qpairs;
 	u16	num_vectors;
-<<<<<<< HEAD
-	u32	bw;
-=======
 	u16	bw_min;
 	u16	bw_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bfa_ablk_cfg_port_s {
@@ -999,8 +939,6 @@ struct sfp_diag_ext_s {
 	u8	ext_status_ctl[2];
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Diagnostic: Data Fields -- Address A2h
  * General Use Fields: User Writable Table - Features's Control Registers
@@ -1029,16 +967,12 @@ struct sfp_usr_eeprom_s {
 	u8	rsvd9[2];       /*  */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sfp_mem_s {
 	struct sfp_srlid_base_s	srlid_base;
 	struct sfp_srlid_ext_s	srlid_ext;
 	struct sfp_diag_base_s	diag_base;
 	struct sfp_diag_ext_s	diag_ext;
-<<<<<<< HEAD
-=======
 	struct sfp_usr_eeprom_s usr_eeprom;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1212,10 +1146,7 @@ struct bfa_flash_attr_s {
 #define LB_PATTERN_DEFAULT	0xB5B5B5B5
 #define QTEST_CNT_DEFAULT	10
 #define QTEST_PAT_DEFAULT	LB_PATTERN_DEFAULT
-<<<<<<< HEAD
-=======
 #define DPORT_ENABLE_LOOPCNT_DEFAULT (1024 * 1024)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bfa_diag_memtest_s {
 	u8	algo;
@@ -1244,8 +1175,6 @@ struct bfa_diag_loopback_result_s {
 	u8	rsvd[3];
 };
 
-<<<<<<< HEAD
-=======
 enum bfa_diag_dport_test_status {
 	DPORT_TEST_ST_IDLE	= 0,    /* the test has not started yet. */
 	DPORT_TEST_ST_FINAL	= 1,    /* the test done successfully */
@@ -1294,7 +1223,6 @@ struct bfa_diag_dport_result_s {
 	struct bfa_diag_dport_subtest_result_s subtest[DPORT_TEST_MAX];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_diag_ledtest_s {
 	u32	cmd;    /* bfa_led_op_t */
 	u32	color;  /* bfa_led_color_t */

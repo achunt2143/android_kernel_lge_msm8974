@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copyright (C) 2009 Red Hat, Inc.
  * Copyright (C) 2006 Rusty Russell IBM Corporation
  *
@@ -10,53 +7,19 @@
  * Inspiration, some code, and most witty comments come from
  * Documentation/virtual/lguest/lguest.c, by Rusty Russell
  *
-<<<<<<< HEAD
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Generic code for virtio server in host kernel.
  */
 
 #include <linux/eventfd.h>
 #include <linux/vhost.h>
-<<<<<<< HEAD
-#include <linux/virtio_net.h>
-#include <linux/mm.h>
-#include <linux/mmu_context.h>
-#include <linux/miscdevice.h>
-#include <linux/mutex.h>
-#include <linux/rcupdate.h>
-=======
 #include <linux/uio.h>
 #include <linux/mm.h>
 #include <linux/miscdevice.h>
 #include <linux/mutex.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/poll.h>
 #include <linux/file.h>
 #include <linux/highmem.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/kthread.h>
-#include <linux/cgroup.h>
-
-#include <linux/net.h>
-#include <linux/if_packet.h>
-#include <linux/if_arp.h>
-
-#include "vhost.h"
-
-enum {
-	VHOST_MEMORY_MAX_NREGIONS = 64,
-	VHOST_MEMORY_F_LOG = 0x1,
-};
-
-static unsigned vhost_zcopy_mask __read_mostly;
-
-#define vhost_used_event(vq) ((u16 __user *)&vq->avail->ring[vq->num])
-#define vhost_avail_event(vq) ((u16 __user *)&vq->used->ring[vq->num])
-=======
 #include <linux/vmalloc.h>
 #include <linux/kthread.h>
 #include <linux/module.h>
@@ -187,7 +150,6 @@ static void vhost_flush_work(struct vhost_work *work)
 	s = container_of(work, struct vhost_flush_struct, work);
 	complete(&s->wait_event);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void vhost_poll_func(struct file *file, wait_queue_head_t *wqh,
 			    poll_table *pt)
@@ -199,32 +161,6 @@ static void vhost_poll_func(struct file *file, wait_queue_head_t *wqh,
 	add_wait_queue(wqh, &poll->wait);
 }
 
-<<<<<<< HEAD
-static int vhost_poll_wakeup(wait_queue_t *wait, unsigned mode, int sync,
-			     void *key)
-{
-	struct vhost_poll *poll = container_of(wait, struct vhost_poll, wait);
-
-	if (!((unsigned long)key & poll->mask))
-		return 0;
-
-	vhost_poll_queue(poll);
-	return 0;
-}
-
-static void vhost_work_init(struct vhost_work *work, vhost_work_fn_t fn)
-{
-	INIT_LIST_HEAD(&work->node);
-	work->fn = fn;
-	init_waitqueue_head(&work->done);
-	work->flushing = 0;
-	work->queue_seq = work->done_seq = 0;
-}
-
-/* Init poll structure */
-void vhost_poll_init(struct vhost_poll *poll, vhost_work_fn_t fn,
-		     unsigned long mask, struct vhost_dev *dev)
-=======
 static int vhost_poll_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync,
 			     void *key)
 {
@@ -253,28 +189,11 @@ EXPORT_SYMBOL_GPL(vhost_work_init);
 void vhost_poll_init(struct vhost_poll *poll, vhost_work_fn_t fn,
 		     __poll_t mask, struct vhost_dev *dev,
 		     struct vhost_virtqueue *vq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	init_waitqueue_func_entry(&poll->wait, vhost_poll_wakeup);
 	init_poll_funcptr(&poll->table, vhost_poll_func);
 	poll->mask = mask;
 	poll->dev = dev;
-<<<<<<< HEAD
-
-	vhost_work_init(&poll->work, fn);
-}
-
-/* Start polling a file. We add ourselves to file's wait queue. The caller must
- * keep a reference to a file until after vhost_poll_stop is called. */
-void vhost_poll_start(struct vhost_poll *poll, struct file *file)
-{
-	unsigned long mask;
-
-	mask = file->f_op->poll(file, &poll->table);
-	if (mask)
-		vhost_poll_wakeup(&poll->wait, 0, 0, (void *)mask);
-}
-=======
 	poll->wqh = NULL;
 	poll->vq = vq;
 
@@ -302,69 +221,11 @@ int vhost_poll_start(struct vhost_poll *poll, struct file *file)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(vhost_poll_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Stop polling a file. After this function returns, it becomes safe to drop the
  * file reference. You must also flush afterwards. */
 void vhost_poll_stop(struct vhost_poll *poll)
 {
-<<<<<<< HEAD
-	remove_wait_queue(poll->wqh, &poll->wait);
-}
-
-static bool vhost_work_seq_done(struct vhost_dev *dev, struct vhost_work *work,
-				unsigned seq)
-{
-	int left;
-
-	spin_lock_irq(&dev->work_lock);
-	left = seq - work->done_seq;
-	spin_unlock_irq(&dev->work_lock);
-	return left <= 0;
-}
-
-static void vhost_work_flush(struct vhost_dev *dev, struct vhost_work *work)
-{
-	unsigned seq;
-	int flushing;
-
-	spin_lock_irq(&dev->work_lock);
-	seq = work->queue_seq;
-	work->flushing++;
-	spin_unlock_irq(&dev->work_lock);
-	wait_event(work->done, vhost_work_seq_done(dev, work, seq));
-	spin_lock_irq(&dev->work_lock);
-	flushing = --work->flushing;
-	spin_unlock_irq(&dev->work_lock);
-	BUG_ON(flushing < 0);
-}
-
-/* Flush any work that has been scheduled. When calling this, don't hold any
- * locks that are also used by the callback. */
-void vhost_poll_flush(struct vhost_poll *poll)
-{
-	vhost_work_flush(poll->dev, &poll->work);
-}
-
-static inline void vhost_work_queue(struct vhost_dev *dev,
-				    struct vhost_work *work)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&dev->work_lock, flags);
-	if (list_empty(&work->node)) {
-		list_add_tail(&work->node, &dev->work_list);
-		work->queue_seq++;
-		wake_up_process(dev->worker);
-	}
-	spin_unlock_irqrestore(&dev->work_lock, flags);
-}
-
-void vhost_poll_queue(struct vhost_poll *poll)
-{
-	vhost_work_queue(poll->dev, &poll->work);
-}
-=======
 	if (poll->wqh) {
 		remove_wait_queue(poll->wqh, &poll->wait);
 		poll->wqh = NULL;
@@ -498,7 +359,6 @@ bool vhost_vq_is_setup(struct vhost_virtqueue *vq)
 	return vq->avail && vq->desc && vq->used && vhost_vq_access_ok(vq);
 }
 EXPORT_SYMBOL_GPL(vhost_vq_is_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void vhost_vq_reset(struct vhost_dev *dev,
 			   struct vhost_virtqueue *vq)
@@ -515,67 +375,6 @@ static void vhost_vq_reset(struct vhost_dev *dev,
 	vq->used_flags = 0;
 	vq->log_used = false;
 	vq->log_addr = -1ull;
-<<<<<<< HEAD
-	vq->vhost_hlen = 0;
-	vq->sock_hlen = 0;
-	vq->private_data = NULL;
-	vq->log_base = NULL;
-	vq->error_ctx = NULL;
-	vq->error = NULL;
-	vq->kick = NULL;
-	vq->call_ctx = NULL;
-	vq->call = NULL;
-	vq->log_ctx = NULL;
-	vq->upend_idx = 0;
-	vq->done_idx = 0;
-	vq->ubufs = NULL;
-}
-
-static int vhost_worker(void *data)
-{
-	struct vhost_dev *dev = data;
-	struct vhost_work *work = NULL;
-	unsigned uninitialized_var(seq);
-
-	use_mm(dev->mm);
-
-	for (;;) {
-		/* mb paired w/ kthread_stop */
-		set_current_state(TASK_INTERRUPTIBLE);
-
-		spin_lock_irq(&dev->work_lock);
-		if (work) {
-			work->done_seq = seq;
-			if (work->flushing)
-				wake_up_all(&work->done);
-		}
-
-		if (kthread_should_stop()) {
-			spin_unlock_irq(&dev->work_lock);
-			__set_current_state(TASK_RUNNING);
-			break;
-		}
-		if (!list_empty(&dev->work_list)) {
-			work = list_first_entry(&dev->work_list,
-						struct vhost_work, node);
-			list_del_init(&work->node);
-			seq = work->queue_seq;
-		} else
-			work = NULL;
-		spin_unlock_irq(&dev->work_lock);
-
-		if (work) {
-			__set_current_state(TASK_RUNNING);
-			work->fn(work);
-			if (need_resched())
-				schedule();
-		} else
-			schedule();
-
-	}
-	unuse_mm(dev->mm);
-	return 0;
-=======
 	vq->private_data = NULL;
 	vq->acked_features = 0;
 	vq->acked_backend_features = 0;
@@ -616,7 +415,6 @@ static bool vhost_worker(void *data)
 	}
 
 	return !!node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
@@ -627,41 +425,11 @@ static void vhost_vq_free_iovecs(struct vhost_virtqueue *vq)
 	vq->log = NULL;
 	kfree(vq->heads);
 	vq->heads = NULL;
-<<<<<<< HEAD
-	kfree(vq->ubuf_info);
-	vq->ubuf_info = NULL;
-}
-
-void vhost_enable_zcopy(int vq)
-{
-	vhost_zcopy_mask |= 0x1 << vq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Helper to allocate iovec buffers for all vqs. */
 static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
 {
-<<<<<<< HEAD
-	int i;
-	bool zcopy;
-
-	for (i = 0; i < dev->nvqs; ++i) {
-		dev->vqs[i].indirect = kmalloc(sizeof *dev->vqs[i].indirect *
-					       UIO_MAXIOV, GFP_KERNEL);
-		dev->vqs[i].log = kmalloc(sizeof *dev->vqs[i].log * UIO_MAXIOV,
-					  GFP_KERNEL);
-		dev->vqs[i].heads = kmalloc(sizeof *dev->vqs[i].heads *
-					    UIO_MAXIOV, GFP_KERNEL);
-		zcopy = vhost_zcopy_mask & (0x1 << i);
-		if (zcopy)
-			dev->vqs[i].ubuf_info =
-				kmalloc(sizeof *dev->vqs[i].ubuf_info *
-					UIO_MAXIOV, GFP_KERNEL);
-		if (!dev->vqs[i].indirect || !dev->vqs[i].log ||
-			!dev->vqs[i].heads ||
-			(zcopy && !dev->vqs[i].ubuf_info))
-=======
 	struct vhost_virtqueue *vq;
 	int i;
 
@@ -675,18 +443,13 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
 		vq->heads = kmalloc_array(dev->iov_limit, sizeof(*vq->heads),
 					  GFP_KERNEL);
 		if (!vq->indirect || !vq->log || !vq->heads)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_nomem;
 	}
 	return 0;
 
 err_nomem:
 	for (; i >= 0; --i)
-<<<<<<< HEAD
-		vhost_vq_free_iovecs(&dev->vqs[i]);
-=======
 		vhost_vq_free_iovecs(dev->vqs[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
@@ -695,14 +458,6 @@ static void vhost_dev_free_iovecs(struct vhost_dev *dev)
 	int i;
 
 	for (i = 0; i < dev->nvqs; ++i)
-<<<<<<< HEAD
-		vhost_vq_free_iovecs(&dev->vqs[i]);
-}
-
-long vhost_dev_init(struct vhost_dev *dev,
-		    struct vhost_virtqueue *vqs, int nvqs)
-{
-=======
 		vhost_vq_free_iovecs(dev->vqs[i]);
 }
 
@@ -753,37 +508,12 @@ void vhost_dev_init(struct vhost_dev *dev,
 				       struct vhost_iotlb_msg *msg))
 {
 	struct vhost_virtqueue *vq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	dev->vqs = vqs;
 	dev->nvqs = nvqs;
 	mutex_init(&dev->mutex);
 	dev->log_ctx = NULL;
-<<<<<<< HEAD
-	dev->log_file = NULL;
-	dev->memory = NULL;
-	dev->mm = NULL;
-	spin_lock_init(&dev->work_lock);
-	INIT_LIST_HEAD(&dev->work_list);
-	dev->worker = NULL;
-
-	for (i = 0; i < dev->nvqs; ++i) {
-		dev->vqs[i].log = NULL;
-		dev->vqs[i].indirect = NULL;
-		dev->vqs[i].heads = NULL;
-		dev->vqs[i].ubuf_info = NULL;
-		dev->vqs[i].dev = dev;
-		mutex_init(&dev->vqs[i].mutex);
-		vhost_vq_reset(dev, dev->vqs + i);
-		if (dev->vqs[i].handle_kick)
-			vhost_poll_init(&dev->vqs[i].poll,
-					dev->vqs[i].handle_kick, POLLIN, dev);
-	}
-
-	return 0;
-}
-=======
 	dev->umem = NULL;
 	dev->iotlb = NULL;
 	dev->mm = NULL;
@@ -812,7 +542,6 @@ void vhost_dev_init(struct vhost_dev *dev,
 	}
 }
 EXPORT_SYMBOL_GPL(vhost_dev_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Caller should have device mutex */
 long vhost_dev_check_owner(struct vhost_dev *dev)
@@ -820,324 +549,6 @@ long vhost_dev_check_owner(struct vhost_dev *dev)
 	/* Are you the owner? If not, I don't think you mean to do that */
 	return dev->mm == current->mm ? 0 : -EPERM;
 }
-<<<<<<< HEAD
-
-struct vhost_attach_cgroups_struct {
-	struct vhost_work work;
-	struct task_struct *owner;
-	int ret;
-};
-
-static void vhost_attach_cgroups_work(struct vhost_work *work)
-{
-	struct vhost_attach_cgroups_struct *s;
-
-	s = container_of(work, struct vhost_attach_cgroups_struct, work);
-	s->ret = cgroup_attach_task_all(s->owner, current);
-}
-
-static int vhost_attach_cgroups(struct vhost_dev *dev)
-{
-	struct vhost_attach_cgroups_struct attach;
-
-	attach.owner = current;
-	vhost_work_init(&attach.work, vhost_attach_cgroups_work);
-	vhost_work_queue(dev, &attach.work);
-	vhost_work_flush(dev, &attach.work);
-	return attach.ret;
-}
-
-/* Caller should have device mutex */
-static long vhost_dev_set_owner(struct vhost_dev *dev)
-{
-	struct task_struct *worker;
-	int err;
-
-	/* Is there an owner already? */
-	if (dev->mm) {
-		err = -EBUSY;
-		goto err_mm;
-	}
-
-	/* No owner, become one */
-	dev->mm = get_task_mm(current);
-	worker = kthread_create(vhost_worker, dev, "vhost-%d", current->pid);
-	if (IS_ERR(worker)) {
-		err = PTR_ERR(worker);
-		goto err_worker;
-	}
-
-	dev->worker = worker;
-	wake_up_process(worker);	/* avoid contributing to loadavg */
-
-	err = vhost_attach_cgroups(dev);
-	if (err)
-		goto err_cgroup;
-
-	err = vhost_dev_alloc_iovecs(dev);
-	if (err)
-		goto err_cgroup;
-
-	return 0;
-err_cgroup:
-	kthread_stop(worker);
-	dev->worker = NULL;
-err_worker:
-	if (dev->mm)
-		mmput(dev->mm);
-	dev->mm = NULL;
-err_mm:
-	return err;
-}
-
-/* Caller should have device mutex */
-long vhost_dev_reset_owner(struct vhost_dev *dev)
-{
-	struct vhost_memory *memory;
-
-	/* Restore memory to default empty mapping. */
-	memory = kmalloc(offsetof(struct vhost_memory, regions), GFP_KERNEL);
-	if (!memory)
-		return -ENOMEM;
-
-	vhost_dev_cleanup(dev, true);
-
-	memory->nregions = 0;
-	RCU_INIT_POINTER(dev->memory, memory);
-	return 0;
-}
-
-/* In case of DMA done not in order in lower device driver for some reason.
- * upend_idx is used to track end of used idx, done_idx is used to track head
- * of used idx. Once lower device DMA done contiguously, we will signal KVM
- * guest used idx.
- */
-int vhost_zerocopy_signal_used(struct vhost_virtqueue *vq)
-{
-	int i;
-	int j = 0;
-
-	for (i = vq->done_idx; i != vq->upend_idx; i = (i + 1) % UIO_MAXIOV) {
-		if ((vq->heads[i].len == VHOST_DMA_DONE_LEN)) {
-			vq->heads[i].len = VHOST_DMA_CLEAR_LEN;
-			vhost_add_used_and_signal(vq->dev, vq,
-						  vq->heads[i].id, 0);
-			++j;
-		} else
-			break;
-	}
-	if (j)
-		vq->done_idx = i;
-	return j;
-}
-
-/* Caller should have device mutex if and only if locked is set */
-void vhost_dev_cleanup(struct vhost_dev *dev, bool locked)
-{
-	int i;
-
-	for (i = 0; i < dev->nvqs; ++i) {
-		if (dev->vqs[i].kick && dev->vqs[i].handle_kick) {
-			vhost_poll_stop(&dev->vqs[i].poll);
-			vhost_poll_flush(&dev->vqs[i].poll);
-		}
-		/* Wait for all lower device DMAs done. */
-		if (dev->vqs[i].ubufs)
-			vhost_ubuf_put_and_wait(dev->vqs[i].ubufs);
-
-		/* Signal guest as appropriate. */
-		vhost_zerocopy_signal_used(&dev->vqs[i]);
-
-		if (dev->vqs[i].error_ctx)
-			eventfd_ctx_put(dev->vqs[i].error_ctx);
-		if (dev->vqs[i].error)
-			fput(dev->vqs[i].error);
-		if (dev->vqs[i].kick)
-			fput(dev->vqs[i].kick);
-		if (dev->vqs[i].call_ctx)
-			eventfd_ctx_put(dev->vqs[i].call_ctx);
-		if (dev->vqs[i].call)
-			fput(dev->vqs[i].call);
-		vhost_vq_reset(dev, dev->vqs + i);
-	}
-	vhost_dev_free_iovecs(dev);
-	if (dev->log_ctx)
-		eventfd_ctx_put(dev->log_ctx);
-	dev->log_ctx = NULL;
-	if (dev->log_file)
-		fput(dev->log_file);
-	dev->log_file = NULL;
-	/* No one will access memory at this point */
-	kfree(rcu_dereference_protected(dev->memory,
-					locked ==
-						lockdep_is_held(&dev->mutex)));
-	RCU_INIT_POINTER(dev->memory, NULL);
-	WARN_ON(!list_empty(&dev->work_list));
-	if (dev->worker) {
-		kthread_stop(dev->worker);
-		dev->worker = NULL;
-	}
-	if (dev->mm)
-		mmput(dev->mm);
-	dev->mm = NULL;
-}
-
-static int log_access_ok(void __user *log_base, u64 addr, unsigned long sz)
-{
-	u64 a = addr / VHOST_PAGE_SIZE / 8;
-
-	/* Make sure 64 bit math will not overflow. */
-	if (a > ULONG_MAX - (unsigned long)log_base ||
-	    a + (unsigned long)log_base > ULONG_MAX)
-		return 0;
-
-	return access_ok(VERIFY_WRITE, log_base + a,
-			 (sz + VHOST_PAGE_SIZE * 8 - 1) / VHOST_PAGE_SIZE / 8);
-}
-
-/* Caller should have vq mutex and device mutex. */
-static int vq_memory_access_ok(void __user *log_base, struct vhost_memory *mem,
-			       int log_all)
-{
-	int i;
-
-	if (!mem)
-		return 0;
-
-	for (i = 0; i < mem->nregions; ++i) {
-		struct vhost_memory_region *m = mem->regions + i;
-		unsigned long a = m->userspace_addr;
-		if (m->memory_size > ULONG_MAX)
-			return 0;
-		else if (!access_ok(VERIFY_WRITE, (void __user *)a,
-				    m->memory_size))
-			return 0;
-		else if (log_all && !log_access_ok(log_base,
-						   m->guest_phys_addr,
-						   m->memory_size))
-			return 0;
-	}
-	return 1;
-}
-
-/* Can we switch to this memory table? */
-/* Caller should have device mutex but not vq mutex */
-static int memory_access_ok(struct vhost_dev *d, struct vhost_memory *mem,
-			    int log_all)
-{
-	int i;
-
-	for (i = 0; i < d->nvqs; ++i) {
-		int ok;
-		mutex_lock(&d->vqs[i].mutex);
-		/* If ring is inactive, will check when it's enabled. */
-		if (d->vqs[i].private_data)
-			ok = vq_memory_access_ok(d->vqs[i].log_base, mem,
-						 log_all);
-		else
-			ok = 1;
-		mutex_unlock(&d->vqs[i].mutex);
-		if (!ok)
-			return 0;
-	}
-	return 1;
-}
-
-static int vq_access_ok(struct vhost_dev *d, unsigned int num,
-			struct vring_desc __user *desc,
-			struct vring_avail __user *avail,
-			struct vring_used __user *used)
-{
-	size_t s = vhost_has_feature(d, VIRTIO_RING_F_EVENT_IDX) ? 2 : 0;
-	return access_ok(VERIFY_READ, desc, num * sizeof *desc) &&
-	       access_ok(VERIFY_READ, avail,
-			 sizeof *avail + num * sizeof *avail->ring + s) &&
-	       access_ok(VERIFY_WRITE, used,
-			sizeof *used + num * sizeof *used->ring + s);
-}
-
-/* Can we log writes? */
-/* Caller should have device mutex but not vq mutex */
-int vhost_log_access_ok(struct vhost_dev *dev)
-{
-	struct vhost_memory *mp;
-
-	mp = rcu_dereference_protected(dev->memory,
-				       lockdep_is_held(&dev->mutex));
-	return memory_access_ok(dev, mp, 1);
-}
-
-/* Verify access for write logging. */
-/* Caller should have vq mutex and device mutex */
-static int vq_log_access_ok(struct vhost_dev *d, struct vhost_virtqueue *vq,
-			    void __user *log_base)
-{
-	struct vhost_memory *mp;
-	size_t s = vhost_has_feature(d, VIRTIO_RING_F_EVENT_IDX) ? 2 : 0;
-
-	mp = rcu_dereference_protected(vq->dev->memory,
-				       lockdep_is_held(&vq->mutex));
-	return vq_memory_access_ok(log_base, mp,
-			    vhost_has_feature(vq->dev, VHOST_F_LOG_ALL)) &&
-		(!vq->log_used || log_access_ok(log_base, vq->log_addr,
-					sizeof *vq->used +
-					vq->num * sizeof *vq->used->ring + s));
-}
-
-/* Can we start vq? */
-/* Caller should have vq mutex and device mutex */
-int vhost_vq_access_ok(struct vhost_virtqueue *vq)
-{
-	return vq_access_ok(vq->dev, vq->num, vq->desc, vq->avail, vq->used) &&
-		vq_log_access_ok(vq->dev, vq, vq->log_base);
-}
-
-static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
-{
-	struct vhost_memory mem, *newmem, *oldmem;
-	unsigned long size = offsetof(struct vhost_memory, regions);
-
-	if (copy_from_user(&mem, m, size))
-		return -EFAULT;
-	if (mem.padding)
-		return -EOPNOTSUPP;
-	if (mem.nregions > VHOST_MEMORY_MAX_NREGIONS)
-		return -E2BIG;
-	newmem = kmalloc(size + mem.nregions * sizeof *m->regions, GFP_KERNEL);
-	if (!newmem)
-		return -ENOMEM;
-
-	memcpy(newmem, &mem, size);
-	if (copy_from_user(newmem->regions, m->regions,
-			   mem.nregions * sizeof *m->regions)) {
-		kfree(newmem);
-		return -EFAULT;
-	}
-
-	if (!memory_access_ok(d, newmem,
-			      vhost_has_feature(d, VHOST_F_LOG_ALL))) {
-		kfree(newmem);
-		return -EFAULT;
-	}
-	oldmem = rcu_dereference_protected(d->memory,
-					   lockdep_is_held(&d->mutex));
-	rcu_assign_pointer(d->memory, newmem);
-	synchronize_rcu();
-	kfree(oldmem);
-	return 0;
-}
-
-static long vhost_set_vring(struct vhost_dev *d, int ioctl, void __user *argp)
-{
-	struct file *eventfp, *filep = NULL,
-		    *pollstart = NULL, *pollstop = NULL;
-	struct eventfd_ctx *ctx = NULL;
-	u32 __user *idxp = argp;
-	struct vhost_virtqueue *vq;
-	struct vhost_vring_state s;
-	struct vhost_vring_file f;
-	struct vhost_vring_addr a;
-=======
 EXPORT_SYMBOL_GPL(vhost_dev_check_owner);
 
 /* Caller should have device mutex */
@@ -1357,19 +768,12 @@ static int vhost_get_vq_from_user(struct vhost_dev *dev, void __user *argp,
 				  struct vhost_virtqueue **vq, u32 *id)
 {
 	u32 __user *idxp = argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 idx;
 	long r;
 
 	r = get_user(idx, idxp);
 	if (r < 0)
 		return r;
-<<<<<<< HEAD
-	if (idx >= d->nvqs)
-		return -ENOBUFS;
-
-	vq = d->vqs + idx;
-=======
 
 	if (idx >= dev->nvqs)
 		return -ENOBUFS;
@@ -2451,30 +1855,11 @@ static long vhost_vring_set_num_addr(struct vhost_dev *d,
 				     void __user *argp)
 {
 	long r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&vq->mutex);
 
 	switch (ioctl) {
 	case VHOST_SET_VRING_NUM:
-<<<<<<< HEAD
-		/* Resizing ring with an active backend?
-		 * You don't want to do that. */
-		if (vq->private_data) {
-			r = -EBUSY;
-			break;
-		}
-		if (copy_from_user(&s, argp, sizeof s)) {
-			r = -EFAULT;
-			break;
-		}
-		if (!s.num || s.num > 0xffff || (s.num & (s.num - 1))) {
-			r = -EINVAL;
-			break;
-		}
-		vq->num = s.num;
-		break;
-=======
 		r = vhost_vring_set_num(d, vq, argp);
 		break;
 	case VHOST_SET_VRING_ADDR:
@@ -2511,7 +1896,6 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 	mutex_lock(&vq->mutex);
 
 	switch (ioctl) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VHOST_SET_VRING_BASE:
 		/* Moving base with an active backend?
 		 * You don't want to do that. */
@@ -2523,13 +1907,6 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 			r = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-		if (s.num > 0xffff) {
-			r = -EINVAL;
-			break;
-		}
-		vq->last_avail_idx = s.num;
-=======
 		if (vhost_has_feature(vq, VIRTIO_F_RING_PACKED)) {
 			vq->last_avail_idx = s.num & 0xffff;
 			vq->last_used_idx = (s.num >> 16) & 0xffff;
@@ -2540,70 +1917,11 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 			}
 			vq->last_avail_idx = s.num;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Forget the cached index value. */
 		vq->avail_idx = vq->last_avail_idx;
 		break;
 	case VHOST_GET_VRING_BASE:
 		s.index = idx;
-<<<<<<< HEAD
-		s.num = vq->last_avail_idx;
-		if (copy_to_user(argp, &s, sizeof s))
-			r = -EFAULT;
-		break;
-	case VHOST_SET_VRING_ADDR:
-		if (copy_from_user(&a, argp, sizeof a)) {
-			r = -EFAULT;
-			break;
-		}
-		if (a.flags & ~(0x1 << VHOST_VRING_F_LOG)) {
-			r = -EOPNOTSUPP;
-			break;
-		}
-		/* For 32bit, verify that the top 32bits of the user
-		   data are set to zero. */
-		if ((u64)(unsigned long)a.desc_user_addr != a.desc_user_addr ||
-		    (u64)(unsigned long)a.used_user_addr != a.used_user_addr ||
-		    (u64)(unsigned long)a.avail_user_addr != a.avail_user_addr) {
-			r = -EFAULT;
-			break;
-		}
-		if ((a.avail_user_addr & (sizeof *vq->avail->ring - 1)) ||
-		    (a.used_user_addr & (sizeof *vq->used->ring - 1)) ||
-		    (a.log_guest_addr & (sizeof *vq->used->ring - 1))) {
-			r = -EINVAL;
-			break;
-		}
-
-		/* We only verify access here if backend is configured.
-		 * If it is not, we don't as size might not have been setup.
-		 * We will verify when backend is configured. */
-		if (vq->private_data) {
-			if (!vq_access_ok(d, vq->num,
-				(void __user *)(unsigned long)a.desc_user_addr,
-				(void __user *)(unsigned long)a.avail_user_addr,
-				(void __user *)(unsigned long)a.used_user_addr)) {
-				r = -EINVAL;
-				break;
-			}
-
-			/* Also validate log access for used ring if enabled. */
-			if ((a.flags & (0x1 << VHOST_VRING_F_LOG)) &&
-			    !log_access_ok(vq->log_base, a.log_guest_addr,
-					   sizeof *vq->used +
-					   vq->num * sizeof *vq->used->ring)) {
-				r = -EINVAL;
-				break;
-			}
-		}
-
-		vq->log_used = !!(a.flags & (0x1 << VHOST_VRING_F_LOG));
-		vq->desc = (void __user *)(unsigned long)a.desc_user_addr;
-		vq->avail = (void __user *)(unsigned long)a.avail_user_addr;
-		vq->log_addr = a.log_guest_addr;
-		vq->used = (void __user *)(unsigned long)a.used_user_addr;
-		break;
-=======
 		if (vhost_has_feature(vq, VIRTIO_F_RING_PACKED))
 			s.num = (u32)vq->last_avail_idx | ((u32)vq->last_used_idx << 16);
 		else
@@ -2611,29 +1929,19 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 		if (copy_to_user(argp, &s, sizeof s))
 			r = -EFAULT;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VHOST_SET_VRING_KICK:
 		if (copy_from_user(&f, argp, sizeof f)) {
 			r = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-		eventfp = f.fd == -1 ? NULL : eventfd_fget(f.fd);
-=======
 		eventfp = f.fd == VHOST_FILE_UNBIND ? NULL : eventfd_fget(f.fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(eventfp)) {
 			r = PTR_ERR(eventfp);
 			break;
 		}
 		if (eventfp != vq->kick) {
-<<<<<<< HEAD
-			pollstop = filep = vq->kick;
-			pollstart = vq->kick = eventfp;
-=======
 			pollstop = (filep = vq->kick) != NULL;
 			pollstart = (vq->kick = eventfp) != NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			filep = eventfp;
 		break;
@@ -2642,21 +1950,6 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 			r = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-		eventfp = f.fd == -1 ? NULL : eventfd_fget(f.fd);
-		if (IS_ERR(eventfp)) {
-			r = PTR_ERR(eventfp);
-			break;
-		}
-		if (eventfp != vq->call) {
-			filep = vq->call;
-			ctx = vq->call_ctx;
-			vq->call = eventfp;
-			vq->call_ctx = eventfp ?
-				eventfd_ctx_fileget(eventfp) : NULL;
-		} else
-			filep = eventfp;
-=======
 		ctx = f.fd == VHOST_FILE_UNBIND ? NULL : eventfd_ctx_fdget(f.fd);
 		if (IS_ERR(ctx)) {
 			r = PTR_ERR(ctx);
@@ -2664,28 +1957,12 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 		}
 
 		swap(ctx, vq->call_ctx.ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case VHOST_SET_VRING_ERR:
 		if (copy_from_user(&f, argp, sizeof f)) {
 			r = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-		eventfp = f.fd == -1 ? NULL : eventfd_fget(f.fd);
-		if (IS_ERR(eventfp)) {
-			r = PTR_ERR(eventfp);
-			break;
-		}
-		if (eventfp != vq->error) {
-			filep = vq->error;
-			vq->error = eventfp;
-			ctx = vq->error_ctx;
-			vq->error_ctx = eventfp ?
-				eventfd_ctx_fileget(eventfp) : NULL;
-		} else
-			filep = eventfp;
-=======
 		ctx = f.fd == VHOST_FILE_UNBIND ? NULL : eventfd_ctx_fdget(f.fd);
 		if (IS_ERR(ctx)) {
 			r = PTR_ERR(ctx);
@@ -2711,7 +1988,6 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 		s.num = vq->busyloop_timeout;
 		if (copy_to_user(argp, &s, sizeof(s)))
 			r = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		r = -ENOIOCTLCMD;
@@ -2720,37 +1996,17 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
 	if (pollstop && vq->handle_kick)
 		vhost_poll_stop(&vq->poll);
 
-<<<<<<< HEAD
-	if (ctx)
-=======
 	if (!IS_ERR_OR_NULL(ctx))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eventfd_ctx_put(ctx);
 	if (filep)
 		fput(filep);
 
 	if (pollstart && vq->handle_kick)
-<<<<<<< HEAD
-		vhost_poll_start(&vq->poll, vq->kick);
-=======
 		r = vhost_poll_start(&vq->poll, vq->kick);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&vq->mutex);
 
 	if (pollstop && vq->handle_kick)
-<<<<<<< HEAD
-		vhost_poll_flush(&vq->poll);
-	return r;
-}
-
-/* Caller must have device mutex */
-long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, unsigned long arg)
-{
-	void __user *argp = (void __user *)arg;
-	struct file *eventfp, *filep = NULL;
-	struct eventfd_ctx *ctx = NULL;
-=======
 		vhost_dev_flush(vq->poll.dev);
 	return r;
 }
@@ -2787,7 +2043,6 @@ EXPORT_SYMBOL_GPL(vhost_init_device_iotlb);
 long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
 {
 	struct eventfd_ctx *ctx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 p;
 	long r;
 	int i, fd;
@@ -2819,17 +2074,10 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
 		for (i = 0; i < d->nvqs; ++i) {
 			struct vhost_virtqueue *vq;
 			void __user *base = (void __user *)(unsigned long)p;
-<<<<<<< HEAD
-			vq = d->vqs + i;
-			mutex_lock(&vq->mutex);
-			/* If ring is inactive, will check when it's enabled. */
-			if (vq->private_data && !vq_log_access_ok(d, vq, base))
-=======
 			vq = d->vqs[i];
 			mutex_lock(&vq->mutex);
 			/* If ring is inactive, will check when it's enabled. */
 			if (vq->private_data && !vq_log_access_ok(vq, base))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				r = -EFAULT;
 			else
 				vq->log_base = base;
@@ -2840,33 +2088,6 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
 		r = get_user(fd, (int __user *)argp);
 		if (r < 0)
 			break;
-<<<<<<< HEAD
-		eventfp = fd == -1 ? NULL : eventfd_fget(fd);
-		if (IS_ERR(eventfp)) {
-			r = PTR_ERR(eventfp);
-			break;
-		}
-		if (eventfp != d->log_file) {
-			filep = d->log_file;
-			d->log_file = eventfp;
-			ctx = d->log_ctx;
-			d->log_ctx = eventfp ?
-				eventfd_ctx_fileget(eventfp) : NULL;
-		} else
-			filep = eventfp;
-		for (i = 0; i < d->nvqs; ++i) {
-			mutex_lock(&d->vqs[i].mutex);
-			d->vqs[i].log_ctx = d->log_ctx;
-			mutex_unlock(&d->vqs[i].mutex);
-		}
-		if (ctx)
-			eventfd_ctx_put(ctx);
-		if (filep)
-			fput(filep);
-		break;
-	default:
-		r = vhost_set_vring(d, ioctl, argp);
-=======
 		ctx = fd == VHOST_FILE_UNBIND ? NULL : eventfd_ctx_fdget(fd);
 		if (IS_ERR(ctx)) {
 			r = PTR_ERR(ctx);
@@ -2883,41 +2104,16 @@ long vhost_dev_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *argp)
 		break;
 	default:
 		r = -ENOIOCTLCMD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 done:
 	return r;
 }
-<<<<<<< HEAD
-
-static const struct vhost_memory_region *find_region(struct vhost_memory *mem,
-						     __u64 addr, __u32 len)
-{
-	struct vhost_memory_region *reg;
-	int i;
-
-	/* linear search is not brilliant, but we really have on the order of 6
-	 * regions in practice */
-	for (i = 0; i < mem->nregions; ++i) {
-		reg = mem->regions + i;
-		if (reg->guest_phys_addr <= addr &&
-		    reg->guest_phys_addr + reg->memory_size - 1 >= addr)
-			return reg;
-	}
-	return NULL;
-}
-
-/* TODO: This is really inefficient.  We need something like get_user()
- * (instruction directly accesses the data, with an exception table entry
- * returning -EFAULT). See Documentation/x86/exception-tables.txt.
-=======
 EXPORT_SYMBOL_GPL(vhost_dev_ioctl);
 
 /* TODO: This is really inefficient.  We need something like get_user()
  * (instruction directly accesses the data, with an exception table entry
  * returning -EFAULT). See Documentation/arch/x86/exception-tables.rst.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int set_bit_to_user(int nr, void __user *addr)
 {
@@ -2927,23 +2123,14 @@ static int set_bit_to_user(int nr, void __user *addr)
 	int bit = nr + (log % PAGE_SIZE) * 8;
 	int r;
 
-<<<<<<< HEAD
-	r = get_user_pages_fast(log, 1, 1, &page);
-=======
 	r = pin_user_pages_fast(log, 1, FOLL_WRITE, &page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r < 0)
 		return r;
 	BUG_ON(r != 1);
 	base = kmap_atomic(page);
 	set_bit(bit, base);
 	kunmap_atomic(base);
-<<<<<<< HEAD
-	set_page_dirty_lock(page);
-	put_page(page);
-=======
 	unpin_user_pages_dirty_lock(&page, 1, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2973,10 +2160,6 @@ static int log_write(void __user *log_base,
 	return r;
 }
 
-<<<<<<< HEAD
-int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
-		    unsigned int log_num, u64 len)
-=======
 static int log_write_hva(struct vhost_virtqueue *vq, u64 hva, u64 len)
 {
 	struct vhost_iotlb *umem = vq->umem;
@@ -3041,14 +2224,11 @@ static int log_used(struct vhost_virtqueue *vq, u64 used_offset, u64 len)
 
 int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
 		    unsigned int log_num, u64 len, struct iovec *iov, int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, r;
 
 	/* Make sure data written is seen before log. */
 	smp_wmb();
-<<<<<<< HEAD
-=======
 
 	if (vq->iotlb) {
 		for (i = 0; i < count; i++) {
@@ -3060,7 +2240,6 @@ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < log_num; ++i) {
 		u64 l = min(log[i].len, len);
 		r = log_write(vq->log_base, log[i].addr, l);
@@ -3069,11 +2248,7 @@ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
 		len -= l;
 		if (!len) {
 			if (vq->log_ctx)
-<<<<<<< HEAD
-				eventfd_signal(vq->log_ctx, 1);
-=======
 				eventfd_signal(vq->log_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 	}
@@ -3081,50 +2256,29 @@ int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
 	BUG();
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(vhost_log_write);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int vhost_update_used_flags(struct vhost_virtqueue *vq)
 {
 	void __user *used;
-<<<<<<< HEAD
-	if (__put_user(vq->used_flags, &vq->used->flags) < 0)
-=======
 	if (vhost_put_used_flags(vq))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	if (unlikely(vq->log_used)) {
 		/* Make sure the flag is seen before log. */
 		smp_wmb();
 		/* Log used flag write. */
 		used = &vq->used->flags;
-<<<<<<< HEAD
-		log_write(vq->log_base, vq->log_addr +
-			  (used - (void __user *)vq->used),
-			  sizeof vq->used->flags);
-		if (vq->log_ctx)
-			eventfd_signal(vq->log_ctx, 1);
-=======
 		log_used(vq, (used - (void __user *)vq->used),
 			 sizeof vq->used->flags);
 		if (vq->log_ctx)
 			eventfd_signal(vq->log_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int vhost_update_avail_event(struct vhost_virtqueue *vq, u16 avail_event)
-{
-	if (__put_user(vq->avail_idx, vhost_avail_event(vq)))
-=======
 static int vhost_update_avail_event(struct vhost_virtqueue *vq)
 {
 	if (vhost_put_avail_event(vq))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	if (unlikely(vq->log_used)) {
 		void __user *used;
@@ -3132,49 +2286,14 @@ static int vhost_update_avail_event(struct vhost_virtqueue *vq)
 		smp_wmb();
 		/* Log avail event write */
 		used = vhost_avail_event(vq);
-<<<<<<< HEAD
-		log_write(vq->log_base, vq->log_addr +
-			  (used - (void __user *)vq->used),
-			  sizeof *vhost_avail_event(vq));
-		if (vq->log_ctx)
-			eventfd_signal(vq->log_ctx, 1);
-=======
 		log_used(vq, (used - (void __user *)vq->used),
 			 sizeof *vhost_avail_event(vq));
 		if (vq->log_ctx)
 			eventfd_signal(vq->log_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-int vhost_init_used(struct vhost_virtqueue *vq)
-{
-	int r;
-	if (!vq->private_data)
-		return 0;
-
-	r = vhost_update_used_flags(vq);
-	if (r)
-		return r;
-	vq->signalled_used_valid = false;
-	return get_user(vq->last_used_idx, &vq->used->idx);
-}
-
-static int translate_desc(struct vhost_dev *dev, u64 addr, u32 len,
-			  struct iovec iov[], int iov_size)
-{
-	const struct vhost_memory_region *reg;
-	struct vhost_memory *mem;
-	struct iovec *_iov;
-	u64 s = 0;
-	int ret = 0;
-
-	rcu_read_lock();
-
-	mem = rcu_dereference(dev->memory);
-=======
 int vhost_vq_init_access(struct vhost_virtqueue *vq)
 {
 	__virtio16 last_used_idx;
@@ -3220,25 +2339,12 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
 	u64 s = 0, last = addr + len - 1;
 	int ret = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((u64)len > s) {
 		u64 size;
 		if (unlikely(ret >= iov_size)) {
 			ret = -ENOBUFS;
 			break;
 		}
-<<<<<<< HEAD
-		reg = find_region(mem, addr, len);
-		if (unlikely(!reg)) {
-			ret = -EFAULT;
-			break;
-		}
-		_iov = iov + ret;
-		size = reg->memory_size - addr + reg->guest_phys_addr;
-		_iov->iov_len = min((u64)len - s, size);
-		_iov->iov_base = (void __user *)(unsigned long)
-			(reg->userspace_addr + addr - reg->guest_phys_addr);
-=======
 
 		map = vhost_iotlb_itree_first(umem, addr, last);
 		if (map == NULL || map->start > addr) {
@@ -3258,49 +2364,24 @@ static int translate_desc(struct vhost_virtqueue *vq, u64 addr, u32 len,
 		_iov->iov_len = min((u64)len - s, size);
 		_iov->iov_base = (void __user *)(unsigned long)
 				 (map->addr + addr - map->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s += size;
 		addr += size;
 		++ret;
 	}
 
-<<<<<<< HEAD
-	rcu_read_unlock();
-=======
 	if (ret == -EAGAIN)
 		vhost_iotlb_miss(vq, addr, access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* Each buffer in the virtqueues is actually a chain of descriptors.  This
  * function returns the next descriptor in the chain,
  * or -1U if we're at the end. */
-<<<<<<< HEAD
-static unsigned next_desc(struct vring_desc *desc)
-=======
 static unsigned next_desc(struct vhost_virtqueue *vq, struct vring_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int next;
 
 	/* If this descriptor says it doesn't chain, we're done. */
-<<<<<<< HEAD
-	if (!(desc->flags & VRING_DESC_F_NEXT))
-		return -1U;
-
-	/* Check they're not leading us off end of descriptors. */
-	next = desc->next;
-	/* Make sure compiler knows to grab that: we don't want it changing! */
-	/* We will use the result as an index in an array, so most
-	 * architectures only need a compiler barrier here. */
-	read_barrier_depends();
-
-	return next;
-}
-
-static int get_indirect(struct vhost_dev *dev, struct vhost_virtqueue *vq,
-=======
 	if (!(desc->flags & cpu_to_vhost16(vq, VRING_DESC_F_NEXT)))
 		return -1U;
 
@@ -3310,7 +2391,6 @@ static int get_indirect(struct vhost_dev *dev, struct vhost_virtqueue *vq,
 }
 
 static int get_indirect(struct vhost_virtqueue *vq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct iovec iov[], unsigned int iov_size,
 			unsigned int *out_num, unsigned int *in_num,
 			struct vhost_log *log, unsigned int *log_num,
@@ -3318,15 +2398,6 @@ static int get_indirect(struct vhost_virtqueue *vq,
 {
 	struct vring_desc desc;
 	unsigned int i = 0, count, found = 0;
-<<<<<<< HEAD
-	int ret;
-
-	/* Sanity check */
-	if (unlikely(indirect->len % sizeof desc)) {
-		vq_err(vq, "Invalid length in indirect descriptor: "
-		       "len 0x%llx not multiple of 0x%zx\n",
-		       (unsigned long long)indirect->len,
-=======
 	u32 len = vhost32_to_cpu(vq, indirect->len);
 	struct iov_iter from;
 	int ret, access;
@@ -3336,25 +2407,10 @@ static int get_indirect(struct vhost_virtqueue *vq,
 		vq_err(vq, "Invalid length in indirect descriptor: "
 		       "len 0x%llx not multiple of 0x%zx\n",
 		       (unsigned long long)len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       sizeof desc);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	ret = translate_desc(dev, indirect->addr, indirect->len, vq->indirect,
-			     UIO_MAXIOV);
-	if (unlikely(ret < 0)) {
-		vq_err(vq, "Translation failure %d in indirect.\n", ret);
-		return ret;
-	}
-
-	/* We will use the result as an address to read from, so most
-	 * architectures only need a compiler barrier here. */
-	read_barrier_depends();
-
-	count = indirect->len / sizeof desc;
-=======
 	ret = translate_desc(vq, vhost64_to_cpu(vq, indirect->addr), len, vq->indirect,
 			     UIO_MAXIOV, VHOST_ACCESS_RO);
 	if (unlikely(ret < 0)) {
@@ -3364,7 +2420,6 @@ static int get_indirect(struct vhost_virtqueue *vq,
 	}
 	iov_iter_init(&from, ITER_SOURCE, vq->indirect, ret, len);
 	count = len / sizeof desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Buffers are chained via a 16 bit next field, so
 	 * we can have at most 2^16 of these. */
 	if (unlikely(count > USHRT_MAX + 1)) {
@@ -3381,33 +2436,6 @@ static int get_indirect(struct vhost_virtqueue *vq,
 			       i, count);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		if (unlikely(memcpy_fromiovec((unsigned char *)&desc,
-					      vq->indirect, sizeof desc))) {
-			vq_err(vq, "Failed indirect descriptor: idx %d, %zx\n",
-			       i, (size_t)indirect->addr + i * sizeof desc);
-			return -EINVAL;
-		}
-		if (unlikely(desc.flags & VRING_DESC_F_INDIRECT)) {
-			vq_err(vq, "Nested indirect descriptor: idx %d, %zx\n",
-			       i, (size_t)indirect->addr + i * sizeof desc);
-			return -EINVAL;
-		}
-
-		ret = translate_desc(dev, desc.addr, desc.len, iov + iov_count,
-				     iov_size - iov_count);
-		if (unlikely(ret < 0)) {
-			vq_err(vq, "Translation failure %d indirect idx %d\n",
-			       ret, i);
-			return ret;
-		}
-		/* If this is an input descriptor, increment that count. */
-		if (desc.flags & VRING_DESC_F_WRITE) {
-			*in_num += ret;
-			if (unlikely(log)) {
-				log[*log_num].addr = desc.addr;
-				log[*log_num].len = desc.len;
-=======
 		if (unlikely(!copy_from_iter_full(&desc, sizeof(desc), &from))) {
 			vq_err(vq, "Failed indirect descriptor: idx %d, %zx\n",
 			       i, (size_t)vhost64_to_cpu(vq, indirect->addr) + i * sizeof desc);
@@ -3439,7 +2467,6 @@ static int get_indirect(struct vhost_virtqueue *vq,
 			if (unlikely(log && ret)) {
 				log[*log_num].addr = vhost64_to_cpu(vq, desc.addr);
 				log[*log_num].len = vhost32_to_cpu(vq, desc.len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				++*log_num;
 			}
 		} else {
@@ -3452,11 +2479,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
 			}
 			*out_num += ret;
 		}
-<<<<<<< HEAD
-	} while ((i = next_desc(&desc)) != -1);
-=======
 	} while ((i = next_desc(vq, &desc)) != -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3468,11 +2491,7 @@ static int get_indirect(struct vhost_virtqueue *vq,
  * This function returns the descriptor number found, or vq->num (which is
  * never a valid descriptor number) if none was found.  A negative code is
  * returned on error. */
-<<<<<<< HEAD
-int vhost_get_vq_desc(struct vhost_dev *dev, struct vhost_virtqueue *vq,
-=======
 int vhost_get_vq_desc(struct vhost_virtqueue *vq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      struct iovec iov[], unsigned int iov_size,
 		      unsigned int *out_num, unsigned int *in_num,
 		      struct vhost_log *log, unsigned int *log_num)
@@ -3480,35 +2499,6 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 	struct vring_desc desc;
 	unsigned int i, head, found = 0;
 	u16 last_avail_idx;
-<<<<<<< HEAD
-	int ret;
-
-	/* Check it isn't doing very strange things with descriptor numbers. */
-	last_avail_idx = vq->last_avail_idx;
-	if (unlikely(__get_user(vq->avail_idx, &vq->avail->idx))) {
-		vq_err(vq, "Failed to access avail idx at %p\n",
-		       &vq->avail->idx);
-		return -EFAULT;
-	}
-
-	if (unlikely((u16)(vq->avail_idx - last_avail_idx) > vq->num)) {
-		vq_err(vq, "Guest moved used index from %u to %u",
-		       last_avail_idx, vq->avail_idx);
-		return -EFAULT;
-	}
-
-	/* If there's nothing new since last we looked, return invalid. */
-	if (vq->avail_idx == last_avail_idx)
-		return vq->num;
-
-	/* Only get avail ring entries after they have been exposed by guest. */
-	smp_rmb();
-
-	/* Grab the next descriptor number they're advertising, and increment
-	 * the index we've seen. */
-	if (unlikely(__get_user(head,
-				&vq->avail->ring[last_avail_idx % vq->num]))) {
-=======
 	__virtio16 avail_idx;
 	__virtio16 ring_head;
 	int ret, access;
@@ -3545,18 +2535,14 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 	/* Grab the next descriptor number they're advertising, and increment
 	 * the index we've seen. */
 	if (unlikely(vhost_get_avail_head(vq, &ring_head, last_avail_idx))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vq_err(vq, "Failed to read head: idx %d address %p\n",
 		       last_avail_idx,
 		       &vq->avail->ring[last_avail_idx % vq->num]);
 		return -EFAULT;
 	}
 
-<<<<<<< HEAD
-=======
 	head = vhost16_to_cpu(vq, ring_head);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If their number is silly, that's an error. */
 	if (unlikely(head >= vq->num)) {
 		vq_err(vq, "Guest says index %u > %u is available",
@@ -3583,25 +2569,12 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 			       i, vq->num, head);
 			return -EINVAL;
 		}
-<<<<<<< HEAD
-		ret = __copy_from_user(&desc, vq->desc + i, sizeof desc);
-=======
 		ret = vhost_get_desc(vq, &desc, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(ret)) {
 			vq_err(vq, "Failed to get descriptor: idx %d addr %p\n",
 			       i, vq->desc + i);
 			return -EFAULT;
 		}
-<<<<<<< HEAD
-		if (desc.flags & VRING_DESC_F_INDIRECT) {
-			ret = get_indirect(dev, vq, iov, iov_size,
-					   out_num, in_num,
-					   log, log_num, &desc);
-			if (unlikely(ret < 0)) {
-				vq_err(vq, "Failure detected "
-				       "in indirect descriptor at idx %d\n", i);
-=======
 		if (desc.flags & cpu_to_vhost16(vq, VRING_DESC_F_INDIRECT)) {
 			ret = get_indirect(vq, iov, iov_size,
 					   out_num, in_num,
@@ -3610,28 +2583,11 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 				if (ret != -EAGAIN)
 					vq_err(vq, "Failure detected "
 						"in indirect descriptor at idx %d\n", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ret;
 			}
 			continue;
 		}
 
-<<<<<<< HEAD
-		ret = translate_desc(dev, desc.addr, desc.len, iov + iov_count,
-				     iov_size - iov_count);
-		if (unlikely(ret < 0)) {
-			vq_err(vq, "Translation failure %d descriptor idx %d\n",
-			       ret, i);
-			return ret;
-		}
-		if (desc.flags & VRING_DESC_F_WRITE) {
-			/* If this is an input descriptor,
-			 * increment that count. */
-			*in_num += ret;
-			if (unlikely(log)) {
-				log[*log_num].addr = desc.addr;
-				log[*log_num].len = desc.len;
-=======
 		if (desc.flags & cpu_to_vhost16(vq, VRING_DESC_F_WRITE))
 			access = VHOST_ACCESS_WO;
 		else
@@ -3652,7 +2608,6 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 			if (unlikely(log && ret)) {
 				log[*log_num].addr = vhost64_to_cpu(vq, desc.addr);
 				log[*log_num].len = vhost32_to_cpu(vq, desc.len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				++*log_num;
 			}
 		} else {
@@ -3665,11 +2620,7 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 			}
 			*out_num += ret;
 		}
-<<<<<<< HEAD
-	} while ((i = next_desc(&desc)) != -1);
-=======
 	} while ((i = next_desc(vq, &desc)) != -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* On success, increment avail index. */
 	vq->last_avail_idx++;
@@ -3679,70 +2630,19 @@ int vhost_get_vq_desc(struct vhost_virtqueue *vq,
 	BUG_ON(!(vq->used_flags & VRING_USED_F_NO_NOTIFY));
 	return head;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(vhost_get_vq_desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Reverse the effect of vhost_get_vq_desc. Useful for error handling. */
 void vhost_discard_vq_desc(struct vhost_virtqueue *vq, int n)
 {
 	vq->last_avail_idx -= n;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(vhost_discard_vq_desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* After we've used one of their buffers, we tell them about it.  We'll then
  * want to notify the guest, using eventfd. */
 int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
 {
-<<<<<<< HEAD
-	struct vring_used_elem __user *used;
-
-	/* The virtqueue contains a ring of used buffers.  Get a pointer to the
-	 * next entry in that used ring. */
-	used = &vq->used->ring[vq->last_used_idx % vq->num];
-	if (__put_user(head, &used->id)) {
-		vq_err(vq, "Failed to write used id");
-		return -EFAULT;
-	}
-	if (__put_user(len, &used->len)) {
-		vq_err(vq, "Failed to write used len");
-		return -EFAULT;
-	}
-	/* Make sure buffer is written before we update index. */
-	smp_wmb();
-	if (__put_user(vq->last_used_idx + 1, &vq->used->idx)) {
-		vq_err(vq, "Failed to increment used idx");
-		return -EFAULT;
-	}
-	if (unlikely(vq->log_used)) {
-		/* Make sure data is seen before log. */
-		smp_wmb();
-		/* Log used ring entry write. */
-		log_write(vq->log_base,
-			  vq->log_addr +
-			   ((void __user *)used - (void __user *)vq->used),
-			  sizeof *used);
-		/* Log used index update. */
-		log_write(vq->log_base,
-			  vq->log_addr + offsetof(struct vring_used, idx),
-			  sizeof vq->used->idx);
-		if (vq->log_ctx)
-			eventfd_signal(vq->log_ctx, 1);
-	}
-	vq->last_used_idx++;
-	/* If the driver never bothers to signal in a very long while,
-	 * used index might wrap around. If that happens, invalidate
-	 * signalled_used index we stored. TODO: make sure driver
-	 * signals at least once in 2^16 and remove this. */
-	if (unlikely(vq->last_used_idx == vq->signalled_used))
-		vq->signalled_used_valid = false;
-	return 0;
-}
-=======
 	struct vring_used_elem heads = {
 		cpu_to_vhost32(vq, head),
 		cpu_to_vhost32(vq, len)
@@ -3751,21 +2651,11 @@ int vhost_add_used(struct vhost_virtqueue *vq, unsigned int head, int len)
 	return vhost_add_used_n(vq, &heads, 1);
 }
 EXPORT_SYMBOL_GPL(vhost_add_used);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __vhost_add_used_n(struct vhost_virtqueue *vq,
 			    struct vring_used_elem *heads,
 			    unsigned count)
 {
-<<<<<<< HEAD
-	struct vring_used_elem __user *used;
-	u16 old, new;
-	int start;
-
-	start = vq->last_used_idx % vq->num;
-	used = vq->used->ring + start;
-	if (__copy_to_user(used, heads, count * sizeof *used)) {
-=======
 	vring_used_elem_t __user *used;
 	u16 old, new;
 	int start;
@@ -3773,7 +2663,6 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
 	start = vq->last_used_idx & (vq->num - 1);
 	used = vq->used->ring + start;
 	if (vhost_put_used(vq, heads, start, count)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vq_err(vq, "Failed to write used");
 		return -EFAULT;
 	}
@@ -3781,15 +2670,8 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
 		/* Make sure data is seen before log. */
 		smp_wmb();
 		/* Log used ring entry write. */
-<<<<<<< HEAD
-		log_write(vq->log_base,
-			  vq->log_addr +
-			   ((void __user *)used - (void __user *)vq->used),
-			  count * sizeof *used);
-=======
 		log_used(vq, ((void __user *)used - (void __user *)vq->used),
 			 count * sizeof *used);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	old = vq->last_used_idx;
 	new = (vq->last_used_idx += count);
@@ -3809,11 +2691,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
 {
 	int start, n, r;
 
-<<<<<<< HEAD
-	start = vq->last_used_idx % vq->num;
-=======
 	start = vq->last_used_idx & (vq->num - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n = vq->num - start;
 	if (n < count) {
 		r = __vhost_add_used_n(vq, heads, n);
@@ -3826,30 +2704,11 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
 
 	/* Make sure buffer is written before we update index. */
 	smp_wmb();
-<<<<<<< HEAD
-	if (put_user(vq->last_used_idx, &vq->used->idx)) {
-=======
 	if (vhost_put_used_idx(vq)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vq_err(vq, "Failed to increment used idx");
 		return -EFAULT;
 	}
 	if (unlikely(vq->log_used)) {
-<<<<<<< HEAD
-		/* Log used index update. */
-		log_write(vq->log_base,
-			  vq->log_addr + offsetof(struct vring_used, idx),
-			  sizeof vq->used->idx);
-		if (vq->log_ctx)
-			eventfd_signal(vq->log_ctx, 1);
-	}
-	return r;
-}
-
-static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
-{
-	__u16 old, new, event;
-=======
 		/* Make sure used idx is seen before log. */
 		smp_wmb();
 		/* Log used index update. */
@@ -3866,26 +2725,12 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 {
 	__u16 old, new;
 	__virtio16 event;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool v;
 	/* Flush out used index updates. This is paired
 	 * with the barrier that the Guest executes when enabling
 	 * interrupts. */
 	smp_mb();
 
-<<<<<<< HEAD
-	if (vhost_has_feature(dev, VIRTIO_F_NOTIFY_ON_EMPTY) &&
-	    unlikely(vq->avail_idx == vq->last_avail_idx))
-		return true;
-
-	if (!vhost_has_feature(dev, VIRTIO_RING_F_EVENT_IDX)) {
-		__u16 flags;
-		if (__get_user(flags, &vq->avail->flags)) {
-			vq_err(vq, "Failed to get flags");
-			return true;
-		}
-		return !(flags & VRING_AVAIL_F_NO_INTERRUPT);
-=======
 	if (vhost_has_feature(vq, VIRTIO_F_NOTIFY_ON_EMPTY) &&
 	    unlikely(vq->avail_idx == vq->last_avail_idx))
 		return true;
@@ -3897,7 +2742,6 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 			return true;
 		}
 		return !(flags & cpu_to_vhost16(vq, VRING_AVAIL_F_NO_INTERRUPT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	old = vq->signalled_used;
 	v = vq->signalled_used_valid;
@@ -3907,35 +2751,21 @@ static bool vhost_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 	if (unlikely(!v))
 		return true;
 
-<<<<<<< HEAD
-	if (get_user(event, vhost_used_event(vq))) {
-		vq_err(vq, "Failed to get used event idx");
-		return true;
-	}
-	return vring_need_event(event, new, old);
-=======
 	if (vhost_get_used_event(vq, &event)) {
 		vq_err(vq, "Failed to get used event idx");
 		return true;
 	}
 	return vring_need_event(vhost16_to_cpu(vq, event), new, old);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This actually signals the guest, using eventfd. */
 void vhost_signal(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 {
 	/* Signal the Guest tell them we used something up. */
-<<<<<<< HEAD
-	if (vq->call_ctx && vhost_notify(dev, vq))
-		eventfd_signal(vq->call_ctx, 1);
-}
-=======
 	if (vq->call_ctx.ctx && vhost_notify(dev, vq))
 		eventfd_signal(vq->call_ctx.ctx);
 }
 EXPORT_SYMBOL_GPL(vhost_signal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* And here's the combo meal deal.  Supersize me! */
 void vhost_add_used_and_signal(struct vhost_dev *dev,
@@ -3945,10 +2775,7 @@ void vhost_add_used_and_signal(struct vhost_dev *dev,
 	vhost_add_used(vq, head, len);
 	vhost_signal(dev, vq);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(vhost_add_used_and_signal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* multi-buffer version of vhost_add_used_and_signal */
 void vhost_add_used_and_signal_n(struct vhost_dev *dev,
@@ -3958,8 +2785,6 @@ void vhost_add_used_and_signal_n(struct vhost_dev *dev,
 	vhost_add_used_n(vq, heads, count);
 	vhost_signal(dev, vq);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(vhost_add_used_and_signal_n);
 
 /* return true if we're sure that avaiable ring is empty */
@@ -3989,26 +2814,17 @@ bool vhost_vq_avail_empty(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 	return true;
 }
 EXPORT_SYMBOL_GPL(vhost_vq_avail_empty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* OK, now we need to know about added descriptors. */
 bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 {
-<<<<<<< HEAD
-	u16 avail_idx;
-=======
 	__virtio16 avail_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	if (!(vq->used_flags & VRING_USED_F_NO_NOTIFY))
 		return false;
 	vq->used_flags &= ~VRING_USED_F_NO_NOTIFY;
-<<<<<<< HEAD
-	if (!vhost_has_feature(dev, VIRTIO_RING_F_EVENT_IDX)) {
-=======
 	if (!vhost_has_feature(vq, VIRTIO_RING_F_EVENT_IDX)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = vhost_update_used_flags(vq);
 		if (r) {
 			vq_err(vq, "Failed to enable notification at %p: %d\n",
@@ -4016,11 +2832,7 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 			return false;
 		}
 	} else {
-<<<<<<< HEAD
-		r = vhost_update_avail_event(vq, vq->avail_idx);
-=======
 		r = vhost_update_avail_event(vq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			vq_err(vq, "Failed to update avail event index at %p: %d\n",
 			       vhost_avail_event(vq), r);
@@ -4030,21 +2842,13 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 	/* They could have slipped one in as we were doing that: make
 	 * sure it's written, then check again. */
 	smp_mb();
-<<<<<<< HEAD
-	r = __get_user(avail_idx, &vq->avail->idx);
-=======
 	r = vhost_get_avail_idx(vq, &avail_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		vq_err(vq, "Failed to check avail idx at %p: %d\n",
 		       &vq->avail->idx, r);
 		return false;
 	}
 
-<<<<<<< HEAD
-	return avail_idx != vq->avail_idx;
-}
-=======
 	vq->avail_idx = vhost16_to_cpu(vq, avail_idx);
 	if (vq->avail_idx != vq->last_avail_idx) {
 		/* Since we have updated avail_idx, the following
@@ -4059,7 +2863,6 @@ bool vhost_enable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 	return false;
 }
 EXPORT_SYMBOL_GPL(vhost_enable_notify);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* We don't need to be notified again. */
 void vhost_disable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
@@ -4069,61 +2872,6 @@ void vhost_disable_notify(struct vhost_dev *dev, struct vhost_virtqueue *vq)
 	if (vq->used_flags & VRING_USED_F_NO_NOTIFY)
 		return;
 	vq->used_flags |= VRING_USED_F_NO_NOTIFY;
-<<<<<<< HEAD
-	if (!vhost_has_feature(dev, VIRTIO_RING_F_EVENT_IDX)) {
-		r = vhost_update_used_flags(vq);
-		if (r)
-			vq_err(vq, "Failed to enable notification at %p: %d\n",
-			       &vq->used->flags, r);
-	}
-}
-
-static void vhost_zerocopy_done_signal(struct kref *kref)
-{
-	struct vhost_ubuf_ref *ubufs = container_of(kref, struct vhost_ubuf_ref,
-						    kref);
-	wake_up(&ubufs->wait);
-}
-
-struct vhost_ubuf_ref *vhost_ubuf_alloc(struct vhost_virtqueue *vq,
-					bool zcopy)
-{
-	struct vhost_ubuf_ref *ubufs;
-	/* No zero copy backend? Nothing to count. */
-	if (!zcopy)
-		return NULL;
-	ubufs = kmalloc(sizeof *ubufs, GFP_KERNEL);
-	if (!ubufs)
-		return ERR_PTR(-ENOMEM);
-	kref_init(&ubufs->kref);
-	init_waitqueue_head(&ubufs->wait);
-	ubufs->vq = vq;
-	return ubufs;
-}
-
-void vhost_ubuf_put(struct vhost_ubuf_ref *ubufs)
-{
-	kref_put(&ubufs->kref, vhost_zerocopy_done_signal);
-}
-
-void vhost_ubuf_put_and_wait(struct vhost_ubuf_ref *ubufs)
-{
-	kref_put(&ubufs->kref, vhost_zerocopy_done_signal);
-	wait_event(ubufs->wait, !atomic_read(&ubufs->kref.refcount));
-	kfree(ubufs);
-}
-
-void vhost_zerocopy_callback(struct ubuf_info *ubuf)
-{
-	struct vhost_ubuf_ref *ubufs = ubuf->ctx;
-	struct vhost_virtqueue *vq = ubufs->vq;
-
-	vhost_poll_queue(&vq->poll);
-	/* set len = 1 to mark this desc buffers done DMA */
-	vq->heads[ubuf->desc].len = VHOST_DMA_DONE_LEN;
-	kref_put(&ubufs->kref, vhost_zerocopy_done_signal);
-}
-=======
 	if (!vhost_has_feature(vq, VIRTIO_RING_F_EVENT_IDX)) {
 		r = vhost_update_used_flags(vq);
 		if (r)
@@ -4207,4 +2955,3 @@ MODULE_VERSION("0.0.1");
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Michael S. Tsirkin");
 MODULE_DESCRIPTION("Host kernel accelerator for virtio");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

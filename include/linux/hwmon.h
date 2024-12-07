@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     hwmon.h - part of lm_sensors, Linux kernel modules for hardware monitoring
 
@@ -10,38 +7,11 @@
 
     Copyright (C) 2005 Mark M. Hoffman <mhoffman@lightlink.com>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; version 2 of the License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #ifndef _HWMON_H_
 #define _HWMON_H_
 
-<<<<<<< HEAD
-struct device;
-
-struct device *hwmon_device_register(struct device *dev);
-
-void hwmon_device_unregister(struct device *dev);
-
-/* Scale user input to sensible values */
-static inline int SENSORS_LIMIT(long value, long low, long high)
-{
-	if (value < low)
-		return low;
-	else if (value > high)
-		return high;
-	else
-		return value;
-}
-
-#endif
-
-=======
 #include <linux/bitops.h>
 
 struct device;
@@ -541,4 +511,3 @@ static inline bool hwmon_is_bad_char(const char ch)
 }
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *
  * Copyright (C) 2008 Cedric Bregardis <cedric.bregardis@free.fr> and
@@ -9,23 +6,6 @@
  *
  * This file is part of the Audiowerk2 ALSA driver
  *
-<<<<<<< HEAD
- * The Audiowerk2 ALSA driver is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2.
- *
- * The Audiowerk2 ALSA driver is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with the Audiowerk2 ALSA driver; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
- * USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *****************************************************************************/
 
 #ifndef AW2_SAA7146_H
@@ -39,20 +19,12 @@
 
 #define NUM_STREAM_CAPTURE_ANA 0
 
-<<<<<<< HEAD
-typedef void (*snd_aw2_saa7146_it_cb) (void *);
-
-struct snd_aw2_saa7146_cb_param {
-	snd_aw2_saa7146_it_cb p_it_callback;
-	void *p_callback_param;
-=======
 struct snd_pcm_substream;
 typedef void (*snd_aw2_saa7146_it_cb) (struct snd_pcm_substream *);
 
 struct snd_aw2_saa7146_cb_param {
 	snd_aw2_saa7146_it_cb p_it_callback;
 	struct snd_pcm_substream *p_callback_param;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* definition of the chip-specific record */

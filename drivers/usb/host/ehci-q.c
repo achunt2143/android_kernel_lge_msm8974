@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001-2004 by David Brownell
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * Copyright (C) 2001-2004 by David Brownell
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* this file is part of ehci-hcd.c */
@@ -46,16 +27,6 @@
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-/* fill a qtd, returning how much of the buffer we were able to queue up */
-
-static int
-qtd_fill(struct ehci_hcd *ehci, struct ehci_qtd *qtd, dma_addr_t buf,
-		  size_t len, int token, int maxpacket)
-{
-	int	i, count;
-	u64	addr = buf;
-=======
 /* PID Codes that are used here, from EHCI specification, Table 3-16. */
 #define PID_CODE_IN    1
 #define PID_CODE_SETUP 2
@@ -69,7 +40,6 @@ qtd_fill(struct ehci_hcd *ehci, struct ehci_qtd *qtd, dma_addr_t buf,
 	unsigned int count;
 	u64	addr = buf;
 	int	i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* one buffer entry per 4K ... first might be short or unaligned */
 	qtd->hw_buf[0] = cpu_to_hc32(ehci, (u32)addr);
@@ -112,11 +82,7 @@ qh_update (struct ehci_hcd *ehci, struct ehci_qh *qh, struct ehci_qtd *qtd)
 	struct ehci_qh_hw *hw = qh->hw;
 
 	/* writes to an active overlay are unsafe */
-<<<<<<< HEAD
-	BUG_ON(qh->qh_state != QH_STATE_IDLE);
-=======
 	WARN_ON(qh->qh_state != QH_STATE_IDLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hw->hw_qtd_next = QTD_NEXT(ehci, qtd->qtd_dma);
 	hw->hw_alt_next = EHCI_LIST_END(ehci);
@@ -126,24 +92,14 @@ qh_update (struct ehci_hcd *ehci, struct ehci_qh *qh, struct ehci_qtd *qtd)
 	 * and set the pseudo-toggle in udev. Only usb_clear_halt() will
 	 * ever clear it.
 	 */
-<<<<<<< HEAD
-	if (!(hw->hw_info1 & cpu_to_hc32(ehci, 1 << 14))) {
-=======
 	if (!(hw->hw_info1 & cpu_to_hc32(ehci, QH_TOGGLE_CTL))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned	is_out, epnum;
 
 		is_out = qh->is_out;
 		epnum = (hc32_to_cpup(ehci, &hw->hw_info1) >> 8) & 0x0f;
-<<<<<<< HEAD
-		if (unlikely (!usb_gettoggle (qh->dev, epnum, is_out))) {
-			hw->hw_token &= ~cpu_to_hc32(ehci, QTD_TOGGLE);
-			usb_settoggle (qh->dev, epnum, is_out, 1);
-=======
 		if (unlikely(!usb_gettoggle(qh->ps.udev, epnum, is_out))) {
 			hw->hw_token &= ~cpu_to_hc32(ehci, QTD_TOGGLE);
 			usb_settoggle(qh->ps.udev, epnum, is_out, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -159,28 +115,6 @@ qh_refresh (struct ehci_hcd *ehci, struct ehci_qh *qh)
 {
 	struct ehci_qtd *qtd;
 
-<<<<<<< HEAD
-	if (list_empty (&qh->qtd_list))
-		qtd = qh->dummy;
-	else {
-		qtd = list_entry (qh->qtd_list.next,
-				struct ehci_qtd, qtd_list);
-		/*
-		 * first qtd may already be partially processed.
-		 * If we come here during unlink, the QH overlay region
-		 * might have reference to the just unlinked qtd. The
-		 * qtd is updated in qh_completions(). Update the QH
-		 * overlay here.
-		 */
-		if (cpu_to_hc32(ehci, qtd->qtd_dma) == qh->hw->hw_current) {
-			qh->hw->hw_qtd_next = qtd->hw_next;
-			qtd = NULL;
-		}
-	}
-
-	if (qtd)
-		qh_update (ehci, qh, qtd);
-=======
 	qtd = list_entry(qh->qtd_list.next, struct ehci_qtd, qtd_list);
 
 	/*
@@ -198,7 +132,6 @@ qh_refresh (struct ehci_hcd *ehci, struct ehci_qh *qh)
 		qh_update(ehci, qh, qtd);
 	}
 	qh->should_be_inactive = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
@@ -231,21 +164,13 @@ static void ehci_clear_tt_buffer(struct ehci_hcd *ehci, struct ehci_qh *qh,
 	 * Note: this routine is never called for Isochronous transfers.
 	 */
 	if (urb->dev->tt && !usb_pipeint(urb->pipe) && !qh->clearing_tt) {
-<<<<<<< HEAD
-#ifdef DEBUG
-=======
 #ifdef CONFIG_DYNAMIC_DEBUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct usb_device *tt = urb->dev->tt->hub;
 		dev_dbg(&tt->dev,
 			"clear tt buffer port %d, a%d ep%d t%08x\n",
 			urb->dev->ttport, urb->dev->devnum,
 			usb_pipeendpoint(urb->pipe), token);
-<<<<<<< HEAD
-#endif /* DEBUG */
-=======
 #endif /* CONFIG_DYNAMIC_DEBUG */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ehci_is_TDI(ehci)
 				|| urb->dev->tt->hub !=
 				   ehci_to_hcd(ehci)->self.root_hub) {
@@ -270,11 +195,7 @@ static int qtd_copy_status (
 	int	status = -EINPROGRESS;
 
 	/* count IN/OUT bytes, not SETUP (even short packets) */
-<<<<<<< HEAD
-	if (likely (QTD_PID (token) != 2))
-=======
 	if (likely(QTD_PID(token) != PID_CODE_SETUP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		urb->actual_length += length - QTD_LENGTH (token);
 
 	/* don't modify error codes */
@@ -290,8 +211,6 @@ static int qtd_copy_status (
 		if (token & QTD_STS_BABBLE) {
 			/* FIXME "must" disable babbling device's port too */
 			status = -EOVERFLOW;
-<<<<<<< HEAD
-=======
 		/*
 		 * When MMF is active and PID Code is IN, queue is halted.
 		 * EHCI Specification, Table 4-13.
@@ -299,7 +218,6 @@ static int qtd_copy_status (
 		} else if ((token & QTD_STS_MMF) &&
 					(QTD_PID(token) == PID_CODE_IN)) {
 			status = -EPROTO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* CERR nonzero + halt --> stall */
 		} else if (QTD_CERR(token)) {
 			status = -EPIPE;
@@ -325,16 +243,6 @@ static int qtd_copy_status (
 		} else {	/* unknown */
 			status = -EPROTO;
 		}
-<<<<<<< HEAD
-
-		ehci_vdbg (ehci,
-			"dev%d ep%d%s qtd token %08x --> status %d\n",
-			usb_pipedevice (urb->pipe),
-			usb_pipeendpoint (urb->pipe),
-			usb_pipein (urb->pipe) ? "in" : "out",
-			token, status);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return status;
@@ -342,36 +250,19 @@ static int qtd_copy_status (
 
 static void
 ehci_urb_done(struct ehci_hcd *ehci, struct urb *urb, int status)
-<<<<<<< HEAD
-__releases(ehci->lock)
-__acquires(ehci->lock)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (usb_pipetype(urb->pipe) == PIPE_INTERRUPT) {
 		/* ... update hc-wide periodic stats */
 		ehci_to_hcd(ehci)->self.bandwidth_int_reqs--;
 	}
 
-<<<<<<< HEAD
-	if (usb_pipetype(urb->pipe) != PIPE_ISOCHRONOUS)
-		qh_put((struct ehci_qh *) urb->hcpriv);
-
-	if (unlikely(urb->unlinked)) {
-		COUNT(ehci->stats.unlink);
-=======
 	if (unlikely(urb->unlinked)) {
 		INCR(ehci->stats.unlink);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* report non-error and short read status as zero */
 		if (status == -EINPROGRESS || status == -EREMOTEIO)
 			status = 0;
-<<<<<<< HEAD
-		COUNT(ehci->stats.complete);
-=======
 		INCR(ehci->stats.complete);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #ifdef EHCI_URB_TRACE
@@ -384,34 +275,16 @@ __acquires(ehci->lock)
 		urb->actual_length, urb->transfer_buffer_length);
 #endif
 
-<<<<<<< HEAD
-	/* complete() can reenter this HCD */
-	usb_hcd_unlink_urb_from_ep(ehci_to_hcd(ehci), urb);
-	spin_unlock (&ehci->lock);
-	usb_hcd_giveback_urb(ehci_to_hcd(ehci), urb, status);
-	spin_lock (&ehci->lock);
-}
-
-static void start_unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh);
-static void unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh);
-
-=======
 	usb_hcd_unlink_urb_from_ep(ehci_to_hcd(ehci), urb);
 	usb_hcd_giveback_urb(ehci_to_hcd(ehci), urb, status);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int qh_schedule (struct ehci_hcd *ehci, struct ehci_qh *qh);
 
 /*
  * Process and free completed qtds for a qh, returning URBs to drivers.
-<<<<<<< HEAD
- * Chases up to qh->hw_current.  Returns number of completions called,
- * indicating how much "real" work we did.
-=======
  * Chases up to qh->hw_current.  Returns nonzero if the caller should
  * unlink qh.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static unsigned
 qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
@@ -420,19 +293,9 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	struct list_head	*entry, *tmp;
 	int			last_status;
 	int			stopped;
-<<<<<<< HEAD
-	unsigned		count = 0;
 	u8			state;
 	struct ehci_qh_hw	*hw = qh->hw;
 
-	if (unlikely (list_empty (&qh->qtd_list)))
-		return count;
-
-=======
-	u8			state;
-	struct ehci_qh_hw	*hw = qh->hw;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* completions (or tasks on other cpus) must never clobber HALT
 	 * till we've gone through and cleaned everything up, even when
 	 * they add urbs to this qh's queue or mark them for unlinking.
@@ -441,11 +304,7 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	 *
 	 * It's a bug for qh->qh_state to be anything other than
 	 * QH_STATE_IDLE, unless our caller is scan_async() or
-<<<<<<< HEAD
-	 * scan_periodic().
-=======
 	 * scan_intr().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	state = qh->qh_state;
 	qh->qh_state = QH_STATE_COMPLETING;
@@ -454,11 +313,7 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
  rescan:
 	last = NULL;
 	last_status = -EINPROGRESS;
-<<<<<<< HEAD
-	qh->needs_rescan = 0;
-=======
 	qh->dequeue_during_giveback = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* remove de-activated QTDs from front of queue.
 	 * after faults (including short reads), cleanup this urb
@@ -477,10 +332,6 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 		if (last) {
 			if (likely (last->urb != urb)) {
 				ehci_urb_done(ehci, last->urb, last_status);
-<<<<<<< HEAD
-				count++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				last_status = -EINPROGRESS;
 			}
 			ehci_qtd_free (ehci, last);
@@ -542,10 +393,7 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 					goto retry_xacterr;
 				}
 				stopped = 1;
-<<<<<<< HEAD
-=======
 				qh->unlink_reason |= QH_UNLINK_HALTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* magic dummy for some short reads; qh won't advance.
 			 * that silicon quirk can kick in with this dummy too.
@@ -560,19 +408,12 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 					&& !(qtd->hw_alt_next
 						& EHCI_LIST_END(ehci))) {
 				stopped = 1;
-<<<<<<< HEAD
-=======
 				qh->unlink_reason |= QH_UNLINK_SHORT_READ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 		/* stop scanning when we reach qtds the hc is using */
 		} else if (likely (!stopped
-<<<<<<< HEAD
-				&& ehci->rh_state == EHCI_RH_RUNNING)) {
-=======
 				&& ehci->rh_state >= EHCI_RH_RUNNING)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* scan the whole queue for unlinks whenever it stops */
@@ -580,15 +421,10 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 			stopped = 1;
 
 			/* cancel everything if we halt, suspend, etc */
-<<<<<<< HEAD
-			if (ehci->rh_state != EHCI_RH_RUNNING)
-				last_status = -ESHUTDOWN;
-=======
 			if (ehci->rh_state < EHCI_RH_RUNNING) {
 				last_status = -ESHUTDOWN;
 				qh->unlink_reason |= QH_UNLINK_SHUTDOWN;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* this qtd is active; skip it unless a previous qtd
 			 * for its urb faulted, or its urb was canceled.
@@ -596,13 +432,6 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 			else if (last_status == -EINPROGRESS && !urb->unlinked)
 				continue;
 
-<<<<<<< HEAD
-			/* qh unlinked; token in overlay may be most current */
-			if (state == QH_STATE_IDLE
-					&& cpu_to_hc32(ehci, qtd->qtd_dma)
-						== hw->hw_current) {
-				token = hc32_to_cpu(ehci, hw->hw_token);
-=======
 			/*
 			 * If this was the active qtd when the qh was unlinked
 			 * and the overlay's token is active, then the overlay
@@ -617,7 +446,6 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 				token = hc32_to_cpu(ehci, hw->hw_token);
 				hw->hw_token &= ~ACTIVE_BIT(ehci);
 				qh->should_be_inactive = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* An unlink may leave an incomplete
 				 * async transaction in the TT buffer.
@@ -682,34 +510,16 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	/* last urb's completion might still need calling */
 	if (likely (last != NULL)) {
 		ehci_urb_done(ehci, last->urb, last_status);
-<<<<<<< HEAD
-		count++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ehci_qtd_free (ehci, last);
 	}
 
 	/* Do we need to rescan for URBs dequeued during a giveback? */
-<<<<<<< HEAD
-	if (unlikely(qh->needs_rescan)) {
-=======
 	if (unlikely(qh->dequeue_during_giveback)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* If the QH is already unlinked, do the rescan now. */
 		if (state == QH_STATE_IDLE)
 			goto rescan;
 
-<<<<<<< HEAD
-		/* Otherwise we have to wait until the QH is fully unlinked.
-		 * Our caller will start an unlink if qh->needs_rescan is
-		 * set.  But if an unlink has already started, nothing needs
-		 * to be done.
-		 */
-		if (state != QH_STATE_LINKED)
-			qh->needs_rescan = 0;
-=======
 		/* Otherwise the caller must unlink the QH. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* restore original state; caller must unlink or relink */
@@ -718,35 +528,6 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	/* be sure the hardware's done with the qh before refreshing
 	 * it after fault cleanup, or recovering from silicon wrongly
 	 * overlaying the dummy qtd (which reduces DMA chatter).
-<<<<<<< HEAD
-	 */
-	if (stopped != 0 || hw->hw_qtd_next == EHCI_LIST_END(ehci)) {
-		switch (state) {
-		case QH_STATE_IDLE:
-			qh_refresh(ehci, qh);
-			break;
-		case QH_STATE_LINKED:
-			/* We won't refresh a QH that's linked (after the HC
-			 * stopped the queue).  That avoids a race:
-			 *  - HC reads first part of QH;
-			 *  - CPU updates that first part and the token;
-			 *  - HC reads rest of that QH, including token
-			 * Result:  HC gets an inconsistent image, and then
-			 * DMAs to/from the wrong memory (corrupting it).
-			 *
-			 * That should be rare for interrupt transfers,
-			 * except maybe high bandwidth ...
-			 */
-
-			/* Tell the caller to start an unlink */
-			qh->needs_rescan = 1;
-			break;
-		/* otherwise, unlink already started */
-		}
-	}
-
-	return count;
-=======
 	 *
 	 * We won't refresh a QH that's linked (after the HC
 	 * stopped the queue).  That avoids a race:
@@ -764,19 +545,10 @@ qh_completions (struct ehci_hcd *ehci, struct ehci_qh *qh)
 
 	/* Let the caller know if the QH needs to be unlinked. */
 	return qh->unlink_reason;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-// high bandwidth multiplier, as encoded in highspeed endpoint descriptors
-#define hb_mult(wMaxPacketSize) (1 + (((wMaxPacketSize) >> 11) & 0x03))
-// ... and packet size, for any kind of endpoint descriptor
-#define max_packet(wMaxPacketSize) ((wMaxPacketSize) & 0x07ff)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * reverse of qh_urb_transaction:  free a list of TDs.
  * used for cleanup after errors, before HC sees an URB's TDs.
@@ -825,12 +597,7 @@ qh_urb_transaction (
 	qtd->urb = urb;
 
 	token = QTD_STS_ACTIVE;
-<<<<<<< HEAD
-	if (!ehci->disable_cerr)
-		token |= (EHCI_TUNE_CERR << 10);
-=======
 	token |= (EHCI_TUNE_CERR << 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* for split transactions, SplitXState initialized to zero */
 
 	len = urb->transfer_buffer_length;
@@ -878,11 +645,7 @@ qh_urb_transaction (
 		token |= (1 /* "in" */ << 8);
 	/* else it's already initted to "out" pid (0 << 8) */
 
-<<<<<<< HEAD
-	maxpacket = max_packet(usb_maxpacket(urb->dev, urb->pipe, !is_input));
-=======
 	maxpacket = usb_endpoint_maxp(&urb->ep->desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * buffer gets wrapped in one or more qtds;
@@ -890,11 +653,7 @@ qh_urb_transaction (
 	 * and may serve as a control status ack
 	 */
 	for (;;) {
-<<<<<<< HEAD
-		int this_qtd_len;
-=======
 		unsigned int this_qtd_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		this_qtd_len = qtd_fill(ehci, qtd, buf, this_sg_len, token,
 				maxpacket);
@@ -1005,17 +764,11 @@ qh_make (
 	gfp_t			flags
 ) {
 	struct ehci_qh		*qh = ehci_qh_alloc (ehci, flags);
-<<<<<<< HEAD
-	u32			info1 = 0, info2 = 0;
-	int			is_input, type;
-	int			maxp = 0;
-=======
 	struct usb_host_endpoint *ep;
 	u32			info1 = 0, info2 = 0;
 	int			is_input, type;
 	int			maxp = 0;
 	int			mult;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_tt		*tt = urb->dev->tt;
 	struct ehci_qh_hw	*hw;
 
@@ -1030,24 +783,15 @@ qh_make (
 
 	is_input = usb_pipein (urb->pipe);
 	type = usb_pipetype (urb->pipe);
-<<<<<<< HEAD
-	maxp = usb_maxpacket (urb->dev, urb->pipe, !is_input);
-=======
 	ep = usb_pipe_endpoint (urb->dev, urb->pipe);
 	maxp = usb_endpoint_maxp (&ep->desc);
 	mult = usb_endpoint_maxp_mult (&ep->desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 1024 byte maxpacket is a hardware ceiling.  High bandwidth
 	 * acts like up to 3KB, but is built from smaller packets.
 	 */
-<<<<<<< HEAD
-	if (max_packet(maxp) > 1024) {
-		ehci_dbg(ehci, "bogus qh maxpacket %d\n", max_packet(maxp));
-=======
 	if (maxp > 1024) {
 		ehci_dbg(ehci, "bogus qh maxpacket %d\n", maxp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
@@ -1060,20 +804,6 @@ qh_make (
 	 * For control/bulk requests, the HC or TT handles these.
 	 */
 	if (type == PIPE_INTERRUPT) {
-<<<<<<< HEAD
-		qh->usecs = NS_TO_US(usb_calc_bus_time(USB_SPEED_HIGH,
-				is_input, 0,
-				hb_mult(maxp) * max_packet(maxp)));
-		qh->start = NO_FRAME;
-		qh->stamp = ehci->periodic_stamp;
-
-		if (urb->dev->speed == USB_SPEED_HIGH) {
-			qh->c_usecs = 0;
-			qh->gap_uf = 0;
-
-			qh->period = urb->interval >> 3;
-			if (qh->period == 0 && urb->interval != 1) {
-=======
 		unsigned	tmp;
 
 		qh->ps.usecs = NS_TO_US(usb_calc_bus_time(USB_SPEED_HIGH,
@@ -1085,18 +815,11 @@ qh_make (
 			qh->gap_uf = 0;
 
 			if (urb->interval > 1 && urb->interval < 8) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* NOTE interval 2 or 4 uframes could work.
 				 * But interval 1 scheduling is simpler, and
 				 * includes high bandwidth.
 				 */
 				urb->interval = 1;
-<<<<<<< HEAD
-			} else if (qh->period > ehci->periodic_size) {
-				qh->period = ehci->periodic_size;
-				urb->interval = qh->period << 3;
-			}
-=======
 			} else if (urb->interval > ehci->periodic_size << 3) {
 				urb->interval = ehci->periodic_size << 3;
 			}
@@ -1109,7 +832,6 @@ qh_make (
 			/* Allow urb->interval to override */
 			qh->ps.bw_uperiod = min_t(unsigned, tmp, urb->interval);
 			qh->ps.bw_period = qh->ps.bw_uperiod >> 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			int		think_time;
 
@@ -1119,24 +841,6 @@ qh_make (
 
 			/* FIXME this just approximates SPLIT/CSPLIT times */
 			if (is_input) {		// SPLIT, gap, CSPLIT+DATA
-<<<<<<< HEAD
-				qh->c_usecs = qh->usecs + HS_USECS (0);
-				qh->usecs = HS_USECS (1);
-			} else {		// SPLIT+DATA, gap, CSPLIT
-				qh->usecs += HS_USECS (1);
-				qh->c_usecs = HS_USECS (0);
-			}
-
-			think_time = tt ? tt->think_time : 0;
-			qh->tt_usecs = NS_TO_US (think_time +
-					usb_calc_bus_time (urb->dev->speed,
-					is_input, 0, max_packet (maxp)));
-			qh->period = urb->interval;
-			if (qh->period > ehci->periodic_size) {
-				qh->period = ehci->periodic_size;
-				urb->interval = qh->period;
-			}
-=======
 				qh->ps.c_usecs = qh->ps.usecs + HS_USECS(0);
 				qh->ps.usecs = HS_USECS(1);
 			} else {		// SPLIT+DATA, gap, CSPLIT
@@ -1160,41 +864,26 @@ qh_make (
 			/* Allow urb->interval to override */
 			qh->ps.bw_period = min_t(unsigned, tmp, urb->interval);
 			qh->ps.bw_uperiod = qh->ps.bw_period << 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* support for tt scheduling, and access to toggles */
-<<<<<<< HEAD
-	qh->dev = urb->dev;
-=======
 	qh->ps.udev = urb->dev;
 	qh->ps.ep = urb->ep;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* using TT? */
 	switch (urb->dev->speed) {
 	case USB_SPEED_LOW:
-<<<<<<< HEAD
-		info1 |= (1 << 12);	/* EPS "low" */
-		/* FALL THROUGH */
-=======
 		info1 |= QH_LOW_SPEED;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case USB_SPEED_FULL:
 		/* EPS 0 means "full" */
 		if (type != PIPE_INTERRUPT)
 			info1 |= (EHCI_TUNE_RL_TT << 28);
 		if (type == PIPE_CONTROL) {
-<<<<<<< HEAD
-			info1 |= (1 << 27);	/* for TT */
-			info1 |= 1 << 14;	/* toggle from qtd */
-=======
 			info1 |= QH_CONTROL_EP;		/* for TT */
 			info1 |= QH_TOGGLE_CTL;		/* toggle from qtd */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		info1 |= maxp << 16;
 
@@ -1219,19 +908,11 @@ qh_make (
 		break;
 
 	case USB_SPEED_HIGH:		/* no TT involved */
-<<<<<<< HEAD
-		info1 |= (2 << 12);	/* EPS "high" */
-		if (type == PIPE_CONTROL) {
-			info1 |= (EHCI_TUNE_RL_HS << 28);
-			info1 |= 64 << 16;	/* usb2 fixed maxpacket */
-			info1 |= 1 << 14;	/* toggle from qtd */
-=======
 		info1 |= QH_HIGH_SPEED;
 		if (type == PIPE_CONTROL) {
 			info1 |= (EHCI_TUNE_RL_HS << 28);
 			info1 |= 64 << 16;	/* usb2 fixed maxpacket */
 			info1 |= QH_TOGGLE_CTL;	/* toggle from qtd */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			info2 |= (EHCI_TUNE_MULT_HS << 30);
 		} else if (type == PIPE_BULK) {
 			info1 |= (EHCI_TUNE_RL_HS << 28);
@@ -1241,19 +922,6 @@ qh_make (
 			 * to help them do so.  So now people expect to use
 			 * such nonconformant devices with Linux too; sigh.
 			 */
-<<<<<<< HEAD
-			info1 |= max_packet(maxp) << 16;
-			info2 |= (EHCI_TUNE_MULT_HS << 30);
-		} else {		/* PIPE_INTERRUPT */
-			info1 |= max_packet (maxp) << 16;
-			info2 |= hb_mult (maxp) << 30;
-		}
-		break;
-	default:
-		dbg ("bogus dev %p speed %d", urb->dev, urb->dev->speed);
-done:
-		qh_put (qh);
-=======
 			info1 |= maxp << 16;
 			info2 |= (EHCI_TUNE_MULT_HS << 30);
 		} else {		/* PIPE_INTERRUPT */
@@ -1266,34 +934,23 @@ done:
 			urb->dev->speed);
 done:
 		qh_destroy(ehci, qh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
 	/* NOTE:  if (PIPE_INTERRUPT) { scheduler sets s-mask } */
 
-<<<<<<< HEAD
-	/* init as live, toggle clear, advance to dummy */
-=======
 	/* init as live, toggle clear */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qh->qh_state = QH_STATE_IDLE;
 	hw = qh->hw;
 	hw->hw_info1 = cpu_to_hc32(ehci, info1);
 	hw->hw_info2 = cpu_to_hc32(ehci, info2);
 	qh->is_out = !is_input;
 	usb_settoggle (urb->dev, usb_pipeendpoint (urb->pipe), !is_input, 1);
-<<<<<<< HEAD
-	qh_refresh (ehci, qh);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return qh;
 }
 
 /*-------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static void enable_async(struct ehci_hcd *ehci)
 {
 	if (ehci->async_count++)
@@ -1320,7 +977,6 @@ static void disable_async(struct ehci_hcd *ehci)
 	ehci_poll_ASS(ehci);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* move qh (and its qtds) onto async queue; maybe enable queue.  */
 
 static void qh_link_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
@@ -1334,33 +990,11 @@ static void qh_link_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
 
 	WARN_ON(qh->qh_state != QH_STATE_IDLE);
 
-<<<<<<< HEAD
-	/* (re)start the async schedule? */
-	head = ehci->async;
-	timer_action_done (ehci, TIMER_ASYNC_OFF);
-	if (!head->qh_next.qh) {
-		u32	cmd = ehci_readl(ehci, &ehci->regs->command);
-
-		if (!(cmd & CMD_ASE)) {
-			/* in case a clear of CMD_ASE didn't take yet */
-			(void)handshake(ehci, &ehci->regs->status,
-					STS_ASS, 0, 150);
-			cmd |= CMD_ASE;
-			ehci_writel(ehci, cmd, &ehci->regs->command);
-			/* posted write need not be known to HC yet ... */
-		}
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear halt and/or toggle; and maybe recover from silicon quirk */
 	qh_refresh(ehci, qh);
 
 	/* splice right after start */
-<<<<<<< HEAD
-=======
 	head = ehci->async;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qh->qh_next = head->qh_next;
 	qh->hw->hw_next = head->hw->hw_next;
 	wmb ();
@@ -1368,19 +1002,12 @@ static void qh_link_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
 	head->qh_next.qh = qh;
 	head->hw->hw_next = dma;
 
-<<<<<<< HEAD
-	qh_get(qh);
-	qh->xacterrs = 0;
-	qh->qh_state = QH_STATE_LINKED;
-	/* qtd completions reported later by interrupt */
-=======
 	qh->qh_state = QH_STATE_LINKED;
 	qh->xacterrs = 0;
 	qh->unlink_reason = 0;
 	/* qtd completions reported later by interrupt */
 
 	enable_async(ehci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
@@ -1464,11 +1091,7 @@ static struct ehci_qh *qh_append_tds (
 			wmb ();
 			dummy->hw_token = token;
 
-<<<<<<< HEAD
-			urb->hcpriv = qh_get (qh);
-=======
 			urb->hcpriv = qh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return qh;
@@ -1532,33 +1155,13 @@ submit_async (
 }
 
 /*-------------------------------------------------------------------------*/
-<<<<<<< HEAD
-/* This function creates the qtds and submits them for the
-=======
 #ifdef CONFIG_USB_HCD_TEST_MODE
 /*
  * This function creates the qtds and submits them for the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SINGLE_STEP_SET_FEATURE Test.
  * This is done in two parts: first SETUP req for GetDesc is sent then
  * 15 seconds later, the IN stage for GetDesc starts to req data from dev
  *
-<<<<<<< HEAD
- * is_setup : i/p arguement decides which of the two stage needs to be
- * performed; TRUE - SETUP and FALSE - IN+STATUS
- * Returns 0 if success
- */
-#ifdef CONFIG_USB_EHCI_EHSET
-static int
-submit_single_step_set_feature(
-	struct usb_hcd  *hcd,
-	struct urb      *urb,
-	int 		is_setup
-) {
-	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
-	struct list_head	qtd_list;
-	struct list_head	*head ;
-=======
  * is_setup : i/p argument decides which of the two stage needs to be
  * performed; TRUE - SETUP and FALSE - IN+STATUS
  * Returns 0 if success
@@ -1571,7 +1174,6 @@ static int ehci_submit_single_step_set_feature(
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 	struct list_head	qtd_list;
 	struct list_head	*head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ehci_qtd		*qtd, *qtd_prev;
 	dma_addr_t		buf;
@@ -1581,13 +1183,7 @@ static int ehci_submit_single_step_set_feature(
 	INIT_LIST_HEAD(&qtd_list);
 	head = &qtd_list;
 
-<<<<<<< HEAD
-	/*
-	 * URBs map to sequences of QTDs:  one logical transaction
-	 */
-=======
 	/* URBs map to sequences of QTDs:  one logical transaction */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qtd = ehci_qtd_alloc(ehci, GFP_KERNEL);
 	if (unlikely(!qtd))
 		return -1;
@@ -1598,37 +1194,22 @@ static int ehci_submit_single_step_set_feature(
 	token |= (EHCI_TUNE_CERR << 10);
 
 	len = urb->transfer_buffer_length;
-<<<<<<< HEAD
-	/* Check if the request is to perform just the SETUP stage (getDesc)
-=======
 	/*
 	 * Check if the request is to perform just the SETUP stage (getDesc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * as in SINGLE_STEP_SET_FEATURE test, DATA stage (IN) happens
 	 * 15 secs after the setup
 	 */
 	if (is_setup) {
-<<<<<<< HEAD
-		/* SETUP pid */
-		qtd_fill(ehci, qtd, urb->setup_dma,
-				sizeof(struct usb_ctrlrequest),
-				token | (2 /* "setup" */ << 8), 8);
-=======
 		/* SETUP pid, and interrupt after SETUP completion */
 		qtd_fill(ehci, qtd, urb->setup_dma,
 				sizeof(struct usb_ctrlrequest),
 				QTD_IOC | token | (2 /* "setup" */ << 8), 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		submit_async(ehci, urb, &qtd_list, GFP_ATOMIC);
 		return 0; /*Return now; we shall come back after 15 seconds*/
 	}
 
-<<<<<<< HEAD
-	/*---------------------------------------------------------------------
-=======
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * IN: data transfer stage:  buffer setup : start the IN txn phase for
 	 * the get_Desc SETUP which was sent 15seconds back
 	 */
@@ -1637,22 +1218,6 @@ static int ehci_submit_single_step_set_feature(
 
 	token |= (1 /* "in" */ << 8);  /*This is IN stage*/
 
-<<<<<<< HEAD
-	maxpacket = max_packet(usb_maxpacket(urb->dev, urb->pipe, 0));
-
-	qtd_fill(ehci, qtd, buf, len, token, maxpacket);
-
-	/* Our IN phase shall always be a short read; so keep the queue running
-	* and let it advance to the next qtd which zero length OUT status */
-
-	qtd->hw_alt_next = EHCI_LIST_END(ehci);
-
-	/*----------------------------------------------------------------------
-	 * STATUS stage for GetDesc control request
-	 */
-	token ^= 0x0100;	/* "in" <--> "out"  */
-	token |= QTD_TOGGLE;	/* force DATA1 */
-=======
 	maxpacket = usb_endpoint_maxp(&urb->ep->desc);
 
 	qtd_fill(ehci, qtd, buf, len, token, maxpacket);
@@ -1666,7 +1231,6 @@ static int ehci_submit_single_step_set_feature(
 	/* STATUS stage for GetDesc control request */
 	token ^= 0x0100;        /* "in" <--> "out"  */
 	token |= QTD_TOGGLE;    /* force DATA1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	qtd_prev = qtd;
 	qtd = ehci_qtd_alloc(ehci, GFP_ATOMIC);
@@ -1676,17 +1240,8 @@ static int ehci_submit_single_step_set_feature(
 	qtd_prev->hw_next = QTD_NEXT(ehci, qtd->qtd_dma);
 	list_add_tail(&qtd->qtd_list, head);
 
-<<<<<<< HEAD
-	/* dont fill any data in such packets */
-	qtd_fill(ehci, qtd, 0, 0, token, 0);
-
-	/* by default, enable interrupt on urb completion */
-	if (likely(!(urb->transfer_flags & URB_NO_INTERRUPT)))
-		qtd->hw_token |= cpu_to_hc32(ehci, QTD_IOC);
-=======
 	/* Interrupt after STATUS completion */
 	qtd_fill(ehci, qtd, 0, 0, token | QTD_IOC, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	submit_async(ehci, urb, &qtd_list, GFP_KERNEL);
 
@@ -1696,90 +1251,6 @@ cleanup:
 	qtd_list_free(ehci, urb, head);
 	return -1;
 }
-<<<<<<< HEAD
-#endif
-
-/*-------------------------------------------------------------------------*/
-
-/* the async qh for the qtds being reclaimed are now unlinked from the HC */
-
-static void end_unlink_async (struct ehci_hcd *ehci)
-{
-	struct ehci_qh		*qh = ehci->reclaim;
-	struct ehci_qh		*next;
-
-	iaa_watchdog_done(ehci);
-
-	// qh->hw_next = cpu_to_hc32(qh->qh_dma);
-	qh->qh_state = QH_STATE_IDLE;
-	qh->qh_next.qh = NULL;
-	qh_put (qh);			// refcount from reclaim
-
-	/* other unlink(s) may be pending (in QH_STATE_UNLINK_WAIT) */
-	next = qh->reclaim;
-	ehci->reclaim = next;
-	qh->reclaim = NULL;
-
-	qh_completions (ehci, qh);
-
-	if (!list_empty(&qh->qtd_list) && ehci->rh_state == EHCI_RH_RUNNING) {
-		qh_link_async (ehci, qh);
-	} else {
-		/* it's not free to turn the async schedule on/off; leave it
-		 * active but idle for a while once it empties.
-		 */
-		if (ehci->rh_state == EHCI_RH_RUNNING
-				&& ehci->async->qh_next.qh == NULL)
-			timer_action (ehci, TIMER_ASYNC_OFF);
-	}
-	qh_put(qh);			/* refcount from async list */
-
-	if (next) {
-		ehci->reclaim = NULL;
-		start_unlink_async (ehci, next);
-	}
-
-	if (ehci->has_synopsys_hc_bug)
-		ehci_writel(ehci, (u32) ehci->async->qh_dma,
-			    &ehci->regs->async_next);
-}
-
-/* makes sure the async qh will become idle */
-/* caller must own ehci->lock */
-
-static void start_unlink_async (struct ehci_hcd *ehci, struct ehci_qh *qh)
-{
-	int		cmd = ehci_readl(ehci, &ehci->regs->command);
-	struct ehci_qh	*prev;
-
-#ifdef DEBUG
-	assert_spin_locked(&ehci->lock);
-	if (ehci->reclaim
-			|| (qh->qh_state != QH_STATE_LINKED
-				&& qh->qh_state != QH_STATE_UNLINK_WAIT)
-			)
-		BUG ();
-#endif
-
-	/* stop async schedule right now? */
-	if (unlikely (qh == ehci->async)) {
-		/* can't get here without STS_ASS set */
-		if (ehci->rh_state != EHCI_RH_HALTED
-				&& !ehci->reclaim) {
-			/* ... and CMD_IAAD clear */
-			ehci_writel(ehci, cmd & ~CMD_ASE,
-				    &ehci->regs->command);
-			wmb ();
-			// handshake later, if we need to
-			timer_action_done (ehci, TIMER_ASYNC_OFF);
-		}
-		return;
-	}
-
-	qh->qh_state = QH_STATE_UNLINK;
-	ehci->reclaim = qh = qh_get (qh);
-
-=======
 #endif /* CONFIG_USB_HCD_TEST_MODE */
 
 /*-------------------------------------------------------------------------*/
@@ -1793,7 +1264,6 @@ static void single_unlink_async(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	list_add_tail(&qh->unlink_node, &ehci->async_unlink);
 
 	/* Unlink it from the schedule */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prev = ehci->async;
 	while (prev->qh_next.qh != qh)
 		prev = prev->qh_next.qh;
@@ -1802,23 +1272,6 @@ static void single_unlink_async(struct ehci_hcd *ehci, struct ehci_qh *qh)
 	prev->qh_next = qh->qh_next;
 	if (ehci->qh_scan_next == qh)
 		ehci->qh_scan_next = qh->qh_next.qh;
-<<<<<<< HEAD
-	wmb ();
-
-	/* If the controller isn't running, we don't have to wait for it */
-	if (unlikely(ehci->rh_state != EHCI_RH_RUNNING)) {
-		/* if (unlikely (qh->reclaim != 0))
-		 *	this will recurse, probably not much
-		 */
-		end_unlink_async (ehci);
-		return;
-	}
-
-	cmd |= CMD_IAAD;
-	ehci_writel(ehci, cmd, &ehci->regs->command);
-	(void)ehci_readl(ehci, &ehci->regs->command);
-	iaa_watchdog_start(ehci);
-=======
 }
 
 static void start_iaa_cycle(struct ehci_hcd *ehci)
@@ -2026,34 +1479,20 @@ static void start_unlink_async(struct ehci_hcd *ehci, struct ehci_qh *qh)
 
 	single_unlink_async(ehci, qh);
 	start_iaa_cycle(ehci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
 
 static void scan_async (struct ehci_hcd *ehci)
 {
-<<<<<<< HEAD
-	bool			stopped;
-	struct ehci_qh		*qh;
-	enum ehci_timer_action	action = TIMER_IO_WATCHDOG;
-
-	timer_action_done (ehci, TIMER_ASYNC_SHRINK);
-	stopped = (ehci->rh_state != EHCI_RH_RUNNING);
-=======
 	struct ehci_qh		*qh;
 	bool			check_unlinks_later = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ehci->qh_scan_next = ehci->async->qh_next.qh;
 	while (ehci->qh_scan_next) {
 		qh = ehci->qh_scan_next;
 		ehci->qh_scan_next = qh->qh_next.qh;
-<<<<<<< HEAD
- rescan:
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* clean any finished work for this qh */
 		if (!list_empty(&qh->qtd_list)) {
 			int temp;
@@ -2063,37 +1502,6 @@ static void scan_async (struct ehci_hcd *ehci)
 			 * drops the lock.  That's why ehci->qh_scan_next
 			 * always holds the next qh to scan; if the next qh
 			 * gets unlinked then ehci->qh_scan_next is adjusted
-<<<<<<< HEAD
-			 * in start_unlink_async().
-			 */
-			qh = qh_get(qh);
-			temp = qh_completions(ehci, qh);
-			if (qh->needs_rescan)
-				unlink_async(ehci, qh);
-			qh->unlink_time = jiffies + EHCI_SHRINK_JIFFIES;
-			qh_put(qh);
-			if (temp != 0)
-				goto rescan;
-		}
-
-		/* unlink idle entries, reducing DMA usage as well
-		 * as HCD schedule-scanning costs.  delay for any qh
-		 * we just scanned, there's a not-unusual case that it
-		 * doesn't stay idle for long.
-		 * (plus, avoids some kind of re-activation race.)
-		 */
-		if (list_empty(&qh->qtd_list)
-				&& qh->qh_state == QH_STATE_LINKED) {
-			if (!ehci->reclaim && (stopped ||
-					time_after_eq(jiffies, qh->unlink_time)))
-				start_unlink_async(ehci, qh);
-			else
-				action = TIMER_ASYNC_SHRINK;
-		}
-	}
-	if (action == TIMER_ASYNC_SHRINK)
-		timer_action (ehci, TIMER_ASYNC_SHRINK);
-=======
 			 * in single_unlink_async().
 			 */
 			temp = qh_completions(ehci, qh);
@@ -2119,5 +1527,4 @@ static void scan_async (struct ehci_hcd *ehci)
 		ehci_enable_event(ehci, EHCI_HRTIMER_ASYNC_UNLINKS, true);
 		++ehci->async_unlink_cycle;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

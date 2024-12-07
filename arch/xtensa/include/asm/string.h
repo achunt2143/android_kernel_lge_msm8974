@@ -53,11 +53,7 @@ static inline char *strncpy(char *__dest, const char *__src, size_t __n)
 		"bne	%1, %5, 1b\n"
 		"2:"
 		: "=r" (__dest), "=r" (__src), "=&r" (__dummy)
-<<<<<<< HEAD
-		: "0" (__dest), "1" (__src), "r" (__src+__n)
-=======
 		: "0" (__dest), "1" (__src), "r" ((uintptr_t)__src+__n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "memory");
 
 	return __xdest;
@@ -78,11 +74,7 @@ static inline int strcmp(const char *__cs, const char *__ct)
 		"beqz	%2, 2f\n\t"
 		"beq	%2, %3, 1b\n"
 		"2:\n\t"
-<<<<<<< HEAD
-		"sub	%2, %3, %2"
-=======
 		"sub	%2, %2, %3"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r" (__cs), "=r" (__ct), "=&r" (__res), "=&r" (__dummy)
 		: "0" (__cs), "1" (__ct));
 
@@ -107,32 +99,15 @@ static inline int strncmp(const char *__cs, const char *__ct, size_t __n)
 		"beqz	%3, 2f\n\t"
 		"beq	%2, %3, 1b\n"
 		"2:\n\t"
-<<<<<<< HEAD
-		"sub	%2, %3, %2"
-		: "=r" (__cs), "=r" (__ct), "=&r" (__res), "=&r" (__dummy)
-		: "0" (__cs), "1" (__ct), "r" (__cs+__n));
-=======
 		"sub	%2, %2, %3"
 		: "=r" (__cs), "=r" (__ct), "=&r" (__res), "=&r" (__dummy)
 		: "0" (__cs), "1" (__ct), "r" ((uintptr_t)__cs+__n));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return __res;
 }
 
 #define __HAVE_ARCH_MEMSET
 extern void *memset(void *__s, int __c, size_t __count);
-<<<<<<< HEAD
-
-#define __HAVE_ARCH_MEMCPY
-extern void *memcpy(void *__to, __const__ void *__from, size_t __n);
-
-#define __HAVE_ARCH_MEMMOVE
-extern void *memmove(void *__dest, __const__ void *__src, size_t __n);
-
-/* Don't build bcopy at all ...  */
-#define __HAVE_ARCH_BCOPY
-=======
 extern void *__memset(void *__s, int __c, size_t __count);
 
 #define __HAVE_ARCH_MEMCPY
@@ -158,6 +133,5 @@ extern void *__memmove(void *__dest, __const__ void *__src, size_t __n);
 #define __NO_FORTIFY /* FORTIFY_SOURCE uses __builtin_memcpy, etc. */
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _XTENSA_STRING_H */

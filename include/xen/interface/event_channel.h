@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * event_channel.h
  *
@@ -181,8 +178,6 @@ struct evtchn_unmask {
 	evtchn_port_t port;
 };
 
-<<<<<<< HEAD
-=======
 /*
  * EVTCHNOP_reset: Close all event channels associated with specified domain.
  * NOTES:
@@ -229,7 +224,6 @@ struct evtchn_set_priority {
 	uint32_t priority;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct evtchn_op {
 	uint32_t cmd; /* EVTCHNOP_* */
 	union {
@@ -247,8 +241,6 @@ struct evtchn_op {
 };
 DEFINE_GUEST_HANDLE_STRUCT(evtchn_op);
 
-<<<<<<< HEAD
-=======
 /*
  * 2-level ABI
  */
@@ -284,5 +276,4 @@ struct evtchn_fifo_control_block {
 	event_word_t head[EVTCHN_FIFO_MAX_QUEUES];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __XEN_PUBLIC_EVENT_CHANNEL_H__ */

@@ -1,25 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Author	Karsten Keil <kkeil@novell.com>
  *
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/gfp.h>
@@ -88,12 +72,6 @@ mISDN_initdchannel(struct dchannel *ch, int maxlen, void *phf)
 EXPORT_SYMBOL(mISDN_initdchannel);
 
 int
-<<<<<<< HEAD
-mISDN_initbchannel(struct bchannel *ch, int maxlen)
-{
-	ch->Flags = 0;
-	ch->maxlen = maxlen;
-=======
 mISDN_initbchannel(struct bchannel *ch, unsigned short maxlen,
 		   unsigned short minlen)
 {
@@ -104,7 +82,6 @@ mISDN_initbchannel(struct bchannel *ch, unsigned short maxlen,
 	ch->maxlen = maxlen;
 	ch->next_maxlen = maxlen;
 	ch->init_maxlen = maxlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ch->hw = NULL;
 	ch->rx_skb = NULL;
 	ch->tx_skb = NULL;
@@ -130,11 +107,7 @@ mISDN_freedchannel(struct dchannel *ch)
 	}
 	skb_queue_purge(&ch->squeue);
 	skb_queue_purge(&ch->rqueue);
-<<<<<<< HEAD
-	flush_work_sync(&ch->workq);
-=======
 	flush_work(&ch->workq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(mISDN_freedchannel);
@@ -158,22 +131,6 @@ mISDN_clear_bchannel(struct bchannel *ch)
 	test_and_clear_bit(FLG_TX_BUSY, &ch->Flags);
 	test_and_clear_bit(FLG_TX_NEXT, &ch->Flags);
 	test_and_clear_bit(FLG_ACTIVE, &ch->Flags);
-<<<<<<< HEAD
-}
-EXPORT_SYMBOL(mISDN_clear_bchannel);
-
-int
-mISDN_freebchannel(struct bchannel *ch)
-{
-	mISDN_clear_bchannel(ch);
-	skb_queue_purge(&ch->rqueue);
-	ch->rcount = 0;
-	flush_work_sync(&ch->workq);
-	return 0;
-}
-EXPORT_SYMBOL(mISDN_freebchannel);
-
-=======
 	test_and_clear_bit(FLG_FILLEMPTY, &ch->Flags);
 	test_and_clear_bit(FLG_TX_EMPTY, &ch->Flags);
 	test_and_clear_bit(FLG_RX_OFF, &ch->Flags);
@@ -240,7 +197,6 @@ mISDN_ctrl_bchannel(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 }
 EXPORT_SYMBOL(mISDN_ctrl_bchannel);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u_int
 get_sapi_tei(u_char *p)
 {
@@ -290,26 +246,6 @@ recv_Echannel(struct dchannel *ech, struct dchannel *dch)
 EXPORT_SYMBOL(recv_Echannel);
 
 void
-<<<<<<< HEAD
-recv_Bchannel(struct bchannel *bch, unsigned int id)
-{
-	struct mISDNhead *hh;
-
-	hh = mISDN_HEAD_P(bch->rx_skb);
-	hh->prim = PH_DATA_IND;
-	hh->id = id;
-	if (bch->rcount >= 64) {
-		printk(KERN_WARNING "B-channel %p receive queue overflow, "
-		       "flushing!\n", bch);
-		skb_queue_purge(&bch->rqueue);
-		bch->rcount = 0;
-		return;
-	}
-	bch->rcount++;
-	skb_queue_tail(&bch->rqueue, bch->rx_skb);
-	bch->rx_skb = NULL;
-	schedule_event(bch, FLG_RECVQUEUE);
-=======
 recv_Bchannel(struct bchannel *bch, unsigned int id, bool force)
 {
 	struct mISDNhead *hh;
@@ -341,7 +277,6 @@ recv_Bchannel(struct bchannel *bch, unsigned int id, bool force)
 		bch->rx_skb = NULL;
 		schedule_event(bch, FLG_RECVQUEUE);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(recv_Bchannel);
 
@@ -399,11 +334,7 @@ get_next_dframe(struct dchannel *dch)
 }
 EXPORT_SYMBOL(get_next_dframe);
 
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 confirm_Bsend(struct bchannel *bch)
 {
 	struct sk_buff	*skb;
@@ -425,10 +356,6 @@ confirm_Bsend(struct bchannel *bch)
 	skb_queue_tail(&bch->rqueue, skb);
 	schedule_event(bch, FLG_RECVQUEUE);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(confirm_Bsend);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int
 get_next_bframe(struct bchannel *bch)
@@ -439,13 +366,8 @@ get_next_bframe(struct bchannel *bch)
 		if (bch->tx_skb) {
 			bch->next_skb = NULL;
 			test_and_clear_bit(FLG_TX_NEXT, &bch->Flags);
-<<<<<<< HEAD
-			if (!test_bit(FLG_TRANSPARENT, &bch->Flags))
-				confirm_Bsend(bch); /* not for transparent */
-=======
 			/* confirm imediately to allow next data */
 			confirm_Bsend(bch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		} else {
 			test_and_clear_bit(FLG_TX_NEXT, &bch->Flags);
@@ -534,16 +456,11 @@ bchannel_senddata(struct bchannel *ch, struct sk_buff *skb)
 		/* write to fifo */
 		ch->tx_skb = skb;
 		ch->tx_idx = 0;
-<<<<<<< HEAD
-=======
 		confirm_Bsend(ch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 }
 EXPORT_SYMBOL(bchannel_senddata);
-<<<<<<< HEAD
-=======
 
 /* The function allocates a new receive skb on demand with a size for the
  * requirements of the current protocol. It returns the tailroom of the
@@ -597,4 +514,3 @@ bchannel_get_rxbuf(struct bchannel *bch, int reqlen)
 	return len;
 }
 EXPORT_SYMBOL(bchannel_get_rxbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

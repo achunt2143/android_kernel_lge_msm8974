@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 Sistina Software.
  * Copyright (C) 2004 Red Hat, Inc. All rights reserved.
@@ -30,8 +27,6 @@ struct path_selector {
 	void *context;
 };
 
-<<<<<<< HEAD
-=======
 /*
  * If a path selector uses this flag, a high resolution timer is used
  * (via ktime_get_ns) to account for IO start time in BIO-based mpath.
@@ -46,90 +41,48 @@ struct path_selector {
 #define DM_PS_USE_HR_TIMER		0x00000001
 #define dm_ps_use_hr_timer(type)	((type)->features & DM_PS_USE_HR_TIMER)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Information about a path selector type */
 struct path_selector_type {
 	char *name;
 	struct module *module;
 
-<<<<<<< HEAD
-=======
 	unsigned int features;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int table_args;
 	unsigned int info_args;
 
 	/*
 	 * Constructs a path selector object, takes custom arguments
 	 */
-<<<<<<< HEAD
-	int (*create) (struct path_selector *ps, unsigned argc, char **argv);
-	void (*destroy) (struct path_selector *ps);
-=======
 	int (*create)(struct path_selector *ps, unsigned int argc, char **argv);
 	void (*destroy)(struct path_selector *ps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Add an opaque path object, along with some selector specific
 	 * path args (eg, path priority).
 	 */
-<<<<<<< HEAD
-	int (*add_path) (struct path_selector *ps, struct dm_path *path,
-			 int argc, char **argv, char **error);
-=======
 	int (*add_path)(struct path_selector *ps, struct dm_path *path,
 			int argc, char **argv, char **error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Chooses a path for this io, if no paths are available then
 	 * NULL will be returned.
-<<<<<<< HEAD
-	 *
-	 * repeat_count is the number of times to use the path before
-	 * calling the function again.  0 means don't call it again unless
-	 * the path fails.
-	 */
-	struct dm_path *(*select_path) (struct path_selector *ps,
-					unsigned *repeat_count,
-					size_t nr_bytes);
-=======
 	 */
 	struct dm_path *(*select_path)(struct path_selector *ps, size_t nr_bytes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Notify the selector that a path has failed.
 	 */
-<<<<<<< HEAD
-	void (*fail_path) (struct path_selector *ps, struct dm_path *p);
-=======
 	void (*fail_path)(struct path_selector *ps, struct dm_path *p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ask selector to reinstate a path.
 	 */
-<<<<<<< HEAD
-	int (*reinstate_path) (struct path_selector *ps, struct dm_path *p);
-=======
 	int (*reinstate_path)(struct path_selector *ps, struct dm_path *p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Table content based on parameters added in ps_add_path_fn
 	 * or path selector status
 	 */
-<<<<<<< HEAD
-	int (*status) (struct path_selector *ps, struct dm_path *path,
-		       status_type_t type, char *result, unsigned int maxlen);
-
-	int (*start_io) (struct path_selector *ps, struct dm_path *path,
-			 size_t nr_bytes);
-	int (*end_io) (struct path_selector *ps, struct dm_path *path,
-		       size_t nr_bytes);
-=======
 	int (*status)(struct path_selector *ps, struct dm_path *path,
 		      status_type_t type, char *result, unsigned int maxlen);
 
@@ -137,7 +90,6 @@ struct path_selector_type {
 			size_t nr_bytes);
 	int (*end_io)(struct path_selector *ps, struct dm_path *path,
 		      size_t nr_bytes, u64 start_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Register a path selector */

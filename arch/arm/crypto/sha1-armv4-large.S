@@ -1,6 +1,4 @@
 #define __ARM_ARCH__ __LINUX_ARM_ARCH__
-<<<<<<< HEAD
-=======
 @ SPDX-License-Identifier: GPL-2.0
 
 @ This code is taken from the OpenSSL project but the author (Andy Polyakov)
@@ -11,16 +9,11 @@
 @ The original headers, including the original license headers, are
 @ included below for completeness.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 @ ====================================================================
 @ Written by Andy Polyakov <appro@fy.chalmers.se> for the OpenSSL
 @ project. The module is, however, dual licensed under OpenSSL and
 @ CRYPTOGAMS licenses depending on where you obtain it. For further
-<<<<<<< HEAD
-@ details see http://www.openssl.org/~appro/cryptogams/.
-=======
 @ details see https://www.openssl.org/~appro/cryptogams/.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 @ ====================================================================
 
 @ sha1_block procedure for ARMv4.

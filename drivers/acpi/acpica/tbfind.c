@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: tbfind   - find table
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "actables.h"
@@ -63,11 +18,7 @@ ACPI_MODULE_NAME("tbfind")
  *
  * FUNCTION:    acpi_tb_find_table
  *
-<<<<<<< HEAD
- * PARAMETERS:  Signature           - String with ACPI table signature
-=======
  * PARAMETERS:  signature           - String with ACPI table signature
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              oem_id              - String with the table OEM ID
  *              oem_table_id        - String with the OEM Table ID
  *              table_index         - Where the table index is returned
@@ -83,26 +34,6 @@ acpi_status
 acpi_tb_find_table(char *signature,
 		   char *oem_id, char *oem_table_id, u32 *table_index)
 {
-<<<<<<< HEAD
-	u32 i;
-	acpi_status status;
-	struct acpi_table_header header;
-
-	ACPI_FUNCTION_TRACE(tb_find_table);
-
-	/* Normalize the input strings */
-
-	ACPI_MEMSET(&header, 0, sizeof(struct acpi_table_header));
-	ACPI_STRNCPY(header.signature, signature, ACPI_NAME_SIZE);
-	ACPI_STRNCPY(header.oem_id, oem_id, ACPI_OEM_ID_SIZE);
-	ACPI_STRNCPY(header.oem_table_id, oem_table_id, ACPI_OEM_TABLE_ID_SIZE);
-
-	/* Search for the table */
-
-	for (i = 0; i < acpi_gbl_root_table_list.current_table_count; ++i) {
-		if (ACPI_MEMCMP(&(acpi_gbl_root_table_list.tables[i].signature),
-				header.signature, ACPI_NAME_SIZE)) {
-=======
 	acpi_status status = AE_OK;
 	struct acpi_table_header header;
 	u32 i;
@@ -135,7 +66,6 @@ acpi_tb_find_table(char *signature,
 	for (i = 0; i < acpi_gbl_root_table_list.current_table_count; ++i) {
 		if (memcmp(&(acpi_gbl_root_table_list.tables[i].signature),
 			   header.signature, ACPI_NAMESEG_SIZE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Not the requested table */
 
@@ -149,17 +79,10 @@ acpi_tb_find_table(char *signature,
 			/* Table is not currently mapped, map it */
 
 			status =
-<<<<<<< HEAD
-			    acpi_tb_verify_table(&acpi_gbl_root_table_list.
-						 tables[i]);
-			if (ACPI_FAILURE(status)) {
-				return_ACPI_STATUS(status);
-=======
 			    acpi_tb_validate_table(&acpi_gbl_root_table_list.
 						   tables[i]);
 			if (ACPI_FAILURE(status)) {
 				goto unlock_and_exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			if (!acpi_gbl_root_table_list.tables[i].pointer) {
@@ -169,23 +92,6 @@ acpi_tb_find_table(char *signature,
 
 		/* Check for table match on all IDs */
 
-<<<<<<< HEAD
-		if (!ACPI_MEMCMP
-		    (acpi_gbl_root_table_list.tables[i].pointer->signature,
-		     header.signature, ACPI_NAME_SIZE) && (!oem_id[0]
-							   ||
-							   !ACPI_MEMCMP
-							   (acpi_gbl_root_table_list.
-							    tables[i].pointer->
-							    oem_id,
-							    header.oem_id,
-							    ACPI_OEM_ID_SIZE))
-		    && (!oem_table_id[0]
-			|| !ACPI_MEMCMP(acpi_gbl_root_table_list.tables[i].
-					pointer->oem_table_id,
-					header.oem_table_id,
-					ACPI_OEM_TABLE_ID_SIZE))) {
-=======
 		if (!memcmp
 		    (acpi_gbl_root_table_list.tables[i].pointer->signature,
 		     header.signature, ACPI_NAMESEG_SIZE) && (!oem_id[0]
@@ -200,19 +106,11 @@ acpi_tb_find_table(char *signature,
 			|| !memcmp(acpi_gbl_root_table_list.tables[i].pointer->
 				   oem_table_id, header.oem_table_id,
 				   ACPI_OEM_TABLE_ID_SIZE))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*table_index = i;
 
 			ACPI_DEBUG_PRINT((ACPI_DB_TABLES,
 					  "Found table [%4.4s]\n",
 					  header.signature));
-<<<<<<< HEAD
-			return_ACPI_STATUS(AE_OK);
-		}
-	}
-
-	return_ACPI_STATUS(AE_NOT_FOUND);
-=======
 			goto unlock_and_exit;
 		}
 	}
@@ -221,5 +119,4 @@ acpi_tb_find_table(char *signature,
 unlock_and_exit:
 	(void)acpi_ut_release_mutex(ACPI_MTX_TABLES);
 	return_ACPI_STATUS(status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

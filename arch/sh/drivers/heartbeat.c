@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic heartbeat driver for regular LED banks
  *
@@ -17,23 +14,11 @@
  * traditionally used for strobing the load average. This use case is
  * handled by this driver, rather than giving each LED bit position its
  * own struct device.
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/platform_device.h>
-#include <linux/sched.h>
-=======
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/sched.h>
 #include <linux/sched/loadavg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -71,15 +56,9 @@ static inline void heartbeat_toggle_bit(struct heartbeat_data *hd,
 	}
 }
 
-<<<<<<< HEAD
-static void heartbeat_timer(unsigned long data)
-{
-	struct heartbeat_data *hd = (struct heartbeat_data *)data;
-=======
 static void heartbeat_timer(struct timer_list *t)
 {
 	struct heartbeat_data *hd = from_timer(hd, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static unsigned bit = 0, up = 1;
 
 	heartbeat_toggle_bit(hd, bit, hd->flags & HEARTBEAT_INVERTED);
@@ -117,11 +96,7 @@ static int heartbeat_drv_probe(struct platform_device *pdev)
 			return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	hd->base = ioremap_nocache(res->start, resource_size(res));
-=======
 	hd->base = ioremap(res->start, resource_size(res));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!hd->base)) {
 		dev_err(&pdev->dev, "ioremap failed\n");
 
@@ -155,44 +130,17 @@ static int heartbeat_drv_probe(struct platform_device *pdev)
 		}
 	}
 
-<<<<<<< HEAD
-	setup_timer(&hd->timer, heartbeat_timer, (unsigned long)hd);
-=======
 	timer_setup(&hd->timer, heartbeat_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_set_drvdata(pdev, hd);
 
 	return mod_timer(&hd->timer, jiffies + 1);
 }
 
-<<<<<<< HEAD
-static int heartbeat_drv_remove(struct platform_device *pdev)
-{
-	struct heartbeat_data *hd = platform_get_drvdata(pdev);
-
-	del_timer_sync(&hd->timer);
-	iounmap(hd->base);
-
-	platform_set_drvdata(pdev, NULL);
-
-	if (!pdev->dev.platform_data)
-		kfree(hd);
-
-	return 0;
-}
-
-static struct platform_driver heartbeat_driver = {
-	.probe		= heartbeat_drv_probe,
-	.remove		= heartbeat_drv_remove,
-	.driver		= {
-		.name	= DRV_NAME,
-=======
 static struct platform_driver heartbeat_driver = {
 	.probe		= heartbeat_drv_probe,
 	.driver		= {
 		.name			= DRV_NAME,
 		.suppress_bind_attrs	= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -201,18 +149,4 @@ static int __init heartbeat_init(void)
 	printk(KERN_NOTICE DRV_NAME ": version %s loaded\n", DRV_VERSION);
 	return platform_driver_register(&heartbeat_driver);
 }
-<<<<<<< HEAD
-
-static void __exit heartbeat_exit(void)
-{
-	platform_driver_unregister(&heartbeat_driver);
-}
-module_init(heartbeat_init);
-module_exit(heartbeat_exit);
-
-MODULE_VERSION(DRV_VERSION);
-MODULE_AUTHOR("Paul Mundt");
-MODULE_LICENSE("GPL v2");
-=======
 device_initcall(heartbeat_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

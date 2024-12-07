@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale CPM1/CPM2 I2C interface.
  * Copyright (c) 1999 Dan Malek (dmalek@jlc.net).
@@ -17,49 +14,22 @@
  *
  * Converted to of_platform_device. Renamed to i2c-cpm.c.
  * (C) 2007,2008 Jochen Friedrich <jochen@scram.de>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/errno.h>
 #include <linux/stddef.h>
 #include <linux/i2c.h>
 #include <linux/io.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-#include <linux/of_platform.h>
-#include <linux/of_i2c.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sysdev/fsl_soc.h>
 #include <asm/cpm.h>
 
@@ -95,12 +65,9 @@ struct i2c_ram {
 	char    res1[4];	/* Reserved */
 	ushort  rpbase;		/* Relocation pointer */
 	char    res2[2];	/* Reserved */
-<<<<<<< HEAD
-=======
 	/* The following elements are only for CPM2 */
 	char    res3[4];	/* Reserved */
 	uint    sdmatmp;	/* Internal */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define I2COM_START	0x80
@@ -143,13 +110,8 @@ struct cpm_i2c {
 	cbd_t __iomem *rbase;
 	u_char *txbuf[CPM_MAXBD];
 	u_char *rxbuf[CPM_MAXBD];
-<<<<<<< HEAD
-	u32 txdma[CPM_MAXBD];
-	u32 rxdma[CPM_MAXBD];
-=======
 	dma_addr_t txdma[CPM_MAXBD];
 	dma_addr_t rxdma[CPM_MAXBD];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t cpm_i2c_interrupt(int irq, void *dev_id)
@@ -229,13 +191,7 @@ static void cpm_i2c_parse_message(struct i2c_adapter *adap,
 	tbdf = cpm->tbase + tx;
 	rbdf = cpm->rbase + rx;
 
-<<<<<<< HEAD
-	addr = pmsg->addr << 1;
-	if (pmsg->flags & I2C_M_RD)
-		addr |= 1;
-=======
 	addr = i2c_8bit_addr_from_msg(pmsg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tb = cpm->txbuf[tx];
 	rb = cpm->rxbuf[rx];
@@ -344,29 +300,12 @@ static int cpm_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	struct i2c_reg __iomem *i2c_reg = cpm->i2c_reg;
 	struct i2c_ram __iomem *i2c_ram = cpm->i2c_ram;
 	struct i2c_msg *pmsg;
-<<<<<<< HEAD
-	int ret, i;
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int tptr;
 	int rptr;
 	cbd_t __iomem *tbdf;
 	cbd_t __iomem *rbdf;
 
-<<<<<<< HEAD
-	if (num > CPM_MAXBD)
-		return -EINVAL;
-
-	/* Check if we have any oversized READ requests */
-	for (i = 0; i < num; i++) {
-		pmsg = &msgs[i];
-		if (pmsg->len >= CPM_MAX_READ)
-			return -EINVAL;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset to use first buffer */
 	out_be16(&i2c_ram->rbptr, in_be16(&i2c_ram->rbase));
 	out_be16(&i2c_ram->tbptr, in_be16(&i2c_ram->tbase));
@@ -377,8 +316,6 @@ static int cpm_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 	tptr = 0;
 	rptr = 0;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * If there was a collision in the last i2c transaction,
 	 * Set I2COM_MASTER as it was cleared during collision.
@@ -387,7 +324,6 @@ static int cpm_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 		out_8(&cpm->i2c_reg->i2com, I2COM_MASTER);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (tptr < num) {
 		pmsg = &msgs[tptr];
 		dev_dbg(&adap->dev, "R: %d T: %d\n", rptr, tptr);
@@ -470,8 +406,6 @@ static const struct i2c_algorithm cpm_i2c_algo = {
 	.functionality = cpm_i2c_func,
 };
 
-<<<<<<< HEAD
-=======
 /* CPM_MAX_READ is also limiting writes according to the code! */
 static const struct i2c_adapter_quirks cpm_i2c_quirks = {
 	.max_num_msgs = CPM_MAXBD,
@@ -479,21 +413,14 @@ static const struct i2c_adapter_quirks cpm_i2c_quirks = {
 	.max_write_len = CPM_MAX_READ,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_adapter cpm_ops = {
 	.owner		= THIS_MODULE,
 	.name		= "i2c-cpm",
 	.algo		= &cpm_i2c_algo,
-<<<<<<< HEAD
-};
-
-static int __devinit cpm_i2c_setup(struct cpm_i2c *cpm)
-=======
 	.quirks		= &cpm_i2c_quirks,
 };
 
 static int cpm_i2c_setup(struct cpm_i2c *cpm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *ofdev = cpm->ofdev;
 	const u32 *data;
@@ -507,11 +434,7 @@ static int cpm_i2c_setup(struct cpm_i2c *cpm)
 
 	init_waitqueue_head(&cpm->i2c_wait);
 
-<<<<<<< HEAD
-	cpm->irq = of_irq_to_resource(ofdev->dev.of_node, 0, NULL);
-=======
 	cpm->irq = irq_of_parse_and_map(ofdev->dev.of_node, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cpm->irq)
 		return -EINVAL;
 
@@ -611,13 +534,9 @@ static int cpm_i2c_setup(struct cpm_i2c *cpm)
 		}
 		out_be32(&rbdf[i].cbd_bufaddr, ((cpm->rxdma[i] + 1) & ~1));
 
-<<<<<<< HEAD
-		cpm->txbuf[i] = (unsigned char *)dma_alloc_coherent(&cpm->ofdev->dev, CPM_MAX_READ + 1, &cpm->txdma[i], GFP_KERNEL);
-=======
 		cpm->txbuf[i] = dma_alloc_coherent(&cpm->ofdev->dev,
 						   CPM_MAX_READ + 1,
 						   &cpm->txdma[i], GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!cpm->txbuf[i]) {
 			ret = -ENOMEM;
 			goto out_muram;
@@ -711,11 +630,7 @@ static void cpm_i2c_shutdown(struct cpm_i2c *cpm)
 		cpm_muram_free(cpm->i2c_addr);
 }
 
-<<<<<<< HEAD
-static int __devinit cpm_i2c_probe(struct platform_device *ofdev)
-=======
 static int cpm_i2c_probe(struct platform_device *ofdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result, len;
 	struct cpm_i2c *cpm;
@@ -727,11 +642,7 @@ static int cpm_i2c_probe(struct platform_device *ofdev)
 
 	cpm->ofdev = ofdev;
 
-<<<<<<< HEAD
-	dev_set_drvdata(&ofdev->dev, cpm);
-=======
 	platform_set_drvdata(ofdev, cpm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cpm->adap = cpm_ops;
 	i2c_set_adapdata(&cpm->adap, cpm);
@@ -747,68 +658,33 @@ static int cpm_i2c_probe(struct platform_device *ofdev)
 	/* register new adapter to i2c module... */
 
 	data = of_get_property(ofdev->dev.of_node, "linux,i2c-index", &len);
-<<<<<<< HEAD
-	cpm->adap.nr = (data && len == 4) ? be32_to_cpup(data) : -1;
-	result = i2c_add_numbered_adapter(&cpm->adap);
-
-	if (result < 0) {
-		dev_err(&ofdev->dev, "Unable to register with I2C\n");
-		goto out_shut;
-	}
-=======
 	cpm->adap.nr = (data && len == 4) ? *data : -1;
 	result = i2c_add_numbered_adapter(&cpm->adap);
 
 	if (result < 0)
 		goto out_shut;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&ofdev->dev, "hw routines for %s registered.\n",
 		cpm->adap.name);
 
-<<<<<<< HEAD
-	/*
-	 * register OF I2C devices
-	 */
-	of_i2c_register_devices(&cpm->adap);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 out_shut:
 	cpm_i2c_shutdown(cpm);
 out_free:
-<<<<<<< HEAD
-	dev_set_drvdata(&ofdev->dev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(cpm);
 
 	return result;
 }
 
-<<<<<<< HEAD
-static int __devexit cpm_i2c_remove(struct platform_device *ofdev)
-{
-	struct cpm_i2c *cpm = dev_get_drvdata(&ofdev->dev);
-=======
 static void cpm_i2c_remove(struct platform_device *ofdev)
 {
 	struct cpm_i2c *cpm = platform_get_drvdata(ofdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2c_del_adapter(&cpm->adap);
 
 	cpm_i2c_shutdown(cpm);
 
-<<<<<<< HEAD
-	dev_set_drvdata(&ofdev->dev, NULL);
 	kfree(cpm);
-
-	return 0;
-=======
-	kfree(cpm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id cpm_i2c_match[] = {
@@ -825,16 +701,9 @@ MODULE_DEVICE_TABLE(of, cpm_i2c_match);
 
 static struct platform_driver cpm_i2c_driver = {
 	.probe		= cpm_i2c_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(cpm_i2c_remove),
-	.driver = {
-		.name = "fsl-i2c-cpm",
-		.owner = THIS_MODULE,
-=======
 	.remove_new	= cpm_i2c_remove,
 	.driver = {
 		.name = "fsl-i2c-cpm",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = cpm_i2c_match,
 	},
 };

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_MODULELOADER_H
 #define _LINUX_MODULELOADER_H
 /* The stuff needed for archs to support modules. */
@@ -16,12 +13,9 @@
  * must be implemented by each architecture.
  */
 
-<<<<<<< HEAD
-=======
 /* arch may override to do additional checking of ELF header architecture */
 bool module_elf_check_arch(Elf_Ehdr *hdr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Adjust arch-specific sections.  Return 0 on success.  */
 int module_frob_arch_sections(Elf_Ehdr *hdr,
 			      Elf_Shdr *sechdrs,
@@ -36,12 +30,6 @@ unsigned int arch_mod_section_prepend(struct module *mod, unsigned int section);
 void *module_alloc(unsigned long size);
 
 /* Free memory returned from module_alloc. */
-<<<<<<< HEAD
-void module_free(struct module *mod, void *module_region);
-
-/* Apply the given relocation to the (simplified) ELF.  Return -error
-   or 0. */
-=======
 void module_memfree(void *module_region);
 
 /* Determines if the section name is an init section (that is only used during
@@ -64,17 +52,11 @@ bool module_init_layout_section(const char *sname);
  * or 0.
  */
 #ifdef CONFIG_MODULES_USE_ELF_REL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int apply_relocate(Elf_Shdr *sechdrs,
 		   const char *strtab,
 		   unsigned int symindex,
 		   unsigned int relsec,
 		   struct module *mod);
-<<<<<<< HEAD
-
-/* Apply the given add relocation to the (simplified) ELF.  Return
-   -error or 0 */
-=======
 #else
 static inline int apply_relocate(Elf_Shdr *sechdrs,
 				 const char *strtab,
@@ -93,14 +75,11 @@ static inline int apply_relocate(Elf_Shdr *sechdrs,
  * -error or 0
  */
 #ifdef CONFIG_MODULES_USE_ELF_RELA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int apply_relocate_add(Elf_Shdr *sechdrs,
 		       const char *strtab,
 		       unsigned int symindex,
 		       unsigned int relsec,
 		       struct module *mod);
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_LIVEPATCH
 /*
  * Some architectures (namely x86_64 and ppc64) perform sanity checks when
@@ -130,18 +109,12 @@ static inline int apply_relocate_add(Elf_Shdr *sechdrs,
 	return -ENOEXEC;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Any final processing of module before access.  Return -error or 0. */
 int module_finalize(const Elf_Ehdr *hdr,
 		    const Elf_Shdr *sechdrs,
 		    struct module *mod);
 
-<<<<<<< HEAD
-/* Any cleanup needed when module leaves. */
-void module_arch_cleanup(struct module *mod);
-
-=======
 #ifdef CONFIG_MODULES
 void flush_module_init_free_work(void);
 #else
@@ -164,5 +137,4 @@ void module_arch_freeing_init(struct module *mod);
 #define MODULE_ALIGN PAGE_SIZE
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

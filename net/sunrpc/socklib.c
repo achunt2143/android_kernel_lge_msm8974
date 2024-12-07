@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/socklib.c
  *
@@ -17,11 +14,6 @@
 #include <linux/types.h>
 #include <linux/pagemap.h>
 #include <linux/udp.h>
-<<<<<<< HEAD
-#include <linux/sunrpc/xdr.h>
-#include <linux/export.h>
-
-=======
 #include <linux/sunrpc/msg_prot.h>
 #include <linux/sunrpc/sched.h>
 #include <linux/sunrpc/xdr.h>
@@ -41,7 +33,6 @@ struct xdr_skb_reader {
 
 typedef size_t (*xdr_skb_read_actor)(struct xdr_skb_reader *desc, void *to,
 				     size_t len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * xdr_skb_read_bits - copy some data bits from skb to internal buffer
@@ -52,12 +43,8 @@ typedef size_t (*xdr_skb_read_actor)(struct xdr_skb_reader *desc, void *to,
  * Possibly called several times to iterate over an sk_buff and copy
  * data out of it.
  */
-<<<<<<< HEAD
-size_t xdr_skb_read_bits(struct xdr_skb_reader *desc, void *to, size_t len)
-=======
 static size_t
 xdr_skb_read_bits(struct xdr_skb_reader *desc, void *to, size_t len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (len > desc->count)
 		len = desc->count;
@@ -67,10 +54,6 @@ xdr_skb_read_bits(struct xdr_skb_reader *desc, void *to, size_t len)
 	desc->offset += len;
 	return len;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(xdr_skb_read_bits);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * xdr_skb_read_and_csum_bits - copy and checksum from skb to buffer
@@ -88,11 +71,7 @@ static size_t xdr_skb_read_and_csum_bits(struct xdr_skb_reader *desc, void *to, 
 	if (len > desc->count)
 		len = desc->count;
 	pos = desc->offset;
-<<<<<<< HEAD
-	csum2 = skb_copy_and_csum_bits(desc->skb, pos, to, len, 0);
-=======
 	csum2 = skb_copy_and_csum_bits(desc->skb, pos, to, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->csum = csum_block_add(desc->csum, csum2, pos);
 	desc->count -= len;
 	desc->offset += len;
@@ -107,12 +86,8 @@ static size_t xdr_skb_read_and_csum_bits(struct xdr_skb_reader *desc, void *to, 
  * @copy_actor: virtual method for copying data
  *
  */
-<<<<<<< HEAD
-ssize_t xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct xdr_skb_reader *desc, xdr_skb_read_actor copy_actor)
-=======
 static ssize_t
 xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct xdr_skb_reader *desc, xdr_skb_read_actor copy_actor)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct page	**ppage = xdr->pages;
 	unsigned int	len, pglen = xdr->page_len;
@@ -139,26 +114,16 @@ xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct xdr_skb
 	if (base || xdr->page_base) {
 		pglen -= base;
 		base += xdr->page_base;
-<<<<<<< HEAD
-		ppage += base >> PAGE_CACHE_SHIFT;
-		base &= ~PAGE_CACHE_MASK;
-=======
 		ppage += base >> PAGE_SHIFT;
 		base &= ~PAGE_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	do {
 		char *kaddr;
 
 		/* ACL likes to be lazy in allocating pages - ACLs
 		 * are small by default but can get huge. */
-<<<<<<< HEAD
-		if (unlikely(*ppage == NULL)) {
-			*ppage = alloc_page(GFP_ATOMIC);
-=======
 		if ((xdr->flags & XDRBUF_SPARSE_PAGES) && *ppage == NULL) {
 			*ppage = alloc_page(GFP_NOWAIT | __GFP_NOWARN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(*ppage == NULL)) {
 				if (copied == 0)
 					copied = -ENOMEM;
@@ -166,11 +131,7 @@ xdr_partial_copy_from_skb(struct xdr_buf *xdr, unsigned int base, struct xdr_skb
 			}
 		}
 
-<<<<<<< HEAD
-		len = PAGE_CACHE_SIZE;
-=======
 		len = PAGE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kaddr = kmap_atomic(*ppage);
 		if (base) {
 			len -= base;
@@ -197,10 +158,6 @@ copy_tail:
 out:
 	return copied;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(xdr_partial_copy_from_skb);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * csum_partial_copy_to_xdr - checksum and copy data
@@ -215,11 +172,7 @@ int csum_partial_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb)
 	struct xdr_skb_reader	desc;
 
 	desc.skb = skb;
-<<<<<<< HEAD
-	desc.offset = sizeof(struct udphdr);
-=======
 	desc.offset = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc.count = skb->len - desc.offset;
 
 	if (skb_csum_unnecessary(skb))
@@ -237,14 +190,9 @@ int csum_partial_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb)
 		return -1;
 	if (csum_fold(desc.csum))
 		return -1;
-<<<<<<< HEAD
-	if (unlikely(skb->ip_summed == CHECKSUM_COMPLETE))
-		netdev_rx_csum_fault(skb->dev);
-=======
 	if (unlikely(skb->ip_summed == CHECKSUM_COMPLETE) &&
 	    !skb->csum_complete_sw)
 		netdev_rx_csum_fault(skb->dev, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 no_checksum:
 	if (xdr_partial_copy_from_skb(xdr, 0, &desc, xdr_skb_read_bits) < 0)
@@ -254,8 +202,6 @@ no_checksum:
 	return 0;
 }
 EXPORT_SYMBOL_GPL(csum_partial_copy_to_xdr);
-<<<<<<< HEAD
-=======
 
 static inline int xprt_sendmsg(struct socket *sock, struct msghdr *msg,
 			       size_t seek)
@@ -376,4 +322,3 @@ out:
 	}
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

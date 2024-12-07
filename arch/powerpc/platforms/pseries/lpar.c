@@ -1,56 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pSeries_lpar.c
  * Copyright (C) 2001 Todd Inglett, IBM Corporation
  *
  * pSeries LPAR support.
-<<<<<<< HEAD
- * 
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Enables debugging of low-level hash table routines - careful! */
 #undef DEBUG
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "lpar: " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/dma-mapping.h>
 #include <linux/console.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <asm/processor.h>
-#include <asm/mmu.h>
-#include <asm/page.h>
-#include <asm/pgtable.h>
-#include <asm/machdep.h>
-#include <asm/abs_addr.h>
-#include <asm/mmu_context.h>
-#include <asm/iommu.h>
-#include <asm/tlbflush.h>
-#include <asm/tlb.h>
-#include <asm/prom.h>
-#include <asm/cputable.h>
-=======
 #include <linux/jump_label.h>
 #include <linux/delay.h>
 #include <linux/stop_machine.h>
@@ -70,17 +33,10 @@
 #include <asm/tlb.h>
 #include <asm/cputable.h>
 #include <asm/papr-sysparm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/smp.h>
 #include <asm/trace.h>
 #include <asm/firmware.h>
-<<<<<<< HEAD
-
-#include "plpar_wrappers.h"
-#include "pseries.h"
-
-=======
 #include <asm/plpar_wrappers.h>
 #include <asm/kexec.h>
 #include <asm/fadump.h>
@@ -96,16 +52,12 @@
 #define HBR_AVPN	0x0200000000000000UL
 #define HBR_ANDCOND	0x0100000000000000UL
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* in hvCall.S */
 EXPORT_SYMBOL(plpar_hcall);
 EXPORT_SYMBOL(plpar_hcall9);
 EXPORT_SYMBOL(plpar_hcall_norets);
 
-<<<<<<< HEAD
-extern void pSeries_find_serial_port(void);
-=======
 #ifdef CONFIG_PPC_64S_HASH_MMU
 /*
  * H_BLOCK_REMOVE supported block size for this page size in segment who's base
@@ -720,34 +672,25 @@ u64 pseries_paravirt_steal_clock(int cpu)
 #endif
 
 #endif /* CONFIG_PPC_SPLPAR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void vpa_init(int cpu)
 {
 	int hwcpu = get_hard_smp_processor_id(cpu);
 	unsigned long addr;
 	long ret;
-<<<<<<< HEAD
-	struct paca_struct *pp;
-	struct dtl_entry *dtl;
-=======
 
 	/*
 	 * The spec says it "may be problematic" if CPU x registers the VPA of
 	 * CPU y. We should never do that, but wail if we ever do.
 	 */
 	WARN_ON(cpu != smp_processor_id());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cpu_has_feature(CPU_FTR_ALTIVEC))
 		lppaca_of(cpu).vmxregs_in_use = 1;
 
-<<<<<<< HEAD
-=======
 	if (cpu_has_feature(CPU_FTR_ARCH_207S))
 		lppaca_of(cpu).ebb_regs_in_use = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr = __pa(&lppaca_of(cpu));
 	ret = register_vpa(hwcpu, addr);
 
@@ -756,60 +699,25 @@ void vpa_init(int cpu)
 		       "%lx failed with %ld\n", cpu, hwcpu, addr, ret);
 		return;
 	}
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_PPC_64S_HASH_MMU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * PAPR says this feature is SLB-Buffer but firmware never
 	 * reports that.  All SPLPAR support SLB shadow buffer.
 	 */
-<<<<<<< HEAD
-	addr = __pa(&slb_shadow[cpu]);
-	if (firmware_has_feature(FW_FEATURE_SPLPAR)) {
-=======
 	if (!radix_enabled() && firmware_has_feature(FW_FEATURE_SPLPAR)) {
 		addr = __pa(paca_ptrs[cpu]->slb_shadow_ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = register_slb_shadow(hwcpu, addr);
 		if (ret)
 			pr_err("WARNING: SLB shadow buffer registration for "
 			       "cpu %d (hw %d) of area %lx failed with %ld\n",
 			       cpu, hwcpu, addr, ret);
 	}
-<<<<<<< HEAD
-=======
 #endif /* CONFIG_PPC_64S_HASH_MMU */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Register dispatch trace log, if one has been allocated.
 	 */
-<<<<<<< HEAD
-	pp = &paca[cpu];
-	dtl = pp->dispatch_log;
-	if (dtl) {
-		pp->dtl_ridx = 0;
-		pp->dtl_curr = dtl;
-		lppaca_of(cpu).dtl_idx = 0;
-
-		/* hypervisor reads buffer length from this field */
-		dtl->enqueue_to_dispatch_time = DISPATCH_LOG_BYTES;
-		ret = register_dtl(hwcpu, __pa(dtl));
-		if (ret)
-			pr_err("WARNING: DTL registration of cpu %d (hw %d) "
-			       "failed with %ld\n", smp_processor_id(),
-			       hwcpu, ret);
-		lppaca_of(cpu).dtl_enable_mask = 2;
-	}
-}
-
-static long pSeries_lpar_hpte_insert(unsigned long hpte_group,
- 			      unsigned long va, unsigned long pa,
- 			      unsigned long rflags, unsigned long vflags,
-			      int psize, int ssize)
-=======
 	register_dtl_buffer(cpu);
 }
 
@@ -849,7 +757,6 @@ static long pSeries_lpar_hpte_insert(unsigned long hpte_group,
 				     unsigned long vpn, unsigned long pa,
 				     unsigned long rflags, unsigned long vflags,
 				     int psize, int apsize, int ssize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lpar_rc;
 	unsigned long flags;
@@ -857,21 +764,12 @@ static long pSeries_lpar_hpte_insert(unsigned long hpte_group,
 	unsigned long hpte_v, hpte_r;
 
 	if (!(vflags & HPTE_V_BOLTED))
-<<<<<<< HEAD
-		pr_devel("hpte_insert(group=%lx, va=%016lx, pa=%016lx, "
-			 "rflags=%lx, vflags=%lx, psize=%d)\n",
-			 hpte_group, va, pa, rflags, vflags, psize);
-
-	hpte_v = hpte_encode_v(va, psize, ssize) | vflags | HPTE_V_VALID;
-	hpte_r = hpte_encode_r(pa, psize) | rflags;
-=======
 		pr_devel("hpte_insert(group=%lx, vpn=%016lx, "
 			 "pa=%016lx, rflags=%lx, vflags=%lx, psize=%d)\n",
 			 hpte_group, vpn,  pa, rflags, vflags, psize);
 
 	hpte_v = hpte_encode_v(vpn, psize, apsize, ssize) | vflags | HPTE_V_VALID;
 	hpte_r = hpte_encode_r(pa, psize, apsize) | rflags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(vflags & HPTE_V_BOLTED))
 		pr_devel(" hpte_v=%016lx, hpte_r=%016lx\n", hpte_v, hpte_r);
@@ -884,23 +782,12 @@ static long pSeries_lpar_hpte_insert(unsigned long hpte_group,
 	/* Exact = 0                   */
 	flags = 0;
 
-<<<<<<< HEAD
-	/* Make pHyp happy */
-	if ((rflags & _PAGE_NO_CACHE) & !(rflags & _PAGE_WRITETHRU))
-		hpte_r &= ~_PAGE_COHERENT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (firmware_has_feature(FW_FEATURE_XCMO) && !(hpte_r & HPTE_R_N))
 		flags |= H_COALESCE_CAND;
 
 	lpar_rc = plpar_pte_enter(flags, hpte_group, hpte_v, hpte_r, &slot);
 	if (unlikely(lpar_rc == H_PTEG_FULL)) {
-<<<<<<< HEAD
-		if (!(vflags & HPTE_V_BOLTED))
-			pr_devel(" full\n");
-=======
 		pr_devel("Hash table group is full\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -910,12 +797,7 @@ static long pSeries_lpar_hpte_insert(unsigned long hpte_group,
 	 * or we will loop forever, so return -2 in this case.
 	 */
 	if (unlikely(lpar_rc != H_SUCCESS)) {
-<<<<<<< HEAD
-		if (!(vflags & HPTE_V_BOLTED))
-			pr_devel(" lpar err %lu\n", lpar_rc);
-=======
 		pr_err("Failed hash pte insert with error %ld\n", lpar_rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -2;
 	}
 	if (!(vflags & HPTE_V_BOLTED))
@@ -943,11 +825,7 @@ static long pSeries_lpar_hpte_remove(unsigned long hpte_group)
 
 		/* don't remove a bolted entry */
 		lpar_rc = plpar_pte_remove(H_ANDCOND, hpte_group + slot_offset,
-<<<<<<< HEAD
-					   (0x1UL << 4), &dummy1, &dummy2);
-=======
 					   HPTE_V_BOLTED, &dummy1, &dummy2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lpar_rc == H_SUCCESS)
 			return i;
 
@@ -965,12 +843,8 @@ static long pSeries_lpar_hpte_remove(unsigned long hpte_group)
 	return -1;
 }
 
-<<<<<<< HEAD
-static void pSeries_lpar_hptab_clear(void)
-=======
 /* Called during kexec sequence with MMU off */
 static notrace void manual_hpte_clear_all(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long size_bytes = 1UL << ppc64_pft_size;
 	unsigned long hpte_count = size_bytes >> 4;
@@ -987,16 +861,11 @@ static notrace void manual_hpte_clear_all(void)
          */
 	for (i = 0; i < hpte_count; i += 4) {
 		lpar_rc = plpar_pte_read_4_raw(0, i, (void *)ptes);
-<<<<<<< HEAD
-		if (lpar_rc != H_SUCCESS)
-			continue;
-=======
 		if (lpar_rc != H_SUCCESS) {
 			pr_info("Failed to read hash page table at %ld err %ld\n",
 				i, lpar_rc);
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (j = 0; j < 4; j++){
 			if ((ptes[j].pteh & HPTE_V_VRMA_MASK) ==
 				HPTE_V_VRMA_MASK)
@@ -1008,22 +877,6 @@ static notrace void manual_hpte_clear_all(void)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * This computes the AVPN and B fields of the first dword of a HPTE,
- * for use when we want to match an existing PTE.  The bottom 7 bits
- * of the returned value are zero.
- */
-static inline unsigned long hpte_encode_avpn(unsigned long va, int psize,
-					     int ssize)
-{
-	unsigned long v;
-
-	v = (va >> 23) & ~(mmu_psize_defs[psize].avpnm);
-	v <<= HPTE_V_AVPN_SHIFT;
-	v |= ((unsigned long) ssize) << HPTE_V_SSIZE_SHIFT;
-	return v;
-=======
 /* Called during kexec sequence with MMU off */
 static notrace int hcall_hpte_clear_all(void)
 {
@@ -1059,7 +912,6 @@ static notrace void pseries_hpte_clear_all(void)
 	if (firmware_has_feature(FW_FEATURE_SET_MODE) && !is_fadump_active())
 		pseries_big_endian_exceptions();
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1070,16 +922,6 @@ static notrace void pseries_hpte_clear_all(void)
  */
 static long pSeries_lpar_hpte_updatepp(unsigned long slot,
 				       unsigned long newpp,
-<<<<<<< HEAD
-				       unsigned long va,
-				       int psize, int ssize, int local)
-{
-	unsigned long lpar_rc;
-	unsigned long flags = (newpp & 7) | H_AVPN;
-	unsigned long want_v;
-
-	want_v = hpte_encode_avpn(va, psize, ssize);
-=======
 				       unsigned long vpn,
 				       int psize, int apsize,
 				       int ssize, unsigned long inv_flags)
@@ -1095,7 +937,6 @@ static long pSeries_lpar_hpte_updatepp(unsigned long slot,
 	if (mmu_has_feature(MMU_FTR_KERNEL_RO))
 		/* Move pp0 into bit 8 (IBM 55) */
 		flags |= (newpp & HPTE_R_PP0) >> 55;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_devel("    update: avpnv=%016lx, hash=%016lx, f=%lx, psize: %d ...",
 		 want_v, slot, flags, psize);
@@ -1114,50 +955,6 @@ static long pSeries_lpar_hpte_updatepp(unsigned long slot,
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned long pSeries_lpar_hpte_getword0(unsigned long slot)
-{
-	unsigned long dword0;
-	unsigned long lpar_rc;
-	unsigned long dummy_word1;
-	unsigned long flags;
-
-	/* Read 1 pte at a time                        */
-	/* Do not need RPN to logical page translation */
-	/* No cross CEC PFT access                     */
-	flags = 0;
-
-	lpar_rc = plpar_pte_read(flags, slot, &dword0, &dummy_word1);
-
-	BUG_ON(lpar_rc != H_SUCCESS);
-
-	return dword0;
-}
-
-static long pSeries_lpar_hpte_find(unsigned long va, int psize, int ssize)
-{
-	unsigned long hash;
-	unsigned long i;
-	long slot;
-	unsigned long want_v, hpte_v;
-
-	hash = hpt_hash(va, mmu_psize_defs[psize].shift, ssize);
-	want_v = hpte_encode_avpn(va, psize, ssize);
-
-	/* Bolted entries are always in the primary group */
-	slot = (hash & htab_hash_mask) * HPTES_PER_GROUP;
-	for (i = 0; i < HPTES_PER_GROUP; i++) {
-		hpte_v = pSeries_lpar_hpte_getword0(slot);
-
-		if (HPTE_V_COMPARE(hpte_v, want_v) && (hpte_v & HPTE_V_VALID))
-			/* HPTE matches */
-			return slot;
-		++slot;
-	}
-
-	return -1;
-} 
-=======
 static long __pSeries_lpar_hpte_find(unsigned long want_v, unsigned long hpte_group)
 {
 	long lpar_rc;
@@ -1211,23 +1008,11 @@ static long pSeries_lpar_hpte_find(unsigned long vpn, int psize, int ssize)
 	}
 	return hpte_group + slot;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pSeries_lpar_hpte_updateboltedpp(unsigned long newpp,
 					     unsigned long ea,
 					     int psize, int ssize)
 {
-<<<<<<< HEAD
-	unsigned long lpar_rc, slot, vsid, va, flags;
-
-	vsid = get_kernel_vsid(ea, ssize);
-	va = hpt_va(ea, vsid, ssize);
-
-	slot = pSeries_lpar_hpte_find(va, psize, ssize);
-	BUG_ON(slot == -1);
-
-	flags = newpp & 7;
-=======
 	unsigned long vpn;
 	unsigned long lpar_rc, slot, vsid, flags;
 
@@ -1244,36 +1029,23 @@ static void pSeries_lpar_hpte_updateboltedpp(unsigned long newpp,
 
 	flags |= ((newpp & HPTE_R_KEY_HI) >> 48) | (newpp & HPTE_R_KEY_LO);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpar_rc = plpar_pte_protect(flags, slot, 0);
 
 	BUG_ON(lpar_rc != H_SUCCESS);
 }
 
-<<<<<<< HEAD
-static void pSeries_lpar_hpte_invalidate(unsigned long slot, unsigned long va,
-					 int psize, int ssize, int local)
-=======
 static void pSeries_lpar_hpte_invalidate(unsigned long slot, unsigned long vpn,
 					 int psize, int apsize,
 					 int ssize, int local)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long want_v;
 	unsigned long lpar_rc;
 	unsigned long dummy1, dummy2;
 
-<<<<<<< HEAD
-	pr_devel("    inval : slot=%lx, va=%016lx, psize: %d, local: %d\n",
-		 slot, va, psize, local);
-
-	want_v = hpte_encode_avpn(va, psize, ssize);
-=======
 	pr_devel("    inval : slot=%lx, vpn=%016lx, psize: %d, local: %d\n",
 		 slot, vpn, psize, local);
 
 	want_v = hpte_encode_avpn(vpn, psize, ssize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpar_rc = plpar_pte_remove(H_AVPN, slot, want_v, &dummy1, &dummy2);
 	if (lpar_rc == H_NOT_FOUND)
 		return;
@@ -1281,28 +1053,6 @@ static void pSeries_lpar_hpte_invalidate(unsigned long slot, unsigned long vpn,
 	BUG_ON(lpar_rc != H_SUCCESS);
 }
 
-<<<<<<< HEAD
-static void pSeries_lpar_hpte_removebolted(unsigned long ea,
-					   int psize, int ssize)
-{
-	unsigned long slot, vsid, va;
-
-	vsid = get_kernel_vsid(ea, ssize);
-	va = hpt_va(ea, vsid, ssize);
-
-	slot = pSeries_lpar_hpte_find(va, psize, ssize);
-	BUG_ON(slot == -1);
-
-	pSeries_lpar_hpte_invalidate(slot, va, psize, ssize, 0);
-}
-
-/* Flag bits for H_BULK_REMOVE */
-#define HBR_REQUEST	0x4000000000000000UL
-#define HBR_RESPONSE	0x8000000000000000UL
-#define HBR_END		0xc000000000000000UL
-#define HBR_AVPN	0x0200000000000000UL
-#define HBR_ANDCOND	0x0100000000000000UL
-=======
 
 /*
  * As defined in the PAPR's section 14.5.4.1.8
@@ -1767,7 +1517,6 @@ void __init pseries_lpar_read_hblkrm_characteristics(void)
 				pr_info("H_BLOCK_REMOVE supports base psize:%d psize:%d block size:%d",
 					bpsize, idx, hblkrm_size[bpsize][idx]);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Take a spinlock around flushes to avoid bouncing the hypervisor tlbie
@@ -1775,15 +1524,6 @@ void __init pseries_lpar_read_hblkrm_characteristics(void)
  */
 static void pSeries_lpar_flush_hash_range(unsigned long number, int local)
 {
-<<<<<<< HEAD
-	unsigned long i, pix, rc;
-	unsigned long flags = 0;
-	struct ppc64_tlb_batch *batch = &__get_cpu_var(ppc64_tlb_batch);
-	int lock_tlbie = !mmu_has_feature(MMU_FTR_LOCKLESS_TLBIE);
-	unsigned long param[9];
-	unsigned long va;
-	unsigned long hash, index, shift, hidx, slot;
-=======
 	unsigned long vpn;
 	unsigned long i, pix, rc;
 	unsigned long flags = 0;
@@ -1791,42 +1531,21 @@ static void pSeries_lpar_flush_hash_range(unsigned long number, int local)
 	int lock_tlbie = !mmu_has_feature(MMU_FTR_LOCKLESS_TLBIE);
 	unsigned long param[PLPAR_HCALL9_BUFSIZE];
 	unsigned long index, shift, slot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	real_pte_t pte;
 	int psize, ssize;
 
 	if (lock_tlbie)
 		spin_lock_irqsave(&pSeries_lpar_tlbie_lock, flags);
 
-<<<<<<< HEAD
-=======
 	if (is_supported_hlbkrm(batch->psize, batch->psize)) {
 		do_block_remove(number, batch, param);
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psize = batch->psize;
 	ssize = batch->ssize;
 	pix = 0;
 	for (i = 0; i < number; i++) {
-<<<<<<< HEAD
-		va = batch->vaddr[i];
-		pte = batch->pte[i];
-		pte_iterate_hashed_subpages(pte, psize, va, index, shift) {
-			hash = hpt_hash(va, shift, ssize);
-			hidx = __rpte_to_hidx(pte, index);
-			if (hidx & _PTEIDX_SECONDARY)
-				hash = ~hash;
-			slot = (hash & htab_hash_mask) * HPTES_PER_GROUP;
-			slot += hidx & _PTEIDX_GROUP_IX;
-			if (!firmware_has_feature(FW_FEATURE_BULK_REMOVE)) {
-				pSeries_lpar_hpte_invalidate(slot, va, psize,
-							     ssize, local);
-			} else {
-				param[pix] = HBR_REQUEST | HBR_AVPN | slot;
-				param[pix+1] = hpte_encode_avpn(va, psize,
-=======
 		vpn = batch->vpn[i];
 		pte = batch->pte[i];
 		pte_iterate_hashed_subpages(pte, psize, vpn, index, shift) {
@@ -1840,7 +1559,6 @@ static void pSeries_lpar_flush_hash_range(unsigned long number, int local)
 			} else {
 				param[pix] = HBR_REQUEST | HBR_AVPN | slot;
 				param[pix+1] = hpte_encode_avpn(vpn, psize,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								ssize);
 				pix += 2;
 				if (pix == 8) {
@@ -1862,10 +1580,7 @@ static void pSeries_lpar_flush_hash_range(unsigned long number, int local)
 		BUG_ON(rc != H_SUCCESS);
 	}
 
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lock_tlbie)
 		spin_unlock_irqrestore(&pSeries_lpar_tlbie_lock, flags);
 }
@@ -1874,33 +1589,14 @@ static int __init disable_bulk_remove(char *str)
 {
 	if (strcmp(str, "off") == 0 &&
 	    firmware_has_feature(FW_FEATURE_BULK_REMOVE)) {
-<<<<<<< HEAD
-			printk(KERN_INFO "Disabling BULK_REMOVE firmware feature");
-			powerpc_firmware_features &= ~FW_FEATURE_BULK_REMOVE;
-=======
 		pr_info("Disabling BULK_REMOVE firmware feature");
 		powerpc_firmware_features &= ~FW_FEATURE_BULK_REMOVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 }
 
 __setup("bulk_remove=", disable_bulk_remove);
 
-<<<<<<< HEAD
-void __init hpte_init_lpar(void)
-{
-	ppc_md.hpte_invalidate	= pSeries_lpar_hpte_invalidate;
-	ppc_md.hpte_updatepp	= pSeries_lpar_hpte_updatepp;
-	ppc_md.hpte_updateboltedpp = pSeries_lpar_hpte_updateboltedpp;
-	ppc_md.hpte_insert	= pSeries_lpar_hpte_insert;
-	ppc_md.hpte_remove	= pSeries_lpar_hpte_remove;
-	ppc_md.hpte_removebolted = pSeries_lpar_hpte_removebolted;
-	ppc_md.flush_hash_range	= pSeries_lpar_flush_hash_range;
-	ppc_md.hpte_clear_all   = pSeries_lpar_hptab_clear;
-}
-
-=======
 #define HPT_RESIZE_TIMEOUT	10000 /* ms */
 
 struct hpt_resize_state {
@@ -2039,7 +1735,6 @@ void __init radix_init_pseries(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC_SMLPAR
 #define CMO_FREE_HINT_DEFAULT 1
 static int cmo_free_hint_flag = CMO_FREE_HINT_DEFAULT;
@@ -2050,21 +1745,13 @@ static int __init cmo_free_hint(char *str)
 	parm = strstrip(str);
 
 	if (strcasecmp(parm, "no") == 0 || strcasecmp(parm, "off") == 0) {
-<<<<<<< HEAD
-		printk(KERN_INFO "cmo_free_hint: CMO free page hinting is not active.\n");
-=======
 		pr_info("%s: CMO free page hinting is not active.\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmo_free_hint_flag = 0;
 		return 1;
 	}
 
 	cmo_free_hint_flag = 1;
-<<<<<<< HEAD
-	printk(KERN_INFO "cmo_free_hint: CMO free page hinting is active.\n");
-=======
 	pr_info("%s: CMO free page hinting is active.\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (strcasecmp(parm, "yes") == 0 || strcasecmp(parm, "on") == 0)
 		return 1;
@@ -2091,11 +1778,8 @@ static void pSeries_set_page_state(struct page *page, int order,
 
 void arch_free_page(struct page *page, int order)
 {
-<<<<<<< HEAD
-=======
 	if (radix_enabled())
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cmo_free_hint_flag || !firmware_has_feature(FW_FEATURE_CMO))
 		return;
 
@@ -2103,11 +1787,6 @@ void arch_free_page(struct page *page, int order)
 }
 EXPORT_SYMBOL(arch_free_page);
 
-<<<<<<< HEAD
-#endif
-
-#ifdef CONFIG_TRACEPOINTS
-=======
 #endif /* CONFIG_PPC_SMLPAR */
 #endif /* CONFIG_PPC_BOOK3S_64 */
 
@@ -2126,7 +1805,6 @@ void hcall_tracepoint_unregfunc(void)
 	static_key_slow_dec(&hcall_tracepoint_key);
 }
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We optimise our hcall path by placing hcall_tracepoint_refcount
  * directly in the TOC so we can check if the hcall tracepoints are
@@ -2136,33 +1814,16 @@ void hcall_tracepoint_unregfunc(void)
 /* NB: reg/unreg are called while guarded with the tracepoints_mutex */
 extern long hcall_tracepoint_refcount;
 
-<<<<<<< HEAD
-/* 
- * Since the tracing code might execute hcalls we need to guard against
- * recursion. One example of this are spinlocks calling H_YIELD on
- * shared processor partitions.
- */
-static DEFINE_PER_CPU(unsigned int, hcall_trace_depth);
-
-void hcall_tracepoint_regfunc(void)
-{
-	hcall_tracepoint_refcount++;
-=======
 int hcall_tracepoint_regfunc(void)
 {
 	hcall_tracepoint_refcount++;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hcall_tracepoint_unregfunc(void)
 {
 	hcall_tracepoint_refcount--;
 }
-<<<<<<< HEAD
-
-void __trace_hcall_entry(unsigned long opcode, unsigned long *args)
-=======
 #endif
 
 /*
@@ -2179,31 +1840,15 @@ static DEFINE_PER_CPU(unsigned int, hcall_trace_depth);
 
 
 notrace void __trace_hcall_entry(unsigned long opcode, unsigned long *args)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned int *depth;
 
-<<<<<<< HEAD
-	/*
-	 * We cannot call tracepoints inside RCU idle regions which
-	 * means we must not trace H_CEDE.
-	 */
-	if (opcode == H_CEDE)
-		return;
-
-	local_irq_save(flags);
-
-	depth = &__get_cpu_var(hcall_trace_depth);
-
-	if (*depth)
-=======
 	local_irq_save(flags);
 
 	depth = this_cpu_ptr(&hcall_trace_depth);
 
 	if (WARN_ON_ONCE(*depth))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	(*depth)++;
@@ -2215,32 +1860,16 @@ out:
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-void __trace_hcall_exit(long opcode, unsigned long retval,
-			unsigned long *retbuf)
-=======
 notrace void __trace_hcall_exit(long opcode, long retval, unsigned long *retbuf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned int *depth;
 
-<<<<<<< HEAD
-	if (opcode == H_CEDE)
-		return;
-
-	local_irq_save(flags);
-
-	depth = &__get_cpu_var(hcall_trace_depth);
-
-	if (*depth)
-=======
 	local_irq_save(flags);
 
 	depth = this_cpu_ptr(&hcall_trace_depth);
 
 	if (*depth) /* Don't warn again on the way out */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	(*depth)++;
@@ -2272,11 +1901,7 @@ int h_get_mpp(struct hvcall_mpp_data *mpp_data)
 
 	mpp_data->mem_weight = (retbuf[3] >> 7 * 8) & 0xff;
 	mpp_data->unallocated_mem_weight = (retbuf[3] >> 6 * 8) & 0xff;
-<<<<<<< HEAD
-	mpp_data->unallocated_entitlement = retbuf[3] & 0xffffffffffff;
-=======
 	mpp_data->unallocated_entitlement = retbuf[3] & 0xffffffffffffUL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpp_data->pool_size = retbuf[4];
 	mpp_data->loan_request = retbuf[5];
@@ -2300,8 +1925,6 @@ int h_get_mpp_x(struct hvcall_mpp_x_data *mpp_x_data)
 
 	return rc;
 }
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_PPC_64S_HASH_MMU
 static unsigned long __init vsid_unscramble(unsigned long vsid, int ssize)
@@ -2405,4 +2028,3 @@ static int __init vpa_debugfs_init(void)
 }
 machine_arch_initcall(pseries, vpa_debugfs_init);
 #endif /* CONFIG_DEBUG_FS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

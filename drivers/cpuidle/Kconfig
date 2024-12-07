@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menu "CPU Idle"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CPU_IDLE
 	bool "CPU idle PM support"
 	default y if ACPI || PPC_PSERIES
-<<<<<<< HEAD
-=======
 	select CPU_IDLE_GOV_LADDER if (!NO_HZ && !NO_HZ_IDLE)
 	select CPU_IDLE_GOV_MENU if (NO_HZ || NO_HZ_IDLE) && !CPU_IDLE_GOV_TEO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  CPU idle is a generic framework for supporting software-controlled
 	  idle processor power management.  It includes modular cross-platform
@@ -19,20 +13,6 @@ config CPU_IDLE
 
 	  If you're using an ACPI-enabled platform, you should say Y here.
 
-<<<<<<< HEAD
-config CPU_IDLE_GOV_LADDER
-	bool
-	depends on CPU_IDLE
-	default y
-
-config CPU_IDLE_GOV_MENU
-	bool
-	depends on CPU_IDLE && NO_HZ
-	default y
-
-config ARCH_NEEDS_CPU_IDLE_COUPLED
-	def_bool n
-=======
 if CPU_IDLE
 
 config CPU_IDLE_MULTIPLE_DRIVERS
@@ -106,4 +86,3 @@ endif
 config ARCH_NEEDS_CPU_IDLE_COUPLED
 	def_bool n
 endmenu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/ceph/ceph_debug.h>
 #include <linux/backing-dev.h>
@@ -13,28 +10,18 @@
 #include <keys/ceph-type.h>
 #include <linux/module.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-#include <linux/parser.h>
-#include <linux/sched.h>
-=======
 #include <linux/nsproxy.h>
 #include <linux/fs_parser.h>
 #include <linux/sched.h>
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/statfs.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-
-
-=======
 #include <linux/vmalloc.h>
 
 
 #include <linux/ceph/ceph_features.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ceph/libceph.h>
 #include <linux/ceph/debugfs.h>
 #include <linux/ceph/decode.h>
@@ -43,21 +30,6 @@
 #include "crypto.h"
 
 
-<<<<<<< HEAD
-
-/*
- * find filename portion of a path (/foo/bar/baz -> baz)
- */
-const char *ceph_file_part(const char *s, int len)
-{
-	const char *e = s + len;
-
-	while (e != s && *(e-1) != '/')
-		e--;
-	return e;
-}
-EXPORT_SYMBOL(ceph_file_part);
-=======
 /*
  * Module compatibility interface.  For now it doesn't do anything,
  * but its existence signals a certain level of functionality.
@@ -85,7 +57,6 @@ static const struct kernel_param_ops param_ops_supported_features = {
 };
 module_param_cb(supported_features, &param_ops_supported_features, NULL,
 		0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *ceph_msg_type_name(int type)
 {
@@ -100,14 +71,10 @@ const char *ceph_msg_type_name(int type)
 	case CEPH_MSG_MON_SUBSCRIBE_ACK: return "mon_subscribe_ack";
 	case CEPH_MSG_STATFS: return "statfs";
 	case CEPH_MSG_STATFS_REPLY: return "statfs_reply";
-<<<<<<< HEAD
-	case CEPH_MSG_MDS_MAP: return "mds_map";
-=======
 	case CEPH_MSG_MON_GET_VERSION: return "mon_get_version";
 	case CEPH_MSG_MON_GET_VERSION_REPLY: return "mon_get_version_reply";
 	case CEPH_MSG_MDS_MAP: return "mds_map";
 	case CEPH_MSG_FS_MAP_USER: return "fs_map_user";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CEPH_MSG_CLIENT_SESSION: return "client_session";
 	case CEPH_MSG_CLIENT_RECONNECT: return "client_reconnect";
 	case CEPH_MSG_CLIENT_REQUEST: return "client_request";
@@ -115,10 +82,6 @@ const char *ceph_msg_type_name(int type)
 	case CEPH_MSG_CLIENT_REPLY: return "client_reply";
 	case CEPH_MSG_CLIENT_CAPS: return "client_caps";
 	case CEPH_MSG_CLIENT_CAPRELEASE: return "client_cap_release";
-<<<<<<< HEAD
-	case CEPH_MSG_CLIENT_SNAP: return "client_snap";
-	case CEPH_MSG_CLIENT_LEASE: return "client_lease";
-=======
 	case CEPH_MSG_CLIENT_QUOTA: return "client_quota";
 	case CEPH_MSG_CLIENT_SNAP: return "client_snap";
 	case CEPH_MSG_CLIENT_LEASE: return "client_lease";
@@ -126,15 +89,11 @@ const char *ceph_msg_type_name(int type)
 	case CEPH_MSG_POOLOP: return "poolop";
 	case CEPH_MSG_MON_COMMAND: return "mon_command";
 	case CEPH_MSG_MON_COMMAND_ACK: return "mon_command_ack";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CEPH_MSG_OSD_MAP: return "osd_map";
 	case CEPH_MSG_OSD_OP: return "osd_op";
 	case CEPH_MSG_OSD_OPREPLY: return "osd_opreply";
 	case CEPH_MSG_WATCH_NOTIFY: return "watch_notify";
-<<<<<<< HEAD
-=======
 	case CEPH_MSG_OSD_BACKOFF: return "osd_backoff";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default: return "unknown";
 	}
 }
@@ -178,8 +137,6 @@ int ceph_compare_options(struct ceph_options *new_opt,
 	int i;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Don't bother comparing options if network namespaces don't
 	 * match.
@@ -187,7 +144,6 @@ int ceph_compare_options(struct ceph_options *new_opt,
 	if (!net_eq(current->nsproxy->net_ns, read_pnet(&client->msgr.net)))
 		return -1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = memcmp(opt1, opt2, ofs);
 	if (ret)
 		return ret;
@@ -220,13 +176,10 @@ int ceph_compare_options(struct ceph_options *new_opt,
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	ret = ceph_compare_crush_locs(&opt1->crush_locs, &opt2->crush_locs);
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* any matching mon ip implies a match */
 	for (i = 0; i < opt1->num_mon; i++) {
 		if (ceph_monmap_contains(client->monc.monmap,
@@ -237,23 +190,14 @@ int ceph_compare_options(struct ceph_options *new_opt,
 }
 EXPORT_SYMBOL(ceph_compare_options);
 
-<<<<<<< HEAD
-
-static int parse_fsid(const char *str, struct ceph_fsid *fsid)
-=======
 int ceph_parse_fsid(const char *str, struct ceph_fsid *fsid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = 0;
 	char tmp[3];
 	int err = -EINVAL;
 	int d;
 
-<<<<<<< HEAD
-	dout("parse_fsid '%s'\n", str);
-=======
 	dout("%s '%s'\n", __func__, str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp[2] = 0;
 	while (*str && i < 16) {
 		if (ispunct(*str)) {
@@ -273,71 +217,25 @@ int ceph_parse_fsid(const char *str, struct ceph_fsid *fsid)
 
 	if (i == 16)
 		err = 0;
-<<<<<<< HEAD
-	dout("parse_fsid ret %d got fsid %pU", err, fsid);
-	return err;
-}
-=======
 	dout("%s ret %d got fsid %pU\n", __func__, err, fsid);
 	return err;
 }
 EXPORT_SYMBOL(ceph_parse_fsid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ceph options
  */
 enum {
-<<<<<<< HEAD
-	Opt_osdtimeout,
-	Opt_osdkeepalivetimeout,
-	Opt_mount_timeout,
-	Opt_osd_idle_ttl,
-	Opt_last_int,
-=======
 	Opt_osdkeepalivetimeout,
 	Opt_mount_timeout,
 	Opt_osd_idle_ttl,
 	Opt_osd_request_timeout,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* int args above */
 	Opt_fsid,
 	Opt_name,
 	Opt_secret,
 	Opt_key,
 	Opt_ip,
-<<<<<<< HEAD
-	Opt_last_string,
-	/* string args above */
-	Opt_share,
-	Opt_noshare,
-	Opt_crc,
-	Opt_nocrc,
-};
-
-static match_table_t opt_tokens = {
-	{Opt_osdtimeout, "osdtimeout=%d"},
-	{Opt_osdkeepalivetimeout, "osdkeepalive=%d"},
-	{Opt_mount_timeout, "mount_timeout=%d"},
-	{Opt_osd_idle_ttl, "osd_idle_ttl=%d"},
-	/* int args above */
-	{Opt_fsid, "fsid=%s"},
-	{Opt_name, "name=%s"},
-	{Opt_secret, "secret=%s"},
-	{Opt_key, "key=%s"},
-	{Opt_ip, "ip=%s"},
-	/* string args above */
-	{Opt_share, "share"},
-	{Opt_noshare, "noshare"},
-	{Opt_crc, "crc"},
-	{Opt_nocrc, "nocrc"},
-	{-1, NULL}
-};
-
-void ceph_destroy_options(struct ceph_options *opt)
-{
-	dout("destroy_options %p\n", opt);
-=======
 	Opt_crush_location,
 	Opt_read_from_replica,
 	Opt_ms_mode,
@@ -442,7 +340,6 @@ void ceph_destroy_options(struct ceph_options *opt)
 		return;
 
 	ceph_clear_crush_locs(&opt->crush_locs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(opt->name);
 	if (opt->key) {
 		ceph_crypto_key_destroy(opt->key);
@@ -454,42 +351,21 @@ void ceph_destroy_options(struct ceph_options *opt)
 EXPORT_SYMBOL(ceph_destroy_options);
 
 /* get secret from key store */
-<<<<<<< HEAD
-static int get_secret(struct ceph_crypto_key *dst, const char *name) {
-=======
 static int get_secret(struct ceph_crypto_key *dst, const char *name,
 		      struct p_log *log)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct key *ukey;
 	int key_err;
 	int err = 0;
 	struct ceph_crypto_key *ckey;
 
 	ukey = request_key(&key_type_ceph, name, NULL);
-<<<<<<< HEAD
-	if (!ukey || IS_ERR(ukey)) {
-=======
 	if (IS_ERR(ukey)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* request_key errors don't map nicely to mount(2)
 		   errors; don't even try, but still printk */
 		key_err = PTR_ERR(ukey);
 		switch (key_err) {
 		case -ENOKEY:
-<<<<<<< HEAD
-			pr_warning("ceph: Mount failed due to key not found: %s\n", name);
-			break;
-		case -EKEYEXPIRED:
-			pr_warning("ceph: Mount failed due to expired key: %s\n", name);
-			break;
-		case -EKEYREVOKED:
-			pr_warning("ceph: Mount failed due to revoked key: %s\n", name);
-			break;
-		default:
-			pr_warning("ceph: Mount failed due to unknown key error"
-			       " %d: %s\n", key_err, name);
-=======
 			error_plog(log, "Failed due to key not found: %s",
 			       name);
 			break;
@@ -504,17 +380,12 @@ static int get_secret(struct ceph_crypto_key *dst, const char *name,
 		default:
 			error_plog(log, "Failed due to key error %d: %s",
 			       key_err, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		err = -EPERM;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ckey = ukey->payload.data;
-=======
 	ckey = ukey->payload.data[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ceph_crypto_key_clone(dst, ckey);
 	if (err)
 		goto out_key;
@@ -526,162 +397,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-struct ceph_options *
-ceph_parse_options(char *options, const char *dev_name,
-			const char *dev_name_end,
-			int (*parse_extra_token)(char *c, void *private),
-			void *private)
-{
-	struct ceph_options *opt;
-	const char *c;
-	int err = -ENOMEM;
-	substring_t argstr[MAX_OPT_ARGS];
-
-	opt = kzalloc(sizeof(*opt), GFP_KERNEL);
-	if (!opt)
-		return ERR_PTR(-ENOMEM);
-	opt->mon_addr = kcalloc(CEPH_MAX_MON, sizeof(*opt->mon_addr),
-				GFP_KERNEL);
-	if (!opt->mon_addr)
-		goto out;
-
-	dout("parse_options %p options '%s' dev_name '%s'\n", opt, options,
-	     dev_name);
-
-	/* start with defaults */
-	opt->flags = CEPH_OPT_DEFAULT;
-	opt->osd_keepalive_timeout = CEPH_OSD_KEEPALIVE_DEFAULT;
-	opt->mount_timeout = CEPH_MOUNT_TIMEOUT_DEFAULT; /* seconds */
-	opt->osd_idle_ttl = CEPH_OSD_IDLE_TTL_DEFAULT;   /* seconds */
-
-	/* get mon ip(s) */
-	/* ip1[:port1][,ip2[:port2]...] */
-	err = ceph_parse_ips(dev_name, dev_name_end, opt->mon_addr,
-			     CEPH_MAX_MON, &opt->num_mon);
-	if (err < 0)
-		goto out;
-
-	/* parse mount options */
-	while ((c = strsep(&options, ",")) != NULL) {
-		int token, intval, ret;
-		if (!*c)
-			continue;
-		err = -EINVAL;
-		token = match_token((char *)c, opt_tokens, argstr);
-		if (token < 0 && parse_extra_token) {
-			/* extra? */
-			err = parse_extra_token((char *)c, private);
-			if (err < 0) {
-				pr_err("bad option at '%s'\n", c);
-				goto out;
-			}
-			continue;
-		}
-		if (token < Opt_last_int) {
-			ret = match_int(&argstr[0], &intval);
-			if (ret < 0) {
-				pr_err("bad mount option arg (not int) "
-				       "at '%s'\n", c);
-				continue;
-			}
-			dout("got int token %d val %d\n", token, intval);
-		} else if (token > Opt_last_int && token < Opt_last_string) {
-			dout("got string token %d val %s\n", token,
-			     argstr[0].from);
-		} else {
-			dout("got token %d\n", token);
-		}
-		switch (token) {
-		case Opt_ip:
-			err = ceph_parse_ips(argstr[0].from,
-					     argstr[0].to,
-					     &opt->my_addr,
-					     1, NULL);
-			if (err < 0)
-				goto out;
-			opt->flags |= CEPH_OPT_MYIP;
-			break;
-
-		case Opt_fsid:
-			err = parse_fsid(argstr[0].from, &opt->fsid);
-			if (err == 0)
-				opt->flags |= CEPH_OPT_FSID;
-			break;
-		case Opt_name:
-			opt->name = kstrndup(argstr[0].from,
-					      argstr[0].to-argstr[0].from,
-					      GFP_KERNEL);
-			break;
-		case Opt_secret:
-		        opt->key = kzalloc(sizeof(*opt->key), GFP_KERNEL);
-			if (!opt->key) {
-				err = -ENOMEM;
-				goto out;
-			}
-			err = ceph_crypto_key_unarmor(opt->key, argstr[0].from);
-			if (err < 0)
-				goto out;
-			break;
-		case Opt_key:
-		        opt->key = kzalloc(sizeof(*opt->key), GFP_KERNEL);
-			if (!opt->key) {
-				err = -ENOMEM;
-				goto out;
-			}
-			err = get_secret(opt->key, argstr[0].from);
-			if (err < 0)
-				goto out;
-			break;
-
-			/* misc */
-		case Opt_osdtimeout:
-			pr_warning("ignoring deprecated osdtimeout option\n");
-			break;
-		case Opt_osdkeepalivetimeout:
-			opt->osd_keepalive_timeout = intval;
-			break;
-		case Opt_osd_idle_ttl:
-			opt->osd_idle_ttl = intval;
-			break;
-		case Opt_mount_timeout:
-			opt->mount_timeout = intval;
-			break;
-
-		case Opt_share:
-			opt->flags &= ~CEPH_OPT_NOSHARE;
-			break;
-		case Opt_noshare:
-			opt->flags |= CEPH_OPT_NOSHARE;
-			break;
-
-		case Opt_crc:
-			opt->flags &= ~CEPH_OPT_NOCRC;
-			break;
-		case Opt_nocrc:
-			opt->flags |= CEPH_OPT_NOCRC;
-			break;
-
-		default:
-			BUG_ON(token);
-		}
-	}
-
-	/* success */
-	return opt;
-
-out:
-	ceph_destroy_options(opt);
-	return ERR_PTR(err);
-}
-EXPORT_SYMBOL(ceph_parse_options);
-
-u64 ceph_client_id(struct ceph_client *client)
-{
-	return client->monc.auth->global_id;
-}
-EXPORT_SYMBOL(ceph_client_id);
-=======
 int ceph_parse_mon_ips(const char *buf, size_t len, struct ceph_options *opt,
 		       struct fc_log *l, char delim)
 {
@@ -985,20 +700,10 @@ u64 ceph_client_gid(struct ceph_client *client)
 	return client->monc.auth->global_id;
 }
 EXPORT_SYMBOL(ceph_client_gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * create a fresh client instance
  */
-<<<<<<< HEAD
-struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private,
-				       unsigned supported_features,
-				       unsigned required_features)
-{
-	struct ceph_client *client;
-	struct ceph_entity_addr *myaddr = NULL;
-	int err = -ENOMEM;
-=======
 struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
 {
 	struct ceph_client *client;
@@ -1008,7 +713,6 @@ struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
 	err = wait_for_random_bytes();
 	if (err < 0)
 		return ERR_PTR(err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	client = kzalloc(sizeof(*client), GFP_KERNEL);
 	if (client == NULL)
@@ -1022,31 +726,17 @@ struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
 	client->auth_err = 0;
 
 	client->extra_mon_dispatch = NULL;
-<<<<<<< HEAD
-	client->supported_features = CEPH_FEATURE_SUPPORTED_DEFAULT |
-		supported_features;
-	client->required_features = CEPH_FEATURE_REQUIRED_DEFAULT |
-		required_features;
-=======
 	client->supported_features = CEPH_FEATURES_SUPPORTED_DEFAULT;
 	client->required_features = CEPH_FEATURES_REQUIRED_DEFAULT;
 
 	if (!ceph_test_opt(client, NOMSGSIGN))
 		client->required_features |= CEPH_FEATURE_MSG_AUTH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* msgr */
 	if (ceph_test_opt(client, MYIP))
 		myaddr = &client->options->my_addr;
-<<<<<<< HEAD
-	ceph_messenger_init(&client->msgr, myaddr,
-		client->supported_features,
-		client->required_features,
-		ceph_test_opt(client, NOCRC));
-=======
 
 	ceph_messenger_init(&client->msgr, myaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* subsystems */
 	err = ceph_monc_init(&client->monc, client);
@@ -1061,10 +751,7 @@ struct ceph_client *ceph_create_client(struct ceph_options *opt, void *private)
 fail_monc:
 	ceph_monc_stop(&client->monc);
 fail:
-<<<<<<< HEAD
-=======
 	ceph_messenger_fini(&client->msgr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(client);
 	return ERR_PTR(err);
 }
@@ -1078,13 +765,8 @@ void ceph_destroy_client(struct ceph_client *client)
 
 	/* unmount */
 	ceph_osdc_stop(&client->osdc);
-<<<<<<< HEAD
-
-	ceph_monc_stop(&client->monc);
-=======
 	ceph_monc_stop(&client->monc);
 	ceph_messenger_fini(&client->msgr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ceph_debugfs_client_cleanup(client);
 
@@ -1095,12 +777,6 @@ void ceph_destroy_client(struct ceph_client *client)
 }
 EXPORT_SYMBOL(ceph_destroy_client);
 
-<<<<<<< HEAD
-/*
- * true if we have the mon map (and have thus joined the cluster)
- */
-static int have_mon_and_osd_map(struct ceph_client *client)
-=======
 void ceph_reset_client_addr(struct ceph_client *client)
 {
 	ceph_messenger_reset_nonce(&client->msgr);
@@ -1113,7 +789,6 @@ EXPORT_SYMBOL(ceph_reset_client_addr);
  * true if we have the mon map (and have thus joined the cluster)
  */
 static bool have_mon_and_osd_map(struct ceph_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return client->monc.monmap && client->monc.monmap->epoch &&
 	       client->osdc.osdmap && client->osdc.osdmap->epoch;
@@ -1124,13 +799,8 @@ static bool have_mon_and_osd_map(struct ceph_client *client)
  */
 int __ceph_open_session(struct ceph_client *client, unsigned long started)
 {
-<<<<<<< HEAD
-	int err;
-	unsigned long timeout = client->options->mount_timeout * HZ;
-=======
 	unsigned long timeout = client->options->mount_timeout;
 	long err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* open session, and wait for mon and osd maps */
 	err = ceph_monc_open_session(&client->monc);
@@ -1138,46 +808,28 @@ int __ceph_open_session(struct ceph_client *client, unsigned long started)
 		return err;
 
 	while (!have_mon_and_osd_map(client)) {
-<<<<<<< HEAD
-		err = -EIO;
-		if (timeout && time_after_eq(jiffies, started + timeout))
-			return err;
-=======
 		if (timeout && time_after_eq(jiffies, started + timeout))
 			return -ETIMEDOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* wait */
 		dout("mount waiting for mon_map\n");
 		err = wait_event_interruptible_timeout(client->auth_wq,
 			have_mon_and_osd_map(client) || (client->auth_err < 0),
-<<<<<<< HEAD
-			timeout);
-		if (err == -EINTR || err == -ERESTARTSYS)
-=======
 			ceph_timeout_jiffies(timeout));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		if (client->auth_err < 0)
 			return client->auth_err;
 	}
 
-<<<<<<< HEAD
-=======
 	pr_info("client%llu fsid %pU\n", ceph_client_gid(client),
 		&client->fsid);
 	ceph_debugfs_client_init(client);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(__ceph_open_session);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ceph_open_session(struct ceph_client *client)
 {
 	int ret;
@@ -1193,8 +845,6 @@ int ceph_open_session(struct ceph_client *client)
 }
 EXPORT_SYMBOL(ceph_open_session);
 
-<<<<<<< HEAD
-=======
 int ceph_wait_for_latest_osdmap(struct ceph_client *client,
 				unsigned long timeout)
 {
@@ -1212,19 +862,12 @@ int ceph_wait_for_latest_osdmap(struct ceph_client *client,
 	return ceph_monc_wait_osdmap(&client->monc, newest_epoch, timeout);
 }
 EXPORT_SYMBOL(ceph_wait_for_latest_osdmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init init_ceph_lib(void)
 {
 	int ret = 0;
 
-<<<<<<< HEAD
-	ret = ceph_debugfs_init();
-	if (ret < 0)
-		goto out;
-=======
 	ceph_debugfs_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ceph_crypto_init();
 	if (ret < 0)
@@ -1234,15 +877,6 @@ static int __init init_ceph_lib(void)
 	if (ret < 0)
 		goto out_crypto;
 
-<<<<<<< HEAD
-	pr_info("loaded (mon/osd proto %d/%d, osdmap %d/%d %d/%d)\n",
-		CEPH_MONC_PROTOCOL, CEPH_OSDC_PROTOCOL,
-		CEPH_OSDMAP_VERSION, CEPH_OSDMAP_VERSION_EXT,
-		CEPH_OSDMAP_INC_VERSION, CEPH_OSDMAP_INC_VERSION_EXT);
-
-	return 0;
-
-=======
 	ret = ceph_osdc_setup();
 	if (ret < 0)
 		goto out_msgr;
@@ -1254,27 +888,19 @@ static int __init init_ceph_lib(void)
 
 out_msgr:
 	ceph_msgr_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_crypto:
 	ceph_crypto_shutdown();
 out_debugfs:
 	ceph_debugfs_cleanup();
-<<<<<<< HEAD
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void __exit exit_ceph_lib(void)
 {
 	dout("exit_ceph_lib\n");
-<<<<<<< HEAD
-=======
 	WARN_ON(!ceph_strings_empty());
 
 	ceph_osdc_cleanup();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_msgr_exit();
 	ceph_crypto_shutdown();
 	ceph_debugfs_cleanup();
@@ -1286,9 +912,5 @@ module_exit(exit_ceph_lib);
 MODULE_AUTHOR("Sage Weil <sage@newdream.net>");
 MODULE_AUTHOR("Yehuda Sadeh <yehuda@hq.newdream.net>");
 MODULE_AUTHOR("Patience Warnick <patience@newdream.net>");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Ceph filesystem for Linux");
-=======
 MODULE_DESCRIPTION("Ceph core library");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

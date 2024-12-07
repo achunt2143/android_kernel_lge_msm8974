@@ -15,18 +15,11 @@
 #include <linux/platform_device.h>
 #include <linux/stop_machine.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <asm/machdep.h>
-#include <asm/cell-regs.h>
-
-#include "edac_core.h"
-=======
 #include <linux/of_address.h>
 #include <asm/machdep.h>
 #include <asm/cell-regs.h>
 
 #include "edac_module.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cell_edac_priv
 {
@@ -41,17 +34,10 @@ struct cell_edac_priv
 static void cell_edac_count_ce(struct mem_ctl_info *mci, int chan, u64 ar)
 {
 	struct cell_edac_priv		*priv = mci->pvt_info;
-<<<<<<< HEAD
-	struct csrow_info		*csrow = &mci->csrows[0];
-	unsigned long			address, pfn, offset, syndrome;
-
-	dev_dbg(mci->dev, "ECC CE err on node %d, channel %d, ar = 0x%016llx\n",
-=======
 	struct csrow_info		*csrow = mci->csrows[0];
 	unsigned long			address, pfn, offset, syndrome;
 
 	dev_dbg(mci->pdev, "ECC CE err on node %d, channel %d, ar = 0x%016llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->node, chan, ar);
 
 	/* Address decoding is likely a bit bogus, to dbl check */
@@ -63,30 +49,18 @@ static void cell_edac_count_ce(struct mem_ctl_info *mci, int chan, u64 ar)
 	syndrome = (ar & 0x000000001fe00000ul) >> 21;
 
 	/* TODO: Decoding of the error address */
-<<<<<<< HEAD
-	edac_mc_handle_ce(mci, csrow->first_page + pfn, offset,
-			  syndrome, 0, chan, "");
-=======
 	edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
 			     csrow->first_page + pfn, offset, syndrome,
 			     0, chan, -1, "", "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cell_edac_count_ue(struct mem_ctl_info *mci, int chan, u64 ar)
 {
 	struct cell_edac_priv		*priv = mci->pvt_info;
-<<<<<<< HEAD
-	struct csrow_info		*csrow = &mci->csrows[0];
-	unsigned long			address, pfn, offset;
-
-	dev_dbg(mci->dev, "ECC UE err on node %d, channel %d, ar = 0x%016llx\n",
-=======
 	struct csrow_info		*csrow = mci->csrows[0];
 	unsigned long			address, pfn, offset;
 
 	dev_dbg(mci->pdev, "ECC UE err on node %d, channel %d, ar = 0x%016llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->node, chan, ar);
 
 	/* Address decoding is likely a bit bogus, to dbl check */
@@ -97,13 +71,9 @@ static void cell_edac_count_ue(struct mem_ctl_info *mci, int chan, u64 ar)
 	offset = address & ~PAGE_MASK;
 
 	/* TODO: Decoding of the error address */
-<<<<<<< HEAD
-	edac_mc_handle_ue(mci, csrow->first_page + pfn, offset, 0, "");
-=======
 	edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
 			     csrow->first_page + pfn, offset, 0,
 			     0, chan, -1, "", "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cell_edac_check(struct mem_ctl_info *mci)
@@ -114,11 +84,7 @@ static void cell_edac_check(struct mem_ctl_info *mci)
 	fir = in_be64(&priv->regs->mic_fir);
 #ifdef DEBUG
 	if (fir != priv->prev_fir) {
-<<<<<<< HEAD
-		dev_dbg(mci->dev, "fir change : 0x%016lx\n", fir);
-=======
 		dev_dbg(mci->pdev, "fir change : 0x%016lx\n", fir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->prev_fir = fir;
 	}
 #endif
@@ -154,25 +120,11 @@ static void cell_edac_check(struct mem_ctl_info *mci)
 		mb();	/* sync up */
 #ifdef DEBUG
 		fir = in_be64(&priv->regs->mic_fir);
-<<<<<<< HEAD
-		dev_dbg(mci->dev, "fir clear  : 0x%016lx\n", fir);
-=======
 		dev_dbg(mci->pdev, "fir clear  : 0x%016lx\n", fir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 }
 
-<<<<<<< HEAD
-static void __devinit cell_edac_init_csrows(struct mem_ctl_info *mci)
-{
-	struct csrow_info		*csrow = &mci->csrows[0];
-	struct cell_edac_priv		*priv = mci->pvt_info;
-	struct device_node		*np;
-
-	for (np = NULL;
-	     (np = of_find_node_by_name(np, "memory")) != NULL;) {
-=======
 static void cell_edac_init_csrows(struct mem_ctl_info *mci)
 {
 	struct csrow_info		*csrow = mci->csrows[0];
@@ -183,7 +135,6 @@ static void cell_edac_init_csrows(struct mem_ctl_info *mci)
 	u32				nr_pages;
 
 	for_each_node_by_name(np, "memory") {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct resource r;
 
 		/* We "know" that the Cell firmware only creates one entry
@@ -195,28 +146,6 @@ static void cell_edac_init_csrows(struct mem_ctl_info *mci)
 		if (of_node_to_nid(np) != priv->node)
 			continue;
 		csrow->first_page = r.start >> PAGE_SHIFT;
-<<<<<<< HEAD
-		csrow->nr_pages = resource_size(&r) >> PAGE_SHIFT;
-		csrow->last_page = csrow->first_page + csrow->nr_pages - 1;
-		csrow->mtype = MEM_XDR;
-		csrow->edac_mode = EDAC_SECDED;
-		dev_dbg(mci->dev,
-			"Initialized on node %d, chanmask=0x%x,"
-			" first_page=0x%lx, nr_pages=0x%x\n",
-			priv->node, priv->chanmask,
-			csrow->first_page, csrow->nr_pages);
-		break;
-	}
-}
-
-static int __devinit cell_edac_probe(struct platform_device *pdev)
-{
-	struct cbe_mic_tm_regs __iomem	*regs;
-	struct mem_ctl_info		*mci;
-	struct cell_edac_priv		*priv;
-	u64				reg;
-	int				rc, chanmask;
-=======
 		nr_pages = resource_size(&r) >> PAGE_SHIFT;
 		csrow->last_page = csrow->first_page + nr_pages - 1;
 
@@ -244,7 +173,6 @@ static int cell_edac_probe(struct platform_device *pdev)
 	struct cell_edac_priv		*priv;
 	u64				reg;
 	int				rc, chanmask, num_chans;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regs = cbe_get_cpu_mic_tm_regs(cbe_node_to_cpu(pdev->id));
 	if (regs == NULL)
@@ -269,10 +197,6 @@ static int cell_edac_probe(struct platform_device *pdev)
 		in_be64(&regs->mic_fir));
 
 	/* Allocate & init EDAC MC data structure */
-<<<<<<< HEAD
-	mci = edac_mc_alloc(sizeof(struct cell_edac_priv), 1,
-			    chanmask == 3 ? 2 : 1, pdev->id);
-=======
 	num_chans = chanmask == 3 ? 2 : 1;
 
 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
@@ -283,18 +207,13 @@ static int cell_edac_probe(struct platform_device *pdev)
 	layers[1].is_virt_csrow = false;
 	mci = edac_mc_alloc(pdev->id, ARRAY_SIZE(layers), layers,
 			    sizeof(struct cell_edac_priv));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mci == NULL)
 		return -ENOMEM;
 	priv = mci->pvt_info;
 	priv->regs = regs;
 	priv->node = pdev->id;
 	priv->chanmask = chanmask;
-<<<<<<< HEAD
-	mci->dev = &pdev->dev;
-=======
 	mci->pdev = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->mtype_cap = MEM_FLAG_XDR;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_EC | EDAC_FLAG_SECDED;
 	mci->edac_cap = EDAC_FLAG_EC | EDAC_FLAG_SECDED;
@@ -315,34 +234,19 @@ static int cell_edac_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit cell_edac_remove(struct platform_device *pdev)
-=======
 static void cell_edac_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mem_ctl_info *mci = edac_mc_del_mc(&pdev->dev);
 	if (mci)
 		edac_mc_free(mci);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver cell_edac_driver = {
 	.driver		= {
 		.name	= "cbe-mic",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= cell_edac_probe,
-	.remove		= __devexit_p(cell_edac_remove),
-=======
 	},
 	.probe		= cell_edac_probe,
 	.remove_new	= cell_edac_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init cell_edac_init(void)

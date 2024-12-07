@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-/* Hey EMACS -*- linux-c -*- */
-/*
- *
- * Copyright (C) 2002-2003 Romain Lievin <roms@tilp.info>
- * Released under the terms of the GNU GPL v2.0.
- *
- */
-
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include "lkc.h"
-#include "images.c"
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002-2003 Romain Lievin <roms@tilp.info>
@@ -22,7 +6,6 @@
 #include <stdlib.h>
 #include "lkc.h"
 #include "images.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <glade/glade.h>
 #include <gtk/gtk.h>
@@ -31,15 +14,9 @@
 
 #include <stdio.h>
 #include <string.h>
-<<<<<<< HEAD
-#include <unistd.h>
-#include <time.h>
-#include <stdlib.h>
-=======
 #include <strings.h>
 #include <unistd.h>
 #include <time.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 //#define DEBUG
 
@@ -95,13 +72,8 @@ static gchar **fill_row(struct menu *menu);
 static void conf_changed(void);
 
 /* Helping/Debugging Functions */
-<<<<<<< HEAD
-
-const char *dbg_sym_flags(int val)
-=======
 #ifdef DEBUG
 static const char *dbg_sym_flags(int val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static char buf[256];
 
@@ -123,28 +95,17 @@ static const char *dbg_sym_flags(int val)
 		strcat(buf, "write/");
 	if (val & SYMBOL_CHANGED)
 		strcat(buf, "changed/");
-<<<<<<< HEAD
-	if (val & SYMBOL_AUTO)
-		strcat(buf, "auto/");
-=======
 	if (val & SYMBOL_NO_WRITE)
 		strcat(buf, "no_write/");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf[strlen(buf) - 1] = '\0';
 
 	return buf;
 }
-<<<<<<< HEAD
-
-void replace_button_icon(GladeXML * xml, GdkDrawable * window,
-			 GtkStyle * style, gchar * btn_name, gchar ** xpm)
-=======
 #endif
 
 static void replace_button_icon(GladeXML *xml, GdkDrawable *window,
 				GtkStyle *style, gchar *btn_name, gchar **xpm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	GdkPixmap *pixmap;
 	GdkBitmap *mask;
@@ -162,11 +123,7 @@ static void replace_button_icon(GladeXML *xml, GdkDrawable *window,
 }
 
 /* Main Window Initialization */
-<<<<<<< HEAD
-void init_main_window(const gchar * glade_file)
-=======
 static void init_main_window(const gchar *glade_file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	GladeXML *xml;
 	GtkWidget *widget;
@@ -175,11 +132,7 @@ static void init_main_window(const gchar *glade_file)
 
 	xml = glade_xml_new(glade_file, "window1", NULL);
 	if (!xml)
-<<<<<<< HEAD
-		g_error(_("GUI loading failed !\n"));
-=======
 		g_error("GUI loading failed !\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	glade_xml_signal_autoconnect(xml);
 
 	main_wnd = glade_xml_get_widget(xml, "window1");
@@ -211,17 +164,6 @@ static void init_main_window(const gchar *glade_file)
 	style = gtk_widget_get_style(main_wnd);
 	widget = glade_xml_get_widget(xml, "toolbar1");
 
-<<<<<<< HEAD
-#if 0	/* Use stock Gtk icons instead */
-	replace_button_icon(xml, main_wnd->window, style,
-			    "button1", (gchar **) xpm_back);
-	replace_button_icon(xml, main_wnd->window, style,
-			    "button2", (gchar **) xpm_load);
-	replace_button_icon(xml, main_wnd->window, style,
-			    "button3", (gchar **) xpm_save);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	replace_button_icon(xml, main_wnd->window, style,
 			    "button4", (gchar **) xpm_single_view);
 	replace_button_icon(xml, main_wnd->window, style,
@@ -229,25 +171,6 @@ static void init_main_window(const gchar *glade_file)
 	replace_button_icon(xml, main_wnd->window, style,
 			    "button6", (gchar **) xpm_tree_view);
 
-<<<<<<< HEAD
-#if 0
-	switch (view_mode) {
-	case SINGLE_VIEW:
-		widget = glade_xml_get_widget(xml, "button4");
-		g_signal_emit_by_name(widget, "clicked");
-		break;
-	case SPLIT_VIEW:
-		widget = glade_xml_get_widget(xml, "button5");
-		g_signal_emit_by_name(widget, "clicked");
-		break;
-	case FULL_VIEW:
-		widget = glade_xml_get_widget(xml, "button6");
-		g_signal_emit_by_name(widget, "clicked");
-		break;
-	}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txtbuf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_w));
 	tag1 = gtk_text_buffer_create_tag(txtbuf, "mytag1",
 					  "foreground", "red",
@@ -262,11 +185,7 @@ static void init_main_window(const gchar *glade_file)
 	gtk_widget_show(main_wnd);
 }
 
-<<<<<<< HEAD
-void init_tree_model(void)
-=======
 static void init_tree_model(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	gint i;
 
@@ -296,11 +215,7 @@ static void init_tree_model(void)
 	model1 = GTK_TREE_MODEL(tree1);
 }
 
-<<<<<<< HEAD
-void init_left_tree(void)
-=======
 static void init_left_tree(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	GtkTreeView *view = GTK_TREE_VIEW(tree1_w);
 	GtkCellRenderer *renderer;
@@ -313,11 +228,7 @@ static void init_left_tree(void)
 
 	column = gtk_tree_view_column_new();
 	gtk_tree_view_append_column(view, column);
-<<<<<<< HEAD
-	gtk_tree_view_column_set_title(column, _("Options"));
-=======
 	gtk_tree_view_column_set_title(column, "Options");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	renderer = gtk_cell_renderer_toggle_new();
 	gtk_tree_view_column_pack_start(GTK_TREE_VIEW_COLUMN(column),
@@ -346,11 +257,7 @@ static void renderer_edited(GtkCellRendererText * cell,
 			    const gchar * path_string,
 			    const gchar * new_text, gpointer user_data);
 
-<<<<<<< HEAD
-void init_right_tree(void)
-=======
 static void init_right_tree(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	GtkTreeView *view = GTK_TREE_VIEW(tree2_w);
 	GtkCellRenderer *renderer;
@@ -364,11 +271,7 @@ static void init_right_tree(void)
 
 	column = gtk_tree_view_column_new();
 	gtk_tree_view_append_column(view, column);
-<<<<<<< HEAD
-	gtk_tree_view_column_set_title(column, _("Options"));
-=======
 	gtk_tree_view_column_set_title(column, "Options");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	renderer = gtk_cell_renderer_pixbuf_new();
 	gtk_tree_view_column_pack_start(GTK_TREE_VIEW_COLUMN(column),
@@ -397,11 +300,7 @@ static void init_right_tree(void)
 
 	renderer = gtk_cell_renderer_text_new();
 	gtk_tree_view_insert_column_with_attributes(view, -1,
-<<<<<<< HEAD
-						    _("Name"), renderer,
-=======
 						    "Name", renderer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    "text", COL_NAME,
 						    "foreground-gdk",
 						    COL_COLOR, NULL);
@@ -425,11 +324,7 @@ static void init_right_tree(void)
 						    COL_COLOR, NULL);
 	renderer = gtk_cell_renderer_text_new();
 	gtk_tree_view_insert_column_with_attributes(view, -1,
-<<<<<<< HEAD
-						    _("Value"), renderer,
-=======
 						    "Value", renderer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    "text", COL_VALUE,
 						    "editable",
 						    COL_EDIT,
@@ -468,11 +363,7 @@ static void text_insert_help(struct menu *menu)
 {
 	GtkTextBuffer *buffer;
 	GtkTextIter start, end;
-<<<<<<< HEAD
-	const char *prompt = _(menu_get_prompt(menu));
-=======
 	const char *prompt = menu_get_prompt(menu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gstr help = str_new();
 
 	menu_get_ext_help(menu, &help);
@@ -526,11 +417,7 @@ gboolean on_window1_delete_event(GtkWidget * widget, GdkEvent * event,
 	if (!conf_get_changed())
 		return FALSE;
 
-<<<<<<< HEAD
-	dialog = gtk_dialog_new_with_buttons(_("Warning !"),
-=======
 	dialog = gtk_dialog_new_with_buttons("Warning !",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     GTK_WINDOW(main_wnd),
 					     (GtkDialogFlags)
 					     (GTK_DIALOG_MODAL |
@@ -544,11 +431,7 @@ gboolean on_window1_delete_event(GtkWidget * widget, GdkEvent * event,
 	gtk_dialog_set_default_response(GTK_DIALOG(dialog),
 					GTK_RESPONSE_CANCEL);
 
-<<<<<<< HEAD
-	label = gtk_label_new(_("\nSave configuration ?\n"));
-=======
 	label = gtk_label_new("\nSave configuration ?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gtk_container_add(GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), label);
 	gtk_widget_show(label);
 
@@ -608,11 +491,7 @@ load_filename(GtkFileSelection * file_selector, gpointer user_data)
 					     (user_data));
 
 	if (conf_read(fn))
-<<<<<<< HEAD
-		text_insert_msg(_("Error"), _("Unable to load configuration !"));
-=======
 		text_insert_msg("Error", "Unable to load configuration !");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		display_tree(&rootmenu);
 }
@@ -621,11 +500,7 @@ void on_load1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
 	GtkWidget *fs;
 
-<<<<<<< HEAD
-	fs = gtk_file_selection_new(_("Load file..."));
-=======
 	fs = gtk_file_selection_new("Load file...");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	g_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(fs)->ok_button),
 			 "clicked",
 			 G_CALLBACK(load_filename), (gpointer) fs);
@@ -644,12 +519,8 @@ void on_load1_activate(GtkMenuItem * menuitem, gpointer user_data)
 void on_save_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
 	if (conf_write(NULL))
-<<<<<<< HEAD
-		text_insert_msg(_("Error"), _("Unable to save configuration !"));
-=======
 		text_insert_msg("Error", "Unable to save configuration !");
 	conf_write_autoconf(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -662,11 +533,7 @@ store_filename(GtkFileSelection * file_selector, gpointer user_data)
 					     (user_data));
 
 	if (conf_write(fn))
-<<<<<<< HEAD
-		text_insert_msg(_("Error"), _("Unable to save configuration !"));
-=======
 		text_insert_msg("Error", "Unable to save configuration !");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gtk_widget_destroy(GTK_WIDGET(user_data));
 }
@@ -675,11 +542,7 @@ void on_save_as1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
 	GtkWidget *fs;
 
-<<<<<<< HEAD
-	fs = gtk_file_selection_new(_("Save file as..."));
-=======
 	fs = gtk_file_selection_new("Save file as...");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	g_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION(fs)->ok_button),
 			 "clicked",
 			 G_CALLBACK(store_filename), (gpointer) fs);
@@ -772,13 +635,8 @@ on_set_option_mode3_activate(GtkMenuItem *menuitem, gpointer user_data)
 void on_introduction1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
 	GtkWidget *dialog;
-<<<<<<< HEAD
-	const gchar *intro_text = _(
-	    "Welcome to gkc, the GTK+ graphical configuration tool\n"
-=======
 	const gchar *intro_text =
 	    "Welcome to gconfig, the GTK+ graphical configuration tool.\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    "For each option, a blank box indicates the feature is disabled, a\n"
 	    "check indicates it is enabled, and a dot indicates that it is to\n"
 	    "be compiled as a module.  Clicking on the box will cycle through the three states.\n"
@@ -789,14 +647,7 @@ void on_introduction1_activate(GtkMenuItem * menuitem, gpointer user_data)
 	    "Although there is no cross reference yet to help you figure out\n"
 	    "what other options must be enabled to support the option you\n"
 	    "are interested in, you can still view the help of a grayed-out\n"
-<<<<<<< HEAD
-	    "option.\n"
-	    "\n"
-	    "Toggling Show Debug Info under the Options menu will show \n"
-	    "the dependencies, which you can then match by examining other options.");
-=======
 	    "option.";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dialog = gtk_message_dialog_new(GTK_WINDOW(main_wnd),
 					GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -813,13 +664,8 @@ void on_about1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
 	GtkWidget *dialog;
 	const gchar *about_text =
-<<<<<<< HEAD
-	    _("gkc is copyright (c) 2002 Romain Lievin <roms@lpg.ticalc.org>.\n"
-	      "Based on the source code from Roman Zippel.\n");
-=======
 	    "gconfig is copyright (c) 2002 Romain Lievin <roms@lpg.ticalc.org>.\n"
 	      "Based on the source code from Roman Zippel.\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dialog = gtk_message_dialog_new(GTK_WINDOW(main_wnd),
 					GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -836,15 +682,9 @@ void on_license1_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
 	GtkWidget *dialog;
 	const gchar *license_text =
-<<<<<<< HEAD
-	    _("gkc is released under the terms of the GNU GPL v2.\n"
-	      "For more information, please see the source code or\n"
-	      "visit http://www.fsf.org/licenses/licenses.html\n");
-=======
 	    "gconfig is released under the terms of the GNU GPL v2.\n"
 	      "For more information, please see the source code or\n"
 	      "visit http://www.fsf.org/licenses/licenses.html\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dialog = gtk_message_dialog_new(GTK_WINDOW(main_wnd),
 					GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -1067,11 +907,7 @@ on_treeview2_button_press_event(GtkWidget * widget,
 			current = menu;
 			display_tree_part();
 			gtk_widget_set_sensitive(back_btn, TRUE);
-<<<<<<< HEAD
-		} else if ((col == COL_OPTION)) {
-=======
 		} else if (col == COL_OPTION) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			toggle_sym_value(menu);
 			gtk_tree_view_expand_row(view, path, TRUE);
 		}
@@ -1205,10 +1041,6 @@ static gchar **fill_row(struct menu *menu)
 		g_free(row[i]);
 	bzero(row, sizeof(row));
 
-<<<<<<< HEAD
-	row[COL_OPTION] =
-	    g_strdup_printf("%s %s", _(menu_get_prompt(menu)),
-=======
 	ptype = menu->prompt ? menu->prompt->type : P_UNKNOWN;
 
 	row[COL_OPTION] =
@@ -1216,7 +1048,6 @@ static gchar **fill_row(struct menu *menu)
 			    ptype == P_COMMENT ? "***" : "",
 			    menu_get_prompt(menu),
 			    ptype == P_COMMENT ? "***" : "",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    sym && !sym_has_value(sym) ? "(NEW)" : "");
 
 	if (opt_mode == OPT_ALL && !menu_is_visible(menu))
@@ -1227,10 +1058,6 @@ static gchar **fill_row(struct menu *menu)
 	else
 		row[COL_COLOR] = g_strdup("Black");
 
-<<<<<<< HEAD
-	ptype = menu->prompt ? menu->prompt->type : P_UNKNOWN;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ptype) {
 	case P_MENU:
 		row[COL_PIXBUF] = (gchar *) xpm_menu;
@@ -1272,11 +1099,7 @@ static gchar **fill_row(struct menu *menu)
 
 		if (def_menu)
 			row[COL_VALUE] =
-<<<<<<< HEAD
-			    g_strdup(_(menu_get_prompt(def_menu)));
-=======
 			    g_strdup(menu_get_prompt(def_menu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (sym->flags & SYMBOL_CHOICEVAL)
 		row[COL_BTNRAD] = GINT_TO_POINTER(TRUE);
@@ -1385,13 +1208,8 @@ static GtkTreeIter found;
 /*
  * Find a menu in the GtkTree starting at parent.
  */
-<<<<<<< HEAD
-GtkTreeIter *gtktree_iter_find_node(GtkTreeIter * parent,
-				    struct menu *tofind)
-=======
 static GtkTreeIter *gtktree_iter_find_node(GtkTreeIter *parent,
 					   struct menu *tofind)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	GtkTreeIter iter;
 	GtkTreeIter *child = &iter;
@@ -1559,11 +1377,7 @@ static void display_tree(struct menu *menu)
 		    && (tree == tree2))
 			continue;
 /*
-<<<<<<< HEAD
-                if (((menu != &rootmenu) && !(menu->flags & MENU_ROOT))
-=======
 		if (((menu != &rootmenu) && !(menu->flags & MENU_ROOT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    || (view_mode == FULL_VIEW)
 		    || (view_mode == SPLIT_VIEW))*/
 
@@ -1606,11 +1420,7 @@ static void display_list(void)
 	tree = tree2;
 }
 
-<<<<<<< HEAD
-void fixup_rootmenu(struct menu *menu)
-=======
 static void fixup_rootmenu(struct menu *menu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct menu *child;
 	static int menu_cnt = 0;
@@ -1634,24 +1444,11 @@ int main(int ac, char *av[])
 	char *env;
 	gchar *glade_file;
 
-<<<<<<< HEAD
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	bind_textdomain_codeset(PACKAGE, "UTF-8");
-	textdomain(PACKAGE);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* GTK stuffs */
 	gtk_set_locale();
 	gtk_init(&ac, &av);
 	glade_init();
 
-<<<<<<< HEAD
-	//add_pixmap_directory (PACKAGE_DATA_DIR "/" PACKAGE "/pixmaps");
-	//add_pixmap_directory (PACKAGE_SOURCE_DIR "/pixmaps");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Determine GUI path */
 	env = getenv(SRCTREE);
 	if (env)
@@ -1667,18 +1464,12 @@ int main(int ac, char *av[])
 		case 'a':
 			//showAll = 1;
 			break;
-<<<<<<< HEAD
-		case 'h':
-		case '?':
-			printf("%s <config>\n", av[0]);
-=======
 		case 's':
 			conf_set_message_callback(NULL);
 			break;
 		case 'h':
 		case '?':
 			printf("%s [-s] <config>\n", av[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			exit(0);
 		}
 		name = av[2];

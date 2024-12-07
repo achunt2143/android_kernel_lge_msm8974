@@ -1,28 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2010 FUJITSU LIMITED
- * Copyright (C) 2010 Tomohiro Kusumi <kusumi.tomohiro@jp.fujitsu.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
-#include <linux/kernel.h>
-#include <linux/trace_seq.h>
-#include <trace/events/scsi.h>
-
-#define SERVICE_ACTION16(cdb) (cdb[1] & 0x1f)
-#define SERVICE_ACTION32(cdb) ((cdb[8] << 8) | cdb[9])
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2010 FUJITSU LIMITED
@@ -35,7 +10,6 @@
 
 #define SERVICE_ACTION16(cdb) (cdb[1] & 0x1f)
 #define SERVICE_ACTION32(cdb) (get_unaligned_be16(&cdb[8]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *
 scsi_trace_misc(struct trace_seq *, unsigned char *, int);
@@ -43,18 +17,6 @@ scsi_trace_misc(struct trace_seq *, unsigned char *, int);
 static const char *
 scsi_trace_rw6(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len;
-	sector_t lba = 0, txlen = 0;
-
-	lba |= ((cdb[1] & 0x1F) << 16);
-	lba |=  (cdb[2] << 8);
-	lba |=   cdb[3];
-	txlen = cdb[4];
-
-	trace_seq_printf(p, "lba=%llu txlen=%llu",
-			 (unsigned long long)lba, (unsigned long long)txlen);
-=======
 	const char *ret = trace_seq_buffer_ptr(p);
 	u32 lba, txlen;
 
@@ -66,7 +28,6 @@ scsi_trace_rw6(struct trace_seq *p, unsigned char *cdb, int len)
 	txlen = cdb[4] ? cdb[4] : 256;
 
 	trace_seq_printf(p, "lba=%u txlen=%u", lba, txlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_seq_putc(p, 0);
 
 	return ret;
@@ -75,20 +36,6 @@ scsi_trace_rw6(struct trace_seq *p, unsigned char *cdb, int len)
 static const char *
 scsi_trace_rw10(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len;
-	sector_t lba = 0, txlen = 0;
-
-	lba |= (cdb[2] << 24);
-	lba |= (cdb[3] << 16);
-	lba |= (cdb[4] << 8);
-	lba |=  cdb[5];
-	txlen |= (cdb[7] << 8);
-	txlen |=  cdb[8];
-
-	trace_seq_printf(p, "lba=%llu txlen=%llu protect=%u",
-			 (unsigned long long)lba, (unsigned long long)txlen,
-=======
 	const char *ret = trace_seq_buffer_ptr(p);
 	u32 lba, txlen;
 
@@ -96,7 +43,6 @@ scsi_trace_rw10(struct trace_seq *p, unsigned char *cdb, int len)
 	txlen = get_unaligned_be16(&cdb[7]);
 
 	trace_seq_printf(p, "lba=%u txlen=%u protect=%u", lba, txlen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 cdb[1] >> 5);
 
 	if (cdb[0] == WRITE_SAME)
@@ -110,22 +56,6 @@ scsi_trace_rw10(struct trace_seq *p, unsigned char *cdb, int len)
 static const char *
 scsi_trace_rw12(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len;
-	sector_t lba = 0, txlen = 0;
-
-	lba |= (cdb[2] << 24);
-	lba |= (cdb[3] << 16);
-	lba |= (cdb[4] << 8);
-	lba |=  cdb[5];
-	txlen |= (cdb[6] << 24);
-	txlen |= (cdb[7] << 16);
-	txlen |= (cdb[8] << 8);
-	txlen |=  cdb[9];
-
-	trace_seq_printf(p, "lba=%llu txlen=%llu protect=%u",
-			 (unsigned long long)lba, (unsigned long long)txlen,
-=======
 	const char *ret = trace_seq_buffer_ptr(p);
 	u32 lba, txlen;
 
@@ -133,7 +63,6 @@ scsi_trace_rw12(struct trace_seq *p, unsigned char *cdb, int len)
 	txlen = get_unaligned_be32(&cdb[6]);
 
 	trace_seq_printf(p, "lba=%u txlen=%u protect=%u", lba, txlen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 cdb[1] >> 5);
 	trace_seq_putc(p, 0);
 
@@ -143,26 +72,6 @@ scsi_trace_rw12(struct trace_seq *p, unsigned char *cdb, int len)
 static const char *
 scsi_trace_rw16(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len;
-	sector_t lba = 0, txlen = 0;
-
-	lba |= ((u64)cdb[2] << 56);
-	lba |= ((u64)cdb[3] << 48);
-	lba |= ((u64)cdb[4] << 40);
-	lba |= ((u64)cdb[5] << 32);
-	lba |= (cdb[6] << 24);
-	lba |= (cdb[7] << 16);
-	lba |= (cdb[8] << 8);
-	lba |=  cdb[9];
-	txlen |= (cdb[10] << 24);
-	txlen |= (cdb[11] << 16);
-	txlen |= (cdb[12] << 8);
-	txlen |=  cdb[13];
-
-	trace_seq_printf(p, "lba=%llu txlen=%llu protect=%u",
-			 (unsigned long long)lba, (unsigned long long)txlen,
-=======
 	const char *ret = trace_seq_buffer_ptr(p);
 	u64 lba;
 	u32 txlen;
@@ -171,7 +80,6 @@ scsi_trace_rw16(struct trace_seq *p, unsigned char *cdb, int len)
 	txlen = get_unaligned_be32(&cdb[10]);
 
 	trace_seq_printf(p, "lba=%llu txlen=%u protect=%u", lba, txlen,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 cdb[1] >> 5);
 
 	if (cdb[0] == WRITE_SAME_16)
@@ -185,15 +93,9 @@ scsi_trace_rw16(struct trace_seq *p, unsigned char *cdb, int len)
 static const char *
 scsi_trace_rw32(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len, *cmd;
-	sector_t lba = 0, txlen = 0;
-	u32 ei_lbrt = 0;
-=======
 	const char *ret = trace_seq_buffer_ptr(p), *cmd;
 	u64 lba;
 	u32 ei_lbrt, txlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (SERVICE_ACTION32(cdb)) {
 	case READ_32:
@@ -209,32 +111,6 @@ scsi_trace_rw32(struct trace_seq *p, unsigned char *cdb, int len)
 		cmd = "WRITE_SAME";
 		break;
 	default:
-<<<<<<< HEAD
-		trace_seq_printf(p, "UNKNOWN");
-		goto out;
-	}
-
-	lba |= ((u64)cdb[12] << 56);
-	lba |= ((u64)cdb[13] << 48);
-	lba |= ((u64)cdb[14] << 40);
-	lba |= ((u64)cdb[15] << 32);
-	lba |= (cdb[16] << 24);
-	lba |= (cdb[17] << 16);
-	lba |= (cdb[18] << 8);
-	lba |=  cdb[19];
-	ei_lbrt |= (cdb[20] << 24);
-	ei_lbrt |= (cdb[21] << 16);
-	ei_lbrt |= (cdb[22] << 8);
-	ei_lbrt |=  cdb[23];
-	txlen |= (cdb[28] << 24);
-	txlen |= (cdb[29] << 16);
-	txlen |= (cdb[30] << 8);
-	txlen |=  cdb[31];
-
-	trace_seq_printf(p, "%s_32 lba=%llu txlen=%llu protect=%u ei_lbrt=%u",
-			 cmd, (unsigned long long)lba,
-			 (unsigned long long)txlen, cdb[10] >> 5, ei_lbrt);
-=======
 		trace_seq_puts(p, "UNKNOWN");
 		goto out;
 	}
@@ -245,7 +121,6 @@ scsi_trace_rw32(struct trace_seq *p, unsigned char *cdb, int len)
 
 	trace_seq_printf(p, "%s_32 lba=%llu txlen=%u protect=%u ei_lbrt=%u",
 			 cmd, lba, txlen, cdb[10] >> 5, ei_lbrt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (SERVICE_ACTION32(cdb) == WRITE_SAME_32)
 		trace_seq_printf(p, " unmap=%u", cdb[10] >> 3 & 1);
@@ -259,13 +134,8 @@ out:
 static const char *
 scsi_trace_unmap(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len;
-	unsigned int regions = cdb[7] << 8 | cdb[8];
-=======
 	const char *ret = trace_seq_buffer_ptr(p);
 	unsigned int regions = get_unaligned_be16(&cdb[7]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_seq_printf(p, "regions=%u", (regions - 8) / 16);
 	trace_seq_putc(p, 0);
@@ -276,15 +146,9 @@ scsi_trace_unmap(struct trace_seq *p, unsigned char *cdb, int len)
 static const char *
 scsi_trace_service_action_in(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len, *cmd;
-	sector_t lba = 0;
-	u32 alloc_len = 0;
-=======
 	const char *ret = trace_seq_buffer_ptr(p), *cmd;
 	u64 lba;
 	u32 alloc_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (SERVICE_ACTION16(cdb)) {
 	case SAI_READ_CAPACITY_16:
@@ -294,27 +158,6 @@ scsi_trace_service_action_in(struct trace_seq *p, unsigned char *cdb, int len)
 		cmd = "GET_LBA_STATUS";
 		break;
 	default:
-<<<<<<< HEAD
-		trace_seq_printf(p, "UNKNOWN");
-		goto out;
-	}
-
-	lba |= ((u64)cdb[2] << 56);
-	lba |= ((u64)cdb[3] << 48);
-	lba |= ((u64)cdb[4] << 40);
-	lba |= ((u64)cdb[5] << 32);
-	lba |= (cdb[6] << 24);
-	lba |= (cdb[7] << 16);
-	lba |= (cdb[8] << 8);
-	lba |=  cdb[9];
-	alloc_len |= (cdb[10] << 24);
-	alloc_len |= (cdb[11] << 16);
-	alloc_len |= (cdb[12] << 8);
-	alloc_len |=  cdb[13];
-
-	trace_seq_printf(p, "%s lba=%llu alloc_len=%u", cmd,
-			 (unsigned long long)lba, alloc_len);
-=======
 		trace_seq_puts(p, "UNKNOWN");
 		goto out;
 	}
@@ -475,7 +318,6 @@ scsi_trace_zbc_out(struct trace_seq *p, unsigned char *cdb, int len)
 
 	trace_seq_printf(p, "%s zone=%llu all=%u", cmd,
 			 (unsigned long long)zone_id, cdb[14] & 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	trace_seq_putc(p, 0);
@@ -500,15 +342,9 @@ scsi_trace_varlen(struct trace_seq *p, unsigned char *cdb, int len)
 static const char *
 scsi_trace_misc(struct trace_seq *p, unsigned char *cdb, int len)
 {
-<<<<<<< HEAD
-	const char *ret = p->buffer + p->len;
-
-	trace_seq_printf(p, "-");
-=======
 	const char *ret = trace_seq_buffer_ptr(p);
 
 	trace_seq_putc(p, '-');
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_seq_putc(p, 0);
 
 	return ret;
@@ -537,12 +373,6 @@ scsi_trace_parse_cdb(struct trace_seq *p, unsigned char *cdb, int len)
 		return scsi_trace_rw16(p, cdb, len);
 	case UNMAP:
 		return scsi_trace_unmap(p, cdb, len);
-<<<<<<< HEAD
-	case SERVICE_ACTION_IN:
-		return scsi_trace_service_action_in(p, cdb, len);
-	case VARIABLE_LENGTH_CMD:
-		return scsi_trace_varlen(p, cdb, len);
-=======
 	case SERVICE_ACTION_IN_16:
 		return scsi_trace_service_action_in(p, cdb, len);
 	case VARIABLE_LENGTH_CMD:
@@ -555,7 +385,6 @@ scsi_trace_parse_cdb(struct trace_seq *p, unsigned char *cdb, int len)
 		return scsi_trace_zbc_in(p, cdb, len);
 	case ZBC_OUT:
 		return scsi_trace_zbc_out(p, cdb, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return scsi_trace_misc(p, cdb, len);
 	}

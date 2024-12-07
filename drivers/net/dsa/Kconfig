@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-menu "Distributed Switch Architecture drivers"
-	depends on NET_DSA
-
-config NET_DSA_MV88E6XXX
-	tristate
-	default n
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menu "Distributed Switch Architecture drivers"
 	depends on NET_DSA
@@ -75,38 +67,10 @@ config NET_DSA_MT7530_MMIO
 	  The switch is a similar design as MT7531, but the switch registers
 	  are directly mapped into the SoCs register space rather than being
 	  accessible via MDIO.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config NET_DSA_MV88E6060
 	tristate "Marvell 88E6060 ethernet switch chip support"
 	select NET_DSA_TAG_TRAILER
-<<<<<<< HEAD
-	---help---
-	  This enables support for the Marvell 88E6060 ethernet switch
-	  chip.
-
-config NET_DSA_MV88E6XXX_NEED_PPU
-	bool
-	default n
-
-config NET_DSA_MV88E6131
-	tristate "Marvell 88E6085/6095/6095F/6131 ethernet switch chip support"
-	select NET_DSA_MV88E6XXX
-	select NET_DSA_MV88E6XXX_NEED_PPU
-	select NET_DSA_TAG_DSA
-	---help---
-	  This enables support for the Marvell 88E6085/6095/6095F/6131
-	  ethernet switch chips.
-
-config NET_DSA_MV88E6123_61_65
-	tristate "Marvell 88E6123/6161/6165 ethernet switch chip support"
-	select NET_DSA_MV88E6XXX
-	select NET_DSA_TAG_EDSA
-	---help---
-	  This enables support for the Marvell 88E6123/6161/6165
-	  ethernet switch chips.
-
-=======
 	help
 	  This enables support for the Marvell 88E6060 ethernet switch
 	  chip.
@@ -186,5 +150,4 @@ config NET_DSA_VITESSE_VSC73XX_PLATFORM
 	  This enables support for the Vitesse VSC7385, VSC7388, VSC7395
 	  and VSC7398 SparX integrated ethernet switches, connected over
 	  a CPU-attached address bus and work in memory-mapped I/O mode.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu

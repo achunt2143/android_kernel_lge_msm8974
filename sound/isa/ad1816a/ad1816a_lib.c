@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     ad1816a.c - lowlevel code for Analog Devices AD1816A chip.
     Copyright (C) 1999-2000 by Massimo Piccioni <dafastidio@libero.it>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/delay.h>
@@ -29,18 +10,11 @@
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/ioport.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/tlv.h>
 #include <sound/ad1816a.h>
 
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 
 static inline int snd_ad1816a_busy_wait(struct snd_ad1816a *chip)
@@ -99,12 +73,8 @@ static void snd_ad1816a_write_mask(struct snd_ad1816a *chip, unsigned char reg,
 
 
 static unsigned char snd_ad1816a_get_format(struct snd_ad1816a *chip,
-<<<<<<< HEAD
-					    unsigned int format, int channels)
-=======
 					    snd_pcm_format_t format,
 					    int channels)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char retval = AD1816A_FMT_LINEAR_8;
 
@@ -185,12 +155,8 @@ static void snd_ad1816a_close(struct snd_ad1816a *chip, unsigned int mode)
 		snd_ad1816a_write_mask(chip, AD1816A_INTERRUPT_ENABLE,
 			AD1816A_TIMER_IRQ_ENABLE, 0x0000);
 	}
-<<<<<<< HEAD
-	if (!((chip->mode &= ~mode) & AD1816A_MODE_OPEN))
-=======
 	chip->mode &= ~mode;
 	if (!(chip->mode & AD1816A_MODE_OPEN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->mode = 0;
 
 	spin_unlock_irqrestore(&chip->lock, flags);
@@ -241,20 +207,6 @@ static int snd_ad1816a_capture_trigger(struct snd_pcm_substream *substream, int 
 				   SNDRV_PCM_STREAM_CAPTURE, cmd, 1);
 }
 
-<<<<<<< HEAD
-static int snd_ad1816a_hw_params(struct snd_pcm_substream *substream,
-				 struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
-}
-
-static int snd_ad1816a_hw_free(struct snd_pcm_substream *substream)
-{
-	return snd_pcm_lib_free_pages(substream);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_ad1816a_playback_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_ad1816a *chip = snd_pcm_substream_chip(substream);
@@ -366,11 +318,7 @@ static irqreturn_t snd_ad1816a_interrupt(int irq, void *dev_id)
 }
 
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_ad1816a_playback = {
-=======
 static const struct snd_pcm_hardware snd_ad1816a_playback = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
 	.formats =		(SNDRV_PCM_FMTBIT_MU_LAW | SNDRV_PCM_FMTBIT_A_LAW |
@@ -389,11 +337,7 @@ static const struct snd_pcm_hardware snd_ad1816a_playback = {
 	.fifo_size =		0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_ad1816a_capture = {
-=======
 static const struct snd_pcm_hardware snd_ad1816a_capture = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
 	.formats =		(SNDRV_PCM_FMTBIT_MU_LAW | SNDRV_PCM_FMTBIT_A_LAW |
@@ -466,11 +410,7 @@ static int snd_ad1816a_timer_stop(struct snd_timer *timer)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_timer_hardware snd_ad1816a_timer_table = {
-=======
 static const struct snd_timer_hardware snd_ad1816a_timer_table = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags =	SNDRV_TIMER_HW_AUTO,
 	.resolution =	10000,
 	.ticks =	65535,
@@ -487,12 +427,8 @@ static int snd_ad1816a_playback_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int error;
 
-<<<<<<< HEAD
-	if ((error = snd_ad1816a_open(chip, AD1816A_MODE_PLAYBACK)) < 0)
-=======
 	error = snd_ad1816a_open(chip, AD1816A_MODE_PLAYBACK);
 	if (error < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 	runtime->hw = snd_ad1816a_playback;
 	snd_pcm_limit_isa_dma_size(chip->dma1, &runtime->hw.buffer_bytes_max);
@@ -507,12 +443,8 @@ static int snd_ad1816a_capture_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int error;
 
-<<<<<<< HEAD
-	if ((error = snd_ad1816a_open(chip, AD1816A_MODE_CAPTURE)) < 0)
-=======
 	error = snd_ad1816a_open(chip, AD1816A_MODE_CAPTURE);
 	if (error < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 	runtime->hw = snd_ad1816a_capture;
 	snd_pcm_limit_isa_dma_size(chip->dma2, &runtime->hw.buffer_bytes_max);
@@ -540,11 +472,7 @@ static int snd_ad1816a_capture_close(struct snd_pcm_substream *substream)
 }
 
 
-<<<<<<< HEAD
-static void __devinit snd_ad1816a_init(struct snd_ad1816a *chip)
-=======
 static void snd_ad1816a_init(struct snd_ad1816a *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -564,9 +492,6 @@ static void snd_ad1816a_init(struct snd_ad1816a *chip)
 	spin_unlock_irqrestore(&chip->lock, flags);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_ad1816a_probe(struct snd_ad1816a *chip)
-=======
 #ifdef CONFIG_PM
 void snd_ad1816a_suspend(struct snd_ad1816a *chip)
 {
@@ -593,7 +518,6 @@ void snd_ad1816a_resume(struct snd_ad1816a *chip)
 #endif
 
 static int snd_ad1816a_probe(struct snd_ad1816a *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -617,34 +541,7 @@ static int snd_ad1816a_probe(struct snd_ad1816a *chip)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_ad1816a_free(struct snd_ad1816a *chip)
-{
-	release_and_free_resource(chip->res_port);
-	if (chip->irq >= 0)
-		free_irq(chip->irq, (void *) chip);
-	if (chip->dma1 >= 0) {
-		snd_dma_disable(chip->dma1);
-		free_dma(chip->dma1);
-	}
-	if (chip->dma2 >= 0) {
-		snd_dma_disable(chip->dma2);
-		free_dma(chip->dma2);
-	}
-	kfree(chip);
-	return 0;
-}
-
-static int snd_ad1816a_dev_free(struct snd_device *device)
-{
-	struct snd_ad1816a *chip = device->device_data;
-	return snd_ad1816a_free(chip);
-}
-
-static const char __devinit *snd_ad1816a_chip_id(struct snd_ad1816a *chip)
-=======
 static const char *snd_ad1816a_chip_id(struct snd_ad1816a *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (chip->hardware) {
 	case AD1816A_HW_AD1816A: return "AD1816A";
@@ -657,56 +554,16 @@ static const char *snd_ad1816a_chip_id(struct snd_ad1816a *chip)
 	}
 }
 
-<<<<<<< HEAD
-int __devinit snd_ad1816a_create(struct snd_card *card,
-				 unsigned long port, int irq, int dma1, int dma2,
-				 struct snd_ad1816a **rchip)
-{
-        static struct snd_device_ops ops = {
-		.dev_free =	snd_ad1816a_dev_free,
-	};
-	int error;
-	struct snd_ad1816a *chip;
-
-	*rchip = NULL;
-
-	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
-	if (chip == NULL)
-		return -ENOMEM;
-=======
 int snd_ad1816a_create(struct snd_card *card,
 		       unsigned long port, int irq, int dma1, int dma2,
 		       struct snd_ad1816a *chip)
 {
 	int error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->irq = -1;
 	chip->dma1 = -1;
 	chip->dma2 = -1;
 
-<<<<<<< HEAD
-	if ((chip->res_port = request_region(port, 16, "AD1816A")) == NULL) {
-		snd_printk(KERN_ERR "ad1816a: can't grab port 0x%lx\n", port);
-		snd_ad1816a_free(chip);
-		return -EBUSY;
-	}
-	if (request_irq(irq, snd_ad1816a_interrupt, 0, "AD1816A", (void *) chip)) {
-		snd_printk(KERN_ERR "ad1816a: can't grab IRQ %d\n", irq);
-		snd_ad1816a_free(chip);
-		return -EBUSY;
-	}
-	chip->irq = irq;
-	if (request_dma(dma1, "AD1816A - 1")) {
-		snd_printk(KERN_ERR "ad1816a: can't grab DMA1 %d\n", dma1);
-		snd_ad1816a_free(chip);
-		return -EBUSY;
-	}
-	chip->dma1 = dma1;
-	if (request_dma(dma2, "AD1816A - 2")) {
-		snd_printk(KERN_ERR "ad1816a: can't grab DMA2 %d\n", dma2);
-		snd_ad1816a_free(chip);
-=======
 	chip->res_port = devm_request_region(card->dev, port, 16, "AD1816A");
 	if (!chip->res_port) {
 		snd_printk(KERN_ERR "ad1816a: can't grab port 0x%lx\n", port);
@@ -726,7 +583,6 @@ int snd_ad1816a_create(struct snd_card *card,
 	chip->dma1 = dma1;
 	if (snd_devm_request_dma(card->dev, dma2, "AD1816A - 2")) {
 		snd_printk(KERN_ERR "ad1816a: can't grab DMA2 %d\n", dma2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 	chip->dma2 = dma2;
@@ -735,31 +591,6 @@ int snd_ad1816a_create(struct snd_card *card,
 	chip->port = port;
 	spin_lock_init(&chip->lock);
 
-<<<<<<< HEAD
-	if ((error = snd_ad1816a_probe(chip))) {
-		snd_ad1816a_free(chip);
-		return error;
-	}
-
-	snd_ad1816a_init(chip);
-
-	/* Register device */
-	if ((error = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0) {
-		snd_ad1816a_free(chip);
-		return error;
-	}
-
-	*rchip = chip;
-	return 0;
-}
-
-static struct snd_pcm_ops snd_ad1816a_playback_ops = {
-	.open =		snd_ad1816a_playback_open,
-	.close =	snd_ad1816a_playback_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_ad1816a_hw_params,
-	.hw_free =	snd_ad1816a_hw_free,
-=======
 	error = snd_ad1816a_probe(chip);
 	if (error)
 		return error;
@@ -772,44 +603,26 @@ static struct snd_pcm_ops snd_ad1816a_playback_ops = {
 static const struct snd_pcm_ops snd_ad1816a_playback_ops = {
 	.open =		snd_ad1816a_playback_open,
 	.close =	snd_ad1816a_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ad1816a_playback_prepare,
 	.trigger =	snd_ad1816a_playback_trigger,
 	.pointer =	snd_ad1816a_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_ad1816a_capture_ops = {
-	.open =		snd_ad1816a_capture_open,
-	.close =	snd_ad1816a_capture_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_ad1816a_hw_params,
-	.hw_free =	snd_ad1816a_hw_free,
-=======
 static const struct snd_pcm_ops snd_ad1816a_capture_ops = {
 	.open =		snd_ad1816a_capture_open,
 	.close =	snd_ad1816a_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ad1816a_capture_prepare,
 	.trigger =	snd_ad1816a_capture_trigger,
 	.pointer =	snd_ad1816a_capture_pointer,
 };
 
-<<<<<<< HEAD
-int __devinit snd_ad1816a_pcm(struct snd_ad1816a *chip, int device, struct snd_pcm **rpcm)
-=======
 int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	struct snd_pcm *pcm;
 
-<<<<<<< HEAD
-	if ((error = snd_pcm_new(chip->card, "AD1816A", device, 1, 1, &pcm)))
-=======
 	error = snd_pcm_new(chip->card, "AD1816A", device, 1, 1, &pcm);
 	if (error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_ad1816a_playback_ops);
@@ -821,19 +634,6 @@ int snd_ad1816a_pcm(struct snd_ad1816a *chip, int device)
 	strcpy(pcm->name, snd_ad1816a_chip_id(chip));
 	snd_ad1816a_init(chip);
 
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_isa_data(),
-					      64*1024, chip->dma1 > 3 || chip->dma2 > 3 ? 128*1024 : 64*1024);
-
-	chip->pcm = pcm;
-	if (rpcm)
-		*rpcm = pcm;
-	return 0;
-}
-
-int __devinit snd_ad1816a_timer(struct snd_ad1816a *chip, int device, struct snd_timer **rtimer)
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, chip->card->dev,
 				       64*1024, chip->dma1 > 3 || chip->dma2 > 3 ? 128*1024 : 64*1024);
 
@@ -842,7 +642,6 @@ int __devinit snd_ad1816a_timer(struct snd_ad1816a *chip, int device, struct snd
 }
 
 int snd_ad1816a_timer(struct snd_ad1816a *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_timer *timer;
 	struct snd_timer_id tid;
@@ -853,22 +652,13 @@ int snd_ad1816a_timer(struct snd_ad1816a *chip, int device)
 	tid.card = chip->card->number;
 	tid.device = device;
 	tid.subdevice = 0;
-<<<<<<< HEAD
-	if ((error = snd_timer_new(chip->card, "AD1816A", &tid, &timer)) < 0)
-=======
 	error = snd_timer_new(chip->card, "AD1816A", &tid, &timer);
 	if (error < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 	strcpy(timer->name, snd_ad1816a_chip_id(chip));
 	timer->private_data = chip;
 	chip->timer = timer;
 	timer->hw = snd_ad1816a_timer_table;
-<<<<<<< HEAD
-	if (rtimer)
-		*rtimer = timer;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -878,26 +668,12 @@ int snd_ad1816a_timer(struct snd_ad1816a *chip, int device)
 
 static int snd_ad1816a_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[8] = {
-=======
 	static const char * const texts[8] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Line", "Mix", "CD", "Synth", "Video",
 		"Mic", "Phone",
 	};
 
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 2;
-	uinfo->value.enumerated.items = 7;
-	if (uinfo->value.enumerated.item > 6)
-		uinfo->value.enumerated.item = 6;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	return snd_ctl_enum_info(uinfo, 2, 7, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ad1816a_get_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1079,11 +855,7 @@ static const DECLARE_TLV_DB_SCALE(db_scale_6bit, -9450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_5bit_12db_max, -3450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_rec_gain, 0, 150, 0);
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ad1816a_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_ad1816a_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 AD1816A_DOUBLE("Master Playback Switch", AD1816A_MASTER_ATT, 15, 7, 1, 1),
 AD1816A_DOUBLE_TLV("Master Playback Volume", AD1816A_MASTER_ATT, 8, 0, 31, 1,
 		   db_scale_5bit),
@@ -1129,11 +901,7 @@ AD1816A_SINGLE("3D Control - Switch", AD1816A_3D_PHAT_CTRL, 15, 1, 1),
 AD1816A_SINGLE("3D Control - Level", AD1816A_3D_PHAT_CTRL, 0, 15, 0),
 };
                                         
-<<<<<<< HEAD
-int __devinit snd_ad1816a_mixer(struct snd_ad1816a *chip)
-=======
 int snd_ad1816a_mixer(struct snd_ad1816a *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	unsigned int idx;
@@ -1147,12 +915,8 @@ int snd_ad1816a_mixer(struct snd_ad1816a *chip)
 	strcpy(card->mixername, snd_ad1816a_chip_id(chip));
 
 	for (idx = 0; idx < ARRAY_SIZE(snd_ad1816a_controls); idx++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_ad1816a_controls[idx], chip))) < 0)
-=======
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_ad1816a_controls[idx], chip));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	return 0;

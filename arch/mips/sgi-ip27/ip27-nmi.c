@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mmzone.h>
 #include <linux/nodemask.h>
@@ -12,13 +9,9 @@
 #include <asm/sn/addrs.h>
 #include <asm/sn/nmi.h>
 #include <asm/sn/arch.h>
-<<<<<<< HEAD
-#include <asm/sn/sn0/hub.h>
-=======
 #include <asm/sn/agent.h>
 
 #include "ip27-common.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 #define NODE_NUM_CPUS(n)	CNODE_NUM_CPUS(n)
@@ -26,30 +19,13 @@
 #define NODE_NUM_CPUS(n)	CPUS_PER_NODE
 #endif
 
-<<<<<<< HEAD
-#define CNODEID_NONE (cnodeid_t)-1
-=======
 #define SEND_NMI(_nasid, _slice)	\
 	REMOTE_HUB_S((_nasid),  (PI_NMI_A + ((_slice) * PI_NMI_OFFSET)), 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef unsigned long machreg_t;
 
 static arch_spinlock_t nmi_lock = __ARCH_SPIN_LOCK_UNLOCKED;
-<<<<<<< HEAD
-
-/*
- * Lets see what else we need to do here. Set up sp, gp?
- */
-void nmi_dump(void)
-{
-	void cont_nmi_dump(void);
-
-	cont_nmi_dump();
-}
-=======
 static void nmi_dump(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void install_cpu_nmi_handler(int slice)
 {
@@ -70,46 +46,23 @@ void install_cpu_nmi_handler(int slice)
  * into the eframe format for the node under consideration.
  */
 
-<<<<<<< HEAD
-void nmi_cpu_eframe_save(nasid_t nasid, int slice)
-{
-	struct reg_struct *nr;
-	int 		i;
-=======
 static void nmi_cpu_eframe_save(nasid_t nasid, int slice)
 {
 	struct reg_struct *nr;
 	int		i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the pointer to the current cpu's register set. */
 	nr = (struct reg_struct *)
 		(TO_UNCAC(TO_NODE(nasid, IP27_NMI_KREGS_OFFSET)) +
 		slice * IP27_NMI_KREGS_CPU_SIZE);
 
-<<<<<<< HEAD
-	printk("NMI nasid %d: slice %d\n", nasid, slice);
-=======
 	pr_emerg("NMI nasid %d: slice %d\n", nasid, slice);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Saved main processor registers
 	 */
 	for (i = 0; i < 32; ) {
 		if ((i % 4) == 0)
-<<<<<<< HEAD
-			printk("$%2d   :", i);
-		printk(" %016lx", nr->gpr[i]);
-
-		i++;
-		if ((i % 4) == 0)
-			printk("\n");
-	}
-
-	printk("Hi    : (value lost)\n");
-	printk("Lo    : (value lost)\n");
-=======
 			pr_emerg("$%2d   :", i);
 		pr_cont(" %016lx", nr->gpr[i]);
 
@@ -120,38 +73,10 @@ static void nmi_cpu_eframe_save(nasid_t nasid, int slice)
 
 	pr_emerg("Hi    : (value lost)\n");
 	pr_emerg("Lo    : (value lost)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Saved cp0 registers
 	 */
-<<<<<<< HEAD
-	printk("epc   : %016lx %pS\n", nr->epc, (void *) nr->epc);
-	printk("%s\n", print_tainted());
-	printk("ErrEPC: %016lx %pS\n", nr->error_epc, (void *) nr->error_epc);
-	printk("ra    : %016lx %pS\n", nr->gpr[31], (void *) nr->gpr[31]);
-	printk("Status: %08lx         ", nr->sr);
-
-	if (nr->sr & ST0_KX)
-		printk("KX ");
-	if (nr->sr & ST0_SX)
-		printk("SX 	");
-	if (nr->sr & ST0_UX)
-		printk("UX ");
-
-	switch (nr->sr & ST0_KSU) {
-	case KSU_USER:
-		printk("USER ");
-		break;
-	case KSU_SUPERVISOR:
-		printk("SUPERVISOR ");
-		break;
-	case KSU_KERNEL:
-		printk("KERNEL ");
-		break;
-	default:
-		printk("BAD_MODE ");
-=======
 	pr_emerg("epc   : %016lx %pS\n", nr->epc, (void *)nr->epc);
 	pr_emerg("%s\n", print_tainted());
 	pr_emerg("ErrEPC: %016lx %pS\n", nr->error_epc, (void *)nr->error_epc);
@@ -177,32 +102,10 @@ static void nmi_cpu_eframe_save(nasid_t nasid, int slice)
 		break;
 	default:
 		pr_cont("BAD_MODE ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	if (nr->sr & ST0_ERL)
-<<<<<<< HEAD
-		printk("ERL ");
-	if (nr->sr & ST0_EXL)
-		printk("EXL ");
-	if (nr->sr & ST0_IE)
-		printk("IE ");
-	printk("\n");
-
-	printk("Cause : %08lx\n", nr->cause);
-	printk("PrId  : %08x\n", read_c0_prid());
-	printk("BadVA : %016lx\n", nr->badva);
-	printk("CErr  : %016lx\n", nr->cache_err);
-	printk("NMI_SR: %016lx\n", nr->nmi_sr);
-
-	printk("\n");
-}
-
-void nmi_dump_hub_irq(nasid_t nasid, int slice)
-{
-	hubreg_t mask0, mask1, pend0, pend1;
-=======
 		pr_cont("ERL ");
 	if (nr->sr & ST0_EXL)
 		pr_cont("EXL ");
@@ -222,7 +125,6 @@ void nmi_dump_hub_irq(nasid_t nasid, int slice)
 static void nmi_dump_hub_irq(nasid_t nasid, int slice)
 {
 	u64 mask0, mask1, pend0, pend1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (slice == 0) {				/* Slice A */
 		mask0 = REMOTE_HUB_L(nasid, PI_INT_MASK0_A);
@@ -235,38 +137,19 @@ static void nmi_dump_hub_irq(nasid_t nasid, int slice)
 	pend0 = REMOTE_HUB_L(nasid, PI_INT_PEND0);
 	pend1 = REMOTE_HUB_L(nasid, PI_INT_PEND1);
 
-<<<<<<< HEAD
-	printk("PI_INT_MASK0: %16Lx PI_INT_MASK1: %16Lx\n", mask0, mask1);
-	printk("PI_INT_PEND0: %16Lx PI_INT_PEND1: %16Lx\n", pend0, pend1);
-	printk("\n\n");
-=======
 	pr_emerg("PI_INT_MASK0: %16llx PI_INT_MASK1: %16llx\n", mask0, mask1);
 	pr_emerg("PI_INT_PEND0: %16llx PI_INT_PEND1: %16llx\n", pend0, pend1);
 	pr_emerg("\n\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Copy the cpu registers which have been saved in the IP27prom format
  * into the eframe format for the node under consideration.
  */
-<<<<<<< HEAD
-void nmi_node_eframe_save(cnodeid_t  cnode)
-{
-	nasid_t nasid;
-	int slice;
-
-	/* Make sure that we have a valid node */
-	if (cnode == CNODEID_NONE)
-		return;
-
-	nasid = COMPACT_TO_NASID_NODEID(cnode);
-=======
 static void nmi_node_eframe_save(nasid_t nasid)
 {
 	int slice;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nasid == INVALID_NASID)
 		return;
 
@@ -280,19 +163,6 @@ static void nmi_node_eframe_save(nasid_t nasid)
 /*
  * Save the nmi cpu registers for all cpus in the system.
  */
-<<<<<<< HEAD
-void
-nmi_eframes_save(void)
-{
-	cnodeid_t	cnode;
-
-	for_each_online_node(cnode)
-		nmi_node_eframe_save(cnode);
-}
-
-void
-cont_nmi_dump(void)
-=======
 static void nmi_eframes_save(void)
 {
 	nasid_t nasid;
@@ -302,7 +172,6 @@ static void nmi_eframes_save(void)
 }
 
 static void nmi_dump(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifndef REAL_NMI_SIGNAL
 	static atomic_t nmied_cpus = ATOMIC_INIT(0);

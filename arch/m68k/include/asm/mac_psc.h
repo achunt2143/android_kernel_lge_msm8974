@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Peripheral System Controller (PSC)
  *
@@ -213,10 +210,6 @@
 #ifndef __ASSEMBLY__
 
 extern volatile __u8 *psc;
-<<<<<<< HEAD
-extern int psc_present;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void psc_register_interrupts(void);
 extern void psc_irq_enable(int);

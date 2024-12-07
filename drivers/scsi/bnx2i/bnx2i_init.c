@@ -1,29 +1,17 @@
-<<<<<<< HEAD
-/* bnx2i.c: Broadcom NetXtreme II iSCSI driver.
- *
- * Copyright (c) 2006 - 2011 Broadcom Corporation
- * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
- * Copyright (c) 2007, 2008 Mike Christie
-=======
 /* bnx2i.c: QLogic NetXtreme II iSCSI driver.
  *
  * Copyright (c) 2006 - 2013 Broadcom Corporation
  * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
  * Copyright (c) 2007, 2008 Mike Christie
  * Copyright (c) 2014, QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
  * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
-<<<<<<< HEAD
- * Maintained by: Eddie Wai (eddie.wai@broadcom.com)
-=======
  * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
  * Maintained by: QLogic-Storage-Upstream@qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bnx2i.h"
@@ -32,30 +20,18 @@ static struct list_head adapter_list = LIST_HEAD_INIT(adapter_list);
 static u32 adapter_count;
 
 #define DRV_MODULE_NAME		"bnx2i"
-<<<<<<< HEAD
-#define DRV_MODULE_VERSION	"2.7.0.3"
-#define DRV_MODULE_RELDATE	"Jun 15, 2011"
-
-static char version[] __devinitdata =
-		"Broadcom NetXtreme II iSCSI Driver " DRV_MODULE_NAME \
-=======
 #define DRV_MODULE_VERSION	"2.7.10.1"
 #define DRV_MODULE_RELDATE	"Jul 16, 2014"
 
 static char version[] =
 		"QLogic NetXtreme II iSCSI Driver " DRV_MODULE_NAME \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		" v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 
 
 MODULE_AUTHOR("Anil Veerabhadrappa <anilgv@broadcom.com> and "
 	      "Eddie Wai <eddie.wai@broadcom.com>");
 
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Broadcom NetXtreme II BCM5706/5708/5709/57710/57711/57712"
-=======
 MODULE_DESCRIPTION("QLogic NetXtreme II BCM5706/5708/5709/57710/57711/57712"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   "/57800/57810/57840 iSCSI Driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
@@ -94,62 +70,15 @@ u64 iscsi_error_mask = 0x00;
 
 DEFINE_PER_CPU(struct bnx2i_percpu_s, bnx2i_percpu);
 
-<<<<<<< HEAD
-static int bnx2i_cpu_callback(struct notifier_block *nfb,
-			      unsigned long action, void *hcpu);
-/* notification function for CPU hotplug events */
-static struct notifier_block bnx2i_cpu_notifier = {
-	.notifier_call = bnx2i_cpu_callback,
-};
-
-
-/**
- * bnx2i_identify_device - identifies NetXtreme II device type
- * @hba: 		Adapter structure pointer
-=======
 /**
  * bnx2i_identify_device - identifies NetXtreme II device type
  * @hba: 		Adapter structure pointer
  * @dev:		Corresponding cnic device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function identifies the NX2 device type and sets appropriate
  *	queue mailbox register access method, 5709 requires driver to
  *	access MBOX regs using *bin* mode
  */
-<<<<<<< HEAD
-void bnx2i_identify_device(struct bnx2i_hba *hba)
-{
-	hba->cnic_dev_type = 0;
-	if ((hba->pci_did == PCI_DEVICE_ID_NX2_5706) ||
-	    (hba->pci_did == PCI_DEVICE_ID_NX2_5706S))
-		set_bit(BNX2I_NX2_DEV_5706, &hba->cnic_dev_type);
-	else if ((hba->pci_did == PCI_DEVICE_ID_NX2_5708) ||
-	    (hba->pci_did == PCI_DEVICE_ID_NX2_5708S))
-		set_bit(BNX2I_NX2_DEV_5708, &hba->cnic_dev_type);
-	else if ((hba->pci_did == PCI_DEVICE_ID_NX2_5709) ||
-	    (hba->pci_did == PCI_DEVICE_ID_NX2_5709S)) {
-		set_bit(BNX2I_NX2_DEV_5709, &hba->cnic_dev_type);
-		hba->mail_queue_access = BNX2I_MQ_BIN_MODE;
-	} else if (hba->pci_did == PCI_DEVICE_ID_NX2_57710    ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57711    ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57711E   ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57712    ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57712E   ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57800    ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57800_MF ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57800_VF ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57810    ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57810_MF ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57810_VF ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57840    ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57840_MF ||
-		   hba->pci_did == PCI_DEVICE_ID_NX2_57840_VF)
-		set_bit(BNX2I_NX2_DEV_57710, &hba->cnic_dev_type);
-	else
-		printk(KERN_ALERT "bnx2i: unknown device, 0x%x\n",
-				  hba->pci_did);
-=======
 void bnx2i_identify_device(struct bnx2i_hba *hba, struct cnic_dev *dev)
 {
 	hba->cnic_dev_type = 0;
@@ -171,7 +100,6 @@ void bnx2i_identify_device(struct bnx2i_hba *hba, struct cnic_dev *dev)
 		printk(KERN_ALERT "bnx2i: unknown device, 0x%x\n",
 				  hba->pci_did);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -238,18 +166,6 @@ void bnx2i_start(void *handle)
 	struct bnx2i_hba *hba = handle;
 	int i = HZ;
 
-<<<<<<< HEAD
-	/*
-	 * We should never register devices that don't support iSCSI
-	 * (see bnx2i_init_one), so something is wrong if we try to
-	 * start a iSCSI adapter on hardware with 0 supported iSCSI
-	 * connections
-	 */
-	BUG_ON(!hba->cnic->max_iscsi_conn);
-
-	bnx2i_send_fw_iscsi_init_msg(hba);
-	while (!test_bit(ADAPTER_STATE_UP, &hba->adapter_state) && i--)
-=======
 	/* On some bnx2x devices, it is possible that iSCSI is no
 	 * longer supported after firmware is downloaded.  In that
 	 * case, the iscsi_init_msg will return failure.
@@ -258,7 +174,6 @@ void bnx2i_start(void *handle)
 	bnx2i_send_fw_iscsi_init_msg(hba);
 	while (!test_bit(ADAPTER_STATE_UP, &hba->adapter_state) &&
 	       !test_bit(ADAPTER_STATE_INIT_FAILED, &hba->adapter_state) && i--)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(BNX2I_INIT_POLL_TIME);
 }
 
@@ -449,14 +364,6 @@ void bnx2i_ulp_exit(struct cnic_dev *dev)
 
 
 /**
-<<<<<<< HEAD
- * bnx2i_percpu_thread_create - Create a receive thread for an
- *				online CPU
- *
- * @cpu:	cpu index for the online cpu
- */
-static void bnx2i_percpu_thread_create(unsigned int cpu)
-=======
  * bnx2i_get_stats - Retrieve various statistic from iSCSI offload
  * @handle:	bnx2i_hba
  *
@@ -502,7 +409,6 @@ int bnx2i_get_stats(void *handle)
  * @cpu:	cpu index for the online cpu
  */
 static int bnx2i_cpu_online(unsigned int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2i_percpu_s *p;
 	struct task_struct *thread;
@@ -512,18 +418,6 @@ static int bnx2i_cpu_online(unsigned int cpu)
 	thread = kthread_create_on_node(bnx2i_percpu_io_thread, (void *)p,
 					cpu_to_node(cpu),
 					"bnx2i_thread/%d", cpu);
-<<<<<<< HEAD
-	/* bind thread to the cpu */
-	if (likely(!IS_ERR(thread))) {
-		kthread_bind(thread, cpu);
-		p->iothread = thread;
-		wake_up_process(thread);
-	}
-}
-
-
-static void bnx2i_percpu_thread_destroy(unsigned int cpu)
-=======
 	if (IS_ERR(thread))
 		return PTR_ERR(thread);
 
@@ -535,7 +429,6 @@ static void bnx2i_percpu_thread_destroy(unsigned int cpu)
 }
 
 static int bnx2i_cpu_offline(unsigned int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2i_percpu_s *p;
 	struct task_struct *thread;
@@ -558,50 +451,10 @@ static int bnx2i_cpu_offline(unsigned int cpu)
 	spin_unlock_bh(&p->p_work_lock);
 	if (thread)
 		kthread_stop(thread);
-<<<<<<< HEAD
-}
-
-
-/**
- * bnx2i_cpu_callback - Handler for CPU hotplug events
- *
- * @nfb:	The callback data block
- * @action:	The event triggering the callback
- * @hcpu:	The index of the CPU that the event is for
- *
- * This creates or destroys per-CPU data for iSCSI
- *
- * Returns NOTIFY_OK always.
- */
-static int bnx2i_cpu_callback(struct notifier_block *nfb,
-			      unsigned long action, void *hcpu)
-{
-	unsigned cpu = (unsigned long)hcpu;
-
-	switch (action) {
-	case CPU_ONLINE:
-	case CPU_ONLINE_FROZEN:
-		printk(KERN_INFO "bnx2i: CPU %x online: Create Rx thread\n",
-			cpu);
-		bnx2i_percpu_thread_create(cpu);
-		break;
-	case CPU_DEAD:
-	case CPU_DEAD_FROZEN:
-		printk(KERN_INFO "CPU %x offline: Remove Rx thread\n", cpu);
-		bnx2i_percpu_thread_destroy(cpu);
-		break;
-	default:
-		break;
-	}
-	return NOTIFY_OK;
-}
-
-=======
 	return 0;
 }
 
 static enum cpuhp_state bnx2i_online_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * bnx2i_mod_init - module init entry point
@@ -621,11 +474,6 @@ static int __init bnx2i_mod_init(void)
 	if (sq_size && !is_power_of_2(sq_size))
 		sq_size = roundup_pow_of_two(sq_size);
 
-<<<<<<< HEAD
-	mutex_init(&bnx2i_dev_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnx2i_scsi_xport_template =
 			iscsi_register_transport(&bnx2i_iscsi_transport);
 	if (!bnx2i_scsi_xport_template) {
@@ -648,16 +496,6 @@ static int __init bnx2i_mod_init(void)
 		p->iothread = NULL;
 	}
 
-<<<<<<< HEAD
-	for_each_online_cpu(cpu)
-		bnx2i_percpu_thread_create(cpu);
-
-	/* Initialize per CPU interrupt thread */
-	register_hotcpu_notifier(&bnx2i_cpu_notifier);
-
-	return 0;
-
-=======
 	err = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "scsi/bnx2i:online",
 				bnx2i_cpu_online, bnx2i_cpu_offline);
 	if (err < 0)
@@ -667,7 +505,6 @@ static int __init bnx2i_mod_init(void)
 
 unreg_driver:
 	cnic_unregister_driver(CNIC_ULP_ISCSI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unreg_xport:
 	iscsi_unregister_transport(&bnx2i_iscsi_transport);
 out:
@@ -686,10 +523,6 @@ out:
 static void __exit bnx2i_mod_exit(void)
 {
 	struct bnx2i_hba *hba;
-<<<<<<< HEAD
-	unsigned cpu = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&bnx2i_dev_lock);
 	while (!list_empty(&adapter_list)) {
@@ -707,14 +540,7 @@ static void __exit bnx2i_mod_exit(void)
 	}
 	mutex_unlock(&bnx2i_dev_lock);
 
-<<<<<<< HEAD
-	unregister_hotcpu_notifier(&bnx2i_cpu_notifier);
-
-	for_each_online_cpu(cpu)
-		bnx2i_percpu_thread_destroy(cpu);
-=======
 	cpuhp_remove_state(bnx2i_online_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iscsi_unregister_transport(&bnx2i_iscsi_transport);
 	cnic_unregister_driver(CNIC_ULP_ISCSI);

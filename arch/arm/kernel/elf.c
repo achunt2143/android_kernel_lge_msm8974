@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/sched.h>
 #include <linux/personality.h>
 #include <linux/binfmts.h>
 #include <linux/elf.h>
-<<<<<<< HEAD
-=======
 #include <linux/elf-fdpic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/system_info.h>
 
 int elf_check_arch(const struct elf32_hdr *x)
@@ -84,15 +78,6 @@ void elf_set_personality(const struct elf32_hdr *x)
 EXPORT_SYMBOL(elf_set_personality);
 
 /*
-<<<<<<< HEAD
- * Set READ_IMPLIES_EXEC if:
- *  - the binary requires an executable stack
- *  - we're running on a CPU which doesn't support NX.
- */
-int arm_elf_read_implies_exec(const struct elf32_hdr *x, int executable_stack)
-{
-	if (executable_stack != EXSTACK_DISABLE_X)
-=======
  * An executable for which elf_read_implies_exec() returns TRUE will
  * have the READ_IMPLIES_EXEC personality flag set automatically.
  *
@@ -119,15 +104,12 @@ int arm_elf_read_implies_exec(const struct elf32_hdr *x, int executable_stack)
 int arm_elf_read_implies_exec(int executable_stack)
 {
 	if (executable_stack == EXSTACK_DEFAULT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	if (cpu_architecture() < CPU_ARCH_ARMv6)
 		return 1;
 	return 0;
 }
 EXPORT_SYMBOL(arm_elf_read_implies_exec);
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_MMU) && defined(CONFIG_BINFMT_ELF_FDPIC)
 
@@ -149,4 +131,3 @@ void elf_fdpic_arch_lay_out_mm(struct elf_fdpic_params *exec_params,
 }
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

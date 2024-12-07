@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2008-2009 Cisco Systems, Inc.  All rights reserved.
  * Copyright (c) 2007-2008 Intel Corporation.  All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -33,17 +14,11 @@
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-#include <linux/random.h>
-#include <scsi/fc/fc_fcoe.h>
-#include <scsi/libfc.h>
-=======
 #include <linux/local_lock.h>
 #include <linux/random.h>
 #include <scsi/fc/fc_fcoe.h>
 #include <scsi/libfc.h>
 #include <scsi/fcoe_sysfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FCOE_MAX_CMD_LEN	16	/* Supported CDB length */
 
@@ -57,11 +32,7 @@
  * FIP tunable parameters.
  */
 #define FCOE_CTLR_START_DELAY	2000	/* mS after first adv. to choose FCF */
-<<<<<<< HEAD
-#define FCOE_CTRL_SOL_TOV	2000	/* min. solicitation interval (mS) */
-=======
 #define FCOE_CTLR_SOL_TOV	2000	/* min. solicitation interval (mS) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FCOE_CTLR_FCF_LIMIT	20	/* max. number of FCF entries */
 #define FCOE_CTLR_VN2VN_LOGIN_LIMIT 3	/* max. VN2VN rport login retries */
 
@@ -96,19 +67,12 @@ enum fip_state {
  * The mode is the state that is to be entered after link up.
  * It must not change after fcoe_ctlr_init() sets it.
  */
-<<<<<<< HEAD
-#define FIP_MODE_AUTO		FIP_ST_AUTO
-#define FIP_MODE_NON_FIP	FIP_ST_NON_FIP
-#define FIP_MODE_FABRIC		FIP_ST_ENABLED
-#define FIP_MODE_VN2VN		FIP_ST_VNMP_START
-=======
 enum fip_mode {
 	FIP_MODE_AUTO,
 	FIP_MODE_NON_FIP,
 	FIP_MODE_FABRIC,
 	FIP_MODE_VN2VN,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct fcoe_ctlr - FCoE Controller and FIP state
@@ -117,10 +81,7 @@ enum fip_mode {
  * @lp:		   &fc_lport: libfc local port.
  * @sel_fcf:	   currently selected FCF, or NULL.
  * @fcfs:	   list of discovered FCFs.
-<<<<<<< HEAD
-=======
  * @cdev:          (Optional) pointer to sysfs fcoe_ctlr_device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fcf_count:	   number of discovered FCF entries.
  * @sol_time:	   time when a multicast solicitation was last sent.
  * @sel_time:	   time after which to select an FCF.
@@ -138,15 +99,10 @@ enum fip_mode {
  * @flogi_req_send: send of FLOGI requested
  * @flogi_count:   number of FLOGI attempts in AUTO mode.
  * @map_dest:	   use the FC_MAP mode for destination MAC addresses.
-<<<<<<< HEAD
- * @spma:	   supports SPMA server-provided MACs mode
- * @probe_tries:   number of FC_IDs probed
-=======
  * @fip_resp:	   start FIP VLAN discovery responder
  * @spma:	   supports SPMA server-provided MACs mode
  * @probe_tries:   number of FC_IDs probed
  * @priority:      DCBx FCoE APP priority
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dest_addr:	   MAC address of the selected FC forwarder.
  * @ctl_src_addr:  the native MAC address of our local port.
  * @send:	   LLD-supplied function to handle sending FIP Ethernet frames
@@ -161,18 +117,11 @@ enum fip_mode {
  */
 struct fcoe_ctlr {
 	enum fip_state state;
-<<<<<<< HEAD
-	enum fip_state mode;
-	struct fc_lport *lp;
-	struct fcoe_fcf *sel_fcf;
-	struct list_head fcfs;
-=======
 	enum fip_mode mode;
 	struct fc_lport *lp;
 	struct fcoe_fcf *sel_fcf;
 	struct list_head fcfs;
 	struct fcoe_ctlr_device *cdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 fcf_count;
 	unsigned long sol_time;
 	unsigned long sel_time;
@@ -191,12 +140,8 @@ struct fcoe_ctlr {
 	u16 flogi_oxid;
 	u8 flogi_req_send;
 	u8 flogi_count;
-<<<<<<< HEAD
-	u8 map_dest;
-=======
 	bool map_dest;
 	bool fip_resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 spma;
 	u8 probe_tries;
 	u8 priority;
@@ -211,10 +156,6 @@ struct fcoe_ctlr {
 };
 
 /**
-<<<<<<< HEAD
- * struct fcoe_fcf - Fibre-Channel Forwarder
- * @list:	 list linkage
-=======
  * fcoe_ctlr_priv() - Return the private data from a fcoe_ctlr
  * @cltr: The fcoe_ctlr whose private data will be returned
  */
@@ -236,7 +177,6 @@ static inline void *fcoe_ctlr_priv(const struct fcoe_ctlr *ctlr)
  * @event:       The event to be processed
  * @fip:         The controller that the FCF was discovered on
  * @fcf_dev:     The associated fcoe_fcf_device instance
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @time:	 system time (jiffies) when an advertisement was last received
  * @switch_name: WWN of switch from advertisement
  * @fabric_name: WWN of fabric from advertisement
@@ -258,12 +198,9 @@ static inline void *fcoe_ctlr_priv(const struct fcoe_ctlr *ctlr)
  */
 struct fcoe_fcf {
 	struct list_head list;
-<<<<<<< HEAD
-=======
 	struct work_struct event_work;
 	struct fcoe_ctlr *fip;
 	struct fcoe_fcf_device *fcf_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long time;
 
 	u64 switch_name;
@@ -280,12 +217,9 @@ struct fcoe_fcf {
 	u8 fd_flags:1;
 };
 
-<<<<<<< HEAD
-=======
 #define fcoe_fcf_to_fcf_dev(x)			\
 	((x)->fcf_dev)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct fcoe_rport - VN2VN remote port
  * @time:	time of create or last beacon packet received from node
@@ -296,10 +230,7 @@ struct fcoe_fcf {
  * @vn_mac:	VN_Node assigned MAC address for data
  */
 struct fcoe_rport {
-<<<<<<< HEAD
-=======
 	struct fc_rport_priv rdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long time;
 	u16 fcoe_len;
 	u16 flags;
@@ -309,11 +240,7 @@ struct fcoe_rport {
 };
 
 /* FIP API functions */
-<<<<<<< HEAD
-void fcoe_ctlr_init(struct fcoe_ctlr *, enum fip_state);
-=======
 void fcoe_ctlr_init(struct fcoe_ctlr *, enum fip_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fcoe_ctlr_destroy(struct fcoe_ctlr *);
 void fcoe_ctlr_link_up(struct fcoe_ctlr *);
 int fcoe_ctlr_link_down(struct fcoe_ctlr *);
@@ -323,12 +250,8 @@ int fcoe_ctlr_recv_flogi(struct fcoe_ctlr *, struct fc_lport *,
 			 struct fc_frame *);
 
 /* libfcoe funcs */
-<<<<<<< HEAD
-u64 fcoe_wwn_from_mac(unsigned char mac[], unsigned int, unsigned int);
-=======
 u64 fcoe_wwn_from_mac(unsigned char mac[ETH_ALEN], unsigned int scheme,
 		      unsigned int port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fcoe_libfc_config(struct fc_lport *, struct fcoe_ctlr *,
 		      const struct libfc_function_template *, int init_fcp);
 u32 fcoe_fc_crc(struct fc_frame *fp);
@@ -338,12 +261,9 @@ void __fcoe_get_lesb(struct fc_lport *lport, struct fc_els_lesb *fc_lesb,
 		     struct net_device *netdev);
 void fcoe_wwn_to_str(u64 wwn, char *buf, int len);
 int fcoe_validate_vport_create(struct fc_vport *vport);
-<<<<<<< HEAD
-=======
 int fcoe_link_speed_update(struct fc_lport *);
 void fcoe_get_lesb(struct fc_lport *, struct fc_els_lesb *);
 void fcoe_ctlr_get_lesb(struct fcoe_ctlr_device *ctlr_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * is_fip_mode() - returns true if FIP mode selected.
@@ -373,16 +293,11 @@ static inline bool is_fip_mode(struct fcoe_ctlr *fip)
  * @attached:	whether this transport is already attached
  * @list:	list linkage to all attached transports
  * @match:	handler to allow the transport driver to match up a given netdev
-<<<<<<< HEAD
- * @create:	handler to sysfs entry of create for FCoE instances
- * @destroy:	handler to sysfs entry of destroy for FCoE instances
-=======
  * @alloc:      handler to allocate per-instance FCoE structures
  *		(no discovery or login)
  * @create:	handler to sysfs entry of create for FCoE instances
  * @destroy:    handler to delete per-instance FCoE structures
  *		(frees all memory)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @enable:	handler to sysfs entry of enable for FCoE instances
  * @disable:	handler to sysfs entry of disable for FCoE instances
  */
@@ -391,12 +306,8 @@ struct fcoe_transport {
 	bool attached;
 	struct list_head list;
 	bool (*match) (struct net_device *device);
-<<<<<<< HEAD
-	int (*create) (struct net_device *device, enum fip_state fip_mode);
-=======
 	int (*alloc) (struct net_device *device);
 	int (*create) (struct net_device *device, enum fip_mode fip_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*destroy) (struct net_device *device);
 	int (*enable) (struct net_device *device);
 	int (*disable) (struct net_device *device);
@@ -404,31 +315,20 @@ struct fcoe_transport {
 
 /**
  * struct fcoe_percpu_s - The context for FCoE receive thread(s)
-<<<<<<< HEAD
- * @thread:	    The thread context
-=======
  * @kthread:	    The thread context (used by bnx2fc)
  * @work:	    The work item (used by fcoe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fcoe_rx_list:   The queue of pending packets to process
  * @page:	    The memory page for calculating frame trailer CRCs
  * @crc_eof_offset: The offset into the CRC page pointing to available
  *		    memory for a new trailer
  */
 struct fcoe_percpu_s {
-<<<<<<< HEAD
-	struct task_struct *thread;
-	struct sk_buff_head fcoe_rx_list;
-	struct page *crc_eof_page;
-	int crc_eof_offset;
-=======
 	struct task_struct *kthread;
 	struct work_struct work;
 	struct sk_buff_head fcoe_rx_list;
 	struct page *crc_eof_page;
 	int crc_eof_offset;
 	local_lock_t lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -438,10 +338,6 @@ struct fcoe_percpu_s {
  * @lport:		       The associated local port
  * @fcoe_pending_queue:	       The pending Rx queue of skbs
  * @fcoe_pending_queue_active: Indicates if the pending queue is active
-<<<<<<< HEAD
- * @priority:		       Packet priority (DCB)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @max_queue_depth:	       Max queue depth of pending queue
  * @min_queue_depth:	       Min queue depth of pending queue
  * @timer:		       The queue timer
@@ -457,24 +353,11 @@ struct fcoe_port {
 	struct fc_lport	      *lport;
 	struct sk_buff_head   fcoe_pending_queue;
 	u8		      fcoe_pending_queue_active;
-<<<<<<< HEAD
-	u8		      priority;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		      max_queue_depth;
 	u32		      min_queue_depth;
 	struct timer_list     timer;
 	struct work_struct    destroy_work;
 	u8		      data_src_addr[ETH_ALEN];
-<<<<<<< HEAD
-};
-void fcoe_clean_pending_queue(struct fc_lport *);
-void fcoe_check_wait_queue(struct fc_lport *lport, struct sk_buff *skb);
-void fcoe_queue_timer(ulong lport);
-int fcoe_get_paged_crc_eof(struct sk_buff *skb, int tlen,
-			   struct fcoe_percpu_s *fps);
-
-=======
 	struct net_device * (*get_netdev)(const struct fc_lport *lport);
 };
 
@@ -499,7 +382,6 @@ int fcoe_get_paged_crc_eof(struct sk_buff *skb, int tlen,
 void fcoe_fcf_get_selected(struct fcoe_fcf_device *);
 void fcoe_ctlr_set_fip_mode(struct fcoe_ctlr_device *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct netdev_list
  * A mapping from netdevice to fcoe_transport
@@ -514,9 +396,6 @@ struct fcoe_netdev_mapping {
 int fcoe_transport_attach(struct fcoe_transport *ft);
 int fcoe_transport_detach(struct fcoe_transport *ft);
 
-<<<<<<< HEAD
-#endif /* _LIBFCOE_H */
-=======
 /* sysfs store handler for ctrl_control interface */
 ssize_t fcoe_ctlr_create_store(const char *buf, size_t count);
 ssize_t fcoe_ctlr_destroy_store(const char *buf, size_t count);
@@ -524,4 +403,3 @@ ssize_t fcoe_ctlr_destroy_store(const char *buf, size_t count);
 #endif /* _LIBFCOE_H */
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

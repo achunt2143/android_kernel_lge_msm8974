@@ -1,42 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/power/wakeup.c - System wakeup events framework
  *
  * Copyright (c) 2010 Rafael J. Wysocki <rjw@sisk.pl>, Novell Inc.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2.
- */
-
-#include <linux/device.h>
-#include <linux/slab.h>
-#include <linux/sched.h>
-=======
  */
 #define pr_fmt(fmt) "PM: " fmt
 
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 #include <linux/export.h>
 #include <linux/suspend.h>
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
-<<<<<<< HEAD
-#include <trace/events/power.h>
-
-#include "power.h"
-/* #define POLL_DEBUG */
-#ifdef POLL_DEBUG
-#define POLL_PERIOD	(5 * HZ)
-struct delayed_work poll_work;
-#endif
-=======
 #include <linux/pm_wakeirq.h>
 #include <trace/events/power.h>
 
@@ -45,15 +22,12 @@ struct delayed_work poll_work;
 #define list_for_each_entry_rcu_locked(pos, head, member) \
 	list_for_each_entry_rcu(pos, head, member, \
 		srcu_read_lock_held(&wakeup_srcu))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If set, the suspend/hibernate code will abort transitions to a sleep state
  * if wakeup events are registered during or immediately before the transition.
  */
 bool events_check_enabled __read_mostly;
 
-<<<<<<< HEAD
-=======
 /* First wakeup IRQ seen by the kernel in the last cycle. */
 static unsigned int wakeup_irq[2] __read_mostly;
 static DEFINE_RAW_SPINLOCK(wakeup_irq_lock);
@@ -61,7 +35,6 @@ static DEFINE_RAW_SPINLOCK(wakeup_irq_lock);
 /* If greater than 0 and the system is suspending, terminate the suspend. */
 static atomic_t pm_abort_suspend __read_mostly;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Combined counters of registered wakeup events and wakeup events in progress.
  * They need to be modified together atomically, so it's better to use one
@@ -83,38 +56,14 @@ static void split_counters(unsigned int *cnt, unsigned int *inpr)
 /* A preserved old value of the events counter. */
 static unsigned int saved_count;
 
-<<<<<<< HEAD
-static DEFINE_SPINLOCK(events_lock);
-
-static void pm_wakeup_timer_fn(unsigned long data);
-=======
 static DEFINE_RAW_SPINLOCK(events_lock);
 
 static void pm_wakeup_timer_fn(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(wakeup_sources);
 
 static DECLARE_WAIT_QUEUE_HEAD(wakeup_count_wait_queue);
 
-<<<<<<< HEAD
-/**
- * wakeup_source_prepare - Prepare a new wakeup source for initialization.
- * @ws: Wakeup source to prepare.
- * @name: Pointer to the name of the new wakeup source.
- *
- * Callers must ensure that the @name string won't be freed when @ws is still in
- * use.
- */
-void wakeup_source_prepare(struct wakeup_source *ws, const char *name)
-{
-	if (ws) {
-		memset(ws, 0, sizeof(*ws));
-		ws->name = name;
-	}
-}
-EXPORT_SYMBOL_GPL(wakeup_source_prepare);
-=======
 DEFINE_STATIC_SRCU(wakeup_srcu);
 
 static struct wakeup_source deleted_ws = {
@@ -123,7 +72,6 @@ static struct wakeup_source deleted_ws = {
 };
 
 static DEFINE_IDA(wakeup_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * wakeup_source_create - Create a struct wakeup_source object.
@@ -132,34 +80,6 @@ static DEFINE_IDA(wakeup_ida);
 struct wakeup_source *wakeup_source_create(const char *name)
 {
 	struct wakeup_source *ws;
-<<<<<<< HEAD
-
-	ws = kmalloc(sizeof(*ws), GFP_KERNEL);
-	if (!ws)
-		return NULL;
-
-	wakeup_source_prepare(ws, name ? kstrdup(name, GFP_KERNEL) : NULL);
-	return ws;
-}
-EXPORT_SYMBOL_GPL(wakeup_source_create);
-
-/**
- * wakeup_source_drop - Prepare a struct wakeup_source object for destruction.
- * @ws: Wakeup source to prepare for destruction.
- *
- * Callers must ensure that __pm_stay_awake() or __pm_wakeup_event() will never
- * be run in parallel with this function for the same wakeup source object.
- */
-void wakeup_source_drop(struct wakeup_source *ws)
-{
-	if (!ws)
-		return;
-
-	del_timer_sync(&ws->timer);
-	__pm_relax(ws);
-}
-EXPORT_SYMBOL_GPL(wakeup_source_drop);
-=======
 	const char *ws_name;
 	int id;
 
@@ -222,7 +142,6 @@ static void wakeup_source_free(struct wakeup_source *ws)
 	kfree_const(ws->name);
 	kfree(ws);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * wakeup_source_destroy - Destroy a struct wakeup_source object.
@@ -235,15 +154,9 @@ void wakeup_source_destroy(struct wakeup_source *ws)
 	if (!ws)
 		return;
 
-<<<<<<< HEAD
-	wakeup_source_drop(ws);
-	kfree(ws->name);
-	kfree(ws);
-=======
 	__pm_relax(ws);
 	wakeup_source_record(ws);
 	wakeup_source_free(ws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(wakeup_source_destroy);
 
@@ -253,31 +166,18 @@ EXPORT_SYMBOL_GPL(wakeup_source_destroy);
  */
 void wakeup_source_add(struct wakeup_source *ws)
 {
-<<<<<<< HEAD
-=======
 	unsigned long flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (WARN_ON(!ws))
 		return;
 
 	spin_lock_init(&ws->lock);
-<<<<<<< HEAD
-	setup_timer(&ws->timer, pm_wakeup_timer_fn, (unsigned long)ws);
-	ws->active = false;
-	ws->last_time = ktime_get();
-
-	spin_lock_irq(&events_lock);
-	list_add_rcu(&ws->entry, &wakeup_sources);
-	spin_unlock_irq(&events_lock);
-=======
 	timer_setup(&ws->timer, pm_wakeup_timer_fn, 0);
 	ws->active = false;
 
 	raw_spin_lock_irqsave(&events_lock, flags);
 	list_add_rcu(&ws->entry, &wakeup_sources);
 	raw_spin_unlock_irqrestore(&events_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(wakeup_source_add);
 
@@ -287,15 +187,6 @@ EXPORT_SYMBOL_GPL(wakeup_source_add);
  */
 void wakeup_source_remove(struct wakeup_source *ws)
 {
-<<<<<<< HEAD
-	if (WARN_ON(!ws))
-		return;
-
-	spin_lock_irq(&events_lock);
-	list_del_rcu(&ws->entry);
-	spin_unlock_irq(&events_lock);
-	synchronize_rcu();
-=======
 	unsigned long flags;
 
 	if (WARN_ON(!ws))
@@ -312,24 +203,11 @@ void wakeup_source_remove(struct wakeup_source *ws)
 	 * this wakeup source as not registered.
 	 */
 	ws->timer.function = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(wakeup_source_remove);
 
 /**
  * wakeup_source_register - Create wakeup source and add it to the list.
-<<<<<<< HEAD
- * @name: Name of the wakeup source to register.
- */
-struct wakeup_source *wakeup_source_register(const char *name)
-{
-	struct wakeup_source *ws;
-
-	ws = wakeup_source_create(name);
-	if (ws)
-		wakeup_source_add(ws);
-
-=======
  * @dev: Device this wakeup source is associated with (or NULL if virtual).
  * @name: Name of the wakeup source to register.
  */
@@ -350,7 +228,6 @@ struct wakeup_source *wakeup_source_register(struct device *dev,
 		}
 		wakeup_source_add(ws);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ws;
 }
 EXPORT_SYMBOL_GPL(wakeup_source_register);
@@ -363,20 +240,15 @@ void wakeup_source_unregister(struct wakeup_source *ws)
 {
 	if (ws) {
 		wakeup_source_remove(ws);
-<<<<<<< HEAD
-=======
 		if (ws->dev)
 			wakeup_source_sysfs_remove(ws);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wakeup_source_destroy(ws);
 	}
 }
 EXPORT_SYMBOL_GPL(wakeup_source_unregister);
 
 /**
-<<<<<<< HEAD
-=======
  * wakeup_sources_read_lock - Lock wakeup source list for read.
  *
  * Returns an index of srcu lock for struct wakeup_srcu.
@@ -431,7 +303,6 @@ struct wakeup_source *wakeup_sources_walk_next(struct wakeup_source *ws)
 EXPORT_SYMBOL_GPL(wakeup_sources_walk_next);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * device_wakeup_attach - Attach a wakeup source object to a device object.
  * @dev: Device to handle.
  * @ws: Wakeup source object to attach to @dev.
@@ -446,11 +317,8 @@ static int device_wakeup_attach(struct device *dev, struct wakeup_source *ws)
 		return -EEXIST;
 	}
 	dev->power.wakeup = ws;
-<<<<<<< HEAD
-=======
 	if (dev->power.wakeirq)
 		device_wakeup_attach_irq(dev, dev->power.wakeirq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&dev->power.lock);
 	return 0;
 }
@@ -469,14 +337,10 @@ int device_wakeup_enable(struct device *dev)
 	if (!dev || !dev->power.can_wakeup)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	ws = wakeup_source_register(dev_name(dev));
-=======
 	if (pm_suspend_target_state != PM_SUSPEND_ON)
 		dev_dbg(dev, "Suspicious %s() during system transition!\n", __func__);
 
 	ws = wakeup_source_register(dev, dev_name(dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ws)
 		return -ENOMEM;
 
@@ -489,8 +353,6 @@ int device_wakeup_enable(struct device *dev)
 EXPORT_SYMBOL_GPL(device_wakeup_enable);
 
 /**
-<<<<<<< HEAD
-=======
  * device_wakeup_attach_irq - Attach a wakeirq to a wakeup source
  * @dev: Device to handle
  * @wakeirq: Device specific wakeirq entry
@@ -566,7 +428,6 @@ void device_wakeup_disarm_wake_irqs(void)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * device_wakeup_detach - Detach a device's wakeup source object from it.
  * @dev: Device to detach the wakeup source object from.
  *
@@ -598,13 +459,7 @@ int device_wakeup_disable(struct device *dev)
 		return -EINVAL;
 
 	ws = device_wakeup_detach(dev);
-<<<<<<< HEAD
-	if (ws)
-		wakeup_source_unregister(ws);
-
-=======
 	wakeup_source_unregister(ws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(device_wakeup_disable);
@@ -626,12 +481,6 @@ void device_set_wakeup_capable(struct device *dev, bool capable)
 	if (!!dev->power.can_wakeup == !!capable)
 		return;
 
-<<<<<<< HEAD
-	if (device_is_registered(dev) && !list_empty(&dev->power.entry)) {
-		if (capable) {
-			if (wakeup_sysfs_add(dev))
-				return;
-=======
 	dev->power.can_wakeup = capable;
 	if (device_is_registered(dev) && !list_empty(&dev->power.entry)) {
 		if (capable) {
@@ -639,68 +488,24 @@ void device_set_wakeup_capable(struct device *dev, bool capable)
 
 			if (ret)
 				dev_info(dev, "Wakeup sysfs attributes not added\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			wakeup_sysfs_remove(dev);
 		}
 	}
-<<<<<<< HEAD
-	dev->power.can_wakeup = capable;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(device_set_wakeup_capable);
 
 /**
-<<<<<<< HEAD
- * device_init_wakeup - Device wakeup initialization.
- * @dev: Device to handle.
- * @enable: Whether or not to enable @dev as a wakeup device.
- *
- * By default, most devices should leave wakeup disabled.  The exceptions are
- * devices that everyone expects to be wakeup sources: keyboards, power buttons,
- * possibly network interfaces, etc.  Also, devices that don't generate their
- * own wakeup requests but merely forward requests from one bus to another
- * (like PCI bridges) should have wakeup enabled by default.
- */
-int device_init_wakeup(struct device *dev, bool enable)
-{
-	int ret = 0;
-
-	if (enable) {
-		device_set_wakeup_capable(dev, true);
-		ret = device_wakeup_enable(dev);
-	} else {
-		device_set_wakeup_capable(dev, false);
-	}
-
-	return ret;
-}
-EXPORT_SYMBOL_GPL(device_init_wakeup);
-
-/**
- * device_set_wakeup_enable - Enable or disable a device to wake up the system.
- * @dev: Device to handle.
- */
-int device_set_wakeup_enable(struct device *dev, bool enable)
-{
-	if (!dev || !dev->power.can_wakeup)
-		return -EINVAL;
-
-=======
  * device_set_wakeup_enable - Enable or disable a device to wake up the system.
  * @dev: Device to handle.
  * @enable: enable/disable flag
  */
 int device_set_wakeup_enable(struct device *dev, bool enable)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return enable ? device_wakeup_enable(dev) : device_wakeup_disable(dev);
 }
 EXPORT_SYMBOL_GPL(device_set_wakeup_enable);
 
-<<<<<<< HEAD
-=======
 /**
  * wakeup_source_not_registered - validate the given wakeup source.
  * @ws: Wakeup source to be validated.
@@ -714,7 +519,6 @@ static bool wakeup_source_not_registered(struct wakeup_source *ws)
 	return ws->timer.function != pm_wakeup_timer_fn;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The functions below use the observation that each wakeup event starts a
  * period in which the system should not be suspended.  The moment this period
@@ -744,45 +548,21 @@ static bool wakeup_source_not_registered(struct wakeup_source *ws)
  */
 
 /**
-<<<<<<< HEAD
- * wakup_source_activate - Mark given wakeup source as active.
- * @ws: Wakeup source to handle.
- *
- * Update the @ws' statistics and, if @ws has just been activated, notify the PM
- * core of the event by incrementing the counter of of wakeup events being
-=======
  * wakeup_source_activate - Mark given wakeup source as active.
  * @ws: Wakeup source to handle.
  *
  * Update the @ws' statistics and, if @ws has just been activated, notify the PM
  * core of the event by incrementing the counter of the wakeup events being
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * processed.
  */
 static void wakeup_source_activate(struct wakeup_source *ws)
 {
 	unsigned int cec;
-<<<<<<< HEAD
-#if defined(CONFIG_MACH_MSM8974_B1_KR) || defined(CONFIG_MACH_MSM8974_B1W)
-	extern int boost_freq;
-	extern bool suspend_marker_entry;
-	unsigned int cnt, inpr;
-	bool wakeup_pending = true;
-
-	if (suspend_marker_entry) {
-		split_counters(&cnt, &inpr);
-		if (cnt == saved_count && inpr == 0) {
-			wakeup_pending = false;
-		}
-	}
-#endif
-=======
 
 	if (WARN_ONCE(wakeup_source_not_registered(ws),
 			"unregistered wakeup source\n"))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ws->active = true;
 	ws->active_count++;
 	ws->last_time = ktime_get();
@@ -791,38 +571,16 @@ static void wakeup_source_activate(struct wakeup_source *ws)
 
 	/* Increment the counter of events in progress. */
 	cec = atomic_inc_return(&combined_event_count);
-<<<<<<< HEAD
-	trace_wakeup_source_activate(ws->name, cec);
-#if defined(CONFIG_MACH_MSM8974_B1_KR) || defined(CONFIG_MACH_MSM8974_B1W)
-	if (suspend_marker_entry) {
-		if (!wakeup_pending) {
-			if (boost_freq == 1) {
-				if (!strcmp(ws->name, "touch_irq") || !strcmp(ws->name, "hall_ic_wakeups")){
-					printk(KERN_ERR "ws->name=%s, boost_Freq=%d\n", ws->name, boost_freq);
-					boost_freq++;
-					printk(KERN_ERR "ws->name=%s, boost_Freq=%d\n", ws->name, boost_freq);
-				}
-			}
-		}
-	}
-#endif
-=======
 
 	trace_wakeup_source_activate(ws->name, cec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * wakeup_source_report_event - Report wakeup event using the given source.
  * @ws: Wakeup source to report the event for.
-<<<<<<< HEAD
- */
-static void wakeup_source_report_event(struct wakeup_source *ws)
-=======
  * @hard: If set, abort suspends in progress and wake up from suspend-to-idle.
  */
 static void wakeup_source_report_event(struct wakeup_source *ws, bool hard)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ws->event_count++;
 	/* This is racy, but the counter is approximate anyway. */
@@ -831,12 +589,9 @@ static void wakeup_source_report_event(struct wakeup_source *ws, bool hard)
 
 	if (!ws->active)
 		wakeup_source_activate(ws);
-<<<<<<< HEAD
-=======
 
 	if (hard)
 		pm_system_wakeup();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -854,11 +609,7 @@ void __pm_stay_awake(struct wakeup_source *ws)
 
 	spin_lock_irqsave(&ws->lock, flags);
 
-<<<<<<< HEAD
-	wakeup_source_report_event(ws);
-=======
 	wakeup_source_report_event(ws, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	del_timer(&ws->timer);
 	ws->timer_expires = 0;
 
@@ -902,11 +653,7 @@ static inline void update_prevent_sleep_time(struct wakeup_source *ws,
 #endif
 
 /**
-<<<<<<< HEAD
- * wakup_source_deactivate - Mark given wakeup source as inactive.
-=======
  * wakeup_source_deactivate - Mark given wakeup source as inactive.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ws: Wakeup source to handle.
  *
  * Update the @ws' statistics and notify the PM core that the wakeup source has
@@ -951,11 +698,7 @@ static void wakeup_source_deactivate(struct wakeup_source *ws)
 
 	/*
 	 * Increment the counter of registered wakeup events and decrement the
-<<<<<<< HEAD
-	 * couter of wakeup events in progress simultaneously.
-=======
 	 * counter of wakeup events in progress simultaneously.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	cec = atomic_add_return(MAX_IN_PROGRESS, &combined_event_count);
 	trace_wakeup_source_deactivate(ws->name, cec);
@@ -1009,25 +752,15 @@ EXPORT_SYMBOL_GPL(pm_relax);
 
 /**
  * pm_wakeup_timer_fn - Delayed finalization of a wakeup event.
-<<<<<<< HEAD
- * @data: Address of the wakeup source object associated with the event source.
-=======
  * @t: timer list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Call wakeup_source_deactivate() for the wakeup source whose address is stored
  * in @data if it is currently active and its timer has not been canceled and
  * the expiration time of the timer is not in future.
  */
-<<<<<<< HEAD
-static void pm_wakeup_timer_fn(unsigned long data)
-{
-	struct wakeup_source *ws = (struct wakeup_source *)data;
-=======
 static void pm_wakeup_timer_fn(struct timer_list *t)
 {
 	struct wakeup_source *ws = from_timer(ws, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&ws->lock, flags);
@@ -1042,16 +775,10 @@ static void pm_wakeup_timer_fn(struct timer_list *t)
 }
 
 /**
-<<<<<<< HEAD
- * __pm_wakeup_event - Notify the PM core of a wakeup event.
- * @ws: Wakeup source object associated with the event source.
- * @msec: Anticipated event processing time (in milliseconds).
-=======
  * pm_wakeup_ws_event - Notify the PM core of a wakeup event.
  * @ws: Wakeup source object associated with the event source.
  * @msec: Anticipated event processing time (in milliseconds).
  * @hard: If set, abort suspends in progress and wake up from suspend-to-idle.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Notify the PM core of a wakeup event whose source is @ws that will take
  * approximately @msec milliseconds to be processed by the kernel.  If @ws is
@@ -1060,11 +787,7 @@ static void pm_wakeup_timer_fn(struct timer_list *t)
  *
  * It is safe to call this function from interrupt context.
  */
-<<<<<<< HEAD
-void __pm_wakeup_event(struct wakeup_source *ws, unsigned int msec)
-=======
 void pm_wakeup_ws_event(struct wakeup_source *ws, unsigned int msec, bool hard)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned long expires;
@@ -1074,11 +797,7 @@ void pm_wakeup_ws_event(struct wakeup_source *ws, unsigned int msec, bool hard)
 
 	spin_lock_irqsave(&ws->lock, flags);
 
-<<<<<<< HEAD
-	wakeup_source_report_event(ws);
-=======
 	wakeup_source_report_event(ws, hard);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!msec) {
 		wakeup_source_deactivate(ws);
@@ -1097,19 +816,6 @@ void pm_wakeup_ws_event(struct wakeup_source *ws, unsigned int msec, bool hard)
  unlock:
 	spin_unlock_irqrestore(&ws->lock, flags);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(__pm_wakeup_event);
-
-
-/**
- * pm_wakeup_event - Notify the PM core of a wakeup event.
- * @dev: Device the wakeup event is related to.
- * @msec: Anticipated event processing time (in milliseconds).
- *
- * Call __pm_wakeup_event() for the @dev's wakeup source object.
- */
-void pm_wakeup_event(struct device *dev, unsigned int msec)
-=======
 EXPORT_SYMBOL_GPL(pm_wakeup_ws_event);
 
 /**
@@ -1121,7 +827,6 @@ EXPORT_SYMBOL_GPL(pm_wakeup_ws_event);
  * Call pm_wakeup_ws_event() for the @dev's wakeup source object.
  */
 void pm_wakeup_dev_event(struct device *dev, unsigned int msec, bool hard)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -1129,44 +834,6 @@ void pm_wakeup_dev_event(struct device *dev, unsigned int msec, bool hard)
 		return;
 
 	spin_lock_irqsave(&dev->power.lock, flags);
-<<<<<<< HEAD
-	__pm_wakeup_event(dev->power.wakeup, msec);
-	spin_unlock_irqrestore(&dev->power.lock, flags);
-}
-EXPORT_SYMBOL_GPL(pm_wakeup_event);
-
-static void print_active_wakeup_sources(void)
-{
-	struct wakeup_source *ws;
-	int active = 0;
-	struct wakeup_source *last_activity_ws = NULL;
-
-	rcu_read_lock();
-#ifdef CONFIG_LGE_PM
-	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
-		if (ws->active) {
-			ws->pending_count++;
-			pr_info("active wakeup source: %s pending_count: %lu\n",
-				ws->name, ws->pending_count);
-			active = 1;
-		} else if (!active &&
-			   (!last_activity_ws ||
-			    ktime_to_ns(ws->last_time) >
-			    ktime_to_ns(last_activity_ws->last_time))) {
-			last_activity_ws = ws;
-		}
-	}
-
-	if (!active && last_activity_ws) {
-		last_activity_ws->pending_count++;
-		pr_info("last active wakeup source: %s pending_count: %lu\n",
-			last_activity_ws->name, last_activity_ws->pending_count);
-	}
-#else
-	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
-		if (ws->active) {
-			pr_info("active wakeup source: %s\n", ws->name);
-=======
 	pm_wakeup_ws_event(dev->power.wakeup, msec, hard);
 	spin_unlock_irqrestore(&dev->power.lock, flags);
 }
@@ -1182,7 +849,6 @@ void pm_print_active_wakeup_sources(void)
 	list_for_each_entry_rcu_locked(ws, &wakeup_sources, entry) {
 		if (ws->active) {
 			pm_pr_dbg("active wakeup source: %s\n", ws->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			active = 1;
 		} else if (!active &&
 			   (!last_activity_ws ||
@@ -1193,19 +859,11 @@ void pm_print_active_wakeup_sources(void)
 	}
 
 	if (!active && last_activity_ws)
-<<<<<<< HEAD
-		pr_info("last active wakeup source: %s\n",
-			last_activity_ws->name);
-#endif
-	rcu_read_unlock();
-}
-=======
 		pm_pr_dbg("last active wakeup source: %s\n",
 			last_activity_ws->name);
 	srcu_read_unlock(&wakeup_srcu, srcuidx);
 }
 EXPORT_SYMBOL_GPL(pm_print_active_wakeup_sources);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pm_wakeup_pending - Check if power transition in progress should be aborted.
@@ -1220,11 +878,7 @@ bool pm_wakeup_pending(void)
 	unsigned long flags;
 	bool ret = false;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&events_lock, flags);
-=======
 	raw_spin_lock_irqsave(&events_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (events_check_enabled) {
 		unsigned int cnt, inpr;
 
@@ -1232,14 +886,6 @@ bool pm_wakeup_pending(void)
 		ret = (cnt != saved_count || inpr > 0);
 		events_check_enabled = !ret;
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&events_lock, flags);
-
-	if (ret)
-		print_active_wakeup_sources();
-
-	return ret;
-=======
 	raw_spin_unlock_irqrestore(&events_lock, flags);
 
 	if (ret) {
@@ -1304,7 +950,6 @@ void pm_system_irq_wakeup(unsigned int irq_number)
 unsigned int pm_wakeup_irq(void)
 {
 	return wakeup_irq[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1332,11 +977,7 @@ bool pm_get_wakeup_count(unsigned int *count, bool block)
 			split_counters(&cnt, &inpr);
 			if (inpr == 0 || signal_pending(current))
 				break;
-<<<<<<< HEAD
-
-=======
 			pm_print_active_wakeup_sources();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			schedule();
 		}
 		finish_wait(&wakeup_count_wait_queue, &wait);
@@ -1360,52 +1001,32 @@ bool pm_get_wakeup_count(unsigned int *count, bool block)
 bool pm_save_wakeup_count(unsigned int count)
 {
 	unsigned int cnt, inpr;
-<<<<<<< HEAD
-
-	events_check_enabled = false;
-	spin_lock_irq(&events_lock);
-=======
 	unsigned long flags;
 
 	events_check_enabled = false;
 	raw_spin_lock_irqsave(&events_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	split_counters(&cnt, &inpr);
 	if (cnt == count && inpr == 0) {
 		saved_count = count;
 		events_check_enabled = true;
 	}
-<<<<<<< HEAD
-	spin_unlock_irq(&events_lock);
-=======
 	raw_spin_unlock_irqrestore(&events_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return events_check_enabled;
 }
 
 #ifdef CONFIG_PM_AUTOSLEEP
 /**
  * pm_wakep_autosleep_enabled - Modify autosleep_enabled for all wakeup sources.
-<<<<<<< HEAD
- * @enabled: Whether to set or to clear the autosleep_enabled flags.
-=======
  * @set: Whether to set or to clear the autosleep_enabled flags.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void pm_wakep_autosleep_enabled(bool set)
 {
 	struct wakeup_source *ws;
 	ktime_t now = ktime_get();
-<<<<<<< HEAD
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
-=======
 	int srcuidx;
 
 	srcuidx = srcu_read_lock(&wakeup_srcu);
 	list_for_each_entry_rcu_locked(ws, &wakeup_sources, entry) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irq(&ws->lock);
 		if (ws->autosleep_enabled != set) {
 			ws->autosleep_enabled = set;
@@ -1418,19 +1039,10 @@ void pm_wakep_autosleep_enabled(bool set)
 		}
 		spin_unlock_irq(&ws->lock);
 	}
-<<<<<<< HEAD
-	rcu_read_unlock();
-}
-#endif /* CONFIG_PM_AUTOSLEEP */
-
-static struct dentry *wakeup_sources_stats_dentry;
-
-=======
 	srcu_read_unlock(&wakeup_srcu, srcuidx);
 }
 #endif /* CONFIG_PM_AUTOSLEEP */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * print_wakeup_source_stats - Print wakeup source statistics information.
  * @m: seq_file to print the statistics into.
@@ -1445,10 +1057,6 @@ static int print_wakeup_source_stats(struct seq_file *m,
 	unsigned long active_count;
 	ktime_t active_time;
 	ktime_t prevent_sleep_time;
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&ws->lock, flags);
 
@@ -1461,121 +1069,13 @@ static int print_wakeup_source_stats(struct seq_file *m,
 
 		active_time = ktime_sub(now, ws->last_time);
 		total_time = ktime_add(total_time, active_time);
-<<<<<<< HEAD
-		if (active_time.tv64 > max_time.tv64)
-=======
 		if (active_time > max_time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			max_time = active_time;
 
 		if (ws->autosleep_enabled)
 			prevent_sleep_time = ktime_add(prevent_sleep_time,
 				ktime_sub(now, ws->start_prevent_time));
 	} else {
-<<<<<<< HEAD
-		active_time = ktime_set(0, 0);
-	}
-#ifdef CONFIG_LGE_PM
-	ret = seq_printf(m, "%-12s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"
-			"%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\n",
-			ws->name, active_count, ws->event_count,
-			ws->wakeup_count, ws->expire_count, ws->pending_count,
-			ktime_to_ms(active_time), ktime_to_ms(total_time),
-			ktime_to_ms(max_time), ktime_to_ms(ws->last_time),
-			ktime_to_ms(prevent_sleep_time));
-#else
-	ret = seq_printf(m, "%-12s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"
-			"%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\n",
-			ws->name, active_count, ws->event_count,
-			ws->wakeup_count, ws->expire_count,
-			ktime_to_ms(active_time), ktime_to_ms(total_time),
-			ktime_to_ms(max_time), ktime_to_ms(ws->last_time),
-			ktime_to_ms(prevent_sleep_time));
-#endif
-
-	spin_unlock_irqrestore(&ws->lock, flags);
-
-	return ret;
-}
-
-#ifdef CONFIG_LGE_PM
-#define BUF_MAX	256
-static void __print_wakeup_source_active_stats(struct wakeup_source *ws,
-						char *buf)
-{
-	unsigned long flags;
-	ktime_t total_time;
-	ktime_t max_time;
-	unsigned long active_count;
-	ktime_t active_time;
-	ktime_t prevent_sleep_time;
-
-	spin_lock_irqsave(&ws->lock, flags);
-
-	total_time = ws->total_time;
-	max_time = ws->max_time;
-	prevent_sleep_time = ws->prevent_sleep_time;
-	active_count = ws->active_count;
-	if (ws->active) {
-		ktime_t now = ktime_get();
-
-		active_time = ktime_sub(now, ws->last_time);
-		total_time = ktime_add(total_time, active_time);
-		if (active_time.tv64 > max_time.tv64)
-			max_time = active_time;
-
-		if (ws->autosleep_enabled)
-			prevent_sleep_time = ktime_add(prevent_sleep_time,
-				ktime_sub(now, ws->start_prevent_time));
-	} else {
-		active_time = ktime_set(0, 0);
-	}
-
-	if (ktime_to_ms(active_time) > 0)
-		snprintf(buf, BUF_MAX, "%-12s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"
-				"%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\n",
-				ws->name, active_count, ws->event_count,
-				ws->wakeup_count, ws->expire_count, ws->pending_count,
-				ktime_to_ms(active_time), ktime_to_ms(total_time),
-				ktime_to_ms(max_time), ktime_to_ms(ws->last_time),
-				ktime_to_ms(prevent_sleep_time));
-	else
-		strncpy(buf, "", BUF_MAX);
-
-	spin_unlock_irqrestore(&ws->lock, flags);
-}
-static int print_wakeup_source_active_stats(struct seq_file *m,
-					    struct wakeup_source *ws)
-{
-	char buf[BUF_MAX];
-	__print_wakeup_source_active_stats(ws, buf);
-	return seq_printf(m, "%s", buf);
-}
-#endif
-
-/**
- * wakeup_sources_stats_show - Print wakeup sources statistics information.
- * @m: seq_file to print the statistics into.
- */
-static int wakeup_sources_stats_show(struct seq_file *m, void *unused)
-{
-	struct wakeup_source *ws;
-
-#ifdef CONFIG_LGE_PM
-	seq_puts(m, "name\t\tactive_count\tevent_count\twakeup_count\t"
-		"expire_count\tpending_count\tactive_since\ttotal_time\t"
-		"max_time\tlast_change\tprevent_suspend_time\n");
-#else
-	seq_puts(m, "name\t\tactive_count\tevent_count\twakeup_count\t"
-		"expire_count\tactive_since\ttotal_time\tmax_time\t"
-		"last_change\tprevent_suspend_time\n");
-#endif
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(ws, &wakeup_sources, entry)
-		print_wakeup_source_stats(m, ws);
-	rcu_read_unlock();
-=======
 		active_time = 0;
 	}
 
@@ -1649,43 +1149,10 @@ static int wakeup_sources_stats_seq_show(struct seq_file *m, void *v)
 	struct wakeup_source *ws = v;
 
 	print_wakeup_source_stats(m, ws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_LGE_PM
-static int wakeup_sources_active_stats_show(struct seq_file *m, void *unused)
-{
-	struct wakeup_source *ws;
-
-	seq_puts(m, "name\t\tactive_count\tevent_count\twakeup_count\t"
-		"expire_count\tpending_count\tactive_since\ttotal_time\t"
-		"max_time\tlast_change\tprevent_suspend_time\n");
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(ws, &wakeup_sources, entry)
-		print_wakeup_source_active_stats(m, ws);
-	rcu_read_unlock();
-
-	return 0;
-}
-#endif
-
-static int wakeup_sources_stats_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, wakeup_sources_stats_show, NULL);
-}
-
-#ifdef CONFIG_LGE_PM
-static int wakeup_sources_active_stats_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, wakeup_sources_active_stats_show, NULL);
-}
-#endif
-
-=======
 static const struct seq_operations wakeup_sources_stats_seq_ops = {
 	.start = wakeup_sources_stats_seq_start,
 	.next  = wakeup_sources_stats_seq_next,
@@ -1698,60 +1165,11 @@ static int wakeup_sources_stats_open(struct inode *inode, struct file *file)
 	return seq_open_private(file, &wakeup_sources_stats_seq_ops, sizeof(int));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct file_operations wakeup_sources_stats_fops = {
 	.owner = THIS_MODULE,
 	.open = wakeup_sources_stats_open,
 	.read = seq_read,
 	.llseek = seq_lseek,
-<<<<<<< HEAD
-	.release = single_release,
-};
-
-#ifdef CONFIG_LGE_PM
-static const struct file_operations wakeup_sources_active_stats_fops = {
-	.owner = THIS_MODULE,
-	.open = wakeup_sources_active_stats_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
-};
-
-#ifdef POLL_DEBUG
-static void poll_worker(struct work_struct *work)
-{
-	struct wakeup_source *ws;
-	printk("name\t\tactive_count\tevent_count\twakeup_count\t"
-		"expire_count\tpending_count\tactive_since\ttotal_time\t"
-		"max_time\tlast_change\tprevent_suspend_time\n");
-	rcu_read_lock();
-	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
-		char buf[BUF_MAX];
-		__print_wakeup_source_active_stats(ws, buf);
-		printk("%s", buf);
-	}
-	rcu_read_unlock();
-
-	schedule_delayed_work(&poll_work, POLL_PERIOD);
-}
-#endif
-#endif
-
-static int __init wakeup_sources_debugfs_init(void)
-{
-	wakeup_sources_stats_dentry = debugfs_create_file("wakeup_sources",
-			S_IRUGO, NULL, NULL, &wakeup_sources_stats_fops);
-
-#ifdef CONFIG_LGE_PM
-	wakeup_sources_stats_dentry = debugfs_create_file("wakeup_sources_active",
-			S_IRUGO, NULL, NULL, &wakeup_sources_active_stats_fops);
-#ifdef POLL_DEBUG
-	INIT_DELAYED_WORK(&poll_work, poll_worker);
-	schedule_delayed_work(&poll_work, POLL_PERIOD);
-#endif
-#endif
-
-=======
 	.release = seq_release_private,
 };
 
@@ -1759,7 +1177,6 @@ static int __init wakeup_sources_debugfs_init(void)
 {
 	debugfs_create_file("wakeup_sources", 0444, NULL, NULL,
 			    &wakeup_sources_stats_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

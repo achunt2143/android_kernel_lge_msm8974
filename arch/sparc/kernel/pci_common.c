@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_common.c: PCI controller common support.
  *
  * Copyright (C) 1999, 2007 David S. Miller (davem@davemloft.net)
@@ -9,17 +6,10 @@
 
 #include <linux/string.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/pci.h>
-#include <linux/device.h>
-#include <linux/of_device.h>
-=======
 #include <linux/pci.h>
 #include <linux/device.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/prom.h>
 #include <asm/oplib.h>
@@ -340,46 +330,6 @@ void pci_get_pbm_props(struct pci_pbm_info *pbm)
 	}
 }
 
-<<<<<<< HEAD
-static void pci_register_legacy_regions(struct resource *io_res,
-					struct resource *mem_res)
-{
-	struct resource *p;
-
-	/* VGA Video RAM. */
-	p = kzalloc(sizeof(*p), GFP_KERNEL);
-	if (!p)
-		return;
-
-	p->name = "Video RAM area";
-	p->start = mem_res->start + 0xa0000UL;
-	p->end = p->start + 0x1ffffUL;
-	p->flags = IORESOURCE_BUSY;
-	request_resource(mem_res, p);
-
-	p = kzalloc(sizeof(*p), GFP_KERNEL);
-	if (!p)
-		return;
-
-	p->name = "System ROM";
-	p->start = mem_res->start + 0xf0000UL;
-	p->end = p->start + 0xffffUL;
-	p->flags = IORESOURCE_BUSY;
-	request_resource(mem_res, p);
-
-	p = kzalloc(sizeof(*p), GFP_KERNEL);
-	if (!p)
-		return;
-
-	p->name = "Video ROM";
-	p->start = mem_res->start + 0xc0000UL;
-	p->end = p->start + 0x7fffUL;
-	p->flags = IORESOURCE_BUSY;
-	request_resource(mem_res, p);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pci_register_iommu_region(struct pci_pbm_info *pbm)
 {
 	const u32 *vdma = of_get_property(pbm->op->dev.of_node, "virtual-dma",
@@ -411,11 +361,8 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 	int i, saw_mem, saw_io;
 	int num_pbm_ranges;
 
-<<<<<<< HEAD
-=======
 	/* Corresponding generic code in of_pci_get_host_bridge_resources() */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	saw_mem = saw_io = 0;
 	pbm_ranges = of_get_property(pbm->op->dev.of_node, "ranges", &i);
 	if (!pbm_ranges) {
@@ -426,13 +373,6 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 	}
 
 	num_pbm_ranges = i / sizeof(*pbm_ranges);
-<<<<<<< HEAD
-
-	for (i = 0; i < num_pbm_ranges; i++) {
-		const struct linux_prom_pci_ranges *pr = &pbm_ranges[i];
-		unsigned long a, size;
-		u32 parent_phys_hi, parent_phys_lo;
-=======
 	memset(&pbm->mem64_space, 0, sizeof(struct resource));
 
 	for (i = 0; i < num_pbm_ranges; i++) {
@@ -440,17 +380,13 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 		unsigned long a, size, region_a;
 		u32 parent_phys_hi, parent_phys_lo;
 		u32 child_phys_mid, child_phys_lo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 size_hi, size_lo;
 		int type;
 
 		parent_phys_hi = pr->parent_phys_hi;
 		parent_phys_lo = pr->parent_phys_lo;
-<<<<<<< HEAD
-=======
 		child_phys_mid = pr->child_phys_mid;
 		child_phys_lo = pr->child_phys_lo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tlb_type == hypervisor)
 			parent_phys_hi &= 0x0fffffff;
 
@@ -460,11 +396,8 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 		type = (pr->child_phys_hi >> 24) & 0x3;
 		a = (((unsigned long)parent_phys_hi << 32UL) |
 		     ((unsigned long)parent_phys_lo  <<  0UL));
-<<<<<<< HEAD
-=======
 		region_a = (((unsigned long)child_phys_mid << 32UL) |
 		     ((unsigned long)child_phys_lo  <<  0UL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size = (((unsigned long)size_hi << 32UL) |
 			((unsigned long)size_lo  <<  0UL));
 
@@ -479,10 +412,7 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 			pbm->io_space.start = a;
 			pbm->io_space.end = a + size - 1UL;
 			pbm->io_space.flags = IORESOURCE_IO;
-<<<<<<< HEAD
-=======
 			pbm->io_offset = a - region_a;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			saw_io = 1;
 			break;
 
@@ -491,17 +421,11 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 			pbm->mem_space.start = a;
 			pbm->mem_space.end = a + size - 1UL;
 			pbm->mem_space.flags = IORESOURCE_MEM;
-<<<<<<< HEAD
-=======
 			pbm->mem_offset = a - region_a;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			saw_mem = 1;
 			break;
 
 		case 3:
-<<<<<<< HEAD
-			/* XXX 64-bit MEM handling XXX */
-=======
 			/* 64-bit MEM handling */
 			pbm->mem64_space.start = a;
 			pbm->mem64_space.end = a + size - 1UL;
@@ -509,7 +433,6 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 			pbm->mem64_offset = a - region_a;
 			saw_mem = 1;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			break;
@@ -523,20 +446,6 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 		prom_halt();
 	}
 
-<<<<<<< HEAD
-	printk("%s: PCI IO[%llx] MEM[%llx]\n",
-	       pbm->name,
-	       pbm->io_space.start,
-	       pbm->mem_space.start);
-
-	pbm->io_space.name = pbm->mem_space.name = pbm->name;
-
-	request_resource(&ioport_resource, &pbm->io_space);
-	request_resource(&iomem_resource, &pbm->mem_space);
-
-	pci_register_legacy_regions(&pbm->io_space,
-				    &pbm->mem_space);
-=======
 	if (pbm->io_space.flags)
 		printk("%s: PCI IO %pR offset %llx\n",
 		       pbm->name, &pbm->io_space, pbm->io_offset);
@@ -562,7 +471,6 @@ void pci_determine_mem_io_space(struct pci_pbm_info *pbm)
 	if (pbm->mem64_space.flags)
 		request_resource(&iomem_resource, &pbm->mem64_space);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_register_iommu_region(pbm);
 }
 
@@ -582,13 +490,8 @@ void pci_scan_for_target_abort(struct pci_pbm_info *pbm,
 				   PCI_STATUS_REC_TARGET_ABORT));
 		if (error_bits) {
 			pci_write_config_word(pdev, PCI_STATUS, error_bits);
-<<<<<<< HEAD
-			printk("%s: Device %s saw Target Abort [%016x]\n",
-			       pbm->name, pci_name(pdev), status);
-=======
 			pci_info(pdev, "%s: Device saw Target Abort [%016x]\n",
 				 pbm->name, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -610,13 +513,8 @@ void pci_scan_for_master_abort(struct pci_pbm_info *pbm,
 			(status & (PCI_STATUS_REC_MASTER_ABORT));
 		if (error_bits) {
 			pci_write_config_word(pdev, PCI_STATUS, error_bits);
-<<<<<<< HEAD
-			printk("%s: Device %s received Master Abort [%016x]\n",
-			       pbm->name, pci_name(pdev), status);
-=======
 			pci_info(pdev, "%s: Device received Master Abort "
 				 "[%016x]\n", pbm->name, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -639,13 +537,8 @@ void pci_scan_for_parity_error(struct pci_pbm_info *pbm,
 				   PCI_STATUS_DETECTED_PARITY));
 		if (error_bits) {
 			pci_write_config_word(pdev, PCI_STATUS, error_bits);
-<<<<<<< HEAD
-			printk("%s: Device %s saw Parity Error [%016x]\n",
-			       pbm->name, pci_name(pdev), status);
-=======
 			pci_info(pdev, "%s: Device saw Parity Error [%016x]\n",
 				 pbm->name, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 

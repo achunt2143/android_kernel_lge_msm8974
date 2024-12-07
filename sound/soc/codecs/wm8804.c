@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * wm8804.c  --  WM8804 S/PDIF transceiver driver
- *
- * Copyright 2010 Wolfson Microelectronics plc
- *
- * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * wm8804.c  --  WM8804 S/PDIF transceiver driver
@@ -17,25 +5,15 @@
  * Copyright 2010-11 Wolfson Microelectronics plc
  *
  * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/delay.h>
-#include <linux/pm.h>
-#include <linux/i2c.h>
-#include <linux/of_device.h>
-#include <linux/spi/spi.h>
-#include <linux/regmap.h>
-=======
 #include <linux/gpio/consumer.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/pm_runtime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -44,10 +22,7 @@
 #include <sound/soc.h>
 #include <sound/initval.h>
 #include <sound/tlv.h>
-<<<<<<< HEAD
-=======
 #include <sound/soc-dapm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "wm8804.h"
 
@@ -81,15 +56,6 @@ static const struct reg_default wm8804_reg_defaults[] = {
 };
 
 struct wm8804_priv {
-<<<<<<< HEAD
-	struct regmap *regmap;
-	struct regulator_bulk_data supplies[WM8804_NUM_SUPPLIES];
-	struct notifier_block disable_nb[WM8804_NUM_SUPPLIES];
-};
-
-static int txsrc_get(struct snd_kcontrol *kcontrol,
-		     struct snd_ctl_elem_value *ucontrol);
-=======
 	struct device *dev;
 	struct regmap *regmap;
 	struct regulator_bulk_data supplies[WM8804_NUM_SUPPLIES];
@@ -100,17 +66,13 @@ static int txsrc_get(struct snd_kcontrol *kcontrol,
 
 	int aif_pwr;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int txsrc_put(struct snd_kcontrol *kcontrol,
 		     struct snd_ctl_elem_value *ucontrol);
 
-<<<<<<< HEAD
-=======
 static int wm8804_aif_event(struct snd_soc_dapm_widget *w,
 			    struct snd_kcontrol *kcontrol, int event);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We can't use the same notifier block for more than one supply and
  * there's no way I can see to get from a callback to the caller
@@ -132,28 +94,6 @@ WM8804_REGULATOR_EVENT(0)
 WM8804_REGULATOR_EVENT(1)
 
 static const char *txsrc_text[] = { "S/PDIF RX", "AIF" };
-<<<<<<< HEAD
-static const SOC_ENUM_SINGLE_EXT_DECL(txsrc, txsrc_text);
-
-static const struct snd_kcontrol_new wm8804_snd_controls[] = {
-	SOC_ENUM_EXT("Input Source", txsrc, txsrc_get, txsrc_put),
-	SOC_SINGLE("TX Playback Switch", WM8804_PWRDN, 2, 1, 1),
-	SOC_SINGLE("AIF Playback Switch", WM8804_PWRDN, 4, 1, 1)
-};
-
-static int txsrc_get(struct snd_kcontrol *kcontrol,
-		     struct snd_ctl_elem_value *ucontrol)
-{
-	struct snd_soc_codec *codec;
-	unsigned int src;
-
-	codec = snd_kcontrol_chip(kcontrol);
-	src = snd_soc_read(codec, WM8804_SPDTX4);
-	if (src & 0x40)
-		ucontrol->value.integer.value[0] = 1;
-	else
-		ucontrol->value.integer.value[0] = 0;
-=======
 static SOC_ENUM_SINGLE_DECL(txsrc, WM8804_SPDTX4, 6, txsrc_text);
 
 static const struct snd_kcontrol_new wm8804_tx_source_mux[] = {
@@ -210,7 +150,6 @@ static int wm8804_aif_event(struct snd_soc_dapm_widget *w,
 			snd_soc_component_update_bits(component, WM8804_PWRDN, 0x10, 0x10);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -218,50 +157,6 @@ static int wm8804_aif_event(struct snd_soc_dapm_widget *w,
 static int txsrc_put(struct snd_kcontrol *kcontrol,
 		     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-	unsigned int src, txpwr;
-
-	codec = snd_kcontrol_chip(kcontrol);
-
-	if (ucontrol->value.integer.value[0] != 0
-			&& ucontrol->value.integer.value[0] != 1)
-		return -EINVAL;
-
-	src = snd_soc_read(codec, WM8804_SPDTX4);
-	switch ((src & 0x40) >> 6) {
-	case 0:
-		if (!ucontrol->value.integer.value[0])
-			return 0;
-		break;
-	case 1:
-		if (ucontrol->value.integer.value[1])
-			return 0;
-		break;
-	}
-
-	/* save the current power state of the transmitter */
-	txpwr = snd_soc_read(codec, WM8804_PWRDN) & 0x4;
-	/* power down the transmitter */
-	snd_soc_update_bits(codec, WM8804_PWRDN, 0x4, 0x4);
-	/* set the tx source */
-	snd_soc_update_bits(codec, WM8804_SPDTX4, 0x40,
-			    ucontrol->value.integer.value[0] << 6);
-
-	if (ucontrol->value.integer.value[0]) {
-		/* power down the receiver */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x2, 0x2);
-		/* power up the AIF */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x10, 0);
-	} else {
-		/* don't power down the AIF -- may be used as an output */
-		/* power up the receiver */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x2, 0);
-	}
-
-	/* restore the transmitter's configuration */
-	snd_soc_update_bits(codec, WM8804_PWRDN, 0x4, txpwr);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_kcontrol_component(kcontrol);
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
@@ -289,7 +184,6 @@ static int txsrc_put(struct snd_kcontrol *kcontrol,
 	}
 
 	snd_soc_dapm_mutex_unlock(dapm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -313,30 +207,17 @@ static bool wm8804_volatile(struct device *dev, unsigned int reg)
 	}
 }
 
-<<<<<<< HEAD
-static int wm8804_reset(struct snd_soc_codec *codec)
-{
-	return snd_soc_write(codec, WM8804_RST_DEVID1, 0x0);
-=======
 static int wm8804_soft_reset(struct wm8804_priv *wm8804)
 {
 	return regmap_write(wm8804->regmap, WM8804_RST_DEVID1, 0x0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8804_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-	u16 format, master, bcp, lrp;
-
-	codec = dai->codec;
-=======
 	struct snd_soc_component *component;
 	u16 format, master, bcp, lrp;
 
 	component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
@@ -358,13 +239,8 @@ static int wm8804_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	}
 
 	/* set data format */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8804_AIFTX, 0x3, format);
-	snd_soc_update_bits(codec, WM8804_AIFRX, 0x3, format);
-=======
 	snd_soc_component_update_bits(component, WM8804_AIFTX, 0x3, format);
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0x3, format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBM_CFM:
@@ -379,11 +255,7 @@ static int wm8804_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	}
 
 	/* set master/slave mode */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8804_AIFRX, 0x40, master << 6);
-=======
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0x40, master << 6);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bcp = lrp = 0;
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
@@ -404,15 +276,9 @@ static int wm8804_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	}
 
 	/* set frame inversion */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8804_AIFTX, 0x10 | 0x20,
-			    (bcp << 4) | (lrp << 5));
-	snd_soc_update_bits(codec, WM8804_AIFRX, 0x10 | 0x20,
-=======
 	snd_soc_component_update_bits(component, WM8804_AIFTX, 0x10 | 0x20,
 			    (bcp << 4) | (lrp << 5));
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0x10 | 0x20,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (bcp << 4) | (lrp << 5));
 	return 0;
 }
@@ -421,21 +287,6 @@ static int wm8804_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-	u16 blen;
-
-	codec = dai->codec;
-
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		blen = 0x0;
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		blen = 0x1;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-=======
 	struct snd_soc_component *component;
 	u16 blen;
 
@@ -449,27 +300,17 @@ static int wm8804_hw_params(struct snd_pcm_substream *substream,
 		blen = 0x1;
 		break;
 	case 24:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blen = 0x2;
 		break;
 	default:
 		dev_err(dai->dev, "Unsupported word length: %u\n",
-<<<<<<< HEAD
-			params_format(params));
-=======
 			params_width(params));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* set word length */
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8804_AIFTX, 0xc, blen << 2);
-	snd_soc_update_bits(codec, WM8804_AIFRX, 0xc, blen << 2);
-=======
 	snd_soc_component_update_bits(component, WM8804_AIFTX, 0xc, blen << 2);
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0xc, blen << 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -500,11 +341,7 @@ static struct {
 
 #define FIXED_PLL_SIZE ((1ULL << 22) * 10)
 static int pll_factors(struct pll_div *pll_div, unsigned int target,
-<<<<<<< HEAD
-		       unsigned int source)
-=======
 		       unsigned int source, unsigned int mclk_div)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 Kpart;
 	unsigned long int K, Ndiv, Nmod, tmp;
@@ -516,12 +353,8 @@ static int pll_factors(struct pll_div *pll_div, unsigned int target,
 	 */
 	for (i = 0; i < ARRAY_SIZE(post_table); i++) {
 		tmp = target * post_table[i].div;
-<<<<<<< HEAD
-		if (tmp >= 90000000 && tmp <= 100000000) {
-=======
 		if ((tmp >= 90000000 && tmp <= 100000000) &&
 		    (mclk_div == post_table[i].mclkdiv)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pll_div->freqmode = post_table[i].freqmode;
 			pll_div->mclkdiv = post_table[i].mclkdiv;
 			target *= post_table[i].div;
@@ -568,15 +401,6 @@ static int wm8804_set_pll(struct snd_soc_dai *dai, int pll_id,
 			  int source, unsigned int freq_in,
 			  unsigned int freq_out)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-
-	codec = dai->codec;
-	if (!freq_in || !freq_out) {
-		/* disable the PLL */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x1, 0x1);
-		return 0;
-=======
 	struct snd_soc_component *component = dai->component;
 	struct wm8804_priv *wm8804 = snd_soc_component_get_drvdata(component);
 	bool change;
@@ -587,41 +411,16 @@ static int wm8804_set_pll(struct snd_soc_dai *dai, int pll_id,
 					 0x1, 0x1, &change);
 		if (change)
 			pm_runtime_put(wm8804->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		int ret;
 		struct pll_div pll_div;
 
-<<<<<<< HEAD
-		ret = pll_factors(&pll_div, freq_out, freq_in);
-=======
 		ret = pll_factors(&pll_div, freq_out, freq_in,
 				  wm8804->mclk_div);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 
 		/* power down the PLL before reprogramming it */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x1, 0x1);
-
-		if (!freq_in || !freq_out)
-			return 0;
-
-		/* set PLLN and PRESCALE */
-		snd_soc_update_bits(codec, WM8804_PLL4, 0xf | 0x10,
-				    pll_div.n | (pll_div.prescale << 4));
-		/* set mclkdiv and freqmode */
-		snd_soc_update_bits(codec, WM8804_PLL5, 0x3 | 0x8,
-				    pll_div.freqmode | (pll_div.mclkdiv << 3));
-		/* set PLLK */
-		snd_soc_write(codec, WM8804_PLL1, pll_div.k & 0xff);
-		snd_soc_write(codec, WM8804_PLL2, (pll_div.k >> 8) & 0xff);
-		snd_soc_write(codec, WM8804_PLL3, pll_div.k >> 16);
-
-		/* power up the PLL */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x1, 0);
-=======
 		regmap_update_bits_check(wm8804->regmap, WM8804_PWRDN,
 					 0x1, 0x1, &change);
 		if (!change)
@@ -640,7 +439,6 @@ static int wm8804_set_pll(struct snd_soc_dai *dai, int pll_id,
 
 		/* power up the PLL */
 		snd_soc_component_update_bits(component, WM8804_PWRDN, 0x1, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -649,25 +447,15 @@ static int wm8804_set_pll(struct snd_soc_dai *dai, int pll_id,
 static int wm8804_set_sysclk(struct snd_soc_dai *dai,
 			     int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-
-	codec = dai->codec;
-=======
 	struct snd_soc_component *component;
 
 	component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (clk_id) {
 	case WM8804_TX_CLKSRC_MCLK:
 		if ((freq >= 10000000 && freq <= 14400000)
 				|| (freq >= 16280000 && freq <= 27000000))
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8804_PLL6, 0x80, 0x80);
-=======
 			snd_soc_component_update_bits(component, WM8804_PLL6, 0x80, 0x80);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			dev_err(dai->dev, "OSCCLOCK is not within the "
 				"recommended range: %uHz\n", freq);
@@ -675,15 +463,6 @@ static int wm8804_set_sysclk(struct snd_soc_dai *dai,
 		}
 		break;
 	case WM8804_TX_CLKSRC_PLL:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8804_PLL6, 0x80, 0);
-		break;
-	case WM8804_CLKOUT_SRC_CLK1:
-		snd_soc_update_bits(codec, WM8804_PLL6, 0x8, 0);
-		break;
-	case WM8804_CLKOUT_SRC_OSCCLK:
-		snd_soc_update_bits(codec, WM8804_PLL6, 0x8, 0x8);
-=======
 		snd_soc_component_update_bits(component, WM8804_PLL6, 0x80, 0);
 		break;
 	case WM8804_CLKOUT_SRC_CLK1:
@@ -691,7 +470,6 @@ static int wm8804_set_sysclk(struct snd_soc_dai *dai,
 		break;
 	case WM8804_CLKOUT_SRC_OSCCLK:
 		snd_soc_component_update_bits(component, WM8804_PLL6, 0x8, 0x8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		dev_err(dai->dev, "Unknown clock source: %d\n", clk_id);
@@ -704,16 +482,6 @@ static int wm8804_set_sysclk(struct snd_soc_dai *dai,
 static int wm8804_set_clkdiv(struct snd_soc_dai *dai,
 			     int div_id, int div)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec;
-
-	codec = dai->codec;
-	switch (div_id) {
-	case WM8804_CLKOUT_DIV:
-		snd_soc_update_bits(codec, WM8804_PLL5, 0x30,
-				    (div & 0x3) << 4);
-		break;
-=======
 	struct snd_soc_component *component;
 	struct wm8804_priv *wm8804;
 
@@ -727,7 +495,6 @@ static int wm8804_set_clkdiv(struct snd_soc_dai *dai,
 		wm8804 = snd_soc_component_get_drvdata(component);
 		wm8804->mclk_div = div;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		dev_err(dai->dev, "Unknown clock divider: %d\n", div_id);
 		return -EINVAL;
@@ -735,175 +502,6 @@ static int wm8804_set_clkdiv(struct snd_soc_dai *dai,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm8804_set_bias_level(struct snd_soc_codec *codec,
-				 enum snd_soc_bias_level level)
-{
-	int ret;
-	struct wm8804_priv *wm8804;
-
-	wm8804 = snd_soc_codec_get_drvdata(codec);
-	switch (level) {
-	case SND_SOC_BIAS_ON:
-		break;
-	case SND_SOC_BIAS_PREPARE:
-		/* power up the OSC and the PLL */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x9, 0);
-		break;
-	case SND_SOC_BIAS_STANDBY:
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-			ret = regulator_bulk_enable(ARRAY_SIZE(wm8804->supplies),
-						    wm8804->supplies);
-			if (ret) {
-				dev_err(codec->dev,
-					"Failed to enable supplies: %d\n",
-					ret);
-				return ret;
-			}
-			regcache_sync(wm8804->regmap);
-		}
-		/* power down the OSC and the PLL */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x9, 0x9);
-		break;
-	case SND_SOC_BIAS_OFF:
-		/* power down the OSC and the PLL */
-		snd_soc_update_bits(codec, WM8804_PWRDN, 0x9, 0x9);
-		regulator_bulk_disable(ARRAY_SIZE(wm8804->supplies),
-				       wm8804->supplies);
-		break;
-	}
-
-	codec->dapm.bias_level = level;
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int wm8804_suspend(struct snd_soc_codec *codec)
-{
-	wm8804_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static int wm8804_resume(struct snd_soc_codec *codec)
-{
-	wm8804_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-	return 0;
-}
-#else
-#define wm8804_suspend NULL
-#define wm8804_resume NULL
-#endif
-
-static int wm8804_remove(struct snd_soc_codec *codec)
-{
-	struct wm8804_priv *wm8804;
-	int i;
-
-	wm8804 = snd_soc_codec_get_drvdata(codec);
-	wm8804_set_bias_level(codec, SND_SOC_BIAS_OFF);
-
-	for (i = 0; i < ARRAY_SIZE(wm8804->supplies); ++i)
-		regulator_unregister_notifier(wm8804->supplies[i].consumer,
-					      &wm8804->disable_nb[i]);
-	regulator_bulk_free(ARRAY_SIZE(wm8804->supplies), wm8804->supplies);
-	return 0;
-}
-
-static int wm8804_probe(struct snd_soc_codec *codec)
-{
-	struct wm8804_priv *wm8804;
-	int i, id1, id2, ret;
-
-	wm8804 = snd_soc_codec_get_drvdata(codec);
-
-	codec->control_data = wm8804->regmap;
-
-	ret = snd_soc_codec_set_cache_io(codec, 8, 8, SND_SOC_REGMAP);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to set cache i/o: %d\n", ret);
-		return ret;
-	}
-
-	for (i = 0; i < ARRAY_SIZE(wm8804->supplies); i++)
-		wm8804->supplies[i].supply = wm8804_supply_names[i];
-
-	ret = regulator_bulk_get(codec->dev, ARRAY_SIZE(wm8804->supplies),
-				 wm8804->supplies);
-	if (ret) {
-		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
-		return ret;
-	}
-
-	wm8804->disable_nb[0].notifier_call = wm8804_regulator_event_0;
-	wm8804->disable_nb[1].notifier_call = wm8804_regulator_event_1;
-
-	/* This should really be moved into the regulator core */
-	for (i = 0; i < ARRAY_SIZE(wm8804->supplies); i++) {
-		ret = regulator_register_notifier(wm8804->supplies[i].consumer,
-						  &wm8804->disable_nb[i]);
-		if (ret != 0) {
-			dev_err(codec->dev,
-				"Failed to register regulator notifier: %d\n",
-				ret);
-		}
-	}
-
-	ret = regulator_bulk_enable(ARRAY_SIZE(wm8804->supplies),
-				    wm8804->supplies);
-	if (ret) {
-		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
-		goto err_reg_get;
-	}
-
-	id1 = snd_soc_read(codec, WM8804_RST_DEVID1);
-	if (id1 < 0) {
-		dev_err(codec->dev, "Failed to read device ID: %d\n", id1);
-		ret = id1;
-		goto err_reg_enable;
-	}
-
-	id2 = snd_soc_read(codec, WM8804_DEVID2);
-	if (id2 < 0) {
-		dev_err(codec->dev, "Failed to read device ID: %d\n", id2);
-		ret = id2;
-		goto err_reg_enable;
-	}
-
-	id2 = (id2 << 8) | id1;
-
-	if (id2 != 0x8805) {
-		dev_err(codec->dev, "Invalid device ID: %#x\n", id2);
-		ret = -EINVAL;
-		goto err_reg_enable;
-	}
-
-	ret = snd_soc_read(codec, WM8804_DEVREV);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to read device revision: %d\n",
-			ret);
-		goto err_reg_enable;
-	}
-	dev_info(codec->dev, "revision %c\n", ret + 'A');
-
-	ret = wm8804_reset(codec);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to issue reset: %d\n", ret);
-		goto err_reg_enable;
-	}
-
-	wm8804_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	return 0;
-
-err_reg_enable:
-	regulator_bulk_disable(ARRAY_SIZE(wm8804->supplies), wm8804->supplies);
-err_reg_get:
-	regulator_bulk_free(ARRAY_SIZE(wm8804->supplies), wm8804->supplies);
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dai_ops wm8804_dai_ops = {
 	.hw_params = wm8804_hw_params,
 	.set_fmt = wm8804_set_fmt,
@@ -937,30 +535,6 @@ static struct snd_soc_dai_driver wm8804_dai = {
 		.formats = WM8804_FORMATS,
 	},
 	.ops = &wm8804_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1
-};
-
-static struct snd_soc_codec_driver soc_codec_dev_wm8804 = {
-	.probe = wm8804_probe,
-	.remove = wm8804_remove,
-	.suspend = wm8804_suspend,
-	.resume = wm8804_resume,
-	.set_bias_level = wm8804_set_bias_level,
-	.idle_bias_off = true,
-
-	.controls = wm8804_snd_controls,
-	.num_controls = ARRAY_SIZE(wm8804_snd_controls),
-};
-
-static const struct of_device_id wm8804_of_match[] = {
-	{ .compatible = "wlf,wm8804", },
-	{ }
-};
-MODULE_DEVICE_TABLE(of, wm8804_of_match);
-
-static struct regmap_config wm8804_regmap_config = {
-=======
 	.symmetric_rate = 1
 };
 
@@ -974,154 +548,12 @@ static const struct snd_soc_component_driver soc_component_dev_wm8804 = {
 };
 
 const struct regmap_config wm8804_regmap_config = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_bits = 8,
 	.val_bits = 8,
 
 	.max_register = WM8804_MAX_REGISTER,
 	.volatile_reg = wm8804_volatile,
 
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-	.reg_defaults = wm8804_reg_defaults,
-	.num_reg_defaults = ARRAY_SIZE(wm8804_reg_defaults),
-};
-
-#if defined(CONFIG_SPI_MASTER)
-static int __devinit wm8804_spi_probe(struct spi_device *spi)
-{
-	struct wm8804_priv *wm8804;
-	int ret;
-
-	wm8804 = devm_kzalloc(&spi->dev, sizeof *wm8804, GFP_KERNEL);
-	if (!wm8804)
-		return -ENOMEM;
-
-	wm8804->regmap = regmap_init_spi(spi, &wm8804_regmap_config);
-	if (IS_ERR(wm8804->regmap)) {
-		ret = PTR_ERR(wm8804->regmap);
-		return ret;
-	}
-
-	spi_set_drvdata(spi, wm8804);
-
-	ret = snd_soc_register_codec(&spi->dev,
-				     &soc_codec_dev_wm8804, &wm8804_dai, 1);
-
-	return ret;
-}
-
-static int __devexit wm8804_spi_remove(struct spi_device *spi)
-{
-	struct wm8804_priv *wm8804 = spi_get_drvdata(spi);
-	snd_soc_unregister_codec(&spi->dev);
-	regmap_exit(wm8804->regmap);
-	return 0;
-}
-
-static struct spi_driver wm8804_spi_driver = {
-	.driver = {
-		.name = "wm8804",
-		.owner = THIS_MODULE,
-		.of_match_table = wm8804_of_match,
-	},
-	.probe = wm8804_spi_probe,
-	.remove = __devexit_p(wm8804_spi_remove)
-};
-#endif
-
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-static __devinit int wm8804_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-{
-	struct wm8804_priv *wm8804;
-	int ret;
-
-	wm8804 = devm_kzalloc(&i2c->dev, sizeof *wm8804, GFP_KERNEL);
-	if (!wm8804)
-		return -ENOMEM;
-
-	wm8804->regmap = regmap_init_i2c(i2c, &wm8804_regmap_config);
-	if (IS_ERR(wm8804->regmap)) {
-		ret = PTR_ERR(wm8804->regmap);
-		return ret;
-	}
-
-	i2c_set_clientdata(i2c, wm8804);
-
-	ret = snd_soc_register_codec(&i2c->dev,
-				     &soc_codec_dev_wm8804, &wm8804_dai, 1);
-	if (ret != 0)
-		goto err;
-
-	return 0;
-
-err:
-	regmap_exit(wm8804->regmap);
-	return ret;
-}
-
-static __devexit int wm8804_i2c_remove(struct i2c_client *i2c)
-{
-	struct wm8804_priv *wm8804 = i2c_get_clientdata(i2c);
-
-	snd_soc_unregister_codec(&i2c->dev);
-	regmap_exit(wm8804->regmap);
-
-	return 0;
-}
-
-static const struct i2c_device_id wm8804_i2c_id[] = {
-	{ "wm8804", 0 },
-	{ }
-};
-MODULE_DEVICE_TABLE(i2c, wm8804_i2c_id);
-
-static struct i2c_driver wm8804_i2c_driver = {
-	.driver = {
-		.name = "wm8804",
-		.owner = THIS_MODULE,
-		.of_match_table = wm8804_of_match,
-	},
-	.probe = wm8804_i2c_probe,
-	.remove = __devexit_p(wm8804_i2c_remove),
-	.id_table = wm8804_i2c_id
-};
-#endif
-
-static int __init wm8804_modinit(void)
-{
-	int ret = 0;
-
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	ret = i2c_add_driver(&wm8804_i2c_driver);
-	if (ret) {
-		printk(KERN_ERR "Failed to register wm8804 I2C driver: %d\n",
-		       ret);
-	}
-#endif
-#if defined(CONFIG_SPI_MASTER)
-	ret = spi_register_driver(&wm8804_spi_driver);
-	if (ret != 0) {
-		printk(KERN_ERR "Failed to register wm8804 SPI driver: %d\n",
-		       ret);
-	}
-#endif
-	return ret;
-}
-module_init(wm8804_modinit);
-
-static void __exit wm8804_exit(void)
-{
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	i2c_del_driver(&wm8804_i2c_driver);
-#endif
-#if defined(CONFIG_SPI_MASTER)
-	spi_unregister_driver(&wm8804_spi_driver);
-#endif
-}
-module_exit(wm8804_exit);
-=======
 	.cache_type = REGCACHE_MAPLE,
 	.reg_defaults = wm8804_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8804_reg_defaults),
@@ -1287,7 +719,6 @@ const struct dev_pm_ops wm8804_pm = {
 	SET_RUNTIME_PM_OPS(wm8804_runtime_suspend, wm8804_runtime_resume, NULL)
 };
 EXPORT_SYMBOL_GPL(wm8804_pm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM8804 driver");
 MODULE_AUTHOR("Dimitris Papastamos <dp@opensource.wolfsonmicro.com>");

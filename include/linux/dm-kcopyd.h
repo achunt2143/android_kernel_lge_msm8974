@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 - 2003 Sistina Software
  * Copyright (C) 2004 - 2008 Red Hat, Inc. All rights reserved.
@@ -24,15 +21,6 @@
 #define DM_KCOPYD_MAX_REGIONS 8
 
 #define DM_KCOPYD_IGNORE_ERROR 1
-<<<<<<< HEAD
-
-/*
- * To use kcopyd you must first create a dm_kcopyd_client object.
- */
-struct dm_kcopyd_client;
-struct dm_kcopyd_client *dm_kcopyd_client_create(void);
-void dm_kcopyd_client_destroy(struct dm_kcopyd_client *kc);
-=======
 #define DM_KCOPYD_WRITE_SEQ    2
 
 struct dm_kcopyd_throttle {
@@ -65,7 +53,6 @@ struct dm_kcopyd_client;
 struct dm_kcopyd_client *dm_kcopyd_client_create(struct dm_kcopyd_throttle *throttle);
 void dm_kcopyd_client_destroy(struct dm_kcopyd_client *kc);
 void dm_kcopyd_client_flush(struct dm_kcopyd_client *kc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Submit a copy job to kcopyd.  This is built on top of the
@@ -74,21 +61,12 @@ void dm_kcopyd_client_flush(struct dm_kcopyd_client *kc);
  * read_err is a boolean,
  * write_err is a bitset, with 1 bit for each destination region
  */
-<<<<<<< HEAD
-typedef void (*dm_kcopyd_notify_fn)(int read_err, unsigned long write_err,
-				    void *context);
-
-int dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
-		   unsigned num_dests, struct dm_io_region *dests,
-		   unsigned flags, dm_kcopyd_notify_fn fn, void *context);
-=======
 typedef void (*dm_kcopyd_notify_fn)(int read_err, unsigned int long write_err,
 				    void *context);
 
 void dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
 		    unsigned int num_dests, struct dm_io_region *dests,
 		    unsigned int flags, dm_kcopyd_notify_fn fn, void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Prepare a callback and submit it via the kcopyd thread.
@@ -103,19 +81,11 @@ void dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,
  */
 void *dm_kcopyd_prepare_callback(struct dm_kcopyd_client *kc,
 				 dm_kcopyd_notify_fn fn, void *context);
-<<<<<<< HEAD
-void dm_kcopyd_do_callback(void *job, int read_err, unsigned long write_err);
-
-int dm_kcopyd_zero(struct dm_kcopyd_client *kc,
-		   unsigned num_dests, struct dm_io_region *dests,
-		   unsigned flags, dm_kcopyd_notify_fn fn, void *context);
-=======
 void dm_kcopyd_do_callback(void *job, int read_err, unsigned int long write_err);
 
 void dm_kcopyd_zero(struct dm_kcopyd_client *kc,
 		    unsigned int num_dests, struct dm_io_region *dests,
 		    unsigned int flags, dm_kcopyd_notify_fn fn, void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __KERNEL__ */
 #endif	/* _LINUX_DM_KCOPYD_H */

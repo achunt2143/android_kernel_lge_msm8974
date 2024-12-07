@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM f2fs
 
@@ -9,11 +6,6 @@
 #define _TRACE_F2FS_H
 
 #include <linux/tracepoint.h>
-<<<<<<< HEAD
-
-#define show_dev(entry)		MAJOR(entry->dev), MINOR(entry->dev)
-#define show_dev_ino(entry)	show_dev(entry), (unsigned long)entry->ino
-=======
 #include <uapi/linux/f2fs.h>
 
 #define show_dev(dev)		MAJOR(dev), MINOR(dev)
@@ -58,7 +50,6 @@ TRACE_DEFINE_ENUM(CP_PAUSE);
 TRACE_DEFINE_ENUM(CP_RESIZE);
 TRACE_DEFINE_ENUM(EX_READ);
 TRACE_DEFINE_ENUM(EX_BLOCK_AGE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define show_block_type(type)						\
 	__print_symbolic(type,						\
@@ -66,36 +57,6 @@ TRACE_DEFINE_ENUM(EX_BLOCK_AGE);
 		{ DATA,		"DATA" },				\
 		{ META,		"META" },				\
 		{ META_FLUSH,	"META_FLUSH" },				\
-<<<<<<< HEAD
-		{ INMEM,	"INMEM" },				\
-		{ INMEM_DROP,	"INMEM_DROP" },				\
-		{ INMEM_REVOKE,	"INMEM_REVOKE" },			\
-		{ IPU,		"IN-PLACE" },				\
-		{ OPU,		"OUT-OF-PLACE" })
-
-#define F2FS_BIO_MASK(t)	(t & (READA | WRITE_FLUSH_FUA))
-#define F2FS_BIO_EXTRA_MASK(t)	(t & (REQ_META | REQ_PRIO))
-
-#define show_bio_type(type)	show_bio_base(type), show_bio_extra(type)
-
-#define show_bio_base(type)						\
-	__print_symbolic(F2FS_BIO_MASK(type),				\
-		{ READ, 		"READ" },			\
-		{ READA, 		"READAHEAD" },			\
-		{ READ_SYNC, 		"READ_SYNC" },			\
-		{ WRITE, 		"WRITE" },			\
-		{ WRITE_SYNC, 		"WRITE_SYNC" },			\
-		{ WRITE_FLUSH,		"WRITE_FLUSH" },		\
-		{ WRITE_FUA, 		"WRITE_FUA" },			\
-		{ WRITE_FLUSH_FUA,	"WRITE_FLUSH_FUA" })
-
-#define show_bio_extra(type)						\
-	__print_symbolic(F2FS_BIO_EXTRA_MASK(type),			\
-		{ REQ_META, 		"(M)" },			\
-		{ REQ_PRIO, 		"(P)" },			\
-		{ REQ_META | REQ_PRIO,	"(MP)" },			\
-		{ 0, " \b" })
-=======
 		{ IPU,		"IN-PLACE" },				\
 		{ OPU,		"OUT-OF-PLACE" })
 
@@ -122,7 +83,6 @@ TRACE_DEFINE_ENUM(EX_BLOCK_AGE);
 		{ (__force u32)REQ_PRIO,	"P" },			\
 		{ (__force u32)REQ_PREFLUSH,	"PF" },			\
 		{ (__force u32)REQ_FUA,		"FUA" })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define show_data_type(type)						\
 	__print_symbolic(type,						\
@@ -146,38 +106,22 @@ TRACE_DEFINE_ENUM(EX_BLOCK_AGE);
 
 #define show_alloc_mode(type)						\
 	__print_symbolic(type,						\
-<<<<<<< HEAD
-		{ LFS,	"LFS-mode" },					\
-		{ SSR,	"SSR-mode" })
-=======
 		{ LFS,		"LFS-mode" },				\
 		{ SSR,		"SSR-mode" },				\
 		{ AT_SSR,	"AT_SSR-mode" })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define show_victim_policy(type)					\
 	__print_symbolic(type,						\
 		{ GC_GREEDY,	"Greedy" },				\
-<<<<<<< HEAD
-		{ GC_CB,	"Cost-Benefit" })
-
-#define show_cpreason(type)						\
-	__print_symbolic(type,						\
-=======
 		{ GC_CB,	"Cost-Benefit" },			\
 		{ GC_AT,	"Age-threshold" })
 
 #define show_cpreason(type)						\
 	__print_flags(type, "|",					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ CP_UMOUNT,	"Umount" },				\
 		{ CP_FASTBOOT,	"Fastboot" },				\
 		{ CP_SYNC,	"Sync" },				\
 		{ CP_RECOVERY,	"Recovery" },				\
-<<<<<<< HEAD
-		{ CP_DISCARD,	"Discard" })
-
-=======
 		{ CP_DISCARD,	"Discard" },				\
 		{ CP_PAUSE,	"Pause" },				\
 		{ CP_TRIMMED,	"Trimmed" },				\
@@ -233,7 +177,6 @@ TRACE_DEFINE_ENUM(EX_BLOCK_AGE);
 struct f2fs_sb_info;
 struct f2fs_io_info;
 struct extent_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct victim_sel_policy;
 struct f2fs_map_blocks;
 
@@ -285,23 +228,13 @@ DECLARE_EVENT_CLASS(f2fs__inode_exit,
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
-<<<<<<< HEAD
-=======
 		__field(umode_t, mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int,	ret)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
-<<<<<<< HEAD
-		__entry->ret	= ret;
-	),
-
-	TP_printk("dev = (%d,%d), ino = %lu, ret = %d",
-		show_dev_ino(__entry),
-=======
 		__entry->mode	= inode->i_mode;
 		__entry->ret	= ret;
 	),
@@ -310,7 +243,6 @@ DECLARE_EVENT_CLASS(f2fs__inode_exit,
 		show_dev_ino(__entry),
 		show_inode_type(__entry->mode & S_IFMT),
 		__entry->mode & S_ALL_PERM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ret)
 );
 
@@ -323,24 +255,14 @@ DEFINE_EVENT(f2fs__inode, f2fs_sync_file_enter,
 
 TRACE_EVENT(f2fs_sync_file_exit,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, int need_cp, int datasync, int ret),
-
-	TP_ARGS(inode, need_cp, datasync, ret),
-=======
 	TP_PROTO(struct inode *inode, int cp_reason, int datasync, int ret),
 
 	TP_ARGS(inode, cp_reason, datasync, ret),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
-<<<<<<< HEAD
-		__field(int,	need_cp)
-=======
 		__field(int,	cp_reason)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int,	datasync)
 		__field(int,	ret)
 	),
@@ -348,26 +270,15 @@ TRACE_EVENT(f2fs_sync_file_exit,
 	TP_fast_assign(
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->ino		= inode->i_ino;
-<<<<<<< HEAD
-		__entry->need_cp	= need_cp;
-=======
 		__entry->cp_reason	= cp_reason;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->datasync	= datasync;
 		__entry->ret		= ret;
 	),
 
-<<<<<<< HEAD
-	TP_printk("dev = (%d,%d), ino = %lu, checkpoint is %s, "
-		"datasync = %d, ret = %d",
-		show_dev_ino(__entry),
-		__entry->need_cp ? "needed" : "not needed",
-=======
 	TP_printk("dev = (%d,%d), ino = %lu, cp_reason: %s, "
 		"datasync = %d, ret = %d",
 		show_dev_ino(__entry),
 		show_fsync_cpreason(__entry->cp_reason),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->datasync,
 		__entry->ret)
 );
@@ -391,11 +302,7 @@ TRACE_EVENT(f2fs_sync_fs,
 	),
 
 	TP_printk("dev = (%d,%d), superblock is %s, wait = %d",
-<<<<<<< HEAD
-		show_dev(__entry),
-=======
 		show_dev(__entry->dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->dirty ? "dirty" : "not dirty",
 		__entry->wait)
 );
@@ -439,11 +346,7 @@ TRACE_EVENT(f2fs_unlink_enter,
 		__field(ino_t,	ino)
 		__field(loff_t,	size)
 		__field(blkcnt_t, blocks)
-<<<<<<< HEAD
-		__field(const char *,	name)
-=======
 		__string(name,  dentry->d_name.name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -451,11 +354,7 @@ TRACE_EVENT(f2fs_unlink_enter,
 		__entry->ino	= dir->i_ino;
 		__entry->size	= dir->i_size;
 		__entry->blocks	= dir->i_blocks;
-<<<<<<< HEAD
-		__entry->name	= dentry->d_name.name;
-=======
 		__assign_str(name, dentry->d_name.name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev = (%d,%d), dir ino = %lu, i_size = %lld, "
@@ -463,11 +362,7 @@ TRACE_EVENT(f2fs_unlink_enter,
 		show_dev_ino(__entry),
 		__entry->size,
 		(unsigned long long)__entry->blocks,
-<<<<<<< HEAD
-		__entry->name)
-=======
 		__get_str(name))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DEFINE_EVENT(f2fs__inode_exit, f2fs_unlink_exit,
@@ -477,8 +372,6 @@ DEFINE_EVENT(f2fs__inode_exit, f2fs_unlink_exit,
 	TP_ARGS(inode, ret)
 );
 
-<<<<<<< HEAD
-=======
 DEFINE_EVENT(f2fs__inode_exit, f2fs_drop_inode,
 
 	TP_PROTO(struct inode *inode, int ret),
@@ -486,7 +379,6 @@ DEFINE_EVENT(f2fs__inode_exit, f2fs_drop_inode,
 	TP_ARGS(inode, ret)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_EVENT(f2fs__inode, f2fs_truncate,
 
 	TP_PROTO(struct inode *inode),
@@ -630,22 +522,14 @@ DEFINE_EVENT(f2fs__truncate_node, f2fs_truncate_node,
 
 TRACE_EVENT(f2fs_truncate_partial_nodes,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, nid_t nid[], int depth, int err),
-=======
 	TP_PROTO(struct inode *inode, nid_t *nid, int depth, int err),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(inode, nid, depth, err),
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
-<<<<<<< HEAD
-		__field(nid_t,	nid[3])
-=======
 		__array(nid_t,	nid, 3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int,	depth)
 		__field(int,	err)
 	),
@@ -670,12 +554,6 @@ TRACE_EVENT(f2fs_truncate_partial_nodes,
 		__entry->err)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(f2fs_map_blocks,
-	TP_PROTO(struct inode *inode, struct f2fs_map_blocks *map, int ret),
-
-	TP_ARGS(inode, map, ret),
-=======
 TRACE_EVENT(f2fs_file_write_iter,
 
 	TP_PROTO(struct inode *inode, loff_t offset, size_t length,
@@ -712,7 +590,6 @@ TRACE_EVENT(f2fs_map_blocks,
 		 int ret),
 
 	TP_ARGS(inode, map, flag, ret),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
@@ -720,79 +597,54 @@ TRACE_EVENT(f2fs_map_blocks,
 		__field(block_t,	m_lblk)
 		__field(block_t,	m_pblk)
 		__field(unsigned int,	m_len)
-<<<<<<< HEAD
-=======
 		__field(unsigned int,	m_flags)
 		__field(int,	m_seg_type)
 		__field(bool,	m_may_create)
 		__field(bool,	m_multidev_dio)
 		__field(int,	flag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int,	ret)
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev		= inode->i_sb->s_dev;
-=======
 		__entry->dev		= map->m_bdev->bd_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ino		= inode->i_ino;
 		__entry->m_lblk		= map->m_lblk;
 		__entry->m_pblk		= map->m_pblk;
 		__entry->m_len		= map->m_len;
-<<<<<<< HEAD
-=======
 		__entry->m_flags	= map->m_flags;
 		__entry->m_seg_type	= map->m_seg_type;
 		__entry->m_may_create	= map->m_may_create;
 		__entry->m_multidev_dio	= map->m_multidev_dio;
 		__entry->flag		= flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ret		= ret;
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, file offset = %llu, "
-<<<<<<< HEAD
-		"start blkaddr = 0x%llx, len = 0x%llx, err = %d",
-=======
 		"start blkaddr = 0x%llx, len = 0x%llx, flags = %u, "
 		"seg_type = %d, may_create = %d, multidevice = %d, "
 		"flag = %d, err = %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_dev_ino(__entry),
 		(unsigned long long)__entry->m_lblk,
 		(unsigned long long)__entry->m_pblk,
 		(unsigned long long)__entry->m_len,
-<<<<<<< HEAD
-=======
 		__entry->m_flags,
 		__entry->m_seg_type,
 		__entry->m_may_create,
 		__entry->m_multidev_dio,
 		__entry->flag,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ret)
 );
 
 TRACE_EVENT(f2fs_background_gc,
 
-<<<<<<< HEAD
-	TP_PROTO(struct super_block *sb, long wait_ms,
-=======
 	TP_PROTO(struct super_block *sb, unsigned int wait_ms,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int prefree, unsigned int free),
 
 	TP_ARGS(sb, wait_ms, prefree, free),
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
-<<<<<<< HEAD
-		__field(long,	wait_ms)
-=======
 		__field(unsigned int,	wait_ms)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned int,	prefree)
 		__field(unsigned int,	free)
 	),
@@ -804,20 +656,13 @@ TRACE_EVENT(f2fs_background_gc,
 		__entry->free		= free;
 	),
 
-<<<<<<< HEAD
-	TP_printk("dev = (%d,%d), wait_ms = %ld, prefree = %u, free = %u",
-		show_dev(__entry),
-=======
 	TP_printk("dev = (%d,%d), wait_ms = %u, prefree = %u, free = %u",
 		show_dev(__entry->dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->wait_ms,
 		__entry->prefree,
 		__entry->free)
 );
 
-<<<<<<< HEAD
-=======
 TRACE_EVENT(f2fs_gc_begin,
 
 	TP_PROTO(struct super_block *sb, int gc_type, bool no_bg_gc,
@@ -930,7 +775,6 @@ TRACE_EVENT(f2fs_gc_end,
 		__entry->prefree_seg)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(f2fs_get_victim,
 
 	TP_PROTO(struct super_block *sb, int type, int gc_type,
@@ -946,10 +790,7 @@ TRACE_EVENT(f2fs_get_victim,
 		__field(int,	alloc_mode)
 		__field(int,	gc_mode)
 		__field(unsigned int,	victim)
-<<<<<<< HEAD
-=======
 		__field(unsigned int,	cost)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned int,	ofs_unit)
 		__field(unsigned int,	pre_victim)
 		__field(unsigned int,	prefree)
@@ -963,43 +804,29 @@ TRACE_EVENT(f2fs_get_victim,
 		__entry->alloc_mode	= p->alloc_mode;
 		__entry->gc_mode	= p->gc_mode;
 		__entry->victim		= p->min_segno;
-<<<<<<< HEAD
-=======
 		__entry->cost		= p->min_cost;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ofs_unit	= p->ofs_unit;
 		__entry->pre_victim	= pre_victim;
 		__entry->prefree	= prefree;
 		__entry->free		= free;
 	),
 
-<<<<<<< HEAD
-	TP_printk("dev = (%d,%d), type = %s, policy = (%s, %s, %s), victim = %u "
-		"ofs_unit = %u, pre_victim_secno = %d, prefree = %u, free = %u",
-		show_dev(__entry),
-=======
 	TP_printk("dev = (%d,%d), type = %s, policy = (%s, %s, %s), "
 		"victim = %u, cost = %u, ofs_unit = %u, "
 		"pre_victim_secno = %d, prefree = %u, free = %u",
 		show_dev(__entry->dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_data_type(__entry->type),
 		show_gc_type(__entry->gc_type),
 		show_alloc_mode(__entry->alloc_mode),
 		show_victim_policy(__entry->gc_mode),
 		__entry->victim,
-<<<<<<< HEAD
-=======
 		__entry->cost,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ofs_unit,
 		(int)__entry->pre_victim,
 		__entry->prefree,
 		__entry->free)
 );
 
-<<<<<<< HEAD
-=======
 TRACE_EVENT(f2fs_lookup_start,
 
 	TP_PROTO(struct inode *dir, struct dentry *dentry, unsigned int flags),
@@ -1154,7 +981,6 @@ TRACE_EVENT(f2fs_readdir,
 		__entry->err)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(f2fs_fallocate,
 
 	TP_PROTO(struct inode *inode, int mode,
@@ -1197,44 +1023,21 @@ TRACE_EVENT(f2fs_fallocate,
 
 TRACE_EVENT(f2fs_direct_IO_enter,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, loff_t offset, unsigned long len, int rw),
-
-	TP_ARGS(inode, offset, len, rw),
-=======
 	TP_PROTO(struct inode *inode, struct kiocb *iocb, long len, int rw),
 
 	TP_ARGS(inode, iocb, len, rw),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
-<<<<<<< HEAD
-		__field(loff_t,	pos)
-=======
 		__field(loff_t,	ki_pos)
 		__field(int,	ki_flags)
 		__field(u16,	ki_ioprio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned long,	len)
 		__field(int,	rw)
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev	= inode->i_sb->s_dev;
-		__entry->ino	= inode->i_ino;
-		__entry->pos	= offset;
-		__entry->len	= len;
-		__entry->rw	= rw;
-	),
-
-	TP_printk("dev = (%d,%d), ino = %lu pos = %lld len = %lu rw = %d",
-		show_dev_ino(__entry),
-		__entry->pos,
-		__entry->len,
-=======
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->ino		= inode->i_ino;
 		__entry->ki_pos		= iocb->ki_pos;
@@ -1250,7 +1053,6 @@ TRACE_EVENT(f2fs_direct_IO_enter,
 		__entry->len,
 		__entry->ki_flags,
 		__entry->ki_ioprio,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->rw)
 );
 
@@ -1288,43 +1090,24 @@ TRACE_EVENT(f2fs_direct_IO_exit,
 		__entry->ret)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(f2fs_reserve_new_block,
-
-	TP_PROTO(struct inode *inode, nid_t nid, unsigned int ofs_in_node),
-
-	TP_ARGS(inode, nid, ofs_in_node),
-=======
 TRACE_EVENT(f2fs_reserve_new_blocks,
 
 	TP_PROTO(struct inode *inode, nid_t nid, unsigned int ofs_in_node,
 							blkcnt_t count),
 
 	TP_ARGS(inode, nid, ofs_in_node, count),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(nid_t, nid)
 		__field(unsigned int, ofs_in_node)
-<<<<<<< HEAD
-=======
 		__field(blkcnt_t, count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->nid	= nid;
 		__entry->ofs_in_node = ofs_in_node;
-<<<<<<< HEAD
-	),
-
-	TP_printk("dev = (%d,%d), nid = %u, ofs_in_node = %u",
-		show_dev(__entry),
-		(unsigned int)__entry->nid,
-		__entry->ofs_in_node)
-=======
 		__entry->count = count;
 	),
 
@@ -1333,7 +1116,6 @@ TRACE_EVENT(f2fs_reserve_new_blocks,
 		(unsigned int)__entry->nid,
 		__entry->ofs_in_node,
 		(unsigned long long)__entry->count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
@@ -1348,25 +1130,13 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__field(pgoff_t, index)
 		__field(block_t, old_blkaddr)
 		__field(block_t, new_blkaddr)
-<<<<<<< HEAD
-		__field(int, rw)
-=======
 		__field(enum req_op, op)
 		__field(blk_opf_t, op_flags)
 		__field(int, temp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, type)
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev		= page->mapping->host->i_sb->s_dev;
-		__entry->ino		= page->mapping->host->i_ino;
-		__entry->index		= page->index;
-		__entry->old_blkaddr	= fio->old_blkaddr;
-		__entry->new_blkaddr	= fio->new_blkaddr;
-		__entry->rw		= fio->rw;
-=======
 		__entry->dev		= page_file_mapping(page)->host->i_sb->s_dev;
 		__entry->ino		= page_file_mapping(page)->host->i_ino;
 		__entry->index		= page->index;
@@ -1375,26 +1145,17 @@ DECLARE_EVENT_CLASS(f2fs__submit_page_bio,
 		__entry->op		= fio->op;
 		__entry->op_flags	= fio->op_flags;
 		__entry->temp		= fio->temp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->type		= fio->type;
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, page_index = 0x%lx, "
-<<<<<<< HEAD
-		"oldaddr = 0x%llx, newaddr = 0x%llx rw = %s%s, type = %s",
-=======
 		"oldaddr = 0x%llx, newaddr = 0x%llx, rw = %s(%s), type = %s_%s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_dev_ino(__entry),
 		(unsigned long)__entry->index,
 		(unsigned long long)__entry->old_blkaddr,
 		(unsigned long long)__entry->new_blkaddr,
-<<<<<<< HEAD
-		show_bio_type(__entry->rw),
-=======
 		show_bio_type(__entry->op, __entry->op_flags),
 		show_block_temp(__entry->temp),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_block_type(__entry->type))
 );
 
@@ -1407,11 +1168,7 @@ DEFINE_EVENT_CONDITION(f2fs__submit_page_bio, f2fs_submit_page_bio,
 	TP_CONDITION(page->mapping)
 );
 
-<<<<<<< HEAD
-DEFINE_EVENT_CONDITION(f2fs__submit_page_bio, f2fs_submit_page_mbio,
-=======
 DEFINE_EVENT_CONDITION(f2fs__submit_page_bio, f2fs_submit_page_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_PROTO(struct page *page, struct f2fs_io_info *fio),
 
@@ -1420,18 +1177,6 @@ DEFINE_EVENT_CONDITION(f2fs__submit_page_bio, f2fs_submit_page_write,
 	TP_CONDITION(page->mapping)
 );
 
-<<<<<<< HEAD
-DECLARE_EVENT_CLASS(f2fs__submit_bio,
-
-	TP_PROTO(struct super_block *sb, struct f2fs_io_info *fio,
-						struct bio *bio),
-
-	TP_ARGS(sb, fio, bio),
-
-	TP_STRUCT__entry(
-		__field(dev_t,	dev)
-		__field(int,	rw)
-=======
 DECLARE_EVENT_CLASS(f2fs__bio,
 
 	TP_PROTO(struct super_block *sb, int type, struct bio *bio),
@@ -1443,7 +1188,6 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 		__field(dev_t,	target)
 		__field(enum req_op,	op)
 		__field(blk_opf_t,	op_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int,	type)
 		__field(sector_t,	sector)
 		__field(unsigned int,	size)
@@ -1451,17 +1195,6 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 
 	TP_fast_assign(
 		__entry->dev		= sb->s_dev;
-<<<<<<< HEAD
-		__entry->rw		= fio->rw;
-		__entry->type		= fio->type;
-		__entry->sector		= bio->bi_sector;
-		__entry->size		= bio->bi_size;
-	),
-
-	TP_printk("dev = (%d,%d), %s%s, %s, sector = %lld, size = %u",
-		show_dev(__entry),
-		show_bio_type(__entry->rw),
-=======
 		__entry->target		= bio_dev(bio);
 		__entry->op		= bio_op(bio);
 		__entry->op_flags	= bio->bi_opf;
@@ -1474,38 +1207,20 @@ DECLARE_EVENT_CLASS(f2fs__bio,
 		show_dev(__entry->target),
 		show_dev(__entry->dev),
 		show_bio_type(__entry->op, __entry->op_flags),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_block_type(__entry->type),
 		(unsigned long long)__entry->sector,
 		__entry->size)
 );
 
-<<<<<<< HEAD
-DEFINE_EVENT_CONDITION(f2fs__submit_bio, f2fs_submit_write_bio,
-
-	TP_PROTO(struct super_block *sb, struct f2fs_io_info *fio,
-							struct bio *bio),
-
-	TP_ARGS(sb, fio, bio),
-=======
 DEFINE_EVENT_CONDITION(f2fs__bio, f2fs_prepare_write_bio,
 
 	TP_PROTO(struct super_block *sb, int type, struct bio *bio),
 
 	TP_ARGS(sb, type, bio),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_CONDITION(bio)
 );
 
-<<<<<<< HEAD
-DEFINE_EVENT_CONDITION(f2fs__submit_bio, f2fs_submit_read_bio,
-
-	TP_PROTO(struct super_block *sb, struct f2fs_io_info *fio,
-							struct bio *bio),
-
-	TP_ARGS(sb, fio, bio),
-=======
 DEFINE_EVENT_CONDITION(f2fs__bio, f2fs_prepare_read_bio,
 
 	TP_PROTO(struct super_block *sb, int type, struct bio *bio),
@@ -1529,33 +1244,21 @@ DEFINE_EVENT_CONDITION(f2fs__bio, f2fs_submit_write_bio,
 	TP_PROTO(struct super_block *sb, int type, struct bio *bio),
 
 	TP_ARGS(sb, type, bio),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_CONDITION(bio)
 );
 
 TRACE_EVENT(f2fs_write_begin,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len,
-				unsigned int flags),
-
-	TP_ARGS(inode, pos, len, flags),
-=======
 	TP_PROTO(struct inode *inode, loff_t pos, unsigned int len),
 
 	TP_ARGS(inode, pos, len),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
 		__field(loff_t,	pos)
 		__field(unsigned int, len)
-<<<<<<< HEAD
-		__field(unsigned int, flags)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -1563,23 +1266,12 @@ TRACE_EVENT(f2fs_write_begin,
 		__entry->ino	= inode->i_ino;
 		__entry->pos	= pos;
 		__entry->len	= len;
-<<<<<<< HEAD
-		__entry->flags	= flags;
-	),
-
-	TP_printk("dev = (%d,%d), ino = %lu, pos = %llu, len = %u, flags = %u",
-		show_dev_ino(__entry),
-		(unsigned long long)__entry->pos,
-		__entry->len,
-		__entry->flags)
-=======
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, pos = %llu, len = %u",
 		show_dev_ino(__entry),
 		(unsigned long long)__entry->pos,
 		__entry->len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(f2fs_write_end,
@@ -1629,18 +1321,11 @@ DECLARE_EVENT_CLASS(f2fs__page,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev	= page->mapping->host->i_sb->s_dev;
-		__entry->ino	= page->mapping->host->i_ino;
-		__entry->type	= type;
-		__entry->dir	= S_ISDIR(page->mapping->host->i_mode);
-=======
 		__entry->dev	= page_file_mapping(page)->host->i_sb->s_dev;
 		__entry->ino	= page_file_mapping(page)->host->i_ino;
 		__entry->type	= type;
 		__entry->dir	=
 			S_ISDIR(page_file_mapping(page)->host->i_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->index	= page->index;
 		__entry->dirty	= PageDirty(page);
 		__entry->uptodate = PageUptodate(page);
@@ -1684,27 +1369,6 @@ DEFINE_EVENT(f2fs__page, f2fs_set_page_dirty,
 	TP_ARGS(page, type)
 );
 
-<<<<<<< HEAD
-DEFINE_EVENT(f2fs__page, f2fs_vm_page_mkwrite,
-
-	TP_PROTO(struct page *page, int type),
-
-	TP_ARGS(page, type)
-);
-
-DEFINE_EVENT(f2fs__page, f2fs_register_inmem_page,
-
-	TP_PROTO(struct page *page, int type),
-
-	TP_ARGS(page, type)
-);
-
-DEFINE_EVENT(f2fs__page, f2fs_commit_inmem_page,
-
-	TP_PROTO(struct page *page, int type),
-
-	TP_ARGS(page, type)
-=======
 TRACE_EVENT(f2fs_replace_atomic_write_block,
 
 	TP_PROTO(struct inode *inode, struct inode *cow_inode, pgoff_t index,
@@ -1786,7 +1450,6 @@ DEFINE_EVENT(f2fs_mmap, f2fs_vm_page_mkwrite,
 			vm_flags_t flags, vm_fault_t ret),
 
 	TP_ARGS(inode, index, flags, ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(f2fs_writepages,
@@ -1811,10 +1474,7 @@ TRACE_EVENT(f2fs_writepages,
 		__field(char,	tagged_writepages)
 		__field(char,	for_reclaim)
 		__field(char,	range_cyclic)
-<<<<<<< HEAD
-=======
 		__field(char,	for_sync)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -1833,19 +1493,12 @@ TRACE_EVENT(f2fs_writepages,
 		__entry->tagged_writepages	= wbc->tagged_writepages;
 		__entry->for_reclaim	= wbc->for_reclaim;
 		__entry->range_cyclic	= wbc->range_cyclic;
-<<<<<<< HEAD
-=======
 		__entry->for_sync	= wbc->for_sync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("dev = (%d,%d), ino = %lu, %s, %s, nr_to_write %ld, "
 		"skipped %ld, start %lld, end %lld, wb_idx %lu, sync_mode %d, "
-<<<<<<< HEAD
-		"kupdate %u background %u tagged %u reclaim %u cyclic %u",
-=======
 		"kupdate %u background %u tagged %u reclaim %u cyclic %u sync %u",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_dev_ino(__entry),
 		show_block_type(__entry->type),
 		show_file_type(__entry->dir),
@@ -1859,25 +1512,15 @@ TRACE_EVENT(f2fs_writepages,
 		__entry->for_background,
 		__entry->tagged_writepages,
 		__entry->for_reclaim,
-<<<<<<< HEAD
-		__entry->range_cyclic)
-=======
 		__entry->range_cyclic,
 		__entry->for_sync)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(f2fs_readpages,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, struct page *page, unsigned int nrpage),
-
-	TP_ARGS(inode, page, nrpage),
-=======
 	TP_PROTO(struct inode *inode, pgoff_t start, unsigned int nrpage),
 
 	TP_ARGS(inode, start, nrpage),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
@@ -1889,11 +1532,7 @@ TRACE_EVENT(f2fs_readpages,
 	TP_fast_assign(
 		__entry->dev	= inode->i_sb->s_dev;
 		__entry->ino	= inode->i_ino;
-<<<<<<< HEAD
-		__entry->start	= page->index;
-=======
 		__entry->start	= start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->nrpage	= nrpage;
 	),
 
@@ -1905,43 +1544,19 @@ TRACE_EVENT(f2fs_readpages,
 
 TRACE_EVENT(f2fs_write_checkpoint,
 
-<<<<<<< HEAD
-	TP_PROTO(struct super_block *sb, int reason, char *msg),
-=======
 	TP_PROTO(struct super_block *sb, int reason, const char *msg),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(sb, reason, msg),
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(int,	reason)
-<<<<<<< HEAD
-		__field(char *,	msg)
-=======
 		__string(dest_msg, msg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev		= sb->s_dev;
 		__entry->reason		= reason;
-<<<<<<< HEAD
-		__entry->msg		= msg;
-	),
-
-	TP_printk("dev = (%d,%d), checkpoint for %s, state = %s",
-		show_dev(__entry),
-		show_cpreason(__entry->reason),
-		__entry->msg)
-);
-
-TRACE_EVENT(f2fs_issue_discard,
-
-	TP_PROTO(struct super_block *sb, block_t blkstart, block_t blklen),
-
-	TP_ARGS(sb, blkstart, blklen),
-=======
 		__assign_str(dest_msg, msg);
 	),
 
@@ -1956,7 +1571,6 @@ DECLARE_EVENT_CLASS(f2fs_discard,
 	TP_PROTO(struct block_device *dev, block_t blkstart, block_t blklen),
 
 	TP_ARGS(dev, blkstart, blklen),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
@@ -1965,33 +1579,17 @@ DECLARE_EVENT_CLASS(f2fs_discard,
 	),
 
 	TP_fast_assign(
-<<<<<<< HEAD
-		__entry->dev	= sb->s_dev;
-=======
 		__entry->dev	= dev->bd_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->blkstart = blkstart;
 		__entry->blklen = blklen;
 	),
 
 	TP_printk("dev = (%d,%d), blkstart = 0x%llx, blklen = 0x%llx",
-<<<<<<< HEAD
-		show_dev(__entry),
-=======
 		show_dev(__entry->dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(unsigned long long)__entry->blkstart,
 		(unsigned long long)__entry->blklen)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(f2fs_issue_flush,
-
-	TP_PROTO(struct super_block *sb, unsigned int nobarrier,
-					unsigned int flush_merge),
-
-	TP_ARGS(sb, nobarrier, flush_merge),
-=======
 DEFINE_EVENT(f2fs_discard, f2fs_queue_discard,
 
 	TP_PROTO(struct block_device *dev, block_t blkstart, block_t blklen),
@@ -2054,26 +1652,11 @@ TRACE_EVENT(f2fs_issue_flush,
 				unsigned int flush_merge, int ret),
 
 	TP_ARGS(dev, nobarrier, flush_merge, ret),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(unsigned int, nobarrier)
 		__field(unsigned int, flush_merge)
-<<<<<<< HEAD
-	),
-
-	TP_fast_assign(
-		__entry->dev	= sb->s_dev;
-		__entry->nobarrier = nobarrier;
-		__entry->flush_merge = flush_merge;
-	),
-
-	TP_printk("dev = (%d,%d), %s %s",
-		show_dev(__entry),
-		__entry->nobarrier ? "skip (nobarrier)" : "issue",
-		__entry->flush_merge ? " with flush_merge" : "")
-=======
 		__field(int,  ret)
 	),
 
@@ -2089,45 +1672,25 @@ TRACE_EVENT(f2fs_issue_flush,
 		__entry->nobarrier ? "skip (nobarrier)" : "issue",
 		__entry->flush_merge ? " with flush_merge" : "",
 		__entry->ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(f2fs_lookup_extent_tree_start,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, unsigned int pgofs),
-
-	TP_ARGS(inode, pgofs),
-=======
 	TP_PROTO(struct inode *inode, unsigned int pgofs, enum extent_type type),
 
 	TP_ARGS(inode, pgofs, type),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
 		__field(unsigned int, pgofs)
-<<<<<<< HEAD
-=======
 		__field(enum extent_type, type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev = inode->i_sb->s_dev;
 		__entry->ino = inode->i_ino;
 		__entry->pgofs = pgofs;
-<<<<<<< HEAD
-	),
-
-	TP_printk("dev = (%d,%d), ino = %lu, pgofs = %u",
-		show_dev_ino(__entry),
-		__entry->pgofs)
-);
-
-TRACE_EVENT_CONDITION(f2fs_lookup_extent_tree_end,
-=======
 		__entry->type = type;
 	),
 
@@ -2138,7 +1701,6 @@ TRACE_EVENT_CONDITION(f2fs_lookup_extent_tree_end,
 );
 
 TRACE_EVENT_CONDITION(f2fs_lookup_read_extent_tree_end,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_PROTO(struct inode *inode, unsigned int pgofs,
 						struct extent_info *ei),
@@ -2152,13 +1714,8 @@ TRACE_EVENT_CONDITION(f2fs_lookup_read_extent_tree_end,
 		__field(ino_t,	ino)
 		__field(unsigned int, pgofs)
 		__field(unsigned int, fofs)
-<<<<<<< HEAD
-		__field(u32, blk)
-		__field(unsigned int, len)
-=======
 		__field(unsigned int, len)
 		__field(u32, blk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -2166,27 +1723,6 @@ TRACE_EVENT_CONDITION(f2fs_lookup_read_extent_tree_end,
 		__entry->ino = inode->i_ino;
 		__entry->pgofs = pgofs;
 		__entry->fofs = ei->fofs;
-<<<<<<< HEAD
-		__entry->blk = ei->blk;
-		__entry->len = ei->len;
-	),
-
-	TP_printk("dev = (%d,%d), ino = %lu, pgofs = %u, "
-		"ext_info(fofs: %u, blk: %u, len: %u)",
-		show_dev_ino(__entry),
-		__entry->pgofs,
-		__entry->fofs,
-		__entry->blk,
-		__entry->len)
-);
-
-TRACE_EVENT(f2fs_update_extent_tree_range,
-
-	TP_PROTO(struct inode *inode, unsigned int pgofs, block_t blkaddr,
-						unsigned int len),
-
-	TP_ARGS(inode, pgofs, blkaddr, len),
-=======
 		__entry->len = ei->len;
 		__entry->blk = ei->blk;
 	),
@@ -2246,7 +1782,6 @@ TRACE_EVENT(f2fs_update_read_extent_tree_range,
 						unsigned int c_len),
 
 	TP_ARGS(inode, pgofs, len, blkaddr, c_len),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
@@ -2254,28 +1789,13 @@ TRACE_EVENT(f2fs_update_read_extent_tree_range,
 		__field(unsigned int, pgofs)
 		__field(u32, blk)
 		__field(unsigned int, len)
-<<<<<<< HEAD
-=======
 		__field(unsigned int, c_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev = inode->i_sb->s_dev;
 		__entry->ino = inode->i_ino;
 		__entry->pgofs = pgofs;
-<<<<<<< HEAD
-		__entry->blk = blkaddr;
-		__entry->len = len;
-	),
-
-	TP_printk("dev = (%d,%d), ino = %lu, pgofs = %u, "
-					"blkaddr = %u, len = %u",
-		show_dev_ino(__entry),
-		__entry->pgofs,
-		__entry->blk,
-		__entry->len)
-=======
 		__entry->len = len;
 		__entry->blk = blkaddr;
 		__entry->c_len = c_len;
@@ -2323,44 +1843,26 @@ TRACE_EVENT(f2fs_update_age_extent_tree_range,
 		__entry->len,
 		__entry->age,
 		__entry->blocks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(f2fs_shrink_extent_tree,
 
 	TP_PROTO(struct f2fs_sb_info *sbi, unsigned int node_cnt,
-<<<<<<< HEAD
-						unsigned int tree_cnt),
-
-	TP_ARGS(sbi, node_cnt, tree_cnt),
-=======
 			unsigned int tree_cnt, enum extent_type type),
 
 	TP_ARGS(sbi, node_cnt, tree_cnt, type),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(unsigned int, node_cnt)
 		__field(unsigned int, tree_cnt)
-<<<<<<< HEAD
-=======
 		__field(enum extent_type, type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev = sbi->sb->s_dev;
 		__entry->node_cnt = node_cnt;
 		__entry->tree_cnt = tree_cnt;
-<<<<<<< HEAD
-	),
-
-	TP_printk("dev = (%d,%d), shrunk: node_cnt = %u, tree_cnt = %u",
-		show_dev(__entry),
-		__entry->node_cnt,
-		__entry->tree_cnt)
-=======
 		__entry->type = type;
 	),
 
@@ -2369,43 +1871,26 @@ TRACE_EVENT(f2fs_shrink_extent_tree,
 		__entry->node_cnt,
 		__entry->tree_cnt,
 		show_extent_type(__entry->type))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(f2fs_destroy_extent_tree,
 
-<<<<<<< HEAD
-	TP_PROTO(struct inode *inode, unsigned int node_cnt),
-
-	TP_ARGS(inode, node_cnt),
-=======
 	TP_PROTO(struct inode *inode, unsigned int node_cnt,
 				enum extent_type type),
 
 	TP_ARGS(inode, node_cnt, type),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_STRUCT__entry(
 		__field(dev_t,	dev)
 		__field(ino_t,	ino)
 		__field(unsigned int, node_cnt)
-<<<<<<< HEAD
-=======
 		__field(enum extent_type, type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->dev = inode->i_sb->s_dev;
 		__entry->ino = inode->i_ino;
 		__entry->node_cnt = node_cnt;
-<<<<<<< HEAD
-	),
-
-	TP_printk("dev = (%d,%d), ino = %lu, destroyed: node_cnt = %u",
-		show_dev_ino(__entry),
-		__entry->node_cnt)
-=======
 		__entry->type = type;
 	),
 
@@ -2413,27 +1898,18 @@ TRACE_EVENT(f2fs_destroy_extent_tree,
 		show_dev_ino(__entry),
 		__entry->node_cnt,
 		show_extent_type(__entry->type))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 DECLARE_EVENT_CLASS(f2fs_sync_dirty_inodes,
 
-<<<<<<< HEAD
-	TP_PROTO(struct super_block *sb, int type, int count),
-=======
 	TP_PROTO(struct super_block *sb, int type, s64 count),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(sb, type, count),
 
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(int, type)
-<<<<<<< HEAD
-		__field(int, count)
-=======
 		__field(s64, count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
@@ -2442,41 +1918,26 @@ DECLARE_EVENT_CLASS(f2fs_sync_dirty_inodes,
 		__entry->count	= count;
 	),
 
-<<<<<<< HEAD
-	TP_printk("dev = (%d,%d), %s, dirty count = %d",
-		show_dev(__entry),
-=======
 	TP_printk("dev = (%d,%d), %s, dirty count = %lld",
 		show_dev(__entry->dev),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_file_type(__entry->type),
 		__entry->count)
 );
 
 DEFINE_EVENT(f2fs_sync_dirty_inodes, f2fs_sync_dirty_inodes_enter,
 
-<<<<<<< HEAD
-	TP_PROTO(struct super_block *sb, int type, int count),
-=======
 	TP_PROTO(struct super_block *sb, int type, s64 count),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(sb, type, count)
 );
 
 DEFINE_EVENT(f2fs_sync_dirty_inodes, f2fs_sync_dirty_inodes_exit,
 
-<<<<<<< HEAD
-	TP_PROTO(struct super_block *sb, int type, int count),
-=======
 	TP_PROTO(struct super_block *sb, int type, s64 count),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(sb, type, count)
 );
 
-<<<<<<< HEAD
-=======
 TRACE_EVENT(f2fs_shutdown,
 
 	TP_PROTO(struct f2fs_sb_info *sbi, unsigned int mode, int ret),
@@ -2943,7 +2404,6 @@ DEFINE_EVENT(f2fs__rw_end, f2fs_datawrite_end,
 	TP_ARGS(inode, offset, bytes)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_F2FS_H */
 
  /* This part must be outside protection */

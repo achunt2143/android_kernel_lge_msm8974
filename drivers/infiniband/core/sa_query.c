@@ -32,10 +32,6 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/random.h>
@@ -43,18 +39,6 @@
 #include <linux/slab.h>
 #include <linux/dma-mapping.h>
 #include <linux/kref.h>
-<<<<<<< HEAD
-#include <linux/idr.h>
-#include <linux/workqueue.h>
-
-#include <rdma/ib_pack.h>
-#include <rdma/ib_cache.h>
-#include "sa.h"
-
-MODULE_AUTHOR("Roland Dreier");
-MODULE_DESCRIPTION("InfiniBand subnet administration query support");
-MODULE_LICENSE("Dual BSD/GPL");
-=======
 #include <linux/xarray.h>
 #include <linux/workqueue.h>
 #include <uapi/linux/if_ether.h>
@@ -76,7 +60,6 @@ MODULE_LICENSE("Dual BSD/GPL");
 #define IB_SA_CPI_MAX_RETRY_CNT			3
 #define IB_SA_CPI_RETRY_WAIT			1000 /*msecs */
 static int sa_local_svc_timeout_ms = IB_SA_LOCAL_SVC_TIMEOUT_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ib_sa_sm_ah {
 	struct ib_ah        *ah;
@@ -85,8 +68,6 @@ struct ib_sa_sm_ah {
 	u8		     src_path_mask;
 };
 
-<<<<<<< HEAD
-=======
 enum rdma_class_port_info_type {
 	RDMA_CLASS_PORT_INFO_IB,
 	RDMA_CLASS_PORT_INFO_OPA
@@ -106,52 +87,32 @@ struct ib_sa_classport_cache {
 	struct rdma_class_port_info data;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ib_sa_port {
 	struct ib_mad_agent *agent;
 	struct ib_sa_sm_ah  *sm_ah;
 	struct work_struct   update_task;
-<<<<<<< HEAD
-	spinlock_t           ah_lock;
-	u8                   port_num;
-=======
 	struct ib_sa_classport_cache classport_info;
 	struct delayed_work ib_cpi_work;
 	spinlock_t                   classport_lock; /* protects class port info set */
 	spinlock_t           ah_lock;
 	u32		     port_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ib_sa_device {
 	int                     start_port, end_port;
 	struct ib_event_handler event_handler;
-<<<<<<< HEAD
-	struct ib_sa_port port[0];
-};
-
-struct ib_sa_query {
-	void (*callback)(struct ib_sa_query *, int, struct ib_sa_mad *);
-=======
 	struct ib_sa_port port[];
 };
 
 struct ib_sa_query {
 	void (*callback)(struct ib_sa_query *sa_query, int status,
 			 struct ib_sa_mad *mad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*release)(struct ib_sa_query *);
 	struct ib_sa_client    *client;
 	struct ib_sa_port      *port;
 	struct ib_mad_send_buf *mad_buf;
 	struct ib_sa_sm_ah     *sm_ah;
 	int			id;
-<<<<<<< HEAD
-};
-
-struct ib_sa_service_query {
-	void (*callback)(int, struct ib_sa_service_rec *, void *);
-=======
 	u32			flags;
 	struct list_head	list; /* Local svc request list */
 	u32			seq; /* Local svc request sequence number */
@@ -173,18 +134,12 @@ struct ib_sa_path_query {
 
 struct ib_sa_guidinfo_query {
 	void (*callback)(int, struct ib_sa_guidinfo_rec *, void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *context;
 	struct ib_sa_query sa_query;
 };
 
-<<<<<<< HEAD
-struct ib_sa_path_query {
-	void (*callback)(int, struct ib_sa_path_rec *, void *);
-=======
 struct ib_sa_classport_info_query {
 	void (*callback)(void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *context;
 	struct ib_sa_query sa_query;
 };
@@ -195,10 +150,6 @@ struct ib_sa_mcmember_query {
 	struct ib_sa_query sa_query;
 };
 
-<<<<<<< HEAD
-static void ib_sa_add_one(struct ib_device *device);
-static void ib_sa_remove_one(struct ib_device *device);
-=======
 static LIST_HEAD(ib_nl_request_list);
 static DEFINE_SPINLOCK(ib_nl_request_lock);
 static atomic_t ib_nl_sa_request_seq;
@@ -221,7 +172,6 @@ static const struct nla_policy ib_nl_policy[LS_NLA_TYPE_MAX] = {
 
 static int ib_sa_add_one(struct ib_device *device);
 static void ib_sa_remove_one(struct ib_device *device, void *client_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ib_client sa_client = {
 	.name   = "sa",
@@ -229,24 +179,14 @@ static struct ib_client sa_client = {
 	.remove = ib_sa_remove_one
 };
 
-<<<<<<< HEAD
-static DEFINE_SPINLOCK(idr_lock);
-static DEFINE_IDR(query_idr);
-=======
 static DEFINE_XARRAY_FLAGS(queries, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_IRQ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(tid_lock);
 static u32 tid;
 
 #define PATH_REC_FIELD(field) \
-<<<<<<< HEAD
-	.struct_offset_bytes = offsetof(struct ib_sa_path_rec, field),		\
-	.struct_size_bytes   = sizeof ((struct ib_sa_path_rec *) 0)->field,	\
-=======
 	.struct_offset_bytes = offsetof(struct sa_path_rec, field),	\
 	.struct_size_bytes   = sizeof_field(struct sa_path_rec, field),	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.field_name          = "sa_path_rec:" #field
 
 static const struct ib_field path_rec_table[] = {
@@ -262,17 +202,6 @@ static const struct ib_field path_rec_table[] = {
 	  .offset_words = 6,
 	  .offset_bits  = 0,
 	  .size_bits    = 128 },
-<<<<<<< HEAD
-	{ PATH_REC_FIELD(dlid),
-	  .offset_words = 10,
-	  .offset_bits  = 0,
-	  .size_bits    = 16 },
-	{ PATH_REC_FIELD(slid),
-	  .offset_words = 10,
-	  .offset_bits  = 16,
-	  .size_bits    = 16 },
-	{ PATH_REC_FIELD(raw_traffic),
-=======
 	{ PATH_REC_FIELD(ib.dlid),
 	  .offset_words = 10,
 	  .offset_bits  = 0,
@@ -282,7 +211,6 @@ static const struct ib_field path_rec_table[] = {
 	  .offset_bits  = 16,
 	  .size_bits    = 16 },
 	{ PATH_REC_FIELD(ib.raw_traffic),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  .offset_words = 11,
 	  .offset_bits  = 0,
 	  .size_bits    = 1 },
@@ -356,11 +284,6 @@ static const struct ib_field path_rec_table[] = {
 	  .size_bits    = 48 },
 };
 
-<<<<<<< HEAD
-#define MCMEMBER_REC_FIELD(field) \
-	.struct_offset_bytes = offsetof(struct ib_sa_mcmember_rec, field),	\
-	.struct_size_bytes   = sizeof ((struct ib_sa_mcmember_rec *) 0)->field,	\
-=======
 #define OPA_PATH_REC_FIELD(field) \
 	.struct_offset_bytes = \
 		offsetof(struct sa_path_rec, field), \
@@ -494,7 +417,6 @@ static const struct ib_field opa_path_rec_table[] = {
 #define MCMEMBER_REC_FIELD(field) \
 	.struct_offset_bytes = offsetof(struct ib_sa_mcmember_rec, field),	\
 	.struct_size_bytes   = sizeof_field(struct ib_sa_mcmember_rec, field),	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.field_name          = "sa_mcmember_rec:" #field
 
 static const struct ib_field mcmember_rec_table[] = {
@@ -576,56 +498,6 @@ static const struct ib_field mcmember_rec_table[] = {
 	  .size_bits    = 23 },
 };
 
-<<<<<<< HEAD
-#define SERVICE_REC_FIELD(field) \
-	.struct_offset_bytes = offsetof(struct ib_sa_service_rec, field),	\
-	.struct_size_bytes   = sizeof ((struct ib_sa_service_rec *) 0)->field,	\
-	.field_name          = "sa_service_rec:" #field
-
-static const struct ib_field service_rec_table[] = {
-	{ SERVICE_REC_FIELD(id),
-	  .offset_words = 0,
-	  .offset_bits  = 0,
-	  .size_bits    = 64 },
-	{ SERVICE_REC_FIELD(gid),
-	  .offset_words = 2,
-	  .offset_bits  = 0,
-	  .size_bits    = 128 },
-	{ SERVICE_REC_FIELD(pkey),
-	  .offset_words = 6,
-	  .offset_bits  = 0,
-	  .size_bits    = 16 },
-	{ SERVICE_REC_FIELD(lease),
-	  .offset_words = 7,
-	  .offset_bits  = 0,
-	  .size_bits    = 32 },
-	{ SERVICE_REC_FIELD(key),
-	  .offset_words = 8,
-	  .offset_bits  = 0,
-	  .size_bits    = 128 },
-	{ SERVICE_REC_FIELD(name),
-	  .offset_words = 12,
-	  .offset_bits  = 0,
-	  .size_bits    = 64*8 },
-	{ SERVICE_REC_FIELD(data8),
-	  .offset_words = 28,
-	  .offset_bits  = 0,
-	  .size_bits    = 16*8 },
-	{ SERVICE_REC_FIELD(data16),
-	  .offset_words = 32,
-	  .offset_bits  = 0,
-	  .size_bits    = 8*16 },
-	{ SERVICE_REC_FIELD(data32),
-	  .offset_words = 36,
-	  .offset_bits  = 0,
-	  .size_bits    = 4*32 },
-	{ SERVICE_REC_FIELD(data64),
-	  .offset_words = 40,
-	  .offset_bits  = 0,
-	  .size_bits    = 2*64 },
-};
-
-=======
 #define CLASSPORTINFO_REC_FIELD(field) \
 	.struct_offset_bytes = offsetof(struct ib_class_port_info, field),	\
 	.struct_size_bytes   = sizeof_field(struct ib_class_port_info, field),	\
@@ -1244,97 +1116,14 @@ resp_out:
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void free_sm_ah(struct kref *kref)
 {
 	struct ib_sa_sm_ah *sm_ah = container_of(kref, struct ib_sa_sm_ah, ref);
 
-<<<<<<< HEAD
-	ib_destroy_ah(sm_ah->ah);
-	kfree(sm_ah);
-}
-
-static void update_sm_ah(struct work_struct *work)
-{
-	struct ib_sa_port *port =
-		container_of(work, struct ib_sa_port, update_task);
-	struct ib_sa_sm_ah *new_ah;
-	struct ib_port_attr port_attr;
-	struct ib_ah_attr   ah_attr;
-
-	if (ib_query_port(port->agent->device, port->port_num, &port_attr)) {
-		printk(KERN_WARNING "Couldn't query port\n");
-		return;
-	}
-
-	new_ah = kmalloc(sizeof *new_ah, GFP_KERNEL);
-	if (!new_ah) {
-		printk(KERN_WARNING "Couldn't allocate new SM AH\n");
-		return;
-	}
-
-	kref_init(&new_ah->ref);
-	new_ah->src_path_mask = (1 << port_attr.lmc) - 1;
-
-	new_ah->pkey_index = 0;
-	if (ib_find_pkey(port->agent->device, port->port_num,
-			 IB_DEFAULT_PKEY_FULL, &new_ah->pkey_index))
-		printk(KERN_ERR "Couldn't find index for default PKey\n");
-
-	memset(&ah_attr, 0, sizeof ah_attr);
-	ah_attr.dlid     = port_attr.sm_lid;
-	ah_attr.sl       = port_attr.sm_sl;
-	ah_attr.port_num = port->port_num;
-
-	new_ah->ah = ib_create_ah(port->agent->qp->pd, &ah_attr);
-	if (IS_ERR(new_ah->ah)) {
-		printk(KERN_WARNING "Couldn't create new SM AH\n");
-		kfree(new_ah);
-		return;
-	}
-
-	spin_lock_irq(&port->ah_lock);
-	if (port->sm_ah)
-		kref_put(&port->sm_ah->ref, free_sm_ah);
-	port->sm_ah = new_ah;
-	spin_unlock_irq(&port->ah_lock);
-
-}
-
-static void ib_sa_event(struct ib_event_handler *handler, struct ib_event *event)
-{
-	if (event->event == IB_EVENT_PORT_ERR    ||
-	    event->event == IB_EVENT_PORT_ACTIVE ||
-	    event->event == IB_EVENT_LID_CHANGE  ||
-	    event->event == IB_EVENT_PKEY_CHANGE ||
-	    event->event == IB_EVENT_SM_CHANGE   ||
-	    event->event == IB_EVENT_CLIENT_REREGISTER) {
-		unsigned long flags;
-		struct ib_sa_device *sa_dev =
-			container_of(handler, typeof(*sa_dev), event_handler);
-		struct ib_sa_port *port =
-			&sa_dev->port[event->element.port_num - sa_dev->start_port];
-
-		if (rdma_port_get_link_layer(handler->device, port->port_num) != IB_LINK_LAYER_INFINIBAND)
-			return;
-
-		spin_lock_irqsave(&port->ah_lock, flags);
-		if (port->sm_ah)
-			kref_put(&port->sm_ah->ref, free_sm_ah);
-		port->sm_ah = NULL;
-		spin_unlock_irqrestore(&port->ah_lock, flags);
-
-		queue_work(ib_wq, &sa_dev->port[event->element.port_num -
-					    sa_dev->start_port].update_task);
-	}
-}
-
-=======
 	rdma_destroy_ah(sm_ah->ah, 0);
 	kfree(sm_ah);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ib_sa_register_client(struct ib_sa_client *client)
 {
 	atomic_set(&client->users, 1);
@@ -1361,25 +1150,6 @@ EXPORT_SYMBOL(ib_sa_unregister_client);
 void ib_sa_cancel_query(int id, struct ib_sa_query *query)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	struct ib_mad_agent *agent;
-	struct ib_mad_send_buf *mad_buf;
-
-	spin_lock_irqsave(&idr_lock, flags);
-	if (idr_find(&query_idr, id) != query) {
-		spin_unlock_irqrestore(&idr_lock, flags);
-		return;
-	}
-	agent = query->port->agent;
-	mad_buf = query->mad_buf;
-	spin_unlock_irqrestore(&idr_lock, flags);
-
-	ib_cancel_mad(agent, mad_buf);
-}
-EXPORT_SYMBOL(ib_sa_cancel_query);
-
-static u8 get_src_path_mask(struct ib_device *device, u8 port_num)
-=======
 	struct ib_mad_send_buf *mad_buf;
 
 	xa_lock_irqsave(&queries, flags);
@@ -1401,7 +1171,6 @@ static u8 get_src_path_mask(struct ib_device *device, u8 port_num)
 EXPORT_SYMBOL(ib_sa_cancel_query);
 
 static u8 get_src_path_mask(struct ib_device *device, u32 port_num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_sa_device *sa_dev;
 	struct ib_sa_port   *port;
@@ -1420,45 +1189,6 @@ static u8 get_src_path_mask(struct ib_device *device, u32 port_num)
 	return src_path_mask;
 }
 
-<<<<<<< HEAD
-int ib_init_ah_from_path(struct ib_device *device, u8 port_num,
-			 struct ib_sa_path_rec *rec, struct ib_ah_attr *ah_attr)
-{
-	int ret;
-	u16 gid_index;
-	int force_grh;
-
-	memset(ah_attr, 0, sizeof *ah_attr);
-	ah_attr->dlid = be16_to_cpu(rec->dlid);
-	ah_attr->sl = rec->sl;
-	ah_attr->src_path_bits = be16_to_cpu(rec->slid) &
-				 get_src_path_mask(device, port_num);
-	ah_attr->port_num = port_num;
-	ah_attr->static_rate = rec->rate;
-
-	force_grh = rdma_port_get_link_layer(device, port_num) == IB_LINK_LAYER_ETHERNET;
-
-	if (rec->hop_limit > 1 || force_grh) {
-		ah_attr->ah_flags = IB_AH_GRH;
-		ah_attr->grh.dgid = rec->dgid;
-
-		ret = ib_find_cached_gid(device, &rec->sgid, &port_num,
-					 &gid_index);
-		if (ret)
-			return ret;
-
-		ah_attr->grh.sgid_index    = gid_index;
-		ah_attr->grh.flow_label    = be32_to_cpu(rec->flow_label);
-		ah_attr->grh.hop_limit     = rec->hop_limit;
-		ah_attr->grh.traffic_class = rec->traffic_class;
-	}
-	return 0;
-}
-EXPORT_SYMBOL(ib_init_ah_from_path);
-
-static int alloc_mad(struct ib_sa_query *query, gfp_t gfp_mask)
-{
-=======
 static int init_ah_attr_grh_fields(struct ib_device *device, u32 port_num,
 				   struct sa_path_rec *rec,
 				   struct rdma_ah_attr *ah_attr,
@@ -1537,7 +1267,6 @@ EXPORT_SYMBOL(ib_init_ah_attr_from_path);
 static int alloc_mad(struct ib_sa_query *query, gfp_t gfp_mask)
 {
 	struct rdma_ah_attr ah_attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&query->port->ah_lock, flags);
@@ -1549,12 +1278,6 @@ static int alloc_mad(struct ib_sa_query *query, gfp_t gfp_mask)
 	query->sm_ah = query->port->sm_ah;
 	spin_unlock_irqrestore(&query->port->ah_lock, flags);
 
-<<<<<<< HEAD
-	query->mad_buf = ib_create_send_mad(query->port->agent, 1,
-					    query->sm_ah->pkey_index,
-					    0, IB_MGMT_SA_HDR, IB_MGMT_SA_DATA,
-					    gfp_mask);
-=======
 	/*
 	 * Always check if sm_ah has valid dlid assigned,
 	 * before querying for class port info
@@ -1571,7 +1294,6 @@ static int alloc_mad(struct ib_sa_query *query, gfp_t gfp_mask)
 					    ((query->flags & IB_SA_QUERY_OPA) ?
 					     OPA_MGMT_BASE_VERSION :
 					     IB_MGMT_BASE_VERSION));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(query->mad_buf)) {
 		kref_put(&query->sm_ah->ref, free_sm_ah);
 		return -ENOMEM;
@@ -1588,24 +1310,13 @@ static void free_mad(struct ib_sa_query *query)
 	kref_put(&query->sm_ah->ref, free_sm_ah);
 }
 
-<<<<<<< HEAD
-static void init_mad(struct ib_sa_mad *mad, struct ib_mad_agent *agent)
-{
-=======
 static void init_mad(struct ib_sa_query *query, struct ib_mad_agent *agent)
 {
 	struct ib_sa_mad *mad = query->mad_buf->mad;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	memset(mad, 0, sizeof *mad);
 
-<<<<<<< HEAD
-	mad->mad_hdr.base_version  = IB_MGMT_BASE_VERSION;
-	mad->mad_hdr.mgmt_class    = IB_MGMT_CLASS_SUBN_ADM;
-	mad->mad_hdr.class_version = IB_SA_CLASS_VERSION;
-
-=======
 	if (query->flags & IB_SA_QUERY_OPA) {
 		mad->mad_hdr.base_version  = OPA_MGMT_BASE_VERSION;
 		mad->mad_hdr.class_version = OPA_SA_CLASS_VERSION;
@@ -1614,40 +1325,12 @@ static void init_mad(struct ib_sa_query *query, struct ib_mad_agent *agent)
 		mad->mad_hdr.class_version = IB_SA_CLASS_VERSION;
 	}
 	mad->mad_hdr.mgmt_class    = IB_MGMT_CLASS_SUBN_ADM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&tid_lock, flags);
 	mad->mad_hdr.tid           =
 		cpu_to_be64(((u64) agent->hi_tid) << 32 | tid++);
 	spin_unlock_irqrestore(&tid_lock, flags);
 }
 
-<<<<<<< HEAD
-static int send_mad(struct ib_sa_query *query, int timeout_ms, gfp_t gfp_mask)
-{
-	unsigned long flags;
-	int ret, id;
-
-retry:
-	if (!idr_pre_get(&query_idr, gfp_mask))
-		return -ENOMEM;
-	spin_lock_irqsave(&idr_lock, flags);
-	ret = idr_get_new(&query_idr, query, &id);
-	spin_unlock_irqrestore(&idr_lock, flags);
-	if (ret == -EAGAIN)
-		goto retry;
-	if (ret)
-		return ret;
-
-	query->mad_buf->timeout_ms  = timeout_ms;
-	query->mad_buf->context[0] = query;
-	query->id = id;
-
-	ret = ib_post_send_mad(query->mad_buf, NULL);
-	if (ret) {
-		spin_lock_irqsave(&idr_lock, flags);
-		idr_remove(&query_idr, id);
-		spin_unlock_irqrestore(&idr_lock, flags);
-=======
 static int send_mad(struct ib_sa_query *query, unsigned long timeout_ms,
 		    gfp_t gfp_mask)
 {
@@ -1685,7 +1368,6 @@ static int send_mad(struct ib_sa_query *query, unsigned long timeout_ms,
 		xa_lock_irqsave(&queries, flags);
 		__xa_erase(&queries, id);
 		xa_unlock_irqrestore(&queries, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1696,33 +1378,12 @@ static int send_mad(struct ib_sa_query *query, unsigned long timeout_ms,
 	return ret ? ret : id;
 }
 
-<<<<<<< HEAD
-void ib_sa_unpack_path(void *attribute, struct ib_sa_path_rec *rec)
-=======
 void ib_sa_unpack_path(void *attribute, struct sa_path_rec *rec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ib_unpack(path_rec_table, ARRAY_SIZE(path_rec_table), attribute, rec);
 }
 EXPORT_SYMBOL(ib_sa_unpack_path);
 
-<<<<<<< HEAD
-static void ib_sa_path_rec_callback(struct ib_sa_query *sa_query,
-				    int status,
-				    struct ib_sa_mad *mad)
-{
-	struct ib_sa_path_query *query =
-		container_of(sa_query, struct ib_sa_path_query, sa_query);
-
-	if (mad) {
-		struct ib_sa_path_rec rec;
-
-		ib_unpack(path_rec_table, ARRAY_SIZE(path_rec_table),
-			  mad->data, &rec);
-		query->callback(status, &rec, query->context);
-	} else
-		query->callback(status, NULL, query->context);
-=======
 void ib_sa_pack_path(struct sa_path_rec *rec, void *attribute)
 {
 	ib_pack(path_rec_table, ARRAY_SIZE(path_rec_table), rec, attribute);
@@ -1816,20 +1477,15 @@ static void ib_sa_path_rec_callback(struct ib_sa_query *sa_query,
 	} else {
 		query->callback(status, &rec, 1, query->context);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ib_sa_path_rec_release(struct ib_sa_query *sa_query)
 {
-<<<<<<< HEAD
-	kfree(container_of(sa_query, struct ib_sa_path_query, sa_query));
-=======
 	struct ib_sa_path_query *query =
 		container_of(sa_query, struct ib_sa_path_query, sa_query);
 
 	kfree(query->conv_pr);
 	kfree(query);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1858,15 +1514,6 @@ static void ib_sa_path_rec_release(struct ib_sa_query *sa_query)
  * the query.
  */
 int ib_sa_path_rec_get(struct ib_sa_client *client,
-<<<<<<< HEAD
-		       struct ib_device *device, u8 port_num,
-		       struct ib_sa_path_rec *rec,
-		       ib_sa_comp_mask comp_mask,
-		       int timeout_ms, gfp_t gfp_mask,
-		       void (*callback)(int status,
-					struct ib_sa_path_rec *resp,
-					void *context),
-=======
 		       struct ib_device *device, u32 port_num,
 		       struct sa_path_rec *rec,
 		       ib_sa_comp_mask comp_mask,
@@ -1874,7 +1521,6 @@ int ib_sa_path_rec_get(struct ib_sa_client *client,
 		       void (*callback)(int status,
 					struct sa_path_rec *resp,
 					unsigned int num_paths, void *context),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       void *context,
 		       struct ib_sa_query **sa_query)
 {
@@ -1883,21 +1529,12 @@ int ib_sa_path_rec_get(struct ib_sa_client *client,
 	struct ib_sa_port   *port;
 	struct ib_mad_agent *agent;
 	struct ib_sa_mad *mad;
-<<<<<<< HEAD
-=======
 	enum opa_pr_supported status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (!sa_dev)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	port  = &sa_dev->port[port_num - sa_dev->start_port];
-	agent = port->agent;
-
-	query = kmalloc(sizeof *query, gfp_mask);
-=======
 	if ((rec->rec_type != SA_PATH_REC_TYPE_IB) &&
 	    (rec->rec_type != SA_PATH_REC_TYPE_OPA))
 		return -EINVAL;
@@ -1906,16 +1543,10 @@ int ib_sa_path_rec_get(struct ib_sa_client *client,
 	agent = port->agent;
 
 	query = kzalloc(sizeof(*query), gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!query)
 		return -ENOMEM;
 
 	query->sa_query.port     = port;
-<<<<<<< HEAD
-	ret = alloc_mad(&query->sa_query, gfp_mask);
-	if (ret)
-		goto err1;
-=======
 	if (rec->rec_type == SA_PATH_REC_TYPE_OPA) {
 		status = opa_pr_query_possible(client, sa_dev, device, port_num);
 		if (status == PR_NOT_SUPPORTED) {
@@ -1936,7 +1567,6 @@ int ib_sa_path_rec_get(struct ib_sa_client *client,
 	ret = alloc_mad(&query->sa_query, gfp_mask);
 	if (ret)
 		goto err2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ib_sa_client_get(client);
 	query->sa_query.client = client;
@@ -1944,11 +1574,7 @@ int ib_sa_path_rec_get(struct ib_sa_client *client,
 	query->context         = context;
 
 	mad = query->sa_query.mad_buf->mad;
-<<<<<<< HEAD
-	init_mad(mad, agent);
-=======
 	init_mad(&query->sa_query, agent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	query->sa_query.callback = callback ? ib_sa_path_rec_callback : NULL;
 	query->sa_query.release  = ib_sa_path_rec_release;
@@ -1956,23 +1582,6 @@ int ib_sa_path_rec_get(struct ib_sa_client *client,
 	mad->mad_hdr.attr_id	 = cpu_to_be16(IB_SA_ATTR_PATH_REC);
 	mad->sa_hdr.comp_mask	 = comp_mask;
 
-<<<<<<< HEAD
-	ib_pack(path_rec_table, ARRAY_SIZE(path_rec_table), rec, mad->data);
-
-	*sa_query = &query->sa_query;
-
-	ret = send_mad(&query->sa_query, timeout_ms, gfp_mask);
-	if (ret < 0)
-		goto err2;
-
-	return ret;
-
-err2:
-	*sa_query = NULL;
-	ib_sa_client_put(query->sa_query.client);
-	free_mad(&query->sa_query);
-
-=======
 	if (query->sa_query.flags & IB_SA_QUERY_OPA) {
 		ib_pack(opa_path_rec_table, ARRAY_SIZE(opa_path_rec_table),
 			rec, mad->data);
@@ -2003,144 +1612,14 @@ err3:
 	free_mad(&query->sa_query);
 err2:
 	kfree(query->conv_pr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err1:
 	kfree(query);
 	return ret;
 }
 EXPORT_SYMBOL(ib_sa_path_rec_get);
 
-<<<<<<< HEAD
-static void ib_sa_service_rec_callback(struct ib_sa_query *sa_query,
-				    int status,
-				    struct ib_sa_mad *mad)
-{
-	struct ib_sa_service_query *query =
-		container_of(sa_query, struct ib_sa_service_query, sa_query);
-
-	if (mad) {
-		struct ib_sa_service_rec rec;
-
-		ib_unpack(service_rec_table, ARRAY_SIZE(service_rec_table),
-			  mad->data, &rec);
-		query->callback(status, &rec, query->context);
-	} else
-		query->callback(status, NULL, query->context);
-}
-
-static void ib_sa_service_rec_release(struct ib_sa_query *sa_query)
-{
-	kfree(container_of(sa_query, struct ib_sa_service_query, sa_query));
-}
-
-/**
- * ib_sa_service_rec_query - Start Service Record operation
- * @client:SA client
- * @device:device to send request on
- * @port_num: port number to send request on
- * @method:SA method - should be get, set, or delete
- * @rec:Service Record to send in request
- * @comp_mask:component mask to send in request
- * @timeout_ms:time to wait for response
- * @gfp_mask:GFP mask to use for internal allocations
- * @callback:function called when request completes, times out or is
- * canceled
- * @context:opaque user context passed to callback
- * @sa_query:request context, used to cancel request
- *
- * Send a Service Record set/get/delete to the SA to register,
- * unregister or query a service record.
- * The callback function will be called when the request completes (or
- * fails); status is 0 for a successful response, -EINTR if the query
- * is canceled, -ETIMEDOUT is the query timed out, or -EIO if an error
- * occurred sending the query.  The resp parameter of the callback is
- * only valid if status is 0.
- *
- * If the return value of ib_sa_service_rec_query() is negative, it is an
- * error code.  Otherwise it is a request ID that can be used to cancel
- * the query.
- */
-int ib_sa_service_rec_query(struct ib_sa_client *client,
-			    struct ib_device *device, u8 port_num, u8 method,
-			    struct ib_sa_service_rec *rec,
-			    ib_sa_comp_mask comp_mask,
-			    int timeout_ms, gfp_t gfp_mask,
-			    void (*callback)(int status,
-					     struct ib_sa_service_rec *resp,
-					     void *context),
-			    void *context,
-			    struct ib_sa_query **sa_query)
-{
-	struct ib_sa_service_query *query;
-	struct ib_sa_device *sa_dev = ib_get_client_data(device, &sa_client);
-	struct ib_sa_port   *port;
-	struct ib_mad_agent *agent;
-	struct ib_sa_mad *mad;
-	int ret;
-
-	if (!sa_dev)
-		return -ENODEV;
-
-	port  = &sa_dev->port[port_num - sa_dev->start_port];
-	agent = port->agent;
-
-	if (method != IB_MGMT_METHOD_GET &&
-	    method != IB_MGMT_METHOD_SET &&
-	    method != IB_SA_METHOD_DELETE)
-		return -EINVAL;
-
-	query = kmalloc(sizeof *query, gfp_mask);
-	if (!query)
-		return -ENOMEM;
-
-	query->sa_query.port     = port;
-	ret = alloc_mad(&query->sa_query, gfp_mask);
-	if (ret)
-		goto err1;
-
-	ib_sa_client_get(client);
-	query->sa_query.client = client;
-	query->callback        = callback;
-	query->context         = context;
-
-	mad = query->sa_query.mad_buf->mad;
-	init_mad(mad, agent);
-
-	query->sa_query.callback = callback ? ib_sa_service_rec_callback : NULL;
-	query->sa_query.release  = ib_sa_service_rec_release;
-	mad->mad_hdr.method	 = method;
-	mad->mad_hdr.attr_id	 = cpu_to_be16(IB_SA_ATTR_SERVICE_REC);
-	mad->sa_hdr.comp_mask	 = comp_mask;
-
-	ib_pack(service_rec_table, ARRAY_SIZE(service_rec_table),
-		rec, mad->data);
-
-	*sa_query = &query->sa_query;
-
-	ret = send_mad(&query->sa_query, timeout_ms, gfp_mask);
-	if (ret < 0)
-		goto err2;
-
-	return ret;
-
-err2:
-	*sa_query = NULL;
-	ib_sa_client_put(query->sa_query.client);
-	free_mad(&query->sa_query);
-
-err1:
-	kfree(query);
-	return ret;
-}
-EXPORT_SYMBOL(ib_sa_service_rec_query);
-
-static void ib_sa_mcmember_rec_callback(struct ib_sa_query *sa_query,
-					int status,
-					struct ib_sa_mad *mad)
-=======
 static void ib_sa_mcmember_rec_callback(struct ib_sa_query *sa_query,
 					int status, struct ib_sa_mad *mad)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_sa_mcmember_query *query =
 		container_of(sa_query, struct ib_sa_mcmember_query, sa_query);
@@ -2161,19 +1640,11 @@ static void ib_sa_mcmember_rec_release(struct ib_sa_query *sa_query)
 }
 
 int ib_sa_mcmember_rec_query(struct ib_sa_client *client,
-<<<<<<< HEAD
-			     struct ib_device *device, u8 port_num,
-			     u8 method,
-			     struct ib_sa_mcmember_rec *rec,
-			     ib_sa_comp_mask comp_mask,
-			     int timeout_ms, gfp_t gfp_mask,
-=======
 			     struct ib_device *device, u32 port_num,
 			     u8 method,
 			     struct ib_sa_mcmember_rec *rec,
 			     ib_sa_comp_mask comp_mask,
 			     unsigned long timeout_ms, gfp_t gfp_mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     void (*callback)(int status,
 					      struct ib_sa_mcmember_rec *resp,
 					      void *context),
@@ -2193,11 +1664,7 @@ int ib_sa_mcmember_rec_query(struct ib_sa_client *client,
 	port  = &sa_dev->port[port_num - sa_dev->start_port];
 	agent = port->agent;
 
-<<<<<<< HEAD
-	query = kmalloc(sizeof *query, gfp_mask);
-=======
 	query = kzalloc(sizeof(*query), gfp_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!query)
 		return -ENOMEM;
 
@@ -2212,11 +1679,7 @@ int ib_sa_mcmember_rec_query(struct ib_sa_client *client,
 	query->context         = context;
 
 	mad = query->sa_query.mad_buf->mad;
-<<<<<<< HEAD
-	init_mad(mad, agent);
-=======
 	init_mad(&query->sa_query, agent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	query->sa_query.callback = callback ? ib_sa_mcmember_rec_callback : NULL;
 	query->sa_query.release  = ib_sa_mcmember_rec_release;
@@ -2245,8 +1708,6 @@ err1:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /* Support GuidInfoRecord */
 static void ib_sa_guidinfo_rec_callback(struct ib_sa_query *sa_query,
 					int status, struct ib_sa_mad *mad)
@@ -2521,7 +1982,6 @@ err_nomem:
 	return;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void send_handler(struct ib_mad_agent *agent,
 			 struct ib_mad_send_wc *mad_send_wc)
 {
@@ -2544,14 +2004,6 @@ static void send_handler(struct ib_mad_agent *agent,
 			break;
 		}
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&idr_lock, flags);
-	idr_remove(&query_idr, query->id);
-	spin_unlock_irqrestore(&idr_lock, flags);
-
-	free_mad(query);
-	ib_sa_client_put(query->client);
-=======
 	xa_lock_irqsave(&queries, flags);
 	__xa_erase(&queries, query->id);
 	xa_unlock_irqrestore(&queries, flags);
@@ -2559,21 +2011,10 @@ static void send_handler(struct ib_mad_agent *agent,
 	free_mad(query);
 	if (query->client)
 		ib_sa_client_put(query->client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	query->release(query);
 }
 
 static void recv_handler(struct ib_mad_agent *mad_agent,
-<<<<<<< HEAD
-			 struct ib_mad_recv_wc *mad_recv_wc)
-{
-	struct ib_sa_query *query;
-	struct ib_mad_send_buf *mad_buf;
-
-	mad_buf = (void *) (unsigned long) mad_recv_wc->wc->wr_id;
-	query = mad_buf->context[0];
-
-=======
 			 struct ib_mad_send_buf *send_buf,
 			 struct ib_mad_recv_wc *mad_recv_wc)
 {
@@ -2583,7 +2024,6 @@ static void recv_handler(struct ib_mad_agent *mad_agent,
 		return;
 
 	query = send_buf->context[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (query->callback) {
 		if (mad_recv_wc->wc->status == IB_WC_SUCCESS)
 			query->callback(query,
@@ -2597,28 +2037,6 @@ static void recv_handler(struct ib_mad_agent *mad_agent,
 	ib_free_recv_mad(mad_recv_wc);
 }
 
-<<<<<<< HEAD
-static void ib_sa_add_one(struct ib_device *device)
-{
-	struct ib_sa_device *sa_dev;
-	int s, e, i;
-
-	if (rdma_node_get_transport(device->node_type) != RDMA_TRANSPORT_IB)
-		return;
-
-	if (device->node_type == RDMA_NODE_IB_SWITCH)
-		s = e = 0;
-	else {
-		s = 1;
-		e = device->phys_port_cnt;
-	}
-
-	sa_dev = kzalloc(sizeof *sa_dev +
-			 (e - s + 1) * sizeof (struct ib_sa_port),
-			 GFP_KERNEL);
-	if (!sa_dev)
-		return;
-=======
 static void update_sm_ah(struct work_struct *work)
 {
 	struct ib_sa_port *port =
@@ -2746,33 +2164,18 @@ static int ib_sa_add_one(struct ib_device *device)
 			 GFP_KERNEL);
 	if (!sa_dev)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sa_dev->start_port = s;
 	sa_dev->end_port   = e;
 
 	for (i = 0; i <= e - s; ++i) {
 		spin_lock_init(&sa_dev->port[i].ah_lock);
-<<<<<<< HEAD
-		if (rdma_port_get_link_layer(device, i + 1) != IB_LINK_LAYER_INFINIBAND)
-=======
 		if (!rdma_cap_ib_sa(device, i + 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		sa_dev->port[i].sm_ah    = NULL;
 		sa_dev->port[i].port_num = i + s;
 
-<<<<<<< HEAD
-		sa_dev->port[i].agent =
-			ib_register_mad_agent(device, i + s, IB_QPT_GSI,
-					      NULL, 0, send_handler,
-					      recv_handler, sa_dev);
-		if (IS_ERR(sa_dev->port[i].agent))
-			goto err;
-
-		INIT_WORK(&sa_dev->port[i].update_task, update_sm_ah);
-=======
 		spin_lock_init(&sa_dev->port[i].classport_lock);
 		sa_dev->port[i].classport_info.valid = false;
 
@@ -2795,7 +2198,6 @@ static int ib_sa_add_one(struct ib_device *device)
 	if (!count) {
 		ret = -EOPNOTSUPP;
 		goto free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ib_set_client_data(device, &sa_client, sa_dev);
@@ -2808,41 +2210,6 @@ static int ib_sa_add_one(struct ib_device *device)
 	 */
 
 	INIT_IB_EVENT_HANDLER(&sa_dev->event_handler, device, ib_sa_event);
-<<<<<<< HEAD
-	if (ib_register_event_handler(&sa_dev->event_handler))
-		goto err;
-
-	for (i = 0; i <= e - s; ++i)
-		if (rdma_port_get_link_layer(device, i + 1) == IB_LINK_LAYER_INFINIBAND)
-			update_sm_ah(&sa_dev->port[i].update_task);
-
-	return;
-
-err:
-	while (--i >= 0)
-		if (rdma_port_get_link_layer(device, i + 1) == IB_LINK_LAYER_INFINIBAND)
-			ib_unregister_mad_agent(sa_dev->port[i].agent);
-
-	kfree(sa_dev);
-
-	return;
-}
-
-static void ib_sa_remove_one(struct ib_device *device)
-{
-	struct ib_sa_device *sa_dev = ib_get_client_data(device, &sa_client);
-	int i;
-
-	if (!sa_dev)
-		return;
-
-	ib_unregister_event_handler(&sa_dev->event_handler);
-
-	flush_workqueue(ib_wq);
-
-	for (i = 0; i <= sa_dev->end_port - sa_dev->start_port; ++i) {
-		if (rdma_port_get_link_layer(device, i + 1) == IB_LINK_LAYER_INFINIBAND) {
-=======
 	ib_register_event_handler(&sa_dev->event_handler);
 
 	for (i = 0; i <= e - s; ++i) {
@@ -2873,7 +2240,6 @@ static void ib_sa_remove_one(struct ib_device *device, void *client_data)
 	for (i = 0; i <= sa_dev->end_port - sa_dev->start_port; ++i) {
 		if (rdma_cap_ib_sa(device, i + 1)) {
 			cancel_delayed_work_sync(&sa_dev->port[i].ib_cpi_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ib_unregister_mad_agent(sa_dev->port[i].agent);
 			if (sa_dev->port[i].sm_ah)
 				kref_put(&sa_dev->port[i].sm_ah->ref, free_sm_ah);
@@ -2884,39 +2250,22 @@ static void ib_sa_remove_one(struct ib_device *device, void *client_data)
 	kfree(sa_dev);
 }
 
-<<<<<<< HEAD
-static int __init ib_sa_init(void)
-=======
 int ib_sa_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	get_random_bytes(&tid, sizeof tid);
 
-<<<<<<< HEAD
-	ret = ib_register_client(&sa_client);
-	if (ret) {
-		printk(KERN_ERR "Couldn't register ib_sa client\n");
-=======
 	atomic_set(&ib_nl_sa_request_seq, 0);
 
 	ret = ib_register_client(&sa_client);
 	if (ret) {
 		pr_err("Couldn't register ib_sa client\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err1;
 	}
 
 	ret = mcast_init();
 	if (ret) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Couldn't initialize multicast handling\n");
-		goto err2;
-	}
-
-	return 0;
-=======
 		pr_err("Couldn't initialize multicast handling\n");
 		goto err2;
 	}
@@ -2933,24 +2282,12 @@ int ib_sa_init(void)
 
 err3:
 	mcast_cleanup();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err2:
 	ib_unregister_client(&sa_client);
 err1:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __exit ib_sa_cleanup(void)
-{
-	mcast_cleanup();
-	ib_unregister_client(&sa_client);
-	idr_destroy(&query_idr);
-}
-
-module_init(ib_sa_init);
-module_exit(ib_sa_cleanup);
-=======
 void ib_sa_cleanup(void)
 {
 	cancel_delayed_work(&ib_nl_timed_work);
@@ -2959,4 +2296,3 @@ void ib_sa_cleanup(void)
 	ib_unregister_client(&sa_client);
 	WARN_ON(!xa_empty(&queries));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

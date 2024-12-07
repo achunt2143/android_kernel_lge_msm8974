@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * check TSC synchronization.
  *
@@ -18,22 +15,14 @@
  * ( The serial nature of the boot logic and the CPU hotplug lock
  *   protects against more than 2 CPUs entering this code. )
  */
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
-=======
 #include <linux/workqueue.h>
 #include <linux/topology.h>
 #include <linux/spinlock.h>
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smp.h>
 #include <linux/nmi.h>
 #include <asm/tsc.h>
 
-<<<<<<< HEAD
-=======
 struct tsc_adjust {
 	s64		bootval;
 	s64		adjusted;
@@ -251,44 +240,19 @@ bool tsc_store_and_check_tsc_adjust(bool bootcpu)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Entry/exit counters that make sure that both CPUs
  * run the measurement code at once:
  */
-<<<<<<< HEAD
-static __cpuinitdata atomic_t start_count;
-static __cpuinitdata atomic_t stop_count;
-=======
 static atomic_t start_count;
 static atomic_t stop_count;
 static atomic_t test_runs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We use a raw spinlock in this exceptional case, because
  * we want to have the fastest, inlined, non-debug version
  * of a critical section, to be able to prove TSC time-warps:
  */
-<<<<<<< HEAD
-static __cpuinitdata arch_spinlock_t sync_lock = __ARCH_SPIN_LOCK_UNLOCKED;
-
-static __cpuinitdata cycles_t last_tsc;
-static __cpuinitdata cycles_t max_warp;
-static __cpuinitdata int nr_warps;
-
-/*
- * TSC-warp measurement loop running on both CPUs:
- */
-static __cpuinit void check_tsc_warp(unsigned int timeout)
-{
-	cycles_t start, now, prev, end;
-	int i;
-
-	rdtsc_barrier();
-	start = get_cycles();
-	rdtsc_barrier();
-=======
 static arch_spinlock_t sync_lock = __ARCH_SPIN_LOCK_UNLOCKED;
 
 static cycles_t last_tsc;
@@ -306,15 +270,10 @@ static cycles_t check_tsc_warp(unsigned int timeout)
 	int i, cur_warps = 0;
 
 	start = rdtsc_ordered();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The measurement runs for 'timeout' msecs:
 	 */
 	end = start + (cycles_t) tsc_khz * timeout;
-<<<<<<< HEAD
-	now = start;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; ; i++) {
 		/*
@@ -324,13 +283,7 @@ static cycles_t check_tsc_warp(unsigned int timeout)
 		 */
 		arch_spin_lock(&sync_lock);
 		prev = last_tsc;
-<<<<<<< HEAD
-		rdtsc_barrier();
-		now = get_cycles();
-		rdtsc_barrier();
-=======
 		now = rdtsc_ordered();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		last_tsc = now;
 		arch_spin_unlock(&sync_lock);
 
@@ -353,9 +306,6 @@ static cycles_t check_tsc_warp(unsigned int timeout)
 		if (unlikely(prev > now)) {
 			arch_spin_lock(&sync_lock);
 			max_warp = max(max_warp, prev - now);
-<<<<<<< HEAD
-			nr_warps++;
-=======
 			cur_max_warp = max_warp;
 			/*
 			 * Check whether this bounces back and forth. Only
@@ -365,17 +315,13 @@ static cycles_t check_tsc_warp(unsigned int timeout)
 				random_warps++;
 			nr_warps++;
 			cur_warps = nr_warps;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			arch_spin_unlock(&sync_lock);
 		}
 	}
 	WARN(!(now-start),
 		"Warning: zero tsc calibration delta: %Ld [max: %Ld]\n",
 			now-start, end-start);
-<<<<<<< HEAD
-=======
 	return cur_max_warp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -390,47 +336,6 @@ static cycles_t check_tsc_warp(unsigned int timeout)
  * But as the TSC is per-logical CPU and can potentially be modified wrongly
  * by the bios, TSC sync test for smaller duration should be able
  * to catch such errors. Also this will catch the condition where all the
-<<<<<<< HEAD
- * cores in the socket doesn't get reset at the same time.
- */
-static inline unsigned int loop_timeout(int cpu)
-{
-	return (cpumask_weight(cpu_core_mask(cpu)) > 1) ? 2 : 20;
-}
-
-/*
- * Source CPU calls into this - it waits for the freshly booted
- * target CPU to arrive and then starts the measurement:
- */
-void __cpuinit check_tsc_sync_source(int cpu)
-{
-	int cpus = 2;
-
-	/*
-	 * No need to check if we already know that the TSC is not
-	 * synchronized:
-	 */
-	if (unsynchronized_tsc())
-		return;
-
-	if (tsc_clocksource_reliable) {
-		if (cpu == (nr_cpu_ids-1) || system_state != SYSTEM_BOOTING)
-			pr_info(
-			"Skipped synchronization checks as TSC is reliable.\n");
-		return;
-	}
-
-	/*
-	 * Reset it - in case this is a second bootup:
-	 */
-	atomic_set(&stop_count, 0);
-
-	/*
-	 * Wait for the target to arrive:
-	 */
-	while (atomic_read(&start_count) != cpus-1)
-		cpu_relax();
-=======
  * cores in the socket don't get reset at the same time.
  */
 static inline unsigned int loop_timeout(int cpu)
@@ -467,7 +372,6 @@ retry:
 	while (atomic_read(&start_count) != cpus - 1)
 		cpu_relax();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Trigger the target to continue into the measurement too:
 	 */
@@ -478,17 +382,6 @@ retry:
 	while (atomic_read(&stop_count) != cpus-1)
 		cpu_relax();
 
-<<<<<<< HEAD
-	if (nr_warps) {
-		pr_warning("TSC synchronization [CPU#%d -> CPU#%d]:\n",
-			smp_processor_id(), cpu);
-		pr_warning("Measured %Ld cycles TSC warp between CPUs, "
-			   "turning off TSC clock.\n", max_warp);
-		mark_tsc_unstable("check_tsc_sync_source failed");
-	} else {
-		pr_debug("TSC synchronization [CPU#%d -> CPU#%d]: passed\n",
-			smp_processor_id(), cpu);
-=======
 	/*
 	 * If the test was successful set the number of runs to zero and
 	 * stop. If not, decrement the number of runs an check if we can
@@ -511,17 +404,13 @@ retry:
 		if (random_warps)
 			pr_warn("TSC warped randomly between CPUs\n");
 		schedule_work(&tsc_sync_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Reset it - just in case we boot another CPU later:
 	 */
 	atomic_set(&start_count, 0);
-<<<<<<< HEAD
-=======
 	random_warps = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr_warps = 0;
 	max_warp = 0;
 	last_tsc = 0;
@@ -530,30 +419,17 @@ retry:
 	 * Let the target continue with the bootup:
 	 */
 	atomic_inc(&stop_count);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Retry, if there is a chance to do so.
 	 */
 	if (atomic_read(&test_runs) > 0)
 		goto retry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Freshly booted CPUs call into this:
  */
-<<<<<<< HEAD
-void __cpuinit check_tsc_sync_target(void)
-{
-	int cpus = 2;
-
-	if (unsynchronized_tsc() || tsc_clocksource_reliable)
-		return;
-
-	/*
-=======
 void check_tsc_sync_target(void)
 {
 	struct tsc_adjust *cur = this_cpu_ptr(&tsc_adjust);
@@ -582,7 +458,6 @@ void check_tsc_sync_target(void)
 				 (unsigned long *)(unsigned long)cpu, 0);
 retry:
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Register this CPU's participation and wait for the
 	 * source CPU to start the measurement:
 	 */
@@ -590,16 +465,12 @@ retry:
 	while (atomic_read(&start_count) != cpus)
 		cpu_relax();
 
-<<<<<<< HEAD
-	check_tsc_warp(loop_timeout(smp_processor_id()));
-=======
 	cur_max_warp = check_tsc_warp(loop_timeout(cpu));
 
 	/*
 	 * Store the maximum observed warp value for a potential retry:
 	 */
 	gbl_max_warp = max_warp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ok, we are done:
@@ -611,9 +482,6 @@ retry:
 	 */
 	while (atomic_read(&stop_count) != cpus)
 		cpu_relax();
-<<<<<<< HEAD
-}
-=======
 
 	/*
 	 * Reset it for the next sync test:
@@ -658,4 +526,3 @@ retry:
 }
 
 #endif /* CONFIG_SMP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

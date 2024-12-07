@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File		pci-acpi.h
  *
@@ -15,14 +12,6 @@
 #include <linux/acpi.h>
 
 #ifdef CONFIG_ACPI
-<<<<<<< HEAD
-extern acpi_status pci_acpi_add_bus_pm_notifier(struct acpi_device *dev,
-						 struct pci_bus *pci_bus);
-extern acpi_status pci_acpi_remove_bus_pm_notifier(struct acpi_device *dev);
-extern acpi_status pci_acpi_add_pm_notifier(struct acpi_device *dev,
-					     struct pci_dev *pci_dev);
-extern acpi_status pci_acpi_remove_pm_notifier(struct acpi_device *dev);
-=======
 extern acpi_status pci_acpi_add_bus_pm_notifier(struct acpi_device *dev);
 static inline acpi_status pci_acpi_remove_bus_pm_notifier(struct acpi_device *dev)
 {
@@ -39,44 +28,20 @@ extern phys_addr_t acpi_pci_root_get_mcfg_addr(acpi_handle handle);
 struct pci_ecam_ops;
 extern int pci_mcfg_lookup(struct acpi_pci_root *root, struct resource *cfgres,
 			   const struct pci_ecam_ops **ecam_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline acpi_handle acpi_find_root_bridge_handle(struct pci_dev *pdev)
 {
 	struct pci_bus *pbus = pdev->bus;
-<<<<<<< HEAD
-	/* Find a PCI root bus */
-	while (!pci_is_root_bus(pbus))
-		pbus = pbus->parent;
-	return acpi_get_pci_rootbridge_handle(pci_domain_nr(pbus),
-					      pbus->number);
-=======
 
 	/* Find a PCI root bus */
 	while (!pci_is_root_bus(pbus))
 		pbus = pbus->parent;
 
 	return ACPI_HANDLE(pbus->bridge);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline acpi_handle acpi_pci_get_bridge_handle(struct pci_bus *pbus)
 {
-<<<<<<< HEAD
-	if (!pci_is_root_bus(pbus))
-		return DEVICE_ACPI_HANDLE(&(pbus->self->dev));
-	return acpi_get_pci_rootbridge_handle(pci_domain_nr(pbus),
-					      pbus->number);
-}
-#endif
-
-#ifdef CONFIG_ACPI_APEI
-extern bool aer_acpi_firmware_first(void);
-#else
-static inline bool aer_acpi_firmware_first(void) { return false; }
-#endif
-
-=======
 	struct device *dev;
 
 	if (pci_is_root_bus(pbus))
@@ -173,5 +138,4 @@ static inline void acpi_pci_add_bus(struct pci_bus *bus) { }
 static inline void acpi_pci_remove_bus(struct pci_bus *bus) { }
 #endif	/* CONFIG_ACPI */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _PCI_ACPI_H_ */

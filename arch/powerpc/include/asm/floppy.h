@@ -13,13 +13,8 @@
 
 #include <asm/machdep.h>
 
-<<<<<<< HEAD
-#define fd_inb(port)		inb_p(port)
-#define fd_outb(value,port)	outb_p(value,port)
-=======
 #define fd_inb(base, reg)		inb_p((base) + (reg))
 #define fd_outb(value, base, reg)	outb_p(value, (base) + (reg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define fd_enable_dma()         enable_dma(FLOPPY_DMA)
 #define fd_disable_dma()	 fd_ops->_disable_dma(FLOPPY_DMA)
@@ -30,10 +25,6 @@
 #define fd_get_dma_residue()    fd_ops->_get_dma_residue(FLOPPY_DMA)
 #define fd_enable_irq()         enable_irq(FLOPPY_IRQ)
 #define fd_disable_irq()        disable_irq(FLOPPY_IRQ)
-<<<<<<< HEAD
-#define fd_cacheflush(addr,size) /* nothing */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fd_free_irq()           free_irq(FLOPPY_IRQ, NULL);
 
 #include <linux/pci.h>
@@ -70,23 +61,6 @@ static irqreturn_t floppy_hardint(int irq, void *dev_id)
 	st = 1;
 	for (lcount=virtual_dma_count, lptr=virtual_dma_addr;
 	     lcount; lcount--, lptr++) {
-<<<<<<< HEAD
-		st=inb(virtual_dma_port+4) & 0xa0 ;
-		if (st != 0xa0)
-			break;
-		if (virtual_dma_mode)
-			outb_p(*lptr, virtual_dma_port+5);
-		else
-			*lptr = inb_p(virtual_dma_port+5);
-	}
-	virtual_dma_count = lcount;
-	virtual_dma_addr = lptr;
-	st = inb(virtual_dma_port+4);
-
-	if (st == 0x20)
-		return IRQ_HANDLED;
-	if (!(st & 0x20)) {
-=======
 		st = inb(virtual_dma_port + FD_STATUS);
 		st &= STATUS_DMA | STATUS_READY;
 		if (st != (STATUS_DMA | STATUS_READY))
@@ -103,7 +77,6 @@ static irqreturn_t floppy_hardint(int irq, void *dev_id)
 	if (st == STATUS_DMA)
 		return IRQ_HANDLED;
 	if (!(st & STATUS_DMA)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		virtual_dma_residue += virtual_dma_count;
 		virtual_dma_count=0;
 		doing_vdma = 0;
@@ -161,31 +134,19 @@ static int hard_dma_setup(char *addr, unsigned long size, int mode, int io)
 	int dir;
 
 	doing_vdma = 0;
-<<<<<<< HEAD
-	dir = (mode == DMA_MODE_READ) ? PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE;
-=======
 	dir = (mode == DMA_MODE_READ) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bus_addr 
 	    && (addr != prev_addr || size != prev_size || dir != prev_dir)) {
 		/* different from last time -- unmap prev */
-<<<<<<< HEAD
-		pci_unmap_single(isa_bridge_pcidev, bus_addr, prev_size, prev_dir);
-=======
 		dma_unmap_single(&isa_bridge_pcidev->dev, bus_addr, prev_size,
 				 prev_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bus_addr = 0;
 	}
 
 	if (!bus_addr)	/* need to map it */
-<<<<<<< HEAD
-		bus_addr = pci_map_single(isa_bridge_pcidev, addr, size, dir);
-=======
 		bus_addr = dma_map_single(&isa_bridge_pcidev->dev, addr, size,
 					  dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* remember this one as prev */
 	prev_addr = addr;
@@ -193,10 +154,6 @@ static int hard_dma_setup(char *addr, unsigned long size, int mode, int io)
 	prev_dir = dir;
 
 	fd_clear_dma_ff();
-<<<<<<< HEAD
-	fd_cacheflush(addr, size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fd_set_dma_mode(mode);
 	set_dma_addr(FLOPPY_DMA, bus_addr);
 	fd_set_dma_count(size);

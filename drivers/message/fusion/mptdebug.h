@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/message/fusion/mptdebug.h
  *      For use with LSI PCI chip/adapter(s)
@@ -70,14 +67,6 @@
 
 #ifdef CONFIG_FUSION_LOGGING
 #define MPT_CHECK_LOGGING(IOC, CMD, BITS)			\
-<<<<<<< HEAD
-{								\
-	if (IOC->debug_level & BITS)				\
-		CMD;						\
-}
-#else
-#define MPT_CHECK_LOGGING(IOC, CMD, BITS)
-=======
 do {								\
 	if (IOC->debug_level & BITS)				\
 		CMD;						\
@@ -85,7 +74,6 @@ do {								\
 #else
 #define MPT_CHECK_LOGGING(IOC, CMD, BITS)			\
 do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 

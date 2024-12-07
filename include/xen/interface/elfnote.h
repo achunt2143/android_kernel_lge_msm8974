@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * elfnote.h
  *
@@ -22,21 +19,13 @@
  *
  * LEGACY indicated the fields in the legacy __xen_guest string which
  * this a note type replaces.
-<<<<<<< HEAD
-=======
  *
  * String values (for non-legacy) are NULL terminated ASCII, also known
  * as ASCIZ type.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * NAME=VALUE pair (string).
-<<<<<<< HEAD
- *
- * LEGACY: FEATURES and PAE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define XEN_ELFNOTE_INFO           0
 
@@ -150,22 +139,6 @@
 
 /*
  * Whether or not the guest supports cooperative suspend cancellation.
-<<<<<<< HEAD
- */
-#define XEN_ELFNOTE_SUSPEND_CANCEL 14
-
-#endif /* __XEN_PUBLIC_ELFNOTE_H__ */
-
-/*
- * Local variables:
- * mode: C
- * c-set-style: "BSD"
- * c-basic-offset: 4
- * tab-width: 4
- * indent-tabs-mode: nil
- * End:
- */
-=======
  * This is a numeric value.
  *
  * Default is 0
@@ -218,4 +191,3 @@
 #define XEN_ELFNOTE_MAX XEN_ELFNOTE_PHYS32_ENTRY
 
 #endif /* __XEN_PUBLIC_ELFNOTE_H__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

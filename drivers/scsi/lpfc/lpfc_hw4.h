@@ -1,17 +1,11 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
-<<<<<<< HEAD
- * Copyright (C) 2009-2012 Emulex.  All rights reserved.                *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.emulex.com                                                  *
-=======
  * Copyright (C) 2017-2024 Broadcom. All Rights Reserved. The term *
  * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.  *
  * Copyright (C) 2009-2016 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.broadcom.com                                                *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -26,12 +20,9 @@
  * included with this package.                                     *
  *******************************************************************/
 
-<<<<<<< HEAD
-=======
 #include <uapi/scsi/fc/fc_fs.h>
 #include <uapi/scsi/fc/fc_els.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Macros to deal with bit fields. Each bit field must have 3 #defines
  * associated with it (_SHIFT, _MASK, and _WORD).
  * EG. For a bit field that is in the 7th bit of the "field4" field of a
@@ -69,8 +60,6 @@
 	((ptr)->name##_WORD = ((((value) & name##_MASK) << name##_SHIFT) | \
 		 ((ptr)->name##_WORD & ~(name##_MASK << name##_SHIFT))))
 
-<<<<<<< HEAD
-=======
 #define get_wqe_reqtag(x)	(((x)->wqe.words[9] >>  0) & 0xFFFF)
 #define get_wqe_tmo(x)		(((x)->wqe.words[7] >> 24) & 0x00FF)
 
@@ -79,7 +68,6 @@
 #define set_job_ulpstatus(x, y)	bf_set(lpfc_wcqe_c_status, &(x)->wcqe_cmpl, y)
 #define set_job_ulpword4(x, y)	((&(x)->wcqe_cmpl)->parameter = y)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dma_address {
 	uint32_t addr_lo;
 	uint32_t addr_hi;
@@ -107,10 +95,7 @@ struct lpfc_sli_intf {
 #define LPFC_SLI_INTF_IF_TYPE_0		0
 #define LPFC_SLI_INTF_IF_TYPE_1		1
 #define LPFC_SLI_INTF_IF_TYPE_2		2
-<<<<<<< HEAD
-=======
 #define LPFC_SLI_INTF_IF_TYPE_6		6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_sli_intf_sli_family_SHIFT		8
 #define lpfc_sli_intf_sli_family_MASK		0x0000000F
 #define lpfc_sli_intf_sli_family_WORD		word0
@@ -118,12 +103,9 @@ struct lpfc_sli_intf {
 #define LPFC_SLI_INTF_FAMILY_BE3	0x1
 #define LPFC_SLI_INTF_FAMILY_LNCR_A0	0xa
 #define LPFC_SLI_INTF_FAMILY_LNCR_B0	0xb
-<<<<<<< HEAD
-=======
 #define LPFC_SLI_INTF_FAMILY_G6		0xc
 #define LPFC_SLI_INTF_FAMILY_G7		0xd
 #define LPFC_SLI_INTF_FAMILY_G7P	0xe
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_sli_intf_slirev_SHIFT		4
 #define lpfc_sli_intf_slirev_MASK		0x0000000F
 #define lpfc_sli_intf_slirev_WORD		word0
@@ -141,13 +123,9 @@ struct lpfc_sli_intf {
 
 #define LPFC_SLI4_MB_WORD_COUNT		64
 #define LPFC_MAX_MQ_PAGE		8
-<<<<<<< HEAD
-#define LPFC_MAX_WQ_PAGE		8
-=======
 #define LPFC_MAX_WQ_PAGE_V0		4
 #define LPFC_MAX_WQ_PAGE		8
 #define LPFC_MAX_RQ_PAGE		8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_MAX_CQ_PAGE		4
 #define LPFC_MAX_EQ_PAGE		8
 
@@ -158,10 +136,7 @@ struct lpfc_sli_intf {
 /* Define SLI4 Alignment requirements. */
 #define LPFC_ALIGN_16_BYTE	16
 #define LPFC_ALIGN_64_BYTE	64
-<<<<<<< HEAD
-=======
 #define SLI4_PAGE_SIZE		4096
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Define SLI4 specific definitions. */
 #define LPFC_MQ_CQE_BYTE_OFFSET	256
@@ -226,23 +201,13 @@ struct lpfc_sli_intf {
 #define LPFC_CTL_PDEV_CTL_FRL_ALL	0x00
 #define LPFC_CTL_PDEV_CTL_FRL_FC_FCOE	0x10
 #define LPFC_CTL_PDEV_CTL_FRL_NIC	0x20
-<<<<<<< HEAD
-=======
 #define LPFC_CTL_PDEV_CTL_DDL_RAS	0x1000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LPFC_FW_DUMP_REQUEST    (LPFC_CTL_PDEV_CTL_DD | LPFC_CTL_PDEV_CTL_FRST)
 
 /* Active interrupt test count */
 #define LPFC_ACT_INTR_CNT	4
 
-<<<<<<< HEAD
-/* Delay Multiplier constant */
-#define LPFC_DMULT_CONST       651042
-#define LPFC_MIM_IMAX          636
-#define LPFC_FP_DEF_IMAX       10000
-#define LPFC_SP_DEF_IMAX       10000
-=======
 /* Algrithmns for scheduling FCP commands to WQs */
 #define	LPFC_FCP_SCHED_BY_HDWQ		0
 #define	LPFC_FCP_SCHED_BY_CPU		1
@@ -269,13 +234,10 @@ struct lpfc_sli_intf {
 #define LPFC_MIN_CPU_MAP       0
 #define LPFC_MAX_CPU_MAP       1
 #define LPFC_HBA_CPU_MAP       1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PORT_CAPABILITIES constants. */
 #define LPFC_MAX_SUPPORTED_PAGES	8
 
-<<<<<<< HEAD
-=======
 enum ulp_bde64_word3 {
 	ULP_BDE64_SIZE_MASK		= 0xffffff,
 
@@ -304,7 +266,6 @@ struct ulp_bde64_le {
 	__le32 addr_high;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ulp_bde64 {
 	union ULP_BDE_TUS {
 		uint32_t w;
@@ -331,36 +292,15 @@ struct ulp_bde64 {
 	uint32_t addrHigh;
 };
 
-<<<<<<< HEAD
-=======
 /* Maximun size of immediate data that can fit into a 128 byte WQE */
 #define LPFC_MAX_BDE_IMM_SIZE	64
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_sli4_flags {
 	uint32_t word0;
 #define lpfc_idx_rsrc_rdy_SHIFT		0
 #define lpfc_idx_rsrc_rdy_MASK		0x00000001
 #define lpfc_idx_rsrc_rdy_WORD		word0
 #define LPFC_IDX_RSRC_RDY		1
-<<<<<<< HEAD
-#define lpfc_xri_rsrc_rdy_SHIFT		1
-#define lpfc_xri_rsrc_rdy_MASK		0x00000001
-#define lpfc_xri_rsrc_rdy_WORD		word0
-#define LPFC_XRI_RSRC_RDY		1
-#define lpfc_rpi_rsrc_rdy_SHIFT		2
-#define lpfc_rpi_rsrc_rdy_MASK		0x00000001
-#define lpfc_rpi_rsrc_rdy_WORD		word0
-#define LPFC_RPI_RSRC_RDY		1
-#define lpfc_vpi_rsrc_rdy_SHIFT		3
-#define lpfc_vpi_rsrc_rdy_MASK		0x00000001
-#define lpfc_vpi_rsrc_rdy_WORD		word0
-#define LPFC_VPI_RSRC_RDY		1
-#define lpfc_vfi_rsrc_rdy_SHIFT		4
-#define lpfc_vfi_rsrc_rdy_MASK		0x00000001
-#define lpfc_vfi_rsrc_rdy_WORD		word0
-#define LPFC_VFI_RSRC_RDY		1
-=======
 #define lpfc_rpi_rsrc_rdy_SHIFT		1
 #define lpfc_rpi_rsrc_rdy_MASK		0x00000001
 #define lpfc_rpi_rsrc_rdy_WORD		word0
@@ -376,7 +316,6 @@ struct lpfc_sli4_flags {
 #define lpfc_ftr_ashdr_SHIFT            4
 #define lpfc_ftr_ashdr_MASK             0x00000001
 #define lpfc_ftr_ashdr_WORD             word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sli4_bls_rsp {
@@ -413,11 +352,7 @@ struct sli4_bls_rsp {
 struct lpfc_eqe {
 	uint32_t word0;
 #define lpfc_eqe_resource_id_SHIFT	16
-<<<<<<< HEAD
-#define lpfc_eqe_resource_id_MASK	0x000000FF
-=======
 #define lpfc_eqe_resource_id_MASK	0x0000FFFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_eqe_resource_id_WORD	word0
 #define lpfc_eqe_minor_code_SHIFT	4
 #define lpfc_eqe_minor_code_MASK	0x00000FFF
@@ -460,12 +395,6 @@ struct lpfc_cqe {
 #define CQE_STATUS_NEED_BUFF_ENTRY	0xf
 #define CQE_STATUS_DI_ERROR		0x16
 
-<<<<<<< HEAD
-/* Used when mapping CQE status to IOCB */
-#define LPFC_IOCB_STATUS_MASK		0xf
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Status returned by hardware (valid only if status = CQE_STATUS_SUCCESS). */
 #define CQE_HW_STATUS_NO_ERR		0x0
 #define CQE_HW_STATUS_UNDERRUN		0x1
@@ -477,20 +406,13 @@ struct lpfc_cqe {
 #define CQE_CODE_RECEIVE		0x4
 #define CQE_CODE_XRI_ABORTED		0x5
 #define CQE_CODE_RECEIVE_V1		0x9
-<<<<<<< HEAD
-=======
 #define CQE_CODE_NVME_ERSP		0xd
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Define mask value for xri_aborted and wcqe completed CQE extended status.
  * Currently, extended status is limited to 9 bits (0x0 -> 0x103) .
  */
-<<<<<<< HEAD
-#define WCQE_PARAM_MASK		0x1FF;
-=======
 #define WCQE_PARAM_MASK		0x1FF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* completion queue entry for wqe completions */
 struct lpfc_wcqe_complete {
@@ -504,9 +426,6 @@ struct lpfc_wcqe_complete {
 #define lpfc_wcqe_c_hw_status_SHIFT	0
 #define lpfc_wcqe_c_hw_status_MASK	0x000000FF
 #define lpfc_wcqe_c_hw_status_WORD	word0
-<<<<<<< HEAD
-	uint32_t total_data_placed;
-=======
 #define lpfc_wcqe_c_ersp0_SHIFT		0
 #define lpfc_wcqe_c_ersp0_MASK		0x0000FFFF
 #define lpfc_wcqe_c_ersp0_WORD		word0
@@ -517,7 +436,6 @@ struct lpfc_wcqe_complete {
 #define lpfc_wcqe_c_cmf_bw_SHIFT	0
 #define lpfc_wcqe_c_cmf_bw_MASK		0x0FFFFFFF
 #define lpfc_wcqe_c_cmf_bw_WORD		total_data_placed
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t parameter;
 #define lpfc_wcqe_c_bg_edir_SHIFT	5
 #define lpfc_wcqe_c_bg_edir_MASK	0x00000001
@@ -550,12 +468,9 @@ struct lpfc_wcqe_complete {
 #define lpfc_wcqe_c_code_SHIFT		lpfc_cqe_code_SHIFT
 #define lpfc_wcqe_c_code_MASK		lpfc_cqe_code_MASK
 #define lpfc_wcqe_c_code_WORD		lpfc_cqe_code_WORD
-<<<<<<< HEAD
-=======
 #define lpfc_wcqe_c_sqhead_SHIFT	0
 #define lpfc_wcqe_c_sqhead_MASK		0x0000FFFF
 #define lpfc_wcqe_c_sqhead_WORD		word3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* completion queue entry for wqe release */
@@ -618,15 +533,9 @@ struct sli4_wcqe_xri_aborted {
 /* completion queue entry structure for rqe completion */
 struct lpfc_rcqe {
 	uint32_t word0;
-<<<<<<< HEAD
-#define lpfc_rcqe_bindex_SHIFT		16
-#define lpfc_rcqe_bindex_MASK		0x0000FFF
-#define lpfc_rcqe_bindex_WORD		word0
-=======
 #define lpfc_rcqe_iv_SHIFT		31
 #define lpfc_rcqe_iv_MASK		0x00000001
 #define lpfc_rcqe_iv_WORD		word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_rcqe_status_SHIFT		8
 #define lpfc_rcqe_status_MASK		0x000000FF
 #define lpfc_rcqe_status_WORD		word0
@@ -634,10 +543,7 @@ struct lpfc_rcqe {
 #define FC_STATUS_RQ_BUF_LEN_EXCEEDED 	0x11 /* payload truncated */
 #define FC_STATUS_INSUFF_BUF_NEED_BUF 	0x12 /* Insufficient buffers */
 #define FC_STATUS_INSUFF_BUF_FRM_DISC 	0x13 /* Frame Discard */
-<<<<<<< HEAD
-=======
 #define FC_STATUS_RQ_DMA_FAILURE	0x14 /* DMA failure */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word1;
 #define lpfc_rcqe_fcf_id_v1_SHIFT	0
 #define lpfc_rcqe_fcf_id_v1_MASK	0x0000003F
@@ -710,11 +616,8 @@ struct lpfc_register {
 	uint32_t word0;
 };
 
-<<<<<<< HEAD
-=======
 #define LPFC_PORT_SEM_UE_RECOVERABLE    0xE000
 #define LPFC_PORT_SEM_MASK		0xF000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The following BAR0 Registers apply to SLI4 if_type 0 UCNAs. */
 #define LPFC_UERR_STATUS_HI		0x00A4
 #define LPFC_UERR_STATUS_LO		0x00A0
@@ -723,10 +626,7 @@ struct lpfc_register {
 
 /* The following BAR0 register sets are defined for if_type 0 and 2 UCNAs. */
 #define LPFC_SLI_INTF			0x0058
-<<<<<<< HEAD
-=======
 #define LPFC_SLI_ASIC_VER		0x009C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LPFC_CTL_PORT_SEM_OFFSET	0x400
 #define lpfc_port_smphr_perr_SHIFT	31
@@ -798,27 +698,20 @@ struct lpfc_register {
 #define lpfc_sliport_status_oti_SHIFT	29
 #define lpfc_sliport_status_oti_MASK	0x1
 #define lpfc_sliport_status_oti_WORD	word0
-<<<<<<< HEAD
-=======
 #define lpfc_sliport_status_dip_SHIFT	25
 #define lpfc_sliport_status_dip_MASK	0x1
 #define lpfc_sliport_status_dip_WORD	word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_sliport_status_rn_SHIFT	24
 #define lpfc_sliport_status_rn_MASK	0x1
 #define lpfc_sliport_status_rn_WORD	word0
 #define lpfc_sliport_status_rdy_SHIFT	23
 #define lpfc_sliport_status_rdy_MASK	0x1
 #define lpfc_sliport_status_rdy_WORD	word0
-<<<<<<< HEAD
-#define MAX_IF_TYPE_2_RESETS	1000
-=======
 #define lpfc_sliport_status_pldv_SHIFT	0
 #define lpfc_sliport_status_pldv_MASK	0x1
 #define lpfc_sliport_status_pldv_WORD	word0
 #define CFG_PLD				0x3C
 #define MAX_IF_TYPE_2_RESETS		6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LPFC_CTL_PORT_CTL_OFFSET	0x408
 #define lpfc_sliport_ctrl_end_SHIFT	30
@@ -834,8 +727,6 @@ struct lpfc_register {
 #define LPFC_CTL_PORT_ER1_OFFSET	0x40C
 #define LPFC_CTL_PORT_ER2_OFFSET	0x410
 
-<<<<<<< HEAD
-=======
 #define LPFC_CTL_PORT_EQ_DELAY_OFFSET	0x418
 #define lpfc_sliport_eqdelay_delay_SHIFT 16
 #define lpfc_sliport_eqdelay_delay_MASK	0xffff
@@ -847,7 +738,6 @@ struct lpfc_register {
 #define LPFC_SEC_TO_MSEC		1000
 #define LPFC_MSECS_TO_SECS(msecs) ((msecs) / 1000)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The following Registers apply to SLI4 if_type 0 UCNAs. They typically
  * reside in BAR 2.
  */
@@ -912,29 +802,6 @@ struct lpfc_register {
  * register sets depending on the UCNA Port's reported if_type
  * value.  For UCNA ports running SLI4 and if_type 0, they reside in
  * BAR4.  For UCNA ports running SLI4 and if_type 2, they reside in
-<<<<<<< HEAD
- * BAR0.  The offsets are the same so the driver must account for
- * any base address difference.
- */
-#define LPFC_RQ_DOORBELL		0x00A0
-#define lpfc_rq_doorbell_num_posted_SHIFT	16
-#define lpfc_rq_doorbell_num_posted_MASK	0x3FFF
-#define lpfc_rq_doorbell_num_posted_WORD	word0
-#define lpfc_rq_doorbell_id_SHIFT		0
-#define lpfc_rq_doorbell_id_MASK		0xFFFF
-#define lpfc_rq_doorbell_id_WORD		word0
-
-#define LPFC_WQ_DOORBELL		0x0040
-#define lpfc_wq_doorbell_num_posted_SHIFT	24
-#define lpfc_wq_doorbell_num_posted_MASK	0x00FF
-#define lpfc_wq_doorbell_num_posted_WORD	word0
-#define lpfc_wq_doorbell_index_SHIFT		16
-#define lpfc_wq_doorbell_index_MASK		0x00FF
-#define lpfc_wq_doorbell_index_WORD		word0
-#define lpfc_wq_doorbell_id_SHIFT		0
-#define lpfc_wq_doorbell_id_MASK		0xFFFF
-#define lpfc_wq_doorbell_id_WORD		word0
-=======
  * BAR0.  For FC ports running SLI4 and if_type 6, they reside in
  * BAR2. The offsets and base address are different,  so the driver
  * has to compute the register addresses accordingly
@@ -989,7 +856,6 @@ struct lpfc_register {
 #define lpfc_if6_wq_db_list_fm_id_SHIFT		0
 #define lpfc_if6_wq_db_list_fm_id_MASK		0xFFFF
 #define lpfc_if6_wq_db_list_fm_id_WORD		word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LPFC_EQCQ_DOORBELL		0x0120
 #define lpfc_eqcq_doorbell_se_SHIFT		31
@@ -1026,8 +892,6 @@ struct lpfc_register {
 #define LPFC_CQID_HI_FIELD_SHIFT		10
 #define LPFC_EQID_HI_FIELD_SHIFT		9
 
-<<<<<<< HEAD
-=======
 #define LPFC_IF6_CQ_DOORBELL			0x00C0
 #define lpfc_if6_cq_doorbell_se_SHIFT		31
 #define lpfc_if6_cq_doorbell_se_MASK		0x0001
@@ -1060,7 +924,6 @@ struct lpfc_register {
 #define lpfc_if6_eq_doorbell_eqid_MASK		0x0FFF
 #define lpfc_if6_eq_doorbell_eqid_WORD		word0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_BMBX			0x0160
 #define lpfc_bmbx_addr_SHIFT		2
 #define lpfc_bmbx_addr_MASK		0x3FFFFFFF
@@ -1073,10 +936,7 @@ struct lpfc_register {
 #define lpfc_bmbx_rdy_WORD		word0
 
 #define LPFC_MQ_DOORBELL			0x0140
-<<<<<<< HEAD
-=======
 #define LPFC_IF6_MQ_DOORBELL			0x0160
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_mq_doorbell_num_posted_SHIFT	16
 #define lpfc_mq_doorbell_num_posted_MASK	0x3FFF
 #define lpfc_mq_doorbell_num_posted_WORD	word0
@@ -1149,15 +1009,12 @@ union lpfc_sli4_cfg_shdr {
 #define lpfc_mbox_hdr_add_status_SHIFT		8
 #define lpfc_mbox_hdr_add_status_MASK		0x000000FF
 #define lpfc_mbox_hdr_add_status_WORD		word7
-<<<<<<< HEAD
-=======
 #define LPFC_ADD_STATUS_INCOMPAT_OBJ		0xA2
 #define lpfc_mbox_hdr_add_status_2_SHIFT	16
 #define lpfc_mbox_hdr_add_status_2_MASK		0x000000FF
 #define lpfc_mbox_hdr_add_status_2_WORD		word7
 #define LPFC_ADD_STATUS_2_INCOMPAT_FLASH	0x01
 #define LPFC_ADD_STATUS_2_INCORRECT_ASIC	0x02
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t response_length;
 		uint32_t actual_response_length;
 	} response;
@@ -1182,10 +1039,7 @@ struct mbox_header {
 /* Subsystem Definitions */
 #define LPFC_MBOX_SUBSYSTEM_NA		0x0
 #define LPFC_MBOX_SUBSYSTEM_COMMON	0x1
-<<<<<<< HEAD
-=======
 #define LPFC_MBOX_SUBSYSTEM_LOWLEVEL	0xB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_MBOX_SUBSYSTEM_FCOE	0xC
 
 /* Device Specific Definitions */
@@ -1201,19 +1055,12 @@ struct mbox_header {
 #define LPFC_MBOX_OPCODE_MQ_CREATE			0x15
 #define LPFC_MBOX_OPCODE_GET_CNTL_ATTRIBUTES		0x20
 #define LPFC_MBOX_OPCODE_NOP				0x21
-<<<<<<< HEAD
-=======
 #define LPFC_MBOX_OPCODE_MODIFY_EQ_DELAY		0x29
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_MBOX_OPCODE_MQ_DESTROY			0x35
 #define LPFC_MBOX_OPCODE_CQ_DESTROY			0x36
 #define LPFC_MBOX_OPCODE_EQ_DESTROY			0x37
 #define LPFC_MBOX_OPCODE_QUERY_FW_CFG			0x3A
 #define LPFC_MBOX_OPCODE_FUNCTION_RESET			0x3D
-<<<<<<< HEAD
-#define LPFC_MBOX_OPCODE_GET_PORT_NAME			0x4D
-#define LPFC_MBOX_OPCODE_MQ_CREATE_EXT			0x5A
-=======
 #define LPFC_MBOX_OPCODE_SET_PHYSICAL_LINK_CONFIG	0x3E
 #define LPFC_MBOX_OPCODE_SET_BOOT_CONFIG		0x43
 #define LPFC_MBOX_OPCODE_SET_BEACON_CONFIG              0x45
@@ -1225,16 +1072,12 @@ struct mbox_header {
 #define LPFC_MBOX_OPCODE_SEND_ACTIVATION		0x73
 #define LPFC_MBOX_OPCODE_RESET_LICENSES			0x74
 #define LPFC_MBOX_OPCODE_REG_CONGESTION_BUF		0x8E
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_MBOX_OPCODE_GET_RSRC_EXTENT_INFO		0x9A
 #define LPFC_MBOX_OPCODE_GET_ALLOC_RSRC_EXTENT		0x9B
 #define LPFC_MBOX_OPCODE_ALLOC_RSRC_EXTENT		0x9C
 #define LPFC_MBOX_OPCODE_DEALLOC_RSRC_EXTENT		0x9D
 #define LPFC_MBOX_OPCODE_GET_FUNCTION_CONFIG		0xA0
-<<<<<<< HEAD
-=======
 #define LPFC_MBOX_OPCODE_GET_PROFILE_CAPACITIES		0xA1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_MBOX_OPCODE_GET_PROFILE_CONFIG		0xA4
 #define LPFC_MBOX_OPCODE_SET_PROFILE_CONFIG		0xA5
 #define LPFC_MBOX_OPCODE_GET_PROFILE_LIST		0xA6
@@ -1245,10 +1088,7 @@ struct mbox_header {
 #define LPFC_MBOX_OPCODE_READ_OBJECT_LIST		0xAD
 #define LPFC_MBOX_OPCODE_DELETE_OBJECT			0xAE
 #define LPFC_MBOX_OPCODE_GET_SLI4_PARAMETERS		0xB5
-<<<<<<< HEAD
-=======
 #define LPFC_MBOX_OPCODE_SET_FEATURES                   0xBF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FCoE Opcodes */
 #define LPFC_MBOX_OPCODE_FCOE_WQ_CREATE			0x01
@@ -1262,11 +1102,6 @@ struct mbox_header {
 #define LPFC_MBOX_OPCODE_FCOE_DELETE_FCF		0x0A
 #define LPFC_MBOX_OPCODE_FCOE_POST_HDR_TEMPLATE		0x0B
 #define LPFC_MBOX_OPCODE_FCOE_REDISCOVER_FCF		0x10
-<<<<<<< HEAD
-#define LPFC_MBOX_OPCODE_FCOE_SET_FCLINK_SETTINGS	0x21
-#define LPFC_MBOX_OPCODE_FCOE_LINK_DIAG_STATE		0x22
-#define LPFC_MBOX_OPCODE_FCOE_LINK_DIAG_LOOPBACK	0x23
-=======
 #define LPFC_MBOX_OPCODE_FCOE_CQ_CREATE_SET		0x1D
 #define LPFC_MBOX_OPCODE_FCOE_SET_FCLINK_SETTINGS	0x21
 #define LPFC_MBOX_OPCODE_FCOE_LINK_DIAG_STATE		0x22
@@ -1275,7 +1110,6 @@ struct mbox_header {
 
 /* Low level Opcodes */
 #define LPFC_MBOX_OPCODE_SET_DIAG_LOG_OPTION		0x37
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Mailbox command structures */
 struct eq_context {
@@ -1288,12 +1122,9 @@ struct eq_context {
 #define lpfc_eq_context_valid_SHIFT	29
 #define lpfc_eq_context_valid_MASK	0x00000001
 #define lpfc_eq_context_valid_WORD	word0
-<<<<<<< HEAD
-=======
 #define lpfc_eq_context_autovalid_SHIFT 28
 #define lpfc_eq_context_autovalid_MASK  0x00000001
 #define lpfc_eq_context_autovalid_WORD  word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word1;
 #define lpfc_eq_context_count_SHIFT	26
 #define lpfc_eq_context_count_MASK	0x00000003
@@ -1310,8 +1141,6 @@ struct eq_context {
 	uint32_t reserved3;
 };
 
-<<<<<<< HEAD
-=======
 struct eq_delay_info {
 	uint32_t eq_id;
 	uint32_t phase;
@@ -1319,7 +1148,6 @@ struct eq_delay_info {
 };
 #define	LPFC_MAX_EQ_DELAY_EQID_CNT	8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sgl_page_pairs {
 	uint32_t sgl_pg0_addr_lo;
 	uint32_t sgl_pg0_addr_hi;
@@ -1352,15 +1180,12 @@ struct lpfc_mbx_sge {
 	uint32_t length;
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_mbx_host_buf {
 	uint32_t length;
 	uint32_t pa_lo;
 	uint32_t pa_hi;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_mbx_nembed_cmd {
 	struct lpfc_sli4_cfg_mhdr cfg_mhdr;
 #define LPFC_SLI4_MBX_SGE_MAX_PAGES	19
@@ -1371,8 +1196,6 @@ struct lpfc_mbx_nembed_sge_virt {
 	void *addr[LPFC_SLI4_MBX_SGE_MAX_PAGES];
 };
 
-<<<<<<< HEAD
-=======
 #define LPFC_MBX_OBJECT_NAME_LEN_DW	26
 struct lpfc_mbx_read_object {  /* Version 0 */
 	struct mbox_header header;
@@ -1398,7 +1221,6 @@ struct lpfc_mbx_read_object {  /* Version 0 */
 	} u;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_mbx_eq_create {
 	struct mbox_header header;
 	union {
@@ -1419,8 +1241,6 @@ struct lpfc_mbx_eq_create {
 	} u;
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_mbx_modify_eq_delay {
 	struct mbox_header header;
 	union {
@@ -1434,7 +1254,6 @@ struct lpfc_mbx_modify_eq_delay {
 	} u;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_mbx_eq_destroy {
 	struct mbox_header header;
 	union {
@@ -1455,8 +1274,6 @@ struct lpfc_mbx_nop {
 	uint32_t context[2];
 };
 
-<<<<<<< HEAD
-=======
 
 
 struct lpfc_mbx_set_ras_fwlog {
@@ -1496,7 +1313,6 @@ struct lpfc_mbx_set_ras_fwlog {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cq_context {
 	uint32_t word0;
 #define lpfc_cq_context_event_SHIFT	31
@@ -1511,13 +1327,10 @@ struct cq_context {
 #define LPFC_CQ_CNT_256		0x0
 #define LPFC_CQ_CNT_512		0x1
 #define LPFC_CQ_CNT_1024	0x2
-<<<<<<< HEAD
-=======
 #define LPFC_CQ_CNT_WORD7	0x3
 #define lpfc_cq_context_autovalid_SHIFT 15
 #define lpfc_cq_context_autovalid_MASK  0x00000001
 #define lpfc_cq_context_autovalid_WORD  word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word1;
 #define lpfc_cq_eq_id_SHIFT		22	/* Version 0 Only */
 #define lpfc_cq_eq_id_MASK		0x000000FF
@@ -1525,11 +1338,7 @@ struct cq_context {
 #define lpfc_cq_eq_id_2_SHIFT		0 	/* Version 2 Only */
 #define lpfc_cq_eq_id_2_MASK		0x0000FFFF
 #define lpfc_cq_eq_id_2_WORD		word1
-<<<<<<< HEAD
-	uint32_t reserved0;
-=======
 	uint32_t lpfc_cq_context_count;		/* Version 2 Only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t reserved1;
 };
 
@@ -1556,8 +1365,6 @@ struct lpfc_mbx_cq_create {
 	} u;
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_mbx_cq_create_set {
 	union  lpfc_sli4_cfg_shdr cfg_shdr;
 	union {
@@ -1671,7 +1478,6 @@ struct lpfc_mbx_cq_create_set {
 	} u;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_mbx_cq_destroy {
 	struct mbox_header header;
 	union {
@@ -1700,14 +1506,6 @@ struct lpfc_mbx_wq_create {
 		struct {	/* Version 0 Request */
 			uint32_t word0;
 #define lpfc_mbx_wq_create_num_pages_SHIFT	0
-<<<<<<< HEAD
-#define lpfc_mbx_wq_create_num_pages_MASK	0x0000FFFF
-#define lpfc_mbx_wq_create_num_pages_WORD	word0
-#define lpfc_mbx_wq_create_cq_id_SHIFT		16
-#define lpfc_mbx_wq_create_cq_id_MASK		0x0000FFFF
-#define lpfc_mbx_wq_create_cq_id_WORD		word0
-			struct dma_address page[LPFC_MAX_WQ_PAGE];
-=======
 #define lpfc_mbx_wq_create_num_pages_MASK	0x000000FF
 #define lpfc_mbx_wq_create_num_pages_WORD	word0
 #define lpfc_mbx_wq_create_dua_SHIFT		8
@@ -1724,7 +1522,6 @@ struct lpfc_mbx_wq_create {
 #define lpfc_mbx_wq_create_ulp_num_SHIFT	8
 #define lpfc_mbx_wq_create_ulp_num_MASK		0x000000FF
 #define lpfc_mbx_wq_create_ulp_num_WORD		word9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} request;
 		struct {	/* Version 1 Request */
 			uint32_t word0;	/* Word 0 is the same as in v0 */
@@ -1732,8 +1529,6 @@ struct lpfc_mbx_wq_create {
 #define lpfc_mbx_wq_create_page_size_SHIFT	0
 #define lpfc_mbx_wq_create_page_size_MASK	0x000000FF
 #define lpfc_mbx_wq_create_page_size_WORD	word1
-<<<<<<< HEAD
-=======
 #define LPFC_WQ_PAGE_SIZE_4096	0x1
 #define lpfc_mbx_wq_create_dpp_req_SHIFT	15
 #define lpfc_mbx_wq_create_dpp_req_MASK		0x00000001
@@ -1744,7 +1539,6 @@ struct lpfc_mbx_wq_create {
 #define lpfc_mbx_wq_create_toe_SHIFT		13
 #define lpfc_mbx_wq_create_toe_MASK		0x00000001
 #define lpfc_mbx_wq_create_toe_WORD		word1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_mbx_wq_create_wqe_size_SHIFT	8
 #define lpfc_mbx_wq_create_wqe_size_MASK	0x0000000F
 #define lpfc_mbx_wq_create_wqe_size_WORD	word1
@@ -1761,9 +1555,6 @@ struct lpfc_mbx_wq_create {
 #define lpfc_mbx_wq_create_q_id_SHIFT	0
 #define lpfc_mbx_wq_create_q_id_MASK	0x0000FFFF
 #define lpfc_mbx_wq_create_q_id_WORD	word0
-<<<<<<< HEAD
-		} response;
-=======
 			uint32_t doorbell_offset;
 			uint32_t word2;
 #define lpfc_mbx_wq_create_bar_set_SHIFT	0
@@ -1798,7 +1589,6 @@ struct lpfc_mbx_wq_create {
 #define lpfc_mbx_wq_create_dpp_bar_WORD		word3
 			uint32_t dpp_offset;
 		} response_1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 };
 
@@ -1819,10 +1609,7 @@ struct lpfc_mbx_wq_destroy {
 
 #define LPFC_HDR_BUF_SIZE 128
 #define LPFC_DATA_BUF_SIZE 2048
-<<<<<<< HEAD
-=======
 #define LPFC_NVMET_DATA_BUF_SIZE 128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rq_context {
 	uint32_t word0;
 #define lpfc_rq_context_rqe_count_SHIFT	16	/* Version 0 Only */
@@ -1832,17 +1619,10 @@ struct rq_context {
 #define LPFC_RQ_RING_SIZE_1024		10	/* 1024 entries */
 #define LPFC_RQ_RING_SIZE_2048		11	/* 2048 entries */
 #define LPFC_RQ_RING_SIZE_4096		12	/* 4096 entries */
-<<<<<<< HEAD
-#define lpfc_rq_context_rqe_count_1_SHIFT	16	/* Version 1 Only */
-#define lpfc_rq_context_rqe_count_1_MASK	0x0000FFFF
-#define lpfc_rq_context_rqe_count_1_WORD	word0
-#define lpfc_rq_context_rqe_size_SHIFT	8		/* Version 1 Only */
-=======
 #define lpfc_rq_context_rqe_count_1_SHIFT	16	/* Version 1-2 Only */
 #define lpfc_rq_context_rqe_count_1_MASK	0x0000FFFF
 #define lpfc_rq_context_rqe_count_1_WORD	word0
 #define lpfc_rq_context_rqe_size_SHIFT	8		/* Version 1-2 Only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_rq_context_rqe_size_MASK	0x0000000F
 #define lpfc_rq_context_rqe_size_WORD	word0
 #define LPFC_RQE_SIZE_8		2
@@ -1853,12 +1633,6 @@ struct rq_context {
 #define lpfc_rq_context_page_size_SHIFT	0		/* Version 1 Only */
 #define lpfc_rq_context_page_size_MASK	0x000000FF
 #define lpfc_rq_context_page_size_WORD	word0
-<<<<<<< HEAD
-	uint32_t reserved1;
-	uint32_t word2;
-#define lpfc_rq_context_cq_id_SHIFT	16
-#define lpfc_rq_context_cq_id_MASK	0x000003FF
-=======
 #define	LPFC_RQ_PAGE_SIZE_4096	0x1
 	uint32_t word1;
 #define lpfc_rq_context_data_size_SHIFT	16		/* Version 2 Only */
@@ -1870,17 +1644,13 @@ struct rq_context {
 	uint32_t word2;
 #define lpfc_rq_context_cq_id_SHIFT	16
 #define lpfc_rq_context_cq_id_MASK	0x0000FFFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_rq_context_cq_id_WORD	word2
 #define lpfc_rq_context_buf_size_SHIFT	0
 #define lpfc_rq_context_buf_size_MASK	0x0000FFFF
 #define lpfc_rq_context_buf_size_WORD	word2
-<<<<<<< HEAD
-=======
 #define lpfc_rq_context_base_cq_SHIFT	0		/* Version 2 Only */
 #define lpfc_rq_context_base_cq_MASK	0x0000FFFF
 #define lpfc_rq_context_base_cq_WORD	word2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t buffer_size;				/* Version 1 Only */
 };
 
@@ -1892,16 +1662,6 @@ struct lpfc_mbx_rq_create {
 #define lpfc_mbx_rq_create_num_pages_SHIFT	0
 #define lpfc_mbx_rq_create_num_pages_MASK	0x0000FFFF
 #define lpfc_mbx_rq_create_num_pages_WORD	word0
-<<<<<<< HEAD
-			struct rq_context context;
-			struct dma_address page[LPFC_MAX_WQ_PAGE];
-		} request;
-		struct {
-			uint32_t word0;
-#define lpfc_mbx_rq_create_q_id_SHIFT	0
-#define lpfc_mbx_rq_create_q_id_MASK	0x0000FFFF
-#define lpfc_mbx_rq_create_q_id_WORD	word0
-=======
 #define lpfc_mbx_rq_create_dua_SHIFT		16
 #define lpfc_mbx_rq_create_dua_MASK		0x00000001
 #define lpfc_mbx_rq_create_dua_WORD		word0
@@ -1982,7 +1742,6 @@ struct lpfc_mbx_rq_create_v2 {
 #define lpfc_mbx_rq_create_db_format_SHIFT	16
 #define lpfc_mbx_rq_create_db_format_MASK	0x0000FFFF
 #define lpfc_mbx_rq_create_db_format_WORD	word2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} response;
 	} u;
 };
@@ -2057,14 +1816,11 @@ struct lpfc_mbx_mq_create_ext {
 #define lpfc_mbx_mq_create_ext_async_evt_link_SHIFT	LPFC_TRAILER_CODE_LINK
 #define lpfc_mbx_mq_create_ext_async_evt_link_MASK	0x00000001
 #define lpfc_mbx_mq_create_ext_async_evt_link_WORD	async_evt_bmap
-<<<<<<< HEAD
-=======
 #define LPFC_EVT_CODE_LINK_NO_LINK	0x0
 #define LPFC_EVT_CODE_LINK_10_MBIT	0x1
 #define LPFC_EVT_CODE_LINK_100_MBIT	0x2
 #define LPFC_EVT_CODE_LINK_1_GBIT	0x3
 #define LPFC_EVT_CODE_LINK_10_GBIT	0x4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_mbx_mq_create_ext_async_evt_fip_SHIFT	LPFC_TRAILER_CODE_FCOE
 #define lpfc_mbx_mq_create_ext_async_evt_fip_MASK	0x00000001
 #define lpfc_mbx_mq_create_ext_async_evt_fip_WORD	async_evt_bmap
@@ -2074,8 +1830,6 @@ struct lpfc_mbx_mq_create_ext {
 #define lpfc_mbx_mq_create_ext_async_evt_fc_SHIFT	LPFC_TRAILER_CODE_FC
 #define lpfc_mbx_mq_create_ext_async_evt_fc_MASK	0x00000001
 #define lpfc_mbx_mq_create_ext_async_evt_fc_WORD	async_evt_bmap
-<<<<<<< HEAD
-=======
 #define LPFC_EVT_CODE_FC_NO_LINK	0x0
 #define LPFC_EVT_CODE_FC_1_GBAUD	0x1
 #define LPFC_EVT_CODE_FC_2_GBAUD	0x2
@@ -2083,7 +1837,6 @@ struct lpfc_mbx_mq_create_ext {
 #define LPFC_EVT_CODE_FC_8_GBAUD	0x8
 #define LPFC_EVT_CODE_FC_10_GBAUD	0xA
 #define LPFC_EVT_CODE_FC_16_GBAUD	0x10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_mbx_mq_create_ext_async_evt_sli_SHIFT	LPFC_TRAILER_CODE_SLI
 #define lpfc_mbx_mq_create_ext_async_evt_sli_MASK	0x00000001
 #define lpfc_mbx_mq_create_ext_async_evt_sli_WORD	async_evt_bmap
@@ -2146,8 +1899,6 @@ struct lpfc_mbx_get_rsrc_extent_info {
 	} u;
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_mbx_query_fw_config {
 	struct mbox_header header;
 	struct {
@@ -2198,7 +1949,6 @@ struct lpfc_mbx_set_beacon_config {
 	uint32_t word5;  /* RESERVED  */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_id_range {
 	uint32_t word5;
 #define lpfc_mbx_rsrc_id_word4_0_SHIFT	0
@@ -2217,14 +1967,11 @@ struct lpfc_mbx_set_link_diag_state {
 #define lpfc_mbx_set_diag_state_diag_SHIFT	0
 #define lpfc_mbx_set_diag_state_diag_MASK	0x00000001
 #define lpfc_mbx_set_diag_state_diag_WORD	word0
-<<<<<<< HEAD
-=======
 #define lpfc_mbx_set_diag_state_diag_bit_valid_SHIFT	2
 #define lpfc_mbx_set_diag_state_diag_bit_valid_MASK	0x00000001
 #define lpfc_mbx_set_diag_state_diag_bit_valid_WORD	word0
 #define LPFC_DIAG_STATE_DIAG_BIT_VALID_NO_CHANGE	0
 #define LPFC_DIAG_STATE_DIAG_BIT_VALID_CHANGE		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_mbx_set_diag_state_link_num_SHIFT	16
 #define lpfc_mbx_set_diag_state_link_num_MASK	0x0000003F
 #define lpfc_mbx_set_diag_state_link_num_WORD	word0
@@ -2243,20 +1990,6 @@ struct lpfc_mbx_set_link_diag_loopback {
 	union {
 		struct {
 			uint32_t word0;
-<<<<<<< HEAD
-#define lpfc_mbx_set_diag_lpbk_type_SHIFT	0
-#define lpfc_mbx_set_diag_lpbk_type_MASK	0x00000003
-#define lpfc_mbx_set_diag_lpbk_type_WORD	word0
-#define LPFC_DIAG_LOOPBACK_TYPE_DISABLE		0x0
-#define LPFC_DIAG_LOOPBACK_TYPE_INTERNAL	0x1
-#define LPFC_DIAG_LOOPBACK_TYPE_SERDES		0x2
-#define lpfc_mbx_set_diag_lpbk_link_num_SHIFT	16
-#define lpfc_mbx_set_diag_lpbk_link_num_MASK	0x0000003F
-#define lpfc_mbx_set_diag_lpbk_link_num_WORD	word0
-#define lpfc_mbx_set_diag_lpbk_link_type_SHIFT	22
-#define lpfc_mbx_set_diag_lpbk_link_type_MASK	0x00000003
-#define lpfc_mbx_set_diag_lpbk_link_type_WORD	word0
-=======
 #define lpfc_mbx_set_diag_lpbk_type_SHIFT		0
 #define lpfc_mbx_set_diag_lpbk_type_MASK		0x00000003
 #define lpfc_mbx_set_diag_lpbk_type_WORD		word0
@@ -2270,7 +2003,6 @@ struct lpfc_mbx_set_link_diag_loopback {
 #define lpfc_mbx_set_diag_lpbk_link_type_SHIFT		22
 #define lpfc_mbx_set_diag_lpbk_link_type_MASK		0x00000003
 #define lpfc_mbx_set_diag_lpbk_link_type_WORD		word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} req;
 		struct {
 			uint32_t word0;
@@ -2414,8 +2146,6 @@ struct sli4_sge {	/* SLI-4 */
 	uint32_t sge_len;
 };
 
-<<<<<<< HEAD
-=======
 struct sli4_hybrid_sgl {
 	struct list_head list_node;
 	struct sli4_sge *dma_sgl;
@@ -2433,7 +2163,6 @@ struct fcp_cmd_rsp_buf {
 	dma_addr_t fcp_cmd_rsp_dma_handle;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sli4_sge_diseed {	/* SLI-4 */
 	uint32_t ref_tag;
 	uint32_t ref_tag_tran;
@@ -2557,10 +2286,6 @@ struct fcf_record {
 #define lpfc_fcf_record_fc_map_2_MASK		0x000000FF
 #define lpfc_fcf_record_fc_map_2_WORD		word7
 #define lpfc_fcf_record_fcf_valid_SHIFT		24
-<<<<<<< HEAD
-#define lpfc_fcf_record_fcf_valid_MASK		0x000000FF
-#define lpfc_fcf_record_fcf_valid_WORD		word7
-=======
 #define lpfc_fcf_record_fcf_valid_MASK		0x00000001
 #define lpfc_fcf_record_fcf_valid_WORD		word7
 #define lpfc_fcf_record_fcf_fc_SHIFT		25
@@ -2569,7 +2294,6 @@ struct fcf_record {
 #define lpfc_fcf_record_fcf_sol_SHIFT		31
 #define lpfc_fcf_record_fcf_sol_MASK		0x00000001
 #define lpfc_fcf_record_fcf_sol_WORD		word7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word8;
 #define lpfc_fcf_record_fcf_index_SHIFT		0
 #define lpfc_fcf_record_fcf_index_MASK		0x0000FFFF
@@ -2658,54 +2382,6 @@ struct lpfc_mbx_redisc_fcf_tbl {
 #define lpfc_mbx_redisc_fcf_index_WORD		word12
 };
 
-<<<<<<< HEAD
-struct lpfc_mbx_query_fw_cfg {
-	struct mbox_header header;
-	uint32_t config_number;
-	uint32_t asic_rev;
-	uint32_t phys_port;
-	uint32_t function_mode;
-/* firmware Function Mode */
-#define lpfc_function_mode_toe_SHIFT		0
-#define lpfc_function_mode_toe_MASK		0x00000001
-#define lpfc_function_mode_toe_WORD		function_mode
-#define lpfc_function_mode_nic_SHIFT		1
-#define lpfc_function_mode_nic_MASK		0x00000001
-#define lpfc_function_mode_nic_WORD		function_mode
-#define lpfc_function_mode_rdma_SHIFT		2
-#define lpfc_function_mode_rdma_MASK		0x00000001
-#define lpfc_function_mode_rdma_WORD		function_mode
-#define lpfc_function_mode_vm_SHIFT		3
-#define lpfc_function_mode_vm_MASK		0x00000001
-#define lpfc_function_mode_vm_WORD		function_mode
-#define lpfc_function_mode_iscsi_i_SHIFT	4
-#define lpfc_function_mode_iscsi_i_MASK		0x00000001
-#define lpfc_function_mode_iscsi_i_WORD		function_mode
-#define lpfc_function_mode_iscsi_t_SHIFT	5
-#define lpfc_function_mode_iscsi_t_MASK		0x00000001
-#define lpfc_function_mode_iscsi_t_WORD		function_mode
-#define lpfc_function_mode_fcoe_i_SHIFT		6
-#define lpfc_function_mode_fcoe_i_MASK		0x00000001
-#define lpfc_function_mode_fcoe_i_WORD		function_mode
-#define lpfc_function_mode_fcoe_t_SHIFT		7
-#define lpfc_function_mode_fcoe_t_MASK		0x00000001
-#define lpfc_function_mode_fcoe_t_WORD		function_mode
-#define lpfc_function_mode_dal_SHIFT		8
-#define lpfc_function_mode_dal_MASK		0x00000001
-#define lpfc_function_mode_dal_WORD		function_mode
-#define lpfc_function_mode_lro_SHIFT		9
-#define lpfc_function_mode_lro_MASK		0x00000001
-#define lpfc_function_mode_lro_WORD		function_mode
-#define lpfc_function_mode_flex10_SHIFT		10
-#define lpfc_function_mode_flex10_MASK		0x00000001
-#define lpfc_function_mode_flex10_WORD		function_mode
-#define lpfc_function_mode_ncsi_SHIFT		11
-#define lpfc_function_mode_ncsi_MASK		0x00000001
-#define lpfc_function_mode_ncsi_WORD		function_mode
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Status field for embedded SLI_CONFIG mailbox command */
 #define STATUS_SUCCESS					0x0
 #define STATUS_FAILED 					0x1
@@ -2733,8 +2409,6 @@ struct lpfc_mbx_query_fw_cfg {
 #define STATUS_FCF_IN_USE				0x3a
 #define STATUS_FCF_TABLE_EMPTY				0x43
 
-<<<<<<< HEAD
-=======
 /*
  * Additional status field for embedded SLI_CONFIG mailbox
  * command.
@@ -2745,7 +2419,6 @@ struct lpfc_mbx_query_fw_cfg {
 #define ADD_STATUS_INVALID_OBJECT_NAME			0xA0
 #define ADD_STATUS_FW_DOWNLOAD_HW_DISABLED              0x58
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_mbx_sli4_config {
 	struct mbox_header header;
 };
@@ -2791,12 +2464,9 @@ struct lpfc_mbx_init_vfi {
 
 struct lpfc_mbx_reg_vfi {
 	uint32_t word1;
-<<<<<<< HEAD
-=======
 #define lpfc_reg_vfi_upd_SHIFT		29
 #define lpfc_reg_vfi_upd_MASK		0x00000001
 #define lpfc_reg_vfi_upd_WORD		word1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_reg_vfi_vp_SHIFT		28
 #define lpfc_reg_vfi_vp_MASK		0x00000001
 #define lpfc_reg_vfi_vp_WORD		word1
@@ -2815,11 +2485,6 @@ struct lpfc_mbx_reg_vfi {
 	uint32_t e_d_tov;
 	uint32_t r_a_tov;
 	uint32_t word10;
-<<<<<<< HEAD
-#define lpfc_reg_vfi_nport_id_SHIFT		0
-#define lpfc_reg_vfi_nport_id_MASK		0x00FFFFFF
-#define lpfc_reg_vfi_nport_id_WORD		word10
-=======
 #define lpfc_reg_vfi_nport_id_SHIFT	0
 #define lpfc_reg_vfi_nport_id_MASK	0x00FFFFFF
 #define lpfc_reg_vfi_nport_id_WORD	word10
@@ -2829,7 +2494,6 @@ struct lpfc_mbx_reg_vfi {
 #define lpfc_reg_vfi_bbscn_SHIFT	28
 #define lpfc_reg_vfi_bbscn_MASK		0x0000000F
 #define lpfc_reg_vfi_bbscn_WORD		word10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lpfc_mbx_init_vpi {
@@ -3011,8 +2675,6 @@ struct lpfc_mbx_reg_fcfi {
 #define lpfc_reg_fcfi_vlan_tag_WORD	word8
 };
 
-<<<<<<< HEAD
-=======
 struct lpfc_mbx_reg_fcfi_mrq {
 	uint32_t word1;
 #define lpfc_reg_fcfi_mrq_info_index_SHIFT	0
@@ -3167,7 +2829,6 @@ struct lpfc_mbx_reg_fcfi_mrq {
 	uint32_t word16;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_mbx_unreg_fcfi {
 	uint32_t word1_rsv;
 	uint32_t word2;
@@ -3193,10 +2854,7 @@ struct lpfc_mbx_read_rev {
 #define lpfc_mbx_rd_rev_vpd_MASK		0x00000001
 #define lpfc_mbx_rd_rev_vpd_WORD		word1
 	uint32_t first_hw_rev;
-<<<<<<< HEAD
-=======
 #define LPFC_G7_ASIC_1				0xd
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t second_hw_rev;
 	uint32_t word4_rsvd;
 	uint32_t third_hw_rev;
@@ -3234,8 +2892,6 @@ struct lpfc_mbx_read_config {
 #define lpfc_mbx_rd_conf_extnts_inuse_SHIFT	31
 #define lpfc_mbx_rd_conf_extnts_inuse_MASK	0x00000001
 #define lpfc_mbx_rd_conf_extnts_inuse_WORD	word1
-<<<<<<< HEAD
-=======
 #define lpfc_mbx_rd_conf_fawwpn_SHIFT		30
 #define lpfc_mbx_rd_conf_fawwpn_MASK		0x00000001
 #define lpfc_mbx_rd_conf_fawwpn_WORD		word1
@@ -3245,7 +2901,6 @@ struct lpfc_mbx_read_config {
 #define lpfc_mbx_rd_conf_acs_SHIFT		27	/* alarm signaling */
 #define lpfc_mbx_rd_conf_acs_MASK		0x00000001
 #define lpfc_mbx_rd_conf_acs_WORD		word1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word2;
 #define lpfc_mbx_rd_conf_lnk_numb_SHIFT		0
 #define lpfc_mbx_rd_conf_lnk_numb_MASK		0x0000003F
@@ -3258,8 +2913,6 @@ struct lpfc_mbx_read_config {
 #define lpfc_mbx_rd_conf_lnk_ldv_SHIFT		8
 #define lpfc_mbx_rd_conf_lnk_ldv_MASK		0x00000001
 #define lpfc_mbx_rd_conf_lnk_ldv_WORD		word2
-<<<<<<< HEAD
-=======
 #define lpfc_mbx_rd_conf_trunk_SHIFT		12
 #define lpfc_mbx_rd_conf_trunk_MASK		0x0000000F
 #define lpfc_mbx_rd_conf_trunk_WORD		word2
@@ -3272,7 +2925,6 @@ struct lpfc_mbx_read_config {
 #define lpfc_mbx_rd_conf_ptv_SHIFT		23
 #define lpfc_mbx_rd_conf_ptv_MASK		0x00000001
 #define lpfc_mbx_rd_conf_ptv_WORD		word2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_mbx_rd_conf_topology_SHIFT		24
 #define lpfc_mbx_rd_conf_topology_MASK		0x000000FF
 #define lpfc_mbx_rd_conf_topology_WORD		word2
@@ -3286,10 +2938,6 @@ struct lpfc_mbx_read_config {
 #define lpfc_mbx_rd_conf_r_a_tov_SHIFT		0
 #define lpfc_mbx_rd_conf_r_a_tov_MASK		0x0000FFFF
 #define lpfc_mbx_rd_conf_r_a_tov_WORD		word6
-<<<<<<< HEAD
-	uint32_t rsvd_7;
-	uint32_t rsvd_8;
-=======
 #define lpfc_mbx_rd_conf_link_speed_SHIFT	16
 #define lpfc_mbx_rd_conf_link_speed_MASK	0x0000FFFF
 #define lpfc_mbx_rd_conf_link_speed_WORD	word6
@@ -3304,7 +2952,6 @@ struct lpfc_mbx_read_config {
 #define lpfc_mbx_rd_conf_bbscn_def_SHIFT	8
 #define lpfc_mbx_rd_conf_bbscn_def_MASK		0x0000000F
 #define lpfc_mbx_rd_conf_bbscn_def_WORD		word8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word9;
 #define lpfc_mbx_rd_conf_lmt_SHIFT		0
 #define lpfc_mbx_rd_conf_lmt_MASK		0x0000FFFF
@@ -3389,11 +3036,6 @@ struct lpfc_mbx_request_features {
 #define lpfc_mbx_rq_ftr_rq_ifip_SHIFT		7
 #define lpfc_mbx_rq_ftr_rq_ifip_MASK		0x00000001
 #define lpfc_mbx_rq_ftr_rq_ifip_WORD		word2
-<<<<<<< HEAD
-#define lpfc_mbx_rq_ftr_rq_perfh_SHIFT		11
-#define lpfc_mbx_rq_ftr_rq_perfh_MASK		0x00000001
-#define lpfc_mbx_rq_ftr_rq_perfh_WORD		word2
-=======
 #define lpfc_mbx_rq_ftr_rq_iaar_SHIFT		9
 #define lpfc_mbx_rq_ftr_rq_iaar_MASK		0x00000001
 #define lpfc_mbx_rq_ftr_rq_iaar_WORD		word2
@@ -3406,7 +3048,6 @@ struct lpfc_mbx_request_features {
 #define lpfc_mbx_rq_ftr_rq_ashdr_SHIFT          17
 #define lpfc_mbx_rq_ftr_rq_ashdr_MASK           0x00000001
 #define lpfc_mbx_rq_ftr_rq_ashdr_WORD           word2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word3;
 #define lpfc_mbx_rq_ftr_rsp_iaab_SHIFT		0
 #define lpfc_mbx_rq_ftr_rsp_iaab_MASK		0x00000001
@@ -3435,181 +3076,6 @@ struct lpfc_mbx_request_features {
 #define lpfc_mbx_rq_ftr_rsp_perfh_SHIFT		11
 #define lpfc_mbx_rq_ftr_rsp_perfh_MASK		0x00000001
 #define lpfc_mbx_rq_ftr_rsp_perfh_WORD		word3
-<<<<<<< HEAD
-};
-
-struct lpfc_mbx_supp_pages {
-	uint32_t word1;
-#define qs_SHIFT 				0
-#define qs_MASK					0x00000001
-#define qs_WORD					word1
-#define wr_SHIFT				1
-#define wr_MASK 				0x00000001
-#define wr_WORD					word1
-#define pf_SHIFT				8
-#define pf_MASK					0x000000ff
-#define pf_WORD					word1
-#define cpn_SHIFT				16
-#define cpn_MASK				0x000000ff
-#define cpn_WORD				word1
-	uint32_t word2;
-#define list_offset_SHIFT 			0
-#define list_offset_MASK			0x000000ff
-#define list_offset_WORD			word2
-#define next_offset_SHIFT			8
-#define next_offset_MASK			0x000000ff
-#define next_offset_WORD			word2
-#define elem_cnt_SHIFT				16
-#define elem_cnt_MASK				0x000000ff
-#define elem_cnt_WORD				word2
-	uint32_t word3;
-#define pn_0_SHIFT				24
-#define pn_0_MASK  				0x000000ff
-#define pn_0_WORD				word3
-#define pn_1_SHIFT				16
-#define pn_1_MASK				0x000000ff
-#define pn_1_WORD				word3
-#define pn_2_SHIFT				8
-#define pn_2_MASK				0x000000ff
-#define pn_2_WORD				word3
-#define pn_3_SHIFT				0
-#define pn_3_MASK				0x000000ff
-#define pn_3_WORD				word3
-	uint32_t word4;
-#define pn_4_SHIFT				24
-#define pn_4_MASK				0x000000ff
-#define pn_4_WORD				word4
-#define pn_5_SHIFT				16
-#define pn_5_MASK				0x000000ff
-#define pn_5_WORD				word4
-#define pn_6_SHIFT				8
-#define pn_6_MASK				0x000000ff
-#define pn_6_WORD				word4
-#define pn_7_SHIFT				0
-#define pn_7_MASK				0x000000ff
-#define pn_7_WORD				word4
-	uint32_t rsvd[27];
-#define LPFC_SUPP_PAGES			0
-#define LPFC_BLOCK_GUARD_PROFILES	1
-#define LPFC_SLI4_PARAMETERS		2
-};
-
-struct lpfc_mbx_pc_sli4_params {
-	uint32_t word1;
-#define qs_SHIFT				0
-#define qs_MASK					0x00000001
-#define qs_WORD					word1
-#define wr_SHIFT				1
-#define wr_MASK					0x00000001
-#define wr_WORD					word1
-#define pf_SHIFT				8
-#define pf_MASK					0x000000ff
-#define pf_WORD					word1
-#define cpn_SHIFT				16
-#define cpn_MASK				0x000000ff
-#define cpn_WORD				word1
-	uint32_t word2;
-#define if_type_SHIFT				0
-#define if_type_MASK				0x00000007
-#define if_type_WORD				word2
-#define sli_rev_SHIFT				4
-#define sli_rev_MASK				0x0000000f
-#define sli_rev_WORD				word2
-#define sli_family_SHIFT			8
-#define sli_family_MASK				0x000000ff
-#define sli_family_WORD				word2
-#define featurelevel_1_SHIFT			16
-#define featurelevel_1_MASK			0x000000ff
-#define featurelevel_1_WORD			word2
-#define featurelevel_2_SHIFT			24
-#define featurelevel_2_MASK			0x0000001f
-#define featurelevel_2_WORD			word2
-	uint32_t word3;
-#define fcoe_SHIFT 				0
-#define fcoe_MASK				0x00000001
-#define fcoe_WORD				word3
-#define fc_SHIFT				1
-#define fc_MASK					0x00000001
-#define fc_WORD					word3
-#define nic_SHIFT				2
-#define nic_MASK				0x00000001
-#define nic_WORD				word3
-#define iscsi_SHIFT				3
-#define iscsi_MASK				0x00000001
-#define iscsi_WORD				word3
-#define rdma_SHIFT				4
-#define rdma_MASK				0x00000001
-#define rdma_WORD				word3
-	uint32_t sge_supp_len;
-#define SLI4_PAGE_SIZE 4096
-	uint32_t word5;
-#define if_page_sz_SHIFT			0
-#define if_page_sz_MASK				0x0000ffff
-#define if_page_sz_WORD				word5
-#define loopbk_scope_SHIFT			24
-#define loopbk_scope_MASK			0x0000000f
-#define loopbk_scope_WORD			word5
-#define rq_db_window_SHIFT			28
-#define rq_db_window_MASK			0x0000000f
-#define rq_db_window_WORD			word5
-	uint32_t word6;
-#define eq_pages_SHIFT				0
-#define eq_pages_MASK				0x0000000f
-#define eq_pages_WORD				word6
-#define eqe_size_SHIFT				8
-#define eqe_size_MASK				0x000000ff
-#define eqe_size_WORD				word6
-	uint32_t word7;
-#define cq_pages_SHIFT				0
-#define cq_pages_MASK				0x0000000f
-#define cq_pages_WORD				word7
-#define cqe_size_SHIFT				8
-#define cqe_size_MASK				0x000000ff
-#define cqe_size_WORD				word7
-	uint32_t word8;
-#define mq_pages_SHIFT				0
-#define mq_pages_MASK				0x0000000f
-#define mq_pages_WORD				word8
-#define mqe_size_SHIFT				8
-#define mqe_size_MASK				0x000000ff
-#define mqe_size_WORD				word8
-#define mq_elem_cnt_SHIFT			16
-#define mq_elem_cnt_MASK			0x000000ff
-#define mq_elem_cnt_WORD			word8
-	uint32_t word9;
-#define wq_pages_SHIFT				0
-#define wq_pages_MASK				0x0000ffff
-#define wq_pages_WORD				word9
-#define wqe_size_SHIFT				8
-#define wqe_size_MASK				0x000000ff
-#define wqe_size_WORD				word9
-	uint32_t word10;
-#define rq_pages_SHIFT				0
-#define rq_pages_MASK				0x0000ffff
-#define rq_pages_WORD				word10
-#define rqe_size_SHIFT				8
-#define rqe_size_MASK				0x000000ff
-#define rqe_size_WORD				word10
-	uint32_t word11;
-#define hdr_pages_SHIFT				0
-#define hdr_pages_MASK				0x0000000f
-#define hdr_pages_WORD				word11
-#define hdr_size_SHIFT				8
-#define hdr_size_MASK				0x0000000f
-#define hdr_size_WORD				word11
-#define hdr_pp_align_SHIFT			16
-#define hdr_pp_align_MASK			0x0000ffff
-#define hdr_pp_align_WORD			word11
-	uint32_t word12;
-#define sgl_pages_SHIFT				0
-#define sgl_pages_MASK				0x0000000f
-#define sgl_pages_WORD				word12
-#define sgl_pp_align_SHIFT			16
-#define sgl_pp_align_MASK			0x0000ffff
-#define sgl_pp_align_WORD			word12
-	uint32_t rsvd_13_63[51];
-};
-=======
 #define lpfc_mbx_rq_ftr_rsp_mrqp_SHIFT		16
 #define lpfc_mbx_rq_ftr_rsp_mrqp_MASK		0x00000001
 #define lpfc_mbx_rq_ftr_rsp_mrqp_WORD		word3
@@ -3835,7 +3301,6 @@ struct user_eeprom {
 	uint8_t reserved191[57];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SLI4_PAGE_ALIGN(addr) (((addr)+((SLI4_PAGE_SIZE)-1)) \
 			       &(~((SLI4_PAGE_SIZE)-1)))
 
@@ -3864,26 +3329,20 @@ struct lpfc_sli4_parameters {
 #define cfg_sli_hint_2_MASK			0x0000001f
 #define cfg_sli_hint_2_WORD			word1
 	uint32_t word2;
-<<<<<<< HEAD
-=======
 #define cfg_eqav_SHIFT				31
 #define cfg_eqav_MASK				0x00000001
 #define cfg_eqav_WORD				word2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word3;
 	uint32_t word4;
 #define cfg_cqv_SHIFT				14
 #define cfg_cqv_MASK				0x00000003
 #define cfg_cqv_WORD				word4
-<<<<<<< HEAD
-=======
 #define cfg_cqpsize_SHIFT			16
 #define cfg_cqpsize_MASK			0x000000ff
 #define cfg_cqpsize_WORD			word4
 #define cfg_cqav_SHIFT				31
 #define cfg_cqav_MASK				0x00000001
 #define cfg_cqav_WORD				word4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word5;
 	uint32_t word6;
 #define cfg_mqv_SHIFT				14
@@ -3891,11 +3350,6 @@ struct lpfc_sli4_parameters {
 #define cfg_mqv_WORD				word6
 	uint32_t word7;
 	uint32_t word8;
-<<<<<<< HEAD
-#define cfg_wqv_SHIFT				14
-#define cfg_wqv_MASK				0x00000003
-#define cfg_wqv_WORD				word8
-=======
 #define cfg_wqpcnt_SHIFT			0
 #define cfg_wqpcnt_MASK				0x0000000f
 #define cfg_wqpcnt_WORD				word8
@@ -3908,7 +3362,6 @@ struct lpfc_sli4_parameters {
 #define cfg_wqpsize_SHIFT			16
 #define cfg_wqpsize_MASK			0x000000ff
 #define cfg_wqpsize_WORD			word8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word9;
 	uint32_t word10;
 #define cfg_rqv_SHIFT				14
@@ -3931,12 +3384,9 @@ struct lpfc_sli4_parameters {
 #define cfg_phwq_SHIFT				15
 #define cfg_phwq_MASK				0x00000001
 #define cfg_phwq_WORD				word12
-<<<<<<< HEAD
-=======
 #define cfg_oas_SHIFT				25
 #define cfg_oas_MASK				0x00000001
 #define cfg_oas_WORD				word12
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cfg_loopbk_scope_SHIFT			28
 #define cfg_loopbk_scope_MASK			0x0000000f
 #define cfg_loopbk_scope_WORD			word12
@@ -3956,8 +3406,6 @@ struct lpfc_sli4_parameters {
 	uint32_t word17;
 	uint32_t word18;
 	uint32_t word19;
-<<<<<<< HEAD
-=======
 #define cfg_ext_embed_cb_SHIFT			0
 #define cfg_ext_embed_cb_MASK			0x00000001
 #define cfg_ext_embed_cb_WORD			word19
@@ -4143,7 +3591,6 @@ struct lpfc_mbx_set_trunk_mode {
 #define lpfc_mbx_set_trunk_mode_MASK      0xFF
 	uint32_t word1;
 	uint32_t word2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lpfc_mbx_get_sli4_parameters {
@@ -4151,10 +3598,6 @@ struct lpfc_mbx_get_sli4_parameters {
 	struct lpfc_sli4_parameters sli4_parameters;
 };
 
-<<<<<<< HEAD
-struct lpfc_rscr_desc_generic {
-#define LPFC_RSRC_DESC_WSIZE			18
-=======
 struct lpfc_mbx_reg_congestion_buf {
 	struct mbox_header header;
 	uint32_t word0;
@@ -4172,7 +3615,6 @@ struct lpfc_mbx_reg_congestion_buf {
 
 struct lpfc_rscr_desc_generic {
 #define LPFC_RSRC_DESC_WSIZE			22
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t desc[LPFC_RSRC_DESC_WSIZE];
 };
 
@@ -4182,12 +3624,9 @@ struct lpfc_rsrc_desc_pcie {
 #define lpfc_rsrc_desc_pcie_type_MASK		0x000000ff
 #define lpfc_rsrc_desc_pcie_type_WORD		word0
 #define LPFC_RSRC_DESC_TYPE_PCIE		0x40
-<<<<<<< HEAD
-=======
 #define lpfc_rsrc_desc_pcie_length_SHIFT	8
 #define lpfc_rsrc_desc_pcie_length_MASK		0x000000ff
 #define lpfc_rsrc_desc_pcie_length_WORD		word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word1;
 #define lpfc_rsrc_desc_pcie_pfnum_SHIFT		0
 #define lpfc_rsrc_desc_pcie_pfnum_MASK		0x000000ff
@@ -4215,15 +3654,12 @@ struct lpfc_rsrc_desc_fcfcoe {
 #define lpfc_rsrc_desc_fcfcoe_type_MASK		0x000000ff
 #define lpfc_rsrc_desc_fcfcoe_type_WORD		word0
 #define LPFC_RSRC_DESC_TYPE_FCFCOE		0x43
-<<<<<<< HEAD
-=======
 #define lpfc_rsrc_desc_fcfcoe_length_SHIFT	8
 #define lpfc_rsrc_desc_fcfcoe_length_MASK	0x000000ff
 #define lpfc_rsrc_desc_fcfcoe_length_WORD	word0
 #define LPFC_RSRC_DESC_TYPE_FCFCOE_V0_RSVD	0
 #define LPFC_RSRC_DESC_TYPE_FCFCOE_V0_LENGTH	72
 #define LPFC_RSRC_DESC_TYPE_FCFCOE_V1_LENGTH	88
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word1;
 #define lpfc_rsrc_desc_fcfcoe_vfnum_SHIFT	0
 #define lpfc_rsrc_desc_fcfcoe_vfnum_MASK	0x000000ff
@@ -4282,15 +3718,12 @@ struct lpfc_rsrc_desc_fcfcoe {
 #define lpfc_rsrc_desc_fcfcoe_eq_cnt_SHIFT	16
 #define lpfc_rsrc_desc_fcfcoe_eq_cnt_MASK	0x0000ffff
 #define lpfc_rsrc_desc_fcfcoe_eq_cnt_WORD	word13
-<<<<<<< HEAD
-=======
 /* extended FC/FCoE Resource Descriptor when length = 88 bytes */
 	uint32_t bw_min;
 	uint32_t bw_max;
 	uint32_t iops_min;
 	uint32_t iops_max;
 	uint32_t reserved[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct lpfc_func_cfg {
@@ -4345,12 +3778,9 @@ struct lpfc_controller_attribute {
 #define lpfc_cntl_attr_eprom_ver_hi_SHIFT	8
 #define lpfc_cntl_attr_eprom_ver_hi_MASK	0x000000ff
 #define lpfc_cntl_attr_eprom_ver_hi_WORD	word17
-<<<<<<< HEAD
-=======
 #define lpfc_cntl_attr_flash_id_SHIFT		16
 #define lpfc_cntl_attr_flash_id_MASK		0x000000ff
 #define lpfc_cntl_attr_flash_id_WORD		word17
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t mbx_da_struct_ver;
 	uint32_t ep_fw_da_struct_ver;
 	uint32_t ncsi_ver_str[3];
@@ -4492,12 +3922,8 @@ struct lpfc_mbx_get_port_name {
 #define MB_CEQ_STATUS_QUEUE_FLUSHING		0x4
 #define MB_CQE_STATUS_DMA_FAILED		0x5
 
-<<<<<<< HEAD
-#define LPFC_MBX_WR_CONFIG_MAX_BDE		8
-=======
 
 #define LPFC_MBX_WR_CONFIG_MAX_BDE		1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_mbx_wr_object {
 	struct mbox_header header;
 	union {
@@ -4506,28 +3932,19 @@ struct lpfc_mbx_wr_object {
 #define lpfc_wr_object_eof_SHIFT		31
 #define lpfc_wr_object_eof_MASK			0x00000001
 #define lpfc_wr_object_eof_WORD			word4
-<<<<<<< HEAD
-=======
 #define lpfc_wr_object_eas_SHIFT		29
 #define lpfc_wr_object_eas_MASK			0x00000001
 #define lpfc_wr_object_eas_WORD			word4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_wr_object_write_length_SHIFT	0
 #define lpfc_wr_object_write_length_MASK	0x00FFFFFF
 #define lpfc_wr_object_write_length_WORD	word4
 			uint32_t write_offset;
-<<<<<<< HEAD
-			uint32_t object_name[26];
-=======
 			uint32_t object_name[LPFC_MBX_OBJECT_NAME_LEN_DW];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uint32_t bde_count;
 			struct ulp_bde64 bde[LPFC_MBX_WR_CONFIG_MAX_BDE];
 		} request;
 		struct {
 			uint32_t actual_write_length;
-<<<<<<< HEAD
-=======
 			uint32_t word5;
 #define lpfc_wr_object_change_status_SHIFT	0
 #define lpfc_wr_object_change_status_MASK	0x000000FF
@@ -4540,7 +3957,6 @@ struct lpfc_mbx_wr_object {
 #define lpfc_wr_object_csf_SHIFT		8
 #define lpfc_wr_object_csf_MASK			0x00000001
 #define lpfc_wr_object_csf_WORD			word5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} response;
 	} u;
 };
@@ -4568,15 +3984,6 @@ struct lpfc_mqe {
 		struct lpfc_mbx_del_fcf_tbl_entry del_fcf_entry;
 		struct lpfc_mbx_redisc_fcf_tbl redisc_fcf_tbl;
 		struct lpfc_mbx_reg_fcfi reg_fcfi;
-<<<<<<< HEAD
-		struct lpfc_mbx_unreg_fcfi unreg_fcfi;
-		struct lpfc_mbx_mq_create mq_create;
-		struct lpfc_mbx_mq_create_ext mq_create_ext;
-		struct lpfc_mbx_eq_create eq_create;
-		struct lpfc_mbx_cq_create cq_create;
-		struct lpfc_mbx_wq_create wq_create;
-		struct lpfc_mbx_rq_create rq_create;
-=======
 		struct lpfc_mbx_reg_fcfi_mrq reg_fcfi_mrq;
 		struct lpfc_mbx_unreg_fcfi unreg_fcfi;
 		struct lpfc_mbx_mq_create mq_create;
@@ -4589,7 +3996,6 @@ struct lpfc_mqe {
 		struct lpfc_mbx_wq_create wq_create;
 		struct lpfc_mbx_rq_create rq_create;
 		struct lpfc_mbx_rq_create_v2 rq_create_v2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct lpfc_mbx_mq_destroy mq_destroy;
 		struct lpfc_mbx_eq_destroy eq_destroy;
 		struct lpfc_mbx_cq_destroy cq_destroy;
@@ -4605,17 +4011,10 @@ struct lpfc_mqe {
 		struct lpfc_mbx_read_config rd_config;
 		struct lpfc_mbx_request_features req_ftrs;
 		struct lpfc_mbx_post_hdr_tmpl hdr_tmpl;
-<<<<<<< HEAD
-		struct lpfc_mbx_query_fw_cfg query_fw_cfg;
-		struct lpfc_mbx_supp_pages supp_pages;
-		struct lpfc_mbx_pc_sli4_params sli4_params;
-		struct lpfc_mbx_get_sli4_parameters get_sli4_parameters;
-=======
 		struct lpfc_mbx_query_fw_config query_fw_cfg;
 		struct lpfc_mbx_set_beacon_config beacon_config;
 		struct lpfc_mbx_get_sli4_parameters get_sli4_parameters;
 		struct lpfc_mbx_reg_congestion_buf reg_congestion_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct lpfc_mbx_set_link_diag_state link_diag_state;
 		struct lpfc_mbx_set_link_diag_loopback link_diag_loopback;
 		struct lpfc_mbx_run_link_diag_test link_diag_test;
@@ -4623,16 +4022,12 @@ struct lpfc_mqe {
 		struct lpfc_mbx_get_prof_cfg get_prof_cfg;
 		struct lpfc_mbx_wr_object wr_object;
 		struct lpfc_mbx_get_port_name get_port_name;
-<<<<<<< HEAD
-		struct lpfc_mbx_nop nop;
-=======
 		struct lpfc_mbx_set_feature  set_feature;
 		struct lpfc_mbx_memory_dump_type3 mem_dump_type3;
 		struct lpfc_mbx_set_host_data set_host_data;
 		struct lpfc_mbx_set_trunk_mode set_trunk_mode;
 		struct lpfc_mbx_nop nop;
 		struct lpfc_mbx_set_ras_fwlog ras_fwlog;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} un;
 };
 
@@ -4642,13 +4037,8 @@ struct lpfc_mcqe {
 #define lpfc_mcqe_status_MASK		0x0000FFFF
 #define lpfc_mcqe_status_WORD		word0
 #define lpfc_mcqe_ext_status_SHIFT	16
-<<<<<<< HEAD
-#define lpfc_mcqe_ext_status_MASK  	0x0000FFFF
-#define lpfc_mcqe_ext_status_WORD 	word0
-=======
 #define lpfc_mcqe_ext_status_MASK	0x0000FFFF
 #define lpfc_mcqe_ext_status_WORD	word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t mcqe_tag0;
 	uint32_t mcqe_tag1;
 	uint32_t trailer;
@@ -4691,13 +4081,10 @@ struct lpfc_acqe_link {
 #define LPFC_ASYNC_LINK_SPEED_100MBPS		0x2
 #define LPFC_ASYNC_LINK_SPEED_1GBPS		0x3
 #define LPFC_ASYNC_LINK_SPEED_10GBPS		0x4
-<<<<<<< HEAD
-=======
 #define LPFC_ASYNC_LINK_SPEED_20GBPS		0x5
 #define LPFC_ASYNC_LINK_SPEED_25GBPS		0x6
 #define LPFC_ASYNC_LINK_SPEED_40GBPS		0x7
 #define LPFC_ASYNC_LINK_SPEED_100GBPS		0x8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_acqe_link_duplex_SHIFT		16
 #define lpfc_acqe_link_duplex_MASK		0x000000FF
 #define lpfc_acqe_link_duplex_WORD		word0
@@ -4724,10 +4111,7 @@ struct lpfc_acqe_link {
 #define LPFC_ASYNC_LINK_FAULT_NONE	0x0
 #define LPFC_ASYNC_LINK_FAULT_LOCAL	0x1
 #define LPFC_ASYNC_LINK_FAULT_REMOTE	0x2
-<<<<<<< HEAD
-=======
 #define LPFC_ASYNC_LINK_FAULT_LR_LRR	0x3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_acqe_logical_link_speed_SHIFT	16
 #define lpfc_acqe_logical_link_speed_MASK	0x0000FFFF
 #define lpfc_acqe_logical_link_speed_WORD	word1
@@ -4778,34 +4162,24 @@ struct lpfc_acqe_grp5 {
 	uint32_t trailer;
 };
 
-<<<<<<< HEAD
-=======
 extern const char *const trunk_errmsg[];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_acqe_fc_la {
 	uint32_t word0;
 #define lpfc_acqe_fc_la_speed_SHIFT		24
 #define lpfc_acqe_fc_la_speed_MASK		0x000000FF
 #define lpfc_acqe_fc_la_speed_WORD		word0
-<<<<<<< HEAD
-#define LPFC_FC_LA_SPEED_UNKOWN		0x0
-=======
 #define LPFC_FC_LA_SPEED_UNKNOWN		0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_FC_LA_SPEED_1G		0x1
 #define LPFC_FC_LA_SPEED_2G		0x2
 #define LPFC_FC_LA_SPEED_4G		0x4
 #define LPFC_FC_LA_SPEED_8G		0x8
 #define LPFC_FC_LA_SPEED_10G		0xA
 #define LPFC_FC_LA_SPEED_16G		0x10
-<<<<<<< HEAD
-=======
 #define LPFC_FC_LA_SPEED_32G            0x20
 #define LPFC_FC_LA_SPEED_64G            0x21
 #define LPFC_FC_LA_SPEED_128G           0x22
 #define LPFC_FC_LA_SPEED_256G           0x23
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_acqe_fc_la_topology_SHIFT		16
 #define lpfc_acqe_fc_la_topology_MASK		0x000000FF
 #define lpfc_acqe_fc_la_topology_WORD		word0
@@ -4820,15 +4194,12 @@ struct lpfc_acqe_fc_la {
 #define LPFC_FC_LA_TYPE_LINK_UP		0x1
 #define LPFC_FC_LA_TYPE_LINK_DOWN	0x2
 #define LPFC_FC_LA_TYPE_NO_HARD_ALPA	0x3
-<<<<<<< HEAD
-=======
 #define LPFC_FC_LA_TYPE_MDS_LINK_DOWN	0x4
 #define LPFC_FC_LA_TYPE_MDS_LOOPBACK	0x5
 #define LPFC_FC_LA_TYPE_UNEXP_WWPN	0x6
 #define LPFC_FC_LA_TYPE_TRUNKING_EVENT  0x7
 #define LPFC_FC_LA_TYPE_ACTIVATE_FAIL		0x8
 #define LPFC_FC_LA_TYPE_LINK_RESET_PRTCL_EVT	0x9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define lpfc_acqe_fc_la_port_type_SHIFT		6
 #define lpfc_acqe_fc_la_port_type_MASK		0x00000003
 #define lpfc_acqe_fc_la_port_type_WORD		word0
@@ -4837,8 +4208,6 @@ struct lpfc_acqe_fc_la {
 #define lpfc_acqe_fc_la_port_number_SHIFT	0
 #define lpfc_acqe_fc_la_port_number_MASK	0x0000003F
 #define lpfc_acqe_fc_la_port_number_WORD	word0
-<<<<<<< HEAD
-=======
 
 /* Attention Type is 0x07 (Trunking Event) word0 */
 #define lpfc_acqe_fc_la_trunk_link_status_port0_SHIFT	16
@@ -4865,7 +4234,6 @@ struct lpfc_acqe_fc_la {
 #define lpfc_acqe_fc_la_trunk_config_port3_SHIFT	23
 #define lpfc_acqe_fc_la_trunk_config_port3_MASK		0x0000001
 #define lpfc_acqe_fc_la_trunk_config_port3_WORD		word0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word1;
 #define lpfc_acqe_fc_la_llink_spd_SHIFT		16
 #define lpfc_acqe_fc_la_llink_spd_MASK		0x0000FFFF
@@ -4873,8 +4241,6 @@ struct lpfc_acqe_fc_la {
 #define lpfc_acqe_fc_la_fault_SHIFT		0
 #define lpfc_acqe_fc_la_fault_MASK		0x000000FF
 #define lpfc_acqe_fc_la_fault_WORD		word1
-<<<<<<< HEAD
-=======
 #define lpfc_acqe_fc_la_link_status_SHIFT	8
 #define lpfc_acqe_fc_la_link_status_MASK	0x0000007F
 #define lpfc_acqe_fc_la_link_status_WORD	word1
@@ -4884,7 +4250,6 @@ struct lpfc_acqe_fc_la {
 #define lpfc_acqe_fc_la_trunk_linkmask_SHIFT		4
 #define lpfc_acqe_fc_la_trunk_linkmask_MASK		0x000000F
 #define lpfc_acqe_fc_la_trunk_linkmask_WORD		word1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_FC_LA_FAULT_NONE		0x0
 #define LPFC_FC_LA_FAULT_LOCAL		0x1
 #define LPFC_FC_LA_FAULT_REMOTE		0x2
@@ -4894,12 +4259,6 @@ struct lpfc_acqe_fc_la {
 #define LPFC_FC_LA_EVENT_TYPE_SHARED_LINK	0x2
 };
 
-<<<<<<< HEAD
-struct lpfc_acqe_sli {
-	uint32_t event_data1;
-	uint32_t event_data2;
-	uint32_t reserved;
-=======
 struct lpfc_acqe_misconfigured_event {
 	struct {
 	uint32_t word0;
@@ -4966,15 +4325,12 @@ struct lpfc_acqe_sli {
 	uint32_t event_data1;
 	uint32_t event_data2;
 	uint32_t event_data3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t trailer;
 #define LPFC_SLI_EVENT_TYPE_PORT_ERROR		0x1
 #define LPFC_SLI_EVENT_TYPE_OVER_TEMP		0x2
 #define LPFC_SLI_EVENT_TYPE_NORM_TEMP		0x3
 #define LPFC_SLI_EVENT_TYPE_NVLOG_POST		0x4
 #define LPFC_SLI_EVENT_TYPE_DIAG_DUMP		0x5
-<<<<<<< HEAD
-=======
 #define LPFC_SLI_EVENT_TYPE_MISCONFIGURED	0x9
 #define LPFC_SLI_EVENT_TYPE_REMOTE_DPORT	0xA
 #define LPFC_SLI_EVENT_TYPE_PORT_PARAMS_CHG	0xE
@@ -4983,7 +4339,6 @@ struct lpfc_acqe_sli {
 #define LPFC_SLI_EVENT_TYPE_CGN_SIGNAL		0x11
 #define LPFC_SLI_EVENT_TYPE_RD_SIGNAL           0x12
 #define LPFC_SLI_EVENT_TYPE_RESET_CM_STATS      0x13
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -5014,12 +4369,9 @@ struct wqe_common {
 #define wqe_dif_SHIFT         0
 #define wqe_dif_MASK          0x00000003
 #define wqe_dif_WORD          word7
-<<<<<<< HEAD
-=======
 #define LPFC_WQE_DIF_PASSTHRU	1
 #define LPFC_WQE_DIF_STRIP	2
 #define LPFC_WQE_DIF_INSERT	3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define wqe_ct_SHIFT          2
 #define wqe_ct_MASK           0x00000003
 #define wqe_ct_WORD           word7
@@ -5064,21 +4416,16 @@ struct wqe_common {
 #define wqe_rcvoxid_SHIFT     16
 #define wqe_rcvoxid_MASK      0x0000FFFF
 #define wqe_rcvoxid_WORD      word9
-<<<<<<< HEAD
-=======
 #define wqe_sof_SHIFT         24
 #define wqe_sof_MASK          0x000000FF
 #define wqe_sof_WORD          word9
 #define wqe_eof_SHIFT         16
 #define wqe_eof_MASK          0x000000FF
 #define wqe_eof_WORD          word9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word10;
 #define wqe_ebde_cnt_SHIFT    0
 #define wqe_ebde_cnt_MASK     0x0000000f
 #define wqe_ebde_cnt_WORD     word10
-<<<<<<< HEAD
-=======
 #define wqe_xchg_SHIFT        4
 #define wqe_xchg_MASK         0x00000001
 #define wqe_xchg_WORD         word10
@@ -5090,7 +4437,6 @@ struct wqe_common {
 #define wqe_oas_SHIFT         6
 #define wqe_oas_MASK          0x00000001
 #define wqe_oas_WORD          word10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define wqe_lenloc_SHIFT      7
 #define wqe_lenloc_MASK       0x00000003
 #define wqe_lenloc_WORD       word10
@@ -5107,10 +4453,7 @@ struct wqe_common {
 #define wqe_iod_SHIFT         13
 #define wqe_iod_MASK          0x00000001
 #define wqe_iod_WORD          word10
-<<<<<<< HEAD
-=======
 #define LPFC_WQE_IOD_NONE	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPFC_WQE_IOD_WRITE	0
 #define LPFC_WQE_IOD_READ	1
 #define wqe_dbde_SHIFT        14
@@ -5146,17 +4489,6 @@ struct wqe_common {
 #define wqe_cmd_type_MASK     0x0000000f
 #define wqe_cmd_type_WORD     word11
 #define wqe_els_id_SHIFT      4
-<<<<<<< HEAD
-#define wqe_els_id_MASK       0x00000003
-#define wqe_els_id_WORD       word11
-#define LPFC_ELS_ID_FLOGI	3
-#define LPFC_ELS_ID_FDISC	2
-#define LPFC_ELS_ID_LOGO	1
-#define LPFC_ELS_ID_DEFAULT	0
-#define wqe_wqec_SHIFT        7
-#define wqe_wqec_MASK         0x00000001
-#define wqe_wqec_WORD         word11
-=======
 #define wqe_els_id_MASK       0x00000007
 #define wqe_els_id_WORD       word11
 #define wqe_irsp_SHIFT        4
@@ -5177,7 +4509,6 @@ struct wqe_common {
 #define wqe_irsplen_SHIFT     8
 #define wqe_irsplen_MASK      0x0000000f
 #define wqe_irsplen_WORD      word11
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define wqe_cqid_SHIFT        16
 #define wqe_cqid_MASK         0x0000ffff
 #define wqe_cqid_WORD         word11
@@ -5209,8 +4540,6 @@ struct lpfc_wqe_generic{
 	uint32_t payload[4];
 };
 
-<<<<<<< HEAD
-=======
 enum els_request64_wqe_word11 {
 	LPFC_ELS_ID_DEFAULT,
 	LPFC_ELS_ID_LOGO,
@@ -5219,7 +4548,6 @@ enum els_request64_wqe_word11 {
 	LPFC_ELS_ID_PLOGI,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct els_request64_wqe {
 	struct ulp_bde64 bde;
 	uint32_t payload_len;
@@ -5246,20 +4574,13 @@ struct els_request64_wqe {
 #define els_req64_hopcnt_SHIFT      24
 #define els_req64_hopcnt_MASK       0x000000ff
 #define els_req64_hopcnt_WORD       word13
-<<<<<<< HEAD
-	uint32_t reserved[2];
-=======
 	uint32_t word14;
 	uint32_t max_response_payload_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct xmit_els_rsp64_wqe {
 	struct ulp_bde64 bde;
 	uint32_t response_payload_len;
-<<<<<<< HEAD
-	uint32_t rsvd4;
-=======
 	uint32_t word4;
 #define els_rsp64_sid_SHIFT         0
 #define els_rsp64_sid_MASK          0x00FFFFFF
@@ -5267,7 +4588,6 @@ struct xmit_els_rsp64_wqe {
 #define els_rsp64_sp_SHIFT          24
 #define els_rsp64_sp_MASK           0x00000001
 #define els_rsp64_sp_WORD           word4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wqe_did wqe_dest;
 	struct wqe_common wqe_com; /* words 6-11 */
 	uint32_t word12;
@@ -5370,9 +4690,6 @@ struct gen_req64_wqe {
 	uint32_t relative_offset;
 	struct wqe_rctl_dfctl wge_ctl; /* word 5 */
 	struct wqe_common wqe_com;     /* words 6-11 */
-<<<<<<< HEAD
-	uint32_t rsvd_12_15[4];
-=======
 	uint32_t rsvd_12_14[3];
 	uint32_t max_response_payload_len;
 };
@@ -5423,7 +4740,6 @@ struct lpfc_nvme_prli {
 #define prli_fb_sz_MASK                 0x0000ffff
 #define prli_fb_sz_WORD                 word5
 #define LPFC_NVMET_FB_SZ_MAX  65536   /* Driver target mode only. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct create_xri_wqe {
@@ -5436,8 +4752,6 @@ struct create_xri_wqe {
 #define T_REQUEST_TAG 3
 #define T_XRI_TAG 1
 
-<<<<<<< HEAD
-=======
 struct cmf_sync_wqe {
 	uint32_t rsrvd[3];
 	uint32_t word3;
@@ -5504,7 +4818,6 @@ struct cmf_sync_wqe {
 	uint32_t word15;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct abort_cmd_wqe {
 	uint32_t rsrvd[3];
 	uint32_t word3;
@@ -5522,9 +4835,6 @@ struct abort_cmd_wqe {
 
 struct fcp_iwrite64_wqe {
 	struct ulp_bde64 bde;
-<<<<<<< HEAD
-	uint32_t payload_offset_len;
-=======
 	uint32_t word3;
 #define	cmd_buff_len_SHIFT  16
 #define	cmd_buff_len_MASK  0x00000ffff
@@ -5532,7 +4842,6 @@ struct fcp_iwrite64_wqe {
 #define payload_offset_len_SHIFT 0
 #define payload_offset_len_MASK 0x0000ffff
 #define payload_offset_len_WORD word3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t total_xfer_len;
 	uint32_t initial_xfer_len;
 	struct wqe_common wqe_com;     /* words 6-11 */
@@ -5542,9 +4851,6 @@ struct fcp_iwrite64_wqe {
 
 struct fcp_iread64_wqe {
 	struct ulp_bde64 bde;
-<<<<<<< HEAD
-	uint32_t payload_offset_len;   /* word 3 */
-=======
 	uint32_t word3;
 #define	cmd_buff_len_SHIFT  16
 #define	cmd_buff_len_MASK  0x00000ffff
@@ -5552,7 +4858,6 @@ struct fcp_iread64_wqe {
 #define payload_offset_len_SHIFT 0
 #define payload_offset_len_MASK 0x0000ffff
 #define payload_offset_len_WORD word3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t total_xfer_len;       /* word 4 */
 	uint32_t rsrvd5;               /* word 5 */
 	struct wqe_common wqe_com;     /* words 6-11 */
@@ -5562,9 +4867,6 @@ struct fcp_iread64_wqe {
 
 struct fcp_icmnd64_wqe {
 	struct ulp_bde64 bde;          /* words 0-2 */
-<<<<<<< HEAD
-	uint32_t rsrvd3;               /* word 3 */
-=======
 	uint32_t word3;
 #define	cmd_buff_len_SHIFT  16
 #define	cmd_buff_len_MASK  0x00000ffff
@@ -5572,15 +4874,12 @@ struct fcp_icmnd64_wqe {
 #define payload_offset_len_SHIFT 0
 #define payload_offset_len_MASK 0x0000ffff
 #define payload_offset_len_WORD word3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t rsrvd4;               /* word 4 */
 	uint32_t rsrvd5;               /* word 5 */
 	struct wqe_common wqe_com;     /* words 6-11 */
 	uint32_t rsvd_12_15[4];        /* word 12-15 */
 };
 
-<<<<<<< HEAD
-=======
 struct fcp_trsp64_wqe {
 	struct ulp_bde64 bde;
 	uint32_t response_len;
@@ -5640,7 +4939,6 @@ struct lpfc_els_rdf_rsp {
 	struct fc_els_rdf_resp		rdf_resp;  /* hdr up to descriptors */
 	struct lpfc_els_rdf_reg_desc	reg_d1;	/* 1st descriptor */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 union lpfc_wqe {
 	uint32_t words[16];
@@ -5649,10 +4947,7 @@ union lpfc_wqe {
 	struct fcp_iread64_wqe fcp_iread;
 	struct fcp_iwrite64_wqe fcp_iwrite;
 	struct abort_cmd_wqe abort_cmd;
-<<<<<<< HEAD
-=======
 	struct cmf_sync_wqe cmf_sync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct create_xri_wqe create_xri;
 	struct xmit_bcast64_wqe xmit_bcast64;
 	struct xmit_seq64_wqe xmit_sequence;
@@ -5660,13 +4955,6 @@ union lpfc_wqe {
 	struct xmit_els_rsp64_wqe xmit_els_rsp;
 	struct els_request64_wqe els_req;
 	struct gen_req64_wqe gen_req;
-<<<<<<< HEAD
-};
-
-#define LPFC_GROUP_OJECT_MAGIC_NUM		0xfeaa0001
-#define LPFC_FILE_TYPE_GROUP			0xf7
-#define LPFC_FILE_ID_GROUP			0xa2
-=======
 	struct fcp_trsp64_wqe fcp_trsp;
 	struct fcp_tsend64_wqe fcp_tsend;
 	struct fcp_treceive64_wqe fcp_treceive;
@@ -5698,7 +4986,6 @@ union lpfc_wqe128 {
 #define MAGIC_NUMBER_G7 0xFEAA0005
 #define MAGIC_NUMBER_G7P 0xFEAA0020
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lpfc_grp_hdr {
 	uint32_t size;
 	uint32_t magic_number;
@@ -5714,13 +5001,6 @@ struct lpfc_grp_hdr {
 	uint8_t revision[32];
 };
 
-<<<<<<< HEAD
-#define FCP_COMMAND 0x0
-#define FCP_COMMAND_DATA_OUT 0x1
-#define ELS_COMMAND_NON_FIP 0xC
-#define ELS_COMMAND_FIP 0xD
-#define OTHER_COMMAND 0x8
-=======
 /* Defines for WQE command type */
 #define FCP_COMMAND		0x0
 #define NVME_READ_CMD		0x0
@@ -5758,13 +5038,10 @@ struct lpfc_grp_hdr {
 
 #define CMD_WQE_MASK            0xff
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LPFC_FW_DUMP	1
 #define LPFC_FW_RESET	2
 #define LPFC_DV_RESET	3
-<<<<<<< HEAD
-=======
 
 /* On some kernels, enum fc_ls_tlv_dtag does not have
  * these 2 enums defined, on other kernels it does.
@@ -5789,4 +5066,3 @@ struct lpfc_grp_hdr {
 #define LPFC_FPIN_WWPN_LINE_SZ  128
 #define LPFC_FPIN_WWPN_LINE_CNT 6
 #define LPFC_FPIN_WWPN_NUM_LINE 6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

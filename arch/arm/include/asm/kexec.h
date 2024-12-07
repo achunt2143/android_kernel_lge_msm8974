@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-#ifndef _ARM_KEXEC_H
-#define _ARM_KEXEC_H
-
-#ifdef CONFIG_KEXEC
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ARM_KEXEC_H
 #define _ARM_KEXEC_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Maximum physical address we can use pages from */
 #define KEXEC_SOURCE_MEMORY_LIMIT (-1UL)
 /* Maximum address we can reach in physical address mode */
@@ -26,14 +18,11 @@
 
 #ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-=======
 #define ARCH_HAS_KIMAGE_ARCH
 struct kimage_arch {
 	u32 kernel_r2;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * crash_setup_regs() - save registers for the panic kernel
  * @newregs: registers are saved here
@@ -65,15 +54,6 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 	}
 }
 
-<<<<<<< HEAD
-/* Function pointer to optional machine-specific reinitialization */
-extern void (*kexec_reinit)(void);
-
-#endif /* __ASSEMBLY__ */
-
-#endif /* CONFIG_KEXEC */
-
-=======
 static inline unsigned long phys_to_boot_phys(phys_addr_t phys)
 {
 	return phys_to_idmap(phys);
@@ -100,5 +80,4 @@ static inline struct page *boot_pfn_to_page(unsigned long boot_pfn)
 
 #endif /* __ASSEMBLY__ */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ARM_KEXEC_H */

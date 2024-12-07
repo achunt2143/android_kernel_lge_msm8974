@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * QNAP TS-109/TS-209 Board Setup
  *
  * Maintainer: Byron Bradley <byron.bbradley@gmail.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/gpio.h>
 #include <linux/kernel.h>
@@ -22,11 +11,7 @@
 #include <linux/pci.h>
 #include <linux/irq.h>
 #include <linux/mtd/physmap.h>
-<<<<<<< HEAD
-#include <linux/mtd/nand.h>
-=======
 #include <linux/mtd/rawnand.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mv643xx_eth.h>
 #include <linux/gpio_keys.h>
 #include <linux/input.h>
@@ -36,15 +21,9 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
-<<<<<<< HEAD
-#include <mach/orion5x.h>
-#include "common.h"
-#include "mpp.h"
-=======
 #include "common.h"
 #include "mpp.h"
 #include "orion5x.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "tsx09-common.h"
 
 #define QNAP_TS209_NOR_BOOT_BASE 0xf4000000
@@ -123,11 +102,7 @@ static struct platform_device qnap_ts209_nor_flash = {
 #define QNAP_TS209_PCI_SLOT0_IRQ_PIN	6
 #define QNAP_TS209_PCI_SLOT1_IRQ_PIN	7
 
-<<<<<<< HEAD
-void __init qnap_ts209_pci_preinit(void)
-=======
 static void __init qnap_ts209_pci_preinit(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pin;
 
@@ -191,10 +166,6 @@ static int __init qnap_ts209_pci_map_irq(const struct pci_dev *dev, u8 slot,
 static struct hw_pci qnap_ts209_pci __initdata = {
 	.nr_controllers	= 2,
 	.preinit	= qnap_ts209_pci_preinit,
-<<<<<<< HEAD
-	.swizzle	= pci_std_swizzle,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
 	.map_irq	= qnap_ts209_pci_map_irq,
@@ -311,15 +282,10 @@ static void __init qnap_ts209_init(void)
 	/*
 	 * Configure peripherals.
 	 */
-<<<<<<< HEAD
-	orion5x_setup_dev_boot_win(QNAP_TS209_NOR_BOOT_BASE,
-				   QNAP_TS209_NOR_BOOT_SIZE);
-=======
 	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
 				    ORION_MBUS_DEVBUS_BOOT_ATTR,
 				    QNAP_TS209_NOR_BOOT_BASE,
 				    QNAP_TS209_NOR_BOOT_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_register(&qnap_ts209_nor_flash);
 
 	orion5x_ehci0_init();
@@ -344,11 +310,7 @@ static void __init qnap_ts209_init(void)
 			gpio_free(TS209_RTC_GPIO);
 	}
 	if (qnap_ts209_i2c_rtc.irq == 0)
-<<<<<<< HEAD
-		pr_warning("qnap_ts209_init: failed to get RTC IRQ\n");
-=======
 		pr_warn("qnap_ts209_init: failed to get RTC IRQ\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_register_board_info(0, &qnap_ts209_i2c_rtc, 1);
 
 	/* register tsx09 specific power-off method */
@@ -358,19 +320,12 @@ static void __init qnap_ts209_init(void)
 MACHINE_START(TS209, "QNAP TS-109/TS-209")
 	/* Maintainer: Byron Bradley <byron.bbradley@gmail.com> */
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-=======
 	.nr_irqs	= ORION5X_NR_IRQS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= qnap_ts209_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,
 	.init_irq	= orion5x_init_irq,
-<<<<<<< HEAD
-	.timer		= &orion5x_timer,
-=======
 	.init_time	= orion5x_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= tag_fixup_mem32,
 	.restart	= orion5x_restart,
 MACHINE_END

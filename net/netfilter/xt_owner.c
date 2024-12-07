@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kernel module to match various things tied to sockets associated with
  * locally generated outgoing packets.
@@ -9,23 +6,10 @@
  * (C) 2000 Marc Boucher <marc@mbsi.ca>
  *
  * Copyright © CC Computer Consultants GmbH, 2007 - 2008
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/file.h>
-<<<<<<< HEAD
-#include <net/sock.h>
-#include <linux/netfilter/x_tables.h>
-#include <linux/netfilter/xt_owner.h>
-
-=======
 #include <linux/cred.h>
 
 #include <net/sock.h>
@@ -75,21 +59,15 @@ static int owner_check(const struct xt_mtchk_param *par)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool
 owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_owner_match_info *info = par->matchinfo;
 	const struct file *filp;
-<<<<<<< HEAD
-
-	if (skb->sk == NULL || skb->sk->sk_socket == NULL)
-=======
 	struct sock *sk = skb_to_full_sk(skb);
 	struct net *net = xt_net(par);
 
 	if (!sk || !sk->sk_socket || !net_eq(net, sock_net(sk)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (info->match ^ info->invert) == 0;
 	else if (info->match & info->invert & XT_OWNER_SOCKET)
 		/*
@@ -98,25 +76,6 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		 */
 		return false;
 
-<<<<<<< HEAD
-	filp = skb->sk->sk_socket->file;
-	if (filp == NULL)
-		return ((info->match ^ info->invert) &
-		       (XT_OWNER_UID | XT_OWNER_GID)) == 0;
-
-	if (info->match & XT_OWNER_UID)
-		if ((filp->f_cred->fsuid >= info->uid_min &&
-		    filp->f_cred->fsuid <= info->uid_max) ^
-		    !(info->invert & XT_OWNER_UID))
-			return false;
-
-	if (info->match & XT_OWNER_GID)
-		if ((filp->f_cred->fsgid >= info->gid_min &&
-		    filp->f_cred->fsgid <= info->gid_max) ^
-		    !(info->invert & XT_OWNER_GID))
-			return false;
-
-=======
 	read_lock_bh(&sk->sk_callback_lock);
 	filp = sk->sk_socket ? sk->sk_socket->file : NULL;
 	if (filp == NULL) {
@@ -165,7 +124,6 @@ owner_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	}
 
 	read_unlock_bh(&sk->sk_callback_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -173,10 +131,7 @@ static struct xt_match owner_mt_reg __read_mostly = {
 	.name       = "owner",
 	.revision   = 1,
 	.family     = NFPROTO_UNSPEC,
-<<<<<<< HEAD
-=======
 	.checkentry = owner_check,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match      = owner_mt,
 	.matchsize  = sizeof(struct xt_owner_match_info),
 	.hooks      = (1 << NF_INET_LOCAL_OUT) |

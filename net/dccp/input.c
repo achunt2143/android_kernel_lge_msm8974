@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  net/dccp/input.c
  *
  *  An implementation of the DCCP protocol
  *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dccp.h>
@@ -35,11 +24,7 @@ static void dccp_enqueue_skb(struct sock *sk, struct sk_buff *skb)
 	__skb_pull(skb, dccp_hdr(skb)->dccph_doff * 4);
 	__skb_queue_tail(&sk->sk_receive_queue, skb);
 	skb_set_owner_r(skb, sk);
-<<<<<<< HEAD
-	sk->sk_data_ready(sk, 0);
-=======
 	sk->sk_data_ready(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dccp_fin(struct sock *sk, struct sk_buff *skb)
@@ -79,11 +64,7 @@ static int dccp_rcv_close(struct sock *sk, struct sk_buff *skb)
 		 */
 		if (dccp_sk(sk)->dccps_role != DCCP_ROLE_CLIENT)
 			break;
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DCCP_REQUESTING:
 	case DCCP_ACTIVE_CLOSEREQ:
 		dccp_send_reset(sk, DCCP_RESET_CODE_CLOSED);
@@ -95,11 +76,7 @@ static int dccp_rcv_close(struct sock *sk, struct sk_buff *skb)
 		queued = 1;
 		dccp_fin(sk, skb);
 		dccp_set_state(sk, DCCP_PASSIVE_CLOSE);
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DCCP_PASSIVE_CLOSE:
 		/*
 		 * Retransmitted Close: we have already enqueued the first one.
@@ -136,11 +113,7 @@ static int dccp_rcv_closereq(struct sock *sk, struct sk_buff *skb)
 		queued = 1;
 		dccp_fin(sk, skb);
 		dccp_set_state(sk, DCCP_PASSIVE_CLOSEREQ);
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DCCP_PASSIVE_CLOSEREQ:
 		sk_wake_async(sk, SOCK_WAKE_WAITD, POLL_HUP);
 	}
@@ -149,11 +122,7 @@ static int dccp_rcv_closereq(struct sock *sk, struct sk_buff *skb)
 
 static u16 dccp_reset_code_convert(const u8 code)
 {
-<<<<<<< HEAD
-	const u16 error_code[] = {
-=======
 	static const u16 error_code[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[DCCP_RESET_CODE_CLOSED]	     = 0,	/* normal termination */
 	[DCCP_RESET_CODE_UNSPECIFIED]	     = 0,	/* nothing known */
 	[DCCP_RESET_CODE_ABORTED]	     = ECONNRESET,
@@ -312,11 +281,7 @@ static int dccp_check_seqno(struct sock *sk, struct sk_buff *skb)
 }
 
 static int __dccp_rcv_established(struct sock *sk, struct sk_buff *skb,
-<<<<<<< HEAD
-				  const struct dccp_hdr *dh, const unsigned len)
-=======
 				  const struct dccp_hdr *dh, const unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dccp_sock *dp = dccp_sk(sk);
 
@@ -390,22 +355,14 @@ send_sync:
 		goto discard;
 	}
 
-<<<<<<< HEAD
-	DCCP_INC_STATS_BH(DCCP_MIB_INERRS);
-=======
 	DCCP_INC_STATS(DCCP_MIB_INERRS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 discard:
 	__kfree_skb(skb);
 	return 0;
 }
 
 int dccp_rcv_established(struct sock *sk, struct sk_buff *skb,
-<<<<<<< HEAD
-			 const struct dccp_hdr *dh, const unsigned len)
-=======
 			 const struct dccp_hdr *dh, const unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (dccp_check_seqno(sk, skb))
 		goto discard;
@@ -427,11 +384,7 @@ EXPORT_SYMBOL_GPL(dccp_rcv_established);
 static int dccp_rcv_request_sent_state_process(struct sock *sk,
 					       struct sk_buff *skb,
 					       const struct dccp_hdr *dh,
-<<<<<<< HEAD
-					       const unsigned len)
-=======
 					       const unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 *  Step 4: Prepare sequence numbers in REQUEST
@@ -523,11 +476,7 @@ static int dccp_rcv_request_sent_state_process(struct sock *sk,
 			sk_wake_async(sk, SOCK_WAKE_IO, POLL_OUT);
 		}
 
-<<<<<<< HEAD
-		if (sk->sk_write_pending || icsk->icsk_ack.pingpong ||
-=======
 		if (sk->sk_write_pending || inet_csk_in_pingpong_mode(sk) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    icsk->icsk_accept_queue.rskq_defer_accept) {
 			/* Save one ACK. Data will be ready after
 			 * several ticks, if write_pending is set.
@@ -568,11 +517,7 @@ unable_to_proceed:
 static int dccp_rcv_respond_partopen_state_process(struct sock *sk,
 						   struct sk_buff *skb,
 						   const struct dccp_hdr *dh,
-<<<<<<< HEAD
-						   const unsigned len)
-=======
 						   const unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dccp_sock *dp = dccp_sk(sk);
 	u32 sample = dp->dccps_options_received.dccpor_timestamp_echo;
@@ -585,18 +530,11 @@ static int dccp_rcv_respond_partopen_state_process(struct sock *sk,
 	case DCCP_PKT_DATA:
 		if (sk->sk_state == DCCP_RESPOND)
 			break;
-<<<<<<< HEAD
-	case DCCP_PKT_DATAACK:
-	case DCCP_PKT_ACK:
-		/*
-		 * FIXME: we should be reseting the PARTOPEN (DELACK) timer
-=======
 		fallthrough;
 	case DCCP_PKT_DATAACK:
 	case DCCP_PKT_ACK:
 		/*
 		 * FIXME: we should be resetting the PARTOPEN (DELACK) timer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * here but only if we haven't used the DELACK timer for
 		 * something else, like sending a delayed ack for a TIMESTAMP
 		 * echo, etc, for now were not clearing it, sending an extra
@@ -631,19 +569,12 @@ static int dccp_rcv_respond_partopen_state_process(struct sock *sk,
 }
 
 int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
-<<<<<<< HEAD
-			   struct dccp_hdr *dh, unsigned len)
-=======
 			   struct dccp_hdr *dh, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dccp_sock *dp = dccp_sk(sk);
 	struct dccp_skb_cb *dcb = DCCP_SKB_CB(skb);
 	const int old_state = sk->sk_state;
-<<<<<<< HEAD
-=======
 	bool acceptable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int queued = 0;
 
 	/*
@@ -670,10 +601,6 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 	 */
 	if (sk->sk_state == DCCP_LISTEN) {
 		if (dh->dccph_type == DCCP_PKT_REQUEST) {
-<<<<<<< HEAD
-			if (inet_csk(sk)->icsk_af_ops->conn_request(sk,
-								    skb) < 0)
-=======
 			/* It is possible that we process SYN packets from backlog,
 			 * so we need to make sure to disable BH and RCU right there.
 			 */
@@ -683,7 +610,6 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 			local_bh_enable();
 			rcu_read_unlock();
 			if (!acceptable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 1;
 			consume_skb(skb);
 			return 0;
@@ -758,11 +684,7 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
 		/* Step 8: if using Ack Vectors, mark packet acknowledgeable */
 		dccp_handle_ackvec_processing(sk, skb);
 		dccp_deliver_input_to_ccids(sk, skb);
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DCCP_RESPOND:
 		queued = dccp_rcv_respond_partopen_state_process(sk, skb,
 								 dh, len);
@@ -793,13 +715,9 @@ EXPORT_SYMBOL_GPL(dccp_rcv_state_process);
 
 /**
  *  dccp_sample_rtt  -  Validate and finalise computation of RTT sample
-<<<<<<< HEAD
- *  @delta:	number of microseconds between packet and acknowledgment
-=======
  *  @sk:	socket structure
  *  @delta:	number of microseconds between packet and acknowledgment
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  The routine is kept generic to work in different contexts. It should be
  *  called immediately when the ACK used for the RTT sample arrives.
  */

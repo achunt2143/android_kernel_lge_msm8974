@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   (Tentative) USB Audio Driver for ALSA
  *
@@ -11,34 +8,10 @@
  *	    Alan Cox (alan@lxorguk.ukuu.org.uk)
  *	    Thomas Sailer (sailer@ife.ee.ethz.ch)
  *
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- *
- *  NOTES:
- *
- *   - async unlink should be used for avoiding the sleep inside lock.
- *     2.4.22 usb-uhci seems buggy for async unlinking and results in
- *     oops.  in such a cse, pass async_unlink=0 option.
-=======
  *   Audio Class 3.0 support by Ruslan Bilovol <ruslan.bilovol@gmail.com>
  *
  *  NOTES:
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   - the linked URBs would be preferred but not used so far because of
  *     the instability of unlinking.
  *   - type II is not supported properly.  there is no device which supports
@@ -58,10 +31,7 @@
 #include <linux/mutex.h>
 #include <linux/usb/audio.h>
 #include <linux/usb/audio-v2.h>
-<<<<<<< HEAD
-=======
 #include <linux/usb/audio-v3.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 #include <sound/control.h>
@@ -74,36 +44,21 @@
 #include "usbaudio.h"
 #include "card.h"
 #include "midi.h"
-<<<<<<< HEAD
-=======
 #include "midi2.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "mixer.h"
 #include "proc.h"
 #include "quirks.h"
 #include "endpoint.h"
 #include "helper.h"
-<<<<<<< HEAD
-#include "debug.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pcm.h"
 #include "format.h"
 #include "power.h"
 #include "stream.h"
-<<<<<<< HEAD
-=======
 #include "media.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("USB Audio");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Generic,USB Audio}}");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -111,12 +66,6 @@ static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;/* Enable this card *
 /* Vendor/product IDs for this card */
 static int vid[SNDRV_CARDS] = { [0 ... (SNDRV_CARDS-1)] = -1 };
 static int pid[SNDRV_CARDS] = { [0 ... (SNDRV_CARDS-1)] = -1 };
-<<<<<<< HEAD
-static int nrpacks = 8;		/* max. number of packets per urb */
-static bool async_unlink = 1;
-static int device_setup[SNDRV_CARDS]; /* device parameter for this card */
-static bool ignore_ctl_error;
-=======
 static int device_setup[SNDRV_CARDS]; /* device parameter for this card */
 static bool ignore_ctl_error;
 static bool autoclock = true;
@@ -128,7 +77,6 @@ static unsigned int quirk_flags[SNDRV_CARDS];
 
 bool snd_usb_use_vmalloc = true;
 bool snd_usb_skip_validation;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for the USB audio adapter.");
@@ -140,20 +88,11 @@ module_param_array(vid, int, NULL, 0444);
 MODULE_PARM_DESC(vid, "Vendor ID for the USB audio device.");
 module_param_array(pid, int, NULL, 0444);
 MODULE_PARM_DESC(pid, "Product ID for the USB audio device.");
-<<<<<<< HEAD
-module_param(nrpacks, int, 0644);
-MODULE_PARM_DESC(nrpacks, "Max. number of packets per URB.");
-module_param(async_unlink, bool, 0444);
-MODULE_PARM_DESC(async_unlink, "Use async unlink mode.");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_array(device_setup, int, NULL, 0444);
 MODULE_PARM_DESC(device_setup, "Specific device setup (if needed).");
 module_param(ignore_ctl_error, bool, 0444);
 MODULE_PARM_DESC(ignore_ctl_error,
 		 "Ignore errors from USB controller for mixer interfaces.");
-<<<<<<< HEAD
-=======
 module_param(autoclock, bool, 0444);
 MODULE_PARM_DESC(autoclock, "Enable auto-clock selection for UAC2 devices (default: yes).");
 module_param(lowlatency, bool, 0444);
@@ -170,7 +109,6 @@ module_param_named(use_vmalloc, snd_usb_use_vmalloc, bool, 0444);
 MODULE_PARM_DESC(use_vmalloc, "Use vmalloc for PCM intermediate buffers (default: yes).");
 module_param_named(skip_validation, snd_usb_skip_validation, bool, 0444);
 MODULE_PARM_DESC(skip_validation, "Skip unit descriptor validation (default: no).");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * we keep the snd_usb_audio_t instances by ourselves for merging
@@ -183,17 +121,6 @@ static struct usb_driver usb_audio_driver;
 
 /*
  * disconnect streams
-<<<<<<< HEAD
- * called from snd_usb_audio_disconnect()
- */
-static void snd_usb_stream_disconnect(struct list_head *head)
-{
-	int idx;
-	struct snd_usb_stream *as;
-	struct snd_usb_substream *subs;
-
-	as = list_entry(head, struct snd_usb_stream, list);
-=======
  * called from usb_audio_disconnect()
  */
 static void snd_usb_stream_disconnect(struct snd_usb_stream *as)
@@ -201,18 +128,12 @@ static void snd_usb_stream_disconnect(struct snd_usb_stream *as)
 	int idx;
 	struct snd_usb_substream *subs;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < 2; idx++) {
 		subs = &as->substream[idx];
 		if (!subs->num_formats)
 			continue;
-<<<<<<< HEAD
-		snd_usb_release_substream_urbs(subs, 1);
-		subs->interface = -1;
-=======
 		subs->data_endpoint = NULL;
 		subs->sync_endpoint = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -224,13 +145,8 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 	struct usb_interface *iface = usb_ifnum_to_if(dev, interface);
 
 	if (!iface) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "%d:%u:%d : does not exist\n",
-			   dev->devnum, ctrlif, interface);
-=======
 		dev_err(&dev->dev, "%u:%d : does not exist\n",
 			ctrlif, interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -255,31 +171,14 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 	}
 
 	if (usb_interface_claimed(iface)) {
-<<<<<<< HEAD
-		snd_printdd(KERN_INFO "%d:%d:%d: skipping, already claimed\n",
-						dev->devnum, ctrlif, interface);
-=======
 		dev_dbg(&dev->dev, "%d:%d: skipping, already claimed\n",
 			ctrlif, interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if ((altsd->bInterfaceClass == USB_CLASS_AUDIO ||
 	     altsd->bInterfaceClass == USB_CLASS_VENDOR_SPEC) &&
 	    altsd->bInterfaceSubClass == USB_SUBCLASS_MIDISTREAMING) {
-<<<<<<< HEAD
-		int err = snd_usbmidi_create(chip->card, iface,
-					     &chip->midi_list, NULL);
-		if (err < 0) {
-			snd_printk(KERN_ERR "%d:%u:%d: cannot create sequencer device\n",
-						dev->devnum, ctrlif, interface);
-			return -EINVAL;
-		}
-		usb_driver_claim_interface(&usb_audio_driver, iface, (void *)-1L);
-
-		return 0;
-=======
 		int err = snd_usb_midi_v2_create(chip, iface, NULL,
 						 chip->usb_id);
 		if (err < 0) {
@@ -290,42 +189,27 @@ static int snd_usb_create_stream(struct snd_usb_audio *chip, int ctrlif, int int
 		}
 		return usb_driver_claim_interface(&usb_audio_driver, iface,
 						  USB_AUDIO_IFACE_UNUSED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((altsd->bInterfaceClass != USB_CLASS_AUDIO &&
 	     altsd->bInterfaceClass != USB_CLASS_VENDOR_SPEC) ||
 	    altsd->bInterfaceSubClass != USB_SUBCLASS_AUDIOSTREAMING) {
-<<<<<<< HEAD
-		snd_printdd(KERN_ERR "%d:%u:%d: skipping non-supported interface %d\n",
-					dev->devnum, ctrlif, interface, altsd->bInterfaceClass);
-=======
 		dev_dbg(&dev->dev,
 			"%u:%d: skipping non-supported interface %d\n",
 			ctrlif, interface, altsd->bInterfaceClass);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* skip non-supported classes */
 		return -EINVAL;
 	}
 
 	if (snd_usb_get_speed(dev) == USB_SPEED_LOW) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "low speed audio streaming not supported\n");
-=======
 		dev_err(&dev->dev, "low speed audio streaming not supported\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (! snd_usb_parse_audio_interface(chip, interface)) {
 		usb_set_interface(dev, interface, 0); /* reset the current interface */
-<<<<<<< HEAD
-		usb_driver_claim_interface(&usb_audio_driver, iface, (void *)-1L);
-		return -EINVAL;
-=======
 		return usb_driver_claim_interface(&usb_audio_driver, iface,
 						  USB_AUDIO_IFACE_UNUSED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -339,55 +223,6 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 	struct usb_device *dev = chip->dev;
 	struct usb_host_interface *host_iface;
 	struct usb_interface_descriptor *altsd;
-<<<<<<< HEAD
-	struct usb_interface *usb_iface;
-	void *control_header;
-	int i, protocol;
-	int rest_bytes;
-
-	usb_iface = usb_ifnum_to_if(dev, ctrlif);
-	if (!usb_iface) {
-		snd_printk(KERN_ERR "%d:%u : does not exist\n",
-					dev->devnum, ctrlif);
-		return -EINVAL;
-	}
-
-	/* find audiocontrol interface */
-	host_iface = &usb_iface->altsetting[0];
-	if (!host_iface) {
-		snd_printk(KERN_ERR "Audio Control interface is not available.");
-		return -EINVAL;
-	}
-
-	control_header = snd_usb_find_csint_desc(host_iface->extra,
-						 host_iface->extralen,
-						 NULL, UAC_HEADER);
-	altsd = get_iface_desc(host_iface);
-	protocol = altsd->bInterfaceProtocol;
-
-	if (!control_header) {
-		snd_printk(KERN_ERR "cannot find UAC_HEADER\n");
-		return -EINVAL;
-	}
-
-	rest_bytes = (void *)(host_iface->extra + host_iface->extralen) -
-		control_header;
-
-	/* just to be sure -- this shouldn't hit at all */
-	if (rest_bytes <= 0) {
-		dev_err(&dev->dev, "invalid control header\n");
-		return -EINVAL;
-	}
-
-	switch (protocol) {
-	default:
-		snd_printdd(KERN_WARNING "unknown interface protocol %#02x, assuming v1\n",
-			    protocol);
-		/* fall through */
-
-	case UAC_VERSION_1: {
-		struct uac1_ac_header_descriptor *h1 = control_header;
-=======
 	int i, protocol;
 
 	/* find audiocontrol interface */
@@ -422,7 +257,6 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 			dev_err(&dev->dev, "invalid control header\n");
 			return -EINVAL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (rest_bytes < sizeof(*h1)) {
 			dev_err(&dev->dev, "too short v1 buffer descriptor\n");
@@ -430,11 +264,7 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 		}
 
 		if (!h1->bInCollection) {
-<<<<<<< HEAD
-			snd_printk(KERN_INFO "skipping empty audio interface (v1)\n");
-=======
 			dev_info(&dev->dev, "skipping empty audio interface (v1)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -444,11 +274,7 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 		}
 
 		if (h1->bLength < sizeof(*h1) + h1->bInCollection) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "invalid UAC_HEADER (v1)\n");
-=======
 			dev_err(&dev->dev, "invalid UAC_HEADER (v1)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -458,23 +284,6 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 		break;
 	}
 
-<<<<<<< HEAD
-	case UAC_VERSION_2: {
-		struct usb_interface_assoc_descriptor *assoc =
-						usb_iface->intf_assoc;
-		if (!assoc) {
-			/*
-			* Firmware writers cannot count to three. So to find
-			* the IAD on the NuForce UDH-100, also check the next
-			* interface.
-			*/
-			struct usb_interface *iface =
-					usb_ifnum_to_if(dev, ctrlif + 1);
-			if (iface &&
-				iface->intf_assoc &&
-				iface->intf_assoc->bFunctionClass == USB_CLASS_AUDIO &&
-				iface->intf_assoc->bFunctionProtocol == UAC_VERSION_2)
-=======
 	case UAC_VERSION_2:
 	case UAC_VERSION_3: {
 		struct usb_interface_assoc_descriptor *assoc =
@@ -492,17 +301,10 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 			    iface->intf_assoc &&
 			    iface->intf_assoc->bFunctionClass == USB_CLASS_AUDIO &&
 			    iface->intf_assoc->bFunctionProtocol == UAC_VERSION_2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				assoc = iface->intf_assoc;
 		}
 
 		if (!assoc) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "Audio class v2 interfaces need an interface association\n");
-			return -EINVAL;
-		}
-
-=======
 			dev_err(&dev->dev, "Audio class v2/v3 interfaces need an interface association\n");
 			return -EINVAL;
 		}
@@ -521,7 +323,6 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 			chip->badd_profile = badd;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < assoc->bInterfaceCount; i++) {
 			int intf = assoc->bFirstInterface + i;
 
@@ -532,16 +333,11 @@ static int snd_usb_create_streams(struct snd_usb_audio *chip, int ctrlif)
 		break;
 	}
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Profile name preset table
  */
 struct usb_audio_device_name {
@@ -678,131 +474,12 @@ lookup_device_name(u32 id)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * free the chip instance
  *
  * here we have to do not much, since pcm and controls are already freed
  *
  */
 
-<<<<<<< HEAD
-static int snd_usb_audio_free(struct snd_usb_audio *chip)
-{
-	kfree(chip);
-	return 0;
-}
-
-static int snd_usb_audio_dev_free(struct snd_device *device)
-{
-	struct snd_usb_audio *chip = device->device_data;
-	return snd_usb_audio_free(chip);
-}
-
-static void remove_trailing_spaces(char *str)
-{
-	char *p;
-
-	if (!*str)
-		return;
-	for (p = str + strlen(str) - 1; p >= str && isspace(*p); p--)
-		*p = 0;
-}
-
-/*
- * create a chip instance and set its names.
- */
-static int snd_usb_audio_create(struct usb_device *dev, int idx,
-				const struct snd_usb_audio_quirk *quirk,
-				struct snd_usb_audio **rchip)
-{
-	struct snd_card *card;
-	struct snd_usb_audio *chip;
-	int err, len;
-	char component[14];
-	static struct snd_device_ops ops = {
-		.dev_free =	snd_usb_audio_dev_free,
-	};
-
-	*rchip = NULL;
-
-	switch (snd_usb_get_speed(dev)) {
-	case USB_SPEED_LOW:
-	case USB_SPEED_FULL:
-	case USB_SPEED_HIGH:
-	case USB_SPEED_SUPER:
-		break;
-	default:
-		snd_printk(KERN_ERR "unknown device speed %d\n", snd_usb_get_speed(dev));
-		return -ENXIO;
-	}
-
-	err = snd_card_create(index[idx], id[idx], THIS_MODULE, 0, &card);
-	if (err < 0) {
-		snd_printk(KERN_ERR "cannot create card instance %d\n", idx);
-		return err;
-	}
-
-	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
-	if (! chip) {
-		snd_card_free(card);
-		return -ENOMEM;
-	}
-
-	init_rwsem(&chip->shutdown_rwsem);
-	chip->index = idx;
-	chip->dev = dev;
-	chip->card = card;
-	chip->setup = device_setup[idx];
-	chip->nrpacks = nrpacks;
-	chip->async_unlink = async_unlink;
-	chip->probing = 1;
-
-	chip->usb_id = USB_ID(le16_to_cpu(dev->descriptor.idVendor),
-			      le16_to_cpu(dev->descriptor.idProduct));
-	INIT_LIST_HEAD(&chip->pcm_list);
-	INIT_LIST_HEAD(&chip->midi_list);
-	INIT_LIST_HEAD(&chip->mixer_list);
-
-	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0) {
-		snd_usb_audio_free(chip);
-		snd_card_free(card);
-		return err;
-	}
-
-	strcpy(card->driver, "USB-Audio");
-	sprintf(component, "USB%04x:%04x",
-		USB_ID_VENDOR(chip->usb_id), USB_ID_PRODUCT(chip->usb_id));
-	snd_component_add(card, component);
-
-	/* retrieve the device string as shortname */
-	if (quirk && quirk->product_name && *quirk->product_name) {
-		strlcpy(card->shortname, quirk->product_name, sizeof(card->shortname));
-	} else {
-		if (!dev->descriptor.iProduct ||
-		    usb_string(dev, dev->descriptor.iProduct,
-		    card->shortname, sizeof(card->shortname)) <= 0) {
-			/* no name available from anywhere, so use ID */
-			sprintf(card->shortname, "USB Device %#04x:%#04x",
-				USB_ID_VENDOR(chip->usb_id),
-				USB_ID_PRODUCT(chip->usb_id));
-		}
-	}
-	remove_trailing_spaces(card->shortname);
-
-	/* retrieve the vendor and device strings as longname */
-	if (quirk && quirk->vendor_name && *quirk->vendor_name) {
-		len = strlcpy(card->longname, quirk->vendor_name, sizeof(card->longname));
-	} else {
-		if (dev->descriptor.iManufacturer)
-			len = usb_string(dev, dev->descriptor.iManufacturer,
-					 card->longname, sizeof(card->longname));
-		else
-			len = 0;
-		/* we don't really care if there isn't any vendor string */
-	}
-	if (len > 0) {
-		remove_trailing_spaces(card->longname);
-=======
 static void snd_usb_audio_free(struct snd_card *card)
 {
 	struct snd_usb_audio *chip = card->private_data;
@@ -881,7 +558,6 @@ static void usb_audio_make_longname(struct usb_device *dev,
 	}
 	if (*card->longname) {
 		strim(card->longname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*card->longname)
 			strlcat(card->longname, " ", sizeof(card->longname));
 	}
@@ -906,11 +582,6 @@ static void usb_audio_make_longname(struct usb_device *dev,
 	case USB_SPEED_SUPER:
 		strlcat(card->longname, ", super speed", sizeof(card->longname));
 		break;
-<<<<<<< HEAD
-	default:
-		break;
-	}
-=======
 	case USB_SPEED_SUPER_PLUS:
 		strlcat(card->longname, ", super speed plus", sizeof(card->longname));
 		break;
@@ -991,7 +662,6 @@ static int snd_usb_audio_create(struct usb_interface *intf,
 
 	usb_audio_make_shortname(dev, chip, quirk);
 	usb_audio_make_longname(dev, chip, quirk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_usb_audio_create_proc(chip);
 
@@ -999,8 +669,6 @@ static int snd_usb_audio_create(struct usb_interface *intf,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* look for a matching quirk alias id */
 static bool get_alias_id(struct usb_device *dev, unsigned int *id)
 {
@@ -1087,7 +755,6 @@ static int try_to_register_card(struct snd_usb_audio *chip, int ifnum)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * probe the active usb device
  *
@@ -1098,16 +765,6 @@ static int try_to_register_card(struct snd_usb_audio *chip, int ifnum)
  * only at the first time.  the successive calls of this function will
  * append the pcm interface to the corresponding card.
  */
-<<<<<<< HEAD
-static struct snd_usb_audio *
-snd_usb_audio_probe(struct usb_device *dev,
-		    struct usb_interface *intf,
-		    const struct usb_device_id *usb_id)
-{
-	const struct snd_usb_audio_quirk *quirk = (const struct snd_usb_audio_quirk *)usb_id->driver_info;
-	int i, err;
-	struct snd_usb_audio *chip;
-=======
 static int usb_audio_probe(struct usb_interface *intf,
 			   const struct usb_device_id *usb_id)
 {
@@ -1116,7 +773,6 @@ static int usb_audio_probe(struct usb_interface *intf,
 		(const struct snd_usb_audio_quirk *)usb_id->driver_info;
 	struct snd_usb_audio *chip;
 	int i, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_host_interface *alts;
 	int ifnum;
 	u32 id;
@@ -1125,13 +781,6 @@ static int usb_audio_probe(struct usb_interface *intf,
 	ifnum = get_iface_desc(alts)->bInterfaceNumber;
 	id = USB_ID(le16_to_cpu(dev->descriptor.idVendor),
 		    le16_to_cpu(dev->descriptor.idProduct));
-<<<<<<< HEAD
-	if (quirk && quirk->ifnum >= 0 && ifnum != quirk->ifnum)
-		goto __err_val;
-
-	if (snd_usb_apply_boot_quirk(dev, intf, quirk) < 0)
-		goto __err_val;
-=======
 	if (get_alias_id(dev, &id))
 		quirk = get_alias_quirk(dev, id);
 	if (quirk && quirk->ifnum >= 0 && ifnum != quirk->ifnum)
@@ -1142,7 +791,6 @@ static int usb_audio_probe(struct usb_interface *intf,
 	err = snd_usb_apply_boot_quirk(dev, intf, quirk, id);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * found a config.  now register to ALSA
@@ -1153,14 +801,6 @@ static int usb_audio_probe(struct usb_interface *intf,
 	mutex_lock(&register_mutex);
 	for (i = 0; i < SNDRV_CARDS; i++) {
 		if (usb_chip[i] && usb_chip[i]->dev == dev) {
-<<<<<<< HEAD
-			if (usb_chip[i]->shutdown) {
-				snd_printk(KERN_ERR "USB device is in the shutdown state, cannot create a card instance\n");
-				goto __error;
-			}
-			chip = usb_chip[i];
-			chip->probing = 1;
-=======
 			if (atomic_read(&usb_chip[i]->shutdown)) {
 				dev_err(&dev->dev, "USB device is in the shutdown state, cannot create a card instance\n");
 				err = -EIO;
@@ -1168,40 +808,18 @@ static int usb_audio_probe(struct usb_interface *intf,
 			}
 			chip = usb_chip[i];
 			atomic_inc(&chip->active); /* avoid autopm */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	if (! chip) {
-<<<<<<< HEAD
-=======
 		err = snd_usb_apply_boot_quirk_once(dev, intf, quirk, id);
 		if (err < 0)
 			goto __error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* it's a fresh one.
 		 * now look for an empty slot and create a new card instance
 		 */
 		for (i = 0; i < SNDRV_CARDS; i++)
-<<<<<<< HEAD
-			if (enable[i] && ! usb_chip[i] &&
-			    (vid[i] == -1 || vid[i] == USB_ID_VENDOR(id)) &&
-			    (pid[i] == -1 || pid[i] == USB_ID_PRODUCT(id))) {
-				if (snd_usb_audio_create(dev, i, quirk, &chip) < 0) {
-					goto __error;
-				}
-				snd_card_set_dev(chip->card, &intf->dev);
-				chip->pm_intf = intf;
-				break;
-			}
-		if (!chip) {
-			printk(KERN_ERR "no available usb audio device\n");
-			goto __error;
-		}
-	}
-
-=======
 			if (!usb_chip[i] &&
 			    (vid[i] == -1 || vid[i] == USB_ID_VENDOR(id)) &&
 			    (pid[i] == -1 || pid[i] == USB_ID_PRODUCT(id))) {
@@ -1242,7 +860,6 @@ static int usb_audio_probe(struct usb_interface *intf,
 	if (chip->quirk_flags & QUIRK_FLAG_DISABLE_AUTOSUSPEND)
 		usb_disable_autosuspend(interface_to_usbdev(intf));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * For devices with more than one control interface, we assume the
 	 * first contains the audio controls. We might need a more specific
@@ -1251,52 +868,16 @@ static int usb_audio_probe(struct usb_interface *intf,
 	if (!chip->ctrl_intf)
 		chip->ctrl_intf = alts;
 
-<<<<<<< HEAD
-	chip->txfr_quirk = 0;
-	err = 1; /* continue */
-	if (quirk && quirk->ifnum != QUIRK_NO_INTERFACE) {
-		/* need some special handlings */
-		if ((err = snd_usb_create_quirk(chip, intf, &usb_audio_driver, quirk)) < 0)
-=======
 	err = 1; /* continue */
 	if (quirk && quirk->ifnum != QUIRK_NO_INTERFACE) {
 		/* need some special handlings */
 		err = snd_usb_create_quirk(chip, intf, &usb_audio_driver, quirk);
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __error;
 	}
 
 	if (err > 0) {
 		/* create normal USB audio interfaces */
-<<<<<<< HEAD
-		if (snd_usb_create_streams(chip, ifnum) < 0 ||
-		    snd_usb_create_mixer(chip, ifnum, ignore_ctl_error) < 0) {
-			goto __error;
-		}
-	}
-
-	/* we are allowed to call snd_card_register() many times */
-	if (snd_card_register(chip->card) < 0) {
-		goto __error;
-	}
-
-	usb_chip[chip->index] = chip;
-	chip->num_interfaces++;
-	chip->probing = 0;
-	mutex_unlock(&register_mutex);
-	return chip;
-
- __error:
-	if (chip) {
-		if (!chip->num_interfaces)
-			snd_card_free(chip->card);
-		chip->probing = 0;
-	}
-	mutex_unlock(&register_mutex);
- __err_val:
-	return NULL;
-=======
 		err = snd_usb_create_streams(chip, ifnum);
 		if (err < 0)
 			goto __error;
@@ -1348,37 +929,12 @@ static int usb_audio_probe(struct usb_interface *intf,
 	}
 	mutex_unlock(&register_mutex);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * we need to take care of counter, since disconnection can be called also
  * many times as well as usb_audio_probe().
  */
-<<<<<<< HEAD
-static void snd_usb_audio_disconnect(struct usb_device *dev,
-				     struct snd_usb_audio *chip)
-{
-	struct snd_card *card;
-	struct list_head *p;
-	bool was_shutdown;
-
-	if (chip == (void *)-1L)
-		return;
-
-	card = chip->card;
-	down_write(&chip->shutdown_rwsem);
-	was_shutdown = chip->shutdown;
-	chip->shutdown = 1;
-	up_write(&chip->shutdown_rwsem);
-
-	mutex_lock(&register_mutex);
-	if (!was_shutdown) {
-		snd_card_disconnect(card);
-		/* release the pcm resources */
-		list_for_each(p, &chip->pcm_list) {
-			snd_usb_stream_disconnect(p);
-=======
 static void usb_audio_disconnect(struct usb_interface *intf)
 {
 	struct snd_usb_audio *chip = usb_get_intfdata(intf);
@@ -1409,20 +965,11 @@ static void usb_audio_disconnect(struct usb_interface *intf)
 		/* release the endpoint resources */
 		list_for_each_entry(ep, &chip->ep_list, list) {
 			snd_usb_endpoint_release(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* release the midi resources */
 		list_for_each(p, &chip->midi_list) {
 			snd_usbmidi_disconnect(p);
 		}
-<<<<<<< HEAD
-		/* release mixer resources */
-		list_for_each(p, &chip->mixer_list) {
-			snd_usb_mixer_disconnect(p);
-		}
-	}
-
-=======
 		snd_usb_midi_v2_disconnect_all(chip);
 		/*
 		 * Nice to check quirk && quirk->shares_media_device and
@@ -1441,7 +988,6 @@ static void usb_audio_disconnect(struct usb_interface *intf)
 	if (chip->quirk_flags & QUIRK_FLAG_DISABLE_AUTOSUSPEND)
 		usb_enable_autosuspend(interface_to_usbdev(intf));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->num_interfaces--;
 	if (chip->num_interfaces <= 0) {
 		usb_chip[chip->index] = NULL;
@@ -1452,43 +998,6 @@ static void usb_audio_disconnect(struct usb_interface *intf)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * new 2.5 USB kernel API
- */
-static int usb_audio_probe(struct usb_interface *intf,
-			   const struct usb_device_id *id)
-{
-	struct snd_usb_audio *chip;
-	chip = snd_usb_audio_probe(interface_to_usbdev(intf), intf, id);
-	if (chip) {
-		usb_set_intfdata(intf, chip);
-		return 0;
-	} else
-		return -EIO;
-}
-
-static void usb_audio_disconnect(struct usb_interface *intf)
-{
-	snd_usb_audio_disconnect(interface_to_usbdev(intf),
-				 usb_get_intfdata(intf));
-}
-
-#ifdef CONFIG_PM
-
-int snd_usb_autoresume(struct snd_usb_audio *chip)
-{
-	int err = -ENODEV;
-
-	down_read(&chip->shutdown_rwsem);
-	if (chip->probing)
-		err = 0;
-	else if (!chip->shutdown)
-		err = usb_autopm_get_interface(chip->pm_intf);
-	up_read(&chip->shutdown_rwsem);
-
-	return err;
-=======
 /* lock the shutdown (disconnect) task and autoresume */
 int snd_usb_lock_shutdown(struct snd_usb_audio *chip)
 {
@@ -1538,17 +1047,10 @@ int snd_usb_autoresume(struct snd_usb_audio *chip)
 		}
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void snd_usb_autosuspend(struct snd_usb_audio *chip)
 {
-<<<<<<< HEAD
-	down_read(&chip->shutdown_rwsem);
-	if (!chip->shutdown && !chip->probing)
-		usb_autopm_put_interface(chip->pm_intf);
-	up_read(&chip->shutdown_rwsem);
-=======
 	int i;
 
 	if (atomic_read(&chip->shutdown))
@@ -1558,40 +1060,11 @@ void snd_usb_autosuspend(struct snd_usb_audio *chip)
 
 	for (i = 0; i < chip->num_interfaces; i++)
 		usb_autopm_put_interface(chip->intf[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usb_audio_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct snd_usb_audio *chip = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	struct list_head *p;
-	struct snd_usb_stream *as;
-	struct usb_mixer_interface *mixer;
-
-	if (chip == (void *)-1L)
-		return 0;
-
-	if (!PMSG_IS_AUTO(message)) {
-		snd_power_change_state(chip->card, SNDRV_CTL_POWER_D3hot);
-		if (!chip->num_suspended_intf++) {
-			list_for_each(p, &chip->pcm_list) {
-				as = list_entry(p, struct snd_usb_stream, list);
-				snd_pcm_suspend_all(as->pcm);
-			}
- 		}
-	} else {
-		/*
-		 * otherwise we keep the rest of the system in the dark
-		 * to keep this transparent
-		 */
-		if (!chip->num_suspended_intf++)
-			chip->autosuspended = 1;
-	}
-
-	list_for_each_entry(mixer, &chip->mixer_list, list)
-		snd_usb_mixer_inactivate(mixer);
-=======
 	struct snd_usb_stream *as;
 	struct snd_usb_endpoint *ep;
 	struct usb_mixer_interface *mixer;
@@ -1616,7 +1089,6 @@ static int usb_audio_suspend(struct usb_interface *intf, pm_message_t message)
 		snd_power_change_state(chip->card, SNDRV_CTL_POWER_D3hot);
 		chip->system_suspend = chip->num_suspended_intf;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1624,15 +1096,6 @@ static int usb_audio_suspend(struct usb_interface *intf, pm_message_t message)
 static int usb_audio_resume(struct usb_interface *intf)
 {
 	struct snd_usb_audio *chip = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	struct usb_mixer_interface *mixer;
-	int err = 0;
-
-	if (chip == (void *)-1L)
-		return 0;
-	if (--chip->num_suspended_intf)
-		return 0;
-=======
 	struct snd_usb_stream *as;
 	struct usb_mixer_interface *mixer;
 	struct list_head *p;
@@ -1651,36 +1114,16 @@ static int usb_audio_resume(struct usb_interface *intf)
 			goto err_out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * ALSA leaves material resumption to user space
 	 * we just notify and restart the mixers
 	 */
 	list_for_each_entry(mixer, &chip->mixer_list, list) {
-<<<<<<< HEAD
-		err = snd_usb_mixer_activate(mixer);
-=======
 		err = snd_usb_mixer_resume(mixer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			goto err_out;
 	}
 
-<<<<<<< HEAD
-	if (!chip->autosuspended)
-		snd_power_change_state(chip->card, SNDRV_CTL_POWER_D0);
-	chip->autosuspended = 0;
-
-err_out:
-	return err;
-}
-#else
-#define usb_audio_suspend	NULL
-#define usb_audio_resume	NULL
-#endif		/* CONFIG_PM */
-
-static struct usb_device_id usb_audio_ids [] = {
-=======
 	list_for_each(p, &chip->midi_list) {
 		snd_usbmidi_resume(p);
 	}
@@ -1700,19 +1143,13 @@ err_out:
 }
 
 static const struct usb_device_id usb_audio_ids [] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "quirks-table.h"
     { .match_flags = (USB_DEVICE_ID_MATCH_INT_CLASS | USB_DEVICE_ID_MATCH_INT_SUBCLASS),
       .bInterfaceClass = USB_CLASS_AUDIO,
       .bInterfaceSubClass = USB_SUBCLASS_AUDIOCONTROL },
     { }						/* Terminating entry */
 };
-<<<<<<< HEAD
-
-MODULE_DEVICE_TABLE (usb, usb_audio_ids);
-=======
 MODULE_DEVICE_TABLE(usb, usb_audio_ids);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * entry point for linux usb interface
@@ -1724,32 +1161,9 @@ static struct usb_driver usb_audio_driver = {
 	.disconnect =	usb_audio_disconnect,
 	.suspend =	usb_audio_suspend,
 	.resume =	usb_audio_resume,
-<<<<<<< HEAD
-=======
 	.reset_resume =	usb_audio_resume,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table =	usb_audio_ids,
 	.supports_autosuspend = 1,
 };
 
-<<<<<<< HEAD
-static int __init snd_usb_audio_init(void)
-{
-	if (nrpacks < 1 || nrpacks > MAX_PACKS) {
-		printk(KERN_WARNING "invalid nrpacks value.\n");
-		return -EINVAL;
-	}
-
-	return usb_register(&usb_audio_driver);
-}
-
-static void __exit snd_usb_audio_cleanup(void)
-{
-	usb_deregister(&usb_audio_driver);
-}
-
-module_init(snd_usb_audio_init);
-module_exit(snd_usb_audio_cleanup);
-=======
 module_usb_driver(usb_audio_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

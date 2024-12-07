@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # linux/arch/arm/tools/Makefile
 #
 # Copyright (C) 2001 Russell King
 #
 
-<<<<<<< HEAD
-include/generated/mach-types.h: $(src)/gen-mach-types $(src)/mach-types
-	@echo '  Generating $@'
-	@mkdir -p $(dir $@)
-	$(Q)$(AWK) -f $^ > $@ || { rm -f $@; /bin/false; }
-=======
 gen := arch/$(ARCH)/include/generated
 kapi := $(gen)/asm
 uapi := $(gen)/uapi/asm
@@ -64,4 +55,3 @@ $(kapi)/unistd-nr.h: $(syscall) $(sysnr) FORCE
 
 $(gen)/calls-%.S: $(syscall) $(systbl) FORCE
 	$(call if_changed,systbl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

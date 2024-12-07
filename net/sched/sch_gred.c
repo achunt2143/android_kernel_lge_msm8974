@@ -1,28 +1,12 @@
-<<<<<<< HEAD
-/*
- * net/sched/sch_gred.c	Generic Random Early Detection queue.
- *
- *
- *              This program is free software; you can redistribute it and/or
- *              modify it under the terms of the GNU General Public License
- *              as published by the Free Software Foundation; either version
- *              2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * net/sched/sch_gred.c	Generic Random Early Detection queue.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:    J Hadi Salim (hadi@cyberus.ca) 1998-2002
  *
  *             991129: -  Bug fix with grio mode
  *		       - a better sing. AvgQ mode with Grio(WRED)
-<<<<<<< HEAD
- *		       - A finer grained VQ dequeue based on sugestion
-=======
  *		       - A finer grained VQ dequeue based on suggestion
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		         from Ren Liu
  *		       - More error checks
  *
@@ -34,33 +18,23 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-=======
 #include <net/pkt_cls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/pkt_sched.h>
 #include <net/red.h>
 
 #define GRED_DEF_PRIO (MAX_DPs / 2)
 #define GRED_VQ_MASK (MAX_DPs - 1)
 
-<<<<<<< HEAD
-=======
 #define GRED_VQ_RED_FLAGS	(TC_RED_ECN | TC_RED_HARDDROP)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct gred_sched_data;
 struct gred_sched;
 
 struct gred_sched_data {
 	u32		limit;		/* HARD maximal queue length	*/
 	u32		DP;		/* the drop parameters */
-<<<<<<< HEAD
-	u32		bytesin;	/* bytes seen on virtualQ so far*/
-=======
 	u32		red_flags;	/* virtualQ version of red_flags */
 	u64		bytesin;	/* bytes seen on virtualQ so far*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		packetsin;	/* packets seen on virtualQ so far*/
 	u32		backlog;	/* bytes on the virtualQ */
 	u8		prio;		/* the prio of this vq */
@@ -82,10 +56,7 @@ struct gred_sched {
 	u32 		DPs;
 	u32 		def;
 	struct red_vars wred_set;
-<<<<<<< HEAD
-=======
 	struct tc_gred_qopt_offload *opt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int gred_wred_mode(struct gred_sched *table)
@@ -131,14 +102,8 @@ static inline int gred_wred_mode_check(struct Qdisc *sch)
 		if (q == NULL)
 			continue;
 
-<<<<<<< HEAD
-		for (n = 0; n < table->DPs; n++)
-			if (table->tab[n] && table->tab[n] != q &&
-			    table->tab[n]->prio == q->prio)
-=======
 		for (n = i + 1; n < table->DPs; n++)
 			if (table->tab[n] && table->tab[n]->prio == q->prio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 1;
 	}
 
@@ -171,21 +136,6 @@ static inline void gred_store_wred_set(struct gred_sched *table,
 				       struct gred_sched_data *q)
 {
 	table->wred_set.qavg = q->vars.qavg;
-<<<<<<< HEAD
-}
-
-static inline int gred_use_ecn(struct gred_sched *t)
-{
-	return t->red_flags & TC_RED_ECN;
-}
-
-static inline int gred_use_harddrop(struct gred_sched *t)
-{
-	return t->red_flags & TC_RED_HARDDROP;
-}
-
-static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-=======
 	table->wred_set.qidlestart = q->vars.qidlestart;
 }
 
@@ -214,7 +164,6 @@ static bool gred_per_vq_red_flags_used(struct gred_sched *table)
 
 static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 			struct sk_buff **to_free)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gred_sched_data *q = NULL;
 	struct gred_sched *t = qdisc_priv(sch);
@@ -230,12 +179,8 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 			 * if no default DP has been configured. This
 			 * allows for DP flows to be left untouched.
 			 */
-<<<<<<< HEAD
-			if (skb_queue_len(&sch->q) < qdisc_dev(sch)->tx_queue_len)
-=======
 			if (likely(sch->qstats.backlog + qdisc_pkt_len(skb) <=
 					sch->limit))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return qdisc_enqueue_tail(skb, sch);
 			else
 				goto drop;
@@ -246,11 +191,7 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		skb->tc_index = (skb->tc_index & ~GRED_VQ_MASK) | dp;
 	}
 
-<<<<<<< HEAD
-	/* sum up all the qaves of prios <= to ours to get the new qave */
-=======
 	/* sum up all the qaves of prios < ours to get the new qave */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!gred_wred_mode(t) && gred_rio_mode(t)) {
 		int i;
 
@@ -283,13 +224,8 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		break;
 
 	case RED_PROB_MARK:
-<<<<<<< HEAD
-		sch->qstats.overlimits++;
-		if (!gred_use_ecn(t) || !INET_ECN_set_ce(skb)) {
-=======
 		qdisc_qstats_overlimit(sch);
 		if (!gred_use_ecn(q) || !INET_ECN_set_ce(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			q->stats.prob_drop++;
 			goto congestion_drop;
 		}
@@ -298,13 +234,8 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		break;
 
 	case RED_HARD_MARK:
-<<<<<<< HEAD
-		sch->qstats.overlimits++;
-		if (gred_use_harddrop(t) || !gred_use_ecn(t) ||
-=======
 		qdisc_qstats_overlimit(sch);
 		if (gred_use_harddrop(q) || !gred_use_ecn(q) ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !INET_ECN_set_ce(skb)) {
 			q->stats.forced_drop++;
 			goto congestion_drop;
@@ -313,28 +244,17 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		break;
 	}
 
-<<<<<<< HEAD
-	if (q->backlog + qdisc_pkt_len(skb) <= q->limit) {
-=======
 	if (gred_backlog(t, q, sch) + qdisc_pkt_len(skb) <= q->limit) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q->backlog += qdisc_pkt_len(skb);
 		return qdisc_enqueue_tail(skb, sch);
 	}
 
 	q->stats.pdrop++;
 drop:
-<<<<<<< HEAD
-	return qdisc_drop(skb, sch);
-
-congestion_drop:
-	qdisc_drop(skb, sch);
-=======
 	return qdisc_drop(skb, sch, to_free);
 
 congestion_drop:
 	qdisc_drop(skb, sch, to_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NET_XMIT_CN;
 }
 
@@ -350,17 +270,6 @@ static struct sk_buff *gred_dequeue(struct Qdisc *sch)
 		u16 dp = tc_index_to_dp(skb);
 
 		if (dp >= t->DPs || (q = t->tab[dp]) == NULL) {
-<<<<<<< HEAD
-			if (net_ratelimit())
-				pr_warning("GRED: Unable to relocate VQ 0x%x "
-					   "after dequeue, screwing up "
-					   "backlog.\n", tc_index_to_dp(skb));
-		} else {
-			q->backlog -= qdisc_pkt_len(skb);
-
-			if (!q->backlog && !gred_wred_mode(t))
-				red_start_of_idle_period(&q->vars);
-=======
 			net_warn_ratelimited("GRED: Unable to relocate VQ 0x%x after dequeue, screwing up backlog\n",
 					     tc_index_to_dp(skb));
 		} else {
@@ -373,59 +282,14 @@ static struct sk_buff *gred_dequeue(struct Qdisc *sch)
 				if (!q->backlog)
 					red_start_of_idle_period(&q->vars);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		return skb;
 	}
 
-<<<<<<< HEAD
-	if (gred_wred_mode(t) && !red_is_idling(&t->wred_set))
-		red_start_of_idle_period(&t->wred_set);
-
 	return NULL;
 }
 
-static unsigned int gred_drop(struct Qdisc *sch)
-{
-	struct sk_buff *skb;
-	struct gred_sched *t = qdisc_priv(sch);
-
-	skb = qdisc_dequeue_tail(sch);
-	if (skb) {
-		unsigned int len = qdisc_pkt_len(skb);
-		struct gred_sched_data *q;
-		u16 dp = tc_index_to_dp(skb);
-
-		if (dp >= t->DPs || (q = t->tab[dp]) == NULL) {
-			if (net_ratelimit())
-				pr_warning("GRED: Unable to relocate VQ 0x%x "
-					   "while dropping, screwing up "
-					   "backlog.\n", tc_index_to_dp(skb));
-		} else {
-			q->backlog -= len;
-			q->stats.other++;
-
-			if (!q->backlog && !gred_wred_mode(t))
-				red_start_of_idle_period(&q->vars);
-		}
-
-		qdisc_drop(skb, sch);
-		return len;
-	}
-
-	if (gred_wred_mode(t) && !red_is_idling(&t->wred_set))
-		red_start_of_idle_period(&t->wred_set);
-
-	return 0;
-
-}
-
-=======
-	return NULL;
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gred_reset(struct Qdisc *sch)
 {
 	int i;
@@ -444,8 +308,6 @@ static void gred_reset(struct Qdisc *sch)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void gred_offload(struct Qdisc *sch, enum tc_gred_command command)
 {
 	struct gred_sched *table = qdisc_priv(sch);
@@ -538,21 +400,11 @@ static int gred_offload_dump_stats(struct Qdisc *sch)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void gred_destroy_vq(struct gred_sched_data *q)
 {
 	kfree(q);
 }
 
-<<<<<<< HEAD
-static inline int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps)
-{
-	struct gred_sched *table = qdisc_priv(sch);
-	struct tc_gred_sopt *sopt;
-	int i;
-
-	if (dps == NULL)
-=======
 static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
 				 struct netlink_ext_ack *extack)
 {
@@ -562,15 +414,10 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
 	int i;
 
 	if (!dps)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	sopt = nla_data(dps);
 
-<<<<<<< HEAD
-	if (sopt->DPs > MAX_DPs || sopt->DPs == 0 || sopt->def_DP >= sopt->DPs)
-		return -EINVAL;
-=======
 	if (sopt->DPs > MAX_DPs) {
 		NL_SET_ERR_MSG_MOD(extack, "number of virtual queues too high");
 		return -EINVAL;
@@ -588,15 +435,11 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
 		NL_SET_ERR_MSG_MOD(extack, "can't set per-Qdisc RED flags when per-virtual queue flags are used");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sch_tree_lock(sch);
 	table->DPs = sopt->DPs;
 	table->def = sopt->def_DP;
-<<<<<<< HEAD
-=======
 	red_flags_changed = table->red_flags != sopt->flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	table->red_flags = sopt->flags;
 
 	/*
@@ -616,12 +459,6 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
 		gred_disable_wred_mode(table);
 	}
 
-<<<<<<< HEAD
-	for (i = table->DPs; i < MAX_DPs; i++) {
-		if (table->tab[i]) {
-			pr_warning("GRED: Warning: Destroying "
-				   "shadowed VQ 0x%x\n", i);
-=======
 	if (red_flags_changed)
 		for (i = 0; i < table->DPs; i++)
 			if (table->tab[i])
@@ -632,61 +469,43 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
 		if (table->tab[i]) {
 			pr_warn("GRED: Warning: Destroying shadowed VQ 0x%x\n",
 				i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gred_destroy_vq(table->tab[i]);
 			table->tab[i] = NULL;
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	gred_offload(sch, TC_GRED_REPLACE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static inline int gred_change_vq(struct Qdisc *sch, int dp,
 				 struct tc_gred_qopt *ctl, int prio,
 				 u8 *stab, u32 max_P,
-<<<<<<< HEAD
-				 struct gred_sched_data **prealloc)
-=======
 				 struct gred_sched_data **prealloc,
 				 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gred_sched *table = qdisc_priv(sch);
 	struct gred_sched_data *q = table->tab[dp];
 
-<<<<<<< HEAD
-=======
 	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log, stab)) {
 		NL_SET_ERR_MSG_MOD(extack, "invalid RED parameters");
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!q) {
 		table->tab[dp] = q = *prealloc;
 		*prealloc = NULL;
 		if (!q)
 			return -ENOMEM;
-<<<<<<< HEAD
-=======
 		q->red_flags = table->red_flags & GRED_VQ_RED_FLAGS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	q->DP = dp;
 	q->prio = prio;
-<<<<<<< HEAD
-	q->limit = ctl->limit;
-=======
 	if (ctl->limit > sch->limit)
 		q->limit = sch->limit;
 	else
 		q->limit = ctl->limit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (q->backlog == 0)
 		red_end_of_idle_period(&q->vars);
@@ -698,8 +517,6 @@ static inline int gred_change_vq(struct Qdisc *sch, int dp,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static const struct nla_policy gred_vq_policy[TCA_GRED_VQ_MAX + 1] = {
 	[TCA_GRED_VQ_DP]	= { .type = NLA_U32 },
 	[TCA_GRED_VQ_FLAGS]	= { .type = NLA_U32 },
@@ -709,17 +526,11 @@ static const struct nla_policy gred_vqe_policy[TCA_GRED_VQ_ENTRY_MAX + 1] = {
 	[TCA_GRED_VQ_ENTRY]	= { .type = NLA_NESTED },
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct nla_policy gred_policy[TCA_GRED_MAX + 1] = {
 	[TCA_GRED_PARMS]	= { .len = sizeof(struct tc_gred_qopt) },
 	[TCA_GRED_STAB]		= { .len = 256 },
 	[TCA_GRED_DPS]		= { .len = sizeof(struct tc_gred_sopt) },
 	[TCA_GRED_MAX_P]	= { .type = NLA_U32 },
-<<<<<<< HEAD
-};
-
-static int gred_change(struct Qdisc *sch, struct nlattr *opt)
-=======
 	[TCA_GRED_LIMIT]	= { .type = NLA_U32 },
 	[TCA_GRED_VQ_LIST]	= { .type = NLA_NESTED },
 };
@@ -830,7 +641,6 @@ static int gred_vqs_validate(struct gred_sched *table, u32 cdp,
 
 static int gred_change(struct Qdisc *sch, struct nlattr *opt,
 		       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gred_sched *table = qdisc_priv(sch);
 	struct tc_gred_qopt *ctl;
@@ -840,30 +650,6 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
 	u32 max_P;
 	struct gred_sched_data *prealloc;
 
-<<<<<<< HEAD
-	if (opt == NULL)
-		return -EINVAL;
-
-	err = nla_parse_nested(tb, TCA_GRED_MAX, opt, gred_policy);
-	if (err < 0)
-		return err;
-
-	if (tb[TCA_GRED_PARMS] == NULL && tb[TCA_GRED_STAB] == NULL)
-		return gred_change_table_def(sch, opt);
-
-	if (tb[TCA_GRED_PARMS] == NULL ||
-	    tb[TCA_GRED_STAB] == NULL)
-		return -EINVAL;
-
-	max_P = tb[TCA_GRED_MAX_P] ? nla_get_u32(tb[TCA_GRED_MAX_P]) : 0;
-
-	err = -EINVAL;
-	ctl = nla_data(tb[TCA_GRED_PARMS]);
-	stab = nla_data(tb[TCA_GRED_STAB]);
-
-	if (ctl->DP >= table->DPs)
-		goto errout;
-=======
 	err = nla_parse_nested_deprecated(tb, TCA_GRED_MAX, opt, gred_policy,
 					  extack);
 	if (err < 0)
@@ -898,7 +684,6 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
 		if (err)
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (gred_rio_mode(table)) {
 		if (ctl->prio == 0) {
@@ -918,11 +703,6 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
 	prealloc = kzalloc(sizeof(*prealloc), GFP_KERNEL);
 	sch_tree_lock(sch);
 
-<<<<<<< HEAD
-	err = gred_change_vq(sch, ctl->DP, ctl, prio, stab, max_P, &prealloc);
-	if (err < 0)
-		goto errout_locked;
-=======
 	err = gred_change_vq(sch, ctl->DP, ctl, prio, stab, max_P, &prealloc,
 			     extack);
 	if (err < 0)
@@ -930,7 +710,6 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
 
 	if (tb[TCA_GRED_VQ_LIST])
 		gred_vqs_apply(table, tb[TCA_GRED_VQ_LIST]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (gred_rio_mode(table)) {
 		gred_disable_wred_mode(table);
@@ -938,33 +717,6 @@ static int gred_change(struct Qdisc *sch, struct nlattr *opt,
 			gred_enable_wred_mode(table);
 	}
 
-<<<<<<< HEAD
-	err = 0;
-
-errout_locked:
-	sch_tree_unlock(sch);
-	kfree(prealloc);
-errout:
-	return err;
-}
-
-static int gred_init(struct Qdisc *sch, struct nlattr *opt)
-{
-	struct nlattr *tb[TCA_GRED_MAX + 1];
-	int err;
-
-	if (opt == NULL)
-		return -EINVAL;
-
-	err = nla_parse_nested(tb, TCA_GRED_MAX, opt, gred_policy);
-	if (err < 0)
-		return err;
-
-	if (tb[TCA_GRED_PARMS] || tb[TCA_GRED_STAB])
-		return -EINVAL;
-
-	return gred_change_table_def(sch, tb[TCA_GRED_DPS]);
-=======
 	sch_tree_unlock(sch);
 	kfree(prealloc);
 
@@ -1011,17 +763,12 @@ static int gred_init(struct Qdisc *sch, struct nlattr *opt,
 	}
 
 	return gred_change_table_def(sch, tb[TCA_GRED_DPS], extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 {
 	struct gred_sched *table = qdisc_priv(sch);
-<<<<<<< HEAD
-	struct nlattr *parms, *opts = NULL;
-=======
 	struct nlattr *parms, *vqs, *opts = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u32 max_p[MAX_DPs];
 	struct tc_gred_sopt sopt = {
@@ -1031,12 +778,6 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 		.flags	= table->red_flags,
 	};
 
-<<<<<<< HEAD
-	opts = nla_nest_start(skb, TCA_OPTIONS);
-	if (opts == NULL)
-		goto nla_put_failure;
-	NLA_PUT(skb, TCA_GRED_DPS, sizeof(sopt), &sopt);
-=======
 	if (gred_offload_dump_stats(sch))
 		goto nla_put_failure;
 
@@ -1045,18 +786,12 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 		goto nla_put_failure;
 	if (nla_put(skb, TCA_GRED_DPS, sizeof(sopt), &sopt))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < MAX_DPs; i++) {
 		struct gred_sched_data *q = table->tab[i];
 
 		max_p[i] = q ? q->parms.max_P : 0;
 	}
-<<<<<<< HEAD
-	NLA_PUT(skb, TCA_GRED_MAX_P, sizeof(max_p), max_p);
-
-	parms = nla_nest_start(skb, TCA_GRED_PARMS);
-=======
 	if (nla_put(skb, TCA_GRED_MAX_P, sizeof(max_p), max_p))
 		goto nla_put_failure;
 
@@ -1065,17 +800,13 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 
 	/* Old style all-in-one dump of VQs */
 	parms = nla_nest_start_noflag(skb, TCA_GRED_PARMS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (parms == NULL)
 		goto nla_put_failure;
 
 	for (i = 0; i < MAX_DPs; i++) {
 		struct gred_sched_data *q = table->tab[i];
 		struct tc_gred_qopt opt;
-<<<<<<< HEAD
-=======
 		unsigned long qavg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(&opt, 0, sizeof(opt));
 
@@ -1090,21 +821,13 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 
 		opt.limit	= q->limit;
 		opt.DP		= q->DP;
-<<<<<<< HEAD
-		opt.backlog	= q->backlog;
-=======
 		opt.backlog	= gred_backlog(table, q, sch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		opt.prio	= q->prio;
 		opt.qth_min	= q->parms.qth_min >> q->parms.Wlog;
 		opt.qth_max	= q->parms.qth_max >> q->parms.Wlog;
 		opt.Wlog	= q->parms.Wlog;
 		opt.Plog	= q->parms.Plog;
 		opt.Scell_log	= q->parms.Scell_log;
-<<<<<<< HEAD
-		opt.other	= q->stats.other;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		opt.early	= q->stats.prob_drop;
 		opt.forced	= q->stats.forced_drop;
 		opt.pdrop	= q->stats.pdrop;
@@ -1114,13 +837,9 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
 		if (gred_wred_mode(table))
 			gred_load_wred_set(table, q);
 
-<<<<<<< HEAD
-		opt.qave = red_calc_qavg(&q->parms, &q->vars, q->vars.qavg);
-=======
 		qavg = red_calc_qavg(&q->parms, &q->vars,
 				     q->vars.qavg >> q->parms.Wlog);
 		opt.qave = qavg >> q->parms.Wlog;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 append_opt:
 		if (nla_append(skb, sizeof(opt), &opt) < 0)
@@ -1129,8 +848,6 @@ append_opt:
 
 	nla_nest_end(skb, parms);
 
-<<<<<<< HEAD
-=======
 	/* Dump the VQs again, in more structured way */
 	vqs = nla_nest_start_noflag(skb, TCA_GRED_VQ_LIST);
 	if (!vqs)
@@ -1181,7 +898,6 @@ append_opt:
 	}
 	nla_nest_end(skb, vqs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nla_nest_end(skb, opts);
 
 nla_put_failure:
@@ -1194,18 +910,11 @@ static void gred_destroy(struct Qdisc *sch)
 	struct gred_sched *table = qdisc_priv(sch);
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < table->DPs; i++) {
-		if (table->tab[i])
-			gred_destroy_vq(table->tab[i]);
-	}
-=======
 	for (i = 0; i < table->DPs; i++)
 		gred_destroy_vq(table->tab[i]);
 
 	gred_offload(sch, TC_GRED_DESTROY);
 	kfree(table->opt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct Qdisc_ops gred_qdisc_ops __read_mostly = {
@@ -1214,10 +923,6 @@ static struct Qdisc_ops gred_qdisc_ops __read_mostly = {
 	.enqueue	=	gred_enqueue,
 	.dequeue	=	gred_dequeue,
 	.peek		=	qdisc_peek_head,
-<<<<<<< HEAD
-	.drop		=	gred_drop,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		=	gred_init,
 	.reset		=	gred_reset,
 	.destroy	=	gred_destroy,
@@ -1225,10 +930,7 @@ static struct Qdisc_ops gred_qdisc_ops __read_mostly = {
 	.dump		=	gred_dump,
 	.owner		=	THIS_MODULE,
 };
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_NET_SCH("gred");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init gred_module_init(void)
 {
@@ -1244,7 +946,4 @@ module_init(gred_module_init)
 module_exit(gred_module_exit)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("Generic Random Early Detection qdisc");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

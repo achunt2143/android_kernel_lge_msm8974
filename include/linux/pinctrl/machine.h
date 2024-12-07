@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Machine interface for the pinctrl subsystem.
  *
@@ -10,24 +7,13 @@
  * Based on bits of regulator core, gpio core and clk core
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LINUX_PINCTRL_MACHINE_H
 #define __LINUX_PINCTRL_MACHINE_H
 
-<<<<<<< HEAD
-#include <linux/bug.h>
-
-#include "pinctrl-state.h"
-=======
 #include <linux/array_size.h>
 
 #include <linux/pinctrl/pinctrl-state.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum pinctrl_map_type {
 	PIN_MAP_TYPE_INVALID,
@@ -61,11 +47,7 @@ struct pinctrl_map_mux {
 struct pinctrl_map_configs {
 	const char *group_or_pin;
 	unsigned long *configs;
-<<<<<<< HEAD
-	unsigned num_configs;
-=======
 	unsigned int num_configs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -167,17 +149,6 @@ struct pinctrl_map {
 #define PIN_MAP_CONFIGS_GROUP_HOG_DEFAULT(dev, grp, cfgs)		\
 	PIN_MAP_CONFIGS_GROUP(dev, PINCTRL_STATE_DEFAULT, dev, grp, cfgs)
 
-<<<<<<< HEAD
-#ifdef CONFIG_PINCTRL
-
-extern int pinctrl_register_mappings(struct pinctrl_map const *map,
-				unsigned num_maps);
-extern void pinctrl_provide_dummies(void);
-#else
-
-static inline int pinctrl_register_mappings(struct pinctrl_map const *map,
-					   unsigned num_maps)
-=======
 struct pinctrl_map;
 
 #ifdef CONFIG_PINCTRL
@@ -190,18 +161,14 @@ extern void pinctrl_provide_dummies(void);
 
 static inline int pinctrl_register_mappings(const struct pinctrl_map *map,
 					    unsigned int num_maps)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline void pinctrl_unregister_mappings(const struct pinctrl_map *map)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pinctrl_provide_dummies(void)
 {
 }

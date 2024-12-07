@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * i2sbus driver -- private definitions
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- *
- * GPL v2, can be found in COPYING.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __I2SBUS_H
 #define __I2SBUS_H
@@ -21,10 +13,6 @@
 
 #include <sound/pcm.h>
 
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pmac_feature.h>
 #include <asm/dbdma.h>
 

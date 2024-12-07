@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -41,25 +22,15 @@
 
 /*
  * Used to report a bss has been scanned
-<<<<<<< HEAD
-*/
-struct survey_event	{
-	struct ndis_wlan_bssid_ex bss;
-=======
  */
 struct survey_event	{
 	struct wlan_bssid_ex bss;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Used to report that the requested site survey has been done.
  * bss_cnt indicates the number of bss that has been reported.
-<<<<<<< HEAD
-*/
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct surveydone_event {
 	unsigned int	bss_cnt;
 
@@ -71,11 +42,7 @@ struct surveydone_event {
  *  -1: authentication fail
  *  -2: association fail
  *  > 0: TID
-<<<<<<< HEAD
-*/
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct joinbss_event {
 	struct	wlan_network	network;
 };
@@ -83,19 +50,11 @@ struct joinbss_event {
 /*
  * Used to report a given STA has joinned the created BSS.
  * It is used in AP/Ad-HoC(M) mode.
-<<<<<<< HEAD
-*/
-struct stassoc_event {
-	unsigned char macaddr[6];
-	unsigned char rsvd[2];
-	int    cam_id;
-=======
  */
 struct stassoc_event {
 	unsigned char macaddr[6];
 	unsigned char rsvd[2];
 	__le32    cam_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct stadel_event {
@@ -143,10 +102,7 @@ struct ADDBA_Req_Report_parm {
 	unsigned short StartSeqNum;
 	unsigned char tid;
 };
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rtl8712_event.h"
 
 #endif /* _WLANEVENT_H_ */

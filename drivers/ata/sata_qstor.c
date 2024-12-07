@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sata_qstor.c - Pacific Digital Corporation QStor SATA
  *
@@ -10,40 +7,14 @@
  *  Copyright 2005 Pacific Digital Corporation.
  *  (OSL/GPL code release authorized by Jalil Fadavi).
  *
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- *  libata documentation is available via 'make {ps|pdf}docs',
- *  as Documentation/DocBook/libata.*
- *
-=======
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/driver-api/libata.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -129,11 +100,7 @@ static int qs_scr_write(struct ata_link *link, unsigned int sc_reg, u32 val);
 static int qs_ata_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
 static int qs_port_start(struct ata_port *ap);
 static void qs_host_stop(struct ata_host *host);
-<<<<<<< HEAD
-static void qs_qc_prep(struct ata_queued_cmd *qc);
-=======
 static enum ata_completion_errors qs_qc_prep(struct ata_queued_cmd *qc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int qs_qc_issue(struct ata_queued_cmd *qc);
 static int qs_check_atapi_dma(struct ata_queued_cmd *qc);
 static void qs_freeze(struct ata_port *ap);
@@ -141,11 +108,7 @@ static void qs_thaw(struct ata_port *ap);
 static int qs_prereset(struct ata_link *link, unsigned long deadline);
 static void qs_error_handler(struct ata_port *ap);
 
-<<<<<<< HEAD
-static struct scsi_host_template qs_ata_sht = {
-=======
 static const struct scsi_host_template qs_ata_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= QS_MAX_PRD,
 	.dma_boundary		= QS_DMA_BOUNDARY,
@@ -289,22 +252,12 @@ static unsigned int qs_fill_sg(struct ata_queued_cmd *qc)
 		len = sg_dma_len(sg);
 		*(__le32 *)prd = cpu_to_le32(len);
 		prd += sizeof(u64);
-<<<<<<< HEAD
-
-		VPRINTK("PRD[%u] = (0x%llX, 0x%X)\n", si,
-					(unsigned long long)addr, len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return si;
 }
 
-<<<<<<< HEAD
-static void qs_qc_prep(struct ata_queued_cmd *qc)
-=======
 static enum ata_completion_errors qs_qc_prep(struct ata_queued_cmd *qc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qs_port_priv *pp = qc->ap->private_data;
 	u8 dflags = QS_DF_PORD, *buf = pp->pkt;
@@ -312,17 +265,9 @@ static enum ata_completion_errors qs_qc_prep(struct ata_queued_cmd *qc)
 	u64 addr;
 	unsigned int nelem;
 
-<<<<<<< HEAD
-	VPRINTK("ENTER\n");
-
-	qs_enter_reg_mode(qc->ap);
-	if (qc->tf.protocol != ATA_PROT_DMA)
-		return;
-=======
 	qs_enter_reg_mode(qc->ap);
 	if (qc->tf.protocol != ATA_PROT_DMA)
 		return AC_ERR_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nelem = qs_fill_sg(qc);
 
@@ -345,11 +290,8 @@ static enum ata_completion_errors qs_qc_prep(struct ata_queued_cmd *qc)
 
 	/* frame information structure (FIS) */
 	ata_tf_to_fis(&qc->tf, 0, 1, &buf[32]);
-<<<<<<< HEAD
-=======
 
 	return AC_ERR_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void qs_packet_start(struct ata_queued_cmd *qc)
@@ -357,11 +299,6 @@ static inline void qs_packet_start(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 	u8 __iomem *chan = qs_mmio_base(ap->host) + (ap->port_no * 0x4000);
 
-<<<<<<< HEAD
-	VPRINTK("ENTER, ap %p\n", ap);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writeb(QS_CTR0_CLER, chan + QS_CCT_CTR0);
 	wmb();                             /* flush PRDs and pkt to memory */
 	writel(QS_CCF_RUN_PKT, chan + QS_CCT_CFF);
@@ -430,13 +367,8 @@ static inline unsigned int qs_intr_pkt(struct ata_host *host)
 			struct qs_port_priv *pp = ap->private_data;
 			struct ata_queued_cmd *qc;
 
-<<<<<<< HEAD
-			DPRINTK("SFF=%08x%08x: sCHAN=%u sHST=%d sDST=%02x\n",
-					sff1, sff0, port_no, sHST, sDST);
-=======
 			dev_dbg(host->dev, "SFF=%08x%08x: sHST=%d sDST=%02x\n",
 				sff1, sff0, sHST, sDST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			handled = 1;
 			if (!pp || pp->state != qs_state_pkt)
 				continue;
@@ -496,20 +428,10 @@ static irqreturn_t qs_intr(int irq, void *dev_instance)
 	unsigned int handled = 0;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	VPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&host->lock, flags);
 	handled  = qs_intr_pkt(host) | qs_intr_mmio(host);
 	spin_unlock_irqrestore(&host->lock, flags);
 
-<<<<<<< HEAD
-	VPRINTK("EXIT\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_RETVAL(handled);
 }
 
@@ -546,10 +468,6 @@ static int qs_port_start(struct ata_port *ap)
 				      GFP_KERNEL);
 	if (!pp->pkt)
 		return -ENOMEM;
-<<<<<<< HEAD
-	memset(pp->pkt, 0, QS_PKT_BYTES);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap->private_data = pp;
 
 	qs_enter_reg_mode(ap);
@@ -610,35 +528,6 @@ static void qs_host_init(struct ata_host *host, unsigned int chip_id)
 static int qs_set_dma_masks(struct pci_dev *pdev, void __iomem *mmio_base)
 {
 	u32 bus_info = readl(mmio_base + QS_HID_HPHY);
-<<<<<<< HEAD
-	int rc, have_64bit_bus = (bus_info & QS_HPHY_64BIT);
-
-	if (have_64bit_bus &&
-	    !pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-		if (rc) {
-			rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-			if (rc) {
-				dev_err(&pdev->dev,
-					"64-bit DMA enable failed\n");
-				return rc;
-			}
-		}
-	} else {
-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc) {
-			dev_err(&pdev->dev, "32-bit DMA enable failed\n");
-			return rc;
-		}
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc) {
-			dev_err(&pdev->dev,
-				"32-bit consistent DMA enable failed\n");
-			return rc;
-		}
-	}
-	return 0;
-=======
 	int dma_bits = (bus_info & QS_HPHY_64BIT) ? 64 : 32;
 	int rc;
 
@@ -646,7 +535,6 @@ static int qs_set_dma_masks(struct pci_dev *pdev, void __iomem *mmio_base)
 	if (rc)
 		dev_err(&pdev->dev, "%d-bit DMA enable failed\n", dma_bits);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int qs_ata_init_one(struct pci_dev *pdev,
@@ -700,28 +588,10 @@ static int qs_ata_init_one(struct pci_dev *pdev,
 				 &qs_ata_sht);
 }
 
-<<<<<<< HEAD
-static int __init qs_ata_init(void)
-{
-	return pci_register_driver(&qs_ata_pci_driver);
-}
-
-static void __exit qs_ata_exit(void)
-{
-	pci_unregister_driver(&qs_ata_pci_driver);
-}
-=======
 module_pci_driver(qs_ata_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Mark Lord");
 MODULE_DESCRIPTION("Pacific Digital Corporation QStor SATA low-level driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, qs_ata_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-module_init(qs_ata_init);
-module_exit(qs_ata_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

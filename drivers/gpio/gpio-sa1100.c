@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-sa1100/gpio.c
  *
  * Generic SA-1100 GPIO handling
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/gpio.h>
-#include <linux/init.h>
-#include <linux/module.h>
-
-#include <mach/hardware.h>
-#include <mach/irqs.h>
-
-static int sa1100_gpio_get(struct gpio_chip *chip, unsigned offset)
-{
-	return GPLR & GPIO_GPIO(offset);
-=======
  */
 #include <linux/gpio/driver.h>
 #include <linux/init.h>
@@ -61,17 +41,10 @@ static int sa1100_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
 	return readl_relaxed(sa1100_gpio_chip(chip)->membase + R_GPLR) &
 		BIT(offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sa1100_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
-<<<<<<< HEAD
-	if (value)
-		GPSR = GPIO_GPIO(offset);
-	else
-		GPCR = GPIO_GPIO(offset);
-=======
 	int reg = value ? R_GPSR : R_GPCR;
 
 	writel_relaxed(BIT(offset), sa1100_gpio_chip(chip)->membase + reg);
@@ -85,18 +58,10 @@ static int sa1100_get_direction(struct gpio_chip *chip, unsigned offset)
 		return GPIO_LINE_DIRECTION_OUT;
 
 	return GPIO_LINE_DIRECTION_IN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sa1100_direction_input(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-
-	local_irq_save(flags);
-	GPDR &= ~GPIO_GPIO(offset);
-	local_irq_restore(flags);
-=======
 	void __iomem *gpdr = sa1100_gpio_chip(chip)->membase + R_GPDR;
 	unsigned long flags;
 
@@ -104,47 +69,24 @@ static int sa1100_direction_input(struct gpio_chip *chip, unsigned offset)
 	writel_relaxed(readl_relaxed(gpdr) & ~BIT(offset), gpdr);
 	local_irq_restore(flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int sa1100_direction_output(struct gpio_chip *chip, unsigned offset, int value)
 {
-<<<<<<< HEAD
-=======
 	void __iomem *gpdr = sa1100_gpio_chip(chip)->membase + R_GPDR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	local_irq_save(flags);
 	sa1100_gpio_set(chip, offset, value);
-<<<<<<< HEAD
-	GPDR |= GPIO_GPIO(offset);
-	local_irq_restore(flags);
-=======
 	writel_relaxed(readl_relaxed(gpdr) | BIT(offset), gpdr);
 	local_irq_restore(flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int sa1100_to_irq(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	return offset < 11 ? (IRQ_GPIO0 + offset) : (IRQ_GPIO11 - 11 + offset);
-}
-
-static struct gpio_chip sa1100_gpio_chip = {
-	.label			= "gpio",
-	.direction_input	= sa1100_direction_input,
-	.direction_output	= sa1100_direction_output,
-	.set			= sa1100_gpio_set,
-	.get			= sa1100_gpio_get,
-	.to_irq			= sa1100_to_irq,
-	.base			= 0,
-	.ngpio			= GPIO_MAX + 1,
-=======
 	return sa1100_gpio_chip(chip)->irqbase + offset;
 }
 
@@ -363,14 +305,10 @@ static const int sa1100_gpio_irqs[] __initconst = {
 	IRQ_GPIO10_SC,
 	/* Install handler for GPIO 11-27 edge detect interrupts */
 	IRQ_GPIO11_27,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init sa1100_init_gpio(void)
 {
-<<<<<<< HEAD
-	gpiochip_add(&sa1100_gpio_chip);
-=======
 	struct sa1100_gpio_chip *sgc = &sa1100_gpio_chip;
 	int i;
 
@@ -388,5 +326,4 @@ void __init sa1100_init_gpio(void)
 	for (i = 0; i < ARRAY_SIZE(sa1100_gpio_irqs); i++)
 		irq_set_chained_handler_and_data(sa1100_gpio_irqs[i],
 						 sa1100_gpio_handler, sgc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

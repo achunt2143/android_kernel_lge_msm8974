@@ -33,10 +33,6 @@
 #ifndef _DRM_CACHE_H_
 #define _DRM_CACHE_H_
 
-<<<<<<< HEAD
-void drm_clflush_pages(struct page *pages[], unsigned long num_pages);
-
-=======
 #include <linux/scatterlist.h>
 
 struct iosys_map;
@@ -89,5 +85,4 @@ void drm_memcpy_init_early(void);
 void drm_memcpy_from_wc(struct iosys_map *dst,
 			const struct iosys_map *src,
 			unsigned long len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

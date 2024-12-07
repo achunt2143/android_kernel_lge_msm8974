@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2012 Red Hat
  *
@@ -9,39 +6,17 @@
  * Copyright (C) 2009 Roberto De Ioris <roberto@unbit.it>
  * Copyright (C) 2009 Jaya Kumar <jayakumar.lkml@gmail.com>
  * Copyright (C) 2009 Bernie Thompson <bernie@plugable.com>
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License v2. See the file COPYING in the main directory of this archive for
- * more details.
- */
-#include "drmP.h"
-=======
  */
 
 #include <drm/drm.h>
 #include <drm/drm_print.h>
 #include <drm/drm_probe_helper.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "udl_drv.h"
 
 /* -BULK_SIZE as per usb-skeleton. Can we get full page and avoid overhead? */
 #define BULK_SIZE 512
 
-<<<<<<< HEAD
-#define MAX_TRANSFER (PAGE_SIZE*16 - BULK_SIZE)
-#define WRITES_IN_FLIGHT (4)
-#define MAX_VENDOR_DESCRIPTOR_SIZE 256
-
-#define GET_URB_TIMEOUT	HZ
-#define FREE_URB_TIMEOUT (HZ*2)
-
-static int udl_parse_vendor_descriptor(struct drm_device *dev,
-				       struct usb_device *usbdev)
-{
-	struct udl_device *udl = dev->dev_private;
-=======
 #define NR_USB_REQUEST_CHANNEL 0x12
 
 #define MAX_TRANSFER (PAGE_SIZE*16 - BULK_SIZE)
@@ -53,7 +28,6 @@ static struct urb *udl_get_urb_locked(struct udl_device *udl, long timeout);
 static int udl_parse_vendor_descriptor(struct udl_device *udl)
 {
 	struct usb_device *udev = udl_to_usb_device(udl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *desc;
 	char *buf;
 	char *desc_end;
@@ -65,22 +39,11 @@ static int udl_parse_vendor_descriptor(struct udl_device *udl)
 		return false;
 	desc = buf;
 
-<<<<<<< HEAD
-	total_len = usb_get_descriptor(usbdev, 0x5f, /* vendor specific */
-				    0, desc, MAX_VENDOR_DESCRIPTOR_SIZE);
-	if (total_len > 5) {
-		DRM_INFO("vendor descriptor length:%x data:%02x %02x %02x %02x" \
-			"%02x %02x %02x %02x %02x %02x %02x\n",
-			total_len, desc[0],
-			desc[1], desc[2], desc[3], desc[4], desc[5], desc[6],
-			desc[7], desc[8], desc[9], desc[10]);
-=======
 	total_len = usb_get_descriptor(udev, 0x5f, /* vendor specific */
 				    0, desc, MAX_VENDOR_DESCRIPTOR_SIZE);
 	if (total_len > 5) {
 		DRM_INFO("vendor descriptor length:%x data:%11ph\n",
 			total_len, desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((desc[0] != total_len) || /* descriptor length */
 		    (desc[1] != 0x5f) ||   /* vendor descriptor type */
@@ -96,11 +59,7 @@ static int udl_parse_vendor_descriptor(struct udl_device *udl)
 			u8 length;
 			u16 key;
 
-<<<<<<< HEAD
-			key = *((u16 *) desc);
-=======
 			key = le16_to_cpu(*((u16 *) desc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			desc += sizeof(u16);
 			length = *desc;
 			desc++;
@@ -132,14 +91,6 @@ success:
 	return true;
 }
 
-<<<<<<< HEAD
-static void udl_release_urb_work(struct work_struct *work)
-{
-	struct urb_node *unode = container_of(work, struct urb_node,
-					      release_urb_work.work);
-
-	up(&unode->dev->urbs.limit_sem);
-=======
 /*
  * Need to ensure a channel is selected before submitting URBs
  */
@@ -165,7 +116,6 @@ int udl_select_std_channel(struct udl_device *udl)
 			      USB_CTRL_SET_TIMEOUT);
 	kfree(sendbuf);
 	return ret < 0 ? ret : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void udl_urb_completion(struct urb *urb)
@@ -178,17 +128,10 @@ void udl_urb_completion(struct urb *urb)
 	if (urb->status) {
 		if (!(urb->status == -ENOENT ||
 		    urb->status == -ECONNRESET ||
-<<<<<<< HEAD
-		    urb->status == -ESHUTDOWN)) {
-			DRM_ERROR("%s - nonzero write bulk status received: %d\n",
-				__func__, urb->status);
-			atomic_set(&udl->lost_pixels, 1);
-=======
 		    urb->status == -EPROTO ||
 		    urb->status == -ESHUTDOWN)) {
 			DRM_ERROR("%s - nonzero write bulk status received: %d\n",
 				__func__, urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -199,60 +142,18 @@ void udl_urb_completion(struct urb *urb)
 	udl->urbs.available++;
 	spin_unlock_irqrestore(&udl->urbs.lock, flags);
 
-<<<<<<< HEAD
-#if 0
-	/*
-	 * When using fb_defio, we deadlock if up() is called
-	 * while another is waiting. So queue to another process.
-	 */
-	if (fb_defio)
-		schedule_delayed_work(&unode->release_urb_work, 0);
-	else
-#endif
-		up(&udl->urbs.limit_sem);
-=======
 	wake_up(&udl->urbs.sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void udl_free_urb_list(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	struct udl_device *udl = dev->dev_private;
-	int count = udl->urbs.count;
-	struct list_head *node;
-	struct urb_node *unode;
-	struct urb *urb;
-	int ret;
-	unsigned long flags;
-=======
 	struct udl_device *udl = to_udl(dev);
 	struct urb_node *unode;
 	struct urb *urb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DRM_DEBUG("Waiting for completes and freeing all render urbs\n");
 
 	/* keep waiting and freeing, until we've got 'em all */
-<<<<<<< HEAD
-	while (count--) {
-
-		/* Getting interrupted means a leak, but ok at shutdown*/
-		ret = down_interruptible(&udl->urbs.limit_sem);
-		if (ret)
-			break;
-
-		spin_lock_irqsave(&udl->urbs.lock, flags);
-
-		node = udl->urbs.list.next; /* have reserved one with sem */
-		list_del_init(node);
-
-		spin_unlock_irqrestore(&udl->urbs.lock, flags);
-
-		unode = list_entry(node, struct urb_node, entry);
-		urb = unode->urb;
-
-=======
 	while (udl->urbs.count) {
 		spin_lock_irq(&udl->urbs.lock);
 		urb = udl_get_urb_locked(udl, MAX_SCHEDULE_TIMEOUT);
@@ -261,39 +162,18 @@ static void udl_free_urb_list(struct drm_device *dev)
 		if (WARN_ON(!urb))
 			break;
 		unode = urb->context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Free each separately allocated piece */
 		usb_free_coherent(urb->dev, udl->urbs.size,
 				  urb->transfer_buffer, urb->transfer_dma);
 		usb_free_urb(urb);
-<<<<<<< HEAD
-		kfree(node);
-	}
-	udl->urbs.count = 0;
-=======
 		kfree(unode);
 	}
 
 	wake_up_all(&udl->urbs.sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int udl_alloc_urb_list(struct drm_device *dev, int count, size_t size)
 {
-<<<<<<< HEAD
-	struct udl_device *udl = dev->dev_private;
-	int i = 0;
-	struct urb *urb;
-	struct urb_node *unode;
-	char *buf;
-
-	spin_lock_init(&udl->urbs.lock);
-
-	udl->urbs.size = size;
-	INIT_LIST_HEAD(&udl->urbs.list);
-
-	while (i < count) {
-=======
 	struct udl_device *udl = to_udl(dev);
 	struct urb *urb;
 	struct urb_node *unode;
@@ -311,18 +191,11 @@ retry:
 	udl->urbs.size = size;
 
 	while (udl->urbs.count * size < wanted_size) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unode = kzalloc(sizeof(struct urb_node), GFP_KERNEL);
 		if (!unode)
 			break;
 		unode->dev = udl;
 
-<<<<<<< HEAD
-		INIT_DELAYED_WORK(&unode->release_urb_work,
-			  udl_release_urb_work);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
 			kfree(unode);
@@ -330,83 +203,26 @@ retry:
 		}
 		unode->urb = urb;
 
-<<<<<<< HEAD
-		buf = usb_alloc_coherent(udl->ddev->usbdev, MAX_TRANSFER, GFP_KERNEL,
-=======
 		buf = usb_alloc_coherent(udev, size, GFP_KERNEL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 &urb->transfer_dma);
 		if (!buf) {
 			kfree(unode);
 			usb_free_urb(urb);
-<<<<<<< HEAD
-=======
 			if (size > PAGE_SIZE) {
 				size /= 2;
 				udl_free_urb_list(dev);
 				goto retry;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		/* urb->transfer_buffer_length set to actual before submit */
-<<<<<<< HEAD
-		usb_fill_bulk_urb(urb, udl->ddev->usbdev, usb_sndbulkpipe(udl->ddev->usbdev, 1),
-			buf, size, udl_urb_completion, unode);
-=======
 		usb_fill_bulk_urb(urb, udev, usb_sndbulkpipe(udev, 1),
 				  buf, size, udl_urb_completion, unode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
 		list_add_tail(&unode->entry, &udl->urbs.list);
 
-<<<<<<< HEAD
-		i++;
-	}
-
-	sema_init(&udl->urbs.limit_sem, i);
-	udl->urbs.count = i;
-	udl->urbs.available = i;
-
-	DRM_DEBUG("allocated %d %d byte urbs\n", i, (int) size);
-
-	return i;
-}
-
-struct urb *udl_get_urb(struct drm_device *dev)
-{
-	struct udl_device *udl = dev->dev_private;
-	int ret = 0;
-	struct list_head *entry;
-	struct urb_node *unode;
-	struct urb *urb = NULL;
-	unsigned long flags;
-
-	/* Wait for an in-flight buffer to complete and get re-queued */
-	ret = down_timeout(&udl->urbs.limit_sem, GET_URB_TIMEOUT);
-	if (ret) {
-		atomic_set(&udl->lost_pixels, 1);
-		DRM_INFO("wait for urb interrupted: %x available: %d\n",
-		       ret, udl->urbs.available);
-		goto error;
-	}
-
-	spin_lock_irqsave(&udl->urbs.lock, flags);
-
-	BUG_ON(list_empty(&udl->urbs.list)); /* reserved one with limit_sem */
-	entry = udl->urbs.list.next;
-	list_del_init(entry);
-	udl->urbs.available--;
-
-	spin_unlock_irqrestore(&udl->urbs.lock, flags);
-
-	unode = list_entry(entry, struct urb_node, entry);
-	urb = unode->urb;
-
-error:
-=======
 		udl->urbs.count++;
 		udl->urbs.available++;
 	}
@@ -451,24 +267,11 @@ struct urb *udl_get_urb(struct drm_device *dev)
 	spin_lock_irq(&udl->urbs.lock);
 	urb = udl_get_urb_locked(udl, GET_URB_TIMEOUT);
 	spin_unlock_irq(&udl->urbs.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return urb;
 }
 
 int udl_submit_urb(struct drm_device *dev, struct urb *urb, size_t len)
 {
-<<<<<<< HEAD
-	struct udl_device *udl = dev->dev_private;
-	int ret;
-
-	BUG_ON(len > udl->urbs.size);
-
-	urb->transfer_buffer_length = len; /* set to actual payload len */
-	ret = usb_submit_urb(urb, GFP_ATOMIC);
-	if (ret) {
-		udl_urb_completion(urb); /* because no one else will */
-		atomic_set(&udl->lost_pixels, 1);
-=======
 	struct udl_device *udl = to_udl(dev);
 	int ret;
 
@@ -481,28 +284,11 @@ int udl_submit_urb(struct drm_device *dev, struct urb *urb, size_t len)
  error:
 	if (ret) {
 		udl_urb_completion(urb); /* because no one else will */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DRM_ERROR("usb_submit_urb error %x\n", ret);
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-int udl_driver_load(struct drm_device *dev, unsigned long flags)
-{
-	struct udl_device *udl;
-	int ret;
-
-	DRM_DEBUG("\n");
-	udl = kzalloc(sizeof(struct udl_device), GFP_KERNEL);
-	if (!udl)
-		return -ENOMEM;
-
-	udl->ddev = dev;
-	dev->dev_private = udl;
-
-	if (!udl_parse_vendor_descriptor(dev, dev->usbdev)) {
-=======
 /* wait until all pending URBs have been processed */
 void udl_sync_pending_urbs(struct drm_device *dev)
 {
@@ -533,33 +319,20 @@ int udl_init(struct udl_device *udl)
 
 	if (!udl_parse_vendor_descriptor(udl)) {
 		ret = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DRM_ERROR("firmware not recognized. Assume incompatible device\n");
 		goto err;
 	}
 
-<<<<<<< HEAD
-	if (!udl_alloc_urb_list(dev, WRITES_IN_FLIGHT, MAX_TRANSFER)) {
-		ret = -ENOMEM;
-=======
 	if (udl_select_std_channel(udl))
 		DRM_ERROR("Selecting channel failed\n");
 
 	if (!udl_alloc_urb_list(dev, WRITES_IN_FLIGHT, MAX_TRANSFER)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DRM_ERROR("udl_alloc_urb_list failed\n");
 		goto err;
 	}
 
 	DRM_DEBUG("\n");
 	ret = udl_modeset_init(dev);
-<<<<<<< HEAD
-
-	ret = udl_fbdev_init(dev);
-	return 0;
-err:
-	kfree(udl);
-=======
 	if (ret)
 		goto err;
 
@@ -571,35 +344,17 @@ err:
 	if (udl->urbs.count)
 		udl_free_urb_list(dev);
 	put_device(udl->dmadev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DRM_ERROR("%d\n", ret);
 	return ret;
 }
 
 int udl_drop_usb(struct drm_device *dev)
 {
-<<<<<<< HEAD
-	udl_free_urb_list(dev);
-	return 0;
-}
-
-int udl_driver_unload(struct drm_device *dev)
-{
-	struct udl_device *udl = dev->dev_private;
-
-	if (udl->urbs.count)
-		udl_free_urb_list(dev);
-
-	udl_fbdev_cleanup(dev);
-	udl_modeset_cleanup(dev);
-	kfree(udl);
-=======
 	struct udl_device *udl = to_udl(dev);
 
 	udl_free_urb_list(dev);
 	put_device(udl->dmadev);
 	udl->dmadev = NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

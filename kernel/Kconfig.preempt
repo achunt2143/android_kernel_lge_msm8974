@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 
 config PREEMPT_NONE_BUILD
@@ -12,7 +10,6 @@ config PREEMPT_BUILD
 	bool
 	select PREEMPTION
 	select UNINLINE_SPIN_UNLOCK if !ARCH_INLINE_SPIN_UNLOCK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 choice
 	prompt "Preemption Model"
@@ -20,10 +17,7 @@ choice
 
 config PREEMPT_NONE
 	bool "No Forced Preemption (Server)"
-<<<<<<< HEAD
-=======
 	select PREEMPT_NONE_BUILD if !PREEMPT_DYNAMIC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This is the traditional Linux preemption model, geared towards
 	  throughput. It will still provide good latencies most of the
@@ -37,11 +31,8 @@ config PREEMPT_NONE
 
 config PREEMPT_VOLUNTARY
 	bool "Voluntary Kernel Preemption (Desktop)"
-<<<<<<< HEAD
-=======
 	depends on !ARCH_NO_PREEMPT
 	select PREEMPT_VOLUNTARY_BUILD if !PREEMPT_DYNAMIC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option reduces the latency of the kernel by adding more
 	  "explicit preemption points" to the kernel code. These new
@@ -59,13 +50,8 @@ config PREEMPT_VOLUNTARY
 
 config PREEMPT
 	bool "Preemptible Kernel (Low-Latency Desktop)"
-<<<<<<< HEAD
-	select PREEMPT_COUNT
-	select UNINLINE_SPIN_UNLOCK if !ARCH_INLINE_SPIN_UNLOCK
-=======
 	depends on !ARCH_NO_PREEMPT
 	select PREEMPT_BUILD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option reduces the latency of the kernel by making
 	  all kernel code (that is not executing in a critical section)
@@ -81,12 +67,6 @@ config PREEMPT
 	  embedded system with latency requirements in the milliseconds
 	  range.
 
-<<<<<<< HEAD
-endchoice
-
-config PREEMPT_COUNT
-       bool
-=======
 config PREEMPT_RT
 	bool "Fully Preemptible Kernel (Real-Time)"
 	depends on EXPERT && ARCH_SUPPORTS_RT
@@ -154,4 +134,3 @@ config SCHED_CORE
 	  be no measurable impact on performance.
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

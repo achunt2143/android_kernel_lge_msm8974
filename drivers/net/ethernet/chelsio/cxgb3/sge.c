@@ -126,15 +126,10 @@ struct rsp_desc {		/* response queue descriptor */
 	struct rss_header rss_hdr;
 	__be32 flags;
 	__be32 len_cq;
-<<<<<<< HEAD
-	u8 imm_data[47];
-	u8 intr_gen;
-=======
 	struct_group(immediate,
 		u8 imm_data[47];
 		u8 intr_gen;
 	);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -171,14 +166,6 @@ static u8 flit_desc_map[] = {
 #endif
 };
 
-<<<<<<< HEAD
-static inline struct sge_qset *fl_to_qset(const struct sge_fl *q, int qidx)
-{
-	return container_of(q, struct sge_qset, fl[qidx]);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct sge_qset *rspq_to_qset(const struct sge_rspq *q)
 {
 	return container_of(q, struct sge_qset, rspq);
@@ -254,13 +241,8 @@ static inline void unmap_skb(struct sk_buff *skb, struct sge_txq *q,
 	frag_idx = d->fragidx;
 
 	if (frag_idx == 0 && skb_headlen(skb)) {
-<<<<<<< HEAD
-		pci_unmap_single(pdev, be64_to_cpu(sgp->addr[0]),
-				 skb_headlen(skb), PCI_DMA_TODEVICE);
-=======
 		dma_unmap_single(&pdev->dev, be64_to_cpu(sgp->addr[0]),
 				 skb_headlen(skb), DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		j = 1;
 	}
 
@@ -268,15 +250,9 @@ static inline void unmap_skb(struct sk_buff *skb, struct sge_txq *q,
 	nfrags = skb_shinfo(skb)->nr_frags;
 
 	while (frag_idx < nfrags && curflit < WR_FLITS) {
-<<<<<<< HEAD
-		pci_unmap_page(pdev, be64_to_cpu(sgp->addr[j]),
-			       skb_frag_size(&skb_shinfo(skb)->frags[frag_idx]),
-			       PCI_DMA_TODEVICE);
-=======
 		dma_unmap_page(&pdev->dev, be64_to_cpu(sgp->addr[j]),
 			       skb_frag_size(&skb_shinfo(skb)->frags[frag_idx]),
 			       DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		j ^= 1;
 		if (j == 0) {
 			sgp++;
@@ -319,11 +295,7 @@ static void free_tx_desc(struct adapter *adapter, struct sge_txq *q,
 			if (need_unmap)
 				unmap_skb(d->skb, q, cidx, pdev);
 			if (d->eop) {
-<<<<<<< HEAD
-				kfree_skb(d->skb);
-=======
 				dev_consume_skb_any(d->skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				d->skb = NULL;
 			}
 		}
@@ -380,25 +352,14 @@ static void clear_rx_desc(struct pci_dev *pdev, const struct sge_fl *q,
 	if (q->use_pages && d->pg_chunk.page) {
 		(*d->pg_chunk.p_cnt)--;
 		if (!*d->pg_chunk.p_cnt)
-<<<<<<< HEAD
-			pci_unmap_page(pdev,
-				       d->pg_chunk.mapping,
-				       q->alloc_size, PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_page(&pdev->dev, d->pg_chunk.mapping,
 				       q->alloc_size, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		put_page(d->pg_chunk.page);
 		d->pg_chunk.page = NULL;
 	} else {
-<<<<<<< HEAD
-		pci_unmap_single(pdev, dma_unmap_addr(d, dma_addr),
-				 q->buf_size, PCI_DMA_FROMDEVICE);
-=======
 		dma_unmap_single(&pdev->dev, dma_unmap_addr(d, dma_addr),
 				 q->buf_size, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(d->skb);
 		d->skb = NULL;
 	}
@@ -407,11 +368,7 @@ static void clear_rx_desc(struct pci_dev *pdev, const struct sge_fl *q,
 /**
  *	free_rx_bufs - free the Rx buffers on an SGE free list
  *	@pdev: the PCI device associated with the adapter
-<<<<<<< HEAD
- *	@rxq: the SGE free list to clean up
-=======
  *	@q: the SGE free list to clean up
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Release the buffers on an SGE free-buffer Rx queue.  HW fetching from
  *	this queue should be stopped before calling this function.
@@ -453,24 +410,15 @@ static inline int add_one_rx_buf(void *va, unsigned int len,
 {
 	dma_addr_t mapping;
 
-<<<<<<< HEAD
-	mapping = pci_map_single(pdev, va, len, PCI_DMA_FROMDEVICE);
-	if (unlikely(pci_dma_mapping_error(pdev, mapping)))
-=======
 	mapping = dma_map_single(&pdev->dev, va, len, DMA_FROM_DEVICE);
 	if (unlikely(dma_mapping_error(&pdev->dev, mapping)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	dma_unmap_addr_set(sd, dma_addr, mapping);
 
 	d->addr_lo = cpu_to_be32(mapping);
 	d->addr_hi = cpu_to_be32((u64) mapping >> 32);
-<<<<<<< HEAD
-	wmb();
-=======
 	dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d->len_gen = cpu_to_be32(V_FLD_GEN1(gen));
 	d->gen2 = cpu_to_be32(V_FLD_GEN2(gen));
 	return 0;
@@ -481,11 +429,7 @@ static inline int add_one_rx_chunk(dma_addr_t mapping, struct rx_desc *d,
 {
 	d->addr_lo = cpu_to_be32(mapping);
 	d->addr_hi = cpu_to_be32((u64) mapping >> 32);
-<<<<<<< HEAD
-	wmb();
-=======
 	dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d->len_gen = cpu_to_be32(V_FLD_GEN1(gen));
 	d->gen2 = cpu_to_be32(V_FLD_GEN2(gen));
 	return 0;
@@ -505,10 +449,6 @@ static int alloc_pg_chunk(struct adapter *adapter, struct sge_fl *q,
 		q->pg_chunk.p_cnt = q->pg_chunk.va + (PAGE_SIZE << order) -
 				    SGE_PG_RSVD;
 		q->pg_chunk.offset = 0;
-<<<<<<< HEAD
-		mapping = pci_map_page(adapter->pdev, q->pg_chunk.page,
-				       0, q->alloc_size, PCI_DMA_FROMDEVICE);
-=======
 		mapping = dma_map_page(&adapter->pdev->dev, q->pg_chunk.page,
 				       0, q->alloc_size, DMA_FROM_DEVICE);
 		if (unlikely(dma_mapping_error(&adapter->pdev->dev, mapping))) {
@@ -516,7 +456,6 @@ static int alloc_pg_chunk(struct adapter *adapter, struct sge_fl *q,
 			q->pg_chunk.page = NULL;
 			return -EIO;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q->pg_chunk.mapping = mapping;
 	}
 	sd->pg_chunk = q->pg_chunk;
@@ -550,11 +489,7 @@ static inline void ring_fl_db(struct adapter *adap, struct sge_fl *q)
 
 /**
  *	refill_fl - refill an SGE free-buffer list
-<<<<<<< HEAD
- *	@adapter: the adapter
-=======
  *	@adap: the adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@q: the free-list to refill
  *	@n: the number of new buffers to allocate
  *	@gfp: the gfp flags for allocating new buffers
@@ -583,15 +518,9 @@ nomem:				q->alloc_failed++;
 			dma_unmap_addr_set(sd, dma_addr, mapping);
 
 			add_one_rx_chunk(mapping, d, q->gen);
-<<<<<<< HEAD
-			pci_dma_sync_single_for_device(adap->pdev, mapping,
-						q->buf_size - SGE_PG_RSVD,
-						PCI_DMA_FROMDEVICE);
-=======
 			dma_sync_single_for_device(&adap->pdev->dev, mapping,
 						   q->buf_size - SGE_PG_RSVD,
 						   DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			void *buf_start;
 
@@ -635,11 +564,7 @@ static inline void __refill_fl(struct adapter *adap, struct sge_fl *fl)
 
 /**
  *	recycle_rx_buf - recycle a receive buffer
-<<<<<<< HEAD
- *	@adapter: the adapter
-=======
  *	@adap: the adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@q: the SGE free list
  *	@idx: index of buffer to recycle
  *
@@ -655,11 +580,7 @@ static void recycle_rx_buf(struct adapter *adap, struct sge_fl *q,
 	q->sdesc[q->pidx] = q->sdesc[idx];
 	to->addr_lo = from->addr_lo;	/* already big endian */
 	to->addr_hi = from->addr_hi;	/* likewise */
-<<<<<<< HEAD
-	wmb();
-=======
 	dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	to->len_gen = cpu_to_be32(V_FLD_GEN1(q->gen));
 	to->gen2 = cpu_to_be32(V_FLD_GEN2(q->gen));
 
@@ -708,10 +629,6 @@ static void *alloc_ring(struct pci_dev *pdev, size_t nelem, size_t elem_size,
 		}
 		*(void **)metadata = s;
 	}
-<<<<<<< HEAD
-	memset(p, 0, len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return p;
 }
 
@@ -744,11 +661,7 @@ static void t3_reset_qset(struct sge_qset *q)
 
 
 /**
-<<<<<<< HEAD
- *	free_qset - free the resources of an SGE queue set
-=======
  *	t3_free_qset - free the resources of an SGE queue set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@adapter: the adapter owning the queue set
  *	@q: the queue set
  *
@@ -876,15 +789,6 @@ static struct sk_buff *get_packet(struct adapter *adap, struct sge_fl *fl,
 		skb = alloc_skb(len, GFP_ATOMIC);
 		if (likely(skb != NULL)) {
 			__skb_put(skb, len);
-<<<<<<< HEAD
-			pci_dma_sync_single_for_cpu(adap->pdev,
-					    dma_unmap_addr(sd, dma_addr), len,
-					    PCI_DMA_FROMDEVICE);
-			memcpy(skb->data, sd->skb->data, len);
-			pci_dma_sync_single_for_device(adap->pdev,
-					    dma_unmap_addr(sd, dma_addr), len,
-					    PCI_DMA_FROMDEVICE);
-=======
 			dma_sync_single_for_cpu(&adap->pdev->dev,
 						dma_unmap_addr(sd, dma_addr),
 						len, DMA_FROM_DEVICE);
@@ -892,7 +796,6 @@ static struct sk_buff *get_packet(struct adapter *adap, struct sge_fl *fl,
 			dma_sync_single_for_device(&adap->pdev->dev,
 						   dma_unmap_addr(sd, dma_addr),
 						   len, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (!drop_thres)
 			goto use_orig_buf;
 recycle:
@@ -906,13 +809,8 @@ recycle:
 		goto recycle;
 
 use_orig_buf:
-<<<<<<< HEAD
-	pci_unmap_single(adap->pdev, dma_unmap_addr(sd, dma_addr),
-			 fl->buf_size, PCI_DMA_FROMDEVICE);
-=======
 	dma_unmap_single(&adap->pdev->dev, dma_unmap_addr(sd, dma_addr),
 			 fl->buf_size, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb = sd->skb;
 	skb_put(skb, len);
 	__refill_fl(adap, fl);
@@ -923,10 +821,7 @@ use_orig_buf:
  *	get_packet_pg - return the next ingress packet buffer from a free list
  *	@adap: the adapter that received the packet
  *	@fl: the SGE free list holding the packet
-<<<<<<< HEAD
-=======
  *	@q: the queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@len: the packet length including any SGE padding
  *	@drop_thres: # of remaining buffers before we start dropping packets
  *
@@ -955,20 +850,11 @@ static struct sk_buff *get_packet_pg(struct adapter *adap, struct sge_fl *fl,
 		newskb = alloc_skb(len, GFP_ATOMIC);
 		if (likely(newskb != NULL)) {
 			__skb_put(newskb, len);
-<<<<<<< HEAD
-			pci_dma_sync_single_for_cpu(adap->pdev, dma_addr, len,
-					    PCI_DMA_FROMDEVICE);
-			memcpy(newskb->data, sd->pg_chunk.va, len);
-			pci_dma_sync_single_for_device(adap->pdev, dma_addr,
-						       len,
-						       PCI_DMA_FROMDEVICE);
-=======
 			dma_sync_single_for_cpu(&adap->pdev->dev, dma_addr,
 						len, DMA_FROM_DEVICE);
 			memcpy(newskb->data, sd->pg_chunk.va, len);
 			dma_sync_single_for_device(&adap->pdev->dev, dma_addr,
 						   len, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (!drop_thres)
 			return NULL;
 recycle:
@@ -992,23 +878,12 @@ recycle:
 		goto recycle;
 	}
 
-<<<<<<< HEAD
-	pci_dma_sync_single_for_cpu(adap->pdev, dma_addr, len,
-				    PCI_DMA_FROMDEVICE);
-	(*sd->pg_chunk.p_cnt)--;
-	if (!*sd->pg_chunk.p_cnt && sd->pg_chunk.page != fl->pg_chunk.page)
-		pci_unmap_page(adap->pdev,
-			       sd->pg_chunk.mapping,
-			       fl->alloc_size,
-			       PCI_DMA_FROMDEVICE);
-=======
 	dma_sync_single_for_cpu(&adap->pdev->dev, dma_addr, len,
 				DMA_FROM_DEVICE);
 	(*sd->pg_chunk.p_cnt)--;
 	if (!*sd->pg_chunk.p_cnt && sd->pg_chunk.page != fl->pg_chunk.page)
 		dma_unmap_page(&adap->pdev->dev, sd->pg_chunk.mapping,
 			       fl->alloc_size, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb) {
 		__skb_put(newskb, SGE_RX_PULL_LEN);
 		memcpy(newskb->data, sd->pg_chunk.va, SGE_RX_PULL_LEN);
@@ -1047,12 +922,8 @@ static inline struct sk_buff *get_imm_packet(const struct rsp_desc *resp)
 
 	if (skb) {
 		__skb_put(skb, IMMED_PKT_SIZE);
-<<<<<<< HEAD
-		skb_copy_to_linear_data(skb, resp->imm_data, IMMED_PKT_SIZE);
-=======
 		BUILD_BUG_ON(IMMED_PKT_SIZE != sizeof(resp->immediate));
 		skb_copy_to_linear_data(skb, &resp->immediate, IMMED_PKT_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return skb;
 }
@@ -1077,10 +948,6 @@ static inline unsigned int calc_tx_descs(const struct sk_buff *skb)
 	return flits_to_desc(flits);
 }
 
-<<<<<<< HEAD
-/**
- *	make_sgl - populate a scatter/gather list for a packet
-=======
 /*	map_skb - map a packet main body and its page fragments
  *	@pdev: the PCI device
  *	@skb: the packet
@@ -1127,31 +994,10 @@ out_err:
 
 /**
  *	write_sgl - populate a scatter/gather list for a packet
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@skb: the packet
  *	@sgp: the SGL to populate
  *	@start: start address of skb main body data to include in the SGL
  *	@len: length of skb main body data to include in the SGL
-<<<<<<< HEAD
- *	@pdev: the PCI device
- *
- *	Generates a scatter/gather list for the buffers that make up a packet
- *	and returns the SGL size in 8-byte words.  The caller must size the SGL
- *	appropriately.
- */
-static inline unsigned int make_sgl(const struct sk_buff *skb,
-				    struct sg_ent *sgp, unsigned char *start,
-				    unsigned int len, struct pci_dev *pdev)
-{
-	dma_addr_t mapping;
-	unsigned int i, j = 0, nfrags;
-
-	if (len) {
-		mapping = pci_map_single(pdev, start, len, PCI_DMA_TODEVICE);
-		sgp->len[0] = cpu_to_be32(len);
-		sgp->addr[0] = cpu_to_be64(mapping);
-		j = 1;
-=======
  *	@addr: the list of the mapped addresses
  *
  *	Copies the scatter/gather list for the buffers that make up a packet
@@ -1167,22 +1013,14 @@ static inline unsigned int write_sgl(const struct sk_buff *skb,
 	if (len) {
 		sgp->len[0] = cpu_to_be32(len);
 		sgp->addr[j++] = cpu_to_be64(addr[k++]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nfrags = skb_shinfo(skb)->nr_frags;
 	for (i = 0; i < nfrags; i++) {
 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 
-<<<<<<< HEAD
-		mapping = skb_frag_dma_map(&pdev->dev, frag, 0, skb_frag_size(frag),
-					   DMA_TO_DEVICE);
-		sgp->len[j] = cpu_to_be32(skb_frag_size(frag));
-		sgp->addr[j] = cpu_to_be64(mapping);
-=======
 		sgp->len[j] = cpu_to_be32(skb_frag_size(frag));
 		sgp->addr[j] = cpu_to_be64(addr[k++]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		j ^= 1;
 		if (j == 0)
 			++sgp;
@@ -1268,11 +1106,7 @@ static void write_wr_hdr_sgl(unsigned int ndesc, struct sk_buff *skb,
 		sd->eop = 1;
 		wrp->wr_hi = htonl(F_WR_SOP | F_WR_EOP | V_WR_DATATYPE(1) |
 				   V_WR_SGLSFLT(flits)) | wr_hi;
-<<<<<<< HEAD
-		wmb();
-=======
 		dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wrp->wr_lo = htonl(V_WR_LEN(flits + sgl_flits) |
 				   V_WR_GEN(gen)) | wr_lo;
 		wr_gen2(d, gen);
@@ -1318,11 +1152,7 @@ static void write_wr_hdr_sgl(unsigned int ndesc, struct sk_buff *skb,
 		}
 		sd->eop = 1;
 		wrp->wr_hi |= htonl(F_WR_EOP);
-<<<<<<< HEAD
-		wmb();
-=======
 		dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wp->wr_lo = htonl(V_WR_LEN(WR_FLITS) | V_WR_GEN(ogen)) | wr_lo;
 		wr_gen2((struct tx_desc *)wp, ogen);
 		WARN_ON(ndesc != 0);
@@ -1339,10 +1169,7 @@ static void write_wr_hdr_sgl(unsigned int ndesc, struct sk_buff *skb,
  *	@q: the Tx queue
  *	@ndesc: number of descriptors the packet will occupy
  *	@compl: the value of the COMPL bit to use
-<<<<<<< HEAD
-=======
  *	@addr: address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Generate a TX_PKT work request to send the supplied packet.
  */
@@ -1350,11 +1177,7 @@ static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 			    const struct port_info *pi,
 			    unsigned int pidx, unsigned int gen,
 			    struct sge_txq *q, unsigned int ndesc,
-<<<<<<< HEAD
-			    unsigned int compl)
-=======
 			    unsigned int compl, const dma_addr_t *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int flits, sgl_flits, cntrl, tso_info;
 	struct sg_ent *sgp, sgl[MAX_SKB_FRAGS / 2 + 1];
@@ -1364,13 +1187,8 @@ static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 	cpl->len = htonl(skb->len);
 	cntrl = V_TXPKT_INTF(pi->port_id);
 
-<<<<<<< HEAD
-	if (vlan_tx_tag_present(skb))
-		cntrl |= F_TXPKT_VLAN_VLD | V_TXPKT_VLAN(vlan_tx_tag_get(skb));
-=======
 	if (skb_vlan_tag_present(skb))
 		cntrl |= F_TXPKT_VLAN_VLD | V_TXPKT_VLAN(skb_vlan_tag_get(skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tso_info = V_LSO_MSS(skb_shinfo(skb)->gso_size);
 	if (tso_info) {
@@ -1405,19 +1223,11 @@ static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 			cpl->wr.wr_hi = htonl(V_WR_BCNTLFLT(skb->len & 7) |
 					      V_WR_OP(FW_WROPCODE_TUNNEL_TX_PKT)
 					      | F_WR_SOP | F_WR_EOP | compl);
-<<<<<<< HEAD
-			wmb();
-			cpl->wr.wr_lo = htonl(V_WR_LEN(flits) | V_WR_GEN(gen) |
-					      V_WR_TID(q->token));
-			wr_gen2(d, gen);
-			kfree_skb(skb);
-=======
 			dma_wmb();
 			cpl->wr.wr_lo = htonl(V_WR_LEN(flits) | V_WR_GEN(gen) |
 					      V_WR_TID(q->token));
 			wr_gen2(d, gen);
 			dev_consume_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 
@@ -1425,11 +1235,7 @@ static void write_tx_pkt_wr(struct adapter *adap, struct sk_buff *skb,
 	}
 
 	sgp = ndesc == 1 ? (struct sg_ent *)&d->flit[flits] : sgl;
-<<<<<<< HEAD
-	sgl_flits = make_sgl(skb, sgp, skb->data, skb_headlen(skb), adap->pdev);
-=======
 	sgl_flits = write_sgl(skb, sgp, skb->data, skb_headlen(skb), addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_wr_hdr_sgl(ndesc, skb, d, pidx, q, sgl, flits, sgl_flits, gen,
 			 htonl(V_WR_OP(FW_WROPCODE_TUNNEL_TX_PKT) | compl),
@@ -1445,11 +1251,7 @@ static inline void t3_stop_tx_queue(struct netdev_queue *txq,
 }
 
 /**
-<<<<<<< HEAD
- *	eth_xmit - add a packet to the Ethernet Tx queue
-=======
  *	t3_eth_xmit - add a packet to the Ethernet Tx queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@skb: the packet
  *	@dev: the egress net device
  *
@@ -1464,21 +1266,14 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct netdev_queue *txq;
 	struct sge_qset *qs;
 	struct sge_txq *q;
-<<<<<<< HEAD
-=======
 	dma_addr_t addr[MAX_SKB_FRAGS + 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The chip min packet length is 9 octets but play safe and reject
 	 * anything shorter than an Ethernet header.
 	 */
 	if (unlikely(skb->len < ETH_HLEN)) {
-<<<<<<< HEAD
-		dev_kfree_skb(skb);
-=======
 		dev_kfree_skb_any(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 	}
 
@@ -1500,8 +1295,6 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_BUSY;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Check if ethernet packet can't be sent as immediate data */
 	if (skb->len > (WR_LEN - sizeof(struct cpl_tx_pkt))) {
 		if (unlikely(map_skb(adap->pdev, skb, addr) < 0)) {
@@ -1510,7 +1303,6 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->in_use += ndesc;
 	if (unlikely(credits - ndesc < q->stop_thres)) {
 		t3_stop_tx_queue(txq, qs, q);
@@ -1534,19 +1326,11 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	/* update port statistics */
-<<<<<<< HEAD
-	if (skb->ip_summed == CHECKSUM_COMPLETE)
-		qs->port_stats[SGE_PSTAT_TX_CSUM]++;
-	if (skb_shinfo(skb)->gso_size)
-		qs->port_stats[SGE_PSTAT_TSO]++;
-	if (vlan_tx_tag_present(skb))
-=======
 	if (skb->ip_summed == CHECKSUM_PARTIAL)
 		qs->port_stats[SGE_PSTAT_TX_CSUM]++;
 	if (skb_shinfo(skb)->gso_size)
 		qs->port_stats[SGE_PSTAT_TSO]++;
 	if (skb_vlan_tag_present(skb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qs->port_stats[SGE_PSTAT_VLANINS]++;
 
 	/*
@@ -1576,11 +1360,7 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (likely(!skb_shared(skb)))
 		skb_orphan(skb);
 
-<<<<<<< HEAD
-	write_tx_pkt_wr(adap, skb, pi, pidx, gen, q, ndesc, compl);
-=======
 	write_tx_pkt_wr(adap, skb, pi, pidx, gen, q, ndesc, compl, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	check_ring_tx_db(adap, q);
 	return NETDEV_TX_OK;
 }
@@ -1610,11 +1390,7 @@ static inline void write_imm(struct tx_desc *d, struct sk_buff *skb,
 
 	to->wr_hi = from->wr_hi | htonl(F_WR_SOP | F_WR_EOP |
 					V_WR_BCNTLFLT(len & 7));
-<<<<<<< HEAD
-	wmb();
-=======
 	dma_wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	to->wr_lo = from->wr_lo | htonl(V_WR_GEN(gen) |
 					V_WR_LEN((len + 7) / 8));
 	wr_gen2(d, gen);
@@ -1651,11 +1427,7 @@ static inline int check_desc_avail(struct adapter *adap, struct sge_txq *q,
 		struct sge_qset *qs = txq_to_qset(q, qid);
 
 		set_bit(qid, &qs->txq_stopped);
-<<<<<<< HEAD
-		smp_mb__after_clear_bit();
-=======
 		smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (should_restart_tx(q) &&
 		    test_and_clear_bit(qid, &qs->txq_stopped))
@@ -1741,16 +1513,6 @@ static int ctrl_xmit(struct adapter *adap, struct sge_txq *q,
 
 /**
  *	restart_ctrlq - restart a suspended control queue
-<<<<<<< HEAD
- *	@qs: the queue set cotaining the control queue
- *
- *	Resumes transmission on a suspended Tx control queue.
- */
-static void restart_ctrlq(unsigned long data)
-{
-	struct sk_buff *skb;
-	struct sge_qset *qs = (struct sge_qset *)data;
-=======
  *	@w: pointer to the work associated with this handler
  *
  *	Resumes transmission on a suspended Tx control queue.
@@ -1760,7 +1522,6 @@ static void restart_ctrlq(struct work_struct *w)
 	struct sk_buff *skb;
 	struct sge_qset *qs = container_of(w, struct sge_qset,
 					   txq[TXQ_CTRL].qresume_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sge_txq *q = &qs->txq[TXQ_CTRL];
 
 	spin_lock(&q->lock);
@@ -1780,11 +1541,7 @@ static void restart_ctrlq(struct work_struct *w)
 
 	if (!skb_queue_empty(&q->sendq)) {
 		set_bit(TXQ_CTRL, &qs->txq_stopped);
-<<<<<<< HEAD
-		smp_mb__after_clear_bit();
-=======
 		smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (should_restart_tx(q) &&
 		    test_and_clear_bit(TXQ_CTRL, &qs->txq_stopped))
@@ -1829,17 +1586,6 @@ static void deferred_unmap_destructor(struct sk_buff *skb)
 	dui = (struct deferred_unmap_info *)skb->head;
 	p = dui->addr;
 
-<<<<<<< HEAD
-	if (skb->tail - skb->transport_header)
-		pci_unmap_single(dui->pdev, *p++,
-				 skb->tail - skb->transport_header,
-				 PCI_DMA_TODEVICE);
-
-	si = skb_shinfo(skb);
-	for (i = 0; i < si->nr_frags; i++)
-		pci_unmap_page(dui->pdev, *p++, skb_frag_size(&si->frags[i]),
-			       PCI_DMA_TODEVICE);
-=======
 	if (skb_tail_pointer(skb) - skb_transport_header(skb))
 		dma_unmap_single(&dui->pdev->dev, *p++,
 				 skb_tail_pointer(skb) - skb_transport_header(skb),
@@ -1849,7 +1595,6 @@ static void deferred_unmap_destructor(struct sk_buff *skb)
 	for (i = 0; i < si->nr_frags; i++)
 		dma_unmap_page(&dui->pdev->dev, *p++,
 			       skb_frag_size(&si->frags[i]), DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void setup_deferred_unmapping(struct sk_buff *skb, struct pci_dev *pdev,
@@ -1876,22 +1621,15 @@ static void setup_deferred_unmapping(struct sk_buff *skb, struct pci_dev *pdev,
  *	@pidx: index of the first Tx descriptor to write
  *	@gen: the generation value to use
  *	@ndesc: number of descriptors the packet will occupy
-<<<<<<< HEAD
-=======
  *	@addr: the address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Write an offload work request to send the supplied packet.  The packet
  *	data already carry the work request with most fields populated.
  */
 static void write_ofld_wr(struct adapter *adap, struct sk_buff *skb,
 			  struct sge_txq *q, unsigned int pidx,
-<<<<<<< HEAD
-			  unsigned int gen, unsigned int ndesc)
-=======
 			  unsigned int gen, unsigned int ndesc,
 			  const dma_addr_t *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int sgl_flits, flits;
 	struct work_request_hdr *from;
@@ -1912,15 +1650,9 @@ static void write_ofld_wr(struct adapter *adap, struct sk_buff *skb,
 
 	flits = skb_transport_offset(skb) / 8;
 	sgp = ndesc == 1 ? (struct sg_ent *)&d->flit[flits] : sgl;
-<<<<<<< HEAD
-	sgl_flits = make_sgl(skb, sgp, skb_transport_header(skb),
-			     skb->tail - skb->transport_header,
-			     adap->pdev);
-=======
 	sgl_flits = write_sgl(skb, sgp, skb_transport_header(skb),
 			      skb_tail_pointer(skb) - skb_transport_header(skb),
 			      addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (need_skb_unmap()) {
 		setup_deferred_unmapping(skb, adap->pdev, sgp, sgl_flits);
 		skb->destructor = deferred_unmap_destructor;
@@ -1946,11 +1678,7 @@ static inline unsigned int calc_tx_descs_ofld(const struct sk_buff *skb)
 
 	flits = skb_transport_offset(skb) / 8;	/* headers */
 	cnt = skb_shinfo(skb)->nr_frags;
-<<<<<<< HEAD
-	if (skb->tail != skb->transport_header)
-=======
 	if (skb_tail_pointer(skb) != skb_transport_header(skb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cnt++;
 	return flits_to_desc(flits + sgl_len(cnt));
 }
@@ -1982,15 +1710,12 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 		goto again;
 	}
 
-<<<<<<< HEAD
-=======
 	if (!immediate(skb) &&
 	    map_skb(adap->pdev, skb, (dma_addr_t *)skb->head)) {
 		spin_unlock(&q->lock);
 		return NET_XMIT_SUCCESS;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gen = q->gen;
 	q->in_use += ndesc;
 	pidx = q->pidx;
@@ -2001,30 +1726,13 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 	}
 	spin_unlock(&q->lock);
 
-<<<<<<< HEAD
-	write_ofld_wr(adap, skb, q, pidx, gen, ndesc);
-=======
 	write_ofld_wr(adap, skb, q, pidx, gen, ndesc, (dma_addr_t *)skb->head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	check_ring_tx_db(adap, q);
 	return NET_XMIT_SUCCESS;
 }
 
 /**
  *	restart_offloadq - restart a suspended offload queue
-<<<<<<< HEAD
- *	@qs: the queue set cotaining the offload queue
- *
- *	Resumes transmission on a suspended Tx offload queue.
- */
-static void restart_offloadq(unsigned long data)
-{
-	struct sk_buff *skb;
-	struct sge_qset *qs = (struct sge_qset *)data;
-	struct sge_txq *q = &qs->txq[TXQ_OFLD];
-	const struct port_info *pi = netdev_priv(qs->netdev);
-	struct adapter *adap = pi->adapter;
-=======
  *	@w: pointer to the work associated with this handler
  *
  *	Resumes transmission on a suspended Tx offload queue.
@@ -2038,7 +1746,6 @@ static void restart_offloadq(struct work_struct *w)
 	const struct port_info *pi = netdev_priv(qs->netdev);
 	struct adapter *adap = pi->adapter;
 	unsigned int written = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&q->lock);
 again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
@@ -2049,11 +1756,7 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 
 		if (unlikely(q->size - q->in_use < ndesc)) {
 			set_bit(TXQ_OFLD, &qs->txq_stopped);
-<<<<<<< HEAD
-			smp_mb__after_clear_bit();
-=======
 			smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (should_restart_tx(q) &&
 			    test_and_clear_bit(TXQ_OFLD, &qs->txq_stopped))
@@ -2062,21 +1765,15 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 			break;
 		}
 
-<<<<<<< HEAD
-=======
 		if (!immediate(skb) &&
 		    map_skb(adap->pdev, skb, (dma_addr_t *)skb->head))
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gen = q->gen;
 		q->in_use += ndesc;
 		pidx = q->pidx;
 		q->pidx += ndesc;
-<<<<<<< HEAD
-=======
 		written += ndesc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (q->pidx >= q->size) {
 			q->pidx -= q->size;
 			q->gen ^= 1;
@@ -2084,12 +1781,8 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 		__skb_unlink(skb, &q->sendq);
 		spin_unlock(&q->lock);
 
-<<<<<<< HEAD
-		write_ofld_wr(adap, skb, q, pidx, gen, ndesc);
-=======
 		write_ofld_wr(adap, skb, q, pidx, gen, ndesc,
 			      (dma_addr_t *)skb->head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&q->lock);
 	}
 	spin_unlock(&q->lock);
@@ -2099,14 +1792,9 @@ again:	reclaim_completed_tx(adap, q, TX_RECLAIM_CHUNK);
 	set_bit(TXQ_LAST_PKT_DB, &q->flags);
 #endif
 	wmb();
-<<<<<<< HEAD
-	t3_write_reg(adap, A_SG_KDOORBELL,
-		     F_SELEGRCNTX | V_EGRCNTX(q->cntxt_id));
-=======
 	if (likely(written))
 		t3_write_reg(adap, A_SG_KDOORBELL,
 			     F_SELEGRCNTX | V_EGRCNTX(q->cntxt_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2196,11 +1884,7 @@ static inline void deliver_partial_bundle(struct t3cdev *tdev,
 
 /**
  *	ofld_poll - NAPI handler for offload packets in interrupt mode
-<<<<<<< HEAD
- *	@dev: the network device doing the polling
-=======
  *	@napi: the network device doing the polling
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@budget: polling budget
  *
  *	The NAPI handler for offload packets when a response queue is serviced
@@ -2225,11 +1909,7 @@ static int ofld_poll(struct napi_struct *napi, int budget)
 		__skb_queue_head_init(&queue);
 		skb_queue_splice_init(&q->rx_queue, &queue);
 		if (skb_queue_empty(&queue)) {
-<<<<<<< HEAD
-			napi_complete(napi);
-=======
 			napi_complete_done(napi, work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irq(&q->lock);
 			return work_done;
 		}
@@ -2271,11 +1951,7 @@ static int ofld_poll(struct napi_struct *napi, int budget)
  *	@rx_gather: a gather list of packets if we are building a bundle
  *	@gather_idx: index of the next available slot in the bundle
  *
-<<<<<<< HEAD
- *	Process an ingress offload pakcet and add it to the offload ingress
-=======
  *	Process an ingress offload packet and add it to the offload ingress
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	queue. 	Returns the index of the next available slot in the bundle.
  */
 static inline int rx_offload(struct t3cdev *tdev, struct sge_rspq *rq,
@@ -2320,35 +1996,23 @@ static void restart_tx(struct sge_qset *qs)
 	    should_restart_tx(&qs->txq[TXQ_OFLD]) &&
 	    test_and_clear_bit(TXQ_OFLD, &qs->txq_stopped)) {
 		qs->txq[TXQ_OFLD].restarts++;
-<<<<<<< HEAD
-		tasklet_schedule(&qs->txq[TXQ_OFLD].qresume_tsk);
-=======
 
 		/* The work can be quite lengthy so we use driver's own queue */
 		queue_work(cxgb3_wq, &qs->txq[TXQ_OFLD].qresume_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (test_bit(TXQ_CTRL, &qs->txq_stopped) &&
 	    should_restart_tx(&qs->txq[TXQ_CTRL]) &&
 	    test_and_clear_bit(TXQ_CTRL, &qs->txq_stopped)) {
 		qs->txq[TXQ_CTRL].restarts++;
-<<<<<<< HEAD
-		tasklet_schedule(&qs->txq[TXQ_CTRL].qresume_tsk);
-=======
 
 		/* The work can be quite lengthy so we use driver's own queue */
 		queue_work(cxgb3_wq, &qs->txq[TXQ_CTRL].qresume_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
  *	cxgb3_arp_process - process an ARP request probing a private IP address
-<<<<<<< HEAD
- *	@adapter: the adapter
-=======
  *	@pi: the port info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@skb: the skbuff containing the ARP request
  *
  *	Check if the ARP request is probing the private IP address
@@ -2410,16 +2074,10 @@ static void cxgb3_process_iscsi_prov_pack(struct port_info *pi,
  *	@adap: the adapter
  *	@rq: the response queue that received the packet
  *	@skb: the packet
-<<<<<<< HEAD
- *	@pad: amount of padding at the start of the buffer
- *
- *	Process an ingress ethernet pakcet and deliver it to the stack.
-=======
  *	@pad: padding
  *	@lro: large receive offload
  *
  *	Process an ingress ethernet packet and deliver it to the stack.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The padding is 2 if the packet was delivered in an Rx buffer and 0
  *	if it was immediate data in a response.
  */
@@ -2443,11 +2101,7 @@ static void rx_eth(struct adapter *adap, struct sge_rspq *rq,
 
 	if (p->vlan_valid) {
 		qs->port_stats[SGE_PSTAT_VLANEX]++;
-<<<<<<< HEAD
-		__vlan_hwaccel_put_tag(skb, ntohs(p->vlan));
-=======
 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), ntohs(p->vlan));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (rq->polling) {
 		if (lro)
@@ -2484,11 +2138,7 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
 	struct port_info *pi = netdev_priv(qs->netdev);
 	struct sk_buff *skb = NULL;
 	struct cpl_rx_pkt *cpl;
-<<<<<<< HEAD
-	struct skb_frag_struct *rx_frag;
-=======
 	skb_frag_t *rx_frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr_frags;
 	int offset = 0;
 
@@ -2499,19 +2149,6 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
 
 	fl->credits--;
 
-<<<<<<< HEAD
-	pci_dma_sync_single_for_cpu(adap->pdev,
-				    dma_unmap_addr(sd, dma_addr),
-				    fl->buf_size - SGE_PG_RSVD,
-				    PCI_DMA_FROMDEVICE);
-
-	(*sd->pg_chunk.p_cnt)--;
-	if (!*sd->pg_chunk.p_cnt && sd->pg_chunk.page != fl->pg_chunk.page)
-		pci_unmap_page(adap->pdev,
-			       sd->pg_chunk.mapping,
-			       fl->alloc_size,
-			       PCI_DMA_FROMDEVICE);
-=======
 	dma_sync_single_for_cpu(&adap->pdev->dev,
 				dma_unmap_addr(sd, dma_addr),
 				fl->buf_size - SGE_PG_RSVD, DMA_FROM_DEVICE);
@@ -2520,7 +2157,6 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
 	if (!*sd->pg_chunk.p_cnt && sd->pg_chunk.page != fl->pg_chunk.page)
 		dma_unmap_page(&adap->pdev->dev, sd->pg_chunk.mapping,
 			       fl->alloc_size, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!skb) {
 		put_page(sd->pg_chunk.page);
@@ -2548,14 +2184,8 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
 	len -= offset;
 
 	rx_frag += nr_frags;
-<<<<<<< HEAD
-	__skb_frag_set_page(rx_frag, sd->pg_chunk.page);
-	rx_frag->page_offset = sd->pg_chunk.offset + offset;
-	skb_frag_size_set(rx_frag, len);
-=======
 	skb_frag_fill_page_desc(rx_frag, sd->pg_chunk.page,
 				sd->pg_chunk.offset + offset, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb->len += len;
 	skb->data_len += len;
@@ -2567,15 +2197,10 @@ static void lro_add_page(struct adapter *adap, struct sge_qset *qs,
 
 	skb_record_rx_queue(skb, qs - &adap->sge.qs[pi->first_qset]);
 
-<<<<<<< HEAD
-	if (cpl->vlan_valid)
-		__vlan_hwaccel_put_tag(skb, ntohs(cpl->vlan));
-=======
 	if (cpl->vlan_valid) {
 		qs->port_stats[SGE_PSTAT_VLANEX]++;
 		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), ntohs(cpl->vlan));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_gro_frags(&qs->napi);
 }
 
@@ -2616,11 +2241,7 @@ static inline void handle_rsp_cntrl_info(struct sge_qset *qs, u32 flags)
 
 /**
  *	check_ring_db - check if we need to ring any doorbells
-<<<<<<< HEAD
- *	@adapter: the adapter
-=======
  *	@adap: the adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@qs: the queue set whose Tx queues are to be examined
  *	@sleeping: indicates which Tx queue sent GTS
  *
@@ -2717,11 +2338,7 @@ static int process_responses(struct adapter *adap, struct sge_qset *qs,
 		u32 len, flags;
 		__be32 rss_hi, rss_lo;
 
-<<<<<<< HEAD
-		rmb();
-=======
 		dma_rmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eth = r->rss_hdr.opcode == CPL_RX_PKT;
 		rss_hi = *(const __be32 *)r;
 		rss_lo = r->rss_hdr.rss_hash_val;
@@ -2732,11 +2349,7 @@ static int process_responses(struct adapter *adap, struct sge_qset *qs,
 			if (!skb)
 				goto no_mem;
 
-<<<<<<< HEAD
-			memcpy(__skb_put(skb, AN_PKT_SIZE), r, AN_PKT_SIZE);
-=======
 			__skb_put_data(skb, r, AN_PKT_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb->data[0] = CPL_ASYNC_NOTIF;
 			rss_hi = htonl(CPL_ASYNC_NOTIF << 24);
 			q->async_notif++;
@@ -2761,24 +2374,13 @@ no_mem:
 			if (fl->use_pages) {
 				void *addr = fl->sdesc[fl->cidx].pg_chunk.va;
 
-<<<<<<< HEAD
-				prefetch(addr);
-#if L1_CACHE_BYTES < 128
-				prefetch(addr + L1_CACHE_BYTES);
-#endif
-=======
 				net_prefetch(addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__refill_fl(adap, fl);
 				if (lro > 0) {
 					lro_add_page(adap, qs, fl,
 						     G_RSPD_LEN(len),
 						     flags & F_RSPD_EOP);
-<<<<<<< HEAD
-					 goto next_fl;
-=======
 					goto next_fl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 
 				skb = get_packet_pg(adap, fl, q,
@@ -2876,11 +2478,7 @@ static int napi_rx_handler(struct napi_struct *napi, int budget)
 	int work_done = process_responses(adap, qs, budget);
 
 	if (likely(work_done < budget)) {
-<<<<<<< HEAD
-		napi_complete(napi);
-=======
 		napi_complete_done(napi, work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Because we don't atomically flush the following
@@ -2903,17 +2501,6 @@ static int napi_rx_handler(struct napi_struct *napi, int budget)
 	return work_done;
 }
 
-<<<<<<< HEAD
-/*
- * Returns true if the device is already scheduled for polling.
- */
-static inline int napi_is_scheduled(struct napi_struct *napi)
-{
-	return test_bit(NAPI_STATE_SCHED, &napi->state);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	process_pure_responses - process pure responses from a response queue
  *	@adap: the adapter
@@ -2957,11 +2544,7 @@ static int process_pure_responses(struct adapter *adap, struct sge_qset *qs,
 		}
 		if (!is_new_response(r, q))
 			break;
-<<<<<<< HEAD
-		rmb();
-=======
 		dma_rmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (is_pure_response(r));
 
 	if (sleeping)
@@ -2996,11 +2579,7 @@ static inline int handle_responses(struct adapter *adap, struct sge_rspq *q)
 
 	if (!is_new_response(r, q))
 		return -1;
-<<<<<<< HEAD
-	rmb();
-=======
 	dma_rmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_pure_response(r) && process_pure_responses(adap, qs, r) == 0) {
 		t3_write_reg(adap, A_SG_GTS, V_RSPQ(q->cntxt_id) |
 			     V_NEWTIMER(q->holdoff_tmr) | V_NEWINDEX(q->cidx));
@@ -3087,16 +2666,7 @@ static int rspq_check_napi(struct sge_qset *qs)
 {
 	struct sge_rspq *q = &qs->rspq;
 
-<<<<<<< HEAD
-	if (!napi_is_scheduled(&qs->napi) &&
-	    is_new_response(&q->desc[q->cidx], q)) {
-		napi_schedule(&qs->napi);
-		return 1;
-	}
-	return 0;
-=======
 	return is_new_response(&q->desc[q->cidx], q) && napi_schedule(&qs->napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3318,11 +2888,7 @@ void t3_sge_err_intr_handler(struct adapter *adapter)
 
 /**
  *	sge_timer_tx - perform periodic maintenance of an SGE qset
-<<<<<<< HEAD
- *	@data: the SGE queue set to maintain
-=======
  *	@t: a timer list containing the SGE queue set to maintain
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Runs periodically from a timer to perform maintenance of an SGE queue
  *	set.  It performs two tasks:
@@ -3338,15 +2904,9 @@ void t3_sge_err_intr_handler(struct adapter *adapter)
  *	bother cleaning them up here.
  *
  */
-<<<<<<< HEAD
-static void sge_timer_tx(unsigned long data)
-{
-	struct sge_qset *qs = (struct sge_qset *)data;
-=======
 static void sge_timer_tx(struct timer_list *t)
 {
 	struct sge_qset *qs = from_timer(qs, t, tx_reclaim_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct port_info *pi = netdev_priv(qs->netdev);
 	struct adapter *adap = pi->adapter;
 	unsigned int tbd[SGE_TXQ_PER_SET] = {0, 0};
@@ -3370,15 +2930,9 @@ static void sge_timer_tx(struct timer_list *t)
 	mod_timer(&qs->tx_reclaim_timer, jiffies + next_period);
 }
 
-<<<<<<< HEAD
-/*
- *	sge_timer_rx - perform periodic maintenance of an SGE qset
- *	@data: the SGE queue set to maintain
-=======
 /**
  *	sge_timer_rx - perform periodic maintenance of an SGE qset
  *	@t: the timer list containing the SGE queue set to maintain
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	a) Replenishes Rx queues that have run out due to memory shortage.
  *	Normally new Rx buffers are added when existing ones are consumed but
@@ -3390,17 +2944,10 @@ static void sge_timer_tx(struct timer_list *t)
  *	starved.
  *
  */
-<<<<<<< HEAD
-static void sge_timer_rx(unsigned long data)
-{
-	spinlock_t *lock;
-	struct sge_qset *qs = (struct sge_qset *)data;
-=======
 static void sge_timer_rx(struct timer_list *t)
 {
 	spinlock_t *lock;
 	struct sge_qset *qs = from_timer(qs, t, rx_reclaim_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct port_info *pi = netdev_priv(qs->netdev);
 	struct adapter *adap = pi->adapter;
 	u32 status;
@@ -3463,11 +3010,7 @@ void t3_update_qset_coalesce(struct sge_qset *qs, const struct qset_params *p)
  *	@irq_vec_idx: the IRQ vector index for response queue interrupts
  *	@p: configuration parameters for this queue set
  *	@ntxq: number of Tx queues for the queue set
-<<<<<<< HEAD
- *	@netdev: net device associated with this queue set
-=======
  *	@dev: net device associated with this queue set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@netdevq: net device TX queue associated with this queue set
  *
  *	Allocate resources and initialize an SGE queue set.  A queue set
@@ -3484,13 +3027,8 @@ int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
 	struct sge_qset *q = &adapter->sge.qs[id];
 
 	init_qset_cntxt(q, id);
-<<<<<<< HEAD
-	setup_timer(&q->tx_reclaim_timer, sge_timer_tx, (unsigned long)q);
-	setup_timer(&q->rx_reclaim_timer, sge_timer_rx, (unsigned long)q);
-=======
 	timer_setup(&q->tx_reclaim_timer, sge_timer_tx, 0);
 	timer_setup(&q->rx_reclaim_timer, sge_timer_rx, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	q->fl[0].desc = alloc_ring(adapter->pdev, p->fl_size,
 				   sizeof(struct rx_desc),
@@ -3532,15 +3070,8 @@ int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
 		skb_queue_head_init(&q->txq[i].sendq);
 	}
 
-<<<<<<< HEAD
-	tasklet_init(&q->txq[TXQ_OFLD].qresume_tsk, restart_offloadq,
-		     (unsigned long)q);
-	tasklet_init(&q->txq[TXQ_CTRL].qresume_tsk, restart_ctrlq,
-		     (unsigned long)q);
-=======
 	INIT_WORK(&q->txq[TXQ_OFLD].qresume_task, restart_offloadq);
 	INIT_WORK(&q->txq[TXQ_CTRL].qresume_task, restart_ctrlq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	q->fl[0].gen = q->fl[1].gen = 1;
 	q->fl[0].size = p->fl_size;
@@ -3629,10 +3160,7 @@ int t3_sge_alloc_qset(struct adapter *adapter, unsigned int id, int nports,
 			  GFP_KERNEL | __GFP_COMP);
 	if (!avail) {
 		CH_ALERT(adapter, "free list queue 0 initialization failed\n");
-<<<<<<< HEAD
-=======
 		ret = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 	if (avail < q->fl[0].size)
@@ -3671,13 +3199,6 @@ void t3_start_sge_timers(struct adapter *adap)
 	for (i = 0; i < SGE_QSETS; ++i) {
 		struct sge_qset *q = &adap->sge.qs[i];
 
-<<<<<<< HEAD
-	if (q->tx_reclaim_timer.function)
-		mod_timer(&q->tx_reclaim_timer, jiffies + TX_RECLAIM_PERIOD);
-
-	if (q->rx_reclaim_timer.function)
-		mod_timer(&q->rx_reclaim_timer, jiffies + RX_RECLAIM_PERIOD);
-=======
 		if (q->tx_reclaim_timer.function)
 			mod_timer(&q->tx_reclaim_timer,
 				  jiffies + TX_RECLAIM_PERIOD);
@@ -3685,7 +3206,6 @@ void t3_start_sge_timers(struct adapter *adap)
 		if (q->rx_reclaim_timer.function)
 			mod_timer(&q->rx_reclaim_timer,
 				  jiffies + RX_RECLAIM_PERIOD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3736,32 +3256,6 @@ void t3_sge_start(struct adapter *adap)
 }
 
 /**
-<<<<<<< HEAD
- *	t3_sge_stop - disable SGE operation
- *	@adap: the adapter
- *
- *	Disables the DMA engine.  This can be called in emeregencies (e.g.,
- *	from error interrupts) or from normal process context.  In the latter
- *	case it also disables any pending queue restart tasklets.  Note that
- *	if it is called in interrupt context it cannot disable the restart
- *	tasklets as it cannot wait, however the tasklets will have no effect
- *	since the doorbells are disabled and the driver will call this again
- *	later from process context, at which time the tasklets will be stopped
- *	if they are still running.
- */
-void t3_sge_stop(struct adapter *adap)
-{
-	t3_set_reg_field(adap, A_SG_CONTROL, F_GLOBALENABLE, 0);
-	if (!in_interrupt()) {
-		int i;
-
-		for (i = 0; i < SGE_QSETS; ++i) {
-			struct sge_qset *qs = &adap->sge.qs[i];
-
-			tasklet_kill(&qs->txq[TXQ_OFLD].qresume_tsk);
-			tasklet_kill(&qs->txq[TXQ_CTRL].qresume_tsk);
-		}
-=======
  *	t3_sge_stop_dma - Disable SGE DMA engine operation
  *	@adap: the adapter
  *
@@ -3799,7 +3293,6 @@ void t3_sge_stop(struct adapter *adap)
 
 		cancel_work_sync(&qs->txq[TXQ_OFLD].qresume_task);
 		cancel_work_sync(&qs->txq[TXQ_CTRL].qresume_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3866,11 +3359,7 @@ void t3_sge_prep(struct adapter *adap, struct sge_params *p)
 		q->coalesce_usecs = 5;
 		q->rspq_size = 1024;
 		q->fl_size = 1024;
-<<<<<<< HEAD
- 		q->jumbo_size = 512;
-=======
 		q->jumbo_size = 512;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		q->txq_size[TXQ_ETH] = 1024;
 		q->txq_size[TXQ_OFLD] = 1024;
 		q->txq_size[TXQ_CTRL] = 256;

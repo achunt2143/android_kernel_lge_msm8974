@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM net
 
@@ -10,11 +7,6 @@
 
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
-<<<<<<< HEAD
-#include <linux/ip.h>
-#include <linux/tracepoint.h>
-
-=======
 #include <linux/if_vlan.h>
 #include <linux/ip.h>
 #include <linux/tracepoint.h>
@@ -77,7 +69,6 @@ TRACE_EVENT(net_dev_start_xmit,
 		  __entry->gso_size, __entry->gso_segs, __entry->gso_type)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(net_dev_xmit,
 
 	TP_PROTO(struct sk_buff *skb,
@@ -101,12 +92,6 @@ TRACE_EVENT(net_dev_xmit,
 		__assign_str(name, dev->name);
 	),
 
-<<<<<<< HEAD
-	TP_printk("dev=%s skbaddr=%pk len=%u rc=%d",
-		__get_str(name), __entry->skbaddr, __entry->len, __entry->rc)
-);
-
-=======
 	TP_printk("dev=%s skbaddr=%p len=%u rc=%d",
 		__get_str(name), __entry->skbaddr, __entry->len, __entry->rc)
 );
@@ -134,7 +119,6 @@ TRACE_EVENT(net_dev_xmit_timeout,
 		__get_str(name), __get_str(driver), __entry->queue_index)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DECLARE_EVENT_CLASS(net_dev_template,
 
 	TP_PROTO(struct sk_buff *skb),
@@ -153,11 +137,7 @@ DECLARE_EVENT_CLASS(net_dev_template,
 		__assign_str(name, skb->dev->name);
 	),
 
-<<<<<<< HEAD
-	TP_printk("dev=%s skbaddr=%pK len=%u",
-=======
 	TP_printk("dev=%s skbaddr=%p len=%u",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__get_str(name), __entry->skbaddr, __entry->len)
 )
 
@@ -181,8 +161,6 @@ DEFINE_EVENT(net_dev_template, netif_rx,
 
 	TP_ARGS(skb)
 );
-<<<<<<< HEAD
-=======
 
 DECLARE_EVENT_CLASS(net_dev_rx_verbose_template,
 
@@ -335,7 +313,6 @@ DEFINE_EVENT(net_dev_rx_exit_template, netif_receive_skb_list_exit,
 	TP_ARGS(ret)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_NET_H */
 
 /* This part must be outside protection */

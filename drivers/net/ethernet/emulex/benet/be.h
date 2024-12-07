@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2005 - 2016 Broadcom
  * All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contact Information:
  * linux-drivers@emulex.com
  *
@@ -38,20 +26,6 @@
 #include <linux/firmware.h>
 #include <linux/slab.h>
 #include <linux/u64_stats_sync.h>
-<<<<<<< HEAD
-
-#include "be_hw.h"
-
-#define DRV_VER			"4.2.116u"
-#define DRV_NAME		"be2net"
-#define BE_NAME			"ServerEngines BladeEngine2 10Gbps NIC"
-#define BE3_NAME		"ServerEngines BladeEngine3 10Gbps NIC"
-#define OC_NAME			"Emulex OneConnect 10Gbps NIC"
-#define OC_NAME_BE		OC_NAME	"(be3)"
-#define OC_NAME_LANCER		OC_NAME "(Lancer)"
-#define OC_NAME_SH		OC_NAME "(Skyhawk)"
-#define DRV_DESC		"ServerEngines BladeEngine 10Gbps NIC Driver"
-=======
 #include <linux/cpumask.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
@@ -67,7 +41,6 @@
 #define OC_NAME_LANCER		OC_NAME "(Lancer)"
 #define OC_NAME_SH		OC_NAME "(Skyhawk)"
 #define DRV_DESC		"Emulex OneConnect NIC Driver"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BE_VENDOR_ID 		0x19a2
 #define EMULEX_VENDOR_ID	0x10df
@@ -78,46 +51,12 @@
 #define OC_DEVICE_ID3		0xe220	/* Device id for Lancer cards */
 #define OC_DEVICE_ID4           0xe228   /* Device id for VF in Lancer */
 #define OC_DEVICE_ID5		0x720	/* Device Id for Skyhawk cards */
-<<<<<<< HEAD
-=======
 #define OC_DEVICE_ID6		0x728   /* Device id for VF in SkyHawk */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OC_SUBSYS_DEVICE_ID1	0xE602
 #define OC_SUBSYS_DEVICE_ID2	0xE642
 #define OC_SUBSYS_DEVICE_ID3	0xE612
 #define OC_SUBSYS_DEVICE_ID4	0xE652
 
-<<<<<<< HEAD
-static inline char *nic_name(struct pci_dev *pdev)
-{
-	switch (pdev->device) {
-	case OC_DEVICE_ID1:
-		return OC_NAME;
-	case OC_DEVICE_ID2:
-		return OC_NAME_BE;
-	case OC_DEVICE_ID3:
-	case OC_DEVICE_ID4:
-		return OC_NAME_LANCER;
-	case BE_DEVICE_ID2:
-		return BE3_NAME;
-	case OC_DEVICE_ID5:
-		return OC_NAME_SH;
-	default:
-		return BE_NAME;
-	}
-}
-
-/* Number of bytes of an RX frame that are copied to skb->data */
-#define BE_HDR_LEN		((u16) 64)
-/* allocate extra space to allow tunneling decapsulation without head reallocation */
-#define BE_RX_SKB_ALLOC_SIZE (BE_HDR_LEN + 64)
-
-#define BE_MAX_JUMBO_FRAME_SIZE	9018
-#define BE_MIN_MTU		256
-
-#define BE_NUM_VLANS_SUPPORTED	64
-#define BE_MAX_EQD		96u
-=======
 /* Number of bytes of an RX frame that are copied to skb->data */
 #define BE_HDR_LEN		((u16) 64)
 /* allocate extra space to allow tunneling decapsulation without head reallocation */
@@ -133,7 +72,6 @@ static inline char *nic_name(struct pci_dev *pdev)
 
 #define BE_NUM_VLANS_SUPPORTED	64
 #define BE_MAX_EQD		128u
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	BE_MAX_TX_FRAG_COUNT	30
 
 #define EVNT_Q_LEN		1024
@@ -144,21 +82,6 @@ static inline char *nic_name(struct pci_dev *pdev)
 #define MCC_Q_LEN		128	/* total size not to exceed 8 pages */
 #define MCC_CQ_LEN		256
 
-<<<<<<< HEAD
-#define BE3_MAX_RSS_QS		8
-#define BE2_MAX_RSS_QS		4
-#define MAX_RSS_QS		BE3_MAX_RSS_QS
-#define MAX_RX_QS		(MAX_RSS_QS + 1) /* RSS qs + 1 def Rx */
-
-#define MAX_TX_QS		8
-#define MAX_MSIX_VECTORS	MAX_RSS_QS
-#define BE_TX_BUDGET		256
-#define BE_NAPI_WEIGHT		64
-#define MAX_RX_POST		BE_NAPI_WEIGHT /* Frags posted at a time */
-#define RX_FRAGS_REFILL_WM	(RX_Q_LEN - MAX_RX_POST)
-
-#define FW_VER_LEN		32
-=======
 #define BE2_MAX_RSS_QS		4
 #define BE3_MAX_RSS_QS		16
 #define BE3_MAX_TX_QS		16
@@ -191,7 +114,6 @@ static inline char *nic_name(struct pci_dev *pdev)
 #define RSS_HASH_KEY_LEN	40
 
 #define BE_UNKNOWN_PHY_STATE	0xFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct be_dma_mem {
 	void *va;
@@ -200,18 +122,6 @@ struct be_dma_mem {
 };
 
 struct be_queue_info {
-<<<<<<< HEAD
-	struct be_dma_mem dma_mem;
-	u16 len;
-	u16 entry_size;	/* Size of an element in the queue */
-	u16 id;
-	u16 tail, head;
-	bool created;
-	atomic_t used;	/* Number of valid elements in the queue */
-};
-
-static inline u32 MODULO(u16 val, u16 limit)
-=======
 	u32 len;
 	u32 entry_size;	/* Size of an element in the queue */
 	u32 tail, head;
@@ -222,26 +132,17 @@ static inline u32 MODULO(u16 val, u16 limit)
 };
 
 static inline u32 MODULO(u32 val, u32 limit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG_ON(limit & (limit - 1));
 	return val & (limit - 1);
 }
 
-<<<<<<< HEAD
-static inline void index_adv(u16 *index, u16 val, u16 limit)
-=======
 static inline void index_adv(u32 *index, u32 val, u32 limit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	*index = MODULO((*index + val), limit);
 }
 
-<<<<<<< HEAD
-static inline void index_inc(u16 *index, u16 limit)
-=======
 static inline void index_inc(u32 *index, u32 limit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	*index = MODULO((*index + 1), limit);
 }
@@ -266,14 +167,11 @@ static inline void queue_head_inc(struct be_queue_info *q)
 	index_inc(&q->head, q->len);
 }
 
-<<<<<<< HEAD
-=======
 static inline void index_dec(u32 *index, u32 limit)
 {
 	*index = MODULO((*index - 1), limit);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void queue_tail_inc(struct be_queue_info *q)
 {
 	index_inc(&q->tail, q->len);
@@ -283,20 +181,6 @@ struct be_eq_obj {
 	struct be_queue_info q;
 	char desc[32];
 
-<<<<<<< HEAD
-	/* Adaptive interrupt coalescing (AIC) info */
-	bool enable_aic;
-	u32 min_eqd;		/* in usecs */
-	u32 max_eqd;		/* in usecs */
-	u32 eqd;		/* configured val when aic is off */
-	u32 cur_eqd;		/* in usecs */
-
-	u8 idx;			/* array index */
-	u16 tx_budget;
-	struct napi_struct napi;
-	struct be_adapter *adapter;
-} ____cacheline_aligned_in_smp;
-=======
 	struct be_adapter *adapter;
 	struct napi_struct napi;
 	u8 idx;			/* array index */
@@ -314,7 +198,6 @@ struct be_aic_obj {		/* Adaptive interrupt coalescing (AIC) info */
 	u64 rx_pkts_prev;	/* Used to calculate RX pps */
 	u64 tx_reqs_prev;	/* Used to calculate TX pps */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct be_mcc_obj {
 	struct be_queue_info q;
@@ -325,13 +208,6 @@ struct be_mcc_obj {
 struct be_tx_stats {
 	u64 tx_bytes;
 	u64 tx_pkts;
-<<<<<<< HEAD
-	u64 tx_reqs;
-	u64 tx_wrbs;
-	u64 tx_compl;
-	ulong tx_jiffies;
-	u32 tx_stops;
-=======
 	u64 tx_vxlan_offload_pkts;
 	u64 tx_reqs;
 	u64 tx_compl;
@@ -345,14 +221,10 @@ struct be_tx_stats {
 	u32 tx_qinq_err;
 	u32 tx_internal_parity_err;
 	u32 tx_sge_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct u64_stats_sync sync;
 	struct u64_stats_sync sync_compl;
 };
 
-<<<<<<< HEAD
-struct be_tx_obj {
-=======
 /* Structure to hold some data of interest obtained from a TX CQE */
 struct be_tx_compl_info {
 	u8 status;		/* Completion status */
@@ -362,54 +234,35 @@ struct be_tx_compl_info {
 struct be_tx_obj {
 	u32 db_offset;
 	struct be_tx_compl_info txcp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_queue_info q;
 	struct be_queue_info cq;
 	/* Remember the skbs that were transmitted */
 	struct sk_buff *sent_skb_list[TX_Q_LEN];
 	struct be_tx_stats stats;
-<<<<<<< HEAD
-=======
 	u16 pend_wrb_cnt;	/* Number of WRBs yet to be given to HW */
 	u16 last_req_wrb_cnt;	/* wrb cnt of the last req in the Q */
 	u16 last_req_hdr;	/* index of the last req's hdr-wrb */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ____cacheline_aligned_in_smp;
 
 /* Struct to remember the pages posted for rx frags */
 struct be_rx_page_info {
 	struct page *page;
-<<<<<<< HEAD
-	DEFINE_DMA_UNMAP_ADDR(bus);
-	u16 page_offset;
-	bool last_page_user;
-=======
 	/* set to page-addr for last frag of the page & frag-addr otherwise */
 	DEFINE_DMA_UNMAP_ADDR(bus);
 	u16 page_offset;
 	bool last_frag;		/* last frag of the page */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct be_rx_stats {
 	u64 rx_bytes;
 	u64 rx_pkts;
-<<<<<<< HEAD
-	u64 rx_pkts_prev;
-	ulong rx_jiffies;
-=======
 	u64 rx_vxlan_offload_pkts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 rx_drops_no_skbs;	/* skb allocation errors */
 	u32 rx_drops_no_frags;	/* HW has no fetched frags */
 	u32 rx_post_fail;	/* page post alloc failures */
 	u32 rx_compl;
 	u32 rx_mcast_pkts;
 	u32 rx_compl_err;	/* completions with err set */
-<<<<<<< HEAD
-	u32 rx_pps;		/* pkts per second */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct u64_stats_sync sync;
 };
 
@@ -417,10 +270,6 @@ struct be_rx_compl_info {
 	u32 rss_hash;
 	u16 vlan_tag;
 	u16 pkt_size;
-<<<<<<< HEAD
-	u16 rxq_idx;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 port;
 	u8 vlanf;
 	u8 num_rcvd;
@@ -431,15 +280,10 @@ struct be_rx_compl_info {
 	u8 ip_csum;
 	u8 l4_csum;
 	u8 ipv6;
-<<<<<<< HEAD
-	u8 vtm;
-	u8 pkt_type;
-=======
 	u8 qnq;
 	u8 pkt_type;
 	u8 ip_frag;
 	u8 tunneled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct be_rx_obj {
@@ -454,13 +298,8 @@ struct be_rx_obj {
 } ____cacheline_aligned_in_smp;
 
 struct be_drv_stats {
-<<<<<<< HEAD
-	u32 be_on_die_temperature;
-	u32 eth_red_drops;
-=======
 	u32 eth_red_drops;
 	u32 dma_map_errors;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 rx_drops_no_pbuf;
 	u32 rx_drops_no_txpb;
 	u32 rx_drops_no_erx_descr;
@@ -476,11 +315,7 @@ struct be_drv_stats {
 	u32 rx_in_range_errors;
 	u32 rx_out_range_errors;
 	u32 rx_frame_too_long;
-<<<<<<< HEAD
-	u32 rx_address_mismatch_drops;
-=======
 	u32 rx_address_filtered;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 rx_dropped_too_small;
 	u32 rx_dropped_too_short;
 	u32 rx_dropped_header_too_small;
@@ -496,10 +331,6 @@ struct be_drv_stats {
 	u32 rx_input_fifo_overflow_drop;
 	u32 pmem_fifo_overflow_drop;
 	u32 jabber_events;
-<<<<<<< HEAD
-};
-
-=======
 	u32 rx_roce_bytes_lsd;
 	u32 rx_roce_bytes_msd;
 	u32 rx_roce_frames;
@@ -510,22 +341,10 @@ struct be_drv_stats {
 /* A vlan-id of 0xFFFF must be used to clear transparent vlan-tagging */
 #define BE_RESET_VLAN_TAG_ID	0xFFFF
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_vf_cfg {
 	unsigned char mac_addr[ETH_ALEN];
 	int if_handle;
 	int pmac_id;
-<<<<<<< HEAD
-	u16 def_vid;
-	u16 vlan_tag;
-	u32 tx_rate;
-};
-
-#define BE_FLAGS_LINK_STATUS_INIT		1
-#define BE_FLAGS_WORKER_SCHEDULED		(1 << 3)
-#define BE_UC_PMAC_COUNT		30
-#define BE_VF_UC_PMAC_COUNT		2
-=======
 	u16 vlan_tag;
 	u32 tx_rate;
 	u32 plink_tracking;
@@ -727,20 +546,14 @@ struct be_vxlan_port {
 	__be16 port;		/* VxLAN UDP dst port */
 	int port_aliases;	/* alias count */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct be_adapter {
 	struct pci_dev *pdev;
 	struct net_device *netdev;
 
-<<<<<<< HEAD
-	u8 __iomem *csr;
-	u8 __iomem *db;		/* Door Bell */
-=======
 	u8 __iomem *csr;	/* CSR BAR used only for BE2/3 */
 	u8 __iomem *db;		/* Door Bell */
 	u8 __iomem *pcicfg;	/* On SH,BEx only. Shadow of PCI config space */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex mbox_lock; /* For serializing mbox cmds to BE card */
 	struct be_dma_mem mbox_mem;
@@ -749,14 +562,6 @@ struct be_adapter {
 	struct be_dma_mem mbox_mem_alloced;
 
 	struct be_mcc_obj mcc_obj;
-<<<<<<< HEAD
-	spinlock_t mcc_lock;	/* For serializing mcc cmds to BE card */
-	spinlock_t mcc_cq_lock;
-
-	u32 num_msix_vec;
-	u32 num_evt_qs;
-	struct be_eq_obj eq_obj[MAX_MSIX_VECTORS];
-=======
 	struct mutex mcc_lock;	/* For serializing mcc cmds to BE card */
 	spinlock_t mcc_cq_lock;
 
@@ -765,29 +570,10 @@ struct be_adapter {
 	u16 num_evt_qs;
 	u16 num_msix_vec;
 	struct be_eq_obj eq_obj[MAX_EVT_QS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct msix_entry msix_entries[MAX_MSIX_VECTORS];
 	bool isr_registered;
 
 	/* TX Rings */
-<<<<<<< HEAD
-	u32 num_tx_qs;
-	struct be_tx_obj tx_obj[MAX_TX_QS];
-
-	/* Rx rings */
-	u32 num_rx_qs;
-	struct be_rx_obj rx_obj[MAX_RX_QS];
-	u32 big_page_size;	/* Compounded page size shared by rx wrbs */
-
-	u8 eq_next_idx;
-	struct be_drv_stats drv_stats;
-
-	u16 vlans_added;
-	u16 max_vlans;	/* Number of vlans supported */
-	u8 vlan_tag[VLAN_N_VID];
-	u8 vlan_prio_bmap;	/* Available Priority BitMap */
-	u16 recommended_prio;	/* Recommended Priority */
-=======
 	u16 num_tx_qs;
 	struct be_tx_obj tx_obj[MAX_TX_QS];
 
@@ -803,7 +589,6 @@ struct be_adapter {
 	bool aic_enabled;
 	u8 vlan_prio_bmap;	/* Available Priority BitMap */
 	u16 recommended_prio_bits;/* Recommended Priority bits in vlan tag */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_dma_mem rx_filter; /* Cmd DMA mem for rx-filter */
 
 	struct be_dma_mem stats_cmd;
@@ -811,20 +596,6 @@ struct be_adapter {
 	struct delayed_work work;
 	u16 work_counter;
 
-<<<<<<< HEAD
-	u32 flags;
-	/* Ethtool knobs and info */
-	char fw_ver[FW_VER_LEN];
-	int if_handle;		/* Used to configure filtering */
-	u32 *pmac_id;		/* MAC addr handle used by BE card */
-	u32 beacon_state;	/* for set_phys_id */
-
-	bool eeh_err;
-	bool ue_detected;
-	bool fw_timeout;
-	u32 port_num;
-	bool promiscuous;
-=======
 	u8 recovery_retries;
 	u8 err_flags;
 	bool pcicfg_mapped;	/* pcicfg obtained via pci_iomap() */
@@ -853,24 +624,11 @@ struct be_adapter {
 	u32 port_num;
 	char port_name;
 	u8 mc_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 function_mode;
 	u32 function_caps;
 	u32 rx_fc;		/* Rx flow control */
 	u32 tx_fc;		/* Tx flow control */
 	bool stats_cmd_sent;
-<<<<<<< HEAD
-	int link_speed;
-	u8 port_type;
-	u8 transceiver;
-	u8 autoneg;
-	u8 generation;		/* BladeEngine ASIC generation */
-	u32 flash_status;
-	struct completion flash_compl;
-
-	u32 num_vfs;
-	u8 is_virtfn;
-=======
 	struct {
 		u32 size;
 		u32 total_size;
@@ -889,22 +647,11 @@ struct be_adapter {
 	u8 pf_num;			/* Numbering used by FW, starts at 0 */
 	u8 vf_num;			/* Numbering used by FW, starts at 1 */
 	u8 virtfn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_vf_cfg *vf_cfg;
 	bool be3_native;
 	u32 sli_family;
 	u8 hba_port_num;
 	u16 pvid;
-<<<<<<< HEAD
-	u8 wol_cap;
-	bool wol;
-	u32 max_pmac_cnt;	/* Max secondary UC MACs programmable */
-	u32 uc_macs;		/* Count of secondary UC MAC programmed */
-};
-
-#define be_physfn(adapter) (!adapter->is_virtfn)
-#define	sriov_enabled(adapter)		(adapter->num_vfs > 0)
-=======
 	__be16 vxlan_port;		/* offloaded vxlan port num */
 	struct phy_info phy;
 	u8 wol_cap;
@@ -936,21 +683,10 @@ struct be_cmd_work {
 #define sriov_enabled(adapter)		(adapter->flags &	\
 					 BE_FLAGS_SRIOV_ENABLED)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_all_vfs(adapter, vf_cfg, i)					\
 	for (i = 0, vf_cfg = &adapter->vf_cfg[i]; i < adapter->num_vfs;	\
 		i++, vf_cfg++)
 
-<<<<<<< HEAD
-/* BladeEngine Generation numbers */
-#define BE_GEN2 2
-#define BE_GEN3 3
-
-#define ON				1
-#define OFF				0
-#define lancer_chip(adapter)	((adapter->pdev->device == OC_DEVICE_ID3) || \
-				 (adapter->pdev->device == OC_DEVICE_ID4))
-=======
 #define ON				1
 #define OFF				0
 
@@ -1038,7 +774,6 @@ static inline u16 be_max_any_irqs(struct be_adapter *adapter)
 
 #define be_roce_supported(adapter)	(skyhawk_chip(adapter) && \
 					(adapter->function_mode & RDMA_ENABLED))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct ethtool_ops be_ethtool_ops;
 
@@ -1055,14 +790,8 @@ extern const struct ethtool_ops be_ethtool_ops;
 	for (i = 0, rxo = &adapter->rx_obj[i]; i < adapter->num_rx_qs;	\
 		i++, rxo++)
 
-<<<<<<< HEAD
-/* Skip the default non-rss queue (last one)*/
-#define for_all_rss_queues(adapter, rxo, i)				\
-	for (i = 0, rxo = &adapter->rx_obj[i]; i < (adapter->num_rx_qs - 1);\
-=======
 #define for_all_rss_queues(adapter, rxo, i)				\
 	for (i = 0, rxo = &adapter->rx_obj[i]; i < adapter->num_rss_qs;	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++, rxo++)
 
 #define for_all_tx_queues(adapter, txo, i)				\
@@ -1073,8 +802,6 @@ extern const struct ethtool_ops be_ethtool_ops;
 	for (i = 0, eqo = &adapter->eq_obj[i]; i < adapter->num_evt_qs; \
 		i++, eqo++)
 
-<<<<<<< HEAD
-=======
 #define for_all_rx_queues_on_eq(adapter, eqo, rxo, i)			\
 	for (i = eqo->idx, rxo = &adapter->rx_obj[i]; i < adapter->num_rx_qs;\
 		 i += adapter->num_evt_qs, rxo += adapter->num_evt_qs)
@@ -1083,7 +810,6 @@ extern const struct ethtool_ops be_ethtool_ops;
 	for (i = eqo->idx, txo = &adapter->tx_obj[i]; i < adapter->num_tx_qs;\
 		i += adapter->num_evt_qs, txo += adapter->num_evt_qs)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define is_mcc_eqo(eqo)			(eqo->idx == 0)
 #define mcc_eqo(adapter)		(&adapter->eq_obj[0])
 
@@ -1132,8 +858,6 @@ static inline u32 amap_get(void *ptr, u32 dw_offset, u32 mask, u32 offset)
 			amap_mask(sizeof(((_struct *)0)->field)),	\
 			AMAP_BIT_OFFSET(_struct, field))
 
-<<<<<<< HEAD
-=======
 #define GET_RX_COMPL_V0_BITS(field, ptr)				\
 		AMAP_GET_BITS(struct amap_eth_rx_compl_v0, field, ptr)
 
@@ -1146,7 +870,6 @@ static inline u32 amap_get(void *ptr, u32 dw_offset, u32 mask, u32 offset)
 #define SET_TX_WRB_HDR_BITS(field, ptr, val)				\
 		AMAP_SET_BITS(struct amap_eth_hdr_wrb, field, ptr, val)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define be_dws_cpu_to_le(wrb, len)	swap_dws(wrb, len)
 #define be_dws_le_to_cpu(wrb, len)	swap_dws(wrb, len)
 static inline void swap_dws(void *wrb, int len)
@@ -1162,11 +885,8 @@ static inline void swap_dws(void *wrb, int len)
 #endif				/* __BIG_ENDIAN */
 }
 
-<<<<<<< HEAD
-=======
 #define be_cmd_status(status)		(status > 0 ? -EIO : status)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 is_tcp_pkt(struct sk_buff *skb)
 {
 	u8 val = 0;
@@ -1191,32 +911,6 @@ static inline u8 is_udp_pkt(struct sk_buff *skb)
 	return val;
 }
 
-<<<<<<< HEAD
-static inline void be_check_sriov_fn_type(struct be_adapter *adapter)
-{
-	u32 sli_intf;
-
-	pci_read_config_dword(adapter->pdev, SLI_INTF_REG_OFFSET, &sli_intf);
-	adapter->is_virtfn = (sli_intf & SLI_INTF_FT_MASK) ? 1 : 0;
-}
-
-static inline bool is_ipv4_pkt(struct sk_buff *skb)
-{
-	return skb->protocol == ntohs(ETH_P_IP) && ip_hdr(skb)->version == 4;
-}
-
-static inline void be_vf_eth_addr_generate(struct be_adapter *adapter, u8 *mac)
-{
-	u32 addr;
-
-	addr = jhash(adapter->netdev->dev_addr, ETH_ALEN, 0);
-
-	mac[5] = (u8)(addr & 0xFF);
-	mac[4] = (u8)((addr >> 8) & 0xFF);
-	mac[3] = (u8)((addr >> 16) & 0xFF);
-	/* Use the OUI from the current MAC address */
-	memcpy(mac, adapter->netdev->dev_addr, 3);
-=======
 static inline bool is_ipv4_pkt(struct sk_buff *skb)
 {
 	return skb->protocol == htons(ETH_P_IP) && ip_hdr(skb)->version == 4;
@@ -1260,7 +954,6 @@ static inline void be_set_error(struct be_adapter *adapter, int err_type)
 static inline void  be_clear_error(struct be_adapter *adapter, int err_type)
 {
 	adapter->err_flags &= ~err_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool be_multi_rxq(const struct be_adapter *adapter)
@@ -1268,37 +961,6 @@ static inline bool be_multi_rxq(const struct be_adapter *adapter)
 	return adapter->num_rx_qs > 1;
 }
 
-<<<<<<< HEAD
-static inline bool be_error(struct be_adapter *adapter)
-{
-	return adapter->eeh_err || adapter->ue_detected || adapter->fw_timeout;
-}
-
-static inline bool be_is_wol_excluded(struct be_adapter *adapter)
-{
-	struct pci_dev *pdev = adapter->pdev;
-
-	if (!be_physfn(adapter))
-		return true;
-
-	switch (pdev->subsystem_device) {
-	case OC_SUBSYS_DEVICE_ID1:
-	case OC_SUBSYS_DEVICE_ID2:
-	case OC_SUBSYS_DEVICE_ID3:
-	case OC_SUBSYS_DEVICE_ID4:
-		return true;
-	default:
-		return false;
-	}
-}
-
-extern void be_cq_notify(struct be_adapter *adapter, u16 qid, bool arm,
-		u16 num_popped);
-extern void be_link_status_update(struct be_adapter *adapter, u8 link_status);
-extern void be_parse_stats(struct be_adapter *adapter);
-extern int be_load_fw(struct be_adapter *adapter, u8 *func);
-extern bool be_is_wol_supported(struct be_adapter *adapter);
-=======
 void be_cq_notify(struct be_adapter *adapter, u16 qid, bool arm,
 		  u16 num_popped);
 void be_link_status_update(struct be_adapter *adapter, u8 link_status);
@@ -1322,5 +984,4 @@ void be_roce_dev_remove(struct be_adapter *);
  */
 void be_roce_dev_shutdown(struct be_adapter *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* BE_H */

@@ -1,26 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MMCIF eMMC driver.
  *
  * Copyright (C) 2010 Renesas Solutions Corp.
  * Yusuke Goda <yusuke.goda.sx@renesas.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License.
- *
- *
- * TODO
- *  1. DMA
- *  2. Power management
- *  3. Handle MMC errors better
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -60,13 +43,6 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/mmc.h>
 #include <linux/mmc/sdio.h>
-<<<<<<< HEAD
-#include <linux/mmc/sh_mmcif.h>
-#include <linux/pagemap.h>
-#include <linux/platform_device.h>
-#include <linux/pm_qos.h>
-#include <linux/pm_runtime.h>
-=======
 #include <linux/mmc/slot-gpio.h>
 #include <linux/mod_devicetable.h>
 #include <linux/mutex.h>
@@ -76,15 +52,10 @@
 #include <linux/pm_qos.h>
 #include <linux/pm_runtime.h>
 #include <linux/sh_dma.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/module.h>
 
 #define DRIVER_NAME	"sh_mmcif"
-<<<<<<< HEAD
-#define DRIVER_VERSION	"2010-04-28"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CE_CMD_SET */
 #define CMD_MASK		0x3f000000
@@ -108,10 +79,7 @@
 #define CMD_SET_TBIT		(1 << 7) /* 1: tran mission bit "Low" */
 #define CMD_SET_OPDM		(1 << 6) /* 1: open/drain */
 #define CMD_SET_CCSH		(1 << 5)
-<<<<<<< HEAD
-=======
 #define CMD_SET_DARS		(1 << 2) /* Dual Data Rate */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CMD_SET_DATW_1		((0 << 1) | (0 << 0)) /* 1bit */
 #define CMD_SET_DATW_4		((0 << 1) | (1 << 0)) /* 4bit */
 #define CMD_SET_DATW_8		((1 << 1) | (0 << 0)) /* 8bit */
@@ -151,15 +119,12 @@
 				 INT_CCSTO | INT_CRCSTO | INT_WDATTO |	  \
 				 INT_RDATTO | INT_RBSYTO | INT_RSPTO)
 
-<<<<<<< HEAD
-=======
 #define INT_ALL			(INT_RBSYE | INT_CRSPE | INT_BUFREN |	 \
 				 INT_BUFWEN | INT_CMD12DRE | INT_BUFRE | \
 				 INT_DTRANE | INT_CMD12RBE | INT_CMD12CRE)
 
 #define INT_CCS			(INT_CCSTO | INT_CCSRCV | INT_CCSDE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* CE_INT_MASK */
 #define MASK_ALL		0x00000000
 #define MASK_MCCSDE		(1 << 29)
@@ -188,11 +153,6 @@
 
 #define MASK_START_CMD		(MASK_MCMDVIO | MASK_MBUFVIO | MASK_MWDATERR | \
 				 MASK_MRDATERR | MASK_MRIDXERR | MASK_MRSPERR | \
-<<<<<<< HEAD
-				 MASK_MCCSTO | MASK_MCRCSTO | MASK_MWDATTO | \
-				 MASK_MRDATTO | MASK_MRBSYTO | MASK_MRSPTO)
-
-=======
 				 MASK_MCRCSTO | MASK_MWDATTO | \
 				 MASK_MRDATTO | MASK_MRBSYTO | MASK_MRSPTO)
 
@@ -201,7 +161,6 @@
 				 MASK_MCMD12DRE | MASK_MBUFRE | MASK_MDTRANE |	\
 				 MASK_MCMD12RBE | MASK_MCMD12CRE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* CE_HOST_STS1 */
 #define STS1_CMDSEQ		(1 << 31)
 
@@ -231,19 +190,6 @@
 				 STS2_AC12BSYTO | STS2_RSPBSYTO |	\
 				 STS2_AC12RSPTO | STS2_RSPTO)
 
-<<<<<<< HEAD
-#define CLKDEV_EMMC_DATA	52000000 /* 52MHz */
-#define CLKDEV_MMC_DATA		20000000 /* 20MHz */
-#define CLKDEV_INIT		400000   /* 400 KHz */
-
-enum mmcif_state {
-	STATE_IDLE,
-	STATE_REQUEST,
-	STATE_IOS,
-};
-
-enum mmcif_wait_for {
-=======
 #define CLKDEV_EMMC_DATA	52000000 /* 52 MHz */
 #define CLKDEV_MMC_DATA		20000000 /* 20 MHz */
 #define CLKDEV_INIT		400000   /* 400 kHz */
@@ -256,7 +202,6 @@ enum sh_mmcif_state {
 };
 
 enum sh_mmcif_wait_for {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MMCIF_WAIT_FOR_REQUEST,
 	MMCIF_WAIT_FOR_CMD,
 	MMCIF_WAIT_FOR_MREAD,
@@ -268,43 +213,20 @@ enum sh_mmcif_wait_for {
 	MMCIF_WAIT_FOR_STOP,
 };
 
-<<<<<<< HEAD
-=======
 /*
  * difference for each SoC
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sh_mmcif_host {
 	struct mmc_host *mmc;
 	struct mmc_request *mrq;
 	struct platform_device *pd;
-<<<<<<< HEAD
-	struct sh_dmae_slave dma_slave_tx;
-	struct sh_dmae_slave dma_slave_rx;
-	struct clk *hclk;
-	unsigned int clk;
-	int bus_width;
-=======
 	struct clk *clk;
 	int bus_width;
 	unsigned char timing;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool sd_error;
 	bool dying;
 	long timeout;
 	void __iomem *addr;
-<<<<<<< HEAD
-	u32 *pio_ptr;
-	spinlock_t lock;		/* protect sh_mmcif_host::state */
-	enum mmcif_state state;
-	enum mmcif_wait_for wait_for;
-	struct delayed_work timeout_work;
-	size_t blocksize;
-	int sg_idx;
-	int sg_blkidx;
-	bool power;
-	bool card_present;
-=======
 	spinlock_t lock;		/* protect sh_mmcif_host::state */
 	enum sh_mmcif_state state;
 	enum sh_mmcif_wait_for wait_for;
@@ -316,7 +238,6 @@ struct sh_mmcif_host {
 	bool clk_ctrl2_enable;
 	struct mutex thread_lock;
 	u32 clkdiv_map;         /* see CE_CLK_CTRL::CLKDIV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DMA support */
 	struct dma_chan		*chan_rx;
@@ -325,8 +246,6 @@ struct sh_mmcif_host {
 	bool			dma_active;
 };
 
-<<<<<<< HEAD
-=======
 static const struct of_device_id sh_mmcif_of_match[] = {
 	{ .compatible = "renesas,sh-mmcif" },
 	{ }
@@ -335,7 +254,6 @@ MODULE_DEVICE_TABLE(of, sh_mmcif_of_match);
 
 #define sh_mmcif_host_to_dev(host) (&host->pd->dev)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void sh_mmcif_bitset(struct sh_mmcif_host *host,
 					unsigned int reg, u32 val)
 {
@@ -348,28 +266,6 @@ static inline void sh_mmcif_bitclr(struct sh_mmcif_host *host,
 	writel(~val & readl(host->addr + reg), host->addr + reg);
 }
 
-<<<<<<< HEAD
-static void mmcif_dma_complete(void *arg)
-{
-	struct sh_mmcif_host *host = arg;
-	struct mmc_data *data = host->mrq->data;
-
-	dev_dbg(&host->pd->dev, "Command completed\n");
-
-	if (WARN(!data, "%s: NULL data in DMA completion!\n",
-		 dev_name(&host->pd->dev)))
-		return;
-
-	if (data->flags & MMC_DATA_READ)
-		dma_unmap_sg(host->chan_rx->device->dev,
-			     data->sg, data->sg_len,
-			     DMA_FROM_DEVICE);
-	else
-		dma_unmap_sg(host->chan_tx->device->dev,
-			     data->sg, data->sg_len,
-			     DMA_TO_DEVICE);
-
-=======
 static void sh_mmcif_dma_complete(void *arg)
 {
 	struct sh_mmcif_host *host = arg;
@@ -382,7 +278,6 @@ static void sh_mmcif_dma_complete(void *arg)
 		 dev_name(dev)))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	complete(&host->dma_complete);
 }
 
@@ -392,10 +287,7 @@ static void sh_mmcif_start_dma_rx(struct sh_mmcif_host *host)
 	struct scatterlist *sg = data->sg;
 	struct dma_async_tx_descriptor *desc = NULL;
 	struct dma_chan *chan = host->chan_rx;
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_cookie_t cookie = -EINVAL;
 	int ret;
 
@@ -408,21 +300,13 @@ static void sh_mmcif_start_dma_rx(struct sh_mmcif_host *host)
 	}
 
 	if (desc) {
-<<<<<<< HEAD
-		desc->callback = mmcif_dma_complete;
-=======
 		desc->callback = sh_mmcif_dma_complete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc->callback_param = host;
 		cookie = dmaengine_submit(desc);
 		sh_mmcif_bitset(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAREN);
 		dma_async_issue_pending(chan);
 	}
-<<<<<<< HEAD
-	dev_dbg(&host->pd->dev, "%s(): mapped %d -> %d, cookie %d\n",
-=======
 	dev_dbg(dev, "%s(): mapped %d -> %d, cookie %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__func__, data->sg_len, ret, cookie);
 
 	if (!desc) {
@@ -438,20 +322,12 @@ static void sh_mmcif_start_dma_rx(struct sh_mmcif_host *host)
 			host->chan_tx = NULL;
 			dma_release_channel(chan);
 		}
-<<<<<<< HEAD
-		dev_warn(&host->pd->dev,
-=======
 		dev_warn(dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 "DMA failed: %d, falling back to PIO\n", ret);
 		sh_mmcif_bitclr(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAREN | BUF_ACC_DMAWEN);
 	}
 
-<<<<<<< HEAD
-	dev_dbg(&host->pd->dev, "%s(): desc %p, cookie %d, sg[%d]\n", __func__,
-=======
 	dev_dbg(dev, "%s(): desc %p, cookie %d, sg[%d]\n", __func__,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc, cookie, data->sg_len);
 }
 
@@ -461,10 +337,7 @@ static void sh_mmcif_start_dma_tx(struct sh_mmcif_host *host)
 	struct scatterlist *sg = data->sg;
 	struct dma_async_tx_descriptor *desc = NULL;
 	struct dma_chan *chan = host->chan_tx;
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_cookie_t cookie = -EINVAL;
 	int ret;
 
@@ -477,21 +350,13 @@ static void sh_mmcif_start_dma_tx(struct sh_mmcif_host *host)
 	}
 
 	if (desc) {
-<<<<<<< HEAD
-		desc->callback = mmcif_dma_complete;
-=======
 		desc->callback = sh_mmcif_dma_complete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc->callback_param = host;
 		cookie = dmaengine_submit(desc);
 		sh_mmcif_bitset(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAWEN);
 		dma_async_issue_pending(chan);
 	}
-<<<<<<< HEAD
-	dev_dbg(&host->pd->dev, "%s(): mapped %d -> %d, cookie %d\n",
-=======
 	dev_dbg(dev, "%s(): mapped %d -> %d, cookie %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__func__, data->sg_len, ret, cookie);
 
 	if (!desc) {
@@ -507,71 +372,11 @@ static void sh_mmcif_start_dma_tx(struct sh_mmcif_host *host)
 			host->chan_rx = NULL;
 			dma_release_channel(chan);
 		}
-<<<<<<< HEAD
-		dev_warn(&host->pd->dev,
-=======
 		dev_warn(dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 "DMA failed: %d, falling back to PIO\n", ret);
 		sh_mmcif_bitclr(host, MMCIF_CE_BUF_ACC, BUF_ACC_DMAREN | BUF_ACC_DMAWEN);
 	}
 
-<<<<<<< HEAD
-	dev_dbg(&host->pd->dev, "%s(): desc %p, cookie %d\n", __func__,
-		desc, cookie);
-}
-
-static bool sh_mmcif_filter(struct dma_chan *chan, void *arg)
-{
-	dev_dbg(chan->device->dev, "%s: slave data %p\n", __func__, arg);
-	chan->private = arg;
-	return true;
-}
-
-static void sh_mmcif_request_dma(struct sh_mmcif_host *host,
-				 struct sh_mmcif_plat_data *pdata)
-{
-	struct sh_dmae_slave *tx, *rx;
-	host->dma_active = false;
-
-	/* We can only either use DMA for both Tx and Rx or not use it at all */
-	if (pdata->dma) {
-		dev_warn(&host->pd->dev,
-			 "Update your platform to use embedded DMA slave IDs\n");
-		tx = &pdata->dma->chan_priv_tx;
-		rx = &pdata->dma->chan_priv_rx;
-	} else {
-		tx = &host->dma_slave_tx;
-		tx->slave_id = pdata->slave_id_tx;
-		rx = &host->dma_slave_rx;
-		rx->slave_id = pdata->slave_id_rx;
-	}
-	if (tx->slave_id > 0 && rx->slave_id > 0) {
-		dma_cap_mask_t mask;
-
-		dma_cap_zero(mask);
-		dma_cap_set(DMA_SLAVE, mask);
-
-		host->chan_tx = dma_request_channel(mask, sh_mmcif_filter, tx);
-		dev_dbg(&host->pd->dev, "%s: TX: got channel %p\n", __func__,
-			host->chan_tx);
-
-		if (!host->chan_tx)
-			return;
-
-		host->chan_rx = dma_request_channel(mask, sh_mmcif_filter, rx);
-		dev_dbg(&host->pd->dev, "%s: RX: got channel %p\n", __func__,
-			host->chan_rx);
-
-		if (!host->chan_rx) {
-			dma_release_channel(host->chan_tx);
-			host->chan_tx = NULL;
-			return;
-		}
-
-		init_completion(&host->dma_complete);
-	}
-=======
 	dev_dbg(dev, "%s(): desc %p, cookie %d\n", __func__,
 		desc, cookie);
 }
@@ -650,7 +455,6 @@ error:
 	if (host->chan_rx)
 		dma_release_channel(host->chan_rx);
 	host->chan_tx = host->chan_rx = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sh_mmcif_release_dma(struct sh_mmcif_host *host)
@@ -673,30 +477,17 @@ static void sh_mmcif_release_dma(struct sh_mmcif_host *host)
 
 static void sh_mmcif_clock_control(struct sh_mmcif_host *host, unsigned int clk)
 {
-<<<<<<< HEAD
-	struct sh_mmcif_plat_data *p = host->pd->dev.platform_data;
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	struct sh_mmcif_plat_data *p = dev->platform_data;
 	bool sup_pclk = p ? p->sup_pclk : false;
 	unsigned int current_clk = clk_get_rate(host->clk);
 	unsigned int clkdiv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sh_mmcif_bitclr(host, MMCIF_CE_CLK_CTRL, CLK_ENABLE);
 	sh_mmcif_bitclr(host, MMCIF_CE_CLK_CTRL, CLK_CLEAR);
 
 	if (!clk)
 		return;
-<<<<<<< HEAD
-	if (p->sup_pclk && clk == host->clk)
-		sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, CLK_SUP_PCLK);
-	else
-		sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, CLK_CLEAR &
-				((fls(DIV_ROUND_UP(host->clk,
-						   clk) - 1) - 1) << 16));
-
-=======
 
 	if (host->clkdiv_map) {
 		unsigned int freq, best_freq, myclk, div, diff_min, diff;
@@ -738,7 +529,6 @@ static void sh_mmcif_clock_control(struct sh_mmcif_host *host, unsigned int clk)
 	}
 
 	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, CLK_CLEAR & clkdiv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, CLK_ENABLE);
 }
 
@@ -750,27 +540,19 @@ static void sh_mmcif_sync_reset(struct sh_mmcif_host *host)
 
 	sh_mmcif_writel(host->addr, MMCIF_CE_VERSION, SOFT_RST_ON);
 	sh_mmcif_writel(host->addr, MMCIF_CE_VERSION, SOFT_RST_OFF);
-<<<<<<< HEAD
-	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, tmp |
-		SRSPTO_256 | SRBSYTO_29 | SRWDTO_29 | SCCSTO_29);
-=======
 	if (host->ccs_enable)
 		tmp |= SCCSTO_29;
 	if (host->clk_ctrl2_enable)
 		sh_mmcif_writel(host->addr, MMCIF_CE_CLK_CTRL2, 0x0F0F0000);
 	sh_mmcif_bitset(host, MMCIF_CE_CLK_CTRL, tmp |
 		SRSPTO_256 | SRBSYTO_29 | SRWDTO_29);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* byte swap on */
 	sh_mmcif_bitset(host, MMCIF_CE_BUF_ACC, BUF_ACC_ATYP);
 }
 
 static int sh_mmcif_error_manage(struct sh_mmcif_host *host)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 state1, state2;
 	int ret, timeout;
 
@@ -778,55 +560,29 @@ static int sh_mmcif_error_manage(struct sh_mmcif_host *host)
 
 	state1 = sh_mmcif_readl(host->addr, MMCIF_CE_HOST_STS1);
 	state2 = sh_mmcif_readl(host->addr, MMCIF_CE_HOST_STS2);
-<<<<<<< HEAD
-	dev_dbg(&host->pd->dev, "ERR HOST_STS1 = %08x\n", state1);
-	dev_dbg(&host->pd->dev, "ERR HOST_STS2 = %08x\n", state2);
-=======
 	dev_dbg(dev, "ERR HOST_STS1 = %08x\n", state1);
 	dev_dbg(dev, "ERR HOST_STS2 = %08x\n", state2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (state1 & STS1_CMDSEQ) {
 		sh_mmcif_bitset(host, MMCIF_CE_CMD_CTRL, CMD_CTRL_BREAK);
 		sh_mmcif_bitset(host, MMCIF_CE_CMD_CTRL, ~CMD_CTRL_BREAK);
-<<<<<<< HEAD
-		for (timeout = 10000000; timeout; timeout--) {
-=======
 		for (timeout = 10000; timeout; timeout--) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(sh_mmcif_readl(host->addr, MMCIF_CE_HOST_STS1)
 			      & STS1_CMDSEQ))
 				break;
 			mdelay(1);
 		}
 		if (!timeout) {
-<<<<<<< HEAD
-			dev_err(&host->pd->dev,
-=======
 			dev_err(dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Forced end of command sequence timeout err\n");
 			return -EIO;
 		}
 		sh_mmcif_sync_reset(host);
-<<<<<<< HEAD
-		dev_dbg(&host->pd->dev, "Forced end of command sequence\n");
-=======
 		dev_dbg(dev, "Forced end of command sequence\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
 	if (state2 & STS2_CRC_ERR) {
-<<<<<<< HEAD
-		dev_dbg(&host->pd->dev, ": CRC error\n");
-		ret = -EIO;
-	} else if (state2 & STS2_TIMEOUT_ERR) {
-		dev_dbg(&host->pd->dev, ": Timeout\n");
-		ret = -ETIMEDOUT;
-	} else {
-		dev_dbg(&host->pd->dev, ": End/Index error\n");
-=======
 		dev_err(dev, " CRC error: state %u, wait %u\n",
 			host->state, host->wait_for);
 		ret = -EIO;
@@ -837,45 +593,11 @@ static int sh_mmcif_error_manage(struct sh_mmcif_host *host)
 	} else {
 		dev_dbg(dev, " End/Index error: state %u, wait %u\n",
 			host->state, host->wait_for);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EIO;
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static bool sh_mmcif_next_block(struct sh_mmcif_host *host, u32 *p)
-{
-	struct mmc_data *data = host->mrq->data;
-
-	host->sg_blkidx += host->blocksize;
-
-	/* data->sg->length must be a multiple of host->blocksize? */
-	BUG_ON(host->sg_blkidx > data->sg->length);
-
-	if (host->sg_blkidx == data->sg->length) {
-		host->sg_blkidx = 0;
-		if (++host->sg_idx < data->sg_len)
-			host->pio_ptr = sg_virt(++data->sg);
-	} else {
-		host->pio_ptr = p;
-	}
-
-	if (host->sg_idx == data->sg_len)
-		return false;
-
-	return true;
-}
-
-static void sh_mmcif_single_read(struct sh_mmcif_host *host,
-				 struct mmc_request *mrq)
-{
-	host->blocksize = (sh_mmcif_readl(host->addr, MMCIF_CE_BLOCK_SET) &
-			   BLOCK_SIZE_MASK) + 3;
-
-	host->wait_for = MMCIF_WAIT_FOR_READ;
-	schedule_delayed_work(&host->timeout_work, host->timeout);
-=======
 static void sh_mmcif_single_read(struct sh_mmcif_host *host,
 				 struct mmc_request *mrq)
 {
@@ -888,7 +610,6 @@ static void sh_mmcif_single_read(struct sh_mmcif_host *host,
 		       SG_MITER_TO_SG);
 
 	host->wait_for = MMCIF_WAIT_FOR_READ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* buf read enable */
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFREN);
@@ -896,20 +617,6 @@ static void sh_mmcif_single_read(struct sh_mmcif_host *host,
 
 static bool sh_mmcif_read_block(struct sh_mmcif_host *host)
 {
-<<<<<<< HEAD
-	struct mmc_data *data = host->mrq->data;
-	u32 *p = sg_virt(data->sg);
-	int i;
-
-	if (host->sd_error) {
-		data->error = sh_mmcif_error_manage(host);
-		return false;
-	}
-
-	for (i = 0; i < host->blocksize / 4; i++)
-		*p++ = sh_mmcif_readl(host->addr, MMCIF_CE_DATA);
-
-=======
 	struct sg_mapping_iter *sgm = &host->sg_miter;
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	struct mmc_data *data = host->mrq->data;
@@ -936,7 +643,6 @@ static bool sh_mmcif_read_block(struct sh_mmcif_host *host)
 
 	sg_miter_stop(&host->sg_miter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* buffer read end */
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFRE);
 	host->wait_for = MMCIF_WAIT_FOR_READ_END;
@@ -947,10 +653,7 @@ static bool sh_mmcif_read_block(struct sh_mmcif_host *host)
 static void sh_mmcif_multi_read(struct sh_mmcif_host *host,
 				struct mmc_request *mrq)
 {
-<<<<<<< HEAD
-=======
 	struct sg_mapping_iter *sgm = &host->sg_miter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data *data = mrq->data;
 
 	if (!data->sg_len || !data->sg->length)
@@ -959,13 +662,6 @@ static void sh_mmcif_multi_read(struct sh_mmcif_host *host,
 	host->blocksize = sh_mmcif_readl(host->addr, MMCIF_CE_BLOCK_SET) &
 		BLOCK_SIZE_MASK;
 
-<<<<<<< HEAD
-	host->wait_for = MMCIF_WAIT_FOR_MREAD;
-	host->sg_idx = 0;
-	host->sg_blkidx = 0;
-	host->pio_ptr = sg_virt(data->sg);
-	schedule_delayed_work(&host->timeout_work, host->timeout);
-=======
 	sg_miter_start(sgm, data->sg, data->sg_len,
 		       SG_MITER_TO_SG);
 
@@ -977,24 +673,11 @@ static void sh_mmcif_multi_read(struct sh_mmcif_host *host,
 
 	host->wait_for = MMCIF_WAIT_FOR_MREAD;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFREN);
 }
 
 static bool sh_mmcif_mread_block(struct sh_mmcif_host *host)
 {
-<<<<<<< HEAD
-	struct mmc_data *data = host->mrq->data;
-	u32 *p = host->pio_ptr;
-	int i;
-
-	if (host->sd_error) {
-		data->error = sh_mmcif_error_manage(host);
-		return false;
-	}
-
-	BUG_ON(!data->sg->length);
-=======
 	struct sg_mapping_iter *sgm = &host->sg_miter;
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	struct mmc_data *data = host->mrq->data;
@@ -1009,19 +692,10 @@ static bool sh_mmcif_mread_block(struct sh_mmcif_host *host)
 	}
 
 	p = sgm->addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < host->blocksize / 4; i++)
 		*p++ = sh_mmcif_readl(host->addr, MMCIF_CE_DATA);
 
-<<<<<<< HEAD
-	if (!sh_mmcif_next_block(host, p))
-		return false;
-
-	schedule_delayed_work(&host->timeout_work, host->timeout);
-	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFREN);
-
-=======
 	sgm->consumed = host->blocksize;
 
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFREN);
@@ -1031,20 +705,12 @@ static bool sh_mmcif_mread_block(struct sh_mmcif_host *host)
 		return false;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
 static void sh_mmcif_single_write(struct sh_mmcif_host *host,
 					struct mmc_request *mrq)
 {
-<<<<<<< HEAD
-	host->blocksize = (sh_mmcif_readl(host->addr, MMCIF_CE_BLOCK_SET) &
-			   BLOCK_SIZE_MASK) + 3;
-
-	host->wait_for = MMCIF_WAIT_FOR_WRITE;
-	schedule_delayed_work(&host->timeout_work, host->timeout);
-=======
 	struct mmc_data *data = mrq->data;
 
 	host->blocksize = (sh_mmcif_readl(host->addr, MMCIF_CE_BLOCK_SET) &
@@ -1054,7 +720,6 @@ static void sh_mmcif_single_write(struct sh_mmcif_host *host,
 		       SG_MITER_FROM_SG);
 
 	host->wait_for = MMCIF_WAIT_FOR_WRITE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* buf write enable */
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFWEN);
@@ -1062,20 +727,6 @@ static void sh_mmcif_single_write(struct sh_mmcif_host *host,
 
 static bool sh_mmcif_write_block(struct sh_mmcif_host *host)
 {
-<<<<<<< HEAD
-	struct mmc_data *data = host->mrq->data;
-	u32 *p = sg_virt(data->sg);
-	int i;
-
-	if (host->sd_error) {
-		data->error = sh_mmcif_error_manage(host);
-		return false;
-	}
-
-	for (i = 0; i < host->blocksize / 4; i++)
-		sh_mmcif_writel(host->addr, MMCIF_CE_DATA, *p++);
-
-=======
 	struct sg_mapping_iter *sgm = &host->sg_miter;
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	struct mmc_data *data = host->mrq->data;
@@ -1102,7 +753,6 @@ static bool sh_mmcif_write_block(struct sh_mmcif_host *host)
 
 	sg_miter_stop(&host->sg_miter);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* buffer write end */
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MDTRANE);
 	host->wait_for = MMCIF_WAIT_FOR_WRITE_END;
@@ -1113,10 +763,7 @@ static bool sh_mmcif_write_block(struct sh_mmcif_host *host)
 static void sh_mmcif_multi_write(struct sh_mmcif_host *host,
 				struct mmc_request *mrq)
 {
-<<<<<<< HEAD
-=======
 	struct sg_mapping_iter *sgm = &host->sg_miter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data *data = mrq->data;
 
 	if (!data->sg_len || !data->sg->length)
@@ -1125,13 +772,6 @@ static void sh_mmcif_multi_write(struct sh_mmcif_host *host,
 	host->blocksize = sh_mmcif_readl(host->addr, MMCIF_CE_BLOCK_SET) &
 		BLOCK_SIZE_MASK;
 
-<<<<<<< HEAD
-	host->wait_for = MMCIF_WAIT_FOR_MWRITE;
-	host->sg_idx = 0;
-	host->sg_blkidx = 0;
-	host->pio_ptr = sg_virt(data->sg);
-	schedule_delayed_work(&host->timeout_work, host->timeout);
-=======
 	sg_miter_start(sgm, data->sg, data->sg_len,
 		       SG_MITER_FROM_SG);
 
@@ -1143,24 +783,11 @@ static void sh_mmcif_multi_write(struct sh_mmcif_host *host,
 
 	host->wait_for = MMCIF_WAIT_FOR_MWRITE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFWEN);
 }
 
 static bool sh_mmcif_mwrite_block(struct sh_mmcif_host *host)
 {
-<<<<<<< HEAD
-	struct mmc_data *data = host->mrq->data;
-	u32 *p = host->pio_ptr;
-	int i;
-
-	if (host->sd_error) {
-		data->error = sh_mmcif_error_manage(host);
-		return false;
-	}
-
-	BUG_ON(!data->sg->length);
-=======
 	struct sg_mapping_iter *sgm = &host->sg_miter;
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	struct mmc_data *data = host->mrq->data;
@@ -1175,17 +802,10 @@ static bool sh_mmcif_mwrite_block(struct sh_mmcif_host *host)
 	}
 
 	p = sgm->addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < host->blocksize / 4; i++)
 		sh_mmcif_writel(host->addr, MMCIF_CE_DATA, *p++);
 
-<<<<<<< HEAD
-	if (!sh_mmcif_next_block(host, p))
-		return false;
-
-	schedule_delayed_work(&host->timeout_work, host->timeout);
-=======
 	sgm->consumed = host->blocksize;
 
 	if (!sg_miter_next(sgm)) {
@@ -1193,7 +813,6 @@ static bool sh_mmcif_mwrite_block(struct sh_mmcif_host *host)
 		return false;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MBUFWEN);
 
 	return true;
@@ -1220,10 +839,7 @@ static void sh_mmcif_get_cmd12response(struct sh_mmcif_host *host,
 static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 			    struct mmc_request *mrq)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data *data = mrq->data;
 	struct mmc_command *cmd = mrq->cmd;
 	u32 opc = cmd->opcode;
@@ -1235,43 +851,20 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 		tmp |= CMD_SET_RTYP_NO;
 		break;
 	case MMC_RSP_R1:
-<<<<<<< HEAD
-	case MMC_RSP_R1B:
-	case MMC_RSP_R3:
-		tmp |= CMD_SET_RTYP_6B;
-		break;
-=======
 	case MMC_RSP_R3:
 		tmp |= CMD_SET_RTYP_6B;
 		break;
 	case MMC_RSP_R1B:
 		tmp |= CMD_SET_RBSY | CMD_SET_RTYP_6B;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MMC_RSP_R2:
 		tmp |= CMD_SET_RTYP_17B;
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(&host->pd->dev, "Unsupported response type.\n");
-		break;
-	}
-	switch (opc) {
-	/* RBSY */
-	case MMC_SWITCH:
-	case MMC_STOP_TRANSMISSION:
-	case MMC_SET_WRITE_PROT:
-	case MMC_CLR_WRITE_PROT:
-	case MMC_ERASE:
-		tmp |= CMD_SET_RBSY;
-		break;
-	}
-=======
 		dev_err(dev, "Unsupported response type.\n");
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* WDAT / DATW */
 	if (data) {
 		tmp |= CMD_SET_WDAT;
@@ -1286,9 +879,6 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 			tmp |= CMD_SET_DATW_8;
 			break;
 		default:
-<<<<<<< HEAD
-			dev_err(&host->pd->dev, "Unsupported bus width.\n");
-=======
 			dev_err(dev, "Unsupported bus width.\n");
 			break;
 		}
@@ -1302,7 +892,6 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 			 * in their platform data.
 			 */
 			tmp |= CMD_SET_DARS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1333,11 +922,8 @@ static u32 sh_mmcif_set_cmd(struct sh_mmcif_host *host,
 static int sh_mmcif_data_trans(struct sh_mmcif_host *host,
 			       struct mmc_request *mrq, u32 opc)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (opc) {
 	case MMC_READ_MULTIPLE_BLOCK:
 		sh_mmcif_multi_read(host, mrq);
@@ -1353,11 +939,7 @@ static int sh_mmcif_data_trans(struct sh_mmcif_host *host,
 		sh_mmcif_single_read(host, mrq);
 		return 0;
 	default:
-<<<<<<< HEAD
-		dev_err(&host->pd->dev, "UNSUPPORTED CMD = d'%08d\n", opc);
-=======
 		dev_err(dev, "Unsupported CMD%d\n", opc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 }
@@ -1366,24 +948,6 @@ static void sh_mmcif_start_cmd(struct sh_mmcif_host *host,
 			       struct mmc_request *mrq)
 {
 	struct mmc_command *cmd = mrq->cmd;
-<<<<<<< HEAD
-	u32 opc = cmd->opcode;
-	u32 mask;
-
-	switch (opc) {
-	/* response busy check */
-	case MMC_SWITCH:
-	case MMC_STOP_TRANSMISSION:
-	case MMC_SET_WRITE_PROT:
-	case MMC_CLR_WRITE_PROT:
-	case MMC_ERASE:
-		mask = MASK_START_CMD | MASK_MRBSYE;
-		break;
-	default:
-		mask = MASK_START_CMD | MASK_MCRSPE;
-		break;
-	}
-=======
 	u32 opc;
 	u32 mask = 0;
 	unsigned long flags;
@@ -1395,7 +959,6 @@ static void sh_mmcif_start_cmd(struct sh_mmcif_host *host,
 
 	if (host->ccs_enable)
 		mask |= MASK_MCCSTO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mrq->data) {
 		sh_mmcif_writel(host->addr, MMCIF_CE_BLOCK_SET, 0);
@@ -1404,40 +967,27 @@ static void sh_mmcif_start_cmd(struct sh_mmcif_host *host,
 	}
 	opc = sh_mmcif_set_cmd(host, mrq);
 
-<<<<<<< HEAD
-	sh_mmcif_writel(host->addr, MMCIF_CE_INT, 0xD80430C0);
-=======
 	if (host->ccs_enable)
 		sh_mmcif_writel(host->addr, MMCIF_CE_INT, 0xD80430C0);
 	else
 		sh_mmcif_writel(host->addr, MMCIF_CE_INT, 0xD80430C0 | INT_CCS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, mask);
 	/* set arg */
 	sh_mmcif_writel(host->addr, MMCIF_CE_ARG, cmd->arg);
 	/* set cmd */
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&host->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sh_mmcif_writel(host->addr, MMCIF_CE_CMD_SET, opc);
 
 	host->wait_for = MMCIF_WAIT_FOR_CMD;
 	schedule_delayed_work(&host->timeout_work, host->timeout);
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&host->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sh_mmcif_stop_cmd(struct sh_mmcif_host *host,
 			      struct mmc_request *mrq)
 {
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mrq->cmd->opcode) {
 	case MMC_READ_MULTIPLE_BLOCK:
 		sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MCMD12DRE);
@@ -1446,38 +996,24 @@ static void sh_mmcif_stop_cmd(struct sh_mmcif_host *host,
 		sh_mmcif_bitset(host, MMCIF_CE_INT_MASK, MASK_MCMD12RBE);
 		break;
 	default:
-<<<<<<< HEAD
-		dev_err(&host->pd->dev, "unsupported stop cmd\n");
-=======
 		dev_err(dev, "unsupported stop cmd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mrq->stop->error = sh_mmcif_error_manage(host);
 		return;
 	}
 
 	host->wait_for = MMCIF_WAIT_FOR_STOP;
-<<<<<<< HEAD
-	schedule_delayed_work(&host->timeout_work, host->timeout);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sh_mmcif_request(struct mmc_host *mmc, struct mmc_request *mrq)
 {
 	struct sh_mmcif_host *host = mmc_priv(mmc);
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&host->lock, flags);
 	if (host->state != STATE_IDLE) {
-<<<<<<< HEAD
-=======
 		dev_dbg(dev, "%s() rejected, state %u\n",
 			__func__, host->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&host->lock, flags);
 		mrq->cmd->error = -EAGAIN;
 		mmc_request_done(mmc, mrq);
@@ -1487,41 +1023,11 @@ static void sh_mmcif_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	host->state = STATE_REQUEST;
 	spin_unlock_irqrestore(&host->lock, flags);
 
-<<<<<<< HEAD
-	switch (mrq->cmd->opcode) {
-	/* MMCIF does not support SD/SDIO command */
-	case SD_IO_SEND_OP_COND:
-	case MMC_APP_CMD:
-		host->state = STATE_IDLE;
-		mrq->cmd->error = -ETIMEDOUT;
-		mmc_request_done(mmc, mrq);
-		return;
-	case MMC_SEND_EXT_CSD: /* = SD_SEND_IF_COND (8) */
-		if (!mrq->data) {
-			/* send_if_cond cmd (not support) */
-			host->state = STATE_IDLE;
-			mrq->cmd->error = -ETIMEDOUT;
-			mmc_request_done(mmc, mrq);
-			return;
-		}
-		break;
-	default:
-		break;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->mrq = mrq;
 
 	sh_mmcif_start_cmd(host, mrq);
 }
 
-<<<<<<< HEAD
-static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
-{
-	struct sh_mmcif_host *host = mmc_priv(mmc);
-	struct sh_mmcif_plat_data *p = host->pd->dev.platform_data;
-=======
 static void sh_mmcif_clk_setup(struct sh_mmcif_host *host)
 {
 	struct device *dev = sh_mmcif_host_to_dev(host);
@@ -1559,16 +1065,12 @@ static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 {
 	struct sh_mmcif_host *host = mmc_priv(mmc);
 	struct device *dev = sh_mmcif_host_to_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&host->lock, flags);
 	if (host->state != STATE_IDLE) {
-<<<<<<< HEAD
-=======
 		dev_dbg(dev, "%s() rejected, state %u\n",
 			__func__, host->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&host->lock, flags);
 		return;
 	}
@@ -1576,44 +1078,6 @@ static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	host->state = STATE_IOS;
 	spin_unlock_irqrestore(&host->lock, flags);
 
-<<<<<<< HEAD
-	if (ios->power_mode == MMC_POWER_UP) {
-		if (!host->card_present) {
-			/* See if we also get DMA */
-			sh_mmcif_request_dma(host, host->pd->dev.platform_data);
-			host->card_present = true;
-		}
-	} else if (ios->power_mode == MMC_POWER_OFF || !ios->clock) {
-		/* clock stop */
-		sh_mmcif_clock_control(host, 0);
-		if (ios->power_mode == MMC_POWER_OFF) {
-			if (host->card_present) {
-				sh_mmcif_release_dma(host);
-				host->card_present = false;
-			}
-		}
-		if (host->power) {
-			pm_runtime_put(&host->pd->dev);
-			host->power = false;
-			if (p->down_pwr && ios->power_mode == MMC_POWER_OFF)
-				p->down_pwr(host->pd);
-		}
-		host->state = STATE_IDLE;
-		return;
-	}
-
-	if (ios->clock) {
-		if (!host->power) {
-			if (p->set_pwr)
-				p->set_pwr(host->pd, ios->power_mode);
-			pm_runtime_get_sync(&host->pd->dev);
-			host->power = true;
-			sh_mmcif_sync_reset(host);
-		}
-		sh_mmcif_clock_control(host, ios->clock);
-	}
-
-=======
 	switch (ios->power_mode) {
 	case MMC_POWER_UP:
 		if (!IS_ERR(mmc->supply.vmmc))
@@ -1643,43 +1107,21 @@ static void sh_mmcif_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	}
 
 	host->timing = ios->timing;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->bus_width = ios->bus_width;
 	host->state = STATE_IDLE;
 }
 
-<<<<<<< HEAD
-static int sh_mmcif_get_cd(struct mmc_host *mmc)
-{
-	struct sh_mmcif_host *host = mmc_priv(mmc);
-	struct sh_mmcif_plat_data *p = host->pd->dev.platform_data;
-
-	if (!p->get_cd)
-		return -ENOSYS;
-	else
-		return p->get_cd(host->pd);
-}
-
-static struct mmc_host_ops sh_mmcif_ops = {
-	.request	= sh_mmcif_request,
-	.set_ios	= sh_mmcif_set_ios,
-	.get_cd		= sh_mmcif_get_cd,
-=======
 static const struct mmc_host_ops sh_mmcif_ops = {
 	.request	= sh_mmcif_request,
 	.set_ios	= sh_mmcif_set_ios,
 	.get_cd		= mmc_gpio_get_cd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 {
 	struct mmc_command *cmd = host->mrq->cmd;
 	struct mmc_data *data = host->mrq->data;
-<<<<<<< HEAD
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long time;
 
 	if (host->sd_error) {
@@ -1688,16 +1130,6 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 		case MMC_SELECT_CARD:
 		case MMC_APP_CMD:
 			cmd->error = -ETIMEDOUT;
-<<<<<<< HEAD
-			host->sd_error = false;
-			break;
-		default:
-			cmd->error = sh_mmcif_error_manage(host);
-			dev_dbg(&host->pd->dev, "Cmd(d'%d) error %d\n",
-				cmd->opcode, cmd->error);
-			break;
-		}
-=======
 			break;
 		default:
 			cmd->error = sh_mmcif_error_manage(host);
@@ -1706,7 +1138,6 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 		dev_dbg(dev, "CMD%d error %d\n",
 			cmd->opcode, cmd->error);
 		host->sd_error = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 	if (!(cmd->flags & MMC_RSP_PRESENT)) {
@@ -1719,15 +1150,12 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 	if (!data)
 		return false;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Completion can be signalled from DMA callback and error, so, have to
 	 * reset here, before setting .dma_active
 	 */
 	init_completion(&host->dma_complete);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->flags & MMC_DATA_READ) {
 		if (host->chan_rx)
 			sh_mmcif_start_dma_rx(host);
@@ -1738,20 +1166,12 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 
 	if (!host->dma_active) {
 		data->error = sh_mmcif_data_trans(host, host->mrq, cmd->opcode);
-<<<<<<< HEAD
-		if (!data->error)
-			return true;
-		return false;
-=======
 		return !data->error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Running in the IRQ thread, can sleep */
 	time = wait_for_completion_interruptible_timeout(&host->dma_complete,
 							 host->timeout);
-<<<<<<< HEAD
-=======
 
 	if (data->flags & MMC_DATA_READ)
 		dma_unmap_sg(host->chan_rx->device->dev,
@@ -1762,21 +1182,10 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 			     data->sg, data->sg_len,
 			     DMA_TO_DEVICE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (host->sd_error) {
 		dev_err(host->mmc->parent,
 			"Error IRQ while waiting for DMA completion!\n");
 		/* Woken up by an error IRQ: abort DMA */
-<<<<<<< HEAD
-		if (data->flags & MMC_DATA_READ)
-			dmaengine_terminate_all(host->chan_rx);
-		else
-			dmaengine_terminate_all(host->chan_tx);
-		data->error = sh_mmcif_error_manage(host);
-	} else if (!time) {
-		data->error = -ETIMEDOUT;
-	} else if (time < 0) {
-=======
 		data->error = sh_mmcif_error_manage(host);
 	} else if (!time) {
 		dev_err(host->mmc->parent, "DMA timeout!\n");
@@ -1784,17 +1193,12 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 	} else if (time < 0) {
 		dev_err(host->mmc->parent,
 			"wait_for_completion_...() error %ld!\n", time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->error = time;
 	}
 	sh_mmcif_bitclr(host, MMCIF_CE_BUF_ACC,
 			BUF_ACC_DMAREN | BUF_ACC_DMAWEN);
 	host->dma_active = false;
 
-<<<<<<< HEAD
-	if (data->error)
-		data->bytes_xfered = 0;
-=======
 	if (data->error) {
 		data->bytes_xfered = 0;
 		/* Abort DMA */
@@ -1803,7 +1207,6 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 		else
 			dmaengine_terminate_sync(host->chan_tx);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return false;
 }
@@ -1811,12 +1214,6 @@ static bool sh_mmcif_end_cmd(struct sh_mmcif_host *host)
 static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 {
 	struct sh_mmcif_host *host = dev_id;
-<<<<<<< HEAD
-	struct mmc_request *mrq = host->mrq;
-
-	cancel_delayed_work_sync(&host->timeout_work);
-
-=======
 	struct mmc_request *mrq;
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	bool wait = false;
@@ -1839,41 +1236,10 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 		return IRQ_HANDLED;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * All handlers return true, if processing continues, and false, if the
 	 * request has to be completed - successfully or not
 	 */
-<<<<<<< HEAD
-	switch (host->wait_for) {
-	case MMCIF_WAIT_FOR_REQUEST:
-		/* We're too late, the timeout has already kicked in */
-		return IRQ_HANDLED;
-	case MMCIF_WAIT_FOR_CMD:
-		if (sh_mmcif_end_cmd(host))
-			/* Wait for data */
-			return IRQ_HANDLED;
-		break;
-	case MMCIF_WAIT_FOR_MREAD:
-		if (sh_mmcif_mread_block(host))
-			/* Wait for more data */
-			return IRQ_HANDLED;
-		break;
-	case MMCIF_WAIT_FOR_READ:
-		if (sh_mmcif_read_block(host))
-			/* Wait for data end */
-			return IRQ_HANDLED;
-		break;
-	case MMCIF_WAIT_FOR_MWRITE:
-		if (sh_mmcif_mwrite_block(host))
-			/* Wait data to write */
-			return IRQ_HANDLED;
-		break;
-	case MMCIF_WAIT_FOR_WRITE:
-		if (sh_mmcif_write_block(host))
-			/* Wait for data end */
-			return IRQ_HANDLED;
-=======
 	switch (wait_work) {
 	case MMCIF_WAIT_FOR_REQUEST:
 		/* We're too late, the timeout has already kicked in */
@@ -1898,15 +1264,11 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 	case MMCIF_WAIT_FOR_WRITE:
 		/* Wait for data end? */
 		wait = sh_mmcif_write_block(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MMCIF_WAIT_FOR_STOP:
 		if (host->sd_error) {
 			mrq->stop->error = sh_mmcif_error_manage(host);
-<<<<<<< HEAD
-=======
 			dev_dbg(dev, "%s(): %d\n", __func__, mrq->stop->error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		sh_mmcif_get_cmd12response(host, mrq->stop);
@@ -1914,22 +1276,15 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 		break;
 	case MMCIF_WAIT_FOR_READ_END:
 	case MMCIF_WAIT_FOR_WRITE_END:
-<<<<<<< HEAD
-		if (host->sd_error)
-			mrq->data->error = sh_mmcif_error_manage(host);
-=======
 		if (host->sd_error) {
 			mrq->data->error = sh_mmcif_error_manage(host);
 			dev_dbg(dev, "%s(): %d\n", __func__, mrq->data->error);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
 	}
 
-<<<<<<< HEAD
-=======
 	if (wait) {
 		schedule_delayed_work(&host->timeout_work, host->timeout);
 		/* Wait for more data */
@@ -1937,7 +1292,6 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 		return IRQ_HANDLED;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (host->wait_for != MMCIF_WAIT_FOR_STOP) {
 		struct mmc_data *data = mrq->data;
 		if (!mrq->cmd->error && data && !data->error)
@@ -1946,16 +1300,11 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 
 		if (mrq->stop && !mrq->cmd->error && (!data || !data->error)) {
 			sh_mmcif_stop_cmd(host, mrq);
-<<<<<<< HEAD
-			if (!mrq->stop->error)
-				return IRQ_HANDLED;
-=======
 			if (!mrq->stop->error) {
 				schedule_delayed_work(&host->timeout_work, host->timeout);
 				mutex_unlock(&host->thread_lock);
 				return IRQ_HANDLED;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1964,74 +1313,14 @@ static irqreturn_t sh_mmcif_irqt(int irq, void *dev_id)
 	host->mrq = NULL;
 	mmc_request_done(host->mmc, mrq);
 
-<<<<<<< HEAD
-=======
 	mutex_unlock(&host->thread_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
 static irqreturn_t sh_mmcif_intr(int irq, void *dev_id)
 {
 	struct sh_mmcif_host *host = dev_id;
-<<<<<<< HEAD
-	u32 state;
-	int err = 0;
-
-	state = sh_mmcif_readl(host->addr, MMCIF_CE_INT);
-
-	if (state & INT_ERR_STS) {
-		/* error interrupts - process first */
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~state);
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, state);
-		err = 1;
-	} else if (state & INT_RBSYE) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT,
-				~(INT_RBSYE | INT_CRSPE));
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MRBSYE);
-	} else if (state & INT_CRSPE) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~INT_CRSPE);
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MCRSPE);
-	} else if (state & INT_BUFREN) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~INT_BUFREN);
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MBUFREN);
-	} else if (state & INT_BUFWEN) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~INT_BUFWEN);
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MBUFWEN);
-	} else if (state & INT_CMD12DRE) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT,
-			~(INT_CMD12DRE | INT_CMD12RBE |
-			  INT_CMD12CRE | INT_BUFRE));
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MCMD12DRE);
-	} else if (state & INT_BUFRE) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~INT_BUFRE);
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MBUFRE);
-	} else if (state & INT_DTRANE) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~INT_DTRANE);
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MDTRANE);
-	} else if (state & INT_CMD12RBE) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT,
-				~(INT_CMD12RBE | INT_CMD12CRE));
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, MASK_MCMD12RBE);
-	} else {
-		dev_dbg(&host->pd->dev, "Unsupported interrupt: 0x%x\n", state);
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT, ~state);
-		sh_mmcif_bitclr(host, MMCIF_CE_INT_MASK, state);
-		err = 1;
-	}
-	if (err) {
-		host->sd_error = true;
-		dev_dbg(&host->pd->dev, "int err state = %08x\n", state);
-	}
-	if (state & ~(INT_CMD12RBE | INT_CMD12CRE)) {
-		if (!host->dma_active)
-			return IRQ_WAKE_THREAD;
-		else if (host->sd_error)
-			mmcif_dma_complete(host);
-	} else {
-		dev_dbg(&host->pd->dev, "Unexpected IRQ 0x%x\n", state);
-=======
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	u32 state, mask;
 
@@ -2060,19 +1349,11 @@ static irqreturn_t sh_mmcif_intr(int irq, void *dev_id)
 			sh_mmcif_dma_complete(host);
 	} else {
 		dev_dbg(dev, "Unexpected IRQ 0x%x\n", state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static void mmcif_timeout_work(struct work_struct *work)
-{
-	struct delayed_work *d = container_of(work, struct delayed_work, work);
-	struct sh_mmcif_host *host = container_of(d, struct sh_mmcif_host, timeout_work);
-	struct mmc_request *mrq = host->mrq;
-=======
 static void sh_mmcif_timeout_work(struct work_struct *work)
 {
 	struct delayed_work *d = to_delayed_work(work);
@@ -2080,14 +1361,11 @@ static void sh_mmcif_timeout_work(struct work_struct *work)
 	struct mmc_request *mrq = host->mrq;
 	struct device *dev = sh_mmcif_host_to_dev(host);
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (host->dying)
 		/* Don't run after mmc_remove_host() */
 		return;
 
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&host->lock, flags);
 	if (host->state == STATE_IDLE) {
 		spin_unlock_irqrestore(&host->lock, flags);
@@ -2100,7 +1378,6 @@ static void sh_mmcif_timeout_work(struct work_struct *work)
 	host->state = STATE_TIMEOUT;
 	spin_unlock_irqrestore(&host->lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Handle races with cancel_delayed_work(), unless
 	 * cancel_delayed_work_sync() is used
@@ -2130,9 +1407,6 @@ static void sh_mmcif_timeout_work(struct work_struct *work)
 	mmc_request_done(host->mmc, mrq);
 }
 
-<<<<<<< HEAD
-static int __devinit sh_mmcif_probe(struct platform_device *pdev)
-=======
 static void sh_mmcif_init_ocr(struct sh_mmcif_host *host)
 {
 	struct device *dev = sh_mmcif_host_to_dev(host);
@@ -2151,59 +1425,10 @@ static void sh_mmcif_init_ocr(struct sh_mmcif_host *host)
 }
 
 static int sh_mmcif_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0, irq[2];
 	struct mmc_host *mmc;
 	struct sh_mmcif_host *host;
-<<<<<<< HEAD
-	struct sh_mmcif_plat_data *pd;
-	struct resource *res;
-	void __iomem *reg;
-	char clk_name[8];
-
-	irq[0] = platform_get_irq(pdev, 0);
-	irq[1] = platform_get_irq(pdev, 1);
-	if (irq[0] < 0 || irq[1] < 0) {
-		dev_err(&pdev->dev, "Get irq error\n");
-		return -ENXIO;
-	}
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "platform_get_resource error.\n");
-		return -ENXIO;
-	}
-	reg = ioremap(res->start, resource_size(res));
-	if (!reg) {
-		dev_err(&pdev->dev, "ioremap error.\n");
-		return -ENOMEM;
-	}
-	pd = pdev->dev.platform_data;
-	if (!pd) {
-		dev_err(&pdev->dev, "sh_mmcif plat data error.\n");
-		ret = -ENXIO;
-		goto clean_up;
-	}
-	mmc = mmc_alloc_host(sizeof(struct sh_mmcif_host), &pdev->dev);
-	if (!mmc) {
-		ret = -ENOMEM;
-		goto clean_up;
-	}
-	host		= mmc_priv(mmc);
-	host->mmc	= mmc;
-	host->addr	= reg;
-	host->timeout	= 1000;
-
-	snprintf(clk_name, sizeof(clk_name), "mmc%d", pdev->id);
-	host->hclk = clk_get(&pdev->dev, clk_name);
-	if (IS_ERR(host->hclk)) {
-		dev_err(&pdev->dev, "cannot get clock \"%s\"\n", clk_name);
-		ret = PTR_ERR(host->hclk);
-		goto clean_up1;
-	}
-	clk_enable(host->hclk);
-	host->clk = clk_get_rate(host->hclk);
-=======
 	struct device *dev = &pdev->dev;
 	struct sh_mmcif_plat_data *pd = dev->platform_data;
 	void __iomem *reg;
@@ -2233,86 +1458,11 @@ static int sh_mmcif_probe(struct platform_device *pdev)
 	host->ccs_enable = true;
 	host->clk_ctrl2_enable = false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->pd = pdev;
 
 	spin_lock_init(&host->lock);
 
 	mmc->ops = &sh_mmcif_ops;
-<<<<<<< HEAD
-	mmc->f_max = host->clk / 2;
-	mmc->f_min = host->clk / 512;
-	if (pd->ocr)
-		mmc->ocr_avail = pd->ocr;
-	mmc->caps = MMC_CAP_MMC_HIGHSPEED;
-	if (pd->caps)
-		mmc->caps |= pd->caps;
-	mmc->max_segs = 32;
-	mmc->max_blk_size = 512;
-	mmc->max_req_size = PAGE_CACHE_SIZE * mmc->max_segs;
-	mmc->max_blk_count = mmc->max_req_size / mmc->max_blk_size;
-	mmc->max_seg_size = mmc->max_req_size;
-
-	sh_mmcif_sync_reset(host);
-	platform_set_drvdata(pdev, host);
-
-	pm_runtime_enable(&pdev->dev);
-	host->power = false;
-
-	ret = pm_runtime_resume(&pdev->dev);
-	if (ret < 0)
-		goto clean_up2;
-
-	INIT_DELAYED_WORK(&host->timeout_work, mmcif_timeout_work);
-
-	sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
-
-	ret = request_threaded_irq(irq[0], sh_mmcif_intr, sh_mmcif_irqt, 0, "sh_mmc:error", host);
-	if (ret) {
-		dev_err(&pdev->dev, "request_irq error (sh_mmc:error)\n");
-		goto clean_up3;
-	}
-	ret = request_threaded_irq(irq[1], sh_mmcif_intr, sh_mmcif_irqt, 0, "sh_mmc:int", host);
-	if (ret) {
-		dev_err(&pdev->dev, "request_irq error (sh_mmc:int)\n");
-		goto clean_up4;
-	}
-
-	ret = mmc_add_host(mmc);
-	if (ret < 0)
-		goto clean_up5;
-
-	dev_pm_qos_expose_latency_limit(&pdev->dev, 100);
-
-	dev_info(&pdev->dev, "driver version %s\n", DRIVER_VERSION);
-	dev_dbg(&pdev->dev, "chip ver H'%04x\n",
-		sh_mmcif_readl(host->addr, MMCIF_CE_VERSION) & 0x0000ffff);
-	return ret;
-
-clean_up5:
-	free_irq(irq[1], host);
-clean_up4:
-	free_irq(irq[0], host);
-clean_up3:
-	pm_runtime_suspend(&pdev->dev);
-clean_up2:
-	pm_runtime_disable(&pdev->dev);
-	clk_disable(host->hclk);
-clean_up1:
-	mmc_free_host(mmc);
-clean_up:
-	if (reg)
-		iounmap(reg);
-	return ret;
-}
-
-static int __devexit sh_mmcif_remove(struct platform_device *pdev)
-{
-	struct sh_mmcif_host *host = platform_get_drvdata(pdev);
-	int irq[2];
-
-	host->dying = true;
-=======
 	sh_mmcif_init_ocr(host);
 
 	mmc->caps |= MMC_CAP_MMC_HIGHSPEED | MMC_CAP_WAIT_WHILE_BUSY;
@@ -2402,7 +1552,6 @@ static void sh_mmcif_remove(struct platform_device *pdev)
 
 	host->dying = true;
 	clk_prepare_enable(host->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_runtime_get_sync(&pdev->dev);
 
 	dev_pm_qos_hide_latency_limit(&pdev->dev);
@@ -2417,23 +1566,6 @@ static void sh_mmcif_remove(struct platform_device *pdev)
 	 */
 	cancel_delayed_work_sync(&host->timeout_work);
 
-<<<<<<< HEAD
-	if (host->addr)
-		iounmap(host->addr);
-
-	irq[0] = platform_get_irq(pdev, 0);
-	irq[1] = platform_get_irq(pdev, 1);
-
-	free_irq(irq[0], host);
-	free_irq(irq[1], host);
-
-	platform_set_drvdata(pdev, NULL);
-
-	clk_disable(host->hclk);
-	mmc_free_host(host->mmc);
-	pm_runtime_put_sync(&pdev->dev);
-	pm_runtime_disable(&pdev->dev);
-=======
 	clk_disable_unprepare(host->clk);
 	mmc_free_host(host->mmc);
 	pm_runtime_put_sync(&pdev->dev);
@@ -2448,45 +1580,10 @@ static int sh_mmcif_suspend(struct device *dev)
 	pm_runtime_get_sync(dev);
 	sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
 	pm_runtime_put(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int sh_mmcif_suspend(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct sh_mmcif_host *host = platform_get_drvdata(pdev);
-	int ret = mmc_suspend_host(host->mmc);
-
-	if (!ret) {
-		sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
-		clk_disable(host->hclk);
-	}
-
-	return ret;
-}
-
-static int sh_mmcif_resume(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct sh_mmcif_host *host = platform_get_drvdata(pdev);
-
-	clk_enable(host->hclk);
-
-	return mmc_resume_host(host->mmc);
-}
-#else
-#define sh_mmcif_suspend	NULL
-#define sh_mmcif_resume		NULL
-#endif	/* CONFIG_PM */
-
-static const struct dev_pm_ops sh_mmcif_dev_pm_ops = {
-	.suspend = sh_mmcif_suspend,
-	.resume = sh_mmcif_resume,
-=======
 static int sh_mmcif_resume(struct device *dev)
 {
 	return 0;
@@ -2495,34 +1592,22 @@ static int sh_mmcif_resume(struct device *dev)
 
 static const struct dev_pm_ops sh_mmcif_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(sh_mmcif_suspend, sh_mmcif_resume)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_driver sh_mmcif_driver = {
 	.probe		= sh_mmcif_probe,
-<<<<<<< HEAD
-	.remove		= sh_mmcif_remove,
-	.driver		= {
-		.name	= DRIVER_NAME,
-		.pm	= &sh_mmcif_dev_pm_ops,
-=======
 	.remove_new	= sh_mmcif_remove,
 	.driver		= {
 		.name	= DRIVER_NAME,
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 		.pm	= &sh_mmcif_dev_pm_ops,
 		.of_match_table = sh_mmcif_of_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 module_platform_driver(sh_mmcif_driver);
 
 MODULE_DESCRIPTION("SuperH on-chip MMC/eMMC interface driver");
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-=======
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:" DRIVER_NAME);
 MODULE_AUTHOR("Yusuke Goda <yusuke.goda.sx@renesas.com>");

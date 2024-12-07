@@ -36,12 +36,8 @@
 #include <linux/slab.h>
 
 #include "mlx4_ib.h"
-<<<<<<< HEAD
-#include "user.h"
-=======
 #include <rdma/mlx4-abi.h>
 #include <rdma/uverbs_ioctl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void *get_wqe(struct mlx4_ib_srq *srq, int n)
 {
@@ -64,11 +60,7 @@ static void mlx4_ib_srq_event(struct mlx4_srq *srq, enum mlx4_event type)
 			event.event = IB_EVENT_SRQ_ERR;
 			break;
 		default:
-<<<<<<< HEAD
-			printk(KERN_WARNING "mlx4_ib: Unexpected event type %d "
-=======
 			pr_warn("Unexpected event type %d "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "on SRQ %06x\n", type, srq->srqn);
 			return;
 		}
@@ -77,14 +69,6 @@ static void mlx4_ib_srq_event(struct mlx4_srq *srq, enum mlx4_event type)
 	}
 }
 
-<<<<<<< HEAD
-struct ib_srq *mlx4_ib_create_srq(struct ib_pd *pd,
-				  struct ib_srq_init_attr *init_attr,
-				  struct ib_udata *udata)
-{
-	struct mlx4_ib_dev *dev = to_mdev(pd->device);
-	struct mlx4_ib_srq *srq;
-=======
 int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 		       struct ib_srq_init_attr *init_attr,
 		       struct ib_udata *udata)
@@ -93,7 +77,6 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 	struct mlx4_ib_ucontext *ucontext = rdma_udata_to_drv_context(
 		udata, struct mlx4_ib_ucontext, ibucontext);
 	struct mlx4_ib_srq *srq = to_msrq(ib_srq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_wqe_srq_next_seg *next;
 	struct mlx4_wqe_data_seg *scatter;
 	u32 cqn;
@@ -103,16 +86,6 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 	int err;
 	int i;
 
-<<<<<<< HEAD
-	/* Sanity check SRQ size before proceeding */
-	if (init_attr->attr.max_wr  >= dev->dev->caps.max_srq_wqes ||
-	    init_attr->attr.max_sge >  dev->dev->caps.max_srq_sge)
-		return ERR_PTR(-EINVAL);
-
-	srq = kmalloc(sizeof *srq, GFP_KERNEL);
-	if (!srq)
-		return ERR_PTR(-ENOMEM);
-=======
 	if (init_attr->srq_type != IB_SRQT_BASIC &&
 	    init_attr->srq_type != IB_SRQT_XRC)
 		return -EOPNOTSUPP;
@@ -121,7 +94,6 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 	if (init_attr->attr.max_wr  >= dev->dev->caps.max_srq_wqes ||
 	    init_attr->attr.max_sge >  dev->dev->caps.max_srq_sge)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&srq->mutex);
 	spin_lock_init(&srq->lock);
@@ -136,25 +108,6 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 
 	buf_size = srq->msrq.max * desc_size;
 
-<<<<<<< HEAD
-	if (pd->uobject) {
-		struct mlx4_ib_create_srq ucmd;
-
-		if (ib_copy_from_udata(&ucmd, udata, sizeof ucmd)) {
-			err = -EFAULT;
-			goto err_srq;
-		}
-
-		srq->umem = ib_umem_get(pd->uobject->context, ucmd.buf_addr,
-					buf_size, 0, 0);
-		if (IS_ERR(srq->umem)) {
-			err = PTR_ERR(srq->umem);
-			goto err_srq;
-		}
-
-		err = mlx4_mtt_init(dev->dev, ib_umem_page_count(srq->umem),
-				    ilog2(srq->umem->page_size), &srq->mtt);
-=======
 	if (udata) {
 		struct mlx4_ib_create_srq ucmd;
 
@@ -169,7 +122,6 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 		err = mlx4_mtt_init(
 			dev->dev, ib_umem_num_dma_blocks(srq->umem, PAGE_SIZE),
 			PAGE_SHIFT, &srq->mtt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto err_buf;
 
@@ -177,31 +129,18 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 		if (err)
 			goto err_mtt;
 
-<<<<<<< HEAD
-		err = mlx4_ib_db_map_user(to_mucontext(pd->uobject->context),
-					  ucmd.db_addr, &srq->db);
-=======
 		err = mlx4_ib_db_map_user(udata, ucmd.db_addr, &srq->db);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto err_mtt;
 	} else {
 		err = mlx4_db_alloc(dev->dev, &srq->db, 0);
 		if (err)
-<<<<<<< HEAD
-			goto err_srq;
-
-		*srq->db.db = 0;
-
-		if (mlx4_buf_alloc(dev->dev, buf_size, PAGE_SIZE * 2, &srq->buf)) {
-=======
 			return err;
 
 		*srq->db.db = 0;
 
 		if (mlx4_buf_alloc(dev->dev, buf_size, PAGE_SIZE * 2,
 				   &srq->buf)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOMEM;
 			goto err_db;
 		}
@@ -230,27 +169,14 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 		if (err)
 			goto err_mtt;
 
-<<<<<<< HEAD
-		srq->wrid = kmalloc(srq->msrq.max * sizeof (u64), GFP_KERNEL);
-=======
 		srq->wrid = kvmalloc_array(srq->msrq.max,
 					   sizeof(u64), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!srq->wrid) {
 			err = -ENOMEM;
 			goto err_mtt;
 		}
 	}
 
-<<<<<<< HEAD
-	cqn = (init_attr->srq_type == IB_SRQT_XRC) ?
-		to_mcq(init_attr->ext.xrc.cq)->mcq.cqn : 0;
-	xrcdn = (init_attr->srq_type == IB_SRQT_XRC) ?
-		to_mxrcd(init_attr->ext.xrc.xrcd)->xrcdn :
-		(u16) dev->dev->caps.reserved_xrcds;
-	err = mlx4_srq_alloc(dev->dev, to_mpd(pd)->pdn, cqn, xrcdn, &srq->mtt,
-			     srq->db.dma, &srq->msrq);
-=======
 	cqn = ib_srq_has_cq(init_attr->srq_type) ?
 		to_mcq(init_attr->ext.cq)->mcq.cqn : 0;
 	xrcdn = (init_attr->srq_type == IB_SRQT_XRC) ?
@@ -258,18 +184,13 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 		(u16) dev->dev->caps.reserved_xrcds;
 	err = mlx4_srq_alloc(dev->dev, to_mpd(ib_srq->pd)->pdn, cqn, xrcdn,
 			     &srq->mtt, srq->db.dma, &srq->msrq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_wrid;
 
 	srq->msrq.event = mlx4_ib_srq_event;
 	srq->ibsrq.ext.xrc.srq_num = srq->msrq.srqn;
 
-<<<<<<< HEAD
-	if (pd->uobject)
-=======
 	if (udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ib_copy_to_udata(udata, &srq->msrq.srqn, sizeof (__u32))) {
 			err = -EFAULT;
 			goto err_wrid;
@@ -277,15 +198,6 @@ int mlx4_ib_create_srq(struct ib_srq *ib_srq,
 
 	init_attr->attr.max_wr = srq->msrq.max - 1;
 
-<<<<<<< HEAD
-	return &srq->ibsrq;
-
-err_wrid:
-	if (pd->uobject)
-		mlx4_ib_db_unmap_user(to_mucontext(pd->uobject->context), &srq->db);
-	else
-		kfree(srq->wrid);
-=======
 	return 0;
 
 err_wrid:
@@ -293,27 +205,11 @@ err_wrid:
 		mlx4_ib_db_unmap_user(ucontext, &srq->db);
 	else
 		kvfree(srq->wrid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_mtt:
 	mlx4_mtt_cleanup(dev->dev, &srq->mtt);
 
 err_buf:
-<<<<<<< HEAD
-	if (pd->uobject)
-		ib_umem_release(srq->umem);
-	else
-		mlx4_buf_free(dev->dev, buf_size, &srq->buf);
-
-err_db:
-	if (!pd->uobject)
-		mlx4_db_free(dev->dev, &srq->db);
-
-err_srq:
-	kfree(srq);
-
-	return ERR_PTR(err);
-=======
 	if (!srq->umem)
 		mlx4_buf_free(dev->dev, buf_size, &srq->buf);
 	ib_umem_release(srq->umem);
@@ -323,7 +219,6 @@ err_db:
 		mlx4_db_free(dev->dev, &srq->db);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mlx4_ib_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
@@ -370,11 +265,7 @@ int mlx4_ib_query_srq(struct ib_srq *ibsrq, struct ib_srq_attr *srq_attr)
 	return 0;
 }
 
-<<<<<<< HEAD
-int mlx4_ib_destroy_srq(struct ib_srq *srq)
-=======
 int mlx4_ib_destroy_srq(struct ib_srq *srq, struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_ib_dev *dev = to_mdev(srq->device);
 	struct mlx4_ib_srq *msrq = to_msrq(srq);
@@ -382,13 +273,6 @@ int mlx4_ib_destroy_srq(struct ib_srq *srq, struct ib_udata *udata)
 	mlx4_srq_free(dev->dev, &msrq->msrq);
 	mlx4_mtt_cleanup(dev->dev, &msrq->mtt);
 
-<<<<<<< HEAD
-	if (srq->uobject) {
-		mlx4_ib_db_unmap_user(to_mucontext(srq->uobject->context), &msrq->db);
-		ib_umem_release(msrq->umem);
-	} else {
-		kfree(msrq->wrid);
-=======
 	if (udata) {
 		mlx4_ib_db_unmap_user(
 			rdma_udata_to_drv_context(
@@ -398,18 +282,11 @@ int mlx4_ib_destroy_srq(struct ib_srq *srq, struct ib_udata *udata)
 			&msrq->db);
 	} else {
 		kvfree(msrq->wrid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlx4_buf_free(dev->dev, msrq->msrq.max << msrq->msrq.wqe_shift,
 			      &msrq->buf);
 		mlx4_db_free(dev->dev, &msrq->db);
 	}
-<<<<<<< HEAD
-
-	kfree(msrq);
-
-=======
 	ib_umem_release(msrq->umem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -427,13 +304,8 @@ void mlx4_ib_free_srq_wqe(struct mlx4_ib_srq *srq, int wqe_index)
 	spin_unlock(&srq->lock);
 }
 
-<<<<<<< HEAD
-int mlx4_ib_post_srq_recv(struct ib_srq *ibsrq, struct ib_recv_wr *wr,
-			  struct ib_recv_wr **bad_wr)
-=======
 int mlx4_ib_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 			  const struct ib_recv_wr **bad_wr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_ib_srq *srq = to_msrq(ibsrq);
 	struct mlx4_wqe_srq_next_seg *next;
@@ -442,10 +314,6 @@ int mlx4_ib_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 	int err = 0;
 	int nreq;
 	int i;
-<<<<<<< HEAD
-
-	spin_lock_irqsave(&srq->lock, flags);
-=======
 	struct mlx4_ib_dev *mdev = to_mdev(ibsrq->device);
 
 	spin_lock_irqsave(&srq->lock, flags);
@@ -454,7 +322,6 @@ int mlx4_ib_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 		*bad_wr = wr;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (nreq = 0; wr; ++nreq, wr = wr->next) {
 		if (unlikely(wr->num_sge > srq->msrq.max_gs)) {
@@ -499,10 +366,7 @@ int mlx4_ib_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 
 		*srq->db.db = cpu_to_be32(srq->wqe_ctr);
 	}
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&srq->lock, flags);
 

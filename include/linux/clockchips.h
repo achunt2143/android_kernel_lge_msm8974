@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  linux/include/linux/clockchips.h
  *
  *  This file contains the structure definitions for clockchips.
@@ -12,38 +9,6 @@
 #ifndef _LINUX_CLOCKCHIPS_H
 #define _LINUX_CLOCKCHIPS_H
 
-<<<<<<< HEAD
-#ifdef CONFIG_GENERIC_CLOCKEVENTS_BUILD
-
-#include <linux/clocksource.h>
-#include <linux/cpumask.h>
-#include <linux/ktime.h>
-#include <linux/notifier.h>
-
-struct clock_event_device;
-
-/* Clock event mode commands */
-enum clock_event_mode {
-	CLOCK_EVT_MODE_UNUSED = 0,
-	CLOCK_EVT_MODE_SHUTDOWN,
-	CLOCK_EVT_MODE_PERIODIC,
-	CLOCK_EVT_MODE_ONESHOT,
-	CLOCK_EVT_MODE_RESUME,
-};
-
-/* Clock event notification values */
-enum clock_event_nofitiers {
-	CLOCK_EVT_NOTIFY_ADD,
-	CLOCK_EVT_NOTIFY_BROADCAST_ON,
-	CLOCK_EVT_NOTIFY_BROADCAST_OFF,
-	CLOCK_EVT_NOTIFY_BROADCAST_FORCE,
-	CLOCK_EVT_NOTIFY_BROADCAST_ENTER,
-	CLOCK_EVT_NOTIFY_BROADCAST_EXIT,
-	CLOCK_EVT_NOTIFY_SUSPEND,
-	CLOCK_EVT_NOTIFY_RESUME,
-	CLOCK_EVT_NOTIFY_CPU_DYING,
-	CLOCK_EVT_NOTIFY_CPU_DEAD,
-=======
 #ifdef CONFIG_GENERIC_CLOCKEVENTS
 
 # include <linux/clocksource.h>
@@ -73,44 +38,27 @@ enum clock_event_state {
 	CLOCK_EVT_STATE_PERIODIC,
 	CLOCK_EVT_STATE_ONESHOT,
 	CLOCK_EVT_STATE_ONESHOT_STOPPED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Clock event features
  */
-<<<<<<< HEAD
-#define CLOCK_EVT_FEAT_PERIODIC		0x000001
-#define CLOCK_EVT_FEAT_ONESHOT		0x000002
-#define CLOCK_EVT_FEAT_KTIME		0x000004
-/*
- * x86(64) specific misfeatures:
-=======
 # define CLOCK_EVT_FEAT_PERIODIC	0x000001
 # define CLOCK_EVT_FEAT_ONESHOT		0x000002
 # define CLOCK_EVT_FEAT_KTIME		0x000004
 
 /*
  * x86(64) specific (mis)features:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * - Clockevent source stops in C3 State and needs broadcast support.
  * - Local APIC timer is used as a dummy device.
  */
-<<<<<<< HEAD
-#define CLOCK_EVT_FEAT_C3STOP		0x000008
-#define CLOCK_EVT_FEAT_DUMMY		0x000010
-=======
 # define CLOCK_EVT_FEAT_C3STOP		0x000008
 # define CLOCK_EVT_FEAT_DUMMY		0x000010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Core shall set the interrupt affinity dynamically in broadcast mode
  */
-<<<<<<< HEAD
-#define CLOCK_EVT_FEAT_DYNIRQ		0x000020
-=======
 # define CLOCK_EVT_FEAT_DYNIRQ		0x000020
 # define CLOCK_EVT_FEAT_PERCPU		0x000040
 
@@ -118,7 +66,6 @@ enum clock_event_state {
  * Clockevent device is based on a hrtimer for broadcast
  */
 # define CLOCK_EVT_FEAT_HRTIMER		0x000080
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct clock_event_device - clock event device descriptor
@@ -131,12 +78,6 @@ enum clock_event_state {
  * @min_delta_ns:	minimum delta value in ns
  * @mult:		nanosecond to cycles multiplier
  * @shift:		nanoseconds to cycles divisor (power of two)
-<<<<<<< HEAD
- * @mode:		operating mode assigned by the management code
- * @features:		features
- * @retries:		number of forced programming retries
- * @set_mode:		set mode function
-=======
  * @state_use_accessors:current state of the device, assigned by the core code
  * @features:		features
  * @retries:		number of forced programming retries
@@ -145,24 +86,12 @@ enum clock_event_state {
  * @set_state_oneshot_stopped: switch state to oneshot_stopped
  * @set_state_shutdown:	switch state to shutdown
  * @tick_resume:	resume clkevt device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @broadcast:		function to broadcast events
  * @min_delta_ticks:	minimum delta value in ticks stored for reconfiguration
  * @max_delta_ticks:	maximum delta value in ticks stored for reconfiguration
  * @name:		ptr to clock event name
  * @rating:		variable to rate clock event devices
  * @irq:		IRQ number (only for non CPU local devices)
-<<<<<<< HEAD
- * @cpumask:		cpumask to indicate for which CPUs this device works
- * @list:		list head for the management code
- */
-struct clock_event_device {
-	void			(*event_handler)(struct clock_event_device *);
-	int			(*set_next_event)(unsigned long evt,
-						  struct clock_event_device *);
-	int			(*set_next_ktime)(ktime_t expires,
-						  struct clock_event_device *);
-=======
  * @bound_on:		Bound on CPU
  * @cpumask:		cpumask to indicate for which CPUs this device works
  * @list:		list head for the management code
@@ -172,21 +101,11 @@ struct clock_event_device {
 	void			(*event_handler)(struct clock_event_device *);
 	int			(*set_next_event)(unsigned long evt, struct clock_event_device *);
 	int			(*set_next_ktime)(ktime_t expires, struct clock_event_device *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ktime_t			next_event;
 	u64			max_delta_ns;
 	u64			min_delta_ns;
 	u32			mult;
 	u32			shift;
-<<<<<<< HEAD
-	enum clock_event_mode	mode;
-	unsigned int		features;
-	unsigned long		retries;
-
-	void			(*broadcast)(const struct cpumask *mask);
-	void			(*set_mode)(enum clock_event_mode mode,
-					    struct clock_event_device *);
-=======
 	enum clock_event_state	state_use_accessors;
 	unsigned int		features;
 	unsigned long		retries;
@@ -200,19 +119,12 @@ struct clock_event_device {
 	void			(*broadcast)(const struct cpumask *mask);
 	void			(*suspend)(struct clock_event_device *);
 	void			(*resume)(struct clock_event_device *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		min_delta_ticks;
 	unsigned long		max_delta_ticks;
 
 	const char		*name;
 	int			rating;
 	int			irq;
-<<<<<<< HEAD
-	const struct cpumask	*cpumask;
-	struct list_head	list;
-} ____cacheline_aligned;
-
-=======
 	int			bound_on;
 	const struct cpumask	*cpumask;
 	struct list_head	list;
@@ -245,7 +157,6 @@ static inline bool clockevent_state_oneshot_stopped(struct clock_event_device *d
 	return dev->state_use_accessors == CLOCK_EVT_STATE_ONESHOT_STOPPED;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Calculate a multiplication factor for scaled math, which is used to convert
  * nanoseconds based values to clock ticks:
@@ -257,14 +168,6 @@ static inline bool clockevent_state_oneshot_stopped(struct clock_event_device *d
  *
  * factor = (clock_ticks << shift) / nanoseconds
  */
-<<<<<<< HEAD
-static inline unsigned long div_sc(unsigned long ticks, unsigned long nsec,
-				   int shift)
-{
-	uint64_t tmp = ((uint64_t)ticks) << shift;
-
-	do_div(tmp, nsec);
-=======
 static inline unsigned long
 div_sc(unsigned long ticks, unsigned long nsec, int shift)
 {
@@ -272,20 +175,13 @@ div_sc(unsigned long ticks, unsigned long nsec, int shift)
 
 	do_div(tmp, nsec);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (unsigned long) tmp;
 }
 
 /* Clock event layer functions */
-<<<<<<< HEAD
-extern u64 clockevent_delta2ns(unsigned long latch,
-			       struct clock_event_device *evt);
-extern void clockevents_register_device(struct clock_event_device *dev);
-=======
 extern u64 clockevent_delta2ns(unsigned long latch, struct clock_event_device *evt);
 extern void clockevents_register_device(struct clock_event_device *dev);
 extern int clockevents_unbind_device(struct clock_event_device *ced, int cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void clockevents_config_and_register(struct clock_event_device *dev,
 					    u32 freq, unsigned long min_delta,
@@ -293,38 +189,6 @@ extern void clockevents_config_and_register(struct clock_event_device *dev,
 
 extern int clockevents_update_freq(struct clock_event_device *ce, u32 freq);
 
-<<<<<<< HEAD
-extern void clockevents_exchange_device(struct clock_event_device *old,
-					struct clock_event_device *new);
-extern void clockevents_set_mode(struct clock_event_device *dev,
-				 enum clock_event_mode mode);
-extern int clockevents_register_notifier(struct notifier_block *nb);
-extern int clockevents_program_event(struct clock_event_device *dev,
-				     ktime_t expires, bool force);
-
-extern void clockevents_handle_noop(struct clock_event_device *dev);
-
-static inline void
-clockevents_calc_mult_shift(struct clock_event_device *ce, u32 freq, u32 minsec)
-{
-	return clocks_calc_mult_shift(&ce->mult, &ce->shift, NSEC_PER_SEC,
-				      freq, minsec);
-}
-
-#ifdef CONFIG_GENERIC_CLOCKEVENTS
-extern void clockevents_notify(unsigned long reason, void *arg);
-#else
-# define clockevents_notify(reason, arg) do { } while (0)
-#endif
-
-#else /* CONFIG_GENERIC_CLOCKEVENTS_BUILD */
-
-#define clockevents_notify(reason, arg) do { } while (0)
-
-#endif
-
-#endif
-=======
 static inline void
 clockevents_calc_mult_shift(struct clock_event_device *ce, u32 freq, u32 maxsec)
 {
@@ -361,4 +225,3 @@ static inline void tick_setup_hrtimer_broadcast(void) { }
 #endif /* !CONFIG_GENERIC_CLOCKEVENTS */
 
 #endif /* _LINUX_CLOCKCHIPS_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

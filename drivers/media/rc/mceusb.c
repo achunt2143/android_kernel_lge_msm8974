@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for USB Windows Media Center Ed. eHome Infrared Transceivers
  *
@@ -23,74 +20,34 @@
  * remote/transceiver requirements and specification document, found at
  * download.microsoft.com, title
  * Windows-Media-Center-RC-IR-Collection-Green-Button-Specification-03-08-2011-V2.pdf
-<<<<<<< HEAD
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/workqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 #include <linux/usb/input.h>
 #include <linux/pm_wakeup.h>
 #include <media/rc-core.h>
 
-<<<<<<< HEAD
-#define DRIVER_VERSION	"1.92"
-=======
 #define DRIVER_VERSION	"1.95"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR	"Jarod Wilson <jarod@redhat.com>"
 #define DRIVER_DESC	"Windows Media Center Ed. eHome Infrared Transceiver " \
 			"device driver"
 #define DRIVER_NAME	"mceusb"
 
-<<<<<<< HEAD
-#define USB_BUFLEN		32 /* USB reception buffer length */
-=======
 #define USB_TX_TIMEOUT		1000 /* in milliseconds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define USB_CTRL_MSG_SZ		2  /* Size of usb ctrl msg on gen1 hw */
 #define MCE_G1_INIT_MSGS	40 /* Init messages on gen1 hw to throw out */
 
 /* MCE constants */
-<<<<<<< HEAD
-#define MCE_CMDBUF_SIZE		384  /* MCE Command buffer length */
-#define MCE_TIME_UNIT		50   /* Approx 50us resolution */
-#define MCE_CODE_LENGTH		5    /* Normal length of packet (with header) */
-#define MCE_PACKET_SIZE		4    /* Normal length of packet (without header) */
-#define MCE_IRDATA_HEADER	0x84 /* Actual header format is 0x80 + num_bytes */
-#define MCE_IRDATA_TRAILER	0x80 /* End of IR data */
-#define MCE_TX_HEADER_LENGTH	3    /* # of bytes in the initializing tx header */
-=======
 #define MCE_IRBUF_SIZE		128  /* TX IR buffer length */
 #define MCE_TIME_UNIT		50   /* Approx 50us resolution */
 #define MCE_PACKET_SIZE		31   /* Max length of packet (with header) */
 #define MCE_IRDATA_HEADER	(0x80 + MCE_PACKET_SIZE - 1)
 				     /* Actual format is 0x80 + num_bytes */
 #define MCE_IRDATA_TRAILER	0x80 /* End of IR data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MCE_MAX_CHANNELS	2    /* Two transmitters, hardware dependent? */
 #define MCE_DEFAULT_TX_MASK	0x03 /* Vals: TX1=0x01, TX2=0x02, ALL=0x03 */
 #define MCE_PULSE_BIT		0x80 /* Pulse bit, MSB set == PULSE else SPACE */
@@ -112,13 +69,8 @@
 #define MCE_CMD			0x1f
 #define MCE_PORT_IR		0x4	/* (0x4 << 5) | MCE_CMD = 0x9f */
 #define MCE_PORT_SYS		0x7	/* (0x7 << 5) | MCE_CMD = 0xff */
-<<<<<<< HEAD
-#define MCE_PORT_SER		0x6	/* 0xc0 thru 0xdf flush & 0x1f bytes */
-#define MCE_PORT_MASK	0xe0	/* Mask out command bits */
-=======
 #define MCE_PORT_SER		0x6	/* 0xc0 through 0xdf flush & 0x1f bytes */
 #define MCE_PORT_MASK		0xe0	/* Mask out command bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Command port headers */
 #define MCE_CMD_PORT_IR		0x9f	/* IR-related cmd/rsp */
@@ -187,31 +139,6 @@
 #define MCE_COMMAND_IRDATA	0x80
 #define MCE_PACKET_LENGTH_MASK	0x1f /* Packet length mask */
 
-<<<<<<< HEAD
-/* module parameters */
-#ifdef CONFIG_USB_DEBUG
-static bool debug = 1;
-#else
-static bool debug;
-#endif
-
-#define mce_dbg(dev, fmt, ...)					\
-	do {							\
-		if (debug)					\
-			dev_info(dev, fmt, ## __VA_ARGS__);	\
-	} while (0)
-
-/* general constants */
-#define SEND_FLAG_IN_PROGRESS	1
-#define SEND_FLAG_COMPLETE	2
-#define RECV_FLAG_IN_PROGRESS	3
-#define RECV_FLAG_COMPLETE	4
-
-#define MCEUSB_RX		1
-#define MCEUSB_TX		2
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VENDOR_PHILIPS		0x0471
 #define VENDOR_SMK		0x0609
 #define VENDOR_TATUNG		0x1460
@@ -235,36 +162,26 @@ static bool debug;
 #define VENDOR_REALTEK		0x0bda
 #define VENDOR_TIVO		0x105a
 #define VENDOR_CONEXANT		0x0572
-<<<<<<< HEAD
-=======
 #define VENDOR_TWISTEDMELON	0x2596
 #define VENDOR_HAUPPAUGE	0x2040
 #define VENDOR_PCTV		0x2013
 #define VENDOR_ADAPTEC		0x03f3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum mceusb_model_type {
 	MCE_GEN2 = 0,		/* Most boards */
 	MCE_GEN1,
 	MCE_GEN3,
-<<<<<<< HEAD
-	MCE_GEN2_TX_INV,
-=======
 	MCE_GEN3_BROKEN_IRTIMEOUT,
 	MCE_GEN2_TX_INV,
 	MCE_GEN2_TX_INV_RX_GOOD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	POLARIS_EVK,
 	CX_HYBRID_TV,
 	MULTIFUNCTION,
 	TIVO_KIT,
 	MCE_GEN2_NO_TX,
-<<<<<<< HEAD
-=======
 	HAUPPAUGE_CX_HYBRID_TV,
 	EVROMEDIA_FULL_HYBRID_FULLHD,
 	ASTROMETA_T2HYBRID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mceusb_model {
@@ -273,8 +190,6 @@ struct mceusb_model {
 	u32 mce_gen3:1;
 	u32 tx_mask_normal:1;
 	u32 no_tx:1;
-<<<<<<< HEAD
-=======
 	u32 broken_irtimeout:1;
 	/*
 	 * 2nd IR receiver (short-range, wideband) for learning mode:
@@ -283,7 +198,6 @@ struct mceusb_model {
 	 *     2, rx2 which under counts IR carrier cycles
 	 */
 	u32 rx2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int ir_intfnum;
 
@@ -295,17 +209,11 @@ static const struct mceusb_model mceusb_model[] = {
 	[MCE_GEN1] = {
 		.mce_gen1 = 1,
 		.tx_mask_normal = 1,
-<<<<<<< HEAD
-	},
-	[MCE_GEN2] = {
-		.mce_gen2 = 1,
-=======
 		.rx2 = 2,
 	},
 	[MCE_GEN2] = {
 		.mce_gen2 = 1,
 		.rx2 = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[MCE_GEN2_NO_TX] = {
 		.mce_gen2 = 1,
@@ -314,21 +222,16 @@ static const struct mceusb_model mceusb_model[] = {
 	[MCE_GEN2_TX_INV] = {
 		.mce_gen2 = 1,
 		.tx_mask_normal = 1,
-<<<<<<< HEAD
-=======
 		.rx2 = 1,
 	},
 	[MCE_GEN2_TX_INV_RX_GOOD] = {
 		.mce_gen2 = 1,
 		.tx_mask_normal = 1,
 		.rx2 = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[MCE_GEN3] = {
 		.mce_gen3 = 1,
 		.tx_mask_normal = 1,
-<<<<<<< HEAD
-=======
 		.rx2 = 2,
 	},
 	[MCE_GEN3_BROKEN_IRTIMEOUT] = {
@@ -336,7 +239,6 @@ static const struct mceusb_model mceusb_model[] = {
 		.tx_mask_normal = 1,
 		.rx2 = 2,
 		.broken_irtimeout = 1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[POLARIS_EVK] = {
 		/*
@@ -344,23 +246,13 @@ static const struct mceusb_model mceusb_model[] = {
 		 * remotes, but we should have something handy,
 		 * to allow testing it
 		 */
-<<<<<<< HEAD
-		.rc_map = RC_MAP_HAUPPAUGE,
-		.name = "Conexant Hybrid TV (cx231xx) MCE IR",
-=======
 		.name = "Conexant Hybrid TV (cx231xx) MCE IR",
 		.rx2 = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[CX_HYBRID_TV] = {
 		.no_tx = 1, /* tx isn't wired up at all */
 		.name = "Conexant Hybrid TV (cx231xx) MCE IR",
 	},
-<<<<<<< HEAD
-	[MULTIFUNCTION] = {
-		.mce_gen2 = 1,
-		.ir_intfnum = 2,
-=======
 	[HAUPPAUGE_CX_HYBRID_TV] = {
 		.no_tx = 1, /* eeprom says it has no tx */
 		.name = "Conexant Hybrid TV (cx231xx) MCE IR no TX",
@@ -369,17 +261,10 @@ static const struct mceusb_model mceusb_model[] = {
 		.mce_gen2 = 1,
 		.ir_intfnum = 2,
 		.rx2 = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	[TIVO_KIT] = {
 		.mce_gen2 = 1,
 		.rc_map = RC_MAP_TIVO,
-<<<<<<< HEAD
-	},
-};
-
-static struct usb_device_id mceusb_dev_table[] = {
-=======
 		.rx2 = 2,
 	},
 	[EVROMEDIA_FULL_HYBRID_FULLHD] = {
@@ -395,7 +280,6 @@ static struct usb_device_id mceusb_dev_table[] = {
 };
 
 static const struct usb_device_id mceusb_dev_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Original Microsoft MCE IR Transceiver (often HP-branded) */
 	{ USB_DEVICE(VENDOR_MICROSOFT, 0x006d),
 	  .driver_info = MCE_GEN1 },
@@ -417,22 +301,14 @@ static const struct usb_device_id mceusb_dev_table[] = {
 	/* Philips/Spinel plus IR transceiver for ASUS */
 	{ USB_DEVICE(VENDOR_PHILIPS, 0x2088) },
 	/* Philips IR transceiver (Dell branded) */
-<<<<<<< HEAD
-	{ USB_DEVICE(VENDOR_PHILIPS, 0x2093) },
-=======
 	{ USB_DEVICE(VENDOR_PHILIPS, 0x2093),
 	  .driver_info = MCE_GEN2_TX_INV },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Realtek MCE IR Receiver and card reader */
 	{ USB_DEVICE(VENDOR_REALTEK, 0x0161),
 	  .driver_info = MULTIFUNCTION },
 	/* SMK/Toshiba G83C0004D410 */
 	{ USB_DEVICE(VENDOR_SMK, 0x031d),
-<<<<<<< HEAD
-	  .driver_info = MCE_GEN2_TX_INV },
-=======
 	  .driver_info = MCE_GEN2_TX_INV_RX_GOOD },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SMK eHome Infrared Transceiver (Sony VAIO) */
 	{ USB_DEVICE(VENDOR_SMK, 0x0322),
 	  .driver_info = MCE_GEN2_TX_INV },
@@ -444,12 +320,9 @@ static const struct usb_device_id mceusb_dev_table[] = {
 	/* SMK/I-O Data GV-MC7/RCKIT Receiver */
 	{ USB_DEVICE(VENDOR_SMK, 0x0353),
 	  .driver_info = MCE_GEN2_NO_TX },
-<<<<<<< HEAD
-=======
 	/* SMK RXX6000 Infrared Receiver */
 	{ USB_DEVICE(VENDOR_SMK, 0x0357),
 	  .driver_info = MCE_GEN2_NO_TX },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Tatung eHome Infrared Transceiver */
 	{ USB_DEVICE(VENDOR_TATUNG, 0x9150) },
 	/* Shuttle eHome Infrared Transceiver */
@@ -477,11 +350,7 @@ static const struct usb_device_id mceusb_dev_table[] = {
 	  .driver_info = MCE_GEN2_TX_INV },
 	/* Topseed eHome Infrared Transceiver */
 	{ USB_DEVICE(VENDOR_TOPSEED, 0x0011),
-<<<<<<< HEAD
-	  .driver_info = MCE_GEN3 },
-=======
 	  .driver_info = MCE_GEN3_BROKEN_IRTIMEOUT },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Ricavision internal Infrared Transceiver */
 	{ USB_DEVICE(VENDOR_RICAVISION, 0x0010) },
 	/* Itron ione Libra Q-11 */
@@ -510,12 +379,8 @@ static const struct usb_device_id mceusb_dev_table[] = {
 	/* Formosa Industrial Computing */
 	{ USB_DEVICE(VENDOR_FORMOSA, 0xe042) },
 	/* Fintek eHome Infrared Transceiver (HP branded) */
-<<<<<<< HEAD
-	{ USB_DEVICE(VENDOR_FINTEK, 0x5168) },
-=======
 	{ USB_DEVICE(VENDOR_FINTEK, 0x5168),
 	  .driver_info = MCE_GEN2_TX_INV },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fintek eHome Infrared Transceiver */
 	{ USB_DEVICE(VENDOR_FINTEK, 0x0602) },
 	/* Fintek eHome Infrared Transceiver (in the AOpen MP45) */
@@ -542,8 +407,6 @@ static const struct usb_device_id mceusb_dev_table[] = {
 	/* Conexant Hybrid TV RDU253S Polaris */
 	{ USB_DEVICE(VENDOR_CONEXANT, 0x58a5),
 	  .driver_info = CX_HYBRID_TV },
-<<<<<<< HEAD
-=======
 	/* Twisted Melon Inc. - Manta Mini Receiver */
 	{ USB_DEVICE(VENDOR_TWISTEDMELON, 0x8008) },
 	/* Twisted Melon Inc. - Manta Pico Receiver */
@@ -581,7 +444,6 @@ static const struct usb_device_id mceusb_dev_table[] = {
 	{ USB_DEVICE(0x15f4, 0x0135),
 	  .driver_info = ASTROMETA_T2HYBRID },
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Terminating entry */
 	{ }
 };
@@ -593,37 +455,23 @@ struct mceusb_dev {
 
 	/* optional features we can enable */
 	bool carrier_report_enabled;
-<<<<<<< HEAD
-	bool learning_enabled;
-=======
 	bool wideband_rx_enabled;	/* aka learning mode, short-range rx */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* core device bits */
 	struct device *dev;
 
 	/* usb */
 	struct usb_device *usbdev;
-<<<<<<< HEAD
-	struct urb *urb_in;
-	struct usb_endpoint_descriptor *usb_ep_in;
-	struct usb_endpoint_descriptor *usb_ep_out;
-=======
 	struct usb_interface *usbintf;
 	struct urb *urb_in;
 	unsigned int pipe_in;
 	struct usb_endpoint_descriptor *usb_ep_out;
 	unsigned int pipe_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* buffers and dma */
 	unsigned char *buf_in;
 	unsigned int len_in;
 	dma_addr_t dma_in;
-<<<<<<< HEAD
-	dma_addr_t dma_out;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum {
 		CMD_HEADER = 0,
@@ -639,17 +487,10 @@ struct mceusb_dev {
 		u32 tx_mask_normal:1;
 		u32 microsoft_gen1:1;
 		u32 no_tx:1;
-<<<<<<< HEAD
-	} flags;
-
-	/* transmit support */
-	int send_flags;
-=======
 		u32 rx2;
 	} flags;
 
 	/* transmit support */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 carrier;
 	unsigned char tx_mask;
 
@@ -663,8 +504,6 @@ struct mceusb_dev {
 	u8 num_rxports;		/* number of receive sensors */
 	u8 txports_cabled;	/* bitmask of transmitters with cable */
 	u8 rxports_active;	/* bitmask of active receive sensors */
-<<<<<<< HEAD
-=======
 	bool learning_active;	/* wideband rx is active */
 
 	/* receiver carrier frequency detection support */
@@ -681,7 +520,6 @@ struct mceusb_dev {
 #		define EVENT_TX_HALT	0
 #		define EVENT_RX_HALT	1
 #		define EVENT_RST_PEND	31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* MCE Device Command Strings, generally a port and command pair */
@@ -708,11 +546,7 @@ static char SET_RX_SENSOR[]	= {MCE_CMD_PORT_IR,
 				   MCE_RSP_EQIRRXPORTEN, 0x00};
 */
 
-<<<<<<< HEAD
-static int mceusb_cmdsize(u8 cmd, u8 subcmd)
-=======
 static int mceusb_cmd_datasize(u8 cmd, u8 subcmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int datasize = 0;
 
@@ -723,24 +557,13 @@ static int mceusb_cmd_datasize(u8 cmd, u8 subcmd)
 		break;
 	case MCE_CMD_PORT_SYS:
 		switch (subcmd) {
-<<<<<<< HEAD
-=======
 		case MCE_RSP_GETPORTSTATUS:
 			datasize = 5;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MCE_RSP_EQWAKEVERSION:
 			datasize = 4;
 			break;
 		case MCE_CMD_G_REVISION:
-<<<<<<< HEAD
-			datasize = 2;
-			break;
-		case MCE_RSP_EQWAKESUPPORT:
-			datasize = 1;
-			break;
-		}
-=======
 			datasize = 4;
 			break;
 		case MCE_RSP_EQWAKESUPPORT:
@@ -751,17 +574,13 @@ static int mceusb_cmd_datasize(u8 cmd, u8 subcmd)
 			break;
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MCE_CMD_PORT_IR:
 		switch (subcmd) {
 		case MCE_CMD_UNKNOWN:
 		case MCE_RSP_EQIRCFS:
 		case MCE_RSP_EQIRTIMEOUT:
 		case MCE_RSP_EQIRRXCFCNT:
-<<<<<<< HEAD
-=======
 		case MCE_RSP_EQIRNUMPORTS:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			datasize = 2;
 			break;
 		case MCE_CMD_SIG_END:
@@ -774,48 +593,6 @@ static int mceusb_cmd_datasize(u8 cmd, u8 subcmd)
 	return datasize;
 }
 
-<<<<<<< HEAD
-static void mceusb_dev_printdata(struct mceusb_dev *ir, char *buf,
-				 int offset, int len, bool out)
-{
-	char codes[USB_BUFLEN * 3 + 1];
-	char inout[9];
-	u8 cmd, subcmd, data1, data2, data3, data4, data5;
-	struct device *dev = ir->dev;
-	int i, start, skip = 0;
-	u32 carrier, period;
-
-	if (!debug)
-		return;
-
-	/* skip meaningless 0xb1 0x60 header bytes on orig receiver */
-	if (ir->flags.microsoft_gen1 && !out && !offset)
-		skip = 2;
-
-	if (len <= skip)
-		return;
-
-	for (i = 0; i < len && i < USB_BUFLEN; i++)
-		snprintf(codes + i * 3, 4, "%02x ", buf[i + offset] & 0xff);
-
-	dev_info(dev, "%sx data: %s(length=%d)\n",
-		 (out ? "t" : "r"), codes, len);
-
-	if (out)
-		strcpy(inout, "Request\0");
-	else
-		strcpy(inout, "Got\0");
-
-	start  = offset + skip;
-	cmd    = buf[start] & 0xff;
-	subcmd = buf[start + 1] & 0xff;
-	data1  = buf[start + 2] & 0xff;
-	data2  = buf[start + 3] & 0xff;
-	data3  = buf[start + 4] & 0xff;
-	data4  = buf[start + 5] & 0xff;
-	data5  = buf[start + 6] & 0xff;
-
-=======
 static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 				 int offset, int len, bool out)
 {
@@ -860,54 +637,21 @@ static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 		return;
 
 	/* Decode MCE command/response */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case MCE_CMD_NULL:
 		if (subcmd == MCE_CMD_NULL)
 			break;
 		if ((subcmd == MCE_CMD_PORT_SYS) &&
-<<<<<<< HEAD
-		    (data1 == MCE_CMD_RESUME))
-			dev_info(dev, "Device resume requested\n");
-		else
-			dev_info(dev, "Unknown command 0x%02x 0x%02x\n",
-=======
 		    (data[0] == MCE_CMD_RESUME))
 			dev_dbg(dev, "Device resume requested");
 		else
 			dev_dbg(dev, "Unknown command 0x%02x 0x%02x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 cmd, subcmd);
 		break;
 	case MCE_CMD_PORT_SYS:
 		switch (subcmd) {
 		case MCE_RSP_EQEMVER:
 			if (!out)
-<<<<<<< HEAD
-				dev_info(dev, "Emulator interface version %x\n",
-					 data1);
-			break;
-		case MCE_CMD_G_REVISION:
-			if (len == 2)
-				dev_info(dev, "Get hw/sw rev?\n");
-			else
-				dev_info(dev, "hw/sw rev 0x%02x 0x%02x "
-					 "0x%02x 0x%02x\n", data1, data2,
-					 buf[start + 4], buf[start + 5]);
-			break;
-		case MCE_CMD_RESUME:
-			dev_info(dev, "Device resume requested\n");
-			break;
-		case MCE_RSP_CMD_ILLEGAL:
-			dev_info(dev, "Illegal PORT_SYS command\n");
-			break;
-		case MCE_RSP_EQWAKEVERSION:
-			if (!out)
-				dev_info(dev, "Wake version, proto: 0x%02x, "
-					 "payload: 0x%02x, address: 0x%02x, "
-					 "version: 0x%02x\n",
-					 data1, data2, data3, data4);
-=======
 				dev_dbg(dev, "Emulator interface version %x",
 					 data[0]);
 			break;
@@ -928,21 +672,10 @@ static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 			if (!out)
 				dev_dbg(dev, "Wake version, proto: 0x%02x, payload: 0x%02x, address: 0x%02x, version: 0x%02x",
 					data[0], data[1], data[2], data[3]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case MCE_RSP_GETPORTSTATUS:
 			if (!out)
 				/* We use data1 + 1 here, to match hw labels */
-<<<<<<< HEAD
-				dev_info(dev, "TX port %d: blaster is%s connected\n",
-					 data1 + 1, data4 ? " not" : "");
-			break;
-		case MCE_CMD_FLASHLED:
-			dev_info(dev, "Attempting to flash LED\n");
-			break;
-		default:
-			dev_info(dev, "Unknown command 0x%02x 0x%02x\n",
-=======
 				dev_dbg(dev, "TX port %d: blaster is%s connected",
 					 data[0] + 1, data[3] ? " not" : "");
 			break;
@@ -951,7 +684,6 @@ static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 			break;
 		default:
 			dev_dbg(dev, "Unknown command 0x%02x 0x%02x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 cmd, subcmd);
 			break;
 		}
@@ -959,48 +691,6 @@ static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 	case MCE_CMD_PORT_IR:
 		switch (subcmd) {
 		case MCE_CMD_SIG_END:
-<<<<<<< HEAD
-			dev_info(dev, "End of signal\n");
-			break;
-		case MCE_CMD_PING:
-			dev_info(dev, "Ping\n");
-			break;
-		case MCE_CMD_UNKNOWN:
-			dev_info(dev, "Resp to 9f 05 of 0x%02x 0x%02x\n",
-				 data1, data2);
-			break;
-		case MCE_RSP_EQIRCFS:
-			period = DIV_ROUND_CLOSEST(
-					(1 << data1 * 2) * (data2 + 1), 10);
-			if (!period)
-				break;
-			carrier = (1000 * 1000) / period;
-			dev_info(dev, "%s carrier of %u Hz (period %uus)\n",
-				 inout, carrier, period);
-			break;
-		case MCE_CMD_GETIRCFS:
-			dev_info(dev, "Get carrier mode and freq\n");
-			break;
-		case MCE_RSP_EQIRTXPORTS:
-			dev_info(dev, "%s transmit blaster mask of 0x%02x\n",
-				 inout, data1);
-			break;
-		case MCE_RSP_EQIRTIMEOUT:
-			/* value is in units of 50us, so x*50/1000 ms */
-			period = ((data1 << 8) | data2) * MCE_TIME_UNIT / 1000;
-			dev_info(dev, "%s receive timeout of %d ms\n",
-				 inout, period);
-			break;
-		case MCE_CMD_GETIRTIMEOUT:
-			dev_info(dev, "Get receive timeout\n");
-			break;
-		case MCE_CMD_GETIRTXPORTS:
-			dev_info(dev, "Get transmit blaster mask\n");
-			break;
-		case MCE_RSP_EQIRRXPORTEN:
-			dev_info(dev, "%s %s-range receive sensor in use\n",
-				 inout, data1 == 0x02 ? "short" : "long");
-=======
 			dev_dbg(dev, "End of signal");
 			break;
 		case MCE_CMD_PING:
@@ -1049,36 +739,18 @@ static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 		case MCE_RSP_EQIRRXPORTEN:
 			dev_dbg(dev, "%s %s-range receive sensor in use",
 				 inout, data[0] == 0x02 ? "short" : "long");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case MCE_CMD_GETIRRXPORTEN:
 		/* aka MCE_RSP_EQIRRXCFCNT */
 			if (out)
-<<<<<<< HEAD
-				dev_info(dev, "Get receive sensor\n");
-			else if (ir->learning_enabled)
-				dev_info(dev, "RX pulse count: %d\n",
-					 ((data1 << 8) | data2));
-=======
 				dev_dbg(dev, "Get receive sensor");
 			else
 				dev_dbg(dev, "RX carrier cycle count: %d",
 					((data[0] << 8) | data[1]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case MCE_RSP_EQIRNUMPORTS:
 			if (out)
 				break;
-<<<<<<< HEAD
-			dev_info(dev, "Num TX ports: %x, num RX ports: %x\n",
-				 data1, data2);
-			break;
-		case MCE_RSP_CMD_ILLEGAL:
-			dev_info(dev, "Illegal PORT_IR command\n");
-			break;
-		default:
-			dev_info(dev, "Unknown command 0x%02x 0x%02x\n",
-=======
 			dev_dbg(dev, "Num TX ports: %x, num RX ports: %x",
 				data[0], data[1]);
 			break;
@@ -1090,7 +762,6 @@ static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 			break;
 		default:
 			dev_dbg(dev, "Unknown command 0x%02x 0x%02x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 cmd, subcmd);
 			break;
 		}
@@ -1098,91 +769,6 @@ static void mceusb_dev_printdata(struct mceusb_dev *ir, u8 *buf, int buf_len,
 	default:
 		break;
 	}
-<<<<<<< HEAD
-
-	if (cmd == MCE_IRDATA_TRAILER)
-		dev_info(dev, "End of raw IR data\n");
-	else if ((cmd != MCE_CMD_PORT_IR) &&
-		 ((cmd & MCE_PORT_MASK) == MCE_COMMAND_IRDATA))
-		dev_info(dev, "Raw IR data, %d pulse/space samples\n", ir->rem);
-}
-
-static void mce_async_callback(struct urb *urb, struct pt_regs *regs)
-{
-	struct mceusb_dev *ir;
-	int len;
-
-	if (!urb)
-		return;
-
-	ir = urb->context;
-	if (ir) {
-		len = urb->actual_length;
-
-		mceusb_dev_printdata(ir, urb->transfer_buffer, 0, len, true);
-	}
-
-	/* the transfer buffer and urb were allocated in mce_request_packet */
-	kfree(urb->transfer_buffer);
-	usb_free_urb(urb);
-}
-
-/* request incoming or send outgoing usb packet - used to initialize remote */
-static void mce_request_packet(struct mceusb_dev *ir, unsigned char *data,
-			       int size, int urb_type)
-{
-	int res, pipe;
-	struct urb *async_urb;
-	struct device *dev = ir->dev;
-	unsigned char *async_buf;
-
-	if (urb_type == MCEUSB_TX) {
-		async_urb = usb_alloc_urb(0, GFP_KERNEL);
-		if (unlikely(!async_urb)) {
-			dev_err(dev, "Error, couldn't allocate urb!\n");
-			return;
-		}
-
-		async_buf = kzalloc(size, GFP_KERNEL);
-		if (!async_buf) {
-			dev_err(dev, "Error, couldn't allocate buf!\n");
-			usb_free_urb(async_urb);
-			return;
-		}
-
-		/* outbound data */
-		pipe = usb_sndintpipe(ir->usbdev,
-				      ir->usb_ep_out->bEndpointAddress);
-		usb_fill_int_urb(async_urb, ir->usbdev, pipe,
-			async_buf, size, (usb_complete_t)mce_async_callback,
-			ir, ir->usb_ep_out->bInterval);
-		memcpy(async_buf, data, size);
-
-	} else if (urb_type == MCEUSB_RX) {
-		/* standard request */
-		async_urb = ir->urb_in;
-		ir->send_flags = RECV_FLAG_IN_PROGRESS;
-
-	} else {
-		dev_err(dev, "Error! Unknown urb type %d\n", urb_type);
-		return;
-	}
-
-	mce_dbg(dev, "receive request called (size=%#x)\n", size);
-
-	async_urb->transfer_buffer_length = size;
-	async_urb->dev = ir->usbdev;
-
-	res = usb_submit_urb(async_urb, GFP_ATOMIC);
-	if (res) {
-		mce_dbg(dev, "receive request FAILED! (res=%d)\n", res);
-		return;
-	}
-	mce_dbg(dev, "receive request complete (res=%d)\n", res);
-}
-
-static void mce_async_out(struct mceusb_dev *ir, unsigned char *data, int size)
-=======
 #endif
 }
 
@@ -1313,109 +899,11 @@ static int mce_write(struct mceusb_dev *ir, u8 *data, int size)
 }
 
 static void mce_command_out(struct mceusb_dev *ir, u8 *data, int size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rsize = sizeof(DEVICE_RESUME);
 
 	if (ir->need_reset) {
 		ir->need_reset = false;
-<<<<<<< HEAD
-		mce_request_packet(ir, DEVICE_RESUME, rsize, MCEUSB_TX);
-		msleep(10);
-	}
-
-	mce_request_packet(ir, data, size, MCEUSB_TX);
-	msleep(10);
-}
-
-static void mce_flush_rx_buffer(struct mceusb_dev *ir, int size)
-{
-	mce_request_packet(ir, NULL, size, MCEUSB_RX);
-}
-
-/* Send data out the IR blaster port(s) */
-static int mceusb_tx_ir(struct rc_dev *dev, unsigned *txbuf, unsigned count)
-{
-	struct mceusb_dev *ir = dev->priv;
-	int i, ret = 0;
-	int cmdcount = 0;
-	unsigned char *cmdbuf; /* MCE command buffer */
-	long signal_duration = 0; /* Singnal length in us */
-	struct timeval start_time, end_time;
-
-	do_gettimeofday(&start_time);
-
-	cmdbuf = kzalloc(sizeof(unsigned) * MCE_CMDBUF_SIZE, GFP_KERNEL);
-	if (!cmdbuf)
-		return -ENOMEM;
-
-	/* MCE tx init header */
-	cmdbuf[cmdcount++] = MCE_CMD_PORT_IR;
-	cmdbuf[cmdcount++] = MCE_CMD_SETIRTXPORTS;
-	cmdbuf[cmdcount++] = ir->tx_mask;
-
-	/* Generate mce packet data */
-	for (i = 0; (i < count) && (cmdcount < MCE_CMDBUF_SIZE); i++) {
-		signal_duration += txbuf[i];
-		txbuf[i] = txbuf[i] / MCE_TIME_UNIT;
-
-		do { /* loop to support long pulses/spaces > 127*50us=6.35ms */
-
-			/* Insert mce packet header every 4th entry */
-			if ((cmdcount < MCE_CMDBUF_SIZE) &&
-			    (cmdcount - MCE_TX_HEADER_LENGTH) %
-			     MCE_CODE_LENGTH == 0)
-				cmdbuf[cmdcount++] = MCE_IRDATA_HEADER;
-
-			/* Insert mce packet data */
-			if (cmdcount < MCE_CMDBUF_SIZE)
-				cmdbuf[cmdcount++] =
-					(txbuf[i] < MCE_PULSE_BIT ?
-					 txbuf[i] : MCE_MAX_PULSE_LENGTH) |
-					 (i & 1 ? 0x00 : MCE_PULSE_BIT);
-			else {
-				ret = -EINVAL;
-				goto out;
-			}
-
-		} while ((txbuf[i] > MCE_MAX_PULSE_LENGTH) &&
-			 (txbuf[i] -= MCE_MAX_PULSE_LENGTH));
-	}
-
-	/* Fix packet length in last header */
-	cmdbuf[cmdcount - (cmdcount - MCE_TX_HEADER_LENGTH) % MCE_CODE_LENGTH] =
-		MCE_COMMAND_IRDATA + (cmdcount - MCE_TX_HEADER_LENGTH) %
-		MCE_CODE_LENGTH - 1;
-
-	/* Check if we have room for the empty packet at the end */
-	if (cmdcount >= MCE_CMDBUF_SIZE) {
-		ret = -EINVAL;
-		goto out;
-	}
-
-	/* All mce commands end with an empty packet (0x80) */
-	cmdbuf[cmdcount++] = MCE_IRDATA_TRAILER;
-
-	/* Transmit the command to the mce device */
-	mce_async_out(ir, cmdbuf, cmdcount);
-
-	/*
-	 * The lircd gap calculation expects the write function to
-	 * wait the time it takes for the ircommand to be sent before
-	 * it returns.
-	 */
-	do_gettimeofday(&end_time);
-	signal_duration -= (end_time.tv_usec - start_time.tv_usec) +
-			   (end_time.tv_sec - start_time.tv_sec) * 1000000;
-
-	/* delay with the closest number of ticks */
-	set_current_state(TASK_INTERRUPTIBLE);
-	schedule_timeout(usecs_to_jiffies(signal_duration));
-
-out:
-	kfree(cmdbuf);
-	return ret ? ret : count;
-=======
 		mce_write(ir, DEVICE_RESUME, rsize);
 		msleep(10);
 	}
@@ -1518,7 +1006,6 @@ static int mceusb_tx_ir(struct rc_dev *dev, unsigned *txbuf, unsigned count)
 		return ret;
 
 	return count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Sets active IR outputs -- mce devices typically have two */
@@ -1526,15 +1013,12 @@ static int mceusb_set_tx_mask(struct rc_dev *dev, u32 mask)
 {
 	struct mceusb_dev *ir = dev->priv;
 
-<<<<<<< HEAD
-=======
 	/* return number of transmitters */
 	int emitters = ir->num_txports ? ir->num_txports : 2;
 
 	if (mask >= (1 << emitters))
 		return emitters;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ir->flags.tx_mask_normal)
 		ir->tx_mask = mask;
 	else
@@ -1560,16 +1044,9 @@ static int mceusb_set_tx_carrier(struct rc_dev *dev, u32 carrier)
 			ir->carrier = carrier;
 			cmdbuf[2] = MCE_CMD_SIG_END;
 			cmdbuf[3] = MCE_IRDATA_TRAILER;
-<<<<<<< HEAD
-			mce_dbg(ir->dev, "%s: disabling carrier "
-				"modulation\n", __func__);
-			mce_async_out(ir, cmdbuf, sizeof(cmdbuf));
-			return carrier;
-=======
 			dev_dbg(ir->dev, "disabling carrier modulation");
 			mce_command_out(ir, cmdbuf, sizeof(cmdbuf));
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		for (prescaler = 0; prescaler < 4; ++prescaler) {
@@ -1578,21 +1055,12 @@ static int mceusb_set_tx_carrier(struct rc_dev *dev, u32 carrier)
 				ir->carrier = carrier;
 				cmdbuf[2] = prescaler;
 				cmdbuf[3] = divisor;
-<<<<<<< HEAD
-				mce_dbg(ir->dev, "%s: requesting %u HZ "
-					"carrier\n", __func__, carrier);
-
-				/* Transmit new carrier to mce device */
-				mce_async_out(ir, cmdbuf, sizeof(cmdbuf));
-				return carrier;
-=======
 				dev_dbg(ir->dev, "requesting %u HZ carrier",
 								carrier);
 
 				/* Transmit new carrier to mce device */
 				mce_command_out(ir, cmdbuf, sizeof(cmdbuf));
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -1600,12 +1068,6 @@ static int mceusb_set_tx_carrier(struct rc_dev *dev, u32 carrier)
 
 	}
 
-<<<<<<< HEAD
-	return carrier;
-}
-
-/*
-=======
 	return 0;
 }
 
@@ -1696,48 +1158,10 @@ static int mceusb_set_rx_carrier_report(struct rc_dev *dev, int enable)
  * in buf_in[]. The response itself determines its total length
  * (mceusb_cmd_datasize() + 2) and hence the minimum size of buf_in[].
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We don't do anything but print debug spew for many of the command bits
  * we receive from the hardware, but some of them are useful information
  * we want to store so that we can use them.
  */
-<<<<<<< HEAD
-static void mceusb_handle_command(struct mceusb_dev *ir, int index)
-{
-	u8 hi = ir->buf_in[index + 1] & 0xff;
-	u8 lo = ir->buf_in[index + 2] & 0xff;
-
-	switch (ir->buf_in[index]) {
-	/* the one and only 5-byte return value command */
-	case MCE_RSP_GETPORTSTATUS:
-		if ((ir->buf_in[index + 4] & 0xff) == 0x00)
-			ir->txports_cabled |= 1 << hi;
-		break;
-
-	/* 2-byte return value commands */
-	case MCE_RSP_EQIRTIMEOUT:
-		ir->rc->timeout = US_TO_NS((hi << 8 | lo) * MCE_TIME_UNIT);
-		break;
-	case MCE_RSP_EQIRNUMPORTS:
-		ir->num_txports = hi;
-		ir->num_rxports = lo;
-		break;
-
-	/* 1-byte return value commands */
-	case MCE_RSP_EQEMVER:
-		ir->emver = hi;
-		break;
-	case MCE_RSP_EQIRTXPORTS:
-		ir->tx_mask = hi;
-		break;
-	case MCE_RSP_EQIRRXPORTEN:
-		ir->learning_enabled = ((hi & 0x02) == 0x02);
-		ir->rxports_active = hi;
-		break;
-	case MCE_RSP_CMD_ILLEGAL:
-		ir->need_reset = true;
-		break;
-=======
 static void mceusb_handle_command(struct mceusb_dev *ir, u8 *buf_in)
 {
 	u8 cmd = buf_in[0];
@@ -1832,7 +1256,6 @@ static void mceusb_handle_command(struct mceusb_dev *ir, u8 *buf_in)
 		ir->need_reset = true;
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -1840,12 +1263,8 @@ static void mceusb_handle_command(struct mceusb_dev *ir, u8 *buf_in)
 
 static void mceusb_process_ir_data(struct mceusb_dev *ir, int buf_len)
 {
-<<<<<<< HEAD
-	DEFINE_IR_RAW_EVENT(rawir);
-=======
 	struct ir_raw_event rawir = {};
 	bool event = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = 0;
 
 	/* skip meaningless 0xb1 0x60 header bytes on orig receiver */
@@ -1859,34 +1278,15 @@ static void mceusb_process_ir_data(struct mceusb_dev *ir, int buf_len)
 	for (; i < buf_len; i++) {
 		switch (ir->parser_state) {
 		case SUBCMD:
-<<<<<<< HEAD
-			ir->rem = mceusb_cmdsize(ir->cmd, ir->buf_in[i]);
-			mceusb_dev_printdata(ir, ir->buf_in, i - 1,
-					     ir->rem + 2, false);
-			mceusb_handle_command(ir, i);
-=======
 			ir->rem = mceusb_cmd_datasize(ir->cmd, ir->buf_in[i]);
 			mceusb_dev_printdata(ir, ir->buf_in, buf_len, i - 1,
 					     ir->rem + 2, false);
 			if (i + ir->rem < buf_len)
 				mceusb_handle_command(ir, &ir->buf_in[i - 1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ir->parser_state = CMD_DATA;
 			break;
 		case PARSE_IRDATA:
 			ir->rem--;
-<<<<<<< HEAD
-			init_ir_raw_event(&rawir);
-			rawir.pulse = ((ir->buf_in[i] & MCE_PULSE_BIT) != 0);
-			rawir.duration = (ir->buf_in[i] & MCE_PULSE_MASK)
-					 * US_TO_NS(MCE_TIME_UNIT);
-
-			mce_dbg(ir->dev, "Storing %s with duration %d\n",
-				rawir.pulse ? "pulse" : "space",
-				rawir.duration);
-
-			ir_raw_event_store_with_filter(ir->rc, &rawir);
-=======
 			rawir.pulse = ((ir->buf_in[i] & MCE_PULSE_BIT) != 0);
 			rawir.duration = (ir->buf_in[i] & MCE_PULSE_MASK);
 			if (unlikely(!rawir.duration)) {
@@ -1906,33 +1306,15 @@ static void mceusb_process_ir_data(struct mceusb_dev *ir, int buf_len)
 
 			if (ir_raw_event_store_with_filter(ir->rc, &rawir))
 				event = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case CMD_DATA:
 			ir->rem--;
 			break;
 		case CMD_HEADER:
-<<<<<<< HEAD
-			/* decode mce packets of the form (84),AA,BB,CC,DD */
-			/* IR data packets can span USB messages - rem */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ir->cmd = ir->buf_in[i];
 			if ((ir->cmd == MCE_CMD_PORT_IR) ||
 			    ((ir->cmd & MCE_PORT_MASK) !=
 			     MCE_COMMAND_IRDATA)) {
-<<<<<<< HEAD
-				ir->parser_state = SUBCMD;
-				continue;
-			}
-			ir->rem = (ir->cmd & MCE_PACKET_LENGTH_MASK);
-			mceusb_dev_printdata(ir, ir->buf_in,
-					     i, ir->rem + 1, false);
-			if (ir->rem)
-				ir->parser_state = PARSE_IRDATA;
-			else
-				ir_raw_event_reset(ir->rc);
-=======
 				/*
 				 * got PORT_SYS, PORT_IR, or unknown
 				 * command response prefix
@@ -1962,23 +1344,12 @@ static void mceusb_process_ir_data(struct mceusb_dev *ir, int buf_len)
 				ir->pulse_tunit = 0;
 				ir->pulse_count = 0;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		if (ir->parser_state != CMD_HEADER && !ir->rem)
 			ir->parser_state = CMD_HEADER;
 	}
-<<<<<<< HEAD
-	mce_dbg(ir->dev, "processed IR data, calling ir_raw_event_handle\n");
-	ir_raw_event_handle(ir->rc);
-}
-
-static void mceusb_dev_recv(struct urb *urb, struct pt_regs *regs)
-{
-	struct mceusb_dev *ir;
-	int buf_len;
-=======
 
 	/*
 	 * Accept IR data spanning multiple rx buffers.
@@ -1996,7 +1367,6 @@ static void mceusb_dev_recv(struct urb *urb, struct pt_regs *regs)
 static void mceusb_dev_recv(struct urb *urb)
 {
 	struct mceusb_dev *ir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!urb)
 		return;
@@ -2007,43 +1377,21 @@ static void mceusb_dev_recv(struct urb *urb)
 		return;
 	}
 
-<<<<<<< HEAD
-	buf_len = urb->actual_length;
-
-	if (ir->send_flags == RECV_FLAG_IN_PROGRESS) {
-		ir->send_flags = SEND_FLAG_COMPLETE;
-		mce_dbg(ir->dev, "setup answer received %d bytes\n",
-			buf_len);
-	}
-
-	switch (urb->status) {
-	/* success */
-	case 0:
-		mceusb_process_ir_data(ir, buf_len);
-=======
 	switch (urb->status) {
 	/* success */
 	case 0:
 		mceusb_process_ir_data(ir, urb->actual_length);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case -ECONNRESET:
 	case -ENOENT:
-<<<<<<< HEAD
-=======
 	case -EILSEQ:
 	case -EPROTO:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -ESHUTDOWN:
 		usb_unlink_urb(urb);
 		return;
 
 	case -EPIPE:
-<<<<<<< HEAD
-	default:
-		mce_dbg(ir->dev, "Error: urb status = %d\n", urb->status);
-=======
 		dev_err(ir->dev, "Error: urb status = %d (RX HALT)",
 			urb->status);
 		mceusb_defer_kevent(ir, EVENT_RX_HALT);
@@ -2051,7 +1399,6 @@ static void mceusb_dev_recv(struct urb *urb)
 
 	default:
 		dev_err(ir->dev, "Error: urb status = %d", urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -2062,69 +1409,19 @@ static void mceusb_get_emulator_version(struct mceusb_dev *ir)
 {
 	/* If we get no reply or an illegal command reply, its ver 1, says MS */
 	ir->emver = 1;
-<<<<<<< HEAD
-	mce_async_out(ir, GET_EMVER, sizeof(GET_EMVER));
-=======
 	mce_command_out(ir, GET_EMVER, sizeof(GET_EMVER));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mceusb_gen1_init(struct mceusb_dev *ir)
 {
 	int ret;
 	struct device *dev = ir->dev;
-<<<<<<< HEAD
-	char *data;
-
-	data = kzalloc(USB_CTRL_MSG_SZ, GFP_KERNEL);
-	if (!data) {
-		dev_err(dev, "%s: memory allocation failed!\n", __func__);
-		return;
-	}
-=======
 	char data[USB_CTRL_MSG_SZ];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is a strange one. Windows issues a set address to the device
 	 * on the receive control pipe and expect a certain value pair back
 	 */
-<<<<<<< HEAD
-	ret = usb_control_msg(ir->usbdev, usb_rcvctrlpipe(ir->usbdev, 0),
-			      USB_REQ_SET_ADDRESS, USB_TYPE_VENDOR, 0, 0,
-			      data, USB_CTRL_MSG_SZ, HZ * 3);
-	mce_dbg(dev, "%s - ret = %d\n", __func__, ret);
-	mce_dbg(dev, "%s - data[0] = %d, data[1] = %d\n",
-		__func__, data[0], data[1]);
-
-	/* set feature: bit rate 38400 bps */
-	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
-			      USB_REQ_SET_FEATURE, USB_TYPE_VENDOR,
-			      0xc04e, 0x0000, NULL, 0, HZ * 3);
-
-	mce_dbg(dev, "%s - ret = %d\n", __func__, ret);
-
-	/* bRequest 4: set char length to 8 bits */
-	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
-			      4, USB_TYPE_VENDOR,
-			      0x0808, 0x0000, NULL, 0, HZ * 3);
-	mce_dbg(dev, "%s - retB = %d\n", __func__, ret);
-
-	/* bRequest 2: set handshaking to use DTR/DSR */
-	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
-			      2, USB_TYPE_VENDOR,
-			      0x0000, 0x0100, NULL, 0, HZ * 3);
-	mce_dbg(dev, "%s - retC = %d\n", __func__, ret);
-
-	/* device resume */
-	mce_async_out(ir, DEVICE_RESUME, sizeof(DEVICE_RESUME));
-
-	/* get hw/sw revision? */
-	mce_async_out(ir, GET_REVISION, sizeof(GET_REVISION));
-
-	kfree(data);
-};
-=======
 	ret = usb_control_msg_recv(ir->usbdev, 0, USB_REQ_SET_ADDRESS,
 				   USB_DIR_IN | USB_TYPE_VENDOR,
 				   0, 0, data, USB_CTRL_MSG_SZ, 3000,
@@ -2158,23 +1455,10 @@ static void mceusb_gen1_init(struct mceusb_dev *ir)
 	/* get hw/sw revision? */
 	mce_command_out(ir, GET_REVISION, sizeof(GET_REVISION));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void mceusb_gen2_init(struct mceusb_dev *ir)
 {
 	/* device resume */
-<<<<<<< HEAD
-	mce_async_out(ir, DEVICE_RESUME, sizeof(DEVICE_RESUME));
-
-	/* get hw/sw revision? */
-	mce_async_out(ir, GET_REVISION, sizeof(GET_REVISION));
-
-	/* get wake version (protocol, key, address) */
-	mce_async_out(ir, GET_WAKEVERSION, sizeof(GET_WAKEVERSION));
-
-	/* unknown what this one actually returns... */
-	mce_async_out(ir, GET_UNKNOWN2, sizeof(GET_UNKNOWN2));
-=======
 	mce_command_out(ir, DEVICE_RESUME, sizeof(DEVICE_RESUME));
 
 	/* get wake version (protocol, key, address) */
@@ -2182,7 +1466,6 @@ static void mceusb_gen2_init(struct mceusb_dev *ir)
 
 	/* unknown what this one actually returns... */
 	mce_command_out(ir, GET_UNKNOWN2, sizeof(GET_UNKNOWN2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mceusb_get_parameters(struct mceusb_dev *ir)
@@ -2196,26 +1479,6 @@ static void mceusb_get_parameters(struct mceusb_dev *ir)
 	ir->num_rxports = 2;
 
 	/* get number of tx and rx ports */
-<<<<<<< HEAD
-	mce_async_out(ir, GET_NUM_PORTS, sizeof(GET_NUM_PORTS));
-
-	/* get the carrier and frequency */
-	mce_async_out(ir, GET_CARRIER_FREQ, sizeof(GET_CARRIER_FREQ));
-
-	if (ir->num_txports && !ir->flags.no_tx)
-		/* get the transmitter bitmask */
-		mce_async_out(ir, GET_TX_BITMASK, sizeof(GET_TX_BITMASK));
-
-	/* get receiver timeout value */
-	mce_async_out(ir, GET_RX_TIMEOUT, sizeof(GET_RX_TIMEOUT));
-
-	/* get receiver sensor setting */
-	mce_async_out(ir, GET_RX_SENSOR, sizeof(GET_RX_SENSOR));
-
-	for (i = 0; i < ir->num_txports; i++) {
-		cmdbuf[2] = i;
-		mce_async_out(ir, cmdbuf, sizeof(cmdbuf));
-=======
 	mce_command_out(ir, GET_NUM_PORTS, sizeof(GET_NUM_PORTS));
 
 	/* get the carrier and frequency */
@@ -2234,7 +1497,6 @@ static void mceusb_get_parameters(struct mceusb_dev *ir)
 	for (i = 0; i < ir->num_txports; i++) {
 		cmdbuf[2] = i;
 		mce_command_out(ir, cmdbuf, sizeof(cmdbuf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2243,9 +1505,6 @@ static void mceusb_flash_led(struct mceusb_dev *ir)
 	if (ir->emver < 2)
 		return;
 
-<<<<<<< HEAD
-	mce_async_out(ir, FLASH_LED, sizeof(FLASH_LED));
-=======
 	mce_command_out(ir, FLASH_LED, sizeof(FLASH_LED));
 }
 
@@ -2317,28 +1576,18 @@ static void mceusb_deferred_kevent(struct work_struct *work)
 		}
 		clear_bit(EVENT_TX_HALT, &ir->kevent_flags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct rc_dev *mceusb_init_rc_dev(struct mceusb_dev *ir)
 {
-<<<<<<< HEAD
-=======
 	struct usb_device *udev = ir->usbdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev = ir->dev;
 	struct rc_dev *rc;
 	int ret;
 
-<<<<<<< HEAD
-	rc = rc_allocate_device();
-	if (!rc) {
-		dev_err(dev, "remote dev allocation failed\n");
-=======
 	rc = rc_allocate_device(RC_DRIVER_IR_RAW);
 	if (!rc) {
 		dev_err(dev, "remote dev allocation failed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2351,20 +1600,11 @@ static struct rc_dev *mceusb_init_rc_dev(struct mceusb_dev *ir)
 
 	usb_make_path(ir->usbdev, ir->phys, sizeof(ir->phys));
 
-<<<<<<< HEAD
-	rc->input_name = ir->name;
-=======
 	rc->device_name = ir->name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc->input_phys = ir->phys;
 	usb_to_input_id(ir->usbdev, &rc->input_id);
 	rc->dev.parent = dev;
 	rc->priv = ir;
-<<<<<<< HEAD
-	rc->driver_type = RC_DRIVER_IR_RAW;
-	rc->allowed_protos = RC_TYPE_ALL;
-	rc->timeout = MS_TO_NS(100);
-=======
 	rc->allowed_protocols = RC_PROTO_BIT_ALL_IR_DECODER;
 	rc->rx_resolution = MCE_TIME_UNIT;
 	rc->min_timeout = MCE_TIME_UNIT;
@@ -2379,21 +1619,11 @@ static struct rc_dev *mceusb_init_rc_dev(struct mceusb_dev *ir)
 		 */
 		rc->max_timeout = rc->timeout;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ir->flags.no_tx) {
 		rc->s_tx_mask = mceusb_set_tx_mask;
 		rc->s_tx_carrier = mceusb_set_tx_carrier;
 		rc->tx_ir = mceusb_tx_ir;
 	}
-<<<<<<< HEAD
-	rc->driver_name = DRIVER_NAME;
-	rc->map_name = mceusb_model[ir->model].rc_map ?
-			mceusb_model[ir->model].rc_map : RC_MAP_RC6_MCE;
-
-	ret = rc_register_device(rc);
-	if (ret < 0) {
-		dev_err(dev, "remote dev registration failed\n");
-=======
 	if (ir->flags.rx2 > 0) {
 		rc->s_wideband_receiver = mceusb_set_rx_wideband;
 		rc->s_carrier_report = mceusb_set_rx_carrier_report;
@@ -2416,7 +1646,6 @@ static struct rc_dev *mceusb_init_rc_dev(struct mceusb_dev *ir)
 	ret = rc_register_device(rc);
 	if (ret < 0) {
 		dev_err(dev, "remote dev registration failed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2427,13 +1656,8 @@ out:
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int __devinit mceusb_dev_probe(struct usb_interface *intf,
-				      const struct usb_device_id *id)
-=======
 static int mceusb_dev_probe(struct usb_interface *intf,
 			    const struct usb_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_device *dev = interface_to_usbdev(intf);
 	struct usb_host_interface *idesc;
@@ -2441,11 +1665,7 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 	struct usb_endpoint_descriptor *ep_in = NULL;
 	struct usb_endpoint_descriptor *ep_out = NULL;
 	struct mceusb_dev *ir = NULL;
-<<<<<<< HEAD
-	int pipe, maxp, i;
-=======
 	int pipe, maxp, i, res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char buf[63], name[128] = "";
 	enum mceusb_model_type model = id->driver_info;
 	bool is_gen3;
@@ -2453,11 +1673,7 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 	bool tx_mask_normal;
 	int ir_intfnum;
 
-<<<<<<< HEAD
-	mce_dbg(&intf->dev, "%s called\n", __func__);
-=======
 	dev_dbg(&intf->dev, "%s called", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	idesc  = intf->cur_altsetting;
 
@@ -2474,45 +1690,6 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 	for (i = 0; i < idesc->desc.bNumEndpoints; ++i) {
 		ep = &idesc->endpoint[i].desc;
 
-<<<<<<< HEAD
-		if ((ep_in == NULL)
-			&& ((ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
-			    == USB_DIR_IN)
-			&& (((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-			    == USB_ENDPOINT_XFER_BULK)
-			|| ((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-			    == USB_ENDPOINT_XFER_INT))) {
-
-			ep_in = ep;
-			ep_in->bmAttributes = USB_ENDPOINT_XFER_INT;
-			ep_in->bInterval = 1;
-			mce_dbg(&intf->dev, "acceptable inbound endpoint "
-				"found\n");
-		}
-
-		if ((ep_out == NULL)
-			&& ((ep->bEndpointAddress & USB_ENDPOINT_DIR_MASK)
-			    == USB_DIR_OUT)
-			&& (((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-			    == USB_ENDPOINT_XFER_BULK)
-			|| ((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-			    == USB_ENDPOINT_XFER_INT))) {
-
-			ep_out = ep;
-			ep_out->bmAttributes = USB_ENDPOINT_XFER_INT;
-			ep_out->bInterval = 1;
-			mce_dbg(&intf->dev, "acceptable outbound endpoint "
-				"found\n");
-		}
-	}
-	if (ep_in == NULL) {
-		mce_dbg(&intf->dev, "inbound and/or endpoint not found\n");
-		return -ENODEV;
-	}
-
-	pipe = usb_rcvintpipe(dev, ep_in->bEndpointAddress);
-	maxp = usb_maxpacket(dev, pipe, usb_pipeout(pipe));
-=======
 		if (ep_in == NULL) {
 			if (usb_endpoint_is_bulk_in(ep)) {
 				ep_in = ep;
@@ -2545,18 +1722,13 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 	else
 		pipe = usb_rcvbulkpipe(dev, ep_in->bEndpointAddress);
 	maxp = usb_maxpacket(dev, pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ir = kzalloc(sizeof(struct mceusb_dev), GFP_KERNEL);
 	if (!ir)
 		goto mem_alloc_fail;
 
-<<<<<<< HEAD
-	ir->buf_in = usb_alloc_coherent(dev, maxp, GFP_ATOMIC, &ir->dma_in);
-=======
 	ir->pipe_in = pipe;
 	ir->buf_in = usb_alloc_coherent(dev, maxp, GFP_KERNEL, &ir->dma_in);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ir->buf_in)
 		goto buf_in_alloc_fail;
 
@@ -2564,24 +1736,13 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 	if (!ir->urb_in)
 		goto urb_in_alloc_fail;
 
-<<<<<<< HEAD
-	ir->usbdev = dev;
-=======
 	ir->usbintf = intf;
 	ir->usbdev = usb_get_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ir->dev = &intf->dev;
 	ir->len_in = maxp;
 	ir->flags.microsoft_gen1 = is_microsoft_gen1;
 	ir->flags.tx_mask_normal = tx_mask_normal;
 	ir->flags.no_tx = mceusb_model[model].no_tx;
-<<<<<<< HEAD
-	ir->model = model;
-
-	/* Saving usb interface data for use by the transmitter routine */
-	ir->usb_ep_in = ep_in;
-	ir->usb_ep_out = ep_out;
-=======
 	ir->flags.rx2 = mceusb_model[model].rx2;
 	ir->model = model;
 
@@ -2593,40 +1754,28 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 	else
 		ir->pipe_out = usb_sndbulkpipe(ir->usbdev,
 					       ep_out->bEndpointAddress);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->descriptor.iManufacturer
 	    && usb_string(dev, dev->descriptor.iManufacturer,
 			  buf, sizeof(buf)) > 0)
-<<<<<<< HEAD
-		strlcpy(name, buf, sizeof(name));
-=======
 		strscpy(name, buf, sizeof(name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->descriptor.iProduct
 	    && usb_string(dev, dev->descriptor.iProduct,
 			  buf, sizeof(buf)) > 0)
 		snprintf(name + strlen(name), sizeof(name) - strlen(name),
 			 " %s", buf);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Initialize async USB error handler before registering
 	 * or activating any mceusb RX and TX functions
 	 */
 	INIT_WORK(&ir->kevent, mceusb_deferred_kevent);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ir->rc = mceusb_init_rc_dev(ir);
 	if (!ir->rc)
 		goto rc_dev_fail;
 
 	/* wire up inbound data handler */
-<<<<<<< HEAD
-	usb_fill_int_urb(ir->urb_in, dev, pipe, ir->buf_in,
-		maxp, (usb_complete_t) mceusb_dev_recv, ir, ep_in->bInterval);
-=======
 	if (usb_endpoint_xfer_int(ep_in))
 		usb_fill_int_urb(ir->urb_in, dev, pipe, ir->buf_in, maxp,
 				 mceusb_dev_recv, ir, ep_in->bInterval);
@@ -2634,20 +1783,14 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 		usb_fill_bulk_urb(ir->urb_in, dev, pipe, ir->buf_in, maxp,
 				  mceusb_dev_recv, ir);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ir->urb_in->transfer_dma = ir->dma_in;
 	ir->urb_in->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
 	/* flush buffers on the device */
-<<<<<<< HEAD
-	mce_dbg(&intf->dev, "Flushing receive buffers\n");
-	mce_flush_rx_buffer(ir, maxp);
-=======
 	dev_dbg(&intf->dev, "Flushing receive buffers");
 	res = usb_submit_urb(ir->urb_in, GFP_KERNEL);
 	if (res)
 		dev_err(&intf->dev, "failed to flush buffers: %d", res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* figure out which firmware/emulator version this hardware has */
 	mceusb_get_emulator_version(ir);
@@ -2671,16 +1814,9 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 	device_set_wakeup_capable(ir->dev, true);
 	device_set_wakeup_enable(ir->dev, true);
 
-<<<<<<< HEAD
-	dev_info(&intf->dev, "Registered %s with mce emulator interface "
-		 "version %x\n", name, ir->emver);
-	dev_info(&intf->dev, "%x tx ports (0x%x cabled) and "
-		 "%x rx sensors (0x%x active)\n",
-=======
 	dev_info(&intf->dev, "Registered %s with mce emulator interface version %x",
 		name, ir->emver);
 	dev_info(&intf->dev, "%x tx ports (0x%x cabled) and %x rx sensors (0x%x active)",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 ir->num_txports, ir->txports_cabled,
 		 ir->num_rxports, ir->rxports_active);
 
@@ -2688,60 +1824,40 @@ static int mceusb_dev_probe(struct usb_interface *intf,
 
 	/* Error-handling path */
 rc_dev_fail:
-<<<<<<< HEAD
-=======
 	cancel_work_sync(&ir->kevent);
 	usb_put_dev(ir->usbdev);
 	usb_kill_urb(ir->urb_in);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_free_urb(ir->urb_in);
 urb_in_alloc_fail:
 	usb_free_coherent(dev, maxp, ir->buf_in, ir->dma_in);
 buf_in_alloc_fail:
 	kfree(ir);
 mem_alloc_fail:
-<<<<<<< HEAD
-	dev_err(&intf->dev, "%s: device setup failed!\n", __func__);
-=======
 	dev_err(&intf->dev, "%s: device setup failed!", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -ENOMEM;
 }
 
 
-<<<<<<< HEAD
-static void __devexit mceusb_dev_disconnect(struct usb_interface *intf)
-=======
 static void mceusb_dev_disconnect(struct usb_interface *intf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_device *dev = interface_to_usbdev(intf);
 	struct mceusb_dev *ir = usb_get_intfdata(intf);
 
-<<<<<<< HEAD
-=======
 	dev_dbg(&intf->dev, "%s called", __func__);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_intfdata(intf, NULL);
 
 	if (!ir)
 		return;
 
 	ir->usbdev = NULL;
-<<<<<<< HEAD
-=======
 	cancel_work_sync(&ir->kevent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc_unregister_device(ir->rc);
 	usb_kill_urb(ir->urb_in);
 	usb_free_urb(ir->urb_in);
 	usb_free_coherent(dev, ir->len_in, ir->buf_in, ir->dma_in);
-<<<<<<< HEAD
-=======
 	usb_put_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(ir);
 }
@@ -2749,11 +1865,7 @@ static void mceusb_dev_disconnect(struct usb_interface *intf)
 static int mceusb_dev_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct mceusb_dev *ir = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	dev_info(ir->dev, "suspend\n");
-=======
 	dev_info(ir->dev, "suspend");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_urb(ir->urb_in);
 	return 0;
 }
@@ -2761,11 +1873,7 @@ static int mceusb_dev_suspend(struct usb_interface *intf, pm_message_t message)
 static int mceusb_dev_resume(struct usb_interface *intf)
 {
 	struct mceusb_dev *ir = usb_get_intfdata(intf);
-<<<<<<< HEAD
-	dev_info(ir->dev, "resume\n");
-=======
 	dev_info(ir->dev, "resume");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usb_submit_urb(ir->urb_in, GFP_ATOMIC))
 		return -EIO;
 	return 0;
@@ -2787,9 +1895,3 @@ MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(usb, mceusb_dev_table);
-<<<<<<< HEAD
-
-module_param(debug, bool, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(debug, "Debug enabled or not");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

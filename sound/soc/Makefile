@@ -1,34 +1,3 @@
-<<<<<<< HEAD
-snd-soc-core-objs := soc-core.o soc-dapm.o soc-jack.o soc-cache.o soc-utils.o
-snd-soc-core-objs += soc-pcm.o soc-compress.o soc-io.o
-
-ifneq ($(CONFIG_SND_SOC_DMAENGINE_PCM),)
-snd-soc-core-objs += soc-dmaengine-pcm.o
-endif
-
-obj-$(CONFIG_SND_SOC)	+= snd-soc-core.o
-obj-$(CONFIG_SND_SOC)	+= codecs/
-obj-$(CONFIG_SND_SOC)	+= atmel/
-obj-$(CONFIG_SND_SOC)	+= au1x/
-obj-$(CONFIG_SND_SOC)	+= blackfin/
-obj-$(CONFIG_SND_SOC)	+= davinci/
-obj-$(CONFIG_SND_SOC)	+= ep93xx/
-obj-$(CONFIG_SND_SOC)	+= fsl/
-obj-$(CONFIG_SND_SOC)   += imx/
-obj-$(CONFIG_SND_SOC)	+= jz4740/
-obj-$(CONFIG_SND_SOC)	+= mid-x86/
-obj-$(CONFIG_SND_SOC)	+= msm/
-obj-$(CONFIG_SND_SOC)	+= mxs/
-obj-$(CONFIG_SND_SOC)	+= nuc900/
-obj-$(CONFIG_SND_SOC)	+= omap/
-obj-$(CONFIG_SND_SOC)	+= kirkwood/
-obj-$(CONFIG_SND_SOC)	+= pxa/
-obj-$(CONFIG_SND_SOC)	+= samsung/
-obj-$(CONFIG_SND_SOC)	+= s6000/
-obj-$(CONFIG_SND_SOC)	+= sh/
-obj-$(CONFIG_SND_SOC)	+= tegra/
-obj-$(CONFIG_SND_SOC)	+= txx9/
-=======
 # SPDX-License-Identifier: GPL-2.0
 snd-soc-core-objs := soc-core.o soc-dapm.o soc-jack.o soc-utils.o soc-dai.o soc-component.o
 snd-soc-core-objs += soc-pcm.o soc-devres.o soc-ops.o soc-link.o soc-card.o
@@ -102,4 +71,3 @@ obj-$(CONFIG_SND_SOC)	+= uniphier/
 obj-$(CONFIG_SND_SOC)	+= ux500/
 obj-$(CONFIG_SND_SOC)	+= xilinx/
 obj-$(CONFIG_SND_SOC)	+= xtensa/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

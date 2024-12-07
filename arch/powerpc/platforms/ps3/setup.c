@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 platform setup routines.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -31,22 +12,14 @@
 #include <linux/root_dev.h>
 #include <linux/console.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/machdep.h>
 #include <asm/firmware.h>
 #include <asm/time.h>
 #include <asm/iommu.h>
 #include <asm/udbg.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/lv1call.h>
 #include <asm/ps3gpu.h>
 
@@ -63,10 +36,7 @@ DEFINE_MUTEX(ps3_gpu_mutex);
 EXPORT_SYMBOL_GPL(ps3_gpu_mutex);
 
 static union ps3_firmware_version ps3_firmware_version;
-<<<<<<< HEAD
-=======
 static char ps3_firmware_version_str[16];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ps3_get_firmware_version(union ps3_firmware_version *v)
 {
@@ -99,11 +69,7 @@ static void ps3_power_save(void)
 	lv1_pause(0);
 }
 
-<<<<<<< HEAD
-static void ps3_restart(char *cmd)
-=======
 static void __noreturn ps3_restart(char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DBG("%s:%d cmd '%s'\n", __func__, __LINE__, cmd);
 
@@ -119,11 +85,7 @@ static void ps3_power_off(void)
 	ps3_sys_manager_power_off(); /* never returns */
 }
 
-<<<<<<< HEAD
-static void ps3_halt(void)
-=======
 static void __noreturn ps3_halt(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DBG("%s:%d\n", __func__, __LINE__);
 
@@ -140,10 +102,7 @@ static void ps3_panic(char *str)
 	printk("   System does not reboot automatically.\n");
 	printk("   Please press POWER button.\n");
 	printk("\n");
-<<<<<<< HEAD
-=======
 	panic_flush_kmsg_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while(1)
 		lv1_pause(1);
@@ -156,19 +115,10 @@ static void __init prealloc(struct ps3_prealloc *p)
 	if (!p->size)
 		return;
 
-<<<<<<< HEAD
-	p->address = __alloc_bootmem(p->size, p->align, __pa(MAX_DMA_ADDRESS));
-	if (!p->address) {
-		printk(KERN_ERR "%s: Cannot allocate %s\n", __func__,
-		       p->name);
-		return;
-	}
-=======
 	p->address = memblock_alloc(p->size, p->align);
 	if (!p->address)
 		panic("%s: Failed to allocate %lu bytes align=0x%lx\n",
 		      __func__, p->size, p->align);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "%s: %lu bytes at %p\n", p->name, p->size,
 	       p->address);
@@ -189,11 +139,7 @@ static int __init early_parse_ps3fb(char *p)
 	if (!p)
 		return 1;
 
-<<<<<<< HEAD
-	ps3fb_videomemory.size = _ALIGN_UP(memparse(p, &p),
-=======
 	ps3fb_videomemory.size = ALIGN(memparse(p, &p),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   ps3fb_videomemory.align);
 	return 0;
 }
@@ -226,15 +172,6 @@ early_param("ps3flash", early_parse_ps3flash);
 #define prealloc_ps3flash_bounce_buffer()	do { } while (0)
 #endif
 
-<<<<<<< HEAD
-static int ps3_set_dabr(unsigned long dabr)
-{
-	enum {DABR_USER = 1, DABR_KERNEL = 2,};
-
-	return lv1_set_dabr(dabr, DABR_KERNEL | DABR_USER) ? -1 : 0;
-}
-
-=======
 static int ps3_set_dabr(unsigned long dabr, unsigned long dabrx)
 {
 	/* Have to set at least one bit in the DABRX */
@@ -280,7 +217,6 @@ static int __init ps3_setup_sysfs(void)
 }
 core_initcall(ps3_setup_sysfs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init ps3_setup_arch(void)
 {
 	u64 tmp;
@@ -289,17 +225,11 @@ static void __init ps3_setup_arch(void)
 
 	lv1_get_version_info(&ps3_firmware_version.raw, &tmp);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "PS3 firmware version %u.%u.%u\n",
-	       ps3_firmware_version.major, ps3_firmware_version.minor,
-	       ps3_firmware_version.rev);
-=======
 	snprintf(ps3_firmware_version_str, sizeof(ps3_firmware_version_str),
 		"%u.%u.%u", ps3_firmware_version.major,
 		ps3_firmware_version.minor, ps3_firmware_version.rev);
 
 	printk(KERN_INFO "PS3 firmware version %s\n", ps3_firmware_version_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ps3_spu_set_platform();
 
@@ -307,13 +237,6 @@ static void __init ps3_setup_arch(void)
 	smp_init_ps3();
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_DUMMY_CONSOLE
-	conswitchp = &dummy_con;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prealloc_ps3fb_videomemory();
 	prealloc_ps3flash_bounce_buffer();
 
@@ -328,25 +251,6 @@ static void __init ps3_progress(char *s, unsigned short hex)
 	printk("*** %04x : %s\n", hex, s ? s : "");
 }
 
-<<<<<<< HEAD
-static int __init ps3_probe(void)
-{
-	unsigned long htab_size;
-	unsigned long dt_root;
-
-	DBG(" -> %s:%d\n", __func__, __LINE__);
-
-	dt_root = of_get_flat_dt_root();
-	if (!of_flat_dt_is_compatible(dt_root, "sony,ps3"))
-		return 0;
-
-	powerpc_firmware_features |= FW_FEATURE_PS3_POSSIBLE;
-
-	ps3_os_area_save_params();
-	ps3_mm_init();
-	ps3_mm_vas_create(&htab_size);
-	ps3_hpte_init(htab_size);
-=======
 void __init ps3_early_mm_init(void)
 {
 	unsigned long htab_size;
@@ -363,17 +267,12 @@ static int __init ps3_probe(void)
 	ps3_os_area_save_params();
 
 	pm_power_off = ps3_power_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBG(" <- %s:%d\n", __func__, __LINE__);
 	return 1;
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_KEXEC)
-=======
 #if defined(CONFIG_KEXEC_CORE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ps3_kexec_cpu_down(int crash_shutdown, int secondary)
 {
 	int cpu = smp_processor_id();
@@ -389,10 +288,7 @@ static void ps3_kexec_cpu_down(int crash_shutdown, int secondary)
 
 define_machine(ps3) {
 	.name				= "PS3",
-<<<<<<< HEAD
-=======
 	.compatible			= "sony,ps3",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe				= ps3_probe,
 	.setup_arch			= ps3_setup_arch,
 	.init_IRQ			= ps3_init_IRQ,
@@ -402,14 +298,8 @@ define_machine(ps3) {
 	.calibrate_decr			= ps3_calibrate_decr,
 	.progress			= ps3_progress,
 	.restart			= ps3_restart,
-<<<<<<< HEAD
-	.power_off			= ps3_power_off,
-	.halt				= ps3_halt,
-#if defined(CONFIG_KEXEC)
-=======
 	.halt				= ps3_halt,
 #if defined(CONFIG_KEXEC_CORE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kexec_cpu_down			= ps3_kexec_cpu_down,
 #endif
 };

@@ -27,11 +27,6 @@
 */
 
 #define DRV_NAME	"starfire"
-<<<<<<< HEAD
-#define DRV_VERSION	"2.1"
-#define DRV_RELDATE	"July  6, 2008"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -48,11 +43,7 @@
 #include <linux/mm.h>
 #include <linux/firmware.h>
 #include <asm/processor.h>		/* Processor type for cache alignment. */
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 /*
@@ -73,11 +64,7 @@
  */
 #define ZEROCOPY
 
-<<<<<<< HEAD
-#if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
-=======
 #if IS_ENABLED(CONFIG_VLAN_8021Q)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VLAN_SUPPORT
 #endif
 
@@ -125,18 +112,6 @@ static int rx_copybreak /* = 0 */;
 #define DMA_BURST_SIZE 128
 #endif
 
-<<<<<<< HEAD
-/* Used to pass the media type, etc.
-   Both 'options[]' and 'full_duplex[]' exist for driver interoperability.
-   The media type is usually passed in 'options[]'.
-   These variables are deprecated, use ethtool instead. -Ion
-*/
-#define MAX_UNITS 8		/* More are supported, limit only on options */
-static int options[MAX_UNITS] = {0, };
-static int full_duplex[MAX_UNITS] = {0, };
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Operational parameters that are set at compile time. */
 
 /* The "native" ring sizes are either 256 or 2048.
@@ -188,21 +163,9 @@ static int full_duplex[MAX_UNITS] = {0, };
 #define FIRMWARE_RX	"adaptec/starfire_rx.bin"
 #define FIRMWARE_TX	"adaptec/starfire_tx.bin"
 
-<<<<<<< HEAD
-/* These identify the driver base version and may not be removed. */
-static const char version[] __devinitconst =
-KERN_INFO "starfire.c:v1.03 7/26/2000  Written by Donald Becker <becker@scyld.com>\n"
-" (unofficial 2.2/2.4 kernel port, version " DRV_VERSION ", " DRV_RELDATE ")\n";
-
 MODULE_AUTHOR("Donald Becker <becker@scyld.com>");
 MODULE_DESCRIPTION("Adaptec Starfire Ethernet driver");
 MODULE_LICENSE("GPL");
-MODULE_VERSION(DRV_VERSION);
-=======
-MODULE_AUTHOR("Donald Becker <becker@scyld.com>");
-MODULE_DESCRIPTION("Adaptec Starfire Ethernet driver");
-MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE(FIRMWARE_RX);
 MODULE_FIRMWARE(FIRMWARE_TX);
 
@@ -212,11 +175,6 @@ module_param(debug, int, 0);
 module_param(rx_copybreak, int, 0);
 module_param(intr_latency, int, 0);
 module_param(small_frames, int, 0);
-<<<<<<< HEAD
-module_param_array(options, int, NULL, 0);
-module_param_array(full_duplex, int, NULL, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(enable_hw_cksum, int, 0);
 MODULE_PARM_DESC(max_interrupt_work, "Maximum events handled per interrupt");
 MODULE_PARM_DESC(mtu, "MTU (all boards)");
@@ -224,11 +182,6 @@ MODULE_PARM_DESC(debug, "Debug level (0-6)");
 MODULE_PARM_DESC(rx_copybreak, "Copy breakpoint for copy-only-tiny-frames");
 MODULE_PARM_DESC(intr_latency, "Maximum interrupt latency, in microseconds");
 MODULE_PARM_DESC(small_frames, "Maximum size of receive frames that bypass interrupt latency (0,64,128,256,512)");
-<<<<<<< HEAD
-MODULE_PARM_DESC(options, "Deprecated: Bits 0-3: media type, bit 17: full duplex");
-MODULE_PARM_DESC(full_duplex, "Deprecated: Forced full-duplex setting (0/1)");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(enable_hw_cksum, "Enable/disable hardware cksum support (0/1)");
 
 /*
@@ -324,11 +277,7 @@ enum chipset {
 	CH_6915 = 0,
 };
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(starfire_pci_tbl) = {
-=======
 static const struct pci_device_id starfire_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(ADAPTEC, 0x6915), CH_6915 },
 	{ 0, }
 };
@@ -338,11 +287,7 @@ MODULE_DEVICE_TABLE(pci, starfire_pci_tbl);
 static const struct chip_info {
 	const char *name;
 	int drv_flags;
-<<<<<<< HEAD
-} netdrv_tbl[] __devinitdata = {
-=======
 } netdrv_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Adaptec Starfire 6915", CanHaveMII },
 };
 
@@ -623,11 +568,7 @@ static int	mdio_read(struct net_device *dev, int phy_id, int location);
 static void	mdio_write(struct net_device *dev, int phy_id, int location, int value);
 static int	netdev_open(struct net_device *dev);
 static void	check_duplex(struct net_device *dev);
-<<<<<<< HEAD
-static void	tx_timeout(struct net_device *dev);
-=======
 static void	tx_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void	init_ring(struct net_device *dev);
 static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev);
 static irqreturn_t intr_handler(int irq, void *dev_instance);
@@ -645,12 +586,8 @@ static const struct ethtool_ops ethtool_ops;
 
 
 #ifdef VLAN_SUPPORT
-<<<<<<< HEAD
-static int netdev_vlan_rx_add_vid(struct net_device *dev, unsigned short vid)
-=======
 static int netdev_vlan_rx_add_vid(struct net_device *dev,
 				  __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 
@@ -664,12 +601,8 @@ static int netdev_vlan_rx_add_vid(struct net_device *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int netdev_vlan_rx_kill_vid(struct net_device *dev, unsigned short vid)
-=======
 static int netdev_vlan_rx_kill_vid(struct net_device *dev,
 				   __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 
@@ -692,12 +625,7 @@ static const struct net_device_ops netdev_ops = {
 	.ndo_tx_timeout		= tx_timeout,
 	.ndo_get_stats		= get_stats,
 	.ndo_set_rx_mode	= set_rx_mode,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= netdev_ioctl,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= netdev_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef VLAN_SUPPORT
@@ -706,15 +634,6 @@ static const struct net_device_ops netdev_ops = {
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit starfire_init_one(struct pci_dev *pdev,
-				       const struct pci_device_id *ent)
-{
-	struct netdev_private *np;
-	int i, irq, option, chip_idx = ent->driver_data;
-	struct net_device *dev;
-	static int card_idx = -1;
-=======
 static int starfire_init_one(struct pci_dev *pdev,
 			     const struct pci_device_id *ent)
 {
@@ -723,35 +642,18 @@ static int starfire_init_one(struct pci_dev *pdev,
 	int i, irq, chip_idx = ent->driver_data;
 	struct net_device *dev;
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long ioaddr;
 	void __iomem *base;
 	int drv_flags, io_size;
 	int boguscnt;
 
-<<<<<<< HEAD
-/* when built into the kernel, we only print version if device is found */
-#ifndef MODULE
-	static int printed_version;
-	if (!printed_version++)
-		printk(version);
-#endif
-
-	card_idx++;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_enable_device (pdev))
 		return -EIO;
 
 	ioaddr = pci_resource_start(pdev, 0);
 	io_size = pci_resource_len(pdev, 0);
 	if (!ioaddr || ((pci_resource_flags(pdev, 0) & IORESOURCE_MEM) == 0)) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME " %d: no PCI MEM resources, aborting\n", card_idx);
-=======
 		dev_err(d, "no PCI MEM resources, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -764,23 +666,14 @@ static int starfire_init_one(struct pci_dev *pdev,
 	irq = pdev->irq;
 
 	if (pci_request_regions (pdev, DRV_NAME)) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME " %d: cannot reserve PCI resources, aborting\n", card_idx);
-=======
 		dev_err(d, "cannot reserve PCI resources, aborting\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_free_netdev;
 	}
 
 	base = ioremap(ioaddr, io_size);
 	if (!base) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME " %d: cannot remap %#x @ %#lx, aborting\n",
-			card_idx, io_size, ioaddr);
-=======
 		dev_err(d, "cannot remap %#x @ %#lx, aborting\n",
 			io_size, ioaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_free_res;
 	}
 
@@ -796,11 +689,7 @@ static int starfire_init_one(struct pci_dev *pdev,
 #endif /* ZEROCOPY */
 
 #ifdef VLAN_SUPPORT
-<<<<<<< HEAD
-	dev->features |= NETIF_F_HW_VLAN_RX | NETIF_F_HW_VLAN_FILTER;
-=======
 	dev->features |= NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_CTAG_FILTER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* VLAN_RX_KILL_VID */
 #ifdef ADDR_64BITS
 	dev->features |= NETIF_F_HIGHDMA;
@@ -808,12 +697,8 @@ static int starfire_init_one(struct pci_dev *pdev,
 
 	/* Serial EEPROM reads are hidden by the hardware. */
 	for (i = 0; i < 6; i++)
-<<<<<<< HEAD
-		dev->dev_addr[i] = readb(base + EEPROMCtrl + 20 - i);
-=======
 		addr[i] = readb(base + EEPROMCtrl + 20 - i);
 	eth_hw_addr_set(dev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if ! defined(final_version) /* Dump the EEPROM contents during development. */
 	if (debug > 4)
@@ -841,12 +726,6 @@ static int starfire_init_one(struct pci_dev *pdev,
 	/* wait a little longer */
 	udelay(1000);
 
-<<<<<<< HEAD
-	dev->base_addr = (unsigned long)base;
-	dev->irq = irq;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np = netdev_priv(dev);
 	np->dev = dev;
 	np->base = base;
@@ -863,24 +742,6 @@ static int starfire_init_one(struct pci_dev *pdev,
 
 	drv_flags = netdrv_tbl[chip_idx].drv_flags;
 
-<<<<<<< HEAD
-	option = card_idx < MAX_UNITS ? options[card_idx] : 0;
-	if (dev->mem_start)
-		option = dev->mem_start;
-
-	/* The lower four bits are the media type. */
-	if (option & 0x200)
-		np->mii_if.full_duplex = 1;
-
-	if (card_idx < MAX_UNITS && full_duplex[card_idx] > 0)
-		np->mii_if.full_duplex = 1;
-
-	if (np->mii_if.full_duplex)
-		np->mii_if.force_media = 1;
-	else
-		np->mii_if.force_media = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->speed100 = 1;
 
 	/* timer resolution is 128 * 0.8us */
@@ -909,15 +770,9 @@ static int starfire_init_one(struct pci_dev *pdev,
 
 	dev->netdev_ops = &netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(dev, &ethtool_ops);
-
-	netif_napi_add(dev, &np->napi, netdev_poll, max_interrupt_work);
-=======
 	dev->ethtool_ops = &ethtool_ops;
 
 	netif_napi_add_weight(dev, &np->napi, netdev_poll, max_interrupt_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mtu)
 		dev->mtu = mtu;
@@ -934,11 +789,7 @@ static int starfire_init_one(struct pci_dev *pdev,
 		int mii_status;
 		for (phy = 0; phy < 32 && phy_idx < PHY_CNT; phy++) {
 			mdio_write(dev, phy, MII_BMCR, BMCR_RESET);
-<<<<<<< HEAD
-			mdelay(100);
-=======
 			msleep(100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			boguscnt = 1000;
 			while (--boguscnt > 0)
 				if ((mdio_read(dev, phy, MII_BMCR) & BMCR_RESET) == 0)
@@ -970,10 +821,6 @@ static int starfire_init_one(struct pci_dev *pdev,
 	return 0;
 
 err_out_cleardev:
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(base);
 err_out_free_res:
 	pci_release_regions (pdev);
@@ -1016,21 +863,14 @@ static int netdev_open(struct net_device *dev)
 	const __be32 *fw_rx_data, *fw_tx_data;
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem *ioaddr = np->base;
-<<<<<<< HEAD
-=======
 	const int irq = np->pci_dev->irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, retval;
 	size_t tx_size, rx_size;
 	size_t tx_done_q_size, rx_done_q_size, tx_ring_size, rx_ring_size;
 
 	/* Do we ever need to reset the chip??? */
 
-<<<<<<< HEAD
-	retval = request_irq(dev->irq, intr_handler, IRQF_SHARED, dev->name, dev);
-=======
 	retval = request_irq(irq, intr_handler, IRQF_SHARED, dev->name, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		return retval;
 
@@ -1039,11 +879,7 @@ static int netdev_open(struct net_device *dev)
 	writel(1, ioaddr + PCIDeviceConfig);
 	if (debug > 1)
 		printk(KERN_DEBUG "%s: netdev_open() irq %d.\n",
-<<<<<<< HEAD
-		       dev->name, dev->irq);
-=======
 		       dev->name, irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate the various queues. */
 	if (!np->queue_mem) {
@@ -1052,17 +888,11 @@ static int netdev_open(struct net_device *dev)
 		tx_ring_size = ((sizeof(starfire_tx_desc) * TX_RING_SIZE + QUEUE_ALIGN - 1) / QUEUE_ALIGN) * QUEUE_ALIGN;
 		rx_ring_size = sizeof(struct starfire_rx_desc) * RX_RING_SIZE;
 		np->queue_mem_size = tx_done_q_size + rx_done_q_size + tx_ring_size + rx_ring_size;
-<<<<<<< HEAD
-		np->queue_mem = pci_alloc_consistent(np->pci_dev, np->queue_mem_size, &np->queue_mem_dma);
-		if (np->queue_mem == NULL) {
-			free_irq(dev->irq, dev);
-=======
 		np->queue_mem = dma_alloc_coherent(&np->pci_dev->dev,
 						   np->queue_mem_size,
 						   &np->queue_mem_dma, GFP_ATOMIC);
 		if (np->queue_mem == NULL) {
 			free_irq(irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 
@@ -1127,11 +957,7 @@ static int netdev_open(struct net_device *dev)
 	writew(0, ioaddr + PerfFilterTable + 4);
 	writew(0, ioaddr + PerfFilterTable + 8);
 	for (i = 1; i < 16; i++) {
-<<<<<<< HEAD
-		__be16 *eaddrs = (__be16 *)dev->dev_addr;
-=======
 		const __be16 *eaddrs = (const __be16 *)dev->dev_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void __iomem *setup_frm = ioaddr + PerfFilterTable + i * 16;
 		writew(be16_to_cpu(eaddrs[2]), setup_frm); setup_frm += 4;
 		writew(be16_to_cpu(eaddrs[1]), setup_frm); setup_frm += 4;
@@ -1268,11 +1094,7 @@ static void check_duplex(struct net_device *dev)
 }
 
 
-<<<<<<< HEAD
-static void tx_timeout(struct net_device *dev)
-=======
 static void tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem *ioaddr = np->base;
@@ -1295,11 +1117,7 @@ static void tx_timeout(struct net_device *dev, unsigned int txqueue)
 
 	/* Trigger an immediate transmit demand. */
 
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.tx_errors++;
 	netif_wake_queue(dev);
 }
@@ -1322,9 +1140,6 @@ static void init_ring(struct net_device *dev)
 		np->rx_info[i].skb = skb;
 		if (skb == NULL)
 			break;
-<<<<<<< HEAD
-		np->rx_info[i].mapping = pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 		np->rx_info[i].mapping = dma_map_single(&np->pci_dev->dev,
 							skb->data,
 							np->rx_buf_sz,
@@ -1334,7 +1149,6 @@ static void init_ring(struct net_device *dev)
 			np->rx_info[i].skb = NULL;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Grrr, we cannot offset to correctly align the IP header. */
 		np->rx_ring[i].rxaddr = cpu_to_dma(np->rx_info[i].mapping | RxDescValid);
 	}
@@ -1365,14 +1179,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	unsigned int entry;
-<<<<<<< HEAD
-	u32 status;
-	int i;
-=======
 	unsigned int prev_tx;
 	u32 status;
 	int i, j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * be cautious here, wrapping the queue has weird semantics
@@ -1390,10 +1199,7 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif /* ZEROCOPY && HAS_BROKEN_FIRMWARE */
 
-<<<<<<< HEAD
-=======
 	prev_tx = np->cur_tx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = np->cur_tx % TX_RING_SIZE;
 	for (i = 0; i < skb_num_frags(skb); i++) {
 		int wrap_ring = 0;
@@ -1417,23 +1223,13 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 			status |= skb_first_frag_len(skb) | (skb_num_frags(skb) << 16);
 
 			np->tx_info[entry].mapping =
-<<<<<<< HEAD
-				pci_map_single(np->pci_dev, skb->data, skb_first_frag_len(skb), PCI_DMA_TODEVICE);
-=======
 				dma_map_single(&np->pci_dev->dev, skb->data,
 					       skb_first_frag_len(skb),
 					       DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			const skb_frag_t *this_frag = &skb_shinfo(skb)->frags[i - 1];
 			status |= skb_frag_size(this_frag);
 			np->tx_info[entry].mapping =
-<<<<<<< HEAD
-				pci_map_single(np->pci_dev,
-					       skb_frag_address(this_frag),
-					       skb_frag_size(this_frag),
-					       PCI_DMA_TODEVICE);
-=======
 				dma_map_single(&np->pci_dev->dev,
 					       skb_frag_address(this_frag),
 					       skb_frag_size(this_frag),
@@ -1442,7 +1238,6 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 		if (dma_mapping_error(&np->pci_dev->dev, np->tx_info[entry].mapping)) {
 			dev->stats.tx_dropped++;
 			goto err_out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		np->tx_ring[entry].addr = cpu_to_dma(np->tx_info[entry].mapping);
@@ -1478,10 +1273,6 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 		netif_stop_queue(dev);
 
 	return NETDEV_TX_OK;
-<<<<<<< HEAD
-}
-
-=======
 
 err_out:
 	entry = prev_tx % TX_RING_SIZE;
@@ -1504,7 +1295,6 @@ err_out:
 	np->cur_tx = prev_tx;
 	return NETDEV_TX_OK;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The interrupt handler does all of the Rx thread work and cleans up
    after the Tx thread. */
@@ -1571,44 +1361,26 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
 				u16 entry = (tx_status & 0x7fff) / sizeof(starfire_tx_desc);
 				struct sk_buff *skb = np->tx_info[entry].skb;
 				np->tx_info[entry].skb = NULL;
-<<<<<<< HEAD
-				pci_unmap_single(np->pci_dev,
-						 np->tx_info[entry].mapping,
-						 skb_first_frag_len(skb),
-						 PCI_DMA_TODEVICE);
-=======
 				dma_unmap_single(&np->pci_dev->dev,
 						 np->tx_info[entry].mapping,
 						 skb_first_frag_len(skb),
 						 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				np->tx_info[entry].mapping = 0;
 				np->dirty_tx += np->tx_info[entry].used_slots;
 				entry = (entry + np->tx_info[entry].used_slots) % TX_RING_SIZE;
 				{
 					int i;
 					for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-<<<<<<< HEAD
-						pci_unmap_single(np->pci_dev,
-								 np->tx_info[entry].mapping,
-								 skb_frag_size(&skb_shinfo(skb)->frags[i]),
-								 PCI_DMA_TODEVICE);
-=======
 						dma_unmap_single(&np->pci_dev->dev,
 								 np->tx_info[entry].mapping,
 								 skb_frag_size(&skb_shinfo(skb)->frags[i]),
 								 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						np->dirty_tx++;
 						entry++;
 					}
 				}
 
-<<<<<<< HEAD
-				dev_kfree_skb_irq(skb);
-=======
 				dev_consume_skb_irq(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			np->tx_done_q[np->tx_done].status = 0;
 			np->tx_done = (np->tx_done + 1) % DONE_Q_SIZE;
@@ -1694,18 +1466,6 @@ static int __netdev_rx(struct net_device *dev, int *quota)
 		if (pkt_len < rx_copybreak &&
 		    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
 			skb_reserve(skb, 2);	/* 16 byte align the IP header */
-<<<<<<< HEAD
-			pci_dma_sync_single_for_cpu(np->pci_dev,
-						    np->rx_info[entry].mapping,
-						    pkt_len, PCI_DMA_FROMDEVICE);
-			skb_copy_to_linear_data(skb, np->rx_info[entry].skb->data, pkt_len);
-			pci_dma_sync_single_for_device(np->pci_dev,
-						       np->rx_info[entry].mapping,
-						       pkt_len, PCI_DMA_FROMDEVICE);
-			skb_put(skb, pkt_len);
-		} else {
-			pci_unmap_single(np->pci_dev, np->rx_info[entry].mapping, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 			dma_sync_single_for_cpu(&np->pci_dev->dev,
 						np->rx_info[entry].mapping,
 						pkt_len, DMA_FROM_DEVICE);
@@ -1718,7 +1478,6 @@ static int __netdev_rx(struct net_device *dev, int *quota)
 			dma_unmap_single(&np->pci_dev->dev,
 					 np->rx_info[entry].mapping,
 					 np->rx_buf_sz, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb = np->rx_info[entry].skb;
 			skb_put(skb, pkt_len);
 			np->rx_info[entry].skb = NULL;
@@ -1764,11 +1523,7 @@ static int __netdev_rx(struct net_device *dev, int *quota)
 				printk(KERN_DEBUG "  netdev_rx() vlanid = %d\n",
 				       vlid);
 			}
-<<<<<<< HEAD
-			__vlan_hwaccel_put_tag(skb, vlid);
-=======
 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 #endif /* VLAN_SUPPORT */
 		netif_receive_skb(skb);
@@ -1840,9 +1595,6 @@ static void refill_rx_ring(struct net_device *dev)
 			if (skb == NULL)
 				break;	/* Better luck next round. */
 			np->rx_info[entry].mapping =
-<<<<<<< HEAD
-				pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 				dma_map_single(&np->pci_dev->dev, skb->data,
 					       np->rx_buf_sz, DMA_FROM_DEVICE);
 			if (dma_mapping_error(&np->pci_dev->dev, np->rx_info[entry].mapping)) {
@@ -1850,7 +1602,6 @@ static void refill_rx_ring(struct net_device *dev)
 				np->rx_info[entry].skb = NULL;
 				break;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->rx_ring[entry].rxaddr =
 				cpu_to_dma(np->rx_info[entry].mapping | RxDescValid);
 		}
@@ -2038,22 +1789,14 @@ static void set_rx_mode(struct net_device *dev)
 	} else if (netdev_mc_count(dev) <= 14) {
 		/* Use the 16 element perfect filter, skip first two entries. */
 		void __iomem *filter_addr = ioaddr + PerfFilterTable + 2 * 16;
-<<<<<<< HEAD
-		__be16 *eaddrs;
-=======
 		const __be16 *eaddrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev_for_each_mc_addr(ha, dev) {
 			eaddrs = (__be16 *) ha->addr;
 			writew(be16_to_cpu(eaddrs[2]), filter_addr); filter_addr += 4;
 			writew(be16_to_cpu(eaddrs[1]), filter_addr); filter_addr += 4;
 			writew(be16_to_cpu(eaddrs[0]), filter_addr); filter_addr += 8;
 		}
-<<<<<<< HEAD
-		eaddrs = (__be16 *)dev->dev_addr;
-=======
 		eaddrs = (const __be16 *)dev->dev_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = netdev_mc_count(dev) + 2;
 		while (i++ < 16) {
 			writew(be16_to_cpu(eaddrs[0]), filter_addr); filter_addr += 4;
@@ -2064,11 +1807,7 @@ static void set_rx_mode(struct net_device *dev)
 	} else {
 		/* Must use a multicast hash table. */
 		void __iomem *filter_addr;
-<<<<<<< HEAD
-		__be16 *eaddrs;
-=======
 		const __be16 *eaddrs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__le16 mc_filter[32] __attribute__ ((aligned(sizeof(long))));	/* Multicast hash filter */
 
 		memset(mc_filter, 0, sizeof(mc_filter));
@@ -2082,11 +1821,7 @@ static void set_rx_mode(struct net_device *dev)
 		}
 		/* Clear the perfect filter list, skip first two entries. */
 		filter_addr = ioaddr + PerfFilterTable + 2 * 16;
-<<<<<<< HEAD
-		eaddrs = (__be16 *)dev->dev_addr;
-=======
 		eaddrs = (const __be16 *)dev->dev_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 2; i < 16; i++) {
 			writew(be16_to_cpu(eaddrs[0]), filter_addr); filter_addr += 4;
 			writew(be16_to_cpu(eaddrs[1]), filter_addr); filter_addr += 4;
@@ -2109,18 +1844,6 @@ static int check_if_running(struct net_device *dev)
 static void get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct netdev_private *np = netdev_priv(dev);
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-	strlcpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
-}
-
-static int get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
-{
-	struct netdev_private *np = netdev_priv(dev);
-	spin_lock_irq(&np->lock);
-	mii_ethtool_gset(&np->mii_if, ecmd);
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
 }
@@ -2131,26 +1854,17 @@ static int get_link_ksettings(struct net_device *dev,
 	struct netdev_private *np = netdev_priv(dev);
 	spin_lock_irq(&np->lock);
 	mii_ethtool_get_link_ksettings(&np->mii_if, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&np->lock);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
-=======
 static int set_link_ksettings(struct net_device *dev,
 			      const struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	int res;
 	spin_lock_irq(&np->lock);
-<<<<<<< HEAD
-	res = mii_ethtool_sset(&np->mii_if, ecmd);
-=======
 	res = mii_ethtool_set_link_ksettings(&np->mii_if, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&np->lock);
 	check_duplex(dev);
 	return res;
@@ -2181,20 +1895,12 @@ static void set_msglevel(struct net_device *dev, u32 val)
 static const struct ethtool_ops ethtool_ops = {
 	.begin = check_if_running,
 	.get_drvinfo = get_drvinfo,
-<<<<<<< HEAD
-	.get_settings = get_settings,
-	.set_settings = set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nway_reset = nway_reset,
 	.get_link = get_link,
 	.get_msglevel = get_msglevel,
 	.set_msglevel = set_msglevel,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings = get_link_ksettings,
 	.set_link_ksettings = set_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
@@ -2258,23 +1964,15 @@ static int netdev_close(struct net_device *dev)
 		}
 	}
 
-<<<<<<< HEAD
-	free_irq(dev->irq, dev);
-=======
 	free_irq(np->pci_dev->irq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Free all the skbuffs in the Rx queue. */
 	for (i = 0; i < RX_RING_SIZE; i++) {
 		np->rx_ring[i].rxaddr = cpu_to_dma(0xBADF00D0); /* An invalid address. */
 		if (np->rx_info[i].skb != NULL) {
-<<<<<<< HEAD
-			pci_unmap_single(np->pci_dev, np->rx_info[i].mapping, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_single(&np->pci_dev->dev,
 					 np->rx_info[i].mapping,
 					 np->rx_buf_sz, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(np->rx_info[i].skb);
 		}
 		np->rx_info[i].skb = NULL;
@@ -2284,14 +1982,8 @@ static int netdev_close(struct net_device *dev)
 		struct sk_buff *skb = np->tx_info[i].skb;
 		if (skb == NULL)
 			continue;
-<<<<<<< HEAD
-		pci_unmap_single(np->pci_dev,
-				 np->tx_info[i].mapping,
-				 skb_first_frag_len(skb), PCI_DMA_TODEVICE);
-=======
 		dma_unmap_single(&np->pci_dev->dev, np->tx_info[i].mapping,
 				 skb_first_frag_len(skb), DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->tx_info[i].mapping = 0;
 		dev_kfree_skb(skb);
 		np->tx_info[i].skb = NULL;
@@ -2300,43 +1992,21 @@ static int netdev_close(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int starfire_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	struct net_device *dev = pci_get_drvdata(pdev);
-=======
 static int __maybe_unused starfire_suspend(struct device *dev_d)
 {
 	struct net_device *dev = dev_get_drvdata(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(dev)) {
 		netif_device_detach(dev);
 		netdev_close(dev);
 	}
 
-<<<<<<< HEAD
-	pci_save_state(pdev);
-	pci_set_power_state(pdev, pci_choose_state(pdev,state));
-
-	return 0;
-}
-
-static int starfire_resume(struct pci_dev *pdev)
-{
-	struct net_device *dev = pci_get_drvdata(pdev);
-
-	pci_set_power_state(pdev, PCI_D0);
-	pci_restore_state(pdev);
-=======
 	return 0;
 }
 
 static int __maybe_unused starfire_resume(struct device *dev_d)
 {
 	struct net_device *dev = dev_get_drvdata(dev_d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(dev)) {
 		netdev_open(dev);
@@ -2345,15 +2015,8 @@ static int __maybe_unused starfire_resume(struct device *dev_d)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-
-static void __devexit starfire_remove_one (struct pci_dev *pdev)
-=======
 
 static void starfire_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct netdev_private *np = netdev_priv(dev);
@@ -2363,12 +2026,8 @@ static void starfire_remove_one(struct pci_dev *pdev)
 	unregister_netdev(dev);
 
 	if (np->queue_mem)
-<<<<<<< HEAD
-		pci_free_consistent(pdev, np->queue_mem_size, np->queue_mem, np->queue_mem_dma);
-=======
 		dma_free_coherent(&pdev->dev, np->queue_mem_size,
 				  np->queue_mem, np->queue_mem_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* XXX: add wakeup code -- requires firmware for MagicPacket */
@@ -2378,31 +2037,16 @@ static void starfire_remove_one(struct pci_dev *pdev)
 	iounmap(np->base);
 	pci_release_regions(pdev);
 
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-	free_netdev(dev);			/* Will also free np!! */
-}
-
-=======
 	free_netdev(dev);			/* Will also free np!! */
 }
 
 static SIMPLE_DEV_PM_OPS(starfire_pm_ops, starfire_suspend, starfire_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver starfire_driver = {
 	.name		= DRV_NAME,
 	.probe		= starfire_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(starfire_remove_one),
-#ifdef CONFIG_PM
-	.suspend	= starfire_suspend,
-	.resume		= starfire_resume,
-#endif /* CONFIG_PM */
-=======
 	.remove		= starfire_remove_one,
 	.driver.pm	= &starfire_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= starfire_pci_tbl,
 };
 
@@ -2411,11 +2055,6 @@ static int __init starfire_init (void)
 {
 /* when a module, this is printed whether or not devices are found in probe */
 #ifdef MODULE
-<<<<<<< HEAD
-	printk(version);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO DRV_NAME ": polling (NAPI) enabled\n");
 #endif
 
@@ -2433,14 +2072,3 @@ static void __exit starfire_cleanup (void)
 
 module_init(starfire_init);
 module_exit(starfire_cleanup);
-<<<<<<< HEAD
-
-
-/*
- * Local variables:
- *  c-basic-offset: 8
- *  tab-width: 8
- * End:
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

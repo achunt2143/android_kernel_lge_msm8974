@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the Analog Devices digital potentiometers
  *
  * Copyright (C) 2010 Michael Hennerich, Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AD_DPOT_H_
@@ -202,21 +194,12 @@ enum dpot_devid {
 struct dpot_data;
 
 struct ad_dpot_bus_ops {
-<<<<<<< HEAD
-	int (*read_d8) (void *client);
-	int (*read_r8d8) (void *client, u8 reg);
-	int (*read_r8d16) (void *client, u8 reg);
-	int (*write_d8) (void *client, u8 val);
-	int (*write_r8d8) (void *client, u8 reg, u8 val);
-	int (*write_r8d16) (void *client, u8 reg, u16 val);
-=======
 	int (*read_d8)(void *client);
 	int (*read_r8d8)(void *client, u8 reg);
 	int (*read_r8d16)(void *client, u8 reg);
 	int (*write_d8)(void *client, u8 val);
 	int (*write_r8d8)(void *client, u8 reg, u8 val);
 	int (*write_r8d16)(void *client, u8 reg, u16 val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ad_dpot_bus_data {
@@ -226,10 +209,6 @@ struct ad_dpot_bus_data {
 
 int ad_dpot_probe(struct device *dev, struct ad_dpot_bus_data *bdata,
 		  unsigned long devid, const char *name);
-<<<<<<< HEAD
-int ad_dpot_remove(struct device *dev);
-=======
 void ad_dpot_remove(struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

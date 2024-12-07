@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Fujitsu B-series Lifebook PS/2 TouchScreen driver
  *
@@ -10,13 +7,6 @@
  *
  * TouchScreen detection, absolute mode setting and packet layout is taken from
  * Harald Hoyer's description of the device.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>
@@ -24,10 +14,7 @@
 #include <linux/libps2.h>
 #include <linux/dmi.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "psmouse.h"
 #include "lifebook.h"
@@ -55,11 +42,7 @@ static int lifebook_set_6byte_proto(const struct dmi_system_id *d)
 	return 1;
 }
 
-<<<<<<< HEAD
-static const struct dmi_system_id __initconst lifebook_dmi_table[] = {
-=======
 static const struct dmi_system_id lifebook_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		/* FLORA-ie 55mi */
 		.matches = {
@@ -151,11 +134,7 @@ static psmouse_ret_t lifebook_process_byte(struct psmouse *psmouse)
 	struct lifebook_data *priv = psmouse->private;
 	struct input_dev *dev1 = psmouse->dev;
 	struct input_dev *dev2 = priv ? priv->dev2 : NULL;
-<<<<<<< HEAD
-	unsigned char *packet = psmouse->packet;
-=======
 	u8 *packet = psmouse->packet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool relative_packet = packet[0] & 0x08;
 
 	if (relative_packet || !lifebook_use_6byte_proto) {
@@ -207,21 +186,10 @@ static psmouse_ret_t lifebook_process_byte(struct psmouse *psmouse)
 	}
 
 	if (dev2) {
-<<<<<<< HEAD
-		if (relative_packet) {
-			input_report_rel(dev2, REL_X,
-				((packet[0] & 0x10) ? packet[1] - 256 : packet[1]));
-			input_report_rel(dev2, REL_Y,
-				 -(int)((packet[0] & 0x20) ? packet[2] - 256 : packet[2]));
-		}
-		input_report_key(dev2, BTN_LEFT, packet[0] & 0x01);
-		input_report_key(dev2, BTN_RIGHT, packet[0] & 0x02);
-=======
 		if (relative_packet)
 			psmouse_report_standard_motion(dev2, packet);
 
 		psmouse_report_standard_buttons(dev2, packet[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_sync(dev2);
 	}
 
@@ -231,19 +199,12 @@ static psmouse_ret_t lifebook_process_byte(struct psmouse *psmouse)
 static int lifebook_absolute_mode(struct psmouse *psmouse)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
-<<<<<<< HEAD
-	unsigned char param;
-
-	if (psmouse_reset(psmouse))
-		return -1;
-=======
 	u8 param;
 	int error;
 
 	error = psmouse_reset(psmouse);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Enable absolute output -- ps2_command fails always but if
@@ -259,24 +220,15 @@ static int lifebook_absolute_mode(struct psmouse *psmouse)
 static void lifebook_relative_mode(struct psmouse *psmouse)
 {
 	struct ps2dev *ps2dev = &psmouse->ps2dev;
-<<<<<<< HEAD
-	unsigned char param = 0x06;
-=======
 	u8 param = 0x06;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ps2_command(ps2dev, &param, PSMOUSE_CMD_SETRES);
 }
 
 static void lifebook_set_resolution(struct psmouse *psmouse, unsigned int resolution)
 {
-<<<<<<< HEAD
-	static const unsigned char params[] = { 0, 1, 2, 2, 3 };
-	unsigned char p;
-=======
 	static const u8 params[] = { 0, 1, 2, 2, 3 };
 	u8 p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (resolution == 0 || resolution > 400)
 		resolution = 400;
@@ -300,32 +252,19 @@ static void lifebook_disconnect(struct psmouse *psmouse)
 
 int lifebook_detect(struct psmouse *psmouse, bool set_properties)
 {
-<<<<<<< HEAD
-        if (!lifebook_present)
-                return -1;
-
-	if (desired_serio_phys &&
-	    strcmp(psmouse->ps2dev.serio->phys, desired_serio_phys))
-		return -1;
-=======
 	if (!lifebook_present)
 		return -ENXIO;
 
 	if (desired_serio_phys &&
 	    strcmp(psmouse->ps2dev.serio->phys, desired_serio_phys))
 		return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (set_properties) {
 		psmouse->vendor = "Fujitsu";
 		psmouse->name = "Lifebook TouchScreen";
 	}
 
-<<<<<<< HEAD
-        return 0;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lifebook_create_relative_device(struct psmouse *psmouse)
@@ -344,28 +283,17 @@ static int lifebook_create_relative_device(struct psmouse *psmouse)
 		 "%s/input1", psmouse->ps2dev.serio->phys);
 
 	dev2->phys = priv->phys;
-<<<<<<< HEAD
-	dev2->name = "PS/2 Touchpad";
-=======
 	dev2->name = "LBPS/2 Fujitsu Lifebook Touchpad";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev2->id.bustype = BUS_I8042;
 	dev2->id.vendor  = 0x0002;
 	dev2->id.product = PSMOUSE_LIFEBOOK;
 	dev2->id.version = 0x0000;
 	dev2->dev.parent = &psmouse->ps2dev.serio->dev;
 
-<<<<<<< HEAD
-	dev2->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_REL);
-	dev2->relbit[BIT_WORD(REL_X)] = BIT_MASK(REL_X) | BIT_MASK(REL_Y);
-	dev2->keybit[BIT_WORD(BTN_LEFT)] =
-				BIT_MASK(BTN_LEFT) | BIT_MASK(BTN_RIGHT);
-=======
 	input_set_capability(dev2, EV_REL, REL_X);
 	input_set_capability(dev2, EV_REL, REL_Y);
 	input_set_capability(dev2, EV_KEY, BTN_LEFT);
 	input_set_capability(dev2, EV_KEY, BTN_RIGHT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = input_register_device(priv->dev2);
 	if (error)
@@ -384,16 +312,6 @@ int lifebook_init(struct psmouse *psmouse)
 {
 	struct input_dev *dev1 = psmouse->dev;
 	int max_coord = lifebook_use_6byte_proto ? 4096 : 1024;
-<<<<<<< HEAD
-
-	if (lifebook_absolute_mode(psmouse))
-		return -1;
-
-	dev1->evbit[0] = BIT_MASK(EV_ABS) | BIT_MASK(EV_KEY);
-	dev1->relbit[0] = 0;
-	dev1->keybit[BIT_WORD(BTN_MOUSE)] = 0;
-	dev1->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
-=======
 	int error;
 
 	error = lifebook_absolute_mode(psmouse);
@@ -406,21 +324,14 @@ int lifebook_init(struct psmouse *psmouse)
 	bitmap_zero(dev1->keybit, KEY_CNT);
 
 	input_set_capability(dev1, EV_KEY, BTN_TOUCH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_set_abs_params(dev1, ABS_X, 0, max_coord, 0, 0);
 	input_set_abs_params(dev1, ABS_Y, 0, max_coord, 0, 0);
 
 	if (!desired_serio_phys) {
-<<<<<<< HEAD
-		if (lifebook_create_relative_device(psmouse)) {
-			lifebook_relative_mode(psmouse);
-			return -1;
-=======
 		error = lifebook_create_relative_device(psmouse);
 		if (error) {
 			lifebook_relative_mode(psmouse);
 			return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Atheros AR71XX/AR724X/AR913X built-in hardware watchdog timer.
  *
@@ -14,29 +11,15 @@
  *
  * which again was based on sa1100 driver,
  *	Copyright (C) 2000 Oleg Drokin <green@crimea.edu>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <linux/errno.h>
-#include <linux/fs.h>
-#include <linux/init.h>
-=======
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/miscdevice.h>
 #include <linux/module.h>
@@ -46,26 +29,17 @@
 #include <linux/watchdog.h>
 #include <linux/clk.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-
-#include <asm/mach-ath79/ath79.h>
-#include <asm/mach-ath79/ar71xx_regs.h>
-=======
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME	"ath79-wdt"
 
 #define WDT_TIMEOUT	15	/* seconds */
 
-<<<<<<< HEAD
-=======
 #define WDOG_REG_CTRL		0x00
 #define WDOG_REG_TIMER		0x04
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WDOG_CTRL_LAST_RESET	BIT(31)
 #define WDOG_CTRL_ACTION_MASK	3
 #define WDOG_CTRL_ACTION_NONE	0	/* no action */
@@ -92,14 +66,6 @@ static struct clk *wdt_clk;
 static unsigned long wdt_freq;
 static int boot_status;
 static int max_timeout;
-<<<<<<< HEAD
-
-static inline void ath79_wdt_keepalive(void)
-{
-	ath79_reset_wr(AR71XX_RESET_REG_WDOG, wdt_freq * timeout);
-	/* flush write */
-	ath79_reset_rr(AR71XX_RESET_REG_WDOG);
-=======
 static void __iomem *wdt_base;
 
 static inline void ath79_wdt_wr(unsigned reg, u32 val)
@@ -117,17 +83,11 @@ static inline void ath79_wdt_keepalive(void)
 	ath79_wdt_wr(WDOG_REG_TIMER, wdt_freq * timeout);
 	/* flush write */
 	ath79_wdt_rr(WDOG_REG_TIMER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ath79_wdt_enable(void)
 {
 	ath79_wdt_keepalive();
-<<<<<<< HEAD
-	ath79_reset_wr(AR71XX_RESET_REG_WDOG_CTRL, WDOG_CTRL_ACTION_FCR);
-	/* flush write */
-	ath79_reset_rr(AR71XX_RESET_REG_WDOG_CTRL);
-=======
 
 	/*
 	 * Updating the TIMER register requires a few microseconds
@@ -140,20 +100,13 @@ static inline void ath79_wdt_enable(void)
 	ath79_wdt_wr(WDOG_REG_CTRL, WDOG_CTRL_ACTION_FCR);
 	/* flush write */
 	ath79_wdt_rr(WDOG_REG_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ath79_wdt_disable(void)
 {
-<<<<<<< HEAD
-	ath79_reset_wr(AR71XX_RESET_REG_WDOG_CTRL, WDOG_CTRL_ACTION_NONE);
-	/* flush write */
-	ath79_reset_rr(AR71XX_RESET_REG_WDOG_CTRL);
-=======
 	ath79_wdt_wr(WDOG_REG_CTRL, WDOG_CTRL_ACTION_NONE);
 	/* flush write */
 	ath79_wdt_rr(WDOG_REG_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath79_wdt_set_timeout(int val)
@@ -175,11 +128,7 @@ static int ath79_wdt_open(struct inode *inode, struct file *file)
 	clear_bit(WDT_FLAGS_EXPECT_CLOSE, &wdt_flags);
 	ath79_wdt_enable();
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath79_wdt_release(struct inode *inode, struct file *file)
@@ -266,13 +215,8 @@ static long ath79_wdt_ioctl(struct file *file, unsigned int cmd,
 		err = ath79_wdt_set_timeout(t);
 		if (err)
 			break;
-<<<<<<< HEAD
-
-		/* fallthrough */
-=======
 		fallthrough;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		err = put_user(timeout, p);
 		break;
@@ -290,10 +234,7 @@ static const struct file_operations ath79_wdt_fops = {
 	.llseek		= no_llseek,
 	.write		= ath79_wdt_write,
 	.unlocked_ioctl	= ath79_wdt_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= ath79_wdt_open,
 	.release	= ath79_wdt_release,
 };
@@ -304,30 +245,11 @@ static struct miscdevice ath79_wdt_miscdev = {
 	.fops = &ath79_wdt_fops,
 };
 
-<<<<<<< HEAD
-static int __devinit ath79_wdt_probe(struct platform_device *pdev)
-=======
 static int ath79_wdt_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 ctrl;
 	int err;
 
-<<<<<<< HEAD
-	wdt_clk = clk_get(&pdev->dev, "wdt");
-	if (IS_ERR(wdt_clk))
-		return PTR_ERR(wdt_clk);
-
-	err = clk_enable(wdt_clk);
-	if (err)
-		goto err_clk_put;
-
-	wdt_freq = clk_get_rate(wdt_clk);
-	if (!wdt_freq) {
-		err = -EINVAL;
-		goto err_clk_disable;
-	}
-=======
 	if (wdt_base)
 		return -EBUSY;
 
@@ -342,7 +264,6 @@ static int ath79_wdt_probe(struct platform_device *pdev)
 	wdt_freq = clk_get_rate(wdt_clk);
 	if (!wdt_freq)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max_timeout = (0xfffffffful / wdt_freq);
 	if (timeout < 1 || timeout > max_timeout) {
@@ -352,40 +273,13 @@ static int ath79_wdt_probe(struct platform_device *pdev)
 			max_timeout, timeout);
 	}
 
-<<<<<<< HEAD
-	ctrl = ath79_reset_rr(AR71XX_RESET_REG_WDOG_CTRL);
-=======
 	ctrl = ath79_wdt_rr(WDOG_REG_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	boot_status = (ctrl & WDOG_CTRL_LAST_RESET) ? WDIOF_CARDRESET : 0;
 
 	err = misc_register(&ath79_wdt_miscdev);
 	if (err) {
 		dev_err(&pdev->dev,
 			"unable to register misc device, err=%d\n", err);
-<<<<<<< HEAD
-		goto err_clk_disable;
-	}
-
-	return 0;
-
-err_clk_disable:
-	clk_disable(wdt_clk);
-err_clk_put:
-	clk_put(wdt_clk);
-	return err;
-}
-
-static int __devexit ath79_wdt_remove(struct platform_device *pdev)
-{
-	misc_deregister(&ath79_wdt_miscdev);
-	clk_disable(wdt_clk);
-	clk_put(wdt_clk);
-	return 0;
-}
-
-static void ath97_wdt_shutdown(struct platform_device *pdev)
-=======
 		return err;
 	}
 
@@ -398,33 +292,10 @@ static void ath79_wdt_remove(struct platform_device *pdev)
 }
 
 static void ath79_wdt_shutdown(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ath79_wdt_disable();
 }
 
-<<<<<<< HEAD
-static struct platform_driver ath79_wdt_driver = {
-	.remove		= __devexit_p(ath79_wdt_remove),
-	.shutdown	= ath97_wdt_shutdown,
-	.driver		= {
-		.name	= DRIVER_NAME,
-		.owner	= THIS_MODULE,
-	},
-};
-
-static int __init ath79_wdt_init(void)
-{
-	return platform_driver_probe(&ath79_wdt_driver, ath79_wdt_probe);
-}
-module_init(ath79_wdt_init);
-
-static void __exit ath79_wdt_exit(void)
-{
-	platform_driver_unregister(&ath79_wdt_driver);
-}
-module_exit(ath79_wdt_exit);
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id ath79_wdt_match[] = {
 	{ .compatible = "qca,ar7130-wdt" },
@@ -444,14 +315,9 @@ static struct platform_driver ath79_wdt_driver = {
 };
 
 module_platform_driver(ath79_wdt_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Atheros AR71XX/AR724X/AR913X hardware watchdog driver");
 MODULE_AUTHOR("Gabor Juhos <juhosg@openwrt.org");
 MODULE_AUTHOR("Imre Kaloz <kaloz@openwrt.org");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:" DRIVER_NAME);
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

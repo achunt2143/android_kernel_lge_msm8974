@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Low-Level PCI Access for i386 machines.
  *
  *	(c) 1999 Martin Mares <mj@ucw.cz>
  */
 
-<<<<<<< HEAD
-#undef DEBUG
-
-#ifdef DEBUG
-#define DBG(x...) printk(x)
-#else
-#define DBG(x...)
-=======
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/ioport.h>
@@ -31,7 +20,6 @@ do {						\
 	if (0)					\
 		printk(fmt, ##__VA_ARGS__);	\
 } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define PCI_PROBE_BIOS		0x0001
@@ -53,12 +41,9 @@ do {						\
 #define PCI_NOASSIGN_ROMS	0x80000
 #define PCI_ROOT_NO_CRS		0x100000
 #define PCI_NOASSIGN_BARS	0x200000
-<<<<<<< HEAD
-=======
 #define PCI_BIG_ROOT_WINDOW	0x400000
 #define PCI_USE_E820		0x800000
 #define PCI_NO_E820		0x1000000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned int pci_probe;
 extern unsigned long pirq_table_addr;
@@ -78,21 +63,14 @@ void pcibios_set_cache_line_size(void);
 /* pci-pc.c */
 
 extern int pcibios_last_bus;
-<<<<<<< HEAD
-extern struct pci_bus *pci_root_bus;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct pci_ops pci_root_ops;
 
 void pcibios_scan_specific_bus(int busn);
 
 /* pci-irq.c */
 
-<<<<<<< HEAD
-=======
 struct pci_dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct irq_info {
 	u8 bus, devfn;			/* Bus, device and function */
 	struct {
@@ -116,9 +94,6 @@ struct irq_routing_table {
 	u32 miniport_data;		/* Crap */
 	u8 rfu[11];
 	u8 checksum;			/* Modulo 256 checksum must give 0 */
-<<<<<<< HEAD
-	struct irq_info slots[0];
-=======
 	struct irq_info slots[];
 } __attribute__((packed));
 
@@ -129,7 +104,6 @@ struct irt_routing_table {
 	u16 exclusive_irqs;		/* IRQs devoted exclusively to
 					   PCI usage */
 	struct irq_info slots[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 extern unsigned int pcibios_irq_mask;
@@ -139,11 +113,8 @@ extern raw_spinlock_t pci_config_lock;
 extern int (*pcibios_enable_irq)(struct pci_dev *dev);
 extern void (*pcibios_disable_irq)(struct pci_dev *dev);
 
-<<<<<<< HEAD
-=======
 extern bool mp_should_keep_irq(struct device *dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_raw_ops {
 	int (*read)(unsigned int domain, unsigned int bus, unsigned int devfn,
 						int reg, int len, u32 *val);
@@ -154,19 +125,11 @@ struct pci_raw_ops {
 extern const struct pci_raw_ops *raw_pci_ops;
 extern const struct pci_raw_ops *raw_pci_ext_ops;
 
-<<<<<<< HEAD
-=======
 extern const struct pci_raw_ops pci_mmcfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct pci_raw_ops pci_direct_conf1;
 extern bool port_cf9_safe;
 
 /* arch_initcall level */
-<<<<<<< HEAD
-extern int pci_direct_probe(void);
-extern void pci_direct_init(int type);
-extern void pci_pcbios_init(void);
-=======
 #ifdef CONFIG_PCI_DIRECT
 extern int pci_direct_probe(void);
 extern void pci_direct_init(int type);
@@ -181,14 +144,10 @@ extern void pci_pcbios_init(void);
 static inline void pci_pcbios_init(void) { }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void __init dmi_check_pciprobe(void);
 extern void __init dmi_check_skip_isa_align(void);
 
 /* some common used subsys_initcalls */
-<<<<<<< HEAD
-extern int __init pci_acpi_init(void);
-=======
 #ifdef CONFIG_PCI
 extern int __init pci_acpi_init(void);
 #else
@@ -197,7 +156,6 @@ static inline int  __init pci_acpi_init(void)
 	return -EINVAL;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void __init pcibios_irq_init(void);
 extern int __init pcibios_init(void);
 extern int pci_legacy_init(void);
@@ -221,9 +179,6 @@ struct pci_mmcfg_region {
 
 extern int __init pci_mmcfg_arch_init(void);
 extern void __init pci_mmcfg_arch_free(void);
-<<<<<<< HEAD
-extern struct pci_mmcfg_region *pci_mmconfig_lookup(int segment, int bus);
-=======
 extern int pci_mmcfg_arch_map(struct pci_mmcfg_region *cfg);
 extern void pci_mmcfg_arch_unmap(struct pci_mmcfg_region *cfg);
 extern int pci_mmconfig_insert(struct device *dev, u16 seg, u8 start, u8 end,
@@ -232,26 +187,17 @@ extern int pci_mmconfig_delete(u16 seg, u8 start, u8 end);
 extern struct pci_mmcfg_region *pci_mmconfig_lookup(int segment, int bus);
 extern struct pci_mmcfg_region *__init pci_mmconfig_add(int segment, int start,
 							int end, u64 addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct list_head pci_mmcfg_list;
 
 #define PCI_MMCFG_BUS_OFFSET(bus)      ((bus) << 20)
 
 /*
-<<<<<<< HEAD
- * AMD Fam10h CPUs are buggy, and cannot access MMIO config space
- * on their northbrige except through the * %eax register. As such, you MUST
- * NOT use normal IOMEM accesses, you need to only use the magic mmio-config
- * accessor functions.
- * In fact just use pci_config_*, nothing else please.
-=======
  * On AMD Fam10h CPUs, all PCI MMIO configuration space accesses must use
  * %eax.  No other source or target registers may be used.  The following
  * mmio_config_* accessors enforce this.  See "BIOS and Kernel Developer's
  * Guide (BKDG) For AMD Family 10h Processors", rev. 3.48, sec 2.11.1,
  * "MMIO Configuration Coding Requirements".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline unsigned char mmio_config_readb(void __iomem *pos)
 {
@@ -302,12 +248,9 @@ static inline void mmio_config_writel(void __iomem *pos, u32 val)
 # define x86_default_pci_init_irq	NULL
 # define x86_default_pci_fixup_irqs	NULL
 #endif
-<<<<<<< HEAD
-=======
 
 #if defined(CONFIG_PCI) && defined(CONFIG_ACPI)
 extern bool pci_use_e820;
 #else
 #define pci_use_e820 false
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sparc64/math-emu/sfp-util.h
  *
@@ -21,13 +18,8 @@
   	   "bcs,a,pn %%xcc, 1f\n\t"		\
   	   "add %0, 1, %0\n"			\
   	   "1:"					\
-<<<<<<< HEAD
-	   : "=r" ((UDItype)(sh)),		\
-	     "=&r" ((UDItype)(sl))		\
-=======
 	   : "=r" (sh),				\
 	     "=&r" (sl)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   : "r" ((UDItype)(ah)),		\
 	     "r" ((UDItype)(bh)),		\
 	     "r" ((UDItype)(al)),		\
@@ -40,13 +32,8 @@
   	   "bcs,a,pn %%xcc, 1f\n\t"		\
   	   "sub %0, 1, %0\n"			\
   	   "1:"					\
-<<<<<<< HEAD
-	   : "=r" ((UDItype)(sh)),		\
-	     "=&r" ((UDItype)(sl))		\
-=======
 	   : "=r" (sh),				\
 	     "=&r" (sl)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   : "r" ((UDItype)(ah)),		\
 	     "r" ((UDItype)(bh)),		\
 	     "r" ((UDItype)(al)),		\
@@ -78,13 +65,8 @@
 		   "sllx %3,32,%3\n\t"			\
 		   "add %1,%3,%1\n\t"			\
 		   "add %5,%2,%0"			\
-<<<<<<< HEAD
-	   : "=r" ((UDItype)(wh)),			\
-	     "=&r" ((UDItype)(wl)),			\
-=======
 	   : "=r" (wh),					\
 	     "=&r" (wl),				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     "=&r" (tmp1), "=&r" (tmp2), "=&r" (tmp3), "=&r" (tmp4) \
 	   : "r" ((UDItype)(u)),			\
 	     "r" ((UDItype)(v))				\

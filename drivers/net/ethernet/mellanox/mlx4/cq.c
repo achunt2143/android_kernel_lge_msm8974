@@ -34,10 +34,6 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hardirq.h>
 #include <linux/export.h>
 
@@ -56,8 +52,6 @@
 #define MLX4_CQ_STATE_ARMED_SOL		( 6 <<  8)
 #define MLX4_EQ_STATE_FIRED		(10 <<  8)
 
-<<<<<<< HEAD
-=======
 #define TASKLET_MAX_TIME 2
 #define TASKLET_MAX_TIME_JIFFIES msecs_to_jiffies(TASKLET_MAX_TIME)
 
@@ -107,32 +101,23 @@ static void mlx4_add_cq_to_tasklet(struct mlx4_cq *cq)
 	spin_unlock_irqrestore(&tasklet_ctx->lock, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mlx4_cq_completion(struct mlx4_dev *dev, u32 cqn)
 {
 	struct mlx4_cq *cq;
 
-<<<<<<< HEAD
-	cq = radix_tree_lookup(&mlx4_priv(dev)->cq_table.tree,
-			       cqn & (dev->caps.num_cqs - 1));
-=======
 	rcu_read_lock();
 	cq = radix_tree_lookup(&mlx4_priv(dev)->cq_table.tree,
 			       cqn & (dev->caps.num_cqs - 1));
 	rcu_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cq) {
 		mlx4_dbg(dev, "Completion event for bogus CQ %08x\n", cqn);
 		return;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Accessing the CQ outside of rcu_read_lock is safe, because
 	 * the CQ is freed only after interrupt handling is completed.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	++cq->arm_sn;
 
 	cq->comp(cq);
@@ -143,31 +128,6 @@ void mlx4_cq_event(struct mlx4_dev *dev, u32 cqn, int event_type)
 	struct mlx4_cq_table *cq_table = &mlx4_priv(dev)->cq_table;
 	struct mlx4_cq *cq;
 
-<<<<<<< HEAD
-	spin_lock(&cq_table->lock);
-
-	cq = radix_tree_lookup(&cq_table->tree, cqn & (dev->caps.num_cqs - 1));
-	if (cq)
-		atomic_inc(&cq->refcount);
-
-	spin_unlock(&cq_table->lock);
-
-	if (!cq) {
-		mlx4_warn(dev, "Async event for bogus CQ %08x\n", cqn);
-		return;
-	}
-
-	cq->event(cq, event_type);
-
-	if (atomic_dec_and_test(&cq->refcount))
-		complete(&cq->free);
-}
-
-static int mlx4_SW2HW_CQ(struct mlx4_dev *dev, struct mlx4_cmd_mailbox *mailbox,
-			 int cq_num)
-{
-	return mlx4_cmd(dev, mailbox->dma, cq_num, 0,
-=======
 	rcu_read_lock();
 	cq = radix_tree_lookup(&cq_table->tree, cqn & (dev->caps.num_cqs - 1));
 	rcu_read_unlock();
@@ -187,7 +147,6 @@ static int mlx4_SW2HW_CQ(struct mlx4_dev *dev, struct mlx4_cmd_mailbox *mailbox,
 			 int cq_num, u8 opmod)
 {
 	return mlx4_cmd(dev, mailbox->dma, cq_num, opmod,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MLX4_CMD_SW2HW_CQ, MLX4_CMD_TIME_CLASS_A,
 			MLX4_CMD_WRAPPED);
 }
@@ -219,11 +178,6 @@ int mlx4_cq_modify(struct mlx4_dev *dev, struct mlx4_cq *cq,
 		return PTR_ERR(mailbox);
 
 	cq_context = mailbox->buf;
-<<<<<<< HEAD
-	memset(cq_context, 0, sizeof *cq_context);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cq_context->cq_max_count = cpu_to_be16(count);
 	cq_context->cq_period    = cpu_to_be16(period);
 
@@ -247,11 +201,6 @@ int mlx4_cq_resize(struct mlx4_dev *dev, struct mlx4_cq *cq,
 		return PTR_ERR(mailbox);
 
 	cq_context = mailbox->buf;
-<<<<<<< HEAD
-	memset(cq_context, 0, sizeof *cq_context);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cq_context->logsize_usrpage = cpu_to_be32(ilog2(entries) << 24);
 	cq_context->log_page_size   = mtt->page_shift - 12;
 	mtt_addr = mlx4_mtt_addr(dev, mtt);
@@ -288,14 +237,6 @@ err_put:
 	mlx4_table_put(dev, &cq_table->table, *cqn);
 
 err_out:
-<<<<<<< HEAD
-	mlx4_bitmap_free(&cq_table->bitmap, *cqn);
-	return err;
-}
-
-static int mlx4_cq_alloc_icm(struct mlx4_dev *dev, int *cqn)
-{
-=======
 	mlx4_bitmap_free(&cq_table->bitmap, *cqn, MLX4_NO_RR);
 	return err;
 }
@@ -303,16 +244,11 @@ static int mlx4_cq_alloc_icm(struct mlx4_dev *dev, int *cqn)
 static int mlx4_cq_alloc_icm(struct mlx4_dev *dev, int *cqn, u8 usage)
 {
 	u32 in_modifier = RES_CQ | (((u32)usage & 3) << 30);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 out_param;
 	int err;
 
 	if (mlx4_is_mfunc(dev)) {
-<<<<<<< HEAD
-		err = mlx4_cmd_imm(dev, 0, &out_param, RES_CQ,
-=======
 		err = mlx4_cmd_imm(dev, 0, &out_param, in_modifier,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   RES_OP_RESERVE_AND_MAP, MLX4_CMD_ALLOC_RES,
 				   MLX4_CMD_TIME_CLASS_A, MLX4_CMD_WRAPPED);
 		if (err)
@@ -332,20 +268,12 @@ void __mlx4_cq_free_icm(struct mlx4_dev *dev, int cqn)
 
 	mlx4_table_put(dev, &cq_table->cmpt_table, cqn);
 	mlx4_table_put(dev, &cq_table->table, cqn);
-<<<<<<< HEAD
-	mlx4_bitmap_free(&cq_table->bitmap, cqn);
-=======
 	mlx4_bitmap_free(&cq_table->bitmap, cqn, MLX4_NO_RR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mlx4_cq_free_icm(struct mlx4_dev *dev, int cqn)
 {
-<<<<<<< HEAD
-	u64 in_param;
-=======
 	u64 in_param = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (mlx4_is_mfunc(dev)) {
@@ -359,12 +287,6 @@ static void mlx4_cq_free_icm(struct mlx4_dev *dev, int cqn)
 		__mlx4_cq_free_icm(dev, cqn);
 }
 
-<<<<<<< HEAD
-int mlx4_cq_alloc(struct mlx4_dev *dev, int nent, struct mlx4_mtt *mtt,
-		  struct mlx4_uar *uar, u64 db_rec, struct mlx4_cq *cq,
-		  unsigned vector, int collapsed)
-{
-=======
 static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
 {
 	int entries_per_copy = PAGE_SIZE / cqe_size;
@@ -423,7 +345,6 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 		  int timestamp_en, void *buf_addr, bool user_cq)
 {
 	bool sw_cq_init = dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_SW_CQ_INIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	struct mlx4_cq_table *cq_table = &priv->cq_table;
 	struct mlx4_cmd_mailbox *mailbox;
@@ -431,24 +352,11 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 	u64 mtt_addr;
 	int err;
 
-<<<<<<< HEAD
-	if (vector > dev->caps.num_comp_vectors + dev->caps.comp_pool)
-=======
 	if (vector >= dev->caps.num_comp_vectors)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	cq->vector = vector;
 
-<<<<<<< HEAD
-	err = mlx4_cq_alloc_icm(dev, &cq->cqn);
-	if (err)
-		return err;
-
-	spin_lock_irq(&cq_table->lock);
-	err = radix_tree_insert(&cq_table->tree, cq->cqn, cq);
-	spin_unlock_irq(&cq_table->lock);
-=======
 	err = mlx4_cq_alloc_icm(dev, &cq->cqn, cq->usage);
 	if (err)
 		return err;
@@ -456,7 +364,6 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 	spin_lock(&cq_table->lock);
 	err = radix_tree_insert(&cq_table->tree, cq->cqn, cq);
 	spin_unlock(&cq_table->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_icm;
 
@@ -467,13 +374,6 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 	}
 
 	cq_context = mailbox->buf;
-<<<<<<< HEAD
-	memset(cq_context, 0, sizeof *cq_context);
-
-	cq_context->flags	    = cpu_to_be32(!!collapsed << 18);
-	cq_context->logsize_usrpage = cpu_to_be32((ilog2(nent) << 24) | uar->index);
-	cq_context->comp_eqn	    = priv->eq_table.eq[vector].eqn;
-=======
 	cq_context->flags	    = cpu_to_be32(!!collapsed << 18);
 	if (timestamp_en)
 		cq_context->flags  |= cpu_to_be32(1 << 19);
@@ -482,7 +382,6 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 		cpu_to_be32((ilog2(nent) << 24) |
 			    mlx4_to_hw_uar_index(dev, uar->index));
 	cq_context->comp_eqn	    = priv->eq_table.eq[MLX4_CQ_TO_EQ_VECTOR(vector)].eqn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cq_context->log_page_size   = mtt->page_shift - MLX4_ICM_PAGE_SHIFT;
 
 	mtt_addr = mlx4_mtt_addr(dev, mtt);
@@ -490,9 +389,6 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 	cq_context->mtt_base_addr_l = cpu_to_be32(mtt_addr & 0xffffffff);
 	cq_context->db_rec_addr     = cpu_to_be64(db_rec);
 
-<<<<<<< HEAD
-	err = mlx4_SW2HW_CQ(dev, mailbox, cq->cqn);
-=======
 	if (sw_cq_init) {
 		if (user_cq) {
 			err = mlx4_init_user_cqes(buf_addr, nent,
@@ -507,7 +403,6 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 
 	err = mlx4_SW2HW_CQ(dev, mailbox, cq->cqn, sw_cq_init);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlx4_free_cmd_mailbox(dev, mailbox);
 	if (err)
 		goto err_radix;
@@ -515,17 +410,6 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
 	cq->cons_index = 0;
 	cq->arm_sn     = 1;
 	cq->uar        = uar;
-<<<<<<< HEAD
-	atomic_set(&cq->refcount, 1);
-	init_completion(&cq->free);
-
-	return 0;
-
-err_radix:
-	spin_lock_irq(&cq_table->lock);
-	radix_tree_delete(&cq_table->tree, cq->cqn);
-	spin_unlock_irq(&cq_table->lock);
-=======
 	refcount_set(&cq->refcount, 1);
 	init_completion(&cq->free);
 	cq->comp = mlx4_add_cq_to_tasklet;
@@ -541,7 +425,6 @@ err_radix:
 	spin_lock(&cq_table->lock);
 	radix_tree_delete(&cq_table->tree, cq->cqn);
 	spin_unlock(&cq_table->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_icm:
 	mlx4_cq_free_icm(dev, cq->cqn);
@@ -560,15 +443,6 @@ void mlx4_cq_free(struct mlx4_dev *dev, struct mlx4_cq *cq)
 	if (err)
 		mlx4_warn(dev, "HW2SW_CQ failed (%d) for CQN %06x\n", err, cq->cqn);
 
-<<<<<<< HEAD
-	synchronize_irq(priv->eq_table.eq[cq->vector].irq);
-
-	spin_lock_irq(&cq_table->lock);
-	radix_tree_delete(&cq_table->tree, cq->cqn);
-	spin_unlock_irq(&cq_table->lock);
-
-	if (atomic_dec_and_test(&cq->refcount))
-=======
 	spin_lock(&cq_table->lock);
 	radix_tree_delete(&cq_table->tree, cq->cqn);
 	spin_unlock(&cq_table->lock);
@@ -579,7 +453,6 @@ void mlx4_cq_free(struct mlx4_dev *dev, struct mlx4_cq *cq)
 		synchronize_irq(priv->eq_table.eq[MLX4_EQ_ASYNC].irq);
 
 	if (refcount_dec_and_test(&cq->refcount))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		complete(&cq->free);
 	wait_for_completion(&cq->free);
 
@@ -590,27 +463,14 @@ EXPORT_SYMBOL_GPL(mlx4_cq_free);
 int mlx4_init_cq_table(struct mlx4_dev *dev)
 {
 	struct mlx4_cq_table *cq_table = &mlx4_priv(dev)->cq_table;
-<<<<<<< HEAD
-	int err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&cq_table->lock);
 	INIT_RADIX_TREE(&cq_table->tree, GFP_ATOMIC);
 	if (mlx4_is_slave(dev))
 		return 0;
 
-<<<<<<< HEAD
-	err = mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
-			       dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
-	if (err)
-		return err;
-
-	return 0;
-=======
 	return mlx4_bitmap_init(&cq_table->bitmap, dev->caps.num_cqs,
 				dev->caps.num_cqs - 1, dev->caps.reserved_cqs, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mlx4_cleanup_cq_table(struct mlx4_dev *dev)

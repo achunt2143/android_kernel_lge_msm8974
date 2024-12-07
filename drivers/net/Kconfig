@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Network device configuration
 #
@@ -10,11 +7,7 @@ menuconfig NETDEVICES
 	default y if UML
 	depends on NET
 	bool "Network device support"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  You can say N here if you don't intend to connect your Linux box to
 	  any other computer at all.
 
@@ -33,12 +26,6 @@ menuconfig NETDEVICES
 # that for each of the symbols.
 if NETDEVICES
 
-<<<<<<< HEAD
-config NET_CORE
-	default y
-	bool "Network core driver support"
-	---help---
-=======
 config MII
 	tristate
 
@@ -46,7 +33,6 @@ config NET_CORE
 	default y
 	bool "Network core driver support"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  You can say N here if you do not intend to use any of the
 	  networking core drivers (i.e. VLAN, bridging, bonding, etc.)
 
@@ -56,12 +42,8 @@ config BONDING
 	tristate "Bonding driver support"
 	depends on INET
 	depends on IPV6 || IPV6=n
-<<<<<<< HEAD
-	---help---
-=======
 	depends on TLS || TLS_DEVICE=n
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say 'Y' or 'M' if you wish to be able to 'bond' multiple Ethernet
 	  Channels together. This is called 'Etherchannel' by Cisco,
 	  'Trunking' by Sun, 802.3ad by the IEEE, and 'Bonding' in Linux.
@@ -69,11 +51,7 @@ config BONDING
 	  The driver supports multiple bonding modes to allow for both high
 	  performance and high availability operation.
 
-<<<<<<< HEAD
-	  Refer to <file:Documentation/networking/bonding.txt> for more
-=======
 	  Refer to <file:Documentation/networking/bonding.rst> for more
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  information.
 
 	  To compile this driver as a module, choose M here: the module
@@ -81,37 +59,17 @@ config BONDING
 
 config DUMMY
 	tristate "Dummy net driver support"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is essentially a bit-bucket device (i.e. traffic you send to
 	  this device is consigned into oblivion) with a configurable IP
 	  address. It is most commonly used in order to make your currently
 	  inactive SLIP address seem like a real address for local programs.
-<<<<<<< HEAD
-	  If you use SLIP or PPP, you might want to say Y here. Since this
-	  thing often comes in handy, the default is Y. It won't enlarge your
-	  kernel either. What a deal. Read about it in the Network
-=======
 	  If you use SLIP or PPP, you might want to say Y here. It won't
 	  enlarge your kernel. What a deal. Read about it in the Network
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Administrator's Guide, available from
 	  <http://www.tldp.org/docs.html#guide>.
 
 	  To compile this driver as a module, choose M here: the module
-<<<<<<< HEAD
-	  will be called dummy.  If you want to use more than one dummy
-	  device at a time, you need to compile this driver as a module.
-	  Instead of 'dummy', the devices will then be called 'dummy0',
-	  'dummy1' etc.
-
-config EQUALIZER
-	tristate "EQL (serial line load balancing) support"
-	---help---
-=======
 	  will be called dummy.
 
 config WIREGUARD
@@ -160,7 +118,6 @@ config WIREGUARD_DEBUG
 config EQUALIZER
 	tristate "EQL (serial line load balancing) support"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have two serial connections to some other computer (this
 	  usually requires two modems and two telephone lines) and you use
 	  SLIP (the protocol for sending Internet traffic over telephone
@@ -170,11 +127,7 @@ config EQUALIZER
 	  Linux driver or with a Livingston Portmaster 2e.
 
 	  Say Y if you want this and read
-<<<<<<< HEAD
-	  <file:Documentation/networking/eql.txt>.  You may also want to read
-=======
 	  <file:Documentation/networking/eql.rst>.  You may also want to read
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  section 6.2 of the NET-3-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
 
@@ -194,27 +147,11 @@ config NET_FC
 	  adaptor below. You also should have said Y to "SCSI support" and
 	  "SCSI generic support".
 
-<<<<<<< HEAD
-config MII
-	tristate "Generic Media Independent Interface device support"
-	help
-	  Most ethernet controllers have MII transceiver either as an external
-	  or internal device.  It is safe to say Y or M here even if your
-	  ethernet card lacks MII.
-
-source "drivers/ieee802154/Kconfig"
-
-config IFB
-	tristate "Intermediate Functional Block support"
-	depends on NET_CLS_ACT
-	---help---
-=======
 config IFB
 	tristate "Intermediate Functional Block support"
 	depends on NET_ACT_MIRRED || NFT_FWD_NETDEV
 	select NET_REDIRECT
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is an intermediate driver that allows sharing of
 	  resources.
 	  To compile this driver as a module, choose M here: the module
@@ -227,14 +164,8 @@ config IFB
 source "drivers/net/team/Kconfig"
 
 config MACVLAN
-<<<<<<< HEAD
-	tristate "MAC-VLAN support (EXPERIMENTAL)"
-	depends on EXPERIMENTAL
-	---help---
-=======
 	tristate "MAC-VLAN support"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This allows one to create virtual interfaces that map packets to
 	  or from specific MAC addresses to a particular interface.
 
@@ -247,35 +178,19 @@ config MACVLAN
 	  will be called macvlan.
 
 config MACVTAP
-<<<<<<< HEAD
-	tristate "MAC-VLAN based tap driver (EXPERIMENTAL)"
-	depends on MACVLAN
-=======
 	tristate "MAC-VLAN based tap driver"
 	depends on MACVLAN
 	depends on INET
 	select TAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This adds a specialized tap character device driver that is based
 	  on the MAC-VLAN network interface, called macvtap. A macvtap device
 	  can be added in the same way as a macvlan device, using 'type
-<<<<<<< HEAD
-	  macvlan', and then be accessed through the tap user space interface.
-=======
 	  macvtap', and then be accessed through the tap user space interface.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called macvtap.
 
-<<<<<<< HEAD
-config NETCONSOLE
-	tristate "Network console logging support"
-	---help---
-	If you want to log kernel messages over the network, enable this.
-	See <file:Documentation/networking/netconsole.txt> for details.
-=======
 config IPVLAN_L3S
 	depends on NETFILTER
 	depends on IPVLAN
@@ -406,7 +321,6 @@ config NETCONSOLE
 	help
 	  If you want to log kernel messages over the network, enable this.
 	  See <file:Documentation/networking/netconsole.rst> for details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config NETCONSOLE_DYNAMIC
 	bool "Dynamic reconfiguration of logging targets"
@@ -416,9 +330,6 @@ config NETCONSOLE_DYNAMIC
 	  This option enables the ability to dynamically reconfigure target
 	  parameters (interface, IP addresses, port numbers, MAC addresses)
 	  at runtime through a userspace interface exported using configfs.
-<<<<<<< HEAD
-	  See <file:Documentation/networking/netconsole.txt> for details.
-=======
 	  See <file:Documentation/networking/netconsole.rst> for details.
 
 config NETCONSOLE_EXTENDED_LOG
@@ -442,21 +353,10 @@ config NETCONSOLE_PREPEND_RELEASE
 	  server/peer can easily identify what kernel release is logging each
 	  message.  See <file:Documentation/networking/netconsole.rst> for
 	  details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config NETPOLL
 	def_bool NETCONSOLE
 
-<<<<<<< HEAD
-config NETPOLL_TRAP
-	bool "Netpoll traffic trapping"
-	default n
-	depends on NETPOLL
-
-config NET_POLL_CONTROLLER
-	def_bool NETPOLL
-
-=======
 config NET_POLL_CONTROLLER
 	def_bool NETPOLL
 
@@ -464,7 +364,6 @@ config NTB_NETDEV
 	tristate "Virtual Ethernet over NTB Transport"
 	depends on NTB_TRANSPORT
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config RIONET
 	tristate "RapidIO Ethernet over messaging driver support"
 	depends on RAPIDIO
@@ -481,14 +380,9 @@ config RIONET_RX_SIZE
 
 config TUN
 	tristate "Universal TUN/TAP device driver support"
-<<<<<<< HEAD
-	select CRC32
-	---help---
-=======
 	depends on INET
 	select CRC32
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  TUN/TAP provides packet reception and transmission for user space
 	  programs.  It can be viewed as a simple Point-to-Point or Ethernet
 	  device, which instead of receiving packets from a physical media,
@@ -500,11 +394,7 @@ config TUN
 	  devices, driver will automatically delete tunXX or tapXX device and
 	  all routes corresponding to it.
 
-<<<<<<< HEAD
-	  Please read <file:Documentation/networking/tuntap.txt> for more
-=======
 	  Please read <file:Documentation/networking/tuntap.rst> for more
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  information.
 
 	  To compile this driver as a module, choose M here: the module
@@ -512,11 +402,6 @@ config TUN
 
 	  If you don't know what to use this for, you don't need it.
 
-<<<<<<< HEAD
-config VETH
-	tristate "Virtual ethernet pair device"
-	---help---
-=======
 config TAP
 	tristate
 	help
@@ -541,19 +426,11 @@ config VETH
 	tristate "Virtual ethernet pair device"
 	select PAGE_POOL
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This device is a local ethernet tunnel. Devices are created in pairs.
 	  When one end receives the packet it appears on its pair and vice
 	  versa.
 
 config VIRTIO_NET
-<<<<<<< HEAD
-	tristate "Virtio network driver (EXPERIMENTAL)"
-	depends on EXPERIMENTAL && VIRTIO
-	---help---
-	  This is the virtual network driver for virtio.  It can be used with
-	  lguest or QEMU based VMMs (like KVM or Xen).  Say Y or M.
-=======
 	tristate "Virtio network driver"
 	depends on VIRTIO
 	select NET_FAILOVER
@@ -606,7 +483,6 @@ config MHI_NET
 	  This is the network driver for MHI bus.  It can be used with
 	  QCOM based WWAN modems for IP or QMAP/rmnet protocol (like SDX55).
 	  Say Y or M.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # NET_CORE
 
@@ -627,19 +503,12 @@ source "drivers/net/fddi/Kconfig"
 
 source "drivers/net/hippi/Kconfig"
 
-<<<<<<< HEAD
-config NET_SB1000
-	tristate "General Instruments Surfboard 1000"
-	depends on PNP
-	---help---
-=======
 source "drivers/net/ipa/Kconfig"
 
 config NET_SB1000
 	tristate "General Instruments Surfboard 1000"
 	depends on PNP
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is a driver for the General Instrument (also known as
 	  NextLevel) SURFboard 1000 internal
 	  cable modem. This is an ISA card which is used by a number of cable
@@ -649,17 +518,10 @@ config NET_SB1000
 
 	  At present this driver only compiles as a module, so say M here if
 	  you have this card. The module will be called sb1000. Then read
-<<<<<<< HEAD
-	  <file:Documentation/networking/README.sb1000> for information on how
-	  to use this module, as it needs special ppp scripts for establishing
-	  a connection. Further documentation and the necessary scripts can be
-	  found at:
-=======
 	  <file:Documentation/networking/device_drivers/cable/sb1000.rst> for
 	  information on how to use this module, as it needs special ppp
 	  scripts for establishing a connection. Further documentation
 	  and the necessary scripts can be found at:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  <http://www.jacksonville.net/~fventuri/>
 	  <http://home.adelphia.net/~siglercm/sb1000.html>
@@ -669,8 +531,6 @@ config NET_SB1000
 
 source "drivers/net/phy/Kconfig"
 
-<<<<<<< HEAD
-=======
 source "drivers/net/pse-pd/Kconfig"
 
 source "drivers/net/can/Kconfig"
@@ -681,7 +541,6 @@ source "drivers/net/mdio/Kconfig"
 
 source "drivers/net/pcs/Kconfig"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/net/plip/Kconfig"
 
 source "drivers/net/ppp/Kconfig"
@@ -690,36 +549,21 @@ source "drivers/net/slip/Kconfig"
 
 source "drivers/s390/net/Kconfig"
 
-<<<<<<< HEAD
-source "drivers/net/tokenring/Kconfig"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/net/usb/Kconfig"
 
 source "drivers/net/wireless/Kconfig"
 
-<<<<<<< HEAD
-source "drivers/net/wimax/Kconfig"
-
-source "drivers/net/wan/Kconfig"
-
-=======
 source "drivers/net/wan/Kconfig"
 
 source "drivers/net/ieee802154/Kconfig"
 
 source "drivers/net/wwan/Kconfig"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config XEN_NETDEV_FRONTEND
 	tristate "Xen network device frontend driver"
 	depends on XEN
 	select XEN_XENBUS_FRONTEND
-<<<<<<< HEAD
-=======
 	select PAGE_POOL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  This driver provides support for Xen paravirtual network
@@ -758,20 +602,13 @@ config XEN_NETDEV_BACKEND
 config VMXNET3
 	tristate "VMware VMXNET3 ethernet driver"
 	depends on PCI && INET
-<<<<<<< HEAD
-=======
 	depends on PAGE_SIZE_LESS_THAN_64KB
 	select PAGE_POOL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This driver supports VMware's vmxnet3 virtual ethernet NIC.
 	  To compile this driver as a module, choose M here: the
 	  module will be called vmxnet3.
 
-<<<<<<< HEAD
-source "drivers/net/hyperv/Kconfig"
-
-=======
 config FUJITSU_ES
 	tristate "FUJITSU Extended Socket Network Device driver"
 	depends on ACPI
@@ -817,5 +654,4 @@ config NETDEV_LEGACY_INIT
 	  Drivers that call netdev_boot_setup_check() should select this
 	  symbol, everything else no longer needs it.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NETDEVICES

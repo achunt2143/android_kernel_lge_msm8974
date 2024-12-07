@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BCM63XX_CPU_H_
 #define BCM63XX_CPU_H_
 
@@ -13,92 +10,12 @@
  * compile time if only one CPU support is enabled (idea stolen from
  * arm mach-types)
  */
-<<<<<<< HEAD
-=======
 #define BCM3368_CPU_ID		0x3368
 #define BCM6328_CPU_ID		0x6328
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM6338_CPU_ID		0x6338
 #define BCM6345_CPU_ID		0x6345
 #define BCM6348_CPU_ID		0x6348
 #define BCM6358_CPU_ID		0x6358
-<<<<<<< HEAD
-#define BCM6368_CPU_ID		0x6368
-
-void __init bcm63xx_cpu_init(void);
-u16 __bcm63xx_get_cpu_id(void);
-u16 bcm63xx_get_cpu_rev(void);
-unsigned int bcm63xx_get_cpu_freq(void);
-
-#ifdef CONFIG_BCM63XX_CPU_6338
-# ifdef bcm63xx_get_cpu_id
-#  undef bcm63xx_get_cpu_id
-#  define bcm63xx_get_cpu_id()	__bcm63xx_get_cpu_id()
-#  define BCMCPU_RUNTIME_DETECT
-# else
-#  define bcm63xx_get_cpu_id()	BCM6338_CPU_ID
-# endif
-# define BCMCPU_IS_6338()	(bcm63xx_get_cpu_id() == BCM6338_CPU_ID)
-#else
-# define BCMCPU_IS_6338()	(0)
-#endif
-
-#ifdef CONFIG_BCM63XX_CPU_6345
-# ifdef bcm63xx_get_cpu_id
-#  undef bcm63xx_get_cpu_id
-#  define bcm63xx_get_cpu_id()	__bcm63xx_get_cpu_id()
-#  define BCMCPU_RUNTIME_DETECT
-# else
-#  define bcm63xx_get_cpu_id()	BCM6345_CPU_ID
-# endif
-# define BCMCPU_IS_6345()	(bcm63xx_get_cpu_id() == BCM6345_CPU_ID)
-#else
-# define BCMCPU_IS_6345()	(0)
-#endif
-
-#ifdef CONFIG_BCM63XX_CPU_6348
-# ifdef bcm63xx_get_cpu_id
-#  undef bcm63xx_get_cpu_id
-#  define bcm63xx_get_cpu_id()	__bcm63xx_get_cpu_id()
-#  define BCMCPU_RUNTIME_DETECT
-# else
-#  define bcm63xx_get_cpu_id()	BCM6348_CPU_ID
-# endif
-# define BCMCPU_IS_6348()	(bcm63xx_get_cpu_id() == BCM6348_CPU_ID)
-#else
-# define BCMCPU_IS_6348()	(0)
-#endif
-
-#ifdef CONFIG_BCM63XX_CPU_6358
-# ifdef bcm63xx_get_cpu_id
-#  undef bcm63xx_get_cpu_id
-#  define bcm63xx_get_cpu_id()	__bcm63xx_get_cpu_id()
-#  define BCMCPU_RUNTIME_DETECT
-# else
-#  define bcm63xx_get_cpu_id()	BCM6358_CPU_ID
-# endif
-# define BCMCPU_IS_6358()	(bcm63xx_get_cpu_id() == BCM6358_CPU_ID)
-#else
-# define BCMCPU_IS_6358()	(0)
-#endif
-
-#ifdef CONFIG_BCM63XX_CPU_6368
-# ifdef bcm63xx_get_cpu_id
-#  undef bcm63xx_get_cpu_id
-#  define bcm63xx_get_cpu_id()	__bcm63xx_get_cpu_id()
-#  define BCMCPU_RUNTIME_DETECT
-# else
-#  define bcm63xx_get_cpu_id()	BCM6368_CPU_ID
-# endif
-# define BCMCPU_IS_6368()	(bcm63xx_get_cpu_id() == BCM6368_CPU_ID)
-#else
-# define BCMCPU_IS_6368()	(0)
-#endif
-
-#ifndef bcm63xx_get_cpu_id
-#error "No CPU support configured"
-#endif
-=======
 #define BCM6362_CPU_ID		0x6362
 #define BCM6368_CPU_ID		0x6368
 
@@ -165,7 +82,6 @@ static inline u16 __pure bcm63xx_get_cpu_id(void)
 #define BCMCPU_IS_6358()	(bcm63xx_get_cpu_id() == BCM6358_CPU_ID)
 #define BCMCPU_IS_6362()	(bcm63xx_get_cpu_id() == BCM6362_CPU_ID)
 #define BCMCPU_IS_6368()	(bcm63xx_get_cpu_id() == BCM6368_CPU_ID)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * While registers sets are (mostly) the same across 63xx CPU, base
@@ -180,25 +96,16 @@ enum bcm63xx_regs_set {
 	RSET_UART1,
 	RSET_GPIO,
 	RSET_SPI,
-<<<<<<< HEAD
-	RSET_SPI2,
-=======
 	RSET_HSSPI,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RSET_UDC0,
 	RSET_OHCI0,
 	RSET_OHCI_PRIV,
 	RSET_USBH_PRIV,
-<<<<<<< HEAD
-	RSET_MPI,
-	RSET_PCMCIA,
-=======
 	RSET_USBD,
 	RSET_USBDMA,
 	RSET_MPI,
 	RSET_PCMCIA,
 	RSET_PCIE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RSET_DSL,
 	RSET_ENET0,
 	RSET_ENET1,
@@ -220,25 +127,13 @@ enum bcm63xx_regs_set {
 	RSET_PCMDMA,
 	RSET_PCMDMAC,
 	RSET_PCMDMAS,
-<<<<<<< HEAD
-=======
 	RSET_RNG,
 	RSET_MISC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define RSET_DSL_LMEM_SIZE		(64 * 1024 * 4)
 #define RSET_DSL_SIZE			4096
 #define RSET_WDT_SIZE			12
-<<<<<<< HEAD
-#define RSET_ENET_SIZE			2048
-#define RSET_ENETDMA_SIZE		2048
-#define RSET_ENETSW_SIZE		65536
-#define RSET_UART_SIZE			24
-#define RSET_UDC_SIZE			256
-#define RSET_OHCI_SIZE			256
-#define RSET_EHCI_SIZE			256
-=======
 #define BCM_6338_RSET_SPI_SIZE		64
 #define BCM_6348_RSET_SPI_SIZE		64
 #define BCM_6358_RSET_SPI_SIZE		1804
@@ -256,7 +151,6 @@ enum bcm63xx_regs_set {
 #define RSET_EHCI_SIZE			256
 #define RSET_USBD_SIZE			256
 #define RSET_USBDMA_SIZE		1280
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RSET_PCMCIA_SIZE		12
 #define RSET_M2M_SIZE			256
 #define RSET_ATM_SIZE			4096
@@ -264,8 +158,6 @@ enum bcm63xx_regs_set {
 #define RSET_XTMDMA_SIZE		256
 #define RSET_XTMDMAC_SIZE(chans)	(16 * (chans))
 #define RSET_XTMDMAS_SIZE(chans)	(16 * (chans))
-<<<<<<< HEAD
-=======
 #define RSET_RNG_SIZE			20
 
 /*
@@ -362,7 +254,6 @@ enum bcm63xx_regs_set {
 #define BCM_6328_RNG_BASE		(0xdeadbeef)
 #define BCM_6328_MISC_BASE		(0xb0001800)
 #define BCM_6328_OTP_BASE		(0xb0000600)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 6338 register sets base address
@@ -376,25 +267,16 @@ enum bcm63xx_regs_set {
 #define BCM_6338_UART1_BASE		(0xdeadbeef)
 #define BCM_6338_GPIO_BASE		(0xfffe0400)
 #define BCM_6338_SPI_BASE		(0xfffe0c00)
-<<<<<<< HEAD
-#define BCM_6338_SPI2_BASE		(0xdeadbeef)
-=======
 #define BCM_6338_HSSPI_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6338_UDC0_BASE		(0xdeadbeef)
 #define BCM_6338_USBDMA_BASE		(0xfffe2400)
 #define BCM_6338_OHCI0_BASE		(0xdeadbeef)
 #define BCM_6338_OHCI_PRIV_BASE		(0xfffe3000)
 #define BCM_6338_USBH_PRIV_BASE		(0xdeadbeef)
-<<<<<<< HEAD
-#define BCM_6338_MPI_BASE		(0xfffe3160)
-#define BCM_6338_PCMCIA_BASE		(0xdeadbeef)
-=======
 #define BCM_6338_USBD_BASE		(0xdeadbeef)
 #define BCM_6338_MPI_BASE		(0xfffe3160)
 #define BCM_6338_PCMCIA_BASE		(0xdeadbeef)
 #define BCM_6338_PCIE_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6338_SDRAM_REGS_BASE	(0xfffe3100)
 #define BCM_6338_DSL_BASE		(0xfffe1000)
 #define BCM_6338_UBUS_BASE		(0xdeadbeef)
@@ -418,11 +300,8 @@ enum bcm63xx_regs_set {
 #define BCM_6338_PCMDMA_BASE		(0xdeadbeef)
 #define BCM_6338_PCMDMAC_BASE		(0xdeadbeef)
 #define BCM_6338_PCMDMAS_BASE		(0xdeadbeef)
-<<<<<<< HEAD
-=======
 #define BCM_6338_RNG_BASE		(0xdeadbeef)
 #define BCM_6338_MISC_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 6345 register sets base address
@@ -436,35 +315,21 @@ enum bcm63xx_regs_set {
 #define BCM_6345_UART1_BASE		(0xdeadbeef)
 #define BCM_6345_GPIO_BASE		(0xfffe0400)
 #define BCM_6345_SPI_BASE		(0xdeadbeef)
-<<<<<<< HEAD
-#define BCM_6345_SPI2_BASE		(0xdeadbeef)
-=======
 #define BCM_6345_HSSPI_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6345_UDC0_BASE		(0xdeadbeef)
 #define BCM_6345_USBDMA_BASE		(0xfffe2800)
 #define BCM_6345_ENET0_BASE		(0xfffe1800)
 #define BCM_6345_ENETDMA_BASE		(0xfffe2800)
-<<<<<<< HEAD
-#define BCM_6345_ENETDMAC_BASE		(0xfffe2900)
-=======
 #define BCM_6345_ENETDMAC_BASE		(0xfffe2840)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6345_ENETDMAS_BASE		(0xfffe2a00)
 #define BCM_6345_ENETSW_BASE		(0xdeadbeef)
 #define BCM_6345_PCMCIA_BASE		(0xfffe2028)
 #define BCM_6345_MPI_BASE		(0xfffe2000)
-<<<<<<< HEAD
-#define BCM_6345_OHCI0_BASE		(0xfffe2100)
-#define BCM_6345_OHCI_PRIV_BASE		(0xfffe2200)
-#define BCM_6345_USBH_PRIV_BASE		(0xdeadbeef)
-=======
 #define BCM_6345_PCIE_BASE		(0xdeadbeef)
 #define BCM_6345_OHCI0_BASE		(0xfffe2100)
 #define BCM_6345_OHCI_PRIV_BASE		(0xfffe2200)
 #define BCM_6345_USBH_PRIV_BASE		(0xdeadbeef)
 #define BCM_6345_USBD_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6345_SDRAM_REGS_BASE	(0xfffe2300)
 #define BCM_6345_DSL_BASE		(0xdeadbeef)
 #define BCM_6345_UBUS_BASE		(0xdeadbeef)
@@ -483,11 +348,8 @@ enum bcm63xx_regs_set {
 #define BCM_6345_PCMDMA_BASE		(0xdeadbeef)
 #define BCM_6345_PCMDMAC_BASE		(0xdeadbeef)
 #define BCM_6345_PCMDMAS_BASE		(0xdeadbeef)
-<<<<<<< HEAD
-=======
 #define BCM_6345_RNG_BASE		(0xdeadbeef)
 #define BCM_6345_MISC_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 6348 register sets base address
@@ -500,15 +362,6 @@ enum bcm63xx_regs_set {
 #define BCM_6348_UART1_BASE		(0xdeadbeef)
 #define BCM_6348_GPIO_BASE		(0xfffe0400)
 #define BCM_6348_SPI_BASE		(0xfffe0c00)
-<<<<<<< HEAD
-#define BCM_6348_SPI2_BASE		(0xdeadbeef)
-#define BCM_6348_UDC0_BASE		(0xfffe1000)
-#define BCM_6348_OHCI0_BASE		(0xfffe1b00)
-#define BCM_6348_OHCI_PRIV_BASE		(0xfffe1c00)
-#define BCM_6348_USBH_PRIV_BASE		(0xdeadbeef)
-#define BCM_6348_MPI_BASE		(0xfffe2000)
-#define BCM_6348_PCMCIA_BASE		(0xfffe2054)
-=======
 #define BCM_6348_HSSPI_BASE		(0xdeadbeef)
 #define BCM_6348_UDC0_BASE		(0xfffe1000)
 #define BCM_6348_USBDMA_BASE		(0xdeadbeef)
@@ -519,7 +372,6 @@ enum bcm63xx_regs_set {
 #define BCM_6348_MPI_BASE		(0xfffe2000)
 #define BCM_6348_PCMCIA_BASE		(0xfffe2054)
 #define BCM_6348_PCIE_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6348_SDRAM_REGS_BASE	(0xfffe2300)
 #define BCM_6348_M2M_BASE		(0xfffe2800)
 #define BCM_6348_DSL_BASE		(0xfffe3000)
@@ -542,11 +394,8 @@ enum bcm63xx_regs_set {
 #define BCM_6348_PCMDMA_BASE		(0xdeadbeef)
 #define BCM_6348_PCMDMAC_BASE		(0xdeadbeef)
 #define BCM_6348_PCMDMAS_BASE		(0xdeadbeef)
-<<<<<<< HEAD
-=======
 #define BCM_6348_RNG_BASE		(0xdeadbeef)
 #define BCM_6348_MISC_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 6358 register sets base address
@@ -558,16 +407,6 @@ enum bcm63xx_regs_set {
 #define BCM_6358_UART0_BASE		(0xfffe0100)
 #define BCM_6358_UART1_BASE		(0xfffe0120)
 #define BCM_6358_GPIO_BASE		(0xfffe0080)
-<<<<<<< HEAD
-#define BCM_6358_SPI_BASE		(0xdeadbeef)
-#define BCM_6358_SPI2_BASE		(0xfffe0800)
-#define BCM_6358_UDC0_BASE		(0xfffe0800)
-#define BCM_6358_OHCI0_BASE		(0xfffe1400)
-#define BCM_6358_OHCI_PRIV_BASE		(0xdeadbeef)
-#define BCM_6358_USBH_PRIV_BASE		(0xfffe1500)
-#define BCM_6358_MPI_BASE		(0xfffe1000)
-#define BCM_6358_PCMCIA_BASE		(0xfffe1054)
-=======
 #define BCM_6358_SPI_BASE		(0xfffe0800)
 #define BCM_6358_HSSPI_BASE		(0xdeadbeef)
 #define BCM_6358_UDC0_BASE		(0xfffe0800)
@@ -579,7 +418,6 @@ enum bcm63xx_regs_set {
 #define BCM_6358_MPI_BASE		(0xfffe1000)
 #define BCM_6358_PCMCIA_BASE		(0xfffe1054)
 #define BCM_6358_PCIE_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6358_SDRAM_REGS_BASE	(0xfffe2300)
 #define BCM_6358_M2M_BASE		(0xdeadbeef)
 #define BCM_6358_DSL_BASE		(0xfffe3000)
@@ -602,11 +440,6 @@ enum bcm63xx_regs_set {
 #define BCM_6358_PCMDMA_BASE		(0xfffe1800)
 #define BCM_6358_PCMDMAC_BASE		(0xfffe1900)
 #define BCM_6358_PCMDMAS_BASE		(0xfffe1a00)
-<<<<<<< HEAD
-
-
-/*
-=======
 #define BCM_6358_RNG_BASE		(0xdeadbeef)
 #define BCM_6358_MISC_BASE		(0xdeadbeef)
 
@@ -668,7 +501,6 @@ enum bcm63xx_regs_set {
 #define BCM_6362_WLAN_SHIM_BASE		(0xb0007000)
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 6368 register sets base address
  */
 #define BCM_6368_DSL_LMEM_BASE		(0xdeadbeef)
@@ -678,16 +510,6 @@ enum bcm63xx_regs_set {
 #define BCM_6368_UART0_BASE		(0xb0000100)
 #define BCM_6368_UART1_BASE		(0xb0000120)
 #define BCM_6368_GPIO_BASE		(0xb0000080)
-<<<<<<< HEAD
-#define BCM_6368_SPI_BASE		(0xdeadbeef)
-#define BCM_6368_SPI2_BASE		(0xb0000800)
-#define BCM_6368_UDC0_BASE		(0xdeadbeef)
-#define BCM_6368_OHCI0_BASE		(0xb0001600)
-#define BCM_6368_OHCI_PRIV_BASE		(0xdeadbeef)
-#define BCM_6368_USBH_PRIV_BASE		(0xb0001700)
-#define BCM_6368_MPI_BASE		(0xb0001000)
-#define BCM_6368_PCMCIA_BASE		(0xb0001054)
-=======
 #define BCM_6368_SPI_BASE		(0xb0000800)
 #define BCM_6368_HSSPI_BASE		(0xdeadbeef)
 #define BCM_6368_UDC0_BASE		(0xdeadbeef)
@@ -699,7 +521,6 @@ enum bcm63xx_regs_set {
 #define BCM_6368_MPI_BASE		(0xb0001000)
 #define BCM_6368_PCMCIA_BASE		(0xb0001054)
 #define BCM_6368_PCIE_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6368_SDRAM_REGS_BASE	(0xdeadbeef)
 #define BCM_6368_M2M_BASE		(0xdeadbeef)
 #define BCM_6368_DSL_BASE		(0xdeadbeef)
@@ -722,62 +543,12 @@ enum bcm63xx_regs_set {
 #define BCM_6368_PCMDMA_BASE		(0xb0005800)
 #define BCM_6368_PCMDMAC_BASE		(0xb0005a00)
 #define BCM_6368_PCMDMAS_BASE		(0xb0005c00)
-<<<<<<< HEAD
-=======
 #define BCM_6368_RNG_BASE		(0xb0004180)
 #define BCM_6368_MISC_BASE		(0xdeadbeef)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 extern const unsigned long *bcm63xx_regs_base;
 
-<<<<<<< HEAD
-#define __GEN_RSET_BASE(__cpu, __rset)					\
-	case RSET_## __rset :						\
-		return BCM_## __cpu ##_## __rset ##_BASE;
-
-#define __GEN_RSET(__cpu)						\
-	switch (set) {							\
-	__GEN_RSET_BASE(__cpu, DSL_LMEM)				\
-	__GEN_RSET_BASE(__cpu, PERF)					\
-	__GEN_RSET_BASE(__cpu, TIMER)					\
-	__GEN_RSET_BASE(__cpu, WDT)					\
-	__GEN_RSET_BASE(__cpu, UART0)					\
-	__GEN_RSET_BASE(__cpu, UART1)					\
-	__GEN_RSET_BASE(__cpu, GPIO)					\
-	__GEN_RSET_BASE(__cpu, SPI)					\
-	__GEN_RSET_BASE(__cpu, SPI2)					\
-	__GEN_RSET_BASE(__cpu, UDC0)					\
-	__GEN_RSET_BASE(__cpu, OHCI0)					\
-	__GEN_RSET_BASE(__cpu, OHCI_PRIV)				\
-	__GEN_RSET_BASE(__cpu, USBH_PRIV)				\
-	__GEN_RSET_BASE(__cpu, MPI)					\
-	__GEN_RSET_BASE(__cpu, PCMCIA)					\
-	__GEN_RSET_BASE(__cpu, DSL)					\
-	__GEN_RSET_BASE(__cpu, ENET0)					\
-	__GEN_RSET_BASE(__cpu, ENET1)					\
-	__GEN_RSET_BASE(__cpu, ENETDMA)					\
-	__GEN_RSET_BASE(__cpu, ENETDMAC)				\
-	__GEN_RSET_BASE(__cpu, ENETDMAS)				\
-	__GEN_RSET_BASE(__cpu, ENETSW)					\
-	__GEN_RSET_BASE(__cpu, EHCI0)					\
-	__GEN_RSET_BASE(__cpu, SDRAM)					\
-	__GEN_RSET_BASE(__cpu, MEMC)					\
-	__GEN_RSET_BASE(__cpu, DDR)					\
-	__GEN_RSET_BASE(__cpu, M2M)					\
-	__GEN_RSET_BASE(__cpu, ATM)					\
-	__GEN_RSET_BASE(__cpu, XTM)					\
-	__GEN_RSET_BASE(__cpu, XTMDMA)					\
-	__GEN_RSET_BASE(__cpu, XTMDMAC)					\
-	__GEN_RSET_BASE(__cpu, XTMDMAS)					\
-	__GEN_RSET_BASE(__cpu, PCM)					\
-	__GEN_RSET_BASE(__cpu, PCMDMA)					\
-	__GEN_RSET_BASE(__cpu, PCMDMAC)					\
-	__GEN_RSET_BASE(__cpu, PCMDMAS)					\
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __GEN_CPU_REGS_TABLE(__cpu)					\
 	[RSET_DSL_LMEM]		= BCM_## __cpu ##_DSL_LMEM_BASE,	\
 	[RSET_PERF]		= BCM_## __cpu ##_PERF_BASE,		\
@@ -787,25 +558,16 @@ extern const unsigned long *bcm63xx_regs_base;
 	[RSET_UART1]		= BCM_## __cpu ##_UART1_BASE,		\
 	[RSET_GPIO]		= BCM_## __cpu ##_GPIO_BASE,		\
 	[RSET_SPI]		= BCM_## __cpu ##_SPI_BASE,		\
-<<<<<<< HEAD
-	[RSET_SPI2]		= BCM_## __cpu ##_SPI2_BASE,		\
-=======
 	[RSET_HSSPI]		= BCM_## __cpu ##_HSSPI_BASE,		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[RSET_UDC0]		= BCM_## __cpu ##_UDC0_BASE,		\
 	[RSET_OHCI0]		= BCM_## __cpu ##_OHCI0_BASE,		\
 	[RSET_OHCI_PRIV]	= BCM_## __cpu ##_OHCI_PRIV_BASE,	\
 	[RSET_USBH_PRIV]	= BCM_## __cpu ##_USBH_PRIV_BASE,	\
-<<<<<<< HEAD
-	[RSET_MPI]		= BCM_## __cpu ##_MPI_BASE,		\
-	[RSET_PCMCIA]		= BCM_## __cpu ##_PCMCIA_BASE,		\
-=======
 	[RSET_USBD]		= BCM_## __cpu ##_USBD_BASE,		\
 	[RSET_USBDMA]		= BCM_## __cpu ##_USBDMA_BASE,		\
 	[RSET_MPI]		= BCM_## __cpu ##_MPI_BASE,		\
 	[RSET_PCMCIA]		= BCM_## __cpu ##_PCMCIA_BASE,		\
 	[RSET_PCIE]		= BCM_## __cpu ##_PCIE_BASE,		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[RSET_DSL]		= BCM_## __cpu ##_DSL_BASE,		\
 	[RSET_ENET0]		= BCM_## __cpu ##_ENET0_BASE,		\
 	[RSET_ENET1]		= BCM_## __cpu ##_ENET1_BASE,		\
@@ -827,40 +589,13 @@ extern const unsigned long *bcm63xx_regs_base;
 	[RSET_PCMDMA]		= BCM_## __cpu ##_PCMDMA_BASE,		\
 	[RSET_PCMDMAC]		= BCM_## __cpu ##_PCMDMAC_BASE,		\
 	[RSET_PCMDMAS]		= BCM_## __cpu ##_PCMDMAS_BASE,		\
-<<<<<<< HEAD
-=======
 	[RSET_RNG]		= BCM_## __cpu ##_RNG_BASE,		\
 	[RSET_MISC]		= BCM_## __cpu ##_MISC_BASE,		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static inline unsigned long bcm63xx_regset_address(enum bcm63xx_regs_set set)
 {
-<<<<<<< HEAD
-#ifdef BCMCPU_RUNTIME_DETECT
 	return bcm63xx_regs_base[set];
-#else
-#ifdef CONFIG_BCM63XX_CPU_6338
-	__GEN_RSET(6338)
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6345
-	__GEN_RSET(6345)
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6348
-	__GEN_RSET(6348)
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6358
-	__GEN_RSET(6358)
-#endif
-#ifdef CONFIG_BCM63XX_CPU_6368
-	__GEN_RSET(6368)
-#endif
-#endif
-	/* unreached */
-	return 0;
-=======
-	return bcm63xx_regs_base[set];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -868,20 +603,13 @@ static inline unsigned long bcm63xx_regset_address(enum bcm63xx_regs_set set)
  */
 enum bcm63xx_irq {
 	IRQ_TIMER = 0,
-<<<<<<< HEAD
-=======
 	IRQ_SPI,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IRQ_UART0,
 	IRQ_UART1,
 	IRQ_DSL,
 	IRQ_ENET0,
 	IRQ_ENET1,
 	IRQ_ENET_PHY,
-<<<<<<< HEAD
-	IRQ_OHCI0,
-	IRQ_EHCI0,
-=======
 	IRQ_HSSPI,
 	IRQ_OHCI0,
 	IRQ_EHCI0,
@@ -892,7 +620,6 @@ enum bcm63xx_irq {
 	IRQ_USBD_TXDMA1,
 	IRQ_USBD_RXDMA2,
 	IRQ_USBD_TXDMA2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IRQ_ENET0_RXDMA,
 	IRQ_ENET0_TXDMA,
 	IRQ_ENET1_RXDMA,
@@ -913,11 +640,6 @@ enum bcm63xx_irq {
 };
 
 /*
-<<<<<<< HEAD
- * 6338 irqs
- */
-#define BCM_6338_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
-=======
  * 3368 irqs
  */
 #define BCM_3368_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
@@ -1017,17 +739,12 @@ enum bcm63xx_irq {
  */
 #define BCM_6338_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
 #define BCM_6338_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6338_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
 #define BCM_6338_UART1_IRQ		0
 #define BCM_6338_DSL_IRQ		(IRQ_INTERNAL_BASE + 5)
 #define BCM_6338_ENET0_IRQ		(IRQ_INTERNAL_BASE + 8)
 #define BCM_6338_ENET1_IRQ		0
 #define BCM_6338_ENET_PHY_IRQ		(IRQ_INTERNAL_BASE + 9)
-<<<<<<< HEAD
-#define BCM_6338_OHCI0_IRQ		0
-#define BCM_6338_EHCI0_IRQ		0
-=======
 #define BCM_6338_HSSPI_IRQ		0
 #define BCM_6338_OHCI0_IRQ		0
 #define BCM_6338_EHCI0_IRQ		0
@@ -1038,7 +755,6 @@ enum bcm63xx_irq {
 #define BCM_6338_USBD_TXDMA1_IRQ	0
 #define BCM_6338_USBD_RXDMA2_IRQ	0
 #define BCM_6338_USBD_TXDMA2_IRQ	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6338_ENET0_RXDMA_IRQ	(IRQ_INTERNAL_BASE + 15)
 #define BCM_6338_ENET0_TXDMA_IRQ	(IRQ_INTERNAL_BASE + 16)
 #define BCM_6338_ENET1_RXDMA_IRQ	0
@@ -1061,20 +777,13 @@ enum bcm63xx_irq {
  * 6345 irqs
  */
 #define BCM_6345_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
-<<<<<<< HEAD
-=======
 #define BCM_6345_SPI_IRQ		0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6345_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
 #define BCM_6345_UART1_IRQ		0
 #define BCM_6345_DSL_IRQ		(IRQ_INTERNAL_BASE + 3)
 #define BCM_6345_ENET0_IRQ		(IRQ_INTERNAL_BASE + 8)
 #define BCM_6345_ENET1_IRQ		0
 #define BCM_6345_ENET_PHY_IRQ		(IRQ_INTERNAL_BASE + 12)
-<<<<<<< HEAD
-#define BCM_6345_OHCI0_IRQ		0
-#define BCM_6345_EHCI0_IRQ		0
-=======
 #define BCM_6345_HSSPI_IRQ		0
 #define BCM_6345_OHCI0_IRQ		0
 #define BCM_6345_EHCI0_IRQ		0
@@ -1085,7 +794,6 @@ enum bcm63xx_irq {
 #define BCM_6345_USBD_TXDMA1_IRQ	0
 #define BCM_6345_USBD_RXDMA2_IRQ	0
 #define BCM_6345_USBD_TXDMA2_IRQ	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6345_ENET0_RXDMA_IRQ	(IRQ_INTERNAL_BASE + 13 + 1)
 #define BCM_6345_ENET0_TXDMA_IRQ	(IRQ_INTERNAL_BASE + 13 + 2)
 #define BCM_6345_ENET1_RXDMA_IRQ	0
@@ -1108,20 +816,13 @@ enum bcm63xx_irq {
  * 6348 irqs
  */
 #define BCM_6348_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
-<<<<<<< HEAD
-=======
 #define BCM_6348_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6348_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
 #define BCM_6348_UART1_IRQ		0
 #define BCM_6348_DSL_IRQ		(IRQ_INTERNAL_BASE + 4)
 #define BCM_6348_ENET0_IRQ		(IRQ_INTERNAL_BASE + 8)
 #define BCM_6348_ENET1_IRQ		(IRQ_INTERNAL_BASE + 7)
 #define BCM_6348_ENET_PHY_IRQ		(IRQ_INTERNAL_BASE + 9)
-<<<<<<< HEAD
-#define BCM_6348_OHCI0_IRQ		(IRQ_INTERNAL_BASE + 12)
-#define BCM_6348_EHCI0_IRQ		0
-=======
 #define BCM_6348_HSSPI_IRQ		0
 #define BCM_6348_OHCI0_IRQ		(IRQ_INTERNAL_BASE + 12)
 #define BCM_6348_EHCI0_IRQ		0
@@ -1132,7 +833,6 @@ enum bcm63xx_irq {
 #define BCM_6348_USBD_TXDMA1_IRQ	0
 #define BCM_6348_USBD_RXDMA2_IRQ	0
 #define BCM_6348_USBD_TXDMA2_IRQ	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6348_ENET0_RXDMA_IRQ	(IRQ_INTERNAL_BASE + 20)
 #define BCM_6348_ENET0_TXDMA_IRQ	(IRQ_INTERNAL_BASE + 21)
 #define BCM_6348_ENET1_RXDMA_IRQ	(IRQ_INTERNAL_BASE + 22)
@@ -1155,20 +855,13 @@ enum bcm63xx_irq {
  * 6358 irqs
  */
 #define BCM_6358_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
-<<<<<<< HEAD
-=======
 #define BCM_6358_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6358_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
 #define BCM_6358_UART1_IRQ		(IRQ_INTERNAL_BASE + 3)
 #define BCM_6358_DSL_IRQ		(IRQ_INTERNAL_BASE + 29)
 #define BCM_6358_ENET0_IRQ		(IRQ_INTERNAL_BASE + 8)
 #define BCM_6358_ENET1_IRQ		(IRQ_INTERNAL_BASE + 6)
 #define BCM_6358_ENET_PHY_IRQ		(IRQ_INTERNAL_BASE + 9)
-<<<<<<< HEAD
-#define BCM_6358_OHCI0_IRQ		(IRQ_INTERNAL_BASE + 5)
-#define BCM_6358_EHCI0_IRQ		(IRQ_INTERNAL_BASE + 10)
-=======
 #define BCM_6358_HSSPI_IRQ		0
 #define BCM_6358_OHCI0_IRQ		(IRQ_INTERNAL_BASE + 5)
 #define BCM_6358_EHCI0_IRQ		(IRQ_INTERNAL_BASE + 10)
@@ -1179,7 +872,6 @@ enum bcm63xx_irq {
 #define BCM_6358_USBD_TXDMA1_IRQ	0
 #define BCM_6358_USBD_RXDMA2_IRQ	0
 #define BCM_6358_USBD_TXDMA2_IRQ	0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6358_ENET0_RXDMA_IRQ	(IRQ_INTERNAL_BASE + 15)
 #define BCM_6358_ENET0_TXDMA_IRQ	(IRQ_INTERNAL_BASE + 16)
 #define BCM_6358_ENET1_RXDMA_IRQ	(IRQ_INTERNAL_BASE + 17)
@@ -1206,8 +898,6 @@ enum bcm63xx_irq {
 #define BCM_6358_EXT_IRQ3		(IRQ_INTERNAL_BASE + 28)
 
 /*
-<<<<<<< HEAD
-=======
  * 6362 irqs
  */
 #define BCM_6362_HIGH_IRQ_BASE		(IRQ_INTERNAL_BASE + 32)
@@ -1273,26 +963,18 @@ enum bcm63xx_irq {
 #define BCM_6362_EXT_IRQ3		(BCM_6362_HIGH_IRQ_BASE + 11)
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 6368 irqs
  */
 #define BCM_6368_HIGH_IRQ_BASE		(IRQ_INTERNAL_BASE + 32)
 
 #define BCM_6368_TIMER_IRQ		(IRQ_INTERNAL_BASE + 0)
-<<<<<<< HEAD
-=======
 #define BCM_6368_SPI_IRQ		(IRQ_INTERNAL_BASE + 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6368_UART0_IRQ		(IRQ_INTERNAL_BASE + 2)
 #define BCM_6368_UART1_IRQ		(IRQ_INTERNAL_BASE + 3)
 #define BCM_6368_DSL_IRQ		(IRQ_INTERNAL_BASE + 4)
 #define BCM_6368_ENET0_IRQ		0
 #define BCM_6368_ENET1_IRQ		0
 #define BCM_6368_ENET_PHY_IRQ		(IRQ_INTERNAL_BASE + 15)
-<<<<<<< HEAD
-#define BCM_6368_OHCI0_IRQ		(IRQ_INTERNAL_BASE + 5)
-#define BCM_6368_EHCI0_IRQ		(IRQ_INTERNAL_BASE + 7)
-=======
 #define BCM_6368_HSSPI_IRQ		0
 #define BCM_6368_OHCI0_IRQ		(IRQ_INTERNAL_BASE + 5)
 #define BCM_6368_EHCI0_IRQ		(IRQ_INTERNAL_BASE + 7)
@@ -1303,7 +985,6 @@ enum bcm63xx_irq {
 #define BCM_6368_USBD_TXDMA1_IRQ	(IRQ_INTERNAL_BASE + 29)
 #define BCM_6368_USBD_RXDMA2_IRQ	(IRQ_INTERNAL_BASE + 30)
 #define BCM_6368_USBD_TXDMA2_IRQ	(IRQ_INTERNAL_BASE + 31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCM_6368_PCMCIA_IRQ		0
 #define BCM_6368_ENET0_RXDMA_IRQ	0
 #define BCM_6368_ENET0_TXDMA_IRQ	0
@@ -1335,20 +1016,13 @@ extern const int *bcm63xx_irqs;
 
 #define __GEN_CPU_IRQ_TABLE(__cpu)					\
 	[IRQ_TIMER]		= BCM_## __cpu ##_TIMER_IRQ,		\
-<<<<<<< HEAD
-=======
 	[IRQ_SPI]		= BCM_## __cpu ##_SPI_IRQ,		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[IRQ_UART0]		= BCM_## __cpu ##_UART0_IRQ,		\
 	[IRQ_UART1]		= BCM_## __cpu ##_UART1_IRQ,		\
 	[IRQ_DSL]		= BCM_## __cpu ##_DSL_IRQ,		\
 	[IRQ_ENET0]		= BCM_## __cpu ##_ENET0_IRQ,		\
 	[IRQ_ENET1]		= BCM_## __cpu ##_ENET1_IRQ,		\
 	[IRQ_ENET_PHY]		= BCM_## __cpu ##_ENET_PHY_IRQ,		\
-<<<<<<< HEAD
-	[IRQ_OHCI0]		= BCM_## __cpu ##_OHCI0_IRQ,		\
-	[IRQ_EHCI0]		= BCM_## __cpu ##_EHCI0_IRQ,		\
-=======
 	[IRQ_HSSPI]		= BCM_## __cpu ##_HSSPI_IRQ,		\
 	[IRQ_OHCI0]		= BCM_## __cpu ##_OHCI0_IRQ,		\
 	[IRQ_EHCI0]		= BCM_## __cpu ##_EHCI0_IRQ,		\
@@ -1359,7 +1033,6 @@ extern const int *bcm63xx_irqs;
 	[IRQ_USBD_TXDMA1]	= BCM_## __cpu ##_USBD_TXDMA1_IRQ,	\
 	[IRQ_USBD_RXDMA2]	= BCM_## __cpu ##_USBD_RXDMA2_IRQ,	\
 	[IRQ_USBD_TXDMA2]	= BCM_## __cpu ##_USBD_TXDMA2_IRQ,	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[IRQ_ENET0_RXDMA]	= BCM_## __cpu ##_ENET0_RXDMA_IRQ,	\
 	[IRQ_ENET0_TXDMA]	= BCM_## __cpu ##_ENET0_TXDMA_IRQ,	\
 	[IRQ_ENET1_RXDMA]	= BCM_## __cpu ##_ENET1_RXDMA_IRQ,	\

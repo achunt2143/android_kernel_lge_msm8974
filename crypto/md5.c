@@ -21,26 +21,6 @@
 #include <linux/module.h>
 #include <linux/string.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/cryptohash.h>
-#include <asm/byteorder.h>
-
-/* XXX: this stuff can be optimized */
-static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
-{
-	while (words--) {
-		__le32_to_cpus(buf);
-		buf++;
-	}
-}
-
-static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
-{
-	while (words--) {
-		__cpu_to_le32s(buf);
-		buf++;
-	}
-=======
 #include <asm/byteorder.h>
 
 const u8 md5_zero_message_hash[MD5_DIGEST_SIZE] = {
@@ -138,7 +118,6 @@ static void md5_transform(__u32 *hash, __u32 const *in)
 	hash[1] += b;
 	hash[2] += c;
 	hash[3] += d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void md5_transform_helper(struct md5_state *ctx)
@@ -151,17 +130,10 @@ static int md5_init(struct shash_desc *desc)
 {
 	struct md5_state *mctx = shash_desc_ctx(desc);
 
-<<<<<<< HEAD
-	mctx->hash[0] = 0x67452301;
-	mctx->hash[1] = 0xefcdab89;
-	mctx->hash[2] = 0x98badcfe;
-	mctx->hash[3] = 0x10325476;
-=======
 	mctx->hash[0] = MD5_H0;
 	mctx->hash[1] = MD5_H1;
 	mctx->hash[2] = MD5_H2;
 	mctx->hash[3] = MD5_H3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mctx->byte_count = 0;
 
 	return 0;
@@ -253,17 +225,10 @@ static struct shash_alg alg = {
 	.descsize	=	sizeof(struct md5_state),
 	.statesize	=	sizeof(struct md5_state),
 	.base		=	{
-<<<<<<< HEAD
-		.cra_name	=	"md5",
-		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
-		.cra_blocksize	=	MD5_HMAC_BLOCK_SIZE,
-		.cra_module	=	THIS_MODULE,
-=======
 		.cra_name	 =	"md5",
 		.cra_driver_name =	"md5-generic",
 		.cra_blocksize	 =	MD5_HMAC_BLOCK_SIZE,
 		.cra_module	 =	THIS_MODULE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -277,16 +242,9 @@ static void __exit md5_mod_fini(void)
 	crypto_unregister_shash(&alg);
 }
 
-<<<<<<< HEAD
-module_init(md5_mod_init);
-=======
 subsys_initcall(md5_mod_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(md5_mod_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MD5 Message Digest Algorithm");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_CRYPTO("md5");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

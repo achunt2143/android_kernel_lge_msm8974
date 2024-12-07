@@ -1,47 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for Ensoniq ES1370/ES1371 AudioPCI soundcard
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
  *		     Thomas Sailer <sailer@ife.ee.ethz.ch>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Power-Management-Code ( CONFIG_PM )
  * for ens1371 only ( FIXME )
  * derived from cs4281.c, atiixp.c and via82xx.c
-<<<<<<< HEAD
- * using http://www.alsa-project.org/~tiwai/writing-an-alsa-driver/ 
- * by Kurt J. Bosch
- */
-
-#include <asm/io.h>
-=======
  * using https://www.kernel.org/doc/html/latest/sound/kernel-api/writing-an-alsa-driver.html
  * by Kurt J. Bosch
  */
 
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -70,15 +41,10 @@
 
 #ifdef CHIP1370
 #define DRIVER_NAME "ENS1370"
-<<<<<<< HEAD
-#else
-#define DRIVER_NAME "ENS1371"
-=======
 #define CHIP_NAME "ES1370" /* it can be ENS but just to keep compatibility... */
 #else
 #define DRIVER_NAME "ENS1371"
 #define CHIP_NAME "ES1371"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -86,29 +52,12 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>, Thomas Sailer <sailer@ife.ee.et
 MODULE_LICENSE("GPL");
 #ifdef CHIP1370
 MODULE_DESCRIPTION("Ensoniq AudioPCI ES1370");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Ensoniq,AudioPCI-97 ES1370},"
-	        "{Creative Labs,SB PCI64/128 (ES1370)}}");
-#endif
-#ifdef CHIP1371
-MODULE_DESCRIPTION("Ensoniq/Creative AudioPCI ES1371+");
-MODULE_SUPPORTED_DEVICE("{{Ensoniq,AudioPCI ES1371/73},"
-		"{Ensoniq,AudioPCI ES1373},"
-		"{Creative Labs,Ectiva EV1938},"
-		"{Creative Labs,SB PCI64/128 (ES1371/73)},"
-		"{Creative Labs,Vibra PCI128},"
-		"{Ectiva,EV1938}}");
-#endif
-
-#if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
-=======
 #endif
 #ifdef CHIP1371
 MODULE_DESCRIPTION("Ensoniq/Creative AudioPCI ES1371+");
 #endif
 
 #if IS_REACHABLE(CONFIG_GAMEPORT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPPORT_JOYSTICK
 #endif
 
@@ -135,11 +84,7 @@ module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable Ensoniq AudioPCI soundcard.");
 #ifdef SUPPORT_JOYSTICK
 #ifdef CHIP1371
-<<<<<<< HEAD
-module_param_array(joystick_port, int, NULL, 0444);
-=======
 module_param_hw_array(joystick_port, int, ioport, NULL, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #else
 module_param_array(joystick, bool, NULL, 0444);
@@ -469,11 +414,7 @@ struct ensoniq {
 	unsigned int spdif_stream;
 
 #ifdef CHIP1370
-<<<<<<< HEAD
-	struct snd_dma_buffer dma_bug;
-=======
 	struct snd_dma_buffer *dma_bug;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef SUPPORT_JOYSTICK
@@ -483,11 +424,7 @@ struct ensoniq {
 
 static irqreturn_t snd_audiopci_interrupt(int irq, void *dev_id);
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_audiopci_ids) = {
-=======
 static const struct pci_device_id snd_audiopci_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CHIP1370
 	{ PCI_VDEVICE(ENSONIQ, 0x5000), 0, },	/* ES1370 */
 #endif
@@ -508,71 +445,41 @@ MODULE_DEVICE_TABLE(pci, snd_audiopci_ids);
 #define POLL_COUNT	0xa000
 
 #ifdef CHIP1370
-<<<<<<< HEAD
-static unsigned int snd_es1370_fixed_rates[] =
-	{5512, 11025, 22050, 44100};
-static struct snd_pcm_hw_constraint_list snd_es1370_hw_constraints_rates = {
-=======
 static const unsigned int snd_es1370_fixed_rates[] =
 	{5512, 11025, 22050, 44100};
 static const struct snd_pcm_hw_constraint_list snd_es1370_hw_constraints_rates = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = 4, 
 	.list = snd_es1370_fixed_rates,
 	.mask = 0,
 };
-<<<<<<< HEAD
-static struct snd_ratnum es1370_clock = {
-=======
 static const struct snd_ratnum es1370_clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num = ES_1370_SRCLOCK,
 	.den_min = 29, 
 	.den_max = 353,
 	.den_step = 1,
 };
-<<<<<<< HEAD
-static struct snd_pcm_hw_constraint_ratnums snd_es1370_hw_constraints_clock = {
-=======
 static const struct snd_pcm_hw_constraint_ratnums snd_es1370_hw_constraints_clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nrats = 1,
 	.rats = &es1370_clock,
 };
 #else
-<<<<<<< HEAD
-static struct snd_ratden es1371_dac_clock = {
-=======
 static const struct snd_ratden es1371_dac_clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_min = 3000 * (1 << 15),
 	.num_max = 48000 * (1 << 15),
 	.num_step = 3000,
 	.den = 1 << 15,
 };
-<<<<<<< HEAD
-static struct snd_pcm_hw_constraint_ratdens snd_es1371_hw_constraints_dac_clock = {
-	.nrats = 1,
-	.rats = &es1371_dac_clock,
-};
-static struct snd_ratnum es1371_adc_clock = {
-=======
 static const struct snd_pcm_hw_constraint_ratdens snd_es1371_hw_constraints_dac_clock = {
 	.nrats = 1,
 	.rats = &es1371_dac_clock,
 };
 static const struct snd_ratnum es1371_adc_clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num = 48000 << 15,
 	.den_min = 32768, 
 	.den_max = 393216,
 	.den_step = 1,
 };
-<<<<<<< HEAD
-static struct snd_pcm_hw_constraint_ratnums snd_es1371_hw_constraints_adc_clock = {
-=======
 static const struct snd_pcm_hw_constraint_ratnums snd_es1371_hw_constraints_adc_clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nrats = 1,
 	.rats = &es1371_adc_clock,
 };
@@ -596,11 +503,7 @@ static unsigned int snd_es1371_wait_src_ready(struct ensoniq * ensoniq)
 			return r;
 		cond_resched();
 	}
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "wait src ready timeout 0x%lx [0x%x]\n",
-=======
 	dev_err(ensoniq->card->dev, "wait src ready timeout 0x%lx [0x%x]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   ES_REG(ensoniq, 1371_SMPRATE), r);
 	return 0;
 }
@@ -662,11 +565,7 @@ static void snd_es1370_codec_write(struct snd_ak4531 *ak4531,
 	unsigned long end_time = jiffies + HZ / 10;
 
 #if 0
-<<<<<<< HEAD
-	printk(KERN_DEBUG
-=======
 	dev_dbg(ensoniq->card->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       "CODEC WRITE: reg = 0x%x, val = 0x%x (0x%x), creg = 0x%x\n",
 	       reg, val, ES_1370_CODEC_WRITE(reg, val), ES_REG(ensoniq, 1370_CODEC));
 #endif
@@ -677,11 +576,7 @@ static void snd_es1370_codec_write(struct snd_ak4531 *ak4531,
 		}
 		schedule_timeout_uninterruptible(1);
 	} while (time_after(end_time, jiffies));
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "codec write timeout, status = 0x%x\n",
-=======
 	dev_err(ensoniq->card->dev, "codec write timeout, status = 0x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   inl(ES_REG(ensoniq, STATUS)));
 }
 
@@ -732,11 +627,7 @@ static void snd_es1371_codec_write(struct snd_ac97 *ac97,
 		}
 	}
 	mutex_unlock(&ensoniq->src_mutex);
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "codec write timeout at 0x%lx [0x%x]\n",
-=======
 	dev_err(ensoniq->card->dev, "codec write timeout at 0x%lx [0x%x]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   ES_REG(ensoniq, 1371_CODEC), inl(ES_REG(ensoniq, 1371_CODEC)));
 }
 
@@ -781,12 +672,8 @@ static unsigned short snd_es1371_codec_read(struct snd_ac97 *ac97,
 			}
 			/* now wait for the stinkin' data (RDY) */
 			for (t = 0; t < POLL_COUNT; t++) {
-<<<<<<< HEAD
-				if ((x = inl(ES_REG(ensoniq, 1371_CODEC))) & ES_1371_CODEC_RDY) {
-=======
 				x = inl(ES_REG(ensoniq, 1371_CODEC));
 				if (x & ES_1371_CODEC_RDY) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (is_ev1938(ensoniq)) {
 						for (t = 0; t < 100; t++)
 							inl(ES_REG(ensoniq, CONTROL));
@@ -798,13 +685,8 @@ static unsigned short snd_es1371_codec_read(struct snd_ac97 *ac97,
 			}
 			mutex_unlock(&ensoniq->src_mutex);
 			if (++fail > 10) {
-<<<<<<< HEAD
-				snd_printk(KERN_ERR "codec read timeout (final) "
-					   "at 0x%lx, reg = 0x%x [0x%x]\n",
-=======
 				dev_err(ensoniq->card->dev,
 					"codec read timeout (final) at 0x%lx, reg = 0x%x [0x%x]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   ES_REG(ensoniq, 1371_CODEC), reg,
 					   inl(ES_REG(ensoniq, 1371_CODEC)));
 				return 0;
@@ -813,11 +695,7 @@ static unsigned short snd_es1371_codec_read(struct snd_ac97 *ac97,
 		}
 	}
 	mutex_unlock(&ensoniq->src_mutex);
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "es1371: codec read timeout at 0x%lx [0x%x]\n",
-=======
 	dev_err(ensoniq->card->dev, "codec read timeout at 0x%lx [0x%x]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   ES_REG(ensoniq, 1371_CODEC), inl(ES_REG(ensoniq, 1371_CODEC)));
 	return 0;
 }
@@ -833,11 +711,7 @@ static void snd_es1371_codec_wait(struct snd_ac97 *ac97)
 
 static void snd_es1371_adc_rate(struct ensoniq * ensoniq, unsigned int rate)
 {
-<<<<<<< HEAD
-	unsigned int n, truncm, freq, result;
-=======
 	unsigned int n, truncm, freq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ensoniq->src_mutex);
 	n = rate / 3000;
@@ -845,10 +719,6 @@ static void snd_es1371_adc_rate(struct ensoniq * ensoniq, unsigned int rate)
 		n--;
 	truncm = (21 * n - 1) | 1;
 	freq = ((48000UL << 15) / rate) * n;
-<<<<<<< HEAD
-	result = (48000UL << 15) / (freq / n);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rate >= 24000) {
 		if (truncm > 239)
 			truncm = 239;
@@ -875,11 +745,7 @@ static void snd_es1371_dac1_rate(struct ensoniq * ensoniq, unsigned int rate)
 	unsigned int freq, r;
 
 	mutex_lock(&ensoniq->src_mutex);
-<<<<<<< HEAD
-	freq = ((rate << 15) + 1500) / 3000;
-=======
 	freq = DIV_ROUND_CLOSEST(rate << 15, 3000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = (snd_es1371_wait_src_ready(ensoniq) & (ES_1371_SRC_DISABLE |
 						   ES_1371_DIS_P2 | ES_1371_DIS_R1)) |
 		ES_1371_DIS_P1;
@@ -900,11 +766,7 @@ static void snd_es1371_dac2_rate(struct ensoniq * ensoniq, unsigned int rate)
 	unsigned int freq, r;
 
 	mutex_lock(&ensoniq->src_mutex);
-<<<<<<< HEAD
-	freq = ((rate << 15) + 1500) / 3000;
-=======
 	freq = DIV_ROUND_CLOSEST(rate << 15, 3000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = (snd_es1371_wait_src_ready(ensoniq) & (ES_1371_SRC_DISABLE |
 						   ES_1371_DIS_P1 | ES_1371_DIS_R1)) |
 		ES_1371_DIS_P2;
@@ -987,20 +849,6 @@ static int snd_ensoniq_trigger(struct snd_pcm_substream *substream, int cmd)
  *  PCM part
  */
 
-<<<<<<< HEAD
-static int snd_ensoniq_hw_params(struct snd_pcm_substream *substream,
-				 struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
-}
-
-static int snd_ensoniq_hw_free(struct snd_pcm_substream *substream)
-{
-	return snd_pcm_lib_free_pages(substream);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_ensoniq_playback1_prepare(struct snd_pcm_substream *substream)
 {
 	struct ensoniq *ensoniq = snd_pcm_substream_chip(substream);
@@ -1178,11 +1026,7 @@ static snd_pcm_uframes_t snd_ensoniq_capture_pointer(struct snd_pcm_substream *s
 	return ptr;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_ensoniq_playback1 =
-=======
 static const struct snd_pcm_hardware snd_ensoniq_playback1 =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1209,11 +1053,7 @@ static const struct snd_pcm_hardware snd_ensoniq_playback1 =
 	.fifo_size =		0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_ensoniq_playback2 =
-=======
 static const struct snd_pcm_hardware snd_ensoniq_playback2 =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1233,11 +1073,7 @@ static const struct snd_pcm_hardware snd_ensoniq_playback2 =
 	.fifo_size =		0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_ensoniq_capture =
-=======
 static const struct snd_pcm_hardware snd_ensoniq_capture =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1358,61 +1194,30 @@ static int snd_ensoniq_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_ensoniq_playback1_ops = {
-	.open =		snd_ensoniq_playback1_open,
-	.close =	snd_ensoniq_playback1_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_ensoniq_hw_params,
-	.hw_free =	snd_ensoniq_hw_free,
-=======
 static const struct snd_pcm_ops snd_ensoniq_playback1_ops = {
 	.open =		snd_ensoniq_playback1_open,
 	.close =	snd_ensoniq_playback1_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ensoniq_playback1_prepare,
 	.trigger =	snd_ensoniq_trigger,
 	.pointer =	snd_ensoniq_playback1_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_ensoniq_playback2_ops = {
-	.open =		snd_ensoniq_playback2_open,
-	.close =	snd_ensoniq_playback2_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_ensoniq_hw_params,
-	.hw_free =	snd_ensoniq_hw_free,
-=======
 static const struct snd_pcm_ops snd_ensoniq_playback2_ops = {
 	.open =		snd_ensoniq_playback2_open,
 	.close =	snd_ensoniq_playback2_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ensoniq_playback2_prepare,
 	.trigger =	snd_ensoniq_trigger,
 	.pointer =	snd_ensoniq_playback2_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_ensoniq_capture_ops = {
-	.open =		snd_ensoniq_capture_open,
-	.close =	snd_ensoniq_capture_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_ensoniq_hw_params,
-	.hw_free =	snd_ensoniq_hw_free,
-=======
 static const struct snd_pcm_ops snd_ensoniq_capture_ops = {
 	.open =		snd_ensoniq_capture_open,
 	.close =	snd_ensoniq_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ensoniq_capture_prepare,
 	.trigger =	snd_ensoniq_trigger,
 	.pointer =	snd_ensoniq_capture_pointer,
 };
 
-<<<<<<< HEAD
-static int __devinit snd_ensoniq_pcm(struct ensoniq * ensoniq, int device,
-				     struct snd_pcm ** rpcm)
-=======
 static const struct snd_pcm_chmap_elem surround_map[] = {
 	{ .channels = 1,
 	  .map = { SNDRV_CHMAP_MONO } },
@@ -1422,22 +1227,11 @@ static const struct snd_pcm_chmap_elem surround_map[] = {
 };
 
 static int snd_ensoniq_pcm(struct ensoniq *ensoniq, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-#ifdef CHIP1370
-	err = snd_pcm_new(ensoniq->card, "ES1370/1", device, 1, 1, &pcm);
-#else
-	err = snd_pcm_new(ensoniq->card, "ES1371/1", device, 1, 1, &pcm);
-#endif
-=======
 	err = snd_pcm_new(ensoniq->card, CHIP_NAME "/1", device, 1, 1, &pcm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -1450,25 +1244,6 @@ static int snd_ensoniq_pcm(struct ensoniq *ensoniq, int device)
 
 	pcm->private_data = ensoniq;
 	pcm->info_flags = 0;
-<<<<<<< HEAD
-#ifdef CHIP1370
-	strcpy(pcm->name, "ES1370 DAC2/ADC");
-#else
-	strcpy(pcm->name, "ES1371 DAC2/ADC");
-#endif
-	ensoniq->pcm1 = pcm;
-
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_pci_data(ensoniq->pci), 64*1024, 128*1024);
-
-	if (rpcm)
-		*rpcm = pcm;
-	return 0;
-}
-
-static int __devinit snd_ensoniq_pcm2(struct ensoniq * ensoniq, int device,
-				      struct snd_pcm ** rpcm)
-=======
 	strcpy(pcm->name, CHIP_NAME " DAC2/ADC");
 	ensoniq->pcm1 = pcm;
 
@@ -1486,22 +1261,11 @@ static int __devinit snd_ensoniq_pcm2(struct ensoniq * ensoniq, int device,
 }
 
 static int snd_ensoniq_pcm2(struct ensoniq *ensoniq, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-#ifdef CHIP1370
-	err = snd_pcm_new(ensoniq->card, "ES1370/2", device, 1, 0, &pcm);
-#else
-	err = snd_pcm_new(ensoniq->card, "ES1371/2", device, 1, 0, &pcm);
-#endif
-=======
 	err = snd_pcm_new(ensoniq->card, CHIP_NAME "/2", device, 1, 0, &pcm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -1512,21 +1276,6 @@ static int snd_ensoniq_pcm2(struct ensoniq *ensoniq, int device)
 #endif
 	pcm->private_data = ensoniq;
 	pcm->info_flags = 0;
-<<<<<<< HEAD
-#ifdef CHIP1370
-	strcpy(pcm->name, "ES1370 DAC1");
-#else
-	strcpy(pcm->name, "ES1371 DAC1");
-#endif
-	ensoniq->pcm2 = pcm;
-
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_pci_data(ensoniq->pci), 64*1024, 128*1024);
-
-	if (rpcm)
-		*rpcm = pcm;
-	return 0;
-=======
 	strcpy(pcm->name, CHIP_NAME " DAC1");
 	ensoniq->pcm2 = pcm;
 
@@ -1541,7 +1290,6 @@ static int snd_ensoniq_pcm2(struct ensoniq *ensoniq, int device)
 				     surround_map, 2, 0, NULL);
 #endif
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1678,11 +1426,7 @@ static int snd_es1371_spdif_put(struct snd_kcontrol *kcontrol,
 
 
 /* spdif controls */
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_es1371_mixer_spdif[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_es1371_mixer_spdif[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ES1371_SPDIF(SNDRV_CTL_NAME_IEC958("",PLAYBACK,SWITCH)),
 	{
 		.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1744,11 +1488,7 @@ static int snd_es1373_rear_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ens1373_rear __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_ens1373_rear =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"AC97 2ch->4ch Copy Switch",
@@ -1766,11 +1506,7 @@ static int snd_es1373_line_get(struct snd_kcontrol *kcontrol,
 	int val = 0;
 	
 	spin_lock_irq(&ensoniq->reg_lock);
-<<<<<<< HEAD
-	if ((ensoniq->ctrl & ES_1371_GPIO_OUTM) >= 4)
-=======
 	if (ensoniq->ctrl & ES_1371_GPIO_OUT(4))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    	val = 1;
 	ucontrol->value.integer.value[0] = val;
 	spin_unlock_irq(&ensoniq->reg_lock);
@@ -1797,11 +1533,7 @@ static int snd_es1373_line_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_ens1373_line __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_ens1373_line =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Line In->Rear Out Switch",
@@ -1823,11 +1555,7 @@ struct es1371_quirk {
 };
 
 static int es1371_quirk_lookup(struct ensoniq *ensoniq,
-<<<<<<< HEAD
-				struct es1371_quirk *list)
-=======
 			       const struct es1371_quirk *list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (list->vid != (unsigned short)PCI_ANY_ID) {
 		if (ensoniq->pci->vendor == list->vid &&
@@ -1839,11 +1567,7 @@ static int es1371_quirk_lookup(struct ensoniq *ensoniq,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct es1371_quirk es1371_spdif_present[] __devinitdata = {
-=======
 static const struct es1371_quirk es1371_spdif_present[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .vid = PCI_VENDOR_ID_ENSONIQ, .did = PCI_DEVICE_ID_ENSONIQ_CT5880, .rev = CT5880REV_CT5880_C },
 	{ .vid = PCI_VENDOR_ID_ENSONIQ, .did = PCI_DEVICE_ID_ENSONIQ_CT5880, .rev = CT5880REV_CT5880_D },
 	{ .vid = PCI_VENDOR_ID_ENSONIQ, .did = PCI_DEVICE_ID_ENSONIQ_CT5880, .rev = CT5880REV_CT5880_E },
@@ -1852,44 +1576,27 @@ static const struct es1371_quirk es1371_spdif_present[] = {
 	{ .vid = PCI_ANY_ID, .did = PCI_ANY_ID }
 };
 
-<<<<<<< HEAD
-static struct snd_pci_quirk ens1373_line_quirk[] __devinitdata = {
-=======
 static const struct snd_pci_quirk ens1373_line_quirk[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SND_PCI_QUIRK_ID(0x1274, 0x2000), /* GA-7DXR */
 	SND_PCI_QUIRK_ID(0x1458, 0xa000), /* GA-8IEXP */
 	{ } /* end */
 };
 
-<<<<<<< HEAD
-static int __devinit snd_ensoniq_1371_mixer(struct ensoniq *ensoniq,
-					    int has_spdif, int has_line)
-=======
 static int snd_ensoniq_1371_mixer(struct ensoniq *ensoniq,
 				  int has_spdif, int has_line)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = ensoniq->card;
 	struct snd_ac97_bus *pbus;
 	struct snd_ac97_template ac97;
 	int err;
-<<<<<<< HEAD
-	static struct snd_ac97_bus_ops ops = {
-=======
 	static const struct snd_ac97_bus_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_es1371_codec_write,
 		.read = snd_es1371_codec_read,
 		.wait = snd_es1371_codec_wait,
 	};
 
-<<<<<<< HEAD
-	if ((err = snd_ac97_bus(card, 0, &ops, NULL, &pbus)) < 0)
-=======
 	err = snd_ac97_bus(card, 0, &ops, NULL, &pbus);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	memset(&ac97, 0, sizeof(ac97));
@@ -1897,12 +1604,8 @@ static int snd_ensoniq_1371_mixer(struct ensoniq *ensoniq,
 	ac97.private_free = snd_ensoniq_mixer_free_ac97;
 	ac97.pci = ensoniq->pci;
 	ac97.scaps = AC97_SCAP_AUDIO;
-<<<<<<< HEAD
-	if ((err = snd_ac97_mixer(pbus, &ac97, &ensoniq->u.es1371.ac97)) < 0)
-=======
 	err = snd_ac97_mixer(pbus, &ac97, &ensoniq->u.es1371.ac97);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	if (has_spdif > 0 ||
 	    (!has_spdif && es1371_quirk_lookup(ensoniq, es1371_spdif_present))) {
@@ -1990,11 +1693,7 @@ static int snd_ensoniq_control_put(struct snd_kcontrol *kcontrol,
  * ENS1370 mixer
  */
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_es1370_controls[2] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_es1370_controls[2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENSONIQ_CONTROL("PCM 0 Output also on Line-In Jack", ES_1370_XCTL0),
 ENSONIQ_CONTROL("Mic +5V bias", ES_1370_XCTL1)
 };
@@ -2007,11 +1706,7 @@ static void snd_ensoniq_mixer_free_ak4531(struct snd_ak4531 *ak4531)
 	ensoniq->u.es1370.ak4531 = NULL;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_ensoniq_1370_mixer(struct ensoniq * ensoniq)
-=======
 static int snd_ensoniq_1370_mixer(struct ensoniq *ensoniq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = ensoniq->card;
 	struct snd_ak4531 ak4531;
@@ -2030,12 +1725,8 @@ static int snd_ensoniq_1370_mixer(struct ensoniq *ensoniq)
 	ak4531.write = snd_es1370_codec_write;
 	ak4531.private_data = ensoniq;
 	ak4531.private_free = snd_ensoniq_mixer_free_ak4531;
-<<<<<<< HEAD
-	if ((err = snd_ak4531_mixer(card, &ak4531, &ensoniq->u.es1370.ak4531)) < 0)
-=======
 	err = snd_ak4531_mixer(card, &ak4531, &ensoniq->u.es1370.ak4531);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	for (idx = 0; idx < ES1370_CONTROLS; idx++) {
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_es1370_controls[idx], ensoniq));
@@ -2050,11 +1741,7 @@ static int snd_ensoniq_1370_mixer(struct ensoniq *ensoniq)
 #ifdef SUPPORT_JOYSTICK
 
 #ifdef CHIP1371
-<<<<<<< HEAD
-static int __devinit snd_ensoniq_get_joystick_port(int dev)
-=======
 static int snd_ensoniq_get_joystick_port(struct ensoniq *ensoniq, int dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (joystick_port[dev]) {
 	case 0: /* disabled */
@@ -2066,40 +1753,24 @@ static int snd_ensoniq_get_joystick_port(struct ensoniq *ensoniq, int dev)
 		return joystick_port[dev];
 
 	default:
-<<<<<<< HEAD
-		printk(KERN_ERR "ens1371: invalid joystick port %#x", joystick_port[dev]);
-=======
 		dev_err(ensoniq->card->dev,
 			"invalid joystick port %#x", joystick_port[dev]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 }
 #else
-<<<<<<< HEAD
-static inline int snd_ensoniq_get_joystick_port(int dev)
-=======
 static int snd_ensoniq_get_joystick_port(struct ensoniq *ensoniq, int dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return joystick[dev] ? 0x200 : 0;
 }
 #endif
 
-<<<<<<< HEAD
-static int __devinit snd_ensoniq_create_gameport(struct ensoniq *ensoniq, int dev)
-=======
 static int snd_ensoniq_create_gameport(struct ensoniq *ensoniq, int dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 	int io_port;
 
-<<<<<<< HEAD
-	io_port = snd_ensoniq_get_joystick_port(dev);
-=======
 	io_port = snd_ensoniq_get_joystick_port(ensoniq, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (io_port) {
 	case 0:
@@ -2110,24 +1781,16 @@ static int snd_ensoniq_create_gameport(struct ensoniq *ensoniq, int dev)
 			if (request_region(io_port, 8, "ens137x: gameport"))
 				break;
 		if (io_port > 0x218) {
-<<<<<<< HEAD
-			printk(KERN_WARNING "ens137x: no gameport ports available\n");
-=======
 			dev_warn(ensoniq->card->dev,
 				 "no gameport ports available\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EBUSY;
 		}
 		break;
 
 	default:
 		if (!request_region(io_port, 8, "ens137x: gameport")) {
-<<<<<<< HEAD
-			printk(KERN_WARNING "ens137x: gameport io port 0x%#x in use\n",
-=======
 			dev_warn(ensoniq->card->dev,
 				 "gameport io port %#x in use\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       io_port);
 			return -EBUSY;
 		}
@@ -2136,12 +1799,8 @@ static int snd_ensoniq_create_gameport(struct ensoniq *ensoniq, int dev)
 
 	ensoniq->gameport = gp = gameport_allocate_port();
 	if (!gp) {
-<<<<<<< HEAD
-		printk(KERN_ERR "ens137x: cannot allocate memory for gameport\n");
-=======
 		dev_err(ensoniq->card->dev,
 			"cannot allocate memory for gameport\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_region(io_port, 8);
 		return -ENOMEM;
 	}
@@ -2189,15 +1848,7 @@ static void snd_ensoniq_proc_read(struct snd_info_entry *entry,
 {
 	struct ensoniq *ensoniq = entry->private_data;
 
-<<<<<<< HEAD
-#ifdef CHIP1370
-	snd_iprintf(buffer, "Ensoniq AudioPCI ES1370\n\n");
-#else
-	snd_iprintf(buffer, "Ensoniq AudioPCI ES1371\n\n");
-#endif
-=======
 	snd_iprintf(buffer, "Ensoniq AudioPCI " CHIP_NAME "\n\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "Joystick enable  : %s\n",
 		    ensoniq->ctrl & ES_JYSTK_EN ? "on" : "off");
 #ifdef CHIP1370
@@ -2211,38 +1862,21 @@ static void snd_ensoniq_proc_read(struct snd_info_entry *entry,
 #endif
 }
 
-<<<<<<< HEAD
-static void __devinit snd_ensoniq_proc_init(struct ensoniq * ensoniq)
-{
-	struct snd_info_entry *entry;
-
-	if (! snd_card_proc_new(ensoniq->card, "audiopci", &entry))
-		snd_info_set_text_ops(entry, ensoniq, snd_ensoniq_proc_read);
-=======
 static void snd_ensoniq_proc_init(struct ensoniq *ensoniq)
 {
 	snd_card_ro_proc_new(ensoniq->card, "audiopci", ensoniq,
 			     snd_ensoniq_proc_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
 
  */
 
-<<<<<<< HEAD
-static int snd_ensoniq_free(struct ensoniq *ensoniq)
-{
-	snd_ensoniq_free_gameport(ensoniq);
-	if (ensoniq->irq < 0)
-		goto __hw_end;
-=======
 static void snd_ensoniq_free(struct snd_card *card)
 {
 	struct ensoniq *ensoniq = card->private_data;
 
 	snd_ensoniq_free_gameport(ensoniq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CHIP1370
 	outl(ES_1370_SERR_DISABLE, ES_REG(ensoniq, CONTROL));	/* switch everything off */
 	outl(0, ES_REG(ensoniq, SERIAL));	/* clear serial interface */
@@ -2250,37 +1884,10 @@ static void snd_ensoniq_free(struct snd_card *card)
 	outl(0, ES_REG(ensoniq, CONTROL));	/* switch everything off */
 	outl(0, ES_REG(ensoniq, SERIAL));	/* clear serial interface */
 #endif
-<<<<<<< HEAD
-	if (ensoniq->irq >= 0)
-		synchronize_irq(ensoniq->irq);
-	pci_set_power_state(ensoniq->pci, 3);
-      __hw_end:
-#ifdef CHIP1370
-	if (ensoniq->dma_bug.area)
-		snd_dma_free_pages(&ensoniq->dma_bug);
-#endif
-	if (ensoniq->irq >= 0)
-		free_irq(ensoniq->irq, ensoniq);
-	pci_release_regions(ensoniq->pci);
-	pci_disable_device(ensoniq->pci);
-	kfree(ensoniq);
-	return 0;
-}
-
-static int snd_ensoniq_dev_free(struct snd_device *device)
-{
-	struct ensoniq *ensoniq = device->device_data;
-	return snd_ensoniq_free(ensoniq);
-}
-
-#ifdef CHIP1371
-static struct snd_pci_quirk es1371_amplifier_hack[] __devinitdata = {
-=======
 }
 
 #ifdef CHIP1371
 static const struct snd_pci_quirk es1371_amplifier_hack[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SND_PCI_QUIRK_ID(0x107b, 0x2150),	/* Gateway Solo 2150 */
 	SND_PCI_QUIRK_ID(0x13bd, 0x100c),	/* EV1938 on Mebius PC-MJ100V */
 	SND_PCI_QUIRK_ID(0x1102, 0x5938),	/* Targa Xtender300 */
@@ -2288,11 +1895,7 @@ static const struct snd_pci_quirk es1371_amplifier_hack[] = {
 	{ } /* end */
 };
 
-<<<<<<< HEAD
-static struct es1371_quirk es1371_ac97_reset_hack[] = {
-=======
 static const struct es1371_quirk es1371_ac97_reset_hack[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .vid = PCI_VENDOR_ID_ENSONIQ, .did = PCI_DEVICE_ID_ENSONIQ_CT5880, .rev = CT5880REV_CT5880_C },
 	{ .vid = PCI_VENDOR_ID_ENSONIQ, .did = PCI_DEVICE_ID_ENSONIQ_CT5880, .rev = CT5880REV_CT5880_D },
 	{ .vid = PCI_VENDOR_ID_ENSONIQ, .did = PCI_DEVICE_ID_ENSONIQ_CT5880, .rev = CT5880REV_CT5880_E },
@@ -2314,11 +1917,7 @@ static void snd_ensoniq_chip_init(struct ensoniq *ensoniq)
 	outl(ensoniq->ctrl, ES_REG(ensoniq, CONTROL));
 	outl(ensoniq->sctrl, ES_REG(ensoniq, SERIAL));
 	outl(ES_MEM_PAGEO(ES_PAGE_ADC), ES_REG(ensoniq, MEM_PAGE));
-<<<<<<< HEAD
-	outl(ensoniq->dma_bug.addr, ES_REG(ensoniq, PHANTOM_FRAME));
-=======
 	outl(ensoniq->dma_bug->addr, ES_REG(ensoniq, PHANTOM_FRAME));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outl(0, ES_REG(ensoniq, PHANTOM_COUNT));
 #else
 	outl(ensoniq->ctrl, ES_REG(ensoniq, CONTROL));
@@ -2367,31 +1966,15 @@ static void snd_ensoniq_chip_init(struct ensoniq *ensoniq)
 	outb(ensoniq->uartc = 0x00, ES_REG(ensoniq, UART_CONTROL));
 	outb(0x00, ES_REG(ensoniq, UART_RES));
 	outl(ensoniq->cssr, ES_REG(ensoniq, STATUS));
-<<<<<<< HEAD
-	synchronize_irq(ensoniq->irq);
-}
-
-#ifdef CONFIG_PM
-static int snd_ensoniq_suspend(struct pci_dev *pci, pm_message_t state)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-=======
 }
 
 static int snd_ensoniq_suspend(struct device *dev)
 {
 	struct snd_card *card = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ensoniq *ensoniq = card->private_data;
 	
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 
-<<<<<<< HEAD
-	snd_pcm_suspend_all(ensoniq->pcm1);
-	snd_pcm_suspend_all(ensoniq->pcm2);
-	
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CHIP1371	
 	snd_ac97_suspend(ensoniq->u.es1371.ac97);
 #else
@@ -2404,30 +1987,6 @@ static int snd_ensoniq_suspend(struct device *dev)
 	udelay(100);
 	snd_ak4531_suspend(ensoniq->u.es1370.ak4531);
 #endif	
-<<<<<<< HEAD
-
-	pci_disable_device(pci);
-	pci_save_state(pci);
-	pci_set_power_state(pci, pci_choose_state(pci, state));
-	return 0;
-}
-
-static int snd_ensoniq_resume(struct pci_dev *pci)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-	struct ensoniq *ensoniq = card->private_data;
-
-	pci_set_power_state(pci, PCI_D0);
-	pci_restore_state(pci);
-	if (pci_enable_device(pci) < 0) {
-		printk(KERN_ERR DRIVER_NAME ": pci_enable_device failed, "
-		       "disabling device\n");
-		snd_card_disconnect(card);
-		return -EIO;
-	}
-	pci_set_master(pci);
-
-=======
 	return 0;
 }
 
@@ -2436,7 +1995,6 @@ static int snd_ensoniq_resume(struct device *dev)
 	struct snd_card *card = dev_get_drvdata(dev);
 	struct ensoniq *ensoniq = card->private_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ensoniq_chip_init(ensoniq);
 
 #ifdef CHIP1371	
@@ -2447,29 +2005,6 @@ static int snd_ensoniq_resume(struct device *dev)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-
-static int __devinit snd_ensoniq_create(struct snd_card *card,
-				     struct pci_dev *pci,
-				     struct ensoniq ** rensoniq)
-{
-	struct ensoniq *ensoniq;
-	int err;
-	static struct snd_device_ops ops = {
-		.dev_free =	snd_ensoniq_dev_free,
-	};
-
-	*rensoniq = NULL;
-	if ((err = pci_enable_device(pci)) < 0)
-		return err;
-	ensoniq = kzalloc(sizeof(*ensoniq), GFP_KERNEL);
-	if (ensoniq == NULL) {
-		pci_disable_device(pci);
-		return -ENOMEM;
-	}
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(snd_ensoniq_pm, snd_ensoniq_suspend, snd_ensoniq_resume);
 
@@ -2482,34 +2017,11 @@ static int snd_ensoniq_create(struct snd_card *card,
 	err = pcim_enable_device(pci);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&ensoniq->reg_lock);
 	mutex_init(&ensoniq->src_mutex);
 	ensoniq->card = card;
 	ensoniq->pci = pci;
 	ensoniq->irq = -1;
-<<<<<<< HEAD
-	if ((err = pci_request_regions(pci, "Ensoniq AudioPCI")) < 0) {
-		kfree(ensoniq);
-		pci_disable_device(pci);
-		return err;
-	}
-	ensoniq->port = pci_resource_start(pci, 0);
-	if (request_irq(pci->irq, snd_audiopci_interrupt, IRQF_SHARED,
-			KBUILD_MODNAME, ensoniq)) {
-		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
-		snd_ensoniq_free(ensoniq);
-		return -EBUSY;
-	}
-	ensoniq->irq = pci->irq;
-#ifdef CHIP1370
-	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
-				16, &ensoniq->dma_bug) < 0) {
-		snd_printk(KERN_ERR "unable to allocate space for phantom area - dma_bug\n");
-		snd_ensoniq_free(ensoniq);
-		return -EBUSY;
-	}
-=======
 	err = pci_request_regions(pci, "Ensoniq AudioPCI");
 	if (err < 0)
 		return err;
@@ -2526,7 +2038,6 @@ static int snd_ensoniq_create(struct snd_card *card,
 		snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV, 16);
 	if (!ensoniq->dma_bug)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	pci_set_master(pci);
 	ensoniq->rev = pci->revision;
@@ -2549,25 +2060,10 @@ static int snd_ensoniq_create(struct snd_card *card,
 		ensoniq->cssr |= ES_1371_ST_AC97_RST;
 #endif
 
-<<<<<<< HEAD
-	snd_ensoniq_chip_init(ensoniq);
-
-	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, ensoniq, &ops)) < 0) {
-		snd_ensoniq_free(ensoniq);
-		return err;
-	}
-
-	snd_ensoniq_proc_init(ensoniq);
-
-	snd_card_set_dev(card, &pci->dev);
-
-	*rensoniq = ensoniq;
-=======
 	card->private_free = snd_ensoniq_free;
 	snd_ensoniq_chip_init(ensoniq);
 
 	snd_ensoniq_proc_init(ensoniq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2732,65 +2228,35 @@ static void snd_ensoniq_midi_output_trigger(struct snd_rawmidi_substream *substr
 	spin_unlock_irqrestore(&ensoniq->reg_lock, flags);
 }
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_ensoniq_midi_output =
-=======
 static const struct snd_rawmidi_ops snd_ensoniq_midi_output =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_ensoniq_midi_output_open,
 	.close =	snd_ensoniq_midi_output_close,
 	.trigger =	snd_ensoniq_midi_output_trigger,
 };
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_ensoniq_midi_input =
-=======
 static const struct snd_rawmidi_ops snd_ensoniq_midi_input =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_ensoniq_midi_input_open,
 	.close =	snd_ensoniq_midi_input_close,
 	.trigger =	snd_ensoniq_midi_input_trigger,
 };
 
-<<<<<<< HEAD
-static int __devinit snd_ensoniq_midi(struct ensoniq * ensoniq, int device,
-				      struct snd_rawmidi **rrawmidi)
-=======
 static int snd_ensoniq_midi(struct ensoniq *ensoniq, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
-<<<<<<< HEAD
-	if (rrawmidi)
-		*rrawmidi = NULL;
-	if ((err = snd_rawmidi_new(ensoniq->card, "ES1370/1", device, 1, 1, &rmidi)) < 0)
-		return err;
-#ifdef CHIP1370
-	strcpy(rmidi->name, "ES1370");
-#else
-	strcpy(rmidi->name, "ES1371");
-#endif
-=======
 	err = snd_rawmidi_new(ensoniq->card, "ES1370/1", device, 1, 1, &rmidi);
 	if (err < 0)
 		return err;
 	strcpy(rmidi->name, CHIP_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_OUTPUT, &snd_ensoniq_midi_output);
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_INPUT, &snd_ensoniq_midi_input);
 	rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT |
 		SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = ensoniq;
 	ensoniq->rmidi = rmidi;
-<<<<<<< HEAD
-	if (rrawmidi)
-		*rrawmidi = rmidi;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2833,22 +2299,13 @@ static irqreturn_t snd_audiopci_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_audiopci_probe(struct pci_dev *pci,
-					const struct pci_device_id *pci_id)
-=======
 static int __snd_audiopci_probe(struct pci_dev *pci,
 				const struct pci_device_id *pci_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
 	struct ensoniq *ensoniq;
-<<<<<<< HEAD
-	int err, pcm_devs[2];
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
@@ -2857,43 +2314,6 @@ static int __snd_audiopci_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
-	if (err < 0)
-		return err;
-
-	if ((err = snd_ensoniq_create(card, pci, &ensoniq)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	card->private_data = ensoniq;
-
-	pcm_devs[0] = 0; pcm_devs[1] = 1;
-#ifdef CHIP1370
-	if ((err = snd_ensoniq_1370_mixer(ensoniq)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-#endif
-#ifdef CHIP1371
-	if ((err = snd_ensoniq_1371_mixer(ensoniq, spdif[dev], lineio[dev])) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-#endif
-	if ((err = snd_ensoniq_pcm(ensoniq, 0, NULL)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	if ((err = snd_ensoniq_pcm2(ensoniq, 1, NULL)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	if ((err = snd_ensoniq_midi(ensoniq, 0, NULL)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
 				sizeof(*ensoniq), &card);
 	if (err < 0)
@@ -2923,7 +2343,6 @@ static int __snd_audiopci_probe(struct pci_dev *pci,
 	err = snd_ensoniq_midi(ensoniq, 0);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_ensoniq_create_gameport(ensoniq, dev);
 
@@ -2936,53 +2355,15 @@ static int __snd_audiopci_probe(struct pci_dev *pci,
 		ensoniq->port,
 		ensoniq->irq);
 
-<<<<<<< HEAD
-	if ((err = snd_card_register(card)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_card_register(card);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit snd_audiopci_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-}
-
-static struct pci_driver driver = {
-	.name = KBUILD_MODNAME,
-	.id_table = snd_audiopci_ids,
-	.probe = snd_audiopci_probe,
-	.remove = __devexit_p(snd_audiopci_remove),
-#ifdef CONFIG_PM
-	.suspend = snd_ensoniq_suspend,
-	.resume = snd_ensoniq_resume,
-#endif
-};
-	
-static int __init alsa_card_ens137x_init(void)
-{
-	return pci_register_driver(&driver);
-}
-
-static void __exit alsa_card_ens137x_exit(void)
-{
-	pci_unregister_driver(&driver);
-}
-
-module_init(alsa_card_ens137x_init)
-module_exit(alsa_card_ens137x_exit)
-=======
 static int snd_audiopci_probe(struct pci_dev *pci,
 			      const struct pci_device_id *pci_id)
 {
@@ -2999,4 +2380,3 @@ static struct pci_driver ens137x_driver = {
 };
 	
 module_pci_driver(ens137x_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

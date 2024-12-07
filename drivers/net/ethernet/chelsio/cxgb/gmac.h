@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *                                                                           *
  * File: gmac.h                                                              *
@@ -11,20 +8,6 @@
  *  Generic MAC functionality.                                               *
  *  part of the Chelsio 10Gb Ethernet Driver.                                *
  *                                                                           *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify      *
- * it under the terms of the GNU General Public License, version 2, as       *
- * published by the Free Software Foundation.                                *
- *                                                                           *
- * You should have received a copy of the GNU General Public License along   *
- * with this program; if not, write to the Free Software Foundation, Inc.,   *
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                 *
- *                                                                           *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
- * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.                     *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                           *
  * http://www.chelsio.com                                                    *
  *                                                                           *
@@ -125,11 +108,7 @@ struct cmac_ops {
 	const struct cmac_statistics *(*statistics_update)(struct cmac *, int);
 
 	int (*macaddress_get)(struct cmac *, u8 mac_addr[6]);
-<<<<<<< HEAD
-	int (*macaddress_set)(struct cmac *, u8 mac_addr[6]);
-=======
 	int (*macaddress_set)(struct cmac *, const u8 mac_addr[6]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 typedef struct _cmac_instance cmac_instance;

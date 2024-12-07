@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __GPIO_PXA_H
 #define __GPIO_PXA_H
 
@@ -18,10 +15,7 @@ extern int pxa_last_gpio;
 extern int pxa_irq_to_gpio(int irq);
 
 struct pxa_gpio_platform_data {
-<<<<<<< HEAD
-=======
 	int irq_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*gpio_set_wake)(unsigned int gpio, unsigned int on);
 };
 

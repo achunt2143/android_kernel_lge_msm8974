@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
- *  (C) 2011       Thomas Renninger <trenn@novell.com> Novell Inc.
- *
- *  Licensed under the terms of the GNU GPL License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
  *  (C) 2011       Thomas Renninger <trenn@novell.com> Novell Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -44,28 +36,6 @@ unsigned int sysfs_read_file(const char *path, char *buf, size_t buflen)
 	return (unsigned int) numread;
 }
 
-<<<<<<< HEAD
-static unsigned int sysfs_write_file(const char *path,
-				     const char *value, size_t len)
-{
-	int fd;
-	ssize_t numwrite;
-
-	fd = open(path, O_WRONLY);
-	if (fd == -1)
-		return 0;
-
-	numwrite = write(fd, value, len);
-	if (numwrite < 1) {
-		close(fd);
-		return 0;
-	}
-	close(fd);
-	return (unsigned int) numwrite;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Detect whether a CPU is online
  *
@@ -110,11 +80,7 @@ int sysfs_is_cpu_online(unsigned int cpu)
 	close(fd);
 
 	value = strtoull(linebuf, &endp, 0);
-<<<<<<< HEAD
-	if (value > 1 || value < 0)
-=======
 	if (value > 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	return value;
@@ -122,8 +88,6 @@ int sysfs_is_cpu_online(unsigned int cpu)
 
 /* CPUidle idlestate specific /sys/devices/system/cpu/cpuX/cpuidle/ access */
 
-<<<<<<< HEAD
-=======
 
 /* CPUidle idlestate specific /sys/devices/system/cpu/cpuX/cpuidle/ access */
 
@@ -151,7 +115,6 @@ unsigned int sysfs_idlestate_file_exists(unsigned int cpu,
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * helper function to read file from /sys into given buffer
  * fname is a relative path under "cpuX/cpuidle/stateX/" dir
@@ -184,8 +147,6 @@ unsigned int sysfs_idlestate_read_file(unsigned int cpu, unsigned int idlestate,
 	return (unsigned int) numread;
 }
 
-<<<<<<< HEAD
-=======
 /* 
  * helper function to write a new value to a /sys file
  * fname is a relative path under "../cpuX/cpuidle/cstateY/" dir
@@ -220,7 +181,6 @@ unsigned int sysfs_idlestate_write_file(unsigned int cpu,
 	return (unsigned int) numwrite;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* read access to files which contain one numeric value */
 
 enum idlestate_value {
@@ -228,10 +188,7 @@ enum idlestate_value {
 	IDLESTATE_POWER,
 	IDLESTATE_LATENCY,
 	IDLESTATE_TIME,
-<<<<<<< HEAD
-=======
 	IDLESTATE_DISABLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MAX_IDLESTATE_VALUE_FILES
 };
 
@@ -240,10 +197,7 @@ static const char *idlestate_value_files[MAX_IDLESTATE_VALUE_FILES] = {
 	[IDLESTATE_POWER] = "power",
 	[IDLESTATE_LATENCY] = "latency",
 	[IDLESTATE_TIME]  = "time",
-<<<<<<< HEAD
-=======
 	[IDLESTATE_DISABLE]  = "disable",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static unsigned long long sysfs_idlestate_get_one_value(unsigned int cpu,
@@ -313,10 +267,6 @@ static char *sysfs_idlestate_get_one_string(unsigned int cpu,
 	return result;
 }
 
-<<<<<<< HEAD
-unsigned long sysfs_get_idlestate_latency(unsigned int cpu,
-					unsigned int idlestate)
-=======
 /*
  * Returns:
  *    1  if disabled
@@ -370,7 +320,6 @@ int sysfs_idlestate_disable(unsigned int cpu,
 
 unsigned long sysfs_get_idlestate_latency(unsigned int cpu,
 					  unsigned int idlestate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sysfs_idlestate_get_one_value(cpu, idlestate, IDLESTATE_LATENCY);
 }
@@ -402,11 +351,7 @@ char *sysfs_get_idlestate_desc(unsigned int cpu, unsigned int idlestate)
  * Negativ in error case
  * Zero if cpuidle does not export any C-states
  */
-<<<<<<< HEAD
-int sysfs_get_idlestate_count(unsigned int cpu)
-=======
 unsigned int sysfs_get_idlestate_count(unsigned int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char file[SYSFS_PATH_MAX];
 	struct stat statbuf;
@@ -415,11 +360,7 @@ unsigned int sysfs_get_idlestate_count(unsigned int cpu)
 
 	snprintf(file, SYSFS_PATH_MAX, PATH_TO_CPU "cpuidle");
 	if (stat(file, &statbuf) != 0 || !S_ISDIR(statbuf.st_mode))
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snprintf(file, SYSFS_PATH_MAX, PATH_TO_CPU "cpu%u/cpuidle/state0", cpu);
 	if (stat(file, &statbuf) != 0 || !S_ISDIR(statbuf.st_mode))
@@ -515,26 +456,7 @@ char *sysfs_get_cpuidle_driver(void)
  */
 int sysfs_get_sched(const char *smt_mc)
 {
-<<<<<<< HEAD
-	unsigned long value;
-	char linebuf[MAX_LINE_LEN];
-	char *endp;
-	char path[SYSFS_PATH_MAX];
-
-	if (strcmp("mc", smt_mc) && strcmp("smt", smt_mc))
-		return -EINVAL;
-
-	snprintf(path, sizeof(path),
-		PATH_TO_CPU "sched_%s_power_savings", smt_mc);
-	if (sysfs_read_file(path, linebuf, MAX_LINE_LEN) == 0)
-		return -1;
-	value = strtoul(linebuf, &endp, 0);
-	if (endp == linebuf || errno == ERANGE)
-		return -1;
-	return value;
-=======
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -545,25 +467,5 @@ int sysfs_get_sched(const char *smt_mc)
  */
 int sysfs_set_sched(const char *smt_mc, int val)
 {
-<<<<<<< HEAD
-	char linebuf[MAX_LINE_LEN];
-	char path[SYSFS_PATH_MAX];
-	struct stat statbuf;
-
-	if (strcmp("mc", smt_mc) && strcmp("smt", smt_mc))
-		return -EINVAL;
-
-	snprintf(path, sizeof(path),
-		PATH_TO_CPU "sched_%s_power_savings", smt_mc);
-	sprintf(linebuf, "%d", val);
-
-	if (stat(path, &statbuf) != 0)
-		return -ENODEV;
-
-	if (sysfs_write_file(path, linebuf, MAX_LINE_LEN) == 0)
-		return -1;
-	return 0;
-=======
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

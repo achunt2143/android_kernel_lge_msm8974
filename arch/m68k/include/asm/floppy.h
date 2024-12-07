@@ -63,23 +63,6 @@ static __inline__ void release_dma_lock(unsigned long flags)
 }
 
 
-<<<<<<< HEAD
-static __inline__ unsigned char fd_inb(int port)
-{
-	if(MACH_IS_Q40)
-		return inb_p(port);
-	else if(MACH_IS_SUN3X)
-		return sun3x_82072_fd_inb(port);
-	return 0;
-}
-
-static __inline__ void fd_outb(unsigned char value, int port)
-{
-	if(MACH_IS_Q40)
-		outb_p(value, port);
-	else if(MACH_IS_SUN3X)
-		sun3x_82072_fd_outb(value, port);
-=======
 static __inline__ unsigned char fd_inb(int base, int reg)
 {
 	if(MACH_IS_Q40)
@@ -95,7 +78,6 @@ static __inline__ void fd_outb(unsigned char value, int base, int reg)
 		outb_p(value, base + reg);
 	else if(MACH_IS_SUN3X)
 		sun3x_82072_fd_outb(value, base + reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -103,11 +85,7 @@ static int fd_request_irq(void)
 {
 	if(MACH_IS_Q40)
 		return request_irq(FLOPPY_IRQ, floppy_hardint,
-<<<<<<< HEAD
-				   IRQF_DISABLED, "floppy", floppy_hardint);
-=======
 				   0, "floppy", floppy_hardint);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if(MACH_IS_SUN3X)
 		return sun3xflop_request_irq();
 	return -ENXIO;
@@ -233,15 +211,6 @@ asmlinkage irqreturn_t floppy_hardint(int irq, void *dev_id)
 		st=1;
 		for(lcount=virtual_dma_count, lptr=virtual_dma_addr;
 		    lcount; lcount--, lptr++) {
-<<<<<<< HEAD
-			st=inb(virtual_dma_port+4) & 0xa0 ;
-			if(st != 0xa0)
-				break;
-			if(virtual_dma_mode)
-				outb_p(*lptr, virtual_dma_port+5);
-			else
-				*lptr = inb_p(virtual_dma_port+5);
-=======
 			st = inb(virtual_dma_port + FD_STATUS);
 			st &= STATUS_DMA | STATUS_READY;
 			if (st != (STATUS_DMA | STATUS_READY))
@@ -250,32 +219,16 @@ asmlinkage irqreturn_t floppy_hardint(int irq, void *dev_id)
 				outb_p(*lptr, virtual_dma_port + FD_DATA);
 			else
 				*lptr = inb_p(virtual_dma_port + FD_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		virtual_dma_count = lcount;
 		virtual_dma_addr = lptr;
-<<<<<<< HEAD
-		st = inb(virtual_dma_port+4);
-=======
 		st = inb(virtual_dma_port + FD_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #ifdef TRACE_FLPY_INT
 	calls++;
 #endif
-<<<<<<< HEAD
-	if(st == 0x20)
-		return IRQ_HANDLED;
-	if(!(st & 0x20)) {
-		virtual_dma_residue += virtual_dma_count;
-		virtual_dma_count=0;
-#ifdef TRACE_FLPY_INT
-		printk("count=%x, residue=%x calls=%d bytes=%d dma_wait=%d\n",
-		       virtual_dma_count, virtual_dma_residue, calls, bytes,
-		       dma_wait);
-=======
 	if (st == STATUS_DMA)
 		return IRQ_HANDLED;
 	if (!(st & STATUS_DMA)) {
@@ -285,7 +238,6 @@ asmlinkage irqreturn_t floppy_hardint(int irq, void *dev_id)
 		pr_info("count=%x, residue=%x calls=%d bytes=%d dma_wait=%d\n",
 			virtual_dma_count, virtual_dma_residue, calls, bytes,
 			dma_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		calls = 0;
 		dma_wait=0;
 #endif

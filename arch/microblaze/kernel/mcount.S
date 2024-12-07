@@ -91,14 +91,6 @@ ENTRY(ftrace_caller)
 #endif /* CONFIG_DYNAMIC_FTRACE */
 	SAVE_REGS
 	swi	r15, r1, 0;
-<<<<<<< HEAD
-	/* MS: HAVE_FUNCTION_TRACE_MCOUNT_TEST begin of checking */
-	lwi	r5, r0, function_trace_stop;
-	bneid	r5, end;
-	nop;
-	/* MS: HAVE_FUNCTION_TRACE_MCOUNT_TEST end of checking */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 #ifndef CONFIG_DYNAMIC_FTRACE
 	lwi	r5, r0, ftrace_graph_return;
@@ -141,11 +133,7 @@ NOALIGN_ENTRY(ftrace_call)
 #endif /* CONFIG_DYNAMIC_FTRACE */
 /* static normal trace */
 	lwi	r6, r1, 120; /* MS: load parent addr */
-<<<<<<< HEAD
-	addik	r5, r15, 0; /* MS: load current function addr */
-=======
 	addik	r5, r15, -4; /* MS: load current function addr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* MS: here is dependency on previous code */
 	brald	r15, r20; /* MS: jump to ftrace handler */
 	nop;

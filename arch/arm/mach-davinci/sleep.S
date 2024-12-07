@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * (C) Copyright 2009, Texas Instruments, Inc. http://www.ti.com/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * (C) Copyright 2009, Texas Instruments, Inc. https://www.ti.com/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* replicated define because linux/bitops.h cannot be included in assembly */
@@ -27,13 +8,8 @@
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
-<<<<<<< HEAD
-#include <mach/psc.h>
-#include <mach/ddr2.h>
-=======
 #include "psc.h"
 #include "ddr2.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "clock.h"
 
@@ -48,10 +24,7 @@
 #define DEEPSLEEP_SLEEPENABLE_BIT	BIT(31)
 
 	.text
-<<<<<<< HEAD
-=======
 	.arch	armv5te
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Move DaVinci into deep sleep state
  *
@@ -228,11 +201,7 @@ ddr2clk_stop_done:
 	cmp	ip, r0
 	bne	ddr2clk_stop_done
 
-<<<<<<< HEAD
-	mov	pc, lr
-=======
 	ret	lr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(davinci_ddr_psc_config)
 
 CACHE_FLUSH:

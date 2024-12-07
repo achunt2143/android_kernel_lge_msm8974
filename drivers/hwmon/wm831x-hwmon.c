@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/hwmon/wm831x-hwmon.c - Wolfson Microelectronics WM831x PMIC
  *                                hardware monitoring features.
  *
  * Copyright (C) 2009 Wolfson Microelectronics plc
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License v2 as published by the
- * Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -36,20 +17,6 @@
 #include <linux/mfd/wm831x/core.h>
 #include <linux/mfd/wm831x/auxadc.h>
 
-<<<<<<< HEAD
-struct wm831x_hwmon {
-	struct wm831x *wm831x;
-	struct device *classdev;
-};
-
-static ssize_t show_name(struct device *dev,
-			 struct device_attribute *attr, char *buf)
-{
-	return sprintf(buf, "wm831x\n");
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char * const input_names[] = {
 	[WM831X_AUX_SYSVDD]    = "SYSVDD",
 	[WM831X_AUX_USB]       = "USB",
@@ -60,17 +27,6 @@ static const char * const input_names[] = {
 	[WM831X_AUX_BATT_TEMP] = "Battery",
 };
 
-<<<<<<< HEAD
-
-static ssize_t show_voltage(struct device *dev,
-			    struct device_attribute *attr, char *buf)
-{
-	struct wm831x_hwmon *hwmon = dev_get_drvdata(dev);
-	int channel = to_sensor_dev_attr(attr)->index;
-	int ret;
-
-	ret = wm831x_auxadc_read_uv(hwmon->wm831x, channel);
-=======
 static ssize_t show_voltage(struct device *dev,
 			    struct device_attribute *attr, char *buf)
 {
@@ -79,7 +35,6 @@ static ssize_t show_voltage(struct device *dev,
 	int ret;
 
 	ret = wm831x_auxadc_read_uv(wm831x, channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -89,19 +44,11 @@ static ssize_t show_voltage(struct device *dev,
 static ssize_t show_chip_temp(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
-<<<<<<< HEAD
-	struct wm831x_hwmon *hwmon = dev_get_drvdata(dev);
-	int channel = to_sensor_dev_attr(attr)->index;
-	int ret;
-
-	ret = wm831x_auxadc_read(hwmon->wm831x, channel);
-=======
 	struct wm831x *wm831x = dev_get_drvdata(dev);
 	int channel = to_sensor_dev_attr(attr)->index;
 	int ret;
 
 	ret = wm831x_auxadc_read(wm831x, channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -129,11 +76,6 @@ static ssize_t show_label(struct device *dev,
 	static SENSOR_DEVICE_ATTR(in##id##_label, S_IRUGO, show_label,	\
 				  NULL, name)
 
-<<<<<<< HEAD
-static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 WM831X_VOLTAGE(0, WM831X_AUX_AUX1);
 WM831X_VOLTAGE(1, WM831X_AUX_AUX2);
 WM831X_VOLTAGE(2, WM831X_AUX_AUX3);
@@ -158,13 +100,7 @@ static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_voltage, NULL,
 static SENSOR_DEVICE_ATTR(temp2_label, S_IRUGO, show_label, NULL,
 			  WM831X_AUX_BATT_TEMP);
 
-<<<<<<< HEAD
-static struct attribute *wm831x_attributes[] = {
-	&dev_attr_name.attr,
-
-=======
 static struct attribute *wm831x_attrs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
@@ -189,55 +125,6 @@ static struct attribute *wm831x_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static const struct attribute_group wm831x_attr_group = {
-	.attrs	= wm831x_attributes,
-};
-
-static int __devinit wm831x_hwmon_probe(struct platform_device *pdev)
-{
-	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
-	struct wm831x_hwmon *hwmon;
-	int ret;
-
-	hwmon = kzalloc(sizeof(struct wm831x_hwmon), GFP_KERNEL);
-	if (!hwmon)
-		return -ENOMEM;
-
-	hwmon->wm831x = wm831x;
-
-	ret = sysfs_create_group(&pdev->dev.kobj, &wm831x_attr_group);
-	if (ret)
-		goto err;
-
-	hwmon->classdev = hwmon_device_register(&pdev->dev);
-	if (IS_ERR(hwmon->classdev)) {
-		ret = PTR_ERR(hwmon->classdev);
-		goto err_sysfs;
-	}
-
-	platform_set_drvdata(pdev, hwmon);
-
-	return 0;
-
-err_sysfs:
-	sysfs_remove_group(&pdev->dev.kobj, &wm831x_attr_group);
-err:
-	kfree(hwmon);
-	return ret;
-}
-
-static int __devexit wm831x_hwmon_remove(struct platform_device *pdev)
-{
-	struct wm831x_hwmon *hwmon = platform_get_drvdata(pdev);
-
-	hwmon_device_unregister(hwmon->classdev);
-	sysfs_remove_group(&pdev->dev.kobj, &wm831x_attr_group);
-	platform_set_drvdata(pdev, NULL);
-	kfree(hwmon);
-
-	return 0;
-=======
 ATTRIBUTE_GROUPS(wm831x);
 
 static int wm831x_hwmon_probe(struct platform_device *pdev)
@@ -249,20 +136,12 @@ static int wm831x_hwmon_probe(struct platform_device *pdev)
 							   wm831x,
 							   wm831x_groups);
 	return PTR_ERR_OR_ZERO(hwmon_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm831x_hwmon_driver = {
 	.probe = wm831x_hwmon_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(wm831x_hwmon_remove),
 	.driver = {
 		.name = "wm831x-hwmon",
-		.owner = THIS_MODULE,
-=======
-	.driver = {
-		.name = "wm831x-hwmon",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

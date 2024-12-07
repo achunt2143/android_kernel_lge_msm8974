@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Asynchronous Transfer Mode (ATM)
 #
 
 config ATM
 	tristate "Asynchronous Transfer Mode (ATM)"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  ATM is a high-speed networking technology for Local Area Networks
 	  and Wide Area Networks.  It uses a fixed packet size and is
 	  connection oriented, allowing for the negotiation of minimum
@@ -23,11 +16,7 @@ config ATM
 	  of your ATM card below.
 
 	  Note that you need a set of user-space programs to actually make use
-<<<<<<< HEAD
-	  of ATM.  See the file <file:Documentation/networking/atm.txt> for
-=======
 	  of ATM.  See the file <file:Documentation/networking/atm.rst> for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  further details.
 
 config ATM_CLIP

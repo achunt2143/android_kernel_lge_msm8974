@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/isofs/inode.c
  *
@@ -19,55 +16,20 @@
 #include <linux/module.h>
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/cred.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/nls.h>
 #include <linux/ctype.h>
 #include <linux/statfs.h>
 #include <linux/cdrom.h>
 #include <linux/parser.h>
 #include <linux/mpage.h>
-<<<<<<< HEAD
-=======
 #include <linux/user_namespace.h>
 #include <linux/seq_file.h>
 #include <linux/blkdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "isofs.h"
 #include "zisofs.h"
 
-<<<<<<< HEAD
-#define BEQUIET
-
-static int isofs_hashi(const struct dentry *parent, const struct inode *inode,
-		struct qstr *qstr);
-static int isofs_hash(const struct dentry *parent, const struct inode *inode,
-		struct qstr *qstr);
-static int isofs_dentry_cmpi(const struct dentry *parent,
-		const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-		unsigned int len, const char *str, const struct qstr *name);
-static int isofs_dentry_cmp(const struct dentry *parent,
-		const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-		unsigned int len, const char *str, const struct qstr *name);
-
-#ifdef CONFIG_JOLIET
-static int isofs_hashi_ms(const struct dentry *parent, const struct inode *inode,
-		struct qstr *qstr);
-static int isofs_hash_ms(const struct dentry *parent, const struct inode *inode,
-		struct qstr *qstr);
-static int isofs_dentry_cmpi_ms(const struct dentry *parent,
-		const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-		unsigned int len, const char *str, const struct qstr *name);
-static int isofs_dentry_cmp_ms(const struct dentry *parent,
-		const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-=======
 /* max tz offset is 13 hours */
 #define MAX_TZ_OFFSET (52*15*60)
 
@@ -83,7 +45,6 @@ static int isofs_hash_ms(const struct dentry *parent, struct qstr *qstr);
 static int isofs_dentry_cmpi_ms(const struct dentry *dentry,
 		unsigned int len, const char *str, const struct qstr *name);
 static int isofs_dentry_cmp_ms(const struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len, const char *str, const struct qstr *name);
 #endif
 
@@ -102,45 +63,24 @@ static void isofs_put_super(struct super_block *sb)
 
 static int isofs_read_inode(struct inode *, int relocated);
 static int isofs_statfs (struct dentry *, struct kstatfs *);
-<<<<<<< HEAD
-=======
 static int isofs_show_options(struct seq_file *, struct dentry *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct kmem_cache *isofs_inode_cachep;
 
 static struct inode *isofs_alloc_inode(struct super_block *sb)
 {
 	struct iso_inode_info *ei;
-<<<<<<< HEAD
-	ei = kmem_cache_alloc(isofs_inode_cachep, GFP_KERNEL);
-=======
 	ei = alloc_inode_sb(sb, isofs_inode_cachep, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ei)
 		return NULL;
 	return &ei->vfs_inode;
 }
 
-<<<<<<< HEAD
-static void isofs_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(isofs_inode_cachep, ISOFS_I(inode));
-}
-
-static void isofs_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, isofs_i_callback);
-}
-
-=======
 static void isofs_free_inode(struct inode *inode)
 {
 	kmem_cache_free(isofs_inode_cachep, ISOFS_I(inode));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_once(void *foo)
 {
 	struct iso_inode_info *ei = foo;
@@ -148,24 +88,14 @@ static void init_once(void *foo)
 	inode_init_once(&ei->vfs_inode);
 }
 
-<<<<<<< HEAD
-static int init_inodecache(void)
-=======
 static int __init init_inodecache(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	isofs_inode_cachep = kmem_cache_create("isofs_inode_cache",
 					sizeof(struct iso_inode_info),
 					0, (SLAB_RECLAIM_ACCOUNT|
-<<<<<<< HEAD
-					SLAB_MEM_SPREAD),
-					init_once);
-	if (isofs_inode_cachep == NULL)
-=======
 					SLAB_ACCOUNT),
 					init_once);
 	if (!isofs_inode_cachep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	return 0;
 }
@@ -182,43 +112,24 @@ static void destroy_inodecache(void)
 
 static int isofs_remount(struct super_block *sb, int *flags, char *data)
 {
-<<<<<<< HEAD
-	if (!(*flags & MS_RDONLY))
-=======
 	sync_filesystem(sb);
 	if (!(*flags & SB_RDONLY))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EROFS;
 	return 0;
 }
 
 static const struct super_operations isofs_sops = {
 	.alloc_inode	= isofs_alloc_inode,
-<<<<<<< HEAD
-	.destroy_inode	= isofs_destroy_inode,
-	.put_super	= isofs_put_super,
-	.statfs		= isofs_statfs,
-	.remount_fs	= isofs_remount,
-	.show_options	= generic_show_options,
-=======
 	.free_inode	= isofs_free_inode,
 	.put_super	= isofs_put_super,
 	.statfs		= isofs_statfs,
 	.remount_fs	= isofs_remount,
 	.show_options	= isofs_show_options,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 static const struct dentry_operations isofs_dentry_ops[] = {
 	{
-<<<<<<< HEAD
-		.d_hash		= isofs_hash,
-		.d_compare	= isofs_dentry_cmp,
-	},
-	{
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.d_hash		= isofs_hashi,
 		.d_compare	= isofs_dentry_cmpi,
 	},
@@ -244,22 +155,13 @@ struct iso9660_options{
 	unsigned int overriderockperm:1;
 	unsigned int uid_set:1;
 	unsigned int gid_set:1;
-<<<<<<< HEAD
-	unsigned int utf8:1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char map;
 	unsigned char check;
 	unsigned int blocksize;
 	umode_t fmode;
 	umode_t dmode;
-<<<<<<< HEAD
-	gid_t gid;
-	uid_t uid;
-=======
 	kgid_t gid;
 	kuid_t uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *iocharset;
 	/* LVE */
 	s32 session;
@@ -270,30 +172,6 @@ struct iso9660_options{
  * Compute the hash for the isofs name corresponding to the dentry.
  */
 static int
-<<<<<<< HEAD
-isofs_hash_common(const struct dentry *dentry, struct qstr *qstr, int ms)
-{
-	const char *name;
-	int len;
-
-	len = qstr->len;
-	name = qstr->name;
-	if (ms) {
-		while (len && name[len-1] == '.')
-			len--;
-	}
-
-	qstr->hash = full_name_hash(name, len);
-
-	return 0;
-}
-
-/*
- * Compute the hash for the isofs name corresponding to the dentry.
- */
-static int
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 isofs_hashi_common(const struct dentry *dentry, struct qstr *qstr, int ms)
 {
 	const char *name;
@@ -308,11 +186,7 @@ isofs_hashi_common(const struct dentry *dentry, struct qstr *qstr, int ms)
 			len--;
 	}
 
-<<<<<<< HEAD
-	hash = init_name_hash();
-=======
 	hash = init_name_hash(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (len--) {
 		c = tolower(*name++);
 		hash = partial_name_hash(c, hash);
@@ -342,11 +216,7 @@ static int isofs_dentry_cmp_common(
 	}
 	if (alen == blen) {
 		if (ci) {
-<<<<<<< HEAD
-			if (strnicmp(name->name, str, alen) == 0)
-=======
 			if (strncasecmp(name->name, str, alen) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 		} else {
 			if (strncmp(name->name, str, alen) == 0)
@@ -357,49 +227,19 @@ static int isofs_dentry_cmp_common(
 }
 
 static int
-<<<<<<< HEAD
-isofs_hash(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *qstr)
-{
-	return isofs_hash_common(dentry, qstr, 0);
-}
-
-static int
-isofs_hashi(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *qstr)
-=======
 isofs_hashi(const struct dentry *dentry, struct qstr *qstr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return isofs_hashi_common(dentry, qstr, 0);
 }
 
 static int
-<<<<<<< HEAD
-isofs_dentry_cmp(const struct dentry *parent, const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-		unsigned int len, const char *str, const struct qstr *name)
-{
-	return isofs_dentry_cmp_common(len, str, name, 0, 0);
-}
-
-static int
-isofs_dentry_cmpi(const struct dentry *parent, const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-=======
 isofs_dentry_cmpi(const struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	return isofs_dentry_cmp_common(len, str, name, 0, 1);
 }
 
 #ifdef CONFIG_JOLIET
-<<<<<<< HEAD
-static int
-isofs_hash_ms(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *qstr)
-=======
 /*
  * Compute the hash for the isofs name corresponding to the dentry.
  */
@@ -423,41 +263,25 @@ isofs_hash_common(const struct dentry *dentry, struct qstr *qstr, int ms)
 
 static int
 isofs_hash_ms(const struct dentry *dentry, struct qstr *qstr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return isofs_hash_common(dentry, qstr, 1);
 }
 
 static int
-<<<<<<< HEAD
-isofs_hashi_ms(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *qstr)
-=======
 isofs_hashi_ms(const struct dentry *dentry, struct qstr *qstr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return isofs_hashi_common(dentry, qstr, 1);
 }
 
 static int
-<<<<<<< HEAD
-isofs_dentry_cmp_ms(const struct dentry *parent, const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-=======
 isofs_dentry_cmp_ms(const struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	return isofs_dentry_cmp_common(len, str, name, 1, 0);
 }
 
 static int
-<<<<<<< HEAD
-isofs_dentry_cmpi_ms(const struct dentry *parent, const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-=======
 isofs_dentry_cmpi_ms(const struct dentry *dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	return isofs_dentry_cmp_common(len, str, name, 1, 1);
@@ -514,10 +338,7 @@ static int parse_options(char *options, struct iso9660_options *popt)
 {
 	char *p;
 	int option;
-<<<<<<< HEAD
-=======
 	unsigned int uv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	popt->map = 'n';
 	popt->rock = 1;
@@ -531,16 +352,9 @@ static int parse_options(char *options, struct iso9660_options *popt)
 	popt->fmode = popt->dmode = ISOFS_INVALID_MODE;
 	popt->uid_set = 0;
 	popt->gid_set = 0;
-<<<<<<< HEAD
-	popt->gid = 0;
-	popt->uid = 0;
-	popt->iocharset = NULL;
-	popt->utf8 = 0;
-=======
 	popt->gid = GLOBAL_ROOT_GID;
 	popt->uid = GLOBAL_ROOT_UID;
 	popt->iocharset = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	popt->overriderockperm = 0;
 	popt->session=-1;
 	popt->sbsector=-1;
@@ -573,14 +387,6 @@ static int parse_options(char *options, struct iso9660_options *popt)
 		case Opt_cruft:
 			popt->cruft = 1;
 			break;
-<<<<<<< HEAD
-		case Opt_utf8:
-			popt->utf8 = 1;
-			break;
-#ifdef CONFIG_JOLIET
-		case Opt_iocharset:
-			popt->iocharset = match_strdup(&args[0]);
-=======
 #ifdef CONFIG_JOLIET
 		case Opt_utf8:
 			kfree(popt->iocharset);
@@ -593,7 +399,6 @@ static int parse_options(char *options, struct iso9660_options *popt)
 			popt->iocharset = match_strdup(&args[0]);
 			if (!popt->iocharset)
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 #endif
 		case Opt_map_a:
@@ -609,15 +414,11 @@ static int parse_options(char *options, struct iso9660_options *popt)
 			if (match_int(&args[0], &option))
 				return 0;
 			n = option;
-<<<<<<< HEAD
-			if (n > 99)
-=======
 			/*
 			 * Track numbers are supposed to be in range 1-99, the
 			 * mount option starts indexing at 0.
 			 */
 			if (n >= 99)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			popt->session = n + 1;
 			break;
@@ -635,17 +436,6 @@ static int parse_options(char *options, struct iso9660_options *popt)
 		case Opt_ignore:
 			break;
 		case Opt_uid:
-<<<<<<< HEAD
-			if (match_int(&args[0], &option))
-				return 0;
-			popt->uid = option;
-			popt->uid_set = 1;
-			break;
-		case Opt_gid:
-			if (match_int(&args[0], &option))
-				return 0;
-			popt->gid = option;
-=======
 			if (match_uint(&args[0], &uv))
 				return 0;
 			popt->uid = make_kuid(current_user_ns(), uv);
@@ -659,7 +449,6 @@ static int parse_options(char *options, struct iso9660_options *popt)
 			popt->gid = make_kgid(current_user_ns(), uv);
 			if (!gid_valid(popt->gid))
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			popt->gid_set = 1;
 			break;
 		case Opt_mode:
@@ -694,8 +483,6 @@ static int parse_options(char *options, struct iso9660_options *popt)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Display the mount options in /proc/mounts.
  */
 static int isofs_show_options(struct seq_file *m, struct dentry *root)
@@ -740,7 +527,6 @@ static int isofs_show_options(struct seq_file *m, struct dentry *root)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * look if the driver can tell the multi session redirection value
  *
  * don't change this if you don't know what you do, please!
@@ -760,26 +546,6 @@ static int isofs_show_options(struct seq_file *m, struct dentry *root)
 
 static unsigned int isofs_get_last_session(struct super_block *sb, s32 session)
 {
-<<<<<<< HEAD
-	struct cdrom_multisession ms_info;
-	unsigned int vol_desc_start;
-	struct block_device *bdev = sb->s_bdev;
-	int i;
-
-	vol_desc_start=0;
-	ms_info.addr_format=CDROM_LBA;
-	if(session >= 0 && session <= 99) {
-		struct cdrom_tocentry Te;
-		Te.cdte_track=session;
-		Te.cdte_format=CDROM_LBA;
-		i = ioctl_by_bdev(bdev, CDROMREADTOCENTRY, (unsigned long) &Te);
-		if (!i) {
-			printk(KERN_DEBUG "ISOFS: Session %d start %d type %d\n",
-				session, Te.cdte_addr.lba,
-				Te.cdte_ctrl&CDROM_DATA_TRACK);
-			if ((Te.cdte_ctrl&CDROM_DATA_TRACK) == 4)
-				return Te.cdte_addr.lba;
-=======
 	struct cdrom_device_info *cdi = disk_to_cdi(sb->s_bdev->bd_disk);
 	unsigned int vol_desc_start = 0;
 
@@ -797,28 +563,10 @@ static unsigned int isofs_get_last_session(struct super_block *sb, s32 session)
 				te.cdte_ctrl & CDROM_DATA_TRACK);
 			if ((te.cdte_ctrl & CDROM_DATA_TRACK) == 4)
 				return te.cdte_addr.lba;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		printk(KERN_ERR "ISOFS: Invalid session number or type of track\n");
 	}
-<<<<<<< HEAD
-	i = ioctl_by_bdev(bdev, CDROMMULTISESSION, (unsigned long) &ms_info);
-	if (session > 0)
-		printk(KERN_ERR "ISOFS: Invalid session number\n");
-#if 0
-	printk(KERN_DEBUG "isofs.inode: CDROMMULTISESSION: rc=%d\n",i);
-	if (i==0) {
-		printk(KERN_DEBUG "isofs.inode: XA disk: %s\n",ms_info.xa_flag?"yes":"no");
-		printk(KERN_DEBUG "isofs.inode: vol_desc_start = %d\n", ms_info.addr.lba);
-	}
-#endif
-	if (i==0)
-#if WE_OBEY_THE_WRITTEN_STANDARDS
-		if (ms_info.xa_flag) /* necessary for a valid ms_info.addr */
-#endif
-			vol_desc_start=ms_info.addr.lba;
-=======
 
 	if (cdi) {
 		struct cdrom_multisession ms_info;
@@ -833,7 +581,6 @@ static unsigned int isofs_get_last_session(struct super_block *sb, s32 session)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return vol_desc_start;
 }
 
@@ -867,12 +614,6 @@ static bool rootdir_empty(struct super_block *sb, unsigned long block)
 
 /*
  * Initialize the superblock and read the root inode.
-<<<<<<< HEAD
- *
- * Note: a check_disk_change() has been done immediately prior
- * to this call, so we don't need to check again.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int isofs_fill_super(struct super_block *s, void *data, int silent)
 {
@@ -891,11 +632,6 @@ static int isofs_fill_super(struct super_block *s, void *data, int silent)
 	int table, error = -EINVAL;
 	unsigned int vol_desc_start;
 
-<<<<<<< HEAD
-	save_mount_options(s, data);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
 	if (!sbi)
 		return -ENOMEM;
@@ -913,11 +649,6 @@ static int isofs_fill_super(struct super_block *s, void *data, int silent)
 	/*
 	 * What if bugger tells us to go beyond page size?
 	 */
-<<<<<<< HEAD
-	opt.blocksize = sb_min_blocksize(s, opt.blocksize);
-
-	sbi->s_high_sierra = 0; /* default is iso9660 */
-=======
 	if (bdev_logical_block_size(s->s_bdev) > 2048) {
 		printk(KERN_WARNING
 		       "ISOFS: unsupported/invalid hardware sector size %d\n",
@@ -929,7 +660,6 @@ static int isofs_fill_super(struct super_block *s, void *data, int silent)
 	sbi->s_high_sierra = 0; /* default is iso9660 */
 	sbi->s_session = opt.session;
 	sbi->s_sbsector = opt.sbsector;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vol_desc_start = (opt.sbsector != -1) ?
 		opt.sbsector : isofs_get_last_session(s,opt.session);
@@ -955,11 +685,7 @@ static int isofs_fill_super(struct super_block *s, void *data, int silent)
 			if (isonum_711(vdp->type) == ISO_VD_END)
 				break;
 			if (isonum_711(vdp->type) == ISO_VD_PRIMARY) {
-<<<<<<< HEAD
-				if (pri == NULL) {
-=======
 				if (!pri) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pri = (struct iso_primary_descriptor *)vdp;
 					/* Save the buffer in case we need it ... */
 					pri_bh = bh;
@@ -1017,10 +743,6 @@ static int isofs_fill_super(struct super_block *s, void *data, int silent)
 	pri_bh = NULL;
 
 root_found:
-<<<<<<< HEAD
-
-	if (joliet_level && (pri == NULL || !opt.rock)) {
-=======
 	/* We don't support read-write mounts */
 	if (!sb_rdonly(s)) {
 		error = -EACCES;
@@ -1028,7 +750,6 @@ root_found:
 	}
 
 	if (joliet_level && (!pri || !opt.rock)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This is the case of Joliet with the norock mount flag.
 		 * A disc with both Joliet and Rock Ridge is handled later
 		 */
@@ -1080,13 +801,10 @@ root_found:
 	 */
 	s->s_maxbytes = 0x80000000000LL;
 
-<<<<<<< HEAD
-=======
 	/* ECMA-119 timestamp from 1900/1/1 with tz offset */
 	s->s_time_min = mktime64(1900, 1, 1, 0, 0, 0) - MAX_TZ_OFFSET;
 	s->s_time_max = mktime64(U8_MAX+1900, 12, 31, 23, 59, 59) + MAX_TZ_OFFSET;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set this for reference. Its not currently used except on write
 	   which we don't have .. */
 
@@ -1146,16 +864,6 @@ root_found:
 	sbi->s_nls_iocharset = NULL;
 
 #ifdef CONFIG_JOLIET
-<<<<<<< HEAD
-	if (joliet_level && opt.utf8 == 0) {
-		char *p = opt.iocharset ? opt.iocharset : CONFIG_NLS_DEFAULT;
-		sbi->s_nls_iocharset = load_nls(p);
-		if (! sbi->s_nls_iocharset) {
-			/* Fail only if explicit charset specified */
-			if (opt.iocharset)
-				goto out_freesbi;
-			sbi->s_nls_iocharset = load_nls_default();
-=======
 	if (joliet_level) {
 		char *p = opt.iocharset ? opt.iocharset : CONFIG_NLS_DEFAULT;
 		if (strcmp(p, "utf8") != 0) {
@@ -1163,7 +871,6 @@ root_found:
 				load_nls(opt.iocharset) : load_nls_default();
 			if (!sbi->s_nls_iocharset)
 				goto out_freesbi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 #endif
@@ -1179,10 +886,6 @@ root_found:
 	sbi->s_gid = opt.gid;
 	sbi->s_uid_set = opt.uid_set;
 	sbi->s_gid_set = opt.gid_set;
-<<<<<<< HEAD
-	sbi->s_utf8 = opt.utf8;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi->s_nocompress = opt.nocompress;
 	sbi->s_overriderockperm = opt.overriderockperm;
 	/*
@@ -1205,10 +908,6 @@ root_found:
 	 * we then decide whether to use the Joliet descriptor.
 	 */
 	inode = isofs_iget(s, sbi->s_firstdatazone, 0);
-<<<<<<< HEAD
-	if (IS_ERR(inode))
-		goto out_no_root;
-=======
 
 	/*
 	 * Fix for broken CDs with a corrupt root inode but a correct Joliet
@@ -1225,7 +924,6 @@ root_found:
 			goto out_no_root;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fix for broken CDs with Rock Ridge and empty ISO root directory but
@@ -1284,15 +982,10 @@ root_found:
 		table += 2;
 	if (opt.check == 'r')
 		table++;
-<<<<<<< HEAD
-
-	s->s_d_op = &isofs_dentry_ops[table];
-=======
 	sbi->s_check = opt.check;
 
 	if (table)
 		s->s_d_op = &isofs_dentry_ops[table - 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get the root dentry */
 	s->s_root = d_make_root(inode);
@@ -1359,12 +1052,7 @@ static int isofs_statfs (struct dentry *dentry, struct kstatfs *buf)
 	buf->f_bavail = 0;
 	buf->f_files = ISOFS_SB(sb)->s_ninodes;
 	buf->f_ffree = 0;
-<<<<<<< HEAD
-	buf->f_fsid.val[0] = (u32)id;
-	buf->f_fsid.val[1] = (u32)(id >> 32);
-=======
 	buf->f_fsid = u64_to_fsid(id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->f_namelen = NAME_MAX;
 	return 0;
 }
@@ -1407,11 +1095,7 @@ int isofs_get_blocks(struct inode *inode, sector_t iblock,
 		 * the page with useless information without generating any
 		 * I/O errors.
 		 */
-<<<<<<< HEAD
-		if (b_off > ((inode->i_size + PAGE_CACHE_SIZE - 1) >> ISOFS_BUFFER_BITS(inode))) {
-=======
 		if (b_off > ((inode->i_size + PAGE_SIZE - 1) >> ISOFS_BUFFER_BITS(inode))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_DEBUG "%s: block >= EOF (%lu, %llu)\n",
 				__func__, b_off,
 				(unsigned long long)inode->i_size);
@@ -1504,17 +1188,6 @@ struct buffer_head *isofs_bread(struct inode *inode, sector_t block)
 	return sb_bread(inode->i_sb, blknr);
 }
 
-<<<<<<< HEAD
-static int isofs_readpage(struct file *file, struct page *page)
-{
-	return mpage_readpage(page, isofs_get_block);
-}
-
-static int isofs_readpages(struct file *file, struct address_space *mapping,
-			struct list_head *pages, unsigned nr_pages)
-{
-	return mpage_readpages(mapping, pages, nr_pages, isofs_get_block);
-=======
 static int isofs_read_folio(struct file *file, struct folio *folio)
 {
 	return mpage_read_folio(folio, isofs_get_block);
@@ -1523,7 +1196,6 @@ static int isofs_read_folio(struct file *file, struct folio *folio)
 static void isofs_readahead(struct readahead_control *rac)
 {
 	mpage_readahead(rac, isofs_get_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static sector_t _isofs_bmap(struct address_space *mapping, sector_t block)
@@ -1532,13 +1204,8 @@ static sector_t _isofs_bmap(struct address_space *mapping, sector_t block)
 }
 
 static const struct address_space_operations isofs_aops = {
-<<<<<<< HEAD
-	.readpage = isofs_readpage,
-	.readpages = isofs_readpages,
-=======
 	.read_folio = isofs_read_folio,
 	.readahead = isofs_readahead,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bmap = _isofs_bmap
 };
 
@@ -1624,21 +1291,11 @@ static int isofs_read_level3_size(struct inode *inode)
 	} while (more_entries);
 out:
 	kfree(tmpde);
-<<<<<<< HEAD
-	if (bh)
-		brelse(bh);
-	return 0;
-
-out_nomem:
-	if (bh)
-		brelse(bh);
-=======
 	brelse(bh);
 	return 0;
 
 out_nomem:
 	brelse(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 
 out_noread:
@@ -1660,11 +1317,7 @@ static int isofs_read_inode(struct inode *inode, int relocated)
 	unsigned long bufsize = ISOFS_BUFFER_SIZE(inode);
 	unsigned long block;
 	int high_sierra = sbi->s_high_sierra;
-<<<<<<< HEAD
-	struct buffer_head *bh = NULL;
-=======
 	struct buffer_head *bh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iso_directory_record *de;
 	struct iso_directory_record *tmpde = NULL;
 	unsigned int de_len;
@@ -1681,22 +1334,14 @@ static int isofs_read_inode(struct inode *inode, int relocated)
 
 	de = (struct iso_directory_record *) (bh->b_data + offset);
 	de_len = *(unsigned char *) de;
-<<<<<<< HEAD
-=======
 	if (de_len < sizeof(struct iso_directory_record))
 		goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (offset + de_len > bufsize) {
 		int frag1 = bufsize - offset;
 
 		tmpde = kmalloc(de_len, GFP_KERNEL);
-<<<<<<< HEAD
-		if (tmpde == NULL) {
-			printk(KERN_INFO "%s: out of memory\n", __func__);
-=======
 		if (!tmpde) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto fail;
 		}
@@ -1791,18 +1436,8 @@ static int isofs_read_inode(struct inode *inode, int relocated)
 			inode->i_ino, de->flags[-high_sierra]);
 	}
 #endif
-<<<<<<< HEAD
-
-	inode->i_mtime.tv_sec =
-	inode->i_atime.tv_sec =
-	inode->i_ctime.tv_sec = iso_date(de->date, high_sierra);
-	inode->i_mtime.tv_nsec =
-	inode->i_atime.tv_nsec =
-	inode->i_ctime.tv_nsec = 0;
-=======
 	inode_set_mtime_to_ts(inode,
 			      inode_set_atime_to_ts(inode, inode_set_ctime(inode, iso_date(de->date, high_sierra), 0)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ei->i_first_extent = (isonum_733(de->extent) +
 			isonum_711(de->ext_attr_length));
@@ -1849,10 +1484,7 @@ static int isofs_read_inode(struct inode *inode, int relocated)
 		inode->i_fop = &isofs_dir_operations;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &page_symlink_inode_operations;
-<<<<<<< HEAD
-=======
 		inode_nohighmem(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_data.a_ops = &isofs_symlink_aops;
 	} else
 		/* XXX - parse_rock_ridge_inode() had already set i_rdev. */
@@ -1861,12 +1493,7 @@ static int isofs_read_inode(struct inode *inode, int relocated)
 	ret = 0;
 out:
 	kfree(tmpde);
-<<<<<<< HEAD
-	if (bh)
-		brelse(bh);
-=======
 	brelse(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 
 out_badread:
@@ -1943,12 +1570,6 @@ struct inode *__isofs_iget(struct super_block *sb,
 static struct dentry *isofs_mount(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
-<<<<<<< HEAD
-	/* We don't support read-write mounts */
-	if (!(flags & MS_RDONLY))
-		return ERR_PTR(-EACCES);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mount_bdev(fs_type, flags, dev_name, data, isofs_fill_super);
 }
 
@@ -1960,10 +1581,7 @@ static struct file_system_type iso9660_fs_type = {
 	.fs_flags	= FS_REQUIRES_DEV,
 };
 MODULE_ALIAS_FS("iso9660");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS("iso9660");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init init_iso9660_fs(void)
 {

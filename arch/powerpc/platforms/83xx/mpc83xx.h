@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __MPC83XX_H__
 #define __MPC83XX_H__
 
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/device.h>
-#include <asm/pci-bridge.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* System Clock Control Register */
 #define MPC83XX_SCCR_OFFS          0xA08
@@ -72,43 +64,20 @@
  * mpc83xx_* files. Mostly for use by mpc83xx_setup
  */
 
-<<<<<<< HEAD
-extern void mpc83xx_restart(char *cmd);
-extern long mpc83xx_time_init(void);
-extern int mpc837x_usb_cfg(void);
-extern int mpc834x_usb_cfg(void);
-extern int mpc831x_usb_cfg(void);
-extern void mpc83xx_ipic_init_IRQ(void);
-#ifdef CONFIG_QUICC_ENGINE
-extern void mpc83xx_qe_init_IRQ(void);
-extern void mpc83xx_ipic_and_qe_init_IRQ(void);
-#else
-static inline void __init mpc83xx_qe_init_IRQ(void) {}
-#define mpc83xx_ipic_and_qe_init_IRQ mpc83xx_ipic_init_IRQ
-#endif /* CONFIG_QUICC_ENGINE */
-=======
 extern void __noreturn mpc83xx_restart(char *cmd);
 extern long mpc83xx_time_init(void);
 int __init mpc837x_usb_cfg(void);
 int __init mpc834x_usb_cfg(void);
 int __init mpc831x_usb_cfg(void);
 extern void mpc83xx_ipic_init_IRQ(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PCI
 extern void mpc83xx_setup_pci(void);
 #else
-<<<<<<< HEAD
-#define mpc83xx_setup_pci()	do {} while (0)
-#endif
-
-extern int mpc83xx_declare_of_platform_devices(void);
-=======
 #define mpc83xx_setup_pci	NULL
 #endif
 
 extern int mpc83xx_declare_of_platform_devices(void);
 extern void mpc83xx_setup_arch(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* __MPC83XX_H__ */

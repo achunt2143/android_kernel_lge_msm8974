@@ -28,52 +28,26 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-<<<<<<< HEAD
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/err.h>
 #include <linux/clk.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/spi/spi.h>
 #include <linux/spi/spi_bitbang.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#include <asm/irq.h>
-#include <mach/hardware.h>
-#include <asm/io.h>
-#include <asm/mach-types.h>
-
-#include <plat/mux.h>
-#include <plat/omap7xx.h>	/* OMAP7XX_IO_CONF registers */
-
-=======
 #include <linux/io.h>
 
 #include <asm/mach-types.h>
 #include <linux/soc/ti/omap1-io.h>
 #include <linux/soc/ti/omap1-soc.h>
 #include <linux/soc/ti/omap1-mux.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FIXME address is now a platform device resource,
  * and irqs should show there too...
@@ -117,10 +91,6 @@ struct uwire_spi {
 };
 
 struct uwire_state {
-<<<<<<< HEAD
-	unsigned	bits_per_word;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned	div1_idx;
 };
 
@@ -129,11 +99,7 @@ struct uwire_state {
  * Or, put it in a structure which is used throughout the driver;
  * that avoids having to issue two loads for each bit of static data.
  */
-<<<<<<< HEAD
-static unsigned int uwire_idx_shift;
-=======
 static unsigned int uwire_idx_shift = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __iomem *uwire_base;
 
 static inline void uwire_write_reg(int idx, u16 val)
@@ -213,11 +179,7 @@ static void uwire_chipselect(struct spi_device *spi, int value)
 
 	w = uwire_read_reg(UWIRE_CSR);
 	old_cs = (w >> 10) & 0x03;
-<<<<<<< HEAD
-	if (value == BITBANG_CS_INACTIVE || old_cs != spi->chip_select) {
-=======
 	if (value == BITBANG_CS_INACTIVE || old_cs != spi_get_chipselect(spi, 0)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Deselect this CS, or the previous CS */
 		w &= ~CS_CMD;
 		uwire_write_reg(UWIRE_CSR, w);
@@ -231,11 +193,7 @@ static void uwire_chipselect(struct spi_device *spi, int value)
 		else
 			uwire_write_reg(UWIRE_SR4, 0);
 
-<<<<<<< HEAD
-		w = spi->chip_select << 10;
-=======
 		w = spi_get_chipselect(spi, 0) << 10;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		w |= CS_CMD;
 		uwire_write_reg(UWIRE_CSR, w);
 	}
@@ -243,14 +201,8 @@ static void uwire_chipselect(struct spi_device *spi, int value)
 
 static int uwire_txrx(struct spi_device *spi, struct spi_transfer *t)
 {
-<<<<<<< HEAD
-	struct uwire_state *ust = spi->controller_state;
-	unsigned	len = t->len;
-	unsigned	bits = ust->bits_per_word;
-=======
 	unsigned	len = t->len;
 	unsigned	bits = t->bits_per_word;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned	bytes;
 	u16		val, w;
 	int		status = 0;
@@ -258,15 +210,7 @@ static int uwire_txrx(struct spi_device *spi, struct spi_transfer *t)
 	if (!t->tx_buf && !t->rx_buf)
 		return 0;
 
-<<<<<<< HEAD
-	/* Microwire doesn't read and write concurrently */
-	if (t->tx_buf && t->rx_buf)
-		return -EPERM;
-
-	w = spi->chip_select << 10;
-=======
 	w = spi_get_chipselect(spi, 0) << 10;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	w |= CS_CMD;
 
 	if (t->tx_buf) {
@@ -364,10 +308,6 @@ static int uwire_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 	struct uwire_state	*ust = spi->controller_state;
 	struct uwire_spi	*uwire;
 	unsigned		flags = 0;
-<<<<<<< HEAD
-	unsigned		bits;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned		hz;
 	unsigned long		rate;
 	int			div1_idx;
@@ -375,28 +315,7 @@ static int uwire_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 	int			div2;
 	int			status;
 
-<<<<<<< HEAD
-	uwire = spi_master_get_devdata(spi->master);
-
-	if (spi->chip_select > 3) {
-		pr_debug("%s: cs%d?\n", dev_name(&spi->dev), spi->chip_select);
-		status = -ENODEV;
-		goto done;
-	}
-
-	bits = spi->bits_per_word;
-	if (t != NULL && t->bits_per_word)
-		bits = t->bits_per_word;
-
-	if (bits > 16) {
-		pr_debug("%s: wordsize %d?\n", dev_name(&spi->dev), bits);
-		status = -ENODEV;
-		goto done;
-	}
-	ust->bits_per_word = bits;
-=======
 	uwire = spi_controller_get_devdata(spi->controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mode 0..3, clock inverted separately;
 	 * standard nCS signaling;
@@ -408,11 +327,7 @@ static int uwire_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 	if (spi->mode & SPI_CPOL)
 		flags |= UWIRE_CLK_INVERTED;
 
-<<<<<<< HEAD
-	switch (spi->mode & (SPI_CPOL | SPI_CPHA)) {
-=======
 	switch (spi->mode & SPI_MODE_X_MASK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPI_MODE_0:
 	case SPI_MODE_3:
 		flags |= UWIRE_WRITE_FALLING_EDGE | UWIRE_READ_RISING_EDGE;
@@ -426,16 +341,10 @@ static int uwire_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 	/* assume it's already enabled */
 	rate = clk_get_rate(uwire->ck);
 
-<<<<<<< HEAD
-	hz = spi->max_speed_hz;
-	if (t != NULL && t->speed_hz)
-		hz = t->speed_hz;
-=======
 	if (t != NULL)
 		hz = t->speed_hz;
 	else
 		hz = spi->max_speed_hz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!hz) {
 		pr_debug("%s: zero speed?\n", dev_name(&spi->dev));
@@ -499,11 +408,7 @@ static int uwire_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 		rate /= 8;
 		break;
 	}
-<<<<<<< HEAD
-	omap_uwire_configure_mode(spi->chip_select, flags);
-=======
 	omap_uwire_configure_mode(spi_get_chipselect(spi, 0), flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("%s: uwire flags %02x, armxor %lu KHz, SCK %lu KHz\n",
 			__func__, flags,
 			clk_get_rate(uwire->ck) / 1000,
@@ -516,22 +421,14 @@ done:
 static int uwire_setup(struct spi_device *spi)
 {
 	struct uwire_state *ust = spi->controller_state;
-<<<<<<< HEAD
-=======
 	bool initial_setup = false;
 	int status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ust == NULL) {
 		ust = kzalloc(sizeof(*ust), GFP_KERNEL);
 		if (ust == NULL)
 			return -ENOMEM;
 		spi->controller_state = ust;
-<<<<<<< HEAD
-	}
-
-	return uwire_setup_transfer(spi, NULL);
-=======
 		initial_setup = true;
 	}
 
@@ -540,7 +437,6 @@ static int uwire_setup(struct spi_device *spi)
 		kfree(ust);
 
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void uwire_cleanup(struct spi_device *spi)
@@ -551,47 +447,6 @@ static void uwire_cleanup(struct spi_device *spi)
 static void uwire_off(struct uwire_spi *uwire)
 {
 	uwire_write_reg(UWIRE_SR3, 0);
-<<<<<<< HEAD
-	clk_disable(uwire->ck);
-	clk_put(uwire->ck);
-	spi_master_put(uwire->bitbang.master);
-}
-
-static int __init uwire_probe(struct platform_device *pdev)
-{
-	struct spi_master	*master;
-	struct uwire_spi	*uwire;
-	int			status;
-
-	master = spi_alloc_master(&pdev->dev, sizeof *uwire);
-	if (!master)
-		return -ENODEV;
-
-	uwire = spi_master_get_devdata(master);
-
-	uwire_base = ioremap(UWIRE_BASE_PHYS, UWIRE_IO_SIZE);
-	if (!uwire_base) {
-		dev_dbg(&pdev->dev, "can't ioremap UWIRE\n");
-		spi_master_put(master);
-		return -ENOMEM;
-	}
-
-	dev_set_drvdata(&pdev->dev, uwire);
-
-	uwire->ck = clk_get(&pdev->dev, "fck");
-	if (IS_ERR(uwire->ck)) {
-		status = PTR_ERR(uwire->ck);
-		dev_dbg(&pdev->dev, "no functional clock?\n");
-		spi_master_put(master);
-		return status;
-	}
-	clk_enable(uwire->ck);
-
-	if (cpu_is_omap7xx())
-		uwire_idx_shift = 1;
-	else
-		uwire_idx_shift = 2;
-=======
 	clk_disable_unprepare(uwire->ck);
 	spi_controller_put(uwire->bitbang.ctlr);
 }
@@ -625,23 +480,10 @@ static int uwire_probe(struct platform_device *pdev)
 		return status;
 	}
 	clk_prepare_enable(uwire->ck);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uwire_write_reg(UWIRE_SR3, 1);
 
 	/* the spi->mode bits understood by this driver: */
-<<<<<<< HEAD
-	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
-
-	master->flags = SPI_MASTER_HALF_DUPLEX;
-
-	master->bus_num = 2;	/* "official" */
-	master->num_chipselect = 4;
-	master->setup = uwire_setup;
-	master->cleanup = uwire_cleanup;
-
-	uwire->bitbang.master = master;
-=======
 	host->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH;
 	host->bits_per_word_mask = SPI_BPW_RANGE_MASK(1, 16);
 	host->flags = SPI_CONTROLLER_HALF_DUPLEX;
@@ -652,7 +494,6 @@ static int uwire_probe(struct platform_device *pdev)
 	host->cleanup = uwire_cleanup;
 
 	uwire->bitbang.ctlr = host;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uwire->bitbang.chipselect = uwire_chipselect;
 	uwire->bitbang.setup_transfer = uwire_setup_transfer;
 	uwire->bitbang.txrx_bufs = uwire_txrx;
@@ -660,27 +501,10 @@ static int uwire_probe(struct platform_device *pdev)
 	status = spi_bitbang_start(&uwire->bitbang);
 	if (status < 0) {
 		uwire_off(uwire);
-<<<<<<< HEAD
-		iounmap(uwire_base);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
 
-<<<<<<< HEAD
-static int __exit uwire_remove(struct platform_device *pdev)
-{
-	struct uwire_spi	*uwire = dev_get_drvdata(&pdev->dev);
-	int			status;
-
-	// FIXME remove all child devices, somewhere ...
-
-	status = spi_bitbang_stop(&uwire->bitbang);
-	uwire_off(uwire);
-	iounmap(uwire_base);
-	return status;
-=======
 static void uwire_remove(struct platform_device *pdev)
 {
 	struct uwire_spi	*uwire = platform_get_drvdata(pdev);
@@ -689,7 +513,6 @@ static void uwire_remove(struct platform_device *pdev)
 
 	spi_bitbang_stop(&uwire->bitbang);
 	uwire_off(uwire);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* work with hotplug and coldplug */
@@ -698,41 +521,16 @@ MODULE_ALIAS("platform:omap_uwire");
 static struct platform_driver uwire_driver = {
 	.driver = {
 		.name		= "omap_uwire",
-<<<<<<< HEAD
-		.owner		= THIS_MODULE,
-	},
-	.remove		= __exit_p(uwire_remove),
-=======
 	},
 	.probe = uwire_probe,
 	.remove_new = uwire_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// suspend ... unuse ck
 	// resume ... use ck
 };
 
 static int __init omap_uwire_init(void)
 {
-<<<<<<< HEAD
-	/* FIXME move these into the relevant board init code. also, include
-	 * H3 support; it uses tsc2101 like H2 (on a different chipselect).
-	 */
-
-	if (machine_is_omap_h2()) {
-		/* defaults: W21 SDO, U18 SDI, V19 SCL */
-		omap_cfg_reg(N14_1610_UWIRE_CS0);
-		omap_cfg_reg(N15_1610_UWIRE_CS1);
-	}
-	if (machine_is_omap_perseus2()) {
-		/* configure pins: MPU_UW_nSCS1, MPU_UW_SDO, MPU_UW_SCLK */
-		int val = omap_readl(OMAP7XX_IO_CONF_9) & ~0x00EEE000;
-		omap_writel(val | 0x00AAA000, OMAP7XX_IO_CONF_9);
-	}
-
-	return platform_driver_probe(&uwire_driver, uwire_probe);
-=======
 	return platform_driver_register(&uwire_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit omap_uwire_exit(void)

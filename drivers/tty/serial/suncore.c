@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* suncore.c
  *
  * Common SUN serial routines.  Based entirely
@@ -14,10 +11,6 @@
  * Copyright (C) 2002 David S. Miller (davem@redhat.com)
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/console.h>
 #include <linux/tty.h>
@@ -96,24 +89,14 @@ void sunserial_console_termios(struct console *con, struct device_node *uart_dp)
 	int baud, bits, stop, cflag;
 	char parity;
 
-<<<<<<< HEAD
-	if (!strcmp(uart_dp->name, "rsc") ||
-	    !strcmp(uart_dp->name, "rsc-console") ||
-	    !strcmp(uart_dp->name, "rsc-control")) {
-=======
 	if (of_node_name_eq(uart_dp, "rsc") ||
 	    of_node_name_eq(uart_dp, "rsc-console") ||
 	    of_node_name_eq(uart_dp, "rsc-control")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode = of_get_property(uart_dp,
 				       "ssp-console-modes", NULL);
 		if (!mode)
 			mode = "115200,8,n,1,-";
-<<<<<<< HEAD
-	} else if (!strcmp(uart_dp->name, "lom-console")) {
-=======
 	} else if (of_node_name_eq(uart_dp, "lom-console")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode = "9600,8,n,1,-";
 	} else {
 		struct device_node *dp;
@@ -129,10 +112,7 @@ void sunserial_console_termios(struct console *con, struct device_node *uart_dp)
 		mode = of_get_property(dp, mode_prop, NULL);
 		if (!mode)
 			mode = "9600,8,n,1,-";
-<<<<<<< HEAD
-=======
 		of_node_put(dp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cflag = CREAD | HUPCL | CLOCAL;
@@ -255,19 +235,6 @@ static int __init suncore_init(void)
 {
 	return 0;
 }
-<<<<<<< HEAD
-
-static void __exit suncore_exit(void)
-{
-}
-
-module_init(suncore_init);
-module_exit(suncore_exit);
-
-MODULE_AUTHOR("Eddie C. Dost, David S. Miller");
-MODULE_DESCRIPTION("Sun serial common layer");
-MODULE_LICENSE("GPL");
-=======
 device_initcall(suncore_init);
 
 #if 0 /* ..def MODULE ; never supported as such */
@@ -275,4 +242,3 @@ MODULE_AUTHOR("Eddie C. Dost, David S. Miller");
 MODULE_DESCRIPTION("Sun serial common layer");
 MODULE_LICENSE("GPL");
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

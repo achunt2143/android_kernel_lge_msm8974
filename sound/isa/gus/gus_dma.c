@@ -1,29 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Routines for GF1 DMA control
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Routines for GF1 DMA control
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/dma.h>
@@ -148,11 +126,8 @@ static void snd_gf1_dma_interrupt(struct snd_gus_card * gus)
 	}
 	block = snd_gf1_dma_next_block(gus);
 	spin_unlock(&gus->dma_lock);
-<<<<<<< HEAD
-=======
 	if (!block)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_gf1_dma_program(gus, block->addr, block->buf_addr, block->count, (unsigned short) block->cmd);
 	kfree(block);
 #if 0
@@ -213,16 +188,9 @@ int snd_gf1_dma_transfer_block(struct snd_gus_card * gus,
 	struct snd_gf1_dma_block *block;
 
 	block = kmalloc(sizeof(*block), atomic ? GFP_ATOMIC : GFP_KERNEL);
-<<<<<<< HEAD
-	if (block == NULL) {
-		snd_printk(KERN_ERR "gf1: DMA transfer failure; not enough memory\n");
-		return -ENOMEM;
-	}
-=======
 	if (!block)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*block = *__block;
 	block->next = NULL;
 

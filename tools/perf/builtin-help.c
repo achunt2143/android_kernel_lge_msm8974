@@ -1,26 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * builtin-help.c
  *
  * Builtin help command
  */
-<<<<<<< HEAD
-#include "perf.h"
-#include "util/cache.h"
-#include "builtin.h"
-#include "util/exec_cmd.h"
-#include "common-cmds.h"
-#include "util/parse-options.h"
-#include "util/run-command.h"
-#include "util/help.h"
-
-static struct man_viewer_list {
-	struct man_viewer_list *next;
-	char name[FLEX_ARRAY];
-=======
 #include "util/cache.h"
 #include "util/config.h"
 #include "util/strbuf.h"
@@ -47,49 +30,21 @@ static struct man_viewer_list {
 static struct man_viewer_list {
 	struct man_viewer_list *next;
 	char name[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } *man_viewer_list;
 
 static struct man_viewer_info_list {
 	struct man_viewer_info_list *next;
 	const char *info;
-<<<<<<< HEAD
-	char name[FLEX_ARRAY];
-} *man_viewer_info_list;
-
-enum help_format {
-=======
 	char name[0];
 } *man_viewer_info_list;
 
 enum help_format {
 	HELP_FORMAT_NONE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HELP_FORMAT_MAN,
 	HELP_FORMAT_INFO,
 	HELP_FORMAT_WEB,
 };
 
-<<<<<<< HEAD
-static bool show_all = false;
-static enum help_format help_format = HELP_FORMAT_MAN;
-static struct option builtin_help_options[] = {
-	OPT_BOOLEAN('a', "all", &show_all, "print all available commands"),
-	OPT_SET_UINT('m', "man", &help_format, "show man page", HELP_FORMAT_MAN),
-	OPT_SET_UINT('w', "web", &help_format, "show manual in web browser",
-			HELP_FORMAT_WEB),
-	OPT_SET_UINT('i', "info", &help_format, "show info page",
-			HELP_FORMAT_INFO),
-	OPT_END(),
-};
-
-static const char * const builtin_help_usage[] = {
-	"perf help [--all] [--man|--web|--info] [command]",
-	NULL
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum help_format parse_help_format(const char *format)
 {
 	if (!strcmp(format, "man"))
@@ -98,13 +53,9 @@ static enum help_format parse_help_format(const char *format)
 		return HELP_FORMAT_INFO;
 	if (!strcmp(format, "web") || !strcmp(format, "html"))
 		return HELP_FORMAT_WEB;
-<<<<<<< HEAD
-	die("unrecognized help format '%s'", format);
-=======
 
 	pr_err("unrecognized help format '%s'", format);
 	return HELP_FORMAT_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *get_man_viewer_info(const char *name)
@@ -124,10 +75,7 @@ static int check_emacsclient_version(void)
 	struct child_process ec_process;
 	const char *argv_ec[] = { "emacsclient", "--version", NULL };
 	int version;
-<<<<<<< HEAD
-=======
 	int ret = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* emacsclient prints its version number on stderr */
 	memset(&ec_process, 0, sizeof(ec_process));
@@ -138,14 +86,10 @@ static int check_emacsclient_version(void)
 		fprintf(stderr, "Failed to start emacsclient.\n");
 		return -1;
 	}
-<<<<<<< HEAD
-	strbuf_read(&buffer, ec_process.err, 20);
-=======
 	if (strbuf_read(&buffer, ec_process.err, 20) < 0) {
 		fprintf(stderr, "Failed to read emacsclient version\n");
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	close(ec_process.err);
 
 	/*
@@ -154,36 +98,17 @@ static int check_emacsclient_version(void)
 	 */
 	finish_command(&ec_process);
 
-<<<<<<< HEAD
-	if (prefixcmp(buffer.buf, "emacsclient")) {
-		fprintf(stderr, "Failed to parse emacsclient version.\n");
-		strbuf_release(&buffer);
-		return -1;
-	}
-
-	strbuf_remove(&buffer, 0, strlen("emacsclient"));
-	version = atoi(buffer.buf);
-=======
 	if (!strstarts(buffer.buf, "emacsclient")) {
 		fprintf(stderr, "Failed to parse emacsclient version.\n");
 		goto out;
 	}
 
 	version = atoi(buffer.buf + strlen("emacsclient"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (version < 22) {
 		fprintf(stderr,
 			"emacsclient version '%d' too old (< 22).\n",
 			version);
-<<<<<<< HEAD
-		strbuf_release(&buffer);
-		return -1;
-	}
-
-	strbuf_release(&buffer);
-	return 0;
-=======
 	} else
 		ret = 0;
 out:
@@ -195,22 +120,12 @@ static void exec_failed(const char *cmd)
 {
 	char sbuf[STRERR_BUFSIZE];
 	pr_warning("failed to exec '%s': %s", cmd, str_error_r(errno, sbuf, sizeof(sbuf)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void exec_woman_emacs(const char *path, const char *page)
 {
 	if (!check_emacsclient_version()) {
 		/* This works only with emacsclient version >= 22. */
-<<<<<<< HEAD
-		struct strbuf man_page = STRBUF_INIT;
-
-		if (!path)
-			path = "emacsclient";
-		strbuf_addf(&man_page, "(woman \"%s\")", page);
-		execlp(path, "emacsclient", "-e", man_page.buf, NULL);
-		warning("failed to exec '%s': %s", path, strerror(errno));
-=======
 		char *man_page;
 
 		if (!path)
@@ -220,21 +135,15 @@ static void exec_woman_emacs(const char *path, const char *page)
 			free(man_page);
 		}
 		exec_failed(path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void exec_man_konqueror(const char *path, const char *page)
 {
 	const char *display = getenv("DISPLAY");
-<<<<<<< HEAD
-	if (display && *display) {
-		struct strbuf man_page = STRBUF_INIT;
-=======
 
 	if (display && *display) {
 		char *man_page;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const char *filename = "kfmclient";
 
 		/* It's simpler to launch konqueror using kfmclient. */
@@ -252,17 +161,11 @@ static void exec_man_konqueror(const char *path, const char *page)
 				filename = file;
 		} else
 			path = "kfmclient";
-<<<<<<< HEAD
-		strbuf_addf(&man_page, "man:%s(1)", page);
-		execlp(path, filename, "newTab", man_page.buf, NULL);
-		warning("failed to exec '%s': %s", path, strerror(errno));
-=======
 		if (asprintf(&man_page, "man:%s(1)", page) > 0) {
 			execlp(path, filename, "newTab", man_page, NULL);
 			free(man_page);
 		}
 		exec_failed(path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -271,21 +174,11 @@ static void exec_man_man(const char *path, const char *page)
 	if (!path)
 		path = "man";
 	execlp(path, "man", page, NULL);
-<<<<<<< HEAD
-	warning("failed to exec '%s': %s", path, strerror(errno));
-=======
 	exec_failed(path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void exec_man_cmd(const char *cmd, const char *page)
 {
-<<<<<<< HEAD
-	struct strbuf shell_cmd = STRBUF_INIT;
-	strbuf_addf(&shell_cmd, "%s %s", cmd, page);
-	execl("/bin/sh", "sh", "-c", shell_cmd.buf, NULL);
-	warning("failed to exec '%s': %s", cmd, strerror(errno));
-=======
 	char *shell_cmd;
 
 	if (asprintf(&shell_cmd, "%s %s", cmd, page) > 0) {
@@ -293,7 +186,6 @@ static void exec_man_cmd(const char *cmd, const char *page)
 		free(shell_cmd);
 	}
 	exec_failed(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void add_man_viewer(const char *name)
@@ -304,11 +196,7 @@ static void add_man_viewer(const char *name)
 	while (*p)
 		p = &((*p)->next);
 	*p = zalloc(sizeof(**p) + len + 1);
-<<<<<<< HEAD
-	strncpy((*p)->name, name, len);
-=======
 	strcpy((*p)->name, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int supported_man_viewer(const char *name, size_t len)
@@ -330,15 +218,12 @@ static void do_add_man_viewer_info(const char *name,
 	man_viewer_info_list = new;
 }
 
-<<<<<<< HEAD
-=======
 static void unsupported_man_viewer(const char *name, const char *var)
 {
 	pr_warning("'%s': path for unsupported man viewer.\n"
 		   "Please consider using 'man.<tool>.%s' instead.", name, var);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int add_man_viewer_path(const char *name,
 			       size_t len,
 			       const char *value)
@@ -346,13 +231,7 @@ static int add_man_viewer_path(const char *name,
 	if (supported_man_viewer(name, len))
 		do_add_man_viewer_info(name, len, value);
 	else
-<<<<<<< HEAD
-		warning("'%s': path for unsupported man viewer.\n"
-			"Please consider using 'man.<tool>.cmd' instead.",
-			name);
-=======
 		unsupported_man_viewer(name, "cmd");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -362,13 +241,7 @@ static int add_man_viewer_cmd(const char *name,
 			      const char *value)
 {
 	if (supported_man_viewer(name, len))
-<<<<<<< HEAD
-		warning("'%s': cmd for supported man viewer.\n"
-			"Please consider using 'man.<tool>.path' instead.",
-			name);
-=======
 		unsupported_man_viewer(name, "path");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		do_add_man_viewer_info(name, len, value);
 
@@ -380,15 +253,10 @@ static int add_man_viewer_info(const char *var, const char *value)
 	const char *name = var + 4;
 	const char *subkey = strrchr(name, '.');
 
-<<<<<<< HEAD
-	if (!subkey)
-		return error("Config with no key for man viewer: %s", name);
-=======
 	if (!subkey) {
 		pr_err("Config with no key for man viewer: %s", name);
 		return -1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!strcmp(subkey, ".path")) {
 		if (!value)
@@ -401,22 +269,12 @@ static int add_man_viewer_info(const char *var, const char *value)
 		return add_man_viewer_cmd(name, subkey - name, value);
 	}
 
-<<<<<<< HEAD
-	warning("'%s': unsupported man viewer sub key.", subkey);
-=======
 	pr_warning("'%s': unsupported man viewer sub key.", subkey);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int perf_help_config(const char *var, const char *value, void *cb)
 {
-<<<<<<< HEAD
-	if (!strcmp(var, "help.format")) {
-		if (!value)
-			return config_error_nonbool(var);
-		help_format = parse_help_format(value);
-=======
 	enum help_format *help_formatp = cb;
 
 	if (!strcmp(var, "help.format")) {
@@ -425,7 +283,6 @@ static int perf_help_config(const char *var, const char *value, void *cb)
 		*help_formatp = parse_help_format(value);
 		if (*help_formatp == HELP_FORMAT_NONE)
 			return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	if (!strcmp(var, "man.viewer")) {
@@ -434,17 +291,10 @@ static int perf_help_config(const char *var, const char *value, void *cb)
 		add_man_viewer(value);
 		return 0;
 	}
-<<<<<<< HEAD
-	if (!prefixcmp(var, "man."))
-		return add_man_viewer_info(var, value);
-
-	return perf_default_config(var, value, cb);
-=======
 	if (strstarts(var, "man."))
 		return add_man_viewer_info(var, value);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct cmdnames main_cmds, other_cmds;
@@ -465,32 +315,6 @@ void list_common_cmds_help(void)
 	}
 }
 
-<<<<<<< HEAD
-static int is_perf_command(const char *s)
-{
-	return is_in_cmdlist(&main_cmds, s) ||
-		is_in_cmdlist(&other_cmds, s);
-}
-
-static const char *prepend(const char *prefix, const char *cmd)
-{
-	size_t pre_len = strlen(prefix);
-	size_t cmd_len = strlen(cmd);
-	char *p = malloc(pre_len + cmd_len + 1);
-	memcpy(p, prefix, pre_len);
-	strcpy(p + pre_len, cmd);
-	return p;
-}
-
-static const char *cmd_to_page(const char *perf_cmd)
-{
-	if (!perf_cmd)
-		return "perf";
-	else if (!prefixcmp(perf_cmd, "perf"))
-		return perf_cmd;
-	else
-		return prepend("perf-", perf_cmd);
-=======
 static const char *cmd_to_page(const char *perf_cmd)
 {
 	char *s;
@@ -501,39 +325,23 @@ static const char *cmd_to_page(const char *perf_cmd)
 		return perf_cmd;
 
 	return asprintf(&s, "perf-%s", perf_cmd) < 0 ? NULL : s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void setup_man_path(void)
 {
-<<<<<<< HEAD
-	struct strbuf new_path = STRBUF_INIT;
-=======
 	char *new_path;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *old_path = getenv("MANPATH");
 
 	/* We should always put ':' after our path. If there is no
 	 * old_path, the ':' at the end will let 'man' to try
 	 * system-wide paths after ours to find the manual page. If
 	 * there is old_path, we need ':' as delimiter. */
-<<<<<<< HEAD
-	strbuf_addstr(&new_path, system_path(PERF_MAN_PATH));
-	strbuf_addch(&new_path, ':');
-	if (old_path)
-		strbuf_addstr(&new_path, old_path);
-
-	setenv("MANPATH", new_path.buf, 1);
-
-	strbuf_release(&new_path);
-=======
 	if (asprintf(&new_path, "%s:%s", system_path(PERF_MAN_PATH), old_path ?: "") > 0) {
 		setenv("MANPATH", new_path, 1);
 		free(new_path);
 	} else {
 		pr_err("Unable to setup man path");
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void exec_viewer(const char *name, const char *page)
@@ -549,17 +357,10 @@ static void exec_viewer(const char *name, const char *page)
 	else if (info)
 		exec_man_cmd(info, page);
 	else
-<<<<<<< HEAD
-		warning("'%s': unknown man viewer.", name);
-}
-
-static void show_man_page(const char *perf_cmd)
-=======
 		pr_warning("'%s': unknown man viewer.", name);
 }
 
 static int show_man_page(const char *perf_cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct man_viewer_list *viewer;
 	const char *page = cmd_to_page(perf_cmd);
@@ -572,39 +373,16 @@ static int show_man_page(const char *perf_cmd)
 	if (fallback)
 		exec_viewer(fallback, page);
 	exec_viewer("man", page);
-<<<<<<< HEAD
-	die("no man viewer handled the request");
-}
-
-static void show_info_page(const char *perf_cmd)
-=======
 
 	pr_err("no man viewer handled the request");
 	return -1;
 }
 
 static int show_info_page(const char *perf_cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *page = cmd_to_page(perf_cmd);
 	setenv("INFOPATH", system_path(PERF_INFO_PATH), 1);
 	execlp("info", "info", "perfman", page, NULL);
-<<<<<<< HEAD
-}
-
-static void get_html_page_path(struct strbuf *page_path, const char *page)
-{
-	struct stat st;
-	const char *html_path = system_path(PERF_HTML_PATH);
-
-	/* Check that we have a perf documentation directory. */
-	if (stat(mkpath("%s/perf.html", html_path), &st)
-	    || !S_ISREG(st.st_mode))
-		die("'%s': not a documentation directory.", html_path);
-
-	strbuf_init(page_path, 0);
-	strbuf_addf(page_path, "%s/%s.html", html_path, page);
-=======
 	return -1;
 }
 
@@ -622,7 +400,6 @@ static int get_html_page_path(char **page_path, const char *page)
 	}
 
 	return asprintf(page_path, "%s/%s.html", html_path, page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -633,35 +410,6 @@ static int get_html_page_path(char **page_path, const char *page)
 #ifndef open_html
 static void open_html(const char *path)
 {
-<<<<<<< HEAD
-	execl_perf_cmd("web--browse", "-c", "help.browser", path, NULL);
-}
-#endif
-
-static void show_html_page(const char *perf_cmd)
-{
-	const char *page = cmd_to_page(perf_cmd);
-	struct strbuf page_path; /* it leaks but we exec bellow */
-
-	get_html_page_path(&page_path, page);
-
-	open_html(page_path.buf);
-}
-
-int cmd_help(int argc, const char **argv, const char *prefix __used)
-{
-	const char *alias;
-
-	load_command_list("perf-", &main_cmds, &other_cmds);
-
-	perf_config(perf_help_config, NULL);
-
-	argc = parse_options(argc, argv, builtin_help_options,
-			builtin_help_usage, 0);
-
-	if (show_all) {
-		printf("\n usage: %s\n\n", perf_usage_string);
-=======
 	execl_cmd("web--browse", "-c", "help.browser", path, NULL);
 }
 #endif
@@ -720,7 +468,6 @@ int cmd_help(int argc, const char **argv)
 
 	if (show_all) {
 		printf("\n Usage: %s\n\n", perf_usage_string);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_commands("perf commands", &main_cmds, &other_cmds);
 		printf(" %s\n\n", perf_more_info_string);
 		return 0;
@@ -733,28 +480,6 @@ int cmd_help(int argc, const char **argv)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	alias = alias_lookup(argv[0]);
-	if (alias && !is_perf_command(argv[0])) {
-		printf("`perf %s' is aliased to `%s'\n", argv[0], alias);
-		return 0;
-	}
-
-	switch (help_format) {
-	case HELP_FORMAT_MAN:
-		show_man_page(argv[0]);
-		break;
-	case HELP_FORMAT_INFO:
-		show_info_page(argv[0]);
-		break;
-	case HELP_FORMAT_WEB:
-		show_html_page(argv[0]);
-	default:
-		break;
-	}
-
-	return 0;
-=======
 	switch (help_format) {
 	case HELP_FORMAT_MAN:
 		rc = show_man_page(argv[0]);
@@ -773,5 +498,4 @@ int cmd_help(int argc, const char **argv)
 	}
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,25 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8728.c  --  WM8728 ALSA SoC Audio driver
  *
  * Copyright 2008 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
  */
 
 #include <linux/mod_devicetable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -27,15 +15,9 @@
 #include <linux/pm.h>
 #include <linux/i2c.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/spi/spi.h>
-#include <linux/slab.h>
-#include <linux/of_device.h>
-=======
 #include <linux/regmap.h>
 #include <linux/spi/spi.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -51,28 +33,16 @@
  * the volume update bits, mute the output and enable infinite zero
  * detect.
  */
-<<<<<<< HEAD
-static const u16 wm8728_reg_defaults[] = {
-	0x1ff,
-	0x1ff,
-	0x001,
-	0x100,
-=======
 static const struct reg_default wm8728_reg_defaults[] = {
 	{ 0, 0x1ff },
 	{ 1, 0x1ff },
 	{ 2, 0x001 },
 	{ 3, 0x100 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* codec private data */
 struct wm8728_priv {
-<<<<<<< HEAD
-	enum snd_soc_control_type control_type;
-=======
 	struct regmap *regmap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const DECLARE_TLV_DB_SCALE(wm8728_tlv, -12750, 50, 1);
@@ -99,17 +69,6 @@ static const struct snd_soc_dapm_route wm8728_intercon[] = {
 	{"VOUTR", NULL, "DAC"},
 };
 
-<<<<<<< HEAD
-static int wm8728_mute(struct snd_soc_dai *dai, int mute)
-{
-	struct snd_soc_codec *codec = dai->codec;
-	u16 mute_reg = snd_soc_read(codec, WM8728_DACCTL);
-
-	if (mute)
-		snd_soc_write(codec, WM8728_DACCTL, mute_reg | 1);
-	else
-		snd_soc_write(codec, WM8728_DACCTL, mute_reg & ~1);
-=======
 static int wm8728_mute(struct snd_soc_dai *dai, int mute, int direction)
 {
 	struct snd_soc_component *component = dai->component;
@@ -119,7 +78,6 @@ static int wm8728_mute(struct snd_soc_dai *dai, int mute, int direction)
 		snd_soc_component_write(component, WM8728_DACCTL, mute_reg | 1);
 	else
 		snd_soc_component_write(component, WM8728_DACCTL, mute_reg & ~1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -128,21 +86,6 @@ static int wm8728_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params,
 	struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec = rtd->codec;
-	u16 dac = snd_soc_read(codec, WM8728_DACCTL);
-
-	dac &= ~0x18;
-
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		dac |= 0x10;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-=======
 	struct snd_soc_component *component = dai->component;
 	u16 dac = snd_soc_component_read(component, WM8728_DACCTL);
 
@@ -155,18 +98,13 @@ static int wm8728_hw_params(struct snd_pcm_substream *substream,
 		dac |= 0x10;
 		break;
 	case 24:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dac |= 0x08;
 		break;
 	default:
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_write(codec, WM8728_DACCTL, dac);
-=======
 	snd_soc_component_write(component, WM8728_DACCTL, dac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -174,13 +112,8 @@ static int wm8728_hw_params(struct snd_pcm_substream *substream,
 static int wm8728_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	u16 iface = snd_soc_read(codec, WM8728_IFCTL);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	u16 iface = snd_soc_component_read(component, WM8728_IFCTL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Currently only I2S is supported by the driver, though the
 	 * hardware is more flexible.
@@ -220,17 +153,6 @@ static int wm8728_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_write(codec, WM8728_IFCTL, iface);
-	return 0;
-}
-
-static int wm8728_set_bias_level(struct snd_soc_codec *codec,
-				 enum snd_soc_bias_level level)
-{
-	u16 reg;
-	int i;
-=======
 	snd_soc_component_write(component, WM8728_IFCTL, iface);
 	return 0;
 }
@@ -240,23 +162,11 @@ static int wm8728_set_bias_level(struct snd_soc_component *component,
 {
 	struct wm8728_priv *wm8728 = snd_soc_component_get_drvdata(component);
 	u16 reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 	case SND_SOC_BIAS_PREPARE:
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-			/* Power everything up... */
-			reg = snd_soc_read(codec, WM8728_DACCTL);
-			snd_soc_write(codec, WM8728_DACCTL, reg & ~0x4);
-
-			/* ..then sync in the register cache. */
-			for (i = 0; i < ARRAY_SIZE(wm8728_reg_defaults); i++)
-				snd_soc_write(codec, i,
-					     snd_soc_read(codec, i));
-=======
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
 			/* Power everything up... */
 			reg = snd_soc_component_read(component, WM8728_DACCTL);
@@ -264,23 +174,14 @@ static int wm8728_set_bias_level(struct snd_soc_component *component,
 
 			/* ..then sync in the register cache. */
 			regcache_sync(wm8728->regmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case SND_SOC_BIAS_OFF:
-<<<<<<< HEAD
-		reg = snd_soc_read(codec, WM8728_DACCTL);
-		snd_soc_write(codec, WM8728_DACCTL, reg | 0x4);
-		break;
-	}
-	codec->dapm.bias_level = level;
-=======
 		reg = snd_soc_component_read(component, WM8728_DACCTL);
 		snd_soc_component_write(component, WM8728_DACCTL, reg | 0x4);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -291,14 +192,9 @@ static int wm8728_set_bias_level(struct snd_soc_component *component,
 
 static const struct snd_soc_dai_ops wm8728_dai_ops = {
 	.hw_params	= wm8728_hw_params,
-<<<<<<< HEAD
-	.digital_mute	= wm8728_mute,
-	.set_fmt	= wm8728_set_dai_fmt,
-=======
 	.mute_stream	= wm8728_mute,
 	.set_fmt	= wm8728_set_dai_fmt,
 	.no_capture_mute = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8728_dai = {
@@ -313,61 +209,6 @@ static struct snd_soc_dai_driver wm8728_dai = {
 	.ops = &wm8728_dai_ops,
 };
 
-<<<<<<< HEAD
-static int wm8728_suspend(struct snd_soc_codec *codec)
-{
-	wm8728_set_bias_level(codec, SND_SOC_BIAS_OFF);
-
-	return 0;
-}
-
-static int wm8728_resume(struct snd_soc_codec *codec)
-{
-	wm8728_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	return 0;
-}
-
-static int wm8728_probe(struct snd_soc_codec *codec)
-{
-	struct wm8728_priv *wm8728 = snd_soc_codec_get_drvdata(codec);
-	int ret;
-
-	ret = snd_soc_codec_set_cache_io(codec, 7, 9, wm8728->control_type);
-	if (ret < 0) {
-		printk(KERN_ERR "wm8728: failed to configure cache I/O: %d\n",
-		       ret);
-		return ret;
-	}
-
-	/* power on device */
-	wm8728_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	return ret;
-}
-
-static int wm8728_remove(struct snd_soc_codec *codec)
-{
-	wm8728_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_wm8728 = {
-	.probe =	wm8728_probe,
-	.remove =	wm8728_remove,
-	.suspend =	wm8728_suspend,
-	.resume =	wm8728_resume,
-	.set_bias_level = wm8728_set_bias_level,
-	.reg_cache_size = ARRAY_SIZE(wm8728_reg_defaults),
-	.reg_word_size = sizeof(u16),
-	.reg_cache_default = wm8728_reg_defaults,
-	.controls = wm8728_snd_controls,
-	.num_controls = ARRAY_SIZE(wm8728_snd_controls),
-	.dapm_widgets = wm8728_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(wm8728_dapm_widgets),
-	.dapm_routes = wm8728_intercon,
-	.num_dapm_routes = ARRAY_SIZE(wm8728_intercon),
-=======
 static const struct snd_soc_component_driver soc_component_dev_wm8728 = {
 	.set_bias_level		= wm8728_set_bias_level,
 	.controls		= wm8728_snd_controls,
@@ -380,7 +221,6 @@ static const struct snd_soc_component_driver soc_component_dev_wm8728 = {
 	.idle_bias_on		= 1,
 	.use_pmdown_time	= 1,
 	.endianness		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct of_device_id wm8728_of_match[] = {
@@ -389,10 +229,6 @@ static const struct of_device_id wm8728_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, wm8728_of_match);
 
-<<<<<<< HEAD
-#if defined(CONFIG_SPI_MASTER)
-static int __devinit wm8728_spi_probe(struct spi_device *spi)
-=======
 static const struct regmap_config wm8728_regmap = {
 	.reg_bits = 7,
 	.val_bits = 9,
@@ -405,32 +241,10 @@ static const struct regmap_config wm8728_regmap = {
 
 #if defined(CONFIG_SPI_MASTER)
 static int wm8728_spi_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8728_priv *wm8728;
 	int ret;
 
-<<<<<<< HEAD
-	wm8728 = kzalloc(sizeof(struct wm8728_priv), GFP_KERNEL);
-	if (wm8728 == NULL)
-		return -ENOMEM;
-
-	wm8728->control_type = SND_SOC_SPI;
-	spi_set_drvdata(spi, wm8728);
-
-	ret = snd_soc_register_codec(&spi->dev,
-			&soc_codec_dev_wm8728, &wm8728_dai, 1);
-	if (ret < 0)
-		kfree(wm8728);
-	return ret;
-}
-
-static int __devexit wm8728_spi_remove(struct spi_device *spi)
-{
-	snd_soc_unregister_codec(&spi->dev);
-	kfree(spi_get_drvdata(spi));
-	return 0;
-=======
 	wm8728 = devm_kzalloc(&spi->dev, sizeof(struct wm8728_priv),
 			      GFP_KERNEL);
 	if (wm8728 == NULL)
@@ -446,25 +260,11 @@ static int __devexit wm8728_spi_remove(struct spi_device *spi)
 			&soc_component_dev_wm8728, &wm8728_dai, 1);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver wm8728_spi_driver = {
 	.driver = {
 		.name	= "wm8728",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.of_match_table = wm8728_of_match,
-	},
-	.probe		= wm8728_spi_probe,
-	.remove		= __devexit_p(wm8728_spi_remove),
-};
-#endif /* CONFIG_SPI_MASTER */
-
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-static __devinit int wm8728_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-=======
 		.of_match_table = wm8728_of_match,
 	},
 	.probe		= wm8728_spi_probe,
@@ -473,34 +273,10 @@ static __devinit int wm8728_i2c_probe(struct i2c_client *i2c,
 
 #if IS_ENABLED(CONFIG_I2C)
 static int wm8728_i2c_probe(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8728_priv *wm8728;
 	int ret;
 
-<<<<<<< HEAD
-	wm8728 = kzalloc(sizeof(struct wm8728_priv), GFP_KERNEL);
-	if (wm8728 == NULL)
-		return -ENOMEM;
-
-	i2c_set_clientdata(i2c, wm8728);
-	wm8728->control_type = SND_SOC_I2C;
-
-	ret =  snd_soc_register_codec(&i2c->dev,
-			&soc_codec_dev_wm8728, &wm8728_dai, 1);
-	if (ret < 0)
-		kfree(wm8728);
-	return ret;
-}
-
-static __devexit int wm8728_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	kfree(i2c_get_clientdata(client));
-	return 0;
-}
-
-=======
 	wm8728 = devm_kzalloc(&i2c->dev, sizeof(struct wm8728_priv),
 			      GFP_KERNEL);
 	if (wm8728 == NULL)
@@ -518,7 +294,6 @@ static __devexit int wm8728_i2c_remove(struct i2c_client *client)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id wm8728_i2c_id[] = {
 	{ "wm8728", 0 },
 	{ }
@@ -528,17 +303,9 @@ MODULE_DEVICE_TABLE(i2c, wm8728_i2c_id);
 static struct i2c_driver wm8728_i2c_driver = {
 	.driver = {
 		.name = "wm8728",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = wm8728_of_match,
-	},
-	.probe =    wm8728_i2c_probe,
-	.remove =   __devexit_p(wm8728_i2c_remove),
-=======
 		.of_match_table = wm8728_of_match,
 	},
 	.probe = wm8728_i2c_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = wm8728_i2c_id,
 };
 #endif
@@ -546,11 +313,7 @@ static struct i2c_driver wm8728_i2c_driver = {
 static int __init wm8728_modinit(void)
 {
 	int ret = 0;
-<<<<<<< HEAD
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-=======
 #if IS_ENABLED(CONFIG_I2C)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = i2c_add_driver(&wm8728_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register wm8728 I2C driver: %d\n",
@@ -570,11 +333,7 @@ module_init(wm8728_modinit);
 
 static void __exit wm8728_exit(void)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-=======
 #if IS_ENABLED(CONFIG_I2C)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_del_driver(&wm8728_i2c_driver);
 #endif
 #if defined(CONFIG_SPI_MASTER)

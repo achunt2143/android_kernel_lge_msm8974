@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * s390host.c --  hosting zSeries kernel virtual machines
- *
- * Copyright IBM Corp. 2008,2009
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License (version 2 only)
- * as published by the Free Software Foundation.
- *
- *    Author(s): Carsten Otte <cotte@de.ibm.com>
- *               Christian Borntraeger <borntraeger@de.ibm.com>
- *               Heiko Carstens <heiko.carstens@de.ibm.com>
- *               Christian Ehrhardt <ehrhardt@de.ibm.com>
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * hosting IBM Z kernel virtual machines (s390x)
@@ -30,7 +13,6 @@
 #define KMSG_COMPONENT "kvm-s390"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/compiler.h>
 #include <linux/err.h>
 #include <linux/fs.h>
@@ -38,98 +20,6 @@
 #include <linux/init.h>
 #include <linux/kvm.h>
 #include <linux/kvm_host.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/slab.h>
-#include <linux/timer.h>
-#include <asm/asm-offsets.h>
-#include <asm/lowcore.h>
-#include <asm/pgtable.h>
-#include <asm/nmi.h>
-#include <asm/switch_to.h>
-#include "kvm-s390.h"
-#include "gaccess.h"
-
-#define VCPU_STAT(x) offsetof(struct kvm_vcpu, stat.x), KVM_STAT_VCPU
-
-struct kvm_stats_debugfs_item debugfs_entries[] = {
-	{ "userspace_handled", VCPU_STAT(exit_userspace) },
-	{ "exit_null", VCPU_STAT(exit_null) },
-	{ "exit_validity", VCPU_STAT(exit_validity) },
-	{ "exit_stop_request", VCPU_STAT(exit_stop_request) },
-	{ "exit_external_request", VCPU_STAT(exit_external_request) },
-	{ "exit_external_interrupt", VCPU_STAT(exit_external_interrupt) },
-	{ "exit_instruction", VCPU_STAT(exit_instruction) },
-	{ "exit_program_interruption", VCPU_STAT(exit_program_interruption) },
-	{ "exit_instr_and_program_int", VCPU_STAT(exit_instr_and_program) },
-	{ "instruction_lctlg", VCPU_STAT(instruction_lctlg) },
-	{ "instruction_lctl", VCPU_STAT(instruction_lctl) },
-	{ "deliver_emergency_signal", VCPU_STAT(deliver_emergency_signal) },
-	{ "deliver_external_call", VCPU_STAT(deliver_external_call) },
-	{ "deliver_service_signal", VCPU_STAT(deliver_service_signal) },
-	{ "deliver_virtio_interrupt", VCPU_STAT(deliver_virtio_interrupt) },
-	{ "deliver_stop_signal", VCPU_STAT(deliver_stop_signal) },
-	{ "deliver_prefix_signal", VCPU_STAT(deliver_prefix_signal) },
-	{ "deliver_restart_signal", VCPU_STAT(deliver_restart_signal) },
-	{ "deliver_program_interruption", VCPU_STAT(deliver_program_int) },
-	{ "exit_wait_state", VCPU_STAT(exit_wait_state) },
-	{ "instruction_stidp", VCPU_STAT(instruction_stidp) },
-	{ "instruction_spx", VCPU_STAT(instruction_spx) },
-	{ "instruction_stpx", VCPU_STAT(instruction_stpx) },
-	{ "instruction_stap", VCPU_STAT(instruction_stap) },
-	{ "instruction_storage_key", VCPU_STAT(instruction_storage_key) },
-	{ "instruction_stsch", VCPU_STAT(instruction_stsch) },
-	{ "instruction_chsc", VCPU_STAT(instruction_chsc) },
-	{ "instruction_stsi", VCPU_STAT(instruction_stsi) },
-	{ "instruction_stfl", VCPU_STAT(instruction_stfl) },
-	{ "instruction_tprot", VCPU_STAT(instruction_tprot) },
-	{ "instruction_sigp_sense", VCPU_STAT(instruction_sigp_sense) },
-	{ "instruction_sigp_sense_running", VCPU_STAT(instruction_sigp_sense_running) },
-	{ "instruction_sigp_external_call", VCPU_STAT(instruction_sigp_external_call) },
-	{ "instruction_sigp_emergency", VCPU_STAT(instruction_sigp_emergency) },
-	{ "instruction_sigp_stop", VCPU_STAT(instruction_sigp_stop) },
-	{ "instruction_sigp_set_arch", VCPU_STAT(instruction_sigp_arch) },
-	{ "instruction_sigp_set_prefix", VCPU_STAT(instruction_sigp_prefix) },
-	{ "instruction_sigp_restart", VCPU_STAT(instruction_sigp_restart) },
-	{ "diagnose_10", VCPU_STAT(diagnose_10) },
-	{ "diagnose_44", VCPU_STAT(diagnose_44) },
-	{ NULL }
-};
-
-static unsigned long long *facilities;
-
-/* Section: not file related */
-int kvm_arch_hardware_enable(void *garbage)
-{
-	/* every s390 is virtualization enabled ;-) */
-	return 0;
-}
-
-void kvm_arch_hardware_disable(void *garbage)
-{
-}
-
-int kvm_arch_hardware_setup(void)
-{
-	return 0;
-}
-
-void kvm_arch_hardware_unsetup(void)
-{
-}
-
-void kvm_arch_check_processor_compat(void *rtn)
-{
-}
-
-int kvm_arch_init(void *opaque)
-{
-	return 0;
-}
-
-void kvm_arch_exit(void)
-{
-=======
 #include <linux/mman.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -645,7 +535,6 @@ static void __kvm_s390_exit(void)
 		kvm_s390_pci_exit();
 	debug_unregister(kvm_s390_dbf);
 	debug_unregister(kvm_s390_dbf_uv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Section: device related */
@@ -657,11 +546,7 @@ long kvm_arch_dev_ioctl(struct file *filp,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-int kvm_dev_ioctl_check_extension(long ext)
-=======
 int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 
@@ -672,11 +557,6 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 #ifdef CONFIG_KVM_S390_UCONTROL
 	case KVM_CAP_S390_UCONTROL:
 #endif
-<<<<<<< HEAD
-	case KVM_CAP_SYNC_REGS:
-		r = 1;
-		break;
-=======
 	case KVM_CAP_ASYNC_PF:
 	case KVM_CAP_SYNC_REGS:
 	case KVM_CAP_ONE_REG:
@@ -780,16 +660,12 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
 	case KVM_CAP_S390_CPU_TOPOLOGY:
 		r = test_facility(11);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		r = 0;
 	}
 	return r;
 }
 
-<<<<<<< HEAD
-/* Section: vm related */
-=======
 void kvm_arch_sync_dirty_log(struct kvm *kvm, struct kvm_memory_slot *memslot)
 {
 	int i;
@@ -823,23 +699,12 @@ void kvm_arch_sync_dirty_log(struct kvm *kvm, struct kvm_memory_slot *memslot)
 /* Section: vm related */
 static void sca_del_vcpu(struct kvm_vcpu *vcpu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Get (and clear) the dirty memory log for a memory slot.
  */
 int kvm_vm_ioctl_get_dirty_log(struct kvm *kvm,
 			       struct kvm_dirty_log *log)
 {
-<<<<<<< HEAD
-	return 0;
-}
-
-long kvm_arch_vm_ioctl(struct file *filp,
-		       unsigned int ioctl, unsigned long arg)
-{
-	struct kvm *kvm = filp->private_data;
-	void __user *argp = (void __user *)arg;
-=======
 	int r;
 	unsigned long n;
 	struct kvm_memory_slot *memslot;
@@ -3120,7 +2985,6 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 	struct kvm *kvm = filp->private_data;
 	void __user *argp = (void __user *)arg;
 	struct kvm_device_attr attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	switch (ioctl) {
@@ -3133,8 +2997,6 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 		r = kvm_s390_inject_vm(kvm, &s390int);
 		break;
 	}
-<<<<<<< HEAD
-=======
 	case KVM_CREATE_IRQCHIP: {
 		struct kvm_irq_routing_entry routing;
 
@@ -3262,7 +3124,6 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 		r = kvm_s390_pci_zpci_op(kvm, &args);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		r = -ENOTTY;
 	}
@@ -3270,12 +3131,6 @@ int kvm_arch_vm_ioctl(struct file *filp, unsigned int ioctl, unsigned long arg)
 	return r;
 }
 
-<<<<<<< HEAD
-int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
-{
-	int rc;
-	char debug_name[16];
-=======
 static int kvm_s390_apxa_installed(void)
 {
 	struct ap_config_info info;
@@ -3444,7 +3299,6 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
 	int i, rc;
 	char debug_name[16];
 	static unsigned long sca_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = -EINVAL;
 #ifdef CONFIG_KVM_S390_UCONTROL
@@ -3463,37 +3317,6 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
 
 	rc = -ENOMEM;
 
-<<<<<<< HEAD
-	kvm->arch.sca = (struct sca_block *) get_zeroed_page(GFP_KERNEL);
-	if (!kvm->arch.sca)
-		goto out_err;
-
-	sprintf(debug_name, "kvm-%u", current->pid);
-
-	kvm->arch.dbf = debug_register(debug_name, 8, 2, 8 * sizeof(long));
-	if (!kvm->arch.dbf)
-		goto out_nodbf;
-
-	spin_lock_init(&kvm->arch.float_int.lock);
-	INIT_LIST_HEAD(&kvm->arch.float_int.list);
-
-	debug_register_view(kvm->arch.dbf, &debug_sprintf_view);
-	VM_EVENT(kvm, 3, "%s", "vm created");
-
-	if (type & KVM_VM_S390_UCONTROL) {
-		kvm->arch.gmap = NULL;
-	} else {
-		kvm->arch.gmap = gmap_alloc(current->mm);
-		if (!kvm->arch.gmap)
-			goto out_nogmap;
-	}
-	return 0;
-out_nogmap:
-	debug_unregister(kvm->arch.dbf);
-out_nodbf:
-	free_page((unsigned long)(kvm->arch.sca));
-out_err:
-=======
 	if (!sclp.has_64bscao)
 		alloc_flags |= GFP_DMA;
 	rwlock_init(&kvm->arch.sca_lock);
@@ -3603,50 +3426,11 @@ out_err:
 	debug_unregister(kvm->arch.dbf);
 	sca_dispose(kvm);
 	KVM_EVENT(3, "creation of vm failed: %d", rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	VCPU_EVENT(vcpu, 3, "%s", "free cpu");
-	if (!kvm_is_ucontrol(vcpu->kvm)) {
-		clear_bit(63 - vcpu->vcpu_id,
-			  (unsigned long *) &vcpu->kvm->arch.sca->mcn);
-		if (vcpu->kvm->arch.sca->cpu[vcpu->vcpu_id].sda ==
-		    (__u64) vcpu->arch.sie_block)
-			vcpu->kvm->arch.sca->cpu[vcpu->vcpu_id].sda = 0;
-	}
-	smp_mb();
-
-	if (kvm_is_ucontrol(vcpu->kvm))
-		gmap_free(vcpu->arch.gmap);
-
-	free_page((unsigned long)(vcpu->arch.sie_block));
-	kvm_vcpu_uninit(vcpu);
-	kfree(vcpu);
-}
-
-static void kvm_free_vcpus(struct kvm *kvm)
-{
-	unsigned int i;
-	struct kvm_vcpu *vcpu;
-
-	kvm_for_each_vcpu(i, vcpu, kvm)
-		kvm_arch_vcpu_destroy(vcpu);
-
-	mutex_lock(&kvm->lock);
-	for (i = 0; i < atomic_read(&kvm->online_vcpus); i++)
-		kvm->vcpus[i] = NULL;
-
-	atomic_set(&kvm->online_vcpus, 0);
-	mutex_unlock(&kvm->lock);
-}
-
-void kvm_arch_sync_events(struct kvm *kvm)
-{
-=======
 	u16 rc, rrc;
 
 	VCPU_EVENT(vcpu, 3, "%s", "free cpu");
@@ -3666,41 +3450,10 @@ void kvm_arch_sync_events(struct kvm *kvm)
 	if (kvm_s390_pv_cpu_get_handle(vcpu))
 		kvm_s390_pv_destroy_cpu(vcpu, &rc, &rrc);
 	free_page((unsigned long)(vcpu->arch.sie_block));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_arch_destroy_vm(struct kvm *kvm)
 {
-<<<<<<< HEAD
-	kvm_free_vcpus(kvm);
-	free_page((unsigned long)(kvm->arch.sca));
-	debug_unregister(kvm->arch.dbf);
-	if (!kvm_is_ucontrol(kvm))
-		gmap_free(kvm->arch.gmap);
-}
-
-/* Section: vcpu related */
-int kvm_arch_vcpu_init(struct kvm_vcpu *vcpu)
-{
-	if (kvm_is_ucontrol(vcpu->kvm)) {
-		vcpu->arch.gmap = gmap_alloc(current->mm);
-		if (!vcpu->arch.gmap)
-			return -ENOMEM;
-		return 0;
-	}
-
-	vcpu->arch.gmap = vcpu->kvm->arch.gmap;
-	vcpu->run->kvm_valid_regs = KVM_SYNC_PREFIX |
-				    KVM_SYNC_GPRS |
-				    KVM_SYNC_ACRS |
-				    KVM_SYNC_CRS;
-	return 0;
-}
-
-void kvm_arch_vcpu_uninit(struct kvm_vcpu *vcpu)
-{
-	/* Nothing todo */
-=======
 	u16 rc, rrc;
 
 	kvm_destroy_vcpus(kvm);
@@ -3958,133 +3711,20 @@ __u64 kvm_s390_get_cpu_timer(struct kvm_vcpu *vcpu)
 	} while (read_seqcount_retry(&vcpu->arch.cputm_seqcount, seq & ~1));
 	preempt_enable();
 	return value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_arch_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
 {
-<<<<<<< HEAD
-	save_fp_regs(&vcpu->arch.host_fpregs);
-	save_access_regs(vcpu->arch.host_acrs);
-	vcpu->arch.guest_fpregs.fpc &= FPC_VALID_MASK;
-	restore_fp_regs(&vcpu->arch.guest_fpregs);
-	restore_access_regs(vcpu->run->s.regs.acrs);
-	gmap_enable(vcpu->arch.gmap);
-	atomic_set_mask(CPUSTAT_RUNNING, &vcpu->arch.sie_block->cpuflags);
-=======
 
 	gmap_enable(vcpu->arch.enabled_gmap);
 	kvm_s390_set_cpuflags(vcpu, CPUSTAT_RUNNING);
 	if (vcpu->arch.cputm_enabled && !is_vcpu_idle(vcpu))
 		__start_cpu_timer_accounting(vcpu);
 	vcpu->cpu = cpu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvm_arch_vcpu_put(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	atomic_clear_mask(CPUSTAT_RUNNING, &vcpu->arch.sie_block->cpuflags);
-	gmap_disable(vcpu->arch.gmap);
-	save_fp_regs(&vcpu->arch.guest_fpregs);
-	save_access_regs(vcpu->run->s.regs.acrs);
-	restore_fp_regs(&vcpu->arch.host_fpregs);
-	restore_access_regs(vcpu->arch.host_acrs);
-}
-
-static void kvm_s390_vcpu_initial_reset(struct kvm_vcpu *vcpu)
-{
-	/* this equals initial cpu reset in pop, but we don't switch to ESA */
-	vcpu->arch.sie_block->gpsw.mask = 0UL;
-	vcpu->arch.sie_block->gpsw.addr = 0UL;
-	kvm_s390_set_prefix(vcpu, 0);
-	vcpu->arch.sie_block->cputm     = 0UL;
-	vcpu->arch.sie_block->ckc       = 0UL;
-	vcpu->arch.sie_block->todpr     = 0;
-	memset(vcpu->arch.sie_block->gcr, 0, 16 * sizeof(__u64));
-	vcpu->arch.sie_block->gcr[0]  = 0xE0UL;
-	vcpu->arch.sie_block->gcr[14] = 0xC2000000UL;
-	vcpu->arch.guest_fpregs.fpc = 0;
-	asm volatile("lfpc %0" : : "Q" (vcpu->arch.guest_fpregs.fpc));
-	vcpu->arch.sie_block->gbea = 1;
-}
-
-int kvm_arch_vcpu_setup(struct kvm_vcpu *vcpu)
-{
-	atomic_set(&vcpu->arch.sie_block->cpuflags, CPUSTAT_ZARCH |
-						    CPUSTAT_SM |
-						    CPUSTAT_STOPPED);
-	vcpu->arch.sie_block->ecb   = 6;
-	vcpu->arch.sie_block->eca   = 0xC1002001U;
-	vcpu->arch.sie_block->fac   = (int) (long) facilities;
-	hrtimer_init(&vcpu->arch.ckc_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	tasklet_init(&vcpu->arch.tasklet, kvm_s390_tasklet,
-		     (unsigned long) vcpu);
-	vcpu->arch.ckc_timer.function = kvm_s390_idle_wakeup;
-	get_cpu_id(&vcpu->arch.cpu_id);
-	vcpu->arch.cpu_id.version = 0xff;
-	return 0;
-}
-
-struct kvm_vcpu *kvm_arch_vcpu_create(struct kvm *kvm,
-				      unsigned int id)
-{
-	struct kvm_vcpu *vcpu;
-	int rc = -EINVAL;
-
-	if (id >= KVM_MAX_VCPUS)
-		goto out;
-
-	rc = -ENOMEM;
-
-	vcpu = kzalloc(sizeof(struct kvm_vcpu), GFP_KERNEL);
-	if (!vcpu)
-		goto out;
-
-	vcpu->arch.sie_block = (struct kvm_s390_sie_block *)
-					get_zeroed_page(GFP_KERNEL);
-
-	if (!vcpu->arch.sie_block)
-		goto out_free_cpu;
-
-	vcpu->arch.sie_block->icpua = id;
-	if (!kvm_is_ucontrol(kvm)) {
-		if (!kvm->arch.sca) {
-			WARN_ON_ONCE(1);
-			goto out_free_cpu;
-		}
-		if (!kvm->arch.sca->cpu[id].sda)
-			kvm->arch.sca->cpu[id].sda =
-				(__u64) vcpu->arch.sie_block;
-		vcpu->arch.sie_block->scaoh =
-			(__u32)(((__u64)kvm->arch.sca) >> 32);
-		vcpu->arch.sie_block->scaol = (__u32)(__u64)kvm->arch.sca;
-		set_bit(63 - id, (unsigned long *) &kvm->arch.sca->mcn);
-	}
-
-	spin_lock_init(&vcpu->arch.local_int.lock);
-	INIT_LIST_HEAD(&vcpu->arch.local_int.list);
-	vcpu->arch.local_int.float_int = &kvm->arch.float_int;
-	spin_lock(&kvm->arch.float_int.lock);
-	kvm->arch.float_int.local_int[id] = &vcpu->arch.local_int;
-	init_waitqueue_head(&vcpu->arch.local_int.wq);
-	vcpu->arch.local_int.cpuflags = &vcpu->arch.sie_block->cpuflags;
-	spin_unlock(&kvm->arch.float_int.lock);
-
-	rc = kvm_vcpu_init(vcpu, kvm, id);
-	if (rc)
-		goto out_free_sie_block;
-	VM_EVENT(kvm, 3, "create cpu %d at %p, sie block at %p", id, vcpu,
-		 vcpu->arch.sie_block);
-
-	return vcpu;
-out_free_sie_block:
-	free_page((unsigned long)(vcpu->arch.sie_block));
-out_free_cpu:
-	kfree(vcpu);
-out:
-	return ERR_PTR(rc);
-=======
 	vcpu->cpu = -1;
 	if (vcpu->arch.cputm_enabled && !is_vcpu_idle(vcpu))
 		__stop_cpu_timer_accounting(vcpu);
@@ -4352,13 +3992,10 @@ out_ucontrol_uninit:
 out_free_sie_block:
 	free_page((unsigned long)(vcpu->arch.sie_block));
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_runnable(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-=======
 	clear_bit(vcpu->vcpu_idx, vcpu->kvm->arch.gisa_int.kicked_mask);
 	return kvm_s390_vcpu_has_irq(vcpu, 0);
 }
@@ -4454,18 +4091,11 @@ bool kvm_arch_no_poll(struct kvm_vcpu *vcpu)
 
 int kvm_arch_vcpu_should_kick(struct kvm_vcpu *vcpu)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* kvm common code refers to this, but never calls it */
 	BUG();
 	return 0;
 }
 
-<<<<<<< HEAD
-static int kvm_arch_vcpu_ioctl_initial_reset(struct kvm_vcpu *vcpu)
-{
-	kvm_s390_vcpu_initial_reset(vcpu);
-	return 0;
-=======
 static int kvm_arch_vcpu_ioctl_get_one_reg(struct kvm_vcpu *vcpu,
 					   struct kvm_one_reg *reg)
 {
@@ -4638,76 +4268,50 @@ static void kvm_arch_vcpu_ioctl_clear_reset(struct kvm_vcpu *vcpu)
 
 	regs->etoken = 0;
 	regs->etoken_extension = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
 {
-<<<<<<< HEAD
-	memcpy(&vcpu->run->s.regs.gprs, &regs->gprs, sizeof(regs->gprs));
-=======
 	vcpu_load(vcpu);
 	memcpy(&vcpu->run->s.regs.gprs, &regs->gprs, sizeof(regs->gprs));
 	vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
 {
-<<<<<<< HEAD
-	memcpy(&regs->gprs, &vcpu->run->s.regs.gprs, sizeof(regs->gprs));
-=======
 	vcpu_load(vcpu);
 	memcpy(&regs->gprs, &vcpu->run->s.regs.gprs, sizeof(regs->gprs));
 	vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
 				  struct kvm_sregs *sregs)
 {
-<<<<<<< HEAD
-	memcpy(&vcpu->run->s.regs.acrs, &sregs->acrs, sizeof(sregs->acrs));
-	memcpy(&vcpu->arch.sie_block->gcr, &sregs->crs, sizeof(sregs->crs));
-	restore_access_regs(vcpu->run->s.regs.acrs);
-=======
 	vcpu_load(vcpu);
 
 	memcpy(&vcpu->run->s.regs.acrs, &sregs->acrs, sizeof(sregs->acrs));
 	memcpy(&vcpu->arch.sie_block->gcr, &sregs->crs, sizeof(sregs->crs));
 
 	vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
 				  struct kvm_sregs *sregs)
 {
-<<<<<<< HEAD
-	memcpy(&sregs->acrs, &vcpu->run->s.regs.acrs, sizeof(sregs->acrs));
-	memcpy(&sregs->crs, &vcpu->arch.sie_block->gcr, sizeof(sregs->crs));
-=======
 	vcpu_load(vcpu);
 
 	memcpy(&sregs->acrs, &vcpu->run->s.regs.acrs, sizeof(sregs->acrs));
 	memcpy(&sregs->crs, &vcpu->arch.sie_block->gcr, sizeof(sregs->crs));
 
 	vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int kvm_arch_vcpu_ioctl_set_fpu(struct kvm_vcpu *vcpu, struct kvm_fpu *fpu)
 {
-<<<<<<< HEAD
-	memcpy(&vcpu->arch.guest_fpregs.fprs, &fpu->fprs, sizeof(fpu->fprs));
-	vcpu->arch.guest_fpregs.fpc = fpu->fpc & FPC_VALID_MASK;
-	restore_fp_regs(&vcpu->arch.guest_fpregs);
-	return 0;
-=======
 	int ret = 0;
 
 	vcpu_load(vcpu);
@@ -4721,15 +4325,10 @@ int kvm_arch_vcpu_ioctl_set_fpu(struct kvm_vcpu *vcpu, struct kvm_fpu *fpu)
 
 	vcpu_put(vcpu);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_get_fpu(struct kvm_vcpu *vcpu, struct kvm_fpu *fpu)
 {
-<<<<<<< HEAD
-	memcpy(&fpu->fprs, &vcpu->arch.guest_fpregs.fprs, sizeof(fpu->fprs));
-	fpu->fpc = vcpu->arch.guest_fpregs.fpc;
-=======
 	vcpu_load(vcpu);
 
 	if (cpu_has_vx())
@@ -4740,7 +4339,6 @@ int kvm_arch_vcpu_ioctl_get_fpu(struct kvm_vcpu *vcpu, struct kvm_fpu *fpu)
 	fpu->fpc = vcpu->run->s.regs.fpc;
 
 	vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4748,11 +4346,7 @@ static int kvm_arch_vcpu_ioctl_set_initial_psw(struct kvm_vcpu *vcpu, psw_t psw)
 {
 	int rc = 0;
 
-<<<<<<< HEAD
-	if (!(atomic_read(&vcpu->arch.sie_block->cpuflags) & CPUSTAT_STOPPED))
-=======
 	if (!is_vcpu_stopped(vcpu))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EBUSY;
 	else {
 		vcpu->run->psw_mask = psw.mask;
@@ -4767,12 +4361,6 @@ int kvm_arch_vcpu_ioctl_translate(struct kvm_vcpu *vcpu,
 	return -EINVAL; /* not implemented yet */
 }
 
-<<<<<<< HEAD
-int kvm_arch_vcpu_ioctl_set_guest_debug(struct kvm_vcpu *vcpu,
-					struct kvm_guest_debug *dbg)
-{
-	return -EINVAL; /* not implemented yet */
-=======
 #define VALID_GUESTDBG_FLAGS (KVM_GUESTDBG_SINGLESTEP | \
 			      KVM_GUESTDBG_USE_HW_BP | \
 			      KVM_GUESTDBG_ENABLE)
@@ -4817,15 +4405,11 @@ int kvm_arch_vcpu_ioctl_set_guest_debug(struct kvm_vcpu *vcpu,
 out:
 	vcpu_put(vcpu);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_get_mpstate(struct kvm_vcpu *vcpu,
 				    struct kvm_mp_state *mp_state)
 {
-<<<<<<< HEAD
-	return -EINVAL; /* not implemented yet */
-=======
 	int ret;
 
 	vcpu_load(vcpu);
@@ -4836,22 +4420,11 @@ int kvm_arch_vcpu_ioctl_get_mpstate(struct kvm_vcpu *vcpu,
 
 	vcpu_put(vcpu);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_set_mpstate(struct kvm_vcpu *vcpu,
 				    struct kvm_mp_state *mp_state)
 {
-<<<<<<< HEAD
-	return -EINVAL; /* not implemented yet */
-}
-
-static int __vcpu_run(struct kvm_vcpu *vcpu)
-{
-	int rc;
-
-	memcpy(&vcpu->arch.sie_block->gg14, &vcpu->run->s.regs.gprs[14], 16);
-=======
 	int rc = 0;
 
 	vcpu_load(vcpu);
@@ -5107,86 +4680,10 @@ static int vcpu_pre_run(struct kvm_vcpu *vcpu)
 
 	vcpu->arch.sie_block->gg14 = vcpu->run->s.regs.gprs[14];
 	vcpu->arch.sie_block->gg15 = vcpu->run->s.regs.gprs[15];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (need_resched())
 		schedule();
 
-<<<<<<< HEAD
-	if (test_thread_flag(TIF_MCCK_PENDING))
-		s390_handle_mcck();
-
-	if (!kvm_is_ucontrol(vcpu->kvm))
-		kvm_s390_deliver_pending_interrupts(vcpu);
-
-	VCPU_EVENT(vcpu, 6, "entering sie flags %x",
-		   atomic_read(&vcpu->arch.sie_block->cpuflags));
-
-	vcpu->arch.sie_block->icptcode = 0;
-	local_irq_disable();
-	kvm_guest_enter();
-	local_irq_enable();
-	rc = sie64a(vcpu->arch.sie_block, vcpu->run->s.regs.gprs);
-	local_irq_disable();
-	kvm_guest_exit();
-	local_irq_enable();
-
-	if (rc) {
-		if (kvm_is_ucontrol(vcpu->kvm)) {
-			rc = SIE_INTERCEPT_UCONTROL;
-		} else {
-			VCPU_EVENT(vcpu, 3, "%s", "fault in sie instruction");
-			kvm_s390_inject_program_int(vcpu, PGM_ADDRESSING);
-			rc = 0;
-		}
-	}
-	VCPU_EVENT(vcpu, 6, "exit sie icptcode %d",
-		   vcpu->arch.sie_block->icptcode);
-
-	memcpy(&vcpu->run->s.regs.gprs[14], &vcpu->arch.sie_block->gg14, 16);
-	return rc;
-}
-
-int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu, struct kvm_run *kvm_run)
-{
-	int rc;
-	sigset_t sigsaved;
-
-rerun_vcpu:
-	if (vcpu->sigset_active)
-		sigprocmask(SIG_SETMASK, &vcpu->sigset, &sigsaved);
-
-	atomic_clear_mask(CPUSTAT_STOPPED, &vcpu->arch.sie_block->cpuflags);
-
-	BUG_ON(vcpu->kvm->arch.float_int.local_int[vcpu->vcpu_id] == NULL);
-
-	vcpu->arch.sie_block->gpsw.mask = kvm_run->psw_mask;
-	vcpu->arch.sie_block->gpsw.addr = kvm_run->psw_addr;
-	if (kvm_run->kvm_dirty_regs & KVM_SYNC_PREFIX) {
-		kvm_run->kvm_dirty_regs &= ~KVM_SYNC_PREFIX;
-		kvm_s390_set_prefix(vcpu, kvm_run->s.regs.prefix);
-	}
-	if (kvm_run->kvm_dirty_regs & KVM_SYNC_CRS) {
-		kvm_run->kvm_dirty_regs &= ~KVM_SYNC_CRS;
-		memcpy(&vcpu->arch.sie_block->gcr, &kvm_run->s.regs.crs, 128);
-		kvm_s390_set_prefix(vcpu, kvm_run->s.regs.prefix);
-	}
-
-	might_fault();
-
-	do {
-		rc = __vcpu_run(vcpu);
-		if (rc)
-			break;
-		if (kvm_is_ucontrol(vcpu->kvm))
-			rc = -EOPNOTSUPP;
-		else
-			rc = kvm_handle_sie_intercept(vcpu);
-	} while (!signal_pending(current) && !rc);
-
-	if (rc == SIE_INTERCEPT_RERUNVCPU)
-		goto rerun_vcpu;
-=======
 	if (!kvm_is_ucontrol(vcpu->kvm)) {
 		rc = kvm_s390_deliver_pending_interrupts(vcpu);
 		if (rc || guestdbg_exit_pending(vcpu))
@@ -5572,66 +5069,18 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
 
 	might_fault();
 	rc = __vcpu_run(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (signal_pending(current) && !rc) {
 		kvm_run->exit_reason = KVM_EXIT_INTR;
 		rc = -EINTR;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_S390_UCONTROL
-	if (rc == SIE_INTERCEPT_UCONTROL) {
-		kvm_run->exit_reason = KVM_EXIT_S390_UCONTROL;
-		kvm_run->s390_ucontrol.trans_exc_code =
-			current->thread.gmap_addr;
-		kvm_run->s390_ucontrol.pgm_code = 0x10;
-		rc = 0;
-	}
-#endif
-
-	if (rc == -EOPNOTSUPP) {
-		/* intercept cannot be handled in-kernel, prepare kvm-run */
-		kvm_run->exit_reason         = KVM_EXIT_S390_SIEIC;
-		kvm_run->s390_sieic.icptcode = vcpu->arch.sie_block->icptcode;
-		kvm_run->s390_sieic.ipa      = vcpu->arch.sie_block->ipa;
-		kvm_run->s390_sieic.ipb      = vcpu->arch.sie_block->ipb;
-=======
 	if (guestdbg_exit_pending(vcpu) && !rc)  {
 		kvm_s390_prepare_debug_exit(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 0;
 	}
 
 	if (rc == -EREMOTE) {
-<<<<<<< HEAD
-		/* intercept was handled, but userspace support is needed
-		 * kvm_run has been prepared by the handler */
-		rc = 0;
-	}
-
-	kvm_run->psw_mask     = vcpu->arch.sie_block->gpsw.mask;
-	kvm_run->psw_addr     = vcpu->arch.sie_block->gpsw.addr;
-	kvm_run->s.regs.prefix = vcpu->arch.sie_block->prefix;
-	memcpy(&kvm_run->s.regs.crs, &vcpu->arch.sie_block->gcr, 128);
-
-	if (vcpu->sigset_active)
-		sigprocmask(SIG_SETMASK, &sigsaved, NULL);
-
-	vcpu->stat.exit_userspace++;
-	return rc;
-}
-
-static int __guestcopy(struct kvm_vcpu *vcpu, u64 guestdest, void *from,
-		       unsigned long n, int prefix)
-{
-	if (prefix)
-		return copy_to_guest(vcpu, guestdest, from, n);
-	else
-		return copy_to_guest_absolute(vcpu, guestdest, from, n);
-}
-
-=======
 		/* userspace support is needed, kvm_run has been prepared */
 		rc = 0;
 	}
@@ -5648,85 +5097,12 @@ out:
 	return rc;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * store status at address
  * we use have two special cases:
  * KVM_S390_STORE_STATUS_NOADDR: -> 0x1200 on 64 bit
  * KVM_S390_STORE_STATUS_PREFIXED: -> prefix
  */
-<<<<<<< HEAD
-int kvm_s390_vcpu_store_status(struct kvm_vcpu *vcpu, unsigned long addr)
-{
-	unsigned char archmode = 1;
-	int prefix;
-
-	if (addr == KVM_S390_STORE_STATUS_NOADDR) {
-		if (copy_to_guest_absolute(vcpu, 163ul, &archmode, 1))
-			return -EFAULT;
-		addr = SAVE_AREA_BASE;
-		prefix = 0;
-	} else if (addr == KVM_S390_STORE_STATUS_PREFIXED) {
-		if (copy_to_guest(vcpu, 163ul, &archmode, 1))
-			return -EFAULT;
-		addr = SAVE_AREA_BASE;
-		prefix = 1;
-	} else
-		prefix = 0;
-
-	/*
-	 * The guest FPRS and ACRS are in the host FPRS/ACRS due to the lazy
-	 * copying in vcpu load/put. Lets update our copies before we save
-	 * it into the save area
-	 */
-	save_fp_regs(&vcpu->arch.guest_fpregs);
-	save_access_regs(vcpu->run->s.regs.acrs);
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, fp_regs),
-			vcpu->arch.guest_fpregs.fprs, 128, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, gp_regs),
-			vcpu->run->s.regs.gprs, 128, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, psw),
-			&vcpu->arch.sie_block->gpsw, 16, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, pref_reg),
-			&vcpu->arch.sie_block->prefix, 4, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu,
-			addr + offsetof(struct save_area, fp_ctrl_reg),
-			&vcpu->arch.guest_fpregs.fpc, 4, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, tod_reg),
-			&vcpu->arch.sie_block->todpr, 4, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, timer),
-			&vcpu->arch.sie_block->cputm, 8, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, clk_cmp),
-			&vcpu->arch.sie_block->ckc, 8, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu, addr + offsetof(struct save_area, acc_regs),
-			&vcpu->run->s.regs.acrs, 64, prefix))
-		return -EFAULT;
-
-	if (__guestcopy(vcpu,
-			addr + offsetof(struct save_area, ctrl_regs),
-			&vcpu->arch.sie_block->gcr, 128, prefix))
-		return -EFAULT;
-	return 0;
-}
-
-=======
 int kvm_s390_store_status_unloaded(struct kvm_vcpu *vcpu, unsigned long gpa)
 {
 	unsigned char archmode = 1;
@@ -6149,28 +5525,11 @@ static int kvm_s390_handle_pv_vcpu_dump(struct kvm_vcpu *vcpu,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long kvm_arch_vcpu_ioctl(struct file *filp,
 			 unsigned int ioctl, unsigned long arg)
 {
 	struct kvm_vcpu *vcpu = filp->private_data;
 	void __user *argp = (void __user *)arg;
-<<<<<<< HEAD
-	long r;
-
-	switch (ioctl) {
-	case KVM_S390_INTERRUPT: {
-		struct kvm_s390_interrupt s390int;
-
-		r = -EFAULT;
-		if (copy_from_user(&s390int, argp, sizeof(s390int)))
-			break;
-		r = kvm_s390_inject_vcpu(vcpu, &s390int);
-		break;
-	}
-	case KVM_S390_STORE_STATUS:
-		r = kvm_s390_vcpu_store_status(vcpu, arg);
-=======
 	int idx;
 	long r;
 	u16 rc, rrc;
@@ -6182,7 +5541,6 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 		idx = srcu_read_lock(&vcpu->kvm->srcu);
 		r = kvm_s390_store_status_unloaded(vcpu, arg);
 		srcu_read_unlock(&vcpu->kvm->srcu, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case KVM_S390_SET_INITIAL_PSW: {
 		psw_t psw;
@@ -6193,11 +5551,6 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 		r = kvm_arch_vcpu_ioctl_set_initial_psw(vcpu, psw);
 		break;
 	}
-<<<<<<< HEAD
-	case KVM_S390_INITIAL_RESET:
-		r = kvm_arch_vcpu_ioctl_initial_reset(vcpu);
-		break;
-=======
 	case KVM_S390_CLEAR_RESET:
 		r = 0;
 		kvm_arch_vcpu_ioctl_clear_reset(vcpu);
@@ -6244,7 +5597,6 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 			r = kvm_arch_vcpu_ioctl_get_one_reg(vcpu, &reg);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KVM_S390_UCONTROL
 	case KVM_S390_UCAS_MAP: {
 		struct kvm_s390_ucas_mapping ucasmap;
@@ -6282,11 +5634,6 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 	}
 #endif
 	case KVM_S390_VCPU_FAULT: {
-<<<<<<< HEAD
-		r = gmap_fault(arg, vcpu->arch.gmap);
-		if (!IS_ERR_VALUE(r))
-			r = 0;
-=======
 		r = gmap_fault(vcpu->arch.gmap, arg, 0);
 		break;
 	}
@@ -6367,25 +5714,17 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
 		if (copy_to_user((__u8 __user *)argp, &cmd.rc,
 				 sizeof(cmd.rc) + sizeof(cmd.rrc)))
 			r = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
 		r = -ENOTTY;
 	}
-<<<<<<< HEAD
-	return r;
-}
-
-int kvm_arch_vcpu_fault(struct kvm_vcpu *vcpu, struct vm_fault *vmf)
-=======
 
 	vcpu_put(vcpu);
 	return r;
 }
 
 vm_fault_t kvm_arch_vcpu_fault(struct kvm_vcpu *vcpu, struct vm_fault *vmf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_KVM_S390_UCONTROL
 	if ((vmf->pgoff == KVM_S390_SIE_PAGE_OFFSET)
@@ -6398,52 +5737,13 @@ vm_fault_t kvm_arch_vcpu_fault(struct kvm_vcpu *vcpu, struct vm_fault *vmf)
 	return VM_FAULT_SIGBUS;
 }
 
-<<<<<<< HEAD
-void kvm_arch_free_memslot(struct kvm_memory_slot *free,
-			   struct kvm_memory_slot *dont)
-{
-}
-
-int kvm_arch_create_memslot(struct kvm_memory_slot *slot, unsigned long npages)
-{
-	return 0;
-=======
 bool kvm_arch_irqchip_in_kernel(struct kvm *kvm)
 {
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Section: memory related */
 int kvm_arch_prepare_memory_region(struct kvm *kvm,
-<<<<<<< HEAD
-				   struct kvm_memory_slot *memslot,
-				   struct kvm_memory_slot old,
-				   struct kvm_userspace_memory_region *mem,
-				   int user_alloc)
-{
-	/* A few sanity checks. We can have exactly one memory slot which has
-	   to start at guest virtual zero and which has to be located at a
-	   page boundary in userland and which has to end at a page boundary.
-	   The memory in userland is ok to be fragmented into various different
-	   vmas. It is okay to mmap() and munmap() stuff in this slot after
-	   doing this call at any time */
-
-	if (mem->slot)
-		return -EINVAL;
-
-	if (mem->guest_phys_addr)
-		return -EINVAL;
-
-	if (mem->userspace_addr & 0xffffful)
-		return -EINVAL;
-
-	if (mem->memory_size & 0xffffful)
-		return -EINVAL;
-
-	if (!user_alloc)
-		return -EINVAL;
-=======
 				   const struct kvm_memory_slot *old,
 				   struct kvm_memory_slot *new,
 				   enum kvm_mr_change change)
@@ -6488,30 +5788,11 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
 	    !(new->flags & KVM_MEM_LOG_DIRTY_PAGES))
 		WARN(kvm_s390_vm_stop_migration(kvm),
 		     "Failed to stop migration mode");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 void kvm_arch_commit_memory_region(struct kvm *kvm,
-<<<<<<< HEAD
-				struct kvm_userspace_memory_region *mem,
-				struct kvm_memory_slot old,
-				int user_alloc)
-{
-	int rc;
-
-
-	rc = gmap_map_segment(kvm->arch.gmap, mem->userspace_addr,
-		mem->guest_phys_addr, mem->memory_size);
-	if (rc)
-		printk(KERN_WARNING "kvm-s390: failed to commit memory region\n");
-	return;
-}
-
-void kvm_arch_flush_shadow(struct kvm *kvm)
-{
-=======
 				struct kvm_memory_slot *old,
 				const struct kvm_memory_slot *new,
 				enum kvm_mr_change change)
@@ -6549,31 +5830,10 @@ static inline unsigned long nonhyp_mask(int i)
 	unsigned int nonhyp_fai = (sclp.hmfai << i * 2) >> 30;
 
 	return 0x0000ffffffffffffUL >> (nonhyp_fai << 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init kvm_s390_init(void)
 {
-<<<<<<< HEAD
-	int ret;
-	ret = kvm_init(NULL, sizeof(struct kvm_vcpu), 0, THIS_MODULE);
-	if (ret)
-		return ret;
-
-	/*
-	 * guests can ask for up to 255+1 double words, we need a full page
-	 * to hold the maximum amount of facilities. On the other hand, we
-	 * only set facilities that are known to work in KVM.
-	 */
-	facilities = (unsigned long long *) get_zeroed_page(GFP_KERNEL|GFP_DMA);
-	if (!facilities) {
-		kvm_exit();
-		return -ENOMEM;
-	}
-	memcpy(facilities, S390_lowcore.stfle_fac_list, 16);
-	facilities[0] &= 0xff00fff3f47c0000ULL;
-	facilities[1] &= 0x001c000000000000ULL;
-=======
 	int i, r;
 
 	if (!sclp.has_sief2) {
@@ -6599,26 +5859,18 @@ static int __init kvm_s390_init(void)
 		__kvm_s390_exit();
 		return r;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit kvm_s390_exit(void)
 {
-<<<<<<< HEAD
-	free_page((unsigned long) facilities);
-	kvm_exit();
-=======
 	kvm_exit();
 
 	__kvm_s390_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(kvm_s390_init);
 module_exit(kvm_s390_exit);
-<<<<<<< HEAD
-=======
 
 /*
  * Enable autoloading of the kvm module.
@@ -6628,4 +5880,3 @@ module_exit(kvm_s390_exit);
 #include <linux/miscdevice.h>
 MODULE_ALIAS_MISCDEV(KVM_MINOR);
 MODULE_ALIAS("devname:kvm");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

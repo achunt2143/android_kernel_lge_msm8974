@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2004, 05, 06 MIPS Technologies, Inc.
  *    Elizabeth Clarke (beth@mips.com)
@@ -27,10 +11,7 @@
 #include <linux/cpumask.h>
 #include <linux/interrupt.h>
 #include <linux/compiler.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smp.h>
 
 #include <linux/atomic.h>
@@ -43,10 +24,7 @@
 #include <asm/mipsregs.h>
 #include <asm/mipsmtregs.h>
 #include <asm/mips_mt.h>
-<<<<<<< HEAD
-=======
 #include <asm/mips-cps.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init smvp_copy_vpe_config(void)
 {
@@ -68,12 +46,8 @@ static void __init smvp_copy_vpe_config(void)
 static unsigned int __init smvp_vpe_init(unsigned int tc, unsigned int mvpconf0,
 	unsigned int ncpu)
 {
-<<<<<<< HEAD
-	if (tc > ((mvpconf0 & MVPCONF0_PVPE) >> MVPCONF0_PVPE_SHIFT))
-=======
 	if (tc >= smp_max_threads ||
 		(tc > ((mvpconf0 & MVPCONF0_PVPE) >> MVPCONF0_PVPE_SHIFT)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ncpu;
 
 	/* Deactivate all but VPE 0 */
@@ -88,14 +62,9 @@ static unsigned int __init smvp_vpe_init(unsigned int tc, unsigned int mvpconf0,
 
 		/* Record this as available CPU */
 		set_cpu_possible(tc, true);
-<<<<<<< HEAD
-		__cpu_number_map[tc]	= ++ncpu;
-		__cpu_logical_map[ncpu]	= tc;
-=======
 		set_cpu_present(tc, true);
 		__cpu_number_map[tc]	= ++ncpu;
 		__cpu_logical_map[ncpu] = tc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Disable multi-threading with TC's */
@@ -104,11 +73,8 @@ static unsigned int __init smvp_vpe_init(unsigned int tc, unsigned int mvpconf0,
 	if (tc != 0)
 		smvp_copy_vpe_config();
 
-<<<<<<< HEAD
-=======
 	cpu_set_vpe_id(&cpu_data[ncpu], tc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ncpu;
 }
 
@@ -140,70 +106,19 @@ static void __init smvp_tc_init(unsigned int tc, unsigned int mvpconf0)
 	write_tc_c0_tchalt(TCHALT_H);
 }
 
-<<<<<<< HEAD
-static void vsmp_send_ipi_single(int cpu, unsigned int action)
-{
-	int i;
-	unsigned long flags;
-	int vpflags;
-
-	local_irq_save(flags);
-
-	vpflags = dvpe();	/* can't access the other CPU's registers whilst MVPE enabled */
-
-	switch (action) {
-	case SMP_CALL_FUNCTION:
-		i = C_SW1;
-		break;
-
-	case SMP_RESCHEDULE_YOURSELF:
-	default:
-		i = C_SW0;
-		break;
-	}
-
-	/* 1:1 mapping of vpe and tc... */
-	settc(cpu);
-	write_vpe_c0_cause(read_vpe_c0_cause() | i);
-	evpe(vpflags);
-
-	local_irq_restore(flags);
-}
-
-static void vsmp_send_ipi_mask(const struct cpumask *mask, unsigned int action)
-{
-	unsigned int i;
-
-	for_each_cpu(i, mask)
-		vsmp_send_ipi_single(i, action);
-}
-
-static void __cpuinit vsmp_init_secondary(void)
-{
-	extern int gic_present;
-
-	/* This is Malta specific: IPI,performance and timer interrupts */
-	if (gic_present)
-		change_c0_status(ST0_IM, STATUSF_IP3 | STATUSF_IP4 |
-=======
 static void vsmp_init_secondary(void)
 {
 	/* This is Malta specific: IPI,performance and timer interrupts */
 	if (mips_gic_present())
 		change_c0_status(ST0_IM, STATUSF_IP2 | STATUSF_IP3 |
 					 STATUSF_IP4 | STATUSF_IP5 |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 STATUSF_IP6 | STATUSF_IP7);
 	else
 		change_c0_status(ST0_IM, STATUSF_IP0 | STATUSF_IP1 |
 					 STATUSF_IP6 | STATUSF_IP7);
 }
 
-<<<<<<< HEAD
-static void __cpuinit vsmp_smp_finish(void)
-=======
 static void vsmp_smp_finish(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* CDFIXME: remove this? */
 	write_c0_compare(read_c0_count() + (8* mips_hpt_frequency/HZ));
@@ -211,23 +126,12 @@ static void vsmp_smp_finish(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
-<<<<<<< HEAD
-		cpu_set(smp_processor_id(), mt_fpu_cpumask);
-=======
 		cpumask_set_cpu(smp_processor_id(), &mt_fpu_cpumask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_MIPS_MT_FPAFF */
 
 	local_irq_enable();
 }
 
-<<<<<<< HEAD
-static void vsmp_cpus_done(void)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup the PC, SP, and GP of a secondary processor and start it
  * running!
@@ -236,11 +140,7 @@ static void vsmp_cpus_done(void)
  * (unsigned long)idle->thread_info the gp
  * assumes a 1:1 mapping of TC => VPE
  */
-<<<<<<< HEAD
-static void __cpuinit vsmp_boot_secondary(int cpu, struct task_struct *idle)
-=======
 static int vsmp_boot_secondary(int cpu, struct task_struct *idle)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct thread_info *gp = task_thread_info(idle);
 	dvpe();
@@ -266,21 +166,14 @@ static int vsmp_boot_secondary(int cpu, struct task_struct *idle)
 	write_tc_gpr_gp((unsigned long)gp);
 
 	flush_icache_range((unsigned long)gp,
-<<<<<<< HEAD
-	                   (unsigned long)(gp + sizeof(struct thread_info)));
-=======
 			   (unsigned long)(gp + sizeof(struct thread_info)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* finally out of configuration and into chaos */
 	clear_c0_mvpcontrol(MVPCONTROL_VPC);
 
 	evpe(EVPE_ENABLE);
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -296,11 +189,7 @@ static void __init vsmp_smp_setup(void)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/* If we have an FPU, enroll ourselves in the FPU-full mask */
 	if (cpu_has_fpu)
-<<<<<<< HEAD
-		cpu_set(0, mt_fpu_cpumask);
-=======
 		cpumask_set_cpu(0, &mt_fpu_cpumask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_MIPS_MT_FPAFF */
 	if (!cpu_has_mipsmt)
 		return;
@@ -340,25 +229,13 @@ static void __init vsmp_prepare_cpus(unsigned int max_cpus)
 	mips_mt_set_cpuoptions();
 }
 
-<<<<<<< HEAD
-struct plat_smp_ops vsmp_smp_ops = {
-	.send_ipi_single	= vsmp_send_ipi_single,
-	.send_ipi_mask		= vsmp_send_ipi_mask,
-	.init_secondary		= vsmp_init_secondary,
-	.smp_finish		= vsmp_smp_finish,
-	.cpus_done		= vsmp_cpus_done,
-=======
 const struct plat_smp_ops vsmp_smp_ops = {
 	.send_ipi_single	= mips_smp_send_ipi_single,
 	.send_ipi_mask		= mips_smp_send_ipi_mask,
 	.init_secondary		= vsmp_init_secondary,
 	.smp_finish		= vsmp_smp_finish,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.boot_secondary		= vsmp_boot_secondary,
 	.smp_setup		= vsmp_smp_setup,
 	.prepare_cpus		= vsmp_prepare_cpus,
 };
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

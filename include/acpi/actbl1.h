@@ -1,76 +1,22 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: actbl1.h - Additional ACPI table definitions
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2011, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACTBL1_H__
 #define __ACTBL1_H__
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
- * Additional ACPI Tables (1)
-=======
  * Additional ACPI Tables
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * These tables are not consumed directly by the ACPICA subsystem, but are
  * included here to support device drivers and the AML disassembler.
  *
-<<<<<<< HEAD
- * The tables in this file are fully defined within the ACPI specification.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ******************************************************************************/
 
 /*
@@ -78,19 +24,6 @@
  * file. Useful because they make it more difficult to inadvertently type in
  * the wrong signature.
  */
-<<<<<<< HEAD
-#define ACPI_SIG_BERT           "BERT"	/* Boot Error Record Table */
-#define ACPI_SIG_CPEP           "CPEP"	/* Corrected Platform Error Polling table */
-#define ACPI_SIG_ECDT           "ECDT"	/* Embedded Controller Boot Resources Table */
-#define ACPI_SIG_EINJ           "EINJ"	/* Error Injection table */
-#define ACPI_SIG_ERST           "ERST"	/* Error Record Serialization Table */
-#define ACPI_SIG_HEST           "HEST"	/* Hardware Error Source Table */
-#define ACPI_SIG_MADT           "APIC"	/* Multiple APIC Description Table */
-#define ACPI_SIG_MSCT           "MSCT"	/* Maximum System Characteristics Table */
-#define ACPI_SIG_SBST           "SBST"	/* Smart Battery Specification Table */
-#define ACPI_SIG_SLIT           "SLIT"	/* System Locality Distance Information Table */
-#define ACPI_SIG_SRAT           "SRAT"	/* System Resource Affinity Table */
-=======
 #define ACPI_SIG_AEST           "AEST"	/* Arm Error Source Table */
 #define ACPI_SIG_ASF            "ASF!"	/* Alert Standard Format table */
 #define ACPI_SIG_ASPT           "ASPT"	/* AMD Secure Processor Table */
@@ -133,7 +66,6 @@
 #define ACPI_SIG_GSCI           "GSCI"	/* GMCH SCI table */
 #define ACPI_SIG_IEIT           "IEIT"
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * All tables must be byte-packed to match the ACPI specification, since
@@ -142,11 +74,6 @@
 #pragma pack(1)
 
 /*
-<<<<<<< HEAD
- * Note about bitfields: The u8 type is used for bitfields in ACPI tables.
- * This is the only type that is even remotely portable. Anything else is not
- * portable, so do not use any other bitfield types.
-=======
  * Note: C bitfields are not used for this reason:
  *
  * "Bitfields are great and easy to read, but unfortunately the C language
@@ -156,7 +83,6 @@
  * this decision was a design error in C. Ritchie could have picked an order
  * and stuck with it." Norman Ramsey.
  * See http://stackoverflow.com/a/1053662/41661
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*******************************************************************************
@@ -184,8 +110,6 @@ struct acpi_whea_header {
 	u64 mask;		/* Bitmask required for this register instruction */
 };
 
-<<<<<<< HEAD
-=======
 /* https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/acpitabl/ns-acpitabl-aspt_table */
 #define ASPT_REVISION_ID 0x01
 struct acpi_table_aspt {
@@ -345,7 +269,6 @@ struct acpi_asf_address {
 	u8 devices;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * BERT - Boot Error Record Table (ACPI 4.0)
@@ -394,8 +317,6 @@ enum acpi_bert_error_severity {
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
-=======
  * BGRT - Boot Graphics Resource Table (ACPI 5.0)
  *        Version 1
  *
@@ -668,7 +589,6 @@ struct acpi_cedt_rdpas {
 
 /*******************************************************************************
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * CPEP - Corrected Platform Error Polling table (ACPI 4.0)
  *        Version 1
  *
@@ -690,8 +610,6 @@ struct acpi_cpep_polling {
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
-=======
  * CSRT - Core System Resource Table
  *        Version 0
  *
@@ -1059,7 +977,6 @@ struct acpi_drtm_dps_id {
 
 /*******************************************************************************
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ECDT - Embedded Controller Boot Resources Table
  *        Version 1
  *
@@ -1071,11 +988,7 @@ struct acpi_table_ecdt {
 	struct acpi_generic_address data;	/* Address of EC data register */
 	u32 uid;		/* Unique ID - must be same as the EC _UID method */
 	u8 gpe;			/* The GPE for the EC */
-<<<<<<< HEAD
-	u8 id[1];		/* Full namepath of the EC in the ACPI namespace */
-=======
 	u8 id[];		/* Full namepath of the EC in the ACPI namespace */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*******************************************************************************
@@ -1115,12 +1028,8 @@ enum acpi_einj_actions {
 	ACPI_EINJ_CHECK_BUSY_STATUS = 6,
 	ACPI_EINJ_GET_COMMAND_STATUS = 7,
 	ACPI_EINJ_SET_ERROR_TYPE_WITH_ADDRESS = 8,
-<<<<<<< HEAD
-	ACPI_EINJ_ACTION_RESERVED = 9,	/* 9 and greater are reserved */
-=======
 	ACPI_EINJ_GET_EXECUTE_TIMINGS = 9,
 	ACPI_EINJ_ACTION_RESERVED = 10,	/* 10 and greater are reserved */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_EINJ_TRIGGER_ERROR = 0xFF	/* Except for this value */
 };
 
@@ -1232,12 +1141,8 @@ enum acpi_erst_actions {
 	ACPI_ERST_GET_ERROR_RANGE = 13,
 	ACPI_ERST_GET_ERROR_LENGTH = 14,
 	ACPI_ERST_GET_ERROR_ATTRIBUTES = 15,
-<<<<<<< HEAD
-	ACPI_ERST_ACTION_RESERVED = 16	/* 16 and greater are reserved */
-=======
 	ACPI_ERST_EXECUTE_TIMINGS = 16,
 	ACPI_ERST_ACTION_RESERVED = 17	/* 17 and greater are reserved */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Values for Instruction field above */
@@ -1268,11 +1173,7 @@ enum acpi_erst_instructions {
 /* Command status return values */
 
 enum acpi_erst_command_status {
-<<<<<<< HEAD
-	ACPI_ERST_SUCESS = 0,
-=======
 	ACPI_ERST_SUCCESS = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_ERST_NO_SPACE = 1,
 	ACPI_ERST_NOT_AVAILABLE = 2,
 	ACPI_ERST_FAILURE = 3,
@@ -1290,8 +1191,6 @@ struct acpi_erst_info {
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
-=======
  * FPDT - Firmware Performance Data Table (ACPI 5.0)
  *        Version 1
  *
@@ -1488,7 +1387,6 @@ struct acpi_gtdt_watchdog {
 
 /*******************************************************************************
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * HEST - Hardware Error Source Table (ACPI 4.0)
  *        Version 1
  *
@@ -1519,13 +1417,9 @@ enum acpi_hest_types {
 	ACPI_HEST_TYPE_AER_ENDPOINT = 7,
 	ACPI_HEST_TYPE_AER_BRIDGE = 8,
 	ACPI_HEST_TYPE_GENERIC_ERROR = 9,
-<<<<<<< HEAD
-	ACPI_HEST_TYPE_RESERVED = 10	/* 10 and greater are reserved */
-=======
 	ACPI_HEST_TYPE_GENERIC_ERROR_V2 = 10,
 	ACPI_HEST_TYPE_IA32_DEFERRED_CHECK = 11,
 	ACPI_HEST_TYPE_RESERVED = 12	/* 12 and greater are reserved */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1556,11 +1450,7 @@ struct acpi_hest_aer_common {
 	u8 enabled;
 	u32 records_to_preallocate;
 	u32 max_sections_per_record;
-<<<<<<< HEAD
-	u32 bus;
-=======
 	u32 bus;		/* Bus and Segment numbers */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 device;
 	u16 function;
 	u16 device_control;
@@ -1575,8 +1465,6 @@ struct acpi_hest_aer_common {
 
 #define ACPI_HEST_FIRMWARE_FIRST        (1)
 #define ACPI_HEST_GLOBAL                (1<<1)
-<<<<<<< HEAD
-=======
 #define ACPI_HEST_GHES_ASSIST           (1<<2)
 
 /*
@@ -1586,7 +1474,6 @@ struct acpi_hest_aer_common {
  */
 #define ACPI_HEST_BUS(bus)              ((bus) & 0xFF)
 #define ACPI_HEST_SEGMENT(bus)          (((bus) >> 8) & 0xFFFF)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Hardware Error Notification */
 
@@ -1610,9 +1497,6 @@ enum acpi_hest_notify_types {
 	ACPI_HEST_NOTIFY_LOCAL = 2,
 	ACPI_HEST_NOTIFY_SCI = 3,
 	ACPI_HEST_NOTIFY_NMI = 4,
-<<<<<<< HEAD
-	ACPI_HEST_NOTIFY_RESERVED = 5	/* 5 and greater are reserved */
-=======
 	ACPI_HEST_NOTIFY_CMCI = 5,	/* ACPI 5.0 */
 	ACPI_HEST_NOTIFY_MCE = 6,	/* ACPI 5.0 */
 	ACPI_HEST_NOTIFY_GPIO = 7,	/* ACPI 6.0 */
@@ -1621,7 +1505,6 @@ enum acpi_hest_notify_types {
 	ACPI_HEST_NOTIFY_GSIV = 10,	/* ACPI 6.1 */
 	ACPI_HEST_NOTIFY_SOFTWARE_DELEGATED = 11,	/* ACPI 6.2 */
 	ACPI_HEST_NOTIFY_RESERVED = 12	/* 12 and greater are reserved */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Values for config_write_enable bitfield above */
@@ -1642,11 +1525,7 @@ enum acpi_hest_notify_types {
 struct acpi_hest_ia_machine_check {
 	struct acpi_hest_header header;
 	u16 reserved1;
-<<<<<<< HEAD
-	u8 flags;
-=======
 	u8 flags;		/* See flags ACPI_HEST_GLOBAL, etc. above */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 enabled;
 	u32 records_to_preallocate;
 	u32 max_sections_per_record;
@@ -1661,11 +1540,7 @@ struct acpi_hest_ia_machine_check {
 struct acpi_hest_ia_corrected {
 	struct acpi_hest_header header;
 	u16 reserved1;
-<<<<<<< HEAD
-	u8 flags;
-=======
 	u8 flags;		/* See flags ACPI_HEST_GLOBAL, etc. above */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 enabled;
 	u32 records_to_preallocate;
 	u32 max_sections_per_record;
@@ -1726,8 +1601,6 @@ struct acpi_hest_generic {
 	u32 error_block_length;
 };
 
-<<<<<<< HEAD
-=======
 /* 10: Generic Hardware Error Source, version 2 */
 
 struct acpi_hest_generic_v2 {
@@ -1746,7 +1619,6 @@ struct acpi_hest_generic_v2 {
 	u64 read_ack_write;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Generic Error Status block */
 
 struct acpi_hest_generic_status {
@@ -1778,220 +1650,6 @@ struct acpi_hest_generic_data {
 	u8 fru_text[20];
 };
 
-<<<<<<< HEAD
-/*******************************************************************************
- *
- * MADT - Multiple APIC Description Table
- *        Version 3
- *
- ******************************************************************************/
-
-struct acpi_table_madt {
-	struct acpi_table_header header;	/* Common ACPI table header */
-	u32 address;		/* Physical address of local APIC */
-	u32 flags;
-};
-
-/* Masks for Flags field above */
-
-#define ACPI_MADT_PCAT_COMPAT       (1)	/* 00: System also has dual 8259s */
-
-/* Values for PCATCompat flag */
-
-#define ACPI_MADT_DUAL_PIC          0
-#define ACPI_MADT_MULTIPLE_APIC     1
-
-/* Values for MADT subtable type in struct acpi_subtable_header */
-
-enum acpi_madt_type {
-	ACPI_MADT_TYPE_LOCAL_APIC = 0,
-	ACPI_MADT_TYPE_IO_APIC = 1,
-	ACPI_MADT_TYPE_INTERRUPT_OVERRIDE = 2,
-	ACPI_MADT_TYPE_NMI_SOURCE = 3,
-	ACPI_MADT_TYPE_LOCAL_APIC_NMI = 4,
-	ACPI_MADT_TYPE_LOCAL_APIC_OVERRIDE = 5,
-	ACPI_MADT_TYPE_IO_SAPIC = 6,
-	ACPI_MADT_TYPE_LOCAL_SAPIC = 7,
-	ACPI_MADT_TYPE_INTERRUPT_SOURCE = 8,
-	ACPI_MADT_TYPE_LOCAL_X2APIC = 9,
-	ACPI_MADT_TYPE_LOCAL_X2APIC_NMI = 10,
-	ACPI_MADT_TYPE_GENERIC_INTERRUPT = 11,
-	ACPI_MADT_TYPE_GENERIC_DISTRIBUTOR = 12,
-	ACPI_MADT_TYPE_RESERVED = 13	/* 13 and greater are reserved */
-};
-
-/*
- * MADT Sub-tables, correspond to Type in struct acpi_subtable_header
- */
-
-/* 0: Processor Local APIC */
-
-struct acpi_madt_local_apic {
-	struct acpi_subtable_header header;
-	u8 processor_id;	/* ACPI processor id */
-	u8 id;			/* Processor's local APIC id */
-	u32 lapic_flags;
-};
-
-/* 1: IO APIC */
-
-struct acpi_madt_io_apic {
-	struct acpi_subtable_header header;
-	u8 id;			/* I/O APIC ID */
-	u8 reserved;		/* Reserved - must be zero */
-	u32 address;		/* APIC physical address */
-	u32 global_irq_base;	/* Global system interrupt where INTI lines start */
-};
-
-/* 2: Interrupt Override */
-
-struct acpi_madt_interrupt_override {
-	struct acpi_subtable_header header;
-	u8 bus;			/* 0 - ISA */
-	u8 source_irq;		/* Interrupt source (IRQ) */
-	u32 global_irq;		/* Global system interrupt */
-	u16 inti_flags;
-};
-
-/* 3: NMI Source */
-
-struct acpi_madt_nmi_source {
-	struct acpi_subtable_header header;
-	u16 inti_flags;
-	u32 global_irq;		/* Global system interrupt */
-};
-
-/* 4: Local APIC NMI */
-
-struct acpi_madt_local_apic_nmi {
-	struct acpi_subtable_header header;
-	u8 processor_id;	/* ACPI processor id */
-	u16 inti_flags;
-	u8 lint;		/* LINTn to which NMI is connected */
-};
-
-/* 5: Address Override */
-
-struct acpi_madt_local_apic_override {
-	struct acpi_subtable_header header;
-	u16 reserved;		/* Reserved, must be zero */
-	u64 address;		/* APIC physical address */
-};
-
-/* 6: I/O Sapic */
-
-struct acpi_madt_io_sapic {
-	struct acpi_subtable_header header;
-	u8 id;			/* I/O SAPIC ID */
-	u8 reserved;		/* Reserved, must be zero */
-	u32 global_irq_base;	/* Global interrupt for SAPIC start */
-	u64 address;		/* SAPIC physical address */
-};
-
-/* 7: Local Sapic */
-
-struct acpi_madt_local_sapic {
-	struct acpi_subtable_header header;
-	u8 processor_id;	/* ACPI processor id */
-	u8 id;			/* SAPIC ID */
-	u8 eid;			/* SAPIC EID */
-	u8 reserved[3];		/* Reserved, must be zero */
-	u32 lapic_flags;
-	u32 uid;		/* Numeric UID - ACPI 3.0 */
-	char uid_string[1];	/* String UID  - ACPI 3.0 */
-};
-
-/* 8: Platform Interrupt Source */
-
-struct acpi_madt_interrupt_source {
-	struct acpi_subtable_header header;
-	u16 inti_flags;
-	u8 type;		/* 1=PMI, 2=INIT, 3=corrected */
-	u8 id;			/* Processor ID */
-	u8 eid;			/* Processor EID */
-	u8 io_sapic_vector;	/* Vector value for PMI interrupts */
-	u32 global_irq;		/* Global system interrupt */
-	u32 flags;		/* Interrupt Source Flags */
-};
-
-/* Masks for Flags field above */
-
-#define ACPI_MADT_CPEI_OVERRIDE     (1)
-
-/* 9: Processor Local X2APIC (ACPI 4.0) */
-
-struct acpi_madt_local_x2apic {
-	struct acpi_subtable_header header;
-	u16 reserved;		/* Reserved - must be zero */
-	u32 local_apic_id;	/* Processor x2APIC ID  */
-	u32 lapic_flags;
-	u32 uid;		/* ACPI processor UID */
-};
-
-/* 10: Local X2APIC NMI (ACPI 4.0) */
-
-struct acpi_madt_local_x2apic_nmi {
-	struct acpi_subtable_header header;
-	u16 inti_flags;
-	u32 uid;		/* ACPI processor UID */
-	u8 lint;		/* LINTn to which NMI is connected */
-	u8 reserved[3];
-};
-
-/* 11: Generic Interrupt (ACPI 5.0) */
-
-struct acpi_madt_generic_interrupt {
-	struct acpi_subtable_header header;
-	u16 reserved;		/* Reserved - must be zero */
-	u32 gic_id;
-	u32 uid;
-	u32 flags;
-	u32 parking_version;
-	u32 performance_interrupt;
-	u64 parked_address;
-	u64 base_address;
-};
-
-/* 12: Generic Distributor (ACPI 5.0) */
-
-struct acpi_madt_generic_distributor {
-	struct acpi_subtable_header header;
-	u16 reserved;		/* Reserved - must be zero */
-	u32 gic_id;
-	u64 base_address;
-	u32 global_irq_base;
-	u32 reserved2;		/* Reserved - must be zero */
-};
-
-/*
- * Common flags fields for MADT subtables
- */
-
-/* MADT Local APIC flags (lapic_flags) and GIC flags */
-
-#define ACPI_MADT_ENABLED           (1)	/* 00: Processor is usable if set */
-
-/* MADT MPS INTI flags (inti_flags) */
-
-#define ACPI_MADT_POLARITY_MASK     (3)	/* 00-01: Polarity of APIC I/O input signals */
-#define ACPI_MADT_TRIGGER_MASK      (3<<2)	/* 02-03: Trigger mode of APIC input signals */
-
-/* Values for MPS INTI flags */
-
-#define ACPI_MADT_POLARITY_CONFORMS       0
-#define ACPI_MADT_POLARITY_ACTIVE_HIGH    1
-#define ACPI_MADT_POLARITY_RESERVED       2
-#define ACPI_MADT_POLARITY_ACTIVE_LOW     3
-
-#define ACPI_MADT_TRIGGER_CONFORMS        (0)
-#define ACPI_MADT_TRIGGER_EDGE            (1<<2)
-#define ACPI_MADT_TRIGGER_RESERVED        (2<<2)
-#define ACPI_MADT_TRIGGER_LEVEL           (3<<2)
-
-/*******************************************************************************
- *
- * MSCT - Maximum System Characteristics Table (ACPI 4.0)
-=======
 /* Extension for revision 0x0300 */
 
 struct acpi_hest_generic_data_v300 {
@@ -2036,135 +1694,10 @@ struct acpi_hest_ia_deferred_check {
 /*******************************************************************************
  *
  * HMAT - Heterogeneous Memory Attributes Table (ACPI 6.2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *        Version 1
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-struct acpi_table_msct {
-	struct acpi_table_header header;	/* Common ACPI table header */
-	u32 proximity_offset;	/* Location of proximity info struct(s) */
-	u32 max_proximity_domains;	/* Max number of proximity domains */
-	u32 max_clock_domains;	/* Max number of clock domains */
-	u64 max_address;	/* Max physical address in system */
-};
-
-/* Subtable - Maximum Proximity Domain Information. Version 1 */
-
-struct acpi_msct_proximity {
-	u8 revision;
-	u8 length;
-	u32 range_start;	/* Start of domain range */
-	u32 range_end;		/* End of domain range */
-	u32 processor_capacity;
-	u64 memory_capacity;	/* In bytes */
-};
-
-/*******************************************************************************
- *
- * SBST - Smart Battery Specification Table
- *        Version 1
- *
- ******************************************************************************/
-
-struct acpi_table_sbst {
-	struct acpi_table_header header;	/* Common ACPI table header */
-	u32 warning_level;
-	u32 low_level;
-	u32 critical_level;
-};
-
-/*******************************************************************************
- *
- * SLIT - System Locality Distance Information Table
- *        Version 1
- *
- ******************************************************************************/
-
-struct acpi_table_slit {
-	struct acpi_table_header header;	/* Common ACPI table header */
-	u64 locality_count;
-	u8 entry[1];		/* Real size = localities^2 */
-};
-
-/*******************************************************************************
- *
- * SRAT - System Resource Affinity Table
- *        Version 3
- *
- ******************************************************************************/
-
-struct acpi_table_srat {
-	struct acpi_table_header header;	/* Common ACPI table header */
-	u32 table_revision;	/* Must be value '1' */
-	u64 reserved;		/* Reserved, must be zero */
-};
-
-/* Values for subtable type in struct acpi_subtable_header */
-
-enum acpi_srat_type {
-	ACPI_SRAT_TYPE_CPU_AFFINITY = 0,
-	ACPI_SRAT_TYPE_MEMORY_AFFINITY = 1,
-	ACPI_SRAT_TYPE_X2APIC_CPU_AFFINITY = 2,
-	ACPI_SRAT_TYPE_RESERVED = 3	/* 3 and greater are reserved */
-};
-
-/*
- * SRAT Sub-tables, correspond to Type in struct acpi_subtable_header
- */
-
-/* 0: Processor Local APIC/SAPIC Affinity */
-
-struct acpi_srat_cpu_affinity {
-	struct acpi_subtable_header header;
-	u8 proximity_domain_lo;
-	u8 apic_id;
-	u32 flags;
-	u8 local_sapic_eid;
-	u8 proximity_domain_hi[3];
-	u32 reserved;		/* Reserved, must be zero */
-};
-
-/* Flags */
-
-#define ACPI_SRAT_CPU_USE_AFFINITY  (1)	/* 00: Use affinity structure */
-
-/* 1: Memory Affinity */
-
-struct acpi_srat_mem_affinity {
-	struct acpi_subtable_header header;
-	u32 proximity_domain;
-	u16 reserved;		/* Reserved, must be zero */
-	u64 base_address;
-	u64 length;
-       u32 reserved1;
-	u32 flags;
-       u64 reserved2;	       /* Reserved, must be zero */
-};
-
-/* Flags */
-
-#define ACPI_SRAT_MEM_ENABLED       (1)	/* 00: Use affinity structure */
-#define ACPI_SRAT_MEM_HOT_PLUGGABLE (1<<1)	/* 01: Memory region is hot pluggable */
-#define ACPI_SRAT_MEM_NON_VOLATILE  (1<<2)	/* 02: Memory region is non-volatile */
-
-/* 2: Processor Local X2_APIC Affinity (ACPI 4.0) */
-
-struct acpi_srat_x2apic_cpu_affinity {
-	struct acpi_subtable_header header;
-	u16 reserved;		/* Reserved, must be zero */
-	u32 proximity_domain;
-	u32 apic_id;
-	u32 flags;
-	u32 clock_domain;
-	u32 reserved2;
-};
-
-/* Flags for struct acpi_srat_cpu_affinity and struct acpi_srat_x2apic_cpu_affinity */
-
-#define ACPI_SRAT_CPU_ENABLED       (1)	/* 00: Use affinity structure */
-=======
 struct acpi_table_hmat {
 	struct acpi_table_header header;	/* Common ACPI table header */
 	u32 reserved;
@@ -2405,7 +1938,6 @@ struct acpi_ibft_target {
 	u16 reverse_chap_secret_length;
 	u16 reverse_chap_secret_offset;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Reset to default packing */
 

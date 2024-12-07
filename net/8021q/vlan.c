@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		802.1Q VLAN
  *		Ethernet-type device handling.
@@ -15,14 +12,6 @@
  *		Add HW acceleration hooks - David S. Miller <davem@redhat.com>;
  *		Correct all the locking - David S. Miller <davem@redhat.com>;
  *		Use hash table for VLAN groups - David S. Miller <davem@redhat.com>
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -41,11 +30,7 @@
 #include <net/rtnetlink.h>
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/if_vlan.h>
 #include "vlan.h"
@@ -55,27 +40,13 @@
 
 /* Global VLAN variables */
 
-<<<<<<< HEAD
-int vlan_net_id __read_mostly;
-=======
 unsigned int vlan_net_id __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char vlan_fullname[] = "802.1Q VLAN Support";
 const char vlan_version[] = DRV_VERSION;
 
 /* End of global variables definitions. */
 
-<<<<<<< HEAD
-static int vlan_group_prealloc_vid(struct vlan_group *vg, u16 vlan_id)
-{
-	struct net_device **array;
-	unsigned int size;
-
-	ASSERT_RTNL();
-
-	array = vg->vlan_devices_arrays[vlan_id / VLAN_GROUP_ARRAY_PART_LEN];
-=======
 static int vlan_group_prealloc_vid(struct vlan_group *vg,
 				   __be16 vlan_proto, u16 vlan_id)
 {
@@ -92,21 +63,10 @@ static int vlan_group_prealloc_vid(struct vlan_group *vg,
 
 	vidx  = vlan_id / VLAN_GROUP_ARRAY_PART_LEN;
 	array = vg->vlan_devices_arrays[pidx][vidx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (array != NULL)
 		return 0;
 
 	size = sizeof(struct net_device *) * VLAN_GROUP_ARRAY_PART_LEN;
-<<<<<<< HEAD
-	array = kzalloc(size, GFP_KERNEL);
-	if (array == NULL)
-		return -ENOBUFS;
-
-	vg->vlan_devices_arrays[vlan_id / VLAN_GROUP_ARRAY_PART_LEN] = array;
-	return 0;
-}
-
-=======
 	array = kzalloc(size, GFP_KERNEL_ACCOUNT);
 	if (array == NULL)
 		return -ENOBUFS;
@@ -126,7 +86,6 @@ static void vlan_stacked_transfer_operstate(const struct net_device *rootdev,
 		netif_stacked_transfer_operstate(rootdev, dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
@@ -144,12 +103,6 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
 
 	grp->nr_vlan_devs--;
 
-<<<<<<< HEAD
-	if (vlan->flags & VLAN_FLAG_GVRP)
-		vlan_gvrp_request_leave(dev);
-
-	vlan_group_set_device(grp, vlan_id, NULL);
-=======
 	if (vlan->flags & VLAN_FLAG_MVRP)
 		vlan_mvrp_request_leave(dev);
 	if (vlan->flags & VLAN_FLAG_GVRP)
@@ -158,47 +111,12 @@ void unregister_vlan_dev(struct net_device *dev, struct list_head *head)
 	vlan_group_set_device(grp, vlan->vlan_proto, vlan_id, NULL);
 
 	netdev_upper_dev_unlink(real_dev, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Because unregister_netdevice_queue() makes sure at least one rcu
 	 * grace period is respected before device freeing,
 	 * we dont need to call synchronize_net() here.
 	 */
 	unregister_netdevice_queue(dev, head);
 
-<<<<<<< HEAD
-	if (grp->nr_vlan_devs == 0)
-		vlan_gvrp_uninit_applicant(real_dev);
-
-	/* Take it out of our own structures, but be sure to interlock with
-	 * HW accelerating devices or SW vlan input packet processing if
-	 * VLAN is not 0 (leave it there for 802.1p).
-	 */
-	if (vlan_id)
-		vlan_vid_del(real_dev, vlan_id);
-
-	/* Get rid of the vlan's reference to real_dev */
-	dev_put(real_dev);
-}
-
-int vlan_check_real_dev(struct net_device *real_dev, u16 vlan_id)
-{
-	const char *name = real_dev->name;
-	const struct net_device_ops *ops = real_dev->netdev_ops;
-
-	if (real_dev->features & NETIF_F_VLAN_CHALLENGED) {
-		pr_info("VLANs not supported on %s\n", name);
-		return -EOPNOTSUPP;
-	}
-
-	if ((real_dev->features & NETIF_F_HW_VLAN_FILTER) &&
-	    (!ops->ndo_vlan_rx_add_vid || !ops->ndo_vlan_rx_kill_vid)) {
-		pr_info("Device %s has buggy VLAN hw accel\n", name);
-		return -EOPNOTSUPP;
-	}
-
-	if (vlan_find_dev(real_dev, vlan_id) != NULL)
-		return -EEXIST;
-=======
 	if (grp->nr_vlan_devs == 0) {
 		vlan_mvrp_uninit_applicant(real_dev);
 		vlan_gvrp_uninit_applicant(real_dev);
@@ -223,16 +141,11 @@ int vlan_check_real_dev(struct net_device *real_dev,
 		NL_SET_ERR_MSG_MOD(extack, "VLAN device already exists");
 		return -EEXIST;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int register_vlan_dev(struct net_device *dev)
-=======
 int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
 	struct net_device *real_dev = vlan->real_dev;
@@ -241,11 +154,7 @@ int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
 	struct vlan_group *grp;
 	int err;
 
-<<<<<<< HEAD
-	err = vlan_vid_add(real_dev, vlan_id);
-=======
 	err = vlan_vid_add(real_dev, vlan->vlan_proto, vlan_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -258,22 +167,6 @@ int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
 		err = vlan_gvrp_init_applicant(real_dev);
 		if (err < 0)
 			goto out_vid_del;
-<<<<<<< HEAD
-	}
-
-	err = vlan_group_prealloc_vid(grp, vlan_id);
-	if (err < 0)
-		goto out_uninit_applicant;
-
-	err = register_netdevice(dev);
-	if (err < 0)
-		goto out_uninit_applicant;
-
-	/* Account for reference in struct vlan_dev_priv */
-	dev_hold(real_dev);
-
-	netif_stacked_transfer_operstate(real_dev, dev);
-=======
 		err = vlan_mvrp_init_applicant(real_dev);
 		if (err < 0)
 			goto out_uninit_gvrp;
@@ -292,28 +185,16 @@ int register_vlan_dev(struct net_device *dev, struct netlink_ext_ack *extack)
 		goto out_unregister_netdev;
 
 	vlan_stacked_transfer_operstate(real_dev, dev, vlan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	linkwatch_fire_event(dev); /* _MUST_ call rfc2863_policy() */
 
 	/* So, got the sucker initialized, now lets place
 	 * it into our local structure.
 	 */
-<<<<<<< HEAD
-	vlan_group_set_device(grp, vlan_id, dev);
-=======
 	vlan_group_set_device(grp, vlan->vlan_proto, vlan_id, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	grp->nr_vlan_devs++;
 
 	return 0;
 
-<<<<<<< HEAD
-out_uninit_applicant:
-	if (grp->nr_vlan_devs == 0)
-		vlan_gvrp_uninit_applicant(real_dev);
-out_vid_del:
-	vlan_vid_del(real_dev, vlan_id);
-=======
 out_unregister_netdev:
 	unregister_netdevice(dev);
 out_uninit_mvrp:
@@ -324,7 +205,6 @@ out_uninit_gvrp:
 		vlan_gvrp_uninit_applicant(real_dev);
 out_vid_del:
 	vlan_vid_del(real_dev, vlan->vlan_proto, vlan_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -334,10 +214,7 @@ out_vid_del:
 static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 {
 	struct net_device *new_dev;
-<<<<<<< HEAD
-=======
 	struct vlan_dev_priv *vlan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net *net = dev_net(real_dev);
 	struct vlan_net *vn = net_generic(net, vlan_net_id);
 	char name[IFNAMSIZ];
@@ -346,12 +223,8 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	if (vlan_id >= VLAN_VID_MASK)
 		return -ERANGE;
 
-<<<<<<< HEAD
-	err = vlan_check_real_dev(real_dev, vlan_id);
-=======
 	err = vlan_check_real_dev(real_dev, htons(ETH_P_8021Q), vlan_id,
 				  NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -381,12 +254,8 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 		snprintf(name, IFNAMSIZ, "vlan%.4i", vlan_id);
 	}
 
-<<<<<<< HEAD
-	new_dev = alloc_netdev(sizeof(struct vlan_dev_priv), name, vlan_setup);
-=======
 	new_dev = alloc_netdev(sizeof(struct vlan_dev_priv), name,
 			       NET_NAME_UNKNOWN, vlan_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new_dev == NULL)
 		return -ENOBUFS;
@@ -397,15 +266,6 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 	 */
 	new_dev->mtu = real_dev->mtu;
 
-<<<<<<< HEAD
-	vlan_dev_priv(new_dev)->vlan_id = vlan_id;
-	vlan_dev_priv(new_dev)->real_dev = real_dev;
-	vlan_dev_priv(new_dev)->dent = NULL;
-	vlan_dev_priv(new_dev)->flags = VLAN_FLAG_REORDER_HDR;
-
-	new_dev->rtnl_link_ops = &vlan_link_ops;
-	err = register_vlan_dev(new_dev);
-=======
 	vlan = vlan_dev_priv(new_dev);
 	vlan->vlan_proto = htons(ETH_P_8021Q);
 	vlan->vlan_id = vlan_id;
@@ -415,7 +275,6 @@ static int register_vlan_device(struct net_device *real_dev, u16 vlan_id)
 
 	new_dev->rtnl_link_ops = &vlan_link_ops;
 	err = register_vlan_dev(new_dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		goto out_free_newdev;
 
@@ -432,15 +291,6 @@ static void vlan_sync_address(struct net_device *dev,
 	struct vlan_dev_priv *vlan = vlan_dev_priv(vlandev);
 
 	/* May be called without an actual change */
-<<<<<<< HEAD
-	if (!compare_ether_addr(vlan->real_dev_addr, dev->dev_addr))
-		return;
-
-	/* vlan address was different from the old address and is equal to
-	 * the new address */
-	if (compare_ether_addr(vlandev->dev_addr, vlan->real_dev_addr) &&
-	    !compare_ether_addr(vlandev->dev_addr, dev->dev_addr))
-=======
 	if (ether_addr_equal(vlan->real_dev_addr, dev->dev_addr))
 		return;
 
@@ -452,66 +302,30 @@ static void vlan_sync_address(struct net_device *dev,
 	 * the new address */
 	if (!ether_addr_equal(vlandev->dev_addr, vlan->real_dev_addr) &&
 	    ether_addr_equal(vlandev->dev_addr, dev->dev_addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_uc_del(dev, vlandev->dev_addr);
 
 	/* vlan address was equal to the old address and is different from
 	 * the new address */
-<<<<<<< HEAD
-	if (!compare_ether_addr(vlandev->dev_addr, vlan->real_dev_addr) &&
-	    compare_ether_addr(vlandev->dev_addr, dev->dev_addr))
-		dev_uc_add(dev, vlandev->dev_addr);
-
-	memcpy(vlan->real_dev_addr, dev->dev_addr, ETH_ALEN);
-=======
 	if (ether_addr_equal(vlandev->dev_addr, vlan->real_dev_addr) &&
 	    !ether_addr_equal(vlandev->dev_addr, dev->dev_addr))
 		dev_uc_add(dev, vlandev->dev_addr);
 
 out:
 	ether_addr_copy(vlan->real_dev_addr, dev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vlan_transfer_features(struct net_device *dev,
 				   struct net_device *vlandev)
 {
-<<<<<<< HEAD
-	vlandev->gso_max_size = dev->gso_max_size;
-
-	if (dev->features & NETIF_F_HW_VLAN_TX)
-=======
 	struct vlan_dev_priv *vlan = vlan_dev_priv(vlandev);
 
 	netif_inherit_tso_max(vlandev, dev);
 
 	if (vlan_hw_offload_capable(dev->features, vlan->vlan_proto))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vlandev->hard_header_len = dev->hard_header_len;
 	else
 		vlandev->hard_header_len = dev->hard_header_len + VLAN_HLEN;
 
-<<<<<<< HEAD
-#if defined(CONFIG_FCOE) || defined(CONFIG_FCOE_MODULE)
-	vlandev->fcoe_ddp_xid = dev->fcoe_ddp_xid;
-#endif
-
-	netdev_update_features(vlandev);
-}
-
-static void __vlan_device_event(struct net_device *dev, unsigned long event)
-{
-	switch (event) {
-	case NETDEV_CHANGENAME:
-		vlan_proc_rem_dev(dev);
-		if (vlan_proc_add_dev(dev) < 0)
-			pr_warn("failed to change proc name for %s\n",
-				dev->name);
-		break;
-	case NETDEV_REGISTER:
-		if (vlan_proc_add_dev(dev) < 0)
-			pr_warn("failed to add proc entry for %s\n", dev->name);
-=======
 #if IS_ENABLED(CONFIG_FCOE)
 	vlandev->fcoe_ddp_xid = dev->fcoe_ddp_xid;
 #endif
@@ -534,46 +348,25 @@ static int __vlan_device_event(struct net_device *dev, unsigned long event)
 		break;
 	case NETDEV_REGISTER:
 		err = vlan_proc_add_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case NETDEV_UNREGISTER:
 		vlan_proc_rem_dev(dev);
 		break;
 	}
-<<<<<<< HEAD
-=======
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 			     void *ptr)
 {
-<<<<<<< HEAD
-	struct net_device *dev = ptr;
-=======
 	struct netlink_ext_ack *extack = netdev_notifier_info_to_extack(ptr);
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vlan_group *grp;
 	struct vlan_info *vlan_info;
 	int i, flgs;
 	struct net_device *vlandev;
 	struct vlan_dev_priv *vlan;
-<<<<<<< HEAD
-	LIST_HEAD(list);
-
-	if (is_vlan_dev(dev))
-		__vlan_device_event(dev, event);
-
-	if ((event == NETDEV_UP) &&
-	    (dev->features & NETIF_F_HW_VLAN_FILTER)) {
-		pr_info("adding VLAN 0 to HW filter on device %s\n",
-			dev->name);
-		vlan_vid_add(dev, 0);
-	}
-=======
 	bool last = false;
 	LIST_HEAD(list);
 	int err;
@@ -594,7 +387,6 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 	if (event == NETDEV_DOWN &&
 	    (dev->features & NETIF_F_HW_VLAN_CTAG_FILTER))
 		vlan_vid_del(dev, htons(ETH_P_8021Q), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vlan_info = rtnl_dereference(dev->vlan_info);
 	if (!vlan_info)
@@ -608,32 +400,14 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 	switch (event) {
 	case NETDEV_CHANGE:
 		/* Propagate real device state to vlan devices */
-<<<<<<< HEAD
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-			netif_stacked_transfer_operstate(dev, vlandev);
-		}
-=======
 		vlan_group_for_each_dev(grp, i, vlandev)
 			vlan_stacked_transfer_operstate(dev, vlandev,
 							vlan_dev_priv(vlandev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case NETDEV_CHANGEADDR:
 		/* Adjust unicast filters on underlying device */
-<<<<<<< HEAD
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-=======
 		vlan_group_for_each_dev(grp, i, vlandev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flgs = vlandev->flags;
 			if (!(flgs & IFF_UP))
 				continue;
@@ -643,15 +417,7 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 		break;
 
 	case NETDEV_CHANGEMTU:
-<<<<<<< HEAD
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-=======
 		vlan_group_for_each_dev(grp, i, vlandev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (vlandev->mtu <= dev->mtu)
 				continue;
 
@@ -661,28 +427,6 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 
 	case NETDEV_FEAT_CHANGE:
 		/* Propagate device features to underlying device */
-<<<<<<< HEAD
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-			vlan_transfer_features(dev, vlandev);
-		}
-
-		break;
-
-	case NETDEV_DOWN:
-		if (dev->features & NETIF_F_HW_VLAN_FILTER)
-			vlan_vid_del(dev, 0);
-
-		/* Put all VLANs for this dev in the down state too.  */
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-=======
 		vlan_group_for_each_dev(grp, i, vlandev)
 			vlan_transfer_features(dev, vlandev);
 		break;
@@ -693,28 +437,12 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 
 		/* Put all VLANs for this dev in the down state too.  */
 		vlan_group_for_each_dev(grp, i, vlandev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flgs = vlandev->flags;
 			if (!(flgs & IFF_UP))
 				continue;
 
 			vlan = vlan_dev_priv(vlandev);
 			if (!(vlan->flags & VLAN_FLAG_LOOSE_BINDING))
-<<<<<<< HEAD
-				dev_change_flags(vlandev, flgs & ~IFF_UP);
-			netif_stacked_transfer_operstate(dev, vlandev);
-		}
-		break;
-
-	case NETDEV_UP:
-		/* Put all VLANs for this dev in the up state too.  */
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-			flgs = vlandev->flags;
-=======
 				list_add(&vlandev->close_list, &close_list);
 		}
 
@@ -732,20 +460,14 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 		/* Put all VLANs for this dev in the up state too.  */
 		vlan_group_for_each_dev(grp, i, vlandev) {
 			flgs = dev_get_flags(vlandev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (flgs & IFF_UP)
 				continue;
 
 			vlan = vlan_dev_priv(vlandev);
 			if (!(vlan->flags & VLAN_FLAG_LOOSE_BINDING))
-<<<<<<< HEAD
-				dev_change_flags(vlandev, flgs | IFF_UP);
-			netif_stacked_transfer_operstate(dev, vlandev);
-=======
 				dev_change_flags(vlandev, flgs | IFF_UP,
 						 extack);
 			vlan_stacked_transfer_operstate(dev, vlandev, vlan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -754,19 +476,6 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 		if (dev->reg_state != NETREG_UNREGISTERING)
 			break;
 
-<<<<<<< HEAD
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-			/* removal of last vid destroys vlan_info, abort
-			 * afterwards */
-			if (vlan_info->nr_vids == 1)
-				i = VLAN_N_VID;
-
-			unregister_vlan_dev(vlandev, &list);
-=======
 		vlan_group_for_each_dev(grp, i, vlandev) {
 			/* removal of last vid destroys vlan_info, abort
 			 * afterwards */
@@ -776,27 +485,12 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 			unregister_vlan_dev(vlandev, &list);
 			if (last)
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		unregister_netdevice_many(&list);
 		break;
 
 	case NETDEV_PRE_TYPE_CHANGE:
 		/* Forbid underlaying device to change its type. */
-<<<<<<< HEAD
-		return NOTIFY_BAD;
-
-	case NETDEV_NOTIFY_PEERS:
-	case NETDEV_BONDING_FAILOVER:
-		/* Propagate to vlan devices */
-		for (i = 0; i < VLAN_N_VID; i++) {
-			vlandev = vlan_group_get_device(grp, i);
-			if (!vlandev)
-				continue;
-
-			call_netdevice_notifiers(event, vlandev);
-		}
-=======
 		if (vlan_uses_dev(dev))
 			return NOTIFY_BAD;
 		break;
@@ -827,7 +521,6 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
 
 	case NETDEV_SVLAN_FILTER_DROP_INFO:
 		vlan_filter_drop_vids(vlan_info, htons(ETH_P_8021AD));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -854,13 +547,8 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 		return -EFAULT;
 
 	/* Null terminate this sucker, just in case. */
-<<<<<<< HEAD
-	args.device1[23] = 0;
-	args.u.device2[23] = 0;
-=======
 	args.device1[sizeof(args.device1) - 1] = 0;
 	args.u.device2[sizeof(args.u.device2) - 1] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtnl_lock();
 
@@ -885,11 +573,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 	switch (args.cmd) {
 	case SET_VLAN_INGRESS_PRIORITY_CMD:
 		err = -EPERM;
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		vlan_dev_set_ingress_priority(dev,
 					      args.u.skb_priority,
@@ -899,11 +583,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case SET_VLAN_EGRESS_PRIORITY_CMD:
 		err = -EPERM;
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		err = vlan_dev_set_egress_priority(dev,
 						   args.u.skb_priority,
@@ -912,11 +592,7 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case SET_VLAN_FLAG_CMD:
 		err = -EPERM;
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		err = vlan_dev_change_flags(dev,
 					    args.vlan_qos ? args.u.flag : 0,
@@ -925,16 +601,9 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case SET_VLAN_NAME_TYPE_CMD:
 		err = -EPERM;
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-			break;
-		if ((args.u.name_type >= 0) &&
-		    (args.u.name_type < VLAN_NAME_TYPE_HIGHEST)) {
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			break;
 		if (args.u.name_type < VLAN_NAME_TYPE_HIGHEST) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct vlan_net *vn;
 
 			vn = net_generic(net, vlan_net_id);
@@ -947,22 +616,14 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case ADD_VLAN_CMD:
 		err = -EPERM;
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		err = register_vlan_device(dev, args.u.VID);
 		break;
 
 	case DEL_VLAN_CMD:
 		err = -EPERM;
-<<<<<<< HEAD
-		if (!capable(CAP_NET_ADMIN))
-=======
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		unregister_vlan_dev(dev, NULL);
 		err = 0;
@@ -970,12 +631,8 @@ static int vlan_ioctl_handler(struct net *net, void __user *arg)
 
 	case GET_VLAN_REALDEV_NAME_CMD:
 		err = 0;
-<<<<<<< HEAD
-		vlan_dev_get_realdev_name(dev, args.u.device2);
-=======
 		vlan_dev_get_realdev_name(dev, args.u.device2,
 					  sizeof(args.u.device2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_to_user(arg, &args,
 				 sizeof(struct vlan_ioctl_args)))
 			err = -EFAULT;
@@ -1040,15 +697,6 @@ static int __init vlan_proto_init(void)
 	if (err < 0)
 		goto err3;
 
-<<<<<<< HEAD
-	err = vlan_netlink_init();
-	if (err < 0)
-		goto err4;
-
-	vlan_ioctl_set(vlan_ioctl_handler);
-	return 0;
-
-=======
 	err = vlan_mvrp_init();
 	if (err < 0)
 		goto err4;
@@ -1062,7 +710,6 @@ static int __init vlan_proto_init(void)
 
 err5:
 	vlan_mvrp_uninit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err4:
 	vlan_gvrp_uninit();
 err3:
@@ -1076,10 +723,7 @@ err0:
 static void __exit vlan_cleanup_module(void)
 {
 	vlan_ioctl_set(NULL);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vlan_netlink_fini();
 
 	unregister_netdevice_notifier(&vlan_notifier_block);
@@ -1087,19 +731,13 @@ static void __exit vlan_cleanup_module(void)
 	unregister_pernet_subsys(&vlan_net_ops);
 	rcu_barrier(); /* Wait for completion of call_rcu()'s */
 
-<<<<<<< HEAD
-=======
 	vlan_mvrp_uninit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vlan_gvrp_uninit();
 }
 
 module_init(vlan_proto_init);
 module_exit(vlan_cleanup_module);
 
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("802.1Q/802.1ad VLAN Protocol");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);

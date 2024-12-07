@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -34,52 +14,9 @@
 #include "vnic_resource.h"
 #include "vnic_devcmd.h"
 #include "vnic_dev.h"
-<<<<<<< HEAD
-#include "vnic_stats.h"
-
-enum vnic_proxy_type {
-	PROXY_NONE,
-	PROXY_BY_BDF,
-	PROXY_BY_INDEX,
-};
-
-struct vnic_res {
-	void __iomem *vaddr;
-	dma_addr_t bus_addr;
-	unsigned int count;
-};
-
-struct vnic_intr_coal_timer_info {
-	u32 mul;
-	u32 div;
-	u32 max_usec;
-};
-
-struct vnic_dev {
-	void *priv;
-	struct pci_dev *pdev;
-	struct vnic_res res[RES_TYPE_MAX];
-	enum vnic_dev_intr_mode intr_mode;
-	struct vnic_devcmd __iomem *devcmd;
-	struct vnic_devcmd_notify *notify;
-	struct vnic_devcmd_notify notify_copy;
-	dma_addr_t notify_pa;
-	u32 notify_sz;
-	dma_addr_t linkstatus_pa;
-	struct vnic_stats *stats;
-	dma_addr_t stats_pa;
-	struct vnic_devcmd_fw_info *fw_info;
-	dma_addr_t fw_info_pa;
-	enum vnic_proxy_type proxy;
-	u32 proxy_index;
-	u64 args[VNIC_DEVCMD_NARGS];
-	struct vnic_intr_coal_timer_info intr_coal_timer_info;
-};
-=======
 #include "vnic_wq.h"
 #include "vnic_stats.h"
 #include "enic.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VNIC_MAX_RES_HDR_SIZE \
 	(sizeof(struct vnic_resource_header) + \
@@ -103,22 +40,14 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 		return -EINVAL;
 
 	if (bar->len < VNIC_MAX_RES_HDR_SIZE) {
-<<<<<<< HEAD
-		pr_err("vNIC BAR0 res hdr length error\n");
-=======
 		vdev_err(vdev, "vNIC BAR0 res hdr length error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	rh  = bar->vaddr;
 	mrh = bar->vaddr;
 	if (!rh) {
-<<<<<<< HEAD
-		pr_err("vNIC BAR0 res hdr not mem-mapped\n");
-=======
 		vdev_err(vdev, "vNIC BAR0 res hdr not mem-mapped\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -127,18 +56,10 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 		(ioread32(&rh->version) != VNIC_RES_VERSION)) {
 		if ((ioread32(&mrh->magic) != MGMTVNIC_MAGIC) ||
 			(ioread32(&mrh->version) != MGMTVNIC_VERSION)) {
-<<<<<<< HEAD
-			pr_err("vNIC BAR0 res magic/version error "
-			"exp (%lx/%lx) or (%lx/%lx), curr (%x/%x)\n",
-			VNIC_RES_MAGIC, VNIC_RES_VERSION,
-			MGMTVNIC_MAGIC, MGMTVNIC_VERSION,
-			ioread32(&rh->magic), ioread32(&rh->version));
-=======
 			vdev_err(vdev, "vNIC BAR0 res magic/version error exp (%lx/%lx) or (%lx/%lx), curr (%x/%x)\n",
 				 VNIC_RES_MAGIC, VNIC_RES_VERSION,
 				 MGMTVNIC_MAGIC, MGMTVNIC_VERSION,
 				 ioread32(&rh->magic), ioread32(&rh->version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -172,27 +93,15 @@ static int vnic_dev_discover_res(struct vnic_dev *vdev,
 			/* each count is stride bytes long */
 			len = count * VNIC_RES_STRIDE;
 			if (len + bar_offset > bar[bar_num].len) {
-<<<<<<< HEAD
-				pr_err("vNIC BAR0 resource %d "
-					"out-of-bounds, offset 0x%x + "
-					"size 0x%x > bar len 0x%lx\n",
-					type, bar_offset,
-					len,
-					bar[bar_num].len);
-=======
 				vdev_err(vdev, "vNIC BAR0 resource %d out-of-bounds, offset 0x%x + size 0x%x > bar len 0x%lx\n",
 					 type, bar_offset, len,
 					 bar[bar_num].len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			}
 			break;
 		case RES_TYPE_INTR_PBA_LEGACY:
 		case RES_TYPE_DEVCMD:
-<<<<<<< HEAD
-=======
 		case RES_TYPE_DEVCMD2:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			len = count;
 			break;
 		default:
@@ -213,10 +122,7 @@ unsigned int vnic_dev_get_res_count(struct vnic_dev *vdev,
 {
 	return vdev->res[type].count;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(vnic_dev_get_res_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __iomem *vnic_dev_get_res(struct vnic_dev *vdev, enum vnic_res_type type,
 	unsigned int index)
@@ -235,10 +141,7 @@ void __iomem *vnic_dev_get_res(struct vnic_dev *vdev, enum vnic_res_type type,
 		return (char __iomem *)vdev->res[type].vaddr;
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(vnic_dev_get_res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int vnic_dev_desc_ring_size(struct vnic_dev_ring *ring,
 	unsigned int desc_count, unsigned int desc_size)
@@ -277,15 +180,6 @@ int vnic_dev_alloc_desc_ring(struct vnic_dev *vdev, struct vnic_dev_ring *ring,
 {
 	vnic_dev_desc_ring_size(ring, desc_count, desc_size);
 
-<<<<<<< HEAD
-	ring->descs_unaligned = pci_alloc_consistent(vdev->pdev,
-		ring->size_unaligned,
-		&ring->base_addr_unaligned);
-
-	if (!ring->descs_unaligned) {
-		pr_err("Failed to allocate ring (size=%d), aborting\n",
-			(int)ring->size);
-=======
 	ring->descs_unaligned = dma_alloc_coherent(&vdev->pdev->dev,
 						   ring->size_unaligned,
 						   &ring->base_addr_unaligned,
@@ -294,7 +188,6 @@ int vnic_dev_alloc_desc_ring(struct vnic_dev *vdev, struct vnic_dev_ring *ring,
 	if (!ring->descs_unaligned) {
 		vdev_err(vdev, "Failed to allocate ring (size=%d), aborting\n",
 			 (int)ring->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -313,16 +206,9 @@ int vnic_dev_alloc_desc_ring(struct vnic_dev *vdev, struct vnic_dev_ring *ring,
 void vnic_dev_free_desc_ring(struct vnic_dev *vdev, struct vnic_dev_ring *ring)
 {
 	if (ring->descs) {
-<<<<<<< HEAD
-		pci_free_consistent(vdev->pdev,
-			ring->size_unaligned,
-			ring->descs_unaligned,
-			ring->base_addr_unaligned);
-=======
 		dma_free_coherent(&vdev->pdev->dev, ring->size_unaligned,
 				  ring->descs_unaligned,
 				  ring->base_addr_unaligned);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ring->descs = NULL;
 	}
 }
@@ -342,11 +228,7 @@ static int _vnic_dev_cmd(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 		return -ENODEV;
 	}
 	if (status & STAT_BUSY) {
-<<<<<<< HEAD
-		pr_err("Busy devcmd %d\n", _CMD_N(cmd));
-=======
 		vdev_neterr(vdev, "Busy devcmd %d\n", _CMD_N(cmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -375,13 +257,6 @@ static int _vnic_dev_cmd(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 
 			if (status & STAT_ERROR) {
 				err = (int)readq(&devcmd->args[0]);
-<<<<<<< HEAD
-				if (err != ERR_ECMDUNKNOWN ||
-				    cmd != CMD_CAPABILITY)
-					pr_err("Error %d devcmd %d\n",
-						err, _CMD_N(cmd));
-				return err;
-=======
 				if (err == ERR_EINVAL &&
 				    cmd == CMD_CAPABILITY)
 					return -err;
@@ -390,7 +265,6 @@ static int _vnic_dev_cmd(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 					vdev_neterr(vdev, "Error %d devcmd %d\n",
 						    err, _CMD_N(cmd));
 				return -err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			if (_CMD_DIR(cmd) & _CMD_DIR_READ) {
@@ -403,12 +277,6 @@ static int _vnic_dev_cmd(struct vnic_dev *vdev, enum vnic_devcmd_cmd cmd,
 		}
 	}
 
-<<<<<<< HEAD
-	pr_err("Timedout devcmd %d\n", _CMD_N(cmd));
-	return -ETIMEDOUT;
-}
-
-=======
 	vdev_neterr(vdev, "Timedout devcmd %d\n", _CMD_N(cmd));
 	return -ETIMEDOUT;
 }
@@ -571,7 +439,6 @@ static void vnic_dev_deinit_devcmd2(struct vnic_dev *vdev)
 	kfree(vdev->devcmd2);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vnic_dev_cmd_proxy(struct vnic_dev *vdev,
 	enum vnic_devcmd_cmd proxy_cmd, enum vnic_devcmd_cmd cmd,
 	u64 *a0, u64 *a1, int wait)
@@ -586,11 +453,7 @@ static int vnic_dev_cmd_proxy(struct vnic_dev *vdev,
 	vdev->args[2] = *a0;
 	vdev->args[3] = *a1;
 
-<<<<<<< HEAD
-	err = _vnic_dev_cmd(vdev, proxy_cmd, wait);
-=======
 	err = vdev->devcmd_rtn(vdev, proxy_cmd, wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -599,12 +462,8 @@ static int vnic_dev_cmd_proxy(struct vnic_dev *vdev,
 		err = (int)vdev->args[1];
 		if (err != ERR_ECMDUNKNOWN ||
 		    cmd != CMD_CAPABILITY)
-<<<<<<< HEAD
-			pr_err("Error %d proxy devcmd %d\n", err, _CMD_N(cmd));
-=======
 			vdev_neterr(vdev, "Error %d proxy devcmd %d\n",
 				    err, _CMD_N(cmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -622,11 +481,7 @@ static int vnic_dev_cmd_no_proxy(struct vnic_dev *vdev,
 	vdev->args[0] = *a0;
 	vdev->args[1] = *a1;
 
-<<<<<<< HEAD
-	err = _vnic_dev_cmd(vdev, cmd, wait);
-=======
 	err = vdev->devcmd_rtn(vdev, cmd, wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*a0 = vdev->args[0];
 	*a1 = vdev->args[1];
@@ -683,23 +538,12 @@ int vnic_dev_fw_info(struct vnic_dev *vdev,
 	int err = 0;
 
 	if (!vdev->fw_info) {
-<<<<<<< HEAD
-		vdev->fw_info = pci_alloc_consistent(vdev->pdev,
-			sizeof(struct vnic_devcmd_fw_info),
-			&vdev->fw_info_pa);
-		if (!vdev->fw_info)
-			return -ENOMEM;
-
-		memset(vdev->fw_info, 0, sizeof(struct vnic_devcmd_fw_info));
-
-=======
 		vdev->fw_info = dma_alloc_coherent(&vdev->pdev->dev,
 						   sizeof(struct vnic_devcmd_fw_info),
 						   &vdev->fw_info_pa, GFP_ATOMIC);
 		if (!vdev->fw_info)
 			return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		a0 = vdev->fw_info_pa;
 		a1 = sizeof(struct vnic_devcmd_fw_info);
 
@@ -746,14 +590,9 @@ int vnic_dev_stats_dump(struct vnic_dev *vdev, struct vnic_stats **stats)
 	int wait = 1000;
 
 	if (!vdev->stats) {
-<<<<<<< HEAD
-		vdev->stats = pci_alloc_consistent(vdev->pdev,
-			sizeof(struct vnic_stats), &vdev->stats_pa);
-=======
 		vdev->stats = dma_alloc_coherent(&vdev->pdev->dev,
 						 sizeof(struct vnic_stats),
 						 &vdev->stats_pa, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!vdev->stats)
 			return -ENOMEM;
 	}
@@ -814,22 +653,14 @@ int vnic_dev_open_done(struct vnic_dev *vdev, int *done)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int vnic_dev_soft_reset(struct vnic_dev *vdev, int arg)
-=======
 int vnic_dev_soft_reset(struct vnic_dev *vdev, int arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 a0 = (u32)arg, a1 = 0;
 	int wait = 1000;
 	return vnic_dev_cmd(vdev, CMD_SOFT_RESET, &a0, &a1, wait);
 }
 
-<<<<<<< HEAD
-static int vnic_dev_soft_reset_done(struct vnic_dev *vdev, int *done)
-=======
 int vnic_dev_soft_reset_done(struct vnic_dev *vdev, int *done)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 a0 = 0, a1 = 0;
 	int wait = 1000;
@@ -926,20 +757,12 @@ int vnic_dev_packet_filter(struct vnic_dev *vdev, int directed, int multicast,
 
 	err = vnic_dev_cmd(vdev, CMD_PACKET_FILTER, &a0, &a1, wait);
 	if (err)
-<<<<<<< HEAD
-		pr_err("Can't set packet filter\n");
-=======
 		vdev_neterr(vdev, "Can't set packet filter\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-int vnic_dev_add_addr(struct vnic_dev *vdev, u8 *addr)
-=======
 int vnic_dev_add_addr(struct vnic_dev *vdev, const u8 *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 a0 = 0, a1 = 0;
 	int wait = 1000;
@@ -951,20 +774,12 @@ int vnic_dev_add_addr(struct vnic_dev *vdev, const u8 *addr)
 
 	err = vnic_dev_cmd(vdev, CMD_ADDR_ADD, &a0, &a1, wait);
 	if (err)
-<<<<<<< HEAD
-		pr_err("Can't add addr [%pM], %d\n", addr, err);
-=======
 		vdev_neterr(vdev, "Can't add addr [%pM], %d\n", addr, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-int vnic_dev_del_addr(struct vnic_dev *vdev, u8 *addr)
-=======
 int vnic_dev_del_addr(struct vnic_dev *vdev, const u8 *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 a0 = 0, a1 = 0;
 	int wait = 1000;
@@ -976,11 +791,7 @@ int vnic_dev_del_addr(struct vnic_dev *vdev, const u8 *addr)
 
 	err = vnic_dev_cmd(vdev, CMD_ADDR_DEL, &a0, &a1, wait);
 	if (err)
-<<<<<<< HEAD
-		pr_err("Can't del addr [%pM], %d\n", addr, err);
-=======
 		vdev_neterr(vdev, "Can't del addr [%pM], %d\n", addr, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -1024,15 +835,6 @@ int vnic_dev_notify_set(struct vnic_dev *vdev, u16 intr)
 	dma_addr_t notify_pa;
 
 	if (vdev->notify || vdev->notify_pa) {
-<<<<<<< HEAD
-		pr_err("notify block %p still allocated", vdev->notify);
-		return -EINVAL;
-	}
-
-	notify_addr = pci_alloc_consistent(vdev->pdev,
-			sizeof(struct vnic_devcmd_notify),
-			&notify_pa);
-=======
 		vdev_neterr(vdev, "notify block %p still allocated\n",
 			    vdev->notify);
 		return -EINVAL;
@@ -1041,7 +843,6 @@ int vnic_dev_notify_set(struct vnic_dev *vdev, u16 intr)
 	notify_addr = dma_alloc_coherent(&vdev->pdev->dev,
 					 sizeof(struct vnic_devcmd_notify),
 					 &notify_pa, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!notify_addr)
 		return -ENOMEM;
 
@@ -1069,16 +870,9 @@ static int vnic_dev_notify_unsetcmd(struct vnic_dev *vdev)
 int vnic_dev_notify_unset(struct vnic_dev *vdev)
 {
 	if (vdev->notify) {
-<<<<<<< HEAD
-		pci_free_consistent(vdev->pdev,
-			sizeof(struct vnic_devcmd_notify),
-			vdev->notify,
-			vdev->notify_pa);
-=======
 		dma_free_coherent(&vdev->pdev->dev,
 				  sizeof(struct vnic_devcmd_notify),
 				  vdev->notify, vdev->notify_pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return vnic_dev_notify_unsetcmd(vdev);
@@ -1151,11 +945,7 @@ int vnic_dev_intr_coal_timer_info(struct vnic_dev *vdev)
 	memset(vdev->args, 0, sizeof(vdev->args));
 
 	if (vnic_dev_capable(vdev, CMD_INTR_COAL_CONVERT))
-<<<<<<< HEAD
-		err = _vnic_dev_cmd(vdev, CMD_INTR_COAL_CONVERT, wait);
-=======
 		err = vdev->devcmd_rtn(vdev, CMD_INTR_COAL_CONVERT, wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		err = ERR_ECMDUNKNOWN;
 
@@ -1164,12 +954,7 @@ int vnic_dev_intr_coal_timer_info(struct vnic_dev *vdev)
 	 */
 	if ((err == ERR_ECMDUNKNOWN) ||
 		(!err && !(vdev->args[0] && vdev->args[1] && vdev->args[2]))) {
-<<<<<<< HEAD
-		pr_warning("Using default conversion factor for "
-			"interrupt coalesce timer\n");
-=======
 		vdev_netwarn(vdev, "Using default conversion factor for interrupt coalesce timer\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vnic_dev_intr_coal_timer_info_default(vdev);
 		return 0;
 	}
@@ -1248,23 +1033,6 @@ void vnic_dev_unregister(struct vnic_dev *vdev)
 {
 	if (vdev) {
 		if (vdev->notify)
-<<<<<<< HEAD
-			pci_free_consistent(vdev->pdev,
-				sizeof(struct vnic_devcmd_notify),
-				vdev->notify,
-				vdev->notify_pa);
-		if (vdev->stats)
-			pci_free_consistent(vdev->pdev,
-				sizeof(struct vnic_stats),
-				vdev->stats, vdev->stats_pa);
-		if (vdev->fw_info)
-			pci_free_consistent(vdev->pdev,
-				sizeof(struct vnic_devcmd_fw_info),
-				vdev->fw_info, vdev->fw_info_pa);
-		kfree(vdev);
-	}
-}
-=======
 			dma_free_coherent(&vdev->pdev->dev,
 					  sizeof(struct vnic_devcmd_notify),
 					  vdev->notify, vdev->notify_pa);
@@ -1283,18 +1051,13 @@ void vnic_dev_unregister(struct vnic_dev *vdev)
 	}
 }
 EXPORT_SYMBOL(vnic_dev_unregister);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct vnic_dev *vnic_dev_register(struct vnic_dev *vdev,
 	void *priv, struct pci_dev *pdev, struct vnic_dev_bar *bar,
 	unsigned int num_bars)
 {
 	if (!vdev) {
-<<<<<<< HEAD
-		vdev = kzalloc(sizeof(struct vnic_dev), GFP_ATOMIC);
-=======
 		vdev = kzalloc(sizeof(struct vnic_dev), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!vdev)
 			return NULL;
 	}
@@ -1305,21 +1068,12 @@ struct vnic_dev *vnic_dev_register(struct vnic_dev *vdev,
 	if (vnic_dev_discover_res(vdev, bar, num_bars))
 		goto err_out;
 
-<<<<<<< HEAD
-	vdev->devcmd = vnic_dev_get_res(vdev, RES_TYPE_DEVCMD, 0);
-	if (!vdev->devcmd)
-		goto err_out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return vdev;
 
 err_out:
 	vnic_dev_unregister(vdev);
 	return NULL;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(vnic_dev_register);
 
 struct pci_dev *vnic_dev_get_pdev(struct vnic_dev *vdev)
@@ -1350,7 +1104,6 @@ int vnic_devcmd_init(struct vnic_dev *vdev)
 
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int vnic_dev_init_prov2(struct vnic_dev *vdev, u8 *buf, u32 len)
 {
@@ -1360,11 +1113,7 @@ int vnic_dev_init_prov2(struct vnic_dev *vdev, u8 *buf, u32 len)
 	void *prov_buf;
 	int ret;
 
-<<<<<<< HEAD
-	prov_buf = pci_alloc_consistent(vdev->pdev, len, &prov_pa);
-=======
 	prov_buf = dma_alloc_coherent(&vdev->pdev->dev, len, &prov_pa, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!prov_buf)
 		return -ENOMEM;
 
@@ -1374,11 +1123,7 @@ int vnic_dev_init_prov2(struct vnic_dev *vdev, u8 *buf, u32 len)
 
 	ret = vnic_dev_cmd(vdev, CMD_INIT_PROV_INFO2, &a0, &a1, wait);
 
-<<<<<<< HEAD
-	pci_free_consistent(vdev->pdev, len, prov_buf, prov_pa);
-=======
 	dma_free_coherent(&vdev->pdev->dev, len, prov_buf, prov_pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1428,8 +1173,6 @@ int vnic_dev_set_mac_addr(struct vnic_dev *vdev, u8 *mac_addr)
 
 	return vnic_dev_cmd(vdev, CMD_SET_MAC_ADDR, &a0, &a1, wait);
 }
-<<<<<<< HEAD
-=======
 
 /* vnic_dev_classifier: Add/Delete classifier entries
  * @vdev: vdev of the device
@@ -1546,4 +1289,3 @@ int vnic_dev_capable_rss_hash_type(struct vnic_dev *vdev, u8 *rss_hash_type)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

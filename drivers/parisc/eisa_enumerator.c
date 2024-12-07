@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-/*
- * eisa_enumerator.c - provide support for EISA adapters in PA-RISC machines
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- * Copyright (c) 2002 Daniel Engstrom <5116@telia.com>
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * eisa_enumerator.c - provide support for EISA adapters in PA-RISC machines
  *
  * Copyright (c) 2002 Daniel Engstrom <5116@telia.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/ioport.h>
@@ -23,11 +10,7 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 
 #include <asm/eisa_bus.h>
@@ -103,22 +86,14 @@ static int configure_memory(const unsigned char *buf,
 	for (i=0;i<HPEE_MEMORY_MAX_ENT;i++) {
 		c = get_8(buf+len);
 		
-<<<<<<< HEAD
-		if (NULL != (res = kmalloc(sizeof(struct resource), GFP_KERNEL))) {
-=======
 		if (NULL != (res = kzalloc(sizeof(struct resource), GFP_KERNEL))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int result;
 			
 			res->name = name;
 			res->start = mem_parent->start + get_24(buf+len+2);
 			res->end = res->start + get_16(buf+len+5)*1024;
 			res->flags = IORESOURCE_MEM;
-<<<<<<< HEAD
-			printk("memory %lx-%lx ", (unsigned long)res->start, (unsigned long)res->end);
-=======
 			pr_cont("memory %pR ", res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = request_resource(mem_parent, res);
 			if (result < 0) {
 				printk(KERN_ERR "EISA Enumerator: failed to claim EISA Bus address space!\n");
@@ -148,11 +123,7 @@ static int configure_irq(const unsigned char *buf)
 	for (i=0;i<HPEE_IRQ_MAX_ENT;i++) {
 		c = get_8(buf+len);
 		
-<<<<<<< HEAD
-		printk("IRQ %d ", c & HPEE_IRQ_CHANNEL_MASK);
-=======
 		pr_cont("IRQ %d ", c & HPEE_IRQ_CHANNEL_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (c & HPEE_IRQ_TRIG_LEVEL) {
 			eisa_make_irq_level(c & HPEE_IRQ_CHANNEL_MASK);
 		} else {
@@ -182,11 +153,7 @@ static int configure_dma(const unsigned char *buf)
 	
 	for (i=0;i<HPEE_DMA_MAX_ENT;i++) {
 		c = get_8(buf+len);
-<<<<<<< HEAD
-		printk("DMA %d ", c&HPEE_DMA_CHANNEL_MASK);
-=======
 		pr_cont("DMA %d ", c&HPEE_DMA_CHANNEL_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* fixme: maybe initialize the dma channel withthe timing ? */
 		len+=2;      
 		if (!(c & HPEE_DMA_MORE)) {
@@ -211,20 +178,12 @@ static int configure_port(const unsigned char *buf, struct resource *io_parent,
 	for (i=0;i<HPEE_PORT_MAX_ENT;i++) {
 		c = get_8(buf+len);
 		
-<<<<<<< HEAD
-		if (NULL != (res = kmalloc(sizeof(struct resource), GFP_KERNEL))) {
-=======
 		if (NULL != (res = kzalloc(sizeof(struct resource), GFP_KERNEL))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res->name = board;
 			res->start = get_16(buf+len+1);
 			res->end = get_16(buf+len+1)+(c&HPEE_PORT_SIZE_MASK)+1;
 			res->flags = IORESOURCE_IO;
-<<<<<<< HEAD
-			printk("ioports %lx-%lx ", (unsigned long)res->start, (unsigned long)res->end);
-=======
 			pr_cont("ioports %pR ", res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = request_resource(io_parent, res);
 			if (result < 0) {
 				printk(KERN_ERR "EISA Enumerator: failed to claim EISA Bus address space!\n");
@@ -393,11 +352,7 @@ static int parse_slot_config(int slot,
 		}
 		if (flags & HPEE_FUNCTION_INFO_CFG_FREE_FORM) {
 			/* I have no idea how to handle this */
-<<<<<<< HEAD
-			printk("function %d have free-form confgiuration, skipping ",
-=======
 			printk("function %d have free-form configuration, skipping ",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				num_func);
 			pos = p0 + function_len;
 			continue;
@@ -438,11 +393,7 @@ static int parse_slot_config(int slot,
 		}
 		
 		if (p0 + function_len < pos) {
-<<<<<<< HEAD
-			printk(KERN_ERR "eisa_enumerator: function %d length mis-match "
-=======
 			printk(KERN_ERR "eisa_enumerator: function %d length mismatch "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "got %d, expected %d\n",
 			       num_func, pos-p0, function_len);
 			res=-1;
@@ -450,31 +401,19 @@ static int parse_slot_config(int slot,
 		}
 		pos = p0 + function_len;
 	}
-<<<<<<< HEAD
-	printk("\n");
-=======
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!id_string_used) {
 		kfree(board);
 	}
 	
 	if (pos != es->config_data_length) {
-<<<<<<< HEAD
-		printk(KERN_ERR "eisa_enumerator: config data length mis-match got %d, expected %d\n",
-=======
 		printk(KERN_ERR "eisa_enumerator: config data length mismatch got %d, expected %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pos, es->config_data_length);
 		res=-1;
 	}
 	
 	if (num_func != es->num_functions) {
-<<<<<<< HEAD
-		printk(KERN_ERR "eisa_enumerator: number of functions mis-match got %d, expected %d\n",
-=======
 		printk(KERN_ERR "eisa_enumerator: number of functions mismatch got %d, expected %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			num_func, es->num_functions);
 		res=-2;
 	}
@@ -512,11 +451,7 @@ static int init_slot(int slot, struct eeprom_eisa_slot_info *es)
 		}
 		if (es->eisa_slot_id != id) {
 			print_eisa_id(id_string, id);
-<<<<<<< HEAD
-			printk(KERN_ERR "EISA slot %d id mis-match: got %s", 
-=======
 			printk(KERN_ERR "EISA slot %d id mismatch: got %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       slot, id_string);
 			
 			print_eisa_id(id_string, es->eisa_slot_id);

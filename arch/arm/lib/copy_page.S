@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/copypage.S
  *
  *  Copyright (C) 1995-1999 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  ASM optimised string functions
  */
 #include <linux/linkage.h>
@@ -46,15 +36,9 @@ ENTRY(copy_page)
 	.endr
 		subs	r2, r2, #1			@	1
 		stmia	r0!, {r3, r4, ip, lr}		@	4
-<<<<<<< HEAD
-		ldmgtia	r1!, {r3, r4, ip, lr}		@	4
-		bgt	1b				@	1
-	PLD(	ldmeqia r1!, {r3, r4, ip, lr}	)
-=======
 		ldmiagt	r1!, {r3, r4, ip, lr}		@	4
 		bgt	1b				@	1
 	PLD(	ldmiaeq r1!, {r3, r4, ip, lr}	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PLD(	beq	2b			)
 		ldmfd	sp!, {r4, pc}			@	3
 ENDPROC(copy_page)

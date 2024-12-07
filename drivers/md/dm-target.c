@@ -1,38 +1,23 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 Sistina Software (UK) Limited
  *
  * This file is released under the GPL.
  */
 
-<<<<<<< HEAD
-#include "dm.h"
-=======
 #include "dm-core.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/kmod.h>
 #include <linux/bio.h>
-<<<<<<< HEAD
-=======
 #include <linux/dax.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DM_MSG_PREFIX "target"
 
 static LIST_HEAD(_targets);
 static DECLARE_RWSEM(_lock);
 
-<<<<<<< HEAD
-#define DM_MOD_NAME_SIZE 32
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct target_type *__find_target_type(const char *name)
 {
 	struct target_type *tt;
@@ -100,16 +85,6 @@ int dm_register_target(struct target_type *tt)
 	int rv = 0;
 
 	down_write(&_lock);
-<<<<<<< HEAD
-	if (__find_target_type(tt->name))
-		rv = -EEXIST;
-	else
-		list_add(&tt->list, &_targets);
-
-	up_write(&_lock);
-	return rv;
-}
-=======
 	if (__find_target_type(tt->name)) {
 		DMERR("%s: '%s' target already registered",
 		      __func__, tt->name);
@@ -122,7 +97,6 @@ int dm_register_target(struct target_type *tt)
 	return rv;
 }
 EXPORT_SYMBOL(dm_register_target);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void dm_unregister_target(struct target_type *tt)
 {
@@ -136,23 +110,12 @@ void dm_unregister_target(struct target_type *tt)
 
 	up_write(&_lock);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(dm_unregister_target);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * io-err: always fails an io, useful for bringing
  * up LVs that have holes in them.
  */
-<<<<<<< HEAD
-static int io_err_ctr(struct dm_target *tt, unsigned int argc, char **args)
-{
-	/*
-	 * Return error for discards instead of -EOPNOTSUPP
-	 */
-	tt->num_discard_requests = 1;
-=======
 struct io_err_c {
 	struct dm_dev *dev;
 	sector_t start;
@@ -214,20 +177,12 @@ static int io_err_ctr(struct dm_target *tt, unsigned int argc, char **args)
 	 */
 	tt->num_discard_bios = 1;
 	tt->discards_supported = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void io_err_dtr(struct dm_target *tt)
 {
-<<<<<<< HEAD
-	/* empty */
-}
-
-static int io_err_map(struct dm_target *tt, struct bio *bio,
-		      union map_info *map_context)
-=======
 	struct io_err_c *ioec = tt->private;
 
 	if (ioec) {
@@ -302,19 +257,12 @@ static void io_err_io_hints(struct dm_target *ti, struct queue_limits *limits)
 static long io_err_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
 		long nr_pages, enum dax_access_mode mode, void **kaddr,
 		pfn_t *pfn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EIO;
 }
 
 static struct target_type error_target = {
 	.name = "error",
-<<<<<<< HEAD
-	.version = {1, 0, 1},
-	.ctr  = io_err_ctr,
-	.dtr  = io_err_dtr,
-	.map  = io_err_map,
-=======
 	.version = {1, 7, 0},
 	.features = DM_TARGET_WILDCARD | DM_TARGET_ZONED_HM,
 	.ctr  = io_err_ctr,
@@ -326,7 +274,6 @@ static struct target_type error_target = {
 	.io_hints = io_err_io_hints,
 	.direct_access = io_err_dax_direct_access,
 	.report_zones = io_err_report_zones,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init dm_target_init(void)
@@ -338,9 +285,3 @@ void dm_target_exit(void)
 {
 	dm_unregister_target(&error_target);
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(dm_register_target);
-EXPORT_SYMBOL(dm_unregister_target);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

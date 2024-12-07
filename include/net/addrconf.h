@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ADDRCONF_H
-#define _ADDRCONF_H
-
-#define MAX_RTR_SOLICITATIONS		3
-#define RTR_SOLICITATION_INTERVAL	(4*HZ)
-
-#define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
-
-#define TEMP_VALID_LIFETIME		(7*86400)
-#define TEMP_PREFERRED_LIFETIME		(86400)
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ADDRCONF_H
 #define _ADDRCONF_H
@@ -23,7 +11,6 @@
 #define TEMP_VALID_LIFETIME		(7*86400)       /* 1 week */
 #define TEMP_PREFERRED_LIFETIME		(86400)         /* 24 hours */
 #define REGEN_MIN_ADVANCE		(2)             /* 2 seconds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REGEN_MAX_RETRY			(3)
 #define MAX_DESYNC_FACTOR		(600)
 
@@ -31,15 +18,12 @@
 
 #define IPV6_MAX_ADDRESSES		16
 
-<<<<<<< HEAD
-=======
 #define ADDRCONF_TIMER_FUZZ_MINUS	(HZ > 50 ? HZ / 50 : 1)
 #define ADDRCONF_TIMER_FUZZ		(HZ / 4)
 #define ADDRCONF_TIMER_FUZZ_MAX		(HZ)
 
 #define ADDRCONF_NOTIFY_PRIORITY	0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/in.h>
 #include <linux/in6.h>
 
@@ -48,14 +32,6 @@ struct prefix_info {
 	__u8			length;
 	__u8			prefix_len;
 
-<<<<<<< HEAD
-#if defined(__BIG_ENDIAN_BITFIELD)
-	__u8			onlink : 1,
-			 	autoconf : 1,
-				reserved : 6;
-#elif defined(__LITTLE_ENDIAN_BITFIELD)
-	__u8			reserved : 6,
-=======
 	union __packed {
 		__u8		flags;
 		struct __packed {
@@ -65,17 +41,13 @@ struct prefix_info {
 				reserved : 6;
 #elif defined(__LITTLE_ENDIAN_BITFIELD)
 			__u8	reserved : 6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				autoconf : 1,
 				onlink : 1;
 #else
 #error "Please fix <asm/byteorder.h>"
 #endif
-<<<<<<< HEAD
-=======
 		};
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32			valid;
 	__be32			prefered;
 	__be32			reserved2;
@@ -83,70 +55,14 @@ struct prefix_info {
 	struct in6_addr		prefix;
 };
 
-<<<<<<< HEAD
-
-=======
 /* rfc4861 4.6.2: IPv6 PIO is 32 bytes in size */
 static_assert(sizeof(struct prefix_info) == 32);
 
 #include <linux/ipv6.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <net/if_inet6.h>
 #include <net/ipv6.h>
 
-<<<<<<< HEAD
-#define IN6_ADDR_HSIZE		16
-
-extern int			addrconf_init(void);
-extern void			addrconf_cleanup(void);
-
-extern int			addrconf_add_ifaddr(struct net *net,
-						    void __user *arg);
-extern int			addrconf_del_ifaddr(struct net *net,
-						    void __user *arg);
-extern int			addrconf_set_dstaddr(struct net *net,
-						     void __user *arg);
-
-extern int			ipv6_chk_addr(struct net *net,
-					      const struct in6_addr *addr,
-					      struct net_device *dev,
-					      int strict);
-
-#if defined(CONFIG_IPV6_MIP6) || defined(CONFIG_IPV6_MIP6_MODULE)
-extern int			ipv6_chk_home_addr(struct net *net,
-						   const struct in6_addr *addr);
-#endif
-
-extern int			ipv6_chk_prefix(const struct in6_addr *addr,
-						struct net_device *dev);
-
-extern struct inet6_ifaddr      *ipv6_get_ifaddr(struct net *net,
-						 const struct in6_addr *addr,
-						 struct net_device *dev,
-						 int strict);
-
-extern int			ipv6_dev_get_saddr(struct net *net,
-					       const struct net_device *dev,
-					       const struct in6_addr *daddr,
-					       unsigned int srcprefs,
-					       struct in6_addr *saddr);
-extern int			__ipv6_get_lladdr(struct inet6_dev *idev,
-						  struct in6_addr *addr,
-						  unsigned char banned_flags);
-extern int			ipv6_get_lladdr(struct net_device *dev,
-						struct in6_addr *addr,
-						unsigned char banned_flags);
-extern int 			ipv6_rcv_saddr_equal(const struct sock *sk,
-						    const struct sock *sk2);
-extern void			addrconf_join_solict(struct net_device *dev,
-					const struct in6_addr *addr);
-extern void			addrconf_leave_solict(struct inet6_dev *idev,
-					const struct in6_addr *addr);
-
-static inline unsigned long addrconf_timeout_fixup(u32 timeout,
-						    unsigned unit)
-=======
 struct in6_validator_info {
 	struct in6_addr		i6vi_addr;
 	struct inet6_dev	*i6vi_dev;
@@ -269,7 +185,6 @@ static inline int addrconf_ifid_eui48(u8 *eui, struct net_device *dev)
 
 static inline unsigned long addrconf_timeout_fixup(u32 timeout,
 						   unsigned int unit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (timeout == 0xffffffff)
 		return ~0UL;
@@ -293,53 +208,15 @@ static inline int addrconf_finite_timeout(unsigned long timeout)
 /*
  *	IPv6 Address Label subsystem (addrlabel.c)
  */
-<<<<<<< HEAD
-extern int			ipv6_addr_label_init(void);
-extern void			ipv6_addr_label_cleanup(void);
-extern void			ipv6_addr_label_rtnl_register(void);
-extern u32			ipv6_addr_label(struct net *net,
-						const struct in6_addr *addr,
-						int type, int ifindex);
-=======
 int ipv6_addr_label_init(void);
 void ipv6_addr_label_cleanup(void);
 int ipv6_addr_label_rtnl_register(void);
 u32 ipv6_addr_label(struct net *net, const struct in6_addr *addr,
 		    int type, int ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	multicast prototypes (mcast.c)
  */
-<<<<<<< HEAD
-extern int ipv6_sock_mc_join(struct sock *sk, int ifindex,
-			     const struct in6_addr *addr);
-extern int ipv6_sock_mc_drop(struct sock *sk, int ifindex,
-			     const struct in6_addr *addr);
-extern void ipv6_sock_mc_close(struct sock *sk);
-extern int inet6_mc_check(struct sock *sk,
-			  const struct in6_addr *mc_addr,
-			  const struct in6_addr *src_addr);
-
-extern int ipv6_dev_mc_inc(struct net_device *dev, const struct in6_addr *addr);
-extern int __ipv6_dev_mc_dec(struct inet6_dev *idev, const struct in6_addr *addr);
-extern int ipv6_dev_mc_dec(struct net_device *dev, const struct in6_addr *addr);
-extern void ipv6_mc_up(struct inet6_dev *idev);
-extern void ipv6_mc_down(struct inet6_dev *idev);
-extern void ipv6_mc_unmap(struct inet6_dev *idev);
-extern void ipv6_mc_remap(struct inet6_dev *idev);
-extern void ipv6_mc_init_dev(struct inet6_dev *idev);
-extern void ipv6_mc_destroy_dev(struct inet6_dev *idev);
-extern void addrconf_dad_failure(struct inet6_ifaddr *ifp);
-
-extern int ipv6_chk_mcast_addr(struct net_device *dev,
-			       const struct in6_addr *group,
-			       const struct in6_addr *src_addr);
-extern int ipv6_is_mld(struct sk_buff *skb, int nexthdr);
-
-extern void addrconf_prefix_rcv(struct net_device *dev,
-				u8 *opt, int len, bool sllao);
-=======
 static inline bool ipv6_mc_may_pull(struct sk_buff *skb,
 				    unsigned int len)
 {
@@ -402,28 +279,10 @@ static inline bool ipv6_is_mld(struct sk_buff *skb, int nexthdr, int offset)
 
 void addrconf_prefix_rcv(struct net_device *dev,
 			 u8 *opt, int len, bool sllao);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	anycast prototypes (anycast.c)
  */
-<<<<<<< HEAD
-extern int ipv6_sock_ac_join(struct sock *sk,int ifindex, const struct in6_addr *addr);
-extern int ipv6_sock_ac_drop(struct sock *sk,int ifindex, const struct in6_addr *addr);
-extern void ipv6_sock_ac_close(struct sock *sk);
-
-extern int ipv6_dev_ac_inc(struct net_device *dev, const struct in6_addr *addr);
-extern int __ipv6_dev_ac_dec(struct inet6_dev *idev, const struct in6_addr *addr);
-extern int ipv6_chk_acast_addr(struct net *net, struct net_device *dev,
-			       const struct in6_addr *addr);
-
-u32 addrconf_rt_table(const struct net_device *dev, u32 default_table);
-
-
-/* Device notifier */
-extern int register_inet6addr_notifier(struct notifier_block *nb);
-extern int unregister_inet6addr_notifier(struct notifier_block *nb);
-=======
 int ipv6_sock_ac_join(struct sock *sk, int ifindex,
 		      const struct in6_addr *addr);
 int ipv6_sock_ac_drop(struct sock *sk, int ifindex,
@@ -452,7 +311,6 @@ int inet6addr_validator_notifier_call_chain(unsigned long val, void *v);
 
 void inet6_netconf_notify_devconf(struct net *net, int event, int type,
 				  int ifindex, struct ipv6_devconf *devconf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __in6_dev_get - get inet6_dev pointer from netdevice
@@ -467,8 +325,6 @@ static inline struct inet6_dev *__in6_dev_get(const struct net_device *dev)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * __in6_dev_stats_get - get inet6_dev pointer for stats
  * @dev: network device
  * @skb: skb for original incoming interface if neeeded
@@ -499,7 +355,6 @@ static inline struct inet6_dev *__in6_dev_get_safely(const struct net_device *de
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in6_dev_get - get inet6_dev pointer from netdevice
  * @dev: network device
  *
@@ -514,28 +369,11 @@ static inline struct inet6_dev *in6_dev_get(const struct net_device *dev)
 	rcu_read_lock();
 	idev = rcu_dereference(dev->ip6_ptr);
 	if (idev)
-<<<<<<< HEAD
-		atomic_inc(&idev->refcnt);
-=======
 		refcount_inc(&idev->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 	return idev;
 }
 
-<<<<<<< HEAD
-extern void in6_dev_finish_destroy(struct inet6_dev *idev);
-
-static inline void in6_dev_put(struct inet6_dev *idev)
-{
-	if (atomic_dec_and_test(&idev->refcnt))
-		in6_dev_finish_destroy(idev);
-}
-
-static inline void __in6_dev_put(struct inet6_dev *idev)
-{
-	atomic_dec(&idev->refcnt);
-=======
 static inline struct neigh_parms *__in6_dev_nd_parms_get_rcu(const struct net_device *dev)
 {
 	struct inet6_dev *idev = __in6_dev_get(dev);
@@ -564,21 +402,10 @@ static inline void in6_dev_put_clear(struct inet6_dev **pidev)
 static inline void __in6_dev_put(struct inet6_dev *idev)
 {
 	refcount_dec(&idev->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void in6_dev_hold(struct inet6_dev *idev)
 {
-<<<<<<< HEAD
-	atomic_inc(&idev->refcnt);
-}
-
-extern void inet6_ifa_finish_destroy(struct inet6_ifaddr *ifp);
-
-static inline void in6_ifa_put(struct inet6_ifaddr *ifp)
-{
-	if (atomic_dec_and_test(&ifp->refcnt))
-=======
 	refcount_inc(&idev->refcnt);
 }
 
@@ -598,26 +425,16 @@ void inet6_ifa_finish_destroy(struct inet6_ifaddr *ifp);
 static inline void in6_ifa_put(struct inet6_ifaddr *ifp)
 {
 	if (refcount_dec_and_test(&ifp->refcnt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inet6_ifa_finish_destroy(ifp);
 }
 
 static inline void __in6_ifa_put(struct inet6_ifaddr *ifp)
 {
-<<<<<<< HEAD
-	atomic_dec(&ifp->refcnt);
-=======
 	refcount_dec(&ifp->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void in6_ifa_hold(struct inet6_ifaddr *ifp)
 {
-<<<<<<< HEAD
-	atomic_inc(&ifp->refcnt);
-}
-
-=======
 	refcount_inc(&ifp->refcnt);
 }
 
@@ -625,7 +442,6 @@ static inline bool in6_ifa_hold_safe(struct inet6_ifaddr *ifp)
 {
 	return refcount_inc_not_zero(&ifp->refcnt);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	compute link-local solicited-node multicast address
@@ -640,28 +456,6 @@ static inline void addrconf_addr_solict_mult(const struct in6_addr *addr,
 		      htonl(0xFF000000) | addr->s6_addr32[3]);
 }
 
-<<<<<<< HEAD
-static inline int ipv6_addr_is_multicast(const struct in6_addr *addr)
-{
-	return (addr->s6_addr32[0] & htonl(0xFF000000)) == htonl(0xFF000000);
-}
-
-static inline int ipv6_addr_is_ll_all_nodes(const struct in6_addr *addr)
-{
-	return ((addr->s6_addr32[0] ^ htonl(0xff020000)) |
-		addr->s6_addr32[1] | addr->s6_addr32[2] |
-		(addr->s6_addr32[3] ^ htonl(0x00000001))) == 0;
-}
-
-static inline int ipv6_addr_is_ll_all_routers(const struct in6_addr *addr)
-{
-	return ((addr->s6_addr32[0] ^ htonl(0xff020000)) |
-		addr->s6_addr32[1] | addr->s6_addr32[2] |
-		(addr->s6_addr32[3] ^ htonl(0x00000002))) == 0;
-}
-
-static inline int ipv6_addr_is_isatap(const struct in6_addr *addr)
-=======
 static inline bool ipv6_addr_is_ll_all_nodes(const struct in6_addr *addr)
 {
 #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
@@ -687,16 +481,10 @@ static inline bool ipv6_addr_is_ll_all_routers(const struct in6_addr *addr)
 }
 
 static inline bool ipv6_addr_is_isatap(const struct in6_addr *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (addr->s6_addr32[2] | htonl(0x02000000)) == htonl(0x02005EFE);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-extern int if6_proc_init(void);
-extern void if6_proc_exit(void);
-=======
 static inline bool ipv6_addr_is_solict_mult(const struct in6_addr *addr)
 {
 #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
@@ -729,7 +517,6 @@ static inline bool ipv6_addr_is_all_snoopers(const struct in6_addr *addr)
 #ifdef CONFIG_PROC_FS
 int if6_proc_init(void);
 void if6_proc_exit(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

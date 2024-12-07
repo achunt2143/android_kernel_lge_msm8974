@@ -35,26 +35,12 @@
  * with this program; if not, write  to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/init.h>
-=======
 #include <linux/init.h>
 #include <linux/irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <asm/irq.h>
-#include <asm/mach/irq.h>
-
-#include <plat/cpu.h>
-
-#include <mach/hardware.h>
-=======
 #include <linux/irqdomain.h>
 
 #include <asm/irq.h>
@@ -64,63 +50,17 @@
 #include "soc.h"
 #include "hardware.h"
 #include "common.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IRQ_BANK(irq) ((irq) >> 5)
 #define IRQ_BIT(irq)  ((irq) & 0x1f)
 
 struct omap_irq_bank {
 	unsigned long base_reg;
-<<<<<<< HEAD
-=======
 	void __iomem *va;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long trigger_map;
 	unsigned long wake_enable;
 };
 
-<<<<<<< HEAD
-u32 omap_irq_flags;
-static unsigned int irq_bank_count;
-static struct omap_irq_bank *irq_banks;
-
-static inline unsigned int irq_bank_readl(int bank, int offset)
-{
-	return omap_readl(irq_banks[bank].base_reg + offset);
-}
-
-static inline void irq_bank_writel(unsigned long value, int bank, int offset)
-{
-	omap_writel(value, irq_banks[bank].base_reg + offset);
-}
-
-static void omap_ack_irq(struct irq_data *d)
-{
-	if (d->irq > 31)
-		omap_writel(0x1, OMAP_IH2_BASE + IRQ_CONTROL_REG_OFFSET);
-
-	omap_writel(0x1, OMAP_IH1_BASE + IRQ_CONTROL_REG_OFFSET);
-}
-
-static void omap_mask_irq(struct irq_data *d)
-{
-	int bank = IRQ_BANK(d->irq);
-	u32 l;
-
-	l = omap_readl(irq_banks[bank].base_reg + IRQ_MIR_REG_OFFSET);
-	l |= 1 << IRQ_BIT(d->irq);
-	omap_writel(l, irq_banks[bank].base_reg + IRQ_MIR_REG_OFFSET);
-}
-
-static void omap_unmask_irq(struct irq_data *d)
-{
-	int bank = IRQ_BANK(d->irq);
-	u32 l;
-
-	l = omap_readl(irq_banks[bank].base_reg + IRQ_MIR_REG_OFFSET);
-	l &= ~(1 << IRQ_BIT(d->irq));
-	omap_writel(l, irq_banks[bank].base_reg + IRQ_MIR_REG_OFFSET);
-=======
 static u32 omap_l2_irq;
 static unsigned int irq_bank_count;
 static struct omap_irq_bank *irq_banks;
@@ -141,37 +81,16 @@ static void omap_ack_irq(int irq)
 		writel_relaxed(0x1, irq_banks[1].va + IRQ_CONTROL_REG_OFFSET);
 
 	writel_relaxed(0x1, irq_banks[0].va + IRQ_CONTROL_REG_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void omap_mask_ack_irq(struct irq_data *d)
 {
-<<<<<<< HEAD
-	omap_mask_irq(d);
-	omap_ack_irq(d);
-}
-
-static int omap_wake_irq(struct irq_data *d, unsigned int enable)
-{
-	int bank = IRQ_BANK(d->irq);
-
-	if (enable)
-		irq_banks[bank].wake_enable |= IRQ_BIT(d->irq);
-	else
-		irq_banks[bank].wake_enable &= ~IRQ_BIT(d->irq);
-
-	return 0;
-}
-
-
-=======
 	struct irq_chip_type *ct = irq_data_get_chip_type(d);
 
 	ct->chip.irq_mask(d);
 	omap_ack_irq(d->irq);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allows tuning the IRQ type and priority
  *
@@ -192,17 +111,6 @@ static void omap_irq_set_cfg(int irq, int fiq, int priority, int trigger)
 	irq_bank_writel(val, bank, offset);
 }
 
-<<<<<<< HEAD
-#if defined (CONFIG_ARCH_OMAP730) || defined (CONFIG_ARCH_OMAP850)
-static struct omap_irq_bank omap7xx_irq_banks[] = {
-	{ .base_reg = OMAP_IH1_BASE,		.trigger_map = 0xb3f8e22f },
-	{ .base_reg = OMAP_IH2_BASE,		.trigger_map = 0xfdb9c1f2 },
-	{ .base_reg = OMAP_IH2_BASE + 0x100,	.trigger_map = 0x800040f3 },
-};
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ARCH_OMAP15XX
 static struct omap_irq_bank omap1510_irq_banks[] = {
 	{ .base_reg = OMAP_IH1_BASE,		.trigger_map = 0xb3febfff },
@@ -224,30 +132,6 @@ static struct omap_irq_bank omap1610_irq_banks[] = {
 };
 #endif
 
-<<<<<<< HEAD
-static struct irq_chip omap_irq_chip = {
-	.name		= "MPU",
-	.irq_ack	= omap_mask_ack_irq,
-	.irq_mask	= omap_mask_irq,
-	.irq_unmask	= omap_unmask_irq,
-	.irq_set_wake	= omap_wake_irq,
-};
-
-void __init omap1_init_irq(void)
-{
-	int i, j;
-
-#if defined(CONFIG_ARCH_OMAP730) || defined(CONFIG_ARCH_OMAP850)
-	if (cpu_is_omap7xx()) {
-		omap_irq_flags = INT_7XX_IH2_IRQ;
-		irq_banks = omap7xx_irq_banks;
-		irq_bank_count = ARRAY_SIZE(omap7xx_irq_banks);
-	}
-#endif
-#ifdef CONFIG_ARCH_OMAP15XX
-	if (cpu_is_omap1510()) {
-		omap_irq_flags = INT_1510_IH2_IRQ;
-=======
 asmlinkage void __exception_irq_entry omap1_handle_irq(struct pt_regs *regs)
 {
 	void __iomem *l1 = irq_banks[0].va;
@@ -305,33 +189,20 @@ void __init omap1_init_irq(void)
 
 #ifdef CONFIG_ARCH_OMAP15XX
 	if (cpu_is_omap1510()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_banks = omap1510_irq_banks;
 		irq_bank_count = ARRAY_SIZE(omap1510_irq_banks);
 	}
 	if (cpu_is_omap310()) {
-<<<<<<< HEAD
-		omap_irq_flags = INT_1510_IH2_IRQ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_banks = omap310_irq_banks;
 		irq_bank_count = ARRAY_SIZE(omap310_irq_banks);
 	}
 #endif
 #if defined(CONFIG_ARCH_OMAP16XX)
 	if (cpu_is_omap16xx()) {
-<<<<<<< HEAD
-		omap_irq_flags = INT_1510_IH2_IRQ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_banks = omap1610_irq_banks;
 		irq_bank_count = ARRAY_SIZE(omap1610_irq_banks);
 	}
 #endif
-<<<<<<< HEAD
-	printk("Total of %i interrupts in %i interrupt banks\n",
-	       irq_bank_count * 32, irq_bank_count);
-=======
 
 	for (i = 0; i < irq_bank_count; i++) {
 		irq_banks[i].va = ioremap(irq_banks[i].base_reg, 0xff);
@@ -354,7 +225,6 @@ void __init omap1_init_irq(void)
 
 	pr_info("Total of %lu interrupts in %i interrupt banks\n",
 		nr_irqs, irq_bank_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mask and clear all interrupts */
 	for (i = 0; i < irq_bank_count; i++) {
@@ -366,13 +236,6 @@ void __init omap1_init_irq(void)
 	irq_bank_writel(0x03, 0, IRQ_CONTROL_REG_OFFSET);
 	irq_bank_writel(0x03, 1, IRQ_CONTROL_REG_OFFSET);
 
-<<<<<<< HEAD
-	/* Enable interrupts in global mask */
-	if (cpu_is_omap7xx())
-		irq_bank_writel(0x0, 0, IRQ_GMR_REG_OFFSET);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Install the interrupt handlers for each bank */
 	for (i = 0; i < irq_bank_count; i++) {
 		for (j = i * 32; j < (i + 1) * 32; j++) {
@@ -380,23 +243,6 @@ void __init omap1_init_irq(void)
 
 			irq_trigger = irq_banks[i].trigger_map >> IRQ_BIT(j);
 			omap_irq_set_cfg(j, 0, 0, irq_trigger);
-<<<<<<< HEAD
-
-			irq_set_chip_and_handler(j, &omap_irq_chip,
-						 handle_level_irq);
-			set_irq_flags(j, IRQF_VALID);
-		}
-	}
-
-	/* Unmask level 2 handler */
-
-	if (cpu_is_omap7xx())
-		omap_unmask_irq(irq_get_irq_data(INT_7XX_IH2_IRQ));
-	else if (cpu_is_omap15xx())
-		omap_unmask_irq(irq_get_irq_data(INT_1510_IH2_IRQ));
-	else if (cpu_is_omap16xx())
-		omap_unmask_irq(irq_get_irq_data(INT_1610_IH2_IRQ));
-=======
 			irq_clear_status_flags(j, IRQ_NOREQUEST);
 		}
 		omap_alloc_gc(irq_banks[i].va, irq_base + i * 32, 32);
@@ -410,5 +256,4 @@ void __init omap1_init_irq(void)
 	}
 
 	set_handle_irq(omap1_handle_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

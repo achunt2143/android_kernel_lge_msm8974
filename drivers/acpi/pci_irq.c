@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  pci_irq.c - ACPI PCI Interrupt Routing ($Revision: 11 $)
  *
@@ -10,32 +7,9 @@
  *  Copyright (C) 2002       Dominik Brodowski <devel@brodo.de>
  *  (c) Copyright 2008 Hewlett-Packard Development Company, L.P.
  *	Bjorn Helgaas <bjorn.helgaas@hp.com>
-<<<<<<< HEAD
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
-
-=======
  */
 
 #define pr_fmt(fmt) "ACPI: PCI: " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/dmi.h>
 #include <linux/kernel.h>
@@ -47,34 +21,15 @@
 #include <linux/pci.h>
 #include <linux/acpi.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-
-#define PREFIX "ACPI: "
-
-#define _COMPONENT		ACPI_PCI_COMPONENT
-ACPI_MODULE_NAME("pci_irq");
-
-struct acpi_prt_entry {
-	struct list_head	list;
-=======
 #include <linux/interrupt.h>
 
 struct acpi_prt_entry {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_pci_id	id;
 	u8			pin;
 	acpi_handle		link;
 	u32			index;		/* GSI, or link _CRS index */
 };
 
-<<<<<<< HEAD
-static LIST_HEAD(acpi_prt_list);
-static DEFINE_SPINLOCK(acpi_prt_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline char pin_name(int pin)
 {
 	return 'A' + pin - 1;
@@ -84,31 +39,6 @@ static inline char pin_name(int pin)
                          PCI IRQ Routing Table (PRT) Support
    -------------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static struct acpi_prt_entry *acpi_pci_irq_find_prt_entry(struct pci_dev *dev,
-							  int pin)
-{
-	struct acpi_prt_entry *entry;
-	int segment = pci_domain_nr(dev->bus);
-	int bus = dev->bus->number;
-	int device = PCI_SLOT(dev->devfn);
-
-	spin_lock(&acpi_prt_lock);
-	list_for_each_entry(entry, &acpi_prt_list, list) {
-		if ((segment == entry->id.segment)
-		    && (bus == entry->id.bus)
-		    && (device == entry->id.device)
-		    && (pin == entry->pin)) {
-			spin_unlock(&acpi_prt_lock);
-			return entry;
-		}
-	}
-	spin_unlock(&acpi_prt_lock);
-	return NULL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* http://bugzilla.kernel.org/show_bug.cgi?id=4773 */
 static const struct dmi_system_id medion_md9580[] = {
 	{
@@ -185,12 +115,6 @@ static void do_prt_fixups(struct acpi_prt_entry *entry,
 		quirk = &prt_quirks[i];
 
 		/* All current quirks involve link devices, not GSIs */
-<<<<<<< HEAD
-		if (!prt->source)
-			continue;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dmi_check_system(quirk->system) &&
 		    entry->id.segment == quirk->segment &&
 		    entry->id.bus == quirk->bus &&
@@ -198,11 +122,7 @@ static void do_prt_fixups(struct acpi_prt_entry *entry,
 		    entry->pin == quirk->pin &&
 		    !strcmp(prt->source, quirk->source) &&
 		    strlen(prt->source) >= strlen(quirk->actual_source)) {
-<<<<<<< HEAD
-			printk(KERN_WARNING PREFIX "firmware reports "
-=======
 			pr_warn("Firmware reports "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"%04x:%02x:%02x PCI INT %c connected to %s; "
 				"changing to %s\n",
 				entry->id.segment, entry->id.bus,
@@ -213,13 +133,6 @@ static void do_prt_fixups(struct acpi_prt_entry *entry,
 	}
 }
 
-<<<<<<< HEAD
-static int acpi_pci_irq_add_entry(acpi_handle handle, struct pci_bus *bus,
-				  struct acpi_pci_routing_table *prt)
-{
-	struct acpi_prt_entry *entry;
-
-=======
 static int acpi_pci_irq_check_entry(acpi_handle handle, struct pci_dev *dev,
 				  int pin, struct acpi_pci_routing_table *prt,
 				  struct acpi_prt_entry **entry_ptr)
@@ -233,7 +146,6 @@ static int acpi_pci_irq_check_entry(acpi_handle handle, struct pci_dev *dev,
 	    prt->pin + 1 != pin)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = kzalloc(sizeof(struct acpi_prt_entry), GFP_KERNEL);
 	if (!entry)
 		return -ENOMEM;
@@ -243,13 +155,8 @@ static int acpi_pci_irq_check_entry(acpi_handle handle, struct pci_dev *dev,
 	 * 1=INTA, 2=INTB.  We use the PCI encoding throughout, so convert
 	 * it here.
 	 */
-<<<<<<< HEAD
-	entry->id.segment = pci_domain_nr(bus);
-	entry->id.bus = bus->number;
-=======
 	entry->id.segment = segment;
 	entry->id.bus = bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->id.device = (prt->address >> 16) & 0xFFFF;
 	entry->pin = prt->pin + 1;
 
@@ -264,11 +171,7 @@ static int acpi_pci_irq_check_entry(acpi_handle handle, struct pci_dev *dev,
 	 * configure the IRQ assigned to this slot|dev|pin.  The 'source_index'
 	 * indicates which resource descriptor in the resource template (of
 	 * the link device) this interrupt is allocated from.
-<<<<<<< HEAD
-	 * 
-=======
 	 *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * NOTE: Don't query the Link Device for IRQ information at this time
 	 *       because Link Device enumeration may not have occurred yet
 	 *       (e.g. exists somewhere 'below' this _PRT entry in the ACPI
@@ -284,58 +187,21 @@ static int acpi_pci_irq_check_entry(acpi_handle handle, struct pci_dev *dev,
 	 * the IRQ value, which is hardwired to specific interrupt inputs on
 	 * the interrupt controller.
 	 */
-<<<<<<< HEAD
-
-	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INFO,
-			      "      %04x:%02x:%02x[%c] -> %s[%d]\n",
-			      entry->id.segment, entry->id.bus,
-			      entry->id.device, pin_name(entry->pin),
-			      prt->source, entry->index));
-
-	spin_lock(&acpi_prt_lock);
-	list_add_tail(&entry->list, &acpi_prt_list);
-	spin_unlock(&acpi_prt_lock);
-=======
 	pr_debug("%04x:%02x:%02x[%c] -> %s[%d]\n",
 		 entry->id.segment, entry->id.bus, entry->id.device,
 		 pin_name(entry->pin), prt->source, entry->index);
 
 	*entry_ptr = entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int acpi_pci_irq_add_prt(acpi_handle handle, struct pci_bus *bus)
-=======
 static int acpi_pci_irq_find_prt_entry(struct pci_dev *dev,
 			  int pin, struct acpi_prt_entry **entry_ptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
 	struct acpi_pci_routing_table *entry;
-<<<<<<< HEAD
-
-	/* 'handle' is the _PRT's parent (root bridge or PCI-PCI bridge) */
-	status = acpi_get_name(handle, ACPI_FULL_PATHNAME, &buffer);
-	if (ACPI_FAILURE(status))
-		return -ENODEV;
-
-	printk(KERN_DEBUG "ACPI: PCI Interrupt Routing Table [%s._PRT]\n",
-	       (char *) buffer.pointer);
-
-	kfree(buffer.pointer);
-
-	buffer.length = ACPI_ALLOCATE_BUFFER;
-	buffer.pointer = NULL;
-
-	status = acpi_get_irq_routing_table(handle, &buffer);
-	if (ACPI_FAILURE(status)) {
-		ACPI_EXCEPTION((AE_INFO, status, "Evaluating _PRT [%s]",
-				acpi_format_exception(status)));
-=======
 	acpi_handle handle = NULL;
 
 	if (dev->bus->bridge)
@@ -347,20 +213,15 @@ static int acpi_pci_irq_find_prt_entry(struct pci_dev *dev,
 	/* 'handle' is the _PRT's parent (root bridge or PCI-PCI bridge) */
 	status = acpi_get_irq_routing_table(handle, &buffer);
 	if (ACPI_FAILURE(status)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(buffer.pointer);
 		return -ENODEV;
 	}
 
 	entry = buffer.pointer;
 	while (entry && (entry->length > 0)) {
-<<<<<<< HEAD
-		acpi_pci_irq_add_entry(handle, bus, entry);
-=======
 		if (!acpi_pci_irq_check_entry(handle, dev, pin,
 						 entry, entry_ptr))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry = (struct acpi_pci_routing_table *)
 		    ((unsigned long)entry + entry->length);
 	}
@@ -369,27 +230,6 @@ static int acpi_pci_irq_find_prt_entry(struct pci_dev *dev,
 	return 0;
 }
 
-<<<<<<< HEAD
-void acpi_pci_irq_del_prt(struct pci_bus *bus)
-{
-	struct acpi_prt_entry *entry, *tmp;
-
-	printk(KERN_DEBUG
-	       "ACPI: Delete PCI Interrupt Routing Table for %04x:%02x\n",
-	       pci_domain_nr(bus), bus->number);
-	spin_lock(&acpi_prt_lock);
-	list_for_each_entry_safe(entry, tmp, &acpi_prt_list, list) {
-		if (pci_domain_nr(bus) == entry->id.segment
-			&& bus->number == entry->id.bus) {
-			list_del(&entry->list);
-			kfree(entry);
-		}
-	}
-	spin_unlock(&acpi_prt_lock);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* --------------------------------------------------------------------------
                           PCI Interrupt Routing Support
    -------------------------------------------------------------------------- */
@@ -450,23 +290,6 @@ static int acpi_reroute_boot_interrupt(struct pci_dev *dev,
 
 static struct acpi_prt_entry *acpi_pci_irq_lookup(struct pci_dev *dev, int pin)
 {
-<<<<<<< HEAD
-	struct acpi_prt_entry *entry;
-	struct pci_dev *bridge;
-	u8 bridge_pin, orig_pin = pin;
-
-	entry = acpi_pci_irq_find_prt_entry(dev, pin);
-	if (entry) {
-#ifdef CONFIG_X86_IO_APIC
-		acpi_reroute_boot_interrupt(dev, entry);
-#endif /* CONFIG_X86_IO_APIC */
-		ACPI_DEBUG_PRINT((ACPI_DB_INFO, "Found %s[%c] _PRT entry\n",
-				  pci_name(dev), pin_name(pin)));
-		return entry;
-	}
-
-	/* 
-=======
 	struct acpi_prt_entry *entry = NULL;
 	struct pci_dev *bridge;
 	u8 bridge_pin, orig_pin = pin;
@@ -482,7 +305,6 @@ static struct acpi_prt_entry *acpi_pci_irq_lookup(struct pci_dev *dev, int pin)
 	}
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Attempt to derive an IRQ for this device from a parent bridge's
 	 * PCI interrupt routing entry (eg. yenta bridge and add-in card bridge).
 	 */
@@ -494,31 +316,16 @@ static struct acpi_prt_entry *acpi_pci_irq_lookup(struct pci_dev *dev, int pin)
 			/* PC card has the same IRQ as its cardbridge */
 			bridge_pin = bridge->pin;
 			if (!bridge_pin) {
-<<<<<<< HEAD
-				ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-						  "No interrupt pin configured for device %s\n",
-						  pci_name(bridge)));
-=======
 				dev_dbg(&bridge->dev, "No interrupt pin configured\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return NULL;
 			}
 			pin = bridge_pin;
 		}
 
-<<<<<<< HEAD
-		entry = acpi_pci_irq_find_prt_entry(bridge, pin);
-		if (entry) {
-			ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-					 "Derived GSI for %s INT %c from %s\n",
-					 pci_name(dev), pin_name(orig_pin),
-					 pci_name(bridge)));
-=======
 		ret = acpi_pci_irq_find_prt_entry(bridge, pin, &entry);
 		if (!ret && entry) {
 			dev_dbg(&dev->dev, "Derived GSI INT %c from %s\n",
 				pin_name(orig_pin), pci_name(bridge));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return entry;
 		}
 
@@ -531,8 +338,6 @@ static struct acpi_prt_entry *acpi_pci_irq_lookup(struct pci_dev *dev, int pin)
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_ISA) || IS_ENABLED(CONFIG_EISA)
 static int acpi_isa_register_gsi(struct pci_dev *dev)
 {
@@ -575,16 +380,12 @@ static inline bool acpi_pci_irq_valid(struct pci_dev *dev, u8 pin)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int acpi_pci_irq_enable(struct pci_dev *dev)
 {
 	struct acpi_prt_entry *entry;
 	int gsi;
 	u8 pin;
 	int triggering = ACPI_LEVEL_SENSITIVE;
-<<<<<<< HEAD
-	int polarity = ACPI_ACTIVE_LOW;
-=======
 	/*
 	 * On ARM systems with the GIC interrupt model, or LoongArch
 	 * systems with the LPIC interrupt model, level interrupts
@@ -596,21 +397,12 @@ int acpi_pci_irq_enable(struct pci_dev *dev)
 	int polarity = acpi_irq_model == ACPI_IRQ_MODEL_GIC ||
 		       acpi_irq_model == ACPI_IRQ_MODEL_LPIC ?
 				      ACPI_ACTIVE_HIGH : ACPI_ACTIVE_LOW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *link = NULL;
 	char link_desc[16];
 	int rc;
 
 	pin = dev->pin;
 	if (!pin) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-				  "No interrupt pin configured for device %s\n",
-				  pci_name(dev)));
-		return 0;
-	}
-
-=======
 		dev_dbg(&dev->dev, "No interrupt pin configured\n");
 		return 0;
 	}
@@ -618,7 +410,6 @@ int acpi_pci_irq_enable(struct pci_dev *dev)
 	if (dev->irq_managed && dev->irq > 0)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = acpi_pci_irq_lookup(dev, pin);
 	if (!entry) {
 		/*
@@ -641,27 +432,6 @@ int acpi_pci_irq_enable(struct pci_dev *dev)
 	} else
 		gsi = -1;
 
-<<<<<<< HEAD
-	/*
-	 * No IRQ known to the ACPI subsystem - maybe the BIOS / 
-	 * driver reported one, then use it. Exit in any case.
-	 */
-	if (gsi < 0) {
-		u32 dev_gsi;
-		dev_warn(&dev->dev, "PCI INT %c: no GSI", pin_name(pin));
-		/* Interrupt Line values above 0xF are forbidden */
-		if (dev->irq > 0 && (dev->irq <= 0xF) &&
-		    (acpi_isa_irq_to_gsi(dev->irq, &dev_gsi) == 0)) {
-			printk(" - using ISA IRQ %d\n", dev->irq);
-			acpi_register_gsi(&dev->dev, dev_gsi,
-					  ACPI_LEVEL_SENSITIVE,
-					  ACPI_ACTIVE_LOW);
-			return 0;
-		} else {
-			printk("\n");
-			return 0;
-		}
-=======
 	if (gsi < 0) {
 		/*
 		 * No IRQ known to the ACPI subsystem - maybe the BIOS /
@@ -678,24 +448,17 @@ int acpi_pci_irq_enable(struct pci_dev *dev)
 
 		kfree(entry);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rc = acpi_register_gsi(&dev->dev, gsi, triggering, polarity);
 	if (rc < 0) {
 		dev_warn(&dev->dev, "PCI INT %c: failed to register GSI\n",
 			 pin_name(pin));
-<<<<<<< HEAD
-		return rc;
-	}
-	dev->irq = rc;
-=======
 		kfree(entry);
 		return rc;
 	}
 	dev->irq = rc;
 	dev->irq_managed = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (link)
 		snprintf(link_desc, sizeof(link_desc), " -> Link[%s]", link);
@@ -707,21 +470,10 @@ int acpi_pci_irq_enable(struct pci_dev *dev)
 		(triggering == ACPI_LEVEL_SENSITIVE) ? "level" : "edge",
 		(polarity == ACPI_ACTIVE_LOW) ? "low" : "high", dev->irq);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-/* FIXME: implement x86/x86_64 version */
-void __attribute__ ((weak)) acpi_unregister_gsi(u32 i)
-{
-}
-
-=======
 	kfree(entry);
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void acpi_pci_irq_disable(struct pci_dev *dev)
 {
 	struct acpi_prt_entry *entry;
@@ -729,11 +481,6 @@ void acpi_pci_irq_disable(struct pci_dev *dev)
 	u8 pin;
 
 	pin = dev->pin;
-<<<<<<< HEAD
-	if (!pin)
-		return;
-
-=======
 	if (!pin || !dev->irq_managed || dev->irq <= 0)
 		return;
 
@@ -745,7 +492,6 @@ void acpi_pci_irq_disable(struct pci_dev *dev)
 		return;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry = acpi_pci_irq_lookup(dev, pin);
 	if (!entry)
 		return;
@@ -755,23 +501,16 @@ void acpi_pci_irq_disable(struct pci_dev *dev)
 	else
 		gsi = entry->index;
 
-<<<<<<< HEAD
-=======
 	kfree(entry);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * TBD: It might be worth clearing dev->irq by magic constant
 	 * (e.g. PCI_UNDEFINED_IRQ).
 	 */
 
 	dev_dbg(&dev->dev, "PCI INT %c disabled\n", pin_name(pin));
-<<<<<<< HEAD
-	acpi_unregister_gsi(gsi);
-=======
 	if (gsi >= 0) {
 		acpi_unregister_gsi(gsi);
 		dev->irq_managed = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

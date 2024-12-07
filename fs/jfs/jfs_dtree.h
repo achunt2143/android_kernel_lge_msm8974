@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2002
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _H_JFS_DTREE
 #define	_H_JFS_DTREE
@@ -271,9 +252,5 @@ extern int dtDelete(tid_t tid, struct inode *ip, struct component_name * key,
 extern int dtModify(tid_t tid, struct inode *ip, struct component_name * key,
 		    ino_t * orig_ino, ino_t new_ino, int flag);
 
-<<<<<<< HEAD
-extern int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir);
-=======
 extern int jfs_readdir(struct file *file, struct dir_context *ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* !_H_JFS_DTREE */

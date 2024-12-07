@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ACPI Sony Notebook Control Driver (SNC and SPIC)
  *
@@ -29,24 +26,6 @@
  * Copyright (C) 2000 Andrew Tridgell <tridge@valinux.com>
  *
  * Earlier work by Werner Almesberger, Paul `Rusty' Russell and Paul Mackerras.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -68,12 +47,6 @@
 #include <linux/workqueue.h>
 #include <linux/acpi.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <acpi/acpi_drivers.h>
-#include <acpi/acpi_bus.h>
-#include <asm/uaccess.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sonypi.h>
 #include <linux/sony-laptop.h>
 #include <linux/rfkill.h>
@@ -81,11 +54,8 @@
 #include <linux/poll.h>
 #include <linux/miscdevice.h>
 #endif
-<<<<<<< HEAD
-=======
 #include <linux/uaccess.h>
 #include <acpi/video.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define dprintk(fmt, ...)			\
 do {						\
@@ -93,11 +63,6 @@ do {						\
 		pr_warn(fmt, ##__VA_ARGS__);	\
 } while (0)
 
-<<<<<<< HEAD
-#define SONY_LAPTOP_DRIVER_VERSION	"0.6"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SONY_NC_CLASS		"sony-nc"
 #define SONY_NC_HID		"SNY5001"
 #define SONY_NC_DRIVER_NAME	"Sony Notebook Control Driver"
@@ -109,10 +74,6 @@ do {						\
 MODULE_AUTHOR("Stelian Pop, Mattia Dongili");
 MODULE_DESCRIPTION("Sony laptop extras driver (SPIC and SNC ACPI device)");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_VERSION(SONY_LAPTOP_DRIVER_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int debug;
 module_param(debug, int, 0);
@@ -148,22 +109,6 @@ MODULE_PARM_DESC(minor,
 		 "default is -1 (automatic)");
 #endif
 
-<<<<<<< HEAD
-static int kbd_backlight = 1;
-module_param(kbd_backlight, int, 0444);
-MODULE_PARM_DESC(kbd_backlight,
-		 "set this to 0 to disable keyboard backlight, "
-		 "1 to enable it (default: 0)");
-
-static int kbd_backlight_timeout;	/* = 0 */
-module_param(kbd_backlight_timeout, int, 0444);
-MODULE_PARM_DESC(kbd_backlight_timeout,
-		 "set this to 0 to set the default 10 seconds timeout, "
-		 "1 for 30 seconds, 2 for 60 seconds and 3 to disable timeout "
-		 "(default: 0)");
-
-static void sony_nc_kbd_backlight_resume(void);
-=======
 static int kbd_backlight = -1;
 module_param(kbd_backlight, int, 0444);
 MODULE_PARM_DESC(kbd_backlight,
@@ -222,7 +167,6 @@ static void sony_nc_smart_conn_cleanup(struct platform_device *pd);
 static int sony_nc_touchpad_setup(struct platform_device *pd,
 				  unsigned int handle);
 static void sony_nc_touchpad_cleanup(struct platform_device *pd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum sony_nc_rfkill {
 	SONY_WIFI,
@@ -235,12 +179,9 @@ enum sony_nc_rfkill {
 static int sony_rfkill_handle;
 static struct rfkill *sony_rfkill_devices[N_SONY_RFKILL];
 static int sony_rfkill_address[N_SONY_RFKILL] = {0x300, 0x500, 0x700, 0x900};
-<<<<<<< HEAD
-=======
 static int sony_nc_rfkill_setup(struct acpi_device *device,
 		unsigned int handle);
 static void sony_nc_rfkill_cleanup(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sony_nc_rfkill_update(void);
 
 /*********** Input Devices ***********/
@@ -267,11 +208,7 @@ struct sony_laptop_keypress {
 /* Correspondance table between sonypi events
  * and input layer indexes in the keymap
  */
-<<<<<<< HEAD
-static int sony_laptop_input_index[] = {
-=======
 static const int sony_laptop_input_index[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	-1,	/*  0 no event */
 	-1,	/*  1 SONYPI_EVENT_JOGDIAL_DOWN */
 	-1,	/*  2 SONYPI_EVENT_JOGDIAL_UP */
@@ -366,13 +303,8 @@ static int sony_laptop_input_keycode_map[] = {
 	KEY_FN_F10,	/* 14 SONYPI_EVENT_FNKEY_F10 */
 	KEY_FN_F11,	/* 15 SONYPI_EVENT_FNKEY_F11 */
 	KEY_FN_F12,	/* 16 SONYPI_EVENT_FNKEY_F12 */
-<<<<<<< HEAD
-	KEY_FN_F1,	/* 17 SONYPI_EVENT_FNKEY_1 */
-	KEY_FN_F2,	/* 18 SONYPI_EVENT_FNKEY_2 */
-=======
 	KEY_FN_1,	/* 17 SONYPI_EVENT_FNKEY_1 */
 	KEY_FN_2,	/* 18 SONYPI_EVENT_FNKEY_2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KEY_FN_D,	/* 19 SONYPI_EVENT_FNKEY_D */
 	KEY_FN_E,	/* 20 SONYPI_EVENT_FNKEY_E */
 	KEY_FN_F,	/* 21 SONYPI_EVENT_FNKEY_F */
@@ -417,11 +349,7 @@ static int sony_laptop_input_keycode_map[] = {
 };
 
 /* release buttons after a short delay if pressed */
-<<<<<<< HEAD
-static void do_sony_laptop_release_key(unsigned long unused)
-=======
 static void do_sony_laptop_release_key(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sony_laptop_keypress kp;
 	unsigned long flags;
@@ -528,11 +456,7 @@ static int sony_laptop_setup_input(struct acpi_device *acpi_device)
 		goto err_dec_users;
 	}
 
-<<<<<<< HEAD
-	setup_timer(&sony_laptop_input.release_key_timer,
-=======
 	timer_setup(&sony_laptop_input.release_key_timer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    do_sony_laptop_release_key, 0);
 
 	/* input keys */
@@ -644,10 +568,6 @@ static atomic_t sony_pf_users = ATOMIC_INIT(0);
 static struct platform_driver sony_pf_driver = {
 	.driver = {
 		   .name = "sony-laptop",
-<<<<<<< HEAD
-		   .owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   }
 };
 static struct platform_device *sony_pf_device;
@@ -664,11 +584,7 @@ static int sony_pf_add(void)
 	if (ret)
 		goto out;
 
-<<<<<<< HEAD
-	sony_pf_device = platform_device_alloc("sony-laptop", -1);
-=======
 	sony_pf_device = platform_device_alloc("sony-laptop", PLATFORM_DEVID_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sony_pf_device) {
 		ret = -ENOMEM;
 		goto out_platform_registered;
@@ -803,61 +719,6 @@ static struct acpi_device *sony_nc_acpi_device = NULL;
 
 /*
  * acpi_evaluate_object wrappers
-<<<<<<< HEAD
- */
-static int acpi_callgetfunc(acpi_handle handle, char *name, int *result)
-{
-	struct acpi_buffer output;
-	union acpi_object out_obj;
-	acpi_status status;
-
-	output.length = sizeof(out_obj);
-	output.pointer = &out_obj;
-
-	status = acpi_evaluate_object(handle, name, NULL, &output);
-	if ((status == AE_OK) && (out_obj.type == ACPI_TYPE_INTEGER)) {
-		*result = out_obj.integer.value;
-		return 0;
-	}
-
-	pr_warn("acpi_callreadfunc failed\n");
-
-	return -1;
-}
-
-static int acpi_callsetfunc(acpi_handle handle, char *name, int value,
-			    int *result)
-{
-	struct acpi_object_list params;
-	union acpi_object in_obj;
-	struct acpi_buffer output;
-	union acpi_object out_obj;
-	acpi_status status;
-
-	params.count = 1;
-	params.pointer = &in_obj;
-	in_obj.type = ACPI_TYPE_INTEGER;
-	in_obj.integer.value = value;
-
-	output.length = sizeof(out_obj);
-	output.pointer = &out_obj;
-
-	status = acpi_evaluate_object(handle, name, &params, &output);
-	if (status == AE_OK) {
-		if (result != NULL) {
-			if (out_obj.type != ACPI_TYPE_INTEGER) {
-				pr_warn("acpi_evaluate_object bad return type\n");
-				return -1;
-			}
-			*result = out_obj.integer.value;
-		}
-		return 0;
-	}
-
-	pr_warn("acpi_evaluate_object failed\n");
-
-	return -1;
-=======
  * all useful calls into SNC methods take one or zero parameters and return
  * integers or arrays.
  */
@@ -943,7 +804,6 @@ static int sony_nc_int_call(acpi_handle handle, char *name, int *value, int
 				sizeof(*result));
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sony_nc_handles {
@@ -960,43 +820,26 @@ static ssize_t sony_nc_handles_show(struct device *dev,
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(handles->cap); i++) {
-<<<<<<< HEAD
-		len += snprintf(buffer + len, PAGE_SIZE - len, "0x%.4x ",
-				handles->cap[i]);
-	}
-	len += snprintf(buffer + len, PAGE_SIZE - len, "\n");
-=======
 		len += sysfs_emit_at(buffer, len, "0x%.4x ", handles->cap[i]);
 	}
 	len += sysfs_emit_at(buffer, len, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len;
 }
 
 static int sony_nc_handles_setup(struct platform_device *pd)
 {
-<<<<<<< HEAD
-	int i;
-	int result;
-=======
 	int i, r, result, arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	handles = kzalloc(sizeof(*handles), GFP_KERNEL);
 	if (!handles)
 		return -ENOMEM;
 
 	for (i = 0; i < ARRAY_SIZE(handles->cap); i++) {
-<<<<<<< HEAD
-		if (!acpi_callsetfunc(sony_nc_acpi_handle,
-					"SN00", i + 0x20, &result)) {
-=======
 		arg = i + 0x20;
 		r = sony_nc_int_call(sony_nc_acpi_handle, "SN00", &arg,
 					&result);
 		if (!r) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dprintk("caching handle 0x%.4x (offset: 0x%.2x)\n",
 					result, i);
 			handles->cap[i] = result;
@@ -1036,13 +879,8 @@ static int sony_find_snc_handle(int handle)
 	int i;
 
 	/* not initialized yet, return early */
-<<<<<<< HEAD
-	if (!handles)
-		return -1;
-=======
 	if (!handles || !handle)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 0x10; i++) {
 		if (handles->cap[i] == handle) {
@@ -1052,27 +890,11 @@ static int sony_find_snc_handle(int handle)
 		}
 	}
 	dprintk("handle 0x%.4x not found\n", handle);
-<<<<<<< HEAD
-	return -1;
-=======
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sony_call_snc_handle(int handle, int argument, int *result)
 {
-<<<<<<< HEAD
-	int ret = 0;
-	int offset = sony_find_snc_handle(handle);
-
-	if (offset < 0)
-		return -1;
-
-	ret = acpi_callsetfunc(sony_nc_acpi_handle, "SN07", offset | argument,
-			result);
-	dprintk("called SN07 with 0x%.4x (result: 0x%.4x)\n", offset | argument,
-			*result);
-=======
 	int arg, ret = 0;
 	int offset = sony_find_snc_handle(handle);
 
@@ -1082,7 +904,6 @@ static int sony_call_snc_handle(int handle, int argument, int *result)
 	arg = offset | argument;
 	ret = sony_nc_int_call(sony_nc_acpi_handle, "SN07", &arg, result);
 	dprintk("called SN07 with 0x%.4x (result: 0x%.4x)\n", arg, *result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1127,34 +948,22 @@ static int boolean_validate(const int direction, const int value)
 static ssize_t sony_nc_sysfs_show(struct device *dev, struct device_attribute *attr,
 			      char *buffer)
 {
-<<<<<<< HEAD
-	int value;
-=======
 	int value, ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sony_nc_value *item =
 	    container_of(attr, struct sony_nc_value, devattr);
 
 	if (!*item->acpiget)
 		return -EIO;
 
-<<<<<<< HEAD
-	if (acpi_callgetfunc(sony_nc_acpi_handle, *item->acpiget, &value) < 0)
-=======
 	ret = sony_nc_int_call(sony_nc_acpi_handle, *item->acpiget, NULL,
 				&value);
 	if (ret < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 	if (item->validate)
 		value = item->validate(SNC_VALIDATE_OUT, value);
 
-<<<<<<< HEAD
-	return snprintf(buffer, PAGE_SIZE, "%d\n", value);
-=======
 	return sysfs_emit(buffer, "%d\n", value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t sony_nc_sysfs_store(struct device *dev,
@@ -1162,10 +971,7 @@ static ssize_t sony_nc_sysfs_store(struct device *dev,
 			       const char *buffer, size_t count)
 {
 	int value;
-<<<<<<< HEAD
-=======
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sony_nc_value *item =
 	    container_of(attr, struct sony_nc_value, devattr);
 
@@ -1175,12 +981,8 @@ static ssize_t sony_nc_sysfs_store(struct device *dev,
 	if (count > 31)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	value = simple_strtoul(buffer, NULL, 10);
-=======
 	if (kstrtoint(buffer, 10, &value))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (item->validate)
 		value = item->validate(SNC_VALIDATE_IN, value);
@@ -1188,16 +990,11 @@ static ssize_t sony_nc_sysfs_store(struct device *dev,
 	if (value < 0)
 		return value;
 
-<<<<<<< HEAD
-	if (acpi_callsetfunc(sony_nc_acpi_handle, *item->acpiset, value, NULL) < 0)
-		return -EIO;
-=======
 	ret = sony_nc_int_call(sony_nc_acpi_handle, *item->acpiset,
 			       &value, NULL);
 	if (ret < 0)
 		return -EIO;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	item->value = value;
 	item->valid = 1;
 	return count;
@@ -1210,17 +1007,6 @@ static ssize_t sony_nc_sysfs_store(struct device *dev,
 struct sony_backlight_props {
 	struct backlight_device *dev;
 	int			handle;
-<<<<<<< HEAD
-	u8			offset;
-	u8			maxlvl;
-};
-struct sony_backlight_props sony_bl_props;
-
-static int sony_backlight_update_status(struct backlight_device *bd)
-{
-	return acpi_callsetfunc(sony_nc_acpi_handle, "SBRT",
-				bd->props.brightness + 1, NULL);
-=======
 	int			cmd_base;
 	u8			offset;
 	u8			maxlvl;
@@ -1231,18 +1017,13 @@ static int sony_backlight_update_status(struct backlight_device *bd)
 {
 	int arg = bd->props.brightness + 1;
 	return sony_nc_int_call(sony_nc_acpi_handle, "SBRT", &arg, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sony_backlight_get_brightness(struct backlight_device *bd)
 {
 	int value;
 
-<<<<<<< HEAD
-	if (acpi_callgetfunc(sony_nc_acpi_handle, "GBRT", &value))
-=======
 	if (sony_nc_int_call(sony_nc_acpi_handle, "GBRT", NULL, &value))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	/* brightness levels are 1-based, while backlight ones are 0-based */
 	return value - 1;
@@ -1254,11 +1035,7 @@ static int sony_nc_get_brightness_ng(struct backlight_device *bd)
 	struct sony_backlight_props *sdev =
 		(struct sony_backlight_props *)bl_get_data(bd);
 
-<<<<<<< HEAD
-	sony_call_snc_handle(sdev->handle, 0x0200, &result);
-=======
 	sony_call_snc_handle(sdev->handle, sdev->cmd_base + 0x100, &result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (result & 0xff) - sdev->offset;
 }
@@ -1270,12 +1047,8 @@ static int sony_nc_update_status_ng(struct backlight_device *bd)
 		(struct sony_backlight_props *)bl_get_data(bd);
 
 	value = bd->props.brightness + sdev->offset;
-<<<<<<< HEAD
-	if (sony_call_snc_handle(sdev->handle, 0x0100 | (value << 16), &result))
-=======
 	if (sony_call_snc_handle(sdev->handle, sdev->cmd_base | (value << 0x10),
 				&result))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 	return value;
@@ -1319,20 +1092,14 @@ static struct sony_nc_event sony_100_events[] = {
 	{ 0x06, SONYPI_EVENT_FNKEY_RELEASED },
 	{ 0x87, SONYPI_EVENT_FNKEY_F7 },
 	{ 0x07, SONYPI_EVENT_FNKEY_RELEASED },
-<<<<<<< HEAD
-=======
 	{ 0x88, SONYPI_EVENT_FNKEY_F8 },
 	{ 0x08, SONYPI_EVENT_FNKEY_RELEASED },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x89, SONYPI_EVENT_FNKEY_F9 },
 	{ 0x09, SONYPI_EVENT_FNKEY_RELEASED },
 	{ 0x8A, SONYPI_EVENT_FNKEY_F10 },
 	{ 0x0A, SONYPI_EVENT_FNKEY_RELEASED },
-<<<<<<< HEAD
-=======
 	{ 0x8B, SONYPI_EVENT_FNKEY_F11 },
 	{ 0x0B, SONYPI_EVENT_FNKEY_RELEASED },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x8C, SONYPI_EVENT_FNKEY_F12 },
 	{ 0x0C, SONYPI_EVENT_FNKEY_RELEASED },
 	{ 0x9d, SONYPI_EVENT_ZOOM_PRESSED },
@@ -1347,11 +1114,8 @@ static struct sony_nc_event sony_100_events[] = {
 	{ 0x25, SONYPI_EVENT_ANYBUTTON_RELEASED },
 	{ 0xa6, SONYPI_EVENT_HELP_PRESSED },
 	{ 0x26, SONYPI_EVENT_ANYBUTTON_RELEASED },
-<<<<<<< HEAD
-=======
 	{ 0xa8, SONYPI_EVENT_FNKEY_1 },
 	{ 0x28, SONYPI_EVENT_ANYBUTTON_RELEASED },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, 0 },
 };
 
@@ -1373,65 +1137,6 @@ static struct sony_nc_event sony_127_events[] = {
 	{ 0, 0 },
 };
 
-<<<<<<< HEAD
-/*
- * ACPI callbacks
- */
-static void sony_nc_notify(struct acpi_device *device, u32 event)
-{
-	u32 ev = event;
-
-	if (ev >= 0x90) {
-		/* New-style event */
-		int result;
-		int key_handle = 0;
-		ev -= 0x90;
-
-		if (sony_find_snc_handle(0x100) == ev)
-			key_handle = 0x100;
-		if (sony_find_snc_handle(0x127) == ev)
-			key_handle = 0x127;
-
-		if (key_handle) {
-			struct sony_nc_event *key_event;
-
-			if (sony_call_snc_handle(key_handle, 0x200, &result)) {
-				dprintk("sony_nc_notify, unable to decode"
-					" event 0x%.2x 0x%.2x\n", key_handle,
-					ev);
-				/* restore the original event */
-				ev = event;
-			} else {
-				ev = result & 0xFF;
-
-				if (key_handle == 0x100)
-					key_event = sony_100_events;
-				else
-					key_event = sony_127_events;
-
-				for (; key_event->data; key_event++) {
-					if (key_event->data == ev) {
-						ev = key_event->event;
-						break;
-					}
-				}
-
-				if (!key_event->data)
-					pr_info("Unknown event: 0x%x 0x%x\n",
-						key_handle, ev);
-				else
-					sony_laptop_report_input_event(ev);
-			}
-		} else if (sony_find_snc_handle(sony_rfkill_handle) == ev) {
-			sony_nc_rfkill_update();
-			return;
-		}
-	} else
-		sony_laptop_report_input_event(ev);
-
-	dprintk("sony_nc_notify, event: 0x%.2x\n", ev);
-	acpi_bus_generate_proc_event(sony_nc_acpi_device, 1, ev);
-=======
 static int sony_nc_hotkeys_decode(u32 event, unsigned int handle)
 {
 	int ret = -EINVAL;
@@ -1564,7 +1269,6 @@ static void sony_nc_notify(struct acpi_device *device, u32 event)
 	}
 	acpi_bus_generate_netlink_event(sony_nc_acpi_device->pnp.device_class,
 			dev_name(&sony_nc_acpi_device->dev), ev_type, real_ev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static acpi_status sony_walk_callback(acpi_handle handle, u32 level,
@@ -1585,28 +1289,6 @@ static acpi_status sony_walk_callback(acpi_handle handle, u32 level,
 /*
  * ACPI device
  */
-<<<<<<< HEAD
-static int sony_nc_function_setup(struct acpi_device *device)
-{
-	int result;
-
-	/* Enable all events */
-	acpi_callsetfunc(sony_nc_acpi_handle, "SN02", 0xffff, &result);
-
-	/* Setup hotkeys */
-	sony_call_snc_handle(0x0100, 0, &result);
-	sony_call_snc_handle(0x0101, 0, &result);
-	sony_call_snc_handle(0x0102, 0x100, &result);
-	sony_call_snc_handle(0x0127, 0, &result);
-
-	return 0;
-}
-
-static int sony_nc_resume(struct acpi_device *device)
-{
-	struct sony_nc_value *item;
-	acpi_handle handle;
-=======
 static void sony_nc_function_setup(struct acpi_device *device,
 		struct platform_device *pf_device)
 {
@@ -1864,48 +1546,20 @@ static void sony_nc_function_resume(void)
 static int sony_nc_resume(struct device *dev)
 {
 	struct sony_nc_value *item;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (item = sony_nc_values; item->name; item++) {
 		int ret;
 
 		if (!item->valid)
 			continue;
-<<<<<<< HEAD
-		ret = acpi_callsetfunc(sony_nc_acpi_handle, *item->acpiset,
-				       item->value, NULL);
-=======
 		ret = sony_nc_int_call(sony_nc_acpi_handle, *item->acpiset,
 				       &item->value, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0) {
 			pr_err("%s: %d\n", __func__, ret);
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (ACPI_SUCCESS(acpi_get_handle(sony_nc_acpi_handle, "ECON",
-					 &handle))) {
-		if (acpi_callsetfunc(sony_nc_acpi_handle, "ECON", 1, NULL))
-			dprintk("ECON Method failed\n");
-	}
-
-	if (ACPI_SUCCESS(acpi_get_handle(sony_nc_acpi_handle, "SN00",
-					 &handle))) {
-		dprintk("Doing SNC setup\n");
-		sony_nc_function_setup(device);
-	}
-
-	/* re-read rfkill state */
-	sony_nc_rfkill_update();
-
-	/* restore kbd backlight states */
-	sony_nc_kbd_backlight_resume();
-
-	return 0;
-}
-=======
 	if (acpi_has_method(sony_nc_acpi_handle, "ECON")) {
 		int arg = 1;
 		if (sony_nc_int_call(sony_nc_acpi_handle, "ECON", &arg, NULL))
@@ -1920,7 +1574,6 @@ static int sony_nc_resume(struct device *dev)
 #endif
 
 static SIMPLE_DEV_PM_OPS(sony_nc_pm, NULL, sony_nc_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void sony_nc_rfkill_cleanup(void)
 {
@@ -1940,11 +1593,7 @@ static int sony_nc_rfkill_set(void *data, bool blocked)
 	int argument = sony_rfkill_address[(long) data] + 0x100;
 
 	if (!blocked)
-<<<<<<< HEAD
-		argument |= 0xff0000;
-=======
 		argument |= 0x070000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sony_call_snc_handle(sony_rfkill_handle, argument, &result);
 }
@@ -1956,20 +1605,12 @@ static const struct rfkill_ops sony_rfkill_ops = {
 static int sony_nc_setup_rfkill(struct acpi_device *device,
 				enum sony_nc_rfkill nc_type)
 {
-<<<<<<< HEAD
-	int err = 0;
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rfkill *rfk;
 	enum rfkill_type type;
 	const char *name;
 	int result;
-<<<<<<< HEAD
-	bool hwblock;
-=======
 	bool hwblock, swblock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (nc_type) {
 	case SONY_WIFI:
@@ -1997,10 +1638,6 @@ static int sony_nc_setup_rfkill(struct acpi_device *device,
 	if (!rfk)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	sony_call_snc_handle(sony_rfkill_handle, 0x200, &result);
-	hwblock = !(result & 0x1);
-=======
 	err = sony_call_snc_handle(sony_rfkill_handle, 0x200, &result);
 	if (err < 0) {
 		rfkill_destroy(rfk);
@@ -2018,7 +1655,6 @@ static int sony_nc_setup_rfkill(struct acpi_device *device,
 	swblock = !(result & 0x2);
 
 	rfkill_init_sw_state(rfk, swblock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfkill_set_hw_state(rfk, hwblock);
 
 	err = rfkill_register(rfk);
@@ -2054,98 +1690,6 @@ static void sony_nc_rfkill_update(void)
 
 		sony_call_snc_handle(sony_rfkill_handle, argument, &result);
 		rfkill_set_states(sony_rfkill_devices[i],
-<<<<<<< HEAD
-				  !(result & 0xf), false);
-	}
-}
-
-static void sony_nc_rfkill_setup(struct acpi_device *device)
-{
-	int offset;
-	u8 dev_code, i;
-	acpi_status status;
-	struct acpi_object_list params;
-	union acpi_object in_obj;
-	union acpi_object *device_enum;
-	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-
-	offset = sony_find_snc_handle(0x124);
-	if (offset == -1) {
-		offset = sony_find_snc_handle(0x135);
-		if (offset == -1)
-			return;
-		else
-			sony_rfkill_handle = 0x135;
-	} else
-		sony_rfkill_handle = 0x124;
-	dprintk("Found rkfill handle: 0x%.4x\n", sony_rfkill_handle);
-
-	/* need to read the whole buffer returned by the acpi call to SN06
-	 * here otherwise we may miss some features
-	 */
-	params.count = 1;
-	params.pointer = &in_obj;
-	in_obj.type = ACPI_TYPE_INTEGER;
-	in_obj.integer.value = offset;
-	status = acpi_evaluate_object(sony_nc_acpi_handle, "SN06", &params,
-			&buffer);
-	if (ACPI_FAILURE(status)) {
-		dprintk("Radio device enumeration failed\n");
-		return;
-	}
-
-	device_enum = (union acpi_object *) buffer.pointer;
-	if (!device_enum) {
-		pr_err("No SN06 return object\n");
-		goto out_no_enum;
-	}
-	if (device_enum->type != ACPI_TYPE_BUFFER) {
-		pr_err("Invalid SN06 return object 0x%.2x\n",
-		       device_enum->type);
-		goto out_no_enum;
-	}
-
-	/* the buffer is filled with magic numbers describing the devices
-	 * available, 0xff terminates the enumeration
-	 */
-	for (i = 0; i < device_enum->buffer.length; i++) {
-
-		dev_code = *(device_enum->buffer.pointer + i);
-		if (dev_code == 0xff)
-			break;
-
-		dprintk("Radio devices, looking at 0x%.2x\n", dev_code);
-
-		if (dev_code == 0 && !sony_rfkill_devices[SONY_WIFI])
-			sony_nc_setup_rfkill(device, SONY_WIFI);
-
-		if (dev_code == 0x10 && !sony_rfkill_devices[SONY_BLUETOOTH])
-			sony_nc_setup_rfkill(device, SONY_BLUETOOTH);
-
-		if ((0xf0 & dev_code) == 0x20 &&
-				!sony_rfkill_devices[SONY_WWAN])
-			sony_nc_setup_rfkill(device, SONY_WWAN);
-
-		if (dev_code == 0x30 && !sony_rfkill_devices[SONY_WIMAX])
-			sony_nc_setup_rfkill(device, SONY_WIMAX);
-	}
-
-out_no_enum:
-	kfree(buffer.pointer);
-	return;
-}
-
-/* Keyboard backlight feature */
-#define KBDBL_HANDLER	0x137
-#define KBDBL_PRESENT	0xB00
-#define	SET_MODE	0xC00
-#define SET_STATE	0xD00
-#define SET_TIMEOUT	0xE00
-
-struct kbd_backlight {
-	int mode;
-	int timeout;
-=======
 				  !(result & 0x2), false);
 	}
 }
@@ -2215,35 +1759,16 @@ struct kbd_backlight {
 	unsigned int mode;
 	unsigned int timeout;
 	unsigned int has_timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_attribute mode_attr;
 	struct device_attribute timeout_attr;
 };
 
-<<<<<<< HEAD
-static struct kbd_backlight *kbdbl_handle;
-=======
 static struct kbd_backlight *kbdbl_ctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t __sony_nc_kbd_backlight_mode_set(u8 value)
 {
 	int result;
 
-<<<<<<< HEAD
-	if (value > 1)
-		return -EINVAL;
-
-	if (sony_call_snc_handle(KBDBL_HANDLER,
-				(value << 0x10) | SET_MODE, &result))
-		return -EIO;
-
-	/* Try to turn the light on/off immediately */
-	sony_call_snc_handle(KBDBL_HANDLER, (value << 0x10) | SET_STATE,
-			&result);
-
-	kbdbl_handle->mode = value;
-=======
 	if (value > 2)
 		return -EINVAL;
 
@@ -2258,7 +1783,6 @@ static ssize_t __sony_nc_kbd_backlight_mode_set(u8 value)
 				&result);
 
 	kbdbl_ctl->mode = value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2273,11 +1797,7 @@ static ssize_t sony_nc_kbd_backlight_mode_store(struct device *dev,
 	if (count > 31)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buffer, 10, &value))
-=======
 	if (kstrtoul(buffer, 10, &value))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	ret = __sony_nc_kbd_backlight_mode_set(value);
@@ -2290,13 +1810,7 @@ static ssize_t sony_nc_kbd_backlight_mode_store(struct device *dev,
 static ssize_t sony_nc_kbd_backlight_mode_show(struct device *dev,
 		struct device_attribute *attr, char *buffer)
 {
-<<<<<<< HEAD
-	ssize_t count = 0;
-	count = snprintf(buffer, PAGE_SIZE, "%d\n", kbdbl_handle->mode);
-	return count;
-=======
 	return sysfs_emit(buffer, "%d\n", kbdbl_ctl->mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __sony_nc_kbd_backlight_timeout_set(u8 value)
@@ -2306,19 +1820,11 @@ static int __sony_nc_kbd_backlight_timeout_set(u8 value)
 	if (value > 3)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (sony_call_snc_handle(KBDBL_HANDLER,
-				(value << 0x10) | SET_TIMEOUT, &result))
-		return -EIO;
-
-	kbdbl_handle->timeout = value;
-=======
 	if (sony_call_snc_handle(kbdbl_ctl->handle, (value << 0x10) |
 				(kbdbl_ctl->base + 0x200), &result))
 		return -EIO;
 
 	kbdbl_ctl->timeout = value;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2333,11 +1839,7 @@ static ssize_t sony_nc_kbd_backlight_timeout_store(struct device *dev,
 	if (count > 31)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buffer, 10, &value))
-=======
 	if (kstrtoul(buffer, 10, &value))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	ret = __sony_nc_kbd_backlight_timeout_set(value);
@@ -2350,46 +1852,6 @@ static ssize_t sony_nc_kbd_backlight_timeout_store(struct device *dev,
 static ssize_t sony_nc_kbd_backlight_timeout_show(struct device *dev,
 		struct device_attribute *attr, char *buffer)
 {
-<<<<<<< HEAD
-	ssize_t count = 0;
-	count = snprintf(buffer, PAGE_SIZE, "%d\n", kbdbl_handle->timeout);
-	return count;
-}
-
-static int sony_nc_kbd_backlight_setup(struct platform_device *pd)
-{
-	int result;
-
-	if (sony_call_snc_handle(KBDBL_HANDLER, KBDBL_PRESENT, &result))
-		return 0;
-	if (!(result & 0x02))
-		return 0;
-
-	kbdbl_handle = kzalloc(sizeof(*kbdbl_handle), GFP_KERNEL);
-	if (!kbdbl_handle)
-		return -ENOMEM;
-
-	sysfs_attr_init(&kbdbl_handle->mode_attr.attr);
-	kbdbl_handle->mode_attr.attr.name = "kbd_backlight";
-	kbdbl_handle->mode_attr.attr.mode = S_IRUGO | S_IWUSR;
-	kbdbl_handle->mode_attr.show = sony_nc_kbd_backlight_mode_show;
-	kbdbl_handle->mode_attr.store = sony_nc_kbd_backlight_mode_store;
-
-	sysfs_attr_init(&kbdbl_handle->timeout_attr.attr);
-	kbdbl_handle->timeout_attr.attr.name = "kbd_backlight_timeout";
-	kbdbl_handle->timeout_attr.attr.mode = S_IRUGO | S_IWUSR;
-	kbdbl_handle->timeout_attr.show = sony_nc_kbd_backlight_timeout_show;
-	kbdbl_handle->timeout_attr.store = sony_nc_kbd_backlight_timeout_store;
-
-	if (device_create_file(&pd->dev, &kbdbl_handle->mode_attr))
-		goto outkzalloc;
-
-	if (device_create_file(&pd->dev, &kbdbl_handle->timeout_attr))
-		goto outmode;
-
-	__sony_nc_kbd_backlight_mode_set(kbd_backlight);
-	__sony_nc_kbd_backlight_timeout_set(kbd_backlight_timeout);
-=======
 	return sysfs_emit(buffer, "%d\n", kbdbl_ctl->timeout);
 }
 
@@ -2481,51 +1943,10 @@ static int sony_nc_kbd_backlight_setup(struct platform_device *pd,
 		__sony_nc_kbd_backlight_timeout_set(kbdbl_ctl->timeout);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 outmode:
-<<<<<<< HEAD
-	device_remove_file(&pd->dev, &kbdbl_handle->mode_attr);
-outkzalloc:
-	kfree(kbdbl_handle);
-	kbdbl_handle = NULL;
-	return -1;
-}
-
-static int sony_nc_kbd_backlight_cleanup(struct platform_device *pd)
-{
-	if (kbdbl_handle) {
-		int result;
-
-		device_remove_file(&pd->dev, &kbdbl_handle->mode_attr);
-		device_remove_file(&pd->dev, &kbdbl_handle->timeout_attr);
-
-		/* restore the default hw behaviour */
-		sony_call_snc_handle(KBDBL_HANDLER, 0x1000 | SET_MODE, &result);
-		sony_call_snc_handle(KBDBL_HANDLER, SET_TIMEOUT, &result);
-
-		kfree(kbdbl_handle);
-	}
-	return 0;
-}
-
-static void sony_nc_kbd_backlight_resume(void)
-{
-	int ignore = 0;
-
-	if (!kbdbl_handle)
-		return;
-
-	if (kbdbl_handle->mode == 0)
-		sony_call_snc_handle(KBDBL_HANDLER, SET_MODE, &ignore);
-
-	if (kbdbl_handle->timeout != 0)
-		sony_call_snc_handle(KBDBL_HANDLER,
-				(kbdbl_handle->timeout << 0x10) | SET_TIMEOUT,
-				&ignore);
-=======
 	device_remove_file(&pd->dev, &kbdbl_ctl->mode_attr);
 outkzalloc:
 	kfree(kbdbl_ctl);
@@ -3608,80 +3029,26 @@ static void sony_nc_touchpad_cleanup(struct platform_device *pd)
 		kfree(tp_ctl);
 		tp_ctl = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sony_nc_backlight_ng_read_limits(int handle,
 		struct sony_backlight_props *props)
 {
-<<<<<<< HEAD
-	int offset;
-	acpi_status status;
-	u8 brlvl, i;
-	u8 min = 0xff, max = 0x00;
-	struct acpi_object_list params;
-	union acpi_object in_obj;
-	union acpi_object *lvl_enum;
-	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-=======
 	u64 offset;
 	int i;
 	int lvl_table_len = 0;
 	u8 min = 0xff, max = 0x00;
 	unsigned char buffer[32] = { 0 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	props->handle = handle;
 	props->offset = 0;
 	props->maxlvl = 0xff;
 
 	offset = sony_find_snc_handle(handle);
-<<<<<<< HEAD
-	if (offset < 0)
-		return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* try to read the boundaries from ACPI tables, if we fail the above
 	 * defaults should be reasonable
 	 */
-<<<<<<< HEAD
-	params.count = 1;
-	params.pointer = &in_obj;
-	in_obj.type = ACPI_TYPE_INTEGER;
-	in_obj.integer.value = offset;
-	status = acpi_evaluate_object(sony_nc_acpi_handle, "SN06", &params,
-			&buffer);
-	if (ACPI_FAILURE(status))
-		return;
-
-	lvl_enum = (union acpi_object *) buffer.pointer;
-	if (!lvl_enum) {
-		pr_err("No SN06 return object.");
-		return;
-	}
-	if (lvl_enum->type != ACPI_TYPE_BUFFER) {
-		pr_err("Invalid SN06 return object 0x%.2x\n",
-		       lvl_enum->type);
-		goto out_invalid;
-	}
-
-	/* the buffer lists brightness levels available, brightness levels are
-	 * from 0 to 8 in the array, other values are used by ALS control.
-	 */
-	for (i = 0; i < 9 && i < lvl_enum->buffer.length; i++) {
-
-		brlvl = *(lvl_enum->buffer.pointer + i);
-		dprintk("Brightness level: %d\n", brlvl);
-
-		if (!brlvl)
-			break;
-
-		if (brlvl > max)
-			max = brlvl;
-		if (brlvl < min)
-			min = brlvl;
-=======
 	i = sony_nc_buffer_call(sony_nc_acpi_handle, "SN06", &offset, buffer,
 			32);
 	if (i < 0)
@@ -3714,45 +3081,19 @@ static void sony_nc_backlight_ng_read_limits(int handle,
 			max = buffer[i];
 		if (buffer[i] < min)
 			min = buffer[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	props->offset = min;
 	props->maxlvl = max;
 	dprintk("Brightness levels: min=%d max=%d\n", props->offset,
 			props->maxlvl);
-<<<<<<< HEAD
-
-out_invalid:
-	kfree(buffer.pointer);
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sony_nc_backlight_setup(void)
 {
-<<<<<<< HEAD
-	acpi_handle unused;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int max_brightness = 0;
 	const struct backlight_ops *ops = NULL;
 	struct backlight_properties props;
 
-<<<<<<< HEAD
-	if (sony_find_snc_handle(0x12f) != -1) {
-		ops = &sony_backlight_ng_ops;
-		sony_nc_backlight_ng_read_limits(0x12f, &sony_bl_props);
-		max_brightness = sony_bl_props.maxlvl - sony_bl_props.offset;
-
-	} else if (sony_find_snc_handle(0x137) != -1) {
-		ops = &sony_backlight_ng_ops;
-		sony_nc_backlight_ng_read_limits(0x137, &sony_bl_props);
-		max_brightness = sony_bl_props.maxlvl - sony_bl_props.offset;
-
-	} else if (ACPI_SUCCESS(acpi_get_handle(sony_nc_acpi_handle, "GBRT",
-						&unused))) {
-=======
 	if (sony_find_snc_handle(0x12f) >= 0) {
 		ops = &sony_backlight_ng_ops;
 		sony_bl_props.cmd_base = 0x0100;
@@ -3784,7 +3125,6 @@ static void sony_nc_backlight_setup(void)
 		max_brightness = sony_bl_props.maxlvl - sony_bl_props.offset;
 
 	} else if (acpi_has_method(sony_nc_acpi_handle, "GBRT")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ops = &sony_backlight_ops;
 		max_brightness = SONY_MAX_BRIGHTNESS - 1;
 
@@ -3808,28 +3148,15 @@ static void sony_nc_backlight_setup(void)
 
 static void sony_nc_backlight_cleanup(void)
 {
-<<<<<<< HEAD
-	if (sony_bl_props.dev)
-		backlight_device_unregister(sony_bl_props.dev);
-=======
 	backlight_device_unregister(sony_bl_props.dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sony_nc_add(struct acpi_device *device)
 {
 	acpi_status status;
 	int result = 0;
-<<<<<<< HEAD
-	acpi_handle handle;
 	struct sony_nc_value *item;
 
-	pr_info("%s v%s\n", SONY_NC_DRIVER_NAME, SONY_LAPTOP_DRIVER_VERSION);
-
-=======
-	struct sony_nc_value *item;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sony_nc_acpi_device = device;
 	strcpy(acpi_device_class(device), "sony/hotkey");
 
@@ -3859,40 +3186,6 @@ static int sony_nc_add(struct acpi_device *device)
 		}
 	}
 
-<<<<<<< HEAD
-	if (ACPI_SUCCESS(acpi_get_handle(sony_nc_acpi_handle, "ECON",
-					 &handle))) {
-		if (acpi_callsetfunc(sony_nc_acpi_handle, "ECON", 1, NULL))
-			dprintk("ECON Method failed\n");
-	}
-
-	if (ACPI_SUCCESS(acpi_get_handle(sony_nc_acpi_handle, "SN00",
-					 &handle))) {
-		dprintk("Doing SNC setup\n");
-		result = sony_nc_handles_setup(sony_pf_device);
-		if (result)
-			goto outpresent;
-		result = sony_nc_kbd_backlight_setup(sony_pf_device);
-		if (result)
-			goto outsnc;
-		sony_nc_function_setup(device);
-		sony_nc_rfkill_setup(device);
-	}
-
-	/* setup input devices and helper fifo */
-	result = sony_laptop_setup_input(device);
-	if (result) {
-		pr_err("Unable to create input devices\n");
-		goto outkbdbacklight;
-	}
-
-	if (acpi_video_backlight_support()) {
-		pr_info("brightness ignored, must be controlled by ACPI video driver\n");
-	} else {
-		sony_nc_backlight_setup();
-	}
-
-=======
 	result = sony_laptop_setup_input(device);
 	if (result) {
 		pr_err("Unable to create input devices\n");
@@ -3916,7 +3209,6 @@ static int sony_nc_add(struct acpi_device *device)
 	if (acpi_video_get_backlight_type() == acpi_backlight_vendor)
 		sony_nc_backlight_setup();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* create sony_pf sysfs attributes related to the SNC device */
 	for (item = sony_nc_values; item->name; ++item) {
 
@@ -3925,14 +3217,8 @@ static int sony_nc_add(struct acpi_device *device)
 
 		/* find the available acpiget as described in the DSDT */
 		for (; item->acpiget && *item->acpiget; ++item->acpiget) {
-<<<<<<< HEAD
-			if (ACPI_SUCCESS(acpi_get_handle(sony_nc_acpi_handle,
-							 *item->acpiget,
-							 &handle))) {
-=======
 			if (acpi_has_method(sony_nc_acpi_handle,
 							*item->acpiget)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dprintk("Found %s getter: %s\n",
 						item->name, *item->acpiget);
 				item->devattr.attr.mode |= S_IRUGO;
@@ -3942,14 +3228,8 @@ static int sony_nc_add(struct acpi_device *device)
 
 		/* find the available acpiset as described in the DSDT */
 		for (; item->acpiset && *item->acpiset; ++item->acpiset) {
-<<<<<<< HEAD
-			if (ACPI_SUCCESS(acpi_get_handle(sony_nc_acpi_handle,
-							 *item->acpiset,
-							 &handle))) {
-=======
 			if (acpi_has_method(sony_nc_acpi_handle,
 							*item->acpiset)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dprintk("Found %s setter: %s\n",
 						item->name, *item->acpiset);
 				item->devattr.attr.mode |= S_IWUSR;
@@ -3966,35 +3246,14 @@ static int sony_nc_add(struct acpi_device *device)
 		}
 	}
 
-<<<<<<< HEAD
-	return 0;
-
-      out_sysfs:
-=======
 	pr_info("SNC setup done.\n");
 	return 0;
 
 out_sysfs:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (item = sony_nc_values; item->name; ++item) {
 		device_remove_file(&sony_pf_device->dev, &item->devattr);
 	}
 	sony_nc_backlight_cleanup();
-<<<<<<< HEAD
-
-	sony_laptop_remove_input();
-
-      outkbdbacklight:
-	sony_nc_kbd_backlight_cleanup(sony_pf_device);
-
-      outsnc:
-	sony_nc_handles_cleanup(sony_pf_device);
-
-      outpresent:
-	sony_pf_remove();
-
-      outwalk:
-=======
 	sony_nc_function_cleanup(sony_pf_device);
 	sony_nc_handles_cleanup(sony_pf_device);
 
@@ -4005,16 +3264,11 @@ outpresent:
 	sony_pf_remove();
 
 outwalk:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sony_nc_rfkill_cleanup();
 	return result;
 }
 
-<<<<<<< HEAD
-static int sony_nc_remove(struct acpi_device *device, int type)
-=======
 static void sony_nc_remove(struct acpi_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sony_nc_value *item;
 
@@ -4026,19 +3280,6 @@ static void sony_nc_remove(struct acpi_device *device)
 		device_remove_file(&sony_pf_device->dev, &item->devattr);
 	}
 
-<<<<<<< HEAD
-	sony_nc_kbd_backlight_cleanup(sony_pf_device);
-	sony_nc_handles_cleanup(sony_pf_device);
-	sony_pf_remove();
-	sony_laptop_remove_input();
-	sony_nc_rfkill_cleanup();
-	dprintk(SONY_NC_DRIVER_NAME " removed.\n");
-
-	return 0;
-}
-
-static const struct acpi_device_id sony_device_ids[] = {
-=======
 	sony_nc_function_cleanup(sony_pf_device);
 	sony_nc_handles_cleanup(sony_pf_device);
 	sony_pf_remove();
@@ -4047,7 +3288,6 @@ static const struct acpi_device_id sony_device_ids[] = {
 }
 
 static const struct acpi_device_id sony_device_ids[] __maybe_unused = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{SONY_NC_HID, 0},
 	{SONY_PIC_HID, 0},
 	{"", 0},
@@ -4067,15 +3307,9 @@ static struct acpi_driver sony_nc_driver = {
 	.ops = {
 		.add = sony_nc_add,
 		.remove = sony_nc_remove,
-<<<<<<< HEAD
-		.resume = sony_nc_resume,
-		.notify = sony_nc_notify,
-		},
-=======
 		.notify = sony_nc_notify,
 		},
 	.drv.pm = &sony_nc_pm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*********** SPIC (SNY6001) Device ***********/
@@ -4483,12 +3717,7 @@ static void sony_pic_detect_device_type(struct sony_pic_dev *dev)
 	dev->event_types = type2_events;
 
 out:
-<<<<<<< HEAD
-	if (pcidev)
-		pci_dev_put(pcidev);
-=======
 	pci_dev_put(pcidev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("detected Type%d model\n",
 		dev->model == SONYPI_DEVICE_TYPE1 ? 1 :
@@ -4664,13 +3893,9 @@ static ssize_t sony_pic_wwanpower_store(struct device *dev,
 	if (count > 31)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	value = simple_strtoul(buffer, NULL, 10);
-=======
 	if (kstrtoul(buffer, 10, &value))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&spic_dev.lock);
 	__sony_pic_set_wwanpower(value);
 	mutex_unlock(&spic_dev.lock);
@@ -4683,11 +3908,7 @@ static ssize_t sony_pic_wwanpower_show(struct device *dev,
 {
 	ssize_t count;
 	mutex_lock(&spic_dev.lock);
-<<<<<<< HEAD
-	count = snprintf(buffer, PAGE_SIZE, "%d\n", spic_dev.wwan_power);
-=======
 	count = sysfs_emit(buffer, "%d\n", spic_dev.wwan_power);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&spic_dev.lock);
 	return count;
 }
@@ -4711,13 +3932,9 @@ static ssize_t sony_pic_bluetoothpower_store(struct device *dev,
 	if (count > 31)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	value = simple_strtoul(buffer, NULL, 10);
-=======
 	if (kstrtoul(buffer, 10, &value))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&spic_dev.lock);
 	__sony_pic_set_bluetoothpower(value);
 	mutex_unlock(&spic_dev.lock);
@@ -4730,11 +3947,7 @@ static ssize_t sony_pic_bluetoothpower_show(struct device *dev,
 {
 	ssize_t count = 0;
 	mutex_lock(&spic_dev.lock);
-<<<<<<< HEAD
-	count = snprintf(buffer, PAGE_SIZE, "%d\n", spic_dev.bluetooth_power);
-=======
 	count = sysfs_emit(buffer, "%d\n", spic_dev.bluetooth_power);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&spic_dev.lock);
 	return count;
 }
@@ -4760,13 +3973,9 @@ static ssize_t sony_pic_fanspeed_store(struct device *dev,
 	if (count > 31)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	value = simple_strtoul(buffer, NULL, 10);
-=======
 	if (kstrtoul(buffer, 10, &value))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sony_pic_set_fanspeed(value))
 		return -EIO;
 
@@ -4780,11 +3989,7 @@ static ssize_t sony_pic_fanspeed_show(struct device *dev,
 	if (sony_pic_get_fanspeed(&value))
 		return -EIO;
 
-<<<<<<< HEAD
-	return snprintf(buffer, PAGE_SIZE, "%d\n", value);
-=======
 	return sysfs_emit(buffer, "%d\n", value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define SPIC_ATTR(_name, _mode)					\
@@ -4803,11 +4008,7 @@ static struct attribute *spic_attributes[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group spic_attribute_group = {
-=======
 static const struct attribute_group spic_attribute_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = spic_attributes
 };
 
@@ -4890,31 +4091,18 @@ static ssize_t sonypi_misc_read(struct file *file, char __user *buf,
 	}
 
 	if (ret > 0) {
-<<<<<<< HEAD
-		struct inode *inode = file->f_path.dentry->d_inode;
-		inode->i_atime = current_fs_time(inode->i_sb);
-=======
 		struct inode *inode = file_inode(file);
 		inode_set_atime_to_ts(inode, current_time(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static unsigned int sonypi_misc_poll(struct file *file, poll_table *wait)
-{
-	poll_wait(file, &sonypi_compat.fifo_proc_list, wait);
-	if (kfifo_len(&sonypi_compat.fifo))
-		return POLLIN | POLLRDNORM;
-=======
 static __poll_t sonypi_misc_poll(struct file *file, poll_table *wait)
 {
 	poll_wait(file, &sonypi_compat.fifo_proc_list, wait);
 	if (kfifo_len(&sonypi_compat.fifo))
 		return EPOLLIN | EPOLLRDNORM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4945,12 +4133,8 @@ static long sonypi_misc_ioctl(struct file *fp, unsigned int cmd,
 			ret = -EIO;
 			break;
 		}
-<<<<<<< HEAD
-		if (acpi_callgetfunc(sony_nc_acpi_handle, "GBRT", &value)) {
-=======
 		if (sony_nc_int_call(sony_nc_acpi_handle, "GBRT", NULL,
 					&value)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EIO;
 			break;
 		}
@@ -4967,14 +4151,9 @@ static long sonypi_misc_ioctl(struct file *fp, unsigned int cmd,
 			ret = -EFAULT;
 			break;
 		}
-<<<<<<< HEAD
-		if (acpi_callsetfunc(sony_nc_acpi_handle, "SBRT",
-				(val8 >> 5) + 1, NULL)) {
-=======
 		value = (val8 >> 5) + 1;
 		if (sony_nc_int_call(sony_nc_acpi_handle, "SBRT", &value,
 					NULL)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EIO;
 			break;
 		}
@@ -5165,11 +4344,7 @@ sony_pic_read_possible_resource(struct acpi_resource *resource, void *context)
 		{
 			struct acpi_resource_irq *p = &resource->data.irq;
 			struct sony_pic_irq *interrupt = NULL;
-<<<<<<< HEAD
-			if (!p || !p->interrupt_count) {
-=======
 			if (!p->interrupt_count) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * IRQ descriptors may have no IRQ# bits set,
 				 * particularly those those w/ _STA disabled
@@ -5191,11 +4366,7 @@ sony_pic_read_possible_resource(struct acpi_resource *resource, void *context)
 				list_add(&interrupt->list, &dev->interrupts);
 				interrupt->irq.triggering = p->triggering;
 				interrupt->irq.polarity = p->polarity;
-<<<<<<< HEAD
-				interrupt->irq.sharable = p->sharable;
-=======
 				interrupt->irq.shareable = p->shareable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				interrupt->irq.interrupt_count = 1;
 				interrupt->irq.interrupts[0] = p->interrupts[i];
 			}
@@ -5206,14 +4377,6 @@ sony_pic_read_possible_resource(struct acpi_resource *resource, void *context)
 			struct acpi_resource_io *io = &resource->data.io;
 			struct sony_pic_ioport *ioport =
 				list_first_entry(&dev->ioports, struct sony_pic_ioport, list);
-<<<<<<< HEAD
-			if (!io) {
-				dprintk("Blank IO resource\n");
-				return AE_OK;
-			}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!ioport->io1.minimum) {
 				memcpy(&ioport->io1, io, sizeof(*io));
 				dprintk("IO1 at 0x%.4x (0x%.2x)\n", ioport->io1.minimum,
@@ -5230,16 +4393,6 @@ sony_pic_read_possible_resource(struct acpi_resource *resource, void *context)
 			}
 			return AE_OK;
 		}
-<<<<<<< HEAD
-	default:
-		dprintk("Resource %d isn't an IRQ nor an IO port\n",
-			resource->type);
-
-	case ACPI_RESOURCE_TYPE_END_TAG:
-		return AE_OK;
-	}
-	return AE_CTRL_TERMINATE;
-=======
 
 	case ACPI_RESOURCE_TYPE_END_TAG:
 		return AE_OK;
@@ -5250,7 +4403,6 @@ sony_pic_read_possible_resource(struct acpi_resource *resource, void *context)
 		return AE_CTRL_TERMINATE;
 
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sony_pic_possible_resources(struct acpi_device *device)
@@ -5365,17 +4517,10 @@ static int sony_pic_enable(struct acpi_device *device,
 		memcpy(&resource->res3.data.irq, &irq->irq,
 				sizeof(struct acpi_resource_irq));
 		/* we requested a shared irq */
-<<<<<<< HEAD
-		resource->res3.data.irq.sharable = ACPI_SHARED;
-
-		resource->res4.type = ACPI_RESOURCE_TYPE_END_TAG;
-
-=======
 		resource->res3.data.irq.shareable = ACPI_SHARED;
 
 		resource->res4.type = ACPI_RESOURCE_TYPE_END_TAG;
 		resource->res4.length = sizeof(struct acpi_resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* setup Type 2/3 resources */
 	else {
@@ -5391,16 +4536,10 @@ static int sony_pic_enable(struct acpi_device *device,
 		memcpy(&resource->res2.data.irq, &irq->irq,
 				sizeof(struct acpi_resource_irq));
 		/* we requested a shared irq */
-<<<<<<< HEAD
-		resource->res2.data.irq.sharable = ACPI_SHARED;
-
-		resource->res3.type = ACPI_RESOURCE_TYPE_END_TAG;
-=======
 		resource->res2.data.irq.shareable = ACPI_SHARED;
 
 		resource->res3.type = ACPI_RESOURCE_TYPE_END_TAG;
 		resource->res3.length = sizeof(struct acpi_resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Attempt to set the resource */
@@ -5485,10 +4624,6 @@ static irqreturn_t sony_pic_irq(int irq, void *dev_id)
 
 found:
 	sony_laptop_report_input_event(device_event);
-<<<<<<< HEAD
-	acpi_bus_generate_proc_event(dev->acpi_dev, 1, device_event);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sonypi_compat_report_event(device_event);
 	return IRQ_HANDLED;
 }
@@ -5498,22 +4633,14 @@ found:
  *  ACPI driver
  *
  *****************/
-<<<<<<< HEAD
-static int sony_pic_remove(struct acpi_device *device, int type)
-=======
 static void sony_pic_remove(struct acpi_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sony_pic_ioport *io, *tmp_io;
 	struct sony_pic_irq *irq, *tmp_irq;
 
 	if (sony_pic_disable(device)) {
 		pr_err("Couldn't disable device\n");
-<<<<<<< HEAD
-		return -ENXIO;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	free_irq(spic_dev.cur_irq->irq.interrupts[0], &spic_dev);
@@ -5543,10 +4670,6 @@ static void sony_pic_remove(struct acpi_device *device)
 	spic_dev.cur_irq = NULL;
 
 	dprintk(SONY_PIC_DRIVER_NAME " removed.\n");
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sony_pic_add(struct acpi_device *device)
@@ -5555,11 +4678,6 @@ static int sony_pic_add(struct acpi_device *device)
 	struct sony_pic_ioport *io, *tmp_io;
 	struct sony_pic_irq *irq, *tmp_irq;
 
-<<<<<<< HEAD
-	pr_info("%s v%s\n", SONY_PIC_DRIVER_NAME, SONY_LAPTOP_DRIVER_VERSION);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spic_dev.acpi_dev = device;
 	strcpy(acpi_device_class(device), "sony/hotkey");
 	sony_pic_detect_device_type(&spic_dev);
@@ -5579,12 +4697,8 @@ static int sony_pic_add(struct acpi_device *device)
 		goto err_free_resources;
 	}
 
-<<<<<<< HEAD
-	if (sonypi_compat_init())
-=======
 	result = sonypi_compat_init();
 	if (result)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_remove_input;
 
 	/* request io port */
@@ -5635,11 +4749,7 @@ static int sony_pic_add(struct acpi_device *device)
 					irq->irq.interrupts[0],
 					irq->irq.triggering,
 					irq->irq.polarity,
-<<<<<<< HEAD
-					irq->irq.sharable);
-=======
 					irq->irq.shareable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spic_dev.cur_irq = irq;
 			break;
 		}
@@ -5667,10 +4777,7 @@ static int sony_pic_add(struct acpi_device *device)
 	if (result)
 		goto err_remove_pf;
 
-<<<<<<< HEAD
-=======
 	pr_info("SPIC setup done.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_remove_pf:
@@ -5710,27 +4817,14 @@ err_free_resources:
 	return result;
 }
 
-<<<<<<< HEAD
-static int sony_pic_suspend(struct acpi_device *device, pm_message_t state)
-{
-	if (sony_pic_disable(device))
-=======
 #ifdef CONFIG_PM_SLEEP
 static int sony_pic_suspend(struct device *dev)
 {
 	if (sony_pic_disable(to_acpi_device(dev)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sony_pic_resume(struct acpi_device *device)
-{
-	sony_pic_enable(device, spic_dev.cur_ioport, spic_dev.cur_irq);
-	return 0;
-}
-=======
 static int sony_pic_resume(struct device *dev)
 {
 	sony_pic_enable(to_acpi_device(dev),
@@ -5740,7 +4834,6 @@ static int sony_pic_resume(struct device *dev)
 #endif
 
 static SIMPLE_DEV_PM_OPS(sony_pic_pm, sony_pic_suspend, sony_pic_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct acpi_device_id sony_pic_device_ids[] = {
 	{SONY_PIC_HID, 0},
@@ -5755,20 +4848,11 @@ static struct acpi_driver sony_pic_driver = {
 	.ops = {
 		.add = sony_pic_add,
 		.remove = sony_pic_remove,
-<<<<<<< HEAD
-		.suspend = sony_pic_suspend,
-		.resume = sony_pic_resume,
-		},
-};
-
-static struct dmi_system_id __initdata sonypi_dmi_table[] = {
-=======
 		},
 	.drv.pm = &sony_pic_pm,
 };
 
 static const struct dmi_system_id sonypi_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Sony Vaio",
 		.matches = {

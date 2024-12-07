@@ -12,20 +12,6 @@
 
 #include <linux/const.h>
 
-<<<<<<< HEAD
-/*
- * This gives the physical RAM offset.
- */
-#ifndef PHYS_OFFSET
-#define PHYS_OFFSET		_AC(0, UL)
-#endif
-
-#ifdef CONFIG_32BIT
-
-#define CAC_BASE		_AC(0x80000000, UL)
-#define IO_BASE			_AC(0xa0000000, UL)
-#define UNCAC_BASE		_AC(0xa0000000, UL)
-=======
 #include <asm/mipsregs.h>
 
 #ifndef IO_SPACE_LIMIT
@@ -51,7 +37,6 @@
 #ifndef UNCAC_BASE
 #define UNCAC_BASE		_AC(0xa0000000, UL)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef MAP_BASE
 #define MAP_BASE		_AC(0xc0000000, UL)
@@ -64,25 +49,14 @@
 #define HIGHMEM_START		_AC(0x20000000, UL)
 #endif
 
-<<<<<<< HEAD
-=======
 #define CKSEG0ADDR_OR_64BIT(x)	CKSEG0ADDR(x)
 #define CKSEG1ADDR_OR_64BIT(x)	CKSEG1ADDR(x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_32BIT */
 
 #ifdef CONFIG_64BIT
 
 #ifndef CAC_BASE
-<<<<<<< HEAD
-#ifdef CONFIG_DMA_NONCOHERENT
-#define CAC_BASE		_AC(0x9800000000000000, UL)
-#else
-#define CAC_BASE		_AC(0xa800000000000000, UL)
-#endif
-=======
 #define CAC_BASE	PHYS_TO_XKPHYS(read_c0_config() & CONF_CM_CMASK, 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef IO_BASE
@@ -106,19 +80,12 @@
 #define HIGHMEM_START		(_AC(1, UL) << _AC(59, UL))
 #endif
 
-<<<<<<< HEAD
-#define TO_PHYS(x)		(             ((x) & TO_PHYS_MASK))
-#define TO_CAC(x)		(CAC_BASE   | ((x) & TO_PHYS_MASK))
-#define TO_UNCAC(x)		(UNCAC_BASE | ((x) & TO_PHYS_MASK))
-
-=======
 #define TO_PHYS(x)		(	      ((x) & TO_PHYS_MASK))
 #define TO_CAC(x)		(CAC_BASE   | ((x) & TO_PHYS_MASK))
 #define TO_UNCAC(x)		(UNCAC_BASE | ((x) & TO_PHYS_MASK))
 
 #define CKSEG0ADDR_OR_64BIT(x)	TO_CAC(x)
 #define CKSEG1ADDR_OR_64BIT(x)	TO_UNCAC(x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_64BIT */
 
 /*

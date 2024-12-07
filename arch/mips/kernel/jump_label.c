@@ -16,11 +16,6 @@
 #include <asm/cacheflush.h>
 #include <asm/inst.h>
 
-<<<<<<< HEAD
-#ifdef HAVE_JUMP_LABEL
-
-#define J_RANGE_MASK ((1ul << 28) - 1)
-=======
 /*
  * Define parameters for the standard MIPS and the microMIPS jump
  * instruction encoding respectively:
@@ -39,26 +34,10 @@
 #define J_RANGE_SHIFT	(2 - J_ISA_BIT)
 #define J_RANGE_MASK	((1ul << (26 + J_RANGE_SHIFT)) - 1)
 #define J_ALIGN_MASK	((1ul << J_RANGE_SHIFT) - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void arch_jump_label_transform(struct jump_entry *e,
 			       enum jump_label_type type)
 {
-<<<<<<< HEAD
-	union mips_instruction insn;
-	union mips_instruction *insn_p =
-		(union mips_instruction *)(unsigned long)e->code;
-
-	/* Jump only works within a 256MB aligned region. */
-	BUG_ON((e->target & ~J_RANGE_MASK) != (e->code & ~J_RANGE_MASK));
-
-	/* Target must have 4 byte alignment. */
-	BUG_ON((e->target & 3) != 0);
-
-	if (type == JUMP_LABEL_ENABLE) {
-		insn.j_format.opcode = j_op;
-		insn.j_format.target = (e->target & J_RANGE_MASK) >> 2;
-=======
 	union mips_instruction *insn_p;
 	union mips_instruction insn;
 	long offset;
@@ -93,34 +72,21 @@ void arch_jump_label_transform(struct jump_entry *e,
 			insn.j_format.opcode = J_ISA_BIT ? mm_j32_op : j_op;
 			insn.j_format.target = e->target >> J_RANGE_SHIFT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		insn.word = 0; /* nop */
 	}
 
-<<<<<<< HEAD
-	get_online_cpus();
-	mutex_lock(&text_mutex);
-	*insn_p = insn;
-=======
 	mutex_lock(&text_mutex);
 	if (IS_ENABLED(CONFIG_CPU_MICROMIPS)) {
 		insn_p->halfword[0] = insn.word >> 16;
 		insn_p->halfword[1] = insn.word;
 	} else
 		*insn_p = insn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	flush_icache_range((unsigned long)insn_p,
 			   (unsigned long)insn_p + sizeof(*insn_p));
 
 	mutex_unlock(&text_mutex);
-<<<<<<< HEAD
-	put_online_cpus();
-}
-
-#endif /* HAVE_JUMP_LABEL */
-=======
 }
 
 #ifdef CONFIG_MODULES
@@ -141,4 +107,3 @@ void jump_label_apply_nops(struct module *mod)
 	}
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

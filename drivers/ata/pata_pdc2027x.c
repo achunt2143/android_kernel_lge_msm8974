@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Promise PATA TX2/TX4/TX2000/133 IDE driver for pdc20268 to pdc20277.
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Promise PATA TX2/TX4/TX2000/133 IDE driver for pdc20268 to pdc20277.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Ported to libata by:
  *  Albert Lee <albertcc@tw.ibm.com> IBM Corporation
  *
@@ -22,34 +11,18 @@
  *  Author: Frank Tiernan (frankt@promise.com)
  *  Released under terms of General Public License
  *
-<<<<<<< HEAD
- *
- *  libata documentation is available via 'make {ps|pdf}docs',
- *  as Documentation/DocBook/libata.*
- *
- *  Hardware information only available under NDA.
- *
-=======
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/driver-api/libata.rst
  *
  *  Hardware information only available under NDA.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/blkdev.h>
-#include <linux/delay.h>
-#include <linux/device.h>
-=======
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/ktime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
@@ -57,16 +30,6 @@
 
 #define DRV_NAME	"pata_pdc2027x"
 #define DRV_VERSION	"1.0"
-<<<<<<< HEAD
-#undef PDC_DEBUG
-
-#ifdef PDC_DEBUG
-#define PDPRINTK(fmt, args...) printk(KERN_ERR "%s: " fmt, __func__, ## args)
-#else
-#define PDPRINTK(fmt, args...)
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	PDC_MMIO_BAR		= 5,
@@ -87,22 +50,14 @@ enum {
 };
 
 static int pdc2027x_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
-<<<<<<< HEAD
-static int pdc2027x_reinit_one(struct pci_dev *pdev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int pdc2027x_reinit_one(struct pci_dev *pdev);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pdc2027x_prereset(struct ata_link *link, unsigned long deadline);
 static void pdc2027x_set_piomode(struct ata_port *ap, struct ata_device *adev);
 static void pdc2027x_set_dmamode(struct ata_port *ap, struct ata_device *adev);
 static int pdc2027x_check_atapi_dma(struct ata_queued_cmd *qc);
-<<<<<<< HEAD
-static unsigned long pdc2027x_mode_filter(struct ata_device *adev, unsigned long mask);
-=======
 static unsigned int pdc2027x_mode_filter(struct ata_device *adev, unsigned int mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pdc2027x_cable_detect(struct ata_port *ap);
 static int pdc2027x_set_mode(struct ata_link *link, struct ata_device **r_failed);
 
@@ -114,15 +69,9 @@ static int pdc2027x_set_mode(struct ata_link *link, struct ata_device **r_failed
  * is issued to the device. However, if the controller clock is 133MHz,
  * the following tables must be used.
  */
-<<<<<<< HEAD
-static struct pdc2027x_pio_timing {
-	u8 value0, value1, value2;
-} pdc2027x_pio_timing_tbl [] = {
-=======
 static const struct pdc2027x_pio_timing {
 	u8 value0, value1, value2;
 } pdc2027x_pio_timing_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0xfb, 0x2b, 0xac }, /* PIO mode 0 */
 	{ 0x46, 0x29, 0xa4 }, /* PIO mode 1 */
 	{ 0x23, 0x26, 0x64 }, /* PIO mode 2 */
@@ -130,29 +79,17 @@ static const struct pdc2027x_pio_timing {
 	{ 0x23, 0x09, 0x25 }, /* PIO mode 4, IORDY on, Prefetch off */
 };
 
-<<<<<<< HEAD
-static struct pdc2027x_mdma_timing {
-	u8 value0, value1;
-} pdc2027x_mdma_timing_tbl [] = {
-=======
 static const struct pdc2027x_mdma_timing {
 	u8 value0, value1;
 } pdc2027x_mdma_timing_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0xdf, 0x5f }, /* MDMA mode 0 */
 	{ 0x6b, 0x27 }, /* MDMA mode 1 */
 	{ 0x69, 0x25 }, /* MDMA mode 2 */
 };
 
-<<<<<<< HEAD
-static struct pdc2027x_udma_timing {
-	u8 value0, value1, value2;
-} pdc2027x_udma_timing_tbl [] = {
-=======
 static const struct pdc2027x_udma_timing {
 	u8 value0, value1, value2;
 } pdc2027x_udma_timing_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x4a, 0x0f, 0xd5 }, /* UDMA mode 0 */
 	{ 0x3a, 0x0a, 0xd0 }, /* UDMA mode 1 */
 	{ 0x2a, 0x07, 0xcd }, /* UDMA mode 2 */
@@ -179,21 +116,13 @@ static struct pci_driver pdc2027x_pci_driver = {
 	.id_table		= pdc2027x_pci_tbl,
 	.probe			= pdc2027x_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= pdc2027x_reinit_one,
 #endif
 };
 
-<<<<<<< HEAD
-static struct scsi_host_template pdc2027x_sht = {
-=======
 static const struct scsi_host_template pdc2027x_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -260,11 +189,7 @@ static inline void __iomem *dev_mmio(struct ata_port *ap, struct ata_device *ade
 }
 
 /**
-<<<<<<< HEAD
- *	pdc2027x_pata_cable_detect - Probe host controller cable detect info
-=======
  *	pdc2027x_cable_detect - Probe host controller cable detect info
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@ap: Port for which cable detect info is desired
  *
  *	Read 80c cable indicator from Promise extended register.
@@ -282,19 +207,11 @@ static int pdc2027x_cable_detect(struct ata_port *ap)
 	if (cgcr & (1 << 26))
 		goto cbl40;
 
-<<<<<<< HEAD
-	PDPRINTK("No cable or 80-conductor cable on port %d\n", ap->port_no);
-
-	return ATA_CBL_PATA80;
-cbl40:
-	printk(KERN_INFO DRV_NAME ": 40-conductor cable detected on port %d\n", ap->port_no);
-=======
 	ata_port_dbg(ap, "No cable or 80-conductor cable\n");
 
 	return ATA_CBL_PATA80;
 cbl40:
 	ata_port_info(ap, DRV_NAME ":40-conductor cable detected\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ATA_CBL_PATA40;
 }
 
@@ -327,22 +244,14 @@ static int pdc2027x_prereset(struct ata_link *link, unsigned long deadline)
 }
 
 /**
-<<<<<<< HEAD
- *	pdc2720x_mode_filter	-	mode selection filter
-=======
  *	pdc2027x_mode_filter	-	mode selection filter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@adev: ATA device
  *	@mask: list of modes proposed
  *
  *	Block UDMA on devices that cause trouble with this controller.
  */
 
-<<<<<<< HEAD
-static unsigned long pdc2027x_mode_filter(struct ata_device *adev, unsigned long mask)
-=======
 static unsigned int pdc2027x_mode_filter(struct ata_device *adev, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char model_num[ATA_ID_PROD_LEN + 1];
 	struct ata_device *pair = ata_dev_pair(adev);
@@ -376,29 +285,17 @@ static void pdc2027x_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	unsigned int pio = adev->pio_mode - XFER_PIO_0;
 	u32 ctcr0, ctcr1;
 
-<<<<<<< HEAD
-	PDPRINTK("adev->pio_mode[%X]\n", adev->pio_mode);
-
-	/* Sanity check */
-	if (pio > 4) {
-		printk(KERN_ERR DRV_NAME ": Unknown pio mode [%d] ignored\n", pio);
-=======
 	ata_port_dbg(ap, "adev->pio_mode[%X]\n", adev->pio_mode);
 
 	/* Sanity check */
 	if (pio > 4) {
 		ata_port_err(ap, "Unknown pio mode [%d] ignored\n", pio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	}
 
 	/* Set the PIO timing registers using value table for 133MHz */
-<<<<<<< HEAD
-	PDPRINTK("Set pio regs... \n");
-=======
 	ata_port_dbg(ap, "Set pio regs... \n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctcr0 = ioread32(dev_mmio(ap, adev, PDC_CTCR0));
 	ctcr0 &= 0xffff0000;
@@ -411,13 +308,7 @@ static void pdc2027x_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	ctcr1 |= (pdc2027x_pio_timing_tbl[pio].value2 << 24);
 	iowrite32(ctcr1, dev_mmio(ap, adev, PDC_CTCR1));
 
-<<<<<<< HEAD
-	PDPRINTK("Set pio regs done\n");
-
-	PDPRINTK("Set to pio mode[%u] \n", pio);
-=======
 	ata_port_dbg(ap, "Set to pio mode[%u] \n", pio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -450,11 +341,7 @@ static void pdc2027x_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 			iowrite32(ctcr1 & ~(1 << 7), dev_mmio(ap, adev, PDC_CTCR1));
 		}
 
-<<<<<<< HEAD
-		PDPRINTK("Set udma regs... \n");
-=======
 		ata_port_dbg(ap, "Set udma regs... \n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ctcr1 = ioread32(dev_mmio(ap, adev, PDC_CTCR1));
 		ctcr1 &= 0xff000000;
@@ -463,24 +350,14 @@ static void pdc2027x_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 			(pdc2027x_udma_timing_tbl[udma_mode].value2 << 16);
 		iowrite32(ctcr1, dev_mmio(ap, adev, PDC_CTCR1));
 
-<<<<<<< HEAD
-		PDPRINTK("Set udma regs done\n");
-
-		PDPRINTK("Set to udma mode[%u] \n", udma_mode);
-=======
 		ata_port_dbg(ap, "Set to udma mode[%u] \n", udma_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else  if ((dma_mode >= XFER_MW_DMA_0) &&
 		   (dma_mode <= XFER_MW_DMA_2)) {
 		/* Set the MDMA timing registers with value table for 133MHz */
 		unsigned int mdma_mode = dma_mode & 0x07;
 
-<<<<<<< HEAD
-		PDPRINTK("Set mdma regs... \n");
-=======
 		ata_port_dbg(ap, "Set mdma regs... \n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctcr0 = ioread32(dev_mmio(ap, adev, PDC_CTCR0));
 
 		ctcr0 &= 0x0000ffff;
@@ -488,18 +365,10 @@ static void pdc2027x_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 			(pdc2027x_mdma_timing_tbl[mdma_mode].value1 << 24);
 
 		iowrite32(ctcr0, dev_mmio(ap, adev, PDC_CTCR0));
-<<<<<<< HEAD
-		PDPRINTK("Set mdma regs done\n");
-
-		PDPRINTK("Set to mdma mode[%u] \n", mdma_mode);
-	} else {
-		printk(KERN_ERR DRV_NAME ": Unknown dma mode [%u] ignored\n", dma_mode);
-=======
 
 		ata_port_dbg(ap, "Set to mdma mode[%u] \n", mdma_mode);
 	} else {
 		ata_port_err(ap, "Unknown dma mode [%u] ignored\n", dma_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -533,11 +402,7 @@ static int pdc2027x_set_mode(struct ata_link *link, struct ata_device **r_failed
 			ctcr1 |= (1 << 25);
 			iowrite32(ctcr1, dev_mmio(ap, dev, PDC_CTCR1));
 
-<<<<<<< HEAD
-			PDPRINTK("Turn on prefetch\n");
-=======
 			ata_dev_dbg(dev, "Turn on prefetch\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			pdc2027x_set_dmamode(ap, dev);
 		}
@@ -608,13 +473,8 @@ retry:
 
 	counter = (bccrh << 15) | bccrl;
 
-<<<<<<< HEAD
-	PDPRINTK("bccrh [%X] bccrl [%X]\n", bccrh,  bccrl);
-	PDPRINTK("bccrhv[%X] bccrlv[%X]\n", bccrhv, bccrlv);
-=======
 	dev_dbg(host->dev, "bccrh [%X] bccrl [%X]\n", bccrh,  bccrl);
 	dev_dbg(host->dev, "bccrhv[%X] bccrlv[%X]\n", bccrhv, bccrlv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The 30-bit decreasing counter are read by 2 pieces.
@@ -623,11 +483,7 @@ retry:
 	 */
 	if (retry && !(bccrh == bccrhv && bccrl >= bccrlv)) {
 		retry--;
-<<<<<<< HEAD
-		PDPRINTK("rereading counter\n");
-=======
 		dev_dbg(host->dev, "rereading counter\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto retry;
 	}
 
@@ -635,19 +491,11 @@ retry:
 }
 
 /**
-<<<<<<< HEAD
- * adjust_pll - Adjust the PLL input clock in Hz.
- *
- * @pdc_controller: controller specific information
- * @host: target ATA host
- * @pll_clock: The input of PLL in HZ
-=======
  * pdc_adjust_pll - Adjust the PLL input clock in Hz.
  *
  * @host: target ATA host
  * @pll_clock: The input of PLL in HZ
  * @board_idx: board identifier
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void pdc_adjust_pll(struct ata_host *host, long pll_clock, unsigned int board_idx)
 {
@@ -660,33 +508,19 @@ static void pdc_adjust_pll(struct ata_host *host, long pll_clock, unsigned int b
 
 	/* Sanity check */
 	if (unlikely(pll_clock_khz < 5000L || pll_clock_khz > 70000L)) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": Invalid PLL input clock %ldkHz, give up!\n", pll_clock_khz);
-		return;
-	}
-
-#ifdef PDC_DEBUG
-	PDPRINTK("pout_required is %ld\n", pout_required);
-=======
 		dev_err(host->dev, "Invalid PLL input clock %ldkHz, give up!\n",
 			pll_clock_khz);
 		return;
 	}
 
 	dev_dbg(host->dev, "pout_required is %ld\n", pout_required);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Show the current clock value of PLL control register
 	 * (maybe already configured by the firmware)
 	 */
 	pll_ctl = ioread16(mmio_base + PDC_PLL_CTL);
 
-<<<<<<< HEAD
-	PDPRINTK("pll_ctl[%X]\n", pll_ctl);
-#endif
-=======
 	dev_dbg(host->dev, "pll_ctl[%X]\n", pll_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Calculate the ratio of F, R and OD
@@ -705,11 +539,7 @@ static void pdc_adjust_pll(struct ata_host *host, long pll_clock, unsigned int b
 		R = 0x00;
 	} else {
 		/* Invalid ratio */
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": Invalid ratio %ld, give up!\n", ratio);
-=======
 		dev_err(host->dev, "Invalid ratio %ld, give up!\n", ratio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -717,17 +547,6 @@ static void pdc_adjust_pll(struct ata_host *host, long pll_clock, unsigned int b
 
 	if (unlikely(F < 0 || F > 127)) {
 		/* Invalid F */
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": F[%d] invalid!\n", F);
-		return;
-	}
-
-	PDPRINTK("F[%d] R[%d] ratio*1000[%ld]\n", F, R, ratio);
-
-	pll_ctl = (R << 8) | F;
-
-	PDPRINTK("Writing pll_ctl[%X]\n", pll_ctl);
-=======
 		dev_err(host->dev, "F[%d] invalid!\n", F);
 		return;
 	}
@@ -737,42 +556,26 @@ static void pdc_adjust_pll(struct ata_host *host, long pll_clock, unsigned int b
 	pll_ctl = (R << 8) | F;
 
 	dev_dbg(host->dev, "Writing pll_ctl[%X]\n", pll_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite16(pll_ctl, mmio_base + PDC_PLL_CTL);
 	ioread16(mmio_base + PDC_PLL_CTL); /* flush */
 
 	/* Wait the PLL circuit to be stable */
-<<<<<<< HEAD
-	mdelay(30);
-
-#ifdef PDC_DEBUG
-=======
 	msleep(30);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *  Show the current clock value of PLL control register
 	 * (maybe configured by the firmware)
 	 */
 	pll_ctl = ioread16(mmio_base + PDC_PLL_CTL);
 
-<<<<<<< HEAD
-	PDPRINTK("pll_ctl[%X]\n", pll_ctl);
-#endif
-=======
 	dev_dbg(host->dev, "pll_ctl[%X]\n", pll_ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
 
 /**
-<<<<<<< HEAD
- * detect_pll_input_clock - Detect the PLL input clock in Hz.
-=======
  * pdc_detect_pll_input_clock - Detect the PLL input clock in Hz.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @host: target ATA host
  * Ex. 16949000 on 33MHz PCI bus for pdc20275.
  *     Half of the PCI clock.
@@ -782,39 +585,17 @@ static long pdc_detect_pll_input_clock(struct ata_host *host)
 	void __iomem *mmio_base = host->iomap[PDC_MMIO_BAR];
 	u32 scr;
 	long start_count, end_count;
-<<<<<<< HEAD
-	struct timeval start_time, end_time;
-=======
 	ktime_t start_time, end_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long pll_clock, usec_elapsed;
 
 	/* Start the test mode */
 	scr = ioread32(mmio_base + PDC_SYS_CTL);
-<<<<<<< HEAD
-	PDPRINTK("scr[%X]\n", scr);
-=======
 	dev_dbg(host->dev, "scr[%X]\n", scr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite32(scr | (0x01 << 14), mmio_base + PDC_SYS_CTL);
 	ioread32(mmio_base + PDC_SYS_CTL); /* flush */
 
 	/* Read current counter value */
 	start_count = pdc_read_counter(host);
-<<<<<<< HEAD
-	do_gettimeofday(&start_time);
-
-	/* Let the counter run for 100 ms. */
-	mdelay(100);
-
-	/* Read the counter values again */
-	end_count = pdc_read_counter(host);
-	do_gettimeofday(&end_time);
-
-	/* Stop the test mode */
-	scr = ioread32(mmio_base + PDC_SYS_CTL);
-	PDPRINTK("scr[%X]\n", scr);
-=======
 	start_time = ktime_get();
 
 	/* Let the counter run for 100 ms. */
@@ -827,28 +608,17 @@ static long pdc_detect_pll_input_clock(struct ata_host *host)
 	/* Stop the test mode */
 	scr = ioread32(mmio_base + PDC_SYS_CTL);
 	dev_dbg(host->dev, "scr[%X]\n", scr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite32(scr & ~(0x01 << 14), mmio_base + PDC_SYS_CTL);
 	ioread32(mmio_base + PDC_SYS_CTL); /* flush */
 
 	/* calculate the input clock in Hz */
-<<<<<<< HEAD
-	usec_elapsed = (end_time.tv_sec - start_time.tv_sec) * 1000000 +
-		(end_time.tv_usec - start_time.tv_usec);
-=======
 	usec_elapsed = (long) ktime_us_delta(end_time, start_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pll_clock = ((start_count - end_count) & 0x3fffffff) / 100 *
 		(100000000 / usec_elapsed);
 
-<<<<<<< HEAD
-	PDPRINTK("start[%ld] end[%ld] \n", start_count, end_count);
-	PDPRINTK("PLL input clock[%ld]Hz\n", pll_clock);
-=======
 	dev_dbg(host->dev, "start[%ld] end[%ld] PLL input clock[%ld]HZ\n",
 		     start_count, end_count, pll_clock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pll_clock;
 }
@@ -858,11 +628,7 @@ static long pdc_detect_pll_input_clock(struct ata_host *host)
  * @host: target ATA host
  * @board_idx: board identifier
  */
-<<<<<<< HEAD
-static int pdc_hardware_init(struct ata_host *host, unsigned int board_idx)
-=======
 static void pdc_hardware_init(struct ata_host *host, unsigned int board_idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long pll_clock;
 
@@ -878,11 +644,6 @@ static void pdc_hardware_init(struct ata_host *host, unsigned int board_idx)
 
 	/* Adjust PLL control register */
 	pdc_adjust_pll(host, pll_clock, board_idx);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -917,12 +678,8 @@ static void pdc_ata_setup_port(struct ata_ioports *port, void __iomem *base)
  * @pdev: instance of pci_dev found
  * @ent:  matching entry in the id_tbl[]
  */
-<<<<<<< HEAD
-static int __devinit pdc2027x_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-=======
 static int pdc2027x_init_one(struct pci_dev *pdev,
 			     const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned long cmd_offset[] = { 0x17c0, 0x15c0 };
 	static const unsigned long bmdma_offset[] = { 0x1000, 0x1008 };
@@ -950,15 +707,7 @@ static int pdc2027x_init_one(struct pci_dev *pdev,
 		return rc;
 	host->iomap = pcim_iomap_table(pdev);
 
-<<<<<<< HEAD
-	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
-	if (rc)
-		return rc;
-
-	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -977,29 +726,17 @@ static int pdc2027x_init_one(struct pci_dev *pdev,
 	//pci_enable_intx(pdev);
 
 	/* initialize adapter */
-<<<<<<< HEAD
-	if (pdc_hardware_init(host, board_idx) != 0)
-		return -EIO;
-=======
 	pdc_hardware_init(host, board_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_master(pdev);
 	return ata_host_activate(host, pdev->irq, ata_bmdma_interrupt,
 				 IRQF_SHARED, &pdc2027x_sht);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int pdc2027x_reinit_one(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int pdc2027x_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int board_idx;
 	int rc;
 
@@ -1013,37 +750,11 @@ static int pdc2027x_reinit_one(struct pci_dev *pdev)
 	else
 		board_idx = PDC_UDMA_133;
 
-<<<<<<< HEAD
-	if (pdc_hardware_init(host, board_idx))
-		return -EIO;
-=======
 	pdc_hardware_init(host, board_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_host_resume(host);
 	return 0;
 }
 #endif
 
-<<<<<<< HEAD
-/**
- * pdc2027x_init - Called after this module is loaded into the kernel.
- */
-static int __init pdc2027x_init(void)
-{
-	return pci_register_driver(&pdc2027x_pci_driver);
-}
-
-/**
- * pdc2027x_exit - Called before this module unloaded from the kernel
- */
-static void __exit pdc2027x_exit(void)
-{
-	pci_unregister_driver(&pdc2027x_pci_driver);
-}
-
-module_init(pdc2027x_init);
-module_exit(pdc2027x_exit);
-=======
 module_pci_driver(pdc2027x_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

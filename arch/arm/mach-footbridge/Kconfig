@@ -1,60 +1,3 @@
-<<<<<<< HEAD
-if ARCH_FOOTBRIDGE
-
-menu "Footbridge Implementations"
-
-config ARCH_CATS
-	bool "CATS"
-	select CLKEVT_I8253
-	select CLKSRC_I8253
-	select FOOTBRIDGE_HOST
-	select ISA
-	select ISA_DMA
-	select PCI
-	help
-	  Say Y here if you intend to run this kernel on the CATS.
-
-	  Saying N will reduce the size of the Footbridge kernel.
-
-config ARCH_PERSONAL_SERVER
-	bool "Compaq Personal Server"
-	select FOOTBRIDGE_HOST
-	select ISA
-	select ISA_DMA
-	select PCI
-	---help---
-	  Say Y here if you intend to run this kernel on the Compaq
-	  Personal Server.
-
-	  Saying N will reduce the size of the Footbridge kernel.
-
-	  The Compaq Personal Server is not available for purchase.
-	  There are no product plans beyond the current research
-	  prototypes at this time.  Information is available at:
-
-	  <http://www.crl.hpl.hp.com/projects/personalserver/>
-
-	  If you have any questions or comments about the  Compaq Personal
-	  Server, send e-mail to <skiff@crl.dec.com>.
-
-config ARCH_EBSA285_ADDIN
-	bool "EBSA285 (addin mode)"
-	select ARCH_EBSA285
-	select FOOTBRIDGE_ADDIN
-	help
-	  Say Y here if you intend to run this kernel on the EBSA285 card
-	  in addin mode.
-
-	  Saying N will reduce the size of the Footbridge kernel.
-
-config ARCH_EBSA285_HOST
-	bool "EBSA285 (host mode)"
-	select ARCH_EBSA285
-	select FOOTBRIDGE_HOST
-	select ISA
-	select ISA_DMA
-	select PCI
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menuconfig ARCH_FOOTBRIDGE
 	bool "FootBridge Implementations"
@@ -79,7 +22,6 @@ config ARCH_EBSA285_HOST
 	select ISA
 	select ARCH_MAY_HAVE_PC_FDC
 	select FORCE_PCI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you intend to run this kernel on the EBSA285 card
 	  in host ("central function") mode.
@@ -90,15 +32,8 @@ config ARCH_NETWINDER
 	bool "NetWinder"
 	select CLKEVT_I8253
 	select CLKSRC_I8253
-<<<<<<< HEAD
-	select FOOTBRIDGE_HOST
-	select ISA
-	select ISA_DMA
-	select PCI
-=======
 	select ISA
 	select FORCE_PCI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you intend to run this kernel on the Rebel.COM
 	  NetWinder.  Information about this machine can be found at:
@@ -107,25 +42,6 @@ config ARCH_NETWINDER
 
 	  Saying N will reduce the size of the Footbridge kernel.
 
-<<<<<<< HEAD
-endmenu
-
-# Footbridge support
-config FOOTBRIDGE
-	bool
-
-# Footbridge in host mode
-config FOOTBRIDGE_HOST
-	bool
-
-# Footbridge in addin mode
-config FOOTBRIDGE_ADDIN
-	bool
-
-# EBSA285 board in either host or addin mode
-config ARCH_EBSA285
-	select ARCH_MAY_HAVE_PC_FDC
-=======
 # Footbridge support
 config FOOTBRIDGE
 	def_bool y
@@ -133,7 +49,6 @@ config FOOTBRIDGE
 	select ISA_DMA_API
 
 config ARCH_EBSA285
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool
 
 endif

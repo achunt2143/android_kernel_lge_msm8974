@@ -1,34 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas USB
  *
  * Copyright (C) 2011 Renesas Solutions Corp.
-<<<<<<< HEAD
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- */
-#ifndef RENESAS_USB_H
-#define RENESAS_USB_H
-=======
  * Copyright (C) 2019 Renesas Electronics Corporation
  * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
  */
 #ifndef RENESAS_USB_H
 #define RENESAS_USB_H
 #include <linux/notifier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/usb/ch9.h>
 
@@ -44,20 +24,6 @@ enum {
 };
 
 /*
-<<<<<<< HEAD
- * callback functions table for driver
- *
- * These functions are called from platform for driver.
- * Callback function's pointer will be set before
- * renesas_usbhs_platform_callback :: hardware_init was called
- */
-struct renesas_usbhs_driver_callback {
-	int (*notify_hotplug)(struct platform_device *pdev);
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * callback functions for platform
  *
  * These functions are called from driver for platform
@@ -78,22 +44,14 @@ struct renesas_usbhs_platform_callback {
 	 * Hardware exit function for platform.
 	 * it is called when driver was removed
 	 */
-<<<<<<< HEAD
-	void (*hardware_exit)(struct platform_device *pdev);
-=======
 	int (*hardware_exit)(struct platform_device *pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * option:
 	 *
 	 * for board specific clock control
 	 */
-<<<<<<< HEAD
-	void (*power_ctrl)(struct platform_device *pdev,
-=======
 	int (*power_ctrl)(struct platform_device *pdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   void __iomem *base, int enable);
 
 	/*
@@ -101,11 +59,7 @@ struct renesas_usbhs_platform_callback {
 	 *
 	 * Phy reset for platform
 	 */
-<<<<<<< HEAD
-	void (*phy_reset)(struct platform_device *pdev);
-=======
 	int (*phy_reset)(struct platform_device *pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * get USB ID function
@@ -125,8 +79,6 @@ struct renesas_usbhs_platform_callback {
 	 * VBUS control is needed for Host
 	 */
 	int (*set_vbus)(struct platform_device *pdev, int enable);
-<<<<<<< HEAD
-=======
 
 	/*
 	 * option:
@@ -134,7 +86,6 @@ struct renesas_usbhs_platform_callback {
 	 */
 	int (*notifier)(struct notifier_block *nb, unsigned long event,
 			void *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -143,8 +94,6 @@ struct renesas_usbhs_platform_callback {
  * some register needs USB chip specific parameters.
  * This struct show it to driver
  */
-<<<<<<< HEAD
-=======
 
 struct renesas_usbhs_driver_pipe_config {
 	u8 type;	/* USB_ENDPOINT_XFER_xxx */
@@ -159,18 +108,12 @@ struct renesas_usbhs_driver_pipe_config {
 			.double_buf = (_double_buf),	\
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct renesas_usbhs_driver_param {
 	/*
 	 * pipe settings
 	 */
-<<<<<<< HEAD
-	u32 *pipe_type; /* array of USB_ENDPOINT_XFER_xxx (from ep0) */
-	int pipe_size; /* pipe_type array size */
-=======
 	struct renesas_usbhs_driver_pipe_config *pipe_configs;
 	int pipe_size; /* pipe_configs array size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * option:
@@ -192,8 +135,6 @@ struct renesas_usbhs_driver_param {
 	 * option:
 	 *
 	 * dma id for dmaengine
-<<<<<<< HEAD
-=======
 	 * The data transfer direction on D0FIFO/D1FIFO should be
 	 * fixed for keeping consistency.
 	 * So, the platform id settings will be..
@@ -202,19 +143,15 @@ struct renesas_usbhs_driver_param {
 	 * or
 	 *	.d1_tx_id = xx_TX,
 	 *	.d0_rx_id = xx_RX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	int d0_tx_id;
 	int d0_rx_id;
 	int d1_tx_id;
 	int d1_rx_id;
-<<<<<<< HEAD
-=======
 	int d2_tx_id;
 	int d2_rx_id;
 	int d3_tx_id;
 	int d3_rx_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * option:
@@ -226,10 +163,6 @@ struct renesas_usbhs_driver_param {
 	/*
 	 * option:
 	 */
-<<<<<<< HEAD
-	u32 has_otg:1; /* for controlling PWEN/EXTLP */
-	u32 has_sudmac:1; /* for SUDMAC */
-=======
 	u32 has_usb_dmac:1; /* for USB-DMAC */
 	u32 runtime_pwctrl:1;
 	u32 has_cnen:1;
@@ -237,7 +170,6 @@ struct renesas_usbhs_driver_param {
 #define USBHS_USB_DMAC_XFER_SIZE	32	/* hardcode the xfer size */
 	u32 multi_clks:1;
 	u32 has_new_pipe_configs:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -255,15 +187,6 @@ struct renesas_usbhs_platform_info {
 	struct renesas_usbhs_platform_callback	platform_callback;
 
 	/*
-<<<<<<< HEAD
-	 * driver set these callback functions pointer.
-	 * platform can use it on callback functions
-	 */
-	struct renesas_usbhs_driver_callback	driver_callback;
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * option:
 	 *
 	 * driver use these param for some register
@@ -276,15 +199,4 @@ struct renesas_usbhs_platform_info {
  */
 #define renesas_usbhs_get_info(pdev)\
 	((struct renesas_usbhs_platform_info *)(pdev)->dev.platform_data)
-<<<<<<< HEAD
-
-#define renesas_usbhs_call_notify_hotplug(pdev)				\
-	({								\
-		struct renesas_usbhs_driver_callback *dc;		\
-		dc = &(renesas_usbhs_get_info(pdev)->driver_callback);	\
-		if (dc && dc->notify_hotplug)				\
-			dc->notify_hotplug(pdev);			\
-	})
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* RENESAS_USB_H */

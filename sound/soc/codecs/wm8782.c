@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sound/soc/codecs/wm8782.c
  * simple, strap-pin configured 24bit 2ch ADC
@@ -10,18 +7,8 @@
  * Author: Johannes Stezenbach <js@sig21.net>
  *
  * based on ad73311.c
-<<<<<<< HEAD
- * Copyright:	Analog Device Inc.
- * Author:	Cliff Cai <cliff.cai@analog.com>
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
  * Copyright:	Analog Devices Inc.
  * Author:	Cliff Cai <cliff.cai@analog.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -29,18 +16,13 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-=======
 #include <linux/regulator/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/ac97_codec.h>
 #include <sound/initval.h>
 #include <sound/soc.h>
 
-<<<<<<< HEAD
-=======
 /* regulator power supply names */
 static const char *supply_names[] = {
 	"Vdda", /* analog supply, 2.7V - 3.6V */
@@ -76,48 +58,17 @@ static const struct snd_soc_dai_ops wm8782_dai_ops = {
 	.startup = &wm8782_dai_startup,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_driver wm8782_dai = {
 	.name = "wm8782",
 	.capture = {
 		.stream_name = "Capture",
 		.channels_min = 2,
 		.channels_max = 2,
-<<<<<<< HEAD
-		/* For configurations with FSAMPEN=0 */
-		.rates = SNDRV_PCM_RATE_8000_48000,
-=======
 		.rates = SNDRV_PCM_RATE_8000_192000,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.formats = SNDRV_PCM_FMTBIT_S16_LE |
 			   SNDRV_PCM_FMTBIT_S20_3LE |
 			   SNDRV_PCM_FMTBIT_S24_LE,
 	},
-<<<<<<< HEAD
-};
-
-static struct snd_soc_codec_driver soc_codec_dev_wm8782;
-
-static __devinit int wm8782_probe(struct platform_device *pdev)
-{
-	return snd_soc_register_codec(&pdev->dev,
-			&soc_codec_dev_wm8782, &wm8782_dai, 1);
-}
-
-static int __devexit wm8782_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_codec(&pdev->dev);
-	return 0;
-}
-
-static struct platform_driver wm8782_codec_driver = {
-	.driver = {
-		.name = "wm8782",
-		.owner = THIS_MODULE,
-	},
-	.probe = wm8782_probe,
-	.remove = __devexit_p(wm8782_remove),
-=======
 	.ops = &wm8782_dai_ops,
 };
 
@@ -225,7 +176,6 @@ static struct platform_driver wm8782_codec_driver = {
 		.of_match_table = of_match_ptr(wm8782_of_match),
 	},
 	.probe = wm8782_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(wm8782_codec_driver);

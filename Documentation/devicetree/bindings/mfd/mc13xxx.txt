@@ -10,12 +10,6 @@ Optional properties:
 - fsl,mc13xxx-uses-touch : Indicate the touchscreen controller is being used
 
 Sub-nodes:
-<<<<<<< HEAD
-- regulators : Contain the regulator nodes.  The MC13892 regulators are
-  bound using their names as listed below with their registers and bits
-  for enabling.
-
-=======
 - codec: Contain the Audio Codec node.
   - adc-port: Contain PMIC SSI port number used for ADC.
   - dac-port: Contain PMIC SSI port number used for DAC.
@@ -88,7 +82,6 @@ MC13783 regulators:
     pwgt2spi  : regulator PWGT2SPI  (register 34, bit 16)
 
 MC13892 regulators:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     vcoincell : regulator VCOINCELL (register 13, bit 23)
     sw1       : regulator SW1	    (register 24, bit 0)
     sw2       : regulator SW2	    (register 25, bit 0)
@@ -120,15 +113,8 @@ MC13892 regulators:
 Examples:
 
 ecspi@70010000 { /* ECSPI1 */
-<<<<<<< HEAD
-	fsl,spi-num-chipselects = <2>;
-	cs-gpios = <&gpio3 24 0>, /* GPIO4_24 */
-		   <&gpio3 25 0>; /* GPIO4_25 */
-	status = "okay";
-=======
 	cs-gpios = <&gpio4 24 0>, /* GPIO4_24 */
 		   <&gpio4 25 0>; /* GPIO4_25 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmic: mc13892@0 {
 		#address-cells = <1>;
@@ -139,8 +125,6 @@ ecspi@70010000 { /* ECSPI1 */
 		interrupt-parent = <&gpio0>;
 		interrupts = <8>;
 
-<<<<<<< HEAD
-=======
 		leds {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -153,7 +137,6 @@ ecspi@70010000 { /* ECSPI1 */
 			};
 		};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regulators {
 			sw1_reg: mc13892__sw1 {
 				regulator-min-microvolt = <600000>;

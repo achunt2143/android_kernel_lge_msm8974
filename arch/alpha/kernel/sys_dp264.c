@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_dp264.c
  *
@@ -29,10 +26,6 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_tsunami.h>
 #include <asm/hwrpb.h>
 #include <asm/tlbflush.h>
@@ -197,12 +190,6 @@ static struct irq_chip clipper_irq_type = {
 static void
 dp264_device_interrupt(unsigned long vector)
 {
-<<<<<<< HEAD
-#if 1
-	printk("dp264_device_interrupt: NOT IMPLEMENTED YET!!\n");
-#else
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long pld;
 	unsigned int i;
 
@@ -220,16 +207,7 @@ dp264_device_interrupt(unsigned long vector)
 			isa_device_interrupt(vector);
 		else
 			handle_irq(16 + i);
-<<<<<<< HEAD
-#if 0
-		TSUNAMI_cchip->dir0.csr = 1UL << i; mb();
-		tmp = TSUNAMI_cchip->dir0.csr;
-#endif
 	}
-#endif
-=======
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void 
@@ -378,11 +356,7 @@ clipper_init_irq(void)
  *  10	 64 bit PCI option slot 3 (not bus 0)
  */
 
-<<<<<<< HEAD
-static int __init
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 isa_irq_fixup(const struct pci_dev *dev, int irq)
 {
 	u8 irq8;
@@ -398,17 +372,10 @@ isa_irq_fixup(const struct pci_dev *dev, int irq)
 	return irq8 & 0xf;
 }
 
-<<<<<<< HEAD
-static int __init
-dp264_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	static char irq_tab[6][5] __initdata = {
-=======
 static int
 dp264_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[6][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{    -1,    -1,    -1,    -1,    -1}, /* IdSel 5 ISA Bridge */
 		{ 16+ 3, 16+ 3, 16+ 2, 16+ 2, 16+ 2}, /* IdSel 6 SCSI builtin*/
@@ -427,17 +394,10 @@ dp264_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return isa_irq_fixup(dev, irq);
 }
 
-<<<<<<< HEAD
-static int __init
-monet_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	static char irq_tab[13][5] __initdata = {
-=======
 static int
 monet_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[13][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{    45,    45,    45,    45,    45}, /* IdSel 3 21143 PCI1 */
 		{    -1,    -1,    -1,    -1,    -1}, /* IdSel 4 unused */
@@ -463,11 +423,7 @@ monet_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return isa_irq_fixup(dev, COMMON_TABLE_LOOKUP);
 }
 
-<<<<<<< HEAD
-static u8 __init
-=======
 static u8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 monet_swizzle(struct pci_dev *dev, u8 *pinp)
 {
 	struct pci_controller *hose = dev->sysdata;
@@ -500,17 +456,10 @@ monet_swizzle(struct pci_dev *dev, u8 *pinp)
 	return slot;
 }
 
-<<<<<<< HEAD
-static int __init
-webbrick_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	static char irq_tab[13][5] __initdata = {
-=======
 static int
 webbrick_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[13][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{    -1,    -1,    -1,    -1,    -1}, /* IdSel 7 ISA Bridge */
 		{    -1,    -1,    -1,    -1,    -1}, /* IdSel 8 unused */
@@ -529,17 +478,10 @@ webbrick_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return isa_irq_fixup(dev, COMMON_TABLE_LOOKUP);
 }
 
-<<<<<<< HEAD
-static int __init
-clipper_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-{
-	static char irq_tab[7][5] __initdata = {
-=======
 static int
 clipper_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[7][5] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{ 16+ 8, 16+ 8, 16+ 9, 16+10, 16+11}, /* IdSel 1 slot 1 */
 		{ 16+12, 16+12, 16+13, 16+14, 16+15}, /* IdSel 2 slot 2 */

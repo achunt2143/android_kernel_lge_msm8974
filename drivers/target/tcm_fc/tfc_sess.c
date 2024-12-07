@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2010 Cisco Systems, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2010 Cisco Systems, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* XXX TBD some includes may be extraneous */
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-<<<<<<< HEAD
-#include <generated/utsrelease.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/utsname.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -42,24 +20,10 @@
 #include <linux/rculist.h>
 #include <linux/kref.h>
 #include <asm/unaligned.h>
-<<<<<<< HEAD
-#include <scsi/scsi.h>
-#include <scsi/scsi_host.h>
-#include <scsi/scsi_device.h>
-#include <scsi/scsi_cmnd.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/libfc.h>
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
-<<<<<<< HEAD
-#include <target/target_core_configfs.h>
-#include <target/configfs_macros.h>
-
-#include "tcm_fc.h"
-
-=======
 
 #include "tcm_fc.h"
 
@@ -68,18 +32,13 @@
 		 (lport)->host->host_no,	   \
 		 (lport)->port_id, ##args )
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ft_sess_delete_all(struct ft_tport *);
 
 /*
  * Lookup or allocate target local port.
  * Caller holds ft_lport_lock.
  */
-<<<<<<< HEAD
-static struct ft_tport *ft_tport_create(struct fc_lport *lport)
-=======
 static struct ft_tport *ft_tport_get(struct fc_lport *lport)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ft_tpg *tpg;
 	struct ft_tport *tport;
@@ -125,14 +84,9 @@ static void ft_tport_delete(struct ft_tport *tport)
 
 	ft_sess_delete_all(tport);
 	lport = tport->lport;
-<<<<<<< HEAD
-	BUG_ON(tport != lport->prov[FC_TYPE_FCP]);
-	rcu_assign_pointer(lport->prov[FC_TYPE_FCP], NULL);
-=======
 	lport->service_params &= ~FCP_SPPF_TARG_FCN;
 	BUG_ON(tport != lport->prov[FC_TYPE_FCP]);
 	RCU_INIT_POINTER(lport->prov[FC_TYPE_FCP], NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tpg = tport->tpg;
 	if (tpg) {
@@ -149,12 +103,8 @@ static void ft_tport_delete(struct ft_tport *tport)
 void ft_lport_add(struct fc_lport *lport, void *arg)
 {
 	mutex_lock(&ft_lport_lock);
-<<<<<<< HEAD
-	ft_tport_create(lport);
-=======
 	ft_tport_get(lport);
 	lport->service_params |= FCP_SPPF_TARG_FCN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ft_lport_lock);
 }
 
@@ -209,22 +159,6 @@ static struct ft_sess *ft_sess_get(struct fc_lport *lport, u32 port_id)
 {
 	struct ft_tport *tport;
 	struct hlist_head *head;
-<<<<<<< HEAD
-	struct hlist_node *pos;
-	struct ft_sess *sess;
-
-	rcu_read_lock();
-	tport = rcu_dereference(lport->prov[FC_TYPE_FCP]);
-	if (!tport)
-		goto out;
-
-	head = &tport->hash[ft_sess_hash(port_id)];
-	hlist_for_each_entry_rcu(sess, pos, head, hash) {
-		if (sess->port_id == port_id) {
-			kref_get(&sess->kref);
-			rcu_read_unlock();
-			pr_debug("port_id %x found %p\n", port_id, sess);
-=======
 	struct ft_sess *sess;
 	char *reason = "no session created";
 
@@ -242,18 +176,11 @@ static struct ft_sess *ft_sess_get(struct fc_lport *lport, u32 port_id)
 			rcu_read_unlock();
 			TFC_SESS_DBG(lport, "port_id %x found %p\n",
 				     port_id, sess);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return sess;
 		}
 	}
 out:
 	rcu_read_unlock();
-<<<<<<< HEAD
-	pr_debug("port_id %x not found\n", port_id);
-	return NULL;
-}
-
-=======
 	TFC_SESS_DBG(lport, "port_id %x not found, %s\n",
 		     port_id, reason);
 	return NULL;
@@ -273,22 +200,11 @@ static int ft_sess_alloc_cb(struct se_portal_group *se_tpg,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocate session and enter it in the hash for the local port.
  * Caller holds ft_lport_lock.
  */
 static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
-<<<<<<< HEAD
-				      struct ft_node_acl *acl)
-{
-	struct ft_sess *sess;
-	struct hlist_head *head;
-	struct hlist_node *pos;
-
-	head = &tport->hash[ft_sess_hash(port_id)];
-	hlist_for_each_entry_rcu(sess, pos, head, hash)
-=======
 				      struct fc_rport_priv *rdata)
 {
 	struct se_portal_group *se_tpg = &tport->tpg->se_tpg;
@@ -300,32 +216,11 @@ static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
 
 	head = &tport->hash[ft_sess_hash(port_id)];
 	hlist_for_each_entry_rcu(sess, head, hash)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sess->port_id == port_id)
 			return sess;
 
 	sess = kzalloc(sizeof(*sess), GFP_KERNEL);
 	if (!sess)
-<<<<<<< HEAD
-		return NULL;
-
-	sess->se_sess = transport_init_session();
-	if (IS_ERR(sess->se_sess)) {
-		kfree(sess);
-		return NULL;
-	}
-	sess->se_sess->se_node_acl = &acl->se_node_acl;
-	sess->tport = tport;
-	sess->port_id = port_id;
-	kref_init(&sess->kref);	/* ref for table entry */
-	hlist_add_head_rcu(&sess->hash, head);
-	tport->sess_count++;
-
-	pr_debug("port_id %x sess %p\n", port_id, sess);
-
-	transport_register_session(&tport->tpg->se_tpg, &acl->se_node_acl,
-				   sess->se_sess, sess);
-=======
 		return ERR_PTR(-ENOMEM);
 
 	kref_init(&sess->kref); /* ref for table entry */
@@ -341,7 +236,6 @@ static struct ft_sess *ft_sess_create(struct ft_tport *tport, u32 port_id,
 		kfree(sess);
 		sess = ERR_PTR(rc);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sess;
 }
 
@@ -367,18 +261,10 @@ static void ft_sess_unhash(struct ft_sess *sess)
 static struct ft_sess *ft_sess_delete(struct ft_tport *tport, u32 port_id)
 {
 	struct hlist_head *head;
-<<<<<<< HEAD
-	struct hlist_node *pos;
-	struct ft_sess *sess;
-
-	head = &tport->hash[ft_sess_hash(port_id)];
-	hlist_for_each_entry_rcu(sess, pos, head, hash) {
-=======
 	struct ft_sess *sess;
 
 	head = &tport->hash[ft_sess_hash(port_id)];
 	hlist_for_each_entry_rcu(sess, head, hash) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sess->port_id == port_id) {
 			ft_sess_unhash(sess);
 			return sess;
@@ -387,8 +273,6 @@ static struct ft_sess *ft_sess_delete(struct ft_tport *tport, u32 port_id)
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static void ft_close_sess(struct ft_sess *sess)
 {
 	target_stop_session(sess->se_sess);
@@ -396,7 +280,6 @@ static void ft_close_sess(struct ft_sess *sess)
 	ft_sess_put(sess);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Delete all sessions from tport.
  * Caller holds ft_lport_lock.
@@ -404,24 +287,13 @@ static void ft_close_sess(struct ft_sess *sess)
 static void ft_sess_delete_all(struct ft_tport *tport)
 {
 	struct hlist_head *head;
-<<<<<<< HEAD
-	struct hlist_node *pos;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ft_sess *sess;
 
 	for (head = tport->hash;
 	     head < &tport->hash[FT_SESS_HASH_SIZE]; head++) {
-<<<<<<< HEAD
-		hlist_for_each_entry_rcu(sess, pos, head, hash) {
-			ft_sess_unhash(sess);
-			transport_deregister_session_configfs(sess->se_sess);
-			ft_sess_put(sess);	/* release from table */
-=======
 		hlist_for_each_entry_rcu(sess, head, hash) {
 			ft_sess_unhash(sess);
 			ft_close_sess(sess);	/* release from table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -431,21 +303,6 @@ static void ft_sess_delete_all(struct ft_tport *tport)
  */
 
 /*
-<<<<<<< HEAD
- * Determine whether session is allowed to be shutdown in the current context.
- * Returns non-zero if the session should be shutdown.
- */
-int ft_sess_shutdown(struct se_session *se_sess)
-{
-	struct ft_sess *sess = se_sess->fabric_sess_ptr;
-
-	pr_debug("port_id %x\n", sess->port_id);
-	return 1;
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Remove session and send PRLO.
  * This is called when the ACL is being deleted or queue depth is changing.
  */
@@ -460,18 +317,10 @@ void ft_sess_close(struct se_session *se_sess)
 		mutex_unlock(&ft_lport_lock);
 		return;
 	}
-<<<<<<< HEAD
-	pr_debug("port_id %x\n", port_id);
-	ft_sess_unhash(sess);
-	mutex_unlock(&ft_lport_lock);
-	transport_deregister_session_configfs(se_sess);
-	ft_sess_put(sess);
-=======
 	TFC_SESS_DBG(sess->tport->lport, "port_id %x close session\n", port_id);
 	ft_sess_unhash(sess);
 	mutex_unlock(&ft_lport_lock);
 	ft_close_sess(sess);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* XXX Send LOGO or PRLO */
 	synchronize_rcu();		/* let transport deregister happen */
 }
@@ -500,26 +349,12 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 {
 	struct ft_tport *tport;
 	struct ft_sess *sess;
-<<<<<<< HEAD
-	struct ft_node_acl *acl;
-	u32 fcp_parm;
-
-	tport = ft_tport_create(rdata->local_port);
-	if (!tport)
-		goto not_target;	/* not a target for this local port */
-
-	acl = ft_acl_get(tport->tpg, rdata);
-	if (!acl)
-		goto not_target;	/* no target for this remote */
-
-=======
 	u32 fcp_parm;
 
 	tport = ft_tport_get(rdata->local_port);
 	if (!tport)
 		goto not_target;	/* not a target for this local port */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rspp)
 		goto fill;
 
@@ -541,11 +376,6 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 		spp->spp_flags |= FC_SPP_EST_IMG_PAIR;
 		if (!(fcp_parm & FCP_SPPF_INIT_FCN))
 			return FC_SPP_RESP_CONF;
-<<<<<<< HEAD
-		sess = ft_sess_create(tport, rdata->ids.port_id, acl);
-		if (!sess)
-			return FC_SPP_RESP_RES;
-=======
 		sess = ft_sess_create(tport, rdata->ids.port_id, rdata);
 		if (IS_ERR(sess)) {
 			if (PTR_ERR(sess) == -EACCES) {
@@ -554,7 +384,6 @@ static int ft_prli_locked(struct fc_rport_priv *rdata, u32 spp_len,
 			} else
 				return FC_SPP_RESP_RES;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sess->params)
 			rdata->prli_count++;
 		sess->params = fcp_parm;
@@ -581,11 +410,7 @@ not_target:
 }
 
 /**
-<<<<<<< HEAD
- * tcm_fcp_prli() - Handle incoming or outgoing PRLI for the FCP target
-=======
  * ft_prli() - Handle incoming or outgoing PRLI for the FCP target
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rdata: remote port private
  * @spp_len: service parameter page length
  * @rspp: received service parameter page (NULL for outgoing PRLI)
@@ -601,46 +426,22 @@ static int ft_prli(struct fc_rport_priv *rdata, u32 spp_len,
 	mutex_lock(&ft_lport_lock);
 	ret = ft_prli_locked(rdata, spp_len, rspp, spp);
 	mutex_unlock(&ft_lport_lock);
-<<<<<<< HEAD
-	pr_debug("port_id %x flags %x ret %x\n",
-	       rdata->ids.port_id, rspp ? rspp->spp_flags : 0, ret);
-	return ret;
-}
-
-static void ft_sess_rcu_free(struct rcu_head *rcu)
-{
-	struct ft_sess *sess = container_of(rcu, struct ft_sess, rcu);
-
-	kfree(sess);
-}
-
-=======
 	TFC_SESS_DBG(rdata->local_port, "port_id %x flags %x ret %x\n",
 		     rdata->ids.port_id, rspp ? rspp->spp_flags : 0, ret);
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ft_sess_free(struct kref *kref)
 {
 	struct ft_sess *sess = container_of(kref, struct ft_sess, kref);
 
-<<<<<<< HEAD
-	transport_deregister_session(sess->se_sess);
-	call_rcu(&sess->rcu, ft_sess_rcu_free);
-=======
 	target_remove_session(sess->se_sess);
 	kfree_rcu(sess, rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ft_sess_put(struct ft_sess *sess)
 {
-<<<<<<< HEAD
-	int sess_held = atomic_read(&sess->kref.refcount);
-=======
 	int sess_held = kref_read(&sess->kref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!sess_held);
 	kref_put(&sess->kref, ft_sess_free);
@@ -652,13 +453,9 @@ static void ft_prlo(struct fc_rport_priv *rdata)
 	struct ft_tport *tport;
 
 	mutex_lock(&ft_lport_lock);
-<<<<<<< HEAD
-	tport = rcu_dereference(rdata->local_port->prov[FC_TYPE_FCP]);
-=======
 	tport = rcu_dereference_protected(rdata->local_port->prov[FC_TYPE_FCP],
 					  lockdep_is_held(&ft_lport_lock));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tport) {
 		mutex_unlock(&ft_lport_lock);
 		return;
@@ -669,12 +466,7 @@ static void ft_prlo(struct fc_rport_priv *rdata)
 		return;
 	}
 	mutex_unlock(&ft_lport_lock);
-<<<<<<< HEAD
-	transport_deregister_session_configfs(sess->se_sess);
-	ft_sess_put(sess);		/* release from table */
-=======
 	ft_close_sess(sess);		/* release from table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdata->prli_count--;
 	/* XXX TBD - clearing actions.  unit attn, see 4.10 */
 }
@@ -688,19 +480,11 @@ static void ft_recv(struct fc_lport *lport, struct fc_frame *fp)
 	struct ft_sess *sess;
 	u32 sid = fc_frame_sid(fp);
 
-<<<<<<< HEAD
-	pr_debug("sid %x\n", sid);
-
-	sess = ft_sess_get(lport, sid);
-	if (!sess) {
-		pr_debug("sid %x sess lookup failed\n", sid);
-=======
 	TFC_SESS_DBG(lport, "recv sid %x\n", sid);
 
 	sess = ft_sess_get(lport, sid);
 	if (!sess) {
 		TFC_SESS_DBG(lport, "sid %x sess lookup failed\n", sid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* TBD XXX - if FCP_CMND, send PRLO */
 		fc_frame_free(fp);
 		return;

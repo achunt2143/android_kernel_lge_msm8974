@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * cisreg.h
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * cisreg.h
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The initial developer of the original code is David A. Hinds
  * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
  * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.

@@ -1,11 +1,7 @@
 /*
  * Linux driver for VMware's vmxnet3 ethernet NIC.
  *
-<<<<<<< HEAD
- * Copyright (C) 2008-2009, VMware, Inc. All Rights Reserved.
-=======
  * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,24 +20,17 @@
  * The full GNU General Public License is included in this distribution in
  * the file called "COPYING".
  *
-<<<<<<< HEAD
- * Maintained by: Shreyas Bhatewara <pv-drivers@vmware.com>
-=======
  * Maintained by: pv-drivers@vmware.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
 
 #include "vmxnet3_int.h"
-<<<<<<< HEAD
-=======
 #include <net/vxlan.h>
 #include <net/geneve.h>
 #include "vmxnet3_xdp.h"
 
 #define VXLAN_UDP_PORT 8472
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct vmxnet3_stat_desc {
 	char desc[ETH_GSTRING_LEN];
@@ -88,13 +77,10 @@ vmxnet3_tq_driver_stats[] = {
 					 copy_skb_header) },
 	{ "  giant hdr",	offsetof(struct vmxnet3_tq_driver_stats,
 					 oversized_hdr) },
-<<<<<<< HEAD
-=======
 	{ "  xdp xmit",		offsetof(struct vmxnet3_tq_driver_stats,
 					 xdp_xmit) },
 	{ "  xdp xmit err",	offsetof(struct vmxnet3_tq_driver_stats,
 					 xdp_xmit_err) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* per rq stats maintained by the device */
@@ -125,11 +111,6 @@ vmxnet3_rq_driver_stats[] = {
 					 drop_fcs) },
 	{ "  rx buf alloc fail", offsetof(struct vmxnet3_rq_driver_stats,
 					  rx_buf_alloc_failure) },
-<<<<<<< HEAD
-};
-
-/* gloabl stats maintained by the driver */
-=======
 	{ "     xdp packets", offsetof(struct vmxnet3_rq_driver_stats,
 				       xdp_packets) },
 	{ "     xdp tx", offsetof(struct vmxnet3_rq_driver_stats,
@@ -143,7 +124,6 @@ vmxnet3_rq_driver_stats[] = {
 };
 
 /* global stats maintained by the driver */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct vmxnet3_stat_desc
 vmxnet3_global_stats[] = {
 	/* description,         offset */
@@ -152,11 +132,7 @@ vmxnet3_global_stats[] = {
 };
 
 
-<<<<<<< HEAD
-struct rtnl_link_stats64 *
-=======
 void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 vmxnet3_get_stats64(struct net_device *netdev,
 		   struct rtnl_link_stats64 *stats)
 {
@@ -203,11 +179,6 @@ vmxnet3_get_stats64(struct net_device *netdev,
 		stats->rx_dropped += drvRxStats->drop_total;
 		stats->multicast +=  devRxStats->mcastPktsRxOK;
 	}
-<<<<<<< HEAD
-
-	return stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -229,34 +200,22 @@ vmxnet3_get_sset_count(struct net_device *netdev, int sset)
 }
 
 
-<<<<<<< HEAD
-/* Should be multiple of 4 */
-#define NUM_TX_REGS	8
-#define NUM_RX_REGS	12
-
-=======
 /* This is a version 2 of the vmxnet3 ethtool_regs which goes hand in hand with
  * the version 2 of the vmxnet3 support for ethtool(8) --register-dump.
  * Therefore, if any registers are added, removed or modified, then a version
  * bump and a corresponding change in the vmxnet3 support for ethtool(8)
  * --register-dump would be required.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 vmxnet3_get_regs_len(struct net_device *netdev)
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	return (adapter->num_tx_queues * NUM_TX_REGS * sizeof(u32) +
-		adapter->num_rx_queues * NUM_RX_REGS * sizeof(u32));
-=======
 
 	return ((9 /* BAR1 registers */ +
 		(1 + adapter->intr.num_intrs) +
 		(1 + adapter->num_tx_queues * 17 /* Tx queue registers */) +
 		(1 + adapter->num_rx_queues * 23 /* Rx queue registers */)) *
 		sizeof(u32));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -265,19 +224,6 @@ vmxnet3_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	strlcpy(drvinfo->driver, vmxnet3_driver_name, sizeof(drvinfo->driver));
-
-	strlcpy(drvinfo->version, VMXNET3_DRIVER_VERSION_REPORT,
-		sizeof(drvinfo->version));
-
-	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
-		ETHTOOL_BUSINFO_LEN);
-	drvinfo->n_stats = vmxnet3_get_sset_count(netdev, ETH_SS_STATS);
-	drvinfo->testinfo_len = 0;
-	drvinfo->eedump_len   = 0;
-	drvinfo->regdump_len  = vmxnet3_get_regs_len(netdev);
-=======
 	strscpy(drvinfo->driver, vmxnet3_driver_name, sizeof(drvinfo->driver));
 
 	strscpy(drvinfo->version, VMXNET3_DRIVER_VERSION_REPORT,
@@ -285,51 +231,12 @@ vmxnet3_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
 
 	strscpy(drvinfo->bus_info, pci_name(adapter->pdev),
 		sizeof(drvinfo->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static void
 vmxnet3_get_strings(struct net_device *netdev, u32 stringset, u8 *buf)
 {
-<<<<<<< HEAD
-	 struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-	if (stringset == ETH_SS_STATS) {
-		int i, j;
-		for (j = 0; j < adapter->num_tx_queues; j++) {
-			for (i = 0; i < ARRAY_SIZE(vmxnet3_tq_dev_stats); i++) {
-				memcpy(buf, vmxnet3_tq_dev_stats[i].desc,
-				       ETH_GSTRING_LEN);
-				buf += ETH_GSTRING_LEN;
-			}
-			for (i = 0; i < ARRAY_SIZE(vmxnet3_tq_driver_stats);
-			     i++) {
-				memcpy(buf, vmxnet3_tq_driver_stats[i].desc,
-				       ETH_GSTRING_LEN);
-				buf += ETH_GSTRING_LEN;
-			}
-		}
-
-		for (j = 0; j < adapter->num_rx_queues; j++) {
-			for (i = 0; i < ARRAY_SIZE(vmxnet3_rq_dev_stats); i++) {
-				memcpy(buf, vmxnet3_rq_dev_stats[i].desc,
-				       ETH_GSTRING_LEN);
-				buf += ETH_GSTRING_LEN;
-			}
-			for (i = 0; i < ARRAY_SIZE(vmxnet3_rq_driver_stats);
-			     i++) {
-				memcpy(buf, vmxnet3_rq_driver_stats[i].desc,
-				       ETH_GSTRING_LEN);
-				buf += ETH_GSTRING_LEN;
-			}
-		}
-
-		for (i = 0; i < ARRAY_SIZE(vmxnet3_global_stats); i++) {
-			memcpy(buf, vmxnet3_global_stats[i].desc,
-				ETH_GSTRING_LEN);
-			buf += ETH_GSTRING_LEN;
-		}
-=======
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 	int i, j;
 
@@ -501,7 +408,6 @@ static void vmxnet3_disable_encap_offloads(struct net_device *netdev)
 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_DCR0_REG);
 		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -510,17 +416,12 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 	unsigned long flags;
 	netdev_features_t changed = features ^ netdev->features;
-<<<<<<< HEAD
-
-	if (changed & (NETIF_F_RXCSUM | NETIF_F_LRO | NETIF_F_HW_VLAN_RX)) {
-=======
 	netdev_features_t tun_offload_mask = NETIF_F_GSO_UDP_TUNNEL |
 					     NETIF_F_GSO_UDP_TUNNEL_CSUM;
 	u8 udp_tun_enabled = (netdev->features & tun_offload_mask) != 0;
 
 	if (changed & (NETIF_F_RXCSUM | NETIF_F_LRO |
 		       NETIF_F_HW_VLAN_CTAG_RX | tun_offload_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (features & NETIF_F_RXCSUM)
 			adapter->shared->devRead.misc.uptFeatures |=
 			UPT1_F_RXCSUM;
@@ -528,11 +429,7 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
 			adapter->shared->devRead.misc.uptFeatures &=
 			~UPT1_F_RXCSUM;
 
-<<<<<<< HEAD
-		/* update harware LRO capability accordingly */
-=======
 		/* update hardware LRO capability accordingly */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (features & NETIF_F_LRO)
 			adapter->shared->devRead.misc.uptFeatures |=
 							UPT1_F_LRO;
@@ -540,19 +437,13 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
 			adapter->shared->devRead.misc.uptFeatures &=
 							~UPT1_F_LRO;
 
-<<<<<<< HEAD
-		if (features & NETIF_F_HW_VLAN_RX)
-=======
 		if (features & NETIF_F_HW_VLAN_CTAG_RX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adapter->shared->devRead.misc.uptFeatures |=
 			UPT1_F_RXVLAN;
 		else
 			adapter->shared->devRead.misc.uptFeatures &=
 			~UPT1_F_RXVLAN;
 
-<<<<<<< HEAD
-=======
 		if ((features & tun_offload_mask) != 0) {
 			vmxnet3_enable_encap_offloads(netdev, features);
 			adapter->shared->devRead.misc.uptFeatures |=
@@ -564,7 +455,6 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
 			~UPT1_F_RXINNEROFLD;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&adapter->cmd_lock, flags);
 		VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
 				       VMXNET3_CMD_UPDATE_FEATURE);
@@ -601,11 +491,7 @@ vmxnet3_get_ethtool_stats(struct net_device *netdev,
 					  vmxnet3_tq_driver_stats[i].offset);
 	}
 
-<<<<<<< HEAD
-	for (j = 0; j < adapter->num_tx_queues; j++) {
-=======
 	for (j = 0; j < adapter->num_rx_queues; j++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		base = (u8 *)&adapter->rqd_start[j].stats;
 		*buf++ = (u64) j;
 		for (i = 1; i < ARRAY_SIZE(vmxnet3_rq_dev_stats); i++)
@@ -624,15 +510,12 @@ vmxnet3_get_ethtool_stats(struct net_device *netdev,
 }
 
 
-<<<<<<< HEAD
-=======
 /* This is a version 2 of the vmxnet3 ethtool_regs which goes hand in hand with
  * the version 2 of the vmxnet3 support for ethtool(8) --register-dump.
  * Therefore, if any registers are added, removed or modified, then a version
  * bump and a corresponding change in the vmxnet3 support for ethtool(8)
  * --register-dump would be required.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
 {
@@ -642,42 +525,6 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
 
 	memset(p, 0, vmxnet3_get_regs_len(netdev));
 
-<<<<<<< HEAD
-	regs->version = 1;
-
-	/* Update vmxnet3_get_regs_len if we want to dump more registers */
-
-	/* make each ring use multiple of 16 bytes */
-	for (i = 0; i < adapter->num_tx_queues; i++) {
-		buf[j++] = adapter->tx_queue[i].tx_ring.next2fill;
-		buf[j++] = adapter->tx_queue[i].tx_ring.next2comp;
-		buf[j++] = adapter->tx_queue[i].tx_ring.gen;
-		buf[j++] = 0;
-
-		buf[j++] = adapter->tx_queue[i].comp_ring.next2proc;
-		buf[j++] = adapter->tx_queue[i].comp_ring.gen;
-		buf[j++] = adapter->tx_queue[i].stopped;
-		buf[j++] = 0;
-	}
-
-	for (i = 0; i < adapter->num_rx_queues; i++) {
-		buf[j++] = adapter->rx_queue[i].rx_ring[0].next2fill;
-		buf[j++] = adapter->rx_queue[i].rx_ring[0].next2comp;
-		buf[j++] = adapter->rx_queue[i].rx_ring[0].gen;
-		buf[j++] = 0;
-
-		buf[j++] = adapter->rx_queue[i].rx_ring[1].next2fill;
-		buf[j++] = adapter->rx_queue[i].rx_ring[1].next2comp;
-		buf[j++] = adapter->rx_queue[i].rx_ring[1].gen;
-		buf[j++] = 0;
-
-		buf[j++] = adapter->rx_queue[i].comp_ring.next2proc;
-		buf[j++] = adapter->rx_queue[i].comp_ring.gen;
-		buf[j++] = 0;
-		buf[j++] = 0;
-	}
-
-=======
 	regs->version = 2;
 
 	/* Update vmxnet3_get_regs_len if we want to dump more registers */
@@ -760,7 +607,6 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
 		buf[j++] = rq->comp_ring.next2proc;
 		buf[j++] = rq->comp_ring.gen;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -793,24 +639,6 @@ vmxnet3_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 
 
 static int
-<<<<<<< HEAD
-vmxnet3_get_settings(struct net_device *netdev, struct ethtool_cmd *ecmd)
-{
-	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-
-	ecmd->supported = SUPPORTED_10000baseT_Full | SUPPORTED_1000baseT_Full |
-			  SUPPORTED_TP;
-	ecmd->advertising = ADVERTISED_TP;
-	ecmd->port = PORT_TP;
-	ecmd->transceiver = XCVR_INTERNAL;
-
-	if (adapter->link_speed) {
-		ethtool_cmd_speed_set(ecmd, adapter->link_speed);
-		ecmd->duplex = DUPLEX_FULL;
-	} else {
-		ethtool_cmd_speed_set(ecmd, -1);
-		ecmd->duplex = -1;
-=======
 vmxnet3_get_link_ksettings(struct net_device *netdev,
 			   struct ethtool_link_ksettings *ecmd)
 {
@@ -830,48 +658,20 @@ vmxnet3_get_link_ksettings(struct net_device *netdev,
 	} else {
 		ecmd->base.speed = SPEED_UNKNOWN;
 		ecmd->base.duplex = DUPLEX_UNKNOWN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-
-static void
-vmxnet3_get_ringparam(struct net_device *netdev,
-		      struct ethtool_ringparam *param)
-=======
 static void
 vmxnet3_get_ringparam(struct net_device *netdev,
 		      struct ethtool_ringparam *param,
 		      struct kernel_ethtool_ringparam *kernel_param,
 		      struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 
 	param->rx_max_pending = VMXNET3_RX_RING_MAX_SIZE;
 	param->tx_max_pending = VMXNET3_TX_RING_MAX_SIZE;
-<<<<<<< HEAD
-	param->rx_mini_max_pending = 0;
-	param->rx_jumbo_max_pending = 0;
-
-	param->rx_pending = adapter->rx_queue[0].rx_ring[0].size *
-			    adapter->num_rx_queues;
-	param->tx_pending = adapter->tx_queue[0].tx_ring.size *
-			    adapter->num_tx_queues;
-	param->rx_mini_pending = 0;
-	param->rx_jumbo_pending = 0;
-}
-
-
-static int
-vmxnet3_set_ringparam(struct net_device *netdev,
-		      struct ethtool_ringparam *param)
-{
-	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-	u32 new_tx_ring_size, new_rx_ring_size;
-=======
 	param->rx_mini_max_pending = VMXNET3_VERSION_GE_3(adapter) ?
 		VMXNET3_RXDATA_DESC_MAX_SIZE : 0;
 	param->rx_jumbo_max_pending = VMXNET3_RX_RING2_MAX_SIZE;
@@ -892,7 +692,6 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 	u32 new_tx_ring_size, new_rx_ring_size, new_rx_ring2_size;
 	u16 new_rxdata_desc_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sz;
 	int err = 0;
 
@@ -904,8 +703,6 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 						VMXNET3_RX_RING_MAX_SIZE)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if (param->rx_jumbo_pending == 0 ||
 	    param->rx_jumbo_pending > VMXNET3_RX_RING2_MAX_SIZE)
 		return -EINVAL;
@@ -923,7 +720,6 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 	} else if (param->rx_mini_pending != 0) {
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* round it up to a multiple of VMXNET3_RING_SIZE_ALIGN */
 	new_tx_ring_size = (param->tx_pending + VMXNET3_RING_SIZE_MASK) &
@@ -945,10 +741,6 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 							   sz) != 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (new_tx_ring_size == adapter->tx_queue[0].tx_ring.size &&
-	    new_rx_ring_size == adapter->rx_queue[0].rx_ring[0].size) {
-=======
 	/* ring2 has to be a multiple of VMXNET3_RING_SIZE_ALIGN */
 	new_rx_ring2_size = (param->rx_jumbo_pending + VMXNET3_RING_SIZE_MASK) &
 				~VMXNET3_RING_SIZE_MASK;
@@ -975,7 +767,6 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 	    new_rx_ring_size == adapter->rx_ring_size &&
 	    new_rx_ring2_size == adapter->rx_ring2_size &&
 	    new_rxdata_desc_size == adapter->rxdata_desc_size) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -984,11 +775,7 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 	 * completion.
 	 */
 	while (test_and_set_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state))
-<<<<<<< HEAD
-		msleep(1);
-=======
 		usleep_range(1000, 2000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(netdev)) {
 		vmxnet3_quiesce_dev(adapter);
@@ -1000,23 +787,6 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 		vmxnet3_rq_destroy_all(adapter);
 
 		err = vmxnet3_create_queues(adapter, new_tx_ring_size,
-<<<<<<< HEAD
-			new_rx_ring_size, VMXNET3_DEF_RX_RING_SIZE);
-
-		if (err) {
-			/* failed, most likely because of OOM, try default
-			 * size */
-			printk(KERN_ERR "%s: failed to apply new sizes, try the"
-				" default ones\n", netdev->name);
-			err = vmxnet3_create_queues(adapter,
-						    VMXNET3_DEF_TX_RING_SIZE,
-						    VMXNET3_DEF_RX_RING_SIZE,
-						    VMXNET3_DEF_RX_RING_SIZE);
-			if (err) {
-				printk(KERN_ERR "%s: failed to create queues "
-					"with default sizes. Closing it\n",
-					netdev->name);
-=======
 					    new_rx_ring_size, new_rx_ring2_size,
 					    adapter->txdata_desc_size,
 					    new_rxdata_desc_size);
@@ -1040,18 +810,12 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 			if (err) {
 				netdev_err(netdev, "failed to create queues "
 					   "with default sizes. Closing it\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 		}
 
 		err = vmxnet3_activate_dev(adapter);
 		if (err)
-<<<<<<< HEAD
-			printk(KERN_ERR "%s: failed to re-activate, error %d."
-				" Closing it\n", netdev->name, err);
-	}
-=======
 			netdev_err(netdev, "failed to re-activate, error %d."
 				   " Closing it\n", err);
 	}
@@ -1059,7 +823,6 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 	adapter->rx_ring_size = new_rx_ring_size;
 	adapter->rx_ring2_size = new_rx_ring2_size;
 	adapter->rxdata_desc_size = new_rxdata_desc_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
@@ -1069,8 +832,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int
 vmxnet3_get_rss_hash_opts(struct vmxnet3_adapter *adapter,
 			  struct ethtool_rxnfc *info)
@@ -1301,21 +1062,12 @@ vmxnet3_set_rss_hash_opt(struct net_device *netdev,
 	}
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 vmxnet3_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info,
 		  u32 *rules)
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
-<<<<<<< HEAD
-	switch (info->cmd) {
-	case ETHTOOL_GRXRINGS:
-		info->data = adapter->num_rx_queues;
-		return 0;
-	}
-	return -EOPNOTSUPP;
-=======
 	int err = 0;
 
 	switch (info->cmd) {
@@ -1371,7 +1123,6 @@ vmxnet3_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info)
 
 done:
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef VMXNET3_RSS
@@ -1385,20 +1136,12 @@ vmxnet3_get_rss_indir_size(struct net_device *netdev)
 }
 
 static int
-<<<<<<< HEAD
-vmxnet3_get_rss_indir(struct net_device *netdev, u32 *p)
-=======
 vmxnet3_get_rss(struct net_device *netdev, struct ethtool_rxfh_param *rxfh)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 	struct UPT1_RSSConf *rssConf = adapter->rss_conf;
 	unsigned int n = rssConf->indTableSize;
 
-<<<<<<< HEAD
-	while (n--)
-		p[n] = rssConf->indTable[n];
-=======
 	rxfh->hfunc = ETH_RSS_HASH_TOP;
 	if (!rxfh->indir)
 		return 0;
@@ -1406,28 +1149,19 @@ vmxnet3_get_rss(struct net_device *netdev, struct ethtool_rxfh_param *rxfh)
 		return 0;
 	while (n--)
 		rxfh->indir[n] = rssConf->indTable[n];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 }
 
 static int
-<<<<<<< HEAD
-vmxnet3_set_rss_indir(struct net_device *netdev, const u32 *p)
-=======
 vmxnet3_set_rss(struct net_device *netdev, struct ethtool_rxfh_param *rxfh,
 		struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	unsigned long flags;
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 	struct UPT1_RSSConf *rssConf = adapter->rss_conf;
 
-<<<<<<< HEAD
-	for (i = 0; i < rssConf->indTableSize; i++)
-		rssConf->indTable[i] = p[i];
-=======
 	/* We do not allow change in unsupported parameters */
 	if (rxfh->key ||
 	    (rxfh->hfunc != ETH_RSS_HASH_NO_CHANGE &&
@@ -1437,7 +1171,6 @@ vmxnet3_set_rss(struct net_device *netdev, struct ethtool_rxfh_param *rxfh,
 		return 0;
 	for (i = 0; i < rssConf->indTableSize; i++)
 		rssConf->indTable[i] = rxfh->indir[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&adapter->cmd_lock, flags);
 	VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
@@ -1449,10 +1182,6 @@ vmxnet3_set_rss(struct net_device *netdev, struct ethtool_rxfh_param *rxfh,
 }
 #endif
 
-<<<<<<< HEAD
-static const struct ethtool_ops vmxnet3_ethtool_ops = {
-	.get_settings      = vmxnet3_get_settings,
-=======
 static int vmxnet3_get_coalesce(struct net_device *netdev,
 				struct ethtool_coalesce *ec,
 				struct kernel_ethtool_coalesce *kernel_coal,
@@ -1618,31 +1347,20 @@ static const struct ethtool_ops vmxnet3_ethtool_ops = {
 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
 				     ETHTOOL_COALESCE_MAX_FRAMES |
 				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo       = vmxnet3_get_drvinfo,
 	.get_regs_len      = vmxnet3_get_regs_len,
 	.get_regs          = vmxnet3_get_regs,
 	.get_wol           = vmxnet3_get_wol,
 	.set_wol           = vmxnet3_set_wol,
 	.get_link          = ethtool_op_get_link,
-<<<<<<< HEAD
-=======
 	.get_coalesce      = vmxnet3_get_coalesce,
 	.set_coalesce      = vmxnet3_set_coalesce,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_strings       = vmxnet3_get_strings,
 	.get_sset_count	   = vmxnet3_get_sset_count,
 	.get_ethtool_stats = vmxnet3_get_ethtool_stats,
 	.get_ringparam     = vmxnet3_get_ringparam,
 	.set_ringparam     = vmxnet3_set_ringparam,
 	.get_rxnfc         = vmxnet3_get_rxnfc,
-<<<<<<< HEAD
-#ifdef VMXNET3_RSS
-	.get_rxfh_indir_size = vmxnet3_get_rss_indir_size,
-	.get_rxfh_indir    = vmxnet3_get_rss_indir,
-	.set_rxfh_indir    = vmxnet3_set_rss_indir,
-#endif
-=======
 	.set_rxnfc         = vmxnet3_set_rxnfc,
 #ifdef VMXNET3_RSS
 	.get_rxfh_indir_size = vmxnet3_get_rss_indir_size,
@@ -1651,14 +1369,9 @@ static const struct ethtool_ops vmxnet3_ethtool_ops = {
 #endif
 	.get_link_ksettings = vmxnet3_get_link_ksettings,
 	.get_channels      = vmxnet3_get_channels,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void vmxnet3_set_ethtool_ops(struct net_device *netdev)
 {
-<<<<<<< HEAD
-	SET_ETHTOOL_OPS(netdev, &vmxnet3_ethtool_ops);
-=======
 	netdev->ethtool_ops = &vmxnet3_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

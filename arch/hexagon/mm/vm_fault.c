@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-/*
- * Memory fault handling for Hexagon
- *
- * Copyright (c) 2010-2011 The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Memory fault handling for Hexagon
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -32,15 +11,6 @@
  * execptions.
  */
 
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/traps.h>
-#include <asm/uaccess.h>
-#include <linux/mm.h>
-#include <linux/signal.h>
-#include <linux/module.h>
-#include <linux/hardirq.h>
-=======
 #include <asm/traps.h>
 #include <asm/vm_fault.h>
 #include <linux/uaccess.h>
@@ -50,7 +20,6 @@
 #include <linux/extable.h>
 #include <linux/hardirq.h>
 #include <linux/perf_event.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Decode of hardware exception sends us to one of several
@@ -65,16 +34,6 @@
 /*
  * Canonical page fault handler
  */
-<<<<<<< HEAD
-void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
-{
-	struct vm_area_struct *vma;
-	struct mm_struct *mm = current->mm;
-	siginfo_t info;
-	int si_code = SEGV_MAPERR;
-	int fault;
-	const struct exception_table_entry *fixup;
-=======
 static void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
 {
 	struct vm_area_struct *vma;
@@ -84,7 +43,6 @@ static void do_page_fault(unsigned long address, long cause, struct pt_regs *reg
 	vm_fault_t fault;
 	const struct exception_table_entry *fixup;
 	unsigned int flags = FAULT_FLAG_DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we're in an interrupt or have no user context,
@@ -95,23 +53,6 @@ static void do_page_fault(unsigned long address, long cause, struct pt_regs *reg
 
 	local_irq_enable();
 
-<<<<<<< HEAD
-	down_read(&mm->mmap_sem);
-	vma = find_vma(mm, address);
-	if (!vma)
-		goto bad_area;
-
-	if (vma->vm_start <= address)
-		goto good_area;
-
-	if (!(vma->vm_flags & VM_GROWSDOWN))
-		goto bad_area;
-
-	if (expand_stack(vma, address))
-		goto bad_area;
-
-good_area:
-=======
 	if (user_mode(regs))
 		flags |= FAULT_FLAG_USER;
 
@@ -121,7 +62,6 @@ retry:
 	if (unlikely(!vma))
 		goto bad_area_nosemaphore;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Address space is OK.  Now check access rights. */
 	si_code = SEGV_ACCERR;
 
@@ -137,25 +77,6 @@ retry:
 	case FLT_STORE:
 		if (!(vma->vm_flags & VM_WRITE))
 			goto bad_area;
-<<<<<<< HEAD
-		break;
-	}
-
-	fault = handle_mm_fault(mm, vma, address, (cause > 0));
-
-	/* The most common case -- we are done. */
-	if (likely(!(fault & VM_FAULT_ERROR))) {
-		if (fault & VM_FAULT_MAJOR)
-			current->maj_flt++;
-		else
-			current->min_flt++;
-
-		up_read(&mm->mmap_sem);
-		return;
-	}
-
-	up_read(&mm->mmap_sem);
-=======
 		flags |= FAULT_FLAG_WRITE;
 		break;
 	}
@@ -184,7 +105,6 @@ retry:
 	}
 
 	mmap_read_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Handle copyin/out exception cases */
 	if (!user_mode(regs))
@@ -199,30 +119,6 @@ retry:
 	 * unable to fix up the page fault.
 	 */
 	if (fault & VM_FAULT_SIGBUS) {
-<<<<<<< HEAD
-		info.si_signo = SIGBUS;
-		info.si_code = BUS_ADRERR;
-	}
-	/* Address is not in the memory map */
-	else {
-		info.si_signo = SIGSEGV;
-		info.si_code = SEGV_ACCERR;
-	}
-	info.si_errno = 0;
-	info.si_addr = (void __user *)address;
-	force_sig_info(info.si_code, &info, current);
-	return;
-
-bad_area:
-	up_read(&mm->mmap_sem);
-
-	if (user_mode(regs)) {
-		info.si_signo = SIGSEGV;
-		info.si_errno = 0;
-		info.si_code = si_code;
-		info.si_addr = (void *)address;
-		force_sig_info(SIGSEGV, &info, current);
-=======
 		si_signo = SIGBUS;
 		si_code = BUS_ADRERR;
 	}
@@ -240,7 +136,6 @@ bad_area:
 bad_area_nosemaphore:
 	if (user_mode(regs)) {
 		force_sig_fault(SIGSEGV, si_code, (void __user *)address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/* Kernel-mode fault falls through */

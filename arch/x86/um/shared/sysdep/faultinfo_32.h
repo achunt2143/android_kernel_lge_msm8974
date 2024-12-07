@@ -27,12 +27,6 @@ struct faultinfo {
 /* This is Page Fault */
 #define SEGV_IS_FIXABLE(fi)	((fi)->trap_no == 14)
 
-<<<<<<< HEAD
-/* SKAS3 has no trap_no on i386, but get_skas_faultinfo() sets it to 0. */
-#define SEGV_MAYBE_FIXABLE(fi)	((fi)->trap_no == 0 && ptrace_faultinfo)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PTRACE_FULL_FAULTINFO 0
 
 #endif

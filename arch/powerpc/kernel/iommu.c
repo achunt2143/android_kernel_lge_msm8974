@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 Mike Corrigan & Dave Engebretsen, IBM Corporation
  * 
@@ -10,23 +7,6 @@
  *               and  Ben. Herrenschmidt, IBM Corporation
  *
  * Dynamic DMA mapping support, bus-independent parts.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -40,10 +20,6 @@
 #include <linux/bitmap.h>
 #include <linux/iommu-helper.h>
 #include <linux/crash_dump.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#include <asm/prom.h>
-=======
 #include <linux/hash.h>
 #include <linux/fault-inject.h>
 #include <linux/pci.h>
@@ -51,17 +27,11 @@
 #include <linux/sched.h>
 #include <linux/debugfs.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/iommu.h>
 #include <asm/pci-bridge.h>
 #include <asm/machdep.h>
 #include <asm/kdump.h>
 #include <asm/fadump.h>
-<<<<<<< HEAD
-
-#define DBG(...)
-
-=======
 #include <asm/vio.h>
 #include <asm/tce.h>
 #include <asm/mmu_context.h>
@@ -107,7 +77,6 @@ static void iommu_debugfs_add(struct iommu_table *tbl){}
 static void iommu_debugfs_del(struct iommu_table *tbl){}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int novmerge;
 
 static void __iommu_free(struct iommu_table *, dma_addr_t, unsigned int);
@@ -123,8 +92,6 @@ static int __init setup_iommu(char *str)
 
 __setup("iommu=", setup_iommu);
 
-<<<<<<< HEAD
-=======
 static DEFINE_PER_CPU(unsigned int, iommu_pool_hash);
 
 /*
@@ -243,7 +210,6 @@ static inline bool should_fail_iommu(struct device *dev)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long iommu_range_alloc(struct device *dev,
 				       struct iommu_table *tbl,
                                        unsigned long npages,
@@ -256,17 +222,11 @@ static unsigned long iommu_range_alloc(struct device *dev,
 	int largealloc = npages > 15;
 	int pass = 0;
 	unsigned long align_mask;
-<<<<<<< HEAD
-	unsigned long boundary_size;
-
-	align_mask = 0xffffffffffffffffl >> (64 - align_order);
-=======
 	unsigned long flags;
 	unsigned int pool_nr;
 	struct iommu_pool *pool;
 
 	align_mask = (1ull << align_order) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This allocator was derived from x86_64's bit string search */
 
@@ -274,21 +234,6 @@ static unsigned long iommu_range_alloc(struct device *dev,
 	if (unlikely(npages == 0)) {
 		if (printk_ratelimit())
 			WARN_ON(1);
-<<<<<<< HEAD
-		return DMA_ERROR_CODE;
-	}
-
-	if (handle && *handle)
-		start = *handle;
-	else
-		start = largealloc ? tbl->it_largehint : tbl->it_hint;
-
-	/* Use only half of the table for small allocs (15 pages or less) */
-	limit = largealloc ? tbl->it_size : tbl->it_halfpoint;
-
-	if (largealloc && start < tbl->it_halfpoint)
-		start = tbl->it_halfpoint;
-=======
 		return DMA_MAPPING_ERROR;
 	}
 
@@ -316,57 +261,18 @@ again:
 		start = pool->hint;
 
 	limit = pool->end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The case below can happen if we have a small segment appended
 	 * to a large, or when the previous alloc was at the very end of
 	 * the available space. If so, go back to the initial start.
 	 */
 	if (start >= limit)
-<<<<<<< HEAD
-		start = largealloc ? tbl->it_largehint : tbl->it_hint;
-
- again:
-=======
 		start = pool->start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (limit + tbl->it_offset > mask) {
 		limit = mask - tbl->it_offset + 1;
 		/* If we're constrained on address range, first try
 		 * at the masked hint to avoid O(n) search complexity,
-<<<<<<< HEAD
-		 * but on second pass, start at 0.
-		 */
-		if ((start & mask) >= limit || pass > 0)
-			start = 0;
-		else
-			start &= mask;
-	}
-
-	if (dev)
-		boundary_size = ALIGN(dma_get_seg_boundary(dev) + 1,
-				      1 << IOMMU_PAGE_SHIFT);
-	else
-		boundary_size = ALIGN(1UL << 32, 1 << IOMMU_PAGE_SHIFT);
-	/* 4GB boundary for iseries_hv_alloc and iseries_hv_map */
-
-	n = iommu_area_alloc(tbl->it_map, limit, start, npages,
-			     tbl->it_offset, boundary_size >> IOMMU_PAGE_SHIFT,
-			     align_mask);
-	if (n == -1) {
-		if (likely(pass < 2)) {
-			/* First failure, just rescan the half of the table.
-			 * Second failure, rescan the other half of the table.
-			 */
-			start = (largealloc ^ pass) ? tbl->it_halfpoint : 0;
-			limit = pass ? tbl->it_size : limit;
-			pass++;
-			goto again;
-		} else {
-			/* Third failure, give up */
-			return DMA_ERROR_CODE;
-=======
 		 * but on second pass, start at 0 in pool 0.
 		 */
 		if ((start & mask) >= limit || pass > 0) {
@@ -412,7 +318,6 @@ again:
 			/* Give up */
 			spin_unlock_irqrestore(&(pool->lock), flags);
 			return DMA_MAPPING_ERROR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -421,17 +326,10 @@ again:
 	/* Bump the hint to a new block for small allocs. */
 	if (largealloc) {
 		/* Don't bump to new block to avoid fragmentation */
-<<<<<<< HEAD
-		tbl->it_largehint = end;
-	} else {
-		/* Overflow will be taken care of at the next allocation */
-		tbl->it_hint = (end + tbl->it_blocksize - 1) &
-=======
 		pool->hint = end;
 	} else {
 		/* Overflow will be taken care of at the next allocation */
 		pool->hint = (end + tbl->it_blocksize - 1) &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		                ~(tbl->it_blocksize - 1);
 	}
 
@@ -439,11 +337,8 @@ again:
 	if (handle)
 		*handle = end;
 
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&(pool->lock), flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return n;
 }
 
@@ -451,34 +346,6 @@ static dma_addr_t iommu_alloc(struct device *dev, struct iommu_table *tbl,
 			      void *page, unsigned int npages,
 			      enum dma_data_direction direction,
 			      unsigned long mask, unsigned int align_order,
-<<<<<<< HEAD
-			      struct dma_attrs *attrs)
-{
-	unsigned long entry, flags;
-	dma_addr_t ret = DMA_ERROR_CODE;
-	int build_fail;
-
-	spin_lock_irqsave(&(tbl->it_lock), flags);
-
-	entry = iommu_range_alloc(dev, tbl, npages, NULL, mask, align_order);
-
-	if (unlikely(entry == DMA_ERROR_CODE)) {
-		spin_unlock_irqrestore(&(tbl->it_lock), flags);
-		return DMA_ERROR_CODE;
-	}
-
-	entry += tbl->it_offset;	/* Offset into real TCE table */
-	ret = entry << IOMMU_PAGE_SHIFT;	/* Set the return dma address */
-
-	/* Put the TCEs in the HW table */
-	build_fail = ppc_md.tce_build(tbl, entry, npages,
-	                              (unsigned long)page & IOMMU_PAGE_MASK,
-	                              direction, attrs);
-
-	/* ppc_md.tce_build() only returns non-zero for transient errors.
-	 * Clean up the table bitmap in this case and return
-	 * DMA_ERROR_CODE. For all other errors the functionality is
-=======
 			      unsigned long attrs)
 {
 	unsigned long entry;
@@ -501,30 +368,16 @@ static dma_addr_t iommu_alloc(struct device *dev, struct iommu_table *tbl,
 	/* tbl->it_ops->set() only returns non-zero for transient errors.
 	 * Clean up the table bitmap in this case and return
 	 * DMA_MAPPING_ERROR. For all other errors the functionality is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * not altered.
 	 */
 	if (unlikely(build_fail)) {
 		__iommu_free(tbl, ret, npages);
-<<<<<<< HEAD
-
-		spin_unlock_irqrestore(&(tbl->it_lock), flags);
-		return DMA_ERROR_CODE;
-	}
-
-	/* Flush/invalidate TLB caches if necessary */
-	if (ppc_md.tce_flush)
-		ppc_md.tce_flush(tbl);
-
-	spin_unlock_irqrestore(&(tbl->it_lock), flags);
-=======
 		return DMA_MAPPING_ERROR;
 	}
 
 	/* Flush/invalidate TLB caches if necessary */
 	if (tbl->it_ops->flush)
 		tbl->it_ops->flush(tbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure updates are seen by hardware */
 	mb();
@@ -532,21 +385,12 @@ static dma_addr_t iommu_alloc(struct device *dev, struct iommu_table *tbl,
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __iommu_free(struct iommu_table *tbl, dma_addr_t dma_addr, 
-			 unsigned int npages)
-{
-	unsigned long entry, free_entry;
-
-	entry = dma_addr >> IOMMU_PAGE_SHIFT;
-=======
 static bool iommu_free_check(struct iommu_table *tbl, dma_addr_t dma_addr,
 			     unsigned int npages)
 {
 	unsigned long entry, free_entry;
 
 	entry = dma_addr >> tbl->it_page_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_entry = entry - tbl->it_offset;
 
 	if (((free_entry + npages) > tbl->it_size) ||
@@ -562,13 +406,6 @@ static bool iommu_free_check(struct iommu_table *tbl, dma_addr_t dma_addr,
 			printk(KERN_INFO "\tindex     = 0x%llx\n", (u64)tbl->it_index);
 			WARN_ON(1);
 		}
-<<<<<<< HEAD
-		return;
-	}
-
-	ppc_md.tce_free(tbl, entry, npages);
-	bitmap_clear(tbl->it_map, free_entry, npages);
-=======
 
 		return false;
 	}
@@ -615,40 +452,17 @@ static void __iommu_free(struct iommu_table *tbl, dma_addr_t dma_addr,
 	spin_lock_irqsave(&(pool->lock), flags);
 	bitmap_clear(tbl->it_map, free_entry, npages);
 	spin_unlock_irqrestore(&(pool->lock), flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void iommu_free(struct iommu_table *tbl, dma_addr_t dma_addr,
 		unsigned int npages)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-
-	spin_lock_irqsave(&(tbl->it_lock), flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__iommu_free(tbl, dma_addr, npages);
 
 	/* Make sure TLB cache is flushed if the HW needs it. We do
 	 * not do an mb() here on purpose, it is not needed on any of
 	 * the current platforms.
 	 */
-<<<<<<< HEAD
-	if (ppc_md.tce_flush)
-		ppc_md.tce_flush(tbl);
-
-	spin_unlock_irqrestore(&(tbl->it_lock), flags);
-}
-
-int iommu_map_sg(struct device *dev, struct iommu_table *tbl,
-		 struct scatterlist *sglist, int nelems,
-		 unsigned long mask, enum dma_data_direction direction,
-		 struct dma_attrs *attrs)
-{
-	dma_addr_t dma_next = 0, dma_addr;
-	unsigned long flags;
-=======
 	if (tbl->it_ops->flush)
 		tbl->it_ops->flush(tbl);
 }
@@ -659,7 +473,6 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 		     unsigned long attrs)
 {
 	dma_addr_t dma_next = 0, dma_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist *s, *outs, *segstart;
 	int outcount, incount, i, build_fail = 0;
 	unsigned int align;
@@ -669,11 +482,7 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 	BUG_ON(direction == DMA_NONE);
 
 	if ((nelems == 0) || !tbl)
-<<<<<<< HEAD
-		return 0;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	outs = s = segstart = &sglist[0];
 	outcount = 1;
@@ -685,11 +494,6 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 
 	DBG("sg mapping %d elements:\n", nelems);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&(tbl->it_lock), flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_seg_size = dma_get_max_seg_size(dev);
 	for_each_sg(sglist, s, nelems, i) {
 		unsigned long vaddr, npages, entry, slen;
@@ -702,15 +506,6 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 		}
 		/* Allocate iommu entries for that segment */
 		vaddr = (unsigned long) sg_virt(s);
-<<<<<<< HEAD
-		npages = iommu_num_pages(vaddr, slen, IOMMU_PAGE_SIZE);
-		align = 0;
-		if (IOMMU_PAGE_SHIFT < PAGE_SHIFT && slen >= PAGE_SIZE &&
-		    (vaddr & ~PAGE_MASK) == 0)
-			align = PAGE_SHIFT - IOMMU_PAGE_SHIFT;
-		entry = iommu_range_alloc(dev, tbl, npages, &handle,
-					  mask >> IOMMU_PAGE_SHIFT, align);
-=======
 		npages = iommu_num_pages(vaddr, slen, IOMMU_PAGE_SIZE(tbl));
 		align = 0;
 		if (tbl->it_page_shift < PAGE_SHIFT && slen >= PAGE_SIZE &&
@@ -718,19 +513,13 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 			align = PAGE_SHIFT - tbl->it_page_shift;
 		entry = iommu_range_alloc(dev, tbl, npages, &handle,
 					  mask >> tbl->it_page_shift, align);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		DBG("  - vaddr: %lx, size: %lx\n", vaddr, slen);
 
 		/* Handle failure */
-<<<<<<< HEAD
-		if (unlikely(entry == DMA_ERROR_CODE)) {
-			if (printk_ratelimit())
-=======
 		if (unlikely(entry == DMA_MAPPING_ERROR)) {
 			if (!(attrs & DMA_ATTR_NO_WARN) &&
 			    printk_ratelimit())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_info(dev, "iommu_alloc failed, tbl %p "
 					 "vaddr %lx npages %lu\n", tbl, vaddr,
 					 npages);
@@ -739,27 +528,16 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 
 		/* Convert entry to a dma_addr_t */
 		entry += tbl->it_offset;
-<<<<<<< HEAD
-		dma_addr = entry << IOMMU_PAGE_SHIFT;
-		dma_addr |= (s->offset & ~IOMMU_PAGE_MASK);
-=======
 		dma_addr = entry << tbl->it_page_shift;
 		dma_addr |= (vaddr & ~IOMMU_PAGE_MASK(tbl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		DBG("  - %lu pages, entry: %lx, dma_addr: %lx\n",
 			    npages, entry, dma_addr);
 
 		/* Insert into HW table */
-<<<<<<< HEAD
-		build_fail = ppc_md.tce_build(tbl, entry, npages,
-		                              vaddr & IOMMU_PAGE_MASK,
-		                              direction, attrs);
-=======
 		build_fail = tbl->it_ops->set(tbl, entry, npages,
 					      vaddr & IOMMU_PAGE_MASK(tbl),
 					      direction, attrs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if(unlikely(build_fail))
 			goto failure;
 
@@ -796,31 +574,16 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 	}
 
 	/* Flush/invalidate TLB caches if necessary */
-<<<<<<< HEAD
-	if (ppc_md.tce_flush)
-		ppc_md.tce_flush(tbl);
-
-	spin_unlock_irqrestore(&(tbl->it_lock), flags);
-
-	DBG("mapped %d elements:\n", outcount);
-
-	/* For the sake of iommu_unmap_sg, we clear out the length in the
-=======
 	if (tbl->it_ops->flush)
 		tbl->it_ops->flush(tbl);
 
 	DBG("mapped %d elements:\n", outcount);
 
 	/* For the sake of ppc_iommu_unmap_sg, we clear out the length in the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * next entry of the sglist if we didn't fill the list completely
 	 */
 	if (outcount < incount) {
 		outs = sg_next(outs);
-<<<<<<< HEAD
-		outs->dma_address = DMA_ERROR_CODE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outs->dma_length = 0;
 	}
 
@@ -834,36 +597,15 @@ int ppc_iommu_map_sg(struct device *dev, struct iommu_table *tbl,
 		if (s->dma_length != 0) {
 			unsigned long vaddr, npages;
 
-<<<<<<< HEAD
-			vaddr = s->dma_address & IOMMU_PAGE_MASK;
-			npages = iommu_num_pages(s->dma_address, s->dma_length,
-						 IOMMU_PAGE_SIZE);
-			__iommu_free(tbl, vaddr, npages);
-			s->dma_address = DMA_ERROR_CODE;
-=======
 			vaddr = s->dma_address & IOMMU_PAGE_MASK(tbl);
 			npages = iommu_num_pages(s->dma_address, s->dma_length,
 						 IOMMU_PAGE_SIZE(tbl));
 			__iommu_free(tbl, vaddr, npages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			s->dma_length = 0;
 		}
 		if (s == outs)
 			break;
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&(tbl->it_lock), flags);
-	return 0;
-}
-
-
-void iommu_unmap_sg(struct iommu_table *tbl, struct scatterlist *sglist,
-		int nelems, enum dma_data_direction direction,
-		struct dma_attrs *attrs)
-{
-	struct scatterlist *sg;
-	unsigned long flags;
-=======
 	return -EIO;
 }
 
@@ -873,18 +615,12 @@ void ppc_iommu_unmap_sg(struct iommu_table *tbl, struct scatterlist *sglist,
 			unsigned long attrs)
 {
 	struct scatterlist *sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(direction == DMA_NONE);
 
 	if (!tbl)
 		return;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&(tbl->it_lock), flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg = sglist;
 	while (nelems--) {
 		unsigned int npages;
@@ -893,11 +629,7 @@ void ppc_iommu_unmap_sg(struct iommu_table *tbl, struct scatterlist *sglist,
 		if (sg->dma_length == 0)
 			break;
 		npages = iommu_num_pages(dma_handle, sg->dma_length,
-<<<<<<< HEAD
-					 IOMMU_PAGE_SIZE);
-=======
 					 IOMMU_PAGE_SIZE(tbl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__iommu_free(tbl, dma_handle, npages);
 		sg = sg_next(sg);
 	}
@@ -906,15 +638,8 @@ void ppc_iommu_unmap_sg(struct iommu_table *tbl, struct scatterlist *sglist,
 	 * do not do an mb() here, the affected platforms do not need it
 	 * when freeing.
 	 */
-<<<<<<< HEAD
-	if (ppc_md.tce_flush)
-		ppc_md.tce_flush(tbl);
-
-	spin_unlock_irqrestore(&(tbl->it_lock), flags);
-=======
 	if (tbl->it_ops->flush)
 		tbl->it_ops->flush(tbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void iommu_table_clear(struct iommu_table *tbl)
@@ -926,29 +651,17 @@ static void iommu_table_clear(struct iommu_table *tbl)
 	 */
 	if (!is_kdump_kernel() || is_fadump_active()) {
 		/* Clear the table in case firmware left allocations in it */
-<<<<<<< HEAD
-		ppc_md.tce_free(tbl, tbl->it_offset, tbl->it_size);
-=======
 		tbl->it_ops->clear(tbl, tbl->it_offset, tbl->it_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 #ifdef CONFIG_CRASH_DUMP
-<<<<<<< HEAD
-	if (ppc_md.tce_get) {
-=======
 	if (tbl->it_ops->get) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long index, tceval, tcecount = 0;
 
 		/* Reserve the existing mappings left by the first kernel. */
 		for (index = 0; index < tbl->it_size; index++) {
-<<<<<<< HEAD
-			tceval = ppc_md.tce_get(tbl, index + tbl->it_offset);
-=======
 			tceval = tbl->it_ops->get(tbl, index + tbl->it_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Freed TCE entry contains 0x7fffffffffffffff on JS20
 			 */
@@ -970,37 +683,12 @@ static void iommu_table_clear(struct iommu_table *tbl)
 #endif
 }
 
-<<<<<<< HEAD
-/*
- * Build a iommu_table structure.  This contains a bit map which
- * is used to manage allocation of the tce space.
- */
-struct iommu_table *iommu_init_table(struct iommu_table *tbl, int nid)
-{
-	unsigned long sz;
-	static int welcomed = 0;
-	struct page *page;
-
-	/* Set aside 1/4 of the table for large allocations. */
-	tbl->it_halfpoint = tbl->it_size * 3 / 4;
-
-	/* number of bytes needed for the bitmap */
-	sz = (tbl->it_size + 7) >> 3;
-
-	page = alloc_pages_node(nid, GFP_KERNEL, get_order(sz));
-	if (!page)
-		panic("iommu_init_table: Can't allocate %ld bytes\n", sz);
-	tbl->it_map = page_address(page);
-	memset(tbl->it_map, 0, sz);
-
-=======
 static void iommu_table_reserve_pages(struct iommu_table *tbl,
 		unsigned long res_start, unsigned long res_end)
 {
 	int i;
 
 	WARN_ON_ONCE(res_end < res_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Reserve page 0 so it will not be used for any mappings.
 	 * This avoids buggy drivers that consider page 0 to be invalid
@@ -1009,11 +697,6 @@ static void iommu_table_reserve_pages(struct iommu_table *tbl,
 	if (tbl->it_offset == 0)
 		set_bit(0, tbl->it_map);
 
-<<<<<<< HEAD
-	tbl->it_hint = 0;
-	tbl->it_largehint = tbl->it_halfpoint;
-	spin_lock_init(&tbl->it_lock);
-=======
 	if (res_start < tbl->it_offset)
 		res_start = tbl->it_offset;
 
@@ -1081,7 +764,6 @@ struct iommu_table *iommu_init_table(struct iommu_table *tbl, int nid,
 	p->start = tbl->poolsize * i;
 	p->hint = p->start;
 	p->end = tbl->it_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iommu_table_clear(tbl);
 
@@ -1091,38 +773,6 @@ struct iommu_table *iommu_init_table(struct iommu_table *tbl, int nid,
 		welcomed = 1;
 	}
 
-<<<<<<< HEAD
-	return tbl;
-}
-
-void iommu_free_table(struct iommu_table *tbl, const char *node_name)
-{
-	unsigned long bitmap_sz, i;
-	unsigned int order;
-
-	if (!tbl || !tbl->it_map) {
-		printk(KERN_ERR "%s: expected TCE map for %s\n", __func__,
-				node_name);
-		return;
-	}
-
-	/* verify that table contains no entries */
-	/* it_size is in entries, and we're examining 64 at a time */
-	for (i = 0; i < (tbl->it_size/64); i++) {
-		if (tbl->it_map[i] != 0) {
-			printk(KERN_WARNING "%s: Unexpected TCEs for %s\n",
-				__func__, node_name);
-			break;
-		}
-	}
-
-	/* calculate bitmap size in bytes */
-	bitmap_sz = (tbl->it_size + 7) / 8;
-
-	/* free bitmap */
-	order = get_order(bitmap_sz);
-	free_pages((unsigned long) tbl->it_map, order);
-=======
 	iommu_debugfs_add(tbl);
 
 	return tbl;
@@ -1171,14 +821,11 @@ static void iommu_table_free(struct kref *kref)
 
 	/* free bitmap */
 	vfree(tbl->it_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* free table */
 	kfree(tbl);
 }
 
-<<<<<<< HEAD
-=======
 struct iommu_table *iommu_tce_table_get(struct iommu_table *tbl)
 {
 	if (kref_get_unless_zero(&tbl->it_kref))
@@ -1197,7 +844,6 @@ int iommu_tce_table_put(struct iommu_table *tbl)
 }
 EXPORT_SYMBOL_GPL(iommu_tce_table_put);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Creates TCEs for a user provided buffer.  The user buffer must be
  * contiguous real kernel storage (not vmalloc).  The address passed here
  * comprises a page address and offset into that page. The dma_addr_t
@@ -1206,15 +852,9 @@ EXPORT_SYMBOL_GPL(iommu_tce_table_put);
 dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
 			  struct page *page, unsigned long offset, size_t size,
 			  unsigned long mask, enum dma_data_direction direction,
-<<<<<<< HEAD
-			  struct dma_attrs *attrs)
-{
-	dma_addr_t dma_handle = DMA_ERROR_CODE;
-=======
 			  unsigned long attrs)
 {
 	dma_addr_t dma_handle = DMA_MAPPING_ERROR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *vaddr;
 	unsigned long uaddr;
 	unsigned int npages, align;
@@ -1223,21 +863,6 @@ dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
 
 	vaddr = page_address(page) + offset;
 	uaddr = (unsigned long)vaddr;
-<<<<<<< HEAD
-	npages = iommu_num_pages(uaddr, size, IOMMU_PAGE_SIZE);
-
-	if (tbl) {
-		align = 0;
-		if (IOMMU_PAGE_SHIFT < PAGE_SHIFT && size >= PAGE_SIZE &&
-		    ((unsigned long)vaddr & ~PAGE_MASK) == 0)
-			align = PAGE_SHIFT - IOMMU_PAGE_SHIFT;
-
-		dma_handle = iommu_alloc(dev, tbl, vaddr, npages, direction,
-					 mask >> IOMMU_PAGE_SHIFT, align,
-					 attrs);
-		if (dma_handle == DMA_ERROR_CODE) {
-			if (printk_ratelimit())  {
-=======
 
 	if (tbl) {
 		npages = iommu_num_pages(uaddr, size, IOMMU_PAGE_SIZE(tbl));
@@ -1252,17 +877,12 @@ dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
 		if (dma_handle == DMA_MAPPING_ERROR) {
 			if (!(attrs & DMA_ATTR_NO_WARN) &&
 			    printk_ratelimit())  {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_info(dev, "iommu_alloc failed, tbl %p "
 					 "vaddr %p npages %d\n", tbl, vaddr,
 					 npages);
 			}
 		} else
-<<<<<<< HEAD
-			dma_handle |= (uaddr & ~IOMMU_PAGE_MASK);
-=======
 			dma_handle |= (uaddr & ~IOMMU_PAGE_MASK(tbl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return dma_handle;
@@ -1270,23 +890,15 @@ dma_addr_t iommu_map_page(struct device *dev, struct iommu_table *tbl,
 
 void iommu_unmap_page(struct iommu_table *tbl, dma_addr_t dma_handle,
 		      size_t size, enum dma_data_direction direction,
-<<<<<<< HEAD
-		      struct dma_attrs *attrs)
-=======
 		      unsigned long attrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int npages;
 
 	BUG_ON(direction == DMA_NONE);
 
 	if (tbl) {
-<<<<<<< HEAD
-		npages = iommu_num_pages(dma_handle, size, IOMMU_PAGE_SIZE);
-=======
 		npages = iommu_num_pages(dma_handle, size,
 					 IOMMU_PAGE_SIZE(tbl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iommu_free(tbl, dma_handle, npages);
 	}
 }
@@ -1304,10 +916,7 @@ void *iommu_alloc_coherent(struct device *dev, struct iommu_table *tbl,
 	unsigned int order;
 	unsigned int nio_pages, io_order;
 	struct page *page;
-<<<<<<< HEAD
-=======
 	int tcesize = (1 << tbl->it_page_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	size = PAGE_ALIGN(size);
 	order = get_order(size);
@@ -1334,17 +943,6 @@ void *iommu_alloc_coherent(struct device *dev, struct iommu_table *tbl,
 	memset(ret, 0, size);
 
 	/* Set up tces to cover the allocated range */
-<<<<<<< HEAD
-	nio_pages = size >> IOMMU_PAGE_SHIFT;
-	io_order = get_iommu_order(size);
-	mapping = iommu_alloc(dev, tbl, ret, nio_pages, DMA_BIDIRECTIONAL,
-			      mask >> IOMMU_PAGE_SHIFT, io_order, NULL);
-	if (mapping == DMA_ERROR_CODE) {
-		free_pages((unsigned long)ret, order);
-		return NULL;
-	}
-	*dma_handle = mapping;
-=======
 	nio_pages = IOMMU_PAGE_ALIGN(size, tbl) >> tbl->it_page_shift;
 
 	io_order = get_iommu_order(size, tbl);
@@ -1356,7 +954,6 @@ void *iommu_alloc_coherent(struct device *dev, struct iommu_table *tbl,
 	}
 
 	*dma_handle = mapping | ((u64)ret & (tcesize - 1));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1367,18 +964,12 @@ void iommu_free_coherent(struct iommu_table *tbl, size_t size,
 		unsigned int nio_pages;
 
 		size = PAGE_ALIGN(size);
-<<<<<<< HEAD
-		nio_pages = size >> IOMMU_PAGE_SHIFT;
-=======
 		nio_pages = IOMMU_PAGE_ALIGN(size, tbl) >> tbl->it_page_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iommu_free(tbl, dma_handle, nio_pages);
 		size = PAGE_ALIGN(size);
 		free_pages((unsigned long)vaddr, get_order(size));
 	}
 }
-<<<<<<< HEAD
-=======
 
 unsigned long iommu_direction_to_tce_perm(enum dma_data_direction dir)
 {
@@ -1850,4 +1441,3 @@ postcore_initcall_sync(spapr_tce_setup_phb_iommus_initcall);
 #endif
 
 #endif /* CONFIG_IOMMU_API */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

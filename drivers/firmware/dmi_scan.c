@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/init.h>
@@ -9,11 +6,6 @@
 #include <linux/ctype.h>
 #include <linux/dmi.h>
 #include <linux/efi.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/random.h>
-#include <asm/dmi.h>
-=======
 #include <linux/memblock.h>
 #include <linux/random.h>
 #include <asm/dmi.h>
@@ -25,22 +17,10 @@
 
 struct kobject *dmi_kobj;
 EXPORT_SYMBOL_GPL(dmi_kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DMI stands for "Desktop Management Interface".  It is part
  * of and an antecedent to, SMBIOS, which stands for System
-<<<<<<< HEAD
- * Management BIOS.  See further: http://www.dmtf.org/standards
- */
-static char dmi_empty_string[] = "        ";
-
-static u16 __initdata dmi_ver;
-/*
- * Catch too early calls to dmi_check_system():
- */
-static int dmi_initialized;
-=======
  * Management BIOS.  See further: https://www.dmtf.org/standards
  */
 static const char dmi_empty_string[] = "";
@@ -62,35 +42,10 @@ static struct dmi_memdev_info {
 	u8 type;		/* DDR2, DDR3, DDR4 etc */
 } *dmi_memdev;
 static int dmi_memdev_nr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char * __init dmi_string_nosave(const struct dmi_header *dm, u8 s)
 {
 	const u8 *bp = ((u8 *) dm) + dm->length;
-<<<<<<< HEAD
-
-	if (s) {
-		s--;
-		while (s > 0 && *bp) {
-			bp += strlen(bp) + 1;
-			s--;
-		}
-
-		if (*bp != 0) {
-			size_t len = strlen(bp)+1;
-			size_t cmp_len = len > 8 ? 8 : len;
-
-			if (!memcmp(bp, dmi_empty_string, cmp_len))
-				return dmi_empty_string;
-			return bp;
-		}
-	}
-
-	return "";
-}
-
-static char * __init dmi_string(const struct dmi_header *dm, u8 s)
-=======
 	const u8 *nsp;
 
 	if (s) {
@@ -109,7 +64,6 @@ static char * __init dmi_string(const struct dmi_header *dm, u8 s)
 }
 
 static const char * __init dmi_string(const struct dmi_header *dm, u8 s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *bp = dmi_string_nosave(dm, s);
 	char *str;
@@ -122,11 +76,6 @@ static const char * __init dmi_string(const struct dmi_header *dm, u8 s)
 	str = dmi_alloc(len);
 	if (str != NULL)
 		strcpy(str, bp);
-<<<<<<< HEAD
-	else
-		printk(KERN_ERR "dmi_string: cannot allocate %Zu bytes.\n", len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return str;
 }
@@ -135,26 +84,14 @@ static const char * __init dmi_string(const struct dmi_header *dm, u8 s)
  *	We have to be cautious here. We have seen BIOSes with DMI pointers
  *	pointing to completely the wrong place for example
  */
-<<<<<<< HEAD
-static void dmi_table(u8 *buf, int len, int num,
-		      void (*decode)(const struct dmi_header *, void *),
-		      void *private_data)
-=======
 static void dmi_decode_table(u8 *buf,
 			     void (*decode)(const struct dmi_header *, void *),
 			     void *private_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *data = buf;
 	int i = 0;
 
 	/*
-<<<<<<< HEAD
-	 *	Stop when we see all the items the table claimed to have
-	 *	OR we run off the end of the table (also happens)
-	 */
-	while ((i < num) && (data - buf + sizeof(struct dmi_header)) <= len) {
-=======
 	 * Stop when we have seen all the items the table claimed to have
 	 * (SMBIOS < 3.0 only) OR we reach an end-of-table marker (SMBIOS
 	 * >= 3.0 only) OR we run off the end of the table (should never
@@ -162,7 +99,6 @@ static void dmi_decode_table(u8 *buf,
 	 */
 	while ((!dmi_num || i < dmi_num) &&
 	       (data - buf + sizeof(struct dmi_header)) <= dmi_len) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct dmi_header *dm = (const struct dmi_header *)data;
 
 		/*
@@ -171,20 +107,6 @@ static void dmi_decode_table(u8 *buf,
 		 *  table in dmi_decode or dmi_string
 		 */
 		data += dm->length;
-<<<<<<< HEAD
-		while ((data - buf < len - 1) && (data[0] || data[1]))
-			data++;
-		if (data - buf < len - 1)
-			decode(dm, private_data);
-		data += 2;
-		i++;
-	}
-}
-
-static u32 dmi_base;
-static u16 dmi_len;
-static u16 dmi_num;
-=======
 		while ((data - buf < dmi_len - 1) && (data[0] || data[1]))
 			data++;
 		if (data - buf < dmi_len - 1)
@@ -211,24 +133,11 @@ static u16 dmi_num;
 }
 
 static phys_addr_t dmi_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init dmi_walk_early(void (*decode)(const struct dmi_header *,
 		void *))
 {
 	u8 *buf;
-<<<<<<< HEAD
-
-	buf = dmi_ioremap(dmi_base, dmi_len);
-	if (buf == NULL)
-		return -1;
-
-	dmi_table(buf, dmi_len, dmi_num, decode, NULL);
-
-	add_device_randomness(buf, dmi_len);
-
-	dmi_iounmap(buf, dmi_len);
-=======
 	u32 orig_dmi_len = dmi_len;
 
 	buf = dmi_early_remap(dmi_base, orig_dmi_len);
@@ -240,7 +149,6 @@ static int __init dmi_walk_early(void (*decode)(const struct dmi_header *,
 	add_device_randomness(buf, dmi_len);
 
 	dmi_early_unmap(buf, orig_dmi_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -255,28 +163,14 @@ static int __init dmi_checksum(const u8 *buf, u8 len)
 	return sum == 0;
 }
 
-<<<<<<< HEAD
-static char *dmi_ident[DMI_STRING_MAX];
-static LIST_HEAD(dmi_devices);
-int dmi_available;
-=======
 static const char *dmi_ident[DMI_STRING_MAX];
 static LIST_HEAD(dmi_devices);
 int dmi_available;
 EXPORT_SYMBOL_GPL(dmi_available);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Save a DMI string
  */
-<<<<<<< HEAD
-static void __init dmi_save_ident(const struct dmi_header *dm, int slot, int string)
-{
-	const char *d = (const char*) dm;
-	char *p;
-
-	if (dmi_ident[slot])
-=======
 static void __init dmi_save_ident(const struct dmi_header *dm, int slot,
 		int string)
 {
@@ -284,7 +178,6 @@ static void __init dmi_save_ident(const struct dmi_header *dm, int slot,
 	const char *p;
 
 	if (dmi_ident[slot] || dm->length <= string)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	p = dmi_string(dm, d[string]);
@@ -294,17 +187,6 @@ static void __init dmi_save_ident(const struct dmi_header *dm, int slot,
 	dmi_ident[slot] = p;
 }
 
-<<<<<<< HEAD
-static void __init dmi_save_uuid(const struct dmi_header *dm, int slot, int index)
-{
-	const u8 *d = (u8*) dm + index;
-	char *s;
-	int is_ff = 1, is_00 = 1, i;
-
-	if (dmi_ident[slot])
-		return;
-
-=======
 static void __init dmi_save_release(const struct dmi_header *dm, int slot,
 		int index)
 {
@@ -344,7 +226,6 @@ static void __init dmi_save_uuid(const struct dmi_header *dm, int slot,
 		return;
 
 	d = (u8 *) dm + index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 16 && (is_ff || is_00); i++) {
 		if (d[i] != 0x00)
 			is_00 = 0;
@@ -364,22 +245,6 @@ static void __init dmi_save_uuid(const struct dmi_header *dm, int slot,
 	 * the UUID are supposed to be little-endian encoded.  The specification
 	 * says that this is the defacto standard.
 	 */
-<<<<<<< HEAD
-	if (dmi_ver >= 0x0206)
-		sprintf(s, "%pUL", d);
-	else
-		sprintf(s, "%pUB", d);
-
-        dmi_ident[slot] = s;
-}
-
-static void __init dmi_save_type(const struct dmi_header *dm, int slot, int index)
-{
-	const u8 *d = (u8*) dm + index;
-	char *s;
-
-	if (dmi_ident[slot])
-=======
 	if (dmi_ver >= 0x020600)
 		sprintf(s, "%pUl", d);
 	else
@@ -395,17 +260,13 @@ static void __init dmi_save_type(const struct dmi_header *dm, int slot,
 	char *s;
 
 	if (dmi_ident[slot] || dm->length <= index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	s = dmi_alloc(4);
 	if (!s)
 		return;
 
-<<<<<<< HEAD
-=======
 	d = (u8 *) dm + index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sprintf(s, "%u", *d & 0x7F);
 	dmi_ident[slot] = s;
 }
@@ -419,15 +280,8 @@ static void __init dmi_save_one_device(int type, const char *name)
 		return;
 
 	dev = dmi_alloc(sizeof(*dev) + strlen(name) + 1);
-<<<<<<< HEAD
-	if (!dev) {
-		printk(KERN_ERR "dmi_save_one_device: out of memory.\n");
-		return;
-	}
-=======
 	if (!dev)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->type = type;
 	strcpy((char *)(dev + 1), name);
@@ -453,13 +307,6 @@ static void __init dmi_save_devices(const struct dmi_header *dm)
 
 static void __init dmi_save_oem_strings_devices(const struct dmi_header *dm)
 {
-<<<<<<< HEAD
-	int i, count = *(u8 *)(dm + 1);
-	struct dmi_device *dev;
-
-	for (i = 1; i <= count; i++) {
-		char *devname = dmi_string(dm, i);
-=======
 	int i, count;
 	struct dmi_device *dev;
 
@@ -469,22 +316,13 @@ static void __init dmi_save_oem_strings_devices(const struct dmi_header *dm)
 	count = *(u8 *)(dm + 1);
 	for (i = 1; i <= count; i++) {
 		const char *devname = dmi_string(dm, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (devname == dmi_empty_string)
 			continue;
 
 		dev = dmi_alloc(sizeof(*dev));
-<<<<<<< HEAD
-		if (!dev) {
-			printk(KERN_ERR
-			   "dmi_save_oem_strings_devices: out of memory.\n");
-			break;
-		}
-=======
 		if (!dev)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev->type = DMI_DEV_TYPE_OEM_STRING;
 		dev->name = devname;
@@ -497,34 +335,17 @@ static void __init dmi_save_oem_strings_devices(const struct dmi_header *dm)
 static void __init dmi_save_ipmi_device(const struct dmi_header *dm)
 {
 	struct dmi_device *dev;
-<<<<<<< HEAD
-	void * data;
-
-	data = dmi_alloc(dm->length);
-	if (data == NULL) {
-		printk(KERN_ERR "dmi_save_ipmi_device: out of memory.\n");
-		return;
-	}
-=======
 	void *data;
 
 	data = dmi_alloc(dm->length);
 	if (data == NULL)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(data, dm, dm->length);
 
 	dev = dmi_alloc(sizeof(*dev));
-<<<<<<< HEAD
-	if (!dev) {
-		printk(KERN_ERR "dmi_save_ipmi_device: out of memory.\n");
-		return;
-	}
-=======
 	if (!dev)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->type = DMI_DEV_TYPE_IPMI;
 	dev->name = "IPMI controller";
@@ -533,29 +354,6 @@ static void __init dmi_save_ipmi_device(const struct dmi_header *dm)
 	list_add_tail(&dev->list, &dmi_devices);
 }
 
-<<<<<<< HEAD
-static void __init dmi_save_dev_onboard(int instance, int segment, int bus,
-					int devfn, const char *name)
-{
-	struct dmi_dev_onboard *onboard_dev;
-
-	onboard_dev = dmi_alloc(sizeof(*onboard_dev) + strlen(name) + 1);
-	if (!onboard_dev) {
-		printk(KERN_ERR "dmi_save_dev_onboard: out of memory.\n");
-		return;
-	}
-	onboard_dev->instance = instance;
-	onboard_dev->segment = segment;
-	onboard_dev->bus = bus;
-	onboard_dev->devfn = devfn;
-
-	strcpy((char *)&onboard_dev[1], name);
-	onboard_dev->dev.type = DMI_DEV_TYPE_DEV_ONBOARD;
-	onboard_dev->dev.name = (char *)&onboard_dev[1];
-	onboard_dev->dev.device_data = onboard_dev;
-
-	list_add(&onboard_dev->dev.list, &dmi_devices);
-=======
 static void __init dmi_save_dev_pciaddr(int instance, int segment, int bus,
 					int devfn, const char *name, int type)
 {
@@ -581,22 +379,10 @@ static void __init dmi_save_dev_pciaddr(int instance, int segment, int bus,
 	dev->dev.device_data = dev;
 
 	list_add(&dev->dev.list, &dmi_devices);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init dmi_save_extended_devices(const struct dmi_header *dm)
 {
-<<<<<<< HEAD
-	const u8 *d = (u8*) dm + 5;
-
-	/* Skip disabled device */
-	if ((*d & 0x80) == 0)
-		return;
-
-	dmi_save_dev_onboard(*(d+1), *(u16 *)(d+2), *(d+4), *(d+5),
-			     dmi_string_nosave(dm, *(d-1)));
-	dmi_save_one_device(*d & 0x7f, dmi_string_nosave(dm, *(d - 1)));
-=======
 	const char *name;
 	const u8 *d = (u8 *)dm;
 
@@ -673,7 +459,6 @@ static void __init dmi_memdev_walk(void)
 		if (dmi_memdev)
 			dmi_walk_early(save_mem_devices);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -683,20 +468,13 @@ static void __init dmi_memdev_walk(void)
  */
 static void __init dmi_decode(const struct dmi_header *dm, void *dummy)
 {
-<<<<<<< HEAD
-	switch(dm->type) {
-=======
 	switch (dm->type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:		/* BIOS Information */
 		dmi_save_ident(dm, DMI_BIOS_VENDOR, 4);
 		dmi_save_ident(dm, DMI_BIOS_VERSION, 5);
 		dmi_save_ident(dm, DMI_BIOS_DATE, 8);
-<<<<<<< HEAD
-=======
 		dmi_save_release(dm, DMI_BIOS_RELEASE, 21);
 		dmi_save_release(dm, DMI_EC_FIRMWARE_RELEASE, 23);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 1:		/* System Information */
 		dmi_save_ident(dm, DMI_SYS_VENDOR, 4);
@@ -704,11 +482,8 @@ static void __init dmi_decode(const struct dmi_header *dm, void *dummy)
 		dmi_save_ident(dm, DMI_PRODUCT_VERSION, 6);
 		dmi_save_ident(dm, DMI_PRODUCT_SERIAL, 7);
 		dmi_save_uuid(dm, DMI_PRODUCT_UUID, 8);
-<<<<<<< HEAD
-=======
 		dmi_save_ident(dm, DMI_PRODUCT_SKU, 25);
 		dmi_save_ident(dm, DMI_PRODUCT_FAMILY, 26);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 2:		/* Base Board Information */
 		dmi_save_ident(dm, DMI_BOARD_VENDOR, 4);
@@ -724,12 +499,9 @@ static void __init dmi_decode(const struct dmi_header *dm, void *dummy)
 		dmi_save_ident(dm, DMI_CHASSIS_SERIAL, 7);
 		dmi_save_ident(dm, DMI_CHASSIS_ASSET_TAG, 8);
 		break;
-<<<<<<< HEAD
-=======
 	case 9:		/* System Slots */
 		dmi_save_system_slot(dm);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 10:	/* Onboard Devices Information */
 		dmi_save_devices(dm);
 		break;
@@ -744,93 +516,6 @@ static void __init dmi_decode(const struct dmi_header *dm, void *dummy)
 	}
 }
 
-<<<<<<< HEAD
-static void __init print_filtered(const char *info)
-{
-	const char *p;
-
-	if (!info)
-		return;
-
-	for (p = info; *p; p++)
-		if (isprint(*p))
-			printk(KERN_CONT "%c", *p);
-		else
-			printk(KERN_CONT "\\x%02x", *p & 0xff);
-}
-
-static void __init dmi_dump_ids(void)
-{
-	const char *board;	/* Board Name is optional */
-
-	printk(KERN_DEBUG "DMI: ");
-	print_filtered(dmi_get_system_info(DMI_SYS_VENDOR));
-	printk(KERN_CONT " ");
-	print_filtered(dmi_get_system_info(DMI_PRODUCT_NAME));
-	board = dmi_get_system_info(DMI_BOARD_NAME);
-	if (board) {
-		printk(KERN_CONT "/");
-		print_filtered(board);
-	}
-	printk(KERN_CONT ", BIOS ");
-	print_filtered(dmi_get_system_info(DMI_BIOS_VERSION));
-	printk(KERN_CONT " ");
-	print_filtered(dmi_get_system_info(DMI_BIOS_DATE));
-	printk(KERN_CONT "\n");
-}
-
-static int __init dmi_present(const char __iomem *p)
-{
-	u8 buf[15];
-
-	memcpy_fromio(buf, p, 15);
-	if (dmi_checksum(buf, 15)) {
-		dmi_num = (buf[13] << 8) | buf[12];
-		dmi_len = (buf[7] << 8) | buf[6];
-		dmi_base = (buf[11] << 24) | (buf[10] << 16) |
-			(buf[9] << 8) | buf[8];
-
-		if (dmi_walk_early(dmi_decode) == 0) {
-			if (dmi_ver)
-				pr_info("SMBIOS %d.%d present.\n",
-				       dmi_ver >> 8, dmi_ver & 0xFF);
-			else {
-				dmi_ver = (buf[14] & 0xF0) << 4 |
-					   (buf[14] & 0x0F);
-				pr_info("Legacy DMI %d.%d present.\n",
-				       dmi_ver >> 8, dmi_ver & 0xFF);
-			}
-			dmi_dump_ids();
-			return 0;
-		}
-	}
-	dmi_ver = 0;
-	return 1;
-}
-
-static int __init smbios_present(const char __iomem *p)
-{
-	u8 buf[32];
-
-	memcpy_fromio(buf, p, 32);
-	if ((buf[5] < 32) && dmi_checksum(buf, buf[5])) {
-		dmi_ver = (buf[6] << 8) + buf[7];
-
-		/* Some BIOS report weird SMBIOS version, fix that up */
-		switch (dmi_ver) {
-		case 0x021F:
-		case 0x0221:
-			pr_debug("SMBIOS version fixup(2.%d->2.%d)\n",
-			       dmi_ver & 0xFF, 3);
-			dmi_ver = 0x0203;
-			break;
-		case 0x0233:
-			pr_debug("SMBIOS version fixup(2.%d->2.%d)\n", 51, 6);
-			dmi_ver = 0x0206;
-			break;
-		}
-		return memcmp(p + 16, "_DMI_", 5) || dmi_present(p + 16);
-=======
 static int __init print_filtered(char *buf, size_t len, const char *info)
 {
 	int c = 0;
@@ -966,19 +651,10 @@ static int __init dmi_smbios3_present(const u8 *buf)
 			pr_info("DMI: %s\n", dmi_ids_string);
 			return 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 }
 
-<<<<<<< HEAD
-void __init dmi_scan_machine(void)
-{
-	char __iomem *p, *q;
-	int rc;
-
-	if (efi_enabled(EFI_CONFIG_TABLES)) {
-=======
 static void __init dmi_scan_machine(void)
 {
 	char __iomem *p, *q;
@@ -1010,7 +686,6 @@ static void __init dmi_scan_machine(void)
 				return;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (efi.smbios == EFI_INVALID_TABLE_ADDR)
 			goto error;
 
@@ -1018,48 +693,6 @@ static void __init dmi_scan_machine(void)
 		 * needed during early boot.  This also means we can
 		 * iounmap the space when we're done with it.
 		 */
-<<<<<<< HEAD
-		p = dmi_ioremap(efi.smbios, 32);
-		if (p == NULL)
-			goto error;
-
-		rc = smbios_present(p);
-		dmi_iounmap(p, 32);
-		if (!rc) {
-			dmi_available = 1;
-			goto out;
-		}
-	}
-	else {
-		/*
-		 * no iounmap() for that ioremap(); it would be a no-op, but
-		 * it's so early in setup that sucker gets confused into doing
-		 * what it shouldn't if we actually call it.
-		 */
-		p = dmi_ioremap(0xF0000, 0x10000);
-		if (p == NULL)
-			goto error;
-
-		for (q = p; q < p + 0x10000; q += 16) {
-			if (memcmp(q, "_SM_", 4) == 0 && q - p <= 0xFFE0)
-				rc = smbios_present(q);
-			else if (memcmp(q, "_DMI_", 5) == 0)
-				rc = dmi_present(q);
-			else
-				continue;
-			if (!rc) {
-				dmi_available = 1;
-				dmi_iounmap(p, 0x10000);
-				goto out;
-			}
-		}
-		dmi_iounmap(p, 0x10000);
-	}
- error:
-	printk(KERN_INFO "DMI not present or invalid.\n");
- out:
-	dmi_initialized = 1;
-=======
 		p = dmi_early_remap(efi.smbios, 32);
 		if (p == NULL)
 			goto error;
@@ -1192,7 +825,6 @@ void __init dmi_setup(void)
 
 	dmi_memdev_walk();
 	dump_stack_set_arch_desc("%s", dmi_ids_string);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1203,20 +835,10 @@ static bool dmi_matches(const struct dmi_system_id *dmi)
 {
 	int i;
 
-<<<<<<< HEAD
-	WARN(!dmi_initialized, KERN_ERR "dmi check: not initialized yet.\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(dmi->matches); i++) {
 		int s = dmi->matches[i].slot;
 		if (s == DMI_NONE)
 			break;
-<<<<<<< HEAD
-		if (dmi_ident[s]
-		    && strstr(dmi_ident[s], dmi->matches[i].substr))
-			continue;
-=======
 		if (s == DMI_OEM_STRING) {
 			/* DMI_OEM_STRING must be exact match */
 			const struct dmi_device *valid;
@@ -1237,7 +859,6 @@ static bool dmi_matches(const struct dmi_system_id *dmi)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* No match */
 		return false;
 	}
@@ -1265,11 +886,8 @@ static bool dmi_is_end_of_table(const struct dmi_system_id *dmi)
  *	Walk the blacklist table running matching functions until someone
  *	returns non zero or we hit the end. Callback function is called for
  *	each successful match. Returns the number of matches.
-<<<<<<< HEAD
-=======
  *
  *	dmi_setup must be called before this function is called.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int dmi_check_system(const struct dmi_system_id *list)
 {
@@ -1298,11 +916,8 @@ EXPORT_SYMBOL(dmi_check_system);
  *
  *	Walk the blacklist table until the first match is found.  Return the
  *	pointer to the matching entry or NULL if there's no match.
-<<<<<<< HEAD
-=======
  *
  *	dmi_setup must be called before this function is called.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 const struct dmi_system_id *dmi_first_match(const struct dmi_system_id *list)
 {
@@ -1343,11 +958,7 @@ int dmi_name_in_serial(const char *str)
 
 /**
  *	dmi_name_in_vendors - Check if string is in the DMI system or board vendor name
-<<<<<<< HEAD
- *	@str: 	Case sensitive Name
-=======
  *	@str: Case sensitive Name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int dmi_name_in_vendors(const char *str)
 {
@@ -1369,30 +980,18 @@ EXPORT_SYMBOL(dmi_name_in_vendors);
  *	@from: previous device found in search, or %NULL for new search.
  *
  *	Iterates through the list of known onboard devices. If a device is
-<<<<<<< HEAD
- *	found with a matching @vendor and @device, a pointer to its device
-=======
  *	found with a matching @type and @name, a pointer to its device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	structure is returned.  Otherwise, %NULL is returned.
  *	A new search is initiated by passing %NULL as the @from argument.
  *	If @from is not %NULL, searches continue from next device.
  */
-<<<<<<< HEAD
-const struct dmi_device * dmi_find_device(int type, const char *name,
-=======
 const struct dmi_device *dmi_find_device(int type, const char *name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    const struct dmi_device *from)
 {
 	const struct list_head *head = from ? &from->list : &dmi_devices;
 	struct list_head *d;
 
-<<<<<<< HEAD
-	for(d = head->next; d != &dmi_devices; d = d->next) {
-=======
 	for (d = head->next; d != &dmi_devices; d = d->next) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct dmi_device *dev =
 			list_entry(d, struct dmi_device, list);
 
@@ -1478,8 +1077,6 @@ out:
 EXPORT_SYMBOL(dmi_get_date);
 
 /**
-<<<<<<< HEAD
-=======
  *	dmi_get_bios_year - get a year out of DMI_BIOS_DATE field
  *
  *	Returns year on success, -ENXIO if DMI is not selected,
@@ -1500,17 +1097,12 @@ int dmi_get_bios_year(void)
 EXPORT_SYMBOL(dmi_get_bios_year);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	dmi_walk - Walk the DMI table and get called back for every record
  *	@decode: Callback function
  *	@private_data: Private data to be passed to the callback function
  *
-<<<<<<< HEAD
- *	Returns -1 when the DMI table can't be reached, 0 on success.
-=======
  *	Returns 0 on success, -ENXIO if DMI is not selected or not present,
  *	or a different negative error code if DMI walking fails.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int dmi_walk(void (*decode)(const struct dmi_header *, void *),
 	     void *private_data)
@@ -1518,17 +1110,6 @@ int dmi_walk(void (*decode)(const struct dmi_header *, void *),
 	u8 *buf;
 
 	if (!dmi_available)
-<<<<<<< HEAD
-		return -1;
-
-	buf = ioremap(dmi_base, dmi_len);
-	if (buf == NULL)
-		return -1;
-
-	dmi_table(buf, dmi_len, dmi_num, decode, private_data);
-
-	iounmap(buf);
-=======
 		return -ENXIO;
 
 	buf = dmi_remap(dmi_base, dmi_len);
@@ -1538,7 +1119,6 @@ int dmi_walk(void (*decode)(const struct dmi_header *, void *),
 	dmi_decode_table(buf, decode, private_data);
 
 	dmi_unmap(buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(dmi_walk);
@@ -1560,8 +1140,6 @@ bool dmi_match(enum dmi_field f, const char *str)
 	return !strcmp(info, str);
 }
 EXPORT_SYMBOL_GPL(dmi_match);
-<<<<<<< HEAD
-=======
 
 void dmi_memdev_name(u16 handle, const char **bank, const char **device)
 {
@@ -1630,4 +1208,3 @@ u16 dmi_memdev_handle(int slot)
 	return 0xffff;	/* Not a valid value */
 }
 EXPORT_SYMBOL_GPL(dmi_memdev_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

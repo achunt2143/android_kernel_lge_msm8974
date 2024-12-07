@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	X.25 Packet Layer release 002
  *
@@ -11,15 +8,6 @@
  *
  *	This code REQUIRES 2.1.15 or higher
  *
-<<<<<<< HEAD
- *	This module:
- *		This module is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	X.25 001	Split from x25_subr.c
  *	mar/20/00	Daniela Squassoni Disabling/enabling of facilities
@@ -28,11 +16,8 @@
  *					on response.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "X25: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/skbuff.h>
@@ -113,11 +98,7 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 					*vc_fac_mask |= X25_MASK_REVERSE;
 					break;
 				}
-<<<<<<< HEAD
-
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case X25_FAC_THROUGHPUT:
 				facilities->throughput = p[1];
 				*vc_fac_mask |= X25_MASK_THROUGHPUT;
@@ -125,11 +106,7 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 			case X25_MARKER:
 				break;
 			default:
-<<<<<<< HEAD
-				printk(KERN_DEBUG "X.25: unknown facility "
-=======
 				pr_debug("unknown facility "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "%02X, value %02X\n",
 				       p[0], p[1]);
 				break;
@@ -152,11 +129,7 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 				*vc_fac_mask |= X25_MASK_WINDOW_SIZE;
 				break;
 			default:
-<<<<<<< HEAD
-				printk(KERN_DEBUG "X.25: unknown facility "
-=======
 				pr_debug("unknown facility "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "%02X, values %02X, %02X\n",
 				       p[0], p[1], p[2]);
 				break;
@@ -167,11 +140,7 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 		case X25_FAC_CLASS_C:
 			if (len < 4)
 				return -1;
-<<<<<<< HEAD
-			printk(KERN_DEBUG "X.25: unknown facility %02X, "
-=======
 			pr_debug("unknown facility %02X, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "values %02X, %02X, %02X\n",
 			       p[0], p[1], p[2], p[3]);
 			p   += 4;
@@ -184,11 +153,8 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 			case X25_FAC_CALLING_AE:
 				if (p[1] > X25_MAX_DTE_FACIL_LEN || p[1] <= 1)
 					return -1;
-<<<<<<< HEAD
-=======
 				if (p[2] > X25_MAX_AE_LEN)
 					return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dte_facs->calling_len = p[2];
 				memcpy(dte_facs->calling_ae, &p[3], p[1] - 1);
 				*vc_fac_mask |= X25_MASK_CALLING_AE;
@@ -196,21 +162,14 @@ int x25_parse_facilities(struct sk_buff *skb, struct x25_facilities *facilities,
 			case X25_FAC_CALLED_AE:
 				if (p[1] > X25_MAX_DTE_FACIL_LEN || p[1] <= 1)
 					return -1;
-<<<<<<< HEAD
-=======
 				if (p[2] > X25_MAX_AE_LEN)
 					return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dte_facs->called_len = p[2];
 				memcpy(dte_facs->called_ae, &p[3], p[1] - 1);
 				*vc_fac_mask |= X25_MASK_CALLED_AE;
 				break;
 			default:
-<<<<<<< HEAD
-				printk(KERN_DEBUG "X.25: unknown facility %02X,"
-=======
 				pr_debug("unknown facility %02X,"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"length %d\n", p[0], p[1]);
 				break;
 			}
@@ -273,11 +232,7 @@ int x25_create_facilities(unsigned char *buffer,
 	}
 
 	if (dte_facs->calling_len && (facil_mask & X25_MASK_CALLING_AE)) {
-<<<<<<< HEAD
-		unsigned bytecount = (dte_facs->calling_len + 1) >> 1;
-=======
 		unsigned int bytecount = (dte_facs->calling_len + 1) >> 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*p++ = X25_FAC_CALLING_AE;
 		*p++ = 1 + bytecount;
 		*p++ = dte_facs->calling_len;
@@ -286,11 +241,7 @@ int x25_create_facilities(unsigned char *buffer,
 	}
 
 	if (dte_facs->called_len && (facil_mask & X25_MASK_CALLED_AE)) {
-<<<<<<< HEAD
-		unsigned bytecount = (dte_facs->called_len % 2) ?
-=======
 		unsigned int bytecount = (dte_facs->called_len % 2) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dte_facs->called_len / 2 + 1 :
 		dte_facs->called_len / 2;
 		*p++ = X25_FAC_CALLED_AE;
@@ -321,10 +272,7 @@ int x25_negotiate_facilities(struct sk_buff *skb, struct sock *sk,
 
 	memset(&theirs, 0, sizeof(theirs));
 	memcpy(new, ours, sizeof(*new));
-<<<<<<< HEAD
-=======
 	memset(dte, 0, sizeof(*dte));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = x25_parse_facilities(skb, &theirs, dte, &x25->vc_facil_mask);
 	if (len < 0)
@@ -334,11 +282,7 @@ int x25_negotiate_facilities(struct sk_buff *skb, struct sock *sk,
 	 *	They want reverse charging, we won't accept it.
 	 */
 	if ((theirs.reverse & 0x01 ) && (ours->reverse & 0x01)) {
-<<<<<<< HEAD
-		SOCK_DEBUG(sk, "X.25: rejecting reverse charging request\n");
-=======
 		net_dbg_ratelimited("X.25: rejecting reverse charging request\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -350,19 +294,11 @@ int x25_negotiate_facilities(struct sk_buff *skb, struct sock *sk,
 		int ours_in  = ours->throughput & 0x0f;
 		int ours_out = ours->throughput & 0xf0;
 		if (!ours_in || theirs_in < ours_in) {
-<<<<<<< HEAD
-			SOCK_DEBUG(sk, "X.25: inbound throughput negotiated\n");
-			new->throughput = (new->throughput & 0xf0) | theirs_in;
-		}
-		if (!ours_out || theirs_out < ours_out) {
-			SOCK_DEBUG(sk,
-=======
 			net_dbg_ratelimited("X.25: inbound throughput negotiated\n");
 			new->throughput = (new->throughput & 0xf0) | theirs_in;
 		}
 		if (!ours_out || theirs_out < ours_out) {
 			net_dbg_ratelimited(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"X.25: outbound throughput negotiated\n");
 			new->throughput = (new->throughput & 0x0f) | theirs_out;
 		}
@@ -370,38 +306,22 @@ int x25_negotiate_facilities(struct sk_buff *skb, struct sock *sk,
 
 	if (theirs.pacsize_in && theirs.pacsize_out) {
 		if (theirs.pacsize_in < ours->pacsize_in) {
-<<<<<<< HEAD
-			SOCK_DEBUG(sk, "X.25: packet size inwards negotiated down\n");
-			new->pacsize_in = theirs.pacsize_in;
-		}
-		if (theirs.pacsize_out < ours->pacsize_out) {
-			SOCK_DEBUG(sk, "X.25: packet size outwards negotiated down\n");
-=======
 			net_dbg_ratelimited("X.25: packet size inwards negotiated down\n");
 			new->pacsize_in = theirs.pacsize_in;
 		}
 		if (theirs.pacsize_out < ours->pacsize_out) {
 			net_dbg_ratelimited("X.25: packet size outwards negotiated down\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new->pacsize_out = theirs.pacsize_out;
 		}
 	}
 
 	if (theirs.winsize_in && theirs.winsize_out) {
 		if (theirs.winsize_in < ours->winsize_in) {
-<<<<<<< HEAD
-			SOCK_DEBUG(sk, "X.25: window size inwards negotiated down\n");
-			new->winsize_in = theirs.winsize_in;
-		}
-		if (theirs.winsize_out < ours->winsize_out) {
-			SOCK_DEBUG(sk, "X.25: window size outwards negotiated down\n");
-=======
 			net_dbg_ratelimited("X.25: window size inwards negotiated down\n");
 			new->winsize_in = theirs.winsize_in;
 		}
 		if (theirs.winsize_out < ours->winsize_out) {
 			net_dbg_ratelimited("X.25: window size outwards negotiated down\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new->winsize_out = theirs.winsize_out;
 		}
 	}
@@ -419,20 +339,12 @@ void x25_limit_facilities(struct x25_facilities *facilities,
 
 	if (!nb->extended) {
 		if (facilities->winsize_in  > 7) {
-<<<<<<< HEAD
-			printk(KERN_DEBUG "X.25: incoming winsize limited to 7\n");
-=======
 			pr_debug("incoming winsize limited to 7\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			facilities->winsize_in = 7;
 		}
 		if (facilities->winsize_out > 7) {
 			facilities->winsize_out = 7;
-<<<<<<< HEAD
-			printk( KERN_DEBUG "X.25: outgoing winsize limited to 7\n");
-=======
 			pr_debug("outgoing winsize limited to 7\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }

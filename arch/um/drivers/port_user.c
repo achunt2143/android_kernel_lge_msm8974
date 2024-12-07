@@ -1,34 +1,19 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-<<<<<<< HEAD
-=======
 #include <string.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
 #include <netinet/in.h>
 #include "chan_user.h"
-<<<<<<< HEAD
-#include "os.h"
-#include "port.h"
-#include "um_malloc.h"
-=======
 #include <os.h>
 #include "port.h"
 #include <um_malloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct port_chan {
 	int raw;
@@ -183,12 +168,6 @@ static void port_pre_exec(void *arg)
 int port_connection(int fd, int *socket, int *pid_out)
 {
 	int new, err;
-<<<<<<< HEAD
-	char *argv[] = { "/usr/sbin/in.telnetd", "-L",
-			 "/usr/lib/uml/port-helper", NULL };
-	struct port_pre_exec_data data;
-
-=======
 	char *env;
 	char *argv[] = { "in.telnetd", "-L",
 			 OS_LIB_PATH "/uml/port-helper", NULL };
@@ -197,13 +176,10 @@ int port_connection(int fd, int *socket, int *pid_out)
 	if ((env = getenv("UML_PORT_HELPER")))
 		argv[2] = env;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new = accept(fd, NULL, 0);
 	if (new < 0)
 		return -errno;
 
-<<<<<<< HEAD
-=======
 	err = os_access(argv[2], X_OK);
 	if (err < 0) {
 		printk(UM_KERN_ERR "port_connection : error accessing port-helper "
@@ -215,7 +191,6 @@ int port_connection(int fd, int *socket, int *pid_out)
 		goto out_close;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = os_pipe(socket, 0, 0);
 	if (err < 0)
 		goto out_close;

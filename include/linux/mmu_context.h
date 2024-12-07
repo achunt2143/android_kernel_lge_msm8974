@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_MMU_CONTEXT_H
-#define _LINUX_MMU_CONTEXT_H
-
-struct mm_struct;
-
-void use_mm(struct mm_struct *mm);
-void unuse_mm(struct mm_struct *mm);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_MMU_CONTEXT_H
 #define _LINUX_MMU_CONTEXT_H
@@ -50,6 +41,5 @@ static inline bool arch_pgtable_dma_compat(struct mm_struct *mm)
 	return true;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

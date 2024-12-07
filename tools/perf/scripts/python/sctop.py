@@ -8,9 +8,6 @@
 # will be refreshed every [interval] seconds.  The default interval is
 # 3 seconds.
 
-<<<<<<< HEAD
-import os, sys, thread, time
-=======
 from __future__ import print_function
 
 import os, sys, time
@@ -19,7 +16,6 @@ try:
 	import thread
 except ImportError:
 	import _thread as thread
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sys.path.append(os.environ['PERF_EXEC_PATH'] + \
 	'/scripts/python/Perf-Trace-Util/lib/Perf/Trace')
@@ -55,11 +51,7 @@ def trace_begin():
 
 def raw_syscalls__sys_enter(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	id, args):
-=======
 	common_callchain, id, args):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if for_comm is not None:
 		if common_comm != for_comm:
 			return
@@ -68,32 +60,15 @@ def raw_syscalls__sys_enter(event_name, context, common_cpu,
 	except TypeError:
 		syscalls[id] = 1
 
-<<<<<<< HEAD
-=======
 def syscalls__sys_enter(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
 	id, args):
 	raw_syscalls__sys_enter(**locals())
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 def print_syscall_totals(interval):
 	while 1:
 		clear_term()
 		if for_comm is not None:
-<<<<<<< HEAD
-			print "\nsyscall events for %s:\n\n" % (for_comm),
-		else:
-			print "\nsyscall events:\n\n",
-
-		print "%-40s  %10s\n" % ("event", "count"),
-		print "%-40s  %10s\n" % ("----------------------------------------", \
-						 "----------"),
-
-		for id, val in sorted(syscalls.iteritems(), key = lambda(k, v): (v, k), \
-					      reverse = True):
-			try:
-				print "%-40s  %10d\n" % (syscall_name(id), val),
-=======
 			print("\nsyscall events for %s:\n" % (for_comm))
 		else:
 			print("\nsyscall events:\n")
@@ -108,7 +83,6 @@ def print_syscall_totals(interval):
 				reverse = True):
 			try:
 				print("%-40s  %10d" % (syscall_name(id), val))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			except TypeError:
 				pass
 		syscalls.clear()

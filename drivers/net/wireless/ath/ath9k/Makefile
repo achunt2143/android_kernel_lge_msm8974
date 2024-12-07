@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: ISC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ath9k-y +=	beacon.o \
 		gpio.o \
 		init.o \
 		main.o \
 		recv.o \
-<<<<<<< HEAD
-		xmit.o
-
-ath9k-$(CONFIG_ATH9K_BTCOEX_SUPPORT) += mci.o
-ath9k-$(CONFIG_ATH9K_LEGACY_RATE_CONTROL) += rc.o
-ath9k-$(CONFIG_ATH9K_PCI) += pci.o
-ath9k-$(CONFIG_ATH9K_AHB) += ahb.o
-ath9k-$(CONFIG_ATH9K_DEBUGFS) += debug.o
-ath9k-$(CONFIG_ATH9K_DFS_DEBUGFS) += dfs_debug.o
-ath9k-$(CONFIG_ATH9K_DFS_CERTIFIED) += dfs.o
-=======
 		xmit.o \
 		link.o \
 		antenna.o \
@@ -35,7 +21,6 @@ ath9k-$(CONFIG_ATH9K_HWRNG) += rng.o
 ath9k-$(CONFIG_ATH9K_DEBUGFS) += debug.o
 
 ath9k-$(CONFIG_ATH9K_STATION_STATISTICS) += debug_sta.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_ATH9K) += ath9k.o
 
@@ -48,10 +33,6 @@ ath9k_hw-y:=	\
 		ar5008_phy.o \
 		ar9002_calib.o \
 		ar9003_calib.o \
-<<<<<<< HEAD
-		ar9003_rtt.o \
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		calib.o \
 		eeprom.o \
 		eeprom_def.o \
@@ -64,14 +45,6 @@ ath9k_hw-y:=	\
 		ar9003_eeprom.o \
 		ar9003_paprd.o
 
-<<<<<<< HEAD
-ath9k_hw-$(CONFIG_ATH9K_BTCOEX_SUPPORT) += btcoex.o \
-					   ar9003_mci.o
-obj-$(CONFIG_ATH9K_HW) += ath9k_hw.o
-
-obj-$(CONFIG_ATH9K_COMMON) += ath9k_common.o
-ath9k_common-y:=	common.o
-=======
 ath9k_hw-$(CONFIG_ATH9K_WOW) += ar9003_wow.o
 
 ath9k_hw-$(CONFIG_ATH9K_BTCOEX_SUPPORT) += btcoex.o \
@@ -91,7 +64,6 @@ ath9k_common-y:=	common.o \
 
 ath9k_common-$(CONFIG_ATH9K_COMMON_DEBUG) += common-debug.o
 ath9k_common-$(CONFIG_ATH9K_COMMON_SPECTRAL) += common-spectral.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ath9k_htc-y +=	htc_hst.o \
 		hif_usb.o \
@@ -105,8 +77,5 @@ ath9k_htc-y +=	htc_hst.o \
 ath9k_htc-$(CONFIG_ATH9K_HTC_DEBUGFS) += htc_drv_debug.o
 
 obj-$(CONFIG_ATH9K_HTC) += ath9k_htc.o
-<<<<<<< HEAD
-=======
 
 obj-$(CONFIG_ATH9K_PCI_NO_EEPROM) += ath9k_pci_owl_loader.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

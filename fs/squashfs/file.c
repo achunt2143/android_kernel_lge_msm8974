@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
  * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
  * Phillip Lougher <phillip@squashfs.org.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * file.c
  */
 
@@ -59,10 +39,7 @@
 #include "squashfs_fs_sb.h"
 #include "squashfs_fs_i.h"
 #include "squashfs.h"
-<<<<<<< HEAD
-=======
 #include "page_actor.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Locate cache slot in range [offset, index] for specified inode.  If
@@ -186,11 +163,7 @@ static long long read_indexes(struct super_block *sb, int n,
 {
 	int err, i;
 	long long block = 0;
-<<<<<<< HEAD
-	__le32 *blist = kmalloc(PAGE_CACHE_SIZE, GFP_KERNEL);
-=======
 	__le32 *blist = kmalloc(PAGE_SIZE, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (blist == NULL) {
 		ERROR("read_indexes: Failed to allocate block_list\n");
@@ -198,11 +171,7 @@ static long long read_indexes(struct super_block *sb, int n,
 	}
 
 	while (n) {
-<<<<<<< HEAD
-		int blocks = min_t(int, n, PAGE_CACHE_SIZE >> 2);
-=======
 		int blocks = min_t(int, n, PAGE_SIZE >> 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = squashfs_read_metadata(sb, blist, start_block,
 				offset, blocks << 2);
@@ -213,15 +182,11 @@ static long long read_indexes(struct super_block *sb, int n,
 		}
 
 		for (i = 0; i < blocks; i++) {
-<<<<<<< HEAD
-			int size = le32_to_cpu(blist[i]);
-=======
 			int size = squashfs_block_size(blist[i]);
 			if (size < 0) {
 				err = size;
 				goto failure;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			block += SQUASHFS_COMPRESSED_SIZE_BLOCK(size);
 		}
 		n -= blocks;
@@ -247,19 +212,11 @@ failure:
  * If the skip factor is limited in this way then the file will use multiple
  * slots.
  */
-<<<<<<< HEAD
-static inline int calculate_skip(int blocks)
-{
-	int skip = blocks / ((SQUASHFS_META_ENTRIES + 1)
-		 * SQUASHFS_META_INDEXES);
-	return min(SQUASHFS_CACHED_BLKS - 1, skip + 1);
-=======
 static inline int calculate_skip(u64 blocks)
 {
 	u64 skip = blocks / ((SQUASHFS_META_ENTRIES + 1)
 		 * SQUASHFS_META_INDEXES);
 	return min((u64) SQUASHFS_CACHED_BLKS - 1, skip + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -402,86 +359,6 @@ static int read_blocklist(struct inode *inode, int index, u64 *block)
 			sizeof(size));
 	if (res < 0)
 		return res;
-<<<<<<< HEAD
-	return le32_to_cpu(size);
-}
-
-
-static int squashfs_readpage(struct file *file, struct page *page)
-{
-	struct inode *inode = page->mapping->host;
-	struct squashfs_sb_info *msblk = inode->i_sb->s_fs_info;
-	int bytes, i, offset = 0, sparse = 0;
-	struct squashfs_cache_entry *buffer = NULL;
-	void *pageaddr;
-
-	int mask = (1 << (msblk->block_log - PAGE_CACHE_SHIFT)) - 1;
-	int index = page->index >> (msblk->block_log - PAGE_CACHE_SHIFT);
-	int start_index = page->index & ~mask;
-	int end_index = start_index | mask;
-	int file_end = i_size_read(inode) >> msblk->block_log;
-
-	TRACE("Entered squashfs_readpage, page index %lx, start block %llx\n",
-				page->index, squashfs_i(inode)->start);
-
-	if (page->index >= ((i_size_read(inode) + PAGE_CACHE_SIZE - 1) >>
-					PAGE_CACHE_SHIFT))
-		goto out;
-
-	if (index < file_end || squashfs_i(inode)->fragment_block ==
-					SQUASHFS_INVALID_BLK) {
-		/*
-		 * Reading a datablock from disk.  Need to read block list
-		 * to get location and block size.
-		 */
-		u64 block = 0;
-		int bsize = read_blocklist(inode, index, &block);
-		if (bsize < 0)
-			goto error_out;
-
-		if (bsize == 0) { /* hole */
-			bytes = index == file_end ?
-				(i_size_read(inode) & (msblk->block_size - 1)) :
-				 msblk->block_size;
-			sparse = 1;
-		} else {
-			/*
-			 * Read and decompress datablock.
-			 */
-			buffer = squashfs_get_datablock(inode->i_sb,
-								block, bsize);
-			if (buffer->error) {
-				ERROR("Unable to read page, block %llx, size %x"
-					"\n", block, bsize);
-				squashfs_cache_put(buffer);
-				goto error_out;
-			}
-			bytes = buffer->length;
-		}
-	} else {
-		/*
-		 * Datablock is stored inside a fragment (tail-end packed
-		 * block).
-		 */
-		buffer = squashfs_get_fragment(inode->i_sb,
-				squashfs_i(inode)->fragment_block,
-				squashfs_i(inode)->fragment_size);
-
-		if (buffer->error) {
-			ERROR("Unable to read page, block %llx, size %x\n",
-				squashfs_i(inode)->fragment_block,
-				squashfs_i(inode)->fragment_size);
-			squashfs_cache_put(buffer);
-			goto error_out;
-		}
-		bytes = i_size_read(inode) & (msblk->block_size - 1);
-		offset = squashfs_i(inode)->fragment_offset;
-	}
-
-	/*
-	 * Loop copying datablock into pages.  As the datablock likely covers
-	 * many PAGE_CACHE_SIZE pages (default block size is 128 KiB) explicitly
-=======
 	return squashfs_block_size(size);
 }
 
@@ -514,20 +391,13 @@ void squashfs_copy_cache(struct page *page, struct squashfs_cache_entry *buffer,
 	/*
 	 * Loop copying datablock into pages.  As the datablock likely covers
 	 * many PAGE_SIZE pages (default block size is 128 KiB) explicitly
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * grab the pages from the page cache, except for the page that we've
 	 * been called to fill.
 	 */
 	for (i = start_index; i <= end_index && bytes > 0; i++,
-<<<<<<< HEAD
-			bytes -= PAGE_CACHE_SIZE, offset += PAGE_CACHE_SIZE) {
-		struct page *push_page;
-		int avail = sparse ? 0 : min_t(int, bytes, PAGE_CACHE_SIZE);
-=======
 			bytes -= PAGE_SIZE, offset += PAGE_SIZE) {
 		struct page *push_page;
 		int avail = buffer ? min_t(int, bytes, PAGE_SIZE) : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		TRACE("bytes %d, i %d, available_bytes %d\n", bytes, i, avail);
 
@@ -540,24 +410,6 @@ void squashfs_copy_cache(struct page *page, struct squashfs_cache_entry *buffer,
 		if (PageUptodate(push_page))
 			goto skip_page;
 
-<<<<<<< HEAD
-		pageaddr = kmap_atomic(push_page);
-		squashfs_copy_data(pageaddr, buffer, offset, avail);
-		memset(pageaddr + avail, 0, PAGE_CACHE_SIZE - avail);
-		kunmap_atomic(pageaddr);
-		flush_dcache_page(push_page);
-		SetPageUptodate(push_page);
-skip_page:
-		unlock_page(push_page);
-		if (i != page->index)
-			page_cache_release(push_page);
-	}
-
-	if (!sparse)
-		squashfs_cache_put(buffer);
-
-	return 0;
-=======
 		squashfs_fill_page(push_page, buffer, offset, avail);
 skip_page:
 		unlock_page(push_page);
@@ -630,27 +482,11 @@ static int squashfs_read_folio(struct file *file, struct folio *folio)
 
 	if (!res)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 error_out:
 	SetPageError(page);
 out:
 	pageaddr = kmap_atomic(page);
-<<<<<<< HEAD
-	memset(pageaddr, 0, PAGE_CACHE_SIZE);
-	kunmap_atomic(pageaddr);
-	flush_dcache_page(page);
-	if (!PageError(page))
-		SetPageUptodate(page);
-	unlock_page(page);
-
-	return 0;
-}
-
-
-const struct address_space_operations squashfs_aops = {
-	.readpage = squashfs_readpage
-=======
 	memset(pageaddr, 0, PAGE_SIZE);
 	kunmap_atomic(pageaddr);
 	flush_dcache_page(page);
@@ -800,5 +636,4 @@ skip_pages:
 const struct address_space_operations squashfs_aops = {
 	.read_folio = squashfs_read_folio,
 	.readahead = squashfs_readahead
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

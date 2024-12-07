@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * highmem.h: virtual kernel memory mappings for high memory
  *
@@ -27,20 +24,10 @@
 #ifdef __KERNEL__
 
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <asm/kmap_types.h>
-#include <asm/tlbflush.h>
-#include <asm/page.h>
-#include <asm/fixmap.h>
-
-extern pte_t *kmap_pte;
-extern pgprot_t kmap_prot;
-=======
 #include <asm/cacheflush.h>
 #include <asm/page.h>
 #include <asm/fixmap.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern pte_t *pkmap_page_table;
 
 /*
@@ -69,50 +56,6 @@ extern pte_t *pkmap_page_table;
 #define PKMAP_NR(virt)  ((virt-PKMAP_BASE) >> PAGE_SHIFT)
 #define PKMAP_ADDR(nr)  (PKMAP_BASE + ((nr) << PAGE_SHIFT))
 
-<<<<<<< HEAD
-extern void *kmap_high(struct page *page);
-extern void kunmap_high(struct page *page);
-extern void *kmap_atomic_prot(struct page *page, pgprot_t prot);
-extern void __kunmap_atomic(void *kvaddr);
-
-static inline void *kmap(struct page *page)
-{
-	might_sleep();
-	if (!PageHighMem(page))
-		return page_address(page);
-	return kmap_high(page);
-}
-
-static inline void kunmap(struct page *page)
-{
-	BUG_ON(in_interrupt());
-	if (!PageHighMem(page))
-		return;
-	kunmap_high(page);
-}
-
-static inline void *kmap_atomic(struct page *page)
-{
-	return kmap_atomic_prot(page, kmap_prot);
-}
-
-static inline struct page *kmap_atomic_to_page(void *ptr)
-{
-	unsigned long idx, vaddr = (unsigned long) ptr;
-	pte_t *pte;
-
-	if (vaddr < FIXADDR_START)
-		return virt_to_page(ptr);
-
-	idx = virt_to_fix(vaddr);
-	pte = kmap_pte - (idx - FIX_KMAP_BEGIN);
-	return pte_page(*pte);
-}
-
-
-#define flush_cache_kmaps()	flush_cache_all()
-
-=======
 #define flush_cache_kmaps()	flush_cache_all()
 
 #define arch_kmap_local_set_pte(mm, vaddr, ptep, ptev)	\
@@ -122,7 +65,6 @@ static inline struct page *kmap_atomic_to_page(void *ptr)
 #define arch_kmap_local_post_unmap(vaddr)	\
 	local_flush_tlb_page(NULL, vaddr)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 
 #endif /* _ASM_HIGHMEM_H */

@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 32-bit compatibility support for ELF format executables and core dumps.
  *
  * Copyright (C) 2007 Red Hat, Inc.  All rights reserved.
  *
-<<<<<<< HEAD
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License v.2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Red Hat Author: Roland McGrath.
  *
  * This file is used in a 64-bit kernel that wants to support 32-bit ELF.
@@ -27,11 +17,8 @@
 #include <linux/elfcore-compat.h>
 #include <linux/time.h>
 
-<<<<<<< HEAD
-=======
 #define ELF_COMPAT	1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Rename the basic ELF layout types to refer to the 32-bit class of files.
  */
@@ -43,17 +30,12 @@
 #undef	elf_shdr
 #undef	elf_note
 #undef	elf_addr_t
-<<<<<<< HEAD
-=======
 #undef	ELF_GNU_PROPERTY_ALIGN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define elfhdr		elf32_hdr
 #define elf_phdr	elf32_phdr
 #define elf_shdr	elf32_shdr
 #define elf_note	elf32_note
 #define elf_addr_t	Elf32_Addr
-<<<<<<< HEAD
-=======
 #define ELF_GNU_PROPERTY_ALIGN	ELF32_GNU_PROPERTY_ALIGN
 
 /*
@@ -62,39 +44,17 @@
 #define user_long_t		compat_long_t
 #define user_siginfo_t		compat_siginfo_t
 #define copy_siginfo_to_external	copy_siginfo_to_external32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The machine-dependent core note format types are defined in elfcore-compat.h,
  * which requires asm/elf.h to define compat_elf_gregset_t et al.
  */
 #define elf_prstatus	compat_elf_prstatus
-<<<<<<< HEAD
-#define elf_prpsinfo	compat_elf_prpsinfo
-
-/*
- * Compat version of cputime_to_compat_timeval, perhaps this
- * should be an inline in <linux/compat.h>.
- */
-static void cputime_to_compat_timeval(const cputime_t cputime,
-				      struct compat_timeval *value)
-{
-	struct timeval tv;
-	cputime_to_timeval(cputime, &tv);
-	value->tv_sec = tv.tv_sec;
-	value->tv_usec = tv.tv_usec;
-}
-
-#undef cputime_to_timeval
-#define cputime_to_timeval cputime_to_compat_timeval
-
-=======
 #define elf_prstatus_common	compat_elf_prstatus_common
 #define elf_prpsinfo	compat_elf_prpsinfo
 
 #undef ns_to_kernel_old_timeval
 #define ns_to_kernel_old_timeval ns_to_old_timeval32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * To use this file, asm/elf.h must define compat_elf_check_arch.
@@ -102,10 +62,6 @@ static void cputime_to_compat_timeval(const cputime_t cputime,
  * differ from the native ones, or omitted when they match.
  */
 
-<<<<<<< HEAD
-#undef	ELF_ARCH
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef	elf_check_arch
 #define	elf_check_arch	compat_elf_check_arch
 
@@ -119,14 +75,11 @@ static void cputime_to_compat_timeval(const cputime_t cputime,
 #define	ELF_HWCAP		COMPAT_ELF_HWCAP
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef	COMPAT_ELF_HWCAP2
 #undef	ELF_HWCAP2
 #define	ELF_HWCAP2		COMPAT_ELF_HWCAP2
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	COMPAT_ARCH_DLINFO
 #undef	ARCH_DLINFO
 #define	ARCH_DLINFO		COMPAT_ARCH_DLINFO
@@ -137,14 +90,6 @@ static void cputime_to_compat_timeval(const cputime_t cputime,
 #define	ELF_ET_DYN_BASE		COMPAT_ELF_ET_DYN_BASE
 #endif
 
-<<<<<<< HEAD
-#ifdef COMPAT_ELF_EXEC_PAGESIZE
-#undef	ELF_EXEC_PAGESIZE
-#define	ELF_EXEC_PAGESIZE	COMPAT_ELF_EXEC_PAGESIZE
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	COMPAT_ELF_PLAT_INIT
 #undef	ELF_PLAT_INIT
 #define	ELF_PLAT_INIT		COMPAT_ELF_PLAT_INIT
@@ -156,17 +101,6 @@ static void cputime_to_compat_timeval(const cputime_t cputime,
 #endif
 
 #ifdef	compat_start_thread
-<<<<<<< HEAD
-#undef	start_thread
-#define	start_thread		compat_start_thread
-#endif
-
-#ifdef	compat_arch_setup_additional_pages
-#undef	ARCH_HAS_SETUP_ADDITIONAL_PAGES
-#define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
-#undef	arch_setup_additional_pages
-#define	arch_setup_additional_pages compat_arch_setup_additional_pages
-=======
 #define COMPAT_START_THREAD(ex, regs, new_ip, new_sp)	\
 	compat_start_thread(regs, new_ip, new_sp)
 #endif
@@ -191,7 +125,6 @@ static void cputime_to_compat_timeval(const cputime_t cputime,
 #ifdef	compat_elf_read_implies_exec
 #undef	elf_read_implies_exec
 #define	elf_read_implies_exec compat_elf_read_implies_exec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -202,11 +135,8 @@ static void cputime_to_compat_timeval(const cputime_t cputime,
 #define elf_format		compat_elf_format
 #define init_elf_binfmt		init_compat_elf_binfmt
 #define exit_elf_binfmt		exit_compat_elf_binfmt
-<<<<<<< HEAD
-=======
 #define binfmt_elf_test_cases	compat_binfmt_elf_test_cases
 #define binfmt_elf_test_suite	compat_binfmt_elf_test_suite
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We share all the actual code with the native (64-bit) version.

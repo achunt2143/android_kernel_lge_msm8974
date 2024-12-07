@@ -85,15 +85,6 @@ aic7770_probe(struct device *dev)
 	int	error;
 
 	sprintf(buf, "ahc_eisa:%d", eisaBase >> 12);
-<<<<<<< HEAD
-	name = kmalloc(strlen(buf) + 1, GFP_ATOMIC);
-	if (name == NULL)
-		return (ENOMEM);
-	strcpy(name, buf);
-	ahc = ahc_alloc(&aic7xxx_driver_template, name);
-	if (ahc == NULL)
-		return (ENOMEM);
-=======
 	name = kstrdup(buf, GFP_ATOMIC);
 	if (name == NULL)
 		return -ENOMEM;
@@ -101,17 +92,12 @@ aic7770_probe(struct device *dev)
 	if (ahc == NULL)
 		return -ENOMEM;
 	ahc->dev = dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = aic7770_config(ahc, aic7770_ident_table + edev->id.driver_data,
 			       eisaBase);
 	if (error != 0) {
 		ahc->bsh.ioport = 0;
 		ahc_free(ahc);
-<<<<<<< HEAD
-		return (error);
-=======
 		return error < 0 ? error : -error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
  	dev_set_drvdata(dev, ahc);

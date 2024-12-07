@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Loopback soundcard
  *
@@ -16,24 +13,6 @@
  *
  *  A next major update in 2010 (separate timers for playback and capture):
  *  Copyright (c) Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -46,23 +25,14 @@
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/pcm.h>
-<<<<<<< HEAD
-#include <sound/info.h>
-#include <sound/initval.h>
-=======
 #include <sound/pcm_params.h>
 #include <sound/info.h>
 #include <sound/initval.h>
 #include <sound/timer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("A loopback soundcard");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{ALSA,Loopback soundcard}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_PCM_SUBSTREAMS	8
 
@@ -71,10 +41,7 @@ static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
 static bool enable[SNDRV_CARDS] = {1, [1 ... (SNDRV_CARDS - 1)] = 0};
 static int pcm_substreams[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 8};
 static int pcm_notify[SNDRV_CARDS];
-<<<<<<< HEAD
-=======
 static char *timer_source[SNDRV_CARDS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for loopback soundcard.");
@@ -86,13 +53,6 @@ module_param_array(pcm_substreams, int, NULL, 0444);
 MODULE_PARM_DESC(pcm_substreams, "PCM substreams # (1-8) for loopback driver.");
 module_param_array(pcm_notify, int, NULL, 0444);
 MODULE_PARM_DESC(pcm_notify, "Break capture when PCM format/rate/channels changes.");
-<<<<<<< HEAD
-
-#define NO_PITCH 100000
-
-struct loopback_pcm;
-
-=======
 module_param_array(timer_source, charp, NULL, 0444);
 MODULE_PARM_DESC(timer_source, "Sound card name or number and device/subdevice number of timer to be used. Empty string for jiffies timer [default].");
 
@@ -135,7 +95,6 @@ struct loopback_ops {
 			  struct snd_info_buffer *buffer);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct loopback_cable {
 	spinlock_t lock;
 	struct loopback_pcm *streams[2];
@@ -144,8 +103,6 @@ struct loopback_cable {
 	unsigned int valid;
 	unsigned int running;
 	unsigned int pause;
-<<<<<<< HEAD
-=======
 	/* timer specific */
 	const struct loopback_ops *ops;
 	/* If sound timer is used */
@@ -155,29 +112,20 @@ struct loopback_cable {
 		struct work_struct event_work;
 		struct snd_timer_instance *instance;
 	} snd_timer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct loopback_setup {
 	unsigned int notify: 1;
 	unsigned int rate_shift;
-<<<<<<< HEAD
-	unsigned int format;
-	unsigned int rate;
-=======
 	snd_pcm_format_t format;
 	unsigned int rate;
 	snd_pcm_access_t access;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int channels;
 	struct snd_ctl_elem_id active_id;
 	struct snd_ctl_elem_id format_id;
 	struct snd_ctl_elem_id rate_id;
 	struct snd_ctl_elem_id channels_id;
-<<<<<<< HEAD
-=======
 	struct snd_ctl_elem_id access_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct loopback {
@@ -186,10 +134,7 @@ struct loopback {
 	struct loopback_cable *cables[MAX_PCM_SUBSTREAMS][2];
 	struct snd_pcm *pcm[2];
 	struct loopback_setup setup[MAX_PCM_SUBSTREAMS][2];
-<<<<<<< HEAD
-=======
 	const char *timer_source;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct loopback_pcm {
@@ -207,13 +152,6 @@ struct loopback_pcm {
 	/* flags */
 	unsigned int period_update_pending :1;
 	/* timer stuff */
-<<<<<<< HEAD
-	unsigned int irq_pos;		/* fractional IRQ position */
-	unsigned int period_size_frac;
-	unsigned long last_jiffies;
-	struct timer_list timer;
-	spinlock_t timer_lock;
-=======
 	unsigned int irq_pos;		/* fractional IRQ position in jiffies
 					 * ticks
 					 */
@@ -225,7 +163,6 @@ struct loopback_pcm {
 
 	/* size of per channel buffer in case of non-interleaved access */
 	unsigned int channel_buf_n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device *devices[SNDRV_CARDS];
@@ -271,20 +208,12 @@ static inline unsigned int get_rate_shift(struct loopback_pcm *dpcm)
 	return get_setup(dpcm)->rate_shift;
 }
 
-<<<<<<< HEAD
-static void loopback_timer_start(struct loopback_pcm *dpcm)
-=======
 /* call in cable->lock */
 static int loopback_jiffies_timer_start(struct loopback_pcm *dpcm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long tick;
 	unsigned int rate_shift = get_rate_shift(dpcm);
 
-<<<<<<< HEAD
-	spin_lock(&dpcm->timer_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rate_shift != dpcm->pcm_rate_shift) {
 		dpcm->pcm_rate_shift = rate_shift;
 		dpcm->period_size_frac = frac_pos(dpcm, dpcm->pcm_period_size);
@@ -294,25 +223,6 @@ static int loopback_jiffies_timer_start(struct loopback_pcm *dpcm)
 		dpcm->period_update_pending = 1;
 	}
 	tick = dpcm->period_size_frac - dpcm->irq_pos;
-<<<<<<< HEAD
-	tick = (tick + dpcm->pcm_bps - 1) / dpcm->pcm_bps;
-	dpcm->timer.expires = jiffies + tick;
-	add_timer(&dpcm->timer);
-	spin_unlock(&dpcm->timer_lock);
-}
-
-static inline void loopback_timer_stop(struct loopback_pcm *dpcm)
-{
-	spin_lock(&dpcm->timer_lock);
-	del_timer(&dpcm->timer);
-	dpcm->timer.expires = 0;
-	spin_unlock(&dpcm->timer_lock);
-}
-
-#define CABLE_VALID_PLAYBACK	(1 << SNDRV_PCM_STREAM_PLAYBACK)
-#define CABLE_VALID_CAPTURE	(1 << SNDRV_PCM_STREAM_CAPTURE)
-#define CABLE_VALID_BOTH	(CABLE_VALID_PLAYBACK|CABLE_VALID_CAPTURE)
-=======
 	tick = DIV_ROUND_UP(tick, dpcm->pcm_bps);
 	mod_timer(&dpcm->timer, jiffies + tick);
 
@@ -422,7 +332,6 @@ static bool is_access_interleaved(snd_pcm_access_t access)
 		return false;
 	}
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int loopback_check_format(struct loopback_cable *cable, int stream)
 {
@@ -442,13 +351,9 @@ static int loopback_check_format(struct loopback_cable *cable, int stream)
 							substream->runtime;
 	check = runtime->format != cruntime->format ||
 		runtime->rate != cruntime->rate ||
-<<<<<<< HEAD
-		runtime->channels != cruntime->channels;
-=======
 		runtime->channels != cruntime->channels ||
 		is_access_interleaved(runtime->access) !=
 		is_access_interleaved(cruntime->access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!check)
 		return 0;
 	if (stream == SNDRV_PCM_STREAM_CAPTURE) {
@@ -476,15 +381,12 @@ static int loopback_check_format(struct loopback_cable *cable, int stream)
 							&setup->channels_id);
 			setup->channels = runtime->channels;
 		}
-<<<<<<< HEAD
-=======
 		if (is_access_interleaved(setup->access) !=
 		    is_access_interleaved(runtime->access)) {
 			snd_ctl_notify(card, SNDRV_CTL_EVENT_MASK_VALUE,
 							&setup->access_id);
 			setup->access = runtime->access;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -501,11 +403,7 @@ static int loopback_trigger(struct snd_pcm_substream *substream, int cmd)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct loopback_pcm *dpcm = runtime->private_data;
 	struct loopback_cable *cable = dpcm->cable;
-<<<<<<< HEAD
-	int err, stream = 1 << substream->stream;
-=======
 	int err = 0, stream = 1 << substream->stream;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
@@ -514,20 +412,12 @@ static int loopback_trigger(struct snd_pcm_substream *substream, int cmd)
 			return err;
 		dpcm->last_jiffies = jiffies;
 		dpcm->pcm_rate_shift = 0;
-<<<<<<< HEAD
-		spin_lock(&cable->lock);	
-		cable->running |= stream;
-		cable->pause &= ~stream;
-		spin_unlock(&cable->lock);
-		loopback_timer_start(dpcm);
-=======
 		dpcm->last_drift = 0;
 		spin_lock(&cable->lock);	
 		cable->running |= stream;
 		cable->pause &= ~stream;
 		err = cable->ops->start(dpcm);
 		spin_unlock(&cable->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 			loopback_active_notify(dpcm);
 		break;
@@ -535,13 +425,8 @@ static int loopback_trigger(struct snd_pcm_substream *substream, int cmd)
 		spin_lock(&cable->lock);	
 		cable->running &= ~stream;
 		cable->pause &= ~stream;
-<<<<<<< HEAD
-		spin_unlock(&cable->lock);
-		loopback_timer_stop(dpcm);
-=======
 		err = cable->ops->stop(dpcm);
 		spin_unlock(&cable->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 			loopback_active_notify(dpcm);
 		break;
@@ -549,52 +434,25 @@ static int loopback_trigger(struct snd_pcm_substream *substream, int cmd)
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 		spin_lock(&cable->lock);	
 		cable->pause |= stream;
-<<<<<<< HEAD
-		spin_unlock(&cable->lock);
-		loopback_timer_stop(dpcm);
-=======
 		err = cable->ops->stop(dpcm);
 		spin_unlock(&cable->lock);
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 			loopback_active_notify(dpcm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 	case SNDRV_PCM_TRIGGER_RESUME:
 		spin_lock(&cable->lock);
 		dpcm->last_jiffies = jiffies;
 		cable->pause &= ~stream;
-<<<<<<< HEAD
-		spin_unlock(&cable->lock);
-		loopback_timer_start(dpcm);
-=======
 		err = cable->ops->start(dpcm);
 		spin_unlock(&cable->lock);
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 			loopback_active_notify(dpcm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-static void params_change_substream(struct loopback_pcm *dpcm,
-				    struct snd_pcm_runtime *runtime)
-{
-	struct snd_pcm_runtime *dst_runtime;
-
-	if (dpcm == NULL || dpcm->substream == NULL)
-		return;
-	dst_runtime = dpcm->substream->runtime;
-	if (dst_runtime == NULL)
-		return;
-	dst_runtime->hw = dpcm->cable->hw;
-=======
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void params_change(struct snd_pcm_substream *substream)
@@ -603,21 +461,11 @@ static void params_change(struct snd_pcm_substream *substream)
 	struct loopback_pcm *dpcm = runtime->private_data;
 	struct loopback_cable *cable = dpcm->cable;
 
-<<<<<<< HEAD
-	cable->hw.formats = (1ULL << runtime->format);
-=======
 	cable->hw.formats = pcm_format_to_bits(runtime->format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cable->hw.rate_min = runtime->rate;
 	cable->hw.rate_max = runtime->rate;
 	cable->hw.channels_min = runtime->channels;
 	cable->hw.channels_max = runtime->channels;
-<<<<<<< HEAD
-	params_change_substream(cable->streams[SNDRV_PCM_STREAM_PLAYBACK],
-				runtime);
-	params_change_substream(cable->streams[SNDRV_PCM_STREAM_CAPTURE],
-				runtime);
-=======
 
 	if (cable->snd_timer.instance) {
 		cable->hw.period_bytes_min =
@@ -625,7 +473,6 @@ static void params_change(struct snd_pcm_substream *substream)
 		cable->hw.period_bytes_max = cable->hw.period_bytes_min;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int loopback_prepare(struct snd_pcm_substream *substream)
@@ -633,11 +480,6 @@ static int loopback_prepare(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct loopback_pcm *dpcm = runtime->private_data;
 	struct loopback_cable *cable = dpcm->cable;
-<<<<<<< HEAD
-	int bps, salign;
-
-	salign = (snd_pcm_format_width(runtime->format) *
-=======
 	int err, bps, salign;
 
 	if (cable->ops->stop_sync) {
@@ -647,7 +489,6 @@ static int loopback_prepare(struct snd_pcm_substream *substream)
 	}
 
 	salign = (snd_pcm_format_physical_width(runtime->format) *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						runtime->channels) / 8;
 	bps = salign * runtime->rate;
 	if (bps <= 0 || salign <= 0)
@@ -655,10 +496,7 @@ static int loopback_prepare(struct snd_pcm_substream *substream)
 
 	dpcm->buf_pos = 0;
 	dpcm->pcm_buffer_size = frames_to_bytes(runtime, runtime->buffer_size);
-<<<<<<< HEAD
-=======
 	dpcm->channel_buf_n = dpcm->pcm_buffer_size / runtime->channels;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
 		/* clear capture buffer */
 		dpcm->silent_size = dpcm->pcm_buffer_size;
@@ -709,8 +547,6 @@ static void clear_capture_buf(struct loopback_pcm *dpcm, unsigned int bytes)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void copy_play_buf_part_n(struct loopback_pcm *play, struct loopback_pcm *capt,
 				 unsigned int size, unsigned int src_off, unsigned int dst_off)
 {
@@ -727,7 +563,6 @@ static void copy_play_buf_part_n(struct loopback_pcm *play, struct loopback_pcm 
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void copy_play_buf(struct loopback_pcm *play,
 			  struct loopback_pcm *capt,
 			  unsigned int bytes)
@@ -741,11 +576,7 @@ static void copy_play_buf(struct loopback_pcm *play,
 
 	/* check if playback is draining, trim the capture copy size
 	 * when our pointer is at the end of playback ring buffer */
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_DRAINING &&
-=======
 	if (runtime->state == SNDRV_PCM_STATE_DRAINING &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    snd_pcm_playback_hw_avail(runtime) < runtime->buffer_size) { 
 	    	snd_pcm_uframes_t appl_ptr, appl_ptr1, diff;
 		appl_ptr = appl_ptr1 = runtime->control->appl_ptr;
@@ -766,14 +597,10 @@ static void copy_play_buf(struct loopback_pcm *play,
 			size = play->pcm_buffer_size - src_off;
 		if (dst_off + size > capt->pcm_buffer_size)
 			size = capt->pcm_buffer_size - dst_off;
-<<<<<<< HEAD
-		memcpy(dst + dst_off, src + src_off, size);
-=======
 		if (!is_access_interleaved(runtime->access))
 			copy_play_buf_part_n(play, capt, size, src_off, dst_off);
 		else
 			memcpy(dst + dst_off, src + src_off, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		capt->silent_size = 0;
 		bytes -= size;
 		if (!bytes)
@@ -788,32 +615,6 @@ static void copy_play_buf(struct loopback_pcm *play,
 	}
 }
 
-<<<<<<< HEAD
-#define BYTEPOS_UPDATE_POSONLY	0
-#define BYTEPOS_UPDATE_CLEAR	1
-#define BYTEPOS_UPDATE_COPY	2
-
-static void loopback_bytepos_update(struct loopback_pcm *dpcm,
-				    unsigned int delta,
-				    unsigned int cmd)
-{
-	unsigned int count;
-	unsigned long last_pos;
-
-	last_pos = byte_pos(dpcm, dpcm->irq_pos);
-	dpcm->irq_pos += delta * dpcm->pcm_bps;
-	count = byte_pos(dpcm, dpcm->irq_pos) - last_pos;
-	if (!count)
-		return;
-	if (cmd == BYTEPOS_UPDATE_CLEAR)
-		clear_capture_buf(dpcm, count);
-	else if (cmd == BYTEPOS_UPDATE_COPY)
-		copy_play_buf(dpcm->cable->streams[SNDRV_PCM_STREAM_PLAYBACK],
-			      dpcm->cable->streams[SNDRV_PCM_STREAM_CAPTURE],
-			      count);
-	dpcm->buf_pos += count;
-	dpcm->buf_pos %= dpcm->pcm_buffer_size;
-=======
 static inline unsigned int bytepos_delta(struct loopback_pcm *dpcm,
 					 unsigned int jiffies_delta)
 {
@@ -826,16 +627,10 @@ static inline unsigned int bytepos_delta(struct loopback_pcm *dpcm,
 	if (delta >= dpcm->last_drift)
 		delta -= dpcm->last_drift;
 	dpcm->last_drift = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dpcm->irq_pos >= dpcm->period_size_frac) {
 		dpcm->irq_pos %= dpcm->period_size_frac;
 		dpcm->period_update_pending = 1;
 	}
-<<<<<<< HEAD
-}
-
-static unsigned int loopback_pos_update(struct loopback_cable *cable)
-=======
 	return delta;
 }
 
@@ -849,22 +644,11 @@ static inline void bytepos_finish(struct loopback_pcm *dpcm,
 /* call in cable->lock */
 static unsigned int loopback_jiffies_timer_pos_update
 		(struct loopback_cable *cable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct loopback_pcm *dpcm_play =
 			cable->streams[SNDRV_PCM_STREAM_PLAYBACK];
 	struct loopback_pcm *dpcm_capt =
 			cable->streams[SNDRV_PCM_STREAM_CAPTURE];
-<<<<<<< HEAD
-	unsigned long delta_play = 0, delta_capt = 0;
-	unsigned int running;
-	unsigned long flags;
-
-	spin_lock_irqsave(&cable->lock, flags);
-	running = cable->running ^ cable->pause;
-	if (running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) {
-		delta_play = jiffies - dpcm_play->last_jiffies;
-=======
 	unsigned long delta_play = 0, delta_capt = 0, cur_jiffies;
 	unsigned int running, count1, count2;
 
@@ -872,16 +656,11 @@ static unsigned int loopback_jiffies_timer_pos_update
 	running = cable->running ^ cable->pause;
 	if (running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) {
 		delta_play = cur_jiffies - dpcm_play->last_jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dpcm_play->last_jiffies += delta_play;
 	}
 
 	if (running & (1 << SNDRV_PCM_STREAM_CAPTURE)) {
-<<<<<<< HEAD
-		delta_capt = jiffies - dpcm_capt->last_jiffies;
-=======
 		delta_capt = cur_jiffies - dpcm_capt->last_jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dpcm_capt->last_jiffies += delta_capt;
 	}
 
@@ -889,14 +668,6 @@ static unsigned int loopback_jiffies_timer_pos_update
 		goto unlock;
 		
 	if (delta_play > delta_capt) {
-<<<<<<< HEAD
-		loopback_bytepos_update(dpcm_play, delta_play - delta_capt,
-					BYTEPOS_UPDATE_POSONLY);
-		delta_play = delta_capt;
-	} else if (delta_play < delta_capt) {
-		loopback_bytepos_update(dpcm_capt, delta_capt - delta_play,
-					BYTEPOS_UPDATE_CLEAR);
-=======
 		count1 = bytepos_delta(dpcm_play, delta_play - delta_capt);
 		bytepos_finish(dpcm_play, count1);
 		delta_play = delta_capt;
@@ -904,7 +675,6 @@ static unsigned int loopback_jiffies_timer_pos_update
 		count1 = bytepos_delta(dpcm_capt, delta_capt - delta_play);
 		clear_capture_buf(dpcm_capt, count1);
 		bytepos_finish(dpcm_capt, count1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		delta_capt = delta_play;
 	}
 
@@ -912,28 +682,6 @@ static unsigned int loopback_jiffies_timer_pos_update
 		goto unlock;
 
 	/* note delta_capt == delta_play at this moment */
-<<<<<<< HEAD
-	loopback_bytepos_update(dpcm_capt, delta_capt, BYTEPOS_UPDATE_COPY);
-	loopback_bytepos_update(dpcm_play, delta_play, BYTEPOS_UPDATE_POSONLY);
- unlock:
-	spin_unlock_irqrestore(&cable->lock, flags);
-	return running;
-}
-
-static void loopback_timer_function(unsigned long data)
-{
-	struct loopback_pcm *dpcm = (struct loopback_pcm *)data;
-	unsigned int running;
-
-	running = loopback_pos_update(dpcm->cable);
-	if (running & (1 << dpcm->substream->stream)) {
-		loopback_timer_start(dpcm);
-		if (dpcm->period_update_pending) {
-			dpcm->period_update_pending = 0;
-			snd_pcm_period_elapsed(dpcm->substream);
-		}
-	}
-=======
 	count1 = bytepos_delta(dpcm_play, delta_play);
 	count2 = bytepos_delta(dpcm_capt, delta_capt);
 	if (count1 < count2) {
@@ -1154,26 +902,12 @@ static void loopback_snd_timer_dpcm_info(struct loopback_pcm *dpcm,
 	snd_iprintf(buffer, "    timer open:\t\t%s\n",
 		    (cable->snd_timer.stream == SNDRV_PCM_STREAM_CAPTURE) ?
 			    "capture" : "playback");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static snd_pcm_uframes_t loopback_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct loopback_pcm *dpcm = runtime->private_data;
-<<<<<<< HEAD
-
-	loopback_pos_update(dpcm->cable);
-	return bytes_to_frames(runtime, dpcm->buf_pos);
-}
-
-static struct snd_pcm_hardware loopback_pcm_hardware =
-{
-	.info =		(SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_MMAP |
-			 SNDRV_PCM_INFO_MMAP_VALID | SNDRV_PCM_INFO_PAUSE |
-			 SNDRV_PCM_INFO_RESUME),
-	.formats =	(SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S16_BE |
-=======
 	snd_pcm_uframes_t pos;
 
 	spin_lock(&dpcm->cable->lock);
@@ -1192,7 +926,6 @@ static const struct snd_pcm_hardware loopback_pcm_hardware =
 	.formats =	(SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S16_BE |
 			 SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S24_BE |
 			 SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S24_3BE |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 SNDRV_PCM_FMTBIT_S32_LE | SNDRV_PCM_FMTBIT_S32_BE |
 			 SNDRV_PCM_FMTBIT_FLOAT_LE | SNDRV_PCM_FMTBIT_FLOAT_BE),
 	.rates =	SNDRV_PCM_RATE_CONTINUOUS | SNDRV_PCM_RATE_8000_192000,
@@ -1216,16 +949,6 @@ static void loopback_runtime_free(struct snd_pcm_runtime *runtime)
 	kfree(dpcm);
 }
 
-<<<<<<< HEAD
-static int loopback_hw_params(struct snd_pcm_substream *substream,
-			      struct snd_pcm_hw_params *params)
-{
-	return snd_pcm_lib_alloc_vmalloc_buffer(substream,
-						params_buffer_bytes(params));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int loopback_hw_free(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -1235,11 +958,7 @@ static int loopback_hw_free(struct snd_pcm_substream *substream)
 	mutex_lock(&dpcm->loopback->cable_lock);
 	cable->valid &= ~(1 << substream->stream);
 	mutex_unlock(&dpcm->loopback->cable_lock);
-<<<<<<< HEAD
-	return snd_pcm_lib_free_vmalloc_buffer(substream);
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int get_cable_index(struct snd_pcm_substream *substream)
@@ -1253,18 +972,6 @@ static unsigned int get_cable_index(struct snd_pcm_substream *substream)
 static int rule_format(struct snd_pcm_hw_params *params,
 		       struct snd_pcm_hw_rule *rule)
 {
-<<<<<<< HEAD
-
-	struct snd_pcm_hardware *hw = rule->private;
-	struct snd_mask *maskp = hw_param_mask(params, rule->var);
-
-	maskp->bits[0] &= (u_int32_t)hw->formats;
-	maskp->bits[1] &= (u_int32_t)(hw->formats >> 32);
-	memset(maskp->bits + 2, 0, (SNDRV_MASK_MAX-64) / 8); /* clear rest */
-	if (! maskp->bits[0] && ! maskp->bits[1])
-		return -EINVAL;
-	return 0;
-=======
 	struct loopback_pcm *dpcm = rule->private;
 	struct loopback_cable *cable = dpcm->cable;
 	struct snd_mask m;
@@ -1275,19 +982,11 @@ static int rule_format(struct snd_pcm_hw_params *params,
 	m.bits[1] = (u_int32_t)(cable->hw.formats >> 32);
 	mutex_unlock(&dpcm->loopback->cable_lock);
 	return snd_mask_refine(hw_param_mask(params, rule->var), &m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rule_rate(struct snd_pcm_hw_params *params,
 		     struct snd_pcm_hw_rule *rule)
 {
-<<<<<<< HEAD
-	struct snd_pcm_hardware *hw = rule->private;
-	struct snd_interval t;
-
-        t.min = hw->rate_min;
-        t.max = hw->rate_max;
-=======
 	struct loopback_pcm *dpcm = rule->private;
 	struct loopback_cable *cable = dpcm->cable;
 	struct snd_interval t;
@@ -1296,7 +995,6 @@ static int rule_rate(struct snd_pcm_hw_params *params,
 	t.min = cable->hw.rate_min;
 	t.max = cable->hw.rate_max;
 	mutex_unlock(&dpcm->loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         t.openmin = t.openmax = 0;
         t.integer = 0;
 	return snd_interval_refine(hw_param_interval(params, rule->var), &t);
@@ -1305,13 +1003,6 @@ static int rule_rate(struct snd_pcm_hw_params *params,
 static int rule_channels(struct snd_pcm_hw_params *params,
 			 struct snd_pcm_hw_rule *rule)
 {
-<<<<<<< HEAD
-	struct snd_pcm_hardware *hw = rule->private;
-	struct snd_interval t;
-
-        t.min = hw->channels_min;
-        t.max = hw->channels_max;
-=======
 	struct loopback_pcm *dpcm = rule->private;
 	struct loopback_cable *cable = dpcm->cable;
 	struct snd_interval t;
@@ -1320,14 +1011,11 @@ static int rule_channels(struct snd_pcm_hw_params *params,
 	t.min = cable->hw.channels_min;
 	t.max = cable->hw.channels_max;
 	mutex_unlock(&dpcm->loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         t.openmin = t.openmax = 0;
         t.integer = 0;
 	return snd_interval_refine(hw_param_interval(params, rule->var), &t);
 }
 
-<<<<<<< HEAD
-=======
 static int rule_period_bytes(struct snd_pcm_hw_params *params,
 			     struct snd_pcm_hw_rule *rule)
 {
@@ -1536,17 +1224,12 @@ static const struct loopback_ops loopback_snd_timer_ops = {
 	.dpcm_info = loopback_snd_timer_dpcm_info,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int loopback_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct loopback *loopback = substream->private_data;
 	struct loopback_pcm *dpcm;
-<<<<<<< HEAD
-	struct loopback_cable *cable;
-=======
 	struct loopback_cable *cable = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 	int dev = get_cable_index(substream);
 
@@ -1558,32 +1241,16 @@ static int loopback_open(struct snd_pcm_substream *substream)
 	}
 	dpcm->loopback = loopback;
 	dpcm->substream = substream;
-<<<<<<< HEAD
-	setup_timer(&dpcm->timer, loopback_timer_function,
-		    (unsigned long)dpcm);
-	spin_lock_init(&dpcm->timer_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cable = loopback->cables[substream->number][dev];
 	if (!cable) {
 		cable = kzalloc(sizeof(*cable), GFP_KERNEL);
 		if (!cable) {
-<<<<<<< HEAD
-			kfree(dpcm);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOMEM;
 			goto unlock;
 		}
 		spin_lock_init(&cable->lock);
 		cable->hw = loopback_pcm_hardware;
-<<<<<<< HEAD
-		loopback->cables[substream->number][dev] = cable;
-	}
-	dpcm->cable = cable;
-	cable->streams[substream->stream] = dpcm;
-=======
 		if (loopback->timer_source)
 			cable->ops = &loopback_snd_timer_ops;
 		else
@@ -1598,7 +1265,6 @@ static int loopback_open(struct snd_pcm_substream *substream)
 		if (err < 0)
 			goto unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
 
@@ -1607,38 +1273,23 @@ static int loopback_open(struct snd_pcm_substream *substream)
 	/* are cached -> they do not reflect the actual state */
 	err = snd_pcm_hw_rule_add(runtime, 0,
 				  SNDRV_PCM_HW_PARAM_FORMAT,
-<<<<<<< HEAD
-				  rule_format, &runtime->hw,
-=======
 				  rule_format, dpcm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  SNDRV_PCM_HW_PARAM_FORMAT, -1);
 	if (err < 0)
 		goto unlock;
 	err = snd_pcm_hw_rule_add(runtime, 0,
 				  SNDRV_PCM_HW_PARAM_RATE,
-<<<<<<< HEAD
-				  rule_rate, &runtime->hw,
-=======
 				  rule_rate, dpcm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  SNDRV_PCM_HW_PARAM_RATE, -1);
 	if (err < 0)
 		goto unlock;
 	err = snd_pcm_hw_rule_add(runtime, 0,
 				  SNDRV_PCM_HW_PARAM_CHANNELS,
-<<<<<<< HEAD
-				  rule_channels, &runtime->hw,
-=======
 				  rule_channels, dpcm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  SNDRV_PCM_HW_PARAM_CHANNELS, -1);
 	if (err < 0)
 		goto unlock;
 
-<<<<<<< HEAD
-	runtime->private_data = dpcm;
-=======
 	/* In case of sound timer the period time of both devices of the same
 	 * loop has to be the same.
 	 * This rule only takes effect if a sound timer was chosen
@@ -1655,15 +1306,11 @@ static int loopback_open(struct snd_pcm_substream *substream)
 	/* loopback_runtime_free() has not to be called if kfree(dpcm) was
 	 * already called here. Otherwise it will end up with a double free.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->private_free = loopback_runtime_free;
 	if (get_notify(dpcm))
 		runtime->hw = loopback_pcm_hardware;
 	else
 		runtime->hw = cable->hw;
-<<<<<<< HEAD
- unlock:
-=======
 
 	spin_lock_irq(&cable->lock);
 	cable->streams[substream->stream] = dpcm;
@@ -1674,7 +1321,6 @@ static int loopback_open(struct snd_pcm_substream *substream)
 		free_cable(substream);
 		kfree(dpcm);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&loopback->cable_lock);
 	return err;
 }
@@ -1683,31 +1329,6 @@ static int loopback_close(struct snd_pcm_substream *substream)
 {
 	struct loopback *loopback = substream->private_data;
 	struct loopback_pcm *dpcm = substream->runtime->private_data;
-<<<<<<< HEAD
-	struct loopback_cable *cable;
-	int dev = get_cable_index(substream);
-
-	loopback_timer_stop(dpcm);
-	mutex_lock(&loopback->cable_lock);
-	cable = loopback->cables[substream->number][dev];
-	if (cable->streams[!substream->stream]) {
-		/* other stream is still alive */
-		cable->streams[substream->stream] = NULL;
-	} else {
-		/* free the cable */
-		loopback->cables[substream->number][dev] = NULL;
-		kfree(cable);
-	}
-	mutex_unlock(&loopback->cable_lock);
-	return 0;
-}
-
-static struct snd_pcm_ops loopback_playback_ops = {
-	.open =		loopback_open,
-	.close =	loopback_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	loopback_hw_params,
-=======
 	int err = 0;
 
 	if (dpcm->cable->ops->close_substream)
@@ -1721,37 +1342,14 @@ static struct snd_pcm_ops loopback_playback_ops = {
 static const struct snd_pcm_ops loopback_pcm_ops = {
 	.open =		loopback_open,
 	.close =	loopback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_free =	loopback_hw_free,
 	.prepare =	loopback_prepare,
 	.trigger =	loopback_trigger,
 	.pointer =	loopback_pointer,
-<<<<<<< HEAD
-	.page =		snd_pcm_lib_get_vmalloc_page,
-	.mmap =		snd_pcm_lib_mmap_vmalloc,
-};
-
-static struct snd_pcm_ops loopback_capture_ops = {
-	.open =		loopback_open,
-	.close =	loopback_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	loopback_hw_params,
-	.hw_free =	loopback_hw_free,
-	.prepare =	loopback_prepare,
-	.trigger =	loopback_trigger,
-	.pointer =	loopback_pointer,
-	.page =		snd_pcm_lib_get_vmalloc_page,
-	.mmap =		snd_pcm_lib_mmap_vmalloc,
-};
-
-static int __devinit loopback_pcm_new(struct loopback *loopback,
-				      int device, int substreams)
-=======
 };
 
 static int loopback_pcm_new(struct loopback *loopback,
 			    int device, int substreams)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -1760,14 +1358,9 @@ static int loopback_pcm_new(struct loopback *loopback,
 			  substreams, substreams, &pcm);
 	if (err < 0)
 		return err;
-<<<<<<< HEAD
-	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &loopback_playback_ops);
-	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &loopback_capture_ops);
-=======
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &loopback_pcm_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &loopback_pcm_ops);
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_VMALLOC, NULL, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcm->private_data = loopback;
 	pcm->info_flags = 0;
@@ -1793,17 +1386,11 @@ static int loopback_rate_shift_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
-<<<<<<< HEAD
-	ucontrol->value.integer.value[0] =
-		loopback->setup[kcontrol->id.subdevice]
-			       [kcontrol->id.device].rate_shift;
-=======
 	mutex_lock(&loopback->cable_lock);
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
 			       [kcontrol->id.device].rate_shift;
 	mutex_unlock(&loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1835,17 +1422,11 @@ static int loopback_notify_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
-<<<<<<< HEAD
-	ucontrol->value.integer.value[0] =
-		loopback->setup[kcontrol->id.subdevice]
-			       [kcontrol->id.device].notify;
-=======
 	mutex_lock(&loopback->cable_lock);
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
 			       [kcontrol->id.device].notify;
 	mutex_unlock(&loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1857,20 +1438,14 @@ static int loopback_notify_put(struct snd_kcontrol *kcontrol,
 	int change = 0;
 
 	val = ucontrol->value.integer.value[0] ? 1 : 0;
-<<<<<<< HEAD
-=======
 	mutex_lock(&loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (val != loopback->setup[kcontrol->id.subdevice]
 				[kcontrol->id.device].notify) {
 		loopback->setup[kcontrol->id.subdevice]
 			[kcontrol->id.device].notify = val;
 		change = 1;
 	}
-<<<<<<< HEAD
-=======
 	mutex_unlock(&loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return change;
 }
 
@@ -1878,15 +1453,6 @@ static int loopback_active_get(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
-<<<<<<< HEAD
-	struct loopback_cable *cable = loopback->cables
-			[kcontrol->id.subdevice][kcontrol->id.device ^ 1];
-	unsigned int val = 0;
-
-	if (cable != NULL)
-		val = (cable->running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) ?
-									1 : 0;
-=======
 	struct loopback_cable *cable;
 
 	unsigned int val = 0;
@@ -1899,7 +1465,6 @@ static int loopback_active_get(struct snd_kcontrol *kcontrol,
 		val = (running & (1 << SNDRV_PCM_STREAM_PLAYBACK)) ? 1 : 0;
 	}
 	mutex_unlock(&loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ucontrol->value.integer.value[0] = val;
 	return 0;
 }
@@ -1910,11 +1475,7 @@ static int loopback_format_info(struct snd_kcontrol *kcontrol,
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 1;
 	uinfo->value.integer.min = 0;
-<<<<<<< HEAD
-	uinfo->value.integer.max = SNDRV_PCM_FORMAT_LAST;
-=======
 	uinfo->value.integer.max = (__force int)SNDRV_PCM_FORMAT_LAST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uinfo->value.integer.step = 1;
 	return 0;
 }                                  
@@ -1925,11 +1486,7 @@ static int loopback_format_get(struct snd_kcontrol *kcontrol,
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
 	ucontrol->value.integer.value[0] =
-<<<<<<< HEAD
-		loopback->setup[kcontrol->id.subdevice]
-=======
 		(__force int)loopback->setup[kcontrol->id.subdevice]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       [kcontrol->id.device].format;
 	return 0;
 }
@@ -1950,17 +1507,11 @@ static int loopback_rate_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
-<<<<<<< HEAD
-	ucontrol->value.integer.value[0] =
-		loopback->setup[kcontrol->id.subdevice]
-			       [kcontrol->id.device].rate;
-=======
 	mutex_lock(&loopback->cable_lock);
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
 			       [kcontrol->id.device].rate;
 	mutex_unlock(&loopback->cable_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1980,15 +1531,6 @@ static int loopback_channels_get(struct snd_kcontrol *kcontrol,
 {
 	struct loopback *loopback = snd_kcontrol_chip(kcontrol);
 	
-<<<<<<< HEAD
-	ucontrol->value.integer.value[0] =
-		loopback->setup[kcontrol->id.subdevice]
-			       [kcontrol->id.device].channels;
-	return 0;
-}
-
-static struct snd_kcontrol_new loopback_controls[]  __devinitdata = {
-=======
 	mutex_lock(&loopback->cable_lock);
 	ucontrol->value.integer.value[0] =
 		loopback->setup[kcontrol->id.subdevice]
@@ -2021,7 +1563,6 @@ static int loopback_access_get(struct snd_kcontrol *kcontrol,
 }
 
 static const struct snd_kcontrol_new loopback_controls[]  = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =        SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =         "PCM Rate Shift 100000",
@@ -2067,12 +1608,6 @@ static const struct snd_kcontrol_new loopback_controls[]  = {
 	.name =         "PCM Slave Channels",
 	.info =         loopback_channels_info,
 	.get =          loopback_channels_get
-<<<<<<< HEAD
-}
-};
-
-static int __devinit loopback_mixer_new(struct loopback *loopback, int notify)
-=======
 },
 #define ACCESS_IDX 6
 {
@@ -2085,7 +1620,6 @@ static int __devinit loopback_mixer_new(struct loopback *loopback, int notify)
 };
 
 static int loopback_mixer_new(struct loopback *loopback, int notify)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = loopback->card;
 	struct snd_pcm *pcm;
@@ -2103,10 +1637,7 @@ static int loopback_mixer_new(struct loopback *loopback, int notify)
 			setup->notify = notify;
 			setup->rate_shift = NO_PITCH;
 			setup->format = SNDRV_PCM_FORMAT_S16_LE;
-<<<<<<< HEAD
-=======
 			setup->access = SNDRV_PCM_ACCESS_RW_INTERLEAVED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			setup->rate = 48000;
 			setup->channels = 2;
 			for (idx = 0; idx < ARRAY_SIZE(loopback_controls);
@@ -2117,8 +1648,6 @@ static int loopback_mixer_new(struct loopback *loopback, int notify)
 					return -ENOMEM;
 				kctl->id.device = dev;
 				kctl->id.subdevice = substr;
-<<<<<<< HEAD
-=======
 
 				/* Add the control before copying the id so that
 				 * the numid field of the id is set in the copy.
@@ -2127,7 +1656,6 @@ static int loopback_mixer_new(struct loopback *loopback, int notify)
 				if (err < 0)
 					return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				switch (idx) {
 				case ACTIVE_IDX:
 					setup->active_id = kctl->id;
@@ -2141,32 +1669,18 @@ static int loopback_mixer_new(struct loopback *loopback, int notify)
 				case CHANNELS_IDX:
 					setup->channels_id = kctl->id;
 					break;
-<<<<<<< HEAD
-				default:
-					break;
-				}
-				err = snd_ctl_add(card, kctl);
-				if (err < 0)
-					return err;
-=======
 				case ACCESS_IDX:
 					setup->access_id = kctl->id;
 					break;
 				default:
 					break;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void print_dpcm_info(struct snd_info_buffer *buffer,
 			    struct loopback_pcm *dpcm,
 			    const char *id)
@@ -2183,18 +1697,8 @@ static void print_dpcm_info(struct snd_info_buffer *buffer,
 	snd_iprintf(buffer, "    bytes_per_sec:\t%u\n", dpcm->pcm_bps);
 	snd_iprintf(buffer, "    sample_align:\t%u\n", dpcm->pcm_salign);
 	snd_iprintf(buffer, "    rate_shift:\t\t%u\n", dpcm->pcm_rate_shift);
-<<<<<<< HEAD
-	snd_iprintf(buffer, "    update_pending:\t%u\n",
-						dpcm->period_update_pending);
-	snd_iprintf(buffer, "    irq_pos:\t\t%u\n", dpcm->irq_pos);
-	snd_iprintf(buffer, "    period_frac:\t%u\n", dpcm->period_size_frac);
-	snd_iprintf(buffer, "    last_jiffies:\t%lu (%lu)\n",
-					dpcm->last_jiffies, jiffies);
-	snd_iprintf(buffer, "    timer_expires:\t%lu\n", dpcm->timer.expires);
-=======
 	if (dpcm->cable->ops->dpcm_info)
 		dpcm->cable->ops->dpcm_info(dpcm, buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void print_substream_info(struct snd_info_buffer *buffer,
@@ -2230,30 +1734,6 @@ static void print_cable_info(struct snd_info_entry *entry,
 	mutex_unlock(&loopback->cable_lock);
 }
 
-<<<<<<< HEAD
-static int __devinit loopback_proc_new(struct loopback *loopback, int cidx)
-{
-	char name[32];
-	struct snd_info_entry *entry;
-	int err;
-
-	snprintf(name, sizeof(name), "cable#%d", cidx);
-	err = snd_card_proc_new(loopback->card, name, &entry);
-	if (err < 0)
-		return err;
-
-	snd_info_set_text_ops(entry, loopback, print_cable_info);
-	return 0;
-}
-
-#else /* !CONFIG_PROC_FS */
-
-#define loopback_proc_new(loopback, cidx) do { } while (0)
-
-#endif
-
-static int __devinit loopback_probe(struct platform_device *devptr)
-=======
 static int loopback_cable_proc_new(struct loopback *loopback, int cidx)
 {
 	char name[32];
@@ -2306,20 +1786,14 @@ static int loopback_timer_source_proc_new(struct loopback *loopback)
 }
 
 static int loopback_probe(struct platform_device *devptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct loopback *loopback;
 	int dev = devptr->id;
 	int err;
 
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
-			      sizeof(struct loopback), &card);
-=======
 	err = snd_devm_card_new(&devptr->dev, index[dev], id[dev], THIS_MODULE,
 				sizeof(struct loopback), &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	loopback = card->private_data;
@@ -2330,26 +1804,12 @@ static int loopback_probe(struct platform_device *devptr)
 		pcm_substreams[dev] = MAX_PCM_SUBSTREAMS;
 	
 	loopback->card = card;
-<<<<<<< HEAD
-=======
 	loopback_set_timer_source(loopback, timer_source[dev]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&loopback->cable_lock);
 
 	err = loopback_pcm_new(loopback, 0, pcm_substreams[dev]);
 	if (err < 0)
-<<<<<<< HEAD
-		goto __nodev;
-	err = loopback_pcm_new(loopback, 1, pcm_substreams[dev]);
-	if (err < 0)
-		goto __nodev;
-	err = loopback_mixer_new(loopback, pcm_notify[dev] ? 1 : 0);
-	if (err < 0)
-		goto __nodev;
-	loopback_proc_new(loopback, 0);
-	loopback_proc_new(loopback, 1);
-=======
 		return err;
 	err = loopback_pcm_new(loopback, 1, pcm_substreams[dev]);
 	if (err < 0)
@@ -2360,46 +1820,10 @@ static int loopback_probe(struct platform_device *devptr)
 	loopback_cable_proc_new(loopback, 0);
 	loopback_cable_proc_new(loopback, 1);
 	loopback_timer_source_proc_new(loopback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(card->driver, "Loopback");
 	strcpy(card->shortname, "Loopback");
 	sprintf(card->longname, "Loopback %i", dev + 1);
 	err = snd_card_register(card);
-<<<<<<< HEAD
-	if (!err) {
-		platform_set_drvdata(devptr, card);
-		return 0;
-	}
-      __nodev:
-	snd_card_free(card);
-	return err;
-}
-
-static int __devexit loopback_remove(struct platform_device *devptr)
-{
-	snd_card_free(platform_get_drvdata(devptr));
-	platform_set_drvdata(devptr, NULL);
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int loopback_suspend(struct platform_device *pdev,
-				pm_message_t state)
-{
-	struct snd_card *card = platform_get_drvdata(pdev);
-	struct loopback *loopback = card->private_data;
-
-	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
-
-	snd_pcm_suspend_all(loopback->pcm[0]);
-	snd_pcm_suspend_all(loopback->pcm[1]);
-	return 0;
-}
-	
-static int loopback_resume(struct platform_device *pdev)
-{
-	struct snd_card *card = platform_get_drvdata(pdev);
-=======
 	if (err < 0)
 		return err;
 	platform_set_drvdata(devptr, card);
@@ -2417,35 +1841,20 @@ static int loopback_suspend(struct device *pdev)
 static int loopback_resume(struct device *pdev)
 {
 	struct snd_card *card = dev_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(loopback_pm, loopback_suspend, loopback_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SND_LOOPBACK_DRIVER	"snd_aloop"
 
 static struct platform_driver loopback_driver = {
 	.probe		= loopback_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(loopback_remove),
-#ifdef CONFIG_PM
-	.suspend	= loopback_suspend,
-	.resume		= loopback_resume,
-#endif
-	.driver		= {
-		.name	= SND_LOOPBACK_DRIVER
-=======
 	.driver		= {
 		.name	= SND_LOOPBACK_DRIVER,
 		.pm	= &loopback_pm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

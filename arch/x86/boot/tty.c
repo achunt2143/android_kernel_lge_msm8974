@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -34,11 +25,7 @@ int early_serial_base;
  * error during initialization.
  */
 
-<<<<<<< HEAD
-static void __attribute__((section(".inittext"))) serial_putchar(int ch)
-=======
 static void __section(".inittext") serial_putchar(int ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned timeout = 0xffff;
 
@@ -48,11 +35,7 @@ static void __section(".inittext") serial_putchar(int ch)
 	outb(ch, early_serial_base + TXR);
 }
 
-<<<<<<< HEAD
-static void __attribute__((section(".inittext"))) bios_putchar(int ch)
-=======
 static void __section(".inittext") bios_putchar(int ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct biosregs ireg;
 
@@ -64,11 +47,7 @@ static void __section(".inittext") bios_putchar(int ch)
 	intcall(0x10, &ireg, NULL);
 }
 
-<<<<<<< HEAD
-void __attribute__((section(".inittext"))) putchar(int ch)
-=======
 void __section(".inittext") putchar(int ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ch == '\n')
 		putchar('\r');	/* \n -> \r\n */
@@ -79,11 +58,7 @@ void __section(".inittext") putchar(int ch)
 		serial_putchar(ch);
 }
 
-<<<<<<< HEAD
-void __attribute__((section(".inittext"))) puts(const char *str)
-=======
 void __section(".inittext") puts(const char *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (*str)
 		putchar(*str++);

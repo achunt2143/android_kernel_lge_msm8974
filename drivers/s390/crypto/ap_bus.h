@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-/*
- * linux/drivers/s390/crypto/ap_bus.h
- *
- * Copyright (C) 2006 IBM Corporation
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 /*
  * Copyright IBM Corp. 2006, 2023
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s): Cornelia Huck <cornelia.huck@de.ibm.com>
  *	      Martin Schwidefsky <schwidefsky@de.ibm.com>
  *	      Ralph Wuerthner <rwuerthn@de.ibm.com>
@@ -15,128 +8,12 @@
  *	      Holger Dengler <hd@linux.vnet.ibm.com>
  *
  * Adjunct processor bus header file.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AP_BUS_H_
 #define _AP_BUS_H_
 
 #include <linux/device.h>
-<<<<<<< HEAD
-#include <linux/mod_devicetable.h>
-#include <linux/types.h>
-
-#define AP_DEVICES 64		/* Number of AP devices. */
-#define AP_DOMAINS 16		/* Number of AP domains. */
-#define AP_MAX_RESET 90		/* Maximum number of resets. */
-#define AP_RESET_TIMEOUT (HZ/2)	/* Time in ticks for reset timeouts. */
-#define AP_CONFIG_TIME 30	/* Time in seconds between AP bus rescans. */
-#define AP_POLL_TIME 1		/* Time in ticks between receive polls. */
-
-extern int ap_domain_index;
-
-/**
- * The ap_qid_t identifier of an ap queue. It contains a
- * 6 bit device index and a 4 bit queue index (domain).
- */
-typedef unsigned int ap_qid_t;
-
-#define AP_MKQID(_device,_queue) (((_device) & 63) << 8 | ((_queue) & 15))
-#define AP_QID_DEVICE(_qid) (((_qid) >> 8) & 63)
-#define AP_QID_QUEUE(_qid) ((_qid) & 15)
-
-/**
- * structy ap_queue_status - Holds the AP queue status.
- * @queue_empty: Shows if queue is empty
- * @replies_waiting: Waiting replies
- * @queue_full: Is 1 if the queue is full
- * @pad: A 4 bit pad
- * @int_enabled: Shows if interrupts are enabled for the AP
- * @response_conde: Holds the 8 bit response code
- * @pad2: A 16 bit pad
- *
- * The ap queue status word is returned by all three AP functions
- * (PQAP, NQAP and DQAP).  There's a set of flags in the first
- * byte, followed by a 1 byte response code.
- */
-struct ap_queue_status {
-	unsigned int queue_empty	: 1;
-	unsigned int replies_waiting	: 1;
-	unsigned int queue_full		: 1;
-	unsigned int pad1		: 4;
-	unsigned int int_enabled	: 1;
-	unsigned int response_code	: 8;
-	unsigned int pad2		: 16;
-} __packed;
-
-#define AP_QUEUE_STATUS_INVALID \
-		{ 1, 1, 1, 0xF, 1, 0xFF, 0xFFFF }
-
-static inline
-int ap_queue_status_invalid_test(struct ap_queue_status *status)
-{
-	struct ap_queue_status invalid = AP_QUEUE_STATUS_INVALID;
-	return !(memcmp(status, &invalid, sizeof(struct ap_queue_status)));
-}
-
-#define MAX_AP_FACILITY 31
-
-static inline int test_ap_facility(unsigned int function, unsigned int nr)
-{
-	if (nr > MAX_AP_FACILITY)
-		return 0;
-	return function & (unsigned int)(0x80000000 >> nr);
-}
-
-#define AP_RESPONSE_NORMAL		0x00
-#define AP_RESPONSE_Q_NOT_AVAIL		0x01
-#define AP_RESPONSE_RESET_IN_PROGRESS	0x02
-#define AP_RESPONSE_DECONFIGURED	0x03
-#define AP_RESPONSE_CHECKSTOPPED	0x04
-#define AP_RESPONSE_BUSY		0x05
-#define AP_RESPONSE_INVALID_ADDRESS	0x06
-#define AP_RESPONSE_OTHERWISE_CHANGED	0x07
-#define AP_RESPONSE_Q_FULL		0x10
-#define AP_RESPONSE_NO_PENDING_REPLY	0x10
-#define AP_RESPONSE_INDEX_TOO_BIG	0x11
-#define AP_RESPONSE_NO_FIRST_PART	0x13
-#define AP_RESPONSE_MESSAGE_TOO_BIG	0x15
-#define AP_RESPONSE_REQ_FAC_NOT_INST	0x16
-
-/*
- * Known device types
- */
-#define AP_DEVICE_TYPE_PCICC	3
-#define AP_DEVICE_TYPE_PCICA	4
-#define AP_DEVICE_TYPE_PCIXCC	5
-#define AP_DEVICE_TYPE_CEX2A	6
-#define AP_DEVICE_TYPE_CEX2C	7
-#define AP_DEVICE_TYPE_CEX3A	8
-#define AP_DEVICE_TYPE_CEX3C	9
-
-/*
- * AP reset flag states
- */
-#define AP_RESET_IGNORE	0	/* request timeout will be ignored */
-#define AP_RESET_ARMED	1	/* request timeout timer is active */
-#define AP_RESET_DO	2	/* AP reset required */
-=======
 #include <linux/types.h>
 #include <linux/hashtable.h>
 #include <asm/isc.h>
@@ -243,23 +120,10 @@ enum ap_dev_state {
 	AP_DEV_STATE_ERROR,		/* device is in error state */
 	NR_AP_DEV_STATES
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ap_device;
 struct ap_message;
 
-<<<<<<< HEAD
-struct ap_driver {
-	struct device_driver driver;
-	struct ap_device_id *ids;
-
-	int (*probe)(struct ap_device *);
-	void (*remove)(struct ap_device *);
-	/* receive is called from tasklet context */
-	void (*receive)(struct ap_device *, struct ap_message *,
-			struct ap_message *);
-	int request_timeout;		/* request timeout in jiffies */
-=======
 /*
  * The ap driver struct includes a flags field which holds some info for
  * the ap bus about the driver. Currently only one flag is supported and
@@ -292,7 +156,6 @@ struct ap_driver {
 	 */
 	void (*on_scan_complete)(struct ap_config_info *new_config_info,
 				 struct ap_config_info *old_config_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_ap_drv(x) container_of((x), struct ap_driver, driver)
@@ -302,51 +165,11 @@ void ap_driver_unregister(struct ap_driver *);
 
 struct ap_device {
 	struct device device;
-<<<<<<< HEAD
-	struct ap_driver *drv;		/* Pointer to AP device driver. */
-	spinlock_t lock;		/* Per device lock. */
-	struct list_head list;		/* private list of all AP devices. */
-
-	ap_qid_t qid;			/* AP queue id. */
-	int queue_depth;		/* AP queue depth.*/
 	int device_type;		/* AP device type. */
-	int unregistered;		/* marks AP device as unregistered */
-	struct timer_list timeout;	/* Timer for request timeouts. */
-	int reset;			/* Reset required after req. timeout. */
-
-	int queue_count;		/* # messages currently on AP queue. */
-
-	struct list_head pendingq;	/* List of message sent to AP queue. */
-	int pendingq_count;		/* # requests on pendingq list. */
-	struct list_head requestq;	/* List of message yet to be sent. */
-	int requestq_count;		/* # requests on requestq list. */
-	int total_request_count;	/* # requests ever for this AP device. */
-
-	struct ap_message *reply;	/* Per device reply message. */
-
-	void *private;			/* ap driver private pointer. */
-=======
-	int device_type;		/* AP device type. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_ap_dev(x) container_of((x), struct ap_device, device)
 
-<<<<<<< HEAD
-struct ap_message {
-	struct list_head list;		/* Request queueing. */
-	unsigned long long psmid;	/* Message id. */
-	void *message;			/* Pointer to message buffer. */
-	size_t length;			/* Message length. */
-
-	void *private;			/* ap driver private pointer. */
-	unsigned int special:1;		/* Used for special commands. */
-};
-
-#define AP_DEVICE(dt)					\
-	.dev_type=(dt),					\
-	.match_flags=AP_DEVICE_ID_MATCH_DEVICE_TYPE,
-=======
 struct ap_card {
 	struct ap_device ap_dev;
 	struct ap_tapq_hwinfo hwinfo;	/* TAPQ GR2 content */
@@ -408,7 +231,6 @@ struct ap_message {
 #define AP_MSG_FLAG_SPECIAL  0x0001	/* flag msg as 'special' with NQAP */
 #define AP_MSG_FLAG_USAGE    0x0002	/* CCA, EP11: usage (no admin) msg */
 #define AP_MSG_FLAG_ADMIN    0x0004	/* CCA, EP11: admin (=control) msg */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ap_init_message() - Initialize ap_message.
@@ -417,29 +239,6 @@ struct ap_message {
  */
 static inline void ap_init_message(struct ap_message *ap_msg)
 {
-<<<<<<< HEAD
-	ap_msg->psmid = 0;
-	ap_msg->length = 0;
-	ap_msg->special = 0;
-}
-
-/*
- * Note: don't use ap_send/ap_recv after using ap_queue_message
- * for the first time. Otherwise the ap message queue will get
- * confused.
- */
-int ap_send(ap_qid_t, unsigned long long, void *, size_t);
-int ap_recv(ap_qid_t, unsigned long long *, void *, size_t);
-
-void ap_queue_message(struct ap_device *ap_dev, struct ap_message *ap_msg);
-void ap_cancel_message(struct ap_device *ap_dev, struct ap_message *ap_msg);
-void ap_flush_queue(struct ap_device *ap_dev);
-
-int ap_module_init(void);
-void ap_module_exit(void);
-
-int ap_4096_commands_available(ap_qid_t qid);
-=======
 	memset(ap_msg, 0, sizeof(*ap_msg));
 }
 
@@ -562,6 +361,5 @@ int ap_wait_apqn_bindings_complete(unsigned long timeout);
 
 void ap_send_config_uevent(struct ap_device *ap_dev, bool cfg);
 void ap_send_online_uevent(struct ap_device *ap_dev, int online);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _AP_BUS_H_ */

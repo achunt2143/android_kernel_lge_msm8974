@@ -36,25 +36,14 @@
 #include <linux/types.h>
 #include <linux/ctype.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
 #include <linux/mdio.h>
 #include "version.h"
 
-<<<<<<< HEAD
-#define CH_ERR(adap, fmt, ...)   dev_err(&adap->pdev->dev, fmt, ## __VA_ARGS__)
-#define CH_WARN(adap, fmt, ...)  dev_warn(&adap->pdev->dev, fmt, ## __VA_ARGS__)
-#define CH_ALERT(adap, fmt, ...) \
-	dev_printk(KERN_ALERT, &adap->pdev->dev, fmt, ## __VA_ARGS__)
-=======
 #define CH_ERR(adap, fmt, ...)   dev_err(&adap->pdev->dev, fmt, ##__VA_ARGS__)
 #define CH_WARN(adap, fmt, ...)  dev_warn(&adap->pdev->dev, fmt, ##__VA_ARGS__)
 #define CH_ALERT(adap, fmt, ...) dev_alert(&adap->pdev->dev, fmt, ##__VA_ARGS__)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * More powerful macro that selectively prints messages based on msg_enable.
@@ -586,11 +575,7 @@ static inline int t3_mdio_write(struct cphy *phy, int mmd, int reg,
 
 /* Convenience initializer */
 static inline void cphy_init(struct cphy *phy, struct adapter *adapter,
-<<<<<<< HEAD
-			     int phy_addr, struct cphy_ops *phy_ops,
-=======
 			     int phy_addr, const struct cphy_ops *phy_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     const struct mdio_ops *mdio_ops,
 			      unsigned int caps, const char *desc)
 {
@@ -691,11 +676,6 @@ void t3_link_changed(struct adapter *adapter, int port_id);
 void t3_link_fault(struct adapter *adapter, int port_id);
 int t3_link_start(struct cphy *phy, struct cmac *mac, struct link_config *lc);
 const struct adapter_info *t3_get_adapter_info(unsigned int board_id);
-<<<<<<< HEAD
-int t3_seeprom_read(struct adapter *adapter, u32 addr, __le32 *data);
-int t3_seeprom_write(struct adapter *adapter, u32 addr, __le32 data);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t3_seeprom_wp(struct adapter *adapter, int enable);
 int t3_get_tp_version(struct adapter *adapter, u32 *vers);
 int t3_check_tpsram_version(struct adapter *adapter);
@@ -728,11 +708,7 @@ int t3_mac_enable(struct cmac *mac, int which);
 int t3_mac_disable(struct cmac *mac, int which);
 int t3_mac_set_mtu(struct cmac *mac, unsigned int mtu);
 int t3_mac_set_rx_mode(struct cmac *mac, struct net_device *dev);
-<<<<<<< HEAD
-int t3_mac_set_address(struct cmac *mac, unsigned int idx, u8 addr[6]);
-=======
 int t3_mac_set_address(struct cmac *mac, unsigned int idx, const u8 addr[6]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t3_mac_set_num_ucast(struct cmac *mac, int n);
 const struct mac_stats *t3_mac_update_stats(struct cmac *mac);
 int t3_mac_set_speed_duplex_fc(struct cmac *mac, int speed, int duplex, int fc);
@@ -792,9 +768,6 @@ int t3_xaui_direct_phy_prep(struct cphy *phy, struct adapter *adapter,
 			    int phy_addr, const struct mdio_ops *mdio_ops);
 int t3_aq100x_phy_prep(struct cphy *phy, struct adapter *adapter,
 			    int phy_addr, const struct mdio_ops *mdio_ops);
-<<<<<<< HEAD
-=======
 
 extern struct workqueue_struct *cxgb3_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* __CHELSIO_COMMON_H */

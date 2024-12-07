@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/****************************************************************************
- * Driver for Solarflare Solarstorm network controllers and boards
- * Copyright 2007-2009 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /****************************************************************************
  * Driver for Solarflare network controllers and boards
  * Copyright 2007-2013 Solarflare Communications Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef EFX_ENUM_H
@@ -88,10 +78,6 @@ enum efx_loopback_mode {
 			    (1 << LOOPBACK_XAUI) |		\
 			    (1 << LOOPBACK_GMII) |		\
 			    (1 << LOOPBACK_SGMII) |		\
-<<<<<<< HEAD
-			    (1 << LOOPBACK_SGMII) |		\
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (1 << LOOPBACK_XGBR) |		\
 			    (1 << LOOPBACK_XFI) |		\
 			    (1 << LOOPBACK_XAUI_FAR) |		\
@@ -146,33 +132,6 @@ enum efx_loopback_mode {
  *
  * Reset methods are numbered in order of increasing scope.
  *
-<<<<<<< HEAD
- * @RESET_TYPE_INVISIBLE: don't reset the PHYs or interrupts
- * @RESET_TYPE_ALL: reset everything but PCI core blocks
- * @RESET_TYPE_WORLD: reset everything, save & restore PCI config
- * @RESET_TYPE_DISABLE: disable NIC
- * @RESET_TYPE_TX_WATCHDOG: reset due to TX watchdog
- * @RESET_TYPE_INT_ERROR: reset due to internal error
- * @RESET_TYPE_RX_RECOVERY: reset to recover from RX datapath errors
- * @RESET_TYPE_RX_DESC_FETCH: pcie error during rx descriptor fetch
- * @RESET_TYPE_TX_DESC_FETCH: pcie error during tx descriptor fetch
- * @RESET_TYPE_TX_SKIP: hardware completed empty tx descriptors
- * @RESET_TYPE_MC_FAILURE: MC reboot/assertion
- */
-enum reset_type {
-	RESET_TYPE_INVISIBLE = 0,
-	RESET_TYPE_ALL = 1,
-	RESET_TYPE_WORLD = 2,
-	RESET_TYPE_DISABLE = 3,
-	RESET_TYPE_MAX_METHOD,
-	RESET_TYPE_TX_WATCHDOG,
-	RESET_TYPE_INT_ERROR,
-	RESET_TYPE_RX_RECOVERY,
-	RESET_TYPE_RX_DESC_FETCH,
-	RESET_TYPE_TX_DESC_FETCH,
-	RESET_TYPE_TX_SKIP,
-	RESET_TYPE_MC_FAILURE,
-=======
  * @RESET_TYPE_INVISIBLE: Reset datapath and MAC (Falcon only)
  * @RESET_TYPE_RECOVER_OR_ALL: Try to recover. Apply RESET_TYPE_ALL
  * if unsuccessful.
@@ -211,7 +170,6 @@ enum reset_type {
 	 * RESET_TYPE_MAX_METHOD.
 	 */
 	RESET_TYPE_MCDI_TIMEOUT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RESET_TYPE_MAX,
 };
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/kernel/entry.S
  *
@@ -16,12 +13,6 @@
 
 	.text
 	.set noat
-<<<<<<< HEAD
-
-/* Stack offsets.  */
-#define SP_OFF			184
-#define SWITCH_STACK_SIZE	320
-=======
 	.cfi_sections	.debug_frame
 
 /* Stack offsets.  */
@@ -47,7 +38,6 @@
 	.cfi_endproc
 	.size	\func, . - \func
 .endm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This defines the normal kernel pt-regs layout.
@@ -59,66 +49,6 @@
  * the palcode-provided values are available to the signal handler.
  */
 
-<<<<<<< HEAD
-#define SAVE_ALL			\
-	subq	$sp, SP_OFF, $sp;	\
-	stq	$0, 0($sp);		\
-	stq	$1, 8($sp);		\
-	stq	$2, 16($sp);		\
-	stq	$3, 24($sp);		\
-	stq	$4, 32($sp);		\
-	stq	$28, 144($sp);		\
-	lda	$2, alpha_mv;		\
-	stq	$5, 40($sp);		\
-	stq	$6, 48($sp);		\
-	stq	$7, 56($sp);		\
-	stq	$8, 64($sp);		\
-	stq	$19, 72($sp);		\
-	stq	$20, 80($sp);		\
-	stq	$21, 88($sp);		\
-	ldq	$2, HAE_CACHE($2);	\
-	stq	$22, 96($sp);		\
-	stq	$23, 104($sp);		\
-	stq	$24, 112($sp);		\
-	stq	$25, 120($sp);		\
-	stq	$26, 128($sp);		\
-	stq	$27, 136($sp);		\
-	stq	$2, 152($sp);		\
-	stq	$16, 160($sp);		\
-	stq	$17, 168($sp);		\
-	stq	$18, 176($sp)
-
-#define RESTORE_ALL			\
-	lda	$19, alpha_mv;		\
-	ldq	$0, 0($sp);		\
-	ldq	$1, 8($sp);		\
-	ldq	$2, 16($sp);		\
-	ldq	$3, 24($sp);		\
-	ldq	$21, 152($sp);		\
-	ldq	$20, HAE_CACHE($19);	\
-	ldq	$4, 32($sp);		\
-	ldq	$5, 40($sp);		\
-	ldq	$6, 48($sp);		\
-	ldq	$7, 56($sp);		\
-	subq	$20, $21, $20;		\
-	ldq	$8, 64($sp);		\
-	beq	$20, 99f;		\
-	ldq	$20, HAE_REG($19);	\
-	stq	$21, HAE_CACHE($19);	\
-	stq	$21, 0($20);		\
-99:;					\
-	ldq	$19, 72($sp);		\
-	ldq	$20, 80($sp);		\
-	ldq	$21, 88($sp);		\
-	ldq	$22, 96($sp);		\
-	ldq	$23, 104($sp);		\
-	ldq	$24, 112($sp);		\
-	ldq	$25, 120($sp);		\
-	ldq	$26, 128($sp);		\
-	ldq	$27, 136($sp);		\
-	ldq	$28, 144($sp);		\
-	addq	$sp, SP_OFF, $sp
-=======
 .macro	SAVE_ALL
 	subq	$sp, SP_OFF, $sp
 	.cfi_adjust_cfa_offset	SP_OFF
@@ -242,55 +172,27 @@
 	.cfi_restore	$15
 	.cfi_adjust_cfa_offset	-SWITCH_STACK_SIZE
 .endm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Non-syscall kernel entry points.
  */
 
-<<<<<<< HEAD
-	.align	4
-	.globl	entInt
-	.ent	entInt
-entInt:
-=======
 CFI_START_OSF_FRAME entInt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $19
 	jsr	$31, do_entInt
-<<<<<<< HEAD
-.end entInt
-
-	.align	4
-	.globl	entArith
-	.ent	entArith
-entArith:
-=======
 CFI_END_OSF_FRAME entInt
 
 CFI_START_OSF_FRAME entArith
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $18
 	jsr	$31, do_entArith
-<<<<<<< HEAD
-.end entArith
-
-	.align	4
-	.globl	entMM
-	.ent	entMM
-entMM:
-	SAVE_ALL
-/* save $9 - $15 so the inline exception code can manipulate them.  */
-	subq	$sp, 56, $sp
-=======
 CFI_END_OSF_FRAME entArith
 
 CFI_START_OSF_FRAME entMM
@@ -298,7 +200,6 @@ CFI_START_OSF_FRAME entMM
 /* save $9 - $15 so the inline exception code can manipulate them.  */
 	subq	$sp, 56, $sp
 	.cfi_adjust_cfa_offset	56
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stq	$9, 0($sp)
 	stq	$10, 8($sp)
 	stq	$11, 16($sp)
@@ -306,8 +207,6 @@ CFI_START_OSF_FRAME entMM
 	stq	$13, 32($sp)
 	stq	$14, 40($sp)
 	stq	$15, 48($sp)
-<<<<<<< HEAD
-=======
 	.cfi_rel_offset	$9, 0
 	.cfi_rel_offset	$10, 8
 	.cfi_rel_offset	$11, 16
@@ -315,7 +214,6 @@ CFI_START_OSF_FRAME entMM
 	.cfi_rel_offset	$13, 32
 	.cfi_rel_offset	$14, 40
 	.cfi_rel_offset	$15, 48
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addq	$sp, 56, $19
 /* handle the fault */
 	lda	$8, 0x3fff
@@ -330,16 +228,6 @@ CFI_START_OSF_FRAME entMM
 	ldq	$14, 40($sp)
 	ldq	$15, 48($sp)
 	addq	$sp, 56, $sp
-<<<<<<< HEAD
-/* finish up the syscall as normal.  */
-	br	ret_from_sys_call
-.end entMM
-
-	.align	4
-	.globl	entIF
-	.ent	entIF
-entIF:
-=======
 	.cfi_restore	$9
 	.cfi_restore	$10
 	.cfi_restore	$11
@@ -353,23 +241,12 @@ entIF:
 CFI_END_OSF_FRAME entMM
 
 CFI_START_OSF_FRAME entIF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $17
 	jsr	$31, do_entIF
-<<<<<<< HEAD
-.end entIF
-
-	.align	4
-	.globl	entUna
-	.ent	entUna
-entUna:
-	lda	$sp, -256($sp)
-	stq	$0, 0($sp)
-=======
 CFI_END_OSF_FRAME entIF
 
 CFI_START_OSF_FRAME entUna
@@ -378,7 +255,6 @@ CFI_START_OSF_FRAME entUna
 	stq	$0, 0($sp)
 	.cfi_rel_offset	$0, 0
 	.cfi_remember_state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldq	$0, 256($sp)	/* get PS */
 	stq	$1, 8($sp)
 	stq	$2, 16($sp)
@@ -410,8 +286,6 @@ CFI_START_OSF_FRAME entUna
 	stq	$28, 224($sp)
 	mov	$sp, $19
 	stq	$gp, 232($sp)
-<<<<<<< HEAD
-=======
 	.cfi_rel_offset	$1, 1*8
 	.cfi_rel_offset	$2, 2*8
 	.cfi_rel_offset	$3, 3*8
@@ -438,7 +312,6 @@ CFI_START_OSF_FRAME entUna
 	.cfi_rel_offset	$27, 27*8
 	.cfi_rel_offset	$28, 28*8
 	.cfi_rel_offset	$29, 29*8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lda	$8, 0x3fff
 	stq	$31, 248($sp)
 	bic	$sp, $8, $8
@@ -472,18 +345,6 @@ CFI_START_OSF_FRAME entUna
 	ldq	$28, 224($sp)
 	ldq	$gp, 232($sp)
 	lda	$sp, 256($sp)
-<<<<<<< HEAD
-	call_pal PAL_rti
-.end entUna
-
-	.align	4
-	.ent	entUnaUser
-entUnaUser:
-	ldq	$0, 0($sp)	/* restore original $0 */
-	lda	$sp, 256($sp)	/* pop entUna's stack frame */
-	SAVE_ALL		/* setup normal kernel stack */
-	lda	$sp, -56($sp)
-=======
 	.cfi_restore	$1
 	.cfi_restore	$2
 	.cfi_restore	$3
@@ -523,7 +384,6 @@ entUnaUser:
 	SAVE_ALL		/* setup normal kernel stack */
 	lda	$sp, -56($sp)
 	.cfi_adjust_cfa_offset	56
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stq	$9, 0($sp)
 	stq	$10, 8($sp)
 	stq	$11, 16($sp)
@@ -531,8 +391,6 @@ entUnaUser:
 	stq	$13, 32($sp)
 	stq	$14, 40($sp)
 	stq	$15, 48($sp)
-<<<<<<< HEAD
-=======
 	.cfi_rel_offset	$9, 0
 	.cfi_rel_offset	$10, 8
 	.cfi_rel_offset	$11, 16
@@ -540,7 +398,6 @@ entUnaUser:
 	.cfi_rel_offset	$13, 32
 	.cfi_rel_offset	$14, 40
 	.cfi_rel_offset	$15, 48
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lda	$8, 0x3fff
 	addq	$sp, 56, $19
 	bic	$sp, $8, $8
@@ -553,15 +410,6 @@ entUnaUser:
 	ldq	$14, 40($sp)
 	ldq	$15, 48($sp)
 	lda	$sp, 56($sp)
-<<<<<<< HEAD
-	br	ret_from_sys_call
-.end entUnaUser
-
-	.align	4
-	.globl	entDbg
-	.ent	entDbg
-entDbg:
-=======
 	.cfi_restore	$9
 	.cfi_restore	$10
 	.cfi_restore	$11
@@ -574,18 +422,13 @@ entDbg:
 CFI_END_OSF_FRAME entUna
 
 CFI_START_OSF_FRAME entDbg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SAVE_ALL
 	lda	$8, 0x3fff
 	lda	$26, ret_from_sys_call
 	bic	$sp, $8, $8
 	mov	$sp, $16
 	jsr	$31, do_entDbg
-<<<<<<< HEAD
-.end entDbg
-=======
 CFI_END_OSF_FRAME entDbg
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The system call entry point is special.  Most importantly, it looks
@@ -600,26 +443,17 @@ CFI_END_OSF_FRAME entDbg
 
 	.align	4
 	.globl	entSys
-<<<<<<< HEAD
-	.globl	ret_from_sys_call
-	.ent	entSys
-=======
 	.type	entSys, @function
 	.cfi_startproc simple
 	.cfi_return_column 64
 	.cfi_def_cfa	$sp, 48
 	.cfi_rel_offset	64, 8
 	.cfi_rel_offset	$gp, 16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 entSys:
 	SAVE_ALL
 	lda	$8, 0x3fff
 	bic	$sp, $8, $8
-<<<<<<< HEAD
-	lda	$4, NR_SYSCALLS($31)
-=======
 	lda	$4, NR_syscalls($31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stq	$16, SP_OFF+24($sp)
 	lda	$5, sys_call_table
 	lda	$27, sys_ni_syscall
@@ -628,14 +462,6 @@ entSys:
 	stq	$17, SP_OFF+32($sp)
 	s8addq	$0, $5, $5
 	stq	$18, SP_OFF+40($sp)
-<<<<<<< HEAD
-	blbs	$3, strace
-	beq	$4, 1f
-	ldq	$27, 0($5)
-1:	jsr	$26, ($27), alpha_ni_syscall
-	ldgp	$gp, 0($26)
-	blt	$0, $syscall_error	/* the call failed */
-=======
 	.cfi_rel_offset	$16, SP_OFF+24
 	.cfi_rel_offset	$17, SP_OFF+32
 	.cfi_rel_offset	$18, SP_OFF+40
@@ -652,19 +478,13 @@ entSys:
 	ldgp	$gp, 0($26)
 	blt	$0, $syscall_error	/* the call failed */
 $ret_success:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stq	$0, 0($sp)
 	stq	$31, 72($sp)		/* a3=0 => no error */
 
 	.align	4
-<<<<<<< HEAD
-ret_from_sys_call:
-	cmovne	$26, 0, $19		/* $19 = 0 => non-restartable */
-=======
 	.globl	ret_from_sys_call
 ret_from_sys_call:
 	cmovne	$26, 0, $18		/* $18 = 0 => non-restartable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldq	$0, SP_OFF($sp)
 	and	$0, 8, $0
 	beq	$0, ret_to_kernel
@@ -673,12 +493,6 @@ ret_to_user:
 		sampling and the rti.  */
 	lda	$16, 7
 	call_pal PAL_swpipl
-<<<<<<< HEAD
-	ldl	$5, TI_FLAGS($8)
-	and	$5, _TIF_WORK_MASK, $2
-	bne	$2, work_pending
-restore_all:
-=======
 	ldl	$17, TI_FLAGS($8)
 	and	$17, _TIF_WORK_MASK, $2
 	bne	$2, work_pending
@@ -688,21 +502,14 @@ restore_all:
 	bne	$3, restore_fpu
 restore_other:
 	.cfi_remember_state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RESTORE_ALL
 	call_pal PAL_rti
 
 ret_to_kernel:
-<<<<<<< HEAD
-	lda	$16, 7
-	call_pal PAL_swpipl
-	br restore_all
-=======
 	.cfi_restore_state
 	lda	$16, 7
 	call_pal PAL_swpipl
 	br restore_other
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.align 3
 $syscall_error:
@@ -713,17 +520,10 @@ $syscall_error:
 	 * frame to indicate that a negative return value wasn't an
 	 * error number..
 	 */
-<<<<<<< HEAD
-	ldq	$19, 0($sp)	/* old syscall nr (zero if success) */
-	beq	$19, $ret_success
-
-	ldq	$20, 72($sp)	/* .. and this a3 */
-=======
 	ldq	$18, 0($sp)	/* old syscall nr (zero if success) */
 	beq	$18, $ret_success
 
 	ldq	$19, 72($sp)	/* .. and this a3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subq	$31, $0, $0	/* with error in v0 */
 	addq	$31, 1, $1	/* set a3 for errno return */
 	stq	$0, 0($sp)
@@ -731,67 +531,10 @@ $syscall_error:
 	stq	$1, 72($sp)	/* a3 for return */
 	br	ret_from_sys_call
 
-<<<<<<< HEAD
-$ret_success:
-	stq	$0, 0($sp)
-	stq	$31, 72($sp)	/* a3=0 => no error */
-	br	ret_from_sys_call
-.end entSys
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Do all cleanup when returning from all interrupts and system calls.
  *
  * Arguments:
-<<<<<<< HEAD
- *       $5: TI_FLAGS.
- *       $8: current.
- *      $19: The old syscall number, or zero if this is not a return
- *           from a syscall that errored and is possibly restartable.
- *      $20: The old a3 value
- */
-
-	.align	4
-	.ent	work_pending
-work_pending:
-	and	$5, _TIF_NEED_RESCHED, $2
-	beq	$2, $work_notifysig
-
-$work_resched:
-	subq	$sp, 16, $sp
-	stq	$19, 0($sp)              /* save syscall nr */
-	stq	$20, 8($sp)              /* and error indication (a3) */
-	jsr	$26, schedule
-	ldq	$19, 0($sp)
-	ldq	$20, 8($sp)
-	addq	$sp, 16, $sp
-	/* Make sure need_resched and sigpending don't change between
-		sampling and the rti.  */
-	lda	$16, 7
-	call_pal PAL_swpipl
-	ldl	$5, TI_FLAGS($8)
-	and	$5, _TIF_WORK_MASK, $2
-	beq	$2, restore_all
-	and	$5, _TIF_NEED_RESCHED, $2
-	bne	$2, $work_resched
-
-$work_notifysig:
-	mov	$sp, $16
-	bsr	$1, do_switch_stack
-	mov	$sp, $17
-	mov	$5, $18
-	mov	$19, $9		/* save old syscall number */
-	mov	$20, $10	/* save old a3 */
-	and	$5, _TIF_SIGPENDING, $2
-	cmovne	$2, 0, $9	/* we don't want double syscall restarts */
-	jsr	$26, do_notify_resume
-	mov	$9, $19
-	mov	$10, $20
-	bsr	$1, undo_switch_stack
-	br	ret_to_user
-.end work_pending
-=======
  *       $8: current.
  *      $17: TI_FLAGS.
  *      $18: The old syscall number, or zero if this is not a return
@@ -821,24 +564,12 @@ $work_notifysig:
 	jsr	$26, do_work_pending
 	UNDO_SWITCH_STACK
 	br	restore_all
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PTRACE syscall handler
  */
 
 	.align	4
-<<<<<<< HEAD
-	.ent	strace
-strace:
-	/* set up signal stack, call syscall_trace */
-	bsr	$1, do_switch_stack
-	jsr	$26, syscall_trace
-	bsr	$1, undo_switch_stack
-
-	/* get the system call number and the arguments back.. */
-	ldq	$0, 0($sp)
-=======
 	.type	strace, @function
 strace:
 	/* set up signal stack, call syscall_trace */
@@ -855,7 +586,6 @@ strace:
 	UNDO_SWITCH_STACK
 
 	/* get the arguments back.. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldq	$16, SP_OFF+24($sp)
 	ldq	$17, SP_OFF+32($sp)
 	ldq	$18, SP_OFF+40($sp)
@@ -864,15 +594,9 @@ strace:
 	ldq	$21, 88($sp)
 
 	/* get the system call pointer.. */
-<<<<<<< HEAD
-	lda	$1, NR_SYSCALLS($31)
-	lda	$2, sys_call_table
-	lda	$27, alpha_ni_syscall
-=======
 	lda	$1, NR_syscalls($31)
 	lda	$2, sys_call_table
 	lda	$27, sys_ni_syscall
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmpult	$0, $1, $1
 	s8addq	$0, $2, $2
 	beq	$1, 1f
@@ -883,15 +607,6 @@ ret_from_straced:
 
 	/* check return.. */
 	blt	$0, $strace_error	/* the call failed */
-<<<<<<< HEAD
-	stq	$31, 72($sp)		/* a3=0 => no error */
-$strace_success:
-	stq	$0, 0($sp)		/* save return value */
-
-	bsr	$1, do_switch_stack
-	jsr	$26, syscall_trace
-	bsr	$1, undo_switch_stack
-=======
 $strace_success:
 	stq	$31, 72($sp)		/* a3=0 => no error */
 	stq	$0, 0($sp)		/* save return value */
@@ -899,39 +614,19 @@ $strace_success:
 	DO_SWITCH_STACK
 	jsr	$26, syscall_trace_leave
 	UNDO_SWITCH_STACK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	br	$31, ret_from_sys_call
 
 	.align	3
 $strace_error:
-<<<<<<< HEAD
-	ldq	$19, 0($sp)	/* old syscall nr (zero if success) */
-	beq	$19, $strace_success
-	ldq	$20, 72($sp)	/* .. and this a3 */
-=======
 	ldq	$18, 0($sp)	/* old syscall nr (zero if success) */
 	beq	$18, $strace_success
 	ldq	$19, 72($sp)	/* .. and this a3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	subq	$31, $0, $0	/* with error in v0 */
 	addq	$31, 1, $1	/* set a3 for errno return */
 	stq	$0, 0($sp)
 	stq	$1, 72($sp)	/* a3 for return */
 
-<<<<<<< HEAD
-	bsr	$1, do_switch_stack
-	mov	$19, $9		/* save old syscall number */
-	mov	$20, $10	/* save old a3 */
-	jsr	$26, syscall_trace
-	mov	$9, $19
-	mov	$10, $20
-	bsr	$1, undo_switch_stack
-
-	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
-	br	ret_from_sys_call
-.end strace
-=======
 	DO_SWITCH_STACK
 	mov	$18, $9		/* save old syscall number */
 	mov	$19, $10	/* save old a3 */
@@ -943,18 +638,12 @@ $strace_error:
 	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
 	br	ret_from_sys_call
 CFI_END_OSF_FRAME entSys
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Save and restore the switch stack -- aka the balance of the user context.
  */
 
 	.align	4
-<<<<<<< HEAD
-	.ent	do_switch_stack
-do_switch_stack:
-	lda	$sp, -SWITCH_STACK_SIZE($sp)
-=======
 	.type	do_switch_stack, @function
 	.cfi_startproc simple
 	.cfi_return_column 64
@@ -963,7 +652,6 @@ do_switch_stack:
 do_switch_stack:
 	lda	$sp, -SWITCH_STACK_SIZE($sp)
 	.cfi_adjust_cfa_offset	SWITCH_STACK_SIZE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stq	$9, 0($sp)
 	stq	$10, 8($sp)
 	stq	$11, 16($sp)
@@ -972,47 +660,6 @@ do_switch_stack:
 	stq	$14, 40($sp)
 	stq	$15, 48($sp)
 	stq	$26, 56($sp)
-<<<<<<< HEAD
-	stt	$f0, 64($sp)
-	stt	$f1, 72($sp)
-	stt	$f2, 80($sp)
-	stt	$f3, 88($sp)
-	stt	$f4, 96($sp)
-	stt	$f5, 104($sp)
-	stt	$f6, 112($sp)
-	stt	$f7, 120($sp)
-	stt	$f8, 128($sp)
-	stt	$f9, 136($sp)
-	stt	$f10, 144($sp)
-	stt	$f11, 152($sp)
-	stt	$f12, 160($sp)
-	stt	$f13, 168($sp)
-	stt	$f14, 176($sp)
-	stt	$f15, 184($sp)
-	stt	$f16, 192($sp)
-	stt	$f17, 200($sp)
-	stt	$f18, 208($sp)
-	stt	$f19, 216($sp)
-	stt	$f20, 224($sp)
-	stt	$f21, 232($sp)
-	stt	$f22, 240($sp)
-	stt	$f23, 248($sp)
-	stt	$f24, 256($sp)
-	stt	$f25, 264($sp)
-	stt	$f26, 272($sp)
-	stt	$f27, 280($sp)
-	mf_fpcr	$f0		# get fpcr
-	stt	$f28, 288($sp)
-	stt	$f29, 296($sp)
-	stt	$f30, 304($sp)
-	stt	$f0, 312($sp)	# save fpcr in slot of $f31
-	ldt	$f0, 64($sp)	# dont let "do_switch_stack" change fp state.
-	ret	$31, ($1), 1
-.end do_switch_stack
-
-	.align	4
-	.ent	undo_switch_stack
-=======
 	ret	$31, ($1), 1
 	.cfi_endproc
 	.size	do_switch_stack, .-do_switch_stack
@@ -1022,7 +669,6 @@ do_switch_stack:
 	.cfi_startproc simple
 	.cfi_def_cfa $sp, 0
 	.cfi_register 64, $1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 undo_switch_stack:
 	ldq	$9, 0($sp)
 	ldq	$10, 8($sp)
@@ -1032,44 +678,6 @@ undo_switch_stack:
 	ldq	$14, 40($sp)
 	ldq	$15, 48($sp)
 	ldq	$26, 56($sp)
-<<<<<<< HEAD
-	ldt	$f30, 312($sp)	# get saved fpcr
-	ldt	$f0, 64($sp)
-	ldt	$f1, 72($sp)
-	ldt	$f2, 80($sp)
-	ldt	$f3, 88($sp)
-	mt_fpcr	$f30		# install saved fpcr
-	ldt	$f4, 96($sp)
-	ldt	$f5, 104($sp)
-	ldt	$f6, 112($sp)
-	ldt	$f7, 120($sp)
-	ldt	$f8, 128($sp)
-	ldt	$f9, 136($sp)
-	ldt	$f10, 144($sp)
-	ldt	$f11, 152($sp)
-	ldt	$f12, 160($sp)
-	ldt	$f13, 168($sp)
-	ldt	$f14, 176($sp)
-	ldt	$f15, 184($sp)
-	ldt	$f16, 192($sp)
-	ldt	$f17, 200($sp)
-	ldt	$f18, 208($sp)
-	ldt	$f19, 216($sp)
-	ldt	$f20, 224($sp)
-	ldt	$f21, 232($sp)
-	ldt	$f22, 240($sp)
-	ldt	$f23, 248($sp)
-	ldt	$f24, 256($sp)
-	ldt	$f25, 264($sp)
-	ldt	$f26, 272($sp)
-	ldt	$f27, 280($sp)
-	ldt	$f28, 288($sp)
-	ldt	$f29, 296($sp)
-	ldt	$f30, 304($sp)
-	lda	$sp, SWITCH_STACK_SIZE($sp)
-	ret	$31, ($1), 1
-.end undo_switch_stack
-=======
 	lda	$sp, SWITCH_STACK_SIZE($sp)
 	ret	$31, ($1), 1
 	.cfi_endproc
@@ -1116,27 +724,10 @@ restore_fpu:
 	br restore_other
 #undef V
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The meat of the context switch code.
  */
-<<<<<<< HEAD
-
-	.align	4
-	.globl	alpha_switch_to
-	.ent	alpha_switch_to
-alpha_switch_to:
-	.prologue 0
-	bsr	$1, do_switch_stack
-	call_pal PAL_swpctx
-	lda	$8, 0x3fff
-	bsr	$1, undo_switch_stack
-	bic	$sp, $8, $8
-	mov	$17, $0
-	ret
-.end alpha_switch_to
-=======
 	.align	4
 	.globl	alpha_switch_to
 	.type	alpha_switch_to, @function
@@ -1160,7 +751,6 @@ alpha_switch_to:
 	ret
 	.cfi_endproc
 	.size	alpha_switch_to, .-alpha_switch_to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * New processes begin life here.
@@ -1170,123 +760,12 @@ alpha_switch_to:
 	.align	4
 	.ent	ret_from_fork
 ret_from_fork:
-<<<<<<< HEAD
-	lda	$26, ret_from_sys_call
-=======
 	lda	$26, ret_to_user
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	$17, $16
 	jmp	$31, schedule_tail
 .end ret_from_fork
 
 /*
-<<<<<<< HEAD
- * kernel_thread(fn, arg, clone_flags)
- */
-	.align 4
-	.globl	kernel_thread
-	.ent	kernel_thread
-kernel_thread:
-	/* We can be called from a module.  */
-	ldgp	$gp, 0($27)
-	.prologue 1
-	subq	$sp, SP_OFF+6*8, $sp
-	br	$1, 2f		/* load start address */
-
-	/* We've now "returned" from a fake system call.  */
-	unop
-	blt	$0, 1f		/* error?  */
-	ldi	$1, 0x3fff
-	beq	$20, 1f		/* parent or child?  */
-
-	bic	$sp, $1, $8	/* in child.  */
-	jsr	$26, ($27)
-	ldgp	$gp, 0($26)
-	mov	$0, $16
-	mov	$31, $26
-	jmp	$31, sys_exit
-
-1:	ret			/* in parent.  */
-
-	.align 4
-2:	/* Fake a system call stack frame, as we can't do system calls
-	   from kernel space.  Note that we store FN and ARG as they
-	   need to be set up in the child for the call.  Also store $8
-	   and $26 for use in the parent.  */
-	stq	$31, SP_OFF($sp)	/* ps */
-	stq	$1, SP_OFF+8($sp)	/* pc */
-	stq	$gp, SP_OFF+16($sp)	/* gp */
-	stq	$16, 136($sp)		/* $27; FN for child */
-	stq	$17, SP_OFF+24($sp)	/* $16; ARG for child */
-	stq	$8, 64($sp)		/* $8 */
-	stq	$26, 128($sp)		/* $26 */
-	/* Avoid the HAE being gratuitously wrong, to avoid restoring it.  */
-	ldq	$2, alpha_mv+HAE_CACHE
-	stq	$2, 152($sp)		/* HAE */
-
-	/* Shuffle FLAGS to the front; add CLONE_VM.  */
-	ldi	$1, CLONE_VM|CLONE_UNTRACED
-	or	$18, $1, $16
-	bsr	$26, sys_clone
-
-	/* We don't actually care for a3 success widgetry in the kernel.
-	   Not for positive errno values.  */
-	stq	$0, 0($sp)		/* $0 */
-	br	ret_to_kernel
-.end kernel_thread
-
-/*
- * kernel_execve(path, argv, envp)
- */
-	.align	4
-	.globl	kernel_execve
-	.ent	kernel_execve
-kernel_execve:
-	/* We can be called from a module.  */
-	ldgp	$gp, 0($27)
-	lda	$sp, -(32+SIZEOF_PT_REGS+8)($sp)
-	.frame	$sp, 32+SIZEOF_PT_REGS+8, $26, 0
-	stq	$26, 0($sp)
-	stq	$16, 8($sp)
-	stq	$17, 16($sp)
-	stq	$18, 24($sp)
-	.prologue 1
-
-	lda	$16, 32($sp)
-	lda	$17, 0
-	lda	$18, SIZEOF_PT_REGS
-	bsr	$26, memset		!samegp
-
-	/* Avoid the HAE being gratuitously wrong, which would cause us
-	   to do the whole turn off interrupts thing and restore it.  */
-	ldq	$2, alpha_mv+HAE_CACHE
-	stq	$2, 152+32($sp)
-
-	ldq	$16, 8($sp)
-	ldq	$17, 16($sp)
-	ldq	$18, 24($sp)
-	lda	$19, 32($sp)
-	bsr	$26, do_execve		!samegp
-
-	ldq	$26, 0($sp)
-	bne	$0, 1f			/* error! */
-
-	/* Move the temporary pt_regs struct from its current location
-	   to the top of the kernel stack frame.  See copy_thread for
-	   details for a normal process.  */
-	lda	$16, 0x4000 - SIZEOF_PT_REGS($8)
-	lda	$17, 32($sp)
-	lda	$18, SIZEOF_PT_REGS
-	bsr	$26, memmove		!samegp
-
-	/* Take that over as our new stack frame and visit userland!  */
-	lda	$sp, 0x4000 - SIZEOF_PT_REGS($8)
-	br	$31, ret_from_sys_call
-
-1:	lda	$sp, 32+SIZEOF_PT_REGS+8($sp)
-	ret
-.end kernel_execve
-=======
  * ... and new kernel threads - here
  */
 	.align 4
@@ -1300,217 +779,10 @@ ret_from_kernel_thread:
 	jsr	$26, ($9)
 	br	$31, ret_to_user
 .end ret_from_kernel_thread
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
  * Special system calls.  Most of these are special in that they either
-<<<<<<< HEAD
- * have to play switch_stack games or in some way use the pt_regs struct.
- */
-	.align	4
-	.globl	sys_fork
-	.ent	sys_fork
-sys_fork:
-	.prologue 0
-	mov	$sp, $21
-	bsr	$1, do_switch_stack
-	bis	$31, SIGCHLD, $16
-	mov	$31, $17
-	mov	$31, $18
-	mov	$31, $19
-	mov	$31, $20
-	jsr	$26, alpha_clone
-	bsr	$1, undo_switch_stack
-	ret
-.end sys_fork
-
-	.align	4
-	.globl	sys_clone
-	.ent	sys_clone
-sys_clone:
-	.prologue 0
-	mov	$sp, $21
-	bsr	$1, do_switch_stack
-	/* $16, $17, $18, $19, $20 come from the user.  */
-	jsr	$26, alpha_clone
-	bsr	$1, undo_switch_stack
-	ret
-.end sys_clone
-
-	.align	4
-	.globl	sys_vfork
-	.ent	sys_vfork
-sys_vfork:
-	.prologue 0
-	mov	$sp, $16
-	bsr	$1, do_switch_stack
-	jsr	$26, alpha_vfork
-	bsr	$1, undo_switch_stack
-	ret
-.end sys_vfork
-
-	.align	4
-	.globl	sys_sigreturn
-	.ent	sys_sigreturn
-sys_sigreturn:
-	.prologue 0
-	lda	$9, ret_from_straced
-	cmpult	$26, $9, $9
-	mov	$sp, $17
-	lda	$18, -SWITCH_STACK_SIZE($sp)
-	lda	$sp, -SWITCH_STACK_SIZE($sp)
-	jsr	$26, do_sigreturn
-	bne	$9, 1f
-	jsr	$26, syscall_trace
-1:	br	$1, undo_switch_stack
-	br	ret_from_sys_call
-.end sys_sigreturn
-
-	.align	4
-	.globl	sys_rt_sigreturn
-	.ent	sys_rt_sigreturn
-sys_rt_sigreturn:
-	.prologue 0
-	lda	$9, ret_from_straced
-	cmpult	$26, $9, $9
-	mov	$sp, $17
-	lda	$18, -SWITCH_STACK_SIZE($sp)
-	lda	$sp, -SWITCH_STACK_SIZE($sp)
-	jsr	$26, do_rt_sigreturn
-	bne	$9, 1f
-	jsr	$26, syscall_trace
-1:	br	$1, undo_switch_stack
-	br	ret_from_sys_call
-.end sys_rt_sigreturn
-
-	.align	4
-	.globl	sys_sethae
-	.ent	sys_sethae
-sys_sethae:
-	.prologue 0
-	stq	$16, 152($sp)
-	ret
-.end sys_sethae
-
-	.align	4
-	.globl	osf_getpriority
-	.ent	osf_getpriority
-osf_getpriority:
-	lda	$sp, -16($sp)
-	stq	$26, 0($sp)
-	.prologue 0
-
-	jsr	$26, sys_getpriority
-
-	ldq	$26, 0($sp)
-	blt	$0, 1f
-
-	/* Return value is the unbiased priority, i.e. 20 - prio.
-	   This does result in negative return values, so signal
-	   no error by writing into the R0 slot.  */
-	lda	$1, 20
-	stq	$31, 16($sp)
-	subl	$1, $0, $0
-	unop
-
-1:	lda	$sp, 16($sp)
-	ret
-.end osf_getpriority
-
-	.align	4
-	.globl	sys_getxuid
-	.ent	sys_getxuid
-sys_getxuid:
-	.prologue 0
-	ldq	$2, TI_TASK($8)
-	ldq	$3, TASK_CRED($2)
-	ldl	$0, CRED_UID($3)
-	ldl	$1, CRED_EUID($3)
-	stq	$1, 80($sp)
-	ret
-.end sys_getxuid
-
-	.align	4
-	.globl	sys_getxgid
-	.ent	sys_getxgid
-sys_getxgid:
-	.prologue 0
-	ldq	$2, TI_TASK($8)
-	ldq	$3, TASK_CRED($2)
-	ldl	$0, CRED_GID($3)
-	ldl	$1, CRED_EGID($3)
-	stq	$1, 80($sp)
-	ret
-.end sys_getxgid
-
-	.align	4
-	.globl	sys_getxpid
-	.ent	sys_getxpid
-sys_getxpid:
-	.prologue 0
-	ldq	$2, TI_TASK($8)
-
-	/* See linux/kernel/timer.c sys_getppid for discussion
-	   about this loop.  */
-	ldq	$3, TASK_GROUP_LEADER($2)
-	ldq	$4, TASK_REAL_PARENT($3)
-	ldl	$0, TASK_TGID($2)
-1:	ldl	$1, TASK_TGID($4)
-#ifdef CONFIG_SMP
-	mov	$4, $5
-	mb
-	ldq	$3, TASK_GROUP_LEADER($2)
-	ldq	$4, TASK_REAL_PARENT($3)
-	cmpeq	$4, $5, $5
-	beq	$5, 1b
-#endif
-	stq	$1, 80($sp)
-	ret
-.end sys_getxpid
-
-	.align	4
-	.globl	sys_alpha_pipe
-	.ent	sys_alpha_pipe
-sys_alpha_pipe:
-	lda	$sp, -16($sp)
-	stq	$26, 0($sp)
-	.prologue 0
-
-	mov	$31, $17
-	lda	$16, 8($sp)
-	jsr	$26, do_pipe_flags
-
-	ldq	$26, 0($sp)
-	bne	$0, 1f
-
-	/* The return values are in $0 and $20.  */
-	ldl	$1, 12($sp)
-	ldl	$0, 8($sp)
-
-	stq	$1, 80+16($sp)
-1:	lda	$sp, 16($sp)
-	ret
-.end sys_alpha_pipe
-
-	.align	4
-	.globl	sys_execve
-	.ent	sys_execve
-sys_execve:
-	.prologue 0
-	mov	$sp, $19
-	jmp	$31, do_sys_execve
-.end sys_execve
-
-	.align	4
-	.globl	alpha_ni_syscall
-	.ent	alpha_ni_syscall
-alpha_ni_syscall:
-	.prologue 0
-	/* Special because it also implements overflow handling via
-	   syscall number 0.  And if you recall, zero is a special
-	   trigger for "not an error".  Store large non-zero there.  */
-=======
  * have to play switch_stack games.
  */
 
@@ -1573,13 +845,8 @@ alpha_syscall_zero:
 	   Store a non-zero there - -ENOSYS we need in register
 	   for our return value will do just fine.
 	  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lda	$0, -ENOSYS
 	unop
 	stq	$0, 0($sp)
 	ret
-<<<<<<< HEAD
-.end alpha_ni_syscall
-=======
 .end alpha_syscall_zero
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

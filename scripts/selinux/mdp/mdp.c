@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * mdp - make dummy policy
@@ -9,43 +6,20 @@
  * When pointed at a kernel tree, builds a dummy policy for that kernel
  * with exactly one type with full rights to itself.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) IBM Corporation, 2006
  *
  * Authors: Serge E. Hallyn <serue@us.ibm.com>
  */
 
-<<<<<<< HEAD
-=======
 
 /* NOTE: we really do want to use the kernel headers here */
 #define __EXPORTED_HEADERS__
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-<<<<<<< HEAD
-=======
 #include <linux/kconfig.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void usage(char *name)
 {
@@ -61,12 +35,9 @@ struct security_class_mapping {
 
 #include "classmap.h"
 #include "initial_sid_to_string.h"
-<<<<<<< HEAD
-=======
 #include "policycap_names.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int main(int argc, char *argv[])
 {
@@ -99,10 +70,6 @@ int main(int argc, char *argv[])
 
 	initial_sid_to_string_len = sizeof(initial_sid_to_string) / sizeof (char *);
 	/* print out the sids */
-<<<<<<< HEAD
-	for (i = 1; i < initial_sid_to_string_len; i++)
-		fprintf(fout, "sid %s\n", initial_sid_to_string[i]);
-=======
 	for (i = 1; i < initial_sid_to_string_len; i++) {
 		const char *name = initial_sid_to_string[i];
 
@@ -111,16 +78,11 @@ int main(int argc, char *argv[])
 		else
 			fprintf(fout, "sid unused%d\n", i);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fprintf(fout, "\n");
 
 	/* print out the class permissions */
 	for (i = 0; secclass_map[i].name; i++) {
-<<<<<<< HEAD
-		struct security_class_mapping *map = &secclass_map[i];
-=======
 		const struct security_class_mapping *map = &secclass_map[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fprintf(fout, "class %s\n", map->name);
 		fprintf(fout, "{\n");
 		for (j = 0; map->perms[j]; j++)
@@ -129,16 +91,6 @@ int main(int argc, char *argv[])
 	}
 	fprintf(fout, "\n");
 
-<<<<<<< HEAD
-	/* NOW PRINT OUT MLS STUFF */
-	if (mls) {
-		printf("MLS not yet implemented\n");
-		exit(1);
-	}
-
-	/* types, roles, and allows */
-	fprintf(fout, "type base_t;\n");
-=======
 	/* print out mls declarations and constraints */
 	if (mls) {
 		fprintf(fout, "sensitivity s0;\n");
@@ -173,42 +125,10 @@ int main(int argc, char *argv[])
 	/* types, roles, and allows */
 	fprintf(fout, "type base_t;\n");
 	fprintf(fout, "role base_r;\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fprintf(fout, "role base_r types { base_t };\n");
 	for (i = 0; secclass_map[i].name; i++)
 		fprintf(fout, "allow base_t base_t:%s *;\n",
 			secclass_map[i].name);
-<<<<<<< HEAD
-	fprintf(fout, "user user_u roles { base_r };\n");
-	fprintf(fout, "\n");
-
-	/* default sids */
-	for (i = 1; i < initial_sid_to_string_len; i++)
-		fprintf(fout, "sid %s user_u:base_r:base_t\n", initial_sid_to_string[i]);
-	fprintf(fout, "\n");
-
-	fprintf(fout, "fs_use_xattr ext2 user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr ext3 user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr ext4 user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr jfs user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr xfs user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr reiserfs user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr jffs2 user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr gfs2 user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_xattr lustre user_u:base_r:base_t;\n");
-
-	fprintf(fout, "fs_use_task eventpollfs user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_task pipefs user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_task sockfs user_u:base_r:base_t;\n");
-
-	fprintf(fout, "fs_use_trans mqueue user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_trans devpts user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_trans hugetlbfs user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_trans tmpfs user_u:base_r:base_t;\n");
-	fprintf(fout, "fs_use_trans shm user_u:base_r:base_t;\n");
-
-	fprintf(fout, "genfscon proc / user_u:base_r:base_t\n");
-=======
 	fprintf(fout, "user user_u roles { base_r }");
 	if (mls)
 		fprintf(fout, " level %s range %s - %s", SYSTEMLOW,
@@ -337,7 +257,6 @@ int main(int argc, char *argv[])
 #endif
 	GENFSCON("cgroup", "/");
 	GENFSCON("cgroup2", "/");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fclose(fout);
 
@@ -346,13 +265,8 @@ int main(int argc, char *argv[])
 		printf("Wrote policy, but cannot open %s for writing\n", ctxout);
 		usage(argv[0]);
 	}
-<<<<<<< HEAD
-	fprintf(fout, "/ user_u:base_r:base_t\n");
-	fprintf(fout, "/.* user_u:base_r:base_t\n");
-=======
 	fprintf(fout, "/ " OBJUSERROLETYPE "%s\n", mls ? ":" SYSTEMLOW : "");
 	fprintf(fout, "/.* " OBJUSERROLETYPE "%s\n", mls ? ":" SYSTEMLOW : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fclose(fout);
 
 	return 0;

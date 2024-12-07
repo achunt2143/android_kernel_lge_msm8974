@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/preempt.h>
-#include <asm/msr.h>
-
-struct msr *msrs_alloc(void)
-{
-	struct msr *msrs = NULL;
-
-	msrs = alloc_percpu(struct msr);
-	if (!msrs) {
-		pr_warning("%s: error allocating msrs\n", __func__);
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/export.h>
 #include <linux/percpu.h>
@@ -26,7 +13,6 @@ struct msr __percpu *msrs_alloc(void)
 	msrs = alloc_percpu(struct msr);
 	if (!msrs) {
 		pr_warn("%s: error allocating msrs\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -34,17 +20,11 @@ struct msr __percpu *msrs_alloc(void)
 }
 EXPORT_SYMBOL(msrs_alloc);
 
-<<<<<<< HEAD
-void msrs_free(struct msr *msrs)
-=======
 void msrs_free(struct msr __percpu *msrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	free_percpu(msrs);
 }
 EXPORT_SYMBOL(msrs_free);
-<<<<<<< HEAD
-=======
 
 /**
  * msr_read - Read an MSR with error handling
@@ -162,4 +142,3 @@ EXPORT_SYMBOL(do_trace_rdpmc);
 EXPORT_TRACEPOINT_SYMBOL(rdpmc);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

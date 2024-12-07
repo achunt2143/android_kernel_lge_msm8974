@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*======================================================================
 
     A PCMCIA ethernet driver for Asix AX88190-based cards
@@ -22,13 +19,7 @@
 
     Written 1992,1993 by Donald Becker.
     Copyright 1993 United States Government as represented by the
-<<<<<<< HEAD
-    Director, National Security Agency.  This software may be used and
-    distributed according to the terms of the GNU General Public License,
-    incorporated herein by reference.
-=======
     Director, National Security Agency.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     Donald Becker may be reached at becker@scyld.com
 
 ======================================================================*/
@@ -37,10 +28,6 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ptrace.h>
 #include <linux/string.h>
 #include <linux/timer.h>
@@ -59,11 +46,7 @@
 
 #include <asm/io.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AXNET_CMD	0x00
 #define AXNET_DATAPORT	0x10	/* NatSemi-defined port window offset. */
@@ -100,15 +83,9 @@ static netdev_tx_t axnet_start_xmit(struct sk_buff *skb,
 					  struct net_device *dev);
 static struct net_device_stats *get_stats(struct net_device *dev);
 static void set_multicast_list(struct net_device *dev);
-<<<<<<< HEAD
-static void axnet_tx_timeout(struct net_device *dev);
-static irqreturn_t ei_irq_wrapper(int irq, void *dev_id);
-static void ei_watchdog(u_long arg);
-=======
 static void axnet_tx_timeout(struct net_device *dev, unsigned int txqueue);
 static irqreturn_t ei_irq_wrapper(int irq, void *dev_id);
 static void ei_watchdog(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void axnet_reset_8390(struct net_device *dev);
 
 static int mdio_read(unsigned int addr, int phy_id, int loc);
@@ -130,11 +107,7 @@ static irqreturn_t ax_interrupt(int irq, void *dev_id);
 
 /*====================================================================*/
 
-<<<<<<< HEAD
-typedef struct axnet_dev_t {
-=======
 struct axnet_dev {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcmcia_device	*p_dev;
 	caddr_t	base;
 	struct timer_list	watchdog;
@@ -144,15 +117,9 @@ struct axnet_dev {
 	int	phy_id;
 	int	flags;
 	int	active_low;
-<<<<<<< HEAD
-} axnet_dev_t;
-
-static inline axnet_dev_t *PRIV(struct net_device *dev)
-=======
 };
 
 static inline struct axnet_dev *PRIV(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *p = (char *)netdev_priv(dev) + sizeof(struct ei_device);
 	return p;
@@ -161,40 +128,24 @@ static inline struct axnet_dev *PRIV(struct net_device *dev)
 static const struct net_device_ops axnet_netdev_ops = {
 	.ndo_open 		= axnet_open,
 	.ndo_stop		= axnet_close,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= axnet_ioctl,
-=======
 	.ndo_eth_ioctl		= axnet_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_start_xmit		= axnet_start_xmit,
 	.ndo_tx_timeout		= axnet_tx_timeout,
 	.ndo_get_stats		= get_stats,
 	.ndo_set_rx_mode	= set_multicast_list,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
 static int axnet_probe(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-    axnet_dev_t *info;
-=======
     struct axnet_dev *info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct net_device *dev;
     struct ei_device *ei_local;
 
     dev_dbg(&link->dev, "axnet_attach()\n");
 
-<<<<<<< HEAD
-    dev = alloc_etherdev(sizeof(struct ei_device) + sizeof(axnet_dev_t));
-=======
     dev = alloc_etherdev(sizeof(struct ei_device) + sizeof(struct axnet_dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!dev)
 	return -ENOMEM;
 
@@ -236,10 +187,7 @@ static int get_prom(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
     unsigned int ioaddr = dev->base_addr;
-<<<<<<< HEAD
-=======
     u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i, j;
 
     /* This is based on drivers/net/ethernet/8390/ne.c */
@@ -273,17 +221,11 @@ static int get_prom(struct pcmcia_device *link)
 
     for (i = 0; i < 6; i += 2) {
 	j = inw(ioaddr + AXNET_DATAPORT);
-<<<<<<< HEAD
-	dev->dev_addr[i] = j & 0xff;
-	dev->dev_addr[i+1] = j >> 8;
-    }
-=======
 	addr[i] = j & 0xff;
 	addr[i+1] = j >> 8;
     }
     eth_hw_addr_set(dev, addr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     return 1;
 } /* get_prom */
 
@@ -332,11 +274,7 @@ static int axnet_configcheck(struct pcmcia_device *p_dev, void *priv_data)
 static int axnet_config(struct pcmcia_device *link)
 {
     struct net_device *dev = link->priv;
-<<<<<<< HEAD
-    axnet_dev_t *info = PRIV(dev);
-=======
     struct axnet_dev *info = PRIV(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     int i, j, j2, ret;
 
     dev_dbg(&link->dev, "axnet_config(0x%p)\n", link);
@@ -451,11 +389,7 @@ static int axnet_suspend(struct pcmcia_device *link)
 static int axnet_resume(struct pcmcia_device *link)
 {
 	struct net_device *dev = link->priv;
-<<<<<<< HEAD
-	axnet_dev_t *info = PRIV(dev);
-=======
 	struct axnet_dev *info = PRIV(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (link->open) {
 		if (info->active_low == 1)
@@ -533,11 +467,7 @@ static void mdio_write(unsigned int addr, int phy_id, int loc, int value)
 static int axnet_open(struct net_device *dev)
 {
     int ret;
-<<<<<<< HEAD
-    axnet_dev_t *info = PRIV(dev);
-=======
     struct axnet_dev *info = PRIV(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct pcmcia_device *link = info->p_dev;
     unsigned int nic_base = dev->base_addr;
     
@@ -554,16 +484,8 @@ static int axnet_open(struct net_device *dev)
     link->open++;
 
     info->link_status = 0x00;
-<<<<<<< HEAD
-    init_timer(&info->watchdog);
-    info->watchdog.function = ei_watchdog;
-    info->watchdog.data = (u_long)dev;
-    info->watchdog.expires = jiffies + HZ;
-    add_timer(&info->watchdog);
-=======
     timer_setup(&info->watchdog, ei_watchdog, 0);
     mod_timer(&info->watchdog, jiffies + HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return ax_open(dev);
 } /* axnet_open */
@@ -572,11 +494,7 @@ static int axnet_open(struct net_device *dev)
 
 static int axnet_close(struct net_device *dev)
 {
-<<<<<<< HEAD
-    axnet_dev_t *info = PRIV(dev);
-=======
     struct axnet_dev *info = PRIV(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct pcmcia_device *link = info->p_dev;
 
     dev_dbg(&link->dev, "axnet_close('%s')\n", dev->name);
@@ -630,17 +548,10 @@ static irqreturn_t ei_irq_wrapper(int irq, void *dev_id)
     return ax_interrupt(irq, dev_id);
 }
 
-<<<<<<< HEAD
-static void ei_watchdog(u_long arg)
-{
-    struct net_device *dev = (struct net_device *)(arg);
-    axnet_dev_t *info = PRIV(dev);
-=======
 static void ei_watchdog(struct timer_list *t)
 {
     struct axnet_dev *info = from_timer(info, t, watchdog);
     struct net_device *dev = info->p_dev->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     unsigned int nic_base = dev->base_addr;
     unsigned int mii_addr = nic_base + AXNET_MII_EEP;
     u_short link;
@@ -696,20 +607,13 @@ reschedule:
 
 static int axnet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {
-<<<<<<< HEAD
-    axnet_dev_t *info = PRIV(dev);
-=======
     struct axnet_dev *info = PRIV(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct mii_ioctl_data *data = if_mii(rq);
     unsigned int mii_addr = dev->base_addr + AXNET_MII_EEP;
     switch (cmd) {
     case SIOCGMIIPHY:
 	data->phy_id = info->phy_id;
-<<<<<<< HEAD
-=======
 	fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     case SIOCGMIIREG:		/* Read MII PHY register. */
 	data->val_out = mdio_read(mii_addr, data->phy_id, data->reg_num & 0x1f);
 	return 0;
@@ -745,33 +649,19 @@ static void block_input(struct net_device *dev, int count,
 			struct sk_buff *skb, int ring_offset)
 {
     unsigned int nic_base = dev->base_addr;
-<<<<<<< HEAD
-    int xfer_count = count;
-    char *buf = skb->data;
-
-    if ((ei_debug > 4) && (count != 4))
-	    pr_debug("%s: [bi=%d]\n", dev->name, count+4);
-=======
     struct ei_device *ei_local = netdev_priv(dev);
     char *buf = skb->data;
 
     if ((netif_msg_rx_status(ei_local)) && (count != 4))
 	netdev_dbg(dev, "[bi=%d]\n", count+4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     outb_p(ring_offset & 0xff, nic_base + EN0_RSARLO);
     outb_p(ring_offset >> 8, nic_base + EN0_RSARHI);
     outb_p(E8390_RREAD+E8390_START, nic_base + AXNET_CMD);
 
     insw(nic_base + AXNET_DATAPORT,buf,count>>1);
-<<<<<<< HEAD
-    if (count & 0x01)
-	buf[count-1] = inb(nic_base + AXNET_DATAPORT), xfer_count++;
-
-=======
     if (count & 0x01) {
 	buf[count-1] = inb(nic_base + AXNET_DATAPORT);
     }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*====================================================================*/
@@ -837,23 +727,7 @@ static struct pcmcia_driver axnet_cs_driver = {
 	.suspend	= axnet_suspend,
 	.resume		= axnet_resume,
 };
-<<<<<<< HEAD
-
-static int __init init_axnet_cs(void)
-{
-	return pcmcia_register_driver(&axnet_cs_driver);
-}
-
-static void __exit exit_axnet_cs(void)
-{
-	pcmcia_unregister_driver(&axnet_cs_driver);
-}
-
-module_init(init_axnet_cs);
-module_exit(exit_axnet_cs);
-=======
 module_pcmcia_driver(axnet_cs_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*====================================================================*/
 
@@ -893,11 +767,7 @@ module_pcmcia_driver(axnet_cs_driver);
   Paul Gortmaker	: tweak ANK's above multicast changes a bit.
   Paul Gortmaker	: update packet statistics for v2.1.x
   Alan Cox		: support arbitrary stupid port mappings on the
-<<<<<<< HEAD
-  			  68K Macintosh. Support >16bit I/O spaces
-=======
 			  68K Macintosh. Support >16bit I/O spaces
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   Paul Gortmaker	: add kmod support for auto-loading of the 8390
 			  module by all drivers that require it.
   Alan Cox		: Spinlocking work, added 'BUG_83C690'
@@ -939,14 +809,6 @@ module_pcmcia_driver(axnet_cs_driver);
 #define ei_block_input (ei_local->block_input)
 #define ei_get_8390_hdr (ei_local->get_8390_hdr)
 
-<<<<<<< HEAD
-/* use 0 for production, 1 for verification, >2 for debug */
-#ifndef ei_debug
-int ei_debug = 1;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Index to functions. */
 static void ei_tx_intr(struct net_device *dev);
 static void ei_tx_err(struct net_device *dev);
@@ -1038,20 +900,13 @@ static int ax_close(struct net_device *dev)
 /**
  * axnet_tx_timeout - handle transmit time out condition
  * @dev: network device which has apparently fallen asleep
-<<<<<<< HEAD
-=======
  * @txqueue: unused
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Called by kernel when device never acknowledges a transmit has
  * completed (or failed) - i.e. never posted a Tx related interrupt.
  */
 
-<<<<<<< HEAD
-static void axnet_tx_timeout(struct net_device *dev)
-=======
 static void axnet_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long e8390_base = dev->base_addr;
 	struct ei_device *ei_local = netdev_priv(dev);
@@ -1065,18 +920,10 @@ static void axnet_tx_timeout(struct net_device *dev, unsigned int txqueue)
 	isr = inb(e8390_base+EN0_ISR);
 	spin_unlock_irqrestore(&ei_local->page_lock, flags);
 
-<<<<<<< HEAD
-	netdev_printk(KERN_DEBUG, dev,
-		      "Tx timed out, %s TSR=%#2x, ISR=%#2x, t=%d.\n",
-		      (txsr & ENTSR_ABT) ? "excess collisions." :
-		      (isr) ? "lost interrupt?" : "cable problem?",
-		      txsr, isr, tickssofar);
-=======
 	netdev_dbg(dev, "Tx timed out, %s TSR=%#2x, ISR=%#2x, t=%d.\n",
 		   (txsr & ENTSR_ABT) ? "excess collisions." :
 		   (isr) ? "lost interrupt?" : "cable problem?",
 		   txsr, isr, tickssofar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!isr && !dev->stats.tx_packets) 
 	{
@@ -1145,40 +992,17 @@ static netdev_tx_t axnet_start_xmit(struct sk_buff *skb,
 	{
 		output_page = ei_local->tx_start_page;
 		ei_local->tx1 = send_length;
-<<<<<<< HEAD
-		if (ei_debug  &&  ei_local->tx2 > 0)
-			netdev_printk(KERN_DEBUG, dev,
-				      "idle transmitter tx2=%d, lasttx=%d, txing=%d\n",
-				      ei_local->tx2, ei_local->lasttx,
-				      ei_local->txing);
-=======
 		if ((netif_msg_tx_queued(ei_local)) &&
 		    ei_local->tx2 > 0)
 			netdev_dbg(dev,
 				   "idle transmitter tx2=%d, lasttx=%d, txing=%d\n",
 				   ei_local->tx2, ei_local->lasttx,
 				   ei_local->txing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	else if (ei_local->tx2 == 0) 
 	{
 		output_page = ei_local->tx_start_page + TX_PAGES/2;
 		ei_local->tx2 = send_length;
-<<<<<<< HEAD
-		if (ei_debug  &&  ei_local->tx1 > 0)
-			netdev_printk(KERN_DEBUG, dev,
-				      "idle transmitter, tx1=%d, lasttx=%d, txing=%d\n",
-				      ei_local->tx1, ei_local->lasttx,
-				      ei_local->txing);
-	}
-	else
-	{	/* We should never get here. */
-		if (ei_debug)
-			netdev_printk(KERN_DEBUG, dev,
-				      "No Tx buffers free! tx1=%d tx2=%d last=%d\n",
-				      ei_local->tx1, ei_local->tx2,
-				      ei_local->lasttx);
-=======
 		if ((netif_msg_tx_queued(ei_local)) &&
 		    ei_local->tx1 > 0)
 			netdev_dbg(dev,
@@ -1192,7 +1016,6 @@ static netdev_tx_t axnet_start_xmit(struct sk_buff *skb,
 			  "No Tx buffers free! tx1=%d tx2=%d last=%d\n",
 			  ei_local->tx1, ei_local->tx2,
 			  ei_local->lasttx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ei_local->irqlock = 0;
 		netif_stop_queue(dev);
 		outb_p(ENISR_ALL, e8390_base + EN0_IMR);
@@ -1219,11 +1042,7 @@ static netdev_tx_t axnet_start_xmit(struct sk_buff *skb,
 	{
 		ei_local->txing = 1;
 		NS8390_trigger_send(dev, send_length, output_page);
-<<<<<<< HEAD
-		dev->trans_start = jiffies;
-=======
 		netif_trans_update(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (output_page == ei_local->tx_start_page) 
 		{
 			ei_local->tx1 = -1;
@@ -1272,11 +1091,7 @@ static irqreturn_t ax_interrupt(int irq, void *dev_id)
 	long e8390_base;
 	int interrupts, nr_serviced = 0, i;
 	struct ei_device *ei_local;
-<<<<<<< HEAD
-    	int handled = 0;
-=======
 	int handled = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	e8390_base = dev->base_addr;
@@ -1304,16 +1119,9 @@ static irqreturn_t ax_interrupt(int irq, void *dev_id)
 		spin_unlock_irqrestore(&ei_local->page_lock, flags);
 		return IRQ_NONE;
 	}
-<<<<<<< HEAD
-    
-	if (ei_debug > 3)
-		netdev_printk(KERN_DEBUG, dev, "interrupt(isr=%#2.2x)\n",
-			      inb_p(e8390_base + EN0_ISR));
-=======
 
 	netif_dbg(ei_local, intr, dev, "interrupt(isr=%#2.2x)\n",
 		  inb_p(e8390_base + EN0_ISR));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	outb_p(0x00, e8390_base + EN0_ISR);
 	ei_local->irqlock = 1;
@@ -1323,14 +1131,8 @@ static irqreturn_t ax_interrupt(int irq, void *dev_id)
 	       ++nr_serviced < MAX_SERVICE)
 	{
 		if (!netif_running(dev) || (interrupts == 0xff)) {
-<<<<<<< HEAD
-			if (ei_debug > 1)
-				netdev_warn(dev,
-					    "interrupt from stopped card\n");
-=======
 			netif_warn(ei_local, intr, dev,
 				   "interrupt from stopped card\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb_p(interrupts, e8390_base + EN0_ISR);
 			interrupts = 0;
 			break;
@@ -1366,24 +1168,15 @@ static irqreturn_t ax_interrupt(int irq, void *dev_id)
 		}
 	}
     
-<<<<<<< HEAD
-	if (interrupts && ei_debug > 3) 
-=======
 	if (interrupts && (netif_msg_intr(ei_local)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		handled = 1;
 		if (nr_serviced >= MAX_SERVICE) 
 		{
 			/* 0xFF is valid for a card removal */
-<<<<<<< HEAD
-			if(interrupts!=0xFF)
-				netdev_warn(dev, "Too much work at interrupt, status %#2.2x\n",
-=======
 			if (interrupts != 0xFF)
 				netdev_warn(dev,
 					    "Too much work at interrupt, status %#2.2x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    interrupts);
 			outb_p(ENISR_ALL, e8390_base + EN0_ISR); /* Ack. most intrs. */
 		} else {
@@ -1422,12 +1215,7 @@ static void ei_tx_err(struct net_device *dev)
 	unsigned char tx_was_aborted = txsr & (ENTSR_ABT+ENTSR_FU);
 
 #ifdef VERBOSE_ERROR_DUMP
-<<<<<<< HEAD
-	netdev_printk(KERN_DEBUG, dev,
-		      "transmitter error (%#2x):", txsr);
-=======
 	netdev_dbg(dev, "transmitter error (%#2x):", txsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (txsr & ENTSR_ABT)
 		pr_cont(" excess-collisions");
 	if (txsr & ENTSR_ND)
@@ -1483,13 +1271,6 @@ static void ei_tx_intr(struct net_device *dev)
 		{
 			ei_local->txing = 1;
 			NS8390_trigger_send(dev, ei_local->tx2, ei_local->tx_start_page + 6);
-<<<<<<< HEAD
-			dev->trans_start = jiffies;
-			ei_local->tx2 = -1,
-			ei_local->lasttx = 2;
-		}
-		else ei_local->lasttx = 20, ei_local->txing = 0;	
-=======
 			netif_trans_update(dev);
 			ei_local->tx2 = -1;
 			ei_local->lasttx = 2;
@@ -1497,33 +1278,18 @@ static void ei_tx_intr(struct net_device *dev)
 			ei_local->lasttx = 20;
 			ei_local->txing = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	else if (ei_local->tx2 < 0) 
 	{
 		if (ei_local->lasttx != 2  &&  ei_local->lasttx != -2)
-<<<<<<< HEAD
-			netdev_info(dev, "%s: bogus last_tx_buffer %d, tx2=%d\n",
-				    ei_local->name, ei_local->lasttx,
-				    ei_local->tx2);
-=======
 			netdev_err(dev, "%s: bogus last_tx_buffer %d, tx2=%d\n",
 				   ei_local->name, ei_local->lasttx,
 				   ei_local->tx2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ei_local->tx2 = 0;
 		if (ei_local->tx1 > 0) 
 		{
 			ei_local->txing = 1;
 			NS8390_trigger_send(dev, ei_local->tx1, ei_local->tx_start_page);
-<<<<<<< HEAD
-			dev->trans_start = jiffies;
-			ei_local->tx1 = -1;
-			ei_local->lasttx = 1;
-		}
-		else
-			ei_local->lasttx = 10, ei_local->txing = 0;
-=======
 			netif_trans_update(dev);
 			ei_local->tx1 = -1;
 			ei_local->lasttx = 1;
@@ -1531,7 +1297,6 @@ static void ei_tx_intr(struct net_device *dev)
 			ei_local->lasttx = 10;
 			ei_local->txing = 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 //	else
 //		netdev_warn(dev, "unexpected TX-done interrupt, lasttx=%d\n",
@@ -1597,17 +1362,11 @@ static void ei_receive(struct net_device *dev)
 		   Keep quiet if it looks like a card removal. One problem here
 		   is that some clones crash in roughly the same way.
 		 */
-<<<<<<< HEAD
-		if (ei_debug > 0  &&  this_frame != ei_local->current_page && (this_frame!=0x0 || rxing_page!=0xFF))
-		    netdev_err(dev, "mismatched read page pointers %2x vs %2x\n",
-			       this_frame, ei_local->current_page);
-=======
 		if ((netif_msg_rx_err(ei_local)) &&
 		    this_frame != ei_local->current_page &&
 		    (this_frame != 0x0 || rxing_page != 0xFF))
 			netdev_err(dev, "mismatched read page pointers %2x vs %2x\n",
 				   this_frame, ei_local->current_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 		if (this_frame == rxing_page)	/* Read all the frames? */
 			break;				/* Done for now */
@@ -1622,18 +1381,10 @@ static void ei_receive(struct net_device *dev)
 		
 		if (pkt_len < 60  ||  pkt_len > 1518) 
 		{
-<<<<<<< HEAD
-			if (ei_debug)
-				netdev_printk(KERN_DEBUG, dev,
-					      "bogus packet size: %d, status=%#2x nxpg=%#2x\n",
-					      rx_frame.count, rx_frame.status,
-					      rx_frame.next);
-=======
 			netif_err(ei_local, rx_err, dev,
 				  "bogus packet size: %d, status=%#2x nxpg=%#2x\n",
 				  rx_frame.count, rx_frame.status,
 				  rx_frame.next);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.rx_errors++;
 			dev->stats.rx_length_errors++;
 		}
@@ -1644,16 +1395,9 @@ static void ei_receive(struct net_device *dev)
 			skb = netdev_alloc_skb(dev, pkt_len + 2);
 			if (skb == NULL) 
 			{
-<<<<<<< HEAD
-				if (ei_debug > 1)
-					netdev_printk(KERN_DEBUG, dev,
-						      "Couldn't allocate a sk_buff of size %d\n",
-						      pkt_len);
-=======
 				netif_err(ei_local, rx_err, dev,
 					  "Couldn't allocate a sk_buff of size %d\n",
 					  pkt_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->stats.rx_dropped++;
 				break;
 			}
@@ -1672,18 +1416,10 @@ static void ei_receive(struct net_device *dev)
 		} 
 		else 
 		{
-<<<<<<< HEAD
-			if (ei_debug)
-				netdev_printk(KERN_DEBUG, dev,
-					      "bogus packet: status=%#2x nxpg=%#2x size=%d\n",
-					      rx_frame.status, rx_frame.next,
-					      rx_frame.count);
-=======
 			netif_err(ei_local, rx_err, dev,
 				  "bogus packet: status=%#2x nxpg=%#2x size=%d\n",
 				  rx_frame.status, rx_frame.next,
 				  rx_frame.count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.rx_errors++;
 			/* NB: The NIC counts CRC, frame and missed errors. */
 			if (pkt_stat & ENRSR_FO)
@@ -1717,16 +1453,10 @@ static void ei_receive(struct net_device *dev)
 
 static void ei_rx_overrun(struct net_device *dev)
 {
-<<<<<<< HEAD
-	axnet_dev_t *info = PRIV(dev);
-	long e8390_base = dev->base_addr;
-	unsigned char was_txing, must_resend = 0;
-=======
 	struct axnet_dev *info = PRIV(dev);
 	long e8390_base = dev->base_addr;
 	unsigned char was_txing, must_resend = 0;
 	struct ei_device *ei_local = netdev_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
 	/*
 	 * Record whether a Tx was in progress and then issue the
@@ -1734,14 +1464,8 @@ static void ei_rx_overrun(struct net_device *dev)
 	 */
 	was_txing = inb_p(e8390_base+E8390_CMD) & E8390_TRANS;
 	outb_p(E8390_NODMA+E8390_PAGE0+E8390_STOP, e8390_base+E8390_CMD);
-<<<<<<< HEAD
-    
-	if (ei_debug > 1)
-		netdev_printk(KERN_DEBUG, dev, "Receiver overrun\n");
-=======
 
 	netif_dbg(ei_local, rx_err, dev, "Receiver overrun\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.rx_over_errors++;
     
 	/* 
@@ -1863,21 +1587,12 @@ static void do_set_multicast_list(struct net_device *dev)
 	}
 	outb_p(E8390_NODMA + E8390_PAGE0, e8390_base + E8390_CMD);
 
-<<<<<<< HEAD
-  	if(dev->flags&IFF_PROMISC)
-  		outb_p(E8390_RXCONFIG | 0x58, e8390_base + EN0_RXCR);
-	else if (dev->flags & IFF_ALLMULTI || !netdev_mc_empty(dev))
-  		outb_p(E8390_RXCONFIG | 0x48, e8390_base + EN0_RXCR);
-  	else
-  		outb_p(E8390_RXCONFIG | 0x40, e8390_base + EN0_RXCR);
-=======
 	if(dev->flags&IFF_PROMISC)
 		outb_p(E8390_RXCONFIG | 0x58, e8390_base + EN0_RXCR);
 	else if (dev->flags & IFF_ALLMULTI || !netdev_mc_empty(dev))
 		outb_p(E8390_RXCONFIG | 0x48, e8390_base + EN0_RXCR);
 	else
 		outb_p(E8390_RXCONFIG | 0x40, e8390_base + EN0_RXCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	outb_p(E8390_NODMA+E8390_PAGE0+E8390_START, e8390_base+E8390_CMD);
 }
@@ -1910,11 +1625,7 @@ static void set_multicast_list(struct net_device *dev)
 
 static void AX88190_init(struct net_device *dev, int startp)
 {
-<<<<<<< HEAD
-	axnet_dev_t *info = PRIV(dev);
-=======
 	struct axnet_dev *info = PRIV(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long e8390_base = dev->base_addr;
 	struct ei_device *ei_local = netdev_priv(dev);
 	int i;

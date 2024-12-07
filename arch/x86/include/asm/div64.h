@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_DIV64_H
 #define _ASM_X86_DIV64_H
 
@@ -63,10 +60,6 @@ static inline u64 div_u64_rem(u64 dividend, u32 divisor, u32 *remainder)
 }
 #define div_u64_rem	div_u64_rem
 
-<<<<<<< HEAD
-#else
-# include <asm-generic/div64.h>
-=======
 static inline u64 mul_u32_u32(u32 a, u32 b)
 {
 	u32 high, low;
@@ -109,7 +102,6 @@ static inline u64 mul_u64_u32_div(u64 a, u32 mul, u32 div)
 }
 #define mul_u64_u32_div	mul_u64_u32_div
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_X86_32 */
 
 #endif /* _ASM_X86_DIV64_H */

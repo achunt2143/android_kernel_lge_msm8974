@@ -21,23 +21,6 @@
  *
  * Authors: Alex Deucher
  */
-<<<<<<< HEAD
-#include <linux/firmware.h>
-#include <linux/platform_device.h>
-#include <linux/slab.h>
-#include "drmP.h"
-#include "radeon.h"
-#include "radeon_asic.h"
-#include "radeon_drm.h"
-#include "evergreend.h"
-#include "atom.h"
-#include "avivod.h"
-#include "evergreen_reg.h"
-#include "evergreen_blit_shaders.h"
-
-#define EVERGREEN_PFP_UCODE_SIZE 1120
-#define EVERGREEN_PM4_UCODE_SIZE 1376
-=======
 
 #include <linux/firmware.h>
 #include <linux/pci.h>
@@ -136,7 +119,6 @@ void eg_pif_phy1_wreg(struct radeon_device *rdev, u32 reg, u32 v)
 	WREG32(EVERGREEN_PIF_PHY1_DATA, (v));
 	spin_unlock_irqrestore(&rdev->pif_idx_lock, flags);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const u32 crtc_offsets[6] =
 {
@@ -148,13 +130,6 @@ static const u32 crtc_offsets[6] =
 	EVERGREEN_CRTC5_REGISTER_OFFSET
 };
 
-<<<<<<< HEAD
-static void evergreen_gpu_init(struct radeon_device *rdev);
-void evergreen_fini(struct radeon_device *rdev);
-void evergreen_pcie_gen2_enable(struct radeon_device *rdev);
-extern void cayman_cp_int_cntl_setup(struct radeon_device *rdev,
-				     int ring, u32 cp_int_cntl);
-=======
 #include "clearstate_evergreen.h"
 
 static const u32 sumo_rlc_save_restore_register_list[] =
@@ -1132,7 +1107,6 @@ int evergreen_get_allowed_info_register(struct radeon_device *rdev,
 		return -EINVAL;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void evergreen_tiling_fields(unsigned tiling_flags, unsigned *bankw,
 			     unsigned *bankh, unsigned *mtaspect,
@@ -1165,36 +1139,6 @@ void evergreen_tiling_fields(unsigned tiling_flags, unsigned *bankw,
 	}
 }
 
-<<<<<<< HEAD
-void evergreen_fix_pci_max_read_req_size(struct radeon_device *rdev)
-{
-	u16 ctl, v;
-	int cap, err;
-
-	cap = pci_pcie_cap(rdev->pdev);
-	if (!cap)
-		return;
-
-	err = pci_read_config_word(rdev->pdev, cap + PCI_EXP_DEVCTL, &ctl);
-	if (err)
-		return;
-
-	v = (ctl & PCI_EXP_DEVCTL_READRQ) >> 12;
-
-	/* if bios or OS sets MAX_READ_REQUEST_SIZE to an invalid value, fix it
-	 * to avoid hangs or perfomance issues
-	 */
-	if ((v == 0) || (v == 6) || (v == 7)) {
-		ctl &= ~PCI_EXP_DEVCTL_READRQ;
-		ctl |= (2 << 12);
-		pci_write_config_word(rdev->pdev, cap + PCI_EXP_DEVCTL, ctl);
-	}
-}
-
-void dce4_wait_for_vblank(struct radeon_device *rdev, int crtc)
-{
-	int i;
-=======
 static int sumo_set_uvd_clock(struct radeon_device *rdev, u32 clock,
 			      u32 cntl_reg, u32 status_reg)
 {
@@ -1433,23 +1377,10 @@ static bool dce4_is_counter_moving(struct radeon_device *rdev, int crtc)
 void dce4_wait_for_vblank(struct radeon_device *rdev, int crtc)
 {
 	unsigned i = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (crtc >= rdev->num_crtc)
 		return;
 
-<<<<<<< HEAD
-	if (RREG32(EVERGREEN_CRTC_CONTROL + crtc_offsets[crtc]) & EVERGREEN_CRTC_MASTER_EN) {
-		for (i = 0; i < rdev->usec_timeout; i++) {
-			if (!(RREG32(EVERGREEN_CRTC_STATUS + crtc_offsets[crtc]) & EVERGREEN_CRTC_V_BLANK))
-				break;
-			udelay(1);
-		}
-		for (i = 0; i < rdev->usec_timeout; i++) {
-			if (RREG32(EVERGREEN_CRTC_STATUS + crtc_offsets[crtc]) & EVERGREEN_CRTC_V_BLANK)
-				break;
-			udelay(1);
-=======
 	if (!(RREG32(EVERGREEN_CRTC_CONTROL + crtc_offsets[crtc]) & EVERGREEN_CRTC_MASTER_EN))
 		return;
 
@@ -1467,41 +1398,10 @@ void dce4_wait_for_vblank(struct radeon_device *rdev, int crtc)
 		if (i++ % 100 == 0) {
 			if (!dce4_is_counter_moving(rdev, crtc))
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-void evergreen_pre_page_flip(struct radeon_device *rdev, int crtc)
-{
-	/* enable the pflip int */
-	radeon_irq_kms_pflip_irq_get(rdev, crtc);
-}
-
-void evergreen_post_page_flip(struct radeon_device *rdev, int crtc)
-{
-	/* disable the pflip int */
-	radeon_irq_kms_pflip_irq_put(rdev, crtc);
-}
-
-u32 evergreen_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
-{
-	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
-	u32 tmp = RREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset);
-	int i;
-
-	/* Lock the graphics update lock */
-	tmp |= EVERGREEN_GRPH_UPDATE_LOCK;
-	WREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
-
-	/* update the scanout addresses */
-	WREG32(EVERGREEN_GRPH_SECONDARY_SURFACE_ADDRESS_HIGH + radeon_crtc->crtc_offset,
-	       upper_32_bits(crtc_base));
-	WREG32(EVERGREEN_GRPH_SECONDARY_SURFACE_ADDRESS + radeon_crtc->crtc_offset,
-	       (u32)crtc_base);
-
-=======
 /**
  * evergreen_page_flip - pageflip callback.
  *
@@ -1526,28 +1426,10 @@ void evergreen_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base,
 	WREG32(EVERGREEN_GRPH_PITCH + radeon_crtc->crtc_offset,
 	       fb->pitches[0] / fb->format->cpp[0]);
 	/* update the scanout addresses */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(EVERGREEN_GRPH_PRIMARY_SURFACE_ADDRESS_HIGH + radeon_crtc->crtc_offset,
 	       upper_32_bits(crtc_base));
 	WREG32(EVERGREEN_GRPH_PRIMARY_SURFACE_ADDRESS + radeon_crtc->crtc_offset,
 	       (u32)crtc_base);
-<<<<<<< HEAD
-
-	/* Wait for update_pending to go high. */
-	for (i = 0; i < rdev->usec_timeout; i++) {
-		if (RREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset) & EVERGREEN_GRPH_SURFACE_UPDATE_PENDING)
-			break;
-		udelay(1);
-	}
-	DRM_DEBUG("Update pending now high. Unlocking vupdate_lock.\n");
-
-	/* Unlock the lock, so double-buffering can take place inside vblank */
-	tmp &= ~EVERGREEN_GRPH_UPDATE_LOCK;
-	WREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
-
-	/* Return current update_pending status: */
-	return RREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset) & EVERGREEN_GRPH_SURFACE_UPDATE_PENDING;
-=======
 	/* post the write */
 	RREG32(EVERGREEN_GRPH_PRIMARY_SURFACE_ADDRESS + radeon_crtc->crtc_offset);
 }
@@ -1567,7 +1449,6 @@ bool evergreen_page_flip_pending(struct radeon_device *rdev, int crtc_id)
 	/* Return current update_pending status: */
 	return !!(RREG32(EVERGREEN_GRPH_UPDATE + radeon_crtc->crtc_offset) &
 		EVERGREEN_GRPH_SURFACE_UPDATE_PENDING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* get temperature in millidegrees */
@@ -1617,8 +1498,6 @@ int sumo_get_temp(struct radeon_device *rdev)
 	return actual_temp * 1000;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * sumo_pm_init_profile - Initialize power profiles callback.
  *
@@ -1628,7 +1507,6 @@ int sumo_get_temp(struct radeon_device *rdev)
  * (sumo, trinity, SI).
  * Used for profile mode only.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sumo_pm_init_profile(struct radeon_device *rdev)
 {
 	int idx;
@@ -1680,8 +1558,6 @@ void sumo_pm_init_profile(struct radeon_device *rdev)
 		rdev->pm.power_state[idx].num_clock_modes - 1;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * btc_pm_init_profile - Initialize power profiles callback.
  *
@@ -1748,7 +1624,6 @@ void btc_pm_init_profile(struct radeon_device *rdev)
  * Set non-clock parameters associated with a power state
  * (voltage, etc.) (evergreen+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void evergreen_pm_misc(struct radeon_device *rdev)
 {
 	int req_ps_idx = rdev->pm.requested_power_state_index;
@@ -1757,23 +1632,14 @@ void evergreen_pm_misc(struct radeon_device *rdev)
 	struct radeon_voltage *voltage = &ps->clock_info[req_cm_idx].voltage;
 
 	if (voltage->type == VOLTAGE_SW) {
-<<<<<<< HEAD
-		/* 0xff01 is a flag rather then an actual voltage */
-		if (voltage->voltage == 0xff01)
-=======
 		/* 0xff0x are flags rather then an actual voltage */
 		if ((voltage->voltage & 0xff00) == 0xff00)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		if (voltage->voltage && (voltage->voltage != rdev->pm.current_vddc)) {
 			radeon_atom_set_voltage(rdev, voltage->voltage, SET_VOLTAGE_TYPE_ASIC_VDDC);
 			rdev->pm.current_vddc = voltage->voltage;
 			DRM_DEBUG("Setting: vddc: %d\n", voltage->voltage);
 		}
-<<<<<<< HEAD
-		/* 0xff01 is a flag rather then an actual voltage */
-		if (voltage->vddci == 0xff01)
-=======
 
 		/* starting with BTC, there is one state that is used for both
 		 * MH and SH.  Difference is that we always use the high clock index for
@@ -1789,7 +1655,6 @@ void evergreen_pm_misc(struct radeon_device *rdev)
 
 		/* 0xff0x are flags rather then an actual voltage */
 		if ((voltage->vddci & 0xff00) == 0xff00)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		if (voltage->vddci && (voltage->vddci != rdev->pm.current_vddci)) {
 			radeon_atom_set_voltage(rdev, voltage->vddci, SET_VOLTAGE_TYPE_ASIC_VDDCI);
@@ -1799,8 +1664,6 @@ void evergreen_pm_misc(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * evergreen_pm_prepare - pre-power state change callback.
  *
@@ -1808,7 +1671,6 @@ void evergreen_pm_misc(struct radeon_device *rdev)
  *
  * Prepare for a power state change (evergreen+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void evergreen_pm_prepare(struct radeon_device *rdev)
 {
 	struct drm_device *ddev = rdev->ddev;
@@ -1827,8 +1689,6 @@ void evergreen_pm_prepare(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * evergreen_pm_finish - post-power state change callback.
  *
@@ -1836,7 +1696,6 @@ void evergreen_pm_prepare(struct radeon_device *rdev)
  *
  * Clean up after a power state change (evergreen+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void evergreen_pm_finish(struct radeon_device *rdev)
 {
 	struct drm_device *ddev = rdev->ddev;
@@ -1855,104 +1714,6 @@ void evergreen_pm_finish(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-bool evergreen_hpd_sense(struct radeon_device *rdev, enum radeon_hpd_id hpd)
-{
-	bool connected = false;
-
-	switch (hpd) {
-	case RADEON_HPD_1:
-		if (RREG32(DC_HPD1_INT_STATUS) & DC_HPDx_SENSE)
-			connected = true;
-		break;
-	case RADEON_HPD_2:
-		if (RREG32(DC_HPD2_INT_STATUS) & DC_HPDx_SENSE)
-			connected = true;
-		break;
-	case RADEON_HPD_3:
-		if (RREG32(DC_HPD3_INT_STATUS) & DC_HPDx_SENSE)
-			connected = true;
-		break;
-	case RADEON_HPD_4:
-		if (RREG32(DC_HPD4_INT_STATUS) & DC_HPDx_SENSE)
-			connected = true;
-		break;
-	case RADEON_HPD_5:
-		if (RREG32(DC_HPD5_INT_STATUS) & DC_HPDx_SENSE)
-			connected = true;
-		break;
-	case RADEON_HPD_6:
-		if (RREG32(DC_HPD6_INT_STATUS) & DC_HPDx_SENSE)
-			connected = true;
-			break;
-	default:
-		break;
-	}
-
-	return connected;
-}
-
-void evergreen_hpd_set_polarity(struct radeon_device *rdev,
-				enum radeon_hpd_id hpd)
-{
-	u32 tmp;
-	bool connected = evergreen_hpd_sense(rdev, hpd);
-
-	switch (hpd) {
-	case RADEON_HPD_1:
-		tmp = RREG32(DC_HPD1_INT_CONTROL);
-		if (connected)
-			tmp &= ~DC_HPDx_INT_POLARITY;
-		else
-			tmp |= DC_HPDx_INT_POLARITY;
-		WREG32(DC_HPD1_INT_CONTROL, tmp);
-		break;
-	case RADEON_HPD_2:
-		tmp = RREG32(DC_HPD2_INT_CONTROL);
-		if (connected)
-			tmp &= ~DC_HPDx_INT_POLARITY;
-		else
-			tmp |= DC_HPDx_INT_POLARITY;
-		WREG32(DC_HPD2_INT_CONTROL, tmp);
-		break;
-	case RADEON_HPD_3:
-		tmp = RREG32(DC_HPD3_INT_CONTROL);
-		if (connected)
-			tmp &= ~DC_HPDx_INT_POLARITY;
-		else
-			tmp |= DC_HPDx_INT_POLARITY;
-		WREG32(DC_HPD3_INT_CONTROL, tmp);
-		break;
-	case RADEON_HPD_4:
-		tmp = RREG32(DC_HPD4_INT_CONTROL);
-		if (connected)
-			tmp &= ~DC_HPDx_INT_POLARITY;
-		else
-			tmp |= DC_HPDx_INT_POLARITY;
-		WREG32(DC_HPD4_INT_CONTROL, tmp);
-		break;
-	case RADEON_HPD_5:
-		tmp = RREG32(DC_HPD5_INT_CONTROL);
-		if (connected)
-			tmp &= ~DC_HPDx_INT_POLARITY;
-		else
-			tmp |= DC_HPDx_INT_POLARITY;
-		WREG32(DC_HPD5_INT_CONTROL, tmp);
-			break;
-	case RADEON_HPD_6:
-		tmp = RREG32(DC_HPD6_INT_CONTROL);
-		if (connected)
-			tmp &= ~DC_HPDx_INT_POLARITY;
-		else
-			tmp |= DC_HPDx_INT_POLARITY;
-		WREG32(DC_HPD6_INT_CONTROL, tmp);
-		break;
-	default:
-		break;
-	}
-}
-
-=======
 /**
  * evergreen_hpd_sense - hpd sense callback.
  *
@@ -2000,25 +1761,17 @@ void evergreen_hpd_set_polarity(struct radeon_device *rdev,
  * Setup the hpd pins used by the card (evergreen+).
  * Enable the pin, set the polarity, and enable the hpd interrupts.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void evergreen_hpd_init(struct radeon_device *rdev)
 {
 	struct drm_device *dev = rdev->ddev;
 	struct drm_connector *connector;
-<<<<<<< HEAD
-=======
 	unsigned enabled = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tmp = DC_HPDx_CONNECTION_TIMER(0x9c4) |
 		DC_HPDx_RX_INT_TIMER(0xfa) | DC_HPDx_EN;
 
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
-<<<<<<< HEAD
-		struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-=======
 		enum radeon_hpd_id hpd =
 			to_radeon_connector(connector)->hpd.hpd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (connector->connector_type == DRM_MODE_CONNECTOR_eDP ||
 		    connector->connector_type == DRM_MODE_CONNECTOR_LVDS) {
@@ -2029,42 +1782,6 @@ void evergreen_hpd_init(struct radeon_device *rdev)
 			 */
 			continue;
 		}
-<<<<<<< HEAD
-		switch (radeon_connector->hpd.hpd) {
-		case RADEON_HPD_1:
-			WREG32(DC_HPD1_CONTROL, tmp);
-			rdev->irq.hpd[0] = true;
-			break;
-		case RADEON_HPD_2:
-			WREG32(DC_HPD2_CONTROL, tmp);
-			rdev->irq.hpd[1] = true;
-			break;
-		case RADEON_HPD_3:
-			WREG32(DC_HPD3_CONTROL, tmp);
-			rdev->irq.hpd[2] = true;
-			break;
-		case RADEON_HPD_4:
-			WREG32(DC_HPD4_CONTROL, tmp);
-			rdev->irq.hpd[3] = true;
-			break;
-		case RADEON_HPD_5:
-			WREG32(DC_HPD5_CONTROL, tmp);
-			rdev->irq.hpd[4] = true;
-			break;
-		case RADEON_HPD_6:
-			WREG32(DC_HPD6_CONTROL, tmp);
-			rdev->irq.hpd[5] = true;
-			break;
-		default:
-			break;
-		}
-		radeon_hpd_set_polarity(rdev, radeon_connector->hpd.hpd);
-	}
-	if (rdev->irq.installed)
-		evergreen_irq_set(rdev);
-}
-
-=======
 
 		if (hpd == RADEON_HPD_NONE)
 			continue;
@@ -2085,45 +1802,10 @@ void evergreen_hpd_init(struct radeon_device *rdev)
  * Tear down the hpd pins used by the card (evergreen+).
  * Disable the hpd interrupts.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void evergreen_hpd_fini(struct radeon_device *rdev)
 {
 	struct drm_device *dev = rdev->ddev;
 	struct drm_connector *connector;
-<<<<<<< HEAD
-
-	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
-		struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-		switch (radeon_connector->hpd.hpd) {
-		case RADEON_HPD_1:
-			WREG32(DC_HPD1_CONTROL, 0);
-			rdev->irq.hpd[0] = false;
-			break;
-		case RADEON_HPD_2:
-			WREG32(DC_HPD2_CONTROL, 0);
-			rdev->irq.hpd[1] = false;
-			break;
-		case RADEON_HPD_3:
-			WREG32(DC_HPD3_CONTROL, 0);
-			rdev->irq.hpd[2] = false;
-			break;
-		case RADEON_HPD_4:
-			WREG32(DC_HPD4_CONTROL, 0);
-			rdev->irq.hpd[3] = false;
-			break;
-		case RADEON_HPD_5:
-			WREG32(DC_HPD5_CONTROL, 0);
-			rdev->irq.hpd[4] = false;
-			break;
-		case RADEON_HPD_6:
-			WREG32(DC_HPD6_CONTROL, 0);
-			rdev->irq.hpd[5] = false;
-			break;
-		default:
-			break;
-		}
-	}
-=======
 	unsigned disabled = 0;
 
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
@@ -2137,7 +1819,6 @@ void evergreen_hpd_fini(struct radeon_device *rdev)
 		disabled |= 1 << hpd;
 	}
 	radeon_irq_kms_disable_hpd(rdev, disabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* watermark setup */
@@ -2411,17 +2092,7 @@ static u32 evergreen_latency_watermark(struct evergreen_wm_params *wm)
 	b.full = dfixed_const(wm->num_heads);
 	a.full = dfixed_div(a, b);
 
-<<<<<<< HEAD
-	b.full = dfixed_const(1000);
-	c.full = dfixed_const(wm->disp_clk);
-	b.full = dfixed_div(c, b);
-	c.full = dfixed_const(wm->bytes_per_pixel);
-	b.full = dfixed_mul(b, c);
-
-	lb_fill_bw = min(dfixed_trunc(a), dfixed_trunc(b));
-=======
 	lb_fill_bw = min(dfixed_trunc(a), wm->disp_clk * wm->bytes_per_pixel / 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	a.full = dfixed_const(max_src_lines_per_dst_line * wm->src_width * wm->bytes_per_pixel);
 	b.full = dfixed_const(1000);
@@ -2486,14 +2157,9 @@ static void evergreen_program_watermarks(struct radeon_device *rdev,
 					 u32 lb_size, u32 num_heads)
 {
 	struct drm_display_mode *mode = &radeon_crtc->base.mode;
-<<<<<<< HEAD
-	struct evergreen_wm_params wm;
-	u32 pixel_period;
-=======
 	struct evergreen_wm_params wm_low, wm_high;
 	u32 dram_channels;
 	u32 active_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 line_time = 0;
 	u32 latency_watermark_a = 0, latency_watermark_b = 0;
 	u32 priority_a_mark = 0, priority_b_mark = 0;
@@ -2504,45 +2170,6 @@ static void evergreen_program_watermarks(struct radeon_device *rdev,
 	fixed20_12 a, b, c;
 
 	if (radeon_crtc->base.enabled && num_heads && mode) {
-<<<<<<< HEAD
-		pixel_period = 1000000 / (u32)mode->clock;
-		line_time = min((u32)mode->crtc_htotal * pixel_period, (u32)65535);
-		priority_a_cnt = 0;
-		priority_b_cnt = 0;
-
-		wm.yclk = rdev->pm.current_mclk * 10;
-		wm.sclk = rdev->pm.current_sclk * 10;
-		wm.disp_clk = mode->clock;
-		wm.src_width = mode->crtc_hdisplay;
-		wm.active_time = mode->crtc_hdisplay * pixel_period;
-		wm.blank_time = line_time - wm.active_time;
-		wm.interlaced = false;
-		if (mode->flags & DRM_MODE_FLAG_INTERLACE)
-			wm.interlaced = true;
-		wm.vsc = radeon_crtc->vsc;
-		wm.vtaps = 1;
-		if (radeon_crtc->rmx_type != RMX_OFF)
-			wm.vtaps = 2;
-		wm.bytes_per_pixel = 4; /* XXX: get this from fb config */
-		wm.lb_size = lb_size;
-		wm.dram_channels = evergreen_get_number_of_dram_channels(rdev);
-		wm.num_heads = num_heads;
-
-		/* set for high clocks */
-		latency_watermark_a = min(evergreen_latency_watermark(&wm), (u32)65535);
-		/* set for low clocks */
-		/* wm.yclk = low clk; wm.sclk = low clk */
-		latency_watermark_b = min(evergreen_latency_watermark(&wm), (u32)65535);
-
-		/* possibly force display priority to high */
-		/* should really do this at mode validation time... */
-		if (!evergreen_average_bandwidth_vs_dram_bandwidth_for_display(&wm) ||
-		    !evergreen_average_bandwidth_vs_available_bandwidth(&wm) ||
-		    !evergreen_check_latency_hiding(&wm) ||
-		    (rdev->disp_priority == 2)) {
-			DRM_DEBUG_KMS("force priority to high\n");
-			priority_a_cnt |= PRIORITY_ALWAYS_ON;
-=======
 		active_time = (u32) div_u64((u64)mode->crtc_hdisplay * 1000000,
 					    (u32)mode->clock);
 		line_time = (u32) div_u64((u64)mode->crtc_htotal * 1000000,
@@ -2625,7 +2252,6 @@ static void evergreen_program_watermarks(struct radeon_device *rdev,
 		    !evergreen_check_latency_hiding(&wm_low) ||
 		    (rdev->disp_priority == 2)) {
 			DRM_DEBUG_KMS("force priority b to high\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priority_b_cnt |= PRIORITY_ALWAYS_ON;
 		}
 
@@ -2652,12 +2278,9 @@ static void evergreen_program_watermarks(struct radeon_device *rdev,
 		c.full = dfixed_div(c, a);
 		priority_b_mark = dfixed_trunc(c);
 		priority_b_cnt |= priority_b_mark & PRIORITY_MARK_MASK;
-<<<<<<< HEAD
-=======
 
 		/* Save number of lines the linebuffer leads before the scanout */
 		radeon_crtc->lb_vblank_lead_lines = DIV_ROUND_UP(lb_size, mode->crtc_hdisplay);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* select wm A */
@@ -2684,10 +2307,6 @@ static void evergreen_program_watermarks(struct radeon_device *rdev,
 	WREG32(PRIORITY_A_CNT + radeon_crtc->crtc_offset, priority_a_cnt);
 	WREG32(PRIORITY_B_CNT + radeon_crtc->crtc_offset, priority_b_cnt);
 
-<<<<<<< HEAD
-}
-
-=======
 	/* save values for DPM */
 	radeon_crtc->line_time = line_time;
 	radeon_crtc->wm_high = latency_watermark_a;
@@ -2702,7 +2321,6 @@ static void evergreen_program_watermarks(struct radeon_device *rdev,
  * Update the display watermarks based on the requested mode(s)
  * (evergreen+).
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void evergreen_bandwidth_update(struct radeon_device *rdev)
 {
 	struct drm_display_mode *mode0 = NULL;
@@ -2710,12 +2328,9 @@ void evergreen_bandwidth_update(struct radeon_device *rdev)
 	u32 num_heads = 0, lb_size;
 	int i;
 
-<<<<<<< HEAD
-=======
 	if (!rdev->mode_info.mode_config_initialized)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_update_display_priority(rdev);
 
 	for (i = 0; i < rdev->num_crtc; i++) {
@@ -2732,8 +2347,6 @@ void evergreen_bandwidth_update(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /**
  * evergreen_mc_wait_for_idle - wait for MC idle callback.
  *
@@ -2743,7 +2356,6 @@ void evergreen_bandwidth_update(struct radeon_device *rdev)
  * (evergreen+).
  * Returns 0 if the MC is idle, -1 if not.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int evergreen_mc_wait_for_idle(struct radeon_device *rdev)
 {
 	unsigned i;
@@ -2775,11 +2387,7 @@ void evergreen_pcie_gart_tlb_flush(struct radeon_device *rdev)
 		tmp = RREG32(VM_CONTEXT0_REQUEST_RESPONSE);
 		tmp = (tmp & RESPONSE_TYPE_MASK) >> RESPONSE_TYPE_SHIFT;
 		if (tmp == 2) {
-<<<<<<< HEAD
-			printk(KERN_WARNING "[drm] r600 flush TLB failed\n");
-=======
 			pr_warn("[drm] r600 flush TLB failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		if (tmp) {
@@ -2789,11 +2397,7 @@ void evergreen_pcie_gart_tlb_flush(struct radeon_device *rdev)
 	}
 }
 
-<<<<<<< HEAD
-int evergreen_pcie_gart_enable(struct radeon_device *rdev)
-=======
 static int evergreen_pcie_gart_enable(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 	int r;
@@ -2805,10 +2409,6 @@ static int evergreen_pcie_gart_enable(struct radeon_device *rdev)
 	r = radeon_gart_table_vram_pin(rdev);
 	if (r)
 		return r;
-<<<<<<< HEAD
-	radeon_gart_restore(rdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setup L2 cache */
 	WREG32(VM_L2_CNTL, ENABLE_L2_CACHE | ENABLE_L2_FRAGMENT_PROCESSING |
 				ENABLE_L2_PTE_CACHE_LRU_UPDATE_BY_WRITE |
@@ -2855,11 +2455,7 @@ static int evergreen_pcie_gart_enable(struct radeon_device *rdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-void evergreen_pcie_gart_disable(struct radeon_device *rdev)
-=======
 static void evergreen_pcie_gart_disable(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 
@@ -2884,11 +2480,7 @@ static void evergreen_pcie_gart_disable(struct radeon_device *rdev)
 	radeon_gart_table_vram_unpin(rdev);
 }
 
-<<<<<<< HEAD
-void evergreen_pcie_gart_fini(struct radeon_device *rdev)
-=======
 static void evergreen_pcie_gart_fini(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	evergreen_pcie_gart_disable(rdev);
 	radeon_gart_table_vram_free(rdev);
@@ -2896,11 +2488,7 @@ static void evergreen_pcie_gart_fini(struct radeon_device *rdev)
 }
 
 
-<<<<<<< HEAD
-void evergreen_agp_enable(struct radeon_device *rdev)
-=======
 static void evergreen_agp_enable(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 
@@ -2926,8 +2514,6 @@ static void evergreen_agp_enable(struct radeon_device *rdev)
 	WREG32(VM_CONTEXT1_CNTL, 0);
 }
 
-<<<<<<< HEAD
-=======
 static const unsigned ni_dig_offsets[] = {
 	NI_DIG0_REGISTER_OFFSET,
 	NI_DIG1_REGISTER_OFFSET,
@@ -3074,19 +2660,10 @@ static void evergreen_blank_dp_output(struct radeon_device *rdev,
 
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *save)
 {
 	u32 crtc_enabled, tmp, frame_count, blackout;
 	int i, j;
-<<<<<<< HEAD
-
-	save->vga_render_control = RREG32(VGA_RENDER_CONTROL);
-	save->vga_hdp_control = RREG32(VGA_HDP_CONTROL);
-
-	/* disable VGA render */
-	WREG32(VGA_RENDER_CONTROL, 0);
-=======
 	unsigned dig_fe;
 
 	if (!ASIC_IS_NODCE(rdev)) {
@@ -3096,7 +2673,6 @@ void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *sav
 		/* disable VGA render */
 		WREG32(VGA_RENDER_CONTROL, 0);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* blank the display controllers */
 	for (i = 0; i < rdev->num_crtc; i++) {
 		crtc_enabled = RREG32(EVERGREEN_CRTC_CONTROL + crtc_offsets[i]) & EVERGREEN_CRTC_MASTER_EN;
@@ -3128,9 +2704,6 @@ void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *sav
 					break;
 				udelay(1);
 			}
-<<<<<<< HEAD
-
-=======
 			/*we should disable dig if it drives dp sst*/
 			/*but we are in radeon_device_init and the topology is unknown*/
 			/*and it is available after radeon_modeset_init*/
@@ -3142,7 +2715,6 @@ void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *sav
 			    evergreen_is_dp_sst_stream_enabled(rdev, i, &dig_fe))
 				evergreen_blank_dp_output(rdev, dig_fe);
 			/*we could remove 6 lines below*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* XXX this is a hack to avoid strange behavior with EFI on certain systems */
 			WREG32(EVERGREEN_CRTC_UPDATE_LOCK + crtc_offsets[i], 1);
 			tmp = RREG32(EVERGREEN_CRTC_CONTROL + crtc_offsets[i]);
@@ -3202,28 +2774,18 @@ void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *s
 		WREG32(EVERGREEN_GRPH_SECONDARY_SURFACE_ADDRESS + crtc_offsets[i],
 		       (u32)rdev->mc.vram_start);
 	}
-<<<<<<< HEAD
-	WREG32(EVERGREEN_VGA_MEMORY_BASE_ADDRESS_HIGH, upper_32_bits(rdev->mc.vram_start));
-	WREG32(EVERGREEN_VGA_MEMORY_BASE_ADDRESS, (u32)rdev->mc.vram_start);
-=======
 
 	if (!ASIC_IS_NODCE(rdev)) {
 		WREG32(EVERGREEN_VGA_MEMORY_BASE_ADDRESS_HIGH, upper_32_bits(rdev->mc.vram_start));
 		WREG32(EVERGREEN_VGA_MEMORY_BASE_ADDRESS, (u32)rdev->mc.vram_start);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* unlock regs and wait for update */
 	for (i = 0; i < rdev->num_crtc; i++) {
 		if (save->crtc_enabled[i]) {
 			tmp = RREG32(EVERGREEN_MASTER_UPDATE_MODE + crtc_offsets[i]);
-<<<<<<< HEAD
-			if ((tmp & 0x3) != 0) {
-				tmp &= ~0x3;
-=======
 			if ((tmp & 0x7) != 0) {
 				tmp &= ~0x7;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				WREG32(EVERGREEN_MASTER_UPDATE_MODE + crtc_offsets[i], tmp);
 			}
 			tmp = RREG32(EVERGREEN_GRPH_UPDATE + crtc_offsets[i]);
@@ -3256,11 +2818,7 @@ void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *s
 		if (save->crtc_enabled[i]) {
 			if (ASIC_IS_DCE6(rdev)) {
 				tmp = RREG32(EVERGREEN_CRTC_BLANK_CONTROL + crtc_offsets[i]);
-<<<<<<< HEAD
-				tmp |= EVERGREEN_CRTC_BLANK_DATA_EN;
-=======
 				tmp &= ~EVERGREEN_CRTC_BLANK_DATA_EN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				WREG32(EVERGREEN_CRTC_UPDATE_LOCK + crtc_offsets[i], 1);
 				WREG32(EVERGREEN_CRTC_BLANK_CONTROL + crtc_offsets[i], tmp);
 				WREG32(EVERGREEN_CRTC_UPDATE_LOCK + crtc_offsets[i], 0);
@@ -3280,19 +2838,12 @@ void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *s
 			}
 		}
 	}
-<<<<<<< HEAD
-	/* Unlock vga access */
-	WREG32(VGA_HDP_CONTROL, save->vga_hdp_control);
-	mdelay(1);
-	WREG32(VGA_RENDER_CONTROL, save->vga_render_control);
-=======
 	if (!ASIC_IS_NODCE(rdev)) {
 		/* Unlock vga access */
 		WREG32(VGA_HDP_CONTROL, save->vga_hdp_control);
 		mdelay(1);
 		WREG32(VGA_RENDER_CONTROL, save->vga_render_control);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void evergreen_mc_program(struct radeon_device *rdev)
@@ -3377,19 +2928,12 @@ void evergreen_mc_program(struct radeon_device *rdev)
  */
 void evergreen_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 {
-<<<<<<< HEAD
-	struct radeon_ring *ring = &rdev->ring[ib->fence->ring];
-=======
 	struct radeon_ring *ring = &rdev->ring[ib->ring];
 	u32 next_rptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set to DX10/11 mode */
 	radeon_ring_write(ring, PACKET3(PACKET3_MODE_CONTROL, 0));
 	radeon_ring_write(ring, 1);
-<<<<<<< HEAD
-	/* FIXME: implement */
-=======
 
 	if (ring->rptr_save_reg) {
 		next_rptr = ring->wptr + 3 + 4;
@@ -3406,7 +2950,6 @@ void evergreen_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 		radeon_ring_write(ring, 0);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_ring_write(ring, PACKET3(PACKET3_INDIRECT_BUFFER, 2));
 	radeon_ring_write(ring,
 #ifdef __BIG_ENDIAN
@@ -3468,11 +3011,7 @@ static int evergreen_cp_start(struct radeon_device *rdev)
 	radeon_ring_write(ring, PACKET3_ME_INITIALIZE_DEVICE_ID(1));
 	radeon_ring_write(ring, 0);
 	radeon_ring_write(ring, 0);
-<<<<<<< HEAD
-	radeon_ring_unlock_commit(rdev, ring);
-=======
 	radeon_ring_unlock_commit(rdev, ring, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cp_me = 0xff;
 	WREG32(CP_ME_CNTL, cp_me);
@@ -3515,20 +3054,12 @@ static int evergreen_cp_start(struct radeon_device *rdev)
 	radeon_ring_write(ring, 0x0000000e); /* VGT_VERTEX_REUSE_BLOCK_CNTL */
 	radeon_ring_write(ring, 0x00000010); /*  */
 
-<<<<<<< HEAD
-	radeon_ring_unlock_commit(rdev, ring);
-=======
 	radeon_ring_unlock_commit(rdev, ring, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int evergreen_cp_resume(struct radeon_device *rdev)
-=======
 static int evergreen_cp_resume(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
 	u32 tmp;
@@ -3548,13 +3079,8 @@ static int evergreen_cp_resume(struct radeon_device *rdev)
 	RREG32(GRBM_SOFT_RESET);
 
 	/* Set ring buffer size */
-<<<<<<< HEAD
-	rb_bufsz = drm_order(ring->ring_size / 8);
-	tmp = (drm_order(RADEON_GPU_PAGE_SIZE/8) << 8) | rb_bufsz;
-=======
 	rb_bufsz = order_base_2(ring->ring_size / 8);
 	tmp = (order_base_2(RADEON_GPU_PAGE_SIZE/8) << 8) | rb_bufsz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __BIG_ENDIAN
 	tmp |= BUF_SWAP_32BIT;
 #endif
@@ -3571,11 +3097,7 @@ static int evergreen_cp_resume(struct radeon_device *rdev)
 	ring->wptr = 0;
 	WREG32(CP_RB_WPTR, ring->wptr);
 
-<<<<<<< HEAD
-	/* set the wb address wether it's enabled or not */
-=======
 	/* set the wb address whether it's enabled or not */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(CP_RB_RPTR_ADDR,
 	       ((rdev->wb.gpu_addr + RADEON_WB_CP_RPTR_OFFSET) & 0xFFFFFFFC));
 	WREG32(CP_RB_RPTR_ADDR_HI, upper_32_bits(rdev->wb.gpu_addr + RADEON_WB_CP_RPTR_OFFSET) & 0xFF);
@@ -3594,11 +3116,6 @@ static int evergreen_cp_resume(struct radeon_device *rdev)
 	WREG32(CP_RB_BASE, ring->gpu_addr >> 8);
 	WREG32(CP_DEBUG, (1 << 27) | (1 << 28));
 
-<<<<<<< HEAD
-	ring->rptr = RREG32(CP_RB_RPTR);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	evergreen_cp_start(rdev);
 	ring->ready = true;
 	r = radeon_ring_test(rdev, RADEON_RING_TYPE_GFX_INDEX, ring);
@@ -3612,170 +3129,10 @@ static int evergreen_cp_resume(struct radeon_device *rdev)
 /*
  * Core functions
  */
-<<<<<<< HEAD
-static u32 evergreen_get_tile_pipe_to_backend_map(struct radeon_device *rdev,
-						  u32 num_tile_pipes,
-						  u32 num_backends,
-						  u32 backend_disable_mask)
-{
-	u32 backend_map = 0;
-	u32 enabled_backends_mask = 0;
-	u32 enabled_backends_count = 0;
-	u32 cur_pipe;
-	u32 swizzle_pipe[EVERGREEN_MAX_PIPES];
-	u32 cur_backend = 0;
-	u32 i;
-	bool force_no_swizzle;
-
-	if (num_tile_pipes > EVERGREEN_MAX_PIPES)
-		num_tile_pipes = EVERGREEN_MAX_PIPES;
-	if (num_tile_pipes < 1)
-		num_tile_pipes = 1;
-	if (num_backends > EVERGREEN_MAX_BACKENDS)
-		num_backends = EVERGREEN_MAX_BACKENDS;
-	if (num_backends < 1)
-		num_backends = 1;
-
-	for (i = 0; i < EVERGREEN_MAX_BACKENDS; ++i) {
-		if (((backend_disable_mask >> i) & 1) == 0) {
-			enabled_backends_mask |= (1 << i);
-			++enabled_backends_count;
-		}
-		if (enabled_backends_count == num_backends)
-			break;
-	}
-
-	if (enabled_backends_count == 0) {
-		enabled_backends_mask = 1;
-		enabled_backends_count = 1;
-	}
-
-	if (enabled_backends_count != num_backends)
-		num_backends = enabled_backends_count;
-
-	memset((uint8_t *)&swizzle_pipe[0], 0, sizeof(u32) * EVERGREEN_MAX_PIPES);
-	switch (rdev->family) {
-	case CHIP_CEDAR:
-	case CHIP_REDWOOD:
-	case CHIP_PALM:
-	case CHIP_SUMO:
-	case CHIP_SUMO2:
-	case CHIP_TURKS:
-	case CHIP_CAICOS:
-		force_no_swizzle = false;
-		break;
-	case CHIP_CYPRESS:
-	case CHIP_HEMLOCK:
-	case CHIP_JUNIPER:
-	case CHIP_BARTS:
-	default:
-		force_no_swizzle = true;
-		break;
-	}
-	if (force_no_swizzle) {
-		bool last_backend_enabled = false;
-
-		force_no_swizzle = false;
-		for (i = 0; i < EVERGREEN_MAX_BACKENDS; ++i) {
-			if (((enabled_backends_mask >> i) & 1) == 1) {
-				if (last_backend_enabled)
-					force_no_swizzle = true;
-				last_backend_enabled = true;
-			} else
-				last_backend_enabled = false;
-		}
-	}
-
-	switch (num_tile_pipes) {
-	case 1:
-	case 3:
-	case 5:
-	case 7:
-		DRM_ERROR("odd number of pipes!\n");
-		break;
-	case 2:
-		swizzle_pipe[0] = 0;
-		swizzle_pipe[1] = 1;
-		break;
-	case 4:
-		if (force_no_swizzle) {
-			swizzle_pipe[0] = 0;
-			swizzle_pipe[1] = 1;
-			swizzle_pipe[2] = 2;
-			swizzle_pipe[3] = 3;
-		} else {
-			swizzle_pipe[0] = 0;
-			swizzle_pipe[1] = 2;
-			swizzle_pipe[2] = 1;
-			swizzle_pipe[3] = 3;
-		}
-		break;
-	case 6:
-		if (force_no_swizzle) {
-			swizzle_pipe[0] = 0;
-			swizzle_pipe[1] = 1;
-			swizzle_pipe[2] = 2;
-			swizzle_pipe[3] = 3;
-			swizzle_pipe[4] = 4;
-			swizzle_pipe[5] = 5;
-		} else {
-			swizzle_pipe[0] = 0;
-			swizzle_pipe[1] = 2;
-			swizzle_pipe[2] = 4;
-			swizzle_pipe[3] = 1;
-			swizzle_pipe[4] = 3;
-			swizzle_pipe[5] = 5;
-		}
-		break;
-	case 8:
-		if (force_no_swizzle) {
-			swizzle_pipe[0] = 0;
-			swizzle_pipe[1] = 1;
-			swizzle_pipe[2] = 2;
-			swizzle_pipe[3] = 3;
-			swizzle_pipe[4] = 4;
-			swizzle_pipe[5] = 5;
-			swizzle_pipe[6] = 6;
-			swizzle_pipe[7] = 7;
-		} else {
-			swizzle_pipe[0] = 0;
-			swizzle_pipe[1] = 2;
-			swizzle_pipe[2] = 4;
-			swizzle_pipe[3] = 6;
-			swizzle_pipe[4] = 1;
-			swizzle_pipe[5] = 3;
-			swizzle_pipe[6] = 5;
-			swizzle_pipe[7] = 7;
-		}
-		break;
-	}
-
-	for (cur_pipe = 0; cur_pipe < num_tile_pipes; ++cur_pipe) {
-		while (((1 << cur_backend) & enabled_backends_mask) == 0)
-			cur_backend = (cur_backend + 1) % EVERGREEN_MAX_BACKENDS;
-
-		backend_map |= (((cur_backend & 0xf) << (swizzle_pipe[cur_pipe] * 4)));
-
-		cur_backend = (cur_backend + 1) % EVERGREEN_MAX_BACKENDS;
-	}
-
-	return backend_map;
-}
-
-static void evergreen_gpu_init(struct radeon_device *rdev)
-{
-	u32 cc_rb_backend_disable = 0;
-	u32 cc_gc_shader_pipe_config;
-	u32 gb_addr_config = 0;
-	u32 mc_shared_chmap, mc_arb_ramcfg;
-	u32 gb_backend_map;
-	u32 grbm_gfx_index;
-=======
 static void evergreen_gpu_init(struct radeon_device *rdev)
 {
 	u32 gb_addr_config;
 	u32 mc_arb_ramcfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sx_debug_1;
 	u32 smx_dc_ctl0;
 	u32 sq_config;
@@ -3790,12 +3147,8 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 	u32 sq_stack_resource_mgmt_3;
 	u32 vgt_cache_invalidation;
 	u32 hdp_host_path_cntl, tmp;
-<<<<<<< HEAD
-	int i, j, num_shader_engines, ps_thread_count;
-=======
 	u32 disabled_rb_mask;
 	int i, j, ps_thread_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (rdev->family) {
 	case CHIP_CYPRESS:
@@ -3819,10 +3172,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x100;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = CYPRESS_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_JUNIPER:
 		rdev->config.evergreen.num_ses = 1;
@@ -3844,10 +3194,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x100;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = JUNIPER_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_REDWOOD:
 		rdev->config.evergreen.num_ses = 1;
@@ -3869,10 +3216,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x100;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = REDWOOD_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_CEDAR:
 	default:
@@ -3895,10 +3239,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x40;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = CEDAR_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_PALM:
 		rdev->config.evergreen.num_ses = 1;
@@ -3920,10 +3261,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x40;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = CEDAR_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_SUMO:
 		rdev->config.evergreen.num_ses = 1;
@@ -3951,10 +3289,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x40;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = SUMO_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_SUMO2:
 		rdev->config.evergreen.num_ses = 1;
@@ -3976,10 +3311,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x40;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = SUMO2_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_BARTS:
 		rdev->config.evergreen.num_ses = 2;
@@ -4001,10 +3333,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x100;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = BARTS_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_TURKS:
 		rdev->config.evergreen.num_ses = 1;
@@ -4026,10 +3355,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x100;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = TURKS_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CHIP_CAICOS:
 		rdev->config.evergreen.num_ses = 1;
@@ -4051,10 +3377,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 		rdev->config.evergreen.sc_prim_fifo_size = 0x40;
 		rdev->config.evergreen.sc_hiz_tile_fifo_size = 0x30;
 		rdev->config.evergreen.sc_earlyz_tile_fifo_size = 0x130;
-<<<<<<< HEAD
-=======
 		gb_addr_config = CAICOS_GB_ADDR_CONFIG_GOLDEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -4068,33 +3391,12 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 	}
 
 	WREG32(GRBM_CNTL, GRBM_READ_TIMEOUT(0xff));
-<<<<<<< HEAD
-
-	evergreen_fix_pci_max_read_req_size(rdev);
-
-	cc_gc_shader_pipe_config = RREG32(CC_GC_SHADER_PIPE_CONFIG) & ~2;
-
-	cc_gc_shader_pipe_config |=
-		INACTIVE_QD_PIPES((EVERGREEN_MAX_PIPES_MASK << rdev->config.evergreen.max_pipes)
-				  & EVERGREEN_MAX_PIPES_MASK);
-	cc_gc_shader_pipe_config |=
-		INACTIVE_SIMDS((EVERGREEN_MAX_SIMDS_MASK << rdev->config.evergreen.max_simds)
-			       & EVERGREEN_MAX_SIMDS_MASK);
-
-	cc_rb_backend_disable =
-		BACKEND_DISABLE((EVERGREEN_MAX_BACKENDS_MASK << rdev->config.evergreen.max_backends)
-				& EVERGREEN_MAX_BACKENDS_MASK);
-
-
-	mc_shared_chmap = RREG32(MC_SHARED_CHMAP);
-=======
 	WREG32(SRBM_INT_CNTL, 0x1);
 	WREG32(SRBM_INT_ACK, 0x1);
 
 	evergreen_fix_pci_max_read_req_size(rdev);
 
 	RREG32(MC_SHARED_CHMAP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((rdev->family == CHIP_PALM) ||
 	    (rdev->family == CHIP_SUMO) ||
 	    (rdev->family == CHIP_SUMO2))
@@ -4102,137 +3404,6 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 	else
 		mc_arb_ramcfg = RREG32(MC_ARB_RAMCFG);
 
-<<<<<<< HEAD
-	switch (rdev->config.evergreen.max_tile_pipes) {
-	case 1:
-	default:
-		gb_addr_config |= NUM_PIPES(0);
-		break;
-	case 2:
-		gb_addr_config |= NUM_PIPES(1);
-		break;
-	case 4:
-		gb_addr_config |= NUM_PIPES(2);
-		break;
-	case 8:
-		gb_addr_config |= NUM_PIPES(3);
-		break;
-	}
-
-	gb_addr_config |= PIPE_INTERLEAVE_SIZE((mc_arb_ramcfg & BURSTLENGTH_MASK) >> BURSTLENGTH_SHIFT);
-	gb_addr_config |= BANK_INTERLEAVE_SIZE(0);
-	gb_addr_config |= NUM_SHADER_ENGINES(rdev->config.evergreen.num_ses - 1);
-	gb_addr_config |= SHADER_ENGINE_TILE_SIZE(1);
-	gb_addr_config |= NUM_GPUS(0); /* Hemlock? */
-	gb_addr_config |= MULTI_GPU_TILE_SIZE(2);
-
-	if (((mc_arb_ramcfg & NOOFCOLS_MASK) >> NOOFCOLS_SHIFT) > 2)
-		gb_addr_config |= ROW_SIZE(2);
-	else
-		gb_addr_config |= ROW_SIZE((mc_arb_ramcfg & NOOFCOLS_MASK) >> NOOFCOLS_SHIFT);
-
-	if (rdev->ddev->pdev->device == 0x689e) {
-		u32 efuse_straps_4;
-		u32 efuse_straps_3;
-		u8 efuse_box_bit_131_124;
-
-		WREG32(RCU_IND_INDEX, 0x204);
-		efuse_straps_4 = RREG32(RCU_IND_DATA);
-		WREG32(RCU_IND_INDEX, 0x203);
-		efuse_straps_3 = RREG32(RCU_IND_DATA);
-		efuse_box_bit_131_124 = (u8)(((efuse_straps_4 & 0xf) << 4) | ((efuse_straps_3 & 0xf0000000) >> 28));
-
-		switch(efuse_box_bit_131_124) {
-		case 0x00:
-			gb_backend_map = 0x76543210;
-			break;
-		case 0x55:
-			gb_backend_map = 0x77553311;
-			break;
-		case 0x56:
-			gb_backend_map = 0x77553300;
-			break;
-		case 0x59:
-			gb_backend_map = 0x77552211;
-			break;
-		case 0x66:
-			gb_backend_map = 0x77443300;
-			break;
-		case 0x99:
-			gb_backend_map = 0x66552211;
-			break;
-		case 0x5a:
-			gb_backend_map = 0x77552200;
-			break;
-		case 0xaa:
-			gb_backend_map = 0x66442200;
-			break;
-		case 0x95:
-			gb_backend_map = 0x66553311;
-			break;
-		default:
-			DRM_ERROR("bad backend map, using default\n");
-			gb_backend_map =
-				evergreen_get_tile_pipe_to_backend_map(rdev,
-								       rdev->config.evergreen.max_tile_pipes,
-								       rdev->config.evergreen.max_backends,
-								       ((EVERGREEN_MAX_BACKENDS_MASK <<
-								   rdev->config.evergreen.max_backends) &
-									EVERGREEN_MAX_BACKENDS_MASK));
-			break;
-		}
-	} else if (rdev->ddev->pdev->device == 0x68b9) {
-		u32 efuse_straps_3;
-		u8 efuse_box_bit_127_124;
-
-		WREG32(RCU_IND_INDEX, 0x203);
-		efuse_straps_3 = RREG32(RCU_IND_DATA);
-		efuse_box_bit_127_124 = (u8)((efuse_straps_3 & 0xF0000000) >> 28);
-
-		switch(efuse_box_bit_127_124) {
-		case 0x0:
-			gb_backend_map = 0x00003210;
-			break;
-		case 0x5:
-		case 0x6:
-		case 0x9:
-		case 0xa:
-			gb_backend_map = 0x00003311;
-			break;
-		default:
-			DRM_ERROR("bad backend map, using default\n");
-			gb_backend_map =
-				evergreen_get_tile_pipe_to_backend_map(rdev,
-								       rdev->config.evergreen.max_tile_pipes,
-								       rdev->config.evergreen.max_backends,
-								       ((EVERGREEN_MAX_BACKENDS_MASK <<
-								   rdev->config.evergreen.max_backends) &
-									EVERGREEN_MAX_BACKENDS_MASK));
-			break;
-		}
-	} else {
-		switch (rdev->family) {
-		case CHIP_CYPRESS:
-		case CHIP_HEMLOCK:
-		case CHIP_BARTS:
-			gb_backend_map = 0x66442200;
-			break;
-		case CHIP_JUNIPER:
-			gb_backend_map = 0x00002200;
-			break;
-		default:
-			gb_backend_map =
-				evergreen_get_tile_pipe_to_backend_map(rdev,
-								       rdev->config.evergreen.max_tile_pipes,
-								       rdev->config.evergreen.max_backends,
-								       ((EVERGREEN_MAX_BACKENDS_MASK <<
-									 rdev->config.evergreen.max_backends) &
-									EVERGREEN_MAX_BACKENDS_MASK));
-		}
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* setup tiling info dword.  gb_addr_config is not adequate since it does
 	 * not have bank info, so create a custom tiling dword.
 	 * bits 3:0   num_pipes
@@ -4273,44 +3444,6 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 			break;
 		}
 	}
-<<<<<<< HEAD
-	rdev->config.evergreen.tile_config |=
-		((mc_arb_ramcfg & BURSTLENGTH_MASK) >> BURSTLENGTH_SHIFT) << 8;
-	rdev->config.evergreen.tile_config |=
-		((gb_addr_config & 0x30000000) >> 28) << 12;
-
-	rdev->config.evergreen.backend_map = gb_backend_map;
-	WREG32(GB_BACKEND_MAP, gb_backend_map);
-	WREG32(GB_ADDR_CONFIG, gb_addr_config);
-	WREG32(DMIF_ADDR_CONFIG, gb_addr_config);
-	WREG32(HDP_ADDR_CONFIG, gb_addr_config);
-
-	num_shader_engines = ((RREG32(GB_ADDR_CONFIG) & NUM_SHADER_ENGINES(3)) >> 12) + 1;
-	grbm_gfx_index = INSTANCE_BROADCAST_WRITES;
-
-	for (i = 0; i < rdev->config.evergreen.num_ses; i++) {
-		u32 rb = cc_rb_backend_disable | (0xf0 << 16);
-		u32 sp = cc_gc_shader_pipe_config;
-		u32 gfx = grbm_gfx_index | SE_INDEX(i);
-
-		if (i == num_shader_engines) {
-			rb |= BACKEND_DISABLE(EVERGREEN_MAX_BACKENDS_MASK);
-			sp |= INACTIVE_SIMDS(EVERGREEN_MAX_SIMDS_MASK);
-		}
-
-		WREG32(GRBM_GFX_INDEX, gfx);
-		WREG32(RLC_GFX_INDEX, gfx);
-
-		WREG32(CC_RB_BACKEND_DISABLE, rb);
-		WREG32(CC_SYS_RB_BACKEND_DISABLE, rb);
-		WREG32(GC_USER_RB_BACKEND_DISABLE, rb);
-		WREG32(CC_GC_SHADER_PIPE_CONFIG, sp);
-	}
-
-	grbm_gfx_index = INSTANCE_BROADCAST_WRITES | SE_BROADCAST_WRITES;
-	WREG32(GRBM_GFX_INDEX, grbm_gfx_index);
-	WREG32(RLC_GFX_INDEX, grbm_gfx_index);
-=======
 	rdev->config.evergreen.tile_config |= 0 << 8;
 	rdev->config.evergreen.tile_config |=
 		((gb_addr_config & 0x30000000) >> 28) << 12;
@@ -4385,7 +3518,6 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 	}
 	rdev->config.evergreen.backend_map = tmp;
 	WREG32(GB_BACKEND_MAP, tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WREG32(CGTS_SYS_TCC_DISABLE, 0);
 	WREG32(CGTS_TCC_DISABLE, 0);
@@ -4461,11 +3593,7 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
 
 	sq_lds_resource_mgmt = RREG32(SQ_LDS_RESOURCE_MGMT);
 
-<<<<<<< HEAD
-	sq_gpr_resource_mgmt_1 = NUM_PS_GPRS((rdev->config.evergreen.max_gprs - (4 * 2))* 12 / 32);
-=======
 	sq_gpr_resource_mgmt_1 = NUM_PS_GPRS((rdev->config.evergreen.max_gprs - (4 * 2)) * 12 / 32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sq_gpr_resource_mgmt_1 |= NUM_VS_GPRS((rdev->config.evergreen.max_gprs - (4 * 2)) * 6 / 32);
 	sq_gpr_resource_mgmt_1 |= NUM_CLAUSE_TEMP_GPRS(4);
 	sq_gpr_resource_mgmt_2 = NUM_GS_GPRS((rdev->config.evergreen.max_gprs - (4 * 2)) * 4 / 32);
@@ -4637,53 +3765,6 @@ int evergreen_mc_init(struct radeon_device *rdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-bool evergreen_gpu_is_lockup(struct radeon_device *rdev, struct radeon_ring *ring)
-{
-	u32 srbm_status;
-	u32 grbm_status;
-	u32 grbm_status_se0, grbm_status_se1;
-	struct r100_gpu_lockup *lockup = &rdev->config.evergreen.lockup;
-	int r;
-
-	srbm_status = RREG32(SRBM_STATUS);
-	grbm_status = RREG32(GRBM_STATUS);
-	grbm_status_se0 = RREG32(GRBM_STATUS_SE0);
-	grbm_status_se1 = RREG32(GRBM_STATUS_SE1);
-	if (!(grbm_status & GUI_ACTIVE)) {
-		r100_gpu_lockup_update(lockup, ring);
-		return false;
-	}
-	/* force CP activities */
-	r = radeon_ring_lock(rdev, ring, 2);
-	if (!r) {
-		/* PACKET2 NOP */
-		radeon_ring_write(ring, 0x80000000);
-		radeon_ring_write(ring, 0x80000000);
-		radeon_ring_unlock_commit(rdev, ring);
-	}
-	ring->rptr = RREG32(CP_RB_RPTR);
-	return r100_gpu_cp_is_lockup(rdev, lockup, ring);
-}
-
-static int evergreen_gpu_soft_reset(struct radeon_device *rdev)
-{
-	struct evergreen_mc_save save;
-	u32 grbm_reset = 0;
-
-	if (!(RREG32(GRBM_STATUS) & GUI_ACTIVE))
-		return 0;
-
-	dev_info(rdev->dev, "GPU softreset \n");
-	dev_info(rdev->dev, "  GRBM_STATUS=0x%08X\n",
-		RREG32(GRBM_STATUS));
-	dev_info(rdev->dev, "  GRBM_STATUS_SE0=0x%08X\n",
-		RREG32(GRBM_STATUS_SE0));
-	dev_info(rdev->dev, "  GRBM_STATUS_SE1=0x%08X\n",
-		RREG32(GRBM_STATUS_SE1));
-	dev_info(rdev->dev, "  SRBM_STATUS=0x%08X\n",
-		RREG32(SRBM_STATUS));
-=======
 void evergreen_print_gpu_status_regs(struct radeon_device *rdev)
 {
 	dev_info(rdev->dev, "  GRBM_STATUS               = 0x%08X\n",
@@ -4835,53 +3916,10 @@ static void evergreen_gpu_soft_reset(struct radeon_device *rdev, u32 reset_mask)
 
 	udelay(50);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	evergreen_mc_stop(rdev, &save);
 	if (evergreen_mc_wait_for_idle(rdev)) {
 		dev_warn(rdev->dev, "Wait for MC idle timedout !\n");
 	}
-<<<<<<< HEAD
-	/* Disable CP parsing/prefetching */
-	WREG32(CP_ME_CNTL, CP_ME_HALT | CP_PFP_HALT);
-
-	/* reset all the gfx blocks */
-	grbm_reset = (SOFT_RESET_CP |
-		      SOFT_RESET_CB |
-		      SOFT_RESET_DB |
-		      SOFT_RESET_PA |
-		      SOFT_RESET_SC |
-		      SOFT_RESET_SPI |
-		      SOFT_RESET_SH |
-		      SOFT_RESET_SX |
-		      SOFT_RESET_TC |
-		      SOFT_RESET_TA |
-		      SOFT_RESET_VC |
-		      SOFT_RESET_VGT);
-
-	dev_info(rdev->dev, "  GRBM_SOFT_RESET=0x%08X\n", grbm_reset);
-	WREG32(GRBM_SOFT_RESET, grbm_reset);
-	(void)RREG32(GRBM_SOFT_RESET);
-	udelay(50);
-	WREG32(GRBM_SOFT_RESET, 0);
-	(void)RREG32(GRBM_SOFT_RESET);
-	/* Wait a little for things to settle down */
-	udelay(50);
-	dev_info(rdev->dev, "  GRBM_STATUS=0x%08X\n",
-		RREG32(GRBM_STATUS));
-	dev_info(rdev->dev, "  GRBM_STATUS_SE0=0x%08X\n",
-		RREG32(GRBM_STATUS_SE0));
-	dev_info(rdev->dev, "  GRBM_STATUS_SE1=0x%08X\n",
-		RREG32(GRBM_STATUS_SE1));
-	dev_info(rdev->dev, "  SRBM_STATUS=0x%08X\n",
-		RREG32(SRBM_STATUS));
-	evergreen_mc_resume(rdev, &save);
-	return 0;
-}
-
-int evergreen_asic_reset(struct radeon_device *rdev)
-{
-	return evergreen_gpu_soft_reset(rdev);
-=======
 
 	if (reset_mask & (RADEON_RESET_GFX | RADEON_RESET_COMPUTE)) {
 		grbm_soft_reset |= SOFT_RESET_DB |
@@ -5404,44 +4442,21 @@ int evergreen_rlc_resume(struct radeon_device *rdev)
 	evergreen_rlc_start(rdev);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Interrupts */
 
 u32 evergreen_get_vblank_counter(struct radeon_device *rdev, int crtc)
 {
-<<<<<<< HEAD
-	switch (crtc) {
-	case 0:
-		return RREG32(CRTC_STATUS_FRAME_COUNT + EVERGREEN_CRTC0_REGISTER_OFFSET);
-	case 1:
-		return RREG32(CRTC_STATUS_FRAME_COUNT + EVERGREEN_CRTC1_REGISTER_OFFSET);
-	case 2:
-		return RREG32(CRTC_STATUS_FRAME_COUNT + EVERGREEN_CRTC2_REGISTER_OFFSET);
-	case 3:
-		return RREG32(CRTC_STATUS_FRAME_COUNT + EVERGREEN_CRTC3_REGISTER_OFFSET);
-	case 4:
-		return RREG32(CRTC_STATUS_FRAME_COUNT + EVERGREEN_CRTC4_REGISTER_OFFSET);
-	case 5:
-		return RREG32(CRTC_STATUS_FRAME_COUNT + EVERGREEN_CRTC5_REGISTER_OFFSET);
-	default:
-		return 0;
-	}
-=======
 	if (crtc >= rdev->num_crtc)
 		return 0;
 	else
 		return RREG32(CRTC_STATUS_FRAME_COUNT + crtc_offsets[crtc]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void evergreen_disable_interrupt_state(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tmp;
 
 	if (rdev->family >= CHIP_CAYMAN) {
@@ -5449,61 +4464,6 @@ void evergreen_disable_interrupt_state(struct radeon_device *rdev)
 					 CNTX_BUSY_INT_ENABLE | CNTX_EMPTY_INT_ENABLE);
 		cayman_cp_int_cntl_setup(rdev, 1, 0);
 		cayman_cp_int_cntl_setup(rdev, 2, 0);
-<<<<<<< HEAD
-	} else
-		WREG32(CP_INT_CNTL, CNTX_BUSY_INT_ENABLE | CNTX_EMPTY_INT_ENABLE);
-	WREG32(GRBM_INT_CNTL, 0);
-	WREG32(INT_MASK + EVERGREEN_CRTC0_REGISTER_OFFSET, 0);
-	WREG32(INT_MASK + EVERGREEN_CRTC1_REGISTER_OFFSET, 0);
-	if (rdev->num_crtc >= 4) {
-		WREG32(INT_MASK + EVERGREEN_CRTC2_REGISTER_OFFSET, 0);
-		WREG32(INT_MASK + EVERGREEN_CRTC3_REGISTER_OFFSET, 0);
-	}
-	if (rdev->num_crtc >= 6) {
-		WREG32(INT_MASK + EVERGREEN_CRTC4_REGISTER_OFFSET, 0);
-		WREG32(INT_MASK + EVERGREEN_CRTC5_REGISTER_OFFSET, 0);
-	}
-
-	WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC0_REGISTER_OFFSET, 0);
-	WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC1_REGISTER_OFFSET, 0);
-	if (rdev->num_crtc >= 4) {
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC2_REGISTER_OFFSET, 0);
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC3_REGISTER_OFFSET, 0);
-	}
-	if (rdev->num_crtc >= 6) {
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC4_REGISTER_OFFSET, 0);
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC5_REGISTER_OFFSET, 0);
-	}
-
-	/* only one DAC on DCE6 */
-	if (!ASIC_IS_DCE6(rdev))
-		WREG32(DACA_AUTODETECT_INT_CONTROL, 0);
-	WREG32(DACB_AUTODETECT_INT_CONTROL, 0);
-
-	tmp = RREG32(DC_HPD1_INT_CONTROL) & DC_HPDx_INT_POLARITY;
-	WREG32(DC_HPD1_INT_CONTROL, tmp);
-	tmp = RREG32(DC_HPD2_INT_CONTROL) & DC_HPDx_INT_POLARITY;
-	WREG32(DC_HPD2_INT_CONTROL, tmp);
-	tmp = RREG32(DC_HPD3_INT_CONTROL) & DC_HPDx_INT_POLARITY;
-	WREG32(DC_HPD3_INT_CONTROL, tmp);
-	tmp = RREG32(DC_HPD4_INT_CONTROL) & DC_HPDx_INT_POLARITY;
-	WREG32(DC_HPD4_INT_CONTROL, tmp);
-	tmp = RREG32(DC_HPD5_INT_CONTROL) & DC_HPDx_INT_POLARITY;
-	WREG32(DC_HPD5_INT_CONTROL, tmp);
-	tmp = RREG32(DC_HPD6_INT_CONTROL) & DC_HPDx_INT_POLARITY;
-	WREG32(DC_HPD6_INT_CONTROL, tmp);
-
-}
-
-int evergreen_irq_set(struct radeon_device *rdev)
-{
-	u32 cp_int_cntl = CNTX_BUSY_INT_ENABLE | CNTX_EMPTY_INT_ENABLE;
-	u32 cp_int_cntl1 = 0, cp_int_cntl2 = 0;
-	u32 crtc1 = 0, crtc2 = 0, crtc3 = 0, crtc4 = 0, crtc5 = 0, crtc6 = 0;
-	u32 hpd1, hpd2, hpd3, hpd4, hpd5, hpd6;
-	u32 grbm_int_cntl = 0;
-	u32 grph1 = 0, grph2 = 0, grph3 = 0, grph4 = 0, grph5 = 0, grph6 = 0;
-=======
 		tmp = RREG32(CAYMAN_DMA1_CNTL) & ~TRAP_ENABLE;
 		WREG32(CAYMAN_DMA1_CNTL, tmp);
 	} else
@@ -5535,7 +4495,6 @@ int evergreen_irq_set(struct radeon_device *rdev)
 	u32 grbm_int_cntl = 0;
 	u32 dma_cntl, dma_cntl1 = 0;
 	u32 thermal_int = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rdev->irq.installed) {
 		WARN(1, "Can't enable IRQ/MSI because no handler is installed\n");
@@ -5549,26 +4508,6 @@ int evergreen_irq_set(struct radeon_device *rdev)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	hpd1 = RREG32(DC_HPD1_INT_CONTROL) & ~DC_HPDx_INT_EN;
-	hpd2 = RREG32(DC_HPD2_INT_CONTROL) & ~DC_HPDx_INT_EN;
-	hpd3 = RREG32(DC_HPD3_INT_CONTROL) & ~DC_HPDx_INT_EN;
-	hpd4 = RREG32(DC_HPD4_INT_CONTROL) & ~DC_HPDx_INT_EN;
-	hpd5 = RREG32(DC_HPD5_INT_CONTROL) & ~DC_HPDx_INT_EN;
-	hpd6 = RREG32(DC_HPD6_INT_CONTROL) & ~DC_HPDx_INT_EN;
-
-	if (rdev->family >= CHIP_CAYMAN) {
-		/* enable CP interrupts on all rings */
-		if (rdev->irq.sw_int[RADEON_RING_TYPE_GFX_INDEX]) {
-			DRM_DEBUG("evergreen_irq_set: sw int gfx\n");
-			cp_int_cntl |= TIME_STAMP_INT_ENABLE;
-		}
-		if (rdev->irq.sw_int[CAYMAN_RING_TYPE_CP1_INDEX]) {
-			DRM_DEBUG("evergreen_irq_set: sw int cp1\n");
-			cp_int_cntl1 |= TIME_STAMP_INT_ENABLE;
-		}
-		if (rdev->irq.sw_int[CAYMAN_RING_TYPE_CP2_INDEX]) {
-=======
 	if (rdev->family == CHIP_ARUBA)
 		thermal_int = RREG32(TN_CG_THERMAL_INT_CTRL) &
 			~(THERM_INT_MASK_HIGH | THERM_INT_MASK_LOW);
@@ -5589,81 +4528,17 @@ int evergreen_irq_set(struct radeon_device *rdev)
 			cp_int_cntl1 |= TIME_STAMP_INT_ENABLE;
 		}
 		if (atomic_read(&rdev->irq.ring_int[CAYMAN_RING_TYPE_CP2_INDEX])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DRM_DEBUG("evergreen_irq_set: sw int cp2\n");
 			cp_int_cntl2 |= TIME_STAMP_INT_ENABLE;
 		}
 	} else {
-<<<<<<< HEAD
-		if (rdev->irq.sw_int[RADEON_RING_TYPE_GFX_INDEX]) {
-=======
 		if (atomic_read(&rdev->irq.ring_int[RADEON_RING_TYPE_GFX_INDEX])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DRM_DEBUG("evergreen_irq_set: sw int gfx\n");
 			cp_int_cntl |= RB_INT_ENABLE;
 			cp_int_cntl |= TIME_STAMP_INT_ENABLE;
 		}
 	}
 
-<<<<<<< HEAD
-	if (rdev->irq.crtc_vblank_int[0] ||
-	    rdev->irq.pflip[0]) {
-		DRM_DEBUG("evergreen_irq_set: vblank 0\n");
-		crtc1 |= VBLANK_INT_MASK;
-	}
-	if (rdev->irq.crtc_vblank_int[1] ||
-	    rdev->irq.pflip[1]) {
-		DRM_DEBUG("evergreen_irq_set: vblank 1\n");
-		crtc2 |= VBLANK_INT_MASK;
-	}
-	if (rdev->irq.crtc_vblank_int[2] ||
-	    rdev->irq.pflip[2]) {
-		DRM_DEBUG("evergreen_irq_set: vblank 2\n");
-		crtc3 |= VBLANK_INT_MASK;
-	}
-	if (rdev->irq.crtc_vblank_int[3] ||
-	    rdev->irq.pflip[3]) {
-		DRM_DEBUG("evergreen_irq_set: vblank 3\n");
-		crtc4 |= VBLANK_INT_MASK;
-	}
-	if (rdev->irq.crtc_vblank_int[4] ||
-	    rdev->irq.pflip[4]) {
-		DRM_DEBUG("evergreen_irq_set: vblank 4\n");
-		crtc5 |= VBLANK_INT_MASK;
-	}
-	if (rdev->irq.crtc_vblank_int[5] ||
-	    rdev->irq.pflip[5]) {
-		DRM_DEBUG("evergreen_irq_set: vblank 5\n");
-		crtc6 |= VBLANK_INT_MASK;
-	}
-	if (rdev->irq.hpd[0]) {
-		DRM_DEBUG("evergreen_irq_set: hpd 1\n");
-		hpd1 |= DC_HPDx_INT_EN;
-	}
-	if (rdev->irq.hpd[1]) {
-		DRM_DEBUG("evergreen_irq_set: hpd 2\n");
-		hpd2 |= DC_HPDx_INT_EN;
-	}
-	if (rdev->irq.hpd[2]) {
-		DRM_DEBUG("evergreen_irq_set: hpd 3\n");
-		hpd3 |= DC_HPDx_INT_EN;
-	}
-	if (rdev->irq.hpd[3]) {
-		DRM_DEBUG("evergreen_irq_set: hpd 4\n");
-		hpd4 |= DC_HPDx_INT_EN;
-	}
-	if (rdev->irq.hpd[4]) {
-		DRM_DEBUG("evergreen_irq_set: hpd 5\n");
-		hpd5 |= DC_HPDx_INT_EN;
-	}
-	if (rdev->irq.hpd[5]) {
-		DRM_DEBUG("evergreen_irq_set: hpd 6\n");
-		hpd6 |= DC_HPDx_INT_EN;
-	}
-	if (rdev->irq.gui_idle) {
-		DRM_DEBUG("gui idle\n");
-		grbm_int_cntl |= GUI_IDLE_INT_ENABLE;
-=======
 	if (atomic_read(&rdev->irq.ring_int[R600_RING_TYPE_DMA_INDEX])) {
 		DRM_DEBUG("r600_irq_set: sw int dma\n");
 		dma_cntl |= TRAP_ENABLE;
@@ -5680,7 +4555,6 @@ int evergreen_irq_set(struct radeon_device *rdev)
 	if (rdev->irq.dpm_thermal) {
 		DRM_DEBUG("dpm thermal\n");
 		thermal_int |= THERM_INT_MASK_HIGH | THERM_INT_MASK_LOW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rdev->family >= CHIP_CAYMAN) {
@@ -5689,38 +4563,6 @@ int evergreen_irq_set(struct radeon_device *rdev)
 		cayman_cp_int_cntl_setup(rdev, 2, cp_int_cntl2);
 	} else
 		WREG32(CP_INT_CNTL, cp_int_cntl);
-<<<<<<< HEAD
-	WREG32(GRBM_INT_CNTL, grbm_int_cntl);
-
-	WREG32(INT_MASK + EVERGREEN_CRTC0_REGISTER_OFFSET, crtc1);
-	WREG32(INT_MASK + EVERGREEN_CRTC1_REGISTER_OFFSET, crtc2);
-	if (rdev->num_crtc >= 4) {
-		WREG32(INT_MASK + EVERGREEN_CRTC2_REGISTER_OFFSET, crtc3);
-		WREG32(INT_MASK + EVERGREEN_CRTC3_REGISTER_OFFSET, crtc4);
-	}
-	if (rdev->num_crtc >= 6) {
-		WREG32(INT_MASK + EVERGREEN_CRTC4_REGISTER_OFFSET, crtc5);
-		WREG32(INT_MASK + EVERGREEN_CRTC5_REGISTER_OFFSET, crtc6);
-	}
-
-	WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC0_REGISTER_OFFSET, grph1);
-	WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC1_REGISTER_OFFSET, grph2);
-	if (rdev->num_crtc >= 4) {
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC2_REGISTER_OFFSET, grph3);
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC3_REGISTER_OFFSET, grph4);
-	}
-	if (rdev->num_crtc >= 6) {
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC4_REGISTER_OFFSET, grph5);
-		WREG32(GRPH_INT_CONTROL + EVERGREEN_CRTC5_REGISTER_OFFSET, grph6);
-	}
-
-	WREG32(DC_HPD1_INT_CONTROL, hpd1);
-	WREG32(DC_HPD2_INT_CONTROL, hpd2);
-	WREG32(DC_HPD3_INT_CONTROL, hpd3);
-	WREG32(DC_HPD4_INT_CONTROL, hpd4);
-	WREG32(DC_HPD5_INT_CONTROL, hpd5);
-	WREG32(DC_HPD6_INT_CONTROL, hpd6);
-=======
 
 	WREG32(DMA_CNTL, dma_cntl);
 
@@ -5761,110 +4603,10 @@ int evergreen_irq_set(struct radeon_device *rdev)
 
 	/* posting read */
 	RREG32(SRBM_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void evergreen_irq_ack(struct radeon_device *rdev)
-{
-	u32 tmp;
-
-	rdev->irq.stat_regs.evergreen.disp_int = RREG32(DISP_INTERRUPT_STATUS);
-	rdev->irq.stat_regs.evergreen.disp_int_cont = RREG32(DISP_INTERRUPT_STATUS_CONTINUE);
-	rdev->irq.stat_regs.evergreen.disp_int_cont2 = RREG32(DISP_INTERRUPT_STATUS_CONTINUE2);
-	rdev->irq.stat_regs.evergreen.disp_int_cont3 = RREG32(DISP_INTERRUPT_STATUS_CONTINUE3);
-	rdev->irq.stat_regs.evergreen.disp_int_cont4 = RREG32(DISP_INTERRUPT_STATUS_CONTINUE4);
-	rdev->irq.stat_regs.evergreen.disp_int_cont5 = RREG32(DISP_INTERRUPT_STATUS_CONTINUE5);
-	rdev->irq.stat_regs.evergreen.d1grph_int = RREG32(GRPH_INT_STATUS + EVERGREEN_CRTC0_REGISTER_OFFSET);
-	rdev->irq.stat_regs.evergreen.d2grph_int = RREG32(GRPH_INT_STATUS + EVERGREEN_CRTC1_REGISTER_OFFSET);
-	if (rdev->num_crtc >= 4) {
-		rdev->irq.stat_regs.evergreen.d3grph_int = RREG32(GRPH_INT_STATUS + EVERGREEN_CRTC2_REGISTER_OFFSET);
-		rdev->irq.stat_regs.evergreen.d4grph_int = RREG32(GRPH_INT_STATUS + EVERGREEN_CRTC3_REGISTER_OFFSET);
-	}
-	if (rdev->num_crtc >= 6) {
-		rdev->irq.stat_regs.evergreen.d5grph_int = RREG32(GRPH_INT_STATUS + EVERGREEN_CRTC4_REGISTER_OFFSET);
-		rdev->irq.stat_regs.evergreen.d6grph_int = RREG32(GRPH_INT_STATUS + EVERGREEN_CRTC5_REGISTER_OFFSET);
-	}
-
-	if (rdev->irq.stat_regs.evergreen.d1grph_int & GRPH_PFLIP_INT_OCCURRED)
-		WREG32(GRPH_INT_STATUS + EVERGREEN_CRTC0_REGISTER_OFFSET, GRPH_PFLIP_INT_CLEAR);
-	if (rdev->irq.stat_regs.evergreen.d2grph_int & GRPH_PFLIP_INT_OCCURRED)
-		WREG32(GRPH_INT_STATUS + EVERGREEN_CRTC1_REGISTER_OFFSET, GRPH_PFLIP_INT_CLEAR);
-	if (rdev->irq.stat_regs.evergreen.disp_int & LB_D1_VBLANK_INTERRUPT)
-		WREG32(VBLANK_STATUS + EVERGREEN_CRTC0_REGISTER_OFFSET, VBLANK_ACK);
-	if (rdev->irq.stat_regs.evergreen.disp_int & LB_D1_VLINE_INTERRUPT)
-		WREG32(VLINE_STATUS + EVERGREEN_CRTC0_REGISTER_OFFSET, VLINE_ACK);
-	if (rdev->irq.stat_regs.evergreen.disp_int_cont & LB_D2_VBLANK_INTERRUPT)
-		WREG32(VBLANK_STATUS + EVERGREEN_CRTC1_REGISTER_OFFSET, VBLANK_ACK);
-	if (rdev->irq.stat_regs.evergreen.disp_int_cont & LB_D2_VLINE_INTERRUPT)
-		WREG32(VLINE_STATUS + EVERGREEN_CRTC1_REGISTER_OFFSET, VLINE_ACK);
-
-	if (rdev->num_crtc >= 4) {
-		if (rdev->irq.stat_regs.evergreen.d3grph_int & GRPH_PFLIP_INT_OCCURRED)
-			WREG32(GRPH_INT_STATUS + EVERGREEN_CRTC2_REGISTER_OFFSET, GRPH_PFLIP_INT_CLEAR);
-		if (rdev->irq.stat_regs.evergreen.d4grph_int & GRPH_PFLIP_INT_OCCURRED)
-			WREG32(GRPH_INT_STATUS + EVERGREEN_CRTC3_REGISTER_OFFSET, GRPH_PFLIP_INT_CLEAR);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont2 & LB_D3_VBLANK_INTERRUPT)
-			WREG32(VBLANK_STATUS + EVERGREEN_CRTC2_REGISTER_OFFSET, VBLANK_ACK);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont2 & LB_D3_VLINE_INTERRUPT)
-			WREG32(VLINE_STATUS + EVERGREEN_CRTC2_REGISTER_OFFSET, VLINE_ACK);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont3 & LB_D4_VBLANK_INTERRUPT)
-			WREG32(VBLANK_STATUS + EVERGREEN_CRTC3_REGISTER_OFFSET, VBLANK_ACK);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont3 & LB_D4_VLINE_INTERRUPT)
-			WREG32(VLINE_STATUS + EVERGREEN_CRTC3_REGISTER_OFFSET, VLINE_ACK);
-	}
-
-	if (rdev->num_crtc >= 6) {
-		if (rdev->irq.stat_regs.evergreen.d5grph_int & GRPH_PFLIP_INT_OCCURRED)
-			WREG32(GRPH_INT_STATUS + EVERGREEN_CRTC4_REGISTER_OFFSET, GRPH_PFLIP_INT_CLEAR);
-		if (rdev->irq.stat_regs.evergreen.d6grph_int & GRPH_PFLIP_INT_OCCURRED)
-			WREG32(GRPH_INT_STATUS + EVERGREEN_CRTC5_REGISTER_OFFSET, GRPH_PFLIP_INT_CLEAR);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont4 & LB_D5_VBLANK_INTERRUPT)
-			WREG32(VBLANK_STATUS + EVERGREEN_CRTC4_REGISTER_OFFSET, VBLANK_ACK);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont4 & LB_D5_VLINE_INTERRUPT)
-			WREG32(VLINE_STATUS + EVERGREEN_CRTC4_REGISTER_OFFSET, VLINE_ACK);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont5 & LB_D6_VBLANK_INTERRUPT)
-			WREG32(VBLANK_STATUS + EVERGREEN_CRTC5_REGISTER_OFFSET, VBLANK_ACK);
-		if (rdev->irq.stat_regs.evergreen.disp_int_cont5 & LB_D6_VLINE_INTERRUPT)
-			WREG32(VLINE_STATUS + EVERGREEN_CRTC5_REGISTER_OFFSET, VLINE_ACK);
-	}
-
-	if (rdev->irq.stat_regs.evergreen.disp_int & DC_HPD1_INTERRUPT) {
-		tmp = RREG32(DC_HPD1_INT_CONTROL);
-		tmp |= DC_HPDx_INT_ACK;
-		WREG32(DC_HPD1_INT_CONTROL, tmp);
-	}
-	if (rdev->irq.stat_regs.evergreen.disp_int_cont & DC_HPD2_INTERRUPT) {
-		tmp = RREG32(DC_HPD2_INT_CONTROL);
-		tmp |= DC_HPDx_INT_ACK;
-		WREG32(DC_HPD2_INT_CONTROL, tmp);
-	}
-	if (rdev->irq.stat_regs.evergreen.disp_int_cont2 & DC_HPD3_INTERRUPT) {
-		tmp = RREG32(DC_HPD3_INT_CONTROL);
-		tmp |= DC_HPDx_INT_ACK;
-		WREG32(DC_HPD3_INT_CONTROL, tmp);
-	}
-	if (rdev->irq.stat_regs.evergreen.disp_int_cont3 & DC_HPD4_INTERRUPT) {
-		tmp = RREG32(DC_HPD4_INT_CONTROL);
-		tmp |= DC_HPDx_INT_ACK;
-		WREG32(DC_HPD4_INT_CONTROL, tmp);
-	}
-	if (rdev->irq.stat_regs.evergreen.disp_int_cont4 & DC_HPD5_INTERRUPT) {
-		tmp = RREG32(DC_HPD5_INT_CONTROL);
-		tmp |= DC_HPDx_INT_ACK;
-		WREG32(DC_HPD5_INT_CONTROL, tmp);
-	}
-	if (rdev->irq.stat_regs.evergreen.disp_int_cont5 & DC_HPD6_INTERRUPT) {
-		tmp = RREG32(DC_HPD5_INT_CONTROL);
-		tmp |= DC_HPDx_INT_ACK;
-		WREG32(DC_HPD6_INT_CONTROL, tmp);
-	}
-}
-
-void evergreen_irq_disable(struct radeon_device *rdev)
-=======
 /* Note that the order we write back regs here is important */
 static void evergreen_irq_ack(struct radeon_device *rdev)
 {
@@ -5916,7 +4658,6 @@ static void evergreen_irq_ack(struct radeon_device *rdev)
 }
 
 static void evergreen_irq_disable(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	r600_disable_interrupts(rdev);
 	/* Wait and acknowledge irq */
@@ -5941,21 +4682,13 @@ static u32 evergreen_get_ih_wptr(struct radeon_device *rdev)
 		wptr = RREG32(IH_RB_WPTR);
 
 	if (wptr & RB_OVERFLOW) {
-<<<<<<< HEAD
-=======
 		wptr &= ~RB_OVERFLOW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* When a ring buffer overflow happen start parsing interrupt
 		 * from the last not overwritten vector (wptr + 16). Hopefully
 		 * this should allow us to catchup.
 		 */
-<<<<<<< HEAD
-		dev_warn(rdev->dev, "IH ring buffer overflow (0x%08X, %d, %d)\n",
-			wptr, rdev->ih.rptr, (wptr + 16) + rdev->ih.ptr_mask);
-=======
 		dev_warn(rdev->dev, "IH ring buffer overflow (0x%08X, 0x%08X, 0x%08X)\n",
 			 wptr, rdev->ih.rptr, (wptr + 16) & rdev->ih.ptr_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdev->ih.rptr = (wptr + 16) & rdev->ih.ptr_mask;
 		tmp = RREG32(IH_RB_CNTL);
 		tmp |= IH_WPTR_OVERFLOW_CLEAR;
@@ -5966,44 +4699,25 @@ static u32 evergreen_get_ih_wptr(struct radeon_device *rdev)
 
 int evergreen_irq_process(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-=======
 	u32 *disp_int = rdev->irq.stat_regs.evergreen.disp_int;
 	u32 *afmt_status = rdev->irq.stat_regs.evergreen.afmt_status;
 	u32 crtc_idx, hpd_idx, afmt_idx;
 	u32 mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 wptr;
 	u32 rptr;
 	u32 src_id, src_data;
 	u32 ring_index;
-<<<<<<< HEAD
-	unsigned long flags;
-	bool queue_hotplug = false;
-=======
 	bool queue_hotplug = false;
 	bool queue_hdmi = false;
 	bool queue_dp = false;
 	bool queue_thermal = false;
 	u32 status, addr;
 	const char *event_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rdev->ih.enabled || rdev->shutdown)
 		return IRQ_NONE;
 
 	wptr = evergreen_get_ih_wptr(rdev);
-<<<<<<< HEAD
-	rptr = rdev->ih.rptr;
-	DRM_DEBUG("r600_irq_process start: rptr %d, wptr %d\n", rptr, wptr);
-
-	spin_lock_irqsave(&rdev->ih.lock, flags);
-	if (rptr == wptr) {
-		spin_unlock_irqrestore(&rdev->ih.lock, flags);
-		return IRQ_NONE;
-	}
-restart_ih:
-=======
 
 restart_ih:
 	/* is somebody else already processing irqs? */
@@ -6013,17 +4727,12 @@ restart_ih:
 	rptr = rdev->ih.rptr;
 	DRM_DEBUG("evergreen_irq_process start: rptr %d, wptr %d\n", rptr, wptr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Order reading of wptr vs. reading of IH ring data */
 	rmb();
 
 	/* display interrupts */
 	evergreen_irq_ack(rdev);
 
-<<<<<<< HEAD
-	rdev->ih.wptr = wptr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (rptr != wptr) {
 		/* wptr/rptr are in bytes! */
 		ring_index = rptr / 4;
@@ -6032,211 +4741,6 @@ restart_ih:
 
 		switch (src_id) {
 		case 1: /* D1 vblank/vline */
-<<<<<<< HEAD
-			switch (src_data) {
-			case 0: /* D1 vblank */
-				if (rdev->irq.stat_regs.evergreen.disp_int & LB_D1_VBLANK_INTERRUPT) {
-					if (rdev->irq.crtc_vblank_int[0]) {
-						drm_handle_vblank(rdev->ddev, 0);
-						rdev->pm.vblank_sync = true;
-						wake_up(&rdev->irq.vblank_queue);
-					}
-					if (rdev->irq.pflip[0])
-						radeon_crtc_handle_flip(rdev, 0);
-					rdev->irq.stat_regs.evergreen.disp_int &= ~LB_D1_VBLANK_INTERRUPT;
-					DRM_DEBUG("IH: D1 vblank\n");
-				}
-				break;
-			case 1: /* D1 vline */
-				if (rdev->irq.stat_regs.evergreen.disp_int & LB_D1_VLINE_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int &= ~LB_D1_VLINE_INTERRUPT;
-					DRM_DEBUG("IH: D1 vline\n");
-				}
-				break;
-			default:
-				DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
-				break;
-			}
-			break;
-		case 2: /* D2 vblank/vline */
-			switch (src_data) {
-			case 0: /* D2 vblank */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont & LB_D2_VBLANK_INTERRUPT) {
-					if (rdev->irq.crtc_vblank_int[1]) {
-						drm_handle_vblank(rdev->ddev, 1);
-						rdev->pm.vblank_sync = true;
-						wake_up(&rdev->irq.vblank_queue);
-					}
-					if (rdev->irq.pflip[1])
-						radeon_crtc_handle_flip(rdev, 1);
-					rdev->irq.stat_regs.evergreen.disp_int_cont &= ~LB_D2_VBLANK_INTERRUPT;
-					DRM_DEBUG("IH: D2 vblank\n");
-				}
-				break;
-			case 1: /* D2 vline */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont & LB_D2_VLINE_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont &= ~LB_D2_VLINE_INTERRUPT;
-					DRM_DEBUG("IH: D2 vline\n");
-				}
-				break;
-			default:
-				DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
-				break;
-			}
-			break;
-		case 3: /* D3 vblank/vline */
-			switch (src_data) {
-			case 0: /* D3 vblank */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont2 & LB_D3_VBLANK_INTERRUPT) {
-					if (rdev->irq.crtc_vblank_int[2]) {
-						drm_handle_vblank(rdev->ddev, 2);
-						rdev->pm.vblank_sync = true;
-						wake_up(&rdev->irq.vblank_queue);
-					}
-					if (rdev->irq.pflip[2])
-						radeon_crtc_handle_flip(rdev, 2);
-					rdev->irq.stat_regs.evergreen.disp_int_cont2 &= ~LB_D3_VBLANK_INTERRUPT;
-					DRM_DEBUG("IH: D3 vblank\n");
-				}
-				break;
-			case 1: /* D3 vline */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont2 & LB_D3_VLINE_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont2 &= ~LB_D3_VLINE_INTERRUPT;
-					DRM_DEBUG("IH: D3 vline\n");
-				}
-				break;
-			default:
-				DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
-				break;
-			}
-			break;
-		case 4: /* D4 vblank/vline */
-			switch (src_data) {
-			case 0: /* D4 vblank */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont3 & LB_D4_VBLANK_INTERRUPT) {
-					if (rdev->irq.crtc_vblank_int[3]) {
-						drm_handle_vblank(rdev->ddev, 3);
-						rdev->pm.vblank_sync = true;
-						wake_up(&rdev->irq.vblank_queue);
-					}
-					if (rdev->irq.pflip[3])
-						radeon_crtc_handle_flip(rdev, 3);
-					rdev->irq.stat_regs.evergreen.disp_int_cont3 &= ~LB_D4_VBLANK_INTERRUPT;
-					DRM_DEBUG("IH: D4 vblank\n");
-				}
-				break;
-			case 1: /* D4 vline */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont3 & LB_D4_VLINE_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont3 &= ~LB_D4_VLINE_INTERRUPT;
-					DRM_DEBUG("IH: D4 vline\n");
-				}
-				break;
-			default:
-				DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
-				break;
-			}
-			break;
-		case 5: /* D5 vblank/vline */
-			switch (src_data) {
-			case 0: /* D5 vblank */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont4 & LB_D5_VBLANK_INTERRUPT) {
-					if (rdev->irq.crtc_vblank_int[4]) {
-						drm_handle_vblank(rdev->ddev, 4);
-						rdev->pm.vblank_sync = true;
-						wake_up(&rdev->irq.vblank_queue);
-					}
-					if (rdev->irq.pflip[4])
-						radeon_crtc_handle_flip(rdev, 4);
-					rdev->irq.stat_regs.evergreen.disp_int_cont4 &= ~LB_D5_VBLANK_INTERRUPT;
-					DRM_DEBUG("IH: D5 vblank\n");
-				}
-				break;
-			case 1: /* D5 vline */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont4 & LB_D5_VLINE_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont4 &= ~LB_D5_VLINE_INTERRUPT;
-					DRM_DEBUG("IH: D5 vline\n");
-				}
-				break;
-			default:
-				DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
-				break;
-			}
-			break;
-		case 6: /* D6 vblank/vline */
-			switch (src_data) {
-			case 0: /* D6 vblank */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont5 & LB_D6_VBLANK_INTERRUPT) {
-					if (rdev->irq.crtc_vblank_int[5]) {
-						drm_handle_vblank(rdev->ddev, 5);
-						rdev->pm.vblank_sync = true;
-						wake_up(&rdev->irq.vblank_queue);
-					}
-					if (rdev->irq.pflip[5])
-						radeon_crtc_handle_flip(rdev, 5);
-					rdev->irq.stat_regs.evergreen.disp_int_cont5 &= ~LB_D6_VBLANK_INTERRUPT;
-					DRM_DEBUG("IH: D6 vblank\n");
-				}
-				break;
-			case 1: /* D6 vline */
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont5 & LB_D6_VLINE_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont5 &= ~LB_D6_VLINE_INTERRUPT;
-					DRM_DEBUG("IH: D6 vline\n");
-				}
-				break;
-			default:
-				DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
-				break;
-			}
-			break;
-		case 42: /* HPD hotplug */
-			switch (src_data) {
-			case 0:
-				if (rdev->irq.stat_regs.evergreen.disp_int & DC_HPD1_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int &= ~DC_HPD1_INTERRUPT;
-					queue_hotplug = true;
-					DRM_DEBUG("IH: HPD1\n");
-				}
-				break;
-			case 1:
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont & DC_HPD2_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont &= ~DC_HPD2_INTERRUPT;
-					queue_hotplug = true;
-					DRM_DEBUG("IH: HPD2\n");
-				}
-				break;
-			case 2:
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont2 & DC_HPD3_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont2 &= ~DC_HPD3_INTERRUPT;
-					queue_hotplug = true;
-					DRM_DEBUG("IH: HPD3\n");
-				}
-				break;
-			case 3:
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont3 & DC_HPD4_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont3 &= ~DC_HPD4_INTERRUPT;
-					queue_hotplug = true;
-					DRM_DEBUG("IH: HPD4\n");
-				}
-				break;
-			case 4:
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont4 & DC_HPD5_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont4 &= ~DC_HPD5_INTERRUPT;
-					queue_hotplug = true;
-					DRM_DEBUG("IH: HPD5\n");
-				}
-				break;
-			case 5:
-				if (rdev->irq.stat_regs.evergreen.disp_int_cont5 & DC_HPD6_INTERRUPT) {
-					rdev->irq.stat_regs.evergreen.disp_int_cont5 &= ~DC_HPD6_INTERRUPT;
-					queue_hotplug = true;
-					DRM_DEBUG("IH: HPD6\n");
-				}
-				break;
-			default:
-				DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
-				break;
-			}
-=======
 		case 2: /* D2 vblank/vline */
 		case 3: /* D3 vblank/vline */
 		case 4: /* D4 vblank/vline */
@@ -6349,7 +4853,6 @@ restart_ih:
 			dev_err(rdev->dev, "  VM_CONTEXT1_PROTECTION_FAULT_STATUS 0x%08X\n",
 				status);
 			cayman_vm_decode_fault(rdev, status, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 176: /* CP_INT in ring buffer */
 		case 177: /* CP_INT in IB1 */
@@ -6374,12 +4877,6 @@ restart_ih:
 			} else
 				radeon_fence_process(rdev, RADEON_RING_TYPE_GFX_INDEX);
 			break;
-<<<<<<< HEAD
-		case 233: /* GUI IDLE */
-			DRM_DEBUG("IH: GUI idle\n");
-			rdev->pm.gui_idle = true;
-			wake_up(&rdev->irq.idle_queue);
-=======
 		case 224: /* DMA trap event */
 			DRM_DEBUG("IH: DMA trap\n");
 			radeon_fence_process(rdev, R600_RING_TYPE_DMA_INDEX);
@@ -6402,7 +4899,6 @@ restart_ih:
 				DRM_DEBUG("IH: DMA1 trap\n");
 				radeon_fence_process(rdev, CAYMAN_RING_TYPE_DMA1_INDEX);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			DRM_DEBUG("Unhandled interrupt: %d %d\n", src_id, src_data);
@@ -6412,24 +4908,6 @@ restart_ih:
 		/* wptr/rptr are in bytes! */
 		rptr += 16;
 		rptr &= rdev->ih.ptr_mask;
-<<<<<<< HEAD
-	}
-	/* make sure wptr hasn't changed while processing */
-	wptr = evergreen_get_ih_wptr(rdev);
-	if (wptr != rdev->ih.wptr)
-		goto restart_ih;
-	if (queue_hotplug)
-		schedule_work(&rdev->hotplug_work);
-	rdev->ih.rptr = rptr;
-	WREG32(IH_RB_RPTR, rdev->ih.rptr);
-	spin_unlock_irqrestore(&rdev->ih.lock, flags);
-	return IRQ_HANDLED;
-}
-
-static int evergreen_startup(struct radeon_device *rdev)
-{
-	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
-=======
 		WREG32(IH_RB_RPTR, rptr);
 	}
 	if (queue_dp)
@@ -6521,24 +4999,10 @@ static void evergreen_uvd_resume(struct radeon_device *rdev)
 static int evergreen_startup(struct radeon_device *rdev)
 {
 	struct radeon_ring *ring;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	/* enable pcie gen2 link */
 	evergreen_pcie_gen2_enable(rdev);
-<<<<<<< HEAD
-
-	evergreen_mc_program(rdev);
-
-	if (ASIC_IS_DCE5(rdev)) {
-		if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw || !rdev->mc_fw) {
-			r = ni_init_microcode(rdev);
-			if (r) {
-				DRM_ERROR("Failed to load firmware!\n");
-				return r;
-			}
-		}
-=======
 	/* enable aspm */
 	evergreen_program_aspm(rdev);
 
@@ -6550,31 +5014,13 @@ static int evergreen_startup(struct radeon_device *rdev)
 	evergreen_mc_program(rdev);
 
 	if (ASIC_IS_DCE5(rdev) && !rdev->pm.dpm_enabled) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = ni_mc_load_microcode(rdev);
 		if (r) {
 			DRM_ERROR("Failed to load MC firmware!\n");
 			return r;
 		}
-<<<<<<< HEAD
-	} else {
-		if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw) {
-			r = r600_init_microcode(rdev);
-			if (r) {
-				DRM_ERROR("Failed to load firmware!\n");
-				return r;
-			}
-		}
 	}
 
-	r = r600_vram_scratch_init(rdev);
-	if (r)
-		return r;
-
-=======
-	}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->flags & RADEON_IS_AGP) {
 		evergreen_agp_enable(rdev);
 	} else {
@@ -6584,13 +5030,6 @@ static int evergreen_startup(struct radeon_device *rdev)
 	}
 	evergreen_gpu_init(rdev);
 
-<<<<<<< HEAD
-	r = evergreen_blit_init(rdev);
-	if (r) {
-		r600_blit_fini(rdev);
-		rdev->asic->copy.copy = NULL;
-		dev_warn(rdev->dev, "failed blitter (%d) falling back to memcpy\n", r);
-=======
 	/* allocate rlc buffers */
 	if (rdev->flags & RADEON_IS_IGP) {
 		rdev->rlc.reg_list = sumo_rlc_save_restore_register_list;
@@ -6602,7 +5041,6 @@ static int evergreen_startup(struct radeon_device *rdev)
 			DRM_ERROR("Failed to init rlc BOs!\n");
 			return r;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* allocate wb buffer */
@@ -6616,8 +5054,6 @@ static int evergreen_startup(struct radeon_device *rdev)
 		return r;
 	}
 
-<<<<<<< HEAD
-=======
 	r = radeon_fence_driver_start_ring(rdev, R600_RING_TYPE_DMA_INDEX);
 	if (r) {
 		dev_err(rdev->dev, "failed initializing DMA fences (%d).\n", r);
@@ -6626,7 +5062,6 @@ static int evergreen_startup(struct radeon_device *rdev)
 
 	evergreen_uvd_start(rdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable IRQ */
 	if (!rdev->irq.installed) {
 		r = radeon_irq_kms_init(rdev);
@@ -6642,13 +5077,6 @@ static int evergreen_startup(struct radeon_device *rdev)
 	}
 	evergreen_irq_set(rdev);
 
-<<<<<<< HEAD
-	r = radeon_ring_init(rdev, ring, ring->ring_size, RADEON_WB_CP_RPTR_OFFSET,
-			     R600_CP_RB_RPTR, R600_CP_RB_WPTR,
-			     0, 0xfffff, RADEON_CP_PACKET2);
-	if (r)
-		return r;
-=======
 	ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
 	r = radeon_ring_init(rdev, ring, ring->ring_size, RADEON_WB_CP_RPTR_OFFSET,
 			     RADEON_CP_PACKET2);
@@ -6661,28 +5089,12 @@ static int evergreen_startup(struct radeon_device *rdev)
 	if (r)
 		return r;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = evergreen_cp_load_microcode(rdev);
 	if (r)
 		return r;
 	r = evergreen_cp_resume(rdev);
 	if (r)
 		return r;
-<<<<<<< HEAD
-
-	r = radeon_ib_pool_start(rdev);
-	if (r)
-		return r;
-
-	r = radeon_ib_test(rdev, RADEON_RING_TYPE_GFX_INDEX, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX]);
-	if (r) {
-		DRM_ERROR("radeon: failed testing IB (%d).\n", r);
-		rdev->accel_working = false;
-		return r;
-	}
-
-	r = r600_audio_init(rdev);
-=======
 	r = r600_dma_resume(rdev);
 	if (r)
 		return r;
@@ -6696,7 +5108,6 @@ static int evergreen_startup(struct radeon_device *rdev)
 	}
 
 	r = radeon_audio_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		DRM_ERROR("radeon: audio init failed\n");
 		return r;
@@ -6721,15 +5132,12 @@ int evergreen_resume(struct radeon_device *rdev)
 	/* post card */
 	atom_asic_init(rdev->mode_info.atom_context);
 
-<<<<<<< HEAD
-=======
 	/* init golden registers */
 	evergreen_init_golden_registers(rdev);
 
 	if (rdev->pm.pm_method == PM_METHOD_DPM)
 		radeon_pm_resume(rdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->accel_working = true;
 	r = evergreen_startup(rdev);
 	if (r) {
@@ -6744,16 +5152,6 @@ int evergreen_resume(struct radeon_device *rdev)
 
 int evergreen_suspend(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
-
-	r600_audio_fini(rdev);
-	/* FIXME: we should wait for ring to be empty */
-	radeon_ib_pool_suspend(rdev);
-	r600_blit_suspend(rdev);
-	r700_cp_stop(rdev);
-	ring->ready = false;
-=======
 	radeon_pm_suspend(rdev);
 	radeon_audio_fini(rdev);
 	if (rdev->has_uvd) {
@@ -6762,7 +5160,6 @@ int evergreen_suspend(struct radeon_device *rdev)
 	}
 	r700_cp_stop(rdev);
 	r600_dma_stop(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	evergreen_irq_suspend(rdev);
 	radeon_wb_disable(rdev);
 	evergreen_pcie_gart_disable(rdev);
@@ -6780,13 +5177,6 @@ int evergreen_init(struct radeon_device *rdev)
 {
 	int r;
 
-<<<<<<< HEAD
-	/* This don't do much */
-	r = radeon_gem_init(rdev);
-	if (r)
-		return r;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read BIOS */
 	if (!radeon_get_bios(rdev)) {
 		if (ASIC_IS_AVIVO(rdev))
@@ -6814,11 +5204,8 @@ int evergreen_init(struct radeon_device *rdev)
 		DRM_INFO("GPU not posted. posting now...\n");
 		atom_asic_init(rdev->mode_info.atom_context);
 	}
-<<<<<<< HEAD
-=======
 	/* init golden registers */
 	evergreen_init_golden_registers(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize scratch registers */
 	r600_scratch_init(rdev);
 	/* Initialize surface registers */
@@ -6826,13 +5213,7 @@ int evergreen_init(struct radeon_device *rdev)
 	/* Initialize clocks */
 	radeon_get_clock_info(rdev->ddev);
 	/* Fence driver */
-<<<<<<< HEAD
-	r = radeon_fence_driver_init(rdev);
-	if (r)
-		return r;
-=======
 	radeon_fence_driver_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* initialize AGP */
 	if (rdev->flags & RADEON_IS_AGP) {
 		r = radeon_agp_init(rdev);
@@ -6848,11 +5229,6 @@ int evergreen_init(struct radeon_device *rdev)
 	if (r)
 		return r;
 
-<<<<<<< HEAD
-	rdev->ring[RADEON_RING_TYPE_GFX_INDEX].ring_obj = NULL;
-	r600_ring_init(rdev, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX], 1024 * 1024);
-
-=======
 	if (ASIC_IS_DCE5(rdev)) {
 		if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw || !rdev->mc_fw) {
 			r = ni_init_microcode(rdev);
@@ -6882,7 +5258,6 @@ int evergreen_init(struct radeon_device *rdev)
 
 	evergreen_uvd_init(rdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->ih.ring_obj = NULL;
 	r600_ih_ring_init(rdev, 64 * 1024);
 
@@ -6890,33 +5265,17 @@ int evergreen_init(struct radeon_device *rdev)
 	if (r)
 		return r;
 
-<<<<<<< HEAD
-	r = radeon_ib_pool_init(rdev);
 	rdev->accel_working = true;
-	if (r) {
-		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
-		rdev->accel_working = false;
-	}
-
-=======
-	rdev->accel_working = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = evergreen_startup(rdev);
 	if (r) {
 		dev_err(rdev->dev, "disabling GPU acceleration\n");
 		r700_cp_fini(rdev);
-<<<<<<< HEAD
-		r600_irq_fini(rdev);
-		radeon_wb_fini(rdev);
-		r100_ib_fini(rdev);
-=======
 		r600_dma_fini(rdev);
 		r600_irq_fini(rdev);
 		if (rdev->flags & RADEON_IS_IGP)
 			sumo_rlc_fini(rdev);
 		radeon_wb_fini(rdev);
 		radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_irq_kms_fini(rdev);
 		evergreen_pcie_gart_fini(rdev);
 		rdev->accel_working = false;
@@ -6933,30 +5292,11 @@ int evergreen_init(struct radeon_device *rdev)
 		}
 	}
 
-<<<<<<< HEAD
-	/* posting read */
-	RREG32(SRBM_STATUS);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 void evergreen_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	r600_audio_fini(rdev);
-	r600_blit_fini(rdev);
-	r700_cp_fini(rdev);
-	r600_irq_fini(rdev);
-	radeon_wb_fini(rdev);
-	r100_ib_fini(rdev);
-	radeon_irq_kms_fini(rdev);
-	evergreen_pcie_gart_fini(rdev);
-	r600_vram_scratch_fini(rdev);
-	radeon_gem_fini(rdev);
-	radeon_semaphore_driver_fini(rdev);
-=======
 	radeon_pm_fini(rdev);
 	radeon_audio_fini(rdev);
 	r700_cp_fini(rdev);
@@ -6972,7 +5312,6 @@ void evergreen_fini(struct radeon_device *rdev)
 	evergreen_pcie_gart_fini(rdev);
 	r600_vram_scratch_fini(rdev);
 	radeon_gem_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_fence_driver_fini(rdev);
 	radeon_agp_fini(rdev);
 	radeon_bo_fini(rdev);
@@ -6998,34 +5337,6 @@ void evergreen_pcie_gen2_enable(struct radeon_device *rdev)
 	if (ASIC_IS_X2(rdev))
 		return;
 
-<<<<<<< HEAD
-	speed_cntl = RREG32_PCIE_P(PCIE_LC_SPEED_CNTL);
-	if ((speed_cntl & LC_OTHER_SIDE_EVER_SENT_GEN2) ||
-	    (speed_cntl & LC_OTHER_SIDE_SUPPORTS_GEN2)) {
-
-		link_width_cntl = RREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL);
-		link_width_cntl &= ~LC_UPCONFIGURE_DIS;
-		WREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
-
-		speed_cntl = RREG32_PCIE_P(PCIE_LC_SPEED_CNTL);
-		speed_cntl &= ~LC_TARGET_LINK_SPEED_OVERRIDE_EN;
-		WREG32_PCIE_P(PCIE_LC_SPEED_CNTL, speed_cntl);
-
-		speed_cntl = RREG32_PCIE_P(PCIE_LC_SPEED_CNTL);
-		speed_cntl |= LC_CLR_FAILED_SPD_CHANGE_CNT;
-		WREG32_PCIE_P(PCIE_LC_SPEED_CNTL, speed_cntl);
-
-		speed_cntl = RREG32_PCIE_P(PCIE_LC_SPEED_CNTL);
-		speed_cntl &= ~LC_CLR_FAILED_SPD_CHANGE_CNT;
-		WREG32_PCIE_P(PCIE_LC_SPEED_CNTL, speed_cntl);
-
-		speed_cntl = RREG32_PCIE_P(PCIE_LC_SPEED_CNTL);
-		speed_cntl |= LC_GEN2_EN_STRAP;
-		WREG32_PCIE_P(PCIE_LC_SPEED_CNTL, speed_cntl);
-
-	} else {
-		link_width_cntl = RREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL);
-=======
 	if ((rdev->pdev->bus->max_bus_speed != PCIE_SPEED_5_0GT) &&
 		(rdev->pdev->bus->max_bus_speed != PCIE_SPEED_8_0GT))
 		return;
@@ -7063,17 +5374,11 @@ void evergreen_pcie_gen2_enable(struct radeon_device *rdev)
 
 	} else {
 		link_width_cntl = RREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* XXX: only disable it if gen1 bridge vendor == 0x111d or 0x1106 */
 		if (1)
 			link_width_cntl |= LC_UPCONFIGURE_DIS;
 		else
 			link_width_cntl &= ~LC_UPCONFIGURE_DIS;
-<<<<<<< HEAD
-		WREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
-	}
-}
-=======
 		WREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
 	}
 }
@@ -7227,4 +5532,3 @@ void evergreen_program_aspm(struct radeon_device *rdev)
 	if (pcie_lc_cntl != pcie_lc_cntl_old)
 		WREG32_PCIE_PORT(PCIE_LC_CNTL, pcie_lc_cntl);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

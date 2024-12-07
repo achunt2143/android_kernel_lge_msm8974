@@ -1,18 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_msi.c: Sparc64 MSI support common layer.
  *
  * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
  */
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/irq.h>
 
@@ -120,17 +114,10 @@ static void free_msi(struct pci_pbm_info *pbm, int msi_num)
 
 static struct irq_chip msi_irq = {
 	.name		= "PCI-MSI",
-<<<<<<< HEAD
-	.irq_mask	= mask_msi_irq,
-	.irq_unmask	= unmask_msi_irq,
-	.irq_enable	= unmask_msi_irq,
-	.irq_disable	= mask_msi_irq,
-=======
 	.irq_mask	= pci_msi_mask_irq,
 	.irq_unmask	= pci_msi_unmask_irq,
 	.irq_enable	= pci_msi_unmask_irq,
 	.irq_disable	= pci_msi_mask_irq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* XXX affinity XXX */
 };
 
@@ -161,21 +148,13 @@ static int sparc64_setup_msi_irq(unsigned int *irq_p,
 	msiqid = pick_msiq(pbm);
 
 	err = ops->msi_setup(pbm, msiqid, msi,
-<<<<<<< HEAD
-			     (entry->msi_attrib.is_64 ? 1 : 0));
-=======
 			     (entry->pci.msi_attrib.is_64 ? 1 : 0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_msi_free;
 
 	pbm->msi_irq_table[msi - pbm->msi_first] = *irq_p;
 
-<<<<<<< HEAD
-	if (entry->msi_attrib.is_64) {
-=======
 	if (entry->pci.msi_attrib.is_64) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg.address_hi = pbm->msi64_start >> 32;
 		msg.address_lo = pbm->msi64_start & 0xffffffff;
 	} else {
@@ -185,11 +164,7 @@ static int sparc64_setup_msi_irq(unsigned int *irq_p,
 	msg.data = msi;
 
 	irq_set_msi_desc(*irq_p, entry);
-<<<<<<< HEAD
-	write_msi_msg(*irq_p, &msg);
-=======
 	pci_write_msi_msg(*irq_p, &msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -218,13 +193,8 @@ static void sparc64_teardown_msi_irq(unsigned int irq,
 			break;
 	}
 	if (i >= pbm->msi_num) {
-<<<<<<< HEAD
-		printk(KERN_ERR "%s: teardown: No MSI for irq %u\n",
-		       pbm->name, irq);
-=======
 		pci_err(pdev, "%s: teardown: No MSI for irq %u\n", pbm->name,
 			irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -233,15 +203,9 @@ static void sparc64_teardown_msi_irq(unsigned int irq,
 
 	err = ops->msi_teardown(pbm, msi_num);
 	if (err) {
-<<<<<<< HEAD
-		printk(KERN_ERR "%s: teardown: ops->teardown() on MSI %u, "
-		       "irq %u, gives error %d\n",
-		       pbm->name, msi_num, irq, err);
-=======
 		pci_err(pdev, "%s: teardown: ops->teardown() on MSI %u, "
 			"irq %u, gives error %d\n", pbm->name, msi_num, irq,
 			err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 

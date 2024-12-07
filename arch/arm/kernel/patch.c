@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/kprobes.h>
-#include <linux/stop_machine.h>
-
-#include <asm/cacheflush.h>
-#include <asm/smp_plat.h>
-#include <asm/opcodes.h>
-#include <asm/mmu_writeable.h>
-
-#include "patch.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
@@ -22,34 +10,12 @@
 #include <asm/smp_plat.h>
 #include <asm/opcodes.h>
 #include <asm/patch.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct patch {
 	void *addr;
 	unsigned int insn;
 };
 
-<<<<<<< HEAD
-void __kprobes __patch_text(void *addr, unsigned int insn)
-{
-	bool thumb2 = IS_ENABLED(CONFIG_THUMB2_KERNEL);
-	int size;
-	unsigned long flags;
-
-	mem_text_writeable_spinlock(&flags);
-	mem_text_address_writeable((unsigned long)addr);
-
-	if (thumb2 && __opcode_is_thumb16(insn)) {
-		*(u16 *)addr = __opcode_to_mem_thumb16(insn);
-		size = sizeof(u16);
-	} else if (thumb2 && ((uintptr_t)addr & 2)) {
-		u16 first = __opcode_thumb32_first(insn);
-		u16 second = __opcode_thumb32_second(insn);
-		u16 *addrh = addr;
-
-		addrh[0] = __opcode_to_mem_thumb16(first);
-		addrh[1] = __opcode_to_mem_thumb16(second);
-=======
 #ifdef CONFIG_MMU
 static DEFINE_RAW_SPINLOCK(patch_lock);
 
@@ -121,7 +87,6 @@ void __kprobes __patch_text_real(void *addr, unsigned int insn, bool remap)
 			flush_kernel_vmap_range(addrh1, 2);
 			patch_unmap(FIX_TEXT_POKE1, NULL);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		size = sizeof(u32);
 	} else {
@@ -130,17 +95,6 @@ void __kprobes __patch_text_real(void *addr, unsigned int insn, bool remap)
 		else
 			insn = __opcode_to_mem_arm(insn);
 
-<<<<<<< HEAD
-		*(u32 *)addr = insn;
-		size = sizeof(u32);
-	}
-
-	flush_icache_range((uintptr_t)(addr),
-			   (uintptr_t)(addr) + size);
-
-	mem_text_address_restore();
-	mem_text_writeable_spinunlock(&flags);
-=======
 		*(u32 *)waddr = insn;
 		size = sizeof(u32);
 	}
@@ -152,7 +106,6 @@ void __kprobes __patch_text_real(void *addr, unsigned int insn, bool remap)
 
 	flush_icache_range((uintptr_t)(addr),
 			   (uintptr_t)(addr) + size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __kprobes patch_text_stop_machine(void *data)
@@ -171,20 +124,5 @@ void __kprobes patch_text(void *addr, unsigned int insn)
 		.insn = insn,
 	};
 
-<<<<<<< HEAD
-	if (cache_ops_need_broadcast()) {
-		stop_machine(patch_text_stop_machine, &patch, cpu_online_mask);
-	} else {
-		bool straddles_word = IS_ENABLED(CONFIG_THUMB2_KERNEL)
-				      && __opcode_is_thumb32(insn)
-				      && ((uintptr_t)addr & 2);
-
-		if (straddles_word)
-			stop_machine(patch_text_stop_machine, &patch, NULL);
-		else
-			__patch_text(addr, insn);
-	}
-=======
 	stop_machine_cpuslocked(patch_text_stop_machine, &patch, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

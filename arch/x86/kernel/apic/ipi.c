@@ -1,40 +1,3 @@
-<<<<<<< HEAD
-#include <linux/cpumask.h>
-#include <linux/interrupt.h>
-#include <linux/init.h>
-
-#include <linux/mm.h>
-#include <linux/delay.h>
-#include <linux/spinlock.h>
-#include <linux/kernel_stat.h>
-#include <linux/mc146818rtc.h>
-#include <linux/cache.h>
-#include <linux/cpu.h>
-#include <linux/module.h>
-
-#include <asm/smp.h>
-#include <asm/mtrr.h>
-#include <asm/tlbflush.h>
-#include <asm/mmu_context.h>
-#include <asm/apic.h>
-#include <asm/proto.h>
-#include <asm/ipi.h>
-
-void default_send_IPI_mask_sequence_phys(const struct cpumask *mask, int vector)
-{
-	unsigned long query_cpu;
-	unsigned long flags;
-
-	/*
-	 * Hack. The clustered APIC addressing mode doesn't allow us to send
-	 * to an arbitrary mask, so I do a unicast to each CPU instead.
-	 * - mbligh
-	 */
-	local_irq_save(flags);
-	for_each_cpu(query_cpu, mask) {
-		__default_send_IPI_dest_field(per_cpu(x86_cpu_to_apicid,
-				query_cpu), vector, APIC_DEST_PHYSICAL);
-=======
 // SPDX-License-Identifier: GPL-2.0
 
 #include <linux/cpumask.h>
@@ -241,7 +204,6 @@ void default_send_IPI_mask_sequence_phys(const struct cpumask *mask, int vector)
 	for_each_cpu(cpu, mask) {
 		__default_send_IPI_dest_field(per_cpu(x86_cpu_to_apicid,
 				cpu), vector, APIC_DEST_PHYSICAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	local_irq_restore(flags);
 }
@@ -249,20 +211,6 @@ void default_send_IPI_mask_sequence_phys(const struct cpumask *mask, int vector)
 void default_send_IPI_mask_allbutself_phys(const struct cpumask *mask,
 						 int vector)
 {
-<<<<<<< HEAD
-	unsigned int this_cpu = smp_processor_id();
-	unsigned int query_cpu;
-	unsigned long flags;
-
-	/* See Hack comment above */
-
-	local_irq_save(flags);
-	for_each_cpu(query_cpu, mask) {
-		if (query_cpu == this_cpu)
-			continue;
-		__default_send_IPI_dest_field(per_cpu(x86_cpu_to_apicid,
-				 query_cpu), vector, APIC_DEST_PHYSICAL);
-=======
 	unsigned int cpu, this_cpu = smp_processor_id();
 	unsigned long flags;
 
@@ -272,32 +220,10 @@ void default_send_IPI_mask_allbutself_phys(const struct cpumask *mask,
 			continue;
 		__default_send_IPI_dest_field(per_cpu(x86_cpu_to_apicid,
 				 cpu), vector, APIC_DEST_PHYSICAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-
-void default_send_IPI_mask_sequence_logical(const struct cpumask *mask,
-						 int vector)
-{
-	unsigned long flags;
-	unsigned int query_cpu;
-
-	/*
-	 * Hack. The clustered APIC addressing mode doesn't allow us to send
-	 * to an arbitrary mask, so I do a unicasts to each CPU instead. This
-	 * should be modified to do 1 message per cluster ID - mbligh
-	 */
-
-	local_irq_save(flags);
-	for_each_cpu(query_cpu, mask)
-		__default_send_IPI_dest_field(
-			early_per_cpu(x86_cpu_to_logical_apicid, query_cpu),
-			vector, apic->dest_logical);
-=======
 /*
  * Helper function for APICs which insist on cpumasks
  */
@@ -330,35 +256,12 @@ void default_send_IPI_mask_sequence_logical(const struct cpumask *mask, int vect
 	local_irq_save(flags);
 	for_each_cpu(cpu, mask)
 		__default_send_IPI_dest_field(1U << cpu, vector, APIC_DEST_LOGICAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 }
 
 void default_send_IPI_mask_allbutself_logical(const struct cpumask *mask,
 						 int vector)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	unsigned int query_cpu;
-	unsigned int this_cpu = smp_processor_id();
-
-	/* See Hack comment above */
-
-	local_irq_save(flags);
-	for_each_cpu(query_cpu, mask) {
-		if (query_cpu == this_cpu)
-			continue;
-		__default_send_IPI_dest_field(
-			early_per_cpu(x86_cpu_to_logical_apicid, query_cpu),
-			vector, apic->dest_logical);
-		}
-	local_irq_restore(flags);
-}
-
-/*
- * This is only used on smaller machines.
- */
-=======
 	unsigned int cpu, this_cpu = smp_processor_id();
 	unsigned long flags;
 
@@ -371,58 +274,22 @@ void default_send_IPI_mask_allbutself_logical(const struct cpumask *mask,
 	local_irq_restore(flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void default_send_IPI_mask_logical(const struct cpumask *cpumask, int vector)
 {
 	unsigned long mask = cpumask_bits(cpumask)[0];
 	unsigned long flags;
 
-<<<<<<< HEAD
-	if (WARN_ONCE(!mask, "empty IPI mask"))
-=======
 	if (!mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	local_irq_save(flags);
 	WARN_ON(mask & ~cpumask_bits(cpu_online_mask)[0]);
-<<<<<<< HEAD
-	__default_send_IPI_dest_field(mask, vector, apic->dest_logical);
-	local_irq_restore(flags);
-}
-
-void default_send_IPI_allbutself(int vector)
-{
-	/*
-	 * if there are no other CPUs in the system then we get an APIC send
-	 * error if we try to broadcast, thus avoid sending IPIs in this case.
-	 */
-	if (!(num_online_cpus() > 1))
-		return;
-
-	__default_local_send_IPI_allbutself(vector);
-}
-
-void default_send_IPI_all(int vector)
-{
-	__default_local_send_IPI_all(vector);
-}
-
-void default_send_IPI_self(int vector)
-{
-	__default_send_IPI_shortcut(APIC_DEST_SELF, vector, apic->dest_logical);
-}
-
-/* must come after the send_IPI functions above for inlining */
-static int convert_apicid_to_cpu(int apic_id)
-=======
 	__default_send_IPI_dest_field(mask, vector, APIC_DEST_LOGICAL);
 	local_irq_restore(flags);
 }
 
 #ifdef CONFIG_SMP
 static int convert_apicid_to_cpu(u32 apic_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -435,14 +302,6 @@ static int convert_apicid_to_cpu(u32 apic_id)
 
 int safe_smp_processor_id(void)
 {
-<<<<<<< HEAD
-	int apicid, cpuid;
-
-	if (!cpu_has_apic)
-		return 0;
-
-	apicid = hard_smp_processor_id();
-=======
 	u32 apicid;
 	int cpuid;
 
@@ -450,7 +309,6 @@ int safe_smp_processor_id(void)
 		return 0;
 
 	apicid = read_apic_id();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (apicid == BAD_APICID)
 		return 0;
 
@@ -459,7 +317,4 @@ int safe_smp_processor_id(void)
 	return cpuid >= 0 ? cpuid : 0;
 }
 #endif
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

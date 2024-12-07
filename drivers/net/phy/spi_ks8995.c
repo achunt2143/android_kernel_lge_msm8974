@@ -1,30 +1,11 @@
-<<<<<<< HEAD
-/*
- * SPI driver for Micrel/Kendin KS8995M ethernet switch
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * SPI driver for Micrel/Kendin KS8995M and KSZ8864RMN ethernet switches
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2008 Gabor Juhos <juhosg at openwrt.org>
  *
  * This file was based on: drivers/spi/at25.c
  *     Copyright (C) 2006 David Brownell
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
- */
-
-#include <linux/types.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/delay.h>
-#include <linux/device.h>
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -36,7 +17,6 @@
 #include <linux/device.h>
 #include <linux/gpio/consumer.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/spi/spi.h>
 
@@ -89,15 +69,11 @@
 #define KS8995_REG_IAD1		0x76    /* Indirect Access Data 1 */
 #define KS8995_REG_IAD0		0x77    /* Indirect Access Data 0 */
 
-<<<<<<< HEAD
-#define KS8995_REGS_SIZE	0x80
-=======
 #define KSZ8864_REG_ID1		0xfe	/* Chip ID in bit 7 */
 
 #define KS8995_REGS_SIZE	0x80
 #define KSZ8864_REGS_SIZE	0x100
 #define KSZ8795_REGS_SIZE	0x100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ID1_CHIPID_M		0xf
 #define ID1_CHIPID_S		4
@@ -106,25 +82,17 @@
 #define ID1_START_SW		1	/* start the switch */
 
 #define FAMILY_KS8995		0x95
-<<<<<<< HEAD
-#define CHIPID_M		0
-=======
 #define FAMILY_KSZ8795		0x87
 #define CHIPID_M		0
 #define KS8995_CHIP_ID		0x00
 #define KSZ8864_CHIP_ID		0x01
 #define KSZ8795_CHIP_ID		0x09
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KS8995_CMD_WRITE	0x02U
 #define KS8995_CMD_READ		0x03U
 
 #define KS8995_RESET_DELAY	10 /* usec */
 
-<<<<<<< HEAD
-struct ks8995_pdata {
-	/* not yet implemented */
-=======
 enum ks8995_chip_variant {
 	ks8995,
 	ksz8864,
@@ -166,17 +134,11 @@ static const struct ks8995_chip_params ks8995_chip[] = {
 		.addr_width = 12,
 		.addr_shift = 1,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ks8995_switch {
 	struct spi_device	*spi;
 	struct mutex		lock;
-<<<<<<< HEAD
-	struct ks8995_pdata	*pdata;
-};
-
-=======
 	struct gpio_desc	*reset_gpio;
 	struct bin_attribute	regs_attr;
 	const struct ks8995_chip_params	*chip;
@@ -199,7 +161,6 @@ static const struct of_device_id ks8895_spi_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, ks8895_spi_of_match);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 get_chip_id(u8 val)
 {
 	return (val >> ID1_CHIPID_S) & ID1_CHIPID_M;
@@ -210,8 +171,6 @@ static inline u8 get_chip_rev(u8 val)
 	return (val >> ID1_REVISION_S) & ID1_REVISION_M;
 }
 
-<<<<<<< HEAD
-=======
 /* create_spi_cmd - create a chip specific SPI command header
  * @ks: pointer to switch instance
  * @cmd: SPI command for switch
@@ -235,33 +194,21 @@ static inline __be16 create_spi_cmd(struct ks8995_switch *ks, int cmd,
 	/* SPI protocol needs big endian */
 	return cpu_to_be16(result);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------------------ */
 static int ks8995_read(struct ks8995_switch *ks, char *buf,
 		 unsigned offset, size_t count)
 {
-<<<<<<< HEAD
-	u8 cmd[2];
-=======
 	__be16 cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spi_transfer t[2];
 	struct spi_message m;
 	int err;
 
-<<<<<<< HEAD
-=======
 	cmd = create_spi_cmd(ks, KS8995_CMD_READ, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_message_init(&m);
 
 	memset(&t, 0, sizeof(t));
 
-<<<<<<< HEAD
-	t[0].tx_buf = cmd;
-=======
 	t[0].tx_buf = &cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t[0].len = sizeof(cmd);
 	spi_message_add_tail(&t[0], &m);
 
@@ -269,12 +216,6 @@ static int ks8995_read(struct ks8995_switch *ks, char *buf,
 	t[1].len = count;
 	spi_message_add_tail(&t[1], &m);
 
-<<<<<<< HEAD
-	cmd[0] = KS8995_CMD_READ;
-	cmd[1] = offset;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&ks->lock);
 	err = spi_sync(ks->spi, &m);
 	mutex_unlock(&ks->lock);
@@ -282,35 +223,20 @@ static int ks8995_read(struct ks8995_switch *ks, char *buf,
 	return err ? err : count;
 }
 
-<<<<<<< HEAD
-
-static int ks8995_write(struct ks8995_switch *ks, char *buf,
-		 unsigned offset, size_t count)
-{
-	u8 cmd[2];
-=======
 static int ks8995_write(struct ks8995_switch *ks, char *buf,
 		 unsigned offset, size_t count)
 {
 	__be16 cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spi_transfer t[2];
 	struct spi_message m;
 	int err;
 
-<<<<<<< HEAD
-=======
 	cmd = create_spi_cmd(ks, KS8995_CMD_WRITE, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_message_init(&m);
 
 	memset(&t, 0, sizeof(t));
 
-<<<<<<< HEAD
-	t[0].tx_buf = cmd;
-=======
 	t[0].tx_buf = &cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t[0].len = sizeof(cmd);
 	spi_message_add_tail(&t[0], &m);
 
@@ -318,12 +244,6 @@ static int ks8995_write(struct ks8995_switch *ks, char *buf,
 	t[1].len = count;
 	spi_message_add_tail(&t[1], &m);
 
-<<<<<<< HEAD
-	cmd[0] = KS8995_CMD_WRITE;
-	cmd[1] = offset;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&ks->lock);
 	err = spi_sync(ks->spi, &m);
 	mutex_unlock(&ks->lock);
@@ -333,22 +253,14 @@ static int ks8995_write(struct ks8995_switch *ks, char *buf,
 
 static inline int ks8995_read_reg(struct ks8995_switch *ks, u8 addr, u8 *buf)
 {
-<<<<<<< HEAD
-	return (ks8995_read(ks, buf, addr, 1) != 1);
-=======
 	return ks8995_read(ks, buf, addr, 1) != 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ks8995_write_reg(struct ks8995_switch *ks, u8 addr, u8 val)
 {
 	char buf = val;
 
-<<<<<<< HEAD
-	return (ks8995_write(ks, &buf, addr, 1) != 1);
-=======
 	return ks8995_write(ks, &buf, addr, 1) != 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ------------------------------------------------------------------------ */
@@ -376,70 +288,24 @@ static int ks8995_reset(struct ks8995_switch *ks)
 	return ks8995_start(ks);
 }
 
-<<<<<<< HEAD
-/* ------------------------------------------------------------------------ */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t ks8995_registers_read(struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr, char *buf, loff_t off, size_t count)
 {
 	struct device *dev;
 	struct ks8995_switch *ks8995;
 
-<<<<<<< HEAD
-	dev = container_of(kobj, struct device, kobj);
-	ks8995 = dev_get_drvdata(dev);
-
-	if (unlikely(off > KS8995_REGS_SIZE))
-		return 0;
-
-	if ((off + count) > KS8995_REGS_SIZE)
-		count = KS8995_REGS_SIZE - off;
-
-	if (unlikely(!count))
-		return count;
-
-	return ks8995_read(ks8995, buf, off, count);
-}
-
-
-=======
 	dev = kobj_to_dev(kobj);
 	ks8995 = dev_get_drvdata(dev);
 
 	return ks8995_read(ks8995, buf, off, count);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t ks8995_registers_write(struct file *filp, struct kobject *kobj,
 	struct bin_attribute *bin_attr, char *buf, loff_t off, size_t count)
 {
 	struct device *dev;
 	struct ks8995_switch *ks8995;
 
-<<<<<<< HEAD
-	dev = container_of(kobj, struct device, kobj);
-	ks8995 = dev_get_drvdata(dev);
-
-	if (unlikely(off >= KS8995_REGS_SIZE))
-		return -EFBIG;
-
-	if ((off + count) > KS8995_REGS_SIZE)
-		count = KS8995_REGS_SIZE - off;
-
-	if (unlikely(!count))
-		return count;
-
-	return ks8995_write(ks8995, buf, off, count);
-}
-
-
-static struct bin_attribute ks8995_registers_attr = {
-	.attr = {
-		.name   = "registers",
-		.mode   = S_IRUSR | S_IWUSR,
-=======
 	dev = kobj_to_dev(kobj);
 	ks8995 = dev_get_drvdata(dev);
 
@@ -533,7 +399,6 @@ static const struct bin_attribute ks8995_registers_attr = {
 	.attr = {
 		.name   = "registers",
 		.mode   = 0600,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.size   = KS8995_REGS_SIZE,
 	.read   = ks8995_registers_read,
@@ -541,29 +406,6 @@ static const struct bin_attribute ks8995_registers_attr = {
 };
 
 /* ------------------------------------------------------------------------ */
-<<<<<<< HEAD
-
-static int __devinit ks8995_probe(struct spi_device *spi)
-{
-	struct ks8995_switch    *ks;
-	struct ks8995_pdata     *pdata;
-	u8      ids[2];
-	int     err;
-
-	/* Chip description */
-	pdata = spi->dev.platform_data;
-
-	ks = kzalloc(sizeof(*ks), GFP_KERNEL);
-	if (!ks) {
-		dev_err(&spi->dev, "no memory for private data\n");
-		return -ENOMEM;
-	}
-
-	mutex_init(&ks->lock);
-	ks->pdata = pdata;
-	ks->spi = spi_dev_get(spi);
-	dev_set_drvdata(&spi->dev, ks);
-=======
 static int ks8995_probe(struct spi_device *spi)
 {
 	struct ks8995_switch *ks;
@@ -601,95 +443,12 @@ static int ks8995_probe(struct spi_device *spi)
 	gpiod_set_value_cansleep(ks->reset_gpio, 0);
 
 	spi_set_drvdata(spi, ks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi->mode = SPI_MODE_0;
 	spi->bits_per_word = 8;
 	err = spi_setup(spi);
 	if (err) {
 		dev_err(&spi->dev, "spi_setup failed, err=%d\n", err);
-<<<<<<< HEAD
-		goto err_drvdata;
-	}
-
-	err = ks8995_read(ks, ids, KS8995_REG_ID0, sizeof(ids));
-	if (err < 0) {
-		dev_err(&spi->dev, "unable to read id registers, err=%d\n",
-				err);
-		goto err_drvdata;
-	}
-
-	switch (ids[0]) {
-	case FAMILY_KS8995:
-		break;
-	default:
-		dev_err(&spi->dev, "unknown family id:%02x\n", ids[0]);
-		err = -ENODEV;
-		goto err_drvdata;
-	}
-
-	err = ks8995_reset(ks);
-	if (err)
-		goto err_drvdata;
-
-	err = sysfs_create_bin_file(&spi->dev.kobj, &ks8995_registers_attr);
-	if (err) {
-		dev_err(&spi->dev, "unable to create sysfs file, err=%d\n",
-				    err);
-		goto err_drvdata;
-	}
-
-	dev_info(&spi->dev, "KS89%02X device found, Chip ID:%01x, "
-			"Revision:%01x\n", ids[0],
-			get_chip_id(ids[1]), get_chip_rev(ids[1]));
-
-	return 0;
-
-err_drvdata:
-	dev_set_drvdata(&spi->dev, NULL);
-	kfree(ks);
-	return err;
-}
-
-static int __devexit ks8995_remove(struct spi_device *spi)
-{
-	struct ks8995_data      *ks8995;
-
-	ks8995 = dev_get_drvdata(&spi->dev);
-	sysfs_remove_bin_file(&spi->dev.kobj, &ks8995_registers_attr);
-
-	dev_set_drvdata(&spi->dev, NULL);
-	kfree(ks8995);
-
-	return 0;
-}
-
-/* ------------------------------------------------------------------------ */
-
-static struct spi_driver ks8995_driver = {
-	.driver = {
-		.name	    = "spi-ks8995",
-		.bus	     = &spi_bus_type,
-		.owner	   = THIS_MODULE,
-	},
-	.probe	  = ks8995_probe,
-	.remove	  = __devexit_p(ks8995_remove),
-};
-
-static int __init ks8995_init(void)
-{
-	printk(KERN_INFO DRV_DESC " version " DRV_VERSION"\n");
-
-	return spi_register_driver(&ks8995_driver);
-}
-module_init(ks8995_init);
-
-static void __exit ks8995_exit(void)
-{
-	spi_unregister_driver(&ks8995_driver);
-}
-module_exit(ks8995_exit);
-=======
 		return err;
 	}
 
@@ -740,7 +499,6 @@ static struct spi_driver ks8995_driver = {
 };
 
 module_spi_driver(ks8995_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION(DRV_DESC);
 MODULE_VERSION(DRV_VERSION);

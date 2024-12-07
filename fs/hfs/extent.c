@@ -107,11 +107,7 @@ static u16 hfs_ext_lastblock(struct hfs_extent *ext)
 	return be16_to_cpu(ext->block) + be16_to_cpu(ext->count);
 }
 
-<<<<<<< HEAD
-static void __hfs_ext_write_extent(struct inode *inode, struct hfs_find_data *fd)
-=======
 static int __hfs_ext_write_extent(struct inode *inode, struct hfs_find_data *fd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 
@@ -120,36 +116,15 @@ static int __hfs_ext_write_extent(struct inode *inode, struct hfs_find_data *fd)
 	res = hfs_brec_find(fd);
 	if (HFS_I(inode)->flags & HFS_FLG_EXT_NEW) {
 		if (res != -ENOENT)
-<<<<<<< HEAD
-			return;
-=======
 			return res;
 		/* Fail early and avoid ENOSPC during the btree operation */
 		res = hfs_bmap_reserve(fd->tree, fd->tree->depth + 1);
 		if (res)
 			return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hfs_brec_insert(fd, HFS_I(inode)->cached_extents, sizeof(hfs_extent_rec));
 		HFS_I(inode)->flags &= ~(HFS_FLG_EXT_DIRTY|HFS_FLG_EXT_NEW);
 	} else {
 		if (res)
-<<<<<<< HEAD
-			return;
-		hfs_bnode_write(fd->bnode, HFS_I(inode)->cached_extents, fd->entryoffset, fd->entrylength);
-		HFS_I(inode)->flags &= ~HFS_FLG_EXT_DIRTY;
-	}
-}
-
-void hfs_ext_write_extent(struct inode *inode)
-{
-	struct hfs_find_data fd;
-
-	if (HFS_I(inode)->flags & HFS_FLG_EXT_DIRTY) {
-		hfs_find_init(HFS_SB(inode->i_sb)->ext_tree, &fd);
-		__hfs_ext_write_extent(inode, &fd);
-		hfs_find_exit(&fd);
-	}
-=======
 			return res;
 		hfs_bnode_write(fd->bnode, HFS_I(inode)->cached_extents, fd->entryoffset, fd->entrylength);
 		HFS_I(inode)->flags &= ~HFS_FLG_EXT_DIRTY;
@@ -170,7 +145,6 @@ int hfs_ext_write_extent(struct inode *inode)
 		hfs_find_exit(&fd);
 	}
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int __hfs_ext_read_extent(struct hfs_find_data *fd, struct hfs_extent *extent,
@@ -196,16 +170,11 @@ static inline int __hfs_ext_cache_extent(struct hfs_find_data *fd, struct inode 
 {
 	int res;
 
-<<<<<<< HEAD
-	if (HFS_I(inode)->flags & HFS_FLG_EXT_DIRTY)
-		__hfs_ext_write_extent(inode, fd);
-=======
 	if (HFS_I(inode)->flags & HFS_FLG_EXT_DIRTY) {
 		res = __hfs_ext_write_extent(inode, fd);
 		if (res)
 			return res;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = __hfs_ext_read_extent(fd, HFS_I(inode)->cached_extents, inode->i_ino,
 				    block, HFS_IS_RSRC(inode) ? HFS_FK_RSRC : HFS_FK_DATA);
@@ -228,17 +197,11 @@ static int hfs_ext_read_extent(struct inode *inode, u16 block)
 	    block < HFS_I(inode)->cached_start + HFS_I(inode)->cached_blocks)
 		return 0;
 
-<<<<<<< HEAD
-	hfs_find_init(HFS_SB(inode->i_sb)->ext_tree, &fd);
-	res = __hfs_ext_cache_extent(&fd, inode, block);
-	hfs_find_exit(&fd);
-=======
 	res = hfs_find_init(HFS_SB(inode->i_sb)->ext_tree, &fd);
 	if (!res) {
 		res = __hfs_ext_cache_extent(&fd, inode, block);
 		hfs_find_exit(&fd);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -246,20 +209,12 @@ static void hfs_dump_extent(struct hfs_extent *extent)
 {
 	int i;
 
-<<<<<<< HEAD
-	dprint(DBG_EXTENT, "   ");
-	for (i = 0; i < 3; i++)
-		dprint(DBG_EXTENT, " %u:%u", be16_to_cpu(extent[i].block),
-				 be16_to_cpu(extent[i].count));
-	dprint(DBG_EXTENT, "\n");
-=======
 	hfs_dbg(EXTENT, "   ");
 	for (i = 0; i < 3; i++)
 		hfs_dbg_cont(EXTENT, " %u:%u",
 			     be16_to_cpu(extent[i].block),
 			     be16_to_cpu(extent[i].count));
 	hfs_dbg_cont(EXTENT, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hfs_add_extent(struct hfs_extent *extent, u16 offset,
@@ -349,11 +304,7 @@ int hfs_free_fork(struct super_block *sb, struct hfs_cat_file *file, int type)
 		return 0;
 
 	blocks = 0;
-<<<<<<< HEAD
-	for (i = 0; i < 3; extent++, i++)
-=======
 	for (i = 0; i < 3; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blocks += be16_to_cpu(extent[i].count);
 
 	res = hfs_free_extents(sb, extent, blocks, blocks);
@@ -362,13 +313,9 @@ int hfs_free_fork(struct super_block *sb, struct hfs_cat_file *file, int type)
 	if (total_blocks == blocks)
 		return 0;
 
-<<<<<<< HEAD
-	hfs_find_init(HFS_SB(sb)->ext_tree, &fd);
-=======
 	res = hfs_find_init(HFS_SB(sb)->ext_tree, &fd);
 	if (res)
 		return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		res = __hfs_ext_read_extent(&fd, extent, cnid, total_blocks, type);
 		if (res)
@@ -398,13 +345,9 @@ int hfs_get_block(struct inode *inode, sector_t block,
 	ablock = (u32)block / HFS_SB(sb)->fs_div;
 
 	if (block >= HFS_I(inode)->fs_blocks) {
-<<<<<<< HEAD
-		if (block > HFS_I(inode)->fs_blocks || !create)
-=======
 		if (!create)
 			return 0;
 		if (block > HFS_I(inode)->fs_blocks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		if (ablock >= HFS_I(inode)->alloc_blocks) {
 			res = hfs_extend_file(inode);
@@ -468,17 +411,10 @@ int hfs_extend_file(struct inode *inode)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	dprint(DBG_EXTENT, "extend %lu: %u,%u\n", inode->i_ino, start, len);
-	if (HFS_I(inode)->alloc_blocks == HFS_I(inode)->first_blocks) {
-		if (!HFS_I(inode)->first_blocks) {
-			dprint(DBG_EXTENT, "first extents\n");
-=======
 	hfs_dbg(EXTENT, "extend %lu: %u,%u\n", inode->i_ino, start, len);
 	if (HFS_I(inode)->alloc_blocks == HFS_I(inode)->first_blocks) {
 		if (!HFS_I(inode)->first_blocks) {
 			hfs_dbg(EXTENT, "first extents\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* no extents yet */
 			HFS_I(inode)->first_extents[0].block = cpu_to_be16(start);
 			HFS_I(inode)->first_extents[0].count = cpu_to_be16(len);
@@ -515,24 +451,15 @@ out:
 		if (inode->i_ino < HFS_FIRSTUSER_CNID)
 			set_bit(HFS_FLG_ALT_MDB_DIRTY, &HFS_SB(sb)->flags);
 		set_bit(HFS_FLG_MDB_DIRTY, &HFS_SB(sb)->flags);
-<<<<<<< HEAD
-		sb->s_dirt = 1;
-=======
 		hfs_mark_mdb_dirty(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 
 insert_extent:
-<<<<<<< HEAD
-	dprint(DBG_EXTENT, "insert new extent\n");
-	hfs_ext_write_extent(inode);
-=======
 	hfs_dbg(EXTENT, "insert new extent\n");
 	res = hfs_ext_write_extent(inode);
 	if (res)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(HFS_I(inode)->cached_extents, 0, sizeof(hfs_extent_rec));
 	HFS_I(inode)->cached_extents[0].block = cpu_to_be16(start);
@@ -554,22 +481,6 @@ void hfs_file_truncate(struct inode *inode)
 	u32 size;
 	int res;
 
-<<<<<<< HEAD
-	dprint(DBG_INODE, "truncate: %lu, %Lu -> %Lu\n", inode->i_ino,
-	       (long long)HFS_I(inode)->phys_size, inode->i_size);
-	if (inode->i_size > HFS_I(inode)->phys_size) {
-		struct address_space *mapping = inode->i_mapping;
-		void *fsdata;
-		struct page *page;
-		int res;
-
-		/* XXX: Can use generic_cont_expand? */
-		size = inode->i_size - 1;
-		res = pagecache_write_begin(NULL, mapping, size+1, 0,
-				AOP_FLAG_UNINTERRUPTIBLE, &page, &fsdata);
-		if (!res) {
-			res = pagecache_write_end(NULL, mapping, size+1, 0, 0,
-=======
 	hfs_dbg(INODE, "truncate: %lu, %Lu -> %Lu\n",
 		inode->i_ino, (long long)HFS_I(inode)->phys_size,
 		inode->i_size);
@@ -584,7 +495,6 @@ void hfs_file_truncate(struct inode *inode)
 				&fsdata);
 		if (!res) {
 			res = generic_write_end(NULL, mapping, size + 1, 0, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					page, fsdata);
 		}
 		if (res)
@@ -599,16 +509,12 @@ void hfs_file_truncate(struct inode *inode)
 		goto out;
 
 	mutex_lock(&HFS_I(inode)->extents_lock);
-<<<<<<< HEAD
-	hfs_find_init(HFS_SB(sb)->ext_tree, &fd);
-=======
 	res = hfs_find_init(HFS_SB(sb)->ext_tree, &fd);
 	if (res) {
 		mutex_unlock(&HFS_I(inode)->extents_lock);
 		/* XXX: We lack error handling of hfs_file_truncate() */
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1) {
 		if (alloc_cnt == HFS_I(inode)->first_blocks) {
 			hfs_free_extents(sb, HFS_I(inode)->first_extents,

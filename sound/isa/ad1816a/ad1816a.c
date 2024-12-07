@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
     card-ad1816a.c - driver for ADI SoundPort AD1816A based soundcards.
     Copyright (C) 2000 by Massimo Piccioni <dafastidio@libero.it>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/init.h>
@@ -41,16 +22,6 @@
 MODULE_AUTHOR("Massimo Piccioni <dafastidio@libero.it>");
 MODULE_DESCRIPTION("AD1816A, AD1815");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Highscreen,Sound-Boostar 16 3D},"
-		"{Analog Devices,AD1815},"
-		"{Analog Devices,AD1816A},"
-		"{TerraTec,Base 64},"
-		"{TerraTec,AudioSystem EWS64S},"
-		"{Aztech/Newcom SC-16 3D},"
-		"{Shark Predator ISA}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 1-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -73,22 +44,10 @@ MODULE_PARM_DESC(enable, "Enable ad1816a based soundcard.");
 module_param_array(clockfreq, int, NULL, 0444);
 MODULE_PARM_DESC(clockfreq, "Clock frequency for ad1816a driver (default = 0).");
 
-<<<<<<< HEAD
-struct snd_card_ad1816a {
-	struct pnp_dev *dev;
-	struct pnp_dev *devmpu;
-};
-
-static struct pnp_card_device_id snd_ad1816a_pnpids[] = {
-	/* Analog Devices AD1815 */
-	{ .id = "ADS7150", .devs = { { .id = "ADS7150" }, { .id = "ADS7151" } } },
-	/* Analog Device AD1816? */
-=======
 static const struct pnp_card_device_id snd_ad1816a_pnpids[] = {
 	/* Analog Devices AD1815 */
 	{ .id = "ADS7150", .devs = { { .id = "ADS7150" }, { .id = "ADS7151" } } },
 	/* Analog Devices AD1816? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .id = "ADS7180", .devs = { { .id = "ADS7180" }, { .id = "ADS7181" } } },
 	/* Analog Devices AD1816A - added by Kenneth Platz <kxp@atl.hp.com> */
 	{ .id = "ADS7181", .devs = { { .id = "ADS7180" }, { .id = "ADS7181" } } },
@@ -116,37 +75,16 @@ MODULE_DEVICE_TABLE(pnp_card, snd_ad1816a_pnpids);
 #define	DRIVER_NAME	"snd-card-ad1816a"
 
 
-<<<<<<< HEAD
-static int __devinit snd_card_ad1816a_pnp(int dev, struct snd_card_ad1816a *acard,
-					  struct pnp_card_link *card,
-					  const struct pnp_card_device_id *id)
-=======
 static int snd_card_ad1816a_pnp(int dev, struct pnp_card_link *card,
 				const struct pnp_card_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
 
-<<<<<<< HEAD
-	acard->dev = pnp_request_card_device(card, id->devs[0].id, NULL);
-	if (acard->dev == NULL)
-		return -EBUSY;
-
-	acard->devmpu = pnp_request_card_device(card, id->devs[1].id, NULL);
-	if (acard->devmpu == NULL) {
-		mpu_port[dev] = -1;
-		snd_printk(KERN_WARNING PFX "MPU401 device busy, skipping.\n");
-	}
-
-	pdev = acard->dev;
-
-=======
 	pdev = pnp_request_card_device(card, id->devs[0].id, NULL);
 	if (pdev == NULL)
 		return -EBUSY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pnp_activate_dev(pdev);
 	if (err < 0) {
 		printk(KERN_ERR PFX "AUDIO PnP configure failure\n");
@@ -159,28 +97,17 @@ static int snd_card_ad1816a_pnp(int dev, struct pnp_card_link *card,
 	dma2[dev] = pnp_dma(pdev, 1);
 	irq[dev] = pnp_irq(pdev, 0);
 
-<<<<<<< HEAD
-	if (acard->devmpu == NULL)
-		return 0;
-
-	pdev = acard->devmpu;
-=======
 	pdev = pnp_request_card_device(card, id->devs[1].id, NULL);
 	if (pdev == NULL) {
 		mpu_port[dev] = -1;
 		snd_printk(KERN_WARNING PFX "MPU401 device busy, skipping.\n");
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pnp_activate_dev(pdev);
 	if (err < 0) {
 		printk(KERN_ERR PFX "MPU401 PnP configure failure\n");
 		mpu_port[dev] = -1;
-<<<<<<< HEAD
-		acard->devmpu = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mpu_port[dev] = pnp_port_start(pdev, 0);
 		mpu_irq[dev] = pnp_irq(pdev, 0);
@@ -189,38 +116,6 @@ static int snd_card_ad1816a_pnp(int dev, struct pnp_card_link *card,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
-					    const struct pnp_card_device_id *pid)
-{
-	int error;
-	struct snd_card *card;
-	struct snd_card_ad1816a *acard;
-	struct snd_ad1816a *chip;
-	struct snd_opl3 *opl3;
-	struct snd_timer *timer;
-
-	error = snd_card_create(index[dev], id[dev], THIS_MODULE,
-				sizeof(struct snd_card_ad1816a), &card);
-	if (error < 0)
-		return error;
-	acard = card->private_data;
-
-	if ((error = snd_card_ad1816a_pnp(dev, acard, pcard, pid))) {
-		snd_card_free(card);
-		return error;
-	}
-	snd_card_set_dev(card, &pcard->card->dev);
-
-	if ((error = snd_ad1816a_create(card, port[dev],
-					irq[dev],
-					dma1[dev],
-					dma2[dev],
-					&chip)) < 0) {
-		snd_card_free(card);
-		return error;
-	}
-=======
 static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 				  const struct pnp_card_device_id *pid)
 {
@@ -247,7 +142,6 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 				   chip);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (clockfreq[dev] >= 5000 && clockfreq[dev] <= 100000)
 		chip->clock_freq = clockfreq[dev];
 
@@ -256,23 +150,6 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 	sprintf(card->longname, "%s, SS at 0x%lx, irq %d, dma %d&%d",
 		card->shortname, chip->port, irq[dev], dma1[dev], dma2[dev]);
 
-<<<<<<< HEAD
-	if ((error = snd_ad1816a_pcm(chip, 0, NULL)) < 0) {
-		snd_card_free(card);
-		return error;
-	}
-
-	if ((error = snd_ad1816a_mixer(chip)) < 0) {
-		snd_card_free(card);
-		return error;
-	}
-
-	error = snd_ad1816a_timer(chip, 0, &timer);
-	if (error < 0) {
-		snd_card_free(card);
-		return error;
-	}
-=======
 	error = snd_ad1816a_pcm(chip, 0);
 	if (error < 0)
 		return error;
@@ -284,7 +161,6 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 	error = snd_ad1816a_timer(chip, 0);
 	if (error < 0)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mpu_port[dev] > 0) {
 		if (snd_mpu401_uart_new(card, 0, MPU401_HW_MPU401,
@@ -300,19 +176,6 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 			printk(KERN_ERR PFX "no OPL device at 0x%lx-0x%lx.\n", fm_port[dev], fm_port[dev] + 2);
 		} else {
 			error = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
-<<<<<<< HEAD
-			if (error < 0) {
-				snd_card_free(card);
-				return error;
-			}
-		}
-	}
-
-	if ((error = snd_card_register(card)) < 0) {
-		snd_card_free(card);
-		return error;
-	}
-=======
 			if (error < 0)
 				return error;
 		}
@@ -321,22 +184,14 @@ static int snd_card_ad1816a_probe(int dev, struct pnp_card_link *pcard,
 	error = snd_card_register(card);
 	if (error < 0)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned int __devinitdata ad1816a_devices;
-
-static int __devinit snd_ad1816a_pnp_detect(struct pnp_card_link *card,
-					    const struct pnp_card_device_id *id)
-=======
 static unsigned int ad1816a_devices;
 
 static int snd_ad1816a_pnp_detect(struct pnp_card_link *card,
 				  const struct pnp_card_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	int res;
@@ -354,14 +209,6 @@ static int snd_ad1816a_pnp_detect(struct pnp_card_link *card,
         return -ENODEV;
 }
 
-<<<<<<< HEAD
-static void __devexit snd_ad1816a_pnp_remove(struct pnp_card_link * pcard)
-{
-	snd_card_free(pnp_get_card_drvdata(pcard));
-	pnp_set_card_drvdata(pcard, NULL);
-}
-
-=======
 #ifdef CONFIG_PM
 static int snd_ad1816a_pnp_suspend(struct pnp_card_link *pcard,
 				   pm_message_t state)
@@ -383,21 +230,15 @@ static int snd_ad1816a_pnp_resume(struct pnp_card_link *pcard)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pnp_card_driver ad1816a_pnpc_driver = {
 	.flags		= PNP_DRIVER_RES_DISABLE,
 	.name		= "ad1816a",
 	.id_table	= snd_ad1816a_pnpids,
 	.probe		= snd_ad1816a_pnp_detect,
-<<<<<<< HEAD
-	.remove		= __devexit_p(snd_ad1816a_pnp_remove),
-	/* FIXME: suspend/resume */
-=======
 #ifdef CONFIG_PM
 	.suspend	= snd_ad1816a_pnp_suspend,
 	.resume		= snd_ad1816a_pnp_resume,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init alsa_card_ad1816a_init(void)

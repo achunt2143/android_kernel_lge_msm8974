@@ -1,23 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API for algorithms (i.e., low-level API).
  *
  * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- */
-
-#include <linux/err.h>
-#include <linux/errno.h>
-=======
  */
 
 #include <crypto/algapi.h>
@@ -25,7 +10,6 @@
 #include <linux/err.h>
 #include <linux/errno.h>
 #include <linux/fips.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -33,48 +17,12 @@
 #include <linux/rtnetlink.h>
 #include <linux/slab.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/workqueue.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "internal.h"
 
 static LIST_HEAD(crypto_template_list);
 
-<<<<<<< HEAD
-void crypto_larval_error(const char *name, u32 type, u32 mask)
-{
-	struct crypto_alg *alg;
-
-	alg = crypto_alg_lookup(name, type, mask);
-
-	if (alg) {
-		if (crypto_is_larval(alg)) {
-			struct crypto_larval *larval = (void *)alg;
-			complete_all(&larval->completion);
-		}
-		crypto_mod_put(alg);
-	}
-}
-EXPORT_SYMBOL_GPL(crypto_larval_error);
-
-static inline int crypto_set_driver_name(struct crypto_alg *alg)
-{
-	static const char suffix[] = "-generic";
-	char *driver_name = alg->cra_driver_name;
-	int len;
-
-	if (*driver_name)
-		return 0;
-
-	len = strlcpy(driver_name, alg->cra_name, CRYPTO_MAX_ALG_NAME);
-	if (len + sizeof(suffix) > CRYPTO_MAX_ALG_NAME)
-		return -ENAMETOOLONG;
-
-	memcpy(driver_name + len, suffix, sizeof(suffix));
-	return 0;
-=======
 #ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS
 DEFINE_PER_CPU(bool, crypto_simd_disabled_for_test);
 EXPORT_PER_CPU_SYMBOL_GPL(crypto_simd_disabled_for_test);
@@ -85,23 +33,10 @@ static inline void crypto_check_module_sig(struct module *mod)
 	if (fips_enabled && mod && !module_sig_ok(mod))
 		panic("Module %s signature verification failed in FIPS mode\n",
 		      module_name(mod));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int crypto_check_alg(struct crypto_alg *alg)
 {
-<<<<<<< HEAD
-	if (alg->cra_alignmask & (alg->cra_alignmask + 1))
-		return -EINVAL;
-
-	if (alg->cra_blocksize > PAGE_SIZE / 8)
-		return -EINVAL;
-
-	if (alg->cra_priority < 0)
-		return -EINVAL;
-
-	return crypto_set_driver_name(alg);
-=======
 	crypto_check_module_sig(alg->cra_module);
 
 	if (!alg->cra_name[0] || !alg->cra_driver_name[0])
@@ -148,20 +83,10 @@ static void crypto_destroy_instance_workfn(struct work_struct *w)
 
 	crypto_free_instance(inst);
 	crypto_tmpl_put(tmpl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void crypto_destroy_instance(struct crypto_alg *alg)
 {
-<<<<<<< HEAD
-	struct crypto_instance *inst = (void *)alg;
-	struct crypto_template *tmpl = inst->tmpl;
-
-	tmpl->free(inst);
-	crypto_tmpl_put(tmpl);
-}
-
-=======
 	struct crypto_instance *inst = container_of(alg,
 						    struct crypto_instance,
 						    alg);
@@ -179,7 +104,6 @@ static void crypto_destroy_instance(struct crypto_alg *alg)
  * This function is also responsible for resurrecting any algorithms
  * in the dependency chain of nalg by unsetting n->dead.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct list_head *crypto_more_spawns(struct crypto_alg *alg,
 					    struct list_head *stack,
 					    struct list_head *top,
@@ -187,28 +111,6 @@ static struct list_head *crypto_more_spawns(struct crypto_alg *alg,
 {
 	struct crypto_spawn *spawn, *n;
 
-<<<<<<< HEAD
-	if (list_empty(stack))
-		return NULL;
-
-	spawn = list_first_entry(stack, struct crypto_spawn, list);
-	n = list_entry(spawn->list.next, struct crypto_spawn, list);
-
-	if (spawn->alg && &n->list != stack && !n->alg)
-		n->alg = (n->list.next == stack) ? alg :
-			 &list_entry(n->list.next, struct crypto_spawn,
-				     list)->inst->alg;
-
-	list_move(&spawn->list, secondary_spawns);
-
-	return &n->list == stack ? top : &n->inst->alg.cra_users;
-}
-
-static void crypto_remove_spawn(struct crypto_spawn *spawn,
-				struct list_head *list)
-{
-	struct crypto_instance *inst = spawn->inst;
-=======
 	spawn = list_first_entry_or_null(stack, struct crypto_spawn, list);
 	if (!spawn)
 		return NULL;
@@ -229,26 +131,16 @@ static void crypto_remove_spawn(struct crypto_spawn *spawn,
 static void crypto_remove_instance(struct crypto_instance *inst,
 				   struct list_head *list)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct crypto_template *tmpl = inst->tmpl;
 
 	if (crypto_is_dead(&inst->alg))
 		return;
 
 	inst->alg.cra_flags |= CRYPTO_ALG_DEAD;
-<<<<<<< HEAD
-	if (hlist_unhashed(&inst->list))
-		return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tmpl || !crypto_tmpl_get(tmpl))
 		return;
 
-<<<<<<< HEAD
-	crypto_notify(CRYPTO_MSG_ALG_UNREGISTER, &inst->alg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_move(&inst->alg.cra_list, list);
 	hlist_del(&inst->list);
 	inst->alg.cra_destroy = crypto_destroy_instance;
@@ -256,15 +148,12 @@ static void crypto_remove_instance(struct crypto_instance *inst,
 	BUG_ON(!list_empty(&inst->alg.cra_users));
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Given an algorithm alg, remove all algorithms that depend on it
  * through spawns.  If nalg is not null, then exempt any algorithms
  * that is depended on by nalg.  This is useful when nalg itself
  * depends on alg.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 			  struct crypto_alg *nalg)
 {
@@ -283,14 +172,11 @@ void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 		list_move(&spawn->list, &top);
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Perform a depth-first walk starting from alg through
 	 * the cra_users tree.  The list stack records the path
 	 * from alg to the current spawn.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spawns = &top;
 	do {
 		while (!list_empty(spawns)) {
@@ -300,11 +186,6 @@ void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 						 list);
 			inst = spawn->inst;
 
-<<<<<<< HEAD
-			BUG_ON(&inst->alg == alg);
-
-			list_move(&spawn->list, &stack);
-=======
 			list_move(&spawn->list, &stack);
 			spawn->dead = !spawn->registered || &inst->alg != nalg;
 
@@ -312,15 +193,10 @@ void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 				break;
 
 			BUG_ON(&inst->alg == alg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (&inst->alg == nalg)
 				break;
 
-<<<<<<< HEAD
-			spawn->alg = NULL;
-			spawns = &inst->alg.cra_users;
-=======
 			spawns = &inst->alg.cra_users;
 
 			/*
@@ -340,18 +216,10 @@ void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 			 */
 			if (spawns->next == NULL)
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} while ((spawns = crypto_more_spawns(alg, &stack, &top,
 					      &secondary_spawns)));
 
-<<<<<<< HEAD
-	list_for_each_entry_safe(spawn, n, &secondary_spawns, list) {
-		if (spawn->alg)
-			list_move(&spawn->list, &spawn->alg->cra_users);
-		else
-			crypto_remove_spawn(spawn, list);
-=======
 	/*
 	 * Remove all instances that are marked as dead.  Also
 	 * complete the resurrection of the others by moving them
@@ -362,110 +230,15 @@ void crypto_remove_spawns(struct crypto_alg *alg, struct list_head *list,
 			list_move(&spawn->list, &spawn->alg->cra_users);
 		else if (spawn->registered)
 			crypto_remove_instance(spawn->inst, list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(crypto_remove_spawns);
 
-<<<<<<< HEAD
-static struct crypto_larval *__crypto_register_alg(struct crypto_alg *alg)
-{
-	struct crypto_alg *q;
-	struct crypto_larval *larval;
-	int ret = -EAGAIN;
-
-	if (crypto_is_dead(alg))
-		goto err;
-
-	INIT_LIST_HEAD(&alg->cra_users);
-
-	/* No cheating! */
-	alg->cra_flags &= ~CRYPTO_ALG_TESTED;
-
-	ret = -EEXIST;
-
-	atomic_set(&alg->cra_refcnt, 1);
-	list_for_each_entry(q, &crypto_alg_list, cra_list) {
-		if (q == alg)
-			goto err;
-
-		if (crypto_is_moribund(q))
-			continue;
-
-		if (crypto_is_larval(q)) {
-			if (!strcmp(alg->cra_driver_name, q->cra_driver_name))
-				goto err;
-			continue;
-		}
-
-		if (!strcmp(q->cra_driver_name, alg->cra_name) ||
-		    !strcmp(q->cra_name, alg->cra_driver_name))
-			goto err;
-	}
-
-	larval = crypto_larval_alloc(alg->cra_name,
-				     alg->cra_flags | CRYPTO_ALG_TESTED, 0);
-	if (IS_ERR(larval))
-		goto out;
-
-	ret = -ENOENT;
-	larval->adult = crypto_mod_get(alg);
-	if (!larval->adult)
-		goto free_larval;
-
-	atomic_set(&larval->alg.cra_refcnt, 1);
-	memcpy(larval->alg.cra_driver_name, alg->cra_driver_name,
-	       CRYPTO_MAX_ALG_NAME);
-	larval->alg.cra_priority = alg->cra_priority;
-
-	list_add(&alg->cra_list, &crypto_alg_list);
-	list_add(&larval->alg.cra_list, &crypto_alg_list);
-
-out:
-	return larval;
-
-free_larval:
-	kfree(larval);
-err:
-	larval = ERR_PTR(ret);
-	goto out;
-}
-
-void crypto_alg_tested(const char *name, int err)
-{
-	struct crypto_larval *test;
-	struct crypto_alg *alg;
-	struct crypto_alg *q;
-	LIST_HEAD(list);
-
-	down_write(&crypto_alg_sem);
-	list_for_each_entry(q, &crypto_alg_list, cra_list) {
-		if (crypto_is_moribund(q) || !crypto_is_larval(q))
-			continue;
-
-		test = (struct crypto_larval *)q;
-
-		if (!strcmp(q->cra_driver_name, name))
-			goto found;
-	}
-
-	printk(KERN_ERR "alg: Unexpected test result for %s: %d\n", name, err);
-	goto unlock;
-
-found:
-	q->cra_flags |= CRYPTO_ALG_DEAD;
-	alg = test->adult;
-	if (err || list_empty(&alg->cra_list))
-		goto complete;
-
-	alg->cra_flags |= CRYPTO_ALG_TESTED;
-=======
 static void crypto_alg_finish_registration(struct crypto_alg *alg,
 					   bool fulfill_requests,
 					   struct list_head *algs_to_put)
 {
 	struct crypto_alg *q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(q, &crypto_alg_list, cra_list) {
 		if (q == alg)
@@ -490,20 +263,12 @@ static void crypto_alg_finish_registration(struct crypto_alg *alg,
 				continue;
 			if ((q->cra_flags ^ alg->cra_flags) & larval->mask)
 				continue;
-<<<<<<< HEAD
-			if (!crypto_mod_get(alg))
-				continue;
-
-			larval->adult = alg;
-			complete_all(&larval->completion);
-=======
 
 			if (fulfill_requests && crypto_mod_get(alg))
 				larval->adult = alg;
 			else
 				larval->adult = ERR_PTR(-EAGAIN);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -514,11 +279,6 @@ static void crypto_alg_finish_registration(struct crypto_alg *alg,
 		    q->cra_priority > alg->cra_priority)
 			continue;
 
-<<<<<<< HEAD
-		crypto_remove_spawns(q, &list, alg);
-	}
-
-=======
 		crypto_remove_spawns(q, algs_to_put, alg);
 	}
 
@@ -668,7 +428,6 @@ found:
 
 	crypto_alg_finish_registration(alg, best, &list);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 complete:
 	complete_all(&test->completion);
 
@@ -691,31 +450,6 @@ void crypto_remove_final(struct list_head *list)
 }
 EXPORT_SYMBOL_GPL(crypto_remove_final);
 
-<<<<<<< HEAD
-static void crypto_wait_for_test(struct crypto_larval *larval)
-{
-	int err;
-
-	err = crypto_probing_notify(CRYPTO_MSG_ALG_REGISTER, larval->adult);
-	if (err != NOTIFY_STOP) {
-		if (WARN_ON(err != NOTIFY_DONE))
-			goto out;
-		crypto_alg_tested(larval->alg.cra_driver_name, 0);
-	}
-
-	err = wait_for_completion_killable(&larval->completion);
-	WARN_ON(err);
-
-out:
-	crypto_larval_kill(&larval->alg);
-}
-
-int crypto_register_alg(struct crypto_alg *alg)
-{
-	struct crypto_larval *larval;
-	int err;
-
-=======
 int crypto_register_alg(struct crypto_alg *alg)
 {
 	struct crypto_larval *larval;
@@ -724,33 +458,23 @@ int crypto_register_alg(struct crypto_alg *alg)
 	int err;
 
 	alg->cra_flags &= ~CRYPTO_ALG_DEAD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = crypto_check_alg(alg);
 	if (err)
 		return err;
 
 	down_write(&crypto_alg_sem);
-<<<<<<< HEAD
-	larval = __crypto_register_alg(alg);
-=======
 	larval = __crypto_register_alg(alg, &algs_to_put);
 	if (!IS_ERR_OR_NULL(larval)) {
 		test_started = crypto_boot_test_finished();
 		larval->test_started = test_started;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&crypto_alg_sem);
 
 	if (IS_ERR(larval))
 		return PTR_ERR(larval);
-<<<<<<< HEAD
-
-	crypto_wait_for_test(larval);
-=======
 	if (test_started)
 		crypto_wait_for_test(larval);
 	crypto_remove_final(&algs_to_put);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(crypto_register_alg);
@@ -762,21 +486,13 @@ static int crypto_remove_alg(struct crypto_alg *alg, struct list_head *list)
 
 	alg->cra_flags |= CRYPTO_ALG_DEAD;
 
-<<<<<<< HEAD
-	crypto_notify(CRYPTO_MSG_ALG_UNREGISTER, alg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del_init(&alg->cra_list);
 	crypto_remove_spawns(alg, list, NULL);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int crypto_unregister_alg(struct crypto_alg *alg)
-=======
 void crypto_unregister_alg(struct crypto_alg *alg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	LIST_HEAD(list);
@@ -785,27 +501,16 @@ void crypto_unregister_alg(struct crypto_alg *alg)
 	ret = crypto_remove_alg(alg, &list);
 	up_write(&crypto_alg_sem);
 
-<<<<<<< HEAD
-	if (ret)
-		return ret;
-
-	BUG_ON(atomic_read(&alg->cra_refcnt) != 1);
-=======
 	if (WARN(ret, "Algorithm %s is not registered", alg->cra_driver_name))
 		return;
 
 	if (WARN_ON(refcount_read(&alg->cra_refcnt) != 1))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (alg->cra_destroy)
 		alg->cra_destroy(alg);
 
 	crypto_remove_final(&list);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(crypto_unregister_alg);
 
@@ -829,27 +534,12 @@ err:
 }
 EXPORT_SYMBOL_GPL(crypto_register_algs);
 
-<<<<<<< HEAD
-int crypto_unregister_algs(struct crypto_alg *algs, int count)
-{
-	int i, ret;
-
-	for (i = 0; i < count; i++) {
-		ret = crypto_unregister_alg(&algs[i]);
-		if (ret)
-			pr_err("Failed to unregister %s %s: %d\n",
-			       algs[i].cra_driver_name, algs[i].cra_name, ret);
-	}
-
-	return 0;
-=======
 void crypto_unregister_algs(struct crypto_alg *algs, int count)
 {
 	int i;
 
 	for (i = 0; i < count; i++)
 		crypto_unregister_alg(&algs[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(crypto_unregister_algs);
 
@@ -860,21 +550,14 @@ int crypto_register_template(struct crypto_template *tmpl)
 
 	down_write(&crypto_alg_sem);
 
-<<<<<<< HEAD
-=======
 	crypto_check_module_sig(tmpl->module);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(q, &crypto_template_list, list) {
 		if (q == tmpl)
 			goto out;
 	}
 
 	list_add(&tmpl->list, &crypto_template_list);
-<<<<<<< HEAD
-	crypto_notify(CRYPTO_MSG_TMPL_REGISTER, tmpl);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = 0;
 out:
 	up_write(&crypto_alg_sem);
@@ -882,12 +565,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(crypto_register_template);
 
-<<<<<<< HEAD
-void crypto_unregister_template(struct crypto_template *tmpl)
-{
-	struct crypto_instance *inst;
-	struct hlist_node *p, *n;
-=======
 int crypto_register_templates(struct crypto_template *tmpls, int count)
 {
 	int i, err;
@@ -910,7 +587,6 @@ void crypto_unregister_template(struct crypto_template *tmpl)
 {
 	struct crypto_instance *inst;
 	struct hlist_node *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hlist_head *list;
 	LIST_HEAD(users);
 
@@ -920,20 +596,6 @@ void crypto_unregister_template(struct crypto_template *tmpl)
 	list_del_init(&tmpl->list);
 
 	list = &tmpl->instances;
-<<<<<<< HEAD
-	hlist_for_each_entry(inst, p, list, list) {
-		int err = crypto_remove_alg(&inst->alg, &users);
-		BUG_ON(err);
-	}
-
-	crypto_notify(CRYPTO_MSG_TMPL_UNREGISTER, tmpl);
-
-	up_write(&crypto_alg_sem);
-
-	hlist_for_each_entry_safe(inst, p, n, list, list) {
-		BUG_ON(atomic_read(&inst->alg.cra_refcnt) != 1);
-		tmpl->free(inst);
-=======
 	hlist_for_each_entry(inst, list, list) {
 		int err = crypto_remove_alg(&inst->alg, &users);
 
@@ -945,14 +607,11 @@ void crypto_unregister_template(struct crypto_template *tmpl)
 	hlist_for_each_entry_safe(inst, n, list, list) {
 		BUG_ON(refcount_read(&inst->alg.cra_refcnt) != 1);
 		crypto_free_instance(inst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	crypto_remove_final(&users);
 }
 EXPORT_SYMBOL_GPL(crypto_unregister_template);
 
-<<<<<<< HEAD
-=======
 void crypto_unregister_templates(struct crypto_template *tmpls, int count)
 {
 	int i;
@@ -962,7 +621,6 @@ void crypto_unregister_templates(struct crypto_template *tmpls, int count)
 }
 EXPORT_SYMBOL_GPL(crypto_unregister_templates);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct crypto_template *__crypto_lookup_template(const char *name)
 {
 	struct crypto_template *q, *tmpl = NULL;
@@ -984,13 +642,8 @@ static struct crypto_template *__crypto_lookup_template(const char *name)
 
 struct crypto_template *crypto_lookup_template(const char *name)
 {
-<<<<<<< HEAD
-	return try_then_request_module(__crypto_lookup_template(name), "%s",
-				       name);
-=======
 	return try_then_request_module(__crypto_lookup_template(name),
 				       "crypto-%s", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(crypto_lookup_template);
 
@@ -998,32 +651,20 @@ int crypto_register_instance(struct crypto_template *tmpl,
 			     struct crypto_instance *inst)
 {
 	struct crypto_larval *larval;
-<<<<<<< HEAD
-=======
 	struct crypto_spawn *spawn;
 	u32 fips_internal = 0;
 	LIST_HEAD(algs_to_put);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = crypto_check_alg(&inst->alg);
 	if (err)
-<<<<<<< HEAD
-		goto err;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inst->alg.cra_module = tmpl->module;
 	inst->alg.cra_flags |= CRYPTO_ALG_INSTANCE;
 
 	down_write(&crypto_alg_sem);
 
-<<<<<<< HEAD
-	larval = __crypto_register_alg(&inst->alg);
-	if (IS_ERR(larval))
-		goto unlock;
-=======
 	larval = ERR_PTR(-EAGAIN);
 	for (spawn = inst->spawns; spawn;) {
 		struct crypto_spawn *next;
@@ -1049,7 +690,6 @@ int crypto_register_instance(struct crypto_template *tmpl,
 		goto unlock;
 	else if (larval)
 		larval->test_started = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hlist_add_head(&inst->list, &tmpl->instances);
 	inst->tmpl = tmpl;
@@ -1057,56 +697,6 @@ int crypto_register_instance(struct crypto_template *tmpl,
 unlock:
 	up_write(&crypto_alg_sem);
 
-<<<<<<< HEAD
-	err = PTR_ERR(larval);
-	if (IS_ERR(larval))
-		goto err;
-
-	crypto_wait_for_test(larval);
-	err = 0;
-
-err:
-	return err;
-}
-EXPORT_SYMBOL_GPL(crypto_register_instance);
-
-int crypto_unregister_instance(struct crypto_alg *alg)
-{
-	int err;
-	struct crypto_instance *inst = (void *)alg;
-	struct crypto_template *tmpl = inst->tmpl;
-	LIST_HEAD(users);
-
-	if (!(alg->cra_flags & CRYPTO_ALG_INSTANCE))
-		return -EINVAL;
-
-	BUG_ON(atomic_read(&alg->cra_refcnt) != 1);
-
-	down_write(&crypto_alg_sem);
-
-	hlist_del_init(&inst->list);
-	err = crypto_remove_alg(alg, &users);
-
-	up_write(&crypto_alg_sem);
-
-	if (err)
-		return err;
-
-	tmpl->free(inst);
-	crypto_remove_final(&users);
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(crypto_unregister_instance);
-
-int crypto_init_spawn(struct crypto_spawn *spawn, struct crypto_alg *alg,
-		      struct crypto_instance *inst, u32 mask)
-{
-	int err = -EAGAIN;
-
-	spawn->inst = inst;
-	spawn->mask = mask;
-=======
 	if (IS_ERR(larval))
 		return PTR_ERR(larval);
 	if (larval)
@@ -1148,47 +738,11 @@ int crypto_grab_spawn(struct crypto_spawn *spawn, struct crypto_instance *inst,
 			      type | CRYPTO_ALG_FIPS_INTERNAL, mask);
 	if (IS_ERR(alg))
 		return PTR_ERR(alg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&crypto_alg_sem);
 	if (!crypto_is_moribund(alg)) {
 		list_add(&spawn->list, &alg->cra_users);
 		spawn->alg = alg;
-<<<<<<< HEAD
-		err = 0;
-	}
-	up_write(&crypto_alg_sem);
-
-	return err;
-}
-EXPORT_SYMBOL_GPL(crypto_init_spawn);
-
-int crypto_init_spawn2(struct crypto_spawn *spawn, struct crypto_alg *alg,
-		       struct crypto_instance *inst,
-		       const struct crypto_type *frontend)
-{
-	int err = -EINVAL;
-
-	if ((alg->cra_flags ^ frontend->type) & frontend->maskset)
-		goto out;
-
-	spawn->frontend = frontend;
-	err = crypto_init_spawn(spawn, alg, inst, frontend->maskset);
-
-out:
-	return err;
-}
-EXPORT_SYMBOL_GPL(crypto_init_spawn2);
-
-void crypto_drop_spawn(struct crypto_spawn *spawn)
-{
-	if (!spawn->alg)
-		return;
-
-	down_write(&crypto_alg_sem);
-	list_del(&spawn->list);
-	up_write(&crypto_alg_sem);
-=======
 		spawn->mask = mask;
 		spawn->next = inst->spawns;
 		inst->spawns = spawn;
@@ -1215,28 +769,11 @@ void crypto_drop_spawn(struct crypto_spawn *spawn)
 
 	if (!spawn->registered)
 		crypto_mod_put(spawn->alg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(crypto_drop_spawn);
 
 static struct crypto_alg *crypto_spawn_alg(struct crypto_spawn *spawn)
 {
-<<<<<<< HEAD
-	struct crypto_alg *alg;
-	struct crypto_alg *alg2;
-
-	down_read(&crypto_alg_sem);
-	alg = spawn->alg;
-	alg2 = alg;
-	if (alg2)
-		alg2 = crypto_mod_get(alg2);
-	up_read(&crypto_alg_sem);
-
-	if (!alg2) {
-		if (alg)
-			crypto_shoot_alg(alg);
-		return ERR_PTR(-EAGAIN);
-=======
 	struct crypto_alg *alg = ERR_PTR(-EAGAIN);
 	struct crypto_alg *target;
 	bool shoot = false;
@@ -1255,7 +792,6 @@ static struct crypto_alg *crypto_spawn_alg(struct crypto_spawn *spawn)
 	if (shoot) {
 		crypto_shoot_alg(target);
 		crypto_alg_put(target);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return alg;
@@ -1338,9 +874,6 @@ struct crypto_attr_type *crypto_get_attr_type(struct rtattr **tb)
 }
 EXPORT_SYMBOL_GPL(crypto_get_attr_type);
 
-<<<<<<< HEAD
-int crypto_check_attr_type(struct rtattr **tb, u32 type)
-=======
 /**
  * crypto_check_attr_type() - check algorithm type and compute inherited mask
  * @tb: the template parameters
@@ -1358,7 +891,6 @@ int crypto_check_attr_type(struct rtattr **tb, u32 type)
  * Return: 0 on success; -errno on failure
  */
 int crypto_check_attr_type(struct rtattr **tb, u32 type, u32 *mask_ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct crypto_attr_type *algt;
 
@@ -1369,10 +901,7 @@ int crypto_check_attr_type(struct rtattr **tb, u32 type, u32 *mask_ret)
 	if ((algt->type ^ type) & algt->mask)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	*mask_ret = crypto_algt_inherited_mask(algt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(crypto_check_attr_type);
@@ -1395,101 +924,6 @@ const char *crypto_attr_alg_name(struct rtattr *rta)
 }
 EXPORT_SYMBOL_GPL(crypto_attr_alg_name);
 
-<<<<<<< HEAD
-struct crypto_alg *crypto_attr_alg2(struct rtattr *rta,
-				    const struct crypto_type *frontend,
-				    u32 type, u32 mask)
-{
-	const char *name;
-	int err;
-
-	name = crypto_attr_alg_name(rta);
-	err = PTR_ERR(name);
-	if (IS_ERR(name))
-		return ERR_PTR(err);
-
-	return crypto_find_alg(name, frontend, type, mask);
-}
-EXPORT_SYMBOL_GPL(crypto_attr_alg2);
-
-int crypto_attr_u32(struct rtattr *rta, u32 *num)
-{
-	struct crypto_attr_u32 *nu32;
-
-	if (!rta)
-		return -ENOENT;
-	if (RTA_PAYLOAD(rta) < sizeof(*nu32))
-		return -EINVAL;
-	if (rta->rta_type != CRYPTOA_U32)
-		return -EINVAL;
-
-	nu32 = RTA_DATA(rta);
-	*num = nu32->num;
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(crypto_attr_u32);
-
-void *crypto_alloc_instance2(const char *name, struct crypto_alg *alg,
-			     unsigned int head)
-{
-	struct crypto_instance *inst;
-	char *p;
-	int err;
-
-	p = kzalloc(head + sizeof(*inst) + sizeof(struct crypto_spawn),
-		    GFP_KERNEL);
-	if (!p)
-		return ERR_PTR(-ENOMEM);
-
-	inst = (void *)(p + head);
-
-	err = -ENAMETOOLONG;
-	if (snprintf(inst->alg.cra_name, CRYPTO_MAX_ALG_NAME, "%s(%s)", name,
-		     alg->cra_name) >= CRYPTO_MAX_ALG_NAME)
-		goto err_free_inst;
-
-	if (snprintf(inst->alg.cra_driver_name, CRYPTO_MAX_ALG_NAME, "%s(%s)",
-		     name, alg->cra_driver_name) >= CRYPTO_MAX_ALG_NAME)
-		goto err_free_inst;
-
-	return p;
-
-err_free_inst:
-	kfree(p);
-	return ERR_PTR(err);
-}
-EXPORT_SYMBOL_GPL(crypto_alloc_instance2);
-
-struct crypto_instance *crypto_alloc_instance(const char *name,
-					      struct crypto_alg *alg)
-{
-	struct crypto_instance *inst;
-	struct crypto_spawn *spawn;
-	int err;
-
-	inst = crypto_alloc_instance2(name, alg, 0);
-	if (IS_ERR(inst))
-		goto out;
-
-	spawn = crypto_instance_ctx(inst);
-	err = crypto_init_spawn(spawn, alg, inst,
-				CRYPTO_ALG_TYPE_MASK | CRYPTO_ALG_ASYNC);
-
-	if (err)
-		goto err_free_inst;
-
-	return inst;
-
-err_free_inst:
-	kfree(inst);
-	inst = ERR_PTR(err);
-
-out:
-	return inst;
-}
-EXPORT_SYMBOL_GPL(crypto_alloc_instance);
-=======
 int crypto_inst_setname(struct crypto_instance *inst, const char *name,
 			struct crypto_alg *alg)
 {
@@ -1504,7 +938,6 @@ int crypto_inst_setname(struct crypto_instance *inst, const char *name,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(crypto_inst_setname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void crypto_init_queue(struct crypto_queue *queue, unsigned int max_qlen)
 {
@@ -1521,17 +954,11 @@ int crypto_enqueue_request(struct crypto_queue *queue,
 	int err = -EINPROGRESS;
 
 	if (unlikely(queue->qlen >= queue->max_qlen)) {
-<<<<<<< HEAD
-		err = -EBUSY;
-		if (!(request->flags & CRYPTO_TFM_REQ_MAY_BACKLOG))
-			goto out;
-=======
 		if (!(request->flags & CRYPTO_TFM_REQ_MAY_BACKLOG)) {
 			err = -ENOSPC;
 			goto out;
 		}
 		err = -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (queue->backlog == &queue->list)
 			queue->backlog = &request->list;
 	}
@@ -1544,9 +971,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(crypto_enqueue_request);
 
-<<<<<<< HEAD
-void *__crypto_dequeue_request(struct crypto_queue *queue, unsigned int offset)
-=======
 void crypto_enqueue_request_head(struct crypto_queue *queue,
 				 struct crypto_async_request *request)
 {
@@ -1559,7 +983,6 @@ void crypto_enqueue_request_head(struct crypto_queue *queue,
 EXPORT_SYMBOL_GPL(crypto_enqueue_request_head);
 
 struct crypto_async_request *crypto_dequeue_request(struct crypto_queue *queue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *request;
 
@@ -1574,37 +997,10 @@ struct crypto_async_request *crypto_dequeue_request(struct crypto_queue *queue)
 	request = queue->list.next;
 	list_del(request);
 
-<<<<<<< HEAD
-	return (char *)list_entry(request, struct crypto_async_request, list) -
-	       offset;
-}
-EXPORT_SYMBOL_GPL(__crypto_dequeue_request);
-
-struct crypto_async_request *crypto_dequeue_request(struct crypto_queue *queue)
-{
-	return __crypto_dequeue_request(queue, 0);
-}
-EXPORT_SYMBOL_GPL(crypto_dequeue_request);
-
-int crypto_tfm_in_queue(struct crypto_queue *queue, struct crypto_tfm *tfm)
-{
-	struct crypto_async_request *req;
-
-	list_for_each_entry(req, &queue->list, list) {
-		if (req->tfm == tfm)
-			return 1;
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(crypto_tfm_in_queue);
-
-=======
 	return list_entry(request, struct crypto_async_request, list);
 }
 EXPORT_SYMBOL_GPL(crypto_dequeue_request);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void crypto_inc_byte(u8 *a, unsigned int size)
 {
 	u8 *b = (a + size);
@@ -1623,14 +1019,6 @@ void crypto_inc(u8 *a, unsigned int size)
 	__be32 *b = (__be32 *)(a + size);
 	u32 c;
 
-<<<<<<< HEAD
-	for (; size >= 4; size -= 4) {
-		c = be32_to_cpu(*--b) + 1;
-		*b = cpu_to_be32(c);
-		if (c)
-			return;
-	}
-=======
 	if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) ||
 	    IS_ALIGNED((unsigned long)b, __alignof__(*b)))
 		for (; size >= 4; size -= 4) {
@@ -1639,38 +1027,11 @@ void crypto_inc(u8 *a, unsigned int size)
 			if (likely(c))
 				return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	crypto_inc_byte(a, size);
 }
 EXPORT_SYMBOL_GPL(crypto_inc);
 
-<<<<<<< HEAD
-static inline void crypto_xor_byte(u8 *a, const u8 *b, unsigned int size)
-{
-	for (; size; size--)
-		*a++ ^= *b++;
-}
-
-void crypto_xor(u8 *dst, const u8 *src, unsigned int size)
-{
-	u32 *a = (u32 *)dst;
-	u32 *b = (u32 *)src;
-
-	for (; size >= 4; size -= 4)
-		*a++ ^= *b++;
-
-	crypto_xor_byte((u8 *)a, (u8 *)b, size);
-}
-EXPORT_SYMBOL_GPL(crypto_xor);
-
-static int __init crypto_algapi_init(void)
-{
-//Move proc init to tcrypt on FIPS device
-#ifndef CONFIG_CRYPTO_FIPS
-	crypto_init_proc();
-#endif
-=======
 unsigned int crypto_alg_extsize(struct crypto_alg *alg)
 {
 	return alg->cra_ctxsize +
@@ -1738,7 +1099,6 @@ static int __init crypto_algapi_init(void)
 {
 	crypto_init_proc();
 	crypto_start_tests();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1747,20 +1107,13 @@ static void __exit crypto_algapi_exit(void)
 	crypto_exit_proc();
 }
 
-<<<<<<< HEAD
-module_init(crypto_algapi_init);
-=======
 /*
  * We run this at late_initcall so that all the built-in algorithms
  * have had a chance to register themselves first.
  */
 late_initcall(crypto_algapi_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(crypto_algapi_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Cryptographic algorithms API");
-<<<<<<< HEAD
-=======
 MODULE_SOFTDEP("pre: cryptomgr");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PGTABLE_NOPMD_H
 #define _PGTABLE_NOPMD_H
 
@@ -11,11 +8,7 @@
 
 struct mm_struct;
 
-<<<<<<< HEAD
-#define __PAGETABLE_PMD_FOLDED
-=======
 #define __PAGETABLE_PMD_FOLDED 1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Having the pmd type consist of a pud gets the size right, and allows
@@ -37,11 +30,8 @@ typedef struct { pud_t pud; } pmd_t;
 static inline int pud_none(pud_t pud)		{ return 0; }
 static inline int pud_bad(pud_t pud)		{ return 0; }
 static inline int pud_present(pud_t pud)	{ return 1; }
-<<<<<<< HEAD
-=======
 static inline int pud_user(pud_t pud)		{ return 0; }
 static inline int pud_leaf(pud_t pud)		{ return 0; }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pud_clear(pud_t *pud)	{ }
 #define pmd_ERROR(pmd)				(pud_ERROR((pmd).pud))
 
@@ -57,20 +47,13 @@ static inline pmd_t * pmd_offset(pud_t * pud, unsigned long address)
 {
 	return (pmd_t *)pud;
 }
-<<<<<<< HEAD
-=======
 #define pmd_offset pmd_offset
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pmd_val(x)				(pud_val((x).pud))
 #define __pmd(x)				((pmd_t) { __pud(x) } )
 
 #define pud_page(pud)				(pmd_page((pmd_t){ pud }))
-<<<<<<< HEAD
-#define pud_page_vaddr(pud)			(pmd_page_vaddr((pmd_t){ pud }))
-=======
 #define pud_pgtable(pud)			((pmd_t *)(pmd_page_vaddr((pmd_t){ pud })))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * allocating and freeing a pmd is trivial: the 1-entry pmd is
@@ -80,11 +63,7 @@ static inline pmd_t * pmd_offset(pud_t * pud, unsigned long address)
 static inline void pmd_free(struct mm_struct *mm, pmd_t *pmd)
 {
 }
-<<<<<<< HEAD
-#define __pmd_free_tlb(tlb, x, a)		do { } while (0)
-=======
 #define pmd_free_tlb(tlb, x, a)		do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef  pmd_addr_end
 #define pmd_addr_end(addr, end)			(end)

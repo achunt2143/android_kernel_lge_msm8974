@@ -13,24 +13,14 @@
 #include <linux/init.h>
 #include <linux/ioport.h>
 #include <linux/console.h>
-<<<<<<< HEAD
-#include <linux/screen_info.h>
-#include <linux/platform_device.h>
-#include <linux/serial_8250.h>
-=======
 #include <linux/platform_device.h>
 #include <linux/serial_8250.h>
 #include <linux/dma-mapping.h>
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/jazz.h>
 #include <asm/jazzdma.h>
 #include <asm/reboot.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbmisc.h>
 
 extern asmlinkage void jazz_handle_int(void);
@@ -42,38 +32,22 @@ static struct resource jazz_io_resources[] = {
 		.start	= 0x00,
 		.end	= 0x1f,
 		.name	= "dma1",
-<<<<<<< HEAD
-		.flags	= IORESOURCE_BUSY
-=======
 		.flags	= IORESOURCE_IO | IORESOURCE_BUSY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.start	= 0x40,
 		.end	= 0x5f,
 		.name	= "timer",
-<<<<<<< HEAD
-		.flags	= IORESOURCE_BUSY
-=======
 		.flags	= IORESOURCE_IO | IORESOURCE_BUSY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.start	= 0x80,
 		.end	= 0x8f,
 		.name	= "dma page reg",
-<<<<<<< HEAD
-		.flags	= IORESOURCE_BUSY
-=======
 		.flags	= IORESOURCE_IO | IORESOURCE_BUSY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.start	= 0xc0,
 		.end	= 0xdf,
 		.name	= "dma2",
-<<<<<<< HEAD
-		.flags	= IORESOURCE_BUSY
-=======
 		.flags	= IORESOURCE_IO | IORESOURCE_BUSY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -101,17 +75,6 @@ void __init plat_mem_setup(void)
 
 	_machine_restart = jazz_machine_restart;
 
-<<<<<<< HEAD
-#ifdef CONFIG_VT
-	screen_info = (struct screen_info) {
-		.orig_video_cols	= 160,
-		.orig_video_lines	= 64,
-		.orig_video_points	= 16,
-	};
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_preferred_console("ttyS", 0, "9600");
 }
 
@@ -165,12 +128,6 @@ static struct resource jazz_esp_rsrc[] = {
 	}
 };
 
-<<<<<<< HEAD
-static struct platform_device jazz_esp_pdev = {
-	.name           = "jazz_esp",
-	.num_resources  = ARRAY_SIZE(jazz_esp_rsrc),
-	.resource       = jazz_esp_rsrc
-=======
 static u64 jazz_esp_dma_mask = DMA_BIT_MASK(32);
 
 static struct platform_device jazz_esp_pdev = {
@@ -181,7 +138,6 @@ static struct platform_device jazz_esp_pdev = {
 		.dma_mask	   = &jazz_esp_dma_mask,
 		.coherent_dma_mask = DMA_BIT_MASK(32),
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource jazz_sonic_rsrc[] = {
@@ -197,12 +153,6 @@ static struct resource jazz_sonic_rsrc[] = {
 	}
 };
 
-<<<<<<< HEAD
-static struct platform_device jazz_sonic_pdev = {
-	.name           = "jazzsonic",
-	.num_resources  = ARRAY_SIZE(jazz_sonic_rsrc),
-	.resource       = jazz_sonic_rsrc
-=======
 static u64 jazz_sonic_dma_mask = DMA_BIT_MASK(32);
 
 static struct platform_device jazz_sonic_pdev = {
@@ -213,7 +163,6 @@ static struct platform_device jazz_sonic_pdev = {
 		.dma_mask	   = &jazz_sonic_dma_mask,
 		.coherent_dma_mask = DMA_BIT_MASK(32),
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource jazz_cmos_rsrc[] = {
@@ -230,15 +179,6 @@ static struct resource jazz_cmos_rsrc[] = {
 };
 
 static struct platform_device jazz_cmos_pdev = {
-<<<<<<< HEAD
-	.name           = "rtc_cmos",
-	.num_resources  = ARRAY_SIZE(jazz_cmos_rsrc),
-	.resource       = jazz_cmos_rsrc
-};
-
-static struct platform_device pcspeaker_pdev = {
-	.name           = "pcspkr",
-=======
 	.name		= "rtc_cmos",
 	.num_resources	= ARRAY_SIZE(jazz_cmos_rsrc),
 	.resource	= jazz_cmos_rsrc
@@ -246,7 +186,6 @@ static struct platform_device pcspeaker_pdev = {
 
 static struct platform_device pcspeaker_pdev = {
 	.name		= "pcspkr",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id		= -1,
 };
 

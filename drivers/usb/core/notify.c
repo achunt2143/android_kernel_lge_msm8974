@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * All the USB notify logic
  *
@@ -10,10 +7,7 @@
  * notifier functions originally based on those in kernel/sys.c
  * but fixed up to not be so broken.
  *
-<<<<<<< HEAD
-=======
  * Released under the GPLv2 only.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -59,22 +53,8 @@ void usb_notify_add_device(struct usb_device *udev)
 
 void usb_notify_remove_device(struct usb_device *udev)
 {
-<<<<<<< HEAD
-	/* Protect against simultaneous usbfs open */
-	mutex_lock(&usbfs_mutex);
 	blocking_notifier_call_chain(&usb_notifier_list,
 			USB_DEVICE_REMOVE, udev);
-	mutex_unlock(&usbfs_mutex);
-}
-
-void usb_notify_config_device(struct usb_device *udev)
-{
-	blocking_notifier_call_chain(&usb_notifier_list,
-			USB_DEVICE_CONFIG, udev);
-=======
-	blocking_notifier_call_chain(&usb_notifier_list,
-			USB_DEVICE_REMOVE, udev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void usb_notify_add_bus(struct usb_bus *ubus)

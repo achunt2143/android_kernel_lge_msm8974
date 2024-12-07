@@ -1,48 +1,3 @@
-<<<<<<< HEAD
-#include "builtin.h"
-
-#include "perf.h"
-#include "util/cache.h"
-#include "util/debug.h"
-#include "util/exec_cmd.h"
-#include "util/header.h"
-#include "util/parse-options.h"
-#include "util/session.h"
-#include "util/tool.h"
-#include "util/symbol.h"
-#include "util/thread.h"
-#include "util/trace-event.h"
-#include "util/util.h"
-#include "util/evlist.h"
-#include "util/evsel.h"
-#include <linux/bitmap.h>
-
-static char const		*script_name;
-static char const		*generate_script_lang;
-static bool			debug_mode;
-static u64			last_timestamp;
-static u64			nr_unordered;
-extern const struct option	record_options[];
-static bool			no_callchain;
-static bool			show_full_info;
-static bool			system_wide;
-static const char		*cpu_list;
-static DECLARE_BITMAP(cpu_bitmap, MAX_NR_CPUS);
-
-enum perf_output_field {
-	PERF_OUTPUT_COMM            = 1U << 0,
-	PERF_OUTPUT_TID             = 1U << 1,
-	PERF_OUTPUT_PID             = 1U << 2,
-	PERF_OUTPUT_TIME            = 1U << 3,
-	PERF_OUTPUT_CPU             = 1U << 4,
-	PERF_OUTPUT_EVNAME          = 1U << 5,
-	PERF_OUTPUT_TRACE           = 1U << 6,
-	PERF_OUTPUT_IP              = 1U << 7,
-	PERF_OUTPUT_SYM             = 1U << 8,
-	PERF_OUTPUT_DSO             = 1U << 9,
-	PERF_OUTPUT_ADDR            = 1U << 10,
-	PERF_OUTPUT_SYMOFFSET       = 1U << 11,
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include "builtin.h"
 
@@ -206,7 +161,6 @@ struct perf_script {
 	struct perf_time_interval *ptime_range;
 	int			range_size;
 	int			range_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct output_option {
@@ -223,10 +177,6 @@ struct output_option {
 	{.str = "ip",    .field = PERF_OUTPUT_IP},
 	{.str = "sym",   .field = PERF_OUTPUT_SYM},
 	{.str = "dso",   .field = PERF_OUTPUT_DSO},
-<<<<<<< HEAD
-	{.str = "addr",  .field = PERF_OUTPUT_ADDR},
-	{.str = "symoff", .field = PERF_OUTPUT_SYMOFFSET},
-=======
 	{.str = "dsoff", .field = PERF_OUTPUT_DSOFF},
 	{.str = "addr",  .field = PERF_OUTPUT_ADDR},
 	{.str = "symoff", .field = PERF_OUTPUT_SYMOFFSET},
@@ -266,25 +216,18 @@ enum {
 	OUTPUT_TYPE_SYNTH = PERF_TYPE_MAX,
 	OUTPUT_TYPE_OTHER,
 	OUTPUT_TYPE_MAX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* default set to maintain compatibility with current format */
 static struct {
 	bool user_set;
 	bool wildcard_set;
-<<<<<<< HEAD
-	u64 fields;
-	u64 invalid_fields;
-} output[PERF_TYPE_MAX] = {
-=======
 	unsigned int print_ip_opts;
 	u64 fields;
 	u64 invalid_fields;
 	u64 user_set_fields;
 	u64 user_unset_fields;
 } output[OUTPUT_TYPE_MAX] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	[PERF_TYPE_HARDWARE] = {
 		.user_set = false,
@@ -292,16 +235,10 @@ static struct {
 		.fields = PERF_OUTPUT_COMM | PERF_OUTPUT_TID |
 			      PERF_OUTPUT_CPU | PERF_OUTPUT_TIME |
 			      PERF_OUTPUT_EVNAME | PERF_OUTPUT_IP |
-<<<<<<< HEAD
-				  PERF_OUTPUT_SYM | PERF_OUTPUT_DSO,
-
-		.invalid_fields = PERF_OUTPUT_TRACE,
-=======
 			      PERF_OUTPUT_SYM | PERF_OUTPUT_SYMOFFSET |
 			      PERF_OUTPUT_DSO | PERF_OUTPUT_PERIOD,
 
 		.invalid_fields = PERF_OUTPUT_TRACE | PERF_OUTPUT_BPF_OUTPUT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	[PERF_TYPE_SOFTWARE] = {
@@ -310,13 +247,9 @@ static struct {
 		.fields = PERF_OUTPUT_COMM | PERF_OUTPUT_TID |
 			      PERF_OUTPUT_CPU | PERF_OUTPUT_TIME |
 			      PERF_OUTPUT_EVNAME | PERF_OUTPUT_IP |
-<<<<<<< HEAD
-				  PERF_OUTPUT_SYM | PERF_OUTPUT_DSO,
-=======
 			      PERF_OUTPUT_SYM | PERF_OUTPUT_SYMOFFSET |
 			      PERF_OUTPUT_DSO | PERF_OUTPUT_PERIOD |
 			      PERF_OUTPUT_BPF_OUTPUT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.invalid_fields = PERF_OUTPUT_TRACE,
 	},
@@ -326,9 +259,6 @@ static struct {
 
 		.fields = PERF_OUTPUT_COMM | PERF_OUTPUT_TID |
 				  PERF_OUTPUT_CPU | PERF_OUTPUT_TIME |
-<<<<<<< HEAD
-				  PERF_OUTPUT_EVNAME | PERF_OUTPUT_TRACE,
-=======
 				  PERF_OUTPUT_EVNAME | PERF_OUTPUT_TRACE
 	},
 
@@ -342,7 +272,6 @@ static struct {
 			      PERF_OUTPUT_DSO | PERF_OUTPUT_PERIOD,
 
 		.invalid_fields = PERF_OUTPUT_TRACE | PERF_OUTPUT_BPF_OUTPUT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 
 	[PERF_TYPE_RAW] = {
@@ -351,18 +280,6 @@ static struct {
 		.fields = PERF_OUTPUT_COMM | PERF_OUTPUT_TID |
 			      PERF_OUTPUT_CPU | PERF_OUTPUT_TIME |
 			      PERF_OUTPUT_EVNAME | PERF_OUTPUT_IP |
-<<<<<<< HEAD
-				  PERF_OUTPUT_SYM | PERF_OUTPUT_DSO,
-
-		.invalid_fields = PERF_OUTPUT_TRACE,
-	},
-};
-
-static bool output_set_by_user(void)
-{
-	int j;
-	for (j = 0; j < PERF_TYPE_MAX; ++j) {
-=======
 			      PERF_OUTPUT_SYM | PERF_OUTPUT_SYMOFFSET |
 			      PERF_OUTPUT_DSO | PERF_OUTPUT_PERIOD |
 			      PERF_OUTPUT_ADDR | PERF_OUTPUT_DATA_SRC |
@@ -478,7 +395,6 @@ static bool output_set_by_user(void)
 {
 	int j;
 	for (j = 0; j < OUTPUT_TYPE_MAX; ++j) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (output[j].user_set)
 			return true;
 	}
@@ -499,15 +415,6 @@ static const char *output_field2str(enum perf_output_field field)
 	return str;
 }
 
-<<<<<<< HEAD
-#define PRINT_FIELD(x)  (output[attr->type].fields & PERF_OUTPUT_##x)
-
-static int perf_event_attr__check_stype(struct perf_event_attr *attr,
-				  u64 sample_type, const char *sample_msg,
-				  enum perf_output_field field)
-{
-	int type = attr->type;
-=======
 #define PRINT_FIELD(x)  (output[output_type(attr->type)].fields & PERF_OUTPUT_##x)
 
 static int evsel__do_check_stype(struct evsel *evsel, u64 sample_type, const char *sample_msg,
@@ -515,21 +422,15 @@ static int evsel__do_check_stype(struct evsel *evsel, u64 sample_type, const cha
 {
 	struct perf_event_attr *attr = &evsel->core.attr;
 	int type = output_type(attr->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *evname;
 
 	if (attr->sample_type & sample_type)
 		return 0;
 
-<<<<<<< HEAD
-	if (output[type].user_set) {
-		evname = __event_name(attr->type, attr->config, NULL);
-=======
 	if (output[type].user_set_fields & field) {
 		if (allow_user_set)
 			return 0;
 		evname = evsel__name(evsel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("Samples for '%s' event do not have %s attribute set. "
 		       "Cannot print '%s' field.\n",
 		       evname, sample_msg, output_field2str(field));
@@ -538,11 +439,7 @@ static int evsel__do_check_stype(struct evsel *evsel, u64 sample_type, const cha
 
 	/* user did not ask for it explicitly so remove from the default list */
 	output[type].fields &= ~field;
-<<<<<<< HEAD
-	evname = __event_name(attr->type, attr->config, NULL);
-=======
 	evname = evsel__name(evsel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("Samples for '%s' event do not have %s attribute set. "
 		 "Skipping '%s' field.\n",
 		 evname, sample_msg, output_field2str(field));
@@ -550,35 +447,6 @@ static int evsel__do_check_stype(struct evsel *evsel, u64 sample_type, const cha
 	return 0;
 }
 
-<<<<<<< HEAD
-static int perf_evsel__check_attr(struct perf_evsel *evsel,
-				  struct perf_session *session)
-{
-	struct perf_event_attr *attr = &evsel->attr;
-
-	if (PRINT_FIELD(TRACE) &&
-		!perf_session__has_traces(session, "record -R"))
-		return -EINVAL;
-
-	if (PRINT_FIELD(IP)) {
-		if (perf_event_attr__check_stype(attr, PERF_SAMPLE_IP, "IP",
-					   PERF_OUTPUT_IP))
-			return -EINVAL;
-
-		if (!no_callchain &&
-		    !(attr->sample_type & PERF_SAMPLE_CALLCHAIN))
-			symbol_conf.use_callchain = false;
-	}
-
-	if (PRINT_FIELD(ADDR) &&
-		perf_event_attr__check_stype(attr, PERF_SAMPLE_ADDR, "ADDR",
-				       PERF_OUTPUT_ADDR))
-		return -EINVAL;
-
-	if (PRINT_FIELD(SYM) && !PRINT_FIELD(IP) && !PRINT_FIELD(ADDR)) {
-		pr_err("Display of symbols requested but neither sample IP nor "
-			   "sample address\nis selected. Hence, no addresses to convert "
-=======
 static int evsel__check_stype(struct evsel *evsel, u64 sample_type, const char *sample_msg,
 			      enum perf_output_field field)
 {
@@ -624,7 +492,6 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
 	    !(evsel->core.attr.sample_type & (PERF_SAMPLE_IP|PERF_SAMPLE_ADDR))) {
 		pr_err("Display of symbols requested but neither sample IP nor "
 			   "sample address\navailable. Hence, no addresses to convert "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "to symbols.\n");
 		return -EINVAL;
 	}
@@ -633,28 +500,6 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
 		       "selected.\n");
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	if (PRINT_FIELD(DSO) && !PRINT_FIELD(IP) && !PRINT_FIELD(ADDR)) {
-		pr_err("Display of DSO requested but neither sample IP nor "
-			   "sample address\nis selected. Hence, no addresses to convert "
-		       "to DSO.\n");
-		return -EINVAL;
-	}
-
-	if ((PRINT_FIELD(PID) || PRINT_FIELD(TID)) &&
-		perf_event_attr__check_stype(attr, PERF_SAMPLE_TID, "TID",
-				       PERF_OUTPUT_TID|PERF_OUTPUT_PID))
-		return -EINVAL;
-
-	if (PRINT_FIELD(TIME) &&
-		perf_event_attr__check_stype(attr, PERF_SAMPLE_TIME, "TIME",
-				       PERF_OUTPUT_TIME))
-		return -EINVAL;
-
-	if (PRINT_FIELD(CPU) &&
-		perf_event_attr__check_stype(attr, PERF_SAMPLE_CPU, "CPU",
-				       PERF_OUTPUT_CPU))
-=======
 	if (PRINT_FIELD(DSO) &&
 	    !(evsel->core.attr.sample_type & (PERF_SAMPLE_IP|PERF_SAMPLE_ADDR))) {
 		pr_err("Display of DSO requested but no address to convert.\n");
@@ -715,14 +560,11 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
 
 	if (PRINT_FIELD(RETIRE_LAT) &&
 	    evsel__check_stype(evsel, PERF_SAMPLE_WEIGHT_STRUCT, "WEIGHT_STRUCT", PERF_OUTPUT_RETIRE_LAT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void set_print_ip_opts(struct perf_event_attr *attr)
 {
 	unsigned int type = output_type(attr->type);
@@ -761,272 +603,32 @@ static struct evsel *find_first_output_type(struct evlist *evlist,
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * verify all user requested events exist and the samples
  * have the expected data
  */
 static int perf_session__check_output_opt(struct perf_session *session)
 {
-<<<<<<< HEAD
-	int j;
-	struct perf_evsel *evsel;
-
-	for (j = 0; j < PERF_TYPE_MAX; ++j) {
-		evsel = perf_session__find_first_evtype(session, j);
-=======
 	bool tod = false;
 	unsigned int j;
 	struct evsel *evsel;
 
 	for (j = 0; j < OUTPUT_TYPE_MAX; ++j) {
 		evsel = find_first_output_type(session->evlist, j);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * even if fields is set to 0 (ie., show nothing) event must
 		 * exist if user explicitly includes it on the command line
 		 */
-<<<<<<< HEAD
-		if (!evsel && output[j].user_set && !output[j].wildcard_set) {
-			pr_err("%s events do not exist. "
-			       "Remove corresponding -f option to proceed.\n",
-=======
 		if (!evsel && output[j].user_set && !output[j].wildcard_set &&
 		    j != OUTPUT_TYPE_SYNTH) {
 			pr_err("%s events do not exist. "
 			       "Remove corresponding -F option to proceed.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       event_type(j));
 			return -1;
 		}
 
 		if (evsel && output[j].fields &&
-<<<<<<< HEAD
-			perf_evsel__check_attr(evsel, session))
-			return -1;
-	}
-
-	return 0;
-}
-
-static void print_sample_start(struct perf_sample *sample,
-			       struct thread *thread,
-			       struct perf_event_attr *attr)
-{
-	int type;
-	struct event *event;
-	const char *evname = NULL;
-	unsigned long secs;
-	unsigned long usecs;
-	unsigned long long nsecs;
-
-	if (PRINT_FIELD(COMM)) {
-		if (latency_format)
-			printf("%8.8s ", thread->comm);
-		else if (PRINT_FIELD(IP) && symbol_conf.use_callchain)
-			printf("%s ", thread->comm);
-		else
-			printf("%16s ", thread->comm);
-	}
-
-	if (PRINT_FIELD(PID) && PRINT_FIELD(TID))
-		printf("%5d/%-5d ", sample->pid, sample->tid);
-	else if (PRINT_FIELD(PID))
-		printf("%5d ", sample->pid);
-	else if (PRINT_FIELD(TID))
-		printf("%5d ", sample->tid);
-
-	if (PRINT_FIELD(CPU)) {
-		if (latency_format)
-			printf("%3d ", sample->cpu);
-		else
-			printf("[%03d] ", sample->cpu);
-	}
-
-	if (PRINT_FIELD(TIME)) {
-		nsecs = sample->time;
-		secs = nsecs / NSECS_PER_SEC;
-		nsecs -= secs * NSECS_PER_SEC;
-		usecs = nsecs / NSECS_PER_USEC;
-		printf("%5lu.%06lu: ", secs, usecs);
-	}
-
-	if (PRINT_FIELD(EVNAME)) {
-		if (attr->type == PERF_TYPE_TRACEPOINT) {
-			type = trace_parse_common_type(sample->raw_data);
-			event = trace_find_event(type);
-			if (event)
-				evname = event->name;
-		} else
-			evname = __event_name(attr->type, attr->config, NULL);
-
-		printf("%s: ", evname ? evname : "[unknown]");
-	}
-}
-
-static bool is_bts_event(struct perf_event_attr *attr)
-{
-	return ((attr->type == PERF_TYPE_HARDWARE) &&
-		(attr->config & PERF_COUNT_HW_BRANCH_INSTRUCTIONS) &&
-		(attr->sample_period == 1));
-}
-
-static bool sample_addr_correlates_sym(struct perf_event_attr *attr)
-{
-	if ((attr->type == PERF_TYPE_SOFTWARE) &&
-	    ((attr->config == PERF_COUNT_SW_PAGE_FAULTS) ||
-	     (attr->config == PERF_COUNT_SW_PAGE_FAULTS_MIN) ||
-	     (attr->config == PERF_COUNT_SW_PAGE_FAULTS_MAJ)))
-		return true;
-
-	if (is_bts_event(attr))
-		return true;
-
-	return false;
-}
-
-static void print_sample_addr(union perf_event *event,
-			  struct perf_sample *sample,
-			  struct machine *machine,
-			  struct thread *thread,
-			  struct perf_event_attr *attr)
-{
-	struct addr_location al;
-	u8 cpumode = event->header.misc & PERF_RECORD_MISC_CPUMODE_MASK;
-
-	printf("%16" PRIx64, sample->addr);
-
-	if (!sample_addr_correlates_sym(attr))
-		return;
-
-	thread__find_addr_map(thread, machine, cpumode, MAP__FUNCTION,
-			      sample->addr, &al);
-	if (!al.map)
-		thread__find_addr_map(thread, machine, cpumode, MAP__VARIABLE,
-				      sample->addr, &al);
-
-	al.cpu = sample->cpu;
-	al.sym = NULL;
-
-	if (al.map)
-		al.sym = map__find_symbol(al.map, al.addr, NULL);
-
-	if (PRINT_FIELD(SYM)) {
-		printf(" ");
-		if (PRINT_FIELD(SYMOFFSET))
-			symbol__fprintf_symname_offs(al.sym, &al, stdout);
-		else
-			symbol__fprintf_symname(al.sym, stdout);
-	}
-
-	if (PRINT_FIELD(DSO)) {
-		printf(" (");
-		map__fprintf_dsoname(al.map, stdout);
-		printf(")");
-	}
-}
-
-static void print_sample_bts(union perf_event *event,
-			     struct perf_sample *sample,
-			     struct perf_evsel *evsel,
-			     struct machine *machine,
-			     struct thread *thread)
-{
-	struct perf_event_attr *attr = &evsel->attr;
-
-	/* print branch_from information */
-	if (PRINT_FIELD(IP)) {
-		if (!symbol_conf.use_callchain)
-			printf(" ");
-		else
-			printf("\n");
-		perf_event__print_ip(event, sample, machine, evsel,
-				     PRINT_FIELD(SYM), PRINT_FIELD(DSO),
-				     PRINT_FIELD(SYMOFFSET));
-	}
-
-	printf(" => ");
-
-	/* print branch_to information */
-	if (PRINT_FIELD(ADDR))
-		print_sample_addr(event, sample, machine, thread, attr);
-
-	printf("\n");
-}
-
-static void process_event(union perf_event *event __unused,
-			  struct perf_sample *sample,
-			  struct perf_evsel *evsel,
-			  struct machine *machine,
-			  struct thread *thread)
-{
-	struct perf_event_attr *attr = &evsel->attr;
-
-	if (output[attr->type].fields == 0)
-		return;
-
-	print_sample_start(sample, thread, attr);
-
-	if (is_bts_event(attr)) {
-		print_sample_bts(event, sample, evsel, machine, thread);
-		return;
-	}
-
-	if (PRINT_FIELD(TRACE))
-		print_trace_event(sample->cpu, sample->raw_data,
-				  sample->raw_size);
-
-	if (PRINT_FIELD(ADDR))
-		print_sample_addr(event, sample, machine, thread, attr);
-
-	if (PRINT_FIELD(IP)) {
-		if (!symbol_conf.use_callchain)
-			printf(" ");
-		else
-			printf("\n");
-		perf_event__print_ip(event, sample, machine, evsel,
-				     PRINT_FIELD(SYM), PRINT_FIELD(DSO),
-				     PRINT_FIELD(SYMOFFSET));
-	}
-
-	printf("\n");
-}
-
-static int default_start_script(const char *script __unused,
-				int argc __unused,
-				const char **argv __unused)
-{
-	return 0;
-}
-
-static int default_stop_script(void)
-{
-	return 0;
-}
-
-static int default_generate_script(const char *outfile __unused)
-{
-	return 0;
-}
-
-static struct scripting_ops default_scripting_ops = {
-	.start_script		= default_start_script,
-	.stop_script		= default_stop_script,
-	.process_event		= process_event,
-	.generate_script	= default_generate_script,
-};
-
-static struct scripting_ops	*scripting_ops;
-
-static void setup_scripting(void)
-{
-	setup_perl_scripting();
-	setup_python_scripting();
-	setup_json_export();
-
-	scripting_ops = &default_scripting_ops;
-=======
 			evsel__check_attr(evsel, session))
 			return -1;
 
@@ -2743,33 +2345,12 @@ static void setup_scripting(void)
 static int flush_scripting(void)
 {
 	return scripting_ops ? scripting_ops->flush_script() : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cleanup_scripting(void)
 {
 	pr_debug("\nperf script stopped\n");
 
-<<<<<<< HEAD
-	return scripting_ops->stop_script();
-}
-
-static const char *input_name;
-
-static int process_sample_event(struct perf_tool *tool __used,
-				union perf_event *event,
-				struct perf_sample *sample,
-				struct perf_evsel *evsel,
-				struct machine *machine)
-{
-	struct addr_location al;
-	struct thread *thread = machine__findnew_thread(machine, event->ip.tid);
-
-	if (thread == NULL) {
-		pr_debug("problem processing %d event, skipping it.\n",
-			 event->header.type);
-		return -1;
-=======
 	return scripting_ops ? scripting_ops->stop_script() : 0;
 }
 
@@ -2805,7 +2386,6 @@ static int process_sample_event(struct perf_tool *tool,
 	if (perf_time__ranges_skip_sample(scr->ptime_range, scr->range_num,
 					  sample->time)) {
 		goto out_put;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (debug_mode) {
@@ -2816,46 +2396,6 @@ static int process_sample_event(struct perf_tool *tool,
 			nr_unordered++;
 		}
 		last_timestamp = sample->time;
-<<<<<<< HEAD
-		return 0;
-	}
-
-	if (perf_event__preprocess_sample(event, machine, &al, sample, 0) < 0) {
-		pr_err("problem processing %d event, skipping it.\n",
-		       event->header.type);
-		return -1;
-	}
-
-	if (al.filtered)
-		return 0;
-
-	if (cpu_list && !test_bit(sample->cpu, cpu_bitmap))
-		return 0;
-
-	scripting_ops->process_event(event, sample, evsel, machine, thread);
-
-	evsel->hists.stats.total_period += sample->period;
-	return 0;
-}
-
-static struct perf_tool perf_script = {
-	.sample		 = process_sample_event,
-	.mmap		 = perf_event__process_mmap,
-	.comm		 = perf_event__process_comm,
-	.exit		 = perf_event__process_task,
-	.fork		 = perf_event__process_task,
-	.attr		 = perf_event__process_attr,
-	.event_type	 = perf_event__process_event_type,
-	.tracing_data	 = perf_event__process_tracing_data,
-	.build_id	 = perf_event__process_build_id,
-	.ordered_samples = true,
-	.ordering_requires_timestamps = true,
-};
-
-extern volatile int session_done;
-
-static void sig_handler(int sig __unused)
-=======
 		goto out_put;
 	}
 
@@ -3190,14 +2730,10 @@ static int process_text_poke_events(struct perf_tool *tool,
 }
 
 static void sig_handler(int sig __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	session_done = 1;
 }
 
-<<<<<<< HEAD
-static int __cmd_script(struct perf_session *session)
-=======
 static void perf_script__fclose_per_event_dump(struct perf_script *script)
 {
 	struct evlist *evlist = script->session->evlist;
@@ -3273,15 +2809,11 @@ static void perf_script__exit(struct perf_script *script)
 }
 
 static int __cmd_script(struct perf_script *script)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	signal(SIGINT, sig_handler);
 
-<<<<<<< HEAD
-	ret = perf_session__process_events(session, &perf_script);
-=======
 	/* override event processing functions */
 	if (script->show_task_events) {
 		script->tool.comm = process_comm_event;
@@ -3324,7 +2856,6 @@ static int __cmd_script(struct perf_script *script)
 
 	if (script->per_event_dump)
 		perf_script__exit_per_event_dump_stats(script);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (debug_mode)
 		pr_err("Misordered timestamps: %" PRIu64 "\n", nr_unordered);
@@ -3335,11 +2866,7 @@ static int __cmd_script(struct perf_script *script)
 struct script_spec {
 	struct list_head	node;
 	struct scripting_ops	*ops;
-<<<<<<< HEAD
-	char			spec[0];
-=======
 	char			spec[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static LIST_HEAD(script_specs);
@@ -3372,26 +2899,6 @@ static struct script_spec *script_spec__find(const char *spec)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct script_spec *script_spec__findnew(const char *spec,
-						struct scripting_ops *ops)
-{
-	struct script_spec *s = script_spec__find(spec);
-
-	if (s)
-		return s;
-
-	s = script_spec__new(spec, ops);
-	if (!s)
-		return NULL;
-
-	script_spec__add(s);
-
-	return s;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int script_spec_register(const char *spec, struct scripting_ops *ops)
 {
 	struct script_spec *s;
@@ -3400,17 +2907,11 @@ int script_spec_register(const char *spec, struct scripting_ops *ops)
 	if (s)
 		return -1;
 
-<<<<<<< HEAD
-	s = script_spec__findnew(spec, ops);
-	if (!s)
-		return -1;
-=======
 	s = script_spec__new(spec, ops);
 	if (!s)
 		return -1;
 	else
 		script_spec__add(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -3438,10 +2939,6 @@ static void list_available_languages(void)
 	fprintf(stderr, "\n");
 }
 
-<<<<<<< HEAD
-static int parse_scriptname(const struct option *opt __used,
-			    const char *str, int unset __used)
-=======
 /* Find script file relative to current directory or exec path */
 static char *find_script(const char *script)
 {
@@ -3475,7 +2972,6 @@ static char *find_script(const char *script)
 
 static int parse_scriptname(const struct option *opt __maybe_unused,
 			    const char *str, int unset __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char spec[PATH_MAX];
 	const char *script, *ext;
@@ -3515,38 +3011,23 @@ static int parse_scriptname(const struct option *opt __maybe_unused,
 		}
 	}
 
-<<<<<<< HEAD
-	script_name = strdup(script);
-=======
 	script_name = find_script(script);
 	if (!script_name)
 		script_name = strdup(script);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int parse_output_fields(const struct option *opt __used,
-			    const char *arg, int unset __used)
-{
-	char *tok;
-	int i, imax = sizeof(all_output_options) / sizeof(struct output_option);
-=======
 static int parse_output_fields(const struct option *opt __maybe_unused,
 			    const char *arg, int unset __maybe_unused)
 {
 	char *tok, *strtok_saveptr = NULL;
 	int i, imax = ARRAY_SIZE(all_output_options);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int j;
 	int rc = 0;
 	char *str = strdup(arg);
 	int type = -1;
-<<<<<<< HEAD
-=======
 	enum { DEFAULT, SET, ADD, REMOVE } change = DEFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!str)
 		return -ENOMEM;
@@ -3567,13 +3048,10 @@ static int parse_output_fields(const struct option *opt __maybe_unused,
 			type = PERF_TYPE_TRACEPOINT;
 		else if (!strcmp(str, "raw"))
 			type = PERF_TYPE_RAW;
-<<<<<<< HEAD
-=======
 		else if (!strcmp(str, "break"))
 			type = PERF_TYPE_BREAKPOINT;
 		else if (!strcmp(str, "synth"))
 			type = OUTPUT_TYPE_SYNTH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			fprintf(stderr, "Invalid event type in field string.\n");
 			rc = -EINVAL;
@@ -3584,13 +3062,10 @@ static int parse_output_fields(const struct option *opt __maybe_unused,
 			pr_warning("Overriding previous field request for %s events.\n",
 				   event_type(type));
 
-<<<<<<< HEAD
-=======
 		/* Don't override defaults for +- */
 		if (strchr(tok, '+') || strchr(tok, '-'))
 			goto parse;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		output[type].fields = 0;
 		output[type].user_set = true;
 		output[type].wildcard_set = false;
@@ -3604,12 +3079,6 @@ static int parse_output_fields(const struct option *opt __maybe_unused,
 			goto out;
 		}
 
-<<<<<<< HEAD
-		if (output_set_by_user())
-			pr_warning("Overriding previous field request for all events.\n");
-
-		for (j = 0; j < PERF_TYPE_MAX; ++j) {
-=======
 		/* Don't override defaults for +- */
 		if (strchr(str, '+') || strchr(str, '-'))
 			goto parse;
@@ -3618,17 +3087,12 @@ static int parse_output_fields(const struct option *opt __maybe_unused,
 			pr_warning("Overriding previous field request for all events.\n");
 
 		for (j = 0; j < OUTPUT_TYPE_MAX; ++j) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			output[j].fields = 0;
 			output[j].user_set = true;
 			output[j].wildcard_set = true;
 		}
 	}
 
-<<<<<<< HEAD
-	tok = strtok(tok, ",");
-	while (tok) {
-=======
 parse:
 	for (tok = strtok_r(tok, ",", &strtok_saveptr); tok; tok = strtok_r(NULL, ",", &strtok_saveptr)) {
 		if (*tok == '+') {
@@ -3647,25 +3111,19 @@ parse:
 			change = SET;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < imax; ++i) {
 			if (strcmp(tok, all_output_options[i].str) == 0)
 				break;
 		}
-<<<<<<< HEAD
-=======
 		if (i == imax && strcmp(tok, "flags") == 0) {
 			print_flags = change != REMOVE;
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i == imax) {
 			fprintf(stderr, "Invalid field requested.\n");
 			rc = -EINVAL;
 			goto out;
 		}
-<<<<<<< HEAD
-=======
 #ifndef HAVE_LIBCAPSTONE_SUPPORT
 		if (change != REMOVE && strcmp(tok, "disasm") == 0) {
 			fprintf(stderr, "Field \"disasm\" requires perf to be built with libcapstone support.\n");
@@ -3673,20 +3131,11 @@ parse:
 			goto out;
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (type == -1) {
 			/* add user option to all events types for
 			 * which it is valid
 			 */
-<<<<<<< HEAD
-			for (j = 0; j < PERF_TYPE_MAX; ++j) {
-				if (output[j].invalid_fields & all_output_options[i].field) {
-					pr_warning("\'%s\' not valid for %s events. Ignoring.\n",
-						   all_output_options[i].str, event_type(j));
-				} else
-					output[j].fields |= all_output_options[i].field;
-=======
 			for (j = 0; j < OUTPUT_TYPE_MAX; ++j) {
 				if (output[j].invalid_fields & all_output_options[i].field) {
 					pr_warning("\'%s\' not valid for %s events. Ignoring.\n",
@@ -3704,7 +3153,6 @@ parse:
 					output[j].user_set = true;
 					output[j].wildcard_set = true;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			if (output[type].invalid_fields & all_output_options[i].field) {
@@ -3714,12 +3162,6 @@ parse:
 				rc = -EINVAL;
 				goto out;
 			}
-<<<<<<< HEAD
-			output[type].fields |= all_output_options[i].field;
-		}
-
-		tok = strtok(NULL, ",");
-=======
 			if (change == REMOVE)
 				output[type].fields &= ~all_output_options[i].field;
 			else
@@ -3727,7 +3169,6 @@ parse:
 			output[type].user_set = true;
 			output[type].wildcard_set = true;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (type >= 0) {
@@ -3736,50 +3177,16 @@ parse:
 				 "Events will not be displayed.\n", event_type(type));
 		}
 	}
-<<<<<<< HEAD
-
-=======
 	goto out;
 
 out_badmix:
 	fprintf(stderr, "Cannot mix +-field with overridden fields\n");
 	rc = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	free(str);
 	return rc;
 }
 
-<<<<<<< HEAD
-/* Helper function for filesystems that return a dent->d_type DT_UNKNOWN */
-static int is_directory(const char *base_path, const struct dirent *dent)
-{
-	char path[PATH_MAX];
-	struct stat st;
-
-	sprintf(path, "%s/%s", base_path, dent->d_name);
-	if (stat(path, &st))
-		return 0;
-
-	return S_ISDIR(st.st_mode);
-}
-
-#define for_each_lang(scripts_path, scripts_dir, lang_dirent, lang_next)\
-	while (!readdir_r(scripts_dir, &lang_dirent, &lang_next) &&	\
-	       lang_next)						\
-		if ((lang_dirent.d_type == DT_DIR ||			\
-		     (lang_dirent.d_type == DT_UNKNOWN &&		\
-		      is_directory(scripts_path, &lang_dirent))) &&	\
-		    (strcmp(lang_dirent.d_name, ".")) &&		\
-		    (strcmp(lang_dirent.d_name, "..")))
-
-#define for_each_script(lang_path, lang_dir, script_dirent, script_next)\
-	while (!readdir_r(lang_dir, &script_dirent, &script_next) &&	\
-	       script_next)						\
-		if (script_dirent.d_type != DT_DIR &&			\
-		    (script_dirent.d_type != DT_UNKNOWN ||		\
-		     !is_directory(lang_path, &script_dirent)))
-=======
 #define for_each_lang(scripts_path, scripts_dir, lang_dirent)		\
 	while ((lang_dirent = readdir(scripts_dir)) != NULL)		\
 		if ((lang_dirent->d_type == DT_DIR ||			\
@@ -3793,7 +3200,6 @@ static int is_directory(const char *base_path, const struct dirent *dent)
 		if (script_dirent->d_type != DT_DIR &&			\
 		    (script_dirent->d_type != DT_UNKNOWN ||		\
 		     !is_directory(lang_path, script_dirent)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define RECORD_SUFFIX			"-record"
@@ -3820,15 +3226,9 @@ static struct script_desc *script_desc__new(const char *name)
 
 static void script_desc__delete(struct script_desc *s)
 {
-<<<<<<< HEAD
-	free(s->name);
-	free(s->half_liner);
-	free(s->args);
-=======
 	zfree(&s->name);
 	zfree(&s->half_liner);
 	zfree(&s->args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free(s);
 }
 
@@ -3856,23 +3256,11 @@ static struct script_desc *script_desc__findnew(const char *name)
 
 	s = script_desc__new(name);
 	if (!s)
-<<<<<<< HEAD
-		goto out_delete_desc;
-=======
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	script_desc__add(s);
 
 	return s;
-<<<<<<< HEAD
-
-out_delete_desc:
-	script_desc__delete(s);
-
-	return NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *ends_with(const char *str, const char *suffix)
@@ -3889,21 +3277,6 @@ static const char *ends_with(const char *str, const char *suffix)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static char *ltrim(char *str)
-{
-	int len = strlen(str);
-
-	while (len && isspace(*str)) {
-		len--;
-		str++;
-	}
-
-	return str;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int read_script_info(struct script_desc *desc, const char *filename)
 {
 	char line[BUFSIZ], *p;
@@ -3914,11 +3287,7 @@ static int read_script_info(struct script_desc *desc, const char *filename)
 		return -1;
 
 	while (fgets(line, sizeof(line), fp)) {
-<<<<<<< HEAD
-		p = ltrim(line);
-=======
 		p = skip_spaces(line);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strlen(p) == 0)
 			continue;
 		if (*p != '#')
@@ -3927,31 +3296,19 @@ static int read_script_info(struct script_desc *desc, const char *filename)
 		if (strlen(p) && *p == '!')
 			continue;
 
-<<<<<<< HEAD
-		p = ltrim(p);
-=======
 		p = skip_spaces(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strlen(p) && p[strlen(p) - 1] == '\n')
 			p[strlen(p) - 1] = '\0';
 
 		if (!strncmp(p, "description:", strlen("description:"))) {
 			p += strlen("description:");
-<<<<<<< HEAD
-			desc->half_liner = strdup(ltrim(p));
-=======
 			desc->half_liner = strdup(skip_spaces(p));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
 		if (!strncmp(p, "args:", strlen("args:"))) {
 			p += strlen("args:");
-<<<<<<< HEAD
-			desc->args = strdup(ltrim(p));
-=======
 			desc->args = strdup(skip_spaces(p));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 	}
@@ -3979,29 +3336,6 @@ static char *get_script_root(struct dirent *script_dirent, const char *suffix)
 	return script_root;
 }
 
-<<<<<<< HEAD
-static int list_available_scripts(const struct option *opt __used,
-				  const char *s __used, int unset __used)
-{
-	struct dirent *script_next, *lang_next, script_dirent, lang_dirent;
-	char scripts_path[MAXPATHLEN];
-	DIR *scripts_dir, *lang_dir;
-	char script_path[MAXPATHLEN];
-	char lang_path[MAXPATHLEN];
-	struct script_desc *desc;
-	char first_half[BUFSIZ];
-	char *script_root;
-
-	snprintf(scripts_path, MAXPATHLEN, "%s/scripts", perf_exec_path());
-
-	scripts_dir = opendir(scripts_path);
-	if (!scripts_dir)
-		return -1;
-
-	for_each_lang(scripts_path, scripts_dir, lang_dirent, lang_next) {
-		snprintf(lang_path, MAXPATHLEN, "%s/%s/bin", scripts_path,
-			 lang_dirent.d_name);
-=======
 static int list_available_scripts(const struct option *opt __maybe_unused,
 				  const char *s __maybe_unused,
 				  int unset __maybe_unused)
@@ -4037,26 +3371,16 @@ static int list_available_scripts(const struct option *opt __maybe_unused,
 	for_each_lang(scripts_path, scripts_dir, lang_dirent) {
 		scnprintf(lang_path, MAXPATHLEN, "%s/%s/bin", scripts_path,
 			  lang_dirent->d_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lang_dir = opendir(lang_path);
 		if (!lang_dir)
 			continue;
 
-<<<<<<< HEAD
-		for_each_script(lang_path, lang_dir, script_dirent, script_next) {
-			script_root = get_script_root(&script_dirent, REPORT_SUFFIX);
-			if (script_root) {
-				desc = script_desc__findnew(script_root);
-				snprintf(script_path, MAXPATHLEN, "%s/%s",
-					 lang_path, script_dirent.d_name);
-=======
 		for_each_script(lang_path, lang_dir, script_dirent) {
 			script_root = get_script_root(script_dirent, REPORT_SUFFIX);
 			if (script_root) {
 				desc = script_desc__findnew(script_root);
 				scnprintf(script_path, MAXPATHLEN, "%s/%s",
 					  lang_path, script_dirent->d_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				read_script_info(desc, script_path);
 				free(script_root);
 			}
@@ -4071,14 +3395,6 @@ static int list_available_scripts(const struct option *opt __maybe_unused,
 			desc->half_liner ? desc->half_liner : "");
 	}
 
-<<<<<<< HEAD
-	exit(0);
-}
-
-static char *get_script_path(const char *script_root, const char *suffix)
-{
-	struct dirent *script_next, *lang_next, script_dirent, lang_dirent;
-=======
 	free(buf);
 	exit(0);
 }
@@ -4252,46 +3568,25 @@ int find_scripts(char **scripts_array, char **scripts_path_array, int num,
 static char *get_script_path(const char *script_root, const char *suffix)
 {
 	struct dirent *script_dirent, *lang_dirent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char scripts_path[MAXPATHLEN];
 	char script_path[MAXPATHLEN];
 	DIR *scripts_dir, *lang_dir;
 	char lang_path[MAXPATHLEN];
 	char *__script_root;
 
-<<<<<<< HEAD
-	snprintf(scripts_path, MAXPATHLEN, "%s/scripts", perf_exec_path());
-=======
 	snprintf(scripts_path, MAXPATHLEN, "%s/scripts", get_argv_exec_path());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scripts_dir = opendir(scripts_path);
 	if (!scripts_dir)
 		return NULL;
 
-<<<<<<< HEAD
-	for_each_lang(scripts_path, scripts_dir, lang_dirent, lang_next) {
-		snprintf(lang_path, MAXPATHLEN, "%s/%s/bin", scripts_path,
-			 lang_dirent.d_name);
-=======
 	for_each_lang(scripts_path, scripts_dir, lang_dirent) {
 		scnprintf(lang_path, MAXPATHLEN, "%s/%s/bin", scripts_path,
 			  lang_dirent->d_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lang_dir = opendir(lang_path);
 		if (!lang_dir)
 			continue;
 
-<<<<<<< HEAD
-		for_each_script(lang_path, lang_dir, script_dirent, script_next) {
-			__script_root = get_script_root(&script_dirent, suffix);
-			if (__script_root && !strcmp(script_root, __script_root)) {
-				free(__script_root);
-				closedir(lang_dir);
-				closedir(scripts_dir);
-				snprintf(script_path, MAXPATHLEN, "%s/%s",
-					 lang_path, script_dirent.d_name);
-=======
 		for_each_script(lang_path, lang_dir, script_dirent) {
 			__script_root = get_script_root(script_dirent, suffix);
 			if (__script_root && !strcmp(script_root, __script_root)) {
@@ -4300,7 +3595,6 @@ static char *get_script_path(const char *script_root, const char *suffix)
 				scnprintf(script_path, MAXPATHLEN, "%s/%s",
 					  lang_path, script_dirent->d_name);
 				closedir(lang_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return strdup(script_path);
 			}
 			free(__script_root);
@@ -4314,11 +3608,7 @@ static char *get_script_path(const char *script_root, const char *suffix)
 
 static bool is_top_script(const char *script_path)
 {
-<<<<<<< HEAD
-	return ends_with(script_path, "top") == NULL ? false : true;
-=======
 	return ends_with(script_path, "top") != NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int has_required_arg(char *script_path)
@@ -4344,22 +3634,6 @@ out:
 	return n_args;
 }
 
-<<<<<<< HEAD
-static const char * const script_usage[] = {
-	"perf script [<options>]",
-	"perf script [<options>] record <script> [<record-options>] <command>",
-	"perf script [<options>] report <script> [script-args]",
-	"perf script [<options>] <script> [<record-options>] <command>",
-	"perf script [<options>] <top-script> [script-args]",
-	NULL
-};
-
-static const struct option options[] = {
-	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
-		    "dump raw trace in ASCII"),
-	OPT_INCR('v', "verbose", &verbose,
-		    "be more verbose (show symbol address, etc)"),
-=======
 static int have_cmd(int argc, const char **argv)
 {
 	char **__argv = malloc(sizeof(const char *) * argc);
@@ -4630,27 +3904,17 @@ int cmd_script(int argc, const char **argv)
 		    "dump unsorted raw trace in ASCII"),
 	OPT_INCR('v', "verbose", &verbose,
 		 "be more verbose (show symbol address, etc)"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_BOOLEAN('L', "Latency", &latency_format,
 		    "show latency attributes (irqs/preemption disabled, etc)"),
 	OPT_CALLBACK_NOOPT('l', "list", NULL, NULL, "list available scripts",
 			   list_available_scripts),
-<<<<<<< HEAD
-=======
 	OPT_CALLBACK_NOOPT(0, "list-dlfilters", NULL, NULL, "list available dlfilters",
 			   list_available_dlfilters),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_CALLBACK('s', "script", NULL, "name",
 		     "script file name (lang:script name, script name, or *)",
 		     parse_scriptname),
 	OPT_STRING('g', "gen-script", &generate_script_lang, "lang",
 		   "generate perf-script.xx script in specified language"),
-<<<<<<< HEAD
-	OPT_STRING('i', "input", &input_name, "file",
-		    "input file name"),
-	OPT_BOOLEAN('d', "debug-mode", &debug_mode,
-		   "do various checks like samples ordering and lost events"),
-=======
 	OPT_STRING(0, "dlfilter", &dlfilter_file, "file", "filter .so file name"),
 	OPT_CALLBACK(0, "dlarg", NULL, "argument", "filter argument",
 		     add_dlarg),
@@ -4659,28 +3923,12 @@ int cmd_script(int argc, const char **argv)
 		   "do various checks like samples ordering and lost events"),
 	OPT_BOOLEAN(0, "header", &header, "Show data header."),
 	OPT_BOOLEAN(0, "header-only", &header_only, "Show only data header."),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_STRING('k', "vmlinux", &symbol_conf.vmlinux_name,
 		   "file", "vmlinux pathname"),
 	OPT_STRING(0, "kallsyms", &symbol_conf.kallsyms_name,
 		   "file", "kallsyms pathname"),
 	OPT_BOOLEAN('G', "hide-call-graph", &no_callchain,
 		    "When printing symbols do not display call chain"),
-<<<<<<< HEAD
-	OPT_STRING(0, "symfs", &symbol_conf.symfs, "directory",
-		    "Look for files with symbols relative to this directory"),
-	OPT_CALLBACK('f', "fields", NULL, "str",
-		     "comma separated output fields prepend with 'type:'. "
-		     "Valid types: hw,sw,trace,raw. "
-		     "Fields: comm,tid,pid,time,cpu,event,trace,ip,sym,dso,"
-		     "addr,symoff",
-		     parse_output_fields),
-	OPT_BOOLEAN('a', "all-cpus", &system_wide,
-		     "system-wide collection from all CPUs"),
-	OPT_STRING('C', "cpu", &cpu_list, "cpu", "list of cpus to profile"),
-	OPT_STRING('c', "comms", &symbol_conf.comm_list_str, "comm[,comm...]",
-		   "only display events for these comms"),
-=======
 	OPT_CALLBACK(0, "symfs", NULL, "directory",
 		     "Look for files with symbols relative to this directory",
 		     symbol__config_symfs),
@@ -4728,52 +3976,10 @@ int cmd_script(int argc, const char **argv)
 		     "Default: kernel.perf_event_max_stack or " __stringify(PERF_MAX_STACK_DEPTH)),
 	OPT_BOOLEAN(0, "reltime", &reltime, "Show time stamps relative to start"),
 	OPT_BOOLEAN(0, "deltatime", &deltatime, "Show time stamps relative to previous event"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OPT_BOOLEAN('I', "show-info", &show_full_info,
 		    "display extended information from perf.data file"),
 	OPT_BOOLEAN('\0', "show-kernel-path", &symbol_conf.show_kernel_path,
 		    "Show the path of [kernel.kallsyms]"),
-<<<<<<< HEAD
-
-	OPT_END()
-};
-
-static bool have_cmd(int argc, const char **argv)
-{
-	char **__argv = malloc(sizeof(const char *) * argc);
-
-	if (!__argv)
-		die("malloc");
-	memcpy(__argv, argv, sizeof(const char *) * argc);
-	argc = parse_options(argc, (const char **)__argv, record_options,
-			     NULL, PARSE_OPT_STOP_AT_NON_OPTION);
-	free(__argv);
-
-	return argc != 0;
-}
-
-int cmd_script(int argc, const char **argv, const char *prefix __used)
-{
-	char *rec_script_path = NULL;
-	char *rep_script_path = NULL;
-	struct perf_session *session;
-	char *script_path = NULL;
-	const char **__argv;
-	int i, j, err;
-
-	setup_scripting();
-
-	argc = parse_options(argc, argv, options, script_usage,
-			     PARSE_OPT_STOP_AT_NON_OPTION);
-
-	if (argc > 1 && !strncmp(argv[0], "rec", strlen("rec"))) {
-		rec_script_path = get_script_path(argv[1], RECORD_SUFFIX);
-		if (!rec_script_path)
-			return cmd_record(argc, argv, NULL);
-	}
-
-	if (argc > 1 && !strncmp(argv[0], "rep", strlen("rep"))) {
-=======
 	OPT_BOOLEAN('\0', "show-task-events", &script.show_task_events,
 		    "Show the fork/comm/exit events"),
 	OPT_BOOLEAN('\0', "show-mmap-events", &script.show_mmap_events,
@@ -4874,7 +4080,6 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 	}
 
 	if (argc > 1 && strlen(argv[0]) > 2 && strstarts("report", argv[0])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rep_script_path = get_script_path(argv[1], REPORT_SUFFIX);
 		if (!rep_script_path) {
 			fprintf(stderr,
@@ -4884,10 +4089,6 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 		}
 	}
 
-<<<<<<< HEAD
-	/* make sure PERF_EXEC_PATH is set for scripts */
-	perf_set_argv_exec_path(perf_exec_path());
-=======
 	if (reltime && deltatime) {
 		fprintf(stderr,
 			"reltime and deltatime - the two don't get along well. "
@@ -4901,7 +4102,6 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 
 	/* make sure PERF_EXEC_PATH is set for scripts */
 	set_argv_exec_path(get_argv_exec_path());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (argc && !script_name && !rec_script_path && !rep_script_path) {
 		int live_pipe[2];
@@ -4912,11 +4112,6 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 		rep_script_path = get_script_path(argv[0], REPORT_SUFFIX);
 
 		if (!rec_script_path && !rep_script_path) {
-<<<<<<< HEAD
-			fprintf(stderr, " Couldn't find script %s\n\n See perf"
-				" script -l for available scripts.\n", argv[0]);
-			usage_with_options(script_usage, options);
-=======
 			script_name = find_script(argv[0]);
 			if (script_name) {
 				argc -= 1;
@@ -4926,7 +4121,6 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 			usage_with_options_msg(script_usage, options,
 				"Couldn't find script `%s'\n\n See perf"
 				" script -l for available scripts.\n", argv[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (is_top_script(argv[0])) {
@@ -4937,37 +4131,22 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 			rep_args = has_required_arg(rep_script_path);
 			rec_args = (argc - 1) - rep_args;
 			if (rec_args < 0) {
-<<<<<<< HEAD
-				fprintf(stderr, " %s script requires options."
-					"\n\n See perf script -l for available "
-					"scripts and options.\n", argv[0]);
-				usage_with_options(script_usage, options);
-=======
 				usage_with_options_msg(script_usage, options,
 					"`%s' script requires options."
 					"\n\n See perf script -l for available "
 					"scripts and options.\n", argv[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
 		if (pipe(live_pipe) < 0) {
 			perror("failed to create pipe");
-<<<<<<< HEAD
-			exit(-1);
-=======
 			return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		pid = fork();
 		if (pid < 0) {
 			perror("failed to fork");
-<<<<<<< HEAD
-			exit(-1);
-=======
 			return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!pid) {
@@ -4979,15 +4158,6 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 			if (is_top_script(argv[0])) {
 				system_wide = true;
 			} else if (!system_wide) {
-<<<<<<< HEAD
-				system_wide = !have_cmd(argc - rep_args,
-							&argv[rep_args]);
-			}
-
-			__argv = malloc((argc + 6) * sizeof(const char *));
-			if (!__argv)
-				die("malloc");
-=======
 				if (have_cmd(argc - rep_args, &argv[rep_args]) != 0) {
 					err = -1;
 					goto out;
@@ -5000,7 +4170,6 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 				err = -ENOMEM;
 				goto out;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			__argv[j++] = "/bin/sh";
 			__argv[j++] = rec_script_path;
@@ -5022,17 +4191,12 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 		close(live_pipe[1]);
 
 		__argv = malloc((argc + 4) * sizeof(const char *));
-<<<<<<< HEAD
-		if (!__argv)
-			die("malloc");
-=======
 		if (!__argv) {
 			pr_err("malloc failed\n");
 			err = -ENOMEM;
 			goto out;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		j = 0;
 		__argv[j++] = "/bin/sh";
 		__argv[j++] = rep_script_path;
@@ -5046,11 +4210,7 @@ int cmd_script(int argc, const char **argv, const char *prefix __used)
 		free(__argv);
 		exit(-1);
 	}
-<<<<<<< HEAD
-
-=======
 script_found:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rec_script_path)
 		script_path = rec_script_path;
 	if (rep_script_path)
@@ -5061,14 +4221,6 @@ script_found:
 
 		if (!rec_script_path)
 			system_wide = false;
-<<<<<<< HEAD
-		else if (!system_wide)
-			system_wide = !have_cmd(argc - 1, &argv[1]);
-
-		__argv = malloc((argc + 2) * sizeof(const char *));
-		if (!__argv)
-			die("malloc");
-=======
 		else if (!system_wide) {
 			if (have_cmd(argc - 1, &argv[1]) != 0) {
 				err = -1;
@@ -5083,7 +4235,6 @@ script_found:
 			goto out;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__argv[j++] = "/bin/sh";
 		__argv[j++] = script_path;
 		if (system_wide)
@@ -5097,23 +4248,6 @@ script_found:
 		exit(-1);
 	}
 
-<<<<<<< HEAD
-	if (symbol__init() < 0)
-		return -1;
-	if (!script_name)
-		setup_pager();
-
-	session = perf_session__new(input_name, O_RDONLY, 0, false, &perf_script);
-	if (session == NULL)
-		return -ENOMEM;
-
-	if (cpu_list) {
-		if (perf_session__cpu_bitmap(session, cpu_list, cpu_bitmap))
-			return -1;
-	}
-
-	perf_session__fprintf_info(session, stdout, show_full_info);
-=======
 	if (dlfilter_file) {
 		dlfilter = dlfilter__new(dlfilter_file, dlargc, dlargv);
 		if (!dlfilter)
@@ -5167,15 +4301,12 @@ script_found:
 			goto out_delete;
 		itrace_synth_opts.cpu_bitmap = cpu_bitmap;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!no_callchain)
 		symbol_conf.use_callchain = true;
 	else
 		symbol_conf.use_callchain = false;
 
-<<<<<<< HEAD
-=======
 #ifdef HAVE_LIBTRACEEVENT
 	if (session->tevent.pevent &&
 	    tep_set_function_resolver(session->tevent.pevent,
@@ -5186,7 +4317,6 @@ script_found:
 		goto out_delete;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (generate_script_lang) {
 		struct stat perf_stat;
 		int input;
@@ -5194,15 +4324,6 @@ script_found:
 		if (output_set_by_user()) {
 			fprintf(stderr,
 				"custom fields not supported for generated scripts");
-<<<<<<< HEAD
-			return -1;
-		}
-
-		input = open(session->filename, O_RDONLY);	/* input_name */
-		if (input < 0) {
-			perror("failed to open file");
-			exit(-1);
-=======
 			err = -EINVAL;
 			goto out_delete;
 		}
@@ -5212,45 +4333,22 @@ script_found:
 			err = -errno;
 			perror("failed to open file");
 			goto out_delete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		err = fstat(input, &perf_stat);
 		if (err < 0) {
 			perror("failed to stat file");
-<<<<<<< HEAD
-			exit(-1);
-=======
 			goto out_delete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!perf_stat.st_size) {
 			fprintf(stderr, "zero-sized file, nothing to do!\n");
-<<<<<<< HEAD
-			exit(0);
-=======
 			goto out_delete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		scripting_ops = script_spec__lookup(generate_script_lang);
 		if (!scripting_ops) {
 			fprintf(stderr, "invalid language specifier");
-<<<<<<< HEAD
-			return -1;
-		}
-
-		err = scripting_ops->generate_script("perf-script");
-		goto out;
-	}
-
-	if (script_name) {
-		err = scripting_ops->start_script(script_name, argc, argv);
-		if (err)
-			goto out;
-		pr_debug("perf script started with script %s\n\n", script_name);
-=======
 			err = -ENOENT;
 			goto out_delete;
 		}
@@ -5273,20 +4371,11 @@ script_found:
 			goto out_delete;
 		pr_debug("perf script started with script %s\n\n", script_name);
 		script_started = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 
 	err = perf_session__check_output_opt(session);
 	if (err < 0)
-<<<<<<< HEAD
-		goto out;
-
-	err = __cmd_script(session);
-
-	perf_session__delete(session);
-	cleanup_scripting();
-=======
 		goto out_delete;
 
 	if (script.time_str) {
@@ -5332,7 +4421,6 @@ out_delete:
 		cleanup_scripting();
 	dlfilter__cleanup(dlfilter);
 	free_dlarg();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }

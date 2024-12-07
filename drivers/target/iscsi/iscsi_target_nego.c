@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-/*******************************************************************************
- * This file contains main functions related to iSCSI Parameter negotiation.
- *
- * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
- *
- * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- ******************************************************************************/
-
-#include <linux/ctype.h>
-#include <scsi/iscsi_proto.h>
-#include <target/target_core_base.h>
-#include <target/target_core_fabric.h>
-
-#include "iscsi_target_core.h"
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*******************************************************************************
  * This file contains main functions related to iSCSI Parameter negotiation.
@@ -48,7 +20,6 @@
 #include <target/iscsi/iscsi_transport.h>
 
 #include <target/iscsi/iscsi_target_core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_parameters.h"
 #include "iscsi_target_login.h"
 #include "iscsi_target_nego.h"
@@ -58,10 +29,6 @@
 #include "iscsi_target_auth.h"
 
 #define MAX_LOGIN_PDUS  7
-<<<<<<< HEAD
-#define TEXT_LEN	4096
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void convert_null_to_semi(char *buf, int len)
 {
@@ -72,11 +39,7 @@ void convert_null_to_semi(char *buf, int len)
 			buf[i] = ';';
 }
 
-<<<<<<< HEAD
-int strlen_semi(char *buf)
-=======
 static int strlen_semi(char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = 0;
 
@@ -100,17 +63,6 @@ int extract_param(
 	int len;
 
 	if (!in_buf || !pattern || !out_buf || !type)
-<<<<<<< HEAD
-		return -1;
-
-	ptr = strstr(in_buf, pattern);
-	if (!ptr)
-		return -1;
-
-	ptr = strstr(ptr, "=");
-	if (!ptr)
-		return -1;
-=======
 		return -EINVAL;
 
 	ptr = strstr(in_buf, pattern);
@@ -120,37 +72,25 @@ int extract_param(
 	ptr = strstr(ptr, "=");
 	if (!ptr)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ptr += 1;
 	if (*ptr == '0' && (*(ptr+1) == 'x' || *(ptr+1) == 'X')) {
 		ptr += 2; /* skip 0x */
 		*type = HEX;
-<<<<<<< HEAD
-=======
 	} else if (*ptr == '0' && (*(ptr+1) == 'b' || *(ptr+1) == 'B')) {
 		ptr += 2; /* skip 0b */
 		*type = BASE64;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		*type = DECIMAL;
 
 	len = strlen_semi(ptr);
 	if (len < 0)
-<<<<<<< HEAD
-		return -1;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len >= max_length) {
 		pr_err("Length of input: %d exceeds max_length:"
 			" %d\n", len, max_length);
-<<<<<<< HEAD
-		return -1;
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	memcpy(out_buf, ptr, len);
 	out_buf[len] = '\0';
@@ -158,10 +98,6 @@ int extract_param(
 	return 0;
 }
 
-<<<<<<< HEAD
-static u32 iscsi_handle_authentication(
-	struct iscsi_conn *conn,
-=======
 static struct iscsi_node_auth *iscsi_get_node_auth(struct iscsit_conn *conn)
 {
 	struct iscsi_portal_group *tpg;
@@ -189,51 +125,17 @@ static struct iscsi_node_auth *iscsi_get_node_auth(struct iscsit_conn *conn)
 
 static u32 iscsi_handle_authentication(
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *in_buf,
 	char *out_buf,
 	int in_length,
 	int *out_length,
 	unsigned char *authtype)
 {
-<<<<<<< HEAD
-	struct iscsi_session *sess = conn->sess;
-	struct iscsi_node_auth *auth;
-	struct iscsi_node_acl *iscsi_nacl;
-	struct se_node_acl *se_nacl;
-
-	if (!sess->sess_ops->SessionType) {
-		/*
-		 * For SessionType=Normal
-		 */
-		se_nacl = conn->sess->se_sess->se_node_acl;
-		if (!se_nacl) {
-			pr_err("Unable to locate struct se_node_acl for"
-					" CHAP auth\n");
-			return -1;
-		}
-		iscsi_nacl = container_of(se_nacl, struct iscsi_node_acl,
-				se_node_acl);
-		if (!iscsi_nacl) {
-			pr_err("Unable to locate struct iscsi_node_acl for"
-					" CHAP auth\n");
-			return -1;
-		}
-
-		auth = ISCSI_NODE_AUTH(iscsi_nacl);
-	} else {
-		/*
-		 * For SessionType=Discovery
-		 */
-		auth = &iscsit_global->discovery_acl.node_auth;
-	}
-=======
 	struct iscsi_node_auth *auth;
 
 	auth = iscsi_get_node_auth(conn);
 	if (!auth)
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (strstr("CHAP", authtype))
 		strcpy(conn->sess->auth_type, "CHAP");
@@ -242,27 +144,6 @@ static u32 iscsi_handle_authentication(
 
 	if (strstr("None", authtype))
 		return 1;
-<<<<<<< HEAD
-#ifdef CANSRP
-	else if (strstr("SRP", authtype))
-		return srp_main_loop(conn, auth, in_buf, out_buf,
-				&in_length, out_length);
-#endif
-	else if (strstr("CHAP", authtype))
-		return chap_main_loop(conn, auth, in_buf, out_buf,
-				&in_length, out_length);
-	else if (strstr("SPKM1", authtype))
-		return 2;
-	else if (strstr("SPKM2", authtype))
-		return 2;
-	else if (strstr("KRB5", authtype))
-		return 2;
-	else
-		return 2;
-}
-
-static void iscsi_remove_failed_auth_entry(struct iscsi_conn *conn)
-=======
 	else if (strstr("CHAP", authtype))
 		return chap_main_loop(conn, auth, in_buf, out_buf,
 				&in_length, out_length);
@@ -271,18 +152,12 @@ static void iscsi_remove_failed_auth_entry(struct iscsi_conn *conn)
 }
 
 static void iscsi_remove_failed_auth_entry(struct iscsit_conn *conn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kfree(conn->auth_protocol);
 }
 
-<<<<<<< HEAD
-static int iscsi_target_check_login_request(
-	struct iscsi_conn *conn,
-=======
 int iscsi_target_check_login_request(
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_login *login)
 {
 	int req_csg, req_nsg;
@@ -312,13 +187,8 @@ int iscsi_target_check_login_request(
 		return -1;
 	}
 
-<<<<<<< HEAD
-	req_csg = (login_req->flags & ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK) >> 2;
-	req_nsg = (login_req->flags & ISCSI_FLAG_LOGIN_NEXT_STAGE_MASK);
-=======
 	req_csg = ISCSI_LOGIN_CURRENT_STAGE(login_req->flags);
 	req_nsg = ISCSI_LOGIN_NEXT_STAGE(login_req->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (req_csg != login->current_stage) {
 		pr_err("Initiator unexpectedly changed login stage"
@@ -375,16 +245,10 @@ int iscsi_target_check_login_request(
 
 	return 0;
 }
-<<<<<<< HEAD
-
-static int iscsi_target_check_first_request(
-	struct iscsi_conn *conn,
-=======
 EXPORT_SYMBOL(iscsi_target_check_login_request);
 
 static int iscsi_target_check_first_request(
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_login *login)
 {
 	struct iscsi_param *param = NULL;
@@ -451,16 +315,9 @@ static int iscsi_target_check_first_request(
 	return 0;
 }
 
-<<<<<<< HEAD
-static int iscsi_target_do_tx_login_io(struct iscsi_conn *conn, struct iscsi_login *login)
-{
-	u32 padding = 0;
-	struct iscsi_session *sess = conn->sess;
-=======
 static int iscsi_target_do_tx_login_io(struct iscsit_conn *conn, struct iscsi_login *login)
 {
 	u32 padding = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_login_rsp *login_rsp;
 
 	login_rsp = (struct iscsi_login_rsp *) login->rsp;
@@ -469,16 +326,6 @@ static int iscsi_target_do_tx_login_io(struct iscsit_conn *conn, struct iscsi_lo
 	hton24(login_rsp->dlength, login->rsp_length);
 	memcpy(login_rsp->isid, login->isid, 6);
 	login_rsp->tsih			= cpu_to_be16(login->tsih);
-<<<<<<< HEAD
-	login_rsp->itt			= cpu_to_be32(login->init_task_tag);
-	login_rsp->statsn		= cpu_to_be32(conn->stat_sn++);
-	login_rsp->exp_cmdsn		= cpu_to_be32(conn->sess->exp_cmd_sn);
-	login_rsp->max_cmdsn		= cpu_to_be32(conn->sess->max_cmd_sn);
-
-	pr_debug("Sending Login Response, Flags: 0x%02x, ITT: 0x%08x,"
-		" ExpCmdSN; 0x%08x, MaxCmdSN: 0x%08x, StatSN: 0x%08x, Length:"
-		" %u\n", login_rsp->flags, ntohl(login_rsp->itt),
-=======
 	login_rsp->itt			= login->init_task_tag;
 	login_rsp->statsn		= cpu_to_be32(conn->stat_sn++);
 	login_rsp->exp_cmdsn		= cpu_to_be32(conn->sess->exp_cmd_sn);
@@ -487,107 +334,10 @@ static int iscsi_target_do_tx_login_io(struct iscsit_conn *conn, struct iscsi_lo
 	pr_debug("Sending Login Response, Flags: 0x%02x, ITT: 0x%08x,"
 		" ExpCmdSN; 0x%08x, MaxCmdSN: 0x%08x, StatSN: 0x%08x, Length:"
 		" %u\n", login_rsp->flags, (__force u32)login_rsp->itt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ntohl(login_rsp->exp_cmdsn), ntohl(login_rsp->max_cmdsn),
 		ntohl(login_rsp->statsn), login->rsp_length);
 
 	padding = ((-login->rsp_length) & 3);
-<<<<<<< HEAD
-
-	if (iscsi_login_tx_data(
-			conn,
-			login->rsp,
-			login->rsp_buf,
-			login->rsp_length + padding) < 0)
-		return -1;
-
-	login->rsp_length		= 0;
-	login_rsp->tsih			= be16_to_cpu(login_rsp->tsih);
-	login_rsp->itt			= be32_to_cpu(login_rsp->itt);
-	login_rsp->statsn		= be32_to_cpu(login_rsp->statsn);
-	mutex_lock(&sess->cmdsn_mutex);
-	login_rsp->exp_cmdsn		= be32_to_cpu(sess->exp_cmd_sn);
-	login_rsp->max_cmdsn		= be32_to_cpu(sess->max_cmd_sn);
-	mutex_unlock(&sess->cmdsn_mutex);
-
-	return 0;
-}
-
-static int iscsi_target_do_rx_login_io(struct iscsi_conn *conn, struct iscsi_login *login)
-{
-	u32 padding = 0, payload_length;
-	struct iscsi_login_req *login_req;
-
-	if (iscsi_login_rx_data(conn, login->req, ISCSI_HDR_LEN) < 0)
-		return -1;
-
-	login_req = (struct iscsi_login_req *) login->req;
-	payload_length			= ntoh24(login_req->dlength);
-	login_req->tsih			= be16_to_cpu(login_req->tsih);
-	login_req->itt			= be32_to_cpu(login_req->itt);
-	login_req->cid			= be16_to_cpu(login_req->cid);
-	login_req->cmdsn		= be32_to_cpu(login_req->cmdsn);
-	login_req->exp_statsn		= be32_to_cpu(login_req->exp_statsn);
-
-	pr_debug("Got Login Command, Flags 0x%02x, ITT: 0x%08x,"
-		" CmdSN: 0x%08x, ExpStatSN: 0x%08x, CID: %hu, Length: %u\n",
-		 login_req->flags, login_req->itt, login_req->cmdsn,
-		 login_req->exp_statsn, login_req->cid, payload_length);
-
-	if (iscsi_target_check_login_request(conn, login) < 0)
-		return -1;
-
-	padding = ((-payload_length) & 3);
-	memset(login->req_buf, 0, MAX_KEY_VALUE_PAIRS);
-
-	if (iscsi_login_rx_data(
-			conn,
-			login->req_buf,
-			payload_length + padding) < 0)
-		return -1;
-
-	return 0;
-}
-
-static int iscsi_target_do_login_io(struct iscsi_conn *conn, struct iscsi_login *login)
-{
-	if (iscsi_target_do_tx_login_io(conn, login) < 0)
-		return -1;
-
-	if (iscsi_target_do_rx_login_io(conn, login) < 0)
-		return -1;
-
-	return 0;
-}
-
-static int iscsi_target_get_initial_payload(
-	struct iscsi_conn *conn,
-	struct iscsi_login *login)
-{
-	u32 padding = 0, payload_length;
-	struct iscsi_login_req *login_req;
-
-	login_req = (struct iscsi_login_req *) login->req;
-	payload_length = ntoh24(login_req->dlength);
-
-	pr_debug("Got Login Command, Flags 0x%02x, ITT: 0x%08x,"
-		" CmdSN: 0x%08x, ExpStatSN: 0x%08x, Length: %u\n",
-		login_req->flags, login_req->itt, login_req->cmdsn,
-		login_req->exp_statsn, payload_length);
-
-	if (iscsi_target_check_login_request(conn, login) < 0)
-		return -1;
-
-	padding = ((-payload_length) & 3);
-
-	if (iscsi_login_rx_data(
-			conn,
-			login->req_buf,
-			payload_length + padding) < 0)
-		return -1;
-
-	return 0;
-=======
 	/*
 	 * Before sending the last login response containing the transition
 	 * bit for full-feature-phase, go ahead and start up TX/RX threads
@@ -976,7 +726,6 @@ static void iscsi_target_sk_state_change(struct sock *sk)
 	write_unlock_bh(&sk->sk_callback_lock);
 
 	orig_state_change(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -985,11 +734,7 @@ static void iscsi_target_sk_state_change(struct sock *sk)
  *	ISID/TSIH combinations.
  */
 static int iscsi_target_check_for_existing_instances(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-=======
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_login *login)
 {
 	if (login->checked_for_existing)
@@ -1005,11 +750,7 @@ static int iscsi_target_check_for_existing_instances(
 }
 
 static int iscsi_target_do_authentication(
-<<<<<<< HEAD
-	struct iscsi_conn *conn,
-=======
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_login *login)
 {
 	int authret;
@@ -1067,10 +808,6 @@ static int iscsi_target_do_authentication(
 	return 0;
 }
 
-<<<<<<< HEAD
-static int iscsi_target_handle_csg_zero(
-	struct iscsi_conn *conn,
-=======
 bool iscsi_conn_auth_required(struct iscsit_conn *conn)
 {
 	struct iscsi_node_acl *nacl;
@@ -1109,7 +846,6 @@ bool iscsi_conn_auth_required(struct iscsit_conn *conn)
 
 static int iscsi_target_handle_csg_zero(
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_login *login)
 {
 	int ret;
@@ -1131,11 +867,7 @@ static int iscsi_target_handle_csg_zero(
 			SENDER_INITIATOR|SENDER_RECEIVER,
 			login->req_buf,
 			payload_length,
-<<<<<<< HEAD
-			conn->param_list);
-=======
 			conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return -1;
 
@@ -1150,15 +882,12 @@ static int iscsi_target_handle_csg_zero(
 		}
 
 		goto do_auth;
-<<<<<<< HEAD
-=======
 	} else if (!payload_length) {
 		pr_err("Initiator sent zero length security payload,"
 		       " login failed\n");
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_INITIATOR_ERR,
 				    ISCSI_LOGIN_STATUS_AUTH_FAILED);
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (login->first_request)
@@ -1170,35 +899,12 @@ static int iscsi_target_handle_csg_zero(
 			SENDER_TARGET,
 			login->rsp_buf,
 			&login->rsp_length,
-<<<<<<< HEAD
-			conn->param_list);
-=======
 			conn->param_list,
 			conn->tpg->tpg_attrib.login_keys_workaround);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return -1;
 
 	if (!iscsi_check_negotiated_keys(conn->param_list)) {
-<<<<<<< HEAD
-		if (ISCSI_TPG_ATTRIB(ISCSI_TPG_C(conn))->authentication &&
-		    !strncmp(param->value, NONE, 4)) {
-			pr_err("Initiator sent AuthMethod=None but"
-				" Target is enforcing iSCSI Authentication,"
-					" login failed.\n");
-			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_INITIATOR_ERR,
-					ISCSI_LOGIN_STATUS_AUTH_FAILED);
-			return -1;
-		}
-
-		if (ISCSI_TPG_ATTRIB(ISCSI_TPG_C(conn))->authentication &&
-		    !login->auth_complete)
-			return 0;
-
-		if (strncmp(param->value, NONE, 4) && !login->auth_complete)
-			return 0;
-
-=======
 		bool auth_required = iscsi_conn_auth_required(conn);
 
 		if (auth_required) {
@@ -1220,7 +926,6 @@ static int iscsi_target_handle_csg_zero(
 				return 0;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((login_req->flags & ISCSI_FLAG_LOGIN_NEXT_STAGE1) &&
 		    (login_req->flags & ISCSI_FLAG_LOGIN_TRANSIT)) {
 			login_rsp->flags |= ISCSI_FLAG_LOGIN_NEXT_STAGE1 |
@@ -1234,9 +939,6 @@ do_auth:
 	return iscsi_target_do_authentication(conn, login);
 }
 
-<<<<<<< HEAD
-static int iscsi_target_handle_csg_one(struct iscsi_conn *conn, struct iscsi_login *login)
-=======
 static bool iscsi_conn_authenticated(struct iscsit_conn *conn,
 				     struct iscsi_login *login)
 {
@@ -1250,7 +952,6 @@ static bool iscsi_conn_authenticated(struct iscsit_conn *conn,
 }
 
 static int iscsi_target_handle_csg_one(struct iscsit_conn *conn, struct iscsi_login *login)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	u32 payload_length;
@@ -1266,11 +967,7 @@ static int iscsi_target_handle_csg_one(struct iscsit_conn *conn, struct iscsi_lo
 			SENDER_INITIATOR|SENDER_RECEIVER,
 			login->req_buf,
 			payload_length,
-<<<<<<< HEAD
-			conn->param_list);
-=======
 			conn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_INITIATOR_ERR,
 				ISCSI_LOGIN_STATUS_INIT_ERR);
@@ -1289,30 +986,18 @@ static int iscsi_target_handle_csg_one(struct iscsit_conn *conn, struct iscsi_lo
 			SENDER_TARGET,
 			login->rsp_buf,
 			&login->rsp_length,
-<<<<<<< HEAD
-			conn->param_list);
-=======
 			conn->param_list,
 			conn->tpg->tpg_attrib.login_keys_workaround);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_INITIATOR_ERR,
 				ISCSI_LOGIN_STATUS_INIT_ERR);
 		return -1;
 	}
 
-<<<<<<< HEAD
-	if (!login->auth_complete &&
-	     ISCSI_TPG_ATTRIB(ISCSI_TPG_C(conn))->authentication) {
-		pr_err("Initiator is requesting CSG: 1, has not been"
-			 " successfully authenticated, and the Target is"
-			" enforcing iSCSI Authentication, login failed.\n");
-=======
 	if (!iscsi_conn_authenticated(conn, login)) {
 		pr_err("Initiator is requesting CSG: 1, has not been"
 		       " successfully authenticated, and the Target is"
 		       " enforcing iSCSI Authentication, login failed.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_INITIATOR_ERR,
 				ISCSI_LOGIN_STATUS_AUTH_FAILED);
 		return -1;
@@ -1327,9 +1012,6 @@ static int iscsi_target_handle_csg_one(struct iscsit_conn *conn, struct iscsi_lo
 	return 0;
 }
 
-<<<<<<< HEAD
-static int iscsi_target_do_login(struct iscsi_conn *conn, struct iscsi_login *login)
-=======
 /*
  * RETURN VALUE:
  *
@@ -1338,7 +1020,6 @@ static int iscsi_target_do_login(struct iscsi_conn *conn, struct iscsi_login *lo
  *  0 = More PDU exchanges required
  */
 static int iscsi_target_do_login(struct iscsit_conn *conn, struct iscsi_login *login)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pdu_count = 0;
 	struct iscsi_login_req *login_req;
@@ -1355,15 +1036,9 @@ static int iscsi_target_do_login(struct iscsit_conn *conn, struct iscsi_login *l
 			return -1;
 		}
 
-<<<<<<< HEAD
-		switch ((login_req->flags & ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK) >> 2) {
-		case 0:
-			login_rsp->flags |= (0 & ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK);
-=======
 		switch (ISCSI_LOGIN_CURRENT_STAGE(login_req->flags)) {
 		case 0:
 			login_rsp->flags &= ~ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (iscsi_target_handle_csg_zero(conn, login) < 0)
 				return -1;
 			break;
@@ -1372,13 +1047,6 @@ static int iscsi_target_do_login(struct iscsit_conn *conn, struct iscsi_login *l
 			if (iscsi_target_handle_csg_one(conn, login) < 0)
 				return -1;
 			if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
-<<<<<<< HEAD
-				login->tsih = conn->sess->tsih;
-				if (iscsi_target_do_tx_login_io(conn,
-						login) < 0)
-					return -1;
-				return 0;
-=======
 				/*
 				 * Check to make sure the TCP connection has not
 				 * dropped asynchronously while session reinstatement
@@ -1395,36 +1063,23 @@ static int iscsi_target_do_login(struct iscsit_conn *conn, struct iscsi_login *l
 						login) < 0)
 					return -1;
 				return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		default:
 			pr_err("Illegal CSG: %d received from"
 				" Initiator, protocol error.\n",
-<<<<<<< HEAD
-				(login_req->flags & ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK)
-				>> 2);
-			break;
-		}
-
-		if (iscsi_target_do_login_io(conn, login) < 0)
-=======
 				ISCSI_LOGIN_CURRENT_STAGE(login_req->flags));
 			break;
 		}
 
 		if (iscsi_target_do_tx_login_io(conn, login) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 
 		if (login_rsp->flags & ISCSI_FLAG_LOGIN_TRANSIT) {
 			login_rsp->flags &= ~ISCSI_FLAG_LOGIN_TRANSIT;
 			login_rsp->flags &= ~ISCSI_FLAG_LOGIN_NEXT_STAGE_MASK;
 		}
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1448,26 +1103,13 @@ static void iscsi_initiatorname_tolower(
 /*
  * Processes the first Login Request..
  */
-<<<<<<< HEAD
-static int iscsi_target_locate_portal(
-	struct iscsi_np *np,
-	struct iscsi_conn *conn,
-=======
 int iscsi_target_locate_portal(
 	struct iscsi_np *np,
 	struct iscsit_conn *conn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_login *login)
 {
 	char *i_buf = NULL, *s_buf = NULL, *t_buf = NULL;
 	char *tmpbuf, *start = NULL, *end = NULL, *key, *value;
-<<<<<<< HEAD
-	struct iscsi_session *sess = conn->sess;
-	struct iscsi_tiqn *tiqn;
-	struct iscsi_login_req *login_req;
-	u32 payload_length;
-	int sessiontype = 0, ret = 0;
-=======
 	struct iscsit_session *sess = conn->sess;
 	struct iscsi_tiqn *tiqn;
 	struct iscsi_tpg_np *tpg_np = NULL;
@@ -1481,42 +1123,16 @@ int iscsi_target_locate_portal(
 
 	login->np = np;
 	conn->tpg = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	login_req = (struct iscsi_login_req *) login->req;
 	payload_length = ntoh24(login_req->dlength);
 
-<<<<<<< HEAD
-	login->first_request	= 1;
-	login->leading_connection = (!login_req->tsih) ? 1 : 0;
-	login->current_stage	=
-		(login_req->flags & ISCSI_FLAG_LOGIN_CURRENT_STAGE_MASK) >> 2;
-	login->version_min	= login_req->min_version;
-	login->version_max	= login_req->max_version;
-	memcpy(login->isid, login_req->isid, 6);
-	login->cmd_sn		= login_req->cmdsn;
-	login->init_task_tag	= login_req->itt;
-	login->initial_exp_statsn = login_req->exp_statsn;
-	login->cid		= login_req->cid;
-	login->tsih		= login_req->tsih;
-
-	if (iscsi_target_get_initial_payload(conn, login) < 0)
-		return -1;
-
-	tmpbuf = kzalloc(payload_length + 1, GFP_KERNEL);
-=======
 	tmpbuf = kmemdup_nul(login->req_buf, payload_length, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tmpbuf) {
 		pr_err("Unable to allocate memory for tmpbuf.\n");
 		return -1;
 	}
 
-<<<<<<< HEAD
-	memcpy(tmpbuf, login->req_buf, payload_length);
-	tmpbuf[payload_length] = '\0';
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start = tmpbuf;
 	end = (start + payload_length);
 
@@ -1539,10 +1155,6 @@ int iscsi_target_locate_portal(
 
 		start += strlen(key) + strlen(value) + 2;
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * See 5.3.  Login Phase.
 	 */
@@ -1578,10 +1190,6 @@ int iscsi_target_locate_portal(
 	 */
 	sessiontype = strncmp(s_buf, DISCOVERY, 9);
 	if (!sessiontype) {
-<<<<<<< HEAD
-		conn->tpg = iscsit_global->discovery_tpg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!login->leading_connection)
 			goto get_target;
 
@@ -1598,26 +1206,16 @@ int iscsi_target_locate_portal(
 		 * Serialize access across the discovery struct iscsi_portal_group to
 		 * process login attempt.
 		 */
-<<<<<<< HEAD
-		if (iscsit_access_np(np, conn->tpg) < 0) {
-			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_SVC_UNAVAILABLE);
-=======
 		conn->tpg = iscsit_global->discovery_tpg;
 		if (iscsit_access_np(np, conn->tpg) < 0) {
 			iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
 				ISCSI_LOGIN_STATUS_SVC_UNAVAILABLE);
 			conn->tpg = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -1;
 			goto out;
 		}
 		ret = 0;
-<<<<<<< HEAD
-		goto out;
-=======
 		goto alloc_tags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 get_target:
@@ -1648,11 +1246,7 @@ get_target:
 	/*
 	 * Locate Target Portal Group from Storage Node.
 	 */
-<<<<<<< HEAD
-	conn->tpg = iscsit_get_tpg_from_np(tiqn, np);
-=======
 	conn->tpg = iscsit_get_tpg_from_np(tiqn, np, &tpg_np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!conn->tpg) {
 		pr_err("Unable to locate Target Portal Group"
 				" on %s\n", tiqn->tiqn);
@@ -1662,22 +1256,16 @@ get_target:
 		ret = -1;
 		goto out;
 	}
-<<<<<<< HEAD
-=======
 	conn->tpg_np = tpg_np;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("Located Portal Group Object: %hu\n", conn->tpg->tpgt);
 	/*
 	 * Setup crc32c modules from libcrypto
 	 */
 	if (iscsi_login_setup_crypto(conn) < 0) {
 		pr_err("iscsi_login_setup_crypto() failed\n");
-<<<<<<< HEAD
-=======
 		kref_put(&tpg_np->tpg_np_kref, iscsit_login_kref_put);
 		iscsit_put_tiqn_for_login(tiqn);
 		conn->tpg = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -1;
 		goto out;
 	}
@@ -1686,30 +1274,18 @@ get_target:
 	 * process login attempt.
 	 */
 	if (iscsit_access_np(np, conn->tpg) < 0) {
-<<<<<<< HEAD
-		iscsit_put_tiqn_for_login(tiqn);
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_SVC_UNAVAILABLE);
-		ret = -1;
-		conn->tpg = NULL;
-=======
 		kref_put(&tpg_np->tpg_np_kref, iscsit_login_kref_put);
 		iscsit_put_tiqn_for_login(tiqn);
 		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
 				ISCSI_LOGIN_STATUS_SVC_UNAVAILABLE);
 		conn->tpg = NULL;
 		ret = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/*
 	 * conn->sess->node_acl will be set when the referenced
-<<<<<<< HEAD
-	 * struct iscsi_session is located from received ISID+TSIH in
-=======
 	 * struct iscsit_session is located from received ISID+TSIH in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * iscsi_login_non_zero_tsih_s2().
 	 */
 	if (!login->leading_connection) {
@@ -1736,10 +1312,6 @@ get_target:
 		ret = -1;
 		goto out;
 	}
-<<<<<<< HEAD
-
-	ret = 0;
-=======
 	se_nacl = sess->se_sess->se_node_acl;
 	queue_depth = se_nacl->queue_depth;
 	/*
@@ -1761,111 +1333,11 @@ alloc_tags:
 				    ISCSI_LOGIN_STATUS_NO_RESOURCES);
 		ret = -1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	kfree(tmpbuf);
 	return ret;
 }
 
-<<<<<<< HEAD
-struct iscsi_login *iscsi_target_init_negotiation(
-	struct iscsi_np *np,
-	struct iscsi_conn *conn,
-	char *login_pdu)
-{
-	struct iscsi_login *login;
-
-	login = kzalloc(sizeof(struct iscsi_login), GFP_KERNEL);
-	if (!login) {
-		pr_err("Unable to allocate memory for struct iscsi_login.\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		return NULL;
-	}
-
-	login->req = kmemdup(login_pdu, ISCSI_HDR_LEN, GFP_KERNEL);
-	if (!login->req) {
-		pr_err("Unable to allocate memory for Login Request.\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		goto out;
-	}
-
-	login->req_buf = kzalloc(MAX_KEY_VALUE_PAIRS, GFP_KERNEL);
-	if (!login->req_buf) {
-		pr_err("Unable to allocate memory for response buffer.\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		goto out;
-	}
-	/*
-	 * SessionType: Discovery
-	 *
-	 *	Locates Default Portal
-	 *
-	 * SessionType: Normal
-	 *
-	 *	Locates Target Portal from NP -> Target IQN
-	 */
-	if (iscsi_target_locate_portal(np, conn, login) < 0) {
-		pr_err("iSCSI Login negotiation failed.\n");
-		goto out;
-	}
-
-	return login;
-out:
-	kfree(login->req);
-	kfree(login->req_buf);
-	kfree(login);
-
-	return NULL;
-}
-
-int iscsi_target_start_negotiation(
-	struct iscsi_login *login,
-	struct iscsi_conn *conn)
-{
-	int ret = -1;
-
-	login->rsp = kzalloc(ISCSI_HDR_LEN, GFP_KERNEL);
-	if (!login->rsp) {
-		pr_err("Unable to allocate memory for"
-				" Login Response.\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		ret = -1;
-		goto out;
-	}
-
-	login->rsp_buf = kzalloc(MAX_KEY_VALUE_PAIRS, GFP_KERNEL);
-	if (!login->rsp_buf) {
-		pr_err("Unable to allocate memory for"
-			" request buffer.\n");
-		iscsit_tx_login_rsp(conn, ISCSI_STATUS_CLS_TARGET_ERR,
-				ISCSI_LOGIN_STATUS_NO_RESOURCES);
-		ret = -1;
-		goto out;
-	}
-
-	ret = iscsi_target_do_login(conn, login);
-out:
-	if (ret != 0)
-		iscsi_remove_failed_auth_entry(conn);
-
-	iscsi_target_nego_release(login, conn);
-	return ret;
-}
-
-void iscsi_target_nego_release(
-	struct iscsi_login *login,
-	struct iscsi_conn *conn)
-{
-	kfree(login->req);
-	kfree(login->rsp);
-	kfree(login->req_buf);
-	kfree(login->rsp_buf);
-	kfree(login);
-=======
 int iscsi_target_start_negotiation(
 	struct iscsi_login *login,
 	struct iscsit_conn *conn)
@@ -1933,5 +1405,4 @@ void iscsi_target_nego_release(struct iscsit_conn *conn)
 	kfree(login);
 
 	conn->conn_login = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

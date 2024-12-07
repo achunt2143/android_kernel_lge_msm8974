@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __EMUX_VOICE_H
 #define __EMUX_VOICE_H
 
@@ -10,23 +7,6 @@
  *
  *  Copyright (C) 1999 Steve Ratcliffe
  *  Copyright (c) 1999-2000 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/wait.h>
@@ -62,11 +42,7 @@ void snd_emux_update_channel(struct snd_emux_port *port,
 			     struct snd_midi_channel *chan, int update);
 void snd_emux_update_port(struct snd_emux_port *port, int update);
 
-<<<<<<< HEAD
-void snd_emux_timer_callback(unsigned long data);
-=======
 void snd_emux_timer_callback(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* emux_effect.c */
 #ifdef SNDRV_EMUX_USE_RAW_EFFECT
@@ -93,11 +69,6 @@ void snd_emux_init_seq_oss(struct snd_emux *emu);
 void snd_emux_detach_seq_oss(struct snd_emux *emu);
 
 /* emux_proc.c */
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-void snd_emux_proc_init(struct snd_emux *emu, struct snd_card *card, int device);
-void snd_emux_proc_free(struct snd_emux *emu);
-=======
 #ifdef CONFIG_SND_PROC_FS
 void snd_emux_proc_init(struct snd_emux *emu, struct snd_card *card, int device);
 void snd_emux_proc_free(struct snd_emux *emu);
@@ -105,7 +76,6 @@ void snd_emux_proc_free(struct snd_emux *emu);
 static inline void snd_emux_proc_init(struct snd_emux *emu,
 				      struct snd_card *card, int device) {}
 static inline void snd_emux_proc_free(struct snd_emux *emu) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define STATE_IS_PLAYING(s) ((s) & SNDRV_EMUX_ST_ON)

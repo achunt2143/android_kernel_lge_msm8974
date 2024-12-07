@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    pata_it8213.c - iTE Tech. Inc.  IT8213 PATA driver
  *
@@ -14,10 +11,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -235,11 +228,7 @@ static void it8213_set_dmamode (struct ata_port *ap, struct ata_device *adev)
 	pci_write_config_byte(dev, 0x48, udma_enable);
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template it8213_sht = {
-=======
 static const struct scsi_host_template it8213_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -295,32 +284,13 @@ static struct pci_driver it8213_pci_driver = {
 	.id_table		= it8213_pci_tbl,
 	.probe			= it8213_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init it8213_init(void)
-{
-	return pci_register_driver(&it8213_pci_driver);
-}
-
-static void __exit it8213_exit(void)
-{
-	pci_unregister_driver(&it8213_pci_driver);
-}
-
-module_init(it8213_init);
-module_exit(it8213_exit);
-=======
 module_pci_driver(it8213_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for the ITE 8213");

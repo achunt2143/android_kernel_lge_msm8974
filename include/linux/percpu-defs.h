@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_PERCPU_DEFS_H
-#define _LINUX_PERCPU_DEFS_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * linux/percpu-defs.h - basic definitions for percpu areas
@@ -41,7 +36,6 @@
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Base implementations of per-CPU variable declarations and definitions, where
  * the section in which the variable is to be placed is provided by the
@@ -57,21 +51,7 @@
 	PER_CPU_ATTRIBUTES
 
 #define __PCPU_DUMMY_ATTRS						\
-<<<<<<< HEAD
-	__attribute__((section(".discard"), unused))
-
-/*
- * Macro which verifies @ptr is a percpu pointer without evaluating
- * @ptr.  This is to be used in percpu accessors to verify that the
- * input parameter is a percpu pointer.
- */
-#define __verify_pcpu_ptr(ptr)	do {					\
-	const void __percpu *__vpp_verify = (typeof(ptr))NULL;		\
-	(void)__vpp_verify;						\
-} while (0)
-=======
 	__section(".discard") __attribute__((unused))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * s390 and alpha modules require percpu variables to be defined as
@@ -111,13 +91,8 @@
 	__PCPU_DUMMY_ATTRS char __pcpu_scope_##name;			\
 	extern __PCPU_DUMMY_ATTRS char __pcpu_unique_##name;		\
 	__PCPU_DUMMY_ATTRS char __pcpu_unique_##name;			\
-<<<<<<< HEAD
-	__PCPU_ATTRS(sec) PER_CPU_DEF_ATTRIBUTES __weak			\
-	__typeof__(type) name
-=======
 	extern __PCPU_ATTRS(sec) __typeof__(type) name;			\
 	__PCPU_ATTRS(sec) __weak __typeof__(type) name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 /*
  * Normal declaration and definition macros.
@@ -126,12 +101,7 @@
 	extern __PCPU_ATTRS(sec) __typeof__(type) name
 
 #define DEFINE_PER_CPU_SECTION(type, name, sec)				\
-<<<<<<< HEAD
-	__PCPU_ATTRS(sec) PER_CPU_DEF_ATTRIBUTES			\
-	__typeof__(type) name
-=======
 	__PCPU_ATTRS(sec) __typeof__(type) name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -196,12 +166,6 @@
  * Declaration/definition used for per-CPU variables that must be read mostly.
  */
 #define DECLARE_PER_CPU_READ_MOSTLY(type, name)			\
-<<<<<<< HEAD
-	DECLARE_PER_CPU_SECTION(type, name, "..readmostly")
-
-#define DEFINE_PER_CPU_READ_MOSTLY(type, name)				\
-	DEFINE_PER_CPU_SECTION(type, name, "..readmostly")
-=======
 	DECLARE_PER_CPU_SECTION(type, name, "..read_mostly")
 
 #define DEFINE_PER_CPU_READ_MOSTLY(type, name)				\
@@ -220,7 +184,6 @@
 #else
 #define DEFINE_PER_CPU_DECRYPTED(type, name)	DEFINE_PER_CPU(type, name)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Intermodule exports for per-CPU variables.  sparse forgets about
@@ -235,8 +198,6 @@
 #define EXPORT_PER_CPU_SYMBOL_GPL(var)
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * Accessors and operations.
  */
@@ -544,5 +505,4 @@ do {									\
 #define this_cpu_dec_return(pcp)	this_cpu_add_return(pcp, -1)
 
 #endif /* __ASSEMBLY__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_PERCPU_DEFS_H */

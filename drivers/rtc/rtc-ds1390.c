@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * rtc-ds1390.c -- driver for the Dallas/Maxim DS1390/93/94 SPI RTC
  *
  * Copyright (C) 2008 Mercury IMC Ltd
  * Written by Mark Jackson <mpfj@mimc.co.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOTE: Currently this driver only supports the bare minimum for read
  * and write the RTC. The extra features provided by the chip family
  * (alarms, trickle charger, different control registers) are unavailable.
@@ -27,10 +17,7 @@
 #include <linux/spi/spi.h>
 #include <linux/bcd.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DS1390_REG_100THS		0x00
 #define DS1390_REG_SECONDS		0x01
@@ -51,8 +38,6 @@
 #define DS1390_REG_STATUS		0x0E
 #define DS1390_REG_TRICKLE		0x0F
 
-<<<<<<< HEAD
-=======
 #define DS1390_TRICKLE_CHARGER_ENABLE	0xA0
 #define DS1390_TRICKLE_CHARGER_250_OHM	0x01
 #define DS1390_TRICKLE_CHARGER_2K_OHM	0x02
@@ -60,14 +45,11 @@
 #define DS1390_TRICKLE_CHARGER_NO_DIODE	0x04
 #define DS1390_TRICKLE_CHARGER_DIODE	0x08
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ds1390 {
 	struct rtc_device *rtc;
 	u8 txrx_buf[9];	/* cmd + 8 registers */
 };
 
-<<<<<<< HEAD
-=======
 static void ds1390_set_reg(struct device *dev, unsigned char address,
 			   unsigned char data)
 {
@@ -81,7 +63,6 @@ static void ds1390_set_reg(struct device *dev, unsigned char address,
 	spi_write(spi, buf, 2);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ds1390_get_reg(struct device *dev, unsigned char address,
 				unsigned char *data)
 {
@@ -99,17 +80,11 @@ static int ds1390_get_reg(struct device *dev, unsigned char address,
 	if (status != 0)
 		return status;
 
-<<<<<<< HEAD
-	*data = chip->txrx_buf[1];
-=======
 	*data = chip->txrx_buf[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void ds1390_trickle_of_init(struct spi_device *spi)
 {
 	u32 ohms = 0;
@@ -149,7 +124,6 @@ out:
 	return;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ds1390_read_time(struct device *dev, struct rtc_time *dt)
 {
 	struct spi_device *spi = to_spi_device(dev);
@@ -176,11 +150,7 @@ static int ds1390_read_time(struct device *dev, struct rtc_time *dt)
 	/* adjust for century bit */
 	dt->tm_year = bcd2bin(chip->txrx_buf[6]) + ((chip->txrx_buf[5] & 0x80) ? 100 : 0);
 
-<<<<<<< HEAD
-	return rtc_valid_tm(dt);
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ds1390_set_time(struct device *dev, struct rtc_time *dt)
@@ -208,11 +178,7 @@ static const struct rtc_class_ops ds1390_rtc_ops = {
 	.set_time	= ds1390_set_time,
 };
 
-<<<<<<< HEAD
-static int __devinit ds1390_probe(struct spi_device *spi)
-=======
 static int ds1390_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char tmp;
 	struct ds1390 *chip;
@@ -222,36 +188,15 @@ static int ds1390_probe(struct spi_device *spi)
 	spi->bits_per_word = 8;
 	spi_setup(spi);
 
-<<<<<<< HEAD
-	chip = kzalloc(sizeof *chip, GFP_KERNEL);
-	if (!chip) {
-		dev_err(&spi->dev, "unable to allocate device memory\n");
-		return -ENOMEM;
-	}
-	dev_set_drvdata(&spi->dev, chip);
-=======
 	chip = devm_kzalloc(&spi->dev, sizeof(*chip), GFP_KERNEL);
 	if (!chip)
 		return -ENOMEM;
 
 	spi_set_drvdata(spi, chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = ds1390_get_reg(&spi->dev, DS1390_REG_SECONDS, &tmp);
 	if (res != 0) {
 		dev_err(&spi->dev, "unable to read device\n");
-<<<<<<< HEAD
-		kfree(chip);
-		return res;
-	}
-
-	chip->rtc = rtc_device_register("ds1390",
-				&spi->dev, &ds1390_rtc_ops, THIS_MODULE);
-	if (IS_ERR(chip->rtc)) {
-		dev_err(&spi->dev, "unable to register device\n");
-		res = PTR_ERR(chip->rtc);
-		kfree(chip);
-=======
 		return res;
 	}
 
@@ -263,23 +208,11 @@ static int ds1390_probe(struct spi_device *spi)
 	if (IS_ERR(chip->rtc)) {
 		dev_err(&spi->dev, "unable to register device\n");
 		res = PTR_ERR(chip->rtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return res;
 }
 
-<<<<<<< HEAD
-static int __devexit ds1390_remove(struct spi_device *spi)
-{
-	struct ds1390 *chip = spi_get_drvdata(spi);
-
-	rtc_device_unregister(chip->rtc);
-	kfree(chip);
-
-	return 0;
-}
-=======
 static const struct of_device_id ds1390_of_match[] __maybe_unused = {
 	{ .compatible = "dallas,ds1390" },
 	{}
@@ -291,22 +224,14 @@ static const struct spi_device_id ds1390_spi_ids[] = {
 	{}
 };
 MODULE_DEVICE_TABLE(spi, ds1390_spi_ids);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct spi_driver ds1390_driver = {
 	.driver = {
 		.name	= "rtc-ds1390",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe	= ds1390_probe,
-	.remove = __devexit_p(ds1390_remove),
-=======
 		.of_match_table = of_match_ptr(ds1390_of_match),
 	},
 	.probe	= ds1390_probe,
 	.id_table = ds1390_spi_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(ds1390_driver);

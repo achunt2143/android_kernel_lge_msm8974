@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * wm8903.c  --  WM8903 ALSA SoC Audio driver
- *
- * Copyright 2008 Wolfson Microelectronics
- * Copyright 2011 NVIDIA, Inc.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * TODO:
- *  - TDM mode configuration.
- *  - Digital microphone support.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * wm8903.c  --  WM8903 ALSA SoC Audio driver
@@ -26,7 +9,6 @@
  *
  * TODO:
  *  - TDM mode configuration.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -34,14 +16,6 @@
 #include <linux/init.h>
 #include <linux/completion.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-#include <linux/pm.h>
-#include <linux/i2c.h>
-#include <linux/regmap.h>
-#include <linux/slab.h>
-#include <linux/irq.h>
-=======
 #include <linux/gpio/driver.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
@@ -50,7 +24,6 @@
 #include <linux/slab.h>
 #include <linux/irq.h>
 #include <linux/mutex.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/jack.h>
 #include <sound/pcm.h>
@@ -139,12 +112,6 @@ static const struct reg_default wm8903_reg_defaults[] = {
 	{ 172, 0x0000 },    /* R172 - Analogue Output Bias 0 */
 };
 
-<<<<<<< HEAD
-struct wm8903_priv {
-	struct wm8903_platform_data *pdata;
-	struct snd_soc_codec *codec;
-	struct regmap *regmap;
-=======
 #define WM8903_NUM_SUPPLIES 4
 static const char *wm8903_supply_names[WM8903_NUM_SUPPLIES] = {
 	"AVDD",
@@ -158,15 +125,11 @@ struct wm8903_priv {
 	struct device *dev;
 	struct regmap *regmap;
 	struct regulator_bulk_data supplies[WM8903_NUM_SUPPLIES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int sysclk;
 	int irq;
 
-<<<<<<< HEAD
-=======
 	struct mutex lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fs;
 	int deemph;
 
@@ -284,17 +247,10 @@ static bool wm8903_volatile_register(struct device *dev, unsigned int reg)
 	case WM8903_DC_SERVO_READBACK_2:
 	case WM8903_DC_SERVO_READBACK_3:
 	case WM8903_DC_SERVO_READBACK_4:
-<<<<<<< HEAD
-		return 1;
-
-	default:
-		return 0;
-=======
 		return true;
 
 	default:
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -310,24 +266,15 @@ static int wm8903_cp_event(struct snd_soc_dapm_widget *w,
 static int wm8903_dcs_event(struct snd_soc_dapm_widget *w,
 			    struct snd_kcontrol *kcontrol, int event)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = w->codec;
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		wm8903->dcs_pending |= 1 << w->shift;
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_DC_SERVO_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_DC_SERVO_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    1 << w->shift, 0);
 		break;
 	}
@@ -338,29 +285,16 @@ static int wm8903_dcs_event(struct snd_soc_dapm_widget *w,
 #define WM8903_DCS_MODE_WRITE_STOP 0
 #define WM8903_DCS_MODE_START_STOP 2
 
-<<<<<<< HEAD
-static void wm8903_seq_notifier(struct snd_soc_dapm_context *dapm,
-				enum snd_soc_dapm_type event, int subseq)
-{
-	struct snd_soc_codec *codec = container_of(dapm,
-						   struct snd_soc_codec, dapm);
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-=======
 static void wm8903_seq_notifier(struct snd_soc_component *component,
 				enum snd_soc_dapm_type event, int subseq)
 {
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dcs_mode = WM8903_DCS_MODE_WRITE_STOP;
 	int i, val;
 
 	/* Complete any pending DC servo starts */
 	if (wm8903->dcs_pending) {
-<<<<<<< HEAD
-		dev_dbg(codec->dev, "Starting DC servo for %x\n",
-=======
 		dev_dbg(component->dev, "Starting DC servo for %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wm8903->dcs_pending);
 
 		/* If we've no cached values then we need to do startup */
@@ -369,16 +303,6 @@ static void wm8903_seq_notifier(struct snd_soc_component *component,
 				continue;
 
 			if (wm8903->dcs_cache[i]) {
-<<<<<<< HEAD
-				dev_dbg(codec->dev,
-					"Restore DC servo %d value %x\n",
-					3 - i, wm8903->dcs_cache[i]);
-
-				snd_soc_write(codec, WM8903_DC_SERVO_4 + i,
-					      wm8903->dcs_cache[i] & 0xff);
-			} else {
-				dev_dbg(codec->dev,
-=======
 				dev_dbg(component->dev,
 					"Restore DC servo %d value %x\n",
 					3 - i, wm8903->dcs_cache[i]);
@@ -387,7 +311,6 @@ static void wm8903_seq_notifier(struct snd_soc_component *component,
 					      wm8903->dcs_cache[i] & 0xff);
 			} else {
 				dev_dbg(component->dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Calibrate DC servo %d\n", 3 - i);
 				dcs_mode = WM8903_DCS_MODE_START_STOP;
 			}
@@ -397,17 +320,10 @@ static void wm8903_seq_notifier(struct snd_soc_component *component,
 		if (wm8903->class_w_users)
 			dcs_mode = WM8903_DCS_MODE_START_STOP;
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_DC_SERVO_2,
-				    WM8903_DCS_MODE_MASK, dcs_mode);
-
-		snd_soc_update_bits(codec, WM8903_DC_SERVO_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_DC_SERVO_2,
 				    WM8903_DCS_MODE_MASK, dcs_mode);
 
 		snd_soc_component_update_bits(component, WM8903_DC_SERVO_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8903_DCS_ENA_MASK, wm8903->dcs_pending);
 
 		switch (dcs_mode) {
@@ -425,15 +341,9 @@ static void wm8903_seq_notifier(struct snd_soc_component *component,
 				if (!(wm8903->dcs_pending & (1 << i)))
 					continue;
 
-<<<<<<< HEAD
-				val = snd_soc_read(codec,
-						   WM8903_DC_SERVO_READBACK_1 + i);
-				dev_dbg(codec->dev, "DC servo %d: %x\n",
-=======
 				val = snd_soc_component_read(component,
 						   WM8903_DC_SERVO_READBACK_1 + i);
 				dev_dbg(component->dev, "DC servo %d: %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					3 - i, val);
 				wm8903->dcs_cache[i] = val;
 			}
@@ -459,34 +369,18 @@ static void wm8903_seq_notifier(struct snd_soc_component *component,
 static int wm8903_class_w_put(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_dapm_widget_list *wlist = snd_kcontrol_chip(kcontrol);
-	struct snd_soc_dapm_widget *widget = wlist->widgets[0];
-	struct snd_soc_codec *codec = widget->codec;
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-	u16 reg;
-	int ret;
-
-	reg = snd_soc_read(codec, WM8903_CLASS_W_0);
-=======
 	struct snd_soc_component *component = snd_soc_dapm_kcontrol_component(kcontrol);
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
 	u16 reg;
 	int ret;
 
 	reg = snd_soc_component_read(component, WM8903_CLASS_W_0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn it off if we're about to enable bypass */
 	if (ucontrol->value.integer.value[0]) {
 		if (wm8903->class_w_users == 0) {
-<<<<<<< HEAD
-			dev_dbg(codec->dev, "Disabling Class W\n");
-			snd_soc_write(codec, WM8903_CLASS_W_0, reg &
-=======
 			dev_dbg(component->dev, "Disabling Class W\n");
 			snd_soc_component_write(component, WM8903_CLASS_W_0, reg &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ~(WM8903_CP_DYN_FREQ | WM8903_CP_DYN_V));
 		}
 		wm8903->class_w_users++;
@@ -498,51 +392,29 @@ static int wm8903_class_w_put(struct snd_kcontrol *kcontrol,
 	/* If we've just disabled the last bypass path turn Class W on */
 	if (!ucontrol->value.integer.value[0]) {
 		if (wm8903->class_w_users == 1) {
-<<<<<<< HEAD
-			dev_dbg(codec->dev, "Enabling Class W\n");
-			snd_soc_write(codec, WM8903_CLASS_W_0, reg |
-=======
 			dev_dbg(component->dev, "Enabling Class W\n");
 			snd_soc_component_write(component, WM8903_CLASS_W_0, reg |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     WM8903_CP_DYN_FREQ | WM8903_CP_DYN_V);
 		}
 		wm8903->class_w_users--;
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Bypass use count now %d\n",
-=======
 	dev_dbg(component->dev, "Bypass use count now %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm8903->class_w_users);
 
 	return ret;
 }
 
 #define SOC_DAPM_SINGLE_W(xname, reg, shift, max, invert) \
-<<<<<<< HEAD
-{	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, \
-	.info = snd_soc_info_volsw, \
-	.get = snd_soc_dapm_get_volsw, .put = wm8903_class_w_put, \
-	.private_value =  SOC_SINGLE_VALUE(reg, shift, max, invert) }
-=======
 	SOC_SINGLE_EXT(xname, reg, shift, max, invert, \
 		snd_soc_dapm_get_volsw, wm8903_class_w_put)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static int wm8903_deemph[] = { 0, 32000, 44100, 48000 };
 
-<<<<<<< HEAD
-static int wm8903_set_deemph(struct snd_soc_codec *codec)
-{
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-=======
 static int wm8903_set_deemph(struct snd_soc_component *component)
 {
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val, i, best;
 
 	/* If we're using deemphasis select the nearest available sample
@@ -562,30 +434,18 @@ static int wm8903_set_deemph(struct snd_soc_component *component)
 		val = 0;
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Set deemphasis %d (%dHz)\n",
-		best, wm8903_deemph[best]);
-
-	return snd_soc_update_bits(codec, WM8903_DAC_DIGITAL_1,
-=======
 	dev_dbg(component->dev, "Set deemphasis %d (%dHz)\n",
 		best, wm8903_deemph[best]);
 
 	return snd_soc_component_update_bits(component, WM8903_DAC_DIGITAL_1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   WM8903_DEEMPH_MASK, val);
 }
 
 static int wm8903_get_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = wm8903->deemph;
 
@@ -595,31 +455,14 @@ static int wm8903_get_deemph(struct snd_kcontrol *kcontrol,
 static int wm8903_put_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-	int deemph = ucontrol->value.integer.value[0];
-=======
 	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
 	unsigned int deemph = ucontrol->value.integer.value[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	if (deemph > 1)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	mutex_lock(&codec->mutex);
-	if (wm8903->deemph != deemph) {
-		wm8903->deemph = deemph;
-
-		wm8903_set_deemph(codec);
-
-		ret = 1;
-	}
-	mutex_unlock(&codec->mutex);
-=======
 	mutex_lock(&wm8903->lock);
 	if (wm8903->deemph != deemph) {
 		wm8903->deemph = deemph;
@@ -629,7 +472,6 @@ static int wm8903_put_deemph(struct snd_kcontrol *kcontrol,
 		ret = 1;
 	}
 	mutex_unlock(&wm8903->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -637,11 +479,8 @@ static int wm8903_put_deemph(struct snd_kcontrol *kcontrol,
 /* ALSA can only do steps of .01dB */
 static const DECLARE_TLV_DB_SCALE(digital_tlv, -7200, 75, 1);
 
-<<<<<<< HEAD
-=======
 static const DECLARE_TLV_DB_SCALE(dac_boost_tlv, 0, 600, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const DECLARE_TLV_DB_SCALE(digital_sidetone_tlv, -3600, 300, 0);
 static const DECLARE_TLV_DB_SCALE(out_tlv, -5700, 100, 0);
 
@@ -655,49 +494,28 @@ static const char *hpf_mode_text[] = {
 	"Hi-fi", "Voice 1", "Voice 2", "Voice 3"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum hpf_mode =
-	SOC_ENUM_SINGLE(WM8903_ADC_DIGITAL_0, 5, 4, hpf_mode_text);
-=======
 static SOC_ENUM_SINGLE_DECL(hpf_mode,
 			    WM8903_ADC_DIGITAL_0, 5, hpf_mode_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *osr_text[] = {
 	"Low power", "High performance"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum adc_osr =
-	SOC_ENUM_SINGLE(WM8903_ANALOGUE_ADC_0, 0, 2, osr_text);
-
-static const struct soc_enum dac_osr =
-	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_1, 0, 2, osr_text);
-=======
 static SOC_ENUM_SINGLE_DECL(adc_osr,
 			    WM8903_ANALOGUE_ADC_0, 0, osr_text);
 
 static SOC_ENUM_SINGLE_DECL(dac_osr,
 			    WM8903_DAC_DIGITAL_1, 0, osr_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *drc_slope_text[] = {
 	"1", "1/2", "1/4", "1/8", "1/16", "0"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum drc_slope_r0 =
-	SOC_ENUM_SINGLE(WM8903_DRC_2, 3, 6, drc_slope_text);
-
-static const struct soc_enum drc_slope_r1 =
-	SOC_ENUM_SINGLE(WM8903_DRC_2, 0, 6, drc_slope_text);
-=======
 static SOC_ENUM_SINGLE_DECL(drc_slope_r0,
 			    WM8903_DRC_2, 3, drc_slope_text);
 
 static SOC_ENUM_SINGLE_DECL(drc_slope_r1,
 			    WM8903_DRC_2, 0, drc_slope_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *drc_attack_text[] = {
 	"instantaneous",
@@ -705,207 +523,114 @@ static const char *drc_attack_text[] = {
 	"46.4ms", "92.8ms", "185.6ms"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum drc_attack =
-	SOC_ENUM_SINGLE(WM8903_DRC_1, 12, 11, drc_attack_text);
-=======
 static SOC_ENUM_SINGLE_DECL(drc_attack,
 			    WM8903_DRC_1, 12, drc_attack_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *drc_decay_text[] = {
 	"186ms", "372ms", "743ms", "1.49s", "2.97s", "5.94s", "11.89s",
 	"23.87s", "47.56s"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum drc_decay =
-	SOC_ENUM_SINGLE(WM8903_DRC_1, 8, 9, drc_decay_text);
-=======
 static SOC_ENUM_SINGLE_DECL(drc_decay,
 			    WM8903_DRC_1, 8, drc_decay_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *drc_ff_delay_text[] = {
 	"5 samples", "9 samples"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum drc_ff_delay =
-	SOC_ENUM_SINGLE(WM8903_DRC_0, 5, 2, drc_ff_delay_text);
-=======
 static SOC_ENUM_SINGLE_DECL(drc_ff_delay,
 			    WM8903_DRC_0, 5, drc_ff_delay_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *drc_qr_decay_text[] = {
 	"0.725ms", "1.45ms", "5.8ms"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum drc_qr_decay =
-	SOC_ENUM_SINGLE(WM8903_DRC_1, 4, 3, drc_qr_decay_text);
-=======
 static SOC_ENUM_SINGLE_DECL(drc_qr_decay,
 			    WM8903_DRC_1, 4, drc_qr_decay_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *drc_smoothing_text[] = {
 	"Low", "Medium", "High"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum drc_smoothing =
-	SOC_ENUM_SINGLE(WM8903_DRC_0, 11, 3, drc_smoothing_text);
-=======
 static SOC_ENUM_SINGLE_DECL(drc_smoothing,
 			    WM8903_DRC_0, 11, drc_smoothing_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *soft_mute_text[] = {
 	"Fast (fs/2)", "Slow (fs/32)"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum soft_mute =
-	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_1, 10, 2, soft_mute_text);
-=======
 static SOC_ENUM_SINGLE_DECL(soft_mute,
 			    WM8903_DAC_DIGITAL_1, 10, soft_mute_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *mute_mode_text[] = {
 	"Hard", "Soft"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum mute_mode =
-	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_1, 9, 2, mute_mode_text);
-=======
 static SOC_ENUM_SINGLE_DECL(mute_mode,
 			    WM8903_DAC_DIGITAL_1, 9, mute_mode_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *companding_text[] = {
 	"ulaw", "alaw"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum dac_companding =
-	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 0, 2, companding_text);
-
-static const struct soc_enum adc_companding =
-	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 2, 2, companding_text);
-=======
 static SOC_ENUM_SINGLE_DECL(dac_companding,
 			    WM8903_AUDIO_INTERFACE_0, 0, companding_text);
 
 static SOC_ENUM_SINGLE_DECL(adc_companding,
 			    WM8903_AUDIO_INTERFACE_0, 2, companding_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *input_mode_text[] = {
 	"Single-Ended", "Differential Line", "Differential Mic"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum linput_mode_enum =
-	SOC_ENUM_SINGLE(WM8903_ANALOGUE_LEFT_INPUT_1, 0, 3, input_mode_text);
-
-static const struct soc_enum rinput_mode_enum =
-	SOC_ENUM_SINGLE(WM8903_ANALOGUE_RIGHT_INPUT_1, 0, 3, input_mode_text);
-=======
 static SOC_ENUM_SINGLE_DECL(linput_mode_enum,
 			    WM8903_ANALOGUE_LEFT_INPUT_1, 0, input_mode_text);
 
 static SOC_ENUM_SINGLE_DECL(rinput_mode_enum,
 			    WM8903_ANALOGUE_RIGHT_INPUT_1, 0, input_mode_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *linput_mux_text[] = {
 	"IN1L", "IN2L", "IN3L"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum linput_enum =
-	SOC_ENUM_SINGLE(WM8903_ANALOGUE_LEFT_INPUT_1, 2, 3, linput_mux_text);
-
-static const struct soc_enum linput_inv_enum =
-	SOC_ENUM_SINGLE(WM8903_ANALOGUE_LEFT_INPUT_1, 4, 3, linput_mux_text);
-=======
 static SOC_ENUM_SINGLE_DECL(linput_enum,
 			    WM8903_ANALOGUE_LEFT_INPUT_1, 2, linput_mux_text);
 
 static SOC_ENUM_SINGLE_DECL(linput_inv_enum,
 			    WM8903_ANALOGUE_LEFT_INPUT_1, 4, linput_mux_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *rinput_mux_text[] = {
 	"IN1R", "IN2R", "IN3R"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum rinput_enum =
-	SOC_ENUM_SINGLE(WM8903_ANALOGUE_RIGHT_INPUT_1, 2, 3, rinput_mux_text);
-
-static const struct soc_enum rinput_inv_enum =
-	SOC_ENUM_SINGLE(WM8903_ANALOGUE_RIGHT_INPUT_1, 4, 3, rinput_mux_text);
-=======
 static SOC_ENUM_SINGLE_DECL(rinput_enum,
 			    WM8903_ANALOGUE_RIGHT_INPUT_1, 2, rinput_mux_text);
 
 static SOC_ENUM_SINGLE_DECL(rinput_inv_enum,
 			    WM8903_ANALOGUE_RIGHT_INPUT_1, 4, rinput_mux_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static const char *sidetone_text[] = {
 	"None", "Left", "Right"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum lsidetone_enum =
-	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_0, 2, 3, sidetone_text);
-
-static const struct soc_enum rsidetone_enum =
-	SOC_ENUM_SINGLE(WM8903_DAC_DIGITAL_0, 0, 3, sidetone_text);
-=======
 static SOC_ENUM_SINGLE_DECL(lsidetone_enum,
 			    WM8903_DAC_DIGITAL_0, 2, sidetone_text);
 
 static SOC_ENUM_SINGLE_DECL(rsidetone_enum,
 			    WM8903_DAC_DIGITAL_0, 0, sidetone_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *adcinput_text[] = {
 	"ADC", "DMIC"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum adcinput_enum =
-	SOC_ENUM_SINGLE(WM8903_CLOCK_RATE_TEST_4, 9, 2, adcinput_text);
-=======
 static SOC_ENUM_SINGLE_DECL(adcinput_enum,
 			    WM8903_CLOCK_RATE_TEST_4, 9, adcinput_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *aif_text[] = {
 	"Left", "Right"
 };
 
-<<<<<<< HEAD
-static const struct soc_enum lcapture_enum =
-	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 7, 2, aif_text);
-
-static const struct soc_enum rcapture_enum =
-	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 6, 2, aif_text);
-
-static const struct soc_enum lplay_enum =
-	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 5, 2, aif_text);
-
-static const struct soc_enum rplay_enum =
-	SOC_ENUM_SINGLE(WM8903_AUDIO_INTERFACE_0, 4, 2, aif_text);
-=======
 static SOC_ENUM_SINGLE_DECL(lcapture_enum,
 			    WM8903_AUDIO_INTERFACE_0, 7, aif_text);
 
@@ -917,7 +642,6 @@ static SOC_ENUM_SINGLE_DECL(lplay_enum,
 
 static SOC_ENUM_SINGLE_DECL(rplay_enum,
 			    WM8903_AUDIO_INTERFACE_0, 4, aif_text);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new wm8903_snd_controls[] = {
 
@@ -977,11 +701,8 @@ SOC_ENUM("DAC Mute Mode", mute_mode),
 SOC_SINGLE("DAC Mono Switch", WM8903_DAC_DIGITAL_1, 12, 1, 0),
 SOC_ENUM("DAC Companding Mode", dac_companding),
 SOC_SINGLE("DAC Companding Switch", WM8903_AUDIO_INTERFACE_0, 1, 1, 0),
-<<<<<<< HEAD
-=======
 SOC_SINGLE_TLV("DAC Boost Volume", WM8903_AUDIO_INTERFACE_0, 9, 3, 0,
 	       dac_boost_tlv),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SOC_SINGLE_BOOL_EXT("Playback Deemphasis Switch", 0,
 		    wm8903_get_deemph, wm8903_put_deemph),
 
@@ -1375,11 +1096,7 @@ static const struct snd_soc_dapm_route wm8903_intercon[] = {
 	{ "Right Line Output PGA", NULL, "Charge Pump" },
 };
 
-<<<<<<< HEAD
-static int wm8903_set_bias_level(struct snd_soc_codec *codec,
-=======
 static int wm8903_set_bias_level(struct snd_soc_component *component,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 enum snd_soc_bias_level level)
 {
 	switch (level) {
@@ -1387,23 +1104,14 @@ static int wm8903_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_VMID_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8903_VMID_RES_MASK,
 				    WM8903_VMID_RES_50K);
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
-<<<<<<< HEAD
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
-			snd_soc_update_bits(codec, WM8903_BIAS_CONTROL_0,
-=======
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
 			snd_soc_component_update_bits(component, WM8903_BIAS_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8903_POBCTRL | WM8903_ISEL_MASK |
 					    WM8903_STARTUP_BIAS_ENA |
 					    WM8903_BIAS_ENA,
@@ -1411,28 +1119,13 @@ static int wm8903_set_bias_level(struct snd_soc_component *component,
 					    (2 << WM8903_ISEL_SHIFT) |
 					    WM8903_STARTUP_BIAS_ENA);
 
-<<<<<<< HEAD
-			snd_soc_update_bits(codec,
-=======
 			snd_soc_component_update_bits(component,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8903_ANALOGUE_SPK_OUTPUT_CONTROL_0,
 					    WM8903_SPK_DISCHARGE,
 					    WM8903_SPK_DISCHARGE);
 
 			msleep(33);
 
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8903_POWER_MANAGEMENT_5,
-					    WM8903_SPKL_ENA | WM8903_SPKR_ENA,
-					    WM8903_SPKL_ENA | WM8903_SPKR_ENA);
-
-			snd_soc_update_bits(codec,
-					    WM8903_ANALOGUE_SPK_OUTPUT_CONTROL_0,
-					    WM8903_SPK_DISCHARGE, 0);
-
-			snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-=======
 			snd_soc_component_update_bits(component, WM8903_POWER_MANAGEMENT_5,
 					    WM8903_SPKL_ENA | WM8903_SPKR_ENA,
 					    WM8903_SPKL_ENA | WM8903_SPKR_ENA);
@@ -1442,7 +1135,6 @@ static int wm8903_set_bias_level(struct snd_soc_component *component,
 					    WM8903_SPK_DISCHARGE, 0);
 
 			snd_soc_component_update_bits(component, WM8903_VMID_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8903_VMID_TIE_ENA |
 					    WM8903_BUFIO_ENA |
 					    WM8903_VMID_IO_ENA |
@@ -1458,20 +1150,6 @@ static int wm8903_set_bias_level(struct snd_soc_component *component,
 
 			msleep(129);
 
-<<<<<<< HEAD
-			snd_soc_update_bits(codec, WM8903_POWER_MANAGEMENT_5,
-					    WM8903_SPKL_ENA | WM8903_SPKR_ENA,
-					    0);
-
-			snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-					    WM8903_VMID_SOFT_MASK, 0);
-
-			snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-					    WM8903_VMID_RES_MASK,
-					    WM8903_VMID_RES_50K);
-
-			snd_soc_update_bits(codec, WM8903_BIAS_CONTROL_0,
-=======
 			snd_soc_component_update_bits(component, WM8903_POWER_MANAGEMENT_5,
 					    WM8903_SPKL_ENA | WM8903_SPKR_ENA,
 					    0);
@@ -1484,46 +1162,26 @@ static int wm8903_set_bias_level(struct snd_soc_component *component,
 					    WM8903_VMID_RES_50K);
 
 			snd_soc_component_update_bits(component, WM8903_BIAS_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8903_BIAS_ENA | WM8903_POBCTRL,
 					    WM8903_BIAS_ENA);
 
 			/* By default no bypass paths are enabled so
 			 * enable Class W support.
 			 */
-<<<<<<< HEAD
-			dev_dbg(codec->dev, "Enabling Class W\n");
-			snd_soc_update_bits(codec, WM8903_CLASS_W_0,
-=======
 			dev_dbg(component->dev, "Enabling Class W\n");
 			snd_soc_component_update_bits(component, WM8903_CLASS_W_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    WM8903_CP_DYN_FREQ |
 					    WM8903_CP_DYN_V,
 					    WM8903_CP_DYN_FREQ |
 					    WM8903_CP_DYN_V);
 		}
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_VMID_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8903_VMID_RES_MASK,
 				    WM8903_VMID_RES_250K);
 		break;
 
 	case SND_SOC_BIAS_OFF:
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_BIAS_CONTROL_0,
-				    WM8903_BIAS_ENA, 0);
-
-		snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-				    WM8903_VMID_SOFT_MASK,
-				    2 << WM8903_VMID_SOFT_SHIFT);
-
-		snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_BIAS_CONTROL_0,
 				    WM8903_BIAS_ENA, 0);
 
@@ -1532,48 +1190,29 @@ static int wm8903_set_bias_level(struct snd_soc_component *component,
 				    2 << WM8903_VMID_SOFT_SHIFT);
 
 		snd_soc_component_update_bits(component, WM8903_VMID_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8903_VMID_BUF_ENA, 0);
 
 		msleep(290);
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_VMID_CONTROL_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_VMID_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8903_VMID_TIE_ENA | WM8903_BUFIO_ENA |
 				    WM8903_VMID_IO_ENA | WM8903_VMID_RES_MASK |
 				    WM8903_VMID_SOFT_MASK |
 				    WM8903_VMID_BUF_ENA, 0);
 
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_BIAS_CONTROL_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_BIAS_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8903_STARTUP_BIAS_ENA, 0);
 		break;
 	}
 
-<<<<<<< HEAD
-	codec->dapm.bias_level = level;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int wm8903_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 				 int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8903->sysclk = freq;
 
@@ -1583,13 +1222,8 @@ static int wm8903_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 static int wm8903_set_dai_fmt(struct snd_soc_dai *codec_dai,
 			      unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	u16 aif1 = snd_soc_read(codec, WM8903_AUDIO_INTERFACE_1);
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	u16 aif1 = snd_soc_component_read(component, WM8903_AUDIO_INTERFACE_1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aif1 &= ~(WM8903_LRCLK_DIR | WM8903_BCLK_DIR | WM8903_AIF_FMT_MASK |
 		  WM8903_AIF_LRCLK_INV | WM8903_AIF_BCLK_INV);
@@ -1667,41 +1301,24 @@ static int wm8903_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	snd_soc_write(codec, WM8903_AUDIO_INTERFACE_1, aif1);
-=======
 	snd_soc_component_write(component, WM8903_AUDIO_INTERFACE_1, aif1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int wm8903_digital_mute(struct snd_soc_dai *codec_dai, int mute)
-{
-	struct snd_soc_codec *codec = codec_dai->codec;
-	u16 reg;
-
-	reg = snd_soc_read(codec, WM8903_DAC_DIGITAL_1);
-=======
 static int wm8903_mute(struct snd_soc_dai *codec_dai, int mute, int direction)
 {
 	struct snd_soc_component *component = codec_dai->component;
 	u16 reg;
 
 	reg = snd_soc_component_read(component, WM8903_DAC_DIGITAL_1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mute)
 		reg |= WM8903_DAC_MUTE;
 	else
 		reg &= ~WM8903_DAC_MUTE;
 
-<<<<<<< HEAD
-	snd_soc_write(codec, WM8903_DAC_DIGITAL_1, reg);
-=======
 	snd_soc_component_write(component, WM8903_DAC_DIGITAL_1, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1821,14 +1438,8 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec *codec =rtd->codec;
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-=======
 	struct snd_soc_component *component = dai->component;
 	struct wm8903_priv *wm8903 = snd_soc_component_get_drvdata(component);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fs = params_rate(params);
 	int bclk;
 	int bclk_div;
@@ -1839,21 +1450,12 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 	int cur_val;
 	int clk_sys;
 
-<<<<<<< HEAD
-	u16 aif1 = snd_soc_read(codec, WM8903_AUDIO_INTERFACE_1);
-	u16 aif2 = snd_soc_read(codec, WM8903_AUDIO_INTERFACE_2);
-	u16 aif3 = snd_soc_read(codec, WM8903_AUDIO_INTERFACE_3);
-	u16 clock0 = snd_soc_read(codec, WM8903_CLOCK_RATES_0);
-	u16 clock1 = snd_soc_read(codec, WM8903_CLOCK_RATES_1);
-	u16 dac_digital1 = snd_soc_read(codec, WM8903_DAC_DIGITAL_1);
-=======
 	u16 aif1 = snd_soc_component_read(component, WM8903_AUDIO_INTERFACE_1);
 	u16 aif2 = snd_soc_component_read(component, WM8903_AUDIO_INTERFACE_2);
 	u16 aif3 = snd_soc_component_read(component, WM8903_AUDIO_INTERFACE_3);
 	u16 clock0 = snd_soc_component_read(component, WM8903_CLOCK_RATES_0);
 	u16 clock1 = snd_soc_component_read(component, WM8903_CLOCK_RATES_1);
 	u16 dac_digital1 = snd_soc_component_read(component, WM8903_DAC_DIGITAL_1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable sloping stopband filter for low sample rates */
 	if (fs <= 24000)
@@ -1872,31 +1474,12 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "DSP fs = %dHz\n", sample_rates[dsp_config].rate);
-=======
 	dev_dbg(component->dev, "DSP fs = %dHz\n", sample_rates[dsp_config].rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clock1 &= ~WM8903_SAMPLE_RATE_MASK;
 	clock1 |= sample_rates[dsp_config].value;
 
 	aif1 &= ~WM8903_AIF_WL_MASK;
 	bclk = 2 * fs;
-<<<<<<< HEAD
-	switch (params_format(params)) {
-	case SNDRV_PCM_FORMAT_S16_LE:
-		bclk *= 16;
-		break;
-	case SNDRV_PCM_FORMAT_S20_3LE:
-		bclk *= 20;
-		aif1 |= 0x4;
-		break;
-	case SNDRV_PCM_FORMAT_S24_LE:
-		bclk *= 24;
-		aif1 |= 0x8;
-		break;
-	case SNDRV_PCM_FORMAT_S32_LE:
-=======
 	switch (params_width(params)) {
 	case 16:
 		bclk *= 16;
@@ -1910,7 +1493,6 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 		aif1 |= 0x8;
 		break;
 	case 32:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bclk *= 32;
 		aif1 |= 0xc;
 		break;
@@ -1918,11 +1500,7 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "MCLK = %dHz, target sample rate = %dHz\n",
-=======
 	dev_dbg(component->dev, "MCLK = %dHz, target sample rate = %dHz\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm8903->sysclk, fs);
 
 	/* We may not have an MCLK which allows us to generate exactly
@@ -1957,20 +1535,12 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 	clock1 |= clk_sys_ratios[clk_config].rate << WM8903_CLK_SYS_RATE_SHIFT;
 	clock1 |= clk_sys_ratios[clk_config].mode << WM8903_CLK_SYS_MODE_SHIFT;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "CLK_SYS_RATE=%x, CLK_SYS_MODE=%x div=%d\n",
-=======
 	dev_dbg(component->dev, "CLK_SYS_RATE=%x, CLK_SYS_MODE=%x div=%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clk_sys_ratios[clk_config].rate,
 		clk_sys_ratios[clk_config].mode,
 		clk_sys_ratios[clk_config].div);
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "Actual CLK_SYS = %dHz\n", clk_sys);
-=======
 	dev_dbg(component->dev, "Actual CLK_SYS = %dHz\n", clk_sys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We may not get quite the right frequency if using
 	 * approximate clocks so look for the closest match that is
@@ -1978,31 +1548,19 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 	 * BCLKs to clock out the samples).
 	 */
 	bclk_div = 0;
-<<<<<<< HEAD
-	best_val = ((clk_sys * 10) / bclk_divs[0].ratio) - bclk;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = 1;
 	while (i < ARRAY_SIZE(bclk_divs)) {
 		cur_val = ((clk_sys * 10) / bclk_divs[i].ratio) - bclk;
 		if (cur_val < 0) /* BCLK table is sorted */
 			break;
 		bclk_div = i;
-<<<<<<< HEAD
-		best_val = cur_val;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 
 	aif2 &= ~WM8903_BCLK_DIV_MASK;
 	aif3 &= ~WM8903_LRCLK_RATE_MASK;
 
-<<<<<<< HEAD
-	dev_dbg(codec->dev, "BCLK ratio %d for %dHz - actual BCLK = %dHz\n",
-=======
 	dev_dbg(component->dev, "BCLK ratio %d for %dHz - actual BCLK = %dHz\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bclk_divs[bclk_div].ratio / 10, bclk,
 		(clk_sys * 10) / bclk_divs[bclk_div].ratio);
 
@@ -2010,16 +1568,6 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 	aif3 |= bclk / fs;
 
 	wm8903->fs = params_rate(params);
-<<<<<<< HEAD
-	wm8903_set_deemph(codec);
-
-	snd_soc_write(codec, WM8903_CLOCK_RATES_0, clock0);
-	snd_soc_write(codec, WM8903_CLOCK_RATES_1, clock1);
-	snd_soc_write(codec, WM8903_AUDIO_INTERFACE_1, aif1);
-	snd_soc_write(codec, WM8903_AUDIO_INTERFACE_2, aif2);
-	snd_soc_write(codec, WM8903_AUDIO_INTERFACE_3, aif3);
-	snd_soc_write(codec, WM8903_DAC_DIGITAL_1, dac_digital1);
-=======
 	wm8903_set_deemph(component);
 
 	snd_soc_component_write(component, WM8903_CLOCK_RATES_0, clock0);
@@ -2028,7 +1576,6 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 	snd_soc_component_write(component, WM8903_AUDIO_INTERFACE_2, aif2);
 	snd_soc_component_write(component, WM8903_AUDIO_INTERFACE_3, aif3);
 	snd_soc_component_write(component, WM8903_DAC_DIGITAL_1, dac_digital1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2036,11 +1583,7 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
 /**
  * wm8903_mic_detect - Enable microphone detection via the WM8903 IRQ
  *
-<<<<<<< HEAD
- * @codec:  WM8903 codec
-=======
  * @component:  WM8903 component
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @jack:   jack to report detection events on
  * @det:    value to report for presence detection
  * @shrt:   value to report for short detection
@@ -2054,15 +1597,6 @@ static int wm8903_hw_params(struct snd_pcm_substream *substream,
  * micdet_cfg in the platform data.  Using this function will force on
  * the microphone bias for the device.
  */
-<<<<<<< HEAD
-int wm8903_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
-		      int det, int shrt)
-{
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-	int irq_mask = WM8903_MICDET_EINT | WM8903_MICSHRT_EINT;
-
-	dev_dbg(codec->dev, "Enabling microphone detection: %x %x\n",
-=======
 int wm8903_mic_detect(struct snd_soc_component *component, struct snd_soc_jack *jack,
 		      int det, int shrt)
 {
@@ -2070,7 +1604,6 @@ int wm8903_mic_detect(struct snd_soc_component *component, struct snd_soc_jack *
 	int irq_mask = WM8903_MICDET_EINT | WM8903_MICSHRT_EINT;
 
 	dev_dbg(component->dev, "Enabling microphone detection: %x %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		det, shrt);
 
 	/* Store the configuration */
@@ -2084,32 +1617,19 @@ int wm8903_mic_detect(struct snd_soc_component *component, struct snd_soc_jack *
 	if (shrt)
 		irq_mask &= ~WM8903_MICSHRT_EINT;
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8903_INTERRUPT_STATUS_1_MASK,
-=======
 	snd_soc_component_update_bits(component, WM8903_INTERRUPT_STATUS_1_MASK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    WM8903_MICDET_EINT | WM8903_MICSHRT_EINT,
 			    irq_mask);
 
 	if (det || shrt) {
 		/* Enable mic detection, this may not have been set through
 		 * platform data (eg, if the defaults are OK). */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, WM8903_WRITE_SEQUENCER_0,
-				    WM8903_WSEQ_ENA, WM8903_WSEQ_ENA);
-		snd_soc_update_bits(codec, WM8903_MIC_BIAS_CONTROL_0,
-				    WM8903_MICDET_ENA, WM8903_MICDET_ENA);
-	} else {
-		snd_soc_update_bits(codec, WM8903_MIC_BIAS_CONTROL_0,
-=======
 		snd_soc_component_update_bits(component, WM8903_WRITE_SEQUENCER_0,
 				    WM8903_WSEQ_ENA, WM8903_WSEQ_ENA);
 		snd_soc_component_update_bits(component, WM8903_MIC_BIAS_CONTROL_0,
 				    WM8903_MICDET_ENA, WM8903_MICDET_ENA);
 	} else {
 		snd_soc_component_update_bits(component, WM8903_MIC_BIAS_CONTROL_0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    WM8903_MICDET_ENA, 0);
 	}
 
@@ -2119,19 +1639,6 @@ EXPORT_SYMBOL_GPL(wm8903_mic_detect);
 
 static irqreturn_t wm8903_irq(int irq, void *data)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = data;
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-	int mic_report;
-	int int_pol;
-	int int_val = 0;
-	int mask = ~snd_soc_read(codec, WM8903_INTERRUPT_STATUS_1_MASK);
-
-	int_val = snd_soc_read(codec, WM8903_INTERRUPT_STATUS_1) & mask;
-
-	if (int_val & WM8903_WSEQ_BUSY_EINT) {
-		dev_warn(codec->dev, "Write sequencer done\n");
-=======
 	struct wm8903_priv *wm8903 = data;
 	int mic_report, ret;
 	unsigned int int_val, mask, int_pol;
@@ -2153,7 +1660,6 @@ static irqreturn_t wm8903_irq(int irq, void *data)
 
 	if (int_val & WM8903_WSEQ_BUSY_EINT) {
 		dev_warn(wm8903->dev, "Write sequencer done\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2164,17 +1670,6 @@ static irqreturn_t wm8903_irq(int irq, void *data)
 	 * the polarity register.
 	 */
 	mic_report = wm8903->mic_last_report;
-<<<<<<< HEAD
-	int_pol = snd_soc_read(codec, WM8903_INTERRUPT_POLARITY_1);
-
-#ifndef CONFIG_SND_SOC_WM8903_MODULE
-	if (int_val & (WM8903_MICSHRT_EINT | WM8903_MICDET_EINT))
-		trace_snd_soc_jack_irq(dev_name(codec->dev));
-#endif
-
-	if (int_val & WM8903_MICSHRT_EINT) {
-		dev_dbg(codec->dev, "Microphone short (pol=%x)\n", int_pol);
-=======
 	ret = regmap_read(wm8903->regmap, WM8903_INTERRUPT_POLARITY_1,
 			  &int_pol);
 	if (ret != 0) {
@@ -2190,18 +1685,13 @@ static irqreturn_t wm8903_irq(int irq, void *data)
 
 	if (int_val & WM8903_MICSHRT_EINT) {
 		dev_dbg(wm8903->dev, "Microphone short (pol=%x)\n", int_pol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mic_report ^= wm8903->mic_short;
 		int_pol ^= WM8903_MICSHRT_INV;
 	}
 
 	if (int_val & WM8903_MICDET_EINT) {
-<<<<<<< HEAD
-		dev_dbg(codec->dev, "Microphone detect (pol=%x)\n", int_pol);
-=======
 		dev_dbg(wm8903->dev, "Microphone detect (pol=%x)\n", int_pol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mic_report ^= wm8903->mic_det;
 		int_pol ^= WM8903_MICDET_INV;
@@ -2209,13 +1699,8 @@ static irqreturn_t wm8903_irq(int irq, void *data)
 		msleep(wm8903->mic_delay);
 	}
 
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, WM8903_INTERRUPT_POLARITY_1,
-			    WM8903_MICSHRT_INV | WM8903_MICDET_INV, int_pol);
-=======
 	regmap_update_bits(wm8903->regmap, WM8903_INTERRUPT_POLARITY_1,
 			   WM8903_MICSHRT_INV | WM8903_MICDET_INV, int_pol);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_soc_jack_report(wm8903->mic_jack, mic_report,
 			    wm8903->mic_short | wm8903->mic_det);
@@ -2249,16 +1734,10 @@ static irqreturn_t wm8903_irq(int irq, void *data)
 
 static const struct snd_soc_dai_ops wm8903_dai_ops = {
 	.hw_params	= wm8903_hw_params,
-<<<<<<< HEAD
-	.digital_mute	= wm8903_digital_mute,
-	.set_fmt	= wm8903_set_dai_fmt,
-	.set_sysclk	= wm8903_set_dai_sysclk,
-=======
 	.mute_stream	= wm8903_mute,
 	.set_fmt	= wm8903_set_dai_fmt,
 	.set_sysclk	= wm8903_set_dai_sysclk,
 	.no_capture_mute = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8903_dai = {
@@ -2278,26 +1757,6 @@ static struct snd_soc_dai_driver wm8903_dai = {
 		 .formats = WM8903_FORMATS,
 	 },
 	.ops = &wm8903_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1,
-};
-
-static int wm8903_suspend(struct snd_soc_codec *codec)
-{
-	wm8903_set_bias_level(codec, SND_SOC_BIAS_OFF);
-
-	return 0;
-}
-
-static int wm8903_resume(struct snd_soc_codec *codec)
-{
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-
-	regcache_sync(wm8903->regmap);
-
-	wm8903_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-=======
 	.symmetric_rate = 1,
 };
 
@@ -2307,19 +1766,10 @@ static int wm8903_resume(struct snd_soc_component *component)
 
 	regcache_sync(wm8903->regmap);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 #ifdef CONFIG_GPIOLIB
-<<<<<<< HEAD
-static inline struct wm8903_priv *gpio_to_wm8903(struct gpio_chip *chip)
-{
-	return container_of(chip, struct wm8903_priv, gpio_chip);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wm8903_gpio_request(struct gpio_chip *chip, unsigned offset)
 {
 	if (offset >= WM8903_NUM_GPIO)
@@ -2330,12 +1780,7 @@ static int wm8903_gpio_request(struct gpio_chip *chip, unsigned offset)
 
 static int wm8903_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
-	struct snd_soc_codec *codec = wm8903->codec;
-=======
 	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int mask, val;
 	int ret;
 
@@ -2343,13 +1788,8 @@ static int wm8903_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 	val = (WM8903_GPn_FN_GPIO_INPUT << WM8903_GP1_FN_SHIFT) |
 		WM8903_GP1_DIR;
 
-<<<<<<< HEAD
-	ret = snd_soc_update_bits(codec, WM8903_GPIO_CONTROL_1 + offset,
-				  mask, val);
-=======
 	ret = regmap_update_bits(wm8903->regmap,
 				 WM8903_GPIO_CONTROL_1 + offset, mask, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -2358,33 +1798,18 @@ static int wm8903_gpio_direction_in(struct gpio_chip *chip, unsigned offset)
 
 static int wm8903_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
-	struct snd_soc_codec *codec = wm8903->codec;
-	int reg;
-
-	reg = snd_soc_read(codec, WM8903_GPIO_CONTROL_1 + offset);
-
-	return (reg & WM8903_GP1_LVL_MASK) >> WM8903_GP1_LVL_SHIFT;
-=======
 	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
 	unsigned int reg;
 
 	regmap_read(wm8903->regmap, WM8903_GPIO_CONTROL_1 + offset, &reg);
 
 	return !!((reg & WM8903_GP1_LVL_MASK) >> WM8903_GP1_LVL_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8903_gpio_direction_out(struct gpio_chip *chip,
 				     unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
-	struct snd_soc_codec *codec = wm8903->codec;
-=======
 	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int mask, val;
 	int ret;
 
@@ -2392,13 +1817,8 @@ static int wm8903_gpio_direction_out(struct gpio_chip *chip,
 	val = (WM8903_GPn_FN_GPIO_OUTPUT << WM8903_GP1_FN_SHIFT) |
 		(value << WM8903_GP2_LVL_SHIFT);
 
-<<<<<<< HEAD
-	ret = snd_soc_update_bits(codec, WM8903_GPIO_CONTROL_1 + offset,
-				  mask, val);
-=======
 	ret = regmap_update_bits(wm8903->regmap,
 				 WM8903_GPIO_CONTROL_1 + offset, mask, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -2407,17 +1827,6 @@ static int wm8903_gpio_direction_out(struct gpio_chip *chip,
 
 static void wm8903_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 {
-<<<<<<< HEAD
-	struct wm8903_priv *wm8903 = gpio_to_wm8903(chip);
-	struct snd_soc_codec *codec = wm8903->codec;
-
-	snd_soc_update_bits(codec, WM8903_GPIO_CONTROL_1 + offset,
-			    WM8903_GP1_LVL_MASK,
-			    !!value << WM8903_GP1_LVL_SHIFT);
-}
-
-static struct gpio_chip wm8903_template_chip = {
-=======
 	struct wm8903_priv *wm8903 = gpiochip_get_data(chip);
 
 	regmap_update_bits(wm8903->regmap, WM8903_GPIO_CONTROL_1 + offset,
@@ -2426,7 +1835,6 @@ static struct gpio_chip wm8903_template_chip = {
 }
 
 static const struct gpio_chip wm8903_template_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.label			= "wm8903",
 	.owner			= THIS_MODULE,
 	.request		= wm8903_gpio_request,
@@ -2437,52 +1845,20 @@ static const struct gpio_chip wm8903_template_chip = {
 	.can_sleep		= 1,
 };
 
-<<<<<<< HEAD
-static void wm8903_init_gpio(struct snd_soc_codec *codec)
-{
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-=======
 static void wm8903_init_gpio(struct wm8903_priv *wm8903)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wm8903_platform_data *pdata = wm8903->pdata;
 	int ret;
 
 	wm8903->gpio_chip = wm8903_template_chip;
 	wm8903->gpio_chip.ngpio = WM8903_NUM_GPIO;
-<<<<<<< HEAD
-	wm8903->gpio_chip.dev = codec->dev;
-=======
 	wm8903->gpio_chip.parent = wm8903->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->gpio_base)
 		wm8903->gpio_chip.base = pdata->gpio_base;
 	else
 		wm8903->gpio_chip.base = -1;
 
-<<<<<<< HEAD
-	ret = gpiochip_add(&wm8903->gpio_chip);
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to add GPIOs: %d\n", ret);
-}
-
-static void wm8903_free_gpio(struct snd_soc_codec *codec)
-{
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-	int ret;
-
-	ret = gpiochip_remove(&wm8903->gpio_chip);
-	if (ret != 0)
-		dev_err(codec->dev, "Failed to remove GPIOs: %d\n", ret);
-}
-#else
-static void wm8903_init_gpio(struct snd_soc_codec *codec)
-{
-}
-
-static void wm8903_free_gpio(struct snd_soc_codec *codec)
-=======
 	ret = gpiochip_add_data(&wm8903->gpio_chip, wm8903);
 	if (ret != 0)
 		dev_err(wm8903->dev, "Failed to add GPIOs: %d\n", ret);
@@ -2498,163 +1874,10 @@ static void wm8903_init_gpio(struct wm8903_priv *wm8903)
 }
 
 static void wm8903_free_gpio(struct wm8903_priv *wm8903)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-static int wm8903_probe(struct snd_soc_codec *codec)
-{
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-	struct wm8903_platform_data *pdata = wm8903->pdata;
-	int ret, i;
-	int trigger, irq_pol;
-	u16 val;
-	bool mic_gpio = false;
-
-	wm8903->codec = codec;
-	codec->control_data = wm8903->regmap;
-
-	ret = snd_soc_codec_set_cache_io(codec, 8, 16, SND_SOC_REGMAP);
-	if (ret != 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	/* Set up GPIOs, detect if any are MIC detect outputs */
-	for (i = 0; i < ARRAY_SIZE(pdata->gpio_cfg); i++) {
-		if ((!pdata->gpio_cfg[i]) ||
-		    (pdata->gpio_cfg[i] > WM8903_GPIO_CONFIG_ZERO))
-			continue;
-
-		snd_soc_write(codec, WM8903_GPIO_CONTROL_1 + i,
-				pdata->gpio_cfg[i] & 0x7fff);
-
-		val = (pdata->gpio_cfg[i] & WM8903_GP1_FN_MASK)
-			>> WM8903_GP1_FN_SHIFT;
-
-		switch (val) {
-		case WM8903_GPn_FN_MICBIAS_CURRENT_DETECT:
-		case WM8903_GPn_FN_MICBIAS_SHORT_DETECT:
-			mic_gpio = true;
-			break;
-		default:
-			break;
-		}
-	}
-
-	/* Set up microphone detection */
-	snd_soc_write(codec, WM8903_MIC_BIAS_CONTROL_0,
-			pdata->micdet_cfg);
-
-	/* Microphone detection needs the WSEQ clock */
-	if (pdata->micdet_cfg)
-		snd_soc_update_bits(codec, WM8903_WRITE_SEQUENCER_0,
-				    WM8903_WSEQ_ENA, WM8903_WSEQ_ENA);
-
-	/* If microphone detection is enabled by pdata but
-	    * detected via IRQ then interrupts can be lost before
-	    * the machine driver has set up microphone detection
-	    * IRQs as the IRQs are clear on read.  The detection
-	    * will be enabled when the machine driver configures.
-	    */
-	WARN_ON(!mic_gpio && (pdata->micdet_cfg & WM8903_MICDET_ENA));
-
-	wm8903->mic_delay = pdata->micdet_delay;
-
-	if (wm8903->irq) {
-		if (pdata->irq_active_low) {
-			trigger = IRQF_TRIGGER_LOW;
-			irq_pol = WM8903_IRQ_POL;
-		} else {
-			trigger = IRQF_TRIGGER_HIGH;
-			irq_pol = 0;
-		}
-
-		snd_soc_update_bits(codec, WM8903_INTERRUPT_CONTROL,
-				    WM8903_IRQ_POL, irq_pol);
-		
-		ret = request_threaded_irq(wm8903->irq, NULL, wm8903_irq,
-					   trigger | IRQF_ONESHOT,
-					   "wm8903", codec);
-		if (ret != 0) {
-			dev_err(codec->dev, "Failed to request IRQ: %d\n",
-				ret);
-			return ret;
-		}
-
-		/* Enable write sequencer interrupts */
-		snd_soc_update_bits(codec, WM8903_INTERRUPT_STATUS_1_MASK,
-				    WM8903_IM_WSEQ_BUSY_EINT, 0);
-	}
-
-	/* power on device */
-	wm8903_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	/* Latch volume update bits */
-	val = snd_soc_read(codec, WM8903_ADC_DIGITAL_VOLUME_LEFT);
-	val |= WM8903_ADCVU;
-	snd_soc_write(codec, WM8903_ADC_DIGITAL_VOLUME_LEFT, val);
-	snd_soc_write(codec, WM8903_ADC_DIGITAL_VOLUME_RIGHT, val);
-
-	val = snd_soc_read(codec, WM8903_DAC_DIGITAL_VOLUME_LEFT);
-	val |= WM8903_DACVU;
-	snd_soc_write(codec, WM8903_DAC_DIGITAL_VOLUME_LEFT, val);
-	snd_soc_write(codec, WM8903_DAC_DIGITAL_VOLUME_RIGHT, val);
-
-	val = snd_soc_read(codec, WM8903_ANALOGUE_OUT1_LEFT);
-	val |= WM8903_HPOUTVU;
-	snd_soc_write(codec, WM8903_ANALOGUE_OUT1_LEFT, val);
-	snd_soc_write(codec, WM8903_ANALOGUE_OUT1_RIGHT, val);
-
-	val = snd_soc_read(codec, WM8903_ANALOGUE_OUT2_LEFT);
-	val |= WM8903_LINEOUTVU;
-	snd_soc_write(codec, WM8903_ANALOGUE_OUT2_LEFT, val);
-	snd_soc_write(codec, WM8903_ANALOGUE_OUT2_RIGHT, val);
-
-	val = snd_soc_read(codec, WM8903_ANALOGUE_OUT3_LEFT);
-	val |= WM8903_SPKVU;
-	snd_soc_write(codec, WM8903_ANALOGUE_OUT3_LEFT, val);
-	snd_soc_write(codec, WM8903_ANALOGUE_OUT3_RIGHT, val);
-
-	/* Enable DAC soft mute by default */
-	snd_soc_update_bits(codec, WM8903_DAC_DIGITAL_1,
-			    WM8903_DAC_MUTEMODE | WM8903_DAC_MUTE,
-			    WM8903_DAC_MUTEMODE | WM8903_DAC_MUTE);
-
-	wm8903_init_gpio(codec);
-
-	return ret;
-}
-
-/* power down chip */
-static int wm8903_remove(struct snd_soc_codec *codec)
-{
-	struct wm8903_priv *wm8903 = snd_soc_codec_get_drvdata(codec);
-
-	wm8903_free_gpio(codec);
-	wm8903_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	if (wm8903->irq)
-		free_irq(wm8903->irq, codec);
-
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_wm8903 = {
-	.probe =	wm8903_probe,
-	.remove =	wm8903_remove,
-	.suspend =	wm8903_suspend,
-	.resume =	wm8903_resume,
-	.set_bias_level = wm8903_set_bias_level,
-	.seq_notifier = wm8903_seq_notifier,
-	.controls = wm8903_snd_controls,
-	.num_controls = ARRAY_SIZE(wm8903_snd_controls),
-	.dapm_widgets = wm8903_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(wm8903_dapm_widgets),
-	.dapm_routes = wm8903_intercon,
-	.num_dapm_routes = ARRAY_SIZE(wm8903_intercon),
-=======
 static const struct snd_soc_component_driver soc_component_dev_wm8903 = {
 	.resume			= wm8903_resume,
 	.set_bias_level		= wm8903_set_bias_level,
@@ -2669,7 +1892,6 @@ static const struct snd_soc_component_driver soc_component_dev_wm8903 = {
 	.idle_bias_on		= 1,
 	.use_pmdown_time	= 1,
 	.endianness		= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct regmap_config wm8903_regmap = {
@@ -2680,11 +1902,7 @@ static const struct regmap_config wm8903_regmap = {
 	.volatile_reg = wm8903_volatile_register,
 	.readable_reg = wm8903_readable_register,
 
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-=======
 	.cache_type = REGCACHE_MAPLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_defaults = wm8903_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8903_reg_defaults),
 };
@@ -2706,11 +1924,7 @@ static int wm8903_set_pdata_irq_trigger(struct i2c_client *i2c,
 		* We assume the controller imposes no restrictions,
 		* so we are able to select active-high
 		*/
-<<<<<<< HEAD
-		/* Fall-through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IRQ_TYPE_LEVEL_HIGH:
 		pdata->irq_active_low = false;
 		break;
@@ -2765,22 +1979,6 @@ static int wm8903_set_pdata_from_of(struct i2c_client *i2c,
 	return 0;
 }
 
-<<<<<<< HEAD
-static __devinit int wm8903_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-{
-	struct wm8903_platform_data *pdata = dev_get_platdata(&i2c->dev);
-	struct wm8903_priv *wm8903;
-	unsigned int val;
-	int ret;
-
-	wm8903 = devm_kzalloc(&i2c->dev,  sizeof(struct wm8903_priv),
-			      GFP_KERNEL);
-	if (wm8903 == NULL)
-		return -ENOMEM;
-
-	wm8903->regmap = regmap_init_i2c(i2c, &wm8903_regmap);
-=======
 static int wm8903_i2c_probe(struct i2c_client *i2c)
 {
 	struct wm8903_platform_data *pdata = dev_get_platdata(&i2c->dev);
@@ -2798,7 +1996,6 @@ static int wm8903_i2c_probe(struct i2c_client *i2c)
 	wm8903->dev = &i2c->dev;
 
 	wm8903->regmap = devm_regmap_init_i2c(i2c, &wm8903_regmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm8903->regmap)) {
 		ret = PTR_ERR(wm8903->regmap);
 		dev_err(&i2c->dev, "Failed to allocate register map: %d\n",
@@ -2807,29 +2004,15 @@ static int wm8903_i2c_probe(struct i2c_client *i2c)
 	}
 
 	i2c_set_clientdata(i2c, wm8903);
-<<<<<<< HEAD
-	wm8903->irq = i2c->irq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If no platform data was supplied, create storage for defaults */
 	if (pdata) {
 		wm8903->pdata = pdata;
 	} else {
-<<<<<<< HEAD
-		wm8903->pdata = devm_kzalloc(&i2c->dev,
-					sizeof(struct wm8903_platform_data),
-					GFP_KERNEL);
-		if (wm8903->pdata == NULL) {
-			dev_err(&i2c->dev, "Failed to allocate pdata\n");
-			return -ENOMEM;
-		}
-=======
 		wm8903->pdata = devm_kzalloc(&i2c->dev, sizeof(*wm8903->pdata),
 					     GFP_KERNEL);
 		if (!wm8903->pdata)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (i2c->irq) {
 			ret = wm8903_set_pdata_irq_trigger(i2c, wm8903->pdata);
@@ -2844,8 +2027,6 @@ static int wm8903_i2c_probe(struct i2c_client *i2c)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	pdata = wm8903->pdata;
 
 	for (i = 0; i < ARRAY_SIZE(wm8903->supplies); i++)
@@ -2865,7 +2046,6 @@ static int wm8903_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = regmap_read(wm8903->regmap, WM8903_SW_RESET_AND_ID, &val);
 	if (ret != 0) {
 		dev_err(&i2c->dev, "Failed to read chip ID: %d\n", ret);
@@ -2888,10 +2068,6 @@ static int wm8903_i2c_probe(struct i2c_client *i2c)
 	/* Reset the device */
 	regmap_write(wm8903->regmap, WM8903_SW_RESET_AND_ID, 0x8903);
 
-<<<<<<< HEAD
-	ret = snd_soc_register_codec(&i2c->dev,
-			&soc_codec_dev_wm8903, &wm8903_dai, 1);
-=======
 	wm8903_init_gpio(wm8903);
 
 	/* Set up GPIO pin state, detect if any are MIC detect outputs */
@@ -2995,26 +2171,11 @@ static int wm8903_i2c_probe(struct i2c_client *i2c)
 
 	ret = devm_snd_soc_register_component(&i2c->dev,
 			&soc_component_dev_wm8903, &wm8903_dai, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0)
 		goto err;
 
 	return 0;
 err:
-<<<<<<< HEAD
-	regmap_exit(wm8903->regmap);
-	return ret;
-}
-
-static __devexit int wm8903_i2c_remove(struct i2c_client *client)
-{
-	struct wm8903_priv *wm8903 = i2c_get_clientdata(client);
-
-	regmap_exit(wm8903->regmap);
-	snd_soc_unregister_codec(&client->dev);
-
-	return 0;
-=======
 	regulator_bulk_disable(ARRAY_SIZE(wm8903->supplies),
 			       wm8903->supplies);
 	return ret;
@@ -3029,7 +2190,6 @@ static void wm8903_i2c_remove(struct i2c_client *client)
 	if (client->irq)
 		free_irq(client->irq, wm8903);
 	wm8903_free_gpio(wm8903);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id wm8903_of_match[] = {
@@ -3047,33 +2207,6 @@ MODULE_DEVICE_TABLE(i2c, wm8903_i2c_id);
 static struct i2c_driver wm8903_i2c_driver = {
 	.driver = {
 		.name = "wm8903",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = wm8903_of_match,
-	},
-	.probe =    wm8903_i2c_probe,
-	.remove =   __devexit_p(wm8903_i2c_remove),
-	.id_table = wm8903_i2c_id,
-};
-
-static int __init wm8903_modinit(void)
-{
-	int ret = 0;
-	ret = i2c_add_driver(&wm8903_i2c_driver);
-	if (ret != 0) {
-		printk(KERN_ERR "Failed to register wm8903 I2C driver: %d\n",
-		       ret);
-	}
-	return ret;
-}
-module_init(wm8903_modinit);
-
-static void __exit wm8903_exit(void)
-{
-	i2c_del_driver(&wm8903_i2c_driver);
-}
-module_exit(wm8903_exit);
-=======
 		.of_match_table = wm8903_of_match,
 	},
 	.probe =    wm8903_i2c_probe,
@@ -3082,7 +2215,6 @@ module_exit(wm8903_exit);
 };
 
 module_i2c_driver(wm8903_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM8903 driver");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.cm>");

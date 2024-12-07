@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPWireless 3G PCMCIA Network Driver
  *
@@ -52,12 +49,6 @@ struct ipw_dev {
 
 	void __iomem *common_memory;
 
-<<<<<<< HEAD
-	/* Reference to attribute memory, containing CIS data */
-	void *attribute_memory;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Hardware context */
 	struct ipw_hardware *hardware;
 	/* Network layer context */

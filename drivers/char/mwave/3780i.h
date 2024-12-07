@@ -68,11 +68,7 @@ typedef struct {
 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
-<<<<<<< HEAD
-	unsigned char Reserved:5;	/* 0: Reserved */
-=======
 	unsigned short Reserved:13;	/* 0: Reserved */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } DSP_ISA_SLAVE_CONTROL;
 
 
@@ -105,11 +101,7 @@ typedef struct {
 } DSP_UART_CFG_1;
 
 typedef struct {
-<<<<<<< HEAD
-	unsigned char Enable:1;	/* RW: Enable I/O and IRQ: 0=FALSE, 1=TRUE */
-=======
 	unsigned char Enable:1;	/* RW: Enable I/O and IRQ: 0=false, 1=true */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_UART_CFG_2;
 
@@ -122,11 +114,7 @@ typedef struct {
 } DSP_HBRIDGE_CFG_1;
 
 typedef struct {
-<<<<<<< HEAD
-	unsigned char Enable:1;	/* RW: enable I/O and IRQ: 0=FALSE, 1=TRUE */
-=======
 	unsigned char Enable:1;	/* RW: enable I/O and IRQ: 0=false, 1=true */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_HBRIDGE_CFG_2;
 
@@ -145,20 +133,12 @@ typedef struct {
 
 
 typedef struct {
-<<<<<<< HEAD
-	unsigned char GateIOCHRDY:1;	/* RW: Enable IOCHRDY gating: 0=FALSE, 1=TRUE */
-=======
 	unsigned char GateIOCHRDY:1;	/* RW: Enable IOCHRDY gating: 0=false, 1=true */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_ISA_PROT_CFG;
 
 typedef struct {
-<<<<<<< HEAD
-	unsigned char Enable:1;	/* RW: Enable low power suspend/resume 0=FALSE, 1=TRUE */
-=======
 	unsigned char Enable:1;	/* RW: Enable low power suspend/resume 0=false, 1=true */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char Reserved:7;	/* 0: Reserved */
 } DSP_POWER_MGMT_CFG;
 

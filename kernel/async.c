@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * async.c: Asynchronous function calls for boot performance
  *
  * (C) Copyright 2009 Intel Corporation
  * Author: Arjan van de Ven <arjan@linux.intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2
- * of the License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -57,30 +46,6 @@ asynchronous and synchronous parts of the kernel.
 
 #include <linux/async.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-#include <linux/ktime.h>
-#include <linux/export.h>
-#include <linux/wait.h>
-#include <linux/sched.h>
-#include <linux/slab.h>
-#include <linux/workqueue.h>
-
-static async_cookie_t next_cookie = 1;
-
-#define MAX_WORK	32768
-
-static LIST_HEAD(async_pending);
-static LIST_HEAD(async_running);
-static DEFINE_SPINLOCK(async_lock);
-
-struct async_entry {
-	struct list_head	list;
-	struct work_struct	work;
-	async_cookie_t		cookie;
-	async_func_ptr		*func;
-	void			*data;
-	struct list_head	*running;
-=======
 #include <linux/export.h>
 #include <linux/ktime.h>
 #include <linux/pid.h>
@@ -109,50 +74,12 @@ struct async_entry {
 	async_func_t		func;
 	void			*data;
 	struct async_domain	*domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DECLARE_WAIT_QUEUE_HEAD(async_done);
 
 static atomic_t entry_count;
 
-<<<<<<< HEAD
-
-/*
- * MUST be called with the lock held!
- */
-static async_cookie_t  __lowest_in_progress(struct list_head *running)
-{
-	struct async_entry *entry;
-
-	if (!running) { /* just check the entry count */
-		if (atomic_read(&entry_count))
-			return 0; /* smaller than any cookie */
-		else
-			return next_cookie;
-	}
-
-	if (!list_empty(running)) {
-		entry = list_first_entry(running,
-			struct async_entry, list);
-		return entry->cookie;
-	}
-
-	list_for_each_entry(entry, &async_pending, list)
-		if (entry->running == running)
-			return entry->cookie;
-
-	return next_cookie;	/* "infinity" value */
-}
-
-static async_cookie_t  lowest_in_progress(struct list_head *running)
-{
-	unsigned long flags;
-	async_cookie_t ret;
-
-	spin_lock_irqsave(&async_lock, flags);
-	ret = __lowest_in_progress(running);
-=======
 static long long microseconds_since(ktime_t start)
 {
 	ktime_t now = ktime_get();
@@ -180,7 +107,6 @@ static async_cookie_t lowest_in_progress(struct async_domain *domain)
 	if (first)
 		ret = first->cookie;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&async_lock, flags);
 	return ret;
 }
@@ -193,37 +119,6 @@ static void async_run_entry_fn(struct work_struct *work)
 	struct async_entry *entry =
 		container_of(work, struct async_entry, work);
 	unsigned long flags;
-<<<<<<< HEAD
-	ktime_t uninitialized_var(calltime), delta, rettime;
-
-	/* 1) move self to the running queue */
-	spin_lock_irqsave(&async_lock, flags);
-	list_move_tail(&entry->list, entry->running);
-	spin_unlock_irqrestore(&async_lock, flags);
-
-	/* 2) run (and print duration) */
-	if (initcall_debug && system_state == SYSTEM_BOOTING) {
-		printk(KERN_DEBUG "calling  %lli_%pF @ %i\n",
-			(long long)entry->cookie,
-			entry->func, task_pid_nr(current));
-		calltime = ktime_get();
-	}
-	entry->func(entry->data, entry->cookie);
-	if (initcall_debug && system_state == SYSTEM_BOOTING) {
-		rettime = ktime_get();
-		delta = ktime_sub(rettime, calltime);
-		printk(KERN_DEBUG "initcall %lli_%pF returned 0 after %lld usecs\n",
-			(long long)entry->cookie,
-			entry->func,
-			(long long)ktime_to_ns(delta) >> 10);
-	}
-
-	/* 3) remove self from the running queue */
-	spin_lock_irqsave(&async_lock, flags);
-	list_del(&entry->list);
-
-	/* 4) free the entry */
-=======
 	ktime_t calltime;
 
 	/* 1) run (and print duration) */
@@ -243,19 +138,11 @@ static void async_run_entry_fn(struct work_struct *work)
 	list_del_init(&entry->global_list);
 
 	/* 3) free the entry */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(entry);
 	atomic_dec(&entry_count);
 
 	spin_unlock_irqrestore(&async_lock, flags);
 
-<<<<<<< HEAD
-	/* 5) wake up any waiters */
-	wake_up(&async_done);
-}
-
-static async_cookie_t __async_schedule(async_func_ptr *ptr, void *data, struct list_head *running)
-=======
 	/* 4) wake up any waiters */
 	wake_up(&async_done);
 }
@@ -312,7 +199,6 @@ static async_cookie_t __async_schedule_node_domain(async_func_t func,
  */
 async_cookie_t async_schedule_node_domain(async_func_t func, void *data,
 					  int node, struct async_domain *domain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct async_entry *entry;
 	unsigned long flags;
@@ -332,60 +218,6 @@ async_cookie_t async_schedule_node_domain(async_func_t func, void *data,
 		spin_unlock_irqrestore(&async_lock, flags);
 
 		/* low on memory.. run synchronously */
-<<<<<<< HEAD
-		ptr(data, newcookie);
-		return newcookie;
-	}
-	INIT_WORK(&entry->work, async_run_entry_fn);
-	entry->func = ptr;
-	entry->data = data;
-	entry->running = running;
-
-	spin_lock_irqsave(&async_lock, flags);
-	newcookie = entry->cookie = next_cookie++;
-	list_add_tail(&entry->list, &async_pending);
-	atomic_inc(&entry_count);
-	spin_unlock_irqrestore(&async_lock, flags);
-
-	/* schedule for execution */
-	queue_work(system_unbound_wq, &entry->work);
-
-	return newcookie;
-}
-
-/**
- * async_schedule - schedule a function for asynchronous execution
- * @ptr: function to execute asynchronously
- * @data: data pointer to pass to the function
- *
- * Returns an async_cookie_t that may be used for checkpointing later.
- * Note: This function may be called from atomic or non-atomic contexts.
- */
-async_cookie_t async_schedule(async_func_ptr *ptr, void *data)
-{
-	return __async_schedule(ptr, data, &async_running);
-}
-EXPORT_SYMBOL_GPL(async_schedule);
-
-/**
- * async_schedule_domain - schedule a function for asynchronous execution within a certain domain
- * @ptr: function to execute asynchronously
- * @data: data pointer to pass to the function
- * @running: running list for the domain
- *
- * Returns an async_cookie_t that may be used for checkpointing later.
- * @running may be used in the async_synchronize_*_domain() functions
- * to wait within a certain synchronization domain rather than globally.
- * A synchronization domain is specified via the running queue @running to use.
- * Note: This function may be called from atomic or non-atomic contexts.
- */
-async_cookie_t async_schedule_domain(async_func_ptr *ptr, void *data,
-				     struct list_head *running)
-{
-	return __async_schedule(ptr, data, running);
-}
-EXPORT_SYMBOL_GPL(async_schedule_domain);
-=======
 		func(data, newcookie);
 		return newcookie;
 	}
@@ -441,7 +273,6 @@ bool async_schedule_dev_nocall(async_func_t func, struct device *dev)
 				     &async_dfl_domain, entry);
 	return true;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * async_synchronize_full - synchronize all asynchronous function calls
@@ -450,26 +281,12 @@ bool async_schedule_dev_nocall(async_func_t func, struct device *dev)
  */
 void async_synchronize_full(void)
 {
-<<<<<<< HEAD
-	async_synchronize_cookie_domain(next_cookie, NULL);
-=======
 	async_synchronize_full_domain(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(async_synchronize_full);
 
 /**
  * async_synchronize_full_domain - synchronize all asynchronous function within a certain domain
-<<<<<<< HEAD
- * @list: running list to synchronize on
- *
- * This function waits until all asynchronous function calls for the
- * synchronization domain specified by the running list @list have been done.
- */
-void async_synchronize_full_domain(struct list_head *list)
-{
-	async_synchronize_cookie_domain(next_cookie, list);
-=======
  * @domain: the domain to synchronize
  *
  * This function waits until all asynchronous function calls for the
@@ -478,41 +295,12 @@ void async_synchronize_full_domain(struct list_head *list)
 void async_synchronize_full_domain(struct async_domain *domain)
 {
 	async_synchronize_cookie_domain(ASYNC_COOKIE_MAX, domain);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(async_synchronize_full_domain);
 
 /**
  * async_synchronize_cookie_domain - synchronize asynchronous function calls within a certain domain with cookie checkpointing
  * @cookie: async_cookie_t to use as checkpoint
-<<<<<<< HEAD
- * @running: running list to synchronize on, NULL indicates all lists
- *
- * This function waits until all asynchronous function calls for the
- * synchronization domain specified by the running list @list submitted
- * prior to @cookie have been done.
- */
-void async_synchronize_cookie_domain(async_cookie_t cookie,
-				     struct list_head *running)
-{
-	ktime_t uninitialized_var(starttime), delta, endtime;
-
-	if (initcall_debug && system_state == SYSTEM_BOOTING) {
-		printk(KERN_DEBUG "async_waiting @ %i\n", task_pid_nr(current));
-		starttime = ktime_get();
-	}
-
-	wait_event(async_done, lowest_in_progress(running) >= cookie);
-
-	if (initcall_debug && system_state == SYSTEM_BOOTING) {
-		endtime = ktime_get();
-		delta = ktime_sub(endtime, starttime);
-
-		printk(KERN_DEBUG "async_continuing @ %i after %lli usec\n",
-			task_pid_nr(current),
-			(long long)ktime_to_ns(delta) >> 10);
-	}
-=======
  * @domain: the domain to synchronize (%NULL for all registered domains)
  *
  * This function waits until all asynchronous function calls for the
@@ -530,7 +318,6 @@ void async_synchronize_cookie_domain(async_cookie_t cookie, struct async_domain 
 
 	pr_debug("async_continuing @ %i after %lli usec\n", task_pid_nr(current),
 		 microseconds_since(starttime));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(async_synchronize_cookie_domain);
 
@@ -543,11 +330,6 @@ EXPORT_SYMBOL_GPL(async_synchronize_cookie_domain);
  */
 void async_synchronize_cookie(async_cookie_t cookie)
 {
-<<<<<<< HEAD
-	async_synchronize_cookie_domain(cookie, &async_running);
-}
-EXPORT_SYMBOL_GPL(async_synchronize_cookie);
-=======
 	async_synchronize_cookie_domain(cookie, &async_dfl_domain);
 }
 EXPORT_SYMBOL_GPL(async_synchronize_cookie);
@@ -578,4 +360,3 @@ void __init async_init(void)
 	BUG_ON(!async_wq);
 	workqueue_set_min_active(async_wq, WQ_DFL_ACTIVE);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

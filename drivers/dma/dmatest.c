@@ -1,56 +1,26 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DMA Engine test module
  *
  * Copyright (C) 2007 Atmel Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-=======
  * Copyright (C) 2013 Intel Corporation
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmaengine.h>
 #include <linux/freezer.h>
 #include <linux/init.h>
 #include <linux/kthread.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/task.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/random.h>
 #include <linux/slab.h>
 #include <linux/wait.h>
 
-<<<<<<< HEAD
-static unsigned int test_buf_size = 16384;
-module_param(test_buf_size, uint, S_IRUGO);
-MODULE_PARM_DESC(test_buf_size, "Size of the memcpy test buffer");
-
-static char test_channel[20];
-module_param_string(channel, test_channel, sizeof(test_channel), S_IRUGO);
-MODULE_PARM_DESC(channel, "Bus ID of the channel to test (default: any)");
-
-static char test_device[20];
-module_param_string(device, test_device, sizeof(test_device), S_IRUGO);
-MODULE_PARM_DESC(device, "Bus ID of the DMA Engine to test (default: any)");
-
-static unsigned int threads_per_chan = 1;
-module_param(threads_per_chan, uint, S_IRUGO);
-=======
 static bool nobounce;
 module_param(nobounce, bool, 0644);
 MODULE_PARM_DESC(nobounce, "Prevent using swiotlb buffer (default: use swiotlb buffer)");
@@ -65,28 +35,15 @@ MODULE_PARM_DESC(device, "Bus ID of the DMA Engine to test (default: any)");
 
 static unsigned int threads_per_chan = 1;
 module_param(threads_per_chan, uint, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(threads_per_chan,
 		"Number of threads to start per channel (default: 1)");
 
 static unsigned int max_channels;
-<<<<<<< HEAD
-module_param(max_channels, uint, S_IRUGO);
-=======
 module_param(max_channels, uint, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(max_channels,
 		"Maximum number of channels to use (default: all)");
 
 static unsigned int iterations;
-<<<<<<< HEAD
-module_param(iterations, uint, S_IRUGO);
-MODULE_PARM_DESC(iterations,
-		"Iterations before stopping test (default: infinite)");
-
-static unsigned int xor_sources = 3;
-module_param(xor_sources, uint, S_IRUGO);
-=======
 module_param(iterations, uint, 0644);
 MODULE_PARM_DESC(iterations,
 		"Iterations before stopping test (default: infinite)");
@@ -98,26 +55,15 @@ MODULE_PARM_DESC(dmatest,
 
 static unsigned int xor_sources = 3;
 module_param(xor_sources, uint, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(xor_sources,
 		"Number of xor source buffers (default: 3)");
 
 static unsigned int pq_sources = 3;
-<<<<<<< HEAD
-module_param(pq_sources, uint, S_IRUGO);
-=======
 module_param(pq_sources, uint, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(pq_sources,
 		"Number of p+q source buffers (default: 3)");
 
 static int timeout = 3000;
-<<<<<<< HEAD
-module_param(timeout, uint, S_IRUGO);
-MODULE_PARM_DESC(timeout, "Transfer Timeout in msec (default: 3000), "
-		 "Pass -1 for infinite timeout");
-
-=======
 module_param(timeout, int, 0644);
 MODULE_PARM_DESC(timeout, "Transfer Timeout in msec (default: 3000), "
 		 "Pass -1 for infinite timeout");
@@ -241,7 +187,6 @@ MODULE_PARM_DESC(test_list, "Print current test list");
 /* Maximum amount of mismatched bytes in buffer to print */
 #define MAX_ERROR_COUNT		32
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initialization patterns. All bytes in the source buffer has bit 7
  * set, all bytes in the destination buffer has bit 7 cleared.
@@ -258,16 +203,6 @@ MODULE_PARM_DESC(test_list, "Print current test list");
 #define PATTERN_COPY		0x40
 #define PATTERN_OVERWRITE	0x20
 #define PATTERN_COUNT_MASK	0x1f
-<<<<<<< HEAD
-
-struct dmatest_thread {
-	struct list_head	node;
-	struct task_struct	*task;
-	struct dma_chan		*chan;
-	u8			**srcs;
-	u8			**dsts;
-	enum dma_transaction_type type;
-=======
 #define PATTERN_MEMSET_IDX	0x01
 
 /* Fixed point arithmetic ops */
@@ -303,7 +238,6 @@ struct dmatest_thread {
 	struct dmatest_done test_done;
 	bool			done;
 	bool			pending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dmatest_chan {
@@ -312,27 +246,6 @@ struct dmatest_chan {
 	struct list_head	threads;
 };
 
-<<<<<<< HEAD
-/*
- * These are protected by dma_list_mutex since they're only used by
- * the DMA filter function callback
- */
-static LIST_HEAD(dmatest_channels);
-static unsigned int nr_channels;
-
-static bool dmatest_match_channel(struct dma_chan *chan)
-{
-	if (test_channel[0] == '\0')
-		return true;
-	return strcmp(dma_chan_name(chan), test_channel) == 0;
-}
-
-static bool dmatest_match_device(struct dma_device *device)
-{
-	if (test_device[0] == '\0')
-		return true;
-	return strcmp(dev_name(device->dev), test_device) == 0;
-=======
 static DECLARE_WAIT_QUEUE_HEAD(thread_wait);
 static bool wait;
 
@@ -400,7 +313,6 @@ static bool dmatest_match_device(struct dmatest_params *params,
 	if (params->device[0] == '\0')
 		return true;
 	return strcmp(dev_name(device->dev), params->device) == 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned long dmatest_random(void)
@@ -411,9 +323,6 @@ static unsigned long dmatest_random(void)
 	return buf;
 }
 
-<<<<<<< HEAD
-static void dmatest_init_srcs(u8 **bufs, unsigned int start, unsigned int len)
-=======
 static inline u8 gen_inv_idx(u8 index, bool is_memset)
 {
 	u8 val = is_memset ? PATTERN_MEMSET_IDX : index;
@@ -433,87 +342,39 @@ static inline u8 gen_dst_value(u8 index, bool is_memset)
 
 static void dmatest_init_srcs(u8 **bufs, unsigned int start, unsigned int len,
 		unsigned int buf_size, bool is_memset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	u8 *buf;
 
 	for (; (buf = *bufs); bufs++) {
 		for (i = 0; i < start; i++)
-<<<<<<< HEAD
-			buf[i] = PATTERN_SRC | (~i & PATTERN_COUNT_MASK);
-		for ( ; i < start + len; i++)
-			buf[i] = PATTERN_SRC | PATTERN_COPY
-				| (~i & PATTERN_COUNT_MASK);
-		for ( ; i < test_buf_size; i++)
-			buf[i] = PATTERN_SRC | (~i & PATTERN_COUNT_MASK);
-=======
 			buf[i] = gen_src_value(i, is_memset);
 		for ( ; i < start + len; i++)
 			buf[i] = gen_src_value(i, is_memset) | PATTERN_COPY;
 		for ( ; i < buf_size; i++)
 			buf[i] = gen_src_value(i, is_memset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf++;
 	}
 }
 
-<<<<<<< HEAD
-static void dmatest_init_dsts(u8 **bufs, unsigned int start, unsigned int len)
-=======
 static void dmatest_init_dsts(u8 **bufs, unsigned int start, unsigned int len,
 		unsigned int buf_size, bool is_memset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	u8 *buf;
 
 	for (; (buf = *bufs); bufs++) {
 		for (i = 0; i < start; i++)
-<<<<<<< HEAD
-			buf[i] = PATTERN_DST | (~i & PATTERN_COUNT_MASK);
-		for ( ; i < start + len; i++)
-			buf[i] = PATTERN_DST | PATTERN_OVERWRITE
-				| (~i & PATTERN_COUNT_MASK);
-		for ( ; i < test_buf_size; i++)
-			buf[i] = PATTERN_DST | (~i & PATTERN_COUNT_MASK);
-=======
 			buf[i] = gen_dst_value(i, is_memset);
 		for ( ; i < start + len; i++)
 			buf[i] = gen_dst_value(i, is_memset) |
 						PATTERN_OVERWRITE;
 		for ( ; i < buf_size; i++)
 			buf[i] = gen_dst_value(i, is_memset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void dmatest_mismatch(u8 actual, u8 pattern, unsigned int index,
-<<<<<<< HEAD
-		unsigned int counter, bool is_srcbuf)
-{
-	u8		diff = actual ^ pattern;
-	u8		expected = pattern | (~counter & PATTERN_COUNT_MASK);
-	const char	*thread_name = current->comm;
-
-	if (is_srcbuf)
-		pr_warning("%s: srcbuf[0x%x] overwritten!"
-				" Expected %02x, got %02x\n",
-				thread_name, index, expected, actual);
-	else if ((pattern & PATTERN_COPY)
-			&& (diff & (PATTERN_COPY | PATTERN_OVERWRITE)))
-		pr_warning("%s: dstbuf[0x%x] not copied!"
-				" Expected %02x, got %02x\n",
-				thread_name, index, expected, actual);
-	else if (diff & PATTERN_SRC)
-		pr_warning("%s: dstbuf[0x%x] was copied!"
-				" Expected %02x, got %02x\n",
-				thread_name, index, expected, actual);
-	else
-		pr_warning("%s: dstbuf[0x%x] mismatch!"
-				" Expected %02x, got %02x\n",
-				thread_name, index, expected, actual);
-=======
 		unsigned int counter, bool is_srcbuf, bool is_memset)
 {
 	u8		diff = actual ^ pattern;
@@ -533,16 +394,11 @@ static void dmatest_mismatch(u8 actual, u8 pattern, unsigned int index,
 	else
 		pr_warn("%s: dstbuf[0x%x] mismatch! Expected %02x, got %02x\n",
 			thread_name, index, expected, actual);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int dmatest_verify(u8 **bufs, unsigned int start,
 		unsigned int end, unsigned int counter, u8 pattern,
-<<<<<<< HEAD
-		bool is_srcbuf)
-=======
 		bool is_srcbuf, bool is_memset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	unsigned int error_count = 0;
@@ -555,56 +411,29 @@ static unsigned int dmatest_verify(u8 **bufs, unsigned int start,
 		counter = counter_orig;
 		for (i = start; i < end; i++) {
 			actual = buf[i];
-<<<<<<< HEAD
-			expected = pattern | (~counter & PATTERN_COUNT_MASK);
-			if (actual != expected) {
-				if (error_count < 32)
-					dmatest_mismatch(actual, pattern, i,
-							 counter, is_srcbuf);
-=======
 			expected = pattern | gen_inv_idx(counter, is_memset);
 			if (actual != expected) {
 				if (error_count < MAX_ERROR_COUNT)
 					dmatest_mismatch(actual, pattern, i,
 							 counter, is_srcbuf,
 							 is_memset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				error_count++;
 			}
 			counter++;
 		}
 	}
 
-<<<<<<< HEAD
-	if (error_count > 32)
-		pr_warning("%s: %u errors suppressed\n",
-			current->comm, error_count - 32);
-=======
 	if (error_count > MAX_ERROR_COUNT)
 		pr_warn("%s: %u errors suppressed\n",
 			current->comm, error_count - MAX_ERROR_COUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error_count;
 }
 
-<<<<<<< HEAD
-/* poor man's completion - we want to use wait_event_freezable() on it */
-struct dmatest_done {
-	bool			done;
-	wait_queue_head_t	*wait;
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dmatest_callback(void *arg)
 {
 	struct dmatest_done *done = arg;
-<<<<<<< HEAD
-
-	done->done = true;
-	wake_up_all(done->wait);
-=======
 	struct dmatest_thread *thread =
 		container_of(done, struct dmatest_thread, test_done);
 	if (!thread->done) {
@@ -726,7 +555,6 @@ static int dmatest_alloc_test_data(struct dmatest_data *d,
 err:
 	__dmatest_free_test_data(d, i);
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -745,14 +573,6 @@ err:
  */
 static int dmatest_func(void *data)
 {
-<<<<<<< HEAD
-	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(done_wait);
-	struct dmatest_thread	*thread = data;
-	struct dmatest_done	done = { .wait = &done_wait };
-	struct dma_chan		*chan;
-	const char		*thread_name;
-	unsigned int		src_off, dst_off, len;
-=======
 	struct dmatest_thread	*thread = data;
 	struct dmatest_done	*done = &thread->test_done;
 	struct dmatest_info	*info;
@@ -760,22 +580,11 @@ static int dmatest_func(void *data)
 	struct dma_chan		*chan;
 	struct dma_device	*dev;
 	struct device		*dma_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		error_count;
 	unsigned int		failed_tests = 0;
 	unsigned int		total_tests = 0;
 	dma_cookie_t		cookie;
 	enum dma_status		status;
-<<<<<<< HEAD
-	enum dma_ctrl_flags 	flags;
-	u8			pq_coefs[pq_sources + 1];
-	int			ret;
-	int			src_cnt;
-	int			dst_cnt;
-	int			i;
-
-	thread_name = current->comm;
-=======
 	enum dma_ctrl_flags	flags;
 	u8			*pq_coefs = NULL;
 	int			ret;
@@ -794,125 +603,11 @@ static int dmatest_func(void *data)
 	dma_addr_t		*srcs;
 	dma_addr_t		*dma_pq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_freezable();
 
 	ret = -ENOMEM;
 
 	smp_rmb();
-<<<<<<< HEAD
-	chan = thread->chan;
-	if (thread->type == DMA_MEMCPY)
-		src_cnt = dst_cnt = 1;
-	else if (thread->type == DMA_XOR) {
-		src_cnt = xor_sources | 1; /* force odd to ensure dst = src */
-		dst_cnt = 1;
-	} else if (thread->type == DMA_PQ) {
-		src_cnt = pq_sources | 1; /* force odd to ensure dst = src */
-		dst_cnt = 2;
-		for (i = 0; i < src_cnt; i++)
-			pq_coefs[i] = 1;
-	} else
-		goto err_srcs;
-
-	thread->srcs = kcalloc(src_cnt+1, sizeof(u8 *), GFP_KERNEL);
-	if (!thread->srcs)
-		goto err_srcs;
-	for (i = 0; i < src_cnt; i++) {
-		thread->srcs[i] = kmalloc(test_buf_size, GFP_KERNEL);
-		if (!thread->srcs[i])
-			goto err_srcbuf;
-	}
-	thread->srcs[i] = NULL;
-
-	thread->dsts = kcalloc(dst_cnt+1, sizeof(u8 *), GFP_KERNEL);
-	if (!thread->dsts)
-		goto err_dsts;
-	for (i = 0; i < dst_cnt; i++) {
-		thread->dsts[i] = kmalloc(test_buf_size, GFP_KERNEL);
-		if (!thread->dsts[i])
-			goto err_dstbuf;
-	}
-	thread->dsts[i] = NULL;
-
-	set_user_nice(current, 10);
-
-	/*
-	 * src buffers are freed by the DMAEngine code with dma_unmap_single()
-	 * dst buffers are freed by ourselves below
-	 */
-	flags = DMA_CTRL_ACK | DMA_PREP_INTERRUPT
-	      | DMA_COMPL_SKIP_DEST_UNMAP | DMA_COMPL_SRC_UNMAP_SINGLE;
-
-	while (!kthread_should_stop()
-	       && !(iterations && total_tests >= iterations)) {
-		struct dma_device *dev = chan->device;
-		struct dma_async_tx_descriptor *tx = NULL;
-		dma_addr_t dma_srcs[src_cnt];
-		dma_addr_t dma_dsts[dst_cnt];
-		u8 align = 0;
-
-		total_tests++;
-
-		/* honor alignment restrictions */
-		if (thread->type == DMA_MEMCPY)
-			align = dev->copy_align;
-		else if (thread->type == DMA_XOR)
-			align = dev->xor_align;
-		else if (thread->type == DMA_PQ)
-			align = dev->pq_align;
-
-		if (1 << align > test_buf_size) {
-			pr_err("%u-byte buffer too small for %d-byte alignment\n",
-			       test_buf_size, 1 << align);
-			break;
-		}
-
-		len = dmatest_random() % test_buf_size + 1;
-		len = (len >> align) << align;
-		if (!len)
-			len = 1 << align;
-		src_off = dmatest_random() % (test_buf_size - len + 1);
-		dst_off = dmatest_random() % (test_buf_size - len + 1);
-
-		src_off = (src_off >> align) << align;
-		dst_off = (dst_off >> align) << align;
-
-		dmatest_init_srcs(thread->srcs, src_off, len);
-		dmatest_init_dsts(thread->dsts, dst_off, len);
-
-		for (i = 0; i < src_cnt; i++) {
-			u8 *buf = thread->srcs[i] + src_off;
-
-			dma_srcs[i] = dma_map_single(dev->dev, buf, len,
-						     DMA_TO_DEVICE);
-		}
-		/* map with DMA_BIDIRECTIONAL to force writeback/invalidate */
-		for (i = 0; i < dst_cnt; i++) {
-			dma_dsts[i] = dma_map_single(dev->dev, thread->dsts[i],
-						     test_buf_size,
-						     DMA_BIDIRECTIONAL);
-		}
-
-
-		if (thread->type == DMA_MEMCPY)
-			tx = dev->device_prep_dma_memcpy(chan,
-							 dma_dsts[0] + dst_off,
-							 dma_srcs[0], len,
-							 flags);
-		else if (thread->type == DMA_XOR)
-			tx = dev->device_prep_dma_xor(chan,
-						      dma_dsts[0] + dst_off,
-						      dma_srcs, src_cnt,
-						      len, flags);
-		else if (thread->type == DMA_PQ) {
-			dma_addr_t dma_pq[dst_cnt];
-
-			for (i = 0; i < dst_cnt; i++)
-				dma_pq[i] = dma_dsts[i] + dst_off;
-			tx = dev->device_prep_dma_pq(chan, dma_pq, dma_srcs,
-						     src_cnt, pq_coefs,
-=======
 	thread->pending = false;
 	info = thread->info;
 	params = &info->params;
@@ -1114,135 +809,10 @@ static int dmatest_func(void *data)
 				dma_pq[i] = dsts[i] + dst->off;
 			tx = dev->device_prep_dma_pq(chan, dma_pq, srcs,
 						     src->cnt, pq_coefs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     len, flags);
 		}
 
 		if (!tx) {
-<<<<<<< HEAD
-			for (i = 0; i < src_cnt; i++)
-				dma_unmap_single(dev->dev, dma_srcs[i], len,
-						 DMA_TO_DEVICE);
-			for (i = 0; i < dst_cnt; i++)
-				dma_unmap_single(dev->dev, dma_dsts[i],
-						 test_buf_size,
-						 DMA_BIDIRECTIONAL);
-			pr_warning("%s: #%u: prep error with src_off=0x%x "
-					"dst_off=0x%x len=0x%x\n",
-					thread_name, total_tests - 1,
-					src_off, dst_off, len);
-			msleep(100);
-			failed_tests++;
-			continue;
-		}
-
-		done.done = false;
-		tx->callback = dmatest_callback;
-		tx->callback_param = &done;
-		cookie = tx->tx_submit(tx);
-
-		if (dma_submit_error(cookie)) {
-			pr_warning("%s: #%u: submit error %d with src_off=0x%x "
-					"dst_off=0x%x len=0x%x\n",
-					thread_name, total_tests - 1, cookie,
-					src_off, dst_off, len);
-			msleep(100);
-			failed_tests++;
-			continue;
-		}
-		dma_async_issue_pending(chan);
-
-		wait_event_freezable_timeout(done_wait, done.done,
-					     msecs_to_jiffies(timeout));
-
-		status = dma_async_is_tx_complete(chan, cookie, NULL, NULL);
-
-		if (!done.done) {
-			/*
-			 * We're leaving the timed out dma operation with
-			 * dangling pointer to done_wait.  To make this
-			 * correct, we'll need to allocate wait_done for
-			 * each test iteration and perform "who's gonna
-			 * free it this time?" dancing.  For now, just
-			 * leave it dangling.
-			 */
-			pr_warning("%s: #%u: test timed out\n",
-				   thread_name, total_tests - 1);
-			failed_tests++;
-			continue;
-		} else if (status != DMA_SUCCESS) {
-			pr_warning("%s: #%u: got completion callback,"
-				   " but status is \'%s\'\n",
-				   thread_name, total_tests - 1,
-				   status == DMA_ERROR ? "error" : "in progress");
-			failed_tests++;
-			continue;
-		}
-
-		/* Unmap by myself (see DMA_COMPL_SKIP_DEST_UNMAP above) */
-		for (i = 0; i < dst_cnt; i++)
-			dma_unmap_single(dev->dev, dma_dsts[i], test_buf_size,
-					 DMA_BIDIRECTIONAL);
-
-		error_count = 0;
-
-		pr_debug("%s: verifying source buffer...\n", thread_name);
-		error_count += dmatest_verify(thread->srcs, 0, src_off,
-				0, PATTERN_SRC, true);
-		error_count += dmatest_verify(thread->srcs, src_off,
-				src_off + len, src_off,
-				PATTERN_SRC | PATTERN_COPY, true);
-		error_count += dmatest_verify(thread->srcs, src_off + len,
-				test_buf_size, src_off + len,
-				PATTERN_SRC, true);
-
-		pr_debug("%s: verifying dest buffer...\n",
-				thread->task->comm);
-		error_count += dmatest_verify(thread->dsts, 0, dst_off,
-				0, PATTERN_DST, false);
-		error_count += dmatest_verify(thread->dsts, dst_off,
-				dst_off + len, src_off,
-				PATTERN_SRC | PATTERN_COPY, false);
-		error_count += dmatest_verify(thread->dsts, dst_off + len,
-				test_buf_size, dst_off + len,
-				PATTERN_DST, false);
-
-		if (error_count) {
-			pr_warning("%s: #%u: %u errors with "
-				"src_off=0x%x dst_off=0x%x len=0x%x\n",
-				thread_name, total_tests - 1, error_count,
-				src_off, dst_off, len);
-			failed_tests++;
-		} else {
-			pr_debug("%s: #%u: No errors with "
-				"src_off=0x%x dst_off=0x%x len=0x%x\n",
-				thread_name, total_tests - 1,
-				src_off, dst_off, len);
-		}
-	}
-
-	ret = 0;
-	for (i = 0; thread->dsts[i]; i++)
-		kfree(thread->dsts[i]);
-err_dstbuf:
-	kfree(thread->dsts);
-err_dsts:
-	for (i = 0; thread->srcs[i]; i++)
-		kfree(thread->srcs[i]);
-err_srcbuf:
-	kfree(thread->srcs);
-err_srcs:
-	pr_notice("%s: terminating after %u tests, %u failures (status %d)\n",
-			thread_name, total_tests, failed_tests, ret);
-
-	/* terminate all transfers on specified channels */
-	chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
-	if (iterations > 0)
-		while (!kthread_should_stop()) {
-			DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wait_dmatest_exit);
-			interruptible_sleep_on(&wait_dmatest_exit);
-		}
-=======
 			result("prep error", total_tests, src->off,
 			       dst->off, len, ret);
 			msleep(100);
@@ -1371,7 +941,6 @@ err_thread_type:
 
 	thread->done = true;
 	wake_up(&thread_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1384,38 +953,23 @@ static void dmatest_cleanup_channel(struct dmatest_chan *dtc)
 
 	list_for_each_entry_safe(thread, _thread, &dtc->threads, node) {
 		ret = kthread_stop(thread->task);
-<<<<<<< HEAD
-		pr_debug("dmatest: thread %s exited with status %d\n",
-				thread->task->comm, ret);
-		list_del(&thread->node);
-=======
 		pr_debug("thread %s exited with status %d\n",
 			 thread->task->comm, ret);
 		list_del(&thread->node);
 		put_task_struct(thread->task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(thread);
 	}
 
 	/* terminate all transfers on specified channels */
-<<<<<<< HEAD
-	dtc->chan->device->device_control(dtc->chan, DMA_TERMINATE_ALL, 0);
-=======
 	dmaengine_terminate_sync(dtc->chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(dtc);
 }
 
-<<<<<<< HEAD
-static int dmatest_add_threads(struct dmatest_chan *dtc, enum dma_transaction_type type)
-{
-=======
 static int dmatest_add_threads(struct dmatest_info *info,
 		struct dmatest_chan *dtc, enum dma_transaction_type type)
 {
 	struct dmatest_params *params = &info->params;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dmatest_thread *thread;
 	struct dma_chan *chan = dtc->chan;
 	char *op;
@@ -1423,11 +977,8 @@ static int dmatest_add_threads(struct dmatest_info *info,
 
 	if (type == DMA_MEMCPY)
 		op = "copy";
-<<<<<<< HEAD
-=======
 	else if (type == DMA_MEMSET)
 		op = "set";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (type == DMA_XOR)
 		op = "xor";
 	else if (type == DMA_PQ)
@@ -1435,24 +986,6 @@ static int dmatest_add_threads(struct dmatest_info *info,
 	else
 		return -EINVAL;
 
-<<<<<<< HEAD
-	for (i = 0; i < threads_per_chan; i++) {
-		thread = kzalloc(sizeof(struct dmatest_thread), GFP_KERNEL);
-		if (!thread) {
-			pr_warning("dmatest: No memory for %s-%s%u\n",
-				   dma_chan_name(chan), op, i);
-
-			break;
-		}
-		thread->chan = dtc->chan;
-		thread->type = type;
-		smp_wmb();
-		thread->task = kthread_run(dmatest_func, thread, "%s-%s%u",
-				dma_chan_name(chan), op, i);
-		if (IS_ERR(thread->task)) {
-			pr_warning("dmatest: Failed to run thread %s-%s%u\n",
-					dma_chan_name(chan), op, i);
-=======
 	for (i = 0; i < params->threads_per_chan; i++) {
 		thread = kzalloc(sizeof(struct dmatest_thread), GFP_KERNEL);
 		if (!thread) {
@@ -1471,31 +1004,21 @@ static int dmatest_add_threads(struct dmatest_info *info,
 		if (IS_ERR(thread->task)) {
 			pr_warn("Failed to create thread %s-%s%u\n",
 				dma_chan_name(chan), op, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(thread);
 			break;
 		}
 
 		/* srcbuf and dstbuf are allocated by the thread itself */
-<<<<<<< HEAD
-
-		list_add_tail(&thread->node, &dtc->threads);
-=======
 		get_task_struct(thread->task);
 		list_add_tail(&thread->node, &dtc->threads);
 		thread->pending = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return i;
 }
 
-<<<<<<< HEAD
-static int dmatest_add_channel(struct dma_chan *chan)
-=======
 static int dmatest_add_channel(struct dmatest_info *info,
 		struct dma_chan *chan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dmatest_chan	*dtc;
 	struct dma_device	*dma_dev = chan->device;
@@ -1504,37 +1027,13 @@ static int dmatest_add_channel(struct dmatest_info *info,
 
 	dtc = kmalloc(sizeof(struct dmatest_chan), GFP_KERNEL);
 	if (!dtc) {
-<<<<<<< HEAD
-		pr_warning("dmatest: No memory for %s\n", dma_chan_name(chan));
-=======
 		pr_warn("No memory for %s\n", dma_chan_name(chan));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	dtc->chan = chan;
 	INIT_LIST_HEAD(&dtc->threads);
 
-<<<<<<< HEAD
-	if (dma_has_cap(DMA_MEMCPY, dma_dev->cap_mask)) {
-		cnt = dmatest_add_threads(dtc, DMA_MEMCPY);
-		thread_count += cnt > 0 ? cnt : 0;
-	}
-	if (dma_has_cap(DMA_XOR, dma_dev->cap_mask)) {
-		cnt = dmatest_add_threads(dtc, DMA_XOR);
-		thread_count += cnt > 0 ? cnt : 0;
-	}
-	if (dma_has_cap(DMA_PQ, dma_dev->cap_mask)) {
-		cnt = dmatest_add_threads(dtc, DMA_PQ);
-		thread_count += cnt > 0 ? cnt : 0;
-	}
-
-	pr_info("dmatest: Started %u threads using %s\n",
-		thread_count, dma_chan_name(chan));
-
-	list_add_tail(&dtc->node, &dmatest_channels);
-	nr_channels++;
-=======
 	if (dma_has_cap(DMA_COMPLETION_NO_ORDER, dma_dev->cap_mask) &&
 	    info->params.polled) {
 		info->params.polled = false;
@@ -1569,34 +1068,12 @@ static int dmatest_add_channel(struct dmatest_info *info,
 
 	list_add_tail(&dtc->node, &info->channels);
 	info->nr_channels++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static bool filter(struct dma_chan *chan, void *param)
 {
-<<<<<<< HEAD
-	if (!dmatest_match_channel(chan) || !dmatest_match_device(chan->device))
-		return false;
-	else
-		return true;
-}
-
-static int __init dmatest_init(void)
-{
-	dma_cap_mask_t mask;
-	struct dma_chan *chan;
-	int err = 0;
-
-	dma_cap_zero(mask);
-	dma_cap_set(DMA_MEMCPY, mask);
-	for (;;) {
-		chan = dma_request_channel(mask, filter, NULL);
-		if (chan) {
-			err = dmatest_add_channel(chan);
-			if (err) {
-=======
 	return dmatest_match_channel(param, chan) && dmatest_match_device(param, chan->device);
 }
 
@@ -1614,19 +1091,11 @@ static void request_channels(struct dmatest_info *info,
 		chan = dma_request_channel(mask, filter, params);
 		if (chan) {
 			if (dmatest_add_channel(info, chan)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dma_release_channel(chan);
 				break; /* add_channel failed, punt */
 			}
 		} else
 			break; /* no more channels available */
-<<<<<<< HEAD
-		if (max_channels && nr_channels >= max_channels)
-			break; /* we have all we need */
-	}
-
-	return err;
-=======
 		if (params->max_channels &&
 		    info->nr_channels >= params->max_channels)
 			break; /* we have all we need */
@@ -1888,32 +1357,17 @@ static int __init dmatest_init(void)
 	info->did_init = true;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 /* when compiled-in wait for drivers to load first */
 late_initcall(dmatest_init);
 
 static void __exit dmatest_exit(void)
 {
-<<<<<<< HEAD
-	struct dmatest_chan *dtc, *_dtc;
-	struct dma_chan *chan;
-
-	list_for_each_entry_safe(dtc, _dtc, &dmatest_channels, node) {
-		list_del(&dtc->node);
-		chan = dtc->chan;
-		dmatest_cleanup_channel(dtc);
-		pr_debug("dmatest: dropped channel %s\n",
-			 dma_chan_name(chan));
-		dma_release_channel(chan);
-	}
-=======
 	struct dmatest_info *info = &test_info;
 
 	mutex_lock(&info->lock);
 	stop_threaded_test(info);
 	mutex_unlock(&info->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(dmatest_exit);
 

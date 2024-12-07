@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/leds/leds-locomo.c
  *
  * Copyright (C) 2005 John Lenz <lenz@cs.wisc.edu>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -21,10 +11,6 @@
 #include <linux/device.h>
 #include <linux/leds.h>
 
-<<<<<<< HEAD
-#include <mach/hardware.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hardware/locomo.h>
 
 static void locomoled_brightness_set(struct led_classdev *led_cdev,
@@ -69,25 +55,6 @@ static int locomoled_probe(struct locomo_dev *ldev)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = led_classdev_register(&ldev->dev, &locomo_led0);
-	if (ret < 0)
-		return ret;
-
-	ret = led_classdev_register(&ldev->dev, &locomo_led1);
-	if (ret < 0)
-		led_classdev_unregister(&locomo_led0);
-
-	return ret;
-}
-
-static int locomoled_remove(struct locomo_dev *dev)
-{
-	led_classdev_unregister(&locomo_led0);
-	led_classdev_unregister(&locomo_led1);
-	return 0;
-}
-=======
 	ret = devm_led_classdev_register(&ldev->dev, &locomo_led0);
 	if (ret < 0)
 		return ret;
@@ -95,7 +62,6 @@ static int locomoled_remove(struct locomo_dev *dev)
 	return  devm_led_classdev_register(&ldev->dev, &locomo_led1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct locomo_driver locomoled_driver = {
 	.drv = {
@@ -103,10 +69,6 @@ static struct locomo_driver locomoled_driver = {
 	},
 	.devid	= LOCOMO_DEVID_LED,
 	.probe	= locomoled_probe,
-<<<<<<< HEAD
-	.remove	= locomoled_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init locomoled_init(void)

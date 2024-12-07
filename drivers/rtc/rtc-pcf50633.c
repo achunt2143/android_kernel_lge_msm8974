@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NXP PCF50633 RTC Driver
  *
  * (C) 2006-2008 by Openmoko, Inc.
@@ -10,15 +7,6 @@
  *
  * Broken down from monstrous PCF50633 driver mainly by
  * Harald Welte, Andy Green and Werner Almesberger
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -138,17 +126,9 @@ static int pcf50633_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	pcf2rtc_time(tm, &pcf_tm);
 
-<<<<<<< HEAD
-	dev_dbg(dev, "RTC_TIME: %u.%u.%u %u:%u:%u\n",
-		tm->tm_mday, tm->tm_mon, tm->tm_year,
-		tm->tm_hour, tm->tm_min, tm->tm_sec);
-
-	return rtc_valid_tm(tm);
-=======
 	dev_dbg(dev, "RTC_TIME: %ptRr\n", tm);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcf50633_rtc_set_time(struct device *dev, struct rtc_time *tm)
@@ -159,13 +139,7 @@ static int pcf50633_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	rtc = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	dev_dbg(dev, "RTC_TIME: %u.%u.%u %u:%u:%u\n",
-		tm->tm_mday, tm->tm_mon, tm->tm_year,
-		tm->tm_hour, tm->tm_min, tm->tm_sec);
-=======
 	dev_dbg(dev, "RTC_TIME: %ptRr\n", tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtc2pcf_time(&pcf_tm, tm);
 
@@ -249,11 +223,7 @@ static int pcf50633_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct rtc_class_ops pcf50633_rtc_ops = {
-=======
 static const struct rtc_class_ops pcf50633_rtc_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_time		= pcf50633_rtc_read_time,
 	.set_time		= pcf50633_rtc_set_time,
 	.read_alarm		= pcf50633_rtc_read_alarm,
@@ -269,66 +239,33 @@ static void pcf50633_rtc_irq(int irq, void *data)
 	rtc->alarm_pending = 1;
 }
 
-<<<<<<< HEAD
-static int __devinit pcf50633_rtc_probe(struct platform_device *pdev)
-{
-	struct pcf50633_rtc *rtc;
-
-	rtc = kzalloc(sizeof(*rtc), GFP_KERNEL);
-=======
 static int pcf50633_rtc_probe(struct platform_device *pdev)
 {
 	struct pcf50633_rtc *rtc;
 
 	rtc = devm_kzalloc(&pdev->dev, sizeof(*rtc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rtc)
 		return -ENOMEM;
 
 	rtc->pcf = dev_to_pcf50633(pdev->dev.parent);
 	platform_set_drvdata(pdev, rtc);
-<<<<<<< HEAD
-	rtc->rtc_dev = rtc_device_register("pcf50633-rtc", &pdev->dev,
-				&pcf50633_rtc_ops, THIS_MODULE);
-
-	if (IS_ERR(rtc->rtc_dev)) {
-		int ret =  PTR_ERR(rtc->rtc_dev);
-		kfree(rtc);
-		return ret;
-	}
-=======
 	rtc->rtc_dev = devm_rtc_device_register(&pdev->dev, "pcf50633-rtc",
 				&pcf50633_rtc_ops, THIS_MODULE);
 
 	if (IS_ERR(rtc->rtc_dev))
 		return PTR_ERR(rtc->rtc_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcf50633_register_irq(rtc->pcf, PCF50633_IRQ_ALARM,
 					pcf50633_rtc_irq, rtc);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit pcf50633_rtc_remove(struct platform_device *pdev)
-=======
 static void pcf50633_rtc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcf50633_rtc *rtc;
 
 	rtc = platform_get_drvdata(pdev);
-<<<<<<< HEAD
-
 	pcf50633_free_irq(rtc->pcf, PCF50633_IRQ_ALARM);
-
-	rtc_device_unregister(rtc->rtc_dev);
-	kfree(rtc);
-
-	return 0;
-=======
-	pcf50633_free_irq(rtc->pcf, PCF50633_IRQ_ALARM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pcf50633_rtc_driver = {
@@ -336,11 +273,7 @@ static struct platform_driver pcf50633_rtc_driver = {
 		.name = "pcf50633-rtc",
 	},
 	.probe = pcf50633_rtc_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(pcf50633_rtc_remove),
-=======
 	.remove_new = pcf50633_rtc_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(pcf50633_rtc_driver);

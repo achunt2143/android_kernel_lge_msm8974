@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPWireless 3G PCMCIA Network Driver
  *
@@ -63,11 +60,7 @@ struct tl_setup_config_done_msg {
 	unsigned char sig_no;		/* TL_SETUP_SIGNO_CONFIG_DONE_MSG */
 } __attribute__ ((__packed__));
 
-<<<<<<< HEAD
-/* Asyncronous messages */
-=======
 /* Asynchronous messages */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct tl_setup_open_msg {
 	unsigned char sig_no;		/* TL_SETUP_SIGNO_OPEN_MSG */
 	unsigned char port_no;

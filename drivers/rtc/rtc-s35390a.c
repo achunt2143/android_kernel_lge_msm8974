@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Seiko Instruments S-35390A RTC Driver
  *
  * Copyright (c) 2007 Byron Bradley
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -22,19 +11,13 @@
 #include <linux/bitrev.h>
 #include <linux/bcd.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/delay.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define S35390A_CMD_STATUS1	0
 #define S35390A_CMD_STATUS2	1
 #define S35390A_CMD_TIME1	2
-<<<<<<< HEAD
-=======
 #define S35390A_CMD_TIME2	3
 #define S35390A_CMD_INT2_REG1	5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define S35390A_BYTE_YEAR	0
 #define S35390A_BYTE_MONTH	1
@@ -44,13 +27,6 @@
 #define S35390A_BYTE_MINS	5
 #define S35390A_BYTE_SECS	6
 
-<<<<<<< HEAD
-#define S35390A_FLAG_POC	0x01
-#define S35390A_FLAG_BLD	0x02
-#define S35390A_FLAG_24H	0x40
-#define S35390A_FLAG_RESET	0x80
-#define S35390A_FLAG_TEST	0x01
-=======
 #define S35390A_ALRM_BYTE_WDAY	0
 #define S35390A_ALRM_BYTE_HOURS	1
 #define S35390A_ALRM_BYTE_MINS	2
@@ -72,7 +48,6 @@
 #define S35390A_INT2_MODE_PMIN_EDG	BIT(2) /* INT2ME */
 #define S35390A_INT2_MODE_FREQ		BIT(3) /* INT2FE */
 #define S35390A_INT2_MODE_PMIN		(BIT(3) | BIT(2)) /* INT2FE | INT2ME */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id s35390a_id[] = {
 	{ "s35390a", 0 },
@@ -80,8 +55,6 @@ static const struct i2c_device_id s35390a_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, s35390a_id);
 
-<<<<<<< HEAD
-=======
 static const __maybe_unused struct of_device_id s35390a_of_match[] = {
 	{ .compatible = "s35390a" },
 	{ .compatible = "sii,s35390a" },
@@ -89,7 +62,6 @@ static const __maybe_unused struct of_device_id s35390a_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, s35390a_of_match);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct s35390a {
 	struct i2c_client *client[8];
 	struct rtc_device *rtc;
@@ -100,15 +72,11 @@ static int s35390a_set_reg(struct s35390a *s35390a, int reg, char *buf, int len)
 {
 	struct i2c_client *client = s35390a->client[reg];
 	struct i2c_msg msg[] = {
-<<<<<<< HEAD
-		{ client->addr, 0, len, buf },
-=======
 		{
 			.addr = client->addr,
 			.len = len,
 			.buf = buf
 		},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	if ((i2c_transfer(client->adapter, msg, 1)) != 1)
@@ -121,16 +89,12 @@ static int s35390a_get_reg(struct s35390a *s35390a, int reg, char *buf, int len)
 {
 	struct i2c_client *client = s35390a->client[reg];
 	struct i2c_msg msg[] = {
-<<<<<<< HEAD
-		{ client->addr, I2C_M_RD, len, buf },
-=======
 		{
 			.addr = client->addr,
 			.flags = I2C_M_RD,
 			.len = len,
 			.buf = buf
 		},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	if ((i2c_transfer(client->adapter, msg, 1)) != 1)
@@ -139,21 +103,6 @@ static int s35390a_get_reg(struct s35390a *s35390a, int reg, char *buf, int len)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int s35390a_reset(struct s35390a *s35390a)
-{
-	char buf[1];
-
-	if (s35390a_get_reg(s35390a, S35390A_CMD_STATUS1, buf, sizeof(buf)) < 0)
-		return -EIO;
-
-	if (!(buf[0] & (S35390A_FLAG_POC | S35390A_FLAG_BLD)))
-		return 0;
-
-	buf[0] |= (S35390A_FLAG_RESET | S35390A_FLAG_24H);
-	buf[0] &= 0xf0;
-	return s35390a_set_reg(s35390a, S35390A_CMD_STATUS1, buf, sizeof(buf));
-=======
 static int s35390a_init(struct s35390a *s35390a)
 {
 	u8 buf;
@@ -217,7 +166,6 @@ static int s35390a_read_status(struct s35390a *s35390a, char *status1)
 	 * If both POC and BLD are unset everything is fine.
 	 */
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int s35390a_disable_test_mode(struct s35390a *s35390a)
@@ -259,32 +207,21 @@ static int s35390a_reg2hr(struct s35390a *s35390a, char reg)
 	return hour;
 }
 
-<<<<<<< HEAD
-static int s35390a_set_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	struct s35390a	*s35390a = i2c_get_clientdata(client);
-	int i, err;
-	char buf[7];
-=======
 static int s35390a_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct s35390a	*s35390a = i2c_get_clientdata(client);
 	int i;
 	char buf[7], status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&client->dev, "%s: tm is secs=%d, mins=%d, hours=%d mday=%d, "
 		"mon=%d, year=%d, wday=%d\n", __func__, tm->tm_sec,
 		tm->tm_min, tm->tm_hour, tm->tm_mday, tm->tm_mon, tm->tm_year,
 		tm->tm_wday);
 
-<<<<<<< HEAD
-=======
 	if (s35390a_read_status(s35390a, &status) == 1)
 		s35390a_init(s35390a);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf[S35390A_BYTE_YEAR] = bin2bcd(tm->tm_year - 100);
 	buf[S35390A_BYTE_MONTH] = bin2bcd(tm->tm_mon + 1);
 	buf[S35390A_BYTE_DAY] = bin2bcd(tm->tm_mday);
@@ -297,19 +234,6 @@ static int s35390a_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	for (i = 0; i < 7; ++i)
 		buf[i] = bitrev8(buf[i]);
 
-<<<<<<< HEAD
-	err = s35390a_set_reg(s35390a, S35390A_CMD_TIME1, buf, sizeof(buf));
-
-	return err;
-}
-
-static int s35390a_get_datetime(struct i2c_client *client, struct rtc_time *tm)
-{
-	struct s35390a *s35390a = i2c_get_clientdata(client);
-	char buf[7];
-	int i, err;
-
-=======
 	return s35390a_set_reg(s35390a, S35390A_CMD_TIME1, buf, sizeof(buf));
 }
 
@@ -323,7 +247,6 @@ static int s35390a_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	if (s35390a_read_status(s35390a, &status) == 1)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = s35390a_get_reg(s35390a, S35390A_CMD_TIME1, buf, sizeof(buf));
 	if (err < 0)
 		return err;
@@ -345,19 +268,6 @@ static int s35390a_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_min, tm->tm_hour, tm->tm_mday, tm->tm_mon, tm->tm_year,
 		tm->tm_wday);
 
-<<<<<<< HEAD
-	return rtc_valid_tm(tm);
-}
-
-static int s35390a_rtc_read_time(struct device *dev, struct rtc_time *tm)
-{
-	return s35390a_get_datetime(to_i2c_client(dev), tm);
-}
-
-static int s35390a_rtc_set_time(struct device *dev, struct rtc_time *tm)
-{
-	return s35390a_set_datetime(to_i2c_client(dev), tm);
-=======
 	return 0;
 }
 
@@ -498,37 +408,11 @@ static int s35390a_rtc_ioctl(struct device *dev, unsigned int cmd,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rtc_class_ops s35390a_rtc_ops = {
 	.read_time	= s35390a_rtc_read_time,
 	.set_time	= s35390a_rtc_set_time,
-<<<<<<< HEAD
-};
-
-static struct i2c_driver s35390a_driver;
-
-static int s35390a_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-	int err;
-	unsigned int i;
-	struct s35390a *s35390a;
-	struct rtc_time tm;
-	char buf[1];
-
-	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-		err = -ENODEV;
-		goto exit;
-	}
-
-	s35390a = kzalloc(sizeof(struct s35390a), GFP_KERNEL);
-	if (!s35390a) {
-		err = -ENOMEM;
-		goto exit;
-	}
-=======
 	.set_alarm	= s35390a_rtc_set_alarm,
 	.read_alarm	= s35390a_rtc_read_alarm,
 	.ioctl          = s35390a_rtc_ioctl,
@@ -548,43 +432,12 @@ static int s35390a_probe(struct i2c_client *client)
 	s35390a = devm_kzalloc(dev, sizeof(struct s35390a), GFP_KERNEL);
 	if (!s35390a)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	s35390a->client[0] = client;
 	i2c_set_clientdata(client, s35390a);
 
 	/* This chip uses multiple addresses, use dummy devices for them */
 	for (i = 1; i < 8; ++i) {
-<<<<<<< HEAD
-		s35390a->client[i] = i2c_new_dummy(client->adapter,
-					client->addr + i);
-		if (!s35390a->client[i]) {
-			dev_err(&client->dev, "Address %02x unavailable\n",
-						client->addr + i);
-			err = -EBUSY;
-			goto exit_dummy;
-		}
-	}
-
-	err = s35390a_reset(s35390a);
-	if (err < 0) {
-		dev_err(&client->dev, "error resetting chip\n");
-		goto exit_dummy;
-	}
-
-	err = s35390a_disable_test_mode(s35390a);
-	if (err < 0) {
-		dev_err(&client->dev, "error disabling test mode\n");
-		goto exit_dummy;
-	}
-
-	err = s35390a_get_reg(s35390a, S35390A_CMD_STATUS1, buf, sizeof(buf));
-	if (err < 0) {
-		dev_err(&client->dev, "error checking 12/24 hour mode\n");
-		goto exit_dummy;
-	}
-	if (buf[0] & S35390A_FLAG_24H)
-=======
 		s35390a->client[i] = devm_i2c_new_dummy_device(dev,
 							       client->adapter,
 							       client->addr + i);
@@ -606,48 +459,10 @@ static int s35390a_probe(struct i2c_client *client)
 	}
 
 	if (status1 & S35390A_FLAG_24H)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s35390a->twentyfourhour = 1;
 	else
 		s35390a->twentyfourhour = 0;
 
-<<<<<<< HEAD
-	if (s35390a_get_datetime(client, &tm) < 0)
-		dev_warn(&client->dev, "clock needs to be set\n");
-
-	s35390a->rtc = rtc_device_register(s35390a_driver.driver.name,
-				&client->dev, &s35390a_rtc_ops, THIS_MODULE);
-
-	if (IS_ERR(s35390a->rtc)) {
-		err = PTR_ERR(s35390a->rtc);
-		goto exit_dummy;
-	}
-	return 0;
-
-exit_dummy:
-	for (i = 1; i < 8; ++i)
-		if (s35390a->client[i])
-			i2c_unregister_device(s35390a->client[i]);
-	kfree(s35390a);
-
-exit:
-	return err;
-}
-
-static int s35390a_remove(struct i2c_client *client)
-{
-	unsigned int i;
-
-	struct s35390a *s35390a = i2c_get_clientdata(client);
-	for (i = 1; i < 8; ++i)
-		if (s35390a->client[i])
-			i2c_unregister_device(s35390a->client[i]);
-
-	rtc_device_unregister(s35390a->rtc);
-	kfree(s35390a);
-
-	return 0;
-=======
 	if (status1 & S35390A_FLAG_INT2) {
 		/* disable alarm (and maybe test mode) */
 		buf = 0;
@@ -677,21 +492,14 @@ static int s35390a_remove(struct i2c_client *client)
 		rtc_update_irq(s35390a->rtc, 1, RTC_AF);
 
 	return devm_rtc_register_device(s35390a->rtc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct i2c_driver s35390a_driver = {
 	.driver		= {
 		.name	= "rtc-s35390a",
-<<<<<<< HEAD
-	},
-	.probe		= s35390a_probe,
-	.remove		= s35390a_remove,
-=======
 		.of_match_table = of_match_ptr(s35390a_of_match),
 	},
 	.probe		= s35390a_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= s35390a_id,
 };
 

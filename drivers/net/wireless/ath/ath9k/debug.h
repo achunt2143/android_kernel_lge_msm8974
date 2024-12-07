@@ -18,25 +18,10 @@
 #define DEBUG_H
 
 #include "hw.h"
-<<<<<<< HEAD
-#include "rc.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "dfs_debug.h"
 
 struct ath_txq;
 struct ath_buf;
-<<<<<<< HEAD
-
-#ifdef CONFIG_ATH9K_DEBUGFS
-#define TX_STAT_INC(q, c) sc->debug.stats.txstats[q].c++
-#define RESET_STAT_INC(sc, type) sc->debug.stats.reset[type]++
-#else
-#define TX_STAT_INC(q, c) do { } while (0)
-#define RESET_STAT_INC(sc, type) do { } while (0)
-#endif
-
-=======
 struct fft_sample_tlv;
 
 #ifdef CONFIG_ATH9K_DEBUGFS
@@ -71,7 +56,6 @@ enum ath_reset_type {
 	__RESET_TYPE_MAX
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ATH9K_DEBUGFS
 
 /**
@@ -100,12 +84,9 @@ enum ath_reset_type {
  * @tsfoor: TSF out of range, indicates that the corrected TSF received
  * from a beacon differs from the PCU's internal TSF by more than a
  * (programmable) threshold
-<<<<<<< HEAD
-=======
  * @local_timeout: Internal bus timeout.
  * @mci: MCI interrupt, specific to MCI based BTCOEX chipsets
  * @gen_timer: Generic hardware timer interrupt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ath_interrupt_stats {
 	u32 total;
@@ -131,10 +112,6 @@ struct ath_interrupt_stats {
 	u32 dtim;
 	u32 bb_watchdog;
 	u32 tsfoor;
-<<<<<<< HEAD
-};
-
-=======
 	u32 mci;
 	u32 gen_timer;
 
@@ -161,7 +138,6 @@ struct ath_interrupt_stats {
 };
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct ath_tx_stats - Statistics about TX
  * @tx_pkts_all:  No. of total frames transmitted, including ones that
@@ -172,17 +148,10 @@ struct ath_interrupt_stats {
  * @completed: Total MPDUs (non-aggr) completed
  * @a_aggr: Total no. of aggregates queued
  * @a_queued_hw: Total AMPDUs queued to hardware
-<<<<<<< HEAD
- * @a_queued_sw: Total AMPDUs queued to software queues
- * @a_completed: Total AMPDUs completed
- * @a_retries: No. of AMPDUs retried (SW)
- * @a_xretries: No. of AMPDUs dropped due to xretries
-=======
  * @a_completed: Total AMPDUs completed
  * @a_retries: No. of AMPDUs retried (SW)
  * @a_xretries: No. of AMPDUs dropped due to xretries
  * @txerr_filtered: No. of frames with TXERR_FILT flag set.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fifo_underrun: FIFO underrun occurrences
 	Valid only for:
 		- non-aggregate condition.
@@ -195,10 +164,7 @@ struct ath_interrupt_stats {
  * @puttxbuf: Number of times hardware was given txbuf to write.
  * @txstart:  Number of times hardware was told to start tx.
  * @txprocdesc:  Number of times tx descriptor was processed
-<<<<<<< HEAD
-=======
  * @txfailed:  Out-of-memory or other errors in xmit path.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ath_tx_stats {
 	u32 tx_pkts_all;
@@ -208,17 +174,10 @@ struct ath_tx_stats {
 	u32 xretries;
 	u32 a_aggr;
 	u32 a_queued_hw;
-<<<<<<< HEAD
-	u32 a_queued_sw;
-	u32 a_completed;
-	u32 a_retries;
-	u32 a_xretries;
-=======
 	u32 a_completed;
 	u32 a_retries;
 	u32 a_xretries;
 	u32 txerr_filtered;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 fifo_underrun;
 	u32 xtxop;
 	u32 timer_exp;
@@ -228,48 +187,6 @@ struct ath_tx_stats {
 	u32 puttxbuf;
 	u32 txstart;
 	u32 txprocdesc;
-<<<<<<< HEAD
-};
-
-/**
- * struct ath_rx_stats - RX Statistics
- * @rx_pkts_all:  No. of total frames received, including ones that
-	may have had errors.
- * @rx_bytes_all:  No. of total bytes received, including ones that
-	may have had errors.
- * @crc_err: No. of frames with incorrect CRC value
- * @decrypt_crc_err: No. of frames whose CRC check failed after
-	decryption process completed
- * @phy_err: No. of frames whose reception failed because the PHY
-	encountered an error
- * @mic_err: No. of frames with incorrect TKIP MIC verification failure
- * @pre_delim_crc_err: Pre-Frame delimiter CRC error detections
- * @post_delim_crc_err: Post-Frame delimiter CRC error detections
- * @decrypt_busy_err: Decryption interruptions counter
- * @phy_err_stats: Individual PHY error statistics
- */
-struct ath_rx_stats {
-	u32 rx_pkts_all;
-	u32 rx_bytes_all;
-	u32 crc_err;
-	u32 decrypt_crc_err;
-	u32 phy_err;
-	u32 mic_err;
-	u32 pre_delim_crc_err;
-	u32 post_delim_crc_err;
-	u32 decrypt_busy_err;
-	u32 phy_err_stats[ATH9K_PHYERR_MAX];
-};
-
-enum ath_reset_type {
-	RESET_TYPE_BB_HANG,
-	RESET_TYPE_BB_WATCHDOG,
-	RESET_TYPE_FATAL_INT,
-	RESET_TYPE_TX_ERROR,
-	RESET_TYPE_TX_HANG,
-	RESET_TYPE_PLL_HANG,
-	__RESET_TYPE_MAX
-=======
 	u32 txfailed;
 };
 
@@ -318,7 +235,6 @@ struct ath_antenna_stats {
 	u32 rssi_avg;
 	u32 lna_recv_cnt[4];
 	u32 lna_attempt_cnt[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_stats {
@@ -326,84 +242,24 @@ struct ath_stats {
 	struct ath_tx_stats txstats[ATH9K_NUM_TX_QUEUES];
 	struct ath_rx_stats rxstats;
 	struct ath_dfs_stats dfs_stats;
-<<<<<<< HEAD
-	u32 reset[__RESET_TYPE_MAX];
-};
-
-#define ATH_DBG_MAX_SAMPLES	10
-struct ath_dbg_bb_mac_samp {
-	u32 dma_dbg_reg_vals[ATH9K_NUM_DMA_DEBUG_REGS];
-	u32 pcu_obs, pcu_cr, noise;
-	struct {
-		u64 jiffies;
-		int8_t rssi_ctl0;
-		int8_t rssi_ctl1;
-		int8_t rssi_ctl2;
-		int8_t rssi_ext0;
-		int8_t rssi_ext1;
-		int8_t rssi_ext2;
-		int8_t rssi;
-		bool isok;
-		u8 rts_fail_cnt;
-		u8 data_fail_cnt;
-		u8 rateindex;
-		u8 qid;
-		u8 tid;
-		u32 ba_low;
-		u32 ba_high;
-	} ts[ATH_DBG_MAX_SAMPLES];
-	struct {
-		u64 jiffies;
-		int8_t rssi_ctl0;
-		int8_t rssi_ctl1;
-		int8_t rssi_ctl2;
-		int8_t rssi_ext0;
-		int8_t rssi_ext1;
-		int8_t rssi_ext2;
-		int8_t rssi;
-		bool is_mybeacon;
-		u8 antenna;
-		u8 rate;
-	} rs[ATH_DBG_MAX_SAMPLES];
-	struct ath_cycle_counters cc;
-	struct ath9k_nfcal_hist nfCalHist[NUM_NF_READINGS];
-};
-
-=======
 	struct ath_antenna_stats ant_stats[2];
 	u32 reset[__RESET_TYPE_MAX];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ath9k_debug {
 	struct dentry *debugfs_phy;
 	u32 regidx;
 	struct ath_stats stats;
-<<<<<<< HEAD
-#ifdef CONFIG_ATH9K_MAC_DEBUG
-	spinlock_t samp_lock;
-	struct ath_dbg_bb_mac_samp bb_mac_samp[ATH_DBG_MAX_SAMPLES];
-	u8 sampidx;
-	u8 tsidx;
-	u8 rsidx;
-#endif
-};
-
-int ath9k_init_debug(struct ath_hw *ah);
-=======
 };
 
 int ath9k_init_debug(struct ath_hw *ah);
 void ath9k_deinit_debug(struct ath_softc *sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ath_debug_stat_interrupt(struct ath_softc *sc, enum ath9k_int status);
 void ath_debug_stat_tx(struct ath_softc *sc, struct ath_buf *bf,
 		       struct ath_tx_status *ts, struct ath_txq *txq,
 		       unsigned int flags);
 void ath_debug_stat_rx(struct ath_softc *sc, struct ath_rx_status *rs);
-<<<<<<< HEAD
-=======
 int ath9k_get_et_sset_count(struct ieee80211_hw *hw,
 			    struct ieee80211_vif *vif, int sset);
 void ath9k_get_et_stats(struct ieee80211_hw *hw,
@@ -420,7 +276,6 @@ void ath9k_debug_stat_ant(struct ath_softc *sc,
 			  struct ath_hw_antcomb_conf *div_ant_conf,
 			  int main_rssi_avg, int alt_rssi_avg);
 void ath9k_debug_sync_cause(struct ath_softc *sc, u32 sync_cause);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -429,20 +284,13 @@ static inline int ath9k_init_debug(struct ath_hw *ah)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline void ath9k_deinit_debug(struct ath_softc *sc)
 {
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ath_debug_stat_interrupt(struct ath_softc *sc,
 					    enum ath9k_int status)
 {
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ath_debug_stat_tx(struct ath_softc *sc,
 				     struct ath_buf *bf,
 				     struct ath_tx_status *ts,
@@ -450,31 +298,10 @@ static inline void ath_debug_stat_tx(struct ath_softc *sc,
 				     unsigned int flags)
 {
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ath_debug_stat_rx(struct ath_softc *sc,
 				     struct ath_rx_status *rs)
 {
 }
-<<<<<<< HEAD
-
-#endif /* CONFIG_ATH9K_DEBUGFS */
-
-#ifdef CONFIG_ATH9K_MAC_DEBUG
-
-void ath9k_debug_samp_bb_mac(struct ath_softc *sc);
-
-#else
-
-static inline void ath9k_debug_samp_bb_mac(struct ath_softc *sc)
-{
-}
-
-#endif
-
-=======
 static inline void ath9k_debug_stat_ant(struct ath_softc *sc,
 					struct ath_hw_antcomb_conf *div_ant_conf,
 					int main_rssi_avg, int alt_rssi_avg)
@@ -500,6 +327,5 @@ static inline void ath_debug_rate_stats(struct ath_softc *sc,
 {
 }
 #endif /* CONFIG_ATH9K_STATION_STATISTICS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* DEBUG_H */

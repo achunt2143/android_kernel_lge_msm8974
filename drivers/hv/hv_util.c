@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2010, Microsoft Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place - Suite 330, Boston, MA 02111-1307 USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2010, Microsoft Corporation.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  *   Haiyang Zhang <haiyangz@microsoft.com>
  *   Hank Janssen  <hjanssen@microsoft.com>
@@ -34,8 +15,6 @@
 #include <linux/sysctl.h>
 #include <linux/reboot.h>
 #include <linux/hyperv.h>
-<<<<<<< HEAD
-=======
 #include <linux/clockchips.h>
 #include <linux/ptp_clock_kernel.h>
 #include <asm/mshyperv.h>
@@ -135,18 +114,10 @@ static int hv_shutdown_init(struct hv_util_service *srv)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void shutdown_onchannelcallback(void *context);
 static struct hv_util_service util_shutdown = {
 	.util_cb = shutdown_onchannelcallback,
-<<<<<<< HEAD
-};
-
-static void timesync_onchannelcallback(void *context);
-static struct hv_util_service util_timesynch = {
-	.util_cb = timesync_onchannelcallback,
-=======
 	.util_init = hv_shutdown_init,
 };
 
@@ -160,7 +131,6 @@ static struct hv_util_service util_timesynch = {
 	.util_init = hv_timesync_init,
 	.util_pre_suspend = hv_timesync_pre_suspend,
 	.util_deinit = hv_timesync_deinit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void heartbeat_onchannelcallback(void *context);
@@ -171,17 +141,6 @@ static struct hv_util_service util_heartbeat = {
 static struct hv_util_service util_kvp = {
 	.util_cb = hv_kvp_onchannelcallback,
 	.util_init = hv_kvp_init,
-<<<<<<< HEAD
-	.util_deinit = hv_kvp_deinit,
-};
-
-static void shutdown_onchannelcallback(void *context)
-{
-	struct vmbus_channel *channel = context;
-	u32 recvlen;
-	u64 requestid;
-	u8  execute_shutdown = false;
-=======
 	.util_pre_suspend = hv_kvp_pre_suspend,
 	.util_pre_resume = hv_kvp_pre_resume,
 	.util_deinit = hv_kvp_deinit,
@@ -229,74 +188,11 @@ static void shutdown_onchannelcallback(void *context)
 	struct work_struct *work = NULL;
 	u32 recvlen;
 	u64 requestid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  *shut_txf_buf = util_shutdown.recv_buffer;
 
 	struct shutdown_msg_data *shutdown_msg;
 
 	struct icmsg_hdr *icmsghdrp;
-<<<<<<< HEAD
-	struct icmsg_negotiate *negop = NULL;
-
-	vmbus_recvpacket(channel, shut_txf_buf,
-			 PAGE_SIZE, &recvlen, &requestid);
-
-	if (recvlen > 0) {
-		icmsghdrp = (struct icmsg_hdr *)&shut_txf_buf[
-			sizeof(struct vmbuspipe_hdr)];
-
-		if (icmsghdrp->icmsgtype == ICMSGTYPE_NEGOTIATE) {
-			vmbus_prep_negotiate_resp(icmsghdrp, negop, shut_txf_buf);
-		} else {
-			shutdown_msg =
-				(struct shutdown_msg_data *)&shut_txf_buf[
-					sizeof(struct vmbuspipe_hdr) +
-					sizeof(struct icmsg_hdr)];
-
-			switch (shutdown_msg->flags) {
-			case 0:
-			case 1:
-				icmsghdrp->status = HV_S_OK;
-				execute_shutdown = true;
-
-				pr_info("Shutdown request received -"
-					    " graceful shutdown initiated\n");
-				break;
-			default:
-				icmsghdrp->status = HV_E_FAIL;
-				execute_shutdown = false;
-
-				pr_info("Shutdown request received -"
-					    " Invalid request\n");
-				break;
-			}
-		}
-
-		icmsghdrp->icflags = ICMSGHDRFLAG_TRANSACTION
-			| ICMSGHDRFLAG_RESPONSE;
-
-		vmbus_sendpacket(channel, shut_txf_buf,
-				       recvlen, requestid,
-				       VM_PKT_DATA_INBAND, 0);
-	}
-
-	if (execute_shutdown == true)
-		orderly_poweroff(true);
-}
-
-/*
- * Set guest time to host UTC time.
- */
-static inline void do_adj_guesttime(u64 hosttime)
-{
-	s64 host_tns;
-	struct timespec host_ts;
-
-	host_tns = (hosttime - WLTIMEDELTA) * 100;
-	host_ts = ns_to_timespec(host_tns);
-
-	do_settimeofday(&host_ts);
-=======
 
 	if (vmbus_recvpacket(channel, shut_txf_buf, HV_HYP_PAGE_SIZE, &recvlen, &requestid)) {
 		pr_err_ratelimited("Shutdown request received. Could not read into shut txf buf\n");
@@ -382,27 +278,11 @@ static inline void do_adj_guesttime(u64 hosttime)
 
 	if (work)
 		schedule_work(work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Set the host time in a process context.
  */
-<<<<<<< HEAD
-
-struct adj_time_work {
-	struct work_struct work;
-	u64	host_time;
-};
-
-static void hv_set_host_time(struct work_struct *work)
-{
-	struct adj_time_work	*wrk;
-
-	wrk = container_of(work, struct adj_time_work, work);
-	do_adj_guesttime(wrk->host_time);
-	kfree(wrk);
-=======
 static struct work_struct adj_time_work;
 
 /*
@@ -490,7 +370,6 @@ static inline bool hv_implicit_sync(u64 host_time)
 		return true;
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -499,35 +378,6 @@ static inline bool hv_implicit_sync(u64 host_time)
  * ICTIMESYNCFLAG_SYNC flag bit indicates reboot, restore events of the VM.
  * After reboot the flag ICTIMESYNCFLAG_SYNC is included in the first time
  * message after the timesync channel is opened. Since the hv_utils module is
-<<<<<<< HEAD
- * loaded after hv_vmbus, the first message is usually missed. The other
- * thing is, systime is automatically set to emulated hardware clock which may
- * not be UTC time or in the same time zone. So, to override these effects, we
- * use the first 50 time samples for initial system time setting.
- */
-static inline void adj_guesttime(u64 hosttime, u8 flags)
-{
-	struct adj_time_work    *wrk;
-	static s32 scnt = 50;
-
-	wrk = kmalloc(sizeof(struct adj_time_work), GFP_ATOMIC);
-	if (wrk == NULL)
-		return;
-
-	wrk->host_time = hosttime;
-	if ((flags & ICTIMESYNCFLAG_SYNC) != 0) {
-		INIT_WORK(&wrk->work, hv_set_host_time);
-		schedule_work(&wrk->work);
-		return;
-	}
-
-	if ((flags & ICTIMESYNCFLAG_SAMPLE) != 0 && scnt > 0) {
-		scnt--;
-		INIT_WORK(&wrk->work, hv_set_host_time);
-		schedule_work(&wrk->work);
-	} else
-		kfree(wrk);
-=======
  * loaded after hv_vmbus, the first message is usually missed. This bit is
  * considered a hard request to discipline the clock.
  *
@@ -565,7 +415,6 @@ static inline void adj_guesttime(u64 hosttime, u64 reftime, u8 adj_flags)
 	if ((adj_flags & ICTIMESYNCFLAG_SYNC) ||
 	    (timesync_implicit && hv_implicit_sync(host_ts.host_time)))
 		schedule_work(&adj_time_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -578,14 +427,6 @@ static void timesync_onchannelcallback(void *context)
 	u64 requestid;
 	struct icmsg_hdr *icmsghdrp;
 	struct ictimesync_data *timedatap;
-<<<<<<< HEAD
-	u8 *time_txf_buf = util_timesynch.recv_buffer;
-
-	vmbus_recvpacket(channel, time_txf_buf,
-			 PAGE_SIZE, &recvlen, &requestid);
-
-	if (recvlen > 0) {
-=======
 	struct ictimesync_ref_data *refdata;
 	u8 *time_txf_buf = util_timesynch.recv_buffer;
 
@@ -613,19 +454,10 @@ static void timesync_onchannelcallback(void *context)
 			break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icmsghdrp = (struct icmsg_hdr *)&time_txf_buf[
 				sizeof(struct vmbuspipe_hdr)];
 
 		if (icmsghdrp->icmsgtype == ICMSGTYPE_NEGOTIATE) {
-<<<<<<< HEAD
-			vmbus_prep_negotiate_resp(icmsghdrp, NULL, time_txf_buf);
-		} else {
-			timedatap = (struct ictimesync_data *)&time_txf_buf[
-				sizeof(struct vmbuspipe_hdr) +
-				sizeof(struct icmsg_hdr)];
-			adj_guesttime(timedatap->parenttime, timedatap->flags);
-=======
 			if (vmbus_prep_negotiate_resp(icmsghdrp,
 						time_txf_buf, recvlen,
 						fw_versions, FW_VER_COUNT,
@@ -665,20 +497,14 @@ static void timesync_onchannelcallback(void *context)
 			icmsghdrp->status = HV_E_FAIL;
 			pr_err_ratelimited("Timesync request received. Invalid msg type: %d\n",
 					   icmsghdrp->icmsgtype);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		icmsghdrp->icflags = ICMSGHDRFLAG_TRANSACTION
 			| ICMSGHDRFLAG_RESPONSE;
 
 		vmbus_sendpacket(channel, time_txf_buf,
-<<<<<<< HEAD
-				recvlen, requestid,
-				VM_PKT_DATA_INBAND, 0);
-=======
 				 recvlen, requestid,
 				 VM_PKT_DATA_INBAND, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -696,12 +522,6 @@ static void heartbeat_onchannelcallback(void *context)
 	struct heartbeat_msg_data *heartbeat_msg;
 	u8 *hbeat_txf_buf = util_heartbeat.recv_buffer;
 
-<<<<<<< HEAD
-	vmbus_recvpacket(channel, hbeat_txf_buf,
-			 PAGE_SIZE, &recvlen, &requestid);
-
-	if (recvlen > 0) {
-=======
 	while (1) {
 
 		if (vmbus_recvpacket(channel, hbeat_txf_buf, HV_HYP_PAGE_SIZE,
@@ -720,21 +540,10 @@ static void heartbeat_onchannelcallback(void *context)
 			break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		icmsghdrp = (struct icmsg_hdr *)&hbeat_txf_buf[
 				sizeof(struct vmbuspipe_hdr)];
 
 		if (icmsghdrp->icmsgtype == ICMSGTYPE_NEGOTIATE) {
-<<<<<<< HEAD
-			vmbus_prep_negotiate_resp(icmsghdrp, NULL, hbeat_txf_buf);
-		} else {
-			heartbeat_msg =
-				(struct heartbeat_msg_data *)&hbeat_txf_buf[
-					sizeof(struct vmbuspipe_hdr) +
-					sizeof(struct icmsg_hdr)];
-
-			heartbeat_msg->seq_num += 1;
-=======
 			if (vmbus_prep_negotiate_resp(icmsghdrp,
 					hbeat_txf_buf, recvlen,
 					fw_versions, FW_VER_COUNT,
@@ -762,20 +571,12 @@ static void heartbeat_onchannelcallback(void *context)
 			icmsghdrp->status = HV_E_FAIL;
 			pr_err_ratelimited("Heartbeat request received. Invalid msg type: %d\n",
 					   icmsghdrp->icmsgtype);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		icmsghdrp->icflags = ICMSGHDRFLAG_TRANSACTION
 			| ICMSGHDRFLAG_RESPONSE;
 
 		vmbus_sendpacket(channel, hbeat_txf_buf,
-<<<<<<< HEAD
-				       recvlen, requestid,
-				       VM_PKT_DATA_INBAND, 0);
-	}
-}
-
-=======
 				 recvlen, requestid,
 				 VM_PKT_DATA_INBAND, 0);
 	}
@@ -784,7 +585,6 @@ static void heartbeat_onchannelcallback(void *context)
 #define HV_UTIL_RING_SEND_SIZE VMBUS_RING_SIZE(3 * HV_HYP_PAGE_SIZE)
 #define HV_UTIL_RING_RECV_SIZE VMBUS_RING_SIZE(3 * HV_HYP_PAGE_SIZE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int util_probe(struct hv_device *dev,
 			const struct hv_vmbus_device_id *dev_id)
 {
@@ -792,16 +592,10 @@ static int util_probe(struct hv_device *dev,
 		(struct hv_util_service *)dev_id->driver_data;
 	int ret;
 
-<<<<<<< HEAD
-	srv->recv_buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
-	if (!srv->recv_buffer)
-		return -ENOMEM;
-=======
 	srv->recv_buffer = kmalloc(HV_HYP_PAGE_SIZE * 4, GFP_KERNEL);
 	if (!srv->recv_buffer)
 		return -ENOMEM;
 	srv->channel = dev->channel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (srv->util_init) {
 		ret = srv->util_init(srv);
 		if (ret) {
@@ -810,14 +604,6 @@ static int util_probe(struct hv_device *dev,
 		}
 	}
 
-<<<<<<< HEAD
-	ret = vmbus_open(dev->channel, 2 * PAGE_SIZE, 2 * PAGE_SIZE, NULL, 0,
-			srv->util_cb, dev->channel);
-	if (ret)
-		goto error;
-
-	hv_set_drvdata(dev, srv);
-=======
 	/*
 	 * The set of services managed by the util driver are not performance
 	 * critical and do not need batched reading. Furthermore, some services
@@ -835,7 +621,6 @@ static int util_probe(struct hv_device *dev,
 	if (ret)
 		goto error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 error:
@@ -846,16 +631,6 @@ error1:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int util_remove(struct hv_device *dev)
-{
-	struct hv_util_service *srv = hv_get_drvdata(dev);
-
-	vmbus_close(dev->channel);
-	if (srv->util_deinit)
-		srv->util_deinit();
-	kfree(srv->recv_buffer);
-=======
 static void util_remove(struct hv_device *dev)
 {
 	struct hv_util_service *srv = hv_get_drvdata(dev);
@@ -883,30 +658,10 @@ static int util_suspend(struct hv_device *dev)
 	}
 
 	vmbus_close(dev->channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct hv_vmbus_device_id id_table[] = {
-	/* Shutdown guid */
-	{ VMBUS_DEVICE(0x31, 0x60, 0x0B, 0X0E, 0x13, 0x52, 0x34, 0x49,
-		       0x81, 0x8B, 0x38, 0XD9, 0x0C, 0xED, 0x39, 0xDB)
-	  .driver_data = (unsigned long)&util_shutdown },
-	/* Time synch guid */
-	{ VMBUS_DEVICE(0x30, 0xe6, 0x27, 0x95, 0xae, 0xd0, 0x7b, 0x49,
-		       0xad, 0xce, 0xe8, 0x0a, 0xb0, 0x17, 0x5c, 0xaf)
-	  .driver_data = (unsigned long)&util_timesynch },
-	/* Heartbeat guid */
-	{ VMBUS_DEVICE(0x39, 0x4f, 0x16, 0x57, 0x15, 0x91, 0x78, 0x4e,
-		       0xab, 0x55, 0x38, 0x2f, 0x3b, 0xd5, 0x42, 0x2d)
-	  .driver_data = (unsigned long)&util_heartbeat },
-	/* KVP guid */
-	{ VMBUS_DEVICE(0xe7, 0xf4, 0xa0, 0xa9, 0x45, 0x5a, 0x96, 0x4d,
-		       0xb8, 0x27, 0x8a, 0x84, 0x1e, 0x8c, 0x3,  0xe6)
-	  .driver_data = (unsigned long)&util_kvp },
-=======
 static int util_resume(struct hv_device *dev)
 {
 	struct hv_util_service *srv = hv_get_drvdata(dev);
@@ -949,7 +704,6 @@ static const struct hv_vmbus_device_id id_table[] = {
 	{ HV_FCOPY_GUID,
 	  .driver_data = (unsigned long)&util_fcopy
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 
@@ -957,14 +711,6 @@ MODULE_DEVICE_TABLE(vmbus, id_table);
 
 /* The one and only one */
 static  struct hv_driver util_drv = {
-<<<<<<< HEAD
-	.name = "hv_util",
-	.id_table = id_table,
-	.probe =  util_probe,
-	.remove =  util_remove,
-};
-
-=======
 	.name = "hv_utils",
 	.id_table = id_table,
 	.probe =  util_probe,
@@ -1053,7 +799,6 @@ static void hv_timesync_deinit(void)
 	hv_timesync_cancel_work();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_hyperv_utils(void)
 {
 	pr_info("Registering HyperV Utility Driver\n");
@@ -1072,8 +817,4 @@ module_init(init_hyperv_utils);
 module_exit(exit_hyperv_utils);
 
 MODULE_DESCRIPTION("Hyper-V Utilities");
-<<<<<<< HEAD
-MODULE_VERSION(HV_DRV_VERSION);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

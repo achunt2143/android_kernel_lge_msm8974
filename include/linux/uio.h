@@ -1,34 +1,3 @@
-<<<<<<< HEAD
-#ifndef __LINUX_UIO_H
-#define __LINUX_UIO_H
-
-#include <linux/compiler.h>
-#include <linux/types.h>
-
-/*
- *	Berkeley style UIO structures	-	Alan Cox 1994.
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- */
-
-struct iovec
-{
-	void __user *iov_base;	/* BSD uses caddr_t (1003.1g requires void *) */
-	__kernel_size_t iov_len; /* Must be size_t (1003.1g) */
-};
-
-/*
- *	UIO_MAXIOV shall be at least 16 1003.1g (5.4.1.1)
- */
- 
-#define UIO_FASTIOV	8
-#define UIO_MAXIOV	1024
-
-#ifdef __KERNEL__
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  *	Berkeley style UIO structures	-	Alan Cox 1994.
@@ -44,15 +13,12 @@ struct iovec
 struct page;
 
 typedef unsigned int __bitwise iov_iter_extraction_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kvec {
 	void *iov_base; /* and that should *never* hold a userland pointer */
 	size_t iov_len;
 };
 
-<<<<<<< HEAD
-=======
 enum iter_type {
 	/* iter types */
 	ITER_UBUF,
@@ -175,7 +141,6 @@ static inline bool user_backed_iter(const struct iov_iter *i)
 	return iter_is_ubuf(i) || iter_is_iovec(i);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Total number of bytes covered by an iovec.
  *
@@ -193,11 +158,6 @@ static inline size_t iov_length(const struct iovec *iov, unsigned long nr_segs)
 	return ret;
 }
 
-<<<<<<< HEAD
-unsigned long iov_shorten(struct iovec *iov, unsigned long nr_segs, size_t to);
-#endif
-
-=======
 size_t copy_page_from_iter_atomic(struct page *page, size_t offset,
 				  size_t bytes, struct iov_iter *i);
 void iov_iter_advance(struct iov_iter *i, size_t bytes);
@@ -421,5 +381,4 @@ ssize_t extract_iter_to_sg(struct iov_iter *iter, size_t len,
 			   struct sg_table *sgtable, unsigned int sg_max,
 			   iov_iter_extraction_t extraction_flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

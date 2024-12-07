@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-menu "Kernel hacking"
-
-source "lib/Kconfig.debug"
-
-config BOOTPARAM
-	bool 'Compiled-in Kernel Boot Parameter'
-
-config BOOTPARAM_STRING
-	string 'Kernel Boot Parameter'
-	default 'console=ttyS0,19200'
-	depends on BOOTPARAM
-
-config EARLY_PRINTK
-	bool "Early printk" if EMBEDDED
-	depends on MVME16x || MAC
-	default y
-	help
-          Write kernel log output directly to a serial port.
-
-          This is useful for kernel debugging when your machine crashes very
-          early before the console code is initialized.
-          You should normally say N here, unless you want to debug such a crash.
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 config BOOTPARAM
@@ -46,7 +22,6 @@ config EARLY_PRINTK
 	  This is useful for kernel debugging when your machine crashes very
 	  early, i.e. before the normal console driver is loaded.
 	  You should normally say N here, unless you want to debug such a crash.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if !MMU
 
@@ -61,26 +36,10 @@ config HIGHPROFILE
 	help
 	  Use a fast secondary clock to produce profiling information.
 
-<<<<<<< HEAD
-config NO_KERNEL_MSG
-	bool "Suppress Kernel BUG Messages"
-	help
-	  Do not output any debug BUG messages within the kernel.
-
-config BDM_DISABLE
-	bool "Disable BDM signals"
-	depends on (EXPERIMENTAL && COLDFIRE)
-=======
 config BDM_DISABLE
 	bool "Disable BDM signals"
 	depends on COLDFIRE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Disable the ColdFire CPU's BDM signals.
 
 endif
-<<<<<<< HEAD
-
-endmenu
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

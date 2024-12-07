@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Amiga mouse driver for Linux/m68k
  *
@@ -15,14 +12,6 @@
  *	Russell King
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,11 +21,7 @@
 
 #include <asm/irq.h>
 #include <asm/setup.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/amigahw.h>
 #include <asm/amigaints.h>
 
@@ -140,38 +125,6 @@ static int __init amimouse_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __exit amimouse_remove(struct platform_device *pdev)
-{
-	struct input_dev *dev = platform_get_drvdata(pdev);
-
-	platform_set_drvdata(pdev, NULL);
-	input_unregister_device(dev);
-	return 0;
-}
-
-static struct platform_driver amimouse_driver = {
-	.remove = __exit_p(amimouse_remove),
-	.driver   = {
-		.name	= "amiga-mouse",
-		.owner	= THIS_MODULE,
-	},
-};
-
-static int __init amimouse_init(void)
-{
-	return platform_driver_probe(&amimouse_driver, amimouse_probe);
-}
-
-module_init(amimouse_init);
-
-static void __exit amimouse_exit(void)
-{
-	platform_driver_unregister(&amimouse_driver);
-}
-
-module_exit(amimouse_exit);
-=======
 static void __exit amimouse_remove(struct platform_device *pdev)
 {
 	struct input_dev *dev = platform_get_drvdata(pdev);
@@ -193,6 +146,5 @@ static struct platform_driver amimouse_driver __refdata = {
 };
 
 module_platform_driver_probe(amimouse_driver, amimouse_probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_ALIAS("platform:amiga-mouse");

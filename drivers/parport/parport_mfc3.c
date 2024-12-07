@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Low-level parallel port routines for the Multiface 3 card
  *
  * Author: Joerg Dorchain <joerg@dorchain.net>
@@ -73,14 +70,6 @@
 #define MAX_MFC 5
 
 #undef DEBUG
-<<<<<<< HEAD
-#ifdef DEBUG
-#define DPRINTK printk
-#else
-static inline int DPRINTK(void *nothing, ...) {return 0;}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct parport *this_port[MAX_MFC] = {NULL, };
 static volatile int dummy; /* for trigger readds */
@@ -90,11 +79,7 @@ static struct parport_operations pp_mfc3_ops;
 
 static void mfc3_write_data(struct parport *p, unsigned char data)
 {
-<<<<<<< HEAD
-DPRINTK(KERN_DEBUG "write_data %c\n",data);
-=======
 	pr_debug("write_data %c\n", data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dummy = pia(p)->pprb; /* clears irq bit */
 	/* Triggers also /STROBE.*/
@@ -138,21 +123,13 @@ static unsigned char control_mfc3_to_pc(unsigned char control)
 
 static void mfc3_write_control(struct parport *p, unsigned char control)
 {
-<<<<<<< HEAD
-DPRINTK(KERN_DEBUG "write_control %02x\n",control);
-=======
 	pr_debug("write_control %02x\n", control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pia(p)->ppra = (pia(p)->ppra & 0x1f) | control_pc_to_mfc3(control);
 }
 	
 static unsigned char mfc3_read_control( struct parport *p)
 {
-<<<<<<< HEAD
-DPRINTK(KERN_DEBUG "read_control \n");
-=======
 	pr_debug("read_control\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return control_mfc3_to_pc(pia(p)->ppra & 0xe0);
 }
 
@@ -160,38 +137,12 @@ static unsigned char mfc3_frob_control( struct parport *p, unsigned char mask, u
 {
 	unsigned char old;
 
-<<<<<<< HEAD
-DPRINTK(KERN_DEBUG "frob_control mask %02x, value %02x\n",mask,val);
-=======
 	pr_debug("frob_control mask %02x, value %02x\n", mask, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	old = mfc3_read_control(p);
 	mfc3_write_control(p, (old & ~mask) ^ val);
 	return old;
 }
 
-<<<<<<< HEAD
-#if 0 /* currently unused */
-static unsigned char status_pc_to_mfc3(unsigned char status)
-{
-	unsigned char ret = 1;
-
-	if (status & PARPORT_STATUS_BUSY) /* Busy */
-		ret &= ~1;
-	if (status & PARPORT_STATUS_ACK) /* Ack */
-		ret |= 8;
-	if (status & PARPORT_STATUS_PAPEROUT) /* PaperOut */
-		ret |= 2;
-	if (status & PARPORT_STATUS_SELECT) /* select */
-		ret |= 4;
-	if (status & PARPORT_STATUS_ERROR) /* error */
-		ret |= 16;
-	return ret;
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned char status_mfc3_to_pc(unsigned char status)
 {
 	unsigned char ret = PARPORT_STATUS_BUSY;
@@ -210,43 +161,16 @@ static unsigned char status_mfc3_to_pc(unsigned char status)
 	return ret;
 }
 
-<<<<<<< HEAD
-#if 0 /* currently unused */
-static void mfc3_write_status( struct parport *p, unsigned char status)
-{
-DPRINTK(KERN_DEBUG "write_status %02x\n",status);
-	pia(p)->ppra = (pia(p)->ppra & 0xe0) | status_pc_to_mfc3(status);
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned char mfc3_read_status(struct parport *p)
 {
 	unsigned char status;
 
 	status = status_mfc3_to_pc(pia(p)->ppra & 0x1f);
-<<<<<<< HEAD
-DPRINTK(KERN_DEBUG "read_status %02x\n", status);
-	return status;
-}
-
-#if 0 /* currently unused */
-static void mfc3_change_mode( struct parport *p, int m)
-{
-	/* XXX: This port only has one mode, and I am
-	not sure about the corresponding PC-style mode*/
-}
-#endif
-
-static int use_cnt = 0;
-=======
 	pr_debug("read_status %02x\n", status);
 	return status;
 }
 
 static int use_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t mfc3_interrupt(int irq, void *dev_id)
 {
@@ -273,11 +197,7 @@ static void mfc3_disable_irq(struct parport *p)
 
 static void mfc3_data_forward(struct parport *p)
 {
-<<<<<<< HEAD
-	DPRINTK(KERN_DEBUG "forward\n");
-=======
 	pr_debug("forward\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pia(p)->crb &= ~PIA_DDR; /* make data direction register visible */
 	pia(p)->pddrb = 255; /* all pins output */
 	pia(p)->crb |= PIA_DDR; /* make data register visible - default */
@@ -285,11 +205,7 @@ static void mfc3_data_forward(struct parport *p)
 
 static void mfc3_data_reverse(struct parport *p)
 {
-<<<<<<< HEAD
-	DPRINTK(KERN_DEBUG "reverse\n");
-=======
 	pr_debug("reverse\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pia(p)->crb &= ~PIA_DDR; /* make data direction register visible */
 	pia(p)->pddrb = 0; /* all pins input */
 	pia(p)->crb |= PIA_DDR; /* make data register visible - default */
@@ -380,11 +296,7 @@ static int __init parport_mfc3_init(void)
 		if (!request_mem_region(piabase, sizeof(struct pia), "PIA"))
 			continue;
 
-<<<<<<< HEAD
-		pp = (struct pia *)ZTWO_VADDR(piabase);
-=======
 		pp = ZTWO_VADDR(piabase);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pp->crb = 0;
 		pp->pddrb = 255; /* all data pins output */
 		pp->crb = PIA_DDR|32|8;
@@ -408,11 +320,7 @@ static int __init parport_mfc3_init(void)
 		p->dev = &z->dev;
 
 		this_port[pias++] = p;
-<<<<<<< HEAD
-		printk(KERN_INFO "%s: Multiface III port using irq\n", p->name);
-=======
 		pr_info("%s: Multiface III port using irq\n", p->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* XXX: set operating mode */
 
 		p->private_data = (void *)piabase;
@@ -451,10 +359,6 @@ static void __exit parport_mfc3_exit(void)
 
 MODULE_AUTHOR("Joerg Dorchain <joerg@dorchain.net>");
 MODULE_DESCRIPTION("Parport Driver for Multiface 3 expansion cards Parallel Port");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("Multiface 3 Parallel Port");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 module_init(parport_mfc3_init)

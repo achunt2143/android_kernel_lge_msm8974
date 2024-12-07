@@ -1,23 +1,11 @@
-<<<<<<< HEAD
-/*
- * linux/kernel/time/tick-broadcast.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains functions which emulate a local clock-event
  * device via a broadcast event source.
  *
  * Copyright(C) 2005-2006, Thomas Gleixner <tglx@linutronix.de>
  * Copyright(C) 2005-2007, Red Hat, Inc., Ingo Molnar
  * Copyright(C) 2006-2007, Timesys Corp., Thomas Gleixner
-<<<<<<< HEAD
- *
- * This code is licenced under the GPL version 2. For details see
- * kernel-base/COPYING.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/cpu.h>
 #include <linux/err.h>
@@ -26,11 +14,8 @@
 #include <linux/percpu.h>
 #include <linux/profile.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/smp.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "tick-internal.h"
 
@@ -40,18 +25,6 @@
  */
 
 static struct tick_device tick_broadcast_device;
-<<<<<<< HEAD
-/* FIXME: Use cpumask_var_t. */
-static DECLARE_BITMAP(tick_broadcast_mask, NR_CPUS);
-static DECLARE_BITMAP(tmpmask, NR_CPUS);
-static DEFINE_RAW_SPINLOCK(tick_broadcast_lock);
-static int tick_broadcast_force;
-
-#ifdef CONFIG_TICK_ONESHOT
-static void tick_broadcast_clear_oneshot(int cpu);
-#else
-static inline void tick_broadcast_clear_oneshot(int cpu) { }
-=======
 static cpumask_var_t tick_broadcast_mask __cpumask_var_read_mostly;
 static cpumask_var_t tick_broadcast_on __cpumask_var_read_mostly;
 static cpumask_var_t tmpmask __cpumask_var_read_mostly;
@@ -76,7 +49,6 @@ static inline void tick_resume_broadcast_oneshot(struct clock_event_device *bc) 
 # ifdef CONFIG_HOTPLUG_CPU
 static inline void tick_broadcast_oneshot_offline(unsigned int cpu) { }
 # endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -89,9 +61,6 @@ struct tick_device *tick_get_broadcast_device(void)
 
 struct cpumask *tick_get_broadcast_mask(void)
 {
-<<<<<<< HEAD
-	return to_cpumask(tick_broadcast_mask);
-=======
 	return tick_broadcast_mask;
 }
 
@@ -100,7 +69,6 @@ static struct clock_event_device *tick_get_oneshot_wakeup_device(int cpu);
 const struct clock_event_device *tick_get_wakeup_device(int cpu)
 {
 	return tick_get_oneshot_wakeup_device(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -115,25 +83,6 @@ static void tick_broadcast_start_periodic(struct clock_event_device *bc)
 /*
  * Check, if the device can be utilized as broadcast device:
  */
-<<<<<<< HEAD
-int tick_check_broadcast_device(struct clock_event_device *dev)
-{
-	struct clock_event_device *cur = tick_broadcast_device.evtdev;
-
-	if ((dev->features & CLOCK_EVT_FEAT_DUMMY) ||
-	    (tick_broadcast_device.evtdev &&
-	     tick_broadcast_device.evtdev->rating >= dev->rating) ||
-	     (dev->features & CLOCK_EVT_FEAT_C3STOP))
-		return 0;
-
-	clockevents_exchange_device(tick_broadcast_device.evtdev, dev);
-	if (cur)
-		cur->event_handler = clockevents_handle_noop;
-	tick_broadcast_device.evtdev = dev;
-	if (!cpumask_empty(tick_get_broadcast_mask()))
-		tick_broadcast_start_periodic(dev);
-	return 1;
-=======
 static bool tick_check_broadcast_device(struct clock_event_device *curdev,
 					struct clock_event_device *newdev)
 {
@@ -252,7 +201,6 @@ void tick_install_broadcast_device(struct clock_event_device *dev, int cpu)
 	 * forever.
 	 */
 	tick_clock_notify();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -263,10 +211,6 @@ int tick_is_broadcast_device(struct clock_event_device *dev)
 	return (dev && tick_broadcast_device.evtdev == dev);
 }
 
-<<<<<<< HEAD
-/*
- * Check, if the device is disfunctional and a place holder, which
-=======
 int tick_broadcast_update_freq(struct clock_event_device *dev, u32 freq)
 {
 	int ret = -ENODEV;
@@ -298,15 +242,11 @@ static void tick_device_setup_broadcast_func(struct clock_event_device *dev)
 
 /*
  * Check, if the device is dysfunctional and a placeholder, which
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * needs to be handled by the broadcast device.
  */
 int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
 {
-<<<<<<< HEAD
-=======
 	struct clock_event_device *bc = tick_broadcast_device.evtdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int ret = 0;
 
@@ -320,22 +260,6 @@ int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
 	 */
 	if (!tick_device_is_functional(dev)) {
 		dev->event_handler = tick_handle_periodic;
-<<<<<<< HEAD
-		cpumask_set_cpu(cpu, tick_get_broadcast_mask());
-		tick_broadcast_start_periodic(tick_broadcast_device.evtdev);
-		ret = 1;
-	} else {
-		/*
-		 * When the new device is not affected by the stop
-		 * feature and the cpu is marked in the broadcast mask
-		 * then clear the broadcast bit.
-		 */
-		if (!(dev->features & CLOCK_EVT_FEAT_C3STOP)) {
-			int cpu = smp_processor_id();
-
-			cpumask_clear_cpu(cpu, tick_get_broadcast_mask());
-			tick_broadcast_clear_oneshot(cpu);
-=======
 		tick_device_setup_broadcast_func(dev);
 		cpumask_set_cpu(cpu, tick_broadcast_mask);
 		if (tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC)
@@ -395,22 +319,12 @@ int tick_device_uses_broadcast(struct clock_event_device *dev, int cpu)
 			break;
 		default:
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * Broadcast the event to the cpus, which are set in the mask (mangled).
- */
-static void tick_do_broadcast(struct cpumask *mask)
-{
-	int cpu = smp_processor_id();
-	struct tick_device *td;
-=======
 int tick_receive_broadcast(void)
 {
 	struct tick_device *td = this_cpu_ptr(&tick_cpu_device);
@@ -434,17 +348,11 @@ static bool tick_do_broadcast(struct cpumask *mask)
 	int cpu = smp_processor_id();
 	struct tick_device *td;
 	bool local = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check, if the current cpu is in the mask
 	 */
 	if (cpumask_test_cpu(cpu, mask)) {
-<<<<<<< HEAD
-		cpumask_clear_cpu(cpu, mask);
-		td = &per_cpu(tick_cpu_device, cpu);
-		td->evtdev->event_handler(td->evtdev);
-=======
 		struct clock_event_device *bc = tick_broadcast_device.evtdev;
 
 		cpumask_clear_cpu(cpu, mask);
@@ -461,7 +369,6 @@ static bool tick_do_broadcast(struct cpumask *mask)
 		 *	     expire_hrtimers()
 		 */
 		local = !(bc->features & CLOCK_EVT_FEAT_HRTIMER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!cpumask_empty(mask)) {
@@ -474,32 +381,17 @@ static bool tick_do_broadcast(struct cpumask *mask)
 		td = &per_cpu(tick_cpu_device, cpumask_first(mask));
 		td->evtdev->broadcast(mask);
 	}
-<<<<<<< HEAD
-=======
 	return local;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Periodic broadcast:
  * - invoke the broadcast handlers
  */
-<<<<<<< HEAD
-static void tick_do_periodic_broadcast(void)
-{
-	raw_spin_lock(&tick_broadcast_lock);
-
-	cpumask_and(to_cpumask(tmpmask),
-		    cpu_online_mask, tick_get_broadcast_mask());
-	tick_do_broadcast(to_cpumask(tmpmask));
-
-	raw_spin_unlock(&tick_broadcast_lock);
-=======
 static bool tick_do_periodic_broadcast(void)
 {
 	cpumask_and(tmpmask, cpu_online_mask, tick_broadcast_mask);
 	return tick_do_broadcast(tmpmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -507,51 +399,6 @@ static bool tick_do_periodic_broadcast(void)
  */
 static void tick_handle_periodic_broadcast(struct clock_event_device *dev)
 {
-<<<<<<< HEAD
-	ktime_t next;
-
-	tick_do_periodic_broadcast();
-
-	/*
-	 * The device is in periodic mode. No reprogramming necessary:
-	 */
-	if (dev->mode == CLOCK_EVT_MODE_PERIODIC)
-		return;
-
-	/*
-	 * Setup the next period for devices, which do not have
-	 * periodic mode. We read dev->next_event first and add to it
-	 * when the event already expired. clockevents_program_event()
-	 * sets dev->next_event only when the event is really
-	 * programmed to the device.
-	 */
-	for (next = dev->next_event; ;) {
-		next = ktime_add(next, tick_period);
-
-		if (!clockevents_program_event(dev, next, false))
-			return;
-		tick_do_periodic_broadcast();
-	}
-}
-
-/*
- * Powerstate information: The system enters/leaves a state, where
- * affected devices might stop
- */
-static void tick_do_broadcast_on_off(unsigned long *reason)
-{
-	struct clock_event_device *bc, *dev;
-	struct tick_device *td;
-	unsigned long flags;
-	int cpu, bc_stopped;
-
-	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
-
-	cpu = smp_processor_id();
-	td = &per_cpu(tick_cpu_device, cpu);
-	dev = td->evtdev;
-	bc = tick_broadcast_device.evtdev;
-=======
 	struct tick_device *td = this_cpu_ptr(&tick_cpu_device);
 	bool bc_local;
 
@@ -599,7 +446,6 @@ void tick_broadcast_control(enum tick_broadcast_mode mode)
 	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
 	td = this_cpu_ptr(&tick_cpu_device);
 	dev = td->evtdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Is the device not affected by the powerstate ?
@@ -610,26 +456,6 @@ void tick_broadcast_control(enum tick_broadcast_mode mode)
 	if (!tick_device_is_functional(dev))
 		goto out;
 
-<<<<<<< HEAD
-	bc_stopped = cpumask_empty(tick_get_broadcast_mask());
-
-	switch (*reason) {
-	case CLOCK_EVT_NOTIFY_BROADCAST_ON:
-	case CLOCK_EVT_NOTIFY_BROADCAST_FORCE:
-		if (!cpumask_test_cpu(cpu, tick_get_broadcast_mask())) {
-			cpumask_set_cpu(cpu, tick_get_broadcast_mask());
-			if (tick_broadcast_device.mode ==
-			    TICKDEV_MODE_PERIODIC)
-				clockevents_shutdown(dev);
-		}
-		if (*reason == CLOCK_EVT_NOTIFY_BROADCAST_FORCE)
-			tick_broadcast_force = 1;
-		break;
-	case CLOCK_EVT_NOTIFY_BROADCAST_OFF:
-		if (!tick_broadcast_force &&
-		    cpumask_test_cpu(cpu, tick_get_broadcast_mask())) {
-			cpumask_clear_cpu(cpu, tick_get_broadcast_mask());
-=======
 	cpu = smp_processor_id();
 	bc = tick_broadcast_device.evtdev;
 	bc_stopped = cpumask_empty(tick_broadcast_mask);
@@ -660,7 +486,6 @@ void tick_broadcast_control(enum tick_broadcast_mode mode)
 			break;
 		cpumask_clear_cpu(cpu, tick_broadcast_on);
 		if (cpumask_test_and_clear_cpu(cpu, tick_broadcast_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (tick_broadcast_device.mode ==
 			    TICKDEV_MODE_PERIODIC)
 				tick_setup_periodic(dev, 0);
@@ -668,16 +493,6 @@ void tick_broadcast_control(enum tick_broadcast_mode mode)
 		break;
 	}
 
-<<<<<<< HEAD
-	if (cpumask_empty(tick_get_broadcast_mask())) {
-		if (!bc_stopped)
-			clockevents_shutdown(bc);
-	} else if (bc_stopped) {
-		if (tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC)
-			tick_broadcast_start_periodic(bc);
-		else
-			tick_broadcast_setup_oneshot(bc);
-=======
 	if (bc) {
 		if (cpumask_empty(tick_broadcast_mask)) {
 			if (!bc_stopped)
@@ -688,28 +503,11 @@ void tick_broadcast_control(enum tick_broadcast_mode mode)
 			else
 				tick_broadcast_setup_oneshot(bc, false);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
-<<<<<<< HEAD
-
-/*
- * Powerstate information: The system enters/leaves a state, where
- * affected devices might stop.
- */
-void tick_broadcast_on_off(unsigned long reason, int *oncpu)
-{
-	if (!cpumask_test_cpu(*oncpu, cpu_online_mask))
-		printk(KERN_ERR "tick-broadcast: ignoring broadcast for "
-		       "offline CPU #%d\n", *oncpu);
-	else
-		tick_do_broadcast_on_off(&reason);
-}
-=======
 EXPORT_SYMBOL_GPL(tick_broadcast_control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set the periodic handler depending on broadcast on/off
@@ -722,30 +520,6 @@ void tick_set_periodic_handler(struct clock_event_device *dev, int broadcast)
 		dev->event_handler = tick_handle_periodic_broadcast;
 }
 
-<<<<<<< HEAD
-/*
- * Remove a CPU from broadcasting
- */
-void tick_shutdown_broadcast(unsigned int *cpup)
-{
-	struct clock_event_device *bc;
-	unsigned long flags;
-	unsigned int cpu = *cpup;
-
-	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
-
-	bc = tick_broadcast_device.evtdev;
-	cpumask_clear_cpu(cpu, tick_get_broadcast_mask());
-
-	if (tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC) {
-		if (bc && cpumask_empty(tick_get_broadcast_mask()))
-			clockevents_shutdown(bc);
-	}
-
-	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
-}
-
-=======
 #ifdef CONFIG_HOTPLUG_CPU
 static void tick_shutdown_broadcast(void)
 {
@@ -772,7 +546,6 @@ void tick_broadcast_offline(unsigned int cpu)
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void tick_suspend_broadcast(void)
 {
 	struct clock_event_device *bc;
@@ -787,13 +560,6 @@ void tick_suspend_broadcast(void)
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
 
-<<<<<<< HEAD
-int tick_resume_broadcast(void)
-{
-	struct clock_event_device *bc;
-	unsigned long flags;
-	int broadcast = 0;
-=======
 /*
  * This is called from tick_resume_local() on a resuming CPU. That's
  * called from the core resume function, tick_unfreeze() and the magic XEN
@@ -814,27 +580,12 @@ void tick_resume_broadcast(void)
 {
 	struct clock_event_device *bc;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
 
 	bc = tick_broadcast_device.evtdev;
 
 	if (bc) {
-<<<<<<< HEAD
-		clockevents_set_mode(bc, CLOCK_EVT_MODE_RESUME);
-
-		switch (tick_broadcast_device.mode) {
-		case TICKDEV_MODE_PERIODIC:
-			if (!cpumask_empty(tick_get_broadcast_mask()))
-				tick_broadcast_start_periodic(bc);
-			broadcast = cpumask_test_cpu(smp_processor_id(),
-						     tick_get_broadcast_mask());
-			break;
-		case TICKDEV_MODE_ONESHOT:
-			if (!cpumask_empty(tick_get_broadcast_mask()))
-				broadcast = tick_resume_broadcast_oneshot(bc);
-=======
 		clockevents_tick_resume(bc);
 
 		switch (tick_broadcast_device.mode) {
@@ -845,22 +596,10 @@ void tick_resume_broadcast(void)
 		case TICKDEV_MODE_ONESHOT:
 			if (!cpumask_empty(tick_broadcast_mask))
 				tick_resume_broadcast_oneshot(bc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
-<<<<<<< HEAD
-
-	return broadcast;
-}
-
-
-#ifdef CONFIG_TICK_ONESHOT
-
-/* FIXME: use cpumask_var_t. */
-static DECLARE_BITMAP(tick_broadcast_oneshot_mask, NR_CPUS);
-=======
 }
 
 #ifdef CONFIG_TICK_ONESHOT
@@ -868,16 +607,12 @@ static DECLARE_BITMAP(tick_broadcast_oneshot_mask, NR_CPUS);
 static cpumask_var_t tick_broadcast_oneshot_mask __cpumask_var_read_mostly;
 static cpumask_var_t tick_broadcast_pending_mask __cpumask_var_read_mostly;
 static cpumask_var_t tick_broadcast_force_mask __cpumask_var_read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Exposed for debugging: see timer_list.c
  */
 struct cpumask *tick_get_broadcast_oneshot_mask(void)
 {
-<<<<<<< HEAD
-	return to_cpumask(tick_broadcast_oneshot_mask);
-=======
 	return tick_broadcast_oneshot_mask;
 }
 
@@ -895,7 +630,6 @@ noinstr int tick_check_broadcast_expired(void)
 #else
 	return cpumask_test_cpu(smp_processor_id(), tick_broadcast_force_mask);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -914,26 +648,6 @@ static void tick_broadcast_set_affinity(struct clock_event_device *bc,
 	irq_set_affinity(bc->irq, bc->cpumask);
 }
 
-<<<<<<< HEAD
-static int tick_broadcast_set_event(struct clock_event_device *bc, int cpu,
-				    ktime_t expires, int force)
-{
-	int ret;
-
-	if (bc->mode != CLOCK_EVT_MODE_ONESHOT)
-		clockevents_set_mode(bc, CLOCK_EVT_MODE_ONESHOT);
-
-	ret = clockevents_program_event(bc, expires, force);
-	if (!ret)
-		tick_broadcast_set_affinity(bc, cpumask_of(cpu));
-	return ret;
-}
-
-int tick_resume_broadcast_oneshot(struct clock_event_device *bc)
-{
-	clockevents_set_mode(bc, CLOCK_EVT_MODE_ONESHOT);
-	return 0;
-=======
 static void tick_broadcast_set_event(struct clock_event_device *bc, int cpu,
 				     ktime_t expires)
 {
@@ -947,24 +661,16 @@ static void tick_broadcast_set_event(struct clock_event_device *bc, int cpu,
 static void tick_resume_broadcast_oneshot(struct clock_event_device *bc)
 {
 	clockevents_switch_state(bc, CLOCK_EVT_STATE_ONESHOT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Called from irq_enter() when idle was interrupted to reenable the
  * per cpu device.
  */
-<<<<<<< HEAD
-void tick_check_oneshot_broadcast(int cpu)
-{
-	if (cpumask_test_cpu(cpu, to_cpumask(tick_broadcast_oneshot_mask))) {
-		struct tick_device *td = &per_cpu(tick_cpu_device, cpu);
-=======
 void tick_check_oneshot_broadcast_this_cpu(void)
 {
 	if (cpumask_test_cpu(smp_processor_id(), tick_broadcast_oneshot_mask)) {
 		struct tick_device *td = this_cpu_ptr(&tick_cpu_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We might be in the middle of switching over from
@@ -972,13 +678,8 @@ void tick_check_oneshot_broadcast_this_cpu(void)
 		 * switched over, leave the device alone.
 		 */
 		if (td->mode == TICKDEV_MODE_ONESHOT) {
-<<<<<<< HEAD
-			clockevents_set_mode(td->evtdev,
-					     CLOCK_EVT_MODE_ONESHOT);
-=======
 			clockevents_switch_state(td->evtdev,
 					      CLOCK_EVT_STATE_ONESHOT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -991,22 +692,6 @@ static void tick_handle_oneshot_broadcast(struct clock_event_device *dev)
 	struct tick_device *td;
 	ktime_t now, next_event;
 	int cpu, next_cpu = 0;
-<<<<<<< HEAD
-
-	raw_spin_lock(&tick_broadcast_lock);
-again:
-	dev->next_event.tv64 = KTIME_MAX;
-	next_event.tv64 = KTIME_MAX;
-	cpumask_clear(to_cpumask(tmpmask));
-	now = ktime_get();
-	/* Find all expired events */
-	for_each_cpu(cpu, tick_get_broadcast_oneshot_mask()) {
-		td = &per_cpu(tick_cpu_device, cpu);
-		if (td->evtdev->next_event.tv64 <= now.tv64) {
-			cpumask_set_cpu(cpu, to_cpumask(tmpmask));
-		} else if (td->evtdev->next_event.tv64 < next_event.tv64) {
-			next_event.tv64 = td->evtdev->next_event.tv64;
-=======
 	bool bc_local;
 
 	raw_spin_lock(&tick_broadcast_lock);
@@ -1035,17 +720,11 @@ again:
 			cpumask_set_cpu(cpu, tick_broadcast_pending_mask);
 		} else if (td->evtdev->next_event < next_event) {
 			next_event = td->evtdev->next_event;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			next_cpu = cpu;
 		}
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Wakeup the cpus which have an expired event.
-	 */
-	tick_do_broadcast(to_cpumask(tmpmask));
-=======
 	 * Remove the current cpu from the pending mask. The event is
 	 * delivered immediately in tick_do_broadcast() !
 	 */
@@ -1066,7 +745,6 @@ again:
 	 * Wakeup the cpus which have an expired event.
 	 */
 	bc_local = tick_do_broadcast(tmpmask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Two reasons for reprogram:
@@ -1078,68 +756,6 @@ again:
 	 * - There are pending events on sleeping CPUs which were not
 	 * in the event mask
 	 */
-<<<<<<< HEAD
-	if (next_event.tv64 != KTIME_MAX) {
-		/*
-		 * Rearm the broadcast device. If event expired,
-		 * repeat the above
-		 */
-		if (tick_broadcast_set_event(dev, next_cpu, next_event, 0))
-			goto again;
-	}
-	raw_spin_unlock(&tick_broadcast_lock);
-}
-
-/*
- * Powerstate information: The system enters/leaves a state, where
- * affected devices might stop
- */
-void tick_broadcast_oneshot_control(unsigned long reason)
-{
-	struct clock_event_device *bc, *dev;
-	struct tick_device *td;
-	unsigned long flags;
-	int cpu;
-
-	/*
-	 * Periodic mode does not care about the enter/exit of power
-	 * states
-	 */
-	if (tick_broadcast_device.mode == TICKDEV_MODE_PERIODIC)
-		return;
-
-	/*
-	 * We are called with preemtion disabled from the depth of the
-	 * idle code, so we can't be moved away.
-	 */
-	cpu = smp_processor_id();
-	td = &per_cpu(tick_cpu_device, cpu);
-	dev = td->evtdev;
-
-	if (!(dev->features & CLOCK_EVT_FEAT_C3STOP))
-		return;
-
-	bc = tick_broadcast_device.evtdev;
-
-	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
-	if (reason == CLOCK_EVT_NOTIFY_BROADCAST_ENTER) {
-		if (!cpumask_test_cpu(cpu, tick_get_broadcast_oneshot_mask())) {
-			cpumask_set_cpu(cpu, tick_get_broadcast_oneshot_mask());
-			clockevents_set_mode(dev, CLOCK_EVT_MODE_SHUTDOWN);
-			if (dev->next_event.tv64 < bc->next_event.tv64)
-				tick_broadcast_set_event(bc, cpu, dev->next_event, 1);
-		}
-	} else {
-		if (cpumask_test_cpu(cpu, tick_get_broadcast_oneshot_mask())) {
-			cpumask_clear_cpu(cpu,
-					  tick_get_broadcast_oneshot_mask());
-			clockevents_set_mode(dev, CLOCK_EVT_MODE_ONESHOT);
-			if (dev->next_event.tv64 != KTIME_MAX)
-				tick_program_event(dev->next_event, 1);
-		}
-	}
-	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
-=======
 	if (next_event != KTIME_MAX)
 		tick_broadcast_set_event(dev, next_cpu, next_event);
 
@@ -1360,7 +976,6 @@ int __tick_broadcast_oneshot_control(enum tick_broadcast_state state)
 	 * to go into deep idle.
 	 */
 	return -EBUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1370,12 +985,8 @@ int __tick_broadcast_oneshot_control(enum tick_broadcast_state state)
  */
 static void tick_broadcast_clear_oneshot(int cpu)
 {
-<<<<<<< HEAD
-	cpumask_clear_cpu(cpu, tick_get_broadcast_oneshot_mask());
-=======
 	cpumask_clear_cpu(cpu, tick_broadcast_oneshot_mask);
 	cpumask_clear_cpu(cpu, tick_broadcast_pending_mask);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tick_broadcast_init_next_event(struct cpumask *mask,
@@ -1391,53 +1002,6 @@ static void tick_broadcast_init_next_event(struct cpumask *mask,
 	}
 }
 
-<<<<<<< HEAD
-/**
- * tick_broadcast_setup_oneshot - setup the broadcast device
- */
-void tick_broadcast_setup_oneshot(struct clock_event_device *bc)
-{
-	int cpu = smp_processor_id();
-
-	/* Set it up only once ! */
-	if (bc->event_handler != tick_handle_oneshot_broadcast) {
-		int was_periodic = bc->mode == CLOCK_EVT_MODE_PERIODIC;
-
-		bc->event_handler = tick_handle_oneshot_broadcast;
-
-		/* Take the do_timer update */
-		tick_do_timer_cpu = cpu;
-
-		/*
-		 * We must be careful here. There might be other CPUs
-		 * waiting for periodic broadcast. We need to set the
-		 * oneshot_mask bits for those and program the
-		 * broadcast device to fire.
-		 */
-		cpumask_copy(to_cpumask(tmpmask), tick_get_broadcast_mask());
-		cpumask_clear_cpu(cpu, to_cpumask(tmpmask));
-		cpumask_or(tick_get_broadcast_oneshot_mask(),
-			   tick_get_broadcast_oneshot_mask(),
-			   to_cpumask(tmpmask));
-
-		if (was_periodic && !cpumask_empty(to_cpumask(tmpmask))) {
-			clockevents_set_mode(bc, CLOCK_EVT_MODE_ONESHOT);
-			tick_broadcast_init_next_event(to_cpumask(tmpmask),
-						       tick_next_period);
-			tick_broadcast_set_event(bc, cpu, tick_next_period, 1);
-		} else
-			bc->next_event.tv64 = KTIME_MAX;
-	} else {
-		/*
-		 * The first cpu which switches to oneshot mode sets
-		 * the bit for all other cpus which are in the general
-		 * (periodic) broadcast mask. So the bit is set and
-		 * would prevent the first broadcast enter after this
-		 * to program the bc device.
-		 */
-		tick_broadcast_clear_oneshot(cpu);
-	}
-=======
 static inline ktime_t tick_get_next_period(void)
 {
 	ktime_t next;
@@ -1552,7 +1116,6 @@ static void tick_broadcast_setup_oneshot(struct clock_event_device *bc,
 	 */
 	if (!cpumask_empty(tick_broadcast_oneshot_mask))
 		tick_broadcast_set_event(bc, cpu, nexttick);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1561,49 +1124,20 @@ static void tick_broadcast_setup_oneshot(struct clock_event_device *bc,
 void tick_broadcast_switch_to_oneshot(void)
 {
 	struct clock_event_device *bc;
-<<<<<<< HEAD
-=======
 	enum tick_device_mode oldmode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
 
-<<<<<<< HEAD
-	tick_broadcast_device.mode = TICKDEV_MODE_ONESHOT;
-	bc = tick_broadcast_device.evtdev;
-	if (bc)
-		tick_broadcast_setup_oneshot(bc);
-=======
 	oldmode = tick_broadcast_device.mode;
 	tick_broadcast_device.mode = TICKDEV_MODE_ONESHOT;
 	bc = tick_broadcast_device.evtdev;
 	if (bc)
 		tick_broadcast_setup_oneshot(bc, oldmode == TICKDEV_MODE_PERIODIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
 
-<<<<<<< HEAD
-
-/*
- * Remove a dead CPU from broadcasting
- */
-void tick_shutdown_broadcast_oneshot(unsigned int *cpup)
-{
-	unsigned long flags;
-	unsigned int cpu = *cpup;
-
-	raw_spin_lock_irqsave(&tick_broadcast_lock, flags);
-
-	/*
-	 * Clear the broadcast mask flag for the dead cpu, but do not
-	 * stop the broadcast device!
-	 */
-	cpumask_clear_cpu(cpu, tick_get_broadcast_oneshot_mask());
-
-=======
 #ifdef CONFIG_HOTPLUG_CPU
 void hotplug_cpu__broadcast_tick_pull(int deadcpu)
 {
@@ -1617,13 +1151,10 @@ void hotplug_cpu__broadcast_tick_pull(int deadcpu)
 		/* This moves the broadcast assignment to this CPU: */
 		clockevents_program_event(bc, bc->next_event, 1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw_spin_unlock_irqrestore(&tick_broadcast_lock, flags);
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Remove a dying CPU from broadcasting
  */
 static void tick_broadcast_oneshot_offline(unsigned int cpu)
@@ -1642,7 +1173,6 @@ static void tick_broadcast_oneshot_offline(unsigned int cpu)
 #endif
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Check, whether the broadcast device is in one shot mode
  */
 int tick_broadcast_oneshot_active(void)
@@ -1660,9 +1190,6 @@ bool tick_broadcast_oneshot_available(void)
 	return bc ? bc->features & CLOCK_EVT_FEAT_ONESHOT : false;
 }
 
-<<<<<<< HEAD
-#endif
-=======
 #else
 int __tick_broadcast_oneshot_control(enum tick_broadcast_state state)
 {
@@ -1686,4 +1213,3 @@ void __init tick_broadcast_init(void)
 	zalloc_cpumask_var(&tick_broadcast_force_mask, GFP_NOWAIT);
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

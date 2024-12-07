@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2007 Intel Corporation. All rights reserved.
  * Copyright(c) 2008 Red Hat, Inc.  All rights reserved.
  * Copyright(c) 2008 Mike Christie
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -34,18 +15,11 @@
 #include <linux/slab.h>
 #include <linux/err.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/log2.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/fc/fc_fc2.h>
 
 #include <scsi/libfc.h>
-<<<<<<< HEAD
-#include <scsi/fc_encode.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fc_libfc.h"
 
@@ -74,11 +48,8 @@ static struct workqueue_struct *fc_exch_workqueue;
  * @total_exches: Total allocated exchanges
  * @lock:	  Exch pool lock
  * @ex_list:	  List of exchanges
-<<<<<<< HEAD
-=======
  * @left:	  Cache of free slot in exch array
  * @right:	  Cache of free slot in exch array
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This structure manages per cpu exchanges in array of exchange pointers.
  * This array is allocated followed by struct fc_exch_pool memory for
@@ -90,10 +61,6 @@ struct fc_exch_pool {
 	u16		 next_index;
 	u16		 total_exches;
 
-<<<<<<< HEAD
-	/* two cache of free slot in exch array */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16		 left;
 	u16		 right;
 } ____cacheline_aligned_in_smp;
@@ -107,10 +74,7 @@ struct fc_exch_pool {
  * @ep_pool:	    Reserved exchange pointers
  * @pool_max_index: Max exch array index in exch pool
  * @pool:	    Per cpu exch pool
-<<<<<<< HEAD
-=======
  * @lport:	    Local exchange port
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @stats:	    Statistics structure
  *
  * This structure is the center for creating exchanges and sequences.
@@ -119,24 +83,13 @@ struct fc_exch_pool {
 struct fc_exch_mgr {
 	struct fc_exch_pool __percpu *pool;
 	mempool_t	*ep_pool;
-<<<<<<< HEAD
-=======
 	struct fc_lport	*lport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum fc_class	class;
 	struct kref	kref;
 	u16		min_xid;
 	u16		max_xid;
 	u16		pool_max_index;
 
-<<<<<<< HEAD
-	/*
-	 * currently exchange mgr stats are updated but not used.
-	 * either stats can be expose via sysfs or remove them
-	 * all together if not used XXX
-	 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		atomic_t no_free_exch;
 		atomic_t no_free_exch_xid;
@@ -157,11 +110,7 @@ struct fc_exch_mgr {
  * for each anchor to determine if that EM should be used. The last
  * anchor in the list will always match to handle any exchanges not
  * handled by other EMs. The non-default EMs would be added to the
-<<<<<<< HEAD
- * anchor list by HW that provides FCoE offloads.
-=======
  * anchor list by HW that provides offloads.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct fc_exch_mgr_anchor {
 	struct list_head ema_list;
@@ -322,11 +271,7 @@ static void fc_exch_setup_hdr(struct fc_exch *ep, struct fc_frame *fp,
 
 	if (f_ctl & FC_FC_END_SEQ) {
 		fr_eof(fp) = FC_EOF_T;
-<<<<<<< HEAD
-		if (fc_sof_needs_ack(ep->class))
-=======
 		if (fc_sof_needs_ack((enum fc_sof)ep->class))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fr_eof(fp) = FC_EOF_N;
 		/*
 		 * From F_CTL.
@@ -349,14 +294,7 @@ static void fc_exch_setup_hdr(struct fc_exch *ep, struct fc_frame *fp,
 		fr_eof(fp) = FC_EOF_N;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Initialize remainig fh fields
-	 * from fc_fill_fc_hdr
-	 */
-=======
 	/* Initialize remaining fh fields from fc_fill_fc_hdr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fh->fh_ox_id = htons(ep->oxid);
 	fh->fh_rx_id = htons(ep->rxid);
 	fh->fh_seq_id = ep->seq.id;
@@ -384,10 +322,6 @@ static void fc_exch_release(struct fc_exch *ep)
 }
 
 /**
-<<<<<<< HEAD
- * fc_exch_done_locked() - Complete an exchange with the exchange lock held
- * @ep: The exchange that is complete
-=======
  * fc_exch_timer_cancel() - cancel exch timer
  * @ep:		The exchange whose timer to be canceled
  */
@@ -441,7 +375,6 @@ static void fc_exch_timer_set(struct fc_exch *ep, unsigned int timer_msec)
  * @ep: The exchange that is complete
  *
  * Note: May sleep if invoked from outside a response handler.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int fc_exch_done_locked(struct fc_exch *ep)
 {
@@ -453,32 +386,20 @@ static int fc_exch_done_locked(struct fc_exch *ep)
 	 * ep, and in that case we only clear the resp and set it as
 	 * complete, so it can be reused by the timer to send the rrq.
 	 */
-<<<<<<< HEAD
-	ep->resp = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ep->state & FC_EX_DONE)
 		return rc;
 	ep->esb_stat |= ESB_ST_COMPLETE;
 
 	if (!(ep->esb_stat & ESB_ST_REC_QUAL)) {
 		ep->state |= FC_EX_DONE;
-<<<<<<< HEAD
-		if (cancel_delayed_work(&ep->timeout_work))
-			atomic_dec(&ep->ex_refcnt); /* drop hold for timer */
-=======
 		fc_exch_timer_cancel(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 0;
 	}
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static struct fc_exch fc_quarantine_exch;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * fc_exch_ptr_get() - Return an exchange from an exchange pool
  * @pool:  Exchange Pool to get an exchange from
@@ -523,16 +444,6 @@ static void fc_exch_delete(struct fc_exch *ep)
 
 	/* update cache of free slot */
 	index = (ep->xid - ep->em->min_xid) >> fc_cpu_order;
-<<<<<<< HEAD
-	if (pool->left == FC_XID_UNKNOWN)
-		pool->left = index;
-	else if (pool->right == FC_XID_UNKNOWN)
-		pool->right = index;
-	else
-		pool->next_index = index;
-
-	fc_exch_ptr_set(pool, index, NULL);
-=======
 	if (!(ep->state & FC_EX_QUARANTINE)) {
 		if (pool->left == FC_XID_UNKNOWN)
 			pool->left = index;
@@ -544,74 +455,21 @@ static void fc_exch_delete(struct fc_exch *ep)
 	} else {
 		fc_exch_ptr_set(pool, index, &fc_quarantine_exch);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&ep->ex_list);
 	spin_unlock_bh(&pool->lock);
 	fc_exch_release(ep);	/* drop hold for exch in mp */
 }
 
-<<<<<<< HEAD
-/**
- * fc_exch_timer_set_locked() - Start a timer for an exchange w/ the
- *				the exchange lock held
- * @ep:		The exchange whose timer will start
- * @timer_msec: The timeout period
- *
- * Used for upper level protocols to time out the exchange.
- * The timer is cancelled when it fires or when the exchange completes.
- */
-static inline void fc_exch_timer_set_locked(struct fc_exch *ep,
-					    unsigned int timer_msec)
-{
-	if (ep->state & (FC_EX_RST_CLEANUP | FC_EX_DONE))
-		return;
-
-	FC_EXCH_DBG(ep, "Exchange timer armed\n");
-
-	if (queue_delayed_work(fc_exch_workqueue, &ep->timeout_work,
-			       msecs_to_jiffies(timer_msec)))
-		fc_exch_hold(ep);		/* hold for timer */
-}
-
-/**
- * fc_exch_timer_set() - Lock the exchange and set the timer
- * @ep:		The exchange whose timer will start
- * @timer_msec: The timeout period
- */
-static void fc_exch_timer_set(struct fc_exch *ep, unsigned int timer_msec)
-{
-	spin_lock_bh(&ep->ex_lock);
-	fc_exch_timer_set_locked(ep, timer_msec);
-	spin_unlock_bh(&ep->ex_lock);
-}
-
-/**
- * fc_seq_send() - Send a frame using existing sequence/exchange pair
- * @lport: The local port that the exchange will be sent on
- * @sp:	   The sequence to be sent
- * @fp:	   The frame to be sent on the exchange
- */
-static int fc_seq_send(struct fc_lport *lport, struct fc_seq *sp,
-		       struct fc_frame *fp)
-{
-	struct fc_exch *ep;
-	struct fc_frame_header *fh = fc_frame_header_get(fp);
-	int error;
-=======
 static int fc_seq_send_locked(struct fc_lport *lport, struct fc_seq *sp,
 			      struct fc_frame *fp)
 {
 	struct fc_exch *ep;
 	struct fc_frame_header *fh = fc_frame_header_get(fp);
 	int error = -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 f_ctl;
 	u8 fh_type = fh->fh_type;
 
 	ep = fc_seq_exch(sp);
-<<<<<<< HEAD
-	WARN_ON((ep->esb_stat & ESB_ST_SEQ_INIT) != ESB_ST_SEQ_INIT);
-=======
 
 	if (ep->esb_stat & (ESB_ST_COMPLETE | ESB_ST_ABNORMAL)) {
 		fc_frame_free(fp);
@@ -619,7 +477,6 @@ static int fc_seq_send_locked(struct fc_lport *lport, struct fc_seq *sp,
 	}
 
 	WARN_ON(!(ep->esb_stat & ESB_ST_SEQ_INIT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	f_ctl = ntoh24(fh->fh_f_ctl);
 	fc_exch_setup_hdr(ep, fp, f_ctl);
@@ -642,26 +499,13 @@ static int fc_seq_send_locked(struct fc_lport *lport, struct fc_seq *sp,
 	error = lport->tt.frame_send(lport, fp);
 
 	if (fh_type == FC_TYPE_BLS)
-<<<<<<< HEAD
-		return error;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the exchange and sequence flags,
 	 * assuming all frames for the sequence have been sent.
 	 * We can only be called to send once for each sequence.
 	 */
-<<<<<<< HEAD
-	spin_lock_bh(&ep->ex_lock);
-	ep->f_ctl = f_ctl & ~FC_FC_FIRST_SEQ;	/* not first seq */
-	if (f_ctl & FC_FC_SEQ_INIT)
-		ep->esb_stat &= ~ESB_ST_SEQ_INIT;
-	spin_unlock_bh(&ep->ex_lock);
-	return error;
-}
-=======
 	ep->f_ctl = f_ctl & ~FC_FC_FIRST_SEQ;	/* not first seq */
 	if (f_ctl & FC_FC_SEQ_INIT)
 		ep->esb_stat &= ~ESB_ST_SEQ_INIT;
@@ -689,7 +533,6 @@ int fc_seq_send(struct fc_lport *lport, struct fc_seq *sp, struct fc_frame *fp)
 	return error;
 }
 EXPORT_SYMBOL(fc_seq_send);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_seq_alloc() - Allocate a sequence for a given exchange
@@ -731,11 +574,7 @@ static struct fc_seq *fc_seq_start_next_locked(struct fc_seq *sp)
  *			 for a given sequence/exchange pair
  * @sp: The sequence/exchange to get a new exchange for
  */
-<<<<<<< HEAD
-static struct fc_seq *fc_seq_start_next(struct fc_seq *sp)
-=======
 struct fc_seq *fc_seq_start_next(struct fc_seq *sp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_exch *ep = fc_seq_exch(sp);
 
@@ -745,20 +584,6 @@ struct fc_seq *fc_seq_start_next(struct fc_seq *sp)
 
 	return sp;
 }
-<<<<<<< HEAD
-
-/*
- * Set the response handler for the exchange associated with a sequence.
- */
-static void fc_seq_set_resp(struct fc_seq *sp,
-			    void (*resp)(struct fc_seq *, struct fc_frame *,
-					 void *),
-			    void *arg)
-{
-	struct fc_exch *ep = fc_seq_exch(sp);
-
-	spin_lock_bh(&ep->ex_lock);
-=======
 EXPORT_SYMBOL(fc_seq_start_next);
 
 /*
@@ -783,23 +608,17 @@ void fc_seq_set_resp(struct fc_seq *sp,
 		spin_lock_bh(&ep->ex_lock);
 	}
 	finish_wait(&ep->resp_wq, &wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->resp = resp;
 	ep->arg = arg;
 	spin_unlock_bh(&ep->ex_lock);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(fc_seq_set_resp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_exch_abort_locked() - Abort an exchange
  * @ep:	The exchange to be aborted
  * @timer_msec: The period of time to wait before aborting
  *
-<<<<<<< HEAD
-=======
  * Abort an exchange and sequence. Generally called because of a
  * exchange timeout or an abort from the upper layer.
  *
@@ -807,7 +626,6 @@ EXPORT_SYMBOL(fc_seq_set_resp);
  * timer_msec value is specified then exchange resp handler
  * will be called with timeout error if no response to abort.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Locking notes:  Called with exch lock held
  *
  * Return value: 0 on success else error code
@@ -819,11 +637,6 @@ static int fc_exch_abort_locked(struct fc_exch *ep,
 	struct fc_frame *fp;
 	int error;
 
-<<<<<<< HEAD
-	if (ep->esb_stat & (ESB_ST_COMPLETE | ESB_ST_ABNORMAL) ||
-	    ep->state & (FC_EX_DONE | FC_EX_RST_CLEANUP))
-		return -ENXIO;
-=======
 	FC_EXCH_DBG(ep, "exch: abort, time %d msecs\n", timer_msec);
 	if (ep->esb_stat & (ESB_ST_COMPLETE | ESB_ST_ABNORMAL) ||
 	    ep->state & (FC_EX_DONE | FC_EX_RST_CLEANUP)) {
@@ -831,7 +644,6 @@ static int fc_exch_abort_locked(struct fc_exch *ep,
 			    ep->esb_stat, ep->state);
 		return -ENXIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Send the abort on a new sequence if possible.
@@ -840,29 +652,6 @@ static int fc_exch_abort_locked(struct fc_exch *ep,
 	if (!sp)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ep->esb_stat |= ESB_ST_SEQ_INIT | ESB_ST_ABNORMAL;
-	if (timer_msec)
-		fc_exch_timer_set_locked(ep, timer_msec);
-
-	/*
-	 * If not logged into the fabric, don't send ABTS but leave
-	 * sequence active until next timeout.
-	 */
-	if (!ep->sid)
-		return 0;
-
-	/*
-	 * Send an abort for the sequence that timed out.
-	 */
-	fp = fc_frame_alloc(ep->lp, 0);
-	if (fp) {
-		fc_fill_fc_hdr(fp, FC_RCTL_BA_ABTS, ep->did, ep->sid,
-			       FC_TYPE_BLS, FC_FC_END_SEQ | FC_FC_SEQ_INIT, 0);
-		error = fc_seq_send(ep->lp, sp, fp);
-	} else
-		error = -ENOBUFS;
-=======
 	if (timer_msec)
 		fc_exch_timer_set_locked(ep, timer_msec);
 
@@ -888,7 +677,6 @@ static int fc_exch_abort_locked(struct fc_exch *ep,
 		error = 0;
 	}
 	ep->esb_stat |= ESB_ST_ABNORMAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -901,12 +689,7 @@ static int fc_exch_abort_locked(struct fc_exch *ep,
  *
  * Return value: 0 on success else error code
  */
-<<<<<<< HEAD
-static int fc_seq_exch_abort(const struct fc_seq *req_sp,
-			     unsigned int timer_msec)
-=======
 int fc_seq_exch_abort(const struct fc_seq *req_sp, unsigned int timer_msec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_exch *ep;
 	int error;
@@ -919,8 +702,6 @@ int fc_seq_exch_abort(const struct fc_seq *req_sp, unsigned int timer_msec)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * fc_invoke_resp() - invoke ep->resp()
  * @ep:	   The exchange to be operated on
  * @fp:	   The frame pointer to pass through to ->resp()
@@ -977,7 +758,6 @@ static bool fc_invoke_resp(struct fc_exch *ep, struct fc_seq *sp,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fc_exch_timeout() - Handle exchange timer expiration
  * @work: The work_struct identifying the exchange that timed out
  */
@@ -986,19 +766,10 @@ static void fc_exch_timeout(struct work_struct *work)
 	struct fc_exch *ep = container_of(work, struct fc_exch,
 					  timeout_work.work);
 	struct fc_seq *sp = &ep->seq;
-<<<<<<< HEAD
-	void (*resp)(struct fc_seq *, struct fc_frame *fp, void *arg);
-	void *arg;
-	u32 e_stat;
-	int rc = 1;
-
-	FC_EXCH_DBG(ep, "Exchange timed out\n");
-=======
 	u32 e_stat;
 	int rc = 1;
 
 	FC_EXCH_DBG(ep, "Exchange timed out state %x\n", ep->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&ep->ex_lock);
 	if (ep->state & (FC_EX_RST_CLEANUP | FC_EX_DONE))
@@ -1012,24 +783,13 @@ static void fc_exch_timeout(struct work_struct *work)
 			fc_exch_rrq(ep);
 		goto done;
 	} else {
-<<<<<<< HEAD
-		resp = ep->resp;
-		arg = ep->arg;
-		ep->resp = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (e_stat & ESB_ST_ABNORMAL)
 			rc = fc_exch_done_locked(ep);
 		spin_unlock_bh(&ep->ex_lock);
 		if (!rc)
 			fc_exch_delete(ep);
-<<<<<<< HEAD
-		if (resp)
-			resp(sp, ERR_PTR(-FC_EX_TIMEOUT), arg);
-=======
 		fc_invoke_resp(ep, sp, ERR_PTR(-FC_EX_TIMEOUT));
 		fc_seq_set_resp(sp, NULL, ep->arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_seq_exch_abort(sp, 2 * ep->r_a_tov);
 		goto done;
 	}
@@ -1065,23 +825,6 @@ static struct fc_exch *fc_exch_em_alloc(struct fc_lport *lport,
 	}
 	memset(ep, 0, sizeof(*ep));
 
-<<<<<<< HEAD
-	cpu = get_cpu();
-	pool = per_cpu_ptr(mp->pool, cpu);
-	spin_lock_bh(&pool->lock);
-	put_cpu();
-
-	/* peek cache of free slot */
-	if (pool->left != FC_XID_UNKNOWN) {
-		index = pool->left;
-		pool->left = FC_XID_UNKNOWN;
-		goto hit;
-	}
-	if (pool->right != FC_XID_UNKNOWN) {
-		index = pool->right;
-		pool->right = FC_XID_UNKNOWN;
-		goto hit;
-=======
 	cpu = raw_smp_processor_id();
 	pool = per_cpu_ptr(mp->pool, cpu);
 	spin_lock_bh(&pool->lock);
@@ -1100,7 +843,6 @@ static struct fc_exch *fc_exch_em_alloc(struct fc_lport *lport,
 			pool->right = FC_XID_UNKNOWN;
 			goto hit;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	index = pool->next_index;
@@ -1137,11 +879,8 @@ hit:
 	ep->f_ctl = FC_FC_FIRST_SEQ;	/* next seq is first seq */
 	ep->rxid = FC_XID_UNKNOWN;
 	ep->class = mp->class;
-<<<<<<< HEAD
-=======
 	ep->resp_active = 0;
 	init_waitqueue_head(&ep->resp_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_DELAYED_WORK(&ep->timeout_work, fc_exch_timeout);
 out:
 	return ep;
@@ -1163,16 +902,6 @@ err:
  * EM is selected when a NULL match function pointer is encountered
  * or when a call to a match function returns true.
  */
-<<<<<<< HEAD
-static inline struct fc_exch *fc_exch_alloc(struct fc_lport *lport,
-					    struct fc_frame *fp)
-{
-	struct fc_exch_mgr_anchor *ema;
-
-	list_for_each_entry(ema, &lport->ema_list, ema_list)
-		if (!ema->match || ema->match(fp))
-			return fc_exch_em_alloc(lport, ema->mp);
-=======
 static struct fc_exch *fc_exch_alloc(struct fc_lport *lport,
 				     struct fc_frame *fp)
 {
@@ -1186,7 +915,6 @@ static struct fc_exch *fc_exch_alloc(struct fc_lport *lport,
 				return ep;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -1197,17 +925,6 @@ static struct fc_exch *fc_exch_alloc(struct fc_lport *lport,
  */
 static struct fc_exch *fc_exch_find(struct fc_exch_mgr *mp, u16 xid)
 {
-<<<<<<< HEAD
-	struct fc_exch_pool *pool;
-	struct fc_exch *ep = NULL;
-
-	if ((xid >= mp->min_xid) && (xid <= mp->max_xid)) {
-		pool = per_cpu_ptr(mp->pool, xid & fc_cpu_mask);
-		spin_lock_bh(&pool->lock);
-		ep = fc_exch_ptr_get(pool, (xid - mp->min_xid) >> fc_cpu_order);
-		if (ep && ep->xid == xid)
-			fc_exch_hold(ep);
-=======
 	struct fc_lport *lport = mp->lport;
 	struct fc_exch_pool *pool;
 	struct fc_exch *ep = NULL;
@@ -1234,7 +951,6 @@ static struct fc_exch *fc_exch_find(struct fc_exch_mgr *mp, u16 xid)
 			WARN_ON(ep->xid != xid);
 			fc_exch_hold(ep);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_bh(&pool->lock);
 	}
 	return ep;
@@ -1245,15 +961,10 @@ static struct fc_exch *fc_exch_find(struct fc_exch_mgr *mp, u16 xid)
  * fc_exch_done() - Indicate that an exchange/sequence tuple is complete and
  *		    the memory allocated for the related objects may be freed.
  * @sp: The sequence that has completed
-<<<<<<< HEAD
- */
-static void fc_exch_done(struct fc_seq *sp)
-=======
  *
  * Note: May sleep if invoked from outside a response handler.
  */
 void fc_exch_done(struct fc_seq *sp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_exch *ep = fc_seq_exch(sp);
 	int rc;
@@ -1261,18 +972,12 @@ void fc_exch_done(struct fc_seq *sp)
 	spin_lock_bh(&ep->ex_lock);
 	rc = fc_exch_done_locked(ep);
 	spin_unlock_bh(&ep->ex_lock);
-<<<<<<< HEAD
-	if (!rc)
-		fc_exch_delete(ep);
-}
-=======
 
 	fc_seq_set_resp(sp, NULL, ep->arg);
 	if (!rc)
 		fc_exch_delete(ep);
 }
 EXPORT_SYMBOL(fc_exch_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_exch_resp() - Allocate a new exchange for a response frame
@@ -1398,10 +1103,7 @@ static enum fc_pf_rjt_reason fc_seq_lookup_recip(struct fc_lport *lport,
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	spin_lock_bh(&ep->ex_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * At this point, we have the exchange held.
 	 * Find or create the sequence.
@@ -1418,11 +1120,7 @@ static enum fc_pf_rjt_reason fc_seq_lookup_recip(struct fc_lport *lport,
 				/*
 				 * Update sequence_id based on incoming last
 				 * frame of sequence exchange. This is needed
-<<<<<<< HEAD
-				 * for FCoE target where DDP has been used
-=======
 				 * for FC target where DDP has been used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 * on target where, stack is indicated only
 				 * about last frame's (payload _header) header.
 				 * Whereas "seq_id" which is part of
@@ -1433,19 +1131,11 @@ static enum fc_pf_rjt_reason fc_seq_lookup_recip(struct fc_lport *lport,
 				 * sending RSP, hence write request on other
 				 * end never finishes.
 				 */
-<<<<<<< HEAD
-				spin_lock_bh(&ep->ex_lock);
-				sp->ssb_stat |= SSB_ST_RESP;
-				sp->id = fh->fh_seq_id;
-				spin_unlock_bh(&ep->ex_lock);
-			} else {
-=======
 				sp->ssb_stat |= SSB_ST_RESP;
 				sp->id = fh->fh_seq_id;
 			} else {
 				spin_unlock_bh(&ep->ex_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* sequence/exch should exist */
 				reject = FC_RJT_SEQ_ID;
 				goto rel;
@@ -1456,10 +1146,7 @@ static enum fc_pf_rjt_reason fc_seq_lookup_recip(struct fc_lport *lport,
 
 	if (f_ctl & FC_FC_SEQ_INIT)
 		ep->esb_stat |= ESB_ST_SEQ_INIT;
-<<<<<<< HEAD
-=======
 	spin_unlock_bh(&ep->ex_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fr_seq(fp) = sp;
 out:
@@ -1537,13 +1224,8 @@ static void fc_exch_set_addr(struct fc_exch *ep,
  *
  * The received frame is not freed.
  */
-<<<<<<< HEAD
-static void fc_seq_els_rsp_send(struct fc_frame *fp, enum fc_els_cmd els_cmd,
-				struct fc_seq_els_data *els_data)
-=======
 void fc_seq_els_rsp_send(struct fc_frame *fp, enum fc_els_cmd els_cmd,
 			 struct fc_seq_els_data *els_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (els_cmd) {
 	case ELS_LS_RJT:
@@ -1562,10 +1244,7 @@ void fc_seq_els_rsp_send(struct fc_frame *fp, enum fc_els_cmd els_cmd,
 		FC_LPORT_DBG(fr_dev(fp), "Invalid ELS CMD:%x\n", els_cmd);
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(fc_seq_els_rsp_send);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_seq_send_last() - Send a sequence that is the last in the exchange
@@ -1583,11 +1262,7 @@ static void fc_seq_send_last(struct fc_seq *sp, struct fc_frame *fp,
 	f_ctl = FC_FC_LAST_SEQ | FC_FC_END_SEQ | FC_FC_SEQ_INIT;
 	f_ctl |= ep->f_ctl;
 	fc_fill_fc_hdr(fp, rctl, ep->did, ep->sid, fh_type, f_ctl, 0);
-<<<<<<< HEAD
-	fc_seq_send(ep->lp, sp, fp);
-=======
 	fc_seq_send_locked(ep->lp, sp, fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1611,15 +1286,10 @@ static void fc_seq_send_ack(struct fc_seq *sp, const struct fc_frame *rx_fp)
 	 */
 	if (fc_sof_needs_ack(fr_sof(rx_fp))) {
 		fp = fc_frame_alloc(lport, 0);
-<<<<<<< HEAD
-		if (!fp)
-			return;
-=======
 		if (!fp) {
 			FC_EXCH_DBG(ep, "Drop ACK request, out of memory\n");
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		fh = fc_frame_header_get(fp);
 		fh->fh_r_ctl = FC_RCTL_ACK_1;
@@ -1672,19 +1342,11 @@ static void fc_exch_send_ba_rjt(struct fc_frame *rx_fp,
 	struct fc_frame_header *rx_fh;
 	struct fc_frame_header *fh;
 	struct fc_ba_rjt *rp;
-<<<<<<< HEAD
-=======
 	struct fc_seq *sp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport;
 	unsigned int f_ctl;
 
 	lport = fr_dev(rx_fp);
-<<<<<<< HEAD
-	fp = fc_frame_alloc(lport, sizeof(*rp));
-	if (!fp)
-		return;
-=======
 	sp = fr_seq(rx_fp);
 	fp = fc_frame_alloc(lport, sizeof(*rp));
 	if (!fp) {
@@ -1692,7 +1354,6 @@ static void fc_exch_send_ba_rjt(struct fc_frame *rx_fp,
 			     "Drop BA_RJT request, out of memory\n");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fh = fc_frame_header_get(fp);
 	rx_fh = fc_frame_header_get(rx_fp);
 
@@ -1756,23 +1417,6 @@ static void fc_exch_recv_abts(struct fc_exch *ep, struct fc_frame *rx_fp)
 
 	if (!ep)
 		goto reject;
-<<<<<<< HEAD
-	spin_lock_bh(&ep->ex_lock);
-	if (ep->esb_stat & ESB_ST_COMPLETE) {
-		spin_unlock_bh(&ep->ex_lock);
-		goto reject;
-	}
-	if (!(ep->esb_stat & ESB_ST_REC_QUAL))
-		fc_exch_hold(ep);		/* hold for REC_QUAL */
-	ep->esb_stat |= ESB_ST_ABNORMAL | ESB_ST_REC_QUAL;
-	fc_exch_timer_set_locked(ep, ep->r_a_tov);
-
-	fp = fc_frame_alloc(ep->lp, sizeof(*ap));
-	if (!fp) {
-		spin_unlock_bh(&ep->ex_lock);
-		goto free;
-	}
-=======
 
 	FC_EXCH_DBG(ep, "exch: ABTS received\n");
 	fp = fc_frame_alloc(ep->lp, sizeof(*ap));
@@ -1793,7 +1437,6 @@ static void fc_exch_recv_abts(struct fc_exch *ep, struct fc_frame *rx_fp)
 		fc_exch_hold(ep);		/* hold for REC_QUAL */
 	}
 	fc_exch_timer_set_locked(ep, ep->r_a_tov);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fh = fc_frame_header_get(fp);
 	ap = fc_frame_payload_get(fp, sizeof(*ap));
 	memset(ap, 0, sizeof(*ap));
@@ -1806,27 +1449,17 @@ static void fc_exch_recv_abts(struct fc_exch *ep, struct fc_frame *rx_fp)
 		ap->ba_low_seq_cnt = htons(sp->cnt);
 	}
 	sp = fc_seq_start_next_locked(sp);
-<<<<<<< HEAD
-	spin_unlock_bh(&ep->ex_lock);
-	fc_seq_send_last(sp, fp, FC_RCTL_BA_ACC, FC_TYPE_BLS);
-=======
 	fc_seq_send_last(sp, fp, FC_RCTL_BA_ACC, FC_TYPE_BLS);
 	ep->esb_stat |= ESB_ST_ABNORMAL;
 	spin_unlock_bh(&ep->ex_lock);
 
 free:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_frame_free(rx_fp);
 	return;
 
 reject:
 	fc_exch_send_ba_rjt(rx_fp, FC_BA_RJT_UNABLE, FC_BA_RJT_INV_XID);
-<<<<<<< HEAD
-free:
-	fc_frame_free(rx_fp);
-=======
 	goto free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1838,11 +1471,7 @@ free:
  * A reference will be held on the exchange/sequence for the caller, which
  * must call fc_seq_release().
  */
-<<<<<<< HEAD
-static struct fc_seq *fc_seq_assign(struct fc_lport *lport, struct fc_frame *fp)
-=======
 struct fc_seq *fc_seq_assign(struct fc_lport *lport, struct fc_frame *fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_exch_mgr_anchor *ema;
 
@@ -1856,27 +1485,17 @@ struct fc_seq *fc_seq_assign(struct fc_lport *lport, struct fc_frame *fp)
 			break;
 	return fr_seq(fp);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(fc_seq_assign);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_seq_release() - Release the hold
  * @sp:    The sequence.
  */
-<<<<<<< HEAD
-static void fc_seq_release(struct fc_seq *sp)
-{
-	fc_exch_release(fc_seq_exch(sp));
-}
-=======
 void fc_seq_release(struct fc_seq *sp)
 {
 	fc_exch_release(fc_seq_exch(sp));
 }
 EXPORT_SYMBOL(fc_seq_release);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_exch_recv_req() - Handler for an incoming request
@@ -1912,11 +1531,7 @@ static void fc_exch_recv_req(struct fc_lport *lport, struct fc_exch_mgr *mp,
 	 * The upper-level protocol may request one later, if needed.
 	 */
 	if (fh->fh_rx_id == htons(FC_XID_UNKNOWN))
-<<<<<<< HEAD
-		return lport->tt.lport_recv(lport, fp);
-=======
 		return fc_lport_recv(lport, fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reject = fc_seq_lookup_recip(lport, mp, fp);
 	if (reject == FC_RJT_NONE) {
@@ -1936,15 +1551,8 @@ static void fc_exch_recv_req(struct fc_lport *lport, struct fc_exch_mgr *mp,
 		 * If new exch resp handler is valid then call that
 		 * first.
 		 */
-<<<<<<< HEAD
-		if (ep->resp)
-			ep->resp(sp, fp, ep->arg);
-		else
-			lport->tt.lport_recv(lport, fp);
-=======
 		if (!fc_invoke_resp(ep, sp, fp))
 			fc_lport_recv(lport, fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_exch_release(ep);	/* release from lookup */
 	} else {
 		FC_LPORT_DBG(lport, "exch/seq lookup failed: reject %x\n",
@@ -1967,11 +1575,6 @@ static void fc_exch_recv_seq_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
 	struct fc_exch *ep;
 	enum fc_sof sof;
 	u32 f_ctl;
-<<<<<<< HEAD
-	void (*resp)(struct fc_seq *, struct fc_frame *fp, void *arg);
-	void *ex_resp_arg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	ep = fc_exch_find(mp, ntohs(fh->fh_ox_id));
@@ -1999,25 +1602,10 @@ static void fc_exch_recv_seq_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
 	if (fc_sof_is_init(sof)) {
 		sp->ssb_stat |= SSB_ST_RESP;
 		sp->id = fh->fh_seq_id;
-<<<<<<< HEAD
-	} else if (sp->id != fh->fh_seq_id) {
-		atomic_inc(&mp->stats.seq_not_found);
-		goto rel;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	f_ctl = ntoh24(fh->fh_f_ctl);
 	fr_seq(fp) = sp;
-<<<<<<< HEAD
-	if (f_ctl & FC_FC_SEQ_INIT)
-		ep->esb_stat |= ESB_ST_SEQ_INIT;
-
-	if (fc_sof_needs_ack(sof))
-		fc_seq_send_ack(sp, fp);
-	resp = ep->resp;
-	ex_resp_arg = ep->arg;
-=======
 
 	spin_lock_bh(&ep->ex_lock);
 	if (f_ctl & FC_FC_SEQ_INIT)
@@ -2026,20 +1614,11 @@ static void fc_exch_recv_seq_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
 
 	if (fc_sof_needs_ack(sof))
 		fc_seq_send_ack(sp, fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fh->fh_type != FC_TYPE_FCP && fr_eof(fp) == FC_EOF_T &&
 	    (f_ctl & (FC_FC_LAST_SEQ | FC_FC_END_SEQ)) ==
 	    (FC_FC_LAST_SEQ | FC_FC_END_SEQ)) {
 		spin_lock_bh(&ep->ex_lock);
-<<<<<<< HEAD
-		resp = ep->resp;
-		rc = fc_exch_done_locked(ep);
-		WARN_ON(fc_seq_exch(sp) != ep);
-		spin_unlock_bh(&ep->ex_lock);
-		if (!rc)
-			fc_exch_delete(ep);
-=======
 		rc = fc_exch_done_locked(ep);
 		WARN_ON(fc_seq_exch(sp) != ep);
 		spin_unlock_bh(&ep->ex_lock);
@@ -2050,7 +1629,6 @@ static void fc_exch_recv_seq_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
 					"hence skip calling the resp\n");
 			goto skip_resp;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2066,17 +1644,10 @@ static void fc_exch_recv_seq_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
 	 * If new exch resp handler is valid then call that
 	 * first.
 	 */
-<<<<<<< HEAD
-	if (resp)
-		resp(sp, fp, ex_resp_arg);
-	else
-		fc_frame_free(fp);
-=======
 	if (!fc_invoke_resp(ep, sp, fp))
 		fc_frame_free(fp);
 
 skip_resp:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_exch_release(ep);
 	return;
 rel:
@@ -2115,11 +1686,6 @@ static void fc_exch_recv_resp(struct fc_exch_mgr *mp, struct fc_frame *fp)
  */
 static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
 {
-<<<<<<< HEAD
-	void (*resp)(struct fc_seq *, struct fc_frame *fp, void *arg);
-	void *ex_resp_arg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_frame_header *fh;
 	struct fc_ba_acc *ap;
 	struct fc_seq *sp;
@@ -2131,16 +1697,11 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
 	FC_EXCH_DBG(ep, "exch: BLS rctl %x - %s\n", fh->fh_r_ctl,
 		    fc_exch_rctl_name(fh->fh_r_ctl));
 
-<<<<<<< HEAD
-	if (cancel_delayed_work_sync(&ep->timeout_work))
-		fc_exch_release(ep);	/* release from pending timer hold */
-=======
 	if (cancel_delayed_work_sync(&ep->timeout_work)) {
 		FC_EXCH_DBG(ep, "Exchange timer canceled due to ABTS response\n");
 		fc_exch_release(ep);	/* release from pending timer hold */
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&ep->ex_lock);
 	switch (fh->fh_r_ctl) {
@@ -2170,12 +1731,6 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
 		break;
 	}
 
-<<<<<<< HEAD
-	resp = ep->resp;
-	ex_resp_arg = ep->arg;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* do we need to do some other checks here. Can we reuse more of
 	 * fc_exch_recv_seq_resp
 	 */
@@ -2187,19 +1742,6 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
 	    ntoh24(fh->fh_f_ctl) & FC_FC_LAST_SEQ)
 		rc = fc_exch_done_locked(ep);
 	spin_unlock_bh(&ep->ex_lock);
-<<<<<<< HEAD
-	if (!rc)
-		fc_exch_delete(ep);
-
-	if (resp)
-		resp(sp, fp, ex_resp_arg);
-	else
-		fc_frame_free(fp);
-
-	if (has_rec)
-		fc_exch_timer_set(ep, ep->r_a_tov);
-
-=======
 
 	fc_exch_hold(ep);
 	if (!rc)
@@ -2209,7 +1751,6 @@ static void fc_exch_abts_resp(struct fc_exch *ep, struct fc_frame *fp)
 	if (has_rec)
 		fc_exch_timer_set(ep, ep->r_a_tov);
 	fc_exch_release(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2248,11 +1789,7 @@ static void fc_exch_recv_bls(struct fc_exch_mgr *mp, struct fc_frame *fp)
 			break;
 		default:
 			if (ep)
-<<<<<<< HEAD
-				FC_EXCH_DBG(ep, "BLS rctl %x - %s received",
-=======
 				FC_EXCH_DBG(ep, "BLS rctl %x - %s received\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    fh->fh_r_ctl,
 					    fc_exch_rctl_name(fh->fh_r_ctl));
 			break;
@@ -2268,14 +1805,10 @@ static void fc_exch_recv_bls(struct fc_exch_mgr *mp, struct fc_frame *fp)
 				fc_frame_free(fp);
 			break;
 		case FC_RCTL_BA_ABTS:
-<<<<<<< HEAD
-			fc_exch_recv_abts(ep, fp);
-=======
 			if (ep)
 				fc_exch_recv_abts(ep, fp);
 			else
 				fc_frame_free(fp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:			/* ignore junk */
 			fc_frame_free(fp);
@@ -2298,13 +1831,6 @@ static void fc_seq_ls_acc(struct fc_frame *rx_fp)
 	struct fc_lport *lport;
 	struct fc_els_ls_acc *acc;
 	struct fc_frame *fp;
-<<<<<<< HEAD
-
-	lport = fr_dev(rx_fp);
-	fp = fc_frame_alloc(lport, sizeof(*acc));
-	if (!fp)
-		return;
-=======
 	struct fc_seq *sp;
 
 	lport = fr_dev(rx_fp);
@@ -2315,7 +1841,6 @@ static void fc_seq_ls_acc(struct fc_frame *rx_fp)
 			    "exch: drop LS_ACC, out of memory\n");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acc = fc_frame_payload_get(fp, sizeof(*acc));
 	memset(acc, 0, sizeof(*acc));
 	acc->la_cmd = ELS_LS_ACC;
@@ -2338,13 +1863,6 @@ static void fc_seq_ls_rjt(struct fc_frame *rx_fp, enum fc_els_rjt_reason reason,
 	struct fc_lport *lport;
 	struct fc_els_ls_rjt *rjt;
 	struct fc_frame *fp;
-<<<<<<< HEAD
-
-	lport = fr_dev(rx_fp);
-	fp = fc_frame_alloc(lport, sizeof(*rjt));
-	if (!fp)
-		return;
-=======
 	struct fc_seq *sp;
 
 	lport = fr_dev(rx_fp);
@@ -2355,7 +1873,6 @@ static void fc_seq_ls_rjt(struct fc_frame *rx_fp, enum fc_els_rjt_reason reason,
 			    "exch: drop LS_ACC, out of memory\n");
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rjt = fc_frame_payload_get(fp, sizeof(*rjt));
 	memset(rjt, 0, sizeof(*rjt));
 	rjt->er_cmd = ELS_LS_RJT;
@@ -2368,40 +1885,12 @@ static void fc_seq_ls_rjt(struct fc_frame *rx_fp, enum fc_els_rjt_reason reason,
 /**
  * fc_exch_reset() - Reset an exchange
  * @ep: The exchange to be reset
-<<<<<<< HEAD
-=======
  *
  * Note: May sleep if invoked from outside a response handler.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_exch_reset(struct fc_exch *ep)
 {
 	struct fc_seq *sp;
-<<<<<<< HEAD
-	void (*resp)(struct fc_seq *, struct fc_frame *, void *);
-	void *arg;
-	int rc = 1;
-
-	spin_lock_bh(&ep->ex_lock);
-	fc_exch_abort_locked(ep, 0);
-	ep->state |= FC_EX_RST_CLEANUP;
-	if (cancel_delayed_work(&ep->timeout_work))
-		atomic_dec(&ep->ex_refcnt);	/* drop hold for timer */
-	resp = ep->resp;
-	ep->resp = NULL;
-	if (ep->esb_stat & ESB_ST_REC_QUAL)
-		atomic_dec(&ep->ex_refcnt);	/* drop hold for rec_qual */
-	ep->esb_stat &= ~ESB_ST_REC_QUAL;
-	arg = ep->arg;
-	sp = &ep->seq;
-	rc = fc_exch_done_locked(ep);
-	spin_unlock_bh(&ep->ex_lock);
-	if (!rc)
-		fc_exch_delete(ep);
-
-	if (resp)
-		resp(sp, ERR_PTR(-FC_EX_CLOSED), arg);
-=======
 	int rc = 1;
 
 	spin_lock_bh(&ep->ex_lock);
@@ -2428,7 +1917,6 @@ static void fc_exch_reset(struct fc_exch *ep)
 skip_resp:
 	fc_seq_set_resp(sp, NULL, ep->arg);
 	fc_exch_release(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2535,12 +2023,7 @@ static void fc_exch_els_rec(struct fc_frame *rfp)
 	enum fc_els_rjt_reason reason = ELS_RJT_LOGIC;
 	enum fc_els_rjt_explan explan;
 	u32 sid;
-<<<<<<< HEAD
-	u16 rxid;
-	u16 oxid;
-=======
 	u16 xid, rxid, oxid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lport = fr_dev(rfp);
 	rp = fc_frame_payload_get(rfp, sizeof(*rp));
@@ -2551,13 +2034,6 @@ static void fc_exch_els_rec(struct fc_frame *rfp)
 	rxid = ntohs(rp->rec_rx_id);
 	oxid = ntohs(rp->rec_ox_id);
 
-<<<<<<< HEAD
-	ep = fc_exch_lookup(lport,
-			    sid == fc_host_port_id(lport->host) ? oxid : rxid);
-	explan = ELS_EXPL_OXID_RXID;
-	if (!ep)
-		goto reject;
-=======
 	explan = ELS_EXPL_OXID_RXID;
 	if (sid == fc_host_port_id(lport->host))
 		xid = oxid;
@@ -2578,21 +2054,15 @@ static void fc_exch_els_rec(struct fc_frame *rfp)
 	}
 	FC_EXCH_DBG(ep, "REC request from %x: rxid %x oxid %x\n",
 		    sid, rxid, oxid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ep->oid != sid || oxid != ep->oxid)
 		goto rel;
 	if (rxid != FC_XID_UNKNOWN && rxid != ep->rxid)
 		goto rel;
 	fp = fc_frame_alloc(lport, sizeof(*acc));
-<<<<<<< HEAD
-	if (!fp)
-		goto out;
-=======
 	if (!fp) {
 		FC_EXCH_DBG(ep, "Drop REC request, out of memory\n");
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acc = fc_frame_payload_get(fp, sizeof(*acc));
 	memset(acc, 0, sizeof(*acc));
@@ -2648,15 +2118,6 @@ static void fc_exch_rrq_resp(struct fc_seq *sp, struct fc_frame *fp, void *arg)
 
 	switch (op) {
 	case ELS_LS_RJT:
-<<<<<<< HEAD
-		FC_EXCH_DBG(aborted_ep, "LS_RJT for RRQ");
-		/* fall through */
-	case ELS_LS_ACC:
-		goto cleanup;
-	default:
-		FC_EXCH_DBG(aborted_ep, "unexpected response op %x "
-			    "for RRQ", op);
-=======
 		FC_EXCH_DBG(aborted_ep, "LS_RJT for RRQ\n");
 		fallthrough;
 	case ELS_LS_ACC:
@@ -2664,7 +2125,6 @@ static void fc_exch_rrq_resp(struct fc_seq *sp, struct fc_frame *fp, void *arg)
 	default:
 		FC_EXCH_DBG(aborted_ep, "unexpected response op %x for RRQ\n",
 			    op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2684,8 +2144,6 @@ cleanup:
  * @arg:	The argument to be passed to the response handler
  * @timer_msec: The timeout period for the exchange
  *
-<<<<<<< HEAD
-=======
  * The exchange response handler is set in this routine to resp()
  * function pointer. It can be called in two scenarios: if a timeout
  * occurs or if a response frame is received for the exchange. The
@@ -2704,7 +2162,6 @@ cleanup:
  * it fires or when the exchange is done. The exchange timeout handler
  * is registered by EM layer.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The frame pointer with some of the header's fields must be
  * filled before calling this routine, those fields are:
  *
@@ -2715,16 +2172,6 @@ cleanup:
  * - frame control
  * - parameter or relative offset
  */
-<<<<<<< HEAD
-static struct fc_seq *fc_exch_seq_send(struct fc_lport *lport,
-				       struct fc_frame *fp,
-				       void (*resp)(struct fc_seq *,
-						    struct fc_frame *fp,
-						    void *arg),
-				       void (*destructor)(struct fc_seq *,
-							  void *),
-				       void *arg, u32 timer_msec)
-=======
 struct fc_seq *fc_exch_seq_send(struct fc_lport *lport,
 				struct fc_frame *fp,
 				void (*resp)(struct fc_seq *,
@@ -2732,7 +2179,6 @@ struct fc_seq *fc_exch_seq_send(struct fc_lport *lport,
 					     void *arg),
 				void (*destructor)(struct fc_seq *, void *),
 				void *arg, u32 timer_msec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_exch *ep;
 	struct fc_seq *sp = NULL;
@@ -2751,11 +2197,7 @@ struct fc_seq *fc_exch_seq_send(struct fc_lport *lport,
 	ep->resp = resp;
 	ep->destructor = destructor;
 	ep->arg = arg;
-<<<<<<< HEAD
-	ep->r_a_tov = FC_DEF_R_A_TOV;
-=======
 	ep->r_a_tov = lport->r_a_tov;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->lp = lport;
 	sp = &ep->seq;
 
@@ -2789,10 +2231,7 @@ err:
 		fc_exch_delete(ep);
 	return NULL;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(fc_exch_seq_send);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_exch_rrq() - Send an ELS RRQ (Reinstate Recovery Qualifier) command
@@ -2834,10 +2273,7 @@ static void fc_exch_rrq(struct fc_exch *ep)
 		return;
 
 retry:
-<<<<<<< HEAD
-=======
 	FC_EXCH_DBG(ep, "exch: RRQ send failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&ep->ex_lock);
 	if (ep->state & (FC_EX_RST_CLEANUP | FC_EX_DONE)) {
 		spin_unlock_bh(&ep->ex_lock);
@@ -2880,11 +2316,8 @@ static void fc_exch_els_rrq(struct fc_frame *fp)
 	if (!ep)
 		goto reject;
 	spin_lock_bh(&ep->ex_lock);
-<<<<<<< HEAD
-=======
 	FC_EXCH_DBG(ep, "RRQ request from %x: xid %x rxid %x oxid %x\n",
 		    sid, xid, ntohs(rp->rrq_rx_id), ntohs(rp->rrq_ox_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ep->oxid != ntohs(rp->rrq_ox_id))
 		goto unlock_reject;
 	if (ep->rxid != ntohs(rp->rrq_rx_id) &&
@@ -2901,15 +2334,8 @@ static void fc_exch_els_rrq(struct fc_frame *fp)
 		ep->esb_stat &= ~ESB_ST_REC_QUAL;
 		atomic_dec(&ep->ex_refcnt);	/* drop hold for rec qual */
 	}
-<<<<<<< HEAD
-	if (ep->esb_stat & ESB_ST_COMPLETE) {
-		if (cancel_delayed_work(&ep->timeout_work))
-			atomic_dec(&ep->ex_refcnt);	/* drop timer hold */
-	}
-=======
 	if (ep->esb_stat & ESB_ST_COMPLETE)
 		fc_exch_timer_cancel(ep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_bh(&ep->ex_lock);
 
@@ -2929,8 +2355,6 @@ out:
 }
 
 /**
-<<<<<<< HEAD
-=======
  * fc_exch_update_stats() - update exches stats to lport
  * @lport: The local port to update exchange manager stats
  */
@@ -2956,7 +2380,6 @@ void fc_exch_update_stats(struct fc_lport *lport)
 EXPORT_SYMBOL(fc_exch_update_stats);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fc_exch_mgr_add() - Add an exchange manager to a local port's list of EMs
  * @lport: The local port to add the exchange manager to
  * @mp:	   The exchange manager to be added to the local port
@@ -3062,10 +2485,7 @@ struct fc_exch_mgr *fc_exch_mgr_alloc(struct fc_lport *lport,
 		return NULL;
 
 	mp->class = class;
-<<<<<<< HEAD
-=======
 	mp->lport = lport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* adjust em exch xid range for offload */
 	mp->min_xid = min_xid;
 
@@ -3187,11 +2607,7 @@ void fc_exch_recv(struct fc_lport *lport, struct fc_frame *fp)
 
 	/* lport lock ? */
 	if (!lport || lport->state == LPORT_ST_DISABLED) {
-<<<<<<< HEAD
-		FC_LPORT_DBG(lport, "Receiving frames for an lport that "
-=======
 		FC_LIBFC_DBG("Receiving frames for an lport that "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     "has not been initialized correctly\n");
 		fc_frame_free(fp);
 		return;
@@ -3217,11 +2633,7 @@ void fc_exch_recv(struct fc_lport *lport, struct fc_frame *fp)
 	case FC_EOF_T:
 		if (f_ctl & FC_FC_END_SEQ)
 			skb_trim(fp_skb(fp), fr_len(fp) - FC_FC_FILL(f_ctl));
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FC_EOF_N:
 		if (fh->fh_type == FC_TYPE_BLS)
 			fc_exch_recv_bls(ema->mp, fp);
@@ -3247,42 +2659,9 @@ EXPORT_SYMBOL(fc_exch_recv);
  */
 int fc_exch_init(struct fc_lport *lport)
 {
-<<<<<<< HEAD
-	if (!lport->tt.seq_start_next)
-		lport->tt.seq_start_next = fc_seq_start_next;
-
-	if (!lport->tt.seq_set_resp)
-		lport->tt.seq_set_resp = fc_seq_set_resp;
-
-	if (!lport->tt.exch_seq_send)
-		lport->tt.exch_seq_send = fc_exch_seq_send;
-
-	if (!lport->tt.seq_send)
-		lport->tt.seq_send = fc_seq_send;
-
-	if (!lport->tt.seq_els_rsp_send)
-		lport->tt.seq_els_rsp_send = fc_seq_els_rsp_send;
-
-	if (!lport->tt.exch_done)
-		lport->tt.exch_done = fc_exch_done;
-
 	if (!lport->tt.exch_mgr_reset)
 		lport->tt.exch_mgr_reset = fc_exch_mgr_reset;
 
-	if (!lport->tt.seq_exch_abort)
-		lport->tt.seq_exch_abort = fc_seq_exch_abort;
-
-	if (!lport->tt.seq_assign)
-		lport->tt.seq_assign = fc_seq_assign;
-
-	if (!lport->tt.seq_release)
-		lport->tt.seq_release = fc_seq_release;
-
-=======
-	if (!lport->tt.exch_mgr_reset)
-		lport->tt.exch_mgr_reset = fc_exch_mgr_reset;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(fc_exch_init);
@@ -3311,18 +2690,8 @@ int fc_setup_exch_mgr(void)
 	 * cpu on which exchange originated by simple bitwise
 	 * AND operation between fc_cpu_mask and exchange id.
 	 */
-<<<<<<< HEAD
-	fc_cpu_mask = 1;
-	fc_cpu_order = 0;
-	while (fc_cpu_mask < nr_cpu_ids) {
-		fc_cpu_mask <<= 1;
-		fc_cpu_order++;
-	}
-	fc_cpu_mask--;
-=======
 	fc_cpu_order = ilog2(roundup_pow_of_two(nr_cpu_ids));
 	fc_cpu_mask = (1 << fc_cpu_order) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fc_exch_workqueue = create_singlethread_workqueue("fc_exch_workqueue");
 	if (!fc_exch_workqueue)

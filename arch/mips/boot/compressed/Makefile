@@ -12,38 +12,12 @@
 # Author: Wu Zhangjin <wuzhangjin@gmail.com>
 #
 
-<<<<<<< HEAD
-=======
 include $(srctree)/arch/mips/Kbuild.platforms
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # set the default size of the mallocing area for decompressing
 BOOT_HEAP_SIZE := 0x400000
 
 # Disable Function Tracer
-<<<<<<< HEAD
-KBUILD_CFLAGS := $(shell echo $(KBUILD_CFLAGS) | sed -e "s/-pg//")
-
-KBUILD_CFLAGS := $(LINUXINCLUDE) $(KBUILD_CFLAGS) -D__KERNEL__ \
-	-DBOOT_HEAP_SIZE=$(BOOT_HEAP_SIZE) -D"VMLINUX_LOAD_ADDRESS_ULL=$(VMLINUX_LOAD_ADDRESS)ull"
-
-KBUILD_AFLAGS := $(LINUXINCLUDE) $(KBUILD_AFLAGS) -D__ASSEMBLY__ \
-	-DBOOT_HEAP_SIZE=$(BOOT_HEAP_SIZE) \
-	-DKERNEL_ENTRY=0x$(shell $(NM) $(objtree)/$(KBUILD_IMAGE) 2>/dev/null | grep " kernel_entry" | cut -f1 -d \ )
-
-targets := head.o decompress.o dbg.o uart-16550.o uart-alchemy.o
-
-# decompressor objects (linked with vmlinuz)
-vmlinuzobjs-y := $(obj)/head.o $(obj)/decompress.o $(obj)/dbg.o
-
-ifdef CONFIG_DEBUG_ZBOOT
-vmlinuzobjs-$(CONFIG_SYS_SUPPORTS_ZBOOT_UART16550) += $(obj)/uart-16550.o
-vmlinuzobjs-$(CONFIG_MIPS_ALCHEMY)		   += $(obj)/uart-alchemy.o
-endif
-
-targets += vmlinux.bin
-OBJCOPYFLAGS_vmlinux.bin := $(OBJCOPYFLAGS) -O binary -R .comment -S
-=======
 KBUILD_CFLAGS := $(filter-out $(CC_FLAGS_FTRACE), $(KBUILD_CFLAGS))
 
 KBUILD_CFLAGS := $(filter-out -fstack-protector, $(KBUILD_CFLAGS))
@@ -87,43 +61,10 @@ targets += vmlinux.bin
 
 OBJCOPYFLAGS_vmlinux.bin := $(OBJCOPYFLAGS) -O binary -R .comment -S
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 $(obj)/vmlinux.bin: $(KBUILD_IMAGE) FORCE
 	$(call if_changed,objcopy)
 
 tool_$(CONFIG_KERNEL_GZIP)    = gzip
-<<<<<<< HEAD
-tool_$(CONFIG_KERNEL_BZIP2)   = bzip2
-tool_$(CONFIG_KERNEL_LZMA)    = lzma
-tool_$(CONFIG_KERNEL_LZO)     = lzo
-
-targets += vmlinux.bin.z
-$(obj)/vmlinux.bin.z: $(obj)/vmlinux.bin FORCE
-	$(call if_changed,$(tool_y))
-
-targets += piggy.o
-OBJCOPYFLAGS_piggy.o := --add-section=.image=$(obj)/vmlinux.bin.z \
-                        --set-section-flags=.image=contents,alloc,load,readonly,data
-$(obj)/piggy.o: $(obj)/dummy.o $(obj)/vmlinux.bin.z FORCE
-	$(call if_changed,objcopy)
-
-# Calculate the load address of the compressed kernel image
-hostprogs-y := calc_vmlinuz_load_addr
-
-VMLINUZ_LOAD_ADDRESS = $(shell $(obj)/calc_vmlinuz_load_addr \
-		$(obj)/vmlinux.bin $(VMLINUX_LOAD_ADDRESS))
-
-vmlinuzobjs-y += $(obj)/piggy.o
-
-quiet_cmd_zld = LD      $@
-      cmd_zld = $(LD) $(LDFLAGS) -Ttext $(VMLINUZ_LOAD_ADDRESS) -T $< $(vmlinuzobjs-y) -o $@
-quiet_cmd_strip = STRIP   $@
-      cmd_strip = $(STRIP) -s $@
-vmlinuz: $(src)/ld.script $(vmlinuzobjs-y) $(obj)/calc_vmlinuz_load_addr
-	$(call cmd,zld)
-	$(call cmd,strip)
-
-=======
 tool_$(CONFIG_KERNEL_BZIP2)   = bzip2_with_size
 tool_$(CONFIG_KERNEL_LZ4)     = lz4_with_size
 tool_$(CONFIG_KERNEL_LZMA)    = lzma_with_size
@@ -178,7 +119,6 @@ objboot := $(objtree)/arch/mips/boot
 
 $(objboot)/vmlinuz: $(objtree)/vmlinuz FORCE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Some DECstations need all possible sections of an ECOFF executable
 #
@@ -187,35 +127,6 @@ ifdef CONFIG_MACH_DECSTATION
 endif
 
 # elf2ecoff can only handle 32bit image
-<<<<<<< HEAD
-hostprogs-y += ../elf2ecoff
-
-ifdef CONFIG_32BIT
-	VMLINUZ = vmlinuz
-else
-	VMLINUZ = vmlinuz.32
-endif
-
-quiet_cmd_32 = OBJCOPY $@
-      cmd_32 = $(OBJCOPY) -O $(32bit-bfd) $(OBJCOPYFLAGS) $< $@
-vmlinuz.32: vmlinuz
-	$(call cmd,32)
-
-quiet_cmd_ecoff = ECOFF   $@
-      cmd_ecoff = $< $(VMLINUZ) $@ $(e2eflag)
-vmlinuz.ecoff: $(obj)/../elf2ecoff $(VMLINUZ)
-	$(call cmd,ecoff)
-
-OBJCOPYFLAGS_vmlinuz.bin := $(OBJCOPYFLAGS) -O binary
-vmlinuz.bin: vmlinuz
-	$(call cmd,objcopy)
-
-OBJCOPYFLAGS_vmlinuz.srec := $(OBJCOPYFLAGS) -S -O srec
-vmlinuz.srec: vmlinuz
-	$(call cmd,objcopy)
-
-clean-files := $(objtree)/vmlinuz $(objtree)/vmlinuz.{32,ecoff,bin,srec}
-=======
 hostprogs += ../elf2ecoff
 
 ifdef CONFIG_32BIT
@@ -306,4 +217,3 @@ quiet_cmd_itb-image = ITB     $@
 
 $(objboot)/vmlinuz.itb: $(objboot)/vmlinuz.its $(objboot)/vmlinuz.bin FORCE
 	$(call if_changed,itb-image,$<)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

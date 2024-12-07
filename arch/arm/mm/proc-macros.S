@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We need constants.h for:
  *  VMA_VM_MM
@@ -9,10 +6,6 @@
  *  VM_EXEC
  */
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-#include <asm/thread_info.h>
-
-=======
 #include <asm/pgtable.h>
 #include <asm/thread_info.h>
 
@@ -20,7 +13,6 @@
 #include <asm/v7m.h>
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vma_vm_mm - get mm pointer from vma pointer (vma->vm_mm)
  */
@@ -35,39 +27,19 @@
 	ldr	\rd, [\rn, #VMA_VM_FLAGS]
 	.endm
 
-<<<<<<< HEAD
-	.macro	tsk_mm, rd, rn
-	ldr	\rd, [\rn, #TI_TASK]
-	ldr	\rd, [\rd, #TSK_ACTIVE_MM]
-	.endm
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * act_mm - get current->active_mm
  */
 	.macro	act_mm, rd
-<<<<<<< HEAD
-	bic	\rd, sp, #8128
-	bic	\rd, \rd, #63
-	ldr	\rd, [\rd, #TI_TASK]
-	ldr	\rd, [\rd, #TSK_ACTIVE_MM]
-=======
 	get_current \rd
 	.if (TSK_ACTIVE_MM > IMM12_MASK)
 	add	\rd, \rd, #TSK_ACTIVE_MM & ~IMM12_MASK
 	.endif
 	ldr	\rd, [\rd, #TSK_ACTIVE_MM & IMM12_MASK]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 /*
  * mmid - get context id from mm pointer (mm->context.id)
-<<<<<<< HEAD
- */
-	.macro	mmid, rd, rn
-	ldr	\rd, [\rn, #MM_CONTEXT_ID]
-=======
  * note, this field is 64bit, so in big-endian the two words are swapped too.
  */
 	.macro	mmid, rd, rn
@@ -76,7 +48,6 @@
 #else
 	ldr	\rd, [\rn, #MM_CONTEXT_ID]
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 /*
@@ -101,9 +72,6 @@
  * on ARMv7.
  */
 	.macro	dcache_line_size, reg, tmp
-<<<<<<< HEAD
-	mrc	p15, 0, \tmp, c0, c0, 1		@ read ctr
-=======
 #ifdef CONFIG_CPU_V7M
 	movw	\tmp, #:lower16:BASEADDR_V7M_SCB + V7M_SCB_CTR
 	movt	\tmp, #:upper16:BASEADDR_V7M_SCB + V7M_SCB_CTR
@@ -111,7 +79,6 @@
 #else
 	mrc	p15, 0, \tmp, c0, c0, 1		@ read ctr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lsr	\tmp, \tmp, #16
 	and	\tmp, \tmp, #0xf		@ cache line size encoding
 	mov	\reg, #4			@ bytes per word
@@ -123,9 +90,6 @@
  * on ARMv7.
  */
 	.macro	icache_line_size, reg, tmp
-<<<<<<< HEAD
-	mrc	p15, 0, \tmp, c0, c0, 1		@ read ctr
-=======
 #ifdef CONFIG_CPU_V7M
 	movw	\tmp, #:lower16:BASEADDR_V7M_SCB + V7M_SCB_CTR
 	movt	\tmp, #:upper16:BASEADDR_V7M_SCB + V7M_SCB_CTR
@@ -133,7 +97,6 @@
 #else
 	mrc	p15, 0, \tmp, c0, c0, 1		@ read ctr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and	\tmp, \tmp, #0xf		@ cache line size encoding
 	mov	\reg, #4			@ bytes per word
 	mov	\reg, \reg, lsl \tmp		@ actual cache line size
@@ -149,11 +112,7 @@
 #endif
 #if !defined (CONFIG_ARM_LPAE) && \
 	(L_PTE_XN+L_PTE_USER+L_PTE_RDONLY+L_PTE_DIRTY+L_PTE_YOUNG+\
-<<<<<<< HEAD
-	 L_PTE_FILE+L_PTE_PRESENT) > L_PTE_SHARED
-=======
 	 L_PTE_PRESENT) > L_PTE_SHARED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #error Invalid Linux PTE bit settings
 #endif
 #endif	/* CONFIG_MMU */
@@ -167,19 +126,9 @@
  *  100x   1   0   1	r/o	no acc
  *  10x0   1   0   1	r/o	no acc
  *  1011   0   0   1	r/w	no acc
-<<<<<<< HEAD
- *  110x   0   1   0	r/w	r/o
- *  11x0   0   1   0	r/w	r/o
- *  1111   0   1   1	r/w	r/w
- *
- * If !CONFIG_CPU_USE_DOMAINS, the following permissions are changed:
- *  110x   1   1   1	r/o	r/o
- *  11x0   1   1   1	r/o	r/o
-=======
  *  110x   1   1   1	r/o	r/o
  *  11x0   1   1   1	r/o	r/o
  *  1111   0   1   1	r/w	r/w
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 	.macro	armv6_mt_table pfx
 \pfx\()_mt_table:
@@ -198,11 +147,7 @@
 	.long	PTE_EXT_TEX(2)					@ L_PTE_MT_DEV_NONSHARED
 	.long	0x00						@ unused
 	.long	0x00						@ unused
-<<<<<<< HEAD
-	.long	0x00						@ unused
-=======
 	.long	PTE_CACHEABLE | PTE_BUFFERABLE | PTE_EXT_APX	@ L_PTE_MT_VECTORS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro	armv6_set_pte_ext pfx
@@ -223,36 +168,21 @@
 
 	tst	r1, #L_PTE_USER
 	orrne	r3, r3, #PTE_EXT_AP1
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_USE_DOMAINS
-	@ allow kernel read/write access to read-only user pages
-	tstne	r3, #PTE_EXT_APX
-	bicne	r3, r3, #PTE_EXT_APX | PTE_EXT_AP0
-#endif
-=======
 	tstne	r3, #PTE_EXT_APX
 
 	@ user read-only -> kernel read-only
 	bicne	r3, r3, #PTE_EXT_AP0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tst	r1, #L_PTE_XN
 	orrne	r3, r3, #PTE_EXT_XN
 
-<<<<<<< HEAD
-	orr	r3, r3, r2
-=======
 	eor	r3, r3, r2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tst	r1, #L_PTE_YOUNG
 	tstne	r1, #L_PTE_PRESENT
 	moveq	r3, #0
-<<<<<<< HEAD
-=======
 	tstne	r1, #L_PTE_NONE
 	movne	r3, #0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	str	r3, [r0]
 	mcr	p15, 0, r0, c7, c10, 1		@ flush_pte
@@ -342,9 +272,6 @@
 	mcr	p15, 0, ip, c7, c10, 4		@ data write barrier
 	.endm
 
-<<<<<<< HEAD
-.macro define_processor_functions name:req, dabort:req, pabort:req, nommu=0, suspend=0
-=======
 .macro define_processor_functions name:req, dabort:req, pabort:req, nommu=0, suspend=0, bugs=0
 /*
  * If we are building for big.Little with branch predictor hardening,
@@ -353,17 +280,13 @@
 #if defined(CONFIG_BIG_LITTLE) && defined(CONFIG_HARDEN_BRANCH_PREDICTOR)
 	.section ".rodata"
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type	\name\()_processor_functions, #object
 	.align 2
 ENTRY(\name\()_processor_functions)
 	.word	\dabort
 	.word	\pabort
 	.word	cpu_\name\()_proc_init
-<<<<<<< HEAD
-=======
 	.word	\bugs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.word	cpu_\name\()_proc_fin
 	.word	cpu_\name\()_reset
 	.word	cpu_\name\()_do_idle
@@ -378,11 +301,7 @@ ENTRY(\name\()_processor_functions)
 
 	.if \suspend
 	.word	cpu_\name\()_suspend_size
-<<<<<<< HEAD
-#ifdef CONFIG_PM_SLEEP
-=======
 #ifdef CONFIG_ARM_CPU_SUSPEND
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.word	cpu_\name\()_do_suspend
 	.word	cpu_\name\()_do_resume
 #else
@@ -396,12 +315,9 @@ ENTRY(\name\()_processor_functions)
 	.endif
 
 	.size	\name\()_processor_functions, . - \name\()_processor_functions
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_BIG_LITTLE) && defined(CONFIG_HARDEN_BRANCH_PREDICTOR)
 	.previous
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .endm
 
 .macro define_cache_functions name:req
@@ -418,21 +334,13 @@ ENTRY(\name\()_cache_fns)
 	.long	\name\()_flush_kern_dcache_area
 	.long	\name\()_dma_map_area
 	.long	\name\()_dma_unmap_area
-<<<<<<< HEAD
-	.long	\name\()_dma_inv_range
-	.long	\name\()_dma_clean_range
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	\name\()_dma_flush_range
 	.size	\name\()_cache_fns, . - \name\()_cache_fns
 .endm
 
 .macro define_tlb_functions name:req, flags_up:req, flags_smp
 	.type	\name\()_tlb_fns, #object
-<<<<<<< HEAD
-=======
 	.align 2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENTRY(\name\()_tlb_fns)
 	.long	\name\()_flush_user_tlb_range
 	.long	\name\()_flush_kern_tlb_range
@@ -444,8 +352,6 @@ ENTRY(\name\()_tlb_fns)
 	.endif
 	.size	\name\()_tlb_fns, . - \name\()_tlb_fns
 .endm
-<<<<<<< HEAD
-=======
 
 .macro globl_equ x, y
 	.globl	\x
@@ -479,4 +385,3 @@ ENTRY(\name\()_tlb_fns)
 	orr	\dest, \addr, \dest, lsl #1	@ mask in the region size
 	orr	\dest, \dest, \enable
 .endm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

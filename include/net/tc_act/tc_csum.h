@@ -1,22 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __NET_TC_CSUM_H
 #define __NET_TC_CSUM_H
 
 #include <linux/types.h>
 #include <net/act_api.h>
-<<<<<<< HEAD
-
-struct tcf_csum {
-	struct tcf_common common;
-
-	u32 update_flags;
-};
-#define to_tcf_csum(pc) \
-	container_of(pc,struct tcf_csum,common)
-=======
 #include <linux/tc_act/tc_csum.h>
 
 struct tcf_csum_params {
@@ -50,6 +37,5 @@ static inline u32 tcf_csum_update_flags(const struct tc_action *a)
 
 	return update_flags;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __NET_TC_CSUM_H */

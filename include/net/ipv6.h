@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Linux INET6 implementation
  *
  *	Authors:
  *	Pedro Roque		<roque@di.fc.ul.pt>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NET_IPV6_H
@@ -23,12 +12,6 @@
 #include <linux/ipv6.h>
 #include <linux/hardirq.h>
 #include <linux/jhash.h>
-<<<<<<< HEAD
-#include <net/if_inet6.h>
-#include <net/ndisc.h>
-#include <net/flow.h>
-#include <net/snmp.h>
-=======
 #include <linux/refcount.h>
 #include <linux/jump_label_ratelimit.h>
 #include <net/if_inet6.h>
@@ -39,7 +22,6 @@
 #include <net/netns/hash.h>
 
 struct ip_tunnel_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SIN6_LEN_RFC2133	24
 
@@ -50,39 +32,23 @@ struct ip_tunnel_info;
  */
 
 #define NEXTHDR_HOP		0	/* Hop-by-hop option header. */
-<<<<<<< HEAD
-=======
 #define NEXTHDR_IPV4		4	/* IPv4 in IPv6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NEXTHDR_TCP		6	/* TCP segment. */
 #define NEXTHDR_UDP		17	/* UDP message. */
 #define NEXTHDR_IPV6		41	/* IPv6 in IPv6 */
 #define NEXTHDR_ROUTING		43	/* Routing header. */
 #define NEXTHDR_FRAGMENT	44	/* Fragmentation/reassembly header. */
-<<<<<<< HEAD
-=======
 #define NEXTHDR_GRE		47	/* GRE header. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NEXTHDR_ESP		50	/* Encapsulating security payload. */
 #define NEXTHDR_AUTH		51	/* Authentication header. */
 #define NEXTHDR_ICMP		58	/* ICMP for IPv6. */
 #define NEXTHDR_NONE		59	/* No next header */
 #define NEXTHDR_DEST		60	/* Destination options header. */
-<<<<<<< HEAD
-=======
 #define NEXTHDR_SCTP		132	/* SCTP message. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NEXTHDR_MOBILITY	135	/* Mobility header. */
 
 #define NEXTHDR_MAX		255
 
-<<<<<<< HEAD
-
-
-#define IPV6_DEFAULT_HOPLIMIT   64
-#define IPV6_DEFAULT_MCASTHOPS	1
-
-=======
 #define IPV6_DEFAULT_HOPLIMIT   64
 #define IPV6_DEFAULT_MCASTHOPS	1
 
@@ -126,7 +92,6 @@ struct ip_tunnel_info;
 #define IP6_DEFAULT_MAX_DST_OPTS_LEN	 INT_MAX /* No limit */
 #define IP6_DEFAULT_MAX_HBH_OPTS_LEN	 INT_MAX /* No limit */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Addr type
  *	
@@ -140,13 +105,8 @@ struct ip_tunnel_info;
 
 #define IPV6_ADDR_ANY		0x0000U
 
-<<<<<<< HEAD
-#define IPV6_ADDR_UNICAST      	0x0001U	
-#define IPV6_ADDR_MULTICAST    	0x0002U	
-=======
 #define IPV6_ADDR_UNICAST	0x0001U
 #define IPV6_ADDR_MULTICAST	0x0002U
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPV6_ADDR_LOOPBACK	0x0010U
 #define IPV6_ADDR_LINKLOCAL	0x0020U
@@ -191,9 +151,6 @@ struct frag_hdr {
 	__be32	identification;
 };
 
-<<<<<<< HEAD
-#define	IP6_MF	0x0001
-=======
 /*
  * Jumbo payload option, as described in RFC 2675 2.
  */
@@ -250,7 +207,6 @@ void ip6_frag_init(struct sk_buff *skb, unsigned int hlen, unsigned int mtu,
 		   u8 nexthdr, __be32 frag_id, struct ip6_frag_state *state);
 struct sk_buff *ip6_frag_next(struct sk_buff *skb,
 			      struct ip6_frag_state *state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IP6_REPLY_MARK(net, mark) \
 	((net)->ipv6.sysctl.fwmark_reflect ? (mark) : 0)
@@ -259,20 +215,6 @@ struct sk_buff *ip6_frag_next(struct sk_buff *skb,
 
 /* sysctls */
 extern int sysctl_mld_max_msf;
-<<<<<<< HEAD
-extern struct ctl_path net_ipv6_ctl_path[];
-
-#define _DEVINC(net, statname, modifier, idev, field)			\
-({									\
-	struct inet6_dev *_idev = (idev);				\
-	if (likely(_idev != NULL))					\
-		SNMP_INC_STATS##modifier((_idev)->stats.statname, (field)); \
-	SNMP_INC_STATS##modifier((net)->mib.statname##_statistics, (field));\
-})
-
-/* per device counters are atomic_long_t */
-#define _DEVINCATOMIC(net, statname, modifier, idev, field)		\
-=======
 extern int sysctl_mld_qrv;
 
 #define _DEVINC(net, statname, mod, idev, field)			\
@@ -285,16 +227,11 @@ extern int sysctl_mld_qrv;
 
 /* per device counters are atomic_long_t */
 #define _DEVINCATOMIC(net, statname, mod, idev, field)			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({									\
 	struct inet6_dev *_idev = (idev);				\
 	if (likely(_idev != NULL))					\
 		SNMP_INC_STATS_ATOMIC_LONG((_idev)->stats.statname##dev, (field)); \
-<<<<<<< HEAD
-	SNMP_INC_STATS##modifier((net)->mib.statname##_statistics, (field));\
-=======
 	mod##SNMP_INC_STATS((net)->mib.statname##_statistics, (field));\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 })
 
 /* per device and per net counters are atomic_long_t */
@@ -306,22 +243,6 @@ extern int sysctl_mld_qrv;
 	SNMP_INC_STATS_ATOMIC_LONG((net)->mib.statname##_statistics, (field));\
 })
 
-<<<<<<< HEAD
-#define _DEVADD(net, statname, modifier, idev, field, val)		\
-({									\
-	struct inet6_dev *_idev = (idev);				\
-	if (likely(_idev != NULL))					\
-		SNMP_ADD_STATS##modifier((_idev)->stats.statname, (field), (val)); \
-	SNMP_ADD_STATS##modifier((net)->mib.statname##_statistics, (field), (val));\
-})
-
-#define _DEVUPD(net, statname, modifier, idev, field, val)		\
-({									\
-	struct inet6_dev *_idev = (idev);				\
-	if (likely(_idev != NULL))					\
-		SNMP_UPD_PO_STATS##modifier((_idev)->stats.statname, field, (val)); \
-	SNMP_UPD_PO_STATS##modifier((net)->mib.statname##_statistics, field, (val));\
-=======
 #define _DEVADD(net, statname, mod, idev, field, val)			\
 ({									\
 	struct inet6_dev *_idev = (idev);				\
@@ -336,35 +257,11 @@ extern int sysctl_mld_qrv;
 	if (likely(_idev != NULL))					\
 		mod##SNMP_UPD_PO_STATS((_idev)->stats.statname, field, (val)); \
 	mod##SNMP_UPD_PO_STATS((net)->mib.statname##_statistics, field, (val));\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 })
 
 /* MIBs */
 
 #define IP6_INC_STATS(net, idev,field)		\
-<<<<<<< HEAD
-		_DEVINC(net, ipv6, 64, idev, field)
-#define IP6_INC_STATS_BH(net, idev,field)	\
-		_DEVINC(net, ipv6, 64_BH, idev, field)
-#define IP6_ADD_STATS(net, idev,field,val)	\
-		_DEVADD(net, ipv6, 64, idev, field, val)
-#define IP6_ADD_STATS_BH(net, idev,field,val)	\
-		_DEVADD(net, ipv6, 64_BH, idev, field, val)
-#define IP6_UPD_PO_STATS(net, idev,field,val)   \
-		_DEVUPD(net, ipv6, 64, idev, field, val)
-#define IP6_UPD_PO_STATS_BH(net, idev,field,val)   \
-		_DEVUPD(net, ipv6, 64_BH, idev, field, val)
-#define ICMP6_INC_STATS(net, idev, field)	\
-		_DEVINCATOMIC(net, icmpv6, , idev, field)
-#define ICMP6_INC_STATS_BH(net, idev, field)	\
-		_DEVINCATOMIC(net, icmpv6, _BH, idev, field)
-
-#define ICMP6MSGOUT_INC_STATS(net, idev, field)		\
-	_DEVINC_ATOMIC_ATOMIC(net, icmpv6msg, idev, field +256)
-#define ICMP6MSGOUT_INC_STATS_BH(net, idev, field)	\
-	_DEVINC_ATOMIC_ATOMIC(net, icmpv6msg, idev, field +256)
-#define ICMP6MSGIN_INC_STATS_BH(net, idev, field)	\
-=======
 		_DEVINC(net, ipv6, , idev, field)
 #define __IP6_INC_STATS(net, idev,field)	\
 		_DEVINC(net, ipv6, __, idev, field)
@@ -384,7 +281,6 @@ extern int sysctl_mld_qrv;
 #define ICMP6MSGOUT_INC_STATS(net, idev, field)		\
 	_DEVINC_ATOMIC_ATOMIC(net, icmpv6msg, idev, field +256)
 #define ICMP6MSGIN_INC_STATS(net, idev, field)	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_DEVINC_ATOMIC_ATOMIC(net, icmpv6msg, idev, field)
 
 struct ip6_ra_chain {
@@ -403,10 +299,7 @@ extern rwlock_t ip6_ra_lock;
  */
 
 struct ipv6_txoptions {
-<<<<<<< HEAD
-=======
 	refcount_t		refcnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Length of this structure */
 	int			tot_len;
 
@@ -419,14 +312,6 @@ struct ipv6_txoptions {
 	struct ipv6_opt_hdr	*dst0opt;
 	struct ipv6_rt_hdr	*srcrt;	/* Routing Header */
 	struct ipv6_opt_hdr	*dst1opt;
-<<<<<<< HEAD
-
-	/* Option buffer, as read by IPV6_PKTOPTIONS, starts here. */
-};
-
-struct ip6_flowlabel {
-	struct ip6_flowlabel	*next;
-=======
 	struct rcu_head		rcu;
 	/* Option buffer, as read by IPV6_PKTOPTIONS, starts here. */
 };
@@ -440,46 +325,22 @@ enum flowlabel_reflect {
 
 struct ip6_flowlabel {
 	struct ip6_flowlabel __rcu *next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32			label;
 	atomic_t		users;
 	struct in6_addr		dst;
 	struct ipv6_txoptions	*opt;
 	unsigned long		linger;
-<<<<<<< HEAD
-	u8			share;
-	u32			owner;
-=======
 	struct rcu_head		rcu;
 	u8			share;
 	union {
 		struct pid *pid;
 		kuid_t uid;
 	} owner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		lastuse;
 	unsigned long		expires;
 	struct net		*fl_net;
 };
 
-<<<<<<< HEAD
-#define IPV6_FLOWINFO_MASK	cpu_to_be32(0x0FFFFFFF)
-#define IPV6_FLOWLABEL_MASK	cpu_to_be32(0x000FFFFF)
-
-struct ipv6_fl_socklist {
-	struct ipv6_fl_socklist	*next;
-	struct ip6_flowlabel	*fl;
-};
-
-extern struct ip6_flowlabel	*fl6_sock_lookup(struct sock *sk, __be32 label);
-extern struct ipv6_txoptions	*fl6_merge_options(struct ipv6_txoptions * opt_space,
-						   struct ip6_flowlabel * fl,
-						   struct ipv6_txoptions * fopt);
-extern void			fl6_free_socklist(struct sock *sk);
-extern int			ipv6_flowlabel_opt(struct sock *sk, char __user *optval, int optlen);
-extern int			ip6_flowlabel_init(void);
-extern void			ip6_flowlabel_cleanup(void);
-=======
 #define IPV6_FLOWINFO_MASK		cpu_to_be32(0x0FFFFFFF)
 #define IPV6_FLOWLABEL_MASK		cpu_to_be32(0x000FFFFF)
 #define IPV6_FLOWLABEL_STATELESS_FLAG	cpu_to_be32(0x00080000)
@@ -568,7 +429,6 @@ int ipv6_flowlabel_opt_get(struct sock *sk, struct in6_flowlabel_req *freq,
 int ip6_flowlabel_init(void);
 void ip6_flowlabel_cleanup(void);
 bool ip6_autoflowlabel(struct net *net, const struct sock *sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void fl6_sock_release(struct ip6_flowlabel *fl)
 {
@@ -576,38 +436,6 @@ static inline void fl6_sock_release(struct ip6_flowlabel *fl)
 		atomic_dec(&fl->users);
 }
 
-<<<<<<< HEAD
-extern void icmpv6_notify(struct sk_buff *skb, u8 type, u8 code, __be32 info);
-
-int icmpv6_push_pending_frames(struct sock *sk, struct flowi6 *fl6,
-			       struct icmp6hdr *thdr, int len);
-
-struct dst_entry *icmpv6_route_lookup(struct net *net, struct sk_buff *skb,
-				      struct sock *sk, struct flowi6 *fl6);
-
-extern int 			ip6_ra_control(struct sock *sk, int sel);
-
-extern int			ipv6_parse_hopopts(struct sk_buff *skb);
-
-extern struct ipv6_txoptions *  ipv6_dup_options(struct sock *sk, struct ipv6_txoptions *opt);
-extern struct ipv6_txoptions *	ipv6_renew_options(struct sock *sk, struct ipv6_txoptions *opt,
-						   int newtype,
-						   struct ipv6_opt_hdr __user *newopt,
-						   int newoptlen);
-struct ipv6_txoptions *ipv6_fixup_options(struct ipv6_txoptions *opt_space,
-					  struct ipv6_txoptions *opt);
-
-extern int ipv6_opt_accepted(struct sock *sk, struct sk_buff *skb);
-
-int ip6_frag_nqueues(struct net *net);
-int ip6_frag_mem(struct net *net);
-
-#define IPV6_FRAG_HIGH_THRESH	(256 * 1024)	/* 262144 */
-#define IPV6_FRAG_LOW_THRESH	(192 * 1024)	/* 196608 */
-#define IPV6_FRAG_TIMEOUT	(60 * HZ)	/* 60 seconds */
-
-extern int __ipv6_addr_type(const struct in6_addr *addr);
-=======
 enum skb_drop_reason icmpv6_notify(struct sk_buff *skb, u8 type,
 				   u8 code, __be32 info);
 
@@ -722,7 +550,6 @@ static inline bool ipv6_accept_ra(const struct inet6_dev *idev)
 #define IPV6_FRAG_TIMEOUT	(60 * HZ)	/* 60 seconds */
 
 int __ipv6_addr_type(const struct in6_addr *addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int ipv6_addr_type(const struct in6_addr *addr)
 {
 	return __ipv6_addr_type(addr) & 0xffff;
@@ -760,12 +587,6 @@ static inline int ipv6_addr_cmp(const struct in6_addr *a1, const struct in6_addr
 	return memcmp(a1, a2, sizeof(struct in6_addr));
 }
 
-<<<<<<< HEAD
-static inline int
-ipv6_masked_addr_cmp(const struct in6_addr *a1, const struct in6_addr *m,
-		     const struct in6_addr *a2)
-{
-=======
 static inline bool
 ipv6_masked_addr_cmp(const struct in6_addr *a1, const struct in6_addr *m,
 		     const struct in6_addr *a2)
@@ -778,21 +599,14 @@ ipv6_masked_addr_cmp(const struct in6_addr *a1, const struct in6_addr *m,
 	return !!(((ul1[0] ^ ul2[0]) & ulm[0]) |
 		  ((ul1[1] ^ ul2[1]) & ulm[1]));
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return !!(((a1->s6_addr32[0] ^ a2->s6_addr32[0]) & m->s6_addr32[0]) |
 		  ((a1->s6_addr32[1] ^ a2->s6_addr32[1]) & m->s6_addr32[1]) |
 		  ((a1->s6_addr32[2] ^ a2->s6_addr32[2]) & m->s6_addr32[2]) |
 		  ((a1->s6_addr32[3] ^ a2->s6_addr32[3]) & m->s6_addr32[3]));
-<<<<<<< HEAD
-}
-
-static inline void ipv6_addr_prefix(struct in6_addr *pfx, 
-=======
 #endif
 }
 
 static inline void ipv6_addr_prefix(struct in6_addr *pfx,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    const struct in6_addr *addr,
 				    int plen)
 {
@@ -806,21 +620,6 @@ static inline void ipv6_addr_prefix(struct in6_addr *pfx,
 		pfx->s6_addr[o] = addr->s6_addr[o] & (0xff00 >> b);
 }
 
-<<<<<<< HEAD
-static inline void ipv6_addr_set(struct in6_addr *addr, 
-				     __be32 w1, __be32 w2,
-				     __be32 w3, __be32 w4)
-{
-	addr->s6_addr32[0] = w1;
-	addr->s6_addr32[1] = w2;
-	addr->s6_addr32[2] = w3;
-	addr->s6_addr32[3] = w4;
-}
-
-static inline int ipv6_addr_equal(const struct in6_addr *a1,
-				  const struct in6_addr *a2)
-{
-=======
 static inline void ipv6_addr_prefix_copy(struct in6_addr *addr,
 					 const struct in6_addr *pfx,
 					 int plen)
@@ -873,19 +672,10 @@ static inline bool ipv6_addr_equal(const struct in6_addr *a1,
 
 	return ((ul1[0] ^ ul2[0]) | (ul1[1] ^ ul2[1])) == 0UL;
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ((a1->s6_addr32[0] ^ a2->s6_addr32[0]) |
 		(a1->s6_addr32[1] ^ a2->s6_addr32[1]) |
 		(a1->s6_addr32[2] ^ a2->s6_addr32[2]) |
 		(a1->s6_addr32[3] ^ a2->s6_addr32[3])) == 0;
-<<<<<<< HEAD
-}
-
-static inline int __ipv6_prefix_equal(const __be32 *a1, const __be32 *a2,
-				      unsigned int prefixlen)
-{
-	unsigned pdw, pbi;
-=======
 #endif
 }
 
@@ -921,56 +711,15 @@ static inline bool ipv6_prefix_equal(const struct in6_addr *addr1,
 	const __be32 *a1 = addr1->s6_addr32;
 	const __be32 *a2 = addr2->s6_addr32;
 	unsigned int pdw, pbi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check complete u32 in prefix */
 	pdw = prefixlen >> 5;
 	if (pdw && memcmp(a1, a2, pdw << 2))
-<<<<<<< HEAD
-		return 0;
-=======
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check incomplete u32 in prefix */
 	pbi = prefixlen & 0x1f;
 	if (pbi && ((a1[pdw] ^ a2[pdw]) & htonl((0xffffffff) << (32 - pbi))))
-<<<<<<< HEAD
-		return 0;
-
-	return 1;
-}
-
-static inline int ipv6_prefix_equal(const struct in6_addr *a1,
-				    const struct in6_addr *a2,
-				    unsigned int prefixlen)
-{
-	return __ipv6_prefix_equal(a1->s6_addr32, a2->s6_addr32,
-				   prefixlen);
-}
-
-struct inet_frag_queue;
-
-enum ip6_defrag_users {
-	IP6_DEFRAG_LOCAL_DELIVER,
-	IP6_DEFRAG_CONNTRACK_IN,
-	__IP6_DEFRAG_CONNTRACK_IN	= IP6_DEFRAG_CONNTRACK_IN + USHRT_MAX,
-	IP6_DEFRAG_CONNTRACK_OUT,
-	__IP6_DEFRAG_CONNTRACK_OUT	= IP6_DEFRAG_CONNTRACK_OUT + USHRT_MAX,
-	IP6_DEFRAG_CONNTRACK_BRIDGE_IN,
-	__IP6_DEFRAG_CONNTRACK_BRIDGE_IN = IP6_DEFRAG_CONNTRACK_BRIDGE_IN + USHRT_MAX,
-};
-
-struct ip6_create_arg {
-	__be32 id;
-	u32 user;
-	const struct in6_addr *src;
-	const struct in6_addr *dst;
-};
-
-void ip6_frag_init(struct inet_frag_queue *q, void *a);
-int ip6_frag_match(struct inet_frag_queue *q, void *a);
-=======
 		return false;
 
 	return true;
@@ -1001,42 +750,10 @@ static inline u32 ipv6_addr_hash(const struct in6_addr *a)
 			     a->s6_addr32[2] ^ a->s6_addr32[3]);
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* more secured version of ipv6_addr_hash() */
 static inline u32 __ipv6_addr_jhash(const struct in6_addr *a, const u32 initval)
 {
-<<<<<<< HEAD
-	u32 v = (__force u32)a->s6_addr32[0] ^ (__force u32)a->s6_addr32[1];
-
-	return jhash_3words(v,
-			    (__force u32)a->s6_addr32[2],
-			    (__force u32)a->s6_addr32[3],
-			    initval);
-}
-
-static inline u32 ipv6_addr_jhash(const struct in6_addr *a)
-{
-	return __ipv6_addr_jhash(a, ipv6_hash_secret);
-}
-
-static inline int ipv6_addr_any(const struct in6_addr *a)
-{
-	return (a->s6_addr32[0] | a->s6_addr32[1] |
-		a->s6_addr32[2] | a->s6_addr32[3]) == 0;
-}
-
-static inline int ipv6_addr_loopback(const struct in6_addr *a)
-{
-	return (a->s6_addr32[0] | a->s6_addr32[1] |
-		a->s6_addr32[2] | (a->s6_addr32[3] ^ htonl(1))) == 0;
-}
-
-static inline int ipv6_addr_v4mapped(const struct in6_addr *a)
-{
-	return (a->s6_addr32[0] | a->s6_addr32[1] |
-		 (a->s6_addr32[2] ^ htonl(0x0000ffff))) == 0;
-=======
 	return jhash2((__force const u32 *)a->s6_addr32,
 		      ARRAY_SIZE(a->s6_addr32), initval);
 }
@@ -1088,30 +805,22 @@ static inline u32 ipv6_portaddr_hash(const struct net *net,
 		hash = jhash2((__force u32 *)addr6->s6_addr32, 4, mix);
 
 	return hash ^ port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Check for a RFC 4843 ORCHID address
  * (Overlay Routable Cryptographic Hash Identifiers)
  */
-<<<<<<< HEAD
-static inline int ipv6_addr_orchid(const struct in6_addr *a)
-=======
 static inline bool ipv6_addr_orchid(const struct in6_addr *a)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (a->s6_addr32[0] & htonl(0xfffffff0)) == htonl(0x20010010);
 }
 
-<<<<<<< HEAD
-=======
 static inline bool ipv6_addr_is_multicast(const struct in6_addr *addr)
 {
 	return (addr->s6_addr32[0] & htonl(0xFF000000)) == htonl(0xFF000000);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ipv6_addr_set_v4mapped(const __be32 addr,
 					  struct in6_addr *v4mapped)
 {
@@ -1125,11 +834,7 @@ static inline void ipv6_addr_set_v4mapped(const __be32 addr,
  * find the first different bit between two addresses
  * length of address must be a multiple of 32bits
  */
-<<<<<<< HEAD
-static inline int __ipv6_addr_diff(const void *token1, const void *token2, int addrlen)
-=======
 static inline int __ipv6_addr_diff32(const void *token1, const void *token2, int addrlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const __be32 *a1 = token1, *a2 = token2;
 	int i;
@@ -1143,11 +848,7 @@ static inline int __ipv6_addr_diff32(const void *token1, const void *token2, int
 	}
 
 	/*
-<<<<<<< HEAD
-	 *	we should *never* get to this point since that 
-=======
 	 *	we should *never* get to this point since that
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *	would mean the addrs are equal
 	 *
 	 *	However, we do get to it 8) And exacly, when
@@ -1165,8 +866,6 @@ static inline int __ipv6_addr_diff32(const void *token1, const void *token2, int
 	return addrlen << 5;
 }
 
-<<<<<<< HEAD
-=======
 #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
 static inline int __ipv6_addr_diff64(const void *token1, const void *token2, int addrlen)
 {
@@ -1194,16 +893,11 @@ static inline int __ipv6_addr_diff(const void *token1, const void *token2, int a
 	return __ipv6_addr_diff32(token1, token2, addrlen);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int ipv6_addr_diff(const struct in6_addr *a1, const struct in6_addr *a2)
 {
 	return __ipv6_addr_diff(a1, a2, sizeof(struct in6_addr));
 }
 
-<<<<<<< HEAD
-extern void ipv6_select_ident(struct frag_hdr *fhdr, struct rt6_info *rt);
-void ipv6_proxy_select_ident(struct sk_buff *skb);
-=======
 __be32 ipv6_select_ident(struct net *net,
 			 const struct in6_addr *daddr,
 			 const struct in6_addr *saddr);
@@ -1375,7 +1069,6 @@ static inline __be32 flowi6_get_flowlabel(const struct flowi6 *fl6)
 {
 	return fl6->flowlabel & IPV6_FLOWLABEL_MASK;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Prototypes exported by ipv6
@@ -1385,72 +1078,16 @@ static inline __be32 flowi6_get_flowlabel(const struct flowi6 *fl6)
  *	rcv function (called from netdevice level)
  */
 
-<<<<<<< HEAD
-extern int			ipv6_rcv(struct sk_buff *skb, 
-					 struct net_device *dev, 
-					 struct packet_type *pt,
-					 struct net_device *orig_dev);
-
-extern int			ip6_rcv_finish(struct sk_buff *skb);
-=======
 int ipv6_rcv(struct sk_buff *skb, struct net_device *dev,
 	     struct packet_type *pt, struct net_device *orig_dev);
 void ipv6_list_rcv(struct list_head *head, struct packet_type *pt,
 		   struct net_device *orig_dev);
 
 int ip6_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	upper-layer output functions
  */
-<<<<<<< HEAD
-extern int			ip6_xmit(struct sock *sk,
-					 struct sk_buff *skb,
-					 struct flowi6 *fl6,
-					 struct ipv6_txoptions *opt,
-					 int tclass);
-
-extern int			ip6_nd_hdr(struct sock *sk,
-					   struct sk_buff *skb,
-					   struct net_device *dev,
-					   const struct in6_addr *saddr,
-					   const struct in6_addr *daddr,
-					   int proto, int len);
-
-extern int			ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr);
-
-extern int			ip6_append_data(struct sock *sk,
-						int getfrag(void *from, char *to, int offset, int len, int odd, struct sk_buff *skb),
-		    				void *from,
-						int length,
-						int transhdrlen,
-		      				int hlimit,
-		      				int tclass,
-						struct ipv6_txoptions *opt,
-						struct flowi6 *fl6,
-						struct rt6_info *rt,
-						unsigned int flags,
-						int dontfrag);
-
-extern int			ip6_push_pending_frames(struct sock *sk);
-
-extern void			ip6_flush_pending_frames(struct sock *sk);
-
-extern int			ip6_dst_lookup(struct sock *sk,
-					       struct dst_entry **dst,
-					       struct flowi6 *fl6);
-extern struct dst_entry *	ip6_dst_lookup_flow(struct sock *sk,
-						    struct flowi6 *fl6,
-						    const struct in6_addr *final_dst,
-						    bool can_sleep);
-extern struct dst_entry *	ip6_sk_dst_lookup_flow(struct sock *sk,
-						       struct flowi6 *fl6,
-						       const struct in6_addr *final_dst,
-						       bool can_sleep);
-extern struct dst_entry *	ip6_blackhole_route(struct net *net,
-						    struct dst_entry *orig_dst);
-=======
 int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
 	     __u32 mark, struct ipv6_txoptions *opt, int tclass, u32 priority);
 
@@ -1495,21 +1132,11 @@ struct dst_entry *ip6_sk_dst_lookup_flow(struct sock *sk, struct flowi6 *fl6,
 					 bool connected);
 struct dst_entry *ip6_blackhole_route(struct net *net,
 				      struct dst_entry *orig_dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	skb processing functions
  */
 
-<<<<<<< HEAD
-extern int			ip6_output(struct sk_buff *skb);
-extern int			ip6_forward(struct sk_buff *skb);
-extern int			ip6_input(struct sk_buff *skb);
-extern int			ip6_mc_input(struct sk_buff *skb);
-
-extern int			__ip6_local_out(struct sk_buff *skb);
-extern int			ip6_local_out(struct sk_buff *skb);
-=======
 int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb);
 int ip6_forward(struct sk_buff *skb);
 int ip6_input(struct sk_buff *skb);
@@ -1519,32 +1146,11 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
 
 int __ip6_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
 int ip6_local_out(struct net *net, struct sock *sk, struct sk_buff *skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Extension header (options) processing
  */
 
-<<<<<<< HEAD
-extern void 			ipv6_push_nfrag_opts(struct sk_buff *skb,
-						     struct ipv6_txoptions *opt,
-						     u8 *proto,
-						     struct in6_addr **daddr_p);
-extern void			ipv6_push_frag_opts(struct sk_buff *skb,
-						    struct ipv6_txoptions *opt,
-						    u8 *proto);
-
-extern int			ipv6_skip_exthdr(const struct sk_buff *, int start,
-					         u8 *nexthdrp, __be16 *frag_offp);
-
-extern int 			ipv6_ext_hdr(u8 nexthdr);
-
-extern int ipv6_find_tlv(struct sk_buff *skb, int offset, int type);
-
-extern struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
-				       const struct ipv6_txoptions *opt,
-				       struct in6_addr *orig);
-=======
 void ipv6_push_nfrag_opts(struct sk_buff *skb, struct ipv6_txoptions *opt,
 			  u8 *proto, struct in6_addr **daddr_p,
 			  struct in6_addr *saddr);
@@ -1571,55 +1177,10 @@ int ipv6_find_tlv(const struct sk_buff *skb, int offset, int type);
 struct in6_addr *fl6_update_dst(struct flowi6 *fl6,
 				const struct ipv6_txoptions *opt,
 				struct in6_addr *orig);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	socket options (ipv6_sockglue.c)
  */
-<<<<<<< HEAD
-
-extern int			ipv6_setsockopt(struct sock *sk, int level, 
-						int optname,
-						char __user *optval, 
-						unsigned int optlen);
-extern int			ipv6_getsockopt(struct sock *sk, int level, 
-						int optname,
-						char __user *optval, 
-						int __user *optlen);
-extern int			compat_ipv6_setsockopt(struct sock *sk,
-						int level,
-						int optname,
-						char __user *optval,
-						unsigned int optlen);
-extern int			compat_ipv6_getsockopt(struct sock *sk,
-						int level,
-						int optname,
-						char __user *optval,
-						int __user *optlen);
-
-extern int			ip6_datagram_connect(struct sock *sk, 
-						     struct sockaddr *addr, int addr_len);
-
-extern int 			ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len,
-						int *addr_len);
-extern int 			ipv6_recv_rxpmtu(struct sock *sk, struct msghdr *msg, int len,
-						 int *addr_len);
-extern void			ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err, __be16 port,
-						u32 info, u8 *payload);
-extern void			ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info);
-extern void			ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu);
-
-extern int inet6_release(struct socket *sock);
-extern int inet6_bind(struct socket *sock, struct sockaddr *uaddr, 
-		      int addr_len);
-extern int inet6_getname(struct socket *sock, struct sockaddr *uaddr,
-			 int *uaddr_len, int peer);
-extern int inet6_ioctl(struct socket *sock, unsigned int cmd, 
-		       unsigned long arg);
-
-extern int inet6_hash_connect(struct inet_timewait_death_row *death_row,
-			      struct sock *sk);
-=======
 DECLARE_STATIC_KEY_FALSE(ip6_min_hopcount);
 
 int do_ipv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,
@@ -1664,47 +1225,17 @@ int inet6_hash_connect(struct inet_timewait_death_row *death_row,
 int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
 int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		  int flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * reassembly.c
  */
 extern const struct proto_ops inet6_stream_ops;
 extern const struct proto_ops inet6_dgram_ops;
-<<<<<<< HEAD
-=======
 extern const struct proto_ops inet6_sockraw_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct group_source_req;
 struct group_filter;
 
-<<<<<<< HEAD
-extern int ip6_mc_source(int add, int omode, struct sock *sk,
-			 struct group_source_req *pgsr);
-extern int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf);
-extern int ip6_mc_msfget(struct sock *sk, struct group_filter *gsf,
-			 struct group_filter __user *optval,
-			 int __user *optlen);
-extern unsigned int inet6_hash_frag(__be32 id, const struct in6_addr *saddr,
-				    const struct in6_addr *daddr, u32 rnd);
-
-#ifdef CONFIG_PROC_FS
-extern int  ac6_proc_init(struct net *net);
-extern void ac6_proc_exit(struct net *net);
-extern int  raw6_proc_init(void);
-extern void raw6_proc_exit(void);
-extern int  tcp6_proc_init(struct net *net);
-extern void tcp6_proc_exit(struct net *net);
-extern int  udp6_proc_init(struct net *net);
-extern void udp6_proc_exit(struct net *net);
-extern int  udplite6_proc_init(void);
-extern void udplite6_proc_exit(void);
-extern int  ipv6_misc_proc_init(void);
-extern void ipv6_misc_proc_exit(void);
-extern int snmp6_register_dev(struct inet6_dev *idev);
-extern int snmp6_unregister_dev(struct inet6_dev *idev);
-=======
 int ip6_mc_source(int add, int omode, struct sock *sk,
 		  struct group_source_req *pgsr);
 int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
@@ -1727,7 +1258,6 @@ int ipv6_misc_proc_init(void);
 void ipv6_misc_proc_exit(void);
 int snmp6_register_dev(struct inet6_dev *idev);
 int snmp6_unregister_dev(struct inet6_dev *idev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 static inline int ac6_proc_init(struct net *net) { return 0; }
@@ -1737,19 +1267,6 @@ static inline int snmp6_unregister_dev(struct inet6_dev *idev) { return 0; }
 #endif
 
 #ifdef CONFIG_SYSCTL
-<<<<<<< HEAD
-extern ctl_table ipv6_route_table_template[];
-extern ctl_table ipv6_icmp_table_template[];
-
-extern struct ctl_table *ipv6_icmp_sysctl_init(struct net *net);
-extern struct ctl_table *ipv6_route_sysctl_init(struct net *net);
-extern int ipv6_sysctl_register(void);
-extern void ipv6_sysctl_unregister(void);
-extern int ipv6_static_sysctl_register(void);
-extern void ipv6_static_sysctl_unregister(void);
-#endif
-
-=======
 struct ctl_table *ipv6_icmp_sysctl_init(struct net *net);
 size_t ipv6_icmp_sysctl_table_size(void);
 struct ctl_table *ipv6_route_sysctl_init(struct net *net);
@@ -1848,5 +1365,4 @@ static inline void ip6_sock_set_recvpktinfo(struct sock *sk)
 	release_sock(sk);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NET_IPV6_H */

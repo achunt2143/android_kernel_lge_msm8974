@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
- * Written by: Jayamohan Kallickal (jayamohan.kallickal@emulex.com)
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2017 Broadcom. All Rights Reserved.
@@ -24,7 +5,6 @@
  *
  * Contact Information:
  * linux-drivers@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _BEISCSI_MAIN_
@@ -34,11 +14,8 @@
 #include <linux/pci.h>
 #include <linux/if_ether.h>
 #include <linux/in.h>
-<<<<<<< HEAD
-=======
 #include <linux/ctype.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
@@ -47,16 +24,6 @@
 #include <scsi/libiscsi.h>
 #include <scsi/scsi_transport_iscsi.h>
 
-<<<<<<< HEAD
-#include "be.h"
-#define DRV_NAME		"be2iscsi"
-#define BUILD_STR		"4.1.239.0"
-#define BE_NAME			"ServerEngines BladeEngine2" \
-				"Linux iSCSI Driver version" BUILD_STR
-#define DRV_DESC		BE_NAME " " "Driver"
-
-#define BE_VENDOR_ID		0x19A2
-=======
 #define DRV_NAME		"be2iscsi"
 #define BUILD_STR		"11.4.0.1"
 #define BE_NAME			"Emulex OneConnect" \
@@ -65,7 +32,6 @@
 
 #define BE_VENDOR_ID		0x19A2
 #define ELX_VENDOR_ID		0x10DF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DEVICE ID's for BE2 */
 #define BE_DEVICE_ID1		0x212
 #define OC_DEVICE_ID1		0x702
@@ -75,44 +41,16 @@
 #define BE_DEVICE_ID2		0x222
 #define OC_DEVICE_ID3		0x712
 
-<<<<<<< HEAD
-#define BE2_IO_DEPTH		1024
-#define BE2_MAX_SESSIONS	256
-#define BE2_CMDS_PER_CXN	128
-=======
 /* DEVICE ID for SKH */
 #define OC_SKH_ID1		0x722
 
 #define BE2_IO_DEPTH		1024
 #define BE2_MAX_SESSIONS	256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BE2_TMFS		16
 #define BE2_NOPOUT_REQ		16
 #define BE2_SGE			32
 #define BE2_DEFPDU_HDR_SZ	64
 #define BE2_DEFPDU_DATA_SZ	8192
-<<<<<<< HEAD
-
-#define MAX_CPUS		31
-#define BEISCSI_SGLIST_ELEMENTS	30
-
-#define BEISCSI_CMD_PER_LUN	128	/* scsi_host->cmd_per_lun */
-#define BEISCSI_MAX_SECTORS	2048	/* scsi_host->max_sectors */
-
-#define BEISCSI_MAX_CMD_LEN	16	/* scsi_host->max_cmd_len */
-#define BEISCSI_NUM_MAX_LUN	256	/* scsi_host->max_lun */
-#define BEISCSI_NUM_DEVICES_SUPPORTED	0x01
-#define BEISCSI_MAX_FRAGS_INIT	192
-#define BE_NUM_MSIX_ENTRIES	1
-
-#define MPU_EP_CONTROL          0
-#define MPU_EP_SEMAPHORE        0xac
-#define BE2_SOFT_RESET          0x5c
-#define BE2_PCI_ONLINE0         0xb0
-#define BE2_PCI_ONLINE1         0xb4
-#define BE2_SET_RESET           0x80
-#define BE2_MPU_IRAM_ONLINE     0x00000080
-=======
 #define BE2_MAX_NUM_CQ_PROC	512
 
 #define MAX_CPUS		64U
@@ -134,7 +72,6 @@
 #define BEISCSI_MAX_CMD_LEN	16	/* scsi_host->max_cmd_len */
 #define BEISCSI_NUM_MAX_LUN	256	/* scsi_host->max_lun */
 #define BEISCSI_MAX_FRAGS_INIT	192
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BE_SENSE_INFO_SIZE		258
 #define BE_ISCSI_PDU_HEADER_SIZE	64
@@ -142,40 +79,13 @@
 #define MAX_CMD_SZ			65536
 #define IIOC_SCSI_DATA                  0x05	/* Write Operation */
 
-<<<<<<< HEAD
-#define DBG_LVL				0x00000001
-#define DBG_LVL_1			0x00000001
-#define DBG_LVL_2			0x00000002
-#define DBG_LVL_3			0x00000004
-#define DBG_LVL_4			0x00000008
-#define DBG_LVL_5			0x00000010
-#define DBG_LVL_6			0x00000020
-#define DBG_LVL_7			0x00000040
-#define DBG_LVL_8			0x00000080
-
-#define SE_DEBUG(debug_mask, fmt, args...)		\
-do {							\
-	if (debug_mask & DBG_LVL) {			\
-		printk(KERN_ERR "(%s():%d):", __func__, __LINE__);\
-		printk(fmt, ##args);			\
-	}						\
-} while (0);
-
-#define BE_ADAPTER_UP		0x00000000
-#define BE_ADAPTER_LINK_DOWN	0x00000001
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * hardware needs the async PDU buffers to be posted in multiples of 8
  * So have atleast 8 of them by default
  */
 
-<<<<<<< HEAD
-#define HWI_GET_ASYNC_PDU_CTX(phwi)	(phwi->phwi_ctxt->pasync_ctx)
-=======
 #define HWI_GET_ASYNC_PDU_CTX(phwi, ulp_num)	\
 	(phwi->phwi_ctxt->pasync_ctx[ulp_num])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********* Memory BAR register ************/
 #define PCICFG_MEMBAR_CTRL_INT_CTRL_OFFSET	0xfc
@@ -201,22 +111,15 @@ do {							\
 #define DB_RXULP0_OFFSET 0xA0
 /********* Event Q door bell *************/
 #define DB_EQ_OFFSET			DB_CQ_OFFSET
-<<<<<<< HEAD
-#define DB_EQ_RING_ID_MASK		0x1FF	/* bits 0 - 8 */
-=======
 #define DB_EQ_RING_ID_LOW_MASK		0x1FF	/* bits 0 - 8 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Clear the interrupt for this eq */
 #define DB_EQ_CLR_SHIFT			(9)	/* bit 9 */
 /* Must be 1 */
 #define DB_EQ_EVNT_SHIFT		(10)	/* bit 10 */
-<<<<<<< HEAD
-=======
 /* Higher Order EQ_ID bit */
 #define DB_EQ_RING_ID_HIGH_MASK	0x1F /* bits 11 - 15 */
 #define DB_EQ_HIGH_SET_SHIFT	11
 #define DB_EQ_HIGH_FEILD_SHIFT	9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Number of event entries processed */
 #define DB_EQ_NUM_POPPED_SHIFT		(16)	/* bits 16 - 28 */
 /* Rearm bit */
@@ -224,60 +127,35 @@ do {							\
 
 /********* Compl Q door bell *************/
 #define DB_CQ_OFFSET			0x120
-<<<<<<< HEAD
-#define DB_CQ_RING_ID_MASK		0x3FF	/* bits 0 - 9 */
-=======
 #define DB_CQ_RING_ID_LOW_MASK		0x3FF	/* bits 0 - 9 */
 /* Higher Order CQ_ID bit */
 #define DB_CQ_RING_ID_HIGH_MASK	0x1F /* bits 11 - 15 */
 #define DB_CQ_HIGH_SET_SHIFT	11
 #define DB_CQ_HIGH_FEILD_SHIFT	10
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Number of event entries processed */
 #define DB_CQ_NUM_POPPED_SHIFT		(16)	/* bits 16 - 28 */
 /* Rearm bit */
 #define DB_CQ_REARM_SHIFT		(29)	/* bit 29 */
 
 #define GET_HWI_CONTROLLER_WS(pc)	(pc->phwi_ctrlr)
-<<<<<<< HEAD
-#define HWI_GET_DEF_BUFQ_ID(pc) (((struct hwi_controller *)\
-		(GET_HWI_CONTROLLER_WS(pc)))->default_pdu_data.id)
-#define HWI_GET_DEF_HDRQ_ID(pc) (((struct hwi_controller *)\
-		(GET_HWI_CONTROLLER_WS(pc)))->default_pdu_hdr.id)
-=======
 #define HWI_GET_DEF_BUFQ_ID(pc, ulp_num) (((struct hwi_controller *)\
 		(GET_HWI_CONTROLLER_WS(pc)))->default_pdu_data[ulp_num].id)
 #define HWI_GET_DEF_HDRQ_ID(pc, ulp_num) (((struct hwi_controller *)\
 		(GET_HWI_CONTROLLER_WS(pc)))->default_pdu_hdr[ulp_num].id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PAGES_REQUIRED(x) \
 	((x < PAGE_SIZE) ? 1 :  ((x + PAGE_SIZE - 1) / PAGE_SIZE))
 
-<<<<<<< HEAD
-#define BEISCSI_MSI_NAME 20 /* size of msi_name string */
-
-=======
 #define MEM_DESCR_OFFSET 8
 #define BEISCSI_DEFQ_HDR 1
 #define BEISCSI_DEFQ_DATA 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum be_mem_enum {
 	HWI_MEM_ADDN_CONTEXT,
 	HWI_MEM_WRB,
 	HWI_MEM_WRBH,
 	HWI_MEM_SGLH,
 	HWI_MEM_SGE,
-<<<<<<< HEAD
-	HWI_MEM_ASYNC_HEADER_BUF,	/* 5 */
-	HWI_MEM_ASYNC_DATA_BUF,
-	HWI_MEM_ASYNC_HEADER_RING,
-	HWI_MEM_ASYNC_DATA_RING,
-	HWI_MEM_ASYNC_HEADER_HANDLE,
-	HWI_MEM_ASYNC_DATA_HANDLE,	/* 10 */
-	HWI_MEM_ASYNC_PDU_CONTEXT,
-=======
 	HWI_MEM_TEMPLATE_HDR_ULP0,
 	HWI_MEM_ASYNC_HEADER_BUF_ULP0,	/* 6 */
 	HWI_MEM_ASYNC_DATA_BUF_ULP0,
@@ -294,7 +172,6 @@ enum be_mem_enum {
 	HWI_MEM_ASYNC_HEADER_HANDLE_ULP1,
 	HWI_MEM_ASYNC_DATA_HANDLE_ULP1,	/* 19 */
 	HWI_MEM_ASYNC_PDU_CONTEXT_ULP1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ISCSI_MEM_GLOBAL_HEADER,
 	SE_MEM_MAX
 };
@@ -322,18 +199,8 @@ struct mem_array {
 };
 
 struct be_mem_descriptor {
-<<<<<<< HEAD
-	unsigned int index;	/* Index of this memory parameter */
-	unsigned int category;	/* type indicates cached/non-cached */
-	unsigned int num_elements;	/* number of elements in this
-					 * descriptor
-					 */
-	unsigned int alignment_mask;	/* Alignment mask for this block */
-	unsigned int size_in_bytes;	/* Size required by memory block */
-=======
 	unsigned int size_in_bytes;	/* Size required by memory block */
 	unsigned int num_elements;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mem_array *mem_array;
 };
 
@@ -348,10 +215,6 @@ struct sgl_handle {
 struct hba_parameters {
 	unsigned int ios_per_ctrl;
 	unsigned int cxns_per_ctrl;
-<<<<<<< HEAD
-	unsigned int asyncpdus_per_ctrl;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int icds_per_ctrl;
 	unsigned int num_sge_per_io;
 	unsigned int defpdu_hdr_sz;
@@ -359,45 +222,6 @@ struct hba_parameters {
 	unsigned int num_cq_entries;
 	unsigned int num_eq_entries;
 	unsigned int wrbs_per_cxn;
-<<<<<<< HEAD
-	unsigned int crashmode;
-	unsigned int hba_num;
-
-	unsigned int mgmt_ws_sz;
-	unsigned int hwi_ws_sz;
-
-	unsigned int eto;
-	unsigned int ldto;
-
-	unsigned int dbg_flags;
-	unsigned int num_cxn;
-
-	unsigned int eq_timer;
-	/**
-	 * These are calculated from other params. They're here
-	 * for debug purposes
-	 */
-	unsigned int num_mcc_pages;
-	unsigned int num_mcc_cq_pages;
-	unsigned int num_cq_pages;
-	unsigned int num_eq_pages;
-
-	unsigned int num_async_pdu_buf_pages;
-	unsigned int num_async_pdu_buf_sgl_pages;
-	unsigned int num_async_pdu_buf_cq_pages;
-
-	unsigned int num_async_pdu_hdr_pages;
-	unsigned int num_async_pdu_hdr_sgl_pages;
-	unsigned int num_async_pdu_hdr_cq_pages;
-
-	unsigned int num_sge;
-};
-
-struct invalidate_command_table {
-	unsigned short icd;
-	unsigned short cid;
-} __packed;
-=======
 	unsigned int hwi_ws_sz;
 };
 
@@ -440,7 +264,6 @@ struct ulp_cid_info {
 	BEISCSI_ULP_AVLBL_CID(phba, BEISCSI_ULP0)
 #define BEISCSI_ULP1_AVLBL_CID(phba) \
 	BEISCSI_ULP_AVLBL_CID(phba, BEISCSI_ULP1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct beiscsi_hba {
 	struct hba_parameters params;
@@ -450,36 +273,17 @@ struct beiscsi_hba {
 	u8 __iomem *csr_va;	/* CSR */
 	u8 __iomem *db_va;	/* Door  Bell  */
 	u8 __iomem *pci_va;	/* PCI Config */
-<<<<<<< HEAD
-	struct be_bus_address csr_pa;	/* CSR */
-	struct be_bus_address db_pa;	/* CSR */
-	struct be_bus_address pci_pa;	/* CSR */
-	/* PCI representation of our HBA */
-	struct pci_dev *pcidev;
-	unsigned int state;
-	unsigned short asic_revision;
-	unsigned int num_cpus;
-	unsigned int nxt_cqid;
-	struct msix_entry msix_entries[MAX_CPUS + 1];
-	char *msi_name[MAX_CPUS + 1];
-	bool msix_enabled;
-=======
 	/* PCI representation of our HBA */
 	struct pci_dev *pcidev;
 	unsigned int num_cpus;
 	unsigned int nxt_cqid;
 	char *msi_name[MAX_CPUS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_mem_descriptor *init_mem;
 
 	unsigned short io_sgl_alloc_index;
 	unsigned short io_sgl_free_index;
 	unsigned short io_sgl_hndl_avbl;
 	struct sgl_handle **io_sgl_hndl_base;
-<<<<<<< HEAD
-	struct sgl_handle **sgl_hndl_array;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned short eh_sgl_alloc_index;
 	unsigned short eh_sgl_free_index;
@@ -487,19 +291,6 @@ struct beiscsi_hba {
 	struct sgl_handle **eh_sgl_hndl_base;
 	spinlock_t io_sgl_lock;
 	spinlock_t mgmt_sgl_lock;
-<<<<<<< HEAD
-	spinlock_t isr_lock;
-	unsigned int age;
-	unsigned short avlbl_cids;
-	unsigned short cid_alloc;
-	unsigned short cid_free;
-	struct beiscsi_conn *conn_table[BE2_MAX_SESSIONS * 2];
-	struct list_head hba_queue;
-	unsigned short *cid_array;
-	struct iscsi_endpoint **ep_array;
-	struct iscsi_boot_kset *boot_kset;
-	struct Scsi_Host *shost;
-=======
 	spinlock_t async_pdu_lock;
 	struct list_head hba_queue;
 #define BE_MAX_SESSION 2048
@@ -514,46 +305,11 @@ struct beiscsi_hba {
 	struct Scsi_Host *shost;
 	struct iscsi_iface *ipv4_iface;
 	struct iscsi_iface *ipv6_iface;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		/**
 		 * group together since they are used most frequently
 		 * for cid to cri conversion
 		 */
-<<<<<<< HEAD
-		unsigned int iscsi_cid_start;
-		unsigned int phys_port;
-
-		unsigned int isr_offset;
-		unsigned int iscsi_icd_start;
-		unsigned int iscsi_cid_count;
-		unsigned int iscsi_icd_count;
-		unsigned int pci_function;
-
-		unsigned short cid_alloc;
-		unsigned short cid_free;
-		unsigned short avlbl_cids;
-		unsigned short iscsi_features;
-		spinlock_t cid_lock;
-	} fw_config;
-
-	u8 mac_address[ETH_ALEN];
-	unsigned short todo_cq;
-	unsigned short todo_mcc_cq;
-	char wq_name[20];
-	struct workqueue_struct *wq;	/* The actuak work queue */
-	struct work_struct work_cqs;	/* The work being queued */
-	struct be_ctrl_info ctrl;
-	unsigned int generation;
-	unsigned int read_mac_address;
-	struct mgmt_session_info boot_sess;
-	struct invalidate_command_table inv_tbl[128];
-
-};
-
-struct beiscsi_session {
-	struct pci_pool *bhs_pool;
-=======
 #define BEISCSI_PHYS_PORT_MAX	4
 		unsigned int phys_port;
 		/* valid values of phys_port id are 0, 1, 2, 3 */
@@ -642,7 +398,6 @@ struct beiscsi_session {
 
 struct beiscsi_session {
 	struct dma_pool *bhs_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -652,10 +407,7 @@ struct beiscsi_conn {
 	struct iscsi_conn *conn;
 	struct beiscsi_hba *phba;
 	u32 exp_statsn;
-<<<<<<< HEAD
-=======
 	u32 doorbell_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 beiscsi_conn_cid;
 	struct beiscsi_endpoint *ep;
 	unsigned short login_in_progress;
@@ -706,25 +458,15 @@ struct beiscsi_io_task {
 	struct sgl_handle *psgl_handle;
 	struct beiscsi_conn *conn;
 	struct scsi_cmnd *scsi_cmnd;
-<<<<<<< HEAD
-	unsigned int cmd_sn;
-	unsigned int flags;
-	unsigned short cid;
-	unsigned short header_len;
-=======
 	int num_sg;
 	struct hwi_wrb_context *pwrb_context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	itt_t libiscsi_itt;
 	struct be_cmd_bhs *cmd_bhs;
 	struct be_bus_address bhs_pa;
 	unsigned short bhs_len;
-<<<<<<< HEAD
-=======
 	dma_addr_t mtask_addr;
 	uint32_t mtask_data_count;
 	uint8_t wrb_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct be_nonio_bhs {
@@ -764,11 +506,7 @@ struct amap_iscsi_sge {
 };
 
 struct beiscsi_offload_params {
-<<<<<<< HEAD
-	u32 dw[5];
-=======
 	u32 dw[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define OFFLD_PARAMS_ERL	0x00000003
@@ -776,12 +514,9 @@ struct beiscsi_offload_params {
 #define OFFLD_PARAMS_HDE	0x00000008
 #define OFFLD_PARAMS_IR2T	0x00000010
 #define OFFLD_PARAMS_IMD	0x00000020
-<<<<<<< HEAD
-=======
 #define OFFLD_PARAMS_DATA_SEQ_INORDER   0x00000040
 #define OFFLD_PARAMS_PDU_SEQ_INORDER    0x00000080
 #define OFFLD_PARAMS_MAX_R2T 0x00FFFF00
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Pseudo amap definition in which each bit of the actual structure is defined
@@ -796,86 +531,6 @@ struct amap_beiscsi_offload_params {
 	u8 hde[1];
 	u8 ir2t[1];
 	u8 imd[1];
-<<<<<<< HEAD
-	u8 pad[26];
-	u8 exp_statsn[32];
-};
-
-/* void hwi_complete_drvr_msgs(struct beiscsi_conn *beiscsi_conn,
-		struct beiscsi_hba *phba, struct sol_cqe *psol);*/
-
-struct async_pdu_handle {
-	struct list_head link;
-	struct be_bus_address pa;
-	void *pbuffer;
-	unsigned int consumed;
-	unsigned char index;
-	unsigned char is_header;
-	unsigned short cri;
-	unsigned long buffer_len;
-};
-
-struct hwi_async_entry {
-	struct {
-		unsigned char hdr_received;
-		unsigned char hdr_len;
-		unsigned short bytes_received;
-		unsigned int bytes_needed;
-		struct list_head list;
-	} wait_queue;
-
-	struct list_head header_busy_list;
-	struct list_head data_busy_list;
-};
-
-struct hwi_async_pdu_context {
-	struct {
-		struct be_bus_address pa_base;
-		void *va_base;
-		void *ring_base;
-		struct async_pdu_handle *handle_base;
-
-		unsigned int host_write_ptr;
-		unsigned int ep_read_ptr;
-		unsigned int writables;
-
-		unsigned int free_entries;
-		unsigned int busy_entries;
-		unsigned int buffer_size;
-		unsigned int num_entries;
-
-		struct list_head free_list;
-	} async_header;
-
-	struct {
-		struct be_bus_address pa_base;
-		void *va_base;
-		void *ring_base;
-		struct async_pdu_handle *handle_base;
-
-		unsigned int host_write_ptr;
-		unsigned int ep_read_ptr;
-		unsigned int writables;
-
-		unsigned int free_entries;
-		unsigned int busy_entries;
-		unsigned int buffer_size;
-		struct list_head free_list;
-		unsigned int num_entries;
-	} async_data;
-
-	/**
-	 * This is a varying size list! Do not add anything
-	 * after this entry!!
-	 */
-	struct hwi_async_entry async_entry[BE2_MAX_SESSIONS * 2];
-};
-
-#define PDUCQE_CODE_MASK	0x0000003F
-#define PDUCQE_DPL_MASK		0xFFFF0000
-#define PDUCQE_INDEX_MASK	0x0000FFFF
-
-=======
 	u8 data_seq_inorder[1];
 	u8 pdu_seq_inorder[1];
 	u8 max_r2t[16];
@@ -957,7 +612,6 @@ struct hd_async_context {
 	struct hd_async_entry *async_entry;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct i_t_dpdu_cqe {
 	u32 dw[4];
 } __packed;
@@ -979,8 +633,6 @@ struct amap_i_t_dpdu_cqe {
 	u8 valid;
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct amap_i_t_dpdu_cqe_v2 {
 	u8 db_addr_hi[32];  /* DWORD 0 */
 	u8 db_addr_lo[32];  /* DWORD 1 */
@@ -995,7 +647,6 @@ struct amap_i_t_dpdu_cqe_v2 {
 	u8 valid; /* DWORD 3 */
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CQE_VALID_MASK	0x80000000
 #define CQE_CODE_MASK	0x0000003F
 #define CQE_CID_MASK	0x0000FFC0
@@ -1044,14 +695,11 @@ struct iscsi_wrb {
 } __packed;
 
 #define WRB_TYPE_MASK 0xF0000000
-<<<<<<< HEAD
-=======
 #define SKH_WRB_TYPE_OFFSET 27
 #define BE_WRB_TYPE_OFFSET  28
 
 #define ADAPTER_SET_WRB_TYPE(pwrb, wrb_type, type_offset) \
 		(pwrb->dw[0] |= (wrb_type << type_offset))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Pseudo amap definition in which each bit of the actual structure is defined
@@ -1098,13 +746,6 @@ struct amap_iscsi_wrb {
 
 } __packed;
 
-<<<<<<< HEAD
-struct wrb_handle *alloc_wrb_handle(struct beiscsi_hba *phba, unsigned int cid);
-void
-free_mgmt_sgl_handle(struct beiscsi_hba *phba, struct sgl_handle *psgl_handle);
-
-void beiscsi_process_all_cqs(struct work_struct *work);
-=======
 struct amap_iscsi_wrb_v2 {
 	u8 r2t_exp_dtl[25]; /* DWORD 0 */
 	u8 rsvd0[2];    /* DWORD 0*/
@@ -1159,7 +800,6 @@ void hwi_ring_cq_db(struct beiscsi_hba *phba,
 
 unsigned int beiscsi_process_cq(struct be_eq_obj *pbe_eq, int budget);
 void beiscsi_process_mcc_cq(struct beiscsi_hba *phba);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pdu_nop_out {
 	u32 dw[12];
@@ -1220,10 +860,7 @@ struct iscsi_target_context_update_wrb {
  * Pseudo amap definition in which each bit of the actual structure is defined
  * as a byte: used to calculate offset/shift/mask of each field
  */
-<<<<<<< HEAD
-=======
 #define BE_TGT_CTX_UPDT_CMD 0x07
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct amap_iscsi_target_context_update_wrb {
 	u8 lun[14];		/* DWORD 0 */
 	u8 lt;			/* DWORD 0 */
@@ -1269,8 +906,6 @@ struct amap_iscsi_target_context_update_wrb {
 
 } __packed;
 
-<<<<<<< HEAD
-=======
 #define BEISCSI_MAX_RECV_DATASEG_LEN    (64 * 1024)
 #define BEISCSI_MAX_CXNS    1
 struct amap_iscsi_target_context_update_wrb_v2 {
@@ -1314,7 +949,6 @@ struct amap_iscsi_target_context_update_wrb_v2 {
 } __packed;
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct be_ring {
 	u32 pages;		/* queue size in pages */
 	u32 id;			/* queue id assigned by beklib */
@@ -1322,13 +956,10 @@ struct be_ring {
 	u32 cidx;		/* consumer index */
 	u32 pidx;		/* producer index -- not used by most rings */
 	u32 item_size;		/* size in bytes of one object */
-<<<<<<< HEAD
-=======
 	u8 ulp_num;	/* ULP to which CID binded */
 	u16 register_set;
 	u16 doorbell_format;
 	u32 doorbell_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void *va;		/* The virtual address of the ring.  This
 				 * should be last to allow 32 & 64 bit debugger
@@ -1336,35 +967,10 @@ struct be_ring {
 				 */
 };
 
-<<<<<<< HEAD
-struct hwi_wrb_context {
-	struct list_head wrb_handle_list;
-	struct list_head wrb_handle_drvr_list;
-	struct wrb_handle **pwrb_handle_base;
-	struct wrb_handle **pwrb_handle_basestd;
-	struct iscsi_wrb *plast_wrb;
-	unsigned short alloc_index;
-	unsigned short free_index;
-	unsigned short wrb_handles_available;
-	unsigned short cid;
-};
-
-struct hwi_controller {
-	struct list_head io_sgl_list;
-	struct list_head eh_sgl_list;
-	struct sgl_handle *psgl_handle_base;
-	unsigned int wrb_mem_index;
-
-	struct hwi_wrb_context wrb_context[BE2_MAX_SESSIONS * 2];
-	struct mcc_wrb *pmcc_wrb_base;
-	struct be_ring default_pdu_hdr;
-	struct be_ring default_pdu_data;
-=======
 struct hwi_controller {
 	struct hwi_wrb_context *wrb_context;
 	struct be_ring default_pdu_hdr[BEISCSI_ULP_COUNT];
 	struct be_ring default_pdu_data[BEISCSI_ULP_COUNT];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hwi_context_memory *phwi_ctxt;
 };
 
@@ -1379,37 +985,12 @@ enum hwh_type_enum {
 };
 
 struct wrb_handle {
-<<<<<<< HEAD
-	enum hwh_type_enum type;
 	unsigned short wrb_index;
-	unsigned short nxt_wrb_index;
-
-=======
-	unsigned short wrb_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_task *pio_handle;
 	struct iscsi_wrb *pwrb;
 };
 
 struct hwi_context_memory {
-<<<<<<< HEAD
-	/* Adaptive interrupt coalescing (AIC) info */
-	u16 min_eqd;		/* in usecs */
-	u16 max_eqd;		/* in usecs */
-	u16 cur_eqd;		/* in usecs */
-	struct be_eq_obj be_eq[MAX_CPUS];
-	struct be_queue_info be_cq[MAX_CPUS];
-
-	struct be_queue_info be_def_hdrq;
-	struct be_queue_info be_def_dataq;
-
-	struct be_queue_info be_wrbq[BE2_MAX_SESSIONS];
-	struct be_mcc_wrb_context *pbe_mcc_context;
-
-	struct hwi_async_pdu_context *pasync_ctx;
-};
-
-=======
 	struct be_eq_obj be_eq[MAX_CPUS];
 	struct be_queue_info be_cq[MAX_CPUS - 1];
 
@@ -1445,5 +1026,4 @@ do { \
 			__beiscsi_log(phba, level, fmt, ##arg); \
 } while (0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

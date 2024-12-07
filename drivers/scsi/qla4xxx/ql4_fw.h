@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2013 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _QLA4X_FW_H
@@ -72,8 +64,6 @@ struct device_reg_82xx {
 #define ISRX_82XX_RISC_INT	BIT_0 /* RISC interrupt. */
 };
 
-<<<<<<< HEAD
-=======
 /* ISP 83xx I/O Register Set structure */
 struct device_reg_83xx {
 	__le32 mailbox_in[16];	/* 0x0000 */
@@ -108,7 +98,6 @@ struct device_reg_83xx {
 #define INT_ENABLE_FW_MB	(1 << 2)
 #define INT_MASK_FW_MB		(1 << 2)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  remote register set (access via PCI memory read/write) */
 struct isp_reg {
 #define MBOX_REG_COUNT 8
@@ -298,11 +287,8 @@ union external_hw_config_reg {
 #define FA_GOLD_RISC_CODE_ADDR_82	0x80000
 #define FA_FLASH_ISCSI_CHAP		0x540000
 #define FA_FLASH_CHAP_SIZE		0xC0000
-<<<<<<< HEAD
-=======
 #define FA_FLASH_ISCSI_DDB		0x420000
 #define FA_FLASH_DDB_SIZE		0x080000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flash Description Table */
 struct qla_fdt_layout {
@@ -363,10 +349,7 @@ struct qla_flt_header {
 #define FLT_REG_BOOT_CODE_82	0x78
 #define FLT_REG_ISCSI_PARAM	0x65
 #define FLT_REG_ISCSI_CHAP	0x63
-<<<<<<< HEAD
-=======
 #define FLT_REG_ISCSI_DDB	0x6A
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct qla_flt_region {
 	uint32_t code;
@@ -406,11 +389,6 @@ struct qla_flt_region {
 #define MBOX_CMD_CLEAR_DATABASE_ENTRY		0x0031
 #define MBOX_CMD_CONN_OPEN			0x0074
 #define MBOX_CMD_CONN_CLOSE_SESS_LOGOUT		0x0056
-<<<<<<< HEAD
-#define LOGOUT_OPTION_CLOSE_SESSION		0x0002
-#define LOGOUT_OPTION_RELOGIN			0x0004
-#define LOGOUT_OPTION_FREE_DDB			0x0008
-=======
 #define DDB_NOT_LOGGED_IN			0x09
 #define LOGOUT_OPTION_CLOSE_SESSION		0x0002
 #define LOGOUT_OPTION_RELOGIN			0x0004
@@ -418,7 +396,6 @@ struct qla_flt_region {
 #define MBOX_CMD_SET_PARAM			0x0059
 #define SET_DRVR_VERSION			0x200
 #define MAX_DRVR_VER_LEN			24
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MBOX_CMD_EXECUTE_IOCB_A64		0x005A
 #define MBOX_CMD_INITIALIZE_FIRMWARE		0x0060
 #define MBOX_CMD_GET_INIT_FW_CTRL_BLOCK		0x0061
@@ -433,10 +410,7 @@ struct qla_flt_region {
 #define DDB_DS_LOGIN_IN_PROCESS			0x07
 #define MBOX_CMD_GET_FW_STATE			0x0069
 #define MBOX_CMD_GET_INIT_FW_CTRL_BLOCK_DEFAULTS 0x006A
-<<<<<<< HEAD
-=======
 #define MBOX_CMD_DIAG_TEST			0x0075
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MBOX_CMD_GET_SYS_INFO			0x0078
 #define MBOX_CMD_GET_NVRAM			0x0078	/* For 40xx */
 #define MBOX_CMD_SET_NVRAM			0x0079	/* For 40xx */
@@ -452,8 +426,6 @@ struct qla_flt_region {
 #define MBOX_CMD_GET_IP_ADDR_STATE		0x0091
 #define MBOX_CMD_SEND_IPV6_ROUTER_SOL		0x0092
 #define MBOX_CMD_GET_DB_ENTRY_CURRENT_IP_ADDR	0x0093
-<<<<<<< HEAD
-=======
 #define MBOX_CMD_SET_PORT_CONFIG		0x0122
 #define MBOX_CMD_GET_PORT_CONFIG		0x0123
 #define MBOX_CMD_SET_LED_CONFIG			0x0125
@@ -468,7 +440,6 @@ struct qla_flt_region {
 /* Minidump subcommand */
 #define MINIDUMP_GET_SIZE_SUBCOMMAND		0x00
 #define MINIDUMP_GET_TMPLT_SUBCOMMAND		0x01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Mailbox 1 */
 #define FW_STATE_READY				0x0000
@@ -496,14 +467,11 @@ struct qla_flt_region {
 #define MBOX_CMD_GET_CRASH_RECORD		0x0076	/* 4010 only */
 #define MBOX_CMD_GET_CONN_EVENT_LOG		0x0077
 
-<<<<<<< HEAD
-=======
 #define MBOX_CMD_IDC_ACK			0x0101
 #define MBOX_CMD_IDC_TIME_EXTEND		0x0102
 #define MBOX_CMD_PORT_RESET			0x0120
 #define MBOX_CMD_SET_PORT_CONFIG		0x0122
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Mailbox status definitions */
 #define MBOX_COMPLETION_STATUS			4
 #define MBOX_STS_BUSY				0x0007
@@ -536,12 +504,6 @@ struct qla_flt_region {
 #define MBOX_ASTS_SUBNET_STATE_CHANGE		0x8027
 #define MBOX_ASTS_RESPONSE_QUEUE_FULL		0x8028
 #define MBOX_ASTS_IP_ADDR_STATE_CHANGED		0x8029
-<<<<<<< HEAD
-#define MBOX_ASTS_IPV6_PREFIX_EXPIRED		0x802B
-#define MBOX_ASTS_IPV6_ND_PREFIX_IGNORED	0x802C
-#define MBOX_ASTS_IPV6_LCL_PREFIX_IGNORED	0x802D
-#define MBOX_ASTS_ICMPV6_ERROR_MSG_RCVD		0x802E
-=======
 #define MBOX_ASTS_IPV6_DEFAULT_ROUTER_CHANGED	0x802A
 #define MBOX_ASTS_IPV6_LINK_MTU_CHANGE		0x802B
 #define MBOX_ASTS_IPV6_AUTO_PREFIX_IGNORED	0x802C
@@ -553,7 +515,6 @@ struct qla_flt_region {
 #define MBOX_ASTS_IDC_REQUEST_NOTIFICATION	0x8101
 #define MBOX_ASTS_IDC_TIME_EXTEND_NOTIFICATION	0x8102
 #define MBOX_ASTS_DCBX_CONF_CHANGE		0x8110
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MBOX_ASTS_TXSCVR_INSERTED		0x8130
 #define MBOX_ASTS_TXSCVR_REMOVED		0x8131
 
@@ -563,16 +524,6 @@ struct qla_flt_region {
 #define MBOX_ASTS_IPSEC_SYSTEM_FATAL_ERROR	0x8022
 #define MBOX_ASTS_SUBNET_STATE_CHANGE		0x8027
 
-<<<<<<< HEAD
-/* ACB State Defines */
-#define ACB_STATE_UNCONFIGURED	0x00
-#define ACB_STATE_INVALID	0x01
-#define ACB_STATE_ACQUIRING	0x02
-#define ACB_STATE_TENTATIVE	0x03
-#define ACB_STATE_DEPRICATED	0x04
-#define ACB_STATE_VALID		0x05
-#define ACB_STATE_DISABLING	0x06
-=======
 /* ACB Configuration Defines */
 #define ACB_CONFIG_DISABLE		0x00
 #define ACB_CONFIG_SET			0x01
@@ -585,7 +536,6 @@ struct qla_flt_region {
 #define IP_ADDRSTATE_DEPRICATED		4
 #define IP_ADDRSTATE_PREFERRED		5
 #define IP_ADDRSTATE_DISABLING		6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FLASH offsets */
 #define FLASH_SEGMENT_IFCB	0x04000000
@@ -595,13 +545,10 @@ struct qla_flt_region {
 #define FLASH_OPT_COMMIT	2
 #define FLASH_OPT_RMW_COMMIT	3
 
-<<<<<<< HEAD
-=======
 /* generic defines to enable/disable params */
 #define QL4_PARAM_DISABLE	0
 #define QL4_PARAM_ENABLE	1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************************************************************/
 
 /* Host Adapter Initialization Control Block (from host) */
@@ -610,10 +557,7 @@ struct addr_ctrl_blk {
 #define  IFCB_VER_MIN			0x01
 #define  IFCB_VER_MAX			0x02
 	uint8_t control;	/* 01 */
-<<<<<<< HEAD
-=======
 #define	 CTRLOPT_NEW_CONN_DISABLE	0x0002
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint16_t fw_options;	/* 02-03 */
 #define	 FWOPT_HEARTBEAT_ENABLE		  0x1000
@@ -645,13 +589,6 @@ struct addr_ctrl_blk {
 	uint32_t shdwreg_addr_hi;	/* 2C-2F */
 
 	uint16_t iscsi_opts;	/* 30-31 */
-<<<<<<< HEAD
-	uint16_t ipv4_tcp_opts;	/* 32-33 */
-#define TCPOPT_DHCP_ENABLE		0x0200
-	uint16_t ipv4_ip_opts;	/* 34-35 */
-#define IPOPT_IPV4_PROTOCOL_ENABLE	0x8000
-#define IPOPT_VLAN_TAGGING_ENABLE	0x2000
-=======
 #define ISCSIOPTS_HEADER_DIGEST_EN		0x2000
 #define ISCSIOPTS_DATA_DIGEST_EN		0x1000
 #define ISCSIOPTS_IMMEDIATE_DATA_EN		0x0800
@@ -686,7 +623,6 @@ struct addr_ctrl_blk {
 #define IPOPT_FRAGMENTATION_DISABLE	0x0010
 #define IPOPT_IN_FORWARD_EN		0x0008
 #define IPOPT_ARP_REDIRECT_EN		0x0004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint16_t iscsi_max_pdu_size;	/* 36-37 */
 	uint8_t ipv4_tos;	/* 38 */
@@ -737,12 +673,6 @@ struct addr_ctrl_blk {
 	uint32_t cookie;	/* 200-203 */
 	uint16_t ipv6_port;	/* 204-205 */
 	uint16_t ipv6_opts;	/* 206-207 */
-<<<<<<< HEAD
-#define IPV6_OPT_IPV6_PROTOCOL_ENABLE	0x8000
-#define IPV6_OPT_VLAN_TAGGING_ENABLE	0x2000
-
-	uint16_t ipv6_addtl_opts;	/* 208-209 */
-=======
 #define IPV6_OPT_IPV6_PROTOCOL_ENABLE		0x8000
 #define IPV6_OPT_VLAN_TAGGING_ENABLE		0x2000
 #define IPV6_OPT_GRAT_NEIGHBOR_ADV_EN		0x1000
@@ -751,20 +681,16 @@ struct addr_ctrl_blk {
 	uint16_t ipv6_addtl_opts;	/* 208-209 */
 #define IPV6_ADDOPT_IGNORE_ICMP_ECHO_REQ		0x0040
 #define IPV6_ADDOPT_MLD_EN				0x0004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPV6_ADDOPT_NEIGHBOR_DISCOVERY_ADDR_ENABLE	0x0002 /* Pri ACB
 								  Only */
 #define IPV6_ADDOPT_AUTOCONFIG_LINK_LOCAL_ADDR		0x0001
 
 	uint16_t ipv6_tcp_opts;	/* 20A-20B */
-<<<<<<< HEAD
-=======
 #define IPV6_TCPOPT_DELAYED_ACK_DISABLE		0x8000
 #define IPV6_TCPOPT_NAGLE_ALGO_DISABLE		0x0020
 #define IPV6_TCPOPT_WINDOW_SCALE_DISABLE	0x0010
 #define IPV6_TCPOPT_TIMER_SCALE			0x000E
 #define IPV6_TCPOPT_TIMESTAMP_EN		0x0001
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t ipv6_tcp_wsf;	/* 20C */
 	uint16_t ipv6_flow_lbl;	/* 20D-20F */
 	uint8_t ipv6_dflt_rtr_addr[16]; /* 210-21F */
@@ -772,17 +698,6 @@ struct addr_ctrl_blk {
 	uint8_t ipv6_lnk_lcl_addr_state;/* 222 */
 	uint8_t ipv6_addr0_state;	/* 223 */
 	uint8_t ipv6_addr1_state;	/* 224 */
-<<<<<<< HEAD
-#define IP_ADDRSTATE_UNCONFIGURED	0
-#define IP_ADDRSTATE_INVALID		1
-#define IP_ADDRSTATE_ACQUIRING		2
-#define IP_ADDRSTATE_TENTATIVE		3
-#define IP_ADDRSTATE_DEPRICATED		4
-#define IP_ADDRSTATE_PREFERRED		5
-#define IP_ADDRSTATE_DISABLING		6
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t ipv6_dflt_rtr_state;    /* 225 */
 #define IPV6_RTRSTATE_UNKNOWN                   0
 #define IPV6_RTRSTATE_MANUAL                    1
@@ -918,22 +833,15 @@ struct dev_db_entry {
 #define DDB_OPT_IPV6_NULL_LINK_LOCAL		0x800 /* post connection */
 #define DDB_OPT_IPV6_FW_DEFINED_LINK_LOCAL	0x800 /* pre connection */
 
-<<<<<<< HEAD
-=======
 #define OPT_IS_FW_ASSIGNED_IPV6		11
 #define OPT_IPV6_DEVICE			8
 #define OPT_AUTO_SENDTGTS_DISABLE	6
 #define OPT_DISC_SESSION		4
 #define OPT_ENTRY_STATE			3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t exec_throttle;	/* 02-03 */
 	uint16_t exec_count;	/* 04-05 */
 	uint16_t res0;	/* 06-07 */
 	uint16_t iscsi_options;	/* 08-09 */
-<<<<<<< HEAD
-	uint16_t tcp_options;	/* 0A-0B */
-	uint16_t ip_options;	/* 0C-0D */
-=======
 #define ISCSIOPT_HEADER_DIGEST_EN		13
 #define ISCSIOPT_DATA_DIGEST_EN			12
 #define ISCSIOPT_IMMEDIATE_DATA_EN		11
@@ -960,7 +868,6 @@ struct dev_db_entry {
 	uint16_t ip_options;	/* 0C-0D */
 #define IPOPT_FRAGMENT_DISABLE	4
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t iscsi_max_rcv_data_seg_len;	/* 0E-0F */
 #define BYTE_UNITS	512
 	uint32_t res1;	/* 10-13 */
@@ -992,11 +899,8 @@ struct dev_db_entry {
 					 * much RAM */
 	uint8_t link_local_ipv6_addr[0x10]; /* 1A0-1AF */
 	uint8_t res5[0x10];	/* 1B0-1BF */
-<<<<<<< HEAD
-=======
 #define DDB_NO_LINK	0xFFFF
 #define DDB_ISNS	0xFFFD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t ddb_link;	/* 1C0-1C1 */
 	uint16_t chap_tbl_idx;	/* 1C2-1C3 */
 	uint16_t tgt_portal_grp; /* 1C4-1C5 */
@@ -1098,11 +1002,7 @@ struct about_fw_info {
 	uint16_t bootload_minor;	/* 46 - 47 */
 	uint16_t bootload_patch;	/* 48 - 49 */
 	uint16_t bootload_build;	/* 4A - 4B */
-<<<<<<< HEAD
-	uint8_t reserved2[180];		/* 4C - FF */
-=======
 	uint8_t extended_timestamp[180];/* 4C - FF */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct crash_record {
@@ -1128,11 +1028,7 @@ struct crash_record {
 
 	uint8_t out_RISC_reg_dump[256]; /* 80 -17F */
 	uint8_t in_RISC_reg_dump[256];	/*180 -27F */
-<<<<<<< HEAD
-	uint8_t in_out_RISC_stack_dump[0];	/*280 - ??? */
-=======
 	uint8_t in_out_RISC_stack_dump[];	/*280 - ??? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct conn_event_log_entry {
@@ -1285,10 +1181,6 @@ struct status_entry {
 	uint32_t handle;	/* 04-07 */
 
 	uint8_t scsiStatus;	/* 08 */
-<<<<<<< HEAD
-#define SCSI_CHECK_CONDITION		  0x02
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t iscsiFlags;	/* 09 */
 #define ISCSI_FLAG_RESIDUAL_UNDER	  0x02
@@ -1396,9 +1288,6 @@ struct response {
 };
 
 struct ql_iscsi_stats {
-<<<<<<< HEAD
-	uint8_t reserved1[656]; /* 0000-028F */
-=======
 	uint64_t mac_tx_frames; /* 0000–0007 */
 	uint64_t mac_tx_bytes; /* 0008–000F */
 	uint64_t mac_tx_multicast_frames; /* 0010–0017 */
@@ -1481,7 +1370,6 @@ struct ql_iscsi_stats {
 	uint64_t iscsi_hdr_digest_error; /* 0278-027F */
 	uint64_t iscsi_data_digest_error; /* 0280-0287 */
 	uint64_t iscsi_sequence_error; /* 0288-028F */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t tx_cmd_pdu; /* 0290-0293 */
 	uint32_t tx_resp_pdu; /* 0294-0297 */
 	uint32_t rx_cmd_pdu; /* 0298-029B */
@@ -1519,8 +1407,6 @@ struct ql_iscsi_stats {
 	uint8_t reserved2[264]; /* 0x0308 - 0x040F */
 };
 
-<<<<<<< HEAD
-=======
 #define QLA8XXX_DBG_STATE_ARRAY_LEN		16
 #define QLA8XXX_DBG_CAP_SIZE_ARRAY_LEN		8
 #define QLA8XXX_DBG_RSVD_ARRAY_LEN		8
@@ -1552,5 +1438,4 @@ struct qla4_8xxx_minidump_template_hdr {
 	uint32_t capabilities[QLA80XX_TEMPLATE_RESERVED_BITS];
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*  _QLA4X_FW_H */

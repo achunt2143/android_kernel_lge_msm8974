@@ -1,22 +1,9 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2007 Casey Schaufler <casey@schaufler-ca.com>
- *
- *      This program is free software; you can redistribute it and/or modify
- *      it under the terms of the GNU General Public License as published by
- *      the Free Software Foundation, version 2.
- *
- * Author:
- *      Casey Schaufler <casey@schaufler-ca.com>
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2007 Casey Schaufler <casey@schaufler-ca.com>
  *
  * Author:
  *      Casey Schaufler <casey@schaufler-ca.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -28,52 +15,26 @@
 struct smack_known smack_known_huh = {
 	.smk_known	= "?",
 	.smk_secid	= 2,
-<<<<<<< HEAD
-	.smk_cipso	= NULL,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct smack_known smack_known_hat = {
 	.smk_known	= "^",
 	.smk_secid	= 3,
-<<<<<<< HEAD
-	.smk_cipso	= NULL,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct smack_known smack_known_star = {
 	.smk_known	= "*",
 	.smk_secid	= 4,
-<<<<<<< HEAD
-	.smk_cipso	= NULL,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct smack_known smack_known_floor = {
 	.smk_known	= "_",
 	.smk_secid	= 5,
-<<<<<<< HEAD
-	.smk_cipso	= NULL,
-};
-
-struct smack_known smack_known_invalid = {
-	.smk_known	= "",
-	.smk_secid	= 6,
-	.smk_cipso	= NULL,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct smack_known smack_known_web = {
 	.smk_known	= "@",
 	.smk_secid	= 7,
-<<<<<<< HEAD
-	.smk_cipso	= NULL,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 LIST_HEAD(smack_known_list);
@@ -114,29 +75,12 @@ int log_policy = SMACK_AUDIT_DENIED;
  *
  * Do the object check first because that is more
  * likely to differ.
-<<<<<<< HEAD
-=======
  *
  * Allowing write access implies allowing locking.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int smk_access_entry(char *subject_label, char *object_label,
 			struct list_head *rule_list)
 {
-<<<<<<< HEAD
-	int may = -ENOENT;
-	struct smack_rule *srp;
-
-	list_for_each_entry_rcu(srp, rule_list, list) {
-		if (srp->smk_object == object_label &&
-		    srp->smk_subject == subject_label) {
-			may = srp->smk_access;
-			break;
-		}
-	}
-
-	return may;
-=======
 	struct smack_rule *srp;
 
 	list_for_each_entry_rcu(srp, rule_list, list) {
@@ -153,18 +97,12 @@ int smk_access_entry(char *subject_label, char *object_label,
 	}
 
 	return -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * smk_access - determine if a subject has a specific access to an object
-<<<<<<< HEAD
- * @subject_label: a pointer to the subject's Smack label
- * @object_label: a pointer to the object's Smack label
-=======
  * @subject: a pointer to the subject's Smack label entry
  * @object: a pointer to the object's Smack label entry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @request: the access requested, in "MAY" format
  * @a : a pointer to the audit data
  *
@@ -174,33 +112,19 @@ int smk_access_entry(char *subject_label, char *object_label,
  *
  * Smack labels are shared on smack_list
  */
-<<<<<<< HEAD
-int smk_access(char *subject_label, char *object_label, int request,
-	       struct smk_audit_info *a)
-{
-	struct smack_known *skp;
-=======
 int smk_access(struct smack_known *subject, struct smack_known *object,
 	       int request, struct smk_audit_info *a)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int may = MAY_NOT;
 	int rc = 0;
 
 	/*
 	 * Hardcoded comparisons.
-<<<<<<< HEAD
-	 *
-	 * A star subject can't access any object.
-	 */
-	if (subject_label == smack_known_star.smk_known) {
-=======
 	 */
 	/*
 	 * A star subject can't access any object.
 	 */
 	if (subject == &smack_known_star) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EACCES;
 		goto out_audit;
 	}
@@ -209,38 +133,17 @@ int smk_access(struct smack_known *subject, struct smack_known *object,
 	 * Tasks cannot be assigned the internet label.
 	 * An internet subject can access any object.
 	 */
-<<<<<<< HEAD
-	if (object_label == smack_known_web.smk_known ||
-	    subject_label == smack_known_web.smk_known)
-=======
 	if (object == &smack_known_web || subject == &smack_known_web)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_audit;
 	/*
 	 * A star object can be accessed by any subject.
 	 */
-<<<<<<< HEAD
-	if (object_label == smack_known_star.smk_known)
-=======
 	if (object == &smack_known_star)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_audit;
 	/*
 	 * An object can be accessed in any way by a subject
 	 * with the same label.
 	 */
-<<<<<<< HEAD
-	if (subject_label == object_label)
-		goto out_audit;
-	/*
-	 * A hat subject can read any object.
-	 * A floor object can be read by any subject.
-	 */
-	if ((request & MAY_ANYREAD) == request) {
-		if (object_label == smack_known_floor.smk_known)
-			goto out_audit;
-		if (subject_label == smack_known_hat.smk_known)
-=======
 	if (subject->smk_known == object->smk_known)
 		goto out_audit;
 	/*
@@ -252,7 +155,6 @@ int smk_access(struct smack_known *subject, struct smack_known *object,
 		if (object == &smack_known_floor)
 			goto out_audit;
 		if (subject == &smack_known_hat)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_audit;
 	}
 	/*
@@ -262,22 +164,6 @@ int smk_access(struct smack_known *subject, struct smack_known *object,
 	 * good. A negative response from smk_access_entry()
 	 * indicates there is no entry for this pair.
 	 */
-<<<<<<< HEAD
-	skp = smk_find_entry(subject_label);
-	rcu_read_lock();
-	may = smk_access_entry(subject_label, object_label, &skp->smk_rules);
-	rcu_read_unlock();
-
-	if (may > 0 && (request & may) == request)
-		goto out_audit;
-
-	rc = -EACCES;
-out_audit:
-#ifdef CONFIG_AUDIT
-	if (a)
-		smack_log(subject_label, object_label, request, rc, a);
-#endif
-=======
 	rcu_read_lock();
 	may = smk_access_entry(subject->smk_known, object->smk_known,
 			       &subject->smk_rules);
@@ -314,27 +200,10 @@ out_audit:
 			  request, rc, a);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 /**
-<<<<<<< HEAD
- * smk_curacc - determine if current has a specific access to an object
- * @obj_label: a pointer to the object's Smack label
- * @mode: the access requested, in "MAY" format
- * @a : common audit data
- *
- * This function checks the current subject label/object label pair
- * in the access rule list and returns 0 if the access is permitted,
- * non zero otherwise. It allows that current may have the capability
- * to override the rules.
- */
-int smk_curacc(char *obj_label, u32 mode, struct smk_audit_info *a)
-{
-	struct task_smack *tsp = current_security();
-	char *sp = smk_of_task(tsp);
-=======
  * smk_tskacc - determine if a task has a specific access to an object
  * @tsp: a pointer to the subject's task
  * @obj_known: a pointer to the object's label entry
@@ -350,31 +219,21 @@ int smk_tskacc(struct task_smack *tsp, struct smack_known *obj_known,
 	       u32 mode, struct smk_audit_info *a)
 {
 	struct smack_known *sbj_known = smk_of_task(tsp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int may;
 	int rc;
 
 	/*
 	 * Check the global rule list
 	 */
-<<<<<<< HEAD
-	rc = smk_access(sp, obj_label, mode, NULL);
-	if (rc == 0) {
-=======
 	rc = smk_access(sbj_known, obj_known, mode, NULL);
 	if (rc >= 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If there is an entry in the task's rule list
 		 * it can further restrict access.
 		 */
-<<<<<<< HEAD
-		may = smk_access_entry(sp, obj_label, &tsp->smk_rules);
-=======
 		may = smk_access_entry(sbj_known->smk_known,
 				       obj_known->smk_known,
 				       &tsp->smk_rules);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (may < 0)
 			goto out_audit;
 		if ((mode & may) == mode)
@@ -383,37 +242,20 @@ int smk_tskacc(struct task_smack *tsp, struct smack_known *obj_known,
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Return if a specific label has been designated as the
-	 * only one that gets privilege and current does not
-	 * have that label.
-	 */
-	if (smack_onlycap != NULL && smack_onlycap != sp)
-		goto out_audit;
-
-	if (capable(CAP_MAC_OVERRIDE))
-=======
 	 * Allow for priviliged to override policy.
 	 */
 	if (rc != 0 && smack_privileged(CAP_MAC_OVERRIDE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 0;
 
 out_audit:
 #ifdef CONFIG_AUDIT
 	if (a)
-<<<<<<< HEAD
-		smack_log(sp, obj_label, mode, rc, a);
-=======
 		smack_log(sbj_known->smk_known, obj_known->smk_known,
 			  mode, rc, a);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * smk_curacc - determine if current has a specific access to an object
  * @obj_known: a pointer to the object's Smack label entry
@@ -433,7 +275,6 @@ int smk_curacc(struct smack_known *obj_known,
 	return smk_tskacc(tsp, obj_known, mode, a);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_AUDIT
 /**
  * smack_str_from_perm : helper to transalate an int to a
@@ -445,10 +286,7 @@ int smk_curacc(struct smack_known *obj_known,
 static inline void smack_str_from_perm(char *string, int access)
 {
 	int i = 0;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (access & MAY_READ)
 		string[i++] = 'r';
 	if (access & MAY_WRITE)
@@ -457,13 +295,10 @@ static inline void smack_str_from_perm(char *string, int access)
 		string[i++] = 'x';
 	if (access & MAY_APPEND)
 		string[i++] = 'a';
-<<<<<<< HEAD
-=======
 	if (access & MAY_TRANSMUTE)
 		string[i++] = 't';
 	if (access & MAY_LOCK)
 		string[i++] = 'l';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	string[i] = '\0';
 }
 /**
@@ -484,14 +319,10 @@ static void smack_log_callback(struct audit_buffer *ab, void *a)
 	audit_log_untrustedstring(ab, sad->subject);
 	audit_log_format(ab, " object=");
 	audit_log_untrustedstring(ab, sad->object);
-<<<<<<< HEAD
-	audit_log_format(ab, " requested=%s", sad->request);
-=======
 	if (sad->request[0] == '\0')
 		audit_log_format(ab, " labels_differ");
 	else
 		audit_log_format(ab, " requested=%s", sad->request);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -500,11 +331,7 @@ static void smack_log_callback(struct audit_buffer *ab, void *a)
  *  @object_label  : smack label of the object being accessed
  *  @request: requested permissions
  *  @result: result from smk_access
-<<<<<<< HEAD
- *  @a:  auxiliary audit data
-=======
  *  @ad:  auxiliary audit data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Audit the granting or denial of permissions in accordance
  * with the policy.
@@ -512,24 +339,16 @@ static void smack_log_callback(struct audit_buffer *ab, void *a)
 void smack_log(char *subject_label, char *object_label, int request,
 	       int result, struct smk_audit_info *ad)
 {
-<<<<<<< HEAD
-	char request_buffer[SMK_NUM_ACCESS_TYPE + 1];
-=======
 #ifdef CONFIG_SECURITY_SMACK_BRINGUP
 	char request_buffer[SMK_NUM_ACCESS_TYPE + 5];
 #else
 	char request_buffer[SMK_NUM_ACCESS_TYPE + 1];
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct smack_audit_data *sad;
 	struct common_audit_data *a = &ad->a;
 
 	/* check if we have to log the current event */
-<<<<<<< HEAD
-	if (result != 0 && (log_policy & SMACK_AUDIT_DENIED) == 0)
-=======
 	if (result < 0 && (log_policy & SMACK_AUDIT_DENIED) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (result == 0 && (log_policy & SMACK_AUDIT_ACCEPT) == 0)
 		return;
@@ -543,8 +362,6 @@ void smack_log(char *subject_label, char *object_label, int request,
 	smack_str_from_perm(request_buffer, request);
 	sad->subject = subject_label;
 	sad->object  = object_label;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SECURITY_SMACK_BRINGUP
 	/*
 	 * The result may be positive in bringup mode.
@@ -560,7 +377,6 @@ void smack_log(char *subject_label, char *object_label, int request,
 	if (result > 0)
 		result = 0;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sad->request = request_buffer;
 	sad->result  = result;
 
@@ -573,9 +389,6 @@ void smack_log(char *subject_label, char *object_label, int request,
 }
 #endif
 
-<<<<<<< HEAD
-static DEFINE_MUTEX(smack_known_lock);
-=======
 DEFINE_MUTEX(smack_known_lock);
 
 struct hlist_head smack_known_hash[SMACK_HASH_SLOTS];
@@ -597,25 +410,12 @@ void smk_insert_entry(struct smack_known *skp)
 	hlist_add_head_rcu(&skp->smk_hashed, head);
 	list_add_rcu(&skp->list, &smack_known_list);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * smk_find_entry - find a label on the list, return the list entry
  * @string: a text string that might be a Smack label
  *
  * Returns a pointer to the entry in the label list that
-<<<<<<< HEAD
- * matches the passed string.
- */
-struct smack_known *smk_find_entry(const char *string)
-{
-	struct smack_known *skp;
-
-	list_for_each_entry_rcu(skp, &smack_known_list, list) {
-		if (strncmp(skp->smk_known, string, SMK_MAXLEN) == 0)
-			return skp;
-	}
-=======
  * matches the passed string or NULL if not found.
  */
 struct smack_known *smk_find_entry(const char *string)
@@ -630,7 +430,6 @@ struct smack_known *smk_find_entry(const char *string)
 	hlist_for_each_entry_rcu(skp, head, smk_hashed)
 		if (strcmp(skp->smk_known, string) == 0)
 			return skp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
@@ -639,29 +438,6 @@ struct smack_known *smk_find_entry(const char *string)
  * smk_parse_smack - parse smack label from a text string
  * @string: a text string that might contain a Smack label
  * @len: the maximum size, or zero if it is NULL terminated.
-<<<<<<< HEAD
- * @smack: parsed smack label, or NULL if parse error
- */
-void smk_parse_smack(const char *string, int len, char *smack)
-{
-	int found;
-	int i;
-
-	if (len <= 0 || len > SMK_MAXLEN)
-		len = SMK_MAXLEN;
-
-	for (i = 0, found = 0; i < SMK_LABELLEN; i++) {
-		if (found)
-			smack[i] = '\0';
-		else if (i >= len || string[i] > '~' || string[i] <= ' ' ||
-			 string[i] == '/' || string[i] == '"' ||
-			 string[i] == '\\' || string[i] == '\'') {
-			smack[i] = '\0';
-			found = 1;
-		} else
-			smack[i] = string[i];
-	}
-=======
  *
  * Returns a pointer to the clean label or an error code.
  */
@@ -767,7 +543,6 @@ int smack_populate_secattr(struct smack_known *skp)
 
 	return smk_netlbl_mls(smack_cipso_mapped, (char *)&skp->smk_secid,
 			      &skp->smk_netlabel, sizeof(skp->smk_secid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -776,54 +551,22 @@ int smack_populate_secattr(struct smack_known *skp)
  * @len: the maximum size, or zero if it is NULL terminated.
  *
  * Returns a pointer to the entry in the label list that
-<<<<<<< HEAD
- * matches the passed string, adding it if necessary.
-=======
  * matches the passed string, adding it if necessary,
  * or an error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct smack_known *smk_import_entry(const char *string, int len)
 {
 	struct smack_known *skp;
-<<<<<<< HEAD
-	char smack[SMK_LABELLEN];
-
-	smk_parse_smack(string, len, smack);
-	if (smack[0] == '\0')
-		return NULL;
-=======
 	char *smack;
 	int rc;
 
 	smack = smk_parse_smack(string, len);
 	if (IS_ERR(smack))
 		return ERR_CAST(smack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&smack_known_lock);
 
 	skp = smk_find_entry(smack);
-<<<<<<< HEAD
-
-	if (skp == NULL) {
-		skp = kzalloc(sizeof(struct smack_known), GFP_KERNEL);
-		if (skp != NULL) {
-			strncpy(skp->smk_known, smack, SMK_MAXLEN);
-			skp->smk_secid = smack_next_secid++;
-			skp->smk_cipso = NULL;
-			INIT_LIST_HEAD(&skp->smk_rules);
-			spin_lock_init(&skp->smk_cipsolock);
-			mutex_init(&skp->smk_rules_lock);
-			/*
-			 * Make sure that the entry is actually
-			 * filled before putting it on the list.
-			 */
-			list_add_rcu(&skp->list, &smack_known_list);
-		}
-	}
-
-=======
 	if (skp != NULL)
 		goto freeout;
 
@@ -852,43 +595,12 @@ struct smack_known *smk_import_entry(const char *string, int len)
 freeout:
 	kfree(smack);
 unlockout:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&smack_known_lock);
 
 	return skp;
 }
 
 /**
-<<<<<<< HEAD
- * smk_import - import a smack label
- * @string: a text string that might be a Smack label
- * @len: the maximum size, or zero if it is NULL terminated.
- *
- * Returns a pointer to the label in the label list that
- * matches the passed string, adding it if necessary.
- */
-char *smk_import(const char *string, int len)
-{
-	struct smack_known *skp;
-
-	/* labels cannot begin with a '-' */
-	if (string[0] == '-')
-		return NULL;
-	skp = smk_import_entry(string, len);
-	if (skp == NULL)
-		return NULL;
-	return skp->smk_known;
-}
-
-/**
- * smack_from_secid - find the Smack label associated with a secid
- * @secid: an integer that might be associated with a Smack label
- *
- * Returns a pointer to the appropriate Smack label if there is one,
- * otherwise a pointer to the invalid Smack label.
- */
-char *smack_from_secid(const u32 secid)
-=======
  * smack_from_secid - find the Smack label associated with a secid
  * @secid: an integer that might be associated with a Smack label
  *
@@ -896,7 +608,6 @@ char *smack_from_secid(const u32 secid)
  * otherwise a pointer to the invalid Smack label.
  */
 struct smack_known *smack_from_secid(const u32 secid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smack_known *skp;
 
@@ -904,11 +615,7 @@ struct smack_known *smack_from_secid(const u32 secid)
 	list_for_each_entry_rcu(skp, &smack_known_list, list) {
 		if (skp->smk_secid == secid) {
 			rcu_read_unlock();
-<<<<<<< HEAD
-			return skp->smk_known;
-=======
 			return skp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -917,86 +624,6 @@ struct smack_known *smack_from_secid(const u32 secid)
 	 * of a secid that is not on the list.
 	 */
 	rcu_read_unlock();
-<<<<<<< HEAD
-	return smack_known_invalid.smk_known;
-}
-
-/**
- * smack_to_secid - find the secid associated with a Smack label
- * @smack: the Smack label
- *
- * Returns the appropriate secid if there is one,
- * otherwise 0
- */
-u32 smack_to_secid(const char *smack)
-{
-	struct smack_known *skp;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(skp, &smack_known_list, list) {
-		if (strncmp(skp->smk_known, smack, SMK_MAXLEN) == 0) {
-			rcu_read_unlock();
-			return skp->smk_secid;
-		}
-	}
-	rcu_read_unlock();
-	return 0;
-}
-
-/**
- * smack_from_cipso - find the Smack label associated with a CIPSO option
- * @level: Bell & LaPadula level from the network
- * @cp: Bell & LaPadula categories from the network
- *
- * This is a simple lookup in the label table.
- *
- * Return the matching label from the label list or NULL.
- */
-char *smack_from_cipso(u32 level, char *cp)
-{
-	struct smack_known *kp;
-	char *final = NULL;
-
-	rcu_read_lock();
-	list_for_each_entry(kp, &smack_known_list, list) {
-		if (kp->smk_cipso == NULL)
-			continue;
-
-		spin_lock_bh(&kp->smk_cipsolock);
-
-		if (kp->smk_cipso->smk_level == level &&
-		    memcmp(kp->smk_cipso->smk_catset, cp, SMK_LABELLEN) == 0)
-			final = kp->smk_known;
-
-		spin_unlock_bh(&kp->smk_cipsolock);
-
-		if (final != NULL)
-			break;
-	}
-	rcu_read_unlock();
-
-	return final;
-}
-
-/**
- * smack_to_cipso - find the CIPSO option to go with a Smack label
- * @smack: a pointer to the smack label in question
- * @cp: where to put the result
- *
- * Returns zero if a value is available, non-zero otherwise.
- */
-int smack_to_cipso(const char *smack, struct smack_cipso *cp)
-{
-	struct smack_known *kp;
-	int found = 0;
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(kp, &smack_known_list, list) {
-		if (kp->smk_known == smack ||
-		    strcmp(kp->smk_known, smack) == 0) {
-			found = 1;
-			break;
-=======
 	return &smack_known_huh;
 }
 
@@ -1041,18 +668,10 @@ bool smack_privileged_cred(int cap, const struct cred *cred)
 		if (sklep->smk_label == skp) {
 			rcu_read_unlock();
 			return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	rcu_read_unlock();
 
-<<<<<<< HEAD
-	if (found == 0 || kp->smk_cipso == NULL)
-		return -ENOENT;
-
-	memcpy(cp, kp->smk_cipso, sizeof(struct smack_cipso));
-	return 0;
-=======
 	return false;
 }
 
@@ -1074,5 +693,4 @@ bool smack_privileged(int cap)
 		return true;
 
 	return smack_privileged_cred(cap, current_cred());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

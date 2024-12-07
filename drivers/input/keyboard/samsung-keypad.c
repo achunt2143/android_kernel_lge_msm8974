@@ -1,30 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Samsung keypad driver
  *
  * Copyright (C) 2010 Samsung Electronics Co.Ltd
  * Author: Joonyoung Shim <jy0922.shim@samsung.com>
  * Author: Donghwa Lee <dh09.lee@samsung.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -34,10 +19,6 @@
 #include <linux/pm_runtime.h>
 #include <linux/slab.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_gpio.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/input/samsung-keypad.h>
 
@@ -92,13 +73,6 @@ struct samsung_keypad {
 	unsigned int rows;
 	unsigned int cols;
 	unsigned int row_state[SAMSUNG_MAX_COLS];
-<<<<<<< HEAD
-#ifdef CONFIG_OF
-	int row_gpios[SAMSUNG_MAX_ROWS];
-	int col_gpios[SAMSUNG_MAX_COLS];
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short keycodes[];
 };
 
@@ -172,20 +146,12 @@ static irqreturn_t samsung_keypad_irq(int irq, void *dev_id)
 {
 	struct samsung_keypad *keypad = dev_id;
 	unsigned int row_state[SAMSUNG_MAX_COLS];
-<<<<<<< HEAD
-	unsigned int val;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool key_down;
 
 	pm_runtime_get_sync(&keypad->pdev->dev);
 
 	do {
-<<<<<<< HEAD
-		val = readl(keypad->base + SAMSUNG_KEYIFSTSCLR);
-=======
 		readl(keypad->base + SAMSUNG_KEYIFSTSCLR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Clear interrupt. */
 		writel(~0x0, keypad->base + SAMSUNG_KEYIFSTSCLR);
 
@@ -272,48 +238,31 @@ static void samsung_keypad_close(struct input_dev *input_dev)
 }
 
 #ifdef CONFIG_OF
-<<<<<<< HEAD
-static struct samsung_keypad_platdata *samsung_keypad_parse_dt(
-				struct device *dev)
-=======
 static struct samsung_keypad_platdata *
 samsung_keypad_parse_dt(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct samsung_keypad_platdata *pdata;
 	struct matrix_keymap_data *keymap_data;
 	uint32_t *keymap, num_rows = 0, num_cols = 0;
 	struct device_node *np = dev->of_node, *key_np;
-<<<<<<< HEAD
-	unsigned int key_count = 0;
-=======
 	unsigned int key_count;
 
 	if (!np) {
 		dev_err(dev, "missing device tree data\n");
 		return ERR_PTR(-EINVAL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
 	if (!pdata) {
 		dev_err(dev, "could not allocate memory for platform data\n");
-<<<<<<< HEAD
-		return NULL;
-=======
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	of_property_read_u32(np, "samsung,keypad-num-rows", &num_rows);
 	of_property_read_u32(np, "samsung,keypad-num-columns", &num_cols);
 	if (!num_rows || !num_cols) {
 		dev_err(dev, "number of keypad rows/columns not specified\n");
-<<<<<<< HEAD
-		return NULL;
-=======
 		return ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pdata->rows = num_rows;
 	pdata->cols = num_cols;
@@ -321,20 +270,6 @@ samsung_keypad_parse_dt(struct device *dev)
 	keymap_data = devm_kzalloc(dev, sizeof(*keymap_data), GFP_KERNEL);
 	if (!keymap_data) {
 		dev_err(dev, "could not allocate memory for keymap data\n");
-<<<<<<< HEAD
-		return NULL;
-	}
-	pdata->keymap_data = keymap_data;
-
-	for_each_child_of_node(np, key_np)
-		key_count++;
-
-	keymap_data->keymap_size = key_count;
-	keymap = devm_kzalloc(dev, sizeof(uint32_t) * key_count, GFP_KERNEL);
-	if (!keymap) {
-		dev_err(dev, "could not allocate memory for keymap\n");
-		return NULL;
-=======
 		return ERR_PTR(-ENOMEM);
 	}
 	pdata->keymap_data = keymap_data;
@@ -345,7 +280,6 @@ samsung_keypad_parse_dt(struct device *dev)
 	if (!keymap) {
 		dev_err(dev, "could not allocate memory for keymap\n");
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	keymap_data->keymap = keymap;
 
@@ -357,78 +291,6 @@ samsung_keypad_parse_dt(struct device *dev)
 		*keymap++ = KEY(row, col, key_code);
 	}
 
-<<<<<<< HEAD
-	if (of_get_property(np, "linux,input-no-autorepeat", NULL))
-		pdata->no_autorepeat = true;
-	if (of_get_property(np, "linux,input-wakeup", NULL))
-		pdata->wakeup = true;
-
-	return pdata;
-}
-
-static void samsung_keypad_parse_dt_gpio(struct device *dev,
-				struct samsung_keypad *keypad)
-{
-	struct device_node *np = dev->of_node;
-	int gpio, ret, row, col;
-
-	for (row = 0; row < keypad->rows; row++) {
-		gpio = of_get_named_gpio(np, "row-gpios", row);
-		keypad->row_gpios[row] = gpio;
-		if (!gpio_is_valid(gpio)) {
-			dev_err(dev, "keypad row[%d]: invalid gpio %d\n",
-					row, gpio);
-			continue;
-		}
-
-		ret = gpio_request(gpio, "keypad-row");
-		if (ret)
-			dev_err(dev, "keypad row[%d] gpio request failed\n",
-					row);
-	}
-
-	for (col = 0; col < keypad->cols; col++) {
-		gpio = of_get_named_gpio(np, "col-gpios", col);
-		keypad->col_gpios[col] = gpio;
-		if (!gpio_is_valid(gpio)) {
-			dev_err(dev, "keypad column[%d]: invalid gpio %d\n",
-					col, gpio);
-			continue;
-		}
-
-		ret = gpio_request(gpio, "keypad-col");
-		if (ret)
-			dev_err(dev, "keypad column[%d] gpio request failed\n",
-					col);
-	}
-}
-
-static void samsung_keypad_dt_gpio_free(struct samsung_keypad *keypad)
-{
-	int cnt;
-
-	for (cnt = 0; cnt < keypad->rows; cnt++)
-		if (gpio_is_valid(keypad->row_gpios[cnt]))
-			gpio_free(keypad->row_gpios[cnt]);
-
-	for (cnt = 0; cnt < keypad->cols; cnt++)
-		if (gpio_is_valid(keypad->col_gpios[cnt]))
-			gpio_free(keypad->col_gpios[cnt]);
-}
-#else
-static
-struct samsung_keypad_platdata *samsung_keypad_parse_dt(struct device *dev)
-{
-	return NULL;
-}
-
-static void samsung_keypad_dt_gpio_free(struct samsung_keypad *keypad)
-{
-}
-#endif
-
-static int __devinit samsung_keypad_probe(struct platform_device *pdev)
-=======
 	pdata->no_autorepeat = of_property_read_bool(np, "linux,input-no-autorepeat");
 
 	pdata->wakeup = of_property_read_bool(np, "wakeup-source") ||
@@ -449,7 +311,6 @@ samsung_keypad_parse_dt(struct device *dev)
 #endif
 
 static int samsung_keypad_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct samsung_keypad_platdata *pdata;
 	const struct matrix_keymap_data *keymap_data;
@@ -460,21 +321,11 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 	unsigned int keymap_size;
 	int error;
 
-<<<<<<< HEAD
-	if (pdev->dev.of_node)
-		pdata = samsung_keypad_parse_dt(&pdev->dev);
-	else
-		pdata = pdev->dev.platform_data;
-	if (!pdata) {
-		dev_err(&pdev->dev, "no platform data defined\n");
-		return -EINVAL;
-=======
 	pdata = dev_get_platdata(&pdev->dev);
 	if (!pdata) {
 		pdata = samsung_keypad_parse_dt(&pdev->dev);
 		if (IS_ERR(pdata))
 			return PTR_ERR(pdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	keymap_data = pdata->keymap_data;
@@ -496,32 +347,6 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 	row_shift = get_count_order(pdata->cols);
 	keymap_size = (pdata->rows << row_shift) * sizeof(keypad->keycodes[0]);
 
-<<<<<<< HEAD
-	keypad = kzalloc(sizeof(*keypad) + keymap_size, GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!keypad || !input_dev) {
-		error = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		error = -ENODEV;
-		goto err_free_mem;
-	}
-
-	keypad->base = ioremap(res->start, resource_size(res));
-	if (!keypad->base) {
-		error = -EBUSY;
-		goto err_free_mem;
-	}
-
-	keypad->clk = clk_get(&pdev->dev, "keypad");
-	if (IS_ERR(keypad->clk)) {
-		dev_err(&pdev->dev, "failed to get keypad clk\n");
-		error = PTR_ERR(keypad->clk);
-		goto err_unmap_base;
-=======
 	keypad = devm_kzalloc(&pdev->dev, sizeof(*keypad) + keymap_size,
 			      GFP_KERNEL);
 	input_dev = devm_input_allocate_device(&pdev->dev);
@@ -546,7 +371,6 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 	if (error) {
 		dev_err(&pdev->dev, "keypad clock prepare failed\n");
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	keypad->input_dev = input_dev;
@@ -557,49 +381,19 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 	keypad->stopped = true;
 	init_waitqueue_head(&keypad->wait);
 
-<<<<<<< HEAD
-	if (pdev->dev.of_node) {
-#ifdef CONFIG_OF
-		samsung_keypad_parse_dt_gpio(&pdev->dev, keypad);
-		keypad->type = of_device_is_compatible(pdev->dev.of_node,
-					"samsung,s5pv210-keypad");
-#endif
-	} else {
-		keypad->type = platform_get_device_id(pdev)->driver_data;
-	}
-=======
 	if (pdev->dev.of_node)
 		keypad->type = of_device_is_compatible(pdev->dev.of_node,
 					"samsung,s5pv210-keypad");
 	else
 		keypad->type = platform_get_device_id(pdev)->driver_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_dev->name = pdev->name;
 	input_dev->id.bustype = BUS_HOST;
 	input_dev->dev.parent = &pdev->dev;
-<<<<<<< HEAD
-	input_set_drvdata(input_dev, keypad);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_dev->open = samsung_keypad_open;
 	input_dev->close = samsung_keypad_close;
 
-<<<<<<< HEAD
-	input_dev->evbit[0] = BIT_MASK(EV_KEY);
-	if (!pdata->no_autorepeat)
-		input_dev->evbit[0] |= BIT_MASK(EV_REP);
-
-	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
-
-	input_dev->keycode = keypad->keycodes;
-	input_dev->keycodesize = sizeof(keypad->keycodes[0]);
-	input_dev->keycodemax = pdata->rows << row_shift;
-
-	matrix_keypad_build_keymap(keymap_data, row_shift,
-			input_dev->keycode, input_dev->keybit);
-=======
 	error = matrix_keypad_build_keymap(keymap_data, NULL,
 					   pdata->rows, pdata->cols,
 					   keypad->keycodes, input_dev);
@@ -613,21 +407,10 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 		__set_bit(EV_REP, input_dev->evbit);
 
 	input_set_drvdata(input_dev, keypad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keypad->irq = platform_get_irq(pdev, 0);
 	if (keypad->irq < 0) {
 		error = keypad->irq;
-<<<<<<< HEAD
-		goto err_put_clk;
-	}
-
-	error = request_threaded_irq(keypad->irq, NULL, samsung_keypad_irq,
-			IRQF_ONESHOT, dev_name(&pdev->dev), keypad);
-	if (error) {
-		dev_err(&pdev->dev, "failed to register keypad interrupt\n");
-		goto err_put_clk;
-=======
 		goto err_unprepare_clk;
 	}
 
@@ -637,7 +420,6 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 	if (error) {
 		dev_err(&pdev->dev, "failed to register keypad interrupt\n");
 		goto err_unprepare_clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	device_init_wakeup(&pdev->dev, pdata->wakeup);
@@ -646,11 +428,7 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 
 	error = input_register_device(keypad->input_dev);
 	if (error)
-<<<<<<< HEAD
-		goto err_free_irq;
-=======
 		goto err_disable_runtime_pm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdev->dev.of_node) {
 		devm_kfree(&pdev->dev, (void *)pdata->keymap_data->keymap);
@@ -659,26 +437,6 @@ static int samsung_keypad_probe(struct platform_device *pdev)
 	}
 	return 0;
 
-<<<<<<< HEAD
-err_free_irq:
-	free_irq(keypad->irq, keypad);
-	pm_runtime_disable(&pdev->dev);
-	device_init_wakeup(&pdev->dev, 0);
-	platform_set_drvdata(pdev, NULL);
-err_put_clk:
-	clk_put(keypad->clk);
-	samsung_keypad_dt_gpio_free(keypad);
-err_unmap_base:
-	iounmap(keypad->base);
-err_free_mem:
-	input_free_device(input_dev);
-	kfree(keypad);
-
-	return error;
-}
-
-static int __devexit samsung_keypad_remove(struct platform_device *pdev)
-=======
 err_disable_runtime_pm:
 	pm_runtime_disable(&pdev->dev);
 err_unprepare_clk:
@@ -687,41 +445,16 @@ err_unprepare_clk:
 }
 
 static void samsung_keypad_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct samsung_keypad *keypad = platform_get_drvdata(pdev);
 
 	pm_runtime_disable(&pdev->dev);
-<<<<<<< HEAD
-	device_init_wakeup(&pdev->dev, 0);
-	platform_set_drvdata(pdev, NULL);
-
-	input_unregister_device(keypad->input_dev);
-
-	/*
-	 * It is safe to free IRQ after unregistering device because
-	 * samsung_keypad_close will shut off interrupts.
-	 */
-	free_irq(keypad->irq, keypad);
-
-	clk_put(keypad->clk);
-	samsung_keypad_dt_gpio_free(keypad);
-
-	iounmap(keypad->base);
-	kfree(keypad);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_RUNTIME
-=======
 
 	input_unregister_device(keypad->input_dev);
 
 	clk_unprepare(keypad->clk);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int samsung_keypad_runtime_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -766,13 +499,7 @@ static int samsung_keypad_runtime_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
 
-#ifdef CONFIG_PM_SLEEP
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void samsung_keypad_toggle_wakeup(struct samsung_keypad *keypad,
 					 bool enable)
 {
@@ -803,11 +530,7 @@ static int samsung_keypad_suspend(struct device *dev)
 
 	mutex_lock(&input_dev->mutex);
 
-<<<<<<< HEAD
-	if (input_dev->users)
-=======
 	if (input_device_enabled(input_dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		samsung_keypad_stop(keypad);
 
 	samsung_keypad_toggle_wakeup(keypad, true);
@@ -827,31 +550,18 @@ static int samsung_keypad_resume(struct device *dev)
 
 	samsung_keypad_toggle_wakeup(keypad, false);
 
-<<<<<<< HEAD
-	if (input_dev->users)
-=======
 	if (input_device_enabled(input_dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		samsung_keypad_start(keypad);
 
 	mutex_unlock(&input_dev->mutex);
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static const struct dev_pm_ops samsung_keypad_pm_ops = {
-	SET_SYSTEM_SLEEP_PM_OPS(samsung_keypad_suspend, samsung_keypad_resume)
-	SET_RUNTIME_PM_OPS(samsung_keypad_runtime_suspend,
-			   samsung_keypad_runtime_resume, NULL)
-=======
 
 static const struct dev_pm_ops samsung_keypad_pm_ops = {
 	SYSTEM_SLEEP_PM_OPS(samsung_keypad_suspend, samsung_keypad_resume)
 	RUNTIME_PM_OPS(samsung_keypad_runtime_suspend,
 		       samsung_keypad_runtime_resume, NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_OF
@@ -861,17 +571,9 @@ static const struct of_device_id samsung_keypad_dt_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, samsung_keypad_dt_match);
-<<<<<<< HEAD
-#else
-#define samsung_keypad_dt_match NULL
-#endif
-
-static struct platform_device_id samsung_keypad_driver_ids[] = {
-=======
 #endif
 
 static const struct platform_device_id samsung_keypad_driver_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "samsung-keypad",
 		.driver_data	= KEYPAD_TYPE_SAMSUNG,
@@ -885,20 +587,11 @@ MODULE_DEVICE_TABLE(platform, samsung_keypad_driver_ids);
 
 static struct platform_driver samsung_keypad_driver = {
 	.probe		= samsung_keypad_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(samsung_keypad_remove),
-	.driver		= {
-		.name	= "samsung-keypad",
-		.owner	= THIS_MODULE,
-		.of_match_table = samsung_keypad_dt_match,
-		.pm	= &samsung_keypad_pm_ops,
-=======
 	.remove_new	= samsung_keypad_remove,
 	.driver		= {
 		.name	= "samsung-keypad",
 		.of_match_table = of_match_ptr(samsung_keypad_dt_match),
 		.pm	= pm_ptr(&samsung_keypad_pm_ops),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table	= samsung_keypad_driver_ids,
 };

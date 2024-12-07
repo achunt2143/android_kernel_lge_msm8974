@@ -1,51 +1,4 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2010 Red Hat Inc.
- * Author : Dave Airlie <airlied@redhat.com>
- *
- *
- * Licensed under GPLv2
- *
- * vga_switcheroo.c - Support for laptop with dual GPU using one set of outputs
-
- Switcher interface - methods require for ATPX and DCM
- - switchto - this throws the output MUX switch
- - discrete_set_power - sets the power state for the discrete card
-
- GPU driver interface
- - set_gpu_state - this should do the equiv of s/r for the card
-		  - this should *not* set the discrete power state
- - switch_check  - check if the device is in a position to switch now
- */
-
-#include <linux/module.h>
-#include <linux/dmi.h>
-#include <linux/seq_file.h>
-#include <linux/uaccess.h>
-#include <linux/fs.h>
-#include <linux/debugfs.h>
-#include <linux/fb.h>
-
-#include <linux/pci.h>
-#include <linux/console.h>
-#include <linux/vga_switcheroo.h>
-
-struct vga_switcheroo_client {
-	struct pci_dev *pdev;
-	struct fb_info *fb_info;
-	int pwr_state;
-	void (*set_gpu_state)(struct pci_dev *pdev, enum vga_switcheroo_state);
-	void (*reprobe)(struct pci_dev *pdev);
-	bool (*can_switch)(struct pci_dev *pdev);
-	int id;
-	bool active;
-};
-
-static DEFINE_MUTEX(vgasr_mutex);
-
-struct vgasr_priv {
-
-=======
  * vga_switcheroo.c - Support for laptop with dual GPU using one set of outputs
  *
  * Copyright (c) 2010 Red Hat Inc.
@@ -194,29 +147,11 @@ static DEFINE_MUTEX(vgasr_mutex);
  * per system is supported.
  */
 struct vgasr_priv {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool active;
 	bool delayed_switch_active;
 	enum vga_switcheroo_client_id delayed_client_id;
 
 	struct dentry *debugfs_root;
-<<<<<<< HEAD
-	struct dentry *switch_file;
-
-	int registered_clients;
-	struct vga_switcheroo_client clients[VGA_SWITCHEROO_MAX_CLIENTS];
-
-	struct vga_switcheroo_handler *handler;
-};
-
-static int vga_switcheroo_debugfs_init(struct vgasr_priv *priv);
-static void vga_switcheroo_debugfs_fini(struct vgasr_priv *priv);
-
-/* only one switcheroo per system */
-static struct vgasr_priv vgasr_priv;
-
-int vga_switcheroo_register_handler(struct vga_switcheroo_handler *handler)
-=======
 
 	int registered_clients;
 	struct list_head clients;
@@ -300,7 +235,6 @@ static void vga_switcheroo_enable(void)
 int vga_switcheroo_register_handler(
 			  const struct vga_switcheroo_handler *handler,
 			  enum vga_switcheroo_handler_flags_t handler_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&vgasr_mutex);
 	if (vgasr_priv.handler) {
@@ -309,95 +243,14 @@ int vga_switcheroo_register_handler(
 	}
 
 	vgasr_priv.handler = handler;
-<<<<<<< HEAD
-	mutex_unlock(&vgasr_mutex);
-	return 0;
-}
-EXPORT_SYMBOL(vga_switcheroo_register_handler);
-
-void vga_switcheroo_unregister_handler(void)
-{
-	mutex_lock(&vgasr_mutex);
-	vgasr_priv.handler = NULL;
-	mutex_unlock(&vgasr_mutex);
-}
-EXPORT_SYMBOL(vga_switcheroo_unregister_handler);
-
-static void vga_switcheroo_enable(void)
-{
-	int i;
-	int ret;
-	/* call the handler to init */
-	vgasr_priv.handler->init();
-
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		ret = vgasr_priv.handler->get_client_id(vgasr_priv.clients[i].pdev);
-		if (ret < 0)
-			return;
-
-		vgasr_priv.clients[i].id = ret;
-	}
-	vga_switcheroo_debugfs_init(&vgasr_priv);
-	vgasr_priv.active = true;
-}
-
-int vga_switcheroo_register_client(struct pci_dev *pdev,
-				   void (*set_gpu_state)(struct pci_dev *pdev, enum vga_switcheroo_state),
-				   void (*reprobe)(struct pci_dev *pdev),
-				   bool (*can_switch)(struct pci_dev *pdev))
-{
-	int index;
-
-	mutex_lock(&vgasr_mutex);
-	/* don't do IGD vs DIS here */
-	if (vgasr_priv.registered_clients & 1)
-		index = 1;
-	else
-		index = 0;
-
-	vgasr_priv.clients[index].pwr_state = VGA_SWITCHEROO_ON;
-	vgasr_priv.clients[index].pdev = pdev;
-	vgasr_priv.clients[index].set_gpu_state = set_gpu_state;
-	vgasr_priv.clients[index].reprobe = reprobe;
-	vgasr_priv.clients[index].can_switch = can_switch;
-	vgasr_priv.clients[index].id = -1;
-	if (pdev->resource[PCI_ROM_RESOURCE].flags & IORESOURCE_ROM_SHADOW)
-		vgasr_priv.clients[index].active = true;
-
-	vgasr_priv.registered_clients |= (1 << index);
-
-	/* if we get two clients + handler */
-	if (vgasr_priv.registered_clients == 0x3 && vgasr_priv.handler) {
-		printk(KERN_INFO "vga_switcheroo: enabled\n");
-=======
 	vgasr_priv.handler_flags = handler_flags;
 	if (vga_switcheroo_ready()) {
 		pr_info("enabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vga_switcheroo_enable();
 	}
 	mutex_unlock(&vgasr_mutex);
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(vga_switcheroo_register_client);
-
-void vga_switcheroo_unregister_client(struct pci_dev *pdev)
-{
-	int i;
-
-	mutex_lock(&vgasr_mutex);
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		if (vgasr_priv.clients[i].pdev == pdev) {
-			vgasr_priv.registered_clients &= ~(1 << i);
-			break;
-		}
-	}
-
-	printk(KERN_INFO "vga_switcheroo: disabled\n");
-	vga_switcheroo_debugfs_fini(&vgasr_priv);
-	vgasr_priv.active = false;
-=======
 EXPORT_SYMBOL(vga_switcheroo_register_handler);
 
 /**
@@ -659,25 +512,10 @@ void vga_switcheroo_unregister_client(struct pci_dev *pdev)
 		vga_switcheroo_debugfs_fini(&vgasr_priv);
 		vgasr_priv.active = false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&vgasr_mutex);
 }
 EXPORT_SYMBOL(vga_switcheroo_unregister_client);
 
-<<<<<<< HEAD
-void vga_switcheroo_client_fb_set(struct pci_dev *pdev,
-				 struct fb_info *info)
-{
-	int i;
-
-	mutex_lock(&vgasr_mutex);
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		if (vgasr_priv.clients[i].pdev == pdev) {
-			vgasr_priv.clients[i].fb_info = info;
-			break;
-		}
-	}
-=======
 /**
  * vga_switcheroo_client_fb_set() - set framebuffer of a given client
  * @pdev: client pci device
@@ -695,23 +533,10 @@ void vga_switcheroo_client_fb_set(struct pci_dev *pdev,
 	client = find_client_from_pci(&vgasr_priv.clients, pdev);
 	if (client)
 		client->fb_info = info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&vgasr_mutex);
 }
 EXPORT_SYMBOL(vga_switcheroo_client_fb_set);
 
-<<<<<<< HEAD
-static int vga_switcheroo_show(struct seq_file *m, void *v)
-{
-	int i;
-	mutex_lock(&vgasr_mutex);
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		seq_printf(m, "%d:%s:%c:%s:%s\n", i,
-			   vgasr_priv.clients[i].id == VGA_SWITCHEROO_DIS ? "DIS" : "IGD",
-			   vgasr_priv.clients[i].active ? '+' : ' ',
-			   vgasr_priv.clients[i].pwr_state ? "Pwr" : "Off",
-			   pci_name(vgasr_priv.clients[i].pdev));
-=======
 /**
  * vga_switcheroo_lock_ddc() - temporarily switch DDC lines to a given client
  * @pdev: client pci device
@@ -834,7 +659,6 @@ static int vga_switcheroo_show(struct seq_file *m, void *v)
 			   vga_switcheroo_pwr_state(client) ? "Pwr" : "Off",
 			   pci_name(client->pdev));
 		i++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&vgasr_mutex);
 	return 0;
@@ -847,63 +671,28 @@ static int vga_switcheroo_debugfs_open(struct inode *inode, struct file *file)
 
 static int vga_switchon(struct vga_switcheroo_client *client)
 {
-<<<<<<< HEAD
-	if (vgasr_priv.handler->power_state)
-		vgasr_priv.handler->power_state(client->id, VGA_SWITCHEROO_ON);
-	/* call the driver callback to turn on device */
-	client->set_gpu_state(client->pdev, VGA_SWITCHEROO_ON);
-=======
 	if (client->driver_power_control)
 		return 0;
 	if (vgasr_priv.handler->power_state)
 		vgasr_priv.handler->power_state(client->id, VGA_SWITCHEROO_ON);
 	/* call the driver callback to turn on device */
 	client->ops->set_gpu_state(client->pdev, VGA_SWITCHEROO_ON);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	client->pwr_state = VGA_SWITCHEROO_ON;
 	return 0;
 }
 
 static int vga_switchoff(struct vga_switcheroo_client *client)
 {
-<<<<<<< HEAD
-	/* call the driver callback to turn off device */
-	client->set_gpu_state(client->pdev, VGA_SWITCHEROO_OFF);
-=======
 	if (client->driver_power_control)
 		return 0;
 	/* call the driver callback to turn off device */
 	client->ops->set_gpu_state(client->pdev, VGA_SWITCHEROO_OFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vgasr_priv.handler->power_state)
 		vgasr_priv.handler->power_state(client->id, VGA_SWITCHEROO_OFF);
 	client->pwr_state = VGA_SWITCHEROO_OFF;
 	return 0;
 }
 
-<<<<<<< HEAD
-/* stage one happens before delay */
-static int vga_switchto_stage1(struct vga_switcheroo_client *new_client)
-{
-	int i;
-	struct vga_switcheroo_client *active = NULL;
-
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		if (vgasr_priv.clients[i].active == true) {
-			active = &vgasr_priv.clients[i];
-			break;
-		}
-	}
-	if (!active)
-		return 0;
-
-	if (new_client->pwr_state == VGA_SWITCHEROO_OFF)
-		vga_switchon(new_client);
-
-	/* swap shadow resource to denote boot VGA device has changed so X starts on new device */
-	active->pdev->resource[PCI_ROM_RESOURCE].flags &= ~IORESOURCE_ROM_SHADOW;
-	new_client->pdev->resource[PCI_ROM_RESOURCE].flags |= IORESOURCE_ROM_SHADOW;
-=======
 static void set_audio_state(enum vga_switcheroo_client_id id,
 			    enum vga_switcheroo_state state)
 {
@@ -927,7 +716,6 @@ static int vga_switchto_stage1(struct vga_switcheroo_client *new_client)
 		vga_switchon(new_client);
 
 	vga_set_default_device(new_client->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -935,46 +723,14 @@ static int vga_switchto_stage1(struct vga_switcheroo_client *new_client)
 static int vga_switchto_stage2(struct vga_switcheroo_client *new_client)
 {
 	int ret;
-<<<<<<< HEAD
-	int i;
-	struct vga_switcheroo_client *active = NULL;
-
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		if (vgasr_priv.clients[i].active == true) {
-			active = &vgasr_priv.clients[i];
-			break;
-		}
-	}
-=======
 	struct vga_switcheroo_client *active;
 
 	active = find_active_client(&vgasr_priv.clients);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!active)
 		return 0;
 
 	active->active = false;
 
-<<<<<<< HEAD
-	if (new_client->fb_info) {
-		struct fb_event event;
-		console_lock();
-		event.info = new_client->fb_info;
-		fb_notifier_call_chain(FB_EVENT_REMAP_ALL_CONSOLE, &event);
-		console_unlock();
-	}
-
-	ret = vgasr_priv.handler->switchto(new_client->id);
-	if (ret)
-		return ret;
-
-	if (new_client->reprobe)
-		new_client->reprobe(new_client->pdev);
-
-	if (active->pwr_state == VGA_SWITCHEROO_ON)
-		vga_switchoff(active);
-
-=======
 	/* let HDA controller autosuspend if GPU uses driver power control */
 	if (!active->driver_power_control)
 		set_audio_state(active->id, VGA_SWITCHEROO_OFF);
@@ -998,13 +754,10 @@ static int vga_switchto_stage2(struct vga_switcheroo_client *new_client)
 	if (!new_client->driver_power_control)
 		set_audio_state(new_client->id, VGA_SWITCHEROO_ON);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_client->active = true;
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static bool check_can_switch(void)
 {
 	struct vga_switcheroo_client *client;
@@ -1018,24 +771,15 @@ static bool check_can_switch(void)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 vga_switcheroo_debugfs_write(struct file *filp, const char __user *ubuf,
 			     size_t cnt, loff_t *ppos)
 {
 	char usercmd[64];
-<<<<<<< HEAD
-	const char *pdev_name;
-	int i, ret;
-	bool delay = false, can_switch;
-	bool just_mux = false;
-	int client_id = -1;
-=======
 	int ret;
 	bool delay = false, can_switch;
 	bool just_mux = false;
 	enum vga_switcheroo_client_id client_id = VGA_SWITCHEROO_UNKNOWN_ID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vga_switcheroo_client *client = NULL;
 
 	if (cnt > 63)
@@ -1053,13 +797,6 @@ vga_switcheroo_debugfs_write(struct file *filp, const char __user *ubuf,
 
 	/* pwr off the device not in use */
 	if (strncmp(usercmd, "OFF", 3) == 0) {
-<<<<<<< HEAD
-		for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-			if (vgasr_priv.clients[i].active)
-				continue;
-			if (vgasr_priv.clients[i].pwr_state == VGA_SWITCHEROO_ON)
-				vga_switchoff(&vgasr_priv.clients[i]);
-=======
 		list_for_each_entry(client, &vgasr_priv.clients, list) {
 			if (client->active || client_is_audio(client))
 				continue;
@@ -1068,19 +805,11 @@ vga_switcheroo_debugfs_write(struct file *filp, const char __user *ubuf,
 			set_audio_state(client->id, VGA_SWITCHEROO_OFF);
 			if (client->pwr_state == VGA_SWITCHEROO_ON)
 				vga_switchoff(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto out;
 	}
 	/* pwr on the device not in use */
 	if (strncmp(usercmd, "ON", 2) == 0) {
-<<<<<<< HEAD
-		for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-			if (vgasr_priv.clients[i].active)
-				continue;
-			if (vgasr_priv.clients[i].pwr_state == VGA_SWITCHEROO_OFF)
-				vga_switchon(&vgasr_priv.clients[i]);
-=======
 		list_for_each_entry(client, &vgasr_priv.clients, list) {
 			if (client->active || client_is_audio(client))
 				continue;
@@ -1089,7 +818,6 @@ vga_switcheroo_debugfs_write(struct file *filp, const char __user *ubuf,
 			if (client->pwr_state == VGA_SWITCHEROO_OFF)
 				vga_switchon(client);
 			set_audio_state(client->id, VGA_SWITCHEROO_ON);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto out;
 	}
@@ -1120,45 +848,15 @@ vga_switcheroo_debugfs_write(struct file *filp, const char __user *ubuf,
 		client_id = VGA_SWITCHEROO_DIS;
 	}
 
-<<<<<<< HEAD
-	if (client_id == -1)
-		goto out;
-
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		if (vgasr_priv.clients[i].id == client_id) {
-			client = &vgasr_priv.clients[i];
-			break;
-		}
-	}
-=======
 	if (client_id == VGA_SWITCHEROO_UNKNOWN_ID)
 		goto out;
 	client = find_client_from_id(&vgasr_priv.clients, client_id);
 	if (!client)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vgasr_priv.delayed_switch_active = false;
 
 	if (just_mux) {
-<<<<<<< HEAD
-		ret = vgasr_priv.handler->switchto(client_id);
-		goto out;
-	}
-
-	if (client->active == true)
-		goto out;
-
-	/* okay we want a switch - test if devices are willing to switch */
-	can_switch = true;
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		can_switch = vgasr_priv.clients[i].can_switch(vgasr_priv.clients[i].pdev);
-		if (can_switch == false) {
-			printk(KERN_ERR "vga_switcheroo: client %d refused switch\n", i);
-			break;
-		}
-	}
-=======
 		mutex_lock(&vgasr_priv.mux_hw_lock);
 		ret = vgasr_priv.handler->switchto(client_id);
 		mutex_unlock(&vgasr_priv.mux_hw_lock);
@@ -1170,25 +868,10 @@ vga_switcheroo_debugfs_write(struct file *filp, const char __user *ubuf,
 
 	/* okay we want a switch - test if devices are willing to switch */
 	can_switch = check_can_switch();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (can_switch == false && delay == false)
 		goto out;
 
-<<<<<<< HEAD
-	if (can_switch == true) {
-		pdev_name = pci_name(client->pdev);
-		ret = vga_switchto_stage1(client);
-		if (ret)
-			printk(KERN_ERR "vga_switcheroo: switching failed stage 1 %d\n", ret);
-
-		ret = vga_switchto_stage2(client);
-		if (ret)
-			printk(KERN_ERR "vga_switcheroo: switching failed stage 2 %d\n", ret);
-
-	} else {
-		printk(KERN_INFO "vga_switcheroo: setting delayed switch to client %d\n", client->id);
-=======
 	if (can_switch) {
 		ret = vga_switchto_stage1(client);
 		if (ret)
@@ -1200,17 +883,12 @@ vga_switcheroo_debugfs_write(struct file *filp, const char __user *ubuf,
 
 	} else {
 		pr_info("setting delayed switch to client %d\n", client->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vgasr_priv.delayed_switch_active = true;
 		vgasr_priv.delayed_client_id = client_id;
 
 		ret = vga_switchto_stage1(client);
 		if (ret)
-<<<<<<< HEAD
-			printk(KERN_ERR "vga_switcheroo: delayed switching stage 1 failed %d\n", ret);
-=======
 			pr_err("delayed switching stage 1 failed %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -1229,48 +907,6 @@ static const struct file_operations vga_switcheroo_debugfs_fops = {
 
 static void vga_switcheroo_debugfs_fini(struct vgasr_priv *priv)
 {
-<<<<<<< HEAD
-	if (priv->switch_file) {
-		debugfs_remove(priv->switch_file);
-		priv->switch_file = NULL;
-	}
-	if (priv->debugfs_root) {
-		debugfs_remove(priv->debugfs_root);
-		priv->debugfs_root = NULL;
-	}
-}
-
-static int vga_switcheroo_debugfs_init(struct vgasr_priv *priv)
-{
-	/* already initialised */
-	if (priv->debugfs_root)
-		return 0;
-	priv->debugfs_root = debugfs_create_dir("vgaswitcheroo", NULL);
-
-	if (!priv->debugfs_root) {
-		printk(KERN_ERR "vga_switcheroo: Cannot create /sys/kernel/debug/vgaswitcheroo\n");
-		goto fail;
-	}
-
-	priv->switch_file = debugfs_create_file("switch", 0644,
-						priv->debugfs_root, NULL, &vga_switcheroo_debugfs_fops);
-	if (!priv->switch_file) {
-		printk(KERN_ERR "vga_switcheroo: cannot create /sys/kernel/debug/vgaswitcheroo/switch\n");
-		goto fail;
-	}
-	return 0;
-fail:
-	vga_switcheroo_debugfs_fini(priv);
-	return -1;
-}
-
-int vga_switcheroo_process_delayed_switch(void)
-{
-	struct vga_switcheroo_client *client = NULL;
-	const char *pdev_name;
-	bool can_switch = true;
-	int i;
-=======
 	debugfs_remove_recursive(priv->debugfs_root);
 	priv->debugfs_root = NULL;
 }
@@ -1300,7 +936,6 @@ static void vga_switcheroo_debugfs_init(struct vgasr_priv *priv)
 int vga_switcheroo_process_delayed_switch(void)
 {
 	struct vga_switcheroo_client *client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	int err = -EINVAL;
 
@@ -1308,27 +943,6 @@ int vga_switcheroo_process_delayed_switch(void)
 	if (!vgasr_priv.delayed_switch_active)
 		goto err;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "vga_switcheroo: processing delayed switch to %d\n", vgasr_priv.delayed_client_id);
-
-	for (i = 0; i < VGA_SWITCHEROO_MAX_CLIENTS; i++) {
-		if (vgasr_priv.clients[i].id == vgasr_priv.delayed_client_id)
-			client = &vgasr_priv.clients[i];
-		can_switch = vgasr_priv.clients[i].can_switch(vgasr_priv.clients[i].pdev);
-		if (can_switch == false) {
-			printk(KERN_ERR "vga_switcheroo: client %d refused switch\n", i);
-			break;
-		}
-	}
-
-	if (can_switch == false || client == NULL)
-		goto err;
-
-	pdev_name = pci_name(client->pdev);
-	ret = vga_switchto_stage2(client);
-	if (ret)
-		printk(KERN_ERR "vga_switcheroo: delayed switching failed stage 2 %d\n", ret);
-=======
 	pr_info("processing delayed switch to %d\n",
 		vgasr_priv.delayed_client_id);
 
@@ -1340,7 +954,6 @@ int vga_switcheroo_process_delayed_switch(void)
 	ret = vga_switchto_stage2(client);
 	if (ret)
 		pr_err("delayed switching failed stage 2 %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vgasr_priv.delayed_switch_active = false;
 	err = 0;
@@ -1350,8 +963,6 @@ err:
 }
 EXPORT_SYMBOL(vga_switcheroo_process_delayed_switch);
 
-<<<<<<< HEAD
-=======
 /**
  * DOC: Driver power control
  *
@@ -1465,4 +1076,3 @@ void vga_switcheroo_fini_domain_pm_ops(struct device *dev)
 	dev_pm_domain_set(dev, NULL);
 }
 EXPORT_SYMBOL(vga_switcheroo_fini_domain_pm_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

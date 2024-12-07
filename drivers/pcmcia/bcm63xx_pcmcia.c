@@ -263,20 +263,12 @@ static int bcm63xx_pcmcia_get_status(struct pcmcia_socket *sock,
 /*
  * socket polling timer callback
  */
-<<<<<<< HEAD
-static void bcm63xx_pcmcia_poll(unsigned long data)
-=======
 static void bcm63xx_pcmcia_poll(struct timer_list *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm63xx_pcmcia_socket *skt;
 	unsigned int stat, events;
 
-<<<<<<< HEAD
-	skt = (struct bcm63xx_pcmcia_socket *)data;
-=======
 	skt = from_timer(skt, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&skt->lock);
 
@@ -331,16 +323,6 @@ static struct pccard_operations bcm63xx_pcmcia_operations = {
 /*
  * register pcmcia socket to core
  */
-<<<<<<< HEAD
-static int __devinit bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
-{
-	struct bcm63xx_pcmcia_socket *skt;
-	struct pcmcia_socket *sock;
-	struct resource *res, *irq_res;
-	unsigned int regmem_size = 0, iomem_size = 0;
-	u32 val;
-	int ret;
-=======
 static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
 {
 	struct bcm63xx_pcmcia_socket *skt;
@@ -350,7 +332,6 @@ static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
 	u32 val;
 	int ret;
 	int irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skt = kzalloc(sizeof(*skt), GFP_KERNEL);
 	if (!skt)
@@ -362,15 +343,9 @@ static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
 	/* make sure we have all resources we need */
 	skt->common_res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	skt->attr_res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
-<<<<<<< HEAD
-	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	skt->pd = pdev->dev.platform_data;
-	if (!skt->common_res || !skt->attr_res || !irq_res || !skt->pd) {
-=======
 	irq = platform_get_irq(pdev, 0);
 	skt->pd = pdev->dev.platform_data;
 	if (!skt->common_res || !skt->attr_res || (irq < 0) || !skt->pd) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto err;
 	}
@@ -406,11 +381,7 @@ static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
 	sock->dev.parent = &pdev->dev;
 	sock->features = SS_CAP_STATIC_MAP | SS_CAP_PCCARD;
 	sock->io_offset = (unsigned long)skt->io_base;
-<<<<<<< HEAD
-	sock->pci_irq = irq_res->start;
-=======
 	sock->pci_irq = irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_CARDBUS
 	sock->cb_dev = bcm63xx_cb_dev;
@@ -422,11 +393,7 @@ static int bcm63xx_drv_pcmcia_probe(struct platform_device *pdev)
 	sock->map_size = resource_size(skt->common_res);
 
 	/* initialize polling timer */
-<<<<<<< HEAD
-	setup_timer(&skt->timer, bcm63xx_pcmcia_poll, (unsigned long)skt);
-=======
 	timer_setup(&skt->timer, bcm63xx_pcmcia_poll, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize  pcmcia  control register,  drive  VS[12] to  0,
 	 * leave CB IDSEL to the old  value since it is set by the PCI
@@ -470,39 +437,23 @@ err:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit bcm63xx_drv_pcmcia_remove(struct platform_device *pdev)
-=======
 static void bcm63xx_drv_pcmcia_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcm63xx_pcmcia_socket *skt;
 	struct resource *res;
 
 	skt = platform_get_drvdata(pdev);
-<<<<<<< HEAD
-	del_timer_sync(&skt->timer);
-=======
 	timer_shutdown_sync(&skt->timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(skt->base);
 	iounmap(skt->io_base);
 	res = skt->reg_res;
 	release_mem_region(res->start, resource_size(res));
 	kfree(skt);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct platform_driver bcm63xx_pcmcia_driver = {
 	.probe	= bcm63xx_drv_pcmcia_probe,
-<<<<<<< HEAD
-	.remove	= __devexit_p(bcm63xx_drv_pcmcia_remove),
-=======
 	.remove_new = bcm63xx_drv_pcmcia_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver	= {
 		.name	= "bcm63xx_pcmcia",
 		.owner  = THIS_MODULE,
@@ -510,11 +461,7 @@ struct platform_driver bcm63xx_pcmcia_driver = {
 };
 
 #ifdef CONFIG_CARDBUS
-<<<<<<< HEAD
-static int __devinit bcm63xx_cb_probe(struct pci_dev *dev,
-=======
 static int bcm63xx_cb_probe(struct pci_dev *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      const struct pci_device_id *id)
 {
 	/* keep pci device */
@@ -522,21 +469,13 @@ static int bcm63xx_cb_probe(struct pci_dev *dev,
 	return platform_driver_register(&bcm63xx_pcmcia_driver);
 }
 
-<<<<<<< HEAD
-static void __devexit bcm63xx_cb_exit(struct pci_dev *dev)
-=======
 static void bcm63xx_cb_exit(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	platform_driver_unregister(&bcm63xx_pcmcia_driver);
 	bcm63xx_cb_dev = NULL;
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(bcm63xx_cb_table) = {
-=======
 static const struct pci_device_id bcm63xx_cb_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor		= PCI_VENDOR_ID_BROADCOM,
 		.device		= BCM6348_CPU_ID,
@@ -564,11 +503,7 @@ static struct pci_driver bcm63xx_cardbus_driver = {
 	.name		= "bcm63xx_cardbus",
 	.id_table	= bcm63xx_cb_table,
 	.probe		= bcm63xx_cb_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(bcm63xx_cb_exit),
-=======
 	.remove		= bcm63xx_cb_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 

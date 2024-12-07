@@ -14,15 +14,9 @@
 #include <linux/pci.h>
 #include <linux/pci_ids.h>
 #include <linux/edac.h>
-<<<<<<< HEAD
-#include "edac_core.h"
-
-#define X38_REVISION		"1.1"
-=======
 
 #include <linux/io-64-nonatomic-lo-hi.h>
 #include "edac_module.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EDAC_MOD_STR		"x38_edac"
 
@@ -109,17 +103,10 @@ static int how_many_channel(struct pci_dev *pdev)
 
 	pci_read_config_byte(pdev, X38_CAPID0 + 8, &capid0_8b);
 	if (capid0_8b & 0x20) {	/* check DCD: Dual Channel Disable */
-<<<<<<< HEAD
-		debugf0("In single channel mode.\n");
-		x38_channel_num = 1;
-	} else {
-		debugf0("In dual channel mode.\n");
-=======
 		edac_dbg(0, "In single channel mode\n");
 		x38_channel_num = 1;
 	} else {
 		edac_dbg(0, "In dual channel mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		x38_channel_num = 2;
 	}
 
@@ -164,11 +151,7 @@ static void x38_clear_error_info(struct mem_ctl_info *mci)
 {
 	struct pci_dev *pdev;
 
-<<<<<<< HEAD
-	pdev = to_pci_dev(mci->dev);
-=======
 	pdev = to_pci_dev(mci->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Clear any error bits.
@@ -178,25 +161,13 @@ static void x38_clear_error_info(struct mem_ctl_info *mci)
 			 X38_ERRSTS_BITS);
 }
 
-<<<<<<< HEAD
-static u64 x38_readq(const void __iomem *addr)
-{
-	return readl(addr) | (((u64)readl(addr + 4)) << 32);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void x38_get_and_clear_error_info(struct mem_ctl_info *mci,
 				 struct x38_error_info *info)
 {
 	struct pci_dev *pdev;
 	void __iomem *window = mci->pvt_info;
 
-<<<<<<< HEAD
-	pdev = to_pci_dev(mci->dev);
-=======
 	pdev = to_pci_dev(mci->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is a mess because there is no atomic way to read all the
@@ -207,15 +178,9 @@ static void x38_get_and_clear_error_info(struct mem_ctl_info *mci,
 	if (!(info->errsts & X38_ERRSTS_BITS))
 		return;
 
-<<<<<<< HEAD
-	info->eccerrlog[0] = x38_readq(window + X38_C0ECCERRLOG);
-	if (x38_channel_num == 2)
-		info->eccerrlog[1] = x38_readq(window + X38_C1ECCERRLOG);
-=======
 	info->eccerrlog[0] = lo_hi_readq(window + X38_C0ECCERRLOG);
 	if (x38_channel_num == 2)
 		info->eccerrlog[1] = lo_hi_readq(window + X38_C1ECCERRLOG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_word(pdev, X38_ERRSTS, &info->errsts2);
 
@@ -226,17 +191,10 @@ static void x38_get_and_clear_error_info(struct mem_ctl_info *mci,
 	 * should be UE info.
 	 */
 	if ((info->errsts ^ info->errsts2) & X38_ERRSTS_BITS) {
-<<<<<<< HEAD
-		info->eccerrlog[0] = x38_readq(window + X38_C0ECCERRLOG);
-		if (x38_channel_num == 2)
-			info->eccerrlog[1] =
-				x38_readq(window + X38_C1ECCERRLOG);
-=======
 		info->eccerrlog[0] = lo_hi_readq(window + X38_C0ECCERRLOG);
 		if (x38_channel_num == 2)
 			info->eccerrlog[1] =
 				lo_hi_readq(window + X38_C1ECCERRLOG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	x38_clear_error_info(mci);
@@ -252,27 +210,15 @@ static void x38_process_error_info(struct mem_ctl_info *mci,
 		return;
 
 	if ((info->errsts ^ info->errsts2) & X38_ERRSTS_BITS) {
-<<<<<<< HEAD
-		edac_mc_handle_ce_no_info(mci, "UE overwrote CE");
-=======
 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1, 0, 0, 0,
 				     -1, -1, -1,
 				     "UE overwrote CE", "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->errsts = info->errsts2;
 	}
 
 	for (channel = 0; channel < x38_channel_num; channel++) {
 		log = info->eccerrlog[channel];
 		if (log & X38_ECCERRLOG_UE) {
-<<<<<<< HEAD
-			edac_mc_handle_ue(mci, 0, 0,
-				eccerrlog_row(channel, log), "x38 UE");
-		} else if (log & X38_ECCERRLOG_CE) {
-			edac_mc_handle_ce(mci, 0, 0,
-				eccerrlog_syndrome(log),
-				eccerrlog_row(channel, log), 0, "x38 CE");
-=======
 			edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
 					     0, 0, 0,
 					     eccerrlog_row(channel, log),
@@ -284,7 +230,6 @@ static void x38_process_error_info(struct mem_ctl_info *mci,
 					     eccerrlog_row(channel, log),
 					     -1, -1,
 					     "x38 CE", "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -293,20 +238,11 @@ static void x38_check(struct mem_ctl_info *mci)
 {
 	struct x38_error_info info;
 
-<<<<<<< HEAD
-	debugf1("MC%d: %s()\n", mci->mc_idx, __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	x38_get_and_clear_error_info(mci, &info);
 	x38_process_error_info(mci, &info);
 }
 
-<<<<<<< HEAD
-
-void __iomem *x38_map_mchbar(struct pci_dev *pdev)
-=======
 static void __iomem *x38_map_mchbar(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union {
 		u64 mchbar;
@@ -329,11 +265,7 @@ static void __iomem *x38_map_mchbar(struct pci_dev *pdev)
 		return NULL;
 	}
 
-<<<<<<< HEAD
-	window = ioremap_nocache(u.mchbar, X38_MMR_WINDOW_SIZE);
-=======
 	window = ioremap(u.mchbar, X38_MMR_WINDOW_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!window)
 		printk(KERN_ERR "x38: cannot map mmio space at 0x%llx\n",
 			(unsigned long long)u.mchbar);
@@ -385,24 +317,14 @@ static unsigned long drb_to_nr_pages(
 static int x38_probe1(struct pci_dev *pdev, int dev_idx)
 {
 	int rc;
-<<<<<<< HEAD
-	int i;
-	struct mem_ctl_info *mci = NULL;
-	unsigned long last_page;
-=======
 	int i, j;
 	struct mem_ctl_info *mci = NULL;
 	struct edac_mc_layer layers[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 drbs[X38_CHANNELS][X38_RANKS_PER_CHANNEL];
 	bool stacked;
 	void __iomem *window;
 
-<<<<<<< HEAD
-	debugf0("MC: %s()\n", __func__);
-=======
 	edac_dbg(0, "MC:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	window = x38_map_mchbar(pdev);
 	if (!window)
@@ -413,15 +335,6 @@ static int x38_probe1(struct pci_dev *pdev, int dev_idx)
 	how_many_channel(pdev);
 
 	/* FIXME: unconventional pvt_info usage */
-<<<<<<< HEAD
-	mci = edac_mc_alloc(0, X38_RANKS, x38_channel_num, 0);
-	if (!mci)
-		return -ENOMEM;
-
-	debugf3("MC: %s(): init mci\n", __func__);
-
-	mci->dev = &pdev->dev;
-=======
 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
 	layers[0].size = X38_RANKS;
 	layers[0].is_virt_csrow = true;
@@ -435,17 +348,12 @@ static int x38_probe1(struct pci_dev *pdev, int dev_idx)
 	edac_dbg(3, "MC: init mci\n");
 
 	mci->pdev = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->mtype_cap = MEM_FLAG_DDR2;
 
 	mci->edac_ctl_cap = EDAC_FLAG_SECDED;
 	mci->edac_cap = EDAC_FLAG_SECDED;
 
 	mci->mod_name = EDAC_MOD_STR;
-<<<<<<< HEAD
-	mci->mod_ver = X38_REVISION;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->ctl_name = x38_devs[dev_idx].ctl_name;
 	mci->dev_name = pci_name(pdev);
 	mci->edac_check = x38_check;
@@ -460,37 +368,14 @@ static int x38_probe1(struct pci_dev *pdev, int dev_idx)
 	 * cumulative; the last one will contain the total memory
 	 * contained in all ranks.
 	 */
-<<<<<<< HEAD
-	last_page = -1UL;
-	for (i = 0; i < mci->nr_csrows; i++) {
-		unsigned long nr_pages;
-		struct csrow_info *csrow = &mci->csrows[i];
-=======
 	for (i = 0; i < mci->nr_csrows; i++) {
 		unsigned long nr_pages;
 		struct csrow_info *csrow = mci->csrows[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nr_pages = drb_to_nr_pages(drbs, stacked,
 			i / X38_RANKS_PER_CHANNEL,
 			i % X38_RANKS_PER_CHANNEL);
 
-<<<<<<< HEAD
-		if (nr_pages == 0) {
-			csrow->mtype = MEM_EMPTY;
-			continue;
-		}
-
-		csrow->first_page = last_page + 1;
-		last_page += nr_pages;
-		csrow->last_page = last_page;
-		csrow->nr_pages = nr_pages;
-
-		csrow->grain = nr_pages << PAGE_SHIFT;
-		csrow->mtype = MEM_DDR2;
-		csrow->dtype = DEV_UNKNOWN;
-		csrow->edac_mode = EDAC_UNKNOWN;
-=======
 		if (nr_pages == 0)
 			continue;
 
@@ -503,27 +388,18 @@ static int x38_probe1(struct pci_dev *pdev, int dev_idx)
 			dimm->dtype = DEV_UNKNOWN;
 			dimm->edac_mode = EDAC_UNKNOWN;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	x38_clear_error_info(mci);
 
 	rc = -ENODEV;
 	if (edac_mc_add_mc(mci)) {
-<<<<<<< HEAD
-		debugf3("MC: %s(): failed edac_mc_add_mc()\n", __func__);
-=======
 		edac_dbg(3, "MC: failed edac_mc_add_mc()\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	/* get this far and it's successful */
-<<<<<<< HEAD
-	debugf3("MC: %s(): success\n", __func__);
-=======
 	edac_dbg(3, "MC: success\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail:
@@ -534,20 +410,11 @@ fail:
 	return rc;
 }
 
-<<<<<<< HEAD
-static int __devinit x38_init_one(struct pci_dev *pdev,
-				const struct pci_device_id *ent)
-{
-	int rc;
-
-	debugf0("MC: %s()\n", __func__);
-=======
 static int x38_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	int rc;
 
 	edac_dbg(0, "MC:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_enable_device(pdev) < 0)
 		return -EIO;
@@ -559,19 +426,11 @@ static int x38_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return rc;
 }
 
-<<<<<<< HEAD
-static void __devexit x38_remove_one(struct pci_dev *pdev)
-{
-	struct mem_ctl_info *mci;
-
-	debugf0("%s()\n", __func__);
-=======
 static void x38_remove_one(struct pci_dev *pdev)
 {
 	struct mem_ctl_info *mci;
 
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mci = edac_mc_del_mc(&pdev->dev);
 	if (!mci)
@@ -582,11 +441,7 @@ static void x38_remove_one(struct pci_dev *pdev)
 	edac_mc_free(mci);
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(x38_pci_tbl) = {
-=======
 static const struct pci_device_id x38_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 PCI_VEND_DEV(INTEL, X38_HB), PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 	 X38},
@@ -600,11 +455,7 @@ MODULE_DEVICE_TABLE(pci, x38_pci_tbl);
 static struct pci_driver x38_driver = {
 	.name = EDAC_MOD_STR,
 	.probe = x38_init_one,
-<<<<<<< HEAD
-	.remove = __devexit_p(x38_remove_one),
-=======
 	.remove = x38_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = x38_pci_tbl,
 };
 
@@ -612,11 +463,7 @@ static int __init x38_init(void)
 {
 	int pci_rc;
 
-<<<<<<< HEAD
-	debugf3("MC: %s()\n", __func__);
-=======
 	edac_dbg(3, "MC:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ensure that the OPSTATE is set correctly for POLL or NMI */
 	opstate_init();
@@ -630,22 +477,14 @@ static int __init x38_init(void)
 		mci_pdev = pci_get_device(PCI_VENDOR_ID_INTEL,
 					PCI_DEVICE_ID_INTEL_X38_HB, NULL);
 		if (!mci_pdev) {
-<<<<<<< HEAD
-			debugf0("x38 pci_get_device fail\n");
-=======
 			edac_dbg(0, "x38 pci_get_device fail\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
 
 		pci_rc = x38_init_one(mci_pdev, x38_pci_tbl);
 		if (pci_rc < 0) {
-<<<<<<< HEAD
-			debugf0("x38 init fail\n");
-=======
 			edac_dbg(0, "x38 init fail\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
@@ -657,23 +496,14 @@ fail1:
 	pci_unregister_driver(&x38_driver);
 
 fail0:
-<<<<<<< HEAD
-	if (mci_pdev)
-		pci_dev_put(mci_pdev);
-=======
 	pci_dev_put(mci_pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pci_rc;
 }
 
 static void __exit x38_exit(void)
 {
-<<<<<<< HEAD
-	debugf3("MC: %s()\n", __func__);
-=======
 	edac_dbg(3, "MC:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_unregister_driver(&x38_driver);
 	if (!x38_registered) {

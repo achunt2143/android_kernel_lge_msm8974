@@ -34,30 +34,16 @@
 #include <linux/vmalloc.h>
 #include <linux/wait.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <asm/setup.h>
-#include <asm/pgalloc.h>
-#include <asm/hypervisor.h>
-#include <xen/grant_table.h>
-=======
 #include <linux/rbtree.h>
 #include <asm/setup.h>
 #include <asm/hypervisor.h>
 #include <xen/grant_table.h>
 #include <xen/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <xen/xenbus.h>
 #include <xen/interface/io/ring.h>
 #include <xen/interface/io/blkif.h>
 #include <xen/interface/io/protocols.h>
 
-<<<<<<< HEAD
-#define DRV_PFX "xen-blkback:"
-#define DPRINTK(fmt, args...)				\
-	pr_debug(DRV_PFX "(%s:%d) " fmt ".\n",		\
-		 __func__, __LINE__, ##args)
-
-=======
 extern unsigned int xen_blkif_max_ring_order;
 extern unsigned int xenblk_max_queues;
 /*
@@ -80,7 +66,6 @@ extern unsigned int xenblk_max_queues;
 #define MAX_INDIRECT_PAGES \
 	((MAX_INDIRECT_SEGMENTS + SEGS_PER_INDIRECT_FRAME - 1)/SEGS_PER_INDIRECT_FRAME)
 #define INDIRECT_PAGES(_segs) DIV_ROUND_UP(_segs, XEN_PAGES_PER_INDIRECT_FRAME)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Not a real protocol.  Used to generate ring structs which contain
  * the elements common to all protocols only.  This way we get a
@@ -89,14 +74,8 @@ extern unsigned int xenblk_max_queues;
 struct blkif_common_request {
 	char dummy;
 };
-<<<<<<< HEAD
-struct blkif_common_response {
-	char dummy;
-};
-=======
 
 /* i386 protocol version */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct blkif_x86_32_request_rw {
 	uint8_t        nr_segments;  /* number of segments                   */
@@ -120,8 +99,6 @@ struct blkif_x86_32_request_other {
 	uint64_t       id;           /* private guest value, echoed in resp  */
 } __attribute__((__packed__));
 
-<<<<<<< HEAD
-=======
 struct blkif_x86_32_request_indirect {
 	uint8_t        indirect_op;
 	uint16_t       nr_segments;
@@ -140,41 +117,22 @@ struct blkif_x86_32_request_indirect {
 	uint64_t       _pad2;        /* make it 64 byte aligned */
 } __attribute__((__packed__));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct blkif_x86_32_request {
 	uint8_t        operation;    /* BLKIF_OP_???                         */
 	union {
 		struct blkif_x86_32_request_rw rw;
 		struct blkif_x86_32_request_discard discard;
 		struct blkif_x86_32_request_other other;
-<<<<<<< HEAD
-	} u;
-} __attribute__((__packed__));
-
-/* i386 protocol version */
-#pragma pack(push, 4)
-struct blkif_x86_32_response {
-	uint64_t        id;              /* copied from request */
-	uint8_t         operation;       /* copied from request */
-	int16_t         status;          /* BLKIF_RSP_???       */
-};
-#pragma pack(pop)
-=======
 		struct blkif_x86_32_request_indirect indirect;
 	} u;
 } __attribute__((__packed__));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* x86_64 protocol version */
 
 struct blkif_x86_64_request_rw {
 	uint8_t        nr_segments;  /* number of segments                   */
 	blkif_vdev_t   handle;       /* only for read/write requests         */
-<<<<<<< HEAD
-	uint32_t       _pad1;        /* offsetof(blkif_reqest..,u.rw.id)==8  */
-=======
 	uint32_t       _pad1;        /* offsetof(blkif_request..,u.rw.id)==8 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t       id;
 	blkif_sector_t sector_number;/* start sector idx on disk (r/w only)  */
 	struct blkif_request_segment seg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
@@ -196,8 +154,6 @@ struct blkif_x86_64_request_other {
 	uint64_t       id;           /* private guest value, echoed in resp  */
 } __attribute__((__packed__));
 
-<<<<<<< HEAD
-=======
 struct blkif_x86_64_request_indirect {
 	uint8_t        indirect_op;
 	uint16_t       nr_segments;
@@ -217,30 +173,12 @@ struct blkif_x86_64_request_indirect {
 	uint32_t       _pad3;        /* make it 64 byte aligned */
 } __attribute__((__packed__));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct blkif_x86_64_request {
 	uint8_t        operation;    /* BLKIF_OP_???                         */
 	union {
 		struct blkif_x86_64_request_rw rw;
 		struct blkif_x86_64_request_discard discard;
 		struct blkif_x86_64_request_other other;
-<<<<<<< HEAD
-	} u;
-} __attribute__((__packed__));
-
-struct blkif_x86_64_response {
-	uint64_t       __attribute__((__aligned__(8))) id;
-	uint8_t         operation;       /* copied from request */
-	int16_t         status;          /* BLKIF_RSP_???       */
-};
-
-DEFINE_RING_TYPES(blkif_common, struct blkif_common_request,
-		  struct blkif_common_response);
-DEFINE_RING_TYPES(blkif_x86_32, struct blkif_x86_32_request,
-		  struct blkif_x86_32_response);
-DEFINE_RING_TYPES(blkif_x86_64, struct blkif_x86_64_request,
-		  struct blkif_x86_64_response);
-=======
 		struct blkif_x86_64_request_indirect indirect;
 	} u;
 } __attribute__((__packed__));
@@ -251,7 +189,6 @@ DEFINE_RING_TYPES(blkif_x86_32, struct blkif_x86_32_request,
 		  struct blkif_response __packed);
 DEFINE_RING_TYPES(blkif_x86_64, struct blkif_x86_64_request,
 		  struct blkif_response);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 union blkif_back_rings {
 	struct blkif_back_ring        native;
@@ -266,8 +203,6 @@ enum blkif_protocol {
 	BLKIF_PROTOCOL_X86_64 = 3,
 };
 
-<<<<<<< HEAD
-=======
 /*
  * Default protocol if the frontend doesn't specify one.
  */
@@ -277,7 +212,6 @@ enum blkif_protocol {
 #  define BLKIF_PROTOCOL_DEFAULT BLKIF_PROTOCOL_NATIVE
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct xen_vbd {
 	/* What the domain refers to this vbd as. */
 	blkif_vdev_t		handle;
@@ -287,13 +221,6 @@ struct xen_vbd {
 	unsigned char		type;
 	/* phys device that this vbd maps to. */
 	u32			pdevice;
-<<<<<<< HEAD
-	struct block_device	*bdev;
-	/* Cached size parameter. */
-	sector_t		size;
-	bool			flush_support;
-	bool			discard_secure;
-=======
 	struct file		*bdev_file;
 	/* Cached size parameter. */
 	sector_t		size;
@@ -304,13 +231,10 @@ struct xen_vbd {
 	/* Persistent grants feature negotiation result */
 	unsigned int		feature_gnt_persistent:1;
 	unsigned int		overflow_max_grants:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct backend_info;
 
-<<<<<<< HEAD
-=======
 /* Number of requests that we can fit in a ring */
 #define XEN_BLKIF_REQS_PER_PAGE		32
 
@@ -375,59 +299,16 @@ struct xen_blkif_ring {
 	struct xen_blkif	*blkif;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct xen_blkif {
 	/* Unique identifier for this interface. */
 	domid_t			domid;
 	unsigned int		handle;
-<<<<<<< HEAD
-	/* Physical parameters of the comms window. */
-	unsigned int		irq;
 	/* Comms information. */
 	enum blkif_protocol	blk_protocol;
-	union blkif_back_rings	blk_rings;
-	void			*blk_ring;
-=======
-	/* Comms information. */
-	enum blkif_protocol	blk_protocol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The VBD attached to this interface. */
 	struct xen_vbd		vbd;
 	/* Back pointer to the backend_info. */
 	struct backend_info	*be;
-<<<<<<< HEAD
-	/* Private fields. */
-	spinlock_t		blk_ring_lock;
-	atomic_t		refcnt;
-
-	wait_queue_head_t	wq;
-	/* for barrier (drain) requests */
-	struct completion	drain_complete;
-	atomic_t		drain;
-	/* One thread per one blkif. */
-	struct task_struct	*xenblkd;
-	unsigned int		waiting_reqs;
-
-	/* statistics */
-	unsigned long		st_print;
-	int			st_rd_req;
-	int			st_wr_req;
-	int			st_oo_req;
-	int			st_f_req;
-	int			st_ds_req;
-	int			st_rd_sect;
-	int			st_wr_sect;
-
-	wait_queue_head_t	waiting_to_free;
-	/* Thread shutdown wait queue. */
-	wait_queue_head_t	shutdown_wq;
-};
-
-
-#define vbd_sz(_v)	((_v)->bdev->bd_part ? \
-			 (_v)->bdev->bd_part->nr_sects : \
-			  get_capacity((_v)->bdev->bd_disk))
-=======
 	atomic_t		refcnt;
 	/* for barrier (drain) requests */
 	struct completion	drain_complete;
@@ -480,17 +361,12 @@ struct pending_req {
 
 
 #define vbd_sz(_v)	bdev_nr_sectors(file_bdev((_v)->bdev_file))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define xen_blkif_get(_b) (atomic_inc(&(_b)->refcnt))
 #define xen_blkif_put(_b)				\
 	do {						\
 		if (atomic_dec_and_test(&(_b)->refcnt))	\
-<<<<<<< HEAD
-			wake_up(&(_b)->waiting_to_free);\
-=======
 			schedule_work(&(_b)->free_work);\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 struct phys_req {
@@ -499,14 +375,6 @@ struct phys_req {
 	struct block_device	*bdev;
 	blkif_sector_t		sector_number;
 };
-<<<<<<< HEAD
-int xen_blkif_interface_init(void);
-
-int xen_blkif_xenbus_init(void);
-
-irqreturn_t xen_blkif_be_int(int irq, void *dev_id);
-int xen_blkif_schedule(void *arg);
-=======
 
 int xen_blkif_interface_init(void);
 void xen_blkif_interface_fini(void);
@@ -517,7 +385,6 @@ void xen_blkif_xenbus_fini(void);
 irqreturn_t xen_blkif_be_int(int irq, void *dev_id);
 int xen_blkif_schedule(void *arg);
 void xen_blkbk_free_caches(struct xen_blkif_ring *ring);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int xen_blkbk_flush_diskcache(struct xenbus_transaction xbt,
 			      struct backend_info *be, int state);
@@ -525,81 +392,6 @@ int xen_blkbk_flush_diskcache(struct xenbus_transaction xbt,
 int xen_blkbk_barrier(struct xenbus_transaction xbt,
 		      struct backend_info *be, int state);
 struct xenbus_device *xen_blkbk_xenbus(struct backend_info *be);
-<<<<<<< HEAD
-
-static inline void blkif_get_x86_32_req(struct blkif_request *dst,
-					struct blkif_x86_32_request *src)
-{
-	int i, n = BLKIF_MAX_SEGMENTS_PER_REQUEST;
-	dst->operation = ACCESS_ONCE(src->operation);
-	switch (dst->operation) {
-	case BLKIF_OP_READ:
-	case BLKIF_OP_WRITE:
-	case BLKIF_OP_WRITE_BARRIER:
-	case BLKIF_OP_FLUSH_DISKCACHE:
-		dst->u.rw.nr_segments = src->u.rw.nr_segments;
-		dst->u.rw.handle = src->u.rw.handle;
-		dst->u.rw.id = src->u.rw.id;
-		dst->u.rw.sector_number = src->u.rw.sector_number;
-		barrier();
-		if (n > dst->u.rw.nr_segments)
-			n = dst->u.rw.nr_segments;
-		for (i = 0; i < n; i++)
-			dst->u.rw.seg[i] = src->u.rw.seg[i];
-		break;
-	case BLKIF_OP_DISCARD:
-		dst->u.discard.flag = src->u.discard.flag;
-		dst->u.discard.id = src->u.discard.id;
-		dst->u.discard.sector_number = src->u.discard.sector_number;
-		dst->u.discard.nr_sectors = src->u.discard.nr_sectors;
-		break;
-	default:
-		/*
-		 * Don't know how to translate this op. Only get the
-		 * ID so failure can be reported to the frontend.
-		 */
-		dst->u.other.id = src->u.other.id;
-		break;
-	}
-}
-
-static inline void blkif_get_x86_64_req(struct blkif_request *dst,
-					struct blkif_x86_64_request *src)
-{
-	int i, n = BLKIF_MAX_SEGMENTS_PER_REQUEST;
-	dst->operation = ACCESS_ONCE(src->operation);
-	switch (dst->operation) {
-	case BLKIF_OP_READ:
-	case BLKIF_OP_WRITE:
-	case BLKIF_OP_WRITE_BARRIER:
-	case BLKIF_OP_FLUSH_DISKCACHE:
-		dst->u.rw.nr_segments = src->u.rw.nr_segments;
-		dst->u.rw.handle = src->u.rw.handle;
-		dst->u.rw.id = src->u.rw.id;
-		dst->u.rw.sector_number = src->u.rw.sector_number;
-		barrier();
-		if (n > dst->u.rw.nr_segments)
-			n = dst->u.rw.nr_segments;
-		for (i = 0; i < n; i++)
-			dst->u.rw.seg[i] = src->u.rw.seg[i];
-		break;
-	case BLKIF_OP_DISCARD:
-		dst->u.discard.flag = src->u.discard.flag;
-		dst->u.discard.id = src->u.discard.id;
-		dst->u.discard.sector_number = src->u.discard.sector_number;
-		dst->u.discard.nr_sectors = src->u.discard.nr_sectors;
-		break;
-	default:
-		/*
-		 * Don't know how to translate this op. Only get the
-		 * ID so failure can be reported to the frontend.
-		 */
-		dst->u.other.id = src->u.other.id;
-		break;
-	}
-}
-=======
 void xen_blkbk_unmap_purged_grants(struct work_struct *work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __XEN_BLKIF__BACKEND__COMMON_H__ */

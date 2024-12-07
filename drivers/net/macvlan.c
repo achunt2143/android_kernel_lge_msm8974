@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2007 Patrick McHardy <kaber@trash.net>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2007 Patrick McHardy <kaber@trash.net>
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The code this is based on carried the following copyright notice:
  * ---
  * (C) Copyright 2001-2006
@@ -31,21 +20,12 @@
 #include <linux/notifier.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
-<<<<<<< HEAD
-=======
 #include <linux/net_tstamp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ethtool.h>
 #include <linux/if_arp.h>
 #include <linux/if_vlan.h>
 #include <linux/if_link.h>
 #include <linux/if_macvlan.h>
-<<<<<<< HEAD
-#include <net/rtnetlink.h>
-#include <net/xfrm.h>
-
-#define MACVLAN_HASH_SIZE	(1 << BITS_PER_BYTE)
-=======
 #include <linux/hash.h>
 #include <linux/workqueue.h>
 #include <net/rtnetlink.h>
@@ -59,25 +39,11 @@
 
 #define MACVLAN_F_PASSTHRU	1
 #define MACVLAN_F_ADDRCHANGE	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct macvlan_port {
 	struct net_device	*dev;
 	struct hlist_head	vlan_hash[MACVLAN_HASH_SIZE];
 	struct list_head	vlans;
-<<<<<<< HEAD
-	struct rcu_head		rcu;
-	bool 			passthru;
-	int			count;
-};
-
-static void macvlan_port_destroy(struct net_device *dev);
-
-#define macvlan_port_get_rcu(dev) \
-	((struct macvlan_port *) rcu_dereference(dev->rx_handler_data))
-#define macvlan_port_get(dev) ((struct macvlan_port *) dev->rx_handler_data)
-#define macvlan_port_exists(dev) (dev->priv_flags & IFF_MACVLAN_PORT)
-=======
 	struct sk_buff_head	bc_queue;
 	struct work_struct	bc_work;
 	u32			bc_queue_len_used;
@@ -154,31 +120,21 @@ static struct macvlan_port *macvlan_port_get_rtnl(const struct net_device *dev)
 {
 	return rtnl_dereference(dev->rx_handler_data);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct macvlan_dev *macvlan_hash_lookup(const struct macvlan_port *port,
 					       const unsigned char *addr)
 {
 	struct macvlan_dev *vlan;
-<<<<<<< HEAD
-	struct hlist_node *n;
-
-	hlist_for_each_entry_rcu(vlan, n, &port->vlan_hash[addr[5]], hlist) {
-		if (!compare_ether_addr_64bits(vlan->dev->dev_addr, addr))
-=======
 	u32 idx = macvlan_eth_hash(addr);
 
 	hlist_for_each_entry_rcu(vlan, &port->vlan_hash[idx], hlist,
 				 lockdep_rtnl_is_held()) {
 		if (ether_addr_equal_64bits(vlan->dev->dev_addr, addr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return vlan;
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static struct macvlan_source_entry *macvlan_hash_lookup_source(
 	const struct macvlan_dev *vlan,
 	const unsigned char *addr)
@@ -219,15 +175,10 @@ static int macvlan_hash_add_source(struct macvlan_dev *vlan,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void macvlan_hash_add(struct macvlan_dev *vlan)
 {
 	struct macvlan_port *port = vlan->port;
 	const unsigned char *addr = vlan->dev->dev_addr;
-<<<<<<< HEAD
-
-	hlist_add_head_rcu(&vlan->hlist, &port->vlan_hash[addr[5]]);
-=======
 	u32 idx = macvlan_eth_hash(addr);
 
 	hlist_add_head_rcu(&vlan->hlist, &port->vlan_hash[idx]);
@@ -237,7 +188,6 @@ static void macvlan_hash_del_source(struct macvlan_source_entry *entry)
 {
 	hlist_del_rcu(&entry->hlist);
 	kfree_rcu(entry, rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void macvlan_hash_del(struct macvlan_dev *vlan, bool sync)
@@ -254,26 +204,6 @@ static void macvlan_hash_change_addr(struct macvlan_dev *vlan,
 	/* Now that we are unhashed it is safe to change the device
 	 * address without confusing packet delivery.
 	 */
-<<<<<<< HEAD
-	memcpy(vlan->dev->dev_addr, addr, ETH_ALEN);
-	macvlan_hash_add(vlan);
-}
-
-static int macvlan_addr_busy(const struct macvlan_port *port,
-				const unsigned char *addr)
-{
-	/* Test to see if the specified multicast address is
-	 * currently in use by the underlying device or
-	 * another macvlan.
-	 */
-	if (!compare_ether_addr_64bits(port->dev->dev_addr, addr))
-		return 1;
-
-	if (macvlan_hash_lookup(port, addr))
-		return 1;
-
-	return 0;
-=======
 	eth_hw_addr_set(vlan->dev, addr);
 	macvlan_hash_add(vlan);
 }
@@ -293,7 +223,6 @@ static bool macvlan_addr_busy(const struct macvlan_port *port,
 		return true;
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -302,31 +231,16 @@ static int macvlan_broadcast_one(struct sk_buff *skb,
 				 const struct ethhdr *eth, bool local)
 {
 	struct net_device *dev = vlan->dev;
-<<<<<<< HEAD
-	if (!skb)
-		return NET_RX_DROP;
-
-	if (local)
-		return vlan->forward(dev, skb);
-
-	skb->dev = dev;
-	if (!compare_ether_addr_64bits(eth->h_dest,
-				       dev->broadcast))
-=======
 
 	if (local)
 		return __dev_forward_skb(dev, skb);
 
 	skb->dev = dev;
 	if (ether_addr_equal_64bits(eth->h_dest, dev->broadcast))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb->pkt_type = PACKET_BROADCAST;
 	else
 		skb->pkt_type = PACKET_MULTICAST;
 
-<<<<<<< HEAD
-	return vlan->receive(skb);
-=======
 	return 0;
 }
 
@@ -343,7 +257,6 @@ static unsigned int mc_hash(const struct macvlan_dev *vlan,
 
 	val ^= macvlan_hash_mix(vlan);
 	return hash_32(val, MACVLAN_MC_FILTER_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void macvlan_broadcast(struct sk_buff *skb,
@@ -353,35 +266,14 @@ static void macvlan_broadcast(struct sk_buff *skb,
 {
 	const struct ethhdr *eth = eth_hdr(skb);
 	const struct macvlan_dev *vlan;
-<<<<<<< HEAD
-	struct hlist_node *n;
-	struct sk_buff *nskb;
-	unsigned int i;
-	int err;
-=======
 	struct sk_buff *nskb;
 	unsigned int i;
 	int err;
 	unsigned int hash;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->protocol == htons(ETH_P_PAUSE))
 		return;
 
-<<<<<<< HEAD
-	for (i = 0; i < MACVLAN_HASH_SIZE; i++) {
-		hlist_for_each_entry_rcu(vlan, n, &port->vlan_hash[i], hlist) {
-			if (vlan->dev == src || !(vlan->mode & mode))
-				continue;
-
-			nskb = skb_clone(skb, GFP_ATOMIC);
-			err = macvlan_broadcast_one(nskb, vlan, eth,
-					 mode == MACVLAN_MODE_BRIDGE);
-			macvlan_count_rx(vlan, skb->len + ETH_HLEN,
-					 err == NET_RX_SUCCESS, 1);
-		}
-	}
-=======
 	hash_for_each_rcu(port->vlan_hash, i, vlan, hlist) {
 		if (vlan->dev == src || !(vlan->mode & mode))
 			continue;
@@ -547,7 +439,6 @@ static bool macvlan_forward_source(struct sk_buff *skb,
 	}
 
 	return consume;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* called under rcu_read_lock() from netif_receive_skb */
@@ -560,13 +451,6 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
 	const struct macvlan_dev *src;
 	struct net_device *dev;
 	unsigned int len = 0;
-<<<<<<< HEAD
-	int ret = NET_RX_DROP;
-
-	port = macvlan_port_get_rcu(skb->dev);
-	if (is_multicast_ether_addr(eth->h_dest)) {
-		skb = ip_check_defrag(skb, IP_DEFRAG_MACVLAN);
-=======
 	int ret;
 	rx_handler_result_t handle_res;
 
@@ -579,44 +463,10 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
 		unsigned int hash;
 
 		skb = ip_check_defrag(dev_net(skb->dev), skb, IP_DEFRAG_MACVLAN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!skb)
 			return RX_HANDLER_CONSUMED;
 		*pskb = skb;
 		eth = eth_hdr(skb);
-<<<<<<< HEAD
-		src = macvlan_hash_lookup(port, eth->h_source);
-		if (!src)
-			/* frame comes from an external address */
-			macvlan_broadcast(skb, port, NULL,
-					  MACVLAN_MODE_PRIVATE |
-					  MACVLAN_MODE_VEPA    |
-					  MACVLAN_MODE_PASSTHRU|
-					  MACVLAN_MODE_BRIDGE);
-		else if (src->mode == MACVLAN_MODE_VEPA)
-			/* flood to everyone except source */
-			macvlan_broadcast(skb, port, src->dev,
-					  MACVLAN_MODE_VEPA |
-					  MACVLAN_MODE_BRIDGE);
-		else if (src->mode == MACVLAN_MODE_BRIDGE)
-			/*
-			 * flood only to VEPA ports, bridge ports
-			 * already saw the frame on the way out.
-			 */
-			macvlan_broadcast(skb, port, src->dev,
-					  MACVLAN_MODE_VEPA);
-		else {
-			/* forward to original port. */
-			vlan = src;
-			ret = macvlan_broadcast_one(skb, vlan, eth, 0);
-			goto out;
-		}
-
-		return RX_HANDLER_PASS;
-	}
-
-	if (port->passthru)
-=======
 		if (macvlan_forward_source(skb, port, eth->h_source)) {
 			kfree_skb(skb);
 			return RX_HANDLER_CONSUMED;
@@ -646,16 +496,11 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
 		return RX_HANDLER_CONSUMED;
 	}
 	if (macvlan_passthru(port))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vlan = list_first_or_null_rcu(&port->vlans,
 					      struct macvlan_dev, list);
 	else
 		vlan = macvlan_hash_lookup(port, eth->h_dest);
-<<<<<<< HEAD
-	if (vlan == NULL)
-=======
 	if (!vlan || vlan->mode == MACVLAN_MODE_SOURCE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return RX_HANDLER_PASS;
 
 	dev = vlan->dev;
@@ -665,34 +510,21 @@ static rx_handler_result_t macvlan_handle_frame(struct sk_buff **pskb)
 	}
 	len = skb->len + ETH_HLEN;
 	skb = skb_share_check(skb, GFP_ATOMIC);
-<<<<<<< HEAD
-	if (!skb)
-		goto out;
-=======
 	if (!skb) {
 		ret = NET_RX_DROP;
 		handle_res = RX_HANDLER_CONSUMED;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*pskb = skb;
 	skb->dev = dev;
 	skb->pkt_type = PACKET_HOST;
 
-<<<<<<< HEAD
-	ret = vlan->receive(skb);
-
-out:
-	macvlan_count_rx(vlan, len, ret == NET_RX_SUCCESS, 0);
-	return RX_HANDLER_CONSUMED;
-=======
 	ret = NET_RX_SUCCESS;
 	handle_res = RX_HANDLER_ANOTHER;
 out:
 	macvlan_count_rx(vlan, len, ret == NET_RX_SUCCESS, false);
 	return handle_res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
@@ -702,18 +534,11 @@ static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
 	const struct macvlan_dev *dest;
 
 	if (vlan->mode == MACVLAN_MODE_BRIDGE) {
-<<<<<<< HEAD
-		const struct ethhdr *eth = (void *)skb->data;
-
-		/* send to other bridge ports directly */
-		if (is_multicast_ether_addr(eth->h_dest)) {
-=======
 		const struct ethhdr *eth = skb_eth_hdr(skb);
 
 		/* send to other bridge ports directly */
 		if (is_multicast_ether_addr(eth->h_dest)) {
 			skb_reset_mac_header(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			macvlan_broadcast(skb, port, dev, MACVLAN_MODE_BRIDGE);
 			goto xmit_world;
 		}
@@ -726,29 +551,6 @@ static int macvlan_queue_xmit(struct sk_buff *skb, struct net_device *dev)
 			return NET_XMIT_SUCCESS;
 		}
 	}
-<<<<<<< HEAD
-
-xmit_world:
-	skb->dev = vlan->lowerdev;
-	return dev_queue_xmit(skb);
-}
-
-netdev_tx_t macvlan_start_xmit(struct sk_buff *skb,
-			       struct net_device *dev)
-{
-	unsigned int len = skb->len;
-	int ret;
-	const struct macvlan_dev *vlan = netdev_priv(dev);
-
-	ret = macvlan_queue_xmit(skb, dev);
-	if (likely(ret == NET_XMIT_SUCCESS || ret == NET_XMIT_CN)) {
-		struct macvlan_pcpu_stats *pcpu_stats;
-
-		pcpu_stats = this_cpu_ptr(vlan->pcpu_stats);
-		u64_stats_update_begin(&pcpu_stats->syncp);
-		pcpu_stats->tx_packets++;
-		pcpu_stats->tx_bytes += len;
-=======
 xmit_world:
 	skb->dev = vlan->lowerdev;
 	return dev_queue_xmit_accel(skb,
@@ -784,17 +586,12 @@ static netdev_tx_t macvlan_start_xmit(struct sk_buff *skb,
 		u64_stats_update_begin(&pcpu_stats->syncp);
 		u64_stats_inc(&pcpu_stats->tx_packets);
 		u64_stats_add(&pcpu_stats->tx_bytes, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64_stats_update_end(&pcpu_stats->syncp);
 	} else {
 		this_cpu_inc(vlan->pcpu_stats->tx_dropped);
 	}
 	return ret;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(macvlan_start_xmit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int macvlan_hard_header(struct sk_buff *skb, struct net_device *dev,
 			       unsigned short type, const void *daddr,
@@ -809,17 +606,10 @@ static int macvlan_hard_header(struct sk_buff *skb, struct net_device *dev,
 
 static const struct header_ops macvlan_hard_header_ops = {
 	.create  	= macvlan_hard_header,
-<<<<<<< HEAD
-	.rebuild	= eth_rebuild_header,
-	.parse		= eth_header_parse,
-	.cache		= eth_header_cache,
-	.cache_update	= eth_header_cache_update,
-=======
 	.parse		= eth_header_parse,
 	.cache		= eth_header_cache,
 	.cache_update	= eth_header_cache_update,
 	.parse_protocol	= eth_header_parse_protocol,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int macvlan_open(struct net_device *dev)
@@ -828,20 +618,6 @@ static int macvlan_open(struct net_device *dev)
 	struct net_device *lowerdev = vlan->lowerdev;
 	int err;
 
-<<<<<<< HEAD
-	if (vlan->port->passthru) {
-		dev_set_promiscuity(lowerdev, 1);
-		goto hash_add;
-	}
-
-	err = -EBUSY;
-	if (macvlan_addr_busy(vlan->port, dev->dev_addr))
-		goto out;
-
-	err = dev_uc_add(lowerdev, dev->dev_addr);
-	if (err < 0)
-		goto out;
-=======
 	if (macvlan_passthru(vlan->port)) {
 		if (!(vlan->flags & MACVLAN_FLAG_NOPROMISC)) {
 			err = dev_set_promiscuity(lowerdev, 1);
@@ -872,30 +648,22 @@ static int macvlan_open(struct net_device *dev)
 			goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->flags & IFF_ALLMULTI) {
 		err = dev_set_allmulti(lowerdev, 1);
 		if (err < 0)
 			goto del_unicast;
 	}
 
-<<<<<<< HEAD
-=======
 	if (dev->flags & IFF_PROMISC) {
 		err = dev_set_promiscuity(lowerdev, 1);
 		if (err < 0)
 			goto clear_multi;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 hash_add:
 	macvlan_hash_add(vlan);
 	return 0;
 
-<<<<<<< HEAD
-del_unicast:
-	dev_uc_del(lowerdev, dev->dev_addr);
-=======
 clear_multi:
 	if (dev->flags & IFF_ALLMULTI)
 		dev_set_allmulti(lowerdev, -1);
@@ -907,7 +675,6 @@ del_unicast:
 	} else {
 		dev_uc_del(lowerdev, dev->dev_addr);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
@@ -917,17 +684,6 @@ static int macvlan_stop(struct net_device *dev)
 	struct macvlan_dev *vlan = netdev_priv(dev);
 	struct net_device *lowerdev = vlan->lowerdev;
 
-<<<<<<< HEAD
-	if (vlan->port->passthru) {
-		dev_set_promiscuity(lowerdev, -1);
-		goto hash_del;
-	}
-
-	dev_mc_unsync(lowerdev, dev);
-	if (dev->flags & IFF_ALLMULTI)
-		dev_set_allmulti(lowerdev, -1);
-
-=======
 	if (vlan->accel_priv) {
 		lowerdev->netdev_ops->ndo_dfwd_del_station(lowerdev,
 							   vlan->accel_priv);
@@ -949,7 +705,6 @@ static int macvlan_stop(struct net_device *dev)
 	if (dev->flags & IFF_PROMISC)
 		dev_set_promiscuity(lowerdev, -1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_uc_del(lowerdev, dev->dev_addr);
 
 hash_del:
@@ -957,36 +712,6 @@ hash_del:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int macvlan_set_mac_address(struct net_device *dev, void *p)
-{
-	struct macvlan_dev *vlan = netdev_priv(dev);
-	struct net_device *lowerdev = vlan->lowerdev;
-	struct sockaddr *addr = p;
-	int err;
-
-	if (!is_valid_ether_addr(addr->sa_data))
-		return -EADDRNOTAVAIL;
-
-	if (!(dev->flags & IFF_UP)) {
-		/* Just copy in the new address */
-		dev->addr_assign_type &= ~NET_ADDR_RANDOM;
-		memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
-	} else {
-		/* Rehash and update the device filters */
-		if (macvlan_addr_busy(vlan->port, addr->sa_data))
-			return -EBUSY;
-
-		err = dev_uc_add(lowerdev, addr->sa_data);
-		if (err)
-			return err;
-
-		dev_uc_del(lowerdev, dev->dev_addr);
-
-		macvlan_hash_change_addr(vlan, addr->sa_data);
-	}
-	return 0;
-=======
 static int macvlan_sync_address(struct net_device *dev,
 				const unsigned char *addr)
 {
@@ -1046,7 +771,6 @@ static int macvlan_set_mac_address(struct net_device *dev, void *p)
 		return -EADDRINUSE;
 
 	return macvlan_sync_address(dev, addr->sa_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void macvlan_change_rx_flags(struct net_device *dev, int change)
@@ -1054,17 +778,6 @@ static void macvlan_change_rx_flags(struct net_device *dev, int change)
 	struct macvlan_dev *vlan = netdev_priv(dev);
 	struct net_device *lowerdev = vlan->lowerdev;
 
-<<<<<<< HEAD
-	if (change & IFF_ALLMULTI)
-		dev_set_allmulti(lowerdev, dev->flags & IFF_ALLMULTI ? 1 : -1);
-}
-
-static void macvlan_set_multicast_list(struct net_device *dev)
-{
-	struct macvlan_dev *vlan = netdev_priv(dev);
-
-	dev_mc_sync(vlan->lowerdev, dev);
-=======
 	if (dev->flags & IFF_UP) {
 		if (change & IFF_ALLMULTI)
 			dev_set_allmulti(lowerdev, dev->flags & IFF_ALLMULTI ? 1 : -1);
@@ -1144,25 +857,18 @@ static void update_port_bc_cutoff(struct macvlan_dev *vlan, int cutoff)
 
 	vlan->port->bc_cutoff = cutoff;
 	macvlan_recompute_bc_filter(vlan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int macvlan_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
 
-<<<<<<< HEAD
-	if (new_mtu < 68 || vlan->lowerdev->mtu < new_mtu)
-=======
 	if (vlan->lowerdev->mtu < new_mtu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	dev->mtu = new_mtu;
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int macvlan_hwtstamp_get(struct net_device *dev,
 				struct kernel_hwtstamp_config *cfg)
 {
@@ -1183,22 +889,11 @@ static int macvlan_hwtstamp_set(struct net_device *dev,
 	return generic_hwtstamp_set_lower(real_dev, cfg, extack);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * macvlan network devices have devices nesting below it and are a special
  * "super class" of normal network devices; split their locks off into a
  * separate class since they always nest.
  */
-<<<<<<< HEAD
-static struct lock_class_key macvlan_netdev_xmit_lock_key;
-static struct lock_class_key macvlan_netdev_addr_lock_key;
-
-#define MACVLAN_FEATURES \
-	(NETIF_F_SG | NETIF_F_ALL_CSUM | NETIF_F_HIGHDMA | NETIF_F_FRAGLIST | \
-	 NETIF_F_GSO | NETIF_F_TSO | NETIF_F_UFO | NETIF_F_GSO_ROBUST | \
-	 NETIF_F_TSO_ECN | NETIF_F_TSO6 | NETIF_F_GRO | NETIF_F_RXCSUM | \
-	 NETIF_F_HW_VLAN_FILTER)
-=======
 static struct lock_class_key macvlan_netdev_addr_lock_key;
 
 #define ALWAYS_ON_OFFLOADS \
@@ -1212,67 +907,26 @@ static struct lock_class_key macvlan_netdev_addr_lock_key;
 	 NETIF_F_GSO | NETIF_F_TSO | NETIF_F_LRO | \
 	 NETIF_F_TSO_ECN | NETIF_F_TSO6 | NETIF_F_GRO | NETIF_F_RXCSUM | \
 	 NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_STAG_FILTER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MACVLAN_STATE_MASK \
 	((1<<__LINK_STATE_NOCARRIER) | (1<<__LINK_STATE_DORMANT))
 
-<<<<<<< HEAD
-static void macvlan_set_lockdep_class_one(struct net_device *dev,
-					  struct netdev_queue *txq,
-					  void *_unused)
-{
-	lockdep_set_class(&txq->_xmit_lock,
-			  &macvlan_netdev_xmit_lock_key);
-}
-
-static void macvlan_set_lockdep_class(struct net_device *dev)
-{
-	lockdep_set_class(&dev->addr_list_lock,
-			  &macvlan_netdev_addr_lock_key);
-	netdev_for_each_tx_queue(dev, macvlan_set_lockdep_class_one, NULL);
-=======
 static void macvlan_set_lockdep_class(struct net_device *dev)
 {
 	netdev_lockdep_set_classes(dev);
 	lockdep_set_class(&dev->addr_list_lock,
 			  &macvlan_netdev_addr_lock_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int macvlan_init(struct net_device *dev)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
-<<<<<<< HEAD
-	const struct net_device *lowerdev = vlan->lowerdev;
-	int i;
-=======
 	struct net_device *lowerdev = vlan->lowerdev;
 	struct macvlan_port *port = vlan->port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->state		= (dev->state & ~MACVLAN_STATE_MASK) |
 				  (lowerdev->state & MACVLAN_STATE_MASK);
 	dev->features 		= lowerdev->features & MACVLAN_FEATURES;
-<<<<<<< HEAD
-	dev->features		|= NETIF_F_LLTX;
-	dev->vlan_features	= lowerdev->vlan_features & MACVLAN_FEATURES;
-	dev->gso_max_size	= lowerdev->gso_max_size;
-	dev->iflink		= lowerdev->ifindex;
-	dev->hard_header_len	= lowerdev->hard_header_len;
-
-	macvlan_set_lockdep_class(dev);
-
-	vlan->pcpu_stats = alloc_percpu(struct macvlan_pcpu_stats);
-	if (!vlan->pcpu_stats)
-		return -ENOMEM;
-
-	for_each_possible_cpu(i) {
-		struct macvlan_pcpu_stats *mvlstats;
-		mvlstats = per_cpu_ptr(vlan->pcpu_stats, i);
-		u64_stats_init(&mvlstats->syncp);
-	}
-=======
 	dev->features		|= ALWAYS_ON_FEATURES;
 	dev->hw_features	|= NETIF_F_LRO;
 	dev->vlan_features	= lowerdev->vlan_features & MACVLAN_FEATURES;
@@ -1290,7 +944,6 @@ static int macvlan_init(struct net_device *dev)
 
 	/* Get macvlan's reference to lowerdev */
 	netdev_hold(lowerdev, &vlan->dev_tracker, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1302,31 +955,19 @@ static void macvlan_uninit(struct net_device *dev)
 
 	free_percpu(vlan->pcpu_stats);
 
-<<<<<<< HEAD
-=======
 	macvlan_flush_sources(port, vlan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port->count -= 1;
 	if (!port->count)
 		macvlan_port_destroy(port->dev);
 }
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *macvlan_dev_get_stats64(struct net_device *dev,
-							 struct rtnl_link_stats64 *stats)
-=======
 static void macvlan_dev_get_stats64(struct net_device *dev,
 				    struct rtnl_link_stats64 *stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
 
 	if (vlan->pcpu_stats) {
-<<<<<<< HEAD
-		struct macvlan_pcpu_stats *p;
-=======
 		struct vlan_pcpu_stats *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 rx_packets, rx_bytes, rx_multicast, tx_packets, tx_bytes;
 		u32 rx_errors = 0, tx_dropped = 0;
 		unsigned int start;
@@ -1335,15 +976,6 @@ static void macvlan_dev_get_stats64(struct net_device *dev,
 		for_each_possible_cpu(i) {
 			p = per_cpu_ptr(vlan->pcpu_stats, i);
 			do {
-<<<<<<< HEAD
-				start = u64_stats_fetch_begin_irq(&p->syncp);
-				rx_packets	= p->rx_packets;
-				rx_bytes	= p->rx_bytes;
-				rx_multicast	= p->rx_multicast;
-				tx_packets	= p->tx_packets;
-				tx_bytes	= p->tx_bytes;
-			} while (u64_stats_fetch_retry_irq(&p->syncp, start));
-=======
 				start = u64_stats_fetch_begin(&p->syncp);
 				rx_packets	= u64_stats_read(&p->rx_packets);
 				rx_bytes	= u64_stats_read(&p->rx_bytes);
@@ -1351,7 +983,6 @@ static void macvlan_dev_get_stats64(struct net_device *dev,
 				tx_packets	= u64_stats_read(&p->tx_packets);
 				tx_bytes	= u64_stats_read(&p->tx_bytes);
 			} while (u64_stats_fetch_retry(&p->syncp, start));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			stats->rx_packets	+= rx_packets;
 			stats->rx_bytes		+= rx_bytes;
@@ -1361,70 +992,30 @@ static void macvlan_dev_get_stats64(struct net_device *dev,
 			/* rx_errors & tx_dropped are u32, updated
 			 * without syncp protection.
 			 */
-<<<<<<< HEAD
-			rx_errors	+= p->rx_errors;
-			tx_dropped	+= p->tx_dropped;
-=======
 			rx_errors	+= READ_ONCE(p->rx_errors);
 			tx_dropped	+= READ_ONCE(p->tx_dropped);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		stats->rx_errors	= rx_errors;
 		stats->rx_dropped	= rx_errors;
 		stats->tx_dropped	= tx_dropped;
 	}
-<<<<<<< HEAD
-	return stats;
-}
-
-static int macvlan_vlan_rx_add_vid(struct net_device *dev,
-				    unsigned short vid)
-=======
 }
 
 static int macvlan_vlan_rx_add_vid(struct net_device *dev,
 				   __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
 	struct net_device *lowerdev = vlan->lowerdev;
 
-<<<<<<< HEAD
-	return vlan_vid_add(lowerdev, vid);
-}
-
-static int macvlan_vlan_rx_kill_vid(struct net_device *dev,
-				     unsigned short vid)
-=======
 	return vlan_vid_add(lowerdev, proto, vid);
 }
 
 static int macvlan_vlan_rx_kill_vid(struct net_device *dev,
 				    __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
 	struct net_device *lowerdev = vlan->lowerdev;
 
-<<<<<<< HEAD
-	vlan_vid_del(lowerdev, vid);
-	return 0;
-}
-
-static void macvlan_ethtool_get_drvinfo(struct net_device *dev,
-					struct ethtool_drvinfo *drvinfo)
-{
-	snprintf(drvinfo->driver, 32, "macvlan");
-	snprintf(drvinfo->version, 32, "0.1");
-}
-
-static int macvlan_ethtool_get_settings(struct net_device *dev,
-					struct ethtool_cmd *cmd)
-{
-	const struct macvlan_dev *vlan = netdev_priv(dev);
-
-	return __ethtool_get_settings(vlan->lowerdev, cmd);
-=======
 	vlan_vid_del(lowerdev, proto, vid);
 	return 0;
 }
@@ -1568,19 +1159,13 @@ static int macvlan_dev_get_iflink(const struct net_device *dev)
 	struct macvlan_dev *vlan = netdev_priv(dev);
 
 	return READ_ONCE(vlan->lowerdev->ifindex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops macvlan_ethtool_ops = {
 	.get_link		= ethtool_op_get_link,
-<<<<<<< HEAD
-	.get_settings		= macvlan_ethtool_get_settings,
-	.get_drvinfo		= macvlan_ethtool_get_drvinfo,
-=======
 	.get_link_ksettings	= macvlan_ethtool_get_link_ksettings,
 	.get_drvinfo		= macvlan_ethtool_get_drvinfo,
 	.get_ts_info		= macvlan_ethtool_get_ts_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops macvlan_netdev_ops = {
@@ -1590,24 +1175,14 @@ static const struct net_device_ops macvlan_netdev_ops = {
 	.ndo_stop		= macvlan_stop,
 	.ndo_start_xmit		= macvlan_start_xmit,
 	.ndo_change_mtu		= macvlan_change_mtu,
-<<<<<<< HEAD
-	.ndo_change_rx_flags	= macvlan_change_rx_flags,
-	.ndo_set_mac_address	= macvlan_set_mac_address,
-	.ndo_set_rx_mode	= macvlan_set_multicast_list,
-=======
 	.ndo_fix_features	= macvlan_fix_features,
 	.ndo_change_rx_flags	= macvlan_change_rx_flags,
 	.ndo_set_mac_address	= macvlan_set_mac_address,
 	.ndo_set_rx_mode	= macvlan_set_mac_lists,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_get_stats64	= macvlan_dev_get_stats64,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_vlan_rx_add_vid	= macvlan_vlan_rx_add_vid,
 	.ndo_vlan_rx_kill_vid	= macvlan_vlan_rx_kill_vid,
-<<<<<<< HEAD
-};
-
-=======
 	.ndo_fdb_add		= macvlan_fdb_add,
 	.ndo_fdb_del		= macvlan_fdb_del,
 	.ndo_fdb_dump		= ndo_dflt_fdb_dump,
@@ -1630,18 +1205,10 @@ static void macvlan_dev_free(struct net_device *dev)
 	netdev_put(vlan->lowerdev, &vlan->dev_tracker);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void macvlan_common_setup(struct net_device *dev)
 {
 	ether_setup(dev);
 
-<<<<<<< HEAD
-	dev->priv_flags	       &= ~(IFF_XMIT_DST_RELEASE | IFF_TX_SKB_SHARING);
-	dev->priv_flags	       |= IFF_UNICAST_FLT;
-	dev->netdev_ops		= &macvlan_netdev_ops;
-	dev->destructor		= free_netdev;
-	dev->header_ops		= &macvlan_hard_header_ops,
-=======
 	/* ether_setup() has set dev->min_mtu to ETH_MIN_MTU. */
 	dev->max_mtu		= ETH_MAX_MTU;
 	dev->priv_flags	       &= ~IFF_TX_SKB_SHARING;
@@ -1651,7 +1218,6 @@ void macvlan_common_setup(struct net_device *dev)
 	dev->needs_free_netdev	= true;
 	dev->priv_destructor	= macvlan_dev_free;
 	dev->header_ops		= &macvlan_hard_header_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->ethtool_ops	= &macvlan_ethtool_ops;
 }
 EXPORT_SYMBOL_GPL(macvlan_common_setup);
@@ -1659,11 +1225,7 @@ EXPORT_SYMBOL_GPL(macvlan_common_setup);
 static void macvlan_setup(struct net_device *dev)
 {
 	macvlan_common_setup(dev);
-<<<<<<< HEAD
-	dev->tx_queue_len	= 0;
-=======
 	dev->priv_flags |= IFF_NO_QUEUE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int macvlan_port_create(struct net_device *dev)
@@ -1675,23 +1237,13 @@ static int macvlan_port_create(struct net_device *dev)
 	if (dev->type != ARPHRD_ETHER || dev->flags & IFF_LOOPBACK)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	if (netdev_is_rx_handler_busy(dev))
 		return -EBUSY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port = kzalloc(sizeof(*port), GFP_KERNEL);
 	if (port == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	port->passthru = false;
-	port->dev = dev;
-	INIT_LIST_HEAD(&port->vlans);
-	for (i = 0; i < MACVLAN_HASH_SIZE; i++)
-		INIT_HLIST_HEAD(&port->vlan_hash[i]);
-=======
 	port->dev = dev;
 	ether_addr_copy(port->perm_addr, dev->dev_addr);
 	INIT_LIST_HEAD(&port->vlans);
@@ -1704,7 +1256,6 @@ static int macvlan_port_create(struct net_device *dev)
 	port->bc_cutoff = 1;
 	skb_queue_head_init(&port->bc_queue);
 	INIT_WORK(&port->bc_work, macvlan_process_broadcast);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = netdev_rx_handler_register(dev, macvlan_handle_frame, port);
 	if (err)
@@ -1716,17 +1267,6 @@ static int macvlan_port_create(struct net_device *dev)
 
 static void macvlan_port_destroy(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct macvlan_port *port = macvlan_port_get(dev);
-
-	dev->priv_flags &= ~IFF_MACVLAN_PORT;
-	netdev_rx_handler_unregister(dev);
-	kfree_rcu(port, rcu);
-}
-
-static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[])
-{
-=======
 	struct macvlan_port *port = macvlan_port_get_rtnl(dev);
 	struct sk_buff *skb;
 
@@ -1768,7 +1308,6 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
 	struct nlattr *nla, *head;
 	int rem, len;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tb[IFLA_ADDRESS]) {
 		if (nla_len(tb[IFLA_ADDRESS]) != ETH_ALEN)
 			return -EINVAL;
@@ -1776,9 +1315,6 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
 			return -EADDRNOTAVAIL;
 	}
 
-<<<<<<< HEAD
-	if (data && data[IFLA_MACVLAN_MODE]) {
-=======
 	if (!data)
 		return 0;
 
@@ -1788,23 +1324,17 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
 		return -EINVAL;
 
 	if (data[IFLA_MACVLAN_MODE]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (nla_get_u32(data[IFLA_MACVLAN_MODE])) {
 		case MACVLAN_MODE_PRIVATE:
 		case MACVLAN_MODE_VEPA:
 		case MACVLAN_MODE_BRIDGE:
 		case MACVLAN_MODE_PASSTHRU:
-<<<<<<< HEAD
-=======
 		case MACVLAN_MODE_SOURCE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			return -EINVAL;
 		}
 	}
-<<<<<<< HEAD
-=======
 
 	if (data[IFLA_MACVLAN_MACADDR_MODE]) {
 		switch (nla_get_u32(data[IFLA_MACVLAN_MACADDR_MODE])) {
@@ -1905,29 +1435,19 @@ static int macvlan_changelink_sources(struct macvlan_dev *vlan, u32 mode,
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
 			   struct nlattr *tb[], struct nlattr *data[],
-<<<<<<< HEAD
-			   int (*receive)(struct sk_buff *skb),
-			   int (*forward)(struct net_device *dev,
-					  struct sk_buff *skb))
-=======
 			   struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
 	struct macvlan_port *port;
 	struct net_device *lowerdev;
 	int err;
-<<<<<<< HEAD
-=======
 	int macmode;
 	bool create = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tb[IFLA_LINK])
 		return -EINVAL;
@@ -1936,42 +1456,17 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
 	if (lowerdev == NULL)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	/* When creating macvlans on top of other macvlans - use
-	 * the real device as the lowerdev.
-	 */
-	if (lowerdev->rtnl_link_ops == dev->rtnl_link_ops) {
-		struct macvlan_dev *lowervlan = netdev_priv(lowerdev);
-		lowerdev = lowervlan->lowerdev;
-	}
-=======
 	/* When creating macvlans or macvtaps on top of other macvlans - use
 	 * the real device as the lowerdev.
 	 */
 	if (netif_is_macvlan(lowerdev))
 		lowerdev = macvlan_dev_real_dev(lowerdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tb[IFLA_MTU])
 		dev->mtu = lowerdev->mtu;
 	else if (dev->mtu > lowerdev->mtu)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (!tb[IFLA_ADDRESS])
-		eth_hw_addr_random(dev);
-
-	if (!macvlan_port_exists(lowerdev)) {
-		err = macvlan_port_create(lowerdev);
-		if (err < 0)
-			return err;
-	}
-	port = macvlan_port_get(lowerdev);
-
-	/* Only 1 macvlan device can be created in passthru mode */
-	if (port->passthru)
-		return -EINVAL;
-=======
 	/* MTU range: 68 - lowerdev->max_mtu */
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = lowerdev->max_mtu;
@@ -1995,46 +1490,16 @@ int macvlan_common_newlink(struct net *src_net, struct net_device *dev,
 		err = -EINVAL;
 		goto destroy_macvlan_port;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vlan->lowerdev = lowerdev;
 	vlan->dev      = dev;
 	vlan->port     = port;
-<<<<<<< HEAD
-	vlan->receive  = receive;
-	vlan->forward  = forward;
-=======
 	vlan->set_features = MACVLAN_FEATURES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vlan->mode     = MACVLAN_MODE_VEPA;
 	if (data && data[IFLA_MACVLAN_MODE])
 		vlan->mode = nla_get_u32(data[IFLA_MACVLAN_MODE]);
 
-<<<<<<< HEAD
-	if (vlan->mode == MACVLAN_MODE_PASSTHRU) {
-		if (port->count)
-			return -EINVAL;
-		port->passthru = true;
-		memcpy(dev->dev_addr, lowerdev->dev_addr, ETH_ALEN);
-	}
-
-	port->count += 1;
-	err = register_netdevice(dev);
-	if (err < 0)
-		goto destroy_port;
-
-	list_add_tail_rcu(&vlan->list, &port->vlans);
-	netif_stacked_transfer_operstate(lowerdev, dev);
-
-	return 0;
-
-destroy_port:
-	port->count -= 1;
-	if (!port->count)
-		macvlan_port_destroy(lowerdev);
-
-=======
 	if (data && data[IFLA_MACVLAN_FLAGS])
 		vlan->flags = nla_get_u16(data[IFLA_MACVLAN_FLAGS]);
 
@@ -2094,58 +1559,31 @@ destroy_macvlan_port:
 		macvlan_flush_sources(port, vlan);
 		macvlan_port_destroy(port->dev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL_GPL(macvlan_common_newlink);
 
 static int macvlan_newlink(struct net *src_net, struct net_device *dev,
-<<<<<<< HEAD
-			   struct nlattr *tb[], struct nlattr *data[])
-{
-	return macvlan_common_newlink(src_net, dev, tb, data,
-				      netif_rx,
-				      dev_forward_skb);
-=======
 			   struct nlattr *tb[], struct nlattr *data[],
 			   struct netlink_ext_ack *extack)
 {
 	return macvlan_common_newlink(src_net, dev, tb, data, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void macvlan_dellink(struct net_device *dev, struct list_head *head)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
 
-<<<<<<< HEAD
-	list_del_rcu(&vlan->list);
-	unregister_netdevice_queue(dev, head);
-=======
 	if (vlan->mode == MACVLAN_MODE_SOURCE)
 		macvlan_flush_sources(vlan->port, vlan);
 	list_del_rcu(&vlan->list);
 	update_port_bc_queue_len(vlan->port);
 	unregister_netdevice_queue(dev, head);
 	netdev_upper_dev_unlink(vlan->lowerdev, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(macvlan_dellink);
 
 static int macvlan_changelink(struct net_device *dev,
-<<<<<<< HEAD
-		struct nlattr *tb[], struct nlattr *data[])
-{
-	struct macvlan_dev *vlan = netdev_priv(dev);
-	if (data && data[IFLA_MACVLAN_MODE])
-		vlan->mode = nla_get_u32(data[IFLA_MACVLAN_MODE]);
-	return 0;
-}
-
-static size_t macvlan_get_size(const struct net_device *dev)
-{
-	return nla_total_size(4);
-=======
 			      struct nlattr *tb[], struct nlattr *data[],
 			      struct netlink_ext_ack *extack)
 {
@@ -2242,17 +1680,12 @@ static int macvlan_fill_info_macaddr(struct sk_buff *skb,
 			return 1;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int macvlan_fill_info(struct sk_buff *skb,
 				const struct net_device *dev)
 {
 	struct macvlan_dev *vlan = netdev_priv(dev);
-<<<<<<< HEAD
-
-	NLA_PUT_U32(skb, IFLA_MACVLAN_MODE, vlan->mode);
-=======
 	struct macvlan_port *port = vlan->port;
 	int i;
 	struct nlattr *nest;
@@ -2281,7 +1714,6 @@ static int macvlan_fill_info(struct sk_buff *skb,
 	if (port->bc_cutoff != 1 &&
 	    nla_put_s32(skb, IFLA_MACVLAN_BC_CUTOFF, port->bc_cutoff))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
@@ -2289,9 +1721,6 @@ nla_put_failure:
 }
 
 static const struct nla_policy macvlan_policy[IFLA_MACVLAN_MAX + 1] = {
-<<<<<<< HEAD
-	[IFLA_MACVLAN_MODE] = { .type = NLA_U32 },
-=======
 	[IFLA_MACVLAN_MODE]  = { .type = NLA_U32 },
 	[IFLA_MACVLAN_FLAGS] = { .type = NLA_U16 },
 	[IFLA_MACVLAN_MACADDR_MODE] = { .type = NLA_U32 },
@@ -2301,16 +1730,11 @@ static const struct nla_policy macvlan_policy[IFLA_MACVLAN_MAX + 1] = {
 	[IFLA_MACVLAN_BC_QUEUE_LEN] = { .type = NLA_U32 },
 	[IFLA_MACVLAN_BC_QUEUE_LEN_USED] = { .type = NLA_REJECT },
 	[IFLA_MACVLAN_BC_CUTOFF] = { .type = NLA_S32 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int macvlan_link_register(struct rtnl_link_ops *ops)
 {
 	/* common fields */
-<<<<<<< HEAD
-	ops->priv_size		= sizeof(struct macvlan_dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ops->validate		= macvlan_validate;
 	ops->maxtype		= IFLA_MACVLAN_MAX;
 	ops->policy		= macvlan_policy;
@@ -2322,27 +1746,16 @@ int macvlan_link_register(struct rtnl_link_ops *ops)
 };
 EXPORT_SYMBOL_GPL(macvlan_link_register);
 
-<<<<<<< HEAD
-=======
 static struct net *macvlan_get_link_net(const struct net_device *dev)
 {
 	return dev_net(macvlan_dev_real_dev(dev));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct rtnl_link_ops macvlan_link_ops = {
 	.kind		= "macvlan",
 	.setup		= macvlan_setup,
 	.newlink	= macvlan_newlink,
 	.dellink	= macvlan_dellink,
-<<<<<<< HEAD
-};
-
-static int macvlan_device_event(struct notifier_block *unused,
-				unsigned long event, void *ptr)
-{
-	struct net_device *dev = ptr;
-=======
 	.get_link_net	= macvlan_get_link_net,
 	.priv_size      = sizeof(struct macvlan_dev),
 };
@@ -2363,19 +1776,10 @@ static int macvlan_device_event(struct notifier_block *unused,
 				unsigned long event, void *ptr)
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct macvlan_dev *vlan, *next;
 	struct macvlan_port *port;
 	LIST_HEAD(list_kill);
 
-<<<<<<< HEAD
-	if (!macvlan_port_exists(dev))
-		return NOTIFY_DONE;
-
-	port = macvlan_port_get(dev);
-
-	switch (event) {
-=======
 	if (!netif_is_macvlan_port(dev))
 		return NOTIFY_DONE;
 
@@ -2384,7 +1788,6 @@ static int macvlan_device_event(struct notifier_block *unused,
 	switch (event) {
 	case NETDEV_UP:
 	case NETDEV_DOWN:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NETDEV_CHANGE:
 		list_for_each_entry(vlan, &port->vlans, list)
 			netif_stacked_transfer_operstate(vlan->lowerdev,
@@ -2392,13 +1795,6 @@ static int macvlan_device_event(struct notifier_block *unused,
 		break;
 	case NETDEV_FEAT_CHANGE:
 		list_for_each_entry(vlan, &port->vlans, list) {
-<<<<<<< HEAD
-			vlan->dev->features = dev->features & MACVLAN_FEATURES;
-			vlan->dev->gso_max_size = dev->gso_max_size;
-			netdev_features_change(vlan->dev);
-		}
-		break;
-=======
 			netif_inherit_tso_max(vlan->dev, dev);
 			netdev_update_features(vlan->dev);
 		}
@@ -2422,7 +1818,6 @@ static int macvlan_device_event(struct notifier_block *unused,
 			return NOTIFY_BAD;
 
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NETDEV_UNREGISTER:
 		/* twiddle thumbs on netns device moves */
 		if (dev->reg_state != NETREG_UNREGISTERING)
@@ -2431,13 +1826,6 @@ static int macvlan_device_event(struct notifier_block *unused,
 		list_for_each_entry_safe(vlan, next, &port->vlans, list)
 			vlan->dev->rtnl_link_ops->dellink(vlan->dev, &list_kill);
 		unregister_netdevice_many(&list_kill);
-<<<<<<< HEAD
-		list_del(&list_kill);
-		break;
-	case NETDEV_PRE_TYPE_CHANGE:
-		/* Forbid underlaying device to change its type. */
-		return NOTIFY_BAD;
-=======
 		break;
 	case NETDEV_PRE_TYPE_CHANGE:
 		/* Forbid underlying device to change its type. */
@@ -2449,7 +1837,6 @@ static int macvlan_device_event(struct notifier_block *unused,
 		/* Propagate to all vlans */
 		list_for_each_entry(vlan, &port->vlans, list)
 			call_netdevice_notifiers(event, vlan->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NOTIFY_DONE;
 }

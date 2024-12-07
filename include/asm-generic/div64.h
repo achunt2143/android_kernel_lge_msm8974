@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_GENERIC_DIV64_H
 #define _ASM_GENERIC_DIV64_H
 /*
  * Copyright (C) 2003 Bernardo Innocenti <bernie@develer.com>
  * Based on former asm-ppc/div64.h and asm-m68knommu/div64.h
  *
-<<<<<<< HEAD
- * The semantics of do_div() are:
- *
- * uint32_t do_div(uint64_t *n, uint32_t base)
- * {
- * 	uint32_t remainder = *n % base;
- * 	*n = *n / base;
-=======
  * Optimization for constant divisors on 32-bit machines:
  * Copyright (C) 2006-2015 Nicolas Pitre
  *
@@ -27,7 +16,6 @@
  * {
  * 	uint32_t remainder = n % base;
  * 	n = n / base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 	return remainder;
  * }
  *
@@ -40,8 +28,6 @@
 
 #if BITS_PER_LONG == 64
 
-<<<<<<< HEAD
-=======
 /**
  * do_div - returns 2 values: calculate remainder and update new dividend
  * @n: uint64_t dividend (will be updated)
@@ -56,7 +42,6 @@
  * NOTE: macro parameter @n is evaluated multiple times,
  * beware of side effects!
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define do_div(n,base) ({					\
 	uint32_t __base = (base);				\
 	uint32_t __rem;						\
@@ -67,9 +52,6 @@
 
 #elif BITS_PER_LONG == 32
 
-<<<<<<< HEAD
-extern uint32_t __div64_32(uint64_t *dividend, uint32_t divisor);
-=======
 #include <linux/log2.h>
 
 /*
@@ -230,7 +212,6 @@ static inline uint64_t __arch_xprod_64(const uint64_t m, uint64_t n, bool bias)
 #ifndef __div64_32
 extern uint32_t __div64_32(uint64_t *dividend, uint32_t divisor);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The unnecessary pointer compare is there
  * to check for type safety (n must be 64bit)
@@ -239,13 +220,6 @@ extern uint32_t __div64_32(uint64_t *dividend, uint32_t divisor);
 	uint32_t __base = (base);			\
 	uint32_t __rem;					\
 	(void)(((typeof((n)) *)0) == ((uint64_t *)0));	\
-<<<<<<< HEAD
-	if (likely(((n) >> 32) == 0)) {			\
-		__rem = (uint32_t)(n) % __base;		\
-		(n) = (uint32_t)(n) / __base;		\
-	} else 						\
-		__rem = __div64_32(&(n), __base);	\
-=======
 	if (__builtin_constant_p(__base) &&		\
 	    is_power_of_2(__base)) {			\
 		__rem = (n) & (__base - 1);		\
@@ -263,7 +237,6 @@ extern uint32_t __div64_32(uint64_t *dividend, uint32_t divisor);
 	} else {					\
 		__rem = __div64_32(&(n), __base);	\
 	}						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__rem;						\
  })
 

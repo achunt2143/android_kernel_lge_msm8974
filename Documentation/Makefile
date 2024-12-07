@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-obj-m := DocBook/ accounting/ auxdisplay/ connector/ \
-	filesystems/ filesystems/configfs/ ia64/ laptops/ networking/ \
-	pcmcia/ spi/ timers/ watchdog/src/
-=======
 # -*- makefile -*-
 # Makefile for Sphinx documentation
 #
@@ -213,4 +208,3 @@ dochelp:
 	@echo  '  make DOCS_CSS={a .css file} adds a DOCS_CSS override file for html/epub output.'
 	@echo
 	@echo  '  Default location for the generated documents is Documentation/output'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

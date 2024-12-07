@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	X.25 Packet Layer release 002
  *
@@ -11,15 +8,6 @@
  *
  *	This code REQUIRES 2.1.15 or higher
  *
-<<<<<<< HEAD
- *	This module:
- *		This module is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	X.25 001	Jonathan Naylor	  Started coding.
  *	X.25 002	Jonathan Naylor	  New timer architecture.
@@ -28,30 +16,14 @@
  *	2000-09-04	Henner Eisen	  dev_hold() / dev_put() for x25_neigh.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "X25: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/jiffies.h>
 #include <linux/timer.h>
 #include <linux/slab.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <linux/init.h>
-#include <net/x25.h>
-
-#ifdef KW_TAINT_ANALYSIS
-   extern void * get_tainted_stuff();
-#endif
-LIST_HEAD(x25_neigh_list);
-DEFINE_RWLOCK(x25_neigh_list_lock);
-
-static void x25_t20timer_expiry(unsigned long);
-=======
 #include <linux/uaccess.h>
 #include <linux/init.h>
 #include <net/x25.h>
@@ -60,7 +32,6 @@ LIST_HEAD(x25_neigh_list);
 DEFINE_RWLOCK(x25_neigh_list_lock);
 
 static void x25_t20timer_expiry(struct timer_list *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void x25_transmit_restart_confirmation(struct x25_neigh *nb);
 static void x25_transmit_restart_request(struct x25_neigh *nb);
@@ -73,15 +44,9 @@ static inline void x25_start_t20timer(struct x25_neigh *nb)
 	mod_timer(&nb->t20timer, jiffies + nb->t20);
 }
 
-<<<<<<< HEAD
-static void x25_t20timer_expiry(unsigned long param)
-{
-	struct x25_neigh *nb = (struct x25_neigh *)param;
-=======
 static void x25_t20timer_expiry(struct timer_list *t)
 {
 	struct x25_neigh *nb = from_timer(nb, t, t20timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x25_transmit_restart_request(nb);
 
@@ -93,14 +58,6 @@ static inline void x25_stop_t20timer(struct x25_neigh *nb)
 	del_timer(&nb->t20timer);
 }
 
-<<<<<<< HEAD
-static inline int x25_t20timer_pending(struct x25_neigh *nb)
-{
-	return timer_pending(&nb->t20timer);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	This handles all restart and diagnostic frames.
  */
@@ -108,22 +65,6 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
 		      unsigned short frametype)
 {
 	struct sk_buff *skbn;
-<<<<<<< HEAD
-	int confirm;
-
-	switch (frametype) {
-	case X25_RESTART_REQUEST:
-		confirm = !x25_t20timer_pending(nb);
-		x25_stop_t20timer(nb);
-		nb->state = X25_LINK_STATE_3;
-		if (confirm)
-			x25_transmit_restart_confirmation(nb);
-		break;
-
-	case X25_RESTART_CONFIRMATION:
-		x25_stop_t20timer(nb);
-		nb->state = X25_LINK_STATE_3;
-=======
 
 	switch (frametype) {
 	case X25_RESTART_REQUEST:
@@ -163,28 +104,19 @@ void x25_link_control(struct sk_buff *skb, struct x25_neigh *nb,
 			x25_start_t20timer(nb);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case X25_DIAGNOSTIC:
 		if (!pskb_may_pull(skb, X25_STD_MIN_LEN + 4))
 			break;
 
-<<<<<<< HEAD
-		printk(KERN_WARNING "x25: diagnostic #%d - %02X %02X %02X\n",
-=======
 		pr_warn("diagnostic #%d - %02X %02X %02X\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       skb->data[3], skb->data[4],
 		       skb->data[5], skb->data[6]);
 		break;
 
 	default:
-<<<<<<< HEAD
-		printk(KERN_WARNING "x25: received unknown %02X with LCI 000\n",
-=======
 		pr_warn("received unknown %02X with LCI 000\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       frametype);
 		break;
 	}
@@ -302,11 +234,6 @@ void x25_link_established(struct x25_neigh *nb)
 {
 	switch (nb->state) {
 	case X25_LINK_STATE_0:
-<<<<<<< HEAD
-		nb->state = X25_LINK_STATE_2;
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case X25_LINK_STATE_1:
 		x25_transmit_restart_request(nb);
 		nb->state = X25_LINK_STATE_2;
@@ -323,12 +250,9 @@ void x25_link_established(struct x25_neigh *nb)
 void x25_link_terminated(struct x25_neigh *nb)
 {
 	nb->state = X25_LINK_STATE_0;
-<<<<<<< HEAD
-=======
 	skb_queue_purge(&nb->queue);
 	x25_stop_t20timer(nb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Out of order: clear existing virtual calls (X.25 03/93 4.6.3) */
 	x25_kill_by_neigh(nb);
 }
@@ -344,11 +268,7 @@ void x25_link_device_up(struct net_device *dev)
 		return;
 
 	skb_queue_head_init(&nb->queue);
-<<<<<<< HEAD
-	setup_timer(&nb->t20timer, x25_t20timer_expiry, (unsigned long)nb);
-=======
 	timer_setup(&nb->t20timer, x25_t20timer_expiry, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_hold(dev);
 	nb->dev      = dev;
@@ -362,11 +282,7 @@ void x25_link_device_up(struct net_device *dev)
 				       X25_MASK_PACKET_SIZE |
 				       X25_MASK_WINDOW_SIZE;
 	nb->t20      = sysctl_x25_restart_request_timeout;
-<<<<<<< HEAD
-	atomic_set(&nb->refcnt, 1);
-=======
 	refcount_set(&nb->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_bh(&x25_neigh_list_lock);
 	list_add(&nb->node, &x25_neigh_list);
@@ -375,23 +291,13 @@ void x25_link_device_up(struct net_device *dev)
 
 /**
  *	__x25_remove_neigh - remove neighbour from x25_neigh_list
-<<<<<<< HEAD
- *	@nb - neigh to remove
-=======
  *	@nb: - neigh to remove
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Remove neighbour from x25_neigh_list. If it was there.
  *	Caller must hold x25_neigh_list_lock.
  */
 static void __x25_remove_neigh(struct x25_neigh *nb)
 {
-<<<<<<< HEAD
-	skb_queue_purge(&nb->queue);
-	x25_stop_t20timer(nb);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nb->node.next) {
 		list_del(&nb->node);
 		x25_neigh_put(nb);
@@ -426,18 +332,9 @@ void x25_link_device_down(struct net_device *dev)
 struct x25_neigh *x25_get_neigh(struct net_device *dev)
 {
 	struct x25_neigh *nb, *use = NULL;
-<<<<<<< HEAD
-	struct list_head *entry;
-
-	read_lock_bh(&x25_neigh_list_lock);
-	list_for_each(entry, &x25_neigh_list) {
-		nb = list_entry(entry, struct x25_neigh, node);
-
-=======
 
 	read_lock_bh(&x25_neigh_list_lock);
 	list_for_each_entry(nb, &x25_neigh_list, node) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nb->dev == dev) {
 			use = nb;
 			break;
@@ -453,25 +350,13 @@ struct x25_neigh *x25_get_neigh(struct net_device *dev)
 /*
  *	Handle the ioctls that control the subscription functions.
  */
-<<<<<<< HEAD
-int x25_subscr_ioctl(unsigned int cmd, void __user *arg_actual)
-=======
 int x25_subscr_ioctl(unsigned int cmd, void __user *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct x25_subscrip_struct x25_subscr;
 	struct x25_neigh *nb;
 	struct net_device *dev;
 	int rc = -EINVAL;
-<<<<<<< HEAD
-	#ifdef KW_TAINT_ANALYSIS
-	void __user *arg = (void __user *)get_tainted_stuff();
-	#else
-	void __user *arg = arg_actual;
-	#endif
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd != SIOCX25GSUBSCRIP && cmd != SIOCX25SSUBSCRIP)
 		goto out;
 

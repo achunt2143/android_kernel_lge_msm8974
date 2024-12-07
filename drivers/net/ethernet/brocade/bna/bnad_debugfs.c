@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2011 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -25,7 +7,6 @@
  * Copyright (c) 2014-2015 QLogic Corporation
  * All rights reserved
  * www.qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/debugfs.h>
@@ -87,12 +68,7 @@ bnad_debugfs_open_fwtrc(struct inode *inode, struct file *file)
 		fw_debug->debug_buffer = NULL;
 		kfree(fw_debug);
 		fw_debug = NULL;
-<<<<<<< HEAD
-		pr_warn("bnad %s: Failed to collect fwtrc\n",
-			pci_name(bnad->pcidev));
-=======
 		netdev_warn(bnad->netdev, "failed to collect fwtrc\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -132,12 +108,7 @@ bnad_debugfs_open_fwsave(struct inode *inode, struct file *file)
 		fw_debug->debug_buffer = NULL;
 		kfree(fw_debug);
 		fw_debug = NULL;
-<<<<<<< HEAD
-		pr_warn("bna %s: Failed to collect fwsave\n",
-			pci_name(bnad->pcidev));
-=======
 		netdev_warn(bnad->netdev, "failed to collect fwsave\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -192,11 +163,7 @@ bnad_get_debug_drvinfo(struct bnad *bnad, void *buffer, u32 len)
 
 	/* Retrieve flash partition info */
 	fcomp.comp_status = 0;
-<<<<<<< HEAD
-	init_completion(&fcomp.comp);
-=======
 	reinit_completion(&fcomp.comp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&bnad->bna_lock, flags);
 	ret = bfa_nw_flash_get_attr(&bnad->bna.flash, &drvinfo->flash_attr,
 				bnad_cb_completion, &fcomp);
@@ -240,12 +207,7 @@ bnad_debugfs_open_drvinfo(struct inode *inode, struct file *file)
 		drv_info->debug_buffer = NULL;
 		kfree(drv_info);
 		drv_info = NULL;
-<<<<<<< HEAD
-		pr_warn("bna %s: Failed to collect drvinfo\n",
-			pci_name(bnad->pcidev));
-=======
 		netdev_warn(bnad->netdev, "failed to collect drvinfo\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -258,39 +220,12 @@ bnad_debugfs_open_drvinfo(struct inode *inode, struct file *file)
 static loff_t
 bnad_debugfs_lseek(struct file *file, loff_t offset, int orig)
 {
-<<<<<<< HEAD
-	loff_t pos = file->f_pos;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnad_debug_info *debug = file->private_data;
 
 	if (!debug)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	switch (orig) {
-	case 0:
-		file->f_pos = offset;
-		break;
-	case 1:
-		file->f_pos += offset;
-		break;
-	case 2:
-		file->f_pos = debug->buffer_len - offset;
-		break;
-	default:
-		return -EINVAL;
-	}
-
-	if (file->f_pos < 0 || file->f_pos > debug->buffer_len) {
-		file->f_pos = pos;
-		return -EINVAL;
-	}
-
-	return file->f_pos;
-=======
 	return fixed_size_llseek(file, offset, orig, debug->buffer_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -325,17 +260,6 @@ bna_reg_offset_check(struct bfa_ioc *ioc, u32 offset, u32 len)
 	area = (offset >> 15) & 0x7;
 	if (area == 0) {
 		/* PCIe core register */
-<<<<<<< HEAD
-		if ((offset + (len<<2)) > 0x8000)	/* 8k dwords or 32KB */
-			return BFA_STATUS_EINVAL;
-	} else if (area == 0x1) {
-		/* CB 32 KB memory page */
-		if ((offset + (len<<2)) > 0x10000)	/* 8k dwords or 32KB */
-			return BFA_STATUS_EINVAL;
-	} else {
-		/* CB register space 64KB */
-		if ((offset + (len<<2)) > BFA_REG_ADDRMSK(ioc))
-=======
 		if (offset + (len << 2) > 0x8000)	/* 8k dwords or 32KB */
 			return BFA_STATUS_EINVAL;
 	} else if (area == 0x1) {
@@ -345,7 +269,6 @@ bna_reg_offset_check(struct bfa_ioc *ioc, u32 offset, u32 len)
 	} else {
 		/* CB register space 64KB */
 		if (offset + (len << 2) > BFA_REG_ADDRMSK(ioc))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return BFA_STATUS_EINVAL;
 	}
 	return BFA_STATUS_OK;
@@ -381,33 +304,13 @@ bnad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	struct bnad_debug_info *regrd_debug = file->private_data;
 	struct bnad *bnad = (struct bnad *)regrd_debug->i_private;
 	struct bfa_ioc *ioc = &bnad->bna.ioceth.ioc;
-<<<<<<< HEAD
-	int addr, len, rc, i;
-=======
 	int rc, i;
 	u32 addr, len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 *regbuf;
 	void __iomem *rb, *reg_addr;
 	unsigned long flags;
 	void *kern_buf;
 
-<<<<<<< HEAD
-	/* Allocate memory to store the user space buf */
-	kern_buf = kzalloc(nbytes, GFP_KERNEL);
-	if (!kern_buf)
-		return -ENOMEM;
-
-	if (copy_from_user(kern_buf, (void  __user *)buf, nbytes)) {
-		kfree(kern_buf);
-		return -ENOMEM;
-	}
-
-	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
-	if (rc < 2) {
-		pr_warn("bna %s: Failed to read user buffer\n",
-			pci_name(bnad->pcidev));
-=======
 	/* Copy the user space buf */
 	kern_buf = memdup_user_nul(buf, nbytes);
 	if (IS_ERR(kern_buf))
@@ -416,17 +319,12 @@ bnad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	rc = sscanf(kern_buf, "%x:%x", &addr, &len);
 	if (rc < 2 || len > UINT_MAX >> 2) {
 		netdev_warn(bnad->netdev, "failed to read user buffer\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(kern_buf);
 		return -EINVAL;
 	}
 
 	kfree(kern_buf);
 	kfree(bnad->regdata);
-<<<<<<< HEAD
-	bnad->regdata = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bnad->reglen = 0;
 
 	bnad->regdata = kzalloc(len << 2, GFP_KERNEL);
@@ -440,12 +338,7 @@ bnad_debugfs_write_regrd(struct file *file, const char __user *buf,
 	/* offset and len sanity check */
 	rc = bna_reg_offset_check(ioc, addr, len);
 	if (rc) {
-<<<<<<< HEAD
-		pr_warn("bna %s: Failed reg offset check\n",
-			pci_name(bnad->pcidev));
-=======
 		netdev_warn(bnad->netdev, "failed reg offset check\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(bnad->regdata);
 		bnad->regdata = NULL;
 		bnad->reglen = 0;
@@ -472,32 +365,12 @@ bnad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	struct bnad_debug_info *debug = file->private_data;
 	struct bnad *bnad = (struct bnad *)debug->i_private;
 	struct bfa_ioc *ioc = &bnad->bna.ioceth.ioc;
-<<<<<<< HEAD
-	int addr, val, rc;
-=======
 	int rc;
 	u32 addr, val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *reg_addr;
 	unsigned long flags;
 	void *kern_buf;
 
-<<<<<<< HEAD
-	/* Allocate memory to store the user space buf */
-	kern_buf = kzalloc(nbytes, GFP_KERNEL);
-	if (!kern_buf)
-		return -ENOMEM;
-
-	if (copy_from_user(kern_buf, (void  __user *)buf, nbytes)) {
-		kfree(kern_buf);
-		return -ENOMEM;
-	}
-
-	rc = sscanf(kern_buf, "%x:%x", &addr, &val);
-	if (rc < 2) {
-		pr_warn("bna %s: Failed to read user buffer\n",
-			pci_name(bnad->pcidev));
-=======
 	/* Copy the user space buf */
 	kern_buf = memdup_user_nul(buf, nbytes);
 	if (IS_ERR(kern_buf))
@@ -506,7 +379,6 @@ bnad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	rc = sscanf(kern_buf, "%x:%x", &addr, &val);
 	if (rc < 2) {
 		netdev_warn(bnad->netdev, "failed to read user buffer\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(kern_buf);
 		return -EINVAL;
 	}
@@ -517,12 +389,7 @@ bnad_debugfs_write_regwr(struct file *file, const char __user *buf,
 	/* offset and len sanity check */
 	rc = bna_reg_offset_check(ioc, addr, 1);
 	if (rc) {
-<<<<<<< HEAD
-		pr_warn("bna %s: Failed reg offset check\n",
-			pci_name(bnad->pcidev));
-=======
 		netdev_warn(bnad->netdev, "failed reg offset check\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -611,19 +478,11 @@ struct bnad_debugfs_entry {
 };
 
 static const struct bnad_debugfs_entry bnad_debugfs_files[] = {
-<<<<<<< HEAD
-	{ "fwtrc",  S_IFREG|S_IRUGO, &bnad_debugfs_op_fwtrc, },
-	{ "fwsave", S_IFREG|S_IRUGO, &bnad_debugfs_op_fwsave, },
-	{ "regrd",  S_IFREG|S_IRUGO|S_IWUSR, &bnad_debugfs_op_regrd, },
-	{ "regwr",  S_IFREG|S_IWUSR, &bnad_debugfs_op_regwr, },
-	{ "drvinfo", S_IFREG|S_IRUGO, &bnad_debugfs_op_drvinfo, },
-=======
 	{ "fwtrc",  S_IFREG | 0444, &bnad_debugfs_op_fwtrc, },
 	{ "fwsave", S_IFREG | 0444, &bnad_debugfs_op_fwsave, },
 	{ "regrd",  S_IFREG | 0644, &bnad_debugfs_op_regrd, },
 	{ "regwr",  S_IFREG | 0200, &bnad_debugfs_op_regwr, },
 	{ "drvinfo", S_IFREG | 0444, &bnad_debugfs_op_drvinfo, },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct dentry *bna_debugfs_root;
@@ -642,12 +501,8 @@ bnad_debugfs_init(struct bnad *bnad)
 		bna_debugfs_root = debugfs_create_dir("bna", NULL);
 		atomic_set(&bna_debugfs_port_count, 0);
 		if (!bna_debugfs_root) {
-<<<<<<< HEAD
-			pr_warn("BNA: debugfs root dir creation failed\n");
-=======
 			netdev_warn(bnad->netdev,
 				    "debugfs root dir creation failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
@@ -657,14 +512,6 @@ bnad_debugfs_init(struct bnad *bnad)
 	if (!bnad->port_debugfs_root) {
 		bnad->port_debugfs_root =
 			debugfs_create_dir(name, bna_debugfs_root);
-<<<<<<< HEAD
-		if (!bnad->port_debugfs_root) {
-			pr_warn("bna pci_dev %s: root dir creation failed\n",
-				pci_name(bnad->pcidev));
-			return;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		atomic_inc(&bna_debugfs_port_count);
 
@@ -677,15 +524,9 @@ bnad_debugfs_init(struct bnad *bnad)
 							bnad,
 							file->fops);
 			if (!bnad->bnad_dentry_files[i]) {
-<<<<<<< HEAD
-				pr_warn(
-				     "BNA pci_dev:%s: create %s entry failed\n",
-				     pci_name(bnad->pcidev), file->name);
-=======
 				netdev_warn(bnad->netdev,
 					    "create %s entry failed\n",
 					    file->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 		}

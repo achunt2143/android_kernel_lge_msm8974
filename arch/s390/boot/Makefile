@@ -1,35 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux s390-specific parts of the memory manager.
 #
 
-<<<<<<< HEAD
-COMPILE_VERSION := __linux_compile_version_id__`hostname |  \
-			tr -c '[0-9A-Za-z]' '_'`__`date | \
-			tr -c '[0-9A-Za-z]' '_'`_t
-
-ccflags-y  := -DCOMPILE_VERSION=$(COMPILE_VERSION) -gstabs -I.
-
-targets := image
-targets += bzImage
-subdir- := compressed
-
-$(obj)/image: vmlinux FORCE
-	$(call if_changed,objcopy)
-
-$(obj)/bzImage: $(obj)/compressed/vmlinux FORCE
-	$(call if_changed,objcopy)
-
-$(obj)/compressed/vmlinux: FORCE
-	$(Q)$(MAKE) $(build)=$(obj)/compressed $@
-
-install: $(CONFIGURE) $(obj)/image
-	sh -x  $(srctree)/$(obj)/install.sh $(KERNELRELEASE) $(obj)/image \
-	      System.map "$(INSTALL_PATH)"
-=======
 KCOV_INSTRUMENT := n
 GCOV_PROFILE := n
 UBSAN_SANITIZE := n
@@ -171,4 +144,3 @@ $(obj)/vmlinux.bin.zst: $(obj)/vmlinux.bin FORCE
 OBJCOPYFLAGS_piggy.o := -I binary -O elf64-s390 -B s390:64-bit --rename-section .data=.vmlinux.bin.compressed
 $(obj)/piggy.o: $(obj)/vmlinux.bin$(suffix-y) FORCE
 	$(call if_changed,objcopy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

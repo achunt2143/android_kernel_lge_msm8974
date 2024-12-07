@@ -1,33 +1,3 @@
-<<<<<<< HEAD
-menu "Versatile platform type"
-	depends on ARCH_VERSATILE
-
-config ARCH_VERSATILE_PB
-	bool "Support Versatile Platform Baseboard for ARM926EJ-S"
-	select CPU_ARM926T
-	select MIGHT_HAVE_PCI
-	default y
-	help
-	  Include support for the ARM(R) Versatile Platform Baseboard
-	  for the ARM926EJ-S.
-
-config MACH_VERSATILE_AB
-	bool "Support Versatile Application Baseboard for ARM926EJ-S"
-	select CPU_ARM926T
-	help
-	  Include support for the ARM(R) Versatile Application Baseboard
-	  for the ARM926EJ-S.
-
-config MACH_VERSATILE_DT
-	bool "Support Versatile platform from device tree"
-	select USE_OF
-	select CPU_ARM926T
-	help
-	  Include support for the ARM(R) Versatile/PB platform,
-	  using the device tree for discovery
-
-endmenu
-=======
 # SPDX-License-Identifier: GPL-2.0
 config ARCH_VERSATILE
 	bool "ARM Ltd. Versatile family"
@@ -337,4 +307,3 @@ config ARCH_VEXPRESS_TC2_PM
 	  with a TC2 (A15x2 A7x3) big.LITTLE core tile.
 
 endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

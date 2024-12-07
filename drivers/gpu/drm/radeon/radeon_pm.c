@@ -20,18 +20,6 @@
  * Authors: Rafał Miłecki <zajec5@gmail.com>
  *          Alex Deucher <alexdeucher@gmail.com>
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon.h"
-#include "avivod.h"
-#include "atom.h"
-#ifdef CONFIG_ACPI
-#include <linux/acpi.h>
-#endif
-#include <linux/power_supply.h>
-#include <linux/hwmon.h>
-#include <linux/hwmon-sysfs.h>
-=======
 
 #include <linux/hwmon-sysfs.h>
 #include <linux/hwmon.h>
@@ -45,21 +33,13 @@
 #include "r600_dpm.h"
 #include "radeon.h"
 #include "radeon_pm.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RADEON_IDLE_LOOP_MS 100
 #define RADEON_RECLOCK_DELAY_MS 200
 #define RADEON_WAIT_VBLANK_TIMEOUT 200
-<<<<<<< HEAD
-#define RADEON_WAIT_IDLE_TIMEOUT 200
-
-static const char *radeon_pm_state_type_name[5] = {
-	"Default",
-=======
 
 static const char *radeon_pm_state_type_name[5] = {
 	"",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Powersave",
 	"Battery",
 	"Balanced",
@@ -67,21 +47,12 @@ static const char *radeon_pm_state_type_name[5] = {
 };
 
 static void radeon_dynpm_idle_work_handler(struct work_struct *work);
-<<<<<<< HEAD
-static int radeon_debugfs_pm_init(struct radeon_device *rdev);
-=======
 static void radeon_debugfs_pm_init(struct radeon_device *rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool radeon_pm_in_vbl(struct radeon_device *rdev);
 static bool radeon_pm_debug_check_in_vbl(struct radeon_device *rdev, bool finish);
 static void radeon_pm_update_profile(struct radeon_device *rdev);
 static void radeon_pm_set_clocks(struct radeon_device *rdev);
 
-<<<<<<< HEAD
-#define ACPI_AC_CLASS           "ac_adapter"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int radeon_pm_get_type_index(struct radeon_device *rdev,
 			     enum radeon_pm_state_type ps_type,
 			     int instance)
@@ -100,35 +71,6 @@ int radeon_pm_get_type_index(struct radeon_device *rdev,
 	return rdev->pm.default_power_state_index;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_ACPI
-static int radeon_acpi_event(struct notifier_block *nb,
-			     unsigned long val,
-			     void *data)
-{
-	struct radeon_device *rdev = container_of(nb, struct radeon_device, acpi_nb);
-	struct acpi_bus_event *entry = (struct acpi_bus_event *)data;
-
-	if (strcmp(entry->device_class, ACPI_AC_CLASS) == 0) {
-		if (power_supply_is_system_supplied() > 0)
-			DRM_DEBUG_DRIVER("pm: AC\n");
-		else
-			DRM_DEBUG_DRIVER("pm: DC\n");
-
-		if (rdev->pm.pm_method == PM_METHOD_PROFILE) {
-			if (rdev->pm.profile == PM_PROFILE_AUTO) {
-				mutex_lock(&rdev->pm.mutex);
-				radeon_pm_update_profile(rdev);
-				radeon_pm_set_clocks(rdev);
-				mutex_unlock(&rdev->pm.mutex);
-			}
-		}
-	}
-
-	return NOTIFY_OK;
-}
-#endif
-=======
 void radeon_pm_acpi_event_handler(struct radeon_device *rdev)
 {
 	if ((rdev->pm.pm_method == PM_METHOD_DPM) && rdev->pm.dpm_enabled) {
@@ -151,7 +93,6 @@ void radeon_pm_acpi_event_handler(struct radeon_device *rdev)
 		}
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void radeon_pm_update_profile(struct radeon_device *rdev)
 {
@@ -213,11 +154,7 @@ static void radeon_unmap_vram_bos(struct radeon_device *rdev)
 		return;
 
 	list_for_each_entry_safe(bo, n, &rdev->gem.objects, list) {
-<<<<<<< HEAD
-		if (bo->tbo.mem.mem_type == TTM_PL_VRAM)
-=======
 		if (bo->tbo.resource->mem_type == TTM_PL_VRAM)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ttm_bo_unmap_virtual(&bo->tbo);
 	}
 }
@@ -247,10 +184,6 @@ static void radeon_set_power_state(struct radeon_device *rdev)
 		if (sclk > rdev->pm.default_sclk)
 			sclk = rdev->pm.default_sclk;
 
-<<<<<<< HEAD
-		mclk = rdev->pm.power_state[rdev->pm.requested_power_state_index].
-			clock_info[rdev->pm.requested_clock_mode_index].mclk;
-=======
 		/* starting with BTC, there is one state that is used for both
 		 * MH and SH.  Difference is that we always use the high clock index for
 		 * mclk and vddci.
@@ -266,7 +199,6 @@ static void radeon_set_power_state(struct radeon_device *rdev)
 			mclk = rdev->pm.power_state[rdev->pm.requested_power_state_index].
 				clock_info[rdev->pm.requested_clock_mode_index].mclk;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mclk > rdev->pm.default_mclk)
 			mclk = rdev->pm.default_mclk;
 
@@ -319,60 +251,14 @@ static void radeon_set_power_state(struct radeon_device *rdev)
 
 static void radeon_pm_set_clocks(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	int i;
-=======
 	struct drm_crtc *crtc;
 	int i, r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* no need to take locks, etc. if nothing's going to change */
 	if ((rdev->pm.requested_clock_mode_index == rdev->pm.current_clock_mode_index) &&
 	    (rdev->pm.requested_power_state_index == rdev->pm.current_power_state_index))
 		return;
 
-<<<<<<< HEAD
-	mutex_lock(&rdev->ddev->struct_mutex);
-	mutex_lock(&rdev->vram_mutex);
-	for (i = 0; i < RADEON_NUM_RINGS; ++i) {
-		if (rdev->ring[i].ring_obj)
-			mutex_lock(&rdev->ring[i].mutex);
-	}
-
-	/* gui idle int has issues on older chips it seems */
-	if (rdev->family >= CHIP_R600) {
-		if (rdev->irq.installed) {
-			/* wait for GPU idle */
-			rdev->pm.gui_idle = false;
-			rdev->irq.gui_idle = true;
-			radeon_irq_set(rdev);
-			wait_event_interruptible_timeout(
-				rdev->irq.idle_queue, rdev->pm.gui_idle,
-				msecs_to_jiffies(RADEON_WAIT_IDLE_TIMEOUT));
-			rdev->irq.gui_idle = false;
-			radeon_irq_set(rdev);
-		}
-	} else {
-		struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
-		if (ring->ready) {
-			struct radeon_fence *fence;
-			radeon_ring_alloc(rdev, ring, 64);
-			radeon_fence_create(rdev, &fence, radeon_ring_index(rdev, ring));
-			radeon_fence_emit(rdev, fence);
-			radeon_ring_commit(rdev, ring);
-			radeon_fence_wait(fence, false);
-			radeon_fence_unref(&fence);
-		}
-	}
-	radeon_unmap_vram_bos(rdev);
-
-	if (rdev->irq.installed) {
-		for (i = 0; i < rdev->num_crtc; i++) {
-			if (rdev->pm.active_crtcs & (1 << i)) {
-				rdev->pm.req_vblank |= (1 << i);
-				drm_vblank_get(rdev->ddev, i);
-			}
-=======
 	down_write(&rdev->pm.mclk_lock);
 	mutex_lock(&rdev->ring_lock);
 
@@ -405,20 +291,12 @@ static void radeon_pm_set_clocks(struct radeon_device *rdev)
 							 i);
 			}
 			i++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	radeon_set_power_state(rdev);
 
 	if (rdev->irq.installed) {
-<<<<<<< HEAD
-		for (i = 0; i < rdev->num_crtc; i++) {
-			if (rdev->pm.req_vblank & (1 << i)) {
-				rdev->pm.req_vblank &= ~(1 << i);
-				drm_vblank_put(rdev->ddev, i);
-			}
-=======
 		i = 0;
 		drm_for_each_crtc(crtc, rdev->ddev) {
 			if (rdev->pm.req_vblank & (1 << i)) {
@@ -426,7 +304,6 @@ static void radeon_pm_set_clocks(struct radeon_device *rdev)
 				drm_crtc_vblank_put(crtc);
 			}
 			i++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -437,17 +314,8 @@ static void radeon_pm_set_clocks(struct radeon_device *rdev)
 
 	rdev->pm.dynpm_planned_action = DYNPM_ACTION_NONE;
 
-<<<<<<< HEAD
-	for (i = 0; i < RADEON_NUM_RINGS; ++i) {
-		if (rdev->ring[i].ring_obj)
-			mutex_unlock(&rdev->ring[i].mutex);
-	}
-	mutex_unlock(&rdev->vram_mutex);
-	mutex_unlock(&rdev->ddev->struct_mutex);
-=======
 	mutex_unlock(&rdev->ring_lock);
 	up_write(&rdev->pm.mclk_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void radeon_pm_print_states(struct radeon_device *rdev)
@@ -471,19 +339,6 @@ static void radeon_pm_print_states(struct radeon_device *rdev)
 		for (j = 0; j < power_state->num_clock_modes; j++) {
 			clock_info = &(power_state->clock_info[j]);
 			if (rdev->flags & RADEON_IS_IGP)
-<<<<<<< HEAD
-				DRM_DEBUG_DRIVER("\t\t%d e: %d%s\n",
-					j,
-					clock_info->sclk * 10,
-					clock_info->flags & RADEON_PM_MODE_NO_DISPLAY ? "\tNo display only" : "");
-			else
-				DRM_DEBUG_DRIVER("\t\t%d e: %d\tm: %d\tv: %d%s\n",
-					j,
-					clock_info->sclk * 10,
-					clock_info->mclk * 10,
-					clock_info->voltage.voltage,
-					clock_info->flags & RADEON_PM_MODE_NO_DISPLAY ? "\tNo display only" : "");
-=======
 				DRM_DEBUG_DRIVER("\t\t%d e: %d\n",
 						 j,
 						 clock_info->sclk * 10);
@@ -493,7 +348,6 @@ static void radeon_pm_print_states(struct radeon_device *rdev)
 						 clock_info->sclk * 10,
 						 clock_info->mclk * 10,
 						 clock_info->voltage.voltage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -502,17 +356,6 @@ static ssize_t radeon_get_pm_profile(struct device *dev,
 				     struct device_attribute *attr,
 				     char *buf)
 {
-<<<<<<< HEAD
-	struct drm_device *ddev = pci_get_drvdata(to_pci_dev(dev));
-	struct radeon_device *rdev = ddev->dev_private;
-	int cp = rdev->pm.profile;
-
-	return snprintf(buf, PAGE_SIZE, "%s\n",
-			(cp == PM_PROFILE_AUTO) ? "auto" :
-			(cp == PM_PROFILE_LOW) ? "low" :
-			(cp == PM_PROFILE_MID) ? "mid" :
-			(cp == PM_PROFILE_HIGH) ? "high" : "default");
-=======
 	struct drm_device *ddev = dev_get_drvdata(dev);
 	struct radeon_device *rdev = ddev->dev_private;
 	int cp = rdev->pm.profile;
@@ -521,7 +364,6 @@ static ssize_t radeon_get_pm_profile(struct device *dev,
 			  (cp == PM_PROFILE_LOW) ? "low" :
 			  (cp == PM_PROFILE_MID) ? "mid" :
 			  (cp == PM_PROFILE_HIGH) ? "high" : "default");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t radeon_set_pm_profile(struct device *dev,
@@ -529,11 +371,6 @@ static ssize_t radeon_set_pm_profile(struct device *dev,
 				     const char *buf,
 				     size_t count)
 {
-<<<<<<< HEAD
-	struct drm_device *ddev = pci_get_drvdata(to_pci_dev(dev));
-	struct radeon_device *rdev = ddev->dev_private;
-
-=======
 	struct drm_device *ddev = dev_get_drvdata(dev);
 	struct radeon_device *rdev = ddev->dev_private;
 
@@ -542,7 +379,6 @@ static ssize_t radeon_set_pm_profile(struct device *dev,
 	     (ddev->switch_power_state != DRM_SWITCH_POWER_ON))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&rdev->pm.mutex);
 	if (rdev->pm.pm_method == PM_METHOD_PROFILE) {
 		if (strncmp("default", buf, strlen("default")) == 0)
@@ -574,21 +410,12 @@ static ssize_t radeon_get_pm_method(struct device *dev,
 				    struct device_attribute *attr,
 				    char *buf)
 {
-<<<<<<< HEAD
-	struct drm_device *ddev = pci_get_drvdata(to_pci_dev(dev));
-	struct radeon_device *rdev = ddev->dev_private;
-	int pm = rdev->pm.pm_method;
-
-	return snprintf(buf, PAGE_SIZE, "%s\n",
-			(pm == PM_METHOD_DYNPM) ? "dynpm" : "profile");
-=======
 	struct drm_device *ddev = dev_get_drvdata(dev);
 	struct radeon_device *rdev = ddev->dev_private;
 	int pm = rdev->pm.pm_method;
 
 	return sysfs_emit(buf, "%s\n", (pm == PM_METHOD_DYNPM) ? "dynpm" :
 			  (pm == PM_METHOD_PROFILE) ? "profile" : "dpm");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t radeon_set_pm_method(struct device *dev,
@@ -596,11 +423,6 @@ static ssize_t radeon_set_pm_method(struct device *dev,
 				    const char *buf,
 				    size_t count)
 {
-<<<<<<< HEAD
-	struct drm_device *ddev = pci_get_drvdata(to_pci_dev(dev));
-	struct radeon_device *rdev = ddev->dev_private;
-
-=======
 	struct drm_device *ddev = dev_get_drvdata(dev);
 	struct radeon_device *rdev = ddev->dev_private;
 
@@ -616,7 +438,6 @@ static ssize_t radeon_set_pm_method(struct device *dev,
 		count = -EINVAL;
 		goto fail;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (strncmp("dynpm", buf, strlen("dynpm")) == 0) {
 		mutex_lock(&rdev->pm.mutex);
@@ -641,10 +462,6 @@ fail:
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(power_profile, S_IRUGO | S_IWUSR, radeon_get_pm_profile, radeon_set_pm_profile);
-static DEVICE_ATTR(power_method, S_IRUGO | S_IWUSR, radeon_get_pm_method, radeon_set_pm_method);
-=======
 static ssize_t radeon_get_dpm_state(struct device *dev,
 				    struct device_attribute *attr,
 				    char *buf)
@@ -847,61 +664,11 @@ static DEVICE_ATTR(power_dpm_state, S_IRUGO | S_IWUSR, radeon_get_dpm_state, rad
 static DEVICE_ATTR(power_dpm_force_performance_level, S_IRUGO | S_IWUSR,
 		   radeon_get_dpm_forced_performance_level,
 		   radeon_set_dpm_forced_performance_level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t radeon_hwmon_show_temp(struct device *dev,
 				      struct device_attribute *attr,
 				      char *buf)
 {
-<<<<<<< HEAD
-	struct drm_device *ddev = pci_get_drvdata(to_pci_dev(dev));
-	struct radeon_device *rdev = ddev->dev_private;
-	int temp;
-
-	switch (rdev->pm.int_thermal_type) {
-	case THERMAL_TYPE_RV6XX:
-		temp = rv6xx_get_temp(rdev);
-		break;
-	case THERMAL_TYPE_RV770:
-		temp = rv770_get_temp(rdev);
-		break;
-	case THERMAL_TYPE_EVERGREEN:
-	case THERMAL_TYPE_NI:
-		temp = evergreen_get_temp(rdev);
-		break;
-	case THERMAL_TYPE_SUMO:
-		temp = sumo_get_temp(rdev);
-		break;
-	case THERMAL_TYPE_SI:
-		temp = si_get_temp(rdev);
-		break;
-	default:
-		temp = 0;
-		break;
-	}
-
-	return snprintf(buf, PAGE_SIZE, "%d\n", temp);
-}
-
-static ssize_t radeon_hwmon_show_name(struct device *dev,
-				      struct device_attribute *attr,
-				      char *buf)
-{
-	return sprintf(buf, "radeon\n");
-}
-
-static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, radeon_hwmon_show_temp, NULL, 0);
-static SENSOR_DEVICE_ATTR(name, S_IRUGO, radeon_hwmon_show_name, NULL, 0);
-
-static struct attribute *hwmon_attributes[] = {
-	&sensor_dev_attr_temp1_input.dev_attr.attr,
-	&sensor_dev_attr_name.dev_attr.attr,
-	NULL
-};
-
-static const struct attribute_group hwmon_attrgroup = {
-	.attrs = hwmon_attributes,
-=======
 	struct radeon_device *rdev = dev_get_drvdata(dev);
 	struct drm_device *ddev = rdev->ddev;
 	int temp;
@@ -1065,18 +832,12 @@ static const struct attribute_group hwmon_attrgroup = {
 static const struct attribute_group *hwmon_groups[] = {
 	&hwmon_attrgroup,
 	NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int radeon_hwmon_init(struct radeon_device *rdev)
 {
 	int err = 0;
 
-<<<<<<< HEAD
-	rdev->pm.int_hwmon_dev = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (rdev->pm.int_thermal_type) {
 	case THERMAL_TYPE_RV6XX:
 	case THERMAL_TYPE_RV770:
@@ -1084,12 +845,6 @@ static int radeon_hwmon_init(struct radeon_device *rdev)
 	case THERMAL_TYPE_NI:
 	case THERMAL_TYPE_SUMO:
 	case THERMAL_TYPE_SI:
-<<<<<<< HEAD
-		/* No support for TN yet */
-		if (rdev->family == CHIP_ARUBA)
-			return err;
-		rdev->pm.int_hwmon_dev = hwmon_device_register(rdev->dev);
-=======
 	case THERMAL_TYPE_CI:
 	case THERMAL_TYPE_KV:
 		if (rdev->asic->pm.get_temperature == NULL)
@@ -1097,23 +852,10 @@ static int radeon_hwmon_init(struct radeon_device *rdev)
 		rdev->pm.int_hwmon_dev = hwmon_device_register_with_groups(rdev->dev,
 									   "radeon", rdev,
 									   hwmon_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(rdev->pm.int_hwmon_dev)) {
 			err = PTR_ERR(rdev->pm.int_hwmon_dev);
 			dev_err(rdev->dev,
 				"Unable to register hwmon device: %d\n", err);
-<<<<<<< HEAD
-			break;
-		}
-		dev_set_drvdata(rdev->pm.int_hwmon_dev, rdev->ddev);
-		err = sysfs_create_group(&rdev->pm.int_hwmon_dev->kobj,
-					 &hwmon_attrgroup);
-		if (err) {
-			dev_err(rdev->dev,
-				"Unable to create hwmon sysfs file: %d\n", err);
-			hwmon_device_unregister(rdev->dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -1125,15 +867,6 @@ static int radeon_hwmon_init(struct radeon_device *rdev)
 
 static void radeon_hwmon_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	if (rdev->pm.int_hwmon_dev) {
-		sysfs_remove_group(&rdev->pm.int_hwmon_dev->kobj, &hwmon_attrgroup);
-		hwmon_device_unregister(rdev->pm.int_hwmon_dev);
-	}
-}
-
-void radeon_pm_suspend(struct radeon_device *rdev)
-=======
 	if (rdev->pm.int_hwmon_dev)
 		hwmon_device_unregister(rdev->pm.int_hwmon_dev);
 }
@@ -1508,7 +1241,6 @@ void radeon_dpm_enable_vce(struct radeon_device *rdev, bool enable)
 }
 
 static void radeon_pm_suspend_old(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&rdev->pm.mutex);
 	if (rdev->pm.pm_method == PM_METHOD_DYNPM) {
@@ -1520,9 +1252,6 @@ static void radeon_pm_suspend_old(struct radeon_device *rdev)
 	cancel_delayed_work_sync(&rdev->pm.dynpm_idle_work);
 }
 
-<<<<<<< HEAD
-void radeon_pm_resume(struct radeon_device *rdev)
-=======
 static void radeon_pm_suspend_dpm(struct radeon_device *rdev)
 {
 	mutex_lock(&rdev->pm.mutex);
@@ -1543,7 +1272,6 @@ void radeon_pm_suspend(struct radeon_device *rdev)
 }
 
 static void radeon_pm_resume_old(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* set up the default clocks if the MC ucode is loaded */
 	if ((rdev->family >= CHIP_BARTS) &&
@@ -1580,14 +1308,6 @@ static void radeon_pm_resume_old(struct radeon_device *rdev)
 	radeon_pm_compute_clocks(rdev);
 }
 
-<<<<<<< HEAD
-int radeon_pm_init(struct radeon_device *rdev)
-{
-	int ret;
-
-	/* default to profile method */
-	rdev->pm.pm_method = PM_METHOD_PROFILE;
-=======
 static void radeon_pm_resume_dpm(struct radeon_device *rdev)
 {
 	int ret;
@@ -1633,7 +1353,6 @@ static int radeon_pm_init_old(struct radeon_device *rdev)
 {
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->pm.profile = PM_PROFILE_DEFAULT;
 	rdev->pm.dynpm_state = DYNPM_STATE_DISABLED;
 	rdev->pm.dynpm_planned_action = DYNPM_ACTION_NONE;
@@ -1677,35 +1396,13 @@ static int radeon_pm_init_old(struct radeon_device *rdev)
 	INIT_DELAYED_WORK(&rdev->pm.dynpm_idle_work, radeon_dynpm_idle_work_handler);
 
 	if (rdev->pm.num_power_states > 1) {
-<<<<<<< HEAD
-		/* where's the best place to put these? */
-		ret = device_create_file(rdev->dev, &dev_attr_power_profile);
-		if (ret)
-			DRM_ERROR("failed to create device file for power profile\n");
-		ret = device_create_file(rdev->dev, &dev_attr_power_method);
-		if (ret)
-			DRM_ERROR("failed to create device file for power method\n");
-
-#ifdef CONFIG_ACPI
-		rdev->acpi_nb.notifier_call = radeon_acpi_event;
-		register_acpi_notifier(&rdev->acpi_nb);
-#endif
-		if (radeon_debugfs_pm_init(rdev)) {
-			DRM_ERROR("Failed to register debugfs file for PM!\n");
-		}
-
-=======
 		radeon_debugfs_pm_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DRM_INFO("radeon: power management initialized\n");
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-void radeon_pm_fini(struct radeon_device *rdev)
-=======
 static void radeon_dpm_print_power_states(struct radeon_device *rdev)
 {
 	int i;
@@ -1940,7 +1637,6 @@ int radeon_pm_late_init(struct radeon_device *rdev)
 }
 
 static void radeon_pm_fini_old(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (rdev->pm.num_power_states > 1) {
 		mutex_lock(&rdev->pm.mutex);
@@ -1960,20 +1656,6 @@ static void radeon_pm_fini_old(struct radeon_device *rdev)
 
 		device_remove_file(rdev->dev, &dev_attr_power_profile);
 		device_remove_file(rdev->dev, &dev_attr_power_method);
-<<<<<<< HEAD
-#ifdef CONFIG_ACPI
-		unregister_acpi_notifier(&rdev->acpi_nb);
-#endif
-	}
-
-	if (rdev->pm.power_state)
-		kfree(rdev->pm.power_state);
-
-	radeon_hwmon_fini(rdev);
-}
-
-void radeon_pm_compute_clocks(struct radeon_device *rdev)
-=======
 	}
 
 	radeon_hwmon_fini(rdev);
@@ -2008,7 +1690,6 @@ void radeon_pm_fini(struct radeon_device *rdev)
 }
 
 static void radeon_pm_compute_clocks_old(struct radeon_device *rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_device *ddev = rdev->ddev;
 	struct drm_crtc *crtc;
@@ -2021,14 +1702,6 @@ static void radeon_pm_compute_clocks_old(struct radeon_device *rdev)
 
 	rdev->pm.active_crtcs = 0;
 	rdev->pm.active_crtc_count = 0;
-<<<<<<< HEAD
-	list_for_each_entry(crtc,
-		&ddev->mode_config.crtc_list, head) {
-		radeon_crtc = to_radeon_crtc(crtc);
-		if (radeon_crtc->enabled) {
-			rdev->pm.active_crtcs |= (1 << radeon_crtc->crtc_id);
-			rdev->pm.active_crtc_count++;
-=======
 	if (rdev->num_crtc && rdev->mode_info.mode_config_initialized) {
 		list_for_each_entry(crtc,
 				    &ddev->mode_config.crtc_list, head) {
@@ -2037,7 +1710,6 @@ static void radeon_pm_compute_clocks_old(struct radeon_device *rdev)
 				rdev->pm.active_crtcs |= (1 << radeon_crtc->crtc_id);
 				rdev->pm.active_crtc_count++;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2090,8 +1762,6 @@ static void radeon_pm_compute_clocks_old(struct radeon_device *rdev)
 	mutex_unlock(&rdev->pm.mutex);
 }
 
-<<<<<<< HEAD
-=======
 static void radeon_pm_compute_clocks_dpm(struct radeon_device *rdev)
 {
 	struct drm_device *ddev = rdev->ddev;
@@ -2145,7 +1815,6 @@ void radeon_pm_compute_clocks(struct radeon_device *rdev)
 		radeon_pm_compute_clocks_old(rdev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool radeon_pm_in_vbl(struct radeon_device *rdev)
 {
 	int  crtc, vpos, hpos, vbl_status;
@@ -2156,11 +1825,6 @@ static bool radeon_pm_in_vbl(struct radeon_device *rdev)
 	 */
 	for (crtc = 0; (crtc < rdev->num_crtc) && in_vbl; crtc++) {
 		if (rdev->pm.active_crtcs & (1 << crtc)) {
-<<<<<<< HEAD
-			vbl_status = radeon_get_crtc_scanoutpos(rdev->ddev, crtc, &vpos, &hpos);
-			if ((vbl_status & DRM_SCANOUTPOS_VALID) &&
-			    !(vbl_status & DRM_SCANOUTPOS_INVBL))
-=======
 			vbl_status = radeon_get_crtc_scanoutpos(rdev->ddev,
 								crtc,
 								USE_REAL_VBLANKSTART,
@@ -2168,7 +1832,6 @@ static bool radeon_pm_in_vbl(struct radeon_device *rdev)
 								&rdev->mode_info.crtcs[crtc]->base.hwmode);
 			if ((vbl_status & DRM_SCANOUTPOS_VALID) &&
 			    !(vbl_status & DRM_SCANOUTPOS_IN_VBLANK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				in_vbl = false;
 		}
 	}
@@ -2181,11 +1844,7 @@ static bool radeon_pm_debug_check_in_vbl(struct radeon_device *rdev, bool finish
 	u32 stat_crtc = 0;
 	bool in_vbl = radeon_pm_in_vbl(rdev);
 
-<<<<<<< HEAD
-	if (in_vbl == false)
-=======
 	if (!in_vbl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DRM_DEBUG_DRIVER("not in vbl for pm change %08x at %s\n", stat_crtc,
 			 finish ? "exit" : "entry");
 	return in_vbl;
@@ -2194,29 +1853,16 @@ static bool radeon_pm_debug_check_in_vbl(struct radeon_device *rdev, bool finish
 static void radeon_dynpm_idle_work_handler(struct work_struct *work)
 {
 	struct radeon_device *rdev;
-<<<<<<< HEAD
-	int resched;
-	rdev = container_of(work, struct radeon_device,
-				pm.dynpm_idle_work.work);
-
-	resched = ttm_bo_lock_delayed_workqueue(&rdev->mman.bdev);
-=======
 
 	rdev = container_of(work, struct radeon_device,
 				pm.dynpm_idle_work.work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&rdev->pm.mutex);
 	if (rdev->pm.dynpm_state == DYNPM_STATE_ACTIVE) {
 		int not_processed = 0;
 		int i;
 
 		for (i = 0; i < RADEON_NUM_RINGS; ++i) {
-<<<<<<< HEAD
-			not_processed += radeon_fence_count_emitted(rdev, i);
-			if (not_processed >= 3)
-				break;
-=======
 			struct radeon_ring *ring = &rdev->ring[i];
 
 			if (ring->ready) {
@@ -2224,7 +1870,6 @@ static void radeon_dynpm_idle_work_handler(struct work_struct *work)
 				if (not_processed >= 3)
 					break;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (not_processed >= 3) { /* should upclock */
@@ -2253,11 +1898,7 @@ static void radeon_dynpm_idle_work_handler(struct work_struct *work)
 		 * to false since we want to wait for vbl to avoid flicker.
 		 */
 		if (rdev->pm.dynpm_planned_action != DYNPM_ACTION_NONE &&
-<<<<<<< HEAD
-		    jiffies > rdev->pm.dynpm_action_timeout) {
-=======
 		    time_after(jiffies, rdev->pm.dynpm_action_timeout)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radeon_pm_get_dynpm_state(rdev);
 			radeon_pm_set_clocks(rdev);
 		}
@@ -2266,10 +1907,6 @@ static void radeon_dynpm_idle_work_handler(struct work_struct *work)
 				      msecs_to_jiffies(RADEON_IDLE_LOOP_MS));
 	}
 	mutex_unlock(&rdev->pm.mutex);
-<<<<<<< HEAD
-	ttm_bo_unlock_delayed_workqueue(&rdev->mman.bdev, resched);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2277,27 +1914,6 @@ static void radeon_dynpm_idle_work_handler(struct work_struct *work)
  */
 #if defined(CONFIG_DEBUG_FS)
 
-<<<<<<< HEAD
-static int radeon_debugfs_pm_info(struct seq_file *m, void *data)
-{
-	struct drm_info_node *node = (struct drm_info_node *) m->private;
-	struct drm_device *dev = node->minor->dev;
-	struct radeon_device *rdev = dev->dev_private;
-
-	seq_printf(m, "default engine clock: %u0 kHz\n", rdev->pm.default_sclk);
-	/* radeon_get_engine_clock is not reliable on APUs so just print the current clock */
-	if ((rdev->family >= CHIP_PALM) && (rdev->flags & RADEON_IS_IGP))
-		seq_printf(m, "current engine clock: %u0 kHz\n", rdev->pm.current_sclk);
-	else
-		seq_printf(m, "current engine clock: %u0 kHz\n", radeon_get_engine_clock(rdev));
-	seq_printf(m, "default memory clock: %u0 kHz\n", rdev->pm.default_mclk);
-	if (rdev->asic->pm.get_memory_clock)
-		seq_printf(m, "current memory clock: %u0 kHz\n", radeon_get_memory_clock(rdev));
-	if (rdev->pm.current_vddc)
-		seq_printf(m, "voltage: %u mV\n", rdev->pm.current_vddc);
-	if (rdev->asic->pm.get_pcie_lanes)
-		seq_printf(m, "PCIE lanes: %d\n", radeon_get_pcie_lanes(rdev));
-=======
 static int radeon_debugfs_pm_info_show(struct seq_file *m, void *unused)
 {
 	struct radeon_device *rdev = m->private;
@@ -2328,24 +1944,10 @@ static int radeon_debugfs_pm_info_show(struct seq_file *m, void *unused)
 		if (rdev->asic->pm.get_pcie_lanes)
 			seq_printf(m, "PCIE lanes: %d\n", radeon_get_pcie_lanes(rdev));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct drm_info_list radeon_pm_info_list[] = {
-	{"radeon_pm_info", radeon_debugfs_pm_info, 0, NULL},
-};
-#endif
-
-static int radeon_debugfs_pm_init(struct radeon_device *rdev)
-{
-#if defined(CONFIG_DEBUG_FS)
-	return radeon_debugfs_add_files(rdev, radeon_pm_info_list, ARRAY_SIZE(radeon_pm_info_list));
-#else
-	return 0;
-=======
 DEFINE_SHOW_ATTRIBUTE(radeon_debugfs_pm_info);
 #endif
 
@@ -2357,6 +1959,5 @@ static void radeon_debugfs_pm_init(struct radeon_device *rdev)
 	debugfs_create_file("radeon_pm_info", 0444, root, rdev,
 			    &radeon_debugfs_pm_info_fops);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }

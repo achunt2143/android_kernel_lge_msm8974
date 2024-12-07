@@ -1,29 +1,14 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2010 IBM Corporation
- * Copyright (C) 2010 Politecnico di Torino, Italy
- *                    TORSEC group -- http://security.polito.it
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2010 IBM Corporation
  * Copyright (C) 2010 Politecnico di Torino, Italy
  *                    TORSEC group -- https://security.polito.it
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Authors:
  * Mimi Zohar <zohar@us.ibm.com>
  * Roberto Sassu <roberto.sassu@polito.it>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
- *
- * See Documentation/security/keys-trusted-encrypted.txt
-=======
  * See Documentation/security/keys/trusted-encrypted.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/uaccess.h>
@@ -40,20 +25,12 @@
 #include <linux/random.h>
 #include <linux/rcupdate.h>
 #include <linux/scatterlist.h>
-<<<<<<< HEAD
-#include <linux/crypto.h>
-#include <linux/ctype.h>
-#include <crypto/hash.h>
-#include <crypto/sha.h>
-#include <crypto/aes.h>
-=======
 #include <linux/ctype.h>
 #include <crypto/aes.h>
 #include <crypto/hash.h>
 #include <crypto/sha2.h>
 #include <crypto/skcipher.h>
 #include <crypto/utils.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "encrypted.h"
 #include "ecryptfs_format.h"
@@ -65,10 +42,7 @@ static const char hmac_alg[] = "hmac(sha256)";
 static const char blkcipher_alg[] = "cbc(aes)";
 static const char key_format_default[] = "default";
 static const char key_format_ecryptfs[] = "ecryptfs";
-<<<<<<< HEAD
-=======
 static const char key_format_enc32[] = "enc32";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int ivsize;
 static int blksize;
 
@@ -78,23 +52,6 @@ static int blksize;
 #define HASH_SIZE SHA256_DIGEST_SIZE
 #define MAX_DATA_SIZE 4096
 #define MIN_DATA_SIZE  20
-<<<<<<< HEAD
-
-struct sdesc {
-	struct shash_desc shash;
-	char ctx[];
-};
-
-static struct crypto_shash *hashalg;
-static struct crypto_shash *hmacalg;
-
-enum {
-	Opt_err = -1, Opt_new, Opt_load, Opt_update
-};
-
-enum {
-	Opt_error = -1, Opt_default, Opt_ecryptfs
-=======
 #define KEY_ENC32_PAYLOAD_LEN 32
 
 static struct crypto_shash *hash_tfm;
@@ -105,16 +62,12 @@ enum {
 
 enum {
 	Opt_default, Opt_ecryptfs, Opt_enc32, Opt_error
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const match_table_t key_format_tokens = {
 	{Opt_default, "default"},
 	{Opt_ecryptfs, "ecryptfs"},
-<<<<<<< HEAD
-=======
 	{Opt_enc32, "enc32"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{Opt_error, NULL}
 };
 
@@ -125,13 +78,6 @@ static const match_table_t key_tokens = {
 	{Opt_err, NULL}
 };
 
-<<<<<<< HEAD
-static int aes_get_sizes(void)
-{
-	struct crypto_blkcipher *tfm;
-
-	tfm = crypto_alloc_blkcipher(blkcipher_alg, 0, CRYPTO_ALG_ASYNC);
-=======
 static bool user_decrypted_data = IS_ENABLED(CONFIG_USER_DECRYPTED_DATA);
 module_param(user_decrypted_data, bool, 0);
 MODULE_PARM_DESC(user_decrypted_data,
@@ -142,21 +88,14 @@ static int aes_get_sizes(void)
 	struct crypto_skcipher *tfm;
 
 	tfm = crypto_alloc_skcipher(blkcipher_alg, 0, CRYPTO_ALG_ASYNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(tfm)) {
 		pr_err("encrypted_key: failed to alloc_cipher (%ld)\n",
 		       PTR_ERR(tfm));
 		return PTR_ERR(tfm);
 	}
-<<<<<<< HEAD
-	ivsize = crypto_blkcipher_ivsize(tfm);
-	blksize = crypto_blkcipher_blocksize(tfm);
-	crypto_free_blkcipher(tfm);
-=======
 	ivsize = crypto_skcipher_ivsize(tfm);
 	blksize = crypto_skcipher_blocksize(tfm);
 	crypto_free_skcipher(tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -224,11 +163,7 @@ static int valid_master_desc(const char *new_desc, const char *orig_desc)
  * datablob_parse - parse the keyctl data
  *
  * datablob format:
-<<<<<<< HEAD
- * new [<format>] <master-key name> <decrypted data length>
-=======
  * new [<format>] <master-key name> <decrypted data length> [<decrypted data>]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * load [<format>] <master-key name> <decrypted data length>
  *     <encrypted iv + data>
  * update <new-master-key name>
@@ -240,11 +175,7 @@ static int valid_master_desc(const char *new_desc, const char *orig_desc)
  */
 static int datablob_parse(char *datablob, const char **format,
 			  char **master_desc, char **decrypted_datalen,
-<<<<<<< HEAD
-			  char **hex_encoded_iv)
-=======
 			  char **hex_encoded_iv, char **decrypted_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	substring_t args[MAX_OPT_ARGS];
 	int ret = -EINVAL;
@@ -269,10 +200,7 @@ static int datablob_parse(char *datablob, const char **format,
 	key_format = match_token(p, key_format_tokens, args);
 	switch (key_format) {
 	case Opt_ecryptfs:
-<<<<<<< HEAD
-=======
 	case Opt_enc32:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case Opt_default:
 		*format = p;
 		*master_desc = strsep(&datablob, " \t");
@@ -308,10 +236,7 @@ static int datablob_parse(char *datablob, const char **format,
 				"when called from .update method\n", keyword);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		*decrypted_data = strsep(&datablob, " \t");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0;
 		break;
 	case Opt_load:
@@ -379,17 +304,10 @@ out:
  *
  * Use a user provided key to encrypt/decrypt an encrypted-key.
  */
-<<<<<<< HEAD
-static struct key *request_user_key(const char *master_desc, u8 **master_key,
-				    size_t *master_keylen)
-{
-	struct user_key_payload *upayload;
-=======
 static struct key *request_user_key(const char *master_desc, const u8 **master_key,
 				    size_t *master_keylen)
 {
 	const struct user_key_payload *upayload;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct key *ukey;
 
 	ukey = request_key(&key_type_user, master_desc, NULL);
@@ -397,9 +315,6 @@ static struct key *request_user_key(const char *master_desc, const u8 **master_k
 		goto error;
 
 	down_read(&ukey->sem);
-<<<<<<< HEAD
-	upayload = ukey->payload.data;
-=======
 	upayload = user_key_payload_locked(ukey);
 	if (!upayload) {
 		/* key was revoked before we acquired its semaphore */
@@ -408,62 +323,12 @@ static struct key *request_user_key(const char *master_desc, const u8 **master_k
 		ukey = ERR_PTR(-EKEYREVOKED);
 		goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*master_key = upayload->data;
 	*master_keylen = upayload->datalen;
 error:
 	return ukey;
 }
 
-<<<<<<< HEAD
-static struct sdesc *alloc_sdesc(struct crypto_shash *alg)
-{
-	struct sdesc *sdesc;
-	int size;
-
-	size = sizeof(struct shash_desc) + crypto_shash_descsize(alg);
-	sdesc = kmalloc(size, GFP_KERNEL);
-	if (!sdesc)
-		return ERR_PTR(-ENOMEM);
-	sdesc->shash.tfm = alg;
-	sdesc->shash.flags = 0x0;
-	return sdesc;
-}
-
-static int calc_hmac(u8 *digest, const u8 *key, unsigned int keylen,
-		     const u8 *buf, unsigned int buflen)
-{
-	struct sdesc *sdesc;
-	int ret;
-
-	sdesc = alloc_sdesc(hmacalg);
-	if (IS_ERR(sdesc)) {
-		pr_info("encrypted_key: can't alloc %s\n", hmac_alg);
-		return PTR_ERR(sdesc);
-	}
-
-	ret = crypto_shash_setkey(hmacalg, key, keylen);
-	if (!ret)
-		ret = crypto_shash_digest(&sdesc->shash, buf, buflen, digest);
-	kfree(sdesc);
-	return ret;
-}
-
-static int calc_hash(u8 *digest, const u8 *buf, unsigned int buflen)
-{
-	struct sdesc *sdesc;
-	int ret;
-
-	sdesc = alloc_sdesc(hashalg);
-	if (IS_ERR(sdesc)) {
-		pr_info("encrypted_key: can't alloc %s\n", hash_alg);
-		return PTR_ERR(sdesc);
-	}
-
-	ret = crypto_shash_digest(&sdesc->shash, buf, buflen, digest);
-	kfree(sdesc);
-	return ret;
-=======
 static int calc_hmac(u8 *digest, const u8 *key, unsigned int keylen,
 		     const u8 *buf, unsigned int buflen)
 {
@@ -482,7 +347,6 @@ static int calc_hmac(u8 *digest, const u8 *key, unsigned int keylen,
 		err = crypto_shash_tfm_digest(tfm, buf, buflen, digest);
 	crypto_free_shash(tfm);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum derived_key_type { ENC_KEY, AUTH_KEY };
@@ -500,16 +364,9 @@ static int get_derived_key(u8 *derived_key, enum derived_key_type key_type,
 		derived_buf_len = HASH_SIZE;
 
 	derived_buf = kzalloc(derived_buf_len, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!derived_buf) {
-		pr_err("encrypted_key: out of memory\n");
-		return -ENOMEM;
-	}
-=======
 	if (!derived_buf)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (key_type)
 		strcpy(derived_buf, "AUTH_KEY");
 	else
@@ -517,41 +374,6 @@ static int get_derived_key(u8 *derived_key, enum derived_key_type key_type,
 
 	memcpy(derived_buf + strlen(derived_buf) + 1, master_key,
 	       master_keylen);
-<<<<<<< HEAD
-	ret = calc_hash(derived_key, derived_buf, derived_buf_len);
-	kfree(derived_buf);
-	return ret;
-}
-
-static int init_blkcipher_desc(struct blkcipher_desc *desc, const u8 *key,
-			       unsigned int key_len, const u8 *iv,
-			       unsigned int ivsize)
-{
-	int ret;
-
-	desc->tfm = crypto_alloc_blkcipher(blkcipher_alg, 0, CRYPTO_ALG_ASYNC);
-	if (IS_ERR(desc->tfm)) {
-		pr_err("encrypted_key: failed to load %s transform (%ld)\n",
-		       blkcipher_alg, PTR_ERR(desc->tfm));
-		return PTR_ERR(desc->tfm);
-	}
-	desc->flags = 0;
-
-	ret = crypto_blkcipher_setkey(desc->tfm, key, key_len);
-	if (ret < 0) {
-		pr_err("encrypted_key: failed to setkey (%d)\n", ret);
-		crypto_free_blkcipher(desc->tfm);
-		return ret;
-	}
-	crypto_blkcipher_set_iv(desc->tfm, iv, ivsize);
-	return 0;
-}
-
-static struct key *request_master_key(struct encrypted_key_payload *epayload,
-				      u8 **master_key, size_t *master_keylen)
-{
-	struct key *mkey = NULL;
-=======
 	ret = crypto_shash_tfm_digest(hash_tfm, derived_buf, derived_buf_len,
 				      derived_key);
 	kfree_sensitive(derived_buf);
@@ -595,7 +417,6 @@ static struct key *request_master_key(struct encrypted_key_payload *epayload,
 				      const u8 **master_key, size_t *master_keylen)
 {
 	struct key *mkey = ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!strncmp(epayload->master_desc, KEY_TRUSTED_PREFIX,
 		     KEY_TRUSTED_PREFIX_LEN)) {
@@ -634,28 +455,6 @@ static int derived_key_encrypt(struct encrypted_key_payload *epayload,
 {
 	struct scatterlist sg_in[2];
 	struct scatterlist sg_out[1];
-<<<<<<< HEAD
-	struct blkcipher_desc desc;
-	unsigned int encrypted_datalen;
-	unsigned int padlen;
-	char pad[16];
-	int ret;
-
-	encrypted_datalen = roundup(epayload->decrypted_datalen, blksize);
-	padlen = encrypted_datalen - epayload->decrypted_datalen;
-
-	ret = init_blkcipher_desc(&desc, derived_key, derived_keylen,
-				  epayload->iv, ivsize);
-	if (ret < 0)
-		goto out;
-	dump_decrypted_data(epayload);
-
-	memset(pad, 0, sizeof pad);
-	sg_init_table(sg_in, 2);
-	sg_set_buf(&sg_in[0], epayload->decrypted_data,
-		   epayload->decrypted_datalen);
-	sg_set_buf(&sg_in[1], pad, padlen);
-=======
 	struct crypto_skcipher *tfm;
 	struct skcipher_request *req;
 	unsigned int encrypted_datalen;
@@ -674,22 +473,16 @@ static int derived_key_encrypt(struct encrypted_key_payload *epayload,
 	sg_set_buf(&sg_in[0], epayload->decrypted_data,
 		   epayload->decrypted_datalen);
 	sg_set_page(&sg_in[1], ZERO_PAGE(0), AES_BLOCK_SIZE, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg_init_table(sg_out, 1);
 	sg_set_buf(sg_out, epayload->encrypted_data, encrypted_datalen);
 
-<<<<<<< HEAD
-	ret = crypto_blkcipher_encrypt(&desc, sg_out, sg_in, encrypted_datalen);
-	crypto_free_blkcipher(desc.tfm);
-=======
 	memcpy(iv, epayload->iv, sizeof(iv));
 	skcipher_request_set_crypt(req, sg_in, sg_out, encrypted_datalen, iv);
 	ret = crypto_skcipher_encrypt(req);
 	tfm = crypto_skcipher_reqtfm(req);
 	skcipher_request_free(req);
 	crypto_free_skcipher(tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		pr_err("encrypted_key: failed to encrypt (%d)\n", ret);
 	else
@@ -715,10 +508,7 @@ static int datablob_hmac_append(struct encrypted_key_payload *epayload,
 	if (!ret)
 		dump_hmac(NULL, digest, HASH_SIZE);
 out:
-<<<<<<< HEAD
-=======
 	memzero_explicit(derived_key, sizeof(derived_key));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -747,13 +537,8 @@ static int datablob_hmac_verify(struct encrypted_key_payload *epayload,
 	ret = calc_hmac(digest, derived_key, sizeof derived_key, p, len);
 	if (ret < 0)
 		goto out;
-<<<<<<< HEAD
-	ret = memcmp(digest, epayload->format + epayload->datablob_len,
-		     sizeof digest);
-=======
 	ret = crypto_memneq(digest, epayload->format + epayload->datablob_len,
 			    sizeof(digest));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		ret = -EINVAL;
 		dump_hmac("datablob",
@@ -762,10 +547,7 @@ static int datablob_hmac_verify(struct encrypted_key_payload *epayload,
 		dump_hmac("calc", digest, HASH_SIZE);
 	}
 out:
-<<<<<<< HEAD
-=======
 	memzero_explicit(derived_key, sizeof(derived_key));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -775,21 +557,6 @@ static int derived_key_decrypt(struct encrypted_key_payload *epayload,
 {
 	struct scatterlist sg_in[1];
 	struct scatterlist sg_out[2];
-<<<<<<< HEAD
-	struct blkcipher_desc desc;
-	unsigned int encrypted_datalen;
-	char pad[16];
-	int ret;
-
-	encrypted_datalen = roundup(epayload->decrypted_datalen, blksize);
-	ret = init_blkcipher_desc(&desc, derived_key, derived_keylen,
-				  epayload->iv, ivsize);
-	if (ret < 0)
-		goto out;
-	dump_encrypted_data(epayload, encrypted_datalen);
-
-	memset(pad, 0, sizeof pad);
-=======
 	struct crypto_skcipher *tfm;
 	struct skcipher_request *req;
 	unsigned int encrypted_datalen;
@@ -809,18 +576,11 @@ static int derived_key_decrypt(struct encrypted_key_payload *epayload,
 		goto out;
 	dump_encrypted_data(epayload, encrypted_datalen);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg_init_table(sg_in, 1);
 	sg_init_table(sg_out, 2);
 	sg_set_buf(sg_in, epayload->encrypted_data, encrypted_datalen);
 	sg_set_buf(&sg_out[0], epayload->decrypted_data,
 		   epayload->decrypted_datalen);
-<<<<<<< HEAD
-	sg_set_buf(&sg_out[1], pad, sizeof pad);
-
-	ret = crypto_blkcipher_decrypt(&desc, sg_out, sg_in, encrypted_datalen);
-	crypto_free_blkcipher(desc.tfm);
-=======
 	sg_set_buf(&sg_out[1], pad, AES_BLOCK_SIZE);
 
 	memcpy(iv, epayload->iv, sizeof(iv));
@@ -829,15 +589,11 @@ static int derived_key_decrypt(struct encrypted_key_payload *epayload,
 	tfm = crypto_skcipher_reqtfm(req);
 	skcipher_request_free(req);
 	crypto_free_skcipher(tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 	dump_decrypted_data(epayload);
 out:
-<<<<<<< HEAD
-=======
 	kfree(pad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -845,12 +601,8 @@ out:
 static struct encrypted_key_payload *encrypted_key_alloc(struct key *key,
 							 const char *format,
 							 const char *master_desc,
-<<<<<<< HEAD
-							 const char *datalen)
-=======
 							 const char *datalen,
 							 const char *decrypted_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct encrypted_key_payload *epayload = NULL;
 	unsigned short datablob_len;
@@ -859,33 +611,16 @@ static struct encrypted_key_payload *encrypted_key_alloc(struct key *key,
 	unsigned int encrypted_datalen;
 	unsigned int format_len;
 	long dlen;
-<<<<<<< HEAD
-	int ret;
-
-	ret = strict_strtol(datalen, 10, &dlen);
-=======
 	int i;
 	int ret;
 
 	ret = kstrtol(datalen, 10, &dlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0 || dlen < MIN_DATA_SIZE || dlen > MAX_DATA_SIZE)
 		return ERR_PTR(-EINVAL);
 
 	format_len = (!format) ? strlen(key_format_default) : strlen(format);
 	decrypted_datalen = dlen;
 	payload_datalen = decrypted_datalen;
-<<<<<<< HEAD
-	if (format && !strcmp(format, key_format_ecryptfs)) {
-		if (dlen != ECRYPTFS_MAX_KEY_BYTES) {
-			pr_err("encrypted_key: keylen for the ecryptfs format "
-			       "must be equal to %d bytes\n",
-			       ECRYPTFS_MAX_KEY_BYTES);
-			return ERR_PTR(-EINVAL);
-		}
-		decrypted_datalen = ECRYPTFS_MAX_KEY_BYTES;
-		payload_datalen = sizeof(struct ecryptfs_auth_tok);
-=======
 
 	if (decrypted_data) {
 		if (!user_decrypted_data) {
@@ -920,7 +655,6 @@ static struct encrypted_key_payload *encrypted_key_alloc(struct key *key,
 				return ERR_PTR(-EINVAL);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	encrypted_datalen = roundup(decrypted_datalen, blksize);
@@ -949,11 +683,7 @@ static int encrypted_key_decrypt(struct encrypted_key_payload *epayload,
 {
 	struct key *mkey;
 	u8 derived_key[HASH_SIZE];
-<<<<<<< HEAD
-	u8 *master_key;
-=======
 	const u8 *master_key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *hmac;
 	const char *hex_encoded_data;
 	unsigned int encrypted_datalen;
@@ -1001,10 +731,7 @@ static int encrypted_key_decrypt(struct encrypted_key_payload *epayload,
 out:
 	up_read(&mkey->sem);
 	key_put(mkey);
-<<<<<<< HEAD
-=======
 	memzero_explicit(derived_key, sizeof(derived_key));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1039,23 +766,14 @@ static void __ekey_init(struct encrypted_key_payload *epayload,
 /*
  * encrypted_init - initialize an encrypted key
  *
-<<<<<<< HEAD
- * For a new key, use a random number for both the iv and data
- * itself.  For an old key, decrypt the hex encoded data.
-=======
  * For a new key, use either a random number or user-provided decrypted data in
  * case it is provided. A random number is used for the iv in both cases. For
  * an old key, decrypt the hex encoded data.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int encrypted_init(struct encrypted_key_payload *epayload,
 			  const char *key_desc, const char *format,
 			  const char *master_desc, const char *datalen,
-<<<<<<< HEAD
-			  const char *hex_encoded_iv)
-=======
 			  const char *hex_encoded_iv, const char *decrypted_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 
@@ -1069,15 +787,6 @@ static int encrypted_init(struct encrypted_key_payload *epayload,
 	}
 
 	__ekey_init(epayload, format, master_desc, datalen);
-<<<<<<< HEAD
-	if (!hex_encoded_iv) {
-		get_random_bytes(epayload->iv, ivsize);
-
-		get_random_bytes(epayload->decrypted_data,
-				 epayload->decrypted_datalen);
-	} else
-		ret = encrypted_key_decrypt(epayload, format, hex_encoded_iv);
-=======
 	if (hex_encoded_iv) {
 		ret = encrypted_key_decrypt(epayload, format, hex_encoded_iv);
 	} else if (decrypted_data) {
@@ -1088,22 +797,12 @@ static int encrypted_init(struct encrypted_key_payload *epayload,
 		get_random_bytes(epayload->iv, ivsize);
 		get_random_bytes(epayload->decrypted_data, epayload->decrypted_datalen);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
  * encrypted_instantiate - instantiate an encrypted key
  *
-<<<<<<< HEAD
- * Decrypt an existing encrypted datablob or create a new encrypted key
- * based on a kernel random number.
- *
- * On success, return 0. Otherwise return errno.
- */
-static int encrypted_instantiate(struct key *key, const void *data,
-				 size_t datalen)
-=======
  * Instantiates the key:
  * - by decrypting an existing encrypted datablob, or
  * - by creating a new encrypted key based on a kernel random number, or
@@ -1113,7 +812,6 @@ static int encrypted_instantiate(struct key *key, const void *data,
  */
 static int encrypted_instantiate(struct key *key,
 				 struct key_preparsed_payload *prep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct encrypted_key_payload *epayload = NULL;
 	char *datablob = NULL;
@@ -1121,65 +819,39 @@ static int encrypted_instantiate(struct key *key,
 	char *master_desc = NULL;
 	char *decrypted_datalen = NULL;
 	char *hex_encoded_iv = NULL;
-<<<<<<< HEAD
-	int ret;
-
-	if (datalen <= 0 || datalen > 32767 || !data)
-=======
 	char *decrypted_data = NULL;
 	size_t datalen = prep->datalen;
 	int ret;
 
 	if (datalen <= 0 || datalen > 32767 || !prep->data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	datablob = kmalloc(datalen + 1, GFP_KERNEL);
 	if (!datablob)
 		return -ENOMEM;
 	datablob[datalen] = 0;
-<<<<<<< HEAD
-	memcpy(datablob, data, datalen);
-	ret = datablob_parse(datablob, &format, &master_desc,
-			     &decrypted_datalen, &hex_encoded_iv);
-=======
 	memcpy(datablob, prep->data, datalen);
 	ret = datablob_parse(datablob, &format, &master_desc,
 			     &decrypted_datalen, &hex_encoded_iv, &decrypted_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 
 	epayload = encrypted_key_alloc(key, format, master_desc,
-<<<<<<< HEAD
-				       decrypted_datalen);
-=======
 				       decrypted_datalen, decrypted_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(epayload)) {
 		ret = PTR_ERR(epayload);
 		goto out;
 	}
 	ret = encrypted_init(epayload, key->description, format, master_desc,
-<<<<<<< HEAD
-			     decrypted_datalen, hex_encoded_iv);
-	if (ret < 0) {
-		kfree(epayload);
-=======
 			     decrypted_datalen, hex_encoded_iv, decrypted_data);
 	if (ret < 0) {
 		kfree_sensitive(epayload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	rcu_assign_keypointer(key, epayload);
 out:
-<<<<<<< HEAD
-	kfree(datablob);
-=======
 	kfree_sensitive(datablob);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1188,12 +860,7 @@ static void encrypted_rcu_free(struct rcu_head *rcu)
 	struct encrypted_key_payload *epayload;
 
 	epayload = container_of(rcu, struct encrypted_key_payload, rcu);
-<<<<<<< HEAD
-	memset(epayload->decrypted_data, 0, epayload->decrypted_datalen);
-	kfree(epayload);
-=======
 	kfree_sensitive(epayload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1205,33 +872,19 @@ static void encrypted_rcu_free(struct rcu_head *rcu)
  *
  * On success, return 0. Otherwise return errno.
  */
-<<<<<<< HEAD
-static int encrypted_update(struct key *key, const void *data, size_t datalen)
-{
-	struct encrypted_key_payload *epayload = key->payload.data;
-=======
 static int encrypted_update(struct key *key, struct key_preparsed_payload *prep)
 {
 	struct encrypted_key_payload *epayload = key->payload.data[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct encrypted_key_payload *new_epayload;
 	char *buf;
 	char *new_master_desc = NULL;
 	const char *format = NULL;
-<<<<<<< HEAD
-	int ret = 0;
-
-	if (test_bit(KEY_FLAG_NEGATIVE, &key->flags))
-		return -ENOKEY;
-	if (datalen <= 0 || datalen > 32767 || !data)
-=======
 	size_t datalen = prep->datalen;
 	int ret = 0;
 
 	if (key_is_negative(key))
 		return -ENOKEY;
 	if (datalen <= 0 || datalen > 32767 || !prep->data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	buf = kmalloc(datalen + 1, GFP_KERNEL);
@@ -1239,13 +892,8 @@ static int encrypted_update(struct key *key, struct key_preparsed_payload *prep)
 		return -ENOMEM;
 
 	buf[datalen] = 0;
-<<<<<<< HEAD
-	memcpy(buf, data, datalen);
-	ret = datablob_parse(buf, &format, &new_master_desc, NULL, NULL);
-=======
 	memcpy(buf, prep->data, datalen);
 	ret = datablob_parse(buf, &format, &new_master_desc, NULL, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 
@@ -1254,11 +902,7 @@ static int encrypted_update(struct key *key, struct key_preparsed_payload *prep)
 		goto out;
 
 	new_epayload = encrypted_key_alloc(key, epayload->format,
-<<<<<<< HEAD
-					   new_master_desc, epayload->datalen);
-=======
 					   new_master_desc, epayload->datalen, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(new_epayload)) {
 		ret = PTR_ERR(new_epayload);
 		goto out;
@@ -1274,51 +918,31 @@ static int encrypted_update(struct key *key, struct key_preparsed_payload *prep)
 	rcu_assign_keypointer(key, new_epayload);
 	call_rcu(&epayload->rcu, encrypted_rcu_free);
 out:
-<<<<<<< HEAD
-	kfree(buf);
-=======
 	kfree_sensitive(buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
-<<<<<<< HEAD
- * encrypted_read - format and copy the encrypted data to userspace
-=======
  * encrypted_read - format and copy out the encrypted data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The resulting datablob format is:
  * <master-key name> <decrypted data length> <encrypted iv> <encrypted data>
  *
  * On success, return to userspace the encrypted key datablob size.
  */
-<<<<<<< HEAD
-static long encrypted_read(const struct key *key, char __user *buffer,
-=======
 static long encrypted_read(const struct key *key, char *buffer,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   size_t buflen)
 {
 	struct encrypted_key_payload *epayload;
 	struct key *mkey;
-<<<<<<< HEAD
-	u8 *master_key;
-=======
 	const u8 *master_key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t master_keylen;
 	char derived_key[HASH_SIZE];
 	char *ascii_buf;
 	size_t asciiblob_len;
 	int ret;
 
-<<<<<<< HEAD
-	epayload = rcu_dereference_key(key);
-=======
 	epayload = dereference_key_locked(key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* returns the hex encoded iv, encrypted-data, and hmac as ascii */
 	asciiblob_len = epayload->datablob_len + ivsize + 1
@@ -1352,114 +976,41 @@ static long encrypted_read(const struct key *key, char *buffer,
 
 	up_read(&mkey->sem);
 	key_put(mkey);
-<<<<<<< HEAD
-
-	if (copy_to_user(buffer, ascii_buf, asciiblob_len) != 0)
-		ret = -EFAULT;
-	kfree(ascii_buf);
-=======
 	memzero_explicit(derived_key, sizeof(derived_key));
 
 	memcpy(buffer, ascii_buf, asciiblob_len);
 	kfree_sensitive(ascii_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return asciiblob_len;
 out:
 	up_read(&mkey->sem);
 	key_put(mkey);
-<<<<<<< HEAD
-=======
 	memzero_explicit(derived_key, sizeof(derived_key));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
-<<<<<<< HEAD
- * encrypted_destroy - before freeing the key, clear the decrypted data
- *
- * Before freeing the key, clear the memory containing the decrypted
- * key data.
- */
-static void encrypted_destroy(struct key *key)
-{
-	struct encrypted_key_payload *epayload = key->payload.data;
-
-	if (!epayload)
-		return;
-
-	memset(epayload->decrypted_data, 0, epayload->decrypted_datalen);
-	kfree(key->payload.data);
-=======
  * encrypted_destroy - clear and free the key's payload
  */
 static void encrypted_destroy(struct key *key)
 {
 	kfree_sensitive(key->payload.data[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct key_type key_type_encrypted = {
 	.name = "encrypted",
 	.instantiate = encrypted_instantiate,
 	.update = encrypted_update,
-<<<<<<< HEAD
-	.match = user_match,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy = encrypted_destroy,
 	.describe = user_describe,
 	.read = encrypted_read,
 };
 EXPORT_SYMBOL_GPL(key_type_encrypted);
 
-<<<<<<< HEAD
-static void encrypted_shash_release(void)
-{
-	if (hashalg)
-		crypto_free_shash(hashalg);
-	if (hmacalg)
-		crypto_free_shash(hmacalg);
-}
-
-static int __init encrypted_shash_alloc(void)
-{
-	int ret;
-
-	hmacalg = crypto_alloc_shash(hmac_alg, 0, CRYPTO_ALG_ASYNC);
-	if (IS_ERR(hmacalg)) {
-		pr_info("encrypted_key: could not allocate crypto %s\n",
-			hmac_alg);
-		return PTR_ERR(hmacalg);
-	}
-
-	hashalg = crypto_alloc_shash(hash_alg, 0, CRYPTO_ALG_ASYNC);
-	if (IS_ERR(hashalg)) {
-		pr_info("encrypted_key: could not allocate crypto %s\n",
-			hash_alg);
-		ret = PTR_ERR(hashalg);
-		goto hashalg_fail;
-	}
-
-	return 0;
-
-hashalg_fail:
-	crypto_free_shash(hmacalg);
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_encrypted(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = encrypted_shash_alloc();
-	if (ret < 0)
-		return ret;
-=======
 	hash_tfm = crypto_alloc_shash(hash_alg, 0, 0);
 	if (IS_ERR(hash_tfm)) {
 		pr_err("encrypted_key: can't allocate %s transform: %ld\n",
@@ -1467,7 +1018,6 @@ static int __init init_encrypted(void)
 		return PTR_ERR(hash_tfm);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = aes_get_sizes();
 	if (ret < 0)
 		goto out;
@@ -1476,22 +1026,14 @@ static int __init init_encrypted(void)
 		goto out;
 	return 0;
 out:
-<<<<<<< HEAD
-	encrypted_shash_release();
-=======
 	crypto_free_shash(hash_tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 
 }
 
 static void __exit cleanup_encrypted(void)
 {
-<<<<<<< HEAD
-	encrypted_shash_release();
-=======
 	crypto_free_shash(hash_tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_key_type(&key_type_encrypted);
 }
 

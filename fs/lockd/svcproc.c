@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/lockd/svcproc.c
  *
@@ -15,10 +12,7 @@
 #include <linux/time.h>
 #include <linux/lockd/lockd.h>
 #include <linux/lockd/share.h>
-<<<<<<< HEAD
-=======
 #include <linux/sunrpc/svc_xprt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NLMDBG_FACILITY		NLMDBG_CLIENT
 
@@ -61,10 +55,7 @@ nlmsvc_retrieve_args(struct svc_rqst *rqstp, struct nlm_args *argp,
 	struct nlm_host		*host = NULL;
 	struct nlm_file		*file = NULL;
 	struct nlm_lock		*lock = &argp->lock;
-<<<<<<< HEAD
-=======
 	int			mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32			error = 0;
 
 	/* nfsd callbacks must have been installed for this procedure */
@@ -79,21 +70,12 @@ nlmsvc_retrieve_args(struct svc_rqst *rqstp, struct nlm_args *argp,
 
 	/* Obtain file pointer. Not used by FREE_ALL call. */
 	if (filp != NULL) {
-<<<<<<< HEAD
-		error = cast_status(nlm_lookup_file(rqstp, &file, &lock->fh));
-=======
 		error = cast_status(nlm_lookup_file(rqstp, &file, lock));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error != 0)
 			goto no_locks;
 		*filp = file;
 
 		/* Set up the missing parts of the file_lock structure */
-<<<<<<< HEAD
-		lock->fl.fl_file  = file->f_file;
-		lock->fl.fl_owner = (fl_owner_t) host;
-		lock->fl.fl_lmops = &nlmsvc_lock_operations;
-=======
 		mode = lock_to_openmode(&lock->fl);
 		lock->fl.c.flc_flags = FL_POSIX;
 		lock->fl.c.flc_file  = file->f_file[mode];
@@ -105,7 +87,6 @@ nlmsvc_retrieve_args(struct svc_rqst *rqstp, struct nlm_args *argp,
 			nlmsvc_release_host(host);
 			return nlm_lck_denied_nolocks;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -121,11 +102,7 @@ no_locks:
  * NULL: Test for presence of service
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_null(struct svc_rqst *rqstp, void *argp, void *resp)
-=======
 nlmsvc_proc_null(struct svc_rqst *rqstp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dprintk("lockd: NULL          called\n");
 	return rpc_success;
@@ -135,20 +112,12 @@ nlmsvc_proc_null(struct svc_rqst *rqstp)
  * TEST: Check for conflicting lock
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_test(struct svc_rqst *rqstp, struct nlm_args *argp,
-				         struct nlm_res  *resp)
-{
-	struct nlm_host	*host;
-	struct nlm_file	*file;
-=======
 __nlmsvc_proc_test(struct svc_rqst *rqstp, struct nlm_res *resp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
 	struct nlm_host	*host;
 	struct nlm_file	*file;
 	struct nlm_lockowner *test_owner;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 rc = rpc_success;
 
 	dprintk("lockd: TEST          called\n");
@@ -158,11 +127,8 @@ __nlmsvc_proc_test(struct svc_rqst *rqstp, struct nlm_res *resp)
 	if ((resp->status = nlmsvc_retrieve_args(rqstp, argp, &host, &file)))
 		return resp->status == nlm_drop_reply ? rpc_drop_reply :rpc_success;
 
-<<<<<<< HEAD
-=======
 	test_owner = argp->lock.fl.c.flc_owner;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Now check for conflicting locks */
 	resp->status = cast_status(nlmsvc_testlock(rqstp, file, host, &argp->lock, &resp->lock, &resp->cookie));
 	if (resp->status == nlm_drop_reply)
@@ -171,21 +137,13 @@ __nlmsvc_proc_test(struct svc_rqst *rqstp, struct nlm_res *resp)
 		dprintk("lockd: TEST          status %d vers %d\n",
 			ntohl(resp->status), rqstp->rq_vers);
 
-<<<<<<< HEAD
-=======
 	nlmsvc_put_lockowner(test_owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsvc_release_host(host);
 	nlm_release_file(file);
 	return rc;
 }
 
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_lock(struct svc_rqst *rqstp, struct nlm_args *argp,
-				         struct nlm_res  *resp)
-{
-=======
 nlmsvc_proc_test(struct svc_rqst *rqstp)
 {
 	return __nlmsvc_proc_test(rqstp, rqstp->rq_resp);
@@ -195,7 +153,6 @@ static __be32
 __nlmsvc_proc_lock(struct svc_rqst *rqstp, struct nlm_res *resp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlm_host	*host;
 	struct nlm_file	*file;
 	__be32 rc = rpc_success;
@@ -229,23 +186,13 @@ __nlmsvc_proc_lock(struct svc_rqst *rqstp, struct nlm_res *resp)
 	else
 		dprintk("lockd: LOCK         status %d\n", ntohl(resp->status));
 
-<<<<<<< HEAD
-=======
 	nlmsvc_release_lockowner(&argp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsvc_release_host(host);
 	nlm_release_file(file);
 	return rc;
 }
 
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_cancel(struct svc_rqst *rqstp, struct nlm_args *argp,
-				           struct nlm_res  *resp)
-{
-	struct nlm_host	*host;
-	struct nlm_file	*file;
-=======
 nlmsvc_proc_lock(struct svc_rqst *rqstp)
 {
 	return __nlmsvc_proc_lock(rqstp, rqstp->rq_resp);
@@ -258,18 +205,13 @@ __nlmsvc_proc_cancel(struct svc_rqst *rqstp, struct nlm_res *resp)
 	struct nlm_host	*host;
 	struct nlm_file	*file;
 	struct net *net = SVC_NET(rqstp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("lockd: CANCEL        called\n");
 
 	resp->cookie = argp->cookie;
 
 	/* Don't accept requests during grace period */
-<<<<<<< HEAD
-	if (locks_in_grace()) {
-=======
 	if (locks_in_grace(net)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resp->status = nlm_lck_denied_grace_period;
 		return rpc_success;
 	}
@@ -279,59 +221,38 @@ __nlmsvc_proc_cancel(struct svc_rqst *rqstp, struct nlm_res *resp)
 		return resp->status == nlm_drop_reply ? rpc_drop_reply :rpc_success;
 
 	/* Try to cancel request. */
-<<<<<<< HEAD
-	resp->status = cast_status(nlmsvc_cancel_blocked(file, &argp->lock));
-
-	dprintk("lockd: CANCEL        status %d\n", ntohl(resp->status));
-=======
 	resp->status = cast_status(nlmsvc_cancel_blocked(net, file, &argp->lock));
 
 	dprintk("lockd: CANCEL        status %d\n", ntohl(resp->status));
 	nlmsvc_release_lockowner(&argp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsvc_release_host(host);
 	nlm_release_file(file);
 	return rpc_success;
 }
 
-<<<<<<< HEAD
-=======
 static __be32
 nlmsvc_proc_cancel(struct svc_rqst *rqstp)
 {
 	return __nlmsvc_proc_cancel(rqstp, rqstp->rq_resp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * UNLOCK: release a lock
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_unlock(struct svc_rqst *rqstp, struct nlm_args *argp,
-				           struct nlm_res  *resp)
-{
-	struct nlm_host	*host;
-	struct nlm_file	*file;
-=======
 __nlmsvc_proc_unlock(struct svc_rqst *rqstp, struct nlm_res *resp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
 	struct nlm_host	*host;
 	struct nlm_file	*file;
 	struct net *net = SVC_NET(rqstp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("lockd: UNLOCK        called\n");
 
 	resp->cookie = argp->cookie;
 
 	/* Don't accept new lock requests during grace period */
-<<<<<<< HEAD
-	if (locks_in_grace()) {
-=======
 	if (locks_in_grace(net)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resp->status = nlm_lck_denied_grace_period;
 		return rpc_success;
 	}
@@ -341,45 +262,30 @@ __nlmsvc_proc_unlock(struct svc_rqst *rqstp, struct nlm_res *resp)
 		return resp->status == nlm_drop_reply ? rpc_drop_reply :rpc_success;
 
 	/* Now try to remove the lock */
-<<<<<<< HEAD
-	resp->status = cast_status(nlmsvc_unlock(file, &argp->lock));
-
-	dprintk("lockd: UNLOCK        status %d\n", ntohl(resp->status));
-=======
 	resp->status = cast_status(nlmsvc_unlock(net, file, &argp->lock));
 
 	dprintk("lockd: UNLOCK        status %d\n", ntohl(resp->status));
 	nlmsvc_release_lockowner(&argp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsvc_release_host(host);
 	nlm_release_file(file);
 	return rpc_success;
 }
 
-<<<<<<< HEAD
-=======
 static __be32
 nlmsvc_proc_unlock(struct svc_rqst *rqstp)
 {
 	return __nlmsvc_proc_unlock(rqstp, rqstp->rq_resp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GRANTED: A server calls us to tell that a process' lock request
  * was granted
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_granted(struct svc_rqst *rqstp, struct nlm_args *argp,
-				            struct nlm_res  *resp)
-{
-=======
 __nlmsvc_proc_granted(struct svc_rqst *rqstp, struct nlm_res *resp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	resp->cookie = argp->cookie;
 
 	dprintk("lockd: GRANTED       called\n");
@@ -388,34 +294,22 @@ __nlmsvc_proc_granted(struct svc_rqst *rqstp, struct nlm_res *resp)
 	return rpc_success;
 }
 
-<<<<<<< HEAD
-=======
 static __be32
 nlmsvc_proc_granted(struct svc_rqst *rqstp)
 {
 	return __nlmsvc_proc_granted(rqstp, rqstp->rq_resp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the generic lockd callback for async RPC calls
  */
 static void nlmsvc_callback_exit(struct rpc_task *task, void *data)
 {
-<<<<<<< HEAD
-	dprintk("lockd: %5u callback returned %d\n", task->tk_pid,
-			-task->tk_status);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nlmsvc_release_call(struct nlm_rqst *call)
 {
-<<<<<<< HEAD
-	if (!atomic_dec_and_test(&call->a_count))
-=======
 	if (!refcount_dec_and_test(&call->a_count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	nlmsvc_release_host(call->a_host);
 	kfree(call);
@@ -436,16 +330,10 @@ static const struct rpc_call_ops nlmsvc_callback_ops = {
  * because we send the callback before the reply proper. I hope this
  * doesn't break any clients.
  */
-<<<<<<< HEAD
-static __be32 nlmsvc_callback(struct svc_rqst *rqstp, u32 proc, struct nlm_args *argp,
-		__be32 (*func)(struct svc_rqst *, struct nlm_args *, struct nlm_res  *))
-{
-=======
 static __be32 nlmsvc_callback(struct svc_rqst *rqstp, u32 proc,
 		__be32 (*func)(struct svc_rqst *, struct nlm_res *))
 {
 	struct nlm_args *argp = rqstp->rq_argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlm_host	*host;
 	struct nlm_rqst	*call;
 	__be32 stat;
@@ -457,18 +345,11 @@ static __be32 nlmsvc_callback(struct svc_rqst *rqstp, u32 proc,
 		return rpc_system_err;
 
 	call = nlm_alloc_call(host);
-<<<<<<< HEAD
-	if (call == NULL)
-		return rpc_system_err;
-
-	stat = func(rqstp, argp, &call->a_res);
-=======
 	nlmsvc_release_host(host);
 	if (call == NULL)
 		return rpc_system_err;
 
 	stat = func(rqstp, &call->a_res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (stat != 0) {
 		nlmsvc_release_call(call);
 		return stat;
@@ -480,43 +361,6 @@ static __be32 nlmsvc_callback(struct svc_rqst *rqstp, u32 proc,
 	return rpc_success;
 }
 
-<<<<<<< HEAD
-static __be32 nlmsvc_proc_test_msg(struct svc_rqst *rqstp, struct nlm_args *argp,
-					     void	     *resp)
-{
-	dprintk("lockd: TEST_MSG      called\n");
-	return nlmsvc_callback(rqstp, NLMPROC_TEST_RES, argp, nlmsvc_proc_test);
-}
-
-static __be32 nlmsvc_proc_lock_msg(struct svc_rqst *rqstp, struct nlm_args *argp,
-					     void	     *resp)
-{
-	dprintk("lockd: LOCK_MSG      called\n");
-	return nlmsvc_callback(rqstp, NLMPROC_LOCK_RES, argp, nlmsvc_proc_lock);
-}
-
-static __be32 nlmsvc_proc_cancel_msg(struct svc_rqst *rqstp, struct nlm_args *argp,
-					       void	       *resp)
-{
-	dprintk("lockd: CANCEL_MSG    called\n");
-	return nlmsvc_callback(rqstp, NLMPROC_CANCEL_RES, argp, nlmsvc_proc_cancel);
-}
-
-static __be32
-nlmsvc_proc_unlock_msg(struct svc_rqst *rqstp, struct nlm_args *argp,
-                                               void            *resp)
-{
-	dprintk("lockd: UNLOCK_MSG    called\n");
-	return nlmsvc_callback(rqstp, NLMPROC_UNLOCK_RES, argp, nlmsvc_proc_unlock);
-}
-
-static __be32
-nlmsvc_proc_granted_msg(struct svc_rqst *rqstp, struct nlm_args *argp,
-                                                void            *resp)
-{
-	dprintk("lockd: GRANTED_MSG   called\n");
-	return nlmsvc_callback(rqstp, NLMPROC_GRANTED_RES, argp, nlmsvc_proc_granted);
-=======
 static __be32 nlmsvc_proc_test_msg(struct svc_rqst *rqstp)
 {
 	dprintk("lockd: TEST_MSG      called\n");
@@ -547,23 +391,16 @@ nlmsvc_proc_granted_msg(struct svc_rqst *rqstp)
 {
 	dprintk("lockd: GRANTED_MSG   called\n");
 	return nlmsvc_callback(rqstp, NLMPROC_GRANTED_RES, __nlmsvc_proc_granted);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * SHARE: create a DOS share or alter existing share.
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_share(struct svc_rqst *rqstp, struct nlm_args *argp,
-				          struct nlm_res  *resp)
-{
-=======
 nlmsvc_proc_share(struct svc_rqst *rqstp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
 	struct nlm_res *resp = rqstp->rq_resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlm_host	*host;
 	struct nlm_file	*file;
 
@@ -572,11 +409,7 @@ nlmsvc_proc_share(struct svc_rqst *rqstp)
 	resp->cookie = argp->cookie;
 
 	/* Don't accept new lock requests during grace period */
-<<<<<<< HEAD
-	if (locks_in_grace() && !argp->reclaim) {
-=======
 	if (locks_in_grace(SVC_NET(rqstp)) && !argp->reclaim) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resp->status = nlm_lck_denied_grace_period;
 		return rpc_success;
 	}
@@ -589,10 +422,7 @@ nlmsvc_proc_share(struct svc_rqst *rqstp)
 	resp->status = cast_status(nlmsvc_share_file(host, file, argp));
 
 	dprintk("lockd: SHARE         status %d\n", ntohl(resp->status));
-<<<<<<< HEAD
-=======
 	nlmsvc_release_lockowner(&argp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsvc_release_host(host);
 	nlm_release_file(file);
 	return rpc_success;
@@ -602,16 +432,10 @@ nlmsvc_proc_share(struct svc_rqst *rqstp)
  * UNSHARE: Release a DOS share.
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_unshare(struct svc_rqst *rqstp, struct nlm_args *argp,
-				            struct nlm_res  *resp)
-{
-=======
 nlmsvc_proc_unshare(struct svc_rqst *rqstp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
 	struct nlm_res *resp = rqstp->rq_resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlm_host	*host;
 	struct nlm_file	*file;
 
@@ -620,11 +444,7 @@ nlmsvc_proc_unshare(struct svc_rqst *rqstp)
 	resp->cookie = argp->cookie;
 
 	/* Don't accept requests during grace period */
-<<<<<<< HEAD
-	if (locks_in_grace()) {
-=======
 	if (locks_in_grace(SVC_NET(rqstp))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resp->status = nlm_lck_denied_grace_period;
 		return rpc_success;
 	}
@@ -637,10 +457,7 @@ nlmsvc_proc_unshare(struct svc_rqst *rqstp)
 	resp->status = cast_status(nlmsvc_unshare_file(host, file, argp));
 
 	dprintk("lockd: UNSHARE       status %d\n", ntohl(resp->status));
-<<<<<<< HEAD
-=======
 	nlmsvc_release_lockowner(&argp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nlmsvc_release_host(host);
 	nlm_release_file(file);
 	return rpc_success;
@@ -650,15 +467,6 @@ nlmsvc_proc_unshare(struct svc_rqst *rqstp)
  * NM_LOCK: Create an unmonitored lock
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_nm_lock(struct svc_rqst *rqstp, struct nlm_args *argp,
-				            struct nlm_res  *resp)
-{
-	dprintk("lockd: NM_LOCK       called\n");
-
-	argp->monitor = 0;		/* just clean the monitor flag */
-	return nlmsvc_proc_lock(rqstp, argp, resp);
-=======
 nlmsvc_proc_nm_lock(struct svc_rqst *rqstp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
@@ -667,22 +475,15 @@ nlmsvc_proc_nm_lock(struct svc_rqst *rqstp)
 
 	argp->monitor = 0;		/* just clean the monitor flag */
 	return nlmsvc_proc_lock(rqstp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * FREE_ALL: Release all locks and shares held by client
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_free_all(struct svc_rqst *rqstp, struct nlm_args *argp,
-					     void            *resp)
-{
-=======
 nlmsvc_proc_free_all(struct svc_rqst *rqstp)
 {
 	struct nlm_args *argp = rqstp->rq_argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nlm_host	*host;
 
 	/* Obtain client */
@@ -698,16 +499,10 @@ nlmsvc_proc_free_all(struct svc_rqst *rqstp)
  * SM_NOTIFY: private callback from statd (not part of official NLM proto)
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_sm_notify(struct svc_rqst *rqstp, struct nlm_reboot *argp,
-					      void	        *resp)
-{
-=======
 nlmsvc_proc_sm_notify(struct svc_rqst *rqstp)
 {
 	struct nlm_reboot *argp = rqstp->rq_argp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("lockd: SM_NOTIFY     called\n");
 
 	if (!nlm_privileged_requester(rqstp)) {
@@ -717,11 +512,7 @@ nlmsvc_proc_sm_notify(struct svc_rqst *rqstp)
 		return rpc_system_err;
 	}
 
-<<<<<<< HEAD
-	nlm_host_rebooted(argp);
-=======
 	nlm_host_rebooted(SVC_NET(rqstp), argp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rpc_success;
 }
 
@@ -729,16 +520,10 @@ nlmsvc_proc_sm_notify(struct svc_rqst *rqstp)
  * client sent a GRANTED_RES, let's remove the associated block
  */
 static __be32
-<<<<<<< HEAD
-nlmsvc_proc_granted_res(struct svc_rqst *rqstp, struct nlm_res  *argp,
-                                                void            *resp)
-{
-=======
 nlmsvc_proc_granted_res(struct svc_rqst *rqstp)
 {
 	struct nlm_res *argp = rqstp->rq_argp;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nlmsvc_ops)
 		return rpc_success;
 
@@ -748,84 +533,23 @@ nlmsvc_proc_granted_res(struct svc_rqst *rqstp)
 	return rpc_success;
 }
 
-<<<<<<< HEAD
-=======
 static __be32
 nlmsvc_proc_unused(struct svc_rqst *rqstp)
 {
 	return rpc_proc_unavail;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NLM Server procedures.
  */
 
-<<<<<<< HEAD
-#define nlmsvc_encode_norep	nlmsvc_encode_void
-#define nlmsvc_decode_norep	nlmsvc_decode_void
-#define nlmsvc_decode_testres	nlmsvc_decode_void
-#define nlmsvc_decode_lockres	nlmsvc_decode_void
-#define nlmsvc_decode_unlockres	nlmsvc_decode_void
-#define nlmsvc_decode_cancelres	nlmsvc_decode_void
-#define nlmsvc_decode_grantedres	nlmsvc_decode_void
-
-#define nlmsvc_proc_none	nlmsvc_proc_null
-#define nlmsvc_proc_test_res	nlmsvc_proc_null
-#define nlmsvc_proc_lock_res	nlmsvc_proc_null
-#define nlmsvc_proc_cancel_res	nlmsvc_proc_null
-#define nlmsvc_proc_unlock_res	nlmsvc_proc_null
-
 struct nlm_void			{ int dummy; };
 
-#define PROC(name, xargt, xrest, argt, rest, respsize)	\
- { .pc_func	= (svc_procfunc) nlmsvc_proc_##name,	\
-   .pc_decode	= (kxdrproc_t) nlmsvc_decode_##xargt,	\
-   .pc_encode	= (kxdrproc_t) nlmsvc_encode_##xrest,	\
-   .pc_release	= NULL,					\
-   .pc_argsize	= sizeof(struct nlm_##argt),		\
-   .pc_ressize	= sizeof(struct nlm_##rest),		\
-   .pc_xdrressize = respsize,				\
- }
-
-=======
-struct nlm_void			{ int dummy; };
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	Ck	(1+XDR_QUADLEN(NLM_MAXCOOKIELEN))	/* cookie */
 #define	St	1				/* status */
 #define	No	(1+1024/4)			/* Net Obj */
 #define	Rg	2				/* range - offset + size */
 
-<<<<<<< HEAD
-struct svc_procedure		nlmsvc_procedures[] = {
-  PROC(null,		void,		void,		void,	void, 1),
-  PROC(test,		testargs,	testres,	args,	res, Ck+St+2+No+Rg),
-  PROC(lock,		lockargs,	res,		args,	res, Ck+St),
-  PROC(cancel,		cancargs,	res,		args,	res, Ck+St),
-  PROC(unlock,		unlockargs,	res,		args,	res, Ck+St),
-  PROC(granted,		testargs,	res,		args,	res, Ck+St),
-  PROC(test_msg,	testargs,	norep,		args,	void, 1),
-  PROC(lock_msg,	lockargs,	norep,		args,	void, 1),
-  PROC(cancel_msg,	cancargs,	norep,		args,	void, 1),
-  PROC(unlock_msg,	unlockargs,	norep,		args,	void, 1),
-  PROC(granted_msg,	testargs,	norep,		args,	void, 1),
-  PROC(test_res,	testres,	norep,		res,	void, 1),
-  PROC(lock_res,	lockres,	norep,		res,	void, 1),
-  PROC(cancel_res,	cancelres,	norep,		res,	void, 1),
-  PROC(unlock_res,	unlockres,	norep,		res,	void, 1),
-  PROC(granted_res,	res,		norep,		res,	void, 1),
-  /* statd callback */
-  PROC(sm_notify,	reboot,		void,		reboot,	void, 1),
-  PROC(none,		void,		void,		void,	void, 1),
-  PROC(none,		void,		void,		void,	void, 1),
-  PROC(none,		void,		void,		void,	void, 1),
-  PROC(share,		shareargs,	shareres,	args,	res, Ck+St+1),
-  PROC(unshare,		shareargs,	shareres,	args,	res, Ck+St+1),
-  PROC(nm_lock,		lockargs,	res,		args,	res, Ck+St),
-  PROC(free_all,	notify,		void,		args,	void, 0),
-
-=======
 const struct svc_procedure nlmsvc_procedures[24] = {
 	[NLMPROC_NULL] = {
 		.pc_func = nlmsvc_proc_null,
@@ -1067,5 +791,4 @@ const struct svc_procedure nlmsvc_procedures[24] = {
 		.pc_xdrressize = 0,
 		.pc_name = "FREE_ALL",
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

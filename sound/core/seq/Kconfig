@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-# define SND_XXX_SEQ to min(SND_SEQUENCER,SND_XXX)
-
-config SND_RAWMIDI_SEQ
-	def_tristate SND_SEQUENCER && SND_RAWMIDI
-
-config SND_OPL3_LIB_SEQ
-	def_tristate SND_SEQUENCER && SND_OPL3_LIB
-
-config SND_OPL4_LIB_SEQ
-	def_tristate SND_SEQUENCER && SND_OPL4_LIB
-
-config SND_SBAWE_SEQ
-	def_tristate SND_SEQUENCER && SND_SBAWE
-
-config SND_EMU10K1_SEQ
-	def_tristate SND_SEQUENCER && SND_EMU10K1
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config SND_SEQUENCER
 	tristate "Sequencer support"
@@ -92,4 +74,3 @@ config SND_SEQ_UMP_CLIENT
 	def_tristate SND_UMP
 
 endif # SND_SEQUENCER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

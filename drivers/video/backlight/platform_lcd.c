@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* drivers/video/backlight/platform_lcd.c
  *
  * Copyright 2008 Simtec Electronics
  *	Ben Dooks <ben@simtec.co.uk>
  *
  * Generic platform-device LCD power control interface.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/module.h>
@@ -33,11 +22,7 @@ struct platform_lcd {
 	struct plat_lcd_data	*pdata;
 
 	unsigned int		 power;
-<<<<<<< HEAD
-	unsigned int		 suspended : 1;
-=======
 	unsigned int		 suspended:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct platform_lcd *to_our_lcd(struct lcd_device *lcd)
@@ -83,44 +68,19 @@ static struct lcd_ops platform_lcd_ops = {
 	.check_fb	= platform_lcd_match,
 };
 
-<<<<<<< HEAD
-static int __devinit platform_lcd_probe(struct platform_device *pdev)
-=======
 static int platform_lcd_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct plat_lcd_data *pdata;
 	struct platform_lcd *plcd;
 	struct device *dev = &pdev->dev;
 	int err;
 
-<<<<<<< HEAD
-	pdata = pdev->dev.platform_data;
-=======
 	pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdata) {
 		dev_err(dev, "no platform data supplied\n");
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	plcd = devm_kzalloc(&pdev->dev, sizeof(struct platform_lcd),
-			    GFP_KERNEL);
-	if (!plcd) {
-		dev_err(dev, "no memory for state\n");
-		return -ENOMEM;
-	}
-
-	plcd->us = dev;
-	plcd->pdata = pdata;
-	plcd->lcd = lcd_device_register(dev_name(dev), dev,
-					plcd, &platform_lcd_ops);
-	if (IS_ERR(plcd->lcd)) {
-		dev_err(dev, "cannot register lcd device\n");
-		err = PTR_ERR(plcd->lcd);
-		goto err;
-=======
 	if (pdata->probe) {
 		err = pdata->probe(pdata);
 		if (err)
@@ -139,34 +99,15 @@ static int platform_lcd_probe(struct platform_device *pdev)
 	if (IS_ERR(plcd->lcd)) {
 		dev_err(dev, "cannot register lcd device\n");
 		return PTR_ERR(plcd->lcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, plcd);
 	platform_lcd_set_power(plcd->lcd, FB_BLANK_NORMAL);
 
 	return 0;
-<<<<<<< HEAD
-
- err:
-	return err;
-}
-
-static int __devexit platform_lcd_remove(struct platform_device *pdev)
-{
-	struct platform_lcd *plcd = platform_get_drvdata(pdev);
-
-	lcd_device_unregister(plcd->lcd);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int platform_lcd_suspend(struct device *dev)
 {
 	struct platform_lcd *plcd = dev_get_drvdata(dev);
@@ -186,34 +127,17 @@ static int platform_lcd_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-static SIMPLE_DEV_PM_OPS(platform_lcd_pm_ops, platform_lcd_suspend,
-			platform_lcd_resume);
-#endif
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(platform_lcd_pm_ops, platform_lcd_suspend,
 			platform_lcd_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver platform_lcd_driver = {
 	.driver		= {
 		.name	= "platform-lcd",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-		.pm	= &platform_lcd_pm_ops,
-#endif
-	},
-	.probe		= platform_lcd_probe,
-	.remove		= __devexit_p(platform_lcd_remove),
-=======
 		.pm	= &platform_lcd_pm_ops,
 	},
 	.probe		= platform_lcd_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(platform_lcd_driver);

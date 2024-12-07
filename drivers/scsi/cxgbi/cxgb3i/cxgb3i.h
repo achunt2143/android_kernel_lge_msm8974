@@ -1,11 +1,7 @@
 /*
  * cxgb3i.h: Chelsio S3xx iSCSI driver.
  *
-<<<<<<< HEAD
- * Copyright (c) 2008 Chelsio Communications, Inc.
-=======
  * Copyright (c) 2008-2015 Chelsio Communications, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

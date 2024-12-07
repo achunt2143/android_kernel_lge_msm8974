@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_SPECIAL_INSNS_H
-#define _ASM_X86_SPECIAL_INSNS_H
-
-
-#ifdef __KERNEL__
-
-static inline void native_clts(void)
-{
-	asm volatile("clts");
-}
-
-/*
- * Volatile isn't enough to prevent the compiler from reordering the
- * read/write functions for the control registers and messing everything up.
- * A memory clobber would solve the problem, but would prevent reordering of
- * all loads stores around it, which can hurt performance. Solution is to
- * use a variable and mimic reads and writes to it to enforce serialization
- */
-static unsigned long __force_order;
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_SPECIAL_INSNS_H
 #define _ASM_X86_SPECIAL_INSNS_H
@@ -43,38 +22,10 @@ static unsigned long __force_order;
 #define __FORCE_ORDER "m"(*(unsigned int *)0x1000UL)
 
 void native_write_cr0(unsigned long val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long native_read_cr0(void)
 {
 	unsigned long val;
-<<<<<<< HEAD
-	asm volatile("mov %%cr0,%0\n\t" : "=r" (val), "=m" (__force_order));
-	return val;
-}
-
-static inline void native_write_cr0(unsigned long val)
-{
-	asm volatile("mov %0,%%cr0": : "r" (val), "m" (__force_order));
-}
-
-static inline unsigned long native_read_cr2(void)
-{
-	unsigned long val;
-	asm volatile("mov %%cr2,%0\n\t" : "=r" (val), "=m" (__force_order));
-	return val;
-}
-
-static inline void native_write_cr2(unsigned long val)
-{
-	asm volatile("mov %0,%%cr2": : "r" (val), "m" (__force_order));
-}
-
-static inline unsigned long native_read_cr3(void)
-{
-	unsigned long val;
-	asm volatile("mov %%cr3,%0\n\t" : "=r" (val), "=m" (__force_order));
-=======
 	asm volatile("mov %%cr0,%0\n\t" : "=r" (val) : __FORCE_ORDER);
 	return val;
 }
@@ -95,40 +46,17 @@ static inline unsigned long __native_read_cr3(void)
 {
 	unsigned long val;
 	asm volatile("mov %%cr3,%0\n\t" : "=r" (val) : __FORCE_ORDER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val;
 }
 
 static inline void native_write_cr3(unsigned long val)
 {
-<<<<<<< HEAD
-	asm volatile("mov %0,%%cr3": : "r" (val), "m" (__force_order));
-=======
 	asm volatile("mov %0,%%cr3": : "r" (val) : "memory");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long native_read_cr4(void)
 {
 	unsigned long val;
-<<<<<<< HEAD
-	asm volatile("mov %%cr4,%0\n\t" : "=r" (val), "=m" (__force_order));
-	return val;
-}
-
-static inline unsigned long native_read_cr4_safe(void)
-{
-	unsigned long val;
-	/* This could fault if %cr4 does not exist. In x86_64, a cr4 always
-	 * exists, so it will never fail. */
-#ifdef CONFIG_X86_32
-	asm volatile("1: mov %%cr4, %0\n"
-		     "2:\n"
-		     _ASM_EXTABLE(1b, 2b)
-		     : "=r" (val), "=m" (__force_order) : "0" (0));
-#else
-	val = native_read_cr4();
-=======
 #ifdef CONFIG_X86_32
 	/*
 	 * This could fault if CR4 does not exist.  Non-existent CR4
@@ -142,33 +70,10 @@ static inline unsigned long native_read_cr4_safe(void)
 #else
 	/* CR4 always exists on x86_64. */
 	asm volatile("mov %%cr4,%0\n\t" : "=r" (val) : __FORCE_ORDER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return val;
 }
 
-<<<<<<< HEAD
-static inline void native_write_cr4(unsigned long val)
-{
-	asm volatile("mov %0,%%cr4": : "r" (val), "m" (__force_order));
-}
-
-#ifdef CONFIG_X86_64
-static inline unsigned long native_read_cr8(void)
-{
-	unsigned long cr8;
-	asm volatile("movq %%cr8,%0" : "=r" (cr8));
-	return cr8;
-}
-
-static inline void native_write_cr8(unsigned long val)
-{
-	asm volatile("movq %0,%%cr8" :: "r" (val) : "memory");
-}
-#endif
-
-static inline void native_wbinvd(void)
-=======
 void native_write_cr4(unsigned long val);
 
 #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
@@ -211,23 +116,16 @@ static inline void wrpkru(u32 pkru)
 #endif
 
 static __always_inline void native_wbinvd(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	asm volatile("wbinvd": : :"memory");
 }
 
-<<<<<<< HEAD
-extern void native_load_gs_index(unsigned);
-
-#ifdef CONFIG_PARAVIRT
-=======
 static inline unsigned long __read_cr4(void)
 {
 	return native_read_cr4();
 }
 
 #ifdef CONFIG_PARAVIRT_XXL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/paravirt.h>
 #else
 
@@ -241,29 +139,16 @@ static inline void write_cr0(unsigned long x)
 	native_write_cr0(x);
 }
 
-<<<<<<< HEAD
-static inline unsigned long read_cr2(void)
-=======
 static __always_inline unsigned long read_cr2(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return native_read_cr2();
 }
 
-<<<<<<< HEAD
-static inline void write_cr2(unsigned long x)
-=======
 static __always_inline void write_cr2(unsigned long x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	native_write_cr2(x);
 }
 
-<<<<<<< HEAD
-static inline unsigned long read_cr3(void)
-{
-	return native_read_cr3();
-=======
 /*
  * Careful!  CR3 contains more than just an address.  You probably want
  * read_cr3_pa() instead.
@@ -271,7 +156,6 @@ static inline unsigned long read_cr3(void)
 static inline unsigned long __read_cr3(void)
 {
 	return __native_read_cr3();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void write_cr3(unsigned long x)
@@ -279,78 +163,23 @@ static inline void write_cr3(unsigned long x)
 	native_write_cr3(x);
 }
 
-<<<<<<< HEAD
-static inline unsigned long read_cr4(void)
-{
-	return native_read_cr4();
-}
-
-static inline unsigned long read_cr4_safe(void)
-{
-	return native_read_cr4_safe();
-}
-
-static inline void write_cr4(unsigned long x)
-=======
 static inline void __write_cr4(unsigned long x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	native_write_cr4(x);
 }
 
-<<<<<<< HEAD
-static inline void wbinvd(void)
-=======
 static __always_inline void wbinvd(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	native_wbinvd();
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_64
-
-static inline unsigned long read_cr8(void)
-{
-	return native_read_cr8();
-}
-
-static inline void write_cr8(unsigned long x)
-{
-	native_write_cr8(x);
-}
-
-static inline void load_gs_index(unsigned selector)
-{
-	native_load_gs_index(selector);
-}
-
-#endif
-
-/* Clear the 'TS' bit */
-static inline void clts(void)
-{
-	native_clts();
-}
-
-#endif/* CONFIG_PARAVIRT */
-
-#define stts() write_cr0(read_cr0() | X86_CR0_TS)
-
-static inline void clflush(volatile void *__p)
-=======
 #endif /* CONFIG_PARAVIRT_XXL */
 
 static __always_inline void clflush(volatile void *__p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	asm volatile("clflush %0" : "+m" (*(volatile char __force *)__p));
 }
 
-<<<<<<< HEAD
-#define nop() asm volatile ("nop")
-
-=======
 static inline void clflushopt(volatile void *__p)
 {
 	alternative_io(".byte 0x3e; clflush %P0",
@@ -471,7 +300,6 @@ static __always_inline void tile_release(void)
 	 */
 	asm volatile(".byte 0xc4, 0xe2, 0x78, 0x49, 0xc0");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 

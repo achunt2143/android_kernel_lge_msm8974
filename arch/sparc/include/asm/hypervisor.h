@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_HYPERVISOR_H
 #define _SPARC64_HYPERVISOR_H
 
@@ -79,13 +76,10 @@
 #define HV_ETOOMANY			15 /* Too many items specified     */
 #define HV_ECHANNEL			16 /* Invalid LDC channel          */
 #define HV_EBUSY			17 /* Resource busy                */
-<<<<<<< HEAD
-=======
 #define HV_EUNAVAILABLE			23 /* Resource or operation not
 					    * currently available, but may
 					    * become available in the future
 					    */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* mach_exit()
  * TRAP:	HV_FAST_TRAP
@@ -109,11 +103,7 @@
 #define HV_FAST_MACH_EXIT		0x00
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern void sun4v_mach_exit(unsigned long exit_code);
-=======
 void sun4v_mach_exit(unsigned long exit_code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Domain services.  */
@@ -142,15 +132,9 @@ void sun4v_mach_exit(unsigned long exit_code);
 #define HV_FAST_MACH_DESC		0x01
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_mach_desc(unsigned long buffer_pa,
-				     unsigned long buf_len,
-				     unsigned long *real_buf_len);
-=======
 unsigned long sun4v_mach_desc(unsigned long buffer_pa,
 			      unsigned long buf_len,
 			      unsigned long *real_buf_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* mach_sir()
@@ -169,11 +153,7 @@ unsigned long sun4v_mach_desc(unsigned long buffer_pa,
 #define HV_FAST_MACH_SIR		0x02
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern void sun4v_mach_sir(void);
-=======
 void sun4v_mach_sir(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* mach_set_watchdog()
@@ -229,13 +209,8 @@ void sun4v_mach_sir(void);
 #define HV_FAST_MACH_SET_WATCHDOG	0x05
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_mach_set_watchdog(unsigned long timeout,
-					     unsigned long *orig_timeout);
-=======
 unsigned long sun4v_mach_set_watchdog(unsigned long timeout,
 				      unsigned long *orig_timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* CPU services.
@@ -280,17 +255,10 @@ unsigned long sun4v_mach_set_watchdog(unsigned long timeout,
 #define HV_FAST_CPU_START		0x10
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_cpu_start(unsigned long cpuid,
-				     unsigned long pc,
-				     unsigned long rtba,
-				     unsigned long arg0);
-=======
 unsigned long sun4v_cpu_start(unsigned long cpuid,
 			      unsigned long pc,
 			      unsigned long rtba,
 			      unsigned long arg0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* cpu_stop()
@@ -315,11 +283,7 @@ unsigned long sun4v_cpu_start(unsigned long cpuid,
 #define HV_FAST_CPU_STOP		0x11
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_cpu_stop(unsigned long cpuid);
-=======
 unsigned long sun4v_cpu_stop(unsigned long cpuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* cpu_yield()
@@ -336,9 +300,6 @@ unsigned long sun4v_cpu_stop(unsigned long cpuid);
 #define HV_FAST_CPU_YIELD		0x12
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_cpu_yield(void);
-=======
 unsigned long sun4v_cpu_yield(void);
 #endif
 
@@ -358,7 +319,6 @@ unsigned long sun4v_cpu_yield(void);
 
 #ifndef __ASSEMBLY__
 unsigned long sun4v_cpu_poke(unsigned long cpuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* cpu_qconf()
@@ -404,15 +364,9 @@ unsigned long sun4v_cpu_poke(unsigned long cpuid);
 #define  HV_CPU_QUEUE_NONRES_ERROR	 0x3f
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_cpu_qconf(unsigned long type,
-				     unsigned long queue_paddr,
-				     unsigned long num_queue_entries);
-=======
 unsigned long sun4v_cpu_qconf(unsigned long type,
 			      unsigned long queue_paddr,
 			      unsigned long num_queue_entries);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* cpu_qinfo()
@@ -463,13 +417,9 @@ unsigned long sun4v_cpu_qconf(unsigned long type,
 #define HV_FAST_CPU_MONDO_SEND		0x42
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_cpu_mondo_send(unsigned long cpu_count, unsigned long cpu_list_pa, unsigned long mondo_block_pa);
-=======
 unsigned long sun4v_cpu_mondo_send(unsigned long cpu_count,
 				   unsigned long cpu_list_pa,
 				   unsigned long mondo_block_pa);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* cpu_myid()
@@ -480,11 +430,7 @@ unsigned long sun4v_cpu_mondo_send(unsigned long cpu_count,
  * ERRORS:	No errors defined.
  *
  * Return the hypervisor ID handle for the current CPU.  Use by a
-<<<<<<< HEAD
- * virtual CPU to discover it's own identity.
-=======
  * virtual CPU to discover its own identity.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define HV_FAST_CPU_MYID		0x16
 
@@ -504,11 +450,7 @@ unsigned long sun4v_cpu_mondo_send(unsigned long cpu_count,
 #define  HV_CPU_STATE_ERROR		 0x03
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern long sun4v_cpu_state(unsigned long cpuid);
-=======
 long sun4v_cpu_state(unsigned long cpuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* cpu_set_rtba()
@@ -628,11 +570,8 @@ struct hv_fault_status {
 #define HV_FAULT_TYPE_RESV1	13
 #define HV_FAULT_TYPE_UNALIGNED	14
 #define HV_FAULT_TYPE_INV_PGSZ	15
-<<<<<<< HEAD
-=======
 #define HV_FAULT_TYPE_MCD	17
 #define HV_FAULT_TYPE_MCD_DIS	18
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Values 16 --> -2 are reserved.  */
 #define HV_FAULT_TYPE_MULTIPLE	-1
 
@@ -713,13 +652,8 @@ struct hv_fault_status {
 #define HV_FAST_MMU_TSB_CTX0		0x20
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_mmu_tsb_ctx0(unsigned long num_descriptions,
-					unsigned long tsb_desc_ra);
-=======
 unsigned long sun4v_mmu_tsb_ctx0(unsigned long num_descriptions,
 				 unsigned long tsb_desc_ra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* mmu_tsb_ctxnon0()
@@ -803,11 +737,7 @@ unsigned long sun4v_mmu_tsb_ctx0(unsigned long num_descriptions,
 #define HV_FAST_MMU_DEMAP_ALL		0x24
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern void sun4v_mmu_demap_all(void);
-=======
 void sun4v_mmu_demap_all(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* mmu_map_perm_addr()
@@ -837,17 +767,10 @@ void sun4v_mmu_demap_all(void);
 #define HV_FAST_MMU_MAP_PERM_ADDR	0x25
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_mmu_map_perm_addr(unsigned long vaddr,
-					     unsigned long set_to_zero,
-					     unsigned long tte,
-					     unsigned long flags);
-=======
 unsigned long sun4v_mmu_map_perm_addr(unsigned long vaddr,
 				      unsigned long set_to_zero,
 				      unsigned long tte,
 				      unsigned long flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* mmu_fault_area_conf()
@@ -1024,8 +947,6 @@ unsigned long sun4v_mmu_map_perm_addr(unsigned long vaddr,
  */
 #define HV_FAST_MEM_SYNC		0x32
 
-<<<<<<< HEAD
-=======
 /* Coprocessor services
  *
  * M7 and later processors provide an on-chip coprocessor which
@@ -1159,7 +1080,6 @@ unsigned long sun4v_ccb_kill(unsigned long ca,
 #define HV_CCB_KILL_KILLED          2
 #define HV_CCB_KILL_NOTFOUND        3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Time of day services.
  *
  * The hypervisor maintains the time of day on a per-domain basis.
@@ -1185,11 +1105,7 @@ unsigned long sun4v_ccb_kill(unsigned long ca,
 #define HV_FAST_TOD_GET			0x50
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_tod_get(unsigned long *time);
-=======
 unsigned long sun4v_tod_get(unsigned long *time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* tod_set()
@@ -1206,11 +1122,7 @@ unsigned long sun4v_tod_get(unsigned long *time);
 #define HV_FAST_TOD_SET			0x51
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_tod_set(unsigned long time);
-=======
 unsigned long sun4v_tod_set(unsigned long time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Console services */
@@ -1286,16 +1198,6 @@ unsigned long sun4v_tod_set(unsigned long time);
 #define HV_FAST_CONS_WRITE		0x63
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern long sun4v_con_getchar(long *status);
-extern long sun4v_con_putchar(long c);
-extern long sun4v_con_read(unsigned long buffer,
-			   unsigned long size,
-			   unsigned long *bytes_read);
-extern unsigned long sun4v_con_write(unsigned long buffer,
-				     unsigned long size,
-				     unsigned long *bytes_written);
-=======
 long sun4v_con_getchar(long *status);
 long sun4v_con_putchar(long c);
 long sun4v_con_read(unsigned long buffer,
@@ -1304,7 +1206,6 @@ long sun4v_con_read(unsigned long buffer,
 unsigned long sun4v_con_write(unsigned long buffer,
 			      unsigned long size,
 			      unsigned long *bytes_written);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* mach_set_soft_state()
@@ -1320,11 +1221,7 @@ unsigned long sun4v_con_write(unsigned long buffer,
  *		EBADALIGNED	software state description is not correctly
  *				aligned
  *
-<<<<<<< HEAD
- * This allows the guest to report it's soft state to the hypervisor.  There
-=======
  * This allows the guest to report its soft state to the hypervisor.  There
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * are two primary components to this state.  The first part states whether
  * the guest software is running or not.  The second containts optional
  * details specific to the software.
@@ -1343,13 +1240,8 @@ unsigned long sun4v_con_write(unsigned long buffer,
 #define  HV_SOFT_STATE_TRANSITION	 0x02
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_mach_set_soft_state(unsigned long soft_state,
-					       unsigned long msg_string_ra);
-=======
 unsigned long sun4v_mach_set_soft_state(unsigned long soft_state,
 				        unsigned long msg_string_ra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* mach_get_soft_state()
@@ -1427,22 +1319,6 @@ unsigned long sun4v_mach_set_soft_state(unsigned long soft_state,
 #define HV_FAST_SVC_CLRSTATUS		0x84
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_svc_send(unsigned long svc_id,
-				    unsigned long buffer,
-				    unsigned long buffer_size,
-				    unsigned long *sent_bytes);
-extern unsigned long sun4v_svc_recv(unsigned long svc_id,
-				    unsigned long buffer,
-				    unsigned long buffer_size,
-				    unsigned long *recv_bytes);
-extern unsigned long sun4v_svc_getstatus(unsigned long svc_id,
-					 unsigned long *status_bits);
-extern unsigned long sun4v_svc_setstatus(unsigned long svc_id,
-					 unsigned long status_bits);
-extern unsigned long sun4v_svc_clrstatus(unsigned long svc_id,
-					 unsigned long status_bits);
-=======
 unsigned long sun4v_svc_send(unsigned long svc_id,
 			     unsigned long buffer,
 			     unsigned long buffer_size,
@@ -1457,7 +1333,6 @@ unsigned long sun4v_svc_setstatus(unsigned long svc_id,
 				  unsigned long status_bits);
 unsigned long sun4v_svc_clrstatus(unsigned long svc_id,
 				  unsigned long status_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Trap trace services.
@@ -1627,11 +1502,7 @@ struct hv_trap_trace_entry {
  * configuration error of some sort.
  *
  * The dump services provide an opaque buffer into which the
-<<<<<<< HEAD
- * hypervisor can place it's internal state in order to assist in
-=======
  * hypervisor can place its internal state in order to assist in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * debugging such situations.  The contents are opaque and extremely
  * platform and hypervisor implementation specific.  The guest, during
  * a core dump, requests that the hypervisor update any information in
@@ -1747,13 +1618,8 @@ struct hv_trap_trace_entry {
 #define HV_FAST_INTR_DEVINO2SYSINO	0xa0
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_devino_to_sysino(unsigned long devhandle,
-					    unsigned long devino);
-=======
 unsigned long sun4v_devino_to_sysino(unsigned long devhandle,
 				     unsigned long devino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* intr_getenabled()
@@ -1770,11 +1636,7 @@ unsigned long sun4v_devino_to_sysino(unsigned long devhandle,
 #define HV_FAST_INTR_GETENABLED		0xa1
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_intr_getenabled(unsigned long sysino);
-=======
 unsigned long sun4v_intr_getenabled(unsigned long sysino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* intr_setenabled()
@@ -1790,12 +1652,8 @@ unsigned long sun4v_intr_getenabled(unsigned long sysino);
 #define HV_FAST_INTR_SETENABLED		0xa2
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_intr_setenabled(unsigned long sysino, unsigned long intr_enabled);
-=======
 unsigned long sun4v_intr_setenabled(unsigned long sysino,
 				    unsigned long intr_enabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* intr_getstate()
@@ -1811,11 +1669,7 @@ unsigned long sun4v_intr_setenabled(unsigned long sysino,
 #define HV_FAST_INTR_GETSTATE		0xa3
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_intr_getstate(unsigned long sysino);
-=======
 unsigned long sun4v_intr_getstate(unsigned long sysino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* intr_setstate()
@@ -1835,11 +1689,7 @@ unsigned long sun4v_intr_getstate(unsigned long sysino);
 #define HV_FAST_INTR_SETSTATE		0xa4
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_intr_setstate(unsigned long sysino, unsigned long intr_state);
-=======
 unsigned long sun4v_intr_setstate(unsigned long sysino, unsigned long intr_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* intr_gettarget()
@@ -1857,11 +1707,7 @@ unsigned long sun4v_intr_setstate(unsigned long sysino, unsigned long intr_state
 #define HV_FAST_INTR_GETTARGET		0xa5
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_intr_gettarget(unsigned long sysino);
-=======
 unsigned long sun4v_intr_gettarget(unsigned long sysino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* intr_settarget()
@@ -1878,11 +1724,7 @@ unsigned long sun4v_intr_gettarget(unsigned long sysino);
 #define HV_FAST_INTR_SETTARGET		0xa6
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_intr_settarget(unsigned long sysino, unsigned long cpuid);
-=======
 unsigned long sun4v_intr_settarget(unsigned long sysino, unsigned long cpuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* vintr_get_cookie()
@@ -1966,32 +1808,6 @@ unsigned long sun4v_intr_settarget(unsigned long sysino, unsigned long cpuid);
 #define HV_FAST_VINTR_SET_TARGET	0xae
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_vintr_get_cookie(unsigned long dev_handle,
-					    unsigned long dev_ino,
-					    unsigned long *cookie);
-extern unsigned long sun4v_vintr_set_cookie(unsigned long dev_handle,
-					    unsigned long dev_ino,
-					    unsigned long cookie);
-extern unsigned long sun4v_vintr_get_valid(unsigned long dev_handle,
-					   unsigned long dev_ino,
-					   unsigned long *valid);
-extern unsigned long sun4v_vintr_set_valid(unsigned long dev_handle,
-					   unsigned long dev_ino,
-					   unsigned long valid);
-extern unsigned long sun4v_vintr_get_state(unsigned long dev_handle,
-					   unsigned long dev_ino,
-					   unsigned long *state);
-extern unsigned long sun4v_vintr_set_state(unsigned long dev_handle,
-					   unsigned long dev_ino,
-					   unsigned long state);
-extern unsigned long sun4v_vintr_get_target(unsigned long dev_handle,
-					    unsigned long dev_ino,
-					    unsigned long *cpuid);
-extern unsigned long sun4v_vintr_set_target(unsigned long dev_handle,
-					    unsigned long dev_ino,
-					    unsigned long cpuid);
-=======
 unsigned long sun4v_vintr_get_cookie(unsigned long dev_handle,
 				     unsigned long dev_ino,
 				     unsigned long *cookie);
@@ -2016,7 +1832,6 @@ unsigned long sun4v_vintr_get_target(unsigned long dev_handle,
 unsigned long sun4v_vintr_set_target(unsigned long dev_handle,
 				     unsigned long dev_ino,
 				     unsigned long cpuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* PCI IO services.
@@ -2087,10 +1902,7 @@ unsigned long sun4v_vintr_set_target(unsigned long dev_handle,
 
 #define HV_PCI_MAP_ATTR_READ		0x01
 #define HV_PCI_MAP_ATTR_WRITE		0x02
-<<<<<<< HEAD
-=======
 #define HV_PCI_MAP_ATTR_RELAXED_ORDER	0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HV_PCI_DEVICE_BUILD(b,d,f)	\
 	((((b) & 0xff) << 16) | \
@@ -2681,8 +2493,6 @@ unsigned long sun4v_vintr_set_target(unsigned long dev_handle,
  */
 #define HV_FAST_PCI_MSG_SETVALID	0xd3
 
-<<<<<<< HEAD
-=======
 /* PCI IOMMU v2 definitions and services
  *
  * While the PCI IO definitions above is valid IOMMU v2 adds new PCI IO
@@ -3025,7 +2835,6 @@ unsigned long sun4v_vintr_set_target(unsigned long dev_handle,
  */
 #define HV_FAST_PCI_IOTSB_SYNC_MAPPINGS	0x19a
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Logical Domain Channel services.  */
 
 #define LDC_CHANNEL_DOWN		0
@@ -3322,52 +3131,6 @@ struct ldc_mtable_entry {
 #define HV_FAST_LDC_REVOKE		0xef
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_ldc_tx_qconf(unsigned long channel,
-					unsigned long ra,
-					unsigned long num_entries);
-extern unsigned long sun4v_ldc_tx_qinfo(unsigned long channel,
-					unsigned long *ra,
-					unsigned long *num_entries);
-extern unsigned long sun4v_ldc_tx_get_state(unsigned long channel,
-					    unsigned long *head_off,
-					    unsigned long *tail_off,
-					    unsigned long *chan_state);
-extern unsigned long sun4v_ldc_tx_set_qtail(unsigned long channel,
-					    unsigned long tail_off);
-extern unsigned long sun4v_ldc_rx_qconf(unsigned long channel,
-					unsigned long ra,
-					unsigned long num_entries);
-extern unsigned long sun4v_ldc_rx_qinfo(unsigned long channel,
-					unsigned long *ra,
-					unsigned long *num_entries);
-extern unsigned long sun4v_ldc_rx_get_state(unsigned long channel,
-					    unsigned long *head_off,
-					    unsigned long *tail_off,
-					    unsigned long *chan_state);
-extern unsigned long sun4v_ldc_rx_set_qhead(unsigned long channel,
-					    unsigned long head_off);
-extern unsigned long sun4v_ldc_set_map_table(unsigned long channel,
-					     unsigned long ra,
-					     unsigned long num_entries);
-extern unsigned long sun4v_ldc_get_map_table(unsigned long channel,
-					     unsigned long *ra,
-					     unsigned long *num_entries);
-extern unsigned long sun4v_ldc_copy(unsigned long channel,
-				    unsigned long dir_code,
-				    unsigned long tgt_raddr,
-				    unsigned long lcl_raddr,
-				    unsigned long len,
-				    unsigned long *actual_len);
-extern unsigned long sun4v_ldc_mapin(unsigned long channel,
-				     unsigned long cookie,
-				     unsigned long *ra,
-				     unsigned long *perm);
-extern unsigned long sun4v_ldc_unmap(unsigned long ra);
-extern unsigned long sun4v_ldc_revoke(unsigned long channel,
-				      unsigned long cookie,
-				      unsigned long mte_cookie);
-=======
 unsigned long sun4v_ldc_tx_qconf(unsigned long channel,
 				 unsigned long ra,
 				 unsigned long num_entries);
@@ -3412,7 +3175,6 @@ unsigned long sun4v_ldc_unmap(unsigned long ra);
 unsigned long sun4v_ldc_revoke(unsigned long channel,
 			       unsigned long cookie,
 			       unsigned long mte_cookie);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Performance counter services.  */
@@ -3469,16 +3231,6 @@ unsigned long sun4v_ldc_revoke(unsigned long channel,
 #define HV_FAST_N2_SET_PERFREG		0x105
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_niagara_getperf(unsigned long reg,
-					   unsigned long *val);
-extern unsigned long sun4v_niagara_setperf(unsigned long reg,
-					   unsigned long val);
-extern unsigned long sun4v_niagara2_getperf(unsigned long reg,
-					    unsigned long *val);
-extern unsigned long sun4v_niagara2_setperf(unsigned long reg,
-					    unsigned long val);
-=======
 unsigned long sun4v_niagara_getperf(unsigned long reg,
 				    unsigned long *val);
 unsigned long sun4v_niagara_setperf(unsigned long reg,
@@ -3487,7 +3239,6 @@ unsigned long sun4v_niagara2_getperf(unsigned long reg,
 				     unsigned long *val);
 unsigned long sun4v_niagara2_setperf(unsigned long reg,
 				     unsigned long val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* MMU statistics services.
@@ -3582,13 +3333,8 @@ struct hv_mmu_statistics {
 #define HV_FAST_MMUSTAT_INFO		0x103
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_mmustat_conf(unsigned long ra, unsigned long *orig_ra);
-extern unsigned long sun4v_mmustat_info(unsigned long *ra);
-=======
 unsigned long sun4v_mmustat_conf(unsigned long ra, unsigned long *orig_ra);
 unsigned long sun4v_mmustat_info(unsigned long *ra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* NCS crypto services  */
@@ -3677,15 +3423,9 @@ struct hv_ncs_qtail_update_arg {
 #define HV_FAST_NCS_REQUEST		0x110
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_ncs_request(unsigned long request,
-				       unsigned long arg_ra,
-				       unsigned long arg_size);
-=======
 unsigned long sun4v_ncs_request(unsigned long request,
 			        unsigned long arg_ra,
 			        unsigned long arg_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define HV_FAST_FIRE_GET_PERFREG	0x120
@@ -3694,10 +3434,6 @@ unsigned long sun4v_ncs_request(unsigned long request,
 #define HV_FAST_REBOOT_DATA_SET		0x172
 
 #ifndef __ASSEMBLY__
-<<<<<<< HEAD
-extern unsigned long sun4v_reboot_data_set(unsigned long ra,
-					   unsigned long len);
-=======
 unsigned long sun4v_reboot_data_set(unsigned long ra,
 				    unsigned long len);
 #endif
@@ -3731,7 +3467,6 @@ unsigned long sun4v_m7_get_perfreg(unsigned long reg_num,
 				      unsigned long *reg_val);
 unsigned long sun4v_m7_set_perfreg(unsigned long reg_num,
 				      unsigned long reg_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Function numbers for HV_CORE_TRAP.  */
@@ -3758,38 +3493,15 @@ unsigned long sun4v_m7_set_perfreg(unsigned long reg_num,
 #define HV_GRP_SDIO			0x0108
 #define HV_GRP_SDIO_ERR			0x0109
 #define HV_GRP_REBOOT_DATA		0x0110
-<<<<<<< HEAD
-=======
 #define HV_GRP_ATU			0x0111
 #define HV_GRP_DAX			0x0113
 #define HV_GRP_M7_PERF			0x0114
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HV_GRP_NIAG_PERF		0x0200
 #define HV_GRP_FIRE_PERF		0x0201
 #define HV_GRP_N2_CPU			0x0202
 #define HV_GRP_NIU			0x0204
 #define HV_GRP_VF_CPU			0x0205
 #define HV_GRP_KT_CPU			0x0209
-<<<<<<< HEAD
-#define HV_GRP_DIAG			0x0300
-
-#ifndef __ASSEMBLY__
-extern unsigned long sun4v_get_version(unsigned long group,
-				       unsigned long *major,
-				       unsigned long *minor);
-extern unsigned long sun4v_set_version(unsigned long group,
-				       unsigned long major,
-				       unsigned long minor,
-				       unsigned long *actual_minor);
-
-extern int sun4v_hvapi_register(unsigned long group, unsigned long major,
-				unsigned long *minor);
-extern void sun4v_hvapi_unregister(unsigned long group);
-extern int sun4v_hvapi_get(unsigned long group,
-			   unsigned long *major,
-			   unsigned long *minor);
-extern void sun4v_hvapi_init(void);
-=======
 #define HV_GRP_VT_CPU			0x020c
 #define HV_GRP_T5_CPU			0x0211
 #define HV_GRP_DIAG			0x0300
@@ -3810,7 +3522,6 @@ int sun4v_hvapi_get(unsigned long group,
 		    unsigned long *major,
 		    unsigned long *minor);
 void sun4v_hvapi_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* !(_SPARC64_HYPERVISOR_H) */

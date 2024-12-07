@@ -10,10 +10,7 @@
  * Copyright (C) 2002 Broadcom, Inc.
  *   memcpy/copy_user author: Mark Vandevoorde
  * Copyright (C) 2007  Maciej W. Rozycki
-<<<<<<< HEAD
-=======
  * Copyright (C) 2014 Imagination Technologies Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Mnemonic names for arguments to memcpy/__copy_user
  */
@@ -31,15 +28,11 @@
 #ifdef CONFIG_MIPS_MALTA
 #undef CONFIG_CPU_HAS_PREFETCH
 #endif
-<<<<<<< HEAD
-
-=======
 #ifdef CONFIG_CPU_MIPSR6
 #undef CONFIG_CPU_HAS_PREFETCH
 #endif
 
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/regdef.h>
@@ -97,13 +90,6 @@
  * they're not protected.
  */
 
-<<<<<<< HEAD
-#define EXC(inst_reg,addr,handler)		\
-9:	inst_reg, addr;				\
-	.section __ex_table,"a";		\
-	PTR	9b, handler;			\
-	.previous
-=======
 /* Instruction type */
 #define LD_INSN 1
 #define ST_INSN 2
@@ -149,7 +135,6 @@
 			insn reg, addr;				\
 		.endif;						\
 	.endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Only on the 64-bit kernel we can made use of 64-bit registers.
@@ -160,14 +145,6 @@
 
 #ifdef USE_DOUBLE
 
-<<<<<<< HEAD
-#define LOAD   ld
-#define LOADL  ldl
-#define LOADR  ldr
-#define STOREL sdl
-#define STORER sdr
-#define STORE  sd
-=======
 #define LOADK ld /* No exception */
 #define LOAD(reg, addr, handler)	EXC(ld, LD_INSN, reg, addr, handler)
 #define LOADL(reg, addr, handler)	EXC(ldl, LD_INSN, reg, addr, handler)
@@ -175,7 +152,6 @@
 #define STOREL(reg, addr, handler)	EXC(sdl, ST_INSN, reg, addr, handler)
 #define STORER(reg, addr, handler)	EXC(sdr, ST_INSN, reg, addr, handler)
 #define STORE(reg, addr, handler)	EXC(sd, ST_INSN, reg, addr, handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADD    daddu
 #define SUB    dsubu
 #define SRL    dsrl
@@ -206,14 +182,6 @@
 
 #else
 
-<<<<<<< HEAD
-#define LOAD   lw
-#define LOADL  lwl
-#define LOADR  lwr
-#define STOREL swl
-#define STORER swr
-#define STORE  sw
-=======
 #define LOADK lw /* No exception */
 #define LOAD(reg, addr, handler)	EXC(lw, LD_INSN, reg, addr, handler)
 #define LOADL(reg, addr, handler)	EXC(lwl, LD_INSN, reg, addr, handler)
@@ -221,7 +189,6 @@
 #define STOREL(reg, addr, handler)	EXC(swl, ST_INSN, reg, addr, handler)
 #define STORER(reg, addr, handler)	EXC(swr, ST_INSN, reg, addr, handler)
 #define STORE(reg, addr, handler)	EXC(sw, ST_INSN, reg, addr, handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADD    addu
 #define SUB    subu
 #define SRL    srl
@@ -234,19 +201,6 @@
 
 #endif /* USE_DOUBLE */
 
-<<<<<<< HEAD
-#ifdef CONFIG_CPU_LITTLE_ENDIAN
-#define LDFIRST LOADR
-#define LDREST  LOADL
-#define STFIRST STORER
-#define STREST  STOREL
-#define SHIFT_DISCARD SLLV
-#else
-#define LDFIRST LOADL
-#define LDREST  LOADR
-#define STFIRST STOREL
-#define STREST  STORER
-=======
 #define LOADB(reg, addr, handler)	EXC(lb, LD_INSN, reg, addr, handler)
 #define STOREB(reg, addr, handler)	EXC(sb, ST_INSN, reg, addr, handler)
 
@@ -289,7 +243,6 @@
 #define LDREST	LOADR
 #define STFIRST STOREL
 #define STREST	STORER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SHIFT_DISCARD SRLV
 #endif
 
@@ -307,19 +260,6 @@
 	.set	at=v1
 #endif
 
-<<<<<<< HEAD
-/*
- * A combined memcpy/__copy_user
- * __copy_user sets len to 0 for success; else to an upper bound of
- * the number of uncopied bytes.
- * memcpy sets v0 to dst.
- */
-	.align	5
-LEAF(memcpy)					/* a0=dst a1=src a2=len */
-	move	v0, dst				/* return value */
-.L__memcpy:
-FEXPORT(__copy_user)
-=======
 	.align	5
 
 	/*
@@ -337,7 +277,6 @@ FEXPORT(__copy_user)
 	.hidden __memcpy /* make sure it does not leak */
 	.endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Note: dst & src may be unaligned, len may be 0
 	 * Temps
@@ -352,21 +291,6 @@ FEXPORT(__copy_user)
 	 *
 	 * If len < NBYTES use byte operations.
 	 */
-<<<<<<< HEAD
-	PREF(	0, 0(src) )
-	PREF(	1, 0(dst) )
-	sltu	t2, len, NBYTES
-	and	t1, dst, ADDRMASK
-	PREF(	0, 1*32(src) )
-	PREF(	1, 1*32(dst) )
-	bnez	t2, .Lcopy_bytes_checklen
-	 and	t0, src, ADDRMASK
-	PREF(	0, 2*32(src) )
-	PREF(	1, 2*32(dst) )
-	bnez	t1, .Ldst_unaligned
-	 nop
-	bnez	t0, .Lsrc_unaligned_dst_aligned
-=======
 	PREFS(	0, 0(src) )
 	PREFD(	1, 0(dst) )
 	sltu	t2, len, NBYTES
@@ -385,43 +309,10 @@ FEXPORT(__copy_user)
 	or	t0, t0, t1
 	bnez	t0, .Lcopy_unaligned_bytes\@
 #endif /* CONFIG_CPU_NO_LOAD_STORE_LR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * use delay slot for fall-through
 	 * src and dst are aligned; need to compute rem
 	 */
-<<<<<<< HEAD
-.Lboth_aligned:
-	 SRL	t0, len, LOG_NBYTES+3    # +3 for 8 units/iter
-	beqz	t0, .Lcleanup_both_aligned # len < 8*NBYTES
-	 and	rem, len, (8*NBYTES-1)	 # rem = len % (8*NBYTES)
-	PREF(	0, 3*32(src) )
-	PREF(	1, 3*32(dst) )
-	.align	4
-1:
-	R10KCBARRIER(0(ra))
-EXC(	LOAD	t0, UNIT(0)(src),	.Ll_exc)
-EXC(	LOAD	t1, UNIT(1)(src),	.Ll_exc_copy)
-EXC(	LOAD	t2, UNIT(2)(src),	.Ll_exc_copy)
-EXC(	LOAD	t3, UNIT(3)(src),	.Ll_exc_copy)
-	SUB	len, len, 8*NBYTES
-EXC(	LOAD	t4, UNIT(4)(src),	.Ll_exc_copy)
-EXC(	LOAD	t7, UNIT(5)(src),	.Ll_exc_copy)
-EXC(	STORE	t0, UNIT(0)(dst),	.Ls_exc_p8u)
-EXC(	STORE	t1, UNIT(1)(dst),	.Ls_exc_p7u)
-EXC(	LOAD	t0, UNIT(6)(src),	.Ll_exc_copy)
-EXC(	LOAD	t1, UNIT(7)(src),	.Ll_exc_copy)
-	ADD	src, src, 8*NBYTES
-	ADD	dst, dst, 8*NBYTES
-EXC(	STORE	t2, UNIT(-6)(dst),	.Ls_exc_p6u)
-EXC(	STORE	t3, UNIT(-5)(dst),	.Ls_exc_p5u)
-EXC(	STORE	t4, UNIT(-4)(dst),	.Ls_exc_p4u)
-EXC(	STORE	t7, UNIT(-3)(dst),	.Ls_exc_p3u)
-EXC(	STORE	t0, UNIT(-2)(dst),	.Ls_exc_p2u)
-EXC(	STORE	t1, UNIT(-1)(dst),	.Ls_exc_p1u)
-	PREF(	0, 8*32(src) )
-	PREF(	1, 8*32(dst) )
-=======
 .Lboth_aligned\@:
 	 SRL	t0, len, LOG_NBYTES+3	 # +3 for 8 units/iter
 	beqz	t0, .Lcleanup_both_aligned\@ # len < 8*NBYTES
@@ -452,57 +343,20 @@ EXC(	STORE	t1, UNIT(-1)(dst),	.Ls_exc_p1u)
 	STORE(t1, UNIT(-1)(dst), .Ls_exc_p1u\@)
 	PREFS(	0, 8*32(src) )
 	PREFD(	1, 8*32(dst) )
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bne	len, rem, 1b
 	 nop
 
 	/*
 	 * len == rem == the number of bytes left to copy < 8*NBYTES
 	 */
-<<<<<<< HEAD
-.Lcleanup_both_aligned:
-	beqz	len, .Ldone
-	 sltu	t0, len, 4*NBYTES
-	bnez	t0, .Lless_than_4units
-=======
 .Lcleanup_both_aligned\@:
 	beqz	len, .Ldone\@
 	 sltu	t0, len, 4*NBYTES
 	bnez	t0, .Lless_than_4units\@
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 and	rem, len, (NBYTES-1)	# rem = len % NBYTES
 	/*
 	 * len >= 4*NBYTES
 	 */
-<<<<<<< HEAD
-EXC(	LOAD	t0, UNIT(0)(src),	.Ll_exc)
-EXC(	LOAD	t1, UNIT(1)(src),	.Ll_exc_copy)
-EXC(	LOAD	t2, UNIT(2)(src),	.Ll_exc_copy)
-EXC(	LOAD	t3, UNIT(3)(src),	.Ll_exc_copy)
-	SUB	len, len, 4*NBYTES
-	ADD	src, src, 4*NBYTES
-	R10KCBARRIER(0(ra))
-EXC(	STORE	t0, UNIT(0)(dst),	.Ls_exc_p4u)
-EXC(	STORE	t1, UNIT(1)(dst),	.Ls_exc_p3u)
-EXC(	STORE	t2, UNIT(2)(dst),	.Ls_exc_p2u)
-EXC(	STORE	t3, UNIT(3)(dst),	.Ls_exc_p1u)
-	.set	reorder				/* DADDI_WAR */
-	ADD	dst, dst, 4*NBYTES
-	beqz	len, .Ldone
-	.set	noreorder
-.Lless_than_4units:
-	/*
-	 * rem = len % NBYTES
-	 */
-	beq	rem, len, .Lcopy_bytes
-	 nop
-1:
-	R10KCBARRIER(0(ra))
-EXC(	LOAD	t0, 0(src),		.Ll_exc)
-	ADD	src, src, NBYTES
-	SUB	len, len, NBYTES
-EXC(	STORE	t0, 0(dst),		.Ls_exc_p1u)
-=======
 	LOAD( t0, UNIT(0)(src),	.Ll_exc\@)
 	LOAD( t1, UNIT(1)(src),	.Ll_exc_copy\@)
 	LOAD( t2, UNIT(2)(src),	.Ll_exc_copy\@)
@@ -530,24 +384,16 @@ EXC(	STORE	t0, 0(dst),		.Ls_exc_p1u)
 	ADD	src, src, NBYTES
 	SUB	len, len, NBYTES
 	STORE(t0, 0(dst), .Ls_exc_p1u\@)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set	reorder				/* DADDI_WAR */
 	ADD	dst, dst, NBYTES
 	bne	rem, len, 1b
 	.set	noreorder
 
-<<<<<<< HEAD
-	/*
-	 * src and dst are aligned, need to copy rem bytes (rem < NBYTES)
-	 * A loop would do only a byte at a time with possible branch
-	 * mispredicts.  Can't do an explicit LOAD dst,mask,or,STORE
-=======
 #ifndef CONFIG_CPU_NO_LOAD_STORE_LR
 	/*
 	 * src and dst are aligned, need to copy rem bytes (rem < NBYTES)
 	 * A loop would do only a byte at a time with possible branch
 	 * mispredicts.	 Can't do an explicit LOAD dst,mask,or,STORE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * because can't assume read-access to dst.  Instead, use
 	 * STREST dst, which doesn't require read access to dst.
 	 *
@@ -556,19 +402,6 @@ EXC(	STORE	t0, 0(dst),		.Ls_exc_p1u)
 	 * more instruction-level parallelism.
 	 */
 #define bits t2
-<<<<<<< HEAD
-	beqz	len, .Ldone
-	 ADD	t1, dst, len	# t1 is just past last byte of dst
-	li	bits, 8*NBYTES
-	SLL	rem, len, 3	# rem = number of bits to keep
-EXC(	LOAD	t0, 0(src),		.Ll_exc)
-	SUB	bits, bits, rem	# bits = number of bits to discard
-	SHIFT_DISCARD t0, t0, bits
-EXC(	STREST	t0, -1(t1),		.Ls_exc)
-	jr	ra
-	 move	len, zero
-.Ldst_unaligned:
-=======
 	beqz	len, .Ldone\@
 	 ADD	t1, dst, len	# t1 is just past last byte of dst
 	li	bits, 8*NBYTES
@@ -580,7 +413,6 @@ EXC(	STREST	t0, -1(t1),		.Ls_exc)
 	jr	ra
 	 move	len, zero
 .Ldst_unaligned\@:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * dst is unaligned
 	 * t0 = src & ADDRMASK
@@ -591,27 +423,6 @@ EXC(	STREST	t0, -1(t1),		.Ls_exc)
 	 * Set match = (src and dst have same alignment)
 	 */
 #define match rem
-<<<<<<< HEAD
-EXC(	LDFIRST	t3, FIRST(0)(src),	.Ll_exc)
-	ADD	t2, zero, NBYTES
-EXC(	LDREST	t3, REST(0)(src),	.Ll_exc_copy)
-	SUB	t2, t2, t1	# t2 = number of bytes copied
-	xor	match, t0, t1
-	R10KCBARRIER(0(ra))
-EXC(	STFIRST t3, FIRST(0)(dst),	.Ls_exc)
-	beq	len, t2, .Ldone
-	 SUB	len, len, t2
-	ADD	dst, dst, t2
-	beqz	match, .Lboth_aligned
-	 ADD	src, src, t2
-
-.Lsrc_unaligned_dst_aligned:
-	SRL	t0, len, LOG_NBYTES+2    # +2 for 4 units/iter
-	PREF(	0, 3*32(src) )
-	beqz	t0, .Lcleanup_src_unaligned
-	 and	rem, len, (4*NBYTES-1)   # rem = len % 4*NBYTES
-	PREF(	1, 3*32(dst) )
-=======
 	LDFIRST(t3, FIRST(0)(src), .Ll_exc\@)
 	ADD	t2, zero, NBYTES
 	LDREST(t3, REST(0)(src), .Ll_exc_copy\@)
@@ -631,7 +442,6 @@ EXC(	STFIRST t3, FIRST(0)(dst),	.Ls_exc)
 	beqz	t0, .Lcleanup_src_unaligned\@
 	 and	rem, len, (4*NBYTES-1)	 # rem = len % 4*NBYTES
 	PREFD(	1, 3*32(dst) )
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:
 /*
  * Avoid consecutive LD*'s to the same register since some mips
@@ -640,18 +450,6 @@ EXC(	STFIRST t3, FIRST(0)(dst),	.Ls_exc)
  * are to the same unit (unless src is aligned, but it's not).
  */
 	R10KCBARRIER(0(ra))
-<<<<<<< HEAD
-EXC(	LDFIRST	t0, FIRST(0)(src),	.Ll_exc)
-EXC(	LDFIRST	t1, FIRST(1)(src),	.Ll_exc_copy)
-	SUB     len, len, 4*NBYTES
-EXC(	LDREST	t0, REST(0)(src),	.Ll_exc_copy)
-EXC(	LDREST	t1, REST(1)(src),	.Ll_exc_copy)
-EXC(	LDFIRST	t2, FIRST(2)(src),	.Ll_exc_copy)
-EXC(	LDFIRST	t3, FIRST(3)(src),	.Ll_exc_copy)
-EXC(	LDREST	t2, REST(2)(src),	.Ll_exc_copy)
-EXC(	LDREST	t3, REST(3)(src),	.Ll_exc_copy)
-	PREF(	0, 9*32(src) )		# 0 is PREF_LOAD  (not streamed)
-=======
 	LDFIRST(t0, FIRST(0)(src), .Ll_exc\@)
 	LDFIRST(t1, FIRST(1)(src), .Ll_exc_copy\@)
 	SUB	len, len, 4*NBYTES
@@ -662,43 +460,20 @@ EXC(	LDREST	t3, REST(3)(src),	.Ll_exc_copy)
 	LDREST(t2, REST(2)(src), .Ll_exc_copy\@)
 	LDREST(t3, REST(3)(src), .Ll_exc_copy\@)
 	PREFS(	0, 9*32(src) )		# 0 is PREF_LOAD  (not streamed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADD	src, src, 4*NBYTES
 #ifdef CONFIG_CPU_SB1
 	nop				# improves slotting
 #endif
-<<<<<<< HEAD
-EXC(	STORE	t0, UNIT(0)(dst),	.Ls_exc_p4u)
-EXC(	STORE	t1, UNIT(1)(dst),	.Ls_exc_p3u)
-EXC(	STORE	t2, UNIT(2)(dst),	.Ls_exc_p2u)
-EXC(	STORE	t3, UNIT(3)(dst),	.Ls_exc_p1u)
-	PREF(	1, 9*32(dst) )     	# 1 is PREF_STORE (not streamed)
-=======
 	STORE(t0, UNIT(0)(dst),	.Ls_exc_p4u\@)
 	STORE(t1, UNIT(1)(dst),	.Ls_exc_p3u\@)
 	STORE(t2, UNIT(2)(dst),	.Ls_exc_p2u\@)
 	STORE(t3, UNIT(3)(dst),	.Ls_exc_p1u\@)
 	PREFD(	1, 9*32(dst) )		# 1 is PREF_STORE (not streamed)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set	reorder				/* DADDI_WAR */
 	ADD	dst, dst, 4*NBYTES
 	bne	len, rem, 1b
 	.set	noreorder
 
-<<<<<<< HEAD
-.Lcleanup_src_unaligned:
-	beqz	len, .Ldone
-	 and	rem, len, NBYTES-1  # rem = len % NBYTES
-	beq	rem, len, .Lcopy_bytes
-	 nop
-1:
-	R10KCBARRIER(0(ra))
-EXC(	LDFIRST t0, FIRST(0)(src),	.Ll_exc)
-EXC(	LDREST	t0, REST(0)(src),	.Ll_exc_copy)
-	ADD	src, src, NBYTES
-	SUB	len, len, NBYTES
-EXC(	STORE	t0, 0(dst),		.Ls_exc_p1u)
-=======
 .Lcleanup_src_unaligned\@:
 	beqz	len, .Ldone\@
 	 and	rem, len, NBYTES-1  # rem = len % NBYTES
@@ -711,25 +486,11 @@ EXC(	STORE	t0, 0(dst),		.Ls_exc_p1u)
 	ADD	src, src, NBYTES
 	SUB	len, len, NBYTES
 	STORE(t0, 0(dst), .Ls_exc_p1u\@)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set	reorder				/* DADDI_WAR */
 	ADD	dst, dst, NBYTES
 	bne	len, rem, 1b
 	.set	noreorder
 
-<<<<<<< HEAD
-.Lcopy_bytes_checklen:
-	beqz	len, .Ldone
-	 nop
-.Lcopy_bytes:
-	/* 0 < len < NBYTES  */
-	R10KCBARRIER(0(ra))
-#define COPY_BYTE(N)			\
-EXC(	lb	t0, N(src), .Ll_exc);	\
-	SUB	len, len, 1;		\
-	beqz	len, .Ldone;		\
-EXC(	 sb	t0, N(dst), .Ls_exc_p1)
-=======
 #endif /* !CONFIG_CPU_NO_LOAD_STORE_LR */
 .Lcopy_bytes_checklen\@:
 	beqz	len, .Ldone\@
@@ -742,7 +503,6 @@ EXC(	 sb	t0, N(dst), .Ls_exc_p1)
 	SUB	len, len, 1;		\
 	beqz	len, .Ldone\@;		\
 	STOREB(t0, N(dst), .Ls_exc_p1\@)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	COPY_BYTE(0)
 	COPY_BYTE(1)
@@ -752,18 +512,6 @@ EXC(	 sb	t0, N(dst), .Ls_exc_p1)
 	COPY_BYTE(4)
 	COPY_BYTE(5)
 #endif
-<<<<<<< HEAD
-EXC(	lb	t0, NBYTES-2(src), .Ll_exc)
-	SUB	len, len, 1
-	jr	ra
-EXC(	 sb	t0, NBYTES-2(dst), .Ls_exc_p1)
-.Ldone:
-	jr	ra
-	 nop
-	END(memcpy)
-
-.Ll_exc_copy:
-=======
 	LOADB(t0, NBYTES-2(src), .Ll_exc\@)
 	SUB	len, len, 1
 	jr	ra
@@ -794,7 +542,6 @@ EXC(	 sb	t0, NBYTES-2(dst), .Ls_exc_p1)
 	.endif
 
 .Ll_exc_copy\@:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Copy bytes from src until faulting load address (or until a
 	 * lb faults)
@@ -805,68 +552,17 @@ EXC(	 sb	t0, NBYTES-2(dst), .Ls_exc_p1)
 	 *
 	 * Assumes src < THREAD_BUADDR($28)
 	 */
-<<<<<<< HEAD
-	LOAD	t0, TI_TASK($28)
-	 nop
-	LOAD	t0, THREAD_BUADDR(t0)
-1:
-EXC(	lb	t1, 0(src),	.Ll_exc)
-=======
 	LOADK	t0, TI_TASK($28)
 	 nop
 	LOADK	t0, THREAD_BUADDR(t0)
 1:
 	LOADB(t1, 0(src), .Ll_exc\@)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADD	src, src, 1
 	sb	t1, 0(dst)	# can't fault -- we're copy_from_user
 	.set	reorder				/* DADDI_WAR */
 	ADD	dst, dst, 1
 	bne	src, t0, 1b
 	.set	noreorder
-<<<<<<< HEAD
-.Ll_exc:
-	LOAD	t0, TI_TASK($28)
-	 nop
-	LOAD	t0, THREAD_BUADDR(t0)	# t0 is just past last good address
-	 nop
-	SUB	len, AT, t0		# len number of uncopied bytes
-	/*
-	 * Here's where we rely on src and dst being incremented in tandem,
-	 *   See (3) above.
-	 * dst += (fault addr - src) to put dst at first byte to clear
-	 */
-	ADD	dst, t0			# compute start address in a1
-	SUB	dst, src
-	/*
-	 * Clear len bytes starting at dst.  Can't call __bzero because it
-	 * might modify len.  An inefficient loop for these rare times...
-	 */
-	.set	reorder				/* DADDI_WAR */
-	SUB	src, len, 1
-	beqz	len, .Ldone
-	.set	noreorder
-1:	sb	zero, 0(dst)
-	ADD	dst, dst, 1
-#ifndef CONFIG_CPU_DADDI_WORKAROUNDS
-	bnez	src, 1b
-	 SUB	src, src, 1
-#else
-	.set	push
-	.set	noat
-	li	v1, 1
-	bnez	src, 1b
-	 SUB	src, src, v1
-	.set	pop
-#endif
-	jr	ra
-	 nop
-
-
-#define SEXC(n)							\
-	.set	reorder;			/* DADDI_WAR */	\
-.Ls_exc_p ## n ## u:						\
-=======
 .Ll_exc\@:
 	LOADK	t0, TI_TASK($28)
 	 nop
@@ -879,7 +575,6 @@ EXC(	lb	t1, 0(src),	.Ll_exc)
 #define SEXC(n)							\
 	.set	reorder;			/* DADDI_WAR */ \
 .Ls_exc_p ## n ## u\@:						\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADD	len, len, n*NBYTES;				\
 	jr	ra;						\
 	.set	noreorder
@@ -893,23 +588,11 @@ SEXC(3)
 SEXC(2)
 SEXC(1)
 
-<<<<<<< HEAD
-.Ls_exc_p1:
-=======
 .Ls_exc_p1\@:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set	reorder				/* DADDI_WAR */
 	ADD	len, len, 1
 	jr	ra
 	.set	noreorder
-<<<<<<< HEAD
-.Ls_exc:
-	jr	ra
-	 nop
-
-	.align	5
-LEAF(memmove)
-=======
 .Ls_exc\@:
 	jr	ra
 	 nop
@@ -919,7 +602,6 @@ LEAF(memmove)
 	.align	5
 LEAF(memmove)
 EXPORT_SYMBOL(memmove)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ADD	t0, a0, a2
 	ADD	t1, a1, a2
 	sltu	t0, a1, t0			# dst + len <= src -> memcpy
@@ -967,8 +649,6 @@ LEAF(__rmemcpy)					/* a0=dst a1=src a2=len */
 	jr	ra
 	 move	a2, zero
 	END(__rmemcpy)
-<<<<<<< HEAD
-=======
 
 /*
  * A combined memcpy/__copy_user
@@ -1022,4 +702,3 @@ __BUILD_COPY_USER EVA_MODE KERNELOP USEROP
 END(__raw_copy_to_user)
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

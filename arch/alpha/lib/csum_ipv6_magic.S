@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/csum_ipv6_magic.S
  * Contributed by Richard Henderson <rth@tamu.edu>
@@ -16,10 +13,7 @@
  * added by Ivan Kokshaysky <ink@jurassic.park.msu.ru>
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl csum_ipv6_magic
 	.align 4
 	.ent csum_ipv6_magic
@@ -121,7 +115,4 @@ csum_ipv6_magic:
 	ret			# .. e1 :
 
 	.end csum_ipv6_magic
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(csum_ipv6_magic)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

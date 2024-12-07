@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LINUX_IOMMU_HELPER_H
-#define _LINUX_IOMMU_HELPER_H
-
-#include <linux/kernel.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_IOMMU_HELPER_H
 #define _LINUX_IOMMU_HELPER_H
@@ -12,7 +6,6 @@
 #include <linux/log2.h>
 #include <linux/math.h>
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long iommu_device_max_index(unsigned long size,
 						   unsigned long offset,
@@ -24,11 +17,6 @@ static inline unsigned long iommu_device_max_index(unsigned long size,
 		return size;
 }
 
-<<<<<<< HEAD
-extern int iommu_is_span_boundary(unsigned int index, unsigned int nr,
-				  unsigned long shift,
-				  unsigned long boundary_size);
-=======
 static inline int iommu_is_span_boundary(unsigned int index, unsigned int nr,
 		unsigned long shift, unsigned long boundary_size)
 {
@@ -38,7 +26,6 @@ static inline int iommu_is_span_boundary(unsigned int index, unsigned int nr,
 	return shift + nr > boundary_size;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned long iommu_area_alloc(unsigned long *map, unsigned long size,
 				      unsigned long start, unsigned int nr,
 				      unsigned long shift,

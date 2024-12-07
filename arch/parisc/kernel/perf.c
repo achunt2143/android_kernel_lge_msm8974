@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Parisc performance counters
  *  Copyright (C) 2001 Randolph Chung <tausq@debian.org>
  *
  *  This code is derived, with permission, from HP/UX sources.
-<<<<<<< HEAD
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2, or (at your option)
- *    any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -46,11 +26,7 @@
  *  the PDC INTRIGUE calls.  This is done to eliminate bugs introduced
  *  in various PDC revisions.  The code is much more maintainable
  *  and reliable this way vs having to debug on every version of PDC
-<<<<<<< HEAD
- *  on every box. 
-=======
  *  on every box.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/capability.h>
@@ -59,11 +35,7 @@
 #include <linux/miscdevice.h>
 #include <linux/spinlock.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/perf.h>
 #include <asm/parisc-device.h>
 #include <asm/processor.h>
@@ -84,13 +56,8 @@ struct rdr_tbl_ent {
 
 static int perf_processor_interface __read_mostly = UNKNOWN_INTF;
 static int perf_enabled __read_mostly;
-<<<<<<< HEAD
-static spinlock_t perf_lock;
-struct parisc_device *cpu_device __read_mostly;
-=======
 static DEFINE_SPINLOCK(perf_lock);
 static struct parisc_device *cpu_device __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RDRs to write for PCX-W */
 static const int perf_rdrs_W[] =
@@ -215,13 +182,8 @@ static int perf_config(uint32_t *image_ptr);
 static int perf_release(struct inode *inode, struct file *file);
 static int perf_open(struct inode *inode, struct file *file);
 static ssize_t perf_read(struct file *file, char __user *buf, size_t cnt, loff_t *ppos);
-<<<<<<< HEAD
-static ssize_t perf_write(struct file *file, const char __user *buf, size_t count, 
-	loff_t *ppos);
-=======
 static ssize_t perf_write(struct file *file, const char __user *buf,
 	size_t count, loff_t *ppos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long perf_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
 static void perf_start_counters(void);
 static int perf_stop_counters(uint32_t *raddr);
@@ -247,11 +209,7 @@ extern void perf_intrigue_disable_perf_counters (void);
 /*
  * configure:
  *
-<<<<<<< HEAD
- * Configure the cpu with a given data image.  First turn off the counters, 
-=======
  * Configure the cpu with a given data image.  First turn off the counters,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * then download the image, then turn the counters back on.
  */
 static int perf_config(uint32_t *image_ptr)
@@ -263,11 +221,7 @@ static int perf_config(uint32_t *image_ptr)
 	error = perf_stop_counters(raddr);
 	if (error != 0) {
 		printk("perf_config: perf_stop_counters = %ld\n", error);
-<<<<<<< HEAD
-		return -EINVAL; 
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 printk("Preparing to write image\n");
@@ -275,11 +229,7 @@ printk("Preparing to write image\n");
 	error = perf_write_image((uint64_t *)image_ptr);
 	if (error != 0) {
 		printk("perf_config: DOWNLOAD = %ld\n", error);
-<<<<<<< HEAD
-		return -EINVAL; 
-=======
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 printk("Preparing to start counters\n");
@@ -291,11 +241,7 @@ printk("Preparing to start counters\n");
 }
 
 /*
-<<<<<<< HEAD
- * Open the device and initialize all of its memory.  The device is only 
-=======
  * Open the device and initialize all of its memory.  The device is only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * opened once, but can be "queried" by multiple processes that know its
  * file descriptor.
  */
@@ -339,32 +285,14 @@ static ssize_t perf_read(struct file *file, char __user *buf, size_t cnt, loff_t
  * called on the processor that the download should happen
  * on.
  */
-<<<<<<< HEAD
-static ssize_t perf_write(struct file *file, const char __user *buf, size_t count, 
-	loff_t *ppos)
-{
-	int err;
-	size_t image_size;
-=======
 static ssize_t perf_write(struct file *file, const char __user *buf,
 	size_t count, loff_t *ppos)
 {
 	size_t image_size __maybe_unused;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t image_type;
 	uint32_t interface_type;
 	uint32_t test;
 
-<<<<<<< HEAD
-	if (perf_processor_interface == ONYX_INTF) 
-		image_size = PCXU_IMAGE_SIZE;
-	else if (perf_processor_interface == CUDA_INTF) 
-		image_size = PCXW_IMAGE_SIZE;
-	else 
-		return -EFAULT;
-
-	if (!capable(CAP_SYS_ADMIN))
-=======
 	if (perf_processor_interface == ONYX_INTF)
 		image_size = PCXU_IMAGE_SIZE;
 	else if (perf_processor_interface == CUDA_INTF)
@@ -373,19 +301,13 @@ static ssize_t perf_write(struct file *file, const char __user *buf,
 		return -EFAULT;
 
 	if (!perfmon_capable())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EACCES;
 
 	if (count != sizeof(uint32_t))
 		return -EIO;
 
-<<<<<<< HEAD
-	if ((err = copy_from_user(&image_type, buf, sizeof(uint32_t))) != 0) 
-		return err;
-=======
 	if (copy_from_user(&image_type, buf, sizeof(uint32_t)))
 		return -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the interface type and test type */
    	interface_type = (image_type >> 16) & 0xffff;
@@ -395,31 +317,14 @@ static ssize_t perf_write(struct file *file, const char __user *buf,
 
 	/* First check the machine type is correct for
 	   the requested image */
-<<<<<<< HEAD
-        if (((perf_processor_interface == CUDA_INTF) &&
-		       (interface_type != CUDA_INTF)) ||
-	    ((perf_processor_interface == ONYX_INTF) &&
-	               (interface_type != ONYX_INTF))) 
-=======
 	if (((perf_processor_interface == CUDA_INTF) &&
 			(interface_type != CUDA_INTF)) ||
 		((perf_processor_interface == ONYX_INTF) &&
 			(interface_type != ONYX_INTF)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Next check to make sure the requested image
 	   is valid */
-<<<<<<< HEAD
-	if (((interface_type == CUDA_INTF) && 
-		       (test >= MAX_CUDA_IMAGES)) ||
-	    ((interface_type == ONYX_INTF) && 
-		       (test >= MAX_ONYX_IMAGES))) 
-		return -EINVAL;
-
-	/* Copy the image into the processor */
-	if (interface_type == CUDA_INTF) 
-=======
 	if (((interface_type == CUDA_INTF) &&
 		       (test >= MAX_CUDA_IMAGES)) ||
 	    ((interface_type == ONYX_INTF) &&
@@ -428,7 +333,6 @@ static ssize_t perf_write(struct file *file, const char __user *buf,
 
 	/* Copy the image into the processor */
 	if (interface_type == CUDA_INTF)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return perf_config(cuda_images[test]);
 	else
 		return perf_config(onyx_images[test]);
@@ -442,11 +346,7 @@ static ssize_t perf_write(struct file *file, const char __user *buf,
 static void perf_patch_images(void)
 {
 #if 0 /* FIXME!! */
-<<<<<<< HEAD
-/* 
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOTE:  this routine is VERY specific to the current TLB image.
  * If the image is changed, this routine might also need to be changed.
  */
@@ -454,15 +354,9 @@ static void perf_patch_images(void)
 	extern void $i_dtlb_miss_2_0();
 	extern void PA2_0_iva();
 
-<<<<<<< HEAD
-	/* 
-	 * We can only use the lower 32-bits, the upper 32-bits should be 0
-	 * anyway given this is in the kernel 
-=======
 	/*
 	 * We can only use the lower 32-bits, the upper 32-bits should be 0
 	 * anyway given this is in the kernel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	uint32_t itlb_addr  = (uint32_t)&($i_itlb_miss_2_0);
 	uint32_t dtlb_addr  = (uint32_t)&($i_dtlb_miss_2_0);
@@ -470,33 +364,21 @@ static void perf_patch_images(void)
 
 	if (perf_processor_interface == ONYX_INTF) {
 		/* clear last 2 bytes */
-<<<<<<< HEAD
-		onyx_images[TLBMISS][15] &= 0xffffff00;  
-=======
 		onyx_images[TLBMISS][15] &= 0xffffff00;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set 2 bytes */
 		onyx_images[TLBMISS][15] |= (0x000000ff&((dtlb_addr) >> 24));
 		onyx_images[TLBMISS][16] = (dtlb_addr << 8)&0xffffff00;
 		onyx_images[TLBMISS][17] = itlb_addr;
 
 		/* clear last 2 bytes */
-<<<<<<< HEAD
-		onyx_images[TLBHANDMISS][15] &= 0xffffff00;  
-=======
 		onyx_images[TLBHANDMISS][15] &= 0xffffff00;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set 2 bytes */
 		onyx_images[TLBHANDMISS][15] |= (0x000000ff&((dtlb_addr) >> 24));
 		onyx_images[TLBHANDMISS][16] = (dtlb_addr << 8)&0xffffff00;
 		onyx_images[TLBHANDMISS][17] = itlb_addr;
 
 		/* clear last 2 bytes */
-<<<<<<< HEAD
-		onyx_images[BIG_CPI][15] &= 0xffffff00;  
-=======
 		onyx_images[BIG_CPI][15] &= 0xffffff00;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* set 2 bytes */
 		onyx_images[BIG_CPI][15] |= (0x000000ff&((dtlb_addr) >> 24));
 		onyx_images[BIG_CPI][16] = (dtlb_addr << 8)&0xffffff00;
@@ -509,26 +391,6 @@ static void perf_patch_images(void)
 
 	} else if (perf_processor_interface == CUDA_INTF) {
 		/* Cuda interface */
-<<<<<<< HEAD
-		cuda_images[TLBMISS][16] =  
-			(cuda_images[TLBMISS][16]&0xffff0000) |
-			((dtlb_addr >> 8)&0x0000ffff);
-		cuda_images[TLBMISS][17] = 
-			((dtlb_addr << 24)&0xff000000) | ((itlb_addr >> 16)&0x000000ff);
-		cuda_images[TLBMISS][18] = (itlb_addr << 16)&0xffff0000;
-
-		cuda_images[TLBHANDMISS][16] = 
-			(cuda_images[TLBHANDMISS][16]&0xffff0000) |
-			((dtlb_addr >> 8)&0x0000ffff);
-		cuda_images[TLBHANDMISS][17] = 
-			((dtlb_addr << 24)&0xff000000) | ((itlb_addr >> 16)&0x000000ff);
-		cuda_images[TLBHANDMISS][18] = (itlb_addr << 16)&0xffff0000;
-
-		cuda_images[BIG_CPI][16] = 
-			(cuda_images[BIG_CPI][16]&0xffff0000) |
-			((dtlb_addr >> 8)&0x0000ffff);
-		cuda_images[BIG_CPI][17] = 
-=======
 		cuda_images[TLBMISS][16] =
 			(cuda_images[TLBMISS][16]&0xffff0000) |
 			((dtlb_addr >> 8)&0x0000ffff);
@@ -547,7 +409,6 @@ static void perf_patch_images(void)
 			(cuda_images[BIG_CPI][16]&0xffff0000) |
 			((dtlb_addr >> 8)&0x0000ffff);
 		cuda_images[BIG_CPI][17] =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			((dtlb_addr << 24)&0xff000000) | ((itlb_addr >> 16)&0x000000ff);
 		cuda_images[BIG_CPI][18] = (itlb_addr << 16)&0xffff0000;
 	} else {
@@ -559,11 +420,7 @@ static void perf_patch_images(void)
 
 /*
  * ioctl routine
-<<<<<<< HEAD
- * All routines effect the processor that they are executed on.  Thus you 
-=======
  * All routines effect the processor that they are executed on.  Thus you
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * must be running on the processor that you wish to change.
  */
 
@@ -589,11 +446,7 @@ static long perf_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			}
 
 			/* copy out the Counters */
-<<<<<<< HEAD
-			if (copy_to_user((void __user *)arg, raddr, 
-=======
 			if (copy_to_user((void __user *)arg, raddr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					sizeof (raddr)) != 0) {
 				error =  -EFAULT;
 				break;
@@ -621,11 +474,7 @@ static const struct file_operations perf_fops = {
 	.open = perf_open,
 	.release = perf_release
 };
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct miscdevice perf_dev = {
 	MISC_DYNAMIC_MINOR,
 	PA_PERF_DEV,
@@ -671,11 +520,6 @@ static int __init perf_init(void)
 	/* Patch the images to match the system */
     	perf_patch_images();
 
-<<<<<<< HEAD
-	spin_lock_init(&perf_lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* TODO: this only lets us access the first cpu.. what to do for SMP? */
 	cpu_device = per_cpu(cpu_data, 0).dev;
 	printk("Performance monitoring counters enabled for %s\n",
@@ -683,10 +527,7 @@ static int __init perf_init(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 device_initcall(perf_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * perf_start_counters(void)
@@ -739,11 +580,7 @@ static int perf_stop_counters(uint32_t *raddr)
 		/* OR sticky2 (bit 1496) to counter2 bit 32 */
 		tmp64 |= (userbuf[23] >> 8) & 0x0000000080000000;
 		raddr[2] = (uint32_t)tmp64;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Counter3 is bits 1497 to 1528 */
 		tmp64 =  (userbuf[23] >> 7) & 0x00000000ffffffff;
 		/* OR sticky3 (bit 1529) to counter3 bit 32 */
@@ -765,11 +602,7 @@ static int perf_stop_counters(uint32_t *raddr)
 		userbuf[22] = 0;
 		userbuf[23] = 0;
 
-<<<<<<< HEAD
-		/* 
-=======
 		/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Write back the zeroed bytes + the image given
 		 * the read was destructive.
 		 */
@@ -777,21 +610,13 @@ static int perf_stop_counters(uint32_t *raddr)
 	} else {
 
 		/*
-<<<<<<< HEAD
-		 * Read RDR-15 which contains the counters and sticky bits 
-=======
 		 * Read RDR-15 which contains the counters and sticky bits
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (!perf_rdr_read_ubuf(15, userbuf)) {
 			return -13;
 		}
 
-<<<<<<< HEAD
-		/* 
-=======
 		/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Clear out the counters
 		 */
 		perf_rdr_clear(15);
@@ -804,11 +629,7 @@ static int perf_stop_counters(uint32_t *raddr)
 		raddr[2] = (uint32_t)((userbuf[1] >> 32) & 0x00000000ffffffffUL);
 		raddr[3] = (uint32_t)(userbuf[1] & 0x00000000ffffffffUL);
 	}
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -846,11 +667,7 @@ static int perf_rdr_read_ubuf(uint32_t	rdr_num, uint64_t *buffer)
 	i = tentry->num_words;
 	while (i--) {
 		buffer[i] = 0;
-<<<<<<< HEAD
-	}	
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for bits an even number of 64 */
 	if ((xbits = width & 0x03f) != 0) {
@@ -975,15 +792,6 @@ static int perf_write_image(uint64_t *memaddr)
 		return -1;
 	}
 
-<<<<<<< HEAD
-	runway = ioremap_nocache(cpu_device->hpa.start, 4096);
-
-	/* Merge intrigue bits into Runway STATUS 0 */
-	tmp64 = __raw_readq(runway + RUNWAY_STATUS) & 0xffecfffffffffffful;
-	__raw_writeq(tmp64 | (*memaddr++ & 0x0013000000000000ul), 
-		     runway + RUNWAY_STATUS);
-	
-=======
 	runway = ioremap(cpu_device->hpa.start, 4096);
 	if (!runway) {
 		pr_err("perf_write_image: ioremap failed!\n");
@@ -995,17 +803,12 @@ static int perf_write_image(uint64_t *memaddr)
 	__raw_writeq(tmp64 | (*memaddr++ & 0x0013000000000000ul),
 		     runway + RUNWAY_STATUS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Write RUNWAY DEBUG registers */
 	for (i = 0; i < 8; i++) {
 		__raw_writeq(*memaddr++, runway + RUNWAY_DEBUG);
 	}
 
-<<<<<<< HEAD
-	return 0; 
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1029,16 +832,7 @@ printk("perf_rdr_write\n");
 			perf_rdr_shift_out_U(rdr_num, buffer[i]);
 		} else {
 			perf_rdr_shift_out_W(rdr_num, buffer[i]);
-<<<<<<< HEAD
-		}	
-	}
-printk("perf_rdr_write done\n");
-}
-
-module_init(perf_init);
-=======
 		}
 	}
 printk("perf_rdr_write done\n");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

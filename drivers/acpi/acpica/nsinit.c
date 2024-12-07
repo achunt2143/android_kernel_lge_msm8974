@@ -1,67 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: nsinit - namespace initialization
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
 #include "acdispat.h"
 #include "acinterp.h"
-<<<<<<< HEAD
-#include <linux/nmi.h>
-=======
 #include "acevents.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsinit")
@@ -99,22 +50,6 @@ acpi_status acpi_ns_initialize_objects(void)
 
 	ACPI_FUNCTION_TRACE(ns_initialize_objects);
 
-<<<<<<< HEAD
-	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
-			  "**** Starting initialization of namespace objects ****\n"));
-	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
-			      "Completing Region/Field/Buffer/Package initialization:"));
-
-	/* Set all init info to zero */
-
-	ACPI_MEMSET(&info, 0, sizeof(struct acpi_init_walk_info));
-
-	/* Walk entire namespace from the supplied root */
-
-	status = acpi_walk_namespace(ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
-				     ACPI_UINT32_MAX, acpi_ns_init_one_object, NULL,
-				     &info, NULL);
-=======
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
 			  "[Init] Completing Initialization of ACPI Objects\n"));
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
@@ -136,33 +71,17 @@ acpi_status acpi_ns_initialize_objects(void)
 	status = acpi_walk_namespace(ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
 				     ACPI_UINT32_MAX, acpi_ns_init_one_object,
 				     NULL, &info, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		ACPI_EXCEPTION((AE_INFO, status, "During WalkNamespace"));
 	}
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
-<<<<<<< HEAD
-			      "\nInitialized %u/%u Regions %u/%u Fields %u/%u "
-			      "Buffers %u/%u Packages (%u nodes)\n",
-			      info.op_region_init, info.op_region_count,
-			      info.field_init, info.field_count,
-			      info.buffer_init, info.buffer_count,
-			      info.package_init, info.package_count,
-			      info.object_count));
-
-	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
-			  "%u Control Methods found\n", info.method_count));
-	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
-			  "%u Op Regions found\n", info.op_region_count));
-=======
 			      "Namespace contains %u (0x%X) objects\n",
 			      info.object_count, info.object_count));
 
 	ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 			  "%u Control Methods found\n%u Op Regions found\n",
 			  info.method_count, info.op_region_count));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(AE_OK);
 }
@@ -183,88 +102,6 @@ acpi_status acpi_ns_initialize_objects(void)
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-acpi_status acpi_ns_initialize_devices(void)
-{
-	acpi_status status;
-	struct acpi_device_walk_info info;
-
-	ACPI_FUNCTION_TRACE(ns_initialize_devices);
-
-	/* Init counters */
-
-	info.device_count = 0;
-	info.num_STA = 0;
-	info.num_INI = 0;
-
-	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
-			      "Initializing Device/Processor/Thermal objects "
-			      "by executing _INI methods:"));
-
-	/* Tree analysis: find all subtrees that contain _INI methods */
-
-	status = acpi_ns_walk_namespace(ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
-					ACPI_UINT32_MAX, FALSE,
-					acpi_ns_find_ini_methods, NULL, &info,
-					NULL);
-	if (ACPI_FAILURE(status)) {
-		goto error_exit;
-	}
-
-	/* Allocate the evaluation information block */
-
-	info.evaluate_info =
-	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_evaluate_info));
-	if (!info.evaluate_info) {
-		status = AE_NO_MEMORY;
-		goto error_exit;
-	}
-
-	/*
-	 * Execute the "global" _INI method that may appear at the root. This
-	 * support is provided for Windows compatibility (Vista+) and is not
-	 * part of the ACPI specification.
-	 */
-	info.evaluate_info->prefix_node = acpi_gbl_root_node;
-	info.evaluate_info->pathname = METHOD_NAME__INI;
-	info.evaluate_info->parameters = NULL;
-	info.evaluate_info->flags = ACPI_IGNORE_RETURN_VALUE;
-
-	status = acpi_ns_evaluate(info.evaluate_info);
-	if (ACPI_SUCCESS(status)) {
-		info.num_INI++;
-	}
-
-	/* Walk namespace to execute all _INIs on present devices */
-
-	status = acpi_ns_walk_namespace(ACPI_TYPE_ANY, ACPI_ROOT_OBJECT,
-					ACPI_UINT32_MAX, FALSE,
-					acpi_ns_init_one_device, NULL, &info,
-					NULL);
-
-	/*
-	 * Any _OSI requests should be completed by now. If the BIOS has
-	 * requested any Windows OSI strings, we will always truncate
-	 * I/O addresses to 16 bits -- for Windows compatibility.
-	 */
-	if (acpi_gbl_osi_data >= ACPI_OSI_WIN_2000) {
-		acpi_gbl_truncate_io_addresses = TRUE;
-	}
-
-	ACPI_FREE(info.evaluate_info);
-	if (ACPI_FAILURE(status)) {
-		goto error_exit;
-	}
-
-	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
-			      "\nExecuted %u _INI methods requiring %u _STA executions "
-			      "(examined %u objects)\n",
-			      info.num_INI, info.num_STA, info.device_count));
-
-	return_ACPI_STATUS(status);
-
-      error_exit:
-=======
 acpi_status acpi_ns_initialize_devices(u32 flags)
 {
 	acpi_status status = AE_OK;
@@ -399,20 +236,12 @@ acpi_status acpi_ns_initialize_devices(u32 flags)
 	return_ACPI_STATUS(status);
 
 error_exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_EXCEPTION((AE_INFO, status, "During device initialization"));
 	return_ACPI_STATUS(status);
 }
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
- * FUNCTION:    acpi_ns_init_one_object
- *
- * PARAMETERS:  obj_handle      - Node
- *              Level           - Current nesting level
- *              Context         - Points to a init info struct
-=======
  * FUNCTION:    acpi_ns_init_one_package
  *
  * PARAMETERS:  obj_handle      - Node
@@ -470,17 +299,12 @@ acpi_ns_init_one_package(acpi_handle obj_handle,
  * PARAMETERS:  obj_handle      - Node
  *              level           - Current nesting level
  *              context         - Points to a init info struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_value    - Not used
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Callback from acpi_walk_namespace. Invoked for every object
-<<<<<<< HEAD
- *              within the  namespace.
-=======
  *              within the namespace.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *              Currently, the only objects that require initialization are:
  *              1) Methods
@@ -516,52 +340,34 @@ acpi_ns_init_one_object(acpi_handle obj_handle,
 
 	switch (type) {
 	case ACPI_TYPE_REGION:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->op_region_count++;
 		break;
 
 	case ACPI_TYPE_BUFFER_FIELD:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->field_count++;
 		break;
 
 	case ACPI_TYPE_LOCAL_BANK_FIELD:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->field_count++;
 		break;
 
 	case ACPI_TYPE_BUFFER:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->buffer_count++;
 		break;
 
 	case ACPI_TYPE_PACKAGE:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->package_count++;
 		break;
 
 	default:
 
 		/* No init required, just exit now */
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_OK);
 	}
 
@@ -576,26 +382,6 @@ acpi_ns_init_one_object(acpi_handle obj_handle,
 	acpi_ex_enter_interpreter();
 
 	/*
-<<<<<<< HEAD
-	 * Each of these types can contain executable AML code within the
-	 * declaration.
-	 */
-	switch (type) {
-	case ACPI_TYPE_REGION:
-
-		info->op_region_init++;
-		status = acpi_ds_get_region_arguments(obj_desc);
-		break;
-
-	case ACPI_TYPE_BUFFER_FIELD:
-
-		info->field_init++;
-		status = acpi_ds_get_buffer_field_arguments(obj_desc);
-		break;
-
-	case ACPI_TYPE_LOCAL_BANK_FIELD:
-
-=======
 	 * Only initialization of Package objects can be deferred, in order
 	 * to support forward references.
 	 */
@@ -604,27 +390,10 @@ acpi_ns_init_one_object(acpi_handle obj_handle,
 
 		/* TBD: bank_fields do not require deferred init, remove this code */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->field_init++;
 		status = acpi_ds_get_bank_field_arguments(obj_desc);
 		break;
 
-<<<<<<< HEAD
-	case ACPI_TYPE_BUFFER:
-
-		info->buffer_init++;
-		status = acpi_ds_get_buffer_arguments(obj_desc);
-		break;
-
-	case ACPI_TYPE_PACKAGE:
-
-		info->package_init++;
-		status = acpi_ds_get_package_arguments(obj_desc);
-		break;
-
-	default:
-		/* No other types can get here */
-=======
 	case ACPI_TYPE_PACKAGE:
 
 		/* Complete the initialization/resolution of the package object */
@@ -643,7 +412,6 @@ acpi_ns_init_one_object(acpi_handle obj_handle,
 				"Opcode is not deferred [%4.4s] (%s)",
 				acpi_ut_get_node_name(node),
 				acpi_ut_get_type_name(type)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -655,17 +423,6 @@ acpi_ns_init_one_object(acpi_handle obj_handle,
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Print a dot for each object unless we are going to print the entire
-	 * pathname
-	 */
-	if (!(acpi_dbg_level & ACPI_LV_INIT_NAMES)) {
-		ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT, "."));
-	}
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We ignore errors from above, and always return OK, since we don't want
 	 * to abort the walk on any single error.
 	 */
@@ -710,11 +467,7 @@ acpi_ns_find_ini_methods(acpi_handle obj_handle,
 
 	/* We are only looking for methods named _INI */
 
-<<<<<<< HEAD
-	if (!ACPI_COMPARE_NAME(node->name.ascii, METHOD_NAME__INI)) {
-=======
 	if (!ACPI_COMPARE_NAMESEG(node->name.ascii, METHOD_NAME__INI)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_OK);
 	}
 
@@ -737,10 +490,7 @@ acpi_ns_find_ini_methods(acpi_handle obj_handle,
 		break;
 
 	default:
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -846,11 +596,7 @@ acpi_ns_init_one_device(acpi_handle obj_handle,
 			 * we will not run _INI, but we continue to examine the children
 			 * of this device.
 			 *
-<<<<<<< HEAD
-			 * From the ACPI spec, description of _STA: (Note - no mention
-=======
 			 * From the ACPI spec, description of _STA: (note - no mention
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * of whether to run _INI or not on the device in question)
 			 *
 			 * "_STA may return bit 0 clear (not present) with bit 3 set
@@ -884,44 +630,6 @@ acpi_ns_init_one_device(acpi_handle obj_handle,
 	 * Note: We know there is an _INI within this subtree, but it may not be
 	 * under this particular device, it may be lower in the branch.
 	 */
-<<<<<<< HEAD
-	ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname
-			(ACPI_TYPE_METHOD, device_node, METHOD_NAME__INI));
-
-	info->prefix_node = device_node;
-	info->pathname = METHOD_NAME__INI;
-	info->parameters = NULL;
-	info->flags = ACPI_IGNORE_RETURN_VALUE;
-
-	/*
-	 * Some hardware relies on this being executed as atomically
-	 * as possible (without an NMI being received in the middle of
-	 * this) - so disable NMIs and initialize the device:
-	 */
-	status = acpi_ns_evaluate(info);
-
-	if (ACPI_SUCCESS(status)) {
-		walk_info->num_INI++;
-
-		if ((acpi_dbg_level <= ACPI_LV_ALL_EXCEPTIONS) &&
-		    (!(acpi_dbg_level & ACPI_LV_INFO))) {
-			ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT, "."));
-		}
-	}
-#ifdef ACPI_DEBUG_OUTPUT
-	else if (status != AE_NOT_FOUND) {
-
-		/* Ignore error and move on to next device */
-
-		char *scope_name =
-		    acpi_ns_get_external_pathname(info->resolved_node);
-
-		ACPI_EXCEPTION((AE_INFO, status, "during %s._INI execution",
-				scope_name));
-		ACPI_FREE(scope_name);
-	}
-#endif
-=======
 	if (!ACPI_COMPARE_NAMESEG(device_node->name.ascii, "_SB_") ||
 	    device_node->parent != acpi_gbl_root_node) {
 		ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname
@@ -953,7 +661,6 @@ acpi_ns_init_one_device(acpi_handle obj_handle,
 		}
 #endif
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ignore errors from above */
 

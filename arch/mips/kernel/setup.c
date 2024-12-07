@@ -8,16 +8,6 @@
  * Copyright (C) 1994, 95, 96, 97, 98, 99, 2000, 01, 02, 03  Ralf Baechle
  * Copyright (C) 1996 Stoned Elipot
  * Copyright (C) 1999 Silicon Graphics, Inc.
-<<<<<<< HEAD
- * Copyright (C) 2000, 2001, 2002, 2007  Maciej W. Rozycki
- */
-#include <linux/init.h>
-#include <linux/ioport.h>
-#include <linux/export.h>
-#include <linux/screen_info.h>
-#include <linux/memblock.h>
-#include <linux/bootmem.h>
-=======
  * Copyright (C) 2000, 2001, 2002, 2007	 Maciej W. Rozycki
  */
 #include <linux/init.h>
@@ -26,15 +16,12 @@
 #include <linux/ioport.h>
 #include <linux/export.h>
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/initrd.h>
 #include <linux/root_dev.h>
 #include <linux/highmem.h>
 #include <linux/console.h>
 #include <linux/pfn.h>
 #include <linux/debugfs.h>
-<<<<<<< HEAD
-=======
 #include <linux/kexec.h>
 #include <linux/sizes.h>
 #include <linux/device.h>
@@ -43,19 +30,11 @@
 #include <linux/of_fdt.h>
 #include <linux/dmi.h>
 #include <linux/crash_dump.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/addrspace.h>
 #include <asm/bootinfo.h>
 #include <asm/bugs.h>
 #include <asm/cache.h>
-<<<<<<< HEAD
-#include <asm/cpu.h>
-#include <asm/sections.h>
-#include <asm/setup.h>
-#include <asm/smp-ops.h>
-#include <asm/prom.h>
-=======
 #include <asm/cdmm.h>
 #include <asm/cpu.h>
 #include <asm/debug.h>
@@ -70,26 +49,11 @@
 #ifdef CONFIG_MIPS_ELF_APPENDED_DTB
 char __section(".appended_dtb") __appended_dtb[0x100000];
 #endif /* CONFIG_MIPS_ELF_APPENDED_DTB */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpuinfo_mips cpu_data[NR_CPUS] __read_mostly;
 
 EXPORT_SYMBOL(cpu_data);
 
-<<<<<<< HEAD
-#ifdef CONFIG_VT
-struct screen_info screen_info;
-#endif
-
-/*
- * Despite it's name this variable is even if we don't have PCI
- */
-unsigned int PCI_DMA_BUS_IS_PHYS;
-
-EXPORT_SYMBOL(PCI_DMA_BUS_IS_PHYS);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup information
  *
@@ -99,99 +63,24 @@ unsigned long mips_machtype __read_mostly = MACH_UNKNOWN;
 
 EXPORT_SYMBOL(mips_machtype);
 
-<<<<<<< HEAD
-struct boot_mem_map boot_mem_map;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static char __initdata command_line[COMMAND_LINE_SIZE];
 char __initdata arcs_cmdline[COMMAND_LINE_SIZE];
 
 #ifdef CONFIG_CMDLINE_BOOL
-<<<<<<< HEAD
-static char __initdata builtin_cmdline[COMMAND_LINE_SIZE] = CONFIG_CMDLINE;
-=======
 static const char builtin_cmdline[] __initconst = CONFIG_CMDLINE;
 #else
 static const char builtin_cmdline[] __initconst = "";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
  * mips_io_port_base is the begin of the address space to which x86 style
  * I/O ports are mapped.
  */
-<<<<<<< HEAD
-const unsigned long mips_io_port_base = -1;
-=======
 unsigned long mips_io_port_base = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(mips_io_port_base);
 
 static struct resource code_resource = { .name = "Kernel code", };
 static struct resource data_resource = { .name = "Kernel data", };
-<<<<<<< HEAD
-
-void __init add_memory_region(phys_t start, phys_t size, long type)
-{
-	int x = boot_mem_map.nr_map;
-	struct boot_mem_map_entry *prev = boot_mem_map.map + x - 1;
-
-	/* Sanity check */
-	if (start + size < start) {
-		pr_warning("Trying to add an invalid memory region, skipped\n");
-		return;
-	}
-
-	/*
-	 * Try to merge with previous entry if any.  This is far less than
-	 * perfect but is sufficient for most real world cases.
-	 */
-	if (x && prev->addr + prev->size == start && prev->type == type) {
-		prev->size += size;
-		return;
-	}
-
-	if (x == BOOT_MEM_MAP_MAX) {
-		pr_err("Ooops! Too many entries in the memory map!\n");
-		return;
-	}
-
-	boot_mem_map.map[x].addr = start;
-	boot_mem_map.map[x].size = size;
-	boot_mem_map.map[x].type = type;
-	boot_mem_map.nr_map++;
-}
-
-static void __init print_memory_map(void)
-{
-	int i;
-	const int field = 2 * sizeof(unsigned long);
-
-	for (i = 0; i < boot_mem_map.nr_map; i++) {
-		printk(KERN_INFO " memory: %0*Lx @ %0*Lx ",
-		       field, (unsigned long long) boot_mem_map.map[i].size,
-		       field, (unsigned long long) boot_mem_map.map[i].addr);
-
-		switch (boot_mem_map.map[i].type) {
-		case BOOT_MEM_RAM:
-			printk(KERN_CONT "(usable)\n");
-			break;
-		case BOOT_MEM_INIT_RAM:
-			printk(KERN_CONT "(usable after init)\n");
-			break;
-		case BOOT_MEM_ROM_DATA:
-			printk(KERN_CONT "(ROM data)\n");
-			break;
-		case BOOT_MEM_RESERVED:
-			printk(KERN_CONT "(reserved)\n");
-			break;
-		default:
-			printk(KERN_CONT "type %lu\n", boot_mem_map.map[i].type);
-			break;
-		}
-	}
-=======
 static struct resource bss_resource = { .name = "Kernel bss", };
 
 unsigned long __kaslr_offset __ro_after_init;
@@ -221,7 +110,6 @@ void __init detect_memory_region(phys_addr_t start, phys_addr_t sz_min, phys_add
 		((unsigned long long) sz_max) / SZ_1M);
 
 	memblock_add(start, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -259,11 +147,7 @@ static unsigned long __init init_initrd(void)
 	/*
 	 * Board specific code or command line parser should have
 	 * already set up initrd_start and initrd_end. In these cases
-<<<<<<< HEAD
-	 * perfom sanity checks and use them if all looks good.
-=======
 	 * perform sanity checks and use them if all looks good.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!initrd_start || initrd_end <= initrd_start)
 		goto disable;
@@ -272,13 +156,6 @@ static unsigned long __init init_initrd(void)
 		pr_err("initrd start must be page aligned\n");
 		goto disable;
 	}
-<<<<<<< HEAD
-	if (initrd_start < PAGE_OFFSET) {
-		pr_err("initrd start < PAGE_OFFSET\n");
-		goto disable;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Sanitize initrd addresses. For example firmware
@@ -291,14 +168,11 @@ static unsigned long __init init_initrd(void)
 	initrd_end = (unsigned long)__va(end);
 	initrd_start = (unsigned long)__va(__pa(initrd_start));
 
-<<<<<<< HEAD
-=======
 	if (initrd_start < PAGE_OFFSET) {
 		pr_err("initrd start < PAGE_OFFSET\n");
 		goto disable;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ROOT_DEV = Root_RAM0;
 	return PFN_UP(end);
 disable:
@@ -307,8 +181,6 @@ disable:
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* In some conditions (e.g. big endian bootloader with a little endian
    kernel), the initrd might appear byte swapped.  Try to detect this and
    byte swap it if needed.  */
@@ -338,7 +210,6 @@ static void __init maybe_bswap_initrd(void)
 #endif
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init finalize_initrd(void)
 {
 	unsigned long size = initrd_end - initrd_start;
@@ -352,13 +223,9 @@ static void __init finalize_initrd(void)
 		goto disable;
 	}
 
-<<<<<<< HEAD
-	reserve_bootmem(__pa(initrd_start), size, BOOTMEM_DEFAULT);
-=======
 	maybe_bswap_initrd();
 
 	memblock_reserve(__pa(initrd_start), size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	initrd_below_start_ok = 1;
 
 	pr_info("Initial ramdisk at: 0x%lx (%lu bytes)\n",
@@ -385,11 +252,7 @@ static unsigned long __init init_initrd(void)
  * Initialize the bootmem allocator. It also setup initrd related data
  * if needed.
  */
-<<<<<<< HEAD
-#ifdef CONFIG_SGI_IP27
-=======
 #if defined(CONFIG_SGI_IP27) || (defined(CONFIG_CPU_LOONGSON64) && defined(CONFIG_NUMA))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init bootmem_init(void)
 {
@@ -401,50 +264,6 @@ static void __init bootmem_init(void)
 
 static void __init bootmem_init(void)
 {
-<<<<<<< HEAD
-	unsigned long reserved_end;
-	unsigned long mapstart = ~0UL;
-	unsigned long bootmap_size;
-	int i;
-
-	/*
-	 * Init any data related to initrd. It's a nop if INITRD is
-	 * not selected. Once that done we can determine the low bound
-	 * of usable memory.
-	 */
-	reserved_end = max(init_initrd(),
-			   (unsigned long) PFN_UP(__pa_symbol(&_end)));
-
-	/*
-	 * max_low_pfn is not a number of pages. The number of pages
-	 * of the system is given by 'max_low_pfn - min_low_pfn'.
-	 */
-	min_low_pfn = ~0UL;
-	max_low_pfn = 0;
-
-	/*
-	 * Find the highest page frame number we have available.
-	 */
-	for (i = 0; i < boot_mem_map.nr_map; i++) {
-		unsigned long start, end;
-
-		if (boot_mem_map.map[i].type != BOOT_MEM_RAM)
-			continue;
-
-		start = PFN_UP(boot_mem_map.map[i].addr);
-		end = PFN_DOWN(boot_mem_map.map[i].addr
-				+ boot_mem_map.map[i].size);
-
-		if (end > max_low_pfn)
-			max_low_pfn = end;
-		if (start < min_low_pfn)
-			min_low_pfn = start;
-		if (end <= reserved_end)
-			continue;
-		if (start >= mapstart)
-			continue;
-		mapstart = max(reserved_end, start);
-=======
 	phys_addr_t ramstart, ramend;
 	unsigned long start, end;
 	int i;
@@ -497,121 +316,10 @@ static void __init bootmem_init(void)
 			end = PFN_DOWN(HIGHMEM_START);
 		if (end > max_low_pfn)
 			max_low_pfn = end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (min_low_pfn >= max_low_pfn)
 		panic("Incorrect memory mapping !!!");
-<<<<<<< HEAD
-	if (min_low_pfn > ARCH_PFN_OFFSET) {
-		pr_info("Wasting %lu bytes for tracking %lu unused pages\n",
-			(min_low_pfn - ARCH_PFN_OFFSET) * sizeof(struct page),
-			min_low_pfn - ARCH_PFN_OFFSET);
-	} else if (min_low_pfn < ARCH_PFN_OFFSET) {
-		pr_info("%lu free pages won't be used\n",
-			ARCH_PFN_OFFSET - min_low_pfn);
-	}
-	min_low_pfn = ARCH_PFN_OFFSET;
-
-	/*
-	 * Determine low and high memory ranges
-	 */
-	max_pfn = max_low_pfn;
-	if (max_low_pfn > PFN_DOWN(HIGHMEM_START)) {
-#ifdef CONFIG_HIGHMEM
-		highstart_pfn = PFN_DOWN(HIGHMEM_START);
-		highend_pfn = max_low_pfn;
-#endif
-		max_low_pfn = PFN_DOWN(HIGHMEM_START);
-	}
-
-	/*
-	 * Initialize the boot-time allocator with low memory only.
-	 */
-	bootmap_size = init_bootmem_node(NODE_DATA(0), mapstart,
-					 min_low_pfn, max_low_pfn);
-
-
-	for (i = 0; i < boot_mem_map.nr_map; i++) {
-		unsigned long start, end;
-
-		start = PFN_UP(boot_mem_map.map[i].addr);
-		end = PFN_DOWN(boot_mem_map.map[i].addr
-				+ boot_mem_map.map[i].size);
-
-		if (start <= min_low_pfn)
-			start = min_low_pfn;
-		if (start >= end)
-			continue;
-
-#ifndef CONFIG_HIGHMEM
-		if (end > max_low_pfn)
-			end = max_low_pfn;
-
-		/*
-		 * ... finally, is the area going away?
-		 */
-		if (end <= start)
-			continue;
-#endif
-
-		memblock_add_node(PFN_PHYS(start), PFN_PHYS(end - start), 0);
-	}
-
-	/*
-	 * Register fully available low RAM pages with the bootmem allocator.
-	 */
-	for (i = 0; i < boot_mem_map.nr_map; i++) {
-		unsigned long start, end, size;
-
-		start = PFN_UP(boot_mem_map.map[i].addr);
-		end   = PFN_DOWN(boot_mem_map.map[i].addr
-				    + boot_mem_map.map[i].size);
-
-		/*
-		 * Reserve usable memory.
-		 */
-		switch (boot_mem_map.map[i].type) {
-		case BOOT_MEM_RAM:
-			break;
-		case BOOT_MEM_INIT_RAM:
-			memory_present(0, start, end);
-			continue;
-		default:
-			/* Not usable memory */
-			continue;
-		}
-
-		/*
-		 * We are rounding up the start address of usable memory
-		 * and at the end of the usable range downwards.
-		 */
-		if (start >= max_low_pfn)
-			continue;
-		if (start < reserved_end)
-			start = reserved_end;
-		if (end > max_low_pfn)
-			end = max_low_pfn;
-
-		/*
-		 * ... finally, is the area going away?
-		 */
-		if (end <= start)
-			continue;
-		size = end - start;
-
-		/* Register lowmem ranges */
-		free_bootmem(PFN_PHYS(start), size << PAGE_SHIFT);
-		memory_present(0, start, end);
-	}
-
-	/*
-	 * Reserve the bootmap memory.
-	 */
-	reserve_bootmem(PFN_PHYS(mapstart), bootmap_size, BOOTMEM_DEFAULT);
-
-	/*
-=======
 
 	if (max_pfn > PFN_DOWN(HIGHMEM_START)) {
 		max_low_pfn = PFN_DOWN(HIGHMEM_START);
@@ -624,7 +332,6 @@ static void __init bootmem_init(void)
 	}
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Reserve initrd memory if needed.
 	 */
 	finalize_initrd();
@@ -632,45 +339,16 @@ static void __init bootmem_init(void)
 
 #endif	/* CONFIG_SGI_IP27 */
 
-<<<<<<< HEAD
-/*
- * arch_mem_init - initialize memory management subsystem
- *
- *  o plat_mem_setup() detects the memory configuration and will record detected
- *    memory areas using add_memory_region.
- *
- * At this stage the memory configuration of the system is known to the
- * kernel but generic memory management system is still entirely uninitialized.
- *
- *  o bootmem_init()
- *  o sparse_init()
- *  o paging_init()
- *
- * At this stage the bootmem allocator is ready to use.
- *
- * NOTE: historically plat_mem_setup did the entire platform initialization.
- *       This was rather impractical because it meant plat_mem_setup had to
- * get away without any kind of memory allocator.  To keep old code from
- * breaking plat_setup was just renamed to plat_setup and a second platform
- * initialization hook for anything else was introduced.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int usermem __initdata;
 
 static int __init early_parse_mem(char *p)
 {
-<<<<<<< HEAD
-	unsigned long start, size;
-=======
 	phys_addr_t start, size;
 
 	if (!p) {
 		pr_err("mem parameter is empty, do nothing\n");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If a user specifies memory size, we
@@ -678,83 +356,24 @@ static int __init early_parse_mem(char *p)
 	 * size.
 	 */
 	if (usermem == 0) {
-<<<<<<< HEAD
-		boot_mem_map.nr_map = 0;
-		usermem = 1;
- 	}
-=======
 		usermem = 1;
 		memblock_remove(memblock_start_of_DRAM(),
 			memblock_end_of_DRAM() - memblock_start_of_DRAM());
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start = 0;
 	size = memparse(p, &p);
 	if (*p == '@')
 		start = memparse(p + 1, &p);
 
-<<<<<<< HEAD
-	add_memory_region(start, size, BOOT_MEM_RAM);
-=======
 	if (IS_ENABLED(CONFIG_NUMA))
 		memblock_add_node(start, size, pa_to_nid(start), MEMBLOCK_NONE);
 	else
 		memblock_add(start, size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 early_param("mem", early_parse_mem);
 
-<<<<<<< HEAD
-static void __init arch_mem_init(char **cmdline_p)
-{
-	phys_t init_mem, init_end, init_size;
-
-	extern void plat_mem_setup(void);
-
-	/* call board setup routine */
-	plat_mem_setup();
-
-	init_mem = PFN_UP(__pa_symbol(&__init_begin)) << PAGE_SHIFT;
-	init_end = PFN_DOWN(__pa_symbol(&__init_end)) << PAGE_SHIFT;
-	init_size = init_end - init_mem;
-	if (init_size) {
-		/* Make sure it is in the boot_mem_map */
-		int i, found;
-		found = 0;
-		for (i = 0; i < boot_mem_map.nr_map; i++) {
-			if (init_mem >= boot_mem_map.map[i].addr &&
-			    init_mem < (boot_mem_map.map[i].addr +
-					boot_mem_map.map[i].size)) {
-				found = 1;
-				break;
-			}
-		}
-		if (!found)
-			add_memory_region(init_mem, init_size,
-					  BOOT_MEM_INIT_RAM);
-	}
-
-	pr_info("Determined physical RAM map:\n");
-	print_memory_map();
-
-#ifdef CONFIG_CMDLINE_BOOL
-#ifdef CONFIG_CMDLINE_OVERRIDE
-	strlcpy(boot_command_line, builtin_cmdline, COMMAND_LINE_SIZE);
-#else
-	if (builtin_cmdline[0]) {
-		strlcat(arcs_cmdline, " ", COMMAND_LINE_SIZE);
-		strlcat(arcs_cmdline, builtin_cmdline, COMMAND_LINE_SIZE);
-	}
-	strlcpy(boot_command_line, arcs_cmdline, COMMAND_LINE_SIZE);
-#endif
-#else
-	strlcpy(boot_command_line, arcs_cmdline, COMMAND_LINE_SIZE);
-#endif
-	strlcpy(command_line, boot_command_line, COMMAND_LINE_SIZE);
-
-=======
 static int __init early_parse_memmap(char *p)
 {
 	char *oldp;
@@ -1015,23 +634,10 @@ static void __init arch_mem_init(char **cmdline_p)
 
 	bootcmdline_init();
 	strscpy(command_line, boot_command_line, COMMAND_LINE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*cmdline_p = command_line;
 
 	parse_early_param();
 
-<<<<<<< HEAD
-	if (usermem) {
-		pr_info("User-defined physical RAM map:\n");
-		print_memory_map();
-	}
-
-	bootmem_init();
-	device_tree_init();
-	sparse_init();
-	plat_swiotlb_setup();
-	paging_init();
-=======
 	if (usermem)
 		pr_info("User-defined physical RAM map overwrite\n");
 
@@ -1078,17 +684,12 @@ static void __init arch_mem_init(char **cmdline_p)
 		__pa_symbol(&__nosave_end) - __pa_symbol(&__nosave_begin));
 
 	early_memtest(PFN_PHYS(ARCH_PFN_OFFSET), PFN_PHYS(max_low_pfn));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init resource_init(void)
 {
-<<<<<<< HEAD
-	int i;
-=======
 	phys_addr_t start, end;
 	u64 i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (UNCAC_BASE != IO_BASE)
 		return;
@@ -1097,39 +698,6 @@ static void __init resource_init(void)
 	code_resource.end = __pa_symbol(&_etext) - 1;
 	data_resource.start = __pa_symbol(&_etext);
 	data_resource.end = __pa_symbol(&_edata) - 1;
-<<<<<<< HEAD
-
-	/*
-	 * Request address space for all standard RAM.
-	 */
-	for (i = 0; i < boot_mem_map.nr_map; i++) {
-		struct resource *res;
-		unsigned long start, end;
-
-		start = boot_mem_map.map[i].addr;
-		end = boot_mem_map.map[i].addr + boot_mem_map.map[i].size - 1;
-		if (start >= HIGHMEM_START)
-			continue;
-		if (end >= HIGHMEM_START)
-			end = HIGHMEM_START - 1;
-
-		res = alloc_bootmem(sizeof(struct resource));
-		switch (boot_mem_map.map[i].type) {
-		case BOOT_MEM_RAM:
-		case BOOT_MEM_INIT_RAM:
-		case BOOT_MEM_ROM_DATA:
-			res->name = "System RAM";
-			break;
-		case BOOT_MEM_RESERVED:
-		default:
-			res->name = "reserved";
-		}
-
-		res->start = start;
-		res->end = end;
-
-		res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-=======
 	bss_resource.start = __pa_symbol(&__bss_start);
 	bss_resource.end = __pa_symbol(&__bss_stop) - 1;
 
@@ -1151,7 +719,6 @@ static void __init resource_init(void)
 		res->flags = IORESOURCE_SYSTEM_RAM | IORESOURCE_BUSY;
 		res->name = "System RAM";
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		request_resource(&iomem_resource, res);
 
 		/*
@@ -1161,16 +728,6 @@ static void __init resource_init(void)
 		 */
 		request_resource(res, &code_resource);
 		request_resource(res, &data_resource);
-<<<<<<< HEAD
-	}
-}
-
-void __init setup_arch(char **cmdline_p)
-{
-	cpu_probe();
-	prom_init();
-
-=======
 		request_resource(res, &bss_resource);
 		request_crashkernel(res);
 	}
@@ -1220,27 +777,10 @@ void __init setup_arch(char **cmdline_p)
 	prom_init();
 
 	setup_early_fdc_console();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_EARLY_PRINTK
 	setup_early_printk();
 #endif
 	cpu_report();
-<<<<<<< HEAD
-	check_bugs_early();
-
-#if defined(CONFIG_VT)
-#if defined(CONFIG_VGA_CONSOLE)
-	conswitchp = &vga_con;
-#elif defined(CONFIG_DUMMY_CONSOLE)
-	conswitchp = &dummy_con;
-#endif
-#endif
-
-	arch_mem_init(cmdline_p);
-
-	resource_init();
-	plat_smp_setup();
-=======
 	if (IS_ENABLED(CONFIG_CPU_R4X00_BUGS64))
 		check_bugs64_early();
 
@@ -1257,7 +797,6 @@ void __init setup_arch(char **cmdline_p)
 	memblock_dump_all();
 
 	setup_rng_seed();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long kernelsp[NR_CPUS];
@@ -1267,22 +806,11 @@ unsigned long fw_arg0, fw_arg1, fw_arg2, fw_arg3;
 struct dentry *mips_debugfs_dir;
 static int __init debugfs_mips(void)
 {
-<<<<<<< HEAD
-	struct dentry *d;
-
-	d = debugfs_create_dir("mips", NULL);
-	if (!d)
-		return -ENOMEM;
-	mips_debugfs_dir = d;
-=======
 	mips_debugfs_dir = debugfs_create_dir("mips", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 arch_initcall(debugfs_mips);
 #endif
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_DMA_NONCOHERENT
 static int __init setcoherentio(char *str)
@@ -1312,4 +840,3 @@ void __init arch_cpu_finalize_init(void)
 	if (IS_ENABLED(CONFIG_CPU_R4X00_BUGS64))
 		check_bugs64();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -10,11 +10,7 @@
 void *memcpy(void *to, const void *from, size_t n)
 {
 	void *xto = to;
-<<<<<<< HEAD
-	size_t temp, temp1;
-=======
 	size_t temp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!n)
 		return xto;
@@ -51,10 +47,7 @@ void *memcpy(void *to, const void *from, size_t n)
 		for (; temp; temp--)
 			*lto++ = *lfrom++;
 #else
-<<<<<<< HEAD
-=======
 		size_t temp1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asm volatile (
 			"	movel %2,%3\n"
 			"	andw  #7,%3\n"

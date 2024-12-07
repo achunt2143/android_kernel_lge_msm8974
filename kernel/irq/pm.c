@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * linux/kernel/irq/pm.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2009 Rafael J. Wysocki <rjw@sisk.pl>, Novell Inc.
  *
  * This file contains power management functions related to interrupts.
@@ -14,23 +8,11 @@
 #include <linux/irq.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/suspend.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscore_ops.h>
 
 #include "internals.h"
 
-<<<<<<< HEAD
-/**
- * suspend_device_irqs - disable all currently enabled interrupt lines
- *
- * During system-wide suspend or hibernation device drivers need to be prevented
- * from receiving interrupts and this function is provided for this purpose.
- * It marks all interrupt lines in use, except for the timer ones, as disabled
- * and sets the IRQS_SUSPENDED flag for each of them.
-=======
 bool irq_pm_check_wakeup(struct irq_desc *desc)
 {
 	if (irqd_is_wakeup_armed(&desc->irq_data)) {
@@ -145,7 +127,6 @@ static bool suspend_device_irq(struct irq_desc *desc)
  * The active wakeup sources are handled by the flow handler entry
  * code which checks for the IRQD_WAKEUP_ARMED flag, suspends the
  * interrupt and notifies the pm core about the wakeup.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void suspend_device_irqs(void)
 {
@@ -154,19 +135,6 @@ void suspend_device_irqs(void)
 
 	for_each_irq_desc(irq, desc) {
 		unsigned long flags;
-<<<<<<< HEAD
-
-		raw_spin_lock_irqsave(&desc->lock, flags);
-		__disable_irq(desc, irq, true);
-		raw_spin_unlock_irqrestore(&desc->lock, flags);
-	}
-
-	for_each_irq_desc(irq, desc)
-		if (desc->istate & IRQS_SUSPENDED)
-			synchronize_irq(irq);
-}
-EXPORT_SYMBOL_GPL(suspend_device_irqs);
-=======
 		bool sync;
 
 		if (irq_settings_is_nested_thread(desc))
@@ -211,43 +179,29 @@ resume:
 	desc->istate &= ~IRQS_SUSPENDED;
 	__enable_irq(desc);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void resume_irqs(bool want_early)
 {
 	struct irq_desc *desc;
 	int irq;
 
-<<<<<<< HEAD
-	for_each_irq_desc_reverse(irq, desc) {
-=======
 	for_each_irq_desc(irq, desc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long flags;
 		bool is_early = desc->action &&
 			desc->action->flags & IRQF_EARLY_RESUME;
 
 		if (!is_early && want_early)
 			continue;
-<<<<<<< HEAD
-
-		raw_spin_lock_irqsave(&desc->lock, flags);
-		__enable_irq(desc, irq, true);
-=======
 		if (irq_settings_is_nested_thread(desc))
 			continue;
 
 		raw_spin_lock_irqsave(&desc->lock, flags);
 		resume_irq(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		raw_spin_unlock_irqrestore(&desc->lock, flags);
 	}
 }
 
 /**
-<<<<<<< HEAD
- * irq_pm_syscore_ops - enable interrupt lines early
-=======
  * rearm_wake_irq - rearm a wakeup interrupt line after signaling wakeup
  * @irq: Interrupt to rearm
  */
@@ -273,7 +227,6 @@ unlock:
 
 /**
  * irq_pm_syscore_resume - enable interrupt lines early
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Enable all interrupt lines with %IRQF_EARLY_RESUME set.
  */
@@ -305,42 +258,3 @@ void resume_device_irqs(void)
 {
 	resume_irqs(false);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(resume_device_irqs);
-
-/**
- * check_wakeup_irqs - check if any wake-up interrupts are pending
- */
-int check_wakeup_irqs(void)
-{
-	struct irq_desc *desc;
-	int irq;
-
-	for_each_irq_desc(irq, desc) {
-		if (irqd_is_wakeup_set(&desc->irq_data)) {
-			if (desc->istate & IRQS_PENDING) {
-				pr_info("Wakeup IRQ %d %s pending, suspend aborted\n",
-					irq,
-					desc->action && desc->action->name ?
-					desc->action->name : "");
-				return -EBUSY;
-			}
-			continue;
-		}
-		/*
-		 * Check the non wakeup interrupts whether they need
-		 * to be masked before finally going into suspend
-		 * state. That's for hardware which has no wakeup
-		 * source configuration facility. The chip
-		 * implementation indicates that with
-		 * IRQCHIP_MASK_ON_SUSPEND.
-		 */
-		if (desc->istate & IRQS_SUSPENDED &&
-		    irq_desc_get_chip(desc)->flags & IRQCHIP_MASK_ON_SUSPEND)
-			mask_irq(desc);
-	}
-
-	return 0;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

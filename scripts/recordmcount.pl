@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-#!/usr/bin/perl -w
-# (c) 2008, Steven Rostedt <srostedt@redhat.com>
-# Licensed under the terms of the GNU GPL License version 2
-=======
 #!/usr/bin/env perl
 # SPDX-License-Identifier: GPL-2.0-only
 # (c) 2008, Steven Rostedt <srostedt@redhat.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # recordmcount.pl - makes a section called __mcount_loc that holds
 #                   all the offsets to the calls to mcount.
@@ -112,10 +106,7 @@
 # 9) Move the result back to the original object.
 #
 
-<<<<<<< HEAD
-=======
 use warnings;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 use strict;
 
 my $P = $0;
@@ -140,20 +131,11 @@ if ($inputfile =~ m,kernel/trace/ftrace\.o$,) {
 # Acceptable sections to record.
 my %text_sections = (
      ".text" => 1,
-<<<<<<< HEAD
-=======
      ".init.text" => 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      ".ref.text" => 1,
      ".sched.text" => 1,
      ".spinlock.text" => 1,
      ".irqentry.text" => 1,
-<<<<<<< HEAD
-     ".kprobes.text" => 1,
-     ".text.unlikely" => 1,
-);
-
-=======
      ".softirqentry.text" => 1,
      ".kprobes.text" => 1,
      ".cpuidle.text" => 1,
@@ -165,7 +147,6 @@ my %text_section_prefixes = (
      ".text." => 1,
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Note: we are nice to C-programmers here, thus we skip the '||='-idiom.
 $objdump = 'objdump' if (!$objdump);
 $objcopy = 'objcopy' if (!$objcopy);
@@ -192,42 +173,6 @@ my $mcount_regex;	# Find the call site to mcount (return offset)
 my $mcount_adjust;	# Address adjustment to mcount offset
 my $alignment;		# The .align value to use for $mcount_section
 my $section_type;	# Section header plus possible alignment command
-<<<<<<< HEAD
-my $can_use_local = 0; 	# If we can use local function references
-
-# Shut up recordmcount if user has older objcopy
-my $quiet_recordmcount = ".tmp_quiet_recordmcount";
-my $print_warning = 1;
-$print_warning = 0 if ( -f $quiet_recordmcount);
-
-##
-# check_objcopy - whether objcopy supports --globalize-symbols
-#
-#  --globalize-symbols came out in 2.17, we must test the version
-#  of objcopy, and if it is less than 2.17, then we can not
-#  record local functions.
-sub check_objcopy
-{
-    open (IN, "$objcopy --version |") or die "error running $objcopy";
-    while (<IN>) {
-	if (/objcopy.*\s(\d+)\.(\d+)/) {
-	    $can_use_local = 1 if ($1 > 2 || ($1 == 2 && $2 >= 17));
-	    last;
-	}
-    }
-    close (IN);
-
-    if (!$can_use_local && $print_warning) {
-	print STDERR "WARNING: could not find objcopy version or version " .
-	    "is less than 2.17.\n" .
-	    "\tLocal function references are disabled.\n";
-	open (QUIET, ">$quiet_recordmcount");
-	printf QUIET "Disables the warning from recordmcount.pl\n";
-	close QUIET;
-    }
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if ($arch =~ /(x86(_64)?)|(i386)/) {
     if ($bits == 64) {
@@ -244,23 +189,14 @@ if ($arch =~ /(x86(_64)?)|(i386)/) {
 $local_regex = "^[0-9a-fA-F]+\\s+t\\s+(\\S+)";
 $weak_regex = "^[0-9a-fA-F]+\\s+([wW])\\s+(\\S+)";
 $section_regex = "Disassembly of section\\s+(\\S+):";
-<<<<<<< HEAD
-$function_regex = "^([0-9a-fA-F]+)\\s+<(.*?)>:";
-$mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\smcount\$";
-=======
 $function_regex = "^([0-9a-fA-F]+)\\s+<([^^]*?)>:";
 $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s(mcount|__fentry__)\$";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 $section_type = '@progbits';
 $mcount_adjust = 0;
 $type = ".long";
 
 if ($arch eq "x86_64") {
-<<<<<<< HEAD
-    $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\smcount([+-]0x[0-9a-zA-Z]+)?\$";
-=======
     $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s(mcount|__fentry__)([+-]0x[0-9a-zA-Z]+)?\$";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     $type = ".quad";
     $alignment = 8;
     $mcount_adjust = -1;
@@ -281,24 +217,11 @@ if ($arch eq "x86_64") {
     $objcopy .= " -O elf32-i386";
     $cc .= " -m32";
 
-<<<<<<< HEAD
-} elsif ($arch eq "s390" && $bits == 32) {
-    $mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*R_390_32\\s+_mcount\$";
-    $mcount_adjust = -4;
-    $alignment = 4;
-    $ld .= " -m elf_s390";
-    $cc .= " -m31";
-
-} elsif ($arch eq "s390" && $bits == 64) {
-    $mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*R_390_(PC|PLT)32DBL\\s+_mcount\\+0x2\$";
-    $mcount_adjust = -8;
-=======
 } elsif ($arch eq "s390" && $bits == 64) {
     if ($cc =~ /-DCC_USING_HOTPATCH/) {
 	$mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*c0 04 00 00 00 00\\s*(brcl\\s*0,|jgnop\\s*)[0-9a-f]+ <([^\+]*)>\$";
 	$mcount_adjust = 0;
     }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     $alignment = 8;
     $type = ".quad";
     $ld .= " -m elf64_s390";
@@ -309,17 +232,6 @@ if ($arch eq "x86_64") {
 
     # force flags for this arch
     $ld .= " -m shlelf_linux";
-<<<<<<< HEAD
-    $objcopy .= " -O elf32-sh-linux";
-
-} elsif ($arch eq "powerpc") {
-    $local_regex = "^[0-9a-fA-F]+\\s+t\\s+(\\.?\\S+)";
-    $function_regex = "^([0-9a-fA-F]+)\\s+<(\\.?.*?)>:";
-    $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s\\.?_mcount\$";
-
-    if ($bits == 64) {
-	$type = ".quad";
-=======
     if ($endian eq "big") {
 	$objcopy .= " -O elf32-shbig-linux";
     } else {
@@ -350,7 +262,6 @@ if ($arch eq "x86_64") {
     } else {
 	$cc .= " -m32 ";
 	$ld .= " -m elf32".$ldemulation." ";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 
 } elsif ($arch eq "arm") {
@@ -359,21 +270,11 @@ if ($arch eq "x86_64") {
     $mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*R_ARM_(CALL|PC24|THM_CALL)" .
 			"\\s+(__gnu_mcount_nc|mcount)\$";
 
-<<<<<<< HEAD
-} elsif ($arch eq "ia64") {
-    $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s_mcount\$";
-    $type = "data8";
-
-    if ($is_module eq "0") {
-        $cc .= " -mconstant-gp";
-    }
-=======
 } elsif ($arch eq "arm64") {
     $alignment = 3;
     $section_type = '%progbits';
     $mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*R_AARCH64_CALL26\\s+_mcount\$";
     $type = ".quad";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } elsif ($arch eq "sparc64") {
     # In the objdump output there are giblets like:
     # 0000000000000000 <igmp_net_exit-0x18>:
@@ -401,11 +302,7 @@ if ($arch eq "x86_64") {
     # instruction or the addiu one. herein, we record the address of the
     # first one, and then we can replace this instruction by a branch
     # instruction to jump over the profiling function to filter the
-<<<<<<< HEAD
-    # indicated functions, or swith back to the lui instruction to trace
-=======
     # indicated functions, or switch back to the lui instruction to trace
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     # them, which means dynamic tracing.
     #
     #       c:	3c030000 	lui	v1,0x0
@@ -453,11 +350,6 @@ if ($arch eq "x86_64") {
 } elsif ($arch eq "microblaze") {
     # Microblaze calls '_mcount' instead of plain 'mcount'.
     $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s_mcount\$";
-<<<<<<< HEAD
-} elsif ($arch eq "blackfin") {
-    $mcount_regex = "^\\s*([0-9a-fA-F]+):.*\\s__mcount\$";
-    $mcount_adjust = -4;
-=======
 } elsif ($arch eq "riscv") {
     $function_regex = "^([0-9a-fA-F]+)\\s+<([^.0-9][0-9a-zA-Z_\\.]+)>:";
     $mcount_regex = "^\\s*([0-9a-fA-F]+):\\sR_RISCV_CALL(_PLT)?\\s_mcount\$";
@@ -466,7 +358,6 @@ if ($arch eq "x86_64") {
 } elsif ($arch eq "csky") {
     $mcount_regex = "^\\s*([0-9a-fA-F]+):\\s*R_CKCORE_PCREL_JSR_IMM26BY2\\s+_mcount\$";
     $alignment = 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } else {
     die "Arch $arch is not supported with CONFIG_FTRACE_MCOUNT_RECORD";
 }
@@ -500,11 +391,6 @@ if ($filename =~ m,^(.*)(\.\S),) {
 my $mcount_s = $dirname . "/.tmp_mc_" . $prefix . ".s";
 my $mcount_o = $dirname . "/.tmp_mc_" . $prefix . ".o";
 
-<<<<<<< HEAD
-check_objcopy();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Step 1: find all the local (static functions) and weak symbols.
 #         't' is local, 'w/W' is weak
@@ -542,14 +428,6 @@ sub update_funcs
 
     # is this function static? If so, note this fact.
     if (defined $locals{$ref_func}) {
-<<<<<<< HEAD
-
-	# only use locals if objcopy supports globalize-symbols
-	if (!$can_use_local) {
-	    return;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$convert{$ref_func} = 1;
     }
 
@@ -569,11 +447,7 @@ sub update_funcs
 #
 # Step 2: find the sections and mcount call sites
 #
-<<<<<<< HEAD
-open(IN, "$objdump -hdr $inputfile|") || die "error running $objdump";
-=======
 open(IN, "LC_ALL=C $objdump -hdr $inputfile|") || die "error running $objdump";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 my $text;
 
@@ -604,8 +478,6 @@ while (<IN>) {
 
 	# Only record text sections that we know are safe
 	$read_function = defined($text_sections{$1});
-<<<<<<< HEAD
-=======
 	if (!$read_function) {
 	    foreach my $prefix (keys %text_section_prefixes) {
 		if (substr($1, 0, length $prefix) eq $prefix) {
@@ -614,7 +486,6 @@ while (<IN>) {
 		}
 	    }
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	# print out any recorded offsets
 	update_funcs();
 
@@ -721,8 +592,5 @@ if ($#converts >= 0) {
 `$rm $mcount_o $mcount_s`;
 
 exit(0);
-<<<<<<< HEAD
-=======
 
 # vim: softtabstop=4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

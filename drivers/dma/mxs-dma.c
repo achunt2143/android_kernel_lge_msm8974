@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- * Copyright 2011 Freescale Semiconductor, Inc. All Rights Reserved.
- *
- * Refer to drivers/dma/imx-sdma.c
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // Copyright 2011 Freescale Semiconductor, Inc. All Rights Reserved.
 //
 // Refer to drivers/dma/imx-sdma.c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/init.h>
 #include <linux/types.h>
@@ -30,13 +18,6 @@
 #include <linux/platform_device.h>
 #include <linux/dmaengine.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/fsl/mxs-dma.h>
-
-#include <asm/irq.h>
-#include <mach/mxs.h>
-#include <mach/common.h>
-=======
 #include <linux/module.h>
 #include <linux/stmp_device.h>
 #include <linux/of.h>
@@ -45,7 +26,6 @@
 #include <linux/dma/mxs-dma.h>
 
 #include <asm/irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dmaengine.h"
 
@@ -55,17 +35,8 @@
  * dma can program the controller registers of peripheral devices.
  */
 
-<<<<<<< HEAD
-#define MXS_DMA_APBH		0
-#define MXS_DMA_APBX		1
-#define dma_is_apbh()		(mxs_dma->dev_id == MXS_DMA_APBH)
-
-#define APBH_VERSION_LATEST	3
-#define apbh_is_old()		(mxs_dma->version < APBH_VERSION_LATEST)
-=======
 #define dma_is_apbh(mxs_dma)	((mxs_dma)->type == MXS_DMA_APBH)
 #define apbh_is_old(mxs_dma)	((mxs_dma)->dev_id == IMX23_DMA)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HW_APBHX_CTRL0				0x000
 #define BM_APBH_CTRL0_APB_BURST8_EN		(1 << 29)
@@ -75,15 +46,6 @@
 #define HW_APBHX_CTRL2				0x020
 #define HW_APBHX_CHANNEL_CTRL			0x030
 #define BP_APBHX_CHANNEL_CTRL_RESET_CHANNEL	16
-<<<<<<< HEAD
-#define HW_APBH_VERSION				(cpu_is_mx23() ? 0x3f0 : 0x800)
-#define HW_APBX_VERSION				0x800
-#define BP_APBHX_VERSION_MAJOR			24
-#define HW_APBHX_CHn_NXTCMDAR(n) \
-	(((dma_is_apbh() && apbh_is_old()) ? 0x050 : 0x110) + (n) * 0x70)
-#define HW_APBHX_CHn_SEMA(n) \
-	(((dma_is_apbh() && apbh_is_old()) ? 0x080 : 0x140) + (n) * 0x70)
-=======
 /*
  * The offset of NXTCMDAR register is different per both dma type and version,
  * while stride for each channel is all the same 0x70.
@@ -95,7 +57,6 @@
 #define HW_APBHX_CHn_BAR(d, n) \
 	(((dma_is_apbh(d) && apbh_is_old(d)) ? 0x070 : 0x130) + (n) * 0x70)
 #define HW_APBX_CHn_DEBUG1(d, n) (0x150 + (n) * 0x70)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ccw bits definitions
@@ -116,10 +77,7 @@
 #define BM_CCW_COMMAND		(3 << 0)
 #define CCW_CHAIN		(1 << 2)
 #define CCW_IRQ			(1 << 3)
-<<<<<<< HEAD
-=======
 #define CCW_WAIT4RDY		(1 << 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CCW_DEC_SEM		(1 << 6)
 #define CCW_WAIT4END		(1 << 7)
 #define CCW_HALT_ON_TERM	(1 << 8)
@@ -144,67 +102,28 @@ struct mxs_dma_ccw {
 	u32		pio_words[MXS_PIO_WORDS];
 };
 
-<<<<<<< HEAD
-#define NUM_CCW	(int)(PAGE_SIZE / sizeof(struct mxs_dma_ccw))
-=======
 #define CCW_BLOCK_SIZE	(4 * PAGE_SIZE)
 #define NUM_CCW	(int)(CCW_BLOCK_SIZE / sizeof(struct mxs_dma_ccw))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mxs_dma_chan {
 	struct mxs_dma_engine		*mxs_dma;
 	struct dma_chan			chan;
 	struct dma_async_tx_descriptor	desc;
 	struct tasklet_struct		tasklet;
-<<<<<<< HEAD
-	int				chan_irq;
-=======
 	unsigned int			chan_irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mxs_dma_ccw		*ccw;
 	dma_addr_t			ccw_phys;
 	int				desc_count;
 	enum dma_status			status;
 	unsigned int			flags;
-<<<<<<< HEAD
-#define MXS_DMA_SG_LOOP			(1 << 0)
-=======
 	bool				reset;
 #define MXS_DMA_SG_LOOP			(1 << 0)
 #define MXS_DMA_USE_SEMAPHORE		(1 << 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MXS_DMA_CHANNELS		16
 #define MXS_DMA_CHANNELS_MASK		0xffff
 
-<<<<<<< HEAD
-struct mxs_dma_engine {
-	int				dev_id;
-	unsigned int			version;
-	void __iomem			*base;
-	struct clk			*clk;
-	struct dma_device		dma_device;
-	struct device_dma_parameters	dma_parms;
-	struct mxs_dma_chan		mxs_chans[MXS_DMA_CHANNELS];
-};
-
-static void mxs_dma_reset_chan(struct mxs_dma_chan *mxs_chan)
-{
-	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
-	int chan_id = mxs_chan->chan.chan_id;
-
-	if (dma_is_apbh() && apbh_is_old())
-		writel(1 << (chan_id + BP_APBH_CTRL0_RESET_CHANNEL),
-			mxs_dma->base + HW_APBHX_CTRL0 + MXS_SET_ADDR);
-	else
-		writel(1 << (chan_id + BP_APBHX_CHANNEL_CTRL_RESET_CHANNEL),
-			mxs_dma->base + HW_APBHX_CHANNEL_CTRL + MXS_SET_ADDR);
-}
-
-static void mxs_dma_enable_chan(struct mxs_dma_chan *mxs_chan)
-{
-=======
 enum mxs_dma_devtype {
 	MXS_DMA_APBH,
 	MXS_DMA_APBX,
@@ -313,27 +232,11 @@ static void mxs_dma_reset_chan(struct dma_chan *chan)
 static void mxs_dma_enable_chan(struct dma_chan *chan)
 {
 	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 	int chan_id = mxs_chan->chan.chan_id;
 
 	/* set cmd_addr up */
 	writel(mxs_chan->ccw_phys,
-<<<<<<< HEAD
-		mxs_dma->base + HW_APBHX_CHn_NXTCMDAR(chan_id));
-
-	/* write 1 to SEMA to kick off the channel */
-	writel(1, mxs_dma->base + HW_APBHX_CHn_SEMA(chan_id));
-}
-
-static void mxs_dma_disable_chan(struct mxs_dma_chan *mxs_chan)
-{
-	mxs_chan->status = DMA_SUCCESS;
-}
-
-static void mxs_dma_pause_chan(struct mxs_dma_chan *mxs_chan)
-{
-=======
 		mxs_dma->base + HW_APBHX_CHn_NXTCMDAR(mxs_dma, chan_id));
 
 	/* write 1 to SEMA to kick off the channel */
@@ -359,25 +262,10 @@ static void mxs_dma_disable_chan(struct dma_chan *chan)
 static int mxs_dma_pause_chan(struct dma_chan *chan)
 {
 	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 	int chan_id = mxs_chan->chan.chan_id;
 
 	/* freeze the channel */
-<<<<<<< HEAD
-	if (dma_is_apbh() && apbh_is_old())
-		writel(1 << chan_id,
-			mxs_dma->base + HW_APBHX_CTRL0 + MXS_SET_ADDR);
-	else
-		writel(1 << chan_id,
-			mxs_dma->base + HW_APBHX_CHANNEL_CTRL + MXS_SET_ADDR);
-
-	mxs_chan->status = DMA_PAUSED;
-}
-
-static void mxs_dma_resume_chan(struct mxs_dma_chan *mxs_chan)
-{
-=======
 	if (dma_is_apbh(mxs_dma) && apbh_is_old(mxs_dma))
 		writel(1 << chan_id,
 			mxs_dma->base + HW_APBHX_CTRL0 + STMP_OFFSET_REG_SET);
@@ -392,26 +280,10 @@ static void mxs_dma_resume_chan(struct mxs_dma_chan *mxs_chan)
 static int mxs_dma_resume_chan(struct dma_chan *chan)
 {
 	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 	int chan_id = mxs_chan->chan.chan_id;
 
 	/* unfreeze the channel */
-<<<<<<< HEAD
-	if (dma_is_apbh() && apbh_is_old())
-		writel(1 << chan_id,
-			mxs_dma->base + HW_APBHX_CTRL0 + MXS_CLR_ADDR);
-	else
-		writel(1 << chan_id,
-			mxs_dma->base + HW_APBHX_CHANNEL_CTRL + MXS_CLR_ADDR);
-
-	mxs_chan->status = DMA_IN_PROGRESS;
-}
-
-static struct mxs_dma_chan *to_mxs_dma_chan(struct dma_chan *chan)
-{
-	return container_of(chan, struct mxs_dma_chan, chan);
-=======
 	if (dma_is_apbh(mxs_dma) && apbh_is_old(mxs_dma))
 		writel(1 << chan_id,
 			mxs_dma->base + HW_APBHX_CTRL0 + STMP_OFFSET_REG_CLR);
@@ -421,7 +293,6 @@ static struct mxs_dma_chan *to_mxs_dma_chan(struct dma_chan *chan)
 
 	mxs_chan->status = DMA_IN_PROGRESS;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static dma_cookie_t mxs_dma_tx_submit(struct dma_async_tx_descriptor *tx)
@@ -429,14 +300,6 @@ static dma_cookie_t mxs_dma_tx_submit(struct dma_async_tx_descriptor *tx)
 	return dma_cookie_assign(tx);
 }
 
-<<<<<<< HEAD
-static void mxs_dma_tasklet(unsigned long data)
-{
-	struct mxs_dma_chan *mxs_chan = (struct mxs_dma_chan *) data;
-
-	if (mxs_chan->desc.callback)
-		mxs_chan->desc.callback(mxs_chan->desc.callback_param);
-=======
 static void mxs_dma_tasklet(struct tasklet_struct *t)
 {
 	struct mxs_dma_chan *mxs_chan = from_tasklet(mxs_chan, t, tasklet);
@@ -453,24 +316,11 @@ static int mxs_dma_irq_to_chan(struct mxs_dma_engine *mxs_dma, int irq)
 			return i;
 
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t mxs_dma_int_handler(int irq, void *dev_id)
 {
 	struct mxs_dma_engine *mxs_dma = dev_id;
-<<<<<<< HEAD
-	u32 stat1, stat2;
-
-	/* completion status */
-	stat1 = readl(mxs_dma->base + HW_APBHX_CTRL1);
-	stat1 &= MXS_DMA_CHANNELS_MASK;
-	writel(stat1, mxs_dma->base + HW_APBHX_CTRL1 + MXS_CLR_ADDR);
-
-	/* error status */
-	stat2 = readl(mxs_dma->base + HW_APBHX_CTRL2);
-	writel(stat2, mxs_dma->base + HW_APBHX_CTRL2 + MXS_CLR_ADDR);
-=======
 	struct mxs_dma_chan *mxs_chan;
 	u32 completed;
 	u32 err;
@@ -501,48 +351,10 @@ static irqreturn_t mxs_dma_int_handler(int irq, void *dev_id)
 	/* Clear error irq */
 	writel((1 << chan),
 			mxs_dma->base + HW_APBHX_CTRL2 + STMP_OFFSET_REG_CLR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * When both completion and error of termination bits set at the
 	 * same time, we do not take it as an error.  IOW, it only becomes
-<<<<<<< HEAD
-	 * an error we need to handle here in case of either it's (1) a bus
-	 * error or (2) a termination error with no completion.
-	 */
-	stat2 = ((stat2 >> MXS_DMA_CHANNELS) & stat2) | /* (1) */
-		(~(stat2 >> MXS_DMA_CHANNELS) & stat2 & ~stat1); /* (2) */
-
-	/* combine error and completion status for checking */
-	stat1 = (stat2 << MXS_DMA_CHANNELS) | stat1;
-	while (stat1) {
-		int channel = fls(stat1) - 1;
-		struct mxs_dma_chan *mxs_chan =
-			&mxs_dma->mxs_chans[channel % MXS_DMA_CHANNELS];
-
-		if (channel >= MXS_DMA_CHANNELS) {
-			dev_dbg(mxs_dma->dma_device.dev,
-				"%s: error in channel %d\n", __func__,
-				channel - MXS_DMA_CHANNELS);
-			mxs_chan->status = DMA_ERROR;
-			mxs_dma_reset_chan(mxs_chan);
-		} else {
-			if (mxs_chan->flags & MXS_DMA_SG_LOOP)
-				mxs_chan->status = DMA_IN_PROGRESS;
-			else
-				mxs_chan->status = DMA_SUCCESS;
-		}
-
-		stat1 &= ~(1 << channel);
-
-		if (mxs_chan->status == DMA_SUCCESS)
-			dma_cookie_complete(&mxs_chan->desc);
-
-		/* schedule tasklet on this channel */
-		tasklet_schedule(&mxs_chan->tasklet);
-	}
-
-=======
 	 * an error we need to handle here in case of either it's a bus
 	 * error or a termination error with no completion. 0x01 is termination
 	 * error, so we can subtract err & completed to get the real error case.
@@ -577,63 +389,33 @@ static irqreturn_t mxs_dma_int_handler(int irq, void *dev_id)
 	/* schedule tasklet on this channel */
 	tasklet_schedule(&mxs_chan->tasklet);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
 static int mxs_dma_alloc_chan_resources(struct dma_chan *chan)
 {
 	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
-<<<<<<< HEAD
-	struct mxs_dma_data *data = chan->private;
-	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
-	int ret;
-
-	if (!data)
-		return -EINVAL;
-
-	mxs_chan->chan_irq = data->chan_irq;
-
-	mxs_chan->ccw = dma_alloc_coherent(mxs_dma->dma_device.dev, PAGE_SIZE,
-				&mxs_chan->ccw_phys, GFP_KERNEL);
-=======
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 	int ret;
 
 	mxs_chan->ccw = dma_alloc_coherent(mxs_dma->dma_device.dev,
 					   CCW_BLOCK_SIZE,
 					   &mxs_chan->ccw_phys, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mxs_chan->ccw) {
 		ret = -ENOMEM;
 		goto err_alloc;
 	}
 
-<<<<<<< HEAD
-	memset(mxs_chan->ccw, 0, PAGE_SIZE);
-
-	if (mxs_chan->chan_irq != NO_IRQ) {
-		ret = request_irq(mxs_chan->chan_irq, mxs_dma_int_handler,
-					0, "mxs-dma", mxs_dma);
-		if (ret)
-			goto err_irq;
-	}
-=======
 	ret = request_irq(mxs_chan->chan_irq, mxs_dma_int_handler,
 			  0, "mxs-dma", mxs_dma);
 	if (ret)
 		goto err_irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = clk_prepare_enable(mxs_dma->clk);
 	if (ret)
 		goto err_clk;
 
-<<<<<<< HEAD
-	mxs_dma_reset_chan(mxs_chan);
-=======
 	mxs_dma_reset_chan(chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_async_tx_descriptor_init(&mxs_chan->desc, chan);
 	mxs_chan->desc.tx_submit = mxs_dma_tx_submit;
@@ -646,11 +428,7 @@ static int mxs_dma_alloc_chan_resources(struct dma_chan *chan)
 err_clk:
 	free_irq(mxs_chan->chan_irq, mxs_dma);
 err_irq:
-<<<<<<< HEAD
-	dma_free_coherent(mxs_dma->dma_device.dev, PAGE_SIZE,
-=======
 	dma_free_coherent(mxs_dma->dma_device.dev, CCW_BLOCK_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mxs_chan->ccw, mxs_chan->ccw_phys);
 err_alloc:
 	return ret;
@@ -661,19 +439,11 @@ static void mxs_dma_free_chan_resources(struct dma_chan *chan)
 	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 
-<<<<<<< HEAD
-	mxs_dma_disable_chan(mxs_chan);
-
-	free_irq(mxs_chan->chan_irq, mxs_dma);
-
-	dma_free_coherent(mxs_dma->dma_device.dev, PAGE_SIZE,
-=======
 	mxs_dma_disable_chan(chan);
 
 	free_irq(mxs_chan->chan_irq, mxs_dma);
 
 	dma_free_coherent(mxs_dma->dma_device.dev, CCW_BLOCK_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mxs_chan->ccw, mxs_chan->ccw_phys);
 
 	clk_disable_unprepare(mxs_dma->clk);
@@ -689,26 +459,16 @@ static void mxs_dma_free_chan_resources(struct dma_chan *chan)
  *            ......
  *            ->device_prep_slave_sg(0);
  *            ......
-<<<<<<< HEAD
- *            ->device_prep_slave_sg(DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
-=======
  *            ->device_prep_slave_sg(DMA_CTRL_ACK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *            ......
  *    [3] If there are more than two DMA commands in the DMA chain, the code
  *        should be:
  *            ......
  *            ->device_prep_slave_sg(0);                                // First
  *            ......
-<<<<<<< HEAD
- *            ->device_prep_slave_sg(DMA_PREP_INTERRUPT [| DMA_CTRL_ACK]);
- *            ......
- *            ->device_prep_slave_sg(DMA_PREP_INTERRUPT | DMA_CTRL_ACK); // Last
-=======
  *            ->device_prep_slave_sg(DMA_CTRL_ACK]);
  *            ......
  *            ->device_prep_slave_sg(DMA_CTRL_ACK); // Last
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *            ......
  */
 static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
@@ -720,17 +480,6 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 	struct mxs_dma_ccw *ccw;
 	struct scatterlist *sg;
-<<<<<<< HEAD
-	int i, j;
-	u32 *pio;
-	bool append = flags & DMA_PREP_INTERRUPT;
-	int idx = append ? mxs_chan->desc_count : 0;
-
-	if (mxs_chan->status == DMA_IN_PROGRESS && !append)
-		return NULL;
-
-	if (sg_len + (append ? idx : 0) > NUM_CCW) {
-=======
 	u32 i, j;
 	u32 *pio;
 	int idx = 0;
@@ -739,7 +488,6 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
 		idx = mxs_chan->desc_count;
 
 	if (sg_len + idx > NUM_CCW) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(mxs_dma->dma_device.dev,
 				"maximum number of sg exceeded: %d > %d\n",
 				sg_len, NUM_CCW);
@@ -753,11 +501,7 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
 	 * If the sg is prepared with append flag set, the sg
 	 * will be appended to the last prepared sg.
 	 */
-<<<<<<< HEAD
-	if (append) {
-=======
 	if (idx) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(idx < 1);
 		ccw = &mxs_chan->ccw[idx - 1];
 		ccw->next = mxs_chan->ccw_phys + sizeof(*ccw) * idx;
@@ -778,23 +522,12 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
 		ccw->bits = 0;
 		ccw->bits |= CCW_IRQ;
 		ccw->bits |= CCW_DEC_SEM;
-<<<<<<< HEAD
-		if (flags & DMA_CTRL_ACK)
-=======
 		if (flags & MXS_DMA_CTRL_WAIT4END)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ccw->bits |= CCW_WAIT4END;
 		ccw->bits |= CCW_HALT_ON_TERM;
 		ccw->bits |= CCW_TERM_FLUSH;
 		ccw->bits |= BF_CCW(sg_len, PIO_NUM);
 		ccw->bits |= BF_CCW(MXS_DMA_CMD_NO_XFER, COMMAND);
-<<<<<<< HEAD
-	} else {
-		for_each_sg(sgl, sg, sg_len, i) {
-			if (sg->length > MAX_XFER_BYTES) {
-				dev_err(mxs_dma->dma_device.dev, "maximum bytes for sg entry exceeded: %d > %d\n",
-						sg->length, MAX_XFER_BYTES);
-=======
 		if (flags & MXS_DMA_CTRL_WAIT4RDY)
 			ccw->bits |= CCW_WAIT4RDY;
 	} else {
@@ -802,7 +535,6 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
 			if (sg_dma_len(sg) > MAX_XFER_BYTES) {
 				dev_err(mxs_dma->dma_device.dev, "maximum bytes for sg entry exceeded: %d > %d\n",
 						sg_dma_len(sg), MAX_XFER_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto err_out;
 			}
 
@@ -810,11 +542,7 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
 
 			ccw->next = mxs_chan->ccw_phys + sizeof(*ccw) * idx;
 			ccw->bufaddr = sg->dma_address;
-<<<<<<< HEAD
-			ccw->xfer_bytes = sg->length;
-=======
 			ccw->xfer_bytes = sg_dma_len(sg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ccw->bits = 0;
 			ccw->bits |= CCW_CHAIN;
@@ -828,11 +556,7 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_slave_sg(
 				ccw->bits &= ~CCW_CHAIN;
 				ccw->bits |= CCW_IRQ;
 				ccw->bits |= CCW_DEC_SEM;
-<<<<<<< HEAD
-				if (flags & DMA_CTRL_ACK)
-=======
 				if (flags & MXS_DMA_CTRL_WAIT4END)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ccw->bits |= CCW_WAIT4END;
 			}
 		}
@@ -849,31 +573,19 @@ err_out:
 static struct dma_async_tx_descriptor *mxs_dma_prep_dma_cyclic(
 		struct dma_chan *chan, dma_addr_t dma_addr, size_t buf_len,
 		size_t period_len, enum dma_transfer_direction direction,
-<<<<<<< HEAD
-		void *context)
-{
-	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
-	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
-	int num_periods = buf_len / period_len;
-	int i = 0, buf = 0;
-=======
 		unsigned long flags)
 {
 	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 	u32 num_periods = buf_len / period_len;
 	u32 i = 0, buf = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mxs_chan->status == DMA_IN_PROGRESS)
 		return NULL;
 
 	mxs_chan->status = DMA_IN_PROGRESS;
 	mxs_chan->flags |= MXS_DMA_SG_LOOP;
-<<<<<<< HEAD
-=======
 	mxs_chan->flags |= MXS_DMA_USE_SEMAPHORE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (num_periods > NUM_CCW) {
 		dev_err(mxs_dma->dma_device.dev,
@@ -884,11 +596,7 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_dma_cyclic(
 
 	if (period_len > MAX_XFER_BYTES) {
 		dev_err(mxs_dma->dma_device.dev,
-<<<<<<< HEAD
-				"maximum period size exceeded: %d > %d\n",
-=======
 				"maximum period size exceeded: %zu > %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				period_len, MAX_XFER_BYTES);
 		goto err_out;
 	}
@@ -909,10 +617,7 @@ static struct dma_async_tx_descriptor *mxs_dma_prep_dma_cyclic(
 		ccw->bits |= CCW_IRQ;
 		ccw->bits |= CCW_HALT_ON_TERM;
 		ccw->bits |= CCW_TERM_FLUSH;
-<<<<<<< HEAD
-=======
 		ccw->bits |= CCW_DEC_SEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ccw->bits |= BF_CCW(direction == DMA_DEV_TO_MEM ?
 				MXS_DMA_CMD_WRITE : MXS_DMA_CMD_READ, COMMAND);
 
@@ -930,49 +635,18 @@ err_out:
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int mxs_dma_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
-		unsigned long arg)
-{
-	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
-	int ret = 0;
-
-	switch (cmd) {
-	case DMA_TERMINATE_ALL:
-		mxs_dma_reset_chan(mxs_chan);
-		mxs_dma_disable_chan(mxs_chan);
-		break;
-	case DMA_PAUSE:
-		mxs_dma_pause_chan(mxs_chan);
-		break;
-	case DMA_RESUME:
-		mxs_dma_resume_chan(mxs_chan);
-		break;
-	default:
-		ret = -ENOSYS;
-	}
-
-	return ret;
-=======
 static int mxs_dma_terminate_all(struct dma_chan *chan)
 {
 	mxs_dma_reset_chan(chan);
 	mxs_dma_disable_chan(chan);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum dma_status mxs_dma_tx_status(struct dma_chan *chan,
 			dma_cookie_t cookie, struct dma_tx_state *txstate)
 {
 	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
-<<<<<<< HEAD
-	dma_cookie_t last_used;
-
-	last_used = chan->cookie;
-	dma_set_tx_state(txstate, chan->completed_cookie, last_used, 0);
-=======
 	struct mxs_dma_engine *mxs_dma = mxs_chan->mxs_dma;
 	u32 residue = 0;
 
@@ -991,23 +665,11 @@ static enum dma_status mxs_dma_tx_status(struct dma_chan *chan,
 
 	dma_set_tx_state(txstate, chan->completed_cookie, chan->cookie,
 			residue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mxs_chan->status;
 }
 
-<<<<<<< HEAD
-static void mxs_dma_issue_pending(struct dma_chan *chan)
-{
-	struct mxs_dma_chan *mxs_chan = to_mxs_dma_chan(chan);
-
-	mxs_dma_enable_chan(mxs_chan);
-}
-
-static int __init mxs_dma_init(struct mxs_dma_engine *mxs_dma)
-=======
 static int mxs_dma_init(struct mxs_dma_engine *mxs_dma)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -1015,24 +677,6 @@ static int mxs_dma_init(struct mxs_dma_engine *mxs_dma)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	ret = mxs_reset_block(mxs_dma->base);
-	if (ret)
-		goto err_out;
-
-	/* only major version matters */
-	mxs_dma->version = readl(mxs_dma->base +
-				((mxs_dma->dev_id == MXS_DMA_APBX) ?
-				HW_APBX_VERSION : HW_APBH_VERSION)) >>
-				BP_APBHX_VERSION_MAJOR;
-
-	/* enable apbh burst */
-	if (dma_is_apbh()) {
-		writel(BM_APBH_CTRL0_APB_BURST_EN,
-			mxs_dma->base + HW_APBHX_CTRL0 + MXS_SET_ADDR);
-		writel(BM_APBH_CTRL0_APB_BURST8_EN,
-			mxs_dma->base + HW_APBHX_CTRL0 + MXS_SET_ADDR);
-=======
 	ret = stmp_reset_block(mxs_dma->base);
 	if (ret)
 		goto err_out;
@@ -1043,57 +687,17 @@ static int mxs_dma_init(struct mxs_dma_engine *mxs_dma)
 			mxs_dma->base + HW_APBHX_CTRL0 + STMP_OFFSET_REG_SET);
 		writel(BM_APBH_CTRL0_APB_BURST8_EN,
 			mxs_dma->base + HW_APBHX_CTRL0 + STMP_OFFSET_REG_SET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* enable irq for all the channels */
 	writel(MXS_DMA_CHANNELS_MASK << MXS_DMA_CHANNELS,
-<<<<<<< HEAD
-		mxs_dma->base + HW_APBHX_CTRL1 + MXS_SET_ADDR);
-=======
 		mxs_dma->base + HW_APBHX_CTRL1 + STMP_OFFSET_REG_SET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_out:
 	clk_disable_unprepare(mxs_dma->clk);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __init mxs_dma_probe(struct platform_device *pdev)
-{
-	const struct platform_device_id *id_entry =
-				platform_get_device_id(pdev);
-	struct mxs_dma_engine *mxs_dma;
-	struct resource *iores;
-	int ret, i;
-
-	mxs_dma = kzalloc(sizeof(*mxs_dma), GFP_KERNEL);
-	if (!mxs_dma)
-		return -ENOMEM;
-
-	mxs_dma->dev_id = id_entry->driver_data;
-
-	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-	if (!request_mem_region(iores->start, resource_size(iores),
-				pdev->name)) {
-		ret = -EBUSY;
-		goto err_request_region;
-	}
-
-	mxs_dma->base = ioremap(iores->start, resource_size(iores));
-	if (!mxs_dma->base) {
-		ret = -ENOMEM;
-		goto err_ioremap;
-	}
-
-	mxs_dma->clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(mxs_dma->clk)) {
-		ret = PTR_ERR(mxs_dma->clk);
-		goto err_clk;
-	}
-=======
 struct mxs_dma_filter_param {
 	unsigned int chan_id;
 };
@@ -1164,7 +768,6 @@ static int mxs_dma_probe(struct platform_device *pdev)
 	mxs_dma->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(mxs_dma->clk))
 		return PTR_ERR(mxs_dma->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_cap_set(DMA_SLAVE, mxs_dma->dma_device.cap_mask);
 	dma_cap_set(DMA_CYCLIC, mxs_dma->dma_device.cap_mask);
@@ -1179,12 +782,7 @@ static int mxs_dma_probe(struct platform_device *pdev)
 		mxs_chan->chan.device = &mxs_dma->dma_device;
 		dma_cookie_init(&mxs_chan->chan);
 
-<<<<<<< HEAD
-		tasklet_init(&mxs_chan->tasklet, mxs_dma_tasklet,
-			     (unsigned long) mxs_chan);
-=======
 		tasklet_setup(&mxs_chan->tasklet, mxs_dma_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 		/* Add the channel to mxs_chan list */
@@ -1194,21 +792,12 @@ static int mxs_dma_probe(struct platform_device *pdev)
 
 	ret = mxs_dma_init(mxs_dma);
 	if (ret)
-<<<<<<< HEAD
-		goto err_init;
-
-	mxs_dma->dma_device.dev = &pdev->dev;
-
-	/* mxs_dma gets 65535 bytes maximum sg size */
-	mxs_dma->dma_device.dev->dma_parms = &mxs_dma->dma_parms;
-=======
 		return ret;
 
 	mxs_dma->pdev = pdev;
 	mxs_dma->dma_device.dev = &pdev->dev;
 
 	/* mxs_dma gets 65535 bytes maximum sg size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_set_max_seg_size(mxs_dma->dma_device.dev, MAX_XFER_BYTES);
 
 	mxs_dma->dma_device.device_alloc_chan_resources = mxs_dma_alloc_chan_resources;
@@ -1216,15 +805,6 @@ static int mxs_dma_probe(struct platform_device *pdev)
 	mxs_dma->dma_device.device_tx_status = mxs_dma_tx_status;
 	mxs_dma->dma_device.device_prep_slave_sg = mxs_dma_prep_slave_sg;
 	mxs_dma->dma_device.device_prep_dma_cyclic = mxs_dma_prep_dma_cyclic;
-<<<<<<< HEAD
-	mxs_dma->dma_device.device_control = mxs_dma_control;
-	mxs_dma->dma_device.device_issue_pending = mxs_dma_issue_pending;
-
-	ret = dma_async_device_register(&mxs_dma->dma_device);
-	if (ret) {
-		dev_err(mxs_dma->dma_device.dev, "unable to register\n");
-		goto err_init;
-=======
 	mxs_dma->dma_device.device_pause = mxs_dma_pause_chan;
 	mxs_dma->dma_device.device_resume = mxs_dma_resume_chan;
 	mxs_dma->dma_device.device_terminate_all = mxs_dma_terminate_all;
@@ -1244,50 +824,11 @@ static int mxs_dma_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(mxs_dma->dma_device.dev,
 			"failed to register controller\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_info(mxs_dma->dma_device.dev, "initialized\n");
 
 	return 0;
-<<<<<<< HEAD
-
-err_init:
-	clk_put(mxs_dma->clk);
-err_clk:
-	iounmap(mxs_dma->base);
-err_ioremap:
-	release_mem_region(iores->start, resource_size(iores));
-err_request_region:
-	kfree(mxs_dma);
-	return ret;
-}
-
-static struct platform_device_id mxs_dma_type[] = {
-	{
-		.name = "mxs-dma-apbh",
-		.driver_data = MXS_DMA_APBH,
-	}, {
-		.name = "mxs-dma-apbx",
-		.driver_data = MXS_DMA_APBX,
-	}, {
-		/* end of list */
-	}
-};
-
-static struct platform_driver mxs_dma_driver = {
-	.driver		= {
-		.name	= "mxs-dma",
-	},
-	.id_table	= mxs_dma_type,
-};
-
-static int __init mxs_dma_module_init(void)
-{
-	return platform_driver_probe(&mxs_dma_driver, mxs_dma_probe);
-}
-subsys_initcall(mxs_dma_module_init);
-=======
 }
 
 static struct platform_driver mxs_dma_driver = {
@@ -1299,4 +840,3 @@ static struct platform_driver mxs_dma_driver = {
 };
 
 builtin_platform_driver(mxs_dma_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

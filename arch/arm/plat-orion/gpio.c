@@ -8,25 +8,16 @@
  * warranty of any kind, whether express or implied.
  */
 
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/irq.h>
-=======
 #define DEBUG
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/spinlock.h>
 #include <linux/bitops.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
 #include <linux/gpio/driver.h>
 #include <linux/gpio/consumer.h>
 #include <linux/leds.h>
@@ -34,7 +25,6 @@
 #include <linux/of_irq.h>
 #include <linux/of_address.h>
 #include <plat/orion-gpio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * GPIO unit register offsets.
@@ -56,10 +46,7 @@ struct orion_gpio_chip {
 	unsigned long		valid_output;
 	int			mask_offset;
 	int			secondary_irq_base;
-<<<<<<< HEAD
-=======
 	struct irq_domain       *domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __iomem *GPIO_OUT(struct orion_gpio_chip *ochip)
@@ -164,20 +151,11 @@ err_out:
 }
 
 /*
-<<<<<<< HEAD
- * GENERIC_GPIO primitives.
- */
-static int orion_gpio_request(struct gpio_chip *chip, unsigned pin)
-{
-	struct orion_gpio_chip *ochip =
-		container_of(chip, struct orion_gpio_chip, chip);
-=======
  * GPIO primitives.
  */
 static int orion_gpio_request(struct gpio_chip *chip, unsigned pin)
 {
 	struct orion_gpio_chip *ochip = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (orion_gpio_is_valid(ochip, pin, GPIO_INPUT_OK) ||
 	    orion_gpio_is_valid(ochip, pin, GPIO_OUTPUT_OK))
@@ -188,12 +166,7 @@ static int orion_gpio_request(struct gpio_chip *chip, unsigned pin)
 
 static int orion_gpio_direction_input(struct gpio_chip *chip, unsigned pin)
 {
-<<<<<<< HEAD
-	struct orion_gpio_chip *ochip =
-		container_of(chip, struct orion_gpio_chip, chip);
-=======
 	struct orion_gpio_chip *ochip = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (!orion_gpio_is_valid(ochip, pin, GPIO_INPUT_OK))
@@ -208,12 +181,7 @@ static int orion_gpio_direction_input(struct gpio_chip *chip, unsigned pin)
 
 static int orion_gpio_get(struct gpio_chip *chip, unsigned pin)
 {
-<<<<<<< HEAD
-	struct orion_gpio_chip *ochip =
-		container_of(chip, struct orion_gpio_chip, chip);
-=======
 	struct orion_gpio_chip *ochip = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val;
 
 	if (readl(GPIO_IO_CONF(ochip)) & (1 << pin)) {
@@ -228,12 +196,7 @@ static int orion_gpio_get(struct gpio_chip *chip, unsigned pin)
 static int
 orion_gpio_direction_output(struct gpio_chip *chip, unsigned pin, int value)
 {
-<<<<<<< HEAD
-	struct orion_gpio_chip *ochip =
-		container_of(chip, struct orion_gpio_chip, chip);
-=======
 	struct orion_gpio_chip *ochip = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (!orion_gpio_is_valid(ochip, pin, GPIO_OUTPUT_OK))
@@ -250,12 +213,7 @@ orion_gpio_direction_output(struct gpio_chip *chip, unsigned pin, int value)
 
 static void orion_gpio_set(struct gpio_chip *chip, unsigned pin, int value)
 {
-<<<<<<< HEAD
-	struct orion_gpio_chip *ochip =
-		container_of(chip, struct orion_gpio_chip, chip);
-=======
 	struct orion_gpio_chip *ochip = gpiochip_get_data(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&ochip->lock, flags);
@@ -265,22 +223,12 @@ static void orion_gpio_set(struct gpio_chip *chip, unsigned pin, int value)
 
 static int orion_gpio_to_irq(struct gpio_chip *chip, unsigned pin)
 {
-<<<<<<< HEAD
-	struct orion_gpio_chip *ochip =
-		container_of(chip, struct orion_gpio_chip, chip);
-
-	return ochip->secondary_irq_base + pin;
-}
-
-
-=======
 	struct orion_gpio_chip *ochip = gpiochip_get_data(chip);
 
 	return irq_create_mapping(ochip->domain,
 				  ochip->secondary_irq_base + pin);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Orion-specific GPIO API extensions.
  */
@@ -345,19 +293,12 @@ void orion_gpio_set_blink(unsigned pin, int blink)
 		return;
 
 	spin_lock_irqsave(&ochip->lock, flags);
-<<<<<<< HEAD
-	__set_level(ochip, pin, 0);
-	__set_blinking(ochip, pin, blink);
-=======
 	__set_level(ochip, pin & 31, 0);
 	__set_blinking(ochip, pin & 31, blink);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&ochip->lock, flags);
 }
 EXPORT_SYMBOL(orion_gpio_set_blink);
 
-<<<<<<< HEAD
-=======
 #define ORION_BLINK_HALF_PERIOD 100 /* ms */
 
 int orion_gpio_led_blink_set(struct gpio_desc *desc, int state,
@@ -381,7 +322,6 @@ int orion_gpio_led_blink_set(struct gpio_desc *desc, int state,
 }
 EXPORT_SYMBOL_GPL(orion_gpio_led_blink_set);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * Orion GPIO IRQ
@@ -417,19 +357,10 @@ static int gpio_irq_set_type(struct irq_data *d, u32 type)
 	int pin;
 	u32 u;
 
-<<<<<<< HEAD
-	pin = d->irq - gc->irq_base;
-
-	u = readl(GPIO_IO_CONF(ochip)) & (1 << pin);
-	if (!u) {
-		printk(KERN_ERR "orion gpio_irq_set_type failed "
-				"(irq %d, pin %d).\n", d->irq, pin);
-=======
 	pin = d->hwirq - ochip->secondary_irq_base;
 
 	u = readl(GPIO_IO_CONF(ochip)) & (1 << pin);
 	if (!u) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -468,14 +399,6 @@ static int gpio_irq_set_type(struct irq_data *d, u32 type)
 			u &= ~(1 << pin);	/* rising */
 		writel(u, GPIO_IN_POL(ochip));
 	}
-<<<<<<< HEAD
-
-	return 0;
-}
-
-void __init orion_gpio_init(int gpio_base, int ngpio,
-			    u32 base, int mask_offset, int secondary_irq_base)
-=======
 	return 0;
 }
 
@@ -598,16 +521,12 @@ void __init orion_gpio_init(int gpio_base, int ngpio,
 			    void __iomem *base, int mask_offset,
 			    int secondary_irq_base,
 			    int irqs[4])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct orion_gpio_chip *ochip;
 	struct irq_chip_generic *gc;
 	struct irq_chip_type *ct;
 	char gc_label[16];
-<<<<<<< HEAD
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (orion_gpio_chip_count == ARRAY_SIZE(orion_gpio_chips))
 		return;
@@ -626,11 +545,8 @@ void __init orion_gpio_init(int gpio_base, int ngpio,
 	ochip->chip.base = gpio_base;
 	ochip->chip.ngpio = ngpio;
 	ochip->chip.can_sleep = 0;
-<<<<<<< HEAD
-=======
 	ochip->chip.dbg_show = orion_gpio_dbg_show;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&ochip->lock);
 	ochip->base = (void __iomem *)base;
 	ochip->valid_input = 0;
@@ -638,13 +554,7 @@ void __init orion_gpio_init(int gpio_base, int ngpio,
 	ochip->mask_offset = mask_offset;
 	ochip->secondary_irq_base = secondary_irq_base;
 
-<<<<<<< HEAD
-	gpiochip_add(&ochip->chip);
-
-	orion_gpio_chip_count++;
-=======
 	gpiochip_add_data(&ochip->chip, ochip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Mask and clear GPIO interrupts.
@@ -653,18 +563,6 @@ void __init orion_gpio_init(int gpio_base, int ngpio,
 	writel(0, GPIO_EDGE_MASK(ochip));
 	writel(0, GPIO_LEVEL_MASK(ochip));
 
-<<<<<<< HEAD
-	gc = irq_alloc_generic_chip("orion_gpio_irq", 2, secondary_irq_base,
-				    ochip->base, handle_level_irq);
-	gc->private = ochip;
-
-	ct = gc->chip_types;
-	ct->regs.mask = ochip->mask_offset + GPIO_LEVEL_MASK_OFF;
-	ct->type = IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW;
-	ct->chip.irq_mask = irq_gc_mask_clr_bit;
-	ct->chip.irq_unmask = irq_gc_mask_set_bit;
-	ct->chip.irq_set_type = gpio_irq_set_type;
-=======
 	/* Setup the interrupt handlers. Each chip can have up to 4
 	 * interrupt handlers, with each handler dealing with 8 GPIO
 	 * pins. */
@@ -688,56 +586,12 @@ void __init orion_gpio_init(int gpio_base, int ngpio,
 	ct->chip.irq_unmask = orion_gpio_unmask_irq;
 	ct->chip.irq_set_type = gpio_irq_set_type;
 	ct->chip.name = ochip->chip.label;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ct++;
 	ct->regs.mask = ochip->mask_offset + GPIO_EDGE_MASK_OFF;
 	ct->regs.ack = GPIO_EDGE_CAUSE_OFF;
 	ct->type = IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING;
 	ct->chip.irq_ack = irq_gc_ack_clr_bit;
-<<<<<<< HEAD
-	ct->chip.irq_mask = irq_gc_mask_clr_bit;
-	ct->chip.irq_unmask = irq_gc_mask_set_bit;
-	ct->chip.irq_set_type = gpio_irq_set_type;
-	ct->handler = handle_edge_irq;
-
-	irq_setup_generic_chip(gc, IRQ_MSK(ngpio), IRQ_GC_INIT_MASK_CACHE,
-			       IRQ_NOREQUEST, IRQ_LEVEL | IRQ_NOPROBE);
-}
-
-void orion_gpio_irq_handler(int pinoff)
-{
-	struct orion_gpio_chip *ochip;
-	u32 cause, type;
-	int i;
-
-	ochip = orion_gpio_chip_find(pinoff);
-	if (ochip == NULL)
-		return;
-
-	cause = readl(GPIO_DATA_IN(ochip)) & readl(GPIO_LEVEL_MASK(ochip));
-	cause |= readl(GPIO_EDGE_CAUSE(ochip)) & readl(GPIO_EDGE_MASK(ochip));
-
-	for (i = 0; i < ochip->chip.ngpio; i++) {
-		int irq;
-
-		irq = ochip->secondary_irq_base + i;
-
-		if (!(cause & (1 << i)))
-			continue;
-
-		type = irqd_get_trigger_type(irq_get_irq_data(irq));
-		if ((type & IRQ_TYPE_SENSE_MASK) == IRQ_TYPE_EDGE_BOTH) {
-			/* Swap polarity (race with GPIO line) */
-			u32 polarity;
-
-			polarity = readl(GPIO_IN_POL(ochip));
-			polarity ^= 1 << i;
-			writel(polarity, GPIO_IN_POL(ochip));
-		}
-		generic_handle_irq(irq);
-	}
-=======
 	ct->chip.irq_mask = orion_gpio_mask_irq;
 	ct->chip.irq_unmask = orion_gpio_unmask_irq;
 	ct->chip.irq_set_type = gpio_irq_set_type;
@@ -759,5 +613,4 @@ void orion_gpio_irq_handler(int pinoff)
 		      ochip->chip.label);
 
 	orion_gpio_chip_count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

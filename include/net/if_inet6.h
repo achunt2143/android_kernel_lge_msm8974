@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	inet6 interface/address list definitions
  *	Linux INET6 implementation 
  *
  *	Authors:
  *	Pedro Roque		<roque@di.fc.ul.pt>	
-<<<<<<< HEAD
- *
- *
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NET_IF_INET6_H
@@ -24,10 +12,7 @@
 
 #include <net/snmp.h>
 #include <linux/ipv6.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* inet6_dev.if_flags */
 
@@ -37,44 +22,17 @@
 #define IF_RS_SENT	0x10
 #define IF_READY	0x80000000
 
-<<<<<<< HEAD
-/* prefix flags */
-#define IF_PREFIX_ONLINK	0x01
-#define IF_PREFIX_AUTOCONF	0x02
-
-enum {
-	INET6_IFADDR_STATE_DAD,
-	INET6_IFADDR_STATE_POSTDAD,
-	INET6_IFADDR_STATE_UP,
-=======
 enum {
 	INET6_IFADDR_STATE_PREDAD,
 	INET6_IFADDR_STATE_DAD,
 	INET6_IFADDR_STATE_POSTDAD,
 	INET6_IFADDR_STATE_ERRDAD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INET6_IFADDR_STATE_DEAD,
 };
 
 struct inet6_ifaddr {
 	struct in6_addr		addr;
 	__u32			prefix_len;
-<<<<<<< HEAD
-	
-	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
-	__u32			valid_lft;
-	__u32			prefered_lft;
-	atomic_t		refcnt;
-	spinlock_t		lock;
-	spinlock_t		state_lock;
-
-	int			state;
-
-	__u8			probes;
-	__u8			flags;
-
-	__u16			scope;
-=======
 	__u32			rt_priority;
 
 	/* In seconds, relative to tstamp. Expiry is at tstamp + HZ * lft. */
@@ -91,27 +49,10 @@ struct inet6_ifaddr {
 
 	__u16			scope;
 	__u64			dad_nonce;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long		cstamp;	/* created timestamp */
 	unsigned long		tstamp; /* updated timestamp */
 
-<<<<<<< HEAD
-	struct timer_list	timer;
-
-	struct inet6_dev	*idev;
-	struct rt6_info		*rt;
-
-	struct hlist_node	addr_lst;
-	struct list_head	if_list;
-
-#ifdef CONFIG_IPV6_PRIVACY
-	struct list_head	tmp_list;
-	struct inet6_ifaddr	*ifpub;
-	int			regen_count;
-#endif
-	struct rcu_head		rcu;
-=======
 	struct delayed_work	dad_work;
 
 	struct inet6_dev	*idev;
@@ -138,58 +79,34 @@ struct inet6_ifaddr {
 
 	struct rcu_head		rcu;
 	struct in6_addr		peer_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ip6_sf_socklist {
 	unsigned int		sl_max;
 	unsigned int		sl_count;
-<<<<<<< HEAD
-	struct in6_addr		sl_addr[0];
-};
-
-#define IP6_SFLSIZE(count)	(sizeof(struct ip6_sf_socklist) + \
-	(count) * sizeof(struct in6_addr))
-
-=======
 	struct rcu_head		rcu;
 	struct in6_addr		sl_addr[] __counted_by(sl_max);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IP6_SFBLOCK	10	/* allocate this many at once */
 
 struct ipv6_mc_socklist {
 	struct in6_addr		addr;
 	int			ifindex;
-<<<<<<< HEAD
-	struct ipv6_mc_socklist __rcu *next;
-	rwlock_t		sflock;
-	unsigned int		sfmode;		/* MCAST_{INCLUDE,EXCLUDE} */
-	struct ip6_sf_socklist	*sflist;
-=======
 	unsigned int		sfmode;		/* MCAST_{INCLUDE,EXCLUDE} */
 	struct ipv6_mc_socklist __rcu *next;
 	struct ip6_sf_socklist	__rcu *sflist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rcu_head		rcu;
 };
 
 struct ip6_sf_list {
-<<<<<<< HEAD
-	struct ip6_sf_list	*sf_next;
-=======
 	struct ip6_sf_list __rcu *sf_next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct in6_addr		sf_addr;
 	unsigned long		sf_count[2];	/* include/exclude counts */
 	unsigned char		sf_gsresp;	/* include in g & s response? */
 	unsigned char		sf_oldin;	/* change state */
 	unsigned char		sf_crcount;	/* retrans. left to send */
-<<<<<<< HEAD
-=======
 	struct rcu_head		rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MAF_TIMER_RUNNING	0x01
@@ -201,21 +118,6 @@ struct ip6_sf_list {
 struct ifmcaddr6 {
 	struct in6_addr		mca_addr;
 	struct inet6_dev	*idev;
-<<<<<<< HEAD
-	struct ifmcaddr6	*next;
-	struct ip6_sf_list	*mca_sources;
-	struct ip6_sf_list	*mca_tomb;
-	unsigned int		mca_sfmode;
-	unsigned char		mca_crcount;
-	unsigned long		mca_sfcount[2];
-	struct timer_list	mca_timer;
-	unsigned		mca_flags;
-	int			mca_users;
-	atomic_t		mca_refcnt;
-	spinlock_t		mca_lock;
-	unsigned long		mca_cstamp;
-	unsigned long		mca_tstamp;
-=======
 	struct ifmcaddr6	__rcu *next;
 	struct ip6_sf_list	__rcu *mca_sources;
 	struct ip6_sf_list	__rcu *mca_tomb;
@@ -229,7 +131,6 @@ struct ifmcaddr6 {
 	unsigned long		mca_cstamp;
 	unsigned long		mca_tstamp;
 	struct rcu_head		rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Anycast stuff */
@@ -242,16 +143,6 @@ struct ipv6_ac_socklist {
 
 struct ifacaddr6 {
 	struct in6_addr		aca_addr;
-<<<<<<< HEAD
-	struct inet6_dev	*aca_idev;
-	struct rt6_info		*aca_rt;
-	struct ifacaddr6	*aca_next;
-	int			aca_users;
-	atomic_t		aca_refcnt;
-	spinlock_t		aca_lock;
-	unsigned long		aca_cstamp;
-	unsigned long		aca_tstamp;
-=======
 	struct fib6_info	*aca_rt;
 	struct ifacaddr6 __rcu	*aca_next;
 	struct hlist_node	aca_addr_lst;
@@ -260,7 +151,6 @@ struct ifacaddr6 {
 	unsigned long		aca_cstamp;
 	unsigned long		aca_tstamp;
 	struct rcu_head		rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define	IFA_HOST	IPV6_ADDR_LOOPBACK
@@ -276,40 +166,6 @@ struct ipv6_devstat {
 
 struct inet6_dev {
 	struct net_device	*dev;
-<<<<<<< HEAD
-
-	struct list_head	addr_list;
-
-	struct ifmcaddr6	*mc_list;
-	struct ifmcaddr6	*mc_tomb;
-	spinlock_t		mc_lock;
-	unsigned char		mc_qrv;
-	unsigned char		mc_gq_running;
-	unsigned char		mc_ifc_count;
-	unsigned long		mc_v1_seen;
-	unsigned long		mc_maxdelay;
-	struct timer_list	mc_gq_timer;	/* general query timer */
-	struct timer_list	mc_ifc_timer;	/* interface change timer */
-
-	struct ifacaddr6	*ac_list;
-	rwlock_t		lock;
-	atomic_t		refcnt;
-	__u32			if_flags;
-	int			dead;
-
-#ifdef CONFIG_IPV6_PRIVACY
-	u8			rndid[8];
-	struct timer_list	regen_timer;
-	struct list_head	tempaddr_list;
-#endif
-
-	struct neigh_parms	*nd_parms;
-	struct inet6_dev	*next;
-	struct ipv6_devconf	cnf;
-	struct ipv6_devstat	stats;
-	unsigned long		tstamp; /* ipv6InterfaceTable update timestamp */
-	struct rcu_head		rcu;
-=======
 	netdevice_tracker	dev_tracker;
 
 	struct list_head	addr_list;
@@ -363,7 +219,6 @@ struct inet6_dev {
 	struct rcu_head		rcu;
 
 	unsigned int		ra_mtu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void ipv6_eth_mc_map(const struct in6_addr *addr, char *buf)
@@ -380,63 +235,6 @@ static inline void ipv6_eth_mc_map(const struct in6_addr *addr, char *buf)
 	memcpy(buf + 2, &addr->s6_addr32[3], sizeof(__u32));
 }
 
-<<<<<<< HEAD
-static inline void ipv6_tr_mc_map(const struct in6_addr *addr, char *buf)
-{
-	/* All nodes FF01::1, FF02::1, FF02::1:FFxx:xxxx */
-
-	if (((addr->s6_addr[0] == 0xFF) &&
-	    ((addr->s6_addr[1] == 0x01) || (addr->s6_addr[1] == 0x02)) &&
-	     (addr->s6_addr16[1] == 0) &&
-	     (addr->s6_addr32[1] == 0) &&
-	     (addr->s6_addr32[2] == 0) &&
-	     (addr->s6_addr16[6] == 0) &&
-	     (addr->s6_addr[15] == 1)) ||
-	    ((addr->s6_addr[0] == 0xFF) &&
-	     (addr->s6_addr[1] == 0x02) &&
-	     (addr->s6_addr16[1] == 0) &&
-	     (addr->s6_addr32[1] == 0) &&
-	     (addr->s6_addr16[4] == 0) &&
-	     (addr->s6_addr[10] == 0) &&
-	     (addr->s6_addr[11] == 1) &&
-	     (addr->s6_addr[12] == 0xff)))
-	{
-		buf[0]=0xC0;
-		buf[1]=0x00;
-		buf[2]=0x01;
-		buf[3]=0x00;
-		buf[4]=0x00;
-		buf[5]=0x00;
-	/* All routers FF0x::2 */
-	} else if ((addr->s6_addr[0] ==0xff) &&
-		((addr->s6_addr[1] & 0xF0) == 0) &&
-		(addr->s6_addr16[1] == 0) &&
-		(addr->s6_addr32[1] == 0) &&
-		(addr->s6_addr32[2] == 0) &&
-		(addr->s6_addr16[6] == 0) &&
-		(addr->s6_addr[15] == 2))
-	{
-		buf[0]=0xC0;
-		buf[1]=0x00;
-		buf[2]=0x02;
-		buf[3]=0x00;
-		buf[4]=0x00;
-		buf[5]=0x00;
-	} else {
-		unsigned char i ; 
-		
-		i = addr->s6_addr[15] & 7 ; 
-		buf[0]=0xC0;
-		buf[1]=0x00;
-		buf[2]=0x00;
-		buf[3]=0x01 << i ; 
-		buf[4]=0x00;
-		buf[5]=0x00;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ipv6_arcnet_mc_map(const struct in6_addr *addr, char *buf)
 {
 	buf[0] = 0x00;

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PPC64_PPC_ASM_H
 #define _PPC64_PPC_ASM_H
 /*
@@ -9,14 +6,6 @@
  * Definitions used by various bits of low-level assembly code on PowerPC.
  *
  * Copyright (C) 1995-1999 Gary Thomas, Paul Mackerras, Cort Dougan.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Condition Register Bit Fields */
@@ -66,8 +55,6 @@
 #define	r30	30
 #define	r31	31
 
-<<<<<<< HEAD
-=======
 #define SPRN_TBRL	268
 #define SPRN_TBRU	269
 #define SPRN_HSRR0	0x13A	/* Hypervisor Save/Restore 0 */
@@ -107,5 +94,4 @@
 	addi	reg,reg,name@l
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PPC64_PPC_ASM_H */

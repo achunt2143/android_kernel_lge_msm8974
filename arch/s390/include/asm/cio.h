@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/cio.h
- *  include/asm-s390x/cio.h
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Common interface for I/O on S/390
  */
 #ifndef _ASM_S390_CIO_H_
 #define _ASM_S390_CIO_H_
 
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-#include <asm/types.h>
-
-#ifdef __KERNEL__
-
-#define LPM_ANYPATH 0xff
-#define __MAX_CSSID 0
-=======
 #include <linux/bitops.h>
 #include <linux/genalloc.h>
 #include <asm/dma-types.h>
@@ -31,7 +15,6 @@
 #define __MAX_CSSID 0
 #define __MAX_SUBCHANNEL 65535
 #define __MAX_SSID 3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/scsw.h>
 
@@ -50,11 +33,6 @@ struct ccw1 {
 	__u8  cmd_code;
 	__u8  flags;
 	__u16 count;
-<<<<<<< HEAD
-	__u32 cda;
-} __attribute__ ((packed,aligned(8)));
-
-=======
 	dma32_t cda;
 } __attribute__ ((packed,aligned(8)));
 
@@ -76,7 +54,6 @@ struct ccw0 {
 	__u16 count;
 } __packed __aligned(8);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CCW_FLAG_DC		0x80
 #define CCW_FLAG_CC		0x40
 #define CCW_FLAG_SLI		0x20
@@ -127,8 +104,6 @@ struct erw {
 } __attribute__ ((packed));
 
 /**
-<<<<<<< HEAD
-=======
  * struct erw_eadm - EADM Subchannel extended report word
  * @b: aob error
  * @r: arsb error
@@ -141,7 +116,6 @@ struct erw_eadm {
 } __packed;
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct sublog - subchannel logout area
  * @res0: reserved
  * @esf: extended status flags
@@ -179,13 +153,8 @@ struct sublog {
 struct esw0 {
 	struct sublog sublog;
 	struct erw erw;
-<<<<<<< HEAD
-	__u32  faddr[2];
-	__u32  saddr;
-=======
 	dma32_t faddr[2];
 	dma32_t saddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 /**
@@ -237,11 +206,6 @@ struct esw3 {
 } __attribute__ ((packed));
 
 /**
-<<<<<<< HEAD
- * struct irb - interruption response block
- * @scsw: subchannel status word
- * @esw: extened status word, 4 formats
-=======
  * struct esw_eadm - EADM Subchannel Extended Status Word (ESW)
  * @sublog: subchannel logout
  * @erw: extended report word
@@ -258,7 +222,6 @@ struct esw_eadm {
  * struct irb - interruption response block
  * @scsw: subchannel status word
  * @esw: extended status word
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ecw: extended control word
  *
  * The irb that is handed to the device driver when an interrupt occurs. For
@@ -266,11 +229,7 @@ struct esw_eadm {
  * a field is valid; a field not being valid is always passed as %0.
  * If a unit check occurred, @ecw may contain sense data; this is retrieved
  * by the common I/O layer itself if the device doesn't support concurrent
-<<<<<<< HEAD
- * sense (so that the device driver never needs to perform basic sene itself).
-=======
  * sense (so that the device driver never needs to perform basic sense itself).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * For unsolicited interrupts, the irb is passed as-is (expect for sense data,
  * if applicable).
  */
@@ -281,10 +240,7 @@ struct irb {
 		struct esw1 esw1;
 		struct esw2 esw2;
 		struct esw3 esw3;
-<<<<<<< HEAD
-=======
 		struct esw_eadm eadm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} esw;
 	__u8   ecw[32];
 } __attribute__ ((packed,aligned(4)));
@@ -310,8 +266,6 @@ struct ciw {
 #define CIW_TYPE_RNI	0x2    	/* read node identifier */
 
 /*
-<<<<<<< HEAD
-=======
  * Node Descriptor as defined in SA22-7204, "Common I/O-Device Commands"
  */
 
@@ -342,7 +296,6 @@ struct node_descriptor {
 } __packed;
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Flags used as input parameters for do_IO()
  */
 #define DOIO_ALLOW_SUSPEND	 0x0001 /* allow for channel prog. suspend */
@@ -377,11 +330,7 @@ struct ccw_dev_id {
 };
 
 /**
-<<<<<<< HEAD
- * ccw_device_id_is_equal() - compare two ccw_dev_ids
-=======
  * ccw_dev_id_is_equal() - compare two ccw_dev_ids
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev_id1: a ccw_dev_id
  * @dev_id2: another ccw_dev_id
  * Returns:
@@ -399,26 +348,6 @@ static inline int ccw_dev_id_is_equal(struct ccw_dev_id *dev_id1,
 	return 0;
 }
 
-<<<<<<< HEAD
-extern void wait_cons_dev(void);
-
-extern void css_schedule_reprobe(void);
-
-extern void reipl_ccw_dev(struct ccw_dev_id *id);
-
-struct cio_iplinfo {
-	u16 devno;
-	int is_qdio;
-};
-
-extern int cio_get_iplinfo(struct cio_iplinfo *iplinfo);
-
-/* Function from drivers/s390/cio/chsc.c */
-int chsc_sstpc(void *page, unsigned int op, u16 ctrl);
-int chsc_sstpi(void *page, void *result, size_t size);
-
-#endif
-=======
 /**
  * pathmask_to_pos() - find the position of the left-most bit in a pathmask
  * @mask: pathmask with at least one bit set
@@ -448,6 +377,5 @@ int chsc_sstpi(void *page, void *result, size_t size);
 int chsc_stzi(void *page, void *result, size_t size);
 int chsc_sgib(u32 origin);
 int chsc_scud(u16 cu, u64 *esm, u8 *esm_valid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

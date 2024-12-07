@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Copyright (c) by Takashi Iwai <tiwai@suse.de>
@@ -9,55 +6,21 @@
  *
  *  Trident 4DWave-NX memory page allocation (TLB area)
  *  Trident chip can handle only 16MByte of the memory at the same time.
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-#include <asm/io.h>
-=======
  */
 
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/time.h>
 #include <linux/mutex.h>
 
 #include <sound/core.h>
-<<<<<<< HEAD
-#include <sound/trident.h>
-=======
 #include "trident.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* page arguments of these two macros are Trident page (4096 bytes), not like
  * aligned pages in others
  */
-<<<<<<< HEAD
-#define __set_tlb_bus(trident,page,ptr,addr) \
-	do { (trident)->tlb.entries[page] = cpu_to_le32((addr) & ~(SNDRV_TRIDENT_PAGE_SIZE-1)); \
-	     (trident)->tlb.shadow_entries[page] = (ptr); } while (0)
-#define __tlb_to_ptr(trident,page) \
-	(void*)((trident)->tlb.shadow_entries[page])
-=======
 #define __set_tlb_bus(trident,page,addr) \
 	(trident)->tlb.entries[page] = cpu_to_le32((addr) & ~(SNDRV_TRIDENT_PAGE_SIZE-1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __tlb_to_addr(trident,page) \
 	(dma_addr_t)le32_to_cpu((trident->tlb.entries[page]) & ~(SNDRV_TRIDENT_PAGE_SIZE - 1))
 
@@ -66,24 +29,13 @@
 #define ALIGN_PAGE_SIZE		PAGE_SIZE	/* minimum page size for allocation */
 #define MAX_ALIGN_PAGES		SNDRV_TRIDENT_MAX_PAGES	/* maxmium aligned pages */
 /* fill TLB entrie(s) corresponding to page with ptr */
-<<<<<<< HEAD
-#define set_tlb_bus(trident,page,ptr,addr) __set_tlb_bus(trident,page,ptr,addr)
-/* fill TLB entrie(s) corresponding to page with silence pointer */
-#define set_silent_tlb(trident,page)	__set_tlb_bus(trident, page, (unsigned long)trident->tlb.silent_page.area, trident->tlb.silent_page.addr)
-=======
 #define set_tlb_bus(trident,page,addr) __set_tlb_bus(trident,page,addr)
 /* fill TLB entrie(s) corresponding to page with silence pointer */
 #define set_silent_tlb(trident,page)	__set_tlb_bus(trident, page, trident->tlb.silent_page->addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* get aligned page from offset address */
 #define get_aligned_page(offset)	((offset) >> 12)
 /* get offset address from aligned page */
 #define aligned_page_offset(page)	((page) << 12)
-<<<<<<< HEAD
-/* get buffer address from aligned page */
-#define page_to_ptr(trident,page)	__tlb_to_ptr(trident, page)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* get PCI physical address from aligned page */
 #define page_to_addr(trident,page)	__tlb_to_addr(trident, page)
 
@@ -93,38 +45,21 @@
 #define MAX_ALIGN_PAGES		(SNDRV_TRIDENT_MAX_PAGES / 2)
 #define get_aligned_page(offset)	((offset) >> 13)
 #define aligned_page_offset(page)	((page) << 13)
-<<<<<<< HEAD
-#define page_to_ptr(trident,page)	__tlb_to_ptr(trident, (page) << 1)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define page_to_addr(trident,page)	__tlb_to_addr(trident, (page) << 1)
 
 /* fill TLB entries -- we need to fill two entries */
 static inline void set_tlb_bus(struct snd_trident *trident, int page,
-<<<<<<< HEAD
-			       unsigned long ptr, dma_addr_t addr)
-{
-	page <<= 1;
-	__set_tlb_bus(trident, page, ptr, addr);
-	__set_tlb_bus(trident, page+1, ptr + SNDRV_TRIDENT_PAGE_SIZE, addr + SNDRV_TRIDENT_PAGE_SIZE);
-=======
 			       dma_addr_t addr)
 {
 	page <<= 1;
 	__set_tlb_bus(trident, page, addr);
 	__set_tlb_bus(trident, page+1, addr + SNDRV_TRIDENT_PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void set_silent_tlb(struct snd_trident *trident, int page)
 {
 	page <<= 1;
-<<<<<<< HEAD
-	__set_tlb_bus(trident, page, (unsigned long)trident->tlb.silent_page.area, trident->tlb.silent_page.addr);
-	__set_tlb_bus(trident, page+1, (unsigned long)trident->tlb.silent_page.area, trident->tlb.silent_page.addr);
-=======
 	__set_tlb_bus(trident, page, trident->tlb.silent_page->addr);
 	__set_tlb_bus(trident, page+1, trident->tlb.silent_page->addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -139,29 +74,16 @@ static inline void set_silent_tlb(struct snd_trident *trident, int page)
  */
 #define get_aligned_page(offset)	((offset) / ALIGN_PAGE_SIZE)
 #define aligned_page_offset(page)	((page) * ALIGN_PAGE_SIZE)
-<<<<<<< HEAD
-#define page_to_ptr(trident,page)	__tlb_to_ptr(trident, (page) * UNIT_PAGES)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define page_to_addr(trident,page)	__tlb_to_addr(trident, (page) * UNIT_PAGES)
 
 /* fill TLB entries -- UNIT_PAGES entries must be filled */
 static inline void set_tlb_bus(struct snd_trident *trident, int page,
-<<<<<<< HEAD
-			       unsigned long ptr, dma_addr_t addr)
-=======
 			       dma_addr_t addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	page *= UNIT_PAGES;
 	for (i = 0; i < UNIT_PAGES; i++, page++) {
-<<<<<<< HEAD
-		__set_tlb_bus(trident, page, ptr, addr);
-		ptr += SNDRV_TRIDENT_PAGE_SIZE;
-=======
 		__set_tlb_bus(trident, page, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addr += SNDRV_TRIDENT_PAGE_SIZE;
 	}
 }
@@ -170,27 +92,11 @@ static inline void set_silent_tlb(struct snd_trident *trident, int page)
 	int i;
 	page *= UNIT_PAGES;
 	for (i = 0; i < UNIT_PAGES; i++, page++)
-<<<<<<< HEAD
-		__set_tlb_bus(trident, page, (unsigned long)trident->tlb.silent_page.area, trident->tlb.silent_page.addr);
-=======
 		__set_tlb_bus(trident, page, trident->tlb.silent_page->addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* PAGE_SIZE */
 
-<<<<<<< HEAD
-/* calculate buffer pointer from offset address */
-static inline void *offset_ptr(struct snd_trident *trident, int offset)
-{
-	char *ptr;
-	ptr = page_to_ptr(trident, get_aligned_page(offset));
-	ptr += offset % ALIGN_PAGE_SIZE;
-	return (void*)ptr;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* first and last (aligned) pages of memory block */
 #define firstpg(blk)	(((struct snd_trident_memblk_arg *)snd_util_memblk_argptr(blk))->first_page)
 #define lastpg(blk)	(((struct snd_trident_memblk_arg *)snd_util_memblk_argptr(blk))->last_page)
@@ -201,19 +107,11 @@ static inline void *offset_ptr(struct snd_trident *trident, int offset)
 static struct snd_util_memblk *
 search_empty(struct snd_util_memhdr *hdr, int size)
 {
-<<<<<<< HEAD
-	struct snd_util_memblk *blk, *prev;
-=======
 	struct snd_util_memblk *blk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int page, psize;
 	struct list_head *p;
 
 	psize = get_aligned_page(size + ALIGN_PAGE_SIZE -1);
-<<<<<<< HEAD
-	prev = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	page = 0;
 	list_for_each(p, &hdr->block) {
 		blk = list_entry(p, struct snd_util_memblk, list);
@@ -286,21 +184,12 @@ snd_trident_alloc_sg_pages(struct snd_trident *trident,
 	for (page = firstpg(blk); page <= lastpg(blk); page++, idx++) {
 		unsigned long ofs = idx << PAGE_SHIFT;
 		dma_addr_t addr = snd_pcm_sgbuf_get_addr(substream, ofs);
-<<<<<<< HEAD
-		unsigned long ptr = (unsigned long)
-			snd_pcm_sgbuf_get_ptr(substream, ofs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! is_valid_page(addr)) {
 			__snd_util_mem_free(hdr, blk);
 			mutex_unlock(&hdr->block_mutex);
 			return NULL;
 		}
-<<<<<<< HEAD
-		set_tlb_bus(trident, page, ptr, addr);
-=======
 		set_tlb_bus(trident, page, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&hdr->block_mutex);
 	return blk;
@@ -318,10 +207,6 @@ snd_trident_alloc_cont_pages(struct snd_trident *trident,
 	int page;
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	dma_addr_t addr;
-<<<<<<< HEAD
-	unsigned long ptr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_BUG_ON(runtime->dma_bytes <= 0 ||
 		       runtime->dma_bytes > SNDRV_TRIDENT_MAX_PAGES *
@@ -340,24 +225,14 @@ snd_trident_alloc_cont_pages(struct snd_trident *trident,
 			   
 	/* set TLB entries */
 	addr = runtime->dma_addr;
-<<<<<<< HEAD
-	ptr = (unsigned long)runtime->dma_area;
-	for (page = firstpg(blk); page <= lastpg(blk); page++,
-	     ptr += SNDRV_TRIDENT_PAGE_SIZE, addr += SNDRV_TRIDENT_PAGE_SIZE) {
-=======
 	for (page = firstpg(blk); page <= lastpg(blk); page++,
 	     addr += SNDRV_TRIDENT_PAGE_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! is_valid_page(addr)) {
 			__snd_util_mem_free(hdr, blk);
 			mutex_unlock(&hdr->block_mutex);
 			return NULL;
 		}
-<<<<<<< HEAD
-		set_tlb_bus(trident, page, ptr, addr);
-=======
 		set_tlb_bus(trident, page, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&hdr->block_mutex);
 	return blk;

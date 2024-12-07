@@ -26,23 +26,6 @@
 #ifndef __ARCH_ARM_MACH_OMAP1_COMMON_H
 #define __ARCH_ARM_MACH_OMAP1_COMMON_H
 
-<<<<<<< HEAD
-#include <plat/common.h>
-
-#if defined(CONFIG_ARCH_OMAP730) || defined(CONFIG_ARCH_OMAP850)
-void omap7xx_map_io(void);
-#else
-static inline void omap7xx_map_io(void)
-{
-}
-#endif
-
-#ifdef CONFIG_ARCH_OMAP15XX
-void omap15xx_map_io(void);
-#else
-static inline void omap15xx_map_io(void)
-{
-=======
 #include <linux/platform_data/i2c-omap.h>
 #include <linux/reboot.h>
 
@@ -81,33 +64,15 @@ extern int omap_32k_timer_init(void);
 static inline int __init omap_32k_timer_init(void)
 {
 	return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
 #ifdef CONFIG_ARCH_OMAP16XX
-<<<<<<< HEAD
-void omap16xx_map_io(void);
-#else
-static inline void omap16xx_map_io(void)
-{
-}
-#endif
-
-void omap1_init_early(void);
-void omap1_init_irq(void);
-void omap1_restart(char, const char *);
-
-extern struct sys_timer omap1_timer;
-extern bool omap_32k_timer_init(void);
-extern void __init omap_init_consistent_dma_size(void);
-=======
 extern int ocpi_enable(void);
 #else
 static inline int ocpi_enable(void) { return 0; }
 #endif
 
 extern u32 omap1_get_reset_sources(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ARCH_ARM_MACH_OMAP1_COMMON_H */

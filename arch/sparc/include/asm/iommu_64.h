@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* iommu.h: Definitions for the sun5 IOMMU.
  *
  * Copyright (C) 1996, 1999, 2007 David S. Miller (davem@davemloft.net)
@@ -20,10 +17,7 @@
 #define IOPTE_WRITE   0x0000000000000002UL
 
 #define IOMMU_NUM_CTXS	4096
-<<<<<<< HEAD
-=======
 #include <asm/iommu-common.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct iommu_arena {
 	unsigned long	*map;
@@ -31,14 +25,6 @@ struct iommu_arena {
 	unsigned int	limit;
 };
 
-<<<<<<< HEAD
-struct iommu {
-	spinlock_t		lock;
-	struct iommu_arena	arena;
-	void			(*flush_all)(struct iommu *);
-	iopte_t			*page_table;
-	u32			page_table_map_base;
-=======
 #define ATU_64_SPACE_SIZE 0x800000000 /* 32G */
 
 /* Data structures for SPARC ATU architecture */
@@ -72,7 +58,6 @@ struct iommu {
 	spinlock_t		lock;
 	u32			dma_addr_mask;
 	iopte_t			*page_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		iommu_control;
 	unsigned long		iommu_tsbbase;
 	unsigned long		iommu_flush;
@@ -84,10 +69,6 @@ struct iommu {
 	unsigned long		dummy_page_pa;
 	unsigned long		ctx_lowest_free;
 	DECLARE_BITMAP(ctx_bitmap, IOMMU_NUM_CTXS);
-<<<<<<< HEAD
-	u32			dma_addr_mask;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct strbuf {
@@ -105,14 +86,8 @@ struct strbuf {
 	volatile unsigned long	__flushflag_buf[(64+(64-1)) / sizeof(long)];
 };
 
-<<<<<<< HEAD
-extern int iommu_table_init(struct iommu *iommu, int tsbsize,
-			    u32 dma_offset, u32 dma_addr_mask,
-			    int numa_node);
-=======
 int iommu_table_init(struct iommu *iommu, int tsbsize,
 		     u32 dma_offset, u32 dma_addr_mask,
 		     int numa_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(_SPARC64_IOMMU_H) */

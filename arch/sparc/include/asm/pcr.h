@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __PCR_H
 #define __PCR_H
 
 struct pcr_ops {
-<<<<<<< HEAD
-	u64 (*read)(void);
-	void (*write)(u64);
-};
-extern const struct pcr_ops *pcr_ops;
-
-extern void deferred_pcr_work_irq(int irq, struct pt_regs *regs);
-extern void schedule_deferred_pcr_work(void);
-=======
 	u64 (*read_pcr)(unsigned long);
 	void (*write_pcr)(unsigned long, u64);
 	u64 (*read_pic)(unsigned long);
@@ -27,7 +15,6 @@ extern const struct pcr_ops *pcr_ops;
 
 void deferred_pcr_work_irq(int irq, struct pt_regs *regs);
 void schedule_deferred_pcr_work(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCR_PIC_PRIV		0x00000001 /* PIC access is privileged */
 #define PCR_STRACE		0x00000002 /* Trace supervisor events  */
@@ -46,25 +33,6 @@ void schedule_deferred_pcr_work(void);
 #define PCR_N2_SL1_SHIFT	27
 #define PCR_N2_OV1		0x80000000
 
-<<<<<<< HEAD
-extern unsigned int picl_shift;
-
-/* In order to commonize as much of the implementation as
- * possible, we use PICH as our counter.  Mostly this is
- * to accommodate Niagara-1 which can only count insn cycles
- * in PICH.
- */
-static inline u64 picl_value(unsigned int nmi_hz)
-{
-	u32 delta = local_cpu_data().clock_tick / (nmi_hz << picl_shift);
-
-	return ((u64)((0 - delta) & 0xffffffff)) << 32;
-}
-
-extern u64 pcr_enable;
-
-extern int pcr_arch_init(void);
-=======
 #define PCR_N4_OV		0x00000001 /* PIC overflow             */
 #define PCR_N4_TOE		0x00000002 /* Trap On Event            */
 #define PCR_N4_UTRACE		0x00000004 /* Trace user events        */
@@ -79,6 +47,5 @@ extern int pcr_arch_init(void);
 #define PCR_N4_NTC		0x00040000 /* Next-To-Commit wrap      */
 
 int pcr_arch_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __PCR_H */

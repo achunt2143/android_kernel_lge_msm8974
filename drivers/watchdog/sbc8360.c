@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	SBC8360 Watchdog driver
  *
@@ -23,14 +20,6 @@
  *	(c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>,
  *						All Rights Reserved.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
  *	warranty for any of this software. This material is provided
  *	"AS-IS" and at no charge.
@@ -278,11 +267,7 @@ static int sbc8360_open(struct inode *inode, struct file *file)
 	/* Activate and ping once to start the countdown */
 	sbc8360_activate();
 	sbc8360_ping();
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sbc8360_close(struct inode *inode, struct file *file)
@@ -415,9 +400,5 @@ MODULE_AUTHOR("Ian E. Morgan <imorgan@webcon.ca>");
 MODULE_DESCRIPTION("SBC8360 watchdog driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.01");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* end of sbc8360.c */

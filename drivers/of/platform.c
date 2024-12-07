@@ -1,27 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    Copyright (C) 2006 Benjamin Herrenschmidt, IBM Corp.
  *			 <benh@kernel.crashing.org>
  *    and		 Arnd Bergmann, IBM Corp.
  *    Merged from powerpc/kernel/of_platform.c and
  *    sparc{,64}/kernel/of_device.c by Stephen Rothwell
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
- */
-=======
  */
 
 #define pr_fmt(fmt)	"OF: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/module.h>
 #include <linux/amba/bus.h>
@@ -33,11 +20,6 @@
 #include <linux/of_irq.h>
 #include <linux/of_platform.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-
-const struct of_device_id of_default_bus_match_table[] = {
-	{ .compatible = "simple-bus", },
-=======
 #include <linux/sysfb.h>
 
 #include "of_private.h"
@@ -46,54 +28,30 @@ const struct of_device_id of_default_bus_match_table[] = {
 	{ .compatible = "simple-bus", },
 	{ .compatible = "simple-mfd", },
 	{ .compatible = "isa", },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ARM_AMBA
 	{ .compatible = "arm,amba-bus", },
 #endif /* CONFIG_ARM_AMBA */
 	{} /* Empty terminated list */
 };
 
-<<<<<<< HEAD
-static int of_dev_node_match(struct device *dev, void *data)
-{
-	return dev->of_node == data;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * of_find_device_by_node - Find the platform_device associated with a node
  * @np: Pointer to device tree node
  *
-<<<<<<< HEAD
- * Returns platform_device pointer, or NULL if not found
-=======
  * Takes a reference to the embedded struct device which needs to be dropped
  * after use.
  *
  * Return: platform_device pointer, or NULL if not found
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct platform_device *of_find_device_by_node(struct device_node *np)
 {
 	struct device *dev;
 
-<<<<<<< HEAD
-	dev = bus_find_device(&platform_bus_type, NULL, np, of_dev_node_match);
-=======
 	dev = bus_find_device_by_of_node(&platform_bus_type, np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dev ? to_platform_device(dev) : NULL;
 }
 EXPORT_SYMBOL(of_find_device_by_node);
 
-<<<<<<< HEAD
-#if defined(CONFIG_PPC_DCR)
-#include <asm/dcr.h>
-#endif
-
-#ifdef CONFIG_OF_ADDRESS
-=======
 int of_device_add(struct platform_device *ofdev)
 {
 	BUG_ON(ofdev->dev.of_node == NULL);
@@ -132,7 +90,6 @@ static const struct of_device_id of_skipped_node_table[] = {
 	{} /* Empty terminated list */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The following routines scan a subtree and registers a device for
  * each applicable node.
@@ -142,100 +99,6 @@ static const struct of_device_id of_skipped_node_table[] = {
  */
 
 /**
-<<<<<<< HEAD
- * of_device_make_bus_id - Use the device node data to assign a unique name
- * @dev: pointer to device structure that is linked to a device tree node
- *
- * This routine will first try using either the dcr-reg or the reg property
- * value to derive a unique name.  As a last resort it will use the node
- * name followed by a unique number.
- */
-void of_device_make_bus_id(struct device *dev)
-{
-	static atomic_t bus_no_reg_magic;
-	struct device_node *node = dev->of_node;
-	const u32 *reg;
-	u64 addr;
-	const __be32 *addrp;
-	int magic;
-#ifdef CONFIG_MACH_LGE
-	int id, ret;
-	const char *name;
-#endif
-
-#ifdef CONFIG_PPC_DCR
-	/*
-	 * If it's a DCR based device, use 'd' for native DCRs
-	 * and 'D' for MMIO DCRs.
-	 */
-	reg = of_get_property(node, "dcr-reg", NULL);
-	if (reg) {
-#ifdef CONFIG_PPC_DCR_NATIVE
-		dev_set_name(dev, "d%x.%s", *reg, node->name);
-#else /* CONFIG_PPC_DCR_NATIVE */
-		u64 addr = of_translate_dcr_address(node, *reg, NULL);
-		if (addr != OF_BAD_ADDR) {
-			dev_set_name(dev, "D%llx.%s",
-				     (unsigned long long)addr, node->name);
-			return;
-		}
-#endif /* !CONFIG_PPC_DCR_NATIVE */
-	}
-#endif /* CONFIG_PPC_DCR */
-
-	/*
-	 * For MMIO, get the physical address
-	 */
-	reg = of_get_property(node, "reg", NULL);
-	if (reg) {
-		if (of_can_translate_address(node)) {
-			addr = of_translate_address(node, reg);
-		} else {
-			addrp = of_get_address(node, 0, NULL, NULL);
-			if (addrp)
-				addr = of_read_number(addrp, 1);
-			else
-				addr = OF_BAD_ADDR;
-		}
-		if (addr != OF_BAD_ADDR) {
-			dev_set_name(dev, "%llx.%s",
-				     (unsigned long long)addr, node->name);
-			return;
-		}
-	}
-
-#ifdef CONFIG_MACH_LGE
-	/* if "platform,dev,id" and "platform,dev,name" are set both,
-	 * use name.id as device name. if "platform,dev,id" is set only,
-	 * node name.id will be assigned. Also if "platform,dev,id" is 0,
-	 * only "platform,dev,name" (or node name if none) is device name.
-	 */
-	ret = of_property_read_u32(node, "platform,dev,id", &id);
-	if (!ret) {
-		ret = of_property_read_string(node, "platform,dev,name", &name);
-		if (!ret) {
-			if (id == 0) {
-				dev_set_name(dev, "%s", name);
-				return;
-			}
-			dev_set_name(dev, "%s.%d", name, id);
-		} else
-			dev_set_name(dev, "%s.%d", node->name, id);
-		return;
-	}
-#endif
-
-	/*
-	 * No BusID, use the node name and add a globally incremented
-	 * counter (and pray...)
-	 */
-	magic = atomic_add_return(1, &bus_no_reg_magic);
-	dev_set_name(dev, "%s.%d", node->name, magic - 1);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * of_device_alloc - Allocate and initialize an of_device
  * @np: device node to assign to device
  * @bus_id: Name to assign to the device.  May be null to use default name.
@@ -246,24 +109,6 @@ struct platform_device *of_device_alloc(struct device_node *np,
 				  struct device *parent)
 {
 	struct platform_device *dev;
-<<<<<<< HEAD
-	int rc, i, num_reg = 0, num_irq;
-	struct resource *res, temp_res;
-
-	dev = platform_device_alloc("", -1);
-	if (!dev)
-		return NULL;
-
-	/* count the io and irq resources */
-	if (of_can_translate_address(np))
-		while (of_address_to_resource(np, num_reg, &temp_res) == 0)
-			num_reg++;
-	num_irq = of_irq_count(np);
-
-	/* Populate the resource table */
-	if (num_irq || num_reg) {
-		res = kzalloc(sizeof(*res) * (num_irq + num_reg), GFP_KERNEL);
-=======
 	int rc, i, num_reg = 0;
 	struct resource *res;
 
@@ -277,38 +122,22 @@ struct platform_device *of_device_alloc(struct device_node *np,
 	/* Populate the resource table */
 	if (num_reg) {
 		res = kcalloc(num_reg, sizeof(*res), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!res) {
 			platform_device_put(dev);
 			return NULL;
 		}
 
-<<<<<<< HEAD
-		dev->num_resources = num_reg + num_irq;
-=======
 		dev->num_resources = num_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->resource = res;
 		for (i = 0; i < num_reg; i++, res++) {
 			rc = of_address_to_resource(np, i, res);
 			WARN_ON(rc);
 		}
-<<<<<<< HEAD
-		WARN_ON(of_irq_to_resource_table(np, res, num_irq) != num_irq);
-	}
-
-	dev->dev.of_node = of_node_get(np);
-#if defined(CONFIG_MICROBLAZE)
-	dev->dev.dma_mask = &dev->archdata.dma_mask;
-#endif
-	dev->dev.parent = parent;
-=======
 	}
 
 	/* setup generic device info */
 	device_set_node(&dev->dev, of_fwnode_handle(of_node_get(np)));
 	dev->dev.parent = parent ? : &platform_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bus_id)
 		dev_set_name(&dev->dev, "%s", bus_id);
@@ -326,17 +155,10 @@ EXPORT_SYMBOL(of_device_alloc);
  * @platform_data: pointer to populate platform_data pointer with
  * @parent: Linux device model parent device.
  *
-<<<<<<< HEAD
- * Returns pointer to created platform device, or NULL if a device was not
- * registered.  Unavailable devices will not get registered.
- */
-struct platform_device *of_platform_device_create_pdata(
-=======
  * Return: Pointer to created platform device, or NULL if a device was not
  * registered.  Unavailable devices will not get registered.
  */
 static struct platform_device *of_platform_device_create_pdata(
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct device_node *np,
 					const char *bus_id,
 					void *platform_data,
@@ -344,38 +166,6 @@ static struct platform_device *of_platform_device_create_pdata(
 {
 	struct platform_device *dev;
 
-<<<<<<< HEAD
-	if (!of_device_is_available(np))
-		return NULL;
-
-#ifdef CONFIG_MACH_LGE
-	if (!of_device_is_available_revision(np))
-		return NULL;
-#endif
-
-	dev = of_device_alloc(np, bus_id, parent);
-	if (!dev)
-		return NULL;
-
-#if defined(CONFIG_MICROBLAZE)
-	dev->archdata.dma_mask = 0xffffffffUL;
-#endif
-	dev->dev.coherent_dma_mask = DMA_BIT_MASK(sizeof(dma_addr_t) * 8);
-	dev->dev.bus = &platform_bus_type;
-	dev->dev.platform_data = platform_data;
-
-	/* We do not fill the DMA ops for platform devices by default.
-	 * This is currently the responsibility of the platform code
-	 * to do such, possibly using a device notifier
-	 */
-
-	if (of_device_add(dev) != 0) {
-		platform_device_put(dev);
-		return NULL;
-	}
-
-	return dev;
-=======
 	pr_debug("create platform device: %pOF\n", np);
 
 	if (!of_device_is_available(np) ||
@@ -403,7 +193,6 @@ static struct platform_device *of_platform_device_create_pdata(
 err_clear_flag:
 	of_node_clear_flag(np, OF_POPULATED);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -412,11 +201,7 @@ err_clear_flag:
  * @bus_id: name to assign device
  * @parent: Linux device model parent device.
  *
-<<<<<<< HEAD
- * Returns pointer to created platform device, or NULL if a device was not
-=======
  * Return: Pointer to created platform device, or NULL if a device was not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * registered.  Unavailable devices will not get registered.
  */
 struct platform_device *of_platform_device_create(struct device_node *np,
@@ -434,33 +219,16 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 						 struct device *parent)
 {
 	struct amba_device *dev;
-<<<<<<< HEAD
-	const void *prop;
-	int i, ret;
-
-	pr_debug("Creating amba device %s\n", node->full_name);
-
-	if (!of_device_is_available(node))
-=======
 	int ret;
 
 	pr_debug("Creating amba device %pOF\n", node);
 
 	if (!of_device_is_available(node) ||
 	    of_node_test_and_set_flag(node, OF_POPULATED))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	dev = amba_device_alloc(NULL, 0, 0);
 	if (!dev)
-<<<<<<< HEAD
-		return NULL;
-
-	/* setup generic device info */
-	dev->dev.coherent_dma_mask = ~0;
-	dev->dev.of_node = of_node_get(node);
-	dev->dev.parent = parent;
-=======
 		goto err_clear_flag;
 
 	/* AMBA devices only support a single DMA mask */
@@ -470,34 +238,12 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 	/* setup generic device info */
 	device_set_node(&dev->dev, of_fwnode_handle(node));
 	dev->dev.parent = parent ? : &platform_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->dev.platform_data = platform_data;
 	if (bus_id)
 		dev_set_name(&dev->dev, "%s", bus_id);
 	else
 		of_device_make_bus_id(&dev->dev);
 
-<<<<<<< HEAD
-	/* setup amba-specific device info */
-	dev->dma_mask = ~0;
-
-	/* Allow the HW Peripheral ID to be overridden */
-	prop = of_get_property(node, "arm,primecell-periphid", NULL);
-	if (prop)
-		dev->periphid = of_read_ulong(prop, 1);
-
-	/* Decode the IRQs and address ranges */
-	for (i = 0; i < AMBA_NR_IRQS; i++)
-		dev->irq[i] = irq_of_parse_and_map(node, i);
-
-	ret = of_address_to_resource(node, 0, &dev->res);
-	if (ret)
-		goto err_free;
-
-	ret = amba_device_add(dev, &iomem_resource);
-	if (ret)
-		goto err_free;
-=======
 	/* Allow the HW Peripheral ID to be overridden */
 	of_property_read_u32(node, "arm,primecell-periphid", &dev->periphid);
 
@@ -514,17 +260,13 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 		       ret, node);
 		goto err_free;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dev;
 
 err_free:
 	amba_device_put(dev);
-<<<<<<< HEAD
-=======
 err_clear_flag:
 	of_node_clear_flag(node, OF_POPULATED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 #else /* CONFIG_ARM_AMBA */
@@ -537,38 +279,19 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
 }
 #endif /* CONFIG_ARM_AMBA */
 
-<<<<<<< HEAD
-/**
- * of_devname_lookup() - Given a device node, lookup the preferred Linux name
-=======
 /*
  * of_dev_lookup() - Given a device node, lookup the preferred Linux name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *lookup,
 				 struct device_node *np)
 {
-<<<<<<< HEAD
-	struct resource res;
-=======
 	const struct of_dev_auxdata *auxdata;
 	struct resource res;
 	int compatible = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!lookup)
 		return NULL;
 
-<<<<<<< HEAD
-	for(; lookup->compatible != NULL; lookup++) {
-		if (!of_device_is_compatible(np, lookup->compatible))
-			continue;
-		if (!of_address_to_resource(np, 0, &res))
-			if (res.start != lookup->phys_addr)
-				continue;
-		pr_debug("%s: devname=%s\n", np->full_name, lookup->name);
-		return lookup;
-=======
 	auxdata = lookup;
 	for (; auxdata->compatible; auxdata++) {
 		if (!of_device_is_compatible(np, auxdata->compatible))
@@ -593,7 +316,6 @@ static const struct of_dev_auxdata *of_dev_lookup(const struct of_dev_auxdata *l
 			pr_debug("%pOF: compatible match\n", np);
 			return auxdata;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NULL;
@@ -624,10 +346,6 @@ static int of_platform_bus_create(struct device_node *bus,
 
 	/* Make sure it has a compatible property */
 	if (strict && (!of_get_property(bus, "compatible", NULL))) {
-<<<<<<< HEAD
-		pr_debug("%s() - skipping %s, no compatible prop\n",
-			 __func__, bus->full_name);
-=======
 		pr_debug("%s() - skipping %pOF, no compatible prop\n",
 			 __func__, bus);
 		return 0;
@@ -642,7 +360,6 @@ static int of_platform_bus_create(struct device_node *bus,
 	if (of_node_check_flag(bus, OF_POPULATED_BUS)) {
 		pr_debug("%s() - skipping %pOF, already populated\n",
 			__func__, bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -653,13 +370,10 @@ static int of_platform_bus_create(struct device_node *bus,
 	}
 
 	if (of_device_is_compatible(bus, "arm,primecell")) {
-<<<<<<< HEAD
-=======
 		/*
 		 * Don't return an error here to keep compatibility with older
 		 * device tree files.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_amba_device_create(bus, bus_id, platform_data, parent);
 		return 0;
 	}
@@ -669,21 +383,14 @@ static int of_platform_bus_create(struct device_node *bus,
 		return 0;
 
 	for_each_child_of_node(bus, child) {
-<<<<<<< HEAD
-		pr_debug("   create child: %s\n", child->full_name);
-=======
 		pr_debug("   create child: %pOF\n", child);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = of_platform_bus_create(child, matches, lookup, &dev->dev, strict);
 		if (rc) {
 			of_node_put(child);
 			break;
 		}
 	}
-<<<<<<< HEAD
-=======
 	of_node_set_flag(bus, OF_POPULATED_BUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -707,13 +414,8 @@ int of_platform_bus_probe(struct device_node *root,
 	if (!root)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	pr_debug("of_platform_bus_probe()\n");
-	pr_debug(" starting at: %s\n", root->full_name);
-=======
 	pr_debug("%s()\n", __func__);
 	pr_debug(" starting at: %pOF\n", root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Do a self check of bus type, if there's a match, create children */
 	if (of_match_node(matches, root)) {
@@ -722,15 +424,10 @@ int of_platform_bus_probe(struct device_node *root,
 		if (!of_match_node(matches, child))
 			continue;
 		rc = of_platform_bus_create(child, matches, NULL, parent, false);
-<<<<<<< HEAD
-		if (rc)
-			break;
-=======
 		if (rc) {
 			of_node_put(child);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	of_node_put(root);
@@ -742,10 +439,7 @@ EXPORT_SYMBOL(of_platform_bus_probe);
  * of_platform_populate() - Populate platform_devices from device tree data
  * @root: parent of the first level to probe or NULL for the root of the tree
  * @matches: match table, NULL to use the default
-<<<<<<< HEAD
-=======
  * @lookup: auxdata table for matching id and platform_data with device nodes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @parent: parent to hook devices from, NULL for toplevel
  *
  * Similar to of_platform_bus_probe(), this function walks the device tree
@@ -758,11 +452,7 @@ EXPORT_SYMBOL(of_platform_bus_probe);
  * New board support should be using this function instead of
  * of_platform_bus_probe().
  *
-<<<<<<< HEAD
- * Returns 0 on success, < 0 on failure.
-=======
  * Return: 0 on success, < 0 on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int of_platform_populate(struct device_node *root,
 			const struct of_device_id *matches,
@@ -776,13 +466,6 @@ int of_platform_populate(struct device_node *root,
 	if (!root)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	for_each_child_of_node(root, child) {
-		rc = of_platform_bus_create(child, matches, lookup, parent, true);
-		if (rc)
-			break;
-	}
-=======
 	pr_debug("%s()\n", __func__);
 	pr_debug(" starting at: %pOF\n", root);
 
@@ -797,13 +480,10 @@ int of_platform_populate(struct device_node *root,
 	device_links_supplier_sync_state_resume();
 
 	of_node_set_flag(root, OF_POPULATED_BUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	of_node_put(root);
 	return rc;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(of_platform_populate);
 
 int of_platform_default_populate(struct device_node *root,
@@ -1114,5 +794,4 @@ void of_platform_register_reconfig_notifier(void)
 }
 #endif /* CONFIG_OF_DYNAMIC */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_OF_ADDRESS */

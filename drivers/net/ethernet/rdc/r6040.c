@@ -1,33 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RDC R6040 Fast Ethernet MAC support
  *
  * Copyright (C) 2004 Sten Wang <sten.wang@rdc.com.tw>
  * Copyright (C) 2007
  *	Daniel Gimpelevich <daniel@gimpelevich.san-francisco.ca.us>
-<<<<<<< HEAD
- *	Florian Fainelli <florian@openwrt.org>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA  02110-1301, USA.
-=======
  * Copyright (C) 2007-2012 Florian Fainelli <f.fainelli@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/kernel.h>
@@ -42,10 +20,6 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/mii.h>
 #include <linux/ethtool.h>
@@ -60,13 +34,8 @@
 #include <asm/processor.h>
 
 #define DRV_NAME	"r6040"
-<<<<<<< HEAD
-#define DRV_VERSION	"0.28"
-#define DRV_RELDATE	"07Oct2011"
-=======
 #define DRV_VERSION	"0.29"
 #define DRV_RELDATE	"04Jul2016"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Time in jiffies before concluding the transmitter is hung. */
 #define TX_TIMEOUT	(6000 * HZ / 1000)
@@ -90,11 +59,6 @@
 #define MT_ICR		0x0C	/* TX interrupt control */
 #define MR_ICR		0x10	/* RX interrupt control */
 #define MTPR		0x14	/* TX poll command register */
-<<<<<<< HEAD
-#define MR_BSR		0x18	/* RX buffer size */
-#define MR_DCR		0x1A	/* RX descriptor control */
-#define MLSR		0x1C	/* Last status */
-=======
 #define  TM2TX		0x0001	/* Trigger MAC to transmit */
 #define MR_BSR		0x18	/* RX buffer size */
 #define MR_DCR		0x1A	/* RX descriptor control */
@@ -102,7 +66,6 @@
 #define  TX_FIFO_UNDR	0x0200	/* TX FIFO under-run */
 #define	 TX_EXCEEDC	0x2000	/* Transmit exceed collision */
 #define  TX_LATEC	0x4000	/* Transmit late collision */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MMDIO		0x20	/* MDIO control register */
 #define  MDIO_WRITE	0x4000	/* MDIO write */
 #define  MDIO_READ	0x2000	/* MDIO read */
@@ -150,11 +113,6 @@
 #define MID_3M		0x82	/* MID3 Medium */
 #define MID_3H		0x84	/* MID3 High */
 #define PHY_CC		0x88	/* PHY status change configuration register */
-<<<<<<< HEAD
-#define PHY_ST		0x8A	/* PHY status register */
-#define MAC_SM		0xAC	/* MAC status machine */
-#define  MAC_SM_RST	0x0002	/* MAC status machine reset */
-=======
 #define  SCEN		0x8000	/* PHY status change enable */
 #define  PHYAD_SHIFT	8	/* PHY address shift */
 #define  TMRDIV_SHIFT	0	/* Timer divider shift */
@@ -163,7 +121,6 @@
 #define  MAC_SM_RST	0x0002	/* MAC status machine reset */
 #define MD_CSC		0xb6	/* MDC speed control register */
 #define  MD_CSC_DEFAULT	0x0030
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAC_ID		0xBE	/* Identifier register */
 
 #define TX_DCNT		0x80	/* TX descriptor count */
@@ -174,11 +131,8 @@
 #define MBCR_DEFAULT	0x012A	/* MAC Bus Control Register */
 #define MCAST_MAX	3	/* Max number multicast addresses to filter */
 
-<<<<<<< HEAD
-=======
 #define MAC_DEF_TIMEOUT	2048	/* Default MAC read/write operation timeout */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Descriptor status */
 #define DSC_OWNER_MAC	0x8000	/* MAC is the owner of this descriptor */
 #define DSC_RX_OK	0x4000	/* RX was successful */
@@ -196,11 +150,7 @@
 
 MODULE_AUTHOR("Sten Wang <sten.wang@rdc.com.tw>,"
 	"Daniel Gimpelevich <daniel@gimpelevich.san-francisco.ca.us>,"
-<<<<<<< HEAD
-	"Florian Fainelli <florian@openwrt.org>");
-=======
 	"Florian Fainelli <f.fainelli@gmail.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("RDC R6040 NAPI PCI FastEthernet driver");
 MODULE_VERSION(DRV_VERSION " " DRV_RELDATE);
@@ -233,98 +183,59 @@ struct r6040_private {
 	dma_addr_t rx_ring_dma;
 	dma_addr_t tx_ring_dma;
 	u16	tx_free_desc;
-<<<<<<< HEAD
-	u16	mcr0, mcr1;
-=======
 	u16	mcr0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *dev;
 	struct mii_bus *mii_bus;
 	struct napi_struct napi;
 	void __iomem *base;
-<<<<<<< HEAD
-	struct phy_device *phydev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_link;
 	int old_duplex;
 };
 
-<<<<<<< HEAD
-static char version[] __devinitdata = DRV_NAME
-=======
 static char version[] = DRV_NAME
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	": RDC R6040 NAPI net driver,"
 	"version "DRV_VERSION " (" DRV_RELDATE ")";
 
 /* Read a word data from PHY Chip */
 static int r6040_phy_read(void __iomem *ioaddr, int phy_addr, int reg)
 {
-<<<<<<< HEAD
-	int limit = 2048;
-	u16 cmd;
-
-	iowrite16(MDIO_READ + reg + (phy_addr << 8), ioaddr + MMDIO);
-=======
 	int limit = MAC_DEF_TIMEOUT;
 	u16 cmd;
 
 	iowrite16(MDIO_READ | reg | (phy_addr << 8), ioaddr + MMDIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Wait for the read bit to be cleared */
 	while (limit--) {
 		cmd = ioread16(ioaddr + MMDIO);
 		if (!(cmd & MDIO_READ))
 			break;
-<<<<<<< HEAD
-	}
-
-=======
 		udelay(1);
 	}
 
 	if (limit < 0)
 		return -ETIMEDOUT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ioread16(ioaddr + MMRD);
 }
 
 /* Write a word data from PHY Chip */
-<<<<<<< HEAD
-static void r6040_phy_write(void __iomem *ioaddr,
-					int phy_addr, int reg, u16 val)
-{
-	int limit = 2048;
-=======
 static int r6040_phy_write(void __iomem *ioaddr,
 					int phy_addr, int reg, u16 val)
 {
 	int limit = MAC_DEF_TIMEOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 cmd;
 
 	iowrite16(val, ioaddr + MMWD);
 	/* Write the command to the MDIO bus */
-<<<<<<< HEAD
-	iowrite16(MDIO_WRITE + reg + (phy_addr << 8), ioaddr + MMDIO);
-=======
 	iowrite16(MDIO_WRITE | reg | (phy_addr << 8), ioaddr + MMDIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Wait for the write bit to be cleared */
 	while (limit--) {
 		cmd = ioread16(ioaddr + MMDIO);
 		if (!(cmd & MDIO_WRITE))
 			break;
-<<<<<<< HEAD
-	}
-=======
 		udelay(1);
 	}
 
 	return (limit < 0) ? -ETIMEDOUT : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int r6040_mdiobus_read(struct mii_bus *bus, int phy_addr, int reg)
@@ -343,18 +254,7 @@ static int r6040_mdiobus_write(struct mii_bus *bus, int phy_addr,
 	struct r6040_private *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->base;
 
-<<<<<<< HEAD
-	r6040_phy_write(ioaddr, phy_addr, reg, value);
-
-	return 0;
-}
-
-static int r6040_mdiobus_reset(struct mii_bus *bus)
-{
-	return 0;
-=======
 	return r6040_phy_write(ioaddr, phy_addr, reg, value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r6040_free_txbufs(struct net_device *dev)
@@ -364,15 +264,9 @@ static void r6040_free_txbufs(struct net_device *dev)
 
 	for (i = 0; i < TX_DCNT; i++) {
 		if (lp->tx_insert_ptr->skb_ptr) {
-<<<<<<< HEAD
-			pci_unmap_single(lp->pdev,
-				le32_to_cpu(lp->tx_insert_ptr->buf),
-				MAX_BUF_SIZE, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&lp->pdev->dev,
 					 le32_to_cpu(lp->tx_insert_ptr->buf),
 					 MAX_BUF_SIZE, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(lp->tx_insert_ptr->skb_ptr);
 			lp->tx_insert_ptr->skb_ptr = NULL;
 		}
@@ -387,15 +281,9 @@ static void r6040_free_rxbufs(struct net_device *dev)
 
 	for (i = 0; i < RX_DCNT; i++) {
 		if (lp->rx_insert_ptr->skb_ptr) {
-<<<<<<< HEAD
-			pci_unmap_single(lp->pdev,
-				le32_to_cpu(lp->rx_insert_ptr->buf),
-				MAX_BUF_SIZE, PCI_DMA_FROMDEVICE);
-=======
 			dma_unmap_single(&lp->pdev->dev,
 					 le32_to_cpu(lp->rx_insert_ptr->buf),
 					 MAX_BUF_SIZE, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(lp->rx_insert_ptr->skb_ptr);
 			lp->rx_insert_ptr->skb_ptr = NULL;
 		}
@@ -445,24 +333,14 @@ static int r6040_alloc_rxbufs(struct net_device *dev)
 	do {
 		skb = netdev_alloc_skb(dev, MAX_BUF_SIZE);
 		if (!skb) {
-<<<<<<< HEAD
-			netdev_err(dev, "failed to alloc skb for rx\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto err_exit;
 		}
 		desc->skb_ptr = skb;
-<<<<<<< HEAD
-		desc->buf = cpu_to_le32(pci_map_single(lp->pdev,
-					desc->skb_ptr->data,
-					MAX_BUF_SIZE, PCI_DMA_FROMDEVICE));
-=======
 		desc->buf = cpu_to_le32(dma_map_single(&lp->pdev->dev,
 						       desc->skb_ptr->data,
 						       MAX_BUF_SIZE,
 						       DMA_FROM_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc->status = DSC_OWNER_MAC;
 		desc = desc->vndescp;
 	} while (desc != lp->rx_ring);
@@ -475,19 +353,6 @@ err_exit:
 	return rc;
 }
 
-<<<<<<< HEAD
-static void r6040_init_mac_regs(struct net_device *dev)
-{
-	struct r6040_private *lp = netdev_priv(dev);
-	void __iomem *ioaddr = lp->base;
-	int limit = 2048;
-	u16 cmd;
-
-	/* Mask Off Interrupt */
-	iowrite16(MSK_INT, ioaddr + MIER);
-
-	/* Reset RDC MAC */
-=======
 static void r6040_reset_mac(struct r6040_private *lp)
 {
 	void __iomem *ioaddr = lp->base;
@@ -495,24 +360,18 @@ static void r6040_reset_mac(struct r6040_private *lp)
 	u16 cmd, md_csc;
 
 	md_csc = ioread16(ioaddr + MD_CSC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite16(MAC_RST, ioaddr + MCR1);
 	while (limit--) {
 		cmd = ioread16(ioaddr + MCR1);
 		if (cmd & MAC_RST)
 			break;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset internal state machine */
 	iowrite16(MAC_SM_RST, ioaddr + MAC_SM);
 	iowrite16(0, ioaddr + MAC_SM);
 	mdelay(5);
 
-<<<<<<< HEAD
-=======
 	/* Restore MDIO clock frequency */
 	if (md_csc != MD_CSC_DEFAULT)
 		iowrite16(md_csc, ioaddr + MD_CSC);
@@ -529,7 +388,6 @@ static void r6040_init_mac_regs(struct net_device *dev)
 	/* Reset RDC MAC */
 	r6040_reset_mac(lp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* MAC Bus Control Register */
 	iowrite16(MBCR_DEFAULT, ioaddr + MBCR);
 
@@ -557,17 +415,10 @@ static void r6040_init_mac_regs(struct net_device *dev)
 	/* Let TX poll the descriptors
 	 * we may got called by r6040_tx_timeout which has left
 	 * some unsent tx buffers */
-<<<<<<< HEAD
-	iowrite16(0x01, ioaddr + MTPR);
-}
-
-static void r6040_tx_timeout(struct net_device *dev)
-=======
 	iowrite16(TM2TX, ioaddr + MTPR);
 }
 
 static void r6040_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r6040_private *priv = netdev_priv(dev);
 	void __iomem *ioaddr = priv->base;
@@ -602,28 +453,6 @@ static void r6040_down(struct net_device *dev)
 {
 	struct r6040_private *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->base;
-<<<<<<< HEAD
-	int limit = 2048;
-	u16 *adrp;
-	u16 cmd;
-
-	/* Stop MAC */
-	iowrite16(MSK_INT, ioaddr + MIER);	/* Mask Off Interrupt */
-	iowrite16(MAC_RST, ioaddr + MCR1);	/* Reset RDC MAC */
-	while (limit--) {
-		cmd = ioread16(ioaddr + MCR1);
-		if (cmd & MAC_RST)
-			break;
-	}
-
-	/* Restore MAC Address to MIDx */
-	adrp = (u16 *) dev->dev_addr;
-	iowrite16(adrp[0], ioaddr + MID_0L);
-	iowrite16(adrp[1], ioaddr + MID_0M);
-	iowrite16(adrp[2], ioaddr + MID_0H);
-
-	phy_stop(lp->phydev);
-=======
 	const u16 *adrp;
 
 	/* Stop MAC */
@@ -637,7 +466,6 @@ static void r6040_down(struct net_device *dev)
 	iowrite16(adrp[0], ioaddr + MID_0L);
 	iowrite16(adrp[1], ioaddr + MID_0M);
 	iowrite16(adrp[2], ioaddr + MID_0H);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int r6040_close(struct net_device *dev)
@@ -645,21 +473,12 @@ static int r6040_close(struct net_device *dev)
 	struct r6040_private *lp = netdev_priv(dev);
 	struct pci_dev *pdev = lp->pdev;
 
-<<<<<<< HEAD
-	spin_lock_irq(&lp->lock);
-	napi_disable(&lp->napi);
-	netif_stop_queue(dev);
-	r6040_down(dev);
-
-	free_irq(dev->irq, dev);
-=======
 	phy_stop(dev->phydev);
 	napi_disable(&lp->napi);
 	netif_stop_queue(dev);
 
 	spin_lock_irq(&lp->lock);
 	r6040_down(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Free RX buffer */
 	r6040_free_rxbufs(dev);
@@ -669,49 +488,24 @@ static int r6040_close(struct net_device *dev)
 
 	spin_unlock_irq(&lp->lock);
 
-<<<<<<< HEAD
-	/* Free Descriptor memory */
-	if (lp->rx_ring) {
-		pci_free_consistent(pdev,
-				RX_DESC_SIZE, lp->rx_ring, lp->rx_ring_dma);
-=======
 	free_irq(dev->irq, dev);
 
 	/* Free Descriptor memory */
 	if (lp->rx_ring) {
 		dma_free_coherent(&pdev->dev, RX_DESC_SIZE, lp->rx_ring,
 				  lp->rx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->rx_ring = NULL;
 	}
 
 	if (lp->tx_ring) {
-<<<<<<< HEAD
-		pci_free_consistent(pdev,
-				TX_DESC_SIZE, lp->tx_ring, lp->tx_ring_dma);
-=======
 		dma_free_coherent(&pdev->dev, TX_DESC_SIZE, lp->tx_ring,
 				  lp->tx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->tx_ring = NULL;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int r6040_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-{
-	struct r6040_private *lp = netdev_priv(dev);
-
-	if (!lp->phydev)
-		return -EINVAL;
-
-	return phy_mii_ioctl(lp->phydev, rq, cmd);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int r6040_rx(struct net_device *dev, int limit)
 {
 	struct r6040_private *priv = netdev_priv(dev);
@@ -757,29 +551,14 @@ static int r6040_rx(struct net_device *dev, int limit)
 		skb_ptr->dev = priv->dev;
 
 		/* Do not count the CRC */
-<<<<<<< HEAD
-		skb_put(skb_ptr, descptr->len - 4);
-		pci_unmap_single(priv->pdev, le32_to_cpu(descptr->buf),
-					MAX_BUF_SIZE, PCI_DMA_FROMDEVICE);
-=======
 		skb_put(skb_ptr, descptr->len - ETH_FCS_LEN);
 		dma_unmap_single(&priv->pdev->dev, le32_to_cpu(descptr->buf),
 				 MAX_BUF_SIZE, DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_ptr->protocol = eth_type_trans(skb_ptr, priv->dev);
 
 		/* Send to upper layer */
 		netif_receive_skb(skb_ptr);
 		dev->stats.rx_packets++;
-<<<<<<< HEAD
-		dev->stats.rx_bytes += descptr->len - 4;
-
-		/* put new skb into descriptor */
-		descptr->skb_ptr = new_skb;
-		descptr->buf = cpu_to_le32(pci_map_single(priv->pdev,
-						descptr->skb_ptr->data,
-					MAX_BUF_SIZE, PCI_DMA_FROMDEVICE));
-=======
 		dev->stats.rx_bytes += descptr->len - ETH_FCS_LEN;
 
 		/* put new skb into descriptor */
@@ -788,7 +567,6 @@ static int r6040_rx(struct net_device *dev, int limit)
 							  descptr->skb_ptr->data,
 							  MAX_BUF_SIZE,
 							  DMA_FROM_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 next_descr:
 		/* put the descriptor back to the MAC */
@@ -815,26 +593,14 @@ static void r6040_tx(struct net_device *dev)
 		/* Check for errors */
 		err = ioread16(ioaddr + MLSR);
 
-<<<<<<< HEAD
-		if (err & 0x0200)
-			dev->stats.rx_fifo_errors++;
-		if (err & (0x2000 | 0x4000))
-=======
 		if (err & TX_FIFO_UNDR)
 			dev->stats.tx_fifo_errors++;
 		if (err & (TX_EXCEEDC | TX_LATEC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->stats.tx_carrier_errors++;
 
 		if (descptr->status & DSC_OWNER_MAC)
 			break; /* Not complete */
 		skb_ptr = descptr->skb_ptr;
-<<<<<<< HEAD
-		pci_unmap_single(priv->pdev, le32_to_cpu(descptr->buf),
-			skb_ptr->len, PCI_DMA_TODEVICE);
-		/* Free buffer */
-		dev_kfree_skb_irq(skb_ptr);
-=======
 
 		/* Statistic Counter */
 		dev->stats.tx_packets++;
@@ -844,7 +610,6 @@ static void r6040_tx(struct net_device *dev)
 				 skb_ptr->len, DMA_TO_DEVICE);
 		/* Free buffer */
 		dev_kfree_skb(skb_ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		descptr->skb_ptr = NULL;
 		/* To next descriptor */
 		descptr = descptr->vndescp;
@@ -865,14 +630,6 @@ static int r6040_poll(struct napi_struct *napi, int budget)
 	void __iomem *ioaddr = priv->base;
 	int work_done;
 
-<<<<<<< HEAD
-	work_done = r6040_rx(dev, budget);
-
-	if (work_done < budget) {
-		napi_complete(napi);
-		/* Enable RX interrupt */
-		iowrite16(ioread16(ioaddr + MIER) | RX_INTS, ioaddr + MIER);
-=======
 	r6040_tx(dev);
 
 	work_done = r6040_rx(dev, budget);
@@ -882,7 +639,6 @@ static int r6040_poll(struct napi_struct *napi, int budget)
 		/* Enable RX/TX interrupt */
 		iowrite16(ioread16(ioaddr + MIER) | RX_INTS | TX_INTS,
 			  ioaddr + MIER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return work_done;
 }
@@ -909,11 +665,7 @@ static irqreturn_t r6040_interrupt(int irq, void *dev_id)
 	}
 
 	/* RX interrupt request */
-<<<<<<< HEAD
-	if (status & RX_INTS) {
-=======
 	if (status & (RX_INTS | TX_INTS)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status & RX_NO_DESC) {
 			/* RX descriptor unavailable */
 			dev->stats.rx_dropped++;
@@ -924,23 +676,11 @@ static irqreturn_t r6040_interrupt(int irq, void *dev_id)
 
 		if (likely(napi_schedule_prep(&lp->napi))) {
 			/* Mask off RX interrupt */
-<<<<<<< HEAD
-			misr &= ~RX_INTS;
-			__napi_schedule(&lp->napi);
-		}
-	}
-
-	/* TX interrupt request */
-	if (status & TX_INTS)
-		r6040_tx(dev);
-
-=======
 			misr &= ~(RX_INTS | TX_INTS);
 			__napi_schedule_irqoff(&lp->napi);
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Restore RDC MAC interrupt */
 	iowrite16(misr, ioaddr + MIER);
 
@@ -980,11 +720,7 @@ static int r6040_up(struct net_device *dev)
 	/* Initialize all MAC registers */
 	r6040_init_mac_regs(dev);
 
-<<<<<<< HEAD
-	phy_start(lp->phydev);
-=======
 	phy_start(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -995,25 +731,6 @@ static void r6040_mac_address(struct net_device *dev)
 {
 	struct r6040_private *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->base;
-<<<<<<< HEAD
-	u16 *adrp;
-
-	/* Reset MAC */
-	iowrite16(MAC_RST, ioaddr + MCR1);
-	/* Reset internal state machine */
-	iowrite16(MAC_SM_RST, ioaddr + MAC_SM);
-	iowrite16(0, ioaddr + MAC_SM);
-	mdelay(5);
-
-	/* Restore MAC Address */
-	adrp = (u16 *) dev->dev_addr;
-	iowrite16(adrp[0], ioaddr + MID_0L);
-	iowrite16(adrp[1], ioaddr + MID_0M);
-	iowrite16(adrp[2], ioaddr + MID_0H);
-
-	/* Store MAC Address in perm_addr */
-	memcpy(dev->perm_addr, dev->dev_addr, ETH_ALEN);
-=======
 	const u16 *adrp;
 
 	/* Reset MAC */
@@ -1024,7 +741,6 @@ static void r6040_mac_address(struct net_device *dev)
 	iowrite16(adrp[0], ioaddr + MID_0L);
 	iowrite16(adrp[1], ioaddr + MID_0M);
 	iowrite16(adrp[2], ioaddr + MID_0H);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int r6040_open(struct net_device *dev)
@@ -1043,24 +759,16 @@ static int r6040_open(struct net_device *dev)
 
 	/* Allocate Descriptor memory */
 	lp->rx_ring =
-<<<<<<< HEAD
-		pci_alloc_consistent(lp->pdev, RX_DESC_SIZE, &lp->rx_ring_dma);
-=======
 		dma_alloc_coherent(&lp->pdev->dev, RX_DESC_SIZE,
 				   &lp->rx_ring_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lp->rx_ring) {
 		ret = -ENOMEM;
 		goto err_free_irq;
 	}
 
 	lp->tx_ring =
-<<<<<<< HEAD
-		pci_alloc_consistent(lp->pdev, TX_DESC_SIZE, &lp->tx_ring_dma);
-=======
 		dma_alloc_coherent(&lp->pdev->dev, TX_DESC_SIZE,
 				   &lp->tx_ring_dma, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lp->tx_ring) {
 		ret = -ENOMEM;
 		goto err_free_rx_ring;
@@ -1076,19 +784,11 @@ static int r6040_open(struct net_device *dev)
 	return 0;
 
 err_free_tx_ring:
-<<<<<<< HEAD
-	pci_free_consistent(lp->pdev, TX_DESC_SIZE, lp->tx_ring,
-			lp->tx_ring_dma);
-err_free_rx_ring:
-	pci_free_consistent(lp->pdev, RX_DESC_SIZE, lp->rx_ring,
-			lp->rx_ring_dma);
-=======
 	dma_free_coherent(&lp->pdev->dev, TX_DESC_SIZE, lp->tx_ring,
 			  lp->tx_ring_dma);
 err_free_rx_ring:
 	dma_free_coherent(&lp->pdev->dev, RX_DESC_SIZE, lp->rx_ring,
 			  lp->rx_ring_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_irq:
 	free_irq(dev->irq, dev);
 out:
@@ -1103,12 +803,9 @@ static netdev_tx_t r6040_start_xmit(struct sk_buff *skb,
 	void __iomem *ioaddr = lp->base;
 	unsigned long flags;
 
-<<<<<<< HEAD
-=======
 	if (skb_put_padto(skb, ETH_ZLEN) < 0)
 		return NETDEV_TX_OK;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Critical Section */
 	spin_lock_irqsave(&lp->lock, flags);
 
@@ -1120,22 +817,6 @@ static netdev_tx_t r6040_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_BUSY;
 	}
 
-<<<<<<< HEAD
-	/* Statistic Counter */
-	dev->stats.tx_packets++;
-	dev->stats.tx_bytes += skb->len;
-	/* Set TX descriptor & Transmit it */
-	lp->tx_free_desc--;
-	descptr = lp->tx_insert_ptr;
-	if (skb->len < MISR)
-		descptr->len = MISR;
-	else
-		descptr->len = skb->len;
-
-	descptr->skb_ptr = skb;
-	descptr->buf = cpu_to_le32(pci_map_single(lp->pdev,
-		skb->data, skb->len, PCI_DMA_TODEVICE));
-=======
 	/* Set TX descriptor & Transmit it */
 	lp->tx_free_desc--;
 	descptr = lp->tx_insert_ptr;
@@ -1143,18 +824,13 @@ static netdev_tx_t r6040_start_xmit(struct sk_buff *skb,
 	descptr->skb_ptr = skb;
 	descptr->buf = cpu_to_le32(dma_map_single(&lp->pdev->dev, skb->data,
 						  skb->len, DMA_TO_DEVICE));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	descptr->status = DSC_OWNER_MAC;
 
 	skb_tx_timestamp(skb);
 
 	/* Trigger the MAC to check the TX descriptor */
-<<<<<<< HEAD
-	iowrite16(0x01, ioaddr + MTPR);
-=======
 	if (!netdev_xmit_more() || netif_queue_stopped(dev))
 		iowrite16(TM2TX, ioaddr + MTPR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->tx_insert_ptr = descptr->vndescp;
 
 	/* If no tx resource, stop */
@@ -1173,21 +849,13 @@ static void r6040_multicast_list(struct net_device *dev)
 	unsigned long flags;
 	struct netdev_hw_addr *ha;
 	int i;
-<<<<<<< HEAD
-	u16 *adrp;
-=======
 	const u16 *adrp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 hash_table[4] = { 0 };
 
 	spin_lock_irqsave(&lp->lock, flags);
 
 	/* Keep our MAC Address */
-<<<<<<< HEAD
-	adrp = (u16 *)dev->dev_addr;
-=======
 	adrp = (const u16 *)dev->dev_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite16(adrp[0], ioaddr + MID_0L);
 	iowrite16(adrp[1], ioaddr + MID_0M);
 	iowrite16(adrp[2], ioaddr + MID_0H);
@@ -1271,44 +939,18 @@ static void netdev_get_drvinfo(struct net_device *dev,
 {
 	struct r6040_private *rp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	strcpy(info->driver, DRV_NAME);
-	strcpy(info->version, DRV_VERSION);
-	strcpy(info->bus_info, pci_name(rp->pdev));
-}
-
-static int netdev_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct r6040_private *rp = netdev_priv(dev);
-
-	return  phy_ethtool_gset(rp->phydev, cmd);
-}
-
-static int netdev_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct r6040_private *rp = netdev_priv(dev);
-
-	return phy_ethtool_sset(rp->phydev, cmd);
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
 	strscpy(info->bus_info, pci_name(rp->pdev), sizeof(info->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops netdev_ethtool_ops = {
 	.get_drvinfo		= netdev_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings		= netdev_get_settings,
-	.set_settings		= netdev_set_settings,
-	.get_link		= ethtool_op_get_link,
-=======
 	.get_link		= ethtool_op_get_link,
 	.get_ts_info		= ethtool_op_get_ts_info,
 	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
 	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
 	.nway_reset		= phy_ethtool_nway_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops r6040_netdev_ops = {
@@ -1317,16 +959,9 @@ static const struct net_device_ops r6040_netdev_ops = {
 	.ndo_start_xmit		= r6040_start_xmit,
 	.ndo_get_stats		= r6040_get_stats,
 	.ndo_set_rx_mode	= r6040_multicast_list,
-<<<<<<< HEAD
-	.ndo_change_mtu		= eth_change_mtu,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_set_mac_address	= eth_mac_addr,
-	.ndo_do_ioctl		= r6040_ioctl,
-=======
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_eth_ioctl		= phy_do_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= r6040_tx_timeout,
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= r6040_poll_controller,
@@ -1336,11 +971,7 @@ static const struct net_device_ops r6040_netdev_ops = {
 static void r6040_adjust_link(struct net_device *dev)
 {
 	struct r6040_private *lp = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phydev = lp->phydev;
-=======
 	struct phy_device *phydev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status_changed = 0;
 	void __iomem *ioaddr = lp->base;
 
@@ -1360,19 +991,8 @@ static void r6040_adjust_link(struct net_device *dev)
 		lp->old_duplex = phydev->duplex;
 	}
 
-<<<<<<< HEAD
-	if (status_changed) {
-		pr_info("%s: link %s", dev->name, phydev->link ?
-			"UP" : "DOWN");
-		if (phydev->link)
-			pr_cont(" - %d/%s", phydev->speed,
-			DUPLEX_FULL == phydev->duplex ? "full" : "half");
-		pr_cont("\n");
-	}
-=======
 	if (status_changed)
 		phy_print_status(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int r6040_mii_probe(struct net_device *dev)
@@ -1386,69 +1006,33 @@ static int r6040_mii_probe(struct net_device *dev)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	phydev = phy_connect(dev, dev_name(&phydev->dev), &r6040_adjust_link,
-				0, PHY_INTERFACE_MODE_MII);
-=======
 	phydev = phy_connect(dev, phydev_name(phydev), &r6040_adjust_link,
 			     PHY_INTERFACE_MODE_MII);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(phydev)) {
 		dev_err(&lp->pdev->dev, "could not attach to PHY\n");
 		return PTR_ERR(phydev);
 	}
 
-<<<<<<< HEAD
-	/* mask with MAC supported features */
-	phydev->supported &= (SUPPORTED_10baseT_Half
-				| SUPPORTED_10baseT_Full
-				| SUPPORTED_100baseT_Half
-				| SUPPORTED_100baseT_Full
-				| SUPPORTED_Autoneg
-				| SUPPORTED_MII
-				| SUPPORTED_TP);
-
-	phydev->advertising = phydev->supported;
-	lp->phydev = phydev;
-	lp->old_link = 0;
-	lp->old_duplex = -1;
-
-	dev_info(&lp->pdev->dev, "attached PHY driver [%s] "
-		"(mii_bus:phy_addr=%s)\n",
-		phydev->drv->name, dev_name(&phydev->dev));
-=======
 	phy_set_max_speed(phydev, SPEED_100);
 
 	lp->old_link = 0;
 	lp->old_duplex = -1;
 
 	phy_attached_info(phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit r6040_init_one(struct pci_dev *pdev,
-					 const struct pci_device_id *ent)
-=======
 static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct r6040_private *lp;
 	void __iomem *ioaddr;
 	int err, io_size = R6040_IO_SIZE;
 	static int card_idx = -1;
-<<<<<<< HEAD
-	int bar = 0;
-	u16 *adrp;
-	int i;
-=======
 	u16 addr[ETH_ALEN / 2];
 	int bar = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("%s\n", version);
 
@@ -1457,19 +1041,6 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_out;
 
 	/* this should always be supported */
-<<<<<<< HEAD
-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-	if (err) {
-		dev_err(&pdev->dev, "32-bit PCI DMA addresses"
-				"not supported by the card\n");
-		goto err_out;
-	}
-	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-	if (err) {
-		dev_err(&pdev->dev, "32-bit PCI DMA addresses"
-				"not supported by the card\n");
-		goto err_out;
-=======
 	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
 	if (err) {
 		dev_err(&pdev->dev, "32-bit PCI DMA addresses not supported by the card\n");
@@ -1479,18 +1050,13 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err) {
 		dev_err(&pdev->dev, "32-bit PCI DMA addresses not supported by the card\n");
 		goto err_out_disable_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* IO Size check */
 	if (pci_resource_len(pdev, bar) < io_size) {
 		dev_err(&pdev->dev, "Insufficient PCI resources, aborting\n");
 		err = -EIO;
-<<<<<<< HEAD
-		goto err_out;
-=======
 		goto err_out_disable_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pci_set_master(pdev);
@@ -1498,11 +1064,7 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	dev = alloc_etherdev(sizeof(struct r6040_private));
 	if (!dev) {
 		err = -ENOMEM;
-<<<<<<< HEAD
-		goto err_out;
-=======
 		goto err_out_disable_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	lp = netdev_priv(dev);
@@ -1520,12 +1082,6 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 		err = -EIO;
 		goto err_out_free_res;
 	}
-<<<<<<< HEAD
-	/* If PHY status change register is still set to zero it means the
-	 * bootloader didn't initialize it */
-	if (ioread16(ioaddr + PHY_CC) == 0)
-		iowrite16(0x9f07, ioaddr + PHY_CC);
-=======
 
 	/* If PHY status change register is still set to zero it means the
 	 * bootloader didn't initialize it, so we set it to:
@@ -1535,7 +1091,6 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (ioread16(ioaddr + PHY_CC) == 0)
 		iowrite16(SCEN | PHY_MAX_ADDR << PHYAD_SHIFT |
 				7 << TMRDIV_SHIFT, ioaddr + PHY_CC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init system & device */
 	lp->base = ioaddr;
@@ -1547,16 +1102,6 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* Set MAC address */
 	card_idx++;
 
-<<<<<<< HEAD
-	adrp = (u16 *)dev->dev_addr;
-	adrp[0] = ioread16(ioaddr + MID_0L);
-	adrp[1] = ioread16(ioaddr + MID_0M);
-	adrp[2] = ioread16(ioaddr + MID_0H);
-
-	/* Some bootloader/BIOSes do not initialize
-	 * MAC address, warn about that */
-	if (!(adrp[0] || adrp[1] || adrp[2])) {
-=======
 	addr[0] = ioread16(ioaddr + MID_0L);
 	addr[1] = ioread16(ioaddr + MID_0M);
 	addr[2] = ioread16(ioaddr + MID_0H);
@@ -1565,7 +1110,6 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	/* Some bootloader/BIOSes do not initialize
 	 * MAC address, warn about that */
 	if (!(addr[0] || addr[1] || addr[2])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev_warn(dev, "MAC address not initialized, "
 					"generating random\n");
 		eth_hw_addr_random(dev);
@@ -1583,11 +1127,7 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	dev->ethtool_ops = &netdev_ethtool_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
 
-<<<<<<< HEAD
-	netif_napi_add(dev, &lp->napi, r6040_poll, 64);
-=======
 	netif_napi_add(dev, &lp->napi, r6040_poll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->mii_bus = mdiobus_alloc();
 	if (!lp->mii_bus) {
@@ -1599,34 +1139,14 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	lp->mii_bus->priv = dev;
 	lp->mii_bus->read = r6040_mdiobus_read;
 	lp->mii_bus->write = r6040_mdiobus_write;
-<<<<<<< HEAD
-	lp->mii_bus->reset = r6040_mdiobus_reset;
 	lp->mii_bus->name = "r6040_eth_mii";
 	snprintf(lp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
 		dev_name(&pdev->dev), card_idx);
-	lp->mii_bus->irq = kmalloc(sizeof(int)*PHY_MAX_ADDR, GFP_KERNEL);
-	if (!lp->mii_bus->irq) {
-		dev_err(&pdev->dev, "mii_bus irq allocation failed\n");
-		err = -ENOMEM;
-		goto err_out_mdio;
-	}
-
-	for (i = 0; i < PHY_MAX_ADDR; i++)
-		lp->mii_bus->irq[i] = PHY_POLL;
-=======
-	lp->mii_bus->name = "r6040_eth_mii";
-	snprintf(lp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
-		dev_name(&pdev->dev), card_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = mdiobus_register(lp->mii_bus);
 	if (err) {
 		dev_err(&pdev->dev, "failed to register MII bus\n");
-<<<<<<< HEAD
-		goto err_out_mdio_irq;
-=======
 		goto err_out_mdio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = r6040_mii_probe(dev);
@@ -1639,19 +1159,6 @@ static int r6040_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	err = register_netdev(dev);
 	if (err) {
 		dev_err(&pdev->dev, "Failed to register net device\n");
-<<<<<<< HEAD
-		goto err_out_mdio_unregister;
-	}
-	return 0;
-
-err_out_mdio_unregister:
-	mdiobus_unregister(lp->mii_bus);
-err_out_mdio_irq:
-	kfree(lp->mii_bus->irq);
-err_out_mdio:
-	mdiobus_free(lp->mii_bus);
-err_out_unmap:
-=======
 		goto err_out_phy_disconnect;
 	}
 	return 0;
@@ -1664,44 +1171,23 @@ err_out_mdio:
 	mdiobus_free(lp->mii_bus);
 err_out_unmap:
 	netif_napi_del(&lp->napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_iounmap(pdev, ioaddr);
 err_out_free_res:
 	pci_release_regions(pdev);
 err_out_free_dev:
 	free_netdev(dev);
-<<<<<<< HEAD
-=======
 err_out_disable_dev:
 	pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit r6040_remove_one(struct pci_dev *pdev)
-=======
 static void r6040_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct r6040_private *lp = netdev_priv(dev);
 
 	unregister_netdev(dev);
-<<<<<<< HEAD
-	mdiobus_unregister(lp->mii_bus);
-	kfree(lp->mii_bus->irq);
-	mdiobus_free(lp->mii_bus);
-	pci_release_regions(pdev);
-	free_netdev(dev);
-	pci_disable_device(pdev);
-	pci_set_drvdata(pdev, NULL);
-}
-
-
-static DEFINE_PCI_DEVICE_TABLE(r6040_pci_tbl) = {
-=======
 	phy_disconnect(dev->phydev);
 	mdiobus_unregister(lp->mii_bus);
 	mdiobus_free(lp->mii_bus);
@@ -1714,7 +1200,6 @@ static DEFINE_PCI_DEVICE_TABLE(r6040_pci_tbl) = {
 
 
 static const struct pci_device_id r6040_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_RDC, 0x6040) },
 	{ 0 }
 };
@@ -1724,27 +1209,7 @@ static struct pci_driver r6040_driver = {
 	.name		= DRV_NAME,
 	.id_table	= r6040_pci_tbl,
 	.probe		= r6040_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(r6040_remove_one),
-};
-
-
-static int __init r6040_init(void)
-{
-	return pci_register_driver(&r6040_driver);
-}
-
-
-static void __exit r6040_cleanup(void)
-{
-	pci_unregister_driver(&r6040_driver);
-}
-
-module_init(r6040_init);
-module_exit(r6040_cleanup);
-=======
 	.remove		= r6040_remove_one,
 };
 
 module_pci_driver(r6040_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

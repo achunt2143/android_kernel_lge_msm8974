@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ext2/xattr_trusted.c
  * Handler for trusted extended attributes.
@@ -12,33 +9,6 @@
 #include "ext2.h"
 #include "xattr.h"
 
-<<<<<<< HEAD
-static size_t
-ext2_xattr_trusted_list(struct dentry *dentry, char *list, size_t list_size,
-		const char *name, size_t name_len, int type)
-{
-	const int prefix_len = XATTR_TRUSTED_PREFIX_LEN;
-	const size_t total_len = prefix_len + name_len + 1;
-
-	if (!capable(CAP_SYS_ADMIN))
-		return 0;
-
-	if (list && total_len <= list_size) {
-		memcpy(list, XATTR_TRUSTED_PREFIX, prefix_len);
-		memcpy(list+prefix_len, name, name_len);
-		list[prefix_len + name_len] = '\0';
-	}
-	return total_len;
-}
-
-static int
-ext2_xattr_trusted_get(struct dentry *dentry, const char *name,
-		void *buffer, size_t size, int type)
-{
-	if (strcmp(name, "") == 0)
-		return -EINVAL;
-	return ext2_xattr_get(dentry->d_inode, EXT2_XATTR_INDEX_TRUSTED, name,
-=======
 static bool
 ext2_xattr_trusted_list(struct dentry *dentry)
 {
@@ -51,19 +21,10 @@ ext2_xattr_trusted_get(const struct xattr_handler *handler,
 		       const char *name, void *buffer, size_t size)
 {
 	return ext2_xattr_get(inode, EXT2_XATTR_INDEX_TRUSTED, name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      buffer, size);
 }
 
 static int
-<<<<<<< HEAD
-ext2_xattr_trusted_set(struct dentry *dentry, const char *name,
-		const void *value, size_t size, int flags, int type)
-{
-	if (strcmp(name, "") == 0)
-		return -EINVAL;
-	return ext2_xattr_set(dentry->d_inode, EXT2_XATTR_INDEX_TRUSTED, name,
-=======
 ext2_xattr_trusted_set(const struct xattr_handler *handler,
 		       struct mnt_idmap *idmap,
 		       struct dentry *unused, struct inode *inode,
@@ -71,7 +32,6 @@ ext2_xattr_trusted_set(const struct xattr_handler *handler,
 		       size_t size, int flags)
 {
 	return ext2_xattr_set(inode, EXT2_XATTR_INDEX_TRUSTED, name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      value, size, flags);
 }
 

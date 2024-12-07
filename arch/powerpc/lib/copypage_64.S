@@ -1,38 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2008 Mark Nelson, IBM Corp.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (C) 2008 Mark Nelson, IBM Corp.
  */
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-
-        .section        ".toc","aw"
-PPC64_CACHES:
-        .tc             ppc64_caches[TC],ppc64_caches
-        .section        ".text"
-
-_GLOBAL(copy_page)
-	lis	r5,PAGE_SIZE@h
-	ori	r5,r5,PAGE_SIZE@l
-BEGIN_FTR_SECTION
-	ld      r10,PPC64_CACHES@toc(r2)
-	lwz	r11,DCACHEL1LOGLINESIZE(r10)	/* log2 of cache line size */
-	lwz     r12,DCACHEL1LINESIZE(r10)	/* get cache line size */
-=======
 #include <asm/feature-fixups.h>
 
 _GLOBAL_TOC(copy_page)
@@ -58,7 +32,6 @@ BEGIN_FTR_SECTION
 #endif
 	lwz	r11,DCACHEL1LOGBLOCKSIZE(r10)	/* log2 of cache block size */
 	lwz     r12,DCACHEL1BLOCKSIZE(r10)	/* get cache block size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r9,0
 	srd	r8,r5,r11
 
@@ -142,7 +115,4 @@ END_FTR_SECTION_IFSET(CPU_FTR_CP_USE_DCBTZ)
 	std	r11,120(r3)
 	std	r12,128(r3)
 	blr
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(copy_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

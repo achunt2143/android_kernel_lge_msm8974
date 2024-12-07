@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Instituto Nokia de Tecnologia
  *
@@ -9,28 +6,11 @@
  *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
  *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the
- * Free Software Foundation, Inc.,
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-=======
  * Vendor commands implementation based on net/wireless/nl80211.c
  * which is:
  *
  * Copyright 2006-2010	Johannes Berg <johannes@sipsolutions.net>
  * Copyright 2013-2014  Intel Mobile Communications GmbH
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
@@ -40,21 +20,6 @@
 #include <linux/slab.h>
 
 #include "nfc.h"
-<<<<<<< HEAD
-
-static struct genl_multicast_group nfc_genl_event_mcgrp = {
-	.name = NFC_GENL_MCAST_EVENT_NAME,
-};
-
-struct genl_family nfc_genl_family = {
-	.id = GENL_ID_GENERATE,
-	.hdrsize = 0,
-	.name = NFC_GENL_NAME,
-	.version = NFC_GENL_VERSION,
-	.maxattr = NFC_ATTR_MAX,
-};
-
-=======
 #include "llcp.h"
 
 static const struct genl_multicast_group nfc_genl_mcgrps[] = {
@@ -62,17 +27,11 @@ static const struct genl_multicast_group nfc_genl_mcgrps[] = {
 };
 
 static struct genl_family nfc_genl_family;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct nla_policy nfc_genl_policy[NFC_ATTR_MAX + 1] = {
 	[NFC_ATTR_DEVICE_INDEX] = { .type = NLA_U32 },
 	[NFC_ATTR_DEVICE_NAME] = { .type = NLA_STRING,
 				.len = NFC_DEVICE_NAME_MAXSIZE },
 	[NFC_ATTR_PROTOCOLS] = { .type = NLA_U32 },
-<<<<<<< HEAD
-	[NFC_ATTR_COMM_MODE] = { .type = NLA_U8 },
-	[NFC_ATTR_RF_MODE] = { .type = NLA_U8 },
-	[NFC_ATTR_DEVICE_POWERED] = { .type = NLA_U8 },
-=======
 	[NFC_ATTR_TARGET_INDEX] = { .type = NLA_U32 },
 	[NFC_ATTR_COMM_MODE] = { .type = NLA_U8 },
 	[NFC_ATTR_RF_MODE] = { .type = NLA_U8 },
@@ -97,7 +56,6 @@ static const struct nla_policy nfc_sdp_genl_policy[NFC_SDP_ATTR_MAX + 1] = {
 	[NFC_SDP_ATTR_URI] = { .type = NLA_STRING,
 			       .len = U8_MAX - 4 },
 	[NFC_SDP_ATTR_SAP] = { .type = NLA_U8 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int nfc_genl_send_target(struct sk_buff *msg, struct nfc_target *target,
@@ -105,34 +63,11 @@ static int nfc_genl_send_target(struct sk_buff *msg, struct nfc_target *target,
 {
 	void *hdr;
 
-<<<<<<< HEAD
-	hdr = genlmsg_put(msg, NETLINK_CB(cb->skb).pid, cb->nlh->nlmsg_seq,
-=======
 	hdr = genlmsg_put(msg, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  &nfc_genl_family, flags, NFC_CMD_GET_TARGET);
 	if (!hdr)
 		return -EMSGSIZE;
 
-<<<<<<< HEAD
-	genl_dump_check_consistent(cb, hdr, &nfc_genl_family);
-
-	NLA_PUT_U32(msg, NFC_ATTR_TARGET_INDEX, target->idx);
-	NLA_PUT_U32(msg, NFC_ATTR_PROTOCOLS, target->supported_protocols);
-	NLA_PUT_U16(msg, NFC_ATTR_TARGET_SENS_RES, target->sens_res);
-	NLA_PUT_U8(msg, NFC_ATTR_TARGET_SEL_RES, target->sel_res);
-	if (target->nfcid1_len > 0)
-		NLA_PUT(msg, NFC_ATTR_TARGET_NFCID1, target->nfcid1_len,
-			target->nfcid1);
-	if (target->sensb_res_len > 0)
-		NLA_PUT(msg, NFC_ATTR_TARGET_SENSB_RES, target->sensb_res_len,
-			target->sensb_res);
-	if (target->sensf_res_len > 0)
-		NLA_PUT(msg, NFC_ATTR_TARGET_SENSF_RES, target->sensf_res_len,
-			target->sensf_res);
-
-	return genlmsg_end(msg, hdr);
-=======
 	genl_dump_check_consistent(cb, hdr);
 
 	if (nla_put_u32(msg, NFC_ATTR_TARGET_INDEX, target->idx) ||
@@ -163,7 +98,6 @@ static int nfc_genl_send_target(struct sk_buff *msg, struct nfc_target *target,
 
 	genlmsg_end(msg, hdr);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 nla_put_failure:
 	genlmsg_cancel(msg, hdr);
@@ -172,23 +106,6 @@ nla_put_failure:
 
 static struct nfc_dev *__get_device_from_cb(struct netlink_callback *cb)
 {
-<<<<<<< HEAD
-	struct nfc_dev *dev;
-	int rc;
-	u32 idx;
-
-	rc = nlmsg_parse(cb->nlh, GENL_HDRLEN + nfc_genl_family.hdrsize,
-			 nfc_genl_family.attrbuf,
-			 nfc_genl_family.maxattr,
-			 nfc_genl_policy);
-	if (rc < 0)
-		return ERR_PTR(rc);
-
-	if (!nfc_genl_family.attrbuf[NFC_ATTR_DEVICE_INDEX])
-		return ERR_PTR(-EINVAL);
-
-	idx = nla_get_u32(nfc_genl_family.attrbuf[NFC_ATTR_DEVICE_INDEX]);
-=======
 	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
 	struct nfc_dev *dev;
 	u32 idx;
@@ -197,7 +114,6 @@ static struct nfc_dev *__get_device_from_cb(struct netlink_callback *cb)
 		return ERR_PTR(-EINVAL);
 
 	idx = nla_get_u32(info->info.attrs[NFC_ATTR_DEVICE_INDEX]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = nfc_get_device(idx);
 	if (!dev)
@@ -221,11 +137,7 @@ static int nfc_genl_dump_targets(struct sk_buff *skb,
 		cb->args[1] = (long) dev;
 	}
 
-<<<<<<< HEAD
-	spin_lock_bh(&dev->targets_lock);
-=======
 	device_lock(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cb->seq = dev->targets_generation;
 
@@ -238,11 +150,7 @@ static int nfc_genl_dump_targets(struct sk_buff *skb,
 		i++;
 	}
 
-<<<<<<< HEAD
-	spin_unlock_bh(&dev->targets_lock);
-=======
 	device_unlock(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cb->args[0] = i;
 
@@ -264,15 +172,9 @@ int nfc_genl_targets_found(struct nfc_dev *dev)
 	struct sk_buff *msg;
 	void *hdr;
 
-<<<<<<< HEAD
-	dev->genl_data.poll_req_pid = 0;
-
-	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_ATOMIC);
-=======
 	dev->genl_data.poll_req_portid = 0;
 
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msg)
 		return -ENOMEM;
 
@@ -281,16 +183,6 @@ int nfc_genl_targets_found(struct nfc_dev *dev)
 	if (!hdr)
 		goto free_msg;
 
-<<<<<<< HEAD
-	NLA_PUT_U32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx);
-
-	genlmsg_end(msg, hdr);
-
-	return genlmsg_multicast(msg, 0, nfc_genl_event_mcgrp.id, GFP_ATOMIC);
-
-nla_put_failure:
-	genlmsg_cancel(msg, hdr);
-=======
 	if (nla_put_u32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx))
 		goto nla_put_failure;
 
@@ -299,14 +191,11 @@ nla_put_failure:
 	return genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_ATOMIC);
 
 nla_put_failure:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_msg:
 	nlmsg_free(msg);
 	return -EMSGSIZE;
 }
 
-<<<<<<< HEAD
-=======
 int nfc_genl_target_lost(struct nfc_dev *dev, u32 target_idx)
 {
 	struct sk_buff *msg;
@@ -408,17 +297,12 @@ static int nfc_genl_setup_device_added(struct nfc_dev *dev, struct sk_buff *msg)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int nfc_genl_device_added(struct nfc_dev *dev)
 {
 	struct sk_buff *msg;
 	void *hdr;
 
-<<<<<<< HEAD
-	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
-=======
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msg)
 		return -ENOMEM;
 
@@ -427,31 +311,16 @@ int nfc_genl_device_added(struct nfc_dev *dev)
 	if (!hdr)
 		goto free_msg;
 
-<<<<<<< HEAD
-	NLA_PUT_STRING(msg, NFC_ATTR_DEVICE_NAME, nfc_device_name(dev));
-	NLA_PUT_U32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx);
-	NLA_PUT_U32(msg, NFC_ATTR_PROTOCOLS, dev->supported_protocols);
-	NLA_PUT_U8(msg, NFC_ATTR_DEVICE_POWERED, dev->dev_up);
-
-	genlmsg_end(msg, hdr);
-
-	genlmsg_multicast(msg, 0, nfc_genl_event_mcgrp.id, GFP_KERNEL);
-=======
 	if (nfc_genl_setup_device_added(dev, msg))
 		goto nla_put_failure;
 
 	genlmsg_end(msg, hdr);
 
 	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 nla_put_failure:
-<<<<<<< HEAD
-	genlmsg_cancel(msg, hdr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_msg:
 	nlmsg_free(msg);
 	return -EMSGSIZE;
@@ -462,11 +331,7 @@ int nfc_genl_device_removed(struct nfc_dev *dev)
 	struct sk_buff *msg;
 	void *hdr;
 
-<<<<<<< HEAD
-	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
-=======
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msg)
 		return -ENOMEM;
 
@@ -475,13 +340,6 @@ int nfc_genl_device_removed(struct nfc_dev *dev)
 	if (!hdr)
 		goto free_msg;
 
-<<<<<<< HEAD
-	NLA_PUT_U32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx);
-
-	genlmsg_end(msg, hdr);
-
-	genlmsg_multicast(msg, 0, nfc_genl_event_mcgrp.id, GFP_KERNEL);
-=======
 	if (nla_put_u32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx))
 		goto nla_put_failure;
 
@@ -697,51 +555,28 @@ int nfc_genl_se_connectivity(struct nfc_dev *dev, u8 se_idx)
 	genlmsg_end(msg, hdr);
 
 	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 nla_put_failure:
-<<<<<<< HEAD
-	genlmsg_cancel(msg, hdr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_msg:
 	nlmsg_free(msg);
 	return -EMSGSIZE;
 }
 
 static int nfc_genl_send_device(struct sk_buff *msg, struct nfc_dev *dev,
-<<<<<<< HEAD
-				u32 pid, u32 seq,
-=======
 				u32 portid, u32 seq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct netlink_callback *cb,
 				int flags)
 {
 	void *hdr;
 
-<<<<<<< HEAD
-	hdr = genlmsg_put(msg, pid, seq, &nfc_genl_family, flags,
-=======
 	hdr = genlmsg_put(msg, portid, seq, &nfc_genl_family, flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  NFC_CMD_GET_DEVICE);
 	if (!hdr)
 		return -EMSGSIZE;
 
 	if (cb)
-<<<<<<< HEAD
-		genl_dump_check_consistent(cb, hdr, &nfc_genl_family);
-
-	NLA_PUT_STRING(msg, NFC_ATTR_DEVICE_NAME, nfc_device_name(dev));
-	NLA_PUT_U32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx);
-	NLA_PUT_U32(msg, NFC_ATTR_PROTOCOLS, dev->supported_protocols);
-	NLA_PUT_U8(msg, NFC_ATTR_DEVICE_POWERED, dev->dev_up);
-
-	return genlmsg_end(msg, hdr);
-=======
 		genl_dump_check_consistent(cb, hdr);
 
 	if (nfc_genl_setup_device_added(dev, msg))
@@ -749,7 +584,6 @@ static int nfc_genl_send_device(struct sk_buff *msg, struct nfc_dev *dev,
 
 	genlmsg_end(msg, hdr);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 nla_put_failure:
 	genlmsg_cancel(msg, hdr);
@@ -783,11 +617,7 @@ static int nfc_genl_dump_devices(struct sk_buff *skb,
 	while (dev) {
 		int rc;
 
-<<<<<<< HEAD
-		rc = nfc_genl_send_device(skb, dev, NETLINK_CB(cb->skb).pid,
-=======
 		rc = nfc_genl_send_device(skb, dev, NETLINK_CB(cb->skb).portid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  cb->nlh->nlmsg_seq, cb, NLM_F_MULTI);
 		if (rc < 0)
 			break;
@@ -806,15 +636,10 @@ static int nfc_genl_dump_devices_done(struct netlink_callback *cb)
 {
 	struct class_dev_iter *iter = (struct class_dev_iter *) cb->args[0];
 
-<<<<<<< HEAD
-	nfc_device_iter_exit(iter);
-	kfree(iter);
-=======
 	if (iter) {
 		nfc_device_iter_exit(iter);
 		kfree(iter);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -827,11 +652,7 @@ int nfc_genl_dep_link_up_event(struct nfc_dev *dev, u32 target_idx,
 
 	pr_debug("DEP link is up\n");
 
-<<<<<<< HEAD
-	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_ATOMIC);
-=======
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msg)
 		return -ENOMEM;
 
@@ -839,13 +660,6 @@ int nfc_genl_dep_link_up_event(struct nfc_dev *dev, u32 target_idx,
 	if (!hdr)
 		goto free_msg;
 
-<<<<<<< HEAD
-	NLA_PUT_U32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx);
-	if (rf_mode == NFC_RF_INITIATOR)
-		NLA_PUT_U32(msg, NFC_ATTR_TARGET_INDEX, target_idx);
-	NLA_PUT_U8(msg, NFC_ATTR_COMM_MODE, comm_mode);
-	NLA_PUT_U8(msg, NFC_ATTR_RF_MODE, rf_mode);
-=======
 	if (nla_put_u32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx))
 		goto nla_put_failure;
 	if (rf_mode == NFC_RF_INITIATOR &&
@@ -854,25 +668,16 @@ int nfc_genl_dep_link_up_event(struct nfc_dev *dev, u32 target_idx,
 	if (nla_put_u8(msg, NFC_ATTR_COMM_MODE, comm_mode) ||
 	    nla_put_u8(msg, NFC_ATTR_RF_MODE, rf_mode))
 		goto nla_put_failure;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	genlmsg_end(msg, hdr);
 
 	dev->dep_link_up = true;
 
-<<<<<<< HEAD
-	genlmsg_multicast(msg, 0, nfc_genl_event_mcgrp.id, GFP_ATOMIC);
-=======
 	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 nla_put_failure:
-<<<<<<< HEAD
-	genlmsg_cancel(msg, hdr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_msg:
 	nlmsg_free(msg);
 	return -EMSGSIZE;
@@ -885,11 +690,7 @@ int nfc_genl_dep_link_down_event(struct nfc_dev *dev)
 
 	pr_debug("DEP link is down\n");
 
-<<<<<<< HEAD
-	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_ATOMIC);
-=======
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msg)
 		return -ENOMEM;
 
@@ -898,28 +699,16 @@ int nfc_genl_dep_link_down_event(struct nfc_dev *dev)
 	if (!hdr)
 		goto free_msg;
 
-<<<<<<< HEAD
-	NLA_PUT_U32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx);
-
-	genlmsg_end(msg, hdr);
-
-	genlmsg_multicast(msg, 0, nfc_genl_event_mcgrp.id, GFP_ATOMIC);
-=======
 	if (nla_put_u32(msg, NFC_ATTR_DEVICE_INDEX, dev->idx))
 		goto nla_put_failure;
 
 	genlmsg_end(msg, hdr);
 
 	genlmsg_multicast(&nfc_genl_family, msg, 0, 0, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 nla_put_failure:
-<<<<<<< HEAD
-	genlmsg_cancel(msg, hdr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_msg:
 	nlmsg_free(msg);
 	return -EMSGSIZE;
@@ -941,21 +730,13 @@ static int nfc_genl_get_device(struct sk_buff *skb, struct genl_info *info)
 	if (!dev)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
-=======
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msg) {
 		rc = -ENOMEM;
 		goto out_putdev;
 	}
 
-<<<<<<< HEAD
-	rc = nfc_genl_send_device(msg, dev, info->snd_pid, info->snd_seq,
-=======
 	rc = nfc_genl_send_device(msg, dev, info->snd_portid, info->snd_seq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  NULL, 0);
 	if (rc < 0)
 		goto out_free;
@@ -1018,22 +799,11 @@ static int nfc_genl_start_poll(struct sk_buff *skb, struct genl_info *info)
 	struct nfc_dev *dev;
 	int rc;
 	u32 idx;
-<<<<<<< HEAD
-	u32 protocols;
-=======
 	u32 im_protocols = 0, tm_protocols = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Poll start\n");
 
 	if (!info->attrs[NFC_ATTR_DEVICE_INDEX] ||
-<<<<<<< HEAD
-	    !info->attrs[NFC_ATTR_PROTOCOLS])
-		return -EINVAL;
-
-	idx = nla_get_u32(info->attrs[NFC_ATTR_DEVICE_INDEX]);
-	protocols = nla_get_u32(info->attrs[NFC_ATTR_PROTOCOLS]);
-=======
 	    ((!info->attrs[NFC_ATTR_IM_PROTOCOLS] &&
 	      !info->attrs[NFC_ATTR_PROTOCOLS]) &&
 	      !info->attrs[NFC_ATTR_TM_PROTOCOLS]))
@@ -1048,7 +818,6 @@ static int nfc_genl_start_poll(struct sk_buff *skb, struct genl_info *info)
 		im_protocols = nla_get_u32(info->attrs[NFC_ATTR_IM_PROTOCOLS]);
 	else if (info->attrs[NFC_ATTR_PROTOCOLS])
 		im_protocols = nla_get_u32(info->attrs[NFC_ATTR_PROTOCOLS]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = nfc_get_device(idx);
 	if (!dev)
@@ -1056,15 +825,9 @@ static int nfc_genl_start_poll(struct sk_buff *skb, struct genl_info *info)
 
 	mutex_lock(&dev->genl_data.genl_data_mutex);
 
-<<<<<<< HEAD
-	rc = nfc_start_poll(dev, protocols);
-	if (!rc)
-		dev->genl_data.poll_req_pid = info->snd_pid;
-=======
 	rc = nfc_start_poll(dev, im_protocols, tm_protocols);
 	if (!rc)
 		dev->genl_data.poll_req_portid = info->snd_portid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&dev->genl_data.genl_data_mutex);
 
@@ -1087,11 +850,6 @@ static int nfc_genl_stop_poll(struct sk_buff *skb, struct genl_info *info)
 	if (!dev)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	mutex_lock(&dev->genl_data.genl_data_mutex);
-
-	if (dev->genl_data.poll_req_pid != info->snd_pid) {
-=======
 	device_lock(&dev->dev);
 
 	if (!dev->polling) {
@@ -1105,17 +863,12 @@ static int nfc_genl_stop_poll(struct sk_buff *skb, struct genl_info *info)
 	mutex_lock(&dev->genl_data.genl_data_mutex);
 
 	if (dev->genl_data.poll_req_portid != info->snd_portid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EBUSY;
 		goto out;
 	}
 
 	rc = nfc_stop_poll(dev);
-<<<<<<< HEAD
-	dev->genl_data.poll_req_pid = 0;
-=======
 	dev->genl_data.poll_req_portid = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&dev->genl_data.genl_data_mutex);
@@ -1123,8 +876,6 @@ out:
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static int nfc_genl_activate_target(struct sk_buff *skb, struct genl_info *info)
 {
 	struct nfc_dev *dev;
@@ -1177,7 +928,6 @@ static int nfc_genl_deactivate_target(struct sk_buff *skb,
 	return rc;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nfc_genl_dep_link_up(struct sk_buff *skb, struct genl_info *info)
 {
 	struct nfc_dev *dev;
@@ -1219,12 +969,8 @@ static int nfc_genl_dep_link_down(struct sk_buff *skb, struct genl_info *info)
 	int rc;
 	u32 idx;
 
-<<<<<<< HEAD
-	if (!info->attrs[NFC_ATTR_DEVICE_INDEX])
-=======
 	if (!info->attrs[NFC_ATTR_DEVICE_INDEX] ||
 	    !info->attrs[NFC_ATTR_TARGET_INDEX])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	idx = nla_get_u32(info->attrs[NFC_ATTR_DEVICE_INDEX]);
@@ -1239,65 +985,6 @@ static int nfc_genl_dep_link_down(struct sk_buff *skb, struct genl_info *info)
 	return rc;
 }
 
-<<<<<<< HEAD
-static struct genl_ops nfc_genl_ops[] = {
-	{
-		.cmd = NFC_CMD_GET_DEVICE,
-		.doit = nfc_genl_get_device,
-		.dumpit = nfc_genl_dump_devices,
-		.done = nfc_genl_dump_devices_done,
-		.policy = nfc_genl_policy,
-	},
-	{
-		.cmd = NFC_CMD_DEV_UP,
-		.doit = nfc_genl_dev_up,
-		.policy = nfc_genl_policy,
-	},
-	{
-		.cmd = NFC_CMD_DEV_DOWN,
-		.doit = nfc_genl_dev_down,
-		.policy = nfc_genl_policy,
-	},
-	{
-		.cmd = NFC_CMD_START_POLL,
-		.doit = nfc_genl_start_poll,
-		.policy = nfc_genl_policy,
-	},
-	{
-		.cmd = NFC_CMD_STOP_POLL,
-		.doit = nfc_genl_stop_poll,
-		.policy = nfc_genl_policy,
-	},
-	{
-		.cmd = NFC_CMD_DEP_LINK_UP,
-		.doit = nfc_genl_dep_link_up,
-		.policy = nfc_genl_policy,
-	},
-	{
-		.cmd = NFC_CMD_DEP_LINK_DOWN,
-		.doit = nfc_genl_dep_link_down,
-		.policy = nfc_genl_policy,
-	},
-	{
-		.cmd = NFC_CMD_GET_TARGET,
-		.dumpit = nfc_genl_dump_targets,
-		.done = nfc_genl_dump_targets_done,
-		.policy = nfc_genl_policy,
-	},
-};
-
-static int nfc_genl_rcv_nl_event(struct notifier_block *this,
-				 unsigned long event, void *ptr)
-{
-	struct netlink_notify *n = ptr;
-	struct class_dev_iter iter;
-	struct nfc_dev *dev;
-
-	if (event != NETLINK_URELEASE || n->protocol != NETLINK_GENERIC)
-		goto out;
-
-	pr_debug("NETLINK_URELEASE event from id %d\n", n->pid);
-=======
 static int nfc_genl_send_params(struct sk_buff *msg,
 				struct nfc_llcp_local *local,
 				u32 portid, u32 seq)
@@ -2154,18 +1841,11 @@ static void nfc_urelease_event_work(struct work_struct *work)
 	pr_debug("portid %d\n", w->portid);
 
 	mutex_lock(&nfc_devlist_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfc_device_iter_init(&iter);
 	dev = nfc_device_iter_next(&iter);
 
 	while (dev) {
-<<<<<<< HEAD
-		if (dev->genl_data.poll_req_pid == n->pid) {
-			nfc_stop_poll(dev);
-			dev->genl_data.poll_req_pid = 0;
-		}
-=======
 		mutex_lock(&dev->genl_data.genl_data_mutex);
 
 		if (dev->genl_data.poll_req_portid == w->portid) {
@@ -2175,14 +1855,11 @@ static void nfc_urelease_event_work(struct work_struct *work)
 
 		mutex_unlock(&dev->genl_data.genl_data_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev = nfc_device_iter_next(&iter);
 	}
 
 	nfc_device_iter_exit(&iter);
 
-<<<<<<< HEAD
-=======
 	mutex_unlock(&nfc_devlist_mutex);
 
 	kfree(w);
@@ -2206,18 +1883,13 @@ static int nfc_genl_rcv_nl_event(struct notifier_block *this,
 		schedule_work(&w->w);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return NOTIFY_DONE;
 }
 
 void nfc_genl_data_init(struct nfc_genl_data *genl_data)
 {
-<<<<<<< HEAD
-	genl_data->poll_req_pid = 0;
-=======
 	genl_data->poll_req_portid = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&genl_data->genl_data_mutex);
 }
 
@@ -2239,18 +1911,6 @@ int __init nfc_genl_init(void)
 {
 	int rc;
 
-<<<<<<< HEAD
-	rc = genl_register_family_with_ops(&nfc_genl_family, nfc_genl_ops,
-					   ARRAY_SIZE(nfc_genl_ops));
-	if (rc)
-		return rc;
-
-	rc = genl_register_mc_group(&nfc_genl_family, &nfc_genl_event_mcgrp);
-
-	netlink_register_notifier(&nl_notifier);
-
-	return rc;
-=======
 	rc = genl_register_family(&nfc_genl_family);
 	if (rc)
 		return rc;
@@ -2258,7 +1918,6 @@ int __init nfc_genl_init(void)
 	netlink_register_notifier(&nl_notifier);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**

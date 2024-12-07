@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pnpbios -- PnP BIOS driver
  *
@@ -21,23 +18,6 @@
  *
  * Ported to the PnP Layer and several additional improvements (C) 2002
  * by Adam Belay <ambx1@neo.rr.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Change Log
@@ -53,10 +33,6 @@
  */
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/linkage.h>
 #include <linux/kernel.h>
@@ -71,10 +47,7 @@
 #include <linux/delay.h>
 #include <linux/acpi.h>
 #include <linux/freezer.h>
-<<<<<<< HEAD
-=======
 #include <linux/kmod.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kthread.h>
 
 #include <asm/page.h>
@@ -105,11 +78,6 @@ struct pnp_dev_node_info node_info;
  *
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_HOTPLUG
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct completion unload_sem;
 
 /*
@@ -117,10 +85,7 @@ static struct completion unload_sem;
  */
 static int pnp_dock_event(int dock, struct pnp_docking_station_info *info)
 {
-<<<<<<< HEAD
-=======
 	static char const sbin_pnpbios[] = "/sbin/pnpbios";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *argv[3], **envp, *buf, *scratch;
 	int i = 0, value;
 
@@ -135,11 +100,7 @@ static int pnp_dock_event(int dock, struct pnp_docking_station_info *info)
 	 * integrated into the driver core and use the usual infrastructure
 	 * like sysfs and uevents
 	 */
-<<<<<<< HEAD
-	argv[0] = "/sbin/pnpbios";
-=======
 	argv[0] = (char *)sbin_pnpbios;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	argv[1] = "dock";
 	argv[2] = NULL;
 
@@ -166,11 +127,7 @@ static int pnp_dock_event(int dock, struct pnp_docking_station_info *info)
 			   info->location_id, info->serial, info->capabilities);
 	envp[i] = NULL;
 
-<<<<<<< HEAD
-	value = call_usermodehelper(argv [0], argv, envp, UMH_WAIT_EXEC);
-=======
 	value = call_usermodehelper(sbin_pnpbios, argv, envp, UMH_WAIT_EXEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 	kfree(envp);
 	return 0;
@@ -203,11 +160,7 @@ static int pnp_dock_thread(void *unused)
 			 * No dock to manage
 			 */
 		case PNP_FUNCTION_NOT_SUPPORTED:
-<<<<<<< HEAD
-			complete_and_exit(&unload_sem, 0);
-=======
 			kthread_complete_and_exit(&unload_sem, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PNP_SYSTEM_NOT_DOCKED:
 			d = 0;
 			break;
@@ -216,12 +169,8 @@ static int pnp_dock_thread(void *unused)
 			break;
 		default:
 			pnpbios_print_status("pnp_dock_thread", status);
-<<<<<<< HEAD
-			continue;
-=======
 			printk(KERN_WARNING "PnPBIOS: disabling dock monitoring.\n");
 			kthread_complete_and_exit(&unload_sem, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (d != docked) {
 			if (pnp_dock_event(d, &now) == 0) {
@@ -234,17 +183,9 @@ static int pnp_dock_thread(void *unused)
 			}
 		}
 	}
-<<<<<<< HEAD
-	complete_and_exit(&unload_sem, 0);
-}
-
-#endif				/* CONFIG_HOTPLUG */
-
-=======
 	kthread_complete_and_exit(&unload_sem, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pnpbios_get_resources(struct pnp_dev *dev)
 {
 	u8 nodenum = dev->number;
@@ -357,17 +298,6 @@ struct pnp_protocol pnpbios_protocol = {
 
 static int __init insert_device(struct pnp_bios_node *node)
 {
-<<<<<<< HEAD
-	struct list_head *pos;
-	struct pnp_dev *dev;
-	char id[8];
-
-	/* check if the device is already added */
-	list_for_each(pos, &pnpbios_protocol.devices) {
-		dev = list_entry(pos, struct pnp_dev, protocol_list);
-		if (dev->number == node->handle)
-			return -1;
-=======
 	struct pnp_dev *dev;
 	char id[8];
 	int error;
@@ -376,17 +306,12 @@ static int __init insert_device(struct pnp_bios_node *node)
 	list_for_each_entry(dev, &pnpbios_protocol.devices, protocol_list) {
 		if (dev->number == node->handle)
 			return -EEXIST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pnp_eisa_id_to_string(node->eisa_id & PNP_EISA_ID_MASK, id);
 	dev = pnp_alloc_dev(&pnpbios_protocol, node->handle, id);
 	if (!dev)
-<<<<<<< HEAD
-		return -1;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pnpbios_parse_data_stream(dev, node);
 	dev->active = pnp_is_active(dev);
@@ -405,16 +330,12 @@ static int __init insert_device(struct pnp_bios_node *node)
 	if (!dev->active)
 		pnp_init_resources(dev);
 
-<<<<<<< HEAD
-	pnp_add_device(dev);
-=======
 	error = pnp_add_device(dev);
 	if (error) {
 		put_device(&dev->dev);
 		return error;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnpbios_interface_attach_device(node);
 
 	return 0;
@@ -559,11 +480,7 @@ static int __init exploding_pnp_bios(const struct dmi_system_id *d)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct dmi_system_id pnpbios_dmi_table[] __initdata = {
-=======
 static const struct dmi_system_id pnpbios_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{			/* PnPBIOS GPF on boot */
 	 .callback = exploding_pnp_bios,
 	 .ident = "Higraded P14H",
@@ -589,24 +506,12 @@ static int __init pnpbios_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-#if defined(CONFIG_PPC)
-	if (check_legacy_ioport(PNPBIOS_BASE))
-		return -ENODEV;
-#endif
-	if (pnpbios_disabled || dmi_check_system(pnpbios_dmi_table) ||
-	    paravirt_enabled()) {
-		printk(KERN_INFO "PnPBIOS: Disabled\n");
-		return -ENODEV;
-	}
-=======
 	if (pnpbios_disabled || dmi_check_system(pnpbios_dmi_table) ||
 	    arch_pnpbios_disabled()) {
 		printk(KERN_INFO "PnPBIOS: Disabled\n");
 		return -ENODEV;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PNPACPI
 	if (!acpi_disabled && !pnpacpi_disabled) {
 		pnpbios_disabled = 1;
@@ -654,28 +559,6 @@ fs_initcall(pnpbios_init);
 
 static int __init pnpbios_thread_init(void)
 {
-<<<<<<< HEAD
-#if defined(CONFIG_PPC)
-	if (check_legacy_ioport(PNPBIOS_BASE))
-		return 0;
-#endif
-	if (pnpbios_disabled)
-		return 0;
-#ifdef CONFIG_HOTPLUG
-	{
-		struct task_struct *task;
-		init_completion(&unload_sem);
-		task = kthread_run(pnp_dock_thread, NULL, "kpnpbiosd");
-		if (IS_ERR(task))
-			return PTR_ERR(task);
-	}
-#endif
-	return 0;
-}
-
-/* Start the kernel thread later: */
-module_init(pnpbios_thread_init);
-=======
 	struct task_struct *task;
 
 	if (pnpbios_disabled)
@@ -688,6 +571,5 @@ module_init(pnpbios_thread_init);
 
 /* Start the kernel thread later: */
 device_initcall(pnpbios_thread_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_SYMBOL(pnpbios_protocol);

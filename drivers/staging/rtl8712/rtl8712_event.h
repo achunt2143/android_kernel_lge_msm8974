@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -33,13 +14,8 @@
 #ifndef _RTL8712_EVENT_H_
 #define _RTL8712_EVENT_H_
 
-<<<<<<< HEAD
-void r8712_event_handle(struct _adapter *padapter, uint *peventbuf);
-void r8712_got_addbareq_event_callback(struct _adapter *adapter , u8 *pbuf);
-=======
 void r8712_event_handle(struct _adapter *padapter, __le32 *peventbuf);
 void r8712_got_addbareq_event_callback(struct _adapter *adapter, u8 *pbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum rtl8712_c2h_event {
 	GEN_EVT_CODE(_Read_MACREG) = 0,		/*0*/
@@ -72,10 +48,6 @@ enum rtl8712_c2h_event {
 	MAX_C2HEVT
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef _RTL8712_CMD_C_
 
 static struct fwevent wlanevents[] = {

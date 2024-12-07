@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * fs/f2fs/node.c
  *
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
  *             http://www.samsung.com/
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
 #include <linux/mpage.h>
-<<<<<<< HEAD
-#include <linux/backing-dev.h>
-=======
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/pagevec.h>
 #include <linux/swap.h>
@@ -30,28 +16,15 @@
 #include "f2fs.h"
 #include "node.h"
 #include "segment.h"
-<<<<<<< HEAD
-#include "trace.h"
-#include <trace/events/f2fs.h>
-
-#define on_build_free_nids(nmi) mutex_is_locked(&nm_i->build_lock)
-=======
 #include "xattr.h"
 #include "iostat.h"
 #include <trace/events/f2fs.h>
 
 #define on_f2fs_build_free_nids(nmi) mutex_is_locked(&(nm_i)->build_lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct kmem_cache *nat_entry_slab;
 static struct kmem_cache *free_nid_slab;
 static struct kmem_cache *nat_entry_set_slab;
-<<<<<<< HEAD
-
-bool available_free_memory(struct f2fs_sb_info *sbi, int type)
-{
-	struct f2fs_nm_info *nm_i = NM_I(sbi);
-=======
 static struct kmem_cache *fsync_node_entry_slab;
 
 /*
@@ -73,38 +46,20 @@ bool f2fs_available_free_memory(struct f2fs_sb_info *sbi, int type)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct discard_cmd_control *dcc = SM_I(sbi)->dcc_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sysinfo val;
 	unsigned long avail_ram;
 	unsigned long mem_size = 0;
 	bool res = false;
 
-<<<<<<< HEAD
-=======
 	if (!nm_i)
 		return true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	si_meminfo(&val);
 
 	/* only uses low memory */
 	avail_ram = val.totalram - val.totalhigh;
 
 	/*
-<<<<<<< HEAD
-	 * give 25%, 25%, 50%, 50%, 50% memory for each components respectively
-	 */
-	if (type == FREE_NIDS) {
-		mem_size = (nm_i->fcnt * sizeof(struct free_nid)) >>
-							PAGE_CACHE_SHIFT;
-		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 2);
-	} else if (type == NAT_ENTRIES) {
-		mem_size = (nm_i->nat_cnt * sizeof(struct nat_entry)) >>
-							PAGE_CACHE_SHIFT;
-		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 2);
-	} else if (type == DIRTY_DENTS) {
-		if (sbi->sb->s_bdi->dirty_exceeded)
-=======
 	 * give 25%, 25%, 50%, 50%, 25%, 25% memory for each components respectively
 	 */
 	if (type == FREE_NIDS) {
@@ -119,27 +74,12 @@ bool f2fs_available_free_memory(struct f2fs_sb_info *sbi, int type)
 			res = false;
 	} else if (type == DIRTY_DENTS) {
 		if (sbi->sb->s_bdi->wb.dirty_exceeded)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 		mem_size = get_pages(sbi, F2FS_DIRTY_DENTS);
 		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 1);
 	} else if (type == INO_ENTRIES) {
 		int i;
 
-<<<<<<< HEAD
-		for (i = 0; i <= UPDATE_INO; i++)
-			mem_size += (sbi->im[i].ino_num *
-				sizeof(struct ino_entry)) >> PAGE_CACHE_SHIFT;
-		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 1);
-	} else if (type == EXTENT_CACHE) {
-		mem_size = (atomic_read(&sbi->total_ext_tree) *
-				sizeof(struct extent_tree) +
-				atomic_read(&sbi->total_ext_node) *
-				sizeof(struct extent_node)) >> PAGE_CACHE_SHIFT;
-		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 1);
-	} else {
-		if (!sbi->sb->s_bdi->dirty_exceeded)
-=======
 		for (i = 0; i < MAX_INO_ENTRY; i++)
 			mem_size += sbi->im[i].ino_num *
 						sizeof(struct ino_entry);
@@ -175,7 +115,6 @@ bool f2fs_available_free_memory(struct f2fs_sb_info *sbi, int type)
 #endif
 	} else {
 		if (!sbi->sb->s_bdi->wb.dirty_exceeded)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return true;
 	}
 	return res;
@@ -183,60 +122,28 @@ bool f2fs_available_free_memory(struct f2fs_sb_info *sbi, int type)
 
 static void clear_node_page_dirty(struct page *page)
 {
-<<<<<<< HEAD
-	struct address_space *mapping = page->mapping;
-	unsigned int long flags;
-
-	if (PageDirty(page)) {
-		spin_lock_irqsave(&mapping->tree_lock, flags);
-		radix_tree_tag_clear(&mapping->page_tree,
-				page_index(page),
-				PAGECACHE_TAG_DIRTY);
-		spin_unlock_irqrestore(&mapping->tree_lock, flags);
-
-		clear_page_dirty_for_io(page);
-		dec_page_count(F2FS_M_SB(mapping), F2FS_DIRTY_NODES);
-=======
 	if (PageDirty(page)) {
 		f2fs_clear_page_cache_dirty_tag(page);
 		clear_page_dirty_for_io(page);
 		dec_page_count(F2FS_P_SB(page), F2FS_DIRTY_NODES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ClearPageUptodate(page);
 }
 
 static struct page *get_current_nat_page(struct f2fs_sb_info *sbi, nid_t nid)
 {
-<<<<<<< HEAD
-	pgoff_t index = current_nat_addr(sbi, nid);
-	return get_meta_page(sbi, index);
-=======
 	return f2fs_get_meta_page_retry(sbi, current_nat_addr(sbi, nid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct page *get_next_nat_page(struct f2fs_sb_info *sbi, nid_t nid)
 {
 	struct page *src_page;
 	struct page *dst_page;
-<<<<<<< HEAD
-	pgoff_t src_off;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pgoff_t dst_off;
 	void *src_addr;
 	void *dst_addr;
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 
-<<<<<<< HEAD
-	src_off = current_nat_addr(sbi, nid);
-	dst_off = next_nat_addr(sbi, src_off);
-
-	/* get current nat block page with lock */
-	src_page = get_meta_page(sbi, src_off);
-	dst_page = grab_meta_page(sbi, dst_off);
-=======
 	dst_off = next_nat_addr(sbi, current_nat_addr(sbi, nid));
 
 	/* get current nat block page with lock */
@@ -244,16 +151,11 @@ static struct page *get_next_nat_page(struct f2fs_sb_info *sbi, nid_t nid)
 	if (IS_ERR(src_page))
 		return src_page;
 	dst_page = f2fs_grab_meta_page(sbi, dst_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	f2fs_bug_on(sbi, PageDirty(src_page));
 
 	src_addr = page_address(src_page);
 	dst_addr = page_address(dst_page);
-<<<<<<< HEAD
-	memcpy(dst_addr, src_addr, PAGE_CACHE_SIZE);
-=======
 	memcpy(dst_addr, src_addr, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_page_dirty(dst_page);
 	f2fs_put_page(src_page, 1);
 
@@ -262,11 +164,6 @@ static struct page *get_next_nat_page(struct f2fs_sb_info *sbi, nid_t nid)
 	return dst_page;
 }
 
-<<<<<<< HEAD
-static struct nat_entry *__lookup_nat_cache(struct f2fs_nm_info *nm_i, nid_t n)
-{
-	return radix_tree_lookup(&nm_i->nat_root, n);
-=======
 static struct nat_entry *__alloc_nat_entry(struct f2fs_sb_info *sbi,
 						nid_t nid, bool no_fail)
 {
@@ -322,7 +219,6 @@ static struct nat_entry *__lookup_nat_cache(struct f2fs_nm_info *nm_i, nid_t n)
 	}
 
 	return ne;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int __gang_lookup_nat_cache(struct f2fs_nm_info *nm_i,
@@ -333,16 +229,6 @@ static unsigned int __gang_lookup_nat_cache(struct f2fs_nm_info *nm_i,
 
 static void __del_from_nat_cache(struct f2fs_nm_info *nm_i, struct nat_entry *e)
 {
-<<<<<<< HEAD
-	list_del(&e->list);
-	radix_tree_delete(&nm_i->nat_root, nat_get_nid(e));
-	nm_i->nat_cnt--;
-	kmem_cache_free(nat_entry_slab, e);
-}
-
-static void __set_nat_cache_dirty(struct f2fs_nm_info *nm_i,
-						struct nat_entry *ne)
-=======
 	radix_tree_delete(&nm_i->nat_root, nat_get_nid(e));
 	nm_i->nat_cnt[TOTAL_NAT]--;
 	nm_i->nat_cnt[RECLAIMABLE_NAT]--;
@@ -351,24 +237,14 @@ static void __set_nat_cache_dirty(struct f2fs_nm_info *nm_i,
 
 static struct nat_entry_set *__grab_nat_entry_set(struct f2fs_nm_info *nm_i,
 							struct nat_entry *ne)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	nid_t set = NAT_BLOCK_OFFSET(ne->ni.nid);
 	struct nat_entry_set *head;
 
-<<<<<<< HEAD
-	if (get_nat_flag(ne, IS_DIRTY))
-		return;
-
-	head = radix_tree_lookup(&nm_i->nat_set_root, set);
-	if (!head) {
-		head = f2fs_kmem_cache_alloc(nat_entry_set_slab, GFP_NOFS);
-=======
 	head = radix_tree_lookup(&nm_i->nat_set_root, set);
 	if (!head) {
 		head = f2fs_kmem_cache_alloc(nat_entry_set_slab,
 						GFP_NOFS, true, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		INIT_LIST_HEAD(&head->entry_list);
 		INIT_LIST_HEAD(&head->set_list);
@@ -376,27 +252,6 @@ static struct nat_entry_set *__grab_nat_entry_set(struct f2fs_nm_info *nm_i,
 		head->entry_cnt = 0;
 		f2fs_radix_tree_insert(&nm_i->nat_set_root, set, head);
 	}
-<<<<<<< HEAD
-	list_move_tail(&ne->list, &head->entry_list);
-	nm_i->dirty_nat_cnt++;
-	head->entry_cnt++;
-	set_nat_flag(ne, IS_DIRTY, true);
-}
-
-static void __clear_nat_cache_dirty(struct f2fs_nm_info *nm_i,
-						struct nat_entry *ne)
-{
-	nid_t set = NAT_BLOCK_OFFSET(ne->ni.nid);
-	struct nat_entry_set *head;
-
-	head = radix_tree_lookup(&nm_i->nat_set_root, set);
-	if (head) {
-		list_move_tail(&ne->list, &nm_i->nat_entries);
-		set_nat_flag(ne, IS_DIRTY, false);
-		head->entry_cnt--;
-		nm_i->dirty_nat_cnt--;
-	}
-=======
 	return head;
 }
 
@@ -446,7 +301,6 @@ static void __clear_nat_cache_dirty(struct f2fs_nm_info *nm_i,
 	set->entry_cnt--;
 	nm_i->nat_cnt[DIRTY_NAT]--;
 	nm_i->nat_cnt[RECLAIMABLE_NAT]++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int __gang_lookup_nat_set(struct f2fs_nm_info *nm_i,
@@ -456,9 +310,6 @@ static unsigned int __gang_lookup_nat_set(struct f2fs_nm_info *nm_i,
 							start, nr);
 }
 
-<<<<<<< HEAD
-int need_dentry_mark(struct f2fs_sb_info *sbi, nid_t nid)
-=======
 bool f2fs_in_warm_node_list(struct f2fs_sb_info *sbi, struct page *page)
 {
 	return NODE_MAPPING(sbi) == page->mapping &&
@@ -527,52 +378,28 @@ void f2fs_reset_fsync_node_info(struct f2fs_sb_info *sbi)
 }
 
 int f2fs_need_dentry_mark(struct f2fs_sb_info *sbi, nid_t nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct nat_entry *e;
 	bool need = false;
 
-<<<<<<< HEAD
-	down_read(&nm_i->nat_tree_lock);
-=======
 	f2fs_down_read(&nm_i->nat_tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e = __lookup_nat_cache(nm_i, nid);
 	if (e) {
 		if (!get_nat_flag(e, IS_CHECKPOINTED) &&
 				!get_nat_flag(e, HAS_FSYNCED_INODE))
 			need = true;
 	}
-<<<<<<< HEAD
-	up_read(&nm_i->nat_tree_lock);
-	return need;
-}
-
-bool is_checkpointed_node(struct f2fs_sb_info *sbi, nid_t nid)
-=======
 	f2fs_up_read(&nm_i->nat_tree_lock);
 	return need;
 }
 
 bool f2fs_is_checkpointed_node(struct f2fs_sb_info *sbi, nid_t nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct nat_entry *e;
 	bool is_cp = true;
 
-<<<<<<< HEAD
-	down_read(&nm_i->nat_tree_lock);
-	e = __lookup_nat_cache(nm_i, nid);
-	if (e && !get_nat_flag(e, IS_CHECKPOINTED))
-		is_cp = false;
-	up_read(&nm_i->nat_tree_lock);
-	return is_cp;
-}
-
-bool need_inode_block_update(struct f2fs_sb_info *sbi, nid_t ino)
-=======
 	f2fs_down_read(&nm_i->nat_tree_lock);
 	e = __lookup_nat_cache(nm_i, nid);
 	if (e && !get_nat_flag(e, IS_CHECKPOINTED))
@@ -582,65 +409,26 @@ bool need_inode_block_update(struct f2fs_sb_info *sbi, nid_t ino)
 }
 
 bool f2fs_need_inode_block_update(struct f2fs_sb_info *sbi, nid_t ino)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct nat_entry *e;
 	bool need_update = true;
 
-<<<<<<< HEAD
-	down_read(&nm_i->nat_tree_lock);
-=======
 	f2fs_down_read(&nm_i->nat_tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e = __lookup_nat_cache(nm_i, ino);
 	if (e && get_nat_flag(e, HAS_LAST_FSYNC) &&
 			(get_nat_flag(e, IS_CHECKPOINTED) ||
 			 get_nat_flag(e, HAS_FSYNCED_INODE)))
 		need_update = false;
-<<<<<<< HEAD
-	up_read(&nm_i->nat_tree_lock);
-	return need_update;
-}
-
-static struct nat_entry *grab_nat_entry(struct f2fs_nm_info *nm_i, nid_t nid)
-{
-	struct nat_entry *new;
-
-	new = f2fs_kmem_cache_alloc(nat_entry_slab, GFP_NOFS);
-	f2fs_radix_tree_insert(&nm_i->nat_root, nid, new);
-	memset(new, 0, sizeof(struct nat_entry));
-	nat_set_nid(new, nid);
-	nat_reset_flag(new);
-	list_add_tail(&new->list, &nm_i->nat_entries);
-	nm_i->nat_cnt++;
-	return new;
-}
-
-=======
 	f2fs_up_read(&nm_i->nat_tree_lock);
 	return need_update;
 }
 
 /* must be locked by nat_tree_lock */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cache_nat_entry(struct f2fs_sb_info *sbi, nid_t nid,
 						struct f2fs_nat_entry *ne)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
-<<<<<<< HEAD
-	struct nat_entry *e;
-
-	e = __lookup_nat_cache(nm_i, nid);
-	if (!e) {
-		e = grab_nat_entry(nm_i, nid);
-		node_info_from_raw_nat(&e->ni, ne);
-	} else {
-		f2fs_bug_on(sbi, nat_get_ino(e) != ne->ino ||
-				nat_get_blkaddr(e) != ne->block_addr ||
-				nat_get_version(e) != ne->version);
-	}
-=======
 	struct nat_entry *new, *e;
 
 	/* Let's mitigate lock contention of nat_tree_lock during checkpoint */
@@ -663,7 +451,6 @@ static void cache_nat_entry(struct f2fs_sb_info *sbi, nid_t nid,
 	f2fs_up_write(&nm_i->nat_tree_lock);
 	if (e != new)
 		__free_nat_entry(new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
@@ -671,20 +458,12 @@ static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct nat_entry *e;
-<<<<<<< HEAD
-
-	down_write(&nm_i->nat_tree_lock);
-	e = __lookup_nat_cache(nm_i, ni->nid);
-	if (!e) {
-		e = grab_nat_entry(nm_i, ni->nid);
-=======
 	struct nat_entry *new = __alloc_nat_entry(sbi, ni->nid, true);
 
 	f2fs_down_write(&nm_i->nat_tree_lock);
 	e = __lookup_nat_cache(nm_i, ni->nid);
 	if (!e) {
 		e = __init_nat_entry(nm_i, new, NULL, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		copy_node_info(&e->ni, ni);
 		f2fs_bug_on(sbi, ni->blk_addr == NEW_ADDR);
 	} else if (new_blkaddr == NEW_ADDR) {
@@ -696,12 +475,9 @@ static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
 		copy_node_info(&e->ni, ni);
 		f2fs_bug_on(sbi, ni->blk_addr != NULL_ADDR);
 	}
-<<<<<<< HEAD
-=======
 	/* let's free early to reduce memory consumption */
 	if (e != new)
 		__free_nat_entry(new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sanity check */
 	f2fs_bug_on(sbi, nat_get_blkaddr(e) != ni->blk_addr);
@@ -709,36 +485,19 @@ static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
 			new_blkaddr == NULL_ADDR);
 	f2fs_bug_on(sbi, nat_get_blkaddr(e) == NEW_ADDR &&
 			new_blkaddr == NEW_ADDR);
-<<<<<<< HEAD
-	f2fs_bug_on(sbi, nat_get_blkaddr(e) != NEW_ADDR &&
-			nat_get_blkaddr(e) != NULL_ADDR &&
-=======
 	f2fs_bug_on(sbi, __is_valid_data_blkaddr(nat_get_blkaddr(e)) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new_blkaddr == NEW_ADDR);
 
 	/* increment version no as node is removed */
 	if (nat_get_blkaddr(e) != NEW_ADDR && new_blkaddr == NULL_ADDR) {
 		unsigned char version = nat_get_version(e);
-<<<<<<< HEAD
-		nat_set_version(e, inc_node_version(version));
-
-		/* in order to reuse the nid */
-		if (nm_i->next_scan_nid > ni->nid)
-			nm_i->next_scan_nid = ni->nid;
-=======
 
 		nat_set_version(e, inc_node_version(version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* change address */
 	nat_set_blkaddr(e, new_blkaddr);
-<<<<<<< HEAD
-	if (new_blkaddr == NEW_ADDR || new_blkaddr == NULL_ADDR)
-=======
 	if (!__is_valid_data_blkaddr(new_blkaddr))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_nat_flag(e, IS_CHECKPOINTED, false);
 	__set_nat_cache_dirty(nm_i, e);
 
@@ -750,41 +509,14 @@ static void set_node_addr(struct f2fs_sb_info *sbi, struct node_info *ni,
 			set_nat_flag(e, HAS_FSYNCED_INODE, true);
 		set_nat_flag(e, HAS_LAST_FSYNC, fsync_done);
 	}
-<<<<<<< HEAD
-	up_write(&nm_i->nat_tree_lock);
-}
-
-int try_to_free_nats(struct f2fs_sb_info *sbi, int nr_shrink)
-=======
 	f2fs_up_write(&nm_i->nat_tree_lock);
 }
 
 int f2fs_try_to_free_nats(struct f2fs_sb_info *sbi, int nr_shrink)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	int nr = nr_shrink;
 
-<<<<<<< HEAD
-	if (!down_write_trylock(&nm_i->nat_tree_lock))
-		return 0;
-
-	while (nr_shrink && !list_empty(&nm_i->nat_entries)) {
-		struct nat_entry *ne;
-		ne = list_first_entry(&nm_i->nat_entries,
-					struct nat_entry, list);
-		__del_from_nat_cache(nm_i, ne);
-		nr_shrink--;
-	}
-	up_write(&nm_i->nat_tree_lock);
-	return nr - nr_shrink;
-}
-
-/*
- * This function always returns success
- */
-void get_node_info(struct f2fs_sb_info *sbi, nid_t nid, struct node_info *ni)
-=======
 	if (!f2fs_down_write_trylock(&nm_i->nat_tree_lock))
 		return 0;
 
@@ -813,7 +545,6 @@ void get_node_info(struct f2fs_sb_info *sbi, nid_t nid, struct node_info *ni)
 
 int f2fs_get_node_info(struct f2fs_sb_info *sbi, nid_t nid,
 				struct node_info *ni, bool checkpoint_context)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_HOT_DATA);
@@ -823,14 +554,6 @@ int f2fs_get_node_info(struct f2fs_sb_info *sbi, nid_t nid,
 	struct page *page = NULL;
 	struct f2fs_nat_entry ne;
 	struct nat_entry *e;
-<<<<<<< HEAD
-	int i;
-
-	ni->nid = nid;
-
-	/* Check nat cache */
-	down_read(&nm_i->nat_tree_lock);
-=======
 	pgoff_t index;
 	block_t blkaddr;
 	int i;
@@ -839,23 +562,11 @@ int f2fs_get_node_info(struct f2fs_sb_info *sbi, nid_t nid,
 retry:
 	/* Check nat cache */
 	f2fs_down_read(&nm_i->nat_tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e = __lookup_nat_cache(nm_i, nid);
 	if (e) {
 		ni->ino = nat_get_ino(e);
 		ni->blk_addr = nat_get_blkaddr(e);
 		ni->version = nat_get_version(e);
-<<<<<<< HEAD
-		up_read(&nm_i->nat_tree_lock);
-		return;
-	}
-
-	memset(&ne, 0, sizeof(struct f2fs_nat_entry));
-
-	/* Check current segment summary */
-	down_read(&curseg->journal_rwsem);
-	i = lookup_journal_in_cursum(journal, NAT_JOURNAL, nid, 0);
-=======
 		f2fs_up_read(&nm_i->nat_tree_lock);
 		return 0;
 	}
@@ -875,19 +586,11 @@ retry:
 	}
 
 	i = f2fs_lookup_journal_in_cursum(journal, NAT_JOURNAL, nid, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (i >= 0) {
 		ne = nat_in_journal(journal, i);
 		node_info_from_raw_nat(ni, &ne);
 	}
 	up_read(&curseg->journal_rwsem);
-<<<<<<< HEAD
-	if (i >= 0)
-		goto cache;
-
-	/* Fill node_info from nat page */
-	page = get_current_nat_page(sbi, start_nid);
-=======
 	if (i >= 0) {
 		f2fs_up_read(&nm_i->nat_tree_lock);
 		goto cache;
@@ -901,27 +604,11 @@ retry:
 	if (IS_ERR(page))
 		return PTR_ERR(page);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nat_blk = (struct f2fs_nat_block *)page_address(page);
 	ne = nat_blk->entries[nid - start_nid];
 	node_info_from_raw_nat(ni, &ne);
 	f2fs_put_page(page, 1);
 cache:
-<<<<<<< HEAD
-	up_read(&nm_i->nat_tree_lock);
-	/* cache nat entry */
-	down_write(&nm_i->nat_tree_lock);
-	cache_nat_entry(sbi, nid, &ne);
-	up_write(&nm_i->nat_tree_lock);
-}
-
-pgoff_t get_next_page_offset(struct dnode_of_data *dn, pgoff_t pgofs)
-{
-	const long direct_index = ADDRS_PER_INODE(dn->inode);
-	const long direct_blks = ADDRS_PER_BLOCK;
-	const long indirect_blks = ADDRS_PER_BLOCK * NIDS_PER_BLOCK;
-	unsigned int skipped_unit = ADDRS_PER_BLOCK;
-=======
 	blkaddr = le32_to_cpu(ne.block_addr);
 	if (__is_valid_data_blkaddr(blkaddr) &&
 		!f2fs_is_valid_blkaddr(sbi, blkaddr, DATA_GENERIC_ENHANCE))
@@ -961,7 +648,6 @@ pgoff_t f2fs_get_next_page_offset(struct dnode_of_data *dn, pgoff_t pgofs)
 	const long direct_blks = ADDRS_PER_BLOCK(dn->inode);
 	const long indirect_blks = ADDRS_PER_BLOCK(dn->inode) * NIDS_PER_BLOCK;
 	unsigned int skipped_unit = ADDRS_PER_BLOCK(dn->inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cur_level = dn->cur_level;
 	int max_level = dn->max_level;
 	pgoff_t base = 0;
@@ -975,15 +661,10 @@ pgoff_t f2fs_get_next_page_offset(struct dnode_of_data *dn, pgoff_t pgofs)
 	switch (dn->max_level) {
 	case 3:
 		base += 2 * indirect_blks;
-<<<<<<< HEAD
-	case 2:
-		base += 2 * direct_blks;
-=======
 		fallthrough;
 	case 2:
 		base += 2 * direct_blks;
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		base += direct_index;
 		break;
@@ -1002,15 +683,9 @@ static int get_node_path(struct inode *inode, long block,
 				int offset[4], unsigned int noffset[4])
 {
 	const long direct_index = ADDRS_PER_INODE(inode);
-<<<<<<< HEAD
-	const long direct_blks = ADDRS_PER_BLOCK;
-	const long dptrs_per_blk = NIDS_PER_BLOCK;
-	const long indirect_blks = ADDRS_PER_BLOCK * NIDS_PER_BLOCK;
-=======
 	const long direct_blks = ADDRS_PER_BLOCK(inode);
 	const long dptrs_per_blk = NIDS_PER_BLOCK;
 	const long indirect_blks = ADDRS_PER_BLOCK(inode) * NIDS_PER_BLOCK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const long dindirect_blks = indirect_blks * NIDS_PER_BLOCK;
 	int n = 0;
 	int level = 0;
@@ -1072,11 +747,7 @@ static int get_node_path(struct inode *inode, long block,
 		level = 3;
 		goto got;
 	} else {
-<<<<<<< HEAD
-		BUG();
-=======
 		return -E2BIG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 got:
 	return level;
@@ -1085,16 +756,9 @@ got:
 /*
  * Caller should call f2fs_put_dnode(dn).
  * Also, it should grab and release a rwsem by calling f2fs_lock_op() and
-<<<<<<< HEAD
- * f2fs_unlock_op() only if ro is not set RDONLY_NODE.
- * In the case of RDONLY_NODE, we don't need to care about mutex.
- */
-int get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
-=======
  * f2fs_unlock_op() only if mode is set with ALLOC_NODE.
  */
 int f2fs_get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
 	struct page *npage[4];
@@ -1106,21 +770,14 @@ int f2fs_get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
 	int err = 0;
 
 	level = get_node_path(dn->inode, index, offset, noffset);
-<<<<<<< HEAD
-=======
 	if (level < 0)
 		return level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nids[0] = dn->inode->i_ino;
 	npage[0] = dn->inode_page;
 
 	if (!npage[0]) {
-<<<<<<< HEAD
-		npage[0] = get_node_page(sbi, nids[0]);
-=======
 		npage[0] = f2fs_get_node_page(sbi, nids[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(npage[0]))
 			return PTR_ERR(npage[0]);
 	}
@@ -1144,41 +801,24 @@ int f2fs_get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
 
 		if (!nids[i] && mode == ALLOC_NODE) {
 			/* alloc new node */
-<<<<<<< HEAD
-			if (!alloc_nid(sbi, &(nids[i]))) {
-=======
 			if (!f2fs_alloc_nid(sbi, &(nids[i]))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -ENOSPC;
 				goto release_pages;
 			}
 
 			dn->nid = nids[i];
-<<<<<<< HEAD
-			npage[i] = new_node_page(dn, noffset[i], NULL);
-			if (IS_ERR(npage[i])) {
-				alloc_nid_failed(sbi, nids[i]);
-=======
 			npage[i] = f2fs_new_node_page(dn, noffset[i]);
 			if (IS_ERR(npage[i])) {
 				f2fs_alloc_nid_failed(sbi, nids[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = PTR_ERR(npage[i]);
 				goto release_pages;
 			}
 
 			set_nid(parent, offset[i - 1], nids[i], i == 1);
-<<<<<<< HEAD
-			alloc_nid_done(sbi, nids[i]);
-			done = true;
-		} else if (mode == LOOKUP_NODE_RA && i == level && level > 1) {
-			npage[i] = get_node_page_ra(parent, offset[i - 1]);
-=======
 			f2fs_alloc_nid_done(sbi, nids[i]);
 			done = true;
 		} else if (mode == LOOKUP_NODE_RA && i == level && level > 1) {
 			npage[i] = f2fs_get_node_page_ra(parent, offset[i - 1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(npage[i])) {
 				err = PTR_ERR(npage[i]);
 				goto release_pages;
@@ -1193,11 +833,7 @@ int f2fs_get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
 		}
 
 		if (!done) {
-<<<<<<< HEAD
-			npage[i] = get_node_page(sbi, nids[i]);
-=======
 			npage[i] = f2fs_get_node_page(sbi, nids[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(npage[i])) {
 				err = PTR_ERR(npage[i]);
 				f2fs_put_page(npage[0], 0);
@@ -1212,9 +848,6 @@ int f2fs_get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
 	dn->nid = nids[level];
 	dn->ofs_in_node = offset[level];
 	dn->node_page = npage[level];
-<<<<<<< HEAD
-	dn->data_blkaddr = datablock_addr(dn->node_page, dn->ofs_in_node);
-=======
 	dn->data_blkaddr = f2fs_data_blkaddr(dn);
 
 	if (is_inode_flag_set(dn->inode, FI_COMPRESSED_FILE) &&
@@ -1244,7 +877,6 @@ int f2fs_get_dnode_of_data(struct dnode_of_data *dn, pgoff_t index, int mode)
 					fofs, blkaddr, cluster_size, c_len);
 	}
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 release_pages:
@@ -1257,50 +889,11 @@ release_out:
 	if (err == -ENOENT) {
 		dn->cur_level = i;
 		dn->max_level = level;
-<<<<<<< HEAD
-=======
 		dn->ofs_in_node = offset[level];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
-<<<<<<< HEAD
-static void truncate_node(struct dnode_of_data *dn)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
-	struct node_info ni;
-
-	get_node_info(sbi, dn->nid, &ni);
-	if (dn->inode->i_blocks == 0) {
-		f2fs_bug_on(sbi, ni.blk_addr != NULL_ADDR);
-		goto invalidate;
-	}
-	f2fs_bug_on(sbi, ni.blk_addr == NULL_ADDR);
-
-	/* Deallocate node address */
-	invalidate_blocks(sbi, ni.blk_addr);
-	dec_valid_node_count(sbi, dn->inode);
-	set_node_addr(sbi, &ni, NULL_ADDR, false);
-
-	if (dn->nid == dn->inode->i_ino) {
-		remove_orphan_inode(sbi, dn->nid);
-		dec_valid_inode_count(sbi);
-	} else {
-		sync_inode_page(dn);
-	}
-invalidate:
-	clear_node_page_dirty(dn->node_page);
-	set_sbi_flag(sbi, SBI_IS_DIRTY);
-
-	f2fs_put_page(dn->node_page, 1);
-
-	invalidate_mapping_pages(NODE_MAPPING(sbi),
-			dn->node_page->index, dn->node_page->index);
-
-	dn->node_page = NULL;
-	trace_f2fs_truncate_node(dn->inode, dn->nid, ni.blk_addr);
-=======
 static int truncate_node(struct dnode_of_data *dn)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
@@ -1336,41 +929,24 @@ static int truncate_node(struct dnode_of_data *dn)
 	trace_f2fs_truncate_node(dn->inode, dn->nid, ni.blk_addr);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int truncate_dnode(struct dnode_of_data *dn)
 {
-<<<<<<< HEAD
-	struct page *page;
-=======
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
 	struct page *page;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dn->nid == 0)
 		return 1;
 
 	/* get direct node */
-<<<<<<< HEAD
-	page = get_node_page(F2FS_I_SB(dn->inode), dn->nid);
-	if (IS_ERR(page) && PTR_ERR(page) == -ENOENT)
-=======
 	page = f2fs_get_node_page(sbi, dn->nid);
 	if (PTR_ERR(page) == -ENOENT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	else if (IS_ERR(page))
 		return PTR_ERR(page);
 
-<<<<<<< HEAD
-	/* Make dnode_of_data for parameter */
-	dn->node_page = page;
-	dn->ofs_in_node = 0;
-	truncate_data_blocks(dn);
-	truncate_node(dn);
-=======
 	if (IS_INODE(page) || ino_of_node(page) != dn->inode->i_ino) {
 		f2fs_err(sbi, "incorrect node reference, ino: %lu, nid: %u, ino_of_node: %u",
 				dn->inode->i_ino, dn->nid, ino_of_node(page));
@@ -1390,7 +966,6 @@ static int truncate_dnode(struct dnode_of_data *dn)
 		return err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1410,21 +985,14 @@ static int truncate_nodes(struct dnode_of_data *dn, unsigned int nofs,
 
 	trace_f2fs_truncate_nodes_enter(dn->inode, dn->nid, dn->data_blkaddr);
 
-<<<<<<< HEAD
-	page = get_node_page(F2FS_I_SB(dn->inode), dn->nid);
-=======
 	page = f2fs_get_node_page(F2FS_I_SB(dn->inode), dn->nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(page)) {
 		trace_f2fs_truncate_nodes_exit(dn->inode, PTR_ERR(page));
 		return PTR_ERR(page);
 	}
 
-<<<<<<< HEAD
-=======
 	f2fs_ra_node_pages(page, ofs, NIDS_PER_BLOCK);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rn = F2FS_NODE(page);
 	if (depth < 3) {
 		for (i = ofs; i < NIDS_PER_BLOCK; i++, freed++) {
@@ -1462,13 +1030,9 @@ static int truncate_nodes(struct dnode_of_data *dn, unsigned int nofs,
 	if (!ofs) {
 		/* remove current indirect node */
 		dn->node_page = page;
-<<<<<<< HEAD
-		truncate_node(dn);
-=======
 		ret = truncate_node(dn);
 		if (ret)
 			goto out_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		freed++;
 	} else {
 		f2fs_put_page(page, 1);
@@ -1499,11 +1063,7 @@ static int truncate_partial_nodes(struct dnode_of_data *dn,
 	/* get indirect nodes in the path */
 	for (i = 0; i < idx + 1; i++) {
 		/* reference count'll be increased */
-<<<<<<< HEAD
-		pages[i] = get_node_page(F2FS_I_SB(dn->inode), nid[i]);
-=======
 		pages[i] = f2fs_get_node_page(F2FS_I_SB(dn->inode), nid[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(pages[i])) {
 			err = PTR_ERR(pages[i]);
 			idx = i - 1;
@@ -1512,11 +1072,8 @@ static int truncate_partial_nodes(struct dnode_of_data *dn,
 		nid[i + 1] = get_nid(pages[i], offset[i + 1], false);
 	}
 
-<<<<<<< HEAD
-=======
 	f2fs_ra_node_pages(pages[idx], offset[idx + 1], NIDS_PER_BLOCK);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* free direct nodes linked to a partial indirect node */
 	for (i = offset[idx + 1]; i < NIDS_PER_BLOCK; i++) {
 		child_nid = get_nid(pages[idx], i, false);
@@ -1533,13 +1090,9 @@ static int truncate_partial_nodes(struct dnode_of_data *dn,
 	if (offset[idx + 1] == 0) {
 		dn->node_page = pages[idx];
 		dn->nid = nid[idx];
-<<<<<<< HEAD
-		truncate_node(dn);
-=======
 		err = truncate_node(dn);
 		if (err)
 			goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		f2fs_put_page(pages[idx], 1);
 	}
@@ -1558,11 +1111,7 @@ fail:
 /*
  * All the block addresses of data and nodes should be nullified.
  */
-<<<<<<< HEAD
-int truncate_inode_blocks(struct inode *inode, pgoff_t from)
-=======
 int f2fs_truncate_inode_blocks(struct inode *inode, pgoff_t from)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	int err = 0, cont = 1;
@@ -1575,17 +1124,12 @@ int f2fs_truncate_inode_blocks(struct inode *inode, pgoff_t from)
 	trace_f2fs_truncate_inode_blocks_enter(inode, from);
 
 	level = get_node_path(inode, from, offset, noffset);
-<<<<<<< HEAD
-restart:
-	page = get_node_page(sbi, inode->i_ino);
-=======
 	if (level < 0) {
 		trace_f2fs_truncate_inode_blocks_exit(inode, level);
 		return level;
 	}
 
 	page = f2fs_get_node_page(sbi, inode->i_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(page)) {
 		trace_f2fs_truncate_inode_blocks_exit(inode, PTR_ERR(page));
 		return PTR_ERR(page);
@@ -1648,16 +1192,8 @@ skip_partial:
 		if (offset[1] == 0 &&
 				ri->i_nid[offset[0] - NODE_DIR1_BLOCK]) {
 			lock_page(page);
-<<<<<<< HEAD
-			if (unlikely(page->mapping != NODE_MAPPING(sbi))) {
-				f2fs_put_page(page, 1);
-				goto restart;
-			}
-			f2fs_wait_on_page_writeback(page, NODE, true);
-=======
 			BUG_ON(page->mapping != NODE_MAPPING(sbi));
 			f2fs_wait_on_page_writeback(page, NODE, true, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ri->i_nid[offset[0] - NODE_DIR1_BLOCK] = 0;
 			set_page_dirty(page);
 			unlock_page(page);
@@ -1672,41 +1208,18 @@ fail:
 	return err > 0 ? 0 : err;
 }
 
-<<<<<<< HEAD
-int truncate_xattr_node(struct inode *inode, struct page *page)
-=======
 /* caller must lock inode page */
 int f2fs_truncate_xattr_node(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
 	nid_t nid = F2FS_I(inode)->i_xattr_nid;
 	struct dnode_of_data dn;
 	struct page *npage;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nid)
 		return 0;
 
-<<<<<<< HEAD
-	npage = get_node_page(sbi, nid);
-	if (IS_ERR(npage))
-		return PTR_ERR(npage);
-
-	F2FS_I(inode)->i_xattr_nid = 0;
-
-	/* need to do checkpoint during fsync */
-	F2FS_I(inode)->xattr_ver = cur_cp_version(F2FS_CKPT(sbi));
-
-	set_new_dnode(&dn, inode, page, npage, nid);
-
-	if (page)
-		dn.inode_page_locked = true;
-	truncate_node(&dn);
-=======
 	npage = f2fs_get_node_page(sbi, nid);
 	if (IS_ERR(npage))
 		return PTR_ERR(npage);
@@ -1720,7 +1233,6 @@ int f2fs_truncate_xattr_node(struct inode *inode)
 
 	f2fs_i_xnid_write(inode, 0);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1728,29 +1240,17 @@ int f2fs_truncate_xattr_node(struct inode *inode)
  * Caller should grab and release a rwsem by calling f2fs_lock_op() and
  * f2fs_unlock_op().
  */
-<<<<<<< HEAD
-int remove_inode_page(struct inode *inode)
-=======
 int f2fs_remove_inode_page(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dnode_of_data dn;
 	int err;
 
 	set_new_dnode(&dn, inode, NULL, NULL, inode->i_ino);
-<<<<<<< HEAD
-	err = get_dnode_of_data(&dn, 0, LOOKUP_NODE);
-	if (err)
-		return err;
-
-	err = truncate_xattr_node(inode, dn.inode_page);
-=======
 	err = f2fs_get_dnode_of_data(&dn, 0, LOOKUP_NODE);
 	if (err)
 		return err;
 
 	err = f2fs_truncate_xattr_node(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		f2fs_put_dnode(&dn);
 		return err;
@@ -1759,20 +1259,6 @@ int f2fs_remove_inode_page(struct inode *inode)
 	/* remove potential inline_data blocks */
 	if (S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) ||
 				S_ISLNK(inode->i_mode))
-<<<<<<< HEAD
-		truncate_data_blocks_range(&dn, 1);
-
-	/* 0 is possible, after f2fs_new_inode() has failed */
-	f2fs_bug_on(F2FS_I_SB(inode),
-			inode->i_blocks != 0 && inode->i_blocks != 1);
-
-	/* will put inode & node pages */
-	truncate_node(&dn);
-	return 0;
-}
-
-struct page *new_inode_page(struct inode *inode)
-=======
 		f2fs_truncate_data_blocks_range(&dn, 1);
 
 	/* 0 is possible, after f2fs_new_inode() has failed */
@@ -1798,7 +1284,6 @@ struct page *new_inode_page(struct inode *inode)
 }
 
 struct page *f2fs_new_inode_page(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dnode_of_data dn;
 
@@ -1806,43 +1291,6 @@ struct page *f2fs_new_inode_page(struct inode *inode)
 	set_new_dnode(&dn, inode, NULL, NULL, inode->i_ino);
 
 	/* caller should f2fs_put_page(page, 1); */
-<<<<<<< HEAD
-	return new_node_page(&dn, 0, NULL);
-}
-
-struct page *new_node_page(struct dnode_of_data *dn,
-				unsigned int ofs, struct page *ipage)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
-	struct node_info old_ni, new_ni;
-	struct page *page;
-	int err;
-
-	if (unlikely(is_inode_flag_set(F2FS_I(dn->inode), FI_NO_ALLOC)))
-		return ERR_PTR(-EPERM);
-
-	page = grab_cache_page(NODE_MAPPING(sbi), dn->nid);
-	if (!page)
-		return ERR_PTR(-ENOMEM);
-
-	if (unlikely(!inc_valid_node_count(sbi, dn->inode))) {
-		err = -ENOSPC;
-		goto fail;
-	}
-
-	get_node_info(sbi, dn->nid, &old_ni);
-
-	/* Reinitialize old_ni with new node page */
-	f2fs_bug_on(sbi, old_ni.blk_addr != NULL_ADDR);
-	new_ni = old_ni;
-	new_ni.ino = dn->inode->i_ino;
-	set_node_addr(sbi, &new_ni, NEW_ADDR, false);
-
-	f2fs_wait_on_page_writeback(page, NODE, true);
-	fill_node_footer(page, dn->nid, dn->inode->i_ino, ofs, true);
-	set_cold_node(dn->inode, page);
-	SetPageUptodate(page);
-=======
 	return f2fs_new_node_page(&dn, 0);
 }
 
@@ -1888,28 +1336,14 @@ struct page *f2fs_new_node_page(struct dnode_of_data *dn, unsigned int ofs)
 	set_cold_node(page, S_ISDIR(dn->inode->i_mode));
 	if (!PageUptodate(page))
 		SetPageUptodate(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (set_page_dirty(page))
 		dn->node_changed = true;
 
 	if (f2fs_has_xattr_block(ofs))
-<<<<<<< HEAD
-		F2FS_I(dn->inode)->i_xattr_nid = dn->nid;
-
-	dn->node_page = page;
-	if (ipage)
-		update_inode(dn->inode, ipage);
-	else
-		sync_inode_page(dn);
-	if (ofs == 0)
-		inc_valid_inode_count(sbi);
-
-=======
 		f2fs_i_xnid_write(dn->inode, dn->nid);
 
 	if (ofs == 0)
 		inc_valid_inode_count(sbi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return page;
 
 fail:
@@ -1923,27 +1357,13 @@ fail:
  * 0: f2fs_put_page(page, 0)
  * LOCKED_PAGE or error: f2fs_put_page(page, 1)
  */
-<<<<<<< HEAD
-static int read_node_page(struct page *page, int rw)
-=======
 static int read_node_page(struct page *page, blk_opf_t op_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_sb_info *sbi = F2FS_P_SB(page);
 	struct node_info ni;
 	struct f2fs_io_info fio = {
 		.sbi = sbi,
 		.type = NODE,
-<<<<<<< HEAD
-		.rw = rw,
-		.page = page,
-		.encrypted_page = NULL,
-	};
-
-	get_node_info(sbi, page->index, &ni);
-
-	if (unlikely(ni.blk_addr == NULL_ADDR)) {
-=======
 		.op = REQ_OP_READ,
 		.op_flags = op_flags,
 		.page = page,
@@ -1965,18 +1385,10 @@ static int read_node_page(struct page *page, blk_opf_t op_flags)
 
 	/* NEW_ADDR can be seen, after cp_error drops some dirty node pages */
 	if (unlikely(ni.blk_addr == NULL_ADDR || ni.blk_addr == NEW_ADDR)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ClearPageUptodate(page);
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	if (PageUptodate(page))
-		return LOCKED_PAGE;
-
-	fio.new_blkaddr = fio.old_blkaddr = ni.blk_addr;
-	return f2fs_submit_page_bio(&fio);
-=======
 	fio.new_blkaddr = fio.old_blkaddr = ni.blk_addr;
 
 	err = f2fs_submit_page_bio(&fio);
@@ -1985,63 +1397,18 @@ static int read_node_page(struct page *page, blk_opf_t op_flags)
 		f2fs_update_iostat(sbi, NULL, FS_NODE_READ_IO, F2FS_BLKSIZE);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Readahead a node page
  */
-<<<<<<< HEAD
-void ra_node_page(struct f2fs_sb_info *sbi, nid_t nid)
-=======
 void f2fs_ra_node_page(struct f2fs_sb_info *sbi, nid_t nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct page *apage;
 	int err;
 
 	if (!nid)
 		return;
-<<<<<<< HEAD
-	f2fs_bug_on(sbi, check_nid_range(sbi, nid));
-
-	rcu_read_lock();
-	apage = radix_tree_lookup(&NODE_MAPPING(sbi)->page_tree, nid);
-	rcu_read_unlock();
-	if (apage)
-		return;
-
-	apage = grab_cache_page(NODE_MAPPING(sbi), nid);
-	if (!apage)
-		return;
-
-	err = read_node_page(apage, READA);
-	f2fs_put_page(apage, err ? 1 : 0);
-}
-
-/*
- * readahead MAX_RA_NODE number of node pages.
- */
-static void ra_node_pages(struct page *parent, int start)
-{
-	struct f2fs_sb_info *sbi = F2FS_P_SB(parent);
-	struct blk_plug plug;
-	int i, end;
-	nid_t nid;
-
-	blk_start_plug(&plug);
-
-	/* Then, try readahead for siblings of the desired node */
-	end = start + MAX_RA_NODE;
-	end = min(end, NIDS_PER_BLOCK);
-	for (i = start; i < end; i++) {
-		nid = get_nid(parent, i, false);
-		ra_node_page(sbi, nid);
-	}
-	blk_finish_plug(&plug);
-}
-
-=======
 	if (f2fs_check_nid_range(sbi, nid))
 		return;
 
@@ -2057,7 +1424,6 @@ static void ra_node_pages(struct page *parent, int start)
 	f2fs_put_page(apage, err ? 1 : 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct page *__get_node_page(struct f2fs_sb_info *sbi, pgoff_t nid,
 					struct page *parent, int start)
 {
@@ -2066,19 +1432,6 @@ static struct page *__get_node_page(struct f2fs_sb_info *sbi, pgoff_t nid,
 
 	if (!nid)
 		return ERR_PTR(-ENOENT);
-<<<<<<< HEAD
-	f2fs_bug_on(sbi, check_nid_range(sbi, nid));
-repeat:
-	page = grab_cache_page(NODE_MAPPING(sbi), nid);
-	if (!page)
-		return ERR_PTR(-ENOMEM);
-
-	err = read_node_page(page, READ_SYNC);
-	if (err < 0) {
-		f2fs_put_page(page, 1);
-		return ERR_PTR(err);
-	} else if (err == LOCKED_PAGE) {
-=======
 	if (f2fs_check_nid_range(sbi, nid))
 		return ERR_PTR(-EINVAL);
 repeat:
@@ -2091,39 +1444,18 @@ repeat:
 		goto out_put_err;
 	} else if (err == LOCKED_PAGE) {
 		err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto page_hit;
 	}
 
 	if (parent)
-<<<<<<< HEAD
-		ra_node_pages(parent, start + 1);
-
-	lock_page(page);
-
-	if (unlikely(!PageUptodate(page))) {
-		f2fs_put_page(page, 1);
-		return ERR_PTR(-EIO);
-	}
-=======
 		f2fs_ra_node_pages(parent, start + 1, MAX_RA_NODE);
 
 	lock_page(page);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(page->mapping != NODE_MAPPING(sbi))) {
 		f2fs_put_page(page, 1);
 		goto repeat;
 	}
-<<<<<<< HEAD
-page_hit:
-	mark_page_accessed(page);
-	f2fs_bug_on(sbi, nid != nid_of_node(page));
-	return page;
-}
-
-struct page *get_node_page(struct f2fs_sb_info *sbi, pgoff_t nid)
-=======
 
 	if (unlikely(!PageUptodate(page))) {
 		err = -EIO;
@@ -2156,16 +1488,11 @@ out_put_err:
 }
 
 struct page *f2fs_get_node_page(struct f2fs_sb_info *sbi, pgoff_t nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __get_node_page(sbi, nid, NULL, 0);
 }
 
-<<<<<<< HEAD
-struct page *get_node_page_ra(struct page *parent, int start)
-=======
 struct page *f2fs_get_node_page_ra(struct page *parent, int start)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_sb_info *sbi = F2FS_P_SB(parent);
 	nid_t nid = get_nid(parent, start, false);
@@ -2173,27 +1500,6 @@ struct page *f2fs_get_node_page_ra(struct page *parent, int start)
 	return __get_node_page(sbi, nid, parent, start);
 }
 
-<<<<<<< HEAD
-void sync_inode_page(struct dnode_of_data *dn)
-{
-	int ret = 0;
-
-	if (IS_INODE(dn->node_page) || dn->inode_page == dn->node_page) {
-		ret = update_inode(dn->inode, dn->node_page);
-	} else if (dn->inode_page) {
-		if (!dn->inode_page_locked)
-			lock_page(dn->inode_page);
-		ret = update_inode(dn->inode, dn->inode_page);
-		if (!dn->inode_page_locked)
-			unlock_page(dn->inode_page);
-	} else {
-		ret = update_inode_page(dn->inode);
-	}
-	dn->node_changed = ret ? true: false;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void flush_inline_data(struct f2fs_sb_info *sbi, nid_t ino)
 {
 	struct inode *inode;
@@ -2205,21 +1511,11 @@ static void flush_inline_data(struct f2fs_sb_info *sbi, nid_t ino)
 	if (!inode)
 		return;
 
-<<<<<<< HEAD
-	page = find_get_page(inode->i_mapping, 0);
-	if (!page)
-		goto iput_out;
-
-	if (!trylock_page(page))
-		goto release_out;
-
-=======
 	page = f2fs_pagecache_get_page(inode->i_mapping, 0,
 					FGP_LOCK|FGP_NOWAIT, 0);
 	if (!page)
 		goto iput_out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!PageUptodate(page))
 		goto page_out;
 
@@ -2231,54 +1527,15 @@ static void flush_inline_data(struct f2fs_sb_info *sbi, nid_t ino)
 
 	ret = f2fs_write_inline_data(inode, page);
 	inode_dec_dirty_pages(inode);
-<<<<<<< HEAD
-	if (ret)
-		set_page_dirty(page);
-page_out:
-	unlock_page(page);
-release_out:
-	f2fs_put_page(page, 0);
-=======
 	f2fs_remove_dirty_inode(inode);
 	if (ret)
 		set_page_dirty(page);
 page_out:
 	f2fs_put_page(page, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iput_out:
 	iput(inode);
 }
 
-<<<<<<< HEAD
-int sync_node_pages(struct f2fs_sb_info *sbi, nid_t ino,
-					struct writeback_control *wbc)
-{
-	pgoff_t index, end;
-	struct pagevec pvec;
-	int step = ino ? 2 : 0;
-	int nwritten = 0;
-
-	pagevec_init(&pvec, 0);
-
-next_step:
-	index = 0;
-	end = ULONG_MAX;
-
-	while (index <= end) {
-		int i, nr_pages;
-		nr_pages = pagevec_lookup_tag(&pvec, NODE_MAPPING(sbi), &index,
-				PAGECACHE_TAG_DIRTY,
-				min(end - index, (pgoff_t)PAGEVEC_SIZE-1) + 1);
-		if (nr_pages == 0)
-			break;
-
-		for (i = 0; i < nr_pages; i++) {
-			struct page *page = pvec.pages[i];
-
-			if (unlikely(f2fs_cp_error(sbi))) {
-				pagevec_release(&pvec);
-				return -EIO;
-=======
 static struct page *last_fsync_dnode(struct f2fs_sb_info *sbi, nid_t ino)
 {
 	pgoff_t index;
@@ -2730,7 +1987,6 @@ next_step:
 					wbc->sync_mode == WB_SYNC_NONE) {
 				done = 1;
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/*
@@ -2747,18 +2003,8 @@ next_step:
 			if (step == 2 && (!IS_DNODE(page) ||
 						!is_cold_node(page)))
 				continue;
-<<<<<<< HEAD
-
-			/*
-			 * If an fsync mode,
-			 * we should not skip writing node pages.
-			 */
-lock_node:
-			if (ino && ino_of_node(page) == ino)
-=======
 lock_node:
 			if (wbc->sync_mode == WB_SYNC_ALL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lock_page(page);
 			else if (!trylock_page(page))
 				continue;
@@ -2768,22 +2014,12 @@ continue_unlock:
 				unlock_page(page);
 				continue;
 			}
-<<<<<<< HEAD
-			if (ino && ino_of_node(page) != ino)
-				goto continue_unlock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!PageDirty(page)) {
 				/* someone wrote it for us */
 				goto continue_unlock;
 			}
 
-<<<<<<< HEAD
-			/* flush inline_data */
-			if (!ino && is_inline_node(page)) {
-				clear_inline_node(page);
-=======
 			/* flush inline_data/inode, if it's async context. */
 			if (!do_balance)
 				goto write_node;
@@ -2791,34 +2027,11 @@ continue_unlock:
 			/* flush inline_data */
 			if (page_private_inline(page)) {
 				clear_page_private_inline(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				unlock_page(page);
 				flush_inline_data(sbi, ino_of_node(page));
 				goto lock_node;
 			}
 
-<<<<<<< HEAD
-			f2fs_wait_on_page_writeback(page, NODE, true);
-
-			BUG_ON(PageWriteback(page));
-			if (!clear_page_dirty_for_io(page))
-				goto continue_unlock;
-
-			/* called by fsync() */
-			if (ino && IS_DNODE(page)) {
-				set_fsync_mark(page, 1);
-				if (IS_INODE(page))
-					set_dentry_mark(page,
-						need_dentry_mark(sbi, ino));
-				nwritten++;
-			} else {
-				set_fsync_mark(page, 0);
-				set_dentry_mark(page, 0);
-			}
-
-			if (NODE_MAPPING(sbi)->a_ops->writepage(page, wbc))
-				unlock_page(page);
-=======
 			/* flush dirty inode */
 			if (IS_INODE(page) && flush_dirty_inode(page))
 				goto lock_node;
@@ -2837,16 +2050,11 @@ write_node:
 				unlock_page(page);
 			else if (submitted)
 				nwritten++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (--wbc->nr_to_write == 0)
 				break;
 		}
-<<<<<<< HEAD
-		pagevec_release(&pvec);
-=======
 		folio_batch_release(&fbatch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cond_resched();
 
 		if (wbc->nr_to_write == 0) {
@@ -2856,119 +2064,6 @@ write_node:
 	}
 
 	if (step < 2) {
-<<<<<<< HEAD
-		step++;
-		goto next_step;
-	}
-	return nwritten;
-}
-
-int wait_on_node_pages_writeback(struct f2fs_sb_info *sbi, nid_t ino)
-{
-	pgoff_t index = 0, end = ULONG_MAX;
-	struct pagevec pvec;
-	int ret2 = 0, ret = 0;
-
-	pagevec_init(&pvec, 0);
-
-	while (index <= end) {
-		int i, nr_pages;
-		nr_pages = pagevec_lookup_tag(&pvec, NODE_MAPPING(sbi), &index,
-				PAGECACHE_TAG_WRITEBACK,
-				min(end - index, (pgoff_t)PAGEVEC_SIZE-1) + 1);
-		if (nr_pages == 0)
-			break;
-
-		for (i = 0; i < nr_pages; i++) {
-			struct page *page = pvec.pages[i];
-
-			/* until radix tree lookup accepts end_index */
-			if (unlikely(page->index > end))
-				continue;
-
-			if (ino && ino_of_node(page) == ino) {
-				f2fs_wait_on_page_writeback(page, NODE, true);
-				if (TestClearPageError(page))
-					ret = -EIO;
-			}
-		}
-		pagevec_release(&pvec);
-		cond_resched();
-	}
-
-	if (unlikely(test_and_clear_bit(AS_ENOSPC, &NODE_MAPPING(sbi)->flags)))
-		ret2 = -ENOSPC;
-	if (unlikely(test_and_clear_bit(AS_EIO, &NODE_MAPPING(sbi)->flags)))
-		ret2 = -EIO;
-	if (!ret)
-		ret = ret2;
-	return ret;
-}
-
-static int f2fs_write_node_page(struct page *page,
-				struct writeback_control *wbc)
-{
-	struct f2fs_sb_info *sbi = F2FS_P_SB(page);
-	nid_t nid;
-	struct node_info ni;
-	struct f2fs_io_info fio = {
-		.sbi = sbi,
-		.type = NODE,
-		.rw = (wbc->sync_mode == WB_SYNC_ALL) ? WRITE_SYNC : WRITE,
-		.page = page,
-		.encrypted_page = NULL,
-	};
-
-	trace_f2fs_writepage(page, NODE);
-
-	if (unlikely(is_sbi_flag_set(sbi, SBI_POR_DOING)))
-		goto redirty_out;
-	if (unlikely(f2fs_cp_error(sbi)))
-		goto redirty_out;
-
-	/* get old block addr of this node page */
-	nid = nid_of_node(page);
-	f2fs_bug_on(sbi, page->index != nid);
-
-	if (wbc->for_reclaim) {
-		if (!down_read_trylock(&sbi->node_write))
-			goto redirty_out;
-	} else {
-		down_read(&sbi->node_write);
-	}
-
-	get_node_info(sbi, nid, &ni);
-
-	/* This page is already truncated */
-	if (unlikely(ni.blk_addr == NULL_ADDR)) {
-		ClearPageUptodate(page);
-		dec_page_count(sbi, F2FS_DIRTY_NODES);
-		up_read(&sbi->node_write);
-		unlock_page(page);
-		return 0;
-	}
-
-	set_page_writeback(page);
-	fio.old_blkaddr = ni.blk_addr;
-	write_node_page(nid, &fio);
-	set_node_addr(sbi, &ni, fio.new_blkaddr, is_fsync_dnode(page));
-	dec_page_count(sbi, F2FS_DIRTY_NODES);
-	up_read(&sbi->node_write);
-
-	if (wbc->for_reclaim)
-		f2fs_submit_merged_bio_cond(sbi, NULL, page, 0, NODE, WRITE);
-
-	unlock_page(page);
-
-	if (unlikely(f2fs_cp_error(sbi)))
-		f2fs_submit_merged_bio(sbi, NODE, WRITE);
-
-	return 0;
-
-redirty_out:
-	redirty_page_for_writepage(wbc, page);
-	return AOP_WRITEPAGE_ACTIVATE;
-=======
 		if (!is_sbi_flag_set(sbi, SBI_CP_DISABLED) &&
 				wbc->sync_mode == WB_SYNC_NONE && step == 1)
 			goto out;
@@ -3015,30 +2110,12 @@ int f2fs_wait_on_node_pages_writeback(struct f2fs_sb_info *sbi,
 	}
 
 	return filemap_check_errors(NODE_MAPPING(sbi));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int f2fs_write_node_pages(struct address_space *mapping,
 			    struct writeback_control *wbc)
 {
 	struct f2fs_sb_info *sbi = F2FS_M_SB(mapping);
-<<<<<<< HEAD
-	long diff;
-
-	/* balancing f2fs's metadata in background */
-	f2fs_balance_fs_bg(sbi);
-
-	/* collect a number of dirty node pages and write together */
-	if (get_pages(sbi, F2FS_DIRTY_NODES) < nr_pages_to_skip(sbi, NODE))
-		goto skip_write;
-
-	trace_f2fs_writepages(mapping->host, wbc, NODE);
-
-	diff = nr_pages_to_write(sbi, NODE, wbc);
-	wbc->sync_mode = WB_SYNC_NONE;
-	sync_node_pages(sbi, 0, wbc);
-	wbc->nr_to_write = max((long)0, wbc->nr_to_write - diff);
-=======
 	struct blk_plug plug;
 	long diff;
 
@@ -3073,7 +2150,6 @@ static int f2fs_write_node_pages(struct address_space *mapping,
 
 	if (wbc->sync_mode == WB_SYNC_ALL)
 		atomic_dec(&sbi->wb_sync_req[NODE]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 skip_write:
@@ -3082,21 +2158,6 @@ skip_write:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int f2fs_set_node_page_dirty(struct page *page)
-{
-	trace_f2fs_set_page_dirty(page, NODE);
-
-	SetPageUptodate(page);
-	if (!PageDirty(page)) {
-		__set_page_dirty_nobuffers(page);
-		inc_page_count(F2FS_P_SB(page), F2FS_DIRTY_NODES);
-		SetPagePrivate(page);
-		f2fs_trace_pid(page);
-		return 1;
-	}
-	return 0;
-=======
 static bool f2fs_dirty_node_folio(struct address_space *mapping,
 		struct folio *folio)
 {
@@ -3114,7 +2175,6 @@ static bool f2fs_dirty_node_folio(struct address_space *mapping,
 		return true;
 	}
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3123,16 +2183,10 @@ static bool f2fs_dirty_node_folio(struct address_space *mapping,
 const struct address_space_operations f2fs_node_aops = {
 	.writepage	= f2fs_write_node_page,
 	.writepages	= f2fs_write_node_pages,
-<<<<<<< HEAD
-	.set_page_dirty	= f2fs_set_node_page_dirty,
-	.invalidatepage	= f2fs_invalidate_page,
-	.releasepage	= f2fs_release_page,
-=======
 	.dirty_folio	= f2fs_dirty_node_folio,
 	.invalidate_folio = f2fs_invalidate_folio,
 	.release_folio	= f2fs_release_folio,
 	.migrate_folio	= filemap_migrate_folio,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct free_nid *__lookup_free_nid_list(struct f2fs_nm_info *nm_i,
@@ -3141,75 +2195,6 @@ static struct free_nid *__lookup_free_nid_list(struct f2fs_nm_info *nm_i,
 	return radix_tree_lookup(&nm_i->free_nid_root, n);
 }
 
-<<<<<<< HEAD
-static void __del_from_free_nid_list(struct f2fs_nm_info *nm_i,
-						struct free_nid *i)
-{
-	list_del(&i->list);
-	radix_tree_delete(&nm_i->free_nid_root, i->nid);
-}
-
-static int add_free_nid(struct f2fs_sb_info *sbi, nid_t nid, bool build)
-{
-	struct f2fs_nm_info *nm_i = NM_I(sbi);
-	struct free_nid *i;
-	struct nat_entry *ne;
-	bool allocated = false;
-
-	if (!available_free_memory(sbi, FREE_NIDS))
-		return -1;
-
-	/* 0 nid should not be used */
-	if (unlikely(nid == 0))
-		return 0;
-
-	if (build) {
-		/* do not add allocated nids */
-		ne = __lookup_nat_cache(nm_i, nid);
-		if (ne && (!get_nat_flag(ne, IS_CHECKPOINTED) ||
-				nat_get_blkaddr(ne) != NULL_ADDR))
-			allocated = true;
-		if (allocated)
-			return 0;
-	}
-
-	i = f2fs_kmem_cache_alloc(free_nid_slab, GFP_NOFS);
-	i->nid = nid;
-	i->state = NID_NEW;
-
-	if (radix_tree_preload(GFP_NOFS)) {
-		kmem_cache_free(free_nid_slab, i);
-		return 0;
-	}
-
-	spin_lock(&nm_i->free_nid_list_lock);
-	if (radix_tree_insert(&nm_i->free_nid_root, i->nid, i)) {
-		spin_unlock(&nm_i->free_nid_list_lock);
-		radix_tree_preload_end();
-		kmem_cache_free(free_nid_slab, i);
-		return 0;
-	}
-	list_add_tail(&i->list, &nm_i->free_nid_list);
-	nm_i->fcnt++;
-	spin_unlock(&nm_i->free_nid_list_lock);
-	radix_tree_preload_end();
-	return 1;
-}
-
-static void remove_free_nid(struct f2fs_nm_info *nm_i, nid_t nid)
-{
-	struct free_nid *i;
-	bool need_free = false;
-
-	spin_lock(&nm_i->free_nid_list_lock);
-	i = __lookup_free_nid_list(nm_i, nid);
-	if (i && i->state == NID_NEW) {
-		__del_from_free_nid_list(nm_i, i);
-		nm_i->fcnt--;
-		need_free = true;
-	}
-	spin_unlock(&nm_i->free_nid_list_lock);
-=======
 static int __insert_free_nid(struct f2fs_sb_info *sbi,
 				struct free_nid *i)
 {
@@ -3388,30 +2373,17 @@ static void remove_free_nid(struct f2fs_sb_info *sbi, nid_t nid)
 		need_free = true;
 	}
 	spin_unlock(&nm_i->nid_list_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (need_free)
 		kmem_cache_free(free_nid_slab, i);
 }
 
-<<<<<<< HEAD
-static void scan_nat_page(struct f2fs_sb_info *sbi,
-=======
 static int scan_nat_page(struct f2fs_sb_info *sbi,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page *nat_page, nid_t start_nid)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct f2fs_nat_block *nat_blk = page_address(nat_page);
 	block_t blk_addr;
-<<<<<<< HEAD
-	int i;
-
-	i = start_nid % NAT_ENTRY_PER_BLOCK;
-
-	for (; i < NAT_ENTRY_PER_BLOCK; i++, start_nid++) {
-
-=======
 	unsigned int nat_ofs = NAT_BLOCK_OFFSET(start_nid);
 	int i;
 
@@ -3420,44 +2392,10 @@ static int scan_nat_page(struct f2fs_sb_info *sbi,
 	i = start_nid % NAT_ENTRY_PER_BLOCK;
 
 	for (; i < NAT_ENTRY_PER_BLOCK; i++, start_nid++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(start_nid >= nm_i->max_nid))
 			break;
 
 		blk_addr = le32_to_cpu(nat_blk->entries[i].block_addr);
-<<<<<<< HEAD
-		f2fs_bug_on(sbi, blk_addr == NEW_ADDR);
-		if (blk_addr == NULL_ADDR) {
-			if (add_free_nid(sbi, start_nid, true) < 0)
-				break;
-		}
-	}
-}
-
-static void build_free_nids(struct f2fs_sb_info *sbi)
-{
-	struct f2fs_nm_info *nm_i = NM_I(sbi);
-	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_HOT_DATA);
-	struct f2fs_journal *journal = curseg->journal;
-	int i = 0;
-	nid_t nid = nm_i->next_scan_nid;
-
-	/* Enough entries */
-	if (nm_i->fcnt > NAT_ENTRY_PER_BLOCK)
-		return;
-
-	/* readahead nat pages to be scanned */
-	ra_meta_pages(sbi, NAT_BLOCK_OFFSET(nid), FREE_NID_PAGES,
-							META_NAT, true);
-
-	down_read(&nm_i->nat_tree_lock);
-
-	while (1) {
-		struct page *page = get_current_nat_page(sbi, nid);
-
-		scan_nat_page(sbi, page, nid);
-		f2fs_put_page(page, 1);
-=======
 
 		if (blk_addr == NEW_ADDR)
 			return -EFSCORRUPTED;
@@ -3586,7 +2524,6 @@ static int __f2fs_build_free_nids(struct f2fs_sb_info *sbi,
 				return ret;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nid += (NAT_ENTRY_PER_BLOCK - (nid % NAT_ENTRY_PER_BLOCK));
 		if (unlikely(nid >= nm_i->max_nid))
@@ -3600,24 +2537,6 @@ static int __f2fs_build_free_nids(struct f2fs_sb_info *sbi,
 	nm_i->next_scan_nid = nid;
 
 	/* find free nids from current sum_pages */
-<<<<<<< HEAD
-	down_read(&curseg->journal_rwsem);
-	for (i = 0; i < nats_in_cursum(journal); i++) {
-		block_t addr;
-
-		addr = le32_to_cpu(nat_in_journal(journal, i).block_addr);
-		nid = le32_to_cpu(nid_in_journal(journal, i));
-		if (addr == NULL_ADDR)
-			add_free_nid(sbi, nid, true);
-		else
-			remove_free_nid(nm_i, nid);
-	}
-	up_read(&curseg->journal_rwsem);
-	up_read(&nm_i->nat_tree_lock);
-
-	ra_meta_pages(sbi, NAT_BLOCK_OFFSET(nm_i->next_scan_nid),
-					nm_i->ra_nid_pages, META_NAT, false);
-=======
 	scan_curseg_cache(sbi);
 
 	f2fs_up_read(&nm_i->nat_tree_lock);
@@ -3637,7 +2556,6 @@ int f2fs_build_free_nids(struct f2fs_sb_info *sbi, bool sync, bool mount)
 	mutex_unlock(&NM_I(sbi)->build_lock);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3645,49 +2563,11 @@ int f2fs_build_free_nids(struct f2fs_sb_info *sbi, bool sync, bool mount)
  * from second parameter of this function.
  * The returned nid could be used ino as well as nid when inode is created.
  */
-<<<<<<< HEAD
-bool alloc_nid(struct f2fs_sb_info *sbi, nid_t *nid)
-=======
 bool f2fs_alloc_nid(struct f2fs_sb_info *sbi, nid_t *nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct free_nid *i = NULL;
 retry:
-<<<<<<< HEAD
-	if (unlikely(sbi->total_valid_node_count + 1 > nm_i->available_nids))
-		return false;
-
-	spin_lock(&nm_i->free_nid_list_lock);
-
-	/* We should not use stale free nids created by build_free_nids */
-	if (nm_i->fcnt && !on_build_free_nids(nm_i)) {
-		f2fs_bug_on(sbi, list_empty(&nm_i->free_nid_list));
-		list_for_each_entry(i, &nm_i->free_nid_list, list)
-			if (i->state == NID_NEW)
-				break;
-
-		f2fs_bug_on(sbi, i->state != NID_NEW);
-		*nid = i->nid;
-		i->state = NID_ALLOC;
-		nm_i->fcnt--;
-		spin_unlock(&nm_i->free_nid_list_lock);
-		return true;
-	}
-	spin_unlock(&nm_i->free_nid_list_lock);
-
-	/* Let's scan nat pages and its caches to get free nids */
-	mutex_lock(&nm_i->build_lock);
-	build_free_nids(sbi);
-	mutex_unlock(&nm_i->build_lock);
-	goto retry;
-}
-
-/*
- * alloc_nid() should be called prior to this function.
- */
-void alloc_nid_done(struct f2fs_sb_info *sbi, nid_t nid)
-=======
 	if (time_to_inject(sbi, FAULT_ALLOC_NID))
 		return false;
 
@@ -3725,38 +2605,23 @@ void alloc_nid_done(struct f2fs_sb_info *sbi, nid_t nid)
  * f2fs_alloc_nid() should be called prior to this function.
  */
 void f2fs_alloc_nid_done(struct f2fs_sb_info *sbi, nid_t nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct free_nid *i;
 
-<<<<<<< HEAD
-	spin_lock(&nm_i->free_nid_list_lock);
-	i = __lookup_free_nid_list(nm_i, nid);
-	f2fs_bug_on(sbi, !i || i->state != NID_ALLOC);
-	__del_from_free_nid_list(nm_i, i);
-	spin_unlock(&nm_i->free_nid_list_lock);
-=======
 	spin_lock(&nm_i->nid_list_lock);
 	i = __lookup_free_nid_list(nm_i, nid);
 	f2fs_bug_on(sbi, !i);
 	__remove_free_nid(sbi, i, PREALLOC_NID);
 	spin_unlock(&nm_i->nid_list_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kmem_cache_free(free_nid_slab, i);
 }
 
 /*
-<<<<<<< HEAD
- * alloc_nid() should be called prior to this function.
- */
-void alloc_nid_failed(struct f2fs_sb_info *sbi, nid_t nid)
-=======
  * f2fs_alloc_nid() should be called prior to this function.
  */
 void f2fs_alloc_nid_failed(struct f2fs_sb_info *sbi, nid_t nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct free_nid *i;
@@ -3765,19 +2630,6 @@ void f2fs_alloc_nid_failed(struct f2fs_sb_info *sbi, nid_t nid)
 	if (!nid)
 		return;
 
-<<<<<<< HEAD
-	spin_lock(&nm_i->free_nid_list_lock);
-	i = __lookup_free_nid_list(nm_i, nid);
-	f2fs_bug_on(sbi, !i || i->state != NID_ALLOC);
-	if (!available_free_memory(sbi, FREE_NIDS)) {
-		__del_from_free_nid_list(nm_i, i);
-		need_free = true;
-	} else {
-		i->state = NID_NEW;
-		nm_i->fcnt++;
-	}
-	spin_unlock(&nm_i->free_nid_list_lock);
-=======
 	spin_lock(&nm_i->nid_list_lock);
 	i = __lookup_free_nid_list(nm_i, nid);
 	f2fs_bug_on(sbi, !i);
@@ -3794,35 +2646,11 @@ void f2fs_alloc_nid_failed(struct f2fs_sb_info *sbi, nid_t nid)
 	update_free_nid_bitmap(sbi, nid, true, false);
 
 	spin_unlock(&nm_i->nid_list_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (need_free)
 		kmem_cache_free(free_nid_slab, i);
 }
 
-<<<<<<< HEAD
-int try_to_free_nids(struct f2fs_sb_info *sbi, int nr_shrink)
-{
-	struct f2fs_nm_info *nm_i = NM_I(sbi);
-	struct free_nid *i, *next;
-	int nr = nr_shrink;
-
-	if (!mutex_trylock(&nm_i->build_lock))
-		return 0;
-
-	spin_lock(&nm_i->free_nid_list_lock);
-	list_for_each_entry_safe(i, next, &nm_i->free_nid_list, list) {
-		if (nr_shrink <= 0 || nm_i->fcnt <= NAT_ENTRY_PER_BLOCK)
-			break;
-		if (i->state == NID_ALLOC)
-			continue;
-		__del_from_free_nid_list(nm_i, i);
-		kmem_cache_free(free_nid_slab, i);
-		nm_i->fcnt--;
-		nr_shrink--;
-	}
-	spin_unlock(&nm_i->free_nid_list_lock);
-=======
 int f2fs_try_to_free_nids(struct f2fs_sb_info *sbi, int nr_shrink)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
@@ -3851,82 +2679,18 @@ int f2fs_try_to_free_nids(struct f2fs_sb_info *sbi, int nr_shrink)
 		spin_unlock(&nm_i->nid_list_lock);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&nm_i->build_lock);
 
 	return nr - nr_shrink;
 }
 
-<<<<<<< HEAD
-void recover_inline_xattr(struct inode *inode, struct page *page)
-=======
 int f2fs_recover_inline_xattr(struct inode *inode, struct page *page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *src_addr, *dst_addr;
 	size_t inline_size;
 	struct page *ipage;
 	struct f2fs_inode *ri;
 
-<<<<<<< HEAD
-	ipage = get_node_page(F2FS_I_SB(inode), inode->i_ino);
-	f2fs_bug_on(F2FS_I_SB(inode), IS_ERR(ipage));
-
-	ri = F2FS_INODE(page);
-	if (!(ri->i_inline & F2FS_INLINE_XATTR)) {
-		clear_inode_flag(F2FS_I(inode), FI_INLINE_XATTR);
-		goto update_inode;
-	}
-
-	dst_addr = inline_xattr_addr(ipage);
-	src_addr = inline_xattr_addr(page);
-	inline_size = inline_xattr_size(inode);
-
-	f2fs_wait_on_page_writeback(ipage, NODE, true);
-	memcpy(dst_addr, src_addr, inline_size);
-update_inode:
-	update_inode(inode, ipage);
-	f2fs_put_page(ipage, 1);
-}
-
-void recover_xattr_data(struct inode *inode, struct page *page, block_t blkaddr)
-{
-	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
-	nid_t prev_xnid = F2FS_I(inode)->i_xattr_nid;
-	nid_t new_xnid = nid_of_node(page);
-	struct node_info ni;
-
-	/* 1: invalidate the previous xattr nid */
-	if (!prev_xnid)
-		goto recover_xnid;
-
-	/* Deallocate node address */
-	get_node_info(sbi, prev_xnid, &ni);
-	f2fs_bug_on(sbi, ni.blk_addr == NULL_ADDR);
-	invalidate_blocks(sbi, ni.blk_addr);
-	dec_valid_node_count(sbi, inode);
-	set_node_addr(sbi, &ni, NULL_ADDR, false);
-
-recover_xnid:
-	/* 2: allocate new xattr nid */
-	if (unlikely(!inc_valid_node_count(sbi, inode)))
-		f2fs_bug_on(sbi, 1);
-
-	remove_free_nid(NM_I(sbi), new_xnid);
-	get_node_info(sbi, new_xnid, &ni);
-	ni.ino = inode->i_ino;
-	set_node_addr(sbi, &ni, NEW_ADDR, false);
-	F2FS_I(inode)->i_xattr_nid = new_xnid;
-
-	/* 3: update xattr blkaddr */
-	refresh_sit_entry(sbi, NEW_ADDR, blkaddr);
-	set_node_addr(sbi, &ni, blkaddr, false);
-
-	update_inode_page(inode);
-}
-
-int recover_inode_page(struct f2fs_sb_info *sbi, struct page *page)
-=======
 	ipage = f2fs_get_node_page(F2FS_I_SB(inode), inode->i_ino);
 	if (IS_ERR(ipage))
 		return PTR_ERR(ipage);
@@ -4006,29 +2770,11 @@ recover_xnid:
 }
 
 int f2fs_recover_inode_page(struct f2fs_sb_info *sbi, struct page *page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_inode *src, *dst;
 	nid_t ino = ino_of_node(page);
 	struct node_info old_ni, new_ni;
 	struct page *ipage;
-<<<<<<< HEAD
-
-	get_node_info(sbi, ino, &old_ni);
-
-	if (unlikely(old_ni.blk_addr != NULL_ADDR))
-		return -EINVAL;
-
-	ipage = grab_cache_page(NODE_MAPPING(sbi), ino);
-	if (!ipage)
-		return -ENOMEM;
-
-	/* Should not use this inode from free nid list */
-	remove_free_nid(NM_I(sbi), ino);
-
-	SetPageUptodate(ipage);
-	fill_node_footer(ipage, ino, ino, 0, true);
-=======
 	int err;
 
 	err = f2fs_get_node_info(sbi, ino, &old_ni, false);
@@ -4051,23 +2797,15 @@ retry:
 		SetPageUptodate(ipage);
 	fill_node_footer(ipage, ino, ino, 0, true);
 	set_cold_node(ipage, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	src = F2FS_INODE(page);
 	dst = F2FS_INODE(ipage);
 
-<<<<<<< HEAD
-	memcpy(dst, src, (unsigned long)&src->i_ext - (unsigned long)src);
-=======
 	memcpy(dst, src, offsetof(struct f2fs_inode, i_ext));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->i_size = 0;
 	dst->i_blocks = cpu_to_le64(1);
 	dst->i_links = cpu_to_le32(1);
 	dst->i_xattr_nid = 0;
-<<<<<<< HEAD
-	dst->i_inline = src->i_inline & F2FS_INLINE_XATTR;
-=======
 	dst->i_inline = src->i_inline & (F2FS_INLINE_XATTR | F2FS_EXTRA_ATTR);
 	if (dst->i_inline & F2FS_EXTRA_ATTR) {
 		dst->i_extra_isize = src->i_extra_isize;
@@ -4089,16 +2827,11 @@ retry:
 			dst->i_crtime_nsec = src->i_crtime_nsec;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_ni = old_ni;
 	new_ni.ino = ino;
 
-<<<<<<< HEAD
-	if (unlikely(!inc_valid_node_count(sbi, NULL)))
-=======
 	if (unlikely(inc_valid_node_count(sbi, NULL, true)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		WARN_ON(1);
 	set_node_addr(sbi, &new_ni, NEW_ADDR, false);
 	inc_valid_inode_count(sbi);
@@ -4107,41 +2840,20 @@ retry:
 	return 0;
 }
 
-<<<<<<< HEAD
-int restore_node_summary(struct f2fs_sb_info *sbi,
-=======
 int f2fs_restore_node_summary(struct f2fs_sb_info *sbi,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int segno, struct f2fs_summary_block *sum)
 {
 	struct f2fs_node *rn;
 	struct f2fs_summary *sum_entry;
 	block_t addr;
-<<<<<<< HEAD
-	int bio_blocks = MAX_BIO_BLOCKS(sbi);
-	int i, idx, last_offset, nrpages;
-
-	/* scan the node segment */
-	last_offset = sbi->blocks_per_seg;
-=======
 	int i, idx, last_offset, nrpages;
 
 	/* scan the node segment */
 	last_offset = BLKS_PER_SEG(sbi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr = START_BLOCK(sbi, segno);
 	sum_entry = &sum->entries[0];
 
 	for (i = 0; i < last_offset; i += nrpages, addr += nrpages) {
-<<<<<<< HEAD
-		nrpages = min(last_offset - i, bio_blocks);
-
-		/* readahead node pages */
-		ra_meta_pages(sbi, addr, nrpages, META_POR, true);
-
-		for (idx = addr; idx < addr + nrpages; idx++) {
-			struct page *page = get_tmp_page(sbi, idx);
-=======
 		nrpages = bio_max_segs(last_offset - i);
 
 		/* readahead node pages */
@@ -4152,7 +2864,6 @@ int f2fs_restore_node_summary(struct f2fs_sb_info *sbi,
 
 			if (IS_ERR(page))
 				return PTR_ERR(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			rn = F2FS_NODE(page);
 			sum_entry->nid = rn->footer.nid;
@@ -4181,21 +2892,13 @@ static void remove_nats_in_journal(struct f2fs_sb_info *sbi)
 		struct f2fs_nat_entry raw_ne;
 		nid_t nid = le32_to_cpu(nid_in_journal(journal, i));
 
-<<<<<<< HEAD
-=======
 		if (f2fs_check_nid_range(sbi, nid))
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		raw_ne = nat_in_journal(journal, i);
 
 		ne = __lookup_nat_cache(nm_i, nid);
 		if (!ne) {
-<<<<<<< HEAD
-			ne = grab_nat_entry(nm_i, nid);
-			node_info_from_raw_nat(&ne->ni, &raw_ne);
-		}
-=======
 			ne = __alloc_nat_entry(sbi, nid, true);
 			__init_nat_entry(nm_i, ne, &raw_ne, true);
 		}
@@ -4212,7 +2915,6 @@ static void remove_nats_in_journal(struct f2fs_sb_info *sbi)
 			spin_unlock(&nm_i->nid_list_lock);
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__set_nat_cache_dirty(nm_i, ne);
 	}
 	update_nats_in_cursum(journal, -i);
@@ -4237,10 +2939,6 @@ add_out:
 	list_add_tail(&nes->set_list, head);
 }
 
-<<<<<<< HEAD
-static void __flush_nat_entry_set(struct f2fs_sb_info *sbi,
-					struct nat_entry_set *set)
-=======
 static void __update_nat_bits(struct f2fs_nm_info *nm_i, unsigned int nat_ofs,
 							unsigned int valid)
 {
@@ -4311,7 +3009,6 @@ void f2fs_enable_nat_bits(struct f2fs_sb_info *sbi)
 
 static int __flush_nat_entry_set(struct f2fs_sb_info *sbi,
 		struct nat_entry_set *set, struct cp_control *cpc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_HOT_DATA);
 	struct f2fs_journal *journal = curseg->journal;
@@ -4326,24 +3023,17 @@ static int __flush_nat_entry_set(struct f2fs_sb_info *sbi,
 	 * #1, flush nat entries to journal in current hot data summary block.
 	 * #2, flush nat entries to nat page.
 	 */
-<<<<<<< HEAD
-	if (!__has_cursum_space(journal, set->entry_cnt, NAT_JOURNAL))
-=======
 	if ((cpc->reason & CP_UMOUNT) ||
 		!__has_cursum_space(journal, set->entry_cnt, NAT_JOURNAL))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		to_journal = false;
 
 	if (to_journal) {
 		down_write(&curseg->journal_rwsem);
 	} else {
 		page = get_next_nat_page(sbi, start_nid);
-<<<<<<< HEAD
-=======
 		if (IS_ERR(page))
 			return PTR_ERR(page);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nat_blk = page_address(page);
 		f2fs_bug_on(sbi, !nat_blk);
 	}
@@ -4354,18 +3044,10 @@ static int __flush_nat_entry_set(struct f2fs_sb_info *sbi,
 		nid_t nid = nat_get_nid(ne);
 		int offset;
 
-<<<<<<< HEAD
-		if (nat_get_blkaddr(ne) == NEW_ADDR)
-			continue;
-
-		if (to_journal) {
-			offset = lookup_journal_in_cursum(journal,
-=======
 		f2fs_bug_on(sbi, nat_get_blkaddr(ne) == NEW_ADDR);
 
 		if (to_journal) {
 			offset = f2fs_lookup_journal_in_cursum(journal,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							NAT_JOURNAL, nid, 1);
 			f2fs_bug_on(sbi, offset < 0);
 			raw_ne = &nat_in_journal(journal, offset);
@@ -4375,22 +3057,6 @@ static int __flush_nat_entry_set(struct f2fs_sb_info *sbi,
 		}
 		raw_nat_from_node_info(raw_ne, &ne->ni);
 		nat_reset_flag(ne);
-<<<<<<< HEAD
-		__clear_nat_cache_dirty(NM_I(sbi), ne);
-		if (nat_get_blkaddr(ne) == NULL_ADDR)
-			add_free_nid(sbi, nid, false);
-	}
-
-	if (to_journal)
-		up_write(&curseg->journal_rwsem);
-	else
-		f2fs_put_page(page, 1);
-
-	f2fs_bug_on(sbi, set->entry_cnt);
-
-	radix_tree_delete(&NM_I(sbi)->nat_set_root, set->set);
-	kmem_cache_free(nat_entry_set_slab, set);
-=======
 		__clear_nat_cache_dirty(NM_I(sbi), set, ne);
 		if (nat_get_blkaddr(ne) == NULL_ADDR) {
 			add_free_nid(sbi, nid, false, true);
@@ -4414,37 +3080,21 @@ static int __flush_nat_entry_set(struct f2fs_sb_info *sbi,
 		kmem_cache_free(nat_entry_set_slab, set);
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This function is called during the checkpointing process.
  */
-<<<<<<< HEAD
-void flush_nat_entries(struct f2fs_sb_info *sbi)
-=======
 int f2fs_flush_nat_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	struct curseg_info *curseg = CURSEG_I(sbi, CURSEG_HOT_DATA);
 	struct f2fs_journal *journal = curseg->journal;
-<<<<<<< HEAD
-	struct nat_entry_set *setvec[SETVEC_SIZE];
-=======
 	struct nat_entry_set *setvec[NAT_VEC_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nat_entry_set *set, *tmp;
 	unsigned int found;
 	nid_t set_idx = 0;
 	LIST_HEAD(sets);
-<<<<<<< HEAD
-
-	if (!nm_i->dirty_nat_cnt)
-		return;
-
-	down_write(&nm_i->nat_tree_lock);
-=======
 	int err = 0;
 
 	/*
@@ -4461,21 +3111,12 @@ int f2fs_flush_nat_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 		return 0;
 
 	f2fs_down_write(&nm_i->nat_tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if there are no enough space in journal to store dirty nat
 	 * entries, remove all entries from journal and merge them
 	 * into nat entry set.
 	 */
-<<<<<<< HEAD
-	if (!__has_cursum_space(journal, nm_i->dirty_nat_cnt, NAT_JOURNAL))
-		remove_nats_in_journal(sbi);
-
-	while ((found = __gang_lookup_nat_set(nm_i,
-					set_idx, SETVEC_SIZE, setvec))) {
-		unsigned idx;
-=======
 	if (cpc->reason & CP_UMOUNT ||
 		!__has_cursum_space(journal,
 			nm_i->nat_cnt[DIRTY_NAT], NAT_JOURNAL))
@@ -4485,7 +3126,6 @@ int f2fs_flush_nat_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 					set_idx, NAT_VEC_SIZE, setvec))) {
 		unsigned idx;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_idx = setvec[found - 1]->set + 1;
 		for (idx = 0; idx < found; idx++)
 			__adjust_nat_entry_set(setvec[idx], &sets,
@@ -4493,14 +3133,6 @@ int f2fs_flush_nat_entries(struct f2fs_sb_info *sbi, struct cp_control *cpc)
 	}
 
 	/* flush dirty nats in nat entry set */
-<<<<<<< HEAD
-	list_for_each_entry_safe(set, tmp, &sets, set_list)
-		__flush_nat_entry_set(sbi, set);
-
-	up_write(&nm_i->nat_tree_lock);
-
-	f2fs_bug_on(sbi, nm_i->dirty_nat_cnt);
-=======
 	list_for_each_entry_safe(set, tmp, &sets, set_list) {
 		err = __flush_nat_entry_set(sbi, set, cpc);
 		if (err)
@@ -4592,7 +3224,6 @@ static inline void load_free_nid_bitmap(struct f2fs_sb_info *sbi)
 
 		__set_bit_le(i, nm_i->nat_block_bitmap);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int init_node_manager(struct f2fs_sb_info *sbi)
@@ -4600,30 +3231,13 @@ static int init_node_manager(struct f2fs_sb_info *sbi)
 	struct f2fs_super_block *sb_raw = F2FS_RAW_SUPER(sbi);
 	struct f2fs_nm_info *nm_i = NM_I(sbi);
 	unsigned char *version_bitmap;
-<<<<<<< HEAD
-	unsigned int nat_segs, nat_blocks;
-=======
 	unsigned int nat_segs;
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nm_i->nat_blkaddr = le32_to_cpu(sb_raw->nat_blkaddr);
 
 	/* segment_count_nat includes pair segment so divide to 2. */
 	nat_segs = le32_to_cpu(sb_raw->segment_count_nat) >> 1;
-<<<<<<< HEAD
-	nat_blocks = nat_segs << le32_to_cpu(sb_raw->log_blocks_per_seg);
-
-	nm_i->max_nid = NAT_ENTRY_PER_BLOCK * nat_blocks;
-
-	/* not used nids: 0, node, meta, (and root counted as valid node) */
-	nm_i->available_nids = nm_i->max_nid - F2FS_RESERVED_NODE_NUM;
-	nm_i->fcnt = 0;
-	nm_i->nat_cnt = 0;
-	nm_i->ram_thresh = DEF_RAM_THRESHOLD;
-	nm_i->ra_nid_pages = DEF_RA_NID_PAGES;
-	nm_i->dirty_nats_ratio = DEF_DIRTY_NAT_RATIO_THRESHOLD;
-=======
 	nm_i->nat_blocks = nat_segs << le32_to_cpu(sb_raw->log_blocks_per_seg);
 	nm_i->max_nid = NAT_ENTRY_PER_BLOCK * nm_i->nat_blocks;
 
@@ -4636,49 +3250,25 @@ static int init_node_manager(struct f2fs_sb_info *sbi)
 	nm_i->ra_nid_pages = DEF_RA_NID_PAGES;
 	nm_i->dirty_nats_ratio = DEF_DIRTY_NAT_RATIO_THRESHOLD;
 	nm_i->max_rf_node_blocks = DEF_RF_NODE_BLOCKS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_RADIX_TREE(&nm_i->free_nid_root, GFP_ATOMIC);
 	INIT_LIST_HEAD(&nm_i->free_nid_list);
 	INIT_RADIX_TREE(&nm_i->nat_root, GFP_NOIO);
 	INIT_RADIX_TREE(&nm_i->nat_set_root, GFP_NOIO);
 	INIT_LIST_HEAD(&nm_i->nat_entries);
-<<<<<<< HEAD
-
-	mutex_init(&nm_i->build_lock);
-	spin_lock_init(&nm_i->free_nid_list_lock);
-	init_rwsem(&nm_i->nat_tree_lock);
-=======
 	spin_lock_init(&nm_i->nat_list_lock);
 
 	mutex_init(&nm_i->build_lock);
 	spin_lock_init(&nm_i->nid_list_lock);
 	init_f2fs_rwsem(&nm_i->nat_tree_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nm_i->next_scan_nid = le32_to_cpu(sbi->ckpt->next_free_nid);
 	nm_i->bitmap_size = __bitmap_size(sbi, NAT_BITMAP);
 	version_bitmap = __bitmap_ptr(sbi, NAT_BITMAP);
-<<<<<<< HEAD
-	if (!version_bitmap)
-		return -EFAULT;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nm_i->nat_bitmap = kmemdup(version_bitmap, nm_i->bitmap_size,
 					GFP_KERNEL);
 	if (!nm_i->nat_bitmap)
 		return -ENOMEM;
-<<<<<<< HEAD
-	return 0;
-}
-
-int build_node_manager(struct f2fs_sb_info *sbi)
-{
-	int err;
-
-	sbi->nm_info = kzalloc(sizeof(struct f2fs_nm_info), GFP_KERNEL);
-=======
 
 	err = __get_nat_bitmaps(sbi);
 	if (err)
@@ -4733,7 +3323,6 @@ int f2fs_build_node_manager(struct f2fs_sb_info *sbi)
 
 	sbi->nm_info = f2fs_kzalloc(sbi, sizeof(struct f2fs_nm_info),
 							GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sbi->nm_info)
 		return -ENOMEM;
 
@@ -4741,18 +3330,6 @@ int f2fs_build_node_manager(struct f2fs_sb_info *sbi)
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	build_free_nids(sbi);
-	return 0;
-}
-
-void destroy_node_manager(struct f2fs_sb_info *sbi)
-{
-	struct f2fs_nm_info *nm_i = NM_I(sbi);
-	struct free_nid *i, *next_i;
-	struct nat_entry *natvec[NATVEC_SIZE];
-	struct nat_entry_set *setvec[SETVEC_SIZE];
-=======
 	err = init_free_nid_cache(sbi);
 	if (err)
 		return err;
@@ -4770,7 +3347,6 @@ void f2fs_destroy_node_manager(struct f2fs_sb_info *sbi)
 	void *vec[NAT_VEC_SIZE];
 	struct nat_entry **natvec = (struct nat_entry **)vec;
 	struct nat_entry_set **setvec = (struct nat_entry_set **)vec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nid_t nid = 0;
 	unsigned int found;
 
@@ -4778,36 +3354,6 @@ void f2fs_destroy_node_manager(struct f2fs_sb_info *sbi)
 		return;
 
 	/* destroy free nid list */
-<<<<<<< HEAD
-	spin_lock(&nm_i->free_nid_list_lock);
-	list_for_each_entry_safe(i, next_i, &nm_i->free_nid_list, list) {
-		f2fs_bug_on(sbi, i->state == NID_ALLOC);
-		__del_from_free_nid_list(nm_i, i);
-		nm_i->fcnt--;
-		spin_unlock(&nm_i->free_nid_list_lock);
-		kmem_cache_free(free_nid_slab, i);
-		spin_lock(&nm_i->free_nid_list_lock);
-	}
-	f2fs_bug_on(sbi, nm_i->fcnt);
-	spin_unlock(&nm_i->free_nid_list_lock);
-
-	/* destroy nat cache */
-	down_write(&nm_i->nat_tree_lock);
-	while ((found = __gang_lookup_nat_cache(nm_i,
-					nid, NATVEC_SIZE, natvec))) {
-		unsigned idx;
-
-		nid = nat_get_nid(natvec[found - 1]) + 1;
-		for (idx = 0; idx < found; idx++)
-			__del_from_nat_cache(nm_i, natvec[idx]);
-	}
-	f2fs_bug_on(sbi, nm_i->nat_cnt);
-
-	/* destroy nat set cache */
-	nid = 0;
-	while ((found = __gang_lookup_nat_set(nm_i,
-					nid, SETVEC_SIZE, setvec))) {
-=======
 	spin_lock(&nm_i->nid_list_lock);
 	list_for_each_entry_safe(i, next_i, &nm_i->free_nid_list, list) {
 		__remove_free_nid(sbi, i, FREE_NID);
@@ -4842,7 +3388,6 @@ void f2fs_destroy_node_manager(struct f2fs_sb_info *sbi)
 	memset(vec, 0, sizeof(void *) * NAT_VEC_SIZE);
 	while ((found = __gang_lookup_nat_set(nm_i,
 					nid, NAT_VEC_SIZE, setvec))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned idx;
 
 		nid = setvec[found - 1]->set + 1;
@@ -4853,11 +3398,6 @@ void f2fs_destroy_node_manager(struct f2fs_sb_info *sbi)
 			kmem_cache_free(nat_entry_set_slab, setvec[idx]);
 		}
 	}
-<<<<<<< HEAD
-	up_write(&nm_i->nat_tree_lock);
-
-	kfree(nm_i->nat_bitmap);
-=======
 	f2fs_up_write(&nm_i->nat_tree_lock);
 
 	kvfree(nm_i->nat_block_bitmap);
@@ -4875,41 +3415,22 @@ void f2fs_destroy_node_manager(struct f2fs_sb_info *sbi)
 #ifdef CONFIG_F2FS_CHECK_FS
 	kvfree(nm_i->nat_bitmap_mir);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi->nm_info = NULL;
 	kfree(nm_i);
 }
 
-<<<<<<< HEAD
-int __init create_node_manager_caches(void)
-{
-	nat_entry_slab = f2fs_kmem_cache_create("nat_entry",
-=======
 int __init f2fs_create_node_manager_caches(void)
 {
 	nat_entry_slab = f2fs_kmem_cache_create("f2fs_nat_entry",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(struct nat_entry));
 	if (!nat_entry_slab)
 		goto fail;
 
-<<<<<<< HEAD
-	free_nid_slab = f2fs_kmem_cache_create("free_nid",
-=======
 	free_nid_slab = f2fs_kmem_cache_create("f2fs_free_nid",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(struct free_nid));
 	if (!free_nid_slab)
 		goto destroy_nat_entry;
 
-<<<<<<< HEAD
-	nat_entry_set_slab = f2fs_kmem_cache_create("nat_entry_set",
-			sizeof(struct nat_entry_set));
-	if (!nat_entry_set_slab)
-		goto destroy_free_nid;
-	return 0;
-
-=======
 	nat_entry_set_slab = f2fs_kmem_cache_create("f2fs_nat_entry_set",
 			sizeof(struct nat_entry_set));
 	if (!nat_entry_set_slab)
@@ -4923,7 +3444,6 @@ int __init f2fs_create_node_manager_caches(void)
 
 destroy_nat_entry_set:
 	kmem_cache_destroy(nat_entry_set_slab);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 destroy_free_nid:
 	kmem_cache_destroy(free_nid_slab);
 destroy_nat_entry:
@@ -4932,14 +3452,9 @@ fail:
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-void destroy_node_manager_caches(void)
-{
-=======
 void f2fs_destroy_node_manager_caches(void)
 {
 	kmem_cache_destroy(fsync_node_entry_slab);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(nat_entry_set_slab);
 	kmem_cache_destroy(free_nid_slab);
 	kmem_cache_destroy(nat_entry_slab);

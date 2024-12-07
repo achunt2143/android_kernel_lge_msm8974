@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/boot/head.S
  *
@@ -33,57 +30,6 @@
 #include <asm/page_types.h>
 #include <asm/boot.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-
-	__HEAD
-ENTRY(startup_32)
-#ifdef CONFIG_EFI_STUB
-	jmp	preferred_addr
-
-	.balign	0x10
-	/*
-	 * We don't need the return address, so set up the stack so
-	 * efi_main() can find its arugments.
-	 */
-	add	$0x4, %esp
-
-	call	efi_main
-	cmpl	$0, %eax
-	movl	%eax, %esi
-	jne	2f
-1:
-	/* EFI init failed, so hang. */
-	hlt
-	jmp	1b
-2:
-	call	3f
-3:
-	popl	%eax
-	subl	$3b, %eax
-	subl	BP_pref_address(%esi), %eax
-	add	BP_code32_start(%esi), %eax
-	leal	preferred_addr(%eax), %eax
-	jmp	*%eax
-
-preferred_addr:
-#endif
-	cld
-	/*
-	 * Test KEEP_SEGMENTS flag to see if the bootloader is asking
-	 * us to not reload segments
-	 */
-	testb	$(1<<6), BP_loadflags(%esi)
-	jnz	1f
-
-	cli
-	movl	$__BOOT_DS, %eax
-	movl	%eax, %ds
-	movl	%eax, %es
-	movl	%eax, %fs
-	movl	%eax, %gs
-	movl	%eax, %ss
-1:
-=======
 #include <asm/bootparam.h>
 
 /*
@@ -100,7 +46,6 @@ preferred_addr:
 SYM_FUNC_START(startup_32)
 	cld
 	cli
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Calculate the delta between where we were compiled to run
@@ -112,19 +57,6 @@ SYM_FUNC_START(startup_32)
  */
 	leal	(BP_scratch+4)(%esi), %esp
 	call	1f
-<<<<<<< HEAD
-1:	popl	%ebp
-	subl	$1b, %ebp
-
-/*
- * %ebp contains the address we are loaded at by the boot loader and %ebx
- * contains the address where we should move the kernel image temporarily
- * for safe in-place decompression.
- */
-
-#ifdef CONFIG_RELOCATABLE
-	movl	%ebp, %ebx
-=======
 1:	popl	%edx
 	addl	$_GLOBAL_OFFSET_TABLE_+(.-1b), %edx
 
@@ -152,23 +84,11 @@ SYM_FUNC_START(startup_32)
 
 #ifdef CONFIG_RELOCATABLE
 	leal	startup_32@GOTOFF(%edx), %ebx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	BP_kernel_alignment(%esi), %eax
 	decl	%eax
 	addl    %eax, %ebx
 	notl	%eax
 	andl    %eax, %ebx
-<<<<<<< HEAD
-#else
-	movl	$LOAD_PHYSICAL_ADDR, %ebx
-#endif
-
-	/* Target address to relocate to for decompression */
-	addl	$z_extract_offset, %ebx
-
-	/* Set up the stack */
-	leal	boot_stack_end(%ebx), %esp
-=======
 	cmpl	$LOAD_PHYSICAL_ADDR, %ebx
 	jae	1f
 #endif
@@ -182,7 +102,6 @@ SYM_FUNC_START(startup_32)
 
 	/* Set up the stack */
 	leal	boot_stack_end@GOTOFF(%ebx), %esp
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Zero EFLAGS */
 	pushl	$0
@@ -193,13 +112,8 @@ SYM_FUNC_START(startup_32)
  * where decompression in place becomes safe.
  */
 	pushl	%esi
-<<<<<<< HEAD
-	leal	(_bss-4)(%ebp), %esi
-	leal	(_bss-4)(%ebx), %edi
-=======
 	leal	(_bss@GOTOFF-4)(%edx), %esi
 	leal	(_bss@GOTOFF-4)(%ebx), %edi
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	$(_bss - startup_32), %ecx
 	shrl	$2, %ecx
 	std
@@ -207,17 +121,6 @@ SYM_FUNC_START(startup_32)
 	cld
 	popl	%esi
 
-<<<<<<< HEAD
-/*
- * Jump to the relocated address.
- */
-	leal	relocated(%ebx), %eax
-	jmp	*%eax
-ENDPROC(startup_32)
-
-	.text
-relocated:
-=======
 	/*
 	 * The GDT may get overwritten either during the copy we just did or
 	 * during extract_kernel below. To avoid any issues, repoint the GDTR
@@ -236,84 +139,18 @@ SYM_FUNC_END(startup_32)
 
 	.text
 SYM_FUNC_START_LOCAL_NOALIGN(.Lrelocated)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Clear BSS (stack is currently empty)
  */
 	xorl	%eax, %eax
-<<<<<<< HEAD
-	leal	_bss(%ebx), %edi
-	leal	_ebss(%ebx), %ecx
-=======
 	leal	_bss@GOTOFF(%ebx), %edi
 	leal	_ebss@GOTOFF(%ebx), %ecx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subl	%edi, %ecx
 	shrl	$2, %ecx
 	rep	stosl
 
 /*
-<<<<<<< HEAD
- * Adjust our own GOT
- */
-	leal	_got(%ebx), %edx
-	leal	_egot(%ebx), %ecx
-1:
-	cmpl	%ecx, %edx
-	jae	2f
-	addl	%ebx, (%edx)
-	addl	$4, %edx
-	jmp	1b
-2:
-
-/*
- * Do the decompression, and jump to the new kernel..
- */
-	leal	z_extract_offset_negative(%ebx), %ebp
-				/* push arguments for decompress_kernel: */
-	pushl	%ebp		/* output address */
-	pushl	$z_input_len	/* input_len */
-	leal	input_data(%ebx), %eax
-	pushl	%eax		/* input_data */
-	leal	boot_heap(%ebx), %eax
-	pushl	%eax		/* heap area */
-	pushl	%esi		/* real mode pointer */
-	call	decompress_kernel
-	addl	$20, %esp
-
-#if CONFIG_RELOCATABLE
-/*
- * Find the address of the relocations.
- */
-	leal	z_output_len(%ebp), %edi
-
-/*
- * Calculate the delta between where vmlinux was compiled to run
- * and where it was actually loaded.
- */
-	movl	%ebp, %ebx
-	subl	$LOAD_PHYSICAL_ADDR, %ebx
-	jz	2f	/* Nothing to be done if loaded at compiled addr. */
-/*
- * Process relocations.
- */
-
-1:	subl	$4, %edi
-	movl	(%edi), %ecx
-	testl	%ecx, %ecx
-	jz	2f
-	addl	%ebx, -__PAGE_OFFSET(%ebx, %ecx)
-	jmp	1b
-2:
-#endif
-
-/*
- * Jump to the decompressed kernel.
- */
-	xorl	%ebx, %ebx
-	jmp	*%ebp
-=======
  * Do the extraction, and jump to the new kernel..
  */
 	/* push arguments for extract_kernel: */
@@ -340,18 +177,12 @@ SYM_DATA_START_LOCAL(gdt)
 	.quad	0x00cf9a000000ffff	/* __KERNEL_CS */
 	.quad	0x00cf92000000ffff	/* __KERNEL_DS */
 SYM_DATA_END_LABEL(gdt, SYM_L_LOCAL, gdt_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Stack and heap for uncompression
  */
 	.bss
 	.balign 4
-<<<<<<< HEAD
-boot_heap:
-	.fill BOOT_HEAP_SIZE, 1, 0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 boot_stack:
 	.fill BOOT_STACK_SIZE, 1, 0
 boot_stack_end:

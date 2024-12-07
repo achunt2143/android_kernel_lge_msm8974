@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/iwmmxt.S
  *
@@ -12,32 +9,14 @@
  *
  *  Full lazy switching support, optimizations and more, by Nicolas Pitre
 *   Copyright (c) 2003-2004, MontaVista Software, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
 #include <asm/ptrace.h>
 #include <asm/thread_info.h>
 #include <asm/asm-offsets.h>
-<<<<<<< HEAD
-
-#if defined(CONFIG_CPU_PJ4)
-#define PJ4(code...)		code
-#define XSC(code...)
-#else
-#define PJ4(code...)
-#define XSC(code...)		code
-#endif
-=======
 #include <asm/assembler.h>
 #include "iwmmxt.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMX_WR0		 	(0x00)
 #define MMX_WR1		 	(0x08)
@@ -65,8 +44,6 @@
 #define MMX_SIZE		(0x98)
 
 	.text
-<<<<<<< HEAD
-=======
 	.arm
 
 ENTRY(iwmmxt_undef_handler)
@@ -77,55 +54,15 @@ ENTRY(iwmmxt_undef_handler)
 	mov		r0, #0
 	pop		{r9, r10, pc}
 ENDPROC(iwmmxt_undef_handler)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Lazy switching of Concan coprocessor context
  *
-<<<<<<< HEAD
-=======
  * r0  = struct pt_regs pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * r10 = struct thread_info pointer
  * r9  = ret_from_exception
  * lr  = undefined instr exit
  *
-<<<<<<< HEAD
- * called from prefetch exception handler with interrupts disabled
- */
-
-ENTRY(iwmmxt_task_enable)
-
-	XSC(mrc	p15, 0, r2, c15, c1, 0)
-	PJ4(mrc p15, 0, r2, c1, c0, 2)
-	@ CP0 and CP1 accessible?
-	XSC(tst	r2, #0x3)
-	PJ4(tst	r2, #0xf)
-	movne	pc, lr				@ if so no business here
-	@ enable access to CP0 and CP1
-	XSC(orr	r2, r2, #0x3)
-	XSC(mcr	p15, 0, r2, c15, c1, 0)
-	PJ4(orr	r2, r2, #0xf)
-	PJ4(mcr	p15, 0, r2, c1, c0, 2)
-
-	ldr	r3, =concan_owner
-	add	r0, r10, #TI_IWMMXT_STATE	@ get task Concan save area
-	ldr	r2, [sp, #60]			@ current task pc value
-	ldr	r1, [r3]			@ get current Concan owner
-	str	r0, [r3]			@ this task now owns Concan regs
-	sub	r2, r2, #4			@ adjust pc back
-	str	r2, [sp, #60]
-
-	mrc	p15, 0, r2, c2, c0, 0
-	mov	r2, r2				@ cpwait
-
-	teq	r1, #0				@ test for last ownership
-	mov	lr, r9				@ normal exit from exception
-	beq	concan_load			@ no owner, skip save
-
-concan_save:
-
-=======
  * called from prefetch exception handler with interrupts enabled
  */
 
@@ -163,7 +100,6 @@ concan_save:
 	teq	r1, #0				@ test for last ownership
 	beq	concan_load			@ no owner, skip save
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmrc	r2, wCon
 
 	@ CUP? wCx
@@ -172,47 +108,17 @@ concan_save:
 
 concan_dump:
 
-<<<<<<< HEAD
-	wstrw	wCSSF, [r1, #MMX_WCSSF]
-	wstrw	wCASF, [r1, #MMX_WCASF]
-	wstrw	wCGR0, [r1, #MMX_WCGR0]
-	wstrw	wCGR1, [r1, #MMX_WCGR1]
-	wstrw	wCGR2, [r1, #MMX_WCGR2]
-	wstrw	wCGR3, [r1, #MMX_WCGR3]
-=======
 	wstrw	wCSSF, r1, MMX_WCSSF
 	wstrw	wCASF, r1, MMX_WCASF
 	wstrw	wCGR0, r1, MMX_WCGR0
 	wstrw	wCGR1, r1, MMX_WCGR1
 	wstrw	wCGR2, r1, MMX_WCGR2
 	wstrw	wCGR3, r1, MMX_WCGR3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 1:	@ MUP? wRn
 	tst	r2, #0x2
 	beq	2f
 
-<<<<<<< HEAD
-	wstrd	wR0,  [r1, #MMX_WR0]
-	wstrd	wR1,  [r1, #MMX_WR1]
-	wstrd	wR2,  [r1, #MMX_WR2]
-	wstrd	wR3,  [r1, #MMX_WR3]
-	wstrd	wR4,  [r1, #MMX_WR4]
-	wstrd	wR5,  [r1, #MMX_WR5]
-	wstrd	wR6,  [r1, #MMX_WR6]
-	wstrd	wR7,  [r1, #MMX_WR7]
-	wstrd	wR8,  [r1, #MMX_WR8]
-	wstrd	wR9,  [r1, #MMX_WR9]
-	wstrd	wR10, [r1, #MMX_WR10]
-	wstrd	wR11, [r1, #MMX_WR11]
-	wstrd	wR12, [r1, #MMX_WR12]
-	wstrd	wR13, [r1, #MMX_WR13]
-	wstrd	wR14, [r1, #MMX_WR14]
-	wstrd	wR15, [r1, #MMX_WR15]
-
-2:	teq	r0, #0				@ anything to load?
-	moveq	pc, lr
-=======
 	wstrd	wR0,  r1, MMX_WR0
 	wstrd	wR1,  r1, MMX_WR1
 	wstrd	wR2,  r1, MMX_WR2
@@ -232,37 +138,10 @@ concan_dump:
 
 2:	teq	r0, #0				@ anything to load?
 	reteq	lr				@ if not, return
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 concan_load:
 
 	@ Load wRn
-<<<<<<< HEAD
-	wldrd	wR0,  [r0, #MMX_WR0]
-	wldrd	wR1,  [r0, #MMX_WR1]
-	wldrd	wR2,  [r0, #MMX_WR2]
-	wldrd	wR3,  [r0, #MMX_WR3]
-	wldrd	wR4,  [r0, #MMX_WR4]
-	wldrd	wR5,  [r0, #MMX_WR5]
-	wldrd	wR6,  [r0, #MMX_WR6]
-	wldrd	wR7,  [r0, #MMX_WR7]
-	wldrd	wR8,  [r0, #MMX_WR8]
-	wldrd	wR9,  [r0, #MMX_WR9]
-	wldrd	wR10, [r0, #MMX_WR10]
-	wldrd	wR11, [r0, #MMX_WR11]
-	wldrd	wR12, [r0, #MMX_WR12]
-	wldrd	wR13, [r0, #MMX_WR13]
-	wldrd	wR14, [r0, #MMX_WR14]
-	wldrd	wR15, [r0, #MMX_WR15]
-
-	@ Load wCx
-	wldrw	wCSSF, [r0, #MMX_WCSSF]
-	wldrw	wCASF, [r0, #MMX_WCASF]
-	wldrw	wCGR0, [r0, #MMX_WCGR0]
-	wldrw	wCGR1, [r0, #MMX_WCGR1]
-	wldrw	wCGR2, [r0, #MMX_WCGR2]
-	wldrw	wCGR3, [r0, #MMX_WCGR3]
-=======
 	wldrd	wR0,  r0, MMX_WR0
 	wldrd	wR1,  r0, MMX_WR1
 	wldrd	wR2,  r0, MMX_WR2
@@ -287,23 +166,16 @@ concan_load:
 	wldrw	wCGR1, r0, MMX_WCGR1
 	wldrw	wCGR2, r0, MMX_WCGR2
 	wldrw	wCGR3, r0, MMX_WCGR3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	@ clear CUP/MUP (only if r1 != 0)
 	teq	r1, #0
 	mov 	r2, #0
-<<<<<<< HEAD
-	moveq	pc, lr
-	tmcr	wCon, r2
-	mov	pc, lr
-=======
 	reteq	lr
 
 	tmcr	wCon, r2
 	ret	lr
 
 ENDPROC(iwmmxt_task_enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Back up Concan regs to save area and disable access to them
@@ -330,18 +202,9 @@ ENTRY(iwmmxt_task_disable)
 	bne	1f				@ no: quit
 
 	@ enable access to CP0 and CP1
-<<<<<<< HEAD
-	XSC(mrc	p15, 0, r4, c15, c1, 0)
-	XSC(orr	r4, r4, #0x3)
-	XSC(mcr	p15, 0, r4, c15, c1, 0)
-	PJ4(mrc p15, 0, r4, c1, c0, 2)
-	PJ4(orr	r4, r4, #0xf)
-	PJ4(mcr	p15, 0, r4, c1, c0, 2)
-=======
 	mrc	p15, 0, r4, c15, c1, 0
 	orr	r4, r4, #0x3
 	mcr	p15, 0, r4, c15, c1, 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mov	r0, #0				@ nothing to load
 	str	r0, [r3]			@ no more current owner
@@ -350,15 +213,8 @@ ENTRY(iwmmxt_task_disable)
 	bl	concan_save
 
 	@ disable access to CP0 and CP1
-<<<<<<< HEAD
-	XSC(bic	r4, r4, #0x3)
-	XSC(mcr	p15, 0, r4, c15, c1, 0)
-	PJ4(bic	r4, r4, #0xf)
-	PJ4(mcr	p15, 0, r4, c1, c0, 2)
-=======
 	bic	r4, r4, #0x3
 	mcr	p15, 0, r4, c15, c1, 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mrc	p15, 0, r2, c2, c0, 0
 	mov	r2, r2				@ cpwait
@@ -366,11 +222,8 @@ ENTRY(iwmmxt_task_disable)
 1:	msr	cpsr_c, ip			@ restore interrupt mode
 	ldmfd	sp!, {r4, pc}
 
-<<<<<<< HEAD
-=======
 ENDPROC(iwmmxt_task_disable)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copy Concan state to given memory address
  *
@@ -405,13 +258,9 @@ ENTRY(iwmmxt_task_copy)
 	mov	r3, lr				@ preserve return address
 	bl	concan_dump
 	msr	cpsr_c, ip			@ restore interrupt mode
-<<<<<<< HEAD
-	mov	pc, r3
-=======
 	ret	r3
 
 ENDPROC(iwmmxt_task_copy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Restore Concan state from given memory address
@@ -447,13 +296,9 @@ ENTRY(iwmmxt_task_restore)
 	mov	r3, lr				@ preserve return address
 	bl	concan_load
 	msr	cpsr_c, ip			@ restore interrupt mode
-<<<<<<< HEAD
-	mov	pc, r3
-=======
 	ret	r3
 
 ENDPROC(iwmmxt_task_restore)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Concan handling on task switch
@@ -464,47 +309,26 @@ ENDPROC(iwmmxt_task_restore)
  */
 ENTRY(iwmmxt_task_switch)
 
-<<<<<<< HEAD
-	XSC(mrc	p15, 0, r1, c15, c1, 0)
-	PJ4(mrc	p15, 0, r1, c1, c0, 2)
-	@ CP0 and CP1 accessible?
-	XSC(tst	r1, #0x3)
-	PJ4(tst	r1, #0xf)
-=======
 	mrc	p15, 0, r1, c15, c1, 0
 	@ CP0 and CP1 accessible?
 	tst	r1, #0x3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bne	1f				@ yes: block them for next task
 
 	ldr	r2, =concan_owner
 	add	r3, r0, #TI_IWMMXT_STATE	@ get next task Concan save area
 	ldr	r2, [r2]			@ get current Concan owner
 	teq	r2, r3				@ next task owns it?
-<<<<<<< HEAD
-	movne	pc, lr				@ no: leave Concan disabled
-
-1:	@ flip Concan access
-	XSC(eor	r1, r1, #0x3)
-	XSC(mcr	p15, 0, r1, c15, c1, 0)
-	PJ4(eor r1, r1, #0xf)
-	PJ4(mcr	p15, 0, r1, c1, c0, 2)
-=======
 	retne	lr				@ no: leave Concan disabled
 
 1:	@ flip Concan access
 	eor	r1, r1, #0x3
 	mcr	p15, 0, r1, c15, c1, 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mrc	p15, 0, r1, c2, c0, 0
 	sub	pc, lr, r1, lsr #32		@ cpwait and return
 
-<<<<<<< HEAD
-=======
 ENDPROC(iwmmxt_task_switch)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Remove Concan ownership of given task
  *
@@ -521,18 +345,12 @@ ENTRY(iwmmxt_task_release)
 	eors	r0, r0, r1			@ if equal...
 	streq	r0, [r3]			@ then clear ownership
 	msr	cpsr_c, r2			@ restore interrupts
-<<<<<<< HEAD
-	mov	pc, lr
-
-	.data
-=======
 	ret	lr
 
 ENDPROC(iwmmxt_task_release)
 
 	.data
 	.align	2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 concan_owner:
 	.word	0
 

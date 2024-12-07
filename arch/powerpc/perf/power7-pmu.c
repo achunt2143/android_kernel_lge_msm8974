@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance counter support for POWER7 processors.
  *
  * Copyright 2009 Paul Mackerras, IBM Corporation.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/perf_event.h>
@@ -21,11 +10,8 @@
 #include <asm/reg.h>
 #include <asm/cputable.h>
 
-<<<<<<< HEAD
-=======
 #include "internal.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bits in event code for POWER7
  */
@@ -63,13 +49,6 @@
 #define MMCR1_PMCSEL_MSK	0xff
 
 /*
-<<<<<<< HEAD
- * Layout of constraint bits:
- * 6666555555555544444444443333333333222222222211111111110000000000
- * 3210987654321098765432109876543210987654321098765432109876543210
- *                                                 [  ><><><><><><>
- *                                                  NC P6P5P4P3P2P1
-=======
  * Power7 event codes.
  */
 #define EVENT(_name, _code) \
@@ -88,7 +67,6 @@ enum {
  *                                              L2  NC P6P5P4P3P2P1
  *
  * L2 - 16-18 - Required L2SEL value (select field)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NC - number of counters
  *     15: NC error 0x8000
@@ -103,15 +81,9 @@ enum {
  */
 
 static int power7_get_constraint(u64 event, unsigned long *maskp,
-<<<<<<< HEAD
-				 unsigned long *valp)
-{
-	int pmc, sh;
-=======
 				 unsigned long *valp, u64 event_config1 __maybe_unused)
 {
 	int pmc, sh, unit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long mask = 0, value = 0;
 
 	pmc = (event >> PM_PMC_SH) & PM_PMC_MSK;
@@ -129,8 +101,6 @@ static int power7_get_constraint(u64 event, unsigned long *maskp,
 		mask  |= 0x8000;
 		value |= 0x1000;
 	}
-<<<<<<< HEAD
-=======
 
 	unit = (event >> PM_UNIT_SH) & PM_UNIT_MSK;
 	if (unit == 6) {
@@ -140,7 +110,6 @@ static int power7_get_constraint(u64 event, unsigned long *maskp,
 		value |= l2sel << 16;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*maskp = mask;
 	*valp = value;
 	return 0;
@@ -267,10 +236,7 @@ static int power7_marked_instr_event(u64 event)
 	case 6:
 		if (psel == 0x64)
 			return pmc >= 3;
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 8:
 		return unit == 0xd;
 	}
@@ -278,13 +244,9 @@ static int power7_marked_instr_event(u64 event)
 }
 
 static int power7_compute_mmcr(u64 event[], int n_ev,
-<<<<<<< HEAD
-			       unsigned int hwc[], unsigned long mmcr[])
-=======
 			       unsigned int hwc[], struct mmcr_regs *mmcr,
 			       struct perf_event *pevents[],
 			       u32 flags __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long mmcr1 = 0;
 	unsigned long mmcra = MMCRA_SDAR_DCACHE_MISS | MMCRA_SDAR_ERAT_MISS;
@@ -340,33 +302,6 @@ static int power7_compute_mmcr(u64 event[], int n_ev,
 	}
 
 	/* Return MMCRx values */
-<<<<<<< HEAD
-	mmcr[0] = 0;
-	if (pmc_inuse & 1)
-		mmcr[0] = MMCR0_PMC1CE;
-	if (pmc_inuse & 0x3e)
-		mmcr[0] |= MMCR0_PMCjCE;
-	mmcr[1] = mmcr1;
-	mmcr[2] = mmcra;
-	return 0;
-}
-
-static void power7_disable_pmc(unsigned int pmc, unsigned long mmcr[])
-{
-	if (pmc <= 3)
-		mmcr[1] &= ~(0xffUL << MMCR1_PMCSEL_SH(pmc));
-}
-
-static int power7_generic_events[] = {
-	[PERF_COUNT_HW_CPU_CYCLES] = 0x1e,
-	[PERF_COUNT_HW_STALLED_CYCLES_FRONTEND] = 0x100f8, /* GCT_NOSLOT_CYC */
-	[PERF_COUNT_HW_STALLED_CYCLES_BACKEND] = 0x4000a,  /* CMPLU_STALL */
-	[PERF_COUNT_HW_INSTRUCTIONS] = 2,
-	[PERF_COUNT_HW_CACHE_REFERENCES] = 0xc880,	/* LD_REF_L1_LSU*/
-	[PERF_COUNT_HW_CACHE_MISSES] = 0x400f0,		/* LD_MISS_L1	*/
-	[PERF_COUNT_HW_BRANCH_INSTRUCTIONS] = 0x10068,	/* BRU_FIN	*/
-	[PERF_COUNT_HW_BRANCH_MISSES] = 0x400f6,	/* BR_MPRED	*/
-=======
 	mmcr->mmcr0 = 0;
 	if (pmc_inuse & 1)
 		mmcr->mmcr0 = MMCR0_PMC1CE;
@@ -392,7 +327,6 @@ static int power7_generic_events[] = {
 	[PERF_COUNT_HW_CACHE_MISSES] =			PM_LD_MISS_L1,
 	[PERF_COUNT_HW_BRANCH_INSTRUCTIONS] =		PM_BRU_FIN,
 	[PERF_COUNT_HW_BRANCH_MISSES] =			PM_BR_MPRED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define C(x)	PERF_COUNT_HW_CACHE_##x
@@ -402,11 +336,7 @@ static int power7_generic_events[] = {
  * 0 means not supported, -1 means nonsensical, other values
  * are event codes.
  */
-<<<<<<< HEAD
-static int power7_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
-=======
 static u64 power7_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[C(L1D)] = {		/* 	RESULT_ACCESS	RESULT_MISS */
 		[C(OP_READ)] = {	0xc880,		0x400f0	},
 		[C(OP_WRITE)] = {	0,		0x300f0	},
@@ -444,8 +374,6 @@ static u64 power7_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
 	},
 };
 
-<<<<<<< HEAD
-=======
 
 GENERIC_EVENT_ATTR(cpu-cycles,			PM_CYC);
 GENERIC_EVENT_ATTR(stalled-cycles-frontend,	PM_GCT_NOSLOT_CYC);
@@ -500,7 +428,6 @@ static const struct attribute_group *power7_pmu_attr_groups[] = {
 	NULL,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct power_pmu power7_pmu = {
 	.name			= "POWER7",
 	.n_counter		= 6,
@@ -512,27 +439,12 @@ static struct power_pmu power7_pmu = {
 	.get_alternatives	= power7_get_alternatives,
 	.disable_pmc		= power7_disable_pmc,
 	.flags			= PPMU_ALT_SIPR,
-<<<<<<< HEAD
-=======
 	.attr_groups		= power7_pmu_attr_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.n_generic		= ARRAY_SIZE(power7_generic_events),
 	.generic_events		= power7_generic_events,
 	.cache_events		= &power7_cache_events,
 };
 
-<<<<<<< HEAD
-static int __init init_power7_pmu(void)
-{
-	if (!cur_cpu_spec->oprofile_cpu_type ||
-	    strcmp(cur_cpu_spec->oprofile_cpu_type, "ppc64/power7"))
-		return -ENODEV;
-
-	return register_power_pmu(&power7_pmu);
-}
-
-early_initcall(init_power7_pmu);
-=======
 int __init init_power7_pmu(void)
 {
 	unsigned int pvr = mfspr(SPRN_PVR);
@@ -545,4 +457,3 @@ int __init init_power7_pmu(void)
 
 	return register_power_pmu(&power7_pmu);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

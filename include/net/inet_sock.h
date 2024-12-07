@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -11,24 +8,11 @@
  *
  * Authors:	Many, reorganised here by
  * 		Arnaldo Carvalho de Melo <acme@mandriva.com>
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _INET_SOCK_H
 #define _INET_SOCK_H
 
-<<<<<<< HEAD
-
-#include <linux/kmemcheck.h>
-=======
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/jhash.h>
@@ -38,20 +22,13 @@
 #include <net/sock.h>
 #include <net/request_sock.h>
 #include <net/netns/hash.h>
-<<<<<<< HEAD
-=======
 #include <net/tcp_states.h>
 #include <net/l3mdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /** struct ip_options - IP Options
  *
  * @faddr - Saved first hop address
  * @nexthop - Saved nexthop address in LSRR and SSRR
-<<<<<<< HEAD
- * @is_data - Options in __data, rather than skb
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @is_strictroute - Strict source route
  * @srr_is_hit - Packet destination addr was our one
  * @is_changed - IP checksum more not valid
@@ -75,11 +52,7 @@ struct ip_options {
 	unsigned char	router_alert;
 	unsigned char	cipso;
 	unsigned char	__pad2;
-<<<<<<< HEAD
-	unsigned char	__data[0];
-=======
 	unsigned char	__data[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ip_options_rcu {
@@ -94,16 +67,6 @@ struct ip_options_data {
 
 struct inet_request_sock {
 	struct request_sock	req;
-<<<<<<< HEAD
-#if IS_ENABLED(CONFIG_IPV6)
-	u16			inet6_rsk_offset;
-#endif
-	__be16			loc_port;
-	__be32			loc_addr;
-	__be32			rmt_addr;
-	__be16			rmt_port;
-	kmemcheck_bitfield_begin(flags);
-=======
 #define ir_loc_addr		req.__req_common.skc_rcv_saddr
 #define ir_rmt_addr		req.__req_common.skc_daddr
 #define ir_num			req.__req_common.skc_num
@@ -116,7 +79,6 @@ struct inet_request_sock {
 #define ireq_state		req.__req_common.skc_state
 #define ireq_family		req.__req_common.skc_family
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16			snd_wscale : 4,
 				rcv_wscale : 4,
 				tstamp_ok  : 1,
@@ -124,12 +86,6 @@ struct inet_request_sock {
 				wscale_ok  : 1,
 				ecn_ok	   : 1,
 				acked	   : 1,
-<<<<<<< HEAD
-				no_srccheck: 1;
-	kmemcheck_bitfield_end(flags);
-	struct ip_options_rcu	*opt;
-	u32                     ir_mark;
-=======
 				no_srccheck: 1,
 				smc_ok	   : 1;
 	u32                     ir_mark;
@@ -142,7 +98,6 @@ struct inet_request_sock {
 		};
 #endif
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
@@ -150,15 +105,6 @@ static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
 	return (struct inet_request_sock *)sk;
 }
 
-<<<<<<< HEAD
-static inline u32 inet_request_mark(struct sock *sk, struct sk_buff *skb)
-{
-	if (!sk->sk_mark && sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept) {
-		return skb->mark;
-	} else {
-		return sk->sk_mark;
-	}
-=======
 static inline u32 inet_request_mark(const struct sock *sk, struct sk_buff *skb)
 {
 	u32 mark = READ_ONCE(sk->sk_mark);
@@ -213,7 +159,6 @@ static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
 #else
 	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct inet_cork {
@@ -221,13 +166,6 @@ struct inet_cork {
 	__be32			addr;
 	struct ip_options	*opt;
 	unsigned int		fragsize;
-<<<<<<< HEAD
-	struct dst_entry	*dst;
-	int			length; /* Total length of all frames */
-	struct page		*page;
-	u32			off;
-	u8			tx_flags;
-=======
 	int			length; /* Total length of all frames */
 	struct dst_entry	*dst;
 	u8			tx_flags;
@@ -237,7 +175,6 @@ struct inet_cork {
 	__u16			gso_size;
 	u64			transmit_time;
 	u32			mark;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct inet_cork_full {
@@ -257,20 +194,13 @@ struct rtable;
  * @inet_rcv_saddr - Bound local IPv4 addr
  * @inet_dport - Destination port
  * @inet_num - Local port
-<<<<<<< HEAD
-=======
  * @inet_flags - various atomic flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @inet_saddr - Sending source
  * @uc_ttl - Unicast TTL
  * @inet_sport - Source port
  * @inet_id - ID counter for DF pkts
  * @tos - TOS
  * @mc_ttl - Multicasting TTL
-<<<<<<< HEAD
- * @is_icsk - is this an inet_connection_sock?
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @uc_index - Unicast outgoing device index
  * @mc_index - Multicast device index
  * @mc_list - Group array
@@ -285,18 +215,6 @@ struct inet_sock {
 	/* Socket demultiplex comparisons on incoming packets. */
 #define inet_daddr		sk.__sk_common.skc_daddr
 #define inet_rcv_saddr		sk.__sk_common.skc_rcv_saddr
-<<<<<<< HEAD
-
-	__be16			inet_dport;
-	__u16			inet_num;
-	__be32			inet_saddr;
-	__s16			uc_ttl;
-	__u16			cmsg_flags;
-	__be16			inet_sport;
-	__u16			inet_id;
-
-	struct ip_options_rcu __rcu	*inet_opt;
-=======
 #define inet_dport		sk.__sk_common.skc_dport
 #define inet_num		sk.__sk_common.skc_num
 
@@ -307,25 +225,10 @@ struct inet_sock {
 	struct ip_options_rcu __rcu	*inet_opt;
 	atomic_t		inet_id;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8			tos;
 	__u8			min_ttl;
 	__u8			mc_ttl;
 	__u8			pmtudisc;
-<<<<<<< HEAD
-	__u8			recverr:1,
-				is_icsk:1,
-				freebind:1,
-				hdrincl:1,
-				mc_loop:1,
-				transparent:1,
-				mc_all:1,
-				nodefrag:1;
-	__u8			rcv_tos;
-	int			uc_index;
-	int			mc_index;
-	__be32			mc_addr;
-=======
 	__u8			rcv_tos;
 	__u8			convert_csum;
 	int			uc_index;
@@ -333,21 +236,11 @@ struct inet_sock {
 	__be32			mc_addr;
 	u32			local_port_range;	/* high << 16 | low */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_mc_socklist __rcu	*mc_list;
 	struct inet_cork_full	cork;
 };
 
 #define IPCORK_OPT	1	/* ip-options has been held in ipcork.opt */
-<<<<<<< HEAD
-#define IPCORK_ALLFRAG	2	/* always fragment (for ipv6 for now) */
-
-static inline struct inet_sock *inet_sk(const struct sock *sk)
-{
-	return (struct inet_sock *)sk;
-}
-
-=======
 
 enum {
 	INET_FLAGS_PKTINFO	= 0,
@@ -448,7 +341,6 @@ static inline struct sock *skb_to_full_sk(const struct sk_buff *skb)
 
 #define inet_sk(ptr) container_of_const(ptr, struct inet_sock, sk)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __inet_sk_copy_descendant(struct sock *sk_to,
 					     const struct sock *sk_from,
 					     const int ancestor_size)
@@ -456,25 +348,6 @@ static inline void __inet_sk_copy_descendant(struct sock *sk_to,
 	memcpy(inet_sk(sk_to) + 1, inet_sk(sk_from) + 1,
 	       sk_from->sk_prot->obj_size - ancestor_size);
 }
-<<<<<<< HEAD
-#if !(IS_ENABLED(CONFIG_IPV6))
-static inline void inet_sk_copy_descendant(struct sock *sk_to,
-					   const struct sock *sk_from)
-{
-	__inet_sk_copy_descendant(sk_to, sk_from, sizeof(struct inet_sock));
-}
-#endif
-
-extern int inet_sk_rebuild_header(struct sock *sk);
-
-extern u32 inet_ehash_secret;
-extern u32 ipv6_hash_secret;
-extern void build_ehash_secret(void);
-
-static inline unsigned int inet_ehashfn(struct net *net,
-					const __be32 laddr, const __u16 lport,
-					const __be32 faddr, const __be16 fport)
-=======
 
 int inet_sk_rebuild_header(struct sock *sk);
 
@@ -508,61 +381,21 @@ static inline unsigned int __inet_ehashfn(const __be32 laddr,
 					  const __be32 faddr,
 					  const __be16 fport,
 					  u32 initval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return jhash_3words((__force __u32) laddr,
 			    (__force __u32) faddr,
 			    ((__u32) lport) << 16 | (__force __u32)fport,
-<<<<<<< HEAD
-			    inet_ehash_secret + net_hash_mix(net));
-}
-
-static inline int inet_sk_ehashfn(const struct sock *sk)
-{
-	const struct inet_sock *inet = inet_sk(sk);
-	const __be32 laddr = inet->inet_rcv_saddr;
-	const __u16 lport = inet->inet_num;
-	const __be32 faddr = inet->inet_daddr;
-	const __be16 fport = inet->inet_dport;
-	struct net *net = sock_net(sk);
-
-	return inet_ehashfn(net, laddr, lport, faddr, fport);
-}
-
-static inline struct request_sock *inet_reqsk_alloc(struct request_sock_ops *ops)
-{
-	struct request_sock *req = reqsk_alloc(ops);
-	struct inet_request_sock *ireq = inet_rsk(req);
-
-	if (req != NULL) {
-		kmemcheck_annotate_bitfield(ireq, flags);
-		ireq->opt = NULL;
-	}
-
-	return req;
-}
-=======
 			    initval);
 }
 
 struct request_sock *inet_reqsk_alloc(const struct request_sock_ops *ops,
 				      struct sock *sk_listener,
 				      bool attach_listener);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline __u8 inet_sk_flowi_flags(const struct sock *sk)
 {
 	__u8 flags = 0;
 
-<<<<<<< HEAD
-	if (inet_sk(sk)->transparent || inet_sk(sk)->hdrincl)
-		flags |= FLOWI_FLAG_ANYSRC;
-	if (sk->sk_protocol == IPPROTO_TCP)
-		flags |= FLOWI_FLAG_PRECOW_METRICS;
-	return flags;
-}
-
-=======
 	if (inet_test_bit(TRANSPARENT, sk) || inet_test_bit(HDRINCL, sk))
 		flags |= FLOWI_FLAG_ANYSRC;
 	return flags;
@@ -605,5 +438,4 @@ static inline bool inet_addr_valid_or_nonlocal(struct net *net,
 		addr_type == RTN_BROADCAST;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _INET_SOCK_H */

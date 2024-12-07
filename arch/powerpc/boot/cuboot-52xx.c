@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Old U-boot compatibility for MPC5200
  *
@@ -9,13 +6,6 @@
  *
  * Copyright (c) 2007 Secret Lab Technologies Ltd.
  * Copyright (c) 2007 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ops.h"

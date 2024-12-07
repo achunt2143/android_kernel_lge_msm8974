@@ -1,39 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale SEC (talitos) device register and descriptor header defines
  *
  * Copyright (c) 2006-2011 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
-=======
  */
 
 #define TALITOS_TIMEOUT 100000
@@ -207,39 +176,19 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 	return IS_ENABLED(CONFIG_CRYPTO_DEV_TALITOS1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TALITOS_xxx_LO addresses point to the low data bits (32-63) of the register
  */
 
-<<<<<<< HEAD
-=======
 #define ISR1_FORMAT(x)			(((x) << 28) | ((x) << 16))
 #define ISR2_FORMAT(x)			(((x) << 4) | (x))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* global register offset addresses */
 #define TALITOS_MCR			0x1030  /* master control register */
 #define   TALITOS_MCR_RCA0		(1 << 15) /* remap channel 0 */
 #define   TALITOS_MCR_RCA1		(1 << 14) /* remap channel 1 */
 #define   TALITOS_MCR_RCA2		(1 << 13) /* remap channel 2 */
 #define   TALITOS_MCR_RCA3		(1 << 12) /* remap channel 3 */
-<<<<<<< HEAD
-#define   TALITOS_MCR_SWR		0x1     /* s/w reset */
-#define TALITOS_MCR_LO			0x1034
-#define TALITOS_IMR			0x1008  /* interrupt mask register */
-#define   TALITOS_IMR_INIT		0x100ff /* enable channel IRQs */
-#define   TALITOS_IMR_DONE		0x00055 /* done IRQs */
-#define TALITOS_IMR_LO			0x100C
-#define   TALITOS_IMR_LO_INIT		0x20000 /* allow RNGU error IRQs */
-#define TALITOS_ISR			0x1010  /* interrupt status register */
-#define   TALITOS_ISR_4CHERR		0xaa    /* 4 channel errors mask */
-#define   TALITOS_ISR_4CHDONE		0x55    /* 4 channel done mask */
-#define   TALITOS_ISR_CH_0_2_ERR	0x22    /* channels 0, 2 errors mask */
-#define   TALITOS_ISR_CH_0_2_DONE	0x11    /* channels 0, 2 done mask */
-#define   TALITOS_ISR_CH_1_3_ERR	0x88    /* channels 1, 3 errors mask */
-#define   TALITOS_ISR_CH_1_3_DONE	0x44    /* channels 1, 3 done mask */
-=======
 #define   TALITOS1_MCR_SWR		0x1000000     /* s/w reset */
 #define   TALITOS2_MCR_SWR		0x1     /* s/w reset */
 #define TALITOS_MCR_LO			0x1034
@@ -267,21 +216,12 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 #define   TALITOS2_ISR_CH_0_2_DONE	ISR2_FORMAT(0x1) /* ch 0, 2 done mask */
 #define   TALITOS2_ISR_CH_1_3_ERR	ISR2_FORMAT(0x8) /* ch 1, 3 err mask */
 #define   TALITOS2_ISR_CH_1_3_DONE	ISR2_FORMAT(0x4) /* ch 1, 3 done mask */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TALITOS_ISR_LO			0x1014
 #define TALITOS_ICR			0x1018  /* interrupt clear register */
 #define TALITOS_ICR_LO			0x101C
 
 /* channel register address stride */
 #define TALITOS_CH_BASE_OFFSET		0x1000	/* default channel map base */
-<<<<<<< HEAD
-#define TALITOS_CH_STRIDE		0x100
-
-/* channel configuration register  */
-#define TALITOS_CCCR			0x8
-#define   TALITOS_CCCR_CONT		0x2    /* channel continue */
-#define   TALITOS_CCCR_RESET		0x1    /* channel reset */
-=======
 #define TALITOS1_CH_STRIDE		0x1000
 #define TALITOS2_CH_STRIDE		0x100
 
@@ -289,20 +229,14 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 #define TALITOS_CCCR			0x8
 #define   TALITOS2_CCCR_CONT		0x2    /* channel continue on SEC2 */
 #define   TALITOS2_CCCR_RESET		0x1    /* channel reset on SEC2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TALITOS_CCCR_LO			0xc
 #define   TALITOS_CCCR_LO_IWSE		0x80   /* chan. ICCR writeback enab. */
 #define   TALITOS_CCCR_LO_EAE		0x20   /* extended address enable */
 #define   TALITOS_CCCR_LO_CDWE		0x10   /* chan. done writeback enab. */
-<<<<<<< HEAD
-#define   TALITOS_CCCR_LO_NT		0x4    /* notification type */
-#define   TALITOS_CCCR_LO_CDIE		0x2    /* channel done IRQ enable */
-=======
 #define   TALITOS_CCCR_LO_NE		0x8    /* fetch next descriptor enab. */
 #define   TALITOS_CCCR_LO_NT		0x4    /* notification type */
 #define   TALITOS_CCCR_LO_CDIE		0x2    /* channel done IRQ enable */
 #define   TALITOS1_CCCR_LO_RESET	0x1    /* channel reset on SEC1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CCPSR: channel pointer status register */
 #define TALITOS_CCPSR			0x10
@@ -340,39 +274,6 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 #define TALITOS_SCATTER			0xe0
 #define TALITOS_SCATTER_LO		0xe4
 
-<<<<<<< HEAD
-/* execution unit interrupt status registers */
-#define TALITOS_DEUISR			0x2030 /* DES unit */
-#define TALITOS_DEUISR_LO		0x2034
-#define TALITOS_AESUISR			0x4030 /* AES unit */
-#define TALITOS_AESUISR_LO		0x4034
-#define TALITOS_MDEUISR			0x6030 /* message digest unit */
-#define TALITOS_MDEUISR_LO		0x6034
-#define TALITOS_MDEUICR			0x6038 /* interrupt control */
-#define TALITOS_MDEUICR_LO		0x603c
-#define   TALITOS_MDEUICR_LO_ICE	0x4000 /* integrity check IRQ enable */
-#define TALITOS_AFEUISR			0x8030 /* arc4 unit */
-#define TALITOS_AFEUISR_LO		0x8034
-#define TALITOS_RNGUISR			0xa030 /* random number unit */
-#define TALITOS_RNGUISR_LO		0xa034
-#define TALITOS_RNGUSR			0xa028 /* rng status */
-#define TALITOS_RNGUSR_LO		0xa02c
-#define   TALITOS_RNGUSR_LO_RD		0x1	/* reset done */
-#define   TALITOS_RNGUSR_LO_OFL		0xff0000/* output FIFO length */
-#define TALITOS_RNGUDSR			0xa010	/* data size */
-#define TALITOS_RNGUDSR_LO		0xa014
-#define TALITOS_RNGU_FIFO		0xa800	/* output FIFO */
-#define TALITOS_RNGU_FIFO_LO		0xa804	/* output FIFO */
-#define TALITOS_RNGURCR			0xa018	/* reset control */
-#define TALITOS_RNGURCR_LO		0xa01c
-#define   TALITOS_RNGURCR_LO_SR		0x1	/* software reset */
-#define TALITOS_PKEUISR			0xc030 /* public key unit */
-#define TALITOS_PKEUISR_LO		0xc034
-#define TALITOS_KEUISR			0xe030 /* kasumi unit */
-#define TALITOS_KEUISR_LO		0xe034
-#define TALITOS_CRCUISR			0xf030 /* cyclic redundancy check unit*/
-#define TALITOS_CRCUISR_LO		0xf034
-=======
 /* execution unit registers base */
 #define TALITOS2_DEU			0x2000
 #define TALITOS2_AESU			0x4000
@@ -415,7 +316,6 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 #define   TALITOS_RNGUSR_LO_RD		0x1	/* reset done */
 #define   TALITOS_RNGUSR_LO_OFL		0xff0000/* output FIFO length */
 #define   TALITOS_RNGURCR_LO_SR		0x1	/* software reset */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TALITOS_MDEU_CONTEXT_SIZE_MD5_SHA1_SHA256	0x28
 #define TALITOS_MDEU_CONTEXT_SIZE_SHA384_SHA512		0x48
@@ -444,13 +344,9 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 
 /* primary execution unit mode (MODE0) and derivatives */
 #define	DESC_HDR_MODE0_ENCRYPT		cpu_to_be32(0x00100000)
-<<<<<<< HEAD
-#define	DESC_HDR_MODE0_AESU_CBC		cpu_to_be32(0x00200000)
-=======
 #define	DESC_HDR_MODE0_AESU_MASK	cpu_to_be32(0x00600000)
 #define	DESC_HDR_MODE0_AESU_CBC		cpu_to_be32(0x00200000)
 #define	DESC_HDR_MODE0_AESU_CTR		cpu_to_be32(0x00600000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	DESC_HDR_MODE0_DEU_CBC		cpu_to_be32(0x00400000)
 #define	DESC_HDR_MODE0_DEU_3DES		cpu_to_be32(0x00200000)
 #define	DESC_HDR_MODE0_MDEU_CONT	cpu_to_be32(0x08000000)
@@ -493,15 +389,12 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 					 DESC_HDR_MODE1_MDEU_HMAC)
 #define	DESC_HDR_MODE1_MDEU_SHA1_HMAC	(DESC_HDR_MODE1_MDEU_SHA1 | \
 					 DESC_HDR_MODE1_MDEU_HMAC)
-<<<<<<< HEAD
-=======
 #define DESC_HDR_MODE1_MDEU_SHA224_HMAC	(DESC_HDR_MODE1_MDEU_SHA224 | \
 					 DESC_HDR_MODE1_MDEU_HMAC)
 #define DESC_HDR_MODE1_MDEUB_SHA384_HMAC	(DESC_HDR_MODE1_MDEUB_SHA384 | \
 						 DESC_HDR_MODE1_MDEU_HMAC)
 #define DESC_HDR_MODE1_MDEUB_SHA512_HMAC	(DESC_HDR_MODE1_MDEUB_SHA512 | \
 						 DESC_HDR_MODE1_MDEU_HMAC)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* direction of overall data flow (DIR) */
 #define	DESC_HDR_DIR_INBOUND		cpu_to_be32(0x00000002)
@@ -517,9 +410,5 @@ static inline bool has_ftr_sec1(struct talitos_private *priv)
 
 /* link table extent field bits */
 #define DESC_PTR_LNKTBL_JUMP			0x80
-<<<<<<< HEAD
-#define DESC_PTR_LNKTBL_RETURN			0x02
-=======
 #define DESC_PTR_LNKTBL_RET			0x02
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DESC_PTR_LNKTBL_NEXT			0x01

@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/slab.h>
-
-#include "mce_amd.h"
-
-static struct amd_decoder_ops *fam_ops;
-
-static u8 xec_mask	 = 0xf;
-static u8 nb_err_cpumask = 0xf;
-
-static bool report_gart_errors;
-static void (*nb_bus_decoder)(int node_id, struct mce *m);
-
-void amd_report_gart_errors(bool v)
-{
-	report_gart_errors = v;
-}
-EXPORT_SYMBOL_GPL(amd_report_gart_errors);
-
-void amd_register_ecc_decoder(void (*f)(int, struct mce *))
-{
-	nb_bus_decoder = f;
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -39,23 +15,15 @@ static void (*decode_dram_ecc)(int node_id, struct mce *m);
 void amd_register_ecc_decoder(void (*f)(int, struct mce *))
 {
 	decode_dram_ecc = f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(amd_register_ecc_decoder);
 
 void amd_unregister_ecc_decoder(void (*f)(int, struct mce *))
 {
-<<<<<<< HEAD
-	if (nb_bus_decoder) {
-		WARN_ON(nb_bus_decoder != f);
-
-		nb_bus_decoder = NULL;
-=======
 	if (decode_dram_ecc) {
 		WARN_ON(decode_dram_ecc != f);
 
 		decode_dram_ecc = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL_GPL(amd_unregister_ecc_decoder);
@@ -66,20 +34,6 @@ EXPORT_SYMBOL_GPL(amd_unregister_ecc_decoder);
  */
 
 /* transaction type */
-<<<<<<< HEAD
-const char * const tt_msgs[] = { "INSN", "DATA", "GEN", "RESV" };
-EXPORT_SYMBOL_GPL(tt_msgs);
-
-/* cache level */
-const char * const ll_msgs[] = { "RESV", "L1", "L2", "L3/GEN" };
-EXPORT_SYMBOL_GPL(ll_msgs);
-
-/* memory transaction type */
-const char * const rrrr_msgs[] = {
-       "GEN", "RD", "WR", "DRD", "DWR", "IRD", "PRF", "EV", "SNP"
-};
-EXPORT_SYMBOL_GPL(rrrr_msgs);
-=======
 static const char * const tt_msgs[] = { "INSN", "DATA", "GEN", "RESV" };
 
 /* cache level */
@@ -89,23 +43,12 @@ static const char * const ll_msgs[] = { "RESV", "L1", "L2", "L3/GEN" };
 static const char * const rrrr_msgs[] = {
        "GEN", "RD", "WR", "DRD", "DWR", "IRD", "PRF", "EV", "SNP"
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* participating processor */
 const char * const pp_msgs[] = { "SRC", "RES", "OBS", "GEN" };
 EXPORT_SYMBOL_GPL(pp_msgs);
 
 /* request timeout */
-<<<<<<< HEAD
-const char * const to_msgs[] = { "no timeout", "timed out" };
-EXPORT_SYMBOL_GPL(to_msgs);
-
-/* memory or i/o */
-const char * const ii_msgs[] = { "MEM", "RESV", "IO", "GEN" };
-EXPORT_SYMBOL_GPL(ii_msgs);
-
-static const char * const f15h_ic_mce_desc[] = {
-=======
 static const char * const to_msgs[] = { "no timeout", "timed out" };
 
 /* memory or i/o */
@@ -115,7 +58,6 @@ static const char * const ii_msgs[] = { "MEM", "RESV", "IO", "GEN" };
 static const char * const uu_msgs[] = { "RESV", "RESV", "HWA", "RESV" };
 
 static const char * const f15h_mc1_mce_desc[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"UC during a demand linefill from L2",
 	"Parity error during data load from IC",
 	"Parity error for IC valid bit",
@@ -132,18 +74,11 @@ static const char * const f15h_mc1_mce_desc[] = {
 	"uop queue",
 	"insn buffer",
 	"predecode buffer",
-<<<<<<< HEAD
-	"fetch address FIFO"
-};
-
-static const char * const f15h_cu_mce_desc[] = {
-=======
 	"fetch address FIFO",
 	"dispatch uop queue"
 };
 
 static const char * const f15h_mc2_mce_desc[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Fill ECC error on data fills",			/* xec = 0x4 */
 	"Fill parity error on insn fills",
 	"Prefetcher request FIFO parity error",
@@ -160,11 +95,7 @@ static const char * const f15h_mc2_mce_desc[] = {
 	"PRB address parity error"
 };
 
-<<<<<<< HEAD
-static const char * const nb_mce_desc[] = {
-=======
 static const char * const mc4_mce_desc[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"DRAM ECC error detected on the NB",
 	"CRC error detected on HT link",
 	"Link-defined sync error packets detected on HT link",
@@ -186,11 +117,7 @@ static const char * const mc4_mce_desc[] = {
 	"ECC Error in the Probe Filter directory"
 };
 
-<<<<<<< HEAD
-static const char * const fr_ex_mce_desc[] = {
-=======
 static const char * const mc5_mce_desc[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"CPU Watchdog timer expire",
 	"Wakeup array dest tag",
 	"AG payload array",
@@ -203,12 +130,6 @@ static const char * const mc5_mce_desc[] = {
 	"Physical register file AG0 port",
 	"Physical register file AG1 port",
 	"Flag register file",
-<<<<<<< HEAD
-	"DE error occurred"
-};
-
-static bool f12h_dc_mce(u16 ec, u8 xec)
-=======
 	"DE error occurred",
 	"Retire status queue"
 };
@@ -223,7 +144,6 @@ static const char * const mc6_mce_desc[] = {
 };
 
 static bool f12h_mc0_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bool ret = false;
 
@@ -241,44 +161,26 @@ static bool f12h_mc0_mce(u16 ec, u8 xec)
 	return ret;
 }
 
-<<<<<<< HEAD
-static bool f10h_dc_mce(u16 ec, u8 xec)
-=======
 static bool f10h_mc0_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (R4(ec) == R4_GEN && LL(ec) == LL_L1) {
 		pr_cont("during data scrub.\n");
 		return true;
 	}
-<<<<<<< HEAD
-	return f12h_dc_mce(ec, xec);
-}
-
-static bool k8_dc_mce(u16 ec, u8 xec)
-=======
 	return f12h_mc0_mce(ec, xec);
 }
 
 static bool k8_mc0_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (BUS_ERROR(ec)) {
 		pr_cont("during system linefill.\n");
 		return true;
 	}
 
-<<<<<<< HEAD
-	return f10h_dc_mce(ec, xec);
-}
-
-static bool f14h_dc_mce(u16 ec, u8 xec)
-=======
 	return f10h_mc0_mce(ec, xec);
 }
 
 static bool cat_mc0_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 r4	 = R4(ec);
 	bool ret = true;
@@ -330,11 +232,7 @@ static bool cat_mc0_mce(u16 ec, u8 xec)
 	return ret;
 }
 
-<<<<<<< HEAD
-static bool f15h_dc_mce(u16 ec, u8 xec)
-=======
 static bool f15h_mc0_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bool ret = true;
 
@@ -375,35 +273,24 @@ static bool f15h_mc0_mce(u16 ec, u8 xec)
 			pr_cont("System Read Data Error.\n");
 		else
 			pr_cont(" Internal error condition type %d.\n", xec);
-<<<<<<< HEAD
-=======
 	} else if (INT_ERROR(ec)) {
 		if (xec <= 0x1f)
 			pr_cont("Hardware Assert.\n");
 		else
 			ret = false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ret = false;
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static void amd_decode_dc_mce(struct mce *m)
-=======
 static void decode_mc0_mce(struct mce *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 ec = EC(m->status);
 	u8 xec = XEC(m->status, xec_mask);
 
-<<<<<<< HEAD
-	pr_emerg(HW_ERR "Data Cache Error: ");
-=======
 	pr_emerg(HW_ERR "MC0 Error: ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TLB error signatures are the same across families */
 	if (TLB_ERROR(ec)) {
@@ -413,15 +300,6 @@ static void decode_mc0_mce(struct mce *m)
 					    : (xec ? "multimatch" : "parity")));
 			return;
 		}
-<<<<<<< HEAD
-	} else if (fam_ops->dc_mce(ec, xec))
-		;
-	else
-		pr_emerg(HW_ERR "Corrupted DC MCE info?\n");
-}
-
-static bool k8_ic_mce(u16 ec, u8 xec)
-=======
 	} else if (fam_ops.mc0_mce(ec, xec))
 		;
 	else
@@ -429,7 +307,6 @@ static bool k8_ic_mce(u16 ec, u8 xec)
 }
 
 static bool k8_mc1_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 ll	 = LL(ec);
 	bool ret = true;
@@ -463,32 +340,11 @@ static bool k8_mc1_mce(u16 ec, u8 xec)
 	return ret;
 }
 
-<<<<<<< HEAD
-static bool f14h_ic_mce(u16 ec, u8 xec)
-=======
 static bool cat_mc1_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 r4    = R4(ec);
 	bool ret = true;
 
-<<<<<<< HEAD
-	if (MEM_ERROR(ec)) {
-		if (TT(ec) != 0 || LL(ec) != 1)
-			ret = false;
-
-		if (r4 == R4_IRD)
-			pr_cont("Data/tag array parity error for a tag hit.\n");
-		else if (r4 == R4_SNOOP)
-			pr_cont("Tag error during snoop/victimization.\n");
-		else
-			ret = false;
-	}
-	return ret;
-}
-
-static bool f15h_ic_mce(u16 ec, u8 xec)
-=======
 	if (!MEM_ERROR(ec))
 		return false;
 
@@ -510,7 +366,6 @@ static bool f15h_ic_mce(u16 ec, u8 xec)
 }
 
 static bool f15h_mc1_mce(u16 ec, u8 xec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bool ret = true;
 
@@ -519,21 +374,6 @@ static bool f15h_mc1_mce(u16 ec, u8 xec)
 
 	switch (xec) {
 	case 0x0 ... 0xa:
-<<<<<<< HEAD
-		pr_cont("%s.\n", f15h_ic_mce_desc[xec]);
-		break;
-
-	case 0xd:
-		pr_cont("%s.\n", f15h_ic_mce_desc[xec-2]);
-		break;
-
-	case 0x10:
-		pr_cont("%s.\n", f15h_ic_mce_desc[xec-4]);
-		break;
-
-	case 0x11 ... 0x14:
-		pr_cont("Decoder %s parity error.\n", f15h_ic_mce_desc[xec-4]);
-=======
 		pr_cont("%s.\n", f15h_mc1_mce_desc[xec]);
 		break;
 
@@ -547,7 +387,6 @@ static bool f15h_mc1_mce(u16 ec, u8 xec)
 
 	case 0x11 ... 0x15:
 		pr_cont("Decoder %s parity error.\n", f15h_mc1_mce_desc[xec-4]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -556,20 +395,12 @@ static bool f15h_mc1_mce(u16 ec, u8 xec)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void amd_decode_ic_mce(struct mce *m)
-=======
 static void decode_mc1_mce(struct mce *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 ec = EC(m->status);
 	u8 xec = XEC(m->status, xec_mask);
 
-<<<<<<< HEAD
-	pr_emerg(HW_ERR "Instruction Cache Error: ");
-=======
 	pr_emerg(HW_ERR "MC1 Error: ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (TLB_ERROR(ec))
 		pr_cont("%s TLB %s.\n", LL_MSG(ec),
@@ -578,20 +409,6 @@ static void decode_mc1_mce(struct mce *m)
 		bool k8 = (boot_cpu_data.x86 == 0xf && (m->status & BIT_64(58)));
 
 		pr_cont("during %s.\n", (k8 ? "system linefill" : "NB data read"));
-<<<<<<< HEAD
-	} else if (fam_ops->ic_mce(ec, xec))
-		;
-	else
-		pr_emerg(HW_ERR "Corrupted IC MCE info?\n");
-}
-
-static void amd_decode_bu_mce(struct mce *m)
-{
-	u16 ec = EC(m->status);
-	u8 xec = XEC(m->status, xec_mask);
-
-	pr_emerg(HW_ERR "Bus Unit Error");
-=======
 	} else if (INT_ERROR(ec)) {
 		if (xec <= 0x3f)
 			pr_cont("Hardware Assert.\n");
@@ -611,7 +428,6 @@ wrong_mc1_mce:
 static bool k8_mc2_mce(u16 ec, u8 xec)
 {
 	bool ret = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xec == 0x1)
 		pr_cont(" in the write data buffers.\n");
@@ -621,13 +437,8 @@ static bool k8_mc2_mce(u16 ec, u8 xec)
 		pr_cont(": %s error in the L2 cache tags.\n", R4_MSG(ec));
 	else if (xec == 0x0) {
 		if (TLB_ERROR(ec))
-<<<<<<< HEAD
-			pr_cont(": %s error in a Page Descriptor Cache or "
-				"Guest TLB.\n", TT_MSG(ec));
-=======
 			pr_cont("%s error in a Page Descriptor Cache or Guest TLB.\n",
 				TT_MSG(ec));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (BUS_ERROR(ec))
 			pr_cont(": %s/ECC error in data read from NB: %s.\n",
 				R4_MSG(ec), PP_MSG(ec));
@@ -641,26 +452,6 @@ static bool k8_mc2_mce(u16 ec, u8 xec)
 				pr_cont(": %s parity/ECC error during data "
 					"access from L2.\n", R4_MSG(ec));
 			else
-<<<<<<< HEAD
-				goto wrong_bu_mce;
-		} else
-			goto wrong_bu_mce;
-	} else
-		goto wrong_bu_mce;
-
-	return;
-
-wrong_bu_mce:
-	pr_emerg(HW_ERR "Corrupted BU MCE info?\n");
-}
-
-static void amd_decode_cu_mce(struct mce *m)
-{
-	u16 ec = EC(m->status);
-	u8 xec = XEC(m->status, xec_mask);
-
-	pr_emerg(HW_ERR "Combined Unit Error: ");
-=======
 				ret = false;
 		} else
 			ret = false;
@@ -673,7 +464,6 @@ static void amd_decode_cu_mce(struct mce *m)
 static bool f15h_mc2_mce(u16 ec, u8 xec)
 {
 	bool ret = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (TLB_ERROR(ec)) {
 		if (xec == 0x0)
@@ -681,43 +471,15 @@ static bool f15h_mc2_mce(u16 ec, u8 xec)
 		else if (xec == 0x1)
 			pr_cont("Poison data provided for TLB fill.\n");
 		else
-<<<<<<< HEAD
-			goto wrong_cu_mce;
-	} else if (BUS_ERROR(ec)) {
-		if (xec > 2)
-			goto wrong_cu_mce;
-=======
 			ret = false;
 	} else if (BUS_ERROR(ec)) {
 		if (xec > 2)
 			ret = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pr_cont("Error during attempted NB data read.\n");
 	} else if (MEM_ERROR(ec)) {
 		switch (xec) {
 		case 0x4 ... 0xc:
-<<<<<<< HEAD
-			pr_cont("%s.\n", f15h_cu_mce_desc[xec - 0x4]);
-			break;
-
-		case 0x10 ... 0x14:
-			pr_cont("%s.\n", f15h_cu_mce_desc[xec - 0x7]);
-			break;
-
-		default:
-			goto wrong_cu_mce;
-		}
-	}
-
-	return;
-
-wrong_cu_mce:
-	pr_emerg(HW_ERR "Corrupted CU MCE info?\n");
-}
-
-static void amd_decode_ls_mce(struct mce *m)
-=======
 			pr_cont("%s.\n", f15h_mc2_mce_desc[xec - 0x4]);
 			break;
 
@@ -791,49 +553,22 @@ static void decode_mc2_mce(struct mce *m)
 }
 
 static void decode_mc3_mce(struct mce *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 ec = EC(m->status);
 	u8 xec = XEC(m->status, xec_mask);
 
 	if (boot_cpu_data.x86 >= 0x14) {
-<<<<<<< HEAD
-		pr_emerg("You shouldn't be seeing an LS MCE on this cpu family,"
-=======
 		pr_emerg("You shouldn't be seeing MC3 MCE on this cpu family,"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 " please report on LKML.\n");
 		return;
 	}
 
-<<<<<<< HEAD
-	pr_emerg(HW_ERR "Load Store Error");
-=======
 	pr_emerg(HW_ERR "MC3 Error");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xec == 0x0) {
 		u8 r4 = R4(ec);
 
 		if (!BUS_ERROR(ec) || (r4 != R4_DRD && r4 != R4_DWR))
-<<<<<<< HEAD
-			goto wrong_ls_mce;
-
-		pr_cont(" during %s.\n", R4_MSG(ec));
-	} else
-		goto wrong_ls_mce;
-
-	return;
-
-wrong_ls_mce:
-	pr_emerg(HW_ERR "Corrupted LS MCE info?\n");
-}
-
-void amd_decode_nb_mce(struct mce *m)
-{
-	struct cpuinfo_x86 *c = &boot_cpu_data;
-	int node_id = amd_get_nb_id(m->extcpu);
-=======
 			goto wrong_mc3_mce;
 
 		pr_cont(" during %s.\n", R4_MSG(ec));
@@ -850,16 +585,11 @@ static void decode_mc4_mce(struct mce *m)
 {
 	unsigned int fam = x86_family(m->cpuid);
 	int node_id = topology_amd_node_id(m->extcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 ec = EC(m->status);
 	u8 xec = XEC(m->status, 0x1f);
 	u8 offset = 0;
 
-<<<<<<< HEAD
-	pr_emerg(HW_ERR "Northbridge Error (node %d): ", node_id);
-=======
 	pr_emerg(HW_ERR "MC4 Error (node %d): ", node_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (xec) {
 	case 0x0 ... 0xe:
@@ -867,15 +597,6 @@ static void decode_mc4_mce(struct mce *m)
 		/* special handling for DRAM ECCs */
 		if (xec == 0x0 || xec == 0x8) {
 			/* no ECCs on F11h */
-<<<<<<< HEAD
-			if (c->x86 == 0x11)
-				goto wrong_nb_mce;
-
-			pr_cont("%s.\n", nb_mce_desc[xec]);
-
-			if (nb_bus_decoder)
-				nb_bus_decoder(node_id, m);
-=======
 			if (fam == 0x11)
 				goto wrong_mc4_mce;
 
@@ -883,7 +604,6 @@ static void decode_mc4_mce(struct mce *m)
 
 			if (decode_dram_ecc)
 				decode_dram_ecc(node_id, m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		break;
@@ -894,16 +614,6 @@ static void decode_mc4_mce(struct mce *m)
 		else if (BUS_ERROR(ec))
 			pr_cont("DMA Exclusion Vector Table Walk error.\n");
 		else
-<<<<<<< HEAD
-			goto wrong_nb_mce;
-		return;
-
-	case 0x19:
-		if (boot_cpu_data.x86 == 0x15)
-			pr_cont("Compute Unit Data Error.\n");
-		else
-			goto wrong_nb_mce;
-=======
 			goto wrong_mc4_mce;
 		return;
 
@@ -912,7 +622,6 @@ static void decode_mc4_mce(struct mce *m)
 			pr_cont("Compute Unit Data Error.\n");
 		else
 			goto wrong_mc4_mce;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	case 0x1c ... 0x1f:
@@ -920,81 +629,6 @@ static void decode_mc4_mce(struct mce *m)
 		break;
 
 	default:
-<<<<<<< HEAD
-		goto wrong_nb_mce;
-	}
-
-	pr_cont("%s.\n", nb_mce_desc[xec - offset]);
-	return;
-
-wrong_nb_mce:
-	pr_emerg(HW_ERR "Corrupted NB MCE info?\n");
-}
-EXPORT_SYMBOL_GPL(amd_decode_nb_mce);
-
-static void amd_decode_fr_mce(struct mce *m)
-{
-	struct cpuinfo_x86 *c = &boot_cpu_data;
-	u8 xec = XEC(m->status, xec_mask);
-
-	if (c->x86 == 0xf || c->x86 == 0x11)
-		goto wrong_fr_mce;
-
-	pr_emerg(HW_ERR "%s Error: ",
-		 (c->x86 == 0x15 ? "Execution Unit" : "FIROB"));
-
-	if (xec == 0x0 || xec == 0xc)
-		pr_cont("%s.\n", fr_ex_mce_desc[xec]);
-	else if (xec < 0xd)
-		pr_cont("%s parity error.\n", fr_ex_mce_desc[xec]);
-	else
-		goto wrong_fr_mce;
-
-	return;
-
-wrong_fr_mce:
-	pr_emerg(HW_ERR "Corrupted FR MCE info?\n");
-}
-
-static void amd_decode_fp_mce(struct mce *m)
-{
-	u8 xec = XEC(m->status, xec_mask);
-
-	pr_emerg(HW_ERR "Floating Point Unit Error: ");
-
-	switch (xec) {
-	case 0x1:
-		pr_cont("Free List");
-		break;
-
-	case 0x2:
-		pr_cont("Physical Register File");
-		break;
-
-	case 0x3:
-		pr_cont("Retire Queue");
-		break;
-
-	case 0x4:
-		pr_cont("Scheduler table");
-		break;
-
-	case 0x5:
-		pr_cont("Status Register File");
-		break;
-
-	default:
-		goto wrong_fp_mce;
-		break;
-	}
-
-	pr_cont(" parity error.\n");
-
-	return;
-
-wrong_fp_mce:
-	pr_emerg(HW_ERR "Corrupted FP MCE info?\n");
-=======
 		goto wrong_mc4_mce;
 	}
 
@@ -1113,18 +747,14 @@ static void decode_smca_error(struct mce *m)
 	if ((bank_type == SMCA_UMC || bank_type == SMCA_UMC_V2) &&
 	    xec == 0 && decode_dram_ecc)
 		decode_dram_ecc(topology_amd_node_id(m->extcpu), m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void amd_decode_err_code(u16 ec)
 {
-<<<<<<< HEAD
-=======
 	if (INT_ERROR(ec)) {
 		pr_emerg(HW_ERR "internal: %s\n", UU_MSG(ec));
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_emerg(HW_ERR "cache level: %s", LL_MSG(ec));
 
@@ -1143,45 +773,6 @@ static inline void amd_decode_err_code(u16 ec)
 	pr_cont("\n");
 }
 
-<<<<<<< HEAD
-/*
- * Filter out unwanted MCE signatures here.
- */
-static bool amd_filter_mce(struct mce *m)
-{
-	u8 xec = (m->status >> 16) & 0x1f;
-
-	/*
-	 * NB GART TLB error reporting is disabled by default.
-	 */
-	if (m->bank == 4 && xec == 0x5 && !report_gart_errors)
-		return true;
-
-	return false;
-}
-
-int amd_decode_mce(struct notifier_block *nb, unsigned long val, void *data)
-{
-	struct mce *m = (struct mce *)data;
-	struct cpuinfo_x86 *c = &boot_cpu_data;
-	int ecc;
-
-	if (amd_filter_mce(m))
-		return NOTIFY_STOP;
-
-	pr_emerg(HW_ERR "CPU:%d\tMC%d_STATUS[%s|%s|%s|%s|%s",
-		m->extcpu, m->bank,
-		((m->status & MCI_STATUS_OVER)	? "Over"  : "-"),
-		((m->status & MCI_STATUS_UC)	? "UE"	  : "CE"),
-		((m->status & MCI_STATUS_MISCV)	? "MiscV" : "-"),
-		((m->status & MCI_STATUS_PCC)	? "PCC"	  : "-"),
-		((m->status & MCI_STATUS_ADDRV)	? "AddrV" : "-"));
-
-	if (c->x86 == 0x15)
-		pr_cont("|%s|%s",
-			((m->status & BIT_64(44)) ? "Deferred" : "-"),
-			((m->status & BIT_64(43)) ? "Poison"   : "-"));
-=======
 static const char *decode_error_status(struct mce *m)
 {
 	if (m->status & MCI_STATUS_UC) {
@@ -1231,50 +822,12 @@ amd_decode_mce(struct notifier_block *nb, unsigned long val, void *data)
 
 		pr_cont("|%s", ((m->status & MCI_STATUS_SYNDV) ? "SyndV" : "-"));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* do the two bits[14:13] together */
 	ecc = (m->status >> 45) & 0x3;
 	if (ecc)
 		pr_cont("|%sECC", ((ecc == 2) ? "C" : "U"));
 
-<<<<<<< HEAD
-	pr_cont("]: 0x%016llx\n", m->status);
-
-	if (m->status & MCI_STATUS_ADDRV)
-		pr_emerg(HW_ERR "\tMC%d_ADDR: 0x%016llx\n", m->bank, m->addr);
-
-	switch (m->bank) {
-	case 0:
-		amd_decode_dc_mce(m);
-		break;
-
-	case 1:
-		amd_decode_ic_mce(m);
-		break;
-
-	case 2:
-		if (c->x86 == 0x15)
-			amd_decode_cu_mce(m);
-		else
-			amd_decode_bu_mce(m);
-		break;
-
-	case 3:
-		amd_decode_ls_mce(m);
-		break;
-
-	case 4:
-		amd_decode_nb_mce(m);
-		break;
-
-	case 5:
-		amd_decode_fr_mce(m);
-		break;
-
-	case 6:
-		amd_decode_fp_mce(m);
-=======
 	if (fam >= 0x15) {
 		pr_cont("|%s", (m->status & MCI_STATUS_DEFERRED ? "Deferred" : "-"));
 
@@ -1340,23 +893,12 @@ amd_decode_mce(struct notifier_block *nb, unsigned long val, void *data)
 
 	case 6:
 		decode_mc6_mce(m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	amd_decode_err_code(m->status & 0xffff);
-
-	return NOTIFY_STOP;
-}
-EXPORT_SYMBOL_GPL(amd_decode_mce);
-
-static struct notifier_block amd_mce_dec_nb = {
-	.notifier_call	= amd_decode_mce,
-=======
  err_code:
 	amd_decode_err_code(m->status & 0xffff);
 
@@ -1367,64 +909,12 @@ static struct notifier_block amd_mce_dec_nb = {
 static struct notifier_block amd_mce_dec_nb = {
 	.notifier_call	= amd_decode_mce,
 	.priority	= MCE_PRIO_EDAC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init mce_amd_init(void)
 {
 	struct cpuinfo_x86 *c = &boot_cpu_data;
 
-<<<<<<< HEAD
-	if (c->x86_vendor != X86_VENDOR_AMD)
-		return 0;
-
-	if (c->x86 < 0xf || c->x86 > 0x15)
-		return 0;
-
-	fam_ops = kzalloc(sizeof(struct amd_decoder_ops), GFP_KERNEL);
-	if (!fam_ops)
-		return -ENOMEM;
-
-	switch (c->x86) {
-	case 0xf:
-		fam_ops->dc_mce = k8_dc_mce;
-		fam_ops->ic_mce = k8_ic_mce;
-		break;
-
-	case 0x10:
-		fam_ops->dc_mce = f10h_dc_mce;
-		fam_ops->ic_mce = k8_ic_mce;
-		break;
-
-	case 0x11:
-		fam_ops->dc_mce = k8_dc_mce;
-		fam_ops->ic_mce = k8_ic_mce;
-		break;
-
-	case 0x12:
-		fam_ops->dc_mce = f12h_dc_mce;
-		fam_ops->ic_mce = k8_ic_mce;
-		break;
-
-	case 0x14:
-		nb_err_cpumask  = 0x3;
-		fam_ops->dc_mce = f14h_dc_mce;
-		fam_ops->ic_mce = f14h_ic_mce;
-		break;
-
-	case 0x15:
-		xec_mask = 0x1f;
-		fam_ops->dc_mce = f15h_dc_mce;
-		fam_ops->ic_mce = f15h_ic_mce;
-		break;
-
-	default:
-		printk(KERN_WARNING "Huh? What family is it: 0x%x?!\n", c->x86);
-		kfree(fam_ops);
-		return -EINVAL;
-	}
-
-=======
 	if (c->x86_vendor != X86_VENDOR_AMD &&
 	    c->x86_vendor != X86_VENDOR_HYGON)
 		return -ENODEV;
@@ -1494,7 +984,6 @@ static int __init mce_amd_init(void)
 	}
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("MCE: In-kernel MCE decoding enabled.\n");
 
 	mce_register_decode_chain(&amd_mce_dec_nb);
@@ -1507,10 +996,6 @@ early_initcall(mce_amd_init);
 static void __exit mce_amd_exit(void)
 {
 	mce_unregister_decode_chain(&amd_mce_dec_nb);
-<<<<<<< HEAD
-	kfree(fam_ops);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_DESCRIPTION("AMD MCE decoder");

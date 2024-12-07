@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale MPC85xx/MPC86xx RapidIO support
  *
@@ -19,22 +16,6 @@
  *
  * Copyright 2005 MontaVista Software, Inc.
  * Matt Porter <mporter@kernel.crashing.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/types.h>
-#include <linux/dma-mapping.h>
-#include <linux/interrupt.h>
-#include <linux/device.h>
-#include <linux/of_platform.h>
-=======
  */
 
 #include <linux/init.h>
@@ -46,17 +27,13 @@
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/slab.h>
 
 #include <linux/io.h>
 #include <linux/uaccess.h>
 #include <asm/machdep.h>
-<<<<<<< HEAD
-=======
 #include <asm/rio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fsl_rio.h"
 
@@ -78,12 +55,6 @@
 #define RIO_ISR_AACR		0x10120
 #define RIO_ISR_AACR_AA		0x1	/* Accept All ID */
 
-<<<<<<< HEAD
-#define __fsl_read_rio_config(x, addr, err, op)		\
-	__asm__ __volatile__(				\
-		"1:	"op" %1,0(%2)\n"		\
-		"	eieio\n"			\
-=======
 #define RIWTAR_TRAD_VAL_SHIFT	12
 #define RIWTAR_TRAD_MASK	0x00FFFFFF
 #define RIWBAR_BADD_VAL_SHIFT	12
@@ -103,21 +74,11 @@ static DEFINE_SPINLOCK(fsl_rio_config_lock);
 	__asm__ __volatile__(				\
 		"1:	"op" %1,0(%2)\n"		\
 		"	"barrier"\n"			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"2:\n"					\
 		".section .fixup,\"ax\"\n"		\
 		"3:	li %1,-1\n"			\
 		"	li %0,%3\n"			\
 		"	b 2b\n"				\
-<<<<<<< HEAD
-		".section __ex_table,\"a\"\n"		\
-			PPC_LONG_ALIGN "\n"		\
-			PPC_LONG "1b,3b\n"		\
-		".text"					\
-		: "=r" (err), "=r" (x)			\
-		: "b" (addr), "i" (-EFAULT), "0" (err))
-
-=======
 		".previous\n"				\
 		EX_TABLE(1b, 3b)			\
 		: "=r" (err), "=r" (x)			\
@@ -131,7 +92,6 @@ static DEFINE_SPINLOCK(fsl_rio_config_lock);
 	___fsl_read_rio_config(x, addr, err, op, "eieio")
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __iomem *rio_regs_win;
 void __iomem *rmu_regs_win;
 resource_size_t rio_law_start;
@@ -139,11 +99,7 @@ resource_size_t rio_law_start;
 struct fsl_rio_dbell *dbell;
 struct fsl_rio_pw *pw;
 
-<<<<<<< HEAD
-#ifdef CONFIG_E500
-=======
 #ifdef CONFIG_PPC_E500
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fsl_rio_mcheck_exception(struct pt_regs *regs)
 {
 	const struct exception_table_entry *entry;
@@ -161,13 +117,8 @@ int fsl_rio_mcheck_exception(struct pt_regs *regs)
 				 __func__);
 			out_be32((u32 *)(rio_regs_win + RIO_LTLEDCSR),
 				 0);
-<<<<<<< HEAD
-			regs->msr |= MSR_RI;
-			regs->nip = entry->fixup;
-=======
 			regs_set_recoverable(regs);
 			regs_set_return_ip(regs, extable_fixup(entry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 	}
@@ -240,10 +191,7 @@ fsl_rio_config_read(struct rio_mport *mport, int index, u16 destid,
 			u8 hopcount, u32 offset, int len, u32 *val)
 {
 	struct rio_priv *priv = mport->priv;
-<<<<<<< HEAD
-=======
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *data;
 	u32 rval, err = 0;
 
@@ -257,11 +205,8 @@ fsl_rio_config_read(struct rio_mport *mport, int index, u16 destid,
 	if (offset > (0x1000000 - len) || !IS_ALIGNED(offset, len))
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&fsl_rio_config_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_be32(&priv->maint_atmu_regs->rowtar,
 		 (destid << 22) | (hopcount << 12) | (offset >> 12));
 	out_be32(&priv->maint_atmu_regs->rowtear, (destid >> 10));
@@ -278,10 +223,7 @@ fsl_rio_config_read(struct rio_mport *mport, int index, u16 destid,
 		__fsl_read_rio_config(rval, data, err, "lwz");
 		break;
 	default:
-<<<<<<< HEAD
-=======
 		spin_unlock_irqrestore(&fsl_rio_config_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -290,10 +232,7 @@ fsl_rio_config_read(struct rio_mport *mport, int index, u16 destid,
 			 err, destid, hopcount, offset);
 	}
 
-<<<<<<< HEAD
-=======
 	spin_unlock_irqrestore(&fsl_rio_config_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*val = rval;
 
 	return err;
@@ -317,14 +256,10 @@ fsl_rio_config_write(struct rio_mport *mport, int index, u16 destid,
 			u8 hopcount, u32 offset, int len, u32 val)
 {
 	struct rio_priv *priv = mport->priv;
-<<<<<<< HEAD
-	u8 *data;
-=======
 	unsigned long flags;
 	u8 *data;
 	int ret = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug
 		("fsl_rio_config_write:"
 		" index %d destid %d hopcount %d offset %8.8x len %d val %8.8x\n",
@@ -335,11 +270,8 @@ fsl_rio_config_write(struct rio_mport *mport, int index, u16 destid,
 	if (offset > (0x1000000 - len) || !IS_ALIGNED(offset, len))
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	spin_lock_irqsave(&fsl_rio_config_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_be32(&priv->maint_atmu_regs->rowtar,
 		 (destid << 22) | (hopcount << 12) | (offset >> 12));
 	out_be32(&priv->maint_atmu_regs->rowtear, (destid >> 10));
@@ -356,14 +288,6 @@ fsl_rio_config_write(struct rio_mport *mport, int index, u16 destid,
 		out_be32((u32 *) data, val);
 		break;
 	default:
-<<<<<<< HEAD
-		return -EINVAL;
-	}
-
-	return 0;
-}
-
-=======
 		ret = -EINVAL;
 	}
 	spin_unlock_irqrestore(&fsl_rio_config_lock, flags);
@@ -454,7 +378,6 @@ static void fsl_unmap_inb_mem(struct rio_mport *mport, dma_addr_t lstart)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fsl_rio_port_error_handler(int offset)
 {
 	/*XXX: Error recovery is not implemented, we just clear errors */
@@ -520,32 +443,17 @@ static inline void fsl_rio_info(struct device *dev, u32 ccsr)
  * master port with system-specific info, and registers the
  * master port with the RapidIO subsystem.
  */
-<<<<<<< HEAD
-int fsl_rio_setup(struct platform_device *dev)
-=======
 static int fsl_rio_setup(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rio_ops *ops;
 	struct rio_mport *port;
 	struct rio_priv *priv;
 	int rc = 0;
-<<<<<<< HEAD
-	const u32 *dt_range, *cell, *port_index;
-	u32 active_ports = 0;
-	struct resource regs, rmu_regs;
-	struct device_node *np, *rmu_node;
-	int rlen;
-	u32 ccsr;
-	u64 range_start, range_size;
-	int paw, aw, sw;
-=======
 	const u32 *port_index;
 	u32 active_ports = 0;
 	struct device_node *np, *rmu_node;
 	u32 ccsr;
 	u64 range_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 i;
 	static int tmp;
 	struct device_node *rmu_np[MAX_MSG_UNIT_NUM] = {NULL};
@@ -555,21 +463,7 @@ static int fsl_rio_setup(struct platform_device *dev)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	rc = of_address_to_resource(dev->dev.of_node, 0, &regs);
-	if (rc) {
-		dev_err(&dev->dev, "Can't get %s property 'reg'\n",
-				dev->dev.of_node->full_name);
-		return -EFAULT;
-	}
-	dev_info(&dev->dev, "Of-device full name %s\n",
-			dev->dev.of_node->full_name);
-	dev_info(&dev->dev, "Regs: %pR\n", &regs);
-
-	rio_regs_win = ioremap(regs.start, resource_size(&regs));
-=======
 	rio_regs_win = of_iomap(dev->dev.of_node, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rio_regs_win) {
 		dev_err(&dev->dev, "Unable to map rio register window\n");
 		rc = -ENOMEM;
@@ -594,19 +488,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 	ops->add_outb_message = fsl_add_outb_message;
 	ops->add_inb_buffer = fsl_add_inb_buffer;
 	ops->get_inb_message = fsl_get_inb_message;
-<<<<<<< HEAD
-
-	rmu_node = of_parse_phandle(dev->dev.of_node, "fsl,srio-rmu-handle", 0);
-	if (!rmu_node)
-		goto err_rmu;
-	rc = of_address_to_resource(rmu_node, 0, &rmu_regs);
-	if (rc) {
-		dev_err(&dev->dev, "Can't get %s property 'reg'\n",
-				rmu_node->full_name);
-		goto err_rmu;
-	}
-	rmu_regs_win = ioremap(rmu_regs.start, resource_size(&rmu_regs));
-=======
 	ops->map_inb = fsl_map_inb_mem;
 	ops->unmap_inb = fsl_unmap_inb_mem;
 
@@ -619,7 +500,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 	rmu_regs_win = of_iomap(rmu_node, 0);
 
 	of_node_put(rmu_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rmu_regs_win) {
 		dev_err(&dev->dev, "Unable to map rmu register window\n");
 		rc = -ENOMEM;
@@ -633,10 +513,7 @@ static int fsl_rio_setup(struct platform_device *dev)
 	/*set up doobell node*/
 	np = of_find_compatible_node(NULL, NULL, "fsl,srio-dbell-unit");
 	if (!np) {
-<<<<<<< HEAD
-=======
 		dev_err(&dev->dev, "No fsl,srio-dbell-unit node\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto err_dbell;
 	}
@@ -650,34 +527,19 @@ static int fsl_rio_setup(struct platform_device *dev)
 	dbell->bellirq = irq_of_parse_and_map(np, 1);
 	dev_info(&dev->dev, "bellirq: %d\n", dbell->bellirq);
 
-<<<<<<< HEAD
-	aw = of_n_addr_cells(np);
-	dt_range = of_get_property(np, "reg", &rlen);
-	if (!dt_range) {
-		pr_err("%s: unable to find 'reg' property\n",
-			np->full_name);
-		rc = -ENOMEM;
-		goto err_pw;
-	}
-	range_start = of_read_number(dt_range, aw);
-=======
 	if (of_property_read_reg(np, 0, &range_start, NULL)) {
 		pr_err("%pOF: unable to find 'reg' property\n",
 			np);
 		rc = -ENOMEM;
 		goto err_pw;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbell->dbell_regs = (struct rio_dbell_regs *)(rmu_regs_win +
 				(u32)range_start);
 
 	/*set up port write node*/
 	np = of_find_compatible_node(NULL, NULL, "fsl,srio-port-write-unit");
 	if (!np) {
-<<<<<<< HEAD
-=======
 		dev_err(&dev->dev, "No fsl,srio-port-write-unit node\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto err_pw;
 	}
@@ -690,63 +552,16 @@ static int fsl_rio_setup(struct platform_device *dev)
 	pw->dev = &dev->dev;
 	pw->pwirq = irq_of_parse_and_map(np, 0);
 	dev_info(&dev->dev, "pwirq: %d\n", pw->pwirq);
-<<<<<<< HEAD
-	aw = of_n_addr_cells(np);
-	dt_range = of_get_property(np, "reg", &rlen);
-	if (!dt_range) {
-		pr_err("%s: unable to find 'reg' property\n",
-			np->full_name);
-		rc = -ENOMEM;
-		goto err;
-	}
-	range_start = of_read_number(dt_range, aw);
-=======
 	if (of_property_read_reg(np, 0, &range_start, NULL)) {
 		pr_err("%pOF: unable to find 'reg' property\n",
 			np);
 		rc = -ENOMEM;
 		goto err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pw->pw_regs = (struct rio_pw_regs *)(rmu_regs_win + (u32)range_start);
 
 	/*set up ports node*/
 	for_each_child_of_node(dev->dev.of_node, np) {
-<<<<<<< HEAD
-		port_index = of_get_property(np, "cell-index", NULL);
-		if (!port_index) {
-			dev_err(&dev->dev, "Can't get %s property 'cell-index'\n",
-					np->full_name);
-			continue;
-		}
-
-		dt_range = of_get_property(np, "ranges", &rlen);
-		if (!dt_range) {
-			dev_err(&dev->dev, "Can't get %s property 'ranges'\n",
-					np->full_name);
-			continue;
-		}
-
-		/* Get node address wide */
-		cell = of_get_property(np, "#address-cells", NULL);
-		if (cell)
-			aw = *cell;
-		else
-			aw = of_n_addr_cells(np);
-		/* Get node size wide */
-		cell = of_get_property(np, "#size-cells", NULL);
-		if (cell)
-			sw = *cell;
-		else
-			sw = of_n_size_cells(np);
-		/* Get parent address wide wide */
-		paw = of_n_addr_cells(np);
-		range_start = of_read_number(dt_range + aw, paw);
-		range_size = of_read_number(dt_range + aw + paw, sw);
-
-		dev_info(&dev->dev, "%s: LAW start 0x%016llx, size 0x%016llx.\n",
-				np->full_name, range_start, range_size);
-=======
 		struct resource res;
 
 		port_index = of_get_property(np, "cell-index", NULL);
@@ -764,21 +579,17 @@ static int fsl_rio_setup(struct platform_device *dev)
 
 		dev_info(&dev->dev, "%pOF: LAW %pR\n",
 				np, &res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		port = kzalloc(sizeof(struct rio_mport), GFP_KERNEL);
 		if (!port)
 			continue;
 
-<<<<<<< HEAD
-=======
 		rc = rio_mport_initialize(port);
 		if (rc) {
 			kfree(port);
 			continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = *port_index - 1;
 		port->index = (unsigned char)i;
 
@@ -790,13 +601,7 @@ static int fsl_rio_setup(struct platform_device *dev)
 		}
 
 		INIT_LIST_HEAD(&port->dbells);
-<<<<<<< HEAD
-		port->iores.start = range_start;
-		port->iores.end = port->iores.start + range_size - 1;
-		port->iores.flags = IORESOURCE_MEM;
-=======
 		port->iores = res;	/* struct copy */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port->iores.name = "rio_io_win";
 
 		if (request_resource(&iomem_resource, &port->iores) < 0) {
@@ -810,24 +615,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 		sprintf(port->name, "RIO mport %d", i);
 
 		priv->dev = &dev->dev;
-<<<<<<< HEAD
-		port->ops = ops;
-		port->priv = priv;
-		port->phys_efptr = 0x100;
-		priv->regs_win = rio_regs_win;
-
-		/* Probe the master port phy type */
-		ccsr = in_be32(priv->regs_win + RIO_CCSR + i*0x20);
-		port->phy_type = (ccsr & 1) ? RIO_PHY_SERIAL : RIO_PHY_PARALLEL;
-		if (port->phy_type == RIO_PHY_PARALLEL) {
-			dev_err(&dev->dev, "RIO: Parallel PHY type, unsupported port type!\n");
-			release_resource(&port->iores);
-			kfree(priv);
-			kfree(port);
-			continue;
-		}
-		dev_info(&dev->dev, "RapidIO PHY type: Serial\n");
-=======
 		port->dev.parent = &dev->dev;
 		port->ops = ops;
 		port->priv = priv;
@@ -837,7 +624,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 
 		ccsr = in_be32(priv->regs_win + RIO_CCSR + i*0x20);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Checking the port training status */
 		if (in_be32((priv->regs_win + RIO_ESCSR + i*0x20)) & 1) {
 			dev_err(&dev->dev, "Port %d is not ready. "
@@ -870,15 +656,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 		dev_info(&dev->dev, "RapidIO Common Transport System size: %d\n",
 				port->sys_size ? 65536 : 256);
 
-<<<<<<< HEAD
-		if (rio_register_mport(port)) {
-			release_resource(&port->iores);
-			kfree(priv);
-			kfree(port);
-			continue;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (port->host_deviceid >= 0)
 			out_be32(priv->regs_win + RIO_GCCSR, RIO_PORT_GEN_HOST |
 				RIO_PORT_GEN_MASTER | RIO_PORT_GEN_DISCOVERED);
@@ -891,13 +668,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 			RIO_ATMU_REGS_PORT2_OFFSET));
 
 		priv->maint_atmu_regs = priv->atmu_regs + 1;
-<<<<<<< HEAD
-
-		/* Set to receive any dist ID for serial RapidIO controller. */
-		if (port->phy_type == RIO_PHY_SERIAL)
-			out_be32((priv->regs_win
-				+ RIO_ISR_AACR + i*0x80), RIO_ISR_AACR_AA);
-=======
 		priv->inb_atmu_regs = (struct rio_inb_atmu_regs __iomem *)
 			(priv->regs_win +
 			((i == 0) ? RIO_INB_ATMU_REGS_PORT1_OFFSET :
@@ -906,7 +676,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 		/* Set to receive packets with any dest ID */
 		out_be32((priv->regs_win + RIO_ISR_AACR + i*0x80),
 			 RIO_ISR_AACR_AA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Configure maintenance transaction window */
 		out_be32(&priv->maint_atmu_regs->rowbar,
@@ -920,11 +689,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 		rio_law_start = range_start;
 
 		fsl_rio_setup_rmu(port, rmu_np[i]);
-<<<<<<< HEAD
-
-		dbell->mport[i] = port;
-
-=======
 		fsl_rio_inbound_mem_init(priv);
 
 		dbell->mport[i] = port;
@@ -936,7 +700,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 			kfree(port);
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		active_ports++;
 	}
 
@@ -951,12 +714,6 @@ static int fsl_rio_setup(struct platform_device *dev)
 	return 0;
 err:
 	kfree(pw);
-<<<<<<< HEAD
-err_pw:
-	kfree(dbell);
-err_dbell:
-	iounmap(rmu_regs_win);
-=======
 	pw = NULL;
 err_pw:
 	kfree(dbell);
@@ -964,32 +721,21 @@ err_pw:
 err_dbell:
 	iounmap(rmu_regs_win);
 	rmu_regs_win = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_rmu:
 	kfree(ops);
 err_ops:
 	iounmap(rio_regs_win);
-<<<<<<< HEAD
-=======
 	rio_regs_win = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_rio_regs:
 	return rc;
 }
 
 /* The probe function for RapidIO peer-to-peer network.
  */
-<<<<<<< HEAD
-static int __devinit fsl_of_rio_rpn_probe(struct platform_device *dev)
-{
-	printk(KERN_INFO "Setting up RapidIO peer-to-peer network %s\n",
-			dev->dev.of_node->full_name);
-=======
 static int fsl_of_rio_rpn_probe(struct platform_device *dev)
 {
 	printk(KERN_INFO "Setting up RapidIO peer-to-peer network %pOF\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return fsl_rio_setup(dev);
 };
@@ -1004,10 +750,6 @@ static const struct of_device_id fsl_of_rio_rpn_ids[] = {
 static struct platform_driver fsl_of_rio_rpn_driver = {
 	.driver = {
 		.name = "fsl-of-rio",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = fsl_of_rio_rpn_ids,
 	},
 	.probe = fsl_of_rio_rpn_probe,

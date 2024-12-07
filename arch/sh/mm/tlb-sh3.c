@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/mm/tlb-sh3.c
  *
@@ -9,11 +6,6 @@
  *
  * Copyright (C) 1999  Niibe Yutaka
  * Copyright (C) 2002  Paul Mundt
-<<<<<<< HEAD
- *
- * Released under the terms of the GNU GPL v2.0.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/signal.h>
 #include <linux/sched.h>
@@ -28,12 +20,7 @@
 #include <linux/interrupt.h>
 
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/pgalloc.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/cacheflush.h>
 

@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/devfreq/governor_performance.c
  *
  *  Copyright (C) 2011 Samsung Electronics
  *	MyungJoo Ham <myungjoo.ham@samsung.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/devfreq.h>
@@ -21,25 +11,13 @@
 #include "governor.h"
 
 static int devfreq_performance_func(struct devfreq *df,
-<<<<<<< HEAD
-				    unsigned long *freq,
-				u32 *flag)
-=======
 				    unsigned long *freq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * target callback should be able to get floor value as
 	 * said in devfreq.h
 	 */
-<<<<<<< HEAD
-	if (!df->max_freq)
-		*freq = UINT_MAX;
-	else
-		*freq = df->max_freq;
-=======
 	*freq = DEVFREQ_MAX_FREQ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -47,28 +25,6 @@ static int devfreq_performance_handler(struct devfreq *devfreq,
 				unsigned int event, void *data)
 {
 	int ret = 0;
-<<<<<<< HEAD
-	unsigned long freq;
-
-	mutex_lock(&devfreq->lock);
-	freq = devfreq->previous_freq;
-	switch (event) {
-	case DEVFREQ_GOV_START:
-		devfreq->profile->target(devfreq->dev.parent,
-				&freq,
-				DEVFREQ_FLAG_WAKEUP_MAXFREQ);
-		/* fall through */
-	case DEVFREQ_GOV_RESUME:
-		ret = update_devfreq(devfreq);
-		break;
-	case DEVFREQ_GOV_SUSPEND:
-		devfreq->profile->target(devfreq->dev.parent,
-				&freq,
-				DEVFREQ_FLAG_WAKEUP_MAXFREQ);
-		break;
-	}
-	mutex_unlock(&devfreq->lock);
-=======
 
 	if (event == DEVFREQ_GOV_START) {
 		mutex_lock(&devfreq->lock);
@@ -76,16 +32,11 @@ static int devfreq_performance_handler(struct devfreq *devfreq,
 		mutex_unlock(&devfreq->lock);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static struct devfreq_governor devfreq_performance = {
-<<<<<<< HEAD
-	.name = "performance",
-=======
 	.name = DEVFREQ_GOV_PERFORMANCE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_target_freq = devfreq_performance_func,
 	.event_handler = devfreq_performance_handler,
 };

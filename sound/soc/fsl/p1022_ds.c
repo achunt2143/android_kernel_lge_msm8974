@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/**
- * Freescale P1022DS ALSA SoC Machine driver
- *
- * Author: Timur Tabi <timur@freescale.com>
- *
- * Copyright 2010 Freescale Semiconductor, Inc.
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
-
-#include <linux/module.h>
-#include <linux/interrupt.h>
-#include <linux/of_device.h>
-#include <linux/slab.h>
-#include <linux/of_i2c.h>
-#include <sound/soc.h>
-#include <asm/fsl_guts.h>
-
-#include "fsl_dma.h"
-#include "fsl_ssi.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // Freescale P1022DS ALSA SoC Machine driver
@@ -41,7 +17,6 @@
 #include "fsl_dma.h"
 #include "fsl_ssi.h"
 #include "fsl_utils.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* P1022-specific PMUXCR and DMUXCR bit definitions */
 
@@ -79,11 +54,6 @@ static inline void guts_set_dmuxcr(struct ccsr_guts __iomem *guts,
 /* There's only one global utilities register */
 static phys_addr_t guts_phys;
 
-<<<<<<< HEAD
-#define DAI_NAME_SIZE	32
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * machine_data: machine-specific ASoC device data
  *
@@ -100,10 +70,6 @@ struct machine_data {
 	unsigned int ssi_id;		/* 0 = SSI1, 1 = SSI2, etc */
 	unsigned int dma_id[2];		/* 0 = DMA1, 1 = DMA2, etc */
 	unsigned int dma_channel_id[2]; /* 0 = ch 0, 1 = ch 1, etc*/
-<<<<<<< HEAD
-	char codec_name[DAI_NAME_SIZE];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char platform_name[2][DAI_NAME_SIZE]; /* One for each DMA channel */
 };
 
@@ -155,22 +121,14 @@ static int p1022_ds_machine_probe(struct snd_soc_card *card)
  */
 static int p1022_ds_startup(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-=======
 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct machine_data *mdata =
 		container_of(rtd->card, struct machine_data, card);
 	struct device *dev = rtd->card->dev;
 	int ret = 0;
 
 	/* Tell the codec driver what the serial protocol is. */
-<<<<<<< HEAD
-	ret = snd_soc_dai_set_fmt(rtd->codec_dai, mdata->dai_format);
-=======
 	ret = snd_soc_dai_set_fmt(snd_soc_rtd_to_codec(rtd, 0), mdata->dai_format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(dev, "could not set codec driver audio format\n");
 		return ret;
@@ -180,11 +138,7 @@ static int p1022_ds_startup(struct snd_pcm_substream *substream)
 	 * Tell the codec driver what the MCLK frequency is, and whether it's
 	 * a slave or master.
 	 */
-<<<<<<< HEAD
-	ret = snd_soc_dai_set_sysclk(rtd->codec_dai, 0, mdata->clk_frequency,
-=======
 	ret = snd_soc_dai_set_sysclk(snd_soc_rtd_to_codec(rtd, 0), 0, mdata->clk_frequency,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     mdata->codec_clk_direction);
 	if (ret < 0) {
 		dev_err(dev, "could not set codec driver clock params\n");
@@ -226,148 +180,11 @@ static int p1022_ds_machine_remove(struct snd_soc_card *card)
 /**
  * p1022_ds_ops: ASoC machine driver operations
  */
-<<<<<<< HEAD
-static struct snd_soc_ops p1022_ds_ops = {
-=======
 static const struct snd_soc_ops p1022_ds_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.startup = p1022_ds_startup,
 };
 
 /**
-<<<<<<< HEAD
- * get_node_by_phandle_name - get a node by its phandle name
- *
- * This function takes a node, the name of a property in that node, and a
- * compatible string.  Assuming the property is a phandle to another node,
- * it returns that node, (optionally) if that node is compatible.
- *
- * If the property is not a phandle, or the node it points to is not compatible
- * with the specific string, then NULL is returned.
- */
-static struct device_node *get_node_by_phandle_name(struct device_node *np,
-	const char *name, const char *compatible)
-{
-	np = of_parse_phandle(np, name, 0);
-	if (!np)
-		return NULL;
-
-	if (!of_device_is_compatible(np, compatible)) {
-		of_node_put(np);
-		return NULL;
-	}
-
-	return np;
-}
-
-/**
- * get_parent_cell_index -- return the cell-index of the parent of a node
- *
- * Return the value of the cell-index property of the parent of the given
- * node.  This is used for DMA channel nodes that need to know the DMA ID
- * of the controller they are on.
- */
-static int get_parent_cell_index(struct device_node *np)
-{
-	struct device_node *parent = of_get_parent(np);
-	const u32 *iprop;
-	int ret = -1;
-
-	if (!parent)
-		return -1;
-
-	iprop = of_get_property(parent, "cell-index", NULL);
-	if (iprop)
-		ret = be32_to_cpup(iprop);
-
-	of_node_put(parent);
-
-	return ret;
-}
-
-/**
- * codec_node_dev_name - determine the dev_name for a codec node
- *
- * This function determines the dev_name for an I2C node.  This is the name
- * that would be returned by dev_name() if this device_node were part of a
- * 'struct device'  It's ugly and hackish, but it works.
- *
- * The dev_name for such devices include the bus number and I2C address. For
- * example, "cs4270-codec.0-004f".
- */
-static int codec_node_dev_name(struct device_node *np, char *buf, size_t len)
-{
-	const u32 *iprop;
-	int addr;
-	char temp[DAI_NAME_SIZE];
-	struct i2c_client *i2c;
-
-	of_modalias_node(np, temp, DAI_NAME_SIZE);
-
-	iprop = of_get_property(np, "reg", NULL);
-	if (!iprop)
-		return -EINVAL;
-
-	addr = be32_to_cpup(iprop);
-
-	/* We need the adapter number */
-	i2c = of_find_i2c_device_by_node(np);
-	if (!i2c)
-		return -ENODEV;
-
-	snprintf(buf, len, "%s.%u-%04x", temp, i2c->adapter->nr, addr);
-
-	return 0;
-}
-
-static int get_dma_channel(struct device_node *ssi_np,
-			   const char *name,
-			   struct snd_soc_dai_link *dai,
-			   unsigned int *dma_channel_id,
-			   unsigned int *dma_id)
-{
-	struct resource res;
-	struct device_node *dma_channel_np;
-	const u32 *iprop;
-	int ret;
-
-	dma_channel_np = get_node_by_phandle_name(ssi_np, name,
-						  "fsl,ssi-dma-channel");
-	if (!dma_channel_np)
-		return -EINVAL;
-
-	/* Determine the dev_name for the device_node.  This code mimics the
-	 * behavior of of_device_make_bus_id(). We need this because ASoC uses
-	 * the dev_name() of the device to match the platform (DMA) device with
-	 * the CPU (SSI) device.  It's all ugly and hackish, but it works (for
-	 * now).
-	 *
-	 * dai->platform name should already point to an allocated buffer.
-	 */
-	ret = of_address_to_resource(dma_channel_np, 0, &res);
-	if (ret) {
-		of_node_put(dma_channel_np);
-		return ret;
-	}
-	snprintf((char *)dai->platform_name, DAI_NAME_SIZE, "%llx.%s",
-		 (unsigned long long) res.start, dma_channel_np->name);
-
-	iprop = of_get_property(dma_channel_np, "cell-index", NULL);
-	if (!iprop) {
-		of_node_put(dma_channel_np);
-		return -EINVAL;
-	}
-
-	*dma_channel_id = be32_to_cpup(iprop);
-	*dma_id = get_parent_cell_index(dma_channel_np);
-	of_node_put(dma_channel_np);
-
-	return 0;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * p1022_ds_probe: platform probe function for the machine driver
  *
  * Although this is a machine driver, the SSI node is the "master" node with
@@ -378,22 +195,12 @@ static int p1022_ds_probe(struct platform_device *pdev)
 {
 	struct device *dev = pdev->dev.parent;
 	/* ssi_pdev is the platform device for the SSI node that probed us */
-<<<<<<< HEAD
-	struct platform_device *ssi_pdev =
-		container_of(dev, struct platform_device, dev);
-	struct device_node *np = ssi_pdev->dev.of_node;
-	struct device_node *codec_np = NULL;
-	struct platform_device *sound_device = NULL;
-	struct machine_data *mdata;
-	int ret = -ENODEV;
-=======
 	struct platform_device *ssi_pdev = to_platform_device(dev);
 	struct device_node *np = ssi_pdev->dev.of_node;
 	struct device_node *codec_np = NULL;
 	struct machine_data *mdata;
 	struct snd_soc_dai_link_component *comp;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *sprop;
 	const u32 *iprop;
 
@@ -410,20 +217,6 @@ static int p1022_ds_probe(struct platform_device *pdev)
 		goto error_put;
 	}
 
-<<<<<<< HEAD
-	mdata->dai[0].cpu_dai_name = dev_name(&ssi_pdev->dev);
-	mdata->dai[0].ops = &p1022_ds_ops;
-
-	/* Determine the codec name, it will be used as the codec DAI name */
-	ret = codec_node_dev_name(codec_np, mdata->codec_name, DAI_NAME_SIZE);
-	if (ret) {
-		dev_err(&pdev->dev, "invalid codec node %s\n",
-			codec_np->full_name);
-		ret = -EINVAL;
-		goto error;
-	}
-	mdata->dai[0].codec_name = mdata->codec_name;
-=======
 	comp = devm_kzalloc(&pdev->dev, 6 * sizeof(*comp), GFP_KERNEL);
 	if (!comp) {
 		ret = -ENOMEM;
@@ -452,7 +245,6 @@ static int p1022_ds_probe(struct platform_device *pdev)
 
 	/* ASoC core can match codec with device node */
 	mdata->dai[0].codecs->of_node = codec_np;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We register two DAIs per SSI, one for playback and the other for
 	 * capture.  We support codecs that have separate DAIs for both playback
@@ -461,13 +253,8 @@ static int p1022_ds_probe(struct platform_device *pdev)
 	memcpy(&mdata->dai[1], &mdata->dai[0], sizeof(struct snd_soc_dai_link));
 
 	/* The DAI names from the codec (snd_soc_dai_driver.name) */
-<<<<<<< HEAD
-	mdata->dai[0].codec_dai_name = "wm8776-hifi-playback";
-	mdata->dai[1].codec_dai_name = "wm8776-hifi-capture";
-=======
 	mdata->dai[0].codecs->dai_name = "wm8776-hifi-playback";
 	mdata->dai[1].codecs->dai_name = "wm8776-hifi-capture";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the device ID */
 	iprop = of_get_property(np, "cell-index", NULL);
@@ -488,11 +275,7 @@ static int p1022_ds_probe(struct platform_device *pdev)
 
 	if (strcasecmp(sprop, "i2s-slave") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBM_CFM;
-=======
 			SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBP_CFP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_OUT;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_IN;
 
@@ -510,65 +293,37 @@ static int p1022_ds_probe(struct platform_device *pdev)
 		mdata->clk_frequency = be32_to_cpup(iprop);
 	} else if (strcasecmp(sprop, "i2s-master") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBS_CFS;
-=======
 			SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBC_CFC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_IN;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_OUT;
 	} else if (strcasecmp(sprop, "lj-slave") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_CBM_CFM;
-=======
 			SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_CBP_CFP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_OUT;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_IN;
 	} else if (strcasecmp(sprop, "lj-master") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_CBS_CFS;
-=======
 			SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_CBC_CFC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_IN;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_OUT;
 	} else if (strcasecmp(sprop, "rj-slave") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_RIGHT_J | SND_SOC_DAIFMT_CBM_CFM;
-=======
 			SND_SOC_DAIFMT_RIGHT_J | SND_SOC_DAIFMT_CBP_CFP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_OUT;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_IN;
 	} else if (strcasecmp(sprop, "rj-master") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_RIGHT_J | SND_SOC_DAIFMT_CBS_CFS;
-=======
 			SND_SOC_DAIFMT_RIGHT_J | SND_SOC_DAIFMT_CBC_CFC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_IN;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_OUT;
 	} else if (strcasecmp(sprop, "ac97-slave") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_AC97 | SND_SOC_DAIFMT_CBM_CFM;
-=======
 			SND_SOC_DAIFMT_AC97 | SND_SOC_DAIFMT_CBP_CFP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_OUT;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_IN;
 	} else if (strcasecmp(sprop, "ac97-master") == 0) {
 		mdata->dai_format = SND_SOC_DAIFMT_NB_NF |
-<<<<<<< HEAD
-			SND_SOC_DAIFMT_AC97 | SND_SOC_DAIFMT_CBS_CFS;
-=======
 			SND_SOC_DAIFMT_AC97 | SND_SOC_DAIFMT_CBC_CFC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdata->codec_clk_direction = SND_SOC_CLOCK_IN;
 		mdata->cpu_clk_direction = SND_SOC_CLOCK_OUT;
 	} else {
@@ -585,34 +340,20 @@ static int p1022_ds_probe(struct platform_device *pdev)
 	}
 
 	/* Find the playback DMA channel to use. */
-<<<<<<< HEAD
-	mdata->dai[0].platform_name = mdata->platform_name[0];
-	ret = get_dma_channel(np, "fsl,playback-dma", &mdata->dai[0],
-			      &mdata->dma_channel_id[0],
-			      &mdata->dma_id[0]);
-=======
 	mdata->dai[0].platforms->name = mdata->platform_name[0];
 	ret = fsl_asoc_get_dma_channel(np, "fsl,playback-dma", &mdata->dai[0],
 				       &mdata->dma_channel_id[0],
 				       &mdata->dma_id[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(&pdev->dev, "missing/invalid playback DMA phandle\n");
 		goto error;
 	}
 
 	/* Find the capture DMA channel to use. */
-<<<<<<< HEAD
-	mdata->dai[1].platform_name = mdata->platform_name[1];
-	ret = get_dma_channel(np, "fsl,capture-dma", &mdata->dai[1],
-			      &mdata->dma_channel_id[1],
-			      &mdata->dma_id[1]);
-=======
 	mdata->dai[1].platforms->name = mdata->platform_name[1];
 	ret = fsl_asoc_get_dma_channel(np, "fsl,capture-dma", &mdata->dai[1],
 				       &mdata->dma_channel_id[1],
 				       &mdata->dma_id[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(&pdev->dev, "missing/invalid capture DMA phandle\n");
 		goto error;
@@ -627,29 +368,6 @@ static int p1022_ds_probe(struct platform_device *pdev)
 	mdata->card.probe = p1022_ds_machine_probe;
 	mdata->card.remove = p1022_ds_machine_remove;
 	mdata->card.name = pdev->name; /* The platform driver name */
-<<<<<<< HEAD
-	mdata->card.num_links = 2;
-	mdata->card.dai_link = mdata->dai;
-
-	/* Allocate a new audio platform device structure */
-	sound_device = platform_device_alloc("soc-audio", -1);
-	if (!sound_device) {
-		dev_err(&pdev->dev, "platform device alloc failed\n");
-		ret = -ENOMEM;
-		goto error;
-	}
-
-	/* Associate the card data with the sound device */
-	platform_set_drvdata(sound_device, &mdata->card);
-
-	/* Register with ASoC */
-	ret = platform_device_add(sound_device);
-	if (ret) {
-		dev_err(&pdev->dev, "platform device add failed\n");
-		goto error;
-	}
-	dev_set_drvdata(&pdev->dev, sound_device);
-=======
 	mdata->card.owner = THIS_MODULE;
 	mdata->card.dev = &pdev->dev;
 	mdata->card.num_links = 2;
@@ -661,19 +379,12 @@ static int p1022_ds_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "could not register card\n");
 		goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	of_node_put(codec_np);
 
 	return 0;
 
 error:
-<<<<<<< HEAD
-	if (sound_device)
-		platform_device_put(sound_device);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mdata);
 error_put:
 	of_node_put(codec_np);
@@ -685,23 +396,6 @@ error_put:
  *
  * This function is called when the platform device is removed.
  */
-<<<<<<< HEAD
-static int __devexit p1022_ds_remove(struct platform_device *pdev)
-{
-	struct platform_device *sound_device = dev_get_drvdata(&pdev->dev);
-	struct snd_soc_card *card = platform_get_drvdata(sound_device);
-	struct machine_data *mdata =
-		container_of(card, struct machine_data, card);
-
-	platform_device_unregister(sound_device);
-
-	kfree(mdata);
-	sound_device->dev.platform_data = NULL;
-
-	dev_set_drvdata(&pdev->dev, NULL);
-
-	return 0;
-=======
 static void p1022_ds_remove(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
@@ -710,26 +404,17 @@ static void p1022_ds_remove(struct platform_device *pdev)
 
 	snd_soc_unregister_card(card);
 	kfree(mdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver p1022_ds_driver = {
 	.probe = p1022_ds_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(p1022_ds_remove),
-=======
 	.remove_new = p1022_ds_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		/*
 		 * The name must match 'compatible' property in the device tree,
 		 * in lowercase letters.
 		 */
 		.name = "snd-soc-p1022ds",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -1,20 +1,8 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2005 - 2011 Emulex
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.  The full GNU General
- * Public License is included in this distribution in the file called COPYING.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2005 - 2016 Broadcom
  * All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contact Information:
  * linux-drivers@emulex.com
  *
@@ -23,13 +11,6 @@
  * Costa Mesa, CA 92626
  */
 
-<<<<<<< HEAD
-#include "be.h"
-#include "be_cmds.h"
-
-/* Must be a power of 2 or else MODULO will BUG_ON */
-static int be_get_temp_freq = 64;
-=======
 #include <linux/module.h>
 #include "be.h"
 #include "be_cmds.h"
@@ -129,56 +110,31 @@ static bool be_cmd_allowed(struct be_adapter *adapter, u8 opcode, u8 subsystem)
 
 	return true;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void *embedded_payload(struct be_mcc_wrb *wrb)
 {
 	return wrb->payload.embedded_payload;
 }
 
-<<<<<<< HEAD
-static void be_mcc_notify(struct be_adapter *adapter)
-=======
 static int be_mcc_notify(struct be_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_queue_info *mccq = &adapter->mcc_obj.q;
 	u32 val = 0;
 
-<<<<<<< HEAD
-	if (be_error(adapter))
-		return;
-=======
 	if (be_check_error(adapter, BE_ERROR_ANY))
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val |= mccq->id & DB_MCCQ_RING_ID_MASK;
 	val |= 1 << DB_MCCQ_NUM_POSTED_SHIFT;
 
 	wmb();
 	iowrite32(val, adapter->db + DB_MCCQ_OFFSET);
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* To check if valid bit is set, check the entire word as we don't know
  * the endianness of the data (old entry is host endian while a new entry is
-<<<<<<< HEAD
- * little endian) */
-static inline bool be_mcc_compl_is_new(struct be_mcc_compl *compl)
-{
-	if (compl->flags != 0) {
-		compl->flags = le32_to_cpu(compl->flags);
-		BUG_ON((compl->flags & CQE_FLAGS_VALID_MASK) == 0);
-		return true;
-	} else {
-		return false;
-	}
-=======
  * little endian)
  */
 static inline bool be_mcc_compl_is_new(struct be_mcc_compl *compl)
@@ -193,7 +149,6 @@ static inline bool be_mcc_compl_is_new(struct be_mcc_compl *compl)
 		}
 	}
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Need to reset the entire word that houses the valid bit */
@@ -202,66 +157,6 @@ static inline void be_mcc_compl_use(struct be_mcc_compl *compl)
 	compl->flags = 0;
 }
 
-<<<<<<< HEAD
-static int be_mcc_compl_process(struct be_adapter *adapter,
-	struct be_mcc_compl *compl)
-{
-	u16 compl_status, extd_status;
-
-	/* Just swap the status to host endian; mcc tag is opaquely copied
-	 * from mcc_wrb */
-	be_dws_le_to_cpu(compl, 4);
-
-	compl_status = (compl->status >> CQE_STATUS_COMPL_SHIFT) &
-				CQE_STATUS_COMPL_MASK;
-
-	if (((compl->tag0 == OPCODE_COMMON_WRITE_FLASHROM) ||
-		(compl->tag0 == OPCODE_COMMON_WRITE_OBJECT)) &&
-		(compl->tag1 == CMD_SUBSYSTEM_COMMON)) {
-		adapter->flash_status = compl_status;
-		complete(&adapter->flash_compl);
-	}
-
-	if (compl_status == MCC_STATUS_SUCCESS) {
-		if (((compl->tag0 == OPCODE_ETH_GET_STATISTICS) ||
-			 (compl->tag0 == OPCODE_ETH_GET_PPORT_STATS)) &&
-			(compl->tag1 == CMD_SUBSYSTEM_ETH)) {
-			be_parse_stats(adapter);
-			adapter->stats_cmd_sent = false;
-		}
-		if (compl->tag0 ==
-				OPCODE_COMMON_GET_CNTL_ADDITIONAL_ATTRIBUTES) {
-			struct be_mcc_wrb *mcc_wrb =
-				queue_index_node(&adapter->mcc_obj.q,
-						compl->tag1);
-			struct be_cmd_resp_get_cntl_addnl_attribs *resp =
-				embedded_payload(mcc_wrb);
-			adapter->drv_stats.be_on_die_temperature =
-				resp->on_die_temperature;
-		}
-	} else {
-		if (compl->tag0 == OPCODE_COMMON_GET_CNTL_ADDITIONAL_ATTRIBUTES)
-			be_get_temp_freq = 0;
-
-		if (compl_status == MCC_STATUS_NOT_SUPPORTED ||
-			compl_status == MCC_STATUS_ILLEGAL_REQUEST)
-			goto done;
-
-		if (compl_status == MCC_STATUS_UNAUTHORIZED_REQUEST) {
-			dev_warn(&adapter->pdev->dev, "This domain(VM) is not "
-				"permitted to execute this cmd (opcode %d)\n",
-				compl->tag0);
-		} else {
-			extd_status = (compl->status >> CQE_STATUS_EXTD_SHIFT) &
-					CQE_STATUS_EXTD_MASK;
-			dev_err(&adapter->pdev->dev, "Cmd (opcode %d) failed:"
-				"status %d, extd-status %d\n",
-				compl->tag0, compl_status, extd_status);
-		}
-	}
-done:
-	return compl_status;
-=======
 static struct be_cmd_resp_hdr *be_decode_resp_hdr(u32 tag0, u32 tag1)
 {
 	unsigned long addr;
@@ -383,17 +278,10 @@ static int be_mcc_compl_process(struct be_adapter *adapter,
 		}
 	}
 	return compl->status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Link state evt is a string of bytes; no need for endian swapping */
 static void be_async_link_state_process(struct be_adapter *adapter,
-<<<<<<< HEAD
-		struct be_async_event_link_state *evt)
-{
-	/* When link status changes, link speed must be re-queried from FW */
-	adapter->link_speed = -1;
-=======
 					struct be_mcc_compl *compl)
 {
 	struct be_async_event_link_state *evt =
@@ -410,15 +298,11 @@ static void be_async_link_state_process(struct be_adapter *adapter,
 	if (!BEx_chip(adapter) &&
 	    !(evt->port_link_status & LOGICAL_LINK_STATUS_MASK))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* For the initial link status do not rely on the ASYNC event as
 	 * it may not be received in some cases.
 	 */
 	if (adapter->flags & BE_FLAGS_LINK_STATUS_INIT)
-<<<<<<< HEAD
-		be_link_status_update(adapter, evt->port_link_status);
-=======
 		be_link_status_update(adapter,
 				      evt->port_link_status & LINK_STATUS_MASK);
 }
@@ -478,19 +362,10 @@ log_message:
 	/* Log Vendor name and part no. if a misconfigured SFP is detected */
 	if (be_phy_misconfigured(new_phy_state))
 		adapter->flags |= BE_FLAGS_PHY_MISCONFIGURED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Grp5 CoS Priority evt */
 static void be_async_grp5_cos_priority_process(struct be_adapter *adapter,
-<<<<<<< HEAD
-		struct be_async_event_grp5_cos_priority *evt)
-{
-	if (evt->valid) {
-		adapter->vlan_prio_bmap = evt->available_priority_bmap;
-		adapter->recommended_prio &= ~VLAN_PRIO_MASK;
-		adapter->recommended_prio =
-=======
 					       struct be_mcc_compl *compl)
 {
 	struct be_async_event_grp5_cos_priority *evt =
@@ -499,21 +374,10 @@ static void be_async_grp5_cos_priority_process(struct be_adapter *adapter,
 	if (evt->valid) {
 		adapter->vlan_prio_bmap = evt->available_priority_bmap;
 		adapter->recommended_prio_bits =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			evt->reco_default_priority << VLAN_PRIO_SHIFT;
 	}
 }
 
-<<<<<<< HEAD
-/* Grp5 QOS Speed evt */
-static void be_async_grp5_qos_speed_process(struct be_adapter *adapter,
-		struct be_async_event_grp5_qos_link_speed *evt)
-{
-	if (evt->physical_port == adapter->port_num) {
-		/* qos_link_speed is in units of 10 Mbps */
-		adapter->link_speed = evt->qos_link_speed * 10;
-	}
-=======
 /* Grp5 QOS Speed evt: qos_link_speed is in units of 10 Mbps */
 static void be_async_grp5_qos_speed_process(struct be_adapter *adapter,
 					    struct be_mcc_compl *compl)
@@ -524,44 +388,10 @@ static void be_async_grp5_qos_speed_process(struct be_adapter *adapter,
 	if (adapter->phy.link_speed >= 0 &&
 	    evt->physical_port == adapter->port_num)
 		adapter->phy.link_speed = le16_to_cpu(evt->qos_link_speed) * 10;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*Grp5 PVID evt*/
 static void be_async_grp5_pvid_state_process(struct be_adapter *adapter,
-<<<<<<< HEAD
-		struct be_async_event_grp5_pvid_state *evt)
-{
-	if (evt->enabled)
-		adapter->pvid = le16_to_cpu(evt->tag) & VLAN_VID_MASK;
-	else
-		adapter->pvid = 0;
-}
-
-static void be_async_grp5_evt_process(struct be_adapter *adapter,
-		u32 trailer, struct be_mcc_compl *evt)
-{
-	u8 event_type = 0;
-
-	event_type = (trailer >> ASYNC_TRAILER_EVENT_TYPE_SHIFT) &
-		ASYNC_TRAILER_EVENT_TYPE_MASK;
-
-	switch (event_type) {
-	case ASYNC_EVENT_COS_PRIORITY:
-		be_async_grp5_cos_priority_process(adapter,
-		(struct be_async_event_grp5_cos_priority *)evt);
-	break;
-	case ASYNC_EVENT_QOS_SPEED:
-		be_async_grp5_qos_speed_process(adapter,
-		(struct be_async_event_grp5_qos_link_speed *)evt);
-	break;
-	case ASYNC_EVENT_PVID_STATE:
-		be_async_grp5_pvid_state_process(adapter,
-		(struct be_async_event_grp5_pvid_state *)evt);
-	break;
-	default:
-		dev_warn(&adapter->pdev->dev, "Unknown grp5 event!\n");
-=======
 					     struct be_mcc_compl *compl)
 {
 	struct be_async_event_grp5_pvid_state *evt =
@@ -611,25 +441,10 @@ static void be_async_grp5_evt_process(struct be_adapter *adapter,
 		be_async_grp5_fw_control_process(adapter, compl);
 		break;
 	default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static inline bool is_link_state_evt(u32 trailer)
-{
-	return ((trailer >> ASYNC_TRAILER_EVENT_CODE_SHIFT) &
-		ASYNC_TRAILER_EVENT_CODE_MASK) ==
-				ASYNC_EVENT_CODE_LINK_STATE;
-}
-
-static inline bool is_grp5_evt(u32 trailer)
-{
-	return (((trailer >> ASYNC_TRAILER_EVENT_CODE_SHIFT) &
-		ASYNC_TRAILER_EVENT_CODE_MASK) ==
-				ASYNC_EVENT_CODE_GRP_5);
-=======
 static void be_async_dbg_evt_process(struct be_adapter *adapter,
 				     struct be_mcc_compl *cmp)
 {
@@ -697,7 +512,6 @@ static void be_mcc_event_process(struct be_adapter *adapter,
 		be_async_dbg_evt_process(adapter, compl);
 	else if (is_sliport_evt(compl->flags))
 		be_async_sliport_evt_process(adapter, compl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct be_mcc_compl *be_mcc_compl_get(struct be_adapter *adapter)
@@ -724,16 +538,12 @@ void be_async_mcc_enable(struct be_adapter *adapter)
 
 void be_async_mcc_disable(struct be_adapter *adapter)
 {
-<<<<<<< HEAD
-	adapter->mcc_obj.rearm_cq = false;
-=======
 	spin_lock_bh(&adapter->mcc_cq_lock);
 
 	adapter->mcc_obj.rearm_cq = false;
 	be_cq_notify(adapter, adapter->mcc_obj.cq.id, false, 0);
 
 	spin_unlock_bh(&adapter->mcc_cq_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int be_process_mcc(struct be_adapter *adapter)
@@ -742,21 +552,6 @@ int be_process_mcc(struct be_adapter *adapter)
 	int num = 0, status = 0;
 	struct be_mcc_obj *mcc_obj = &adapter->mcc_obj;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_cq_lock);
-	while ((compl = be_mcc_compl_get(adapter))) {
-		if (compl->flags & CQE_FLAGS_ASYNC_MASK) {
-			/* Interpret flags as an async trailer */
-			if (is_link_state_evt(compl->flags))
-				be_async_link_state_process(adapter,
-				(struct be_async_event_link_state *) compl);
-			else if (is_grp5_evt(compl->flags))
-				be_async_grp5_evt_process(adapter,
-				compl->flags, compl);
-		} else if (compl->flags & CQE_FLAGS_COMPLETED_MASK) {
-				status = be_mcc_compl_process(adapter, compl);
-				atomic_dec(&mcc_obj->q.used);
-=======
 	spin_lock(&adapter->mcc_cq_lock);
 
 	while ((compl = be_mcc_compl_get(adapter))) {
@@ -765,7 +560,6 @@ int be_process_mcc(struct be_adapter *adapter)
 		} else if (compl->flags & CQE_FLAGS_COMPLETED_MASK) {
 			status = be_mcc_compl_process(adapter, compl);
 			atomic_dec(&mcc_obj->q.used);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		be_mcc_compl_use(compl);
 		num++;
@@ -774,41 +568,18 @@ int be_process_mcc(struct be_adapter *adapter)
 	if (num)
 		be_cq_notify(adapter, mcc_obj->cq.id, mcc_obj->rearm_cq, num);
 
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_cq_lock);
-=======
 	spin_unlock(&adapter->mcc_cq_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Wait till no more pending mcc requests are present */
 static int be_mcc_wait_compl(struct be_adapter *adapter)
 {
-<<<<<<< HEAD
-#define mcc_timeout		120000 /* 12s timeout */
-=======
 #define mcc_timeout		12000 /* 12s timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, status = 0;
 	struct be_mcc_obj *mcc_obj = &adapter->mcc_obj;
 
 	for (i = 0; i < mcc_timeout; i++) {
-<<<<<<< HEAD
-		if (be_error(adapter))
-			return -EIO;
-
-		status = be_process_mcc(adapter);
-
-		if (atomic_read(&mcc_obj->q.used) == 0)
-			break;
-		udelay(100);
-	}
-	if (i == mcc_timeout) {
-		dev_err(&adapter->pdev->dev, "FW not responding\n");
-		adapter->fw_timeout = true;
-		return -1;
-=======
 		if (be_check_error(adapter, BE_ERROR_ANY))
 			return -EIO;
 
@@ -824,7 +595,6 @@ static int be_mcc_wait_compl(struct be_adapter *adapter)
 		dev_err(&adapter->pdev->dev, "FW not responding\n");
 		be_set_error(adapter, BE_ERROR_FW);
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
@@ -832,10 +602,6 @@ static int be_mcc_wait_compl(struct be_adapter *adapter)
 /* Notify MCC requests and wait for completion */
 static int be_mcc_notify_wait(struct be_adapter *adapter)
 {
-<<<<<<< HEAD
-	be_mcc_notify(adapter);
-	return be_mcc_wait_compl(adapter);
-=======
 	int status;
 	struct be_mcc_wrb *wrb;
 	struct be_mcc_obj *mcc_obj = &adapter->mcc_obj;
@@ -860,7 +626,6 @@ static int be_mcc_notify_wait(struct be_adapter *adapter)
 		   CQE_ADDL_STATUS_SHIFT));
 out:
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int be_mbox_db_ready_wait(struct be_adapter *adapter, void __iomem *db)
@@ -869,11 +634,7 @@ static int be_mbox_db_ready_wait(struct be_adapter *adapter, void __iomem *db)
 	u32 ready;
 
 	do {
-<<<<<<< HEAD
-		if (be_error(adapter))
-=======
 		if (be_check_error(adapter, BE_ERROR_ANY))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 
 		ready = ioread32(db);
@@ -886,13 +647,8 @@ static int be_mbox_db_ready_wait(struct be_adapter *adapter, void __iomem *db)
 
 		if (msecs > 4000) {
 			dev_err(&adapter->pdev->dev, "FW not responding\n");
-<<<<<<< HEAD
-			adapter->fw_timeout = true;
-			be_detect_dump_ue(adapter);
-=======
 			be_set_error(adapter, BE_ERROR_FW);
 			be_detect_error(adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 
@@ -903,12 +659,7 @@ static int be_mbox_db_ready_wait(struct be_adapter *adapter, void __iomem *db)
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Insert the mailbox address into the doorbell in two steps
-=======
 /* Insert the mailbox address into the doorbell in two steps
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Polls on the mbox doorbell till a command completion (or a timeout) occurs
  */
 static int be_mbox_notify_wait(struct be_adapter *adapter)
@@ -957,25 +708,6 @@ static int be_mbox_notify_wait(struct be_adapter *adapter)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int be_POST_stage_get(struct be_adapter *adapter, u16 *stage)
-{
-	u32 sem;
-
-	if (lancer_chip(adapter))
-		sem  = ioread32(adapter->db + MPU_EP_SEMAPHORE_IF_TYPE2_OFFSET);
-	else
-		sem  = ioread32(adapter->csr + MPU_EP_SEMAPHORE_OFFSET);
-
-	*stage = sem & EP_SEMAPHORE_POST_STAGE_MASK;
-	if ((sem >> EP_SEMAPHORE_POST_ERR_SHIFT) & EP_SEMAPHORE_POST_ERR_MASK)
-		return -1;
-	else
-		return 0;
-}
-
-int be_cmd_POST(struct be_adapter *adapter)
-=======
 u16 be_POST_stage_get(struct be_adapter *adapter)
 {
 	u32 sem;
@@ -1011,35 +743,11 @@ static int lancer_wait_ready(struct be_adapter *adapter)
 }
 
 int be_fw_wait_ready(struct be_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 stage;
 	int status, timeout = 0;
 	struct device *dev = &adapter->pdev->dev;
 
-<<<<<<< HEAD
-	do {
-		status = be_POST_stage_get(adapter, &stage);
-		if (status) {
-			dev_err(dev, "POST error; stage=0x%x\n", stage);
-			return -1;
-		} else if (stage != POST_STAGE_ARMFW_RDY) {
-			if (msleep_interruptible(2000)) {
-				dev_err(dev, "Waiting for POST aborted\n");
-				return -EINTR;
-			}
-			timeout += 2;
-		} else {
-			return 0;
-		}
-	} while (timeout < 60);
-
-	dev_err(dev, "POST timeout; stage=0x%x\n", stage);
-	return -1;
-}
-
-
-=======
 	if (lancer_chip(adapter)) {
 		status = lancer_wait_ready(adapter);
 		if (status) {
@@ -1071,32 +779,23 @@ err:
 	return -ETIMEDOUT;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct be_sge *nonembedded_sgl(struct be_mcc_wrb *wrb)
 {
 	return &wrb->payload.sgl[0];
 }
 
-<<<<<<< HEAD
-=======
 static inline void fill_wrb_tags(struct be_mcc_wrb *wrb, unsigned long addr)
 {
 	wrb->tag0 = addr & 0xFFFFFFFF;
 	wrb->tag1 = upper_32_bits(addr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Don't touch the hdr after it's prepared */
 /* mem will be NULL for embedded commands */
 static void be_wrb_cmd_hdr_prepare(struct be_cmd_req_hdr *req_hdr,
-<<<<<<< HEAD
-				u8 subsystem, u8 opcode, int cmd_len,
-				struct be_mcc_wrb *wrb, struct be_dma_mem *mem)
-=======
 				   u8 subsystem, u8 opcode, int cmd_len,
 				   struct be_mcc_wrb *wrb,
 				   struct be_dma_mem *mem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_sge *sge;
 
@@ -1104,13 +803,7 @@ static void be_wrb_cmd_hdr_prepare(struct be_cmd_req_hdr *req_hdr,
 	req_hdr->subsystem = subsystem;
 	req_hdr->request_length = cpu_to_le32(cmd_len - sizeof(*req_hdr));
 	req_hdr->version = 0;
-<<<<<<< HEAD
-
-	wrb->tag0 = opcode;
-	wrb->tag1 = subsystem;
-=======
 	fill_wrb_tags(wrb, (ulong)req_hdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wrb->payload_length = cmd_len;
 	if (mem) {
 		wrb->embedded |= (1 & MCC_WRB_SGE_CNT_MASK) <<
@@ -1125,11 +818,7 @@ static void be_wrb_cmd_hdr_prepare(struct be_cmd_req_hdr *req_hdr,
 }
 
 static void be_cmd_page_addrs_prepare(struct phys_addr *pages, u32 max_pages,
-<<<<<<< HEAD
-			struct be_dma_mem *mem)
-=======
 				      struct be_dma_mem *mem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, buf_pages = min(PAGES_4K_SPANNED(mem->va, mem->size), max_pages);
 	u64 dma = (u64)mem->dma;
@@ -1141,44 +830,11 @@ static void be_cmd_page_addrs_prepare(struct phys_addr *pages, u32 max_pages,
 	}
 }
 
-<<<<<<< HEAD
-/* Converts interrupt delay in microseconds to multiplier value */
-static u32 eq_delay_to_mult(u32 usec_delay)
-{
-#define MAX_INTR_RATE			651042
-	const u32 round = 10;
-	u32 multiplier;
-
-	if (usec_delay == 0)
-		multiplier = 0;
-	else {
-		u32 interrupt_rate = 1000000 / usec_delay;
-		/* Max delay, corresponding to the lowest interrupt rate */
-		if (interrupt_rate == 0)
-			multiplier = 1023;
-		else {
-			multiplier = (MAX_INTR_RATE - interrupt_rate) * round;
-			multiplier /= interrupt_rate;
-			/* Round the multiplier to the closest value.*/
-			multiplier = (multiplier + round/2) / round;
-			multiplier = min(multiplier, (u32)1023);
-		}
-	}
-	return multiplier;
-}
-
-static inline struct be_mcc_wrb *wrb_from_mbox(struct be_adapter *adapter)
-{
-	struct be_dma_mem *mbox_mem = &adapter->mbox_mem;
-	struct be_mcc_wrb *wrb
-		= &((struct be_mcc_mailbox *)(mbox_mem->va))->wrb;
-=======
 static inline struct be_mcc_wrb *wrb_from_mbox(struct be_adapter *adapter)
 {
 	struct be_dma_mem *mbox_mem = &adapter->mbox_mem;
 	struct be_mcc_wrb *wrb = &((struct be_mcc_mailbox *)(mbox_mem->va))->wrb;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(wrb, 0, sizeof(*wrb));
 	return wrb;
 }
@@ -1188,18 +844,11 @@ static struct be_mcc_wrb *wrb_from_mccq(struct be_adapter *adapter)
 	struct be_queue_info *mccq = &adapter->mcc_obj.q;
 	struct be_mcc_wrb *wrb;
 
-<<<<<<< HEAD
-	if (atomic_read(&mccq->used) >= mccq->len) {
-		dev_err(&adapter->pdev->dev, "Out of MCCQ wrbs\n");
-		return NULL;
-	}
-=======
 	if (!mccq->created)
 		return NULL;
 
 	if (atomic_read(&mccq->used) >= mccq->len)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = queue_head_node(mccq);
 	queue_head_inc(mccq);
@@ -1208,8 +857,6 @@ static struct be_mcc_wrb *wrb_from_mccq(struct be_adapter *adapter)
 	return wrb;
 }
 
-<<<<<<< HEAD
-=======
 static bool use_mcc(struct be_adapter *adapter)
 {
 	return adapter->mcc_obj.q.created;
@@ -1285,7 +932,6 @@ unlock:
 	return status;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Tell fw we're about to start firing cmds by writing a
  * special pattern across the wrb hdr; uses mbox
  */
@@ -1294,12 +940,9 @@ int be_cmd_fw_init(struct be_adapter *adapter)
 	u8 *wrb;
 	int status;
 
-<<<<<<< HEAD
-=======
 	if (lancer_chip(adapter))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mutex_lock_interruptible(&adapter->mbox_lock))
 		return -1;
 
@@ -1327,12 +970,9 @@ int be_cmd_fw_clean(struct be_adapter *adapter)
 	u8 *wrb;
 	int status;
 
-<<<<<<< HEAD
-=======
 	if (lancer_chip(adapter))
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mutex_lock_interruptible(&adapter->mbox_lock))
 		return -1;
 
@@ -1351,15 +991,6 @@ int be_cmd_fw_clean(struct be_adapter *adapter)
 	mutex_unlock(&adapter->mbox_lock);
 	return status;
 }
-<<<<<<< HEAD
-int be_cmd_eq_create(struct be_adapter *adapter,
-		struct be_queue_info *eq, int eq_delay)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_eq_create *req;
-	struct be_dma_mem *q_mem = &eq->dma_mem;
-	int status;
-=======
 
 int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 {
@@ -1367,7 +998,6 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 	struct be_cmd_req_eq_create *req;
 	struct be_dma_mem *q_mem = &eqo->q.dma_mem;
 	int status, ver = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mutex_lock_interruptible(&adapter->mbox_lock))
 		return -1;
@@ -1376,10 +1006,6 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_EQ_CREATE, sizeof(*req), wrb, NULL);
-
-=======
 			       OPCODE_COMMON_EQ_CREATE, sizeof(*req), wrb,
 			       NULL);
 
@@ -1388,20 +1014,13 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 		ver = 2;
 
 	req->hdr.version = ver;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->num_pages =  cpu_to_le16(PAGES_4K_SPANNED(q_mem->va, q_mem->size));
 
 	AMAP_SET_BITS(struct amap_eq_context, valid, req->context, 1);
 	/* 4byte eqe*/
 	AMAP_SET_BITS(struct amap_eq_context, size, req->context, 0);
 	AMAP_SET_BITS(struct amap_eq_context, count, req->context,
-<<<<<<< HEAD
-			__ilog2_u32(eq->len/256));
-	AMAP_SET_BITS(struct amap_eq_context, delaymult, req->context,
-			eq_delay_to_mult(eq_delay));
-=======
 		      __ilog2_u32(eqo->q.len / 256));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be_dws_cpu_to_le(req->context, sizeof(req->context));
 
 	be_cmd_page_addrs_prepare(req->pages, ARRAY_SIZE(req->pages), q_mem);
@@ -1409,16 +1028,11 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_eq_create *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-		eq->id = le16_to_cpu(resp->eq_id);
-		eq->created = true;
-=======
 
 		eqo->q.id = le16_to_cpu(resp->eq_id);
 		eqo->msix_idx =
 			(ver == 2) ? le16_to_cpu(resp->msix_idx) : eqo->idx;
 		eqo->q.created = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&adapter->mbox_lock);
@@ -1427,21 +1041,13 @@ int be_cmd_eq_create(struct be_adapter *adapter, struct be_eq_obj *eqo)
 
 /* Use MCC */
 int be_cmd_mac_addr_query(struct be_adapter *adapter, u8 *mac_addr,
-<<<<<<< HEAD
-			u8 type, bool permanent, u32 if_handle, u32 pmac_id)
-=======
 			  bool permanent, u32 if_handle, u32 pmac_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_mac_query *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -1451,14 +1057,6 @@ int be_cmd_mac_addr_query(struct be_adapter *adapter, u8 *mac_addr,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_NTWK_MAC_QUERY, sizeof(*req), wrb, NULL);
-	req->type = type;
-	if (permanent) {
-		req->permanent = 1;
-	} else {
-		req->if_id = cpu_to_le16((u16) if_handle);
-=======
 			       OPCODE_COMMON_NTWK_MAC_QUERY, sizeof(*req), wrb,
 			       NULL);
 	req->type = MAC_ADDRESS_TYPE_NETWORK;
@@ -1466,7 +1064,6 @@ int be_cmd_mac_addr_query(struct be_adapter *adapter, u8 *mac_addr,
 		req->permanent = 1;
 	} else {
 		req->if_id = cpu_to_le16((u16)if_handle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->pmac_id = cpu_to_le32(pmac_id);
 		req->permanent = 0;
 	}
@@ -1474,40 +1071,24 @@ int be_cmd_mac_addr_query(struct be_adapter *adapter, u8 *mac_addr,
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_mac_query *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(mac_addr, resp->mac.addr, ETH_ALEN);
 	}
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Uses synchronous MCCQ */
-<<<<<<< HEAD
-int be_cmd_pmac_add(struct be_adapter *adapter, u8 *mac_addr,
-		u32 if_id, u32 *pmac_id, u32 domain)
-=======
 int be_cmd_pmac_add(struct be_adapter *adapter, const u8 *mac_addr,
 		    u32 if_id, u32 *pmac_id, u32 domain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_pmac_add *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -1517,12 +1098,8 @@ int be_cmd_pmac_add(struct be_adapter *adapter, const u8 *mac_addr,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_NTWK_PMAC_ADD, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_NTWK_PMAC_ADD, sizeof(*req), wrb,
 			       NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->hdr.domain = domain;
 	req->if_id = cpu_to_le32(if_id);
@@ -1531,23 +1108,14 @@ int be_cmd_pmac_add(struct be_adapter *adapter, const u8 *mac_addr,
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_pmac_add *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*pmac_id = le32_to_cpu(resp->pmac_id);
 	}
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-
-	 if (status == MCC_STATUS_UNAUTHORIZED_REQUEST)
-=======
 	mutex_unlock(&adapter->mcc_lock);
 
 	if (base_status(status) == MCC_STATUS_UNAUTHORIZED_REQUEST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -EPERM;
 
 	return status;
@@ -1563,11 +1131,7 @@ int be_cmd_pmac_del(struct be_adapter *adapter, u32 if_id, int pmac_id, u32 dom)
 	if (pmac_id == -1)
 		return 0;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -1577,12 +1141,8 @@ int be_cmd_pmac_del(struct be_adapter *adapter, u32 if_id, int pmac_id, u32 dom)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_NTWK_PMAC_DEL, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_NTWK_PMAC_DEL, sizeof(*req),
 			       wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->hdr.domain = dom;
 	req->if_id = cpu_to_le32(if_id);
@@ -1591,21 +1151,13 @@ int be_cmd_pmac_del(struct be_adapter *adapter, u32 if_id, int pmac_id, u32 dom)
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Uses Mbox */
 int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
-<<<<<<< HEAD
-		struct be_queue_info *eq, bool no_delay, int coalesce_wm)
-=======
 		     struct be_queue_info *eq, bool no_delay, int coalesce_wm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_cq_create *req;
@@ -1621,33 +1173,6 @@ int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
 	ctxt = &req->context;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_CQ_CREATE, sizeof(*req), wrb, NULL);
-
-	req->num_pages =  cpu_to_le16(PAGES_4K_SPANNED(q_mem->va, q_mem->size));
-	if (lancer_chip(adapter)) {
-		req->hdr.version = 2;
-		req->page_size = 1; /* 1 for 4K */
-		AMAP_SET_BITS(struct amap_cq_context_lancer, nodelay, ctxt,
-								no_delay);
-		AMAP_SET_BITS(struct amap_cq_context_lancer, count, ctxt,
-						__ilog2_u32(cq->len/256));
-		AMAP_SET_BITS(struct amap_cq_context_lancer, valid, ctxt, 1);
-		AMAP_SET_BITS(struct amap_cq_context_lancer, eventable,
-								ctxt, 1);
-		AMAP_SET_BITS(struct amap_cq_context_lancer, eqid,
-								ctxt, eq->id);
-	} else {
-		AMAP_SET_BITS(struct amap_cq_context_be, coalescwm, ctxt,
-								coalesce_wm);
-		AMAP_SET_BITS(struct amap_cq_context_be, nodelay,
-								ctxt, no_delay);
-		AMAP_SET_BITS(struct amap_cq_context_be, count, ctxt,
-						__ilog2_u32(cq->len/256));
-		AMAP_SET_BITS(struct amap_cq_context_be, valid, ctxt, 1);
-		AMAP_SET_BITS(struct amap_cq_context_be, eventable, ctxt, 1);
-		AMAP_SET_BITS(struct amap_cq_context_be, eqid, ctxt, eq->id);
-=======
 			       OPCODE_COMMON_CQ_CREATE, sizeof(*req), wrb,
 			       NULL);
 
@@ -1680,7 +1205,6 @@ int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
 		AMAP_SET_BITS(struct amap_cq_context_v2, valid, ctxt, 1);
 		AMAP_SET_BITS(struct amap_cq_context_v2, eventable, ctxt, 1);
 		AMAP_SET_BITS(struct amap_cq_context_v2, eqid, ctxt, eq->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	be_dws_cpu_to_le(ctxt, sizeof(req->context));
@@ -1690,10 +1214,7 @@ int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_cq_create *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cq->id = le16_to_cpu(resp->cq_id);
 		cq->created = true;
 	}
@@ -1706,24 +1227,15 @@ int be_cmd_cq_create(struct be_adapter *adapter, struct be_queue_info *cq,
 static u32 be_encoded_q_len(int q_len)
 {
 	u32 len_encoded = fls(q_len); /* log2(len) + 1 */
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len_encoded == 16)
 		len_encoded = 0;
 	return len_encoded;
 }
 
-<<<<<<< HEAD
-int be_cmd_mccq_ext_create(struct be_adapter *adapter,
-			struct be_queue_info *mccq,
-			struct be_queue_info *cq)
-=======
 static int be_cmd_mccq_ext_create(struct be_adapter *adapter,
 				  struct be_queue_info *mccq,
 				  struct be_queue_info *cq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_mcc_ext_create *req;
@@ -1739,32 +1251,6 @@ static int be_cmd_mccq_ext_create(struct be_adapter *adapter,
 	ctxt = &req->context;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			OPCODE_COMMON_MCC_CREATE_EXT, sizeof(*req), wrb, NULL);
-
-	req->num_pages = cpu_to_le16(PAGES_4K_SPANNED(q_mem->va, q_mem->size));
-	if (lancer_chip(adapter)) {
-		req->hdr.version = 1;
-		req->cq_id = cpu_to_le16(cq->id);
-
-		AMAP_SET_BITS(struct amap_mcc_context_lancer, ring_size, ctxt,
-						be_encoded_q_len(mccq->len));
-		AMAP_SET_BITS(struct amap_mcc_context_lancer, valid, ctxt, 1);
-		AMAP_SET_BITS(struct amap_mcc_context_lancer, async_cq_id,
-								ctxt, cq->id);
-		AMAP_SET_BITS(struct amap_mcc_context_lancer, async_cq_valid,
-								 ctxt, 1);
-
-	} else {
-		AMAP_SET_BITS(struct amap_mcc_context_be, valid, ctxt, 1);
-		AMAP_SET_BITS(struct amap_mcc_context_be, ring_size, ctxt,
-						be_encoded_q_len(mccq->len));
-		AMAP_SET_BITS(struct amap_mcc_context_be, cq_id, ctxt, cq->id);
-	}
-
-	/* Subscribe to Link State and Group 5 Events(bits 1 and 5 set) */
-	req->async_event_bitmap[0] = cpu_to_le32(0x00000022);
-=======
 			       OPCODE_COMMON_MCC_CREATE_EXT, sizeof(*req), wrb,
 			       NULL);
 
@@ -1796,7 +1282,6 @@ static int be_cmd_mccq_ext_create(struct be_adapter *adapter,
 				    BIT(ASYNC_EVENT_CODE_QNQ) |
 				    BIT(ASYNC_EVENT_CODE_SLIPORT));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be_dws_cpu_to_le(ctxt, sizeof(req->context));
 
 	be_cmd_page_addrs_prepare(req->pages, ARRAY_SIZE(req->pages), q_mem);
@@ -1804,10 +1289,7 @@ static int be_cmd_mccq_ext_create(struct be_adapter *adapter,
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_mcc_create *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mccq->id = le16_to_cpu(resp->id);
 		mccq->created = true;
 	}
@@ -1816,15 +1298,9 @@ static int be_cmd_mccq_ext_create(struct be_adapter *adapter,
 	return status;
 }
 
-<<<<<<< HEAD
-int be_cmd_mccq_org_create(struct be_adapter *adapter,
-			struct be_queue_info *mccq,
-			struct be_queue_info *cq)
-=======
 static int be_cmd_mccq_org_create(struct be_adapter *adapter,
 				  struct be_queue_info *mccq,
 				  struct be_queue_info *cq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_mcc_create *req;
@@ -1840,22 +1316,14 @@ static int be_cmd_mccq_org_create(struct be_adapter *adapter,
 	ctxt = &req->context;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			OPCODE_COMMON_MCC_CREATE, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_MCC_CREATE, sizeof(*req), wrb,
 			       NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->num_pages = cpu_to_le16(PAGES_4K_SPANNED(q_mem->va, q_mem->size));
 
 	AMAP_SET_BITS(struct amap_mcc_context_be, valid, ctxt, 1);
 	AMAP_SET_BITS(struct amap_mcc_context_be, ring_size, ctxt,
-<<<<<<< HEAD
-			be_encoded_q_len(mccq->len));
-=======
 		      be_encoded_q_len(mccq->len));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AMAP_SET_BITS(struct amap_mcc_context_be, cq_id, ctxt, cq->id);
 
 	be_dws_cpu_to_le(ctxt, sizeof(req->context));
@@ -1865,10 +1333,7 @@ static int be_cmd_mccq_org_create(struct be_adapter *adapter,
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_mcc_create *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mccq->id = le16_to_cpu(resp->id);
 		mccq->created = true;
 	}
@@ -1878,21 +1343,12 @@ static int be_cmd_mccq_org_create(struct be_adapter *adapter,
 }
 
 int be_cmd_mccq_create(struct be_adapter *adapter,
-<<<<<<< HEAD
-			struct be_queue_info *mccq,
-			struct be_queue_info *cq)
-=======
 		       struct be_queue_info *mccq, struct be_queue_info *cq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status;
 
 	status = be_cmd_mccq_ext_create(adapter, mccq, cq);
-<<<<<<< HEAD
-	if (status && !lancer_chip(adapter)) {
-=======
 	if (status && BEx_chip(adapter)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(&adapter->pdev->dev, "Upgrade to F/W ver 2.102.235.0 "
 			"or newer to avoid conflicting priorities between NIC "
 			"and FCoE traffic");
@@ -1901,61 +1357,6 @@ int be_cmd_mccq_create(struct be_adapter *adapter,
 	return status;
 }
 
-<<<<<<< HEAD
-int be_cmd_txq_create(struct be_adapter *adapter,
-			struct be_queue_info *txq,
-			struct be_queue_info *cq)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_eth_tx_create *req;
-	struct be_dma_mem *q_mem = &txq->dma_mem;
-	void *ctxt;
-	int status;
-
-	spin_lock_bh(&adapter->mcc_lock);
-
-	wrb = wrb_from_mccq(adapter);
-	if (!wrb) {
-		status = -EBUSY;
-		goto err;
-	}
-
-	req = embedded_payload(wrb);
-	ctxt = &req->context;
-
-	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ETH,
-		OPCODE_ETH_TX_CREATE, sizeof(*req), wrb, NULL);
-
-	if (lancer_chip(adapter)) {
-		req->hdr.version = 1;
-		AMAP_SET_BITS(struct amap_tx_context, if_id, ctxt,
-					adapter->if_handle);
-	}
-
-	req->num_pages = PAGES_4K_SPANNED(q_mem->va, q_mem->size);
-	req->ulp_num = BE_ULP1_NUM;
-	req->type = BE_ETH_TX_RING_TYPE_STANDARD;
-
-	AMAP_SET_BITS(struct amap_tx_context, tx_ring_size, ctxt,
-		be_encoded_q_len(txq->len));
-	AMAP_SET_BITS(struct amap_tx_context, ctx_valid, ctxt, 1);
-	AMAP_SET_BITS(struct amap_tx_context, cq_id_send, ctxt, cq->id);
-
-	be_dws_cpu_to_le(ctxt, sizeof(req->context));
-
-	be_cmd_page_addrs_prepare(req->pages, ARRAY_SIZE(req->pages), q_mem);
-
-	status = be_mcc_notify_wait(adapter);
-	if (!status) {
-		struct be_cmd_resp_eth_tx_create *resp = embedded_payload(wrb);
-		txq->id = le16_to_cpu(resp->cid);
-		txq->created = true;
-	}
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-
-=======
 int be_cmd_txq_create(struct be_adapter *adapter, struct be_tx_obj *txo)
 {
 	struct be_mcc_wrb wrb = {0};
@@ -2000,30 +1401,20 @@ int be_cmd_txq_create(struct be_adapter *adapter, struct be_tx_obj *txo)
 		txq->created = true;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Uses MCC */
 int be_cmd_rxq_create(struct be_adapter *adapter,
-<<<<<<< HEAD
-		struct be_queue_info *rxq, u16 cq_id, u16 frag_size,
-		u32 if_id, u32 rss, u8 *rss_id)
-=======
 		      struct be_queue_info *rxq, u16 cq_id, u16 frag_size,
 		      u32 if_id, u32 rss, u8 *rss_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_eth_rx_create *req;
 	struct be_dma_mem *q_mem = &rxq->dma_mem;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2033,11 +1424,7 @@ int be_cmd_rxq_create(struct be_adapter *adapter,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ETH,
-<<<<<<< HEAD
-				OPCODE_ETH_RX_CREATE, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_ETH_RX_CREATE, sizeof(*req), wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->cq_id = cpu_to_le16(cq_id);
 	req->frag_size = fls(frag_size) - 1;
@@ -2050,21 +1437,14 @@ int be_cmd_rxq_create(struct be_adapter *adapter,
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_eth_rx_create *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rxq->id = le16_to_cpu(resp->id);
 		rxq->created = true;
 		*rss_id = resp->rss_id;
 	}
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2072,11 +1452,7 @@ err:
  * Uses Mbox
  */
 int be_cmd_q_destroy(struct be_adapter *adapter, struct be_queue_info *q,
-<<<<<<< HEAD
-		int queue_type)
-=======
 		     int queue_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_q_destroy *req;
@@ -2115,20 +1491,11 @@ int be_cmd_q_destroy(struct be_adapter *adapter, struct be_queue_info *q,
 	}
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, subsys, opcode, sizeof(*req), wrb,
-<<<<<<< HEAD
-				NULL);
-	req->id = cpu_to_le16(q->id);
-
-	status = be_mbox_notify_wait(adapter);
-	if (!status)
-		q->created = false;
-=======
 			       NULL);
 	req->id = cpu_to_le16(q->id);
 
 	status = be_mbox_notify_wait(adapter);
 	q->created = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&adapter->mbox_lock);
 	return status;
@@ -2141,11 +1508,7 @@ int be_cmd_rxq_destroy(struct be_adapter *adapter, struct be_queue_info *q)
 	struct be_cmd_req_q_destroy *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2155,17 +1518,6 @@ int be_cmd_rxq_destroy(struct be_adapter *adapter, struct be_queue_info *q)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ETH,
-<<<<<<< HEAD
-			OPCODE_ETH_RX_DESTROY, sizeof(*req), wrb, NULL);
-	req->id = cpu_to_le16(q->id);
-
-	status = be_mcc_notify_wait(adapter);
-	if (!status)
-		q->created = false;
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 			       OPCODE_ETH_RX_DESTROY, sizeof(*req), wrb, NULL);
 	req->id = cpu_to_le16(q->id);
 
@@ -2174,58 +1526,10 @@ err:
 
 err:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Create an rx filtering policy configuration on an i/f
-<<<<<<< HEAD
- * Uses MCCQ
- */
-int be_cmd_if_create(struct be_adapter *adapter, u32 cap_flags, u32 en_flags,
-		u8 *mac, u32 *if_handle, u32 *pmac_id, u32 domain)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_if_create *req;
-	int status;
-
-	spin_lock_bh(&adapter->mcc_lock);
-
-	wrb = wrb_from_mccq(adapter);
-	if (!wrb) {
-		status = -EBUSY;
-		goto err;
-	}
-	req = embedded_payload(wrb);
-
-	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-		OPCODE_COMMON_NTWK_INTERFACE_CREATE, sizeof(*req), wrb, NULL);
-	req->hdr.domain = domain;
-	req->capability_flags = cpu_to_le32(cap_flags);
-	req->enable_flags = cpu_to_le32(en_flags);
-	if (mac)
-		memcpy(req->mac_addr, mac, ETH_ALEN);
-	else
-		req->pmac_invalid = true;
-
-	status = be_mcc_notify_wait(adapter);
-	if (!status) {
-		struct be_cmd_resp_if_create *resp = embedded_payload(wrb);
-		*if_handle = le32_to_cpu(resp->interface_id);
-		if (mac)
-			*pmac_id = le32_to_cpu(resp->pmac_id);
-	}
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-/* Uses MCCQ */
-int be_cmd_if_destroy(struct be_adapter *adapter, int interface_id, u32 domain)
-{
-	struct be_mcc_wrb *wrb;
-=======
  * Will use MBOX only if MCCQ has not been created.
  */
 int be_cmd_if_create(struct be_adapter *adapter, u32 cap_flags, u32 en_flags,
@@ -2261,32 +1565,12 @@ int be_cmd_if_create(struct be_adapter *adapter, u32 cap_flags, u32 en_flags,
 int be_cmd_if_destroy(struct be_adapter *adapter, int interface_id, u32 domain)
 {
 	struct be_mcc_wrb wrb = {0};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_cmd_req_if_destroy *req;
 	int status;
 
 	if (interface_id == -1)
 		return 0;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-
-	wrb = wrb_from_mccq(adapter);
-	if (!wrb) {
-		status = -EBUSY;
-		goto err;
-	}
-	req = embedded_payload(wrb);
-
-	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-		OPCODE_COMMON_NTWK_INTERFACE_DESTROY, sizeof(*req), wrb, NULL);
-	req->hdr.domain = domain;
-	req->interface_id = cpu_to_le32(interface_id);
-
-	status = be_mcc_notify_wait(adapter);
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	req = embedded_payload(&wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
@@ -2296,7 +1580,6 @@ err:
 	req->interface_id = cpu_to_le32(interface_id);
 
 	status = be_cmd_notify_wait(adapter, &wrb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2310,14 +1593,7 @@ int be_cmd_get_stats(struct be_adapter *adapter, struct be_dma_mem *nonemb_cmd)
 	struct be_cmd_req_hdr *hdr;
 	int status = 0;
 
-<<<<<<< HEAD
-	if (MODULO(adapter->work_counter, be_get_temp_freq) == 0)
-		be_cmd_get_die_temperature(adapter);
-
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2327,18 +1603,6 @@ int be_cmd_get_stats(struct be_adapter *adapter, struct be_dma_mem *nonemb_cmd)
 	hdr = nonemb_cmd->va;
 
 	be_wrb_cmd_hdr_prepare(hdr, CMD_SUBSYSTEM_ETH,
-<<<<<<< HEAD
-		OPCODE_ETH_GET_STATISTICS, nonemb_cmd->size, wrb, nonemb_cmd);
-
-	if (adapter->generation == BE_GEN3)
-		hdr->version = 1;
-
-	be_mcc_notify(adapter);
-	adapter->stats_cmd_sent = true;
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 			       OPCODE_ETH_GET_STATISTICS, nonemb_cmd->size, wrb,
 			       nonemb_cmd);
 
@@ -2358,33 +1622,22 @@ err:
 
 err:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Lancer Stats */
 int lancer_cmd_get_pport_stats(struct be_adapter *adapter,
-<<<<<<< HEAD
-				struct be_dma_mem *nonemb_cmd)
-{
-
-=======
 			       struct be_dma_mem *nonemb_cmd)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct be_mcc_wrb *wrb;
 	struct lancer_cmd_req_pport_stats *req;
 	int status = 0;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	if (!be_cmd_allowed(adapter, OPCODE_ETH_GET_PPORT_STATS,
 			    CMD_SUBSYSTEM_ETH))
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2394,25 +1647,6 @@ int lancer_cmd_get_pport_stats(struct be_adapter *adapter,
 	req = nonemb_cmd->va;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ETH,
-<<<<<<< HEAD
-			OPCODE_ETH_GET_PPORT_STATS, nonemb_cmd->size, wrb,
-			nonemb_cmd);
-
-	req->cmd_params.params.pport_num = cpu_to_le16(adapter->port_num);
-	req->cmd_params.params.reset_stats = 0;
-
-	be_mcc_notify(adapter);
-	adapter->stats_cmd_sent = true;
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-/* Uses synchronous mcc */
-int be_cmd_link_status_query(struct be_adapter *adapter, u8 *mac_speed,
-			     u16 *link_speed, u8 *link_status, u32 dom)
-=======
 			       OPCODE_ETH_GET_PPORT_STATS, nonemb_cmd->size,
 			       wrb, nonemb_cmd);
 
@@ -2458,17 +1692,12 @@ static int be_mac_to_link_speed(int mac_speed)
  */
 int be_cmd_link_status_query(struct be_adapter *adapter, u16 *link_speed,
 			     u8 *link_status, u32 dom)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_link_status *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (link_status)
 		*link_status = LINK_DOWN;
@@ -2481,17 +1710,11 @@ int be_cmd_link_status_query(struct be_adapter *adapter, u16 *link_speed,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_NTWK_LINK_STATUS_QUERY, sizeof(*req), wrb, NULL);
-
-	if (adapter->generation == BE_GEN3 || lancer_chip(adapter))
-=======
 			       OPCODE_COMMON_NTWK_LINK_STATUS_QUERY,
 			       sizeof(*req), wrb, NULL);
 
 	/* version 1 of the cmd is not supported only by BE2 */
 	if (!BE2_chip(adapter))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->hdr.version = 1;
 
 	req->hdr.domain = dom;
@@ -2499,13 +1722,6 @@ int be_cmd_link_status_query(struct be_adapter *adapter, u16 *link_speed,
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_link_status *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-		if (resp->mac_speed != PHY_LINK_SPEED_ZERO) {
-			if (link_speed)
-				*link_speed = le16_to_cpu(resp->link_speed);
-			if (mac_speed)
-				*mac_speed = resp->mac_speed;
-=======
 
 		if (link_speed) {
 			*link_speed = resp->link_speed ?
@@ -2514,18 +1730,13 @@ int be_cmd_link_status_query(struct be_adapter *adapter, u16 *link_speed,
 
 			if (!resp->logical_link_status)
 				*link_speed = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (link_status)
 			*link_status = resp->logical_link_status;
 	}
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2534,18 +1745,9 @@ int be_cmd_get_die_temperature(struct be_adapter *adapter)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_get_cntl_addnl_attribs *req;
-<<<<<<< HEAD
-	u16 mccq_index;
-	int status;
-
-	spin_lock_bh(&adapter->mcc_lock);
-
-	mccq_index = adapter->mcc_obj.q.head;
-=======
 	int status = 0;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2555,61 +1757,16 @@ int be_cmd_get_die_temperature(struct be_adapter *adapter)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_GET_CNTL_ADDITIONAL_ATTRIBUTES, sizeof(*req),
-		wrb, NULL);
-
-	wrb->tag1 = mccq_index;
-
-	be_mcc_notify(adapter);
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 			       OPCODE_COMMON_GET_CNTL_ADDITIONAL_ATTRIBUTES,
 			       sizeof(*req), wrb, NULL);
 
 	status = be_mcc_notify(adapter);
 err:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Uses synchronous mcc */
-<<<<<<< HEAD
-int be_cmd_get_reg_len(struct be_adapter *adapter, u32 *log_size)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_get_fat *req;
-	int status;
-
-	spin_lock_bh(&adapter->mcc_lock);
-
-	wrb = wrb_from_mccq(adapter);
-	if (!wrb) {
-		status = -EBUSY;
-		goto err;
-	}
-	req = embedded_payload(wrb);
-
-	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-		OPCODE_COMMON_MANAGE_FAT, sizeof(*req), wrb, NULL);
-	req->fat_operation = cpu_to_le32(QUERY_FAT);
-	status = be_mcc_notify_wait(adapter);
-	if (!status) {
-		struct be_cmd_resp_get_fat *resp = embedded_payload(wrb);
-		if (log_size && resp->log_size)
-			*log_size = le32_to_cpu(resp->log_size) -
-					sizeof(u32);
-	}
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-void be_cmd_get_regs(struct be_adapter *adapter, u32 buf_len, void *buf)
-=======
 int be_cmd_get_fat_dump_len(struct be_adapter *adapter, u32 *dump_size)
 {
 	struct be_mcc_wrb wrb = {0};
@@ -2634,7 +1791,6 @@ int be_cmd_get_fat_dump_len(struct be_adapter *adapter, u32 *dump_size)
 }
 
 int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_dma_mem get_fat_cmd;
 	struct be_mcc_wrb *wrb;
@@ -2644,27 +1800,6 @@ int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
 	int status;
 
 	if (buf_len == 0)
-<<<<<<< HEAD
-		return;
-
-	total_size = buf_len;
-
-	get_fat_cmd.size = sizeof(struct be_cmd_req_get_fat) + 60*1024;
-	get_fat_cmd.va = pci_alloc_consistent(adapter->pdev,
-			get_fat_cmd.size,
-			&get_fat_cmd.dma);
-	if (!get_fat_cmd.va) {
-		status = -ENOMEM;
-		dev_err(&adapter->pdev->dev,
-		"Memory allocation failure while retrieving FAT data\n");
-		return;
-	}
-
-	spin_lock_bh(&adapter->mcc_lock);
-
-	while (total_size) {
-		buf_size = min(total_size, (u32)60*1024);
-=======
 		return 0;
 
 	total_size = buf_len;
@@ -2680,7 +1815,6 @@ int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
 
 	while (total_size) {
 		buf_size = min(total_size, (u32)60 * 1024);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		total_size -= buf_size;
 
 		wrb = wrb_from_mccq(adapter);
@@ -2692,13 +1826,8 @@ int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
 
 		payload_len = sizeof(struct be_cmd_req_get_fat) + buf_size;
 		be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-				OPCODE_COMMON_MANAGE_FAT, payload_len, wrb,
-				&get_fat_cmd);
-=======
 				       OPCODE_COMMON_MANAGE_FAT, payload_len,
 				       wrb, &get_fat_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		req->fat_operation = cpu_to_le32(RETRIEVE_FAT);
 		req->read_log_offset = cpu_to_le32(log_offset);
@@ -2708,16 +1837,10 @@ int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
 		status = be_mcc_notify_wait(adapter);
 		if (!status) {
 			struct be_cmd_resp_get_fat *resp = get_fat_cmd.va;
-<<<<<<< HEAD
-			memcpy(buf + offset,
-				resp->data_buffer,
-				le32_to_cpu(resp->read_log_length));
-=======
 
 			memcpy(buf + offset,
 			       resp->data_buffer,
 			       le32_to_cpu(resp->read_log_length));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			dev_err(&adapter->pdev->dev, "FAT Table Retrieve error\n");
 			goto err;
@@ -2726,17 +1849,6 @@ int be_cmd_get_fat_dump(struct be_adapter *adapter, u32 buf_len, void *buf)
 		log_offset += buf_size;
 	}
 err:
-<<<<<<< HEAD
-	pci_free_consistent(adapter->pdev, get_fat_cmd.size,
-			get_fat_cmd.va,
-			get_fat_cmd.dma);
-	spin_unlock_bh(&adapter->mcc_lock);
-}
-
-/* Uses synchronous mcc */
-int be_cmd_get_fw_ver(struct be_adapter *adapter, char *fw_ver,
-			char *fw_on_flash)
-=======
 	dma_free_coherent(&adapter->pdev->dev, get_fat_cmd.size,
 			  get_fat_cmd.va, get_fat_cmd.dma);
 	mutex_unlock(&adapter->mcc_lock);
@@ -2745,17 +1857,12 @@ int be_cmd_get_fw_ver(struct be_adapter *adapter, char *fw_ver,
 
 /* Uses synchronous mcc */
 int be_cmd_get_fw_ver(struct be_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_get_fw_version *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2766,18 +1873,6 @@ int be_cmd_get_fw_ver(struct be_adapter *adapter)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_GET_FW_VERSION, sizeof(*req), wrb, NULL);
-	status = be_mcc_notify_wait(adapter);
-	if (!status) {
-		struct be_cmd_resp_get_fw_version *resp = embedded_payload(wrb);
-		strcpy(fw_ver, resp->firmware_version_string);
-		if (fw_on_flash)
-			strcpy(fw_on_flash, resp->fw_on_flash_version_string);
-	}
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 			       OPCODE_COMMON_GET_FW_VERSION, sizeof(*req), wrb,
 			       NULL);
 	status = be_mcc_notify_wait(adapter);
@@ -2791,22 +1886,12 @@ err:
 	}
 err:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* set the EQ delay interval of an EQ to specified value
  * Uses async mcc
  */
-<<<<<<< HEAD
-int be_cmd_modify_eqd(struct be_adapter *adapter, u32 eq_id, u32 eqd)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_modify_eq_delay *req;
-	int status = 0;
-
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 static int __be_cmd_modify_eqd(struct be_adapter *adapter,
 			       struct be_set_eqd *set_eqd, int num)
 {
@@ -2815,7 +1900,6 @@ static int __be_cmd_modify_eqd(struct be_adapter *adapter,
 	int status = 0, i;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2825,25 +1909,6 @@ static int __be_cmd_modify_eqd(struct be_adapter *adapter,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_MODIFY_EQ_DELAY, sizeof(*req), wrb, NULL);
-
-	req->num_eq = cpu_to_le32(1);
-	req->delay[0].eq_id = cpu_to_le32(eq_id);
-	req->delay[0].phase = 0;
-	req->delay[0].delay_multiplier = cpu_to_le32(eqd);
-
-	be_mcc_notify(adapter);
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-/* Uses sycnhronous mcc */
-int be_cmd_vlan_config(struct be_adapter *adapter, u32 if_id, u16 *vtag_array,
-			u32 num, bool untagged, bool promiscuous)
-=======
 			       OPCODE_COMMON_MODIFY_EQ_DELAY, sizeof(*req), wrb,
 			       NULL);
 
@@ -2879,17 +1944,12 @@ int be_cmd_modify_eqd(struct be_adapter *adapter, struct be_set_eqd *set_eqd,
 /* Uses sycnhronous mcc */
 int be_cmd_vlan_config(struct be_adapter *adapter, u32 if_id, u16 *vtag_array,
 		       u32 num, u32 domain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_vlan_config *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2899,27 +1959,6 @@ int be_cmd_vlan_config(struct be_adapter *adapter, u32 if_id, u16 *vtag_array,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_NTWK_VLAN_CONFIG, sizeof(*req), wrb, NULL);
-
-	req->interface_id = if_id;
-	req->promiscuous = promiscuous;
-	req->untagged = untagged;
-	req->num_vlan = num;
-	if (!promiscuous) {
-		memcpy(req->normal_vlan, vtag_array,
-			req->num_vlan * sizeof(vtag_array[0]));
-	}
-
-	status = be_mcc_notify_wait(adapter);
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-int be_cmd_rx_filter(struct be_adapter *adapter, u32 flags, u32 value)
-=======
 			       OPCODE_COMMON_NTWK_VLAN_CONFIG, sizeof(*req),
 			       wrb, NULL);
 	req->hdr.domain = domain;
@@ -2937,18 +1976,13 @@ err:
 }
 
 static int __be_cmd_rx_filter(struct be_adapter *adapter, u32 flags, u32 value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_dma_mem *mem = &adapter->rx_filter;
 	struct be_cmd_req_rx_filter *req = mem->va;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -2957,27 +1991,6 @@ static int __be_cmd_rx_filter(struct be_adapter *adapter, u32 flags, u32 value)
 	}
 	memset(req, 0, sizeof(*req));
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-				OPCODE_COMMON_NTWK_RX_FILTER, sizeof(*req),
-				wrb, mem);
-
-	req->if_id = cpu_to_le32(adapter->if_handle);
-	if (flags & IFF_PROMISC) {
-		req->if_flags_mask = cpu_to_le32(BE_IF_FLAGS_PROMISCUOUS |
-					BE_IF_FLAGS_VLAN_PROMISCUOUS);
-		if (value == ON)
-			req->if_flags = cpu_to_le32(BE_IF_FLAGS_PROMISCUOUS |
-						BE_IF_FLAGS_VLAN_PROMISCUOUS);
-	} else if (flags & IFF_ALLMULTI) {
-		req->if_flags_mask = req->if_flags =
-				cpu_to_le32(BE_IF_FLAGS_MCAST_PROMISCUOUS);
-	} else {
-		struct netdev_hw_addr *ha;
-		int i = 0;
-
-		req->if_flags_mask = req->if_flags =
-				cpu_to_le32(BE_IF_FLAGS_MULTICAST);
-=======
 			       OPCODE_COMMON_NTWK_RX_FILTER, sizeof(*req),
 			       wrb, mem);
 
@@ -2987,36 +2000,21 @@ static int __be_cmd_rx_filter(struct be_adapter *adapter, u32 flags, u32 value)
 
 	if (flags & BE_IF_FLAGS_MULTICAST) {
 		int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Reset mcast promisc mode if already set by setting mask
 		 * and not setting flags field
 		 */
 		req->if_flags_mask |=
-<<<<<<< HEAD
-				cpu_to_le32(BE_IF_FLAGS_MCAST_PROMISCUOUS);
-
-		req->mcast_num = cpu_to_le32(netdev_mc_count(adapter->netdev));
-		netdev_for_each_mc_addr(ha, adapter->netdev)
-			memcpy(req->mcast_mac[i++].byte, ha->addr, ETH_ALEN);
-=======
 			cpu_to_le32(BE_IF_FLAGS_MCAST_PROMISCUOUS &
 				    be_if_cap_flags(adapter));
 		req->mcast_num = cpu_to_le32(adapter->mc_count);
 		for (i = 0; i < adapter->mc_count; i++)
 			ether_addr_copy(req->mcast_mac[i].byte,
 					adapter->mc_list[i].mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	status = be_mcc_notify_wait(adapter);
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-=======
 	mutex_unlock(&adapter->mcc_lock);
 	return status;
 }
@@ -3037,7 +2035,6 @@ int be_cmd_rx_filter(struct be_adapter *adapter, u32 flags, u32 value)
 	return __be_cmd_rx_filter(adapter, flags, value);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Uses synchrounous mcc */
 int be_cmd_set_flow_control(struct be_adapter *adapter, u32 tx_fc, u32 rx_fc)
 {
@@ -3045,15 +2042,11 @@ int be_cmd_set_flow_control(struct be_adapter *adapter, u32 tx_fc, u32 rx_fc)
 	struct be_cmd_req_set_flow_control *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	if (!be_cmd_allowed(adapter, OPCODE_COMMON_SET_FLOW_CONTROL,
 			    CMD_SUBSYSTEM_COMMON))
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -3063,30 +2056,21 @@ int be_cmd_set_flow_control(struct be_adapter *adapter, u32 tx_fc, u32 rx_fc)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_SET_FLOW_CONTROL, sizeof(*req), wrb, NULL);
-
-=======
 			       OPCODE_COMMON_SET_FLOW_CONTROL, sizeof(*req),
 			       wrb, NULL);
 
 	req->hdr.version = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->tx_flow_control = cpu_to_le16((u16)tx_fc);
 	req->rx_flow_control = cpu_to_le16((u16)rx_fc);
 
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
 
 	if (base_status(status) == MCC_STATUS_FEATURE_NOT_SUPPORTED)
 		return  -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -3097,15 +2081,11 @@ int be_cmd_get_flow_control(struct be_adapter *adapter, u32 *tx_fc, u32 *rx_fc)
 	struct be_cmd_req_get_flow_control *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	if (!be_cmd_allowed(adapter, OPCODE_COMMON_GET_FLOW_CONTROL,
 			    CMD_SUBSYSTEM_COMMON))
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -3115,41 +2095,25 @@ int be_cmd_get_flow_control(struct be_adapter *adapter, u32 *tx_fc, u32 *rx_fc)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_GET_FLOW_CONTROL, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_GET_FLOW_CONTROL, sizeof(*req),
 			       wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_get_flow_control *resp =
 						embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*tx_fc = le16_to_cpu(resp->tx_flow_control);
 		*rx_fc = le16_to_cpu(resp->rx_flow_control);
 	}
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Uses mbox */
-<<<<<<< HEAD
-int be_cmd_query_fw_cfg(struct be_adapter *adapter, u32 *port_num,
-		u32 *mode, u32 *caps)
-=======
 int be_cmd_query_fw_cfg(struct be_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_query_fw_cfg *req;
@@ -3162,21 +2126,12 @@ int be_cmd_query_fw_cfg(struct be_adapter *adapter)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_QUERY_FIRMWARE_CONFIG, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_QUERY_FIRMWARE_CONFIG,
 			       sizeof(*req), wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_query_fw_cfg *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-		*port_num = le32_to_cpu(resp->phys_port);
-		*mode = le32_to_cpu(resp->function_mode);
-		*caps = le32_to_cpu(resp->function_caps);
-=======
 
 		adapter->port_num = le32_to_cpu(resp->phys_port);
 		adapter->function_mode = le32_to_cpu(resp->function_mode);
@@ -3185,7 +2140,6 @@ int be_cmd_query_fw_cfg(struct be_adapter *adapter)
 		dev_info(&adapter->pdev->dev,
 			 "FW config: function_mode=0x%x, function_caps=0x%x\n",
 			 adapter->function_mode, adapter->function_caps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&adapter->mbox_lock);
@@ -3199,8 +2153,6 @@ int be_cmd_reset_function(struct be_adapter *adapter)
 	struct be_cmd_req_hdr *req;
 	int status;
 
-<<<<<<< HEAD
-=======
 	if (lancer_chip(adapter)) {
 		iowrite32(SLI_PORT_CONTROL_IP_MASK,
 			  adapter->db + SLIPORT_CONTROL_OFFSET);
@@ -3211,7 +2163,6 @@ int be_cmd_reset_function(struct be_adapter *adapter)
 		return status;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mutex_lock_interruptible(&adapter->mbox_lock))
 		return -1;
 
@@ -3219,12 +2170,8 @@ int be_cmd_reset_function(struct be_adapter *adapter)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(req, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_FUNCTION_RESET, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_FUNCTION_RESET, sizeof(*req), wrb,
 			       NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mbox_notify_wait(adapter);
 
@@ -3232,37 +2179,6 @@ int be_cmd_reset_function(struct be_adapter *adapter)
 	return status;
 }
 
-<<<<<<< HEAD
-int be_cmd_rss_config(struct be_adapter *adapter, u8 *rsstable, u16 table_size)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_rss_config *req;
-	u32 myhash[10] = {0x15d43fa5, 0x2534685a, 0x5f87693a, 0x5668494e,
-			0x33cf6a53, 0x383334c6, 0x76ac4257, 0x59b242b2,
-			0x3ea83c02, 0x4a110304};
-	int status;
-
-	if (mutex_lock_interruptible(&adapter->mbox_lock))
-		return -1;
-
-	wrb = wrb_from_mbox(adapter);
-	req = embedded_payload(wrb);
-
-	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ETH,
-		OPCODE_ETH_RSS_CONFIG, sizeof(*req), wrb, NULL);
-
-	req->if_id = cpu_to_le32(adapter->if_handle);
-	req->enable_rss = cpu_to_le16(RSS_ENABLE_TCP_IPV4 | RSS_ENABLE_IPV4 |
-				      RSS_ENABLE_TCP_IPV6 | RSS_ENABLE_IPV6);
-	req->cpu_table_size_log2 = cpu_to_le16(fls(table_size) - 1);
-	memcpy(req->cpu_table, rsstable, table_size);
-	memcpy(req->hash, myhash, sizeof(myhash));
-	be_dws_cpu_to_le(req->hash, sizeof(req->hash));
-
-	status = be_mbox_notify_wait(adapter);
-
-	mutex_unlock(&adapter->mbox_lock);
-=======
 int be_cmd_rss_config(struct be_adapter *adapter, u8 *rsstable,
 		      u32 rss_hash_opts, u16 table_size, const u8 *rss_hkey)
 {
@@ -3299,27 +2215,18 @@ int be_cmd_rss_config(struct be_adapter *adapter, u8 *rsstable,
 	status = be_mcc_notify_wait(adapter);
 err:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Uses sync mcc */
 int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num,
-<<<<<<< HEAD
-			u8 bcn, u8 sts, u8 state)
-=======
 			    u8 bcn, u8 sts, u8 state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_enable_disable_beacon *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -3329,12 +2236,8 @@ int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_ENABLE_DISABLE_BEACON, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_ENABLE_DISABLE_BEACON,
 			       sizeof(*req), wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->port_num = port_num;
 	req->beacon_state = state;
@@ -3344,11 +2247,7 @@ int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num,
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -3359,11 +2258,7 @@ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
 	struct be_cmd_req_get_beacon_state *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -3373,12 +2268,8 @@ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_GET_BEACON_STATE, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_GET_BEACON_STATE, sizeof(*req),
 			       wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->port_num = port_num;
 
@@ -3386,23 +2277,11 @@ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
 	if (!status) {
 		struct be_cmd_resp_get_beacon_state *resp =
 						embedded_payload(wrb);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*state = resp->beacon_state;
 	}
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-int lancer_cmd_write_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
-			u32 data_size, u32 data_offset, const char *obj_name,
-			u32 *data_written, u8 *addn_status)
-=======
 	mutex_unlock(&adapter->mcc_lock);
 	return status;
 }
@@ -3459,7 +2338,6 @@ static int lancer_cmd_write_object(struct be_adapter *adapter,
 				   u32 data_offset, const char *obj_name,
 				   u32 *data_written, u8 *change_status,
 				   u8 *addn_status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct lancer_cmd_req_write_object *req;
@@ -3467,11 +2345,7 @@ static int lancer_cmd_write_object(struct be_adapter *adapter,
 	void *ctxt = NULL;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->flash_status = 0;
 
 	wrb = wrb_from_mccq(adapter);
@@ -3483,40 +2357,6 @@ static int lancer_cmd_write_object(struct be_adapter *adapter,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-				OPCODE_COMMON_WRITE_OBJECT,
-				sizeof(struct lancer_cmd_req_write_object), wrb,
-				NULL);
-
-	ctxt = &req->context;
-	AMAP_SET_BITS(struct amap_lancer_write_obj_context,
-			write_length, ctxt, data_size);
-
-	if (data_size == 0)
-		AMAP_SET_BITS(struct amap_lancer_write_obj_context,
-				eof, ctxt, 1);
-	else
-		AMAP_SET_BITS(struct amap_lancer_write_obj_context,
-				eof, ctxt, 0);
-
-	be_dws_cpu_to_le(ctxt, sizeof(req->context));
-	req->write_offset = cpu_to_le32(data_offset);
-	strcpy(req->object_name, obj_name);
-	req->descriptor_count = cpu_to_le32(1);
-	req->buf_len = cpu_to_le32(data_size);
-	req->addr_low = cpu_to_le32((cmd->dma +
-				sizeof(struct lancer_cmd_req_write_object))
-				& 0xFFFFFFFF);
-	req->addr_high = cpu_to_le32(upper_32_bits(cmd->dma +
-				sizeof(struct lancer_cmd_req_write_object)));
-
-	be_mcc_notify(adapter);
-	spin_unlock_bh(&adapter->mcc_lock);
-
-	if (!wait_for_completion_timeout(&adapter->flash_compl,
-			msecs_to_jiffies(12000)))
-		status = -1;
-=======
 			       OPCODE_COMMON_WRITE_OBJECT,
 			       sizeof(struct lancer_cmd_req_write_object), wrb,
 			       NULL);
@@ -3552,30 +2392,20 @@ static int lancer_cmd_write_object(struct be_adapter *adapter,
 	if (!wait_for_completion_timeout(&adapter->et_cmd_compl,
 					 msecs_to_jiffies(60000)))
 		status = -ETIMEDOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		status = adapter->flash_status;
 
 	resp = embedded_payload(wrb);
 	if (!status) {
 		*data_written = le32_to_cpu(resp->actual_write_len);
-<<<<<<< HEAD
-	} else {
-		*addn_status = resp->additional_status;
-		status = resp->status;
-=======
 		*change_status = resp->change_status;
 	} else {
 		*addn_status = resp->additional_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return status;
 
 err_unlock:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
 	return status;
 }
@@ -3649,29 +2479,19 @@ static int lancer_cmd_delete_object(struct be_adapter *adapter,
 	status = be_mcc_notify_wait(adapter);
 err:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 int lancer_cmd_read_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
-<<<<<<< HEAD
-		u32 data_size, u32 data_offset, const char *obj_name,
-		u32 *data_read, u32 *eof, u8 *addn_status)
-=======
 			   u32 data_size, u32 data_offset, const char *obj_name,
 			   u32 *data_read, u32 *eof, u8 *addn_status)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct lancer_cmd_req_read_object *req;
 	struct lancer_cmd_resp_read_object *resp;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -3682,15 +2502,9 @@ int lancer_cmd_read_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			OPCODE_COMMON_READ_OBJECT,
-			sizeof(struct lancer_cmd_req_read_object), wrb,
-			NULL);
-=======
 			       OPCODE_COMMON_READ_OBJECT,
 			       sizeof(struct lancer_cmd_req_read_object), wrb,
 			       NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->desired_read_len = cpu_to_le32(data_size);
 	req->read_offset = cpu_to_le32(data_offset);
@@ -3711,14 +2525,6 @@ int lancer_cmd_read_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
 	}
 
 err_unlock:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-int be_cmd_write_flashrom(struct be_adapter *adapter, struct be_dma_mem *cmd,
-			u32 flash_type, u32 flash_opcode, u32 buf_size)
-=======
 	mutex_unlock(&adapter->mcc_lock);
 	return status;
 }
@@ -3726,17 +2532,12 @@ int be_cmd_write_flashrom(struct be_adapter *adapter, struct be_dma_mem *cmd,
 static int be_cmd_write_flashrom(struct be_adapter *adapter,
 				 struct be_dma_mem *cmd, u32 flash_type,
 				 u32 flash_opcode, u32 img_offset, u32 buf_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_write_flashrom *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->flash_status = 0;
 
 	wrb = wrb_from_mccq(adapter);
@@ -3747,20 +2548,6 @@ static int be_cmd_write_flashrom(struct be_adapter *adapter,
 	req = cmd->va;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_WRITE_FLASHROM, cmd->size, wrb, cmd);
-
-	req->params.op_type = cpu_to_le32(flash_type);
-	req->params.op_code = cpu_to_le32(flash_opcode);
-	req->params.data_buf_size = cpu_to_le32(buf_size);
-
-	be_mcc_notify(adapter);
-	spin_unlock_bh(&adapter->mcc_lock);
-
-	if (!wait_for_completion_timeout(&adapter->flash_compl,
-			msecs_to_jiffies(40000)))
-		status = -1;
-=======
 			       OPCODE_COMMON_WRITE_FLASHROM, cmd->size, wrb,
 			       cmd);
 
@@ -3780,27 +2567,12 @@ static int be_cmd_write_flashrom(struct be_adapter *adapter,
 	if (!wait_for_completion_timeout(&adapter->et_cmd_compl,
 					 msecs_to_jiffies(40000)))
 		status = -ETIMEDOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		status = adapter->flash_status;
 
 	return status;
 
 err_unlock:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-int be_cmd_get_flash_crc(struct be_adapter *adapter, u8 *flashed_crc,
-			 int offset)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_write_flashrom *req;
-	int status;
-
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
 	return status;
 }
@@ -3813,7 +2585,6 @@ static int be_cmd_get_flash_crc(struct be_adapter *adapter, u8 *flashed_crc,
 	int status;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -3823,13 +2594,6 @@ static int be_cmd_get_flash_crc(struct be_adapter *adapter, u8 *flashed_crc,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_READ_FLASHROM, sizeof(*req)+4, wrb, NULL);
-
-	req->params.op_type = cpu_to_le32(IMG_TYPE_REDBOOT);
-	req->params.op_code = cpu_to_le32(FLASHROM_OPER_REPORT);
-	req->params.offset = cpu_to_le32(offset);
-=======
 			       OPCODE_COMMON_READ_FLASHROM, sizeof(*req),
 			       wrb, NULL);
 
@@ -3840,17 +2604,10 @@ static int be_cmd_get_flash_crc(struct be_adapter *adapter, u8 *flashed_crc,
 		req->params.offset = cpu_to_le32(crc_offset);
 
 	req->params.op_code = cpu_to_le32(FLASHROM_OPER_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->params.data_buf_size = cpu_to_le32(0x4);
 
 	status = be_mcc_notify_wait(adapter);
 	if (!status)
-<<<<<<< HEAD
-		memcpy(flashed_crc, req->params.data_buf, 4);
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 		memcpy(flashed_crc, req->crc, 4);
 
 err:
@@ -4450,26 +3207,17 @@ int be_fw_download(struct be_adapter *adapter, const struct firmware *fw)
 	if (!status)
 		dev_info(dev, "Firmware flashed successfully\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 int be_cmd_enable_magic_wol(struct be_adapter *adapter, u8 *mac,
-<<<<<<< HEAD
-				struct be_dma_mem *nonemb_cmd)
-=======
 			    struct be_dma_mem *nonemb_cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_acpi_wol_magic_config *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -4479,23 +3227,14 @@ int be_cmd_enable_magic_wol(struct be_adapter *adapter, u8 *mac,
 	req = nonemb_cmd->va;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ETH,
-<<<<<<< HEAD
-		OPCODE_ETH_ACPI_WOL_MAGIC_CONFIG, sizeof(*req), wrb,
-		nonemb_cmd);
-=======
 			       OPCODE_ETH_ACPI_WOL_MAGIC_CONFIG, sizeof(*req),
 			       wrb, nonemb_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(req->magic_mac, mac, ETH_ALEN);
 
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4506,47 +3245,29 @@ int be_cmd_set_loopback(struct be_adapter *adapter, u8 port_num,
 	struct be_cmd_req_set_lmode *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	if (!be_cmd_allowed(adapter, OPCODE_LOWLEVEL_SET_LOOPBACK_MODE,
 			    CMD_SUBSYSTEM_LOWLEVEL))
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
 		status = -EBUSY;
-<<<<<<< HEAD
-		goto err;
-=======
 		goto err_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_LOWLEVEL,
-<<<<<<< HEAD
-			OPCODE_LOWLEVEL_SET_LOOPBACK_MODE, sizeof(*req), wrb,
-			NULL);
-=======
 			       OPCODE_LOWLEVEL_SET_LOOPBACK_MODE, sizeof(*req),
 			       wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->src_port = port_num;
 	req->dest_port = port_num;
 	req->loopback_type = loopback_type;
 	req->loopback_state = enable;
 
-<<<<<<< HEAD
-	status = be_mcc_notify_wait(adapter);
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	status = be_mcc_notify(adapter);
 	if (status)
 		goto err_unlock;
@@ -4561,20 +3282,10 @@ err:
 
 err_unlock:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 int be_cmd_loopback_test(struct be_adapter *adapter, u32 port_num,
-<<<<<<< HEAD
-		u32 loopback_type, u32 pkt_size, u32 num_pkts, u64 pattern)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_loopback_test *req;
-	int status;
-
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 			 u32 loopback_type, u32 pkt_size, u32 num_pkts,
 			 u64 pattern)
 {
@@ -4588,7 +3299,6 @@ int be_cmd_loopback_test(struct be_adapter *adapter, u32 port_num,
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -4599,16 +3309,10 @@ int be_cmd_loopback_test(struct be_adapter *adapter, u32 port_num,
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_LOWLEVEL,
-<<<<<<< HEAD
-			OPCODE_LOWLEVEL_LOOPBACK_TEST, sizeof(*req), wrb, NULL);
-	req->hdr.timeout = cpu_to_le32(4);
-
-=======
 			       OPCODE_LOWLEVEL_LOOPBACK_TEST, sizeof(*req), wrb,
 			       NULL);
 
 	req->hdr.timeout = cpu_to_le32(15);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->pattern = cpu_to_le64(pattern);
 	req->src_port = cpu_to_le32(port_num);
 	req->dest_port = cpu_to_le32(port_num);
@@ -4616,16 +3320,6 @@ int be_cmd_loopback_test(struct be_adapter *adapter, u32 port_num,
 	req->num_pkts = cpu_to_le32(num_pkts);
 	req->loopback_type = cpu_to_le32(loopback_type);
 
-<<<<<<< HEAD
-	status = be_mcc_notify_wait(adapter);
-	if (!status) {
-		struct be_cmd_resp_loopback_test *resp = embedded_payload(wrb);
-		status = le32_to_cpu(resp->status);
-	}
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	status = be_mcc_notify(adapter);
 	if (status)
 		goto err;
@@ -4639,31 +3333,22 @@ err:
 	return status;
 err:
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 int be_cmd_ddr_dma_test(struct be_adapter *adapter, u64 pattern,
-<<<<<<< HEAD
-				u32 byte_cnt, struct be_dma_mem *cmd)
-=======
 			u32 byte_cnt, struct be_dma_mem *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_ddrdma_test *req;
 	int status;
 	int i, j = 0;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	if (!be_cmd_allowed(adapter, OPCODE_LOWLEVEL_HOST_DDR_DMA,
 			    CMD_SUBSYSTEM_LOWLEVEL))
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -4672,21 +3357,13 @@ int be_cmd_ddr_dma_test(struct be_adapter *adapter, u64 pattern,
 	}
 	req = cmd->va;
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_LOWLEVEL,
-<<<<<<< HEAD
-			OPCODE_LOWLEVEL_HOST_DDR_DMA, cmd->size, wrb, cmd);
-=======
 			       OPCODE_LOWLEVEL_HOST_DDR_DMA, cmd->size, wrb,
 			       cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->pattern = cpu_to_le64(pattern);
 	req->byte_count = cpu_to_le32(byte_cnt);
 	for (i = 0; i < byte_cnt; i++) {
-<<<<<<< HEAD
-		req->snd_buff[i] = (u8)(pattern >> (j*8));
-=======
 		req->snd_buff[i] = (u8)(pattern >> (j * 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		j++;
 		if (j > 7)
 			j = 0;
@@ -4696,40 +3373,20 @@ int be_cmd_ddr_dma_test(struct be_adapter *adapter, u64 pattern,
 
 	if (!status) {
 		struct be_cmd_resp_ddrdma_test *resp;
-<<<<<<< HEAD
-		resp = cmd->va;
-		if ((memcmp(resp->rcv_buff, req->snd_buff, byte_cnt) != 0) ||
-				resp->snd_err) {
-=======
 
 		resp = cmd->va;
 		if ((memcmp(resp->rcv_buff, req->snd_buff, byte_cnt) != 0) ||
 		    resp->snd_err) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = -1;
 		}
 	}
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 int be_cmd_get_seeprom_data(struct be_adapter *adapter,
-<<<<<<< HEAD
-				struct be_dma_mem *nonemb_cmd)
-{
-	struct be_mcc_wrb *wrb;
-	struct be_cmd_req_seeprom_read *req;
-	struct be_sge *sge;
-	int status;
-
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 			    struct be_dma_mem *nonemb_cmd)
 {
 	struct be_mcc_wrb *wrb;
@@ -4737,7 +3394,6 @@ int be_cmd_get_seeprom_data(struct be_adapter *adapter,
 	int status;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -4745,51 +3401,30 @@ int be_cmd_get_seeprom_data(struct be_adapter *adapter,
 		goto err;
 	}
 	req = nonemb_cmd->va;
-<<<<<<< HEAD
-	sge = nonembedded_sgl(wrb);
-
-	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-			OPCODE_COMMON_SEEPROM_READ, sizeof(*req), wrb,
-			nonemb_cmd);
-=======
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
 			       OPCODE_COMMON_SEEPROM_READ, sizeof(*req), wrb,
 			       nonemb_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-int be_cmd_get_phy_info(struct be_adapter *adapter,
-				struct be_phy_info *phy_info)
-=======
 	mutex_unlock(&adapter->mcc_lock);
 	return status;
 }
 
 int be_cmd_get_phy_info(struct be_adapter *adapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_get_phy_info *req;
 	struct be_dma_mem cmd;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	if (!be_cmd_allowed(adapter, OPCODE_COMMON_GET_PHY_DETAILS,
 			    CMD_SUBSYSTEM_COMMON))
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -4797,13 +3432,8 @@ int be_cmd_get_phy_info(struct be_adapter *adapter)
 		goto err;
 	}
 	cmd.size = sizeof(struct be_cmd_req_get_phy_info);
-<<<<<<< HEAD
-	cmd.va = pci_alloc_consistent(adapter->pdev, cmd.size,
-					&cmd.dma);
-=======
 	cmd.va = dma_alloc_coherent(&adapter->pdev->dev, cmd.size, &cmd.dma,
 				    GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cmd.va) {
 		dev_err(&adapter->pdev->dev, "Memory alloc failure\n");
 		status = -ENOMEM;
@@ -4813,32 +3443,13 @@ int be_cmd_get_phy_info(struct be_adapter *adapter)
 	req = cmd.va;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			OPCODE_COMMON_GET_PHY_DETAILS, sizeof(*req),
-			wrb, &cmd);
-=======
 			       OPCODE_COMMON_GET_PHY_DETAILS, sizeof(*req),
 			       wrb, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_phy_info *resp_phy_info =
 				cmd.va + sizeof(struct be_cmd_req_hdr);
-<<<<<<< HEAD
-		phy_info->phy_type = le16_to_cpu(resp_phy_info->phy_type);
-		phy_info->interface_type =
-			le16_to_cpu(resp_phy_info->interface_type);
-	}
-	pci_free_consistent(adapter->pdev, cmd.size,
-				cmd.va, cmd.dma);
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-int be_cmd_set_qos(struct be_adapter *adapter, u32 bps, u32 domain)
-=======
 
 		adapter->phy.phy_type = le16_to_cpu(resp_phy_info->phy_type);
 		adapter->phy.interface_type =
@@ -4863,17 +3474,12 @@ err:
 }
 
 static int be_cmd_set_qos(struct be_adapter *adapter, u32 bps, u32 domain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_set_qos *req;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -4884,11 +3490,7 @@ static int be_cmd_set_qos(struct be_adapter *adapter, u32 bps, u32 domain)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			OPCODE_COMMON_SET_QOS, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_SET_QOS, sizeof(*req), wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->hdr.domain = domain;
 	req->valid_bits = cpu_to_le32(BE_QOS_BITS_NIC);
@@ -4897,11 +3499,7 @@ static int be_cmd_set_qos(struct be_adapter *adapter, u32 bps, u32 domain)
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -4910,34 +3508,15 @@ int be_cmd_get_cntl_attributes(struct be_adapter *adapter)
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_cntl_attribs *req;
 	struct be_cmd_resp_cntl_attribs *resp;
-<<<<<<< HEAD
-	int status;
-	int payload_len = max(sizeof(*req), sizeof(*resp));
-	struct mgmt_controller_attrib *attribs;
-	struct be_dma_mem attribs_cmd;
-
-	memset(&attribs_cmd, 0, sizeof(struct be_dma_mem));
-	attribs_cmd.size = sizeof(struct be_cmd_resp_cntl_attribs);
-	attribs_cmd.va = pci_alloc_consistent(adapter->pdev, attribs_cmd.size,
-						&attribs_cmd.dma);
-	if (!attribs_cmd.va) {
-		dev_err(&adapter->pdev->dev,
-				"Memory allocation failure\n");
-		return -ENOMEM;
-	}
-=======
 	int status, i;
 	int payload_len = max(sizeof(*req), sizeof(*resp));
 	struct mgmt_controller_attrib *attribs;
 	struct be_dma_mem attribs_cmd;
 	u32 *serial_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mutex_lock_interruptible(&adapter->mbox_lock))
 		return -1;
 
-<<<<<<< HEAD
-=======
 	memset(&attribs_cmd, 0, sizeof(struct be_dma_mem));
 	attribs_cmd.size = sizeof(struct be_cmd_resp_cntl_attribs);
 	attribs_cmd.va = dma_alloc_coherent(&adapter->pdev->dev,
@@ -4949,7 +3528,6 @@ int be_cmd_get_cntl_attributes(struct be_adapter *adapter)
 		goto err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wrb = wrb_from_mbox(adapter);
 	if (!wrb) {
 		status = -EBUSY;
@@ -4958,20 +3536,13 @@ int be_cmd_get_cntl_attributes(struct be_adapter *adapter)
 	req = attribs_cmd.va;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			 OPCODE_COMMON_GET_CNTL_ATTRIBUTES, payload_len, wrb,
-			&attribs_cmd);
-=======
 			       OPCODE_COMMON_GET_CNTL_ATTRIBUTES, payload_len,
 			       wrb, &attribs_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		attribs = attribs_cmd.va + sizeof(struct be_cmd_resp_hdr);
 		adapter->hba_port_num = attribs->hba_attribs.phy_port;
-<<<<<<< HEAD
-=======
 		serial_num = attribs->hba_attribs.controller_serial_number;
 		for (i = 0; i < CNTL_SERIAL_NUM_WORDS; i++)
 			adapter->serial_num[i] = le32_to_cpu(serial_num[i]) &
@@ -4981,19 +3552,13 @@ int be_cmd_get_cntl_attributes(struct be_adapter *adapter)
 		 */
 		if (BEx_chip(adapter))
 			adapter->pf_num = attribs->hba_attribs.pci_funcnum;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 err:
 	mutex_unlock(&adapter->mbox_lock);
-<<<<<<< HEAD
-	pci_free_consistent(adapter->pdev, attribs_cmd.size, attribs_cmd.va,
-					attribs_cmd.dma);
-=======
 	if (attribs_cmd.va)
 		dma_free_coherent(&adapter->pdev->dev, attribs_cmd.size,
 				  attribs_cmd.va, attribs_cmd.dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -5016,12 +3581,8 @@ int be_cmd_req_native_mode(struct be_adapter *adapter)
 	req = embedded_payload(wrb);
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-		OPCODE_COMMON_SET_DRIVER_FUNCTION_CAP, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_SET_DRIVER_FUNCTION_CAP,
 			       sizeof(*req), wrb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->valid_cap_flags = cpu_to_le32(CAPABILITY_SW_TIMESTAMPS |
 				CAPABILITY_BE3_NATIVE_ERX_API);
@@ -5030,28 +3591,18 @@ int be_cmd_req_native_mode(struct be_adapter *adapter)
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_set_func_cap *resp = embedded_payload(wrb);
-<<<<<<< HEAD
-		adapter->be3_native = le32_to_cpu(resp->cap_flags) &
-					CAPABILITY_BE3_NATIVE_ERX_API;
-=======
 
 		adapter->be3_native = le32_to_cpu(resp->cap_flags) &
 					CAPABILITY_BE3_NATIVE_ERX_API;
 		if (!adapter->be3_native)
 			dev_warn(&adapter->pdev->dev,
 				 "adapter not in advanced mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 err:
 	mutex_unlock(&adapter->mbox_lock);
 	return status;
 }
 
-<<<<<<< HEAD
-/* Uses synchronous MCCQ */
-int be_cmd_get_mac_from_list(struct be_adapter *adapter, u32 domain,
-			bool *pmac_id_active, u32 *pmac_id, u8 *mac)
-=======
 /* Get privilege(s) for a function */
 int be_cmd_get_fn_privileges(struct be_adapter *adapter, u32 *privilege,
 			     u32 domain)
@@ -5135,7 +3686,6 @@ err:
 int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 			     bool *pmac_id_valid, u32 *pmac_id, u32 if_handle,
 			     u8 domain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_get_mac_list *req;
@@ -5146,19 +3696,6 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 
 	memset(&get_mac_list_cmd, 0, sizeof(struct be_dma_mem));
 	get_mac_list_cmd.size = sizeof(struct be_cmd_resp_get_mac_list);
-<<<<<<< HEAD
-	get_mac_list_cmd.va = pci_alloc_consistent(adapter->pdev,
-			get_mac_list_cmd.size,
-			&get_mac_list_cmd.dma);
-
-	if (!get_mac_list_cmd.va) {
-		dev_err(&adapter->pdev->dev,
-				"Memory allocation failure during GET_MAC_LIST\n");
-		return -ENOMEM;
-	}
-
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	get_mac_list_cmd.va = dma_alloc_coherent(&adapter->pdev->dev,
 						 get_mac_list_cmd.size,
 						 &get_mac_list_cmd.dma,
@@ -5171,7 +3708,6 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 	}
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -5182,14 +3718,6 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 	req = get_mac_list_cmd.va;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-				OPCODE_COMMON_GET_MAC_LIST, sizeof(*req),
-				wrb, &get_mac_list_cmd);
-
-	req->hdr.domain = domain;
-	req->mac_type = MAC_ADDRESS_TYPE_NETWORK;
-	req->perm_override = 1;
-=======
 			       OPCODE_COMMON_GET_MAC_LIST,
 			       get_mac_list_cmd.size, wrb, &get_mac_list_cmd);
 	req->hdr.domain = domain;
@@ -5201,18 +3729,11 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 	} else {
 		req->perm_override = 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_get_mac_list *resp =
 						get_mac_list_cmd.va;
-<<<<<<< HEAD
-		mac_count = resp->true_mac_count + resp->pseudo_mac_count;
-		/* Mac list returned could contain one or more active mac_ids
-		 * or one or more pseudo permanant mac addresses. If an active
-		 * mac_id is present, return first active mac_id found
-=======
 
 		if (*pmac_id_valid) {
 			memcpy(mac, resp->macid_macaddr.mac_addr_id.macaddr,
@@ -5225,7 +3746,6 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 		 * or one or more true or pseudo permanent mac addresses.
 		 * If an active mac_id is present, return first active mac_id
 		 * found.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		for (i = 0; i < mac_count; i++) {
 			struct get_list_macaddr *mac_entry;
@@ -5238,28 +3758,12 @@ int be_cmd_get_mac_from_list(struct be_adapter *adapter, u8 *mac,
 			 * is 6 bytes
 			 */
 			if (mac_addr_size == sizeof(u32)) {
-<<<<<<< HEAD
-				*pmac_id_active = true;
-=======
 				*pmac_id_valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mac_id = mac_entry->mac_addr_id.s_mac_id.mac_id;
 				*pmac_id = le32_to_cpu(mac_id);
 				goto out;
 			}
 		}
-<<<<<<< HEAD
-		/* If no active mac_id found, return first pseudo mac addr */
-		*pmac_id_active = false;
-		memcpy(mac, resp->macaddr_list[0].mac_addr_id.macaddr,
-								ETH_ALEN);
-	}
-
-out:
-	spin_unlock_bh(&adapter->mcc_lock);
-	pci_free_consistent(adapter->pdev, get_mac_list_cmd.size,
-			get_mac_list_cmd.va, get_mac_list_cmd.dma);
-=======
 		/* If no active mac_id found, return first mac addr */
 		*pmac_id_valid = false;
 		memcpy(mac, resp->macaddr_list[0].mac_addr_id.macaddr,
@@ -5308,7 +3812,6 @@ int be_cmd_get_perm_mac(struct be_adapter *adapter, u8 *mac)
 						  NULL, adapter->if_handle, 0);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -5323,23 +3826,12 @@ int be_cmd_set_mac_list(struct be_adapter *adapter, u8 *mac_array,
 
 	memset(&cmd, 0, sizeof(struct be_dma_mem));
 	cmd.size = sizeof(struct be_cmd_req_set_mac_list);
-<<<<<<< HEAD
-	cmd.va = dma_alloc_coherent(&adapter->pdev->dev, cmd.size,
-			&cmd.dma, GFP_KERNEL);
-	if (!cmd.va) {
-		dev_err(&adapter->pdev->dev, "Memory alloc failure\n");
-		return -ENOMEM;
-	}
-
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	cmd.va = dma_alloc_coherent(&adapter->pdev->dev, cmd.size, &cmd.dma,
 				    GFP_KERNEL);
 	if (!cmd.va)
 		return -ENOMEM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -5349,36 +3841,17 @@ int be_cmd_set_mac_list(struct be_adapter *adapter, u8 *mac_array,
 
 	req = cmd.va;
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-				OPCODE_COMMON_SET_MAC_LIST, sizeof(*req),
-				wrb, &cmd);
-=======
 			       OPCODE_COMMON_SET_MAC_LIST, sizeof(*req),
 			       wrb, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->hdr.domain = domain;
 	req->mac_count = mac_count;
 	if (mac_count)
-<<<<<<< HEAD
-		memcpy(req->mac, mac_array, ETH_ALEN*mac_count);
-=======
 		memcpy(req->mac, mac_array, ETH_ALEN * mac_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	dma_free_coherent(&adapter->pdev->dev, cmd.size,
-				cmd.va, cmd.dma);
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-int be_cmd_set_hsw_config(struct be_adapter *adapter, u16 pvid,
-			u32 domain, u16 intf_id)
-=======
 	dma_free_coherent(&adapter->pdev->dev, cmd.size, cmd.va, cmd.dma);
 	mutex_unlock(&adapter->mcc_lock);
 	return status;
@@ -5406,22 +3879,17 @@ int be_cmd_set_mac(struct be_adapter *adapter, u8 *mac, int if_id, u32 dom)
 
 int be_cmd_set_hsw_config(struct be_adapter *adapter, u16 pvid,
 			  u32 domain, u16 intf_id, u16 hsw_mode, u8 spoofchk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_set_hsw_config *req;
 	void *ctxt;
 	int status;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	if (!be_cmd_allowed(adapter, OPCODE_COMMON_SET_HSW_CONFIG,
 			    CMD_SUBSYSTEM_COMMON))
 		return -EPERM;
 
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -5433,12 +3901,8 @@ int be_cmd_set_hsw_config(struct be_adapter *adapter, u16 pvid,
 	ctxt = &req->context;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			OPCODE_COMMON_SET_HSW_CONFIG, sizeof(*req), wrb, NULL);
-=======
 			       OPCODE_COMMON_SET_HSW_CONFIG, sizeof(*req), wrb,
 			       NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->hdr.domain = domain;
 	AMAP_SET_BITS(struct amap_set_hsw_context, interface_id, ctxt, intf_id);
@@ -5446,8 +3910,6 @@ int be_cmd_set_hsw_config(struct be_adapter *adapter, u16 pvid,
 		AMAP_SET_BITS(struct amap_set_hsw_context, pvid_valid, ctxt, 1);
 		AMAP_SET_BITS(struct amap_set_hsw_context, pvid, ctxt, pvid);
 	}
-<<<<<<< HEAD
-=======
 	if (hsw_mode) {
 		AMAP_SET_BITS(struct amap_set_hsw_context, interface_id,
 			      ctxt, adapter->hba_port_num);
@@ -5463,27 +3925,18 @@ int be_cmd_set_hsw_config(struct be_adapter *adapter, u16 pvid,
 		AMAP_SET_BITS(struct amap_set_hsw_context, vlan_spoofchk,
 			      ctxt, spoofchk);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	be_dws_cpu_to_le(req->context, sizeof(req->context));
 	status = be_mcc_notify_wait(adapter);
 
 err:
-<<<<<<< HEAD
-	spin_unlock_bh(&adapter->mcc_lock);
-=======
 	mutex_unlock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /* Get Hyper switch config */
 int be_cmd_get_hsw_config(struct be_adapter *adapter, u16 *pvid,
-<<<<<<< HEAD
-			u32 domain, u16 intf_id)
-=======
 			  u32 domain, u16 intf_id, u8 *mode, bool *spoofchk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_get_hsw_config *req;
@@ -5491,11 +3944,7 @@ int be_cmd_get_hsw_config(struct be_adapter *adapter, u16 *pvid,
 	int status;
 	u16 vid;
 
-<<<<<<< HEAD
-	spin_lock_bh(&adapter->mcc_lock);
-=======
 	mutex_lock(&adapter->mcc_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wrb = wrb_from_mccq(adapter);
 	if (!wrb) {
@@ -5507,14 +3956,6 @@ int be_cmd_get_hsw_config(struct be_adapter *adapter, u16 *pvid,
 	ctxt = &req->context;
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_COMMON,
-<<<<<<< HEAD
-			OPCODE_COMMON_GET_HSW_CONFIG, sizeof(*req), wrb, NULL);
-
-	req->hdr.domain = domain;
-	AMAP_SET_BITS(struct amap_get_hsw_req_context, interface_id, ctxt,
-								intf_id);
-	AMAP_SET_BITS(struct amap_get_hsw_req_context, pvid_valid, ctxt, 1);
-=======
 			       OPCODE_COMMON_GET_HSW_CONFIG, sizeof(*req), wrb,
 			       NULL);
 
@@ -5528,27 +3969,12 @@ int be_cmd_get_hsw_config(struct be_adapter *adapter, u16 *pvid,
 			      ctxt, adapter->hba_port_num);
 		AMAP_SET_BITS(struct amap_get_hsw_req_context, pport, ctxt, 1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be_dws_cpu_to_le(req->context, sizeof(req->context));
 
 	status = be_mcc_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_get_hsw_config *resp =
 						embedded_payload(wrb);
-<<<<<<< HEAD
-		be_dws_le_to_cpu(&resp->context,
-						sizeof(resp->context));
-		vid = AMAP_GET_BITS(struct amap_get_hsw_resp_context,
-							pvid, &resp->context);
-		*pvid = le16_to_cpu(vid);
-	}
-
-err:
-	spin_unlock_bh(&adapter->mcc_lock);
-	return status;
-}
-
-=======
 
 		be_dws_le_to_cpu(&resp->context, sizeof(resp->context));
 		vid = AMAP_GET_BITS(struct amap_get_hsw_resp_context,
@@ -5587,26 +4013,10 @@ static bool be_is_wol_excluded(struct be_adapter *adapter)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int be_cmd_get_acpi_wol_cap(struct be_adapter *adapter)
 {
 	struct be_mcc_wrb *wrb;
 	struct be_cmd_req_acpi_wol_magic_config_v1 *req;
-<<<<<<< HEAD
-	int status;
-	int payload_len = sizeof(*req);
-	struct be_dma_mem cmd;
-
-	memset(&cmd, 0, sizeof(struct be_dma_mem));
-	cmd.size = sizeof(struct be_cmd_resp_acpi_wol_magic_config_v1);
-	cmd.va = pci_alloc_consistent(adapter->pdev, cmd.size,
-					       &cmd.dma);
-	if (!cmd.va) {
-		dev_err(&adapter->pdev->dev,
-				"Memory allocation failure\n");
-		return -ENOMEM;
-	}
-=======
 	int status = 0;
 	struct be_dma_mem cmd;
 
@@ -5616,13 +4026,10 @@ int be_cmd_get_acpi_wol_cap(struct be_adapter *adapter)
 
 	if (be_is_wol_excluded(adapter))
 		return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mutex_lock_interruptible(&adapter->mbox_lock))
 		return -1;
 
-<<<<<<< HEAD
-=======
 	memset(&cmd, 0, sizeof(struct be_dma_mem));
 	cmd.size = sizeof(struct be_cmd_resp_acpi_wol_magic_config_v1);
 	cmd.va = dma_alloc_coherent(&adapter->pdev->dev, cmd.size, &cmd.dma,
@@ -5633,7 +4040,6 @@ int be_cmd_get_acpi_wol_cap(struct be_adapter *adapter)
 		goto err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wrb = wrb_from_mbox(adapter);
 	if (!wrb) {
 		status = -EBUSY;
@@ -5644,11 +4050,7 @@ int be_cmd_get_acpi_wol_cap(struct be_adapter *adapter)
 
 	be_wrb_cmd_hdr_prepare(&req->hdr, CMD_SUBSYSTEM_ETH,
 			       OPCODE_ETH_ACPI_WOL_MAGIC_CONFIG,
-<<<<<<< HEAD
-			       payload_len, wrb, &cmd);
-=======
 			       sizeof(*req), wrb, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	req->hdr.version = 1;
 	req->query_options = BE_GET_WOL_CAP;
@@ -5656,23 +4058,6 @@ int be_cmd_get_acpi_wol_cap(struct be_adapter *adapter)
 	status = be_mbox_notify_wait(adapter);
 	if (!status) {
 		struct be_cmd_resp_acpi_wol_magic_config_v1 *resp;
-<<<<<<< HEAD
-		resp = (struct be_cmd_resp_acpi_wol_magic_config_v1 *) cmd.va;
-
-		/* the command could succeed misleadingly on old f/w
-		 * which is not aware of the V1 version. fake an error. */
-		if (resp->hdr.response_length < payload_len) {
-			status = -1;
-			goto err;
-		}
-		adapter->wol_cap = resp->wol_settings;
-	}
-err:
-	mutex_unlock(&adapter->mbox_lock);
-	pci_free_consistent(adapter->pdev, cmd.size, cmd.va, cmd.dma);
-	return status;
-}
-=======
 
 		resp = (struct be_cmd_resp_acpi_wol_magic_config_v1 *)cmd.va;
 
@@ -6695,4 +5080,3 @@ err:
 	return status;
 }
 EXPORT_SYMBOL(be_roce_mcc_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -10,19 +10,6 @@
 #define __ASM_MACH_IP27_KERNEL_ENTRY_H
 
 #include <asm/sn/addrs.h>
-<<<<<<< HEAD
-#include <asm/sn/sn0/hubni.h>
-#include <asm/sn/klkernvars.h>
-
-/*
- * Returns the local nasid into res.
- */
-	.macro GET_NASID_ASM res
-	dli	\res, LOCAL_HUB_ADDR(NI_STATUS_REV_ID)
-	ld	\res, (\res)
-	and	\res, NSRI_NODEID_MASK
-	dsrl	\res, NSRI_NODEID_SHFT
-=======
 #include <asm/sn/agent.h>
 #include <asm/sn/klkernvars.h>
 
@@ -71,7 +58,6 @@
 #else
 	mtc0	zero, CP0_WIRED
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 /*
@@ -85,11 +71,7 @@
 	.endm
 
 /*
-<<<<<<< HEAD
- * Do SMP slave processor setup necessary before we can savely execute C code.
-=======
  * Do SMP slave processor setup necessary before we can safely execute C code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 	.macro	smp_slave_setup
 	GET_NASID_ASM	t1
@@ -106,13 +88,8 @@
 	 * We might not get launched at the address the kernel is linked to,
 	 * so we jump there.
 	 */
-<<<<<<< HEAD
-	PTR_LA  t0, 0f
-	jr      t0
-=======
 	PTR_LA	t0, 0f
 	jr	t0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 0:
 	.endm
 

@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * linux/fs/9p/trans_rdma.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * RDMA transport layer based on the trans_fd.c implementation.
  *
  *  Copyright (C) 2008 by Tom Tucker <tom@opengridcomputing.com>
@@ -13,25 +7,6 @@
  *  Copyright (C) 2004-2005 by Latchesar Ionkov <lucho@ionkov.net>
  *  Copyright (C) 2004-2008 by Eric Van Hensbergen <ericvh@gmail.com>
  *  Copyright (C) 1997-2002 by Ron Minnich <rminnich@sarnoff.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to:
- *  Free Software Foundation
- *  51 Franklin Street, Fifth Floor
- *  Boston, MA  02111-1301  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -46,18 +21,11 @@
 #include <linux/un.h>
 #include <linux/uaccess.h>
 #include <linux/inet.h>
-<<<<<<< HEAD
-#include <linux/idr.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/file.h>
 #include <linux/parser.h>
 #include <linux/semaphore.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/seq_file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/9p/9p.h>
 #include <net/9p/client.h>
 #include <net/9p/transport.h>
@@ -72,13 +40,7 @@
 #define P9_RDMA_IRD		0
 #define P9_RDMA_ORD		0
 #define P9_RDMA_TIMEOUT		30000		/* 30 seconds */
-<<<<<<< HEAD
-#define P9_RDMA_MAXSIZE		(4*4096)	/* Min SGE is 4, so we can
-						 * safely advertise a maxsize
-						 * of 64k */
-=======
 #define P9_RDMA_MAXSIZE		(1024*1024)	/* 1MB */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct p9_trans_rdma - RDMA transport instance
@@ -88,15 +50,6 @@
  * @pd: Protection Domain pointer
  * @qp: Queue Pair pointer
  * @cq: Completion Queue pointer
-<<<<<<< HEAD
- * @dm_mr: DMA Memory Region pointer
- * @lkey: The local access only memory region key
- * @timeout: Number of uSecs to wait for connection management events
- * @sq_depth: The depth of the Send Queue
- * @sq_sem: Semaphore for the SQ
- * @rq_depth: The depth of the Receive Queue.
- * @rq_count: Count of requests in the Receive Queue.
-=======
  * @timeout: Number of uSecs to wait for connection management events
  * @privport: Whether a privileged port may be used
  * @port: The port to use
@@ -106,7 +59,6 @@
  * @rq_sem: Semaphore for the RQ
  * @excess_rc : Amount of posted Receive Contexts without a pending request.
  *		See rdma_request()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @addr: The remote peer's address
  * @req_lock: Protects the active request list
  * @cm_done: Completion event for connection management tracking
@@ -125,15 +77,6 @@ struct p9_trans_rdma {
 	struct ib_pd *pd;
 	struct ib_qp *qp;
 	struct ib_cq *cq;
-<<<<<<< HEAD
-	struct ib_mr *dma_mr;
-	u32 lkey;
-	long timeout;
-	int sq_depth;
-	struct semaphore sq_sem;
-	int rq_depth;
-	atomic_t rq_count;
-=======
 	long timeout;
 	bool privport;
 	u16 port;
@@ -142,58 +85,35 @@ struct p9_trans_rdma {
 	int rq_depth;
 	struct semaphore rq_sem;
 	atomic_t excess_rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr_in addr;
 	spinlock_t req_lock;
 
 	struct completion cm_done;
 };
 
-<<<<<<< HEAD
-/**
- * p9_rdma_context - Keeps track of in-process WR
- *
- * @wc_op: The original WR op for when the CQE completes in error.
-=======
 struct p9_rdma_req;
 
 /**
  * struct p9_rdma_context - Keeps track of in-process WR
  *
  * @cqe: completion queue entry
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @busa: Bus address to unmap when the WR completes
  * @req: Keeps track of requests (send)
  * @rc: Keepts track of replies (receive)
  */
-<<<<<<< HEAD
-struct p9_rdma_req;
-struct p9_rdma_context {
-	enum ib_wc_opcode wc_op;
-	dma_addr_t busa;
-	union {
-		struct p9_req_t *req;
-		struct p9_fcall *rc;
-=======
 struct p9_rdma_context {
 	struct ib_cqe cqe;
 	dma_addr_t busa;
 	union {
 		struct p9_req_t *req;
 		struct p9_fcall rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };
 
 /**
-<<<<<<< HEAD
- * p9_rdma_opts - Collection of mount options
- * @port: port of connection
-=======
  * struct p9_rdma_opts - Collection of mount options
  * @port: port of connection
  * @privport: Whether a privileged port may be used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sq_depth: The requested depth of the SQ. This really doesn't need
  * to be any deeper than the number of threads used in the client
  * @rq_depth: The depth of the RQ. Should be greater than or equal to SQ depth
@@ -201,10 +121,7 @@ struct p9_rdma_context {
  */
 struct p9_rdma_opts {
 	short port;
-<<<<<<< HEAD
-=======
 	bool privport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sq_depth;
 	int rq_depth;
 	long timeout;
@@ -215,14 +132,10 @@ struct p9_rdma_opts {
  */
 enum {
 	/* Options that take integer arguments */
-<<<<<<< HEAD
-	Opt_port, Opt_rq_depth, Opt_sq_depth, Opt_timeout, Opt_err,
-=======
 	Opt_port, Opt_rq_depth, Opt_sq_depth, Opt_timeout,
 	/* Options that take no argument */
 	Opt_privport,
 	Opt_err,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static match_table_t tokens = {
@@ -230,11 +143,6 @@ static match_table_t tokens = {
 	{Opt_sq_depth, "sq=%u"},
 	{Opt_rq_depth, "rq=%u"},
 	{Opt_timeout, "timeout=%u"},
-<<<<<<< HEAD
-	{Opt_err, NULL},
-};
-
-=======
 	{Opt_privport, "privport"},
 	{Opt_err, NULL},
 };
@@ -256,7 +164,6 @@ static int p9_rdma_show_options(struct seq_file *m, struct p9_client *clnt)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * parse_opts - parse mount options into rdma options structure
  * @params: options string passed from mount
@@ -275,10 +182,7 @@ static int parse_opts(char *params, struct p9_rdma_opts *opts)
 	opts->sq_depth = P9_RDMA_SQ_DEPTH;
 	opts->rq_depth = P9_RDMA_RQ_DEPTH;
 	opts->timeout = P9_RDMA_TIMEOUT;
-<<<<<<< HEAD
-=======
 	opts->privport = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!params)
 		return 0;
@@ -297,13 +201,6 @@ static int parse_opts(char *params, struct p9_rdma_opts *opts)
 		if (!*p)
 			continue;
 		token = match_token(p, tokens, args);
-<<<<<<< HEAD
-		r = match_int(&args[0], &option);
-		if (r < 0) {
-			p9_debug(P9_DEBUG_ERROR,
-				 "integer field, but no integer?\n");
-			continue;
-=======
 		if ((token != Opt_err) && (token != Opt_privport)) {
 			r = match_int(&args[0], &option);
 			if (r < 0) {
@@ -311,7 +208,6 @@ static int parse_opts(char *params, struct p9_rdma_opts *opts)
 					 "integer field, but no integer?\n");
 				continue;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		switch (token) {
 		case Opt_port:
@@ -326,12 +222,9 @@ static int parse_opts(char *params, struct p9_rdma_opts *opts)
 		case Opt_timeout:
 			opts->timeout = option;
 			break;
-<<<<<<< HEAD
-=======
 		case Opt_privport:
 			opts->privport = true;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			continue;
 		}
@@ -366,12 +259,7 @@ p9_cm_event_handler(struct rdma_cm_id *id, struct rdma_cm_event *event)
 	case RDMA_CM_EVENT_DISCONNECTED:
 		if (rdma)
 			rdma->state = P9_RDMA_CLOSED;
-<<<<<<< HEAD
-		if (c)
-			c->status = Disconnected;
-=======
 		c->status = Disconnected;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case RDMA_CM_EVENT_TIMEWAIT_EXIT:
@@ -399,18 +287,12 @@ p9_cm_event_handler(struct rdma_cm_id *id, struct rdma_cm_event *event)
 }
 
 static void
-<<<<<<< HEAD
-handle_recv(struct p9_client *client, struct p9_trans_rdma *rdma,
-	    struct p9_rdma_context *c, enum ib_wc_status status, u32 byte_len)
-{
-=======
 recv_done(struct ib_cq *cq, struct ib_wc *wc)
 {
 	struct p9_client *client = cq->cq_context;
 	struct p9_trans_rdma *rdma = client->trans;
 	struct p9_rdma_context *c =
 		container_of(wc->wr_cqe, struct p9_rdma_context, cqe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct p9_req_t *req;
 	int err = 0;
 	int16_t tag;
@@ -419,18 +301,11 @@ recv_done(struct ib_cq *cq, struct ib_wc *wc)
 	ib_dma_unmap_single(rdma->cm_id->device, c->busa, client->msize,
 							 DMA_FROM_DEVICE);
 
-<<<<<<< HEAD
-	if (status != IB_WC_SUCCESS)
-		goto err_out;
-
-	err = p9_parse_header(c->rc, NULL, NULL, &tag, 1);
-=======
 	if (wc->status != IB_WC_SUCCESS)
 		goto err_out;
 
 	c->rc.size = wc->byte_len;
 	err = p9_parse_header(&c->rc, NULL, NULL, &tag, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_out;
 
@@ -438,27 +313,6 @@ recv_done(struct ib_cq *cq, struct ib_wc *wc)
 	if (!req)
 		goto err_out;
 
-<<<<<<< HEAD
-	req->rc = c->rc;
-	req->status = REQ_STATUS_RCVD;
-	p9_client_cb(client, req);
-
-	return;
-
- err_out:
-	p9_debug(P9_DEBUG_ERROR, "req %p err %d status %d\n", req, err, status);
-	rdma->state = P9_RDMA_FLUSHING;
-	client->status = Disconnected;
-}
-
-static void
-handle_send(struct p9_client *client, struct p9_trans_rdma *rdma,
-	    struct p9_rdma_context *c, enum ib_wc_status status, u32 byte_len)
-{
-	ib_dma_unmap_single(rdma->cm_id->device,
-			    c->busa, c->req->tc->size,
-			    DMA_TO_DEVICE);
-=======
 	/* Check that we have not yet received a reply for this request.
 	 */
 	if (unlikely(req->rc.sdata)) {
@@ -497,7 +351,6 @@ send_done(struct ib_cq *cq, struct ib_wc *wc)
 	up(&rdma->sq_sem);
 	p9_req_put(client, c->req);
 	kfree(c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void qp_event_handler(struct ib_event *event, void *context)
@@ -506,56 +359,11 @@ static void qp_event_handler(struct ib_event *event, void *context)
 		 event->event, context);
 }
 
-<<<<<<< HEAD
-static void cq_comp_handler(struct ib_cq *cq, void *cq_context)
-{
-	struct p9_client *client = cq_context;
-	struct p9_trans_rdma *rdma = client->trans;
-	int ret;
-	struct ib_wc wc;
-
-	ib_req_notify_cq(rdma->cq, IB_CQ_NEXT_COMP);
-	while ((ret = ib_poll_cq(cq, 1, &wc)) > 0) {
-		struct p9_rdma_context *c = (void *) (unsigned long) wc.wr_id;
-
-		switch (c->wc_op) {
-		case IB_WC_RECV:
-			atomic_dec(&rdma->rq_count);
-			handle_recv(client, rdma, c, wc.status, wc.byte_len);
-			break;
-
-		case IB_WC_SEND:
-			handle_send(client, rdma, c, wc.status, wc.byte_len);
-			up(&rdma->sq_sem);
-			break;
-
-		default:
-			pr_err("unexpected completion type, c->wc_op=%d, wc.opcode=%d, status=%d\n",
-			       c->wc_op, wc.opcode, wc.status);
-			break;
-		}
-		kfree(c);
-	}
-}
-
-static void cq_event_handler(struct ib_event *e, void *v)
-{
-	p9_debug(P9_DEBUG_ERROR, "CQ event %d context %p\n", e->event, v);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rdma_destroy_trans(struct p9_trans_rdma *rdma)
 {
 	if (!rdma)
 		return;
 
-<<<<<<< HEAD
-	if (rdma->dma_mr && !IS_ERR(rdma->dma_mr))
-		ib_dereg_mr(rdma->dma_mr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdma->qp && !IS_ERR(rdma->qp))
 		ib_destroy_qp(rdma->qp);
 
@@ -563,11 +371,7 @@ static void rdma_destroy_trans(struct p9_trans_rdma *rdma)
 		ib_dealloc_pd(rdma->pd);
 
 	if (rdma->cq && !IS_ERR(rdma->cq))
-<<<<<<< HEAD
-		ib_destroy_cq(rdma->cq);
-=======
 		ib_free_cq(rdma->cq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rdma->cm_id && !IS_ERR(rdma->cm_id))
 		rdma_destroy_id(rdma->cm_id);
@@ -579,36 +383,16 @@ static int
 post_recv(struct p9_client *client, struct p9_rdma_context *c)
 {
 	struct p9_trans_rdma *rdma = client->trans;
-<<<<<<< HEAD
-	struct ib_recv_wr wr, *bad_wr;
-	struct ib_sge sge;
-
-	c->busa = ib_dma_map_single(rdma->cm_id->device,
-				    c->rc->sdata, client->msize,
-=======
 	struct ib_recv_wr wr;
 	struct ib_sge sge;
 	int ret;
 
 	c->busa = ib_dma_map_single(rdma->cm_id->device,
 				    c->rc.sdata, client->msize,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    DMA_FROM_DEVICE);
 	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa))
 		goto error;
 
-<<<<<<< HEAD
-	sge.addr = c->busa;
-	sge.length = client->msize;
-	sge.lkey = rdma->lkey;
-
-	wr.next = NULL;
-	c->wc_op = IB_WC_RECV;
-	wr.wr_id = (unsigned long) c;
-	wr.sg_list = &sge;
-	wr.num_sge = 1;
-	return ib_post_recv(rdma->qp, &wr, &bad_wr);
-=======
 	c->cqe.done = recv_done;
 
 	sge.addr = c->busa;
@@ -625,7 +409,6 @@ post_recv(struct p9_client *client, struct p9_rdma_context *c)
 		ib_dma_unmap_single(rdma->cm_id->device, c->busa,
 				    client->msize, DMA_FROM_DEVICE);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  error:
 	p9_debug(P9_DEBUG_ERROR, "EIO\n");
@@ -635,19 +418,13 @@ post_recv(struct p9_client *client, struct p9_rdma_context *c)
 static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 {
 	struct p9_trans_rdma *rdma = client->trans;
-<<<<<<< HEAD
-	struct ib_send_wr wr, *bad_wr;
-=======
 	struct ib_send_wr wr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_sge sge;
 	int err = 0;
 	unsigned long flags;
 	struct p9_rdma_context *c = NULL;
 	struct p9_rdma_context *rpl_context = NULL;
 
-<<<<<<< HEAD
-=======
 	/* When an error occurs between posting the recv and the send,
 	 * there will be a receive context posted without a pending request.
 	 * Since there is no way to "un-post" it, we remember it and skip
@@ -668,39 +445,13 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allocate an fcall for the reply */
 	rpl_context = kmalloc(sizeof *rpl_context, GFP_NOFS);
 	if (!rpl_context) {
 		err = -ENOMEM;
-<<<<<<< HEAD
-		goto err_close;
-	}
-
-	/*
-	 * If the request has a buffer, steal it, otherwise
-	 * allocate a new one.  Typically, requests should already
-	 * have receive buffers allocated and just swap them around
-	 */
-	if (!req->rc) {
-		req->rc = kmalloc(sizeof(struct p9_fcall)+client->msize,
-				  GFP_NOFS);
-		if (req->rc) {
-			req->rc->sdata = (char *) req->rc +
-						sizeof(struct p9_fcall);
-			req->rc->capacity = client->msize;
-		}
-	}
-	rpl_context->rc = req->rc;
-	if (!rpl_context->rc) {
-		err = -ENOMEM;
-		goto err_free2;
-	}
-=======
 		goto recv_error;
 	}
 	rpl_context->rc.sdata = req->rc.sdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Post a receive buffer for this request. We need to ensure
@@ -709,18 +460,6 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 	 * outstanding request, so we must keep a count to avoid
 	 * overflowing the RQ.
 	 */
-<<<<<<< HEAD
-	if (atomic_inc_return(&rdma->rq_count) <= rdma->rq_depth) {
-		err = post_recv(client, rpl_context);
-		if (err)
-			goto err_free1;
-	} else
-		atomic_dec(&rdma->rq_count);
-
-	/* remove posted receive buffer from request structure */
-	req->rc = NULL;
-
-=======
 	if (down_interruptible(&rdma->rq_sem)) {
 		err = -EINTR;
 		goto recv_error;
@@ -735,34 +474,15 @@ static int rdma_request(struct p9_client *client, struct p9_req_t *req)
 	req->rc.sdata = NULL;
 
 dont_need_post_recv:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Post the request */
 	c = kmalloc(sizeof *c, GFP_NOFS);
 	if (!c) {
 		err = -ENOMEM;
-<<<<<<< HEAD
-		goto err_free1;
-=======
 		goto send_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	c->req = req;
 
 	c->busa = ib_dma_map_single(rdma->cm_id->device,
-<<<<<<< HEAD
-				    c->req->tc->sdata, c->req->tc->size,
-				    DMA_TO_DEVICE);
-	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa))
-		goto error;
-
-	sge.addr = c->busa;
-	sge.length = c->req->tc->size;
-	sge.lkey = rdma->lkey;
-
-	wr.next = NULL;
-	c->wc_op = IB_WC_SEND;
-	wr.wr_id = (unsigned long) c;
-=======
 				    c->req->tc.sdata, c->req->tc.size,
 				    DMA_TO_DEVICE);
 	if (ib_dma_mapping_error(rdma->cm_id->device, c->busa)) {
@@ -778,32 +498,11 @@ dont_need_post_recv:
 
 	wr.next = NULL;
 	wr.wr_cqe = &c->cqe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wr.opcode = IB_WR_SEND;
 	wr.send_flags = IB_SEND_SIGNALED;
 	wr.sg_list = &sge;
 	wr.num_sge = 1;
 
-<<<<<<< HEAD
-	if (down_interruptible(&rdma->sq_sem))
-		goto error;
-
-	return ib_post_send(rdma->qp, &wr, &bad_wr);
-
- error:
-	kfree(c);
-	kfree(rpl_context->rc);
-	kfree(rpl_context);
-	p9_debug(P9_DEBUG_ERROR, "EIO\n");
-	return -EIO;
- err_free1:
-	kfree(rpl_context->rc);
- err_free2:
-	kfree(rpl_context);
- err_close:
-	spin_lock_irqsave(&rdma->req_lock, flags);
-	if (rdma->state < P9_RDMA_CLOSING) {
-=======
 	if (down_interruptible(&rdma->sq_sem)) {
 		err = -EINTR;
 		goto dma_unmap;
@@ -841,7 +540,6 @@ dma_unmap:
 	kfree(rpl_context);
 	spin_lock_irqsave(&rdma->req_lock, flags);
 	if (err != -EINTR && rdma->state < P9_RDMA_CLOSING) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdma->state = P9_RDMA_CLOSING;
 		spin_unlock_irqrestore(&rdma->req_lock, flags);
 		rdma_disconnect(rdma->cm_id);
@@ -878,37 +576,20 @@ static struct p9_trans_rdma *alloc_rdma(struct p9_rdma_opts *opts)
 	if (!rdma)
 		return NULL;
 
-<<<<<<< HEAD
-=======
 	rdma->port = opts->port;
 	rdma->privport = opts->privport;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdma->sq_depth = opts->sq_depth;
 	rdma->rq_depth = opts->rq_depth;
 	rdma->timeout = opts->timeout;
 	spin_lock_init(&rdma->req_lock);
 	init_completion(&rdma->cm_done);
 	sema_init(&rdma->sq_sem, rdma->sq_depth);
-<<<<<<< HEAD
-	atomic_set(&rdma->rq_count, 0);
-=======
 	sema_init(&rdma->rq_sem, rdma->rq_depth);
 	atomic_set(&rdma->excess_rc, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rdma;
 }
 
-<<<<<<< HEAD
-/* its not clear to me we can do anything after send has been posted */
-static int rdma_cancel(struct p9_client *client, struct p9_req_t *req)
-{
-	return 1;
-}
-
-/**
- * trans_create_rdma - Transport method for creating atransport instance
-=======
 static int rdma_cancel(struct p9_client *client, struct p9_req_t *req)
 {
 	/* Nothing to do here.
@@ -946,7 +627,6 @@ static int p9_rdma_bind_privport(struct p9_trans_rdma *rdma)
 
 /**
  * rdma_create_trans - Transport method for creating a transport instance
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @client: client instance
  * @addr: IP address string
  * @args: Mount options string
@@ -959,13 +639,9 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 	struct p9_trans_rdma *rdma;
 	struct rdma_conn_param conn_param;
 	struct ib_qp_init_attr qp_attr;
-<<<<<<< HEAD
-	struct ib_device_attr devattr;
-=======
 
 	if (addr == NULL)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Parse the transport specific mount options */
 	err = parse_opts(args, &opts);
@@ -978,21 +654,14 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 		return -ENOMEM;
 
 	/* Create the RDMA CM ID */
-<<<<<<< HEAD
-	rdma->cm_id = rdma_create_id(p9_cm_event_handler, client, RDMA_PS_TCP,
-				     IB_QPT_RC);
-=======
 	rdma->cm_id = rdma_create_id(&init_net, p9_cm_event_handler, client,
 				     RDMA_PS_TCP, IB_QPT_RC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rdma->cm_id))
 		goto error;
 
 	/* Associate the client with the transport */
 	client->trans = rdma;
 
-<<<<<<< HEAD
-=======
 	/* Bind to a privileged port if we need to */
 	if (opts.privport) {
 		err = p9_rdma_bind_privport(rdma);
@@ -1003,7 +672,6 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Resolve the server's address */
 	rdma->addr.sin_family = AF_INET;
 	rdma->addr.sin_addr.s_addr = in_aton(addr);
@@ -1025,37 +693,6 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 	if (err || (rdma->state != P9_RDMA_ROUTE_RESOLVED))
 		goto error;
 
-<<<<<<< HEAD
-	/* Query the device attributes */
-	err = ib_query_device(rdma->cm_id->device, &devattr);
-	if (err)
-		goto error;
-
-	/* Create the Completion Queue */
-	rdma->cq = ib_create_cq(rdma->cm_id->device, cq_comp_handler,
-				cq_event_handler, client,
-				opts.sq_depth + opts.rq_depth + 1, 0);
-	if (IS_ERR(rdma->cq))
-		goto error;
-	ib_req_notify_cq(rdma->cq, IB_CQ_NEXT_COMP);
-
-	/* Create the Protection Domain */
-	rdma->pd = ib_alloc_pd(rdma->cm_id->device);
-	if (IS_ERR(rdma->pd))
-		goto error;
-
-	/* Cache the DMA lkey in the transport */
-	rdma->dma_mr = NULL;
-	if (devattr.device_cap_flags & IB_DEVICE_LOCAL_DMA_LKEY)
-		rdma->lkey = rdma->cm_id->device->local_dma_lkey;
-	else {
-		rdma->dma_mr = ib_get_dma_mr(rdma->pd, IB_ACCESS_LOCAL_WRITE);
-		if (IS_ERR(rdma->dma_mr))
-			goto error;
-		rdma->lkey = rdma->dma_mr->lkey;
-	}
-
-=======
 	/* Create the Completion Queue */
 	rdma->cq = ib_alloc_cq_any(rdma->cm_id->device, client,
 				   opts.sq_depth + opts.rq_depth + 1,
@@ -1068,7 +705,6 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
 	if (IS_ERR(rdma->pd))
 		goto error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Create the Queue Pair */
 	memset(&qp_attr, 0, sizeof qp_attr);
 	qp_attr.event_handler = qp_event_handler;
@@ -1111,21 +747,15 @@ error:
 static struct p9_trans_module p9_rdma_trans = {
 	.name = "rdma",
 	.maxsize = P9_RDMA_MAXSIZE,
-<<<<<<< HEAD
-=======
 	.pooled_rbuffers = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.def = 0,
 	.owner = THIS_MODULE,
 	.create = rdma_create_trans,
 	.close = rdma_close,
 	.request = rdma_request,
 	.cancel = rdma_cancel,
-<<<<<<< HEAD
-=======
 	.cancelled = rdma_cancelled,
 	.show_options = p9_rdma_show_options,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1144,10 +774,7 @@ static void __exit p9_trans_rdma_exit(void)
 
 module_init(p9_trans_rdma_init);
 module_exit(p9_trans_rdma_exit);
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_9P("rdma");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Tom Tucker <tom@opengridcomputing.com>");
 MODULE_DESCRIPTION("RDMA Transport for 9P");

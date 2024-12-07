@@ -1,30 +1,17 @@
-<<<<<<< HEAD
-/* bnx2x_init.h: Broadcom Everest network driver.
- *               Structures and macroes needed during the initialization.
- *
- * Copyright (c) 2007-2012 Broadcom Corporation
-=======
 /* bnx2x_init.h: Qlogic Everest network driver.
  *               Structures and macroes needed during the initialization.
  *
  * Copyright (c) 2007-2013 Broadcom Corporation
  * Copyright (c) 2014 QLogic Corporation
  All rights reserved
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
-<<<<<<< HEAD
- * Maintained by: Eilon Greenstein <eilong@broadcom.com>
- * Written by: Eliezer Tamir
- * Modified by: Vladislav Zolotarov <vladz@broadcom.com>
-=======
  * Maintained by: Ariel Elior <ariel.elior@qlogic.com>
  * Written by: Eliezer Tamir
  * Modified by: Vladislav Zolotarov
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef BNX2X_INIT_H
@@ -140,11 +127,7 @@ enum {
 	MODE_MF                        = 0x00000100,
 	MODE_MF_SD                     = 0x00000200,
 	MODE_MF_SI                     = 0x00000400,
-<<<<<<< HEAD
-	MODE_MF_NIV                    = 0x00000800,
-=======
 	MODE_MF_AFEX                   = 0x00000800,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MODE_E3_A0                     = 0x00001000,
 	MODE_E3_B0                     = 0x00002000,
 	MODE_COS3                      = 0x00004000,
@@ -260,12 +243,8 @@ static inline void bnx2x_map_q_cos(struct bnx2x *bp, u32 q_num, u32 new_cos)
 			REG_WR(bp, reg_addr, reg_bit_map | q_bit_map);
 
 			/* set/clear queue bit in command-queue bit map
-<<<<<<< HEAD
-			(E2/E3A0 only, valid COS values are 0/1) */
-=======
 			 * (E2/E3A0 only, valid COS values are 0/1)
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(INIT_MODE_FLAGS(bp) & MODE_E3_B0)) {
 				reg_addr = BNX2X_Q_CMDQ_REG_ADDR(pf_q_num);
 				reg_bit_map = REG_RD(bp, reg_addr);
@@ -301,9 +280,6 @@ static inline void bnx2x_dcb_config_qm(struct bnx2x *bp, enum cos_mode mode,
 }
 
 
-<<<<<<< HEAD
-/* Returns the index of start or end of a specific block stage in ops array*/
-=======
 /* congestion management port init api description
  * the api works as follows:
  * the driver should pass the cmng_init_input struct, the port_init function
@@ -512,7 +488,6 @@ static inline void bnx2x_init_cmng(const struct cmng_init_input *input_data,
 
 
 /* Returns the index of start or end of a specific block stage in ops array */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BLOCK_OPS_IDX(block, stage, end) \
 			(2*(((block)*NUM_OF_INIT_PHASES) + (stage)) + (end))
 
@@ -592,11 +567,7 @@ static const struct {
 		u32 e2;		/* 57712 */
 		u32 e3;		/* 578xx */
 	} reg_mask;		/* Register mask (all valid bits) */
-<<<<<<< HEAD
-	char name[7];		/* Block's longest name is 6 characters long
-=======
 	char name[8];		/* Block's longest name is 7 characters long
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 * (name + suffix)
 				 */
 } bnx2x_blocks_parity_data[] = {
@@ -670,12 +641,6 @@ static const struct {
  * [30] MCP Latched ump_tx_parity
  * [31] MCP Latched scpad_parity
  */
-<<<<<<< HEAD
-#define MISC_AEU_ENABLE_MCP_PRTY_BITS	\
-	(AEU_INPUTS_ATTN_BITS_MCP_LATCHED_ROM_PARITY | \
-	 AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_RX_PARITY | \
-	 AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_TX_PARITY | \
-=======
 #define MISC_AEU_ENABLE_MCP_PRTY_SUB_BITS	\
 	(AEU_INPUTS_ATTN_BITS_MCP_LATCHED_ROM_PARITY | \
 	 AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_RX_PARITY | \
@@ -683,22 +648,12 @@ static const struct {
 
 #define MISC_AEU_ENABLE_MCP_PRTY_BITS	\
 	(MISC_AEU_ENABLE_MCP_PRTY_SUB_BITS | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY)
 
 /* Below registers control the MCP parity attention output. When
  * MISC_AEU_ENABLE_MCP_PRTY_BITS are set - attentions are
  * enabled, when cleared - disabled.
  */
-<<<<<<< HEAD
-static const u32 mcp_attn_ctl_regs[] = {
-	MISC_REG_AEU_ENABLE4_FUNC_0_OUT_0,
-	MISC_REG_AEU_ENABLE4_NIG_0,
-	MISC_REG_AEU_ENABLE4_PXP_0,
-	MISC_REG_AEU_ENABLE4_FUNC_1_OUT_0,
-	MISC_REG_AEU_ENABLE4_NIG_1,
-	MISC_REG_AEU_ENABLE4_PXP_1
-=======
 static const struct {
 	u32 addr;
 	u32 bits;
@@ -715,7 +670,6 @@ static const struct {
 		MISC_AEU_ENABLE_MCP_PRTY_SUB_BITS },
 	{ MISC_REG_AEU_ENABLE4_PXP_1,
 		MISC_AEU_ENABLE_MCP_PRTY_SUB_BITS }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void bnx2x_set_mcp_parity(struct bnx2x *bp, u8 enable)
@@ -724,16 +678,6 @@ static inline void bnx2x_set_mcp_parity(struct bnx2x *bp, u8 enable)
 	u32 reg_val;
 
 	for (i = 0; i < ARRAY_SIZE(mcp_attn_ctl_regs); i++) {
-<<<<<<< HEAD
-		reg_val = REG_RD(bp, mcp_attn_ctl_regs[i]);
-
-		if (enable)
-			reg_val |= MISC_AEU_ENABLE_MCP_PRTY_BITS;
-		else
-			reg_val &= ~MISC_AEU_ENABLE_MCP_PRTY_BITS;
-
-		REG_WR(bp, mcp_attn_ctl_regs[i], reg_val);
-=======
 		reg_val = REG_RD(bp, mcp_attn_ctl_regs[i].addr);
 
 		if (enable)
@@ -742,7 +686,6 @@ static inline void bnx2x_set_mcp_parity(struct bnx2x *bp, u8 enable)
 			reg_val &= ~mcp_attn_ctl_regs[i].bits;
 
 		REG_WR(bp, mcp_attn_ctl_regs[i].addr, reg_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -778,13 +721,7 @@ static inline void bnx2x_disable_blocks_parity(struct bnx2x *bp)
 	bnx2x_set_mcp_parity(bp, false);
 }
 
-<<<<<<< HEAD
-/**
- * Clear the parity error status registers.
- */
-=======
 /* Clear the parity error status registers. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void bnx2x_clear_blocks_parity(struct bnx2x *bp)
 {
 	int i;

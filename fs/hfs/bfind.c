@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfs/bfind.c
  *
@@ -26,10 +23,6 @@ int hfs_find_init(struct hfs_btree *tree, struct hfs_find_data *fd)
 		return -ENOMEM;
 	fd->search_key = ptr;
 	fd->key = ptr + tree->max_key_len + 2;
-<<<<<<< HEAD
-	dprint(DBG_BNODE_REFS, "find_init: %d (%p)\n", tree->cnid, __builtin_return_address(0));
-	mutex_lock(&tree->tree_lock);
-=======
 	hfs_dbg(BNODE_REFS, "find_init: %d (%p)\n",
 		tree->cnid, __builtin_return_address(0));
 	switch (tree->cnid) {
@@ -45,7 +38,6 @@ int hfs_find_init(struct hfs_btree *tree, struct hfs_find_data *fd)
 	default:
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -53,12 +45,8 @@ void hfs_find_exit(struct hfs_find_data *fd)
 {
 	hfs_bnode_put(fd->bnode);
 	kfree(fd->search_key);
-<<<<<<< HEAD
-	dprint(DBG_BNODE_REFS, "find_exit: %d (%p)\n", fd->tree->cnid, __builtin_return_address(0));
-=======
 	hfs_dbg(BNODE_REFS, "find_exit: %d (%p)\n",
 		fd->tree->cnid, __builtin_return_address(0));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&fd->tree->tree_lock);
 	fd->tree = NULL;
 }
@@ -162,13 +150,8 @@ int hfs_brec_find(struct hfs_find_data *fd)
 	return res;
 
 invalid:
-<<<<<<< HEAD
-	printk(KERN_ERR "hfs: inconsistency in B*Tree (%d,%d,%d,%u,%u)\n",
-		height, bnode->height, bnode->type, nidx, parent);
-=======
 	pr_err("inconsistency in B*Tree (%d,%d,%d,%u,%u)\n",
 	       height, bnode->height, bnode->type, nidx, parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = -EIO;
 release:
 	hfs_bnode_put(bnode);

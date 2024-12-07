@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-menu "Kernel hacking"
-
-source "lib/Kconfig.debug"
-
-config PPC_DISABLE_WERROR
-	bool "Don't build arch/powerpc code with -Werror"
-	default n
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 config PPC_DISABLE_WERROR
 	bool "Don't build arch/powerpc code with -Werror"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option tells the compiler NOT to build the code under
 	  arch/powerpc with the -Werror flag (which means warnings
@@ -35,16 +25,6 @@ config PRINT_STACK_DEPTH
 	  too small and stack traces cause important information to
 	  scroll off the screen.
 
-<<<<<<< HEAD
-config DEBUG_STACKOVERFLOW
-	bool "Check for stack overflows"
-	depends on DEBUG_KERNEL
-	help
-	  This option will cause messages to be printed if free stack space
-	  drops below a certain limit.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config HCALL_STATS
 	bool "Hypervisor call instrumentation"
 	depends on PPC_PSERIES && DEBUG_FS && TRACEPOINTS
@@ -73,21 +53,6 @@ config PPC_EMULATED_STATS
 	  emulated.
 
 config CODE_PATCHING_SELFTEST
-<<<<<<< HEAD
-	bool "Run self-tests of the code-patching code."
-	depends on DEBUG_KERNEL
-	default n
-
-config FTR_FIXUP_SELFTEST
-	bool "Run self-tests of the feature-fixup code."
-	depends on DEBUG_KERNEL
-	default n
-
-config MSI_BITMAP_SELFTEST
-	bool "Run self-tests of the MSI bitmap code."
-	depends on DEBUG_KERNEL
-	default n
-=======
 	bool "Run self-tests of the code-patching code"
 	depends on DEBUG_KERNEL
 
@@ -136,15 +101,11 @@ config PPC_IRQ_SOFT_MASK_DEBUG
 config PPC_RFI_SRR_DEBUG
 	bool "Include extra checks for RFI SRR register validity"
 	depends on PPC_BOOK3S_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config XMON
 	bool "Include xmon kernel debugger"
 	depends on DEBUG_KERNEL
-<<<<<<< HEAD
-=======
 	select CONSOLE_POLL if SERIAL_CPM_CONSOLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Include in-kernel hooks for the xmon kernel monitor/debugger.
 	  Unless you are intending to debug the kernel, say N here.
@@ -174,8 +135,6 @@ config XMON_DISASSEMBLY
 	  to say Y here, unless you're building for a memory-constrained
 	  system.
 
-<<<<<<< HEAD
-=======
 config XMON_DEFAULT_RO_MODE
 	bool "Restrict xmon to read-only operations by default"
 	depends on XMON
@@ -184,7 +143,6 @@ config XMON_DEFAULT_RO_MODE
 	  Operate xmon in read-only mode. The cmdline options 'xmon=rw' and
 	  'xmon=ro' override this default.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config DEBUGGER
 	bool
 	depends on KGDB || XMON
@@ -200,13 +158,9 @@ config BDI_SWITCH
 
 config BOOTX_TEXT
 	bool "Support for early boot text console (BootX or OpenFirmware only)"
-<<<<<<< HEAD
-	depends on PPC_OF && PPC_BOOK3S
-=======
 	depends on PPC_BOOK3S
 	select FONT_SUN8x16
 	select FONT_SUPPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to see progress messages from the boot firmware in text
 	  mode. Requires either BootX or Open Firmware.
@@ -229,11 +183,6 @@ choice
 	  enable debugging for the wrong type of machine your kernel
 	  _will not boot_.
 
-<<<<<<< HEAD
-config PPC_EARLY_DEBUG_LPAR
-	bool "LPAR HV Console"
-	depends on PPC_PSERIES
-=======
 config PPC_EARLY_DEBUG_BOOTX
 	bool "BootX or OpenFirmware"
 	depends on BOOTX_TEXT
@@ -244,18 +193,13 @@ config PPC_EARLY_DEBUG_BOOTX
 config PPC_EARLY_DEBUG_LPAR
 	bool "LPAR HV Console"
 	depends on PPC_PSERIES && HVC_CONSOLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this to enable early debugging for a machine with a HVC
 	  console on vterm 0.
 
 config PPC_EARLY_DEBUG_LPAR_HVSI
 	bool "LPAR HVSI Console"
-<<<<<<< HEAD
-	depends on PPC_PSERIES
-=======
 	depends on PPC_PSERIES && HVC_CONSOLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this to enable early debugging for a machine with a HVSI
 	  console on a specified vterm.
@@ -292,24 +236,6 @@ config PPC_EARLY_DEBUG_PAS_REALMODE
 	  Select this to enable early debugging for PA Semi.
 	  Output will be on UART0.
 
-<<<<<<< HEAD
-config PPC_EARLY_DEBUG_BEAT
-	bool "Beat HV Console"
-	depends on PPC_CELLEB
-	select PPC_UDBG_BEAT
-	help
-	  Select this to enable early debugging for Celleb with Beat.
-
-config PPC_EARLY_DEBUG_44x
-	bool "Early serial debugging for IBM/AMCC 44x CPUs"
-	# PPC_EARLY_DEBUG on 440 leaves AS=1 mappings above the TLB high water
-	# mark, which doesn't work with current 440 KVM.
-	depends on 44x && !KVM
-	help
-	  Select this to enable early debugging for IBM 44x chips via the
-	  inbuilt serial port.  If you enable this, ensure you set
-          PPC_EARLY_DEBUG_44x_PHYSLOW below to suit your target board.
-=======
 config PPC_EARLY_DEBUG_44x
 	bool "Early serial debugging for IBM/AMCC 44x CPUs"
 	depends on 44x
@@ -317,7 +243,6 @@ config PPC_EARLY_DEBUG_44x
 	  Select this to enable early debugging for IBM 44x chips via the
 	  inbuilt serial port.  If you enable this, ensure you set
 	  PPC_EARLY_DEBUG_44x_PHYSLOW below to suit your target board.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PPC_EARLY_DEBUG_40x
 	bool "Early serial debugging for IBM/AMCC 40x CPUs"
@@ -325,20 +250,11 @@ config PPC_EARLY_DEBUG_40x
 	help
 	  Select this to enable early debugging for IBM 40x chips via the
 	  inbuilt serial port. This works on chips with a 16550 compatible
-<<<<<<< HEAD
-	  UART. Xilinx chips with uartlite cannot use this option.
-
-config PPC_EARLY_DEBUG_CPM
-	bool "Early serial debugging for Freescale CPM-based serial ports"
-	depends on SERIAL_CPM
-	select PIN_TLB if PPC_8xx
-=======
 	  UART.
 
 config PPC_EARLY_DEBUG_CPM
 	bool "Early serial debugging for Freescale CPM-based serial ports"
 	depends on SERIAL_CPM=y
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this to enable early debugging for Freescale chips
 	  using a CPM-based serial port.  This assumes that the bootwrapper
@@ -352,21 +268,9 @@ config PPC_EARLY_DEBUG_USBGECKO
 	  Select this to enable early debugging for Nintendo GameCube/Wii
 	  consoles via an external USB Gecko adapter.
 
-<<<<<<< HEAD
-config PPC_EARLY_DEBUG_WSP
-	bool "Early debugging via WSP's internal UART"
-	depends on PPC_WSP
-	select PPC_UDBG_16550
-
 config PPC_EARLY_DEBUG_PS3GELIC
 	bool "Early debugging through the PS3 Ethernet port"
 	depends on PPC_PS3
-	select PS3GELIC_UDBG
-=======
-config PPC_EARLY_DEBUG_PS3GELIC
-	bool "Early debugging through the PS3 Ethernet port"
-	depends on PPC_PS3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select this to enable early debugging for the PlayStation3 via
 	  UDP broadcasts sent out through the Ethernet port.
@@ -385,10 +289,6 @@ config PPC_EARLY_DEBUG_OPAL_HVSI
 	  Select this to enable early debugging for the PowerNV platform
 	  using an "hvsi" console
 
-<<<<<<< HEAD
-endchoice
-
-=======
 config PPC_EARLY_DEBUG_MEMCONS
 	bool "In memory console"
 	help
@@ -420,15 +320,10 @@ config PPC_MEMCONS_INPUT_SIZE
 	  Selects the size of the input buffer (in bytes) of the in memory
 	  console.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config PPC_EARLY_DEBUG_OPAL
 	def_bool y
 	depends on PPC_EARLY_DEBUG_OPAL_RAW || PPC_EARLY_DEBUG_OPAL_HVSI
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config PPC_EARLY_DEBUG_HVSI_VTERMNO
 	hex "vterm number to use with early debug HVSI"
 	depends on PPC_EARLY_DEBUG_LPAR_HVSI
@@ -445,10 +340,6 @@ config PPC_EARLY_DEBUG_OPAL_VTERMNO
 	  This correspond to which /dev/hvcN you want to use for early
 	  debug.
 
-<<<<<<< HEAD
-	  On OPAL v1 (takeover) this should always be 0
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  On OPAL v2, this will be 0 for network console and 1 or 2 for
 	  the machine built-in serial ports.
 
@@ -458,11 +349,7 @@ config PPC_EARLY_DEBUG_44x_PHYSLOW
 	default "0x40000200"
 	help
 	  You probably want 0x40000200 for ebony boards and
-<<<<<<< HEAD
-          0x40000300 for taishan
-=======
 	  0x40000300 for taishan
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PPC_EARLY_DEBUG_44x_PHYSHIGH
 	hex "EPRN of early debug UART physical address"
@@ -486,21 +373,6 @@ config PPC_EARLY_DEBUG_CPM_ADDR
 	  platform probing is done, all platforms selected must
 	  share the same address.
 
-<<<<<<< HEAD
-config STRICT_DEVMEM
-	def_bool y
-	prompt "Filter access to /dev/mem"
-	help
-	  This option restricts access to /dev/mem.  If this option is
-	  disabled, you allow userspace access to all memory, including
-	  kernel and userspace memory. Accidental memory access is likely
-	  to be disastrous.
-	  Memory access is required for experts who want to debug the kernel.
-
-	  If you are unsure, say Y.
-
-endmenu
-=======
 config PPC_EARLY_DEBUG_16550_PHYSADDR
 	hex "Early debug Serial 16550 physical address"
 	depends on PPC_EARLY_DEBUG_16550
@@ -532,4 +404,3 @@ config KASAN_SHADOW_OFFSET
 	default 0xe0000000 if PPC32
 	default 0xa80e000000000000 if PPC_BOOK3S_64
 	default 0xa8001c0000000000 if PPC_BOOK3E_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cn_proc.c - process events connector
  *
@@ -9,29 +6,8 @@
  * Based on cn_fork.c by Guillaume Thouvenin <guillaume.thouvenin@bull.net>
  * Original copyright notice follows:
  * Copyright (C) 2005 BULL SA.
-<<<<<<< HEAD
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include <linux/module.h>
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/ktime.h>
 #include <linux/init.h>
@@ -39,15 +15,10 @@
 #include <linux/gfp.h>
 #include <linux/ptrace.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-
-#include <linux/cn_proc.h>
-=======
 #include <linux/pid_namespace.h>
 
 #include <linux/cn_proc.h>
 #include <linux/local_lock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Size of a cn_msg followed by a proc_event structure.  Since the
@@ -68,17 +39,6 @@ static inline struct cn_msg *buffer_to_cn_msg(__u8 *buffer)
 static atomic_t proc_event_num_listeners = ATOMIC_INIT(0);
 static struct cb_id cn_proc_event_id = { CN_IDX_PROC, CN_VAL_PROC };
 
-<<<<<<< HEAD
-/* proc_event_counts is used as the sequence number of the netlink message */
-static DEFINE_PER_CPU(__u32, proc_event_counts) = { 0 };
-
-static inline void get_seq(__u32 *ts, int *cpu)
-{
-	preempt_disable();
-	*ts = __this_cpu_inc_return(proc_event_counts) -1;
-	*cpu = smp_processor_id();
-	preempt_enable();
-=======
 /* local_event.count is used as the sequence number of the netlink message */
 struct local_event {
 	local_lock_t lock;
@@ -152,7 +112,6 @@ static inline void send_msg(struct cn_msg *msg)
 			     cn_filter, (void *)filter_data);
 
 	local_unlock(&local_event.lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void proc_fork_connector(struct task_struct *task)
@@ -160,27 +119,15 @@ void proc_fork_connector(struct task_struct *task)
 	struct cn_msg *msg;
 	struct proc_event *ev;
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct task_struct *parent;
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
 		return;
 
 	msg = buffer_to_cn_msg(buffer);
-<<<<<<< HEAD
-	ev = (struct proc_event*)msg->data;
-	memset(&ev->event_data, 0, sizeof(ev->event_data));
-	get_seq(&msg->seq, &ev->cpu);
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 	ev = (struct proc_event *)msg->data;
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->what = PROC_EVENT_FORK;
 	rcu_read_lock();
 	parent = rcu_dereference(task->real_parent);
@@ -194,39 +141,22 @@ void proc_fork_connector(struct task_struct *task)
 	msg->ack = 0; /* not used */
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	/*  If cn_netlink_send() failed, the data is not sent */
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void proc_exec_connector(struct task_struct *task)
 {
 	struct cn_msg *msg;
 	struct proc_event *ev;
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
 		return;
 
 	msg = buffer_to_cn_msg(buffer);
-<<<<<<< HEAD
-	ev = (struct proc_event*)msg->data;
-	memset(&ev->event_data, 0, sizeof(ev->event_data));
-	get_seq(&msg->seq, &ev->cpu);
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 	ev = (struct proc_event *)msg->data;
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->what = PROC_EVENT_EXEC;
 	ev->event_data.exec.process_pid = task->pid;
 	ev->event_data.exec.process_tgid = task->tgid;
@@ -235,11 +165,7 @@ void proc_exec_connector(struct task_struct *task)
 	msg->ack = 0; /* not used */
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void proc_id_connector(struct task_struct *task, int which_id)
@@ -247,21 +173,13 @@ void proc_id_connector(struct task_struct *task, int which_id)
 	struct cn_msg *msg;
 	struct proc_event *ev;
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct cred *cred;
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
 		return;
 
 	msg = buffer_to_cn_msg(buffer);
-<<<<<<< HEAD
-	ev = (struct proc_event*)msg->data;
-=======
 	ev = (struct proc_event *)msg->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
 	ev->what = which_id;
 	ev->event_data.id.process_pid = task->pid;
@@ -269,21 +187,6 @@ void proc_id_connector(struct task_struct *task, int which_id)
 	rcu_read_lock();
 	cred = __task_cred(task);
 	if (which_id == PROC_EVENT_UID) {
-<<<<<<< HEAD
-		ev->event_data.id.r.ruid = cred->uid;
-		ev->event_data.id.e.euid = cred->euid;
-	} else if (which_id == PROC_EVENT_GID) {
-		ev->event_data.id.r.rgid = cred->gid;
-		ev->event_data.id.e.egid = cred->egid;
-	} else {
-		rcu_read_unlock();
-	     	return;
-	}
-	rcu_read_unlock();
-	get_seq(&msg->seq, &ev->cpu);
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 		ev->event_data.id.r.ruid = from_kuid_munged(&init_user_ns, cred->uid);
 		ev->event_data.id.e.euid = from_kuid_munged(&init_user_ns, cred->euid);
 	} else if (which_id == PROC_EVENT_GID) {
@@ -295,27 +198,18 @@ void proc_id_connector(struct task_struct *task, int which_id)
 	}
 	rcu_read_unlock();
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
 	msg->ack = 0; /* not used */
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void proc_sid_connector(struct task_struct *task)
 {
 	struct cn_msg *msg;
 	struct proc_event *ev;
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
@@ -324,13 +218,7 @@ void proc_sid_connector(struct task_struct *task)
 	msg = buffer_to_cn_msg(buffer);
 	ev = (struct proc_event *)msg->data;
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
-<<<<<<< HEAD
-	get_seq(&msg->seq, &ev->cpu);
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->what = PROC_EVENT_SID;
 	ev->event_data.sid.process_pid = task->pid;
 	ev->event_data.sid.process_tgid = task->tgid;
@@ -339,21 +227,13 @@ void proc_sid_connector(struct task_struct *task)
 	msg->ack = 0; /* not used */
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void proc_ptrace_connector(struct task_struct *task, int ptrace_id)
 {
 	struct cn_msg *msg;
 	struct proc_event *ev;
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
@@ -362,13 +242,7 @@ void proc_ptrace_connector(struct task_struct *task, int ptrace_id)
 	msg = buffer_to_cn_msg(buffer);
 	ev = (struct proc_event *)msg->data;
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
-<<<<<<< HEAD
-	get_seq(&msg->seq, &ev->cpu);
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->what = PROC_EVENT_PTRACE;
 	ev->event_data.ptrace.process_pid  = task->pid;
 	ev->event_data.ptrace.process_tgid = task->tgid;
@@ -385,21 +259,13 @@ void proc_ptrace_connector(struct task_struct *task, int ptrace_id)
 	msg->ack = 0; /* not used */
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void proc_comm_connector(struct task_struct *task)
 {
 	struct cn_msg *msg;
 	struct proc_event *ev;
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
@@ -408,13 +274,7 @@ void proc_comm_connector(struct task_struct *task)
 	msg = buffer_to_cn_msg(buffer);
 	ev = (struct proc_event *)msg->data;
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
-<<<<<<< HEAD
-	get_seq(&msg->seq, &ev->cpu);
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->what = PROC_EVENT_COMM;
 	ev->event_data.comm.process_pid  = task->pid;
 	ev->event_data.comm.process_tgid = task->tgid;
@@ -424,9 +284,6 @@ void proc_comm_connector(struct task_struct *task)
 	msg->ack = 0; /* not used */
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
 }
 
@@ -461,44 +318,28 @@ void proc_coredump_connector(struct task_struct *task)
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void proc_exit_connector(struct task_struct *task)
 {
 	struct cn_msg *msg;
 	struct proc_event *ev;
-<<<<<<< HEAD
-	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
-	struct timespec ts;
-=======
 	struct task_struct *parent;
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
 		return;
 
 	msg = buffer_to_cn_msg(buffer);
-<<<<<<< HEAD
-	ev = (struct proc_event*)msg->data;
-	memset(&ev->event_data, 0, sizeof(ev->event_data));
-	get_seq(&msg->seq, &ev->cpu);
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 	ev = (struct proc_event *)msg->data;
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->what = PROC_EVENT_EXIT;
 	ev->event_data.exit.process_pid = task->pid;
 	ev->event_data.exit.process_tgid = task->tgid;
 	ev->event_data.exit.exit_code = task->exit_code;
 	ev->event_data.exit.exit_signal = task->exit_signal;
 
-<<<<<<< HEAD
-=======
 	rcu_read_lock();
 	if (pid_alive(task)) {
 		parent = rcu_dereference(task->real_parent);
@@ -507,16 +348,11 @@ void proc_exit_connector(struct task_struct *task)
 	}
 	rcu_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&msg->id, &cn_proc_event_id, sizeof(msg->id));
 	msg->ack = 0; /* not used */
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -532,27 +368,15 @@ static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
 	struct cn_msg *msg;
 	struct proc_event *ev;
 	__u8 buffer[CN_PROC_MSG_SIZE] __aligned(8);
-<<<<<<< HEAD
-	struct timespec ts;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&proc_event_num_listeners) < 1)
 		return;
 
 	msg = buffer_to_cn_msg(buffer);
-<<<<<<< HEAD
-	ev = (struct proc_event*)msg->data;
-	memset(&ev->event_data, 0, sizeof(ev->event_data));
-	msg->seq = rcvd_seq;
-	ktime_get_ts(&ts); /* get high res monotonic timestamp */
-	ev->timestamp_ns = timespec_to_ns(&ts);
-=======
 	ev = (struct proc_event *)msg->data;
 	memset(&ev->event_data, 0, sizeof(ev->event_data));
 	msg->seq = rcvd_seq;
 	ev->timestamp_ns = ktime_get_ns();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ev->cpu = -1;
 	ev->what = PROC_EVENT_NONE;
 	ev->event_data.ack.err = err;
@@ -560,46 +384,17 @@ static void cn_proc_ack(int err, int rcvd_seq, int rcvd_ack)
 	msg->ack = rcvd_ack + 1;
 	msg->len = sizeof(*ev);
 	msg->flags = 0; /* not used */
-<<<<<<< HEAD
-	cn_netlink_send(msg, CN_IDX_PROC, GFP_KERNEL);
-=======
 	send_msg(msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cn_proc_mcast_ctl
-<<<<<<< HEAD
- * @data: message sent from userspace via the connector
-=======
  * @msg: message sent from userspace via the connector
  * @nsp: NETLINK_CB of the client's socket buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void cn_proc_mcast_ctl(struct cn_msg *msg,
 			      struct netlink_skb_parms *nsp)
 {
-<<<<<<< HEAD
-	enum proc_cn_mcast_op *mc_op = NULL;
-	int err = 0;
-
-	if (msg->len != sizeof(*mc_op))
-		return;
-
-	/* Can only change if privileged. */
-	if (!capable(CAP_NET_ADMIN)) {
-		err = EPERM;
-		goto out;
-	}
-
-	mc_op = (enum proc_cn_mcast_op*)msg->data;
-	switch (*mc_op) {
-	case PROC_CN_MCAST_LISTEN:
-		atomic_inc(&proc_event_num_listeners);
-		break;
-	case PROC_CN_MCAST_IGNORE:
-		atomic_dec(&proc_event_num_listeners);
-=======
 	enum proc_cn_mcast_op mc_op = 0, prev_mc_op = 0;
 	struct proc_input *pinput = NULL;
 	enum proc_cn_event ev_type = 0;
@@ -660,7 +455,6 @@ static void cn_proc_mcast_ctl(struct cn_msg *msg,
 			atomic_dec(&proc_event_num_listeners);
 		((struct proc_input *)(sk->sk_user_data))->event_type =
 			PROC_EVENT_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		err = EINVAL;
@@ -678,26 +472,13 @@ out:
  */
 static int __init cn_proc_init(void)
 {
-<<<<<<< HEAD
-	int err;
-
-	if ((err = cn_add_callback(&cn_proc_event_id, "cn_proc",
-	 			   &cn_proc_mcast_ctl))) {
-		printk(KERN_WARNING "cn_proc failed to register\n");
-=======
 	int err = cn_add_callback(&cn_proc_event_id,
 				  "cn_proc",
 				  &cn_proc_mcast_ctl);
 	if (err) {
 		pr_warn("cn_proc failed to register\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	return 0;
 }
-<<<<<<< HEAD
-
-module_init(cn_proc_init);
-=======
 device_initcall(cn_proc_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

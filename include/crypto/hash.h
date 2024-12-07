@@ -1,38 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hash: Hash algorithms under the crypto API
  * 
  * Copyright (c) 2008 Herbert Xu <herbert@gondor.apana.org.au>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option) 
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CRYPTO_HASH_H
 #define _CRYPTO_HASH_H
 
-<<<<<<< HEAD
-#include <linux/crypto.h>
-
-struct crypto_ahash;
-
-struct hash_alg_common {
-	unsigned int digestsize;
-	unsigned int statesize;
-
-	struct crypto_alg base;
-};
-
-=======
 #include <linux/atomic.h>
 #include <linux/crypto.h>
 #include <linux/string.h>
@@ -94,7 +69,6 @@ struct crypto_istat_hash {
 }
 struct hash_alg_common HASH_ALG_COMMON;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ahash_request {
 	struct crypto_async_request base;
 
@@ -108,8 +82,6 @@ struct ahash_request {
 	void *__ctx[] CRYPTO_MINALIGN_ATTR;
 };
 
-<<<<<<< HEAD
-=======
 /**
  * struct ahash_alg - asynchronous message digest definition
  * @init: **[mandatory]** Initialize the transformation context. Intended only to initialize the
@@ -183,7 +155,6 @@ struct ahash_request {
  * @clone_tfm: Copy transform into new object, may allocate memory.
  * @halg: see struct hash_alg_common
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ahash_alg {
 	int (*init)(struct ahash_request *req);
 	int (*update)(struct ahash_request *req);
@@ -194,25 +165,15 @@ struct ahash_alg {
 	int (*import)(struct ahash_request *req, const void *in);
 	int (*setkey)(struct crypto_ahash *tfm, const u8 *key,
 		      unsigned int keylen);
-<<<<<<< HEAD
-=======
 	int (*init_tfm)(struct crypto_ahash *tfm);
 	void (*exit_tfm)(struct crypto_ahash *tfm);
 	int (*clone_tfm)(struct crypto_ahash *dst, struct crypto_ahash *src);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct hash_alg_common halg;
 };
 
 struct shash_desc {
 	struct crypto_shash *tfm;
-<<<<<<< HEAD
-	u32 flags;
-
-	void *__ctx[] CRYPTO_MINALIGN_ATTR;
-};
-
-=======
 	void *__ctx[] __aligned(ARCH_SLAB_MINALIGN);
 };
 
@@ -257,7 +218,6 @@ struct shash_desc {
  * @halg: see struct hash_alg_common
  * @HASH_ALG_COMMON: see struct hash_alg_common
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct shash_alg {
 	int (*init)(struct shash_desc *desc);
 	int (*update)(struct shash_desc *desc, const u8 *data,
@@ -271,30 +231,6 @@ struct shash_alg {
 	int (*import)(struct shash_desc *desc, const void *in);
 	int (*setkey)(struct crypto_shash *tfm, const u8 *key,
 		      unsigned int keylen);
-<<<<<<< HEAD
-
-	unsigned int descsize;
-
-	/* These fields must match hash_alg_common. */
-	unsigned int digestsize
-		__attribute__ ((aligned(__alignof__(struct hash_alg_common))));
-	unsigned int statesize;
-
-	struct crypto_alg base;
-};
-
-struct crypto_ahash {
-	int (*init)(struct ahash_request *req);
-	int (*update)(struct ahash_request *req);
-	int (*final)(struct ahash_request *req);
-	int (*finup)(struct ahash_request *req);
-	int (*digest)(struct ahash_request *req);
-	int (*export)(struct ahash_request *req, void *out);
-	int (*import)(struct ahash_request *req, const void *in);
-	int (*setkey)(struct crypto_ahash *tfm, const u8 *key,
-		      unsigned int keylen);
-
-=======
 	int (*init_tfm)(struct crypto_shash *tfm);
 	void (*exit_tfm)(struct crypto_shash *tfm);
 	int (*clone_tfm)(struct crypto_shash *dst, struct crypto_shash *src);
@@ -312,7 +248,6 @@ struct crypto_ahash {
 struct crypto_ahash {
 	bool using_shash; /* Underlying algorithm is shash, not ahash */
 	unsigned int statesize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int reqsize;
 	struct crypto_tfm base;
 };
@@ -322,8 +257,6 @@ struct crypto_shash {
 	struct crypto_tfm base;
 };
 
-<<<<<<< HEAD
-=======
 /**
  * DOC: Asynchronous Message Digest API
  *
@@ -334,17 +267,11 @@ struct crypto_shash {
  * CRYPTO_ALG_TYPE_SKCIPHER API applies here as well.
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct crypto_ahash *__crypto_ahash_cast(struct crypto_tfm *tfm)
 {
 	return container_of(tfm, struct crypto_ahash, base);
 }
 
-<<<<<<< HEAD
-struct crypto_ahash *crypto_alloc_ahash(const char *alg_name, u32 type,
-					u32 mask);
-
-=======
 /**
  * crypto_alloc_ahash() - allocate ahash cipher handle
  * @alg_name: is the cra_name / name or cra_driver_name / driver name of the
@@ -364,32 +291,22 @@ struct crypto_ahash *crypto_alloc_ahash(const char *alg_name, u32 type,
 
 struct crypto_ahash *crypto_clone_ahash(struct crypto_ahash *tfm);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct crypto_tfm *crypto_ahash_tfm(struct crypto_ahash *tfm)
 {
 	return &tfm->base;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * crypto_free_ahash() - zeroize and free the ahash handle
  * @tfm: cipher handle to be freed
  *
  * If @tfm is a NULL or error pointer, this function does nothing.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void crypto_free_ahash(struct crypto_ahash *tfm)
 {
 	crypto_destroy_tfm(tfm, crypto_ahash_tfm(tfm));
 }
 
-<<<<<<< HEAD
-static inline unsigned int crypto_ahash_alignmask(
-	struct crypto_ahash *tfm)
-{
-	return crypto_tfm_alg_alignmask(crypto_ahash_tfm(tfm));
-=======
 /**
  * crypto_has_ahash() - Search for the availability of an ahash.
  * @alg_name: is the cra_name / name or cra_driver_name / driver name of the
@@ -424,7 +341,6 @@ static inline const char *crypto_ahash_driver_name(struct crypto_ahash *tfm)
 static inline unsigned int crypto_ahash_blocksize(struct crypto_ahash *tfm)
 {
 	return crypto_tfm_alg_blocksize(crypto_ahash_tfm(tfm));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct hash_alg_common *__crypto_hash_alg_common(
@@ -439,8 +355,6 @@ static inline struct hash_alg_common *crypto_hash_alg_common(
 	return __crypto_hash_alg_common(crypto_ahash_tfm(tfm)->__crt_alg);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * crypto_ahash_digestsize() - obtain message digest size
  * @tfm: cipher handle
@@ -451,17 +365,11 @@ static inline struct hash_alg_common *crypto_hash_alg_common(
  *
  * Return: message digest size of cipher
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int crypto_ahash_digestsize(struct crypto_ahash *tfm)
 {
 	return crypto_hash_alg_common(tfm)->digestsize;
 }
 
-<<<<<<< HEAD
-static inline unsigned int crypto_ahash_statesize(struct crypto_ahash *tfm)
-{
-	return crypto_hash_alg_common(tfm)->statesize;
-=======
 /**
  * crypto_ahash_statesize() - obtain size of the ahash state
  * @tfm: cipher handle
@@ -475,7 +383,6 @@ static inline unsigned int crypto_ahash_statesize(struct crypto_ahash *tfm)
 static inline unsigned int crypto_ahash_statesize(struct crypto_ahash *tfm)
 {
 	return tfm->statesize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 crypto_ahash_get_flags(struct crypto_ahash *tfm)
@@ -493,8 +400,6 @@ static inline void crypto_ahash_clear_flags(struct crypto_ahash *tfm, u32 flags)
 	crypto_tfm_clear_flags(crypto_ahash_tfm(tfm), flags);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * crypto_ahash_reqtfm() - obtain cipher handle from request
  * @req: asynchronous request handle that contains the reference to the ahash
@@ -505,22 +410,18 @@ static inline void crypto_ahash_clear_flags(struct crypto_ahash *tfm, u32 flags)
  *
  * Return: ahash cipher handle
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct crypto_ahash *crypto_ahash_reqtfm(
 	struct ahash_request *req)
 {
 	return __crypto_ahash_cast(req->base.tfm);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * crypto_ahash_reqsize() - obtain size of the request data structure
  * @tfm: cipher handle
  *
  * Return: size of the request data
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int crypto_ahash_reqsize(struct crypto_ahash *tfm)
 {
 	return tfm->reqsize;
@@ -531,34 +432,6 @@ static inline void *ahash_request_ctx(struct ahash_request *req)
 	return req->__ctx;
 }
 
-<<<<<<< HEAD
-int crypto_ahash_setkey(struct crypto_ahash *tfm, const u8 *key,
-			unsigned int keylen);
-int crypto_ahash_finup(struct ahash_request *req);
-int crypto_ahash_final(struct ahash_request *req);
-int crypto_ahash_digest(struct ahash_request *req);
-
-static inline int crypto_ahash_export(struct ahash_request *req, void *out)
-{
-	return crypto_ahash_reqtfm(req)->export(req, out);
-}
-
-static inline int crypto_ahash_import(struct ahash_request *req, const void *in)
-{
-	return crypto_ahash_reqtfm(req)->import(req, in);
-}
-
-static inline int crypto_ahash_init(struct ahash_request *req)
-{
-	return crypto_ahash_reqtfm(req)->init(req);
-}
-
-static inline int crypto_ahash_update(struct ahash_request *req)
-{
-	return crypto_ahash_reqtfm(req)->update(req);
-}
-
-=======
 /**
  * crypto_ahash_setkey - set key for cipher handle
  * @tfm: cipher handle
@@ -687,15 +560,12 @@ int crypto_ahash_update(struct ahash_request *req);
  * Allow the caller to replace the existing ahash handle in the request
  * data structure with a different one.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ahash_request_set_tfm(struct ahash_request *req,
 					 struct crypto_ahash *tfm)
 {
 	req->base.tfm = crypto_ahash_tfm(tfm);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * ahash_request_alloc() - allocate request data structure
  * @tfm: cipher handle to be registered with the request
@@ -708,7 +578,6 @@ static inline void ahash_request_set_tfm(struct ahash_request *req,
  *
  * Return: allocated request handle in case of success, or NULL if out of memory
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct ahash_request *ahash_request_alloc(
 	struct crypto_ahash *tfm, gfp_t gfp)
 {
@@ -723,11 +592,6 @@ static inline struct ahash_request *ahash_request_alloc(
 	return req;
 }
 
-<<<<<<< HEAD
-static inline void ahash_request_free(struct ahash_request *req)
-{
-	kzfree(req);
-=======
 /**
  * ahash_request_free() - zeroize and free the request data structure
  * @req: request data structure cipher handle to be freed
@@ -741,7 +605,6 @@ static inline void ahash_request_zero(struct ahash_request *req)
 {
 	memzero_explicit(req, sizeof(*req) +
 			      crypto_ahash_reqsize(crypto_ahash_reqtfm(req)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct ahash_request *ahash_request_cast(
@@ -750,14 +613,6 @@ static inline struct ahash_request *ahash_request_cast(
 	return container_of(req, struct ahash_request, base);
 }
 
-<<<<<<< HEAD
-static inline void ahash_request_set_callback(struct ahash_request *req,
-					      u32 flags,
-					      crypto_completion_t complete,
-					      void *data)
-{
-	req->base.complete = complete;
-=======
 /**
  * ahash_request_set_callback() - set asynchronous callback function
  * @req: request handle
@@ -789,13 +644,10 @@ static inline void ahash_request_set_callback(struct ahash_request *req,
 					      void *data)
 {
 	req->base.complete = compl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->base.data = data;
 	req->base.flags = flags;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * ahash_request_set_crypt() - set data buffers
  * @req: ahash_request handle to be updated
@@ -809,7 +661,6 @@ static inline void ahash_request_set_callback(struct ahash_request *req,
  * The source scatter/gather list points to the data the message digest is to
  * be calculated for.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ahash_request_set_crypt(struct ahash_request *req,
 					   struct scatterlist *src, u8 *result,
 					   unsigned int nbytes)
@@ -819,11 +670,6 @@ static inline void ahash_request_set_crypt(struct ahash_request *req,
 	req->result = result;
 }
 
-<<<<<<< HEAD
-struct crypto_shash *crypto_alloc_shash(const char *alg_name, u32 type,
-					u32 mask);
-
-=======
 /**
  * DOC: Synchronous Message Digest API
  *
@@ -858,34 +704,22 @@ struct crypto_shash *crypto_clone_shash(struct crypto_shash *tfm);
 
 int crypto_has_shash(const char *alg_name, u32 type, u32 mask);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct crypto_tfm *crypto_shash_tfm(struct crypto_shash *tfm)
 {
 	return &tfm->base;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * crypto_free_shash() - zeroize and free the message digest handle
  * @tfm: cipher handle to be freed
  *
  * If @tfm is a NULL or error pointer, this function does nothing.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void crypto_free_shash(struct crypto_shash *tfm)
 {
 	crypto_destroy_tfm(tfm, crypto_shash_tfm(tfm));
 }
 
-<<<<<<< HEAD
-static inline unsigned int crypto_shash_alignmask(
-	struct crypto_shash *tfm)
-{
-	return crypto_tfm_alg_alignmask(crypto_shash_tfm(tfm));
-}
-
-=======
 static inline const char *crypto_shash_alg_name(struct crypto_shash *tfm)
 {
 	return crypto_tfm_alg_name(crypto_shash_tfm(tfm));
@@ -905,7 +739,6 @@ static inline const char *crypto_shash_driver_name(struct crypto_shash *tfm)
  *
  * Return: block size of cipher
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int crypto_shash_blocksize(struct crypto_shash *tfm)
 {
 	return crypto_tfm_alg_blocksize(crypto_shash_tfm(tfm));
@@ -921,8 +754,6 @@ static inline struct shash_alg *crypto_shash_alg(struct crypto_shash *tfm)
 	return __crypto_shash_alg(crypto_shash_tfm(tfm)->__crt_alg);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * crypto_shash_digestsize() - obtain message digest size
  * @tfm: cipher handle
@@ -932,7 +763,6 @@ static inline struct shash_alg *crypto_shash_alg(struct crypto_shash *tfm)
  *
  * Return: digest size of cipher
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int crypto_shash_digestsize(struct crypto_shash *tfm)
 {
 	return crypto_shash_alg(tfm)->digestsize;
@@ -958,8 +788,6 @@ static inline void crypto_shash_clear_flags(struct crypto_shash *tfm, u32 flags)
 	crypto_tfm_clear_flags(crypto_shash_tfm(tfm), flags);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * crypto_shash_descsize() - obtain the operational state size
  * @tfm: cipher handle
@@ -975,7 +803,6 @@ static inline void crypto_shash_clear_flags(struct crypto_shash *tfm, u32 flags)
  *
  * Return: size of the operational state
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int crypto_shash_descsize(struct crypto_shash *tfm)
 {
 	return tfm->descsize;
@@ -986,34 +813,6 @@ static inline void *shash_desc_ctx(struct shash_desc *desc)
 	return desc->__ctx;
 }
 
-<<<<<<< HEAD
-int crypto_shash_setkey(struct crypto_shash *tfm, const u8 *key,
-			unsigned int keylen);
-int crypto_shash_digest(struct shash_desc *desc, const u8 *data,
-			unsigned int len, u8 *out);
-
-static inline int crypto_shash_export(struct shash_desc *desc, void *out)
-{
-	return crypto_shash_alg(desc->tfm)->export(desc, out);
-}
-
-static inline int crypto_shash_import(struct shash_desc *desc, const void *in)
-{
-	return crypto_shash_alg(desc->tfm)->import(desc, in);
-}
-
-static inline int crypto_shash_init(struct shash_desc *desc)
-{
-	return crypto_shash_alg(desc->tfm)->init(desc);
-}
-
-int crypto_shash_update(struct shash_desc *desc, const u8 *data,
-			unsigned int len);
-int crypto_shash_final(struct shash_desc *desc, u8 *out);
-int crypto_shash_finup(struct shash_desc *desc, const u8 *data,
-		       unsigned int len, u8 *out);
-
-=======
 /**
  * crypto_shash_setkey() - set key for message digest
  * @tfm: cipher handle
@@ -1172,5 +971,4 @@ static inline void shash_desc_zero(struct shash_desc *desc)
 			 sizeof(*desc) + crypto_shash_descsize(desc->tfm));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _CRYPTO_HASH_H */

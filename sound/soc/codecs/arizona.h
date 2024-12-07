@@ -1,31 +1,18 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arizona.h - Wolfson Arizona class device shared support
  *
  * Copyright 2012 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASOC_ARIZONA_H
 #define _ASOC_ARIZONA_H
 
 #include <linux/completion.h>
-<<<<<<< HEAD
-=======
 #include <linux/notifier.h>
 #include <linux/mfd/arizona/core.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/soc.h>
 
@@ -69,16 +56,6 @@
 #define ARIZONA_CLK_98MHZ  5
 #define ARIZONA_CLK_147MHZ 6
 
-<<<<<<< HEAD
-#define ARIZONA_MAX_DAI  8
-#define ARIZONA_MAX_ADSP 4
-
-#define ARIZONA_SLIM1 4
-#define ARIZONA_SLIM2 5
-#define ARIZONA_SLIM3 6
-
-struct arizona;
-=======
 #define ARIZONA_MAX_DAI  10
 #define ARIZONA_MAX_ADSP 4
 
@@ -88,16 +65,12 @@ struct arizona;
 /* Notifier events */
 #define ARIZONA_NOTIFY_VOICE_TRIGGER   0x1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct wm_adsp;
 
 struct arizona_dai_priv {
 	int clk;
-<<<<<<< HEAD
-=======
 
 	struct snd_pcm_hw_constraint_list constraint;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct arizona_priv {
@@ -110,17 +83,6 @@ struct arizona_priv {
 	int num_inputs;
 	unsigned int in_pending;
 
-<<<<<<< HEAD
-	unsigned int spk_ena:2;
-	unsigned int spk_ena_pending:1;
-};
-
-#define ARIZONA_NUM_MIXER_INPUTS 99
-
-extern const unsigned int arizona_mixer_tlv[];
-extern const char *arizona_mixer_texts[ARIZONA_NUM_MIXER_INPUTS];
-extern int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS];
-=======
 	unsigned int out_up_pending;
 	unsigned int out_up_delay;
 	unsigned int out_down_pending;
@@ -180,7 +142,6 @@ extern unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS];
 	SOC_SINGLE_RANGE_TLV(name " Input Volume", base + 1,		\
 			     ARIZONA_MIXER_VOL_SHIFT, 0x20, 0x50, 0,	\
 			     arizona_mixer_tlv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ARIZONA_MIXER_CONTROLS(name, base) \
 	SOC_SINGLE_RANGE_TLV(name " Input 1 Volume", base + 1,		\
@@ -197,21 +158,12 @@ extern unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS];
 			     arizona_mixer_tlv)
 
 #define ARIZONA_MUX_ENUM_DECL(name, reg) \
-<<<<<<< HEAD
-	SOC_VALUE_ENUM_SINGLE_DECL(name, reg, 0, 0xff,			\
-				   arizona_mixer_texts, arizona_mixer_values)
-
-#define ARIZONA_MUX_CTL_DECL(name) \
-	const struct snd_kcontrol_new name##_mux =	\
-		SOC_DAPM_VALUE_ENUM("Route", name##_enum)
-=======
 	SOC_VALUE_ENUM_SINGLE_AUTODISABLE_DECL( \
 		name, reg, 0, 0xff, arizona_mixer_texts, arizona_mixer_values)
 
 #define ARIZONA_MUX_CTL_DECL(name) \
 	const struct snd_kcontrol_new name##_mux =	\
 		SOC_DAPM_ENUM("Route", name##_enum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ARIZONA_MUX_ENUMS(name, base_reg) \
 	static ARIZONA_MUX_ENUM_DECL(name##_enum, base_reg);      \
@@ -232,11 +184,7 @@ extern unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS];
 	ARIZONA_MUX_ENUMS(name##_aux6, base_reg + 40)
 
 #define ARIZONA_MUX(name, ctrl) \
-<<<<<<< HEAD
-	SND_SOC_DAPM_VALUE_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
-=======
 	SND_SOC_DAPM_MUX(name, SND_SOC_NOPM, 0, 0, ctrl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ARIZONA_MUX_WIDGETS(name, name_str) \
 	ARIZONA_MUX(name_str " Input", &name##_mux)
@@ -274,12 +222,9 @@ extern unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS];
 	ARIZONA_MIXER_INPUT_ROUTES(name " Input 4")
 
 #define ARIZONA_DSP_ROUTES(name) \
-<<<<<<< HEAD
-=======
 	{ name, NULL, name " Preloader"}, \
 	{ name " Preloader", NULL, "SYSCLK" }, \
 	{ name " Preload", NULL, name " Preloader"}, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ name, NULL, name " Aux 1" }, \
 	{ name, NULL, name " Aux 2" }, \
 	{ name, NULL, name " Aux 3" }, \
@@ -295,13 +240,6 @@ extern unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS];
 	ARIZONA_MIXER_ROUTES(name, name "L"), \
 	ARIZONA_MIXER_ROUTES(name, name "R")
 
-<<<<<<< HEAD
-#define ARIZONA_RATE_ENUM_SIZE 4
-extern const char *arizona_rate_text[ARIZONA_RATE_ENUM_SIZE];
-extern const int arizona_rate_val[ARIZONA_RATE_ENUM_SIZE];
-
-extern const struct soc_enum arizona_isrc_fsl[];
-=======
 #define ARIZONA_EQ_CONTROL(xname, xbase)                      \
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname,   \
 	.info = snd_soc_bytes_info, .get = snd_soc_bytes_get, \
@@ -330,7 +268,6 @@ extern const unsigned int arizona_sample_rate_val[ARIZONA_SAMPLE_RATE_ENUM_SIZE]
 extern const struct soc_enum arizona_isrc_fsl[];
 extern const struct soc_enum arizona_isrc_fsh[];
 extern const struct soc_enum arizona_asrc_rate1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct soc_enum arizona_in_vi_ramp;
 extern const struct soc_enum arizona_in_vd_ramp;
@@ -346,32 +283,6 @@ extern const struct soc_enum arizona_lhpf4_mode;
 extern const struct soc_enum arizona_ng_hold;
 extern const struct soc_enum arizona_in_hpf_cut_enum;
 extern const struct soc_enum arizona_in_dmic_osr[];
-<<<<<<< HEAD
-extern const struct soc_enum arizona_in_dmic_osr_ext[];
-
-extern int arizona_in_ev(struct snd_soc_dapm_widget *w,
-			 struct snd_kcontrol *kcontrol,
-			 int event);
-extern int arizona_out_ev(struct snd_soc_dapm_widget *w,
-			  struct snd_kcontrol *kcontrol,
-			  int event);
-extern int arizona_hp_ev(struct snd_soc_dapm_widget *w,
-			 struct snd_kcontrol *kcontrol,
-			 int event);
-extern int arizona_slim_tx_ev(struct snd_soc_dapm_widget *w,
-			     struct snd_kcontrol *kcontrol,
-			     int event);
-extern int arizona_slim_rx_ev(struct snd_soc_dapm_widget *w,
-			     struct snd_kcontrol *kcontrol,
-			     int event);
-
-extern int arizona_set_sysclk(struct snd_soc_codec *codec, int clk_id,
-			      int source, unsigned int freq, int dir);
-
-extern const struct snd_soc_dai_ops arizona_dai_ops;
-extern const struct snd_soc_dai_ops arizona_simple_dai_ops;
-extern const struct snd_soc_dai_ops arizona_slim_dai_ops;
-=======
 
 extern const struct snd_kcontrol_new arizona_adsp2_rate_controls[];
 
@@ -402,7 +313,6 @@ int arizona_set_sysclk(struct snd_soc_component *component, int clk_id, int sour
 
 extern const struct snd_soc_dai_ops arizona_dai_ops;
 extern const struct snd_soc_dai_ops arizona_simple_dai_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ARIZONA_FLL_NAME_LEN 20
 
@@ -411,10 +321,6 @@ struct arizona_fll {
 	int id;
 	unsigned int base;
 	unsigned int vco_mult;
-<<<<<<< HEAD
-	struct completion ok;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int fout;
 	int sync_src;
@@ -426,23 +332,6 @@ struct arizona_fll {
 	char clock_ok_name[ARIZONA_FLL_NAME_LEN];
 };
 
-<<<<<<< HEAD
-extern int arizona_init_fll(struct arizona *arizona, int id, int base,
-			    int lock_irq, int ok_irq, struct arizona_fll *fll);
-extern int arizona_set_fll_refclk(struct arizona_fll *fll, int source,
-				  unsigned int Fref, unsigned int Fout);
-extern int arizona_set_fll(struct arizona_fll *fll, int source,
-			   unsigned int Fref, unsigned int Fout);
-
-extern int arizona_init_spk(struct snd_soc_codec *codec);
-extern int arizona_init_gpio(struct snd_soc_codec *codec);
-
-extern int arizona_init_dai(struct arizona_priv *priv, int dai);
-
-int arizona_set_output_mode(struct snd_soc_codec *codec, int output,
-			    bool diff);
-
-=======
 int arizona_dvfs_up(struct snd_soc_component *component, unsigned int flags);
 int arizona_dvfs_down(struct snd_soc_component *component, unsigned int flags);
 int arizona_dvfs_sysclk_ev(struct snd_soc_dapm_widget *w,
@@ -506,5 +395,4 @@ int arizona_jack_codec_dev_remove(struct arizona_priv *info);
 int arizona_jack_set_jack(struct snd_soc_component *component,
 			  struct snd_soc_jack *jack, void *data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

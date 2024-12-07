@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # X86 Platform Specific Drivers
 #
@@ -10,11 +7,7 @@ menuconfig X86_PLATFORM_DEVICES
 	bool "X86 Platform Specific Device Drivers"
 	default y
 	depends on X86
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to get to see options for device drivers for various
 	  x86 platforms, including vendor-specific laptop extension drivers.
 	  This option alone does not add any kernel code.
@@ -23,13 +16,6 @@ menuconfig X86_PLATFORM_DEVICES
 
 if X86_PLATFORM_DEVICES
 
-<<<<<<< HEAD
-config ACER_WMI
-	tristate "Acer WMI Laptop Extras"
-	depends on ACPI
-	select LEDS_CLASS
-	select NEW_LEDS
-=======
 config ACPI_WMI
 	tristate "WMI"
 	depends on ACPI
@@ -184,20 +170,11 @@ config ACER_WIRELESS
 
 config ACER_WMI
 	tristate "Acer WMI Laptop Extras"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on SERIO_I8042
 	depends on INPUT
 	depends on RFKILL || RFKILL = n
 	depends on ACPI_WMI
-<<<<<<< HEAD
-	select INPUT_SPARSEKMAP
-	# Acer WMI depends on ACPI_VIDEO when ACPI is enabled
-	# but for select to work, need to select ACPI_VIDEO's dependencies, ick
-        select VIDEO_OUTPUT_CONTROL if ACPI
-        select ACPI_VIDEO if ACPI
-	---help---
-=======
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	depends on HWMON
 	select INPUT_SPARSEKMAP
@@ -205,7 +182,6 @@ config ACER_WMI
 	select NEW_LEDS
 	select ACPI_PLATFORM_PROFILE
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is a driver for newer Acer (and Wistron) laptops. It adds
 	  wireless radio and bluetooth control, and on some laptops,
 	  exposes the mail LED and LCD backlight.
@@ -213,24 +189,6 @@ config ACER_WMI
 	  If you have an ACPI-WMI compatible Acer/ Wistron laptop, say Y or M
 	  here.
 
-<<<<<<< HEAD
-config ACERHDF
-	tristate "Acer Aspire One temperature and fan driver"
-	depends on THERMAL && ACPI
-	---help---
-	  This is a driver for Acer Aspire One netbooks. It allows to access
-	  the temperature sensor and to control the fan.
-
-	  After loading this driver the BIOS is still in control of the fan.
-	  To let the kernel handle the fan, do:
-	  echo -n enabled > /sys/class/thermal/thermal_zone0/mode
-
-	  For more information about this driver see
-	  <http://piie.net/files/acerhdf_README.txt>
-
-	  If you have an Acer Aspire One netbook, say Y or M
-	  here.
-=======
 source "drivers/platform/x86/amd/Kconfig"
 
 config ADV_SWBUTTON
@@ -254,28 +212,18 @@ config APPLE_GMUX
 	  Apple laptops, which controls the display mux for the hybrid
 	  graphics as well as the backlight. Currently only backlight
 	  control is supported by the driver.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ASUS_LAPTOP
 	tristate "Asus Laptop Extras"
 	depends on ACPI
 	select LEDS_CLASS
 	select NEW_LEDS
-<<<<<<< HEAD
-	select BACKLIGHT_CLASS_DEVICE
-	depends on INPUT
-	depends on RFKILL || RFKILL = n
-	select INPUT_SPARSEKMAP
-	select INPUT_POLLDEV
-	---help---
-=======
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on INPUT
 	depends on RFKILL || RFKILL = n
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	select INPUT_SPARSEKMAP
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is a driver for Asus laptops, Lenovo SL and the Pegatron
 	  Lucid tablet. It may also support some MEDION, JVC or VICTOR
 	  laptops. It makes all the extra buttons generate standard
@@ -289,47 +237,6 @@ config ASUS_LAPTOP
 
 	  If you have an ACPI-compatible ASUS laptop, say Y or M here.
 
-<<<<<<< HEAD
-config DELL_LAPTOP
-	tristate "Dell Laptop Extras (EXPERIMENTAL)"
-	depends on X86
-	depends on DCDBAS
-	depends on EXPERIMENTAL
-	depends on BACKLIGHT_CLASS_DEVICE
-	depends on RFKILL || RFKILL = n
-	depends on SERIO_I8042
-	select POWER_SUPPLY
-	select LEDS_CLASS
-	select NEW_LEDS
-	default n
-	---help---
-	This driver adds support for rfkill and backlight control to Dell
-	laptops.
-
-config DELL_WMI
-	tristate "Dell WMI extras"
-	depends on ACPI_WMI
-	depends on INPUT
-	select INPUT_SPARSEKMAP
-	---help---
-	  Say Y here if you want to support WMI-based hotkeys on Dell laptops.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called dell-wmi.
-
-config DELL_WMI_AIO
-	tristate "WMI Hotkeys for Dell All-In-One series"
-	depends on ACPI_WMI
-	depends on INPUT
-	select INPUT_SPARSEKMAP
-	---help---
-	  Say Y here if you want to support WMI-based hotkeys on Dell
-	  All-In-One machines.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called dell-wmi-aio.
-
-=======
 config ASUS_WIRELESS
 	tristate "Asus Wireless Radio Control Driver"
 	depends on ACPI
@@ -457,24 +364,18 @@ config AMILO_RFKILL
 	help
 	  This is a driver for enabling wifi on some Fujitsu-Siemens Amilo
 	  laptops.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config FUJITSU_LAPTOP
 	tristate "Fujitsu Laptop Extras"
 	depends on ACPI
 	depends on INPUT
 	depends on BACKLIGHT_CLASS_DEVICE
-<<<<<<< HEAD
-	depends on LEDS_CLASS || LEDS_CLASS=n
-	---help---
-=======
 	depends on ACPI_BATTERY
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	select INPUT_SPARSEKMAP
 	select NEW_LEDS
 	select LEDS_CLASS
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is a driver for laptops built by Fujitsu:
 
 	    * P2xxx/P5xxx/S6xxx/S7xxx series Lifebooks
@@ -485,28 +386,11 @@ config FUJITSU_LAPTOP
 
 	  If you have a Fujitsu laptop, say Y or M here.
 
-<<<<<<< HEAD
-config FUJITSU_LAPTOP_DEBUG
-	bool "Verbose debug mode for Fujitsu Laptop Extras"
-	depends on FUJITSU_LAPTOP
-	default n
-	---help---
-	  Enables extra debug output from the fujitsu extras driver, at the
-	  expense of a slight increase in driver size.
-
-	  If you are not sure, say N here.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config FUJITSU_TABLET
        tristate "Fujitsu Tablet Extras"
        depends on ACPI
        depends on INPUT
-<<<<<<< HEAD
-       ---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
          This is a driver for tablets built by Fujitsu:
 
            * Lifebook P1510/P1610/P1620/Txxxx
@@ -519,129 +403,6 @@ config FUJITSU_TABLET
 
          If you have a Fujitsu convertible or slate, say Y or M here.
 
-<<<<<<< HEAD
-config AMILO_RFKILL
-	tristate "Fujitsu-Siemens Amilo rfkill support"
-	depends on RFKILL
-	---help---
-	  This is a driver for enabling wifi on some Fujitsu-Siemens Amilo
-	  laptops.
-
-config TC1100_WMI
-	tristate "HP Compaq TC1100 Tablet WMI Extras (EXPERIMENTAL)"
-	depends on !X86_64
-	depends on EXPERIMENTAL
-	depends on ACPI
-	depends on ACPI_WMI
-	---help---
-	  This is a driver for the WMI extensions (wireless and bluetooth power
-	  control) of the HP Compaq TC1100 tablet.
-
-config HP_ACCEL
-	tristate "HP laptop accelerometer"
-	depends on INPUT && ACPI
-	select SENSORS_LIS3LV02D
-	select NEW_LEDS
-	select LEDS_CLASS
-	help
-	  This driver provides support for the "Mobile Data Protection System 3D"
-	  or "3D DriveGuard" feature of HP laptops. On such systems the driver
-	  should load automatically (via ACPI alias).
-
-	  Support for a led indicating disk protection will be provided as
-	  hp::hddprotect. For more information on the feature, refer to
-	  Documentation/misc-devices/lis3lv02d.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called hp_accel.
-
-config HP_WMI
-	tristate "HP WMI extras"
-	depends on ACPI_WMI
-	depends on INPUT
-	depends on RFKILL || RFKILL = n
-	select INPUT_SPARSEKMAP
-	help
-	 Say Y here if you want to support WMI-based hotkeys on HP laptops and
-	 to read data from WMI such as docking or ambient light sensor state.
-
-	 To compile this driver as a module, choose M here: the module will
-	 be called hp-wmi.
-
-config MSI_LAPTOP
-	tristate "MSI Laptop Extras"
-	depends on ACPI
-	depends on BACKLIGHT_CLASS_DEVICE
-	depends on RFKILL
-	depends on INPUT && SERIO_I8042
-	select INPUT_SPARSEKMAP
-	---help---
-	  This is a driver for laptops built by MSI (MICRO-STAR
-	  INTERNATIONAL):
-
-	  MSI MegaBook S270 (MS-1013)
-	  Cytron/TCM/Medion/Tchibo MD96100/SAM2000
-
-	  It adds support for Bluetooth, WLAN and LCD brightness control.
-
-	  More information about this driver is available at
-	  <http://0pointer.de/lennart/tchibo.html>.
-
-	  If you have an MSI S270 laptop, say Y or M here.
-
-config PANASONIC_LAPTOP
-	tristate "Panasonic Laptop Extras"
-	depends on INPUT && ACPI
-	depends on BACKLIGHT_CLASS_DEVICE
-	select INPUT_SPARSEKMAP
-	---help---
-	  This driver adds support for access to backlight control and hotkeys
-	  on Panasonic Let's Note laptops.
-
-	  If you have a Panasonic Let's note laptop (such as the R1(N variant),
-	  R2, R3, R5, T2, W2 and Y2 series), say Y.
-
-config COMPAL_LAPTOP
-	tristate "Compal Laptop Extras"
-	depends on ACPI
-	depends on BACKLIGHT_CLASS_DEVICE
-	depends on RFKILL
-	depends on HWMON
-	depends on POWER_SUPPLY
-	---help---
-	  This is a driver for laptops built by Compal:
-
-	  Compal FL90/IFL90
-	  Compal FL91/IFL91
-	  Compal FL92/JFL92
-	  Compal FT00/IFT00
-
-	  It adds support for Bluetooth, WLAN and LCD brightness control.
-
-	  If you have an Compal FL9x/IFL9x/FT00 laptop, say Y or M here.
-
-config SONY_LAPTOP
-	tristate "Sony Laptop Extras"
-	depends on ACPI
-	select BACKLIGHT_CLASS_DEVICE
-	depends on INPUT
-	depends on RFKILL
-	  ---help---
-	  This mini-driver drives the SNC and SPIC devices present in the ACPI
-	  BIOS of the Sony Vaio laptops.
-
-	  It gives access to some extra laptop functionalities like Bluetooth,
-	  screen brightness control, Fn keys and allows powering on/off some
-	  devices.
-
-	  Read <file:Documentation/laptops/sony-laptop.txt> for more information.
-
-config SONYPI_COMPAT
-	bool "Sonypi compatibility"
-	depends on SONY_LAPTOP
-	  ---help---
-	  Build the sonypi driver compatibility code into the sony-laptop driver.
-=======
 config GPD_POCKET_FAN
 	tristate "GPD Pocket Fan Controller support"
 	depends on ACPI
@@ -683,17 +444,11 @@ config IBM_RTL
 	 whether or not the BIOS is in PRTM.
 	 state = 0 (BIOS SMIs on)
 	 state = 1 (BIOS SMIs off)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config IDEAPAD_LAPTOP
 	tristate "Lenovo IdeaPad Laptop Extras"
 	depends on ACPI
 	depends on RFKILL && INPUT
-<<<<<<< HEAD
-	select INPUT_SPARSEKMAP
-	help
-	  This is a driver for the rfkill switches on Lenovo IdeaPad netbooks.
-=======
 	depends on SERIO_I8042
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
@@ -732,17 +487,10 @@ config SENSORS_HDAPS
 
 	  Say Y here if you have an applicable laptop and want to experience
 	  the awesome power of hdaps.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config THINKPAD_ACPI
 	tristate "ThinkPad ACPI Laptop Extras"
 	depends on ACPI
-<<<<<<< HEAD
-	depends on INPUT
-	depends on RFKILL || RFKILL = n
-	select BACKLIGHT_LCD_SUPPORT
-	select BACKLIGHT_CLASS_DEVICE
-=======
 	depends on ACPI_BATTERY
 	depends on INPUT
 	depends on RFKILL || RFKILL = n
@@ -752,25 +500,16 @@ config THINKPAD_ACPI
 	depends on DRM
 	select ACPI_PLATFORM_PROFILE
 	select DRM_PRIVACY_SCREEN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select HWMON
 	select NVRAM
 	select NEW_LEDS
 	select LEDS_CLASS
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is a driver for the IBM and Lenovo ThinkPad laptops. It adds
 	  support for Fn-Fx key combinations, Bluetooth control, video
 	  output switching, ThinkLight control, UltraBay eject and more.
 	  For more information about this driver see
-<<<<<<< HEAD
-	  <file:Documentation/laptops/thinkpad-acpi.txt> and
-=======
 	  <file:Documentation/admin-guide/laptops/thinkpad-acpi.rst> and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  <http://ibm-acpi.sf.net/> .
 
 	  This driver was formerly known as ibm-acpi.
@@ -788,11 +527,7 @@ config THINKPAD_ACPI_ALSA_SUPPORT
 	depends on SND
 	depends on SND = y || THINKPAD_ACPI = SND
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enables monitoring of the built-in console audio output control
 	  (headphone and speakers), which is operated by the mute and (in
 	  some ThinkPad models) volume hotkeys.
@@ -812,12 +547,7 @@ config THINKPAD_ACPI_ALSA_SUPPORT
 config THINKPAD_ACPI_DEBUGFACILITIES
 	bool "Maintainer debug facilities"
 	depends on THINKPAD_ACPI
-<<<<<<< HEAD
-	default n
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enables extra stuff in the thinkpad-acpi which is completely useless
 	  for normal use.  Read the driver source to find out what it does.
 
@@ -827,12 +557,7 @@ config THINKPAD_ACPI_DEBUGFACILITIES
 config THINKPAD_ACPI_DEBUG
 	bool "Verbose debug mode"
 	depends on THINKPAD_ACPI
-<<<<<<< HEAD
-	default n
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Enables extra debugging information, at the expense of a slightly
 	  increase in driver size.
 
@@ -841,12 +566,7 @@ config THINKPAD_ACPI_DEBUG
 config THINKPAD_ACPI_UNSAFE_LEDS
 	bool "Allow control of important LEDs (unsafe)"
 	depends on THINKPAD_ACPI
-<<<<<<< HEAD
-	default n
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Overriding LED state on ThinkPads can mask important
 	  firmware alerts (like critical battery condition), or misled
 	  the user into damaging the hardware (undocking or ejecting
@@ -870,11 +590,7 @@ config THINKPAD_ACPI_VIDEO
 	bool "Video output control support"
 	depends on THINKPAD_ACPI
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Allows the thinkpad_acpi driver to provide an interface to control
 	  the various video output ports.
 
@@ -897,11 +613,7 @@ config THINKPAD_ACPI_HOTKEY_POLL
 	bool "Support NVRAM polling for hot keys"
 	depends on THINKPAD_ACPI
 	default y
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Some thinkpad models benefit from NVRAM polling to detect a few of
 	  the hot key press events.  If you know your ThinkPad model does not
 	  need to do NVRAM polling to support any of the hot keys you use,
@@ -917,123 +629,6 @@ config THINKPAD_ACPI_HOTKEY_POLL
 	  If you are not sure, say Y here.  The driver enables polling only if
 	  it is strictly necessary to do so.
 
-<<<<<<< HEAD
-config SENSORS_HDAPS
-	tristate "Thinkpad Hard Drive Active Protection System (hdaps)"
-	depends on INPUT && X86
-	select INPUT_POLLDEV
-	default n
-	help
-	  This driver provides support for the IBM Hard Drive Active Protection
-	  System (hdaps), which provides an accelerometer and other misc. data.
-	  ThinkPads starting with the R50, T41, and X40 are supported.  The
-	  accelerometer data is readable via sysfs.
-
-	  This driver also provides an absolute input class device, allowing
-	  the laptop to act as a pinball machine-esque joystick.
-
-	  If your ThinkPad is not recognized by the driver, please update to latest
-	  BIOS. This is especially the case for some R52 ThinkPads.
-
-	  Say Y here if you have an applicable laptop and want to experience
-	  the awesome power of hdaps.
-
-config INTEL_MENLOW
-	tristate "Thermal Management driver for Intel menlow platform"
-	depends on ACPI_THERMAL
-	select THERMAL
-	---help---
-	  ACPI thermal management enhancement driver on
-	  Intel Menlow platform.
-
-	  If unsure, say N.
-
-config EEEPC_LAPTOP
-	tristate "Eee PC Hotkey Driver"
-	depends on ACPI
-	depends on INPUT
-	depends on RFKILL || RFKILL = n
-	depends on HOTPLUG_PCI
-	select BACKLIGHT_CLASS_DEVICE
-	select HWMON
-	select LEDS_CLASS
-	select NEW_LEDS
-	select INPUT_SPARSEKMAP
-	---help---
-	  This driver supports the Fn-Fx keys on Eee PC laptops.
-
-	  It  also gives access to some extra laptop functionalities like
-	  Bluetooth, backlight and allows powering on/off some other
-	  devices.
-
-	  If you have an Eee PC laptop, say Y or M here. If this driver
-	  doesn't work on your Eee PC, try eeepc-wmi instead.
-
-config ASUS_WMI
-	tristate "ASUS WMI Driver"
-	depends on ACPI_WMI
-	depends on INPUT
-	depends on HWMON
-	depends on BACKLIGHT_CLASS_DEVICE
-	depends on RFKILL || RFKILL = n
-	depends on HOTPLUG_PCI
-	select INPUT_SPARSEKMAP
-	select LEDS_CLASS
-	select NEW_LEDS
-	---help---
-	  Say Y here if you have a WMI aware Asus laptop (like Eee PCs or new
-	  Asus Notebooks).
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called asus-wmi.
-
-config ASUS_NB_WMI
-	tristate "Asus Notebook WMI Driver"
-	depends on ASUS_WMI
-	---help---
-	  This is a driver for newer Asus notebooks. It adds extra features
-	  like wireless radio and bluetooth control, leds, hotkeys, backlight...
-
-	  For more informations, see
-	  <file:Documentation/ABI/testing/sysfs-platform-asus-wmi>
-
-	  If you have an ACPI-WMI compatible Asus Notebook, say Y or M
-	  here.
-
-config EEEPC_WMI
-	tristate "Eee PC WMI Driver"
-	depends on ASUS_WMI
-	---help---
-	  This is a driver for newer Eee PC laptops. It adds extra features
-	  like wireless radio and bluetooth control, leds, hotkeys, backlight...
-
-	  For more informations, see
-	  <file:Documentation/ABI/testing/sysfs-platform-asus-wmi>
-
-	  If you have an ACPI-WMI compatible Eee PC laptop (>= 1000), say Y or M
-	  here.
-
-config ACPI_WMI
-	tristate "WMI"
-	depends on ACPI
-	help
-	  This driver adds support for the ACPI-WMI (Windows Management
-	  Instrumentation) mapper device (PNP0C14) found on some systems.
-
-	  ACPI-WMI is a proprietary extension to ACPI to expose parts of the
-	  ACPI firmware to userspace - this is done through various vendor
-	  defined methods and data blocks in a PNP0C14 device, which are then
-	  made available for userspace to call.
-
-	  The implementation of this in Linux currently only exposes this to
-	  other kernel space drivers.
-
-	  This driver is a required dependency to build the firmware specific
-	  drivers needed on many machines, including Acer and HP laptops.
-
-	  It is safe to enable this driver even if your DSDT doesn't define
-	  any ACPI-WMI devices.
-=======
 config THINKPAD_LMI
 	tristate "Lenovo WMI-based systems management driver"
 	depends on ACPI_WMI
@@ -1076,17 +671,13 @@ config MSI_LAPTOP
 	  <http://0pointer.de/lennart/tchibo.html>.
 
 	  If you have an MSI S270 laptop, say Y or M here.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MSI_WMI
 	tristate "MSI WMI extras"
 	depends on ACPI_WMI
 	depends on INPUT
 	depends on BACKLIGHT_CLASS_DEVICE
-<<<<<<< HEAD
-=======
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select INPUT_SPARSEKMAP
 	help
 	 Say Y here if you want to support WMI-based hotkeys on MSI laptops.
@@ -1094,17 +685,6 @@ config MSI_WMI
 	 To compile this driver as a module, choose M here: the module will
 	 be called msi-wmi.
 
-<<<<<<< HEAD
-config TOPSTAR_LAPTOP
-	tristate "Topstar Laptop Extras"
-	depends on ACPI
-	depends on INPUT
-	select INPUT_SPARSEKMAP
-	---help---
-	  This driver adds support for hotkeys found on Topstar laptops.
-
-	  If you have a Topstar laptop, say Y or M here.
-=======
 config XO15_EBOOK
 	tristate "OLPC XO-1.5 ebook switch"
 	depends on OLPC || COMPILE_TEST
@@ -1172,26 +752,16 @@ config SAMSUNG_Q10
 	help
 	  This driver provides support for backlight control on Samsung Q10
 	  and related laptops, including Dell Latitude X200.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ACPI_TOSHIBA
 	tristate "Toshiba Laptop Extras"
 	depends on ACPI
-<<<<<<< HEAD
-=======
 	depends on ACPI_BATTERY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on ACPI_WMI
 	select LEDS_CLASS
 	select NEW_LEDS
 	depends on BACKLIGHT_CLASS_DEVICE
 	depends on INPUT
-<<<<<<< HEAD
-	depends on RFKILL || RFKILL = n
-	select INPUT_POLLDEV
-	select INPUT_SPARSEKMAP
-	---help---
-=======
 	depends on SERIO_I8042 || SERIO_I8042 = n
 	depends on ACPI_VIDEO || ACPI_VIDEO = n
 	depends on HWMON || HWMON = n
@@ -1199,7 +769,6 @@ config ACPI_TOSHIBA
 	depends on IIO
 	select INPUT_SPARSEKMAP
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver adds support for access to certain system settings
 	  on "legacy free" Toshiba laptops.  These laptops can be recognized by
 	  their lack of a BIOS setup menu and APM support.
@@ -1225,12 +794,8 @@ config ACPI_TOSHIBA
 config TOSHIBA_BT_RFKILL
 	tristate "Toshiba Bluetooth RFKill switch support"
 	depends on ACPI
-<<<<<<< HEAD
-	---help---
-=======
 	depends on RFKILL || RFKILL = n
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver adds support for Bluetooth events for the RFKill
 	  switch on modern Toshiba laptops with full ACPI support and
 	  an RFKill switch.
@@ -1242,15 +807,6 @@ config TOSHIBA_BT_RFKILL
 	  If you have a modern Toshiba laptop with a Bluetooth and an
 	  RFKill switch (such as the Portege R500), say Y.
 
-<<<<<<< HEAD
-config ACPI_CMPC
-	tristate "CMPC Laptop Extras"
-	depends on X86 && ACPI
-	depends on RFKILL || RFKILL=n
-	select INPUT
-	select BACKLIGHT_CLASS_DEVICE
-	default n
-=======
 config TOSHIBA_HAPS
 	tristate "Toshiba HDD Active Protection Sensor"
 	depends on ACPI
@@ -1292,58 +848,11 @@ config ACPI_CMPC
 	depends on ACPI && INPUT
 	depends on RFKILL || RFKILL=n
 	select BACKLIGHT_CLASS_DEVICE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support for Intel Classmate PC ACPI devices, including some
 	  keys as input device, backlight device, tablet and accelerometer
 	  devices.
 
-<<<<<<< HEAD
-config INTEL_SCU_IPC
-	bool "Intel SCU IPC Support"
-	depends on X86_INTEL_MID
-	default y
-	---help---
-	  IPC is used to bridge the communications between kernel and SCU on
-	  some embedded Intel x86 platforms. This is not needed for PC-type
-	  machines.
-
-config INTEL_SCU_IPC_UTIL
-	tristate "Intel SCU IPC utility driver"
-	depends on INTEL_SCU_IPC
-	default y
-	---help---
-	  The IPC Util driver provides an interface with the SCU enabling
-	  low level access for debug work and updating the firmware. Say
-	  N unless you will be doing this on an Intel MID platform.
-
-config GPIO_INTEL_PMIC
-	bool "Intel PMIC GPIO support"
-	depends on INTEL_SCU_IPC && GPIOLIB
-	---help---
-	  Say Y here to support GPIO via the SCU IPC interface
-	  on Intel MID platforms.
-
-config INTEL_MID_POWER_BUTTON
-	tristate "power button driver for Intel MID platforms"
-	depends on INTEL_SCU_IPC && INPUT
-	help
-	  This driver handles the power button on the Intel MID platforms.
-
-	  If unsure, say N.
-
-config INTEL_MFLD_THERMAL
-       tristate "Thermal driver for Intel Medfield platform"
-       depends on MFD_INTEL_MSIC && THERMAL
-       help
-         Say Y here to enable thermal driver support for the  Intel Medfield
-         platform.
-
-config INTEL_IPS
-	tristate "Intel Intelligent Power Sharing"
-	depends on ACPI
-	---help---
-=======
 config COMPAL_LAPTOP
 	tristate "Compal (and others) Laptop Extras"
 	depends on ACPI
@@ -1520,101 +1029,12 @@ config INTEL_IPS
 	tristate "Intel Intelligent Power Sharing"
 	depends on ACPI && PCI
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Intel Calpella platforms support dynamic power sharing between the
 	  CPU and GPU, maximizing performance in a given TDP.  This driver,
 	  along with the CPU frequency and i915 drivers, provides that
 	  functionality.  If in doubt, say Y here; it will only load on
 	  supported platforms.
 
-<<<<<<< HEAD
-config IBM_RTL
-	tristate "Device driver to enable PRTL support"
-	depends on X86 && PCI
-	---help---
-	 Enable support for IBM Premium Real Time Mode (PRTM).
-	 This module will allow you the enter and exit PRTM in the BIOS via
-	 sysfs on platforms that support this feature.  System in PRTM will
-	 not receive CPU-generated SMIs for recoverable errors.  Use of this
-	 feature without proper support may void your hardware warranty.
-
-	 If the proper BIOS support is found the driver will load and create
-	 /sys/devices/system/ibm_rtl/.  The "state" variable will indicate
-	 whether or not the BIOS is in PRTM.
-	 state = 0 (BIOS SMIs on)
-	 state = 1 (BIOS SMIs off)
-
-config XO1_RFKILL
-	tristate "OLPC XO-1 software RF kill switch"
-	depends on OLPC
-	depends on RFKILL
-	---help---
-	  Support for enabling/disabling the WLAN interface on the OLPC XO-1
-	  laptop.
-
-config XO15_EBOOK
-	tristate "OLPC XO-1.5 ebook switch"
-	depends on ACPI && INPUT
-	---help---
-	  Support for the ebook switch on the OLPC XO-1.5 laptop.
-
-	  This switch is triggered as the screen is rotated and folded down to
-	  convert the device into ebook form.
-
-config SAMSUNG_LAPTOP
-	tristate "Samsung Laptop driver"
-	depends on X86
-	depends on RFKILL || RFKILL = n
-	depends on BACKLIGHT_CLASS_DEVICE
-	select LEDS_CLASS
-	select NEW_LEDS
-	---help---
-	  This module implements a driver for a wide range of different
-	  Samsung laptops.  It offers control over the different
-	  function keys, wireless LED, LCD backlight level.
-
-	  It may also provide some sysfs files described in
-	  <file:Documentation/ABI/testing/sysfs-platform-samsung-laptop>
-
-	  To compile this driver as a module, choose M here: the module
-	  will be called samsung-laptop.
-
-config MXM_WMI
-       tristate "WMI support for MXM Laptop Graphics"
-       depends on ACPI_WMI
-       ---help---
-          MXM is a standard for laptop graphics cards, the WMI interface
-	  is required for switchable nvidia graphics machines
-
-config INTEL_OAKTRAIL
-	tristate "Intel Oaktrail Platform Extras"
-	depends on ACPI
-	depends on RFKILL && BACKLIGHT_CLASS_DEVICE && ACPI
-	---help---
-	  Intel Oaktrail platform need this driver to provide interfaces to
-	  enable/disable the Camera, WiFi, BT etc. devices. If in doubt, say Y
-	  here; it will only load on supported platforms.
-
-config SAMSUNG_Q10
-	tristate "Samsung Q10 Extras"
-	depends on SERIO_I8042
-	select BACKLIGHT_CLASS_DEVICE
-	---help---
-	  This driver provides support for backlight control on Samsung Q10
-	  and related laptops, including Dell Latitude X200.
-
-config APPLE_GMUX
-	tristate "Apple Gmux Driver"
-	depends on PNP
-	select BACKLIGHT_CLASS_DEVICE
-	---help---
-	  This driver provides support for the gmux device found on many
-	  Apple laptops, which controls the display mux for the hybrid
-	  graphics as well as the backlight. Currently only backlight
-	  control is supported by the driver.
-
-endif # X86_PLATFORM_DEVICES
-=======
 config INTEL_SCU_IPC
 	bool
 
@@ -1715,4 +1135,3 @@ config P2SB
 	  The main purpose of this library is to unhide P2SB device in case
 	  firmware kept it hidden on some platforms in order to access devices
 	  behind it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

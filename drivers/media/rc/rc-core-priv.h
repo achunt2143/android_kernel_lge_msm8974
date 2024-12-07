@@ -1,35 +1,13 @@
-<<<<<<< HEAD
-/*
- * Remote Controller core raw events header
- *
- * Copyright (C) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Remote Controller core raw events header
  *
  * Copyright (C) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _RC_CORE_PRIV
 #define _RC_CORE_PRIV
 
-<<<<<<< HEAD
-#include <linux/slab.h>
-#include <linux/spinlock.h>
-#include <media/rc-core.h>
-
-=======
 #define	RC_DEV_MAX		256
 /* Define the max number of pulse/space transitions to buffer */
 #define	MAX_IR_EVENT_SIZE	512
@@ -52,23 +30,17 @@ int rc_open(struct rc_dev *rdev);
  */
 void rc_close(struct rc_dev *rdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ir_raw_handler {
 	struct list_head list;
 
 	u64 protocols; /* which are handled by this handler */
 	int (*decode)(struct rc_dev *dev, struct ir_raw_event event);
-<<<<<<< HEAD
-
-	/* These two should only be used by the lirc decoder */
-=======
 	int (*encode)(enum rc_proto protocol, u32 scancode,
 		      struct ir_raw_event *events, unsigned int max);
 	u32 carrier;
 	u32 min_timeout;
 
 	/* These two should only be used by the mce kbd decoder */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*raw_register)(struct rc_dev *dev);
 	int (*raw_unregister)(struct rc_dev *dev);
 };
@@ -76,14 +48,6 @@ struct ir_raw_handler {
 struct ir_raw_event_ctrl {
 	struct list_head		list;		/* to keep track of raw clients */
 	struct task_struct		*thread;
-<<<<<<< HEAD
-	spinlock_t			lock;
-	struct kfifo_rec_ptr_1		kfifo;		/* fifo for the pulse/space durations */
-	ktime_t				last_event;	/* when last event occurred */
-	enum raw_event_type		last_type;	/* last event type */
-	struct rc_dev			*dev;		/* pointer to the parent rc_dev */
-	u64				enabled_protocols; /* enabled raw protocol decoders */
-=======
 	/* fifo for the pulse/space durations */
 	DECLARE_KFIFO(kfifo, struct ir_raw_event, MAX_IR_EVENT_SIZE);
 	ktime_t				last_event;	/* when last event occurred */
@@ -91,20 +55,16 @@ struct ir_raw_event_ctrl {
 	/* handle delayed ir_raw_event_store_edge processing */
 	spinlock_t			edge_spinlock;
 	struct timer_list		edge_handle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* raw decoder state follows */
 	struct ir_raw_event prev_ev;
 	struct ir_raw_event this_ev;
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_BPF_LIRC_MODE2
 	u32				bpf_sample;
 	struct bpf_prog_array __rcu	*progs;
 #endif
 #if IS_ENABLED(CONFIG_IR_NEC_DECODER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nec_dec {
 		int state;
 		unsigned count;
@@ -112,24 +72,16 @@ struct ir_raw_event_ctrl {
 		bool is_nec_x;
 		bool necx_repeat;
 	} nec;
-<<<<<<< HEAD
-=======
 #endif
 #if IS_ENABLED(CONFIG_IR_RC5_DECODER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rc5_dec {
 		int state;
 		u32 bits;
 		unsigned count;
-<<<<<<< HEAD
-		unsigned wanted_bits;
-	} rc5;
-=======
 		bool is_rc5x;
 	} rc5;
 #endif
 #if IS_ENABLED(CONFIG_IR_RC6_DECODER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rc6_dec {
 		int state;
 		u8 header;
@@ -138,21 +90,15 @@ struct ir_raw_event_ctrl {
 		unsigned count;
 		unsigned wanted_bits;
 	} rc6;
-<<<<<<< HEAD
-=======
 #endif
 #if IS_ENABLED(CONFIG_IR_SONY_DECODER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sony_dec {
 		int state;
 		u32 bits;
 		unsigned count;
 	} sony;
-<<<<<<< HEAD
-=======
 #endif
 #if IS_ENABLED(CONFIG_IR_JVC_DECODER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jvc_dec {
 		int state;
 		u16 bits;
@@ -161,29 +107,13 @@ struct ir_raw_event_ctrl {
 		bool first;
 		bool toggle;
 	} jvc;
-<<<<<<< HEAD
-	struct rc5_sz_dec {
-		int state;
-		u32 bits;
-		unsigned count;
-		unsigned wanted_bits;
-	} rc5_sz;
-=======
 #endif
 #if IS_ENABLED(CONFIG_IR_SANYO_DECODER)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sanyo_dec {
 		int state;
 		unsigned count;
 		u64 bits;
 	} sanyo;
-<<<<<<< HEAD
-	struct mce_kbd_dec {
-		struct input_dev *idev;
-		struct timer_list rx_timeout;
-		char name[64];
-		char phys[64];
-=======
 #endif
 #if IS_ENABLED(CONFIG_IR_SHARP_DECODER)
 	struct sharp_dec {
@@ -198,28 +128,12 @@ struct ir_raw_event_ctrl {
 		/* locks key up timer */
 		spinlock_t keylock;
 		struct timer_list rx_timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int state;
 		u8 header;
 		u32 body;
 		unsigned count;
 		unsigned wanted_bits;
 	} mce_kbd;
-<<<<<<< HEAD
-	struct lirc_codec {
-		struct rc_dev *dev;
-		struct lirc_driver *drv;
-		int carrier_low;
-
-		ktime_t gap_start;
-		u64 gap_duration;
-		bool gap;
-		bool send_timeout_reports;
-
-	} lirc;
-};
-
-=======
 #endif
 #if IS_ENABLED(CONFIG_IR_XMP_DECODER)
 	struct xmp_dec {
@@ -249,7 +163,6 @@ struct ir_raw_event_ctrl {
 /* Mutex for locking raw IR processing and handler change */
 extern struct mutex ir_raw_handler_lock;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* macros for IR decoders */
 static inline bool geq_margin(unsigned d1, unsigned d2, unsigned margin)
 {
@@ -277,14 +190,6 @@ static inline void decrease_duration(struct ir_raw_event *ev, unsigned duration)
 /* Returns true if event is normal pulse/space event */
 static inline bool is_timing_event(struct ir_raw_event ev)
 {
-<<<<<<< HEAD
-	return !ev.carrier_report && !ev.reset;
-}
-
-#define TO_US(duration)			DIV_ROUND_CLOSEST((duration), 1000)
-#define TO_STR(is_pulse)		((is_pulse) ? "pulse" : "space")
-
-=======
 	return !ev.carrier_report && !ev.overflow;
 }
 
@@ -397,83 +302,10 @@ int ir_raw_gen_pl(struct ir_raw_event **ev, unsigned int max,
 		  const struct ir_raw_timings_pl *timings,
 		  unsigned int n, u64 data);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Routines from rc-raw.c to be used internally and by decoders
  */
 u64 ir_raw_get_allowed_protocols(void);
-<<<<<<< HEAD
-int ir_raw_event_register(struct rc_dev *dev);
-void ir_raw_event_unregister(struct rc_dev *dev);
-int ir_raw_handler_register(struct ir_raw_handler *ir_raw_handler);
-void ir_raw_handler_unregister(struct ir_raw_handler *ir_raw_handler);
-void ir_raw_init(void);
-
-/*
- * Decoder initialization code
- *
- * Those load logic are called during ir-core init, and automatically
- * loads the compiled decoders for their usage with IR raw events
- */
-
-/* from ir-nec-decoder.c */
-#ifdef CONFIG_IR_NEC_DECODER_MODULE
-#define load_nec_decode()	request_module("ir-nec-decoder")
-#else
-static inline void load_nec_decode(void) { }
-#endif
-
-/* from ir-rc5-decoder.c */
-#ifdef CONFIG_IR_RC5_DECODER_MODULE
-#define load_rc5_decode()	request_module("ir-rc5-decoder")
-#else
-static inline void load_rc5_decode(void) { }
-#endif
-
-/* from ir-rc6-decoder.c */
-#ifdef CONFIG_IR_RC6_DECODER_MODULE
-#define load_rc6_decode()	request_module("ir-rc6-decoder")
-#else
-static inline void load_rc6_decode(void) { }
-#endif
-
-/* from ir-jvc-decoder.c */
-#ifdef CONFIG_IR_JVC_DECODER_MODULE
-#define load_jvc_decode()	request_module("ir-jvc-decoder")
-#else
-static inline void load_jvc_decode(void) { }
-#endif
-
-/* from ir-sony-decoder.c */
-#ifdef CONFIG_IR_SONY_DECODER_MODULE
-#define load_sony_decode()	request_module("ir-sony-decoder")
-#else
-static inline void load_sony_decode(void) { }
-#endif
-
-/* from ir-sanyo-decoder.c */
-#ifdef CONFIG_IR_SANYO_DECODER_MODULE
-#define load_sanyo_decode()	request_module("ir-sanyo-decoder")
-#else
-static inline void load_sanyo_decode(void) { }
-#endif
-
-/* from ir-mce_kbd-decoder.c */
-#ifdef CONFIG_IR_MCE_KBD_DECODER_MODULE
-#define load_mce_kbd_decode()	request_module("ir-mce_kbd-decoder")
-#else
-static inline void load_mce_kbd_decode(void) { }
-#endif
-
-/* from ir-lirc-codec.c */
-#ifdef CONFIG_IR_LIRC_CODEC_MODULE
-#define load_lirc_codec()	request_module("ir-lirc-codec")
-#else
-static inline void load_lirc_codec(void) { }
-#endif
-
-
-=======
 int ir_raw_event_prepare(struct rc_dev *dev);
 int ir_raw_event_register(struct rc_dev *dev);
 void ir_raw_event_free(struct rc_dev *dev);
@@ -516,5 +348,4 @@ static inline void lirc_bpf_free(struct rc_dev *dev) { }
 static inline void lirc_bpf_run(struct rc_dev *dev, u32 sample) { }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _RC_CORE_PRIV */

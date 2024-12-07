@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/* AFS cell and server record management
- *
- * Copyright (C) 2002 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- */
-
-#include <linux/module.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* AFS cell and server record management
  *
@@ -19,44 +5,11 @@
  * Written by David Howells (dhowells@redhat.com)
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/key.h>
 #include <linux/ctype.h>
 #include <linux/dns_resolver.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <keys/rxrpc-type.h>
-#include "internal.h"
-
-DECLARE_RWSEM(afs_proc_cells_sem);
-LIST_HEAD(afs_proc_cells);
-
-static LIST_HEAD(afs_cells);
-static DEFINE_RWLOCK(afs_cells_lock);
-static DECLARE_RWSEM(afs_cells_sem); /* add/remove serialisation */
-static DECLARE_WAIT_QUEUE_HEAD(afs_cells_freeable_wq);
-static struct afs_cell *afs_cell_root;
-
-/*
- * allocate a cell record and fill in its name, VL server address list and
- * allocate an anonymous key
- */
-static struct afs_cell *afs_cell_alloc(const char *name, unsigned namelen,
-				       char *vllist)
-{
-	struct afs_cell *cell;
-	struct key *key;
-	char keyname[4 + AFS_MAXCELLNAME + 1], *cp, *dp, *next;
-	char  *dvllist = NULL, *_vllist = NULL;
-	char  delimiter = ':';
-	int ret;
-
-	_enter("%*.*s,%s", namelen, namelen, name ?: "", vllist);
-
-	BUG_ON(!name); /* TODO: want to look up "this cell" in the cache */
-
-=======
 #include <linux/inet.h>
 #include <linux/namei.h>
 #include <keys/rxrpc-type.h>
@@ -169,16 +122,11 @@ static struct afs_cell *afs_alloc_cell(struct afs_net *net,
 	ASSERT(name);
 	if (namelen == 0)
 		return ERR_PTR(-EINVAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (namelen > AFS_MAXCELLNAME) {
 		_leave(" = -ENAMETOOLONG");
 		return ERR_PTR(-ENAMETOOLONG);
 	}
 
-<<<<<<< HEAD
-	/* allocate and initialise a cell record */
-	cell = kzalloc(sizeof(struct afs_cell) + namelen + 1, GFP_KERNEL);
-=======
 	/* Prohibit cell names that contain unprintable chars, '/' and '@' or
 	 * that begin with a dot.  This also precludes "@cell".
 	 */
@@ -193,82 +141,11 @@ static struct afs_cell *afs_alloc_cell(struct afs_net *net,
 	_enter("%*.*s,%s", namelen, namelen, name, addresses);
 
 	cell = kzalloc(sizeof(struct afs_cell), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cell) {
 		_leave(" = -ENOMEM");
 		return ERR_PTR(-ENOMEM);
 	}
 
-<<<<<<< HEAD
-	memcpy(cell->name, name, namelen);
-	cell->name[namelen] = 0;
-
-	atomic_set(&cell->usage, 1);
-	INIT_LIST_HEAD(&cell->link);
-	rwlock_init(&cell->servers_lock);
-	INIT_LIST_HEAD(&cell->servers);
-	init_rwsem(&cell->vl_sem);
-	INIT_LIST_HEAD(&cell->vl_list);
-	spin_lock_init(&cell->vl_lock);
-
-	/* if the ip address is invalid, try dns query */
-	if (!vllist || strlen(vllist) < 7) {
-		ret = dns_query("afsdb", name, namelen, "ipv4", &dvllist, NULL);
-		if (ret < 0) {
-			if (ret == -ENODATA || ret == -EAGAIN || ret == -ENOKEY)
-				/* translate these errors into something
-				 * userspace might understand */
-				ret = -EDESTADDRREQ;
-			_leave(" = %d", ret);
-			return ERR_PTR(ret);
-		}
-		_vllist = dvllist;
-
-		/* change the delimiter for user-space reply */
-		delimiter = ',';
-
-	} else {
-		_vllist = vllist;
-	}
-
-	/* fill in the VL server list from the rest of the string */
-	do {
-		unsigned a, b, c, d;
-
-		next = strchr(_vllist, delimiter);
-		if (next)
-			*next++ = 0;
-
-		if (sscanf(_vllist, "%u.%u.%u.%u", &a, &b, &c, &d) != 4)
-			goto bad_address;
-
-		if (a > 255 || b > 255 || c > 255 || d > 255)
-			goto bad_address;
-
-		cell->vl_addrs[cell->vl_naddrs++].s_addr =
-			htonl((a << 24) | (b << 16) | (c << 8) | d);
-
-	} while (cell->vl_naddrs < AFS_CELL_MAX_ADDRS && (_vllist = next));
-
-	/* create a key to represent an anonymous user */
-	memcpy(keyname, "afs@", 4);
-	dp = keyname + 4;
-	cp = cell->name;
-	do {
-		*dp++ = toupper(*cp);
-	} while (*cp++);
-
-	key = rxrpc_get_null_key(keyname);
-	if (IS_ERR(key)) {
-		_debug("no key");
-		ret = PTR_ERR(key);
-		goto error;
-	}
-	cell->anonymous_key = key;
-
-	_debug("anon key %p{%x}",
-	       cell->anonymous_key, key_serial(cell->anonymous_key));
-=======
 	cell->name = kmalloc(namelen + 1, GFP_KERNEL);
 	if (!cell->name) {
 		kfree(cell);
@@ -326,108 +203,21 @@ static struct afs_cell *afs_alloc_cell(struct afs_net *net,
 	atomic_inc(&net->cells_outstanding);
 	cell->debug_id = atomic_inc_return(&cell_debug_id);
 	trace_afs_cell(cell->debug_id, 1, 0, afs_cell_trace_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_leave(" = %p", cell);
 	return cell;
 
-<<<<<<< HEAD
-bad_address:
-	printk(KERN_ERR "kAFS: bad VL server IP address\n");
-	ret = -EINVAL;
-error:
-	key_put(cell->anonymous_key);
-	kfree(dvllist);
-=======
 parse_failed:
 	if (ret == -EINVAL)
 		printk(KERN_ERR "kAFS: bad VL server IP address\n");
 error:
 	kfree(cell->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(cell);
 	_leave(" = %d", ret);
 	return ERR_PTR(ret);
 }
 
 /*
-<<<<<<< HEAD
- * afs_cell_crate() - create a cell record
- * @name:	is the name of the cell.
- * @namsesz:	is the strlen of the cell name.
- * @vllist:	is a colon separated list of IP addresses in "a.b.c.d" format.
- * @retref:	is T to return the cell reference when the cell exists.
- */
-struct afs_cell *afs_cell_create(const char *name, unsigned namesz,
-				 char *vllist, bool retref)
-{
-	struct afs_cell *cell;
-	int ret;
-
-	_enter("%*.*s,%s", namesz, namesz, name ?: "", vllist);
-
-	down_write(&afs_cells_sem);
-	read_lock(&afs_cells_lock);
-	list_for_each_entry(cell, &afs_cells, link) {
-		if (strncasecmp(cell->name, name, namesz) == 0)
-			goto duplicate_name;
-	}
-	read_unlock(&afs_cells_lock);
-
-	cell = afs_cell_alloc(name, namesz, vllist);
-	if (IS_ERR(cell)) {
-		_leave(" = %ld", PTR_ERR(cell));
-		up_write(&afs_cells_sem);
-		return cell;
-	}
-
-	/* add a proc directory for this cell */
-	ret = afs_proc_cell_setup(cell);
-	if (ret < 0)
-		goto error;
-
-#ifdef CONFIG_AFS_FSCACHE
-	/* put it up for caching (this never returns an error) */
-	cell->cache = fscache_acquire_cookie(afs_cache_netfs.primary_index,
-					     &afs_cell_cache_index_def,
-					     cell);
-#endif
-
-	/* add to the cell lists */
-	write_lock(&afs_cells_lock);
-	list_add_tail(&cell->link, &afs_cells);
-	write_unlock(&afs_cells_lock);
-
-	down_write(&afs_proc_cells_sem);
-	list_add_tail(&cell->proc_link, &afs_proc_cells);
-	up_write(&afs_proc_cells_sem);
-	up_write(&afs_cells_sem);
-
-	_leave(" = %p", cell);
-	return cell;
-
-error:
-	up_write(&afs_cells_sem);
-	key_put(cell->anonymous_key);
-	kfree(cell);
-	_leave(" = %d", ret);
-	return ERR_PTR(ret);
-
-duplicate_name:
-	if (retref && !IS_ERR(cell))
-		afs_get_cell(cell);
-
-	read_unlock(&afs_cells_lock);
-	up_write(&afs_cells_sem);
-
-	if (retref) {
-		_leave(" = %p", cell);
-		return cell;
-	}
-
-	_leave(" = -EEXIST");
-	return ERR_PTR(-EEXIST);
-=======
  * afs_lookup_cell - Look up or create a cell record.
  * @net:	The network namespace
  * @name:	The name of the cell.
@@ -542,7 +332,6 @@ error:
 error_noput:
 	_leave(" = %d [error]", ret);
 	return ERR_PTR(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -550,18 +339,11 @@ error_noput:
  * - can be called with a module parameter string
  * - can be called from a write to /proc/fs/afs/rootcell
  */
-<<<<<<< HEAD
-int afs_cell_init(char *rootcell)
-{
-	struct afs_cell *old_root, *new_root;
-	char *cp;
-=======
 int afs_cell_init(struct afs_net *net, const char *rootcell)
 {
 	struct afs_cell *old_root, *new_root;
 	const char *cp, *vllist;
 	size_t len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_enter("");
 
@@ -574,15 +356,6 @@ int afs_cell_init(struct afs_net *net, const char *rootcell)
 	}
 
 	cp = strchr(rootcell, ':');
-<<<<<<< HEAD
-	if (!cp)
-		_debug("kAFS: no VL server IP addresses specified");
-	else
-		*cp++ = 0;
-
-	/* allocate a cell record for the root cell */
-	new_root = afs_cell_create(rootcell, strlen(rootcell), cp, false);
-=======
 	if (!cp) {
 		_debug("kAFS: no VL server IP addresses specified");
 		vllist = NULL;
@@ -594,21 +367,11 @@ int afs_cell_init(struct afs_net *net, const char *rootcell)
 
 	/* allocate a cell record for the root cell */
 	new_root = afs_lookup_cell(net, rootcell, len, vllist, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(new_root)) {
 		_leave(" = %ld", PTR_ERR(new_root));
 		return PTR_ERR(new_root);
 	}
 
-<<<<<<< HEAD
-	/* install the new cell */
-	write_lock(&afs_cells_lock);
-	old_root = afs_cell_root;
-	afs_cell_root = new_root;
-	write_unlock(&afs_cells_lock);
-	afs_put_cell(old_root);
-
-=======
 	if (!test_and_set_bit(AFS_CELL_FL_NO_GC, &new_root->flags))
 		afs_use_cell(new_root, afs_cell_trace_use_pin);
 
@@ -620,166 +383,11 @@ int afs_cell_init(struct afs_net *net, const char *rootcell)
 	up_write(&net->cells_lock);
 
 	afs_unuse_cell(net, old_root, afs_cell_trace_unuse_ws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_leave(" = 0");
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * lookup a cell record
- */
-struct afs_cell *afs_cell_lookup(const char *name, unsigned namesz,
-				 bool dns_cell)
-{
-	struct afs_cell *cell;
-
-	_enter("\"%*.*s\",", namesz, namesz, name ?: "");
-
-	down_read(&afs_cells_sem);
-	read_lock(&afs_cells_lock);
-
-	if (name) {
-		/* if the cell was named, look for it in the cell record list */
-		list_for_each_entry(cell, &afs_cells, link) {
-			if (strncmp(cell->name, name, namesz) == 0) {
-				afs_get_cell(cell);
-				goto found;
-			}
-		}
-		cell = ERR_PTR(-ENOENT);
-		if (dns_cell)
-			goto create_cell;
-	found:
-		;
-	} else {
-		cell = afs_cell_root;
-		if (!cell) {
-			/* this should not happen unless user tries to mount
-			 * when root cell is not set. Return an impossibly
-			 * bizarre errno to alert the user. Things like
-			 * ENOENT might be "more appropriate" but they happen
-			 * for other reasons.
-			 */
-			cell = ERR_PTR(-EDESTADDRREQ);
-		} else {
-			afs_get_cell(cell);
-		}
-
-	}
-
-	read_unlock(&afs_cells_lock);
-	up_read(&afs_cells_sem);
-	_leave(" = %p", cell);
-	return cell;
-
-create_cell:
-	read_unlock(&afs_cells_lock);
-	up_read(&afs_cells_sem);
-
-	cell = afs_cell_create(name, namesz, NULL, true);
-
-	_leave(" = %p", cell);
-	return cell;
-}
-
-#if 0
-/*
- * try and get a cell record
- */
-struct afs_cell *afs_get_cell_maybe(struct afs_cell *cell)
-{
-	write_lock(&afs_cells_lock);
-
-	if (cell && !list_empty(&cell->link))
-		afs_get_cell(cell);
-	else
-		cell = NULL;
-
-	write_unlock(&afs_cells_lock);
-	return cell;
-}
-#endif  /*  0  */
-
-/*
- * destroy a cell record
- */
-void afs_put_cell(struct afs_cell *cell)
-{
-	if (!cell)
-		return;
-
-	_enter("%p{%d,%s}", cell, atomic_read(&cell->usage), cell->name);
-
-	ASSERTCMP(atomic_read(&cell->usage), >, 0);
-
-	/* to prevent a race, the decrement and the dequeue must be effectively
-	 * atomic */
-	write_lock(&afs_cells_lock);
-
-	if (likely(!atomic_dec_and_test(&cell->usage))) {
-		write_unlock(&afs_cells_lock);
-		_leave("");
-		return;
-	}
-
-	ASSERT(list_empty(&cell->servers));
-	ASSERT(list_empty(&cell->vl_list));
-
-	write_unlock(&afs_cells_lock);
-
-	wake_up(&afs_cells_freeable_wq);
-
-	_leave(" [unused]");
-}
-
-/*
- * destroy a cell record
- * - must be called with the afs_cells_sem write-locked
- * - cell->link should have been broken by the caller
- */
-static void afs_cell_destroy(struct afs_cell *cell)
-{
-	_enter("%p{%d,%s}", cell, atomic_read(&cell->usage), cell->name);
-
-	ASSERTCMP(atomic_read(&cell->usage), >=, 0);
-	ASSERT(list_empty(&cell->link));
-
-	/* wait for everyone to stop using the cell */
-	if (atomic_read(&cell->usage) > 0) {
-		DECLARE_WAITQUEUE(myself, current);
-
-		_debug("wait for cell %s", cell->name);
-		set_current_state(TASK_UNINTERRUPTIBLE);
-		add_wait_queue(&afs_cells_freeable_wq, &myself);
-
-		while (atomic_read(&cell->usage) > 0) {
-			schedule();
-			set_current_state(TASK_UNINTERRUPTIBLE);
-		}
-
-		remove_wait_queue(&afs_cells_freeable_wq, &myself);
-		set_current_state(TASK_RUNNING);
-	}
-
-	_debug("cell dead");
-	ASSERTCMP(atomic_read(&cell->usage), ==, 0);
-	ASSERT(list_empty(&cell->servers));
-	ASSERT(list_empty(&cell->vl_list));
-
-	afs_proc_cell_remove(cell);
-
-	down_write(&afs_proc_cells_sem);
-	list_del_init(&cell->proc_link);
-	up_write(&afs_proc_cells_sem);
-
-#ifdef CONFIG_AFS_FSCACHE
-	fscache_relinquish_cookie(cell->cache, 0);
-#endif
-	key_put(cell->anonymous_key);
-	kfree(cell);
-
-=======
  * Update a cell's VL server address list from the DNS.
  */
 static int afs_update_cell(struct afs_cell *cell)
@@ -898,50 +506,10 @@ static void afs_cell_destroy(struct rcu_head *rcu)
 	kfree(cell);
 
 	afs_dec_cells_outstanding(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_leave(" [destroyed]");
 }
 
 /*
-<<<<<<< HEAD
- * purge in-memory cell database on module unload or afs_init() failure
- * - the timeout daemon is stopped before calling this
- */
-void afs_cell_purge(void)
-{
-	struct afs_cell *cell;
-
-	_enter("");
-
-	afs_put_cell(afs_cell_root);
-
-	down_write(&afs_cells_sem);
-
-	while (!list_empty(&afs_cells)) {
-		cell = NULL;
-
-		/* remove the next cell from the front of the list */
-		write_lock(&afs_cells_lock);
-
-		if (!list_empty(&afs_cells)) {
-			cell = list_entry(afs_cells.next,
-					  struct afs_cell, link);
-			list_del_init(&cell->link);
-		}
-
-		write_unlock(&afs_cells_lock);
-
-		if (cell) {
-			_debug("PURGING CELL %s (%d)",
-			       cell->name, atomic_read(&cell->usage));
-
-			/* now the cell should be left with no references */
-			afs_cell_destroy(cell);
-		}
-	}
-
-	up_write(&afs_cells_sem);
-=======
  * Queue the cell manager.
  */
 static void afs_queue_cell_manager(struct afs_net *net)
@@ -1381,6 +949,5 @@ void afs_cell_purge(struct afs_net *net)
 	_debug("wait");
 	wait_var_event(&net->cells_outstanding,
 		       !atomic_read(&net->cells_outstanding));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_leave("");
 }

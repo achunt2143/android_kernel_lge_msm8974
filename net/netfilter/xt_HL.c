@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TTL modification target for IP tables
  * (C) 2000,2005 by Harald Welte <laforge@netfilter.org>
  *
  * Hop Limit modification target for ip6tables
  * Maciej Soltysiak <solt@dns.toxicfilms.tv>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -39,11 +29,7 @@ ttl_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	const struct ipt_TTL_info *info = par->targinfo;
 	int new_ttl;
 
-<<<<<<< HEAD
-	if (!skb_make_writable(skb, skb->len))
-=======
 	if (skb_ensure_writable(skb, sizeof(*iph)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_DROP;
 
 	iph = ip_hdr(skb);
@@ -83,11 +69,7 @@ hl_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 	const struct ip6t_HL_info *info = par->targinfo;
 	int new_hl;
 
-<<<<<<< HEAD
-	if (!skb_make_writable(skb, skb->len))
-=======
 	if (skb_ensure_writable(skb, sizeof(*ip6h)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_DROP;
 
 	ip6h = ipv6_hdr(skb);
@@ -120,15 +102,8 @@ static int ttl_tg_check(const struct xt_tgchk_param *par)
 {
 	const struct ipt_TTL_info *info = par->targinfo;
 
-<<<<<<< HEAD
-	if (info->mode > IPT_TTL_MAXMODE) {
-		pr_info("TTL: invalid or unknown mode %u\n", info->mode);
-		return -EINVAL;
-	}
-=======
 	if (info->mode > IPT_TTL_MAXMODE)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->mode != IPT_TTL_SET && info->ttl == 0)
 		return -EINVAL;
 	return 0;
@@ -138,22 +113,10 @@ static int hl_tg6_check(const struct xt_tgchk_param *par)
 {
 	const struct ip6t_HL_info *info = par->targinfo;
 
-<<<<<<< HEAD
-	if (info->mode > IP6T_HL_MAXMODE) {
-		pr_info("invalid or unknown mode %u\n", info->mode);
-		return -EINVAL;
-	}
-	if (info->mode != IP6T_HL_SET && info->hop_limit == 0) {
-		pr_info("increment/decrement does not "
-			"make sense with value 0\n");
-		return -EINVAL;
-	}
-=======
 	if (info->mode > IP6T_HL_MAXMODE)
 		return -EINVAL;
 	if (info->mode != IP6T_HL_SET && info->hop_limit == 0)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

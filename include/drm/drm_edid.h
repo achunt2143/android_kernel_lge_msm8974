@@ -25,10 +25,6 @@
 
 #include <linux/types.h>
 
-<<<<<<< HEAD
-#define EDID_LENGTH 128
-#define DDC_ADDR 0x50
-=======
 enum hdmi_quantization_range;
 struct drm_connector;
 struct drm_device;
@@ -41,27 +37,19 @@ struct i2c_adapter;
 #define EDID_LENGTH 128
 #define DDC_ADDR 0x50
 #define DDC_ADDR2 0x52 /* E-DDC 1.2 - where DisplayID can hide */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CEA_EXT	    0x02
 #define VTB_EXT	    0x10
 #define DI_EXT	    0x40
 #define LS_EXT	    0x50
 #define MI_EXT	    0x60
-<<<<<<< HEAD
-=======
 #define DISPLAYID_EXT 0x70
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct est_timings {
 	u8 t1;
 	u8 t2;
 	u8 mfg_rsvd;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 00=16:10, 01=4:3, 10=5:4, 11=16:9 */
 #define EDID_TIMING_ASPECT_SHIFT 6
@@ -74,11 +62,7 @@ struct est_timings {
 struct std_timing {
 	u8 hsize; /* need to multiply by 8 then add 248 */
 	u8 vfreq_aspect;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRM_EDID_PT_HSYNC_POSITIVE (1 << 1)
 #define DRM_EDID_PT_VSYNC_POSITIVE (1 << 2)
@@ -104,18 +88,11 @@ struct detailed_pixel_timing {
 	u8 hborder;
 	u8 vborder;
 	u8 misc;
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* If it's not pixel timing, it'll be one of the below */
 struct detailed_data_string {
 	u8 str[13];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
 
 #define DRM_EDID_RANGE_OFFSET_MIN_VFREQ (1 << 0) /* 1.4 */
@@ -130,7 +107,6 @@ struct detailed_data_string {
 
 #define DRM_EDID_CVT_FLAGS_STANDARD_BLANKING (1 << 3)
 #define DRM_EDID_CVT_FLAGS_REDUCED_BLANKING  (1 << 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct detailed_data_monitor_range {
 	u8 min_vfreq;
@@ -138,15 +114,6 @@ struct detailed_data_monitor_range {
 	u8 min_hfreq_khz;
 	u8 max_hfreq_khz;
 	u8 pixel_clock_mhz; /* need to multiply by 10 */
-<<<<<<< HEAD
-	__le16 sec_gtf_toggle; /* A000=use above, 20=use below */
-	u8 hfreq_start_khz; /* need to multiply by 2 */
-	u8 c; /* need to divide by 2 */
-	__le16 m;
-	u8 k;
-	u8 j; /* need to divide by 2 */
-} __attribute__((packed));
-=======
 	u8 flags;
 	union {
 		struct {
@@ -168,37 +135,24 @@ struct detailed_data_monitor_range {
 		} __packed cvt;
 	} __packed formula;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct detailed_data_wpindex {
 	u8 white_yx_lo; /* Lower 2 bits each */
 	u8 white_x_hi;
 	u8 white_y_hi;
 	u8 gamma; /* need to divide by 100 then add 1 */
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct detailed_data_color_point {
 	u8 windex1;
 	u8 wpindex1[3];
 	u8 windex2;
 	u8 wpindex2[3];
-<<<<<<< HEAD
-} __attribute__((packed));
-
-struct cvt_timing {
-	u8 code[3];
-} __attribute__((packed));
-=======
 } __packed;
 
 struct cvt_timing {
 	u8 code[3];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct detailed_non_pixel {
 	u8 pad1;
@@ -212,13 +166,8 @@ struct detailed_non_pixel {
 		struct detailed_data_wpindex color;
 		struct std_timing timings[6];
 		struct cvt_timing cvt[4];
-<<<<<<< HEAD
-	} data;
-} __attribute__((packed));
-=======
 	} __packed data;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EDID_DETAIL_EST_TIMINGS 0xf7
 #define EDID_DETAIL_CVT_3BYTE 0xf8
@@ -235,13 +184,8 @@ struct detailed_timing {
 	union {
 		struct detailed_pixel_timing pixel_data;
 		struct detailed_non_pixel other_data;
-<<<<<<< HEAD
-	} data;
-} __attribute__((packed));
-=======
 	} __packed data;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRM_EDID_INPUT_SERRATION_VSYNC (1 << 0)
 #define DRM_EDID_INPUT_SYNC_ON_GREEN   (1 << 1)
@@ -250,25 +194,6 @@ struct detailed_timing {
 #define DRM_EDID_INPUT_BLANK_TO_BLACK  (1 << 4)
 #define DRM_EDID_INPUT_VIDEO_LEVEL     (3 << 5)
 #define DRM_EDID_INPUT_DIGITAL         (1 << 7)
-<<<<<<< HEAD
-#define DRM_EDID_DIGITAL_DEPTH_MASK    (7 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_UNDEF   (0 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_6       (1 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_8       (2 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_10      (3 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_12      (4 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_14      (5 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_16      (6 << 4)
-#define DRM_EDID_DIGITAL_DEPTH_RSVD    (7 << 4)
-#define DRM_EDID_DIGITAL_TYPE_UNDEF    (0)
-#define DRM_EDID_DIGITAL_TYPE_DVI      (1)
-#define DRM_EDID_DIGITAL_TYPE_HDMI_A   (2)
-#define DRM_EDID_DIGITAL_TYPE_HDMI_B   (3)
-#define DRM_EDID_DIGITAL_TYPE_MDDI     (4)
-#define DRM_EDID_DIGITAL_TYPE_DP       (5)
-
-#define DRM_EDID_FEATURE_DEFAULT_GTF      (1 << 0)
-=======
 #define DRM_EDID_DIGITAL_DEPTH_MASK    (7 << 4) /* 1.4 */
 #define DRM_EDID_DIGITAL_DEPTH_UNDEF   (0 << 4) /* 1.4 */
 #define DRM_EDID_DIGITAL_DEPTH_6       (1 << 4) /* 1.4 */
@@ -289,7 +214,6 @@ struct detailed_timing {
 
 #define DRM_EDID_FEATURE_DEFAULT_GTF      (1 << 0) /* 1.2 */
 #define DRM_EDID_FEATURE_CONTINUOUS_FREQ  (1 << 0) /* 1.4 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRM_EDID_FEATURE_PREFERRED_TIMING (1 << 1)
 #define DRM_EDID_FEATURE_STANDARD_COLOR   (1 << 2)
 /* If analog */
@@ -305,8 +229,6 @@ struct detailed_timing {
 #define DRM_EDID_FEATURE_PM_SUSPEND       (1 << 6)
 #define DRM_EDID_FEATURE_PM_STANDBY       (1 << 7)
 
-<<<<<<< HEAD
-=======
 #define DRM_EDID_HDMI_DC_48               (1 << 6)
 #define DRM_EDID_HDMI_DC_36               (1 << 5)
 #define DRM_EDID_HDMI_DC_30               (1 << 4)
@@ -350,7 +272,6 @@ struct detailed_timing {
 #define DRM_EDID_DSC_MAX_SLICES			0xf
 #define DRM_EDID_DSC_TOTAL_CHUNK_KBYTES		0x3f
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct edid {
 	u8 header[8];
 	/* Vendor & product info */
@@ -370,11 +291,7 @@ struct edid {
 	u8 features;
 	/* Color characteristics */
 	u8 red_green_lo;
-<<<<<<< HEAD
-	u8 black_white_lo;
-=======
 	u8 blue_white_lo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 red_x;
 	u8 red_y;
 	u8 green_x;
@@ -393,21 +310,6 @@ struct edid {
 	u8 extensions;
 	/* Checksum */
 	u8 checksum;
-<<<<<<< HEAD
-} __attribute__((packed));
-
-#define EDID_PRODUCT_ID(e) ((e)->prod_code[0] | ((e)->prod_code[1] << 8))
-
-struct drm_encoder;
-struct drm_connector;
-struct drm_display_mode;
-void drm_edid_to_eld(struct drm_connector *connector, struct edid *edid);
-int drm_av_sync_delay(struct drm_connector *connector,
-		      struct drm_display_mode *mode);
-struct drm_connector *drm_select_eld(struct drm_encoder *encoder,
-				     struct drm_display_mode *mode);
-int drm_load_edid_firmware(struct drm_connector *connector);
-=======
 } __packed;
 
 #define EDID_PRODUCT_ID(e) ((e)->prod_code[0] | ((e)->prod_code[1] << 8))
@@ -557,6 +459,5 @@ bool drm_edid_is_digital(const struct drm_edid *drm_edid);
 
 const u8 *drm_find_edid_extension(const struct drm_edid *drm_edid,
 				  int ext_id, int *ext_index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __DRM_EDID_H__ */

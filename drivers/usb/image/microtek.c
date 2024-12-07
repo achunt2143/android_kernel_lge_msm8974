@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Driver for Microtek Scanmaker X6 USB scanner, and possibly others.
  *
  * (C) Copyright 2000 John Fremlin <vii@penguinpowered.com>
@@ -129,28 +126,10 @@
 #include <linux/errno.h>
 #include <linux/random.h>
 #include <linux/poll.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/usb.h>
 #include <linux/proc_fs.h>
-<<<<<<< HEAD
-
-#include <linux/atomic.h>
-#include <linux/blkdev.h>
-#include "../../scsi/scsi.h"
-#include <scsi/scsi_host.h>
-
-#include "microtek.h"
-
-/*
- * Version Information
- */
-#define DRIVER_VERSION "v0.4.3"
-=======
 #include <linux/atomic.h>
 #include <linux/blkdev.h>
 
@@ -163,7 +142,6 @@
 
 #include "microtek.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "John Fremlin <vii@penguinpowered.com>, Oliver Neukum <Oliver.Neukum@lrz.uni-muenchen.de>"
 #define DRIVER_DESC "Microtek Scanmaker X6 USB scanner driver"
 
@@ -322,13 +300,7 @@ static inline void mts_show_command(struct scsi_cmnd *srb)
 	MTS_DEBUG( "Command %s (%d bytes)\n", what, srb->cmd_len);
 
  out:
-<<<<<<< HEAD
-	MTS_DEBUG( "  %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
-	       srb->cmnd[0], srb->cmnd[1], srb->cmnd[2], srb->cmnd[3], srb->cmnd[4], srb->cmnd[5],
-	       srb->cmnd[6], srb->cmnd[7], srb->cmnd[8], srb->cmnd[9]);
-=======
 	MTS_DEBUG( "  %10ph\n", srb->cmnd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -421,11 +393,7 @@ void mts_int_submit_urb (struct urb* transfer,
 	res = usb_submit_urb( transfer, GFP_ATOMIC );
 	if ( unlikely(res) ) {
 		MTS_INT_ERROR( "could not submit URB! Error was %d\n",(int)res );
-<<<<<<< HEAD
-		context->srb->result = DID_ERROR << 16;
-=======
 		set_host_byte(context->srb, DID_ERROR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mts_transfer_cleanup(transfer);
 	}
 }
@@ -474,11 +442,7 @@ static void mts_data_done( struct urb* transfer )
 		scsi_set_resid(context->srb, context->data_length -
 			       transfer->actual_length);
 	} else if ( unlikely(status) ) {
-<<<<<<< HEAD
-		context->srb->result = (status == -ENOENT ? DID_ABORT : DID_ERROR)<<16;
-=======
 		set_host_byte(context->srb, (status == -ENOENT ? DID_ABORT : DID_ERROR));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mts_get_status(transfer);
@@ -495,20 +459,12 @@ static void mts_command_done( struct urb *transfer )
 	        if (status == -ENOENT) {
 		        /* We are being killed */
 			MTS_DEBUG_GOT_HERE();
-<<<<<<< HEAD
-			context->srb->result = DID_ABORT<<16;
-=======
 			set_host_byte(context->srb, DID_ABORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 } else {
 		        /* A genuine error has occurred */
 			MTS_DEBUG_GOT_HERE();
 
-<<<<<<< HEAD
-		        context->srb->result = DID_ERROR<<16;
-=======
 		        set_host_byte(context->srb, DID_ERROR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 }
 		mts_transfer_cleanup(transfer);
 
@@ -536,10 +492,6 @@ static void mts_command_done( struct urb *transfer )
 
 static void mts_do_sg (struct urb* transfer)
 {
-<<<<<<< HEAD
-	struct scatterlist * sg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status = transfer->status;
 	MTS_INT_INIT();
 
@@ -547,19 +499,6 @@ static void mts_do_sg (struct urb* transfer)
 	                                          scsi_sg_count(context->srb));
 
 	if (unlikely(status)) {
-<<<<<<< HEAD
-                context->srb->result = (status == -ENOENT ? DID_ABORT : DID_ERROR)<<16;
-		mts_transfer_cleanup(transfer);
-        }
-
-	sg = scsi_sglist(context->srb);
-	context->fragment++;
-	mts_int_submit_urb(transfer,
-			   context->data_pipe,
-			   sg_virt(&sg[context->fragment]),
-			   sg[context->fragment].length,
-			   context->fragment + 1 == scsi_sg_count(context->srb) ?
-=======
                 set_host_byte(context->srb, (status == -ENOENT ? DID_ABORT : DID_ERROR));
 		mts_transfer_cleanup(transfer);
         }
@@ -570,7 +509,6 @@ static void mts_do_sg (struct urb* transfer)
 			   sg_virt(context->curr_sg),
 			   context->curr_sg->length,
 			   sg_is_last(context->curr_sg) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   mts_data_done : mts_do_sg);
 }
 
@@ -590,35 +528,20 @@ static void
 mts_build_transfer_context(struct scsi_cmnd *srb, struct mts_desc* desc)
 {
 	int pipe;
-<<<<<<< HEAD
-	struct scatterlist * sg;
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MTS_DEBUG_GOT_HERE();
 
 	desc->context.instance = desc;
 	desc->context.srb = srb;
-<<<<<<< HEAD
-	desc->context.fragment = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!scsi_bufflen(srb)) {
 		desc->context.data = NULL;
 		desc->context.data_length = 0;
 		return;
 	} else {
-<<<<<<< HEAD
-		sg = scsi_sglist(srb);
-		desc->context.data = sg_virt(&sg[0]);
-		desc->context.data_length = sg[0].length;
-=======
 		desc->context.curr_sg = scsi_sglist(srb);
 		desc->context.data = sg_virt(desc->context.curr_sg);
 		desc->context.data_length = desc->context.curr_sg->length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 
@@ -642,19 +565,10 @@ mts_build_transfer_context(struct scsi_cmnd *srb, struct mts_desc* desc)
 	desc->context.data_pipe = pipe;
 }
 
-<<<<<<< HEAD
-
-static int
-mts_scsi_queuecommand_lck(struct scsi_cmnd *srb, mts_scsi_cmnd_callback callback)
-{
-	struct mts_desc* desc = (struct mts_desc*)(srb->device->host->hostdata[0]);
-	int err = 0;
-=======
 static int mts_scsi_queuecommand_lck(struct scsi_cmnd *srb)
 {
 	mts_scsi_cmnd_callback callback = scsi_done;
 	struct mts_desc* desc = (struct mts_desc*)(srb->device->host->hostdata[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	MTS_DEBUG_GOT_HERE();
@@ -667,11 +581,7 @@ static int mts_scsi_queuecommand_lck(struct scsi_cmnd *srb)
 
 		MTS_DEBUG("this device doesn't exist\n");
 
-<<<<<<< HEAD
-		srb->result = DID_BAD_TARGET << 16;
-=======
 		set_host_byte(srb, DID_BAD_TARGET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if(likely(callback != NULL))
 			callback(srb);
@@ -698,31 +608,19 @@ static int mts_scsi_queuecommand_lck(struct scsi_cmnd *srb)
 
 	if(unlikely(res)){
 		MTS_ERROR("error %d submitting URB\n",(int)res);
-<<<<<<< HEAD
-		srb->result = DID_ERROR << 16;
-=======
 		set_host_byte(srb, DID_ERROR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if(likely(callback != NULL))
 			callback(srb);
 
 	}
 out:
-<<<<<<< HEAD
-	return err;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEF_SCSI_QCMD(mts_scsi_queuecommand)
 
-<<<<<<< HEAD
-static struct scsi_host_template mts_scsi_host_template = {
-=======
 static const struct scsi_host_template mts_scsi_host_template = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module			= THIS_MODULE,
 	.name			= "microtekX6",
 	.proc_name		= "microtekX6",
@@ -732,11 +630,6 @@ static const struct scsi_host_template mts_scsi_host_template = {
 	.sg_tablesize =		SG_ALL,
 	.can_queue =		1,
 	.this_id =		-1,
-<<<<<<< HEAD
-	.cmd_per_lun =		1,
-	.use_clustering =	1,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.emulated =		1,
 	.slave_alloc =		mts_slave_alloc,
 	.slave_configure =	mts_slave_configure,
@@ -825,13 +718,10 @@ static int mts_usb_probe(struct usb_interface *intf,
 
 	}
 
-<<<<<<< HEAD
-=======
 	if (ep_in_current != &ep_in_set[2]) {
 		MTS_WARNING("couldn't find two input bulk endpoints. Bailing out.\n");
 		return -ENODEV;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ( ep_out == -1 ) {
 		MTS_WARNING( "couldn't find an output bulk endpoint. Bailing out.\n" );

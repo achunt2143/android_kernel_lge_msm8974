@@ -2,11 +2,7 @@
  * XZ decompressor
  *
  * Authors: Lasse Collin <lasse.collin@tukaani.org>
-<<<<<<< HEAD
- *          Igor Pavlov <http://7-zip.org/>
-=======
  *          Igor Pavlov <https://7-zip.org/>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file has been put into the public domain.
  * You can do whatever you want with this file.
@@ -32,11 +28,7 @@
  * enum xz_mode - Operation mode
  *
  * @XZ_SINGLE:              Single-call mode. This uses less RAM than
-<<<<<<< HEAD
- *                          than multi-call modes, because the LZMA2
-=======
  *                          multi-call modes, because the LZMA2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                          dictionary doesn't need to be allocated as
  *                          part of the decoder state. All required data
  *                          structures are allocated at initialization,
@@ -242,8 +234,6 @@ XZ_EXTERN void xz_dec_reset(struct xz_dec *s);
 XZ_EXTERN void xz_dec_end(struct xz_dec *s);
 
 /*
-<<<<<<< HEAD
-=======
  * Decompressor for MicroLZMA, an LZMA variant with a very minimal header.
  * See xz_dec_microlzma_alloc() below for details.
  *
@@ -350,7 +340,6 @@ extern enum xz_ret xz_dec_microlzma_run(struct xz_dec_microlzma *s,
 extern void xz_dec_microlzma_end(struct xz_dec_microlzma *s);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Standalone build (userspace build or in-kernel build for boot time use)
  * needs a CRC32 implementation. For normal in-kernel use, kernel's own
  * CRC32 module is used instead, and users of this module don't need to

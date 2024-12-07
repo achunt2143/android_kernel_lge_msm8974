@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************************
  *
  *	USBVEND.H		Vendor-specific USB definitions
@@ -12,13 +9,6 @@
  ************************************************************************
  *
  *	Copyright (C) 1998 Inside Out Networks, Inc.
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ************************************************************************/
 
@@ -222,10 +212,7 @@
 //
 // Definitions for other product IDs
 #define ION_DEVICE_ID_MT4X56USB			0x1403	// OEM device
-<<<<<<< HEAD
-=======
 #define ION_DEVICE_ID_E5805A			0x1A01  // OEM device (rebranded Edgeport/4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define	GENERATION_ID_FROM_USB_PRODUCT_ID(ProductId)				\
@@ -607,11 +594,7 @@ struct ti_i2c_desc {
 	__u8	Type;			// Type of descriptor
 	__le16	Size;			// Size of data only not including header
 	__u8	CheckSum;		// Checksum (8 bit sum of data only)
-<<<<<<< HEAD
-	__u8	Data[0];		// Data starts here
-=======
 	__u8	Data[];		// Data starts here
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 // for 5152 devices only (type 2 record)
@@ -619,11 +602,7 @@ struct ti_i2c_desc {
 struct ti_i2c_firmware_rec {
 	__u8	Ver_Major;		// Firmware Major version number
 	__u8	Ver_Minor;		// Firmware Minor version number
-<<<<<<< HEAD
-	__u8	Data[0];		// Download starts here
-=======
 	__u8	Data[];		// Download starts here
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/mac.h
  */
@@ -45,7 +42,3 @@ struct mac_driver_desc {
     /* ... more stuff */
 };
 
-<<<<<<< HEAD
-int mac_partition(struct parsed_partitions *state);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

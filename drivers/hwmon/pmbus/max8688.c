@@ -1,33 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hardware monitoring driver for Maxim MAX8688
  *
  * Copyright (c) 2011 Ericsson AB.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-=======
  */
 
 #include <linux/bitops.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -40,23 +18,6 @@
 #define MAX8688_MFR_TEMPERATURE_PEAK	0xd6
 #define MAX8688_MFG_STATUS		0xd8
 
-<<<<<<< HEAD
-#define MAX8688_STATUS_OC_FAULT		(1 << 4)
-#define MAX8688_STATUS_OV_FAULT		(1 << 5)
-#define MAX8688_STATUS_OV_WARNING	(1 << 8)
-#define MAX8688_STATUS_UV_FAULT		(1 << 9)
-#define MAX8688_STATUS_UV_WARNING	(1 << 10)
-#define MAX8688_STATUS_UC_FAULT		(1 << 11)
-#define MAX8688_STATUS_OC_WARNING	(1 << 12)
-#define MAX8688_STATUS_OT_FAULT		(1 << 13)
-#define MAX8688_STATUS_OT_WARNING	(1 << 14)
-
-static int max8688_read_word_data(struct i2c_client *client, int page, int reg)
-{
-	int ret;
-
-	if (page)
-=======
 #define MAX8688_STATUS_OC_FAULT		BIT(4)
 #define MAX8688_STATUS_OV_FAULT		BIT(5)
 #define MAX8688_STATUS_OV_WARNING	BIT(8)
@@ -73,20 +34,10 @@ static int max8688_read_word_data(struct i2c_client *client, int page,
 	int ret;
 
 	if (page > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 
 	switch (reg) {
 	case PMBUS_VIRT_READ_VOUT_MAX:
-<<<<<<< HEAD
-		ret = pmbus_read_word_data(client, 0, MAX8688_MFR_VOUT_PEAK);
-		break;
-	case PMBUS_VIRT_READ_IOUT_MAX:
-		ret = pmbus_read_word_data(client, 0, MAX8688_MFR_IOUT_PEAK);
-		break;
-	case PMBUS_VIRT_READ_TEMP_MAX:
-		ret = pmbus_read_word_data(client, 0,
-=======
 		ret = pmbus_read_word_data(client, 0, 0xff,
 					   MAX8688_MFR_VOUT_PEAK);
 		break;
@@ -96,7 +47,6 @@ static int max8688_read_word_data(struct i2c_client *client, int page,
 		break;
 	case PMBUS_VIRT_READ_TEMP_MAX:
 		ret = pmbus_read_word_data(client, 0, 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   MAX8688_MFR_TEMPERATURE_PEAK);
 		break;
 	case PMBUS_VIRT_RESET_VOUT_HISTORY:
@@ -147,11 +97,7 @@ static int max8688_read_byte_data(struct i2c_client *client, int page, int reg)
 
 	switch (reg) {
 	case PMBUS_STATUS_VOUT:
-<<<<<<< HEAD
-		mfg_status = pmbus_read_word_data(client, 0,
-=======
 		mfg_status = pmbus_read_word_data(client, 0, 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  MAX8688_MFG_STATUS);
 		if (mfg_status < 0)
 			return mfg_status;
@@ -165,11 +111,7 @@ static int max8688_read_byte_data(struct i2c_client *client, int page, int reg)
 			ret |= PB_VOLTAGE_OV_FAULT;
 		break;
 	case PMBUS_STATUS_IOUT:
-<<<<<<< HEAD
-		mfg_status = pmbus_read_word_data(client, 0,
-=======
 		mfg_status = pmbus_read_word_data(client, 0, 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  MAX8688_MFG_STATUS);
 		if (mfg_status < 0)
 			return mfg_status;
@@ -181,11 +123,7 @@ static int max8688_read_byte_data(struct i2c_client *client, int page, int reg)
 			ret |= PB_IOUT_OC_FAULT;
 		break;
 	case PMBUS_STATUS_TEMPERATURE:
-<<<<<<< HEAD
-		mfg_status = pmbus_read_word_data(client, 0,
-=======
 		mfg_status = pmbus_read_word_data(client, 0, 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  MAX8688_MFG_STATUS);
 		if (mfg_status < 0)
 			return mfg_status;
@@ -227,16 +165,9 @@ static struct pmbus_driver_info max8688_info = {
 	.write_word_data = max8688_write_word_data,
 };
 
-<<<<<<< HEAD
-static int max8688_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-	return pmbus_do_probe(client, id, &max8688_info);
-=======
 static int max8688_probe(struct i2c_client *client)
 {
 	return pmbus_do_probe(client, &max8688_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id max8688_id[] = {
@@ -252,10 +183,6 @@ static struct i2c_driver max8688_driver = {
 		   .name = "max8688",
 		   },
 	.probe = max8688_probe,
-<<<<<<< HEAD
-	.remove = pmbus_do_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = max8688_id,
 };
 
@@ -264,7 +191,4 @@ module_i2c_driver(max8688_driver);
 MODULE_AUTHOR("Guenter Roeck");
 MODULE_DESCRIPTION("PMBus driver for Maxim MAX8688");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_IMPORT_NS(PMBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

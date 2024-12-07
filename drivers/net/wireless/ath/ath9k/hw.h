@@ -20,25 +20,17 @@
 #include <linux/if_ether.h>
 #include <linux/delay.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/firmware.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mac.h"
 #include "ani.h"
 #include "eeprom.h"
 #include "calib.h"
 #include "reg.h"
-<<<<<<< HEAD
-#include "phy.h"
-#include "btcoex.h"
-=======
 #include "reg_mci.h"
 #include "phy.h"
 #include "btcoex.h"
 #include "dynack.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "../regd.h"
 
@@ -59,15 +51,11 @@
 #define AR9300_DEVID_AR9580	0x0033
 #define AR9300_DEVID_AR9462	0x0034
 #define AR9300_DEVID_AR9330	0x0035
-<<<<<<< HEAD
-#define AR9485_DEVID_AR1111	0x0037
-=======
 #define AR9300_DEVID_QCA955X	0x0038
 #define AR9485_DEVID_AR1111	0x0037
 #define AR9300_DEVID_AR9565     0x0036
 #define AR9300_DEVID_AR953X     0x003d
 #define AR9300_DEVID_QCA956X    0x003f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR5416_AR9100_DEVID	0x000b
 
@@ -112,12 +100,6 @@
 			(_ah)->reg_ops.write_flush((_ah));	\
 	} while (0)
 
-<<<<<<< HEAD
-#define PR_EEP(_s, _val)						\
-	do {								\
-		len += snprintf(buf + len, size - len, "%20s : %10d\n",	\
-				_s, (_val));				\
-=======
 #define ENABLE_REG_RMW_BUFFER(_ah)					\
 	do {								\
 		if ((_ah)->reg_ops.enable_rmw_buffer)	\
@@ -134,7 +116,6 @@
 	do {								\
 		len += scnprintf(buf + len, size - len, "%20s : %10d\n",\
 				 _s, (_val));				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SM(_v, _f)  (((_v) << _f##_S) & _f)
@@ -157,11 +138,8 @@
 
 #define REG_WRITE_ARRAY(iniarray, column, regWr) \
 	ath9k_hw_write_array(ah, iniarray, column, &(regWr))
-<<<<<<< HEAD
-=======
 #define REG_READ_ARRAY(ah, array, size) \
 	ath9k_hw_read_array(ah, array, size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR_GPIO_OUTPUT_MUX_AS_OUTPUT             0
 #define AR_GPIO_OUTPUT_MUX_AS_PCIE_ATTENTION_LED 1
@@ -182,10 +160,6 @@
 #define AR_GPIO_OUTPUT_MUX_AS_RUCKUS_DATA        0x1e
 
 #define AR_GPIOD_MASK               0x00001FFF
-<<<<<<< HEAD
-#define AR_GPIO_BIT(_gpio)          (1 << (_gpio))
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BASE_ACTIVATE_DELAY         100
 #define RTC_PLL_SETTLE_DELAY        (AR_SREV_9340(ah) ? 1000 : 100)
@@ -199,10 +173,7 @@
 #define ATH9K_NUM_QUEUES            10
 
 #define MAX_RATE_POWER              63
-<<<<<<< HEAD
-=======
 #define MAX_COMBINED_POWER          254 /* 128 dBm, chosen to fit in u8 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AH_WAIT_TIMEOUT             100000 /* (us) */
 #define AH_TSF_WRITE_TIMEOUT        100    /* (us) */
 #define AH_TIME_QUANTUM             10
@@ -215,11 +186,7 @@
 #define CAB_TIMEOUT_VAL             10
 #define BEACON_TIMEOUT_VAL          10
 #define MIN_BEACON_TIMEOUT_VAL      1
-<<<<<<< HEAD
-#define SLEEP_SLOP                  3
-=======
 #define SLEEP_SLOP                  TU_TO_USEC(3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INIT_CONFIG_STATUS          0x00000000
 #define INIT_RSSI_THR               0x00000700
@@ -234,8 +201,6 @@
 #define PAPRD_TABLE_SZ			24
 #define PAPRD_IDEAL_AGC2_PWR_RANGE	0xe0
 
-<<<<<<< HEAD
-=======
 /*
  * Wake on Wireless
  */
@@ -268,7 +233,6 @@
 #define AH_WOW_LINK_CHANGE		BIT(2)
 #define AH_WOW_BEACON_MISS		BIT(3)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ath_hw_txq_subtype {
 	ATH_TXQ_AC_BK = 0,
 	ATH_TXQ_AC_BE = 1,
@@ -293,19 +257,10 @@ enum ath9k_hw_caps {
 	ATH9K_HW_CAP_LDPC			= BIT(6),
 	ATH9K_HW_CAP_FASTCLOCK			= BIT(7),
 	ATH9K_HW_CAP_SGI_20			= BIT(8),
-<<<<<<< HEAD
-	ATH9K_HW_CAP_PAPRD			= BIT(9),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATH9K_HW_CAP_ANT_DIV_COMB		= BIT(10),
 	ATH9K_HW_CAP_2GHZ			= BIT(11),
 	ATH9K_HW_CAP_5GHZ			= BIT(12),
 	ATH9K_HW_CAP_APM			= BIT(13),
-<<<<<<< HEAD
-	ATH9K_HW_CAP_RTT			= BIT(14),
-	ATH9K_HW_CAP_MCI			= BIT(15),
-	ATH9K_HW_CAP_DFS			= BIT(16),
-=======
 #ifdef CONFIG_ATH9K_PCOEM
 	ATH9K_HW_CAP_RTT			= BIT(14),
 	ATH9K_HW_CAP_MCI			= BIT(15),
@@ -335,7 +290,6 @@ struct ath9k_hw_wow {
 	u32 wow_event_mask;
 	u32 wow_event_mask2;
 	u8 max_patterns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath9k_hw_capabilities {
@@ -343,67 +297,24 @@ struct ath9k_hw_capabilities {
 	u16 rts_aggr_limit;
 	u8 tx_chainmask;
 	u8 rx_chainmask;
-<<<<<<< HEAD
-	u8 max_txchains;
-	u8 max_rxchains;
-	u8 num_gpio_pins;
-=======
 	u8 chip_chainmask;
 	u8 max_txchains;
 	u8 max_rxchains;
 	u8 num_gpio_pins;
 	u32 gpio_mask;
 	u32 gpio_requested;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rx_hp_qdepth;
 	u8 rx_lp_qdepth;
 	u8 rx_status_len;
 	u8 tx_desc_len;
 	u8 txs_len;
-<<<<<<< HEAD
-	u16 pcie_lcr_offset;
-	bool pcie_lcr_extsync_en;
 };
 
-struct ath9k_ops_config {
-	int dma_beacon_response_time;
-	int sw_beacon_response_time;
-	int additional_swba_backoff;
-	int ack_6mb;
-	u32 cwm_ignore_extcca;
-	bool pcieSerDesWrite;
-	u8 pcie_clock_req;
-	u32 pcie_waen;
-	u8 analog_shiftreg;
-	u8 paprd_disable;
-	u32 ofdm_trig_low;
-	u32 ofdm_trig_high;
-	u32 cck_trig_high;
-	u32 cck_trig_low;
-	u32 enable_ani;
-	int serialize_regmode;
-	bool rx_intr_mitigation;
-	bool tx_intr_mitigation;
-#define SPUR_DISABLE        	0
-#define SPUR_ENABLE_IOCTL   	1
-#define SPUR_ENABLE_EEPROM  	2
-#define AR_SPUR_5413_1      	1640
-#define AR_SPUR_5413_2      	1200
-=======
-};
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_NO_SPUR      	0x8000
 #define AR_BASE_FREQ_2GHZ   	2300
 #define AR_BASE_FREQ_5GHZ   	4900
 #define AR_SPUR_FEEQ_BOUND_HT40 19
 #define AR_SPUR_FEEQ_BOUND_HT20 10
-<<<<<<< HEAD
-	int spurmode;
-	u16 spurchans[AR_EEPROM_MODAL_SPURS][2];
-	u8 max_txtrig_level;
-	u16 ani_poll_interval; /* ANI poll interval in ms */
-=======
 
 enum ath9k_hw_hang_checks {
 	HW_BB_WATCHDOG            = BIT(0),
@@ -449,7 +360,6 @@ struct ath9k_ops_config {
 	u8 pll_pwrsave;
 	bool tx_gain_buffalo;
 	bool led_active_high;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ath9k_int {
@@ -503,61 +413,6 @@ enum ath9k_int {
 	ATH9K_INT_NOCARD = 0xffffffff
 };
 
-<<<<<<< HEAD
-#define CHANNEL_CW_INT    0x00002
-#define CHANNEL_CCK       0x00020
-#define CHANNEL_OFDM      0x00040
-#define CHANNEL_2GHZ      0x00080
-#define CHANNEL_5GHZ      0x00100
-#define CHANNEL_PASSIVE   0x00200
-#define CHANNEL_DYN       0x00400
-#define CHANNEL_HALF      0x04000
-#define CHANNEL_QUARTER   0x08000
-#define CHANNEL_HT20      0x10000
-#define CHANNEL_HT40PLUS  0x20000
-#define CHANNEL_HT40MINUS 0x40000
-
-#define CHANNEL_A           (CHANNEL_5GHZ|CHANNEL_OFDM)
-#define CHANNEL_B           (CHANNEL_2GHZ|CHANNEL_CCK)
-#define CHANNEL_G           (CHANNEL_2GHZ|CHANNEL_OFDM)
-#define CHANNEL_G_HT20      (CHANNEL_2GHZ|CHANNEL_HT20)
-#define CHANNEL_A_HT20      (CHANNEL_5GHZ|CHANNEL_HT20)
-#define CHANNEL_G_HT40PLUS  (CHANNEL_2GHZ|CHANNEL_HT40PLUS)
-#define CHANNEL_G_HT40MINUS (CHANNEL_2GHZ|CHANNEL_HT40MINUS)
-#define CHANNEL_A_HT40PLUS  (CHANNEL_5GHZ|CHANNEL_HT40PLUS)
-#define CHANNEL_A_HT40MINUS (CHANNEL_5GHZ|CHANNEL_HT40MINUS)
-#define CHANNEL_ALL				\
-	(CHANNEL_OFDM|				\
-	 CHANNEL_CCK|				\
-	 CHANNEL_2GHZ |				\
-	 CHANNEL_5GHZ |				\
-	 CHANNEL_HT20 |				\
-	 CHANNEL_HT40PLUS |			\
-	 CHANNEL_HT40MINUS)
-
-#define MAX_RTT_TABLE_ENTRY     6
-#define RTT_HIST_MAX            3
-struct ath9k_rtt_hist {
-	u32 table[AR9300_MAX_CHAINS][RTT_HIST_MAX][MAX_RTT_TABLE_ENTRY];
-	u8 num_readings;
-};
-
-#define MAX_IQCAL_MEASUREMENT	8
-#define MAX_CL_TAB_ENTRY	16
-
-struct ath9k_hw_cal_data {
-	u16 channel;
-	u32 channelFlags;
-	u32 chanmode;
-	int32_t CalValid;
-	int8_t iCoff;
-	int8_t qCoff;
-	bool paprd_done;
-	bool nfcal_pending;
-	bool nfcal_interference;
-	bool done_txiqcal_once;
-	bool done_txclcal_once;
-=======
 #define MAX_RTT_TABLE_ENTRY     6
 #define MAX_IQCAL_MEASUREMENT	8
 #define MAX_CL_TAB_ENTRY	16
@@ -583,54 +438,17 @@ struct ath9k_hw_cal_data {
 	int8_t iCoff;
 	int8_t qCoff;
 	u8 caldac[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 small_signal_gain[AR9300_MAX_CHAINS];
 	u32 pa_table[AR9300_MAX_CHAINS][PAPRD_TABLE_SZ];
 	u32 num_measures[AR9300_MAX_CHAINS];
 	int tx_corr_coeff[MAX_IQCAL_MEASUREMENT][AR9300_MAX_CHAINS];
 	u32 tx_clcal[AR9300_MAX_CHAINS][MAX_CL_TAB_ENTRY];
-<<<<<<< HEAD
-	struct ath9k_nfcal_hist nfCalHist[NUM_NF_READINGS];
-	struct ath9k_rtt_hist rtt_hist;
-=======
 	u32 rtt_table[AR9300_MAX_CHAINS][MAX_RTT_TABLE_ENTRY];
 	struct ath9k_nfcal_hist nfCalHist[NUM_NF_READINGS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath9k_channel {
 	struct ieee80211_channel *chan;
-<<<<<<< HEAD
-	struct ar5416AniState ani;
-	u16 channel;
-	u32 channelFlags;
-	u32 chanmode;
-	s16 noisefloor;
-};
-
-#define IS_CHAN_G(_c) ((((_c)->channelFlags & (CHANNEL_G)) == CHANNEL_G) || \
-       (((_c)->channelFlags & CHANNEL_G_HT20) == CHANNEL_G_HT20) || \
-       (((_c)->channelFlags & CHANNEL_G_HT40PLUS) == CHANNEL_G_HT40PLUS) || \
-       (((_c)->channelFlags & CHANNEL_G_HT40MINUS) == CHANNEL_G_HT40MINUS))
-#define IS_CHAN_OFDM(_c) (((_c)->channelFlags & CHANNEL_OFDM) != 0)
-#define IS_CHAN_5GHZ(_c) (((_c)->channelFlags & CHANNEL_5GHZ) != 0)
-#define IS_CHAN_2GHZ(_c) (((_c)->channelFlags & CHANNEL_2GHZ) != 0)
-#define IS_CHAN_HALF_RATE(_c) (((_c)->channelFlags & CHANNEL_HALF) != 0)
-#define IS_CHAN_QUARTER_RATE(_c) (((_c)->channelFlags & CHANNEL_QUARTER) != 0)
-#define IS_CHAN_A_FAST_CLOCK(_ah, _c)			\
-	((((_c)->channelFlags & CHANNEL_5GHZ) != 0) &&	\
-	 ((_ah)->caps.hw_caps & ATH9K_HW_CAP_FASTCLOCK))
-
-/* These macros check chanmode and not channelFlags */
-#define IS_CHAN_B(_c) ((_c)->chanmode == CHANNEL_B)
-#define IS_CHAN_HT20(_c) (((_c)->chanmode == CHANNEL_A_HT20) ||	\
-			  ((_c)->chanmode == CHANNEL_G_HT20))
-#define IS_CHAN_HT40(_c) (((_c)->chanmode == CHANNEL_A_HT40PLUS) ||	\
-			  ((_c)->chanmode == CHANNEL_A_HT40MINUS) ||	\
-			  ((_c)->chanmode == CHANNEL_G_HT40PLUS) ||	\
-			  ((_c)->chanmode == CHANNEL_G_HT40MINUS))
-#define IS_CHAN_HT(_c) (IS_CHAN_HT20((_c)) || IS_CHAN_HT40((_c)))
-=======
 	u16 channel;
 	u16 channelFlags;
 	s16 noisefloor;
@@ -660,7 +478,6 @@ struct ath9k_channel {
 
 #define IS_CHAN_HT40PLUS(_c) ((_c)->channelFlags & CHANNEL_HT40PLUS)
 #define IS_CHAN_HT40MINUS(_c) ((_c)->channelFlags & CHANNEL_HT40MINUS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum ath9k_power_mode {
 	ATH9K_PM_AWAKE = 0,
@@ -687,13 +504,6 @@ struct ath9k_beacon_state {
 	u32 bs_intval;
 #define ATH9K_TSFOOR_THRESHOLD    0x00004240 /* 16k us */
 	u32 bs_dtimperiod;
-<<<<<<< HEAD
-	u16 bs_cfpperiod;
-	u16 bs_cfpmaxduration;
-	u32 bs_cfpnext;
-	u16 bs_timoffset;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 bs_bmissthreshold;
 	u32 bs_sleepduration;
 	u32 bs_tsfoor_threshold;
@@ -729,15 +539,6 @@ struct ath9k_hw_version {
 
 #define AR_GENTMR_BIT(_index)	(1 << (_index))
 
-<<<<<<< HEAD
-/*
- * Using de Bruijin sequence to look up 1's index in a 32 bit number
- * debruijn32 = 0000 0111 0111 1100 1011 0101 0011 0001
- */
-#define debruijn32 0x077CB531U
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ath_gen_timer_configuration {
 	u32 next_addr;
 	u32 period_addr;
@@ -753,18 +554,9 @@ struct ath_gen_timer {
 };
 
 struct ath_gen_timer_table {
-<<<<<<< HEAD
-	u32 gen_timer_index[32];
-	struct ath_gen_timer *timers[ATH_MAX_GEN_TIMER];
-	union {
-		unsigned long timer_bits;
-		u16 val;
-	} timer_mask;
-=======
 	struct ath_gen_timer *timers[ATH_MAX_GEN_TIMER];
 	u16 timer_mask;
 	bool tsf2_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_hw_antcomb_conf {
@@ -774,10 +566,7 @@ struct ath_hw_antcomb_conf {
 	u8 main_gaintb;
 	u8 alt_gaintb;
 	int lna1_lna2_delta;
-<<<<<<< HEAD
-=======
 	int lna1_lna2_switch_delta;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 div_group;
 };
 
@@ -824,19 +613,10 @@ struct ath_hw_radar_conf {
  * @init_cal_settings: setup types of calibrations supported
  * @init_cal: starts actual calibration
  *
-<<<<<<< HEAD
- * @init_mode_regs: Initializes mode registers
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @init_mode_gain_regs: Initialize TX/RX gain registers
  *
  * @rf_set_freq: change frequency
  * @spur_mitigate_freq: spur mitigation
-<<<<<<< HEAD
- * @rf_alloc_ext_banks:
- * @rf_free_ext_banks:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @set_rf_regs:
  * @compute_pll_control: compute the PLL control value to use for
  *	AR_RTC_PLL_CONTROL for a given channel
@@ -847,21 +627,14 @@ struct ath_hw_radar_conf {
  *	register settings through the register initialization.
  */
 struct ath_hw_private_ops {
-<<<<<<< HEAD
-=======
 	void (*init_hang_checks)(struct ath_hw *ah);
 	bool (*detect_mac_hang)(struct ath_hw *ah);
 	bool (*detect_bb_hang)(struct ath_hw *ah);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Calibration ops */
 	void (*init_cal_settings)(struct ath_hw *ah);
 	bool (*init_cal)(struct ath_hw *ah, struct ath9k_channel *chan);
 
-<<<<<<< HEAD
-	void (*init_mode_regs)(struct ath_hw *ah);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*init_mode_gain_regs)(struct ath_hw *ah);
 	void (*setup_calibration)(struct ath_hw *ah,
 				  struct ath9k_cal_list *currCal);
@@ -871,11 +644,6 @@ struct ath_hw_private_ops {
 			   struct ath9k_channel *chan);
 	void (*spur_mitigate_freq)(struct ath_hw *ah,
 				   struct ath9k_channel *chan);
-<<<<<<< HEAD
-	int (*rf_alloc_ext_banks)(struct ath_hw *ah);
-	void (*rf_free_ext_banks)(struct ath_hw *ah);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool (*set_rf_regs)(struct ath_hw *ah,
 			    struct ath9k_channel *chan,
 			    u16 modesIndex);
@@ -902,8 +670,6 @@ struct ath_hw_private_ops {
 
 	/* ANI */
 	void (*ani_cache_ini_regs)(struct ath_hw *ah);
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
 	bool (*is_aic_enabled)(struct ath_hw *ah);
@@ -939,61 +705,39 @@ struct ath_spec_scan {
 	u8 count;
 	u8 period;
 	u8 fft_period;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct ath_hw_ops - callbacks used by hardware code and driver code
  *
-<<<<<<< HEAD
- * This structure contains callbacks designed to to be used internally by
-=======
  * This structure contains callbacks designed to be used internally by
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * hardware code and also by the lower level driver.
  *
  * @config_pci_powersave:
  * @calibrate: periodic calibration for NF, ANI, IQ, ADC gain, ADC-DC
-<<<<<<< HEAD
-=======
  *
  * @spectral_scan_config: set parameters for spectral scan and enable/disable it
  * @spectral_scan_trigger: trigger a spectral scan run
  * @spectral_scan_wait: wait for a spectral scan run to finish
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ath_hw_ops {
 	void (*config_pci_powersave)(struct ath_hw *ah,
 				     bool power_off);
 	void (*rx_enable)(struct ath_hw *ah);
 	void (*set_desc_link)(void *ds, u32 link);
-<<<<<<< HEAD
-	bool (*calibrate)(struct ath_hw *ah,
-			  struct ath9k_channel *chan,
-			  u8 rxchainmask,
-			  bool longcal);
-	bool (*get_isr)(struct ath_hw *ah, enum ath9k_int *masked);
-=======
 	int (*calibrate)(struct ath_hw *ah, struct ath9k_channel *chan,
 			 u8 rxchainmask, bool longcal);
 	bool (*get_isr)(struct ath_hw *ah, enum ath9k_int *masked,
 			u32 *sync_cause_p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*set_txdesc)(struct ath_hw *ah, void *ds,
 			   struct ath_tx_info *i);
 	int (*proc_txdesc)(struct ath_hw *ah, void *ds,
 			   struct ath_tx_status *ts);
-<<<<<<< HEAD
-=======
 	int (*get_duration)(struct ath_hw *ah, const void *ds, int index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*antdiv_comb_conf_get)(struct ath_hw *ah,
 			struct ath_hw_antcomb_conf *antconf);
 	void (*antdiv_comb_conf_set)(struct ath_hw *ah,
 			struct ath_hw_antcomb_conf *antconf);
-<<<<<<< HEAD
-
-=======
 	void (*spectral_scan_config)(struct ath_hw *ah,
 				     struct ath_spec_scan *param);
 	void (*spectral_scan_trigger)(struct ath_hw *ah);
@@ -1006,18 +750,14 @@ struct ath_hw_ops {
 #ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
 	void (*set_bt_ant_diversity)(struct ath_hw *hw, bool enable);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_nf_limits {
 	s16 max;
 	s16 min;
 	s16 nominal;
-<<<<<<< HEAD
-=======
 	s16 cal[AR5416_MAX_CHAINS];
 	s16 pwr[AR5416_MAX_CHAINS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ath_cal_list {
@@ -1030,18 +770,12 @@ enum ath_cal_list {
 #define AH_USE_EEPROM   0x1
 #define AH_UNPLUGGED    0x2 /* The card has been physically removed. */
 #define AH_FASTCC       0x4
-<<<<<<< HEAD
-=======
 #define AH_NO_EEP_SWAP  0x8 /* Do not swap EEPROM data */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ath_hw {
 	struct ath_ops reg_ops;
 
-<<<<<<< HEAD
-=======
 	struct device *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_hw *hw;
 	struct ath_common common;
 	struct ath9k_hw_version hw_version;
@@ -1058,12 +792,8 @@ struct ath_hw {
 	} eeprom;
 	const struct eeprom_ops *eep_ops;
 
-<<<<<<< HEAD
-	bool sw_mgmt_crypto;
-=======
 	bool sw_mgmt_crypto_tx;
 	bool sw_mgmt_crypto_rx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool is_pciexpress;
 	bool aspm_enabled;
 	bool is_monitoring;
@@ -1077,13 +807,9 @@ struct ath_hw {
 	u32 rfkill_gpio;
 	u32 rfkill_polarity;
 	u32 ah_flags;
-<<<<<<< HEAD
-
-=======
 	s16 nf_override;
 
 	bool reset_power_on;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool htc_reset_init;
 
 	enum nl80211_iftype opmode;
@@ -1094,13 +820,8 @@ struct ath_hw {
 	struct ath9k_pacal_info pacal_info;
 	struct ar5416Stats stats;
 	struct ath9k_tx_queue_info txq[ATH9K_NUM_TX_QUEUES];
-<<<<<<< HEAD
-
-	int16_t curchan_rad_index;
-=======
 	DECLARE_BITMAP(pending_del_keymap, ATH_KEYMAX);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum ath9k_int imask;
 	u32 imrs2_reg;
 	u32 txok_interrupt_mask;
@@ -1110,25 +831,14 @@ struct ath_hw {
 	u32 txurn_interrupt_mask;
 	atomic_t intr_ref_cnt;
 	bool chip_fullsleep;
-<<<<<<< HEAD
-	u32 atim_window;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 modes_index;
 
 	/* Calibration */
 	u32 supp_cals;
-<<<<<<< HEAD
-	struct ath9k_cal_list iq_caldata;
-	struct ath9k_cal_list adcgain_caldata;
-	struct ath9k_cal_list adcdc_caldata;
-	struct ath9k_cal_list tempCompCalData;
-=======
 	unsigned long cal_start_time;
 	struct ath9k_cal_list iq_caldata;
 	struct ath9k_cal_list adcgain_caldata;
 	struct ath9k_cal_list adcdc_caldata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath9k_cal_list *cal_list;
 	struct ath9k_cal_list *cal_list_last;
 	struct ath9k_cal_list *cal_list_curr;
@@ -1164,14 +874,6 @@ struct ath_hw {
 
 	u32 sta_id1_defaults;
 	u32 misc_mode;
-<<<<<<< HEAD
-	enum {
-		AUTO_32KHZ,
-		USE_32KHZ,
-		DONT_USE_32KHZ,
-	} enable_32kHz_clock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Private to hardware code */
 	struct ath_hw_private_ops private_ops;
@@ -1179,40 +881,17 @@ struct ath_hw {
 	struct ath_hw_ops ops;
 
 	/* Used to program the radio on non single-chip devices */
-<<<<<<< HEAD
-	u32 *analogBank0Data;
-	u32 *analogBank1Data;
-	u32 *analogBank2Data;
-	u32 *analogBank3Data;
-	u32 *analogBank6Data;
-	u32 *analogBank6TPCData;
-	u32 *analogBank7Data;
-	u32 *bank6Temp;
-
-	u8 txpower_limit;
-=======
 	u32 *analogBank6Data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int coverage_class;
 	u32 slottime;
 	u32 globaltxtimeout;
 
 	/* ANI */
-<<<<<<< HEAD
-	u32 proc_phyerr;
-	u32 aniperiod;
-	int totalSizeDesired[5];
-	int coarse_high[5];
-	int coarse_low[5];
-	int firpwr[5];
-	enum ath9k_ani_cmd ani_function;
-=======
 	u32 aniperiod;
 	enum ath9k_ani_cmd ani_function;
 	u32 ani_skip_count;
 	struct ar5416AniState ani;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
 	struct ath_btcoex_hw btcoex_hw;
@@ -1231,39 +910,17 @@ struct ath_hw {
 	u32 gpio_mask;
 	u32 gpio_val;
 
-<<<<<<< HEAD
-	struct ar5416IniArray iniModes;
-	struct ar5416IniArray iniCommon;
-	struct ar5416IniArray iniBank0;
-	struct ar5416IniArray iniBB_RfGain;
-	struct ar5416IniArray iniBank1;
-	struct ar5416IniArray iniBank2;
-	struct ar5416IniArray iniBank3;
-	struct ar5416IniArray iniBank6;
-	struct ar5416IniArray iniBank6TPC;
-	struct ar5416IniArray iniBank7;
-=======
 	struct ar5416IniArray ini_dfs;
 	struct ar5416IniArray iniModes;
 	struct ar5416IniArray iniCommon;
 	struct ar5416IniArray iniBB_RfGain;
 	struct ar5416IniArray iniBank6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ar5416IniArray iniAddac;
 	struct ar5416IniArray iniPcieSerdes;
 	struct ar5416IniArray iniPcieSerdesLowPower;
 	struct ar5416IniArray iniModesFastClock;
 	struct ar5416IniArray iniAdditional;
 	struct ar5416IniArray iniModesRxGain;
-<<<<<<< HEAD
-	struct ar5416IniArray iniModesTxGain;
-	struct ar5416IniArray iniCckfirNormal;
-	struct ar5416IniArray iniCckfirJapan2484;
-	struct ar5416IniArray ini_japan2484;
-	struct ar5416IniArray iniModes_9271_ANI_reg;
-	struct ar5416IniArray ini_radio_post_sys2ant;
-	struct ar5416IniArray ini_BTCOEX_MAX_TXPWR;
-=======
 	struct ar5416IniArray ini_modes_rx_gain_bounds;
 	struct ar5416IniArray iniModesTxGain;
 	struct ar5416IniArray iniCckfirNormal;
@@ -1273,7 +930,6 @@ struct ath_hw {
 	struct ar5416IniArray ini_modes_rxgain_xlna;
 	struct ar5416IniArray ini_modes_rxgain_bb_core;
 	struct ar5416IniArray ini_modes_rxgain_bb_postamble;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ar5416IniArray iniMac[ATH_INI_NUM_SPLIT];
 	struct ar5416IniArray iniBB[ATH_INI_NUM_SPLIT];
@@ -1285,10 +941,6 @@ struct ath_hw {
 	struct ath_gen_timer_table hw_gen_timers;
 
 	struct ar9003_txs *ts_ring;
-<<<<<<< HEAD
-	void *ts_start;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ts_paddr_start;
 	u32 ts_paddr_end;
 	u16 ts_tail;
@@ -1315,11 +967,6 @@ struct ath_hw {
 	/* Enterprise mode cap */
 	u32 ent_mode;
 
-<<<<<<< HEAD
-	bool is_clk_25mhz;
-	int (*get_mac_revision)(void);
-	int (*external_reset)(void);
-=======
 #ifdef CONFIG_ATH9K_WOW
 	struct ath9k_hw_wow wow;
 #endif
@@ -1341,7 +988,6 @@ struct ath_hw {
 	bool msi_enabled;
 	u32 msi_mask;
 	u32 msi_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_bus_ops {
@@ -1349,10 +995,6 @@ struct ath_bus_ops {
 	void (*read_cachesize)(struct ath_common *common, int *csz);
 	bool (*eeprom_read)(struct ath_common *common, u32 off, u16 *data);
 	void (*bt_coex_prep)(struct ath_common *common);
-<<<<<<< HEAD
-	void (*extn_synch_en)(struct ath_common *common);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*aspm_init)(struct ath_common *common);
 };
 
@@ -1382,10 +1024,6 @@ static inline u8 get_streams(int mask)
 }
 
 /* Initialization, Detach, Reset */
-<<<<<<< HEAD
-const char *ath9k_hw_probe(u16 vendorid, u16 devid);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath9k_hw_deinit(struct ath_hw *ah);
 int ath9k_hw_init(struct ath_hw *ah);
 int ath9k_hw_reset(struct ath_hw *ah, struct ath9k_channel *chan,
@@ -1394,34 +1032,21 @@ int ath9k_hw_fill_cap_info(struct ath_hw *ah);
 u32 ath9k_regd_get_ctl(struct ath_regulatory *reg, struct ath9k_channel *chan);
 
 /* GPIO / RFKILL / Antennae */
-<<<<<<< HEAD
-void ath9k_hw_cfg_gpio_input(struct ath_hw *ah, u32 gpio);
-u32 ath9k_hw_gpio_get(struct ath_hw *ah, u32 gpio);
-void ath9k_hw_cfg_output(struct ath_hw *ah, u32 gpio,
-			 u32 ah_signal_type);
-=======
 void ath9k_hw_gpio_request_in(struct ath_hw *ah, u32 gpio, const char *label);
 void ath9k_hw_gpio_request_out(struct ath_hw *ah, u32 gpio, const char *label,
 			       u32 ah_signal_type);
 void ath9k_hw_gpio_free(struct ath_hw *ah, u32 gpio);
 u32 ath9k_hw_gpio_get(struct ath_hw *ah, u32 gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath9k_hw_set_gpio(struct ath_hw *ah, u32 gpio, u32 val);
 void ath9k_hw_setantenna(struct ath_hw *ah, u32 antenna);
 
 /* General Operation */
-<<<<<<< HEAD
-bool ath9k_hw_wait(struct ath_hw *ah, u32 reg, u32 mask, u32 val, u32 timeout);
-void ath9k_hw_write_array(struct ath_hw *ah, struct ar5416IniArray *array,
-			  int column, unsigned int *writecnt);
-=======
 void ath9k_hw_synth_delay(struct ath_hw *ah, struct ath9k_channel *chan,
 			  int hw_delay);
 bool ath9k_hw_wait(struct ath_hw *ah, u32 reg, u32 mask, u32 val, u32 timeout);
 void ath9k_hw_write_array(struct ath_hw *ah, const struct ar5416IniArray *array,
 			  int column, unsigned int *writecnt);
 void ath9k_hw_read_array(struct ath_hw *ah, u32 array[][2], int size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u32 ath9k_hw_reverse_bits(u32 val, u32 n);
 u16 ath9k_hw_computetxtime(struct ath_hw *ah,
 			   u8 phy, int kbps,
@@ -1441,15 +1066,6 @@ u32 ath9k_hw_gettsf32(struct ath_hw *ah);
 u64 ath9k_hw_gettsf64(struct ath_hw *ah);
 void ath9k_hw_settsf64(struct ath_hw *ah, u64 tsf64);
 void ath9k_hw_reset_tsf(struct ath_hw *ah);
-<<<<<<< HEAD
-void ath9k_hw_set_tsfadjust(struct ath_hw *ah, u32 setting);
-void ath9k_hw_init_global_settings(struct ath_hw *ah);
-u32 ar9003_get_pll_sqsum_dvc(struct ath_hw *ah);
-void ath9k_hw_set11nmac2040(struct ath_hw *ah);
-void ath9k_hw_beaconinit(struct ath_hw *ah, u32 next_beacon, u32 beacon_period);
-void ath9k_hw_set_sta_beacon_timers(struct ath_hw *ah,
-				    const struct ath9k_beacon_state *bs);
-=======
 u32 ath9k_hw_get_tsf_offset(struct timespec64 *last, struct timespec64 *cur);
 void ath9k_hw_set_tsfadjust(struct ath_hw *ah, bool set);
 void ath9k_hw_init_global_settings(struct ath_hw *ah);
@@ -1459,7 +1075,6 @@ void ath9k_hw_beaconinit(struct ath_hw *ah, u32 next_beacon, u32 beacon_period);
 void ath9k_hw_set_sta_beacon_timers(struct ath_hw *ah,
 				    const struct ath9k_beacon_state *bs);
 void ath9k_hw_check_nav(struct ath_hw *ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool ath9k_hw_check_alive(struct ath_hw *ah);
 
 bool ath9k_hw_setpower(struct ath_hw *ah, enum ath9k_power_mode mode);
@@ -1474,10 +1089,7 @@ void ath9k_hw_gen_timer_start(struct ath_hw *ah,
 			      struct ath_gen_timer *timer,
 			      u32 timer_next,
 			      u32 timer_period);
-<<<<<<< HEAD
-=======
 void ath9k_hw_gen_timer_start_tsf2(struct ath_hw *ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath9k_hw_gen_timer_stop(struct ath_hw *ah, struct ath_gen_timer *timer);
 
 void ath_gen_timer_free(struct ath_hw *ah, struct ath_gen_timer *timer);
@@ -1502,10 +1114,7 @@ void ar9002_hw_enable_async_fifo(struct ath_hw *ah);
  * Code specific to AR9003, we stuff these here to avoid callbacks
  * for older families
  */
-<<<<<<< HEAD
-=======
 bool ar9003_hw_bb_watchdog_check(struct ath_hw *ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ar9003_hw_bb_watchdog_config(struct ath_hw *ah);
 void ar9003_hw_bb_watchdog_read(struct ath_hw *ah);
 void ar9003_hw_bb_watchdog_dbg_info(struct ath_hw *ah);
@@ -1516,16 +1125,6 @@ void ar9003_paprd_populate_single_table(struct ath_hw *ah,
 					int chain);
 int ar9003_paprd_create_curve(struct ath_hw *ah,
 			      struct ath9k_hw_cal_data *caldata, int chain);
-<<<<<<< HEAD
-int ar9003_paprd_setup_gain_table(struct ath_hw *ah, int chain);
-int ar9003_paprd_init_table(struct ath_hw *ah);
-bool ar9003_paprd_is_done(struct ath_hw *ah);
-void ar9003_hw_set_paprd_txdesc(struct ath_hw *ah, void *ds, u8 chains);
-void ar9003_hw_set_chain_masks(struct ath_hw *ah, u8 rx, u8 tx);
-
-/* Hardware family op attach helpers */
-void ar5008_hw_attach_phy_ops(struct ath_hw *ah);
-=======
 void ar9003_paprd_setup_gain_table(struct ath_hw *ah, int chain);
 int ar9003_paprd_init_table(struct ath_hw *ah);
 bool ar9003_paprd_is_done(struct ath_hw *ah);
@@ -1540,32 +1139,12 @@ void ar5008_hw_init_rate_txpower(struct ath_hw *ah, int16_t *rate_array,
 
 /* Hardware family op attach helpers */
 int ar5008_hw_attach_phy_ops(struct ath_hw *ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ar9002_hw_attach_phy_ops(struct ath_hw *ah);
 void ar9003_hw_attach_phy_ops(struct ath_hw *ah);
 
 void ar9002_hw_attach_calib_ops(struct ath_hw *ah);
 void ar9003_hw_attach_calib_ops(struct ath_hw *ah);
 
-<<<<<<< HEAD
-void ar9002_hw_attach_ops(struct ath_hw *ah);
-void ar9003_hw_attach_ops(struct ath_hw *ah);
-
-void ar9002_hw_load_ani_reg(struct ath_hw *ah, struct ath9k_channel *chan);
-/*
- * ANI work can be shared between all families but a next
- * generation implementation of ANI will be used only for AR9003 only
- * for now as the other families still need to be tested with the same
- * next generation ANI. Feel free to start testing it though for the
- * older families (AR5008, AR9001, AR9002) by using modparam_force_new_ani.
- */
-extern int modparam_force_new_ani;
-void ath9k_ani_reset(struct ath_hw *ah, bool is_scanning);
-void ath9k_hw_proc_mib_event(struct ath_hw *ah);
-void ath9k_hw_ani_monitor(struct ath_hw *ah, struct ath9k_channel *chan);
-
-#ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
-=======
 int ar9002_hw_attach_ops(struct ath_hw *ah);
 void ar9003_hw_attach_ops(struct ath_hw *ah);
 
@@ -1580,20 +1159,16 @@ void ath9k_hw_setslottime(struct ath_hw *ah, u32 us);
 
 #ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
 void ar9003_hw_attach_aic_ops(struct ath_hw *ah);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool ath9k_hw_btcoex_is_enabled(struct ath_hw *ah)
 {
 	return ah->btcoex_hw.enabled;
 }
-<<<<<<< HEAD
-=======
 static inline bool ath9k_hw_mci_is_enabled(struct ath_hw *ah)
 {
 	return ah->common.btcoex_enabled &&
 	       (ah->caps.hw_caps & ATH9K_HW_CAP_MCI);
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath9k_hw_btcoex_enable(struct ath_hw *ah);
 static inline enum ath_btcoex_scheme
 ath9k_hw_get_btcoex_scheme(struct ath_hw *ah)
@@ -1601,23 +1176,17 @@ ath9k_hw_get_btcoex_scheme(struct ath_hw *ah)
 	return ah->btcoex_hw.scheme;
 }
 #else
-<<<<<<< HEAD
-=======
 static inline void ar9003_hw_attach_aic_ops(struct ath_hw *ah)
 {
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool ath9k_hw_btcoex_is_enabled(struct ath_hw *ah)
 {
 	return false;
 }
-<<<<<<< HEAD
-=======
 static inline bool ath9k_hw_mci_is_enabled(struct ath_hw *ah)
 {
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ath9k_hw_btcoex_enable(struct ath_hw *ah)
 {
 }
@@ -1628,8 +1197,6 @@ ath9k_hw_get_btcoex_scheme(struct ath_hw *ah)
 }
 #endif /* CONFIG_ATH9K_BTCOEX_SUPPORT */
 
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_ATH9K_WOW
 int ath9k_hw_wow_apply_pattern(struct ath_hw *ah, u8 *user_pattern,
@@ -1655,7 +1222,6 @@ static inline void ath9k_hw_wow_enable(struct ath_hw *ah, u32 pattern_enable)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATH9K_CLOCK_RATE_CCK		22
 #define ATH9K_CLOCK_RATE_5GHZ_OFDM	40
 #define ATH9K_CLOCK_RATE_2GHZ_OFDM	44

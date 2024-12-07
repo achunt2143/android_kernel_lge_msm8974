@@ -1,37 +1,3 @@
-<<<<<<< HEAD
-/*
- *  libata-sff.c - helper library for PCI IDE BMDMA
- *
- *  Maintained by:  Jeff Garzik <jgarzik@pobox.com>
- *    		    Please ALWAYS copy linux-ide@vger.kernel.org
- *		    on emails.
- *
- *  Copyright 2003-2006 Red Hat, Inc.  All rights reserved.
- *  Copyright 2003-2006 Jeff Garzik
- *
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- *  libata documentation is available via 'make {ps|pdf}docs',
- *  as Documentation/DocBook/libata.*
- *
- *  Hardware documentation available from http://www.t13.org/ and
- *  http://www.sata-io.org/
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  libata-sff.c - helper library for PCI IDE BMDMA
@@ -44,7 +10,6 @@
  *
  *  Hardware documentation available from http://www.t13.org/ and
  *  http://www.sata-io.org/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -53,11 +18,7 @@
 #include <linux/module.h>
 #include <linux/libata.h>
 #include <linux/highmem.h>
-<<<<<<< HEAD
-
-=======
 #include <trace/events/libata.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "libata.h"
 
 static struct workqueue_struct *ata_sff_wq;
@@ -109,14 +70,6 @@ EXPORT_SYMBOL_GPL(ata_sff_check_status);
 /**
  *	ata_sff_altstatus - Read device alternate status reg
  *	@ap: port where the device is
-<<<<<<< HEAD
- *
- *	Reads ATA taskfile alternate status register for
- *	currently-selected device and return its value.
- *
- *	Note: may NOT be used as the check_altstatus() entry in
- *	ata_port_operations.
-=======
  *	@status: pointer to a status value
  *
  *	Reads ATA alternate status register for currently-selected device
@@ -124,19 +77,10 @@ EXPORT_SYMBOL_GPL(ata_sff_check_status);
  *
  *	RETURN:
  *	true if the register exists, false if not.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	Inherited from caller.
  */
-<<<<<<< HEAD
-static u8 ata_sff_altstatus(struct ata_port *ap)
-{
-	if (ap->ops->sff_check_altstatus)
-		return ap->ops->sff_check_altstatus(ap);
-
-	return ioread8(ap->ioaddr.altstatus_addr);
-=======
 static bool ata_sff_altstatus(struct ata_port *ap, u8 *status)
 {
 	u8 tmp;
@@ -155,7 +99,6 @@ read:
 	if (status)
 		*status = tmp;
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -174,18 +117,9 @@ static u8 ata_sff_irq_status(struct ata_port *ap)
 {
 	u8 status;
 
-<<<<<<< HEAD
-	if (ap->ops->sff_check_altstatus || ap->ioaddr.altstatus_addr) {
-		status = ata_sff_altstatus(ap);
-		/* Not us: We are busy */
-		if (status & ATA_BUSY)
-			return status;
-	}
-=======
 	/* Not us: We are busy */
 	if (ata_sff_altstatus(ap, &status) && (status & ATA_BUSY))
 		return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear INTRQ latch */
 	status = ap->ops->sff_check_status(ap);
 	return status;
@@ -205,14 +139,7 @@ static u8 ata_sff_irq_status(struct ata_port *ap)
 
 static void ata_sff_sync(struct ata_port *ap)
 {
-<<<<<<< HEAD
-	if (ap->ops->sff_check_altstatus)
-		ap->ops->sff_check_altstatus(ap);
-	else if (ap->ioaddr.altstatus_addr)
-		ioread8(ap->ioaddr.altstatus_addr);
-=======
 	ata_sff_altstatus(ap, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -244,21 +171,12 @@ EXPORT_SYMBOL_GPL(ata_sff_pause);
 
 void ata_sff_dma_pause(struct ata_port *ap)
 {
-<<<<<<< HEAD
-	if (ap->ops->sff_check_altstatus || ap->ioaddr.altstatus_addr) {
-		/* An altstatus read will cause the needed delay without
-		   messing up the IRQ status */
-		ata_sff_altstatus(ap);
-		return;
-	}
-=======
 	/*
 	 * An altstatus read will cause the needed delay without
 	 * messing up the IRQ status
 	 */
 	if (ata_sff_altstatus(ap, NULL))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* There are no DMA controllers without ctl. BUG here to ensure
 	   we never violate the HDMA1:0 transition timing and risk
 	   corruption. */
@@ -266,65 +184,6 @@ void ata_sff_dma_pause(struct ata_port *ap)
 }
 EXPORT_SYMBOL_GPL(ata_sff_dma_pause);
 
-<<<<<<< HEAD
-/**
- *	ata_sff_busy_sleep - sleep until BSY clears, or timeout
- *	@ap: port containing status register to be polled
- *	@tmout_pat: impatience timeout in msecs
- *	@tmout: overall timeout in msecs
- *
- *	Sleep until ATA Status register bit BSY clears,
- *	or a timeout occurs.
- *
- *	LOCKING:
- *	Kernel thread context (may sleep).
- *
- *	RETURNS:
- *	0 on success, -errno otherwise.
- */
-int ata_sff_busy_sleep(struct ata_port *ap,
-		       unsigned long tmout_pat, unsigned long tmout)
-{
-	unsigned long timer_start, timeout;
-	u8 status;
-
-	status = ata_sff_busy_wait(ap, ATA_BUSY, 300);
-	timer_start = jiffies;
-	timeout = ata_deadline(timer_start, tmout_pat);
-	while (status != 0xff && (status & ATA_BUSY) &&
-	       time_before(jiffies, timeout)) {
-		ata_msleep(ap, 50);
-		status = ata_sff_busy_wait(ap, ATA_BUSY, 3);
-	}
-
-	if (status != 0xff && (status & ATA_BUSY))
-		ata_port_warn(ap,
-			      "port is slow to respond, please be patient (Status 0x%x)\n",
-			      status);
-
-	timeout = ata_deadline(timer_start, tmout);
-	while (status != 0xff && (status & ATA_BUSY) &&
-	       time_before(jiffies, timeout)) {
-		ata_msleep(ap, 50);
-		status = ap->ops->sff_check_status(ap);
-	}
-
-	if (status == 0xff)
-		return -ENODEV;
-
-	if (status & ATA_BUSY) {
-		ata_port_err(ap,
-			     "port failed to respond (%lu secs, Status 0x%x)\n",
-			     DIV_ROUND_UP(tmout, 1000), status);
-		return -EBUSY;
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(ata_sff_busy_sleep);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ata_sff_check_ready(struct ata_link *link)
 {
 	u8 status = link->ap->ops->sff_check_status(link->ap);
@@ -357,29 +216,14 @@ EXPORT_SYMBOL_GPL(ata_sff_wait_ready);
  *	@ap: port where the device is
  *	@ctl: value to write
  *
-<<<<<<< HEAD
- *	Writes ATA taskfile device control register.
- *
- *	Note: may NOT be used as the sff_set_devctl() entry in
- *	ata_port_operations.
-=======
  *	Writes ATA device control register.
  *
  *	RETURN:
  *	true if the register exists, false if not.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	Inherited from caller.
  */
-<<<<<<< HEAD
-static void ata_sff_set_devctl(struct ata_port *ap, u8 ctl)
-{
-	if (ap->ops->sff_set_devctl)
-		ap->ops->sff_set_devctl(ap, ctl);
-	else
-		iowrite8(ctl, ap->ioaddr.ctl_addr);
-=======
 static bool ata_sff_set_devctl(struct ata_port *ap, u8 ctl)
 {
 	if (ap->ops->sff_set_devctl) {
@@ -392,7 +236,6 @@ static bool ata_sff_set_devctl(struct ata_port *ap, u8 ctl)
 	}
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -444,13 +287,6 @@ EXPORT_SYMBOL_GPL(ata_sff_dev_select);
 static void ata_dev_select(struct ata_port *ap, unsigned int device,
 			   unsigned int wait, unsigned int can_sleep)
 {
-<<<<<<< HEAD
-	if (ata_msg_probe(ap))
-		ata_port_info(ap, "ata_dev_select: ENTER, device %u, wait %u\n",
-			      device, wait);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wait)
 		ata_wait_idle(ap);
 
@@ -478,11 +314,6 @@ static void ata_dev_select(struct ata_port *ap, unsigned int device,
  */
 void ata_sff_irq_on(struct ata_port *ap)
 {
-<<<<<<< HEAD
-	struct ata_ioports *ioaddr = &ap->ioaddr;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ap->ops->sff_irq_on) {
 		ap->ops->sff_irq_on(ap);
 		return;
@@ -491,12 +322,7 @@ void ata_sff_irq_on(struct ata_port *ap)
 	ap->ctl &= ~ATA_NIEN;
 	ap->last_ctl = ap->ctl;
 
-<<<<<<< HEAD
-	if (ap->ops->sff_set_devctl || ioaddr->ctl_addr)
-		ata_sff_set_devctl(ap, ap->ctl);
-=======
 	ata_sff_set_devctl(ap, ap->ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ata_wait_idle(ap);
 
 	if (ap->ops->sff_irq_clear)
@@ -533,15 +359,6 @@ void ata_sff_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
 		iowrite8(tf->hob_lbal, ioaddr->lbal_addr);
 		iowrite8(tf->hob_lbam, ioaddr->lbam_addr);
 		iowrite8(tf->hob_lbah, ioaddr->lbah_addr);
-<<<<<<< HEAD
-		VPRINTK("hob: feat 0x%X nsect 0x%X, lba 0x%X 0x%X 0x%X\n",
-			tf->hob_feature,
-			tf->hob_nsect,
-			tf->hob_lbal,
-			tf->hob_lbam,
-			tf->hob_lbah);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (is_addr) {
@@ -550,25 +367,10 @@ void ata_sff_tf_load(struct ata_port *ap, const struct ata_taskfile *tf)
 		iowrite8(tf->lbal, ioaddr->lbal_addr);
 		iowrite8(tf->lbam, ioaddr->lbam_addr);
 		iowrite8(tf->lbah, ioaddr->lbah_addr);
-<<<<<<< HEAD
-		VPRINTK("feat 0x%X nsect 0x%X lba 0x%X 0x%X 0x%X\n",
-			tf->feature,
-			tf->nsect,
-			tf->lbal,
-			tf->lbam,
-			tf->lbah);
-	}
-
-	if (tf->flags & ATA_TFLAG_DEVICE) {
-		iowrite8(tf->device, ioaddr->device_addr);
-		VPRINTK("device 0x%X\n", tf->device);
-	}
-=======
 	}
 
 	if (tf->flags & ATA_TFLAG_DEVICE)
 		iowrite8(tf->device, ioaddr->device_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_wait_idle(ap);
 }
@@ -591,13 +393,8 @@ void ata_sff_tf_read(struct ata_port *ap, struct ata_taskfile *tf)
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;
 
-<<<<<<< HEAD
-	tf->command = ata_sff_check_status(ap);
-	tf->feature = ioread8(ioaddr->error_addr);
-=======
 	tf->status = ata_sff_check_status(ap);
 	tf->error = ioread8(ioaddr->error_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf->nsect = ioread8(ioaddr->nsect_addr);
 	tf->lbal = ioread8(ioaddr->lbal_addr);
 	tf->lbam = ioread8(ioaddr->lbam_addr);
@@ -633,11 +430,6 @@ EXPORT_SYMBOL_GPL(ata_sff_tf_read);
  */
 void ata_sff_exec_command(struct ata_port *ap, const struct ata_taskfile *tf)
 {
-<<<<<<< HEAD
-	DPRINTK("ata%u: cmd 0x%X\n", ap->print_id, tf->command);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite8(tf->command, ap->ioaddr.command_addr);
 	ata_sff_pause(ap);
 }
@@ -647,10 +439,7 @@ EXPORT_SYMBOL_GPL(ata_sff_exec_command);
  *	ata_tf_to_host - issue ATA taskfile to host controller
  *	@ap: port to which command is being issued
  *	@tf: ATA taskfile register set
-<<<<<<< HEAD
-=======
  *	@tag: tag of the associated command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Issues ATA taskfile register set to ATA host controller,
  *	with proper synchronization with interrupt handler and
@@ -660,28 +449,18 @@ EXPORT_SYMBOL_GPL(ata_sff_exec_command);
  *	spin_lock_irqsave(host lock)
  */
 static inline void ata_tf_to_host(struct ata_port *ap,
-<<<<<<< HEAD
-				  const struct ata_taskfile *tf)
-{
-	ap->ops->sff_tf_load(ap, tf);
-=======
 				  const struct ata_taskfile *tf,
 				  unsigned int tag)
 {
 	trace_ata_tf_load(ap, tf);
 	ap->ops->sff_tf_load(ap, tf);
 	trace_ata_exec_command(ap, tf, tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap->ops->sff_exec_command(ap, tf);
 }
 
 /**
  *	ata_sff_data_xfer - Transfer data by PIO
-<<<<<<< HEAD
- *	@dev: device to target
-=======
  *	@qc: queued command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@buf: data buffer
  *	@buflen: buffer length
  *	@rw: read/write
@@ -694,17 +473,10 @@ static inline void ata_tf_to_host(struct ata_port *ap,
  *	RETURNS:
  *	Bytes consumed.
  */
-<<<<<<< HEAD
-unsigned int ata_sff_data_xfer(struct ata_device *dev, unsigned char *buf,
-			       unsigned int buflen, int rw)
-{
-	struct ata_port *ap = dev->link->ap;
-=======
 unsigned int ata_sff_data_xfer(struct ata_queued_cmd *qc, unsigned char *buf,
 			       unsigned int buflen, int rw)
 {
 	struct ata_port *ap = qc->dev->link->ap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *data_addr = ap->ioaddr.data_addr;
 	unsigned int words = buflen >> 1;
 
@@ -741,11 +513,7 @@ EXPORT_SYMBOL_GPL(ata_sff_data_xfer);
 
 /**
  *	ata_sff_data_xfer32 - Transfer data by PIO
-<<<<<<< HEAD
- *	@dev: device to target
-=======
  *	@qc: queued command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@buf: data buffer
  *	@buflen: buffer length
  *	@rw: read/write
@@ -760,27 +528,17 @@ EXPORT_SYMBOL_GPL(ata_sff_data_xfer);
  *	Bytes consumed.
  */
 
-<<<<<<< HEAD
-unsigned int ata_sff_data_xfer32(struct ata_device *dev, unsigned char *buf,
-			       unsigned int buflen, int rw)
-{
-=======
 unsigned int ata_sff_data_xfer32(struct ata_queued_cmd *qc, unsigned char *buf,
 			       unsigned int buflen, int rw)
 {
 	struct ata_device *dev = qc->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_port *ap = dev->link->ap;
 	void __iomem *data_addr = ap->ioaddr.data_addr;
 	unsigned int words = buflen >> 2;
 	int slop = buflen & 3;
 
 	if (!(ap->pflags & ATA_PFLAG_PIO32))
-<<<<<<< HEAD
-		return ata_sff_data_xfer(dev, buf, buflen, rw);
-=======
 		return ata_sff_data_xfer(qc, buf, buflen, rw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Transfer multiple of 4 bytes */
 	if (rw == READ)
@@ -817,37 +575,6 @@ unsigned int ata_sff_data_xfer32(struct ata_queued_cmd *qc, unsigned char *buf,
 }
 EXPORT_SYMBOL_GPL(ata_sff_data_xfer32);
 
-<<<<<<< HEAD
-/**
- *	ata_sff_data_xfer_noirq - Transfer data by PIO
- *	@dev: device to target
- *	@buf: data buffer
- *	@buflen: buffer length
- *	@rw: read/write
- *
- *	Transfer data from/to the device data register by PIO. Do the
- *	transfer with interrupts disabled.
- *
- *	LOCKING:
- *	Inherited from caller.
- *
- *	RETURNS:
- *	Bytes consumed.
- */
-unsigned int ata_sff_data_xfer_noirq(struct ata_device *dev, unsigned char *buf,
-				     unsigned int buflen, int rw)
-{
-	unsigned long flags;
-	unsigned int consumed;
-
-	local_irq_save(flags);
-	consumed = ata_sff_data_xfer32(dev, buf, buflen, rw);
-	local_irq_restore(flags);
-
-	return consumed;
-}
-EXPORT_SYMBOL_GPL(ata_sff_data_xfer_noirq);
-=======
 static void ata_pio_xfer(struct ata_queued_cmd *qc, struct page *page,
 		unsigned int offset, size_t xfer_size)
 {
@@ -861,7 +588,6 @@ static void ata_pio_xfer(struct ata_queued_cmd *qc, struct page *page,
 	if (!do_write && !PageSlab(page))
 		flush_dcache_page(page);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	ata_pio_sector - Transfer a sector of data.
@@ -874,14 +600,6 @@ static void ata_pio_xfer(struct ata_queued_cmd *qc, struct page *page,
  */
 static void ata_pio_sector(struct ata_queued_cmd *qc)
 {
-<<<<<<< HEAD
-	int do_write = (qc->tf.flags & ATA_TFLAG_WRITE);
-	struct ata_port *ap = qc->ap;
-	struct page *page;
-	unsigned int offset;
-	unsigned char *buf;
-
-=======
 	struct ata_port *ap = qc->ap;
 	struct page *page;
 	unsigned int offset;
@@ -890,7 +608,6 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 		qc->curbytes = qc->nbytes;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (qc->curbytes == qc->nbytes - qc->sect_size)
 		ap->hsm_task_state = HSM_ST_LAST;
 
@@ -901,32 +618,6 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 	page = nth_page(page, (offset >> PAGE_SHIFT));
 	offset %= PAGE_SIZE;
 
-<<<<<<< HEAD
-	DPRINTK("data %s\n", qc->tf.flags & ATA_TFLAG_WRITE ? "write" : "read");
-
-	if (PageHighMem(page)) {
-		unsigned long flags;
-
-		/* FIXME: use a bounce buffer */
-		local_irq_save(flags);
-		buf = kmap_atomic(page);
-
-		/* do the actual data transfer */
-		ap->ops->sff_data_xfer(qc->dev, buf + offset, qc->sect_size,
-				       do_write);
-
-		kunmap_atomic(buf);
-		local_irq_restore(flags);
-	} else {
-		buf = page_address(page);
-		ap->ops->sff_data_xfer(qc->dev, buf + offset, qc->sect_size,
-				       do_write);
-	}
-
-	if (!do_write && !PageSlab(page))
-		flush_dcache_page(page);
-
-=======
 	trace_ata_sff_pio_transfer_data(qc, offset, qc->sect_size);
 
 	/*
@@ -944,17 +635,13 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
 		ata_pio_xfer(qc, page, offset, qc->sect_size);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qc->curbytes += qc->sect_size;
 	qc->cursg_ofs += qc->sect_size;
 
 	if (qc->cursg_ofs == qc->cursg->length) {
 		qc->cursg = sg_next(qc->cursg);
-<<<<<<< HEAD
-=======
 		if (!qc->cursg)
 			ap->hsm_task_state = HSM_ST_LAST;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qc->cursg_ofs = 0;
 	}
 }
@@ -1001,17 +688,10 @@ static void ata_pio_sectors(struct ata_queued_cmd *qc)
 static void atapi_send_cdb(struct ata_port *ap, struct ata_queued_cmd *qc)
 {
 	/* send SCSI cdb */
-<<<<<<< HEAD
-	DPRINTK("send cdb\n");
-	WARN_ON_ONCE(qc->dev->cdb_len < 12);
-
-	ap->ops->sff_data_xfer(qc->dev, qc->cdb, qc->dev->cdb_len, 1);
-=======
 	trace_atapi_send_cdb(qc, 0, qc->dev->cdb_len);
 	WARN_ON_ONCE(qc->dev->cdb_len < 12);
 
 	ap->ops->sff_data_xfer(qc, qc->cdb, qc->dev->cdb_len, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ata_sff_sync(ap);
 	/* FIXME: If the CDB is for DMA do we need to do the transition delay
 	   or is bmdma_start guaranteed to do it ? */
@@ -1026,10 +706,7 @@ static void atapi_send_cdb(struct ata_port *ap, struct ata_queued_cmd *qc)
 	case ATAPI_PROT_DMA:
 		ap->hsm_task_state = HSM_ST_LAST;
 		/* initiate bmdma */
-<<<<<<< HEAD
-=======
 		trace_ata_bmdma_start(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ops->bmdma_start(qc);
 		break;
 #endif /* CONFIG_ATA_BMDMA */
@@ -1043,11 +720,7 @@ static void atapi_send_cdb(struct ata_port *ap, struct ata_queued_cmd *qc)
  *	@qc: Command on going
  *	@bytes: number of bytes
  *
-<<<<<<< HEAD
- *	Transfer Transfer data from/to the ATAPI device.
-=======
  *	Transfer data from/to the ATAPI device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	LOCKING:
  *	Inherited from caller.
@@ -1086,35 +759,12 @@ next_sg:
 	/* don't cross page boundaries */
 	count = min(count, (unsigned int)PAGE_SIZE - offset);
 
-<<<<<<< HEAD
-	DPRINTK("data %s\n", qc->tf.flags & ATA_TFLAG_WRITE ? "write" : "read");
-
-	if (PageHighMem(page)) {
-		unsigned long flags;
-
-		/* FIXME: use bounce buffer */
-		local_irq_save(flags);
-		buf = kmap_atomic(page);
-
-		/* do the actual data transfer */
-		consumed = ap->ops->sff_data_xfer(dev,  buf + offset,
-								count, rw);
-
-		kunmap_atomic(buf);
-		local_irq_restore(flags);
-	} else {
-		buf = page_address(page);
-		consumed = ap->ops->sff_data_xfer(dev,  buf + offset,
-								count, rw);
-	}
-=======
 	trace_atapi_pio_transfer_data(qc, offset, count);
 
 	/* do the actual data transfer */
 	buf = kmap_atomic(page);
 	consumed = ap->ops->sff_data_xfer(qc, buf + offset, count, rw);
 	kunmap_atomic(buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bytes -= min(bytes, consumed);
 	qc->curbytes += count;
@@ -1177,11 +827,6 @@ static void atapi_pio_bytes(struct ata_queued_cmd *qc)
 	if (unlikely(!bytes))
 		goto atapi_check;
 
-<<<<<<< HEAD
-	VPRINTK("ata%u: xfering %d bytes\n", ap->print_id, bytes);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(__atapi_pio_bytes(qc, bytes)))
 		goto err_out;
 	ata_sff_sync(ap); /* flush */
@@ -1237,41 +882,6 @@ static inline int ata_hsm_ok_in_wq(struct ata_port *ap,
 static void ata_hsm_qc_complete(struct ata_queued_cmd *qc, int in_wq)
 {
 	struct ata_port *ap = qc->ap;
-<<<<<<< HEAD
-	unsigned long flags;
-
-	if (ap->ops->error_handler) {
-		if (in_wq) {
-			spin_lock_irqsave(ap->lock, flags);
-
-			/* EH might have kicked in while host lock is
-			 * released.
-			 */
-			qc = ata_qc_from_tag(ap, qc->tag);
-			if (qc) {
-				if (likely(!(qc->err_mask & AC_ERR_HSM))) {
-					ata_sff_irq_on(ap);
-					ata_qc_complete(qc);
-				} else
-					ata_port_freeze(ap);
-			}
-
-			spin_unlock_irqrestore(ap->lock, flags);
-		} else {
-			if (likely(!(qc->err_mask & AC_ERR_HSM)))
-				ata_qc_complete(qc);
-			else
-				ata_port_freeze(ap);
-		}
-	} else {
-		if (in_wq) {
-			spin_lock_irqsave(ap->lock, flags);
-			ata_sff_irq_on(ap);
-			ata_qc_complete(qc);
-			spin_unlock_irqrestore(ap->lock, flags);
-		} else
-			ata_qc_complete(qc);
-=======
 
 	if (in_wq) {
 		/* EH might have kicked in while host lock is released. */
@@ -1288,7 +898,6 @@ static void ata_hsm_qc_complete(struct ata_queued_cmd *qc, int in_wq)
 			ata_qc_complete(qc);
 		else
 			ata_port_freeze(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1307,16 +916,10 @@ int ata_sff_hsm_move(struct ata_port *ap, struct ata_queued_cmd *qc,
 {
 	struct ata_link *link = qc->dev->link;
 	struct ata_eh_info *ehi = &link->eh_info;
-<<<<<<< HEAD
-	unsigned long flags = 0;
-	int poll_next;
-
-=======
 	int poll_next;
 
 	lockdep_assert_held(ap->lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON_ONCE((qc->flags & ATA_QCFLAG_ACTIVE) == 0);
 
 	/* Make sure ata_sff_qc_issue() does not throw things
@@ -1326,12 +929,7 @@ int ata_sff_hsm_move(struct ata_port *ap, struct ata_queued_cmd *qc,
 	WARN_ON_ONCE(in_wq != ata_hsm_ok_in_wq(ap, qc));
 
 fsm_start:
-<<<<<<< HEAD
-	DPRINTK("ata%u: protocol %d task_state %d (dev_stat 0x%X)\n",
-		ap->print_id, qc->tf.protocol, ap->hsm_task_state, status);
-=======
 	trace_ata_sff_hsm_state(qc, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ap->hsm_task_state) {
 	case HSM_ST_FIRST:
@@ -1382,17 +980,6 @@ fsm_start:
 			}
 		}
 
-<<<<<<< HEAD
-		/* Send the CDB (atapi) or the first data block (ata pio out).
-		 * During the state transition, interrupt handler shouldn't
-		 * be invoked before the data transfer is complete and
-		 * hsm_task_state is changed. Hence, the following locking.
-		 */
-		if (in_wq)
-			spin_lock_irqsave(ap->lock, flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (qc->tf.protocol == ATA_PROT_PIO) {
 			/* PIO data out protocol.
 			 * send first data block.
@@ -1408,12 +995,6 @@ fsm_start:
 			/* send CDB */
 			atapi_send_cdb(ap, qc);
 
-<<<<<<< HEAD
-		if (in_wq)
-			spin_unlock_irqrestore(ap->lock, flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* if polling, ata_sff_pio_task() handles the rest.
 		 * otherwise, interrupt handler takes over from here.
 		 */
@@ -1549,12 +1130,7 @@ fsm_start:
 		}
 
 		/* no more data to transfer */
-<<<<<<< HEAD
-		DPRINTK("ata%u: dev %u command complete, drv_stat 0x%x\n",
-			ap->print_id, qc->dev->devno, status);
-=======
 		trace_ata_sff_hsm_command_complete(qc, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		WARN_ON_ONCE(qc->err_mask & (AC_ERR_DEV | AC_ERR_HSM));
 
@@ -1576,12 +1152,8 @@ fsm_start:
 		break;
 	default:
 		poll_next = 0;
-<<<<<<< HEAD
-		BUG();
-=======
 		WARN(true, "ata%d: SFF host state machine in invalid state %d",
 		     ap->print_id, ap->hsm_task_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return poll_next;
@@ -1615,11 +1187,7 @@ EXPORT_SYMBOL_GPL(ata_sff_queue_pio_task);
 
 void ata_sff_flush_pio_task(struct ata_port *ap)
 {
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-=======
 	trace_ata_sff_flush_pio_task(ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cancel_delayed_work_sync(&ap->sff_pio_task);
 
@@ -1636,12 +1204,6 @@ void ata_sff_flush_pio_task(struct ata_port *ap)
 	spin_unlock_irq(ap->lock);
 
 	ap->sff_pio_task_link = NULL;
-<<<<<<< HEAD
-
-	if (ata_msg_ctl(ap))
-		ata_port_dbg(ap, "%s: EXIT\n", __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ata_sff_pio_task(struct work_struct *work)
@@ -1653,21 +1215,14 @@ static void ata_sff_pio_task(struct work_struct *work)
 	u8 status;
 	int poll_next;
 
-<<<<<<< HEAD
-=======
 	spin_lock_irq(ap->lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(ap->sff_pio_task_link == NULL);
 	/* qc can be NULL if timeout occurred */
 	qc = ata_qc_from_tag(ap, link->active_tag);
 	if (!qc) {
 		ap->sff_pio_task_link = NULL;
-<<<<<<< HEAD
-		return;
-=======
 		goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 fsm_start:
@@ -1682,13 +1237,6 @@ fsm_start:
 	 */
 	status = ata_sff_busy_wait(ap, ATA_BUSY, 5);
 	if (status & ATA_BUSY) {
-<<<<<<< HEAD
-		ata_msleep(ap, 2);
-		status = ata_sff_busy_wait(ap, ATA_BUSY, 10);
-		if (status & ATA_BUSY) {
-			ata_sff_queue_pio_task(link, ATA_SHORT_PAUSE);
-			return;
-=======
 		spin_unlock_irq(ap->lock);
 		ata_msleep(ap, 2);
 		spin_lock_irq(ap->lock);
@@ -1697,7 +1245,6 @@ fsm_start:
 		if (status & ATA_BUSY) {
 			ata_sff_queue_pio_task(link, ATA_SHORT_PAUSE);
 			goto out_unlock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1714,11 +1261,8 @@ fsm_start:
 	 */
 	if (poll_next)
 		goto fsm_start;
-<<<<<<< HEAD
-=======
 out_unlock:
 	spin_unlock_irq(ap->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1754,11 +1298,7 @@ unsigned int ata_sff_qc_issue(struct ata_queued_cmd *qc)
 		if (qc->tf.flags & ATA_TFLAG_POLLING)
 			ata_qc_set_polling(qc);
 
-<<<<<<< HEAD
-		ata_tf_to_host(ap, &qc->tf);
-=======
 		ata_tf_to_host(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->hsm_task_state = HSM_ST_LAST;
 
 		if (qc->tf.flags & ATA_TFLAG_POLLING)
@@ -1770,11 +1310,7 @@ unsigned int ata_sff_qc_issue(struct ata_queued_cmd *qc)
 		if (qc->tf.flags & ATA_TFLAG_POLLING)
 			ata_qc_set_polling(qc);
 
-<<<<<<< HEAD
-		ata_tf_to_host(ap, &qc->tf);
-=======
 		ata_tf_to_host(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (qc->tf.flags & ATA_TFLAG_WRITE) {
 			/* PIO data out protocol */
@@ -1804,11 +1340,7 @@ unsigned int ata_sff_qc_issue(struct ata_queued_cmd *qc)
 		if (qc->tf.flags & ATA_TFLAG_POLLING)
 			ata_qc_set_polling(qc);
 
-<<<<<<< HEAD
-		ata_tf_to_host(ap, &qc->tf);
-=======
 		ata_tf_to_host(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ap->hsm_task_state = HSM_ST_FIRST;
 
@@ -1819,10 +1351,6 @@ unsigned int ata_sff_qc_issue(struct ata_queued_cmd *qc)
 		break;
 
 	default:
-<<<<<<< HEAD
-		WARN_ON_ONCE(1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return AC_ERR_SYSTEM;
 	}
 
@@ -1839,21 +1367,10 @@ EXPORT_SYMBOL_GPL(ata_sff_qc_issue);
  *
  *	LOCKING:
  *	spin_lock_irqsave(host lock)
-<<<<<<< HEAD
- *
- *	RETURNS:
- *	true indicating that result TF is successfully filled.
- */
-bool ata_sff_qc_fill_rtf(struct ata_queued_cmd *qc)
-{
-	qc->ap->ops->sff_tf_read(qc->ap, &qc->result_tf);
-	return true;
-=======
  */
 void ata_sff_qc_fill_rtf(struct ata_queued_cmd *qc)
 {
 	qc->ap->ops->sff_tf_read(qc->ap, &qc->result_tf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ata_sff_qc_fill_rtf);
 
@@ -1879,12 +1396,7 @@ static unsigned int __ata_sff_port_intr(struct ata_port *ap,
 {
 	u8 status;
 
-<<<<<<< HEAD
-	VPRINTK("ata%u: protocol %d task_state %d\n",
-		ap->print_id, qc->tf.protocol, ap->hsm_task_state);
-=======
 	trace_ata_sff_port_intr(qc, hsmv_on_idle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check whether we are expecting interrupt in this state */
 	switch (ap->hsm_task_state) {
@@ -2052,11 +1564,7 @@ EXPORT_SYMBOL_GPL(ata_sff_interrupt);
 
 void ata_sff_lost_interrupt(struct ata_port *ap)
 {
-<<<<<<< HEAD
-	u8 status;
-=======
 	u8 status = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_queued_cmd *qc;
 
 	/* Only one outstanding command per SFF channel */
@@ -2066,23 +1574,14 @@ void ata_sff_lost_interrupt(struct ata_port *ap)
 		return;
 	/* See if the controller thinks it is still busy - if so the command
 	   isn't a lost IRQ but is still in progress */
-<<<<<<< HEAD
-	status = ata_sff_altstatus(ap);
-=======
 	if (WARN_ON_ONCE(!ata_sff_altstatus(ap, &status)))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status & ATA_BUSY)
 		return;
 
 	/* There was a command running, we are no longer busy and we have
 	   no interrupt. */
-<<<<<<< HEAD
-	ata_port_warn(ap, "lost interrupt (Status 0x%x)\n",
-								status);
-=======
 	ata_port_warn(ap, "lost interrupt (Status 0x%x)\n", status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Run the host interrupt logic as if the interrupt had not been
 	   lost */
 	ata_sff_port_intr(ap, qc);
@@ -2103,12 +1602,7 @@ void ata_sff_freeze(struct ata_port *ap)
 	ap->ctl |= ATA_NIEN;
 	ap->last_ctl = ap->ctl;
 
-<<<<<<< HEAD
-	if (ap->ops->sff_set_devctl || ap->ioaddr.ctl_addr)
-		ata_sff_set_devctl(ap, ap->ctl);
-=======
 	ata_sff_set_devctl(ap, ap->ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Under certain circumstances, some controllers raise IRQ on
 	 * ATA_NIEN manipulation.  Also, many controllers fail to mask
@@ -2153,25 +1647,15 @@ EXPORT_SYMBOL_GPL(ata_sff_thaw);
  *	Kernel thread context (may sleep)
  *
  *	RETURNS:
-<<<<<<< HEAD
- *	0 on success, -errno otherwise.
-=======
  *	Always 0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ata_sff_prereset(struct ata_link *link, unsigned long deadline)
 {
 	struct ata_eh_context *ehc = &link->eh_context;
 	int rc;
 
-<<<<<<< HEAD
-	rc = ata_std_prereset(link, deadline);
-	if (rc)
-		return rc;
-=======
 	/* The standard prereset is best-effort and always returns 0 */
 	ata_std_prereset(link, deadline);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if we're about to do hardreset, nothing more to do */
 	if (ehc->i.action & ATA_EH_HARDRESET)
@@ -2206,12 +1690,6 @@ EXPORT_SYMBOL_GPL(ata_sff_prereset);
  *	correctly storing and echoing back the
  *	ATA shadow register contents.
  *
-<<<<<<< HEAD
- *	LOCKING:
- *	caller.
- */
-static unsigned int ata_devchk(struct ata_port *ap, unsigned int device)
-=======
  *	RETURN:
  *	true if device is present, false if not.
  *
@@ -2219,7 +1697,6 @@ static unsigned int ata_devchk(struct ata_port *ap, unsigned int device)
  *	caller.
  */
 static bool ata_devchk(struct ata_port *ap, unsigned int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;
 	u8 nsect, lbal;
@@ -2239,15 +1716,9 @@ static bool ata_devchk(struct ata_port *ap, unsigned int device)
 	lbal = ioread8(ioaddr->lbal_addr);
 
 	if ((nsect == 0x55) && (lbal == 0xaa))
-<<<<<<< HEAD
-		return 1;	/* we found a device */
-
-	return 0;		/* nothing found */
-=======
 		return true;	/* we found a device */
 
 	return false;		/* nothing found */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2284,11 +1755,7 @@ unsigned int ata_sff_dev_classify(struct ata_device *dev, int present,
 	memset(&tf, 0, sizeof(tf));
 
 	ap->ops->sff_tf_read(ap, &tf);
-<<<<<<< HEAD
-	err = tf.feature;
-=======
 	err = tf.error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r_err)
 		*r_err = err;
 
@@ -2304,18 +1771,11 @@ unsigned int ata_sff_dev_classify(struct ata_device *dev, int present,
 		return ATA_DEV_NONE;
 
 	/* determine if device is ATA or ATAPI */
-<<<<<<< HEAD
-	class = ata_dev_classify(&tf);
-
-	if (class == ATA_DEV_UNKNOWN) {
-		/* If the device failed diagnostic, it's likely to
-=======
 	class = ata_port_classify(ap, &tf);
 	switch (class) {
 	case ATA_DEV_UNKNOWN:
 		/*
 		 * If the device failed diagnostic, it's likely to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * have reported incorrect device signature too.
 		 * Assume ATA device if the device seems present but
 		 * device signature is invalid with diagnostic
@@ -2325,19 +1785,12 @@ unsigned int ata_sff_dev_classify(struct ata_device *dev, int present,
 			class = ATA_DEV_ATA;
 		else
 			class = ATA_DEV_NONE;
-<<<<<<< HEAD
-	} else if ((class == ATA_DEV_ATA) &&
-		   (ap->ops->sff_check_status(ap) == 0))
-		class = ATA_DEV_NONE;
-
-=======
 		break;
 	case ATA_DEV_ATA:
 		if (ap->ops->sff_check_status(ap) == 0)
 			class = ATA_DEV_NONE;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return class;
 }
 EXPORT_SYMBOL_GPL(ata_sff_dev_classify);
@@ -2424,11 +1877,6 @@ static int ata_bus_softreset(struct ata_port *ap, unsigned int devmask,
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;
 
-<<<<<<< HEAD
-	DPRINTK("ata%u: bus reset via SRST\n", ap->print_id);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ap->ioaddr.ctl_addr) {
 		/* software reset.  causes dev0 to be selected */
 		iowrite8(ap->ctl, ioaddr->ctl_addr);
@@ -2466,11 +1914,6 @@ int ata_sff_softreset(struct ata_link *link, unsigned int *classes,
 	int rc;
 	u8 err;
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* determine if device 0/1 are present */
 	if (ata_devchk(ap, 0))
 		devmask |= (1 << 0);
@@ -2481,10 +1924,6 @@ int ata_sff_softreset(struct ata_link *link, unsigned int *classes,
 	ap->ops->sff_dev_select(ap, 0);
 
 	/* issue bus reset */
-<<<<<<< HEAD
-	DPRINTK("about to softreset, devmask=%x\n", devmask);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ata_bus_softreset(ap, devmask, deadline);
 	/* if link is occupied, -ENODEV too is an error */
 	if (rc && (rc != -ENODEV || sata_scr_valid(link))) {
@@ -2499,10 +1938,6 @@ int ata_sff_softreset(struct ata_link *link, unsigned int *classes,
 		classes[1] = ata_sff_dev_classify(&link->device[1],
 						  devmask & (1 << 1), &err);
 
-<<<<<<< HEAD
-	DPRINTK("EXIT, classes[0]=%u [1]=%u\n", classes[0], classes[1]);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(ata_sff_softreset);
@@ -2526,11 +1961,7 @@ int sata_sff_hardreset(struct ata_link *link, unsigned int *class,
 		       unsigned long deadline)
 {
 	struct ata_eh_context *ehc = &link->eh_context;
-<<<<<<< HEAD
-	const unsigned long *timing = sata_ehc_deb_timing(ehc);
-=======
 	const unsigned int *timing = sata_ehc_deb_timing(ehc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool online;
 	int rc;
 
@@ -2539,10 +1970,6 @@ int sata_sff_hardreset(struct ata_link *link, unsigned int *class,
 	if (online)
 		*class = ata_sff_dev_classify(link->device, 1, NULL);
 
-<<<<<<< HEAD
-	DPRINTK("EXIT, class=%u\n", *class);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 EXPORT_SYMBOL_GPL(sata_sff_hardreset);
@@ -2572,25 +1999,12 @@ void ata_sff_postreset(struct ata_link *link, unsigned int *classes)
 		ap->ops->sff_dev_select(ap, 0);
 
 	/* bail out if no device is present */
-<<<<<<< HEAD
-	if (classes[0] == ATA_DEV_NONE && classes[1] == ATA_DEV_NONE) {
-		DPRINTK("EXIT, no device\n");
-		return;
-	}
-
-	/* set up device control */
-	if (ap->ops->sff_set_devctl || ap->ioaddr.ctl_addr) {
-		ata_sff_set_devctl(ap, ap->ctl);
-		ap->last_ctl = ap->ctl;
-	}
-=======
 	if (classes[0] == ATA_DEV_NONE && classes[1] == ATA_DEV_NONE)
 		return;
 
 	/* set up device control */
 	if (ata_sff_set_devctl(ap, ap->ctl))
 		ap->last_ctl = ap->ctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ata_sff_postreset);
 
@@ -2619,10 +2033,6 @@ void ata_sff_drain_fifo(struct ata_queued_cmd *qc)
 						&& count < 65536; count += 2)
 		ioread16(ap->ioaddr.data_addr);
 
-<<<<<<< HEAD
-	/* Can become DEBUG later */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count)
 		ata_port_dbg(ap, "drained %d bytes to clear DRQ\n", count);
 
@@ -2649,11 +2059,7 @@ void ata_sff_error_handler(struct ata_port *ap)
 	unsigned long flags;
 
 	qc = __ata_qc_from_tag(ap, ap->link.active_tag);
-<<<<<<< HEAD
-	if (qc && !(qc->flags & ATA_QCFLAG_FAILED))
-=======
 	if (qc && !(qc->flags & ATA_QCFLAG_EH))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qc = NULL;
 
 	spin_lock_irqsave(ap->lock, flags);
@@ -2708,24 +2114,11 @@ EXPORT_SYMBOL_GPL(ata_sff_std_ports);
 
 #ifdef CONFIG_PCI
 
-<<<<<<< HEAD
-static int ata_resources_present(struct pci_dev *pdev, int port)
-=======
 static bool ata_resources_present(struct pci_dev *pdev, int port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	/* Check the PCI resources for this channel are enabled */
-<<<<<<< HEAD
-	port = port * 2;
-	for (i = 0; i < 2; i++) {
-		if (pci_resource_start(pdev, port + i) == 0 ||
-		    pci_resource_len(pdev, port + i) == 0)
-			return 0;
-	}
-	return 1;
-=======
 	port *= 2;
 	for (i = 0; i < 2; i++) {
 		if (pci_resource_start(pdev, port + i) == 0 ||
@@ -2733,7 +2126,6 @@ static bool ata_resources_present(struct pci_dev *pdev, int port)
 			return false;
 	}
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2879,11 +2271,7 @@ EXPORT_SYMBOL_GPL(ata_pci_sff_prepare_host);
  */
 int ata_pci_sff_activate_host(struct ata_host *host,
 			      irq_handler_t irq_handler,
-<<<<<<< HEAD
-			      struct scsi_host_template *sht)
-=======
 			      const struct scsi_host_template *sht)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = host->dev;
 	struct pci_dev *pdev = to_pci_dev(dev);
@@ -2895,24 +2283,6 @@ int ata_pci_sff_activate_host(struct ata_host *host,
 		return rc;
 
 	if ((pdev->class >> 8) == PCI_CLASS_STORAGE_IDE) {
-<<<<<<< HEAD
-		u8 tmp8, mask;
-
-		/* TODO: What if one channel is in native mode ... */
-		pci_read_config_byte(pdev, PCI_CLASS_PROG, &tmp8);
-		mask = (1 << 2) | (1 << 0);
-		if ((tmp8 & mask) != mask)
-			legacy_mode = 1;
-#if defined(CONFIG_NO_ATA_LEGACY)
-		/* Some platforms with PCI limits cannot address compat
-		   port space. In that case we punt if their firmware has
-		   left a device in compatibility mode */
-		if (legacy_mode) {
-			printk(KERN_ERR "ata: Compatibility mode ATA is not supported on this platform, skipping.\n");
-			return -EOPNOTSUPP;
-		}
-#endif
-=======
 		u8 tmp8, mask = 0;
 
 		/*
@@ -2930,7 +2300,6 @@ int ata_pci_sff_activate_host(struct ata_host *host,
 			mask |= (1 << 2);
 		if ((tmp8 & mask) != mask)
 			legacy_mode = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!devres_open_group(dev, NULL, GFP_KERNEL))
@@ -2947,11 +2316,7 @@ int ata_pci_sff_activate_host(struct ata_host *host,
 		for (i = 0; i < 2; i++) {
 			if (ata_port_is_dummy(host->ports[i]))
 				continue;
-<<<<<<< HEAD
-			ata_port_desc(host->ports[i], "irq %d", pdev->irq);
-=======
 			ata_port_desc_misc(host->ports[i], pdev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (legacy_mode) {
 		if (!ata_port_is_dummy(host->ports[0])) {
@@ -2961,13 +2326,8 @@ int ata_pci_sff_activate_host(struct ata_host *host,
 			if (rc)
 				goto out;
 
-<<<<<<< HEAD
-			ata_port_desc(host->ports[0], "irq %d",
-				      ATA_PRIMARY_IRQ(pdev));
-=======
 			ata_port_desc_misc(host->ports[0],
 					   ATA_PRIMARY_IRQ(pdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!ata_port_is_dummy(host->ports[1])) {
@@ -2977,13 +2337,8 @@ int ata_pci_sff_activate_host(struct ata_host *host,
 			if (rc)
 				goto out;
 
-<<<<<<< HEAD
-			ata_port_desc(host->ports[1], "irq %d",
-				      ATA_SECONDARY_IRQ(pdev));
-=======
 			ata_port_desc_misc(host->ports[1],
 					   ATA_SECONDARY_IRQ(pdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -3013,11 +2368,7 @@ static const struct ata_port_info *ata_sff_find_valid_pi(
 
 static int ata_pci_init_one(struct pci_dev *pdev,
 		const struct ata_port_info * const *ppi,
-<<<<<<< HEAD
-		struct scsi_host_template *sht, void *host_priv,
-=======
 		const struct scsi_host_template *sht, void *host_priv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int hflags, bool bmdma)
 {
 	struct device *dev = &pdev->dev;
@@ -3025,11 +2376,6 @@ static int ata_pci_init_one(struct pci_dev *pdev,
 	struct ata_host *host = NULL;
 	int rc;
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pi = ata_sff_find_valid_pi(ppi);
 	if (!pi) {
 		dev_err(&pdev->dev, "no valid port_info specified\n");
@@ -3096,11 +2442,7 @@ out:
  */
 int ata_pci_sff_init_one(struct pci_dev *pdev,
 		 const struct ata_port_info * const *ppi,
-<<<<<<< HEAD
-		 struct scsi_host_template *sht, void *host_priv, int hflag)
-=======
 		 const struct scsi_host_template *sht, void *host_priv, int hflag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ata_pci_init_one(pdev, ppi, sht, host_priv, hflag, 0);
 }
@@ -3179,10 +2521,6 @@ static void ata_bmdma_fill_sg(struct ata_queued_cmd *qc)
 
 			prd[pi].addr = cpu_to_le32(addr);
 			prd[pi].flags_len = cpu_to_le32(len & 0xffff);
-<<<<<<< HEAD
-			VPRINTK("PRD[%u] = (0x%X, 0x%X)\n", pi, addr, len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pi++;
 			sg_len -= len;
@@ -3242,10 +2580,6 @@ static void ata_bmdma_fill_sg_dumb(struct ata_queued_cmd *qc)
 				prd[++pi].addr = cpu_to_le32(addr + 0x8000);
 			}
 			prd[pi].flags_len = cpu_to_le32(blen);
-<<<<<<< HEAD
-			VPRINTK("PRD[%u] = (0x%X, 0x%X)\n", pi, addr, len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pi++;
 			sg_len -= len;
@@ -3265,14 +2599,6 @@ static void ata_bmdma_fill_sg_dumb(struct ata_queued_cmd *qc)
  *	LOCKING:
  *	spin_lock_irqsave(host lock)
  */
-<<<<<<< HEAD
-void ata_bmdma_qc_prep(struct ata_queued_cmd *qc)
-{
-	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
-		return;
-
-	ata_bmdma_fill_sg(qc);
-=======
 enum ata_completion_errors ata_bmdma_qc_prep(struct ata_queued_cmd *qc)
 {
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
@@ -3281,7 +2607,6 @@ enum ata_completion_errors ata_bmdma_qc_prep(struct ata_queued_cmd *qc)
 	ata_bmdma_fill_sg(qc);
 
 	return AC_ERR_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ata_bmdma_qc_prep);
 
@@ -3294,14 +2619,6 @@ EXPORT_SYMBOL_GPL(ata_bmdma_qc_prep);
  *	LOCKING:
  *	spin_lock_irqsave(host lock)
  */
-<<<<<<< HEAD
-void ata_bmdma_dumb_qc_prep(struct ata_queued_cmd *qc)
-{
-	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
-		return;
-
-	ata_bmdma_fill_sg_dumb(qc);
-=======
 enum ata_completion_errors ata_bmdma_dumb_qc_prep(struct ata_queued_cmd *qc)
 {
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
@@ -3310,7 +2627,6 @@ enum ata_completion_errors ata_bmdma_dumb_qc_prep(struct ata_queued_cmd *qc)
 	ata_bmdma_fill_sg_dumb(qc);
 
 	return AC_ERR_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ata_bmdma_dumb_qc_prep);
 
@@ -3345,16 +2661,11 @@ unsigned int ata_bmdma_qc_issue(struct ata_queued_cmd *qc)
 	case ATA_PROT_DMA:
 		WARN_ON_ONCE(qc->tf.flags & ATA_TFLAG_POLLING);
 
-<<<<<<< HEAD
-		ap->ops->sff_tf_load(ap, &qc->tf);  /* load tf registers */
-		ap->ops->bmdma_setup(qc);	    /* set up bmdma */
-=======
 		trace_ata_tf_load(ap, &qc->tf);
 		ap->ops->sff_tf_load(ap, &qc->tf);  /* load tf registers */
 		trace_ata_bmdma_setup(ap, &qc->tf, qc->tag);
 		ap->ops->bmdma_setup(qc);	    /* set up bmdma */
 		trace_ata_bmdma_start(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ops->bmdma_start(qc);	    /* initiate bmdma */
 		ap->hsm_task_state = HSM_ST_LAST;
 		break;
@@ -3362,13 +2673,9 @@ unsigned int ata_bmdma_qc_issue(struct ata_queued_cmd *qc)
 	case ATAPI_PROT_DMA:
 		WARN_ON_ONCE(qc->tf.flags & ATA_TFLAG_POLLING);
 
-<<<<<<< HEAD
-		ap->ops->sff_tf_load(ap, &qc->tf);  /* load tf registers */
-=======
 		trace_ata_tf_load(ap, &qc->tf);
 		ap->ops->sff_tf_load(ap, &qc->tf);  /* load tf registers */
 		trace_ata_bmdma_setup(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ops->bmdma_setup(qc);	    /* set up bmdma */
 		ap->hsm_task_state = HSM_ST_FIRST;
 
@@ -3409,21 +2716,14 @@ unsigned int ata_bmdma_port_intr(struct ata_port *ap, struct ata_queued_cmd *qc)
 	if (ap->hsm_task_state == HSM_ST_LAST && ata_is_dma(qc->tf.protocol)) {
 		/* check status of DMA engine */
 		host_stat = ap->ops->bmdma_status(ap);
-<<<<<<< HEAD
-		VPRINTK("ata%u: host_stat 0x%X\n", ap->print_id, host_stat);
-=======
 		trace_ata_bmdma_status(ap, host_stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* if it's not our irq... */
 		if (!(host_stat & ATA_DMA_INTR))
 			return ata_sff_idle_irq(ap);
 
 		/* before we do anything else, clear DMA-Start bit */
-<<<<<<< HEAD
-=======
 		trace_ata_bmdma_stop(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ops->bmdma_stop(qc);
 		bmdma_stopped = true;
 
@@ -3482,11 +2782,7 @@ void ata_bmdma_error_handler(struct ata_port *ap)
 	bool thaw = false;
 
 	qc = __ata_qc_from_tag(ap, ap->link.active_tag);
-<<<<<<< HEAD
-	if (qc && !(qc->flags & ATA_QCFLAG_FAILED))
-=======
 	if (qc && !(qc->flags & ATA_QCFLAG_EH))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qc = NULL;
 
 	/* reset PIO HSM and stop DMA engine */
@@ -3496,10 +2792,7 @@ void ata_bmdma_error_handler(struct ata_port *ap)
 		u8 host_stat;
 
 		host_stat = ap->ops->bmdma_status(ap);
-<<<<<<< HEAD
-=======
 		trace_ata_bmdma_status(ap, host_stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* BMDMA controllers indicate host bus error by
 		 * setting DMA_ERR bit and timing out.  As it wasn't
@@ -3511,10 +2804,7 @@ void ata_bmdma_error_handler(struct ata_port *ap)
 			thaw = true;
 		}
 
-<<<<<<< HEAD
-=======
 		trace_ata_bmdma_stop(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ops->bmdma_stop(qc);
 
 		/* if we're gonna thaw, make sure IRQ is clear */
@@ -3548,10 +2838,7 @@ void ata_bmdma_post_internal_cmd(struct ata_queued_cmd *qc)
 
 	if (ata_is_dma(qc->tf.protocol)) {
 		spin_lock_irqsave(ap->lock, flags);
-<<<<<<< HEAD
-=======
 		trace_ata_bmdma_stop(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap->ops->bmdma_stop(qc);
 		spin_unlock_irqrestore(ap->lock, flags);
 	}
@@ -3799,21 +3086,9 @@ void ata_pci_bmdma_init(struct ata_host *host)
 	 * ->sff_irq_clear method.  Try to initialize bmdma_addr
 	 * regardless of dma masks.
 	 */
-<<<<<<< HEAD
-	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
-	if (rc)
-		ata_bmdma_nodma(host, "failed to set dma mask");
-	if (!rc) {
-		rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
-		if (rc)
-			ata_bmdma_nodma(host,
-					"failed to set consistent dma mask");
-	}
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
 	if (rc)
 		ata_bmdma_nodma(host, "failed to set dma mask");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* request and iomap DMA region */
 	rc = pcim_iomap_regions(pdev, 1 << 4, dev_driver_string(gdev));
@@ -3890,11 +3165,7 @@ EXPORT_SYMBOL_GPL(ata_pci_bmdma_prepare_host);
  */
 int ata_pci_bmdma_init_one(struct pci_dev *pdev,
 			   const struct ata_port_info * const * ppi,
-<<<<<<< HEAD
-			   struct scsi_host_template *sht, void *host_priv,
-=======
 			   const struct scsi_host_template *sht, void *host_priv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   int hflags)
 {
 	return ata_pci_init_one(pdev, ppi, sht, host_priv, hflags, 1);

@@ -44,20 +44,12 @@
 #define cpu_to_mem(cpu)		((void)(cpu),0)
 #endif
 
-<<<<<<< HEAD
-#ifndef parent_node
-#define parent_node(node)	((void)(node),0)
-#endif
-#ifndef cpumask_of_node
-#define cpumask_of_node(node)	((void)node, cpu_online_mask)
-=======
 #ifndef cpumask_of_node
   #ifdef CONFIG_NUMA
     #define cpumask_of_node(node)	((node) == 0 ? cpu_online_mask : cpu_none_mask)
   #else
     #define cpumask_of_node(node)	((void)(node), cpu_online_mask)
   #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifndef pcibus_to_node
 #define pcibus_to_node(bus)	((void)(bus), -1)

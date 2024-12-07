@@ -1,69 +1,42 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for rfkill through the OLPC XO-1 laptop embedded controller
  *
  * Copyright (C) 2010 One Laptop per Child
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/rfkill.h>
-<<<<<<< HEAD
-
-#include <asm/olpc.h>
-=======
 #include <linux/olpc-ec.h>
 
 static bool card_blocked;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int rfkill_set_block(void *data, bool blocked)
 {
 	unsigned char cmd;
-<<<<<<< HEAD
-=======
 	int r;
 
 	if (blocked == card_blocked)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (blocked)
 		cmd = EC_WLAN_ENTER_RESET;
 	else
 		cmd = EC_WLAN_LEAVE_RESET;
 
-<<<<<<< HEAD
-	return olpc_ec_cmd(cmd, NULL, 0, NULL, 0);
-=======
 	r = olpc_ec_cmd(cmd, NULL, 0, NULL, 0);
 	if (r == 0)
 		card_blocked = blocked;
 
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rfkill_ops rfkill_ops = {
 	.set_block = rfkill_set_block,
 };
 
-<<<<<<< HEAD
-static int __devinit xo1_rfkill_probe(struct platform_device *pdev)
-=======
 static int xo1_rfkill_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rfkill *rfk;
 	int r;
@@ -83,34 +56,19 @@ static int xo1_rfkill_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit xo1_rfkill_remove(struct platform_device *pdev)
-=======
 static void xo1_rfkill_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rfkill *rfk = platform_get_drvdata(pdev);
 	rfkill_unregister(rfk);
 	rfkill_destroy(rfk);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver xo1_rfkill_driver = {
 	.driver = {
 		.name = "xo1-rfkill",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe		= xo1_rfkill_probe,
-	.remove		= __devexit_p(xo1_rfkill_remove),
-=======
 	},
 	.probe		= xo1_rfkill_probe,
 	.remove_new	= xo1_rfkill_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(xo1_rfkill_driver);

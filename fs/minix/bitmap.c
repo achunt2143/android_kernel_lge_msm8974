@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/minix/bitmap.c
  *
@@ -100,11 +97,7 @@ int minix_new_block(struct inode * inode)
 unsigned long minix_count_free_blocks(struct super_block *sb)
 {
 	struct minix_sb_info *sbi = minix_sb(sb);
-<<<<<<< HEAD
-	u32 bits = sbi->s_nzones - (sbi->s_firstdatazone + 1);
-=======
 	u32 bits = sbi->s_nzones - sbi->s_firstdatazone + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (count_free(sbi->s_zmap, sb->s_blocksize, bits)
 		<< sbi->s_log_zone_size);
@@ -217,11 +210,7 @@ void minix_free_inode(struct inode * inode)
 	mark_buffer_dirty(bh);
 }
 
-<<<<<<< HEAD
-struct inode *minix_new_inode(const struct inode *dir, umode_t mode, int *error)
-=======
 struct inode *minix_new_inode(const struct inode *dir, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = dir->i_sb;
 	struct minix_sb_info *sbi = minix_sb(sb);
@@ -231,20 +220,10 @@ struct inode *minix_new_inode(const struct inode *dir, umode_t mode)
 	unsigned long j;
 	int i;
 
-<<<<<<< HEAD
-	if (!inode) {
-		*error = -ENOMEM;
-		return NULL;
-	}
-	j = bits_per_zone;
-	bh = NULL;
-	*error = -ENOSPC;
-=======
 	if (!inode)
 		return ERR_PTR(-ENOMEM);
 	j = bits_per_zone;
 	bh = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&bitmap_lock);
 	for (i = 0; i < sbi->s_imap_blocks; i++) {
 		bh = sbi->s_imap[i];
@@ -255,49 +234,29 @@ struct inode *minix_new_inode(const struct inode *dir, umode_t mode)
 	if (!bh || j >= bits_per_zone) {
 		spin_unlock(&bitmap_lock);
 		iput(inode);
-<<<<<<< HEAD
-		return NULL;
-=======
 		return ERR_PTR(-ENOSPC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (minix_test_and_set_bit(j, bh->b_data)) {	/* shouldn't happen */
 		spin_unlock(&bitmap_lock);
 		printk("minix_new_inode: bit already set\n");
 		iput(inode);
-<<<<<<< HEAD
-		return NULL;
-=======
 		return ERR_PTR(-ENOSPC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&bitmap_lock);
 	mark_buffer_dirty(bh);
 	j += i * bits_per_zone;
 	if (!j || j > sbi->s_ninodes) {
 		iput(inode);
-<<<<<<< HEAD
-		return NULL;
-	}
-	inode_init_owner(inode, dir, mode);
-	inode->i_ino = j;
-	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME_SEC;
-=======
 		return ERR_PTR(-ENOSPC);
 	}
 	inode_init_owner(&nop_mnt_idmap, inode, dir, mode);
 	inode->i_ino = j;
 	simple_inode_init_ts(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_blocks = 0;
 	memset(&minix_i(inode)->u, 0, sizeof(minix_i(inode)->u));
 	insert_inode_hash(inode);
 	mark_inode_dirty(inode);
 
-<<<<<<< HEAD
-	*error = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inode;
 }
 

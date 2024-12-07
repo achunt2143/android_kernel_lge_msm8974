@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
@@ -17,7 +6,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/completion.h>
@@ -27,10 +15,7 @@
 #include <linux/prefetch.h>
 #include <linux/blkdev.h>
 #include <linux/rbtree.h>
-<<<<<<< HEAD
-=======
 #include <linux/random.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
@@ -46,25 +31,11 @@
 #include "log.h"
 #include "inode.h"
 #include "trace_gfs2.h"
-<<<<<<< HEAD
-=======
 #include "dir.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BFITNOENT ((u32)~0)
 #define NO_BLOCK ((u64)~0)
 
-<<<<<<< HEAD
-#if BITS_PER_LONG == 32
-#define LBITMASK   (0x55555555UL)
-#define LBITSKIP55 (0x55555555UL)
-#define LBITSKIP00 (0x00000000UL)
-#else
-#define LBITMASK   (0x5555555555555555UL)
-#define LBITSKIP55 (0x5555555555555555UL)
-#define LBITSKIP00 (0x0000000000000000UL)
-#endif
-=======
 struct gfs2_rbm {
 	struct gfs2_rgrpd *rgd;
 	u32 offset;		/* The offset is bitmap relative */
@@ -82,7 +53,6 @@ static inline u64 gfs2_rbm_to_block(const struct gfs2_rbm *rbm)
 	return rbm->rgd->rd_data0 + (rbm_bi(rbm)->bi_start * GFS2_NBBY) +
 		rbm->offset;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These routines are used by the resource group routines (rgrp.c)
@@ -95,14 +65,11 @@ static inline u64 gfs2_rbm_to_block(const struct gfs2_rbm *rbm)
  * 3 = Used (metadata)
  */
 
-<<<<<<< HEAD
-=======
 struct gfs2_extent {
 	struct gfs2_rbm rbm;
 	u32 len;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char valid_change[16] = {
 	        /* current */
 	/* n */ 0, 1, 1, 1,
@@ -111,17 +78,6 @@ static const char valid_change[16] = {
 	        1, 0, 0, 0
 };
 
-<<<<<<< HEAD
-static u32 rgblk_search(struct gfs2_rgrpd *rgd, u32 goal,
-			unsigned char old_state,
-			struct gfs2_bitmap **rbi);
-
-/**
- * gfs2_setbit - Set a bit in the bitmaps
- * @buffer: the buffer that holds the bitmaps
- * @buflen: the length (in bytes) of the buffer
- * @block: the block to set
-=======
 static int gfs2_rbm_find(struct gfs2_rbm *rbm, u8 state, u32 *minext,
 			 struct gfs2_blkreserv *rs, bool nowrap);
 
@@ -130,24 +86,10 @@ static int gfs2_rbm_find(struct gfs2_rbm *rbm, u8 state, u32 *minext,
  * gfs2_setbit - Set a bit in the bitmaps
  * @rbm: The position of the bit to set
  * @do_clone: Also set the clone bitmap, if it exists
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @new_state: the new state of the block
  *
  */
 
-<<<<<<< HEAD
-static inline void gfs2_setbit(struct gfs2_rgrpd *rgd, unsigned char *buf1,
-			       unsigned char *buf2, unsigned int offset,
-			       struct gfs2_bitmap *bi, u32 block,
-			       unsigned char new_state)
-{
-	unsigned char *byte1, *byte2, *end, cur_state;
-	unsigned int buflen = bi->bi_len;
-	const unsigned int bit = (block % GFS2_NBBY) * GFS2_BIT_SIZE;
-
-	byte1 = buf1 + offset + (block / GFS2_NBBY);
-	end = buf1 + offset + buflen;
-=======
 static inline void gfs2_setbit(const struct gfs2_rbm *rbm, bool do_clone,
 			       unsigned char new_state)
 {
@@ -158,26 +100,12 @@ static inline void gfs2_setbit(const struct gfs2_rbm *rbm, bool do_clone,
 
 	byte1 = bi->bi_bh->b_data + bi->bi_offset + (rbm->offset / GFS2_NBBY);
 	end = bi->bi_bh->b_data + bi->bi_offset + buflen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(byte1 >= end);
 
 	cur_state = (*byte1 >> bit) & GFS2_BIT_MASK;
 
 	if (unlikely(!valid_change[new_state * 4 + cur_state])) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "GFS2: buf_blk = 0x%llx old_state=%d, "
-		       "new_state=%d\n",
-		       (unsigned long long)block, cur_state, new_state);
-		printk(KERN_WARNING "GFS2: rgrp=0x%llx bi_start=0x%lx\n",
-		       (unsigned long long)rgd->rd_addr,
-		       (unsigned long)bi->bi_start);
-		printk(KERN_WARNING "GFS2: bi_offset=0x%lx bi_len=0x%lx\n",
-		       (unsigned long)bi->bi_offset,
-		       (unsigned long)bi->bi_len);
-		dump_stack();
-		gfs2_consist_rgrpd(rgd);
-=======
 		struct gfs2_sbd *sdp = rbm->rgd->rd_sbd;
 
 		fs_warn(sdp, "buf_blk = 0x%x old_state=%d, new_state=%d\n",
@@ -190,18 +118,12 @@ static inline void gfs2_setbit(const struct gfs2_rbm *rbm, bool do_clone,
 			(unsigned long long)gfs2_rbm_to_block(rbm));
 		dump_stack();
 		gfs2_consist_rgrpd(rbm->rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	*byte1 ^= (cur_state ^ new_state) << bit;
 
-<<<<<<< HEAD
-	if (buf2) {
-		byte2 = buf2 + offset + (block / GFS2_NBBY);
-=======
 	if (do_clone && bi->bi_clone) {
 		byte2 = bi->bi_clone + bi->bi_offset + (rbm->offset / GFS2_NBBY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cur_state = (*byte2 >> bit) & GFS2_BIT_MASK;
 		*byte2 ^= (cur_state ^ new_state) << bit;
 	}
@@ -209,35 +131,6 @@ static inline void gfs2_setbit(const struct gfs2_rbm *rbm, bool do_clone,
 
 /**
  * gfs2_testbit - test a bit in the bitmaps
-<<<<<<< HEAD
- * @buffer: the buffer that holds the bitmaps
- * @buflen: the length (in bytes) of the buffer
- * @block: the block to read
- *
- */
-
-static inline unsigned char gfs2_testbit(struct gfs2_rgrpd *rgd,
-					 const unsigned char *buffer,
-					 unsigned int buflen, u32 block)
-{
-	const unsigned char *byte, *end;
-	unsigned char cur_state;
-	unsigned int bit;
-
-	byte = buffer + (block / GFS2_NBBY);
-	bit = (block % GFS2_NBBY) * GFS2_BIT_SIZE;
-	end = buffer + buflen;
-
-	gfs2_assert(rgd->rd_sbd, byte < end);
-
-	cur_state = (*byte >> bit) & GFS2_BIT_MASK;
-
-	return cur_state;
-}
-
-/**
- * gfs2_bit_search
-=======
  * @rbm: The bit to test
  * @use_clone: If true, test the clone bitmap, not the official bitmap.
  *
@@ -267,18 +160,12 @@ static inline u8 gfs2_testbit(const struct gfs2_rbm *rbm, bool use_clone)
 
 /**
  * gfs2_bit_search - search bitmap for a state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ptr: Pointer to bitmap data
  * @mask: Mask to use (normally 0x55555.... but adjusted for search start)
  * @state: The state we are searching for
  *
-<<<<<<< HEAD
- * We xor the bitmap data with a patter which is the bitwise opposite
- * of what we are looking for, this gives rise to a pattern of ones
-=======
  * We xor the bitmap data with a pattern which is the bitwise opposite
  * of what we are looking for. This gives rise to a pattern of ones
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * wherever there is a match. Since we have two bits per entry, we
  * take this pattern, shift it down by one place and then and it with
  * the original. All the even bit positions (0,2,4, etc) then represent
@@ -305,11 +192,6 @@ static inline u64 gfs2_bit_search(const __le64 *ptr, u64 mask, u8 state)
 }
 
 /**
-<<<<<<< HEAD
- * gfs2_bitfit - Search an rgrp's bitmap buffer to find a bit-pair representing
- *       a block in a given allocation state.
- * @buffer: the buffer that holds the bitmaps
-=======
  * rs_cmp - multi-block reservation range compare
  * @start: start of the new reservation
  * @len: number of blocks in the new reservation
@@ -332,7 +214,6 @@ static inline int rs_cmp(u64 start, u32 len, struct gfs2_blkreserv *rs)
  * gfs2_bitfit - Search an rgrp's bitmap buffer to find a bit-pair representing
  *       a block in a given allocation state.
  * @buf: the buffer that holds the bitmaps
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len: the length (in bytes) of the buffer
  * @goal: start search at this block's bit-pair (within @buffer)
  * @state: GFS2_BLKST_XXX the state of the block we're looking for.
@@ -360,11 +241,6 @@ static u32 gfs2_bitfit(const u8 *buf, const unsigned int len,
 	u64 mask = 0x5555555555555555ULL;
 	u32 bit;
 
-<<<<<<< HEAD
-	BUG_ON(state > 3);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Mask off bits we don't care about at the start of the search */
 	mask <<= spoint;
 	tmp = gfs2_bit_search(ptr, mask, state);
@@ -386,9 +262,6 @@ static u32 gfs2_bitfit(const u8 *buf, const unsigned int len,
 }
 
 /**
-<<<<<<< HEAD
- * gfs2_bitcount - count the number of bits in a certain state
-=======
  * gfs2_rbm_from_block - Set the rbm based upon rgd and block number
  * @rbm: The rbm with rgd already set correctly
  * @block: The block number (filesystem relative)
@@ -552,7 +425,6 @@ out:
 /**
  * gfs2_bitcount - count the number of bits in a certain state
  * @rgd: the resource group descriptor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buffer: the buffer that holds the bitmaps
  * @buflen: the length (in bytes) of the buffer
  * @state: the state of the block we're looking for
@@ -586,10 +458,6 @@ static u32 gfs2_bitcount(struct gfs2_rgrpd *rgd, const u8 *buffer,
 
 /**
  * gfs2_rgrp_verify - Verify that a resource group is consistent
-<<<<<<< HEAD
- * @sdp: the filesystem
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rgd: the rgrp
  *
  */
@@ -611,15 +479,6 @@ void gfs2_rgrp_verify(struct gfs2_rgrpd *rgd)
 			count[x] += gfs2_bitcount(rgd,
 						  bi->bi_bh->b_data +
 						  bi->bi_offset,
-<<<<<<< HEAD
-						  bi->bi_len, x);
-	}
-
-	if (count[0] != rgd->rd_free) {
-		if (gfs2_consist_rgrpd(rgd))
-			fs_err(sdp, "free data mismatch:  %u != %u\n",
-			       count[0], rgd->rd_free);
-=======
 						  bi->bi_bytes, x);
 	}
 
@@ -627,51 +486,25 @@ void gfs2_rgrp_verify(struct gfs2_rgrpd *rgd)
 		gfs2_lm(sdp, "free data mismatch:  %u != %u\n",
 			count[0], rgd->rd_free);
 		gfs2_consist_rgrpd(rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	tmp = rgd->rd_data - rgd->rd_free - rgd->rd_dinodes;
 	if (count[1] != tmp) {
-<<<<<<< HEAD
-		if (gfs2_consist_rgrpd(rgd))
-			fs_err(sdp, "used data mismatch:  %u != %u\n",
-			       count[1], tmp);
-=======
 		gfs2_lm(sdp, "used data mismatch:  %u != %u\n",
 			count[1], tmp);
 		gfs2_consist_rgrpd(rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (count[2] + count[3] != rgd->rd_dinodes) {
-<<<<<<< HEAD
-		if (gfs2_consist_rgrpd(rgd))
-			fs_err(sdp, "used metadata mismatch:  %u != %u\n",
-			       count[2] + count[3], rgd->rd_dinodes);
-=======
 		gfs2_lm(sdp, "used metadata mismatch:  %u != %u\n",
 			count[2] + count[3], rgd->rd_dinodes);
 		gfs2_consist_rgrpd(rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 }
 
-<<<<<<< HEAD
-static inline int rgrp_contains_block(struct gfs2_rgrpd *rgd, u64 block)
-{
-	u64 first = rgd->rd_data0;
-	u64 last = first + rgd->rd_data;
-	return first <= block && block < last;
-}
-
-/**
- * gfs2_blk2rgrpd - Find resource group for a given data/meta block number
- * @sdp: The GFS2 superblock
- * @n: The data block number
-=======
 /**
  * gfs2_blk2rgrpd - Find resource group for a given data/meta block number
  * @sdp: The GFS2 superblock
@@ -684,7 +517,6 @@ static inline int rgrp_contains_block(struct gfs2_rgrpd *rgd, u64 block)
  * there for alignment purposes. Another way of looking at it is that @exact
  * matches only valid data/metadata blocks, but with @exact false, it will
  * match any block within the extent of the rgrp.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: The resource group, or NULL if not found
  */
@@ -742,11 +574,7 @@ struct gfs2_rgrpd *gfs2_rgrpd_get_first(struct gfs2_sbd *sdp)
 
 /**
  * gfs2_rgrpd_get_next - get the next RG
-<<<<<<< HEAD
- * @rgd: A RG
-=======
  * @rgd: the resource group descriptor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: The next rgrp
  */
@@ -770,8 +598,6 @@ struct gfs2_rgrpd *gfs2_rgrpd_get_next(struct gfs2_rgrpd *rgd)
 	return rgd;
 }
 
-<<<<<<< HEAD
-=======
 void check_and_update_goal(struct gfs2_inode *ip)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
@@ -779,7 +605,6 @@ void check_and_update_goal(struct gfs2_inode *ip)
 		ip->i_goal = ip->i_no_addr;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void gfs2_free_clones(struct gfs2_rgrpd *rgd)
 {
 	int x;
@@ -791,8 +616,6 @@ void gfs2_free_clones(struct gfs2_rgrpd *rgd)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void dump_rs(struct seq_file *seq, const struct gfs2_blkreserv *rs,
 		    const char *fs_id_buf)
 {
@@ -890,7 +713,6 @@ static void return_all_reservations(struct gfs2_rgrpd *rgd)
 	spin_unlock(&rgd->rd_rsspin);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void gfs2_clear_rgrpd(struct gfs2_sbd *sdp)
 {
 	struct rb_node *n;
@@ -904,50 +726,25 @@ void gfs2_clear_rgrpd(struct gfs2_sbd *sdp)
 		rb_erase(n, &sdp->sd_rindex_tree);
 
 		if (gl) {
-<<<<<<< HEAD
-			spin_lock(&gl->gl_spin);
-			gl->gl_object = NULL;
-			spin_unlock(&gl->gl_spin);
-			gfs2_glock_add_to_lru(gl);
-=======
 			if (gl->gl_state != LM_ST_UNLOCKED) {
 				gfs2_glock_cb(gl, LM_ST_UNLOCKED);
 				flush_delayed_work(&gl->gl_work);
 			}
 			gfs2_rgrp_brelse(rgd);
 			glock_clear_object(gl, rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gfs2_glock_put(gl);
 		}
 
 		gfs2_free_clones(rgd);
-<<<<<<< HEAD
-		kfree(rgd->rd_bits);
-=======
 		return_all_reservations(rgd);
 		kfree(rgd->rd_bits);
 		rgd->rd_bits = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(gfs2_rgrpd_cachep, rgd);
 	}
 }
 
-<<<<<<< HEAD
-static void gfs2_rindex_print(const struct gfs2_rgrpd *rgd)
-{
-	printk(KERN_INFO "  ri_addr = %llu\n", (unsigned long long)rgd->rd_addr);
-	printk(KERN_INFO "  ri_length = %u\n", rgd->rd_length);
-	printk(KERN_INFO "  ri_data0 = %llu\n", (unsigned long long)rgd->rd_data0);
-	printk(KERN_INFO "  ri_data = %u\n", rgd->rd_data);
-	printk(KERN_INFO "  ri_bitbytes = %u\n", rgd->rd_bitbytes);
-}
-
-/**
- * gfs2_compute_bitstructs - Compute the bitmap sizes
-=======
 /**
  * compute_bitstructs - Compute the bitmap sizes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rgd: The resource group descriptor
  *
  * Calculates bitmap descriptors, one for each block that contains bitmap data
@@ -981,46 +778,30 @@ static int compute_bitstructs(struct gfs2_rgrpd *rgd)
 			bytes = bytes_left;
 			bi->bi_offset = sizeof(struct gfs2_rgrp);
 			bi->bi_start = 0;
-<<<<<<< HEAD
-			bi->bi_len = bytes;
-=======
 			bi->bi_bytes = bytes;
 			bi->bi_blocks = bytes * GFS2_NBBY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* header block */
 		} else if (x == 0) {
 			bytes = sdp->sd_sb.sb_bsize - sizeof(struct gfs2_rgrp);
 			bi->bi_offset = sizeof(struct gfs2_rgrp);
 			bi->bi_start = 0;
-<<<<<<< HEAD
-			bi->bi_len = bytes;
-=======
 			bi->bi_bytes = bytes;
 			bi->bi_blocks = bytes * GFS2_NBBY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* last block */
 		} else if (x + 1 == length) {
 			bytes = bytes_left;
 			bi->bi_offset = sizeof(struct gfs2_meta_header);
 			bi->bi_start = rgd->rd_bitbytes - bytes_left;
-<<<<<<< HEAD
-			bi->bi_len = bytes;
-=======
 			bi->bi_bytes = bytes;
 			bi->bi_blocks = bytes * GFS2_NBBY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* other blocks */
 		} else {
 			bytes = sdp->sd_sb.sb_bsize -
 				sizeof(struct gfs2_meta_header);
 			bi->bi_offset = sizeof(struct gfs2_meta_header);
 			bi->bi_start = rgd->rd_bitbytes - bytes_left;
-<<<<<<< HEAD
-			bi->bi_len = bytes;
-=======
 			bi->bi_bytes = bytes;
 			bi->bi_blocks = bytes * GFS2_NBBY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		bytes_left -= bytes;
@@ -1031,14 +812,6 @@ static int compute_bitstructs(struct gfs2_rgrpd *rgd)
 		return -EIO;
 	}
 	bi = rgd->rd_bits + (length - 1);
-<<<<<<< HEAD
-	if ((bi->bi_start + bi->bi_len) * GFS2_NBBY != rgd->rd_data) {
-		if (gfs2_consist_rgrpd(rgd)) {
-			gfs2_rindex_print(rgd);
-			fs_err(sdp, "start=%u len=%u offset=%u\n",
-			       bi->bi_start, bi->bi_len, bi->bi_offset);
-		}
-=======
 	if ((bi->bi_start + bi->bi_bytes) * GFS2_NBBY != rgd->rd_data) {
 		gfs2_lm(sdp,
 			"ri_addr = %llu\n"
@@ -1054,7 +827,6 @@ static int compute_bitstructs(struct gfs2_rgrpd *rgd)
 			rgd->rd_bitbytes,
 			bi->bi_start, bi->bi_bytes, bi->bi_offset);
 		gfs2_consist_rgrpd(rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1063,10 +835,7 @@ static int compute_bitstructs(struct gfs2_rgrpd *rgd)
 
 /**
  * gfs2_ri_total - Total up the file system space, according to the rindex.
-<<<<<<< HEAD
-=======
  * @sdp: the filesystem
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 u64 gfs2_ri_total(struct gfs2_sbd *sdp)
@@ -1075,25 +844,14 @@ u64 gfs2_ri_total(struct gfs2_sbd *sdp)
 	struct inode *inode = sdp->sd_rindex;
 	struct gfs2_inode *ip = GFS2_I(inode);
 	char buf[sizeof(struct gfs2_rindex)];
-<<<<<<< HEAD
-	struct file_ra_state ra_state;
 	int error, rgrps;
 
-	file_ra_state_init(&ra_state, inode->i_mapping);
-=======
-	int error, rgrps;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (rgrps = 0;; rgrps++) {
 		loff_t pos = rgrps * sizeof(struct gfs2_rindex);
 
 		if (pos + sizeof(struct gfs2_rindex) > i_size_read(inode))
 			break;
-<<<<<<< HEAD
-		error = gfs2_internal_read(ip, &ra_state, buf, &pos,
-=======
 		error = gfs2_internal_read(ip, buf, &pos,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   sizeof(struct gfs2_rindex));
 		if (error != sizeof(struct gfs2_rindex))
 			break;
@@ -1129,21 +887,12 @@ static int rgd_insert(struct gfs2_rgrpd *rgd)
 
 /**
  * read_rindex_entry - Pull in a new resource index entry from the disk
-<<<<<<< HEAD
- * @gl: The glock covering the rindex inode
-=======
  * @ip: Pointer to the rindex inode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 on success, > 0 on EOF, error code otherwise
  */
 
-<<<<<<< HEAD
-static int read_rindex_entry(struct gfs2_inode *ip,
-			     struct file_ra_state *ra_state)
-=======
 static int read_rindex_entry(struct gfs2_inode *ip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
 	loff_t pos = sdp->sd_rgrps * sizeof(struct gfs2_rindex);
@@ -1154,11 +903,7 @@ static int read_rindex_entry(struct gfs2_inode *ip)
 	if (pos >= i_size_read(&ip->i_inode))
 		return 1;
 
-<<<<<<< HEAD
-	error = gfs2_internal_read(ip, ra_state, (char *)&buf, &pos,
-=======
 	error = gfs2_internal_read(ip, (char *)&buf, &pos,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   sizeof(struct gfs2_rindex));
 
 	if (error != sizeof(struct gfs2_rindex))
@@ -1175,43 +920,25 @@ static int read_rindex_entry(struct gfs2_inode *ip)
 	rgd->rd_data0 = be64_to_cpu(buf.ri_data0);
 	rgd->rd_data = be32_to_cpu(buf.ri_data);
 	rgd->rd_bitbytes = be32_to_cpu(buf.ri_bitbytes);
-<<<<<<< HEAD
-
-	error = compute_bitstructs(rgd);
-	if (error)
-		goto fail;
-=======
 	spin_lock_init(&rgd->rd_rsspin);
 	mutex_init(&rgd->rd_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = gfs2_glock_get(sdp, rgd->rd_addr,
 			       &gfs2_rgrp_glops, CREATE, &rgd->rd_gl);
 	if (error)
 		goto fail;
 
-<<<<<<< HEAD
-	rgd->rd_gl->gl_object = rgd;
-	rgd->rd_flags &= ~GFS2_RDF_UPTODATE;
-=======
 	error = compute_bitstructs(rgd);
 	if (error)
 		goto fail_glock;
 
 	rgd->rd_rgl = (struct gfs2_rgrp_lvb *)rgd->rd_gl->gl_lksb.sb_lvbptr;
 	rgd->rd_flags &= ~GFS2_RDF_PREFERRED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rgd->rd_data > sdp->sd_max_rg_data)
 		sdp->sd_max_rg_data = rgd->rd_data;
 	spin_lock(&sdp->sd_rindex_spin);
 	error = rgd_insert(rgd);
 	spin_unlock(&sdp->sd_rindex_spin);
-<<<<<<< HEAD
-	if (!error)
-		return 0;
-
-	error = 0; /* someone else read in the rgrp; free it and ignore it */
-=======
 	if (!error) {
 		glock_set_object(rgd->rd_gl, rgd);
 		return 0;
@@ -1219,22 +946,16 @@ static int read_rindex_entry(struct gfs2_inode *ip)
 
 	error = 0; /* someone else read in the rgrp; free it and ignore it */
 fail_glock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_glock_put(rgd->rd_gl);
 
 fail:
 	kfree(rgd->rd_bits);
-<<<<<<< HEAD
-=======
 	rgd->rd_bits = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_free(gfs2_rgrpd_cachep, rgd);
 	return error;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * set_rgrp_preferences - Run all the rgrps, selecting some we prefer to use
  * @sdp: the GFS2 superblock
  *
@@ -1265,7 +986,6 @@ static void set_rgrp_preferences(struct gfs2_sbd *sdp)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * gfs2_ri_update - Pull in a new resource index from the disk
  * @ip: pointer to the rindex inode
  *
@@ -1275,34 +995,21 @@ static void set_rgrp_preferences(struct gfs2_sbd *sdp)
 static int gfs2_ri_update(struct gfs2_inode *ip)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-<<<<<<< HEAD
-	struct inode *inode = &ip->i_inode;
-	struct file_ra_state ra_state;
-	int error;
-
-	file_ra_state_init(&ra_state, inode->i_mapping);
-	do {
-		error = read_rindex_entry(ip, &ra_state);
-=======
 	int error;
 
 	do {
 		error = read_rindex_entry(ip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (error == 0);
 
 	if (error < 0)
 		return error;
 
-<<<<<<< HEAD
-=======
 	if (RB_EMPTY_ROOT(&sdp->sd_rindex_tree)) {
 		fs_err(sdp, "no resource groups found in the file system.\n");
 		return -ENOENT;
 	}
 	set_rgrp_preferences(sdp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdp->sd_rindex_uptodate = 1;
 	return 0;
 }
@@ -1361,8 +1068,6 @@ static void gfs2_rgrp_in(struct gfs2_rgrpd *rgd, const void *buf)
 	rgd->rd_free = be32_to_cpu(str->rg_free);
 	rgd->rd_dinodes = be32_to_cpu(str->rg_dinodes);
 	rgd->rd_igeneration = be64_to_cpu(str->rg_igeneration);
-<<<<<<< HEAD
-=======
 	/* rd_data0, rd_data and rd_bitbytes already set from rindex */
 }
 
@@ -1376,35 +1081,17 @@ static void gfs2_rgrp_ondisk2lvb(struct gfs2_rgrp_lvb *rgl, const void *buf)
 	rgl->rl_dinodes = str->rg_dinodes;
 	rgl->rl_igeneration = str->rg_igeneration;
 	rgl->__pad = 0UL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_rgrp_out(struct gfs2_rgrpd *rgd, void *buf)
 {
-<<<<<<< HEAD
-	struct gfs2_rgrp *str = buf;
-=======
 	struct gfs2_rgrpd *next = gfs2_rgrpd_get_next(rgd);
 	struct gfs2_rgrp *str = buf;
 	u32 crc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	str->rg_flags = cpu_to_be32(rgd->rd_flags & ~GFS2_RDF_MASK);
 	str->rg_free = cpu_to_be32(rgd->rd_free);
 	str->rg_dinodes = cpu_to_be32(rgd->rd_dinodes);
-<<<<<<< HEAD
-	str->__pad = cpu_to_be32(0);
-	str->rg_igeneration = cpu_to_be64(rgd->rd_igeneration);
-	memset(&str->rg_reserved, 0, sizeof(str->rg_reserved));
-}
-
-/**
- * gfs2_rgrp_go_lock - Read in a RG's header and bitmaps
- * @rgd: the struct gfs2_rgrpd describing the RG to read in
- *
- * Read in all of a Resource Group's header and bitmap blocks.
- * Caller must eventually call gfs2_rgrp_relse() to free the bitmaps.
-=======
 	if (next == NULL)
 		str->rg_skip = 0;
 	else if (next->rd_addr > rgd->rd_addr)
@@ -1505,40 +1192,25 @@ static void rgrp_set_bitmap_flags(struct gfs2_rgrpd *rgd)
  *
  * Read in all of a Resource Group's header and bitmap blocks.
  * Caller must eventually call gfs2_rgrp_brelse() to free the bitmaps.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: errno
  */
 
-<<<<<<< HEAD
-int gfs2_rgrp_go_lock(struct gfs2_holder *gh)
-{
-	struct gfs2_rgrpd *rgd = gh->gh_gl->gl_object;
-	struct gfs2_sbd *sdp = rgd->rd_sbd;
-	struct gfs2_glock *gl = rgd->rd_gl;
-=======
 int gfs2_rgrp_go_instantiate(struct gfs2_glock *gl)
 {
 	struct gfs2_rgrpd *rgd = gl->gl_object;
 	struct gfs2_sbd *sdp = rgd->rd_sbd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int length = rgd->rd_length;
 	struct gfs2_bitmap *bi;
 	unsigned int x, y;
 	int error;
 
-<<<<<<< HEAD
-	for (x = 0; x < length; x++) {
-		bi = rgd->rd_bits + x;
-		error = gfs2_meta_read(gl, rgd->rd_addr + x, 0, &bi->bi_bh);
-=======
 	if (rgd->rd_bits[0].bi_bh != NULL)
 		return 0;
 
 	for (x = 0; x < length; x++) {
 		bi = rgd->rd_bits + x;
 		error = gfs2_meta_read(gl, rgd->rd_addr + x, 0, 0, &bi->bi_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto fail;
 	}
@@ -1555,16 +1227,6 @@ int gfs2_rgrp_go_instantiate(struct gfs2_glock *gl)
 		}
 	}
 
-<<<<<<< HEAD
-	if (!(rgd->rd_flags & GFS2_RDF_UPTODATE)) {
-		for (x = 0; x < length; x++)
-			clear_bit(GBF_FULL, &rgd->rd_bits[x].bi_flags);
-		gfs2_rgrp_in(rgd, (rgd->rd_bits[0].bi_bh)->b_data);
-		rgd->rd_flags |= (GFS2_RDF_UPTODATE | GFS2_RDF_CHECK);
-		rgd->rd_free_clone = rgd->rd_free;
-	}
-
-=======
 	gfs2_rgrp_in(rgd, (rgd->rd_bits[0].bi_bh)->b_data);
 	rgrp_set_bitmap_flags(rgd);
 	rgd->rd_flags |= GFS2_RDF_CHECK;
@@ -1585,7 +1247,6 @@ int gfs2_rgrp_go_instantiate(struct gfs2_glock *gl)
 		if (rgd->rd_rgl->rl_unlinked == 0)
 			rgd->rd_flags &= ~GFS2_RDF_CHECK;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail:
@@ -1595,21 +1256,6 @@ fail:
 		bi->bi_bh = NULL;
 		gfs2_assert_warn(sdp, !bi->bi_clone);
 	}
-<<<<<<< HEAD
-
-	return error;
-}
-
-/**
- * gfs2_rgrp_go_unlock - Release RG bitmaps read in with gfs2_rgrp_bh_get()
- * @rgd: the struct gfs2_rgrpd describing the RG to read in
- *
- */
-
-void gfs2_rgrp_go_unlock(struct gfs2_holder *gh)
-{
-	struct gfs2_rgrpd *rgd = gh->gh_gl->gl_object;
-=======
 	return error;
 }
 
@@ -1648,24 +1294,16 @@ static int update_rgrp_lvb(struct gfs2_rgrpd *rgd, struct gfs2_holder *gh)
 
 void gfs2_rgrp_brelse(struct gfs2_rgrpd *rgd)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int x, length = rgd->rd_length;
 
 	for (x = 0; x < length; x++) {
 		struct gfs2_bitmap *bi = rgd->rd_bits + x;
-<<<<<<< HEAD
-		brelse(bi->bi_bh);
-		bi->bi_bh = NULL;
-	}
-
-=======
 		if (bi->bi_bh) {
 			brelse(bi->bi_bh);
 			bi->bi_bh = NULL;
 		}
 	}
 	set_bit(GLF_INSTANTIATE_NEEDED, &rgd->rd_gl->gl_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int gfs2_rgrp_send_discards(struct gfs2_sbd *sdp, u64 offset,
@@ -1673,29 +1311,15 @@ int gfs2_rgrp_send_discards(struct gfs2_sbd *sdp, u64 offset,
 			     const struct gfs2_bitmap *bi, unsigned minlen, u64 *ptrimmed)
 {
 	struct super_block *sb = sdp->sd_vfs;
-<<<<<<< HEAD
-	struct block_device *bdev = sb->s_bdev;
-	const unsigned int sects_per_blk = sdp->sd_sb.sb_bsize /
-					   bdev_logical_block_size(sb->s_bdev);
-	u64 blk;
-	sector_t start = 0;
-	sector_t nr_sects = 0;
-	int rv;
-=======
 	u64 blk;
 	sector_t start = 0;
 	sector_t nr_blks = 0;
 	int rv = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int x;
 	u32 trimmed = 0;
 	u8 diff;
 
-<<<<<<< HEAD
-	for (x = 0; x < bi->bi_len; x++) {
-=======
 	for (x = 0; x < bi->bi_bytes; x++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const u8 *clone = bi->bi_clone ? bi->bi_clone : bi->bi_bh->b_data;
 		clone += bi->bi_offset;
 		clone += x;
@@ -1709,37 +1333,6 @@ int gfs2_rgrp_send_discards(struct gfs2_sbd *sdp, u64 offset,
 		if (diff == 0)
 			continue;
 		blk = offset + ((bi->bi_start + x) * GFS2_NBBY);
-<<<<<<< HEAD
-		blk *= sects_per_blk; /* convert to sectors */
-		while(diff) {
-			if (diff & 1) {
-				if (nr_sects == 0)
-					goto start_new_extent;
-				if ((start + nr_sects) != blk) {
-					if (nr_sects >= minlen) {
-						rv = blkdev_issue_discard(bdev,
-							start, nr_sects,
-							GFP_NOFS, 0);
-						if (rv)
-							goto fail;
-						trimmed += nr_sects;
-					}
-					nr_sects = 0;
-start_new_extent:
-					start = blk;
-				}
-				nr_sects += sects_per_blk;
-			}
-			diff >>= 2;
-			blk += sects_per_blk;
-		}
-	}
-	if (nr_sects >= minlen) {
-		rv = blkdev_issue_discard(bdev, start, nr_sects, GFP_NOFS, 0);
-		if (rv)
-			goto fail;
-		trimmed += nr_sects;
-=======
 		while(diff) {
 			if (diff & 1) {
 				if (nr_blks == 0)
@@ -1768,7 +1361,6 @@ start_new_extent:
 		if (rv)
 			goto fail;
 		trimmed += nr_blks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ptrimmed)
 		*ptrimmed = trimmed;
@@ -1776,15 +1368,9 @@ start_new_extent:
 
 fail:
 	if (sdp->sd_args.ar_discard)
-<<<<<<< HEAD
-		fs_warn(sdp, "error %d on discard request, turning discards off for this filesystem", rv);
-	sdp->sd_args.ar_discard = 0;
-	return -EIO;
-=======
 		fs_warn(sdp, "error %d on discard request, turning discards off for this filesystem\n", rv);
 	sdp->sd_args.ar_discard = 0;
 	return rv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1797,15 +1383,9 @@ fail:
 
 int gfs2_fitrim(struct file *filp, void __user *argp)
 {
-<<<<<<< HEAD
-	struct inode *inode = filp->f_dentry->d_inode;
-	struct gfs2_sbd *sdp = GFS2_SB(inode);
-	struct request_queue *q = bdev_get_queue(sdp->sd_vfs->s_bdev);
-=======
 	struct inode *inode = file_inode(filp);
 	struct gfs2_sbd *sdp = GFS2_SB(inode);
 	struct block_device *bdev = sdp->sd_vfs->s_bdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh;
 	struct gfs2_rgrpd *rgd;
 	struct gfs2_rgrpd *rgd_end;
@@ -1814,27 +1394,13 @@ int gfs2_fitrim(struct file *filp, void __user *argp)
 	int ret = 0;
 	u64 amt;
 	u64 trimmed = 0;
-<<<<<<< HEAD
-	unsigned int x;
-=======
 	u64 start, end, minlen;
 	unsigned int x;
 	unsigned bs_shift = sdp->sd_sb.sb_bsize_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-<<<<<<< HEAD
-	if (!blk_queue_discard(q))
-		return -EOPNOTSUPP;
-
-	if (argp == NULL) {
-		r.start = 0;
-		r.len = ULLONG_MAX;
-		r.minlen = 0;
-	} else if (copy_from_user(&r, argp, sizeof(r)))
-=======
 	if (!test_bit(SDF_JOURNAL_LIVE, &sdp->sd_flags))
 		return -EROFS;
 
@@ -1842,21 +1408,12 @@ int gfs2_fitrim(struct file *filp, void __user *argp)
 		return -EOPNOTSUPP;
 
 	if (copy_from_user(&r, argp, sizeof(r)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	ret = gfs2_rindex_update(sdp);
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	rgd = gfs2_blk2rgrpd(sdp, r.start, 0);
-	rgd_end = gfs2_blk2rgrpd(sdp, r.start + r.len, 0);
-
-	while (1) {
-
-		ret = gfs2_glock_nq_init(rgd->rd_gl, LM_ST_EXCLUSIVE, 0, &gh);
-=======
 	start = r.start >> bs_shift;
 	end = start + (r.len >> bs_shift);
 	minlen = max_t(u64, r.minlen, sdp->sd_sb.sb_bsize);
@@ -1876,7 +1433,6 @@ int gfs2_fitrim(struct file *filp, void __user *argp)
 
 		ret = gfs2_glock_nq_init(rgd->rd_gl, LM_ST_EXCLUSIVE,
 					 LM_FLAG_NODE_SCOPE, &gh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto out;
 
@@ -1884,15 +1440,11 @@ int gfs2_fitrim(struct file *filp, void __user *argp)
 			/* Trim each bitmap in the rgrp */
 			for (x = 0; x < rgd->rd_length; x++) {
 				struct gfs2_bitmap *bi = rgd->rd_bits + x;
-<<<<<<< HEAD
-				ret = gfs2_rgrp_send_discards(sdp, rgd->rd_data0, NULL, bi, r.minlen, &amt);
-=======
 				rgrp_lock_local(rgd);
 				ret = gfs2_rgrp_send_discards(sdp,
 						rgd->rd_data0, NULL, bi, minlen,
 						&amt);
 				rgrp_unlock_local(rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret) {
 					gfs2_glock_dq_uninit(&gh);
 					goto out;
@@ -1904,17 +1456,11 @@ int gfs2_fitrim(struct file *filp, void __user *argp)
 			ret = gfs2_trans_begin(sdp, RES_RG_HDR, 0);
 			if (ret == 0) {
 				bh = rgd->rd_bits[0].bi_bh;
-<<<<<<< HEAD
-				rgd->rd_flags |= GFS2_RGF_TRIMMED;
-				gfs2_trans_add_bh(rgd->rd_gl, bh, 1);
-				gfs2_rgrp_out(rgd, bh->b_data);
-=======
 				rgrp_lock_local(rgd);
 				rgd->rd_flags |= GFS2_RGF_TRIMMED;
 				gfs2_trans_add_meta(rgd->rd_gl, bh);
 				gfs2_rgrp_out(rgd, bh->b_data);
 				rgrp_unlock_local(rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				gfs2_trans_end(sdp);
 			}
 		}
@@ -1927,77 +1473,14 @@ int gfs2_fitrim(struct file *filp, void __user *argp)
 	}
 
 out:
-<<<<<<< HEAD
-	r.len = trimmed << 9;
-	if (argp && copy_to_user(argp, &r, sizeof(r)))
-=======
 	r.len = trimmed << bs_shift;
 	if (copy_to_user(argp, &r, sizeof(r)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
- * gfs2_qadata_get - get the struct gfs2_qadata structure for an inode
- * @ip: the incore GFS2 inode structure
- *
- * Returns: the struct gfs2_qadata
- */
-
-struct gfs2_qadata *gfs2_qadata_get(struct gfs2_inode *ip)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	int error;
-	BUG_ON(ip->i_qadata != NULL);
-	ip->i_qadata = kzalloc(sizeof(struct gfs2_qadata), GFP_NOFS);
-	error = gfs2_rindex_update(sdp);
-	if (error)
-		fs_warn(sdp, "rindex update returns %d\n", error);
-	return ip->i_qadata;
-}
-
-/**
- * gfs2_blkrsv_get - get the struct gfs2_blkreserv structure for an inode
- * @ip: the incore GFS2 inode structure
- *
- * Returns: the struct gfs2_qadata
- */
-
-static struct gfs2_blkreserv *gfs2_blkrsv_get(struct gfs2_inode *ip)
-{
-	BUG_ON(ip->i_res != NULL);
-	ip->i_res = kzalloc(sizeof(struct gfs2_blkreserv), GFP_NOFS);
-	return ip->i_res;
-}
-
-/**
- * try_rgrp_fit - See if a given reservation will fit in a given RG
- * @rgd: the RG data
- * @ip: the inode
- *
- * If there's room for the requested blocks to be allocated from the RG:
- *
- * Returns: 1 on success (it fits), 0 on failure (it doesn't fit)
- */
-
-static int try_rgrp_fit(const struct gfs2_rgrpd *rgd, const struct gfs2_inode *ip)
-{
-	const struct gfs2_blkreserv *rs = ip->i_res;
-
-	if (rgd->rd_flags & (GFS2_RGF_NOALLOC | GFS2_RDF_ERROR))
-		return 0;
-	if (rgd->rd_free_clone >= rs->rs_requested)
-		return 1;
-	return 0;
-}
-
-static inline u32 gfs2_bi2rgd_blk(struct gfs2_bitmap *bi, u32 blk)
-{
-	return (bi->bi_start * GFS2_NBBY) + blk;
-=======
  * rs_insert - insert a new multi-block reservation into the rgrp's rb_tree
  * @ip: the inode structure
  *
@@ -2344,17 +1827,13 @@ next_iter:
 	}
 
 	return -ENOSPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * try_rgrp_unlink - Look for any unlinked, allocated, but unused inodes
  * @rgd: The rgrp
-<<<<<<< HEAD
-=======
  * @last_unlinked: block address of the last dinode we unlinked
  * @skip: block address we should explicitly not unlink
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 if no error
  *          The inode, if one has been found, in inode.
@@ -2362,40 +1841,12 @@ next_iter:
 
 static void try_rgrp_unlink(struct gfs2_rgrpd *rgd, u64 *last_unlinked, u64 skip)
 {
-<<<<<<< HEAD
-	u32 goal = 0, block;
-	u64 no_addr;
-=======
 	u64 block;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_sbd *sdp = rgd->rd_sbd;
 	struct gfs2_glock *gl;
 	struct gfs2_inode *ip;
 	int error;
 	int found = 0;
-<<<<<<< HEAD
-	struct gfs2_bitmap *bi;
-
-	while (goal < rgd->rd_data) {
-		down_write(&sdp->sd_log_flush_lock);
-		block = rgblk_search(rgd, goal, GFS2_BLKST_UNLINKED, &bi);
-		up_write(&sdp->sd_log_flush_lock);
-		if (block == BFITNOENT)
-			break;
-
-		block = gfs2_bi2rgd_blk(bi, block);
-		/* rgblk_search can return a block < goal, so we need to
-		   keep it marching forward. */
-		no_addr = block + rgd->rd_data0;
-		goal = max(block + 1, goal + 1);
-		if (*last_unlinked != NO_BLOCK && no_addr <= *last_unlinked)
-			continue;
-		if (no_addr == skip)
-			continue;
-		*last_unlinked = no_addr;
-
-		error = gfs2_glock_get(sdp, no_addr, &gfs2_inode_glops, CREATE, &gl);
-=======
 	struct gfs2_rbm rbm = { .rgd = rgd, .bii = 0, .offset = 0 };
 
 	while (1) {
@@ -2416,7 +1867,6 @@ static void try_rgrp_unlink(struct gfs2_rgrpd *rgd, u64 *last_unlinked, u64 skip
 		*last_unlinked = block;
 
 		error = gfs2_glock_get(sdp, block, &gfs2_iopen_glops, CREATE, &gl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			continue;
 
@@ -2429,11 +1879,7 @@ static void try_rgrp_unlink(struct gfs2_rgrpd *rgd, u64 *last_unlinked, u64 skip
 		 */
 		ip = gl->gl_object;
 
-<<<<<<< HEAD
-		if (ip || queue_work(gfs2_delete_workqueue, &gl->gl_delete) == 0)
-=======
 		if (ip || !gfs2_queue_try_to_evict(gl))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gfs2_glock_put(gl);
 		else
 			found++;
@@ -2448,74 +1894,6 @@ static void try_rgrp_unlink(struct gfs2_rgrpd *rgd, u64 *last_unlinked, u64 skip
 }
 
 /**
-<<<<<<< HEAD
- * get_local_rgrp - Choose and lock a rgrp for allocation
- * @ip: the inode to reserve space for
- * @rgp: the chosen and locked rgrp
- *
- * Try to acquire rgrp in way which avoids contending with others.
- *
- * Returns: errno
- */
-
-static int get_local_rgrp(struct gfs2_inode *ip, u64 *last_unlinked)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	struct gfs2_rgrpd *rgd, *begin = NULL;
-	struct gfs2_blkreserv *rs = ip->i_res;
-	int error, rg_locked, flags = LM_FLAG_TRY;
-	int loops = 0;
-
-	if (ip->i_rgd && rgrp_contains_block(ip->i_rgd, ip->i_goal))
-		rgd = begin = ip->i_rgd;
-	else
-		rgd = begin = gfs2_blk2rgrpd(sdp, ip->i_goal, 1);
-
-	if (rgd == NULL)
-		return -EBADSLT;
-
-	while (loops < 3) {
-		rg_locked = 0;
-
-		if (gfs2_glock_is_locked_by_me(rgd->rd_gl)) {
-			rg_locked = 1;
-			error = 0;
-		} else {
-			error = gfs2_glock_nq_init(rgd->rd_gl, LM_ST_EXCLUSIVE,
-						   flags, &rs->rs_rgd_gh);
-		}
-		switch (error) {
-		case 0:
-			if (try_rgrp_fit(rgd, ip)) {
-				ip->i_rgd = rgd;
-				return 0;
-			}
-			if (rgd->rd_flags & GFS2_RDF_CHECK)
-				try_rgrp_unlink(rgd, last_unlinked, ip->i_no_addr);
-			if (!rg_locked)
-				gfs2_glock_dq_uninit(&rs->rs_rgd_gh);
-			/* fall through */
-		case GLR_TRYFAILED:
-			rgd = gfs2_rgrpd_get_next(rgd);
-			if (rgd == begin) {
-				flags = 0;
-				loops++;
-			}
-			break;
-		default:
-			return error;
-		}
-	}
-
-	return -ENOSPC;
-}
-
-static void gfs2_blkrsv_put(struct gfs2_inode *ip)
-{
-	BUG_ON(ip->i_res == NULL);
-	kfree(ip->i_res);
-	ip->i_res = NULL;
-=======
  * gfs2_rgrp_congested - Use stats to figure out whether an rgrp is congested
  * @rgd: The rgrp in question
  * @loops: An indication of how picky we can be (0=very, 1=less so)
@@ -2647,40 +2025,11 @@ static inline int fast_to_acquire(struct gfs2_rgrpd *rgd)
 	if (rgd->rd_flags & GFS2_RDF_PREFERRED)
 		return 1;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * gfs2_inplace_reserve - Reserve space in the filesystem
  * @ip: the inode to reserve space for
-<<<<<<< HEAD
- *
- * Returns: errno
- */
-
-int gfs2_inplace_reserve(struct gfs2_inode *ip, u32 requested)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	struct gfs2_blkreserv *rs;
-	int error = 0;
-	u64 last_unlinked = NO_BLOCK;
-	int tries = 0;
-
-	rs = gfs2_blkrsv_get(ip);
-	if (!rs)
-		return -ENOMEM;
-
-	rs->rs_requested = requested;
-	if (gfs2_assert_warn(sdp, requested)) {
-		error = -EINVAL;
-		goto out;
-	}
-
-	do {
-		error = get_local_rgrp(ip, &last_unlinked);
-		if (error != -ENOSPC)
-			break;
-=======
  * @ap: the allocation parameters
  *
  * We try our best to find an rgrp that has at least ap->target blocks
@@ -2826,24 +2175,10 @@ next_rgrp:
 		 * trying again.
 		 */
 		loops++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Check that fs hasn't grown if writing to rindex */
 		if (ip == GFS2_I(sdp->sd_rindex) && !sdp->sd_rindex_uptodate) {
 			error = gfs2_ri_update(ip);
 			if (error)
-<<<<<<< HEAD
-				break;
-			continue;
-		}
-		/* Flushing the log may release space */
-		gfs2_log_flush(sdp, NULL);
-	} while (tries++ < 3);
-
-out:
-	if (error)
-		gfs2_blkrsv_put(ip);
-	return error;
-=======
 				return error;
 		}
 		/* Flushing the log may release space */
@@ -2856,7 +2191,6 @@ out:
 	}
 
 	return -ENOSPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2868,128 +2202,6 @@ out:
 
 void gfs2_inplace_release(struct gfs2_inode *ip)
 {
-<<<<<<< HEAD
-	struct gfs2_blkreserv *rs = ip->i_res;
-
-	if (rs->rs_rgd_gh.gh_gl)
-		gfs2_glock_dq_uninit(&rs->rs_rgd_gh);
-	gfs2_blkrsv_put(ip);
-}
-
-/**
- * gfs2_get_block_type - Check a block in a RG is of given type
- * @rgd: the resource group holding the block
- * @block: the block number
- *
- * Returns: The block type (GFS2_BLKST_*)
- */
-
-static unsigned char gfs2_get_block_type(struct gfs2_rgrpd *rgd, u64 block)
-{
-	struct gfs2_bitmap *bi = NULL;
-	u32 length, rgrp_block, buf_block;
-	unsigned int buf;
-	unsigned char type;
-
-	length = rgd->rd_length;
-	rgrp_block = block - rgd->rd_data0;
-
-	for (buf = 0; buf < length; buf++) {
-		bi = rgd->rd_bits + buf;
-		if (rgrp_block < (bi->bi_start + bi->bi_len) * GFS2_NBBY)
-			break;
-	}
-
-	gfs2_assert(rgd->rd_sbd, buf < length);
-	buf_block = rgrp_block - bi->bi_start * GFS2_NBBY;
-
-	type = gfs2_testbit(rgd, bi->bi_bh->b_data + bi->bi_offset,
-			   bi->bi_len, buf_block);
-
-	return type;
-}
-
-/**
- * rgblk_search - find a block in @state
- * @rgd: the resource group descriptor
- * @goal: the goal block within the RG (start here to search for avail block)
- * @state: GFS2_BLKST_XXX the before-allocation state to find
- * @dinode: TRUE if the first block we allocate is for a dinode
- * @rbi: address of the pointer to the bitmap containing the block found
- *
- * Walk rgrp's bitmap to find bits that represent a block in @state.
- *
- * This function never fails, because we wouldn't call it unless we
- * know (from reservation results, etc.) that a block is available.
- *
- * Scope of @goal is just within rgrp, not the whole filesystem.
- * Scope of @returned block is just within bitmap, not the whole filesystem.
- *
- * Returns: the block number found relative to the bitmap rbi
- */
-
-static u32 rgblk_search(struct gfs2_rgrpd *rgd, u32 goal,
-			unsigned char state,
-			struct gfs2_bitmap **rbi)
-{
-	struct gfs2_bitmap *bi = NULL;
-	const u32 length = rgd->rd_length;
-	u32 blk = BFITNOENT;
-	unsigned int buf, x;
-	const u8 *buffer = NULL;
-
-	*rbi = NULL;
-	/* Find bitmap block that contains bits for goal block */
-	for (buf = 0; buf < length; buf++) {
-		bi = rgd->rd_bits + buf;
-		/* Convert scope of "goal" from rgrp-wide to within found bit block */
-		if (goal < (bi->bi_start + bi->bi_len) * GFS2_NBBY) {
-			goal -= bi->bi_start * GFS2_NBBY;
-			goto do_search;
-		}
-	}
-	buf = 0;
-	goal = 0;
-
-do_search:
-	/* Search (up to entire) bitmap in this rgrp for allocatable block.
-	   "x <= length", instead of "x < length", because we typically start
-	   the search in the middle of a bit block, but if we can't find an
-	   allocatable block anywhere else, we want to be able wrap around and
-	   search in the first part of our first-searched bit block.  */
-	for (x = 0; x <= length; x++) {
-		bi = rgd->rd_bits + buf;
-
-		if (test_bit(GBF_FULL, &bi->bi_flags) &&
-		    (state == GFS2_BLKST_FREE))
-			goto skip;
-
-		/* The GFS2_BLKST_UNLINKED state doesn't apply to the clone
-		   bitmaps, so we must search the originals for that. */
-		buffer = bi->bi_bh->b_data + bi->bi_offset;
-		WARN_ON(!buffer_uptodate(bi->bi_bh));
-		if (state != GFS2_BLKST_UNLINKED && bi->bi_clone)
-			buffer = bi->bi_clone + bi->bi_offset;
-
-		blk = gfs2_bitfit(buffer, bi->bi_len, goal, state);
-		if (blk != BFITNOENT)
-			break;
-
-		if ((goal == 0) && (state == GFS2_BLKST_FREE))
-			set_bit(GBF_FULL, &bi->bi_flags);
-
-		/* Try next bitmap block (wrap back to rgrp header if at end) */
-skip:
-		buf++;
-		buf %= length;
-		goal = 0;
-	}
-
-	if (blk != BFITNOENT)
-		*rbi = bi;
-
-	return blk;
-=======
 	struct gfs2_blkreserv *rs = &ip->i_res;
 
 	if (rs->rs_reserved) {
@@ -3003,51 +2215,10 @@ skip:
 	}
 	if (gfs2_holder_initialized(&ip->i_rgd_gh))
 		gfs2_glock_dq_uninit(&ip->i_rgd_gh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * gfs2_alloc_extent - allocate an extent from a given bitmap
-<<<<<<< HEAD
- * @rgd: the resource group descriptor
- * @bi: the bitmap within the rgrp
- * @blk: the block within the bitmap
- * @dinode: TRUE if the first block we allocate is for a dinode
- * @n: The extent length
- *
- * Add the found bitmap buffer to the transaction.
- * Set the found bits to @new_state to change block's allocation state.
- * Returns: starting block number of the extent (fs scope)
- */
-static u64 gfs2_alloc_extent(struct gfs2_rgrpd *rgd, struct gfs2_bitmap *bi,
-			     u32 blk, bool dinode, unsigned int *n)
-{
-	const unsigned int elen = *n;
-	u32 goal;
-	const u8 *buffer = NULL;
-
-	*n = 0;
-	buffer = bi->bi_bh->b_data + bi->bi_offset;
-	gfs2_trans_add_bh(rgd->rd_gl, bi->bi_bh, 1);
-	gfs2_setbit(rgd, bi->bi_bh->b_data, bi->bi_clone, bi->bi_offset,
-		    bi, blk, dinode ? GFS2_BLKST_DINODE : GFS2_BLKST_USED);
-	(*n)++;
-	goal = blk;
-	while (*n < elen) {
-		goal++;
-		if (goal >= (bi->bi_len * GFS2_NBBY))
-			break;
-		if (gfs2_testbit(rgd, buffer, bi->bi_len, goal) !=
-		    GFS2_BLKST_FREE)
-			break;
-		gfs2_setbit(rgd, bi->bi_bh->b_data, bi->bi_clone, bi->bi_offset,
-			    bi, goal, GFS2_BLKST_USED);
-		(*n)++;
-	}
-	blk = gfs2_bi2rgd_blk(bi, blk);
-	rgd->rd_last_alloc = blk + *n - 1;
-	return rgd->rd_data0 + blk;
-=======
  * @rbm: the resource group information
  * @dinode: TRUE if the first block we allocate is for a dinode
  * @n: The extent length (value/result)
@@ -3077,65 +2248,11 @@ static void gfs2_alloc_extent(const struct gfs2_rbm *rbm, bool dinode,
 		(*n)++;
 		block++;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * rgblk_free - Change alloc state of given block(s)
  * @sdp: the filesystem
-<<<<<<< HEAD
- * @bstart: the start of a run of blocks to free
- * @blen: the length of the block run (all must lie within ONE RG!)
- * @new_state: GFS2_BLKST_XXX the after-allocation block state
- *
- * Returns:  Resource group containing the block(s)
- */
-
-static struct gfs2_rgrpd *rgblk_free(struct gfs2_sbd *sdp, u64 bstart,
-				     u32 blen, unsigned char new_state)
-{
-	struct gfs2_rgrpd *rgd;
-	struct gfs2_bitmap *bi = NULL;
-	u32 length, rgrp_blk, buf_blk;
-	unsigned int buf;
-
-	rgd = gfs2_blk2rgrpd(sdp, bstart, 1);
-	if (!rgd) {
-		if (gfs2_consist(sdp))
-			fs_err(sdp, "block = %llu\n", (unsigned long long)bstart);
-		return NULL;
-	}
-
-	length = rgd->rd_length;
-
-	rgrp_blk = bstart - rgd->rd_data0;
-
-	while (blen--) {
-		for (buf = 0; buf < length; buf++) {
-			bi = rgd->rd_bits + buf;
-			if (rgrp_blk < (bi->bi_start + bi->bi_len) * GFS2_NBBY)
-				break;
-		}
-
-		gfs2_assert(rgd->rd_sbd, buf < length);
-
-		buf_blk = rgrp_blk - bi->bi_start * GFS2_NBBY;
-		rgrp_blk++;
-
-		if (!bi->bi_clone) {
-			bi->bi_clone = kmalloc(bi->bi_bh->b_size,
-					       GFP_NOFS | __GFP_NOFAIL);
-			memcpy(bi->bi_clone + bi->bi_offset,
-			       bi->bi_bh->b_data + bi->bi_offset,
-			       bi->bi_len);
-		}
-		gfs2_trans_add_bh(rgd->rd_gl, bi->bi_bh, 1);
-		gfs2_setbit(rgd, bi->bi_bh->b_data, NULL, bi->bi_offset,
-			    bi, buf_blk, new_state);
-	}
-
-	return rgd;
-=======
  * @rgd: the resource group the blocks are in
  * @bstart: the start of a run of blocks to free
  * @blen: the length of the block run (all must lie within ONE RG!)
@@ -3167,27 +2284,11 @@ static void rgblk_free(struct gfs2_sbd *sdp, struct gfs2_rgrpd *rgd,
 		gfs2_setbit(&rbm, false, new_state);
 		gfs2_rbm_add(&rbm, 1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * gfs2_rgrp_dump - print out an rgrp
  * @seq: The iterator
-<<<<<<< HEAD
- * @gl: The glock in question
- *
- */
-
-int gfs2_rgrp_dump(struct seq_file *seq, const struct gfs2_glock *gl)
-{
-	const struct gfs2_rgrpd *rgd = gl->gl_object;
-	if (rgd == NULL)
-		return 0;
-	gfs2_print_dbg(seq, " R: n:%llu f:%02x b:%u/%u i:%u\n",
-		       (unsigned long long)rgd->rd_addr, rgd->rd_flags,
-		       rgd->rd_free, rgd->rd_free_clone, rgd->rd_dinodes);
-	return 0;
-=======
  * @rgd: The rgrp in question
  * @fs_id_buf: pointer to file system id (if requested)
  *
@@ -3218,18 +2319,11 @@ void gfs2_rgrp_dump(struct seq_file *seq, struct gfs2_rgrpd *rgd,
 		dump_rs(seq, trs, fs_id_buf);
 	}
 	spin_unlock(&rgd->rd_rsspin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_rgrp_error(struct gfs2_rgrpd *rgd)
 {
 	struct gfs2_sbd *sdp = rgd->rd_sbd;
-<<<<<<< HEAD
-	fs_warn(sdp, "rgrp %llu has an error, marking it readonly until umount\n",
-		(unsigned long long)rgd->rd_addr);
-	fs_warn(sdp, "umount on all nodes and run fsck.gfs2 to fix the error\n");
-	gfs2_rgrp_dump(NULL, rgd->rd_gl);
-=======
 	char fs_id_buf[sizeof(sdp->sd_fsname) + 7];
 
 	fs_warn(sdp, "rgrp %llu has an error, marking it readonly until umount\n",
@@ -3237,19 +2331,10 @@ static void gfs2_rgrp_error(struct gfs2_rgrpd *rgd)
 	fs_warn(sdp, "umount on all nodes and run fsck.gfs2 to fix the error\n");
 	sprintf(fs_id_buf, "fsid=%s: ", sdp->sd_fsname);
 	gfs2_rgrp_dump(NULL, rgd, fs_id_buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rgd->rd_flags |= GFS2_RDF_ERROR;
 }
 
 /**
-<<<<<<< HEAD
- * gfs2_alloc_blocks - Allocate one or more blocks of data and/or a dinode
- * @ip: the inode to allocate the block for
- * @bn: Used to return the starting block number
- * @ndata: requested number of blocks/extent length (value/result)
- * @dinode: 1 if we're allocating a dinode block, else 0
- * @generation: the generation number of the inode
-=======
  * gfs2_adjust_reservation - Adjust (or remove) a reservation after allocation
  * @ip: The inode we have just allocated blocks for
  * @rbm: The start of the allocated blocks
@@ -3326,51 +2411,11 @@ static void gfs2_set_alloc_start(struct gfs2_rbm *rbm,
  * @bn: Used to return the starting block number
  * @nblocks: requested number of blocks/extent length (value/result)
  * @dinode: 1 if we're allocating a dinode block, else 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns: 0 or error
  */
 
 int gfs2_alloc_blocks(struct gfs2_inode *ip, u64 *bn, unsigned int *nblocks,
-<<<<<<< HEAD
-		      bool dinode, u64 *generation)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	struct buffer_head *dibh;
-	struct gfs2_rgrpd *rgd;
-	unsigned int ndata;
-	u32 goal, blk; /* block, within the rgrp scope */
-	u64 block; /* block, within the file system scope */
-	int error;
-	struct gfs2_bitmap *bi;
-
-	/* Only happens if there is a bug in gfs2, return something distinctive
-	 * to ensure that it is noticed.
-	 */
-	if (ip->i_res == NULL)
-		return -ECANCELED;
-
-	rgd = ip->i_rgd;
-
-	if (!dinode && rgrp_contains_block(rgd, ip->i_goal))
-		goal = ip->i_goal - rgd->rd_data0;
-	else
-		goal = rgd->rd_last_alloc;
-
-	blk = rgblk_search(rgd, goal, GFS2_BLKST_FREE, &bi);
-
-	/* Since all blocks are reserved in advance, this shouldn't happen */
-	if (blk == BFITNOENT)
-		goto rgrp_error;
-
-	block = gfs2_alloc_extent(rgd, bi, blk, dinode, nblocks);
-	ndata = *nblocks;
-	if (dinode)
-		ndata--;
-
-	if (!dinode) {
-		ip->i_goal = block + ndata - 1;
-=======
 		      bool dinode)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
@@ -3406,51 +2451,16 @@ int gfs2_alloc_blocks(struct gfs2_inode *ip, u64 *bn, unsigned int *nblocks,
 	rbm.rgd->rd_last_alloc = block - rbm.rgd->rd_data0;
 	if (!dinode) {
 		ip->i_goal = block + *nblocks - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = gfs2_meta_inode_buffer(ip, &dibh);
 		if (error == 0) {
 			struct gfs2_dinode *di =
 				(struct gfs2_dinode *)dibh->b_data;
-<<<<<<< HEAD
-			gfs2_trans_add_bh(ip->i_gl, dibh, 1);
-=======
 			gfs2_trans_add_meta(ip->i_gl, dibh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			di->di_goal_meta = di->di_goal_data =
 				cpu_to_be64(ip->i_goal);
 			brelse(dibh);
 		}
 	}
-<<<<<<< HEAD
-	if (rgd->rd_free < *nblocks)
-		goto rgrp_error;
-
-	rgd->rd_free -= *nblocks;
-	if (dinode) {
-		rgd->rd_dinodes++;
-		*generation = rgd->rd_igeneration++;
-		if (*generation == 0)
-			*generation = rgd->rd_igeneration++;
-	}
-
-	gfs2_trans_add_bh(rgd->rd_gl, rgd->rd_bits[0].bi_bh, 1);
-	gfs2_rgrp_out(rgd, rgd->rd_bits[0].bi_bh->b_data);
-
-	gfs2_statfs_change(sdp, 0, -(s64)*nblocks, dinode ? 1 : 0);
-	if (dinode)
-		gfs2_trans_add_unrevoke(sdp, block, 1);
-
-	/*
-	 * This needs reviewing to see why we cannot do the quota change
-	 * at this point in the dinode case.
-	 */
-	if (ndata)
-		gfs2_quota_change(ip, ndata, ip->i_inode.i_uid,
-				  ip->i_inode.i_gid);
-
-	rgd->rd_free_clone -= *nblocks;
-	trace_gfs2_block_alloc(ip, block, *nblocks,
-=======
 	spin_lock(&rbm.rgd->rd_rsspin);
 	gfs2_adjust_reservation(ip, &rbm, *nblocks);
 	if (rbm.rgd->rd_free < *nblocks || rbm.rgd->rd_reserved < *nblocks) {
@@ -3486,53 +2496,26 @@ int gfs2_alloc_blocks(struct gfs2_inode *ip, u64 *bn, unsigned int *nblocks,
 	gfs2_quota_change(ip, *nblocks, ip->i_inode.i_uid, ip->i_inode.i_gid);
 
 	trace_gfs2_block_alloc(ip, rbm.rgd, block, *nblocks,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       dinode ? GFS2_BLKST_DINODE : GFS2_BLKST_USED);
 	*bn = block;
 	return 0;
 
 rgrp_error:
-<<<<<<< HEAD
-	gfs2_rgrp_error(rgd);
-=======
 	rgrp_unlock_local(rbm.rgd);
 	gfs2_rgrp_error(rbm.rgd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
 /**
  * __gfs2_free_blocks - free a contiguous run of block(s)
  * @ip: the inode these blocks are being freed from
-<<<<<<< HEAD
-=======
  * @rgd: the resource group the blocks are in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bstart: first block of a run of contiguous blocks
  * @blen: the length of the block run
  * @meta: 1 if the blocks represent metadata
  *
  */
 
-<<<<<<< HEAD
-void __gfs2_free_blocks(struct gfs2_inode *ip, u64 bstart, u32 blen, int meta)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-	struct gfs2_rgrpd *rgd;
-
-	rgd = rgblk_free(sdp, bstart, blen, GFS2_BLKST_FREE);
-	if (!rgd)
-		return;
-	trace_gfs2_block_alloc(ip, bstart, blen, GFS2_BLKST_FREE);
-	rgd->rd_free += blen;
-	rgd->rd_flags &= ~GFS2_RGF_TRIMMED;
-	gfs2_trans_add_bh(rgd->rd_gl, rgd->rd_bits[0].bi_bh, 1);
-	gfs2_rgrp_out(rgd, rgd->rd_bits[0].bi_bh->b_data);
-
-	/* Directories keep their data in the metadata address space */
-	if (meta || ip->i_depth)
-		gfs2_meta_wipe(ip, bstart, blen);
-=======
 void __gfs2_free_blocks(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
 			u64 bstart, u32 blen, int meta)
 {
@@ -3550,35 +2533,23 @@ void __gfs2_free_blocks(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
 	/* Directories keep their data in the metadata address space */
 	if (meta || ip->i_depth || gfs2_is_jdata(ip))
 		gfs2_journal_wipe(ip, bstart, blen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * gfs2_free_meta - free a contiguous run of data block(s)
  * @ip: the inode these blocks are being freed from
-<<<<<<< HEAD
-=======
  * @rgd: the resource group the blocks are in
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bstart: first block of a run of contiguous blocks
  * @blen: the length of the block run
  *
  */
 
-<<<<<<< HEAD
-void gfs2_free_meta(struct gfs2_inode *ip, u64 bstart, u32 blen)
-{
-	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
-
-	__gfs2_free_blocks(ip, bstart, blen, 1);
-=======
 void gfs2_free_meta(struct gfs2_inode *ip, struct gfs2_rgrpd *rgd,
 		    u64 bstart, u32 blen)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(&ip->i_inode);
 
 	__gfs2_free_blocks(ip, rgd, bstart, blen, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_statfs_change(sdp, 0, +blen, 0);
 	gfs2_quota_change(ip, -(s64)blen, ip->i_inode.i_uid, ip->i_inode.i_gid);
 }
@@ -3590,26 +2561,6 @@ void gfs2_unlink_di(struct inode *inode)
 	struct gfs2_rgrpd *rgd;
 	u64 blkno = ip->i_no_addr;
 
-<<<<<<< HEAD
-	rgd = rgblk_free(sdp, blkno, 1, GFS2_BLKST_UNLINKED);
-	if (!rgd)
-		return;
-	trace_gfs2_block_alloc(ip, blkno, 1, GFS2_BLKST_UNLINKED);
-	gfs2_trans_add_bh(rgd->rd_gl, rgd->rd_bits[0].bi_bh, 1);
-	gfs2_rgrp_out(rgd, rgd->rd_bits[0].bi_bh->b_data);
-}
-
-static void gfs2_free_uninit_di(struct gfs2_rgrpd *rgd, u64 blkno)
-{
-	struct gfs2_sbd *sdp = rgd->rd_sbd;
-	struct gfs2_rgrpd *tmp_rgd;
-
-	tmp_rgd = rgblk_free(sdp, blkno, 1, GFS2_BLKST_FREE);
-	if (!tmp_rgd)
-		return;
-	gfs2_assert_withdraw(sdp, rgd == tmp_rgd);
-
-=======
 	rgd = gfs2_blk2rgrpd(sdp, blkno, true);
 	if (!rgd)
 		return;
@@ -3628,27 +2579,11 @@ void gfs2_free_di(struct gfs2_rgrpd *rgd, struct gfs2_inode *ip)
 
 	rgrp_lock_local(rgd);
 	rgblk_free(sdp, rgd, ip->i_no_addr, 1, GFS2_BLKST_FREE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rgd->rd_dinodes)
 		gfs2_consist_rgrpd(rgd);
 	rgd->rd_dinodes--;
 	rgd->rd_free++;
 
-<<<<<<< HEAD
-	gfs2_trans_add_bh(rgd->rd_gl, rgd->rd_bits[0].bi_bh, 1);
-	gfs2_rgrp_out(rgd, rgd->rd_bits[0].bi_bh->b_data);
-
-	gfs2_statfs_change(sdp, 0, +1, -1);
-}
-
-
-void gfs2_free_di(struct gfs2_rgrpd *rgd, struct gfs2_inode *ip)
-{
-	gfs2_free_uninit_di(rgd, ip->i_no_addr);
-	trace_gfs2_block_alloc(ip, ip->i_no_addr, 1, GFS2_BLKST_FREE);
-	gfs2_quota_change(ip, -1, ip->i_inode.i_uid, ip->i_inode.i_gid);
-	gfs2_meta_wipe(ip, ip->i_no_addr, 1);
-=======
 	gfs2_trans_add_meta(rgd->rd_gl, rgd->rd_bits[0].bi_bh);
 	gfs2_rgrp_out(rgd, rgd->rd_bits[0].bi_bh->b_data);
 	be32_add_cpu(&rgd->rd_rgl->rl_unlinked, -1);
@@ -3658,7 +2593,6 @@ void gfs2_free_di(struct gfs2_rgrpd *rgd, struct gfs2_inode *ip)
 	trace_gfs2_block_alloc(ip, rgd, ip->i_no_addr, 1, GFS2_BLKST_FREE);
 	gfs2_quota_change(ip, -1, ip->i_inode.i_uid, ip->i_inode.i_gid);
 	gfs2_journal_wipe(ip, ip->i_no_addr, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3667,13 +2601,10 @@ void gfs2_free_di(struct gfs2_rgrpd *rgd, struct gfs2_inode *ip)
  * @no_addr: The block number to check
  * @type: The block type we are looking for
  *
-<<<<<<< HEAD
-=======
  * The inode glock of @no_addr must be held.  The @type to check for is either
  * GFS2_BLKST_DINODE or GFS2_BLKST_UNLINKED; checking for type GFS2_BLKST_FREE
  * or GFS2_BLKST_USED would make no sense.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: 0 if the block type matches the expected type
  *          -ESTALE if it doesn't match
  *          or -ve errno if something went wrong while checking
@@ -3683,10 +2614,7 @@ int gfs2_check_blk_type(struct gfs2_sbd *sdp, u64 no_addr, unsigned int type)
 {
 	struct gfs2_rgrpd *rgd;
 	struct gfs2_holder rgd_gh;
-<<<<<<< HEAD
-=======
 	struct gfs2_rbm rbm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = -EINVAL;
 
 	rgd = gfs2_blk2rgrpd(sdp, no_addr, 1);
@@ -3697,12 +2625,6 @@ int gfs2_check_blk_type(struct gfs2_sbd *sdp, u64 no_addr, unsigned int type)
 	if (error)
 		goto fail;
 
-<<<<<<< HEAD
-	if (gfs2_get_block_type(rgd, no_addr) != type)
-		error = -ESTALE;
-
-	gfs2_glock_dq_uninit(&rgd_gh);
-=======
 	rbm.rgd = rgd;
 	error = gfs2_rbm_from_block(&rbm, no_addr);
 	if (!WARN_ON_ONCE(error)) {
@@ -3719,7 +2641,6 @@ int gfs2_check_blk_type(struct gfs2_sbd *sdp, u64 no_addr, unsigned int type)
 
 	gfs2_glock_dq_uninit(&rgd_gh);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail:
 	return error;
 }
@@ -3748,21 +2669,6 @@ void gfs2_rlist_add(struct gfs2_inode *ip, struct gfs2_rgrp_list *rlist,
 	if (gfs2_assert_warn(sdp, !rlist->rl_ghs))
 		return;
 
-<<<<<<< HEAD
-	if (ip->i_rgd && rgrp_contains_block(ip->i_rgd, block))
-		rgd = ip->i_rgd;
-	else
-		rgd = gfs2_blk2rgrpd(sdp, block, 1);
-	if (!rgd) {
-		fs_err(sdp, "rlist_add: no rgrp for block %llu\n", (unsigned long long)block);
-		return;
-	}
-	ip->i_rgd = rgd;
-
-	for (x = 0; x < rlist->rl_rgrps; x++)
-		if (rlist->rl_rgd[x] == rgd)
-			return;
-=======
 	/*
 	 * The resource group last accessed is kept in the last position.
 	 */
@@ -3791,7 +2697,6 @@ void gfs2_rlist_add(struct gfs2_inode *ip, struct gfs2_rgrp_list *rlist,
 			return;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rlist->rl_rgrps == rlist->rl_space) {
 		new_space = rlist->rl_space + 10;
@@ -3816,30 +2721,13 @@ void gfs2_rlist_add(struct gfs2_inode *ip, struct gfs2_rgrp_list *rlist,
  * gfs2_rlist_alloc - all RGs have been added to the rlist, now allocate
  *      and initialize an array of glock holders for them
  * @rlist: the list of resource groups
-<<<<<<< HEAD
- * @state: the lock state to acquire the RG lock in
- * @flags: the modifier flags for the holder structures
-=======
  * @state: the state we're requesting
  * @flags: the modifier flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * FIXME: Don't use NOFAIL
  *
  */
 
-<<<<<<< HEAD
-void gfs2_rlist_alloc(struct gfs2_rgrp_list *rlist, unsigned int state)
-{
-	unsigned int x;
-
-	rlist->rl_ghs = kcalloc(rlist->rl_rgrps, sizeof(struct gfs2_holder),
-				GFP_NOFS | __GFP_NOFAIL);
-	for (x = 0; x < rlist->rl_rgrps; x++)
-		gfs2_holder_init(rlist->rl_rgd[x]->rd_gl,
-				state, 0,
-				&rlist->rl_ghs[x]);
-=======
 void gfs2_rlist_alloc(struct gfs2_rgrp_list *rlist,
 		      unsigned int state, u16 flags)
 {
@@ -3851,16 +2739,11 @@ void gfs2_rlist_alloc(struct gfs2_rgrp_list *rlist,
 	for (x = 0; x < rlist->rl_rgrps; x++)
 		gfs2_holder_init(rlist->rl_rgd[x]->rd_gl, state, flags,
 				 &rlist->rl_ghs[x]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * gfs2_rlist_free - free a resource group list
-<<<<<<< HEAD
- * @list: the list of resource groups
-=======
  * @rlist: the list of resource groups
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -3874,11 +2757,6 @@ void gfs2_rlist_free(struct gfs2_rgrp_list *rlist)
 		for (x = 0; x < rlist->rl_rgrps; x++)
 			gfs2_holder_uninit(&rlist->rl_ghs[x]);
 		kfree(rlist->rl_ghs);
-<<<<<<< HEAD
-	}
-}
-
-=======
 		rlist->rl_ghs = NULL;
 	}
 }
@@ -3892,4 +2770,3 @@ void rgrp_unlock_local(struct gfs2_rgrpd *rgd)
 {
 	mutex_unlock(&rgd->rd_mutex);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

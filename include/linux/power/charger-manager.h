@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Samsung Electronics Co., Ltd.
  * MyungJoo.Ham <myungjoo.ham@samsung.com>
@@ -11,29 +8,18 @@
  * monitor charging even in the context of suspend-to-RAM with
  * an interface combining the chargers.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **/
 
 #ifndef _CHARGER_MANAGER_H
 #define _CHARGER_MANAGER_H
 
 #include <linux/power_supply.h>
-<<<<<<< HEAD
-
-enum data_source {
-=======
 #include <linux/extcon.h>
 #include <linux/alarmtimer.h>
 
 enum data_source {
 	CM_BATTERY_PRESENT,
 	CM_NO_BATTERY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CM_FUEL_GAUGE,
 	CM_CHARGER_STAT,
 };
@@ -45,22 +31,6 @@ enum polling_modes {
 	CM_POLL_CHARGING_ONLY,
 };
 
-<<<<<<< HEAD
-/**
- * struct charger_global_desc
- * @rtc_name: the name of RTC used to wake up the system from suspend.
- * @rtc_only_wakeup:
- *	If the system is woken up by waekup-sources other than the RTC or
- *	callbacks, Charger Manager should recognize with
- *	rtc_only_wakeup() returning false.
- *	If the RTC given to CM is the only wakeup reason,
- *	rtc_only_wakeup should return true.
- */
-struct charger_global_desc {
-	char *rtc_name;
-
-	bool (*rtc_only_wakeup)(void);
-=======
 enum cm_batt_temp {
 	CM_BATT_OK = 0,
 	CM_BATT_OVERHEAT,
@@ -149,7 +119,6 @@ struct charger_regulator {
 	struct attribute *attrs[4];
 
 	struct charger_manager *cm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -157,10 +126,6 @@ struct charger_regulator {
  * @psy_name: the name of power-supply-class for charger manager
  * @polling_mode:
  *	Determine which polling mode will be used
-<<<<<<< HEAD
- * @fullbatt_uV: voltage in microvolt
- *	If it is not being charged and VBATT >= fullbatt_uV,
-=======
  * @fullbatt_vchkdrop_uV:
  *	Check voltage drop after the battery is fully charged.
  *	If it has dropped more than fullbatt_vchkdrop_uV
@@ -171,29 +136,10 @@ struct charger_regulator {
  *	If state of Charge >= fullbatt_soc, it is assumed to be full.
  * @fullbatt_full_capacity: full capacity measure
  *	If full capacity of battery >= fullbatt_full_capacity,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	it is assumed to be full.
  * @polling_interval_ms: interval in millisecond at which
  *	charger manager will monitor battery health
  * @battery_present:
-<<<<<<< HEAD
- *	Specify where information for existance of battery can be obtained
- * @psy_charger_stat: the names of power-supply for chargers
- * @num_charger_regulator: the number of entries in charger_regulators
- * @charger_regulators: array of regulator_bulk_data for chargers
- * @psy_fuel_gauge: the name of power-supply for fuel gauge
- * @temperature_out_of_range:
- *	Determine whether the status is overheat or cold or normal.
- *	return_value > 0: overheat
- *	return_value == 0: normal
- *	return_value < 0: cold
- * @measure_battery_temp:
- *	true: measure battery temperature
- *	false: measure ambient temperature
- */
-struct charger_desc {
-	char *psy_name;
-=======
  *	Specify where information for existence of battery can be obtained
  * @psy_charger_stat: the names of power-supply for chargers
  * @num_charger_regulator: the number of entries in charger_regulators
@@ -216,26 +162,10 @@ struct charger_desc {
  */
 struct charger_desc {
 	const char *psy_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum polling_modes polling_mode;
 	unsigned int polling_interval_ms;
 
-<<<<<<< HEAD
-	unsigned int fullbatt_uV;
-
-	enum data_source battery_present;
-
-	char **psy_charger_stat;
-
-	int num_charger_regulators;
-	struct regulator_bulk_data *charger_regulators;
-
-	char *psy_fuel_gauge;
-
-	int (*temperature_out_of_range)(int *mC);
-	bool measure_battery_temp;
-=======
 	unsigned int fullbatt_vchkdrop_uV;
 	unsigned int fullbatt_uV;
 	unsigned int fullbatt_soc;
@@ -261,7 +191,6 @@ struct charger_desc {
 
 	u32 charging_max_duration_ms;
 	u32 discharging_max_duration_ms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define PSY_NAME_MAX	30
@@ -273,65 +202,25 @@ struct charger_desc {
  * @desc: instance of charger_desc
  * @fuel_gauge: power_supply for fuel gauge
  * @charger_stat: array of power_supply for chargers
-<<<<<<< HEAD
- * @charger_enabled: the state of charger
- * @emergency_stop:
- *	When setting true, stop charging
- * @last_temp_mC: the measured temperature in milli-Celsius
-=======
  * @tzd_batt : thermal zone device for battery
  * @charger_enabled: the state of charger
  * @emergency_stop:
  *	When setting true, stop charging
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @psy_name_buf: the name of power-supply-class for charger manager
  * @charger_psy: power_supply for charger manager
  * @status_save_ext_pwr_inserted:
  *	saved status of external power before entering suspend-to-RAM
  * @status_save_batt:
  *	saved status of battery before entering suspend-to-RAM
-<<<<<<< HEAD
-=======
  * @charging_start_time: saved start time of enabling charging
  * @charging_end_time: saved end time of disabling charging
  * @battery_status: Current battery status
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct charger_manager {
 	struct list_head entry;
 	struct device *dev;
 	struct charger_desc *desc;
 
-<<<<<<< HEAD
-	struct power_supply *fuel_gauge;
-	struct power_supply **charger_stat;
-
-	bool charger_enabled;
-
-	int emergency_stop;
-	int last_temp_mC;
-
-	char psy_name_buf[PSY_NAME_MAX + 1];
-	struct power_supply charger_psy;
-
-	bool status_save_ext_pwr_inserted;
-	bool status_save_batt;
-};
-
-#ifdef CONFIG_CHARGER_MANAGER
-extern int setup_charger_manager(struct charger_global_desc *gd);
-extern bool cm_suspend_again(void);
-#else
-static void __maybe_unused setup_charger_manager(struct charger_global_desc *gd)
-{ }
-
-static bool __maybe_unused cm_suspend_again(void)
-{
-	return false;
-}
-#endif
-
-=======
 #ifdef CONFIG_THERMAL
 	struct thermal_zone_device *tzd_batt;
 #endif
@@ -349,5 +238,4 @@ static bool __maybe_unused cm_suspend_again(void)
 	int battery_status;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _CHARGER_MANAGER_H */

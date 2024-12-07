@@ -17,11 +17,8 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/sched_clock.h>
-<<<<<<< HEAD
-=======
 #include <plat/time.h>
 #include <asm/delay.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MBus bridge block registers.
@@ -65,11 +62,7 @@ static u32 ticks_per_jiffy;
  * at least 7.5ns (133MHz TCLK).
  */
 
-<<<<<<< HEAD
-static u32 notrace orion_read_sched_clock(void)
-=======
 static u64 notrace orion_read_sched_clock(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ~readl(timer_base + TIMER0_VAL_OFF);
 }
@@ -114,67 +107,12 @@ orion_clkevt_next_event(unsigned long delta, struct clock_event_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void
-orion_clkevt_mode(enum clock_event_mode mode, struct clock_event_device *dev)
-=======
 static int orion_clkevt_shutdown(struct clock_event_device *evt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	u32 u;
 
 	local_irq_save(flags);
-<<<<<<< HEAD
-	if (mode == CLOCK_EVT_MODE_PERIODIC) {
-		/*
-		 * Setup timer to fire at 1/HZ intervals.
-		 */
-		writel(ticks_per_jiffy - 1, timer_base + TIMER1_RELOAD_OFF);
-		writel(ticks_per_jiffy - 1, timer_base + TIMER1_VAL_OFF);
-
-		/*
-		 * Enable timer interrupt.
-		 */
-		u = readl(bridge_base + BRIDGE_MASK_OFF);
-		writel(u | BRIDGE_INT_TIMER1, bridge_base + BRIDGE_MASK_OFF);
-
-		/*
-		 * Enable timer.
-		 */
-		u = readl(timer_base + TIMER_CTRL_OFF);
-		writel(u | TIMER1_EN | TIMER1_RELOAD_EN,
-		       timer_base + TIMER_CTRL_OFF);
-	} else {
-		/*
-		 * Disable timer.
-		 */
-		u = readl(timer_base + TIMER_CTRL_OFF);
-		writel(u & ~TIMER1_EN, timer_base + TIMER_CTRL_OFF);
-
-		/*
-		 * Disable timer interrupt.
-		 */
-		u = readl(bridge_base + BRIDGE_MASK_OFF);
-		writel(u & ~BRIDGE_INT_TIMER1, bridge_base + BRIDGE_MASK_OFF);
-
-		/*
-		 * ACK pending timer interrupt.
-		 */
-		writel(bridge_timer1_clr_mask, bridge_base + BRIDGE_CAUSE_OFF);
-
-	}
-	local_irq_restore(flags);
-}
-
-static struct clock_event_device orion_clkevt = {
-	.name		= "orion_tick",
-	.features	= CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PERIODIC,
-	.shift		= 32,
-	.rating		= 300,
-	.set_next_event	= orion_clkevt_next_event,
-	.set_mode	= orion_clkevt_mode,
-=======
 
 	/* Disable timer */
 	u = readl(timer_base + TIMER_CTRL_OFF);
@@ -226,7 +164,6 @@ static struct clock_event_device orion_clkevt = {
 	.set_state_periodic	= orion_clkevt_set_periodic,
 	.set_state_oneshot	= orion_clkevt_shutdown,
 	.tick_resume		= orion_clkevt_shutdown,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t orion_timer_interrupt(int irq, void *dev_id)
@@ -240,22 +177,6 @@ static irqreturn_t orion_timer_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static struct irqaction orion_timer_irq = {
-	.name		= "orion_tick",
-	.flags		= IRQF_DISABLED | IRQF_TIMER,
-	.handler	= orion_timer_interrupt
-};
-
-void __init
-orion_time_set_base(u32 _timer_base)
-{
-	timer_base = (void __iomem *)_timer_base;
-}
-
-void __init
-orion_time_init(u32 _bridge_base, u32 _bridge_timer1_clr_mask,
-=======
 void __init
 orion_time_set_base(void __iomem *_timer_base)
 {
@@ -273,7 +194,6 @@ static struct delay_timer orion_delay_timer = {
 
 void __init
 orion_time_init(void __iomem *_bridge_base, u32 _bridge_timer1_clr_mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int irq, unsigned int tclk)
 {
 	u32 u;
@@ -281,21 +201,11 @@ orion_time_init(void __iomem *_bridge_base, u32 _bridge_timer1_clr_mask,
 	/*
 	 * Set SoC-specific data.
 	 */
-<<<<<<< HEAD
-	bridge_base = (void __iomem *)_bridge_base;
-=======
 	bridge_base = _bridge_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bridge_timer1_clr_mask = _bridge_timer1_clr_mask;
 
 	ticks_per_jiffy = (tclk + HZ/2) / HZ;
 
-<<<<<<< HEAD
-	/*
-	 * Set scale and timer for sched_clock.
-	 */
-	setup_sched_clock(orion_read_sched_clock, 32, tclk);
-=======
 	orion_delay_timer.freq = tclk;
 	register_current_timer_delay(&orion_delay_timer);
 
@@ -303,7 +213,6 @@ orion_time_init(void __iomem *_bridge_base, u32 _bridge_timer1_clr_mask,
 	 * Set scale and timer for sched_clock.
 	 */
 	sched_clock_register(orion_read_sched_clock, 32, tclk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Setup free-running clocksource timer (interrupts
@@ -321,18 +230,9 @@ orion_time_init(void __iomem *_bridge_base, u32 _bridge_timer1_clr_mask,
 	/*
 	 * Setup clockevent timer (interrupt-driven).
 	 */
-<<<<<<< HEAD
-	setup_irq(irq, &orion_timer_irq);
-	orion_clkevt.mult = div_sc(tclk, NSEC_PER_SEC, orion_clkevt.shift);
-	orion_clkevt.max_delta_ns = clockevent_delta2ns(0xfffffffe, &orion_clkevt);
-	orion_clkevt.min_delta_ns = clockevent_delta2ns(1, &orion_clkevt);
-	orion_clkevt.cpumask = cpumask_of(0);
-	clockevents_register_device(&orion_clkevt);
-=======
 	if (request_irq(irq, orion_timer_interrupt, IRQF_TIMER, "orion_tick",
 			NULL))
 		pr_err("Failed to request irq %u (orion_tick)\n", irq);
 	orion_clkevt.cpumask = cpumask_of(0);
 	clockevents_config_and_register(&orion_clkevt, tclk, 1, 0xfffffffe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

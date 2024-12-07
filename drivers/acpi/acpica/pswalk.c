@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -70,28 +25,12 @@ ACPI_MODULE_NAME("pswalk")
  * DESCRIPTION: Delete a portion of or an entire parse tree.
  *
  ******************************************************************************/
-<<<<<<< HEAD
-=======
 #include "amlcode.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 {
 	union acpi_parse_object *op = subtree_root;
 	union acpi_parse_object *next = NULL;
 	union acpi_parse_object *parent = NULL;
-<<<<<<< HEAD
-
-	ACPI_FUNCTION_TRACE_PTR(ps_delete_parse_tree, subtree_root);
-
-	/* Visit all nodes in the subtree */
-
-	while (op) {
-
-		/* Check if we are not ascending */
-
-		if (op != parent) {
-
-=======
 	u32 level = 0;
 
 	ACPI_FUNCTION_TRACE_PTR(ps_delete_parse_tree, subtree_root);
@@ -128,7 +67,6 @@ void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 				acpi_os_printf("\n");
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Look for an argument or child of the current op */
 
 			next = acpi_ps_get_arg(op, 0);
@@ -137,10 +75,7 @@ void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 				/* Still going downward in tree (Op is not completed yet) */
 
 				op = next;
-<<<<<<< HEAD
-=======
 				level++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		}
@@ -157,17 +92,11 @@ void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 		if (op == subtree_root) {
 			return_VOID;
 		}
-<<<<<<< HEAD
-		if (next) {
-			op = next;
-		} else {
-=======
 
 		if (next) {
 			op = next;
 		} else {
 			level--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			op = parent;
 		}
 	}

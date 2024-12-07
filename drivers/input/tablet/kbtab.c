@@ -1,42 +1,17 @@
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/slab.h>
-#include <linux/module.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb/input.h>
 #include <asm/unaligned.h>
 
 /*
-<<<<<<< HEAD
- * Version Information
- * v0.0.1 - Original, extremely basic version, 2.4.xx only
- * v0.0.2 - Updated, works with 2.5.62 and 2.4.20;
- *           - added pressure-threshold modules param code from
- *              Alex Perry <alex.perry@ieee.org>
- */
-
-#define DRIVER_VERSION "v0.0.2"
-#define DRIVER_AUTHOR "Josh Myer <josh@joshisanerd.com>"
-#define DRIVER_DESC "USB KB Gear JamStudio Tablet driver"
-#define DRIVER_LICENSE "GPL"
-
-MODULE_AUTHOR(DRIVER_AUTHOR);
-MODULE_DESCRIPTION(DRIVER_DESC);
-MODULE_LICENSE(DRIVER_LICENSE);
-=======
  * Pressure-threshold modules param code from Alex Perry <alex.perry@ieee.org>
  */
 
 MODULE_AUTHOR("Josh Myer <josh@joshisanerd.com>");
 MODULE_DESCRIPTION("USB KB Gear JamStudio Tablet driver");
 MODULE_LICENSE("GPL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define USB_VENDOR_ID_KBGEAR	0x084e
 
@@ -48,11 +23,7 @@ struct kbtab {
 	unsigned char *data;
 	dma_addr_t data_dma;
 	struct input_dev *dev;
-<<<<<<< HEAD
-	struct usb_device *usbdev;
-=======
 	struct usb_interface *intf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *irq;
 	char phys[32];
 };
@@ -73,12 +44,6 @@ static void kbtab_irq(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* this urb is terminated, clean up */
-<<<<<<< HEAD
-		dbg("%s - urb shutting down with status: %d", __func__, urb->status);
-		return;
-	default:
-		dbg("%s - nonzero urb status received: %d", __func__, urb->status);
-=======
 		dev_dbg(&kbtab->intf->dev,
 			"%s - urb shutting down with status: %d\n",
 			__func__, urb->status);
@@ -87,7 +52,6 @@ static void kbtab_irq(struct urb *urb)
 		dev_dbg(&kbtab->intf->dev,
 			"%s - nonzero urb status received: %d\n",
 			__func__, urb->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -111,20 +75,12 @@ static void kbtab_irq(struct urb *urb)
  exit:
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
 	if (retval)
-<<<<<<< HEAD
-		err("%s - usb_submit_urb failed with result %d",
-		     __func__, retval);
-}
-
-static struct usb_device_id kbtab_ids[] = {
-=======
 		dev_err(&kbtab->intf->dev,
 			"%s - usb_submit_urb failed with result %d\n",
 			__func__, retval);
 }
 
 static const struct usb_device_id kbtab_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(USB_VENDOR_ID_KBGEAR, 0x1001), .driver_info = 0 },
 	{ }
 };
@@ -134,14 +90,9 @@ MODULE_DEVICE_TABLE(usb, kbtab_ids);
 static int kbtab_open(struct input_dev *dev)
 {
 	struct kbtab *kbtab = input_get_drvdata(dev);
-<<<<<<< HEAD
-
-	kbtab->irq->dev = kbtab->usbdev;
-=======
 	struct usb_device *udev = interface_to_usbdev(kbtab->intf);
 
 	kbtab->irq->dev = udev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usb_submit_urb(kbtab->irq, GFP_KERNEL))
 		return -EIO;
 
@@ -163,8 +114,6 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 	struct input_dev *input_dev;
 	int error = -ENOMEM;
 
-<<<<<<< HEAD
-=======
 	if (intf->cur_altsetting->desc.bNumEndpoints < 1)
 		return -ENODEV;
 
@@ -172,7 +121,6 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 	if (!usb_endpoint_is_int_in(endpoint))
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kbtab = kzalloc(sizeof(struct kbtab), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!kbtab || !input_dev)
@@ -186,11 +134,7 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 	if (!kbtab->irq)
 		goto fail2;
 
-<<<<<<< HEAD
-	kbtab->usbdev = dev;
-=======
 	kbtab->intf = intf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kbtab->dev = input_dev;
 
 	usb_make_path(dev, kbtab->phys, sizeof(kbtab->phys));
@@ -215,11 +159,6 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 	input_set_abs_params(input_dev, ABS_Y, 0, 0x1750, 4, 0);
 	input_set_abs_params(input_dev, ABS_PRESSURE, 0, 0xff, 0, 0);
 
-<<<<<<< HEAD
-	endpoint = &intf->cur_altsetting->endpoint[0].desc;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_fill_int_urb(kbtab->irq, dev,
 			 usb_rcvintpipe(dev, endpoint->bEndpointAddress),
 			 kbtab->data, 8,
@@ -245,20 +184,13 @@ static int kbtab_probe(struct usb_interface *intf, const struct usb_device_id *i
 static void kbtab_disconnect(struct usb_interface *intf)
 {
 	struct kbtab *kbtab = usb_get_intfdata(intf);
-<<<<<<< HEAD
-=======
 	struct usb_device *udev = interface_to_usbdev(intf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_set_intfdata(intf, NULL);
 
 	input_unregister_device(kbtab->dev);
 	usb_free_urb(kbtab->irq);
-<<<<<<< HEAD
-	usb_free_coherent(kbtab->usbdev, 8, kbtab->data, kbtab->data_dma);
-=======
 	usb_free_coherent(udev, 8, kbtab->data, kbtab->data_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(kbtab);
 }
 

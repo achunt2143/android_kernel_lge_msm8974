@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -17,11 +14,7 @@
 
 #define DRV_NAME	"pata-swarm"
 
-<<<<<<< HEAD
-#define SWARM_IDE_SHIFT	5
-=======
 #define SWARM_IDE_SHIFT 5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SWARM_IDE_BASE	0x1f0
 #define SWARM_IDE_CTRL	0x3f6
 
@@ -58,11 +51,7 @@ static struct platform_device swarm_pata_device = {
 static int __init swarm_pata_init(void)
 {
 	u8 __iomem *base;
-<<<<<<< HEAD
-	phys_t offset, size;
-=======
 	phys_addr_t offset, size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *r;
 
 	if (!SIBYTE_HAVE_IDE)
@@ -99,17 +88,6 @@ device_initcall(swarm_pata_init);
 #define sb1250_dev_struct(num) \
 	static struct resource sb1250_res##num = {		\
 		.name = "SB1250 MAC " __stringify(num),		\
-<<<<<<< HEAD
-		.flags = IORESOURCE_MEM,		\
-		.start = A_MAC_CHANNEL_BASE(num),	\
-		.end = A_MAC_CHANNEL_BASE(num + 1) -1,	\
-	};\
-	static struct platform_device sb1250_dev##num = {	\
-		.name = "sb1250-mac",			\
-	.id = num,					\
-	.resource = &sb1250_res##num,			\
-	.num_resources = 1,				\
-=======
 		.flags = IORESOURCE_MEM,			\
 		.start = A_MAC_CHANNEL_BASE(num),		\
 		.end = A_MAC_CHANNEL_BASE(num + 1) - 1,		\
@@ -119,7 +97,6 @@ device_initcall(swarm_pata_init);
 		.id = num,					\
 		.resource = &sb1250_res##num,			\
 		.num_resources = 1,				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 sb1250_dev_struct(0);
@@ -147,11 +124,7 @@ static int __init sb1250_device_init(void)
 	case K_SYS_SOC_TYPE_BCM1120:
 	case K_SYS_SOC_TYPE_BCM1125:
 	case K_SYS_SOC_TYPE_BCM1125H:
-<<<<<<< HEAD
-	case K_SYS_SOC_TYPE_BCM1250_ALT2:       /* Hybrid */
-=======
 	case K_SYS_SOC_TYPE_BCM1250_ALT2:	/* Hybrid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = platform_add_devices(sb1250_devs, 2);
 		break;
 	case K_SYS_SOC_TYPE_BCM1x55:

@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-/*
- * Event entry/exit for Hexagon
- *
- * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Event entry/exit for Hexagon
  *
  * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/asm-offsets.h>  /*  assembly-safer versions of C defines */
@@ -53,45 +32,6 @@
  * number in the case where we decode a system call (trap0(#1)).
  */
 
-<<<<<<< HEAD
-#define save_pt_regs()\
-	memd(R0 + #_PT_R3130) = R31:30; \
-	{ memw(R0 + #_PT_R2928) = R28; \
-	  R31 = memw(R0 + #_PT_ER_VMPSP); }\
-	{ memw(R0 + #(_PT_R2928 + 4)) = R31; \
-	  R31 = ugp; } \
-	{ memd(R0 + #_PT_R2726) = R27:26; \
-	  R30 = gp ; } \
-	memd(R0 + #_PT_R2524) = R25:24; \
-	memd(R0 + #_PT_R2322) = R23:22; \
-	memd(R0 + #_PT_R2120) = R21:20; \
-	memd(R0 + #_PT_R1918) = R19:18; \
-	memd(R0 + #_PT_R1716) = R17:16; \
-	memd(R0 + #_PT_R1514) = R15:14; \
-	memd(R0 + #_PT_R1312) = R13:12; \
-	{ memd(R0 + #_PT_R1110) = R11:10; \
-	  R15 = lc0; } \
-	{ memd(R0 + #_PT_R0908) = R9:8; \
-	  R14 = sa0; } \
-	{ memd(R0 + #_PT_R0706) = R7:6; \
-	  R13 = lc1; } \
-	{ memd(R0 + #_PT_R0504) = R5:4; \
-	  R12 = sa1; } \
-	{ memd(R0 + #_PT_UGPGP) = R31:30; \
-	  R11 = m1; \
-	  R2.H = #HI(_THREAD_SIZE); } \
-	{ memd(R0 + #_PT_LC0SA0) = R15:14; \
-	  R10 = m0; \
-	  R2.L = #LO(_THREAD_SIZE); } \
-	{ memd(R0 + #_PT_LC1SA1) = R13:12; \
-	  R15 = p3:0; \
-	  R2 = neg(R2); } \
-	{ memd(R0 + #_PT_M1M0) = R11:10; \
-	  R14  = usr; \
-	  R2 = and(R0,R2); } \
-	{ memd(R0 + #_PT_PREDSUSR) =  R15:14; \
-	  THREADINFO_REG = R2; } \
-=======
 #if CONFIG_HEXAGON_ARCH_VERSION < 4
 #define save_pt_regs()\
  memd(R0 + #_PT_R3130) = R31:30; \
@@ -167,18 +107,13 @@
 	  R15 = p3:0; }\
 	{ memd(R0 + #_PT_M1M0) = R11:10; \
 		memw(R0 + #_PT_PREDSUSR + 4) =  R15; }\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ r24 = memw(THREADINFO_REG + #_THREAD_INFO_PT_REGS); \
 	  memw(THREADINFO_REG + #_THREAD_INFO_PT_REGS) = R0; \
 	  R2 = #-1; } \
 	{ memw(R0 + #_PT_SYSCALL_NR) = R2; \
-<<<<<<< HEAD
-	  R30 = #0; }
-=======
 		memd(R0 + #_PT_CS1CS0) = R17:16; \
 	  R30 = #0; }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Restore registers and thread_info.regs state. THREADINFO_REG
@@ -186,10 +121,7 @@
  * preserved. Don't restore R29 (SP) until later.
  */
 
-<<<<<<< HEAD
-=======
 #if CONFIG_HEXAGON_ARCH_VERSION < 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define restore_pt_regs() \
 	{ memw(THREADINFO_REG + #_THREAD_INFO_PT_REGS) = R24; \
 	  R15:14 = memd(R0 + #_PT_PREDSUSR); } \
@@ -217,17 +149,11 @@
 	  R23:22 = memd(R0 + #_PT_R2322); } \
 	{ R25:24 = memd(R0 + #_PT_R2524); \
 	  R27:26 = memd(R0 + #_PT_R2726); } \
-<<<<<<< HEAD
-	R31:30 = memd(R0 + #_PT_UGPGP); \
-=======
 	R31:30 = memd(R0 + #_PT_GPUGP); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ R28 = memw(R0 + #_PT_R2928); \
 	  ugp = R31; } \
 	{ R31:30 = memd(R0 + #_PT_R3130); \
 	  gp = R30; }
-<<<<<<< HEAD
-=======
 #else
 /* V4+ */
 #define restore_pt_regs() \
@@ -261,7 +187,6 @@
 	{ C11:10 = R31:30; \
 		R31:30 = memd(R0 + #_PT_R3130); }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Clears off enough space for the rest of pt_regs; evrec is a part
@@ -275,10 +200,7 @@
  * Need to save off R0, R1, R2, R3 immediately.
  */
 
-<<<<<<< HEAD
-=======
 #if CONFIG_HEXAGON_ARCH_VERSION < 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	vm_event_entry(CHandler) \
 	{ \
 		R29 = add(R29, #-(_PT_REGS_SIZE)); \
@@ -298,8 +220,6 @@
 		R1.H = #HI(CHandler); \
 		jump event_dispatch; \
 	}
-<<<<<<< HEAD
-=======
 #else
 /* V4+ */
 /* turn on I$ prefetch early */
@@ -328,7 +248,6 @@
 		jump event_dispatch; \
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .text
 	/*
@@ -342,15 +261,6 @@ event_dispatch:
 	callr	r1
 
 	/*
-<<<<<<< HEAD
-	 * If we were in kernel mode, we don't need to check scheduler
-	 * or signals if CONFIG_PREEMPT is not set.  If set, then it has
-	 * to jump to a need_resched kind of block.
-	 * BTW, CONFIG_PREEMPT is not supported yet.
-	 */
-
-#ifdef CONFIG_PREEMPT
-=======
 	 * Coming back from the C-world, our thread info pointer
 	 * should be in the designated register (usually R19)
 	 *
@@ -361,62 +271,11 @@ event_dispatch:
 	 */
 
 #ifdef CONFIG_PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	R0 = #VM_INT_DISABLE
 	trap1(#HVM_TRAP1_VMSETIE)
 #endif
 
 	/*  "Nested control path" -- if the previous mode was kernel  */
-<<<<<<< HEAD
-	R0 = memw(R29 + #_PT_ER_VMEST);
-	P0 = tstbit(R0, #HVM_VMEST_UM_SFT);
-	if !P0 jump restore_all;
-	/*
-	 * Returning from system call, normally coming back from user mode
-	 */
-return_from_syscall:
-	/*  Disable interrupts while checking TIF  */
-	R0 = #VM_INT_DISABLE
-	trap1(#HVM_TRAP1_VMSETIE)
-
-	/*
-	 * Coming back from the C-world, our thread info pointer
-	 * should be in the designated register (usually R19)
-	 */
-	R1.L = #LO(_TIF_ALLWORK_MASK)
-	{
-		R1.H = #HI(_TIF_ALLWORK_MASK);
-		R0 = memw(THREADINFO_REG + #_THREAD_INFO_FLAGS);
-	}
-
-	/*
-	 * Compare against the "return to userspace" _TIF_WORK_MASK
-	 */
-	R1 = and(R1,R0);
-	{ P0 = cmp.eq(R1,#0); if (!P0.new) jump:t work_pending;}
-	jump restore_all;  /*  we're outta here!  */
-
-work_pending:
-	{
-		P0 = tstbit(R1, #TIF_NEED_RESCHED);
-		if (!P0.new) jump:nt work_notifysig;
-	}
-	call schedule
-	jump return_from_syscall;  /*  check for more work  */
-
-work_notifysig:
-	/*  this is the part that's kind of fuzzy.  */
-	R1 = and(R0, #(_TIF_SIGPENDING | _TIF_NOTIFY_RESUME));
-	P0 = cmp.eq(R1, #0);
-	if P0 jump restore_all
-	R1 = R0; 	/* unsigned long thread_info_flags */
-	R0 = R29;	/* regs should still be at top of stack  */
-	call do_notify_resume
-
-restore_all:
-	/* Disable interrupts, if they weren't already, before reg restore.  */
-	R0 = #VM_INT_DISABLE
-=======
 	{
 		R0 = memw(R29 + #_PT_ER_VMEST);
 		R26.L = #LO(do_work_pending);
@@ -454,24 +313,10 @@ restore_all:
 	 * Disable interrupts, if they weren't already, before reg restore.
 	 * R0 gets preloaded with #VM_INT_DISABLE before we get here.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trap1(#HVM_TRAP1_VMSETIE)
 
 	/*  do the setregs here for VM 0.5  */
 	/*  R29 here should already be pointing at pt_regs  */
-<<<<<<< HEAD
-	R1:0 = memd(R29 + #_PT_ER_VMEL);
-	R3:2 = memd(R29 + #_PT_ER_VMPSP);
-	trap1(#HVM_TRAP1_VMSETREGS);
-
-	R0 = R29
-	restore_pt_regs()
-	R1:0 = memd(R29 + #_PT_R0100);
-	R29 = add(R29, #_PT_REGS_SIZE);
-	trap1(#HVM_TRAP1_VMRTE)
-	/* Notreached */
-
-=======
 	{
 		R1:0 = memd(R29 + #_PT_ER_VMEL);
 		R3:2 = memd(R29 + #_PT_ER_VMPSP);
@@ -493,7 +338,6 @@ restore_all:
 	/* Notreached */
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl _K_enter_genex
 _K_enter_genex:
 	vm_event_entry(do_genex)
@@ -510,13 +354,6 @@ _K_enter_trap0:
 _K_enter_machcheck:
 	vm_event_entry(do_machcheck)
 
-<<<<<<< HEAD
-
-	.globl ret_from_fork
-ret_from_fork:
-	call schedule_tail
-	jump return_from_syscall
-=======
 	.globl _K_enter_debug
 _K_enter_debug:
 	vm_event_entry(do_debug_exception)
@@ -541,4 +378,3 @@ ret_from_fork:
 		jump check_work_pending
 		R0 = #VM_INT_DISABLE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

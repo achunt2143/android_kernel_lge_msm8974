@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kthread.h>
 
@@ -14,14 +11,6 @@
 #define CREATE_TRACE_POINTS
 #include "trace-events-sample.h"
 
-<<<<<<< HEAD
-
-static void simple_thread_func(int cnt)
-{
-	set_current_state(TASK_INTERRUPTIBLE);
-	schedule_timeout(HZ);
-	trace_foo_bar("hello", cnt);
-=======
 static const char *random_strings[] = {
 	"Mother Goose",
 	"Snoopy",
@@ -67,7 +56,6 @@ static void do_simple_thread_func(int cnt, const char *fmt, ...)
 static void simple_thread_func(int cnt)
 {
 	do_simple_thread_func(cnt, "iter=%d", cnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int simple_thread(void *arg)
@@ -81,8 +69,6 @@ static int simple_thread(void *arg)
 }
 
 static struct task_struct *simple_tsk;
-<<<<<<< HEAD
-=======
 static struct task_struct *simple_tsk_fn;
 
 static void simple_thread_func_fn(int cnt)
@@ -139,7 +125,6 @@ void foo_bar_unreg(void)
  out:
 	mutex_unlock(&thread_mutex);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init trace_event_init(void)
 {
@@ -153,14 +138,11 @@ static int __init trace_event_init(void)
 static void __exit trace_event_exit(void)
 {
 	kthread_stop(simple_tsk);
-<<<<<<< HEAD
-=======
 	mutex_lock(&thread_mutex);
 	if (simple_tsk_fn)
 		kthread_stop(simple_tsk_fn);
 	simple_tsk_fn = NULL;
 	mutex_unlock(&thread_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(trace_event_init);

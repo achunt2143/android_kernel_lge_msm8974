@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Port for PPC64 David Engebretsen, IBM Corp.
  * Contains common pci routines for ppc64 platform, pSeries and iSeries brands.
  * 
  * Copyright (C) 2003 Anton Blanchard <anton@au.ibm.com>, IBM
  *   Rework, based on alpha PCI code.
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -24,27 +13,16 @@
 #include <linux/pci.h>
 #include <linux/string.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/mm.h>
 #include <linux/list.h>
 #include <linux/syscalls.h>
 #include <linux/irq.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-
-#include <asm/processor.h>
-#include <asm/io.h>
-#include <asm/prom.h>
-=======
 #include <linux/of.h>
 
 #include <asm/processor.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-bridge.h>
 #include <asm/byteorder.h>
 #include <asm/machdep.h>
@@ -56,11 +34,7 @@
  * ISA drivers use hard coded offsets.  If no ISA bus exists nothing
  * is mapped on the first 64K of IO space
  */
-<<<<<<< HEAD
-unsigned long pci_io_base = ISA_IO_BASE;
-=======
 unsigned long pci_io_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(pci_io_base);
 
 static int __init pcibios_init(void)
@@ -80,21 +54,12 @@ static int __init pcibios_init(void)
 	pci_add_flags(PCI_ENABLE_PROC_DOMAINS | PCI_COMPAT_DOMAIN_0);
 
 	/* Scan all of the recorded PCI controllers.  */
-<<<<<<< HEAD
-	list_for_each_entry_safe(hose, tmp, &hose_list, list_node) {
-		pcibios_scan_phb(hose);
-		pci_bus_add_devices(hose->bus);
-	}
-=======
 	list_for_each_entry_safe(hose, tmp, &hose_list, list_node)
 		pcibios_scan_phb(hose);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Call common code to handle resource allocation */
 	pcibios_resource_survey();
 
-<<<<<<< HEAD
-=======
 	/* Add devices. */
 	list_for_each_entry_safe(hose, tmp, &hose_list, list_node)
 		pci_bus_add_devices(hose->bus);
@@ -103,19 +68,12 @@ static int __init pcibios_init(void)
 	if (ppc_md.pcibios_fixup)
 		ppc_md.pcibios_fixup();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_DEBUG "PCI: Probing PCI hardware done\n");
 
 	return 0;
 }
 
-<<<<<<< HEAD
-subsys_initcall(pcibios_init);
-
-#ifdef CONFIG_HOTPLUG
-=======
 subsys_initcall_sync(pcibios_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int pcibios_unmap_io_space(struct pci_bus *bus)
 {
@@ -125,11 +83,7 @@ int pcibios_unmap_io_space(struct pci_bus *bus)
 
 	/* If this is not a PHB, we only flush the hash table over
 	 * the area mapped by this bridge. We don't play with the PTE
-<<<<<<< HEAD
-	 * mappings since we might have to deal with sub-page alignemnts
-=======
 	 * mappings since we might have to deal with sub-page alignments
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * so flushing the hash table is the only sane way to make sure
 	 * that no hash entries are covering that removed bridge area
 	 * while still allowing other busses overlapping those pages
@@ -138,24 +92,15 @@ int pcibios_unmap_io_space(struct pci_bus *bus)
 	 * to do an appropriate TLB flush here too
 	 */
 	if (bus->self) {
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_STD_MMU_64
-=======
 #ifdef CONFIG_PPC_BOOK3S_64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct resource *res = bus->resource[0];
 #endif
 
 		pr_debug("IO unmapping for PCI-PCI bridge %s\n",
 			 pci_name(bus->self));
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC_STD_MMU_64
-		__flush_hash_table_range(&init_mm, res->start + _IO_BASE,
-=======
 #ifdef CONFIG_PPC_BOOK3S_64
 		__flush_hash_table_range(res->start + _IO_BASE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 res->end + _IO_BASE + 1);
 #endif
 		return 0;
@@ -164,34 +109,14 @@ int pcibios_unmap_io_space(struct pci_bus *bus)
 	/* Get the host bridge */
 	hose = pci_bus_to_host(bus);
 
-<<<<<<< HEAD
-	/* Check if we have IOs allocated */
-	if (hose->io_base_alloc == 0)
-		return 0;
-
-	pr_debug("IO unmapping for PHB %s\n", hose->dn->full_name);
-	pr_debug("  alloc=0x%p\n", hose->io_base_alloc);
-
-	/* This is a PHB, we fully unmap the IO area */
-	vunmap(hose->io_base_alloc);
-
-=======
 	pr_debug("IO unmapping for PHB %pOF\n", hose->dn);
 	pr_debug("  alloc=0x%p\n", hose->io_base_alloc);
 
 	iounmap(hose->io_base_alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pcibios_unmap_io_space);
 
-<<<<<<< HEAD
-#endif /* CONFIG_HOTPLUG */
-
-static int __devinit pcibios_map_phb_io_space(struct pci_controller *hose)
-{
-	struct vm_struct *area;
-=======
 void __iomem *ioremap_phb(phys_addr_t paddr, unsigned long size)
 {
 	struct vm_struct *area;
@@ -225,18 +150,12 @@ EXPORT_SYMBOL_GPL(ioremap_phb);
 
 static int pcibios_map_phb_io_space(struct pci_controller *hose)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long phys_page;
 	unsigned long size_page;
 	unsigned long io_virt_offset;
 
-<<<<<<< HEAD
-	phys_page = _ALIGN_DOWN(hose->io_base_phys, PAGE_SIZE);
-	size_page = _ALIGN_UP(hose->pci_io_size, PAGE_SIZE);
-=======
 	phys_page = ALIGN_DOWN(hose->io_base_phys, PAGE_SIZE);
 	size_page = ALIGN(hose->pci_io_size, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure IO area address is clear */
 	hose->io_base_alloc = NULL;
@@ -251,16 +170,6 @@ static int pcibios_map_phb_io_space(struct pci_controller *hose)
 	 * with incomplete address decoding but I'd rather not deal with
 	 * those outside of the reserved 64K legacy region.
 	 */
-<<<<<<< HEAD
-	area = __get_vm_area(size_page, 0, PHB_IO_BASE, PHB_IO_END);
-	if (area == NULL)
-		return -ENOMEM;
-	hose->io_base_alloc = area->addr;
-	hose->io_base_virt = (void __iomem *)(area->addr +
-					      hose->io_base_phys - phys_page);
-
-	pr_debug("IO mapping for PHB %s\n", hose->dn->full_name);
-=======
 	hose->io_base_alloc = ioremap_phb(phys_page, size_page);
 	if (!hose->io_base_alloc)
 		return -ENOMEM;
@@ -268,20 +177,11 @@ static int pcibios_map_phb_io_space(struct pci_controller *hose)
 				hose->io_base_phys - phys_page;
 
 	pr_debug("IO mapping for PHB %pOF\n", hose->dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("  phys=0x%016llx, virt=0x%p (alloc=0x%p)\n",
 		 hose->io_base_phys, hose->io_base_virt, hose->io_base_alloc);
 	pr_debug("  size=0x%016llx (alloc=0x%016lx)\n",
 		 hose->pci_io_size, size_page);
 
-<<<<<<< HEAD
-	/* Establish the mapping */
-	if (__ioremap_at(phys_page, area->addr, size_page,
-			 _PAGE_NO_CACHE | _PAGE_GUARDED) == NULL)
-		return -ENOMEM;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fixup hose IO resource */
 	io_virt_offset = pcibios_io_space_offset(hose);
 	hose->io_resource.start += io_virt_offset;
@@ -292,11 +192,7 @@ static int pcibios_map_phb_io_space(struct pci_controller *hose)
 	return 0;
 }
 
-<<<<<<< HEAD
-int __devinit pcibios_map_io_space(struct pci_bus *bus)
-=======
 int pcibios_map_io_space(struct pci_bus *bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	WARN_ON(bus == NULL);
 
@@ -316,11 +212,7 @@ int pcibios_map_io_space(struct pci_bus *bus)
 }
 EXPORT_SYMBOL_GPL(pcibios_map_io_space);
 
-<<<<<<< HEAD
-void __devinit pcibios_setup_phb_io_space(struct pci_controller *hose)
-=======
 void pcibios_setup_phb_io_space(struct pci_controller *hose)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pcibios_map_phb_io_space(hose);
 }
@@ -331,20 +223,11 @@ void pcibios_setup_phb_io_space(struct pci_controller *hose)
 #define IOBASE_ISA_IO		3
 #define IOBASE_ISA_MEM		4
 
-<<<<<<< HEAD
-long sys_pciconfig_iobase(long which, unsigned long in_bus,
-			  unsigned long in_devfn)
-{
-	struct pci_controller* hose;
-	struct list_head *ln;
-	struct pci_bus *bus = NULL;
-=======
 SYSCALL_DEFINE3(pciconfig_iobase, long, which, unsigned long, in_bus,
 			  unsigned long, in_devfn)
 {
 	struct pci_controller* hose;
 	struct pci_bus *tmp_bus, *bus = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *hose_node;
 
 	/* Argh ! Please forgive me for that hack, but that's the
@@ -365,20 +248,12 @@ SYSCALL_DEFINE3(pciconfig_iobase, long, which, unsigned long, in_bus,
 	 * used on pre-domains setup. We return the first match
 	 */
 
-<<<<<<< HEAD
-	for (ln = pci_root_buses.next; ln != &pci_root_buses; ln = ln->next) {
-		bus = pci_bus_b(ln);
-		if (in_bus >= bus->number && in_bus <= bus->subordinate)
-			break;
-		bus = NULL;
-=======
 	list_for_each_entry(tmp_bus, &pci_root_buses, node) {
 		if (in_bus >= tmp_bus->number &&
 		    in_bus <= tmp_bus->busn_res.end) {
 			bus = tmp_bus;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (bus == NULL || bus->dev.of_node == NULL)
 		return -ENODEV;
@@ -390,11 +265,7 @@ SYSCALL_DEFINE3(pciconfig_iobase, long, which, unsigned long, in_bus,
 	case IOBASE_BRIDGE_NUMBER:
 		return (long)hose->first_busno;
 	case IOBASE_MEMORY:
-<<<<<<< HEAD
-		return (long)hose->pci_mem_offset;
-=======
 		return (long)hose->mem_offset[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IOBASE_IO:
 		return (long)hose->io_base_phys;
 	case IOBASE_ISA_IO:
@@ -414,8 +285,6 @@ int pcibus_to_node(struct pci_bus *bus)
 }
 EXPORT_SYMBOL(pcibus_to_node);
 #endif
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_PPC_PMAC
 int pci_device_from_OF_node(struct device_node *np, u8 *bus, u8 *devfn)
@@ -427,4 +296,3 @@ int pci_device_from_OF_node(struct device_node *np, u8 *bus, u8 *devfn)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

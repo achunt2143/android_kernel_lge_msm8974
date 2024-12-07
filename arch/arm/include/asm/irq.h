@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_ARM_IRQ_H
 #define __ASM_ARM_IRQ_H
 
@@ -28,16 +25,6 @@
 #ifndef __ASSEMBLY__
 struct irqaction;
 struct pt_regs;
-<<<<<<< HEAD
-extern void migrate_irqs(void);
-
-extern void asm_do_IRQ(unsigned int, struct pt_regs *);
-void handle_IRQ(unsigned int, struct pt_regs *);
-void init_IRQ(void);
-
-void arch_trigger_all_cpu_backtrace(void);
-#define arch_trigger_all_cpu_backtrace arch_trigger_all_cpu_backtrace
-=======
 
 void handle_IRQ(unsigned int, struct pt_regs *);
 
@@ -53,7 +40,6 @@ static inline int nr_legacy_irqs(void)
 {
 	return NR_IRQS_LEGACY;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

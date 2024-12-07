@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Hewlett-Packard Harmony audio driver
  * Copyright (C) 2004, Kyle McMartin <kyle@parisc-linux.org>
  */

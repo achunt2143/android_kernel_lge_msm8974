@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#!/usr/bin/python
-#
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Cpu task migration overview toy
 #
 # Copyright (C) 2010 Frederic Weisbecker <fweisbec@gmail.com>
@@ -12,25 +7,17 @@
 # This software is distributed under the terms of the GNU General
 # Public License ("GPL") version 2 as published by the Free Software
 # Foundation.
-<<<<<<< HEAD
-
-=======
 from __future__ import print_function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 import os
 import sys
 
 from collections import defaultdict
-<<<<<<< HEAD
-from UserList import UserList
-=======
 try:
 	from UserList import UserList
 except ImportError:
 	# Python 3: UserList moved to the collections package
 	from collections import UserList
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sys.path.append(os.environ['PERF_EXEC_PATH'] + \
 	'/scripts/python/Perf-Trace-Util/lib/Perf/Trace')
@@ -315,11 +302,7 @@ class TimeSliceList(UserList):
 		if i == -1:
 			return
 
-<<<<<<< HEAD
-		for i in xrange(i, len(self.data)):
-=======
 		for i in range(i, len(self.data)):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			timeslice = self.data[i]
 			if timeslice.start > end:
 				return
@@ -355,13 +338,8 @@ class SchedEventProxy:
 		on_cpu_task = self.current_tsk[headers.cpu]
 
 		if on_cpu_task != -1 and on_cpu_task != prev_pid:
-<<<<<<< HEAD
-			print "Sched switch event rejected ts: %s cpu: %d prev: %s(%d) next: %s(%d)" % \
-				(headers.ts_format(), headers.cpu, prev_comm, prev_pid, next_comm, next_pid)
-=======
 			print("Sched switch event rejected ts: %s cpu: %d prev: %s(%d) next: %s(%d)" % \
 				headers.ts_format(), headers.cpu, prev_comm, prev_pid, next_comm, next_pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		threads[prev_pid] = prev_comm
 		threads[next_pid] = next_comm
@@ -393,88 +371,46 @@ def trace_end():
 
 def sched__sched_stat_runtime(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, runtime, vruntime):
-=======
 	common_callchain, comm, pid, runtime, vruntime):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_stat_iowait(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, delay):
-=======
 	common_callchain, comm, pid, delay):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_stat_sleep(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, delay):
-=======
 	common_callchain, comm, pid, delay):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_stat_wait(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, delay):
-=======
 	common_callchain, comm, pid, delay):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_process_fork(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	parent_comm, parent_pid, child_comm, child_pid):
-=======
 	common_callchain, parent_comm, parent_pid, child_comm, child_pid):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_process_wait(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, prio):
-=======
 	common_callchain, comm, pid, prio):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_process_exit(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, prio):
-=======
 	common_callchain, comm, pid, prio):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_process_free(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, prio):
-=======
 	common_callchain, comm, pid, prio):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_migrate_task(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, prio, orig_cpu,
-	dest_cpu):
-	headers = EventHeaders(common_cpu, common_secs, common_nsecs,
-				common_pid, common_comm)
-	parser.migrate(headers, pid, prio, orig_cpu, dest_cpu)
-
-def sched__sched_switch(event_name, context, common_cpu,
-	common_secs, common_nsecs, common_pid, common_comm,
-=======
 	common_callchain, comm, pid, prio, orig_cpu,
 	dest_cpu):
 	headers = EventHeaders(common_cpu, common_secs, common_nsecs,
@@ -483,79 +419,44 @@ def sched__sched_switch(event_name, context, common_cpu,
 
 def sched__sched_switch(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm, common_callchain,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prev_comm, prev_pid, prev_prio, prev_state,
 	next_comm, next_pid, next_prio):
 
 	headers = EventHeaders(common_cpu, common_secs, common_nsecs,
-<<<<<<< HEAD
-				common_pid, common_comm)
-=======
 				common_pid, common_comm, common_callchain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parser.sched_switch(headers, prev_comm, prev_pid, prev_prio, prev_state,
 			 next_comm, next_pid, next_prio)
 
 def sched__sched_wakeup_new(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, prio, success,
-	target_cpu):
-	headers = EventHeaders(common_cpu, common_secs, common_nsecs,
-				common_pid, common_comm)
-=======
 	common_callchain, comm, pid, prio, success,
 	target_cpu):
 	headers = EventHeaders(common_cpu, common_secs, common_nsecs,
 				common_pid, common_comm, common_callchain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parser.wake_up(headers, comm, pid, success, target_cpu, 1)
 
 def sched__sched_wakeup(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, prio, success,
-	target_cpu):
-	headers = EventHeaders(common_cpu, common_secs, common_nsecs,
-				common_pid, common_comm)
-=======
 	common_callchain, comm, pid, prio, success,
 	target_cpu):
 	headers = EventHeaders(common_cpu, common_secs, common_nsecs,
 				common_pid, common_comm, common_callchain)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parser.wake_up(headers, comm, pid, success, target_cpu, 0)
 
 def sched__sched_wait_task(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid, prio):
-=======
 	common_callchain, comm, pid, prio):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_kthread_stop_ret(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	ret):
-=======
 	common_callchain, ret):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass
 
 def sched__sched_kthread_stop(event_name, context, common_cpu,
 	common_secs, common_nsecs, common_pid, common_comm,
-<<<<<<< HEAD
-	comm, pid):
-	pass
-
-def trace_unhandled(event_name, context, common_cpu, common_secs, common_nsecs,
-		common_pid, common_comm):
-=======
 	common_callchain, comm, pid):
 	pass
 
 def trace_unhandled(event_name, context, event_fields_dict):
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pass

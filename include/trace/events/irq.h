@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM irq
 
@@ -13,21 +10,6 @@
 struct irqaction;
 struct softirq_action;
 
-<<<<<<< HEAD
-#define softirq_name(sirq) { sirq##_SOFTIRQ, #sirq }
-#define show_softirq_name(val)				\
-	__print_symbolic(val,				\
-			 softirq_name(HI),		\
-			 softirq_name(TIMER),		\
-			 softirq_name(NET_TX),		\
-			 softirq_name(NET_RX),		\
-			 softirq_name(BLOCK),		\
-			 softirq_name(BLOCK_IOPOLL),	\
-			 softirq_name(TASKLET),		\
-			 softirq_name(SCHED),		\
-			 softirq_name(HRTIMER),		\
-			 softirq_name(RCU))
-=======
 #define SOFTIRQ_NAME_LIST				\
 			 softirq_name(HI)		\
 			 softirq_name(TIMER)		\
@@ -56,7 +38,6 @@ SOFTIRQ_NAME_LIST
 
 #define show_softirq_name(val)				\
 	__print_symbolic(val, SOFTIRQ_NAME_LIST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * irq_handler_entry - called immediately before the irq action handler
@@ -78,26 +59,14 @@ TRACE_EVENT(irq_handler_entry,
 	TP_STRUCT__entry(
 		__field(	int,	irq		)
 		__string(	name,	action->name	)
-<<<<<<< HEAD
-		__field(void*,	handler)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->irq = irq;
 		__assign_str(name, action->name);
-<<<<<<< HEAD
-		__entry->handler = action->handler;
-	),
-
-	TP_printk("irq=%d name=%s handler=%pf",
-		 __entry->irq, __get_str(name), __entry->handler)
-=======
 	),
 
 	TP_printk("irq=%d name=%s", __entry->irq, __get_str(name))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /**
@@ -107,11 +76,7 @@ TRACE_EVENT(irq_handler_entry,
  * @ret: return value
  *
  * If the @ret value is set to IRQ_HANDLED, then we know that the corresponding
-<<<<<<< HEAD
- * @action->handler scuccessully handled this irq. Otherwise, the irq might be
-=======
  * @action->handler successfully handled this irq. Otherwise, the irq might be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * a shared irq line, or the irq was not handled successfully. Can be used in
  * conjunction with the irq_handler_entry to understand irq handler latencies.
  */
@@ -158,11 +123,7 @@ DECLARE_EVENT_CLASS(softirq,
  * @vec_nr:  softirq vector number
  *
  * When used in combination with the softirq_exit tracepoint
-<<<<<<< HEAD
- * we can determine the softirq handler runtine.
-=======
  * we can determine the softirq handler routine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 DEFINE_EVENT(softirq, softirq_entry,
 
@@ -176,11 +137,7 @@ DEFINE_EVENT(softirq, softirq_entry,
  * @vec_nr:  softirq vector number
  *
  * When used in combination with the softirq_entry tracepoint
-<<<<<<< HEAD
- * we can determine the softirq handler runtine.
-=======
  * we can determine the softirq handler routine.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 DEFINE_EVENT(softirq, softirq_exit,
 
@@ -203,8 +160,6 @@ DEFINE_EVENT(softirq, softirq_raise,
 	TP_ARGS(vec_nr)
 );
 
-<<<<<<< HEAD
-=======
 DECLARE_EVENT_CLASS(tasklet,
 
 	TP_PROTO(struct tasklet_struct *t, void *func),
@@ -252,7 +207,6 @@ DEFINE_EVENT(tasklet, tasklet_exit,
 	TP_ARGS(t, func)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*  _TRACE_IRQ_H */
 
 /* This part must be outside protection */

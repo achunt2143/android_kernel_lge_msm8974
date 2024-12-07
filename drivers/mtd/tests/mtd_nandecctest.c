@@ -1,66 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/list.h>
 #include <linux/random.h>
 #include <linux/string.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <linux/jiffies.h>
-#include <linux/mtd/nand_ecc.h>
-
-#if defined(CONFIG_MTD_NAND) || defined(CONFIG_MTD_NAND_MODULE)
-
-static void inject_single_bit_error(void *data, size_t size)
-{
-	unsigned long offset = random32() % (size * BITS_PER_BYTE);
-
-	__change_bit(offset, data);
-}
-
-static unsigned char data[512];
-static unsigned char error_data[512];
-
-static int nand_ecc_test(const size_t size)
-{
-	unsigned char code[3];
-	unsigned char error_code[3];
-	char testname[30];
-
-	BUG_ON(sizeof(data) < size);
-
-	sprintf(testname, "nand-ecc-%zu", size);
-
-	get_random_bytes(data, size);
-
-	memcpy(error_data, data, size);
-	inject_single_bit_error(error_data, size);
-
-	__nand_calculate_ecc(data, size, code);
-	__nand_calculate_ecc(error_data, size, error_code);
-	__nand_correct_data(error_data, code, error_code, size);
-
-	if (!memcmp(data, error_data, size)) {
-		printk(KERN_INFO "mtd_nandecctest: ok - %s\n", testname);
-		return 0;
-	}
-
-	printk(KERN_ERR "mtd_nandecctest: not ok - %s\n", testname);
-
-	printk(KERN_DEBUG "hexdump of data:\n");
-	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 16, 4,
-			data, size, false);
-	printk(KERN_DEBUG "hexdump of error data:\n");
-	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 16, 4,
-			error_data, size, false);
-
-	return -1;
-=======
 #include <linux/slab.h>
 #include <linux/mtd/nand-ecc-sw-hamming.h>
 
@@ -349,16 +295,11 @@ error:
 	kfree(correct_ecc);
 
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
 
-<<<<<<< HEAD
-static int nand_ecc_test(const size_t size)
-=======
 static int nand_ecc_test_run(const size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -367,14 +308,6 @@ static int nand_ecc_test_run(const size_t size)
 
 static int __init ecc_test_init(void)
 {
-<<<<<<< HEAD
-	srandom32(jiffies);
-
-	nand_ecc_test(256);
-	nand_ecc_test(512);
-
-	return 0;
-=======
 	int err;
 
 	err = nand_ecc_test_run(256);
@@ -382,7 +315,6 @@ static int __init ecc_test_init(void)
 		return err;
 
 	return nand_ecc_test_run(512);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit ecc_test_exit(void)

@@ -1,13 +1,9 @@
 /*
  *    Disk Array driver for HP Smart Array SAS controllers
-<<<<<<< HEAD
- *    Copyright 2000, 2009 Hewlett-Packard Development Company, L.P.
-=======
  *    Copyright (c) 2019-2020 Microchip Technology Inc. and its subsidiaries
  *    Copyright 2016 Microsemi Corporation
  *    Copyright 2014-2015 PMC-Sierra, Inc.
  *    Copyright 2000,2009-2015 Hewlett-Packard Development Company, L.P.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -18,15 +14,7 @@
  *    MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
  *    NON INFRINGEMENT.  See the GNU General Public License for more details.
  *
-<<<<<<< HEAD
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *    Questions/Comments/Bugfixes to iss_storagedev@hp.com
-=======
  *    Questions/Comments/Bugfixes to esc.storagedev@microsemi.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -34,19 +22,11 @@
 #include <linux/interrupt.h>
 #include <linux/types.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/pci-aspm.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/fs.h>
 #include <linux/timer.h>
-<<<<<<< HEAD
-#include <linux/seq_file.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/compat.h>
@@ -61,30 +41,13 @@
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
-<<<<<<< HEAD
-=======
 #include <scsi/scsi_eh.h>
 #include <scsi/scsi_transport_sas.h>
 #include <scsi/scsi_dbg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cciss_ioctl.h>
 #include <linux/string.h>
 #include <linux/bitmap.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-#include <linux/kthread.h>
-#include <linux/jiffies.h>
-#include "hpsa_cmd.h"
-#include "hpsa.h"
-
-/* HPSA_DRIVER_VERSION must be 3 byte values (0-255) separated by '.' */
-#define HPSA_DRIVER_VERSION "2.0.2-1"
-#define DRIVER_NAME "HP HPSA Driver (v " HPSA_DRIVER_VERSION ")"
-#define HPSA "hpsa"
-
-/* How long to wait (in milliseconds) for board to go into simple mode */
-#define MAX_CONFIG_WAIT 30000
-=======
 #include <linux/jiffies.h>
 #include <linux/percpu-defs.h>
 #include <linux/percpu.h>
@@ -106,36 +69,21 @@
 #define MODE_CHANGE_WAIT_INTERVAL 10	/* ms for each msleep() call */
 #define MAX_CLEAR_EVENT_WAIT 30000	/* times 20 ms = 600 s */
 #define MAX_MODE_CHANGE_WAIT 2000	/* times 10 ms = 20 s */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_IOCTL_CONFIG_WAIT 1000
 
 /*define how many times we will try a command because of bus resets */
 #define MAX_CMD_RETRIES 3
-<<<<<<< HEAD
-=======
 /* How long to wait before giving up on a command */
 #define HPSA_EH_PTRAID_TIMEOUT (240 * HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Embedded module documentation macros - see modules.h */
 MODULE_AUTHOR("Hewlett-Packard Company");
 MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
 	HPSA_DRIVER_VERSION);
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("HP Smart Array Controllers");
-MODULE_VERSION(HPSA_DRIVER_VERSION);
-MODULE_LICENSE("GPL");
-
-static int hpsa_allow_any;
-module_param(hpsa_allow_any, int, S_IRUGO|S_IWUSR);
-MODULE_PARM_DESC(hpsa_allow_any,
-		"Allow hpsa driver to access unknown HP Smart Array hardware");
-=======
 MODULE_VERSION(HPSA_DRIVER_VERSION);
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("cciss");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hpsa_simple_mode;
 module_param(hpsa_simple_mode, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(hpsa_simple_mode,
@@ -148,13 +96,8 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x3245},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x3247},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x3249},
-<<<<<<< HEAD
-	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x324a},
-	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x324b},
-=======
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x324A},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x324B},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSE,     0x103C, 0x3233},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSF,     0x103C, 0x3350},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSF,     0x103C, 0x3351},
@@ -163,23 +106,11 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSF,     0x103C, 0x3354},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSF,     0x103C, 0x3355},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSF,     0x103C, 0x3356},
-<<<<<<< HEAD
-	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1920},
-=======
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103c, 0x1920},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1921},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1922},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1923},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1924},
-<<<<<<< HEAD
-	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1925},
-	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1926},
-	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1928},
-	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSF,     0x103C, 0x334d},
-	{PCI_VENDOR_ID_HP,     PCI_ANY_ID,	PCI_ANY_ID, PCI_ANY_ID,
-		PCI_CLASS_STORAGE_RAID << 8, 0xffff << 8, 0},
-=======
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103c, 0x1925},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1926},
 	{PCI_VENDOR_ID_HP,     PCI_DEVICE_ID_HP_CISSH,     0x103C, 0x1928},
@@ -217,7 +148,6 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
 		PCI_CLASS_STORAGE_RAID << 8, 0xffff << 8, 0},
 	{PCI_VENDOR_ID_COMPAQ,     PCI_ANY_ID,	PCI_ANY_ID, PCI_ANY_ID,
 		PCI_CLASS_STORAGE_RAID << 8, 0xffff << 8, 0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0,}
 };
 
@@ -228,8 +158,6 @@ MODULE_DEVICE_TABLE(pci, hpsa_pci_device_id);
  *  access = Address of the struct of function pointers
  */
 static struct board_type products[] = {
-<<<<<<< HEAD
-=======
 	{0x40700E11, "Smart Array 5300", &SA5A_access},
 	{0x40800E11, "Smart Array 5i", &SA5B_access},
 	{0x40820E11, "Smart Array 532", &SA5B_access},
@@ -250,20 +178,14 @@ static struct board_type products[] = {
 	{0x3215103C, "Smart Array E200i", &SA5A_access},
 	{0x3237103C, "Smart Array E500", &SA5A_access},
 	{0x323D103C, "Smart Array P700m", &SA5A_access},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x3241103C, "Smart Array P212", &SA5_access},
 	{0x3243103C, "Smart Array P410", &SA5_access},
 	{0x3245103C, "Smart Array P410i", &SA5_access},
 	{0x3247103C, "Smart Array P411", &SA5_access},
 	{0x3249103C, "Smart Array P812", &SA5_access},
-<<<<<<< HEAD
-	{0x324a103C, "Smart Array P712m", &SA5_access},
-	{0x324b103C, "Smart Array P711m", &SA5_access},
-=======
 	{0x324A103C, "Smart Array P712m", &SA5_access},
 	{0x324B103C, "Smart Array P711m", &SA5_access},
 	{0x3233103C, "HP StorageWorks 1210m", &SA5_access}, /* alias of 333f */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x3350103C, "Smart Array P222", &SA5_access},
 	{0x3351103C, "Smart Array P420", &SA5_access},
 	{0x3352103C, "Smart Array P421", &SA5_access},
@@ -271,42 +193,6 @@ static struct board_type products[] = {
 	{0x3354103C, "Smart Array P420i", &SA5_access},
 	{0x3355103C, "Smart Array P220i", &SA5_access},
 	{0x3356103C, "Smart Array P721m", &SA5_access},
-<<<<<<< HEAD
-	{0x1920103C, "Smart Array", &SA5_access},
-	{0x1921103C, "Smart Array", &SA5_access},
-	{0x1922103C, "Smart Array", &SA5_access},
-	{0x1923103C, "Smart Array", &SA5_access},
-	{0x1924103C, "Smart Array", &SA5_access},
-	{0x1925103C, "Smart Array", &SA5_access},
-	{0x1926103C, "Smart Array", &SA5_access},
-	{0x1928103C, "Smart Array", &SA5_access},
-	{0x334d103C, "Smart Array P822se", &SA5_access},
-	{0xFFFF103C, "Unknown Smart Array", &SA5_access},
-};
-
-static int number_of_controllers;
-
-static struct list_head hpsa_ctlr_list = LIST_HEAD_INIT(hpsa_ctlr_list);
-static spinlock_t lockup_detector_lock;
-static struct task_struct *hpsa_lockup_detector;
-
-static irqreturn_t do_hpsa_intr_intx(int irq, void *dev_id);
-static irqreturn_t do_hpsa_intr_msi(int irq, void *dev_id);
-static int hpsa_ioctl(struct scsi_device *dev, int cmd, void *arg);
-static void start_io(struct ctlr_info *h);
-
-#ifdef CONFIG_COMPAT
-static int hpsa_compat_ioctl(struct scsi_device *dev, int cmd, void *arg);
-#endif
-
-static void cmd_free(struct ctlr_info *h, struct CommandList *c);
-static void cmd_special_free(struct ctlr_info *h, struct CommandList *c);
-static struct CommandList *cmd_alloc(struct ctlr_info *h);
-static struct CommandList *cmd_special_alloc(struct ctlr_info *h);
-static void fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
-	void *buff, size_t size, u8 page_code, unsigned char *scsi3addr,
-	int cmd_type);
-=======
 	{0x1920103C, "Smart Array P430i", &SA5_access},
 	{0x1921103C, "Smart Array P830i", &SA5_access},
 	{0x1922103C, "Smart Array P430", &SA5_access},
@@ -389,22 +275,11 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 static void hpsa_free_cmd_pool(struct ctlr_info *h);
 #define VPD_PAGE (1 << 8)
 #define HPSA_SIMPLE_ERROR_BITS 0x03
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int hpsa_scsi_queue_command(struct Scsi_Host *h, struct scsi_cmnd *cmd);
 static void hpsa_scan_start(struct Scsi_Host *);
 static int hpsa_scan_finished(struct Scsi_Host *sh,
 	unsigned long elapsed_time);
-<<<<<<< HEAD
-static int hpsa_change_queue_depth(struct scsi_device *sdev,
-	int qdepth, int reason);
-
-static int hpsa_eh_device_reset_handler(struct scsi_cmnd *scsicmd);
-static int hpsa_slave_alloc(struct scsi_device *sdev);
-static void hpsa_slave_destroy(struct scsi_device *sdev);
-
-static void hpsa_update_scsi_devices(struct ctlr_info *h, int hostno);
-=======
 static int hpsa_change_queue_depth(struct scsi_device *sdev, int qdepth);
 
 static int hpsa_eh_device_reset_handler(struct scsi_cmnd *scsicmd);
@@ -413,28 +288,12 @@ static int hpsa_slave_configure(struct scsi_device *sdev);
 static void hpsa_slave_destroy(struct scsi_device *sdev);
 
 static void hpsa_update_scsi_devices(struct ctlr_info *h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int check_for_unit_attention(struct ctlr_info *h,
 	struct CommandList *c);
 static void check_ioctl_unit_attention(struct ctlr_info *h,
 	struct CommandList *c);
 /* performant mode helper functions */
 static void calc_bucket_map(int *bucket, int num_buckets,
-<<<<<<< HEAD
-	int nsgs, int *bucket_map);
-static __devinit void hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h);
-static inline u32 next_command(struct ctlr_info *h);
-static int __devinit hpsa_find_cfg_addrs(struct pci_dev *pdev,
-	void __iomem *vaddr, u32 *cfg_base_addr, u64 *cfg_base_addr_index,
-	u64 *cfg_offset);
-static int __devinit hpsa_pci_find_memory_BAR(struct pci_dev *pdev,
-	unsigned long *memory_bar);
-static int __devinit hpsa_lookup_board_id(struct pci_dev *pdev, u32 *board_id);
-static int __devinit hpsa_wait_for_board_state(struct pci_dev *pdev,
-	void __iomem *vaddr, int wait_for_ready);
-#define BOARD_NOT_READY 0
-#define BOARD_READY 1
-=======
 	int nsgs, int min_blocks, u32 *bucket_map);
 static void hpsa_free_performant_mode(struct ctlr_info *h);
 static int hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h);
@@ -472,7 +331,6 @@ static int hpsa_luns_changed(struct ctlr_info *h);
 static bool hpsa_cmd_dev_match(struct ctlr_info *h, struct CommandList *c,
 			       struct hpsa_scsi_dev_t *dev,
 			       unsigned char *scsi3addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct ctlr_info *sdev_to_hba(struct scsi_device *sdev)
 {
@@ -486,26 +344,6 @@ static inline struct ctlr_info *shost_to_hba(struct Scsi_Host *sh)
 	return (struct ctlr_info *) *priv;
 }
 
-<<<<<<< HEAD
-static int check_for_unit_attention(struct ctlr_info *h,
-	struct CommandList *c)
-{
-	if (c->err_info->SenseInfo[2] != UNIT_ATTENTION)
-		return 0;
-
-	switch (c->err_info->SenseInfo[12]) {
-	case STATE_CHANGED:
-		dev_warn(&h->pdev->dev, HPSA "%d: a state change "
-			"detected, command retried\n", h->ctlr);
-		break;
-	case LUN_FAILED:
-		dev_warn(&h->pdev->dev, HPSA "%d: LUN failure "
-			"detected, action required\n", h->ctlr);
-		break;
-	case REPORT_LUNS_CHANGED:
-		dev_warn(&h->pdev->dev, HPSA "%d: report LUN data "
-			"changed, action required\n", h->ctlr);
-=======
 static inline bool hpsa_is_cmd_idle(struct CommandList *c)
 {
 	return c->scsi_cmd == SCSI_CMD_IDLE;
@@ -562,25 +400,12 @@ static int check_for_unit_attention(struct ctlr_info *h,
 	case REPORT_LUNS_CHANGED:
 		dev_warn(&h->pdev->dev,
 			"%s: report LUN data changed\n", h->devname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Note: this REPORT_LUNS_CHANGED condition only occurs on the external
 	 * target (array) devices.
 	 */
 		break;
 	case POWER_OR_RESET:
-<<<<<<< HEAD
-		dev_warn(&h->pdev->dev, HPSA "%d: a power on "
-			"or device reset detected\n", h->ctlr);
-		break;
-	case UNIT_ATTENTION_CLEARED:
-		dev_warn(&h->pdev->dev, HPSA "%d: unit attention "
-		    "cleared by another initiator\n", h->ctlr);
-		break;
-	default:
-		dev_warn(&h->pdev->dev, HPSA "%d: unknown "
-			"unit attention detected\n", h->ctlr);
-=======
 		dev_warn(&h->pdev->dev,
 			"%s: a power on or device reset detected\n",
 			h->devname);
@@ -594,14 +419,11 @@ static int check_for_unit_attention(struct ctlr_info *h,
 		dev_warn(&h->pdev->dev,
 			"%s: unknown unit attention detected\n",
 			h->devname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static int check_for_busy(struct ctlr_info *h, struct CommandList *c)
 {
 	if (c->err_info->CommandStatus != CMD_TARGET_STATUS ||
@@ -675,7 +497,6 @@ static ssize_t host_store_raid_offload_debug(struct device *dev,
 	return count;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t host_store_rescan(struct device *dev,
 				 struct device_attribute *attr,
 				 const char *buf, size_t count)
@@ -687,15 +508,12 @@ static ssize_t host_store_rescan(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-=======
 static void hpsa_turn_off_ioaccel_for_device(struct hpsa_scsi_dev_t *device)
 {
 	device->offload_enabled = 0;
 	device->offload_to_be_enabled = 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t host_show_firmware_revision(struct device *dev,
 	     struct device_attribute *attr, char *buf)
 {
@@ -717,12 +535,8 @@ static ssize_t host_show_commands_outstanding(struct device *dev,
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct ctlr_info *h = shost_to_hba(shost);
 
-<<<<<<< HEAD
-	return snprintf(buf, 20, "%d\n", h->commands_outstanding);
-=======
 	return snprintf(buf, 20, "%d\n",
 			atomic_read(&h->commands_outstanding));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t host_show_transport_mode(struct device *dev,
@@ -737,12 +551,6 @@ static ssize_t host_show_transport_mode(struct device *dev,
 			"performant" : "simple");
 }
 
-<<<<<<< HEAD
-/* List of controllers which cannot be hard reset on kexec with reset_devices */
-static u32 unresettable_controller[] = {
-	0x324a103C, /* Smart Array P712m */
-	0x324b103C, /* SmartArray P711m */
-=======
 static ssize_t host_show_hp_ssd_smart_path_status(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -758,7 +566,6 @@ static ssize_t host_show_hp_ssd_smart_path_status(struct device *dev,
 static u32 unresettable_controller[] = {
 	0x324a103C, /* Smart Array P712m */
 	0x324b103C, /* Smart Array P711m */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x3223103C, /* Smart Array P800 */
 	0x3234103C, /* Smart Array P400 */
 	0x3235103C, /* Smart Array P400i */
@@ -800,16 +607,6 @@ static u32 soft_unresettable_controller[] = {
 	0x409D0E11, /* Smart Array 6400 EM */
 };
 
-<<<<<<< HEAD
-static int ctlr_is_hard_resettable(u32 board_id)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(unresettable_controller); i++)
-		if (unresettable_controller[i] == board_id)
-			return 0;
-	return 1;
-=======
 static int board_id_in_array(u32 a[], int nelems, u32 board_id)
 {
 	int i;
@@ -824,22 +621,12 @@ static int ctlr_is_hard_resettable(u32 board_id)
 {
 	return !board_id_in_array(unresettable_controller,
 			ARRAY_SIZE(unresettable_controller), board_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ctlr_is_soft_resettable(u32 board_id)
 {
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(soft_unresettable_controller); i++)
-		if (soft_unresettable_controller[i] == board_id)
-			return 0;
-	return 1;
-=======
 	return !board_id_in_array(soft_unresettable_controller,
 			ARRAY_SIZE(soft_unresettable_controller), board_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ctlr_is_resettable(u32 board_id)
@@ -863,12 +650,6 @@ static inline int is_logical_dev_addr_mode(unsigned char scsi3addr[])
 	return (scsi3addr[3] & 0xC0) == 0x40;
 }
 
-<<<<<<< HEAD
-static const char *raid_label[] = { "0", "4", "1(1+0)", "5", "5+1", "ADG",
-	"UNKNOWN"
-};
-#define RAID_UNKNOWN (ARRAY_SIZE(raid_label) - 1)
-=======
 static const char * const raid_label[] = { "0", "4", "1(+0)", "5", "5+1", "6",
 	"1(+0)ADM", "UNKNOWN", "PHYS DRV"
 };
@@ -886,7 +667,6 @@ static inline bool is_logical_device(struct hpsa_scsi_dev_t *device)
 {
 	return !device->physical_device;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t raid_level_show(struct device *dev,
 	     struct device_attribute *attr, char *buf)
@@ -908,11 +688,7 @@ static ssize_t raid_level_show(struct device *dev,
 	}
 
 	/* Is this even a logical drive? */
-<<<<<<< HEAD
-	if (!is_logical_dev_addr_mode(hdev->scsi3addr)) {
-=======
 	if (!is_logical_device(hdev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&h->lock, flags);
 		l = snprintf(buf, PAGE_SIZE, "N/A\n");
 		return l;
@@ -945,13 +721,7 @@ static ssize_t lunid_show(struct device *dev,
 	}
 	memcpy(lunid, hdev->scsi3addr, sizeof(lunid));
 	spin_unlock_irqrestore(&h->lock, flags);
-<<<<<<< HEAD
-	return snprintf(buf, 20, "0x%02x%02x%02x%02x%02x%02x%02x%02x\n",
-		lunid[0], lunid[1], lunid[2], lunid[3],
-		lunid[4], lunid[5], lunid[6], lunid[7]);
-=======
 	return snprintf(buf, 20, "0x%8phN\n", lunid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t unique_id_show(struct device *dev,
@@ -982,12 +752,6 @@ static ssize_t unique_id_show(struct device *dev,
 			sn[12], sn[13], sn[14], sn[15]);
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(raid_level, S_IRUGO, raid_level_show, NULL);
-static DEVICE_ATTR(lunid, S_IRUGO, lunid_show, NULL);
-static DEVICE_ATTR(unique_id, S_IRUGO, unique_id_show, NULL);
-static DEVICE_ATTR(rescan, S_IWUSR, NULL, host_store_rescan);
-=======
 static ssize_t sas_address_show(struct device *dev,
 	      struct device_attribute *attr, char *buf)
 {
@@ -1157,7 +921,6 @@ static DEVICE_ATTR(hp_ssd_smart_path_status, S_IWUSR|S_IRUGO|S_IROTH,
 		host_store_hp_ssd_smart_path_status);
 static DEVICE_ATTR(raid_offload_debug, S_IWUSR, NULL,
 			host_store_raid_offload_debug);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEVICE_ATTR(firmware_revision, S_IRUGO,
 	host_show_firmware_revision, NULL);
 static DEVICE_ATTR(commands_outstanding, S_IRUGO,
@@ -1166,26 +929,6 @@ static DEVICE_ATTR(transport_mode, S_IRUGO,
 	host_show_transport_mode, NULL);
 static DEVICE_ATTR(resettable, S_IRUGO,
 	host_show_resettable, NULL);
-<<<<<<< HEAD
-
-static struct device_attribute *hpsa_sdev_attrs[] = {
-	&dev_attr_raid_level,
-	&dev_attr_lunid,
-	&dev_attr_unique_id,
-	NULL,
-};
-
-static struct device_attribute *hpsa_shost_attrs[] = {
-	&dev_attr_rescan,
-	&dev_attr_firmware_revision,
-	&dev_attr_commands_outstanding,
-	&dev_attr_transport_mode,
-	&dev_attr_resettable,
-	NULL,
-};
-
-static struct scsi_host_template hpsa_driver_template = {
-=======
 static DEVICE_ATTR(lockup_detected, S_IRUGO,
 	host_show_lockup_detected, NULL);
 static DEVICE_ATTR(ctlr_num, S_IRUGO,
@@ -1225,7 +968,6 @@ ATTRIBUTE_GROUPS(hpsa_shost);
 				 HPSA_MAX_CONCURRENT_PASSTHRUS)
 
 static const struct scsi_host_template hpsa_driver_template = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module			= THIS_MODULE,
 	.name			= HPSA,
 	.proc_name		= HPSA,
@@ -1234,46 +976,14 @@ static const struct scsi_host_template hpsa_driver_template = {
 	.scan_finished		= hpsa_scan_finished,
 	.change_queue_depth	= hpsa_change_queue_depth,
 	.this_id		= -1,
-<<<<<<< HEAD
-	.use_clustering		= ENABLE_CLUSTERING,
-	.eh_device_reset_handler = hpsa_eh_device_reset_handler,
-	.ioctl			= hpsa_ioctl,
-	.slave_alloc		= hpsa_slave_alloc,
-=======
 	.eh_device_reset_handler = hpsa_eh_device_reset_handler,
 	.ioctl			= hpsa_ioctl,
 	.slave_alloc		= hpsa_slave_alloc,
 	.slave_configure	= hpsa_slave_configure,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.slave_destroy		= hpsa_slave_destroy,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl		= hpsa_compat_ioctl,
 #endif
-<<<<<<< HEAD
-	.sdev_attrs = hpsa_sdev_attrs,
-	.shost_attrs = hpsa_shost_attrs,
-	.max_sectors = 8192,
-};
-
-
-/* Enqueuing and dequeuing functions for cmdlists. */
-static inline void addQ(struct list_head *list, struct CommandList *c)
-{
-	list_add_tail(&c->list, list);
-}
-
-static inline u32 next_command(struct ctlr_info *h)
-{
-	u32 a;
-
-	if (unlikely(!(h->transMethod & CFGTBL_Trans_Performant)))
-		return h->access.command_completed(h);
-
-	if ((*(h->reply_pool_head) & 1) == (h->reply_pool_wraparound)) {
-		a = *(h->reply_pool_head); /* Next cmd in ring buffer */
-		(h->reply_pool_head)++;
-		h->commands_outstanding--;
-=======
 	.sdev_groups = hpsa_sdev_groups,
 	.shost_groups = hpsa_shost_groups,
 	.max_sectors = 2048,
@@ -1295,34 +1005,17 @@ static inline u32 next_command(struct ctlr_info *h, u8 q)
 		a = rq->head[rq->current_entry];
 		rq->current_entry++;
 		atomic_dec(&h->commands_outstanding);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		a = FIFO_EMPTY;
 	}
 	/* Check for wraparound */
-<<<<<<< HEAD
-	if (h->reply_pool_head == (h->reply_pool + h->max_commands)) {
-		h->reply_pool_head = h->reply_pool;
-		h->reply_pool_wraparound ^= 1;
-=======
 	if (rq->current_entry == h->max_commands) {
 		rq->current_entry = 0;
 		rq->wraparound ^= 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return a;
 }
 
-<<<<<<< HEAD
-/* set_performant_mode: Modify the tag for cciss performant
- * set bit 0 for pull model, bits 3-1 for block fetch
- * register number
- */
-static void set_performant_mode(struct ctlr_info *h, struct CommandList *c)
-{
-	if (likely(h->transMethod & CFGTBL_Trans_Performant))
-		c->busaddr |= 1 | (h->blockFetchTable[c->Header.SGList] << 1);
-=======
 /*
  * There are some special bits in the bus address of the
  * command that we have to set for the controller to know
@@ -1424,7 +1117,6 @@ static void set_ioaccel2_performant_mode(struct ctlr_info *h,
 	 *  - command type isn't needed for ioaccel2
 	 */
 	c->busaddr |= (h->ioaccel2_blockFetchTable[cp->sg_count]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int is_firmware_flash_cmd(u8 *cdb)
@@ -1439,10 +1131,7 @@ static int is_firmware_flash_cmd(u8 *cdb)
  */
 #define HEARTBEAT_SAMPLE_INTERVAL_DURING_FLASH (240 * HZ)
 #define HEARTBEAT_SAMPLE_INTERVAL (30 * HZ)
-<<<<<<< HEAD
-=======
 #define HPSA_EVENT_MONITOR_INTERVAL (15 * HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dial_down_lockup_detection_during_fw_flash(struct ctlr_info *h,
 		struct CommandList *c)
 {
@@ -1460,27 +1149,6 @@ static void dial_up_lockup_detection_on_fw_flash_complete(struct ctlr_info *h,
 		h->heartbeat_sample_interval = HEARTBEAT_SAMPLE_INTERVAL;
 }
 
-<<<<<<< HEAD
-static void enqueue_cmd_and_start_io(struct ctlr_info *h,
-	struct CommandList *c)
-{
-	unsigned long flags;
-
-	set_performant_mode(h, c);
-	dial_down_lockup_detection_during_fw_flash(h, c);
-	spin_lock_irqsave(&h->lock, flags);
-	addQ(&h->reqQ, c);
-	h->Qdepth++;
-	start_io(h);
-	spin_unlock_irqrestore(&h->lock, flags);
-}
-
-static inline void removeQ(struct CommandList *c)
-{
-	if (WARN_ON(list_empty(&c->list)))
-		return;
-	list_del_init(&c->list);
-=======
 static void __enqueue_cmd_and_start_io(struct ctlr_info *h,
 	struct CommandList *c, int reply_queue)
 {
@@ -1515,7 +1183,6 @@ static void __enqueue_cmd_and_start_io(struct ctlr_info *h,
 static void enqueue_cmd_and_start_io(struct ctlr_info *h, struct CommandList *c)
 {
 	__enqueue_cmd_and_start_io(h, c, DEFAULT_REPLY_QUEUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_hba_lunid(unsigned char scsi3addr[])
@@ -1558,10 +1225,6 @@ static int hpsa_find_target_lun(struct ctlr_info *h,
 	return !found;
 }
 
-<<<<<<< HEAD
-/* Add an entry into h->dev[] array. */
-static int hpsa_scsi_add_entry(struct ctlr_info *h, int hostno,
-=======
 static void hpsa_show_dev_msg(const char *level, struct ctlr_info *h,
 	struct hpsa_scsi_dev_t *dev, char *description)
 {
@@ -1619,7 +1282,6 @@ static void hpsa_show_dev_msg(const char *level, struct ctlr_info *h,
 
 /* Add an entry into h->dev[] array. */
 static int hpsa_scsi_add_entry(struct ctlr_info *h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct hpsa_scsi_dev_t *device,
 		struct hpsa_scsi_dev_t *added[], int *nadded)
 {
@@ -1642,11 +1304,7 @@ static int hpsa_scsi_add_entry(struct ctlr_info *h,
 
 	/* If this device a non-zero lun of a multi-lun device
 	 * byte 4 of the 8-byte LUN addr will contain the logical
-<<<<<<< HEAD
-	 * unit no, zero otherise.
-=======
 	 * unit no, zero otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (device->scsi3addr[4] == 0) {
 		/* This is not a non-zero lun of a multi-lun device */
@@ -1658,30 +1316,19 @@ static int hpsa_scsi_add_entry(struct ctlr_info *h,
 
 	/* This is a non-zero lun of a multi-lun device.
 	 * Search through our list and find the device which
-<<<<<<< HEAD
-	 * has the same 8 byte LUN address, excepting byte 4.
-=======
 	 * has the same 8 byte LUN address, excepting byte 4 and 5.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Assign the same bus and target for this new LUN.
 	 * Use the logical unit number from the firmware.
 	 */
 	memcpy(addr1, device->scsi3addr, 8);
 	addr1[4] = 0;
-<<<<<<< HEAD
-=======
 	addr1[5] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < n; i++) {
 		sd = h->dev[i];
 		memcpy(addr2, sd->scsi3addr, 8);
 		addr2[4] = 0;
-<<<<<<< HEAD
-		/* differ only in byte 4? */
-=======
 		addr2[5] = 0;
 		/* differ only in byte 4 and 5? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (memcmp(addr1, addr2, 8) == 0) {
 			device->bus = sd->bus;
 			device->target = sd->target;
@@ -1693,11 +1340,7 @@ static int hpsa_scsi_add_entry(struct ctlr_info *h,
 		dev_warn(&h->pdev->dev, "physical device with no LUN=0,"
 			" suspect firmware bug or unsupported hardware "
 			"configuration.\n");
-<<<<<<< HEAD
-			return -1;
-=======
 		return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 lun_assigned:
@@ -1706,22 +1349,6 @@ lun_assigned:
 	h->ndevices++;
 	added[*nadded] = device;
 	(*nadded)++;
-<<<<<<< HEAD
-
-	/* initially, (before registering with scsi layer) we don't
-	 * know our hostno and we don't want to print anything first
-	 * time anyway (the scsi layer's inquiries will show that info)
-	 */
-	/* if (hostno != -1) */
-		dev_info(&h->pdev->dev, "%s device c%db%dt%dl%d added.\n",
-			scsi_device_type(device->devtype), hostno,
-			device->bus, device->target, device->lun);
-	return 0;
-}
-
-/* Update an entry in h->dev[] array. */
-static void hpsa_scsi_update_entry(struct ctlr_info *h, int hostno,
-=======
 	hpsa_show_dev_msg(KERN_INFO, h, device,
 		device->expose_device ? "added" : "masked");
 	return 0;
@@ -1733,7 +1360,6 @@ static void hpsa_scsi_update_entry(struct ctlr_info *h, int hostno,
  * Update an entry in h->dev[] array.
  */
 static void hpsa_scsi_update_entry(struct ctlr_info *h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int entry, struct hpsa_scsi_dev_t *new_entry)
 {
 	/* assumes h->devlock is held */
@@ -1741,15 +1367,6 @@ static void hpsa_scsi_update_entry(struct ctlr_info *h,
 
 	/* Raid level changed. */
 	h->dev[entry]->raid_level = new_entry->raid_level;
-<<<<<<< HEAD
-	dev_info(&h->pdev->dev, "%s device c%db%dt%dl%d updated.\n",
-		scsi_device_type(new_entry->devtype), hostno, new_entry->bus,
-		new_entry->target, new_entry->lun);
-}
-
-/* Replace an entry from h->dev[] array. */
-static void hpsa_scsi_replace_entry(struct ctlr_info *h, int hostno,
-=======
 
 	/*
 	 * ioacccel_handle may have changed for a dual domain disk
@@ -1796,7 +1413,6 @@ static void hpsa_scsi_replace_entry(struct ctlr_info *h, int hostno,
 
 /* Replace an entry from h->dev[] array. */
 static void hpsa_scsi_replace_entry(struct ctlr_info *h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int entry, struct hpsa_scsi_dev_t *new_entry,
 	struct hpsa_scsi_dev_t *added[], int *nadded,
 	struct hpsa_scsi_dev_t *removed[], int *nremoved)
@@ -1818,22 +1434,12 @@ static void hpsa_scsi_replace_entry(struct ctlr_info *h,
 	h->dev[entry] = new_entry;
 	added[*nadded] = new_entry;
 	(*nadded)++;
-<<<<<<< HEAD
-	dev_info(&h->pdev->dev, "%s device c%db%dt%dl%d changed.\n",
-		scsi_device_type(new_entry->devtype), hostno, new_entry->bus,
-			new_entry->target, new_entry->lun);
-}
-
-/* Remove an entry from h->dev[] array. */
-static void hpsa_scsi_remove_entry(struct ctlr_info *h, int hostno, int entry,
-=======
 
 	hpsa_show_dev_msg(KERN_INFO, h, new_entry, "replaced");
 }
 
 /* Remove an entry from h->dev[] array. */
 static void hpsa_scsi_remove_entry(struct ctlr_info *h, int entry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hpsa_scsi_dev_t *removed[], int *nremoved)
 {
 	/* assumes h->devlock is held */
@@ -1849,13 +1455,7 @@ static void hpsa_scsi_remove_entry(struct ctlr_info *h, int entry,
 	for (i = entry; i < h->ndevices-1; i++)
 		h->dev[i] = h->dev[i+1];
 	h->ndevices--;
-<<<<<<< HEAD
-	dev_info(&h->pdev->dev, "%s device c%db%dt%dl%d removed.\n",
-		scsi_device_type(sd->devtype), hostno, sd->bus, sd->target,
-		sd->lun);
-=======
 	hpsa_show_dev_msg(KERN_INFO, h, sd, "removed");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define SCSI3ADDR_EQ(a, b) ( \
@@ -1923,8 +1523,6 @@ static inline int device_updated(struct hpsa_scsi_dev_t *dev1,
 	 */
 	if (dev1->raid_level != dev2->raid_level)
 		return 1;
-<<<<<<< HEAD
-=======
 	if (dev1->offload_config != dev2->offload_config)
 		return 1;
 	if (dev1->offload_to_be_enabled != dev2->offload_to_be_enabled)
@@ -1943,7 +1541,6 @@ static inline int device_updated(struct hpsa_scsi_dev_t *dev1,
 	 */
 	if (dev1->ioaccel_handle != dev2->ioaccel_handle)
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1964,12 +1561,9 @@ static int hpsa_scsi_find_entry(struct hpsa_scsi_dev_t *needle,
 #define DEVICE_CHANGED 1
 #define DEVICE_SAME 2
 #define DEVICE_UPDATED 3
-<<<<<<< HEAD
-=======
 	if (needle == NULL)
 		return DEVICE_NOT_FOUND;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < haystack_size; i++) {
 		if (haystack[i] == NULL) /* previously removed. */
 			continue;
@@ -1980,12 +1574,9 @@ static int hpsa_scsi_find_entry(struct hpsa_scsi_dev_t *needle,
 					return DEVICE_UPDATED;
 				return DEVICE_SAME;
 			} else {
-<<<<<<< HEAD
-=======
 				/* Keep offline devices offline */
 				if (needle->volume_offline)
 					return DEVICE_NOT_FOUND;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return DEVICE_CHANGED;
 			}
 		}
@@ -1994,9 +1585,6 @@ static int hpsa_scsi_find_entry(struct hpsa_scsi_dev_t *needle,
 	return DEVICE_NOT_FOUND;
 }
 
-<<<<<<< HEAD
-static void adjust_hpsa_scsi_table(struct ctlr_info *h, int hostno,
-=======
 static void hpsa_monitor_offline_device(struct ctlr_info *h,
 					unsigned char scsi3addr[])
 {
@@ -2330,7 +1918,6 @@ static void hpsa_remove_device(struct ctlr_info *h,
 }
 
 static void adjust_hpsa_scsi_table(struct ctlr_info *h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hpsa_scsi_dev_t *sd[], int nsds)
 {
 	/* sd contains scsi3 addresses and devtypes, and inquiry
@@ -2342,12 +1929,6 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 	unsigned long flags;
 	struct hpsa_scsi_dev_t **added, **removed;
 	int nadded, nremoved;
-<<<<<<< HEAD
-	struct Scsi_Host *sh = NULL;
-
-	added = kzalloc(sizeof(*added) * HPSA_MAX_DEVICES, GFP_KERNEL);
-	removed = kzalloc(sizeof(*removed) * HPSA_MAX_DEVICES, GFP_KERNEL);
-=======
 
 	/*
 	 * A reset can cause a device status to change
@@ -2363,7 +1944,6 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 
 	added = kcalloc(HPSA_MAX_DEVICES, sizeof(*added), GFP_KERNEL);
 	removed = kcalloc(HPSA_MAX_DEVICES, sizeof(*removed), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!added || !removed) {
 		dev_warn(&h->pdev->dev, "out of memory in "
@@ -2388,31 +1968,18 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 		device_change = hpsa_scsi_find_entry(csd, sd, nsds, &entry);
 		if (device_change == DEVICE_NOT_FOUND) {
 			changes++;
-<<<<<<< HEAD
-			hpsa_scsi_remove_entry(h, hostno, i,
-				removed, &nremoved);
-			continue; /* remove ^^^, hence i not incremented */
-		} else if (device_change == DEVICE_CHANGED) {
-			changes++;
-			hpsa_scsi_replace_entry(h, hostno, i, sd[entry],
-=======
 			hpsa_scsi_remove_entry(h, i, removed, &nremoved);
 			continue; /* remove ^^^, hence i not incremented */
 		} else if (device_change == DEVICE_CHANGED) {
 			changes++;
 			hpsa_scsi_replace_entry(h, i, sd[entry],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				added, &nadded, removed, &nremoved);
 			/* Set it to NULL to prevent it from being freed
 			 * at the bottom of hpsa_update_scsi_devices()
 			 */
 			sd[entry] = NULL;
 		} else if (device_change == DEVICE_UPDATED) {
-<<<<<<< HEAD
-			hpsa_scsi_update_entry(h, hostno, i, sd[entry]);
-=======
 			hpsa_scsi_update_entry(h, i, sd[entry]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		i++;
 	}
@@ -2424,8 +1991,6 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 	for (i = 0; i < nsds; i++) {
 		if (!sd[i]) /* if already added above. */
 			continue;
-<<<<<<< HEAD
-=======
 
 		/* Don't add devices which are NOT READY, FORMAT IN PROGRESS
 		 * as the SCSI mid-layer does not handle such devices well.
@@ -2438,17 +2003,11 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 			continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_change = hpsa_scsi_find_entry(sd[i], h->dev,
 					h->ndevices, &entry);
 		if (device_change == DEVICE_NOT_FOUND) {
 			changes++;
-<<<<<<< HEAD
-			if (hpsa_scsi_add_entry(h, hostno, sd[i],
-				added, &nadded) != 0)
-=======
 			if (hpsa_scsi_add_entry(h, sd[i], added, &nadded) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			sd[i] = NULL; /* prevent from being freed later. */
 		} else if (device_change == DEVICE_CHANGED) {
@@ -2459,10 +2018,6 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 			/* but if it does happen, we just ignore that device */
 		}
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&h->devlock, flags);
-
-=======
 	hpsa_update_log_drive_phys_drive_ptrs(h, h->dev, h->ndevices);
 
 	/*
@@ -2492,34 +2047,10 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 			hpsa_monitor_offline_device(h, sd[i]->scsi3addr);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Don't notify scsi mid layer of any changes the first time through
 	 * (or if there are no changes) scsi_scan_host will do it later the
 	 * first time through.
 	 */
-<<<<<<< HEAD
-	if (hostno == -1 || !changes)
-		goto free_and_out;
-
-	sh = h->scsi_host;
-	/* Notify scsi mid layer of any removed devices */
-	for (i = 0; i < nremoved; i++) {
-		struct scsi_device *sdev =
-			scsi_device_lookup(sh, removed[i]->bus,
-				removed[i]->target, removed[i]->lun);
-		if (sdev != NULL) {
-			scsi_remove_device(sdev);
-			scsi_device_put(sdev);
-		} else {
-			/* We don't expect to get here.
-			 * future cmds to this device will get selection
-			 * timeout as if the device was gone.
-			 */
-			dev_warn(&h->pdev->dev, "didn't find c%db%dt%dl%d "
-				" for removal.", hostno, removed[i]->bus,
-				removed[i]->target, removed[i]->lun);
-		}
-=======
 	if (!changes)
 		goto free_and_out;
 
@@ -2529,21 +2060,12 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 			continue;
 		if (removed[i]->expose_device)
 			hpsa_remove_device(h, removed[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(removed[i]);
 		removed[i] = NULL;
 	}
 
 	/* Notify scsi mid layer of any added devices */
 	for (i = 0; i < nadded; i++) {
-<<<<<<< HEAD
-		if (scsi_add_device(sh, added[i]->bus,
-			added[i]->target, added[i]->lun) == 0)
-			continue;
-		dev_warn(&h->pdev->dev, "scsi_add_device c%db%dt%dl%d failed, "
-			"device not added.\n", hostno, added[i]->bus,
-			added[i]->target, added[i]->lun);
-=======
 		int rc = 0;
 
 		if (added[i] == NULL)
@@ -2555,15 +2077,11 @@ static void adjust_hpsa_scsi_table(struct ctlr_info *h,
 			continue;
 		dev_warn(&h->pdev->dev,
 			"addition failed %d, device not added.", rc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* now we have to remove it from h->dev,
 		 * since it didn't get added to scsi mid layer
 		 */
 		fixup_botched_add(h, added[i]);
-<<<<<<< HEAD
-=======
 		h->drv_req_rescan = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 free_and_out:
@@ -2572,11 +2090,7 @@ free_and_out:
 }
 
 /*
-<<<<<<< HEAD
- * Lookup bus/target/lun and retrun corresponding struct hpsa_scsi_dev_t *
-=======
  * Lookup bus/target/lun and return corresponding struct hpsa_scsi_dev_t *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Assume's h->devlock is held.
  */
 static struct hpsa_scsi_dev_t *lookup_hpsa_scsi_dev(struct ctlr_info *h,
@@ -2593,27 +2107,14 @@ static struct hpsa_scsi_dev_t *lookup_hpsa_scsi_dev(struct ctlr_info *h,
 	return NULL;
 }
 
-<<<<<<< HEAD
-/* link sdev->hostdata to our per-device structure. */
-static int hpsa_slave_alloc(struct scsi_device *sdev)
-{
-	struct hpsa_scsi_dev_t *sd;
-=======
 static int hpsa_slave_alloc(struct scsi_device *sdev)
 {
 	struct hpsa_scsi_dev_t *sd = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct ctlr_info *h;
 
 	h = sdev_to_hba(sdev);
 	spin_lock_irqsave(&h->devlock, flags);
-<<<<<<< HEAD
-	sd = lookup_hpsa_scsi_dev(h, sdev_channel(sdev),
-		sdev_id(sdev), sdev->lun);
-	if (sd != NULL)
-		sdev->hostdata = sd;
-=======
 	if (sdev_channel(sdev) == HPSA_PHYSICAL_DEVICE_BUS) {
 		struct scsi_target *starget;
 		struct sas_rphy *rphy;
@@ -2635,16 +2136,10 @@ static int hpsa_slave_alloc(struct scsi_device *sdev)
 		sdev->hostdata = sd;
 	} else
 		sdev->hostdata = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&h->devlock, flags);
 	return 0;
 }
 
-<<<<<<< HEAD
-static void hpsa_slave_destroy(struct scsi_device *sdev)
-{
-	/* nothing to do. */
-=======
 /* configure scsi device based on internal per-device structure */
 #define CTLR_TIMEOUT (120 * HZ)
 static int hpsa_slave_configure(struct scsi_device *sdev)
@@ -2727,7 +2222,6 @@ static int hpsa_allocate_ioaccel2_sg_chain_blocks(struct ctlr_info *h)
 clean:
 	hpsa_free_ioaccel2_sg_chain_blocks(h);
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hpsa_free_sg_chain_blocks(struct ctlr_info *h)
@@ -2744,28 +2238,13 @@ static void hpsa_free_sg_chain_blocks(struct ctlr_info *h)
 	h->cmd_sg_list = NULL;
 }
 
-<<<<<<< HEAD
-static int hpsa_allocate_sg_chain_blocks(struct ctlr_info *h)
-=======
 static int hpsa_alloc_sg_chain_blocks(struct ctlr_info *h)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	if (h->chainsize <= 0)
 		return 0;
 
-<<<<<<< HEAD
-	h->cmd_sg_list = kzalloc(sizeof(*h->cmd_sg_list) * h->nr_cmds,
-				GFP_KERNEL);
-	if (!h->cmd_sg_list)
-		return -ENOMEM;
-	for (i = 0; i < h->nr_cmds; i++) {
-		h->cmd_sg_list[i] = kmalloc(sizeof(*h->cmd_sg_list[i]) *
-						h->chainsize, GFP_KERNEL);
-		if (!h->cmd_sg_list[i])
-			goto clean;
-=======
 	h->cmd_sg_list = kcalloc(h->nr_cmds, sizeof(*h->cmd_sg_list),
 				 GFP_KERNEL);
 	if (!h->cmd_sg_list)
@@ -2778,7 +2257,6 @@ static int hpsa_alloc_sg_chain_blocks(struct ctlr_info *h)
 		if (!h->cmd_sg_list[i])
 			goto clean;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 
@@ -2787,9 +2265,6 @@ clean:
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-static void hpsa_map_sg_chain_block(struct ctlr_info *h,
-=======
 static int hpsa_map_ioaccel2_sg_chain_block(struct ctlr_info *h,
 	struct io_accel2_cmd *cp, struct CommandList *c)
 {
@@ -2824,23 +2299,10 @@ static void hpsa_unmap_ioaccel2_sg_chain_block(struct ctlr_info *h,
 }
 
 static int hpsa_map_sg_chain_block(struct ctlr_info *h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct CommandList *c)
 {
 	struct SGDescriptor *chain_sg, *chain_block;
 	u64 temp64;
-<<<<<<< HEAD
-
-	chain_sg = &c->SG[h->max_cmd_sg_entries - 1];
-	chain_block = h->cmd_sg_list[c->cmdindex];
-	chain_sg->Ext = HPSA_SG_CHAIN;
-	chain_sg->Len = sizeof(*chain_sg) *
-		(c->Header.SGTotal - h->max_cmd_sg_entries);
-	temp64 = pci_map_single(h->pdev, chain_block, chain_sg->Len,
-				PCI_DMA_TODEVICE);
-	chain_sg->Addr.lower = (u32) (temp64 & 0x0FFFFFFFFULL);
-	chain_sg->Addr.upper = (u32) ((temp64 >> 32) & 0x0FFFFFFFFULL);
-=======
 	u32 chain_len;
 
 	chain_sg = &c->SG[h->max_cmd_sg_entries - 1];
@@ -2858,24 +2320,12 @@ static int hpsa_map_sg_chain_block(struct ctlr_info *h,
 	}
 	chain_sg->Addr = cpu_to_le64(temp64);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hpsa_unmap_sg_chain_block(struct ctlr_info *h,
 	struct CommandList *c)
 {
 	struct SGDescriptor *chain_sg;
-<<<<<<< HEAD
-	union u64bit temp64;
-
-	if (c->Header.SGTotal <= h->max_cmd_sg_entries)
-		return;
-
-	chain_sg = &c->SG[h->max_cmd_sg_entries - 1];
-	temp64.val32.lower = chain_sg->Addr.lower;
-	temp64.val32.upper = chain_sg->Addr.upper;
-	pci_unmap_single(h->pdev, temp64.val, chain_sg->Len, PCI_DMA_TODEVICE);
-=======
 
 	if (le16_to_cpu(c->Header.SGTotal) <= h->max_cmd_sg_entries)
 		return;
@@ -3112,7 +2562,6 @@ static int hpsa_evaluate_tmf_status(struct ctlr_info *h,
 		break;
 	}
 	return -tmf_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void complete_scsi_command(struct CommandList *cp)
@@ -3120,43 +2569,6 @@ static void complete_scsi_command(struct CommandList *cp)
 	struct scsi_cmnd *cmd;
 	struct ctlr_info *h;
 	struct ErrorInfo *ei;
-<<<<<<< HEAD
-
-	unsigned char sense_key;
-	unsigned char asc;      /* additional sense code */
-	unsigned char ascq;     /* additional sense code qualifier */
-	unsigned long sense_data_size;
-
-	ei = cp->err_info;
-	cmd = (struct scsi_cmnd *) cp->scsi_cmd;
-	h = cp->h;
-
-	scsi_dma_unmap(cmd); /* undo the DMA mappings */
-	if (cp->Header.SGTotal > h->max_cmd_sg_entries)
-		hpsa_unmap_sg_chain_block(h, cp);
-
-	cmd->result = (DID_OK << 16); 		/* host byte */
-	cmd->result |= (COMMAND_COMPLETE << 8);	/* msg byte */
-	cmd->result |= ei->ScsiStatus;
-
-	/* copy the sense data whether we need to or not. */
-	if (SCSI_SENSE_BUFFERSIZE < sizeof(ei->SenseInfo))
-		sense_data_size = SCSI_SENSE_BUFFERSIZE;
-	else
-		sense_data_size = sizeof(ei->SenseInfo);
-	if (ei->SenseLen < sense_data_size)
-		sense_data_size = ei->SenseLen;
-
-	memcpy(cmd->sense_buffer, ei->SenseInfo, sense_data_size);
-	scsi_set_resid(cmd, ei->ResidualCnt);
-
-	if (ei->CommandStatus == 0) {
-		cmd->scsi_done(cmd);
-		cmd_free(h, cp);
-		return;
-	}
-
-=======
 	struct hpsa_scsi_dev_t *dev;
 	struct io_accel2_cmd *c2;
 
@@ -3250,89 +2662,10 @@ static void complete_scsi_command(struct CommandList *cp)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* an error has occurred */
 	switch (ei->CommandStatus) {
 
 	case CMD_TARGET_STATUS:
-<<<<<<< HEAD
-		if (ei->ScsiStatus) {
-			/* Get sense key */
-			sense_key = 0xf & ei->SenseInfo[2];
-			/* Get additional sense code */
-			asc = ei->SenseInfo[12];
-			/* Get addition sense code qualifier */
-			ascq = ei->SenseInfo[13];
-		}
-
-		if (ei->ScsiStatus == SAM_STAT_CHECK_CONDITION) {
-			if (check_for_unit_attention(h, cp)) {
-				cmd->result = DID_SOFT_ERROR << 16;
-				break;
-			}
-			if (sense_key == ILLEGAL_REQUEST) {
-				/*
-				 * SCSI REPORT_LUNS is commonly unsupported on
-				 * Smart Array.  Suppress noisy complaint.
-				 */
-				if (cp->Request.CDB[0] == REPORT_LUNS)
-					break;
-
-				/* If ASC/ASCQ indicate Logical Unit
-				 * Not Supported condition,
-				 */
-				if ((asc == 0x25) && (ascq == 0x0)) {
-					dev_warn(&h->pdev->dev, "cp %p "
-						"has check condition\n", cp);
-					break;
-				}
-			}
-
-			if (sense_key == NOT_READY) {
-				/* If Sense is Not Ready, Logical Unit
-				 * Not ready, Manual Intervention
-				 * required
-				 */
-				if ((asc == 0x04) && (ascq == 0x03)) {
-					dev_warn(&h->pdev->dev, "cp %p "
-						"has check condition: unit "
-						"not ready, manual "
-						"intervention required\n", cp);
-					break;
-				}
-			}
-			if (sense_key == ABORTED_COMMAND) {
-				/* Aborted command is retryable */
-				dev_warn(&h->pdev->dev, "cp %p "
-					"has check condition: aborted command: "
-					"ASC: 0x%x, ASCQ: 0x%x\n",
-					cp, asc, ascq);
-				cmd->result |= DID_SOFT_ERROR << 16;
-				break;
-			}
-			/* Must be some other type of check condition */
-			dev_warn(&h->pdev->dev, "cp %p has check condition: "
-					"unknown type: "
-					"Sense: 0x%x, ASC: 0x%x, ASCQ: 0x%x, "
-					"Returning result: 0x%x, "
-					"cmd=[%02x %02x %02x %02x %02x "
-					"%02x %02x %02x %02x %02x %02x "
-					"%02x %02x %02x %02x %02x]\n",
-					cp, sense_key, asc, ascq,
-					cmd->result,
-					cmd->cmnd[0], cmd->cmnd[1],
-					cmd->cmnd[2], cmd->cmnd[3],
-					cmd->cmnd[4], cmd->cmnd[5],
-					cmd->cmnd[6], cmd->cmnd[7],
-					cmd->cmnd[8], cmd->cmnd[9],
-					cmd->cmnd[10], cmd->cmnd[11],
-					cmd->cmnd[12], cmd->cmnd[13],
-					cmd->cmnd[14], cmd->cmnd[15]);
-			break;
-		}
-
-
-=======
 		cmd->result |= ei->ScsiStatus;
 		/* copy the sense data */
 		if (SCSI_SENSE_BUFFERSIZE < sizeof(ei->SenseInfo))
@@ -3363,7 +2696,6 @@ static void complete_scsi_command(struct CommandList *cp)
 			}
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Problem was not a check condition
 		 * Pass it up to the upper layers...
 		 */
@@ -3397,14 +2729,8 @@ static void complete_scsi_command(struct CommandList *cp)
 	case CMD_DATA_UNDERRUN: /* let mid layer handle it. */
 		break;
 	case CMD_DATA_OVERRUN:
-<<<<<<< HEAD
-		dev_warn(&h->pdev->dev, "cp %p has"
-			" completed with data overrun "
-			"reported\n", cp);
-=======
 		dev_warn(&h->pdev->dev,
 			"CDB %16phN data overrun\n", cp->Request.CDB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CMD_INVALID: {
 		/* print_bytes(cp, sizeof(*cp), 1, 0);
@@ -3420,36 +2746,6 @@ static void complete_scsi_command(struct CommandList *cp)
 		break;
 	case CMD_PROTOCOL_ERR:
 		cmd->result = DID_ERROR << 16;
-<<<<<<< HEAD
-		dev_warn(&h->pdev->dev, "cp %p has "
-			"protocol error\n", cp);
-		break;
-	case CMD_HARDWARE_ERR:
-		cmd->result = DID_ERROR << 16;
-		dev_warn(&h->pdev->dev, "cp %p had  hardware error\n", cp);
-		break;
-	case CMD_CONNECTION_LOST:
-		cmd->result = DID_ERROR << 16;
-		dev_warn(&h->pdev->dev, "cp %p had connection lost\n", cp);
-		break;
-	case CMD_ABORTED:
-		cmd->result = DID_ABORT << 16;
-		dev_warn(&h->pdev->dev, "cp %p was aborted with status 0x%x\n",
-				cp, ei->ScsiStatus);
-		break;
-	case CMD_ABORT_FAILED:
-		cmd->result = DID_ERROR << 16;
-		dev_warn(&h->pdev->dev, "cp %p reports abort failed\n", cp);
-		break;
-	case CMD_UNSOLICITED_ABORT:
-		cmd->result = DID_SOFT_ERROR << 16; /* retry the command */
-		dev_warn(&h->pdev->dev, "cp %p aborted due to an unsolicited "
-			"abort\n", cp);
-		break;
-	case CMD_TIMEOUT:
-		cmd->result = DID_TIME_OUT << 16;
-		dev_warn(&h->pdev->dev, "cp %p timedout\n", cp);
-=======
 		dev_warn(&h->pdev->dev, "CDB %16phN : protocol error\n",
 				cp->Request.CDB);
 		break;
@@ -3480,14 +2776,11 @@ static void complete_scsi_command(struct CommandList *cp)
 		cmd->result = DID_TIME_OUT << 16;
 		dev_warn(&h->pdev->dev, "CDB %16phN timed out\n",
 			cp->Request.CDB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CMD_UNABORTABLE:
 		cmd->result = DID_ERROR << 16;
 		dev_warn(&h->pdev->dev, "Command unabortable\n");
 		break;
-<<<<<<< HEAD
-=======
 	case CMD_TMF_STATUS:
 		if (hpsa_evaluate_tmf_status(h, cp)) /* TMF failed? */
 			cmd->result = DID_ERROR << 16;
@@ -3500,58 +2793,11 @@ static void complete_scsi_command(struct CommandList *cp)
 		dev_warn(&h->pdev->dev,
 				"cp %p had HP SSD Smart Path error\n", cp);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		cmd->result = DID_ERROR << 16;
 		dev_warn(&h->pdev->dev, "cp %p returned unknown status %x\n",
 				cp, ei->CommandStatus);
 	}
-<<<<<<< HEAD
-	cmd->scsi_done(cmd);
-	cmd_free(h, cp);
-}
-
-static void hpsa_pci_unmap(struct pci_dev *pdev,
-	struct CommandList *c, int sg_used, int data_direction)
-{
-	int i;
-	union u64bit addr64;
-
-	for (i = 0; i < sg_used; i++) {
-		addr64.val32.lower = c->SG[i].Addr.lower;
-		addr64.val32.upper = c->SG[i].Addr.upper;
-		pci_unmap_single(pdev, (dma_addr_t) addr64.val, c->SG[i].Len,
-			data_direction);
-	}
-}
-
-static void hpsa_map_one(struct pci_dev *pdev,
-		struct CommandList *cp,
-		unsigned char *buf,
-		size_t buflen,
-		int data_direction)
-{
-	u64 addr64;
-
-	if (buflen == 0 || data_direction == PCI_DMA_NONE) {
-		cp->Header.SGList = 0;
-		cp->Header.SGTotal = 0;
-		return;
-	}
-
-	addr64 = (u64) pci_map_single(pdev, buf, buflen, data_direction);
-	cp->SG[0].Addr.lower =
-	  (u32) (addr64 & (u64) 0x00000000FFFFFFFF);
-	cp->SG[0].Addr.upper =
-	  (u32) ((addr64 >> 32) & (u64) 0x00000000FFFFFFFF);
-	cp->SG[0].Len = buflen;
-	cp->Header.SGList = (u8) 1;   /* no. SGs contig in this cmd */
-	cp->Header.SGTotal = (u16) 1; /* total sgs in this cmd list */
-}
-
-static inline void hpsa_scsi_do_simple_cmd_core(struct ctlr_info *h,
-	struct CommandList *c)
-=======
 
 	return hpsa_cmd_free_and_done(h, cp, cmd);
 }
@@ -3600,57 +2846,10 @@ static int hpsa_map_one(struct pci_dev *pdev,
 #define DEFAULT_TIMEOUT 30000 /* milliseconds */
 static int hpsa_scsi_do_simple_cmd_core(struct ctlr_info *h,
 	struct CommandList *c, int reply_queue, unsigned long timeout_msecs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DECLARE_COMPLETION_ONSTACK(wait);
 
 	c->waiting = &wait;
-<<<<<<< HEAD
-	enqueue_cmd_and_start_io(h, c);
-	wait_for_completion(&wait);
-}
-
-static void hpsa_scsi_do_simple_cmd_core_if_no_lockup(struct ctlr_info *h,
-	struct CommandList *c)
-{
-	unsigned long flags;
-
-	/* If controller lockup detected, fake a hardware error. */
-	spin_lock_irqsave(&h->lock, flags);
-	if (unlikely(h->lockup_detected)) {
-		spin_unlock_irqrestore(&h->lock, flags);
-		c->err_info->CommandStatus = CMD_HARDWARE_ERR;
-	} else {
-		spin_unlock_irqrestore(&h->lock, flags);
-		hpsa_scsi_do_simple_cmd_core(h, c);
-	}
-}
-
-static void hpsa_scsi_do_simple_cmd_with_retry(struct ctlr_info *h,
-	struct CommandList *c, int data_direction)
-{
-	int retry_count = 0;
-
-	do {
-		memset(c->err_info, 0, sizeof(*c->err_info));
-		hpsa_scsi_do_simple_cmd_core(h, c);
-		retry_count++;
-	} while (check_for_unit_attention(h, c) && retry_count <= 3);
-	hpsa_pci_unmap(h->pdev, c, 1, data_direction);
-}
-
-static void hpsa_scsi_interpret_error(struct CommandList *cp)
-{
-	struct ErrorInfo *ei;
-	struct device *d = &cp->h->pdev->dev;
-
-	ei = cp->err_info;
-	switch (ei->CommandStatus) {
-	case CMD_TARGET_STATUS:
-		dev_warn(d, "cmd %p has completed with errors\n", cp);
-		dev_warn(d, "cmd %p has SCSI Status = %x\n", cp,
-				ei->ScsiStatus);
-=======
 	__enqueue_cmd_and_start_io(h, c, reply_queue);
 	if (timeout_msecs == NO_TIMEOUT) {
 		/* TODO: get rid of this no-timeout thing */
@@ -3748,7 +2947,6 @@ static void hpsa_scsi_interpret_error(struct ctlr_info *h,
 				sense_key, asc, ascq);
 		else
 			dev_warn(d, "SCSI Status = 0x%02x\n", ei->ScsiStatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ei->ScsiStatus == 0)
 			dev_warn(d, "SCSI status is abnormally zero.  "
 			"(probably indicates selection timeout "
@@ -3756,56 +2954,14 @@ static void hpsa_scsi_interpret_error(struct ctlr_info *h,
 			"firmware bug, circa July, 2001.)\n");
 		break;
 	case CMD_DATA_UNDERRUN: /* let mid layer handle it. */
-<<<<<<< HEAD
-			dev_info(d, "UNDERRUN\n");
-		break;
-	case CMD_DATA_OVERRUN:
-		dev_warn(d, "cp %p has completed with data overrun\n", cp);
-=======
 		break;
 	case CMD_DATA_OVERRUN:
 		hpsa_print_cmd(h, "overrun condition", cp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CMD_INVALID: {
 		/* controller unfortunately reports SCSI passthru's
 		 * to non-existent targets as invalid commands.
 		 */
-<<<<<<< HEAD
-		dev_warn(d, "cp %p is reported invalid (probably means "
-			"target device no longer present)\n", cp);
-		/* print_bytes((unsigned char *) cp, sizeof(*cp), 1, 0);
-		print_cmd(cp);  */
-		}
-		break;
-	case CMD_PROTOCOL_ERR:
-		dev_warn(d, "cp %p has protocol error \n", cp);
-		break;
-	case CMD_HARDWARE_ERR:
-		/* cmd->result = DID_ERROR << 16; */
-		dev_warn(d, "cp %p had hardware error\n", cp);
-		break;
-	case CMD_CONNECTION_LOST:
-		dev_warn(d, "cp %p had connection lost\n", cp);
-		break;
-	case CMD_ABORTED:
-		dev_warn(d, "cp %p was aborted\n", cp);
-		break;
-	case CMD_ABORT_FAILED:
-		dev_warn(d, "cp %p reports abort failed\n", cp);
-		break;
-	case CMD_UNSOLICITED_ABORT:
-		dev_warn(d, "cp %p aborted due to an unsolicited abort\n", cp);
-		break;
-	case CMD_TIMEOUT:
-		dev_warn(d, "cp %p timed out\n", cp);
-		break;
-	case CMD_UNABORTABLE:
-		dev_warn(d, "Command unabortable\n");
-		break;
-	default:
-		dev_warn(d, "cp %p returned unknown status %x\n", cp,
-=======
 		hpsa_print_cmd(h, "invalid command", cp);
 		dev_warn(d, "probably means device no longer present\n");
 		}
@@ -3840,15 +2996,10 @@ static void hpsa_scsi_interpret_error(struct ctlr_info *h,
 	default:
 		hpsa_print_cmd(h, "unknown status", cp);
 		dev_warn(d, "Unknown command status %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ei->CommandStatus);
 	}
 }
 
-<<<<<<< HEAD
-static int hpsa_scsi_do_inquiry(struct ctlr_info *h, unsigned char *scsi3addr,
-			unsigned char page, unsigned char *buf,
-=======
 static int hpsa_do_receive_diagnostic(struct ctlr_info *h, u8 *scsi3addr,
 					u8 page, u8 *buf, size_t bufsize)
 {
@@ -3902,34 +3053,12 @@ out:
 
 static int hpsa_scsi_do_inquiry(struct ctlr_info *h, unsigned char *scsi3addr,
 			u16 page, unsigned char *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned char bufsize)
 {
 	int rc = IO_OK;
 	struct CommandList *c;
 	struct ErrorInfo *ei;
 
-<<<<<<< HEAD
-	c = cmd_special_alloc(h);
-
-	if (c == NULL) {			/* trouble... */
-		dev_warn(&h->pdev->dev, "cmd_special_alloc returned NULL!\n");
-		return -ENOMEM;
-	}
-
-	fill_cmd(c, HPSA_INQUIRY, h, buf, bufsize, page, scsi3addr, TYPE_CMD);
-	hpsa_scsi_do_simple_cmd_with_retry(h, c, PCI_DMA_FROMDEVICE);
-	ei = c->err_info;
-	if (ei->CommandStatus != 0 && ei->CommandStatus != CMD_DATA_UNDERRUN) {
-		hpsa_scsi_interpret_error(c);
-		rc = -1;
-	}
-	cmd_special_free(h, c);
-	return rc;
-}
-
-static int hpsa_send_reset(struct ctlr_info *h, unsigned char *scsi3addr)
-=======
 	c = cmd_alloc(h);
 
 	if (fill_cmd(c, HPSA_INQUIRY, h, buf, bufsize,
@@ -3953,23 +3082,11 @@ out:
 
 static int hpsa_send_reset(struct ctlr_info *h, struct hpsa_scsi_dev_t *dev,
 	u8 reset_type, int reply_queue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = IO_OK;
 	struct CommandList *c;
 	struct ErrorInfo *ei;
 
-<<<<<<< HEAD
-	c = cmd_special_alloc(h);
-
-	if (c == NULL) {			/* trouble... */
-		dev_warn(&h->pdev->dev, "cmd_special_alloc returned NULL!\n");
-		return -ENOMEM;
-	}
-
-	fill_cmd(c, HPSA_DEVICE_RESET_MSG, h, NULL, 0, 0, scsi3addr, TYPE_MSG);
-	hpsa_scsi_do_simple_cmd_core(h, c);
-=======
 	c = cmd_alloc(h);
 	c->device = dev;
 
@@ -3980,17 +3097,10 @@ static int hpsa_send_reset(struct ctlr_info *h, struct hpsa_scsi_dev_t *dev,
 		dev_warn(&h->pdev->dev, "Failed to send reset command\n");
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* no unmap needed here because no data xfer. */
 
 	ei = c->err_info;
 	if (ei->CommandStatus != 0) {
-<<<<<<< HEAD
-		hpsa_scsi_interpret_error(c);
-		rc = -1;
-	}
-	cmd_special_free(h, c);
-=======
 		hpsa_scsi_interpret_error(h, c);
 		rc = -1;
 	}
@@ -4088,7 +3198,6 @@ static int hpsa_do_reset(struct ctlr_info *h, struct hpsa_scsi_dev_t *dev,
 		rc = wait_for_device_to_become_ready(h, dev->scsi3addr, 0);
 
 	mutex_unlock(&h->reset_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -4102,9 +3211,6 @@ static void hpsa_get_raid_level(struct ctlr_info *h,
 	buf = kzalloc(64, GFP_KERNEL);
 	if (!buf)
 		return;
-<<<<<<< HEAD
-	rc = hpsa_scsi_do_inquiry(h, scsi3addr, 0xC1, buf, 64);
-=======
 
 	if (!hpsa_vpd_page_supported(h, scsi3addr,
 		HPSA_VPD_LV_DEVICE_GEOMETRY))
@@ -4113,13 +3219,10 @@ static void hpsa_get_raid_level(struct ctlr_info *h,
 	rc = hpsa_scsi_do_inquiry(h, scsi3addr, VPD_PAGE |
 		HPSA_VPD_LV_DEVICE_GEOMETRY, buf, 64);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc == 0)
 		*raid_level = buf[8];
 	if (*raid_level > RAID_UNKNOWN)
 		*raid_level = RAID_UNKNOWN;
-<<<<<<< HEAD
-=======
 exit:
 	kfree(buf);
 	return;
@@ -4604,38 +3707,17 @@ static void hpsa_get_ioaccel_status(struct ctlr_info *h,
 	}
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 	return;
 }
 
 /* Get the device id from inquiry page 0x83 */
 static int hpsa_get_device_id(struct ctlr_info *h, unsigned char *scsi3addr,
-<<<<<<< HEAD
-	unsigned char *device_id, int buflen)
-=======
 	unsigned char *device_id, int index, int buflen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	unsigned char *buf;
 
-<<<<<<< HEAD
-	if (buflen > 16)
-		buflen = 16;
-	buf = kzalloc(64, GFP_KERNEL);
-	if (!buf)
-		return -1;
-	rc = hpsa_scsi_do_inquiry(h, scsi3addr, 0x83, buf, 64);
-	if (rc == 0)
-		memcpy(device_id, &buf[8], buflen);
-	kfree(buf);
-	return rc != 0;
-}
-
-static int hpsa_scsi_do_report_luns(struct ctlr_info *h, int logical,
-		struct ReportLUNdata *buf, int bufsize,
-=======
 	/* Does controller have VPD for device id? */
 	if (!hpsa_vpd_page_supported(h, scsi3addr, HPSA_VPD_LV_DEVICE_ID))
 		return 1; /* not supported */
@@ -4659,7 +3741,6 @@ static int hpsa_scsi_do_report_luns(struct ctlr_info *h, int logical,
 
 static int hpsa_scsi_do_report_luns(struct ctlr_info *h, int logical,
 		void *buf, int bufsize,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int extended_response)
 {
 	int rc = IO_OK;
@@ -4667,27 +3748,6 @@ static int hpsa_scsi_do_report_luns(struct ctlr_info *h, int logical,
 	unsigned char scsi3addr[8];
 	struct ErrorInfo *ei;
 
-<<<<<<< HEAD
-	c = cmd_special_alloc(h);
-	if (c == NULL) {			/* trouble... */
-		dev_err(&h->pdev->dev, "cmd_special_alloc returned NULL!\n");
-		return -1;
-	}
-	/* address the controller */
-	memset(scsi3addr, 0, sizeof(scsi3addr));
-	fill_cmd(c, logical ? HPSA_REPORT_LOG : HPSA_REPORT_PHYS, h,
-		buf, bufsize, 0, scsi3addr, TYPE_CMD);
-	if (extended_response)
-		c->Request.CDB[1] = extended_response;
-	hpsa_scsi_do_simple_cmd_with_retry(h, c, PCI_DMA_FROMDEVICE);
-	ei = c->err_info;
-	if (ei->CommandStatus != 0 &&
-	    ei->CommandStatus != CMD_DATA_UNDERRUN) {
-		hpsa_scsi_interpret_error(c);
-		rc = -1;
-	}
-	cmd_special_free(h, c);
-=======
 	c = cmd_alloc(h);
 
 	/* address the controller */
@@ -4724,17 +3784,10 @@ static int hpsa_scsi_do_report_luns(struct ctlr_info *h, int logical,
 	}
 out:
 	cmd_free(h, c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 static inline int hpsa_scsi_do_report_phys_luns(struct ctlr_info *h,
-<<<<<<< HEAD
-		struct ReportLUNdata *buf,
-		int bufsize, int extended_response)
-{
-	return hpsa_scsi_do_report_luns(h, 0, buf, bufsize, extended_response);
-=======
 		struct ReportExtendedLUNdata *buf, int bufsize)
 {
 	int rc;
@@ -4763,7 +3816,6 @@ static inline int hpsa_scsi_do_report_phys_luns(struct ctlr_info *h,
 	}
 	kfree(lbuf);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int hpsa_scsi_do_report_log_luns(struct ctlr_info *h,
@@ -4780,8 +3832,6 @@ static inline void hpsa_set_bus_target_lun(struct hpsa_scsi_dev_t *device,
 	device->lun = lun;
 }
 
-<<<<<<< HEAD
-=======
 /* Use VPD inquiry to get details of volume status */
 static int hpsa_get_volume_status(struct ctlr_info *h,
 					unsigned char scsi3addr[])
@@ -4886,7 +3936,6 @@ static unsigned char hpsa_volume_offline(struct ctlr_info *h,
 	return HPSA_LV_OK;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hpsa_update_device_info(struct ctlr_info *h,
 	unsigned char scsi3addr[], struct hpsa_scsi_dev_t *this_device,
 	unsigned char *is_OBDR_device)
@@ -4899,12 +3948,6 @@ static int hpsa_update_device_info(struct ctlr_info *h,
 
 	unsigned char *inq_buff;
 	unsigned char *obdr_sig;
-<<<<<<< HEAD
-
-	inq_buff = kzalloc(OBDR_TAPE_INQ_SIZE, GFP_KERNEL);
-	if (!inq_buff)
-		goto bail_out;
-=======
 	int rc = 0;
 
 	inq_buff = kzalloc(OBDR_TAPE_INQ_SIZE, GFP_KERNEL);
@@ -4912,19 +3955,10 @@ static int hpsa_update_device_info(struct ctlr_info *h,
 		rc = -ENOMEM;
 		goto bail_out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Do an inquiry to the device to see what it is. */
 	if (hpsa_scsi_do_inquiry(h, scsi3addr, 0, inq_buff,
 		(unsigned char) OBDR_TAPE_INQ_SIZE) != 0) {
-<<<<<<< HEAD
-		/* Inquiry failed (msg printed already) */
-		dev_err(&h->pdev->dev,
-			"hpsa_update_device_info: inquiry failed\n");
-		goto bail_out;
-	}
-
-=======
 		dev_err(&h->pdev->dev,
 			"%s: inquiry failed, device will be skipped.\n",
 			__func__);
@@ -4935,25 +3969,12 @@ static int hpsa_update_device_info(struct ctlr_info *h,
 	scsi_sanitize_inquiry_string(&inq_buff[8], 8);
 	scsi_sanitize_inquiry_string(&inq_buff[16], 16);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	this_device->devtype = (inq_buff[0] & 0x1f);
 	memcpy(this_device->scsi3addr, scsi3addr, 8);
 	memcpy(this_device->vendor, &inq_buff[8],
 		sizeof(this_device->vendor));
 	memcpy(this_device->model, &inq_buff[16],
 		sizeof(this_device->model));
-<<<<<<< HEAD
-	memset(this_device->device_id, 0,
-		sizeof(this_device->device_id));
-	hpsa_get_device_id(h, scsi3addr, this_device->device_id,
-		sizeof(this_device->device_id));
-
-	if (this_device->devtype == TYPE_DISK &&
-		is_logical_dev_addr_mode(scsi3addr))
-		hpsa_get_raid_level(h, scsi3addr, &this_device->raid_level);
-	else
-		this_device->raid_level = RAID_UNKNOWN;
-=======
 	this_device->rev = inq_buff[2];
 	memset(this_device->device_id, 0,
 		sizeof(this_device->device_id));
@@ -5009,7 +4030,6 @@ static int hpsa_update_device_info(struct ctlr_info *h,
 
 	if (this_device->external)
 		this_device->queue_depth = EXTERNAL_QD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_OBDR_device) {
 		/* See if this is a One-Button-Disaster-Recovery device
@@ -5020,126 +4040,11 @@ static int hpsa_update_device_info(struct ctlr_info *h,
 					strncmp(obdr_sig, OBDR_TAPE_SIG,
 						OBDR_SIG_LEN) == 0);
 	}
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(inq_buff);
 	return 0;
 
 bail_out:
 	kfree(inq_buff);
-<<<<<<< HEAD
-	return 1;
-}
-
-static unsigned char *ext_target_model[] = {
-	"MSA2012",
-	"MSA2024",
-	"MSA2312",
-	"MSA2324",
-	"P2000 G3 SAS",
-	NULL,
-};
-
-static int is_ext_target(struct ctlr_info *h, struct hpsa_scsi_dev_t *device)
-{
-	int i;
-
-	for (i = 0; ext_target_model[i]; i++)
-		if (strncmp(device->model, ext_target_model[i],
-			strlen(ext_target_model[i])) == 0)
-			return 1;
-	return 0;
-}
-
-/* Helper function to assign bus, target, lun mapping of devices.
- * Puts non-external target logical volumes on bus 0, external target logical
- * volumes on bus 1, physical devices on bus 2. and the hba on bus 3.
- * Logical drive target and lun are assigned at this time, but
- * physical device lun and target assignment are deferred (assigned
- * in hpsa_find_target_lun, called by hpsa_scsi_add_entry.)
- */
-static void figure_bus_target_lun(struct ctlr_info *h,
-	u8 *lunaddrbytes, struct hpsa_scsi_dev_t *device)
-{
-	u32 lunid = le32_to_cpu(*((__le32 *) lunaddrbytes));
-
-	if (!is_logical_dev_addr_mode(lunaddrbytes)) {
-		/* physical device, target and lun filled in later */
-		if (is_hba_lunid(lunaddrbytes))
-			hpsa_set_bus_target_lun(device, 3, 0, lunid & 0x3fff);
-		else
-			/* defer target, lun assignment for physical devices */
-			hpsa_set_bus_target_lun(device, 2, -1, -1);
-		return;
-	}
-	/* It's a logical device */
-	if (is_ext_target(h, device)) {
-		/* external target way, put logicals on bus 1
-		 * and match target/lun numbers box
-		 * reports, other smart array, bus 0, target 0, match lunid
-		 */
-		hpsa_set_bus_target_lun(device,
-			1, (lunid >> 16) & 0x3fff, lunid & 0x00ff);
-		return;
-	}
-	hpsa_set_bus_target_lun(device, 0, 0, lunid & 0x3fff);
-}
-
-/*
- * If there is no lun 0 on a target, linux won't find any devices.
- * For the external targets (arrays), we have to manually detect the enclosure
- * which is at lun zero, as CCISS_REPORT_PHYSICAL_LUNS doesn't report
- * it for some reason.  *tmpdevice is the target we're adding,
- * this_device is a pointer into the current element of currentsd[]
- * that we're building up in update_scsi_devices(), below.
- * lunzerobits is a bitmap that tracks which targets already have a
- * lun 0 assigned.
- * Returns 1 if an enclosure was added, 0 if not.
- */
-static int add_ext_target_dev(struct ctlr_info *h,
-	struct hpsa_scsi_dev_t *tmpdevice,
-	struct hpsa_scsi_dev_t *this_device, u8 *lunaddrbytes,
-	unsigned long lunzerobits[], int *n_ext_target_devs)
-{
-	unsigned char scsi3addr[8];
-
-	if (test_bit(tmpdevice->target, lunzerobits))
-		return 0; /* There is already a lun 0 on this target. */
-
-	if (!is_logical_dev_addr_mode(lunaddrbytes))
-		return 0; /* It's the logical targets that may lack lun 0. */
-
-	if (!is_ext_target(h, tmpdevice))
-		return 0; /* Only external target devices have this problem. */
-
-	if (tmpdevice->lun == 0) /* if lun is 0, then we have a lun 0. */
-		return 0;
-
-	memset(scsi3addr, 0, 8);
-	scsi3addr[3] = tmpdevice->target;
-	if (is_hba_lunid(scsi3addr))
-		return 0; /* Don't add the RAID controller here. */
-
-	if (is_scsi_rev_5(h))
-		return 0; /* p1210m doesn't need to do this. */
-
-	if (*n_ext_target_devs >= MAX_EXT_TARGETS) {
-		dev_warn(&h->pdev->dev, "Maximum number of external "
-			"target devices exceeded.  Check your hardware "
-			"configuration.");
-		return 0;
-	}
-
-	if (hpsa_update_device_info(h, scsi3addr, this_device, NULL))
-		return 0;
-	(*n_ext_target_devs)++;
-	hpsa_set_bus_target_lun(this_device,
-				tmpdevice->bus, tmpdevice->target, 0);
-	set_bit(tmpdevice->target, lunzerobits);
-	return 1;
-=======
 	return rc;
 }
 
@@ -5199,7 +4104,6 @@ static int  figure_external_status(struct ctlr_info *h, int raid_ctlr_position,
 		return 0;
 
 	return 1; /* it's an external lun */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -5209,24 +4113,6 @@ static int  figure_external_status(struct ctlr_info *h, int raid_ctlr_position,
  * Returns 0 on success, -1 otherwise.
  */
 static int hpsa_gather_lun_info(struct ctlr_info *h,
-<<<<<<< HEAD
-	int reportlunsize,
-	struct ReportLUNdata *physdev, u32 *nphysicals,
-	struct ReportLUNdata *logdev, u32 *nlogicals)
-{
-	if (hpsa_scsi_do_report_phys_luns(h, physdev, reportlunsize, 0)) {
-		dev_err(&h->pdev->dev, "report physical LUNs failed.\n");
-		return -1;
-	}
-	*nphysicals = be32_to_cpu(*((__be32 *)physdev->LUNListLength)) / 8;
-	if (*nphysicals > HPSA_MAX_PHYS_LUN) {
-		dev_warn(&h->pdev->dev, "maximum physical LUNs (%d) exceeded."
-			"  %d LUNs ignored.\n", HPSA_MAX_PHYS_LUN,
-			*nphysicals - HPSA_MAX_PHYS_LUN);
-		*nphysicals = HPSA_MAX_PHYS_LUN;
-	}
-	if (hpsa_scsi_do_report_log_luns(h, logdev, reportlunsize)) {
-=======
 	struct ReportExtendedLUNdata *physdev, u32 *nphysicals,
 	struct ReportLUNdata *logdev, u32 *nlogicals)
 {
@@ -5241,7 +4127,6 @@ static int hpsa_gather_lun_info(struct ctlr_info *h,
 		*nphysicals = HPSA_MAX_PHYS_LUN;
 	}
 	if (hpsa_scsi_do_report_log_luns(h, logdev, sizeof(*logdev))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&h->pdev->dev, "report logical LUNs failed.\n");
 		return -1;
 	}
@@ -5252,11 +4137,7 @@ static int hpsa_gather_lun_info(struct ctlr_info *h,
 			"maximum logical LUNs (%d) exceeded.  "
 			"%d LUNs ignored.\n", HPSA_MAX_LUN,
 			*nlogicals - HPSA_MAX_LUN);
-<<<<<<< HEAD
-			*nlogicals = HPSA_MAX_LUN;
-=======
 		*nlogicals = HPSA_MAX_LUN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (*nlogicals + *nphysicals > HPSA_MAX_PHYS_LUN) {
 		dev_warn(&h->pdev->dev,
@@ -5268,14 +4149,9 @@ static int hpsa_gather_lun_info(struct ctlr_info *h,
 	return 0;
 }
 
-<<<<<<< HEAD
-u8 *figure_lunaddrbytes(struct ctlr_info *h, int raid_ctlr_position, int i,
-	int nphysicals, int nlogicals, struct ReportLUNdata *physdev_list,
-=======
 static u8 *figure_lunaddrbytes(struct ctlr_info *h, int raid_ctlr_position,
 	int i, int nphysicals, int nlogicals,
 	struct ReportExtendedLUNdata *physdev_list,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ReportLUNdata *logdev_list)
 {
 	/* Helper function, figure out where the LUN ID info is coming from
@@ -5290,12 +4166,8 @@ static u8 *figure_lunaddrbytes(struct ctlr_info *h, int raid_ctlr_position,
 		return RAID_CTLR_LUNID;
 
 	if (i < logicals_start)
-<<<<<<< HEAD
-		return &physdev_list->LUN[i - (raid_ctlr_position == 0)][0];
-=======
 		return &physdev_list->LUN[i -
 				(raid_ctlr_position == 0)].lunid[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i < last_device)
 		return &logdev_list->LUN[i - nphysicals -
@@ -5304,9 +4176,6 @@ static u8 *figure_lunaddrbytes(struct ctlr_info *h, int raid_ctlr_position,
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void hpsa_update_scsi_devices(struct ctlr_info *h, int hostno)
-=======
 /* get physical drive ioaccel handle and queue depth */
 static void hpsa_get_ioaccel_drive_info(struct ctlr_info *h,
 		struct hpsa_scsi_dev_t *dev,
@@ -5461,7 +4330,6 @@ static bool hpsa_skip_device(struct ctlr_info *h, u8 *lunaddrbytes,
 }
 
 static void hpsa_update_scsi_devices(struct ctlr_info *h)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* the idea here is we could get notified
 	 * that some devices have changed, so we do a report
@@ -5473,34 +4341,6 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 	 * tell which devices we already know about, vs. new
 	 * devices, vs.  disappearing devices.
 	 */
-<<<<<<< HEAD
-	struct ReportLUNdata *physdev_list = NULL;
-	struct ReportLUNdata *logdev_list = NULL;
-	u32 nphysicals = 0;
-	u32 nlogicals = 0;
-	u32 ndev_allocated = 0;
-	struct hpsa_scsi_dev_t **currentsd, *this_device, *tmpdevice;
-	int ncurrent = 0;
-	int reportlunsize = sizeof(*physdev_list) + HPSA_MAX_PHYS_LUN * 8;
-	int i, n_ext_target_devs, ndevs_to_allocate;
-	int raid_ctlr_position;
-	DECLARE_BITMAP(lunzerobits, MAX_EXT_TARGETS);
-
-	currentsd = kzalloc(sizeof(*currentsd) * HPSA_MAX_DEVICES, GFP_KERNEL);
-	physdev_list = kzalloc(reportlunsize, GFP_KERNEL);
-	logdev_list = kzalloc(reportlunsize, GFP_KERNEL);
-	tmpdevice = kzalloc(sizeof(*tmpdevice), GFP_KERNEL);
-
-	if (!currentsd || !physdev_list || !logdev_list || !tmpdevice) {
-		dev_err(&h->pdev->dev, "out of memory\n");
-		goto out;
-	}
-	memset(lunzerobits, 0, sizeof(lunzerobits));
-
-	if (hpsa_gather_lun_info(h, reportlunsize, physdev_list, &nphysicals,
-			logdev_list, &nlogicals))
-		goto out;
-=======
 	struct ReportExtendedLUNdata *physdev_list = NULL;
 	struct ReportLUNdata *logdev_list = NULL;
 	struct bmic_identify_physical_device *id_phys = NULL;
@@ -5542,7 +4382,6 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 			"%s: Can't determine number of local logical devices.\n",
 			__func__);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We might see up to the maximum number of logical and physical disks
 	 * plus external target devices, and a device for the local RAID
@@ -5550,11 +4389,8 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 	 */
 	ndevs_to_allocate = nphysicals + nlogicals + MAX_EXT_TARGETS + 1;
 
-<<<<<<< HEAD
-=======
 	hpsa_ext_ctrl_present(h, physdev_list);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allocate the per device structures */
 	for (i = 0; i < ndevs_to_allocate; i++) {
 		if (i >= HPSA_MAX_DEVICES) {
@@ -5566,32 +4402,18 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 
 		currentsd[i] = kzalloc(sizeof(*currentsd[i]), GFP_KERNEL);
 		if (!currentsd[i]) {
-<<<<<<< HEAD
-			dev_warn(&h->pdev->dev, "out of memory at %s:%d\n",
-				__FILE__, __LINE__);
-=======
 			h->drv_req_rescan = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		ndev_allocated++;
 	}
 
-<<<<<<< HEAD
-	if (unlikely(is_scsi_rev_5(h)))
-=======
 	if (is_scsi_rev_5(h))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		raid_ctlr_position = 0;
 	else
 		raid_ctlr_position = nphysicals + nlogicals;
 
 	/* adjust our table of devices */
-<<<<<<< HEAD
-	n_ext_target_devs = 0;
-	for (i = 0; i < nphysicals + nlogicals + 1; i++) {
-		u8 *lunaddrbytes, is_OBDR = 0;
-=======
 	for (i = 0; i < nphysicals + nlogicals + 1; i++) {
 		u8 *lunaddrbytes, is_OBDR = 0;
 		int rc = 0;
@@ -5601,40 +4423,10 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 		memset(tmpdevice, 0, sizeof(*tmpdevice));
 
 		physical_device = i < nphysicals + (raid_ctlr_position == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Figure out where the LUN ID info is coming from */
 		lunaddrbytes = figure_lunaddrbytes(h, raid_ctlr_position,
 			i, nphysicals, nlogicals, physdev_list, logdev_list);
-<<<<<<< HEAD
-		/* skip masked physical devices. */
-		if (lunaddrbytes[3] & 0xC0 &&
-			i < nphysicals + (raid_ctlr_position == 0))
-			continue;
-
-		/* Get device type, vendor, model, device id */
-		if (hpsa_update_device_info(h, lunaddrbytes, tmpdevice,
-							&is_OBDR))
-			continue; /* skip it if we can't talk to it. */
-		figure_bus_target_lun(h, lunaddrbytes, tmpdevice);
-		this_device = currentsd[ncurrent];
-
-		/*
-		 * For external target devices, we have to insert a LUN 0 which
-		 * doesn't show up in CCISS_REPORT_PHYSICAL data, but there
-		 * is nonetheless an enclosure device there.  We have to
-		 * present that otherwise linux won't find anything if
-		 * there is no lun 0.
-		 */
-		if (add_ext_target_dev(h, tmpdevice, this_device,
-				lunaddrbytes, lunzerobits,
-				&n_ext_target_devs)) {
-			ncurrent++;
-			this_device = currentsd[ncurrent];
-		}
-
-		*this_device = *tmpdevice;
-=======
 
 		/* Determine if this is a lun from an external target array */
 		tmpdevice->external =
@@ -5687,7 +4479,6 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 		 */
 		if (this_device->physical_device && this_device->expose_device)
 			hpsa_get_sas_address(h, lunaddrbytes, this_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (this_device->devtype) {
 		case TYPE_ROM:
@@ -5702,10 +4493,6 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 				ncurrent++;
 			break;
 		case TYPE_DISK:
-<<<<<<< HEAD
-			if (i < nphysicals)
-				break;
-=======
 		case TYPE_ZBC:
 			if (this_device->physical_device) {
 				/* The disk is in HBA mode. */
@@ -5716,15 +4503,12 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 				hpsa_get_path_info(this_device,
 					physdev_list, phys_dev_index, id_phys);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ncurrent++;
 			break;
 		case TYPE_TAPE:
 		case TYPE_MEDIUM_CHANGER:
 			ncurrent++;
 			break;
-<<<<<<< HEAD
-=======
 		case TYPE_ENCLOSURE:
 			if (!this_device->external)
 				hpsa_get_enclosure_info(h, lunaddrbytes,
@@ -5732,7 +4516,6 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 						this_device);
 			ncurrent++;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case TYPE_RAID:
 			/* Only present the Smartarray HBA as a RAID controller.
 			 * If it's a RAID controller other than the HBA itself
@@ -5749,9 +4532,6 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 		if (ncurrent >= HPSA_MAX_DEVICES)
 			break;
 	}
-<<<<<<< HEAD
-	adjust_hpsa_scsi_table(h, hostno, currentsd, ncurrent);
-=======
 
 	if (h->sas_host == NULL) {
 		int rc = 0;
@@ -5765,7 +4545,6 @@ static void hpsa_update_scsi_devices(struct ctlr_info *h)
 	}
 
 	adjust_hpsa_scsi_table(h, currentsd, ncurrent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	kfree(tmpdevice);
 	for (i = 0; i < ndev_allocated; i++)
@@ -5773,11 +4552,6 @@ out:
 	kfree(currentsd);
 	kfree(physdev_list);
 	kfree(logdev_list);
-<<<<<<< HEAD
-}
-
-/* hpsa_scatter_gather takes a struct scsi_cmnd, (cmd), and does the pci
-=======
 	kfree(id_ctlr);
 	kfree(id_phys);
 }
@@ -5795,7 +4569,6 @@ static void hpsa_set_sg_descriptor(struct SGDescriptor *desc,
 
 /*
  * hpsa_scatter_gather takes a struct scsi_cmnd, (cmd), and does the pci
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dma mapping  and fills in the scatter gather entries of the
  * hpsa command, cp.
  */
@@ -5803,15 +4576,8 @@ static int hpsa_scatter_gather(struct ctlr_info *h,
 		struct CommandList *cp,
 		struct scsi_cmnd *cmd)
 {
-<<<<<<< HEAD
-	unsigned int len;
-	struct scatterlist *sg;
-	u64 addr64;
-	int use_sg, i, sg_index, chained;
-=======
 	struct scatterlist *sg;
 	int use_sg, i, sg_limit, chained;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct SGDescriptor *curr_sg;
 
 	BUG_ON(scsi_sg_count(cmd) > h->maxsgentries);
@@ -5823,27 +4589,6 @@ static int hpsa_scatter_gather(struct ctlr_info *h,
 	if (!use_sg)
 		goto sglist_finished;
 
-<<<<<<< HEAD
-	curr_sg = cp->SG;
-	chained = 0;
-	sg_index = 0;
-	scsi_for_each_sg(cmd, sg, use_sg, i) {
-		if (i == h->max_cmd_sg_entries - 1 &&
-			use_sg > h->max_cmd_sg_entries) {
-			chained = 1;
-			curr_sg = h->cmd_sg_list[cp->cmdindex];
-			sg_index = 0;
-		}
-		addr64 = (u64) sg_dma_address(sg);
-		len  = sg_dma_len(sg);
-		curr_sg->Addr.lower = (u32) (addr64 & 0x0FFFFFFFFULL);
-		curr_sg->Addr.upper = (u32) ((addr64 >> 32) & 0x0FFFFFFFFULL);
-		curr_sg->Len = len;
-		curr_sg->Ext = 0;  /* we are not chaining */
-		curr_sg++;
-	}
-
-=======
 	/*
 	 * If the number of entries is greater than the max for a single list,
 	 * then we have a chained list; we will set up all but one entry in the
@@ -5877,82 +4622,22 @@ static int hpsa_scatter_gather(struct ctlr_info *h,
 	/* Back the pointer up to the last entry and mark it as "last". */
 	(curr_sg - 1)->Ext = cpu_to_le32(HPSA_SG_LAST);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (use_sg + chained > h->maxSG)
 		h->maxSG = use_sg + chained;
 
 	if (chained) {
 		cp->Header.SGList = h->max_cmd_sg_entries;
-<<<<<<< HEAD
-		cp->Header.SGTotal = (u16) (use_sg + 1);
-		hpsa_map_sg_chain_block(h, cp);
-=======
 		cp->Header.SGTotal = cpu_to_le16(use_sg + 1);
 		if (hpsa_map_sg_chain_block(h, cp)) {
 			scsi_dma_unmap(cmd);
 			return -1;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 sglist_finished:
 
 	cp->Header.SGList = (u8) use_sg;   /* no. SGs contig in this cmd */
-<<<<<<< HEAD
-	cp->Header.SGTotal = (u16) use_sg; /* total sgs in this cmd list */
-	return 0;
-}
-
-
-static int hpsa_scsi_queue_command_lck(struct scsi_cmnd *cmd,
-	void (*done)(struct scsi_cmnd *))
-{
-	struct ctlr_info *h;
-	struct hpsa_scsi_dev_t *dev;
-	unsigned char scsi3addr[8];
-	struct CommandList *c;
-	unsigned long flags;
-
-	/* Get the ptr to our adapter structure out of cmd->host. */
-	h = sdev_to_hba(cmd->device);
-	dev = cmd->device->hostdata;
-	if (!dev) {
-		cmd->result = DID_NO_CONNECT << 16;
-		done(cmd);
-		return 0;
-	}
-	memcpy(scsi3addr, dev->scsi3addr, sizeof(scsi3addr));
-
-	spin_lock_irqsave(&h->lock, flags);
-	if (unlikely(h->lockup_detected)) {
-		spin_unlock_irqrestore(&h->lock, flags);
-		cmd->result = DID_ERROR << 16;
-		done(cmd);
-		return 0;
-	}
-	/* Need a lock as this is being allocated from the pool */
-	c = cmd_alloc(h);
-	spin_unlock_irqrestore(&h->lock, flags);
-	if (c == NULL) {			/* trouble... */
-		dev_err(&h->pdev->dev, "cmd_alloc returned NULL!\n");
-		return SCSI_MLQUEUE_HOST_BUSY;
-	}
-
-	/* Fill in the command list header */
-
-	cmd->scsi_done = done;    /* save this for use by completion code */
-
-	/* save c in case we have to abort it  */
-	cmd->host_scribble = (unsigned char *) c;
-
-	c->cmd_type = CMD_SCSI;
-	c->scsi_cmd = cmd;
-	c->Header.ReplyQueue = 0;  /* unused in simple mode */
-	memcpy(&c->Header.LUN.LunAddrBytes[0], &scsi3addr[0], 8);
-	c->Header.Tag.lower = (c->cmdindex << DIRECT_LOOKUP_SHIFT);
-	c->Header.Tag.lower |= DIRECT_LOOKUP_BIT;
-=======
 	cp->Header.SGTotal = cpu_to_le16(use_sg); /* total sgs in cmd list */
 	return 0;
 }
@@ -6778,28 +5463,10 @@ static int hpsa_ciss_submit(struct ctlr_info *h,
 	c->Header.ReplyQueue = 0;  /* unused in simple mode */
 	memcpy(&c->Header.LUN.LunAddrBytes[0], &dev->scsi3addr[0], 8);
 	c->Header.tag = cpu_to_le64((c->cmdindex << DIRECT_LOOKUP_SHIFT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill in the request block... */
 
 	c->Request.Timeout = 0;
-<<<<<<< HEAD
-	memset(c->Request.CDB, 0, sizeof(c->Request.CDB));
-	BUG_ON(cmd->cmd_len > sizeof(c->Request.CDB));
-	c->Request.CDBLen = cmd->cmd_len;
-	memcpy(c->Request.CDB, cmd->cmnd, cmd->cmd_len);
-	c->Request.Type.Type = TYPE_CMD;
-	c->Request.Type.Attribute = ATTR_SIMPLE;
-	switch (cmd->sc_data_direction) {
-	case DMA_TO_DEVICE:
-		c->Request.Type.Direction = XFER_WRITE;
-		break;
-	case DMA_FROM_DEVICE:
-		c->Request.Type.Direction = XFER_READ;
-		break;
-	case DMA_NONE:
-		c->Request.Type.Direction = XFER_NONE;
-=======
 	BUG_ON(cmd->cmd_len > sizeof(c->Request.CDB));
 	c->Request.CDBLen = cmd->cmd_len;
 	memcpy(c->Request.CDB, cmd->cmnd, cmd->cmd_len);
@@ -6815,7 +5482,6 @@ static int hpsa_ciss_submit(struct ctlr_info *h,
 	case DMA_NONE:
 		c->Request.type_attr_dir =
 			TYPE_ATTR_DIR(TYPE_CMD, ATTR_SIMPLE, XFER_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DMA_BIDIRECTIONAL:
 		/* This can happen if a buggy application does a scsi passthru
@@ -6823,12 +5489,8 @@ static int hpsa_ciss_submit(struct ctlr_info *h,
 		 * ../scsi/scsi_ioctl.c:scsi_ioctl_send_command() )
 		 */
 
-<<<<<<< HEAD
-		c->Request.Type.Direction = XFER_RSVD;
-=======
 		c->Request.type_attr_dir =
 			TYPE_ATTR_DIR(TYPE_CMD, ATTR_SIMPLE, XFER_RSVD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This is technically wrong, and hpsa controllers should
 		 * reject it with CMD_INVALID, which is the most correct
 		 * response, but non-fibre backends appear to let it
@@ -6847,11 +5509,6 @@ static int hpsa_ciss_submit(struct ctlr_info *h,
 	}
 
 	if (hpsa_scatter_gather(h, c, cmd) < 0) { /* Fill SG list */
-<<<<<<< HEAD
-		cmd_free(h, c);
-		return SCSI_MLQUEUE_HOST_BUSY;
-	}
-=======
 		hpsa_cmd_resolve_and_free(h, c);
 		return SCSI_MLQUEUE_HOST_BUSY;
 	}
@@ -6863,15 +5520,11 @@ static int hpsa_ciss_submit(struct ctlr_info *h,
 
 	c->device = dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enqueue_cmd_and_start_io(h, c);
 	/* the cmd'll come back via intr handler in complete_scsi_command()  */
 	return 0;
 }
 
-<<<<<<< HEAD
-static DEF_SCSI_QCMD(hpsa_scsi_queue_command)
-=======
 static void hpsa_cmd_init(struct ctlr_info *h, int index,
 				struct CommandList *c)
 {
@@ -7101,15 +5754,12 @@ static void hpsa_scan_complete(struct ctlr_info *h)
 	wake_up(&h->scan_wait_queue);
 	spin_unlock_irqrestore(&h->scan_lock, flags);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void hpsa_scan_start(struct Scsi_Host *sh)
 {
 	struct ctlr_info *h = shost_to_hba(sh);
 	unsigned long flags;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Don't let rescans be initiated on a controller known to be locked
 	 * up.  If the controller locks up *during* a rescan, that thread is
@@ -7130,16 +5780,12 @@ static void hpsa_scan_start(struct Scsi_Host *sh)
 
 	spin_unlock_irqrestore(&h->scan_lock, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* wait until any scan already in progress is finished. */
 	while (1) {
 		spin_lock_irqsave(&h->scan_lock, flags);
 		if (h->scan_finished)
 			break;
-<<<<<<< HEAD
-=======
 		h->scan_waiting = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&h->scan_lock, flags);
 		wait_event(h->scan_wait_queue, h->scan_finished);
 		/* Note: We don't need to worry about a race between this
@@ -7149,16 +5795,6 @@ static void hpsa_scan_start(struct Scsi_Host *sh)
 		 */
 	}
 	h->scan_finished = 0; /* mark scan as in progress */
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&h->scan_lock, flags);
-
-	hpsa_update_scsi_devices(h, h->scsi_host->host_no);
-
-	spin_lock_irqsave(&h->scan_lock, flags);
-	h->scan_finished = 1; /* mark scan as finished. */
-	wake_up_all(&h->scan_wait_queue);
-	spin_unlock_irqrestore(&h->scan_lock, flags);
-=======
 	h->scan_waiting = 0;
 	spin_unlock_irqrestore(&h->scan_lock, flags);
 
@@ -7195,7 +5831,6 @@ static int hpsa_change_queue_depth(struct scsi_device *sdev, int qdepth)
 		qdepth = logical_drive->queue_depth;
 
 	return scsi_change_queue_depth(sdev, qdepth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hpsa_scan_finished(struct Scsi_Host *sh,
@@ -7211,41 +5846,6 @@ static int hpsa_scan_finished(struct Scsi_Host *sh,
 	return finished;
 }
 
-<<<<<<< HEAD
-static int hpsa_change_queue_depth(struct scsi_device *sdev,
-	int qdepth, int reason)
-{
-	struct ctlr_info *h = sdev_to_hba(sdev);
-
-	if (reason != SCSI_QDEPTH_DEFAULT)
-		return -ENOTSUPP;
-
-	if (qdepth < 1)
-		qdepth = 1;
-	else
-		if (qdepth > h->nr_cmds)
-			qdepth = h->nr_cmds;
-	scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev), qdepth);
-	return sdev->queue_depth;
-}
-
-static void hpsa_unregister_scsi(struct ctlr_info *h)
-{
-	/* we are being forcibly unloaded, and may not refuse. */
-	scsi_remove_host(h->scsi_host);
-	scsi_host_put(h->scsi_host);
-	h->scsi_host = NULL;
-}
-
-static int hpsa_register_scsi(struct ctlr_info *h)
-{
-	struct Scsi_Host *sh;
-	int error;
-
-	sh = scsi_host_alloc(&hpsa_driver_template, sizeof(h));
-	if (sh == NULL)
-		goto fail;
-=======
 static int hpsa_scsi_host_alloc(struct ctlr_info *h)
 {
 	struct Scsi_Host *sh;
@@ -7255,7 +5855,6 @@ static int hpsa_scsi_host_alloc(struct ctlr_info *h)
 		dev_err(&h->pdev->dev, "scsi_host_alloc failed\n");
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sh->io_port = 0;
 	sh->n_io_port = 0;
@@ -7264,77 +5863,6 @@ static int hpsa_scsi_host_alloc(struct ctlr_info *h)
 	sh->max_cmd_len = MAX_COMMAND_SIZE;
 	sh->max_lun = HPSA_MAX_LUN;
 	sh->max_id = HPSA_MAX_LUN;
-<<<<<<< HEAD
-	sh->can_queue = h->nr_cmds;
-	sh->cmd_per_lun = h->nr_cmds;
-	sh->sg_tablesize = h->maxsgentries;
-	h->scsi_host = sh;
-	sh->hostdata[0] = (unsigned long) h;
-	sh->irq = h->intr[h->intr_mode];
-	sh->unique_id = sh->irq;
-	error = scsi_add_host(sh, &h->pdev->dev);
-	if (error)
-		goto fail_host_put;
-	scsi_scan_host(sh);
-	return 0;
-
- fail_host_put:
-	dev_err(&h->pdev->dev, "%s: scsi_add_host"
-		" failed for controller %d\n", __func__, h->ctlr);
-	scsi_host_put(sh);
-	return error;
- fail:
-	dev_err(&h->pdev->dev, "%s: scsi_host_alloc"
-		" failed for controller %d\n", __func__, h->ctlr);
-	return -ENOMEM;
-}
-
-static int wait_for_device_to_become_ready(struct ctlr_info *h,
-	unsigned char lunaddr[])
-{
-	int rc = 0;
-	int count = 0;
-	int waittime = 1; /* seconds */
-	struct CommandList *c;
-
-	c = cmd_special_alloc(h);
-	if (!c) {
-		dev_warn(&h->pdev->dev, "out of memory in "
-			"wait_for_device_to_become_ready.\n");
-		return IO_ERROR;
-	}
-
-	/* Send test unit ready until device ready, or give up. */
-	while (count < HPSA_TUR_RETRY_LIMIT) {
-
-		/* Wait for a bit.  do this first, because if we send
-		 * the TUR right away, the reset will just abort it.
-		 */
-		msleep(1000 * waittime);
-		count++;
-
-		/* Increase wait time with each try, up to a point. */
-		if (waittime < HPSA_MAX_WAIT_INTERVAL_SECS)
-			waittime = waittime * 2;
-
-		/* Send the Test Unit Ready */
-		fill_cmd(c, TEST_UNIT_READY, h, NULL, 0, 0, lunaddr, TYPE_CMD);
-		hpsa_scsi_do_simple_cmd_core(h, c);
-		/* no unmap needed here because no data xfer. */
-
-		if (c->err_info->CommandStatus == CMD_SUCCESS)
-			break;
-
-		if (c->err_info->CommandStatus == CMD_TARGET_STATUS &&
-			c->err_info->ScsiStatus == SAM_STAT_CHECK_CONDITION &&
-			(c->err_info->SenseInfo[2] == NO_SENSE ||
-			c->err_info->SenseInfo[2] == UNIT_ATTENTION))
-			break;
-
-		dev_warn(&h->pdev->dev, "waiting %d secs "
-			"for device to become ready.\n", waittime);
-		rc = 1; /* device not ready. */
-=======
 	sh->can_queue = h->nr_cmds - HPSA_NRESERVED_CMDS;
 	sh->cmd_per_lun = sh->can_queue;
 	sh->sg_tablesize = h->maxsgentries;
@@ -7479,7 +6007,6 @@ static int wait_for_device_to_become_ready(struct ctlr_info *h,
 		rc = hpsa_wait_for_test_unit_ready(h, c, lunaddr, rq);
 		if (rc)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rc)
@@ -7487,11 +6014,7 @@ static int wait_for_device_to_become_ready(struct ctlr_info *h,
 	else
 		dev_warn(&h->pdev->dev, "device is ready.\n");
 
-<<<<<<< HEAD
-	cmd_special_free(h, c);
-=======
 	cmd_free(h, c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -7500,11 +6023,6 @@ static int wait_for_device_to_become_ready(struct ctlr_info *h,
  */
 static int hpsa_eh_device_reset_handler(struct scsi_cmnd *scsicmd)
 {
-<<<<<<< HEAD
-	int rc;
-	struct ctlr_info *h;
-	struct hpsa_scsi_dev_t *dev;
-=======
 	int rc = SUCCESS;
 	int i;
 	struct ctlr_info *h;
@@ -7512,29 +6030,11 @@ static int hpsa_eh_device_reset_handler(struct scsi_cmnd *scsicmd)
 	u8 reset_type;
 	char msg[48];
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* find the controller to which the command to be aborted was sent */
 	h = sdev_to_hba(scsicmd->device);
 	if (h == NULL) /* paranoia */
 		return FAILED;
-<<<<<<< HEAD
-	dev = scsicmd->device->hostdata;
-	if (!dev) {
-		dev_err(&h->pdev->dev, "hpsa_eh_device_reset_handler: "
-			"device lookup failed.\n");
-		return FAILED;
-	}
-	dev_warn(&h->pdev->dev, "resetting device %d:%d:%d:%d\n",
-		h->scsi_host->host_no, dev->bus, dev->target, dev->lun);
-	/* send a reset to the SCSI LUN which the command was sent to */
-	rc = hpsa_send_reset(h, dev->scsi3addr);
-	if (rc == 0 && wait_for_device_to_become_ready(h, dev->scsi3addr) == 0)
-		return SUCCESS;
-
-	dev_warn(&h->pdev->dev, "resetting device failed.\n");
-	return FAILED;
-=======
 
 	spin_lock_irqsave(&h->reset_lock, flags);
 	h->reset_in_progress = 1;
@@ -7682,7 +6182,6 @@ static void cmd_tagged_free(struct ctlr_info *h, struct CommandList *c)
 	 * else to free it, because it is accessed by index.
 	 */
 	(void)atomic_dec(&c->refcount);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -7690,104 +6189,6 @@ static void cmd_tagged_free(struct ctlr_info *h, struct CommandList *c)
  * and managed by cmd_alloc() and cmd_free() using a simple bitmap to track
  * which ones are free or in use.  Lock must be held when calling this.
  * cmd_free() is the complement.
-<<<<<<< HEAD
- */
-static struct CommandList *cmd_alloc(struct ctlr_info *h)
-{
-	struct CommandList *c;
-	int i;
-	union u64bit temp64;
-	dma_addr_t cmd_dma_handle, err_dma_handle;
-
-	do {
-		i = find_first_zero_bit(h->cmd_pool_bits, h->nr_cmds);
-		if (i == h->nr_cmds)
-			return NULL;
-	} while (test_and_set_bit
-		 (i & (BITS_PER_LONG - 1),
-		  h->cmd_pool_bits + (i / BITS_PER_LONG)) != 0);
-	c = h->cmd_pool + i;
-	memset(c, 0, sizeof(*c));
-	cmd_dma_handle = h->cmd_pool_dhandle
-	    + i * sizeof(*c);
-	c->err_info = h->errinfo_pool + i;
-	memset(c->err_info, 0, sizeof(*c->err_info));
-	err_dma_handle = h->errinfo_pool_dhandle
-	    + i * sizeof(*c->err_info);
-	h->nr_allocs++;
-
-	c->cmdindex = i;
-
-	INIT_LIST_HEAD(&c->list);
-	c->busaddr = (u32) cmd_dma_handle;
-	temp64.val = (u64) err_dma_handle;
-	c->ErrDesc.Addr.lower = temp64.val32.lower;
-	c->ErrDesc.Addr.upper = temp64.val32.upper;
-	c->ErrDesc.Len = sizeof(*c->err_info);
-
-	c->h = h;
-	return c;
-}
-
-/* For operations that can wait for kmalloc to possibly sleep,
- * this routine can be called. Lock need not be held to call
- * cmd_special_alloc. cmd_special_free() is the complement.
- */
-static struct CommandList *cmd_special_alloc(struct ctlr_info *h)
-{
-	struct CommandList *c;
-	union u64bit temp64;
-	dma_addr_t cmd_dma_handle, err_dma_handle;
-
-	c = pci_alloc_consistent(h->pdev, sizeof(*c), &cmd_dma_handle);
-	if (c == NULL)
-		return NULL;
-	memset(c, 0, sizeof(*c));
-
-	c->cmdindex = -1;
-
-	c->err_info = pci_alloc_consistent(h->pdev, sizeof(*c->err_info),
-		    &err_dma_handle);
-
-	if (c->err_info == NULL) {
-		pci_free_consistent(h->pdev,
-			sizeof(*c), c, cmd_dma_handle);
-		return NULL;
-	}
-	memset(c->err_info, 0, sizeof(*c->err_info));
-
-	INIT_LIST_HEAD(&c->list);
-	c->busaddr = (u32) cmd_dma_handle;
-	temp64.val = (u64) err_dma_handle;
-	c->ErrDesc.Addr.lower = temp64.val32.lower;
-	c->ErrDesc.Addr.upper = temp64.val32.upper;
-	c->ErrDesc.Len = sizeof(*c->err_info);
-
-	c->h = h;
-	return c;
-}
-
-static void cmd_free(struct ctlr_info *h, struct CommandList *c)
-{
-	int i;
-
-	i = c - h->cmd_pool;
-	clear_bit(i & (BITS_PER_LONG - 1),
-		  h->cmd_pool_bits + (i / BITS_PER_LONG));
-	h->nr_frees++;
-}
-
-static void cmd_special_free(struct ctlr_info *h, struct CommandList *c)
-{
-	union u64bit temp64;
-
-	temp64.val32.lower = c->ErrDesc.Addr.lower;
-	temp64.val32.upper = c->ErrDesc.Addr.upper;
-	pci_free_consistent(h->pdev, sizeof(*c->err_info),
-			    c->err_info, (dma_addr_t) temp64.val);
-	pci_free_consistent(h->pdev, sizeof(*c),
-			    c, (dma_addr_t) (c->busaddr & DIRECT_LOOKUP_MASK));
-=======
  * This function never gives up and returns NULL.  If it hangs,
  * another thread must call cmd_free() to free some tags.
  */
@@ -7861,87 +6262,10 @@ static void cmd_free(struct ctlr_info *h, struct CommandList *c)
 		i = c - h->cmd_pool;
 		clear_bit(i, h->cmd_pool_bits);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_COMPAT
 
-<<<<<<< HEAD
-static int hpsa_ioctl32_passthru(struct scsi_device *dev, int cmd, void *arg)
-{
-	IOCTL32_Command_struct __user *arg32 =
-	    (IOCTL32_Command_struct __user *) arg;
-	IOCTL_Command_struct arg64;
-	IOCTL_Command_struct __user *p = compat_alloc_user_space(sizeof(arg64));
-	int err;
-	u32 cp;
-
-	memset(&arg64, 0, sizeof(arg64));
-	err = 0;
-	err |= copy_from_user(&arg64.LUN_info, &arg32->LUN_info,
-			   sizeof(arg64.LUN_info));
-	err |= copy_from_user(&arg64.Request, &arg32->Request,
-			   sizeof(arg64.Request));
-	err |= copy_from_user(&arg64.error_info, &arg32->error_info,
-			   sizeof(arg64.error_info));
-	err |= get_user(arg64.buf_size, &arg32->buf_size);
-	err |= get_user(cp, &arg32->buf);
-	arg64.buf = compat_ptr(cp);
-	err |= copy_to_user(p, &arg64, sizeof(arg64));
-
-	if (err)
-		return -EFAULT;
-
-	err = hpsa_ioctl(dev, CCISS_PASSTHRU, (void *)p);
-	if (err)
-		return err;
-	err |= copy_in_user(&arg32->error_info, &p->error_info,
-			 sizeof(arg32->error_info));
-	if (err)
-		return -EFAULT;
-	return err;
-}
-
-static int hpsa_ioctl32_big_passthru(struct scsi_device *dev,
-	int cmd, void *arg)
-{
-	BIG_IOCTL32_Command_struct __user *arg32 =
-	    (BIG_IOCTL32_Command_struct __user *) arg;
-	BIG_IOCTL_Command_struct arg64;
-	BIG_IOCTL_Command_struct __user *p =
-	    compat_alloc_user_space(sizeof(arg64));
-	int err;
-	u32 cp;
-
-	memset(&arg64, 0, sizeof(arg64));
-	err = 0;
-	err |= copy_from_user(&arg64.LUN_info, &arg32->LUN_info,
-			   sizeof(arg64.LUN_info));
-	err |= copy_from_user(&arg64.Request, &arg32->Request,
-			   sizeof(arg64.Request));
-	err |= copy_from_user(&arg64.error_info, &arg32->error_info,
-			   sizeof(arg64.error_info));
-	err |= get_user(arg64.buf_size, &arg32->buf_size);
-	err |= get_user(arg64.malloc_size, &arg32->malloc_size);
-	err |= get_user(cp, &arg32->buf);
-	arg64.buf = compat_ptr(cp);
-	err |= copy_to_user(p, &arg64, sizeof(arg64));
-
-	if (err)
-		return -EFAULT;
-
-	err = hpsa_ioctl(dev, CCISS_BIG_PASSTHRU, (void *)p);
-	if (err)
-		return err;
-	err |= copy_in_user(&arg32->error_info, &p->error_info,
-			 sizeof(arg32->error_info));
-	if (err)
-		return -EFAULT;
-	return err;
-}
-
-static int hpsa_compat_ioctl(struct scsi_device *dev, int cmd, void *arg)
-=======
 static int hpsa_ioctl32_passthru(struct scsi_device *dev, unsigned int cmd,
 	void __user *arg)
 {
@@ -8006,7 +6330,6 @@ static int hpsa_ioctl32_big_passthru(struct scsi_device *dev,
 
 static int hpsa_compat_ioctl(struct scsi_device *dev, unsigned int cmd,
 			     void __user *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (cmd) {
 	case CCISS_GETPCIINFO:
@@ -8075,110 +6398,6 @@ static int hpsa_getdrivver_ioctl(struct ctlr_info *h, void __user *argp)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int hpsa_passthru_ioctl(struct ctlr_info *h, void __user *argp)
-{
-	IOCTL_Command_struct iocommand;
-	struct CommandList *c;
-	char *buff = NULL;
-	union u64bit temp64;
-
-	if (!argp)
-		return -EINVAL;
-	if (!capable(CAP_SYS_RAWIO))
-		return -EPERM;
-	if (copy_from_user(&iocommand, argp, sizeof(iocommand)))
-		return -EFAULT;
-	if ((iocommand.buf_size < 1) &&
-	    (iocommand.Request.Type.Direction != XFER_NONE)) {
-		return -EINVAL;
-	}
-	if (iocommand.buf_size > 0) {
-		buff = kmalloc(iocommand.buf_size, GFP_KERNEL);
-		if (buff == NULL)
-			return -EFAULT;
-		if (iocommand.Request.Type.Direction == XFER_WRITE) {
-			/* Copy the data into the buffer we created */
-			if (copy_from_user(buff, iocommand.buf,
-				iocommand.buf_size)) {
-				kfree(buff);
-				return -EFAULT;
-			}
-		} else {
-			memset(buff, 0, iocommand.buf_size);
-		}
-	}
-	c = cmd_special_alloc(h);
-	if (c == NULL) {
-		kfree(buff);
-		return -ENOMEM;
-	}
-	/* Fill in the command type */
-	c->cmd_type = CMD_IOCTL_PEND;
-	/* Fill in Command Header */
-	c->Header.ReplyQueue = 0; /* unused in simple mode */
-	if (iocommand.buf_size > 0) {	/* buffer to fill */
-		c->Header.SGList = 1;
-		c->Header.SGTotal = 1;
-	} else	{ /* no buffers to fill */
-		c->Header.SGList = 0;
-		c->Header.SGTotal = 0;
-	}
-	memcpy(&c->Header.LUN, &iocommand.LUN_info, sizeof(c->Header.LUN));
-	/* use the kernel address the cmd block for tag */
-	c->Header.Tag.lower = c->busaddr;
-
-	/* Fill in Request block */
-	memcpy(&c->Request, &iocommand.Request,
-		sizeof(c->Request));
-
-	/* Fill in the scatter gather information */
-	if (iocommand.buf_size > 0) {
-		temp64.val = pci_map_single(h->pdev, buff,
-			iocommand.buf_size, PCI_DMA_BIDIRECTIONAL);
-		c->SG[0].Addr.lower = temp64.val32.lower;
-		c->SG[0].Addr.upper = temp64.val32.upper;
-		c->SG[0].Len = iocommand.buf_size;
-		c->SG[0].Ext = 0; /* we are not chaining*/
-	}
-	hpsa_scsi_do_simple_cmd_core_if_no_lockup(h, c);
-	if (iocommand.buf_size > 0)
-		hpsa_pci_unmap(h->pdev, c, 1, PCI_DMA_BIDIRECTIONAL);
-	check_ioctl_unit_attention(h, c);
-
-	/* Copy the error information out */
-	memcpy(&iocommand.error_info, c->err_info,
-		sizeof(iocommand.error_info));
-	if (copy_to_user(argp, &iocommand, sizeof(iocommand))) {
-		kfree(buff);
-		cmd_special_free(h, c);
-		return -EFAULT;
-	}
-	if (iocommand.Request.Type.Direction == XFER_READ &&
-		iocommand.buf_size > 0) {
-		/* Copy the data out of the buffer we created */
-		if (copy_to_user(iocommand.buf, buff, iocommand.buf_size)) {
-			kfree(buff);
-			cmd_special_free(h, c);
-			return -EFAULT;
-		}
-	}
-	kfree(buff);
-	cmd_special_free(h, c);
-	return 0;
-}
-
-static int hpsa_big_passthru_ioctl(struct ctlr_info *h, void __user *argp)
-{
-	BIG_IOCTL_Command_struct *ioc;
-	struct CommandList *c;
-	unsigned char **buff = NULL;
-	int *buff_size = NULL;
-	union u64bit temp64;
-	BYTE sg_used = 0;
-	int status = 0;
-	int i;
-=======
 static int hpsa_passthru_ioctl(struct ctlr_info *h,
 			       IOCTL_Command_struct *iocommand)
 {
@@ -8279,42 +6498,10 @@ static int hpsa_big_passthru_ioctl(struct ctlr_info *h,
 	u64 temp64;
 	BYTE sg_used = 0;
 	int status = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 left;
 	u32 sz;
 	BYTE __user *data_ptr;
 
-<<<<<<< HEAD
-	if (!argp)
-		return -EINVAL;
-	if (!capable(CAP_SYS_RAWIO))
-		return -EPERM;
-	ioc = (BIG_IOCTL_Command_struct *)
-	    kmalloc(sizeof(*ioc), GFP_KERNEL);
-	if (!ioc) {
-		status = -ENOMEM;
-		goto cleanup1;
-	}
-	if (copy_from_user(ioc, argp, sizeof(*ioc))) {
-		status = -EFAULT;
-		goto cleanup1;
-	}
-	if ((ioc->buf_size < 1) &&
-	    (ioc->Request.Type.Direction != XFER_NONE)) {
-		status = -EINVAL;
-		goto cleanup1;
-	}
-	/* Check kmalloc limits  using all SGs */
-	if (ioc->malloc_size > MAX_KMALLOC_SIZE) {
-		status = -EINVAL;
-		goto cleanup1;
-	}
-	if (ioc->buf_size > ioc->malloc_size * SG_ENTRIES_IN_CMD) {
-		status = -EINVAL;
-		goto cleanup1;
-	}
-	buff = kzalloc(SG_ENTRIES_IN_CMD * sizeof(char *), GFP_KERNEL);
-=======
 	if (!capable(CAP_SYS_RAWIO))
 		return -EPERM;
 
@@ -8327,16 +6514,11 @@ static int hpsa_big_passthru_ioctl(struct ctlr_info *h,
 	if (ioc->buf_size > ioc->malloc_size * SG_ENTRIES_IN_CMD)
 		return -EINVAL;
 	buff = kcalloc(SG_ENTRIES_IN_CMD, sizeof(char *), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buff) {
 		status = -ENOMEM;
 		goto cleanup1;
 	}
-<<<<<<< HEAD
-	buff_size = kmalloc(SG_ENTRIES_IN_CMD * sizeof(int), GFP_KERNEL);
-=======
 	buff_size = kmalloc_array(SG_ENTRIES_IN_CMD, sizeof(int), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buff_size) {
 		status = -ENOMEM;
 		goto cleanup1;
@@ -8351,15 +6533,9 @@ static int hpsa_big_passthru_ioctl(struct ctlr_info *h,
 			status = -ENOMEM;
 			goto cleanup1;
 		}
-<<<<<<< HEAD
-		if (ioc->Request.Type.Direction == XFER_WRITE) {
-			if (copy_from_user(buff[sg_used], data_ptr, sz)) {
-				status = -ENOMEM;
-=======
 		if (ioc->Request.Type.Direction & XFER_WRITE) {
 			if (copy_from_user(buff[sg_used], data_ptr, sz)) {
 				status = -EFAULT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto cleanup1;
 			}
 		} else
@@ -8368,18 +6544,6 @@ static int hpsa_big_passthru_ioctl(struct ctlr_info *h,
 		data_ptr += sz;
 		sg_used++;
 	}
-<<<<<<< HEAD
-	c = cmd_special_alloc(h);
-	if (c == NULL) {
-		status = -ENOMEM;
-		goto cleanup1;
-	}
-	c->cmd_type = CMD_IOCTL_PEND;
-	c->Header.ReplyQueue = 0;
-	c->Header.SGList = c->Header.SGTotal = sg_used;
-	memcpy(&c->Header.LUN, &ioc->LUN_info, sizeof(c->Header.LUN));
-	c->Header.Tag.lower = c->busaddr;
-=======
 	c = cmd_alloc(h);
 
 	c->cmd_type = CMD_IOCTL_PEND;
@@ -8388,34 +6552,10 @@ static int hpsa_big_passthru_ioctl(struct ctlr_info *h,
 	c->Header.SGList = (u8) sg_used;
 	c->Header.SGTotal = cpu_to_le16(sg_used);
 	memcpy(&c->Header.LUN, &ioc->LUN_info, sizeof(c->Header.LUN));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&c->Request, &ioc->Request, sizeof(c->Request));
 	if (ioc->buf_size > 0) {
 		int i;
 		for (i = 0; i < sg_used; i++) {
-<<<<<<< HEAD
-			temp64.val = pci_map_single(h->pdev, buff[i],
-				    buff_size[i], PCI_DMA_BIDIRECTIONAL);
-			c->SG[i].Addr.lower = temp64.val32.lower;
-			c->SG[i].Addr.upper = temp64.val32.upper;
-			c->SG[i].Len = buff_size[i];
-			/* we are not chaining */
-			c->SG[i].Ext = 0;
-		}
-	}
-	hpsa_scsi_do_simple_cmd_core_if_no_lockup(h, c);
-	if (sg_used)
-		hpsa_pci_unmap(h->pdev, c, sg_used, PCI_DMA_BIDIRECTIONAL);
-	check_ioctl_unit_attention(h, c);
-	/* Copy the error information out */
-	memcpy(&ioc->error_info, c->err_info, sizeof(ioc->error_info));
-	if (copy_to_user(argp, ioc, sizeof(*ioc))) {
-		cmd_special_free(h, c);
-		status = -EFAULT;
-		goto cleanup1;
-	}
-	if (ioc->Request.Type.Direction == XFER_READ && ioc->buf_size > 0) {
-=======
 			temp64 = dma_map_single(&h->pdev->dev, buff[i],
 				    buff_size[i], DMA_BIDIRECTIONAL);
 			if (dma_mapping_error(&h->pdev->dev,
@@ -8448,29 +6588,16 @@ static int hpsa_big_passthru_ioctl(struct ctlr_info *h,
 	if ((ioc->Request.Type.Direction & XFER_READ) && ioc->buf_size > 0) {
 		int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Copy the data out of the buffer we created */
 		BYTE __user *ptr = ioc->buf;
 		for (i = 0; i < sg_used; i++) {
 			if (copy_to_user(ptr, buff[i], buff_size[i])) {
-<<<<<<< HEAD
-				cmd_special_free(h, c);
-				status = -EFAULT;
-				goto cleanup1;
-=======
 				status = -EFAULT;
 				goto cleanup0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			ptr += buff_size[i];
 		}
 	}
-<<<<<<< HEAD
-	cmd_special_free(h, c);
-	status = 0;
-cleanup1:
-	if (buff) {
-=======
 	status = 0;
 cleanup0:
 	cmd_free(h, c);
@@ -8478,16 +6605,11 @@ cleanup1:
 	if (buff) {
 		int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < sg_used; i++)
 			kfree(buff[i]);
 		kfree(buff);
 	}
 	kfree(buff_size);
-<<<<<<< HEAD
-	kfree(ioc);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -8498,17 +6620,6 @@ static void check_ioctl_unit_attention(struct ctlr_info *h,
 			c->err_info->ScsiStatus != SAM_STAT_CHECK_CONDITION)
 		(void) check_for_unit_attention(h, c);
 }
-<<<<<<< HEAD
-/*
- * ioctl
- */
-static int hpsa_ioctl(struct scsi_device *dev, int cmd, void *arg)
-{
-	struct ctlr_info *h;
-	void __user *argp = (void __user *)arg;
-
-	h = sdev_to_hba(dev);
-=======
 
 /*
  * ioctl
@@ -8518,7 +6629,6 @@ static int hpsa_ioctl(struct scsi_device *dev, unsigned int cmd,
 {
 	struct ctlr_info *h = sdev_to_hba(dev);
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case CCISS_DEREGDISK:
@@ -8530,12 +6640,6 @@ static int hpsa_ioctl(struct scsi_device *dev, unsigned int cmd,
 		return hpsa_getpciinfo_ioctl(h, argp);
 	case CCISS_GETDRIVVER:
 		return hpsa_getdrivver_ioctl(h, argp);
-<<<<<<< HEAD
-	case CCISS_PASSTHRU:
-		return hpsa_passthru_ioctl(h, argp);
-	case CCISS_BIG_PASSTHRU:
-		return hpsa_big_passthru_ioctl(h, argp);
-=======
 	case CCISS_PASSTHRU: {
 		IOCTL_Command_struct iocommand;
 
@@ -8565,31 +6669,19 @@ static int hpsa_ioctl(struct scsi_device *dev, unsigned int cmd,
 			rc = -EFAULT;
 		return rc;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOTTY;
 	}
 }
 
-<<<<<<< HEAD
-static int __devinit hpsa_send_host_reset(struct ctlr_info *h,
-	unsigned char *scsi3addr, u8 reset_type)
-=======
 static void hpsa_send_host_reset(struct ctlr_info *h, u8 reset_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct CommandList *c;
 
 	c = cmd_alloc(h);
-<<<<<<< HEAD
-	if (!c)
-		return -ENOMEM;
-	fill_cmd(c, HPSA_DEVICE_RESET_MSG, h, NULL, 0, 0,
-=======
 
 	/* fill_cmd can't fail here, no data buffer to map */
 	(void) fill_cmd(c, HPSA_DEVICE_RESET_MSG, h, NULL, 0, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		RAID_CTLR_LUNID, TYPE_MSG);
 	c->Request.CDB[1] = reset_type; /* fill_cmd defaults to target reset */
 	c->waiting = NULL;
@@ -8598,30 +6690,6 @@ static void hpsa_send_host_reset(struct ctlr_info *h, u8 reset_type)
 	 * the command either.  This is the last command we will send before
 	 * re-initializing everything, so it doesn't matter and won't leak.
 	 */
-<<<<<<< HEAD
-	return 0;
-}
-
-static void fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
-	void *buff, size_t size, u8 page_code, unsigned char *scsi3addr,
-	int cmd_type)
-{
-	int pci_dir = XFER_NONE;
-
-	c->cmd_type = CMD_IOCTL_PEND;
-	c->Header.ReplyQueue = 0;
-	if (buff != NULL && size > 0) {
-		c->Header.SGList = 1;
-		c->Header.SGTotal = 1;
-	} else {
-		c->Header.SGList = 0;
-		c->Header.SGTotal = 0;
-	}
-	c->Header.Tag.lower = c->busaddr;
-	memcpy(c->Header.LUN.LunAddrBytes, scsi3addr, 8);
-
-	c->Request.Type.Type = cmd_type;
-=======
 	return;
 }
 
@@ -8643,20 +6711,10 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 	}
 	memcpy(c->Header.LUN.LunAddrBytes, scsi3addr, 8);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd_type == TYPE_CMD) {
 		switch (cmd) {
 		case HPSA_INQUIRY:
 			/* are we trying to read a vital product page */
-<<<<<<< HEAD
-			if (page_code != 0) {
-				c->Request.CDB[1] = 0x01;
-				c->Request.CDB[2] = page_code;
-			}
-			c->Request.CDBLen = 6;
-			c->Request.Type.Attribute = ATTR_SIMPLE;
-			c->Request.Type.Direction = XFER_READ;
-=======
 			if (page_code & VPD_PAGE) {
 				c->Request.CDB[1] = 0x01;
 				c->Request.CDB[2] = (page_code & 0xff);
@@ -8664,13 +6722,10 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 			c->Request.CDBLen = 6;
 			c->Request.type_attr_dir =
 				TYPE_ATTR_DIR(cmd_type, ATTR_SIMPLE, XFER_READ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			c->Request.Timeout = 0;
 			c->Request.CDB[0] = HPSA_INQUIRY;
 			c->Request.CDB[4] = size & 0xFF;
 			break;
-<<<<<<< HEAD
-=======
 		case RECEIVE_DIAGNOSTIC:
 			c->Request.CDBLen = 6;
 			c->Request.type_attr_dir =
@@ -8682,20 +6737,14 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 			c->Request.CDB[3] = (size >> 8) & 0xFF;
 			c->Request.CDB[4] = size & 0xFF;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case HPSA_REPORT_LOG:
 		case HPSA_REPORT_PHYS:
 			/* Talking to controller so It's a physical command
 			   mode = 00 target = 0.  Nothing to write.
 			 */
 			c->Request.CDBLen = 12;
-<<<<<<< HEAD
-			c->Request.Type.Attribute = ATTR_SIMPLE;
-			c->Request.Type.Direction = XFER_READ;
-=======
 			c->Request.type_attr_dir =
 				TYPE_ATTR_DIR(cmd_type, ATTR_SIMPLE, XFER_READ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			c->Request.Timeout = 0;
 			c->Request.CDB[0] = cmd;
 			c->Request.CDB[6] = (size >> 24) & 0xFF; /* MSB */
@@ -8703,12 +6752,6 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 			c->Request.CDB[8] = (size >> 8) & 0xFF;
 			c->Request.CDB[9] = size & 0xFF;
 			break;
-<<<<<<< HEAD
-		case HPSA_CACHE_FLUSH:
-			c->Request.CDBLen = 12;
-			c->Request.Type.Attribute = ATTR_SIMPLE;
-			c->Request.Type.Direction = XFER_WRITE;
-=======
 		case BMIC_SENSE_DIAG_OPTIONS:
 			c->Request.CDBLen = 16;
 			c->Request.type_attr_dir =
@@ -8732,7 +6775,6 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 			c->Request.type_attr_dir =
 					TYPE_ATTR_DIR(cmd_type,
 						ATTR_SIMPLE, XFER_WRITE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			c->Request.Timeout = 0;
 			c->Request.CDB[0] = BMIC_WRITE;
 			c->Request.CDB[6] = BMIC_CACHE_FLUSH;
@@ -8741,16 +6783,6 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 			break;
 		case TEST_UNIT_READY:
 			c->Request.CDBLen = 6;
-<<<<<<< HEAD
-			c->Request.Type.Attribute = ATTR_SIMPLE;
-			c->Request.Type.Direction = XFER_NONE;
-			c->Request.Timeout = 0;
-			break;
-		default:
-			dev_warn(&h->pdev->dev, "unknown command 0x%c\n", cmd);
-			BUG();
-			return;
-=======
 			c->Request.type_attr_dir =
 				TYPE_ATTR_DIR(cmd_type, ATTR_SIMPLE, XFER_NONE);
 			c->Request.Timeout = 0;
@@ -8826,18 +6858,10 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 		default:
 			dev_warn(&h->pdev->dev, "unknown command 0x%c\n", cmd);
 			BUG();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (cmd_type == TYPE_MSG) {
 		switch (cmd) {
 
-<<<<<<< HEAD
-		case  HPSA_DEVICE_RESET_MSG:
-			c->Request.CDBLen = 16;
-			c->Request.Type.Type =  1; /* It is a MSG not a CMD */
-			c->Request.Type.Attribute = ATTR_SIMPLE;
-			c->Request.Type.Direction = XFER_NONE;
-=======
 		case  HPSA_PHYS_TARGET_RESET:
 			c->Request.CDBLen = 16;
 			c->Request.type_attr_dir =
@@ -8856,7 +6880,6 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 			c->Request.CDBLen = 16;
 			c->Request.type_attr_dir =
 				TYPE_ATTR_DIR(cmd_type, ATTR_SIMPLE, XFER_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			c->Request.Timeout = 0; /* Don't time out */
 			memset(&c->Request.CDB[0], 0, sizeof(c->Request.CDB));
 			c->Request.CDB[0] =  cmd;
@@ -8867,12 +6890,7 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 			c->Request.CDB[5] = 0x00;
 			c->Request.CDB[6] = 0x00;
 			c->Request.CDB[7] = 0x00;
-<<<<<<< HEAD
-		break;
-
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			dev_warn(&h->pdev->dev, "unknown message type %d\n",
 				cmd);
@@ -8883,25 +6901,6 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 		BUG();
 	}
 
-<<<<<<< HEAD
-	switch (c->Request.Type.Direction) {
-	case XFER_READ:
-		pci_dir = PCI_DMA_FROMDEVICE;
-		break;
-	case XFER_WRITE:
-		pci_dir = PCI_DMA_TODEVICE;
-		break;
-	case XFER_NONE:
-		pci_dir = PCI_DMA_NONE;
-		break;
-	default:
-		pci_dir = PCI_DMA_BIDIRECTIONAL;
-	}
-
-	hpsa_map_one(h->pdev, c, buff, size, pci_dir);
-
-	return;
-=======
 	switch (GET_DIR(c->Request.type_attr_dir)) {
 	case XFER_READ:
 		dir = DMA_FROM_DEVICE;
@@ -8918,7 +6917,6 @@ static int fill_cmd(struct CommandList *c, u8 cmd, struct ctlr_info *h,
 	if (hpsa_map_one(h->pdev, c, buff, size, dir))
 		return -1;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -8928,52 +6926,15 @@ static void __iomem *remap_pci_mem(ulong base, ulong size)
 {
 	ulong page_base = ((ulong) base) & PAGE_MASK;
 	ulong page_offs = ((ulong) base) - page_base;
-<<<<<<< HEAD
-	void __iomem *page_remapped = ioremap(page_base, page_offs + size);
-=======
 	void __iomem *page_remapped = ioremap(page_base,
 		page_offs + size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return page_remapped ? (page_remapped + page_offs) : NULL;
 }
 
-<<<<<<< HEAD
-/* Takes cmds off the submission queue and sends them to the hardware,
- * then puts them on the queue of cmds waiting for completion.
- */
-static void start_io(struct ctlr_info *h)
-{
-	struct CommandList *c;
-
-	while (!list_empty(&h->reqQ)) {
-		c = list_entry(h->reqQ.next, struct CommandList, list);
-		/* can't do anything if fifo is full */
-		if ((h->access.fifo_full(h))) {
-			dev_warn(&h->pdev->dev, "fifo full\n");
-			break;
-		}
-
-		/* Get the first entry from the Request Q */
-		removeQ(c);
-		h->Qdepth--;
-
-		/* Tell the controller execute command */
-		h->access.submit_command(h, c);
-
-		/* Put job onto the completed Q */
-		addQ(&h->cmpQ, c);
-	}
-}
-
-static inline unsigned long get_next_completion(struct ctlr_info *h)
-{
-	return h->access.command_completed(h);
-=======
 static inline unsigned long get_next_completion(struct ctlr_info *h, u8 q)
 {
 	return h->access.command_completed(h, q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool interrupt_pending(struct ctlr_info *h)
@@ -8997,40 +6958,6 @@ static inline int bad_tag(struct ctlr_info *h, u32 tag_index,
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline void finish_cmd(struct CommandList *c, u32 raw_tag)
-{
-	removeQ(c);
-	dial_up_lockup_detection_on_fw_flash_complete(c->h, c);
-	if (likely(c->cmd_type == CMD_SCSI))
-		complete_scsi_command(c);
-	else if (c->cmd_type == CMD_IOCTL_PEND)
-		complete(c->waiting);
-}
-
-static inline u32 hpsa_tag_contains_index(u32 tag)
-{
-	return tag & DIRECT_LOOKUP_BIT;
-}
-
-static inline u32 hpsa_tag_to_index(u32 tag)
-{
-	return tag >> DIRECT_LOOKUP_SHIFT;
-}
-
-
-static inline u32 hpsa_tag_discard_error_bits(struct ctlr_info *h, u32 tag)
-{
-#define HPSA_PERF_ERROR_BITS ((1 << DIRECT_LOOKUP_SHIFT) - 1)
-#define HPSA_SIMPLE_ERROR_BITS 0x03
-	if (unlikely(!(h->transMethod & CFGTBL_Trans_Performant)))
-		return tag & ~HPSA_SIMPLE_ERROR_BITS;
-	return tag & ~HPSA_PERF_ERROR_BITS;
-}
-
-/* process completion of an indexed ("direct lookup") command */
-static inline u32 process_indexed_cmd(struct ctlr_info *h,
-=======
 static inline void finish_cmd(struct CommandList *c)
 {
 	dial_up_lockup_detection_on_fw_flash_complete(c->h, c);
@@ -9043,44 +6970,16 @@ static inline void finish_cmd(struct CommandList *c)
 
 /* process completion of an indexed ("direct lookup") command */
 static inline void process_indexed_cmd(struct ctlr_info *h,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 raw_tag)
 {
 	u32 tag_index;
 	struct CommandList *c;
 
-<<<<<<< HEAD
-	tag_index = hpsa_tag_to_index(raw_tag);
-	if (bad_tag(h, tag_index, raw_tag))
-		return next_command(h);
-	c = h->cmd_pool + tag_index;
-	finish_cmd(c, raw_tag);
-	return next_command(h);
-}
-
-/* process completion of a non-indexed command */
-static inline u32 process_nonindexed_cmd(struct ctlr_info *h,
-	u32 raw_tag)
-{
-	u32 tag;
-	struct CommandList *c = NULL;
-
-	tag = hpsa_tag_discard_error_bits(h, raw_tag);
-	list_for_each_entry(c, &h->cmpQ, list) {
-		if ((c->busaddr & 0xFFFFFFE0) == (tag & 0xFFFFFFE0)) {
-			finish_cmd(c, raw_tag);
-			return next_command(h);
-		}
-	}
-	bad_tag(h, h->nr_cmds + 1, raw_tag);
-	return next_command(h);
-=======
 	tag_index = raw_tag >> DIRECT_LOOKUP_SHIFT;
 	if (!bad_tag(h, tag_index, raw_tag)) {
 		c = h->cmd_pool + tag_index;
 		finish_cmd(c);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Some controllers, like p400, will give us one interrupt
@@ -9102,12 +7001,6 @@ static int ignore_bogus_interrupt(struct ctlr_info *h)
 	return 1;
 }
 
-<<<<<<< HEAD
-static irqreturn_t hpsa_intx_discard_completions(int irq, void *dev_id)
-{
-	struct ctlr_info *h = dev_id;
-	unsigned long flags;
-=======
 /*
  * Convert &h->q[x] (passed to interrupt handlers) back to h.
  * Relies on (h-q[x] == x) being true for x such that
@@ -9122,7 +7015,6 @@ static irqreturn_t hpsa_intx_discard_completions(int irq, void *queue)
 {
 	struct ctlr_info *h = queue_to_hba(queue);
 	u8 q = *(u8 *) queue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 raw_tag;
 
 	if (ignore_bogus_interrupt(h))
@@ -9130,24 +7022,6 @@ static irqreturn_t hpsa_intx_discard_completions(int irq, void *queue)
 
 	if (interrupt_not_for_us(h))
 		return IRQ_NONE;
-<<<<<<< HEAD
-	spin_lock_irqsave(&h->lock, flags);
-	h->last_intr_timestamp = get_jiffies_64();
-	while (interrupt_pending(h)) {
-		raw_tag = get_next_completion(h);
-		while (raw_tag != FIFO_EMPTY)
-			raw_tag = next_command(h);
-	}
-	spin_unlock_irqrestore(&h->lock, flags);
-	return IRQ_HANDLED;
-}
-
-static irqreturn_t hpsa_msix_discard_completions(int irq, void *dev_id)
-{
-	struct ctlr_info *h = dev_id;
-	unsigned long flags;
-	u32 raw_tag;
-=======
 	h->last_intr_timestamp = get_jiffies_64();
 	while (interrupt_pending(h)) {
 		raw_tag = get_next_completion(h, q);
@@ -9162,61 +7036,10 @@ static irqreturn_t hpsa_msix_discard_completions(int irq, void *queue)
 	struct ctlr_info *h = queue_to_hba(queue);
 	u32 raw_tag;
 	u8 q = *(u8 *) queue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ignore_bogus_interrupt(h))
 		return IRQ_NONE;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&h->lock, flags);
-	h->last_intr_timestamp = get_jiffies_64();
-	raw_tag = get_next_completion(h);
-	while (raw_tag != FIFO_EMPTY)
-		raw_tag = next_command(h);
-	spin_unlock_irqrestore(&h->lock, flags);
-	return IRQ_HANDLED;
-}
-
-static irqreturn_t do_hpsa_intr_intx(int irq, void *dev_id)
-{
-	struct ctlr_info *h = dev_id;
-	unsigned long flags;
-	u32 raw_tag;
-
-	if (interrupt_not_for_us(h))
-		return IRQ_NONE;
-	spin_lock_irqsave(&h->lock, flags);
-	h->last_intr_timestamp = get_jiffies_64();
-	while (interrupt_pending(h)) {
-		raw_tag = get_next_completion(h);
-		while (raw_tag != FIFO_EMPTY) {
-			if (hpsa_tag_contains_index(raw_tag))
-				raw_tag = process_indexed_cmd(h, raw_tag);
-			else
-				raw_tag = process_nonindexed_cmd(h, raw_tag);
-		}
-	}
-	spin_unlock_irqrestore(&h->lock, flags);
-	return IRQ_HANDLED;
-}
-
-static irqreturn_t do_hpsa_intr_msi(int irq, void *dev_id)
-{
-	struct ctlr_info *h = dev_id;
-	unsigned long flags;
-	u32 raw_tag;
-
-	spin_lock_irqsave(&h->lock, flags);
-	h->last_intr_timestamp = get_jiffies_64();
-	raw_tag = get_next_completion(h);
-	while (raw_tag != FIFO_EMPTY) {
-		if (hpsa_tag_contains_index(raw_tag))
-			raw_tag = process_indexed_cmd(h, raw_tag);
-		else
-			raw_tag = process_nonindexed_cmd(h, raw_tag);
-	}
-	spin_unlock_irqrestore(&h->lock, flags);
-=======
 	h->last_intr_timestamp = get_jiffies_64();
 	raw_tag = get_next_completion(h, q);
 	while (raw_tag != FIFO_EMPTY)
@@ -9255,7 +7078,6 @@ static irqreturn_t do_hpsa_intr_msi(int irq, void *queue)
 		process_indexed_cmd(h, raw_tag);
 		raw_tag = next_command(h, q);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -9263,13 +7085,8 @@ static irqreturn_t do_hpsa_intr_msi(int irq, void *queue)
  * in simple mode, not performant mode due to the tag lookup.
  * We only ever use this immediately after a controller reset.
  */
-<<<<<<< HEAD
-static __devinit int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
-						unsigned char type)
-=======
 static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 			unsigned char type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Command {
 		struct CommandListHeader CommandHeader;
@@ -9280,12 +7097,8 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 	static const size_t cmd_sz = sizeof(*cmd) +
 					sizeof(cmd->ErrorDescriptor);
 	dma_addr_t paddr64;
-<<<<<<< HEAD
-	uint32_t paddr32, tag;
-=======
 	__le32 paddr32;
 	u32 tag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *vaddr;
 	int i, err;
 
@@ -9297,15 +7110,6 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 	 * CCISS commands, so they must be allocated from the lower 4GiB of
 	 * memory.
 	 */
-<<<<<<< HEAD
-	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-	if (err) {
-		iounmap(vaddr);
-		return -ENOMEM;
-	}
-
-	cmd = pci_alloc_consistent(pdev, cmd_sz, &paddr64);
-=======
 	err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
 	if (err) {
 		iounmap(vaddr);
@@ -9313,7 +7117,6 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 	}
 
 	cmd = dma_alloc_coherent(&pdev->dev, cmd_sz, &paddr64, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd == NULL) {
 		iounmap(vaddr);
 		return -ENOMEM;
@@ -9323,21 +7126,6 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 	 * although there's no guarantee, we assume that the address is at
 	 * least 4-byte aligned (most likely, it's page-aligned).
 	 */
-<<<<<<< HEAD
-	paddr32 = paddr64;
-
-	cmd->CommandHeader.ReplyQueue = 0;
-	cmd->CommandHeader.SGList = 0;
-	cmd->CommandHeader.SGTotal = 0;
-	cmd->CommandHeader.Tag.lower = paddr32;
-	cmd->CommandHeader.Tag.upper = 0;
-	memset(&cmd->CommandHeader.LUN.LunAddrBytes, 0, 8);
-
-	cmd->Request.CDBLen = 16;
-	cmd->Request.Type.Type = TYPE_MSG;
-	cmd->Request.Type.Attribute = ATTR_HEADOFQUEUE;
-	cmd->Request.Type.Direction = XFER_NONE;
-=======
 	paddr32 = cpu_to_le32(paddr64);
 
 	cmd->CommandHeader.ReplyQueue = 0;
@@ -9349,22 +7137,10 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 	cmd->Request.CDBLen = 16;
 	cmd->Request.type_attr_dir =
 			TYPE_ATTR_DIR(TYPE_MSG, ATTR_HEADOFQUEUE, XFER_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->Request.Timeout = 0; /* Don't time out */
 	cmd->Request.CDB[0] = opcode;
 	cmd->Request.CDB[1] = type;
 	memset(&cmd->Request.CDB[2], 0, 14); /* rest of the CDB is reserved */
-<<<<<<< HEAD
-	cmd->ErrorDescriptor.Addr.lower = paddr32 + sizeof(*cmd);
-	cmd->ErrorDescriptor.Addr.upper = 0;
-	cmd->ErrorDescriptor.Len = sizeof(struct ErrorInfo);
-
-	writel(paddr32, vaddr + SA5_REQUEST_PORT_OFFSET);
-
-	for (i = 0; i < HPSA_MSG_SEND_RETRY_LIMIT; i++) {
-		tag = readl(vaddr + SA5_REPLY_PORT_OFFSET);
-		if ((tag & ~HPSA_SIMPLE_ERROR_BITS) == paddr32)
-=======
 	cmd->ErrorDescriptor.Addr =
 			cpu_to_le64((le32_to_cpu(paddr32) + sizeof(*cmd)));
 	cmd->ErrorDescriptor.Len = cpu_to_le32(sizeof(struct ErrorInfo));
@@ -9374,7 +7150,6 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 	for (i = 0; i < HPSA_MSG_SEND_RETRY_LIMIT; i++) {
 		tag = readl(vaddr + SA5_REPLY_PORT_OFFSET);
 		if ((tag & ~HPSA_SIMPLE_ERROR_BITS) == paddr64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		msleep(HPSA_MSG_SEND_RETRY_INTERVAL_MSECS);
 	}
@@ -9390,11 +7165,7 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 		return -ETIMEDOUT;
 	}
 
-<<<<<<< HEAD
-	pci_free_consistent(pdev, cmd_sz, cmd, paddr64);
-=======
 	dma_free_coherent(&pdev->dev, cmd_sz, cmd, paddr64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tag & HPSA_ERROR_BIT) {
 		dev_err(&pdev->dev, "controller message %02x:%02x failed\n",
@@ -9410,15 +7181,8 @@ static int hpsa_message(struct pci_dev *pdev, unsigned char opcode,
 #define hpsa_noop(p) hpsa_message(p, 3, 0)
 
 static int hpsa_controller_hard_reset(struct pci_dev *pdev,
-<<<<<<< HEAD
-	void * __iomem vaddr, u32 use_doorbell)
-{
-	u16 pmcsr;
-	int pos;
-=======
 	void __iomem *vaddr, u32 use_doorbell)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (use_doorbell) {
 		/* For everything after the P600, the PCI power state method
@@ -9427,8 +7191,6 @@ static int hpsa_controller_hard_reset(struct pci_dev *pdev,
 		 */
 		dev_info(&pdev->dev, "using doorbell to reset controller\n");
 		writel(use_doorbell, vaddr + SA5_DOORBELL);
-<<<<<<< HEAD
-=======
 
 		/* PMC hardware guys tell us we need a 10 second delay after
 		 * doorbell reset and before any attempt to talk to the board
@@ -9436,7 +7198,6 @@ static int hpsa_controller_hard_reset(struct pci_dev *pdev,
 		 * over in some weird corner cases.
 		 */
 		msleep(10000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else { /* Try to do it the PCI power state way */
 
 		/* Quoting from the Open CISS Specification: "The Power
@@ -9447,21 +7208,6 @@ static int hpsa_controller_hard_reset(struct pci_dev *pdev,
 		 * this causes a secondary PCI reset which will reset the
 		 * controller." */
 
-<<<<<<< HEAD
-		pos = pci_find_capability(pdev, PCI_CAP_ID_PM);
-		if (pos == 0) {
-			dev_err(&pdev->dev,
-				"hpsa_reset_controller: "
-				"PCI PM not supported\n");
-			return -ENODEV;
-		}
-		dev_info(&pdev->dev, "using PCI PM to reset controller\n");
-		/* enter the D3hot power management state */
-		pci_read_config_word(pdev, pos + PCI_PM_CTRL, &pmcsr);
-		pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
-		pmcsr |= PCI_D3hot;
-		pci_write_config_word(pdev, pos + PCI_PM_CTRL, pmcsr);
-=======
 		int rc = 0;
 
 		dev_info(&pdev->dev, "using PCI PM to reset controller\n");
@@ -9470,20 +7216,13 @@ static int hpsa_controller_hard_reset(struct pci_dev *pdev,
 		rc = pci_set_power_state(pdev, PCI_D3hot);
 		if (rc)
 			return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		msleep(500);
 
 		/* enter the D0 power management state */
-<<<<<<< HEAD
-		pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
-		pmcsr |= PCI_D0;
-		pci_write_config_word(pdev, pos + PCI_PM_CTRL, pmcsr);
-=======
 		rc = pci_set_power_state(pdev, PCI_D0);
 		if (rc)
 			return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * The P600 requires a small delay when changing states.
@@ -9495,22 +7234,13 @@ static int hpsa_controller_hard_reset(struct pci_dev *pdev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static __devinit void init_driver_version(char *driver_version, int len)
-=======
 static void init_driver_version(char *driver_version, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memset(driver_version, 0, len);
 	strncpy(driver_version, HPSA " " HPSA_DRIVER_VERSION, len - 1);
 }
 
-<<<<<<< HEAD
-static __devinit int write_driver_ver_to_cfgtable(
-	struct CfgTable __iomem *cfgtable)
-=======
 static int write_driver_ver_to_cfgtable(struct CfgTable __iomem *cfgtable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *driver_version;
 	int i, size = sizeof(cfgtable->driver_version);
@@ -9526,13 +7256,8 @@ static int write_driver_ver_to_cfgtable(struct CfgTable __iomem *cfgtable)
 	return 0;
 }
 
-<<<<<<< HEAD
-static __devinit void read_driver_ver_from_cfgtable(
-	struct CfgTable __iomem *cfgtable, unsigned char *driver_ver)
-=======
 static void read_driver_ver_from_cfgtable(struct CfgTable __iomem *cfgtable,
 					  unsigned char *driver_ver)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -9540,22 +7265,13 @@ static void read_driver_ver_from_cfgtable(struct CfgTable __iomem *cfgtable,
 		driver_ver[i] = readb(&cfgtable->driver_version[i]);
 }
 
-<<<<<<< HEAD
-static __devinit int controller_reset_failed(
-	struct CfgTable __iomem *cfgtable)
-=======
 static int controller_reset_failed(struct CfgTable __iomem *cfgtable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	char *driver_ver, *old_driver_ver;
 	int rc, size = sizeof(cfgtable->driver_version);
 
-<<<<<<< HEAD
-	old_driver_ver = kmalloc(2 * size, GFP_KERNEL);
-=======
 	old_driver_ver = kmalloc_array(2, size, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!old_driver_ver)
 		return -ENOMEM;
 	driver_ver = old_driver_ver + size;
@@ -9572,11 +7288,7 @@ static int controller_reset_failed(struct CfgTable __iomem *cfgtable)
 /* This does a hard reset of the controller using PCI power management
  * states or the using the doorbell register.
  */
-<<<<<<< HEAD
-static __devinit int hpsa_kdump_hard_reset_controller(struct pci_dev *pdev)
-=======
 static int hpsa_kdump_hard_reset_controller(struct pci_dev *pdev, u32 board_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 cfg_offset;
 	u32 cfg_base_addr;
@@ -9587,10 +7299,6 @@ static int hpsa_kdump_hard_reset_controller(struct pci_dev *pdev, u32 board_id)
 	int rc;
 	struct CfgTable __iomem *cfgtable;
 	u32 use_doorbell;
-<<<<<<< HEAD
-	u32 board_id;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 command_register;
 
 	/* For controllers as old as the P600, this is very nearly
@@ -9606,14 +7314,8 @@ static int hpsa_kdump_hard_reset_controller(struct pci_dev *pdev, u32 board_id)
 	 * using the doorbell register.
 	 */
 
-<<<<<<< HEAD
-	rc = hpsa_lookup_board_id(pdev, &board_id);
-	if (rc < 0 || !ctlr_is_resettable(board_id)) {
-		dev_warn(&pdev->dev, "Not resetting device.\n");
-=======
 	if (!ctlr_is_resettable(board_id)) {
 		dev_warn(&pdev->dev, "Controller not resettable\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -9658,13 +7360,8 @@ static int hpsa_kdump_hard_reset_controller(struct pci_dev *pdev, u32 board_id)
 	} else {
 		use_doorbell = misc_fw_support & MISC_FW_DOORBELL_RESET;
 		if (use_doorbell) {
-<<<<<<< HEAD
-			dev_warn(&pdev->dev, "Soft reset not supported. "
-				"Firmware update is required.\n");
-=======
 			dev_warn(&pdev->dev,
 				"Soft reset not supported. Firmware update is required.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOTSUPP; /* try soft reset */
 			goto unmap_cfgtable;
 		}
@@ -9681,28 +7378,10 @@ static int hpsa_kdump_hard_reset_controller(struct pci_dev *pdev, u32 board_id)
 	   need a little pause here */
 	msleep(HPSA_POST_RESET_PAUSE_MSECS);
 
-<<<<<<< HEAD
-	/* Wait for board to become not ready, then ready. */
-	dev_info(&pdev->dev, "Waiting for board to reset.\n");
-	rc = hpsa_wait_for_board_state(pdev, vaddr, BOARD_NOT_READY);
-	if (rc) {
-		dev_warn(&pdev->dev,
-			"failed waiting for board to reset."
-			" Will try soft reset.\n");
-		rc = -ENOTSUPP; /* Not expected, but try soft reset later */
-		goto unmap_cfgtable;
-	}
-	rc = hpsa_wait_for_board_state(pdev, vaddr, BOARD_READY);
-	if (rc) {
-		dev_warn(&pdev->dev,
-			"failed waiting for board to become ready "
-			"after hard reset\n");
-=======
 	rc = hpsa_wait_for_board_state(pdev, vaddr, BOARD_READY);
 	if (rc) {
 		dev_warn(&pdev->dev,
 			"Failed waiting for board to become ready after hard reset\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unmap_cfgtable;
 	}
 
@@ -9730,11 +7409,7 @@ unmap_vaddr:
  *   the io functions.
  *   This is for debug only.
  */
-<<<<<<< HEAD
-static void print_cfg_table(struct device *dev, struct CfgTable *tb)
-=======
 static void print_cfg_table(struct device *dev, struct CfgTable __iomem *tb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef HPSA_DEBUG
 	int i;
@@ -9757,11 +7432,7 @@ static void print_cfg_table(struct device *dev, struct CfgTable __iomem *tb)
 	       readl(&(tb->HostWrite.CoalIntDelay)));
 	dev_info(dev, "   Coalesce Interrupt Count = 0x%x\n",
 	       readl(&(tb->HostWrite.CoalIntCount)));
-<<<<<<< HEAD
-	dev_info(dev, "   Max outstanding commands = 0x%d\n",
-=======
 	dev_info(dev, "   Max outstanding commands = %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       readl(&(tb->CmdsOutMax)));
 	dev_info(dev, "   Bus Types = 0x%x\n", readl(&(tb->BusTypes)));
 	for (i = 0; i < 16; i++)
@@ -9799,10 +7470,6 @@ static int find_PCI_BAR_index(struct pci_dev *pdev, unsigned long pci_bar_addr)
 				dev_warn(&pdev->dev,
 				       "base address is invalid\n");
 				return -1;
-<<<<<<< HEAD
-				break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		if (offset == pci_bar_addr - PCI_BASE_ADDRESS_0)
@@ -9811,59 +7478,6 @@ static int find_PCI_BAR_index(struct pci_dev *pdev, unsigned long pci_bar_addr)
 	return -1;
 }
 
-<<<<<<< HEAD
-/* If MSI/MSI-X is supported by the kernel we will try to enable it on
- * controllers that are capable. If not, we use IO-APIC mode.
- */
-
-static void __devinit hpsa_interrupt_mode(struct ctlr_info *h)
-{
-#ifdef CONFIG_PCI_MSI
-	int err;
-	struct msix_entry hpsa_msix_entries[4] = { {0, 0}, {0, 1},
-	{0, 2}, {0, 3}
-	};
-
-	/* Some boards advertise MSI but don't really support it */
-	if ((h->board_id == 0x40700E11) || (h->board_id == 0x40800E11) ||
-	    (h->board_id == 0x40820E11) || (h->board_id == 0x40830E11))
-		goto default_int_mode;
-	if (pci_find_capability(h->pdev, PCI_CAP_ID_MSIX)) {
-		dev_info(&h->pdev->dev, "MSIX\n");
-		err = pci_enable_msix(h->pdev, hpsa_msix_entries, 4);
-		if (!err) {
-			h->intr[0] = hpsa_msix_entries[0].vector;
-			h->intr[1] = hpsa_msix_entries[1].vector;
-			h->intr[2] = hpsa_msix_entries[2].vector;
-			h->intr[3] = hpsa_msix_entries[3].vector;
-			h->msix_vector = 1;
-			return;
-		}
-		if (err > 0) {
-			dev_warn(&h->pdev->dev, "only %d MSI-X vectors "
-			       "available\n", err);
-			goto default_int_mode;
-		} else {
-			dev_warn(&h->pdev->dev, "MSI-X init failed %d\n",
-			       err);
-			goto default_int_mode;
-		}
-	}
-	if (pci_find_capability(h->pdev, PCI_CAP_ID_MSI)) {
-		dev_info(&h->pdev->dev, "MSI\n");
-		if (!pci_enable_msi(h->pdev))
-			h->msi_vector = 1;
-		else
-			dev_warn(&h->pdev->dev, "MSI init failed\n");
-	}
-default_int_mode:
-#endif				/* CONFIG_PCI_MSI */
-	/* if we get here we're going to use the default interrupt mode */
-	h->intr[h->intr_mode] = h->pdev->irq;
-}
-
-static int __devinit hpsa_lookup_board_id(struct pci_dev *pdev, u32 *board_id)
-=======
 static void hpsa_disable_interrupt_mode(struct ctlr_info *h)
 {
 	pci_free_irq_vectors(h->pdev);
@@ -9925,7 +7539,6 @@ static int hpsa_interrupt_mode(struct ctlr_info *h)
 
 static int hpsa_lookup_board_id(struct pci_dev *pdev, u32 *board_id,
 				bool *legacy_board)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	u32 subsystem_vendor_id, subsystem_device_id;
@@ -9935,32 +7548,6 @@ static int hpsa_lookup_board_id(struct pci_dev *pdev, u32 *board_id,
 	*board_id = ((subsystem_device_id << 16) & 0xffff0000) |
 		    subsystem_vendor_id;
 
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(products); i++)
-		if (*board_id == products[i].board_id)
-			return i;
-
-	if ((subsystem_vendor_id != PCI_VENDOR_ID_HP &&
-		subsystem_vendor_id != PCI_VENDOR_ID_COMPAQ) ||
-		!hpsa_allow_any) {
-		dev_warn(&pdev->dev, "unrecognized board ID: "
-			"0x%08x, ignoring.\n", *board_id);
-			return -ENODEV;
-	}
-	return ARRAY_SIZE(products) - 1; /* generic unknown smart array */
-}
-
-static inline bool hpsa_board_disabled(struct pci_dev *pdev)
-{
-	u16 command;
-
-	(void) pci_read_config_word(pdev, PCI_COMMAND, &command);
-	return ((command & PCI_COMMAND_MEMORY) == 0);
-}
-
-static int __devinit hpsa_pci_find_memory_BAR(struct pci_dev *pdev,
-	unsigned long *memory_bar)
-=======
 	if (legacy_board)
 		*legacy_board = false;
 	for (i = 0; i < ARRAY_SIZE(products); i++)
@@ -9984,7 +7571,6 @@ static int __devinit hpsa_pci_find_memory_BAR(struct pci_dev *pdev,
 
 static int hpsa_pci_find_memory_BAR(struct pci_dev *pdev,
 				    unsigned long *memory_bar)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -10000,13 +7586,8 @@ static int hpsa_pci_find_memory_BAR(struct pci_dev *pdev,
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devinit hpsa_wait_for_board_state(struct pci_dev *pdev,
-	void __iomem *vaddr, int wait_for_ready)
-=======
 static int hpsa_wait_for_board_state(struct pci_dev *pdev, void __iomem *vaddr,
 				     int wait_for_ready)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, iterations;
 	u32 scratchpad;
@@ -10030,15 +7611,9 @@ static int hpsa_wait_for_board_state(struct pci_dev *pdev, void __iomem *vaddr,
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devinit hpsa_find_cfg_addrs(struct pci_dev *pdev,
-	void __iomem *vaddr, u32 *cfg_base_addr, u64 *cfg_base_addr_index,
-	u64 *cfg_offset)
-=======
 static int hpsa_find_cfg_addrs(struct pci_dev *pdev, void __iomem *vaddr,
 			       u32 *cfg_base_addr, u64 *cfg_base_addr_index,
 			       u64 *cfg_offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	*cfg_base_addr = readl(vaddr + SA5_CTCFG_OFFSET);
 	*cfg_offset = readl(vaddr + SA5_CTMEM_OFFSET);
@@ -10051,9 +7626,6 @@ static int hpsa_find_cfg_addrs(struct pci_dev *pdev, void __iomem *vaddr,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit hpsa_find_cfgtables(struct ctlr_info *h)
-=======
 static void hpsa_free_cfgtables(struct ctlr_info *h)
 {
 	if (h->transtable) {
@@ -10070,7 +7642,6 @@ static void hpsa_free_cfgtables(struct ctlr_info *h)
 + * several items must be unmapped (freed) later
 + * */
 static int hpsa_find_cfgtables(struct ctlr_info *h)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 cfg_offset;
 	u32 cfg_base_addr;
@@ -10084,15 +7655,10 @@ static int hpsa_find_cfgtables(struct ctlr_info *h)
 		return rc;
 	h->cfgtable = remap_pci_mem(pci_resource_start(h->pdev,
 		       cfg_base_addr_index) + cfg_offset, sizeof(*h->cfgtable));
-<<<<<<< HEAD
-	if (!h->cfgtable)
-		return -ENOMEM;
-=======
 	if (!h->cfgtable) {
 		dev_err(&h->pdev->dev, "Failed mapping cfgtable\n");
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = write_driver_ver_to_cfgtable(h->cfgtable);
 	if (rc)
 		return rc;
@@ -10101,16 +7667,6 @@ static int hpsa_find_cfgtables(struct ctlr_info *h)
 	h->transtable = remap_pci_mem(pci_resource_start(h->pdev,
 				cfg_base_addr_index)+cfg_offset+trans_offset,
 				sizeof(*h->transtable));
-<<<<<<< HEAD
-	if (!h->transtable)
-		return -ENOMEM;
-	return 0;
-}
-
-static void __devinit hpsa_get_max_perf_mode_cmds(struct ctlr_info *h)
-{
-	h->max_commands = readl(&(h->cfgtable->MaxPerformantModeCommands));
-=======
 	if (!h->transtable) {
 		dev_err(&h->pdev->dev, "Failed mapping transfer table\n");
 		hpsa_free_cfgtables(h);
@@ -10125,23 +7681,11 @@ static void hpsa_get_max_perf_mode_cmds(struct ctlr_info *h)
 	BUILD_BUG_ON(MIN_MAX_COMMANDS <= HPSA_NRESERVED_CMDS);
 
 	h->max_commands = readl(&h->cfgtable->MaxPerformantModeCommands);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Limit commands in memory limited kdump scenario. */
 	if (reset_devices && h->max_commands > 32)
 		h->max_commands = 32;
 
-<<<<<<< HEAD
-	if (h->max_commands < 16) {
-		dev_warn(&h->pdev->dev, "Controller reports "
-			"max supported commands of %d, an obvious lie. "
-			"Using 16.  Ensure that firmware is up to date.\n",
-			h->max_commands);
-		h->max_commands = 16;
-	}
-}
-
-=======
 	if (h->max_commands < MIN_MAX_COMMANDS) {
 		dev_warn(&h->pdev->dev,
 			"Controller reports max supported commands of %d Using %d instead. Ensure that firmware is up to date.\n",
@@ -10160,31 +7704,10 @@ static int hpsa_supports_chained_sg_blocks(struct ctlr_info *h)
 	return h->maxsgentries > 512;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Interrogate the hardware for some limits:
  * max commands, max SG elements without chaining, and with chaining,
  * SG chain block size, etc.
  */
-<<<<<<< HEAD
-static void __devinit hpsa_find_board_params(struct ctlr_info *h)
-{
-	hpsa_get_max_perf_mode_cmds(h);
-	h->nr_cmds = h->max_commands - 4; /* Allow room for some ioctls */
-	h->maxsgentries = readl(&(h->cfgtable->MaxScatterGatherElements));
-	/*
-	 * Limit in-command s/g elements to 32 save dma'able memory.
-	 * Howvever spec says if 0, use 31
-	 */
-	h->max_cmd_sg_entries = 31;
-	if (h->maxsgentries > 512) {
-		h->max_cmd_sg_entries = 32;
-		h->chainsize = h->maxsgentries - h->max_cmd_sg_entries + 1;
-		h->maxsgentries--; /* save one for chain pointer */
-	} else {
-		h->maxsgentries = 31; /* default to traditional values */
-		h->chainsize = 0;
-	}
-=======
 static void hpsa_find_board_params(struct ctlr_info *h)
 {
 	hpsa_get_max_perf_mode_cmds(h);
@@ -10215,38 +7738,17 @@ static void hpsa_find_board_params(struct ctlr_info *h)
 		dev_warn(&h->pdev->dev, "Logical aborts not supported\n");
 	if (!(HPSATMF_IOACCEL_ENABLED & h->TMFSupportFlags))
 		dev_warn(&h->pdev->dev, "HP SSD Smart Path aborts not supported\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool hpsa_CISS_signature_present(struct ctlr_info *h)
 {
-<<<<<<< HEAD
-	if ((readb(&h->cfgtable->Signature[0]) != 'C') ||
-	    (readb(&h->cfgtable->Signature[1]) != 'I') ||
-	    (readb(&h->cfgtable->Signature[2]) != 'S') ||
-	    (readb(&h->cfgtable->Signature[3]) != 'S')) {
-		dev_warn(&h->pdev->dev, "not a valid CISS config table\n");
-=======
 	if (!check_signature(h->cfgtable->Signature, "CISS", 4)) {
 		dev_err(&h->pdev->dev, "not a valid CISS config table\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 	return true;
 }
 
-<<<<<<< HEAD
-/* Need to enable prefetch in the SCSI core for 6400 in x86 */
-static inline void hpsa_enable_scsi_prefetch(struct ctlr_info *h)
-{
-#ifdef CONFIG_X86
-	u32 prefetch;
-
-	prefetch = readl(&(h->cfgtable->SCSI_Prefetch));
-	prefetch |= 0x100;
-	writel(prefetch, &(h->cfgtable->SCSI_Prefetch));
-#endif
-=======
 static inline void hpsa_set_driver_support_bits(struct ctlr_info *h)
 {
 	u32 driver_support;
@@ -10258,7 +7760,6 @@ static inline void hpsa_set_driver_support_bits(struct ctlr_info *h)
 #endif
 	driver_support |= ENABLE_UNIT_ATTN;
 	writel(driver_support, &(h->cfgtable->driver_support));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Disable DMA prefetch for the P600.  Otherwise an ASIC bug may result
@@ -10275,9 +7776,6 @@ static inline void hpsa_p600_dma_prefetch_quirk(struct ctlr_info *h)
 	writel(dma_prefetch, h->vaddr + I2O_DMA1_CFG);
 }
 
-<<<<<<< HEAD
-static void __devinit hpsa_wait_for_mode_change_ack(struct ctlr_info *h)
-=======
 static int hpsa_wait_for_clear_event_notify_ack(struct ctlr_info *h)
 {
 	int i;
@@ -10299,7 +7797,6 @@ done:
 }
 
 static int hpsa_wait_for_mode_change_ack(struct ctlr_info *h)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	u32 doorbell_value;
@@ -10309,26 +7806,13 @@ static int hpsa_wait_for_mode_change_ack(struct ctlr_info *h)
 	 * (e.g.: hot replace a failed 144GB drive in a RAID 5 set right
 	 * as we enter this code.)
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < MAX_CONFIG_WAIT; i++) {
-=======
 	for (i = 0; i < MAX_MODE_CHANGE_WAIT; i++) {
 		if (h->remove_in_progress)
 			goto done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&h->lock, flags);
 		doorbell_value = readl(h->vaddr + SA5_DOORBELL);
 		spin_unlock_irqrestore(&h->lock, flags);
 		if (!(doorbell_value & CFGTBL_ChangeReq))
-<<<<<<< HEAD
-			break;
-		/* delay and try again */
-		usleep_range(10000, 20000);
-	}
-}
-
-static int __devinit hpsa_enter_simple_mode(struct ctlr_info *h)
-=======
 			goto done;
 		/* delay and try again */
 		msleep(MODE_CHANGE_WAIT_INTERVAL);
@@ -10340,7 +7824,6 @@ done:
 
 /* return -ENODEV or other reason on error, 0 on success */
 static int hpsa_enter_simple_mode(struct ctlr_info *h)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 trans_support;
 
@@ -10349,37 +7832,6 @@ static int hpsa_enter_simple_mode(struct ctlr_info *h)
 		return -ENOTSUPP;
 
 	h->max_commands = readl(&(h->cfgtable->CmdsOutMax));
-<<<<<<< HEAD
-	/* Update the field, and then ring the doorbell */
-	writel(CFGTBL_Trans_Simple, &(h->cfgtable->HostWrite.TransportRequest));
-	writel(CFGTBL_ChangeReq, h->vaddr + SA5_DOORBELL);
-	hpsa_wait_for_mode_change_ack(h);
-	print_cfg_table(&h->pdev->dev, h->cfgtable);
-	if (!(readl(&(h->cfgtable->TransportActive)) & CFGTBL_Trans_Simple)) {
-		dev_warn(&h->pdev->dev,
-			"unable to get board into simple mode\n");
-		return -ENODEV;
-	}
-	h->transMethod = CFGTBL_Trans_Simple;
-	return 0;
-}
-
-static int __devinit hpsa_pci_init(struct ctlr_info *h)
-{
-	int prod_index, err;
-
-	prod_index = hpsa_lookup_board_id(h->pdev, &h->board_id);
-	if (prod_index < 0)
-		return -ENODEV;
-	h->product_name = products[prod_index].product_name;
-	h->access = *(products[prod_index].access);
-
-	if (hpsa_board_disabled(h->pdev)) {
-		dev_warn(&h->pdev->dev, "controller appears to be disabled\n");
-		return -ENODEV;
-	}
-
-=======
 
 	/* Update the field, and then ring the doorbell */
 	writel(CFGTBL_Trans_Simple, &(h->cfgtable->HostWrite.TransportRequest));
@@ -10424,44 +7876,19 @@ static int hpsa_pci_init(struct ctlr_info *h)
 	h->product_name = products[prod_index].product_name;
 	h->access = *(products[prod_index].access);
 	h->legacy_board = legacy_board;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_link_state(h->pdev, PCIE_LINK_STATE_L0S |
 			       PCIE_LINK_STATE_L1 | PCIE_LINK_STATE_CLKPM);
 
 	err = pci_enable_device(h->pdev);
 	if (err) {
-<<<<<<< HEAD
-		dev_warn(&h->pdev->dev, "unable to enable PCI device\n");
-=======
 		dev_err(&h->pdev->dev, "failed to enable PCI device\n");
 		pci_disable_device(h->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	err = pci_request_regions(h->pdev, HPSA);
 	if (err) {
 		dev_err(&h->pdev->dev,
-<<<<<<< HEAD
-			"cannot obtain PCI resources, aborting\n");
-		return err;
-	}
-	hpsa_interrupt_mode(h);
-	err = hpsa_pci_find_memory_BAR(h->pdev, &h->paddr);
-	if (err)
-		goto err_out_free_res;
-	h->vaddr = remap_pci_mem(h->paddr, 0x250);
-	if (!h->vaddr) {
-		err = -ENOMEM;
-		goto err_out_free_res;
-	}
-	err = hpsa_wait_for_board_state(h->pdev, h->vaddr, BOARD_READY);
-	if (err)
-		goto err_out_free_res;
-	err = hpsa_find_cfgtables(h);
-	if (err)
-		goto err_out_free_res;
-=======
 			"failed to obtain PCI resources\n");
 		pci_disable_device(h->pdev);
 		return err;
@@ -10491,33 +7918,10 @@ static int hpsa_pci_init(struct ctlr_info *h)
 	err = hpsa_find_cfgtables(h);
 	if (err)
 		goto clean3;	/* vaddr, intmode+region, pci */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpsa_find_board_params(h);
 
 	if (!hpsa_CISS_signature_present(h)) {
 		err = -ENODEV;
-<<<<<<< HEAD
-		goto err_out_free_res;
-	}
-	hpsa_enable_scsi_prefetch(h);
-	hpsa_p600_dma_prefetch_quirk(h);
-	err = hpsa_enter_simple_mode(h);
-	if (err)
-		goto err_out_free_res;
-	return 0;
-
-err_out_free_res:
-	if (h->transtable)
-		iounmap(h->transtable);
-	if (h->cfgtable)
-		iounmap(h->cfgtable);
-	if (h->vaddr)
-		iounmap(h->vaddr);
-	/*
-	 * Deliberately omit pci_disable_device(): it does something nasty to
-	 * Smart Array controllers that pci_enable_device does not undo
-	 */
-=======
 		goto clean4;	/* cfgtables, vaddr, intmode+region, pci */
 	}
 	hpsa_set_driver_support_bits(h);
@@ -10540,16 +7944,11 @@ clean1:
 	 * Documentation/driver-api/pci/pci.rst
 	 */
 	pci_disable_device(h->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_release_regions(h->pdev);
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devinit hpsa_hba_inquiry(struct ctlr_info *h)
-=======
 static void hpsa_hba_inquiry(struct ctlr_info *h)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -10565,11 +7964,7 @@ static void hpsa_hba_inquiry(struct ctlr_info *h)
 	}
 }
 
-<<<<<<< HEAD
-static __devinit int hpsa_init_reset_devices(struct pci_dev *pdev)
-=======
 static int hpsa_init_reset_devices(struct pci_dev *pdev, u32 board_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc, i;
 	void __iomem *vaddr;
@@ -10593,10 +7988,7 @@ static int hpsa_init_reset_devices(struct pci_dev *pdev, u32 board_id)
 		dev_warn(&pdev->dev, "failed to enable device.\n");
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(pdev);
 
 	vaddr = pci_ioremap_bar(pdev, 0);
@@ -10608,33 +8000,18 @@ static int hpsa_init_reset_devices(struct pci_dev *pdev, u32 board_id)
 	iounmap(vaddr);
 
 	/* Reset the controller with a PCI power-cycle or via doorbell */
-<<<<<<< HEAD
-	rc = hpsa_kdump_hard_reset_controller(pdev);
-=======
 	rc = hpsa_kdump_hard_reset_controller(pdev, board_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* -ENOTSUPP here means we cannot reset the controller
 	 * but it's already (and still) up and running in
 	 * "performant mode".  Or, it might be 640x, which can't reset
 	 * due to concerns about shared bbwc between 6402/6404 pair.
 	 */
-<<<<<<< HEAD
-	if (rc) {
-		if (rc != -ENOTSUPP) /* just try to do the kdump anyhow. */
-			rc = -ENODEV;
-		goto out_disable;
-	}
-
-	/* Now try to get the controller to respond to a no-op */
-	dev_warn(&pdev->dev, "Waiting for controller to respond to no-op\n");
-=======
 	if (rc)
 		goto out_disable;
 
 	/* Now try to get the controller to respond to a no-op */
 	dev_info(&pdev->dev, "Waiting for controller to respond to no-op\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < HPSA_POST_RESET_NOOP_RETRIES; i++) {
 		if (hpsa_noop(pdev) == 0)
 			break;
@@ -10649,19 +8026,6 @@ out_disable:
 	return rc;
 }
 
-<<<<<<< HEAD
-static __devinit int hpsa_allocate_cmd_pool(struct ctlr_info *h)
-{
-	h->cmd_pool_bits = kzalloc(
-		DIV_ROUND_UP(h->nr_cmds, BITS_PER_LONG) *
-		sizeof(unsigned long), GFP_KERNEL);
-	h->cmd_pool = pci_alloc_consistent(h->pdev,
-		    h->nr_cmds * sizeof(*h->cmd_pool),
-		    &(h->cmd_pool_dhandle));
-	h->errinfo_pool = pci_alloc_consistent(h->pdev,
-		    h->nr_cmds * sizeof(*h->errinfo_pool),
-		    &(h->errinfo_pool_dhandle));
-=======
 static void hpsa_free_cmd_pool(struct ctlr_info *h)
 {
 	bitmap_free(h->cmd_pool_bits);
@@ -10693,47 +8057,10 @@ static int hpsa_alloc_cmd_pool(struct ctlr_info *h)
 	h->errinfo_pool = dma_alloc_coherent(&h->pdev->dev,
 		    h->nr_cmds * sizeof(*h->errinfo_pool),
 		    &h->errinfo_pool_dhandle, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((h->cmd_pool_bits == NULL)
 	    || (h->cmd_pool == NULL)
 	    || (h->errinfo_pool == NULL)) {
 		dev_err(&h->pdev->dev, "out of memory in %s", __func__);
-<<<<<<< HEAD
-		return -ENOMEM;
-	}
-	return 0;
-}
-
-static void hpsa_free_cmd_pool(struct ctlr_info *h)
-{
-	kfree(h->cmd_pool_bits);
-	if (h->cmd_pool)
-		pci_free_consistent(h->pdev,
-			    h->nr_cmds * sizeof(struct CommandList),
-			    h->cmd_pool, h->cmd_pool_dhandle);
-	if (h->errinfo_pool)
-		pci_free_consistent(h->pdev,
-			    h->nr_cmds * sizeof(struct ErrorInfo),
-			    h->errinfo_pool,
-			    h->errinfo_pool_dhandle);
-}
-
-static int hpsa_request_irq(struct ctlr_info *h,
-	irqreturn_t (*msixhandler)(int, void *),
-	irqreturn_t (*intxhandler)(int, void *))
-{
-	int rc;
-
-	if (h->msix_vector || h->msi_vector)
-		rc = request_irq(h->intr[h->intr_mode], msixhandler,
-				0, h->devname, h);
-	else
-		rc = request_irq(h->intr[h->intr_mode], intxhandler,
-				IRQF_SHARED, h->devname, h);
-	if (rc) {
-		dev_err(&h->pdev->dev, "unable to get irq %d for %s\n",
-		       h->intr[h->intr_mode], h->devname);
-=======
 		goto clean_up;
 	}
 	hpsa_preinitialize_commands(h);
@@ -10830,33 +8157,11 @@ static int hpsa_request_irqs(struct ctlr_info *h,
 		dev_err(&h->pdev->dev, "failed to get irq %d for %s\n",
 		       pci_irq_vector(h->pdev, irq_vector), h->devname);
 		hpsa_free_irqs(h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit hpsa_kdump_soft_reset(struct ctlr_info *h)
-{
-	if (hpsa_send_host_reset(h, RAID_CTLR_LUNID,
-		HPSA_RESET_TYPE_CONTROLLER)) {
-		dev_warn(&h->pdev->dev, "Resetting array controller failed.\n");
-		return -EIO;
-	}
-
-	dev_info(&h->pdev->dev, "Waiting for board to soft reset.\n");
-	if (hpsa_wait_for_board_state(h->pdev, h->vaddr, BOARD_NOT_READY)) {
-		dev_warn(&h->pdev->dev, "Soft reset had no effect.\n");
-		return -1;
-	}
-
-	dev_info(&h->pdev->dev, "Board reset, awaiting READY status.\n");
-	if (hpsa_wait_for_board_state(h->pdev, h->vaddr, BOARD_READY)) {
-		dev_warn(&h->pdev->dev, "Board failed to become ready "
-			"after soft reset.\n");
-		return -1;
-=======
 static int hpsa_kdump_soft_reset(struct ctlr_info *h)
 {
 	int rc;
@@ -10875,61 +8180,11 @@ static int hpsa_kdump_soft_reset(struct ctlr_info *h)
 		dev_warn(&h->pdev->dev, "Board failed to become ready "
 			"after soft reset.\n");
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void hpsa_undo_allocations_after_kdump_soft_reset(struct ctlr_info *h)
-{
-	free_irq(h->intr[h->intr_mode], h);
-#ifdef CONFIG_PCI_MSI
-	if (h->msix_vector)
-		pci_disable_msix(h->pdev);
-	else if (h->msi_vector)
-		pci_disable_msi(h->pdev);
-#endif /* CONFIG_PCI_MSI */
-	hpsa_free_sg_chain_blocks(h);
-	hpsa_free_cmd_pool(h);
-	kfree(h->blockFetchTable);
-	pci_free_consistent(h->pdev, h->reply_pool_size,
-		h->reply_pool, h->reply_pool_dhandle);
-	if (h->vaddr)
-		iounmap(h->vaddr);
-	if (h->transtable)
-		iounmap(h->transtable);
-	if (h->cfgtable)
-		iounmap(h->cfgtable);
-	pci_disable_device(h->pdev);
-	pci_release_regions(h->pdev);
-	kfree(h);
-}
-
-static void remove_ctlr_from_lockup_detector_list(struct ctlr_info *h)
-{
-	assert_spin_locked(&lockup_detector_lock);
-	if (!hpsa_lockup_detector)
-		return;
-	if (h->lockup_detected)
-		return; /* already stopped the lockup detector */
-	list_del(&h->lockup_list);
-}
-
-/* Called when controller lockup detected. */
-static void fail_all_cmds_on_list(struct ctlr_info *h, struct list_head *list)
-{
-	struct CommandList *c = NULL;
-
-	assert_spin_locked(&h->lock);
-	/* Mark all outstanding commands as failed and complete them. */
-	while (!list_empty(list)) {
-		c = list_entry(list->next, struct CommandList, list);
-		c->err_info->CommandStatus = CMD_HARDWARE_ERR;
-		finish_cmd(c, c->Header.Tag.lower);
-	}
-=======
 static void hpsa_free_reply_queues(struct ctlr_info *h)
 {
 	int i;
@@ -11007,31 +8262,11 @@ static void set_lockup_detected_for_all_cpus(struct ctlr_info *h, u32 value)
 		*lockup_detected = value;
 	}
 	wmb(); /* be sure the per-cpu variables are out to memory */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void controller_lockup_detected(struct ctlr_info *h)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-
-	assert_spin_locked(&lockup_detector_lock);
-	remove_ctlr_from_lockup_detector_list(h);
-	h->access.set_intr_mask(h, HPSA_INTR_OFF);
-	spin_lock_irqsave(&h->lock, flags);
-	h->lockup_detected = readl(h->vaddr + SA5_SCRATCHPAD_OFFSET);
-	spin_unlock_irqrestore(&h->lock, flags);
-	dev_warn(&h->pdev->dev, "Controller lockup detected: 0x%08x\n",
-			h->lockup_detected);
-	pci_disable_device(h->pdev);
-	spin_lock_irqsave(&h->lock, flags);
-	fail_all_cmds_on_list(h, &h->cmpQ);
-	fail_all_cmds_on_list(h, &h->reqQ);
-	spin_unlock_irqrestore(&h->lock, flags);
-}
-
-static void detect_controller_lockup(struct ctlr_info *h)
-=======
 	u32 lockup_detected;
 
 	h->access.set_intr_mask(h, HPSA_INTR_OFF);
@@ -11057,25 +8292,16 @@ static void detect_controller_lockup(struct ctlr_info *h)
 }
 
 static int detect_controller_lockup(struct ctlr_info *h)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 now;
 	u32 heartbeat;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	assert_spin_locked(&lockup_detector_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	now = get_jiffies_64();
 	/* If we've received an interrupt recently, we're ok. */
 	if (time_after64(h->last_intr_timestamp +
 				(h->heartbeat_sample_interval), now))
-<<<<<<< HEAD
-		return;
-=======
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we've already checked the heartbeat recently, we're ok.
@@ -11084,11 +8310,7 @@ static int detect_controller_lockup(struct ctlr_info *h)
 	 */
 	if (time_after64(h->last_heartbeat_timestamp +
 				(h->heartbeat_sample_interval), now))
-<<<<<<< HEAD
-		return;
-=======
 		return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If heartbeat has not changed since we last looked, we're not ok. */
 	spin_lock_irqsave(&h->lock, flags);
@@ -11096,91 +8318,12 @@ static int detect_controller_lockup(struct ctlr_info *h)
 	spin_unlock_irqrestore(&h->lock, flags);
 	if (h->last_heartbeat == heartbeat) {
 		controller_lockup_detected(h);
-<<<<<<< HEAD
-		return;
-=======
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* We're ok. */
 	h->last_heartbeat = heartbeat;
 	h->last_heartbeat_timestamp = now;
-<<<<<<< HEAD
-}
-
-static int detect_controller_lockup_thread(void *notused)
-{
-	struct ctlr_info *h;
-	unsigned long flags;
-
-	while (1) {
-		struct list_head *this, *tmp;
-
-		schedule_timeout_interruptible(HEARTBEAT_SAMPLE_INTERVAL);
-		if (kthread_should_stop())
-			break;
-		spin_lock_irqsave(&lockup_detector_lock, flags);
-		list_for_each_safe(this, tmp, &hpsa_ctlr_list) {
-			h = list_entry(this, struct ctlr_info, lockup_list);
-			detect_controller_lockup(h);
-		}
-		spin_unlock_irqrestore(&lockup_detector_lock, flags);
-	}
-	return 0;
-}
-
-static void add_ctlr_to_lockup_detector_list(struct ctlr_info *h)
-{
-	unsigned long flags;
-
-	h->heartbeat_sample_interval = HEARTBEAT_SAMPLE_INTERVAL;
-	spin_lock_irqsave(&lockup_detector_lock, flags);
-	list_add_tail(&h->lockup_list, &hpsa_ctlr_list);
-	spin_unlock_irqrestore(&lockup_detector_lock, flags);
-}
-
-static void start_controller_lockup_detector(struct ctlr_info *h)
-{
-	/* Start the lockup detector thread if not already started */
-	if (!hpsa_lockup_detector) {
-		spin_lock_init(&lockup_detector_lock);
-		hpsa_lockup_detector =
-			kthread_run(detect_controller_lockup_thread,
-						NULL, HPSA);
-	}
-	if (!hpsa_lockup_detector) {
-		dev_warn(&h->pdev->dev,
-			"Could not start lockup detector thread\n");
-		return;
-	}
-	add_ctlr_to_lockup_detector_list(h);
-}
-
-static void stop_controller_lockup_detector(struct ctlr_info *h)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&lockup_detector_lock, flags);
-	remove_ctlr_from_lockup_detector_list(h);
-	/* If the list of ctlr's to monitor is empty, stop the thread */
-	if (list_empty(&hpsa_ctlr_list)) {
-		spin_unlock_irqrestore(&lockup_detector_lock, flags);
-		kthread_stop(hpsa_lockup_detector);
-		spin_lock_irqsave(&lockup_detector_lock, flags);
-		hpsa_lockup_detector = NULL;
-	}
-	spin_unlock_irqrestore(&lockup_detector_lock, flags);
-}
-
-static int __devinit hpsa_init_one(struct pci_dev *pdev,
-				    const struct pci_device_id *ent)
-{
-	int dac, rc;
-	struct ctlr_info *h;
-	int try_soft_reset = 0;
-	unsigned long flags;
-=======
 	return false;
 }
 
@@ -11523,14 +8666,10 @@ static int hpsa_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	int try_soft_reset = 0;
 	unsigned long flags;
 	u32 board_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (number_of_controllers == 0)
 		printk(KERN_INFO DRIVER_NAME "\n");
 
-<<<<<<< HEAD
-	rc = hpsa_init_reset_devices(pdev);
-=======
 	rc = hpsa_lookup_board_id(pdev, &board_id, NULL);
 	if (rc < 0) {
 		dev_warn(&pdev->dev, "Board ID not found\n");
@@ -11538,7 +8677,6 @@ static int hpsa_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	rc = hpsa_init_reset_devices(pdev, board_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		if (rc != -ENOTSUPP)
 			return rc;
@@ -11557,25 +8695,6 @@ reinit_after_soft_reset:
 	 * the 5 lower bits of the address are used by the hardware. and by
 	 * the driver.  See comments in hpsa.h for more info.
 	 */
-<<<<<<< HEAD
-#define COMMANDLIST_ALIGNMENT 32
-	BUILD_BUG_ON(sizeof(struct CommandList) % COMMANDLIST_ALIGNMENT);
-	h = kzalloc(sizeof(*h), GFP_KERNEL);
-	if (!h)
-		return -ENOMEM;
-
-	h->pdev = pdev;
-	h->intr_mode = hpsa_simple_mode ? SIMPLE_MODE_INT : PERF_MODE_INT;
-	INIT_LIST_HEAD(&h->cmpQ);
-	INIT_LIST_HEAD(&h->reqQ);
-	spin_lock_init(&h->lock);
-	spin_lock_init(&h->scan_lock);
-	rc = hpsa_pci_init(h);
-	if (rc != 0)
-		goto clean1;
-
-	sprintf(h->devname, HPSA "%d", number_of_controllers);
-=======
 	BUILD_BUG_ON(sizeof(struct CommandList) % COMMANDLIST_ALIGNMENT);
 	h = hpda_alloc_ctlr_info();
 	if (!h) {
@@ -11613,57 +8732,22 @@ reinit_after_soft_reset:
 		goto clean2_5;	/* pci, lu, aer/h */
 
 	sprintf(h->devname, HPSA "%d", h->scsi_host->host_no);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->ctlr = number_of_controllers;
 	number_of_controllers++;
 
 	/* configure PCI DMA stuff */
-<<<<<<< HEAD
-	rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-	if (rc == 0) {
-		dac = 1;
-	} else {
-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc == 0) {
-			dac = 0;
-		} else {
-			dev_err(&pdev->dev, "no suitable DMA available\n");
-			goto clean1;
-=======
 	rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64));
 	if (rc != 0) {
 		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
 		if (rc != 0) {
 			dev_err(&pdev->dev, "no suitable DMA available\n");
 			goto clean3;	/* shost, pci, lu, aer/h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* make sure the board interrupts are off */
 	h->access.set_intr_mask(h, HPSA_INTR_OFF);
 
-<<<<<<< HEAD
-	if (hpsa_request_irq(h, do_hpsa_intr_msi, do_hpsa_intr_intx))
-		goto clean2;
-	dev_info(&pdev->dev, "%s: <0x%x> at IRQ %d%s using DAC\n",
-	       h->devname, pdev->device,
-	       h->intr[h->intr_mode], dac ? "" : " not");
-	if (hpsa_allocate_cmd_pool(h))
-		goto clean4;
-	if (hpsa_allocate_sg_chain_blocks(h))
-		goto clean4;
-	init_waitqueue_head(&h->scan_wait_queue);
-	h->scan_finished = 1; /* no scan currently in progress */
-
-	pci_set_drvdata(pdev, h);
-	h->ndevices = 0;
-	h->scsi_host = NULL;
-	spin_lock_init(&h->devlock);
-	hpsa_put_ctlr_into_performant_mode(h);
-
-	/* At this point, the controller is ready to take commands.
-=======
 	rc = hpsa_request_irqs(h, do_hpsa_intr_msi, do_hpsa_intr_intx);
 	if (rc)
 		goto clean3;	/* shost, pci, lu, aer/h */
@@ -11708,7 +8792,6 @@ reinit_after_soft_reset:
 
 	/*
 	 * At this point, the controller is ready to take commands.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Now, if reset_devices and the hard reset didn't work, try
 	 * the soft reset and see if that works.
 	 */
@@ -11724,15 +8807,6 @@ reinit_after_soft_reset:
 		spin_lock_irqsave(&h->lock, flags);
 		h->access.set_intr_mask(h, HPSA_INTR_OFF);
 		spin_unlock_irqrestore(&h->lock, flags);
-<<<<<<< HEAD
-		free_irq(h->intr[h->intr_mode], h);
-		rc = hpsa_request_irq(h, hpsa_msix_discard_completions,
-					hpsa_intx_discard_completions);
-		if (rc) {
-			dev_warn(&h->pdev->dev, "Failed to request_irq after "
-				"soft reset.\n");
-			goto clean4;
-=======
 		hpsa_free_irqs(h);
 		rc = hpsa_request_irqs(h, hpsa_msix_discard_completions,
 					hpsa_intx_discard_completions);
@@ -11751,17 +8825,12 @@ reinit_after_soft_reset:
 			 * was just called before request_irqs failed
 			 */
 			goto clean3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		rc = hpsa_kdump_soft_reset(h);
 		if (rc)
 			/* Neither hard nor soft reset worked, we're hosed. */
-<<<<<<< HEAD
-			goto clean4;
-=======
 			goto clean7;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev_info(&h->pdev->dev, "Board READY.\n");
 		dev_info(&h->pdev->dev,
@@ -11782,42 +8851,22 @@ reinit_after_soft_reset:
 		hpsa_undo_allocations_after_kdump_soft_reset(h);
 		try_soft_reset = 0;
 		if (rc)
-<<<<<<< HEAD
-			/* don't go to clean4, we already unallocated */
-=======
 			/* don't goto clean, we already unallocated */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 
 		goto reinit_after_soft_reset;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Enable Accelerated IO path at driver layer */
 	h->acciopath_status = 1;
 	/* Disable discovery polling.*/
 	h->discovery_polling = 0;
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Turn the interrupts on so we can service requests */
 	h->access.set_intr_mask(h, HPSA_INTR_ON);
 
 	hpsa_hba_inquiry(h);
-<<<<<<< HEAD
-	hpsa_register_scsi(h);	/* hook ourselves into SCSI subsystem */
-	start_controller_lockup_detector(h);
-	return 0;
-
-clean4:
-	hpsa_free_sg_chain_blocks(h);
-	hpsa_free_cmd_pool(h);
-	free_irq(h->intr[h->intr_mode], h);
-clean2:
-clean1:
-	kfree(h);
-=======
 
 	h->lastlogicals = kzalloc(sizeof(*(h->lastlogicals)), GFP_KERNEL);
 	if (!h->lastlogicals)
@@ -11877,7 +8926,6 @@ clean1:	/* wq/aer/h */
 		h->monitor_ctlr_wq = NULL;
 	}
 	hpda_free_ctlr_info(h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -11885,37 +8933,14 @@ static void hpsa_flush_cache(struct ctlr_info *h)
 {
 	char *flush_buf;
 	struct CommandList *c;
-<<<<<<< HEAD
-
-=======
 	int rc;
 
 	if (unlikely(lockup_detected(h)))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_buf = kzalloc(4, GFP_KERNEL);
 	if (!flush_buf)
 		return;
 
-<<<<<<< HEAD
-	c = cmd_special_alloc(h);
-	if (!c) {
-		dev_warn(&h->pdev->dev, "cmd_special_alloc returned NULL!\n");
-		goto out_of_memory;
-	}
-	fill_cmd(c, HPSA_CACHE_FLUSH, h, flush_buf, 4, 0,
-		RAID_CTLR_LUNID, TYPE_CMD);
-	hpsa_scsi_do_simple_cmd_with_retry(h, c, PCI_DMA_TODEVICE);
-	if (c->err_info->CommandStatus != 0)
-		dev_warn(&h->pdev->dev,
-			"error flushing cache on controller\n");
-	cmd_special_free(h, c);
-out_of_memory:
-	kfree(flush_buf);
-}
-
-static void hpsa_shutdown(struct pci_dev *pdev)
-=======
 	c = cmd_alloc(h);
 
 	if (fill_cmd(c, HPSA_CACHE_FLUSH, h, flush_buf, 4, 0,
@@ -11997,7 +9022,6 @@ out:
 }
 
 static void __hpsa_shutdown(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ctlr_info *h;
 
@@ -12008,28 +9032,6 @@ static void __hpsa_shutdown(struct pci_dev *pdev)
 	 */
 	hpsa_flush_cache(h);
 	h->access.set_intr_mask(h, HPSA_INTR_OFF);
-<<<<<<< HEAD
-	free_irq(h->intr[h->intr_mode], h);
-#ifdef CONFIG_PCI_MSI
-	if (h->msix_vector)
-		pci_disable_msix(h->pdev);
-	else if (h->msi_vector)
-		pci_disable_msi(h->pdev);
-#endif				/* CONFIG_PCI_MSI */
-}
-
-static void __devexit hpsa_free_device_info(struct ctlr_info *h)
-{
-	int i;
-
-	for (i = 0; i < h->ndevices; i++)
-		kfree(h->dev[i]);
-}
-
-static void __devexit hpsa_remove_one(struct pci_dev *pdev)
-{
-	struct ctlr_info *h;
-=======
 	hpsa_free_irqs(h);			/* init_one 4 */
 	hpsa_disable_interrupt_mode(h);		/* pci_init 2 */
 }
@@ -12054,45 +9056,12 @@ static void hpsa_remove_one(struct pci_dev *pdev)
 {
 	struct ctlr_info *h;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_get_drvdata(pdev) == NULL) {
 		dev_err(&pdev->dev, "unable to remove device\n");
 		return;
 	}
 	h = pci_get_drvdata(pdev);
-<<<<<<< HEAD
-	stop_controller_lockup_detector(h);
-	hpsa_unregister_scsi(h);	/* unhook from SCSI subsystem */
-	hpsa_shutdown(pdev);
-	iounmap(h->vaddr);
-	iounmap(h->transtable);
-	iounmap(h->cfgtable);
-	hpsa_free_device_info(h);
-	hpsa_free_sg_chain_blocks(h);
-	pci_free_consistent(h->pdev,
-		h->nr_cmds * sizeof(struct CommandList),
-		h->cmd_pool, h->cmd_pool_dhandle);
-	pci_free_consistent(h->pdev,
-		h->nr_cmds * sizeof(struct ErrorInfo),
-		h->errinfo_pool, h->errinfo_pool_dhandle);
-	pci_free_consistent(h->pdev, h->reply_pool_size,
-		h->reply_pool, h->reply_pool_dhandle);
-	kfree(h->cmd_pool_bits);
-	kfree(h->blockFetchTable);
-	kfree(h->hba_inquiry_data);
-	/*
-	 * Deliberately omit pci_disable_device(): it does something nasty to
-	 * Smart Array controllers that pci_enable_device does not undo
-	 */
-	pci_release_regions(pdev);
-	pci_set_drvdata(pdev, NULL);
-	kfree(h);
-}
-
-static int hpsa_suspend(__attribute__((unused)) struct pci_dev *pdev,
-	__attribute__((unused)) pm_message_t state)
-=======
 
 	/* Get rid of any controller monitoring work items */
 	spin_lock_irqsave(&h->lock, flags);
@@ -12145,31 +9114,16 @@ static int hpsa_suspend(__attribute__((unused)) struct pci_dev *pdev,
 
 static int __maybe_unused hpsa_suspend(
 	__attribute__((unused)) struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static int hpsa_resume(__attribute__((unused)) struct pci_dev *pdev)
-=======
 static int __maybe_unused hpsa_resume
 	(__attribute__((unused)) struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static struct pci_driver hpsa_pci_driver = {
-	.name = HPSA,
-	.probe = hpsa_init_one,
-	.remove = __devexit_p(hpsa_remove_one),
-	.id_table = hpsa_pci_device_id,	/* id_table */
-	.shutdown = hpsa_shutdown,
-	.suspend = hpsa_suspend,
-	.resume = hpsa_resume,
-=======
 static SIMPLE_DEV_PM_OPS(hpsa_pm_ops, hpsa_suspend, hpsa_resume);
 
 static struct pci_driver hpsa_pci_driver = {
@@ -12179,7 +9133,6 @@ static struct pci_driver hpsa_pci_driver = {
 	.id_table = hpsa_pci_device_id,	/* id_table */
 	.shutdown = hpsa_shutdown,
 	.driver.pm = &hpsa_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Fill in bucket_map[], given nsgs (the max number of
@@ -12195,22 +9148,6 @@ static struct pci_driver hpsa_pci_driver = {
  * bits of the command address.
  */
 static void  calc_bucket_map(int bucket[], int num_buckets,
-<<<<<<< HEAD
-	int nsgs, int *bucket_map)
-{
-	int i, j, b, size;
-
-	/* even a command with 0 SGs requires 4 blocks */
-#define MINIMUM_TRANSFER_BLOCKS 4
-#define NUM_BUCKETS 8
-	/* Note, bucket_map must have nsgs+1 entries. */
-	for (i = 0; i <= nsgs; i++) {
-		/* Compute size of a command with i SG entries */
-		size = i + MINIMUM_TRANSFER_BLOCKS;
-		b = num_buckets; /* Assume the biggest bucket */
-		/* Find the bucket that is just big enough */
-		for (j = 0; j < 8; j++) {
-=======
 	int nsgs, int min_blocks, u32 *bucket_map)
 {
 	int i, j, b, size;
@@ -12222,7 +9159,6 @@ static void  calc_bucket_map(int bucket[], int num_buckets,
 		b = num_buckets; /* Assume the biggest bucket */
 		/* Find the bucket that is just big enough */
 		for (j = 0; j < num_buckets; j++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (bucket[j] >= size) {
 				b = j;
 				break;
@@ -12233,13 +9169,6 @@ static void  calc_bucket_map(int bucket[], int num_buckets,
 	}
 }
 
-<<<<<<< HEAD
-static __devinit void hpsa_enter_performant_mode(struct ctlr_info *h,
-	u32 use_short_tags)
-{
-	int i;
-	unsigned long register_value;
-=======
 /*
  * return -ENODEV on err, 0 on success (or no action)
  * allocates numerous items that must be freed later
@@ -12254,7 +9183,6 @@ static int hpsa_enter_performant_mode(struct ctlr_info *h, u32 trans_support)
 			(trans_support & (CFGTBL_Trans_io_accel1 |
 				CFGTBL_Trans_io_accel2));
 	struct access_method access = SA5_performant_access;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is a bit complicated.  There are 8 registers on
 	 * the controller which we write to to tell it 8 different
@@ -12274,8 +9202,6 @@ static int hpsa_enter_performant_mode(struct ctlr_info *h, u32 trans_support)
 	 * sizes for small commands, and fewer sizes for larger commands.
 	 */
 	int bft[8] = {5, 6, 8, 10, 12, 20, 28, SG_ENTRIES_IN_CMD + 4};
-<<<<<<< HEAD
-=======
 #define MIN_IOACCEL2_BFT_ENTRY 5
 #define HPSA_IOACCEL2_HEADER_SZ 4
 	int bft2[16] = {MIN_IOACCEL2_BFT_ENTRY, 6, 7, 8, 9, 10, 11, 12,
@@ -12286,7 +9212,6 @@ static int hpsa_enter_performant_mode(struct ctlr_info *h, u32 trans_support)
 	BUILD_BUG_ON(offsetof(struct io_accel2_cmd, sg) >
 				 16 * MIN_IOACCEL2_BFT_ENTRY);
 	BUILD_BUG_ON(sizeof(struct ioaccel2_sg_element) != 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUILD_BUG_ON(28 > SG_ENTRIES_IN_CMD + 4);
 	/*  5 = 1 s/g entry or 4k
 	 *  6 = 2 s/g entry or 8k
@@ -12294,17 +9219,6 @@ static int hpsa_enter_performant_mode(struct ctlr_info *h, u32 trans_support)
 	 * 10 = 6 s/g entry or 24k
 	 */
 
-<<<<<<< HEAD
-	h->reply_pool_wraparound = 1; /* spec: init to 1 */
-
-	/* Controller spec: zero out this buffer. */
-	memset(h->reply_pool, 0, h->reply_pool_size);
-	h->reply_pool_head = h->reply_pool;
-
-	bft[7] = SG_ENTRIES_IN_CMD + 4;
-	calc_bucket_map(bft, ARRAY_SIZE(bft),
-				SG_ENTRIES_IN_CMD, h->blockFetchTable);
-=======
 	/* If the controller supports either ioaccel method then
 	 * we can also use the RAID stack submit path that does not
 	 * perform the superfluous readl() after each command submission.
@@ -12319,50 +9233,11 @@ static int hpsa_enter_performant_mode(struct ctlr_info *h, u32 trans_support)
 	bft[7] = SG_ENTRIES_IN_CMD + 4;
 	calc_bucket_map(bft, ARRAY_SIZE(bft),
 				SG_ENTRIES_IN_CMD, 4, h->blockFetchTable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 8; i++)
 		writel(bft[i], &h->transtable->BlockFetch[i]);
 
 	/* size of controller ring buffer */
 	writel(h->max_commands, &h->transtable->RepQSize);
-<<<<<<< HEAD
-	writel(1, &h->transtable->RepQCount);
-	writel(0, &h->transtable->RepQCtrAddrLow32);
-	writel(0, &h->transtable->RepQCtrAddrHigh32);
-	writel(h->reply_pool_dhandle, &h->transtable->RepQAddr0Low32);
-	writel(0, &h->transtable->RepQAddr0High32);
-	writel(CFGTBL_Trans_Performant | use_short_tags,
-		&(h->cfgtable->HostWrite.TransportRequest));
-	writel(CFGTBL_ChangeReq, h->vaddr + SA5_DOORBELL);
-	hpsa_wait_for_mode_change_ack(h);
-	register_value = readl(&(h->cfgtable->TransportActive));
-	if (!(register_value & CFGTBL_Trans_Performant)) {
-		dev_warn(&h->pdev->dev, "unable to get board into"
-					" performant mode\n");
-		return;
-	}
-	/* Change the access methods to the performant access methods */
-	h->access = SA5_performant_access;
-	h->transMethod = CFGTBL_Trans_Performant;
-}
-
-static __devinit void hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h)
-{
-	u32 trans_support;
-
-	if (hpsa_simple_mode)
-		return;
-
-	trans_support = readl(&(h->cfgtable->TransportSupport));
-	if (!(trans_support & PERFORMANT_MODE))
-		return;
-
-	hpsa_get_max_perf_mode_cmds(h);
-	/* Performant mode ring buffer and supporting data structures */
-	h->reply_pool_size = h->max_commands * sizeof(u64);
-	h->reply_pool = pci_alloc_consistent(h->pdev, h->reply_pool_size,
-				&(h->reply_pool_dhandle));
-=======
 	writel(h->nreply_queues, &h->transtable->RepQCount);
 	writel(0, &h->transtable->RepQCtrAddrLow32);
 	writel(0, &h->transtable->RepQCtrAddrHigh32);
@@ -12638,30 +9513,10 @@ static int hpsa_put_ctlr_into_performant_mode(struct ctlr_info *h)
 		h->reply_queue[i].wraparound = 1;  /* spec: init to 1 */
 		h->reply_queue[i].current_entry = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Need a block fetch table for performant mode */
 	h->blockFetchTable = kmalloc(((SG_ENTRIES_IN_CMD + 1) *
 				sizeof(u32)), GFP_KERNEL);
-<<<<<<< HEAD
-
-	if ((h->reply_pool == NULL)
-		|| (h->blockFetchTable == NULL))
-		goto clean_up;
-
-	hpsa_enter_performant_mode(h,
-		trans_support & CFGTBL_Trans_use_short_tags);
-
-	return;
-
-clean_up:
-	if (h->reply_pool)
-		pci_free_consistent(h->pdev, h->reply_pool_size,
-			h->reply_pool, h->reply_pool_dhandle);
-	kfree(h->blockFetchTable);
-}
-
-=======
 	if (!h->blockFetchTable) {
 		rc = -ENOMEM;
 		goto clean1;	/* rq, ioaccel */
@@ -13058,16 +9913,12 @@ static struct sas_function_template hpsa_sas_transport_functions = {
 	.set_phy_speed = hpsa_sas_phy_speed,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  This is it.  Register the PCI driver information for the cards we control
  *  the OS will call our registered routines when it finds one of our cards.
  */
 static int __init hpsa_init(void)
 {
-<<<<<<< HEAD
-	return pci_register_driver(&hpsa_pci_driver);
-=======
 	int rc;
 
 	hpsa_sas_transport_template =
@@ -13081,14 +9932,11 @@ static int __init hpsa_init(void)
 		sas_release_transport(hpsa_sas_transport_template);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit hpsa_cleanup(void)
 {
 	pci_unregister_driver(&hpsa_pci_driver);
-<<<<<<< HEAD
-=======
 	sas_release_transport(hpsa_sas_transport_template);
 }
 
@@ -13168,7 +10016,6 @@ static void __attribute__((unused)) verify_offsets(void)
 	VERIFY_OFFSET(CISS_LUN, 0x78);
 	VERIFY_OFFSET(SG, 0x78 + 8);
 #undef VERIFY_OFFSET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(hpsa_init);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mcs5000_ts.c - Touchscreen driver for MELFAS MCS-5000 controller
  *
@@ -9,23 +6,6 @@
  * Author: Joonyoung Shim <jy0922.shim@samsung.com>
  *
  * Based on wm97xx-core.c
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- */
-
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/i2c.h>
-#include <linux/i2c/mcs.h>
-#include <linux/interrupt.h>
-#include <linux/input.h>
-#include <linux/irq.h>
-=======
  */
 
 #include <linux/module.h>
@@ -34,7 +14,6 @@
 #include <linux/input.h>
 #include <linux/irq.h>
 #include <linux/platform_data/mcs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 /* Registers */
@@ -177,16 +156,9 @@ static irqreturn_t mcs5000_ts_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data)
-{
-	const struct mcs_platform_data *platform_data =
-		data->platform_data;
-=======
 static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data,
 				 const struct mcs_platform_data *platform_data)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct i2c_client *client = data->client;
 
 	/* Touch reset & sleep mode */
@@ -208,31 +180,6 @@ static void mcs5000_ts_phys_init(struct mcs5000_ts_data *data,
 			OP_MODE_ACTIVE | REPORT_RATE_80);
 }
 
-<<<<<<< HEAD
-static int __devinit mcs5000_ts_probe(struct i2c_client *client,
-		const struct i2c_device_id *id)
-{
-	struct mcs5000_ts_data *data;
-	struct input_dev *input_dev;
-	int ret;
-
-	if (!client->dev.platform_data)
-		return -EINVAL;
-
-	data = kzalloc(sizeof(struct mcs5000_ts_data), GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!data || !input_dev) {
-		dev_err(&client->dev, "Failed to allocate memory\n");
-		ret = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	data->client = client;
-	data->input_dev = input_dev;
-	data->platform_data = client->dev.platform_data;
-
-	input_dev->name = "MELPAS MCS-5000 Touchscreen";
-=======
 static int mcs5000_ts_probe(struct i2c_client *client)
 {
 	const struct mcs_platform_data *pdata;
@@ -259,7 +206,6 @@ static int mcs5000_ts_probe(struct i2c_client *client)
 	}
 
 	input_dev->name = "MELFAS MCS-5000 Touchscreen";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->id.bustype = BUS_I2C;
 	input_dev->dev.parent = &client->dev;
 
@@ -269,50 +215,6 @@ static int mcs5000_ts_probe(struct i2c_client *client)
 	input_set_abs_params(input_dev, ABS_X, 0, MCS5000_MAX_XC, 0, 0);
 	input_set_abs_params(input_dev, ABS_Y, 0, MCS5000_MAX_YC, 0, 0);
 
-<<<<<<< HEAD
-	input_set_drvdata(input_dev, data);
-
-	if (data->platform_data->cfg_pin)
-		data->platform_data->cfg_pin();
-
-	ret = request_threaded_irq(client->irq, NULL, mcs5000_ts_interrupt,
-			IRQF_TRIGGER_LOW | IRQF_ONESHOT, "mcs5000_ts", data);
-
-	if (ret < 0) {
-		dev_err(&client->dev, "Failed to register interrupt\n");
-		goto err_free_mem;
-	}
-
-	ret = input_register_device(data->input_dev);
-	if (ret < 0)
-		goto err_free_irq;
-
-	mcs5000_ts_phys_init(data);
-	i2c_set_clientdata(client, data);
-
-	return 0;
-
-err_free_irq:
-	free_irq(client->irq, data);
-err_free_mem:
-	input_free_device(input_dev);
-	kfree(data);
-	return ret;
-}
-
-static int __devexit mcs5000_ts_remove(struct i2c_client *client)
-{
-	struct mcs5000_ts_data *data = i2c_get_clientdata(client);
-
-	free_irq(client->irq, data);
-	input_unregister_device(data->input_dev);
-	kfree(data);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-=======
 	data->input_dev = input_dev;
 
 	if (pdata->cfg_pin)
@@ -339,7 +241,6 @@ static int __devexit mcs5000_ts_remove(struct i2c_client *client)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mcs5000_ts_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -354,25 +255,15 @@ static int mcs5000_ts_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct mcs5000_ts_data *data = i2c_get_clientdata(client);
-<<<<<<< HEAD
-
-	mcs5000_ts_phys_init(data);
-=======
 	const struct mcs_platform_data *pdata = dev_get_platdata(dev);
 
 	mcs5000_ts_phys_init(data, pdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static SIMPLE_DEV_PM_OPS(mcs5000_ts_pm, mcs5000_ts_suspend, mcs5000_ts_resume);
-#endif
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(mcs5000_ts_pm,
 				mcs5000_ts_suspend, mcs5000_ts_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id mcs5000_ts_id[] = {
 	{ "mcs5000_ts", 0 },
@@ -382,18 +273,9 @@ MODULE_DEVICE_TABLE(i2c, mcs5000_ts_id);
 
 static struct i2c_driver mcs5000_ts_driver = {
 	.probe		= mcs5000_ts_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(mcs5000_ts_remove),
-	.driver = {
-		.name = "mcs5000_ts",
-#ifdef CONFIG_PM
-		.pm   = &mcs5000_ts_pm,
-#endif
-=======
 	.driver = {
 		.name = "mcs5000_ts",
 		.pm   = pm_sleep_ptr(&mcs5000_ts_pm),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table	= mcs5000_ts_id,
 };

@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * wm5100-tables.c  --  WM5100 ALSA SoC Audio driver data
- *
- * Copyright 2011 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * wm5100-tables.c  --  WM5100 ALSA SoC Audio driver data
@@ -18,7 +5,6 @@
  * Copyright 2011-2 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "wm5100.h"
@@ -40,11 +26,6 @@ bool wm5100_volatile_register(struct device *dev, unsigned int reg)
 	case WM5100_OUTPUT_STATUS_2:
 	case WM5100_INPUT_ENABLES_STATUS:
 	case WM5100_MIC_DETECT_3:
-<<<<<<< HEAD
-		return 1;
-	default:
-		return 0;
-=======
 		return true;
 	default:
 		if ((reg >= WM5100_DSP1_PM_0 && reg <= WM5100_DSP1_PM_1535) ||
@@ -59,7 +40,6 @@ bool wm5100_volatile_register(struct device *dev, unsigned int reg)
 			return true;
 		else
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -724,11 +704,6 @@ bool wm5100_readable_register(struct device *dev, unsigned int reg)
 	case WM5100_HPLPF3_2:
 	case WM5100_HPLPF4_1:
 	case WM5100_HPLPF4_2:
-<<<<<<< HEAD
-		return 1;
-	default:
-		return 0;
-=======
 	case WM5100_DSP1_CONTROL_1:
 	case WM5100_DSP1_CONTROL_2:
 	case WM5100_DSP1_CONTROL_3:
@@ -833,7 +808,6 @@ bool wm5100_readable_register(struct device *dev, unsigned int reg)
 			return true;
 		else
 			return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1495,8 +1469,6 @@ struct reg_default wm5100_reg_defaults[WM5100_REGISTER_COUNT] = {
 	{ 0x0EC9, 0x0000 },  /* R3785  - HPLPF3_2 */
 	{ 0x0ECC, 0x0000 },  /* R3788  - HPLPF4_1 */
 	{ 0x0ECD, 0x0000 },  /* R3789  - HPLPF4_2 */
-<<<<<<< HEAD
-=======
 	{ 0x0F02, 0x0000 },  /* R3842  - DSP1 Control 2 */
 	{ 0x0F03, 0x0000 },  /* R3843  - DSP1 Control 3 */
 	{ 0x0F04, 0x0000 },  /* R3844  - DSP1 Control 4 */
@@ -1506,5 +1478,4 @@ struct reg_default wm5100_reg_defaults[WM5100_REGISTER_COUNT] = {
 	{ 0x1102, 0x0000 },  /* R4354  - DSP3 Control 2 */
 	{ 0x1103, 0x0000 },  /* R4355  - DSP3 Control 3 */
 	{ 0x1104, 0x0000 },  /* R4356  - DSP3 Control 4 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

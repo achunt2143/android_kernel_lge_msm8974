@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A driver for the AverMedia MR 800 USB FM radio. This device plugs
  * into both the USB and an analog audio input, so this thing
@@ -9,23 +6,6 @@
  * audio data has to be handled by a sound driver.
  *
  * Copyright (c) 2008 Alexey Klimov <klimov.linux@gmail.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -39,27 +19,6 @@
  * achievements (specifications given).
  * Also, Faidon Liambotis <paravoid@debian.org> wrote nice driver for this radio
  * in 2007. He allowed to use his driver to improve current mr800 radio driver.
-<<<<<<< HEAD
- * http://kerneltrap.org/mailarchive/linux-usb-devel/2007/10/11/342492
- *
- * Version 0.01:	First working version.
- * 			It's required to blacklist AverMedia USB Radio
- * 			in usbhid/hid-quirks.c
- * Version 0.10:	A lot of cleanups and fixes: unpluging the device,
- * 			few mutex locks were added, codinstyle issues, etc.
- * 			Added stereo support. Thanks to
- * 			Douglas Schilling Landgraf <dougsland@gmail.com> and
- * 			David Ellingsworth <david@identd.dyndns.org>
- * 			for discussion, help and support.
- * Version 0.11:	Converted to v4l2_device.
- *
- * Many things to do:
- * 	- Correct power management of device (suspend & resume)
- * 	- Add code for scanning and smooth tuning
- * 	- Add code for sensitivity value
- * 	- Correct mistakes
- * 	- In Japan another FREQ_MIN and FREQ_MAX
-=======
  * http://www.spinics.net/lists/linux-usb-devel/msg10109.html
  *
  * Version 0.01:	First working version.
@@ -79,7 +38,6 @@
  *	- Add code for sensitivity value
  *	- Correct mistakes
  *	- In Japan another FREQ_MIN and FREQ_MAX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* kernel includes */
@@ -91,11 +49,8 @@
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
-<<<<<<< HEAD
-=======
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 #include <linux/mutex.h>
 
@@ -135,14 +90,6 @@ devices, that would be 76 and 91.  */
  * List isn't full and will be updated with implementation of new functions
  */
 #define AMRADIO_SET_FREQ	0xa4
-<<<<<<< HEAD
-#define AMRADIO_SET_MUTE	0xab
-#define AMRADIO_SET_MONO	0xae
-
-/* Comfortable defines for amradio_set_mute */
-#define AMRADIO_START		0x00
-#define AMRADIO_STOP		0x01
-=======
 #define AMRADIO_GET_READY_FLAG	0xa5
 #define AMRADIO_GET_SIGNAL	0xa7
 #define AMRADIO_GET_FREQ	0xa8
@@ -154,7 +101,6 @@ devices, that would be 76 and 91.  */
 #define AMRADIO_SET_MONO	0xae
 #define AMRADIO_SET_SEARCH_LVL	0xb0
 #define AMRADIO_STOP_SEARCH	0xb1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Comfortable defines for amradio_set_stereo */
 #define WANT_STEREO		0x00
@@ -165,43 +111,20 @@ static int radio_nr = -1;
 module_param(radio_nr, int, 0);
 MODULE_PARM_DESC(radio_nr, "Radio Nr");
 
-<<<<<<< HEAD
-static int usb_amradio_probe(struct usb_interface *intf,
-			     const struct usb_device_id *id);
-static void usb_amradio_disconnect(struct usb_interface *intf);
-static int usb_amradio_open(struct file *file);
-static int usb_amradio_close(struct file *file);
-static int usb_amradio_suspend(struct usb_interface *intf,
-				pm_message_t message);
-static int usb_amradio_resume(struct usb_interface *intf);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Data for one (physical) device */
 struct amradio_device {
 	/* reference to USB and video device */
 	struct usb_device *usbdev;
 	struct usb_interface *intf;
-<<<<<<< HEAD
-	struct video_device videodev;
-	struct v4l2_device v4l2_dev;
-
-	unsigned char *buffer;
-=======
 	struct video_device vdev;
 	struct v4l2_device v4l2_dev;
 	struct v4l2_ctrl_handler hdl;
 
 	u8 *buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex lock;	/* buffer locking */
 	int curfreq;
 	int stereo;
 	int muted;
-<<<<<<< HEAD
-	int initialized;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct amradio_device *to_amradio_dev(struct v4l2_device *v4l2_dev)
@@ -209,34 +132,8 @@ static inline struct amradio_device *to_amradio_dev(struct v4l2_device *v4l2_dev
 	return container_of(v4l2_dev, struct amradio_device, v4l2_dev);
 }
 
-<<<<<<< HEAD
-/* USB Device ID List */
-static struct usb_device_id usb_amradio_device_table[] = {
-	{USB_DEVICE_AND_INTERFACE_INFO(USB_AMRADIO_VENDOR, USB_AMRADIO_PRODUCT,
-							USB_CLASS_HID, 0, 0) },
-	{ }						/* Terminating entry */
-};
-
-MODULE_DEVICE_TABLE(usb, usb_amradio_device_table);
-
-/* USB subsystem interface */
-static struct usb_driver usb_amradio_driver = {
-	.name			= MR800_DRIVER_NAME,
-	.probe			= usb_amradio_probe,
-	.disconnect		= usb_amradio_disconnect,
-	.suspend		= usb_amradio_suspend,
-	.resume			= usb_amradio_resume,
-	.reset_resume		= usb_amradio_resume,
-	.id_table		= usb_amradio_device_table,
-	.supports_autosuspend	= 1,
-};
-
-/* switch on/off the radio. Send 8 bytes to device */
-static int amradio_set_mute(struct amradio_device *radio, char argument)
-=======
 static int amradio_send_cmd(struct amradio_device *radio, u8 cmd, u8 arg,
 		u8 *extra, u8 extralen, bool reply)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	int size;
@@ -244,101 +141,6 @@ static int amradio_send_cmd(struct amradio_device *radio, u8 cmd, u8 arg,
 	radio->buffer[0] = 0x00;
 	radio->buffer[1] = 0x55;
 	radio->buffer[2] = 0xaa;
-<<<<<<< HEAD
-	radio->buffer[3] = 0x00;
-	radio->buffer[4] = AMRADIO_SET_MUTE;
-	radio->buffer[5] = argument;
-	radio->buffer[6] = 0x00;
-	radio->buffer[7] = 0x00;
-
-	retval = usb_bulk_msg(radio->usbdev, usb_sndintpipe(radio->usbdev, 2),
-		(void *) (radio->buffer), BUFFER_LENGTH, &size, USB_TIMEOUT);
-
-	if (retval < 0 || size != BUFFER_LENGTH) {
-		amradio_dev_warn(&radio->videodev.dev, "set mute failed\n");
-		return retval;
-	}
-
-	radio->muted = argument;
-
-	return retval;
-}
-
-/* set a frequency, freq is defined by v4l's TUNER_LOW, i.e. 1/16th kHz */
-static int amradio_setfreq(struct amradio_device *radio, int freq)
-{
-	int retval;
-	int size;
-	unsigned short freq_send = 0x10 + (freq >> 3) / 25;
-
-	radio->buffer[0] = 0x00;
-	radio->buffer[1] = 0x55;
-	radio->buffer[2] = 0xaa;
-	radio->buffer[3] = 0x03;
-	radio->buffer[4] = AMRADIO_SET_FREQ;
-	radio->buffer[5] = 0x00;
-	radio->buffer[6] = 0x00;
-	radio->buffer[7] = 0x08;
-
-	retval = usb_bulk_msg(radio->usbdev, usb_sndintpipe(radio->usbdev, 2),
-		(void *) (radio->buffer), BUFFER_LENGTH, &size, USB_TIMEOUT);
-
-	if (retval < 0 || size != BUFFER_LENGTH)
-		goto out_err;
-
-	/* frequency is calculated from freq_send and placed in first 2 bytes */
-	radio->buffer[0] = (freq_send >> 8) & 0xff;
-	radio->buffer[1] = freq_send & 0xff;
-	radio->buffer[2] = 0x01;
-	radio->buffer[3] = 0x00;
-	radio->buffer[4] = 0x00;
-	/* 5 and 6 bytes of buffer already = 0x00 */
-	radio->buffer[7] = 0x00;
-
-	retval = usb_bulk_msg(radio->usbdev, usb_sndintpipe(radio->usbdev, 2),
-		(void *) (radio->buffer), BUFFER_LENGTH, &size, USB_TIMEOUT);
-
-	if (retval < 0 || size != BUFFER_LENGTH)
-		goto out_err;
-
-	radio->curfreq = freq;
-	goto out;
-
-out_err:
-	amradio_dev_warn(&radio->videodev.dev, "set frequency failed\n");
-out:
-	return retval;
-}
-
-static int amradio_set_stereo(struct amradio_device *radio, char argument)
-{
-	int retval;
-	int size;
-
-	radio->buffer[0] = 0x00;
-	radio->buffer[1] = 0x55;
-	radio->buffer[2] = 0xaa;
-	radio->buffer[3] = 0x00;
-	radio->buffer[4] = AMRADIO_SET_MONO;
-	radio->buffer[5] = argument;
-	radio->buffer[6] = 0x00;
-	radio->buffer[7] = 0x00;
-
-	retval = usb_bulk_msg(radio->usbdev, usb_sndintpipe(radio->usbdev, 2),
-		(void *) (radio->buffer), BUFFER_LENGTH, &size, USB_TIMEOUT);
-
-	if (retval < 0 || size != BUFFER_LENGTH) {
-		amradio_dev_warn(&radio->videodev.dev, "set stereo failed\n");
-		return retval;
-	}
-
-	if (argument == WANT_STEREO)
-		radio->stereo = 1;
-	else
-		radio->stereo = 0;
-
-	return retval;
-=======
 	radio->buffer[3] = extralen;
 	radio->buffer[4] = cmd;
 	radio->buffer[5] = arg;
@@ -429,7 +231,6 @@ static int amradio_get_stat(struct amradio_device *radio, bool *is_stereo, u32 *
 	*is_stereo = radio->buffer[2] >> 7;
 	*signal = (radio->buffer[3] & 0xf0) << 8;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Handle unplugging the device.
@@ -442,42 +243,23 @@ static void usb_amradio_disconnect(struct usb_interface *intf)
 	struct amradio_device *radio = to_amradio_dev(usb_get_intfdata(intf));
 
 	mutex_lock(&radio->lock);
-<<<<<<< HEAD
-	/* increase the device node's refcount */
-	get_device(&radio->videodev.dev);
-	v4l2_device_disconnect(&radio->v4l2_dev);
-	video_unregister_device(&radio->videodev);
-	mutex_unlock(&radio->lock);
-	/* decrease the device node's refcount, allowing it to be released */
-	put_device(&radio->videodev.dev);
-=======
 	video_unregister_device(&radio->vdev);
 	amradio_set_mute(radio, true);
 	usb_set_intfdata(intf, NULL);
 	v4l2_device_disconnect(&radio->v4l2_dev);
 	mutex_unlock(&radio->lock);
 	v4l2_device_put(&radio->v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* vidioc_querycap - query device capabilities */
 static int vidioc_querycap(struct file *file, void *priv,
 					struct v4l2_capability *v)
 {
-<<<<<<< HEAD
-	struct amradio_device *radio = file->private_data;
-
-	strlcpy(v->driver, "radio-mr800", sizeof(v->driver));
-	strlcpy(v->card, "AverMedia MR 800 USB FM Radio", sizeof(v->card));
-	usb_make_path(radio->usbdev, v->bus_info, sizeof(v->bus_info));
-	v->capabilities = V4L2_CAP_TUNER;
-=======
 	struct amradio_device *radio = video_drvdata(file);
 
 	strscpy(v->driver, "radio-mr800", sizeof(v->driver));
 	strscpy(v->card, "AverMedia MR 800 USB FM Radio", sizeof(v->card));
 	usb_make_path(radio->usbdev, v->bus_info, sizeof(v->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -485,43 +267,13 @@ static int vidioc_querycap(struct file *file, void *priv,
 static int vidioc_g_tuner(struct file *file, void *priv,
 				struct v4l2_tuner *v)
 {
-<<<<<<< HEAD
-	struct amradio_device *radio = file->private_data;
-=======
 	struct amradio_device *radio = video_drvdata(file);
 	bool is_stereo = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	if (v->index > 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-/* TODO: Add function which look is signal stereo or not
- * 	amradio_getstat(radio);
- */
-
-/* we call amradio_set_stereo to set radio->stereo
- * Honestly, amradio_getstat should cover this in future and
- * amradio_set_stereo shouldn't be here
- */
-	retval = amradio_set_stereo(radio, WANT_STEREO);
-
-	strcpy(v->name, "FM");
-	v->type = V4L2_TUNER_RADIO;
-	v->rangelow = FREQ_MIN * FREQ_MUL;
-	v->rangehigh = FREQ_MAX * FREQ_MUL;
-	v->rxsubchans = V4L2_TUNER_SUB_MONO | V4L2_TUNER_SUB_STEREO;
-	v->capability = V4L2_TUNER_CAP_LOW;
-	if (radio->stereo)
-		v->audmode = V4L2_TUNER_MODE_STEREO;
-	else
-		v->audmode = V4L2_TUNER_MODE_MONO;
-	v->signal = 0xffff;     /* Can't get the signal strength, sad.. */
-	v->afc = 0; /* Don't know what is this */
-
-	return retval;
-=======
 	v->signal = 0;
 	retval = amradio_get_stat(radio, &is_stereo, &v->signal);
 	if (retval)
@@ -537,21 +289,13 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	v->audmode = radio->stereo ?
 		V4L2_TUNER_MODE_STEREO : V4L2_TUNER_MODE_MONO;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* vidioc_s_tuner - set tuner attributes */
 static int vidioc_s_tuner(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_tuner *v)
-{
-	struct amradio_device *radio = file->private_data;
-	int retval = -EINVAL;
-=======
 				const struct v4l2_tuner *v)
 {
 	struct amradio_device *radio = video_drvdata(file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (v->index > 0)
 		return -EINVAL;
@@ -559,34 +303,14 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 	/* mono/stereo selector */
 	switch (v->audmode) {
 	case V4L2_TUNER_MODE_MONO:
-<<<<<<< HEAD
-		retval = amradio_set_stereo(radio, WANT_MONO);
-		break;
-	case V4L2_TUNER_MODE_STEREO:
-		retval = amradio_set_stereo(radio, WANT_STEREO);
-		break;
-	}
-
-	return retval;
-=======
 		return amradio_set_stereo(radio, WANT_MONO);
 	default:
 		return amradio_set_stereo(radio, WANT_STEREO);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* vidioc_s_frequency - set tuner radio frequency */
 static int vidioc_s_frequency(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_frequency *f)
-{
-	struct amradio_device *radio = file->private_data;
-
-	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
-		return -EINVAL;
-	return amradio_setfreq(radio, f->frequency);
-=======
 				const struct v4l2_frequency *f)
 {
 	struct amradio_device *radio = video_drvdata(file);
@@ -594,22 +318,15 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 	if (f->tuner != 0)
 		return -EINVAL;
 	return amradio_set_freq(radio, f->frequency);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* vidioc_g_frequency - get tuner radio frequency */
 static int vidioc_g_frequency(struct file *file, void *priv,
 				struct v4l2_frequency *f)
 {
-<<<<<<< HEAD
-	struct amradio_device *radio = file->private_data;
-
-	if (f->tuner != 0)
-=======
 	struct amradio_device *radio = video_drvdata(file);
 
 	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	f->type = V4L2_TUNER_RADIO;
 	f->frequency = radio->curfreq;
@@ -617,89 +334,6 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-/* vidioc_queryctrl - enumerate control items */
-static int vidioc_queryctrl(struct file *file, void *priv,
-				struct v4l2_queryctrl *qc)
-{
-	switch (qc->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		return v4l2_ctrl_query_fill(qc, 0, 1, 1, 1);
-	}
-
-	return -EINVAL;
-}
-
-/* vidioc_g_ctrl - get the value of a control */
-static int vidioc_g_ctrl(struct file *file, void *priv,
-				struct v4l2_control *ctrl)
-{
-	struct amradio_device *radio = file->private_data;
-
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		ctrl->value = radio->muted;
-		return 0;
-	}
-
-	return -EINVAL;
-}
-
-/* vidioc_s_ctrl - set the value of a control */
-static int vidioc_s_ctrl(struct file *file, void *priv,
-				struct v4l2_control *ctrl)
-{
-	struct amradio_device *radio = file->private_data;
-	int retval = -EINVAL;
-
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		if (ctrl->value)
-			retval = amradio_set_mute(radio, AMRADIO_STOP);
-		else
-			retval = amradio_set_mute(radio, AMRADIO_START);
-
-		break;
-	}
-
-	return retval;
-}
-
-/* vidioc_g_audio - get audio attributes */
-static int vidioc_g_audio(struct file *file, void *priv,
-				struct v4l2_audio *a)
-{
-	if (a->index > 1)
-		return -EINVAL;
-
-	strcpy(a->name, "Radio");
-	a->capability = V4L2_AUDCAP_STEREO;
-	return 0;
-}
-
-/* vidioc_s_audio - set audio attributes  */
-static int vidioc_s_audio(struct file *file, void *priv,
-					struct v4l2_audio *a)
-{
-	if (a->index != 0)
-		return -EINVAL;
-	return 0;
-}
-
-/* vidioc_g_input - get input */
-static int vidioc_g_input(struct file *filp, void *priv, unsigned int *i)
-{
-	*i = 0;
-	return 0;
-}
-
-/* vidioc_s_input - set input */
-static int vidioc_s_input(struct file *filp, void *priv, unsigned int i)
-{
-	if (i != 0)
-		return -EINVAL;
-	return 0;
-=======
 static int vidioc_s_hw_freq_seek(struct file *file, void *priv,
 		const struct v4l2_hw_freq_seek *seek)
 {
@@ -768,61 +402,12 @@ static int usb_amradio_s_ctrl(struct v4l2_ctrl *ctrl)
 	}
 
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usb_amradio_init(struct amradio_device *radio)
 {
 	int retval;
 
-<<<<<<< HEAD
-	retval = amradio_set_mute(radio, AMRADIO_STOP);
-	if (retval)
-		goto out_err;
-
-	retval = amradio_set_stereo(radio, WANT_STEREO);
-	if (retval)
-		goto out_err;
-
-	radio->initialized = 1;
-	goto out;
-
-out_err:
-	amradio_dev_err(&radio->videodev.dev, "initialization failed\n");
-out:
-	return retval;
-}
-
-/* open device - amradio_start() and amradio_setfreq() */
-static int usb_amradio_open(struct file *file)
-{
-	struct amradio_device *radio = video_drvdata(file);
-	int retval;
-
-	file->private_data = radio;
-	retval = usb_autopm_get_interface(radio->intf);
-	if (retval)
-		return retval;
-
-	if (unlikely(!radio->initialized)) {
-		retval = usb_amradio_init(radio);
-		if (retval)
-			usb_autopm_put_interface(radio->intf);
-	}
-	return retval;
-}
-
-/*close device */
-static int usb_amradio_close(struct file *file)
-{
-	struct amradio_device *radio = file->private_data;
-
-	if (video_is_registered(&radio->videodev))
-		usb_autopm_put_interface(radio->intf);
-	return 0;
-}
-
-=======
 	retval = amradio_set_mute(radio, true);
 	if (retval)
 		goto out_err;
@@ -839,22 +424,15 @@ out_err:
 	return retval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Suspend device - stop device. Need to be checked and fixed */
 static int usb_amradio_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct amradio_device *radio = to_amradio_dev(usb_get_intfdata(intf));
 
 	mutex_lock(&radio->lock);
-<<<<<<< HEAD
-	if (!radio->muted && radio->initialized) {
-		amradio_set_mute(radio, AMRADIO_STOP);
-		radio->muted = 0;
-=======
 	if (!radio->muted) {
 		amradio_set_mute(radio, true);
 		radio->muted = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&radio->lock);
 
@@ -868,42 +446,18 @@ static int usb_amradio_resume(struct usb_interface *intf)
 	struct amradio_device *radio = to_amradio_dev(usb_get_intfdata(intf));
 
 	mutex_lock(&radio->lock);
-<<<<<<< HEAD
-	if (unlikely(!radio->initialized))
-		goto unlock;
-
-	if (radio->stereo)
-		amradio_set_stereo(radio, WANT_STEREO);
-	else
-		amradio_set_stereo(radio, WANT_MONO);
-
-	amradio_setfreq(radio, radio->curfreq);
-
-	if (!radio->muted)
-		amradio_set_mute(radio, AMRADIO_START);
-
-unlock:
-=======
 	amradio_set_stereo(radio, radio->stereo);
 	amradio_set_freq(radio, radio->curfreq);
 
 	if (!radio->muted)
 		amradio_set_mute(radio, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&radio->lock);
 
 	dev_info(&intf->dev, "coming out of suspend..\n");
 	return 0;
 }
 
-<<<<<<< HEAD
-/* File system interface */
-static const struct v4l2_file_operations usb_amradio_fops = {
-	.owner		= THIS_MODULE,
-	.open		= usb_amradio_open,
-	.release	= usb_amradio_close,
-=======
 static const struct v4l2_ctrl_ops usb_amradio_ctrl_ops = {
 	.s_ctrl = usb_amradio_s_ctrl,
 };
@@ -914,7 +468,6 @@ static const struct v4l2_file_operations usb_amradio_fops = {
 	.open		= v4l2_fh_open,
 	.release	= v4l2_fh_release,
 	.poll		= v4l2_ctrl_poll,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	= video_ioctl2,
 };
 
@@ -924,22 +477,6 @@ static const struct v4l2_ioctl_ops usb_amradio_ioctl_ops = {
 	.vidioc_s_tuner     = vidioc_s_tuner,
 	.vidioc_g_frequency = vidioc_g_frequency,
 	.vidioc_s_frequency = vidioc_s_frequency,
-<<<<<<< HEAD
-	.vidioc_queryctrl   = vidioc_queryctrl,
-	.vidioc_g_ctrl      = vidioc_g_ctrl,
-	.vidioc_s_ctrl      = vidioc_s_ctrl,
-	.vidioc_g_audio     = vidioc_g_audio,
-	.vidioc_s_audio     = vidioc_s_audio,
-	.vidioc_g_input     = vidioc_g_input,
-	.vidioc_s_input     = vidioc_s_input,
-};
-
-static void usb_amradio_video_device_release(struct video_device *videodev)
-{
-	struct amradio_device *radio = video_get_drvdata(videodev);
-
-	/* free rest memory */
-=======
 	.vidioc_s_hw_freq_seek = vidioc_s_hw_freq_seek,
 	.vidioc_log_status  = v4l2_ctrl_log_status,
 	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
@@ -953,7 +490,6 @@ static void usb_amradio_release(struct v4l2_device *v4l2_dev)
 	/* free rest memory */
 	v4l2_ctrl_handler_free(&radio->hdl);
 	v4l2_device_unregister(&radio->v4l2_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(radio->buffer);
 	kfree(radio);
 }
@@ -963,11 +499,7 @@ static int usb_amradio_probe(struct usb_interface *intf,
 				const struct usb_device_id *id)
 {
 	struct amradio_device *radio;
-<<<<<<< HEAD
-	int retval = 0;
-=======
 	int retval;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	radio = kzalloc(sizeof(struct amradio_device), GFP_KERNEL);
 
@@ -991,25 +523,6 @@ static int usb_amradio_probe(struct usb_interface *intf,
 		goto err_v4l2;
 	}
 
-<<<<<<< HEAD
-	mutex_init(&radio->lock);
-
-	strlcpy(radio->videodev.name, radio->v4l2_dev.name,
-		sizeof(radio->videodev.name));
-	radio->videodev.v4l2_dev = &radio->v4l2_dev;
-	radio->videodev.fops = &usb_amradio_fops;
-	radio->videodev.ioctl_ops = &usb_amradio_ioctl_ops;
-	radio->videodev.release = usb_amradio_video_device_release;
-	radio->videodev.lock = &radio->lock;
-
-	radio->usbdev = interface_to_usbdev(intf);
-	radio->intf = intf;
-	radio->curfreq = 95.16 * FREQ_MUL;
-
-	video_set_drvdata(&radio->videodev, radio);
-
-	retval = video_register_device(&radio->videodev, VFL_TYPE_RADIO,
-=======
 	v4l2_ctrl_handler_init(&radio->hdl, 1);
 	v4l2_ctrl_new_std(&radio->hdl, &usb_amradio_ctrl_ops,
 			  V4L2_CID_AUDIO_MUTE, 0, 1, 1, 1);
@@ -1043,7 +556,6 @@ static int usb_amradio_probe(struct usb_interface *intf,
 		goto err_vdev;
 
 	retval = video_register_device(&radio->vdev, VFL_TYPE_RADIO,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					radio_nr);
 	if (retval < 0) {
 		dev_err(&intf->dev, "could not register video device\n");
@@ -1053,11 +565,8 @@ static int usb_amradio_probe(struct usb_interface *intf,
 	return 0;
 
 err_vdev:
-<<<<<<< HEAD
-=======
 	v4l2_ctrl_handler_free(&radio->hdl);
 err_ctrl:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v4l2_device_unregister(&radio->v4l2_dev);
 err_v4l2:
 	kfree(radio->buffer);
@@ -1067,8 +576,6 @@ err:
 	return retval;
 }
 
-<<<<<<< HEAD
-=======
 /* USB Device ID List */
 static const struct usb_device_id usb_amradio_device_table[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(USB_AMRADIO_VENDOR, USB_AMRADIO_PRODUCT,
@@ -1089,5 +596,4 @@ static struct usb_driver usb_amradio_driver = {
 	.id_table		= usb_amradio_device_table,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_usb_driver(usb_amradio_driver);

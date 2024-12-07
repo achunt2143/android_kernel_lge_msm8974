@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2017 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -44,18 +40,6 @@
 void rds_tcp_state_change(struct sock *sk)
 {
 	void (*state_change)(struct sock *sk);
-<<<<<<< HEAD
-	struct rds_connection *conn;
-	struct rds_tcp_connection *tc;
-
-	read_lock_bh(&sk->sk_callback_lock);
-	conn = sk->sk_user_data;
-	if (!conn) {
-		state_change = sk->sk_state_change;
-		goto out;
-	}
-	tc = conn->c_transport_data;
-=======
 	struct rds_conn_path *cp;
 	struct rds_tcp_connection *tc;
 
@@ -66,25 +50,10 @@ void rds_tcp_state_change(struct sock *sk)
 		goto out;
 	}
 	tc = cp->cp_transport_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state_change = tc->t_orig_state_change;
 
 	rdsdebug("sock %p state_change to %d\n", tc->t_sock, sk->sk_state);
 
-<<<<<<< HEAD
-	switch(sk->sk_state) {
-		/* ignore connecting sockets as they make progress */
-		case TCP_SYN_SENT:
-		case TCP_SYN_RECV:
-			break;
-		case TCP_ESTABLISHED:
-			rds_connect_complete(conn);
-			break;
-		case TCP_CLOSE:
-			rds_conn_drop(conn);
-		default:
-			break;
-=======
 	switch (sk->sk_state) {
 	/* ignore connecting sockets as they make progress */
 	case TCP_SYN_SENT:
@@ -112,34 +81,12 @@ void rds_tcp_state_change(struct sock *sk)
 		break;
 	default:
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	read_unlock_bh(&sk->sk_callback_lock);
 	state_change(sk);
 }
 
-<<<<<<< HEAD
-int rds_tcp_conn_connect(struct rds_connection *conn)
-{
-	struct socket *sock = NULL;
-	struct sockaddr_in src, dest;
-	int ret;
-
-	ret = sock_create(PF_INET, SOCK_STREAM, IPPROTO_TCP, &sock);
-	if (ret < 0)
-		goto out;
-
-	rds_tcp_tune(sock);
-
-	src.sin_family = AF_INET;
-	src.sin_addr.s_addr = (__force u32)conn->c_laddr;
-	src.sin_port = (__force u16)htons(0);
-
-	ret = sock->ops->bind(sock, (struct sockaddr *)&src, sizeof(src));
-	if (ret) {
-		rdsdebug("bind failed with %d at address %pI4\n",
-=======
 int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
 {
 	struct socket *sock = NULL;
@@ -201,16 +148,10 @@ int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
 	ret = kernel_bind(sock, addr, addrlen);
 	if (ret) {
 		rdsdebug("bind failed with %d at address %pI6c\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 ret, &conn->c_laddr);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	dest.sin_family = AF_INET;
-	dest.sin_addr.s_addr = (__force u32)conn->c_faddr;
-	dest.sin_port = (__force u16)htons(RDS_TCP_PORT);
-=======
 	if (isv6) {
 		sin6.sin6_family = AF_INET6;
 		sin6.sin6_addr = conn->c_faddr;
@@ -226,24 +167,11 @@ int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
 		addr = (struct sockaddr *)&sin;
 		addrlen = sizeof(sin);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * once we call connect() we can start getting callbacks and they
 	 * own the socket
 	 */
-<<<<<<< HEAD
-	rds_tcp_set_callbacks(sock, conn);
-	ret = sock->ops->connect(sock, (struct sockaddr *)&dest, sizeof(dest),
-				 O_NONBLOCK);
-	sock = NULL;
-
-	rdsdebug("connect to address %pI4 returned %d\n", &conn->c_faddr, ret);
-	if (ret == -EINPROGRESS)
-		ret = 0;
-
-out:
-=======
 	rds_tcp_set_callbacks(sock, cp);
 	ret = kernel_connect(sock, addr, addrlen, O_NONBLOCK);
 
@@ -259,7 +187,6 @@ out:
 
 out:
 	mutex_unlock(&tc->t_conn_path_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sock)
 		sock_release(sock);
 	return ret;
@@ -274,16 +201,6 @@ out:
  * callbacks to those set by TCP.  Our callbacks won't execute again once we
  * hold the sock lock.
  */
-<<<<<<< HEAD
-void rds_tcp_conn_shutdown(struct rds_connection *conn)
-{
-	struct rds_tcp_connection *tc = conn->c_transport_data;
-	struct socket *sock = tc->t_sock;
-
-	rdsdebug("shutting down conn %p tc %p sock %p\n", conn, tc, sock);
-
-	if (sock) {
-=======
 void rds_tcp_conn_path_shutdown(struct rds_conn_path *cp)
 {
 	struct rds_tcp_connection *tc = cp->cp_transport_data;
@@ -295,7 +212,6 @@ void rds_tcp_conn_path_shutdown(struct rds_conn_path *cp)
 	if (sock) {
 		if (rds_destroy_pending(cp->cp_conn))
 			sock_no_linger(sock->sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sock->ops->shutdown(sock, RCV_SHUTDOWN | SEND_SHUTDOWN);
 		lock_sock(sock->sk);
 		rds_tcp_restore_callbacks(sock, tc); /* tc->tc_sock = NULL */

@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2004 Benjamin Herrenschmuidt (benh@kernel.crashing.org),
- *		      IBM Corp.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2004 Benjamin Herrenschmuidt (benh@kernel.crashing.org),
  *		      IBM Corp.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -22,28 +11,16 @@
 #include <linux/delay.h>
 #include <linux/string.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/irq.h>
-
-#include <asm/sections.h>
-#include <asm/io.h>
-#include <asm/prom.h>
-=======
 #include <linux/irq.h>
 #include <linux/of_irq.h>
 
 #include <asm/sections.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-bridge.h>
 #include <asm/machdep.h>
 #include <asm/iommu.h>
 #include <asm/ppc-pci.h>
-<<<<<<< HEAD
-=======
 #include <asm/isa-bridge.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "maple.h"
 
@@ -57,11 +34,7 @@ static struct pci_controller *u3_agp, *u3_ht, *u4_pcie;
 
 static int __init fixup_one_level_bus_range(struct device_node *node, int higher)
 {
-<<<<<<< HEAD
-	for (; node != 0;node = node->sibling) {
-=======
 	for (; node; node = node->sibling) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const int *bus_range;
 		const unsigned int *class_code;
 		int len;
@@ -96,13 +69,8 @@ static void __init fixup_bus_range(struct device_node *bridge)
 	/* Lookup the "bus-range" property for the hose */
 	prop = of_find_property(bridge, "bus-range", &len);
 	if (prop == NULL  || prop->value == NULL || len < 2 * sizeof(int)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Can't get bus-range for %s\n",
-			       bridge->full_name);
-=======
 		printk(KERN_WARNING "Can't get bus-range for %pOF\n",
 			       bridge);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	bus_range = prop->value;
@@ -526,21 +494,12 @@ static int __init maple_add_bridge(struct device_node *dev)
 	const int *bus_range;
 	int primary = 1;
 
-<<<<<<< HEAD
-	DBG("Adding PCI host bridge %s\n", dev->full_name);
-
-	bus_range = of_get_property(dev, "bus-range", &len);
-	if (bus_range == NULL || len < 2 * sizeof(int)) {
-		printk(KERN_WARNING "Can't get bus-range for %s, assume bus 0\n",
-		dev->full_name);
-=======
 	DBG("Adding PCI host bridge %pOF\n", dev);
 
 	bus_range = of_get_property(dev, "bus-range", &len);
 	if (bus_range == NULL || len < 2 * sizeof(int)) {
 		printk(KERN_WARNING "Can't get bus-range for %pOF, assume bus 0\n",
 		dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hose = pcibios_alloc_controller(dev);
@@ -548,10 +507,7 @@ static int __init maple_add_bridge(struct device_node *dev)
 		return -ENOMEM;
 	hose->first_busno = bus_range ? bus_range[0] : 0;
 	hose->last_busno = bus_range ? bus_range[1] : 0xff;
-<<<<<<< HEAD
-=======
 	hose->controller_ops = maple_pci_controller_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	disp_name = NULL;
 	if (of_device_is_compatible(dev, "u3-agp")) {
@@ -580,21 +536,14 @@ static int __init maple_add_bridge(struct device_node *dev)
 	/* Check for legacy IOs */
 	isa_bridge_find_early(hose);
 
-<<<<<<< HEAD
-=======
 	/* create pci_dn's for DT nodes under this PHB */
 	pci_devs_phb_init_dynamic(hose);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
-<<<<<<< HEAD
-void __devinit maple_pci_irq_fixup(struct pci_dev *dev)
-=======
 void maple_pci_irq_fixup(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DBG(" -> maple_pci_irq_fixup\n");
 
@@ -603,11 +552,7 @@ void maple_pci_irq_fixup(struct pci_dev *dev)
 	    pci_bus_to_host(dev->bus) == u4_pcie) {
 		printk(KERN_DEBUG "Fixup U4 PCIe IRQ\n");
 		dev->irq = irq_create_mapping(NULL, 1);
-<<<<<<< HEAD
-		if (dev->irq != NO_IRQ)
-=======
 		if (dev->irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			irq_set_irq_type(dev->irq, IRQ_TYPE_LEVEL_LOW);
 	}
 
@@ -617,18 +562,12 @@ void maple_pci_irq_fixup(struct pci_dev *dev)
 	if (dev->vendor == PCI_VENDOR_ID_AMD &&
 	    dev->device == PCI_DEVICE_ID_AMD_8111_IDE &&
 	    (dev->class & 5) != 5) {
-<<<<<<< HEAD
-		dev->irq = NO_IRQ;
-=======
 		dev->irq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	DBG(" <- maple_pci_irq_fixup\n");
 }
 
-<<<<<<< HEAD
-=======
 static int maple_pci_root_bridge_prepare(struct pci_host_bridge *bridge)
 {
 	struct pci_controller *hose = pci_bus_to_host(bridge->bus);
@@ -649,7 +588,6 @@ static int maple_pci_root_bridge_prepare(struct pci_host_bridge *bridge)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init maple_pci_init(void)
 {
 	struct device_node *np, *root;
@@ -665,15 +603,8 @@ void __init maple_pci_init(void)
 		printk(KERN_CRIT "maple_find_bridges: can't find root of device tree\n");
 		return;
 	}
-<<<<<<< HEAD
-	for (np = NULL; (np = of_get_next_child(root, np)) != NULL;) {
-		if (!np->type)
-			continue;
-		if (strcmp(np->type, "pci") && strcmp(np->type, "ht"))
-=======
 	for_each_child_of_node(root, np) {
 		if (!of_node_is_type(np, "pci") && !of_node_is_type(np, "ht"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if ((of_device_is_compatible(np, "u4-pcie") ||
 		     of_device_is_compatible(np, "u3-agp")) &&
@@ -692,23 +623,7 @@ void __init maple_pci_init(void)
 	if (ht && maple_add_bridge(ht) != 0)
 		of_node_put(ht);
 
-<<<<<<< HEAD
-	/* Setup the linkage between OF nodes and PHBs */ 
-	pci_devs_phb_init();
-
-	/* Fixup the PCI<->OF mapping for U3 AGP due to bus renumbering. We
-	 * assume there is no P2P bridge on the AGP bus, which should be a
-	 * safe assumptions hopefully.
-	 */
-	if (u3_agp) {
-		struct device_node *np = u3_agp->dn;
-		PCI_DN(np)->busno = 0xf0;
-		for (np = np->child; np; np = np->sibling)
-			PCI_DN(np)->busno = 0xf0;
-	}
-=======
 	ppc_md.pcibios_root_bridge_prepare = maple_pci_root_bridge_prepare;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Tell pci.c to not change any resource allocations.  */
 	pci_add_flags(PCI_PROBE_ONLY);
@@ -731,11 +646,7 @@ int maple_pci_get_legacy_ide_irq(struct pci_dev *pdev, int channel)
 		return defirq;
 	}
 	irq = irq_of_parse_and_map(np, channel & 0x1);
-<<<<<<< HEAD
-	if (irq == NO_IRQ) {
-=======
 	if (!irq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk("Failed to map onboard IDE interrupt for channel %d\n",
 		       channel);
 		return defirq;
@@ -743,11 +654,7 @@ int maple_pci_get_legacy_ide_irq(struct pci_dev *pdev, int channel)
 	return irq;
 }
 
-<<<<<<< HEAD
-static void __devinit quirk_ipr_msi(struct pci_dev *dev)
-=======
 static void quirk_ipr_msi(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Something prevents MSIs from the IPR from working on Bimini,
 	 * and the driver has no smarts to recover. So disable MSI
@@ -760,9 +667,6 @@ static void quirk_ipr_msi(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_OBSIDIAN,
 			quirk_ipr_msi);
-<<<<<<< HEAD
-=======
 
 struct pci_controller_ops maple_pci_controller_ops = {
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

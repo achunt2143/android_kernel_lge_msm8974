@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) ST-Ericsson SA 2007-2010
  * Author: Per Friden <per.friden@stericsson.com> for ST-Ericsson SA
  * Author: Jonas Aaberg <jonas.aberg@stericsson.com> for ST-Ericsson SA
-<<<<<<< HEAD
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef STE_DMA40_LL_H
 #define STE_DMA40_LL_H
@@ -132,11 +125,7 @@
 #define D40_DREG_GCC		0x000
 #define D40_DREG_GCC_ENA	0x1
 /* This assumes that there are only 4 event groups */
-<<<<<<< HEAD
-#define D40_DREG_GCC_ENABLE_ALL	0xff01
-=======
 #define D40_DREG_GCC_ENABLE_ALL	0x3ff01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define D40_DREG_GCC_EVTGRP_POS 8
 #define D40_DREG_GCC_SRC 0
 #define D40_DREG_GCC_DST 1
@@ -159,12 +148,6 @@
 
 #define D40_DREG_LCPA		0x020
 #define D40_DREG_LCLA		0x024
-<<<<<<< HEAD
-#define D40_DREG_ACTIVE		0x050
-#define D40_DREG_ACTIVO		0x054
-#define D40_DREG_FSEB1		0x058
-#define D40_DREG_FSEB2		0x05C
-=======
 
 #define D40_DREG_SSEG1		0x030
 #define D40_DREG_SSEG2		0x034
@@ -180,20 +163,16 @@
 #define D40_DREG_ACTIVO		0x054
 #define D40_DREG_CIDMOD		0x058
 #define D40_DREG_TCIDV		0x05C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define D40_DREG_PCMIS		0x060
 #define D40_DREG_PCICR		0x064
 #define D40_DREG_PCTIS		0x068
 #define D40_DREG_PCEIS		0x06C
-<<<<<<< HEAD
-=======
 
 #define D40_DREG_SPCMIS		0x070
 #define D40_DREG_SPCICR		0x074
 #define D40_DREG_SPCTIS		0x078
 #define D40_DREG_SPCEIS		0x07C
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define D40_DREG_LCMIS0		0x080
 #define D40_DREG_LCMIS1		0x084
 #define D40_DREG_LCMIS2		0x088
@@ -210,8 +189,6 @@
 #define D40_DREG_LCEIS1		0x0B4
 #define D40_DREG_LCEIS2		0x0B8
 #define D40_DREG_LCEIS3		0x0BC
-<<<<<<< HEAD
-=======
 
 #define D40_DREG_SLCMIS1	0x0C0
 #define D40_DREG_SLCMIS2	0x0C4
@@ -239,7 +216,6 @@
 #define D40_DREG_FSEBS1		0x108
 #define D40_DREG_FSEBS2		0x10C
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define D40_DREG_PSEG1		0x110
 #define D40_DREG_PSEG2		0x114
 #define D40_DREG_PSEG3		0x118
@@ -256,8 +232,6 @@
 #define D40_DREG_RCEG2		0x144
 #define D40_DREG_RCEG3		0x148
 #define D40_DREG_RCEG4		0x14C
-<<<<<<< HEAD
-=======
 
 #define D40_DREG_PREFOT		0x15C
 #define D40_DREG_EXTCFG		0x160
@@ -338,7 +312,6 @@
 #define D40_DREG_PRSCCIDA	0xF80
 #define D40_DREG_PRSCCIDB	0xF84
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define D40_DREG_STFU		0xFC8
 #define D40_DREG_ICFG		0xFCC
 #define D40_DREG_PERIPHID0	0xFE0
@@ -353,11 +326,7 @@
 /* LLI related structures */
 
 /**
-<<<<<<< HEAD
- * struct d40_phy_lli - The basic configration register for each physical
-=======
  * struct d40_phy_lli - The basic configuration register for each physical
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * channel.
  *
  * @reg_cfg: The configuration register.
@@ -463,12 +432,7 @@ enum d40_lli_flags {
 
 void d40_phy_cfg(struct stedma40_chan_cfg *cfg,
 		 u32 *src_cfg,
-<<<<<<< HEAD
-		 u32 *dst_cfg,
-		 bool is_log);
-=======
 		 u32 *dst_cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void d40_log_cfg(struct stedma40_chan_cfg *cfg,
 		 u32 *lcsp1,

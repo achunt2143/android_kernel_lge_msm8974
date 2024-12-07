@@ -41,10 +41,7 @@
 #include <linux/init.h>
 #include <linux/seq_file.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/traps.h>
 
@@ -53,13 +50,9 @@
 #include <asm/atari_stdma.h>
 #include <asm/irq.h>
 #include <asm/entry.h>
-<<<<<<< HEAD
-
-=======
 #include <asm/io.h>
 
 #include "atari.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Atari interrupt handling scheme:
@@ -89,11 +82,6 @@ __ALIGN_STR "\n\t"
 	"orw	#0x200,%sp@\n\t"	/* set saved ipl to 2 */
 	"rte");
 
-<<<<<<< HEAD
-extern void atari_microwire_cmd(int cmd);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int atari_irq_startup(struct irq_data *data)
 {
 	unsigned int irq = data->irq;
@@ -135,8 +123,6 @@ static struct irq_chip atari_irq_chip = {
 };
 
 /*
-<<<<<<< HEAD
-=======
  * ST-MFP timer D chained interrupts - each driver gets its own timer
  * interrupt instance.
  */
@@ -267,7 +253,6 @@ static struct irq_chip atari_ethernat_chip = {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * void atari_init_IRQ (void)
  *
  * Parameters:	None
@@ -344,8 +329,6 @@ void __init atari_init_IRQ(void)
 	/* Initialize the PSG: all sounds off, both ports output */
 	sound_ym.rd_data_reg_sel = 7;
 	sound_ym.wd_data = 0xff;
-<<<<<<< HEAD
-=======
 
 	m68k_setup_irq_controller(&atari_mfptimer_chip, handle_simple_irq,
 				  IRQ_MFP_TIMER1, 8);
@@ -370,7 +353,6 @@ void __init atari_init_IRQ(void)
 
 	m68k_setup_irq_controller(&atari_ethernat_chip, handle_simple_irq,
 				  139, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -379,11 +361,7 @@ void __init atari_init_IRQ(void)
  * hardware with a programmable int vector (probably a VME board).
  */
 
-<<<<<<< HEAD
-unsigned long atari_register_vme_int(void)
-=======
 unsigned int atari_register_vme_int(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -400,11 +378,7 @@ unsigned int atari_register_vme_int(void)
 EXPORT_SYMBOL(atari_register_vme_int);
 
 
-<<<<<<< HEAD
-void atari_unregister_vme_int(unsigned long irq)
-=======
 void atari_unregister_vme_int(unsigned int irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (irq >= VME_SOURCE_BASE && irq < VME_SOURCE_BASE + VME_MAX_SOURCES) {
 		irq -= VME_SOURCE_BASE;

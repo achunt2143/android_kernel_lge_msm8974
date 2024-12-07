@@ -16,17 +16,11 @@
  */
 
 #include <linux/ip.h>
-<<<<<<< HEAD
-#include "core.h"
-#include "debug.h"
-#include "testmode.h"
-=======
 #include <linux/in.h>
 #include "core.h"
 #include "debug.h"
 #include "testmode.h"
 #include "trace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../regd.h"
 #include "../regd_common.h"
 
@@ -65,8 +59,6 @@ static const s32 wmi_rate_tbl[][2] = {
 	{0, 0}
 };
 
-<<<<<<< HEAD
-=======
 static const s32 wmi_rate_tbl_mcs15[][2] = {
 	/* {W/O SGI, with SGI} */
 	{1000, 1000},
@@ -116,7 +108,6 @@ static const s32 wmi_rate_tbl_mcs15[][2] = {
 	{0, 0}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 802.1d to AC mapping. Refer pg 57 of WMM-test-plan-v1.2 */
 static const u8 up_to_ac[] = {
 	WMM_AC_BE,
@@ -163,11 +154,7 @@ struct ath6kl_vif *ath6kl_get_vif_by_index(struct ath6kl *ar, u8 if_idx)
 }
 
 /*  Performs DIX to 802.3 encapsulation for transmit packets.
-<<<<<<< HEAD
- *  Assumes the entire DIX header is contigous and that there is
-=======
  *  Assumes the entire DIX header is contiguous and that there is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  enough room in the buffer for a 802.3 mac header and LLC+SNAP headers.
  */
 int ath6kl_wmi_dix_2_dot3(struct wmi *wmi, struct sk_buff *skb)
@@ -351,10 +338,6 @@ int ath6kl_wmi_implicit_create_pstream(struct wmi *wmi, u8 if_idx,
 			   ath6kl_wmi_determine_user_priority(((u8 *) llc_hdr) +
 					sizeof(struct ath6kl_llc_snap_hdr),
 					layer2_priority);
-<<<<<<< HEAD
-		} else
-			usr_pri = layer2_priority & 0x7;
-=======
 		} else {
 			usr_pri = layer2_priority & 0x7;
 		}
@@ -365,7 +348,6 @@ int ath6kl_wmi_implicit_create_pstream(struct wmi *wmi, u8 if_idx,
 		 */
 		if (skb->protocol == cpu_to_be16(ETH_P_PAE))
 			usr_pri = WMI_VOICE_USER_PRIORITY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -427,14 +409,9 @@ int ath6kl_wmi_dot11_hdr_remove(struct wmi *wmi, struct sk_buff *skb)
 		hdr_size = roundup(sizeof(struct ieee80211_qos_hdr),
 				   sizeof(u32));
 		skb_pull(skb, hdr_size);
-<<<<<<< HEAD
-	} else if (sub_type == cpu_to_le16(IEEE80211_STYPE_DATA))
-		skb_pull(skb, sizeof(struct ieee80211_hdr_3addr));
-=======
 	} else if (sub_type == cpu_to_le16(IEEE80211_STYPE_DATA)) {
 		skb_pull(skb, sizeof(struct ieee80211_hdr_3addr));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	datap = skb->data;
 	llc_hdr = (struct ath6kl_llc_snap_hdr *)(datap);
@@ -444,13 +421,6 @@ int ath6kl_wmi_dot11_hdr_remove(struct wmi *wmi, struct sk_buff *skb)
 
 	switch ((le16_to_cpu(wh.frame_control)) &
 		(IEEE80211_FCTL_FROMDS | IEEE80211_FCTL_TODS)) {
-<<<<<<< HEAD
-	case 0:
-		memcpy(eth_hdr.h_dest, wh.addr1, ETH_ALEN);
-		memcpy(eth_hdr.h_source, wh.addr2, ETH_ALEN);
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IEEE80211_FCTL_TODS:
 		memcpy(eth_hdr.h_dest, wh.addr3, ETH_ALEN);
 		memcpy(eth_hdr.h_source, wh.addr2, ETH_ALEN);
@@ -461,13 +431,10 @@ int ath6kl_wmi_dot11_hdr_remove(struct wmi *wmi, struct sk_buff *skb)
 		break;
 	case IEEE80211_FCTL_FROMDS | IEEE80211_FCTL_TODS:
 		break;
-<<<<<<< HEAD
-=======
 	default:
 		memcpy(eth_hdr.h_dest, wh.addr1, ETH_ALEN);
 		memcpy(eth_hdr.h_source, wh.addr2, ETH_ALEN);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	skb_pull(skb, sizeof(struct ath6kl_llc_snap_hdr));
@@ -482,11 +449,7 @@ int ath6kl_wmi_dot11_hdr_remove(struct wmi *wmi, struct sk_buff *skb)
 
 /*
  * Performs 802.3 to DIX encapsulation for received packets.
-<<<<<<< HEAD
- * Assumes the entire 802.3 header is contigous.
-=======
  * Assumes the entire 802.3 header is contiguous.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ath6kl_wmi_dot3_2_dix(struct sk_buff *skb)
 {
@@ -557,14 +520,6 @@ static int ath6kl_wmi_remain_on_chnl_event_rx(struct wmi *wmi, u8 *datap,
 		   freq, dur);
 	chan = ieee80211_get_channel(ar->wiphy, freq);
 	if (!chan) {
-<<<<<<< HEAD
-		ath6kl_dbg(ATH6KL_DBG_WMI, "remain_on_chnl: Unknown channel "
-			   "(freq=%u)\n", freq);
-		return -EINVAL;
-	}
-	id = vif->last_roc_id;
-	cfg80211_ready_on_channel(vif->ndev, id, chan, NL80211_CHAN_NO_HT,
-=======
 		ath6kl_dbg(ATH6KL_DBG_WMI,
 			   "remain_on_chnl: Unknown channel (freq=%u)\n",
 			   freq);
@@ -572,7 +527,6 @@ static int ath6kl_wmi_remain_on_chnl_event_rx(struct wmi *wmi, u8 *datap,
 	}
 	id = vif->last_roc_id;
 	cfg80211_ready_on_channel(&vif->wdev, id, chan,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  dur, GFP_ATOMIC);
 
 	return 0;
@@ -595,14 +549,6 @@ static int ath6kl_wmi_cancel_remain_on_chnl_event_rx(struct wmi *wmi,
 	ev = (struct wmi_cancel_remain_on_chnl_event *) datap;
 	freq = le32_to_cpu(ev->freq);
 	dur = le32_to_cpu(ev->duration);
-<<<<<<< HEAD
-	ath6kl_dbg(ATH6KL_DBG_WMI, "cancel_remain_on_chnl: freq=%u dur=%u "
-		   "status=%u\n", freq, dur, ev->status);
-	chan = ieee80211_get_channel(ar->wiphy, freq);
-	if (!chan) {
-		ath6kl_dbg(ATH6KL_DBG_WMI, "cancel_remain_on_chnl: Unknown "
-			   "channel (freq=%u)\n", freq);
-=======
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "cancel_remain_on_chnl: freq=%u dur=%u status=%u\n",
 		   freq, dur, ev->status);
@@ -611,7 +557,6 @@ static int ath6kl_wmi_cancel_remain_on_chnl_event_rx(struct wmi *wmi,
 		ath6kl_dbg(ATH6KL_DBG_WMI,
 			   "cancel_remain_on_chnl: Unknown channel (freq=%u)\n",
 			   freq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (vif->last_cancel_roc_id &&
@@ -620,12 +565,7 @@ static int ath6kl_wmi_cancel_remain_on_chnl_event_rx(struct wmi *wmi,
 	else
 		id = vif->last_roc_id; /* timeout on uncanceled r-o-c */
 	vif->last_cancel_roc_id = 0;
-<<<<<<< HEAD
-	cfg80211_remain_on_channel_expired(vif->ndev, id, chan,
-					   NL80211_CHAN_NO_HT, GFP_ATOMIC);
-=======
 	cfg80211_remain_on_channel_expired(&vif->wdev, id, chan, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -644,11 +584,7 @@ static int ath6kl_wmi_tx_status_event_rx(struct wmi *wmi, u8 *datap, int len,
 	ath6kl_dbg(ATH6KL_DBG_WMI, "tx_status: id=%x ack_status=%u\n",
 		   id, ev->ack_status);
 	if (wmi->last_mgmt_tx_frame) {
-<<<<<<< HEAD
-		cfg80211_mgmt_tx_status(vif->ndev, id,
-=======
 		cfg80211_mgmt_tx_status(&vif->wdev, id,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					wmi->last_mgmt_tx_frame,
 					wmi->last_mgmt_tx_frame_len,
 					!!ev->ack_status, GFP_ATOMIC);
@@ -674,19 +610,6 @@ static int ath6kl_wmi_rx_probe_req_event_rx(struct wmi *wmi, u8 *datap, int len,
 	freq = le32_to_cpu(ev->freq);
 	dlen = le16_to_cpu(ev->len);
 	if (datap + len < ev->data + dlen) {
-<<<<<<< HEAD
-		ath6kl_err("invalid wmi_p2p_rx_probe_req_event: "
-			   "len=%d dlen=%u\n", len, dlen);
-		return -EINVAL;
-	}
-	ath6kl_dbg(ATH6KL_DBG_WMI, "rx_probe_req: len=%u freq=%u "
-		   "probe_req_report=%d\n",
-		   dlen, freq, vif->probe_req_report);
-
-	if (vif->probe_req_report || vif->nw_type == AP_NETWORK)
-		cfg80211_rx_mgmt(vif->ndev, freq, 0,
-				 ev->data, dlen, GFP_ATOMIC);
-=======
 		ath6kl_err("invalid wmi_p2p_rx_probe_req_event: len=%d dlen=%u\n",
 			   len, dlen);
 		return -EINVAL;
@@ -697,7 +620,6 @@ static int ath6kl_wmi_rx_probe_req_event_rx(struct wmi *wmi, u8 *datap, int len,
 
 	if (vif->probe_req_report || vif->nw_type == AP_NETWORK)
 		cfg80211_rx_mgmt(&vif->wdev, freq, 0, ev->data, dlen, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -731,22 +653,12 @@ static int ath6kl_wmi_rx_action_event_rx(struct wmi *wmi, u8 *datap, int len,
 	freq = le32_to_cpu(ev->freq);
 	dlen = le16_to_cpu(ev->len);
 	if (datap + len < ev->data + dlen) {
-<<<<<<< HEAD
-		ath6kl_err("invalid wmi_rx_action_event: "
-			   "len=%d dlen=%u\n", len, dlen);
-		return -EINVAL;
-	}
-	ath6kl_dbg(ATH6KL_DBG_WMI, "rx_action: len=%u freq=%u\n", dlen, freq);
-	cfg80211_rx_mgmt(vif->ndev, freq, 0,
-			 ev->data, dlen, GFP_ATOMIC);
-=======
 		ath6kl_err("invalid wmi_rx_action_event: len=%d dlen=%u\n",
 			   len, dlen);
 		return -EINVAL;
 	}
 	ath6kl_dbg(ATH6KL_DBG_WMI, "rx_action: len=%u freq=%u\n", dlen, freq);
 	cfg80211_rx_mgmt(&vif->wdev, freq, 0, ev->data, dlen, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -835,11 +747,7 @@ static int ath6kl_wmi_ready_event_rx(struct wmi *wmi, u8 *datap, int len)
 
 	ath6kl_ready_event(wmi->parent_dev, ev->mac_addr,
 			   le32_to_cpu(ev->sw_version),
-<<<<<<< HEAD
-			   le32_to_cpu(ev->abi_version));
-=======
 			   le32_to_cpu(ev->abi_version), ev->phy_cap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -868,15 +776,8 @@ int ath6kl_wmi_set_roam_lrssi_cmd(struct wmi *wmi, u8 lrssi)
 	cmd->info.params.roam_rssi_floor = DEF_LRSSI_ROAM_FLOOR;
 	cmd->roam_ctrl = WMI_SET_LRSSI_SCAN_PARAMS;
 
-<<<<<<< HEAD
-	ath6kl_wmi_cmd_send(wmi, 0, skb, WMI_SET_ROAM_CTRL_CMDID,
-			    NO_SYNC_WMIFLAG);
-
-	return 0;
-=======
 	return ath6kl_wmi_cmd_send(wmi, 0, skb, WMI_SET_ROAM_CTRL_CMDID,
 			    NO_SYNC_WMIFLAG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ath6kl_wmi_force_roam_cmd(struct wmi *wmi, const u8 *bssid)
@@ -889,10 +790,6 @@ int ath6kl_wmi_force_roam_cmd(struct wmi *wmi, const u8 *bssid)
 		return -ENOMEM;
 
 	cmd = (struct roam_ctrl_cmd *) skb->data;
-<<<<<<< HEAD
-	memset(cmd, 0, sizeof(*cmd));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(cmd->info.bssid, bssid, ETH_ALEN);
 	cmd->roam_ctrl = WMI_FORCE_ROAM;
@@ -902,8 +799,6 @@ int ath6kl_wmi_force_roam_cmd(struct wmi *wmi, const u8 *bssid)
 				   NO_SYNC_WMIFLAG);
 }
 
-<<<<<<< HEAD
-=======
 int ath6kl_wmi_ap_set_beacon_intvl_cmd(struct wmi *wmi, u8 if_idx,
 				       u32 beacon_intvl)
 {
@@ -937,7 +832,6 @@ int ath6kl_wmi_ap_set_dtim_cmd(struct wmi *wmi, u8 if_idx, u32 dtim_period)
 				   WMI_AP_SET_DTIM_CMDID, NO_SYNC_WMIFLAG);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_wmi_set_roam_mode_cmd(struct wmi *wmi, enum wmi_roam_mode mode)
 {
 	struct sk_buff *skb;
@@ -948,10 +842,6 @@ int ath6kl_wmi_set_roam_mode_cmd(struct wmi *wmi, enum wmi_roam_mode mode)
 		return -ENOMEM;
 
 	cmd = (struct roam_ctrl_cmd *) skb->data;
-<<<<<<< HEAD
-	memset(cmd, 0, sizeof(*cmd));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd->info.roam_mode = mode;
 	cmd->roam_ctrl = WMI_SET_ROAM_MODE;
@@ -976,26 +866,15 @@ static int ath6kl_wmi_connect_event_rx(struct wmi *wmi, u8 *datap, int len,
 		/* AP mode start/STA connected event */
 		struct net_device *dev = vif->ndev;
 		if (memcmp(dev->dev_addr, ev->u.ap_bss.bssid, ETH_ALEN) == 0) {
-<<<<<<< HEAD
-			ath6kl_dbg(ATH6KL_DBG_WMI, "%s: freq %d bssid %pM "
-				   "(AP started)\n",
-=======
 			ath6kl_dbg(ATH6KL_DBG_WMI,
 				   "%s: freq %d bssid %pM (AP started)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   __func__, le16_to_cpu(ev->u.ap_bss.ch),
 				   ev->u.ap_bss.bssid);
 			ath6kl_connect_ap_mode_bss(
 				vif, le16_to_cpu(ev->u.ap_bss.ch));
 		} else {
-<<<<<<< HEAD
-			ath6kl_dbg(ATH6KL_DBG_WMI, "%s: aid %u mac_addr %pM "
-				   "auth=%u keymgmt=%u cipher=%u apsd_info=%u "
-				   "(STA connected)\n",
-=======
 			ath6kl_dbg(ATH6KL_DBG_WMI,
 				   "%s: aid %u mac_addr %pM auth=%u keymgmt=%u cipher=%u apsd_info=%u (STA connected)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   __func__, ev->u.ap_sta.aid,
 				   ev->u.ap_sta.mac_addr,
 				   ev->u.ap_sta.auth,
@@ -1083,11 +962,7 @@ ath6kl_get_regpair(u16 regdmn)
 		return NULL;
 
 	for (i = 0; i < ARRAY_SIZE(regDomainPairs); i++) {
-<<<<<<< HEAD
-		if (regDomainPairs[i].regDmnEnum == regdmn)
-=======
 		if (regDomainPairs[i].reg_domain == regdmn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return &regDomainPairs[i];
 	}
 
@@ -1109,10 +984,6 @@ ath6kl_regd_find_country_by_rd(u16 regdmn)
 
 static void ath6kl_wmi_regdomain_event(struct wmi *wmi, u8 *datap, int len)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath6kl_wmi_regdomain *ev;
 	struct country_code_to_enum_rd *country = NULL;
 	struct reg_dmn_pair_mapping *regpair = NULL;
@@ -1122,16 +993,6 @@ static void ath6kl_wmi_regdomain_event(struct wmi *wmi, u8 *datap, int len)
 	ev = (struct ath6kl_wmi_regdomain *) datap;
 	reg_code = le32_to_cpu(ev->reg_code);
 
-<<<<<<< HEAD
-	if ((reg_code >> ATH6KL_COUNTRY_RD_SHIFT) & COUNTRY_ERD_FLAG)
-		country = ath6kl_regd_find_country((u16) reg_code);
-	else if (!(((u16) reg_code & WORLD_SKU_MASK) == WORLD_SKU_PREFIX)) {
-
-		regpair = ath6kl_get_regpair((u16) reg_code);
-		country = ath6kl_regd_find_country_by_rd((u16) reg_code);
-		ath6kl_dbg(ATH6KL_DBG_WMI, "Regpair used: 0x%0x\n",
-			   regpair->regDmnEnum);
-=======
 	if ((reg_code >> ATH6KL_COUNTRY_RD_SHIFT) & COUNTRY_ERD_FLAG) {
 		country = ath6kl_regd_find_country((u16) reg_code);
 	} else if (!(((u16) reg_code & WORLD_SKU_MASK) == WORLD_SKU_PREFIX)) {
@@ -1143,7 +1004,6 @@ static void ath6kl_wmi_regdomain_event(struct wmi *wmi, u8 *datap, int len)
 		else
 			ath6kl_warn("Regpair not found reg_code 0x%0x\n",
 				    reg_code);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (country && wmi->parent_dev->wiphy_registered) {
@@ -1216,19 +1076,11 @@ static int ath6kl_wmi_tkip_micerr_event_rx(struct wmi *wmi, u8 *datap, int len,
 	return 0;
 }
 
-<<<<<<< HEAD
-void ath6kl_wmi_sscan_timer(unsigned long ptr)
-{
-	struct ath6kl_vif *vif = (struct ath6kl_vif *) ptr;
-
-	cfg80211_sched_scan_results(vif->ar->wiphy);
-=======
 void ath6kl_wmi_sscan_timer(struct timer_list *t)
 {
 	struct ath6kl_vif *vif = from_timer(vif, t, sched_scan_timer);
 
 	cfg80211_sched_scan_results(vif->ar->wiphy, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath6kl_wmi_bssinfo_event_rx(struct wmi *wmi, u8 *datap, int len,
@@ -1238,10 +1090,6 @@ static int ath6kl_wmi_bssinfo_event_rx(struct wmi *wmi, u8 *datap, int len,
 	u8 *buf;
 	struct ieee80211_channel *channel;
 	struct ath6kl *ar = wmi->parent_dev;
-<<<<<<< HEAD
-	struct ieee80211_mgmt *mgmt;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cfg80211_bss *bss;
 
 	if (len <= sizeof(struct wmi_bss_info_hdr2))
@@ -1287,44 +1135,6 @@ static int ath6kl_wmi_bssinfo_event_rx(struct wmi *wmi, u8 *datap, int len,
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * In theory, use of cfg80211_inform_bss() would be more natural here
-	 * since we do not have the full frame. However, at least for now,
-	 * cfg80211 can only distinguish Beacon and Probe Response frames from
-	 * each other when using cfg80211_inform_bss_frame(), so let's build a
-	 * fake IEEE 802.11 header to be able to take benefit of this.
-	 */
-	mgmt = kmalloc(24 + len, GFP_ATOMIC);
-	if (mgmt == NULL)
-		return -EINVAL;
-
-	if (bih->frame_type == BEACON_FTYPE) {
-		mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
-						  IEEE80211_STYPE_BEACON);
-		memset(mgmt->da, 0xff, ETH_ALEN);
-	} else {
-		struct net_device *dev = vif->ndev;
-
-		mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
-						  IEEE80211_STYPE_PROBE_RESP);
-		memcpy(mgmt->da, dev->dev_addr, ETH_ALEN);
-	}
-	mgmt->duration = cpu_to_le16(0);
-	memcpy(mgmt->sa, bih->bssid, ETH_ALEN);
-	memcpy(mgmt->bssid, bih->bssid, ETH_ALEN);
-	mgmt->seq_ctrl = cpu_to_le16(0);
-
-	memcpy(&mgmt->u.beacon, buf, len);
-
-	bss = cfg80211_inform_bss_frame(ar->wiphy, channel, mgmt,
-					24 + len, (bih->snr - 95) * 100,
-					GFP_ATOMIC);
-	kfree(mgmt);
-	if (bss == NULL)
-		return -ENOMEM;
-	cfg80211_put_bss(bss);
-=======
 	bss = cfg80211_inform_bss(ar->wiphy, channel,
 				  bih->frame_type == BEACON_FTYPE ?
 					CFG80211_BSS_FTYPE_BEACON :
@@ -1337,7 +1147,6 @@ static int ath6kl_wmi_bssinfo_event_rx(struct wmi *wmi, u8 *datap, int len,
 	if (bss == NULL)
 		return -ENOMEM;
 	cfg80211_put_bss(ar->wiphy, bss);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Firmware doesn't return any event when scheduled scan has
@@ -1348,11 +1157,7 @@ static int ath6kl_wmi_bssinfo_event_rx(struct wmi *wmi, u8 *datap, int len,
 	 * the timer would not ever fire if the scan interval is short
 	 * enough.
 	 */
-<<<<<<< HEAD
-	if (ar->state == ATH6KL_STATE_SCHED_SCAN &&
-=======
 	if (test_bit(SCHED_SCANNING, &vif->flags) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    !timer_pending(&vif->sched_scan_timer)) {
 		mod_timer(&vif->sched_scan_timer, jiffies +
 			  msecs_to_jiffies(ATH6KL_SCHED_SCAN_RESULT_DELAY));
@@ -1371,13 +1176,10 @@ static int ath6kl_wmi_pstream_timeout_event_rx(struct wmi *wmi, u8 *datap,
 		return -EINVAL;
 
 	ev = (struct wmi_pstream_timeout_event *) datap;
-<<<<<<< HEAD
-=======
 	if (ev->traffic_class >= WMM_NUM_AC) {
 		ath6kl_err("invalid traffic class: %d\n", ev->traffic_class);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * When the pstream (fat pipe == AC) timesout, it means there were
@@ -1399,12 +1201,7 @@ static int ath6kl_wmi_pstream_timeout_event_rx(struct wmi *wmi, u8 *datap,
 static int ath6kl_wmi_bitrate_reply_rx(struct wmi *wmi, u8 *datap, int len)
 {
 	struct wmi_bit_rate_reply *reply;
-<<<<<<< HEAD
-	s32 rate;
-	u32 sgi, index;
-=======
 	u32 index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len < sizeof(struct wmi_bit_rate_reply))
 		return -EINVAL;
@@ -1413,19 +1210,10 @@ static int ath6kl_wmi_bitrate_reply_rx(struct wmi *wmi, u8 *datap, int len)
 
 	ath6kl_dbg(ATH6KL_DBG_WMI, "rateindex %d\n", reply->rate_index);
 
-<<<<<<< HEAD
-	if (reply->rate_index == (s8) RATE_AUTO) {
-		rate = RATE_AUTO;
-	} else {
-		index = reply->rate_index & 0x7f;
-		sgi = (reply->rate_index & 0x80) ? 1 : 0;
-		rate = wmi_rate_tbl[index][sgi];
-=======
 	if (reply->rate_index != (s8) RATE_AUTO) {
 		index = reply->rate_index & 0x7f;
 		if (WARN_ON_ONCE(index > (RATE_MCS_7_40 + 1)))
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ath6kl_wakeup_event(wmi->parent_dev);
@@ -1505,17 +1293,10 @@ static int ath6kl_wmi_neighbor_report_event_rx(struct wmi *wmi, u8 *datap,
 	if (len < sizeof(*ev))
 		return -EINVAL;
 	ev = (struct wmi_neighbor_report_event *) datap;
-<<<<<<< HEAD
-	if (sizeof(*ev) + ev->num_neighbors * sizeof(struct wmi_neighbor_info)
-	    > len) {
-		ath6kl_dbg(ATH6KL_DBG_WMI, "truncated neighbor event "
-			   "(num=%d len=%d)\n", ev->num_neighbors, len);
-=======
 	if (struct_size(ev, neighbor, ev->num_neighbors) > len) {
 		ath6kl_dbg(ATH6KL_DBG_WMI,
 			   "truncated neighbor event (num=%d len=%d)\n",
 			   ev->num_neighbors, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	for (i = 0; i < ev->num_neighbors; i++) {
@@ -1733,12 +1514,6 @@ static int ath6kl_wmi_cac_event_rx(struct wmi *wmi, u8 *datap, int len,
 		return -EINVAL;
 
 	reply = (struct wmi_cac_event *) datap;
-<<<<<<< HEAD
-
-	if ((reply->cac_indication == CAC_INDICATION_ADMISSION_RESP) &&
-	    (reply->status_code != IEEE80211_TSPEC_STATUS_ADMISS_ACCEPTED)) {
-
-=======
 	if (reply->ac >= WMM_NUM_AC) {
 		ath6kl_err("invalid AC: %d\n", reply->ac);
 		return -EINVAL;
@@ -1746,7 +1521,6 @@ static int ath6kl_wmi_cac_event_rx(struct wmi *wmi, u8 *datap, int len,
 
 	if ((reply->cac_indication == CAC_INDICATION_ADMISSION_RESP) &&
 	    (reply->status_code != IEEE80211_TSPEC_STATUS_ADMISS_ACCEPTED)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ts = (struct ieee80211_tspec_ie *) &(reply->tspec_suggestion);
 		tsinfo = le16_to_cpu(ts->tsinfo);
 		tsid = (tsinfo >> IEEE80211_WMM_IE_TSPEC_TID_SHIFT) &
@@ -1777,10 +1551,6 @@ static int ath6kl_wmi_cac_event_rx(struct wmi *wmi, u8 *datap, int len,
 	 * for delete qos stream from AP
 	 */
 	else if (reply->cac_indication == CAC_INDICATION_DELETE) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ts = (struct ieee80211_tspec_ie *) &(reply->tspec_suggestion);
 		tsinfo = le16_to_cpu(ts->tsinfo);
 		ts_id = ((tsinfo >> IEEE80211_WMM_IE_TSPEC_TID_SHIFT) &
@@ -1804,8 +1574,6 @@ static int ath6kl_wmi_cac_event_rx(struct wmi *wmi, u8 *datap, int len,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int ath6kl_wmi_txe_notify_event_rx(struct wmi *wmi, u8 *datap, int len,
 					  struct ath6kl_vif *vif)
 {
@@ -1873,7 +1641,6 @@ int ath6kl_wmi_set_rssi_filter_cmd(struct wmi *wmi, u8 if_idx, s8 rssi)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath6kl_wmi_send_snr_threshold_params(struct wmi *wmi,
 			struct wmi_snr_threshold_params_cmd *snr_cmd)
 {
@@ -1983,10 +1750,6 @@ static int ath6kl_wmi_snr_threshold_event_rx(struct wmi *wmi, u8 *datap,
 
 static int ath6kl_wmi_aplist_event_rx(struct wmi *wmi, u8 *datap, int len)
 {
-<<<<<<< HEAD
-	u16 ap_info_entry_size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct wmi_aplist_event *ev = (struct wmi_aplist_event *) datap;
 	struct wmi_ap_info_v1 *ap_info_v1;
 	u8 index;
@@ -1995,21 +1758,12 @@ static int ath6kl_wmi_aplist_event_rx(struct wmi *wmi, u8 *datap, int len)
 	    ev->ap_list_ver != APLIST_VER1)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	ap_info_entry_size = sizeof(struct wmi_ap_info_v1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap_info_v1 = (struct wmi_ap_info_v1 *) ev->ap_list;
 
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "number of APs in aplist event: %d\n", ev->num_ap);
 
-<<<<<<< HEAD
-	if (len < (int) (sizeof(struct wmi_aplist_event) +
-			 (ev->num_ap - 1) * ap_info_entry_size))
-=======
 	if (len < struct_size(ev, ap_list, ev->num_ap))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* AP list version 1 contents */
@@ -2030,16 +1784,11 @@ int ath6kl_wmi_cmd_send(struct wmi *wmi, u8 if_idx, struct sk_buff *skb,
 	int ret;
 	u16 info1;
 
-<<<<<<< HEAD
-	if (WARN_ON(skb == NULL || (if_idx > (wmi->parent_dev->vif_max - 1))))
-		return -EINVAL;
-=======
 	if (WARN_ON(skb == NULL ||
 		    (if_idx > (wmi->parent_dev->vif_max - 1)))) {
 		dev_kfree_skb(skb);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath6kl_dbg(ATH6KL_DBG_WMI, "wmi tx id %d len %d flag %d\n",
 		   cmd_id, skb->len, sync_flag);
@@ -2069,13 +1818,8 @@ int ath6kl_wmi_cmd_send(struct wmi *wmi, u8 if_idx, struct sk_buff *skb,
 
 	/* Only for OPT_TX_CMD, use BE endpoint. */
 	if (cmd_id == WMI_OPT_TX_FRAME_CMDID) {
-<<<<<<< HEAD
-		ret = ath6kl_wmi_data_hdr_add(wmi, skb, OPT_MSGTYPE,
-					      false, false, 0, NULL, if_idx);
-=======
 		ret = ath6kl_wmi_data_hdr_add(wmi, skb, OPT_MSGTYPE, false,
 				WMI_DATA_HDR_DATA_TYPE_802_3, 0, NULL, if_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			dev_kfree_skb(skb);
 			return ret;
@@ -2101,15 +1845,9 @@ int ath6kl_wmi_connect_cmd(struct wmi *wmi, u8 if_idx,
 			   enum network_type nw_type,
 			   enum dot11_auth_mode dot11_auth_mode,
 			   enum auth_mode auth_mode,
-<<<<<<< HEAD
-			   enum crypto_type pairwise_crypto,
-			   u8 pairwise_crypto_len,
-			   enum crypto_type group_crypto,
-=======
 			   enum ath6kl_crypto_type pairwise_crypto,
 			   u8 pairwise_crypto_len,
 			   enum ath6kl_crypto_type group_crypto,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   u8 group_crypto_len, int ssid_len, u8 *ssid,
 			   u8 *bssid, u16 channel, u32 ctrl_flags,
 			   u8 nw_subtype)
@@ -2205,22 +1943,6 @@ int ath6kl_wmi_disconnect_cmd(struct wmi *wmi, u8 if_idx)
 	return ret;
 }
 
-<<<<<<< HEAD
-int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
-			     enum wmi_scan_type scan_type,
-			     u32 force_fgscan, u32 is_legacy,
-			     u32 home_dwell_time, u32 force_scan_interval,
-			     s8 num_chan, u16 *ch_list, u32 no_cck, u32 *rates)
-{
-	struct sk_buff *skb;
-	struct wmi_begin_scan_cmd *sc;
-	s8 size;
-	int i, band, ret;
-	struct ath6kl *ar = wmi->parent_dev;
-	int num_rates;
-
-	size = sizeof(struct wmi_begin_scan_cmd);
-=======
 /* ath6kl_wmi_start_scan_cmd is to be deprecated. Use
  * ath6kl_wmi_begin_scan_cmd instead. The new function supports P2P
  * mgmt operations using station interface.
@@ -2235,7 +1957,6 @@ static int ath6kl_wmi_startscan_cmd(struct wmi *wmi, u8 if_idx,
 	struct sk_buff *skb;
 	struct wmi_start_scan_cmd *sc;
 	int i, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((scan_type != WMI_LONG_SCAN) && (scan_type != WMI_SHORT_SCAN))
 		return -EINVAL;
@@ -2243,12 +1964,6 @@ static int ath6kl_wmi_startscan_cmd(struct wmi *wmi, u8 if_idx,
 	if (num_chan > WMI_MAX_CHANNELS)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (num_chan)
-		size += sizeof(u16) * (num_chan - 1);
-
-	skb = ath6kl_wmi_get_new_buf(size);
-=======
 	skb = ath6kl_wmi_get_new_buf(struct_size(sc, ch_list, num_chan));
 	if (!skb)
 		return -ENOMEM;
@@ -2306,7 +2021,6 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
 		return -EINVAL;
 
 	skb = ath6kl_wmi_get_new_buf(struct_size(sc, ch_list, num_chan));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		return -ENOMEM;
 
@@ -2319,13 +2033,6 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
 	sc->no_cck = cpu_to_le32(no_cck);
 	sc->num_ch = num_chan;
 
-<<<<<<< HEAD
-	for (band = 0; band < IEEE80211_NUM_BANDS; band++) {
-		struct ieee80211_supported_band *sband =
-		    ar->wiphy->bands[band];
-		u32 ratemask = rates[band];
-		u8 *supp_rates = sc->supp_rates[band].rates;
-=======
 	for (band = 0; band < NUM_NL80211_BANDS; band++) {
 		sband = ar->wiphy->bands[band];
 
@@ -2337,7 +2044,6 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
 
 		ratemask = rates[band];
 		supp_rates = sc->supp_rates[band].rates;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		num_rates = 0;
 
 		for (i = 0; i < sband->n_bitrates; i++) {
@@ -2358,52 +2064,6 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
 	return ret;
 }
 
-<<<<<<< HEAD
-/* ath6kl_wmi_start_scan_cmd is to be deprecated. Use
- * ath6kl_wmi_begin_scan_cmd instead. The new function supports P2P
- * mgmt operations using station interface.
- */
-int ath6kl_wmi_startscan_cmd(struct wmi *wmi, u8 if_idx,
-			     enum wmi_scan_type scan_type,
-			     u32 force_fgscan, u32 is_legacy,
-			     u32 home_dwell_time, u32 force_scan_interval,
-			     s8 num_chan, u16 *ch_list)
-{
-	struct sk_buff *skb;
-	struct wmi_start_scan_cmd *sc;
-	s8 size;
-	int i, ret;
-
-	size = sizeof(struct wmi_start_scan_cmd);
-
-	if ((scan_type != WMI_LONG_SCAN) && (scan_type != WMI_SHORT_SCAN))
-		return -EINVAL;
-
-	if (num_chan > WMI_MAX_CHANNELS)
-		return -EINVAL;
-
-	if (num_chan)
-		size += sizeof(u16) * (num_chan - 1);
-
-	skb = ath6kl_wmi_get_new_buf(size);
-	if (!skb)
-		return -ENOMEM;
-
-	sc = (struct wmi_start_scan_cmd *) skb->data;
-	sc->scan_type = scan_type;
-	sc->force_fg_scan = cpu_to_le32(force_fgscan);
-	sc->is_legacy = cpu_to_le32(is_legacy);
-	sc->home_dwell_time = cpu_to_le32(home_dwell_time);
-	sc->force_scan_intvl = cpu_to_le32(force_scan_interval);
-	sc->num_ch = num_chan;
-
-	for (i = 0; i < num_chan; i++)
-		sc->ch_list[i] = cpu_to_le16(ch_list[i]);
-
-	ret = ath6kl_wmi_cmd_send(wmi, if_idx, skb, WMI_START_SCAN_CMDID,
-				  NO_SYNC_WMIFLAG);
-
-=======
 int ath6kl_wmi_enable_sched_scan_cmd(struct wmi *wmi, u8 if_idx, bool enable)
 {
 	struct sk_buff *skb;
@@ -2422,7 +2082,6 @@ int ath6kl_wmi_enable_sched_scan_cmd(struct wmi *wmi, u8 if_idx, bool enable)
 	ret = ath6kl_wmi_cmd_send(wmi, if_idx, skb,
 				  WMI_ENABLE_SCHED_SCAN_CMDID,
 				  NO_SYNC_WMIFLAG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -2488,11 +2147,7 @@ int ath6kl_wmi_probedssid_cmd(struct wmi *wmi, u8 if_idx, u8 index, u8 flag,
 	struct wmi_probed_ssid_cmd *cmd;
 	int ret;
 
-<<<<<<< HEAD
-	if (index > MAX_PROBED_SSID_INDEX)
-=======
 	if (index >= MAX_PROBED_SSIDS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (ssid_len > sizeof(cmd->ssid))
@@ -2631,11 +2286,7 @@ int ath6kl_wmi_disctimeout_cmd(struct wmi *wmi, u8 if_idx, u8 timeout)
 }
 
 int ath6kl_wmi_addkey_cmd(struct wmi *wmi, u8 if_idx, u8 key_index,
-<<<<<<< HEAD
-			  enum crypto_type key_type,
-=======
 			  enum ath6kl_crypto_type key_type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  u8 key_usage, u8 key_len,
 			  u8 *key_rsc, unsigned int key_rsc_len,
 			  u8 *key_material,
@@ -2646,13 +2297,8 @@ int ath6kl_wmi_addkey_cmd(struct wmi *wmi, u8 if_idx, u8 key_index,
 	struct wmi_add_cipher_key_cmd *cmd;
 	int ret;
 
-<<<<<<< HEAD
-	ath6kl_dbg(ATH6KL_DBG_WMI, "addkey cmd: key_index=%u key_type=%d "
-		   "key_usage=%d key_len=%d key_op_ctrl=%d\n",
-=======
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "addkey cmd: key_index=%u key_type=%d key_usage=%d key_len=%d key_op_ctrl=%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   key_index, key_type, key_usage, key_len, key_op_ctrl);
 
 	if ((key_index > WMI_MAX_KEY_INDEX) || (key_len > WMI_MAX_KEY_LEN) ||
@@ -2687,11 +2333,7 @@ int ath6kl_wmi_addkey_cmd(struct wmi *wmi, u8 if_idx, u8 key_index,
 	return ret;
 }
 
-<<<<<<< HEAD
-int ath6kl_wmi_add_krk_cmd(struct wmi *wmi, u8 if_idx, u8 *krk)
-=======
 int ath6kl_wmi_add_krk_cmd(struct wmi *wmi, u8 if_idx, const u8 *krk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	struct wmi_add_krk_cmd *cmd;
@@ -2771,15 +2413,10 @@ static int ath6kl_wmi_data_sync_send(struct wmi *wmi, struct sk_buff *skb,
 	struct wmi_data_hdr *data_hdr;
 	int ret;
 
-<<<<<<< HEAD
-	if (WARN_ON(skb == NULL || ep_id == wmi->ep_id))
-		return -EINVAL;
-=======
 	if (WARN_ON(skb == NULL || ep_id == wmi->ep_id)) {
 		dev_kfree_skb(skb);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_push(skb, sizeof(struct wmi_data_hdr));
 
@@ -2816,15 +2453,8 @@ static int ath6kl_wmi_sync_point(struct wmi *wmi, u8 if_idx)
 	spin_unlock_bh(&wmi->lock);
 
 	skb = ath6kl_wmi_get_new_buf(sizeof(*cmd));
-<<<<<<< HEAD
-	if (!skb) {
-		ret = -ENOMEM;
-		goto free_skb;
-	}
-=======
 	if (!skb)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = (struct wmi_sync_cmd *) skb->data;
 
@@ -2847,11 +2477,7 @@ static int ath6kl_wmi_sync_point(struct wmi *wmi, u8 if_idx)
 	 * then do not send the Synchronize cmd on the control ep
 	 */
 	if (ret)
-<<<<<<< HEAD
-		goto free_skb;
-=======
 		goto free_cmd_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Send sync cmd followed by sync data messages on all
@@ -2861,17 +2487,6 @@ static int ath6kl_wmi_sync_point(struct wmi *wmi, u8 if_idx)
 				  NO_SYNC_WMIFLAG);
 
 	if (ret)
-<<<<<<< HEAD
-		goto free_skb;
-
-	/* cmd buffer sent, we no longer own it */
-	skb = NULL;
-
-	for (index = 0; index < num_pri_streams; index++) {
-
-		if (WARN_ON(!data_sync_bufs[index].skb))
-			break;
-=======
 		goto free_data_skb;
 
 	for (index = 0; index < num_pri_streams; index++) {
@@ -2879,7 +2494,6 @@ static int ath6kl_wmi_sync_point(struct wmi *wmi, u8 if_idx)
 			ret = -ENOMEM;
 			goto free_data_skb;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ep_id = ath6kl_ac2_endpoint_id(wmi->parent_dev,
 					       data_sync_bufs[index].
@@ -2888,25 +2502,6 @@ static int ath6kl_wmi_sync_point(struct wmi *wmi, u8 if_idx)
 		    ath6kl_wmi_data_sync_send(wmi, data_sync_bufs[index].skb,
 					      ep_id, if_idx);
 
-<<<<<<< HEAD
-		if (ret)
-			break;
-
-		data_sync_bufs[index].skb = NULL;
-	}
-
-free_skb:
-	/* free up any resources left over (possibly due to an error) */
-	if (skb)
-		dev_kfree_skb(skb);
-
-	for (index = 0; index < num_pri_streams; index++) {
-		if (data_sync_bufs[index].skb != NULL) {
-			dev_kfree_skb((struct sk_buff *)data_sync_bufs[index].
-				      skb);
-		}
-	}
-=======
 		data_sync_bufs[index].skb = NULL;
 
 		if (ret)
@@ -2922,7 +2517,6 @@ free_cmd_skb:
 free_data_skb:
 	for (index = 0; index < num_pri_streams; index++)
 		dev_kfree_skb((struct sk_buff *)data_sync_bufs[index].skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -2937,12 +2531,7 @@ int ath6kl_wmi_create_pstream_cmd(struct wmi *wmi, u8 if_idx,
 	s32 nominal_phy = 0;
 	int ret;
 
-<<<<<<< HEAD
-	if (!((params->user_pri < 8) &&
-	      (params->user_pri <= 0x7) &&
-=======
 	if (!((params->user_pri <= 0x7) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      (up_to_ac[params->user_pri & 0x7] == params->traffic_class) &&
 	      (params->traffic_direc == UPLINK_TRAFFIC ||
 	       params->traffic_direc == DNLINK_TRAFFIC ||
@@ -3033,23 +2622,16 @@ int ath6kl_wmi_delete_pstream_cmd(struct wmi *wmi, u8 if_idx, u8 traffic_class,
 	u16 active_tsids = 0;
 	int ret;
 
-<<<<<<< HEAD
-	if (traffic_class > 3) {
-=======
 	if (traffic_class >= WMM_NUM_AC) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath6kl_err("invalid traffic class: %d\n", traffic_class);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
 	if (tsid >= 16) {
 		ath6kl_err("invalid tsid: %d\n", tsid);
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb = ath6kl_wmi_get_new_buf(sizeof(*cmd));
 	if (!skb)
 		return -ENOMEM;
@@ -3138,10 +2720,6 @@ static void ath6kl_wmi_relinquish_implicit_pstream_credits(struct wmi *wmi)
 
 	for (i = 0; i < WMM_NUM_AC; i++) {
 		if (stream_exist & (1 << i)) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * FIXME: Is this lock & unlock inside
 			 * for loop correct? may need rework.
@@ -3172,8 +2750,6 @@ static void ath6kl_wmi_relinquish_implicit_pstream_credits(struct wmi *wmi)
 	spin_unlock_bh(&wmi->lock);
 }
 
-<<<<<<< HEAD
-=======
 static int ath6kl_set_bitrate_mask64(struct wmi *wmi, u8 if_idx,
 				     const struct cfg80211_bitrate_mask *mask)
 {
@@ -3288,7 +2864,6 @@ int ath6kl_wmi_set_bitrate_mask(struct wmi *wmi, u8 if_idx,
 		return ath6kl_set_bitrate_mask32(wmi, if_idx, mask);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_wmi_set_host_sleep_mode_cmd(struct wmi *wmi, u8 if_idx,
 				       enum ath6kl_host_mode host_mode)
 {
@@ -3311,14 +2886,9 @@ int ath6kl_wmi_set_host_sleep_mode_cmd(struct wmi *wmi, u8 if_idx,
 	if (host_mode == ATH6KL_HOST_MODE_ASLEEP) {
 		ath6kl_wmi_relinquish_implicit_pstream_credits(wmi);
 		cmd->asleep = cpu_to_le32(1);
-<<<<<<< HEAD
-	} else
-		cmd->awake = cpu_to_le32(1);
-=======
 	} else {
 		cmd->awake = cpu_to_le32(1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ath6kl_wmi_cmd_send(wmi, if_idx, skb,
 				  WMI_SET_HOST_SLEEP_MODE_CMDID,
@@ -3594,8 +3164,6 @@ int ath6kl_wmi_set_keepalive_cmd(struct wmi *wmi, u8 if_idx,
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 int ath6kl_wmi_set_htcap_cmd(struct wmi *wmi, u8 if_idx,
 			     enum nl80211_band band,
 			     struct ath6kl_htcap *htcap)
@@ -3633,7 +3201,6 @@ int ath6kl_wmi_set_htcap_cmd(struct wmi *wmi, u8 if_idx,
 				   NO_SYNC_WMIFLAG);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_wmi_test_cmd(struct wmi *wmi, void *buf, size_t len)
 {
 	struct sk_buff *skb;
@@ -3696,14 +3263,6 @@ int ath6kl_wmi_add_del_mcast_filter_cmd(struct wmi *wmi, u8 if_idx,
 	return ret;
 }
 
-<<<<<<< HEAD
-s32 ath6kl_wmi_get_rate(s8 rate_index)
-{
-	if (rate_index == RATE_AUTO)
-		return 0;
-
-	return wmi_rate_tbl[(u32) rate_index][0];
-=======
 int ath6kl_wmi_sta_bmiss_enhance_cmd(struct wmi *wmi, u8 if_idx, bool enhance)
 {
 	struct sk_buff *skb;
@@ -3769,7 +3328,6 @@ s32 ath6kl_wmi_get_rate(struct wmi *wmi, s8 rate_index)
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath6kl_wmi_get_pmkid_list_event_rx(struct wmi *wmi, u8 *datap,
@@ -3830,13 +3388,8 @@ int ath6kl_wmi_ap_profile_commit(struct wmi *wmip, u8 if_idx,
 
 	res = ath6kl_wmi_cmd_send(wmip, if_idx, skb, WMI_AP_CONFIG_COMMIT_CMDID,
 				  NO_SYNC_WMIFLAG);
-<<<<<<< HEAD
-	ath6kl_dbg(ATH6KL_DBG_WMI, "%s: nw_type=%u auth_mode=%u ch=%u "
-		   "ctrl_flags=0x%x-> res=%d\n",
-=======
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "%s: nw_type=%u auth_mode=%u ch=%u ctrl_flags=0x%x-> res=%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   __func__, p->nw_type, p->auth_mode, le16_to_cpu(p->ch),
 		   le32_to_cpu(p->ctrl_flags), res);
 	return res;
@@ -3857,12 +3410,9 @@ int ath6kl_wmi_ap_set_mlme(struct wmi *wmip, u8 if_idx, u8 cmd, const u8 *mac,
 	cm->reason = cpu_to_le16(reason);
 	cm->cmd = cmd;
 
-<<<<<<< HEAD
-=======
 	ath6kl_dbg(ATH6KL_DBG_WMI, "ap_set_mlme: cmd=%d reason=%d\n", cm->cmd,
 		   cm->reason);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ath6kl_wmi_cmd_send(wmip, if_idx, skb, WMI_AP_SET_MLME_CMDID,
 				   NO_SYNC_WMIFLAG);
 }
@@ -3962,11 +3512,7 @@ int ath6kl_wmi_set_pvb_cmd(struct wmi *wmi, u8 if_idx, u16 aid,
 	ret = ath6kl_wmi_cmd_send(wmi, if_idx, skb, WMI_AP_SET_PVB_CMDID,
 				  NO_SYNC_WMIFLAG);
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ath6kl_wmi_set_rx_frame_format_cmd(struct wmi *wmi, u8 if_idx,
@@ -4003,14 +3549,9 @@ int ath6kl_wmi_set_appie_cmd(struct wmi *wmi, u8 if_idx, u8 mgmt_frm_type,
 	if (!skb)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ath6kl_dbg(ATH6KL_DBG_WMI, "set_appie_cmd: mgmt_frm_type=%u "
-		   "ie_len=%u\n", mgmt_frm_type, ie_len);
-=======
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "set_appie_cmd: mgmt_frm_type=%u ie_len=%u\n",
 		   mgmt_frm_type, ie_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = (struct wmi_set_appie_cmd *) skb->data;
 	p->mgmt_frm_type = mgmt_frm_type;
 	p->ie_len = ie_len;
@@ -4022,8 +3563,6 @@ int ath6kl_wmi_set_appie_cmd(struct wmi *wmi, u8 if_idx, u8 mgmt_frm_type,
 				   NO_SYNC_WMIFLAG);
 }
 
-<<<<<<< HEAD
-=======
 int ath6kl_wmi_set_ie_cmd(struct wmi *wmi, u8 if_idx, u8 ie_id, u8 ie_field,
 			  const u8 *ie_info, u8 ie_len)
 {
@@ -4047,7 +3586,6 @@ int ath6kl_wmi_set_ie_cmd(struct wmi *wmi, u8 if_idx, u8 ie_id, u8 ie_field,
 				   NO_SYNC_WMIFLAG);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_wmi_disable_11b_rates_cmd(struct wmi *wmi, bool disable)
 {
 	struct sk_buff *skb;
@@ -4099,11 +3637,7 @@ static int ath6kl_wmi_send_action_cmd(struct wmi *wmi, u8 if_idx, u32 id,
 	if (wait)
 		return -EINVAL; /* Offload for wait not supported */
 
-<<<<<<< HEAD
-	buf = kmalloc(data_len, GFP_KERNEL);
-=======
 	buf = kmemdup(data, data_len, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf)
 		return -ENOMEM;
 
@@ -4114,21 +3648,12 @@ static int ath6kl_wmi_send_action_cmd(struct wmi *wmi, u8 if_idx, u32 id,
 	}
 
 	kfree(wmi->last_mgmt_tx_frame);
-<<<<<<< HEAD
-	memcpy(buf, data, data_len);
-	wmi->last_mgmt_tx_frame = buf;
-	wmi->last_mgmt_tx_frame_len = data_len;
-
-	ath6kl_dbg(ATH6KL_DBG_WMI, "send_action_cmd: id=%u freq=%u wait=%u "
-		   "len=%u\n", id, freq, wait, data_len);
-=======
 	wmi->last_mgmt_tx_frame = buf;
 	wmi->last_mgmt_tx_frame_len = data_len;
 
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "send_action_cmd: id=%u freq=%u wait=%u len=%u\n",
 		   id, freq, wait, data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = (struct wmi_send_action_cmd *) skb->data;
 	p->id = cpu_to_le32(id);
 	p->freq = cpu_to_le32(freq);
@@ -4150,11 +3675,7 @@ static int __ath6kl_wmi_send_mgmt_cmd(struct wmi *wmi, u8 if_idx, u32 id,
 	if (wait)
 		return -EINVAL; /* Offload for wait not supported */
 
-<<<<<<< HEAD
-	buf = kmalloc(data_len, GFP_KERNEL);
-=======
 	buf = kmemdup(data, data_len, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf)
 		return -ENOMEM;
 
@@ -4165,21 +3686,12 @@ static int __ath6kl_wmi_send_mgmt_cmd(struct wmi *wmi, u8 if_idx, u32 id,
 	}
 
 	kfree(wmi->last_mgmt_tx_frame);
-<<<<<<< HEAD
-	memcpy(buf, data, data_len);
-	wmi->last_mgmt_tx_frame = buf;
-	wmi->last_mgmt_tx_frame_len = data_len;
-
-	ath6kl_dbg(ATH6KL_DBG_WMI, "send_action_cmd: id=%u freq=%u wait=%u "
-		   "len=%u\n", id, freq, wait, data_len);
-=======
 	wmi->last_mgmt_tx_frame = buf;
 	wmi->last_mgmt_tx_frame_len = data_len;
 
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "send_action_cmd: id=%u freq=%u wait=%u len=%u\n",
 		   id, freq, wait, data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = (struct wmi_send_mgmt_cmd *) skb->data;
 	p->id = cpu_to_le32(id);
 	p->freq = cpu_to_le32(freq);
@@ -4232,14 +3744,9 @@ int ath6kl_wmi_send_probe_response_cmd(struct wmi *wmi, u8 if_idx, u32 freq,
 	if (!skb)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	ath6kl_dbg(ATH6KL_DBG_WMI, "send_probe_response_cmd: freq=%u dst=%pM "
-		   "len=%u\n", freq, dst, data_len);
-=======
 	ath6kl_dbg(ATH6KL_DBG_WMI,
 		   "send_probe_response_cmd: freq=%u dst=%pM len=%u\n",
 		   freq, dst, data_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = (struct wmi_p2p_probe_response_cmd *) skb->data;
 	p->freq = cpu_to_le32(freq);
 	memcpy(p->destination_addr, dst, ETH_ALEN);
@@ -4291,8 +3798,6 @@ int ath6kl_wmi_cancel_remain_on_chnl_cmd(struct wmi *wmi, u8 if_idx)
 				     WMI_CANCEL_REMAIN_ON_CHNL_CMDID);
 }
 
-<<<<<<< HEAD
-=======
 int ath6kl_wmi_set_inact_period(struct wmi *wmi, u8 if_idx, int inact_timeout)
 {
 	struct sk_buff *skb;
@@ -4323,7 +3828,6 @@ static void ath6kl_wmi_hb_challenge_resp_event(struct wmi *wmi, u8 *datap,
 				 le32_to_cpu(cmd->cookie));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath6kl_wmi_control_rx_xtnd(struct wmi *wmi, struct sk_buff *skb)
 {
 	struct wmix_cmd_hdr *cmd;
@@ -4348,10 +3852,7 @@ static int ath6kl_wmi_control_rx_xtnd(struct wmi *wmi, struct sk_buff *skb)
 	switch (id) {
 	case WMIX_HB_CHALLENGE_RESP_EVENTID:
 		ath6kl_dbg(ATH6KL_DBG_WMI, "wmi event hb challenge resp\n");
-<<<<<<< HEAD
-=======
 		ath6kl_wmi_hb_challenge_resp_event(wmi, datap, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case WMIX_DBGLOG_EVENTID:
 		ath6kl_dbg(ATH6KL_DBG_WMI, "wmi event dbglog len %d\n", len);
@@ -4444,12 +3945,9 @@ static int ath6kl_wmi_proc_events_vif(struct wmi *wmi, u16 if_idx, u16 cmd_id,
 	case WMI_RX_ACTION_EVENTID:
 		ath6kl_dbg(ATH6KL_DBG_WMI, "WMI_RX_ACTION_EVENTID\n");
 		return ath6kl_wmi_rx_action_event_rx(wmi, datap, len, vif);
-<<<<<<< HEAD
-=======
 	case WMI_TXE_NOTIFY_EVENTID:
 		ath6kl_dbg(ATH6KL_DBG_WMI, "WMI_TXE_NOTIFY_EVENTID\n");
 		return ath6kl_wmi_txe_notify_event_rx(wmi, datap, len, vif);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ath6kl_dbg(ATH6KL_DBG_WMI, "unknown cmd id 0x%x\n", cmd_id);
 		return -EINVAL;
@@ -4618,11 +4116,8 @@ int ath6kl_wmi_control_rx(struct wmi *wmi, struct sk_buff *skb)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-=======
 	trace_ath6kl_wmi_event(skb->data, skb->len);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ath6kl_wmi_proc_events(wmi, skb);
 }
 

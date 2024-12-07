@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* drivers/char/watchdog/scx200_wdt.c
 
    National Semiconductor SCx200 Watchdog support
@@ -12,13 +9,6 @@
    National Semiconductor PC87307/PC97307 (ala SC1200) WDT driver
    (c) Copyright 2002 Zwane Mwaikambo <zwane@commfireservices.com>
 
-<<<<<<< HEAD
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    The author(s) of this software shall not be held liable for damages
    of any nature resulting due to the use of this software. This
@@ -44,10 +34,6 @@
 MODULE_AUTHOR("Christer Weinigel <wingel@nano-system.com>");
 MODULE_DESCRIPTION("NatSemi SCx200 Watchdog Driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int margin = 60;		/* in seconds */
 module_param(margin, int, 0);
@@ -113,11 +99,7 @@ static int scx200_wdt_open(struct inode *inode, struct file *file)
 		return -EBUSY;
 	scx200_wdt_enable();
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scx200_wdt_release(struct inode *inode, struct file *file)
@@ -204,10 +186,7 @@ static long scx200_wdt_ioctl(struct file *file, unsigned int cmd,
 		margin = new_margin;
 		scx200_wdt_update_margin();
 		scx200_wdt_ping();
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		if (put_user(margin, p))
 			return -EFAULT;
@@ -222,10 +201,7 @@ static const struct file_operations scx200_wdt_fops = {
 	.llseek = no_llseek,
 	.write = scx200_wdt_write,
 	.unlocked_ioctl = scx200_wdt_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = scx200_wdt_open,
 	.release = scx200_wdt_release,
 };
@@ -285,13 +261,3 @@ static void __exit scx200_wdt_cleanup(void)
 
 module_init(scx200_wdt_init);
 module_exit(scx200_wdt_cleanup);
-<<<<<<< HEAD
-
-/*
-    Local variables:
-	compile-command: "make -k -C ../.. SUBDIRS=drivers/char modules"
-	c-basic-offset: 8
-    End:
-*/
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

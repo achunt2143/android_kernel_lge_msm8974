@@ -26,11 +26,8 @@
 
 #include <linux/module.h>
 
-<<<<<<< HEAD
-=======
 #include <drm/drm_crtc_helper.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ch7006_priv.h"
 
 /* DRM encoder functions */
@@ -93,11 +90,7 @@ static void ch7006_encoder_restore(struct drm_encoder *encoder)
 }
 
 static bool ch7006_encoder_mode_fixup(struct drm_encoder *encoder,
-<<<<<<< HEAD
-				      struct drm_display_mode *mode,
-=======
 				      const struct drm_display_mode *mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      struct drm_display_mode *adjusted_mode)
 {
 	struct ch7006_priv *priv = to_ch7006_priv(encoder);
@@ -128,13 +121,8 @@ static void ch7006_encoder_mode_set(struct drm_encoder *encoder,
 	struct ch7006_encoder_params *params = &priv->params;
 	struct ch7006_state *state = &priv->state;
 	uint8_t *regs = state->regs;
-<<<<<<< HEAD
-	struct ch7006_mode *mode = priv->mode;
-	struct ch7006_tv_norm_info *norm = &ch7006_tv_norms[priv->norm];
-=======
 	const struct ch7006_mode *mode = priv->mode;
 	const struct ch7006_tv_norm_info *norm = &ch7006_tv_norms[priv->norm];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int start_active;
 
 	ch7006_dbg(client, "\n");
@@ -228,11 +216,7 @@ static enum drm_connector_status ch7006_encoder_detect(struct drm_encoder *encod
 	else
 		priv->subconnector = DRM_MODE_SUBCONNECTOR_Unknown;
 
-<<<<<<< HEAD
-	drm_connector_property_set_value(connector,
-=======
 	drm_object_property_set_value(&connector->base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			encoder->dev->mode_config.tv_subconnector_property,
 							priv->subconnector);
 
@@ -244,11 +228,7 @@ static int ch7006_encoder_get_modes(struct drm_encoder *encoder,
 				    struct drm_connector *connector)
 {
 	struct ch7006_priv *priv = to_ch7006_priv(encoder);
-<<<<<<< HEAD
-	struct ch7006_mode *mode;
-=======
 	const struct ch7006_mode *mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int n = 0;
 
 	for (mode = ch7006_modes; mode->mode.clock; mode++) {
@@ -272,29 +252,6 @@ static int ch7006_encoder_create_resources(struct drm_encoder *encoder,
 	struct drm_device *dev = encoder->dev;
 	struct drm_mode_config *conf = &dev->mode_config;
 
-<<<<<<< HEAD
-	drm_mode_create_tv_properties(dev, NUM_TV_NORMS, ch7006_tv_norm_names);
-
-	priv->scale_property = drm_property_create_range(dev, 0, "scale", 0, 2);
-
-	drm_connector_attach_property(connector, conf->tv_select_subconnector_property,
-				      priv->select_subconnector);
-	drm_connector_attach_property(connector, conf->tv_subconnector_property,
-				      priv->subconnector);
-	drm_connector_attach_property(connector, conf->tv_left_margin_property,
-				      priv->hmargin);
-	drm_connector_attach_property(connector, conf->tv_bottom_margin_property,
-				      priv->vmargin);
-	drm_connector_attach_property(connector, conf->tv_mode_property,
-				      priv->norm);
-	drm_connector_attach_property(connector, conf->tv_brightness_property,
-				      priv->brightness);
-	drm_connector_attach_property(connector, conf->tv_contrast_property,
-				      priv->contrast);
-	drm_connector_attach_property(connector, conf->tv_flicker_reduction_property,
-				      priv->flicker);
-	drm_connector_attach_property(connector, priv->scale_property,
-=======
 	drm_mode_create_tv_properties_legacy(dev, NUM_TV_NORMS, ch7006_tv_norm_names);
 
 	priv->scale_property = drm_property_create_range(dev, 0, "scale", 0, 2);
@@ -318,7 +275,6 @@ static int ch7006_encoder_create_resources(struct drm_encoder *encoder,
 	drm_object_attach_property(&connector->base, conf->tv_flicker_reduction_property,
 				      priv->flicker);
 	drm_object_attach_property(&connector->base, priv->scale_property,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      priv->scale);
 
 	return 0;
@@ -361,11 +317,7 @@ static int ch7006_encoder_set_property(struct drm_encoder *encoder,
 		ch7006_load_reg(client, state, CH7006_POV);
 		ch7006_load_reg(client, state, CH7006_VPOS);
 
-<<<<<<< HEAD
-	} else if (property == conf->tv_mode_property) {
-=======
 	} else if (property == conf->legacy_tv_mode_property) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (connector->dpms != DRM_MODE_DPMS_OFF)
 			return -EINVAL;
 
@@ -409,32 +361,16 @@ static int ch7006_encoder_set_property(struct drm_encoder *encoder,
 	if (modes_changed) {
 		drm_helper_probe_single_connector_modes(connector, 0, 0);
 
-<<<<<<< HEAD
-		/* Disable the crtc to ensure a full modeset is
-		 * performed whenever it's turned on again. */
-		if (crtc) {
-			struct drm_mode_set modeset = {
-				.crtc = crtc,
-			};
-
-			crtc->funcs->set_config(&modeset);
-		}
-=======
 		if (crtc)
 			drm_crtc_helper_set_mode(crtc, &crtc->mode,
 						 crtc->x, crtc->y,
 						 crtc->primary->fb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct drm_encoder_slave_funcs ch7006_encoder_funcs = {
-=======
 static const struct drm_encoder_slave_funcs ch7006_encoder_funcs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_config = ch7006_encoder_set_config,
 	.destroy = ch7006_encoder_destroy,
 	.dpms = ch7006_encoder_dpms,
@@ -452,11 +388,7 @@ static const struct drm_encoder_slave_funcs ch7006_encoder_funcs = {
 
 /* I2C driver functions */
 
-<<<<<<< HEAD
-static int ch7006_probe(struct i2c_client *client, const struct i2c_device_id *id)
-=======
 static int ch7006_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint8_t addr = CH7006_VERSION_ID;
 	uint8_t val;
@@ -487,24 +419,6 @@ fail:
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int ch7006_remove(struct i2c_client *client)
-{
-	ch7006_dbg(client, "\n");
-
-	return 0;
-}
-
-static int ch7006_suspend(struct i2c_client *client, pm_message_t mesg)
-{
-	ch7006_dbg(client, "\n");
-
-	return 0;
-}
-
-static int ch7006_resume(struct i2c_client *client)
-{
-=======
 static void ch7006_remove(struct i2c_client *client)
 {
 	ch7006_dbg(client, "\n");
@@ -514,7 +428,6 @@ static int ch7006_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ch7006_dbg(client, "\n");
 
 	ch7006_write(client, 0x3d, 0x0);
@@ -572,39 +485,24 @@ static int ch7006_encoder_init(struct i2c_client *client,
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct i2c_device_id ch7006_ids[] = {
-=======
 static const struct i2c_device_id ch7006_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "ch7006", 0 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, ch7006_ids);
 
-<<<<<<< HEAD
-=======
 static const struct dev_pm_ops ch7006_pm_ops = {
 	.resume = ch7006_resume,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct drm_i2c_encoder_driver ch7006_driver = {
 	.i2c_driver = {
 		.probe = ch7006_probe,
 		.remove = ch7006_remove,
-<<<<<<< HEAD
-		.suspend = ch7006_suspend,
-		.resume = ch7006_resume,
-
-		.driver = {
-			.name = "ch7006",
-=======
 
 		.driver = {
 			.name = "ch7006",
 			.pm = &ch7006_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 
 		.id_table = ch7006_ids,

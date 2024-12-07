@@ -1,28 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Early boot support code for BootX bootloader
  *
  *  Copyright (C) 2005 Ben. Herrenschmidt (benh@kernel.crashing.org)
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_fdt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <generated/utsrelease.h>
 #include <asm/sections.h>
 #include <asm/prom.h>
@@ -95,10 +81,7 @@ static void __init bootx_printf(const char *format, ...)
 			break;
 		}
 	}
-<<<<<<< HEAD
-=======
 	va_end(args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else /* CONFIG_BOOTX_TEXT */
 static void __init bootx_printf(const char *format, ...) {}
@@ -126,11 +109,7 @@ static void * __init bootx_early_getprop(unsigned long base,
 
 #define dt_push_token(token, mem) \
 	do { \
-<<<<<<< HEAD
-		*(mem) = _ALIGN_UP(*(mem),4); \
-=======
 		*(mem) = ALIGN(*(mem),4); \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*((u32 *)*(mem)) = token; \
 		*(mem) += 4; \
 	} while(0)
@@ -172,11 +151,7 @@ static void __init bootx_dt_add_prop(char *name, void *data, int size,
 	/* push property content */
 	if (size && data) {
 		memcpy((void *)*mem_end, data, size);
-<<<<<<< HEAD
-		*mem_end = _ALIGN_UP(*mem_end + size, 4);
-=======
 		*mem_end = ALIGN(*mem_end + size, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -269,11 +244,7 @@ static void __init bootx_scan_dt_build_strings(unsigned long base,
 		DBG(" detected display ! adding properties names !\n");
 		bootx_dt_add_string("linux,boot-display", mem_end);
 		bootx_dt_add_string("linux,opened", mem_end);
-<<<<<<< HEAD
-		strncpy(bootx_disp_path, namep, 255);
-=======
 		strscpy(bootx_disp_path, namep, sizeof(bootx_disp_path));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* get and store all property names */
@@ -333,11 +304,7 @@ static void __init bootx_scan_dt_build_struct(unsigned long base,
 			*lp++ = *p;
 	}
 	*lp = 0;
-<<<<<<< HEAD
-	*mem_end = _ALIGN_UP((unsigned long)lp + 1, 4);
-=======
 	*mem_end = ALIGN((unsigned long)lp + 1, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get and store all properties */
 	while (*ppp) {
@@ -390,19 +357,11 @@ static unsigned long __init bootx_flatten_dt(unsigned long start)
 	/* Start using memory after the big blob passed by BootX, get
 	 * some space for the header
 	 */
-<<<<<<< HEAD
-	mem_start = mem_end = _ALIGN_UP(((unsigned long)bi) + start, 4);
-	DBG("Boot params header at: %x\n", mem_start);
-	hdr = (struct boot_param_header *)mem_start;
-	mem_end += sizeof(struct boot_param_header);
-	rsvmap = (u64 *)(_ALIGN_UP(mem_end, 8));
-=======
 	mem_start = mem_end = ALIGN(((unsigned long)bi) + start, 4);
 	DBG("Boot params header at: %x\n", mem_start);
 	hdr = (struct boot_param_header *)mem_start;
 	mem_end += sizeof(struct boot_param_header);
 	rsvmap = (u64 *)(ALIGN(mem_end, 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr->off_mem_rsvmap = ((unsigned long)rsvmap) - mem_start;
 	mem_end = ((unsigned long)rsvmap) + 8 * sizeof(u64);
 
@@ -428,11 +387,7 @@ static unsigned long __init bootx_flatten_dt(unsigned long start)
 	hdr->dt_strings_size = bootx_dt_strend - bootx_dt_strbase;
 
 	/* Build structure */
-<<<<<<< HEAD
-	mem_end = _ALIGN(mem_end, 16);
-=======
 	mem_end = ALIGN(mem_end, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBG("Building device tree structure at: %x\n", mem_end);
 	hdr->off_dt_struct = mem_end - mem_start;
 	bootx_scan_dt_build_struct(base, 4, &mem_end);
@@ -450,11 +405,7 @@ static unsigned long __init bootx_flatten_dt(unsigned long start)
 	 * also bump mem_reserve_cnt to cause further reservations to
 	 * fail since it's too late.
 	 */
-<<<<<<< HEAD
-	mem_end = _ALIGN(mem_end, PAGE_SIZE);
-=======
 	mem_end = ALIGN(mem_end, PAGE_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBG("End of boot params: %x\n", mem_end);
 	rsvmap[0] = mem_start;
 	rsvmap[1] = mem_end;
@@ -483,11 +434,7 @@ static void __init btext_welcome(boot_infos_t *bi)
 	bootx_printf("\nframe buffer at  : 0x%x", bi->dispDeviceBase);
 	bootx_printf(" (phys), 0x%x", bi->logicalDisplayBase);
 	bootx_printf(" (log)");
-<<<<<<< HEAD
-	bootx_printf("\nklimit           : 0x%x",(unsigned long)klimit);
-=======
 	bootx_printf("\nklimit           : 0x%x",(unsigned long)_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bootx_printf("\nboot_info at     : 0x%x", bi);
 	__asm__ __volatile__ ("mfmsr %0" : "=r" (flags));
 	bootx_printf("\nMSR              : 0x%x", flags);
@@ -518,11 +465,7 @@ void __init bootx_init(unsigned long r3, unsigned long r4)
 	boot_infos_t *bi = (boot_infos_t *) r4;
 	unsigned long hdr;
 	unsigned long space;
-<<<<<<< HEAD
-	unsigned long ptr, x;
-=======
 	unsigned long ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *model;
 	unsigned long offset = reloc_offset();
 
@@ -573,11 +516,7 @@ void __init bootx_init(unsigned long r3, unsigned long r4)
 			;
 	}
 	if (bi->architecture != BOOT_ARCH_PCI) {
-<<<<<<< HEAD
-		bootx_printf(" !!! WARNING - Usupported machine"
-=======
 		bootx_printf(" !!! WARNING - Unsupported machine"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     " architecture !\n");
 		for (;;)
 			;
@@ -620,11 +559,8 @@ void __init bootx_init(unsigned long r3, unsigned long r4)
 	 * MMU switched OFF, so this should not be useful anymore.
 	 */
 	if (bi->version < 4) {
-<<<<<<< HEAD
-=======
 		unsigned long x __maybe_unused;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bootx_printf("Touching pages...\n");
 
 		/*

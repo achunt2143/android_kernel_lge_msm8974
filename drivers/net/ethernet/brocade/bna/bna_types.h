@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Linux network driver for Brocade Converged Network Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Linux network driver for QLogic BR-series Converged Network Adapter.
@@ -25,7 +7,6 @@
  * Copyright (c) 2014-2015 QLogic Corporation
  * All rights reserved
  * www.qlogic.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __BNA_TYPES_H__
 #define __BNA_TYPES_H__
@@ -35,15 +16,7 @@
 #include "bfa_cee.h"
 #include "bfa_msgq.h"
 
-<<<<<<< HEAD
-/**
- *
- * Forward declarations
- *
- */
-=======
 /* Forward declarations */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bna_mcam_handle;
 struct bna_txq;
@@ -56,15 +29,7 @@ struct bna_enet;
 struct bna;
 struct bnad;
 
-<<<<<<< HEAD
-/**
- *
- * Enums, primitive data types
- *
- */
-=======
 /* Enums, primitive data types */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum bna_status {
 	BNA_STATUS_T_DISABLED	= 0,
@@ -137,22 +102,6 @@ enum bna_tx_res_req_type {
 enum bna_rx_mem_type {
 	BNA_RX_RES_MEM_T_CCB		= 0,	/* CQ context */
 	BNA_RX_RES_MEM_T_RCB		= 1,	/* CQ context */
-<<<<<<< HEAD
-	BNA_RX_RES_MEM_T_UNMAPQ		= 2,	/* UnmapQ for RxQs */
-	BNA_RX_RES_MEM_T_CQPT		= 3,	/* CQ QPT */
-	BNA_RX_RES_MEM_T_CSWQPT		= 4,	/* S/W QPT */
-	BNA_RX_RES_MEM_T_CQPT_PAGE	= 5,	/* CQPT page */
-	BNA_RX_RES_MEM_T_HQPT		= 6,	/* RX QPT */
-	BNA_RX_RES_MEM_T_DQPT		= 7,	/* RX QPT */
-	BNA_RX_RES_MEM_T_HSWQPT		= 8,	/* RX s/w QPT */
-	BNA_RX_RES_MEM_T_DSWQPT		= 9,	/* RX s/w QPT */
-	BNA_RX_RES_MEM_T_DPAGE		= 10,	/* RX s/w QPT */
-	BNA_RX_RES_MEM_T_HPAGE		= 11,	/* RX s/w QPT */
-	BNA_RX_RES_MEM_T_IBIDX		= 12,
-	BNA_RX_RES_MEM_T_RIT		= 13,
-	BNA_RX_RES_T_INTR		= 14,	/* Rx interrupts */
-	BNA_RX_RES_T_MAX		= 15
-=======
 	BNA_RX_RES_MEM_T_UNMAPHQ	= 2,
 	BNA_RX_RES_MEM_T_UNMAPDQ	= 3,
 	BNA_RX_RES_MEM_T_CQPT		= 4,
@@ -168,7 +117,6 @@ enum bna_rx_mem_type {
 	BNA_RX_RES_MEM_T_RIT		= 14,
 	BNA_RX_RES_T_INTR		= 15,
 	BNA_RX_RES_T_MAX		= 16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum bna_tx_type {
@@ -179,10 +127,6 @@ enum bna_tx_type {
 enum bna_tx_flags {
 	BNA_TX_F_ENET_STARTED	= 1,
 	BNA_TX_F_ENABLED	= 2,
-<<<<<<< HEAD
-	BNA_TX_F_PRIO_CHANGED	= 4,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BNA_TX_F_BW_UPDATED	= 8,
 };
 
@@ -229,23 +173,11 @@ enum bna_rx_mod_flags {
 	BNA_RX_MOD_F_ENET_LOOPBACK	= 2,
 };
 
-<<<<<<< HEAD
-enum bna_rxf_flags {
-	BNA_RXF_F_PAUSED		= 1,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum bna_rxf_event {
 	RXF_E_START			= 1,
 	RXF_E_STOP			= 2,
 	RXF_E_FAIL			= 3,
 	RXF_E_CONFIG			= 4,
-<<<<<<< HEAD
-	RXF_E_PAUSE			= 5,
-	RXF_E_RESUME			= 6,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RXF_E_FW_RESP			= 7,
 };
 
@@ -378,23 +310,12 @@ struct bna_attr {
 	int			max_rit_size;
 };
 
-<<<<<<< HEAD
-/**
- *
- * IOCEth
- *
- */
-
-struct bna_ioceth {
-	bfa_fsm_t		fsm;
-=======
 /* IOCEth */
 
 enum bna_ioceth_event;
 
 struct bna_ioceth {
 	void (*fsm)(struct bna_ioceth *s, enum bna_ioceth_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_ioc ioc;
 
 	struct bna_attr attr;
@@ -407,15 +328,7 @@ struct bna_ioceth {
 	struct bna *bna;
 };
 
-<<<<<<< HEAD
-/**
- *
- * Enet
- *
- */
-=======
 /* Enet */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Pause configuration */
 struct bna_pause_config {
@@ -423,15 +336,10 @@ struct bna_pause_config {
 	enum bna_status rx_pause;
 };
 
-<<<<<<< HEAD
-struct bna_enet {
-	bfa_fsm_t		fsm;
-=======
 enum bna_enet_event;
 
 struct bna_enet {
 	void (*fsm)(struct bna_enet *s, enum bna_enet_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum bna_enet_flags flags;
 
 	enum bna_enet_type type;
@@ -443,12 +351,6 @@ struct bna_enet {
 	void (*stop_cbfn)(void *);
 	void			*stop_cbarg;
 
-<<<<<<< HEAD
-	/* Callback for bna_enet_pause_config() */
-	void (*pause_cbfn)(struct bnad *);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Callback for bna_enet_mtu_set() */
 	void (*mtu_cbfn)(struct bnad *);
 
@@ -460,23 +362,12 @@ struct bna_enet {
 	struct bna *bna;
 };
 
-<<<<<<< HEAD
-/**
- *
- * Ethport
- *
- */
-
-struct bna_ethport {
-	bfa_fsm_t		fsm;
-=======
 /* Ethport */
 
 enum bna_ethport_event;
 
 struct bna_ethport {
 	void (*fsm)(struct bna_ethport *s, enum bna_ethport_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum bna_ethport_flags flags;
 
 	enum bna_link_status link_status;
@@ -498,15 +389,7 @@ struct bna_ethport {
 	struct bna *bna;
 };
 
-<<<<<<< HEAD
-/**
- *
- * Interrupt Block
- *
- */
-=======
 /* Interrupt Block */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Doorbell structure */
 struct bna_ib_dbell {
@@ -530,25 +413,14 @@ struct bna_ib {
 	int			interpkt_timeo;
 };
 
-<<<<<<< HEAD
-/**
- *
- * Tx object
- *
- */
-=======
 /* Tx object */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Tx datapath control structure */
 #define BNA_Q_NAME_SIZE		16
 struct bna_tcb {
 	/* Fast path */
 	void			**sw_qpt;
-<<<<<<< HEAD
-=======
 	void			*sw_q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			*unmap_q;
 	u32		producer_index;
 	u32		consumer_index;
@@ -556,11 +428,6 @@ struct bna_tcb {
 	u32		q_depth;
 	void __iomem   *q_dbell;
 	struct bna_ib_dbell *i_dbell;
-<<<<<<< HEAD
-	int			page_idx;
-	int			page_count;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Control path */
 	struct bna_txq *txq;
 	struct bnad *bnad;
@@ -593,23 +460,16 @@ struct bna_txq {
 };
 
 /* Tx object */
-<<<<<<< HEAD
-=======
 
 enum bna_tx_event;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bna_tx {
 	/* This should be the first one */
 	struct list_head			qe;
 	int			rid;
 	int			hw_id;
 
-<<<<<<< HEAD
-	bfa_fsm_t		fsm;
-=======
 	void (*fsm)(struct bna_tx *s, enum bna_tx_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum bna_tx_flags flags;
 
 	enum bna_tx_type type;
@@ -629,12 +489,6 @@ struct bna_tx {
 	void (*stop_cbfn)(void *arg, struct bna_tx *tx);
 	void			*stop_cbarg;
 
-<<<<<<< HEAD
-	/* callback for bna_tx_prio_set() */
-	void (*prio_change_cbfn)(struct bnad *bnad, struct bna_tx *tx);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_msgq_cmd_entry msgq_cmd;
 	union {
 		struct bfi_enet_tx_cfg_req	cfg_req;
@@ -692,34 +546,18 @@ struct bna_tx_mod {
 	struct bna *bna;
 };
 
-<<<<<<< HEAD
-/**
- *
- * Rx object
- *
- */
-=======
 /* Rx object */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Rx datapath control structure */
 struct bna_rcb {
 	/* Fast path */
 	void			**sw_qpt;
-<<<<<<< HEAD
-=======
 	void			*sw_q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			*unmap_q;
 	u32		producer_index;
 	u32		consumer_index;
 	u32		q_depth;
 	void __iomem   *q_dbell;
-<<<<<<< HEAD
-	int			page_idx;
-	int			page_count;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Control path */
 	struct bna_rxq *rxq;
 	struct bna_ccb *ccb;
@@ -735,11 +573,8 @@ struct bna_rxq {
 
 	int			buffer_size;
 	int			q_depth;
-<<<<<<< HEAD
-=======
 	u32			num_vecs;
 	enum bna_status		multi_buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct bna_qpt qpt;
 	struct bna_rcb *rcb;
@@ -753,10 +588,7 @@ struct bna_rxq {
 	u64		rx_bytes;
 	u64		rx_packets_with_error;
 	u64		rxbuf_alloc_failed;
-<<<<<<< HEAD
-=======
 	u64		rxbuf_map_failed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* RxQ pair */
@@ -785,10 +617,7 @@ struct bna_pkt_rate {
 struct bna_ccb {
 	/* Fast path */
 	void			**sw_qpt;
-<<<<<<< HEAD
-=======
 	void			*sw_q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		producer_index;
 	volatile u32	*hw_producer_index;
 	u32		q_depth;
@@ -796,13 +625,8 @@ struct bna_ccb {
 	struct bna_rcb *rcb[2];
 	void			*ctrl; /* For bnad */
 	struct bna_pkt_rate pkt_rate;
-<<<<<<< HEAD
-	int			page_idx;
-	int			page_count;
-=======
 	u32			pkts_una;
 	u32			bytes_per_intr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Control path */
 	struct bna_cq *cq;
@@ -841,17 +665,6 @@ struct bna_rx_config {
 	enum bna_rx_type rx_type;
 	int			num_paths;
 	enum bna_rxp_type rxp_type;
-<<<<<<< HEAD
-	int			paused;
-	int			q_depth;
-	int			coalescing_timeo;
-	/*
-	 * Small/Large (or Header/Data) buffer size to be configured
-	 * for SLR and HDS queue type. Large buffer size comes from
-	 * enet->mtu.
-	 */
-	int			small_buff_size;
-=======
 	int			coalescing_timeo;
 	/*
 	 * Small/Large (or Header/Data) buffer size to be configured
@@ -868,7 +681,6 @@ struct bna_rx_config {
 	u32			q0_buf_size;
 	u32			q0_num_vecs;
 	enum bna_status		q0_multi_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum bna_status rss_status;
 	struct bna_rss_config rss_config;
@@ -895,17 +707,11 @@ struct bna_rxp {
 };
 
 /* RxF structure (hardware Rx Function) */
-<<<<<<< HEAD
-struct bna_rxf {
-	bfa_fsm_t		fsm;
-	enum bna_rxf_flags flags;
-=======
 
 enum bna_rxf_event;
 
 struct bna_rxf {
 	void (*fsm)(struct bna_rxf *s, enum bna_rxf_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct bfa_msgq_cmd_entry msgq_cmd;
 	union {
@@ -926,13 +732,6 @@ struct bna_rxf {
 	void (*stop_cbfn) (struct bna_rx *rx);
 	struct bna_rx *stop_cbarg;
 
-<<<<<<< HEAD
-	/* callback for bna_rx_receive_pause() / bna_rx_receive_resume() */
-	void (*oper_state_cbfn) (struct bnad *bnad, struct bna_rx *rx);
-	struct bnad *oper_state_cbarg;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/**
 	 * callback for:
 	 *	bna_rxf_ucast_set()
@@ -982,23 +781,16 @@ struct bna_rxf {
 };
 
 /* Rx object */
-<<<<<<< HEAD
-=======
 
 enum bna_rx_event;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bna_rx {
 	/* This should be the first one */
 	struct list_head			qe;
 	int			rid;
 	int			hw_id;
 
-<<<<<<< HEAD
-	bfa_fsm_t		fsm;
-=======
 	void (*fsm)(struct bna_rx *s, enum bna_rx_event e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum bna_rx_type type;
 
@@ -1074,24 +866,12 @@ struct bna_rx_mod {
 	u32		rid_mask;
 };
 
-<<<<<<< HEAD
-/**
- *
- * CAM
- *
- */
-
-struct bna_ucam_mod {
-	struct bna_mac *ucmac;		/* BFI_MAX_UCMAC entries */
-	struct list_head			free_q;
-=======
 /* CAM */
 
 struct bna_ucam_mod {
 	struct bna_mac *ucmac;		/* num_ucmac * 2 entries */
 	struct list_head			free_q;
 	struct list_head			del_q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct bna *bna;
 };
@@ -1104,30 +884,16 @@ struct bna_mcam_handle {
 };
 
 struct bna_mcam_mod {
-<<<<<<< HEAD
-	struct bna_mac *mcmac;		/* BFI_MAX_MCMAC entries */
-	struct bna_mcam_handle *mchandle;	/* BFI_MAX_MCMAC entries */
-	struct list_head			free_q;
-=======
 	struct bna_mac *mcmac;		/* num_mcmac * 2 entries */
 	struct bna_mcam_handle *mchandle;	/* num_mcmac entries */
 	struct list_head			free_q;
 	struct list_head			del_q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head			free_handle_q;
 
 	struct bna *bna;
 };
 
-<<<<<<< HEAD
-/**
- *
- * Statistics
- *
- */
-=======
 /* Statistics */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bna_stats {
 	struct bna_dma_addr	hw_stats_dma;
@@ -1145,15 +911,7 @@ struct bna_stats_mod {
 	struct bfi_enet_stats_req stats_clr;
 };
 
-<<<<<<< HEAD
-/**
- *
- * BNA
- *
- */
-=======
 /* BNA */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bna {
 	struct bna_ident ident;

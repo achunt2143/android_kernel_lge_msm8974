@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * build-id.c
  *
@@ -10,13 +7,6 @@
  * Copyright (C) 2009, 2010 Red Hat Inc.
  * Copyright (C) 2009, 2010 Arnaldo Carvalho de Melo <acme@redhat.com>
  */
-<<<<<<< HEAD
-#include "util.h"
-#include <stdio.h>
-#include "build-id.h"
-#include "event.h"
-#include "symbol.h"
-=======
 #include "util.h" // lsdir(), mkdir_p(), rm_rf()
 #include <dirent.h>
 #include <errno.h>
@@ -31,23 +21,10 @@
 #include "map.h"
 #include "symbol.h"
 #include "thread.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include "debug.h"
 #include "session.h"
 #include "tool.h"
-<<<<<<< HEAD
-
-static int build_id__mark_dso_hit(struct perf_tool *tool __used,
-				  union perf_event *event,
-				  struct perf_sample *sample __used,
-				  struct perf_evsel *evsel __used,
-				  struct machine *machine)
-{
-	struct addr_location al;
-	u8 cpumode = event->header.misc & PERF_RECORD_MISC_CPUMODE_MASK;
-	struct thread *thread = machine__findnew_thread(machine, event->ip.pid);
-=======
 #include "header.h"
 #include "vdso.h"
 #include "path.h"
@@ -74,7 +51,6 @@ int build_id__mark_dso_hit(struct perf_tool *tool __maybe_unused,
 	struct addr_location al;
 	struct thread *thread = machine__findnew_thread(machine, sample->pid,
 							sample->tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (thread == NULL) {
 		pr_err("problem processing %d event, skipping it.\n",
@@ -82,23 +58,6 @@ int build_id__mark_dso_hit(struct perf_tool *tool __maybe_unused,
 		return -1;
 	}
 
-<<<<<<< HEAD
-	thread__find_addr_map(thread, machine, cpumode, MAP__FUNCTION,
-			      event->ip.ip, &al);
-
-	if (al.map != NULL)
-		al.map->dso->hit = 1;
-
-	return 0;
-}
-
-static int perf_event__exit_del_thread(struct perf_tool *tool __used,
-				       union perf_event *event,
-				       struct perf_sample *sample __used,
-				       struct machine *machine)
-{
-	struct thread *thread = machine__findnew_thread(machine, event->fork.tid);
-=======
 	addr_location__init(&al);
 	if (thread__find_map(thread, sample->cpumode, sample->ip, &al))
 		map__dso(al.map)->hit = 1;
@@ -117,20 +76,13 @@ static int perf_event__exit_del_thread(struct perf_tool *tool __maybe_unused,
 	struct thread *thread = machine__findnew_thread(machine,
 							event->fork.pid,
 							event->fork.tid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dump_printf("(%d:%d):(%d:%d)\n", event->fork.pid, event->fork.tid,
 		    event->fork.ppid, event->fork.ptid);
 
 	if (thread) {
-<<<<<<< HEAD
-		rb_erase(&thread->rb_node, &machine->threads);
-		machine->last_match = NULL;
-		thread__delete(thread);
-=======
 		machine__remove_thread(machine, thread);
 		thread__put(thread);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -139,29 +91,6 @@ static int perf_event__exit_del_thread(struct perf_tool *tool __maybe_unused,
 struct perf_tool build_id__mark_dso_hit_ops = {
 	.sample	= build_id__mark_dso_hit,
 	.mmap	= perf_event__process_mmap,
-<<<<<<< HEAD
-	.fork	= perf_event__process_task,
-	.exit	= perf_event__exit_del_thread,
-};
-
-char *dso__build_id_filename(struct dso *self, char *bf, size_t size)
-{
-	char build_id_hex[BUILD_ID_SIZE * 2 + 1];
-
-	if (!self->has_build_id)
-		return NULL;
-
-	build_id__sprintf(self->build_id, sizeof(self->build_id), build_id_hex);
-	if (bf == NULL) {
-		if (asprintf(&bf, "%s/.build-id/%.2s/%s", buildid_dir,
-			     build_id_hex, build_id_hex + 2) < 0)
-			return NULL;
-	} else
-		snprintf(bf, size, "%s/.build-id/%.2s/%s", buildid_dir,
-			 build_id_hex, build_id_hex + 2);
-	return bf;
-}
-=======
 	.mmap2	= perf_event__process_mmap2,
 	.fork	= perf_event__process_fork,
 	.exit	= perf_event__exit_del_thread,
@@ -1091,4 +1020,3 @@ bool build_id__is_defined(const struct build_id *bid)
 {
 	return bid && bid->size ? !!memchr_inv(bid->data, 0, bid->size) : false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifndef __SVM_H
-#define __SVM_H
-
-enum {
-	INTERCEPT_INTR,
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __SVM_H
 #define __SVM_H
@@ -60,7 +53,6 @@ enum {
 	INTERCEPT_EXCEPTION_OFFSET = 64,
 	/* Byte offset 00Ch (word 3) */
 	INTERCEPT_INTR = 96,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INTERCEPT_NMI,
 	INTERCEPT_SMI,
 	INTERCEPT_INIT,
@@ -92,12 +84,8 @@ enum {
 	INTERCEPT_TASK_SWITCH,
 	INTERCEPT_FERR_FREEZE,
 	INTERCEPT_SHUTDOWN,
-<<<<<<< HEAD
-	INTERCEPT_VMRUN,
-=======
 	/* Byte offset 010h (word 4) */
 	INTERCEPT_VMRUN = 128,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INTERCEPT_VMMCALL,
 	INTERCEPT_VMLOAD,
 	INTERCEPT_VMSAVE,
@@ -111,8 +99,6 @@ enum {
 	INTERCEPT_MWAIT,
 	INTERCEPT_MWAIT_COND,
 	INTERCEPT_XSETBV,
-<<<<<<< HEAD
-=======
 	INTERCEPT_RDPRU,
 	TRAP_EFER_WRITE,
 	TRAP_CR0_WRITE,
@@ -130,22 +116,13 @@ enum {
 	INTERCEPT_INVPCID,
 	INTERCEPT_MCOMMIT,
 	INTERCEPT_TLBSYNC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 struct __attribute__ ((__packed__)) vmcb_control_area {
-<<<<<<< HEAD
-	u32 intercept_cr;
-	u32 intercept_dr;
-	u32 intercept_exceptions;
-	u64 intercept;
-	u8 reserved_1[42];
-=======
 	u32 intercepts[MAX_INTERCEPT];
 	u32 reserved_1[15 - MAX_INTERCEPT];
 	u16 pause_filter_thresh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 pause_filter_count;
 	u64 iopm_base_pa;
 	u64 msrpm_base_pa;
@@ -164,28 +141,17 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 	u32 exit_int_info;
 	u32 exit_int_info_err;
 	u64 nested_ctl;
-<<<<<<< HEAD
-	u8 reserved_4[16];
-	u32 event_inj;
-	u32 event_inj_err;
-	u64 nested_cr3;
-	u64 lbr_ctl;
-=======
 	u64 avic_vapic_bar;
 	u64 ghcb_gpa;
 	u32 event_inj;
 	u32 event_inj_err;
 	u64 nested_cr3;
 	u64 virt_ext;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 clean;
 	u32 reserved_5;
 	u64 next_rip;
 	u8 insn_len;
 	u8 insn_bytes[15];
-<<<<<<< HEAD
-	u8 reserved_6[800];
-=======
 	u64 avic_backing_page;	/* Offset 0xe0 */
 	u8 reserved_6[8];	/* Offset 0xe8 */
 	u64 avic_logical_id;	/* Offset 0xf0 */
@@ -201,7 +167,6 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 		struct hv_vmcb_enlightenments hv_enlightenments;
 		u8 reserved_sw[32];
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -215,8 +180,6 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 #define V_IRQ_SHIFT 8
 #define V_IRQ_MASK (1 << V_IRQ_SHIFT)
 
-<<<<<<< HEAD
-=======
 #define V_GIF_SHIFT 9
 #define V_GIF_MASK (1 << V_GIF_SHIFT)
 
@@ -226,19 +189,12 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 #define V_NMI_BLOCKING_SHIFT 12
 #define V_NMI_BLOCKING_MASK (1 << V_NMI_BLOCKING_SHIFT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define V_INTR_PRIO_SHIFT 16
 #define V_INTR_PRIO_MASK (0x0f << V_INTR_PRIO_SHIFT)
 
 #define V_IGN_TPR_SHIFT 20
 #define V_IGN_TPR_MASK (1 << V_IGN_TPR_SHIFT)
 
-<<<<<<< HEAD
-#define V_INTR_MASKING_SHIFT 24
-#define V_INTR_MASKING_MASK (1 << V_INTR_MASKING_SHIFT)
-
-#define SVM_INTERRUPT_SHADOW_MASK 1
-=======
 #define V_IRQ_INJECTION_BITS_MASK (V_IRQ_MASK | V_INTR_PRIO_MASK | V_IGN_TPR_MASK)
 
 #define V_INTR_MASKING_SHIFT 24
@@ -261,7 +217,6 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 
 #define SVM_INTERRUPT_SHADOW_MASK	BIT_ULL(0)
 #define SVM_GUEST_INTERRUPT_MASK	BIT_ULL(1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SVM_IOIO_STR_SHIFT 2
 #define SVM_IOIO_REP_SHIFT 3
@@ -274,13 +229,6 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
 #define SVM_IOIO_SIZE_MASK (7 << SVM_IOIO_SIZE_SHIFT)
 #define SVM_IOIO_ASIZE_MASK (7 << SVM_IOIO_ASIZE_SHIFT)
 
-<<<<<<< HEAD
-#define SVM_VM_CR_VALID_MASK	0x001fULL
-#define SVM_VM_CR_SVM_LOCK_MASK 0x0008ULL
-#define SVM_VM_CR_SVM_DIS_MASK  0x0010ULL
-
-struct __attribute__ ((__packed__)) vmcb_seg {
-=======
 #define SVM_NESTED_CTL_NP_ENABLE	BIT(0)
 #define SVM_NESTED_CTL_SEV_ENABLE	BIT(1)
 #define SVM_NESTED_CTL_SEV_ES_ENABLE	BIT(2)
@@ -340,21 +288,14 @@ static_assert((X2AVIC_MAX_PHYSICAL_ID & AVIC_PHYSICAL_MAX_INDEX_MASK) == X2AVIC_
 #define SVM_SEV_FEAT_DEBUG_SWAP                        BIT(5)
 
 struct vmcb_seg {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 selector;
 	u16 attrib;
 	u32 limit;
 	u64 base;
-<<<<<<< HEAD
-};
-
-struct __attribute__ ((__packed__)) vmcb_save_area {
-=======
 } __packed;
 
 /* Save area definition for legacy and SEV-MEM guests */
 struct vmcb_save_area {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vmcb_seg es;
 	struct vmcb_seg cs;
 	struct vmcb_seg ss;
@@ -365,13 +306,6 @@ struct vmcb_save_area {
 	struct vmcb_seg ldtr;
 	struct vmcb_seg idtr;
 	struct vmcb_seg tr;
-<<<<<<< HEAD
-	u8 reserved_1[43];
-	u8 cpl;
-	u8 reserved_2[4];
-	u64 efer;
-	u8 reserved_3[112];
-=======
 	/* Reserved fields are named following their struct offset */
 	u8 reserved_0xa0[42];
 	u8 vmpl;
@@ -379,7 +313,6 @@ struct vmcb_save_area {
 	u8 reserved_0xcc[4];
 	u64 efer;
 	u8 reserved_0xd8[112];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 cr4;
 	u64 cr3;
 	u64 cr0;
@@ -387,17 +320,11 @@ struct vmcb_save_area {
 	u64 dr6;
 	u64 rflags;
 	u64 rip;
-<<<<<<< HEAD
-	u8 reserved_4[88];
-	u64 rsp;
-	u8 reserved_5[24];
-=======
 	u8 reserved_0x180[88];
 	u64 rsp;
 	u64 s_cet;
 	u64 ssp;
 	u64 isst_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 rax;
 	u64 star;
 	u64 lstar;
@@ -408,31 +335,13 @@ struct vmcb_save_area {
 	u64 sysenter_esp;
 	u64 sysenter_eip;
 	u64 cr2;
-<<<<<<< HEAD
-	u8 reserved_6[32];
-=======
 	u8 reserved_0x248[32];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 g_pat;
 	u64 dbgctl;
 	u64 br_from;
 	u64 br_to;
 	u64 last_excp_from;
 	u64 last_excp_to;
-<<<<<<< HEAD
-};
-
-struct __attribute__ ((__packed__)) vmcb {
-	struct vmcb_control_area control;
-	struct vmcb_save_area save;
-};
-
-#define SVM_CPUID_FEATURE_SHIFT 2
-#define SVM_CPUID_FUNC 0x8000000a
-
-#define SVM_VM_CR_SVM_DISABLE 4
-
-=======
 	u8 reserved_0x298[72];
 	u64 spec_ctrl;		/* Guest version of SPEC_CTRL at 0x2E0 */
 } __packed;
@@ -659,7 +568,6 @@ struct vmcb {
 
 #define SVM_CPUID_FUNC 0x8000000a
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SVM_SELECTOR_S_SHIFT 4
 #define SVM_SELECTOR_DPL_SHIFT 5
 #define SVM_SELECTOR_P_SHIFT 7
@@ -681,35 +589,6 @@ struct vmcb {
 #define SVM_SELECTOR_READ_MASK SVM_SELECTOR_WRITE_MASK
 #define SVM_SELECTOR_CODE_MASK (1 << 3)
 
-<<<<<<< HEAD
-#define INTERCEPT_CR0_READ	0
-#define INTERCEPT_CR3_READ	3
-#define INTERCEPT_CR4_READ	4
-#define INTERCEPT_CR8_READ	8
-#define INTERCEPT_CR0_WRITE	(16 + 0)
-#define INTERCEPT_CR3_WRITE	(16 + 3)
-#define INTERCEPT_CR4_WRITE	(16 + 4)
-#define INTERCEPT_CR8_WRITE	(16 + 8)
-
-#define INTERCEPT_DR0_READ	0
-#define INTERCEPT_DR1_READ	1
-#define INTERCEPT_DR2_READ	2
-#define INTERCEPT_DR3_READ	3
-#define INTERCEPT_DR4_READ	4
-#define INTERCEPT_DR5_READ	5
-#define INTERCEPT_DR6_READ	6
-#define INTERCEPT_DR7_READ	7
-#define INTERCEPT_DR0_WRITE	(16 + 0)
-#define INTERCEPT_DR1_WRITE	(16 + 1)
-#define INTERCEPT_DR2_WRITE	(16 + 2)
-#define INTERCEPT_DR3_WRITE	(16 + 3)
-#define INTERCEPT_DR4_WRITE	(16 + 4)
-#define INTERCEPT_DR5_WRITE	(16 + 5)
-#define INTERCEPT_DR6_WRITE	(16 + 6)
-#define INTERCEPT_DR7_WRITE	(16 + 7)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SVM_EVTINJ_VEC_MASK 0xff
 
 #define SVM_EVTINJ_TYPE_SHIFT 8
@@ -740,94 +619,6 @@ struct vmcb {
 
 #define SVM_EXITINFO_REG_MASK 0x0F
 
-<<<<<<< HEAD
-#define	SVM_EXIT_READ_CR0 	0x000
-#define	SVM_EXIT_READ_CR3 	0x003
-#define	SVM_EXIT_READ_CR4 	0x004
-#define	SVM_EXIT_READ_CR8 	0x008
-#define	SVM_EXIT_WRITE_CR0 	0x010
-#define	SVM_EXIT_WRITE_CR3 	0x013
-#define	SVM_EXIT_WRITE_CR4 	0x014
-#define	SVM_EXIT_WRITE_CR8 	0x018
-#define	SVM_EXIT_READ_DR0 	0x020
-#define	SVM_EXIT_READ_DR1 	0x021
-#define	SVM_EXIT_READ_DR2 	0x022
-#define	SVM_EXIT_READ_DR3 	0x023
-#define	SVM_EXIT_READ_DR4 	0x024
-#define	SVM_EXIT_READ_DR5 	0x025
-#define	SVM_EXIT_READ_DR6 	0x026
-#define	SVM_EXIT_READ_DR7 	0x027
-#define	SVM_EXIT_WRITE_DR0 	0x030
-#define	SVM_EXIT_WRITE_DR1 	0x031
-#define	SVM_EXIT_WRITE_DR2 	0x032
-#define	SVM_EXIT_WRITE_DR3 	0x033
-#define	SVM_EXIT_WRITE_DR4 	0x034
-#define	SVM_EXIT_WRITE_DR5 	0x035
-#define	SVM_EXIT_WRITE_DR6 	0x036
-#define	SVM_EXIT_WRITE_DR7 	0x037
-#define SVM_EXIT_EXCP_BASE      0x040
-#define SVM_EXIT_INTR		0x060
-#define SVM_EXIT_NMI		0x061
-#define SVM_EXIT_SMI		0x062
-#define SVM_EXIT_INIT		0x063
-#define SVM_EXIT_VINTR		0x064
-#define SVM_EXIT_CR0_SEL_WRITE	0x065
-#define SVM_EXIT_IDTR_READ	0x066
-#define SVM_EXIT_GDTR_READ	0x067
-#define SVM_EXIT_LDTR_READ	0x068
-#define SVM_EXIT_TR_READ	0x069
-#define SVM_EXIT_IDTR_WRITE	0x06a
-#define SVM_EXIT_GDTR_WRITE	0x06b
-#define SVM_EXIT_LDTR_WRITE	0x06c
-#define SVM_EXIT_TR_WRITE	0x06d
-#define SVM_EXIT_RDTSC		0x06e
-#define SVM_EXIT_RDPMC		0x06f
-#define SVM_EXIT_PUSHF		0x070
-#define SVM_EXIT_POPF		0x071
-#define SVM_EXIT_CPUID		0x072
-#define SVM_EXIT_RSM		0x073
-#define SVM_EXIT_IRET		0x074
-#define SVM_EXIT_SWINT		0x075
-#define SVM_EXIT_INVD		0x076
-#define SVM_EXIT_PAUSE		0x077
-#define SVM_EXIT_HLT		0x078
-#define SVM_EXIT_INVLPG		0x079
-#define SVM_EXIT_INVLPGA	0x07a
-#define SVM_EXIT_IOIO		0x07b
-#define SVM_EXIT_MSR		0x07c
-#define SVM_EXIT_TASK_SWITCH	0x07d
-#define SVM_EXIT_FERR_FREEZE	0x07e
-#define SVM_EXIT_SHUTDOWN	0x07f
-#define SVM_EXIT_VMRUN		0x080
-#define SVM_EXIT_VMMCALL	0x081
-#define SVM_EXIT_VMLOAD		0x082
-#define SVM_EXIT_VMSAVE		0x083
-#define SVM_EXIT_STGI		0x084
-#define SVM_EXIT_CLGI		0x085
-#define SVM_EXIT_SKINIT		0x086
-#define SVM_EXIT_RDTSCP		0x087
-#define SVM_EXIT_ICEBP		0x088
-#define SVM_EXIT_WBINVD		0x089
-#define SVM_EXIT_MONITOR	0x08a
-#define SVM_EXIT_MWAIT		0x08b
-#define SVM_EXIT_MWAIT_COND	0x08c
-#define SVM_EXIT_XSETBV		0x08d
-#define SVM_EXIT_NPF  		0x400
-
-#define SVM_EXIT_ERR		-1
-
-#define SVM_CR0_SELECTIVE_MASK (X86_CR0_TS | X86_CR0_MP)
-
-#define SVM_VMLOAD ".byte 0x0f, 0x01, 0xda"
-#define SVM_VMRUN  ".byte 0x0f, 0x01, 0xd8"
-#define SVM_VMSAVE ".byte 0x0f, 0x01, 0xdb"
-#define SVM_CLGI   ".byte 0x0f, 0x01, 0xdd"
-#define SVM_STGI   ".byte 0x0f, 0x01, 0xdc"
-#define SVM_INVLPGA ".byte 0x0f, 0x01, 0xdf"
-
-#endif
-
-=======
 #define SVM_CR0_SELECTIVE_MASK (X86_CR0_TS | X86_CR0_MP)
 
 /* GHCB Accessor functions */
@@ -884,4 +675,3 @@ DEFINE_GHCB_ACCESSORS(sw_scratch)
 DEFINE_GHCB_ACCESSORS(xcr0)
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

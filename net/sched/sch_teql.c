@@ -1,16 +1,6 @@
-<<<<<<< HEAD
-/* net/sched/sch_teql.c	"True" (or "trivial") link equalizer.
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /* net/sched/sch_teql.c	"True" (or "trivial") link equalizer.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
  */
 
@@ -73,10 +63,6 @@ struct teql_master {
 struct teql_sched_data {
 	struct Qdisc *next;
 	struct teql_master *m;
-<<<<<<< HEAD
-	struct neighbour *ncache;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff_head q;
 };
 
@@ -87,11 +73,7 @@ struct teql_sched_data {
 /* "teql*" qdisc routines */
 
 static int
-<<<<<<< HEAD
-teql_enqueue(struct sk_buff *skb, struct Qdisc *sch)
-=======
 teql_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = qdisc_dev(sch);
 	struct teql_sched_data *q = qdisc_priv(sch);
@@ -101,13 +83,7 @@ teql_enqueue(struct sk_buff *skb, struct Qdisc *sch, struct sk_buff **to_free)
 		return NET_XMIT_SUCCESS;
 	}
 
-<<<<<<< HEAD
-	kfree_skb(skb);
-	sch->qstats.drops++;
-	return NET_XMIT_DROP;
-=======
 	return qdisc_drop(skb, sch, to_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sk_buff *
@@ -116,13 +92,6 @@ teql_dequeue(struct Qdisc *sch)
 	struct teql_sched_data *dat = qdisc_priv(sch);
 	struct netdev_queue *dat_queue;
 	struct sk_buff *skb;
-<<<<<<< HEAD
-
-	skb = __skb_dequeue(&dat->q);
-	dat_queue = netdev_get_tx_queue(dat->m->dev, 0);
-	if (skb == NULL) {
-		struct net_device *m = qdisc_dev(dat_queue->qdisc);
-=======
 	struct Qdisc *q;
 
 	skb = __skb_dequeue(&dat->q);
@@ -131,7 +100,6 @@ teql_dequeue(struct Qdisc *sch)
 
 	if (skb == NULL) {
 		struct net_device *m = qdisc_dev(q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (m) {
 			dat->m->slaves = sch;
 			netif_wake_queue(m);
@@ -139,11 +107,7 @@ teql_dequeue(struct Qdisc *sch)
 	} else {
 		qdisc_bstats_update(sch, skb);
 	}
-<<<<<<< HEAD
-	sch->q.qlen = dat->q.qlen + dat_queue->qdisc->q.qlen;
-=======
 	sch->q.qlen = dat->q.qlen + q->q.qlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb;
 }
 
@@ -154,27 +118,12 @@ teql_peek(struct Qdisc *sch)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static inline void
-teql_neigh_release(struct neighbour *n)
-{
-	if (n)
-		neigh_release(n);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 teql_reset(struct Qdisc *sch)
 {
 	struct teql_sched_data *dat = qdisc_priv(sch);
 
 	skb_queue_purge(&dat->q);
-<<<<<<< HEAD
-	sch->q.qlen = 0;
-	teql_neigh_release(xchg(&dat->ncache, NULL));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -184,12 +133,9 @@ teql_destroy(struct Qdisc *sch)
 	struct teql_sched_data *dat = qdisc_priv(sch);
 	struct teql_master *master = dat->m;
 
-<<<<<<< HEAD
-=======
 	if (!master)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prev = master->slaves;
 	if (prev) {
 		do {
@@ -205,23 +151,13 @@ teql_destroy(struct Qdisc *sch)
 						txq = netdev_get_tx_queue(master->dev, 0);
 						master->slaves = NULL;
 
-<<<<<<< HEAD
-						root_lock = qdisc_root_sleeping_lock(txq->qdisc);
-						spin_lock_bh(root_lock);
-						qdisc_reset(txq->qdisc);
-=======
 						root_lock = qdisc_root_sleeping_lock(rtnl_dereference(txq->qdisc));
 						spin_lock_bh(root_lock);
 						qdisc_reset(rtnl_dereference(txq->qdisc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						spin_unlock_bh(root_lock);
 					}
 				}
 				skb_queue_purge(&dat->q);
-<<<<<<< HEAD
-				teql_neigh_release(xchg(&dat->ncache, NULL));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 
@@ -229,12 +165,8 @@ teql_destroy(struct Qdisc *sch)
 	}
 }
 
-<<<<<<< HEAD
-static int teql_qdisc_init(struct Qdisc *sch, struct nlattr *opt)
-=======
 static int teql_qdisc_init(struct Qdisc *sch, struct nlattr *opt,
 			   struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = qdisc_dev(sch);
 	struct teql_master *m = (struct teql_master *)sch->ops;
@@ -285,23 +217,6 @@ static int teql_qdisc_init(struct Qdisc *sch, struct nlattr *opt,
 static int
 __teql_resolve(struct sk_buff *skb, struct sk_buff *skb_res,
 	       struct net_device *dev, struct netdev_queue *txq,
-<<<<<<< HEAD
-	       struct neighbour *mn)
-{
-	struct teql_sched_data *q = qdisc_priv(txq->qdisc);
-	struct neighbour *n = q->ncache;
-
-	if (mn->tbl == NULL)
-		return -EINVAL;
-	if (n && n->tbl == mn->tbl &&
-	    memcmp(n->primary_key, mn->primary_key, mn->tbl->key_len) == 0) {
-		atomic_inc(&n->refcnt);
-	} else {
-		n = __neigh_lookup_errno(mn->tbl, mn->primary_key, dev);
-		if (IS_ERR(n))
-			return PTR_ERR(n);
-	}
-=======
 	       struct dst_entry *dst)
 {
 	struct neighbour *n;
@@ -321,26 +236,11 @@ __teql_resolve(struct sk_buff *skb, struct sk_buff *skb_res,
 		n = mn;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (neigh_event_send(n, skb_res) == 0) {
 		int err;
 		char haddr[MAX_ADDR_LEN];
 
 		neigh_ha_snapshot(haddr, n, dev);
-<<<<<<< HEAD
-		err = dev_hard_header(skb, dev, ntohs(skb->protocol), haddr,
-				      NULL, skb->len);
-
-		if (err < 0) {
-			neigh_release(n);
-			return -EINVAL;
-		}
-		teql_neigh_release(xchg(&q->ncache, n));
-		return 0;
-	}
-	neigh_release(n);
-	return (skb_res == NULL) ? -EAGAIN : 1;
-=======
 		err = dev_hard_header(skb, dev, ntohs(skb_protocol(skb, false)),
 				      haddr, NULL, skb->len);
 
@@ -351,7 +251,6 @@ __teql_resolve(struct sk_buff *skb, struct sk_buff *skb_res,
 	}
 	neigh_release(n);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int teql_resolve(struct sk_buff *skb,
@@ -360,28 +259,16 @@ static inline int teql_resolve(struct sk_buff *skb,
 			       struct netdev_queue *txq)
 {
 	struct dst_entry *dst = skb_dst(skb);
-<<<<<<< HEAD
-	struct neighbour *mn;
-	int res;
-
-	if (txq->qdisc == &noop_qdisc)
-=======
 	int res;
 
 	if (rcu_access_pointer(txq->qdisc) == &noop_qdisc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	if (!dev->header_ops || !dst)
 		return 0;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	mn = dst_get_neighbour_noref(dst);
-	res = mn ? __teql_resolve(skb, skb_res, dev, txq, mn) : 0;
-=======
 	res = __teql_resolve(skb, skb_res, dev, txq, dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	return res;
@@ -409,14 +296,8 @@ restart:
 	do {
 		struct net_device *slave = qdisc_dev(q);
 		struct netdev_queue *slave_txq = netdev_get_tx_queue(slave, 0);
-<<<<<<< HEAD
-		const struct net_device_ops *slave_ops = slave->netdev_ops;
-
-		if (slave_txq->qdisc_sleeping != q)
-=======
 
 		if (rcu_access_pointer(slave_txq->qdisc_sleeping) != q)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (netif_xmit_stopped(netdev_get_tx_queue(slave, subq)) ||
 		    !netif_running(slave)) {
@@ -430,13 +311,8 @@ restart:
 				unsigned int length = qdisc_pkt_len(skb);
 
 				if (!netif_xmit_frozen_or_stopped(slave_txq) &&
-<<<<<<< HEAD
-				    slave_ops->ndo_start_xmit(skb, slave) == NETDEV_TX_OK) {
-					txq_trans_update(slave_txq);
-=======
 				    netdev_start_xmit(skb, slave, slave_txq, false) ==
 				    NETDEV_TX_OK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					__netif_tx_unlock(slave_txq);
 					master->slaves = NEXT_SLAVE(q);
 					netif_wake_queue(dev);
@@ -524,13 +400,8 @@ static int teql_master_close(struct net_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *teql_master_stats64(struct net_device *dev,
-						     struct rtnl_link_stats64 *stats)
-=======
 static void teql_master_stats64(struct net_device *dev,
 				struct rtnl_link_stats64 *stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct teql_master *m = netdev_priv(dev);
 
@@ -538,10 +409,6 @@ static void teql_master_stats64(struct net_device *dev,
 	stats->tx_bytes		= m->tx_bytes;
 	stats->tx_errors	= m->tx_errors;
 	stats->tx_dropped	= m->tx_dropped;
-<<<<<<< HEAD
-	return stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int teql_master_mtu(struct net_device *dev, int new_mtu)
@@ -549,12 +416,6 @@ static int teql_master_mtu(struct net_device *dev, int new_mtu)
 	struct teql_master *m = netdev_priv(dev);
 	struct Qdisc *q;
 
-<<<<<<< HEAD
-	if (new_mtu < 68)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q = m->slaves;
 	if (q) {
 		do {
@@ -594,19 +455,12 @@ static __init void teql_master_setup(struct net_device *dev)
 	dev->netdev_ops =       &teql_netdev_ops;
 	dev->type		= ARPHRD_VOID;
 	dev->mtu		= 1500;
-<<<<<<< HEAD
-	dev->tx_queue_len	= 100;
-	dev->flags		= IFF_NOARP;
-	dev->hard_header_len	= LL_MAX_HEADER;
-	dev->priv_flags		&= ~IFF_XMIT_DST_RELEASE;
-=======
 	dev->min_mtu		= 68;
 	dev->max_mtu		= 65535;
 	dev->tx_queue_len	= 100;
 	dev->flags		= IFF_NOARP;
 	dev->hard_header_len	= LL_MAX_HEADER;
 	netif_keep_dst(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static LIST_HEAD(master_dev_list);
@@ -623,13 +477,8 @@ static int __init teql_init(void)
 		struct net_device *dev;
 		struct teql_master *master;
 
-<<<<<<< HEAD
-		dev = alloc_netdev(sizeof(struct teql_master),
-				  "teql%d", teql_master_setup);
-=======
 		dev = alloc_netdev(sizeof(struct teql_master), "teql%d",
 				   NET_NAME_UNKNOWN, teql_master_setup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dev) {
 			err = -ENOMEM;
 			break;
@@ -642,11 +491,7 @@ static int __init teql_init(void)
 
 		master = netdev_priv(dev);
 
-<<<<<<< HEAD
-		strlcpy(master->qops.id, dev->name, IFNAMSIZ);
-=======
 		strscpy(master->qops.id, dev->name, IFNAMSIZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = register_qdisc(&master->qops);
 
 		if (err) {
@@ -678,7 +523,4 @@ module_init(teql_init);
 module_exit(teql_exit);
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("True (or trivial) link equalizer qdisc");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

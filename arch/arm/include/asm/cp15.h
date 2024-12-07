@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_ARM_CP15_H
 #define __ASM_ARM_CP15_H
 
@@ -27,14 +24,11 @@
 #define CR_RR	(1 << 14)	/* Round Robin cache replacement	*/
 #define CR_L4	(1 << 15)	/* LDR pc can set T bit			*/
 #define CR_DT	(1 << 16)
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MMU
 #define CR_HA	(1 << 17)	/* Hardware management of Access Flag   */
 #else
 #define CR_BR	(1 << 17)	/* MPU Background region enable (PMSA)  */
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CR_IT	(1 << 18)
 #define CR_ST	(1 << 19)
 #define CR_FI	(1 << 21)	/* Fast interrupt (lower latency mode)	*/
@@ -49,23 +43,11 @@
 #ifndef __ASSEMBLY__
 
 #if __LINUX_ARM_ARCH__ >= 4
-<<<<<<< HEAD
-#define vectors_high()	(cr_alignment & CR_V)
-=======
 #define vectors_high()	(get_cr() & CR_V)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define vectors_high()	(0)
 #endif
 
-<<<<<<< HEAD
-extern unsigned long cr_no_alignment;	/* defined in entry-armv.S */
-extern unsigned long cr_alignment;	/* defined in entry-armv.S */
-
-static inline unsigned int get_cr(void)
-{
-	unsigned int val;
-=======
 #ifdef CONFIG_CPU_CP15
 
 #include <asm/vdso/cp15.h>
@@ -75,27 +57,17 @@ extern unsigned long cr_alignment;	/* defined in entry-armv.S */
 static inline unsigned long get_cr(void)
 {
 	unsigned long val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm("mrc p15, 0, %0, c1, c0, 0	@ get CR" : "=r" (val) : : "cc");
 	return val;
 }
 
-<<<<<<< HEAD
-static inline void set_cr(unsigned int val)
-=======
 static inline void set_cr(unsigned long val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	asm volatile("mcr p15, 0, %0, c1, c0, 0	@ set CR"
 	  : : "r" (val) : "cc");
 	isb();
 }
 
-<<<<<<< HEAD
-#ifndef CONFIG_SMP
-extern void adjust_cr(unsigned long mask, unsigned long set);
-#endif
-=======
 static inline unsigned int get_auxcr(void)
 {
 	unsigned int val;
@@ -109,7 +81,6 @@ static inline void set_auxcr(unsigned int val)
 	  : : "r" (val));
 	isb();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CPACC_FULL(n)		(3 << (n * 2))
 #define CPACC_SVC(n)		(1 << (n * 2))
@@ -130,9 +101,6 @@ static inline void set_copro_access(unsigned int val)
 	isb();
 }
 
-<<<<<<< HEAD
-#endif
-=======
 #else /* ifdef CONFIG_CPU_CP15 */
 
 /*
@@ -150,6 +118,5 @@ static inline unsigned long get_cr(void)
 #endif /* ifdef CONFIG_CPU_CP15 / else */
 
 #endif /* ifndef __ASSEMBLY__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

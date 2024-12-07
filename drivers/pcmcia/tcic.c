@@ -85,21 +85,12 @@ static int poll_quick = HZ/20;
 /* CCLK external clock time, in nanoseconds.  70 ns = 14.31818 MHz */
 static int cycle_time = 70;
 
-<<<<<<< HEAD
-module_param(tcic_base, ulong, 0444);
-module_param(ignore, int, 0444);
-module_param(do_scan, int, 0444);
-module_param(irq_mask, int, 0444);
-module_param_array(irq_list, int, &irq_list_count, 0444);
-module_param(cs_irq, int, 0444);
-=======
 module_param_hw(tcic_base, ulong, ioport, 0444);
 module_param(ignore, int, 0444);
 module_param(do_scan, int, 0444);
 module_param_hw(irq_mask, int, other, 0444);
 module_param_hw_array(irq_list, int, irq, &irq_list_count, 0444);
 module_param_hw(cs_irq, int, irq, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(poll_interval, int, 0444);
 module_param(poll_quick, int, 0444);
 module_param(cycle_time, int, 0444);
@@ -107,11 +98,7 @@ module_param(cycle_time, int, 0444);
 /*====================================================================*/
 
 static irqreturn_t tcic_interrupt(int irq, void *dev);
-<<<<<<< HEAD
-static void tcic_timer(u_long data);
-=======
 static void tcic_timer(struct timer_list *unused);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pccard_operations tcic_operations;
 
 struct tcic_socket {
@@ -362,10 +349,6 @@ static int __init get_tcic_id(void)
 static struct platform_driver tcic_driver = {
 	.driver = {
 		.name = "tcic-pcmcia",
-<<<<<<< HEAD
-		.owner		= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -452,13 +435,7 @@ static int __init init_tcic(void)
     }
     
     /* Set up polling */
-<<<<<<< HEAD
-    poll_timer.function = &tcic_timer;
-    poll_timer.data = 0;
-    init_timer(&poll_timer);
-=======
     timer_setup(&poll_timer, tcic_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* Build interrupt mask */
     printk(KERN_CONT ", %d sockets\n", sockets);
@@ -604,11 +581,7 @@ static irqreturn_t tcic_interrupt(int irq, void *dev)
     return IRQ_HANDLED;
 } /* tcic_interrupt */
 
-<<<<<<< HEAD
-static void tcic_timer(u_long data)
-=======
 static void tcic_timer(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     pr_debug("tcic_timer()\n");
     tcic_timer_pending = 0;

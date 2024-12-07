@@ -1,32 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 8237A DMA controller suspend functions.
  *
  * Written by Pierre Ossman, 2005.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- */
-
-=======
  */
 
 #include <linux/dmi.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/syscore_ops.h>
 
 #include <asm/dma.h>
-<<<<<<< HEAD
-=======
 #include <asm/x86_init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This module just handles suspend/resume issues with the
@@ -63,8 +47,6 @@ static struct syscore_ops i8237_syscore_ops = {
 
 static int __init i8237A_init_ops(void)
 {
-<<<<<<< HEAD
-=======
 	/*
 	 * From SKL PCH onwards, the legacy DMA device is removed in which the
 	 * I/O ports (81h-83h, 87h, 89h-8Bh, 8Fh) related to it are removed
@@ -88,7 +70,6 @@ static int __init i8237A_init_ops(void)
 	if (x86_pnpbios_disabled() && dmi_get_bios_year() >= 2017)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register_syscore_ops(&i8237_syscore_ops);
 	return 0;
 }

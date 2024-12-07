@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Emagic EMI 2|6 usb audio interface firmware loader.
  * Copyright (C) 2002
  * 	Tapio Laxström (tapio.laxstrom@iptime.fi)
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, as published by
- * the Free Software Foundation, version 2.
- * 
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * emi26.c,v 1.13 2002/03/08 13:10:26 tapio Exp
  */
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -88,27 +74,14 @@ static int emi26_load_firmware (struct usb_device *dev)
 	const struct firmware *bitstream_fw = NULL;
 	const struct firmware *firmware_fw = NULL;
 	const struct ihex_binrec *rec;
-<<<<<<< HEAD
-	int err;
-=======
 	int err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	__u32 addr;	/* Address to write */
 	__u8 *buf;
 
 	buf = kmalloc(FW_LOAD_SIZE, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!buf) {
-		dev_err(&dev->dev, "%s - error loading firmware: error = %d\n",
-			__func__, -ENOMEM);
-		err = -ENOMEM;
-		goto wraperr;
-	}
-=======
 	if (!buf)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = request_ihex_firmware(&loader_fw, "emi26/loader.fw", &dev->dev);
 	if (err)
@@ -130,16 +103,8 @@ static int emi26_load_firmware (struct usb_device *dev)
 
 	/* Assert reset (stop the CPU in the EMI) */
 	err = emi26_set_reset(dev,1);
-<<<<<<< HEAD
-	if (err < 0) {
-		dev_err(&dev->dev,"%s - error loading firmware: error = %d\n",
-			__func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rec = (const struct ihex_binrec *)loader_fw->data;
 	/* 1. We need to put the loader for the FPGA into the EZ-USB */
@@ -147,29 +112,15 @@ static int emi26_load_firmware (struct usb_device *dev)
 		err = emi26_writememory(dev, be32_to_cpu(rec->addr),
 					rec->data, be16_to_cpu(rec->len),
 					ANCHOR_LOAD_INTERNAL);
-<<<<<<< HEAD
-		if (err < 0) {
-			err("%s - error loading firmware: error = %d", __func__, err);
-			goto wraperr;
-		}
-=======
 		if (err < 0)
 			goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rec = ihex_next_binrec(rec);
 	}
 
 	/* De-assert reset (let the CPU run) */
 	err = emi26_set_reset(dev,0);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(250);	/* let device settle */
 
 	/* 2. We upload the FPGA firmware into the EMI
@@ -187,28 +138,14 @@ static int emi26_load_firmware (struct usb_device *dev)
 			rec = ihex_next_binrec(rec);
 		}
 		err = emi26_writememory(dev, addr, buf, i, ANCHOR_LOAD_FPGA);
-<<<<<<< HEAD
-		if (err < 0) {
-			err("%s - error loading firmware: error = %d", __func__, err);
-			goto wraperr;
-		}
-=======
 		if (err < 0)
 			goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (rec);
 
 	/* Assert reset (stop the CPU in the EMI) */
 	err = emi26_set_reset(dev,1);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 3. We need to put the loader for the firmware into the EZ-USB (again...) */
 	for (rec = (const struct ihex_binrec *)loader_fw->data;
@@ -216,29 +153,15 @@ static int emi26_load_firmware (struct usb_device *dev)
 		err = emi26_writememory(dev, be32_to_cpu(rec->addr),
 					rec->data, be16_to_cpu(rec->len),
 					ANCHOR_LOAD_INTERNAL);
-<<<<<<< HEAD
-		if (err < 0) {
-			err("%s - error loading firmware: error = %d", __func__, err);
-			goto wraperr;
-		}
-=======
 		if (err < 0)
 			goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	msleep(250);	/* let device settle */
 
 	/* De-assert reset (let the CPU run) */
 	err = emi26_set_reset(dev,0);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 4. We put the part of the firmware that lies in the external RAM into the EZ-USB */
 
@@ -248,21 +171,6 @@ static int emi26_load_firmware (struct usb_device *dev)
 			err = emi26_writememory(dev, be32_to_cpu(rec->addr),
 						rec->data, be16_to_cpu(rec->len),
 						ANCHOR_LOAD_EXTERNAL);
-<<<<<<< HEAD
-			if (err < 0) {
-				err("%s - error loading firmware: error = %d", __func__, err);
-				goto wraperr;
-			}
-		}
-	}
-	
-	/* Assert reset (stop the CPU in the EMI) */
-	err = emi26_set_reset(dev,1);
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 			if (err < 0)
 				goto wraperr;
 		}
@@ -272,7 +180,6 @@ static int emi26_load_firmware (struct usb_device *dev)
 	err = emi26_set_reset(dev,1);
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (rec = (const struct ihex_binrec *)firmware_fw->data;
 	     rec; rec = ihex_next_binrec(rec)) {
@@ -280,29 +187,15 @@ static int emi26_load_firmware (struct usb_device *dev)
 			err = emi26_writememory(dev, be32_to_cpu(rec->addr),
 						rec->data, be16_to_cpu(rec->len),
 						ANCHOR_LOAD_INTERNAL);
-<<<<<<< HEAD
-			if (err < 0) {
-				err("%s - error loading firmware: error = %d", __func__, err);
-				goto wraperr;
-			}
-=======
 			if (err < 0)
 				goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* De-assert reset (let the CPU run) */
 	err = emi26_set_reset(dev,0);
-<<<<<<< HEAD
-	if (err < 0) {
-		err("%s - error loading firmware: error = %d", __func__, err);
-		goto wraperr;
-	}
-=======
 	if (err < 0)
 		goto wraperr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(250);	/* let device settle */
 
 	/* return 1 to fail the driver inialization
@@ -310,13 +203,10 @@ static int emi26_load_firmware (struct usb_device *dev)
 	err = 1;
 
 wraperr:
-<<<<<<< HEAD
-=======
 	if (err < 0)
 		dev_err(&dev->dev,"%s - error loading firmware: error = %d\n",
 			__func__, err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_firmware(loader_fw);
 	release_firmware(bitstream_fw);
 	release_firmware(firmware_fw);

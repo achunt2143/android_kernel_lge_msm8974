@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 Sistina Software (UK) Limited.
  * Copyright (C) 2004-2008 Red Hat, Inc. All rights reserved.
@@ -9,20 +6,13 @@
  * This file is released under the GPL.
  */
 
-<<<<<<< HEAD
-#include "dm.h"
-=======
 #include "dm-core.h"
 #include "dm-rq.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/vmalloc.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-=======
 #include <linux/blk-integrity.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/namei.h>
 #include <linux/ctype.h>
 #include <linux/string.h>
@@ -31,78 +21,17 @@
 #include <linux/mutex.h>
 #include <linux/delay.h>
 #include <linux/atomic.h>
-<<<<<<< HEAD
-
-#define DM_MSG_PREFIX "table"
-
-#define MAX_DEPTH 16
-=======
 #include <linux/blk-mq.h>
 #include <linux/mount.h>
 #include <linux/dax.h>
 
 #define DM_MSG_PREFIX "table"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NODE_SIZE L1_CACHE_BYTES
 #define KEYS_PER_NODE (NODE_SIZE / sizeof(sector_t))
 #define CHILDREN_PER_NODE (KEYS_PER_NODE + 1)
 
 /*
-<<<<<<< HEAD
- * The table has always exactly one reference from either mapped_device->map
- * or hash_cell->new_map. This reference is not counted in table->holders.
- * A pair of dm_create_table/dm_destroy_table functions is used for table
- * creation/destruction.
- *
- * Temporary references from the other code increase table->holders. A pair
- * of dm_table_get/dm_table_put functions is used to manipulate it.
- *
- * When the table is about to be destroyed, we wait for table->holders to
- * drop to zero.
- */
-
-struct dm_table {
-	struct mapped_device *md;
-	atomic_t holders;
-	unsigned type;
-
-	/* btree table */
-	unsigned int depth;
-	unsigned int counts[MAX_DEPTH];	/* in nodes */
-	sector_t *index[MAX_DEPTH];
-
-	unsigned int num_targets;
-	unsigned int num_allocated;
-	sector_t *highs;
-	struct dm_target *targets;
-
-	struct target_type *immutable_target_type;
-	unsigned integrity_supported:1;
-	unsigned singleton:1;
-
-	/*
-	 * Indicates the rw permissions for the new logical
-	 * device.  This should be a combination of FMODE_READ
-	 * and FMODE_WRITE.
-	 */
-	fmode_t mode;
-
-	/* a list of devices used by this table */
-	struct list_head devices;
-
-	/* events get handed up using this callback */
-	void (*event_fn)(void *);
-	void *event_context;
-
-	struct dm_md_mempools *mempools;
-
-	struct list_head target_callbacks;
-};
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Similar to ceiling(log_size(n))
  */
 static unsigned int int_log(unsigned int n, unsigned int base)
@@ -144,11 +73,7 @@ static sector_t high(struct dm_table *t, unsigned int l, unsigned int n)
 		n = get_child(n, CHILDREN_PER_NODE - 1);
 
 	if (n >= t->counts[l])
-<<<<<<< HEAD
-		return (sector_t) - 1;
-=======
 		return (sector_t) -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return get_node(t, l, n)[KEYS_PER_NODE - 1];
 }
@@ -172,27 +97,6 @@ static int setup_btree_index(unsigned int l, struct dm_table *t)
 	return 0;
 }
 
-<<<<<<< HEAD
-void *dm_vcalloc(unsigned long nmemb, unsigned long elem_size)
-{
-	unsigned long size;
-	void *addr;
-
-	/*
-	 * Check that we're not going to overflow.
-	 */
-	if (nmemb > (ULONG_MAX / elem_size))
-		return NULL;
-
-	size = nmemb * elem_size;
-	addr = vzalloc(size);
-
-	return addr;
-}
-EXPORT_SYMBOL(dm_vcalloc);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * highs, and targets are managed as dynamic arrays during a
  * table load.
@@ -201,41 +105,19 @@ static int alloc_targets(struct dm_table *t, unsigned int num)
 {
 	sector_t *n_highs;
 	struct dm_target *n_targets;
-<<<<<<< HEAD
-	int n = t->num_targets;
-
-	/*
-	 * Allocate both the target array and offset array at once.
-	 * Append an empty entry to catch sectors beyond the end of
-	 * the device.
-	 */
-	n_highs = (sector_t *) dm_vcalloc(num + 1, sizeof(struct dm_target) +
-					  sizeof(sector_t));
-=======
 
 	/*
 	 * Allocate both the target array and offset array at once.
 	 */
 	n_highs = kvcalloc(num, sizeof(struct dm_target) + sizeof(sector_t),
 			   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!n_highs)
 		return -ENOMEM;
 
 	n_targets = (struct dm_target *) (n_highs + num);
 
-<<<<<<< HEAD
-	if (n) {
-		memcpy(n_highs, t->highs, sizeof(*n_highs) * n);
-		memcpy(n_targets, t->targets, sizeof(*n_targets) * n);
-	}
-
-	memset(n_highs + n, -1, sizeof(*n_highs) * (num - n));
-	vfree(t->highs);
-=======
 	memset(n_highs, -1, sizeof(*n_highs) * num);
 	kvfree(t->highs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	t->num_allocated = num;
 	t->highs = n_highs;
@@ -244,12 +126,6 @@ static int alloc_targets(struct dm_table *t, unsigned int num)
 	return 0;
 }
 
-<<<<<<< HEAD
-int dm_table_create(struct dm_table **result, fmode_t mode,
-		    unsigned num_targets, struct mapped_device *md)
-{
-	struct dm_table *t = kzalloc(sizeof(*t), GFP_KERNEL);
-=======
 int dm_table_create(struct dm_table **result, blk_mode_t mode,
 		    unsigned int num_targets, struct mapped_device *md)
 {
@@ -259,18 +135,12 @@ int dm_table_create(struct dm_table **result, blk_mode_t mode,
 		return -EOVERFLOW;
 
 	t = kzalloc(sizeof(*t), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!t)
 		return -ENOMEM;
 
 	INIT_LIST_HEAD(&t->devices);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&t->target_callbacks);
-	atomic_set(&t->holders, 0);
-=======
 	init_rwsem(&t->devices_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!num_targets)
 		num_targets = KEYS_PER_NODE;
@@ -279,119 +149,35 @@ int dm_table_create(struct dm_table **result, blk_mode_t mode,
 
 	if (!num_targets) {
 		kfree(t);
-<<<<<<< HEAD
-		return -ENOMEM;
-=======
 		return -EOVERFLOW;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (alloc_targets(t, num_targets)) {
 		kfree(t);
-<<<<<<< HEAD
-		t = NULL;
-		return -ENOMEM;
-	}
-
-=======
 		return -ENOMEM;
 	}
 
 	t->type = DM_TYPE_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t->mode = mode;
 	t->md = md;
 	*result = t;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void free_devices(struct list_head *devices)
-=======
 static void free_devices(struct list_head *devices, struct mapped_device *md)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *tmp, *next;
 
 	list_for_each_safe(tmp, next, devices) {
 		struct dm_dev_internal *dd =
 		    list_entry(tmp, struct dm_dev_internal, list);
-<<<<<<< HEAD
-		DMWARN("dm_table_destroy: dm_put_device call missing for %s",
-		       dd->dm_dev.name);
-=======
 		DMWARN("%s: dm_table_destroy: dm_put_device call missing for %s",
 		       dm_device_name(md), dd->dm_dev->name);
 		dm_put_table_device(md, dd->dm_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(dd);
 	}
 }
 
-<<<<<<< HEAD
-void dm_table_destroy(struct dm_table *t)
-{
-	unsigned int i;
-
-	if (!t)
-		return;
-
-	while (atomic_read(&t->holders))
-		msleep(1);
-	smp_mb();
-
-	/* free the indexes */
-	if (t->depth >= 2)
-		vfree(t->index[t->depth - 2]);
-
-	/* free the targets */
-	for (i = 0; i < t->num_targets; i++) {
-		struct dm_target *tgt = t->targets + i;
-
-		if (tgt->type->dtr)
-			tgt->type->dtr(tgt);
-
-		dm_put_target_type(tgt->type);
-	}
-
-	vfree(t->highs);
-
-	/* free the device list */
-	free_devices(&t->devices);
-
-	dm_free_md_mempools(t->mempools);
-
-	kfree(t);
-}
-
-void dm_table_get(struct dm_table *t)
-{
-	atomic_inc(&t->holders);
-}
-EXPORT_SYMBOL(dm_table_get);
-
-void dm_table_put(struct dm_table *t)
-{
-	if (!t)
-		return;
-
-	smp_mb__before_atomic_dec();
-	atomic_dec(&t->holders);
-}
-EXPORT_SYMBOL(dm_table_put);
-
-/*
- * Checks to see if we need to extend highs or targets.
- */
-static inline int check_space(struct dm_table *t)
-{
-	if (t->num_targets >= t->num_allocated)
-		return alloc_targets(t, t->num_allocated * 2);
-
-	return 0;
-}
-
-=======
 static void dm_table_destroy_crypto_profile(struct dm_table *t);
 
 void dm_table_destroy(struct dm_table *t)
@@ -425,7 +211,6 @@ void dm_table_destroy(struct dm_table *t)
 	kfree(t);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * See if we've already got a device in the list.
  */
@@ -433,115 +218,29 @@ static struct dm_dev_internal *find_device(struct list_head *l, dev_t dev)
 {
 	struct dm_dev_internal *dd;
 
-<<<<<<< HEAD
-	list_for_each_entry (dd, l, list)
-		if (dd->dm_dev.bdev->bd_dev == dev)
-=======
 	list_for_each_entry(dd, l, list)
 		if (dd->dm_dev->bdev->bd_dev == dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return dd;
 
 	return NULL;
 }
 
 /*
-<<<<<<< HEAD
- * Open a device so we can use it as a map destination.
- */
-static int open_dev(struct dm_dev_internal *d, dev_t dev,
-		    struct mapped_device *md)
-{
-	static char *_claim_ptr = "I belong to device-mapper";
-	struct block_device *bdev;
-
-	int r;
-
-	BUG_ON(d->dm_dev.bdev);
-
-	bdev = blkdev_get_by_dev(dev, d->dm_dev.mode | FMODE_EXCL, _claim_ptr);
-	if (IS_ERR(bdev))
-		return PTR_ERR(bdev);
-
-	r = bd_link_disk_holder(bdev, dm_disk(md));
-	if (r) {
-		blkdev_put(bdev, d->dm_dev.mode | FMODE_EXCL);
-		return r;
-	}
-
-	d->dm_dev.bdev = bdev;
-	return 0;
-}
-
-/*
- * Close a device that we've been using.
- */
-static void close_dev(struct dm_dev_internal *d, struct mapped_device *md)
-{
-	if (!d->dm_dev.bdev)
-		return;
-
-	bd_unlink_disk_holder(d->dm_dev.bdev, dm_disk(md));
-	blkdev_put(d->dm_dev.bdev, d->dm_dev.mode | FMODE_EXCL);
-	d->dm_dev.bdev = NULL;
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If possible, this checks an area of a destination device is invalid.
  */
 static int device_area_is_invalid(struct dm_target *ti, struct dm_dev *dev,
 				  sector_t start, sector_t len, void *data)
 {
-<<<<<<< HEAD
-	struct request_queue *q;
-	struct queue_limits *limits = data;
-	struct block_device *bdev = dev->bdev;
-	sector_t dev_size =
-		i_size_read(bdev->bd_inode) >> SECTOR_SHIFT;
-	unsigned short logical_block_size_sectors =
-		limits->logical_block_size >> SECTOR_SHIFT;
-	char b[BDEVNAME_SIZE];
-
-	/*
-	 * Some devices exist without request functions,
-	 * such as loop devices not yet bound to backing files.
-	 * Forbid the use of such devices.
-	 */
-	q = bdev_get_queue(bdev);
-	if (!q || !q->make_request_fn) {
-		DMWARN("%s: %s is not yet initialised: "
-		       "start=%llu, len=%llu, dev_size=%llu",
-		       dm_device_name(ti->table->md), bdevname(bdev, b),
-		       (unsigned long long)start,
-		       (unsigned long long)len,
-		       (unsigned long long)dev_size);
-		return 1;
-	}
-=======
 	struct queue_limits *limits = data;
 	struct block_device *bdev = dev->bdev;
 	sector_t dev_size = bdev_nr_sectors(bdev);
 	unsigned short logical_block_size_sectors =
 		limits->logical_block_size >> SECTOR_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev_size)
 		return 0;
 
 	if ((start >= dev_size) || (start + len > dev_size)) {
-<<<<<<< HEAD
-		DMWARN("%s: %s too small for target: "
-		       "start=%llu, len=%llu, dev_size=%llu",
-		       dm_device_name(ti->table->md), bdevname(bdev, b),
-		       (unsigned long long)start,
-		       (unsigned long long)len,
-		       (unsigned long long)dev_size);
-		return 1;
-	}
-
-=======
 		DMERR("%s: %pg too small for target: start=%llu, len=%llu, dev_size=%llu",
 		      dm_device_name(ti->table->md), bdev,
 		      (unsigned long long)start,
@@ -583,39 +282,22 @@ static int device_area_is_invalid(struct dm_target *ti, struct dm_dev *dev,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (logical_block_size_sectors <= 1)
 		return 0;
 
 	if (start & (logical_block_size_sectors - 1)) {
-<<<<<<< HEAD
-		DMWARN("%s: start=%llu not aligned to h/w "
-		       "logical block size %u of %s",
-		       dm_device_name(ti->table->md),
-		       (unsigned long long)start,
-		       limits->logical_block_size, bdevname(bdev, b));
-=======
 		DMERR("%s: start=%llu not aligned to h/w logical block size %u of %pg",
 		      dm_device_name(ti->table->md),
 		      (unsigned long long)start,
 		      limits->logical_block_size, bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	if (len & (logical_block_size_sectors - 1)) {
-<<<<<<< HEAD
-		DMWARN("%s: len=%llu not aligned to h/w "
-		       "logical block size %u of %s",
-		       dm_device_name(ti->table->md),
-		       (unsigned long long)len,
-		       limits->logical_block_size, bdevname(bdev, b));
-=======
 		DMERR("%s: len=%llu not aligned to h/w logical block size %u of %pg",
 		      dm_device_name(ti->table->md),
 		      (unsigned long long)len,
 		      limits->logical_block_size, bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -626,27 +308,6 @@ static int device_area_is_invalid(struct dm_target *ti, struct dm_dev *dev,
  * This upgrades the mode on an already open dm_dev, being
  * careful to leave things as they were if we fail to reopen the
  * device and not to touch the existing bdev field in case
-<<<<<<< HEAD
- * it is accessed concurrently inside dm_table_any_congested().
- */
-static int upgrade_mode(struct dm_dev_internal *dd, fmode_t new_mode,
-			struct mapped_device *md)
-{
-	int r;
-	struct dm_dev_internal dd_new, dd_old;
-
-	dd_new = dd_old = *dd;
-
-	dd_new.dm_dev.mode |= new_mode;
-	dd_new.dm_dev.bdev = NULL;
-
-	r = open_dev(&dd_new, dd->dm_dev.bdev->bd_dev, md);
-	if (r)
-		return r;
-
-	dd->dm_dev.mode |= new_mode;
-	close_dev(&dd_old, md);
-=======
  * it is accessed concurrently.
  */
 static int upgrade_mode(struct dm_dev_internal *dd, blk_mode_t new_mode,
@@ -664,7 +325,6 @@ static int upgrade_mode(struct dm_dev_internal *dd, blk_mode_t new_mode,
 
 	dd->dm_dev = new_dev;
 	dm_put_table_device(md, old_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -672,18 +332,6 @@ static int upgrade_mode(struct dm_dev_internal *dd, blk_mode_t new_mode,
 /*
  * Add a device to the list, or just increment the usage count if
  * it's already present.
-<<<<<<< HEAD
- */
-int dm_get_device(struct dm_target *ti, const char *path, fmode_t mode,
-		  struct dm_dev **result)
-{
-	int r;
-	dev_t uninitialized_var(dev);
-	struct dm_dev_internal *dd;
-	unsigned int major, minor;
-	struct dm_table *t = ti->table;
-	char dummy;
-=======
  *
  * Note: the __ref annotation is because this function can call the __init
  * marked early_lookup_bdev when called during early boot code from dm-init.c.
@@ -697,7 +345,6 @@ int __ref dm_get_device(struct dm_target *ti, const char *path, blk_mode_t mode,
 	char dummy;
 	struct dm_dev_internal *dd;
 	struct dm_table *t = ti->table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!t);
 
@@ -707,16 +354,6 @@ int __ref dm_get_device(struct dm_target *ti, const char *path, blk_mode_t mode,
 		if (MAJOR(dev) != major || MINOR(dev) != minor)
 			return -EOVERFLOW;
 	} else {
-<<<<<<< HEAD
-		/* convert the path to a device */
-		struct block_device *bdev = lookup_bdev(path);
-
-		if (IS_ERR(bdev))
-			return PTR_ERR(bdev);
-		dev = bdev->bd_dev;
-		bdput(bdev);
-	}
-=======
 		r = lookup_bdev(path, &dev);
 #ifndef MODULE
 		if (r && system_state < SYSTEM_RUNNING)
@@ -729,43 +366,10 @@ int __ref dm_get_device(struct dm_target *ti, const char *path, blk_mode_t mode,
 		return -EINVAL;
 
 	down_write(&t->devices_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dd = find_device(&t->devices, dev);
 	if (!dd) {
 		dd = kmalloc(sizeof(*dd), GFP_KERNEL);
-<<<<<<< HEAD
-		if (!dd)
-			return -ENOMEM;
-
-		dd->dm_dev.mode = mode;
-		dd->dm_dev.bdev = NULL;
-
-		if ((r = open_dev(dd, dev, t->md))) {
-			kfree(dd);
-			return r;
-		}
-
-		format_dev_t(dd->dm_dev.name, dev);
-
-		atomic_set(&dd->count, 0);
-		list_add(&dd->list, &t->devices);
-
-	} else if (dd->dm_dev.mode != (mode | dd->dm_dev.mode)) {
-		r = upgrade_mode(dd, mode, t->md);
-		if (r)
-			return r;
-	}
-	atomic_inc(&dd->count);
-
-	*result = &dd->dm_dev;
-	return 0;
-}
-EXPORT_SYMBOL(dm_get_device);
-
-int dm_set_device_limits(struct dm_target *ti, struct dm_dev *dev,
-			 sector_t start, sector_t len, void *data)
-=======
 		if (!dd) {
 			r = -ENOMEM;
 			goto unlock_ret_r;
@@ -800,26 +404,10 @@ EXPORT_SYMBOL(dm_get_device);
 
 static int dm_set_device_limits(struct dm_target *ti, struct dm_dev *dev,
 				sector_t start, sector_t len, void *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct queue_limits *limits = data;
 	struct block_device *bdev = dev->bdev;
 	struct request_queue *q = bdev_get_queue(bdev);
-<<<<<<< HEAD
-	char b[BDEVNAME_SIZE];
-
-	if (unlikely(!q)) {
-		DMWARN("%s: Cannot set limits for nonexistent device %s",
-		       dm_device_name(ti->table->md), bdevname(bdev, b));
-		return 0;
-	}
-
-	if (bdev_stack_limits(limits, bdev, start) < 0)
-		DMWARN("%s: adding target device %s caused an alignment inconsistency: "
-		       "physical_block_size=%u, logical_block_size=%u, "
-		       "alignment_offset=%u, start=%llu",
-		       dm_device_name(ti->table->md), bdevname(bdev, b),
-=======
 
 	if (unlikely(!q)) {
 		DMWARN("%s: Cannot set limits for nonexistent device %pg",
@@ -833,44 +421,18 @@ static int dm_set_device_limits(struct dm_target *ti, struct dm_dev *dev,
 		       "physical_block_size=%u, logical_block_size=%u, "
 		       "alignment_offset=%u, start=%llu",
 		       dm_device_name(ti->table->md), bdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       q->limits.physical_block_size,
 		       q->limits.logical_block_size,
 		       q->limits.alignment_offset,
 		       (unsigned long long) start << SECTOR_SHIFT);
-<<<<<<< HEAD
-
-	/*
-	 * Check if merge fn is supported.
-	 * If not we'll force DM to use PAGE_SIZE or
-	 * smaller I/O, just to be safe.
-	 */
-	if (dm_queue_merge_is_compulsory(q) && !ti->type->merge)
-		blk_limits_max_hw_sectors(limits,
-					  (unsigned int) (PAGE_SIZE >> 9));
 	return 0;
 }
-EXPORT_SYMBOL_GPL(dm_set_device_limits);
-=======
-	return 0;
-}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Decrement a device's use count and remove it if necessary.
  */
 void dm_put_device(struct dm_target *ti, struct dm_dev *d)
 {
-<<<<<<< HEAD
-	struct dm_dev_internal *dd = container_of(d, struct dm_dev_internal,
-						  dm_dev);
-
-	if (atomic_dec_and_test(&dd->count)) {
-		close_dev(dd, ti->table->md);
-		list_del(&dd->list);
-		kfree(dd);
-	}
-=======
 	int found = 0;
 	struct dm_table *t = ti->table;
 	struct list_head *devices = &t->devices;
@@ -897,23 +459,12 @@ void dm_put_device(struct dm_target *ti, struct dm_dev *d)
 
 unlock_ret:
 	up_write(&t->devices_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(dm_put_device);
 
 /*
  * Checks to see if the target joins onto the end of the table.
  */
-<<<<<<< HEAD
-static int adjoin(struct dm_table *table, struct dm_target *ti)
-{
-	struct dm_target *prev;
-
-	if (!table->num_targets)
-		return !ti->begin;
-
-	prev = &table->targets[table->num_targets - 1];
-=======
 static int adjoin(struct dm_table *t, struct dm_target *ti)
 {
 	struct dm_target *prev;
@@ -922,7 +473,6 @@ static int adjoin(struct dm_table *t, struct dm_target *ti)
 		return !ti->begin;
 
 	prev = &t->targets[t->num_targets - 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (ti->begin == (prev->begin + prev->len));
 }
 
@@ -936,16 +486,6 @@ static int adjoin(struct dm_table *t, struct dm_target *ti)
  * On the other hand, dm-switch needs to process bulk data using messages and
  * excessive use of GFP_NOIO could cause trouble.
  */
-<<<<<<< HEAD
-static char **realloc_argv(unsigned *array_size, char **old_argv)
-{
-	char **argv;
-	unsigned new_size;
-	gfp_t gfp;
-
-	if (*array_size) {
-		new_size = *array_size * 2;
-=======
 static char **realloc_argv(unsigned int *size, char **old_argv)
 {
 	char **argv;
@@ -954,23 +494,15 @@ static char **realloc_argv(unsigned int *size, char **old_argv)
 
 	if (*size) {
 		new_size = *size * 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfp = GFP_KERNEL;
 	} else {
 		new_size = 8;
 		gfp = GFP_NOIO;
 	}
-<<<<<<< HEAD
-	argv = kmalloc(new_size * sizeof(*argv), gfp);
-	if (argv) {
-		memcpy(argv, old_argv, *array_size * sizeof(*argv));
-		*array_size = new_size;
-=======
 	argv = kmalloc_array(new_size, sizeof(*argv), gfp);
 	if (argv && old_argv) {
 		memcpy(argv, old_argv, *size * sizeof(*argv));
 		*size = new_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(old_argv);
@@ -983,11 +515,7 @@ static char **realloc_argv(unsigned int *size, char **old_argv)
 int dm_split_args(int *argc, char ***argvp, char *input)
 {
 	char *start, *end = input, *out, **argv = NULL;
-<<<<<<< HEAD
-	unsigned array_size = 0;
-=======
 	unsigned int array_size = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*argc = 0;
 
@@ -1051,13 +579,8 @@ int dm_split_args(int *argc, char ***argvp, char *input)
  * two or more targets, the size of each piece it gets split into must
  * be compatible with the logical_block_size of the target processing it.
  */
-<<<<<<< HEAD
-static int validate_hardware_logical_block_alignment(struct dm_table *table,
-						 struct queue_limits *limits)
-=======
 static int validate_hardware_logical_block_alignment(struct dm_table *t,
 						     struct queue_limits *limits)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * This function uses arithmetic modulo the logical_block_size
@@ -1077,26 +600,15 @@ static int validate_hardware_logical_block_alignment(struct dm_table *t,
 	 */
 	unsigned short remaining = 0;
 
-<<<<<<< HEAD
-	struct dm_target *uninitialized_var(ti);
-	struct queue_limits ti_limits;
-	unsigned i = 0;
-=======
 	struct dm_target *ti;
 	struct queue_limits ti_limits;
 	unsigned int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check each entry in the table in turn.
 	 */
-<<<<<<< HEAD
-	while (i < dm_table_get_num_targets(table)) {
-		ti = dm_table_get_target(table, i++);
-=======
 	for (i = 0; i < t->num_targets; i++) {
 		ti = dm_table_get_target(t, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		blk_set_stacking_limits(&ti_limits);
 
@@ -1122,21 +634,12 @@ static int validate_hardware_logical_block_alignment(struct dm_table *t,
 	}
 
 	if (remaining) {
-<<<<<<< HEAD
-		DMWARN("%s: table line %u (start sect %llu len %llu) "
-		       "not aligned to h/w logical block size %u",
-		       dm_device_name(table->md), i,
-		       (unsigned long long) ti->begin,
-		       (unsigned long long) ti->len,
-		       limits->logical_block_size);
-=======
 		DMERR("%s: table line %u (start sect %llu len %llu) "
 		      "not aligned to h/w logical block size %u",
 		      dm_device_name(t->md), i,
 		      (unsigned long long) ti->begin,
 		      (unsigned long long) ti->len,
 		      limits->logical_block_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1148,11 +651,7 @@ int dm_table_add_target(struct dm_table *t, const char *type,
 {
 	int r = -EINVAL, argc;
 	char **argv;
-<<<<<<< HEAD
-	struct dm_target *tgt;
-=======
 	struct dm_target *ti;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (t->singleton) {
 		DMERR("%s: target type %s must appear alone in table",
@@ -1160,67 +659,16 @@ int dm_table_add_target(struct dm_table *t, const char *type,
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if ((r = check_space(t)))
-		return r;
-
-	tgt = t->targets + t->num_targets;
-	memset(tgt, 0, sizeof(*tgt));
-=======
 	BUG_ON(t->num_targets >= t->num_allocated);
 
 	ti = t->targets + t->num_targets;
 	memset(ti, 0, sizeof(*ti));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!len) {
 		DMERR("%s: zero-length target", dm_device_name(t->md));
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	tgt->type = dm_get_target_type(type);
-	if (!tgt->type) {
-		DMERR("%s: %s: unknown target type", dm_device_name(t->md),
-		      type);
-		return -EINVAL;
-	}
-
-	if (dm_target_needs_singleton(tgt->type)) {
-		if (t->num_targets) {
-			DMERR("%s: target type %s must appear alone in table",
-			      dm_device_name(t->md), type);
-			return -EINVAL;
-		}
-		t->singleton = 1;
-	}
-
-	if (dm_target_always_writeable(tgt->type) && !(t->mode & FMODE_WRITE)) {
-		DMERR("%s: target type %s may not be included in read-only tables",
-		      dm_device_name(t->md), type);
-		return -EINVAL;
-	}
-
-	if (t->immutable_target_type) {
-		if (t->immutable_target_type != tgt->type) {
-			DMERR("%s: immutable target type %s cannot be mixed with other target types",
-			      dm_device_name(t->md), t->immutable_target_type->name);
-			return -EINVAL;
-		}
-	} else if (dm_target_is_immutable(tgt->type)) {
-		if (t->num_targets) {
-			DMERR("%s: immutable target type %s cannot be mixed with other target types",
-			      dm_device_name(t->md), tgt->type->name);
-			return -EINVAL;
-		}
-		t->immutable_target_type = tgt->type;
-	}
-
-	tgt->table = t;
-	tgt->begin = start;
-	tgt->len = len;
-	tgt->error = "Unknown error";
-=======
 	ti->type = dm_get_target_type(type);
 	if (!ti->type) {
 		DMERR("%s: %s: unknown target type", dm_device_name(t->md), type);
@@ -1261,54 +709,26 @@ int dm_table_add_target(struct dm_table *t, const char *type,
 	ti->begin = start;
 	ti->len = len;
 	ti->error = "Unknown error";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Does this target adjoin the previous one ?
 	 */
-<<<<<<< HEAD
-	if (!adjoin(t, tgt)) {
-		tgt->error = "Gap in table";
-		r = -EINVAL;
-=======
 	if (!adjoin(t, ti)) {
 		ti->error = "Gap in table";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 	}
 
 	r = dm_split_args(&argc, &argv, params);
 	if (r) {
-<<<<<<< HEAD
-		tgt->error = "couldn't split parameters (insufficient memory)";
-		goto bad;
-	}
-
-	r = tgt->type->ctr(tgt, argc, argv);
-=======
 		ti->error = "couldn't split parameters";
 		goto bad;
 	}
 
 	r = ti->type->ctr(ti, argc, argv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(argv);
 	if (r)
 		goto bad;
 
-<<<<<<< HEAD
-	t->highs[t->num_targets++] = tgt->begin + tgt->len - 1;
-
-	if (!tgt->num_discard_requests && tgt->discards_supported)
-		DMWARN("%s: %s: ignoring discards_supported because num_discard_requests is zero.",
-		       dm_device_name(t->md), type);
-
-	return 0;
-
- bad:
-	DMERR("%s: %s: %s", dm_device_name(t->md), type, tgt->error);
-	dm_put_target_type(tgt->type);
-=======
 	t->highs[t->num_targets++] = ti->begin + ti->len - 1;
 
 	if (!ti->num_discard_bios && ti->discards_supported)
@@ -1323,20 +743,14 @@ int dm_table_add_target(struct dm_table *t, const char *type,
  bad:
 	DMERR("%s: %s: %s (%pe)", dm_device_name(t->md), type, ti->error, ERR_PTR(r));
 	dm_put_target_type(ti->type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 /*
  * Target argument parsing helpers.
  */
-<<<<<<< HEAD
-static int validate_next_arg(struct dm_arg *arg, struct dm_arg_set *arg_set,
-			     unsigned *value, char **error, unsigned grouped)
-=======
 static int validate_next_arg(const struct dm_arg *arg, struct dm_arg_set *arg_set,
 			     unsigned int *value, char **error, unsigned int grouped)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *arg_str = dm_shift_arg(arg_set);
 	char dummy;
@@ -1353,25 +767,15 @@ static int validate_next_arg(const struct dm_arg *arg, struct dm_arg_set *arg_se
 	return 0;
 }
 
-<<<<<<< HEAD
-int dm_read_arg(struct dm_arg *arg, struct dm_arg_set *arg_set,
-		unsigned *value, char **error)
-=======
 int dm_read_arg(const struct dm_arg *arg, struct dm_arg_set *arg_set,
 		unsigned int *value, char **error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return validate_next_arg(arg, arg_set, value, error, 0);
 }
 EXPORT_SYMBOL(dm_read_arg);
 
-<<<<<<< HEAD
-int dm_read_arg_group(struct dm_arg *arg, struct dm_arg_set *arg_set,
-		      unsigned *value, char **error)
-=======
 int dm_read_arg_group(const struct dm_arg *arg, struct dm_arg_set *arg_set,
 		      unsigned int *value, char **error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return validate_next_arg(arg, arg_set, value, error, 1);
 }
@@ -1392,11 +796,7 @@ const char *dm_shift_arg(struct dm_arg_set *as)
 }
 EXPORT_SYMBOL(dm_shift_arg);
 
-<<<<<<< HEAD
-void dm_consume_args(struct dm_arg_set *as, unsigned num_args)
-=======
 void dm_consume_args(struct dm_arg_set *as, unsigned int num_args)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG_ON(as->argc < num_args);
 	as->argc -= num_args;
@@ -1404,19 +804,6 @@ void dm_consume_args(struct dm_arg_set *as, unsigned int num_args)
 }
 EXPORT_SYMBOL(dm_consume_args);
 
-<<<<<<< HEAD
-static int dm_table_set_type(struct dm_table *t)
-{
-	unsigned i;
-	unsigned bio_based = 0, request_based = 0;
-	struct dm_target *tgt;
-	struct dm_dev_internal *dd;
-	struct list_head *devices;
-
-	for (i = 0; i < t->num_targets; i++) {
-		tgt = t->targets + i;
-		if (dm_target_request_based(tgt))
-=======
 static bool __table_type_bio_based(enum dm_queue_mode table_type)
 {
 	return (table_type == DM_TYPE_BIO_BASED ||
@@ -1506,27 +893,16 @@ static int dm_table_determine_type(struct dm_table *t)
 		if (dm_target_hybrid(ti))
 			hybrid = 1;
 		else if (dm_target_request_based(ti))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			request_based = 1;
 		else
 			bio_based = 1;
 
 		if (bio_based && request_based) {
-<<<<<<< HEAD
-			DMWARN("Inconsistent table: different target types"
-			       " can't be mixed up");
-=======
 			DMERR("Inconsistent table: different target types can't be mixed up");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
 
-<<<<<<< HEAD
-	if (bio_based) {
-		/* We must use this table as bio-based */
-		t->type = DM_TYPE_BIO_BASED;
-=======
 	if (hybrid && !bio_based && !request_based) {
 		/*
 		 * The targets can work either way.
@@ -1547,28 +923,14 @@ verify_bio_based:
 		    (list_empty(devices) && live_md_type == DM_TYPE_DAX_BIO_BASED)) {
 			t->type = DM_TYPE_DAX_BIO_BASED;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	BUG_ON(!request_based); /* No targets in this table */
 
-<<<<<<< HEAD
-	/* Non-request-stackable devices can't be used for request-based dm */
-	devices = dm_table_get_devices(t);
-	list_for_each_entry(dd, devices, list) {
-		if (!blk_queue_stackable(bdev_get_queue(dd->dm_dev.bdev))) {
-			DMWARN("table load rejected: including"
-			       " non-request-stackable devices");
-			return -EINVAL;
-		}
-	}
-
-=======
 	t->type = DM_TYPE_REQUEST_BASED;
 
 verify_rq_based:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Request-based dm supports only tables that have a single target now.
 	 * To support multiple targets, request splitting support is needed,
@@ -1576,13 +938,6 @@ verify_rq_based:
 	 * (e.g. request completion process for partial completion.)
 	 */
 	if (t->num_targets > 1) {
-<<<<<<< HEAD
-		DMWARN("Request-based dm doesn't support multiple targets yet");
-		return -EINVAL;
-	}
-
-	t->type = DM_TYPE_REQUEST_BASED;
-=======
 		DMERR("request-based DM doesn't support multiple targets");
 		return -EINVAL;
 	}
@@ -1613,16 +968,11 @@ verify_rq_based:
 		DMERR("table load rejected: including non-request-stackable devices");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-unsigned dm_table_get_type(struct dm_table *t)
-=======
 enum dm_queue_mode dm_table_get_type(struct dm_table *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return t->type;
 }
@@ -1632,38 +982,6 @@ struct target_type *dm_table_get_immutable_target_type(struct dm_table *t)
 	return t->immutable_target_type;
 }
 
-<<<<<<< HEAD
-bool dm_table_request_based(struct dm_table *t)
-{
-	return dm_table_get_type(t) == DM_TYPE_REQUEST_BASED;
-}
-
-int dm_table_alloc_md_mempools(struct dm_table *t)
-{
-	unsigned type = dm_table_get_type(t);
-
-	if (unlikely(type == DM_TYPE_NONE)) {
-		DMWARN("no table type is set, can't allocate mempools");
-		return -EINVAL;
-	}
-
-	t->mempools = dm_alloc_md_mempools(type, t->integrity_supported);
-	if (!t->mempools)
-		return -ENOMEM;
-
-	return 0;
-}
-
-void dm_table_free_md_mempools(struct dm_table *t)
-{
-	dm_free_md_mempools(t->mempools);
-	t->mempools = NULL;
-}
-
-struct dm_md_mempools *dm_table_get_md_mempools(struct dm_table *t)
-{
-	return t->mempools;
-=======
 struct dm_target *dm_table_get_immutable_target(struct dm_table *t)
 {
 	/* Immutable target is implicitly a singleton */
@@ -1751,7 +1069,6 @@ init_bs:
 out_free_pools:
 	dm_free_md_mempools(pools);
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int setup_indexes(struct dm_table *t)
@@ -1766,11 +1083,7 @@ static int setup_indexes(struct dm_table *t)
 		total += t->counts[i];
 	}
 
-<<<<<<< HEAD
-	indexes = (sector_t *) dm_vcalloc(total, (unsigned long) NODE_SIZE);
-=======
 	indexes = kvcalloc(total, NODE_SIZE, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!indexes)
 		return -ENOMEM;
 
@@ -1806,17 +1119,6 @@ static int dm_table_build_index(struct dm_table *t)
 	return r;
 }
 
-<<<<<<< HEAD
-/*
- * Get a disk whose integrity profile reflects the table's profile.
- * If %match_all is true, all devices' profiles must match.
- * If %match_all is false, all devices must at least have an
- * allocated integrity profile; but uninitialized is ok.
- * Returns NULL if integrity support was inconsistent or unavailable.
- */
-static struct gendisk * dm_table_get_integrity_disk(struct dm_table *t,
-						    bool match_all)
-=======
 static bool integrity_profile_exists(struct gendisk *disk)
 {
 	return !!blk_get_integrity(disk);
@@ -1827,20 +1129,11 @@ static bool integrity_profile_exists(struct gendisk *disk)
  * Returns NULL if integrity support was inconsistent or unavailable.
  */
 static struct gendisk *dm_table_get_integrity_disk(struct dm_table *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *devices = dm_table_get_devices(t);
 	struct dm_dev_internal *dd = NULL;
 	struct gendisk *prev_disk = NULL, *template_disk = NULL;
 
-<<<<<<< HEAD
-	list_for_each_entry(dd, devices, list) {
-		template_disk = dd->dm_dev.bdev->bd_disk;
-		if (!blk_get_integrity(template_disk))
-			goto no_integrity;
-		if (!match_all && !blk_integrity_is_initialized(template_disk))
-			continue; /* skip uninitialized profiles */
-=======
 	for (unsigned int i = 0; i < t->num_targets; i++) {
 		struct dm_target *ti = dm_table_get_target(t, i);
 
@@ -1852,7 +1145,6 @@ static struct gendisk *dm_table_get_integrity_disk(struct dm_table *t)
 		template_disk = dd->dm_dev->bdev->bd_disk;
 		if (!integrity_profile_exists(template_disk))
 			goto no_integrity;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (prev_disk &&
 			 blk_integrity_compare(prev_disk, template_disk) < 0)
 			goto no_integrity;
@@ -1871,48 +1163,6 @@ no_integrity:
 }
 
 /*
-<<<<<<< HEAD
- * Register the mapped device for blk_integrity support if
- * the underlying devices have an integrity profile.  But all devices
- * may not have matching profiles (checking all devices isn't reliable
- * during table load because this table may use other DM device(s) which
- * must be resumed before they will have an initialized integity profile).
- * Stacked DM devices force a 2 stage integrity profile validation:
- * 1 - during load, validate all initialized integrity profiles match
- * 2 - during resume, validate all integrity profiles match
- */
-static int dm_table_prealloc_integrity(struct dm_table *t, struct mapped_device *md)
-{
-	struct gendisk *template_disk = NULL;
-
-	template_disk = dm_table_get_integrity_disk(t, false);
-	if (!template_disk)
-		return 0;
-
-	if (!blk_integrity_is_initialized(dm_disk(md))) {
-		t->integrity_supported = 1;
-		return blk_integrity_register(dm_disk(md), NULL);
-	}
-
-	/*
-	 * If DM device already has an initalized integrity
-	 * profile the new profile should not conflict.
-	 */
-	if (blk_integrity_is_initialized(template_disk) &&
-	    blk_integrity_compare(dm_disk(md), template_disk) < 0) {
-		DMWARN("%s: conflict with existing integrity profile: "
-		       "%s profile mismatch",
-		       dm_device_name(t->md),
-		       template_disk->disk_name);
-		return 1;
-	}
-
-	/* Preserve existing initialized integrity profile */
-	t->integrity_supported = 1;
-	return 0;
-}
-
-=======
  * Register the mapped device for blk_integrity support if the
  * underlying devices have an integrity profile.  But all devices may
  * not have matching profiles (checking all devices isn't reliable
@@ -2153,7 +1403,6 @@ static void dm_update_crypto_profile(struct request_queue *q,
 
 #endif /* !CONFIG_BLK_INLINE_ENCRYPTION */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Prepares the table for use by building the indices,
  * setting the type, and allocating mempools.
@@ -2162,15 +1411,9 @@ int dm_table_complete(struct dm_table *t)
 {
 	int r;
 
-<<<<<<< HEAD
-	r = dm_table_set_type(t);
-	if (r) {
-		DMERR("unable to set table type");
-=======
 	r = dm_table_determine_type(t);
 	if (r) {
 		DMERR("unable to determine table type");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -2180,19 +1423,12 @@ int dm_table_complete(struct dm_table *t)
 		return r;
 	}
 
-<<<<<<< HEAD
-	r = dm_table_prealloc_integrity(t, t->md);
-=======
 	r = dm_table_register_integrity(t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		DMERR("could not register integrity profile.");
 		return r;
 	}
 
-<<<<<<< HEAD
-	r = dm_table_alloc_md_mempools(t);
-=======
 	r = dm_table_construct_crypto_profile(t);
 	if (r) {
 		DMERR("could not construct crypto profile.");
@@ -2200,7 +1436,6 @@ int dm_table_complete(struct dm_table *t)
 	}
 
 	r = dm_table_alloc_md_mempools(t, t->md);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		DMERR("unable to allocate mempools");
 
@@ -2219,15 +1454,6 @@ void dm_table_event_callback(struct dm_table *t,
 
 void dm_table_event(struct dm_table *t)
 {
-<<<<<<< HEAD
-	/*
-	 * You can no longer call dm_table_event() from interrupt
-	 * context, use a bottom half instead.
-	 */
-	BUG_ON(in_interrupt());
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&_event_lock);
 	if (t->event_fn)
 		t->event_fn(t->event_context);
@@ -2235,35 +1461,16 @@ void dm_table_event(struct dm_table *t)
 }
 EXPORT_SYMBOL(dm_table_event);
 
-<<<<<<< HEAD
-sector_t dm_table_get_size(struct dm_table *t)
-=======
 inline sector_t dm_table_get_size(struct dm_table *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return t->num_targets ? (t->highs[t->num_targets - 1] + 1) : 0;
 }
 EXPORT_SYMBOL(dm_table_get_size);
 
-<<<<<<< HEAD
-struct dm_target *dm_table_get_target(struct dm_table *t, unsigned int index)
-{
-	if (index >= t->num_targets)
-		return NULL;
-
-	return t->targets + index;
-}
-
-/*
- * Search the btree for the correct target.
- *
- * Caller should check returned pointer with dm_target_is_valid()
-=======
 /*
  * Search the btree for the correct target.
  *
  * Caller should check returned pointer for NULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to trap I/O beyond end of device.
  */
 struct dm_target *dm_table_find_target(struct dm_table *t, sector_t sector)
@@ -2271,12 +1478,9 @@ struct dm_target *dm_table_find_target(struct dm_table *t, sector_t sector)
 	unsigned int l, n = 0, k = 0;
 	sector_t *node;
 
-<<<<<<< HEAD
-=======
 	if (unlikely(sector >= dm_table_get_size(t)))
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (l = 0; l < t->depth; l++) {
 		n = get_child(n, k);
 		node = get_node(t, l, n);
@@ -2289,27 +1493,6 @@ struct dm_target *dm_table_find_target(struct dm_table *t, sector_t sector)
 	return &t->targets[(KEYS_PER_NODE * n) + k];
 }
 
-<<<<<<< HEAD
-/*
- * Establish the new table's queue_limits and validate them.
- */
-int dm_calculate_queue_limits(struct dm_table *table,
-			      struct queue_limits *limits)
-{
-	struct dm_target *uninitialized_var(ti);
-	struct queue_limits ti_limits;
-	unsigned i = 0;
-
-	blk_set_stacking_limits(limits);
-
-	while (i < dm_table_get_num_targets(table)) {
-		blk_set_stacking_limits(&ti_limits);
-
-		ti = dm_table_get_target(table, i++);
-
-		if (!ti->type->iterate_devices)
-			goto combine_limits;
-=======
 static int device_not_poll_capable(struct dm_target *ti, struct dm_dev *dev,
 				   sector_t start, sector_t len, void *data)
 {
@@ -2516,7 +1699,6 @@ int dm_calculate_queue_limits(struct dm_table *t,
 				ti->type->io_hints(ti, &ti_limits);
 			goto combine_limits;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Combine queue limits of all the devices this target uses.
@@ -2524,8 +1706,6 @@ int dm_calculate_queue_limits(struct dm_table *t,
 		ti->type->iterate_devices(ti, dm_set_device_limits,
 					  &ti_limits);
 
-<<<<<<< HEAD
-=======
 		if (!zoned && ti_limits.zoned) {
 			/*
 			 * After stacking all limits, validate all devices
@@ -2535,7 +1715,6 @@ int dm_calculate_queue_limits(struct dm_table *t,
 			zone_sectors = ti_limits.chunk_sectors;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Set I/O hints portion of queue limits */
 		if (ti->type->io_hints)
 			ti->type->io_hints(ti, &ti_limits);
@@ -2554,49 +1733,13 @@ combine_limits:
 		 * for the table.
 		 */
 		if (blk_stack_limits(limits, &ti_limits, 0) < 0)
-<<<<<<< HEAD
-			DMWARN("%s: adding target device "
-			       "(start sect %llu len %llu) "
-			       "caused an alignment inconsistency",
-			       dm_device_name(table->md),
-=======
 			DMWARN("%s: adding target device (start sect %llu len %llu) "
 			       "caused an alignment inconsistency",
 			       dm_device_name(t->md),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       (unsigned long long) ti->begin,
 			       (unsigned long long) ti->len);
 	}
 
-<<<<<<< HEAD
-	return validate_hardware_logical_block_alignment(table, limits);
-}
-
-/*
- * Set the integrity profile for this device if all devices used have
- * matching profiles.  We're quite deep in the resume path but still
- * don't know if all devices (particularly DM devices this device
- * may be stacked on) have matching profiles.  Even if the profiles
- * don't match we have no way to fail (to resume) at this point.
- */
-static void dm_table_set_integrity(struct dm_table *t)
-{
-	struct gendisk *template_disk = NULL;
-
-	if (!blk_get_integrity(dm_disk(t->md)))
-		return;
-
-	template_disk = dm_table_get_integrity_disk(t, true);
-	if (template_disk)
-		blk_integrity_register(dm_disk(t->md),
-				       blk_get_integrity(template_disk));
-	else if (blk_integrity_is_initialized(dm_disk(t->md)))
-		DMWARN("%s: device no longer has a valid integrity profile",
-		       dm_device_name(t->md));
-	else
-		DMWARN("%s: unable to establish an integrity profile",
-		       dm_device_name(t->md));
-=======
 	/*
 	 * Verify that the zoned model and zone sectors, as determined before
 	 * any .io_hints override, are the same across all devices in the table.
@@ -2646,25 +1789,11 @@ static void dm_table_verify_integrity(struct dm_table *t)
 		       dm_device_name(t->md));
 		blk_integrity_unregister(dm_disk(t->md));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int device_flush_capable(struct dm_target *ti, struct dm_dev *dev,
 				sector_t start, sector_t len, void *data)
 {
-<<<<<<< HEAD
-	unsigned flush = (*(unsigned *)data);
-	struct request_queue *q = bdev_get_queue(dev->bdev);
-
-	return q && (q->flush_flags & flush);
-}
-
-static bool dm_table_supports_flush(struct dm_table *t, unsigned flush)
-{
-	struct dm_target *ti;
-	unsigned i = 0;
-
-=======
 	unsigned long flush = (unsigned long) data;
 	struct request_queue *q = bdev_get_queue(dev->bdev);
 
@@ -2673,51 +1802,12 @@ static bool dm_table_supports_flush(struct dm_table *t, unsigned flush)
 
 static bool dm_table_supports_flush(struct dm_table *t, unsigned long flush)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Require at least one underlying device to support flushes.
 	 * t->devices includes internal dm devices such as mirror logs
 	 * so we need to use iterate_devices here, which targets
 	 * supporting flushes must provide.
 	 */
-<<<<<<< HEAD
-	while (i < dm_table_get_num_targets(t)) {
-		ti = dm_table_get_target(t, i++);
-
-		if (!ti->num_flush_requests)
-			continue;
-
-		if (ti->type->iterate_devices &&
-		    ti->type->iterate_devices(ti, device_flush_capable, &flush))
-			return 1;
-	}
-
-	return 0;
-}
-
-static bool dm_table_discard_zeroes_data(struct dm_table *t)
-{
-	struct dm_target *ti;
-	unsigned i = 0;
-
-	/* Ensure that all targets supports discard_zeroes_data. */
-	while (i < dm_table_get_num_targets(t)) {
-		ti = dm_table_get_target(t, i++);
-
-		if (ti->discard_zeroes_data_unsupported)
-			return 0;
-	}
-
-	return 1;
-}
-
-static int device_is_nonrot(struct dm_target *ti, struct dm_dev *dev,
-			    sector_t start, sector_t len, void *data)
-{
-	struct request_queue *q = bdev_get_queue(dev->bdev);
-
-	return q && blk_queue_nonrot(q);
-=======
 	for (unsigned int i = 0; i < t->num_targets; i++) {
 		struct dm_target *ti = dm_table_get_target(t, i);
 
@@ -2753,7 +1843,6 @@ static int device_is_rotational(struct dm_target *ti, struct dm_dev *dev,
 				sector_t start, sector_t len, void *data)
 {
 	return !bdev_nonrot(dev->bdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int device_is_not_random(struct dm_target *ti, struct dm_dev *dev,
@@ -2761,32 +1850,6 @@ static int device_is_not_random(struct dm_target *ti, struct dm_dev *dev,
 {
 	struct request_queue *q = bdev_get_queue(dev->bdev);
 
-<<<<<<< HEAD
-	return q && !blk_queue_add_random(q);
-}
-
-static bool dm_table_all_devices_attribute(struct dm_table *t,
-					   iterate_devices_callout_fn func)
-{
-	struct dm_target *ti;
-	unsigned i = 0;
-
-	while (i < dm_table_get_num_targets(t)) {
-		ti = dm_table_get_target(t, i++);
-
-		if (!ti->type->iterate_devices ||
-		    !ti->type->iterate_devices(ti, func, NULL))
-			return 0;
-	}
-
-	return 1;
-}
-
-void dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
-			       struct queue_limits *limits)
-{
-	unsigned flush = 0;
-=======
 	return !blk_queue_add_random(q);
 }
 
@@ -2899,37 +1962,12 @@ int dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
 {
 	bool wc = false, fua = false;
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Copy table's limits to the DM device's request_queue
 	 */
 	q->limits = *limits;
 
-<<<<<<< HEAD
-	if (!dm_table_supports_discards(t))
-		queue_flag_clear_unlocked(QUEUE_FLAG_DISCARD, q);
-	else
-		queue_flag_set_unlocked(QUEUE_FLAG_DISCARD, q);
-
-	if (dm_table_supports_flush(t, REQ_FLUSH)) {
-		flush |= REQ_FLUSH;
-		if (dm_table_supports_flush(t, REQ_FUA))
-			flush |= REQ_FUA;
-	}
-	blk_queue_flush(q, flush);
-
-	if (!dm_table_discard_zeroes_data(t))
-		q->limits.discard_zeroes_data = 0;
-
-	/* Ensure that all underlying devices are non-rotational. */
-	if (dm_table_all_devices_attribute(t, device_is_nonrot))
-		queue_flag_set_unlocked(QUEUE_FLAG_NONROT, q);
-	else
-		queue_flag_clear_unlocked(QUEUE_FLAG_NONROT, q);
-
-	dm_table_set_integrity(t);
-=======
 	if (dm_table_supports_nowait(t))
 		blk_queue_flag_set(QUEUE_FLAG_NOWAIT, q);
 	else
@@ -2985,7 +2023,6 @@ int dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
 		blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, q);
 	else
 		blk_queue_flag_clear(QUEUE_FLAG_STABLE_WRITES, q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Determine whether or not this queue's I/O timings contribute
@@ -2993,28 +2030,6 @@ int dm_table_set_restrictions(struct dm_table *t, struct request_queue *q,
 	 * Clear QUEUE_FLAG_ADD_RANDOM if any underlying device does not
 	 * have it set.
 	 */
-<<<<<<< HEAD
-	if (blk_queue_add_random(q) && dm_table_all_devices_attribute(t, device_is_not_random))
-		queue_flag_clear_unlocked(QUEUE_FLAG_ADD_RANDOM, q);
-
-	/*
-	 * QUEUE_FLAG_STACKABLE must be set after all queue settings are
-	 * visible to other CPUs because, once the flag is set, incoming bios
-	 * are processed by request-based dm, which refers to the queue
-	 * settings.
-	 * Until the flag set, bios are passed to bio-based dm and queued to
-	 * md->deferred where queue settings are not needed yet.
-	 * Those bios are passed to request-based dm at the resume time.
-	 */
-	smp_mb();
-	if (dm_table_request_based(t))
-		queue_flag_set_unlocked(QUEUE_FLAG_STACKABLE, q);
-}
-
-unsigned int dm_table_get_num_targets(struct dm_table *t)
-{
-	return t->num_targets;
-=======
 	if (blk_queue_add_random(q) &&
 	    dm_table_any_dev_attr(t, device_is_not_random, NULL))
 		blk_queue_flag_clear(QUEUE_FLAG_ADD_RANDOM, q);
@@ -3049,7 +2064,6 @@ unsigned int dm_table_get_num_targets(struct dm_table *t)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct list_head *dm_table_get_devices(struct dm_table *t)
@@ -3057,31 +2071,12 @@ struct list_head *dm_table_get_devices(struct dm_table *t)
 	return &t->devices;
 }
 
-<<<<<<< HEAD
-fmode_t dm_table_get_mode(struct dm_table *t)
-=======
 blk_mode_t dm_table_get_mode(struct dm_table *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return t->mode;
 }
 EXPORT_SYMBOL(dm_table_get_mode);
 
-<<<<<<< HEAD
-static void suspend_targets(struct dm_table *t, unsigned postsuspend)
-{
-	int i = t->num_targets;
-	struct dm_target *ti = t->targets;
-
-	while (i--) {
-		if (postsuspend) {
-			if (ti->type->postsuspend)
-				ti->type->postsuspend(ti);
-		} else if (ti->type->presuspend)
-			ti->type->presuspend(ti);
-
-		ti++;
-=======
 enum suspend_mode {
 	PRESUSPEND,
 	PRESUSPEND_UNDO,
@@ -3109,7 +2104,6 @@ static void suspend_targets(struct dm_table *t, enum suspend_mode mode)
 				ti->type->postsuspend(ti);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3118,9 +2112,6 @@ void dm_table_presuspend_targets(struct dm_table *t)
 	if (!t)
 		return;
 
-<<<<<<< HEAD
-	suspend_targets(t, 0);
-=======
 	suspend_targets(t, PRESUSPEND);
 }
 
@@ -3130,7 +2121,6 @@ void dm_table_presuspend_undo_targets(struct dm_table *t)
 		return;
 
 	suspend_targets(t, PRESUSPEND_UNDO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void dm_table_postsuspend_targets(struct dm_table *t)
@@ -3138,21 +2128,11 @@ void dm_table_postsuspend_targets(struct dm_table *t)
 	if (!t)
 		return;
 
-<<<<<<< HEAD
-	suspend_targets(t, 1);
-=======
 	suspend_targets(t, POSTSUSPEND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dm_table_resume_targets(struct dm_table *t)
 {
-<<<<<<< HEAD
-	int i, r = 0;
-
-	for (i = 0; i < t->num_targets; i++) {
-		struct dm_target *ti = t->targets + i;
-=======
 	unsigned int i;
 	int r = 0;
 
@@ -3160,20 +2140,11 @@ int dm_table_resume_targets(struct dm_table *t)
 
 	for (i = 0; i < t->num_targets; i++) {
 		struct dm_target *ti = dm_table_get_target(t, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!ti->type->preresume)
 			continue;
 
 		r = ti->type->preresume(ti);
-<<<<<<< HEAD
-		if (r)
-			return r;
-	}
-
-	for (i = 0; i < t->num_targets; i++) {
-		struct dm_target *ti = t->targets + i;
-=======
 		if (r) {
 			DMERR("%s: %s: preresume failed, error = %d",
 			      dm_device_name(t->md), ti->type->name, r);
@@ -3183,7 +2154,6 @@ int dm_table_resume_targets(struct dm_table *t)
 
 	for (i = 0; i < t->num_targets; i++) {
 		struct dm_target *ti = dm_table_get_target(t, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ti->type->resume)
 			ti->type->resume(ti);
@@ -3192,99 +2162,12 @@ int dm_table_resume_targets(struct dm_table *t)
 	return 0;
 }
 
-<<<<<<< HEAD
-void dm_table_add_target_callbacks(struct dm_table *t, struct dm_target_callbacks *cb)
-{
-	list_add(&cb->list, &t->target_callbacks);
-}
-EXPORT_SYMBOL_GPL(dm_table_add_target_callbacks);
-
-int dm_table_any_congested(struct dm_table *t, int bdi_bits)
-{
-	struct dm_dev_internal *dd;
-	struct list_head *devices = dm_table_get_devices(t);
-	struct dm_target_callbacks *cb;
-	int r = 0;
-
-	list_for_each_entry(dd, devices, list) {
-		struct request_queue *q = bdev_get_queue(dd->dm_dev.bdev);
-		char b[BDEVNAME_SIZE];
-
-		if (likely(q))
-			r |= bdi_congested(&q->backing_dev_info, bdi_bits);
-		else
-			DMWARN_LIMIT("%s: any_congested: nonexistent device %s",
-				     dm_device_name(t->md),
-				     bdevname(dd->dm_dev.bdev, b));
-	}
-
-	list_for_each_entry(cb, &t->target_callbacks, list)
-		if (cb->congested_fn)
-			r |= cb->congested_fn(cb, bdi_bits);
-
-	return r;
-}
-
-int dm_table_any_busy_target(struct dm_table *t)
-{
-	unsigned i;
-	struct dm_target *ti;
-
-	for (i = 0; i < t->num_targets; i++) {
-		ti = t->targets + i;
-		if (ti->type->busy && ti->type->busy(ti))
-			return 1;
-	}
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mapped_device *dm_table_get_md(struct dm_table *t)
 {
 	return t->md;
 }
 EXPORT_SYMBOL(dm_table_get_md);
 
-<<<<<<< HEAD
-static int device_discard_capable(struct dm_target *ti, struct dm_dev *dev,
-				  sector_t start, sector_t len, void *data)
-{
-	struct request_queue *q = bdev_get_queue(dev->bdev);
-
-	return q && blk_queue_discard(q);
-}
-
-bool dm_table_supports_discards(struct dm_table *t)
-{
-	struct dm_target *ti;
-	unsigned i = 0;
-
-	/*
-	 * Unless any target used by the table set discards_supported,
-	 * require at least one underlying device to support discards.
-	 * t->devices includes internal dm devices such as mirror logs
-	 * so we need to use iterate_devices here, which targets
-	 * supporting discard selectively must provide.
-	 */
-	while (i < dm_table_get_num_targets(t)) {
-		ti = dm_table_get_target(t, i++);
-
-		if (!ti->num_discard_requests)
-			continue;
-
-		if (ti->discards_supported)
-			return 1;
-
-		if (ti->type->iterate_devices &&
-		    ti->type->iterate_devices(ti, device_discard_capable, NULL))
-			return 1;
-	}
-
-	return 0;
-}
-=======
 const char *dm_table_device_name(struct dm_table *t)
 {
 	return dm_device_name(t->md);
@@ -3301,4 +2184,3 @@ void dm_table_run_md_queue_async(struct dm_table *t)
 }
 EXPORT_SYMBOL(dm_table_run_md_queue_async);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#if defined(CONFIG_MMU) && !defined(CONFIG_COLDFIRE)
-#include "entry_mm.S"
-#else
-#include "entry_no.S"
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later
  * -*- mode: asm -*-
  *
@@ -442,4 +435,3 @@ resume:
 	rts
 
 #endif /* CONFIG_MMU && !CONFIG_COLDFIRE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

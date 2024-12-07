@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-#ifndef __ALPHA_SETUP_H
-#define __ALPHA_SETUP_H
-
-#define COMMAND_LINE_SIZE	256
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 #ifndef __ALPHA_SETUP_H
 #define __ALPHA_SETUP_H
 
 #include <uapi/asm/setup.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We leave one page for the initial stack page, and one page for
@@ -43,11 +36,7 @@
  * place.
  */
 #define PARAM			ZERO_PGE
-<<<<<<< HEAD
-#define COMMAND_LINE		((char*)(PARAM + 0x0000))
-=======
 #define COMMAND_LINE		((char *)(absolute_pointer(PARAM + 0x0000)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INITRD_START		(*(unsigned long *) (PARAM+0x100))
 #define INITRD_SIZE		(*(unsigned long *) (PARAM+0x108))
 

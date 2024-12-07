@@ -1,37 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PTP 1588 clock support
  *
  * Copyright (C) 2010 OMICRON electronics GmbH
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PTP_CLOCK_KERNEL_H_
 #define _PTP_CLOCK_KERNEL_H_
 
-<<<<<<< HEAD
-#include <linux/ptp_clock.h>
-
-=======
 #include <linux/device.h>
 #include <linux/pps_kernel.h>
 #include <linux/ptp_clock.h>
@@ -52,7 +28,6 @@
  * @perout: describes configuration for periodic output.
  *	    This is only valid when event == PTP_CLK_REQ_PEROUT.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ptp_clock_request {
 	enum {
@@ -66,13 +41,6 @@ struct ptp_clock_request {
 	};
 };
 
-<<<<<<< HEAD
-/**
- * struct ptp_clock_info - decribes a PTP hardware clock
- *
- * @owner:     The clock driver should set to THIS_MODULE.
- * @name:      A short name to identify the clock.
-=======
 struct system_device_crosststamp;
 
 /**
@@ -92,19 +60,10 @@ struct ptp_system_timestamp {
  * @name:      A short "friendly name" to identify the clock and to
  *             help distinguish PHY based devices from MAC based ones.
  *             The string is not meant to be a unique id.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @max_adj:   The maximum possible frequency adjustment, in parts per billon.
  * @n_alarm:   The number of programmable alarms.
  * @n_ext_ts:  The number of external time stamp channels.
  * @n_per_out: The number of programmable periodic signals.
-<<<<<<< HEAD
- * @pps:       Indicates whether the clock supports a PPS callback.
- *
- * clock operations
- *
- * @adjfreq:  Adjusts the frequency of the hardware clock.
- *            parameter delta: Desired period change in parts per billion.
-=======
  * @n_pins:    The number of programmable pins.
  * @pps:       Indicates whether the clock supports a PPS callback.
  * @pin_config: Array of length 'n_pins'. If the number of
@@ -126,18 +85,10 @@ struct ptp_system_timestamp {
  * @getmaxphase:  Advertises maximum offset that can be provided
  *                to the hardware clock's phase control functionality
  *                through adjphase.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @adjtime:  Shifts the time of the hardware clock.
  *            parameter delta: Desired change in nanoseconds.
  *
-<<<<<<< HEAD
- * @gettime:  Reads the current time from the hardware clock.
- *            parameter ts: Holds the result.
- *
- * @settime:  Set the current time on the hardware clock.
- *            parameter ts: Time value to set.
-=======
  * @gettime64:  Reads the current time from the hardware clock.
  *              This method is deprecated.  New drivers should implement
  *              the @gettimex64 method instead.
@@ -184,14 +135,11 @@ struct ptp_system_timestamp {
  *                   available.
  *                   parameter cts: Contains timestamp (device,system) pair,
  *                   where system time is realtime and monotonic.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @enable:   Request driver to enable or disable an ancillary feature.
  *            parameter request: Desired resource to enable or disable.
  *            parameter on: Caller passes one to enable or zero to disable.
  *
-<<<<<<< HEAD
-=======
  * @verify:   Confirm that a pin can perform a given function. The PTP
  *            Hardware Clock subsystem maintains the 'pin_config'
  *            array on behalf of the drivers, but the PHC subsystem
@@ -209,7 +157,6 @@ struct ptp_system_timestamp {
  *                scheduling time (>=0) or negative value in case further
  *                scheduling is not required.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Drivers should embed their ptp_clock_info within a private
  * structure, obtaining a reference to it using container_of().
  *
@@ -218,24 +165,11 @@ struct ptp_system_timestamp {
 
 struct ptp_clock_info {
 	struct module *owner;
-<<<<<<< HEAD
-	char name[16];
-=======
 	char name[PTP_CLOCK_NAME_LEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 max_adj;
 	int n_alarm;
 	int n_ext_ts;
 	int n_per_out;
-<<<<<<< HEAD
-	int pps;
-	int (*adjfreq)(struct ptp_clock_info *ptp, s32 delta);
-	int (*adjtime)(struct ptp_clock_info *ptp, s64 delta);
-	int (*gettime)(struct ptp_clock_info *ptp, struct timespec *ts);
-	int (*settime)(struct ptp_clock_info *ptp, const struct timespec *ts);
-	int (*enable)(struct ptp_clock_info *ptp,
-		      struct ptp_clock_request *request, int on);
-=======
 	int n_pins;
 	int pps;
 	struct ptp_pin_desc *pin_config;
@@ -259,20 +193,10 @@ struct ptp_clock_info {
 	int (*verify)(struct ptp_clock_info *ptp, unsigned int pin,
 		      enum ptp_pin_function func, unsigned int chan);
 	long (*do_aux_work)(struct ptp_clock_info *ptp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ptp_clock;
 
-<<<<<<< HEAD
-/**
- * ptp_clock_register() - register a PTP hardware clock driver
- *
- * @info:  Structure describing the new clock.
- */
-
-extern struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info);
-=======
 enum ptp_clock_events {
 	PTP_CLOCK_ALARM,
 	PTP_CLOCK_EXTTS,
@@ -389,7 +313,6 @@ static inline u64 adjust_by_scaled_ppm(u64 base, long scaled_ppm)
 
 extern struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 					    struct device *parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ptp_clock_unregister() - unregister a PTP hardware clock driver
@@ -399,30 +322,6 @@ extern struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 
 extern int ptp_clock_unregister(struct ptp_clock *ptp);
 
-<<<<<<< HEAD
-
-enum ptp_clock_events {
-	PTP_CLOCK_ALARM,
-	PTP_CLOCK_EXTTS,
-	PTP_CLOCK_PPS,
-};
-
-/**
- * struct ptp_clock_event - decribes a PTP hardware clock event
- *
- * @type:  One of the ptp_clock_events enumeration values.
- * @index: Identifies the source of the event.
- * @timestamp: When the event occured.
- */
-
-struct ptp_clock_event {
-	int type;
-	int index;
-	u64 timestamp;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ptp_clock_event() - notify the PTP layer about an event
  *
@@ -433,8 +332,6 @@ struct ptp_clock_event {
 extern void ptp_clock_event(struct ptp_clock *ptp,
 			    struct ptp_clock_event *event);
 
-<<<<<<< HEAD
-=======
 /**
  * ptp_clock_index() - obtain the device index of a PTP clock
  *
@@ -570,5 +467,4 @@ static inline void ptp_read_system_postts(struct ptp_system_timestamp *sts)
 		ktime_get_real_ts64(&sts->post_ts);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

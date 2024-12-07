@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Uniprocessor-only support functions.  The counterpart to kernel/smp.c
  */
@@ -10,21 +7,11 @@
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/smp.h>
-<<<<<<< HEAD
-=======
 #include <linux/hypervisor.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int smp_call_function_single(int cpu, void (*func) (void *info), void *info,
 				int wait)
 {
-<<<<<<< HEAD
-	WARN_ON(cpu != 0);
-
-	local_irq_disable();
-	(func)(info);
-	local_irq_enable();
-=======
 	unsigned long flags;
 
 	if (cpu != 0)
@@ -33,13 +20,10 @@ int smp_call_function_single(int cpu, void (*func) (void *info), void *info,
 	local_irq_save(flags);
 	func(info);
 	local_irq_restore(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL(smp_call_function_single);
-<<<<<<< HEAD
-=======
 
 int smp_call_function_single_async(int cpu, call_single_data_t *csd)
 {
@@ -87,4 +71,3 @@ int smp_call_on_cpu(unsigned int cpu, int (*func)(void *), void *par, bool phys)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(smp_call_on_cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

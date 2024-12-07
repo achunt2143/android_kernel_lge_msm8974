@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-/* empty */
-=======
 /*
  * arch/xtensa/include/asm/ftrace.h
  *
@@ -32,4 +29,3 @@ extern void _mcount(void);
 #endif /* CONFIG_FUNCTION_TRACER */
 
 #endif /* _XTENSA_FTRACE_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

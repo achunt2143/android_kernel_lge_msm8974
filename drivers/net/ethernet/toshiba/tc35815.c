@@ -23,11 +23,7 @@
  */
 
 #define DRV_VERSION	"1.39"
-<<<<<<< HEAD
-static const char *version = "tc35815.c:v" DRV_VERSION "\n";
-=======
 static const char version[] = "tc35815.c:v" DRV_VERSION "\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MODNAME			"tc35815"
 
 #include <linux/module.h>
@@ -42,10 +38,6 @@ static const char version[] = "tc35815.c:v" DRV_VERSION "\n";
 #include <linux/string.h>
 #include <linux/spinlock.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
@@ -67,21 +59,13 @@ enum tc35815_chiptype {
 /* indexed by tc35815_chiptype, above */
 static const struct {
 	const char *name;
-<<<<<<< HEAD
-} chip_info[] __devinitdata = {
-=======
 } chip_info[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "TOSHIBA TC35815CF 10/100BaseTX" },
 	{ "TOSHIBA TC35815 with Wake on LAN" },
 	{ "TOSHIBA TC35815/TX4939" },
 };
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(tc35815_pci_tbl) = {
-=======
 static const struct pci_device_id tc35815_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA_2, PCI_DEVICE_ID_TOSHIBA_TC35815CF), .driver_data = TC35815CF },
 	{PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA_2, PCI_DEVICE_ID_TOSHIBA_TC35815_NWU), .driver_data = TC35815_NWU },
 	{PCI_DEVICE(PCI_VENDOR_ID_TOSHIBA_2, PCI_DEVICE_ID_TOSHIBA_TC35815_TX4939), .driver_data = TC35815_TX4939 },
@@ -296,11 +280,7 @@ struct tc35815_regs {
  * Descriptors
  */
 
-<<<<<<< HEAD
-/* Frame descripter */
-=======
 /* Frame descriptor */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct FDesc {
 	volatile __u32 FDNext;
 	volatile __u32 FDSystem;
@@ -308,11 +288,7 @@ struct FDesc {
 	volatile __u32 FDCtl;
 };
 
-<<<<<<< HEAD
-/* Buffer descripter */
-=======
 /* Buffer descriptor */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct BDesc {
 	volatile __u32 BuffData;
 	volatile __u32 BDCtl;
@@ -320,11 +296,7 @@ struct BDesc {
 
 #define FD_ALIGN	16
 
-<<<<<<< HEAD
-/* Frame Descripter bit assign ---------------------------------------------- */
-=======
 /* Frame Descriptor bit assign ---------------------------------------------- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FD_FDLength_MASK       0x0000FFFF /* Length MASK		     */
 #define FD_BDCnt_MASK	       0x001F0000 /* BD count MASK in FD	     */
 #define FD_FrmOpt_MASK	       0x7C000000 /* Frame option MASK		     */
@@ -337,11 +309,7 @@ struct BDesc {
 #define FD_Next_EOL	       0x00000001 /* FD EOL indicator		     */
 #define FD_BDCnt_SHIFT	       16
 
-<<<<<<< HEAD
-/* Buffer Descripter bit assign --------------------------------------------- */
-=======
 /* Buffer Descriptor bit assign --------------------------------------------- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BD_BuffLength_MASK     0x0000FFFF /* Receive Data Size		     */
 #define BD_RxBDID_MASK	       0x00FF0000 /* BD ID Number MASK		     */
 #define BD_RxBDSeqN_MASK       0x7F000000 /* Rx BD Sequence Number	     */
@@ -399,11 +367,7 @@ struct TxFD {
 
 struct RxFD {
 	struct FDesc fd;
-<<<<<<< HEAD
-	struct BDesc bd[0];	/* variable length */
-=======
 	struct BDesc bd[];	/* variable length */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct FrFD {
@@ -441,10 +405,6 @@ struct tc35815_local {
 	spinlock_t rx_lock;
 
 	struct mii_bus *mii_bus;
-<<<<<<< HEAD
-	struct phy_device *phy_dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int duplex;
 	int speed;
 	int link;
@@ -494,15 +454,9 @@ static struct sk_buff *alloc_rxbuf_skb(struct net_device *dev,
 	skb = netdev_alloc_skb(dev, RX_BUF_SIZE);
 	if (!skb)
 		return NULL;
-<<<<<<< HEAD
-	*dma_handle = pci_map_single(hwdev, skb->data, RX_BUF_SIZE,
-				     PCI_DMA_FROMDEVICE);
-	if (pci_dma_mapping_error(hwdev, *dma_handle)) {
-=======
 	*dma_handle = dma_map_single(&hwdev->dev, skb->data, RX_BUF_SIZE,
 				     DMA_FROM_DEVICE);
 	if (dma_mapping_error(&hwdev->dev, *dma_handle)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 		return NULL;
 	}
@@ -512,25 +466,16 @@ static struct sk_buff *alloc_rxbuf_skb(struct net_device *dev,
 
 static void free_rxbuf_skb(struct pci_dev *hwdev, struct sk_buff *skb, dma_addr_t dma_handle)
 {
-<<<<<<< HEAD
-	pci_unmap_single(hwdev, dma_handle, RX_BUF_SIZE,
-			 PCI_DMA_FROMDEVICE);
-=======
 	dma_unmap_single(&hwdev->dev, dma_handle, RX_BUF_SIZE,
 			 DMA_FROM_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb_any(skb);
 }
 
 /* Index to functions, as function prototypes. */
 
 static int	tc35815_open(struct net_device *dev);
-<<<<<<< HEAD
-static int	tc35815_send_packet(struct sk_buff *skb, struct net_device *dev);
-=======
 static netdev_tx_t	tc35815_send_packet(struct sk_buff *skb,
 					    struct net_device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t	tc35815_interrupt(int irq, void *dev_id);
 static int	tc35815_rx(struct net_device *dev, int limit);
 static int	tc35815_poll(struct napi_struct *napi, int budget);
@@ -538,12 +483,7 @@ static void	tc35815_txdone(struct net_device *dev);
 static int	tc35815_close(struct net_device *dev);
 static struct	net_device_stats *tc35815_get_stats(struct net_device *dev);
 static void	tc35815_set_multicast_list(struct net_device *dev);
-<<<<<<< HEAD
-static void	tc35815_tx_timeout(struct net_device *dev);
-static int	tc35815_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
-=======
 static void	tc35815_tx_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void	tc35815_poll_controller(struct net_device *dev);
 #endif
@@ -598,11 +538,7 @@ static int tc_mdio_write(struct mii_bus *bus, int mii_id, int regnum, u16 val)
 static void tc_handle_link_change(struct net_device *dev)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
-<<<<<<< HEAD
-	struct phy_device *phydev = lp->phy_dev;
-=======
 	struct phy_device *phydev = dev->phydev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int status_change = 0;
 
@@ -670,72 +606,24 @@ static void tc_handle_link_change(struct net_device *dev)
 
 static int tc_mii_probe(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct tc35815_local *lp = netdev_priv(dev);
-	struct phy_device *phydev = NULL;
-	int phy_addr;
-	u32 dropmask;
-
-	/* find the first phy */
-	for (phy_addr = 0; phy_addr < PHY_MAX_ADDR; phy_addr++) {
-		if (lp->mii_bus->phy_map[phy_addr]) {
-			if (phydev) {
-				printk(KERN_ERR "%s: multiple PHYs found\n",
-				       dev->name);
-				return -EINVAL;
-			}
-			phydev = lp->mii_bus->phy_map[phy_addr];
-			break;
-		}
-	}
-
-=======
 	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
 	struct tc35815_local *lp = netdev_priv(dev);
 	struct phy_device *phydev;
 
 	phydev = phy_find_first(lp->mii_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!phydev) {
 		printk(KERN_ERR "%s: no PHY found\n", dev->name);
 		return -ENODEV;
 	}
 
 	/* attach the mac to the phy */
-<<<<<<< HEAD
-	phydev = phy_connect(dev, dev_name(&phydev->dev),
-			     &tc_handle_link_change, 0,
-			     lp->chiptype == TC35815_TX4939 ?
-			     PHY_INTERFACE_MODE_RMII : PHY_INTERFACE_MODE_MII);
-=======
 	phydev = phy_connect(dev, phydev_name(phydev),
 			     &tc_handle_link_change,
 			     lp->chiptype == TC35815_TX4939 ? PHY_INTERFACE_MODE_RMII : PHY_INTERFACE_MODE_MII);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(phydev)) {
 		printk(KERN_ERR "%s: Could not attach to PHY\n", dev->name);
 		return PTR_ERR(phydev);
 	}
-<<<<<<< HEAD
-	printk(KERN_INFO "%s: attached PHY driver [%s] "
-		"(mii_bus:phy_addr=%s, id=%x)\n",
-		dev->name, phydev->drv->name, dev_name(&phydev->dev),
-		phydev->phy_id);
-
-	/* mask with MAC supported features */
-	phydev->supported &= PHY_BASIC_FEATURES;
-	dropmask = 0;
-	if (options.speed == 10)
-		dropmask |= SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full;
-	else if (options.speed == 100)
-		dropmask |= SUPPORTED_10baseT_Half | SUPPORTED_10baseT_Full;
-	if (options.duplex == 1)
-		dropmask |= SUPPORTED_10baseT_Full | SUPPORTED_100baseT_Full;
-	else if (options.duplex == 2)
-		dropmask |= SUPPORTED_10baseT_Half | SUPPORTED_100baseT_Half;
-	phydev->supported &= ~dropmask;
-	phydev->advertising = phydev->supported;
-=======
 
 	phy_attached_info(phydev);
 
@@ -757,15 +645,10 @@ static int tc_mii_probe(struct net_device *dev)
 	}
 	linkmode_andnot(phydev->supported, phydev->supported, mask);
 	linkmode_copy(phydev->advertising, phydev->supported);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->link = 0;
 	lp->speed = 0;
 	lp->duplex = -1;
-<<<<<<< HEAD
-	lp->phy_dev = phydev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -774,10 +657,6 @@ static int tc_mii_init(struct net_device *dev)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
 	int err;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->mii_bus = mdiobus_alloc();
 	if (lp->mii_bus == NULL) {
@@ -788,31 +667,12 @@ static int tc_mii_init(struct net_device *dev)
 	lp->mii_bus->name = "tc35815_mii_bus";
 	lp->mii_bus->read = tc_mdio_read;
 	lp->mii_bus->write = tc_mdio_write;
-<<<<<<< HEAD
-	snprintf(lp->mii_bus->id, MII_BUS_ID_SIZE, "%x",
-		 (lp->pci_dev->bus->number << 8) | lp->pci_dev->devfn);
-	lp->mii_bus->priv = dev;
-	lp->mii_bus->parent = &lp->pci_dev->dev;
-	lp->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
-	if (!lp->mii_bus->irq) {
-		err = -ENOMEM;
-		goto err_out_free_mii_bus;
-	}
-
-	for (i = 0; i < PHY_MAX_ADDR; i++)
-		lp->mii_bus->irq[i] = PHY_POLL;
-
-	err = mdiobus_register(lp->mii_bus);
-	if (err)
-		goto err_out_free_mdio_irq;
-=======
 	snprintf(lp->mii_bus->id, MII_BUS_ID_SIZE, "%x", pci_dev_id(lp->pci_dev));
 	lp->mii_bus->priv = dev;
 	lp->mii_bus->parent = &lp->pci_dev->dev;
 	err = mdiobus_register(lp->mii_bus);
 	if (err)
 		goto err_out_free_mii_bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = tc_mii_probe(dev);
 	if (err)
 		goto err_out_unregister_bus;
@@ -820,11 +680,6 @@ static int tc_mii_init(struct net_device *dev)
 
 err_out_unregister_bus:
 	mdiobus_unregister(lp->mii_bus);
-<<<<<<< HEAD
-err_out_free_mdio_irq:
-	kfree(lp->mii_bus->irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free_mii_bus:
 	mdiobus_free(lp->mii_bus);
 err_out:
@@ -837,65 +692,39 @@ err_out:
  * should provide a "tc35815-mac" device with a MAC address in its
  * platform_data.
  */
-<<<<<<< HEAD
-static int __devinit tc35815_mac_match(struct device *dev, void *data)
-{
-	struct platform_device *plat_dev = to_platform_device(dev);
-	struct pci_dev *pci_dev = data;
-=======
 static int tc35815_mac_match(struct device *dev, const void *data)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
 	const struct pci_dev *pci_dev = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int id = pci_dev->irq;
 	return !strcmp(plat_dev->name, "tc35815-mac") && plat_dev->id == id;
 }
 
-<<<<<<< HEAD
-static int __devinit tc35815_read_plat_dev_addr(struct net_device *dev)
-=======
 static int tc35815_read_plat_dev_addr(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
 	struct device *pd = bus_find_device(&platform_bus_type, NULL,
 					    lp->pci_dev, tc35815_mac_match);
 	if (pd) {
 		if (pd->platform_data)
-<<<<<<< HEAD
-			memcpy(dev->dev_addr, pd->platform_data, ETH_ALEN);
-=======
 			eth_hw_addr_set(dev, pd->platform_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_device(pd);
 		return is_valid_ether_addr(dev->dev_addr) ? 0 : -ENODEV;
 	}
 	return -ENODEV;
 }
 #else
-<<<<<<< HEAD
-static int __devinit tc35815_read_plat_dev_addr(struct net_device *dev)
-=======
 static int tc35815_read_plat_dev_addr(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENODEV;
 }
 #endif
 
-<<<<<<< HEAD
-static int __devinit tc35815_init_dev_addr(struct net_device *dev)
-{
-	struct tc35815_regs __iomem *tr =
-		(struct tc35815_regs __iomem *)dev->base_addr;
-=======
 static int tc35815_init_dev_addr(struct net_device *dev)
 {
 	struct tc35815_regs __iomem *tr =
 		(struct tc35815_regs __iomem *)dev->base_addr;
 	u8 addr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	while (tc_readl(&tr->PROM_Ctl) & PROM_Busy)
@@ -906,16 +735,10 @@ static int tc35815_init_dev_addr(struct net_device *dev)
 		while (tc_readl(&tr->PROM_Ctl) & PROM_Busy)
 			;
 		data = tc_readl(&tr->PROM_Data);
-<<<<<<< HEAD
-		dev->dev_addr[i] = data & 0xff;
-		dev->dev_addr[i+1] = data >> 8;
-	}
-=======
 		addr[i] = data & 0xff;
 		addr[i+1] = data >> 8;
 	}
 	eth_hw_addr_set(dev, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!is_valid_ether_addr(dev->dev_addr))
 		return tc35815_read_plat_dev_addr(dev);
 	return 0;
@@ -928,27 +751,16 @@ static const struct net_device_ops tc35815_netdev_ops = {
 	.ndo_get_stats		= tc35815_get_stats,
 	.ndo_set_rx_mode	= tc35815_set_multicast_list,
 	.ndo_tx_timeout		= tc35815_tx_timeout,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= tc35815_ioctl,
-	.ndo_validate_addr	= eth_validate_addr,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= phy_do_ioctl_running,
 	.ndo_validate_addr	= eth_validate_addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= tc35815_poll_controller,
 #endif
 };
 
-<<<<<<< HEAD
-static int __devinit tc35815_init_one(struct pci_dev *pdev,
-				      const struct pci_device_id *ent)
-=======
 static int tc35815_init_one(struct pci_dev *pdev,
 			    const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *ioaddr = NULL;
 	struct net_device *dev;
@@ -991,11 +803,7 @@ static int tc35815_init_one(struct pci_dev *pdev,
 	dev->netdev_ops = &tc35815_netdev_ops;
 	dev->ethtool_ops = &tc35815_ethtool_ops;
 	dev->watchdog_timeo = TC35815_TX_TIMEOUT;
-<<<<<<< HEAD
-	netif_napi_add(dev, &lp->napi, tc35815_poll, NAPI_WEIGHT);
-=======
 	netif_napi_add_weight(dev, &lp->napi, tc35815_poll, NAPI_WEIGHT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->irq = pdev->irq;
 	dev->base_addr = (unsigned long)ioaddr;
@@ -1022,10 +830,6 @@ static int tc35815_init_one(struct pci_dev *pdev,
 	if (rc)
 		goto err_out;
 
-<<<<<<< HEAD
-	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "%s: %s at 0x%lx, %pM, IRQ %d\n",
 		dev->name,
 		chip_info[ent->driver_data].name,
@@ -1047,30 +851,16 @@ err_out:
 }
 
 
-<<<<<<< HEAD
-static void __devexit tc35815_remove_one(struct pci_dev *pdev)
-=======
 static void tc35815_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct tc35815_local *lp = netdev_priv(dev);
 
-<<<<<<< HEAD
-	phy_disconnect(lp->phy_dev);
-	mdiobus_unregister(lp->mii_bus);
-	kfree(lp->mii_bus->irq);
-	mdiobus_free(lp->mii_bus);
-	unregister_netdev(dev);
-	free_netdev(dev);
-	pci_set_drvdata(pdev, NULL);
-=======
 	phy_disconnect(dev->phydev);
 	mdiobus_unregister(lp->mii_bus);
 	mdiobus_free(lp->mii_bus);
 	unregister_netdev(dev);
 	free_netdev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1087,15 +877,9 @@ tc35815_init_queues(struct net_device *dev)
 		       sizeof(struct TxFD) * TX_FD_NUM >
 		       PAGE_SIZE * FD_PAGE_NUM);
 
-<<<<<<< HEAD
-		lp->fd_buf = pci_alloc_consistent(lp->pci_dev,
-						  PAGE_SIZE * FD_PAGE_NUM,
-						  &lp->fd_buf_dma);
-=======
 		lp->fd_buf = dma_alloc_coherent(&lp->pci_dev->dev,
 						PAGE_SIZE * FD_PAGE_NUM,
 						&lp->fd_buf_dma, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!lp->fd_buf)
 			return -ENOMEM;
 		for (i = 0; i < RX_BUF_NUM; i++) {
@@ -1109,16 +893,9 @@ tc35815_init_queues(struct net_device *dev)
 						       lp->rx_skbs[i].skb_dma);
 					lp->rx_skbs[i].skb = NULL;
 				}
-<<<<<<< HEAD
-				pci_free_consistent(lp->pci_dev,
-						    PAGE_SIZE * FD_PAGE_NUM,
-						    lp->fd_buf,
-						    lp->fd_buf_dma);
-=======
 				dma_free_coherent(&lp->pci_dev->dev,
 						  PAGE_SIZE * FD_PAGE_NUM,
 						  lp->fd_buf, lp->fd_buf_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lp->fd_buf = NULL;
 				return -ENOMEM;
 			}
@@ -1213,13 +990,9 @@ tc35815_clear_queues(struct net_device *dev)
 		BUG_ON(lp->tx_skbs[i].skb != skb);
 #endif
 		if (skb) {
-<<<<<<< HEAD
-			pci_unmap_single(lp->pci_dev, lp->tx_skbs[i].skb_dma, skb->len, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&lp->pci_dev->dev,
 					 lp->tx_skbs[i].skb_dma, skb->len,
 					 DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lp->tx_skbs[i].skb = NULL;
 			lp->tx_skbs[i].skb_dma = 0;
 			dev_kfree_skb_any(skb);
@@ -1251,15 +1024,10 @@ tc35815_free_queues(struct net_device *dev)
 			BUG_ON(lp->tx_skbs[i].skb != skb);
 #endif
 			if (skb) {
-<<<<<<< HEAD
-				dev_kfree_skb(skb);
-				pci_unmap_single(lp->pci_dev, lp->tx_skbs[i].skb_dma, skb->len, PCI_DMA_TODEVICE);
-=======
 				dma_unmap_single(&lp->pci_dev->dev,
 						 lp->tx_skbs[i].skb_dma,
 						 skb->len, DMA_TO_DEVICE);
 				dev_kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lp->tx_skbs[i].skb = NULL;
 				lp->tx_skbs[i].skb_dma = 0;
 			}
@@ -1280,13 +1048,8 @@ tc35815_free_queues(struct net_device *dev)
 		}
 	}
 	if (lp->fd_buf) {
-<<<<<<< HEAD
-		pci_free_consistent(lp->pci_dev, PAGE_SIZE * FD_PAGE_NUM,
-				    lp->fd_buf, lp->fd_buf_dma);
-=======
 		dma_free_coherent(&lp->pci_dev->dev, PAGE_SIZE * FD_PAGE_NUM,
 				  lp->fd_buf, lp->fd_buf_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->fd_buf = NULL;
 	}
 }
@@ -1384,28 +1147,12 @@ static int tc35815_tx_full(struct net_device *dev)
 static void tc35815_restart(struct net_device *dev)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
-<<<<<<< HEAD
-
-	if (lp->phy_dev) {
-		int timeout;
-
-		phy_write(lp->phy_dev, MII_BMCR, BMCR_RESET);
-		timeout = 100;
-		while (--timeout) {
-			if (!(phy_read(lp->phy_dev, MII_BMCR) & BMCR_RESET))
-				break;
-			udelay(1);
-		}
-		if (!timeout)
-			printk(KERN_ERR "%s: BMCR reset failed.\n", dev->name);
-=======
 	int ret;
 
 	if (dev->phydev) {
 		ret = phy_init_hw(dev->phydev);
 		if (ret)
 			printk(KERN_ERR "%s: PHY init failed.\n", dev->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_bh(&lp->rx_lock);
@@ -1445,11 +1192,7 @@ static void tc35815_schedule_restart(struct net_device *dev)
 	spin_unlock_irqrestore(&lp->lock, flags);
 }
 
-<<<<<<< HEAD
-static void tc35815_tx_timeout(struct net_device *dev)
-=======
 static void tc35815_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tc35815_regs __iomem *tr =
 		(struct tc35815_regs __iomem *)dev->base_addr;
@@ -1499,11 +1242,7 @@ tc35815_open(struct net_device *dev)
 
 	netif_carrier_off(dev);
 	/* schedule a link state check */
-<<<<<<< HEAD
-	phy_start(lp->phy_dev);
-=======
 	phy_start(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We are now ready to accept transmit requeusts from
 	 * the queueing layer of the networking.
@@ -1518,12 +1257,8 @@ tc35815_open(struct net_device *dev)
  * invariant will hold if you make sure that the netif_*_queue()
  * calls are done at the proper times.
  */
-<<<<<<< HEAD
-static int tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
-=======
 static netdev_tx_t
 tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
 	struct TxFD *txfd;
@@ -1561,14 +1296,10 @@ tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
 	BUG_ON(lp->tx_skbs[lp->tfd_start].skb);
 #endif
 	lp->tx_skbs[lp->tfd_start].skb = skb;
-<<<<<<< HEAD
-	lp->tx_skbs[lp->tfd_start].skb_dma = pci_map_single(lp->pci_dev, skb->data, skb->len, PCI_DMA_TODEVICE);
-=======
 	lp->tx_skbs[lp->tfd_start].skb_dma = dma_map_single(&lp->pci_dev->dev,
 							    skb->data,
 							    skb->len,
 							    DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*add to ring */
 	txfd = &lp->tfd_base[lp->tfd_start];
@@ -1620,11 +1351,7 @@ tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
 static void tc35815_fatal_error_interrupt(struct net_device *dev, u32 status)
 {
 	static int count;
-<<<<<<< HEAD
-	printk(KERN_WARNING "%s: Fatal Error Intterrupt (%#x):",
-=======
 	printk(KERN_WARNING "%s: Fatal Error Interrupt (%#x):",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       dev->name, status);
 	if (status & Int_IntPCI)
 		printk(" IntPCI");
@@ -1670,11 +1397,7 @@ static int tc35815_do_interrupt(struct net_device *dev, u32 status, int limit)
 	if (status & Int_IntExBD) {
 		if (netif_msg_rx_err(lp))
 			dev_warn(&dev->dev,
-<<<<<<< HEAD
-				 "Excessive Buffer Descriptiors (%#x).\n",
-=======
 				 "Excessive Buffer Descriptors (%#x).\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 status);
 		dev->stats.rx_length_errors++;
 		ret = 0;
@@ -1711,21 +1434,10 @@ static irqreturn_t tc35815_interrupt(int irq, void *dev_id)
 	u32 dmactl = tc_readl(&tr->DMA_Ctl);
 
 	if (!(dmactl & DMA_IntMask)) {
-<<<<<<< HEAD
-		/* disable interrupts */
-		tc_writel(dmactl | DMA_IntMask, &tr->DMA_Ctl);
-		if (napi_schedule_prep(&lp->napi))
-			__napi_schedule(&lp->napi);
-		else {
-			printk(KERN_ERR "%s: interrupt taken in poll\n",
-			       dev->name);
-			BUG();
-=======
 		if (napi_schedule_prep(&lp->napi)) {
 			/* disable interrupts */
 			tc_writel(dmactl | DMA_IntMask, &tr->DMA_Ctl);
 			__napi_schedule(&lp->napi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		(void)tc_readl(&tr->Int_Src);	/* flush */
 		return IRQ_HANDLED;
@@ -1791,17 +1503,10 @@ tc35815_rx(struct net_device *dev, int limit)
 			skb = lp->rx_skbs[cur_bd].skb;
 			prefetch(skb->data);
 			lp->rx_skbs[cur_bd].skb = NULL;
-<<<<<<< HEAD
-			pci_unmap_single(lp->pci_dev,
-					 lp->rx_skbs[cur_bd].skb_dma,
-					 RX_BUF_SIZE, PCI_DMA_FROMDEVICE);
-			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN)
-=======
 			dma_unmap_single(&lp->pci_dev->dev,
 					 lp->rx_skbs[cur_bd].skb_dma,
 					 RX_BUF_SIZE, DMA_FROM_DEVICE);
 			if (!HAVE_DMA_RXALIGN(lp) && NET_IP_ALIGN != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				memmove(skb->data, skb->data - NET_IP_ALIGN,
 					pkt_len);
 			data = skb_put(skb, pkt_len);
@@ -1918,12 +1623,9 @@ static int tc35815_poll(struct napi_struct *napi, int budget)
 	int received = 0, handled;
 	u32 status;
 
-<<<<<<< HEAD
-=======
 	if (budget <= 0)
 		return received;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&lp->rx_lock);
 	status = tc_readl(&tr->Int_Src);
 	do {
@@ -1945,11 +1647,7 @@ static int tc35815_poll(struct napi_struct *napi, int budget)
 	spin_unlock(&lp->rx_lock);
 
 	if (received < budget) {
-<<<<<<< HEAD
-		napi_complete(napi);
-=======
 		napi_complete_done(napi, received);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable interrupts */
 		tc_writel(tc_readl(&tr->DMA_Ctl) & ~DMA_IntMask, &tr->DMA_Ctl);
 	}
@@ -2061,13 +1759,9 @@ tc35815_txdone(struct net_device *dev)
 #endif
 		if (skb) {
 			dev->stats.tx_bytes += skb->len;
-<<<<<<< HEAD
-			pci_unmap_single(lp->pci_dev, lp->tx_skbs[lp->tfd_end].skb_dma, skb->len, PCI_DMA_TODEVICE);
-=======
 			dma_unmap_single(&lp->pci_dev->dev,
 					 lp->tx_skbs[lp->tfd_end].skb_dma,
 					 skb->len, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lp->tx_skbs[lp->tfd_end].skb = NULL;
 			lp->tx_skbs[lp->tfd_end].skb_dma = 0;
 			dev_kfree_skb_any(skb);
@@ -2133,13 +1827,8 @@ tc35815_close(struct net_device *dev)
 
 	netif_stop_queue(dev);
 	napi_disable(&lp->napi);
-<<<<<<< HEAD
-	if (lp->phy_dev)
-		phy_stop(lp->phy_dev);
-=======
 	if (dev->phydev)
 		phy_stop(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cancel_work_sync(&lp->restart_work);
 
 	/* Flush the Tx and disable Rx here. */
@@ -2167,12 +1856,8 @@ static struct net_device_stats *tc35815_get_stats(struct net_device *dev)
 	return &dev->stats;
 }
 
-<<<<<<< HEAD
-static void tc35815_set_cam_entry(struct net_device *dev, int index, unsigned char *addr)
-=======
 static void tc35815_set_cam_entry(struct net_device *dev, int index,
 				  const unsigned char *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
 	struct tc35815_regs __iomem *tr =
@@ -2227,12 +1912,8 @@ tc35815_set_multicast_list(struct net_device *dev)
 
 	if (dev->flags & IFF_PROMISC) {
 		/* With some (all?) 100MHalf HUB, controller will hang
-<<<<<<< HEAD
-		 * if we enabled promiscuous mode before linkup... */
-=======
 		 * if we enabled promiscuous mode before linkup...
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct tc35815_local *lp = netdev_priv(dev);
 
 		if (!lp->link)
@@ -2269,34 +1950,10 @@ tc35815_set_multicast_list(struct net_device *dev)
 static void tc35815_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct tc35815_local *lp = netdev_priv(dev);
-<<<<<<< HEAD
-	strcpy(info->driver, MODNAME);
-	strcpy(info->version, DRV_VERSION);
-	strcpy(info->bus_info, pci_name(lp->pci_dev));
-}
-
-static int tc35815_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct tc35815_local *lp = netdev_priv(dev);
-
-	if (!lp->phy_dev)
-		return -ENODEV;
-	return phy_ethtool_gset(lp->phy_dev, cmd);
-}
-
-static int tc35815_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	struct tc35815_local *lp = netdev_priv(dev);
-
-	if (!lp->phy_dev)
-		return -ENODEV;
-	return phy_ethtool_sset(lp->phy_dev, cmd);
-=======
 
 	strscpy(info->driver, MODNAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
 	strscpy(info->bus_info, pci_name(lp->pci_dev), sizeof(info->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 tc35815_get_msglevel(struct net_device *dev)
@@ -2348,37 +2005,16 @@ static void tc35815_get_strings(struct net_device *dev, u32 stringset, u8 *data)
 
 static const struct ethtool_ops tc35815_ethtool_ops = {
 	.get_drvinfo		= tc35815_get_drvinfo,
-<<<<<<< HEAD
-	.get_settings		= tc35815_get_settings,
-	.set_settings		= tc35815_set_settings,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link		= ethtool_op_get_link,
 	.get_msglevel		= tc35815_get_msglevel,
 	.set_msglevel		= tc35815_set_msglevel,
 	.get_strings		= tc35815_get_strings,
 	.get_sset_count		= tc35815_get_sset_count,
 	.get_ethtool_stats	= tc35815_get_ethtool_stats,
-<<<<<<< HEAD
-};
-
-static int tc35815_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-{
-	struct tc35815_local *lp = netdev_priv(dev);
-
-	if (!netif_running(dev))
-		return -EINVAL;
-	if (!lp->phy_dev)
-		return -ENODEV;
-	return phy_mii_ioctl(lp->phy_dev, rq, cmd);
-}
-
-=======
 	.get_link_ksettings = phy_ethtool_get_link_ksettings,
 	.set_link_ksettings = phy_ethtool_set_link_ksettings,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void tc35815_chip_reset(struct net_device *dev)
 {
 	struct tc35815_regs __iomem *tr =
@@ -2461,11 +2097,7 @@ static void tc35815_chip_init(struct net_device *dev)
 	if (lp->chiptype == TC35815_TX4939)
 		txctl &= ~Tx_EnLCarr;
 	/* WORKAROUND: ignore LostCrS in full duplex operation */
-<<<<<<< HEAD
-	if (!lp->phy_dev || !lp->link || lp->duplex == DUPLEX_FULL)
-=======
 	if (!dev->phydev || !lp->link || lp->duplex == DUPLEX_FULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		txctl &= ~Tx_EnLCarr;
 	tc_writel(txctl, &tr->Tx_Ctl);
 }
@@ -2481,13 +2113,8 @@ static int tc35815_suspend(struct pci_dev *pdev, pm_message_t state)
 	if (!netif_running(dev))
 		return 0;
 	netif_device_detach(dev);
-<<<<<<< HEAD
-	if (lp->phy_dev)
-		phy_stop(lp->phy_dev);
-=======
 	if (dev->phydev)
 		phy_stop(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&lp->lock, flags);
 	tc35815_chip_reset(dev);
 	spin_unlock_irqrestore(&lp->lock, flags);
@@ -2498,10 +2125,6 @@ static int tc35815_suspend(struct pci_dev *pdev, pm_message_t state)
 static int tc35815_resume(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
-<<<<<<< HEAD
-	struct tc35815_local *lp = netdev_priv(dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_restore_state(pdev);
 	if (!netif_running(dev))
@@ -2509,13 +2132,8 @@ static int tc35815_resume(struct pci_dev *pdev)
 	pci_set_power_state(pdev, PCI_D0);
 	tc35815_restart(dev);
 	netif_carrier_off(dev);
-<<<<<<< HEAD
-	if (lp->phy_dev)
-		phy_start(lp->phy_dev);
-=======
 	if (dev->phydev)
 		phy_start(dev->phydev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_device_attach(dev);
 	return 0;
 }
@@ -2525,11 +2143,7 @@ static struct pci_driver tc35815_pci_driver = {
 	.name		= MODNAME,
 	.id_table	= tc35815_pci_tbl,
 	.probe		= tc35815_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(tc35815_remove_one),
-=======
 	.remove		= tc35815_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= tc35815_suspend,
 	.resume		= tc35815_resume,
@@ -2541,22 +2155,6 @@ MODULE_PARM_DESC(speed, "0:auto, 10:10Mbps, 100:100Mbps");
 module_param_named(duplex, options.duplex, int, 0);
 MODULE_PARM_DESC(duplex, "0:auto, 1:half, 2:full");
 
-<<<<<<< HEAD
-static int __init tc35815_init_module(void)
-{
-	return pci_register_driver(&tc35815_pci_driver);
-}
-
-static void __exit tc35815_cleanup_module(void)
-{
-	pci_unregister_driver(&tc35815_pci_driver);
-}
-
-module_init(tc35815_init_module);
-module_exit(tc35815_cleanup_module);
-
-=======
 module_pci_driver(tc35815_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("TOSHIBA TC35815 PCI 10M/100M Ethernet driver");
 MODULE_LICENSE("GPL");

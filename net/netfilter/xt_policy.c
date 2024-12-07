@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/* IP tables module for matching IPsec policy
- *
- * Copyright (c) 2004,2005 Patrick McHardy, <kaber@trash.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* IP tables module for matching IPsec policy
  *
  * Copyright (c) 2004,2005 Patrick McHardy, <kaber@trash.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/kernel.h>
@@ -63,11 +53,7 @@ match_policy_in(const struct sk_buff *skb, const struct xt_policy_info *info,
 		unsigned short family)
 {
 	const struct xt_policy_elem *e;
-<<<<<<< HEAD
-	const struct sec_path *sp = skb->sp;
-=======
 	const struct sec_path *sp = skb_sec_path(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int strict = info->flags & XT_POLICY_MATCH_STRICT;
 	int i, pos;
 
@@ -104,12 +90,8 @@ match_policy_out(const struct sk_buff *skb, const struct xt_policy_info *info,
 	if (dst->xfrm == NULL)
 		return -1;
 
-<<<<<<< HEAD
-	for (i = 0; dst && dst->xfrm; dst = dst->child, i++) {
-=======
 	for (i = 0; dst && dst->xfrm;
 	     dst = ((struct xfrm_dst *)dst)->child, i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pos = strict ? i : 0;
 		if (pos >= info->len)
 			return 0;
@@ -132,15 +114,9 @@ policy_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	int ret;
 
 	if (info->flags & XT_POLICY_MATCH_IN)
-<<<<<<< HEAD
-		ret = match_policy_in(skb, info, par->family);
-	else
-		ret = match_policy_out(skb, info, par->family);
-=======
 		ret = match_policy_in(skb, info, xt_family(par));
 	else
 		ret = match_policy_out(skb, info, xt_family(par));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret < 0)
 		ret = info->flags & XT_POLICY_MATCH_NONE ? true : false;
@@ -153,28 +129,6 @@ policy_mt(const struct sk_buff *skb, struct xt_action_param *par)
 static int policy_mt_check(const struct xt_mtchk_param *par)
 {
 	const struct xt_policy_info *info = par->matchinfo;
-<<<<<<< HEAD
-
-	if (!(info->flags & (XT_POLICY_MATCH_IN|XT_POLICY_MATCH_OUT))) {
-		pr_info("neither incoming nor outgoing policy selected\n");
-		return -EINVAL;
-	}
-	if (par->hook_mask & ((1 << NF_INET_PRE_ROUTING) |
-	    (1 << NF_INET_LOCAL_IN)) && info->flags & XT_POLICY_MATCH_OUT) {
-		pr_info("output policy not valid in PREROUTING and INPUT\n");
-		return -EINVAL;
-	}
-	if (par->hook_mask & ((1 << NF_INET_POST_ROUTING) |
-	    (1 << NF_INET_LOCAL_OUT)) && info->flags & XT_POLICY_MATCH_IN) {
-		pr_info("input policy not valid in POSTROUTING and OUTPUT\n");
-		return -EINVAL;
-	}
-	if (info->len > XT_POLICY_MAX_ELEM) {
-		pr_info("too many policy elements\n");
-		return -EINVAL;
-	}
-	return 0;
-=======
 	const char *errmsg = "neither incoming nor outgoing policy selected";
 
 	if (!(info->flags & (XT_POLICY_MATCH_IN|XT_POLICY_MATCH_OUT)))
@@ -198,7 +152,6 @@ static int policy_mt_check(const struct xt_mtchk_param *par)
 err:
 	pr_info_ratelimited("%s\n", errmsg);
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_match policy_mt_reg[] __read_mostly = {

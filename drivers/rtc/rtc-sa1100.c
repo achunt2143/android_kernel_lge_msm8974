@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Real Time Clock interface for StrongARM SA1x00 and XScale PXA2xx
  *
@@ -18,14 +15,6 @@
  *
  * Converted to the RTC subsystem and Driver Model
  *   by Richard Purdie <rpurdie@rpsys.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/platform_device.h>
@@ -42,36 +31,17 @@
 #include <linux/bitops.h>
 #include <linux/io.h>
 
-<<<<<<< HEAD
-#include <mach/hardware.h>
-#include <mach/irqs.h>
-
-#if defined(CONFIG_ARCH_PXA) || defined(CONFIG_ARCH_MMP)
-#include <mach/regs-rtc.h>
-#endif
-=======
 #define RTSR_HZE		BIT(3)	/* HZ interrupt enable */
 #define RTSR_ALE		BIT(2)	/* RTC alarm interrupt enable */
 #define RTSR_HZ			BIT(1)	/* HZ rising-edge detected */
 #define RTSR_AL			BIT(0)	/* RTC alarm detected */
 
 #include "rtc-sa1100.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RTC_DEF_DIVIDER		(32768 - 1)
 #define RTC_DEF_TRIM		0
 #define RTC_FREQ		1024
 
-<<<<<<< HEAD
-struct sa1100_rtc {
-	spinlock_t		lock;
-	int			irq_1hz;
-	int			irq_alarm;
-	struct rtc_device	*rtc;
-	struct clk		*clk;
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
 {
@@ -82,26 +52,16 @@ static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
 
 	spin_lock(&info->lock);
 
-<<<<<<< HEAD
-	rtsr = RTSR;
-	/* clear interrupt sources */
-	RTSR = 0;
-=======
 	rtsr = readl_relaxed(info->rtsr);
 	/* clear interrupt sources */
 	writel_relaxed(0, info->rtsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fix for a nasty initialization problem the in SA11xx RTSR register.
 	 * See also the comments in sa1100_rtc_probe(). */
 	if (rtsr & (RTSR_ALE | RTSR_HZE)) {
 		/* This is the original code, before there was the if test
 		 * above. This code does not clear interrupts that were not
 		 * enabled. */
-<<<<<<< HEAD
-		RTSR = (RTSR_AL | RTSR_HZ) & (rtsr >> 2);
-=======
 		writel_relaxed((RTSR_AL | RTSR_HZ) & (rtsr >> 2), info->rtsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* For some reason, it is possible to enter this routine
 		 * without interruptions enabled, it has been tested with
@@ -110,21 +70,13 @@ static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
 		 * This situation leads to an infinite "loop" of interrupt
 		 * routine calling and as a result the processor seems to
 		 * lock on its first call to open(). */
-<<<<<<< HEAD
-		RTSR = RTSR_AL | RTSR_HZ;
-=======
 		writel_relaxed(RTSR_AL | RTSR_HZ, info->rtsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* clear alarm interrupt if it has occurred */
 	if (rtsr & RTSR_AL)
 		rtsr &= ~RTSR_ALE;
-<<<<<<< HEAD
-	RTSR = rtsr & (RTSR_ALE | RTSR_HZE);
-=======
 	writel_relaxed(rtsr & (RTSR_ALE | RTSR_HZE), info->rtsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update irq data & counter */
 	if (rtsr & RTSR_AL)
@@ -139,62 +91,6 @@ static irqreturn_t sa1100_rtc_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int sa1100_rtc_open(struct device *dev)
-{
-	struct sa1100_rtc *info = dev_get_drvdata(dev);
-	struct rtc_device *rtc = info->rtc;
-	int ret;
-
-	ret = clk_prepare_enable(info->clk);
-	if (ret)
-		goto fail_clk;
-	ret = request_irq(info->irq_1hz, sa1100_rtc_interrupt, 0, "rtc 1Hz", dev);
-	if (ret) {
-		dev_err(dev, "IRQ %d already in use.\n", info->irq_1hz);
-		goto fail_ui;
-	}
-	ret = request_irq(info->irq_alarm, sa1100_rtc_interrupt, 0, "rtc Alrm", dev);
-	if (ret) {
-		dev_err(dev, "IRQ %d already in use.\n", info->irq_alarm);
-		goto fail_ai;
-	}
-	rtc->max_user_freq = RTC_FREQ;
-	rtc_irq_set_freq(rtc, NULL, RTC_FREQ);
-
-	return 0;
-
- fail_ai:
-	free_irq(info->irq_1hz, dev);
- fail_ui:
-	clk_disable_unprepare(info->clk);
- fail_clk:
-	return ret;
-}
-
-static void sa1100_rtc_release(struct device *dev)
-{
-	struct sa1100_rtc *info = dev_get_drvdata(dev);
-
-	spin_lock_irq(&info->lock);
-	RTSR = 0;
-	spin_unlock_irq(&info->lock);
-
-	free_irq(info->irq_alarm, dev);
-	free_irq(info->irq_1hz, dev);
-	clk_disable_unprepare(info->clk);
-}
-
-static int sa1100_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
-{
-	struct sa1100_rtc *info = dev_get_drvdata(dev);
-
-	spin_lock_irq(&info->lock);
-	if (enabled)
-		RTSR |= RTSR_ALE;
-	else
-		RTSR &= ~RTSR_ALE;
-=======
 static int sa1100_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 {
 	u32 rtsr;
@@ -207,53 +103,33 @@ static int sa1100_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	else
 		rtsr &= ~RTSR_ALE;
 	writel_relaxed(rtsr, info->rtsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&info->lock);
 	return 0;
 }
 
 static int sa1100_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
-<<<<<<< HEAD
-	rtc_time_to_tm(RCNR, tm);
-=======
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
 
 	rtc_time64_to_tm(readl_relaxed(info->rcnr), tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int sa1100_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
-<<<<<<< HEAD
-	unsigned long time;
-	int ret;
-
-	ret = rtc_tm_to_time(tm, &time);
-	if (ret == 0)
-		RCNR = time;
-	return ret;
-=======
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
 
 	writel_relaxed(rtc_tm_to_time64(tm), info->rcnr);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sa1100_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	u32	rtsr;
-<<<<<<< HEAD
-
-	rtsr = RTSR;
-=======
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
 
 	rtsr = readl_relaxed(info->rtsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	alrm->enabled = (rtsr & RTSR_ALE) ? 1 : 0;
 	alrm->pending = (rtsr & RTSR_AL) ? 1 : 0;
 	return 0;
@@ -262,25 +138,6 @@ static int sa1100_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 static int sa1100_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	unsigned long time;
-	int ret;
-
-	spin_lock_irq(&info->lock);
-	ret = rtc_tm_to_time(&alrm->time, &time);
-	if (ret != 0)
-		goto out;
-	RTSR = RTSR & (RTSR_HZE|RTSR_ALE|RTSR_AL);
-	RTAR = time;
-	if (alrm->enabled)
-		RTSR |= RTSR_ALE;
-	else
-		RTSR &= ~RTSR_ALE;
-out:
-	spin_unlock_irq(&info->lock);
-
-	return ret;
-=======
 
 	spin_lock_irq(&info->lock);
 	writel_relaxed(readl_relaxed(info->rtsr) &
@@ -293,30 +150,19 @@ out:
 	spin_unlock_irq(&info->lock);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sa1100_rtc_proc(struct device *dev, struct seq_file *seq)
 {
-<<<<<<< HEAD
-	seq_printf(seq, "trim/divider\t\t: 0x%08x\n", (u32) RTTR);
-	seq_printf(seq, "RTSR\t\t\t: 0x%08x\n", (u32)RTSR);
-=======
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
 
 	seq_printf(seq, "trim/divider\t\t: 0x%08x\n", readl_relaxed(info->rttr));
 	seq_printf(seq, "RTSR\t\t\t: 0x%08x\n", readl_relaxed(info->rtsr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static const struct rtc_class_ops sa1100_rtc_ops = {
-<<<<<<< HEAD
-	.open = sa1100_rtc_open,
-	.release = sa1100_rtc_release,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_time = sa1100_rtc_read_time,
 	.set_time = sa1100_rtc_set_time,
 	.read_alarm = sa1100_rtc_read_alarm,
@@ -325,33 +171,6 @@ static const struct rtc_class_ops sa1100_rtc_ops = {
 	.alarm_irq_enable = sa1100_rtc_alarm_irq_enable,
 };
 
-<<<<<<< HEAD
-static int sa1100_rtc_probe(struct platform_device *pdev)
-{
-	struct rtc_device *rtc;
-	struct sa1100_rtc *info;
-	int irq_1hz, irq_alarm, ret = 0;
-
-	irq_1hz = platform_get_irq_byname(pdev, "rtc 1Hz");
-	irq_alarm = platform_get_irq_byname(pdev, "rtc alarm");
-	if (irq_1hz < 0 || irq_alarm < 0)
-		return -ENODEV;
-
-	info = kzalloc(sizeof(struct sa1100_rtc), GFP_KERNEL);
-	if (!info)
-		return -ENOMEM;
-	info->clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(info->clk)) {
-		dev_err(&pdev->dev, "failed to find rtc clock source\n");
-		ret = PTR_ERR(info->clk);
-		goto err_clk;
-	}
-	info->irq_1hz = irq_1hz;
-	info->irq_alarm = irq_alarm;
-	spin_lock_init(&info->lock);
-	platform_set_drvdata(pdev, info);
-
-=======
 int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info)
 {
 	int ret;
@@ -367,7 +186,6 @@ int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info)
 	ret = clk_prepare_enable(info->clk);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * According to the manual we should be able to let RTTR be zero
 	 * and then a default diviser for a 32.768KHz clock is used.
@@ -375,26 +193,6 @@ int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info)
 	 * If the clock divider is uninitialized then reset it to the
 	 * default value to get the 1Hz clock.
 	 */
-<<<<<<< HEAD
-	if (RTTR == 0) {
-		RTTR = RTC_DEF_DIVIDER + (RTC_DEF_TRIM << 16);
-		dev_warn(&pdev->dev, "warning: "
-			"initializing default clock divider/trim value\n");
-		/* The current RTC value probably doesn't make sense either */
-		RCNR = 0;
-	}
-
-	device_init_wakeup(&pdev->dev, 1);
-
-	rtc = rtc_device_register(pdev->name, &pdev->dev, &sa1100_rtc_ops,
-		THIS_MODULE);
-
-	if (IS_ERR(rtc)) {
-		ret = PTR_ERR(rtc);
-		goto err_dev;
-	}
-	info->rtc = rtc;
-=======
 	if (readl_relaxed(info->rttr) == 0) {
 		writel_relaxed(RTC_DEF_DIVIDER + (RTC_DEF_TRIM << 16), info->rttr);
 		dev_warn(&pdev->dev, "warning: "
@@ -412,7 +210,6 @@ int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info)
 		clk_disable_unprepare(info->clk);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fix for a nasty initialization problem the in SA11xx RTSR register.
 	 * See also the comments in sa1100_rtc_interrupt().
@@ -436,20 +233,6 @@ int sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info)
 	 *
 	 * Notice that clearing bit 1 and 0 is accomplished by writting ONES to
 	 * the corresponding bits in RTSR. */
-<<<<<<< HEAD
-	RTSR = RTSR_AL | RTSR_HZ;
-
-	return 0;
-err_dev:
-	platform_set_drvdata(pdev, NULL);
-	clk_put(info->clk);
-err_clk:
-	kfree(info);
-	return ret;
-}
-
-static int sa1100_rtc_remove(struct platform_device *pdev)
-=======
 	writel_relaxed(RTSR_AL | RTSR_HZ, info->rtsr);
 
 	return 0;
@@ -515,23 +298,10 @@ static int sa1100_rtc_probe(struct platform_device *pdev)
 }
 
 static void sa1100_rtc_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa1100_rtc *info = platform_get_drvdata(pdev);
 
 	if (info) {
-<<<<<<< HEAD
-		rtc_device_unregister(info->rtc);
-		clk_put(info->clk);
-		platform_set_drvdata(pdev, NULL);
-		kfree(info);
-	}
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-=======
 		spin_lock_irq(&info->lock);
 		writel_relaxed(0, info->rtsr);
 		spin_unlock_irq(&info->lock);
@@ -540,7 +310,6 @@ static void sa1100_rtc_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sa1100_rtc_suspend(struct device *dev)
 {
 	struct sa1100_rtc *info = dev_get_drvdata(dev);
@@ -556,16 +325,6 @@ static int sa1100_rtc_resume(struct device *dev)
 		disable_irq_wake(info->irq_alarm);
 	return 0;
 }
-<<<<<<< HEAD
-
-static const struct dev_pm_ops sa1100_rtc_pm_ops = {
-	.suspend	= sa1100_rtc_suspend,
-	.resume		= sa1100_rtc_resume,
-};
-#endif
-
-static struct of_device_id sa1100_rtc_dt_ids[] = {
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(sa1100_rtc_pm_ops, sa1100_rtc_suspend,
@@ -573,24 +332,11 @@ static SIMPLE_DEV_PM_OPS(sa1100_rtc_pm_ops, sa1100_rtc_suspend,
 
 #ifdef CONFIG_OF
 static const struct of_device_id sa1100_rtc_dt_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "mrvl,sa1100-rtc", },
 	{ .compatible = "mrvl,mmp-rtc", },
 	{}
 };
 MODULE_DEVICE_TABLE(of, sa1100_rtc_dt_ids);
-<<<<<<< HEAD
-
-static struct platform_driver sa1100_rtc_driver = {
-	.probe		= sa1100_rtc_probe,
-	.remove		= sa1100_rtc_remove,
-	.driver		= {
-		.name	= "sa1100-rtc",
-#ifdef CONFIG_PM
-		.pm	= &sa1100_rtc_pm_ops,
-#endif
-		.of_match_table = sa1100_rtc_dt_ids,
-=======
 #endif
 
 static struct platform_driver sa1100_rtc_driver = {
@@ -600,7 +346,6 @@ static struct platform_driver sa1100_rtc_driver = {
 		.name	= "sa1100-rtc",
 		.pm	= &sa1100_rtc_pm_ops,
 		.of_match_table = of_match_ptr(sa1100_rtc_dt_ids),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

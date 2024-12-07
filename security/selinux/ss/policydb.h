@@ -1,34 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A policy database (policydb) specifies the
  * configuration data for the security policy.
  *
-<<<<<<< HEAD
- * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
-=======
  * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * Updated: Trusted Computer Solutions, Inc. <dgoeddel@trustedcs.com>
-<<<<<<< HEAD
- *
- *	Support for enhanced MLS infrastructure.
- *
- * Updated: Frank Mayer <mayerf@tresys.com> and Karl MacMillan <kmacmillan@tresys.com>
- *
- *	Added conditional policy language extensions
- *
- * Copyright (C) 2004-2005 Trusted Computer Solutions, Inc.
- * Copyright (C) 2003 - 2004 Tresys Technology, LLC
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation, version 2.
-=======
  *          Support for enhanced MLS infrastructure.
  *          Copyright (C) 2004-2005 Trusted Computer Solutions, Inc.
  *
@@ -36,17 +15,11 @@
  *          Karl MacMillan <kmacmillan@tresys.com>
  *          Added conditional policy language extensions
  *          Copyright (C) 2003-2004 Tresys Technology, LLC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SS_POLICYDB_H_
 #define _SS_POLICYDB_H_
 
-<<<<<<< HEAD
-#include <linux/flex_array.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "symtab.h"
 #include "avtab.h"
 #include "sidtab.h"
@@ -64,37 +37,17 @@
 
 /* Permission attributes */
 struct perm_datum {
-<<<<<<< HEAD
-	u32 value;		/* permission bit + 1 */
-=======
 	u32 value; /* permission bit + 1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Attributes of a common prefix for access vectors */
 struct common_datum {
-<<<<<<< HEAD
-	u32 value;			/* internal common value */
-	struct symtab permissions;	/* common permissions */
-=======
 	u32 value; /* internal common value */
 	struct symtab permissions; /* common permissions */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Class attributes */
 struct class_datum {
-<<<<<<< HEAD
-	u32 value;			/* class value */
-	char *comkey;			/* common name */
-	struct common_datum *comdatum;	/* common datum */
-	struct symtab permissions;	/* class-specific permission symbol table */
-	struct constraint_node *constraints;	/* constraints on class permissions */
-	struct constraint_node *validatetrans;	/* special transition rules */
-/* Options how a new object user, role, and type should be decided */
-#define DEFAULT_SOURCE         1
-#define DEFAULT_TARGET         2
-=======
 	u32 value; /* class value */
 	char *comkey; /* common name */
 	struct common_datum *comdatum; /* common datum */
@@ -104,19 +57,10 @@ struct class_datum {
 /* Options how a new object user, role, and type should be decided */
 #define DEFAULT_SOURCE 1
 #define DEFAULT_TARGET 2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char default_user;
 	char default_role;
 	char default_type;
 /* Options how a new object range should be decided */
-<<<<<<< HEAD
-#define DEFAULT_SOURCE_LOW     1
-#define DEFAULT_SOURCE_HIGH    2
-#define DEFAULT_SOURCE_LOW_HIGH        3
-#define DEFAULT_TARGET_LOW     4
-#define DEFAULT_TARGET_HIGH    5
-#define DEFAULT_TARGET_LOW_HIGH        6
-=======
 #define DEFAULT_SOURCE_LOW	1
 #define DEFAULT_SOURCE_HIGH	2
 #define DEFAULT_SOURCE_LOW_HIGH 3
@@ -124,42 +68,11 @@ struct class_datum {
 #define DEFAULT_TARGET_HIGH	5
 #define DEFAULT_TARGET_LOW_HIGH 6
 #define DEFAULT_GLBLUB		7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char default_range;
 };
 
 /* Role attributes */
 struct role_datum {
-<<<<<<< HEAD
-	u32 value;			/* internal role value */
-	u32 bounds;			/* boundary of role */
-	struct ebitmap dominates;	/* set of roles dominated by this role */
-	struct ebitmap types;		/* set of authorized types for role */
-};
-
-struct role_trans {
-	u32 role;		/* current role */
-	u32 type;		/* program executable type, or new object type */
-	u32 tclass;		/* process class, or new object class */
-	u32 new_role;		/* new role */
-	struct role_trans *next;
-};
-
-struct filename_trans {
-	u32 stype;		/* current process */
-	u32 ttype;		/* parent dir context */
-	u16 tclass;		/* class of new object */
-	const char *name;	/* last path component */
-};
-
-struct filename_trans_datum {
-	u32 otype;		/* expected of new object */
-};
-
-struct role_allow {
-	u32 role;		/* current role */
-	u32 new_role;		/* new role */
-=======
 	u32 value; /* internal role value */
 	u32 bounds; /* boundary of role */
 	struct ebitmap dominates; /* set of roles dominated by this role */
@@ -191,41 +104,19 @@ struct filename_trans_datum {
 struct role_allow {
 	u32 role; /* current role */
 	u32 new_role; /* new role */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct role_allow *next;
 };
 
 /* Type attributes */
 struct type_datum {
-<<<<<<< HEAD
-	u32 value;		/* internal type value */
-	u32 bounds;		/* boundary of type */
-	unsigned char primary;	/* primary name? */
-	unsigned char attribute;/* attribute ?*/
-=======
 	u32 value; /* internal type value */
 	u32 bounds; /* boundary of type */
 	unsigned char primary; /* primary name? */
 	unsigned char attribute; /* attribute ?*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* User attributes */
 struct user_datum {
-<<<<<<< HEAD
-	u32 value;			/* internal user value */
-	u32 bounds;			/* bounds of user */
-	struct ebitmap roles;		/* set of authorized roles for user */
-	struct mls_range range;		/* MLS range (min - max) for user */
-	struct mls_level dfltlevel;	/* default login MLS level for user */
-};
-
-
-/* Sensitivity attributes */
-struct level_datum {
-	struct mls_level *level;	/* sensitivity and associated categories */
-	unsigned char isalias;	/* is this sensitivity an alias for another? */
-=======
 	u32 value; /* internal user value */
 	u32 bounds; /* bounds of user */
 	struct ebitmap roles; /* set of authorized roles for user */
@@ -237,18 +128,12 @@ struct level_datum {
 struct level_datum {
 	struct mls_level *level; /* sensitivity and associated categories */
 	unsigned char isalias; /* is this sensitivity an alias for another? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Category attributes */
 struct cat_datum {
-<<<<<<< HEAD
-	u32 value;		/* internal category bit + 1 */
-	unsigned char isalias;  /* is this category an alias for another? */
-=======
 	u32 value; /* internal category bit + 1 */
 	unsigned char isalias; /* is this category an alias for another? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct range_trans {
@@ -259,11 +144,7 @@ struct range_trans {
 
 /* Boolean data type */
 struct cond_bool_datum {
-<<<<<<< HEAD
-	__u32 value;		/* internal type value */
-=======
 	__u32 value; /* internal type value */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int state;
 };
 
@@ -289,33 +170,11 @@ struct type_set {
  */
 struct ocontext {
 	union {
-<<<<<<< HEAD
-		char *name;	/* name of initial SID, fs, netif, fstype, path */
-=======
 		char *name; /* name of initial SID, fs, netif, fstype, path */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			u8 protocol;
 			u16 low_port;
 			u16 high_port;
-<<<<<<< HEAD
-		} port;		/* TCP or UDP port information */
-		struct {
-			u32 addr;
-			u32 mask;
-		} node;		/* node information */
-		struct {
-			u32 addr[4];
-			u32 mask[4];
-		} node6;        /* IPv6 node information */
-	} u;
-	union {
-		u32 sclass;  /* security class for genfs */
-		u32 behavior;  /* labeling behavior for fs_use */
-	} v;
-	struct context context[2];	/* security context(s) */
-	u32 sid[2];	/* SID(s) */
-=======
 		} port; /* TCP or UDP port information */
 		struct {
 			u32 addr;
@@ -341,7 +200,6 @@ struct ocontext {
 	} v;
 	struct context context[2]; /* security context(s) */
 	u32 sid[2]; /* SID(s) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocontext *next;
 };
 
@@ -360,19 +218,6 @@ struct genfs {
 #define SYM_BOOLS   5
 #define SYM_LEVELS  6
 #define SYM_CATS    7
-<<<<<<< HEAD
-#define SYM_NUM     8
-
-/* object context array indices */
-#define OCON_ISID  0	/* initial SIDs */
-#define OCON_FS    1	/* unlabeled file systems */
-#define OCON_PORT  2	/* TCP and UDP port numbers */
-#define OCON_NETIF 3	/* network interfaces */
-#define OCON_NODE  4	/* nodes */
-#define OCON_FSUSE 5	/* fs_use */
-#define OCON_NODE6 6	/* IPv6 nodes */
-#define OCON_NUM   7
-=======
 #define SYM_NUM	    8
 
 /* object context array indices */
@@ -386,7 +231,6 @@ struct genfs {
 #define OCON_IBPKEY    7 /* Infiniband PKeys */
 #define OCON_IBENDPORT 8 /* Infiniband end ports */
 #define OCON_NUM       9
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The policy database */
 struct policydb {
@@ -396,17 +240,6 @@ struct policydb {
 	struct symtab symtab[SYM_NUM];
 #define p_commons symtab[SYM_COMMONS]
 #define p_classes symtab[SYM_CLASSES]
-<<<<<<< HEAD
-#define p_roles symtab[SYM_ROLES]
-#define p_types symtab[SYM_TYPES]
-#define p_users symtab[SYM_USERS]
-#define p_bools symtab[SYM_BOOLS]
-#define p_levels symtab[SYM_LEVELS]
-#define p_cats symtab[SYM_CATS]
-
-	/* symbol names indexed by (value - 1) */
-	struct flex_array *sym_val_to_name[SYM_NUM];
-=======
 #define p_roles	  symtab[SYM_ROLES]
 #define p_types	  symtab[SYM_TYPES]
 #define p_users	  symtab[SYM_USERS]
@@ -416,52 +249,34 @@ struct policydb {
 
 	/* symbol names indexed by (value - 1) */
 	char **sym_val_to_name[SYM_NUM];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* class, role, and user attributes indexed by (value - 1) */
 	struct class_datum **class_val_to_struct;
 	struct role_datum **role_val_to_struct;
 	struct user_datum **user_val_to_struct;
-<<<<<<< HEAD
-	struct flex_array *type_val_to_struct_array;
-=======
 	struct type_datum **type_val_to_struct;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* type enforcement access vectors and transitions */
 	struct avtab te_avtab;
 
 	/* role transitions */
-<<<<<<< HEAD
-	struct role_trans *role_tr;
-=======
 	struct hashtab role_tr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* file transitions with the last path component */
 	/* quickly exclude lookups when parent ttype has no rules */
 	struct ebitmap filename_trans_ttypes;
 	/* actual set of filename_trans rules */
-<<<<<<< HEAD
-	struct hashtab *filename_trans;
-=======
 	struct hashtab filename_trans;
 	/* only used if policyvers < POLICYDB_VERSION_COMP_FTRANS */
 	u32 compat_filename_trans_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* bools indexed by (value - 1) */
 	struct cond_bool_datum **bool_val_to_struct;
 	/* type enforcement conditional access vectors and transitions */
 	struct avtab te_cond_avtab;
-<<<<<<< HEAD
-	/* linked list indexing te_cond_avtab by conditional */
-	struct cond_node *cond_list;
-=======
 	/* array indexing te_cond_avtab by conditional */
 	struct cond_node *cond_list;
 	u32 cond_list_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* role allows */
 	struct role_allow *role_allow;
@@ -476,17 +291,10 @@ struct policydb {
 	struct genfs *genfs;
 
 	/* range transitions table (range_trans_key -> mls_range) */
-<<<<<<< HEAD
-	struct hashtab *range_tr;
-
-	/* type -> attribute reverse mapping */
-	struct flex_array *type_attr_map_array;
-=======
 	struct hashtab range_tr;
 
 	/* type -> attribute reverse mapping */
 	struct ebitmap *type_attr_map_array;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ebitmap policycaps;
 
@@ -502,11 +310,7 @@ struct policydb {
 
 	u16 process_class;
 	u32 process_trans_perms;
-<<<<<<< HEAD
-};
-=======
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void policydb_destroy(struct policydb *p);
 extern int policydb_load_isids(struct policydb *p, struct sidtab *s);
@@ -517,20 +321,6 @@ extern int policydb_role_isvalid(struct policydb *p, unsigned int role);
 extern int policydb_read(struct policydb *p, void *fp);
 extern int policydb_write(struct policydb *p, void *fp);
 
-<<<<<<< HEAD
-#define PERM_SYMTAB_SIZE 32
-
-#define POLICYDB_CONFIG_MLS    1
-
-/* the config flags related to unknown classes/perms are bits 2 and 3 */
-#define REJECT_UNKNOWN	0x00000002
-#define ALLOW_UNKNOWN	0x00000004
-
-#define OBJECT_R "object_r"
-#define OBJECT_R_VAL 1
-
-#define POLICYDB_MAGIC SELINUX_MAGIC
-=======
 extern struct filename_trans_datum *
 policydb_filenametr_search(struct policydb *p, struct filename_trans_key *key);
 
@@ -550,7 +340,6 @@ policydb_roletr_search(struct policydb *p, struct role_trans_key *key);
 #define OBJECT_R_VAL 1
 
 #define POLICYDB_MAGIC	SELINUX_MAGIC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define POLICYDB_STRING "SE Linux"
 
 struct policy_file {
@@ -574,12 +363,6 @@ static inline int next_entry(void *buf, struct policy_file *fp, size_t bytes)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int put_entry(const void *buf, size_t bytes, int num, struct policy_file *fp)
-{
-	size_t len = bytes * num;
-
-=======
 static inline int put_entry(const void *buf, size_t bytes, size_t num,
 			    struct policy_file *fp)
 {
@@ -590,7 +373,6 @@ static inline int put_entry(const void *buf, size_t bytes, size_t num,
 
 	if (len > fp->len)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(fp->data, buf, len);
 	fp->data += len;
 	fp->len -= len;
@@ -598,26 +380,13 @@ static inline int put_entry(const void *buf, size_t bytes, size_t num,
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline char *sym_name(struct policydb *p, unsigned int sym_num, unsigned int element_nr)
-{
-	struct flex_array *fa = p->sym_val_to_name[sym_num];
-
-	return flex_array_get_ptr(fa, element_nr);
-=======
 static inline char *sym_name(struct policydb *p, unsigned int sym_num,
 			     unsigned int element_nr)
 {
 	return p->sym_val_to_name[sym_num][element_nr];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern u16 string_to_security_class(struct policydb *p, const char *name);
 extern u32 string_to_av_perm(struct policydb *p, u16 tclass, const char *name);
 
-<<<<<<< HEAD
-#endif	/* _SS_POLICYDB_H_ */
-
-=======
 #endif /* _SS_POLICYDB_H_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,63 +1,9 @@
-<<<<<<< HEAD
-#ifndef __ALPHA_PAL_H
-#define __ALPHA_PAL_H
-
-/*
- * Common PAL-code
- */
-#define PAL_halt	  0
-#define PAL_cflush	  1
-#define PAL_draina	  2
-#define PAL_bpt		128
-#define PAL_bugchk	129
-#define PAL_chmk	131
-#define PAL_callsys	131
-#define PAL_imb		134
-#define PAL_rduniq	158
-#define PAL_wruniq	159
-#define PAL_gentrap	170
-#define PAL_nphalt	190
-
-/*
- * VMS specific PAL-code
- */
-#define PAL_swppal	10
-#define PAL_mfpr_vptb	41
-
-/*
- * OSF specific PAL-code
- */
-#define PAL_cserve	 9
-#define PAL_wripir	13
-#define PAL_rdmces	16
-#define PAL_wrmces	17
-#define PAL_wrfen	43
-#define PAL_wrvptptr	45
-#define PAL_jtopal	46
-#define PAL_swpctx	48
-#define PAL_wrval	49
-#define PAL_rdval	50
-#define PAL_tbi		51
-#define PAL_wrent	52
-#define PAL_swpipl	53
-#define PAL_rdps	54
-#define PAL_wrkgp	55
-#define PAL_wrusp	56
-#define PAL_wrperfmon	57
-#define PAL_rdusp	58
-#define PAL_whami	60
-#define PAL_retsys	61
-#define PAL_rti		63
-
-#ifdef __KERNEL__
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ALPHA_PAL_H
 #define __ALPHA_PAL_H
 
 #include <uapi/asm/pal.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 
 extern void halt(void) __attribute__((noreturn));
@@ -144,10 +90,7 @@ __CALL_PAL_W1(wrmces, unsigned long);
 __CALL_PAL_RW2(wrperfmon, unsigned long, unsigned long, unsigned long);
 __CALL_PAL_W1(wrusp, unsigned long);
 __CALL_PAL_W1(wrvptptr, unsigned long);
-<<<<<<< HEAD
-=======
 __CALL_PAL_RW1(wtint, unsigned long, unsigned long);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * TB routines..
@@ -170,11 +113,6 @@ __CALL_PAL_RW1(wtint, unsigned long, unsigned long);
 #define tbiap()		__tbi(-1, /* no second argument */)
 #define tbia()		__tbi(-2, /* no second argument */)
 
-<<<<<<< HEAD
-#endif /* !__ASSEMBLY__ */
-#endif /* __KERNEL__ */
-
-=======
 /*
  * QEMU Cserv routines..
  */
@@ -246,5 +184,4 @@ qemu_get_vmtime(void)
 }
 
 #endif /* !__ASSEMBLY__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ALPHA_PAL_H */

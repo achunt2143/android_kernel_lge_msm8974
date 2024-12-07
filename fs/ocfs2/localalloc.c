@@ -1,34 +1,10 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * localalloc.c
  *
  * Node local data allocation
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -353,38 +329,25 @@ int ocfs2_load_local_alloc(struct ocfs2_super *osb)
 	if (num_used
 	    || alloc->id1.bitmap1.i_used
 	    || alloc->id1.bitmap1.i_total
-<<<<<<< HEAD
-	    || la->la_bm_off)
-		mlog(ML_ERROR, "Local alloc hasn't been recovered!\n"
-=======
 	    || la->la_bm_off) {
 		mlog(ML_ERROR, "inconsistent detected, clean journal with"
 		     " unrecovered local alloc, please run fsck.ocfs2!\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     "found = %u, set = %u, taken = %u, off = %u\n",
 		     num_used, le32_to_cpu(alloc->id1.bitmap1.i_used),
 		     le32_to_cpu(alloc->id1.bitmap1.i_total),
 		     OCFS2_LOCAL_ALLOC(alloc)->la_bm_off);
 
-<<<<<<< HEAD
-=======
 		status = -EINVAL;
 		goto bail;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	osb->local_alloc_bh = alloc_bh;
 	osb->local_alloc_state = OCFS2_LA_ENABLED;
 
 bail:
 	if (status < 0)
 		brelse(alloc_bh);
-<<<<<<< HEAD
-	if (inode)
-		iput(inode);
-=======
 	iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_load_local_alloc(osb->local_alloc_bits);
 
@@ -412,12 +375,8 @@ void ocfs2_shutdown_local_alloc(struct ocfs2_super *osb)
 	struct ocfs2_dinode *alloc = NULL;
 
 	cancel_delayed_work(&osb->la_enable_wq);
-<<<<<<< HEAD
-	flush_workqueue(ocfs2_wq);
-=======
 	if (osb->ocfs2_wq)
 		flush_workqueue(osb->ocfs2_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (osb->local_alloc_state == OCFS2_LA_UNUSED)
 		goto out;
@@ -445,11 +404,7 @@ void ocfs2_shutdown_local_alloc(struct ocfs2_super *osb)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&main_bm_inode->i_mutex);
-=======
 	inode_lock(main_bm_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_inode_lock(main_bm_inode, &main_bm_bh, 1);
 	if (status < 0) {
@@ -468,19 +423,11 @@ void ocfs2_shutdown_local_alloc(struct ocfs2_super *osb)
 	bh = osb->local_alloc_bh;
 	alloc = (struct ocfs2_dinode *) bh->b_data;
 
-<<<<<<< HEAD
-	alloc_copy = kmalloc(bh->b_size, GFP_NOFS);
-=======
 	alloc_copy = kmemdup(alloc, bh->b_size, GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!alloc_copy) {
 		status = -ENOMEM;
 		goto out_commit;
 	}
-<<<<<<< HEAD
-	memcpy(alloc_copy, alloc, bh->b_size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_journal_access_di(handle, INODE_CACHE(local_alloc_inode),
 					 bh, OCFS2_JOURNAL_ACCESS_WRITE);
@@ -510,17 +457,6 @@ out_unlock:
 	ocfs2_inode_unlock(main_bm_inode, 1);
 
 out_mutex:
-<<<<<<< HEAD
-	mutex_unlock(&main_bm_inode->i_mutex);
-	iput(main_bm_inode);
-
-out:
-	if (local_alloc_inode)
-		iput(local_alloc_inode);
-
-	if (alloc_copy)
-		kfree(alloc_copy);
-=======
 	inode_unlock(main_bm_inode);
 	iput(main_bm_inode);
 
@@ -528,7 +464,6 @@ out:
 	iput(local_alloc_inode);
 
 	kfree(alloc_copy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -560,11 +495,7 @@ int ocfs2_begin_local_alloc_recovery(struct ocfs2_super *osb,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-=======
 	inode_lock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_read_inode_block_full(inode, &alloc_bh,
 					     OCFS2_BH_IGNORE_CACHE);
@@ -589,11 +520,7 @@ int ocfs2_begin_local_alloc_recovery(struct ocfs2_super *osb,
 		mlog_errno(status);
 
 bail:
-<<<<<<< HEAD
-	if ((status < 0) && (*alloc_copy)) {
-=======
 	if (status < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(*alloc_copy);
 		*alloc_copy = NULL;
 	}
@@ -601,11 +528,7 @@ bail:
 	brelse(alloc_bh);
 
 	if (inode) {
-<<<<<<< HEAD
-		mutex_unlock(&inode->i_mutex);
-=======
 		inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(inode);
 	}
 
@@ -637,11 +560,7 @@ int ocfs2_complete_local_alloc_recovery(struct ocfs2_super *osb,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&main_bm_inode->i_mutex);
-=======
 	inode_lock(main_bm_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_inode_lock(main_bm_inode, &main_bm_bh, 1);
 	if (status < 0) {
@@ -671,11 +590,7 @@ out_unlock:
 	ocfs2_inode_unlock(main_bm_inode, 1);
 
 out_mutex:
-<<<<<<< HEAD
-	mutex_unlock(&main_bm_inode->i_mutex);
-=======
 	inode_unlock(main_bm_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brelse(main_bm_bh);
 
@@ -691,11 +606,7 @@ out:
 
 /*
  * make sure we've got at least bits_wanted contiguous bits in the
-<<<<<<< HEAD
- * local alloc. You lose them when you drop i_mutex.
-=======
  * local alloc. You lose them when you drop i_rwsem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * We will add ourselves to the transaction passed in, but may start
  * our own in order to shift windows.
@@ -721,19 +632,11 @@ int ocfs2_reserve_local_alloc_bits(struct ocfs2_super *osb,
 		goto bail;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&local_alloc_inode->i_mutex);
-
-	/*
-	 * We must double check state and allocator bits because
-	 * another process may have changed them while holding i_mutex.
-=======
 	inode_lock(local_alloc_inode);
 
 	/*
 	 * We must double check state and allocator bits because
 	 * another process may have changed them while holding i_rwsem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	spin_lock(&osb->osb_lock);
 	if (!ocfs2_la_state_enabled(osb) ||
@@ -749,19 +652,10 @@ int ocfs2_reserve_local_alloc_bits(struct ocfs2_super *osb,
 #ifdef CONFIG_OCFS2_DEBUG_FS
 	if (le32_to_cpu(alloc->id1.bitmap1.i_used) !=
 	    ocfs2_local_alloc_count_bits(alloc)) {
-<<<<<<< HEAD
-		ocfs2_error(osb->sb, "local alloc inode %llu says it has "
-			    "%u free bits, but a count shows %u",
-			    (unsigned long long)le64_to_cpu(alloc->i_blkno),
-			    le32_to_cpu(alloc->id1.bitmap1.i_used),
-			    ocfs2_local_alloc_count_bits(alloc));
-		status = -EIO;
-=======
 		status = ocfs2_error(osb->sb, "local alloc inode %llu says it has %u used bits, but a count shows %u\n",
 				(unsigned long long)le64_to_cpu(alloc->i_blkno),
 				le32_to_cpu(alloc->id1.bitmap1.i_used),
 				ocfs2_local_alloc_count_bits(alloc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 #endif
@@ -781,11 +675,7 @@ int ocfs2_reserve_local_alloc_bits(struct ocfs2_super *osb,
 		/*
 		 * Under certain conditions, the window slide code
 		 * might have reduced the number of bits available or
-<<<<<<< HEAD
-		 * disabled the the local alloc entirely. Re-check
-=======
 		 * disabled the local alloc entirely. Re-check
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * here and return -ENOSPC if necessary.
 		 */
 		status = -ENOSPC;
@@ -807,11 +697,7 @@ int ocfs2_reserve_local_alloc_bits(struct ocfs2_super *osb,
 	status = 0;
 bail:
 	if (status < 0 && local_alloc_inode) {
-<<<<<<< HEAD
-		mutex_unlock(&local_alloc_inode->i_mutex);
-=======
 		inode_unlock(local_alloc_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(local_alloc_inode);
 	}
 
@@ -880,18 +766,6 @@ bail:
 	return status;
 }
 
-<<<<<<< HEAD
-static u32 ocfs2_local_alloc_count_bits(struct ocfs2_dinode *alloc)
-{
-	int i;
-	u8 *buffer;
-	u32 count = 0;
-	struct ocfs2_local_alloc *la = OCFS2_LOCAL_ALLOC(alloc);
-
-	buffer = la->la_bitmap;
-	for (i = 0; i < le16_to_cpu(la->la_size); i++)
-		count += hweight8(buffer[i]);
-=======
 int ocfs2_free_local_alloc_bits(struct ocfs2_super *osb,
 				handle_t *handle,
 				struct ocfs2_alloc_context *ac,
@@ -940,7 +814,6 @@ static u32 ocfs2_local_alloc_count_bits(struct ocfs2_dinode *alloc)
 	struct ocfs2_local_alloc *la = OCFS2_LOCAL_ALLOC(alloc);
 
 	count = memweight(la->la_bitmap, le16_to_cpu(la->la_size));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_local_alloc_count_bits(count);
 	return count;
@@ -951,11 +824,7 @@ static int ocfs2_local_alloc_find_clear_bits(struct ocfs2_super *osb,
 				     u32 *numbits,
 				     struct ocfs2_alloc_reservation *resv)
 {
-<<<<<<< HEAD
-	int numfound, bitoff, left, startoff, lastzero;
-=======
 	int numfound = 0, bitoff, left, startoff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int local_resv = 0;
 	struct ocfs2_alloc_reservation r;
 	void *bitmap = NULL;
@@ -993,10 +862,6 @@ static int ocfs2_local_alloc_find_clear_bits(struct ocfs2_super *osb,
 	bitmap = OCFS2_LOCAL_ALLOC(alloc)->la_bitmap;
 
 	numfound = bitoff = startoff = 0;
-<<<<<<< HEAD
-	lastzero = -1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	left = le32_to_cpu(alloc->id1.bitmap1.i_total);
 	while ((bitoff = ocfs2_find_next_zero_bit(bitmap, left, startoff)) != -1) {
 		if (bitoff == left) {
@@ -1108,11 +973,7 @@ static int ocfs2_sync_local_to_main(struct ocfs2_super *osb,
 	la_start_blk = ocfs2_clusters_to_blocks(osb->sb,
 						le32_to_cpu(la->la_bm_off));
 	bitmap = la->la_bitmap;
-<<<<<<< HEAD
-	start = count = bit_off = 0;
-=======
 	start = count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	left = le32_to_cpu(alloc->id1.bitmap1.i_total);
 
 	while ((bit_off = ocfs2_find_next_zero_bit(bitmap, left, start))
@@ -1168,11 +1029,7 @@ enum ocfs2_la_event {
 /*
  * Given an event, calculate the size of our next local alloc window.
  *
-<<<<<<< HEAD
- * This should always be called under i_mutex of the local alloc inode
-=======
  * This should always be called under i_rwsem of the local alloc inode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * so that local alloc disabling doesn't race with processes trying to
  * use the allocator.
  *
@@ -1215,11 +1072,7 @@ static int ocfs2_recalc_la_window(struct ocfs2_super *osb,
 		} else {
 			osb->local_alloc_state = OCFS2_LA_DISABLED;
 		}
-<<<<<<< HEAD
-		queue_delayed_work(ocfs2_wq, &osb->la_enable_wq,
-=======
 		queue_delayed_work(osb->ocfs2_wq, &osb->la_enable_wq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   OCFS2_LA_ENABLE_INTERVAL);
 		goto out_unlock;
 	}
@@ -1255,11 +1108,7 @@ static int ocfs2_local_alloc_reserve_for_window(struct ocfs2_super *osb,
 	}
 
 retry_enospc:
-<<<<<<< HEAD
-	(*ac)->ac_bits_wanted = osb->local_alloc_default_bits;
-=======
 	(*ac)->ac_bits_wanted = osb->local_alloc_bits;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_reserve_cluster_bitmap_bits(osb, *ac);
 	if (status == -ENOSPC) {
 		if (ocfs2_recalc_la_window(osb, OCFS2_LA_EVENT_ENOSPC) ==
@@ -1331,11 +1180,7 @@ retry_enospc:
 		    OCFS2_LA_DISABLED)
 			goto bail;
 
-<<<<<<< HEAD
-		ac->ac_bits_wanted = osb->local_alloc_default_bits;
-=======
 		ac->ac_bits_wanted = osb->local_alloc_bits;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = ocfs2_claim_clusters(handle, ac,
 					      osb->local_alloc_bits,
 					      &cluster_off,
@@ -1425,20 +1270,12 @@ static int ocfs2_local_alloc_slide_window(struct ocfs2_super *osb,
 	 * local alloc shutdown won't try to double free main bitmap
 	 * bits. Make a copy so the sync function knows which bits to
 	 * free. */
-<<<<<<< HEAD
-	alloc_copy = kmalloc(osb->local_alloc_bh->b_size, GFP_NOFS);
-=======
 	alloc_copy = kmemdup(alloc, osb->local_alloc_bh->b_size, GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!alloc_copy) {
 		status = -ENOMEM;
 		mlog_errno(status);
 		goto bail;
 	}
-<<<<<<< HEAD
-	memcpy(alloc_copy, alloc, osb->local_alloc_bh->b_size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_journal_access_di(handle,
 					 INODE_CACHE(local_alloc_inode),
@@ -1474,16 +1311,8 @@ bail:
 
 	brelse(main_bm_bh);
 
-<<<<<<< HEAD
-	if (main_bm_inode)
-		iput(main_bm_inode);
-
-	if (alloc_copy)
-		kfree(alloc_copy);
-=======
 	iput(main_bm_inode);
 	kfree(alloc_copy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ac)
 		ocfs2_free_alloc_context(ac);

@@ -1,24 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* procfs files for key database enumeration
  *
  * Copyright (C) 2004 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
  */
 
-#include <linux/module.h>
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/fs.h>
@@ -27,11 +13,6 @@
 #include <asm/errno.h>
 #include "internal.h"
 
-<<<<<<< HEAD
-#ifdef CONFIG_KEYS_DEBUG_PROC_KEYS
-static int proc_keys_open(struct inode *inode, struct file *file);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *proc_keys_start(struct seq_file *p, loff_t *_pos);
 static void *proc_keys_next(struct seq_file *p, void *v, loff_t *_pos);
 static void proc_keys_stop(struct seq_file *p, void *v);
@@ -44,18 +25,6 @@ static const struct seq_operations proc_keys_ops = {
 	.show	= proc_keys_show,
 };
 
-<<<<<<< HEAD
-static const struct file_operations proc_keys_fops = {
-	.open		= proc_keys_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-#endif
-
-static int proc_key_users_open(struct inode *inode, struct file *file);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *proc_key_users_start(struct seq_file *p, loff_t *_pos);
 static void *proc_key_users_next(struct seq_file *p, void *v, loff_t *_pos);
 static void proc_key_users_stop(struct seq_file *p, void *v);
@@ -68,16 +37,6 @@ static const struct seq_operations proc_key_users_ops = {
 	.show	= proc_key_users_show,
 };
 
-<<<<<<< HEAD
-static const struct file_operations proc_key_users_fops = {
-	.open		= proc_key_users_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Declare the /proc files.
  */
@@ -85,21 +44,11 @@ static int __init key_proc_init(void)
 {
 	struct proc_dir_entry *p;
 
-<<<<<<< HEAD
-#ifdef CONFIG_KEYS_DEBUG_PROC_KEYS
-	p = proc_create("keys", 0, NULL, &proc_keys_fops);
-	if (!p)
-		panic("Cannot create /proc/keys\n");
-#endif
-
-	p = proc_create("key-users", 0, NULL, &proc_key_users_fops);
-=======
 	p = proc_create_seq("keys", 0, NULL, &proc_keys_ops);
 	if (!p)
 		panic("Cannot create /proc/keys\n");
 
 	p = proc_create_seq("key-users", 0, NULL, &proc_key_users_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!p)
 		panic("Cannot create /proc/key-users\n");
 
@@ -112,46 +61,23 @@ __initcall(key_proc_init);
  * Implement "/proc/keys" to provide a list of the keys on the system that
  * grant View permission to the caller.
  */
-<<<<<<< HEAD
-#ifdef CONFIG_KEYS_DEBUG_PROC_KEYS
-
-static struct rb_node *key_serial_next(struct rb_node *n)
-{
-	struct user_namespace *user_ns = current_user_ns();
-=======
 static struct rb_node *key_serial_next(struct seq_file *p, struct rb_node *n)
 {
 	struct user_namespace *user_ns = seq_user_ns(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	n = rb_next(n);
 	while (n) {
 		struct key *key = rb_entry(n, struct key, serial_node);
-<<<<<<< HEAD
-		if (key->user->user_ns == user_ns)
-=======
 		if (kuid_has_mapping(user_ns, key->user->uid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		n = rb_next(n);
 	}
 	return n;
 }
 
-<<<<<<< HEAD
-static int proc_keys_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &proc_keys_ops);
-}
-
-static struct key *find_ge_key(key_serial_t id)
-{
-	struct user_namespace *user_ns = current_user_ns();
-=======
 static struct key *find_ge_key(struct seq_file *p, key_serial_t id)
 {
 	struct user_namespace *user_ns = seq_user_ns(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rb_node *n = key_serial_tree.rb_node;
 	struct key *minkey = NULL;
 
@@ -174,11 +100,7 @@ static struct key *find_ge_key(struct seq_file *p, key_serial_t id)
 		return NULL;
 
 	for (;;) {
-<<<<<<< HEAD
-		if (minkey->user->user_ns == user_ns)
-=======
 		if (kuid_has_mapping(user_ns, minkey->user->uid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return minkey;
 		n = rb_next(&minkey->serial_node);
 		if (!n)
@@ -197,11 +119,7 @@ static void *proc_keys_start(struct seq_file *p, loff_t *_pos)
 
 	if (*_pos > INT_MAX)
 		return NULL;
-<<<<<<< HEAD
-	key = find_ge_key(pos);
-=======
 	key = find_ge_key(p, pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!key)
 		return NULL;
 	*_pos = key->serial;
@@ -218,17 +136,11 @@ static void *proc_keys_next(struct seq_file *p, void *v, loff_t *_pos)
 {
 	struct rb_node *n;
 
-<<<<<<< HEAD
-	n = key_serial_next(v);
-	if (n)
-		*_pos = key_node_serial(n);
-=======
 	n = key_serial_next(p, v);
 	if (n)
 		*_pos = key_node_serial(n);
 	else
 		(*_pos)++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return n;
 }
 
@@ -240,17 +152,6 @@ static void proc_keys_stop(struct seq_file *p, void *v)
 
 static int proc_keys_show(struct seq_file *m, void *v)
 {
-<<<<<<< HEAD
-	const struct cred *cred = current_cred();
-	struct rb_node *_p = v;
-	struct key *key = rb_entry(_p, struct key, serial_node);
-	struct timespec now;
-	unsigned long timo;
-	key_ref_t key_ref, skey_ref;
-	char xbuf[16];
-	int rc;
-
-=======
 	struct rb_node *_p = v;
 	struct key *key = rb_entry(_p, struct key, serial_node);
 	unsigned long flags;
@@ -271,89 +172,31 @@ static int proc_keys_show(struct seq_file *m, void *v)
 					   KEYRING_SEARCH_RECURSE),
 	};
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_ref = make_key_ref(key, 0);
 
 	/* determine if the key is possessed by this process (a test we can
 	 * skip if the key does not indicate the possessor can view it
 	 */
 	if (key->perm & KEY_POS_VIEW) {
-<<<<<<< HEAD
-		skey_ref = search_my_process_keyrings(key->type, key,
-						      lookup_user_key_possessed,
-						      true, cred);
-=======
 		rcu_read_lock();
 		skey_ref = search_cred_keyrings_rcu(&ctx);
 		rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!IS_ERR(skey_ref)) {
 			key_ref_put(skey_ref);
 			key_ref = make_key_ref(key, 1);
 		}
 	}
 
-<<<<<<< HEAD
-	/* check whether the current task is allowed to view the key (assuming
-	 * non-possession)
-	 * - the caller holds a spinlock, and thus the RCU read lock, making our
-	 *   access to __current_cred() safe
-	 */
-	rc = key_task_permission(key_ref, cred, KEY_VIEW);
-	if (rc < 0)
-		return 0;
-
-	now = current_kernel_time();
-=======
 	/* check whether the current task is allowed to view the key */
 	rc = key_task_permission(key_ref, ctx.cred, KEY_NEED_VIEW);
 	if (rc < 0)
 		return 0;
 
 	now = ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 
 	/* come up with a suitable timeout value */
-<<<<<<< HEAD
-	if (key->expiry == 0) {
-		memcpy(xbuf, "perm", 5);
-	} else if (now.tv_sec >= key->expiry) {
-		memcpy(xbuf, "expd", 5);
-	} else {
-		timo = key->expiry - now.tv_sec;
-
-		if (timo < 60)
-			sprintf(xbuf, "%lus", timo);
-		else if (timo < 60*60)
-			sprintf(xbuf, "%lum", timo / 60);
-		else if (timo < 60*60*24)
-			sprintf(xbuf, "%luh", timo / (60*60));
-		else if (timo < 60*60*24*7)
-			sprintf(xbuf, "%lud", timo / (60*60*24));
-		else
-			sprintf(xbuf, "%luw", timo / (60*60*24*7));
-	}
-
-#define showflag(KEY, LETTER, FLAG) \
-	(test_bit(FLAG,	&(KEY)->flags) ? LETTER : '-')
-
-	seq_printf(m, "%08x %c%c%c%c%c%c%c %5d %4s %08x %5d %5d %-9.9s ",
-		   key->serial,
-		   showflag(key, 'I', KEY_FLAG_INSTANTIATED),
-		   showflag(key, 'R', KEY_FLAG_REVOKED),
-		   showflag(key, 'D', KEY_FLAG_DEAD),
-		   showflag(key, 'Q', KEY_FLAG_IN_QUOTA),
-		   showflag(key, 'U', KEY_FLAG_USER_CONSTRUCT),
-		   showflag(key, 'N', KEY_FLAG_NEGATIVE),
-		   showflag(key, 'i', KEY_FLAG_INVALIDATED),
-		   atomic_read(&key->usage),
-		   xbuf,
-		   key->perm,
-		   key->uid,
-		   key->gid,
-=======
 	expiry = READ_ONCE(key->expiry);
 	if (expiry == TIME64_MAX) {
 		memcpy(xbuf, "perm", 5);
@@ -394,7 +237,6 @@ static int proc_keys_show(struct seq_file *m, void *v)
 		   key->perm,
 		   from_kuid_munged(seq_user_ns(m), key->uid),
 		   from_kgid_munged(seq_user_ns(m), key->gid),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   key->type->name);
 
 #undef showflag
@@ -407,47 +249,17 @@ static int proc_keys_show(struct seq_file *m, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_KEYS_DEBUG_PROC_KEYS */
-
-static struct rb_node *__key_user_next(struct rb_node *n)
-{
-	while (n) {
-		struct key_user *user = rb_entry(n, struct key_user, node);
-		if (user->user_ns == current_user_ns())
-=======
 static struct rb_node *__key_user_next(struct user_namespace *user_ns, struct rb_node *n)
 {
 	while (n) {
 		struct key_user *user = rb_entry(n, struct key_user, node);
 		if (kuid_has_mapping(user_ns, user->uid))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		n = rb_next(n);
 	}
 	return n;
 }
 
-<<<<<<< HEAD
-static struct rb_node *key_user_next(struct rb_node *n)
-{
-	return __key_user_next(rb_next(n));
-}
-
-static struct rb_node *key_user_first(struct rb_root *r)
-{
-	struct rb_node *n = rb_first(r);
-	return __key_user_next(n);
-}
-
-/*
- * Implement "/proc/key-users" to provides a list of the key users and their
- * quotas.
- */
-static int proc_key_users_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &proc_key_users_ops);
-=======
 static struct rb_node *key_user_next(struct user_namespace *user_ns, struct rb_node *n)
 {
 	return __key_user_next(user_ns, rb_next(n));
@@ -457,7 +269,6 @@ static struct rb_node *key_user_first(struct user_namespace *user_ns, struct rb_
 {
 	struct rb_node *n = rb_first(r);
 	return __key_user_next(user_ns, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *proc_key_users_start(struct seq_file *p, loff_t *_pos)
@@ -468,17 +279,10 @@ static void *proc_key_users_start(struct seq_file *p, loff_t *_pos)
 
 	spin_lock(&key_user_lock);
 
-<<<<<<< HEAD
-	_p = key_user_first(&key_user_tree);
-	while (pos > 0 && _p) {
-		pos--;
-		_p = key_user_next(_p);
-=======
 	_p = key_user_first(seq_user_ns(p), &key_user_tree);
 	while (pos > 0 && _p) {
 		pos--;
 		_p = key_user_next(seq_user_ns(p), _p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return _p;
@@ -487,11 +291,7 @@ static void *proc_key_users_start(struct seq_file *p, loff_t *_pos)
 static void *proc_key_users_next(struct seq_file *p, void *v, loff_t *_pos)
 {
 	(*_pos)++;
-<<<<<<< HEAD
-	return key_user_next((struct rb_node *)v);
-=======
 	return key_user_next(seq_user_ns(p), (struct rb_node *)v);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void proc_key_users_stop(struct seq_file *p, void *v)
@@ -504,16 +304,6 @@ static int proc_key_users_show(struct seq_file *m, void *v)
 {
 	struct rb_node *_p = v;
 	struct key_user *user = rb_entry(_p, struct key_user, node);
-<<<<<<< HEAD
-	unsigned maxkeys = (user->uid == 0) ?
-		key_quota_root_maxkeys : key_quota_maxkeys;
-	unsigned maxbytes = (user->uid == 0) ?
-		key_quota_root_maxbytes : key_quota_maxbytes;
-
-	seq_printf(m, "%5u: %5d %d/%d %d/%d %d/%d\n",
-		   user->uid,
-		   atomic_read(&user->usage),
-=======
 	unsigned maxkeys = uid_eq(user->uid, GLOBAL_ROOT_UID) ?
 		key_quota_root_maxkeys : key_quota_maxkeys;
 	unsigned maxbytes = uid_eq(user->uid, GLOBAL_ROOT_UID) ?
@@ -522,7 +312,6 @@ static int proc_key_users_show(struct seq_file *m, void *v)
 	seq_printf(m, "%5u: %5d %d/%d %d/%d %d/%d\n",
 		   from_kuid_munged(seq_user_ns(m), user->uid),
 		   refcount_read(&user->usage),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   atomic_read(&user->nkeys),
 		   atomic_read(&user->nikeys),
 		   user->qnkeys,

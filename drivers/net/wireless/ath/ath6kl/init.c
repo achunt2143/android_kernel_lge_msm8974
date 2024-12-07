@@ -16,30 +16,21 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/moduleparam.h>
 #include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/of.h>
 #include <linux/mmc/sdio_func.h>
-<<<<<<< HEAD
-=======
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "core.h"
 #include "cfg80211.h"
 #include "target.h"
 #include "debug.h"
 #include "hif-ops.h"
-<<<<<<< HEAD
-=======
 #include "htc-ops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct ath6kl_hw hw_list[] = {
 	{
@@ -51,10 +42,7 @@ static const struct ath6kl_hw hw_list[] = {
 		.reserved_ram_size		= 6912,
 		.refclk_hz			= 26000000,
 		.uarttx_pin			= 8,
-<<<<<<< HEAD
-=======
 		.flags				= ATH6KL_HW_SDIO_CRC_ERROR_WAR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* hw2.0 needs override address hardcoded */
 		.app_start_override_addr	= 0x944C00,
@@ -80,10 +68,7 @@ static const struct ath6kl_hw hw_list[] = {
 		.refclk_hz			= 26000000,
 		.uarttx_pin			= 8,
 		.testscript_addr		= 0x57ef74,
-<<<<<<< HEAD
-=======
 		.flags				= ATH6KL_HW_SDIO_CRC_ERROR_WAR,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.fw = {
 			.dir		= AR6003_HW_2_1_1_FW_DIR,
@@ -108,10 +93,7 @@ static const struct ath6kl_hw hw_list[] = {
 		.board_addr			= 0x433900,
 		.refclk_hz			= 26000000,
 		.uarttx_pin			= 11,
-<<<<<<< HEAD
-=======
 		.flags				= 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.fw = {
 			.dir		= AR6004_HW_1_0_FW_DIR,
@@ -131,11 +113,7 @@ static const struct ath6kl_hw hw_list[] = {
 		.board_addr			= 0x43d400,
 		.refclk_hz			= 40000000,
 		.uarttx_pin			= 11,
-<<<<<<< HEAD
-
-=======
 		.flags				= 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.fw = {
 			.dir		= AR6004_HW_1_1_FW_DIR,
 			.fw		= AR6004_HW_1_1_FIRMWARE_FILE,
@@ -144,8 +122,6 @@ static const struct ath6kl_hw hw_list[] = {
 		.fw_board		= AR6004_HW_1_1_BOARD_DATA_FILE,
 		.fw_default_board	= AR6004_HW_1_1_DEFAULT_BOARD_DATA_FILE,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.id				= AR6004_HW_1_2_VERSION,
 		.name				= "ar6004 hw 1.2",
@@ -211,7 +187,6 @@ static const struct ath6kl_hw hw_list[] = {
 		.fw_board		= AR6004_HW_3_0_BOARD_DATA_FILE,
 		.fw_default_board	= AR6004_HW_3_0_DEFAULT_BOARD_DATA_FILE,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -247,13 +222,8 @@ struct sk_buff *ath6kl_buf_alloc(int size)
 	u16 reserved;
 
 	/* Add chacheline space at front and back of buffer */
-<<<<<<< HEAD
-	reserved = (2 * L1_CACHE_BYTES) + ATH6KL_DATA_OFFSET +
-		   sizeof(struct htc_packet) + ATH6KL_HTC_ALIGN_BYTES;
-=======
 	reserved = roundup((2 * L1_CACHE_BYTES) + ATH6KL_DATA_OFFSET +
 		   sizeof(struct htc_packet) + ATH6KL_HTC_ALIGN_BYTES, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb = dev_alloc_skb(size + reserved);
 
 	if (skb)
@@ -358,10 +328,7 @@ static int ath6kl_init_service_ep(struct ath6kl *ar)
 	memset(&connect, 0, sizeof(connect));
 
 	/* these fields are the same for all service endpoints */
-<<<<<<< HEAD
-=======
 	connect.ep_cb.tx_comp_multi = ath6kl_tx_complete;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	connect.ep_cb.rx = ath6kl_rx;
 	connect.ep_cb.rx_refill = ath6kl_rx_refill;
 	connect.ep_cb.tx_full = ath6kl_tx_queue_full;
@@ -415,11 +382,7 @@ static int ath6kl_init_service_ep(struct ath6kl *ar)
 	if (ath6kl_connectservice(ar, &connect, "WMI DATA BK"))
 		return -EIO;
 
-<<<<<<< HEAD
-	/* connect to Video service, map this to to HI PRI */
-=======
 	/* connect to Video service, map this to HI PRI */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	connect.svc_id = WMI_DATA_VI_SVC;
 	if (ath6kl_connectservice(ar, &connect, "WMI DATA VI"))
 		return -EIO;
@@ -550,15 +513,9 @@ static int ath6kl_target_config_wlan_params(struct ath6kl *ar, int idx)
 					      P2P_FLAG_MACADDR_REQ |
 					      P2P_FLAG_HMODEL_REQ);
 		if (ret) {
-<<<<<<< HEAD
-			ath6kl_dbg(ATH6KL_DBG_TRC, "failed to request P2P "
-				   "capabilities (%d) - assuming P2P not "
-				   "supported\n", ret);
-=======
 			ath6kl_dbg(ATH6KL_DBG_TRC,
 				   "failed to request P2P capabilities (%d) - assuming P2P not supported\n",
 				   ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ar->p2p = false;
 		}
 	}
@@ -567,14 +524,9 @@ static int ath6kl_target_config_wlan_params(struct ath6kl *ar, int idx)
 		/* Enable Probe Request reporting for P2P */
 		ret = ath6kl_wmi_probe_report_req_cmd(ar->wmi, idx, true);
 		if (ret) {
-<<<<<<< HEAD
-			ath6kl_dbg(ATH6KL_DBG_TRC, "failed to enable Probe "
-				   "Request reporting (%d)\n", ret);
-=======
 			ath6kl_dbg(ATH6KL_DBG_TRC,
 				   "failed to enable Probe Request reporting (%d)\n",
 				   ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -607,24 +559,6 @@ int ath6kl_configure_target(struct ath6kl *ar)
 		fw_mode |= fw_iftype << (i * HI_OPTION_FW_MODE_BITS);
 
 	/*
-<<<<<<< HEAD
-	 * By default, submodes :
-	 *		vif[0] - AP/STA/IBSS
-	 *		vif[1] - "P2P dev"/"P2P GO"/"P2P Client"
-	 *		vif[2] - "P2P dev"/"P2P GO"/"P2P Client"
-	 */
-
-	for (i = 0; i < ar->max_norm_iface; i++)
-		fw_submode |= HI_OPTION_FW_SUBMODE_NONE <<
-			      (i * HI_OPTION_FW_SUBMODE_BITS);
-
-	for (i = ar->max_norm_iface; i < ar->vif_max; i++)
-		fw_submode |= HI_OPTION_FW_SUBMODE_P2PDEV <<
-			      (i * HI_OPTION_FW_SUBMODE_BITS);
-
-	if (ar->p2p && ar->vif_max == 1)
-		fw_submode = HI_OPTION_FW_SUBMODE_P2PDEV;
-=======
 	 * Submodes when fw does not support dynamic interface
 	 * switching:
 	 *		vif[0] - AP/STA/IBSS
@@ -650,7 +584,6 @@ int ath6kl_configure_target(struct ath6kl *ar)
 		if (ar->p2p && ar->vif_max == 1)
 			fw_submode = HI_OPTION_FW_SUBMODE_P2PDEV;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ath6kl_bmi_write_hi32(ar, hi_app_host_interest,
 				  HTC_PROTOCOL_VERSION) != 0) {
@@ -689,20 +622,6 @@ int ath6kl_configure_target(struct ath6kl *ar)
 	 * but possible in theory.
 	 */
 
-<<<<<<< HEAD
-	param = ar->hw.board_ext_data_addr;
-	ram_reserved_size = ar->hw.reserved_ram_size;
-
-	if (ath6kl_bmi_write_hi32(ar, hi_board_ext_data, param) != 0) {
-		ath6kl_err("bmi_write_memory for hi_board_ext_data failed\n");
-		return -EIO;
-	}
-
-	if (ath6kl_bmi_write_hi32(ar, hi_end_ram_reserve_sz,
-				  ram_reserved_size) != 0) {
-		ath6kl_err("bmi_write_memory for hi_end_ram_reserve_sz failed\n");
-		return -EIO;
-=======
 	if ((ar->target_type == TARGET_TYPE_AR6003) ||
 	    (ar->version.target_ver == AR6004_HW_1_3_VERSION) ||
 	    (ar->version.target_ver == AR6004_HW_3_0_VERSION)) {
@@ -719,7 +638,6 @@ int ath6kl_configure_target(struct ath6kl *ar)
 			ath6kl_err("bmi_write_memory for hi_end_ram_reserve_sz failed\n");
 			return -EIO;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set the block size for the target */
@@ -733,12 +651,6 @@ int ath6kl_configure_target(struct ath6kl *ar)
 	if (status)
 		return status;
 
-<<<<<<< HEAD
-	/* Configure target refclk_hz */
-	status = ath6kl_bmi_write_hi32(ar, hi_refclk_hz, ar->hw.refclk_hz);
-	if (status)
-		return status;
-=======
 	/* Only set the baud rate if we're actually doing debug */
 	if (ar->conf_flags & ATH6KL_CONF_UART_DEBUG) {
 		status = ath6kl_bmi_write_hi32(ar, hi_desired_baud_rate,
@@ -754,7 +666,6 @@ int ath6kl_configure_target(struct ath6kl *ar)
 		if (status)
 			return status;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -799,13 +710,8 @@ static bool check_device_tree(struct ath6kl *ar)
 	for_each_compatible_node(node, NULL, "atheros,ath6kl") {
 		board_id = of_get_property(node, board_id_prop, NULL);
 		if (board_id == NULL) {
-<<<<<<< HEAD
-			ath6kl_warn("No \"%s\" property on %s node.\n",
-				    board_id_prop, node->name);
-=======
 			ath6kl_warn("No \"%s\" property on %pOFn node.\n",
 				    board_id_prop, node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		snprintf(board_filename, sizeof(board_filename),
@@ -818,10 +724,7 @@ static bool check_device_tree(struct ath6kl *ar)
 				   board_filename, ret);
 			continue;
 		}
-<<<<<<< HEAD
-=======
 		of_node_put(node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return true;
 	}
 	return false;
@@ -1060,15 +963,10 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 	snprintf(filename, sizeof(filename), "%s/%s", ar->hw.fw.dir, name);
 
 	ret = request_firmware(&fw, filename, ar->dev);
-<<<<<<< HEAD
-	if (ret)
-		return ret;
-=======
 	if (ret) {
 		ath6kl_err("Failed request firmware, rv: %d\n", ret);
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = fw->data;
 	len = fw->size;
@@ -1077,21 +975,15 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 	magic_len = strlen(ATH6KL_FIRMWARE_MAGIC) + 1;
 
 	if (len < magic_len) {
-<<<<<<< HEAD
-=======
 		ath6kl_err("Magic length is invalid, len: %zd  magic_len: %zd\n",
 			   len, magic_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto out;
 	}
 
 	if (memcmp(data, ATH6KL_FIRMWARE_MAGIC, magic_len) != 0) {
-<<<<<<< HEAD
-=======
 		ath6kl_err("Magic is invalid, magic_len: %zd\n",
 			   magic_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EINVAL;
 		goto out;
 	}
@@ -1110,23 +1002,17 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 		len -= sizeof(*hdr);
 		data += sizeof(*hdr);
 
-<<<<<<< HEAD
-		if (len < ie_len) {
-=======
 		ath6kl_dbg(ATH6KL_DBG_BOOT, "ie-id: %d  len: %zd (0x%zx)\n",
 			   ie_id, ie_len, ie_len);
 
 		if (len < ie_len) {
 			ath6kl_err("IE len is invalid, len: %zd  ie_len: %zd  ie-id: %d\n",
 				   len, ie_len, ie_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EINVAL;
 			goto out;
 		}
 
 		switch (ie_id) {
-<<<<<<< HEAD
-=======
 		case ATH6KL_FW_IE_FW_VERSION:
 			strscpy(ar->wiphy->fw_version, data,
 				min(sizeof(ar->wiphy->fw_version), ie_len+1));
@@ -1135,7 +1021,6 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 				   "found fw version %s\n",
 				    ar->wiphy->fw_version);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ATH6KL_FW_IE_OTP_IMAGE:
 			ath6kl_dbg(ATH6KL_DBG_BOOT, "found otp image ie (%zd B)\n",
 				   ie_len);
@@ -1143,10 +1028,7 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 			ar->fw_otp = kmemdup(data, ie_len, GFP_KERNEL);
 
 			if (ar->fw_otp == NULL) {
-<<<<<<< HEAD
-=======
 				ath6kl_err("fw_otp cannot be allocated\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 				goto out;
 			}
@@ -1161,24 +1043,15 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 			if (ar->fw != NULL)
 				break;
 
-<<<<<<< HEAD
-			ar->fw = kmemdup(data, ie_len, GFP_KERNEL);
-
-			if (ar->fw == NULL) {
-=======
 			ar->fw = vmalloc(ie_len);
 
 			if (ar->fw == NULL) {
 				ath6kl_err("fw storage cannot be allocated, len: %zd\n", ie_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 				goto out;
 			}
 
-<<<<<<< HEAD
-=======
 			memcpy(ar->fw, data, ie_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ar->fw_len = ie_len;
 			break;
 		case ATH6KL_FW_IE_PATCH_IMAGE:
@@ -1188,10 +1061,7 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 			ar->fw_patch = kmemdup(data, ie_len, GFP_KERNEL);
 
 			if (ar->fw_patch == NULL) {
-<<<<<<< HEAD
-=======
 				ath6kl_err("fw_patch storage cannot be allocated, len: %zd\n", ie_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 				goto out;
 			}
@@ -1203,20 +1073,10 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 			ar->hw.reserved_ram_size = le32_to_cpup(val);
 
 			ath6kl_dbg(ATH6KL_DBG_BOOT,
-<<<<<<< HEAD
-				   "found reserved ram size ie 0x%d\n",
-				   ar->hw.reserved_ram_size);
-			break;
-		case ATH6KL_FW_IE_CAPABILITIES:
-			if (ie_len < DIV_ROUND_UP(ATH6KL_FW_CAPABILITY_MAX, 8))
-				break;
-
-=======
 				   "found reserved ram size ie %d\n",
 				   ar->hw.reserved_ram_size);
 			break;
 		case ATH6KL_FW_IE_CAPABILITIES:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ath6kl_dbg(ATH6KL_DBG_BOOT,
 				   "found firmware capabilities ie (%zd B)\n",
 				   ie_len);
@@ -1225,12 +1085,9 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 				index = i / 8;
 				bit = i % 8;
 
-<<<<<<< HEAD
-=======
 				if (index == ie_len)
 					break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (data[index] & (1 << bit))
 					__set_bit(i, ar->fw_capabilities);
 			}
@@ -1283,11 +1140,7 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
 
 		len -= ie_len;
 		data += ie_len;
-<<<<<<< HEAD
-	};
-=======
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = 0;
 out:
@@ -1308,8 +1161,6 @@ int ath6kl_init_fetch_firmwares(struct ath6kl *ar)
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-=======
 	ret = ath6kl_fetch_fw_apin(ar, ATH6KL_FW_API5_FILE);
 	if (ret == 0) {
 		ar->fw_api = 5;
@@ -1322,7 +1173,6 @@ int ath6kl_init_fetch_firmwares(struct ath6kl *ar)
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ath6kl_fetch_fw_apin(ar, ATH6KL_FW_API3_FILE);
 	if (ret == 0) {
 		ar->fw_api = 3;
@@ -1366,13 +1216,6 @@ static int ath6kl_upload_board_file(struct ath6kl *ar)
 		ath6kl_bmi_write_hi32(ar, hi_board_data,
 				      board_address);
 	} else {
-<<<<<<< HEAD
-		ath6kl_bmi_read_hi32(ar, hi_board_data, &board_address);
-	}
-
-	/* determine where in target ram to write extended board data */
-	ath6kl_bmi_read_hi32(ar, hi_board_ext_data, &board_ext_address);
-=======
 		ret = ath6kl_bmi_read_hi32(ar, hi_board_data, &board_address);
 		if (ret) {
 			ath6kl_err("Failed to get board file target address.\n");
@@ -1386,7 +1229,6 @@ static int ath6kl_upload_board_file(struct ath6kl *ar)
 		ath6kl_err("Failed to get extended board file target address.\n");
 		return ret;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ar->target_type == TARGET_TYPE_AR6003 &&
 	    board_ext_address == 0) {
@@ -1408,18 +1250,10 @@ static int ath6kl_upload_board_file(struct ath6kl *ar)
 	default:
 		WARN_ON(1);
 		return -EINVAL;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (board_ext_address &&
 	    ar->fw_board_len == (board_data_size + board_ext_data_size)) {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* write extended board data */
 		ath6kl_dbg(ATH6KL_DBG_BOOT,
 			   "writing extended board data to 0x%x (%d B)\n",
@@ -1458,9 +1292,6 @@ static int ath6kl_upload_board_file(struct ath6kl *ar)
 	}
 
 	/* record the fact that Board Data IS initialized */
-<<<<<<< HEAD
-	ath6kl_bmi_write_hi32(ar, hi_board_data_initialized, 1);
-=======
 	if ((ar->version.target_ver == AR6004_HW_1_3_VERSION) ||
 	    (ar->version.target_ver == AR6004_HW_3_0_VERSION))
 		param = board_data_size;
@@ -1468,7 +1299,6 @@ static int ath6kl_upload_board_file(struct ath6kl *ar)
 		param = 1;
 
 	ath6kl_bmi_write_hi32(ar, hi_board_data_initialized, param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1599,15 +1429,11 @@ static int ath6kl_upload_testscript(struct ath6kl *ar)
 	}
 
 	ath6kl_bmi_write_hi32(ar, hi_ota_testscript, address);
-<<<<<<< HEAD
-	ath6kl_bmi_write_hi32(ar, hi_end_ram_reserve_sz, 4096);
-=======
 
 	if ((ar->version.target_ver != AR6004_HW_1_3_VERSION) &&
 	    (ar->version.target_ver != AR6004_HW_3_0_VERSION))
 		ath6kl_bmi_write_hi32(ar, hi_end_ram_reserve_sz, 4096);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath6kl_bmi_write_hi32(ar, hi_test_apps_related, 1);
 
 	return 0;
@@ -1676,12 +1502,6 @@ static int ath6kl_init_upload(struct ath6kl *ar)
 		return status;
 
 	/* WAR to avoid SDIO CRC err */
-<<<<<<< HEAD
-	if (ar->version.target_ver == AR6003_HW_2_0_VERSION ||
-	    ar->version.target_ver == AR6003_HW_2_1_1_VERSION) {
-		ath6kl_err("temporary war to avoid sdio crc error\n");
-
-=======
 	if (ar->hw.flags & ATH6KL_HW_SDIO_CRC_ERROR_WAR) {
 		ath6kl_err("temporary war to avoid sdio crc error\n");
 
@@ -1691,7 +1511,6 @@ static int ath6kl_init_upload(struct ath6kl *ar)
 		if (status)
 			return status;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		param = 0x20;
 
 		address = GPIO_BASE_ADDRESS + GPIO_PIN10_ADDRESS;
@@ -1756,11 +1575,7 @@ static int ath6kl_init_upload(struct ath6kl *ar)
 
 int ath6kl_init_hw_params(struct ath6kl *ar)
 {
-<<<<<<< HEAD
-	const struct ath6kl_hw *uninitialized_var(hw);
-=======
 	const struct ath6kl_hw *hw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(hw_list); i++) {
@@ -1805,12 +1620,6 @@ static const char *ath6kl_init_get_hif_name(enum ath6kl_hif_type type)
 	return NULL;
 }
 
-<<<<<<< HEAD
-int ath6kl_init_hw_start(struct ath6kl *ar)
-{
-	long timeleft;
-	int ret, i;
-=======
 
 static const struct fw_capa_str_map {
 	int id;
@@ -1899,7 +1708,6 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 	long timeleft;
 	int ret, i;
 	char buf[200];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath6kl_dbg(ATH6KL_DBG_BOOT, "hw start\n");
 
@@ -1916,32 +1724,15 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 		goto err_power_off;
 
 	/* Do we need to finish the BMI phase */
-<<<<<<< HEAD
-	/* FIXME: return error from ath6kl_bmi_done() */
-	if (ath6kl_bmi_done(ar)) {
-		ret = -EIO;
-		goto err_power_off;
-	}
-=======
 	ret = ath6kl_bmi_done(ar);
 	if (ret)
 		goto err_power_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The reason we have to wait for the target here is that the
 	 * driver layer has to init BMI in order to set the host block
 	 * size.
 	 */
-<<<<<<< HEAD
-	if (ath6kl_htc_wait_target(ar->htc_target)) {
-		ret = -EIO;
-		goto err_power_off;
-	}
-
-	if (ath6kl_init_service_ep(ar)) {
-		ret = -EIO;
-=======
 	ret = ath6kl_htc_wait_target(ar->htc_target);
 
 	if (ret == -ETIMEDOUT) {
@@ -1962,16 +1753,11 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 	ret = ath6kl_init_service_ep(ar);
 	if (ret) {
 		ath6kl_err("Endpoint service initialization failed: %d\n", ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_cleanup_scatter;
 	}
 
 	/* setup credit distribution */
-<<<<<<< HEAD
-	ath6kl_credit_setup(ar->htc_target, &ar->credit_state_info);
-=======
 	ath6kl_htc_credit_setup(ar->htc_target, &ar->credit_state_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* start HTC */
 	ret = ath6kl_htc_start(ar->htc_target);
@@ -1986,12 +1772,6 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 						    test_bit(WMI_READY,
 							     &ar->flag),
 						    WMI_TIMEOUT);
-<<<<<<< HEAD
-
-	ath6kl_dbg(ATH6KL_DBG_BOOT, "firmware booted\n");
-
-
-=======
 	if (timeleft <= 0) {
 		clear_bit(WMI_READY, &ar->flag);
 		ath6kl_err("wmi is not ready or wait was interrupted: %ld\n",
@@ -2002,7 +1782,6 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 
 	ath6kl_dbg(ATH6KL_DBG_BOOT, "firmware booted\n");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_and_clear_bit(FIRST_BOOT, &ar->flag)) {
 		ath6kl_info("%s %s fw %s api %d%s\n",
 			    ar->hw.name,
@@ -2010,11 +1789,8 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 			    ar->wiphy->fw_version,
 			    ar->fw_api,
 			    test_bit(TESTMODE, &ar->flag) ? " testmode" : "");
-<<<<<<< HEAD
-=======
 		ath6kl_init_get_fwcaps(ar, buf, sizeof(buf));
 		ath6kl_info("firmware supports: %s\n", buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ar->version.abi_ver != ATH6KL_ABI_VERSION) {
@@ -2024,15 +1800,6 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 		goto err_htc_stop;
 	}
 
-<<<<<<< HEAD
-	if (!timeleft || signal_pending(current)) {
-		ath6kl_err("wmi is not ready or wait was interrupted\n");
-		ret = -EIO;
-		goto err_htc_stop;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath6kl_dbg(ATH6KL_DBG_TRC, "%s: wmi is ready\n", __func__);
 
 	/* communicate the wmi protocol verision to the target */
@@ -2046,11 +1813,6 @@ static int __ath6kl_init_hw_start(struct ath6kl *ar)
 			goto err_htc_stop;
 	}
 
-<<<<<<< HEAD
-	ar->state = ATH6KL_STATE_ON;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_htc_stop:
@@ -2063,9 +1825,6 @@ err_power_off:
 	return ret;
 }
 
-<<<<<<< HEAD
-int ath6kl_init_hw_stop(struct ath6kl *ar)
-=======
 int ath6kl_init_hw_start(struct ath6kl *ar)
 {
 	int err;
@@ -2078,7 +1837,6 @@ int ath6kl_init_hw_start(struct ath6kl *ar)
 }
 
 static int __ath6kl_init_hw_stop(struct ath6kl *ar)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -2094,39 +1852,6 @@ static int __ath6kl_init_hw_stop(struct ath6kl *ar)
 	if (ret)
 		ath6kl_warn("failed to power off hif: %d\n", ret);
 
-<<<<<<< HEAD
-	ar->state = ATH6KL_STATE_OFF;
-
-	return 0;
-}
-
-/* FIXME: move this to cfg80211.c and rename to ath6kl_cfg80211_vif_stop() */
-void ath6kl_cleanup_vif(struct ath6kl_vif *vif, bool wmi_ready)
-{
-	static u8 bcast_mac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-	bool discon_issued;
-
-	netif_stop_queue(vif->ndev);
-
-	clear_bit(WLAN_ENABLED, &vif->flags);
-
-	if (wmi_ready) {
-		discon_issued = test_bit(CONNECTED, &vif->flags) ||
-				test_bit(CONNECT_PEND, &vif->flags);
-		ath6kl_disconnect(vif);
-		del_timer(&vif->disconnect_timer);
-
-		if (discon_issued)
-			ath6kl_disconnect_event(vif, DISCONNECT_CMD,
-						(vif->nw_type & AP_NETWORK) ?
-						bcast_mac : vif->bssid,
-						0, NULL, 0);
-	}
-
-	if (vif->scan_req) {
-		cfg80211_scan_done(vif->scan_req, true);
-		vif->scan_req = NULL;
-=======
 	return 0;
 }
 
@@ -2155,7 +1880,6 @@ void ath6kl_init_hw_restart(struct ath6kl *ar)
 	if (__ath6kl_init_hw_start(ar)) {
 		ath6kl_dbg(ATH6KL_DBG_RECOVERY, "Failed to restart during fw error recovery\n");
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2178,17 +1902,11 @@ void ath6kl_stop_txrx(struct ath6kl *ar)
 	list_for_each_entry_safe(vif, tmp_vif, &ar->vif_list, list) {
 		list_del(&vif->list);
 		spin_unlock_bh(&ar->list_lock);
-<<<<<<< HEAD
-		ath6kl_cleanup_vif(vif, test_bit(WMI_READY, &ar->flag));
-		rtnl_lock();
-		ath6kl_cfg80211_vif_cleanup(vif);
-=======
 		ath6kl_cfg80211_vif_stop(vif, test_bit(WMI_READY, &ar->flag));
 		rtnl_lock();
 		wiphy_lock(ar->wiphy);
 		ath6kl_cfg80211_vif_cleanup(vif);
 		wiphy_unlock(ar->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtnl_unlock();
 		spin_lock_bh(&ar->list_lock);
 	}
@@ -2196,12 +1914,9 @@ void ath6kl_stop_txrx(struct ath6kl *ar)
 
 	clear_bit(WMI_READY, &ar->flag);
 
-<<<<<<< HEAD
-=======
 	if (ar->fw_recovery.enable)
 		del_timer_sync(&ar->fw_recovery.hb_timer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * After wmi_shudown all WMI events will be dropped. We
 	 * need to cleanup the buffers allocated in AP mode and
@@ -2223,15 +1938,7 @@ void ath6kl_stop_txrx(struct ath6kl *ar)
 	 * Try to reset the device if we can. The driver may have been
 	 * configure NOT to reset the target during a debug session.
 	 */
-<<<<<<< HEAD
-	ath6kl_dbg(ATH6KL_DBG_TRC,
-		   "attempting to reset target on instance destroy\n");
-	ath6kl_reset_device(ar, ar->target_type, true, true);
-
-	clear_bit(WLAN_ENABLED, &ar->flag);
-=======
 	ath6kl_init_hw_reset(ar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up(&ar->sem);
 }

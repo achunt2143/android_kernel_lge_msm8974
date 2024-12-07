@@ -93,11 +93,7 @@ struct tx4927_pcic_reg {
 
 /* bits for PBACFG */
 #define TX4927_PCIC_PBACFG_FIXPA	0x00000008
-<<<<<<< HEAD
-#define TX4927_PCIC_PBACFG_RPBA	0x00000004
-=======
 #define TX4927_PCIC_PBACFG_RPBA 0x00000004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TX4927_PCIC_PBACFG_PBAEN	0x00000002
 #define TX4927_PCIC_PBACFG_BMCEN	0x00000001
 
@@ -169,11 +165,7 @@ struct tx4927_pcic_reg {
 #define TX4927_PCIC_PDMCFG_CHNEN	0x00000080
 #define TX4927_PCIC_PDMCFG_XFRACT	0x00000040
 #define TX4927_PCIC_PDMCFG_BSWAP	0x00000020
-<<<<<<< HEAD
-#define TX4927_PCIC_PDMCFG_XFRSIZE_MASK	0x0000000c
-=======
 #define TX4927_PCIC_PDMCFG_XFRSIZE_MASK 0x0000000c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TX4927_PCIC_PDMCFG_XFRSIZE_1DW	0x00000000
 #define TX4927_PCIC_PDMCFG_XFRSIZE_1QW	0x00000004
 #define TX4927_PCIC_PDMCFG_XFRSIZE_4QW	0x00000008
@@ -182,11 +174,7 @@ struct tx4927_pcic_reg {
 
 /* bits for PDMSTS */
 #define TX4927_PCIC_PDMSTS_REQCNT_MASK	0x3f000000
-<<<<<<< HEAD
-#define TX4927_PCIC_PDMSTS_FIFOCNT_MASK	0x00f00000
-=======
 #define TX4927_PCIC_PDMSTS_FIFOCNT_MASK 0x00f00000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TX4927_PCIC_PDMSTS_FIFOWP_MASK	0x000c0000
 #define TX4927_PCIC_PDMSTS_FIFORP_MASK	0x00030000
 #define TX4927_PCIC_PDMSTS_ERRINT	0x00000800

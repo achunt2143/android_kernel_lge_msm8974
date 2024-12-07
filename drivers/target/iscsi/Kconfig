@@ -1,21 +1,11 @@
-<<<<<<< HEAD
-config ISCSI_TARGET
-	tristate "Linux-iSCSI.org iSCSI Target Mode Stack"
-	depends on NET
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config ISCSI_TARGET
 	tristate "SCSI Target Mode Stack"
 	depends on INET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CRYPTO
 	select CRYPTO_CRC32C
 	select CRYPTO_CRC32C_INTEL if X86
 	help
-<<<<<<< HEAD
-	Say M here to enable the ConfigFS enabled Linux-iSCSI.org iSCSI
-	Target Mode Stack.
-=======
 	Say M to enable the SCSI target mode stack. A SCSI target mode stack
 	is software that makes local storage available over a storage network
 	to a SCSI initiator system. The supported storage network technologies
@@ -23,4 +13,3 @@ config ISCSI_TARGET
 	Configuration of the SCSI target mode stack happens through configfs.
 
 source	"drivers/target/iscsi/cxgbit/Kconfig"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

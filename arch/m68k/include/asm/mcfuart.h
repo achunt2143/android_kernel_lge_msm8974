@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -47,13 +44,8 @@ struct mcf_platform_uart {
 #define	MCFUART_UFPD		0x30		/* Frac Prec. Divider (r/w) */
 #endif
 #if defined(CONFIG_M5206) || defined(CONFIG_M5206e) || \
-<<<<<<< HEAD
-        defined(CONFIG_M5249) || defined(CONFIG_M5307) || \
-        defined(CONFIG_M5407)
-=======
 	defined(CONFIG_M5249) || defined(CONFIG_M525x) || \
 	defined(CONFIG_M5307) || defined(CONFIG_M5407)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MCFUART_UIVR		0x30		/* Interrupt Vector (r/w) */
 #endif
 #define	MCFUART_UIPR		0x34		/* Input Port (r) */

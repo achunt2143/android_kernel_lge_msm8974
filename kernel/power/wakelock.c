@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kernel/power/wakelock.c
  *
@@ -13,10 +10,7 @@
  * manipulate wakelocks on Android.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/capability.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ctype.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -24,23 +18,16 @@
 #include <linux/list.h>
 #include <linux/rbtree.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/workqueue.h>
 
 #include "power.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_MUTEX(wakelocks_lock);
 
 struct wakelock {
 	char			*name;
 	struct rb_node		node;
-<<<<<<< HEAD
-	struct wakeup_source	ws;
-=======
 	struct wakeup_source	*ws;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM_WAKELOCKS_GC
 	struct list_head	lru;
 #endif
@@ -52,29 +39,12 @@ ssize_t pm_show_wakelocks(char *buf, bool show_active)
 {
 	struct rb_node *node;
 	struct wakelock *wl;
-<<<<<<< HEAD
-	char *str = buf;
-	char *end = buf + PAGE_SIZE;
-=======
 	int len = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&wakelocks_lock);
 
 	for (node = rb_first(&wakelocks_tree); node; node = rb_next(node)) {
 		wl = rb_entry(node, struct wakelock, node);
-<<<<<<< HEAD
-		if (wl->ws.active == show_active)
-			str += scnprintf(str, end - str, "%s ", wl->name);
-	}
-	if (str > buf)
-		str--;
-
-	str += scnprintf(str, end - str, "\n");
-
-	mutex_unlock(&wakelocks_lock);
-	return (str - buf);
-=======
 		if (wl->ws->active == show_active)
 			len += sysfs_emit_at(buf, len, "%s ", wl->name);
 	}
@@ -83,7 +53,6 @@ ssize_t pm_show_wakelocks(char *buf, bool show_active)
 
 	mutex_unlock(&wakelocks_lock);
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if CONFIG_PM_WAKELOCKS_LIMIT > 0
@@ -113,13 +82,9 @@ static inline void decrement_wakelocks_number(void) {}
 #define WL_GC_COUNT_MAX	100
 #define WL_GC_TIME_SEC	300
 
-<<<<<<< HEAD
-static LIST_HEAD(wakelocks_lru_list);
-=======
 static void __wakelocks_gc(struct work_struct *work);
 static LIST_HEAD(wakelocks_lru_list);
 static DECLARE_WORK(wakelock_work, __wakelocks_gc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int wakelocks_gc_count;
 
 static inline void wakelocks_lru_add(struct wakelock *wl)
@@ -132,48 +97,28 @@ static inline void wakelocks_lru_most_recent(struct wakelock *wl)
 	list_move(&wl->lru, &wakelocks_lru_list);
 }
 
-<<<<<<< HEAD
-static void wakelocks_gc(void)
-=======
 static void __wakelocks_gc(struct work_struct *work)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wakelock *wl, *aux;
 	ktime_t now;
 
-<<<<<<< HEAD
-	if (++wakelocks_gc_count <= WL_GC_COUNT_MAX)
-		return;
-=======
 	mutex_lock(&wakelocks_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	now = ktime_get();
 	list_for_each_entry_safe_reverse(wl, aux, &wakelocks_lru_list, lru) {
 		u64 idle_time_ns;
 		bool active;
 
-<<<<<<< HEAD
-		spin_lock_irq(&wl->ws.lock);
-		idle_time_ns = ktime_to_ns(ktime_sub(now, wl->ws.last_time));
-		active = wl->ws.active;
-		spin_unlock_irq(&wl->ws.lock);
-=======
 		spin_lock_irq(&wl->ws->lock);
 		idle_time_ns = ktime_to_ns(ktime_sub(now, wl->ws->last_time));
 		active = wl->ws->active;
 		spin_unlock_irq(&wl->ws->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (idle_time_ns < ((u64)WL_GC_TIME_SEC * NSEC_PER_SEC))
 			break;
 
 		if (!active) {
-<<<<<<< HEAD
-			wakeup_source_remove(&wl->ws);
-=======
 			wakeup_source_unregister(wl->ws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rb_erase(&wl->node, &wakelocks_tree);
 			list_del(&wl->lru);
 			kfree(wl->name);
@@ -182,8 +127,6 @@ static void __wakelocks_gc(struct work_struct *work)
 		}
 	}
 	wakelocks_gc_count = 0;
-<<<<<<< HEAD
-=======
 
 	mutex_unlock(&wakelocks_lock);
 }
@@ -194,7 +137,6 @@ static void wakelocks_gc(void)
 		return;
 
 	schedule_work(&wakelock_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else /* !CONFIG_PM_WAKELOCKS_GC */
 static inline void wakelocks_lru_add(struct wakelock *wl) {}
@@ -242,10 +184,6 @@ static struct wakelock *wakelock_lookup_add(const char *name, size_t len,
 		kfree(wl);
 		return ERR_PTR(-ENOMEM);
 	}
-<<<<<<< HEAD
-	wl->ws.name = wl->name;
-	wakeup_source_add(&wl->ws);
-=======
 
 	wl->ws = wakeup_source_register(NULL, wl->name);
 	if (!wl->ws) {
@@ -255,7 +193,6 @@ static struct wakelock *wakelock_lookup_add(const char *name, size_t len,
 	}
 	wl->ws->last_time = ktime_get();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rb_link_node(&wl->node, parent, node);
 	rb_insert_color(&wl->node, &wakelocks_tree);
 	wakelocks_lru_add(wl);
@@ -271,12 +208,9 @@ int pm_wake_lock(const char *buf)
 	size_t len;
 	int ret = 0;
 
-<<<<<<< HEAD
-=======
 	if (!capable(CAP_BLOCK_SUSPEND))
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (*str && !isspace(*str))
 		str++;
 
@@ -302,15 +236,9 @@ int pm_wake_lock(const char *buf)
 		u64 timeout_ms = timeout_ns + NSEC_PER_MSEC - 1;
 
 		do_div(timeout_ms, NSEC_PER_MSEC);
-<<<<<<< HEAD
-		__pm_wakeup_event(&wl->ws, timeout_ms);
-	} else {
-		__pm_stay_awake(&wl->ws);
-=======
 		__pm_wakeup_event(wl->ws, timeout_ms);
 	} else {
 		__pm_stay_awake(wl->ws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	wakelocks_lru_most_recent(wl);
@@ -326,12 +254,9 @@ int pm_wake_unlock(const char *buf)
 	size_t len;
 	int ret = 0;
 
-<<<<<<< HEAD
-=======
 	if (!capable(CAP_BLOCK_SUSPEND))
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = strlen(buf);
 	if (!len)
 		return -EINVAL;
@@ -349,11 +274,7 @@ int pm_wake_unlock(const char *buf)
 		ret = PTR_ERR(wl);
 		goto out;
 	}
-<<<<<<< HEAD
-	__pm_relax(&wl->ws);
-=======
 	__pm_relax(wl->ws);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wakelocks_lru_most_recent(wl);
 	wakelocks_gc();

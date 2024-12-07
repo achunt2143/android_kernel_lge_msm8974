@@ -1,19 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2008 Nuovation System Designs, LLC
- *   Grant Erickson <gerickson@nuovations.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of the
- * License.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2008 Nuovation System Designs, LLC
  *   Grant Erickson <gerickson@nuovations.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/edac.h>
@@ -23,20 +11,13 @@
 #include <linux/mm.h>
 #include <linux/module.h>
 #include <linux/of_device.h>
-<<<<<<< HEAD
-=======
 #include <linux/of_irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 #include <linux/types.h>
 
 #include <asm/dcr.h>
 
-<<<<<<< HEAD
-#include "edac_core.h"
-=======
 #include "edac_module.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ppc4xx_edac.h"
 
 /*
@@ -197,44 +178,19 @@ struct ppc4xx_ecc_status {
 	u32 wmirq;
 };
 
-<<<<<<< HEAD
-/* Function Prototypes */
-
-static int ppc4xx_edac_probe(struct platform_device *device);
-static int ppc4xx_edac_remove(struct platform_device *device);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Global Variables */
 
 /*
  * Device tree node type and compatible tuples this driver can match
  * on.
  */
-<<<<<<< HEAD
-static struct of_device_id ppc4xx_edac_match[] = {
-=======
 static const struct of_device_id ppc4xx_edac_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.compatible	= "ibm,sdram-4xx-ddr2"
 	},
 	{ }
 };
-<<<<<<< HEAD
-
-static struct platform_driver ppc4xx_edac_driver = {
-	.probe			= ppc4xx_edac_probe,
-	.remove			= ppc4xx_edac_remove,
-	.driver = {
-		.owner = THIS_MODULE,
-		.name = PPC4XX_EDAC_MODULE_NAME,
-		.of_match_table = ppc4xx_edac_match,
-	},
-};
-=======
 MODULE_DEVICE_TABLE(of, ppc4xx_edac_match);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * TODO: The row and channel parameters likely need to be dynamically
@@ -753,14 +709,10 @@ ppc4xx_edac_handle_ce(struct mem_ctl_info *mci,
 
 	for (row = 0; row < mci->nr_csrows; row++)
 		if (ppc4xx_edac_check_bank_error(status, row))
-<<<<<<< HEAD
-			edac_mc_handle_ce_no_info(mci, message);
-=======
 			edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
 					     0, 0, 0,
 					     row, 0, -1,
 					     message, "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -788,14 +740,10 @@ ppc4xx_edac_handle_ue(struct mem_ctl_info *mci,
 
 	for (row = 0; row < mci->nr_csrows; row++)
 		if (ppc4xx_edac_check_bank_error(status, row))
-<<<<<<< HEAD
-			edac_mc_handle_ue(mci, page, offset, row, message);
-=======
 			edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
 					     page, offset, 0,
 					     row, 0, -1,
 					     message, "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -872,12 +820,7 @@ ppc4xx_edac_isr(int irq, void *dev_id)
  *
  * Returns a device type width enumeration.
  */
-<<<<<<< HEAD
-static enum dev_type __devinit
-ppc4xx_edac_get_dtype(u32 mcopt1)
-=======
 static enum dev_type ppc4xx_edac_get_dtype(u32 mcopt1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (mcopt1 & SDRAM_MCOPT1_WDTH_MASK) {
 	case SDRAM_MCOPT1_WDTH_16:
@@ -900,12 +843,7 @@ static enum dev_type ppc4xx_edac_get_dtype(u32 mcopt1)
  *
  * Returns a memory type enumeration.
  */
-<<<<<<< HEAD
-static enum mem_type __devinit
-ppc4xx_edac_get_mtype(u32 mcopt1)
-=======
 static enum mem_type ppc4xx_edac_get_mtype(u32 mcopt1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bool rden = ((mcopt1 & SDRAM_MCOPT1_RDEN_MASK) == SDRAM_MCOPT1_RDEN);
 
@@ -935,26 +873,15 @@ static enum mem_type ppc4xx_edac_get_mtype(u32 mcopt1)
  * Returns 0 if OK; otherwise, -EINVAL if the memory bank size
  * configuration cannot be determined.
  */
-<<<<<<< HEAD
-static int __devinit
-ppc4xx_edac_init_csrows(struct mem_ctl_info *mci, u32 mcopt1)
-=======
 static int ppc4xx_edac_init_csrows(struct mem_ctl_info *mci, u32 mcopt1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ppc4xx_edac_pdata *pdata = mci->pvt_info;
 	int status = 0;
 	enum mem_type mtype;
 	enum dev_type dtype;
 	enum edac_type edac_mode;
-<<<<<<< HEAD
-	int row;
-	u32 mbxcf, size;
-	static u32 ppc4xx_last_page;
-=======
 	int row, j;
 	u32 mbxcf, size, nr_pages;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Establish the memory type and width */
 
@@ -1005,11 +932,7 @@ static int ppc4xx_edac_init_csrows(struct mem_ctl_info *mci, u32 mcopt1)
 		case SDRAM_MBCF_SZ_2GB:
 		case SDRAM_MBCF_SZ_4GB:
 		case SDRAM_MBCF_SZ_8GB:
-<<<<<<< HEAD
-			csi->nr_pages = SDRAM_MBCF_SZ_TO_PAGES(size);
-=======
 			nr_pages = SDRAM_MBCF_SZ_TO_PAGES(size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			ppc4xx_edac_mc_printk(KERN_ERR, mci,
@@ -1020,13 +943,6 @@ static int ppc4xx_edac_init_csrows(struct mem_ctl_info *mci, u32 mcopt1)
 			goto done;
 		}
 
-<<<<<<< HEAD
-		csi->first_page = ppc4xx_last_page;
-		csi->last_page	= csi->first_page + csi->nr_pages - 1;
-		csi->page_mask	= 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * It's unclear exactly what grain should be set to
 		 * here. The SDRAM_ECCES register allows resolution of
@@ -1039,17 +955,6 @@ static int ppc4xx_edac_init_csrows(struct mem_ctl_info *mci, u32 mcopt1)
 		 * possible values would be the PLB width (16), the
 		 * page size (PAGE_SIZE) or the memory width (2 or 4).
 		 */
-<<<<<<< HEAD
-
-		csi->grain	= 1;
-
-		csi->mtype	= mtype;
-		csi->dtype	= dtype;
-
-		csi->edac_mode	= edac_mode;
-
-		ppc4xx_last_page += csi->nr_pages;
-=======
 		for (j = 0; j < csi->nr_channels; j++) {
 			struct dimm_info *dimm = csi->channels[j]->dimm;
 
@@ -1061,7 +966,6 @@ static int ppc4xx_edac_init_csrows(struct mem_ctl_info *mci, u32 mcopt1)
 
 			dimm->edac_mode	= edac_mode;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
  done:
@@ -1086,17 +990,9 @@ static int ppc4xx_edac_init_csrows(struct mem_ctl_info *mci, u32 mcopt1)
  *
  * Returns 0 if OK; otherwise, < 0 on error.
  */
-<<<<<<< HEAD
-static int __devinit
-ppc4xx_edac_mc_init(struct mem_ctl_info *mci,
-		    struct platform_device *op,
-		    const dcr_host_t *dcr_host,
-		    u32 mcopt1)
-=======
 static int ppc4xx_edac_mc_init(struct mem_ctl_info *mci,
 			       struct platform_device *op,
 			       const dcr_host_t *dcr_host, u32 mcopt1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 	const u32 memcheck = (mcopt1 & SDRAM_MCOPT1_MCHK_MASK);
@@ -1108,24 +1004,13 @@ static int ppc4xx_edac_mc_init(struct mem_ctl_info *mci,
 
 	/* Initial driver pointers and private data */
 
-<<<<<<< HEAD
-	mci->dev		= &op->dev;
-
-	dev_set_drvdata(mci->dev, mci);
-=======
 	mci->pdev		= &op->dev;
 
 	dev_set_drvdata(mci->pdev, mci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata			= mci->pvt_info;
 
 	pdata->dcr_host		= *dcr_host;
-<<<<<<< HEAD
-	pdata->irqs.sec		= NO_IRQ;
-	pdata->irqs.ded		= NO_IRQ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize controller capabilities and configuration */
 
@@ -1160,12 +1045,7 @@ static int ppc4xx_edac_mc_init(struct mem_ctl_info *mci,
 	/* Initialize strings */
 
 	mci->mod_name		= PPC4XX_EDAC_MODULE_NAME;
-<<<<<<< HEAD
-	mci->mod_ver		= PPC4XX_EDAC_MODULE_REVISION;
-	mci->ctl_name		= ppc4xx_edac_match->compatible,
-=======
 	mci->ctl_name		= ppc4xx_edac_match->compatible;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->dev_name		= np->full_name;
 
 	/* Initialize callbacks */
@@ -1199,13 +1079,8 @@ static int ppc4xx_edac_mc_init(struct mem_ctl_info *mci,
  * Returns 0 if OK; otherwise, -ENODEV if the interrupts could not be
  * mapped and assigned.
  */
-<<<<<<< HEAD
-static int __devinit
-ppc4xx_edac_register_irq(struct platform_device *op, struct mem_ctl_info *mci)
-=======
 static int ppc4xx_edac_register_irq(struct platform_device *op,
 				    struct mem_ctl_info *mci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 	int ded_irq, sec_irq;
@@ -1215,11 +1090,7 @@ static int ppc4xx_edac_register_irq(struct platform_device *op,
 	ded_irq = irq_of_parse_and_map(np, INTMAP_ECCDED_INDEX);
 	sec_irq = irq_of_parse_and_map(np, INTMAP_ECCSEC_INDEX);
 
-<<<<<<< HEAD
-	if (ded_irq == NO_IRQ || sec_irq == NO_IRQ) {
-=======
 	if (!ded_irq || !sec_irq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ppc4xx_edac_mc_printk(KERN_ERR, mci,
 				      "Unable to map interrupts.\n");
 		status = -ENODEV;
@@ -1228,11 +1099,7 @@ static int ppc4xx_edac_register_irq(struct platform_device *op,
 
 	status = request_irq(ded_irq,
 			     ppc4xx_edac_isr,
-<<<<<<< HEAD
-			     IRQF_DISABLED,
-=======
 			     0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     "[EDAC] MC ECCDED",
 			     mci);
 
@@ -1246,11 +1113,7 @@ static int ppc4xx_edac_register_irq(struct platform_device *op,
 
 	status = request_irq(sec_irq,
 			     ppc4xx_edac_isr,
-<<<<<<< HEAD
-			     IRQF_DISABLED,
-=======
 			     0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     "[EDAC] MC ECCSEC",
 			     mci);
 
@@ -1294,13 +1157,8 @@ static int ppc4xx_edac_register_irq(struct platform_device *op,
  * Returns 0 if the DCRs were successfully mapped; otherwise, < 0 on
  * error.
  */
-<<<<<<< HEAD
-static int __devinit
-ppc4xx_edac_map_dcrs(const struct device_node *np, dcr_host_t *dcr_host)
-=======
 static int ppc4xx_edac_map_dcrs(const struct device_node *np,
 				dcr_host_t *dcr_host)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int dcr_base, dcr_len;
 
@@ -1348,21 +1206,14 @@ static int ppc4xx_edac_map_dcrs(const struct device_node *np,
  * Returns 0 if the controller instance was successfully bound to the
  * driver; otherwise, < 0 on error.
  */
-<<<<<<< HEAD
-static int __devinit ppc4xx_edac_probe(struct platform_device *op)
-=======
 static int ppc4xx_edac_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int status = 0;
 	u32 mcopt1, memcheck;
 	dcr_host_t dcr_host;
 	const struct device_node *np = op->dev.of_node;
 	struct mem_ctl_info *mci = NULL;
-<<<<<<< HEAD
-=======
 	struct edac_mc_layer layers[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static int ppc4xx_edac_instance;
 
 	/*
@@ -1397,13 +1248,8 @@ static int ppc4xx_edac_probe(struct platform_device *op)
 	memcheck = (mcopt1 & SDRAM_MCOPT1_MCHK_MASK);
 
 	if (memcheck == SDRAM_MCOPT1_MCHK_NON) {
-<<<<<<< HEAD
-		ppc4xx_edac_printk(KERN_INFO, "%s: No ECC memory detected or "
-				   "ECC is disabled.\n", np->full_name);
-=======
 		ppc4xx_edac_printk(KERN_INFO, "%pOF: No ECC memory detected or "
 				   "ECC is disabled.\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -ENODEV;
 		goto done;
 	}
@@ -1413,18 +1259,6 @@ static int ppc4xx_edac_probe(struct platform_device *op)
 	 * controller instance and perform the appropriate
 	 * initialization.
 	 */
-<<<<<<< HEAD
-
-	mci = edac_mc_alloc(sizeof(struct ppc4xx_edac_pdata),
-			    ppc4xx_edac_nr_csrows,
-			    ppc4xx_edac_nr_chans,
-			    ppc4xx_edac_instance);
-
-	if (mci == NULL) {
-		ppc4xx_edac_printk(KERN_ERR, "%s: "
-				   "Failed to allocate EDAC MC instance!\n",
-				   np->full_name);
-=======
 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
 	layers[0].size = ppc4xx_edac_nr_csrows;
 	layers[0].is_virt_csrow = true;
@@ -1437,7 +1271,6 @@ static int ppc4xx_edac_probe(struct platform_device *op)
 		ppc4xx_edac_printk(KERN_ERR, "%pOF: "
 				   "Failed to allocate EDAC MC instance!\n",
 				   np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -ENOMEM;
 		goto done;
 	}
@@ -1475,11 +1308,7 @@ static int ppc4xx_edac_probe(struct platform_device *op)
 	return 0;
 
  fail1:
-<<<<<<< HEAD
-	edac_mc_del_mc(mci->dev);
-=======
 	edac_mc_del_mc(mci->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  fail:
 	edac_mc_free(mci);
@@ -1500,12 +1329,7 @@ static int ppc4xx_edac_probe(struct platform_device *op)
  *
  * Unconditionally returns 0.
  */
-<<<<<<< HEAD
-static int
-ppc4xx_edac_remove(struct platform_device *op)
-=======
 static void ppc4xx_edac_remove(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mem_ctl_info *mci = dev_get_drvdata(&op->dev);
 	struct ppc4xx_edac_pdata *pdata = mci->pvt_info;
@@ -1517,15 +1341,8 @@ static void ppc4xx_edac_remove(struct platform_device *op)
 
 	dcr_unmap(pdata->dcr_host, SDRAM_DCR_RESOURCE_LEN);
 
-<<<<<<< HEAD
-	edac_mc_del_mc(mci->dev);
-	edac_mc_free(mci);
-
-	return 0;
-=======
 	edac_mc_del_mc(mci->pdev);
 	edac_mc_free(mci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1557,8 +1374,6 @@ ppc4xx_edac_opstate_init(void)
 			     EDAC_OPSTATE_UNKNOWN_STR)));
 }
 
-<<<<<<< HEAD
-=======
 static struct platform_driver ppc4xx_edac_driver = {
 	.probe			= ppc4xx_edac_probe,
 	.remove_new		= ppc4xx_edac_remove,
@@ -1568,7 +1383,6 @@ static struct platform_driver ppc4xx_edac_driver = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ppc4xx_edac_init - driver/module insertion entry point
  *

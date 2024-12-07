@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Written by Kanoj Sarcar (kanoj@sgi.com) Aug 99
  *
@@ -21,11 +18,7 @@
  *    flags field of the struct page
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_NEED_MULTIPLE_NODES
-=======
 #ifdef CONFIG_NUMA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct pglist_data *node_data[];
 /*
@@ -48,11 +41,7 @@ u64 memory_hotplug_max(void);
 
 #else
 #define memory_hotplug_max() memblock_end_of_DRAM()
-<<<<<<< HEAD
-#endif /* CONFIG_NEED_MULTIPLE_NODES */
-=======
 #endif /* CONFIG_NUMA */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 #endif /* _ASM_MMZONE_H_ */

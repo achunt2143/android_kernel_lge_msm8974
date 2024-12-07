@@ -1,28 +1,6 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * Copyright (C) 2004, 2005 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2004, 2005 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,11 +8,7 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "masklog.h"
 
@@ -59,15 +33,6 @@ static ssize_t mlog_mask_show(u64 mask, char *buf)
 
 static ssize_t mlog_mask_store(u64 mask, const char *buf, size_t count)
 {
-<<<<<<< HEAD
-	if (!strnicmp(buf, "allow", 5)) {
-		__mlog_set_u64(mask, mlog_and_bits);
-		__mlog_clear_u64(mask, mlog_not_bits);
-	} else if (!strnicmp(buf, "deny", 4)) {
-		__mlog_set_u64(mask, mlog_not_bits);
-		__mlog_clear_u64(mask, mlog_and_bits);
-	} else if (!strnicmp(buf, "off", 3)) {
-=======
 	if (!strncasecmp(buf, "allow", 5)) {
 		__mlog_set_u64(mask, mlog_and_bits);
 		__mlog_clear_u64(mask, mlog_not_bits);
@@ -75,7 +40,6 @@ static ssize_t mlog_mask_store(u64 mask, const char *buf, size_t count)
 		__mlog_set_u64(mask, mlog_not_bits);
 		__mlog_clear_u64(mask, mlog_and_bits);
 	} else if (!strncasecmp(buf, "off", 3)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__mlog_clear_u64(mask, mlog_not_bits);
 		__mlog_clear_u64(mask, mlog_and_bits);
 	} else
@@ -84,8 +48,6 @@ static ssize_t mlog_mask_store(u64 mask, const char *buf, size_t count)
 	return count;
 }
 
-<<<<<<< HEAD
-=======
 void __mlog_printk(const u64 *mask, const char *func, int line,
 		   const char *fmt, ...)
 {
@@ -120,7 +82,6 @@ void __mlog_printk(const u64 *mask, const char *func, int line,
 }
 EXPORT_SYMBOL_GPL(__mlog_printk);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlog_attribute {
 	struct attribute attr;
 	u64 mask;
@@ -159,12 +120,8 @@ static struct mlog_attribute mlog_attrs[MLOG_MAX_BITS] = {
 	define_mask(KTHREAD),
 };
 
-<<<<<<< HEAD
-static struct attribute *mlog_attr_ptrs[MLOG_MAX_BITS] = {NULL, };
-=======
 static struct attribute *mlog_default_attrs[MLOG_MAX_BITS] = {NULL, };
 ATTRIBUTE_GROUPS(mlog_default);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t mlog_show(struct kobject *obj, struct attribute *attr,
 			 char *buf)
@@ -188,13 +145,8 @@ static const struct sysfs_ops mlog_attr_ops = {
 };
 
 static struct kobj_type mlog_ktype = {
-<<<<<<< HEAD
-	.default_attrs = mlog_attr_ptrs,
-	.sysfs_ops     = &mlog_attr_ops,
-=======
 	.default_groups = mlog_default_groups,
 	.sysfs_ops      = &mlog_attr_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct kset mlog_kset = {
@@ -206,17 +158,10 @@ int mlog_sys_init(struct kset *o2cb_kset)
 	int i = 0;
 
 	while (mlog_attrs[i].attr.mode) {
-<<<<<<< HEAD
-		mlog_attr_ptrs[i] = &mlog_attrs[i].attr;
-		i++;
-	}
-	mlog_attr_ptrs[i] = NULL;
-=======
 		mlog_default_attrs[i] = &mlog_attrs[i].attr;
 		i++;
 	}
 	mlog_default_attrs[i] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kobject_set_name(&mlog_kset.kobj, "logmask");
 	mlog_kset.kobj.kset = o2cb_kset;

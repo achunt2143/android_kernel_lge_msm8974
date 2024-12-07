@@ -1,29 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* arch/sparc64/mm/tlb.c
  *
  * Copyright (C) 2004 David S. Miller <davem@redhat.com>
  */
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/percpu.h>
 #include <linux/mm.h>
 #include <linux/swap.h>
 #include <linux/preempt.h>
-<<<<<<< HEAD
-
-#include <asm/pgtable.h>
-#include <asm/pgalloc.h>
-=======
 #include <linux/pagemap.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlbflush.h>
 #include <asm/cacheflush.h>
 #include <asm/mmu_context.h>
@@ -65,79 +52,30 @@ out:
 
 void arch_enter_lazy_mmu_mode(void)
 {
-<<<<<<< HEAD
-	struct tlb_batch *tb = &__get_cpu_var(tlb_batch);
-=======
 	struct tlb_batch *tb = this_cpu_ptr(&tlb_batch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tb->active = 1;
 }
 
 void arch_leave_lazy_mmu_mode(void)
 {
-<<<<<<< HEAD
-	struct tlb_batch *tb = &__get_cpu_var(tlb_batch);
-=======
 	struct tlb_batch *tb = this_cpu_ptr(&tlb_batch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tb->tlb_nr)
 		flush_tlb_pending();
 	tb->active = 0;
 }
 
-<<<<<<< HEAD
-void tlb_batch_add(struct mm_struct *mm, unsigned long vaddr,
-		   pte_t *ptep, pte_t orig, int fullmm)
-=======
 static void tlb_batch_add_one(struct mm_struct *mm, unsigned long vaddr,
 			      bool exec, unsigned int hugepage_shift)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tlb_batch *tb = &get_cpu_var(tlb_batch);
 	unsigned long nr;
 
 	vaddr &= PAGE_MASK;
-<<<<<<< HEAD
-	if (pte_exec(orig))
-		vaddr |= 0x1UL;
-
-	if (tlb_type != hypervisor &&
-	    pte_dirty(orig)) {
-		unsigned long paddr, pfn = pte_pfn(orig);
-		struct address_space *mapping;
-		struct page *page;
-
-		if (!pfn_valid(pfn))
-			goto no_cache_flush;
-
-		page = pfn_to_page(pfn);
-		if (PageReserved(page))
-			goto no_cache_flush;
-
-		/* A real file page? */
-		mapping = page_mapping(page);
-		if (!mapping)
-			goto no_cache_flush;
-
-		paddr = (unsigned long) page_address(page);
-		if ((paddr ^ vaddr) & (1 << 13))
-			flush_dcache_page_all(mm, page);
-	}
-
-no_cache_flush:
-
-	if (fullmm) {
-		put_cpu_var(tlb_batch);
-		return;
-	}
-
-=======
 	if (exec)
 		vaddr |= 0x1UL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr = tb->tlb_nr;
 
 	if (unlikely(nr != 0 && mm != tb->mm)) {
@@ -146,19 +84,11 @@ no_cache_flush:
 	}
 
 	if (!tb->active) {
-<<<<<<< HEAD
-		flush_tsb_user_page(mm, vaddr);
-=======
 		flush_tsb_user_page(mm, vaddr, hugepage_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		global_flush_tlb_page(mm, vaddr);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	if (nr == 0)
-		tb->mm = mm;
-=======
 	if (nr == 0) {
 		tb->mm = mm;
 		tb->hugepage_shift = hugepage_shift;
@@ -169,7 +99,6 @@ no_cache_flush:
 		tb->hugepage_shift = hugepage_shift;
 		nr = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tb->vaddrs[nr] = vaddr;
 	tb->tlb_nr = ++nr;
@@ -179,8 +108,6 @@ no_cache_flush:
 out:
 	put_cpu_var(tlb_batch);
 }
-<<<<<<< HEAD
-=======
 
 void tlb_batch_add(struct mm_struct *mm, unsigned long vaddr,
 		   pte_t *ptep, pte_t orig, int fullmm,
@@ -375,4 +302,3 @@ pgtable_t pgtable_trans_huge_withdraw(struct mm_struct *mm, pmd_t *pmdp)
 	return pgtable;
 }
 #endif /* CONFIG_TRANSPARENT_HUGEPAGE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,27 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * sysfs attributes.
  *
-<<<<<<< HEAD
- * Copyright IBM Corporation 2008, 2010
-=======
  * Copyright IBM Corp. 2008, 2020
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "zfcp"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include "zfcp_diag.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "zfcp_ext.h"
 
 #define ZFCP_DEV_ATTR(_feat, _name, _mode, _show, _store) \
@@ -39,8 +29,6 @@ static ssize_t zfcp_sysfs_##_feat##_##_name##_show(struct device *dev,	       \
 static ZFCP_DEV_ATTR(_feat, _name, S_IRUGO,				       \
 		     zfcp_sysfs_##_feat##_##_name##_show, NULL);
 
-<<<<<<< HEAD
-=======
 #define ZFCP_DEFINE_ATTR_CONST(_feat, _name, _format, _value)		       \
 static ssize_t zfcp_sysfs_##_feat##_##_name##_show(struct device *dev,	       \
 						   struct device_attribute *at,\
@@ -51,7 +39,6 @@ static ssize_t zfcp_sysfs_##_feat##_##_name##_show(struct device *dev,	       \
 static ZFCP_DEV_ATTR(_feat, _name, S_IRUGO,				       \
 		     zfcp_sysfs_##_feat##_##_name##_show, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ZFCP_DEFINE_A_ATTR(_name, _format, _value)			     \
 static ssize_t zfcp_sysfs_adapter_##_name##_show(struct device *dev,	     \
 						 struct device_attribute *at,\
@@ -88,13 +75,7 @@ ZFCP_DEFINE_ATTR(zfcp_port, port, status, "0x%08x\n",
 ZFCP_DEFINE_ATTR(zfcp_port, port, in_recovery, "%d\n",
 		 (atomic_read(&port->status) &
 		  ZFCP_STATUS_COMMON_ERP_INUSE) != 0);
-<<<<<<< HEAD
-ZFCP_DEFINE_ATTR(zfcp_port, port, access_denied, "%d\n",
-		 (atomic_read(&port->status) &
-		  ZFCP_STATUS_COMMON_ACCESS_DENIED) != 0);
-=======
 ZFCP_DEFINE_ATTR_CONST(port, access_denied, "%d\n", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ZFCP_DEFINE_ATTR(zfcp_unit, unit, status, "0x%08x\n",
 		 zfcp_unit_sdev_status(unit));
@@ -104,17 +85,8 @@ ZFCP_DEFINE_ATTR(zfcp_unit, unit, in_recovery, "%d\n",
 ZFCP_DEFINE_ATTR(zfcp_unit, unit, access_denied, "%d\n",
 		 (zfcp_unit_sdev_status(unit) &
 		  ZFCP_STATUS_COMMON_ACCESS_DENIED) != 0);
-<<<<<<< HEAD
-ZFCP_DEFINE_ATTR(zfcp_unit, unit, access_shared, "%d\n",
-		 (zfcp_unit_sdev_status(unit) &
-		  ZFCP_STATUS_LUN_SHARED) != 0);
-ZFCP_DEFINE_ATTR(zfcp_unit, unit, access_readonly, "%d\n",
-		 (zfcp_unit_sdev_status(unit) &
-		  ZFCP_STATUS_LUN_READONLY) != 0);
-=======
 ZFCP_DEFINE_ATTR_CONST(unit, access_shared, "%d\n", 0);
 ZFCP_DEFINE_ATTR_CONST(unit, access_readonly, "%d\n", 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t zfcp_sysfs_port_failed_show(struct device *dev,
 					   struct device_attribute *attr,
@@ -135,11 +107,7 @@ static ssize_t zfcp_sysfs_port_failed_store(struct device *dev,
 	struct zfcp_port *port = container_of(dev, struct zfcp_port, dev);
 	unsigned long val;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 0, &val) || val != 0)
-=======
 	if (kstrtoul(buf, 0, &val) || val != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	zfcp_erp_set_port_status(port, ZFCP_STATUS_COMMON_RUNNING);
@@ -178,11 +146,7 @@ static ssize_t zfcp_sysfs_unit_failed_store(struct device *dev,
 	unsigned long val;
 	struct scsi_device *sdev;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 0, &val) || val != 0)
-=======
 	if (kstrtoul(buf, 0, &val) || val != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	sdev = zfcp_unit_sdev(unit);
@@ -232,23 +196,12 @@ static ssize_t zfcp_sysfs_adapter_failed_store(struct device *dev,
 	if (!adapter)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 0, &val) || val != 0) {
-=======
 	if (kstrtoul(buf, 0, &val) || val != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EINVAL;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	zfcp_erp_set_adapter_status(adapter, ZFCP_STATUS_COMMON_RUNNING);
-	zfcp_erp_adapter_reopen(adapter, ZFCP_STATUS_COMMON_ERP_FAILED,
-				"syafai2");
-	zfcp_erp_wait(adapter);
-=======
 	zfcp_erp_adapter_reset_sync(adapter, "syafai2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	zfcp_ccw_adapter_put(adapter);
 	return retval ? retval : (ssize_t) count;
@@ -263,22 +216,11 @@ static ssize_t zfcp_sysfs_port_rescan_store(struct device *dev,
 {
 	struct ccw_device *cdev = to_ccwdev(dev);
 	struct zfcp_adapter *adapter = zfcp_ccw_adapter_by_cdev(cdev);
-<<<<<<< HEAD
-=======
 	int retval = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!adapter)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	/* sync the user-space- with the kernel-invocation of scan_work */
-	queue_work(adapter->work_queue, &adapter->scan_work);
-	flush_work(&adapter->scan_work);
-	zfcp_ccw_adapter_put(adapter);
-
-	return (ssize_t) count;
-=======
 	/*
 	 * If `scsi_host` is missing, we can't schedule `scan_work`, as it
 	 * makes use of the corresponding fc_host object. But this state is
@@ -300,15 +242,12 @@ static ssize_t zfcp_sysfs_port_rescan_store(struct device *dev,
 out:
 	zfcp_ccw_adapter_put(adapter);
 	return retval ? retval : (ssize_t) count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static ZFCP_DEV_ATTR(adapter, port_rescan, S_IWUSR, NULL,
 		     zfcp_sysfs_port_rescan_store);
 
 DEFINE_MUTEX(zfcp_sysfs_port_units_mutex);
 
-<<<<<<< HEAD
-=======
 static void zfcp_sysfs_port_set_removing(struct zfcp_port *const port)
 {
 	lockdep_assert_held(&zfcp_sysfs_port_units_mutex);
@@ -356,7 +295,6 @@ unlock_port_units_mutex:
 	return in_use;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 					    struct device_attribute *attr,
 					    const char *buf, size_t count)
@@ -370,11 +308,7 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 	if (!adapter)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (strict_strtoull(buf, 0, (unsigned long long *) &wwpn))
-=======
 	if (kstrtoull(buf, 0, (unsigned long long *) &wwpn))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	port = zfcp_get_port_by_wwpn(adapter, wwpn);
@@ -383,39 +317,20 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 	else
 		retval = 0;
 
-<<<<<<< HEAD
-	mutex_lock(&zfcp_sysfs_port_units_mutex);
-	if (atomic_read(&port->units) > 0) {
-		retval = -EBUSY;
-		mutex_unlock(&zfcp_sysfs_port_units_mutex);
-		goto out;
-	}
-	/* port is about to be removed, so no more unit_add */
-	atomic_set(&port->units, -1);
-	mutex_unlock(&zfcp_sysfs_port_units_mutex);
-=======
 	if (zfcp_sysfs_port_in_use(port)) {
 		retval = -EBUSY;
 		put_device(&port->dev); /* undo zfcp_get_port_by_wwpn() */
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_irq(&adapter->port_list_lock);
 	list_del(&port->list);
 	write_unlock_irq(&adapter->port_list_lock);
 
-<<<<<<< HEAD
-	put_device(&port->dev);
-
-	zfcp_erp_port_shutdown(port, 0, "syprs_1");
-	zfcp_device_unregister(&port->dev, &zfcp_sysfs_port_attrs);
-=======
 	zfcp_erp_port_shutdown(port, 0, "syprs_1");
 	device_unregister(&port->dev);
 
 	put_device(&port->dev); /* undo zfcp_get_port_by_wwpn() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	zfcp_ccw_adapter_put(adapter);
 	return retval ? retval : (ssize_t) count;
@@ -423,8 +338,6 @@ static ssize_t zfcp_sysfs_port_remove_store(struct device *dev,
 static ZFCP_DEV_ATTR(adapter, port_remove, S_IWUSR, NULL,
 		     zfcp_sysfs_port_remove_store);
 
-<<<<<<< HEAD
-=======
 static ssize_t
 zfcp_sysfs_adapter_diag_max_age_show(struct device *dev,
 				     struct device_attribute *attr, char *buf)
@@ -505,7 +418,6 @@ static ZFCP_DEV_ATTR(adapter, fc_security, S_IRUGO,
 		     zfcp_sysfs_adapter_fc_security_show,
 		     NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *zfcp_adapter_attrs[] = {
 	&dev_attr_adapter_failed.attr,
 	&dev_attr_adapter_in_recovery.attr,
@@ -518,19 +430,12 @@ static struct attribute *zfcp_adapter_attrs[] = {
 	&dev_attr_adapter_lic_version.attr,
 	&dev_attr_adapter_status.attr,
 	&dev_attr_adapter_hardware_version.attr,
-<<<<<<< HEAD
-	NULL
-};
-
-struct attribute_group zfcp_sysfs_adapter_attrs = {
-=======
 	&dev_attr_adapter_diag_max_age.attr,
 	&dev_attr_adapter_fc_security.attr,
 	NULL
 };
 
 static const struct attribute_group zfcp_sysfs_adapter_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = zfcp_adapter_attrs,
 };
 
@@ -542,11 +447,7 @@ static ssize_t zfcp_sysfs_unit_add_store(struct device *dev,
 	u64 fcp_lun;
 	int retval;
 
-<<<<<<< HEAD
-	if (strict_strtoull(buf, 0, (unsigned long long *) &fcp_lun))
-=======
 	if (kstrtoull(buf, 0, (unsigned long long *) &fcp_lun))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	retval = zfcp_unit_add(port, fcp_lun);
@@ -564,11 +465,7 @@ static ssize_t zfcp_sysfs_unit_remove_store(struct device *dev,
 	struct zfcp_port *port = container_of(dev, struct zfcp_port, dev);
 	u64 fcp_lun;
 
-<<<<<<< HEAD
-	if (strict_strtoull(buf, 0, (unsigned long long *) &fcp_lun))
-=======
 	if (kstrtoull(buf, 0, (unsigned long long *) &fcp_lun))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (zfcp_unit_remove(port, fcp_lun))
@@ -578,8 +475,6 @@ static ssize_t zfcp_sysfs_unit_remove_store(struct device *dev,
 }
 static DEVICE_ATTR(unit_remove, S_IWUSR, NULL, zfcp_sysfs_unit_remove_store);
 
-<<<<<<< HEAD
-=======
 static ssize_t zfcp_sysfs_port_fc_security_show(struct device *dev,
 						struct device_attribute *attr,
 						char *buf)
@@ -611,7 +506,6 @@ static ZFCP_DEV_ATTR(port, fc_security, S_IRUGO,
 		     zfcp_sysfs_port_fc_security_show,
 		     NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *zfcp_port_attrs[] = {
 	&dev_attr_unit_add.attr,
 	&dev_attr_unit_remove.attr,
@@ -619,17 +513,6 @@ static struct attribute *zfcp_port_attrs[] = {
 	&dev_attr_port_in_recovery.attr,
 	&dev_attr_port_status.attr,
 	&dev_attr_port_access_denied.attr,
-<<<<<<< HEAD
-	NULL
-};
-
-/**
- * zfcp_sysfs_port_attrs - sysfs attributes for all other ports
- */
-struct attribute_group zfcp_sysfs_port_attrs = {
-	.attrs = zfcp_port_attrs,
-};
-=======
 	&dev_attr_port_fc_security.attr,
 	NULL
 };
@@ -640,7 +523,6 @@ const struct attribute_group *zfcp_port_attr_groups[] = {
 	&zfcp_port_attr_group,
 	NULL,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *zfcp_unit_attrs[] = {
 	&dev_attr_unit_failed.attr,
@@ -651,12 +533,6 @@ static struct attribute *zfcp_unit_attrs[] = {
 	&dev_attr_unit_access_readonly.attr,
 	NULL
 };
-<<<<<<< HEAD
-
-struct attribute_group zfcp_sysfs_unit_attrs = {
-	.attrs = zfcp_unit_attrs,
-};
-=======
 static struct attribute_group zfcp_unit_attr_group = {
 	.attrs = zfcp_unit_attrs,
 };
@@ -664,7 +540,6 @@ const struct attribute_group *zfcp_unit_attr_groups[] = {
 	&zfcp_unit_attr_group,
 	NULL,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ZFCP_DEFINE_LATENCY_ATTR(_name) 				\
 static ssize_t								\
@@ -734,25 +609,15 @@ static ssize_t zfcp_sysfs_scsi_##_name##_show(struct device *dev,	\
 {                                                                        \
 	struct scsi_device *sdev = to_scsi_device(dev);			 \
 	struct zfcp_scsi_dev *zfcp_sdev = sdev_to_zfcp(sdev);		 \
-<<<<<<< HEAD
-	struct zfcp_port *port = zfcp_sdev->port;			 \
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									 \
 	return sprintf(buf, _format, _value);                            \
 }                                                                        \
 static DEVICE_ATTR(_name, S_IRUGO, zfcp_sysfs_scsi_##_name##_show, NULL);
 
 ZFCP_DEFINE_SCSI_ATTR(hba_id, "%s\n",
-<<<<<<< HEAD
-		      dev_name(&port->adapter->ccw_device->dev));
-ZFCP_DEFINE_SCSI_ATTR(wwpn, "0x%016llx\n",
-		      (unsigned long long) port->wwpn);
-=======
 		      dev_name(&zfcp_sdev->port->adapter->ccw_device->dev));
 ZFCP_DEFINE_SCSI_ATTR(wwpn, "0x%016llx\n",
 		      (unsigned long long) zfcp_sdev->port->wwpn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t zfcp_sysfs_scsi_fcp_lun_show(struct device *dev,
 					    struct device_attribute *attr,
@@ -764,15 +629,6 @@ static ssize_t zfcp_sysfs_scsi_fcp_lun_show(struct device *dev,
 }
 static DEVICE_ATTR(fcp_lun, S_IRUGO, zfcp_sysfs_scsi_fcp_lun_show, NULL);
 
-<<<<<<< HEAD
-struct device_attribute *zfcp_sysfs_sdev_attrs[] = {
-	&dev_attr_fcp_lun,
-	&dev_attr_wwpn,
-	&dev_attr_hba_id,
-	&dev_attr_read_latency,
-	&dev_attr_write_latency,
-	&dev_attr_cmd_latency,
-=======
 ZFCP_DEFINE_SCSI_ATTR(zfcp_access_denied, "%d\n",
 		      (atomic_read(&zfcp_sdev->status) &
 		       ZFCP_STATUS_COMMON_ACCESS_DENIED) != 0);
@@ -836,7 +692,6 @@ static const struct attribute_group zfcp_sysfs_sdev_attr_group = {
 
 const struct attribute_group *zfcp_sysfs_sdev_attr_groups[] = {
 	&zfcp_sysfs_sdev_attr_group,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
@@ -858,11 +713,7 @@ static ssize_t zfcp_sysfs_adapter_util_show(struct device *dev,
 		return -ENOMEM;
 
 	retval = zfcp_fsf_exchange_port_data_sync(adapter->qdio, qtcb_port);
-<<<<<<< HEAD
-	if (!retval)
-=======
 	if (retval == 0 || retval == -EAGAIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = sprintf(buf, "%u %u %u\n", qtcb_port->cp_util,
 				 qtcb_port->cb_util, qtcb_port->a_util);
 	kfree(qtcb_port);
@@ -888,11 +739,7 @@ static int zfcp_sysfs_adapter_ex_config(struct device *dev,
 		return -ENOMEM;
 
 	retval = zfcp_fsf_exchange_config_data_sync(adapter->qdio, qtcb_config);
-<<<<<<< HEAD
-	if (!retval)
-=======
 	if (retval == 0 || retval == -EAGAIN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*stat_inf = qtcb_config->stat_info;
 
 	kfree(qtcb_config);
@@ -945,16 +792,6 @@ static ssize_t zfcp_sysfs_adapter_q_full_show(struct device *dev,
 }
 static DEVICE_ATTR(queue_full, S_IRUGO, zfcp_sysfs_adapter_q_full_show, NULL);
 
-<<<<<<< HEAD
-struct device_attribute *zfcp_sysfs_shost_attrs[] = {
-	&dev_attr_utilization,
-	&dev_attr_requests,
-	&dev_attr_megabytes,
-	&dev_attr_seconds_active,
-	&dev_attr_queue_full,
-	NULL
-};
-=======
 static struct attribute *zfcp_sysfs_shost_attrs[] = {
 	&dev_attr_utilization.attr,
 	&dev_attr_requests.attr,
@@ -1098,4 +935,3 @@ const struct attribute_group *zfcp_sysfs_adapter_attr_groups[] = {
 	&zfcp_sysfs_diag_attr_group,
 	NULL,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

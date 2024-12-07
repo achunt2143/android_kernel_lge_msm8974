@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-#ifndef _PASEMI_PASEMI_H
-#define _PASEMI_PASEMI_H
-
-extern unsigned long pas_get_boot_time(void);
-extern void pas_pci_init(void);
-extern void __devinit pas_pci_irq_fixup(struct pci_dev *dev);
-extern void __devinit pas_pci_dma_dev_setup(struct pci_dev *dev);
-
-extern void __iomem *pasemi_pci_getcfgaddr(struct pci_dev *dev, int offset);
-
-extern void __init alloc_iobmap_l2(void);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _PASEMI_PASEMI_H
 #define _PASEMI_PASEMI_H
@@ -23,7 +10,6 @@ extern void pas_pci_dma_dev_setup(struct pci_dev *dev);
 
 void __iomem *__init pasemi_pci_getcfgaddr(struct pci_dev *dev, int offset);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void __init pasemi_map_registers(void);
 
 /* Power savings modes, implemented in asm */
@@ -45,9 +31,6 @@ static inline void restore_astate(int cpu)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 extern struct pci_controller_ops pasemi_pci_controller_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _PASEMI_PASEMI_H */

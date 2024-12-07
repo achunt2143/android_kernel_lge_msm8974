@@ -21,11 +21,7 @@
       supports a variety of varients of Interphase ATM PCI (i)Chip adapter 
       card family (See www.iphase.com/products/ClassSheet.cfm?ClassID=ATM) 
       in terms of PHY type, the size of control memory and the size of 
-<<<<<<< HEAD
-      packet memory. The followings are the change log and history:
-=======
       packet memory. The following are the change log and history:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      
           Bugfix the Mona's UBR driver.
           Modify the basic memory allocation and dma logic.
@@ -128,10 +124,6 @@
 #define IF_RXPKT(A)
 #endif /* CONFIG_ATM_IA_DEBUG */ 
 
-<<<<<<< HEAD
-#define isprint(a) ((a >=' ')&&(a <= '~'))  
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATM_DESC(skb) (skb->protocol)
 #define IA_SKB_STATE(skb) (skb->protocol)
 #define IA_DLED   1

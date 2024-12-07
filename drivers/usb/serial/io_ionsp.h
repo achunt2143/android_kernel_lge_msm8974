@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************************
  *
  *	IONSP.H		Definitions for I/O Networks Serial Protocol
  *
  *	Copyright (C) 1997-1998 Inside Out Networks, Inc.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	These definitions are used by both kernel-mode driver and the
  *	peripheral firmware and MUST be kept in sync.
  *

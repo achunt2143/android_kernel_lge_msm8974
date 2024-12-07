@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/host/pxa.c - PXA MMCI driver
  *
  *  Copyright (C) 2003 Russell King, All Rights Reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This hardware is really sick:
  *   - No way to clear interrupts.
  *   - Have to turn off the clock whenever we touch the device.
@@ -29,26 +19,11 @@
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-=======
 #include <linux/dmaengine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/mmc/host.h>
-<<<<<<< HEAD
-#include <linux/io.h>
-#include <linux/regulator/consumer.h>
-#include <linux/gpio.h>
-#include <linux/gfp.h>
-
-#include <asm/sizes.h>
-
-#include <mach/hardware.h>
-#include <mach/dma.h>
-#include <mach/mmc.h>
-=======
 #include <linux/mmc/slot-gpio.h>
 #include <linux/io.h>
 #include <linux/regulator/consumer.h>
@@ -60,7 +35,6 @@
 #include <linux/sizes.h>
 
 #include <linux/platform_data/mmc-pxamci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "pxamci.h"
 
@@ -79,60 +53,19 @@ struct pxamci_host {
 	void __iomem		*base;
 	struct clk		*clk;
 	unsigned long		clkrate;
-<<<<<<< HEAD
-	int			irq;
-	int			dma;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		clkrt;
 	unsigned int		cmdat;
 	unsigned int		imask;
 	unsigned int		power_mode;
-<<<<<<< HEAD
-=======
 	unsigned long		detect_delay_ms;
 	bool			use_ro_gpio;
 	struct gpio_desc	*power;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pxamci_platform_data *pdata;
 
 	struct mmc_request	*mrq;
 	struct mmc_command	*cmd;
 	struct mmc_data		*data;
 
-<<<<<<< HEAD
-	dma_addr_t		sg_dma;
-	struct pxa_dma_desc	*sg_cpu;
-	unsigned int		dma_len;
-
-	unsigned int		dma_dir;
-	unsigned int		dma_drcmrrx;
-	unsigned int		dma_drcmrtx;
-
-	struct regulator	*vcc;
-};
-
-static inline void pxamci_init_ocr(struct pxamci_host *host)
-{
-#ifdef CONFIG_REGULATOR
-	host->vcc = regulator_get(mmc_dev(host->mmc), "vmmc");
-
-	if (IS_ERR(host->vcc))
-		host->vcc = NULL;
-	else {
-		host->mmc->ocr_avail = mmc_regulator_get_ocrmask(host->vcc);
-		if (host->pdata && host->pdata->ocr_mask)
-			dev_warn(mmc_dev(host->mmc),
-				"ocr_mask/setpower will not be used\n");
-	}
-#endif
-	if (host->vcc == NULL) {
-		/* fall-back to platform data */
-		host->mmc->ocr_avail = host->pdata ?
-			host->pdata->ocr_mask :
-			MMC_VDD_32_33 | MMC_VDD_33_34;
-	}
-=======
 	struct dma_chan		*dma_chan_rx;
 	struct dma_chan		*dma_chan_tx;
 	dma_cookie_t		dma_cookie;
@@ -157,38 +90,12 @@ static int pxamci_init_ocr(struct pxamci_host *host)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int pxamci_set_power(struct pxamci_host *host,
 				    unsigned char power_mode,
 				    unsigned int vdd)
 {
-<<<<<<< HEAD
-	int on;
-
-	if (host->vcc) {
-		int ret;
-
-		if (power_mode == MMC_POWER_UP) {
-			ret = mmc_regulator_set_ocr(host->mmc, host->vcc, vdd);
-			if (ret)
-				return ret;
-		} else if (power_mode == MMC_POWER_OFF) {
-			ret = mmc_regulator_set_ocr(host->mmc, host->vcc, 0);
-			if (ret)
-				return ret;
-		}
-	}
-	if (!host->vcc && host->pdata &&
-	    gpio_is_valid(host->pdata->gpio_power)) {
-		on = ((1 << vdd) & host->pdata->ocr_mask);
-		gpio_set_value(host->pdata->gpio_power,
-			       !!on ^ host->pdata->gpio_power_invert);
-	}
-	if (!host->vcc && host->pdata && host->pdata->setpower)
-		host->pdata->setpower(mmc_dev(host->mmc), vdd);
-=======
 	struct mmc_host *mmc = host->mmc;
 	struct regulator *supply = mmc->supply.vmmc;
 
@@ -202,7 +109,6 @@ static inline int pxamci_set_power(struct pxamci_host *host,
 
 	if (host->pdata && host->pdata->setpower)
 		return host->pdata->setpower(mmc_dev(host->mmc), vdd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -247,22 +153,6 @@ static void pxamci_disable_irq(struct pxamci_host *host, unsigned int mask)
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
-<<<<<<< HEAD
-static void pxamci_setup_data(struct pxamci_host *host, struct mmc_data *data)
-{
-	unsigned int nob = data->blocks;
-	unsigned long long clks;
-	unsigned int timeout;
-	bool dalgn = 0;
-	u32 dcmd;
-	int i;
-
-	host->data = data;
-
-	if (data->flags & MMC_DATA_STREAM)
-		nob = 0xffff;
-
-=======
 static void pxamci_dma_irq(void *param);
 
 static void pxamci_setup_data(struct pxamci_host *host, struct mmc_data *data)
@@ -278,7 +168,6 @@ static void pxamci_setup_data(struct pxamci_host *host, struct mmc_data *data)
 
 	host->data = data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(nob, host->base + MMC_NOB);
 	writel(data->blksz, host->base + MMC_BLKLEN);
 
@@ -287,56 +176,6 @@ static void pxamci_setup_data(struct pxamci_host *host, struct mmc_data *data)
 	timeout = (unsigned int)clks + (data->timeout_clks << host->clkrt);
 	writel((timeout + 255) / 256, host->base + MMC_RDTO);
 
-<<<<<<< HEAD
-	if (data->flags & MMC_DATA_READ) {
-		host->dma_dir = DMA_FROM_DEVICE;
-		dcmd = DCMD_INCTRGADDR | DCMD_FLOWSRC;
-		DRCMR(host->dma_drcmrtx) = 0;
-		DRCMR(host->dma_drcmrrx) = host->dma | DRCMR_MAPVLD;
-	} else {
-		host->dma_dir = DMA_TO_DEVICE;
-		dcmd = DCMD_INCSRCADDR | DCMD_FLOWTRG;
-		DRCMR(host->dma_drcmrrx) = 0;
-		DRCMR(host->dma_drcmrtx) = host->dma | DRCMR_MAPVLD;
-	}
-
-	dcmd |= DCMD_BURST32 | DCMD_WIDTH1;
-
-	host->dma_len = dma_map_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
-				   host->dma_dir);
-
-	for (i = 0; i < host->dma_len; i++) {
-		unsigned int length = sg_dma_len(&data->sg[i]);
-		host->sg_cpu[i].dcmd = dcmd | length;
-		if (length & 31 && !(data->flags & MMC_DATA_READ))
-			host->sg_cpu[i].dcmd |= DCMD_ENDIRQEN;
-		/* Not aligned to 8-byte boundary? */
-		if (sg_dma_address(&data->sg[i]) & 0x7)
-			dalgn = 1;
-		if (data->flags & MMC_DATA_READ) {
-			host->sg_cpu[i].dsadr = host->res->start + MMC_RXFIFO;
-			host->sg_cpu[i].dtadr = sg_dma_address(&data->sg[i]);
-		} else {
-			host->sg_cpu[i].dsadr = sg_dma_address(&data->sg[i]);
-			host->sg_cpu[i].dtadr = host->res->start + MMC_TXFIFO;
-		}
-		host->sg_cpu[i].ddadr = host->sg_dma + (i + 1) *
-					sizeof(struct pxa_dma_desc);
-	}
-	host->sg_cpu[host->dma_len - 1].ddadr = DDADR_STOP;
-	wmb();
-
-	/*
-	 * The PXA27x DMA controller encounters overhead when working with
-	 * unaligned (to 8-byte boundaries) data, so switch on byte alignment
-	 * mode only if we have unaligned data.
-	 */
-	if (dalgn)
-		DALGN |= (1 << host->dma);
-	else
-		DALGN &= ~(1 << host->dma);
-	DDADR(host->dma) = host->sg_dma;
-=======
 	memset(&config, 0, sizeof(config));
 	config.src_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
 	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_1_BYTE;
@@ -379,7 +218,6 @@ static void pxamci_setup_data(struct pxamci_host *host, struct mmc_data *data)
 	}
 
 	host->dma_cookie = dmaengine_submit(tx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * workaround for erratum #91:
@@ -388,11 +226,7 @@ static void pxamci_setup_data(struct pxamci_host *host, struct mmc_data *data)
 	 * before starting DMA.
 	 */
 	if (!cpu_is_pxa27x() || data->flags & MMC_DATA_READ)
-<<<<<<< HEAD
-		DCSR(host->dma) = DCSR_RUN;
-=======
 		dma_async_issue_pending(chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pxamci_start_cmd(struct pxamci_host *host, struct mmc_command *cmd, unsigned int cmdat)
@@ -484,11 +318,7 @@ static int pxamci_cmd_done(struct pxamci_host *host, unsigned int stat)
 		 * enable DMA late
 		 */
 		if (cpu_is_pxa27x() && host->data->flags & MMC_DATA_WRITE)
-<<<<<<< HEAD
-			DCSR(host->dma) = DCSR_RUN;
-=======
 			dma_async_issue_pending(host->dma_chan_tx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pxamci_finish_request(host, host->mrq);
 	}
@@ -499,26 +329,17 @@ static int pxamci_cmd_done(struct pxamci_host *host, unsigned int stat)
 static int pxamci_data_done(struct pxamci_host *host, unsigned int stat)
 {
 	struct mmc_data *data = host->data;
-<<<<<<< HEAD
-=======
 	struct dma_chan *chan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!data)
 		return 0;
 
-<<<<<<< HEAD
-	DCSR(host->dma) = 0;
-	dma_unmap_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
-		     host->dma_dir);
-=======
 	if (data->flags & MMC_DATA_READ)
 		chan = host->dma_chan_rx;
 	else
 		chan = host->dma_chan_tx;
 	dma_unmap_sg(chan->device->dev,
 		     data->sg, data->sg_len, host->dma_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (stat & STAT_READ_TIME_OUT)
 		data->error = -ETIMEDOUT;
@@ -596,12 +417,6 @@ static void pxamci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		cmdat |= CMDAT_DATAEN | CMDAT_DMAEN;
 		if (mrq->data->flags & MMC_DATA_WRITE)
 			cmdat |= CMDAT_WRITE;
-<<<<<<< HEAD
-
-		if (mrq->data->flags & MMC_DATA_STREAM)
-			cmdat |= CMDAT_STREAM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pxamci_start_cmd(host, mrq->cmd, cmdat);
@@ -611,17 +426,8 @@ static int pxamci_get_ro(struct mmc_host *mmc)
 {
 	struct pxamci_host *host = mmc_priv(mmc);
 
-<<<<<<< HEAD
-	if (host->pdata && gpio_is_valid(host->pdata->gpio_card_ro)) {
-		if (host->pdata->gpio_card_ro_invert)
-			return !gpio_get_value(host->pdata->gpio_card_ro);
-		else
-			return gpio_get_value(host->pdata->gpio_card_ro);
-	}
-=======
 	if (host->use_ro_gpio)
 		return mmc_gpio_get_ro(mmc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (host->pdata && host->pdata->get_ro)
 		return !!host->pdata->get_ro(mmc_dev(mmc));
 	/*
@@ -640,11 +446,7 @@ static void pxamci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		unsigned int clk = rate / ios->clock;
 
 		if (host->clkrt == CLKRT_OFF)
-<<<<<<< HEAD
-			clk_enable(host->clk);
-=======
 			clk_prepare_enable(host->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ios->clock == 26000000) {
 			/* to support 26MHz */
@@ -671,11 +473,7 @@ static void pxamci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		pxamci_stop_clock(host);
 		if (host->clkrt != CLKRT_OFF) {
 			host->clkrt = CLKRT_OFF;
-<<<<<<< HEAD
-			clk_disable(host->clk);
-=======
 			clk_disable_unprepare(host->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -721,31 +519,12 @@ static void pxamci_enable_sdio_irq(struct mmc_host *host, int enable)
 
 static const struct mmc_host_ops pxamci_ops = {
 	.request		= pxamci_request,
-<<<<<<< HEAD
-=======
 	.get_cd			= mmc_gpio_get_cd,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_ro			= pxamci_get_ro,
 	.set_ios		= pxamci_set_ios,
 	.enable_sdio_irq	= pxamci_enable_sdio_irq,
 };
 
-<<<<<<< HEAD
-static void pxamci_dma_irq(int dma, void *devid)
-{
-	struct pxamci_host *host = devid;
-	int dcsr = DCSR(dma);
-	DCSR(dma) = dcsr & ~DCSR_STOPIRQEN;
-
-	if (dcsr & DCSR_ENDINTR) {
-		writel(BUF_PART_FULL, host->base + MMC_PRTBUF);
-	} else {
-		pr_err("%s: DMA error on channel %d (DCSR=%#x)\n",
-		       mmc_hostname(host->mmc), dma, dcsr);
-		host->data->error = -EIO;
-		pxamci_data_done(host, 0);
-	}
-=======
 static void pxamci_dma_irq(void *param)
 {
 	struct pxamci_host *host = param;
@@ -777,19 +556,12 @@ static void pxamci_dma_irq(void *param)
 
 out_unlock:
 	spin_unlock_irqrestore(&host->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t pxamci_detect_irq(int irq, void *devid)
 {
 	struct pxamci_host *host = mmc_priv(devid);
 
-<<<<<<< HEAD
-	mmc_detect_change(devid, msecs_to_jiffies(host->pdata->detect_delay_ms));
-	return IRQ_HANDLED;
-}
-
-=======
 	mmc_detect_change(devid, msecs_to_jiffies(host->detect_delay_ms));
 	return IRQ_HANDLED;
 }
@@ -831,26 +603,10 @@ static int pxamci_of_init(struct platform_device *pdev,
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pxamci_probe(struct platform_device *pdev)
 {
 	struct mmc_host *mmc;
 	struct pxamci_host *host = NULL;
-<<<<<<< HEAD
-	struct resource *r, *dmarx, *dmatx;
-	int ret, irq, gpio_cd = -1, gpio_ro = -1, gpio_power = -1;
-
-	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	irq = platform_get_irq(pdev, 0);
-	if (!r || irq < 0)
-		return -ENXIO;
-
-	r = request_mem_region(r->start, SZ_4K, DRIVER_NAME);
-	if (!r)
-		return -EBUSY;
-
-	mmc = mmc_alloc_host(sizeof(struct pxamci_host), &pdev->dev);
-=======
 	struct device *dev = &pdev->dev;
 	struct resource *r;
 	int ret, irq;
@@ -860,7 +616,6 @@ static int pxamci_probe(struct platform_device *pdev)
 		return irq;
 
 	mmc = mmc_alloc_host(sizeof(struct pxamci_host), dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mmc) {
 		ret = -ENOMEM;
 		goto out;
@@ -889,15 +644,6 @@ static int pxamci_probe(struct platform_device *pdev)
 	 */
 	mmc->max_blk_count = 65535;
 
-<<<<<<< HEAD
-	host = mmc_priv(mmc);
-	host->mmc = mmc;
-	host->dma = -1;
-	host->pdata = pdev->dev.platform_data;
-	host->clkrt = CLKRT_OFF;
-
-	host->clk = clk_get(&pdev->dev, NULL);
-=======
 	ret = pxamci_of_init(pdev, mmc);
 	if (ret)
 		goto out;
@@ -908,7 +654,6 @@ static int pxamci_probe(struct platform_device *pdev)
 	host->clkrt = CLKRT_OFF;
 
 	host->clk = devm_clk_get(dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(host->clk)) {
 		ret = PTR_ERR(host->clk);
 		host->clk = NULL;
@@ -923,13 +668,9 @@ static int pxamci_probe(struct platform_device *pdev)
 	mmc->f_min = (host->clkrate + 63) / 64;
 	mmc->f_max = (mmc_has_26MHz()) ? 26000000 : host->clkrate;
 
-<<<<<<< HEAD
-	pxamci_init_ocr(host);
-=======
 	ret = pxamci_init_ocr(host);
 	if (ret < 0)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc->caps = 0;
 	host->cmdat = 0;
@@ -941,24 +682,6 @@ static int pxamci_probe(struct platform_device *pdev)
 				     MMC_CAP_SD_HIGHSPEED;
 	}
 
-<<<<<<< HEAD
-	host->sg_cpu = dma_alloc_coherent(&pdev->dev, PAGE_SIZE, &host->sg_dma, GFP_KERNEL);
-	if (!host->sg_cpu) {
-		ret = -ENOMEM;
-		goto out;
-	}
-
-	spin_lock_init(&host->lock);
-	host->res = r;
-	host->irq = irq;
-	host->imask = MMC_I_MASK_ALL;
-
-	host->base = ioremap(r->start, SZ_4K);
-	if (!host->base) {
-		ret = -ENOMEM;
-		goto out;
-	}
-=======
 	spin_lock_init(&host->lock);
 	host->imask = MMC_I_MASK_ALL;
 
@@ -968,7 +691,6 @@ static int pxamci_probe(struct platform_device *pdev)
 		goto out;
 	}
 	host->res = r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ensure that the host controller is shut down, and setup
@@ -979,120 +701,13 @@ static int pxamci_probe(struct platform_device *pdev)
 	writel(64, host->base + MMC_RESTO);
 	writel(host->imask, host->base + MMC_I_MASK);
 
-<<<<<<< HEAD
-	host->dma = pxa_request_dma(DRIVER_NAME, DMA_PRIO_LOW,
-				    pxamci_dma_irq, host);
-	if (host->dma < 0) {
-		ret = -EBUSY;
-		goto out;
-	}
-
-	ret = request_irq(host->irq, pxamci_irq, 0, DRIVER_NAME, host);
-=======
 	ret = devm_request_irq(dev, irq, pxamci_irq, 0,
 			       DRIVER_NAME, host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
 	platform_set_drvdata(pdev, mmc);
 
-<<<<<<< HEAD
-	dmarx = platform_get_resource(pdev, IORESOURCE_DMA, 0);
-	if (!dmarx) {
-		ret = -ENXIO;
-		goto out;
-	}
-	host->dma_drcmrrx = dmarx->start;
-
-	dmatx = platform_get_resource(pdev, IORESOURCE_DMA, 1);
-	if (!dmatx) {
-		ret = -ENXIO;
-		goto out;
-	}
-	host->dma_drcmrtx = dmatx->start;
-
-	if (host->pdata) {
-		gpio_cd = host->pdata->gpio_card_detect;
-		gpio_ro = host->pdata->gpio_card_ro;
-		gpio_power = host->pdata->gpio_power;
-	}
-	if (gpio_is_valid(gpio_power)) {
-		ret = gpio_request(gpio_power, "mmc card power");
-		if (ret) {
-			dev_err(&pdev->dev, "Failed requesting gpio_power %d\n", gpio_power);
-			goto out;
-		}
-		gpio_direction_output(gpio_power,
-				      host->pdata->gpio_power_invert);
-	}
-	if (gpio_is_valid(gpio_ro)) {
-		ret = gpio_request(gpio_ro, "mmc card read only");
-		if (ret) {
-			dev_err(&pdev->dev, "Failed requesting gpio_ro %d\n", gpio_ro);
-			goto err_gpio_ro;
-		}
-		gpio_direction_input(gpio_ro);
-	}
-	if (gpio_is_valid(gpio_cd)) {
-		ret = gpio_request(gpio_cd, "mmc card detect");
-		if (ret) {
-			dev_err(&pdev->dev, "Failed requesting gpio_cd %d\n", gpio_cd);
-			goto err_gpio_cd;
-		}
-		gpio_direction_input(gpio_cd);
-
-		ret = request_irq(gpio_to_irq(gpio_cd), pxamci_detect_irq,
-				  IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-				  "mmc card detect", mmc);
-		if (ret) {
-			dev_err(&pdev->dev, "failed to request card detect IRQ\n");
-			goto err_request_irq;
-		}
-	}
-
-	if (host->pdata && host->pdata->init)
-		host->pdata->init(&pdev->dev, pxamci_detect_irq, mmc);
-
-	if (gpio_is_valid(gpio_power) && host->pdata->setpower)
-		dev_warn(&pdev->dev, "gpio_power and setpower() both defined\n");
-	if (gpio_is_valid(gpio_ro) && host->pdata->get_ro)
-		dev_warn(&pdev->dev, "gpio_ro and get_ro() both defined\n");
-
-	mmc_add_host(mmc);
-
-	return 0;
-
-err_request_irq:
-	gpio_free(gpio_cd);
-err_gpio_cd:
-	gpio_free(gpio_ro);
-err_gpio_ro:
-	gpio_free(gpio_power);
- out:
-	if (host) {
-		if (host->dma >= 0)
-			pxa_free_dma(host->dma);
-		if (host->base)
-			iounmap(host->base);
-		if (host->sg_cpu)
-			dma_free_coherent(&pdev->dev, PAGE_SIZE, host->sg_cpu, host->sg_dma);
-		if (host->clk)
-			clk_put(host->clk);
-	}
-	if (mmc)
-		mmc_free_host(mmc);
-	release_resource(r);
-	return ret;
-}
-
-static int pxamci_remove(struct platform_device *pdev)
-{
-	struct mmc_host *mmc = platform_get_drvdata(pdev);
-	int gpio_cd = -1, gpio_ro = -1, gpio_power = -1;
-
-	platform_set_drvdata(pdev, NULL);
-=======
 	host->dma_chan_rx = dma_request_chan(dev, "rx");
 	if (IS_ERR(host->dma_chan_rx)) {
 		dev_err(dev, "unable to request rx dma channel\n");
@@ -1170,32 +785,12 @@ out:
 static void pxamci_remove(struct platform_device *pdev)
 {
 	struct mmc_host *mmc = platform_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mmc) {
 		struct pxamci_host *host = mmc_priv(mmc);
 
 		mmc_remove_host(mmc);
 
-<<<<<<< HEAD
-		if (host->pdata) {
-			gpio_cd = host->pdata->gpio_card_detect;
-			gpio_ro = host->pdata->gpio_card_ro;
-			gpio_power = host->pdata->gpio_power;
-		}
-		if (gpio_is_valid(gpio_cd)) {
-			free_irq(gpio_to_irq(gpio_cd), mmc);
-			gpio_free(gpio_cd);
-		}
-		if (gpio_is_valid(gpio_ro))
-			gpio_free(gpio_ro);
-		if (gpio_is_valid(gpio_power))
-			gpio_free(gpio_power);
-		if (host->vcc)
-			regulator_put(host->vcc);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (host->pdata && host->pdata->exit)
 			host->pdata->exit(&pdev->dev, mmc);
 
@@ -1204,63 +799,6 @@ static void pxamci_remove(struct platform_device *pdev)
 		       END_CMD_RES|PRG_DONE|DATA_TRAN_DONE,
 		       host->base + MMC_I_MASK);
 
-<<<<<<< HEAD
-		DRCMR(host->dma_drcmrrx) = 0;
-		DRCMR(host->dma_drcmrtx) = 0;
-
-		free_irq(host->irq, host);
-		pxa_free_dma(host->dma);
-		iounmap(host->base);
-		dma_free_coherent(&pdev->dev, PAGE_SIZE, host->sg_cpu, host->sg_dma);
-
-		clk_put(host->clk);
-
-		release_resource(host->res);
-
-		mmc_free_host(mmc);
-	}
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int pxamci_suspend(struct device *dev)
-{
-	struct mmc_host *mmc = dev_get_drvdata(dev);
-	int ret = 0;
-
-	if (mmc)
-		ret = mmc_suspend_host(mmc);
-
-	return ret;
-}
-
-static int pxamci_resume(struct device *dev)
-{
-	struct mmc_host *mmc = dev_get_drvdata(dev);
-	int ret = 0;
-
-	if (mmc)
-		ret = mmc_resume_host(mmc);
-
-	return ret;
-}
-
-static const struct dev_pm_ops pxamci_pm_ops = {
-	.suspend	= pxamci_suspend,
-	.resume		= pxamci_resume,
-};
-#endif
-
-static struct platform_driver pxamci_driver = {
-	.probe		= pxamci_probe,
-	.remove		= pxamci_remove,
-	.driver		= {
-		.name	= DRIVER_NAME,
-		.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-		.pm	= &pxamci_pm_ops,
-#endif
-=======
 		dmaengine_terminate_all(host->dma_chan_rx);
 		dmaengine_terminate_all(host->dma_chan_tx);
 		dma_release_channel(host->dma_chan_rx);
@@ -1277,7 +815,6 @@ static struct platform_driver pxamci_driver = {
 		.name	= DRIVER_NAME,
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 		.of_match_table = of_match_ptr(pxa_mmc_dt_ids),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

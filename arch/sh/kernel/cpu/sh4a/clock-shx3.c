@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/sh4/clock-shx3.c
  *
@@ -10,13 +7,6 @@
  *  Copyright (C) 2006-2007  Renesas Technology Corp.
  *  Copyright (C) 2006-2007  Renesas Solutions Corp.
  *  Copyright (C) 2006-2010  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -121,34 +111,18 @@ static struct clk_lookup lookups[] = {
 	CLKDEV_CON_ID("cpu_clk", &div4_clks[DIV4_I]),
 
 	/* MSTP32 clocks */
-<<<<<<< HEAD
-	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP027]),
-	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP026]),
-	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP025]),
-	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP024]),
-=======
 	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP027]),
 	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP026]),
 	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP025]),
 	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP024]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CLKDEV_CON_ID("h8ex_fck", &mstp_clks[MSTP003]),
 	CLKDEV_CON_ID("csm_fck", &mstp_clks[MSTP002]),
 	CLKDEV_CON_ID("fe1_fck", &mstp_clks[MSTP001]),
 	CLKDEV_CON_ID("fe0_fck", &mstp_clks[MSTP000]),
 
-<<<<<<< HEAD
-	CLKDEV_ICK_ID("tmu_fck", "sh_tmu.0", &mstp_clks[MSTP008]),
-	CLKDEV_ICK_ID("tmu_fck", "sh_tmu.1", &mstp_clks[MSTP008]),
-	CLKDEV_ICK_ID("tmu_fck", "sh_tmu.2", &mstp_clks[MSTP008]),
-	CLKDEV_ICK_ID("tmu_fck", "sh_tmu.3", &mstp_clks[MSTP009]),
-	CLKDEV_ICK_ID("tmu_fck", "sh_tmu.4", &mstp_clks[MSTP009]),
-	CLKDEV_ICK_ID("tmu_fck", "sh_tmu.5", &mstp_clks[MSTP009]),
-=======
 	CLKDEV_ICK_ID("fck", "sh-tmu.0", &mstp_clks[MSTP008]),
 	CLKDEV_ICK_ID("fck", "sh-tmu.1", &mstp_clks[MSTP009]),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CLKDEV_CON_ID("hudi_fck", &mstp_clks[MSTP119]),
 	CLKDEV_CON_ID("dmac_11_6_fck", &mstp_clks[MSTP105]),
@@ -161,23 +135,14 @@ int __init arch_clk_init(void)
 
 	for (i = 0; i < ARRAY_SIZE(clks); i++)
 		ret |= clk_register(clks[i]);
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(lookups); i++)
-		clkdev_add(&lookups[i]);
-=======
 
 	clkdev_add_table(lookups, ARRAY_SIZE(lookups));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ret)
 		ret = sh_clk_div4_register(div4_clks, ARRAY_SIZE(div4_clks),
 					   &div4_table);
 	if (!ret)
-<<<<<<< HEAD
-		ret = sh_clk_mstp32_register(mstp_clks, MSTP_NR);
-=======
 		ret = sh_clk_mstp_register(mstp_clks, MSTP_NR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }

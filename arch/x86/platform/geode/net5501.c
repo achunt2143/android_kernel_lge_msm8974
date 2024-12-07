@@ -1,49 +1,26 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * System Specific setup for Soekris net5501
  * At the moment this means setup of GPIO control of LEDs and buttons
  * on net5501 boards.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2008-2009 Tower Technologies
  * Written by Alessandro Zummo <a.zummo@towertech.it>
  *
  * Copyright (C) 2008 Constantin Baranov <const@mimas.ru>
  * Copyright (C) 2011 Ed Wildgoose <kernel@wildgooses.com>
  *                and Philip Prindeville <philipp@redfish-solutions.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/leds.h>
-#include <linux/platform_device.h>
-#include <linux/gpio.h>
-#include <linux/input.h>
-#include <linux/gpio_keys.h>
-=======
 #include <linux/leds.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/geode.h>
 
@@ -79,13 +56,7 @@ static struct platform_device net5501_buttons_dev = {
 static struct gpio_led net5501_leds[] = {
 	{
 		.name = "net5501:1",
-<<<<<<< HEAD
-		.gpio = 6,
 		.default_trigger = "default-on",
-		.active_low = 0,
-=======
-		.default_trigger = "default-on",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -94,8 +65,6 @@ static struct gpio_led_platform_data net5501_leds_data = {
 	.leds = net5501_leds,
 };
 
-<<<<<<< HEAD
-=======
 static struct gpiod_lookup_table net5501_leds_gpio_table = {
 	.dev_id = "leds-gpio",
 	.table = {
@@ -105,18 +74,13 @@ static struct gpiod_lookup_table net5501_leds_gpio_table = {
 	},
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device net5501_leds_dev = {
 	.name = "leds-gpio",
 	.id = -1,
 	.dev.platform_data = &net5501_leds_data,
 };
 
-<<<<<<< HEAD
-static struct __initdata platform_device *net5501_devs[] = {
-=======
 static struct platform_device *net5501_devs[] __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&net5501_buttons_dev,
 	&net5501_leds_dev,
 };
@@ -124,10 +88,7 @@ static struct platform_device *net5501_devs[] __initdata = {
 static void __init register_net5501(void)
 {
 	/* Setup LED control through leds-gpio driver */
-<<<<<<< HEAD
-=======
 	gpiod_add_lookup_table(&net5501_leds_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_add_devices(net5501_devs, ARRAY_SIZE(net5501_devs));
 }
 
@@ -188,13 +149,4 @@ static int __init net5501_init(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-module_init(net5501_init);
-
-MODULE_AUTHOR("Philip Prindeville <philipp@redfish-solutions.com>");
-MODULE_DESCRIPTION("Soekris net5501 System Setup");
-MODULE_LICENSE("GPL");
-=======
 device_initcall(net5501_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

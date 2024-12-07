@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/alpha/kernel/process.c
  *
@@ -12,11 +9,6 @@
  * This file handles the architecture-dependent parts of process handling.
  */
 
-<<<<<<< HEAD
-#include <linux/errno.h>
-#include <linux/module.h>
-#include <linux/sched.h>
-=======
 #include <linux/cpu.h>
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -24,7 +16,6 @@
 #include <linux/sched/debug.h>
 #include <linux/sched/task.h>
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/smp.h>
@@ -45,14 +36,8 @@
 #include <linux/rcupdate.h>
 
 #include <asm/reg.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/io.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/uaccess.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hwrpb.h>
 #include <asm/fpu.h>
 
@@ -65,26 +50,6 @@
 void (*pm_power_off)(void) = machine_power_off;
 EXPORT_SYMBOL(pm_power_off);
 
-<<<<<<< HEAD
-void
-cpu_idle(void)
-{
-	set_thread_flag(TIF_POLLING_NRFLAG);
-
-	while (1) {
-		/* FIXME -- EV6 and LCA45 know how to power down
-		   the CPU.  */
-
-		rcu_idle_enter();
-		while (!need_resched())
-			cpu_relax();
-
-		rcu_idle_exit();
-		schedule();
-	}
-}
-
-=======
 #ifdef CONFIG_ALPHA_WTINT
 /*
  * Sleep the CPU.
@@ -101,7 +66,6 @@ void __noreturn arch_cpu_idle_dead(void)
 	BUG();
 }
 #endif /* ALPHA_WTINT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct halt_info {
 	int mode;
@@ -111,11 +75,7 @@ struct halt_info {
 static void
 common_shutdown_1(void *generic_ptr)
 {
-<<<<<<< HEAD
-	struct halt_info *how = (struct halt_info *)generic_ptr;
-=======
 	struct halt_info *how = generic_ptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct percpu_struct *cpup;
 	unsigned long *pflags, flags;
 	int cpuid = smp_processor_id();
@@ -166,11 +126,7 @@ common_shutdown_1(void *generic_ptr)
 	/* Wait for the secondaries to halt. */
 	set_cpu_present(boot_cpuid, false);
 	set_cpu_possible(boot_cpuid, false);
-<<<<<<< HEAD
-	while (cpumask_weight(cpu_present_mask))
-=======
 	while (!cpumask_empty(cpu_present_mask))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		barrier();
 #endif
 
@@ -179,19 +135,12 @@ common_shutdown_1(void *generic_ptr)
 #ifdef CONFIG_DUMMY_CONSOLE
 		/* If we've gotten here after SysRq-b, leave interrupt
 		   context before taking over the console. */
-<<<<<<< HEAD
-		if (in_interrupt())
-			irq_exit();
-		/* This has the effect of resetting the VGA video origin.  */
-		take_over_console(&dummy_con, 0, MAX_NR_CONSOLES-1, 1);
-=======
 		if (in_hardirq())
 			irq_exit();
 		/* This has the effect of resetting the VGA video origin.  */
 		console_lock();
 		do_take_over_console(&dummy_con, 0, MAX_NR_CONSOLES-1, 1);
 		console_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		pci_restore_srm_config();
 		set_hae(srm_hae);
@@ -249,10 +198,7 @@ machine_power_off(void)
 void
 show_regs(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-=======
 	show_regs_print_info(KERN_DEFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dik_show_regs(regs, NULL);
 }
 
@@ -268,17 +214,6 @@ start_thread(struct pt_regs * regs, unsigned long pc, unsigned long sp)
 }
 EXPORT_SYMBOL(start_thread);
 
-<<<<<<< HEAD
-/*
- * Free current thread data structures etc..
- */
-void
-exit_thread(void)
-{
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 flush_thread(void)
 {
@@ -291,87 +226,6 @@ flush_thread(void)
 	current_thread_info()->pcb.unique = 0;
 }
 
-<<<<<<< HEAD
-void
-release_thread(struct task_struct *dead_task)
-{
-}
-
-/*
- * "alpha_clone()".. By the time we get here, the
- * non-volatile registers have also been saved on the
- * stack. We do some ugly pointer stuff here.. (see
- * also copy_thread)
- *
- * Notice that "fork()" is implemented in terms of clone,
- * with parameters (SIGCHLD, 0).
- */
-int
-alpha_clone(unsigned long clone_flags, unsigned long usp,
-	    int __user *parent_tid, int __user *child_tid,
-	    unsigned long tls_value, struct pt_regs *regs)
-{
-	if (!usp)
-		usp = rdusp();
-
-	return do_fork(clone_flags, usp, regs, 0, parent_tid, child_tid);
-}
-
-int
-alpha_vfork(struct pt_regs *regs)
-{
-	return do_fork(CLONE_VFORK | CLONE_VM | SIGCHLD, rdusp(),
-		       regs, 0, NULL, NULL);
-}
-
-/*
- * Copy an alpha thread..
- *
- * Note the "stack_offset" stuff: when returning to kernel mode, we need
- * to have some extra stack-space for the kernel stack that still exists
- * after the "ret_from_fork".  When returning to user mode, we only want
- * the space needed by the syscall stack frame (ie "struct pt_regs").
- * Use the passed "regs" pointer to determine how much space we need
- * for a kernel fork().
- */
-
-int
-copy_thread(unsigned long clone_flags, unsigned long usp,
-	    unsigned long unused,
-	    struct task_struct * p, struct pt_regs * regs)
-{
-	extern void ret_from_fork(void);
-
-	struct thread_info *childti = task_thread_info(p);
-	struct pt_regs * childregs;
-	struct switch_stack * childstack, *stack;
-	unsigned long stack_offset, settls;
-
-	stack_offset = PAGE_SIZE - sizeof(struct pt_regs);
-	if (!(regs->ps & 8))
-		stack_offset = (PAGE_SIZE-1) & (unsigned long) regs;
-	childregs = (struct pt_regs *)
-	  (stack_offset + PAGE_SIZE + task_stack_page(p));
-		
-	*childregs = *regs;
-	settls = regs->r20;
-	childregs->r0 = 0;
-	childregs->r19 = 0;
-	childregs->r20 = 1;	/* OSF/1 has some strange fork() semantics.  */
-	regs->r20 = 0;
-	stack = ((struct switch_stack *) regs) - 1;
-	childstack = ((struct switch_stack *) childregs) - 1;
-	*childstack = *stack;
-	childstack->r26 = (unsigned long) ret_from_fork;
-	childti->pcb.usp = usp;
-	childti->pcb.ksp = (unsigned long) childstack;
-	childti->pcb.flags = 1;	/* set FEN, clear everything else */
-
-	/* Set a new TLS for the child thread?  Peek back into the
-	   syscall arguments that we saved on syscall entry.  Oops,
-	   except we'd have clobbered it with the parent/child set
-	   of r20.  Read the saved copy.  */
-=======
 /*
  * Copy architecture-specific thread state
  */
@@ -405,17 +259,12 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 		childti->pcb.usp = 0;
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Note: if CLONE_SETTLS is not set, then we must inherit the
 	   value from the parent, which will have been set by the block
 	   copy in dup_task_struct.  This is non-intuitive, but is
 	   required for proper operation in the case of a threaded
 	   application calling fork.  */
 	if (clone_flags & CLONE_SETTLS)
-<<<<<<< HEAD
-		childti->pcb.unique = settls;
-
-=======
 		childti->pcb.unique = tls;
 	else
 		regs->r20 = 0;	/* OSF/1 has some strange fork() semantics.  */
@@ -427,7 +276,6 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 	stack = ((struct switch_stack *) regs) - 1;
 	*childstack = *stack;
 	childstack->r26 = (unsigned long) ret_from_fork;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -488,43 +336,11 @@ dump_elf_task(elf_greg_t *dest, struct task_struct *task)
 }
 EXPORT_SYMBOL(dump_elf_task);
 
-<<<<<<< HEAD
-int
-dump_elf_task_fp(elf_fpreg_t *dest, struct task_struct *task)
-{
-	struct switch_stack *sw = (struct switch_stack *)task_pt_regs(task) - 1;
-	memcpy(dest, sw->fp, 32 * 8);
-	return 1;
-}
-EXPORT_SYMBOL(dump_elf_task_fp);
-
-/*
- * sys_execve() executes a new program.
- */
-asmlinkage int
-do_sys_execve(const char __user *ufilename,
-	      const char __user *const __user *argv,
-	      const char __user *const __user *envp, struct pt_regs *regs)
-{
-	int error;
-	char *filename;
-
-	filename = getname(ufilename);
-	error = PTR_ERR(filename);
-	if (IS_ERR(filename))
-		goto out;
-	error = do_execve(filename, argv, envp, regs);
-	putname(filename);
-out:
-	return error;
-}
-=======
 int elf_core_copy_task_fpregs(struct task_struct *t, elf_fpregset_t *fpu)
 {
 	memcpy(fpu, task_thread_info(t)->fp, 32 * 8);
 	return 1;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Return saved PC of a blocked thread.  This assumes the frame
@@ -540,11 +356,7 @@ int elf_core_copy_task_fpregs(struct task_struct *t, elf_fpregset_t *fpu)
  * all.  -- r~
  */
 
-<<<<<<< HEAD
-unsigned long
-=======
 static unsigned long
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 thread_saved_pc(struct task_struct *t)
 {
 	unsigned long base = (unsigned long)task_stack_page(t);
@@ -560,20 +372,11 @@ thread_saved_pc(struct task_struct *t)
 }
 
 unsigned long
-<<<<<<< HEAD
-get_wchan(struct task_struct *p)
-{
-	unsigned long schedule_frame;
-	unsigned long pc;
-	if (!p || p == current || p->state == TASK_RUNNING)
-		return 0;
-=======
 __get_wchan(struct task_struct *p)
 {
 	unsigned long schedule_frame;
 	unsigned long pc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This one depends on the frame size of schedule().  Do a
 	 * "disass schedule" in gdb to find the frame size.  Also, the

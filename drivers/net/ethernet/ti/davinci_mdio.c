@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DaVinci MDIO Module driver
  *
@@ -11,25 +8,6 @@
  *
  * Copyright (C) 2009 Texas Instruments.
  *
-<<<<<<< HEAD
- * ---------------------------------------------------------------------------
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- * ---------------------------------------------------------------------------
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -41,9 +19,6 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-#include <linux/davinci_emac.h>
-=======
 #include <linux/iopoll.h>
 #include <linux/pm_runtime.h>
 #include <linux/davinci_emac.h>
@@ -52,7 +27,6 @@
 #include <linux/pinctrl/consumer.h>
 #include <linux/mdio-bitbang.h>
 #include <linux/sys_soc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This timeout definition is a worst-case ultra defensive measure against
@@ -66,22 +40,17 @@
 
 #define DEF_OUT_FREQ		2200000		/* 2.2 MHz */
 
-<<<<<<< HEAD
-=======
 struct davinci_mdio_of_param {
 	int autosuspend_delay_ms;
 	bool manual_mode;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct davinci_mdio_regs {
 	u32	version;
 	u32	control;
 #define CONTROL_IDLE		BIT(31)
 #define CONTROL_ENABLE		BIT(30)
 #define CONTROL_MAX_DIV		(0xffff)
-<<<<<<< HEAD
-=======
 #define CONTROL_CLKDIV		GENMASK(15, 0)
 
 #define MDIO_MAN_MDCLK_O	BIT(2)
@@ -91,7 +60,6 @@ struct davinci_mdio_regs {
 
 #define MDIO_PIN               0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32	alive;
 	u32	link;
@@ -102,13 +70,9 @@ struct davinci_mdio_regs {
 	u32	userintmasked;
 	u32	userintmaskset;
 	u32	userintmaskclr;
-<<<<<<< HEAD
-	u32	__reserved_1[20];
-=======
 	u32	manualif;
 	u32	poll;
 	u32	__reserved_1[18];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct {
 		u32	access;
@@ -119,34 +83,15 @@ struct davinci_mdio_regs {
 #define USERACCESS_DATA		(0xffff)
 
 		u32	physel;
-<<<<<<< HEAD
-	}	user[0];
-};
-
-struct mdio_platform_data default_pdata = {
-=======
 	}	user[];
 };
 
 static const struct mdio_platform_data default_pdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bus_freq = DEF_OUT_FREQ,
 };
 
 struct davinci_mdio_data {
 	struct mdio_platform_data pdata;
-<<<<<<< HEAD
-	struct davinci_mdio_regs __iomem *regs;
-	spinlock_t	lock;
-	struct clk	*clk;
-	struct device	*dev;
-	struct mii_bus	*bus;
-	bool		suspended;
-	unsigned long	access_time; /* jiffies */
-};
-
-static void __davinci_mdio_reset(struct davinci_mdio_data *data)
-=======
 	struct mdiobb_ctrl bb_ctrl;
 	struct davinci_mdio_regs __iomem *regs;
 	struct clk	*clk;
@@ -163,7 +108,6 @@ static void __davinci_mdio_reset(struct davinci_mdio_data *data)
 };
 
 static void davinci_mdio_init_clk(struct davinci_mdio_data *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 mdio_in, div, mdio_out_khz, access_time;
 
@@ -172,13 +116,7 @@ static void davinci_mdio_init_clk(struct davinci_mdio_data *data)
 	if (div > CONTROL_MAX_DIV)
 		div = CONTROL_MAX_DIV;
 
-<<<<<<< HEAD
-	/* set enable and clock divider */
-	__raw_writel(div | CONTROL_ENABLE, &data->regs->control);
-
-=======
 	data->clk_div = div;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * One mdio transaction consists of:
 	 *	32 bits of preamble
@@ -199,14 +137,6 @@ static void davinci_mdio_init_clk(struct davinci_mdio_data *data)
 		data->access_time = 1;
 }
 
-<<<<<<< HEAD
-static int davinci_mdio_reset(struct mii_bus *bus)
-{
-	struct davinci_mdio_data *data = bus->priv;
-	u32 phy_mask, ver;
-
-	__davinci_mdio_reset(data);
-=======
 static void davinci_mdio_enable(struct davinci_mdio_data *data)
 {
 	/* set enable and clock divider */
@@ -374,20 +304,11 @@ static int davinci_mdio_common_reset(struct davinci_mdio_data *data)
 		davinci_mdio_disable(data);
 		davinci_mdio_enable_manual_mode(data);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wait for scan logic to settle */
 	msleep(PHY_MAX_ADDR * data->access_time);
 
 	/* dump hardware version info */
-<<<<<<< HEAD
-	ver = __raw_readl(&data->regs->version);
-	dev_info(data->dev, "davinci mdio revision %d.%d\n",
-		 (ver >> 8) & 0xff, ver & 0xff);
-
-	/* get phy mask from the alive register */
-	phy_mask = __raw_readl(&data->regs->alive);
-=======
 	ver = readl(&data->regs->version);
 	dev_info(data->dev,
 		 "davinci mdio revision %d.%d, bus freq %ld\n",
@@ -399,7 +320,6 @@ static int davinci_mdio_common_reset(struct davinci_mdio_data *data)
 
 	/* get phy mask from the alive register */
 	phy_mask = readl(&data->regs->alive);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (phy_mask) {
 		/* restrict mdio bus to live phys only */
 		dev_info(data->dev, "detected phy mask %x\n", ~phy_mask);
@@ -411,11 +331,6 @@ static int davinci_mdio_common_reset(struct davinci_mdio_data *data)
 	}
 	data->bus->phy_mask = phy_mask;
 
-<<<<<<< HEAD
-	return 0;
-}
-
-=======
 done:
 	pm_runtime_mark_last_busy(data->dev);
 	pm_runtime_put_autosuspend(data->dev);
@@ -440,7 +355,6 @@ static int davinci_mdiobb_reset(struct mii_bus *bus)
 	return davinci_mdio_common_reset(data);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* wait until hardware is ready for another user access */
 static inline int wait_for_user_access(struct davinci_mdio_data *data)
 {
@@ -449,15 +363,6 @@ static inline int wait_for_user_access(struct davinci_mdio_data *data)
 	u32 reg;
 
 	while (time_after(timeout, jiffies)) {
-<<<<<<< HEAD
-		reg = __raw_readl(&regs->user[0].access);
-		if ((reg & USERACCESS_GO) == 0)
-			return 0;
-
-		reg = __raw_readl(&regs->control);
-		if ((reg & CONTROL_IDLE) == 0)
-			continue;
-=======
 		reg = readl(&regs->user[0].access);
 		if ((reg & USERACCESS_GO) == 0)
 			return 0;
@@ -467,7 +372,6 @@ static inline int wait_for_user_access(struct davinci_mdio_data *data)
 			usleep_range(100, 200);
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * An emac soft_reset may have clobbered the mdio controller's
@@ -475,19 +379,11 @@ static inline int wait_for_user_access(struct davinci_mdio_data *data)
 		 * operation
 		 */
 		dev_warn(data->dev, "resetting idled controller\n");
-<<<<<<< HEAD
-		__davinci_mdio_reset(data);
-		return -EAGAIN;
-	}
-
-	reg = __raw_readl(&regs->user[0].access);
-=======
 		davinci_mdio_enable(data);
 		return -EAGAIN;
 	}
 
 	reg = readl(&regs->user[0].access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((reg & USERACCESS_GO) == 0)
 		return 0;
 
@@ -499,16 +395,6 @@ static inline int wait_for_user_access(struct davinci_mdio_data *data)
 static inline int wait_for_idle(struct davinci_mdio_data *data)
 {
 	struct davinci_mdio_regs __iomem *regs = data->regs;
-<<<<<<< HEAD
-	unsigned long timeout = jiffies + msecs_to_jiffies(MDIO_TIMEOUT);
-
-	while (time_after(timeout, jiffies)) {
-		if (__raw_readl(&regs->control) & CONTROL_IDLE)
-			return 0;
-	}
-	dev_err(data->dev, "timed out waiting for idle\n");
-	return -ETIMEDOUT;
-=======
 	u32 val, ret;
 
 	ret = readl_poll_timeout(&regs->control, val, val & CONTROL_IDLE,
@@ -517,7 +403,6 @@ static inline int wait_for_idle(struct davinci_mdio_data *data)
 		dev_err(data->dev, "timed out waiting for idle\n");
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int davinci_mdio_read(struct mii_bus *bus, int phy_id, int phy_reg)
@@ -529,18 +414,9 @@ static int davinci_mdio_read(struct mii_bus *bus, int phy_id, int phy_reg)
 	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	spin_lock(&data->lock);
-
-	if (data->suspended) {
-		spin_unlock(&data->lock);
-		return -ENODEV;
-	}
-=======
 	ret = pm_runtime_resume_and_get(data->dev);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reg = (USERACCESS_GO | USERACCESS_READ | (phy_reg << 21) |
 	       (phy_id << 16));
@@ -552,11 +428,7 @@ static int davinci_mdio_read(struct mii_bus *bus, int phy_id, int phy_reg)
 		if (ret < 0)
 			break;
 
-<<<<<<< HEAD
-		__raw_writel(reg, &data->regs->user[0].access);
-=======
 		writel(reg, &data->regs->user[0].access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = wait_for_user_access(data);
 		if (ret == -EAGAIN)
@@ -564,22 +436,13 @@ static int davinci_mdio_read(struct mii_bus *bus, int phy_id, int phy_reg)
 		if (ret < 0)
 			break;
 
-<<<<<<< HEAD
-		reg = __raw_readl(&data->regs->user[0].access);
-=======
 		reg = readl(&data->regs->user[0].access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = (reg & USERACCESS_ACK) ? (reg & USERACCESS_DATA) : -EIO;
 		break;
 	}
 
-<<<<<<< HEAD
-	spin_unlock(&data->lock);
-
-=======
 	pm_runtime_mark_last_busy(data->dev);
 	pm_runtime_put_autosuspend(data->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -593,18 +456,9 @@ static int davinci_mdio_write(struct mii_bus *bus, int phy_id,
 	if (phy_reg & ~PHY_REG_MASK || phy_id & ~PHY_ID_MASK)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	spin_lock(&data->lock);
-
-	if (data->suspended) {
-		spin_unlock(&data->lock);
-		return -ENODEV;
-	}
-=======
 	ret = pm_runtime_resume_and_get(data->dev);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reg = (USERACCESS_GO | USERACCESS_WRITE | (phy_reg << 21) |
 		   (phy_id << 16) | (phy_data & USERACCESS_DATA));
@@ -616,11 +470,7 @@ static int davinci_mdio_write(struct mii_bus *bus, int phy_id,
 		if (ret < 0)
 			break;
 
-<<<<<<< HEAD
-		__raw_writel(reg, &data->regs->user[0].access);
-=======
 		writel(reg, &data->regs->user[0].access);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = wait_for_user_access(data);
 		if (ret == -EAGAIN)
@@ -628,9 +478,6 @@ static int davinci_mdio_write(struct mii_bus *bus, int phy_id,
 		break;
 	}
 
-<<<<<<< HEAD
-	spin_unlock(&data->lock);
-=======
 	pm_runtime_mark_last_busy(data->dev);
 	pm_runtime_put_autosuspend(data->dev);
 
@@ -651,16 +498,10 @@ static int davinci_mdio_probe_dt(struct mdio_platform_data *data,
 		return -EINVAL;
 	}
 	data->bus_freq = prop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit davinci_mdio_probe(struct platform_device *pdev)
-{
-	struct mdio_platform_data *pdata = pdev->dev.platform_data;
-=======
 struct k3_mdio_soc_data {
 	bool manual_mode;
 };
@@ -703,77 +544,11 @@ static const struct mdiobb_ops davinci_mdiobb_ops = {
 static int davinci_mdio_probe(struct platform_device *pdev)
 {
 	struct mdio_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev = &pdev->dev;
 	struct davinci_mdio_data *data;
 	struct resource *res;
 	struct phy_device *phy;
 	int ret, addr;
-<<<<<<< HEAD
-
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-	if (!data) {
-		dev_err(dev, "failed to alloc device data\n");
-		return -ENOMEM;
-	}
-
-	data->pdata = pdata ? (*pdata) : default_pdata;
-
-	data->bus = mdiobus_alloc();
-	if (!data->bus) {
-		dev_err(dev, "failed to alloc mii bus\n");
-		ret = -ENOMEM;
-		goto bail_out;
-	}
-
-	data->bus->name		= dev_name(dev);
-	data->bus->read		= davinci_mdio_read,
-	data->bus->write	= davinci_mdio_write,
-	data->bus->reset	= davinci_mdio_reset,
-	data->bus->parent	= dev;
-	data->bus->priv		= data;
-	snprintf(data->bus->id, MII_BUS_ID_SIZE, "%s-%x",
-		pdev->name, pdev->id);
-
-	data->clk = clk_get(dev, NULL);
-	if (IS_ERR(data->clk)) {
-		dev_err(dev, "failed to get device clock\n");
-		ret = PTR_ERR(data->clk);
-		data->clk = NULL;
-		goto bail_out;
-	}
-
-	clk_enable(data->clk);
-
-	dev_set_drvdata(dev, data);
-	data->dev = dev;
-	spin_lock_init(&data->lock);
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(dev, "could not find register map resource\n");
-		ret = -ENOENT;
-		goto bail_out;
-	}
-
-	res = devm_request_mem_region(dev, res->start, resource_size(res),
-					    dev_name(dev));
-	if (!res) {
-		dev_err(dev, "could not allocate register map resource\n");
-		ret = -ENXIO;
-		goto bail_out;
-	}
-
-	data->regs = devm_ioremap_nocache(dev, res->start, resource_size(res));
-	if (!data->regs) {
-		dev_err(dev, "could not map mdio registers\n");
-		ret = -ENOMEM;
-		goto bail_out;
-	}
-
-	/* register the mii bus */
-	ret = mdiobus_register(data->bus);
-=======
 	int autosuspend_delay_ms = -1;
 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
@@ -873,23 +648,15 @@ static int davinci_mdio_probe(struct platform_device *pdev)
 		data->skip_scan = true;
 
 	ret = of_mdiobus_register(data->bus, dev->of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto bail_out;
 
 	/* scan and dump the bus */
 	for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
-<<<<<<< HEAD
-		phy = data->bus->phy_map[addr];
-		if (phy) {
-			dev_info(dev, "phy[%d]: device %s, driver %s\n",
-				 phy->addr, dev_name(&phy->dev),
-=======
 		phy = mdiobus_get_phy(data->bus, addr);
 		if (phy) {
 			dev_info(dev, "phy[%d]: device %s, driver %s\n",
 				 phy->mdio.addr, phydev_name(phy),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 phy->drv ? phy->drv->name : "unknown");
 		}
 	}
@@ -897,42 +664,6 @@ static int davinci_mdio_probe(struct platform_device *pdev)
 	return 0;
 
 bail_out:
-<<<<<<< HEAD
-	if (data->bus)
-		mdiobus_free(data->bus);
-
-	if (data->clk) {
-		clk_disable(data->clk);
-		clk_put(data->clk);
-	}
-
-	kfree(data);
-
-	return ret;
-}
-
-static int __devexit davinci_mdio_remove(struct platform_device *pdev)
-{
-	struct device *dev = &pdev->dev;
-	struct davinci_mdio_data *data = dev_get_drvdata(dev);
-
-	if (data->bus)
-		mdiobus_free(data->bus);
-
-	if (data->clk) {
-		clk_disable(data->clk);
-		clk_put(data->clk);
-	}
-
-	dev_set_drvdata(dev, NULL);
-
-	kfree(data);
-
-	return 0;
-}
-
-static int davinci_mdio_suspend(struct device *dev)
-=======
 	pm_runtime_dont_use_autosuspend(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 	return ret;
@@ -955,26 +686,10 @@ static void davinci_mdio_remove(struct platform_device *pdev)
 
 #ifdef CONFIG_PM
 static int davinci_mdio_runtime_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct davinci_mdio_data *data = dev_get_drvdata(dev);
 	u32 ctrl;
 
-<<<<<<< HEAD
-	spin_lock(&data->lock);
-
-	/* shutdown the scan state machine */
-	ctrl = __raw_readl(&data->regs->control);
-	ctrl &= ~CONTROL_ENABLE;
-	__raw_writel(ctrl, &data->regs->control);
-	wait_for_idle(data);
-
-	if (data->clk)
-		clk_disable(data->clk);
-
-	data->suspended = true;
-	spin_unlock(&data->lock);
-=======
 	/* shutdown the scan state machine */
 	ctrl = readl(&data->regs->control);
 	ctrl &= ~CONTROL_ENABLE;
@@ -1014,7 +729,6 @@ static int davinci_mdio_suspend(struct device *dev)
 
 	/* Select sleep pin state */
 	pinctrl_pm_select_sleep_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1022,28 +736,6 @@ static int davinci_mdio_suspend(struct device *dev)
 static int davinci_mdio_resume(struct device *dev)
 {
 	struct davinci_mdio_data *data = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	u32 ctrl;
-
-	spin_lock(&data->lock);
-	if (data->clk)
-		clk_enable(data->clk);
-
-	/* restart the scan state machine */
-	ctrl = __raw_readl(&data->regs->control);
-	ctrl |= CONTROL_ENABLE;
-	__raw_writel(ctrl, &data->regs->control);
-
-	data->suspended = false;
-	spin_unlock(&data->lock);
-
-	return 0;
-}
-
-static const struct dev_pm_ops davinci_mdio_pm_ops = {
-	.suspend	= davinci_mdio_suspend,
-	.resume		= davinci_mdio_resume,
-=======
 
 	/* Select default pin state */
 	pinctrl_pm_select_default_state(dev);
@@ -1059,25 +751,16 @@ static const struct dev_pm_ops davinci_mdio_pm_ops = {
 	SET_RUNTIME_PM_OPS(davinci_mdio_runtime_suspend,
 			   davinci_mdio_runtime_resume, NULL)
 	SET_LATE_SYSTEM_SLEEP_PM_OPS(davinci_mdio_suspend, davinci_mdio_resume)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_driver davinci_mdio_driver = {
 	.driver = {
 		.name	 = "davinci_mdio",
-<<<<<<< HEAD
-		.owner	 = THIS_MODULE,
-		.pm	 = &davinci_mdio_pm_ops,
-	},
-	.probe = davinci_mdio_probe,
-	.remove = __devexit_p(davinci_mdio_remove),
-=======
 		.pm	 = &davinci_mdio_pm_ops,
 		.of_match_table = of_match_ptr(davinci_mdio_of_mtable),
 	},
 	.probe = davinci_mdio_probe,
 	.remove_new = davinci_mdio_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init davinci_mdio_init(void)

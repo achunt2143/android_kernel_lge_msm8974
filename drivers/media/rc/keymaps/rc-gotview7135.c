@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/* gotview7135.h - Keytable for gotview7135 Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // gotview7135.h - Keytable for gotview7135 Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -28,18 +14,6 @@ static struct rc_map_table gotview7135[] = {
 
 	{ 0x11, KEY_POWER },
 	{ 0x35, KEY_TV },
-<<<<<<< HEAD
-	{ 0x1b, KEY_0 },
-	{ 0x29, KEY_1 },
-	{ 0x19, KEY_2 },
-	{ 0x39, KEY_3 },
-	{ 0x1f, KEY_4 },
-	{ 0x2c, KEY_5 },
-	{ 0x21, KEY_6 },
-	{ 0x24, KEY_7 },
-	{ 0x18, KEY_8 },
-	{ 0x2b, KEY_9 },
-=======
 	{ 0x1b, KEY_NUMERIC_0 },
 	{ 0x29, KEY_NUMERIC_1 },
 	{ 0x19, KEY_NUMERIC_2 },
@@ -50,7 +24,6 @@ static struct rc_map_table gotview7135[] = {
 	{ 0x24, KEY_NUMERIC_7 },
 	{ 0x18, KEY_NUMERIC_8 },
 	{ 0x2b, KEY_NUMERIC_9 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x3b, KEY_AGAIN },	/* LOOP */
 	{ 0x06, KEY_AUDIO },
 	{ 0x31, KEY_PRINT },	/* PREVIEW */
@@ -78,17 +51,10 @@ static struct rc_map_table gotview7135[] = {
 
 static struct rc_map_list gotview7135_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = gotview7135,
-		.size    = ARRAY_SIZE(gotview7135),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_GOTVIEW7135,
-=======
 		.scan     = gotview7135,
 		.size     = ARRAY_SIZE(gotview7135),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_GOTVIEW7135,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -106,9 +72,5 @@ module_init(init_rc_map_gotview7135)
 module_exit(exit_rc_map_gotview7135)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("gotview7135 remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

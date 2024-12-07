@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sparc/kernel/traps.c
  *
@@ -13,32 +10,21 @@
  * I hate traps on the sparc, grrr...
  */
 
-<<<<<<< HEAD
-#include <linux/sched.h>  /* for jiffies */
-=======
 #include <linux/cpu.h>
 #include <linux/sched/mm.h>
 #include <linux/sched/debug.h>
 #include <linux/mm_types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/signal.h>
 #include <linux/smp.h>
 #include <linux/kdebug.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/delay.h>
 #include <asm/ptrace.h>
 #include <asm/oplib.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unistd.h>
 #include <asm/traps.h>
 
@@ -62,11 +48,7 @@ static void instruction_dump(unsigned long *pc)
 #define __SAVE __asm__ __volatile__("save %sp, -0x40, %sp\n\t")
 #define __RESTORE __asm__ __volatile__("restore %g0, %g0, %g0\n\t")
 
-<<<<<<< HEAD
-void die_if_kernel(char *str, struct pt_regs *regs)
-=======
 void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int die_counter;
 	int count = 0;
@@ -80,11 +62,7 @@ void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
 
 	printk("%s(%d): %s [#%d]\n", current->comm, task_pid_nr(current), str, ++die_counter);
 	show_regs(regs);
-<<<<<<< HEAD
-	add_taint(TAINT_DIE);
-=======
 	add_taint(TAINT_DIE, LOCKDEP_NOW_UNRELIABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__SAVE; __SAVE; __SAVE; __SAVE;
 	__SAVE; __SAVE; __SAVE; __SAVE;
@@ -109,22 +87,11 @@ void __noreturn die_if_kernel(char *str, struct pt_regs *regs)
 	}
 	printk("Instruction DUMP:");
 	instruction_dump ((unsigned long *) regs->pc);
-<<<<<<< HEAD
-	if(regs->psr & PSR_PS)
-		do_exit(SIGKILL);
-	do_exit(SIGSEGV);
-=======
 	make_task_dead((regs->psr & PSR_PS) ? SIGKILL : SIGSEGV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_hw_interrupt(struct pt_regs *regs, unsigned long type)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(type < 0x80) {
 		/* Sun OS's puke from bad traps, Linux survives! */
 		printk("Unimplemented Sparc TRAP, type = %02lx\n", type);
@@ -134,68 +101,29 @@ void do_hw_interrupt(struct pt_regs *regs, unsigned long type)
 	if(regs->psr & PSR_PS)
 		die_if_kernel("Kernel bad trap", regs);
 
-<<<<<<< HEAD
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_ILLTRP;
-	info.si_addr = (void __user *)regs->pc;
-	info.si_trapno = type - 0x80;
-	force_sig_info(SIGILL, &info, current);
-=======
 	force_sig_fault_trapno(SIGILL, ILL_ILLTRP,
 			       (void __user *)regs->pc, type - 0x80);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_illegal_instruction(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			    unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(psr & PSR_PS)
 		die_if_kernel("Kernel illegal instruction", regs);
 #ifdef TRAP_DEBUG
 	printk("Ill instr. at pc=%08lx instruction is %08lx\n",
 	       regs->pc, *(unsigned long *)regs->pc);
 #endif
-<<<<<<< HEAD
-	if (!do_user_muldiv (regs, pc))
-		return;
-
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_ILLOPC;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	send_sig_info(SIGILL, &info, current);
-=======
 
 	send_sig_fault(SIGILL, ILL_ILLOPC, (void __user *)pc, current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_priv_instruction(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			 unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	if(psr & PSR_PS)
-		die_if_kernel("Penguin instruction from Penguin mode??!?!", regs);
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_PRVOPC;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	send_sig_info(SIGILL, &info, current);
-=======
 	if(psr & PSR_PS)
 		die_if_kernel("Penguin instruction from Penguin mode??!?!", regs);
 	send_sig_fault(SIGILL, ILL_PRVOPC, (void __user *)pc, current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* XXX User may want to be allowed to do this. XXX */
@@ -203,11 +131,6 @@ void do_priv_instruction(struct pt_regs *regs, unsigned long pc, unsigned long n
 void do_memaccess_unaligned(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			    unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(regs->psr & PSR_PS) {
 		printk("KERNEL MNA at pc %08lx npc %08lx called by %08lx\n", pc, npc,
 		       regs->u_regs[UREG_RETPC]);
@@ -219,18 +142,9 @@ void do_memaccess_unaligned(struct pt_regs *regs, unsigned long pc, unsigned lon
 	instruction_dump ((unsigned long *) regs->pc);
 	printk ("do_MNA!\n");
 #endif
-<<<<<<< HEAD
-	info.si_signo = SIGBUS;
-	info.si_errno = 0;
-	info.si_code = BUS_ADRALN;
-	info.si_addr = /* FIXME: Should dig out mna address */ (void *)0;
-	info.si_trapno = 0;
-	send_sig_info(SIGBUS, &info, current);
-=======
 	send_sig_fault(SIGBUS, BUS_ADRALN,
 		       /* FIXME: Should dig out mna address */ (void *)0,
 		       current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned long init_fsr = 0x0UL;
@@ -282,24 +196,13 @@ static unsigned long fake_fsr;
 static unsigned long fake_queue[32] __attribute__ ((aligned (8)));
 static unsigned long fake_depth;
 
-<<<<<<< HEAD
-extern int do_mathemu(struct pt_regs *, struct task_struct *);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void do_fpe_trap(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 		 unsigned long psr)
 {
 	static int calls;
-<<<<<<< HEAD
-	siginfo_t info;
-	unsigned long fsr;
-	int ret = 0;
-=======
 	unsigned long fsr;
 	int ret = 0;
 	int code;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_SMP
 	struct task_struct *fpt = last_task_used_math;
 #else
@@ -374,26 +277,6 @@ void do_fpe_trap(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 	}
 
 	fsr = fpt->thread.fsr;
-<<<<<<< HEAD
-	info.si_signo = SIGFPE;
-	info.si_errno = 0;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	info.si_code = __SI_FAULT;
-	if ((fsr & 0x1c000) == (1 << 14)) {
-		if (fsr & 0x10)
-			info.si_code = FPE_FLTINV;
-		else if (fsr & 0x08)
-			info.si_code = FPE_FLTOVF;
-		else if (fsr & 0x04)
-			info.si_code = FPE_FLTUND;
-		else if (fsr & 0x02)
-			info.si_code = FPE_FLTDIV;
-		else if (fsr & 0x01)
-			info.si_code = FPE_FLTRES;
-	}
-	send_sig_info(SIGFPE, &info, fpt);
-=======
 	code = FPE_FLTUNK;
 	if ((fsr & 0x1c000) == (1 << 14)) {
 		if (fsr & 0x10)
@@ -408,7 +291,6 @@ void do_fpe_trap(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			code = FPE_FLTRES;
 	}
 	send_sig_fault(SIGFPE, code, (void __user *)pc, fpt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_SMP
 	last_task_used_math = NULL;
 #endif
@@ -420,22 +302,9 @@ void do_fpe_trap(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 void handle_tag_overflow(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			 unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	if(psr & PSR_PS)
-		die_if_kernel("Penguin overflow trap from kernel mode", regs);
-	info.si_signo = SIGEMT;
-	info.si_errno = 0;
-	info.si_code = EMT_TAGOVF;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	send_sig_info(SIGEMT, &info, current);
-=======
 	if(psr & PSR_PS)
 		die_if_kernel("Penguin overflow trap from kernel mode", regs);
 	send_sig_fault(SIGEMT, EMT_TAGOVF, (void __user *)pc, current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void handle_watchpoint(struct pt_regs *regs, unsigned long pc, unsigned long npc,
@@ -453,83 +322,33 @@ void handle_watchpoint(struct pt_regs *regs, unsigned long pc, unsigned long npc
 void handle_reg_access(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 		       unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef TRAP_DEBUG
 	printk("Register Access Exception at PC %08lx NPC %08lx PSR %08lx\n",
 	       pc, npc, psr);
 #endif
-<<<<<<< HEAD
-	info.si_signo = SIGBUS;
-	info.si_errno = 0;
-	info.si_code = BUS_OBJERR;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	force_sig_info(SIGBUS, &info, current);
-=======
 	force_sig_fault(SIGBUS, BUS_OBJERR, (void __user *)pc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void handle_cp_disabled(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_COPROC;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	send_sig_info(SIGILL, &info, current);
-=======
 	send_sig_fault(SIGILL, ILL_COPROC, (void __user *)pc, current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void handle_cp_exception(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 			 unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef TRAP_DEBUG
 	printk("Co-Processor Exception at PC %08lx NPC %08lx PSR %08lx\n",
 	       pc, npc, psr);
 #endif
-<<<<<<< HEAD
-	info.si_signo = SIGILL;
-	info.si_errno = 0;
-	info.si_code = ILL_COPROC;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	send_sig_info(SIGILL, &info, current);
-=======
 	send_sig_fault(SIGILL, ILL_COPROC, (void __user *)pc, current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void handle_hw_divzero(struct pt_regs *regs, unsigned long pc, unsigned long npc,
 		       unsigned long psr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	info.si_signo = SIGFPE;
-	info.si_errno = 0;
-	info.si_code = FPE_INTDIV;
-	info.si_addr = (void __user *)pc;
-	info.si_trapno = 0;
-	send_sig_info(SIGFPE, &info, current);
-=======
 	send_sig_fault(SIGFPE, FPE_INTDIV, (void __user *)pc, current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_DEBUG_BUGVERBOSE
@@ -552,10 +371,6 @@ void trap_init(void)
 	/* Force linker to barf if mismatched */
 	if (TI_UWINMASK    != offsetof(struct thread_info, uwinmask) ||
 	    TI_TASK        != offsetof(struct thread_info, task) ||
-<<<<<<< HEAD
-	    TI_EXECDOMAIN  != offsetof(struct thread_info, exec_domain) ||
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    TI_FLAGS       != offsetof(struct thread_info, flags) ||
 	    TI_CPU         != offsetof(struct thread_info, cpu) ||
 	    TI_PREEMPT     != offsetof(struct thread_info, preempt_count) ||
@@ -571,11 +386,7 @@ void trap_init(void)
 		thread_info_offsets_are_bolixed_pete();
 
 	/* Attach to the address space of init_task. */
-<<<<<<< HEAD
-	atomic_inc(&init_mm.mm_count);
-=======
 	mmgrab(&init_mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current->active_mm = &init_mm;
 
 	/* NOTE: Other cpus have this done as they are started

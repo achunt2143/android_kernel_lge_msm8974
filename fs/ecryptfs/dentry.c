@@ -1,33 +1,11 @@
-<<<<<<< HEAD
-/**
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eCryptfs: Linux filesystem encryption layer
  *
  * Copyright (C) 1997-2003 Erez Zadok
  * Copyright (C) 2001-2003 Stony Brook University
  * Copyright (C) 2004-2006 International Business Machines Corp.
  *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dcache.h>
@@ -52,32 +30,17 @@
  */
 static int ecryptfs_d_revalidate(struct dentry *dentry, unsigned int flags)
 {
-<<<<<<< HEAD
-	struct dentry *lower_dentry;
-	struct vfsmount *lower_mnt;
-=======
 	struct dentry *lower_dentry = ecryptfs_dentry_to_lower(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 1;
 
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
-<<<<<<< HEAD
-	lower_dentry = ecryptfs_dentry_to_lower(dentry);
-	lower_mnt = ecryptfs_dentry_to_lower_mnt(dentry);
-	if (lower_dentry->d_op && lower_dentry->d_op->d_revalidate) {
-		rc = lower_dentry->d_op->d_revalidate(lower_dentry, flags);
-	}
-	if (dentry->d_inode) {
-		struct inode *inode = dentry->d_inode;
-=======
 	if (lower_dentry->d_flags & DCACHE_OP_REVALIDATE)
 		rc = lower_dentry->d_op->d_revalidate(lower_dentry, flags);
 
 	if (d_really_is_positive(dentry)) {
 		struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		fsstack_copy_attr_all(inode, ecryptfs_inode_to_lower(inode));
 		if (!inode->i_nlink)
@@ -88,15 +51,12 @@ static int ecryptfs_d_revalidate(struct dentry *dentry, unsigned int flags)
 
 struct kmem_cache *ecryptfs_dentry_info_cache;
 
-<<<<<<< HEAD
-=======
 static void ecryptfs_dentry_free_rcu(struct rcu_head *head)
 {
 	kmem_cache_free(ecryptfs_dentry_info_cache,
 		container_of(head, struct ecryptfs_dentry_info, rcu));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ecryptfs_d_release
  * @dentry: The ecryptfs dentry
@@ -105,23 +65,11 @@ static void ecryptfs_dentry_free_rcu(struct rcu_head *head)
  */
 static void ecryptfs_d_release(struct dentry *dentry)
 {
-<<<<<<< HEAD
-	if (ecryptfs_dentry_to_private(dentry)) {
-		if (ecryptfs_dentry_to_lower(dentry)) {
-			dput(ecryptfs_dentry_to_lower(dentry));
-			mntput(ecryptfs_dentry_to_lower_mnt(dentry));
-		}
-		kmem_cache_free(ecryptfs_dentry_info_cache,
-				ecryptfs_dentry_to_private(dentry));
-	}
-	return;
-=======
 	struct ecryptfs_dentry_info *p = dentry->d_fsdata;
 	if (p) {
 		path_put(&p->lower_path);
 		call_rcu(&p->rcu, ecryptfs_dentry_free_rcu);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct dentry_operations ecryptfs_dops = {

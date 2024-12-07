@@ -58,20 +58,6 @@ static int mlx4_en_test_loopback_xmit(struct mlx4_en_priv *priv)
 
 	/* build the pkt before xmit */
 	skb = netdev_alloc_skb(priv->dev, MLX4_LOOPBACK_TEST_PAYLOAD + ETH_HLEN + NET_IP_ALIGN);
-<<<<<<< HEAD
-	if (!skb) {
-		en_err(priv, "-LOOPBACK_TEST_XMIT- failed to create skb for xmit\n");
-		return -ENOMEM;
-	}
-	skb_reserve(skb, NET_IP_ALIGN);
-
-	ethh = (struct ethhdr *)skb_put(skb, sizeof(struct ethhdr));
-	packet	= (unsigned char *)skb_put(skb, packet_size);
-	memcpy(ethh->h_dest, priv->dev->dev_addr, ETH_ALEN);
-	memset(ethh->h_source, 0, ETH_ALEN);
-	ethh->h_proto = htons(ETH_P_ARP);
-	skb_set_mac_header(skb, 0);
-=======
 	if (!skb)
 		return -ENOMEM;
 
@@ -83,7 +69,6 @@ static int mlx4_en_test_loopback_xmit(struct mlx4_en_priv *priv)
 	eth_zero_addr(ethh->h_source);
 	ethh->h_proto = htons(ETH_P_ARP);
 	skb_reset_mac_header(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < packet_size; ++i)	/* fill our packet */
 		packet[i] = (unsigned char)(i & 0xff);
 
@@ -97,18 +82,11 @@ static int mlx4_en_test_loopback(struct mlx4_en_priv *priv)
 	u32 loopback_ok = 0;
 	int i;
 
-<<<<<<< HEAD
-
-        priv->loopback_ok = 0;
-	priv->validate_loopback = 1;
-
-=======
         priv->loopback_ok = 0;
 	priv->validate_loopback = 1;
 
 	mlx4_en_update_loopback_state(priv->dev, priv->dev->features);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* xmit */
 	if (mlx4_en_test_loopback_xmit(priv)) {
 		en_err(priv, "Transmitting loopback packet failed\n");
@@ -129,11 +107,6 @@ static int mlx4_en_test_loopback(struct mlx4_en_priv *priv)
 mlx4_en_test_loopback_exit:
 
 	priv->validate_loopback = 0;
-<<<<<<< HEAD
-	return !loopback_ok;
-}
-
-=======
 
 	mlx4_en_update_loopback_state(priv->dev, priv->dev->features);
 	return !loopback_ok;
@@ -162,7 +135,6 @@ static int mlx4_en_test_interrupts(struct mlx4_en_priv *priv)
 
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mlx4_en_test_link(struct mlx4_en_priv *priv)
 {
@@ -180,11 +152,6 @@ static int mlx4_en_test_speed(struct mlx4_en_priv *priv)
 	if (mlx4_en_QUERY_PORT(priv->mdev, priv->port))
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	/* The device currently only supports 10G speed */
-	if (priv->port_state.link_speed != SPEED_10000)
-		return priv->port_state.link_speed;
-=======
 	/* The device supports 100M, 1G, 10G, 20G, 40G and 56G speed */
 	if (priv->port_state.link_speed != SPEED_100 &&
 	    priv->port_state.link_speed != SPEED_1000 &&
@@ -194,7 +161,6 @@ static int mlx4_en_test_speed(struct mlx4_en_priv *priv)
 	    priv->port_state.link_speed != SPEED_56000)
 		return priv->port_state.link_speed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -202,11 +168,6 @@ static int mlx4_en_test_speed(struct mlx4_en_priv *priv)
 void mlx4_en_ex_selftest(struct net_device *dev, u32 *flags, u64 *buf)
 {
 	struct mlx4_en_priv *priv = netdev_priv(dev);
-<<<<<<< HEAD
-	struct mlx4_en_dev *mdev = priv->mdev;
-	struct mlx4_en_tx_ring *tx_ring;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, carrier_ok;
 
 	memset(buf, 0, sizeof(u64) * MLX4_EN_NUM_SELF_TEST);
@@ -216,43 +177,23 @@ void mlx4_en_ex_selftest(struct net_device *dev, u32 *flags, u64 *buf)
 		carrier_ok = netif_carrier_ok(dev);
 
 		netif_carrier_off(dev);
-<<<<<<< HEAD
-retry_tx:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Wait until all tx queues are empty.
 		 * there should not be any additional incoming traffic
 		 * since we turned the carrier off */
 		msleep(200);
-<<<<<<< HEAD
-		for (i = 0; i < priv->tx_ring_num && carrier_ok; i++) {
-			tx_ring = &priv->tx_ring[i];
-			if (tx_ring->prod != (tx_ring->cons + tx_ring->last_nr_txbb))
-				goto retry_tx;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (priv->mdev->dev->caps.flags &
 					MLX4_DEV_CAP_FLAG_UC_LOOPBACK) {
 			buf[3] = mlx4_en_test_registers(priv);
-<<<<<<< HEAD
-			buf[4] = mlx4_en_test_loopback(priv);
-=======
 			if (priv->port_up && dev->mtu >= MLX4_SELFTEST_LB_MIN_MTU)
 				buf[4] = mlx4_en_test_loopback(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (carrier_ok)
 			netif_carrier_on(dev);
 
 	}
-<<<<<<< HEAD
-	buf[0] = mlx4_test_interrupts(mdev->dev);
-=======
 	buf[0] = mlx4_en_test_interrupts(priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf[1] = mlx4_en_test_link(priv);
 	buf[2] = mlx4_en_test_speed(priv);
 

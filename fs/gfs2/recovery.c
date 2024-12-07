@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -21,21 +11,15 @@
 #include <linux/buffer_head.h>
 #include <linux/gfs2_ondisk.h>
 #include <linux/crc32.h>
-<<<<<<< HEAD
-=======
 #include <linux/crc32c.h>
 #include <linux/ktime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
 #include "bmap.h"
 #include "glock.h"
 #include "glops.h"
-<<<<<<< HEAD
-=======
 #include "log.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lops.h"
 #include "meta_io.h"
 #include "recovery.h"
@@ -43,31 +27,19 @@
 #include "util.h"
 #include "dir.h"
 
-<<<<<<< HEAD
-struct workqueue_struct *gfs_recovery_wq;
-=======
 struct workqueue_struct *gfs2_recovery_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int gfs2_replay_read_block(struct gfs2_jdesc *jd, unsigned int blk,
 			   struct buffer_head **bh)
 {
 	struct gfs2_inode *ip = GFS2_I(jd->jd_inode);
 	struct gfs2_glock *gl = ip->i_gl;
-<<<<<<< HEAD
-	int new = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 dblock;
 	u32 extlen;
 	int error;
 
-<<<<<<< HEAD
-	error = gfs2_extent_map(&ip->i_inode, blk, &new, &dblock, &extlen);
-=======
 	extlen = 32;
 	error = gfs2_get_extent(&ip->i_inode, blk, &dblock, &extlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 	if (!dblock) {
@@ -80,17 +52,6 @@ int gfs2_replay_read_block(struct gfs2_jdesc *jd, unsigned int blk,
 	return error;
 }
 
-<<<<<<< HEAD
-int gfs2_revoke_add(struct gfs2_sbd *sdp, u64 blkno, unsigned int where)
-{
-	struct list_head *head = &sdp->sd_revoke_list;
-	struct gfs2_revoke_replay *rr;
-	int found = 0;
-
-	list_for_each_entry(rr, head, rr_list) {
-		if (rr->rr_blkno == blkno) {
-			found = 1;
-=======
 int gfs2_revoke_add(struct gfs2_jdesc *jd, u64 blkno, unsigned int where)
 {
 	struct list_head *head = &jd->jd_revoke_list;
@@ -99,16 +60,11 @@ int gfs2_revoke_add(struct gfs2_jdesc *jd, u64 blkno, unsigned int where)
 	list_for_each_entry(iter, head, rr_list) {
 		if (iter->rr_blkno == blkno) {
 			rr = iter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (found) {
-=======
 	if (rr) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rr->rr_where = where;
 		return 0;
 	}
@@ -124,17 +80,6 @@ int gfs2_revoke_add(struct gfs2_jdesc *jd, u64 blkno, unsigned int where)
 	return 1;
 }
 
-<<<<<<< HEAD
-int gfs2_revoke_check(struct gfs2_sbd *sdp, u64 blkno, unsigned int where)
-{
-	struct gfs2_revoke_replay *rr;
-	int wrap, a, b, revoke;
-	int found = 0;
-
-	list_for_each_entry(rr, &sdp->sd_revoke_list, rr_list) {
-		if (rr->rr_blkno == blkno) {
-			found = 1;
-=======
 int gfs2_revoke_check(struct gfs2_jdesc *jd, u64 blkno, unsigned int where)
 {
 	struct gfs2_revoke_replay *rr = NULL, *iter;
@@ -143,39 +88,21 @@ int gfs2_revoke_check(struct gfs2_jdesc *jd, u64 blkno, unsigned int where)
 	list_for_each_entry(iter, &jd->jd_revoke_list, rr_list) {
 		if (iter->rr_blkno == blkno) {
 			rr = iter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (!found)
-		return 0;
-
-	wrap = (rr->rr_where < sdp->sd_replay_tail);
-	a = (sdp->sd_replay_tail < where);
-=======
 	if (!rr)
 		return 0;
 
 	wrap = (rr->rr_where < jd->jd_replay_tail);
 	a = (jd->jd_replay_tail < where);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b = (where < rr->rr_where);
 	revoke = (wrap) ? (a || b) : (a && b);
 
 	return revoke;
 }
 
-<<<<<<< HEAD
-void gfs2_revoke_clean(struct gfs2_sbd *sdp)
-{
-	struct list_head *head = &sdp->sd_revoke_list;
-	struct gfs2_revoke_replay *rr;
-
-	while (!list_empty(head)) {
-		rr = list_entry(head->next, struct gfs2_revoke_replay, rr_list);
-=======
 void gfs2_revoke_clean(struct gfs2_jdesc *jd)
 {
 	struct list_head *head = &jd->jd_revoke_list;
@@ -183,30 +110,11 @@ void gfs2_revoke_clean(struct gfs2_jdesc *jd)
 
 	while (!list_empty(head)) {
 		rr = list_first_entry(head, struct gfs2_revoke_replay, rr_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&rr->rr_list);
 		kfree(rr);
 	}
 }
 
-<<<<<<< HEAD
-static int gfs2_log_header_in(struct gfs2_log_header_host *lh, const void *buf)
-{
-	const struct gfs2_log_header *str = buf;
-
-	if (str->lh_header.mh_magic != cpu_to_be32(GFS2_MAGIC) ||
-	    str->lh_header.mh_type != cpu_to_be32(GFS2_METATYPE_LH))
-		return 1;
-
-	lh->lh_sequence = be64_to_cpu(str->lh_sequence);
-	lh->lh_flags = be32_to_cpu(str->lh_flags);
-	lh->lh_tail = be32_to_cpu(str->lh_tail);
-	lh->lh_blkno = be32_to_cpu(str->lh_blkno);
-	lh->lh_hash = be32_to_cpu(str->lh_hash);
-	return 0;
-}
-
-=======
 int __get_log_header(struct gfs2_sbd *sdp, const struct gfs2_log_header *lh,
 		     unsigned int blkno, struct gfs2_log_header_host *head)
 {
@@ -240,16 +148,11 @@ int __get_log_header(struct gfs2_sbd *sdp, const struct gfs2_log_header *lh,
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * get_log_header - read the log header for a given segment
  * @jd: the journal
  * @blk: the block to look at
-<<<<<<< HEAD
- * @lh: the log header to return
-=======
  * @head: the log header to return
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Read the log header for a given segement in a given journal.  Do a few
  * sanity checks on it.
@@ -262,163 +165,18 @@ int __get_log_header(struct gfs2_sbd *sdp, const struct gfs2_log_header *lh,
 static int get_log_header(struct gfs2_jdesc *jd, unsigned int blk,
 			  struct gfs2_log_header_host *head)
 {
-<<<<<<< HEAD
-	struct buffer_head *bh;
-	struct gfs2_log_header_host uninitialized_var(lh);
-	const u32 nothing = 0;
-	u32 hash;
-=======
 	struct gfs2_sbd *sdp = GFS2_SB(jd->jd_inode);
 	struct buffer_head *bh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	error = gfs2_replay_read_block(jd, blk, &bh);
 	if (error)
 		return error;
 
-<<<<<<< HEAD
-	hash = crc32_le((u32)~0, bh->b_data, sizeof(struct gfs2_log_header) -
-					     sizeof(u32));
-	hash = crc32_le(hash, (unsigned char const *)&nothing, sizeof(nothing));
-	hash ^= (u32)~0;
-	error = gfs2_log_header_in(&lh, bh->b_data);
-	brelse(bh);
-
-	if (error || lh.lh_blkno != blk || lh.lh_hash != hash)
-		return 1;
-
-	*head = lh;
-
-	return 0;
-}
-
-/**
- * find_good_lh - find a good log header
- * @jd: the journal
- * @blk: the segment to start searching from
- * @lh: the log header to fill in
- * @forward: if true search forward in the log, else search backward
- *
- * Call get_log_header() to get a log header for a segment, but if the
- * segment is bad, either scan forward or backward until we find a good one.
- *
- * Returns: errno
- */
-
-static int find_good_lh(struct gfs2_jdesc *jd, unsigned int *blk,
-			struct gfs2_log_header_host *head)
-{
-	unsigned int orig_blk = *blk;
-	int error;
-
-	for (;;) {
-		error = get_log_header(jd, *blk, head);
-		if (error <= 0)
-			return error;
-
-		if (++*blk == jd->jd_blocks)
-			*blk = 0;
-
-		if (*blk == orig_blk) {
-			gfs2_consist_inode(GFS2_I(jd->jd_inode));
-			return -EIO;
-		}
-	}
-}
-
-/**
- * jhead_scan - make sure we've found the head of the log
- * @jd: the journal
- * @head: this is filled in with the log descriptor of the head
- *
- * At this point, seg and lh should be either the head of the log or just
- * before.  Scan forward until we find the head.
- *
- * Returns: errno
- */
-
-static int jhead_scan(struct gfs2_jdesc *jd, struct gfs2_log_header_host *head)
-{
-	unsigned int blk = head->lh_blkno;
-	struct gfs2_log_header_host lh;
-	int error;
-
-	for (;;) {
-		if (++blk == jd->jd_blocks)
-			blk = 0;
-
-		error = get_log_header(jd, blk, &lh);
-		if (error < 0)
-			return error;
-		if (error == 1)
-			continue;
-
-		if (lh.lh_sequence == head->lh_sequence) {
-			gfs2_consist_inode(GFS2_I(jd->jd_inode));
-			return -EIO;
-		}
-		if (lh.lh_sequence < head->lh_sequence)
-			break;
-
-		*head = lh;
-	}
-
-	return 0;
-}
-
-/**
- * gfs2_find_jhead - find the head of a log
- * @jd: the journal
- * @head: the log descriptor for the head of the log is returned here
- *
- * Do a binary search of a journal and find the valid log entry with the
- * highest sequence number.  (i.e. the log head)
- *
- * Returns: errno
- */
-
-int gfs2_find_jhead(struct gfs2_jdesc *jd, struct gfs2_log_header_host *head)
-{
-	struct gfs2_log_header_host lh_1, lh_m;
-	u32 blk_1, blk_2, blk_m;
-	int error;
-
-	blk_1 = 0;
-	blk_2 = jd->jd_blocks - 1;
-
-	for (;;) {
-		blk_m = (blk_1 + blk_2) / 2;
-
-		error = find_good_lh(jd, &blk_1, &lh_1);
-		if (error)
-			return error;
-
-		error = find_good_lh(jd, &blk_m, &lh_m);
-		if (error)
-			return error;
-
-		if (blk_1 == blk_m || blk_m == blk_2)
-			break;
-
-		if (lh_1.lh_sequence <= lh_m.lh_sequence)
-			blk_1 = blk_m;
-		else
-			blk_2 = blk_m;
-	}
-
-	error = jhead_scan(jd, &lh_1);
-	if (error)
-		return error;
-
-	*head = lh_1;
-
-=======
 	error = __get_log_header(sdp, (const struct gfs2_log_header *)bh->b_data,
 				 blk, head);
 	brelse(bh);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -427,10 +185,7 @@ int gfs2_find_jhead(struct gfs2_jdesc *jd, struct gfs2_log_header_host *head)
  * @jd: the journal
  * @start: the first log header in the active region
  * @end: the last log header (don't process the contents of this entry))
-<<<<<<< HEAD
-=======
  * @pass: iteration number (foreach_descriptor() is called in a for() loop)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Call a given function once for every log descriptor in the active
  * portion of the log.
@@ -438,11 +193,7 @@ int gfs2_find_jhead(struct gfs2_jdesc *jd, struct gfs2_log_header_host *head)
  * Returns: errno
  */
 
-<<<<<<< HEAD
-static int foreach_descriptor(struct gfs2_jdesc *jd, unsigned int start,
-=======
 static int foreach_descriptor(struct gfs2_jdesc *jd, u32 start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      unsigned int end, int pass)
 {
 	struct gfs2_sbd *sdp = GFS2_SB(jd->jd_inode);
@@ -470,11 +221,7 @@ static int foreach_descriptor(struct gfs2_jdesc *jd, u32 start,
 			struct gfs2_log_header_host lh;
 			error = get_log_header(jd, start, &lh);
 			if (!error) {
-<<<<<<< HEAD
-				gfs2_replay_incr_blk(sdp, &start);
-=======
 				gfs2_replay_incr_blk(jd, &start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				brelse(bh);
 				continue;
 			}
@@ -496,11 +243,7 @@ static int foreach_descriptor(struct gfs2_jdesc *jd, u32 start,
 		}
 
 		while (length--)
-<<<<<<< HEAD
-			gfs2_replay_incr_blk(sdp, &start);
-=======
 			gfs2_replay_incr_blk(jd, &start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		brelse(bh);
 	}
@@ -510,68 +253,12 @@ static int foreach_descriptor(struct gfs2_jdesc *jd, u32 start,
 
 /**
  * clean_journal - mark a dirty journal as being clean
-<<<<<<< HEAD
- * @sdp: the filesystem
  * @jd: the journal
- * @gl: the journal's glock
-=======
- * @jd: the journal
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @head: the head journal to start from
  *
  * Returns: errno
  */
 
-<<<<<<< HEAD
-static int clean_journal(struct gfs2_jdesc *jd, struct gfs2_log_header_host *head)
-{
-	struct gfs2_inode *ip = GFS2_I(jd->jd_inode);
-	struct gfs2_sbd *sdp = GFS2_SB(jd->jd_inode);
-	unsigned int lblock;
-	struct gfs2_log_header *lh;
-	u32 hash;
-	struct buffer_head *bh;
-	int error;
-	struct buffer_head bh_map = { .b_state = 0, .b_blocknr = 0 };
-
-	lblock = head->lh_blkno;
-	gfs2_replay_incr_blk(sdp, &lblock);
-	bh_map.b_size = 1 << ip->i_inode.i_blkbits;
-	error = gfs2_block_map(&ip->i_inode, lblock, &bh_map, 0);
-	if (error)
-		return error;
-	if (!bh_map.b_blocknr) {
-		gfs2_consist_inode(ip);
-		return -EIO;
-	}
-
-	bh = sb_getblk(sdp->sd_vfs, bh_map.b_blocknr);
-	lock_buffer(bh);
-	memset(bh->b_data, 0, bh->b_size);
-	set_buffer_uptodate(bh);
-	clear_buffer_dirty(bh);
-	unlock_buffer(bh);
-
-	lh = (struct gfs2_log_header *)bh->b_data;
-	memset(lh, 0, sizeof(struct gfs2_log_header));
-	lh->lh_header.mh_magic = cpu_to_be32(GFS2_MAGIC);
-	lh->lh_header.mh_type = cpu_to_be32(GFS2_METATYPE_LH);
-	lh->lh_header.__pad0 = cpu_to_be64(0);
-	lh->lh_header.mh_format = cpu_to_be32(GFS2_FORMAT_LH);
-	lh->lh_header.mh_jid = cpu_to_be32(sdp->sd_jdesc->jd_jid);
-	lh->lh_sequence = cpu_to_be64(head->lh_sequence + 1);
-	lh->lh_flags = cpu_to_be32(GFS2_LOG_HEAD_UNMOUNT);
-	lh->lh_blkno = cpu_to_be32(lblock);
-	hash = gfs2_disk_hash((const char *)lh, sizeof(struct gfs2_log_header));
-	lh->lh_hash = cpu_to_be32(hash);
-
-	set_buffer_dirty(bh);
-	if (sync_dirty_buffer(bh))
-		gfs2_io_error_bh(sdp, bh);
-	brelse(bh);
-
-	return error;
-=======
 static void clean_journal(struct gfs2_jdesc *jd,
 			  struct gfs2_log_header_host *head)
 {
@@ -586,7 +273,6 @@ static void clean_journal(struct gfs2_jdesc *jd,
 		sdp->sd_log_flush_head = lblock;
 		gfs2_log_incr_head(sdp);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -600,11 +286,7 @@ static void gfs2_recovery_done(struct gfs2_sbd *sdp, unsigned int jid,
 
         ls->ls_recover_jid_done = jid;
         ls->ls_recover_jid_status = message;
-<<<<<<< HEAD
-	sprintf(env_jid, "JID=%d", jid);
-=======
 	sprintf(env_jid, "JID=%u", jid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sprintf(env_status, "RECOVERY=%s",
 		message == LM_RD_SUCCESS ? "Done" : "Failed");
         kobject_uevent_env(&sdp->sd_kobj, KOBJ_CHANGE, envp);
@@ -613,8 +295,6 @@ static void gfs2_recovery_done(struct gfs2_sbd *sdp, unsigned int jid,
 		sdp->sd_lockstruct.ls_ops->lm_recovery_result(sdp, jid, message);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * update_statfs_inode - Update the master statfs inode or zero out the local
  *			 statfs inode for a given journal.
@@ -718,28 +398,12 @@ out:
 	return;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void gfs2_recover_func(struct work_struct *work)
 {
 	struct gfs2_jdesc *jd = container_of(work, struct gfs2_jdesc, jd_work);
 	struct gfs2_inode *ip = GFS2_I(jd->jd_inode);
 	struct gfs2_sbd *sdp = GFS2_SB(jd->jd_inode);
 	struct gfs2_log_header_host head;
-<<<<<<< HEAD
-	struct gfs2_holder j_gh, ji_gh, t_gh;
-	unsigned long t;
-	int ro = 0;
-	unsigned int pass;
-	int error;
-	int jlocked = 0;
-
-	if (sdp->sd_args.ar_spectator ||
-	    (jd->jd_jid != sdp->sd_lockstruct.ls_jid)) {
-		fs_info(sdp, "jid=%u: Trying to acquire journal lock...\n",
-			jd->jd_jid);
-		jlocked = 1;
-		/* Acquire the journal lock so we can do recovery */
-=======
 	struct gfs2_holder j_gh, ji_gh;
 	ktime_t t_start, t_jlck, t_jhd, t_tlck, t_rep;
 	int ro = 0;
@@ -760,7 +424,6 @@ void gfs2_recover_func(struct work_struct *work)
 			jd->jd_jid);
 		jlocked = 1;
 		/* Acquire the journal glock so we can do recovery */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		error = gfs2_glock_nq_num(sdp, jd->jd_jid, &gfs2_journal_glops,
 					  LM_ST_EXCLUSIVE,
@@ -773,18 +436,11 @@ void gfs2_recover_func(struct work_struct *work)
 		case GLR_TRYFAILED:
 			fs_info(sdp, "jid=%u: Busy\n", jd->jd_jid);
 			error = 0;
-<<<<<<< HEAD
-
-		default:
-			goto fail;
-		};
-=======
 			goto fail;
 
 		default:
 			goto fail;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		error = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED,
 					   LM_FLAG_NOEXP | GL_NOCACHE, &ji_gh);
@@ -794,35 +450,13 @@ void gfs2_recover_func(struct work_struct *work)
 		fs_info(sdp, "jid=%u, already locked for use\n", jd->jd_jid);
 	}
 
-<<<<<<< HEAD
-=======
 	t_jlck = ktime_get();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fs_info(sdp, "jid=%u: Looking at journal...\n", jd->jd_jid);
 
 	error = gfs2_jdesc_check(jd);
 	if (error)
 		goto fail_gunlock_ji;
 
-<<<<<<< HEAD
-	error = gfs2_find_jhead(jd, &head);
-	if (error)
-		goto fail_gunlock_ji;
-
-	if (!(head.lh_flags & GFS2_LOG_HEAD_UNMOUNT)) {
-		fs_info(sdp, "jid=%u: Acquiring the transaction lock...\n",
-			jd->jd_jid);
-
-		t = jiffies;
-
-		/* Acquire a shared hold on the transaction lock */
-
-		error = gfs2_glock_nq_init(sdp->sd_trans_gl, LM_ST_SHARED,
-					   LM_FLAG_NOEXP | LM_FLAG_PRIORITY |
-					   GL_NOCACHE, &t_gh);
-		if (error)
-			goto fail_gunlock_ji;
-=======
 	error = gfs2_find_jhead(jd, &head, true);
 	if (error)
 		goto fail_gunlock_ji;
@@ -839,7 +473,6 @@ void gfs2_recover_func(struct work_struct *work)
 				"is frozen\n", jd->jd_jid);
 			goto fail_gunlock_ji;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (test_bit(SDF_RORECOVERY, &sdp->sd_flags)) {
 			ro = 1;
@@ -847,11 +480,7 @@ void gfs2_recover_func(struct work_struct *work)
 			if (!test_bit(SDF_JOURNAL_LIVE, &sdp->sd_flags))
 				ro = 1;
 		} else {
-<<<<<<< HEAD
-			if (sdp->sd_vfs->s_flags & MS_RDONLY) {
-=======
 			if (sb_rdonly(sdp->sd_vfs)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* check if device itself is read-only */
 				ro = bdev_read_only(sdp->sd_vfs->s_bdev);
 				if (!ro) {
@@ -867,13 +496,6 @@ void gfs2_recover_func(struct work_struct *work)
 			fs_warn(sdp, "jid=%u: Can't replay: read-only block "
 				"device\n", jd->jd_jid);
 			error = -EROFS;
-<<<<<<< HEAD
-			goto fail_gunlock_tr;
-		}
-
-		fs_info(sdp, "jid=%u: Replaying journal...\n", jd->jd_jid);
-
-=======
 			goto fail_gunlock_nofreeze;
 		}
 
@@ -885,26 +507,11 @@ void gfs2_recover_func(struct work_struct *work)
 		 * flushes and simultaneous journal replays from stomping on
 		 * each other wrt jd_log_bio. */
 		down_read(&sdp->sd_log_flush_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (pass = 0; pass < 2; pass++) {
 			lops_before_scan(jd, &head, pass);
 			error = foreach_descriptor(jd, head.lh_tail,
 						   head.lh_blkno, pass);
 			lops_after_scan(jd, error, pass);
-<<<<<<< HEAD
-			if (error)
-				goto fail_gunlock_tr;
-		}
-
-		error = clean_journal(jd, &head);
-		if (error)
-			goto fail_gunlock_tr;
-
-		gfs2_glock_dq_uninit(&t_gh);
-		t = DIV_ROUND_UP(jiffies - t, HZ);
-		fs_info(sdp, "jid=%u: Journal replayed in %lus\n",
-			jd->jd_jid, t);
-=======
 			if (error) {
 				up_read(&sdp->sd_log_flush_lock);
 				goto fail_gunlock_nofreeze;
@@ -924,7 +531,6 @@ void gfs2_recover_func(struct work_struct *work)
 			ktime_ms_delta(t_jhd, t_jlck),
 			ktime_ms_delta(t_tlck, t_jhd),
 			ktime_ms_delta(t_rep, t_tlck));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	gfs2_recovery_done(sdp, jd->jd_jid, LM_RD_SUCCESS);
@@ -937,13 +543,8 @@ void gfs2_recover_func(struct work_struct *work)
 	fs_info(sdp, "jid=%u: Done\n", jd->jd_jid);
 	goto done;
 
-<<<<<<< HEAD
-fail_gunlock_tr:
-	gfs2_glock_dq_uninit(&t_gh);
-=======
 fail_gunlock_nofreeze:
 	mutex_unlock(&sdp->sd_freeze_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_gunlock_ji:
 	if (jlocked) {
 		gfs2_glock_dq_uninit(&ji_gh);
@@ -957,23 +558,10 @@ fail:
 	gfs2_recovery_done(sdp, jd->jd_jid, LM_RD_GAVEUP);
 done:
 	clear_bit(JDF_RECOVERY, &jd->jd_flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-	wake_up_bit(&jd->jd_flags, JDF_RECOVERY);
-}
-
-static int gfs2_recovery_wait(void *word)
-{
-	schedule();
-	return 0;
-}
-
-=======
 	smp_mb__after_atomic();
 	wake_up_bit(&jd->jd_flags, JDF_RECOVERY);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int gfs2_recover_journal(struct gfs2_jdesc *jd, bool wait)
 {
 	int rv;
@@ -982,19 +570,11 @@ int gfs2_recover_journal(struct gfs2_jdesc *jd, bool wait)
 		return -EBUSY;
 
 	/* we have JDF_RECOVERY, queue should always succeed */
-<<<<<<< HEAD
-	rv = queue_work(gfs_recovery_wq, &jd->jd_work);
-	BUG_ON(!rv);
-
-	if (wait)
-		wait_on_bit(&jd->jd_flags, JDF_RECOVERY, gfs2_recovery_wait,
-=======
 	rv = queue_work(gfs2_recovery_wq, &jd->jd_work);
 	BUG_ON(!rv);
 
 	if (wait)
 		wait_on_bit(&jd->jd_flags, JDF_RECOVERY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    TASK_UNINTERRUPTIBLE);
 
 	return wait ? jd->jd_recover_error : 0;

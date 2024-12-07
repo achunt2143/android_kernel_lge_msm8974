@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_IO_H
 #define __ASM_SH_IO_H
 
@@ -20,15 +17,6 @@
 #include <asm/cache.h>
 #include <asm/addrspace.h>
 #include <asm/machvec.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm-generic/iomap.h>
-
-#ifdef __KERNEL__
-#define __IO_PREFIX     generic
-#include <asm/io_generic.h>
-#include <asm/io_trapped.h>
-=======
 #include <asm/page.h>
 #include <linux/pgtable.h>
 #include <asm-generic/iomap.h>
@@ -36,7 +24,6 @@
 #define __IO_PREFIX     generic
 #include <asm/io_generic.h>
 #include <asm-generic/pci_iomap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/mangle-port.h>
 
 #define __raw_writeb(v,a)	(__chk_io_ptr(a), *(volatile u8  __force *)(a) = (v))
@@ -127,18 +114,6 @@ static inline void pfx##reads##bwlq(volatile void __iomem *mem,		\
 __BUILD_MEMORY_STRING(__raw_, b, u8)
 __BUILD_MEMORY_STRING(__raw_, w, u16)
 
-<<<<<<< HEAD
-#ifdef CONFIG_SUPERH32
-void __raw_writesl(void __iomem *addr, const void *data, int longlen);
-void __raw_readsl(const void __iomem *addr, void *data, int longlen);
-#else
-__BUILD_MEMORY_STRING(__raw_, l, u32)
-#endif
-
-__BUILD_MEMORY_STRING(__raw_, q, u64)
-
-#ifdef CONFIG_HAS_IOPORT
-=======
 void __raw_writesl(void __iomem *addr, const void *data, int longlen);
 void __raw_readsl(const void __iomem *addr, void *data, int longlen);
 
@@ -169,7 +144,6 @@ __BUILD_MEMORY_STRING(__raw_, q, u64)
 #define iowrite32_rep iowrite32_rep
 
 #ifdef CONFIG_HAS_IOPORT_MAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Slowdown I/O port space accesses for antique hardware.
@@ -181,11 +155,7 @@ __BUILD_MEMORY_STRING(__raw_, q, u64)
  * load/store instructions. sh_io_port_base is the virtual address to
  * which all ports are being mapped.
  */
-<<<<<<< HEAD
-extern const unsigned long sh_io_port_base;
-=======
 extern unsigned long sh_io_port_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void __set_io_port_base(unsigned long pbase)
 {
@@ -211,11 +181,7 @@ static inline void pfx##out##bwlq##p(type val, unsigned long port)	\
 {									\
 	volatile type *__addr;						\
 									\
-<<<<<<< HEAD
-	__addr = __ioport_map(port, sizeof(type));			\
-=======
 	__addr = (void __iomem *)sh_io_port_base + port;		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*__addr = val;							\
 	slow;								\
 }									\
@@ -225,11 +191,7 @@ static inline type pfx##in##bwlq##p(unsigned long port)			\
 	volatile type *__addr;						\
 	type __val;							\
 									\
-<<<<<<< HEAD
-	__addr = __ioport_map(port, sizeof(type));			\
-=======
 	__addr = (void __iomem *)sh_io_port_base + port;		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__val = *__addr;						\
 	slow;								\
 									\
@@ -277,16 +239,6 @@ __BUILD_IOPORT_STRING(w, u16)
 __BUILD_IOPORT_STRING(l, u32)
 __BUILD_IOPORT_STRING(q, u64)
 
-<<<<<<< HEAD
-#endif
-
-#define IO_SPACE_LIMIT 0xffffffff
-
-/* synco on SH-4A, otherwise a nop */
-#define mmiowb()		wmb()
-
-/* We really want to try and get these to memcpy etc */
-=======
 #else /* !CONFIG_HAS_IOPORT_MAP */
 
 #include <asm/io_noioport.h>
@@ -320,7 +272,6 @@ __BUILD_IOPORT_STRING(q, u64)
 #define memset_io memset_io
 #define memcpy_fromio memcpy_fromio
 #define memcpy_toio memcpy_toio
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void memcpy_fromio(void *, const volatile void __iomem *, unsigned long);
 void memcpy_toio(volatile void __iomem *, const void *, unsigned long);
 void memset_io(volatile void __iomem *, int, unsigned long);
@@ -338,147 +289,6 @@ unsigned long long poke_real_address_q(unsigned long long addr,
 #define phys_to_virt(address)	(__va(address))
 #endif
 
-<<<<<<< HEAD
-/*
- * On 32-bit SH, we traditionally have the whole physical address space
- * mapped at all times (as MIPS does), so "ioremap()" and "iounmap()" do
- * not need to do anything but place the address in the proper segment.
- * This is true for P1 and P2 addresses, as well as some P3 ones.
- * However, most of the P3 addresses and newer cores using extended
- * addressing need to map through page tables, so the ioremap()
- * implementation becomes a bit more complicated.
- *
- * See arch/sh/mm/ioremap.c for additional notes on this.
- *
- * We cheat a bit and always return uncachable areas until we've fixed
- * the drivers to handle caching properly.
- *
- * On the SH-5 the concept of segmentation in the 1:1 PXSEG sense simply
- * doesn't exist, so everything must go through page tables.
- */
-#ifdef CONFIG_MMU
-void __iomem *__ioremap_caller(phys_addr_t offset, unsigned long size,
-			       pgprot_t prot, void *caller);
-void __iounmap(void __iomem *addr);
-
-static inline void __iomem *
-__ioremap(phys_addr_t offset, unsigned long size, pgprot_t prot)
-{
-	return __ioremap_caller(offset, size, prot, __builtin_return_address(0));
-}
-
-static inline void __iomem *
-__ioremap_29bit(phys_addr_t offset, unsigned long size, pgprot_t prot)
-{
-#ifdef CONFIG_29BIT
-	phys_addr_t last_addr = offset + size - 1;
-
-	/*
-	 * For P1 and P2 space this is trivial, as everything is already
-	 * mapped. Uncached access for P1 addresses are done through P2.
-	 * In the P3 case or for addresses outside of the 29-bit space,
-	 * mapping must be done by the PMB or by using page tables.
-	 */
-	if (likely(PXSEG(offset) < P3SEG && PXSEG(last_addr) < P3SEG)) {
-		u64 flags = pgprot_val(prot);
-
-		/*
-		 * Anything using the legacy PTEA space attributes needs
-		 * to be kicked down to page table mappings.
-		 */
-		if (unlikely(flags & _PAGE_PCC_MASK))
-			return NULL;
-		if (unlikely(flags & _PAGE_CACHABLE))
-			return (void __iomem *)P1SEGADDR(offset);
-
-		return (void __iomem *)P2SEGADDR(offset);
-	}
-
-	/* P4 above the store queues are always mapped. */
-	if (unlikely(offset >= P3_ADDR_MAX))
-		return (void __iomem *)P4SEGADDR(offset);
-#endif
-
-	return NULL;
-}
-
-static inline void __iomem *
-__ioremap_mode(phys_addr_t offset, unsigned long size, pgprot_t prot)
-{
-	void __iomem *ret;
-
-	ret = __ioremap_trapped(offset, size);
-	if (ret)
-		return ret;
-
-	ret = __ioremap_29bit(offset, size, prot);
-	if (ret)
-		return ret;
-
-	return __ioremap(offset, size, prot);
-}
-#else
-#define __ioremap(offset, size, prot)		((void __iomem *)(offset))
-#define __ioremap_mode(offset, size, prot)	((void __iomem *)(offset))
-#define __iounmap(addr)				do { } while (0)
-#endif /* CONFIG_MMU */
-
-static inline void __iomem *ioremap(phys_addr_t offset, unsigned long size)
-{
-	return __ioremap_mode(offset, size, PAGE_KERNEL_NOCACHE);
-}
-
-static inline void __iomem *
-ioremap_cache(phys_addr_t offset, unsigned long size)
-{
-	return __ioremap_mode(offset, size, PAGE_KERNEL);
-}
-
-#ifdef CONFIG_HAVE_IOREMAP_PROT
-static inline void __iomem *
-ioremap_prot(phys_addr_t offset, unsigned long size, unsigned long flags)
-{
-	return __ioremap_mode(offset, size, __pgprot(flags));
-}
-#endif
-
-#ifdef CONFIG_IOREMAP_FIXED
-extern void __iomem *ioremap_fixed(phys_addr_t, unsigned long, pgprot_t);
-extern int iounmap_fixed(void __iomem *);
-extern void ioremap_fixed_init(void);
-#else
-static inline void __iomem *
-ioremap_fixed(phys_addr_t phys_addr, unsigned long size, pgprot_t prot)
-{
-	BUG();
-	return NULL;
-}
-
-static inline void ioremap_fixed_init(void) { }
-static inline int iounmap_fixed(void __iomem *addr) { return -EINVAL; }
-#endif
-
-#define ioremap_nocache	ioremap
-#define iounmap		__iounmap
-
-/*
- * Convert a physical pointer to a virtual kernel pointer for /dev/mem
- * access
- */
-#define xlate_dev_mem_ptr(p)	__va(p)
-
-/*
- * Convert a virtual cached pointer to an uncached pointer
- */
-#define xlate_dev_kmem_ptr(p)	p
-
-#define ARCH_HAS_VALID_PHYS_ADDR_RANGE
-int valid_phys_addr_range(unsigned long addr, size_t size);
-int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
-
-#endif /* __KERNEL__ */
-
-=======
 #ifdef CONFIG_MMU
 /*
  * I/O memory mapping functions.
@@ -498,5 +308,4 @@ int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
 int valid_phys_addr_range(phys_addr_t addr, size_t size);
 int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_IO_H */

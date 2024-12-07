@@ -25,13 +25,6 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon_drm.h"
-#include "radeon_reg.h"
-#include "radeon.h"
-#include "atom.h"
-=======
 
 #include <linux/pci.h>
 
@@ -42,7 +35,6 @@
 #include "radeon.h"
 #include "radeon_asic.h"
 #include "radeon_reg.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 10 khz */
 uint32_t radeon_legacy_get_engine_clock(struct radeon_device *rdev)
@@ -123,11 +115,7 @@ static bool radeon_read_clocks_OF(struct drm_device *dev)
 		return false;
 	val = of_get_property(dp, "ATY,RefCLK", NULL);
 	if (!val || !*val) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "radeonfb: No ATY,RefCLK property !\n");
-=======
 		pr_warn("radeonfb: No ATY,RefCLK property !\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 	p1pll->reference_freq = p2pll->reference_freq = (*val) / 10;

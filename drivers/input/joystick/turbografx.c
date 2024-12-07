@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1998-2001 Vojtech Pavlik
  *
@@ -13,29 +10,6 @@
  * TurboGraFX parallel port interface driver for Linux.
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
- * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/parport.h>
 #include <linux/input.h>
@@ -56,11 +30,7 @@ struct tgfx_config {
 	unsigned int nargs;
 };
 
-<<<<<<< HEAD
-static struct tgfx_config tgfx_cfg[TGFX_MAX_PORTS] __initdata;
-=======
 static struct tgfx_config tgfx_cfg[TGFX_MAX_PORTS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array_named(map, tgfx_cfg[0].args, int, &tgfx_cfg[0].nargs, 0);
 MODULE_PARM_DESC(map, "Describes first set of devices (<parport#>,<js1>,<js2>,..<js7>");
@@ -92,10 +62,7 @@ static struct tgfx {
 	char phys[TGFX_MAX_DEVICES][32];
 	int sticks;
 	int used;
-<<<<<<< HEAD
-=======
 	int parportno;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex sem;
 } *tgfx_base[TGFX_MAX_PORTS];
 
@@ -103,15 +70,9 @@ static struct tgfx {
  * tgfx_timer() reads and analyzes TurboGraFX joystick data.
  */
 
-<<<<<<< HEAD
-static void tgfx_timer(unsigned long private)
-{
-	struct tgfx *tgfx = (void *) private;
-=======
 static void tgfx_timer(struct timer_list *t)
 {
 	struct tgfx *tgfx = from_timer(tgfx, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *dev;
 	int data1, data2, i;
 
@@ -177,29 +138,6 @@ static void tgfx_close(struct input_dev *dev)
  * tgfx_probe() probes for tg gamepads.
  */
 
-<<<<<<< HEAD
-static struct tgfx __init *tgfx_probe(int parport, int *n_buttons, int n_devs)
-{
-	struct tgfx *tgfx;
-	struct input_dev *input_dev;
-	struct parport *pp;
-	struct pardevice *pd;
-	int i, j;
-	int err;
-
-	pp = parport_find_number(parport);
-	if (!pp) {
-		printk(KERN_ERR "turbografx.c: no such parport\n");
-		err = -EINVAL;
-		goto err_out;
-	}
-
-	pd = parport_register_device(pp, "turbografx", NULL, NULL, NULL, PARPORT_DEV_EXCL, NULL);
-	if (!pd) {
-		printk(KERN_ERR "turbografx.c: parport busy already - lp.o loaded?\n");
-		err = -EBUSY;
-		goto err_put_pp;
-=======
 static void tgfx_attach(struct parport *pp)
 {
 	struct tgfx *tgfx;
@@ -232,52 +170,31 @@ static void tgfx_attach(struct parport *pp)
 	if (!pd) {
 		pr_err("parport busy already - lp.o loaded?\n");
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tgfx = kzalloc(sizeof(struct tgfx), GFP_KERNEL);
 	if (!tgfx) {
 		printk(KERN_ERR "turbografx.c: Not enough memory\n");
-<<<<<<< HEAD
-		err = -ENOMEM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unreg_pardev;
 	}
 
 	mutex_init(&tgfx->sem);
 	tgfx->pd = pd;
-<<<<<<< HEAD
-	init_timer(&tgfx->timer);
-	tgfx->timer.data = (long) tgfx;
-	tgfx->timer.function = tgfx_timer;
-=======
 	tgfx->parportno = pp->number;
 	timer_setup(&tgfx->timer, tgfx_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n_devs; i++) {
 		if (n_buttons[i] < 1)
 			continue;
 
-<<<<<<< HEAD
-		if (n_buttons[i] > 6) {
-			printk(KERN_ERR "turbografx.c: Invalid number of buttons %d\n", n_buttons[i]);
-			err = -EINVAL;
-=======
 		if (n_buttons[i] > ARRAY_SIZE(tgfx_buttons)) {
 			printk(KERN_ERR "turbografx.c: Invalid number of buttons %d\n", n_buttons[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_unreg_devs;
 		}
 
 		tgfx->dev[i] = input_dev = input_allocate_device();
 		if (!input_dev) {
 			printk(KERN_ERR "turbografx.c: Not enough memory for input device\n");
-<<<<<<< HEAD
-			err = -ENOMEM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_unreg_devs;
 		}
 
@@ -306,31 +223,17 @@ static void tgfx_attach(struct parport *pp)
 		for (j = 0; j < n_buttons[i]; j++)
 			set_bit(tgfx_buttons[j], input_dev->keybit);
 
-<<<<<<< HEAD
-		err = input_register_device(tgfx->dev[i]);
-		if (err)
-=======
 		if (input_register_device(tgfx->dev[i]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_free_dev;
 	}
 
         if (!tgfx->sticks) {
 		printk(KERN_ERR "turbografx.c: No valid devices specified\n");
-<<<<<<< HEAD
-		err = -EINVAL;
-		goto err_free_tgfx;
-        }
-
-	parport_put_port(pp);
-	return tgfx;
-=======
 		goto err_free_tgfx;
         }
 
 	tgfx_base[port_idx] = tgfx;
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err_free_dev:
 	input_free_device(tgfx->dev[i]);
@@ -342,17 +245,6 @@ static void tgfx_attach(struct parport *pp)
 	kfree(tgfx);
  err_unreg_pardev:
 	parport_unregister_device(pd);
-<<<<<<< HEAD
- err_put_pp:
-	parport_put_port(pp);
- err_out:
-	return ERR_PTR(err);
-}
-
-static void tgfx_remove(struct tgfx *tgfx)
-{
-	int i;
-=======
 }
 
 static void tgfx_detach(struct parport *port)
@@ -370,7 +262,6 @@ static void tgfx_detach(struct parport *port)
 
 	tgfx = tgfx_base[i];
 	tgfx_base[i] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < TGFX_MAX_DEVICES; i++)
 		if (tgfx->dev[i])
@@ -379,8 +270,6 @@ static void tgfx_detach(struct parport *port)
 	kfree(tgfx);
 }
 
-<<<<<<< HEAD
-=======
 static struct parport_driver tgfx_parport_driver = {
 	.name = "turbografx",
 	.match_port = tgfx_attach,
@@ -388,15 +277,10 @@ static struct parport_driver tgfx_parport_driver = {
 	.devmodel = true,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init tgfx_init(void)
 {
 	int i;
 	int have_dev = 0;
-<<<<<<< HEAD
-	int err = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < TGFX_MAX_PORTS; i++) {
 		if (tgfx_cfg[i].nargs == 0 || tgfx_cfg[i].args[0] < 0)
@@ -404,53 +288,21 @@ static int __init tgfx_init(void)
 
 		if (tgfx_cfg[i].nargs < 2) {
 			printk(KERN_ERR "turbografx.c: at least one joystick must be specified\n");
-<<<<<<< HEAD
-			err = -EINVAL;
-			break;
-		}
-
-		tgfx_base[i] = tgfx_probe(tgfx_cfg[i].args[0],
-					  tgfx_cfg[i].args + 1,
-					  tgfx_cfg[i].nargs - 1);
-		if (IS_ERR(tgfx_base[i])) {
-			err = PTR_ERR(tgfx_base[i]);
-			break;
-=======
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		have_dev = 1;
 	}
 
-<<<<<<< HEAD
-	if (err) {
-		while (--i >= 0)
-			if (tgfx_base[i])
-				tgfx_remove(tgfx_base[i]);
-		return err;
-	}
-
-	return have_dev ? 0 : -ENODEV;
-=======
 	if (!have_dev)
 		return -ENODEV;
 
 	return parport_register_driver(&tgfx_parport_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit tgfx_exit(void)
 {
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < TGFX_MAX_PORTS; i++)
-		if (tgfx_base[i])
-			tgfx_remove(tgfx_base[i]);
-=======
 	parport_unregister_driver(&tgfx_parport_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(tgfx_init);

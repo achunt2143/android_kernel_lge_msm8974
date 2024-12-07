@@ -1,21 +1,8 @@
-<<<<<<< HEAD
-/*
- * Lowland audio support
- *
- * Copyright 2011 Wolfson Microelectronics
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // Lowland audio support
 //
 // Copyright 2011 Wolfson Microelectronics
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -29,74 +16,30 @@
 #define MCLK1_RATE (44100 * 512)
 #define CLKOUT_RATE (44100 * 256)
 
-<<<<<<< HEAD
-static int lowland_hw_params(struct snd_pcm_substream *substream,
-			     struct snd_pcm_hw_params *params)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
-	struct snd_soc_dai *codec_dai = rtd->codec_dai;
-	int ret;
-
-	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S
-					 | SND_SOC_DAIFMT_NB_NF
-					 | SND_SOC_DAIFMT_CBM_CFM);
-	if (ret < 0)
-		return ret;
-
-	ret = snd_soc_dai_set_fmt(cpu_dai, SND_SOC_DAIFMT_I2S
-					 | SND_SOC_DAIFMT_NB_NF
-					 | SND_SOC_DAIFMT_CBM_CFM);
-	if (ret < 0)
-		return ret;
-
-	return 0;
-}
-
-static struct snd_soc_ops lowland_ops = {
-	.hw_params = lowland_hw_params,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_jack lowland_headset;
 
 /* Headset jack detection DAPM pins */
 static struct snd_soc_jack_pin lowland_headset_pins[] = {
 	{
 		.pin = "Headphone",
-<<<<<<< HEAD
-		.mask = SND_JACK_HEADPHONE | SND_JACK_LINEOUT,
-=======
 		.mask = SND_JACK_HEADPHONE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.pin = "Headset Mic",
 		.mask = SND_JACK_MICROPHONE,
 	},
-<<<<<<< HEAD
-=======
 	{
 		.pin = "Line Out",
 		.mask = SND_JACK_LINEOUT,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int lowland_wm5100_init(struct snd_soc_pcm_runtime *rtd)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = rtd->codec;
-	int ret;
-
-	ret = snd_soc_codec_set_sysclk(codec, WM5100_CLK_SYSCLK,
-=======
 	struct snd_soc_component *component = snd_soc_rtd_to_codec(rtd, 0)->component;
 	int ret;
 
 	ret = snd_soc_component_set_sysclk(component, WM5100_CLK_SYSCLK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       WM5100_CLKSRC_MCLK1, MCLK1_RATE,
 				       SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -105,33 +48,13 @@ static int lowland_wm5100_init(struct snd_soc_pcm_runtime *rtd)
 	}
 
 	/* Clock OPCLK, used by the other audio components. */
-<<<<<<< HEAD
-	ret = snd_soc_codec_set_sysclk(codec, WM5100_CLK_OPCLK, 0,
-=======
 	ret = snd_soc_component_set_sysclk(component, WM5100_CLK_OPCLK, 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       CLKOUT_RATE, 0);
 	if (ret < 0) {
 		pr_err("Failed to set OPCLK rate: %d\n", ret);
 		return ret;
 	}
 
-<<<<<<< HEAD
-	ret = snd_soc_jack_new(codec, "Headset",
-			       SND_JACK_LINEOUT | SND_JACK_HEADSET |
-			       SND_JACK_BTN_0,
-			       &lowland_headset);
-	if (ret)
-		return ret;
-
-	ret = snd_soc_jack_add_pins(&lowland_headset,
-				    ARRAY_SIZE(lowland_headset_pins),
-				    lowland_headset_pins);
-	if (ret)
-		return ret;
-
-	wm5100_detect(codec, &lowland_headset);
-=======
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset",
 					 SND_JACK_LINEOUT | SND_JACK_HEADSET |
 					 SND_JACK_BTN_0,
@@ -141,13 +64,10 @@ static int lowland_wm5100_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 
 	wm5100_detect(component, &lowland_headset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int lowland_wm9081_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_component *component = snd_soc_rtd_to_codec(rtd, 0)->component;
@@ -180,52 +100,18 @@ SND_SOC_DAILINK_DEFS(speaker,
 	DAILINK_COMP_ARRAY(COMP_CPU("wm5100-aif3")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("wm9081.1-006c", "wm9081-hifi")));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_link lowland_dai[] = {
 	{
 		.name = "CPU",
 		.stream_name = "CPU",
-<<<<<<< HEAD
-		.cpu_dai_name = "samsung-i2s.0",
-		.codec_dai_name = "wm5100-aif1",
-		.platform_name = "samsung-audio",
-		.codec_name = "wm5100.1-001a",
-		.ops = &lowland_ops,
-		.init = lowland_wm5100_init,
-=======
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 				SND_SOC_DAIFMT_CBM_CFM,
 		.init = lowland_wm5100_init,
 		SND_SOC_DAILINK_REG(cpu),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name = "Baseband",
 		.stream_name = "Baseband",
-<<<<<<< HEAD
-		.cpu_dai_name = "wm5100-aif2",
-		.codec_dai_name = "wm1250-ev1",
-		.codec_name = "wm1250-ev1.1-0027",
-		.ops = &lowland_ops,
-		.ignore_suspend = 1,
-	},
-};
-
-static int lowland_wm9081_init(struct snd_soc_dapm_context *dapm)
-{
-	snd_soc_dapm_nc_pin(dapm, "LINEOUT");
-
-	/* At any time the WM9081 is active it will have this clock */
-	return snd_soc_codec_set_sysclk(dapm->codec, WM9081_SYSCLK_MCLK, 0,
-					CLKOUT_RATE, 0);
-}
-
-static struct snd_soc_aux_dev lowland_aux_dev[] = {
-	{
-		.name = "wm9081",
-		.codec_name = "wm9081.1-006c",
-		.init = lowland_wm9081_init,
-=======
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 				SND_SOC_DAIFMT_CBM_CFM,
 		.ignore_suspend = 1,
@@ -241,17 +127,12 @@ static struct snd_soc_aux_dev lowland_aux_dev[] = {
 		.num_c2c_params = 1,
 		.init = lowland_wm9081_init,
 		SND_SOC_DAILINK_REG(speaker),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 static struct snd_soc_codec_conf lowland_codec_conf[] = {
 	{
-<<<<<<< HEAD
-		.dev_name = "wm9081.1-006c",
-=======
 		.dlc = COMP_CODEC_CONF("wm9081.1-006c"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name_prefix = "Sub",
 	},
 };
@@ -263,13 +144,6 @@ static const struct snd_kcontrol_new controls[] = {
 	SOC_DAPM_PIN_SWITCH("WM1250 Input"),
 	SOC_DAPM_PIN_SWITCH("WM1250 Output"),
 	SOC_DAPM_PIN_SWITCH("Headphone"),
-<<<<<<< HEAD
-};
-
-static struct snd_soc_dapm_widget widgets[] = {
-	SND_SOC_DAPM_HP("Headphone", NULL),
-	SND_SOC_DAPM_MIC("Headset Mic", NULL),
-=======
 	SOC_DAPM_PIN_SWITCH("Line Out"),
 };
 
@@ -277,7 +151,6 @@ static const struct snd_soc_dapm_widget widgets[] = {
 	SND_SOC_DAPM_HP("Headphone", NULL),
 	SND_SOC_DAPM_MIC("Headset Mic", NULL),
 	SND_SOC_DAPM_LINE("Line Out", NULL),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SND_SOC_DAPM_SPK("Main Speaker", NULL),
 
@@ -285,11 +158,7 @@ static const struct snd_soc_dapm_widget widgets[] = {
 	SND_SOC_DAPM_MIC("Main DMIC", NULL),
 };
 
-<<<<<<< HEAD
-static struct snd_soc_dapm_route audio_paths[] = {
-=======
 static const struct snd_soc_dapm_route audio_paths[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Sub IN1", NULL, "HPOUT2L" },
 	{ "Sub IN2", NULL, "HPOUT2R" },
 
@@ -303,11 +172,6 @@ static struct snd_soc_card lowland = {
 	.owner = THIS_MODULE,
 	.dai_link = lowland_dai,
 	.num_links = ARRAY_SIZE(lowland_dai),
-<<<<<<< HEAD
-	.aux_dev = lowland_aux_dev,
-	.num_aux_devs = ARRAY_SIZE(lowland_aux_dev),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.codec_conf = lowland_codec_conf,
 	.num_configs = ARRAY_SIZE(lowland_codec_conf),
 
@@ -319,58 +183,26 @@ static struct snd_soc_card lowland = {
 	.num_dapm_routes = ARRAY_SIZE(audio_paths),
 };
 
-<<<<<<< HEAD
-static __devinit int lowland_probe(struct platform_device *pdev)
-=======
 static int lowland_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_soc_card *card = &lowland;
 	int ret;
 
 	card->dev = &pdev->dev;
 
-<<<<<<< HEAD
-	ret = snd_soc_register_card(card);
-	if (ret) {
-		dev_err(&pdev->dev, "snd_soc_register_card() failed: %d\n",
-			ret);
-		return ret;
-	}
-
-	return 0;
-}
-
-static int __devexit lowland_remove(struct platform_device *pdev)
-{
-	struct snd_soc_card *card = platform_get_drvdata(pdev);
-
-	snd_soc_unregister_card(card);
-
-	return 0;
-=======
 	ret = devm_snd_soc_register_card(&pdev->dev, card);
 	if (ret)
 		dev_err_probe(&pdev->dev, ret, "snd_soc_register_card() failed\n");
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver lowland_driver = {
 	.driver = {
 		.name = "lowland",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
 		.pm = &snd_soc_pm_ops,
 	},
 	.probe = lowland_probe,
-	.remove = __devexit_p(lowland_remove),
-=======
-		.pm = &snd_soc_pm_ops,
-	},
-	.probe = lowland_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(lowland_driver);

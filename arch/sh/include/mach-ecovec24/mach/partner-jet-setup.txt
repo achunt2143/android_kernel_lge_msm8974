@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 LIST "SPDX-License-Identifier: GPL-2.0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 LIST "partner-jet-setup.txt"
 LIST "(C) Copyright 2009 Renesas Solutions Corp"
 LIST "Kuninori Morimoto <morimoto.kuninori@renesas.com>"

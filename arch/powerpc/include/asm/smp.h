@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * smp.h: PowerPC-specific SMP code.
  *
@@ -10,14 +7,6 @@
  *
  * Copyright (C) 1996 David S. Miller (davem@caip.rutgers.edu)
  * Copyright (C) 1996-2001 Cort Dougan <cort@fsmlabs.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_POWERPC_SMP_H
@@ -37,11 +26,6 @@
 #include <asm/percpu.h>
 
 extern int boot_cpuid;
-<<<<<<< HEAD
-extern int spinning_secondaries;
-
-extern void cpu_die(void);
-=======
 extern int boot_cpu_hwid; /* PPC64 only */
 extern int boot_core_hwid;
 extern int spinning_secondaries;
@@ -54,26 +38,18 @@ extern int *chip_id_lookup_table;
 DECLARE_PER_CPU(cpumask_var_t, thread_group_l1_cache_map);
 DECLARE_PER_CPU(cpumask_var_t, thread_group_l2_cache_map);
 DECLARE_PER_CPU(cpumask_var_t, thread_group_l3_cache_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 
 struct smp_ops_t {
 	void  (*message_pass)(int cpu, int msg);
 #ifdef CONFIG_PPC_SMP_MUXED_IPI
-<<<<<<< HEAD
-	void  (*cause_ipi)(int cpu, unsigned long data);
-#endif
-	int   (*probe)(void);
-	int   (*kick_cpu)(int nr);
-=======
 	void  (*cause_ipi)(int cpu);
 #endif
 	int   (*cause_nmi_ipi)(int cpu);
 	void  (*probe)(void);
 	int   (*kick_cpu)(int nr);
 	int   (*prepare_cpu)(int nr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void  (*setup_cpu)(int nr);
 	void  (*bringup_done)(void);
 	void  (*take_timebase)(void);
@@ -81,14 +57,6 @@ struct smp_ops_t {
 	int   (*cpu_disable)(void);
 	void  (*cpu_die)(unsigned int nr);
 	int   (*cpu_bootable)(unsigned int nr);
-<<<<<<< HEAD
-};
-
-extern void smp_send_debugger_break(void);
-extern void start_secondary_resume(void);
-extern void __devinit smp_generic_give_timebase(void);
-extern void __devinit smp_generic_take_timebase(void);
-=======
 #ifdef CONFIG_HOTPLUG_CPU
 	void  (*cpu_offline_self)(void);
 #endif
@@ -103,19 +71,10 @@ extern void smp_send_debugger_break(void);
 extern void __noreturn start_secondary_resume(void);
 extern void smp_generic_give_timebase(void);
 extern void smp_generic_take_timebase(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_PER_CPU(unsigned int, cpu_pvr);
 
 #ifdef CONFIG_HOTPLUG_CPU
-<<<<<<< HEAD
-extern void migrate_irqs(void);
-int generic_cpu_disable(void);
-void generic_cpu_die(unsigned int cpu);
-void generic_mach_cpu_die(void);
-void generic_set_cpu_dead(unsigned int cpu);
-int generic_check_cpu_restart(unsigned int cpu);
-=======
 int generic_cpu_disable(void);
 void generic_cpu_die(unsigned int cpu);
 void generic_set_cpu_dead(unsigned int cpu);
@@ -124,7 +83,6 @@ int generic_check_cpu_restart(unsigned int cpu);
 int is_cpu_dead(unsigned int cpu);
 #else
 #define generic_set_cpu_up(i)	do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_PPC64
@@ -134,11 +92,7 @@ int is_cpu_dead(unsigned int cpu);
 /* 32-bit */
 extern int smp_hw_index[];
 
-<<<<<<< HEAD
-#define raw_smp_processor_id()	(current_thread_info()->cpu)
-=======
 #define raw_smp_processor_id()		(current_thread_info()->cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define hard_smp_processor_id() 	(smp_hw_index[smp_processor_id()])
 
 static inline int get_hard_smp_processor_id(int cpu)
@@ -153,13 +107,9 @@ static inline void set_hard_smp_processor_id(int cpu, int phys)
 #endif
 
 DECLARE_PER_CPU(cpumask_var_t, cpu_sibling_map);
-<<<<<<< HEAD
-DECLARE_PER_CPU(cpumask_var_t, cpu_core_map);
-=======
 DECLARE_PER_CPU(cpumask_var_t, cpu_l2_cache_map);
 DECLARE_PER_CPU(cpumask_var_t, cpu_core_map);
 DECLARE_PER_CPU(cpumask_var_t, cpu_smallcore_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct cpumask *cpu_sibling_mask(int cpu)
 {
@@ -171,10 +121,6 @@ static inline struct cpumask *cpu_core_mask(int cpu)
 	return per_cpu(cpu_core_map, cpu);
 }
 
-<<<<<<< HEAD
-extern int cpu_to_core_id(int cpu);
-
-=======
 static inline struct cpumask *cpu_l2_cache_mask(int cpu)
 {
 	return per_cpu(cpu_l2_cache_map, cpu);
@@ -202,17 +148,10 @@ static inline const struct cpumask *cpu_smt_mask(int cpu)
 }
 #endif /* CONFIG_SCHED_SMT */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Since OpenPIC has only 4 IPIs, we use slightly different message numbers.
  *
  * Make sure this matches openpic_request_IPIs in open_pic.c, or what shows up
  * in /proc/interrupts will be wrong!!! --Troy */
-<<<<<<< HEAD
-#define PPC_MSG_CALL_FUNCTION   0
-#define PPC_MSG_RESCHEDULE      1
-#define PPC_MSG_CALL_FUNC_SINGLE	2
-#define PPC_MSG_DEBUGGER_BREAK  3
-=======
 #define PPC_MSG_CALL_FUNCTION	0
 #define PPC_MSG_RESCHEDULE	1
 #define PPC_MSG_TICK_BROADCAST	2
@@ -228,22 +167,12 @@ extern int smp_handle_nmi_ipi(struct pt_regs *regs);
 #else
 static inline int smp_handle_nmi_ipi(struct pt_regs *regs) { return 0; }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for irq controllers that have dedicated ipis per message (4) */
 extern int smp_request_message_ipi(int virq, int message);
 extern const char *smp_ipi_name[];
 
 /* for irq controllers with only a single ipi */
-<<<<<<< HEAD
-extern void smp_muxed_ipi_set_data(int cpu, unsigned long data);
-extern void smp_muxed_ipi_message_pass(int cpu, int msg);
-extern irqreturn_t smp_ipi_demux(void);
-
-void smp_init_pSeries(void);
-void smp_init_cell(void);
-void smp_init_celleb(void);
-=======
 extern void smp_muxed_ipi_message_pass(int cpu, int msg);
 extern void smp_muxed_ipi_set_message(int cpu, int msg);
 extern irqreturn_t smp_ipi_demux(void);
@@ -251,7 +180,6 @@ extern irqreturn_t smp_ipi_demux_relaxed(void);
 
 void smp_init_pSeries(void);
 void smp_init_cell(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void smp_setup_cpu_maps(void);
 
 extern int __cpu_disable(void);
@@ -261,9 +189,6 @@ extern void __cpu_die(unsigned int cpu);
 /* for UP */
 #define hard_smp_processor_id()		get_hard_smp_processor_id(0)
 #define smp_setup_cpu_maps()
-<<<<<<< HEAD
-
-=======
 #define thread_group_shares_l2  0
 #define thread_group_shares_l3	0
 static inline const struct cpumask *cpu_sibling_mask(int cpu)
@@ -280,31 +205,18 @@ static inline const struct cpumask *cpu_l2_cache_mask(int cpu)
 {
 	return cpumask_of(cpu);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SMP */
 
 #ifdef CONFIG_PPC64
 static inline int get_hard_smp_processor_id(int cpu)
 {
-<<<<<<< HEAD
-	return paca[cpu].hw_cpu_id;
-=======
 	return paca_ptrs[cpu]->hw_cpu_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void set_hard_smp_processor_id(int cpu, int phys)
 {
-<<<<<<< HEAD
-	paca[cpu].hw_cpu_id = phys;
-}
-
-extern void smp_release_cpus(void);
-
-=======
 	paca_ptrs[cpu]->hw_cpu_id = phys;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 /* 32-bit */
 #ifndef CONFIG_SMP
@@ -321,13 +233,6 @@ static inline void set_hard_smp_processor_id(int cpu, int phys)
 #endif /* !CONFIG_SMP */
 #endif /* !CONFIG_PPC64 */
 
-<<<<<<< HEAD
-extern int smt_enabled_at_boot;
-
-extern int smp_mpic_probe(void);
-extern void smp_mpic_setup_cpu(int cpu);
-extern int smp_generic_kick_cpu(int nr);
-=======
 #if defined(CONFIG_PPC64) && (defined(CONFIG_SMP) || defined(CONFIG_KEXEC_CORE))
 extern void smp_release_cpus(void);
 #else
@@ -341,7 +246,6 @@ extern void smp_mpic_setup_cpu(int cpu);
 extern int smp_generic_kick_cpu(int nr);
 extern int smp_generic_cpu_bootable(unsigned int nr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void smp_generic_give_timebase(void);
 extern void smp_generic_take_timebase(void);
@@ -356,20 +260,12 @@ extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
  * 64-bit but defining them all here doesn't harm
  */
 extern void generic_secondary_smp_init(void);
-<<<<<<< HEAD
-extern void generic_secondary_thread_init(void);
-extern unsigned long __secondary_hold_spinloop;
-extern unsigned long __secondary_hold_acknowledge;
-extern char __secondary_hold;
-
-=======
 extern unsigned long __secondary_hold_spinloop;
 extern unsigned long __secondary_hold_acknowledge;
 extern char __secondary_hold;
 extern unsigned int booting_thread_hwid;
 
 extern void __early_start(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 
 #endif /* __KERNEL__ */

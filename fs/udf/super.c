@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * super.c
  *
@@ -15,22 +12,10 @@
  *  This code is based on version 2.00 of the UDF specification,
  *  and revision 3 of the ECMA 167 standard [equivalent to ISO 13346].
  *    http://www.osta.org/
-<<<<<<< HEAD
- *    http://www.ecma.ch/
- *    http://www.iso.org/
- *
- * COPYRIGHT
- *  This file is distributed under the terms of the GNU General Public
- *  License (GPL). Copies of the GPL can be obtained from:
- *    ftp://prep.ai.mit.edu/pub/gnu/GPL
- *  Each contributing author retains all rights to their own work.
- *
-=======
  *    https://www.ecma.ch/
  *    https://www.iso.org/
  *
  * COPYRIGHT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  (C) 1998 Dave Boynton
  *  (C) 1998-2004 Ben Fennema
  *  (C) 2000 Stelias Computing Inc
@@ -55,67 +40,25 @@
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/parser.h>
-#include <linux/stat.h>
-#include <linux/cdrom.h>
-#include <linux/nls.h>
-#include <linux/buffer_head.h>
-#include <linux/vfs.h>
-#include <linux/vmalloc.h>
-#include <linux/errno.h>
-#include <linux/mount.h>
-=======
 #include <linux/stat.h>
 #include <linux/cdrom.h>
 #include <linux/nls.h>
 #include <linux/vfs.h>
 #include <linux/vmalloc.h>
 #include <linux/errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/bitmap.h>
 #include <linux/crc-itu-t.h>
 #include <linux/log2.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-=======
 #include <linux/iversion.h>
 #include <linux/fs_context.h>
 #include <linux/fs_parser.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "udf_sb.h"
 #include "udf_i.h"
 
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-#define VDS_POS_PRIMARY_VOL_DESC	0
-#define VDS_POS_UNALLOC_SPACE_DESC	1
-#define VDS_POS_LOGICAL_VOL_DESC	2
-#define VDS_POS_PARTITION_DESC		3
-#define VDS_POS_IMP_USE_VOL_DESC	4
-#define VDS_POS_VOL_DESC_PTR		5
-#define VDS_POS_TERMINATING_DESC	6
-#define VDS_POS_LENGTH			7
-
-#define UDF_DEFAULT_BLOCKSIZE 2048
-
-enum { UDF_MAX_LINKS = 0xffff };
-
-/* These are the "meat" - everything else is stuffing */
-static int udf_fill_super(struct super_block *, void *, int);
-static void udf_put_super(struct super_block *);
-static int udf_sync_fs(struct super_block *, int);
-static int udf_remount_fs(struct super_block *, int *, char *);
-static void udf_load_logicalvolint(struct super_block *, struct kernel_extent_ad);
-static int udf_find_fileset(struct super_block *, struct kernel_lb_addr *,
-			    struct kernel_lb_addr *);
-static void udf_load_fileset(struct super_block *, struct buffer_head *,
-			     struct kernel_lb_addr *);
-=======
 #include <linux/uaccess.h>
 
 enum {
@@ -152,39 +95,11 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc);
 static void udf_put_super(struct super_block *);
 static int udf_sync_fs(struct super_block *, int);
 static void udf_load_logicalvolint(struct super_block *, struct kernel_extent_ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void udf_open_lvid(struct super_block *);
 static void udf_close_lvid(struct super_block *);
 static unsigned int udf_count_free(struct super_block *);
 static int udf_statfs(struct dentry *, struct kstatfs *);
 static int udf_show_options(struct seq_file *, struct dentry *);
-<<<<<<< HEAD
-
-struct logicalVolIntegrityDescImpUse *udf_sb_lvidiu(struct udf_sb_info *sbi)
-{
-	struct logicalVolIntegrityDesc *lvid =
-		(struct logicalVolIntegrityDesc *)sbi->s_lvid_bh->b_data;
-	__u32 number_of_partitions = le32_to_cpu(lvid->numOfPartitions);
-	__u32 offset = number_of_partitions * 2 *
-				sizeof(uint32_t)/sizeof(uint8_t);
-	return (struct logicalVolIntegrityDescImpUse *)&(lvid->impUse[offset]);
-}
-
-/* UDF filesystem type */
-static struct dentry *udf_mount(struct file_system_type *fs_type,
-		      int flags, const char *dev_name, void *data)
-{
-	return mount_bdev(fs_type, flags, dev_name, data, udf_fill_super);
-}
-
-static struct file_system_type udf_fstype = {
-	.owner		= THIS_MODULE,
-	.name		= "udf",
-	.mount		= udf_mount,
-	.kill_sb	= kill_block_super,
-	.fs_flags	= FS_REQUIRES_DEV,
-};
-=======
 static int udf_init_fs_context(struct fs_context *fc);
 static int udf_parse_param(struct fs_context *fc, struct fs_parameter *param);
 static int udf_reconfigure(struct fs_context *fc);
@@ -229,29 +144,18 @@ static struct file_system_type udf_fstype = {
 	.parameters	= udf_param_spec,
 };
 MODULE_ALIAS_FS("udf");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct kmem_cache *udf_inode_cachep;
 
 static struct inode *udf_alloc_inode(struct super_block *sb)
 {
 	struct udf_inode_info *ei;
-<<<<<<< HEAD
-	ei = kmem_cache_alloc(udf_inode_cachep, GFP_KERNEL);
-=======
 	ei = alloc_inode_sb(sb, udf_inode_cachep, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ei)
 		return NULL;
 
 	ei->i_unique = 0;
 	ei->i_lenExtents = 0;
-<<<<<<< HEAD
-	ei->i_next_alloc_block = 0;
-	ei->i_next_alloc_goal = 0;
-	ei->i_strat4096 = 0;
-	init_rwsem(&ei->i_data_sem);
-=======
 	ei->i_lenStreams = 0;
 	ei->i_next_alloc_block = 0;
 	ei->i_next_alloc_goal = 0;
@@ -262,33 +166,10 @@ static struct inode *udf_alloc_inode(struct super_block *sb)
 	ei->cached_extent.lstart = -1;
 	spin_lock_init(&ei->i_extent_cache_lock);
 	inode_set_iversion(&ei->vfs_inode, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &ei->vfs_inode;
 }
 
-<<<<<<< HEAD
-static void udf_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(udf_inode_cachep, UDF_I(inode));
-}
-
-static void udf_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, udf_i_callback);
-}
-
-static void init_once(void *foo)
-{
-	struct udf_inode_info *ei = (struct udf_inode_info *)foo;
-
-	ei->i_ext.i_data = NULL;
-	inode_init_once(&ei->vfs_inode);
-}
-
-static int init_inodecache(void)
-=======
 static void udf_free_in_core_inode(struct inode *inode)
 {
 	kmem_cache_free(udf_inode_cachep, UDF_I(inode));
@@ -303,16 +184,11 @@ static void init_once(void *foo)
 }
 
 static int __init init_inodecache(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	udf_inode_cachep = kmem_cache_create("udf_inode_cache",
 					     sizeof(struct udf_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT |
-<<<<<<< HEAD
-						 SLAB_MEM_SPREAD),
-=======
 						 SLAB_ACCOUNT),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     init_once);
 	if (!udf_inode_cachep)
 		return -ENOMEM;
@@ -332,54 +208,29 @@ static void destroy_inodecache(void)
 /* Superblock operations */
 static const struct super_operations udf_sb_ops = {
 	.alloc_inode	= udf_alloc_inode,
-<<<<<<< HEAD
-	.destroy_inode	= udf_destroy_inode,
-=======
 	.free_inode	= udf_free_in_core_inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_inode	= udf_write_inode,
 	.evict_inode	= udf_evict_inode,
 	.put_super	= udf_put_super,
 	.sync_fs	= udf_sync_fs,
 	.statfs		= udf_statfs,
-<<<<<<< HEAD
-	.remount_fs	= udf_remount_fs,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.show_options	= udf_show_options,
 };
 
 struct udf_options {
-<<<<<<< HEAD
-	unsigned char novrs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int blocksize;
 	unsigned int session;
 	unsigned int lastblock;
 	unsigned int anchor;
-<<<<<<< HEAD
-	unsigned int volume;
-	unsigned short partition;
-	unsigned int fileset;
-	unsigned int rootdir;
-	unsigned int flags;
-	umode_t umask;
-	gid_t gid;
-	uid_t uid;
-=======
 	unsigned int flags;
 	umode_t umask;
 	kgid_t gid;
 	kuid_t uid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	umode_t fmode;
 	umode_t dmode;
 	struct nls_table *nls_map;
 };
 
-<<<<<<< HEAD
-=======
 /*
  * UDF has historically preserved prior mount options across
  * a remount, so copy those here if remounting, otherwise set
@@ -439,7 +290,6 @@ static void udf_free_fc(struct fs_context *fc)
 	kfree(fc->fs_private);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_udf_fs(void)
 {
 	int err;
@@ -466,26 +316,12 @@ static void __exit exit_udf_fs(void)
 	destroy_inodecache();
 }
 
-<<<<<<< HEAD
-module_init(init_udf_fs)
-module_exit(exit_udf_fs)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int udf_sb_alloc_partition_maps(struct super_block *sb, u32 count)
 {
 	struct udf_sb_info *sbi = UDF_SB(sb);
 
-<<<<<<< HEAD
-	sbi->s_partmaps = kcalloc(count, sizeof(struct udf_part_map),
-				  GFP_KERNEL);
-	if (!sbi->s_partmaps) {
-		udf_err(sb, "Unable to allocate space for %d partition maps\n",
-			count);
-=======
 	sbi->s_partmaps = kcalloc(count, sizeof(*sbi->s_partmaps), GFP_KERNEL);
 	if (!sbi->s_partmaps) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sbi->s_partitions = 0;
 		return -ENOMEM;
 	}
@@ -494,8 +330,6 @@ static int udf_sb_alloc_partition_maps(struct super_block *sb, u32 count)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void udf_sb_free_bitmap(struct udf_bitmap *bitmap)
 {
 	int i;
@@ -545,7 +379,6 @@ static void udf_sb_free_partitions(struct super_block *sb)
 	sbi->s_partmaps = NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int udf_show_options(struct seq_file *seq, struct dentry *root)
 {
 	struct super_block *sb = root->d_sb;
@@ -565,25 +398,12 @@ static int udf_show_options(struct seq_file *seq, struct dentry *root)
 		seq_puts(seq, ",shortad");
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_UID_FORGET))
 		seq_puts(seq, ",uid=forget");
-<<<<<<< HEAD
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_UID_IGNORE))
-		seq_puts(seq, ",uid=ignore");
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_GID_FORGET))
-		seq_puts(seq, ",gid=forget");
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_GID_IGNORE))
-		seq_puts(seq, ",gid=ignore");
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_UID_SET))
-		seq_printf(seq, ",uid=%u", sbi->s_uid);
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_GID_SET))
-		seq_printf(seq, ",gid=%u", sbi->s_gid);
-=======
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_GID_FORGET))
 		seq_puts(seq, ",gid=forget");
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_UID_SET))
 		seq_printf(seq, ",uid=%u", from_kuid(&init_user_ns, sbi->s_uid));
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_GID_SET))
 		seq_printf(seq, ",gid=%u", from_kgid(&init_user_ns, sbi->s_gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->s_umask != 0)
 		seq_printf(seq, ",umask=%ho", sbi->s_umask);
 	if (sbi->s_fmode != UDF_INVALID_MODE)
@@ -591,40 +411,21 @@ static int udf_show_options(struct seq_file *seq, struct dentry *root)
 	if (sbi->s_dmode != UDF_INVALID_MODE)
 		seq_printf(seq, ",dmode=%ho", sbi->s_dmode);
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_SESSION_SET))
-<<<<<<< HEAD
-		seq_printf(seq, ",session=%u", sbi->s_session);
-=======
 		seq_printf(seq, ",session=%d", sbi->s_session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_LASTBLOCK_SET))
 		seq_printf(seq, ",lastblock=%u", sbi->s_last_block);
 	if (sbi->s_anchor != 0)
 		seq_printf(seq, ",anchor=%u", sbi->s_anchor);
-<<<<<<< HEAD
-	/*
-	 * volume, partition, fileset and rootdir seem to be ignored
-	 * currently
-	 */
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_UTF8))
-		seq_puts(seq, ",utf8");
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP) && sbi->s_nls_map)
-		seq_printf(seq, ",iocharset=%s", sbi->s_nls_map->charset);
-=======
 	if (sbi->s_nls_map)
 		seq_printf(seq, ",iocharset=%s", sbi->s_nls_map->charset);
 	else
 		seq_puts(seq, ",iocharset=utf8");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
- * udf_parse_options
-=======
  * udf_parse_param
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * PURPOSE
  *	Parse mount options.
@@ -667,21 +468,12 @@ static int udf_show_options(struct seq_file *seq, struct dentry *root)
  *		yield highly unpredictable results.
  *
  * PRE-CONDITIONS
-<<<<<<< HEAD
- *	options		Pointer to mount options string.
- *	uopts		Pointer to mount options variable.
- *
- * POST-CONDITIONS
- *	<return>	1	Mount options parsed okay.
- *	<return>	0	Error parsing mount options.
-=======
  *	fc		fs_context with pointer to mount options variable.
  *	param		Pointer to fs_parameter being parsed.
  *
  * POST-CONDITIONS
  *	<return>	0	Mount options parsed okay.
  *	<return>	errno	Error parsing mount options.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * HISTORY
  *	July 1, 1997 - Andrew E. Mileski
@@ -693,231 +485,6 @@ enum {
 	Opt_noadinicb, Opt_adinicb, Opt_shortad, Opt_longad,
 	Opt_gid, Opt_uid, Opt_umask, Opt_session, Opt_lastblock,
 	Opt_anchor, Opt_volume, Opt_partition, Opt_fileset,
-<<<<<<< HEAD
-	Opt_rootdir, Opt_utf8, Opt_iocharset,
-	Opt_err, Opt_uforget, Opt_uignore, Opt_gforget, Opt_gignore,
-	Opt_fmode, Opt_dmode
-};
-
-static const match_table_t tokens = {
-	{Opt_novrs,	"novrs"},
-	{Opt_nostrict,	"nostrict"},
-	{Opt_bs,	"bs=%u"},
-	{Opt_unhide,	"unhide"},
-	{Opt_undelete,	"undelete"},
-	{Opt_noadinicb,	"noadinicb"},
-	{Opt_adinicb,	"adinicb"},
-	{Opt_shortad,	"shortad"},
-	{Opt_longad,	"longad"},
-	{Opt_uforget,	"uid=forget"},
-	{Opt_uignore,	"uid=ignore"},
-	{Opt_gforget,	"gid=forget"},
-	{Opt_gignore,	"gid=ignore"},
-	{Opt_gid,	"gid=%u"},
-	{Opt_uid,	"uid=%u"},
-	{Opt_umask,	"umask=%o"},
-	{Opt_session,	"session=%u"},
-	{Opt_lastblock,	"lastblock=%u"},
-	{Opt_anchor,	"anchor=%u"},
-	{Opt_volume,	"volume=%u"},
-	{Opt_partition,	"partition=%u"},
-	{Opt_fileset,	"fileset=%u"},
-	{Opt_rootdir,	"rootdir=%u"},
-	{Opt_utf8,	"utf8"},
-	{Opt_iocharset,	"iocharset=%s"},
-	{Opt_fmode,     "mode=%o"},
-	{Opt_dmode,     "dmode=%o"},
-	{Opt_err,	NULL}
-};
-
-static int udf_parse_options(char *options, struct udf_options *uopt,
-			     bool remount)
-{
-	char *p;
-	int option;
-
-	uopt->novrs = 0;
-	uopt->partition = 0xFFFF;
-	uopt->session = 0xFFFFFFFF;
-	uopt->lastblock = 0;
-	uopt->anchor = 0;
-	uopt->volume = 0xFFFFFFFF;
-	uopt->rootdir = 0xFFFFFFFF;
-	uopt->fileset = 0xFFFFFFFF;
-	uopt->nls_map = NULL;
-
-	if (!options)
-		return 1;
-
-	while ((p = strsep(&options, ",")) != NULL) {
-		substring_t args[MAX_OPT_ARGS];
-		int token;
-		if (!*p)
-			continue;
-
-		token = match_token(p, tokens, args);
-		switch (token) {
-		case Opt_novrs:
-			uopt->novrs = 1;
-			break;
-		case Opt_bs:
-			if (match_int(&args[0], &option))
-				return 0;
-			uopt->blocksize = option;
-			uopt->flags |= (1 << UDF_FLAG_BLOCKSIZE_SET);
-			break;
-		case Opt_unhide:
-			uopt->flags |= (1 << UDF_FLAG_UNHIDE);
-			break;
-		case Opt_undelete:
-			uopt->flags |= (1 << UDF_FLAG_UNDELETE);
-			break;
-		case Opt_noadinicb:
-			uopt->flags &= ~(1 << UDF_FLAG_USE_AD_IN_ICB);
-			break;
-		case Opt_adinicb:
-			uopt->flags |= (1 << UDF_FLAG_USE_AD_IN_ICB);
-			break;
-		case Opt_shortad:
-			uopt->flags |= (1 << UDF_FLAG_USE_SHORT_AD);
-			break;
-		case Opt_longad:
-			uopt->flags &= ~(1 << UDF_FLAG_USE_SHORT_AD);
-			break;
-		case Opt_gid:
-			if (match_int(args, &option))
-				return 0;
-			uopt->gid = option;
-			uopt->flags |= (1 << UDF_FLAG_GID_SET);
-			break;
-		case Opt_uid:
-			if (match_int(args, &option))
-				return 0;
-			uopt->uid = option;
-			uopt->flags |= (1 << UDF_FLAG_UID_SET);
-			break;
-		case Opt_umask:
-			if (match_octal(args, &option))
-				return 0;
-			uopt->umask = option;
-			break;
-		case Opt_nostrict:
-			uopt->flags &= ~(1 << UDF_FLAG_STRICT);
-			break;
-		case Opt_session:
-			if (match_int(args, &option))
-				return 0;
-			uopt->session = option;
-			if (!remount)
-				uopt->flags |= (1 << UDF_FLAG_SESSION_SET);
-			break;
-		case Opt_lastblock:
-			if (match_int(args, &option))
-				return 0;
-			uopt->lastblock = option;
-			if (!remount)
-				uopt->flags |= (1 << UDF_FLAG_LASTBLOCK_SET);
-			break;
-		case Opt_anchor:
-			if (match_int(args, &option))
-				return 0;
-			uopt->anchor = option;
-			break;
-		case Opt_volume:
-			if (match_int(args, &option))
-				return 0;
-			uopt->volume = option;
-			break;
-		case Opt_partition:
-			if (match_int(args, &option))
-				return 0;
-			uopt->partition = option;
-			break;
-		case Opt_fileset:
-			if (match_int(args, &option))
-				return 0;
-			uopt->fileset = option;
-			break;
-		case Opt_rootdir:
-			if (match_int(args, &option))
-				return 0;
-			uopt->rootdir = option;
-			break;
-		case Opt_utf8:
-			uopt->flags |= (1 << UDF_FLAG_UTF8);
-			break;
-#ifdef CONFIG_UDF_NLS
-		case Opt_iocharset:
-			uopt->nls_map = load_nls(args[0].from);
-			uopt->flags |= (1 << UDF_FLAG_NLS_MAP);
-			break;
-#endif
-		case Opt_uignore:
-			uopt->flags |= (1 << UDF_FLAG_UID_IGNORE);
-			break;
-		case Opt_uforget:
-			uopt->flags |= (1 << UDF_FLAG_UID_FORGET);
-			break;
-		case Opt_gignore:
-			uopt->flags |= (1 << UDF_FLAG_GID_IGNORE);
-			break;
-		case Opt_gforget:
-			uopt->flags |= (1 << UDF_FLAG_GID_FORGET);
-			break;
-		case Opt_fmode:
-			if (match_octal(args, &option))
-				return 0;
-			uopt->fmode = option & 0777;
-			break;
-		case Opt_dmode:
-			if (match_octal(args, &option))
-				return 0;
-			uopt->dmode = option & 0777;
-			break;
-		default:
-			pr_err("bad mount option \"%s\" or missing value\n", p);
-			return 0;
-		}
-	}
-	return 1;
-}
-
-static int udf_remount_fs(struct super_block *sb, int *flags, char *options)
-{
-	struct udf_options uopt;
-	struct udf_sb_info *sbi = UDF_SB(sb);
-	int error = 0;
-
-	uopt.flags = sbi->s_flags;
-	uopt.uid   = sbi->s_uid;
-	uopt.gid   = sbi->s_gid;
-	uopt.umask = sbi->s_umask;
-	uopt.fmode = sbi->s_fmode;
-	uopt.dmode = sbi->s_dmode;
-
-	if (!udf_parse_options(options, &uopt, true))
-		return -EINVAL;
-
-	write_lock(&sbi->s_cred_lock);
-	sbi->s_flags = uopt.flags;
-	sbi->s_uid   = uopt.uid;
-	sbi->s_gid   = uopt.gid;
-	sbi->s_umask = uopt.umask;
-	sbi->s_fmode = uopt.fmode;
-	sbi->s_dmode = uopt.dmode;
-	write_unlock(&sbi->s_cred_lock);
-
-	if (sbi->s_lvid_bh) {
-		int write_rev = le16_to_cpu(udf_sb_lvidiu(sbi)->minUDFWriteRev);
-		if (write_rev > UDF_MAX_WRITE_VERSION)
-			*flags |= MS_RDONLY;
-	}
-
-	if ((*flags & MS_RDONLY) == (sb->s_flags & MS_RDONLY))
-		goto out_unlock;
-
-	if (*flags & MS_RDONLY)
-=======
 	Opt_rootdir, Opt_utf8, Opt_iocharset, Opt_err, Opt_fmode, Opt_dmode
 };
 
@@ -1105,7 +672,6 @@ static int udf_reconfigure(struct fs_context *fc)
 		goto out_unlock;
 
 	if (readonly)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		udf_close_lvid(sb);
 	else
 		udf_open_lvid(sb);
@@ -1114,19 +680,6 @@ out_unlock:
 	return error;
 }
 
-<<<<<<< HEAD
-/* Check Volume Structure Descriptors (ECMA 167 2/9.1) */
-/* We also check any "CD-ROM Volume Descriptor Set" (ECMA 167 2/8.3.1) */
-static loff_t udf_check_vsd(struct super_block *sb)
-{
-	struct volStructDesc *vsd = NULL;
-	loff_t sector = 32768;
-	int sectorsize;
-	struct buffer_head *bh = NULL;
-	int nsr02 = 0;
-	int nsr03 = 0;
-	struct udf_sb_info *sbi;
-=======
 /*
  * Check VSD descriptor. Returns -1 in case we are at the end of volume
  * recognition area, 0 if the descriptor is valid but non-interesting, 1 if
@@ -1190,7 +743,6 @@ static int udf_check_vsd(struct super_block *sb)
 	int nsr = 0;
 	struct udf_sb_info *sbi;
 	loff_t session_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sbi = UDF_SB(sb);
 	if (sb->s_blocksize < sizeof(struct volStructDesc))
@@ -1198,71 +750,6 @@ static int udf_check_vsd(struct super_block *sb)
 	else
 		sectorsize = sb->s_blocksize;
 
-<<<<<<< HEAD
-	sector += (sbi->s_session << sb->s_blocksize_bits);
-
-	udf_debug("Starting at sector %u (%ld byte sectors)\n",
-		  (unsigned int)(sector >> sb->s_blocksize_bits),
-		  sb->s_blocksize);
-	/* Process the sequence (if applicable) */
-	for (; !nsr02 && !nsr03; sector += sectorsize) {
-		/* Read a block */
-		bh = udf_tread(sb, sector >> sb->s_blocksize_bits);
-		if (!bh)
-			break;
-
-		/* Look for ISO  descriptors */
-		vsd = (struct volStructDesc *)(bh->b_data +
-					      (sector & (sb->s_blocksize - 1)));
-
-		if (vsd->stdIdent[0] == 0) {
-			brelse(bh);
-			break;
-		} else if (!strncmp(vsd->stdIdent, VSD_STD_ID_CD001,
-				    VSD_STD_ID_LEN)) {
-			switch (vsd->structType) {
-			case 0:
-				udf_debug("ISO9660 Boot Record found\n");
-				break;
-			case 1:
-				udf_debug("ISO9660 Primary Volume Descriptor found\n");
-				break;
-			case 2:
-				udf_debug("ISO9660 Supplementary Volume Descriptor found\n");
-				break;
-			case 3:
-				udf_debug("ISO9660 Volume Partition Descriptor found\n");
-				break;
-			case 255:
-				udf_debug("ISO9660 Volume Descriptor Set Terminator found\n");
-				break;
-			default:
-				udf_debug("ISO9660 VRS (%u) found\n",
-					  vsd->structType);
-				break;
-			}
-		} else if (!strncmp(vsd->stdIdent, VSD_STD_ID_BEA01,
-				    VSD_STD_ID_LEN))
-			; /* nothing */
-		else if (!strncmp(vsd->stdIdent, VSD_STD_ID_TEA01,
-				    VSD_STD_ID_LEN)) {
-			brelse(bh);
-			break;
-		} else if (!strncmp(vsd->stdIdent, VSD_STD_ID_NSR02,
-				    VSD_STD_ID_LEN))
-			nsr02 = sector;
-		else if (!strncmp(vsd->stdIdent, VSD_STD_ID_NSR03,
-				    VSD_STD_ID_LEN))
-			nsr03 = sector;
-		brelse(bh);
-	}
-
-	if (nsr03)
-		return nsr03;
-	else if (nsr02)
-		return nsr02;
-	else if (sector - (sbi->s_session << sb->s_blocksize_bits) == 32768)
-=======
 	session_offset = (loff_t)sbi->s_session << sb->s_blocksize_bits;
 	sector += session_offset;
 
@@ -1310,14 +797,11 @@ static int udf_check_vsd(struct super_block *sb)
 	if (nsr > 0)
 		return 1;
 	else if (!bh && sector - session_offset == VSD_FIRST_SECTOR_OFFSET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	else
 		return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int udf_verify_domain_identifier(struct super_block *sb,
 					struct regid *ident, char *dname)
 {
@@ -1367,151 +851,10 @@ static int udf_load_fileset(struct super_block *sb, struct fileSetDesc *fset,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int udf_find_fileset(struct super_block *sb,
 			    struct kernel_lb_addr *fileset,
 			    struct kernel_lb_addr *root)
 {
-<<<<<<< HEAD
-	struct buffer_head *bh = NULL;
-	long lastblock;
-	uint16_t ident;
-	struct udf_sb_info *sbi;
-
-	if (fileset->logicalBlockNum != 0xFFFFFFFF ||
-	    fileset->partitionReferenceNum != 0xFFFF) {
-		bh = udf_read_ptagged(sb, fileset, 0, &ident);
-
-		if (!bh) {
-			return 1;
-		} else if (ident != TAG_IDENT_FSD) {
-			brelse(bh);
-			return 1;
-		}
-
-	}
-
-	sbi = UDF_SB(sb);
-	if (!bh) {
-		/* Search backwards through the partitions */
-		struct kernel_lb_addr newfileset;
-
-/* --> cvg: FIXME - is it reasonable? */
-		return 1;
-
-		for (newfileset.partitionReferenceNum = sbi->s_partitions - 1;
-		     (newfileset.partitionReferenceNum != 0xFFFF &&
-		      fileset->logicalBlockNum == 0xFFFFFFFF &&
-		      fileset->partitionReferenceNum == 0xFFFF);
-		     newfileset.partitionReferenceNum--) {
-			lastblock = sbi->s_partmaps
-					[newfileset.partitionReferenceNum]
-						.s_partition_len;
-			newfileset.logicalBlockNum = 0;
-
-			do {
-				bh = udf_read_ptagged(sb, &newfileset, 0,
-						      &ident);
-				if (!bh) {
-					newfileset.logicalBlockNum++;
-					continue;
-				}
-
-				switch (ident) {
-				case TAG_IDENT_SBD:
-				{
-					struct spaceBitmapDesc *sp;
-					sp = (struct spaceBitmapDesc *)
-								bh->b_data;
-					newfileset.logicalBlockNum += 1 +
-						((le32_to_cpu(sp->numOfBytes) +
-						  sizeof(struct spaceBitmapDesc)
-						  - 1) >> sb->s_blocksize_bits);
-					brelse(bh);
-					break;
-				}
-				case TAG_IDENT_FSD:
-					*fileset = newfileset;
-					break;
-				default:
-					newfileset.logicalBlockNum++;
-					brelse(bh);
-					bh = NULL;
-					break;
-				}
-			} while (newfileset.logicalBlockNum < lastblock &&
-				 fileset->logicalBlockNum == 0xFFFFFFFF &&
-				 fileset->partitionReferenceNum == 0xFFFF);
-		}
-	}
-
-	if ((fileset->logicalBlockNum != 0xFFFFFFFF ||
-	     fileset->partitionReferenceNum != 0xFFFF) && bh) {
-		udf_debug("Fileset at block=%d, partition=%d\n",
-			  fileset->logicalBlockNum,
-			  fileset->partitionReferenceNum);
-
-		sbi->s_partition = fileset->partitionReferenceNum;
-		udf_load_fileset(sb, bh, root);
-		brelse(bh);
-		return 0;
-	}
-	return 1;
-}
-
-static int udf_load_pvoldesc(struct super_block *sb, sector_t block)
-{
-	struct primaryVolDesc *pvoldesc;
-	struct ustr *instr, *outstr;
-	struct buffer_head *bh;
-	uint16_t ident;
-	int ret = 1;
-
-	instr = kmalloc(sizeof(struct ustr), GFP_NOFS);
-	if (!instr)
-		return 1;
-
-	outstr = kmalloc(sizeof(struct ustr), GFP_NOFS);
-	if (!outstr)
-		goto out1;
-
-	bh = udf_read_tagged(sb, block, block, &ident);
-	if (!bh)
-		goto out2;
-
-	BUG_ON(ident != TAG_IDENT_PVD);
-
-	pvoldesc = (struct primaryVolDesc *)bh->b_data;
-
-	if (udf_disk_stamp_to_time(&UDF_SB(sb)->s_record_time,
-			      pvoldesc->recordingDateAndTime)) {
-#ifdef UDFFS_DEBUG
-		struct timestamp *ts = &pvoldesc->recordingDateAndTime;
-		udf_debug("recording time %04u/%02u/%02u %02u:%02u (%x)\n",
-			  le16_to_cpu(ts->year), ts->month, ts->day, ts->hour,
-			  ts->minute, le16_to_cpu(ts->typeAndTimezone));
-#endif
-	}
-
-	if (!udf_build_ustr(instr, pvoldesc->volIdent, 32))
-		if (udf_CS0toUTF8(outstr, instr)) {
-			strncpy(UDF_SB(sb)->s_volume_ident, outstr->u_name,
-				outstr->u_len > 31 ? 31 : outstr->u_len);
-			udf_debug("volIdent[] = '%s'\n",
-				  UDF_SB(sb)->s_volume_ident);
-		}
-
-	if (!udf_build_ustr(instr, pvoldesc->volSetIdent, 128))
-		if (udf_CS0toUTF8(outstr, instr))
-			udf_debug("volSetIdent[] = '%s'\n", outstr->u_name);
-
-	brelse(bh);
-	ret = 0;
-out2:
-	kfree(outstr);
-out1:
-	kfree(instr);
-=======
 	struct buffer_head *bh;
 	uint16_t ident;
 	int ret;
@@ -1599,33 +942,16 @@ out_bh:
 	brelse(bh);
 out2:
 	kfree(outstr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 struct inode *udf_find_metadata_inode_efe(struct super_block *sb,
-<<<<<<< HEAD
-					u32 meta_file_loc, u32 partition_num)
-=======
 					u32 meta_file_loc, u32 partition_ref)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kernel_lb_addr addr;
 	struct inode *metadata_fe;
 
 	addr.logicalBlockNum = meta_file_loc;
-<<<<<<< HEAD
-	addr.partitionReferenceNum = partition_num;
-
-	metadata_fe = udf_iget(sb, &addr);
-
-	if (metadata_fe == NULL)
-		udf_warn(sb, "metadata inode efe not found\n");
-	else if (UDF_I(metadata_fe)->i_alloc_type != ICBTAG_FLAG_AD_SHORT) {
-		udf_warn(sb, "metadata inode efe does not have short allocation descriptors!\n");
-		iput(metadata_fe);
-		metadata_fe = NULL;
-=======
 	addr.partitionReferenceNum = partition_ref;
 
 	metadata_fe = udf_iget_special(sb, &addr);
@@ -1638,49 +964,18 @@ struct inode *udf_find_metadata_inode_efe(struct super_block *sb,
 		udf_warn(sb, "metadata inode efe does not have short allocation descriptors!\n");
 		iput(metadata_fe);
 		return ERR_PTR(-EIO);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return metadata_fe;
 }
 
-<<<<<<< HEAD
-static int udf_load_metadata_files(struct super_block *sb, int partition)
-=======
 static int udf_load_metadata_files(struct super_block *sb, int partition,
 				   int type1_index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	struct udf_part_map *map;
 	struct udf_meta_data *mdata;
 	struct kernel_lb_addr addr;
-<<<<<<< HEAD
-
-	map = &sbi->s_partmaps[partition];
-	mdata = &map->s_type_specific.s_metadata;
-
-	/* metadata address */
-	udf_debug("Metadata file location: block = %d part = %d\n",
-		  mdata->s_meta_file_loc, map->s_partition_num);
-
-	mdata->s_metadata_fe = udf_find_metadata_inode_efe(sb,
-		mdata->s_meta_file_loc, map->s_partition_num);
-
-	if (mdata->s_metadata_fe == NULL) {
-		/* mirror file entry */
-		udf_debug("Mirror metadata file location: block = %d part = %d\n",
-			  mdata->s_mirror_file_loc, map->s_partition_num);
-
-		mdata->s_mirror_fe = udf_find_metadata_inode_efe(sb,
-			mdata->s_mirror_file_loc, map->s_partition_num);
-
-		if (mdata->s_mirror_fe == NULL) {
-			udf_err(sb, "Both metadata and mirror metadata inode efe can not found\n");
-			goto error_exit;
-		}
-	}
-=======
 	struct inode *fe;
 
 	map = &sbi->s_partmaps[partition];
@@ -1709,7 +1004,6 @@ static int udf_load_metadata_files(struct super_block *sb, int partition,
 	} else
 		mdata->s_metadata_fe = fe;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * bitmap file entry
@@ -1718,46 +1012,6 @@ static int udf_load_metadata_files(struct super_block *sb, int partition,
 	*/
 	if (mdata->s_bitmap_file_loc != 0xFFFFFFFF) {
 		addr.logicalBlockNum = mdata->s_bitmap_file_loc;
-<<<<<<< HEAD
-		addr.partitionReferenceNum = map->s_partition_num;
-
-		udf_debug("Bitmap file location: block = %d part = %d\n",
-			  addr.logicalBlockNum, addr.partitionReferenceNum);
-
-		mdata->s_bitmap_fe = udf_iget(sb, &addr);
-
-		if (mdata->s_bitmap_fe == NULL) {
-			if (sb->s_flags & MS_RDONLY)
-				udf_warn(sb, "bitmap inode efe not found but it's ok since the disc is mounted read-only\n");
-			else {
-				udf_err(sb, "bitmap inode efe not found and attempted read-write mount\n");
-				goto error_exit;
-			}
-		}
-	}
-
-	udf_debug("udf_load_metadata_files Ok\n");
-
-	return 0;
-
-error_exit:
-	return 1;
-}
-
-static void udf_load_fileset(struct super_block *sb, struct buffer_head *bh,
-			     struct kernel_lb_addr *root)
-{
-	struct fileSetDesc *fset;
-
-	fset = (struct fileSetDesc *)bh->b_data;
-
-	*root = lelb_to_cpu(fset->rootDirectoryICB.extLocation);
-
-	UDF_SB(sb)->s_serial_number = le16_to_cpu(fset->descTag.tagSerialNum);
-
-	udf_debug("Rootdir at block=%d, partition=%d\n",
-		  root->logicalBlockNum, root->partitionReferenceNum);
-=======
 		addr.partitionReferenceNum = mdata->s_phys_partition_ref;
 
 		udf_debug("Bitmap file location: block = %u part = %u\n",
@@ -1777,7 +1031,6 @@ static void udf_load_fileset(struct super_block *sb, struct buffer_head *bh,
 
 	udf_debug("udf_load_metadata_files Ok\n");
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int udf_compute_nr_groups(struct super_block *sb, u32 partition)
@@ -1791,24 +1044,6 @@ int udf_compute_nr_groups(struct super_block *sb, u32 partition)
 static struct udf_bitmap *udf_sb_alloc_bitmap(struct super_block *sb, u32 index)
 {
 	struct udf_bitmap *bitmap;
-<<<<<<< HEAD
-	int nr_groups;
-	int size;
-
-	nr_groups = udf_compute_nr_groups(sb, index);
-	size = sizeof(struct udf_bitmap) +
-		(sizeof(struct buffer_head *) * nr_groups);
-
-	if (size <= PAGE_SIZE)
-		bitmap = kzalloc(size, GFP_KERNEL);
-	else
-		bitmap = vzalloc(size); /* TODO: get rid of vzalloc */
-
-	if (bitmap == NULL)
-		return NULL;
-
-	bitmap->s_block_bitmap = (struct buffer_head **)(bitmap + 1);
-=======
 	int nr_groups = udf_compute_nr_groups(sb, index);
 
 	bitmap = kvzalloc(struct_size(bitmap, s_block_bitmap, nr_groups),
@@ -1816,13 +1051,10 @@ static struct udf_bitmap *udf_sb_alloc_bitmap(struct super_block *sb, u32 index)
 	if (!bitmap)
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bitmap->s_nr_groups = nr_groups;
 	return bitmap;
 }
 
-<<<<<<< HEAD
-=======
 static int check_partition_desc(struct super_block *sb,
 				struct partitionDesc *p,
 				struct udf_part_map *map)
@@ -1872,17 +1104,13 @@ force_ro:
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int udf_fill_partdesc_info(struct super_block *sb,
 		struct partitionDesc *p, int p_index)
 {
 	struct udf_part_map *map;
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	struct partitionHeaderDesc *phd;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	map = &sbi->s_partmaps[p_index];
 
@@ -1898,14 +1126,6 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 	if (p->accessType == cpu_to_le32(PD_ACCESS_TYPE_OVERWRITABLE))
 		map->s_partition_flags |= UDF_PART_FLAG_OVERWRITABLE;
 
-<<<<<<< HEAD
-	udf_debug("Partition (%d type %x) starts at physical %d, block length %d\n",
-		  p_index, map->s_partition_type,
-		  map->s_partition_root, map->s_partition_len);
-
-	if (strcmp(p->partitionContents.ident, PD_PARTITION_CONTENTS_NSR02) &&
-	    strcmp(p->partitionContents.ident, PD_PARTITION_CONTENTS_NSR03))
-=======
 	udf_debug("Partition (%d type %x) starts at physical %u, block length %u\n",
 		  p_index, map->s_partition_type,
 		  map->s_partition_root, map->s_partition_len);
@@ -1920,7 +1140,6 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 	 * to avoid allocation info we don't support.
 	 */
 	if (UDF_QUERY_FLAG(sb, UDF_FLAG_RW_INCOMPAT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	phd = (struct partitionHeaderDesc *)p->partitionContentsUse;
@@ -1930,17 +1149,6 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 				phd->unallocSpaceTable.extPosition),
 			.partitionReferenceNum = p_index,
 		};
-<<<<<<< HEAD
-
-		map->s_uspace.s_table = udf_iget(sb, &loc);
-		if (!map->s_uspace.s_table) {
-			udf_debug("cannot load unallocSpaceTable (part %d)\n",
-				  p_index);
-			return 1;
-		}
-		map->s_partition_flags |= UDF_PART_FLAG_UNALLOC_TABLE;
-		udf_debug("unallocSpaceTable (part %d) @ %ld\n",
-=======
 		struct inode *inode;
 
 		inode = udf_iget_special(sb, &loc);
@@ -1952,61 +1160,12 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 		map->s_uspace.s_table = inode;
 		map->s_partition_flags |= UDF_PART_FLAG_UNALLOC_TABLE;
 		udf_debug("unallocSpaceTable (part %d) @ %lu\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  p_index, map->s_uspace.s_table->i_ino);
 	}
 
 	if (phd->unallocSpaceBitmap.extLength) {
 		struct udf_bitmap *bitmap = udf_sb_alloc_bitmap(sb, p_index);
 		if (!bitmap)
-<<<<<<< HEAD
-			return 1;
-		map->s_uspace.s_bitmap = bitmap;
-		bitmap->s_extLength = le32_to_cpu(
-				phd->unallocSpaceBitmap.extLength);
-		bitmap->s_extPosition = le32_to_cpu(
-				phd->unallocSpaceBitmap.extPosition);
-		map->s_partition_flags |= UDF_PART_FLAG_UNALLOC_BITMAP;
-		udf_debug("unallocSpaceBitmap (part %d) @ %d\n",
-			  p_index, bitmap->s_extPosition);
-	}
-
-	if (phd->partitionIntegrityTable.extLength)
-		udf_debug("partitionIntegrityTable (part %d)\n", p_index);
-
-	if (phd->freedSpaceTable.extLength) {
-		struct kernel_lb_addr loc = {
-			.logicalBlockNum = le32_to_cpu(
-				phd->freedSpaceTable.extPosition),
-			.partitionReferenceNum = p_index,
-		};
-
-		map->s_fspace.s_table = udf_iget(sb, &loc);
-		if (!map->s_fspace.s_table) {
-			udf_debug("cannot load freedSpaceTable (part %d)\n",
-				  p_index);
-			return 1;
-		}
-
-		map->s_partition_flags |= UDF_PART_FLAG_FREED_TABLE;
-		udf_debug("freedSpaceTable (part %d) @ %ld\n",
-			  p_index, map->s_fspace.s_table->i_ino);
-	}
-
-	if (phd->freedSpaceBitmap.extLength) {
-		struct udf_bitmap *bitmap = udf_sb_alloc_bitmap(sb, p_index);
-		if (!bitmap)
-			return 1;
-		map->s_fspace.s_bitmap = bitmap;
-		bitmap->s_extLength = le32_to_cpu(
-				phd->freedSpaceBitmap.extLength);
-		bitmap->s_extPosition = le32_to_cpu(
-				phd->freedSpaceBitmap.extPosition);
-		map->s_partition_flags |= UDF_PART_FLAG_FREED_BITMAP;
-		udf_debug("freedSpaceBitmap (part %d) @ %d\n",
-			  p_index, bitmap->s_extPosition);
-	}
-=======
 			return -ENOMEM;
 		map->s_uspace.s_bitmap = bitmap;
 		bitmap->s_extPosition = le32_to_cpu(
@@ -2016,7 +1175,6 @@ static int udf_fill_partdesc_info(struct super_block *sb,
 			  p_index, bitmap->s_extPosition);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2027,10 +1185,7 @@ static void udf_find_vat_block(struct super_block *sb, int p_index,
 	struct udf_part_map *map = &sbi->s_partmaps[p_index];
 	sector_t vat_block;
 	struct kernel_lb_addr ino;
-<<<<<<< HEAD
-=======
 	struct inode *inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * VAT file entry is in the last recorded block. Some broken disks have
@@ -2039,12 +1194,6 @@ static void udf_find_vat_block(struct super_block *sb, int p_index,
 	ino.partitionReferenceNum = type1_index;
 	for (vat_block = start_block;
 	     vat_block >= map->s_partition_root &&
-<<<<<<< HEAD
-	     vat_block >= start_block - 3 &&
-	     !sbi->s_vat_inode; vat_block--) {
-		ino.logicalBlockNum = vat_block - map->s_partition_root;
-		sbi->s_vat_inode = udf_iget(sb, &ino);
-=======
 	     vat_block >= start_block - 3; vat_block--) {
 		ino.logicalBlockNum = vat_block - map->s_partition_root;
 		inode = udf_iget_special(sb, &ino);
@@ -2052,7 +1201,6 @@ static void udf_find_vat_block(struct super_block *sb, int p_index,
 			sbi->s_vat_inode = inode;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2062,14 +1210,8 @@ static int udf_load_vat(struct super_block *sb, int p_index, int type1_index)
 	struct udf_part_map *map = &sbi->s_partmaps[p_index];
 	struct buffer_head *bh = NULL;
 	struct udf_inode_info *vati;
-<<<<<<< HEAD
-	uint32_t pos;
-	struct virtualAllocationTable20 *vat20;
-	sector_t blocks = sb->s_bdev->bd_inode->i_size >> sb->s_blocksize_bits;
-=======
 	struct virtualAllocationTable20 *vat20;
 	sector_t blocks = sb_bdev_nr_blocks(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udf_find_vat_block(sb, p_index, type1_index, sbi->s_last_block);
 	if (!sbi->s_vat_inode &&
@@ -2080,11 +1222,7 @@ static int udf_load_vat(struct super_block *sb, int p_index, int type1_index)
 		udf_find_vat_block(sb, p_index, type1_index, blocks - 1);
 	}
 	if (!sbi->s_vat_inode)
-<<<<<<< HEAD
-		return 1;
-=======
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (map->s_partition_type == UDF_VIRTUAL_MAP15) {
 		map->s_type_specific.s_virtual.s_start_offset = 0;
@@ -2093,16 +1231,6 @@ static int udf_load_vat(struct super_block *sb, int p_index, int type1_index)
 	} else if (map->s_partition_type == UDF_VIRTUAL_MAP20) {
 		vati = UDF_I(sbi->s_vat_inode);
 		if (vati->i_alloc_type != ICBTAG_FLAG_AD_IN_ICB) {
-<<<<<<< HEAD
-			pos = udf_block_map(sbi->s_vat_inode, 0);
-			bh = sb_bread(sb, pos);
-			if (!bh)
-				return 1;
-			vat20 = (struct virtualAllocationTable20 *)bh->b_data;
-		} else {
-			vat20 = (struct virtualAllocationTable20 *)
-							vati->i_ext.i_data;
-=======
 			int err = 0;
 
 			bh = udf_bread(sbi->s_vat_inode, 0, 0, &err);
@@ -2115,7 +1243,6 @@ static int udf_load_vat(struct super_block *sb, int p_index, int type1_index)
 		} else {
 			vat20 = (struct virtualAllocationTable20 *)
 							vati->i_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		map->s_type_specific.s_virtual.s_start_offset =
@@ -2129,15 +1256,12 @@ static int udf_load_vat(struct super_block *sb, int p_index, int type1_index)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Load partition descriptor block
  *
  * Returns <0 on error, 0 on success, -EAGAIN is special - try next descriptor
  * sequence.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int udf_load_partdesc(struct super_block *sb, sector_t block)
 {
 	struct buffer_head *bh;
@@ -2147,15 +1271,6 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 	int i, type1_idx;
 	uint16_t partitionNumber;
 	uint16_t ident;
-<<<<<<< HEAD
-	int ret = 0;
-
-	bh = udf_read_tagged(sb, block, block, &ident);
-	if (!bh)
-		return 1;
-	if (ident != TAG_IDENT_PD)
-		goto out_bh;
-=======
 	int ret;
 
 	bh = udf_read_tagged(sb, block, block, &ident);
@@ -2165,22 +1280,14 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 		ret = 0;
 		goto out_bh;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = (struct partitionDesc *)bh->b_data;
 	partitionNumber = le16_to_cpu(p->partitionNumber);
 
-<<<<<<< HEAD
-	/* First scan for TYPE1, SPARABLE and METADATA partitions */
-	for (i = 0; i < sbi->s_partitions; i++) {
-		map = &sbi->s_partmaps[i];
-		udf_debug("Searching map: (%d == %d)\n",
-=======
 	/* First scan for TYPE1 and SPARABLE partitions */
 	for (i = 0; i < sbi->s_partitions; i++) {
 		map = &sbi->s_partmaps[i];
 		udf_debug("Searching map: (%u == %u)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  map->s_partition_num, partitionNumber);
 		if (map->s_partition_num == partitionNumber &&
 		    (map->s_partition_type == UDF_TYPE1_MAP15 ||
@@ -2189,33 +1296,22 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 	}
 
 	if (i >= sbi->s_partitions) {
-<<<<<<< HEAD
-		udf_debug("Partition (%d) not found in partition map\n",
-			  partitionNumber);
-=======
 		udf_debug("Partition (%u) not found in partition map\n",
 			  partitionNumber);
 		ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_bh;
 	}
 
 	ret = udf_fill_partdesc_info(sb, p, i);
-<<<<<<< HEAD
-=======
 	if (ret < 0)
 		goto out_bh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now rescan for VIRTUAL or METADATA partitions when SPARABLE and
 	 * PHYSICAL partitions are already set up
 	 */
 	type1_idx = i;
-<<<<<<< HEAD
-=======
 	map = NULL; /* supress 'maybe used uninitialized' warning */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < sbi->s_partitions; i++) {
 		map = &sbi->s_partmaps[i];
 
@@ -2226,18 +1322,6 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 			break;
 	}
 
-<<<<<<< HEAD
-	if (i >= sbi->s_partitions)
-		goto out_bh;
-
-	ret = udf_fill_partdesc_info(sb, p, i);
-	if (ret)
-		goto out_bh;
-
-	if (map->s_partition_type == UDF_METADATA_MAP25) {
-		ret = udf_load_metadata_files(sb, i);
-		if (ret) {
-=======
 	if (i >= sbi->s_partitions) {
 		ret = 0;
 		goto out_bh;
@@ -2250,25 +1334,11 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 	if (map->s_partition_type == UDF_METADATA_MAP25) {
 		ret = udf_load_metadata_files(sb, i, type1_idx);
 		if (ret < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udf_err(sb, "error loading MetaData partition map %d\n",
 				i);
 			goto out_bh;
 		}
 	} else {
-<<<<<<< HEAD
-		ret = udf_load_vat(sb, i, type1_idx);
-		if (ret)
-			goto out_bh;
-		/*
-		 * Mark filesystem read-only if we have a partition with
-		 * virtual map since we don't handle writing to it (we
-		 * overwrite blocks instead of relocating them).
-		 */
-		sb->s_flags |= MS_RDONLY;
-		pr_notice("Filesystem marked read-only because writing to pseudooverwrite partition is not implemented\n");
-	}
-=======
 		/*
 		 * If we have a partition with virtual map, we don't handle
 		 * writing to it (we overwrite blocks instead of relocating
@@ -2284,7 +1354,6 @@ static int udf_load_partdesc(struct super_block *sb, sector_t block)
 			goto out_bh;
 	}
 	ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_bh:
 	/* In case loading failed, we handle cleanup in udf_fill_super */
 	brelse(bh);
@@ -2316,15 +1385,12 @@ static int udf_load_sparable_map(struct super_block *sb,
 			(int)spm->numSparingTables);
 		return -EIO;
 	}
-<<<<<<< HEAD
-=======
 	if (le32_to_cpu(spm->sizeSparingTable) > sb->s_blocksize) {
 		udf_err(sb, "error loading logical volume descriptor: "
 			"Too big sparing table size (%u)\n",
 			le32_to_cpu(spm->sizeSparingTable));
 		return -EIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < spm->numSparingTables; i++) {
 		loc = le32_to_cpu(spm->locSparingTable[i]);
@@ -2359,19 +1425,11 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 	uint16_t ident;
 	struct buffer_head *bh;
 	unsigned int table_len;
-<<<<<<< HEAD
-	int ret = 0;
-
-	bh = udf_read_tagged(sb, block, block, &ident);
-	if (!bh)
-		return 1;
-=======
 	int ret;
 
 	bh = udf_read_tagged(sb, block, block, &ident);
 	if (!bh)
 		return -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(ident != TAG_IDENT_LVD);
 	lvd = (struct logicalVolDesc *)bh->b_data;
 	table_len = le32_to_cpu(lvd->mapTableLength);
@@ -2379,12 +1437,6 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 		udf_err(sb, "error loading logical volume descriptor: "
 			"Partition table too long (%u > %lu)\n", table_len,
 			sb->s_blocksize - sizeof(*lvd));
-<<<<<<< HEAD
-		ret = 1;
-		goto out_bh;
-	}
-
-=======
 		ret = -EIO;
 		goto out_bh;
 	}
@@ -2393,7 +1445,6 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 					   "logical volume");
 	if (ret)
 		goto out_bh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = udf_sb_alloc_partition_maps(sb, le32_to_cpu(lvd->numPartitionMaps));
 	if (ret)
 		goto out_bh;
@@ -2434,18 +1485,10 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 			} else if (!strncmp(upm2->partIdent.ident,
 						UDF_ID_SPARABLE,
 						strlen(UDF_ID_SPARABLE))) {
-<<<<<<< HEAD
-				if (udf_load_sparable_map(sb, map,
-				    (struct sparablePartitionMap *)gpm) < 0) {
-					ret = 1;
-					goto out_bh;
-				}
-=======
 				ret = udf_load_sparable_map(sb, map,
 					(struct sparablePartitionMap *)gpm);
 				if (ret < 0)
 					goto out_bh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (!strncmp(upm2->partIdent.ident,
 						UDF_ID_METADATA,
 						strlen(UDF_ID_METADATA))) {
@@ -2454,11 +1497,7 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 				struct metadataPartitionMap *mdm =
 						(struct metadataPartitionMap *)
 						&(lvd->partitionMaps[offset]);
-<<<<<<< HEAD
-				udf_debug("Parsing Logical vol part %d type %d  id=%s\n",
-=======
 				udf_debug("Parsing Logical vol part %d type %u  id=%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  i, type, UDF_ID_METADATA);
 
 				map->s_partition_type = UDF_METADATA_MAP25;
@@ -2480,19 +1519,6 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 				udf_debug("Metadata Ident suffix=0x%x\n",
 					  le16_to_cpu(*(__le16 *)
 						      mdm->partIdent.identSuffix));
-<<<<<<< HEAD
-				udf_debug("Metadata part num=%d\n",
-					  le16_to_cpu(mdm->partitionNum));
-				udf_debug("Metadata part alloc unit size=%d\n",
-					  le32_to_cpu(mdm->allocUnitSize));
-				udf_debug("Metadata file loc=%d\n",
-					  le32_to_cpu(mdm->metadataFileLoc));
-				udf_debug("Mirror file loc=%d\n",
-					  le32_to_cpu(mdm->metadataMirrorFileLoc));
-				udf_debug("Bitmap file loc=%d\n",
-					  le32_to_cpu(mdm->metadataBitmapFileLoc));
-				udf_debug("Flags: %d %d\n",
-=======
 				udf_debug("Metadata part num=%u\n",
 					  le16_to_cpu(mdm->partitionNum));
 				udf_debug("Metadata part alloc unit size=%u\n",
@@ -2504,7 +1530,6 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 				udf_debug("Bitmap file loc=%u\n",
 					  le32_to_cpu(mdm->metadataBitmapFileLoc));
 				udf_debug("Flags: %d %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  mdata->s_flags, mdm->flags);
 			} else {
 				udf_debug("Unknown ident: %s\n",
@@ -2514,11 +1539,7 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 			map->s_volumeseqnum = le16_to_cpu(upm2->volSeqNum);
 			map->s_partition_num = le16_to_cpu(upm2->partitionNum);
 		}
-<<<<<<< HEAD
-		udf_debug("Partition (%d:%d) type %d on volume %d\n",
-=======
 		udf_debug("Partition (%d:%u) type %u on volume %u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  i, map->s_partition_num, type, map->s_volumeseqnum);
 	}
 
@@ -2526,19 +1547,12 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 		struct long_ad *la = (struct long_ad *)&(lvd->logicalVolContentsUse[0]);
 
 		*fileset = lelb_to_cpu(la->extLocation);
-<<<<<<< HEAD
-		udf_debug("FileSet found in LogicalVolDesc at block=%d, partition=%d\n",
-=======
 		udf_debug("FileSet found in LogicalVolDesc at block=%u, partition=%u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  fileset->logicalBlockNum,
 			  fileset->partitionReferenceNum);
 	}
 	if (lvd->integritySeqExt.extLength)
 		udf_load_logicalvolint(sb, leea_to_cpu(lvd->integritySeqExt));
-<<<<<<< HEAD
-
-=======
 	ret = 0;
 
 	if (!sbi->s_lvid_bh) {
@@ -2551,74 +1565,11 @@ static int udf_load_logicalvol(struct super_block *sb, sector_t block,
 			ret = -EACCES;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_bh:
 	brelse(bh);
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * udf_load_logicalvolint
- *
- */
-static void udf_load_logicalvolint(struct super_block *sb, struct kernel_extent_ad loc)
-{
-	struct buffer_head *bh = NULL;
-	uint16_t ident;
-	struct udf_sb_info *sbi = UDF_SB(sb);
-	struct logicalVolIntegrityDesc *lvid;
-
-	while (loc.extLength > 0 &&
-	       (bh = udf_read_tagged(sb, loc.extLocation,
-				     loc.extLocation, &ident)) &&
-	       ident == TAG_IDENT_LVID) {
-		sbi->s_lvid_bh = bh;
-		lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
-
-		if (lvid->nextIntegrityExt.extLength)
-			udf_load_logicalvolint(sb,
-				leea_to_cpu(lvid->nextIntegrityExt));
-
-		if (sbi->s_lvid_bh != bh)
-			brelse(bh);
-		loc.extLength -= sb->s_blocksize;
-		loc.extLocation++;
-	}
-	if (sbi->s_lvid_bh != bh)
-		brelse(bh);
-}
-
-/*
- * udf_process_sequence
- *
- * PURPOSE
- *	Process a main/reserve volume descriptor sequence.
- *
- * PRE-CONDITIONS
- *	sb			Pointer to _locked_ superblock.
- *	block			First block of first extent of the sequence.
- *	lastblock		Lastblock of first extent of the sequence.
- *
- * HISTORY
- *	July 1, 1997 - Andrew E. Mileski
- *	Written, tested, and released.
- */
-static noinline int udf_process_sequence(struct super_block *sb, long block,
-				long lastblock, struct kernel_lb_addr *fileset)
-{
-	struct buffer_head *bh = NULL;
-	struct udf_vds_record vds[VDS_POS_LENGTH];
-	struct udf_vds_record *curr;
-	struct generic_desc *gd;
-	struct volDescPtr *vdp;
-	int done = 0;
-	uint32_t vdsn;
-	uint16_t ident;
-	long next_s = 0, next_e = 0;
-
-	memset(vds, 0, sizeof(struct udf_vds_record) * VDS_POS_LENGTH);
-=======
 static bool udf_lvid_valid(struct super_block *sb,
 			   struct logicalVolIntegrityDesc *lvid)
 {
@@ -2786,77 +1737,20 @@ static noinline int udf_process_sequence(
 				      GFP_KERNEL);
 	if (!data.part_descs_loc)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Read the main descriptor sequence and find which descriptors
 	 * are in it.
 	 */
 	for (; (!done && block <= lastblock); block++) {
-<<<<<<< HEAD
-
-		bh = udf_read_tagged(sb, block, block, &ident);
-		if (!bh) {
-			udf_err(sb,
-				"Block %llu of volume descriptor sequence is corrupted or we could not read it\n",
-				(unsigned long long)block);
-			return 1;
-		}
-=======
 		bh = udf_read_tagged(sb, block, block, &ident);
 		if (!bh)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Process each descriptor (ISO 13346 3/8.3-8.4) */
 		gd = (struct generic_desc *)bh->b_data;
 		vdsn = le32_to_cpu(gd->volDescSeqNum);
 		switch (ident) {
-<<<<<<< HEAD
-		case TAG_IDENT_PVD: /* ISO 13346 3/10.1 */
-			curr = &vds[VDS_POS_PRIMARY_VOL_DESC];
-			if (vdsn >= curr->volDescSeqNum) {
-				curr->volDescSeqNum = vdsn;
-				curr->block = block;
-			}
-			break;
-		case TAG_IDENT_VDP: /* ISO 13346 3/10.3 */
-			curr = &vds[VDS_POS_VOL_DESC_PTR];
-			if (vdsn >= curr->volDescSeqNum) {
-				curr->volDescSeqNum = vdsn;
-				curr->block = block;
-
-				vdp = (struct volDescPtr *)bh->b_data;
-				next_s = le32_to_cpu(
-					vdp->nextVolDescSeqExt.extLocation);
-				next_e = le32_to_cpu(
-					vdp->nextVolDescSeqExt.extLength);
-				next_e = next_e >> sb->s_blocksize_bits;
-				next_e += next_s;
-			}
-			break;
-		case TAG_IDENT_IUVD: /* ISO 13346 3/10.4 */
-			curr = &vds[VDS_POS_IMP_USE_VOL_DESC];
-			if (vdsn >= curr->volDescSeqNum) {
-				curr->volDescSeqNum = vdsn;
-				curr->block = block;
-			}
-			break;
-		case TAG_IDENT_PD: /* ISO 13346 3/10.5 */
-			curr = &vds[VDS_POS_PARTITION_DESC];
-			if (!curr->block)
-				curr->block = block;
-			break;
-		case TAG_IDENT_LVD: /* ISO 13346 3/10.6 */
-			curr = &vds[VDS_POS_LOGICAL_VOL_DESC];
-			if (vdsn >= curr->volDescSeqNum) {
-				curr->volDescSeqNum = vdsn;
-				curr->block = block;
-			}
-			break;
-		case TAG_IDENT_USD: /* ISO 13346 3/10.8 */
-			curr = &vds[VDS_POS_UNALLOC_SPACE_DESC];
-=======
 		case TAG_IDENT_VDP: /* ISO 13346 3/10.3 */
 			if (++indirections > UDF_MAX_TD_NESTING) {
 				udf_err(sb, "too many Volume Descriptor "
@@ -2890,24 +1784,13 @@ static noinline int udf_process_sequence(
 			/* Descriptor we don't care about? */
 			if (!curr)
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (vdsn >= curr->volDescSeqNum) {
 				curr->volDescSeqNum = vdsn;
 				curr->block = block;
 			}
 			break;
 		case TAG_IDENT_TD: /* ISO 13346 3/10.9 */
-<<<<<<< HEAD
-			vds[VDS_POS_TERMINATING_DESC].block = block;
-			if (next_e) {
-				block = next_s;
-				lastblock = next_e;
-				next_s = next_e = 0;
-			} else
-				done = 1;
-=======
 			done = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		brelse(bh);
@@ -2916,34 +1799,6 @@ static noinline int udf_process_sequence(
 	 * Now read interesting descriptors again and process them
 	 * in a suitable order
 	 */
-<<<<<<< HEAD
-	if (!vds[VDS_POS_PRIMARY_VOL_DESC].block) {
-		udf_err(sb, "Primary Volume Descriptor not found!\n");
-		return 1;
-	}
-	if (udf_load_pvoldesc(sb, vds[VDS_POS_PRIMARY_VOL_DESC].block))
-		return 1;
-
-	if (vds[VDS_POS_LOGICAL_VOL_DESC].block && udf_load_logicalvol(sb,
-	    vds[VDS_POS_LOGICAL_VOL_DESC].block, fileset))
-		return 1;
-
-	if (vds[VDS_POS_PARTITION_DESC].block) {
-		/*
-		 * We rescan the whole descriptor sequence to find
-		 * partition descriptor blocks and process them.
-		 */
-		for (block = vds[VDS_POS_PARTITION_DESC].block;
-		     block < vds[VDS_POS_TERMINATING_DESC].block;
-		     block++)
-			if (udf_load_partdesc(sb, block))
-				return 1;
-	}
-
-	return 0;
-}
-
-=======
 	if (!data.vds[VDS_POS_PRIMARY_VOL_DESC].block) {
 		udf_err(sb, "Primary Volume Descriptor not found!\n");
 		ret = -EAGAIN;
@@ -2978,17 +1833,12 @@ out:
  *
  * Returns <0 on error, 0 on success
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int udf_load_sequence(struct super_block *sb, struct buffer_head *bh,
 			     struct kernel_lb_addr *fileset)
 {
 	struct anchorVolDescPtr *anchor;
-<<<<<<< HEAD
-	long main_s, main_e, reserve_s, reserve_e;
-=======
 	sector_t main_s, main_e, reserve_s, reserve_e;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	anchor = (struct anchorVolDescPtr *)bh->b_data;
 
@@ -2996,25 +1846,12 @@ static int udf_load_sequence(struct super_block *sb, struct buffer_head *bh,
 	main_s = le32_to_cpu(anchor->mainVolDescSeqExt.extLocation);
 	main_e = le32_to_cpu(anchor->mainVolDescSeqExt.extLength);
 	main_e = main_e >> sb->s_blocksize_bits;
-<<<<<<< HEAD
-	main_e += main_s;
-=======
 	main_e += main_s - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Locate the reserve sequence */
 	reserve_s = le32_to_cpu(anchor->reserveVolDescSeqExt.extLocation);
 	reserve_e = le32_to_cpu(anchor->reserveVolDescSeqExt.extLength);
 	reserve_e = reserve_e >> sb->s_blocksize_bits;
-<<<<<<< HEAD
-	reserve_e += reserve_s;
-
-	/* Process the main & reserve sequences */
-	/* responsible for finding the PartitionDesc(s) */
-	if (!udf_process_sequence(sb, main_s, main_e, fileset))
-		return 1;
-	return !udf_process_sequence(sb, reserve_s, reserve_e, fileset);
-=======
 	reserve_e += reserve_s - 1;
 
 	/* Process the main & reserve sequences */
@@ -3031,18 +1868,14 @@ static int udf_load_sequence(struct super_block *sb, struct buffer_head *bh,
 			ret = -EIO;
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Check whether there is an anchor block in the given block and
  * load Volume Descriptor Sequence if so.
-<<<<<<< HEAD
-=======
  *
  * Returns <0 on error, 0 on success, -EAGAIN is special - try next anchor
  * block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int udf_check_anchor_block(struct super_block *sb, sector_t block,
 				  struct kernel_lb_addr *fileset)
@@ -3051,47 +1884,18 @@ static int udf_check_anchor_block(struct super_block *sb, sector_t block,
 	uint16_t ident;
 	int ret;
 
-<<<<<<< HEAD
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_VARCONV) &&
-	    udf_fixed_to_variable(block) >=
-	    sb->s_bdev->bd_inode->i_size >> sb->s_blocksize_bits)
-		return 0;
-
-	bh = udf_read_tagged(sb, block, block, &ident);
-	if (!bh)
-		return 0;
-	if (ident != TAG_IDENT_AVDP) {
-		brelse(bh);
-		return 0;
-=======
 	bh = udf_read_tagged(sb, block, block, &ident);
 	if (!bh)
 		return -EAGAIN;
 	if (ident != TAG_IDENT_AVDP) {
 		brelse(bh);
 		return -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ret = udf_load_sequence(sb, bh, fileset);
 	brelse(bh);
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Search for an anchor volume descriptor pointer */
-static sector_t udf_scan_anchors(struct super_block *sb, sector_t lastblock,
-				 struct kernel_lb_addr *fileset)
-{
-	sector_t last[6];
-	int i;
-	struct udf_sb_info *sbi = UDF_SB(sb);
-	int last_count = 0;
-
-	/* First try user provided anchor */
-	if (sbi->s_anchor) {
-		if (udf_check_anchor_block(sb, sbi->s_anchor, fileset))
-			return lastblock;
-=======
 /*
  * Search for an anchor volume descriptor pointer.
  *
@@ -3112,7 +1916,6 @@ static int udf_scan_anchors(struct super_block *sb, udf_pblk_t *lastblock,
 		ret = udf_check_anchor_block(sb, sbi->s_anchor, fileset);
 		if (ret != -EAGAIN)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * according to spec, anchor is in either:
@@ -3121,86 +1924,13 @@ static int udf_scan_anchors(struct super_block *sb, udf_pblk_t *lastblock,
 	 *     lastblock
 	 *  however, if the disc isn't closed, it could be 512.
 	 */
-<<<<<<< HEAD
-	if (udf_check_anchor_block(sb, sbi->s_session + 256, fileset))
-		return lastblock;
-=======
 	ret = udf_check_anchor_block(sb, sbi->s_session + 256, fileset);
 	if (ret != -EAGAIN)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The trouble is which block is the last one. Drives often misreport
 	 * this so we try various possibilities.
 	 */
-<<<<<<< HEAD
-	last[last_count++] = lastblock;
-	if (lastblock >= 1)
-		last[last_count++] = lastblock - 1;
-	last[last_count++] = lastblock + 1;
-	if (lastblock >= 2)
-		last[last_count++] = lastblock - 2;
-	if (lastblock >= 150)
-		last[last_count++] = lastblock - 150;
-	if (lastblock >= 152)
-		last[last_count++] = lastblock - 152;
-
-	for (i = 0; i < last_count; i++) {
-		if (last[i] >= sb->s_bdev->bd_inode->i_size >>
-				sb->s_blocksize_bits)
-			continue;
-		if (udf_check_anchor_block(sb, last[i], fileset))
-			return last[i];
-		if (last[i] < 256)
-			continue;
-		if (udf_check_anchor_block(sb, last[i] - 256, fileset))
-			return last[i];
-	}
-
-	/* Finally try block 512 in case media is open */
-	if (udf_check_anchor_block(sb, sbi->s_session + 512, fileset))
-		return last[0];
-	return 0;
-}
-
-/*
- * Find an anchor volume descriptor and load Volume Descriptor Sequence from
- * area specified by it. The function expects sbi->s_lastblock to be the last
- * block on the media.
- *
- * Return 1 if ok, 0 if not found.
- *
- */
-static int udf_find_anchor(struct super_block *sb,
-			   struct kernel_lb_addr *fileset)
-{
-	sector_t lastblock;
-	struct udf_sb_info *sbi = UDF_SB(sb);
-
-	lastblock = udf_scan_anchors(sb, sbi->s_last_block, fileset);
-	if (lastblock)
-		goto out;
-
-	/* No anchor found? Try VARCONV conversion of block numbers */
-	UDF_SET_FLAG(sb, UDF_FLAG_VARCONV);
-	/* Firstly, we try to not convert number of the last block */
-	lastblock = udf_scan_anchors(sb,
-				udf_variable_to_fixed(sbi->s_last_block),
-				fileset);
-	if (lastblock)
-		goto out;
-
-	/* Secondly, we try with converted number of the last block */
-	lastblock = udf_scan_anchors(sb, sbi->s_last_block, fileset);
-	if (!lastblock) {
-		/* VARCONV didn't help. Clear it. */
-		UDF_CLEAR_FLAG(sb, UDF_FLAG_VARCONV);
-		return 0;
-	}
-out:
-	sbi->s_last_block = lastblock;
-	return 1;
-=======
 	last[last_count++] = *lastblock;
 	if (*lastblock >= 1)
 		last[last_count++] = *lastblock - 1;
@@ -3233,49 +1963,25 @@ out:
 
 	/* Finally try block 512 in case media is open */
 	return udf_check_anchor_block(sb, sbi->s_session + 512, fileset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Check Volume Structure Descriptor, find Anchor block and load Volume
-<<<<<<< HEAD
- * Descriptor Sequence
-=======
  * Descriptor Sequence.
  *
  * Returns < 0 on error, 0 on success. -EAGAIN is special meaning anchor
  * block was not found.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int udf_load_vrs(struct super_block *sb, struct udf_options *uopt,
 			int silent, struct kernel_lb_addr *fileset)
 {
 	struct udf_sb_info *sbi = UDF_SB(sb);
-<<<<<<< HEAD
-	loff_t nsr_off;
-=======
 	int nsr = 0;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sb_set_blocksize(sb, uopt->blocksize)) {
 		if (!silent)
 			udf_warn(sb, "Bad block size\n");
-<<<<<<< HEAD
-		return 0;
-	}
-	sbi->s_last_block = uopt->lastblock;
-	if (!uopt->novrs) {
-		/* Check that it is NSR02 compliant */
-		nsr_off = udf_check_vsd(sb);
-		if (!nsr_off) {
-			if (!silent)
-				udf_warn(sb, "No VRS found\n");
-			return 0;
-		}
-		if (nsr_off == -1)
-			udf_debug("Failed to read byte 32768. Assuming open disc. Skipping validity check\n");
-=======
 		return -EINVAL;
 	}
 	sbi->s_last_block = uopt->lastblock;
@@ -3291,7 +1997,6 @@ static int udf_load_vrs(struct super_block *sb, struct udf_options *uopt,
 			udf_debug("Failed to read sector at offset %d. "
 				  "Assuming open disc. Skipping validity "
 				  "check\n", VSD_FIRST_SECTOR_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sbi->s_last_block)
 			sbi->s_last_block = udf_get_last_block(sb);
 	} else {
@@ -3300,14 +2005,6 @@ static int udf_load_vrs(struct super_block *sb, struct udf_options *uopt,
 
 	/* Look for anchor block and load Volume Descriptor Sequence */
 	sbi->s_anchor = uopt->anchor;
-<<<<<<< HEAD
-	if (!udf_find_anchor(sb, fileset)) {
-		if (!silent)
-			udf_warn(sb, "No anchor found\n");
-		return 0;
-	}
-	return 1;
-=======
 	ret = udf_scan_anchors(sb, &sbi->s_last_block, fileset);
 	if (ret < 0) {
 		if (!silent && ret == -EAGAIN)
@@ -3327,7 +2024,6 @@ static void udf_finalize_lvid(struct logicalVolIntegrityDesc *lvid)
 		crc_itu_t(0, (char *)lvid + sizeof(struct tag),
 			le16_to_cpu(lvid->descTag.descCRCLength)));
 	lvid->descTag.tagChecksum = udf_tag_checksum(&lvid->descTag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void udf_open_lvid(struct super_block *sb)
@@ -3339,27 +2035,6 @@ static void udf_open_lvid(struct super_block *sb)
 
 	if (!bh)
 		return;
-<<<<<<< HEAD
-
-	mutex_lock(&sbi->s_alloc_mutex);
-	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
-	lvidiu = udf_sb_lvidiu(sbi);
-
-	lvidiu->impIdent.identSuffix[0] = UDF_OS_CLASS_UNIX;
-	lvidiu->impIdent.identSuffix[1] = UDF_OS_ID_LINUX;
-	udf_time_to_disk_stamp(&lvid->recordingDateAndTime,
-				CURRENT_TIME);
-	lvid->integrityType = cpu_to_le32(LVID_INTEGRITY_TYPE_OPEN);
-
-	lvid->descTag.descCRC = cpu_to_le16(
-		crc_itu_t(0, (char *)lvid + sizeof(struct tag),
-			le16_to_cpu(lvid->descTag.descCRCLength)));
-
-	lvid->descTag.tagChecksum = udf_tag_checksum(&lvid->descTag);
-	mark_buffer_dirty(bh);
-	sbi->s_lvid_dirty = 0;
-	mutex_unlock(&sbi->s_alloc_mutex);
-=======
 	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
 	lvidiu = udf_sb_lvidiu(sb);
 	if (!lvidiu)
@@ -3379,7 +2054,6 @@ static void udf_open_lvid(struct super_block *sb)
 	mutex_unlock(&sbi->s_alloc_mutex);
 	/* Make opening of filesystem visible on the media immediately */
 	sync_dirty_buffer(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void udf_close_lvid(struct super_block *sb)
@@ -3391,15 +2065,6 @@ static void udf_close_lvid(struct super_block *sb)
 
 	if (!bh)
 		return;
-<<<<<<< HEAD
-
-	mutex_lock(&sbi->s_alloc_mutex);
-	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
-	lvidiu = udf_sb_lvidiu(sbi);
-	lvidiu->impIdent.identSuffix[0] = UDF_OS_CLASS_UNIX;
-	lvidiu->impIdent.identSuffix[1] = UDF_OS_ID_LINUX;
-	udf_time_to_disk_stamp(&lvid->recordingDateAndTime, CURRENT_TIME);
-=======
 	lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
 	lvidiu = udf_sb_lvidiu(sb);
 	if (!lvidiu)
@@ -3408,44 +2073,27 @@ static void udf_close_lvid(struct super_block *sb)
 	mutex_lock(&sbi->s_alloc_mutex);
 	lvidiu->impIdent.identSuffix[0] = UDF_OS_CLASS_UNIX;
 	lvidiu->impIdent.identSuffix[1] = UDF_OS_ID_LINUX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (UDF_MAX_WRITE_VERSION > le16_to_cpu(lvidiu->maxUDFWriteRev))
 		lvidiu->maxUDFWriteRev = cpu_to_le16(UDF_MAX_WRITE_VERSION);
 	if (sbi->s_udfrev > le16_to_cpu(lvidiu->minUDFReadRev))
 		lvidiu->minUDFReadRev = cpu_to_le16(sbi->s_udfrev);
 	if (sbi->s_udfrev > le16_to_cpu(lvidiu->minUDFWriteRev))
 		lvidiu->minUDFWriteRev = cpu_to_le16(sbi->s_udfrev);
-<<<<<<< HEAD
-	lvid->integrityType = cpu_to_le32(LVID_INTEGRITY_TYPE_CLOSE);
-
-	lvid->descTag.descCRC = cpu_to_le16(
-			crc_itu_t(0, (char *)lvid + sizeof(struct tag),
-				le16_to_cpu(lvid->descTag.descCRCLength)));
-
-	lvid->descTag.tagChecksum = udf_tag_checksum(&lvid->descTag);
-=======
 	if (!UDF_QUERY_FLAG(sb, UDF_FLAG_INCONSISTENT))
 		lvid->integrityType = cpu_to_le32(LVID_INTEGRITY_TYPE_CLOSE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We set buffer uptodate unconditionally here to avoid spurious
 	 * warnings from mark_buffer_dirty() when previous EIO has marked
 	 * the buffer as !uptodate
 	 */
 	set_buffer_uptodate(bh);
-<<<<<<< HEAD
-	mark_buffer_dirty(bh);
-	sbi->s_lvid_dirty = 0;
-	mutex_unlock(&sbi->s_alloc_mutex);
-=======
 	udf_finalize_lvid(lvid);
 	mark_buffer_dirty(bh);
 	sbi->s_lvid_dirty = 0;
 	mutex_unlock(&sbi->s_alloc_mutex);
 	/* Make closing of filesystem visible on the media immediately */
 	sync_dirty_buffer(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u64 lvid_get_unique_id(struct super_block *sb)
@@ -3469,82 +2117,12 @@ u64 lvid_get_unique_id(struct super_block *sb)
 	if (!(++uniqueID & 0xFFFFFFFF))
 		uniqueID += 16;
 	lvhd->uniqueID = cpu_to_le64(uniqueID);
-<<<<<<< HEAD
-	mutex_unlock(&sbi->s_alloc_mutex);
-	mark_buffer_dirty(bh);
-=======
 	udf_updated_lvid(sb);
 	mutex_unlock(&sbi->s_alloc_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static void udf_sb_free_bitmap(struct udf_bitmap *bitmap)
-{
-	int i;
-	int nr_groups = bitmap->s_nr_groups;
-	int size = sizeof(struct udf_bitmap) + (sizeof(struct buffer_head *) *
-						nr_groups);
-
-	for (i = 0; i < nr_groups; i++)
-		if (bitmap->s_block_bitmap[i])
-			brelse(bitmap->s_block_bitmap[i]);
-
-	if (size <= PAGE_SIZE)
-		kfree(bitmap);
-	else
-		vfree(bitmap);
-}
-
-static void udf_free_partition(struct udf_part_map *map)
-{
-	int i;
-	struct udf_meta_data *mdata;
-
-	if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_TABLE)
-		iput(map->s_uspace.s_table);
-	if (map->s_partition_flags & UDF_PART_FLAG_FREED_TABLE)
-		iput(map->s_fspace.s_table);
-	if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_BITMAP)
-		udf_sb_free_bitmap(map->s_uspace.s_bitmap);
-	if (map->s_partition_flags & UDF_PART_FLAG_FREED_BITMAP)
-		udf_sb_free_bitmap(map->s_fspace.s_bitmap);
-	if (map->s_partition_type == UDF_SPARABLE_MAP15)
-		for (i = 0; i < 4; i++)
-			brelse(map->s_type_specific.s_sparing.s_spar_map[i]);
-	else if (map->s_partition_type == UDF_METADATA_MAP25) {
-		mdata = &map->s_type_specific.s_metadata;
-		iput(mdata->s_metadata_fe);
-		mdata->s_metadata_fe = NULL;
-
-		iput(mdata->s_mirror_fe);
-		mdata->s_mirror_fe = NULL;
-
-		iput(mdata->s_bitmap_fe);
-		mdata->s_bitmap_fe = NULL;
-	}
-}
-
-static int udf_fill_super(struct super_block *sb, void *options, int silent)
-{
-	int i;
-	int ret;
-	struct inode *inode = NULL;
-	struct udf_options uopt;
-	struct kernel_lb_addr rootdir, fileset;
-	struct udf_sb_info *sbi;
-
-	uopt.flags = (1 << UDF_FLAG_USE_AD_IN_ICB) | (1 << UDF_FLAG_STRICT);
-	uopt.uid = -1;
-	uopt.gid = -1;
-	uopt.umask = 0;
-	uopt.fmode = UDF_INVALID_MODE;
-	uopt.dmode = UDF_INVALID_MODE;
-
-	sbi = kzalloc(sizeof(struct udf_sb_info), GFP_KERNEL);
-=======
 static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 {
 	int ret = -EINVAL;
@@ -3556,7 +2134,6 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 	int silent = fc->sb_flags & SB_SILENT;
 
 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sbi)
 		return -ENOMEM;
 
@@ -3564,44 +2141,6 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	mutex_init(&sbi->s_alloc_mutex);
 
-<<<<<<< HEAD
-	if (!udf_parse_options((char *)options, &uopt, false))
-		goto error_out;
-
-	if (uopt.flags & (1 << UDF_FLAG_UTF8) &&
-	    uopt.flags & (1 << UDF_FLAG_NLS_MAP)) {
-		udf_err(sb, "utf8 cannot be combined with iocharset\n");
-		goto error_out;
-	}
-#ifdef CONFIG_UDF_NLS
-	if ((uopt.flags & (1 << UDF_FLAG_NLS_MAP)) && !uopt.nls_map) {
-		uopt.nls_map = load_nls_default();
-		if (!uopt.nls_map)
-			uopt.flags &= ~(1 << UDF_FLAG_NLS_MAP);
-		else
-			udf_debug("Using default NLS map\n");
-	}
-#endif
-	if (!(uopt.flags & (1 << UDF_FLAG_NLS_MAP)))
-		uopt.flags |= (1 << UDF_FLAG_UTF8);
-
-	fileset.logicalBlockNum = 0xFFFFFFFF;
-	fileset.partitionReferenceNum = 0xFFFF;
-
-	sbi->s_flags = uopt.flags;
-	sbi->s_uid = uopt.uid;
-	sbi->s_gid = uopt.gid;
-	sbi->s_umask = uopt.umask;
-	sbi->s_fmode = uopt.fmode;
-	sbi->s_dmode = uopt.dmode;
-	sbi->s_nls_map = uopt.nls_map;
-	rwlock_init(&sbi->s_cred_lock);
-
-	if (uopt.session == 0xFFFFFFFF)
-		sbi->s_session = udf_get_last_session(sb);
-	else
-		sbi->s_session = uopt.session;
-=======
 	fileset.logicalBlockNum = 0xFFFFFFFF;
 	fileset.partitionReferenceNum = 0xFFFF;
 
@@ -3619,7 +2158,6 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 		sbi->s_session = udf_get_last_session(sb);
 	else
 		sbi->s_session = uopt->session;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udf_debug("Multi-session=%d\n", sbi->s_session);
 
@@ -3627,47 +2165,6 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_op = &udf_sb_ops;
 	sb->s_export_op = &udf_export_ops;
 
-<<<<<<< HEAD
-	sb->s_dirt = 0;
-	sb->s_magic = UDF_SUPER_MAGIC;
-	sb->s_time_gran = 1000;
-
-	if (uopt.flags & (1 << UDF_FLAG_BLOCKSIZE_SET)) {
-		ret = udf_load_vrs(sb, &uopt, silent, &fileset);
-	} else {
-		uopt.blocksize = bdev_logical_block_size(sb->s_bdev);
-		ret = udf_load_vrs(sb, &uopt, silent, &fileset);
-		if (!ret && uopt.blocksize != UDF_DEFAULT_BLOCKSIZE) {
-			if (!silent)
-				pr_notice("Rescanning with blocksize %d\n",
-					  UDF_DEFAULT_BLOCKSIZE);
-			uopt.blocksize = UDF_DEFAULT_BLOCKSIZE;
-			ret = udf_load_vrs(sb, &uopt, silent, &fileset);
-		}
-	}
-	if (!ret) {
-		udf_warn(sb, "No partition found (1)\n");
-		goto error_out;
-	}
-
-	udf_debug("Lastblock=%d\n", sbi->s_last_block);
-
-	if (sbi->s_lvid_bh) {
-		struct logicalVolIntegrityDescImpUse *lvidiu =
-							udf_sb_lvidiu(sbi);
-		uint16_t minUDFReadRev = le16_to_cpu(lvidiu->minUDFReadRev);
-		uint16_t minUDFWriteRev = le16_to_cpu(lvidiu->minUDFWriteRev);
-		/* uint16_t maxUDFWriteRev =
-				le16_to_cpu(lvidiu->maxUDFWriteRev); */
-
-		if (minUDFReadRev > UDF_MAX_READ_VERSION) {
-			udf_err(sb, "minUDFReadRev=%x (max is %x)\n",
-				le16_to_cpu(lvidiu->minUDFReadRev),
-				UDF_MAX_READ_VERSION);
-			goto error_out;
-		} else if (minUDFWriteRev > UDF_MAX_WRITE_VERSION)
-			sb->s_flags |= MS_RDONLY;
-=======
 	sb->s_magic = UDF_SUPER_MAGIC;
 	sb->s_time_gran = 1000;
 
@@ -3731,7 +2228,6 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 			}
 			UDF_SET_FLAG(sb, UDF_FLAG_RW_INCOMPAT);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sbi->s_udfrev = minUDFWriteRev;
 
@@ -3743,22 +2239,12 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	if (!sbi->s_partitions) {
 		udf_warn(sb, "No partition found (2)\n");
-<<<<<<< HEAD
-=======
 		ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error_out;
 	}
 
 	if (sbi->s_partmaps[sbi->s_partition].s_partition_flags &
 			UDF_PART_FLAG_READ_ONLY) {
-<<<<<<< HEAD
-		pr_notice("Partition marked readonly; forcing readonly mount\n");
-		sb->s_flags |= MS_RDONLY;
-	}
-
-	if (udf_find_fileset(sb, &fileset, &rootdir)) {
-=======
 		if (!sb_rdonly(sb)) {
 			ret = -EACCES;
 			goto error_out;
@@ -3768,7 +2254,6 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	ret = udf_find_fileset(sb, &fileset, &rootdir);
 	if (ret < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		udf_warn(sb, "No fileset found\n");
 		goto error_out;
 	}
@@ -3781,30 +2266,19 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 			 le16_to_cpu(ts.year), ts.month, ts.day,
 			 ts.hour, ts.minute, le16_to_cpu(ts.typeAndTimezone));
 	}
-<<<<<<< HEAD
-	if (!(sb->s_flags & MS_RDONLY))
-		udf_open_lvid(sb);
-=======
 	if (!sb_rdonly(sb)) {
 		udf_open_lvid(sb);
 		lvid_open = true;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Assign the root inode */
 	/* assign inodes by physical block number */
 	/* perhaps it's not extensible enough, but for now ... */
 	inode = udf_iget(sb, &rootdir);
-<<<<<<< HEAD
-	if (!inode) {
-		udf_err(sb, "Error in udf_iget, block=%d, partition=%d\n",
-		       rootdir.logicalBlockNum, rootdir.partitionReferenceNum);
-=======
 	if (IS_ERR(inode)) {
 		udf_err(sb, "Error in udf_iget, block=%u, partition=%u\n",
 		       rootdir.logicalBlockNum, rootdir.partitionReferenceNum);
 		ret = PTR_ERR(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error_out;
 	}
 
@@ -3812,40 +2286,14 @@ static int udf_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_root = d_make_root(inode);
 	if (!sb->s_root) {
 		udf_err(sb, "Couldn't allocate root dentry\n");
-<<<<<<< HEAD
-		goto error_out;
-	}
-	sb->s_maxbytes = MAX_LFS_FILESIZE;
-=======
 		ret = -ENOMEM;
 		goto error_out;
 	}
 	sb->s_maxbytes = UDF_MAX_FILESIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_max_links = UDF_MAX_LINKS;
 	return 0;
 
 error_out:
-<<<<<<< HEAD
-	if (sbi->s_vat_inode)
-		iput(sbi->s_vat_inode);
-	if (sbi->s_partitions)
-		for (i = 0; i < sbi->s_partitions; i++)
-			udf_free_partition(&sbi->s_partmaps[i]);
-#ifdef CONFIG_UDF_NLS
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP))
-		unload_nls(sbi->s_nls_map);
-#endif
-	if (!(sb->s_flags & MS_RDONLY))
-		udf_close_lvid(sb);
-	brelse(sbi->s_lvid_bh);
-
-	kfree(sbi->s_partmaps);
-	kfree(sbi);
-	sb->s_fs_info = NULL;
-
-	return -EINVAL;
-=======
 	iput(sbi->s_vat_inode);
 	unload_nls(uopt->nls_map);
 	if (lvid_open)
@@ -3856,7 +2304,6 @@ error_out:
 	sb->s_fs_info = NULL;
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void _udf_err(struct super_block *sb, const char *function,
@@ -3865,13 +2312,6 @@ void _udf_err(struct super_block *sb, const char *function,
 	struct va_format vaf;
 	va_list args;
 
-<<<<<<< HEAD
-	/* mark sb error */
-	if (!(sb->s_flags & MS_RDONLY))
-		sb->s_dirt = 1;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_start(args, fmt);
 
 	vaf.fmt = fmt;
@@ -3900,29 +2340,10 @@ void _udf_warn(struct super_block *sb, const char *function,
 
 static void udf_put_super(struct super_block *sb)
 {
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct udf_sb_info *sbi;
 
 	sbi = UDF_SB(sb);
 
-<<<<<<< HEAD
-	if (sbi->s_vat_inode)
-		iput(sbi->s_vat_inode);
-	if (sbi->s_partitions)
-		for (i = 0; i < sbi->s_partitions; i++)
-			udf_free_partition(&sbi->s_partmaps[i]);
-#ifdef CONFIG_UDF_NLS
-	if (UDF_QUERY_FLAG(sb, UDF_FLAG_NLS_MAP))
-		unload_nls(sbi->s_nls_map);
-#endif
-	if (!(sb->s_flags & MS_RDONLY))
-		udf_close_lvid(sb);
-	brelse(sbi->s_lvid_bh);
-	kfree(sbi->s_partmaps);
-=======
 	iput(sbi->s_vat_inode);
 	unload_nls(sbi->s_nls_map);
 	if (!sb_rdonly(sb))
@@ -3930,7 +2351,6 @@ static void udf_put_super(struct super_block *sb)
 	brelse(sbi->s_lvid_bh);
 	udf_sb_free_partitions(sb);
 	mutex_destroy(&sbi->s_alloc_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sb->s_fs_info);
 	sb->s_fs_info = NULL;
 }
@@ -3941,25 +2361,17 @@ static int udf_sync_fs(struct super_block *sb, int wait)
 
 	mutex_lock(&sbi->s_alloc_mutex);
 	if (sbi->s_lvid_dirty) {
-<<<<<<< HEAD
-=======
 		struct buffer_head *bh = sbi->s_lvid_bh;
 		struct logicalVolIntegrityDesc *lvid;
 
 		lvid = (struct logicalVolIntegrityDesc *)bh->b_data;
 		udf_finalize_lvid(lvid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Blockdevice will be synced later so we don't have to submit
 		 * the buffer for IO
 		 */
-<<<<<<< HEAD
-		mark_buffer_dirty(sbi->s_lvid_bh);
-		sb->s_dirt = 0;
-=======
 		mark_buffer_dirty(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sbi->s_lvid_dirty = 0;
 	}
 	mutex_unlock(&sbi->s_alloc_mutex);
@@ -3974,39 +2386,22 @@ static int udf_statfs(struct dentry *dentry, struct kstatfs *buf)
 	struct logicalVolIntegrityDescImpUse *lvidiu;
 	u64 id = huge_encode_dev(sb->s_bdev->bd_dev);
 
-<<<<<<< HEAD
-	if (sbi->s_lvid_bh != NULL)
-		lvidiu = udf_sb_lvidiu(sbi);
-	else
-		lvidiu = NULL;
-
-=======
 	lvidiu = udf_sb_lvidiu(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->f_type = UDF_SUPER_MAGIC;
 	buf->f_bsize = sb->s_blocksize;
 	buf->f_blocks = sbi->s_partmaps[sbi->s_partition].s_partition_len;
 	buf->f_bfree = udf_count_free(sb);
 	buf->f_bavail = buf->f_bfree;
-<<<<<<< HEAD
-=======
 	/*
 	 * Let's pretend each free block is also a free 'inode' since UDF does
 	 * not have separate preallocated table of inodes.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->f_files = (lvidiu != NULL ? (le32_to_cpu(lvidiu->numFiles) +
 					  le32_to_cpu(lvidiu->numDirs)) : 0)
 			+ buf->f_bfree;
 	buf->f_ffree = buf->f_bfree;
-<<<<<<< HEAD
-	buf->f_namelen = UDF_NAME_LEN - 2;
-	buf->f_fsid.val[0] = (u32)id;
-	buf->f_fsid.val[1] = (u32)(id >> 32);
-=======
 	buf->f_namelen = UDF_NAME_LEN;
 	buf->f_fsid = u64_to_fsid(id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4017,11 +2412,7 @@ static unsigned int udf_count_free_bitmap(struct super_block *sb,
 	struct buffer_head *bh = NULL;
 	unsigned int accum = 0;
 	int index;
-<<<<<<< HEAD
-	int block = 0, newblock;
-=======
 	udf_pblk_t block = 0, newblock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kernel_lb_addr loc;
 	uint32_t bytes;
 	uint8_t *ptr;
@@ -4054,11 +2445,7 @@ static unsigned int udf_count_free_bitmap(struct super_block *sb,
 		if (bytes) {
 			brelse(bh);
 			newblock = udf_get_lb_pblock(sb, &loc, ++block);
-<<<<<<< HEAD
-			bh = udf_tread(sb, newblock);
-=======
 			bh = sb_bread(sb, newblock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!bh) {
 				udf_debug("read failed\n");
 				goto out;
@@ -4078,10 +2465,6 @@ static unsigned int udf_count_free_table(struct super_block *sb,
 	unsigned int accum = 0;
 	uint32_t elen;
 	struct kernel_lb_addr eloc;
-<<<<<<< HEAD
-	int8_t etype;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct extent_position epos;
 
 	mutex_lock(&UDF_SB(sb)->s_alloc_mutex);
@@ -4089,11 +2472,7 @@ static unsigned int udf_count_free_table(struct super_block *sb,
 	epos.offset = sizeof(struct unallocSpaceEntry);
 	epos.bh = NULL;
 
-<<<<<<< HEAD
-	while ((etype = udf_next_aext(table, &epos, &eloc, &elen, 1)) != -1)
-=======
 	while (udf_next_aext(table, &epos, &eloc, &elen, 1) != -1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		accum += (elen >> table->i_sb->s_blocksize_bits);
 
 	brelse(epos.bh);
@@ -4105,12 +2484,6 @@ static unsigned int udf_count_free_table(struct super_block *sb,
 static unsigned int udf_count_free(struct super_block *sb)
 {
 	unsigned int accum = 0;
-<<<<<<< HEAD
-	struct udf_sb_info *sbi;
-	struct udf_part_map *map;
-
-	sbi = UDF_SB(sb);
-=======
 	struct udf_sb_info *sbi = UDF_SB(sb);
 	struct udf_part_map *map;
 	unsigned int part = sbi->s_partition;
@@ -4127,20 +2500,13 @@ static unsigned int udf_count_free(struct super_block *sb)
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->s_lvid_bh) {
 		struct logicalVolIntegrityDesc *lvid =
 			(struct logicalVolIntegrityDesc *)
 			sbi->s_lvid_bh->b_data;
-<<<<<<< HEAD
-		if (le32_to_cpu(lvid->numOfPartitions) > sbi->s_partition) {
-			accum = le32_to_cpu(
-					lvid->freeSpaceTable[sbi->s_partition]);
-=======
 		if (le32_to_cpu(lvid->numOfPartitions) > part) {
 			accum = le32_to_cpu(
 					lvid->freeSpaceTable[part]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (accum == 0xFFFFFFFF)
 				accum = 0;
 		}
@@ -4149,22 +2515,11 @@ static unsigned int udf_count_free(struct super_block *sb)
 	if (accum)
 		return accum;
 
-<<<<<<< HEAD
-	map = &sbi->s_partmaps[sbi->s_partition];
-=======
 	map = &sbi->s_partmaps[part];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (map->s_partition_flags & UDF_PART_FLAG_UNALLOC_BITMAP) {
 		accum += udf_count_free_bitmap(sb,
 					       map->s_uspace.s_bitmap);
 	}
-<<<<<<< HEAD
-	if (map->s_partition_flags & UDF_PART_FLAG_FREED_BITMAP) {
-		accum += udf_count_free_bitmap(sb,
-					       map->s_fspace.s_bitmap);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (accum)
 		return accum;
 
@@ -4172,15 +2527,6 @@ static unsigned int udf_count_free(struct super_block *sb)
 		accum += udf_count_free_table(sb,
 					      map->s_uspace.s_table);
 	}
-<<<<<<< HEAD
-	if (map->s_partition_flags & UDF_PART_FLAG_FREED_TABLE) {
-		accum += udf_count_free_table(sb,
-					      map->s_fspace.s_table);
-	}
-
-	return accum;
-}
-=======
 	return accum;
 }
 
@@ -4189,4 +2535,3 @@ MODULE_DESCRIPTION("Universal Disk Format Filesystem");
 MODULE_LICENSE("GPL");
 module_init(init_udf_fs)
 module_exit(exit_udf_fs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * This source file is released under GPL v2 license (no other versions).
- * See the COPYING file included in the main directory of this source
- * distribution for the license terms and conditions.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctatc.h
  *
  * @Brief
@@ -19,10 +9,6 @@
  *
  * @Author	Liu Chun
  * @Date 	Mar 28 2008
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CTATC_H
@@ -141,11 +127,7 @@ struct ct_atc {
 	/* Don't touch! Used for internal object. */
 	void *rsc_mgrs[NUM_RSCTYP]; /* chip resource managers */
 	void *mixer;		/* internal mixer object */
-<<<<<<< HEAD
-	void *hw;		/* chip specific hardware access object */
-=======
 	struct hw *hw;		/* chip specific hardware access object */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void **daios;		/* digital audio io resources */
 	void **pcm;		/* SUMs for collecting all pcm stream */
 	void **srcs;		/* Sample Rate Converters for input signal */
@@ -157,13 +139,8 @@ struct ct_atc {
 
 	struct ct_timer *timer;
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	int (*suspend)(struct ct_atc *atc, pm_message_t state);
-=======
 #ifdef CONFIG_PM_SLEEP
 	int (*suspend)(struct ct_atc *atc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*resume)(struct ct_atc *atc);
 #define NUM_PCMS (NUM_CTALSADEVS - 1)
 	struct snd_pcm *pcms[NUM_PCMS];
@@ -171,16 +148,9 @@ struct ct_atc {
 };
 
 
-<<<<<<< HEAD
-int __devinit ct_atc_create(struct snd_card *card, struct pci_dev *pci,
-			    unsigned int rsr, unsigned int msr, int chip_type,
-			    unsigned int subsysid, struct ct_atc **ratc);
-int __devinit ct_atc_create_alsa_devs(struct ct_atc *atc);
-=======
 int ct_atc_create(struct snd_card *card, struct pci_dev *pci,
 		  unsigned int rsr, unsigned int msr, int chip_type,
 		  unsigned int subsysid, struct ct_atc **ratc);
 int ct_atc_create_alsa_devs(struct ct_atc *atc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CTATC_H */

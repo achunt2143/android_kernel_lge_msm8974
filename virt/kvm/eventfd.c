@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kvm eventfd support - use eventfd objects to signal various KVM events
  *
@@ -10,30 +7,11 @@
  *
  * Author:
  *	Gregory Haskins <ghaskins@novell.com>
-<<<<<<< HEAD
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kvm_host.h>
 #include <linux/kvm.h>
-<<<<<<< HEAD
-=======
 #include <linux/kvm_irqfd.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/workqueue.h>
 #include <linux/syscalls.h>
 #include <linux/wait.h>
@@ -42,46 +20,6 @@
 #include <linux/list.h>
 #include <linux/eventfd.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-
-#include "iodev.h"
-
-/*
- * --------------------------------------------------------------------
- * irqfd: Allows an fd to be used to inject an interrupt to the guest
- *
- * Credit goes to Avi Kivity for the original idea.
- * --------------------------------------------------------------------
- */
-
-struct _irqfd {
-	/* Used for MSI fast-path */
-	struct kvm *kvm;
-	wait_queue_t wait;
-	/* Update side is protected by irqfds.lock */
-	struct kvm_kernel_irq_routing_entry __rcu *irq_entry;
-	/* Used for level IRQ fast-path */
-	int gsi;
-	struct work_struct inject;
-	/* Used for setup/shutdown */
-	struct eventfd_ctx *eventfd;
-	struct list_head list;
-	poll_table pt;
-	struct work_struct shutdown;
-};
-
-static struct workqueue_struct *irqfd_cleanup_wq;
-
-static void
-irqfd_inject(struct work_struct *work)
-{
-	struct _irqfd *irqfd = container_of(work, struct _irqfd, inject);
-	struct kvm *kvm = irqfd->kvm;
-
-	kvm_set_irq(kvm, KVM_USERSPACE_IRQ_SOURCE_ID, irqfd->gsi, 1);
-	kvm_set_irq(kvm, KVM_USERSPACE_IRQ_SOURCE_ID, irqfd->gsi, 0);
-=======
 #include <linux/srcu.h>
 #include <linux/slab.h>
 #include <linux/seqlock.h>
@@ -174,7 +112,6 @@ irqfd_resampler_shutdown(struct kvm_kernel_irqfd *irqfd)
 	}
 
 	mutex_unlock(&kvm->irqfds.resampler_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -183,11 +120,6 @@ irqfd_resampler_shutdown(struct kvm_kernel_irqfd *irqfd)
 static void
 irqfd_shutdown(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct _irqfd *irqfd = container_of(work, struct _irqfd, shutdown);
-	u64 cnt;
-
-=======
 	struct kvm_kernel_irqfd *irqfd =
 		container_of(work, struct kvm_kernel_irqfd, shutdown);
 	struct kvm *kvm = irqfd->kvm;
@@ -196,7 +128,6 @@ irqfd_shutdown(struct work_struct *work)
 	/* Make sure irqfd has been initialized in assign path. */
 	synchronize_srcu(&kvm->irq_srcu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Synchronize with the wait-queue and unhook ourselves to prevent
 	 * further events.
@@ -207,26 +138,19 @@ irqfd_shutdown(struct work_struct *work)
 	 * We know no new events will be scheduled at this point, so block
 	 * until all previously outstanding events have completed
 	 */
-<<<<<<< HEAD
-	flush_work_sync(&irqfd->inject);
-=======
 	flush_work(&irqfd->inject);
 
 	if (irqfd->resampler) {
 		irqfd_resampler_shutdown(irqfd);
 		eventfd_ctx_put(irqfd->resamplefd);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * It is now safe to release the object's resources
 	 */
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
 	irq_bypass_unregister_consumer(&irqfd->consumer);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eventfd_ctx_put(irqfd->eventfd);
 	kfree(irqfd);
 }
@@ -234,11 +158,7 @@ irqfd_shutdown(struct work_struct *work)
 
 /* assumes kvm->irqfds.lock is held */
 static bool
-<<<<<<< HEAD
-irqfd_is_active(struct _irqfd *irqfd)
-=======
 irqfd_is_active(struct kvm_kernel_irqfd *irqfd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return list_empty(&irqfd->list) ? false : true;
 }
@@ -249,11 +169,7 @@ irqfd_is_active(struct kvm_kernel_irqfd *irqfd)
  * assumes kvm->irqfds.lock is held
  */
 static void
-<<<<<<< HEAD
-irqfd_deactivate(struct _irqfd *irqfd)
-=======
 irqfd_deactivate(struct kvm_kernel_irqfd *irqfd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG_ON(!irqfd_is_active(irqfd));
 
@@ -262,8 +178,6 @@ irqfd_deactivate(struct kvm_kernel_irqfd *irqfd)
 	queue_work(irqfd_cleanup_wq, &irqfd->shutdown);
 }
 
-<<<<<<< HEAD
-=======
 int __attribute__((weak)) kvm_arch_set_irq_inatomic(
 				struct kvm_kernel_irq_routing_entry *irq,
 				struct kvm *kvm, int irq_source_id,
@@ -273,36 +187,10 @@ int __attribute__((weak)) kvm_arch_set_irq_inatomic(
 	return -EWOULDBLOCK;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called with wqh->lock held and interrupts disabled
  */
 static int
-<<<<<<< HEAD
-irqfd_wakeup(wait_queue_t *wait, unsigned mode, int sync, void *key)
-{
-	struct _irqfd *irqfd = container_of(wait, struct _irqfd, wait);
-	unsigned long flags = (unsigned long)key;
-	struct kvm_kernel_irq_routing_entry *irq;
-	struct kvm *kvm = irqfd->kvm;
-
-	if (flags & POLLIN) {
-		rcu_read_lock();
-		irq = rcu_dereference(irqfd->irq_entry);
-		/* An event has been signaled, inject an interrupt */
-		if (irq)
-			kvm_set_msi(irq, kvm, KVM_USERSPACE_IRQ_SOURCE_ID, 1);
-		else
-			schedule_work(&irqfd->inject);
-		rcu_read_unlock();
-	}
-
-	if (flags & POLLHUP) {
-		/* The eventfd is closing, detach from KVM */
-		unsigned long flags;
-
-		spin_lock_irqsave(&kvm->irqfds.lock, flags);
-=======
 irqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
 {
 	struct kvm_kernel_irqfd *irqfd =
@@ -337,7 +225,6 @@ irqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
 		unsigned long iflags;
 
 		spin_lock_irqsave(&kvm->irqfds.lock, iflags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We must check if someone deactivated the irqfd before
@@ -351,61 +238,16 @@ irqfd_wakeup(wait_queue_entry_t *wait, unsigned mode, int sync, void *key)
 		if (irqfd_is_active(irqfd))
 			irqfd_deactivate(irqfd);
 
-<<<<<<< HEAD
-		spin_unlock_irqrestore(&kvm->irqfds.lock, flags);
-	}
-
-	return 0;
-=======
 		spin_unlock_irqrestore(&kvm->irqfds.lock, iflags);
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 irqfd_ptable_queue_proc(struct file *file, wait_queue_head_t *wqh,
 			poll_table *pt)
 {
-<<<<<<< HEAD
-	struct _irqfd *irqfd = container_of(pt, struct _irqfd, pt);
-	add_wait_queue(wqh, &irqfd->wait);
-}
-
-/* Must be called under irqfds.lock */
-static void irqfd_update(struct kvm *kvm, struct _irqfd *irqfd,
-			 struct kvm_irq_routing_table *irq_rt)
-{
-	struct kvm_kernel_irq_routing_entry *e;
-	struct hlist_node *n;
-
-	if (irqfd->gsi >= irq_rt->nr_rt_entries) {
-		rcu_assign_pointer(irqfd->irq_entry, NULL);
-		return;
-	}
-
-	hlist_for_each_entry(e, n, &irq_rt->map[irqfd->gsi], link) {
-		/* Only fast-path MSI. */
-		if (e->type == KVM_IRQ_ROUTING_MSI)
-			rcu_assign_pointer(irqfd->irq_entry, e);
-		else
-			rcu_assign_pointer(irqfd->irq_entry, NULL);
-	}
-}
-
-static int
-kvm_irqfd_assign(struct kvm *kvm, int fd, int gsi)
-{
-	struct kvm_irq_routing_table *irq_rt;
-	struct _irqfd *irqfd, *tmp;
-	struct file *file = NULL;
-	struct eventfd_ctx *eventfd = NULL;
-	int ret;
-	unsigned int events;
-
-	irqfd = kzalloc(sizeof(*irqfd), GFP_KERNEL);
-=======
 	struct kvm_kernel_irqfd *irqfd =
 		container_of(pt, struct kvm_kernel_irqfd, pt);
 	add_wait_queue_priority(wqh, &irqfd->wait);
@@ -474,25 +316,10 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 		return -EINVAL;
 
 	irqfd = kzalloc(sizeof(*irqfd), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!irqfd)
 		return -ENOMEM;
 
 	irqfd->kvm = kvm;
-<<<<<<< HEAD
-	irqfd->gsi = gsi;
-	INIT_LIST_HEAD(&irqfd->list);
-	INIT_WORK(&irqfd->inject, irqfd_inject);
-	INIT_WORK(&irqfd->shutdown, irqfd_shutdown);
-
-	file = eventfd_fget(fd);
-	if (IS_ERR(file)) {
-		ret = PTR_ERR(file);
-		goto fail;
-	}
-
-	eventfd = eventfd_ctx_fileget(file);
-=======
 	irqfd->gsi = args->gsi;
 	INIT_LIST_HEAD(&irqfd->list);
 	INIT_WORK(&irqfd->inject, irqfd_inject);
@@ -506,7 +333,6 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 	}
 
 	eventfd = eventfd_ctx_fileget(f.file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(eventfd)) {
 		ret = PTR_ERR(eventfd);
 		goto fail;
@@ -514,8 +340,6 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 
 	irqfd->eventfd = eventfd;
 
-<<<<<<< HEAD
-=======
 	if (args->flags & KVM_IRQFD_FLAG_RESAMPLE) {
 		struct kvm_kernel_irqfd_resampler *resampler;
 
@@ -565,7 +389,6 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 		mutex_unlock(&kvm->irqfds.resampler_lock);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Install our own custom wake-up handling so we are notified via
 	 * a callback whenever someone signals the underlying eventfd
@@ -585,16 +408,6 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 		goto fail;
 	}
 
-<<<<<<< HEAD
-	irq_rt = rcu_dereference_protected(kvm->irq_routing,
-					   lockdep_is_held(&kvm->irqfds.lock));
-	irqfd_update(kvm, irqfd, irq_rt);
-
-	events = file->f_op->poll(file, &irqfd->pt);
-
-	list_add_tail(&irqfd->list, &kvm->irqfds.items);
-
-=======
 	idx = srcu_read_lock(&kvm->irq_srcu);
 	irqfd_update(kvm, irqfd);
 
@@ -602,33 +415,10 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
 
 	spin_unlock_irq(&kvm->irqfds.lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check if there was an event already pending on the eventfd
 	 * before we registered, and trigger it as if we didn't miss it.
 	 */
-<<<<<<< HEAD
-	if (events & POLLIN)
-		schedule_work(&irqfd->inject);
-
-	spin_unlock_irq(&kvm->irqfds.lock);
-
-	/*
-	 * do not drop the file until the irqfd is fully initialized, otherwise
-	 * we might race against the POLLHUP
-	 */
-	fput(file);
-
-	return 0;
-
-fail:
-	if (eventfd && !IS_ERR(eventfd))
-		eventfd_ctx_put(eventfd);
-
-	if (!IS_ERR(file))
-		fput(file);
-
-=======
 	events = vfs_poll(f.file, &irqfd->pt);
 
 	if (events & EPOLLIN)
@@ -670,19 +460,10 @@ fail:
 	fdput(f);
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(irqfd);
 	return ret;
 }
 
-<<<<<<< HEAD
-void
-kvm_eventfd_init(struct kvm *kvm)
-{
-	spin_lock_init(&kvm->irqfds.lock);
-	INIT_LIST_HEAD(&kvm->irqfds.items);
-	INIT_LIST_HEAD(&kvm->ioeventfds);
-=======
 bool kvm_irq_has_notifier(struct kvm *kvm, unsigned irqchip, unsigned pin)
 {
 	struct kvm_irq_ack_notifier *kian;
@@ -744,46 +525,24 @@ void kvm_unregister_irq_ack_notifier(struct kvm *kvm,
 	mutex_unlock(&kvm->irq_lock);
 	synchronize_srcu(&kvm->irq_srcu);
 	kvm_arch_post_irq_ack_notifier_list_update(kvm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * shutdown any irqfd's that match fd+gsi
  */
 static int
-<<<<<<< HEAD
-kvm_irqfd_deassign(struct kvm *kvm, int fd, int gsi)
-{
-	struct _irqfd *irqfd, *tmp;
-	struct eventfd_ctx *eventfd;
-
-	eventfd = eventfd_ctx_fdget(fd);
-=======
 kvm_irqfd_deassign(struct kvm *kvm, struct kvm_irqfd *args)
 {
 	struct kvm_kernel_irqfd *irqfd, *tmp;
 	struct eventfd_ctx *eventfd;
 
 	eventfd = eventfd_ctx_fdget(args->fd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(eventfd))
 		return PTR_ERR(eventfd);
 
 	spin_lock_irq(&kvm->irqfds.lock);
 
 	list_for_each_entry_safe(irqfd, tmp, &kvm->irqfds.items, list) {
-<<<<<<< HEAD
-		if (irqfd->eventfd == eventfd && irqfd->gsi == gsi) {
-			/*
-			 * This rcu_assign_pointer is needed for when
-			 * another thread calls kvm_irq_routing_update before
-			 * we flush workqueue below (we synchronize with
-			 * kvm_irq_routing_update using irqfds.lock).
-			 * It is paired with synchronize_rcu done by caller
-			 * of that function.
-			 */
-			rcu_assign_pointer(irqfd->irq_entry, NULL);
-=======
 		if (irqfd->eventfd == eventfd && irqfd->gsi == args->gsi) {
 			/*
 			 * This clearing of irq_entry.type is needed for when
@@ -794,7 +553,6 @@ kvm_irqfd_deassign(struct kvm *kvm, struct kvm_irqfd *args)
 			write_seqcount_begin(&irqfd->irq_entry_sc);
 			irqfd->irq_entry.type = 0;
 			write_seqcount_end(&irqfd->irq_entry_sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			irqfd_deactivate(irqfd);
 		}
 	}
@@ -813,14 +571,6 @@ kvm_irqfd_deassign(struct kvm *kvm, struct kvm_irqfd *args)
 }
 
 int
-<<<<<<< HEAD
-kvm_irqfd(struct kvm *kvm, int fd, int gsi, int flags)
-{
-	if (flags & KVM_IRQFD_FLAG_DEASSIGN)
-		return kvm_irqfd_deassign(kvm, fd, gsi);
-
-	return kvm_irqfd_assign(kvm, fd, gsi);
-=======
 kvm_irqfd(struct kvm *kvm, struct kvm_irqfd *args)
 {
 	if (args->flags & ~(KVM_IRQFD_FLAG_DEASSIGN | KVM_IRQFD_FLAG_RESAMPLE))
@@ -830,7 +580,6 @@ kvm_irqfd(struct kvm *kvm, struct kvm_irqfd *args)
 		return kvm_irqfd_deassign(kvm, args);
 
 	return kvm_irqfd_assign(kvm, args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -840,11 +589,7 @@ kvm_irqfd(struct kvm *kvm, struct kvm_irqfd *args)
 void
 kvm_irqfd_release(struct kvm *kvm)
 {
-<<<<<<< HEAD
-	struct _irqfd *irqfd, *tmp;
-=======
 	struct kvm_kernel_irqfd *irqfd, *tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&kvm->irqfds.lock);
 
@@ -862,22 +607,6 @@ kvm_irqfd_release(struct kvm *kvm)
 }
 
 /*
-<<<<<<< HEAD
- * Change irq_routing and irqfd.
- * Caller must invoke synchronize_rcu afterwards.
- */
-void kvm_irq_routing_update(struct kvm *kvm,
-			    struct kvm_irq_routing_table *irq_rt)
-{
-	struct _irqfd *irqfd;
-
-	spin_lock_irq(&kvm->irqfds.lock);
-
-	rcu_assign_pointer(kvm->irq_routing, irq_rt);
-
-	list_for_each_entry(irqfd, &kvm->irqfds.items, list)
-		irqfd_update(kvm, irqfd, irq_rt);
-=======
  * Take note of a change in irq routing.
  * Caller must invoke synchronize_srcu(&kvm->irq_srcu) afterwards.
  */
@@ -905,21 +634,10 @@ void kvm_irq_routing_update(struct kvm *kvm)
 		}
 #endif
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irq(&kvm->irqfds.lock);
 }
 
-<<<<<<< HEAD
-/*
- * create a host-wide workqueue for issuing deferred shutdown requests
- * aggregated from all vm* instances. We need our own isolated single-thread
- * queue to prevent deadlock against flushing the normal work-queue.
- */
-static int __init irqfd_module_init(void)
-{
-	irqfd_cleanup_wq = create_singlethread_workqueue("kvm-irqfd-cleanup");
-=======
 bool kvm_notify_irqfd_resampler(struct kvm *kvm,
 				unsigned int irqchip,
 				unsigned int pin)
@@ -953,28 +671,17 @@ bool kvm_notify_irqfd_resampler(struct kvm *kvm,
 int kvm_irqfd_init(void)
 {
 	irqfd_cleanup_wq = alloc_workqueue("kvm-irqfd-cleanup", 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!irqfd_cleanup_wq)
 		return -ENOMEM;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __exit irqfd_module_exit(void)
-{
-	destroy_workqueue(irqfd_cleanup_wq);
-}
-
-module_init(irqfd_module_init);
-module_exit(irqfd_module_exit);
-=======
 void kvm_irqfd_exit(void)
 {
 	destroy_workqueue(irqfd_cleanup_wq);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * --------------------------------------------------------------------
@@ -992,10 +699,7 @@ struct _ioeventfd {
 	struct eventfd_ctx  *eventfd;
 	u64                  datamatch;
 	struct kvm_io_device dev;
-<<<<<<< HEAD
-=======
 	u8                   bus_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool                 wildcard;
 };
 
@@ -1018,9 +722,6 @@ ioeventfd_in_range(struct _ioeventfd *p, gpa_t addr, int len, const void *val)
 {
 	u64 _val;
 
-<<<<<<< HEAD
-	if (!(addr == p->addr && len == p->length))
-=======
 	if (addr != p->addr)
 		/* address must be precise for a hit */
 		return false;
@@ -1030,7 +731,6 @@ ioeventfd_in_range(struct _ioeventfd *p, gpa_t addr, int len, const void *val)
 		return true;
 
 	if (len != p->length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* address-range must be precise for a hit */
 		return false;
 
@@ -1059,33 +759,20 @@ ioeventfd_in_range(struct _ioeventfd *p, gpa_t addr, int len, const void *val)
 		return false;
 	}
 
-<<<<<<< HEAD
-	return _val == p->datamatch ? true : false;
-=======
 	return _val == p->datamatch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* MMIO/PIO writes trigger an event if the addr/val match */
 static int
-<<<<<<< HEAD
-ioeventfd_write(struct kvm_io_device *this, gpa_t addr, int len,
-		const void *val)
-=======
 ioeventfd_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this, gpa_t addr,
 		int len, const void *val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct _ioeventfd *p = to_ioeventfd(this);
 
 	if (!ioeventfd_in_range(p, addr, len, val))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	eventfd_signal(p->eventfd, 1);
-=======
 	eventfd_signal(p->eventfd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1113,52 +800,17 @@ ioeventfd_check_collision(struct kvm *kvm, struct _ioeventfd *p)
 	struct _ioeventfd *_p;
 
 	list_for_each_entry(_p, &kvm->ioeventfds, list)
-<<<<<<< HEAD
-		if (_p->addr == p->addr && _p->length == p->length &&
-		    (_p->wildcard || p->wildcard ||
-		     _p->datamatch == p->datamatch))
-=======
 		if (_p->bus_idx == p->bus_idx &&
 		    _p->addr == p->addr &&
 		    (!_p->length || !p->length ||
 		     (_p->length == p->length &&
 		      (_p->wildcard || p->wildcard ||
 		       _p->datamatch == p->datamatch))))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return true;
 
 	return false;
 }
 
-<<<<<<< HEAD
-static int
-kvm_assign_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
-{
-	int                       pio = args->flags & KVM_IOEVENTFD_FLAG_PIO;
-	enum kvm_bus              bus_idx = pio ? KVM_PIO_BUS : KVM_MMIO_BUS;
-	struct _ioeventfd        *p;
-	struct eventfd_ctx       *eventfd;
-	int                       ret;
-
-	/* must be natural-word sized */
-	switch (args->len) {
-	case 1:
-	case 2:
-	case 4:
-	case 8:
-		break;
-	default:
-		return -EINVAL;
-	}
-
-	/* check for range overflow */
-	if (args->addr + args->len < args->addr)
-		return -EINVAL;
-
-	/* check for extra flags that we don't understand */
-	if (args->flags & ~KVM_IOEVENTFD_VALID_FLAG_MASK)
-		return -EINVAL;
-=======
 static enum kvm_bus ioeventfd_bus_from_flags(__u32 flags)
 {
 	if (flags & KVM_IOEVENTFD_FLAG_PIO)
@@ -1176,17 +828,12 @@ static int kvm_assign_ioeventfd_idx(struct kvm *kvm,
 	struct eventfd_ctx *eventfd;
 	struct _ioeventfd *p;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eventfd = eventfd_ctx_fdget(args->fd);
 	if (IS_ERR(eventfd))
 		return PTR_ERR(eventfd);
 
-<<<<<<< HEAD
-	p = kzalloc(sizeof(*p), GFP_KERNEL);
-=======
 	p = kzalloc(sizeof(*p), GFP_KERNEL_ACCOUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!p) {
 		ret = -ENOMEM;
 		goto fail;
@@ -1194,10 +841,7 @@ static int kvm_assign_ioeventfd_idx(struct kvm *kvm,
 
 	INIT_LIST_HEAD(&p->list);
 	p->addr    = args->addr;
-<<<<<<< HEAD
-=======
 	p->bus_idx = bus_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->length  = args->len;
 	p->eventfd = eventfd;
 
@@ -1222,10 +866,7 @@ static int kvm_assign_ioeventfd_idx(struct kvm *kvm,
 	if (ret < 0)
 		goto unlock_fail;
 
-<<<<<<< HEAD
-=======
 	kvm_get_bus(kvm, bus_idx)->ioeventfd_count++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&p->list, &kvm->ioeventfds);
 
 	mutex_unlock(&kvm->slots_lock);
@@ -1234,30 +875,15 @@ static int kvm_assign_ioeventfd_idx(struct kvm *kvm,
 
 unlock_fail:
 	mutex_unlock(&kvm->slots_lock);
-<<<<<<< HEAD
-
-fail:
-	kfree(p);
-=======
 	kfree(p);
 
 fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eventfd_ctx_put(eventfd);
 
 	return ret;
 }
 
 static int
-<<<<<<< HEAD
-kvm_deassign_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
-{
-	int                       pio = args->flags & KVM_IOEVENTFD_FLAG_PIO;
-	enum kvm_bus              bus_idx = pio ? KVM_PIO_BUS : KVM_MMIO_BUS;
-	struct _ioeventfd        *p, *tmp;
-	struct eventfd_ctx       *eventfd;
-	int                       ret = -ENOENT;
-=======
 kvm_deassign_ioeventfd_idx(struct kvm *kvm, enum kvm_bus bus_idx,
 			   struct kvm_ioeventfd *args)
 {
@@ -1266,20 +892,11 @@ kvm_deassign_ioeventfd_idx(struct kvm *kvm, enum kvm_bus bus_idx,
 	struct kvm_io_bus	 *bus;
 	int                       ret = -ENOENT;
 	bool                      wildcard;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eventfd = eventfd_ctx_fdget(args->fd);
 	if (IS_ERR(eventfd))
 		return PTR_ERR(eventfd);
 
-<<<<<<< HEAD
-	mutex_lock(&kvm->slots_lock);
-
-	list_for_each_entry_safe(p, tmp, &kvm->ioeventfds, list) {
-		bool wildcard = !(args->flags & KVM_IOEVENTFD_FLAG_DATAMATCH);
-
-		if (p->eventfd != eventfd  ||
-=======
 	wildcard = !(args->flags & KVM_IOEVENTFD_FLAG_DATAMATCH);
 
 	mutex_lock(&kvm->slots_lock);
@@ -1287,7 +904,6 @@ kvm_deassign_ioeventfd_idx(struct kvm *kvm, enum kvm_bus bus_idx,
 	list_for_each_entry(p, &kvm->ioeventfds, list) {
 		if (p->bus_idx != bus_idx ||
 		    p->eventfd != eventfd  ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    p->addr != args->addr  ||
 		    p->length != args->len ||
 		    p->wildcard != wildcard)
@@ -1297,13 +913,9 @@ kvm_deassign_ioeventfd_idx(struct kvm *kvm, enum kvm_bus bus_idx,
 			continue;
 
 		kvm_io_bus_unregister_dev(kvm, bus_idx, &p->dev);
-<<<<<<< HEAD
-		ioeventfd_release(p);
-=======
 		bus = kvm_get_bus(kvm, bus_idx);
 		if (bus)
 			bus->ioeventfd_count--;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0;
 		break;
 	}
@@ -1315,8 +927,6 @@ kvm_deassign_ioeventfd_idx(struct kvm *kvm, enum kvm_bus bus_idx,
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int kvm_deassign_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
 {
 	enum kvm_bus bus_idx = ioeventfd_bus_from_flags(args->flags);
@@ -1380,7 +990,6 @@ fail:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int
 kvm_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
 {
@@ -1389,8 +998,6 @@ kvm_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
 
 	return kvm_assign_ioeventfd(kvm, args);
 }
-<<<<<<< HEAD
-=======
 
 void
 kvm_eventfd_init(struct kvm *kvm)
@@ -1403,4 +1010,3 @@ kvm_eventfd_init(struct kvm *kvm)
 #endif
 	INIT_LIST_HEAD(&kvm->ioeventfds);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

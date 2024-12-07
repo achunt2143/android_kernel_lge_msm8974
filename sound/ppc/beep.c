@@ -1,34 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Beep using pcm
  *
  * Copyright (c) by Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-#include <asm/io.h>
-=======
  */
 
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -67,11 +44,7 @@ void snd_pmac_beep_stop(struct snd_pmac *chip)
  * so we can multiply by an amplitude in the range 0..100 to get a
  * signed short value to put in the output buffer.
  */
-<<<<<<< HEAD
-static short beep_wform[256] = {
-=======
 static const short beep_wform[256] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0,	40,	79,	117,	153,	187,	218,	245,
 	269,	288,	304,	316,	323,	327,	327,	324,
 	318,	310,	299,	288,	275,	262,	249,	236,
@@ -126,24 +99,16 @@ static int snd_pmac_beep_event(struct input_dev *dev, unsigned int type,
 		return -1;
 
 	switch (code) {
-<<<<<<< HEAD
-	case SND_BELL: if (hz) hz = 1000;
-=======
 	case SND_BELL: if (hz) hz = 1000; break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SND_TONE: break;
 	default: return -1;
 	}
 
 	chip = input_get_drvdata(dev);
-<<<<<<< HEAD
-	if (! chip || (beep = chip->beep) == NULL)
-=======
 	if (!chip)
 		return -1;
 	beep = chip->beep;
 	if (!beep)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 
 	if (! hz) {
@@ -231,11 +196,7 @@ static int snd_pmac_put_beep(struct snd_kcontrol *kcontrol,
 	return oval != chip->beep->volume;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_pmac_beep_mixer = {
-=======
 static const struct snd_kcontrol_new snd_pmac_beep_mixer = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Beep Playback Volume",
 	.info = snd_pmac_info_beep,
@@ -244,11 +205,7 @@ static const struct snd_kcontrol_new snd_pmac_beep_mixer = {
 };
 
 /* Initialize beep stuff */
-<<<<<<< HEAD
-int __devinit snd_pmac_attach_beep(struct snd_pmac *chip)
-=======
 int snd_pmac_attach_beep(struct snd_pmac *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmac_beep *beep;
 	struct input_dev *input_dev;

@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/serial/acorn.c
  *
  *  Copyright (C) 1996-2003 Russell King.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/types.h>
@@ -45,20 +35,12 @@ struct serial_card_info {
 	void __iomem *vaddr;
 };
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
 {
 	struct serial_card_info *info;
 	struct serial_card_type *type = id->data;
-<<<<<<< HEAD
-	struct uart_port port;
-=======
 	struct uart_8250_port uart;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long bus_addr;
 	unsigned int i;
 
@@ -77,21 +59,6 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
 
 	ecard_set_drvdata(ec, info);
 
-<<<<<<< HEAD
-	memset(&port, 0, sizeof(struct uart_port));
-	port.irq	= ec->irq;
-	port.flags	= UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
-	port.uartclk	= type->uartclk;
-	port.iotype	= UPIO_MEM;
-	port.regshift	= 2;
-	port.dev	= &ec->dev;
-
-	for (i = 0; i < info->num_ports; i ++) {
-		port.membase = info->vaddr + type->offset[i];
-		port.mapbase = bus_addr + type->offset[i];
-
-		info->ports[i] = serial8250_register_port(&port);
-=======
 	memset(&uart, 0, sizeof(struct uart_8250_port));
 	uart.port.irq	= ec->irq;
 	uart.port.flags	= UPF_BOOT_AUTOCONF | UPF_SHARE_IRQ;
@@ -105,17 +72,12 @@ serial_card_probe(struct expansion_card *ec, const struct ecard_id *id)
 		uart.port.mapbase = bus_addr + type->offset[i];
 
 		info->ports[i] = serial8250_register_8250_port(&uart);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit serial_card_remove(struct expansion_card *ec)
-=======
 static void serial_card_remove(struct expansion_card *ec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serial_card_info *info = ecard_get_drvdata(ec);
 	int i;
@@ -151,11 +113,7 @@ static const struct ecard_id serial_cids[] = {
 
 static struct ecard_driver serial_card_driver = {
 	.probe		= serial_card_probe,
-<<<<<<< HEAD
-	.remove 	= __devexit_p(serial_card_remove),
-=======
 	.remove		= serial_card_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= serial_cids,
 	.drv = {
 		.name	= "8250_acorn",

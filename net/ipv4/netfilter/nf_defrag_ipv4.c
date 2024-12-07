@@ -1,59 +1,26 @@
-<<<<<<< HEAD
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* (C) 1999-2001 Paul `Rusty' Russell
  * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/ip.h>
 #include <linux/netfilter.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/skbuff.h>
-=======
 #include <linux/rcupdate.h>
 #include <linux/skbuff.h>
 #include <net/netns/generic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/route.h>
 #include <net/ip.h>
 
 #include <linux/netfilter_bridge.h>
 #include <linux/netfilter_ipv4.h>
 #include <net/netfilter/ipv4/nf_defrag_ipv4.h>
-<<<<<<< HEAD
-#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-=======
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack.h>
 #endif
 #include <net/netfilter/nf_conntrack_zones.h>
 
-<<<<<<< HEAD
-static int nf_ct_ipv4_gather_frags(struct sk_buff *skb, u_int32_t user)
-{
-	int err;
-
-	skb_orphan(skb);
-
-	local_bh_disable();
-	err = ip_defrag(skb, user);
-	local_bh_enable();
-
-	if (!err) {
-		ip_send_check(ip_hdr(skb));
-		skb->local_df = 1;
-	}
-=======
 static DEFINE_MUTEX(defrag4_mutex);
 
 static int nf_ct_ipv4_gather_frags(struct net *net, struct sk_buff *skb,
@@ -67,7 +34,6 @@ static int nf_ct_ipv4_gather_frags(struct net *net, struct sk_buff *skb,
 
 	if (!err)
 		skb->ignore_df = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -75,51 +41,6 @@ static int nf_ct_ipv4_gather_frags(struct net *net, struct sk_buff *skb,
 static enum ip_defrag_users nf_ct_defrag_user(unsigned int hooknum,
 					      struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	u16 zone = NF_CT_DEFAULT_ZONE;
-
-#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-	if (skb->nfct)
-		zone = nf_ct_zone((struct nf_conn *)skb->nfct);
-#endif
-
-#ifdef CONFIG_BRIDGE_NETFILTER
-	if (skb->nf_bridge &&
-	    skb->nf_bridge->mask & BRNF_NF_BRIDGE_PREROUTING)
-		return IP_DEFRAG_CONNTRACK_BRIDGE_IN + zone;
-#endif
-	if (hooknum == NF_INET_PRE_ROUTING)
-		return IP_DEFRAG_CONNTRACK_IN + zone;
-	else
-		return IP_DEFRAG_CONNTRACK_OUT + zone;
-}
-
-static unsigned int ipv4_conntrack_defrag(unsigned int hooknum,
-					  struct sk_buff *skb,
-					  const struct net_device *in,
-					  const struct net_device *out,
-					  int (*okfn)(struct sk_buff *))
-{
-	struct sock *sk = skb->sk;
-	struct inet_sock *inet = inet_sk(skb->sk);
-
-	if (sk && (sk->sk_family == PF_INET) &&
-	    inet->nodefrag)
-		return NF_ACCEPT;
-
-#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-#if !defined(CONFIG_NF_NAT) && !defined(CONFIG_NF_NAT_MODULE)
-	/* Previously seen (loopback)?  Ignore.  Do this before
-	   fragment check. */
-	if (skb->nfct && !nf_ct_is_template((struct nf_conn *)skb->nfct))
-		return NF_ACCEPT;
-#endif
-#endif
-	/* Gather fragments. */
-	if (ip_is_fragment(ip_hdr(skb))) {
-		enum ip_defrag_users user = nf_ct_defrag_user(hooknum, skb);
-		if (nf_ct_ipv4_gather_frags(skb, user))
-=======
 	u16 zone_id = NF_CT_DEFAULT_ZONE_ID;
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
 	if (skb_nfct(skb)) {
@@ -164,45 +85,26 @@ static unsigned int ipv4_conntrack_defrag(void *priv,
 			nf_ct_defrag_user(state->hook, skb);
 
 		if (nf_ct_ipv4_gather_frags(state->net, skb, user))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NF_STOLEN;
 	}
 	return NF_ACCEPT;
 }
 
-<<<<<<< HEAD
-static struct nf_hook_ops ipv4_defrag_ops[] = {
-	{
-		.hook		= ipv4_conntrack_defrag,
-		.owner		= THIS_MODULE,
-		.pf		= PF_INET,
-=======
 static const struct nf_hook_ops ipv4_defrag_ops[] = {
 	{
 		.hook		= ipv4_conntrack_defrag,
 		.pf		= NFPROTO_IPV4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hooknum	= NF_INET_PRE_ROUTING,
 		.priority	= NF_IP_PRI_CONNTRACK_DEFRAG,
 	},
 	{
 		.hook           = ipv4_conntrack_defrag,
-<<<<<<< HEAD
-		.owner          = THIS_MODULE,
-		.pf             = PF_INET,
-=======
 		.pf             = NFPROTO_IPV4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.hooknum        = NF_INET_LOCAL_OUT,
 		.priority       = NF_IP_PRI_CONNTRACK_DEFRAG,
 	},
 };
 
-<<<<<<< HEAD
-static int __init nf_defrag_init(void)
-{
-	return nf_register_hooks(ipv4_defrag_ops, ARRAY_SIZE(ipv4_defrag_ops));
-=======
 static void __net_exit defrag4_net_exit(struct net *net)
 {
 	if (net->nf.defrag_ipv4_users) {
@@ -232,21 +134,10 @@ static int __init nf_defrag_init(void)
 
 	rcu_assign_pointer(nf_defrag_v4_hook, &defrag_hook);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit nf_defrag_fini(void)
 {
-<<<<<<< HEAD
-	nf_unregister_hooks(ipv4_defrag_ops, ARRAY_SIZE(ipv4_defrag_ops));
-}
-
-void nf_defrag_ipv4_enable(void)
-{
-}
-EXPORT_SYMBOL_GPL(nf_defrag_ipv4_enable);
-
-=======
 	rcu_assign_pointer(nf_defrag_v4_hook, NULL);
 	unregister_pernet_subsys(&defrag4_net_ops);
 }
@@ -291,12 +182,8 @@ void nf_defrag_ipv4_disable(struct net *net)
 }
 EXPORT_SYMBOL_GPL(nf_defrag_ipv4_disable);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_init(nf_defrag_init);
 module_exit(nf_defrag_fini);
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("IPv4 defragmentation support");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

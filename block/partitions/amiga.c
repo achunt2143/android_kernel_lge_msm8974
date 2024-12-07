@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/amiga.c
  *
@@ -11,13 +8,6 @@
  *  Re-organised Feb 1998 Russell King
  */
 
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/affs_hardblocks.h>
-
-#include "check.h"
-#include "amiga.h"
-=======
 #define pr_fmt(fmt) fmt
 
 #include <linux/types.h>
@@ -32,7 +22,6 @@
 #define NR_SECT	5
 #define LO_CYL	9
 #define HI_CYL	10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static __inline__ u32
 checksum_block(__be32 *m, int size)
@@ -50,12 +39,6 @@ int amiga_partition(struct parsed_partitions *state)
 	unsigned char *data;
 	struct RigidDiskBlock *rdb;
 	struct PartitionBlock *pb;
-<<<<<<< HEAD
-	int start_sect, nr_sects, blk, part, res = 0;
-	int blksize = 1;	/* Multiplier for disk block size */
-	int slot = 1;
-	char b[BDEVNAME_SIZE];
-=======
 	u64 start_sect, nr_sects;
 	sector_t blk, end_sect;
 	u32 cylblk;		/* rdb_CylBlocks = nr_heads*sect_per_track */
@@ -63,21 +46,14 @@ int amiga_partition(struct parsed_partitions *state)
 	int part, res = 0;
 	unsigned int blksize = 1;	/* Multiplier for disk block size */
 	int slot = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (blk = 0; ; blk++, put_dev_sector(sect)) {
 		if (blk == RDB_ALLOCATION_LIMIT)
 			goto rdb_done;
 		data = read_part_sector(state, blk, &sect);
 		if (!data) {
-<<<<<<< HEAD
-			if (warn_no_part)
-				printk("Dev %s: unable to read RDB block %d\n",
-				       bdevname(state->bdev, b), blk);
-=======
 			pr_err("Dev %s: unable to read RDB block %llu\n",
 			       state->disk->disk_name, blk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res = -1;
 			goto rdb_done;
 		}
@@ -93,15 +69,6 @@ int amiga_partition(struct parsed_partitions *state)
 		*(__be32 *)(data+0xdc) = 0;
 		if (checksum_block((__be32 *)data,
 				be32_to_cpu(rdb->rdb_SummedLongs) & 0x7F)==0) {
-<<<<<<< HEAD
-			printk("Warning: Trashed word at 0xd0 in block %d "
-				"ignored in checksum calculation\n",blk);
-			break;
-		}
-
-		printk("Dev %s: RDB in block %d has bad checksum\n",
-		       bdevname(state->bdev, b), blk);
-=======
 			pr_err("Trashed word at 0xd0 in block %llu ignored in checksum calculation\n",
 			       blk);
 			break;
@@ -109,7 +76,6 @@ int amiga_partition(struct parsed_partitions *state)
 
 		pr_err("Dev %s: RDB in block %llu has bad checksum\n",
 		       state->disk->disk_name, blk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* blksize is blocks per 512 byte standard block */
@@ -124,15 +90,6 @@ int amiga_partition(struct parsed_partitions *state)
 	}
 	blk = be32_to_cpu(rdb->rdb_PartitionList);
 	put_dev_sector(sect);
-<<<<<<< HEAD
-	for (part = 1; blk>0 && part<=16; part++, put_dev_sector(sect)) {
-		blk *= blksize;	/* Read in terms partition table understands */
-		data = read_part_sector(state, blk, &sect);
-		if (!data) {
-			if (warn_no_part)
-				printk("Dev %s: unable to read partition block %d\n",
-				       bdevname(state->bdev, b), blk);
-=======
 	for (part = 1; (s32) blk>0 && part<=16; part++, put_dev_sector(sect)) {
 		/* Read in terms partition table understands */
 		if (check_mul_overflow(blk, (sector_t) blksize, &blk)) {
@@ -144,7 +101,6 @@ int amiga_partition(struct parsed_partitions *state)
 		if (!data) {
 			pr_err("Dev %s: unable to read partition block %llu\n",
 			       state->disk->disk_name, blk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res = -1;
 			goto rdb_done;
 		}
@@ -155,21 +111,6 @@ int amiga_partition(struct parsed_partitions *state)
 		if (checksum_block((__be32 *)pb, be32_to_cpu(pb->pb_SummedLongs) & 0x7F) != 0 )
 			continue;
 
-<<<<<<< HEAD
-		/* Tell Kernel about it */
-
-		nr_sects = (be32_to_cpu(pb->pb_Environment[10]) + 1 -
-			    be32_to_cpu(pb->pb_Environment[9])) *
-			   be32_to_cpu(pb->pb_Environment[3]) *
-			   be32_to_cpu(pb->pb_Environment[5]) *
-			   blksize;
-		if (!nr_sects)
-			continue;
-		start_sect = be32_to_cpu(pb->pb_Environment[9]) *
-			     be32_to_cpu(pb->pb_Environment[3]) *
-			     be32_to_cpu(pb->pb_Environment[5]) *
-			     blksize;
-=======
 		/* RDB gives us more than enough rope to hang ourselves with,
 		 * many times over (2^128 bytes if all fields max out).
 		 * Some careful checks are in order, so check for potential
@@ -234,7 +175,6 @@ int amiga_partition(struct parsed_partitions *state)
 
 		/* Tell Kernel about it */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_partition(state,slot++,start_sect,nr_sects);
 		{
 			/* Be even more informative to aid mounting */

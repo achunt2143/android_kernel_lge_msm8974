@@ -1,49 +1,10 @@
-<<<<<<< HEAD
-/*
- * Access kernel memory without faulting.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Access kernel or user memory without faulting.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/export.h>
 #include <linux/mm.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-
-/**
- * probe_kernel_read(): safely attempt to read from a location
- * @dst: pointer to the buffer that shall take the data
- * @src: address to read from
- * @size: size of the data chunk
- *
- * Safely read from address @src to the buffer at @dst.  If a kernel fault
- * happens, handle that and return -EFAULT.
- */
-
-long __weak probe_kernel_read(void *dst, const void *src, size_t size)
-    __attribute__((alias("__probe_kernel_read")));
-
-long __probe_kernel_read(void *dst, const void *src, size_t size)
-{
-	long ret;
-	mm_segment_t old_fs = get_fs();
-
-	set_fs(KERNEL_DS);
-	pagefault_disable();
-	ret = __copy_from_user_inatomic(dst,
-			(__force const void __user *)src, size);
-	pagefault_enable();
-	set_fs(old_fs);
-
-	return ret ? -EFAULT : 0;
-}
-EXPORT_SYMBOL_GPL(probe_kernel_read);
-
-/**
- * probe_kernel_write(): safely attempt to write to a location
-=======
 #include <asm/tlb.h>
 
 bool __weak copy_from_kernel_nofault_allowed(const void *unsafe_src,
@@ -172,7 +133,6 @@ EXPORT_SYMBOL_GPL(copy_from_user_nofault);
 
 /**
  * copy_to_user_nofault(): safely attempt to write to a user-space location
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dst: address to write to
  * @src: pointer to the data that shall be written
  * @size: size of the data chunk
@@ -180,25 +140,6 @@ EXPORT_SYMBOL_GPL(copy_from_user_nofault);
  * Safely write to address @dst from the buffer at @src.  If a kernel fault
  * happens, handle that and return -EFAULT.
  */
-<<<<<<< HEAD
-long __weak probe_kernel_write(void *dst, const void *src, size_t size)
-    __attribute__((alias("__probe_kernel_write")));
-
-long __probe_kernel_write(void *dst, const void *src, size_t size)
-{
-	long ret;
-	mm_segment_t old_fs = get_fs();
-
-	set_fs(KERNEL_DS);
-	pagefault_disable();
-	ret = __copy_to_user_inatomic((__force void __user *)dst, src, size);
-	pagefault_enable();
-	set_fs(old_fs);
-
-	return ret ? -EFAULT : 0;
-}
-EXPORT_SYMBOL_GPL(probe_kernel_write);
-=======
 long copy_to_user_nofault(void __user *dst, const void *src, size_t size)
 {
 	long ret = -EFAULT;
@@ -287,4 +228,3 @@ void __copy_overflow(int size, unsigned long count)
 	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
 }
 EXPORT_SYMBOL(__copy_overflow);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

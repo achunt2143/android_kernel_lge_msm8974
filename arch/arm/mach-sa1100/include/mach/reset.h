@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_ARCH_RESET_H
 #define __ASM_ARCH_RESET_H
 
@@ -13,10 +10,6 @@
 #define RESET_STATUS_GPIO	(1 << 3)	/* GPIO Reset */
 #define RESET_STATUS_ALL	(0xf)
 
-<<<<<<< HEAD
-extern unsigned int reset_status;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void clear_reset_status(unsigned int mask)
 {
 	RCSR = mask;

@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/glue-cache.h
  *
  *  Copyright (C) 1999-2002 Russell King
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef ASM_GLUE_CACHE_H
 #define ASM_GLUE_CACHE_H
@@ -26,17 +16,6 @@
 #undef _CACHE
 #undef MULTI_CACHE
 
-<<<<<<< HEAD
-#if defined(CONFIG_CPU_CACHE_V3)
-# ifdef _CACHE
-#  define MULTI_CACHE 1
-# else
-#  define _CACHE v3
-# endif
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_CPU_CACHE_V4)
 # ifdef _CACHE
 #  define MULTI_CACHE 1
@@ -120,21 +99,6 @@
 #endif
 
 #if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_V6K)
-<<<<<<< HEAD
-//# ifdef _CACHE
-#  define MULTI_CACHE 1
-//# else
-//#  define _CACHE v6
-//# endif
-#endif
-
-#if defined(CONFIG_CPU_V7)
-//# ifdef _CACHE
-#  define MULTI_CACHE 1
-//# else
-//#  define _CACHE v7
-//# endif
-=======
 # ifdef _CACHE
 #  define MULTI_CACHE 1
 # else
@@ -156,15 +120,12 @@
 
 #if defined(CONFIG_CPU_V7M)
 #  define MULTI_CACHE 1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #if !defined(_CACHE) && !defined(MULTI_CACHE)
 #error Unknown cache maintenance model
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef __ASSEMBLER__
 static inline void nop_flush_icache_all(void) { }
 static inline void nop_flush_kern_cache_all(void) { }
@@ -184,7 +145,6 @@ static inline void nop_dma_map_area(const void *s, size_t l, int f) { }
 static inline void nop_dma_unmap_area(const void *s, size_t l, int f) { }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MULTI_CACHE
 #define __cpuc_flush_icache_all		__glue(_CACHE,_flush_icache_all)
 #define __cpuc_flush_kern_all		__glue(_CACHE,_flush_kern_cache_all)
@@ -195,11 +155,6 @@ static inline void nop_dma_unmap_area(const void *s, size_t l, int f) { }
 #define __cpuc_coherent_user_range	__glue(_CACHE,_coherent_user_range)
 #define __cpuc_flush_dcache_area	__glue(_CACHE,_flush_kern_dcache_area)
 
-<<<<<<< HEAD
-#define dmac_map_area			__glue(_CACHE,_dma_map_area)
-#define dmac_unmap_area			__glue(_CACHE,_dma_unmap_area)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define dmac_flush_range		__glue(_CACHE,_dma_flush_range)
 #endif
 

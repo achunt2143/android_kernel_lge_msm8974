@@ -1,24 +1,14 @@
-<<<<<<< HEAD
-#
-# For a description of the syntax of this configuration file,
-# see Documentation/kbuild/kconfig-language.txt.
-=======
 # SPDX-License-Identifier: GPL-2.0
 #
 # For a description of the syntax of this configuration file,
 # see Documentation/kbuild/kconfig-language.rst.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Auxiliary display drivers configuration.
 #
 
 menuconfig AUXDISPLAY
 	bool "Auxiliary Display support"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to get to see options for auxiliary display drivers.
 	  This option alone does not add any kernel code.
 
@@ -26,13 +16,6 @@ menuconfig AUXDISPLAY
 
 if AUXDISPLAY
 
-<<<<<<< HEAD
-config KS0108
-	tristate "KS0108 LCD Controller"
-	depends on PARPORT_PC
-	default n
-	---help---
-=======
 #
 # Character LCD section
 #
@@ -389,7 +372,6 @@ config KS0108
 	tristate "KS0108 LCD Controller"
 	depends on PARPORT_PC
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a LCD controlled by one or more KS0108
 	  controllers, say Y. You will need also another more specific
 	  driver for your LCD.
@@ -407,11 +389,7 @@ config KS0108_PORT
 	hex "Parallel port where the LCD is connected"
 	depends on KS0108
 	default 0x378
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The address of the parallel port where the LCD is connected.
 
 	  The first  standard parallel port address is 0x378.
@@ -433,11 +411,7 @@ config KS0108_DELAY
 	int "Delay between each control writing (microseconds)"
 	depends on KS0108
 	default "2"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Amount of time the ks0108 should wait between each control write
 	  to the parallel port.
 
@@ -453,26 +427,13 @@ config CFAG12864B
 	depends on X86
 	depends on FB
 	depends on KS0108
-<<<<<<< HEAD
-	select FB_SYS_FILLRECT
-	select FB_SYS_COPYAREA
-	select FB_SYS_IMAGEBLIT
-	select FB_SYS_FOPS
-	default n
-	---help---
-=======
 	select FB_SYSMEM_HELPERS
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a Crystalfontz 128x64 2-color LCD, cfag12864b Series,
 	  say Y. You also need the ks0108 LCD Controller driver.
 
 	  For help about how to wire your LCD to the parallel port,
-<<<<<<< HEAD
-	  check Documentation/auxdisplay/cfag12864b
-=======
 	  check Documentation/admin-guide/auxdisplay/cfag12864b.rst
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Depends on the x86 arch and the framebuffer support.
 
@@ -486,17 +447,10 @@ config CFAG12864B
 	  If unsure, say N.
 
 config CFAG12864B_RATE
-<<<<<<< HEAD
-       int "Refresh rate (hertz)"
-	depends on CFAG12864B
-	default "20"
-	---help---
-=======
 	int "Refresh rate (hertz)"
 	depends on CFAG12864B
 	default "20"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Refresh rate of the LCD.
 
 	  As the LCD is not memory mapped, the driver has to make the work by
@@ -513,9 +467,6 @@ config CFAG12864B_RATE
 	  If you compile this as a module, you can still override this
 	  value using the module parameters.
 
-<<<<<<< HEAD
-endif # AUXDISPLAY
-=======
 #
 # Single character line display section
 #
@@ -597,4 +548,3 @@ config PANEL
 	depends on PARPORT
 	select AUXDISPLAY
 	select PARPORT_PANEL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

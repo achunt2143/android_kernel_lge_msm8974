@@ -1,12 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2007-2010 ST-Ericsson
- * License terms: GNU General Public License (GPL) version 2
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2007-2010 ST-Ericsson
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Register access functions for the ABX500 Mixed Signal IC family.
  * Author: Mattias Wallin <mattias.wallin@stericsson.com>
  */
@@ -14,12 +8,8 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/init.h>
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/abx500.h>
 
 static LIST_HEAD(abx500_list);
@@ -47,22 +37,12 @@ int abx500_register_ops(struct device *dev, struct abx500_ops *ops)
 {
 	struct abx500_device_entry *dev_entry;
 
-<<<<<<< HEAD
-	dev_entry = kzalloc(sizeof(struct abx500_device_entry), GFP_KERNEL);
-	if (!dev_entry) {
-		dev_err(dev, "register_ops kzalloc failed");
-		return -ENOMEM;
-	}
-	dev_entry->dev = dev;
-	memcpy(&dev_entry->ops, ops, sizeof(struct abx500_ops));
-=======
 	dev_entry = devm_kzalloc(dev, sizeof(*dev_entry), GFP_KERNEL);
 	if (!dev_entry)
 		return -ENOMEM;
 
 	dev_entry->dev = dev;
 	memcpy(&dev_entry->ops, ops, sizeof(*ops));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add_tail(&dev_entry->list, &abx500_list);
 	return 0;
@@ -74,17 +54,8 @@ void abx500_remove_ops(struct device *dev)
 	struct abx500_device_entry *dev_entry, *tmp;
 
 	list_for_each_entry_safe(dev_entry, tmp, &abx500_list, list)
-<<<<<<< HEAD
-	{
-		if (dev_entry->dev == dev) {
-			list_del(&dev_entry->list);
-			kfree(dev_entry);
-		}
-	}
-=======
 		if (dev_entry->dev == dev)
 			list_del(&dev_entry->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(abx500_remove_ops);
 
@@ -94,11 +65,7 @@ int abx500_set_register_interruptible(struct device *dev, u8 bank, u8 reg,
 	struct abx500_ops *ops;
 
 	lookup_ops(dev->parent, &ops);
-<<<<<<< HEAD
-	if ((ops != NULL) && (ops->set_register != NULL))
-=======
 	if (ops && ops->set_register)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ops->set_register(dev, bank, reg, value);
 	else
 		return -ENOTSUPP;
@@ -111,11 +78,7 @@ int abx500_get_register_interruptible(struct device *dev, u8 bank, u8 reg,
 	struct abx500_ops *ops;
 
 	lookup_ops(dev->parent, &ops);
-<<<<<<< HEAD
-	if ((ops != NULL) && (ops->get_register != NULL))
-=======
 	if (ops && ops->get_register)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ops->get_register(dev, bank, reg, value);
 	else
 		return -ENOTSUPP;
@@ -128,11 +91,7 @@ int abx500_get_register_page_interruptible(struct device *dev, u8 bank,
 	struct abx500_ops *ops;
 
 	lookup_ops(dev->parent, &ops);
-<<<<<<< HEAD
-	if ((ops != NULL) && (ops->get_register_page != NULL))
-=======
 	if (ops && ops->get_register_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ops->get_register_page(dev, bank,
 			first_reg, regvals, numregs);
 	else
@@ -146,11 +105,7 @@ int abx500_mask_and_set_register_interruptible(struct device *dev, u8 bank,
 	struct abx500_ops *ops;
 
 	lookup_ops(dev->parent, &ops);
-<<<<<<< HEAD
-	if ((ops != NULL) && (ops->mask_and_set_register != NULL))
-=======
 	if (ops && ops->mask_and_set_register)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ops->mask_and_set_register(dev, bank,
 			reg, bitmask, bitvalues);
 	else
@@ -163,11 +118,7 @@ int abx500_get_chip_id(struct device *dev)
 	struct abx500_ops *ops;
 
 	lookup_ops(dev->parent, &ops);
-<<<<<<< HEAD
-	if ((ops != NULL) && (ops->get_chip_id != NULL))
-=======
 	if (ops && ops->get_chip_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ops->get_chip_id(dev);
 	else
 		return -ENOTSUPP;
@@ -179,11 +130,7 @@ int abx500_event_registers_startup_state_get(struct device *dev, u8 *event)
 	struct abx500_ops *ops;
 
 	lookup_ops(dev->parent, &ops);
-<<<<<<< HEAD
-	if ((ops != NULL) && (ops->event_registers_startup_state_get != NULL))
-=======
 	if (ops && ops->event_registers_startup_state_get)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ops->event_registers_startup_state_get(dev, event);
 	else
 		return -ENOTSUPP;
@@ -195,20 +142,9 @@ int abx500_startup_irq_enabled(struct device *dev, unsigned int irq)
 	struct abx500_ops *ops;
 
 	lookup_ops(dev->parent, &ops);
-<<<<<<< HEAD
-	if ((ops != NULL) && (ops->startup_irq_enabled != NULL))
-=======
 	if (ops && ops->startup_irq_enabled)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ops->startup_irq_enabled(dev, irq);
 	else
 		return -ENOTSUPP;
 }
 EXPORT_SYMBOL(abx500_startup_irq_enabled);
-<<<<<<< HEAD
-
-MODULE_AUTHOR("Mattias Wallin <mattias.wallin@stericsson.com>");
-MODULE_DESCRIPTION("ABX500 core driver");
-MODULE_LICENSE("GPL");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

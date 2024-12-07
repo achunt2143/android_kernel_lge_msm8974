@@ -27,32 +27,6 @@
 
 #include <linux/init.h>
 #include <linux/ioport.h>
-<<<<<<< HEAD
-#include <linux/jiffies.h>
-#include <linux/module.h>
-
-#include <asm/mipsregs.h>
-#include <asm/time.h>
-
-#include <au1000.h>
-
-extern void __init board_setup(void);
-extern void set_cpuspec(void);
-
-void __init plat_mem_setup(void)
-{
-	unsigned long est_freq;
-
-	/* determine core clock */
-	est_freq = au1xxx_calc_clock();
-	est_freq += 5000;    /* round */
-	est_freq -= est_freq % 10000;
-	printk(KERN_INFO "(PRId %08x) @ %lu.%02lu MHz\n", read_c0_prid(),
-	       est_freq / 1000000, ((est_freq % 1000000) * 100) / 1000000);
-
-	/* this is faster than wasting cycles trying to approximate it */
-	preset_lpj = (est_freq >> 1) / HZ;
-=======
 #include <linux/mm.h>
 #include <linux/dma-map-ops.h> /* for dma_default_coherent */
 
@@ -81,7 +55,6 @@ static bool alchemy_dma_coherent(void)
 void __init plat_mem_setup(void)
 {
 	alchemy_set_lpj();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (au1xxx_cpu_needs_config_od())
 		/* Various early Au1xx0 errata corrected by this */
@@ -90,13 +63,9 @@ void __init plat_mem_setup(void)
 		/* Clear to obtain best system bus performance */
 		clear_c0_config(1 << 19); /* Clear Config[OD] */
 
-<<<<<<< HEAD
-	board_setup();  /* board specific setup */
-=======
 	dma_default_coherent = alchemy_dma_coherent();
 
 	board_setup();	/* board specific setup */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* IO/MEM resources. */
 	set_io_port_base(0);
@@ -106,15 +75,9 @@ void __init plat_mem_setup(void)
 	iomem_resource.end = IOMEM_RESOURCE_END;
 }
 
-<<<<<<< HEAD
-#if defined(CONFIG_64BIT_PHYS_ADDR) && defined(CONFIG_PCI)
-/* This routine should be valid for all Au1x based boards */
-phys_t __fixup_bigphys_addr(phys_t phys_addr, phys_t size)
-=======
 #ifdef CONFIG_MIPS_FIXUP_BIGPHYS_ADDR
 /* This routine should be valid for all Au1x based boards */
 phys_addr_t fixup_bigphys_addr(phys_addr_t phys_addr, phys_addr_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long start = ALCHEMY_PCI_MEMWIN_START;
 	unsigned long end = ALCHEMY_PCI_MEMWIN_END;
@@ -125,19 +88,11 @@ phys_addr_t fixup_bigphys_addr(phys_addr_t phys_addr, phys_addr_t size)
 
 	/* Check for PCI memory window */
 	if (phys_addr >= start && (phys_addr + size - 1) <= end)
-<<<<<<< HEAD
-		return (phys_t)(AU1500_PCI_MEM_PHYS_ADDR + phys_addr);
-=======
 		return (phys_addr_t)(AU1500_PCI_MEM_PHYS_ADDR + phys_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* default nop */
 	return phys_addr;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(__fixup_bigphys_addr);
-#endif
-=======
 
 int io_remap_pfn_range(struct vm_area_struct *vma, unsigned long vaddr,
 		unsigned long pfn, unsigned long size, pgprot_t prot)
@@ -148,4 +103,3 @@ int io_remap_pfn_range(struct vm_area_struct *vma, unsigned long vaddr,
 }
 EXPORT_SYMBOL(io_remap_pfn_range);
 #endif /* CONFIG_MIPS_FIXUP_BIGPHYS_ADDR */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

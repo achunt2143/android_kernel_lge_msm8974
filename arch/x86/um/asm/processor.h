@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-#ifndef __UM_PROCESSOR_H
-#define __UM_PROCESSOR_H
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __UM_PROCESSOR_H
 #define __UM_PROCESSOR_H
 #include <linux/time-internal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* include faultinfo structure */
 #include <sysdep/faultinfo.h>
@@ -27,18 +22,11 @@
 #include <asm/user.h>
 
 /* REP NOP (PAUSE) is a good thing to insert into busy-wait loops. */
-<<<<<<< HEAD
-static inline void rep_nop(void)
-=======
 static __always_inline void rep_nop(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__("rep;nop": : :"memory");
 }
 
-<<<<<<< HEAD
-#define cpu_relax()	rep_nop()
-=======
 static __always_inline void cpu_relax(void)
 {
 	if (time_travel_mode == TT_MODE_INFCPU ||
@@ -49,7 +37,6 @@ static __always_inline void cpu_relax(void)
 }
 
 #define task_pt_regs(t) (&(t)->thread.regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/processor-generic.h>
 

@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/mman.h>
-<<<<<<< HEAD
-#include "longjmp.h"
-=======
 #include <longjmp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __i386__
 
@@ -117,11 +110,7 @@ unsigned long os_get_top_address(void)
 		exit(1);
 	}
 
-<<<<<<< HEAD
-	printf("0x%x\n", bottom << UM_KERN_PAGE_SHIFT);
-=======
 	printf("0x%lx\n", bottom << UM_KERN_PAGE_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printf("Locating the top of the address space ... ");
 	fflush(stdout);
 
@@ -146,11 +135,7 @@ out:
 		exit(1);
 	}
 	top <<= UM_KERN_PAGE_SHIFT;
-<<<<<<< HEAD
-	printf("0x%x\n", top);
-=======
 	printf("0x%lx\n", top);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return top;
 }
@@ -160,11 +145,7 @@ out:
 unsigned long os_get_top_address(void)
 {
 	/* The old value of CONFIG_TOP_ADDR */
-<<<<<<< HEAD
-	return 0x7fc0000000;
-=======
 	return 0x7fc0002000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif

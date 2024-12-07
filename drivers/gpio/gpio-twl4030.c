@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Access to GPIOs on TWL4030/TPS659x0 chips
  *
@@ -13,23 +10,6 @@
  *
  * Initial Code:
  *	Andy Lowe / Nishanth Menon
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -37,23 +17,14 @@
 #include <linux/interrupt.h>
 #include <linux/kthread.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
 #include <linux/gpio/machine.h>
 #include <linux/gpio/driver.h>
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/of.h>
 #include <linux/irqdomain.h>
 
-<<<<<<< HEAD
-#include <linux/i2c/twl.h>
-
-=======
 #include <linux/mfd/twl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The GPIO "subchip" supports 18 GPIOs which can be configured as
@@ -66,13 +37,6 @@
  * There are also two LED pins used sometimes as output-only GPIOs.
  */
 
-<<<<<<< HEAD
-
-static struct gpio_chip twl_gpiochip;
-static int twl4030_gpio_irq_base;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* genirq interfaces are not available to modules */
 #ifdef MODULE
 #define is_module()	true
@@ -88,13 +52,6 @@ static int twl4030_gpio_irq_base;
 /* Mask for GPIO registers when aggregated into a 32-bit integer */
 #define GPIO_32_MASK			0x0003ffff
 
-<<<<<<< HEAD
-/* Data structures */
-static DEFINE_MUTEX(gpio_lock);
-
-/* store usage of each GPIO. - each bit represents one GPIO */
-static unsigned int gpio_usage_count;
-=======
 struct gpio_twl4030_priv {
 	struct gpio_chip gpio_chip;
 	struct mutex mutex;
@@ -105,7 +62,6 @@ struct gpio_twl4030_priv {
 	unsigned int direction;
 	unsigned int out_state;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*----------------------------------------------------------------------*/
 
@@ -120,13 +76,6 @@ static inline int gpio_twl4030_write(u8 address, u8 data)
 /*----------------------------------------------------------------------*/
 
 /*
-<<<<<<< HEAD
- * LED register offsets (use TWL4030_MODULE_{LED,PWMA,PWMB}))
- * PWMs A and B are dedicated to LEDs A and B, respectively.
- */
-
-#define TWL4030_LED_LEDEN	0x0
-=======
  * LED register offsets from TWL_MODULE_LED base
  * PWMs A and B are dedicated to LEDs A and B, respectively.
  */
@@ -136,7 +85,6 @@ static inline int gpio_twl4030_write(u8 address, u8 data)
 #define TWL4030_PWMAOFF_REG	0x02
 #define TWL4030_PWMBON_REG	0x03
 #define TWL4030_PWMBOFF_REG	0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* LEDEN bits */
 #define LEDEN_LEDAON		BIT(0)
@@ -148,12 +96,6 @@ static inline int gpio_twl4030_write(u8 address, u8 data)
 #define LEDEN_PWM_LENGTHA	BIT(6)
 #define LEDEN_PWM_LENGTHB	BIT(7)
 
-<<<<<<< HEAD
-#define TWL4030_PWMx_PWMxON	0x0
-#define TWL4030_PWMx_PWMxOFF	0x1
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PWMxON_LENGTH		BIT(7)
 
 /*----------------------------------------------------------------------*/
@@ -172,11 +114,7 @@ static inline int gpio_twl4030_read(u8 address)
 
 /*----------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static u8 cached_leden;		/* protected by gpio_lock */
-=======
 static u8 cached_leden;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The LED lines are open drain outputs ... a FET pulls to GND, so an
  * external pullup is needed.  We could also expose the integrated PWM
@@ -185,31 +123,17 @@ static u8 cached_leden;
 static void twl4030_led_set_value(int led, int value)
 {
 	u8 mask = LEDEN_LEDAON | LEDEN_LEDAPWM;
-<<<<<<< HEAD
-	int status;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (led)
 		mask <<= 1;
 
-<<<<<<< HEAD
-	mutex_lock(&gpio_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (value)
 		cached_leden &= ~mask;
 	else
 		cached_leden |= mask;
-<<<<<<< HEAD
-	status = twl_i2c_write_u8(TWL4030_MODULE_LED, cached_leden,
-			TWL4030_LED_LEDEN);
-	mutex_unlock(&gpio_lock);
-=======
 
 	WARN_ON_ONCE(twl_i2c_write_u8(TWL4030_MODULE_LED, cached_leden,
 				      TWL4030_LED_LEDEN_REG));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twl4030_set_gpio_direction(int gpio, int is_input)
@@ -220,10 +144,6 @@ static int twl4030_set_gpio_direction(int gpio, int is_input)
 	u8 base = REG_GPIODATADIR1 + d_bnk;
 	int ret = 0;
 
-<<<<<<< HEAD
-	mutex_lock(&gpio_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = gpio_twl4030_read(base);
 	if (ret >= 0) {
 		if (is_input)
@@ -233,12 +153,6 @@ static int twl4030_set_gpio_direction(int gpio, int is_input)
 
 		ret = gpio_twl4030_write(base, reg);
 	}
-<<<<<<< HEAD
-	mutex_unlock(&gpio_lock);
-	return ret;
-}
-
-=======
 	return ret;
 }
 
@@ -259,7 +173,6 @@ static int twl4030_get_gpio_direction(int gpio)
 	return GPIO_LINE_DIRECTION_IN;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int twl4030_set_gpio_dataout(int gpio, int enable)
 {
 	u8 d_bnk = gpio >> 3;
@@ -281,13 +194,6 @@ static int twl4030_get_gpio_datain(int gpio)
 	u8 base = 0;
 	int ret = 0;
 
-<<<<<<< HEAD
-	if (unlikely((gpio >= TWL4030_GPIO_MAX)
-		|| !(gpio_usage_count & BIT(gpio))))
-		return -EPERM;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	base = REG_GPIODATAIN1 + d_bnk;
 	ret = gpio_twl4030_read(base);
 	if (ret > 0)
@@ -300,42 +206,20 @@ static int twl4030_get_gpio_datain(int gpio)
 
 static int twl_request(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	int status = 0;
-
-	mutex_lock(&gpio_lock);
-=======
 	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
 	int status = 0;
 
 	mutex_lock(&priv->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Support the two LED outputs as output-only GPIOs. */
 	if (offset >= TWL4030_GPIO_MAX) {
 		u8	ledclr_mask = LEDEN_LEDAON | LEDEN_LEDAEXT
 				| LEDEN_LEDAPWM | LEDEN_PWM_LENGTHA;
-<<<<<<< HEAD
-		u8	module = TWL4030_MODULE_PWMA;
-=======
 		u8	reg = TWL4030_PWMAON_REG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		offset -= TWL4030_GPIO_MAX;
 		if (offset) {
 			ledclr_mask <<= 1;
-<<<<<<< HEAD
-			module = TWL4030_MODULE_PWMB;
-		}
-
-		/* initialize PWM to always-drive */
-		status = twl_i2c_write_u8(module, 0x7f,
-				TWL4030_PWMx_PWMxOFF);
-		if (status < 0)
-			goto done;
-		status = twl_i2c_write_u8(module, 0x7f,
-				TWL4030_PWMx_PWMxON);
-=======
 			reg = TWL4030_PWMBON_REG;
 		}
 
@@ -347,21 +231,10 @@ static int twl_request(struct gpio_chip *chip, unsigned offset)
 
 		/* Followed by PWM ON register */
 		status = twl_i2c_write_u8(TWL4030_MODULE_LED, 0x7f, reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status < 0)
 			goto done;
 
 		/* init LED to not-driven (high) */
-<<<<<<< HEAD
-		module = TWL4030_MODULE_LED;
-		status = twl_i2c_read_u8(module, &cached_leden,
-				TWL4030_LED_LEDEN);
-		if (status < 0)
-			goto done;
-		cached_leden &= ~ledclr_mask;
-		status = twl_i2c_write_u8(module, cached_leden,
-				TWL4030_LED_LEDEN);
-=======
 		status = twl_i2c_read_u8(TWL4030_MODULE_LED, &cached_leden,
 					 TWL4030_LED_LEDEN_REG);
 		if (status < 0)
@@ -369,7 +242,6 @@ static int twl_request(struct gpio_chip *chip, unsigned offset)
 		cached_leden &= ~ledclr_mask;
 		status = twl_i2c_write_u8(TWL4030_MODULE_LED, cached_leden,
 					  TWL4030_LED_LEDEN_REG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status < 0)
 			goto done;
 
@@ -378,62 +250,30 @@ static int twl_request(struct gpio_chip *chip, unsigned offset)
 	}
 
 	/* on first use, turn GPIO module "on" */
-<<<<<<< HEAD
-	if (!gpio_usage_count) {
-=======
 	if (!priv->usage_count) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct twl4030_gpio_platform_data *pdata;
 		u8 value = MASK_GPIO_CTRL_GPIO_ON;
 
 		/* optionally have the first two GPIOs switch vMMC1
 		 * and vMMC2 power supplies based on card presence.
 		 */
-<<<<<<< HEAD
-		pdata = chip->dev->platform_data;
-=======
 		pdata = dev_get_platdata(chip->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pdata)
 			value |= pdata->mmc_cd & 0x03;
 
 		status = gpio_twl4030_write(REG_GPIO_CTRL, value);
 	}
 
-<<<<<<< HEAD
-	if (!status)
-		gpio_usage_count |= (0x1 << offset);
-
-done:
-	mutex_unlock(&gpio_lock);
-=======
 done:
 	if (!status)
 		priv->usage_count |= BIT(offset);
 
 	mutex_unlock(&priv->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 static void twl_free(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	if (offset >= TWL4030_GPIO_MAX) {
-		twl4030_led_set_value(offset - TWL4030_GPIO_MAX, 1);
-		return;
-	}
-
-	mutex_lock(&gpio_lock);
-
-	gpio_usage_count &= ~BIT(offset);
-
-	/* on last use, switch off GPIO module */
-	if (!gpio_usage_count)
-		gpio_twl4030_write(REG_GPIO_CTRL, 0x0);
-
-	mutex_unlock(&gpio_lock);
-=======
 	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
 
 	mutex_lock(&priv->mutex);
@@ -450,16 +290,10 @@ static void twl_free(struct gpio_chip *chip, unsigned offset)
 
 out:
 	mutex_unlock(&priv->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twl_direction_in(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	return (offset < TWL4030_GPIO_MAX)
-		? twl4030_set_gpio_direction(offset, 1)
-		: -EINVAL;
-=======
 	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
 	int ret;
 
@@ -475,33 +309,10 @@ static int twl_direction_in(struct gpio_chip *chip, unsigned offset)
 	mutex_unlock(&priv->mutex);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twl_get(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	int status = 0;
-
-	if (offset < TWL4030_GPIO_MAX)
-		status = twl4030_get_gpio_datain(offset);
-	else if (offset == TWL4030_GPIO_MAX)
-		status = cached_leden & LEDEN_LEDAON;
-	else
-		status = cached_leden & LEDEN_LEDBON;
-	return (status < 0) ? 0 : status;
-}
-
-static int twl_direction_out(struct gpio_chip *chip, unsigned offset, int value)
-{
-	if (offset < TWL4030_GPIO_MAX) {
-		twl4030_set_gpio_dataout(offset, value);
-		return twl4030_set_gpio_direction(offset, 0);
-	} else {
-		twl4030_led_set_value(offset - TWL4030_GPIO_MAX, value);
-		return 0;
-	}
-=======
 	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
 	int ret;
 	int status = 0;
@@ -521,23 +332,17 @@ static int twl_direction_out(struct gpio_chip *chip, unsigned offset, int value)
 out:
 	mutex_unlock(&priv->mutex);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void twl_set(struct gpio_chip *chip, unsigned offset, int value)
 {
-<<<<<<< HEAD
-=======
 	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
 
 	mutex_lock(&priv->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (offset < TWL4030_GPIO_MAX)
 		twl4030_set_gpio_dataout(offset, value);
 	else
 		twl4030_led_set_value(offset - TWL4030_GPIO_MAX, value);
-<<<<<<< HEAD
-=======
 
 	if (value)
 		priv->out_state |= BIT(offset);
@@ -593,19 +398,10 @@ static int twl_get_direction(struct gpio_chip *chip, unsigned offset)
 	mutex_unlock(&priv->mutex);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twl_to_irq(struct gpio_chip *chip, unsigned offset)
 {
-<<<<<<< HEAD
-	return (twl4030_gpio_irq_base && (offset < TWL4030_GPIO_MAX))
-		? (twl4030_gpio_irq_base + offset)
-		: -EINVAL;
-}
-
-static struct gpio_chip twl_gpiochip = {
-=======
 	struct gpio_twl4030_priv *priv = gpiochip_get_data(chip);
 
 	return (priv->irq_base && (offset < TWL4030_GPIO_MAX))
@@ -614,49 +410,30 @@ static struct gpio_chip twl_gpiochip = {
 }
 
 static const struct gpio_chip template_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.label			= "twl4030",
 	.owner			= THIS_MODULE,
 	.request		= twl_request,
 	.free			= twl_free,
 	.direction_input	= twl_direction_in,
-<<<<<<< HEAD
-	.get			= twl_get,
-	.direction_output	= twl_direction_out,
-	.set			= twl_set,
-	.to_irq			= twl_to_irq,
-	.can_sleep		= 1,
-=======
 	.direction_output	= twl_direction_out,
 	.get_direction		= twl_get_direction,
 	.get			= twl_get,
 	.set			= twl_set,
 	.to_irq			= twl_to_irq,
 	.can_sleep		= true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*----------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-static int __devinit gpio_twl4030_pulls(u32 ups, u32 downs)
-{
-	u8		message[6];
-=======
 static int gpio_twl4030_pulls(u32 ups, u32 downs)
 {
 	u8		message[5];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned	i, gpio_bit;
 
 	/* For most pins, a pulldown was enabled by default.
 	 * We should have data that's specific to this board.
 	 */
-<<<<<<< HEAD
-	for (gpio_bit = 1, i = 1; i < 6; i++) {
-=======
 	for (gpio_bit = 1, i = 0; i < 5; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8		bit_mask;
 		unsigned	j;
 
@@ -673,47 +450,23 @@ static int gpio_twl4030_pulls(u32 ups, u32 downs)
 				REG_GPIOPUPDCTR1, 5);
 }
 
-<<<<<<< HEAD
-static int __devinit gpio_twl4030_debounce(u32 debounce, u8 mmc_cd)
-{
-	u8		message[4];
-=======
 static int gpio_twl4030_debounce(u32 debounce, u8 mmc_cd)
 {
 	u8		message[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 30 msec of debouncing is always used for MMC card detect,
 	 * and is optional for everything else.
 	 */
-<<<<<<< HEAD
-	message[1] = (debounce & 0xff) | (mmc_cd & 0x03);
-	debounce >>= 8;
-	message[2] = (debounce & 0xff);
-	debounce >>= 8;
-	message[3] = (debounce & 0x03);
-=======
 	message[0] = (debounce & 0xff) | (mmc_cd & 0x03);
 	debounce >>= 8;
 	message[1] = (debounce & 0xff);
 	debounce >>= 8;
 	message[2] = (debounce & 0x03);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return twl_i2c_write(TWL4030_MODULE_GPIO, message,
 				REG_GPIO_DEBEN1, 3);
 }
 
-<<<<<<< HEAD
-static int gpio_twl4030_remove(struct platform_device *pdev);
-
-static int __devinit gpio_twl4030_probe(struct platform_device *pdev)
-{
-	struct twl4030_gpio_platform_data *pdata = pdev->dev.platform_data;
-	struct device_node *node = pdev->dev.of_node;
-	int ret, irq_base;
-
-=======
 static struct twl4030_gpio_platform_data *of_gpio_twl4030(struct device *dev)
 {
 	struct twl4030_gpio_platform_data *omap_twl_info;
@@ -758,19 +511,14 @@ static int gpio_twl4030_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* maybe setup IRQs */
 	if (is_module()) {
 		dev_err(&pdev->dev, "can't dispatch IRQs from modules\n");
 		goto no_irqs;
 	}
 
-<<<<<<< HEAD
-	irq_base = irq_alloc_descs(-1, 0, TWL4030_GPIO_MAX, 0);
-=======
 	irq_base = devm_irq_alloc_descs(&pdev->dev, -1,
 					0, TWL4030_GPIO_MAX, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (irq_base < 0) {
 		dev_err(&pdev->dev, "Failed to alloc irq_descs\n");
 		return irq_base;
@@ -783,86 +531,6 @@ static int gpio_twl4030_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	twl4030_gpio_irq_base = irq_base;
-
-no_irqs:
-	twl_gpiochip.base = -1;
-	twl_gpiochip.ngpio = TWL4030_GPIO_MAX;
-	twl_gpiochip.dev = &pdev->dev;
-
-	if (pdata) {
-		twl_gpiochip.base = pdata->gpio_base;
-
-		/*
-		 * NOTE:  boards may waste power if they don't set pullups
-		 * and pulldowns correctly ... default for non-ULPI pins is
-		 * pulldown, and some other pins may have external pullups
-		 * or pulldowns.  Careful!
-		 */
-		ret = gpio_twl4030_pulls(pdata->pullups, pdata->pulldowns);
-		if (ret)
-			dev_dbg(&pdev->dev, "pullups %.05x %.05x --> %d\n",
-					pdata->pullups, pdata->pulldowns,
-					ret);
-
-		ret = gpio_twl4030_debounce(pdata->debounce, pdata->mmc_cd);
-		if (ret)
-			dev_dbg(&pdev->dev, "debounce %.03x %.01x --> %d\n",
-					pdata->debounce, pdata->mmc_cd,
-					ret);
-
-		/*
-		 * NOTE: we assume VIBRA_CTL.VIBRA_EN, in MODULE_AUDIO_VOICE,
-		 * is (still) clear if use_leds is set.
-		 */
-		if (pdata->use_leds)
-			twl_gpiochip.ngpio += 2;
-	}
-
-	ret = gpiochip_add(&twl_gpiochip);
-	if (ret < 0) {
-		dev_err(&pdev->dev, "could not register gpiochip, %d\n", ret);
-		twl_gpiochip.ngpio = 0;
-		gpio_twl4030_remove(pdev);
-	} else if (pdata && pdata->setup) {
-		int status;
-
-		status = pdata->setup(&pdev->dev,
-				pdata->gpio_base, TWL4030_GPIO_MAX);
-		if (status)
-			dev_dbg(&pdev->dev, "setup --> %d\n", status);
-	}
-
-	return ret;
-}
-
-/* Cannot use __devexit as gpio_twl4030_probe() calls us */
-static int gpio_twl4030_remove(struct platform_device *pdev)
-{
-	struct twl4030_gpio_platform_data *pdata = pdev->dev.platform_data;
-	int status;
-
-	if (pdata && pdata->teardown) {
-		status = pdata->teardown(&pdev->dev,
-				pdata->gpio_base, TWL4030_GPIO_MAX);
-		if (status) {
-			dev_dbg(&pdev->dev, "teardown --> %d\n", status);
-			return status;
-		}
-	}
-
-	status = gpiochip_remove(&twl_gpiochip);
-	if (status < 0)
-		return status;
-
-	if (is_module())
-		return 0;
-
-	/* REVISIT no support yet for deregistering all the IRQs */
-	WARN_ON(1);
-	return -EIO;
-=======
 	priv->irq_base = irq_base;
 
 no_irqs:
@@ -935,7 +603,6 @@ no_irqs:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id twl_gpio_match[] = {
@@ -950,17 +617,9 @@ MODULE_ALIAS("platform:twl4030_gpio");
 static struct platform_driver gpio_twl4030_driver = {
 	.driver = {
 		.name	= "twl4030_gpio",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.of_match_table = of_match_ptr(twl_gpio_match),
-	},
-	.probe		= gpio_twl4030_probe,
-	.remove		= gpio_twl4030_remove,
-=======
 		.of_match_table = twl_gpio_match,
 	},
 	.probe		= gpio_twl4030_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init gpio_twl4030_init(void)

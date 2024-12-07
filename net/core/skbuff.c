@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Routines having to do with the 'struct sk_buff' memory handlers.
  *
@@ -29,32 +26,17 @@
  *	disabled, or you better be *real* sure that the operation is atomic
  *	with respect to whatever list is being frobbed (e.g. via lock_sock()
  *	or via disabling bottom half handlers, etc).
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  *	The functions in this file will not compile correctly with gcc 2.4.x
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/types.h>
-#include <linux/kernel.h>
-#include <linux/kmemcheck.h>
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/in.h>
@@ -62,10 +44,7 @@
 #include <linux/slab.h>
 #include <linux/tcp.h>
 #include <linux/udp.h>
-<<<<<<< HEAD
-=======
 #include <linux/sctp.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #ifdef CONFIG_NET_CLS_ACT
 #include <net/pkt_sched.h>
@@ -79,102 +58,16 @@
 #include <linux/scatterlist.h>
 #include <linux/errqueue.h>
 #include <linux/prefetch.h>
-<<<<<<< HEAD
-=======
 #include <linux/bitfield.h>
 #include <linux/if_vlan.h>
 #include <linux/mpls.h>
 #include <linux/kcov.h>
 #include <linux/iov_iter.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/protocol.h>
 #include <net/dst.h>
 #include <net/sock.h>
 #include <net/checksum.h>
-<<<<<<< HEAD
-#include <net/xfrm.h>
-
-#include <asm/uaccess.h>
-#include <trace/events/skb.h>
-
-#include "kmap_skb.h"
-
-static struct kmem_cache *skbuff_head_cache __read_mostly;
-static struct kmem_cache *skbuff_fclone_cache __read_mostly;
-
-static void sock_pipe_buf_release(struct pipe_inode_info *pipe,
-				  struct pipe_buffer *buf)
-{
-	put_page(buf->page);
-}
-
-static void sock_pipe_buf_get(struct pipe_inode_info *pipe,
-				struct pipe_buffer *buf)
-{
-	get_page(buf->page);
-}
-
-static int sock_pipe_buf_steal(struct pipe_inode_info *pipe,
-			       struct pipe_buffer *buf)
-{
-	return 1;
-}
-
-
-/* Pipe buffer operations for a socket. */
-static const struct pipe_buf_operations sock_pipe_buf_ops = {
-	.can_merge = 0,
-	.map = generic_pipe_buf_map,
-	.unmap = generic_pipe_buf_unmap,
-	.confirm = generic_pipe_buf_confirm,
-	.release = sock_pipe_buf_release,
-	.steal = sock_pipe_buf_steal,
-	.get = sock_pipe_buf_get,
-};
-
-/*
- *	Keep out-of-line to prevent kernel bloat.
- *	__builtin_return_address is not used because it is not always
- *	reliable.
- */
-
-/**
- *	skb_over_panic	- 	private function
- *	@skb: buffer
- *	@sz: size
- *	@here: address
- *
- *	Out of line support code for skb_put(). Not user callable.
- */
-static void skb_over_panic(struct sk_buff *skb, int sz, void *here)
-{
-	printk(KERN_EMERG "skb_over_panic: text:%p len:%d put:%d head:%p "
-			  "data:%p tail:%#lx end:%#lx dev:%s\n",
-	       here, skb->len, sz, skb->head, skb->data,
-	       (unsigned long)skb->tail, (unsigned long)skb->end,
-	       skb->dev ? skb->dev->name : "<NULL>");
-	BUG();
-}
-
-/**
- *	skb_under_panic	- 	private function
- *	@skb: buffer
- *	@sz: size
- *	@here: address
- *
- *	Out of line support code for skb_push(). Not user callable.
- */
-
-static void skb_under_panic(struct sk_buff *skb, int sz, void *here)
-{
-	printk(KERN_EMERG "skb_under_panic: text:%p len:%d put:%d head:%p "
-			  "data:%p tail:%#lx end:%#lx dev:%s\n",
-	       here, skb->len, sz, skb->head, skb->data,
-	       (unsigned long)skb->tail, (unsigned long)skb->end,
-	       skb->dev ? skb->dev->name : "<NULL>");
-	BUG();
-=======
 #include <net/gso.h>
 #include <net/hotdata.h>
 #include <net/ip6_checksum.h>
@@ -718,7 +611,6 @@ out:
 		*pfmemalloc = ret_pfmemalloc;
 
 	return obj;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* 	Allocate a new skbuff. We do this ourselves so we can fill in a few
@@ -731,15 +623,6 @@ out:
  *	__alloc_skb	-	allocate a network buffer
  *	@size: size to allocate
  *	@gfp_mask: allocation mask
-<<<<<<< HEAD
- *	@fclone: allocate from fclone cache instead of head cache
- *		and allocate a cloned (child) skb
- *	@node: numa node to allocate memory on
- *
- *	Allocate a new &sk_buff. The returned buffer has no headroom and a
- *	tail room of size bytes. The object has a reference count of one.
- *	The return is the buffer. On a failure the return is %NULL.
-=======
  *	@flags: If SKB_ALLOC_FCLONE is set, allocate from fclone cache
  *		instead of head cache and allocate a cloned (child) skb.
  *		If SKB_ALLOC_RX is set, __GFP_MEMALLOC will be used for
@@ -749,27 +632,11 @@ out:
  *	Allocate a new &sk_buff. The returned buffer has no headroom and a
  *	tail room of at least size bytes. The object has a reference count
  *	of one. The return is the buffer. On a failure the return is %NULL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Buffers may only be allocated from interrupts using a @gfp_mask of
  *	%GFP_ATOMIC.
  */
 struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
-<<<<<<< HEAD
-			    int fclone, int node)
-{
-	struct kmem_cache *cache;
-	struct skb_shared_info *shinfo;
-	struct sk_buff *skb;
-	u8 *data;
-
-	cache = fclone ? skbuff_fclone_cache : skbuff_head_cache;
-
-	/* Get the HEAD */
-	skb = kmem_cache_alloc_node(cache, gfp_mask & ~__GFP_DMA, node);
-	if (!skb)
-		goto out;
-=======
 			    int flags, int node)
 {
 	struct kmem_cache *cache;
@@ -791,7 +658,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 		skb = kmem_cache_alloc_node(cache, gfp_mask & ~GFP_DMA, node);
 	if (unlikely(!skb))
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prefetchw(skb);
 
 	/* We do our best to align skb_shared_info on a separate cache
@@ -799,19 +665,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	 * aligned memory blocks, unless SLUB/SLAB debug is enabled.
 	 * Both skb->head and skb_shared_info are cache line aligned.
 	 */
-<<<<<<< HEAD
-	size = SKB_DATA_ALIGN(size);
-	size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-	data = kmalloc_node_track_caller(size, gfp_mask, node);
-	if (unlikely(ZERO_OR_NULL_PTR(data)))
-		goto nodata;
-	/* kmalloc(size) might give us more room than requested.
-	 * Put skb_shared_info exactly at the end of allocated zone,
-	 * to allow max possible filling before reallocation.
-	 */
-	size = SKB_WITH_OVERHEAD(ksize(data));
-	prefetchw(data + size);
-=======
 	data = kmalloc_reserve(&size, gfp_mask, node, &pfmemalloc);
 	if (unlikely(!data))
 		goto nodata;
@@ -820,7 +673,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	 * to allow max possible filling before reallocation.
 	 */
 	prefetchw(data + SKB_WITH_OVERHEAD(size));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Only clear those fields we need to clear, not those that we will
@@ -828,42 +680,6 @@ struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
 	 * the tail pointer in struct sk_buff!
 	 */
 	memset(skb, 0, offsetof(struct sk_buff, tail));
-<<<<<<< HEAD
-	/* Account for allocated memory : skb + skb->head */
-	skb->truesize = SKB_TRUESIZE(size);
-	atomic_set(&skb->users, 1);
-	skb->head = data;
-	skb->data = data;
-	skb_reset_tail_pointer(skb);
-	skb->end = skb->tail + size;
-#ifdef NET_SKBUFF_DATA_USES_OFFSET
-	skb->mac_header = ~0U;
-#endif
-
-	/* make sure we initialize shinfo sequentially */
-	shinfo = skb_shinfo(skb);
-	memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
-	atomic_set(&shinfo->dataref, 1);
-	kmemcheck_annotate_variable(shinfo->destructor_arg);
-
-	if (fclone) {
-		struct sk_buff *child = skb + 1;
-		atomic_t *fclone_ref = (atomic_t *) (child + 1);
-
-		kmemcheck_annotate_bitfield(child, flags1);
-		kmemcheck_annotate_bitfield(child, flags2);
-		skb->fclone = SKB_FCLONE_ORIG;
-		atomic_set(fclone_ref, 1);
-
-		child->fclone = SKB_FCLONE_UNAVAILABLE;
-	}
-out:
-	return skb;
-nodata:
-	kmem_cache_free(cache, skb);
-	skb = NULL;
-	goto out;
-=======
 	__build_skb_around(skb, data, size);
 	skb->pfmemalloc = pfmemalloc;
 
@@ -881,69 +697,10 @@ nodata:
 nodata:
 	kmem_cache_free(cache, skb);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__alloc_skb);
 
 /**
-<<<<<<< HEAD
- * build_skb - build a network buffer
- * @data: data buffer provided by caller
- *
- * Allocate a new &sk_buff. Caller provides space holding head and
- * skb_shared_info. @data must have been allocated by kmalloc()
- * The return is the new skb buffer.
- * On a failure the return is %NULL, and @data is not freed.
- * Notes :
- *  Before IO, driver allocates only data buffer where NIC put incoming frame
- *  Driver should add room at head (NET_SKB_PAD) and
- *  MUST add room at tail (SKB_DATA_ALIGN(skb_shared_info))
- *  After IO, driver calls build_skb(), to allocate sk_buff and populate it
- *  before giving packet to stack.
- *  RX rings only contains data buffers, not full skbs.
- */
-struct sk_buff *build_skb(void *data)
-{
-	struct skb_shared_info *shinfo;
-	struct sk_buff *skb;
-	unsigned int size;
-
-	skb = kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
-	if (!skb)
-		return NULL;
-
-	size = ksize(data) - SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-
-	memset(skb, 0, offsetof(struct sk_buff, tail));
-	skb->truesize = SKB_TRUESIZE(size);
-	atomic_set(&skb->users, 1);
-	skb->head = data;
-	skb->data = data;
-	skb_reset_tail_pointer(skb);
-	skb->end = skb->tail + size;
-#ifdef NET_SKBUFF_DATA_USES_OFFSET
-	skb->mac_header = ~0U;
-#endif
-
-	/* make sure we initialize shinfo sequentially */
-	shinfo = skb_shinfo(skb);
-	memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
-	atomic_set(&shinfo->dataref, 1);
-	kmemcheck_annotate_variable(shinfo->destructor_arg);
-
-	return skb;
-}
-EXPORT_SYMBOL(build_skb);
-
-/**
- *	__netdev_alloc_skb - allocate an skbuff for rx on a specific device
- *	@dev: network device to receive on
- *	@length: length to allocate
- *	@gfp_mask: get_free_pages mask, passed to alloc_skb
- *
- *	Allocate a new &sk_buff and assign it a usage count of one. The
- *	buffer has unspecified headroom built in. Users should allocate
-=======
  *	__netdev_alloc_skb - allocate an skbuff for rx on a specific device
  *	@dev: network device to receive on
  *	@len: length to allocate
@@ -951,24 +708,11 @@ EXPORT_SYMBOL(build_skb);
  *
  *	Allocate a new &sk_buff and assign it a usage count of one. The
  *	buffer has NET_SKB_PAD headroom built in. Users should allocate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	the headroom they think they need without accounting for the
  *	built in space. The built in space is used for optimisations.
  *
  *	%NULL is returned if there is no free memory.
  */
-<<<<<<< HEAD
-struct sk_buff *__netdev_alloc_skb(struct net_device *dev,
-		unsigned int length, gfp_t gfp_mask)
-{
-	struct sk_buff *skb;
-
-	skb = __alloc_skb(length + NET_SKB_PAD, gfp_mask, 0, NUMA_NO_NODE);
-	if (likely(skb)) {
-		skb_reserve(skb, NET_SKB_PAD);
-		skb->dev = dev;
-	}
-=======
 struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
 				   gfp_t gfp_mask)
 {
@@ -1026,17 +770,10 @@ skb_success:
 	skb->dev = dev;
 
 skb_fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb;
 }
 EXPORT_SYMBOL(__netdev_alloc_skb);
 
-<<<<<<< HEAD
-void skb_add_rx_frag(struct sk_buff *skb, int i, struct page *page, int off,
-		     int size, unsigned int truesize)
-{
-	skb_fill_page_desc(skb, i, page, off, size);
-=======
 /**
  *	__napi_alloc_skb - allocate skbuff for rx in a specific NAPI instance
  *	@napi: napi instance this buffer was allocated for
@@ -1131,48 +868,10 @@ void skb_add_rx_frag_netmem(struct sk_buff *skb, int i, netmem_ref netmem,
 	DEBUG_NET_WARN_ON_ONCE(size > truesize);
 
 	skb_fill_netmem_desc(skb, i, netmem, off, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->len += size;
 	skb->data_len += size;
 	skb->truesize += truesize;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(skb_add_rx_frag);
-
-/**
- *	dev_alloc_skb - allocate an skbuff for receiving
- *	@length: length to allocate
- *
- *	Allocate a new &sk_buff and assign it a usage count of one. The
- *	buffer has unspecified headroom built in. Users should allocate
- *	the headroom they think they need without accounting for the
- *	built in space. The built in space is used for optimisations.
- *
- *	%NULL is returned if there is no free memory. Although this function
- *	allocates memory it can be called from an interrupt.
- */
-struct sk_buff *dev_alloc_skb(unsigned int length)
-{
-	/*
-	 * There is more code here than it seems:
-	 * __dev_alloc_skb is an inline
-	 */
-	return __dev_alloc_skb(length, GFP_ATOMIC);
-}
-EXPORT_SYMBOL(dev_alloc_skb);
-
-static void skb_drop_list(struct sk_buff **listp)
-{
-	struct sk_buff *list = *listp;
-
-	*listp = NULL;
-
-	do {
-		struct sk_buff *this = list;
-		list = list->next;
-		kfree_skb(this);
-	} while (list);
-=======
 EXPORT_SYMBOL(skb_add_rx_frag_netmem);
 
 void skb_coalesce_rx_frag(struct sk_buff *skb, int i, int size,
@@ -1193,7 +892,6 @@ static void skb_drop_list(struct sk_buff **listp)
 {
 	kfree_skb_list(*listp);
 	*listp = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void skb_drop_fraglist(struct sk_buff *skb)
@@ -1209,36 +907,6 @@ static void skb_clone_fraglist(struct sk_buff *skb)
 		skb_get(list);
 }
 
-<<<<<<< HEAD
-static void skb_release_data(struct sk_buff *skb)
-{
-	if (!skb->cloned ||
-	    !atomic_sub_return(skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1,
-			       &skb_shinfo(skb)->dataref)) {
-		if (skb_shinfo(skb)->nr_frags) {
-			int i;
-			for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
-				skb_frag_unref(skb, i);
-		}
-
-		/*
-		 * If skb buf is from userspace, we need to notify the caller
-		 * the lower device DMA has done;
-		 */
-		if (skb_shinfo(skb)->tx_flags & SKBTX_DEV_ZEROCOPY) {
-			struct ubuf_info *uarg;
-
-			uarg = skb_shinfo(skb)->destructor_arg;
-			if (uarg->callback)
-				uarg->callback(uarg);
-		}
-
-		if (skb_has_frag_list(skb))
-			skb_drop_fraglist(skb);
-
-		kfree(skb->head);
-	}
-=======
 static bool is_pp_page(struct page *page)
 {
 	return (page->pp_magic & ~0x3UL) == PP_SIGNATURE;
@@ -1477,7 +1145,6 @@ exit:
 	 * dataref set to 0, which will trigger the recycling
 	 */
 	skb->pp_recycle = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1485,70 +1152,6 @@ exit:
  */
 static void kfree_skbmem(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	struct sk_buff *other;
-	atomic_t *fclone_ref;
-
-	switch (skb->fclone) {
-	case SKB_FCLONE_UNAVAILABLE:
-		kmem_cache_free(skbuff_head_cache, skb);
-		break;
-
-	case SKB_FCLONE_ORIG:
-		fclone_ref = (atomic_t *) (skb + 2);
-		if (atomic_dec_and_test(fclone_ref))
-			kmem_cache_free(skbuff_fclone_cache, skb);
-		break;
-
-	case SKB_FCLONE_CLONE:
-		fclone_ref = (atomic_t *) (skb + 1);
-		other = skb - 1;
-
-		/* The clone portion is available for
-		 * fast-cloning again.
-		 */
-		skb->fclone = SKB_FCLONE_UNAVAILABLE;
-
-		if (atomic_dec_and_test(fclone_ref))
-			kmem_cache_free(skbuff_fclone_cache, other);
-		break;
-	}
-}
-
-static void skb_release_head_state(struct sk_buff *skb)
-{
-	skb_dst_drop(skb);
-#ifdef CONFIG_XFRM
-	secpath_put(skb->sp);
-#endif
-	if (skb->destructor) {
-		WARN_ON(in_irq());
-		skb->destructor(skb);
-	}
-#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-	nf_conntrack_put(skb->nfct);
-#endif
-#ifdef NET_SKBUFF_NF_DEFRAG_NEEDED
-	nf_conntrack_put_reasm(skb->nfct_reasm);
-#endif
-#ifdef CONFIG_BRIDGE_NETFILTER
-	nf_bridge_put(skb->nf_bridge);
-#endif
-/* XXX: IS this still necessary? - JHS */
-#ifdef CONFIG_NET_SCHED
-	skb->tc_index = 0;
-#ifdef CONFIG_NET_CLS_ACT
-	skb->tc_verd = 0;
-#endif
-#endif
-}
-
-/* Free everything but the sk_buff shell. */
-static void skb_release_all(struct sk_buff *skb)
-{
-	skb_release_head_state(skb);
-	skb_release_data(skb);
-=======
 	struct sk_buff_fclones *fclones;
 
 	switch (skb->fclone) {
@@ -1597,7 +1200,6 @@ static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason,
 	skb_release_head_state(skb);
 	if (likely(skb->head))
 		skb_release_data(skb, reason, napi_safe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1611,37 +1213,11 @@ static void skb_release_all(struct sk_buff *skb, enum skb_drop_reason reason,
 
 void __kfree_skb(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	skb_release_all(skb);
-=======
 	skb_release_all(skb, SKB_DROP_REASON_NOT_SPECIFIED, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree_skbmem(skb);
 }
 EXPORT_SYMBOL(__kfree_skb);
 
-<<<<<<< HEAD
-/**
- *	kfree_skb - free an sk_buff
- *	@skb: buffer to free
- *
- *	Drop a reference to the buffer and free it if the usage count has
- *	hit zero.
- */
-void kfree_skb(struct sk_buff *skb)
-{
-	if (unlikely(!skb))
-		return;
-	if (likely(atomic_read(&skb->users) == 1))
-		smp_rmb();
-	else if (likely(!atomic_dec_and_test(&skb->users)))
-		return;
-	trace_kfree_skb(skb, __builtin_return_address(0));
-	__kfree_skb(skb);
-}
-EXPORT_SYMBOL(kfree_skb);
-
-=======
 static __always_inline
 bool __kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
 {
@@ -1839,7 +1415,6 @@ void skb_tx_error(struct sk_buff *skb)
 EXPORT_SYMBOL(skb_tx_error);
 
 #ifdef CONFIG_TRACEPOINTS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	consume_skb - free an skbuff
  *	@skb: buffer to free
@@ -1850,65 +1425,6 @@ EXPORT_SYMBOL(skb_tx_error);
  */
 void consume_skb(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	if (unlikely(!skb))
-		return;
-	if (likely(atomic_read(&skb->users) == 1))
-		smp_rmb();
-	else if (likely(!atomic_dec_and_test(&skb->users)))
-		return;
-	trace_consume_skb(skb);
-	__kfree_skb(skb);
-}
-EXPORT_SYMBOL(consume_skb);
-
-/**
- * 	skb_recycle - clean up an skb for reuse
- * 	@skb: buffer
- *
- * 	Recycles the skb to be reused as a receive buffer. This
- * 	function does any necessary reference count dropping, and
- * 	cleans up the skbuff as if it just came from __alloc_skb().
- */
-void skb_recycle(struct sk_buff *skb)
-{
-	struct skb_shared_info *shinfo;
-
-	skb_release_head_state(skb);
-
-	shinfo = skb_shinfo(skb);
-	memset(shinfo, 0, offsetof(struct skb_shared_info, dataref));
-	atomic_set(&shinfo->dataref, 1);
-
-	memset(skb, 0, offsetof(struct sk_buff, tail));
-	skb->data = skb->head + NET_SKB_PAD;
-	skb_reset_tail_pointer(skb);
-}
-EXPORT_SYMBOL(skb_recycle);
-
-/**
- *	skb_recycle_check - check if skb can be reused for receive
- *	@skb: buffer
- *	@skb_size: minimum receive buffer size
- *
- *	Checks that the skb passed in is not shared or cloned, and
- *	that it is linear and its head portion at least as large as
- *	skb_size so that it can be recycled as a receive buffer.
- *	If these conditions are met, this function does any necessary
- *	reference count dropping and cleans up the skbuff as if it
- *	just came from __alloc_skb().
- */
-bool skb_recycle_check(struct sk_buff *skb, int skb_size)
-{
-	if (!skb_is_recycleable(skb, skb_size))
-		return false;
-
-	skb_recycle(skb);
-
-	return true;
-}
-EXPORT_SYMBOL(skb_recycle_check);
-=======
 	if (!skb_unref(skb))
 		return;
 
@@ -2002,51 +1518,10 @@ EXPORT_SYMBOL(napi_consume_skb);
 #define CHECK_SKB_FIELD(field) \
 	BUILD_BUG_ON(offsetof(struct sk_buff, field) !=		\
 		     offsetof(struct sk_buff, headers.field));	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 {
 	new->tstamp		= old->tstamp;
-<<<<<<< HEAD
-	new->dev		= old->dev;
-	new->transport_header	= old->transport_header;
-	new->network_header	= old->network_header;
-	new->mac_header		= old->mac_header;
-	skb_dst_copy(new, old);
-	new->rxhash		= old->rxhash;
-	new->ooo_okay		= old->ooo_okay;
-	new->l4_rxhash		= old->l4_rxhash;
-	new->no_fcs		= old->no_fcs;
-#ifdef CONFIG_XFRM
-	new->sp			= secpath_get(old->sp);
-#endif
-	memcpy(new->cb, old->cb, sizeof(old->cb));
-	new->csum		= old->csum;
-	new->local_df		= old->local_df;
-	new->pkt_type		= old->pkt_type;
-	new->ip_summed		= old->ip_summed;
-	skb_copy_queue_mapping(new, old);
-	new->priority		= old->priority;
-#if IS_ENABLED(CONFIG_IP_VS)
-	new->ipvs_property	= old->ipvs_property;
-#endif
-	new->protocol		= old->protocol;
-	new->mark		= old->mark;
-	new->skb_iif		= old->skb_iif;
-	__nf_copy(new, old);
-#if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE)
-	new->nf_trace		= old->nf_trace;
-#endif
-#ifdef CONFIG_NET_SCHED
-	new->tc_index		= old->tc_index;
-#ifdef CONFIG_NET_CLS_ACT
-	new->tc_verd		= old->tc_verd;
-#endif
-#endif
-	new->vlan_tci		= old->vlan_tci;
-
-	skb_copy_secmark(new, old);
-=======
 	/* We do not copy old->sk */
 	new->dev		= old->dev;
 	memcpy(new->cb, old->cb, sizeof(old->cb));
@@ -2089,7 +1564,6 @@ static void __copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
 	CHECK_SKB_FIELD(tc_index);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2110,26 +1584,17 @@ static struct sk_buff *__skb_clone(struct sk_buff *n, struct sk_buff *skb)
 	n->hdr_len = skb->nohdr ? skb_headroom(skb) : skb->hdr_len;
 	n->cloned = 1;
 	n->nohdr = 0;
-<<<<<<< HEAD
-=======
 	n->peeked = 0;
 	C(pfmemalloc);
 	C(pp_recycle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n->destructor = NULL;
 	C(tail);
 	C(end);
 	C(head);
-<<<<<<< HEAD
-	C(data);
-	C(truesize);
-	atomic_set(&n->users, 1);
-=======
 	C(head_frag);
 	C(data);
 	C(truesize);
 	refcount_set(&n->users, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_inc(&(skb_shinfo(skb)->dataref));
 	skb->cloned = 1;
@@ -2139,8 +1604,6 @@ static struct sk_buff *__skb_clone(struct sk_buff *n, struct sk_buff *skb)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * alloc_skb_for_msg() - allocate sk_buff to wrap frag list forming a msg
  * @first: first sk_buff of the msg
  */
@@ -2166,7 +1629,6 @@ struct sk_buff *alloc_skb_for_msg(struct sk_buff *first)
 EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	skb_morph	-	morph one skb into another
  *	@dst: the skb to receive the contents
  *	@src: the skb to supply the contents
@@ -2178,22 +1640,11 @@ EXPORT_SYMBOL_GPL(alloc_skb_for_msg);
  */
 struct sk_buff *skb_morph(struct sk_buff *dst, struct sk_buff *src)
 {
-<<<<<<< HEAD
-	skb_release_all(dst);
-=======
 	skb_release_all(dst, SKB_CONSUMED, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return __skb_clone(dst, src);
 }
 EXPORT_SYMBOL_GPL(skb_morph);
 
-<<<<<<< HEAD
-/*	skb_copy_ubufs	-	copy userspace skb frags buffers to kernel
- *	@skb: the skb to modify
- *	@gfp_mask: allocation priority
- *
- *	This must be called on SKBTX_DEV_ZEROCOPY skb.
-=======
 int mm_account_pinned_pages(struct mmpin *mmp, size_t size)
 {
 	unsigned long max_pg, num_pg, new_pg, old_pg, rlim;
@@ -2484,7 +1935,6 @@ static int skb_zerocopy_clone(struct sk_buff *nskb, struct sk_buff *orig,
  *	@gfp_mask: allocation priority
  *
  *	This must be called on skb with SKBFL_ZEROCOPY_ENABLE.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	It will copy all frags into kernel and drop the reference
  *	to userspace pages.
  *
@@ -2496,21 +1946,6 @@ static int skb_zerocopy_clone(struct sk_buff *nskb, struct sk_buff *orig,
  */
 int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask)
 {
-<<<<<<< HEAD
-	int i;
-	int num_frags = skb_shinfo(skb)->nr_frags;
-	struct page *page, *head = NULL;
-	struct ubuf_info *uarg = skb_shinfo(skb)->destructor_arg;
-
-	for (i = 0; i < num_frags; i++) {
-		u8 *vaddr;
-		skb_frag_t *f = &skb_shinfo(skb)->frags[i];
-
-		page = alloc_page(GFP_ATOMIC);
-		if (!page) {
-			while (head) {
-				struct page *next = (struct page *)head->private;
-=======
 	int num_frags = skb_shinfo(skb)->nr_frags;
 	struct page *page, *head = NULL;
 	int i, order, psize, new_frags;
@@ -2536,36 +1971,11 @@ int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask)
 		if (!page) {
 			while (head) {
 				struct page *next = (struct page *)page_private(head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				put_page(head);
 				head = next;
 			}
 			return -ENOMEM;
 		}
-<<<<<<< HEAD
-		vaddr = kmap_skb_frag(&skb_shinfo(skb)->frags[i]);
-		memcpy(page_address(page),
-		       vaddr + f->page_offset, skb_frag_size(f));
-		kunmap_skb_frag(vaddr);
-		page->private = (unsigned long)head;
-		head = page;
-	}
-
-	/* skb frags release userspace buffers */
-	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
-		skb_frag_unref(skb, i);
-
-	uarg->callback(uarg);
-
-	/* skb frags point to kernel buffers */
-	for (i = skb_shinfo(skb)->nr_frags; i > 0; i--) {
-		__skb_fill_page_desc(skb, i-1, head, 0,
-				     skb_shinfo(skb)->frags[i - 1].size);
-		head = (struct page *)head->private;
-	}
-
-	skb_shinfo(skb)->tx_flags &= ~SKBTX_DEV_ZEROCOPY;
-=======
 		set_page_private(page, (unsigned long)head);
 		head = page;
 	}
@@ -2613,7 +2023,6 @@ int skb_copy_ubufs(struct sk_buff *skb, gfp_t gfp_mask)
 
 release:
 	skb_zcopy_clear(skb, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(skb_copy_ubufs);
@@ -2634,28 +2043,6 @@ EXPORT_SYMBOL_GPL(skb_copy_ubufs);
 
 struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 {
-<<<<<<< HEAD
-	struct sk_buff *n;
-
-	if (skb_shinfo(skb)->tx_flags & SKBTX_DEV_ZEROCOPY) {
-		if (skb_copy_ubufs(skb, gfp_mask))
-			return NULL;
-	}
-
-	n = skb + 1;
-	if (skb->fclone == SKB_FCLONE_ORIG &&
-	    n->fclone == SKB_FCLONE_UNAVAILABLE) {
-		atomic_t *fclone_ref = (atomic_t *) (n + 1);
-		n->fclone = SKB_FCLONE_CLONE;
-		atomic_inc(fclone_ref);
-	} else {
-		n = kmem_cache_alloc(skbuff_head_cache, gfp_mask);
-		if (!n)
-			return NULL;
-
-		kmemcheck_annotate_bitfield(n, flags1);
-		kmemcheck_annotate_bitfield(n, flags2);
-=======
 	struct sk_buff_fclones *fclones = container_of(skb,
 						       struct sk_buff_fclones,
 						       skb1);
@@ -2677,7 +2064,6 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 		if (!n)
 			return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		n->fclone = SKB_FCLONE_UNAVAILABLE;
 	}
 
@@ -2685,26 +2071,6 @@ struct sk_buff *skb_clone(struct sk_buff *skb, gfp_t gfp_mask)
 }
 EXPORT_SYMBOL(skb_clone);
 
-<<<<<<< HEAD
-static void copy_skb_header(struct sk_buff *new, const struct sk_buff *old)
-{
-#ifndef NET_SKBUFF_DATA_USES_OFFSET
-	/*
-	 *	Shift between the two data areas in bytes
-	 */
-	unsigned long offset = new->data - old->data;
-#endif
-
-	__copy_skb_header(new, old);
-
-#ifndef NET_SKBUFF_DATA_USES_OFFSET
-	/* {transport,network,mac}_header are relative to skb->head */
-	new->transport_header += offset;
-	new->network_header   += offset;
-	if (skb_mac_header_was_set(new))
-		new->mac_header	      += offset;
-#endif
-=======
 void skb_headers_offset_update(struct sk_buff *skb, int off)
 {
 	/* Only adjust this if it actually is csum_start rather than csum */
@@ -2725,13 +2091,10 @@ void skb_copy_header(struct sk_buff *new, const struct sk_buff *old)
 {
 	__copy_skb_header(new, old);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_shinfo(new)->gso_size = skb_shinfo(old)->gso_size;
 	skb_shinfo(new)->gso_segs = skb_shinfo(old)->gso_segs;
 	skb_shinfo(new)->gso_type = skb_shinfo(old)->gso_type;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(skb_copy_header);
 
 static inline int skb_alloc_rx_flag(const struct sk_buff *skb)
@@ -2740,7 +2103,6 @@ static inline int skb_alloc_rx_flag(const struct sk_buff *skb)
 		return SKB_ALLOC_RX;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	skb_copy	-	create private copy of an sk_buff
@@ -2761,12 +2123,6 @@ static inline int skb_alloc_rx_flag(const struct sk_buff *skb)
 
 struct sk_buff *skb_copy(const struct sk_buff *skb, gfp_t gfp_mask)
 {
-<<<<<<< HEAD
-	int headerlen = skb_headroom(skb);
-	unsigned int size = skb_end_offset(skb) + skb->data_len;
-	struct sk_buff *n = alloc_skb(size, gfp_mask);
-
-=======
 	struct sk_buff *n;
 	unsigned int size;
 	int headerlen;
@@ -2778,7 +2134,6 @@ struct sk_buff *skb_copy(const struct sk_buff *skb, gfp_t gfp_mask)
 	size = skb_end_offset(skb) + skb->data_len;
 	n = __alloc_skb(size, gfp_mask,
 			skb_alloc_rx_flag(skb), NUMA_NO_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!n)
 		return NULL;
 
@@ -2787,27 +2142,14 @@ struct sk_buff *skb_copy(const struct sk_buff *skb, gfp_t gfp_mask)
 	/* Set the tail pointer and length */
 	skb_put(n, skb->len);
 
-<<<<<<< HEAD
-	if (skb_copy_bits(skb, -headerlen, n->head, headerlen + skb->len))
-		BUG();
-
-	copy_skb_header(n, skb);
-=======
 	BUG_ON(skb_copy_bits(skb, -headerlen, n->head, headerlen + skb->len));
 
 	skb_copy_header(n, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return n;
 }
 EXPORT_SYMBOL(skb_copy);
 
 /**
-<<<<<<< HEAD
- *	__pskb_copy	-	create copy of an sk_buff with private head.
- *	@skb: buffer to copy
- *	@headroom: headroom of new skb
- *	@gfp_mask: allocation priority
-=======
  *	__pskb_copy_fclone	-  create copy of an sk_buff with private head.
  *	@skb: buffer to copy
  *	@headroom: headroom of new skb
@@ -2815,7 +2157,6 @@ EXPORT_SYMBOL(skb_copy);
  *	@fclone: if true allocate the copy of the skb from the fclone
  *	cache instead of the head cache; it is recommended to set this
  *	to true for the cases where the copy will likely be cloned
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Make a copy of both an &sk_buff and part of its data, located
  *	in header. Fragmented data remain shared. This is used when
@@ -2825,19 +2166,12 @@ EXPORT_SYMBOL(skb_copy);
  *	The returned buffer has a reference count of 1.
  */
 
-<<<<<<< HEAD
-struct sk_buff *__pskb_copy(struct sk_buff *skb, int headroom, gfp_t gfp_mask)
-{
-	unsigned int size = skb_headlen(skb) + headroom;
-	struct sk_buff *n = alloc_skb(size, gfp_mask);
-=======
 struct sk_buff *__pskb_copy_fclone(struct sk_buff *skb, int headroom,
 				   gfp_t gfp_mask, bool fclone)
 {
 	unsigned int size = skb_headlen(skb) + headroom;
 	int flags = skb_alloc_rx_flag(skb) | (fclone ? SKB_ALLOC_FCLONE : 0);
 	struct sk_buff *n = __alloc_skb(size, gfp_mask, flags, NUMA_NO_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!n)
 		goto out;
@@ -2856,20 +2190,11 @@ struct sk_buff *__pskb_copy_fclone(struct sk_buff *skb, int headroom,
 	if (skb_shinfo(skb)->nr_frags) {
 		int i;
 
-<<<<<<< HEAD
-		if (skb_shinfo(skb)->tx_flags & SKBTX_DEV_ZEROCOPY) {
-			if (skb_copy_ubufs(skb, gfp_mask)) {
-				kfree_skb(n);
-				n = NULL;
-				goto out;
-			}
-=======
 		if (skb_orphan_frags(skb, gfp_mask) ||
 		    skb_zerocopy_clone(n, skb, gfp_mask)) {
 			kfree_skb(n);
 			n = NULL;
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 			skb_shinfo(n)->frags[i] = skb_shinfo(skb)->frags[i];
@@ -2883,19 +2208,11 @@ struct sk_buff *__pskb_copy_fclone(struct sk_buff *skb, int headroom,
 		skb_clone_fraglist(n);
 	}
 
-<<<<<<< HEAD
-	copy_skb_header(n, skb);
-out:
-	return n;
-}
-EXPORT_SYMBOL(__pskb_copy);
-=======
 	skb_copy_header(n, skb);
 out:
 	return n;
 }
 EXPORT_SYMBOL(__pskb_copy_fclone);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	pskb_expand_head - reallocate header of &sk_buff
@@ -2904,13 +2221,8 @@ EXPORT_SYMBOL(__pskb_copy_fclone);
  *	@ntail: room to add at tail
  *	@gfp_mask: allocation priority
  *
-<<<<<<< HEAD
- *	Expands (or creates identical copy, if &nhead and &ntail are zero)
- *	header of skb. &sk_buff itself is not changed. &sk_buff MUST have
-=======
  *	Expands (or creates identical copy, if @nhead and @ntail are zero)
  *	header of @skb. &sk_buff itself is not changed. &sk_buff MUST have
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	reference count of 1. Returns zero in the case of success or error,
  *	if expansion failed. In the last case, &sk_buff is not changed.
  *
@@ -2921,47 +2233,6 @@ EXPORT_SYMBOL(__pskb_copy_fclone);
 int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
 		     gfp_t gfp_mask)
 {
-<<<<<<< HEAD
-	int i;
-	u8 *data;
-	int size = nhead + skb_end_offset(skb) + ntail;
-	long off;
-	bool fastpath;
-
-	BUG_ON(nhead < 0);
-
-	if (skb_shared(skb))
-		BUG();
-
-	size = SKB_DATA_ALIGN(size);
-
-	/* Check if we can avoid taking references on fragments if we own
-	 * the last reference on skb->head. (see skb_release_data())
-	 */
-	if (!skb->cloned)
-		fastpath = true;
-	else {
-		int delta = skb->nohdr ? (1 << SKB_DATAREF_SHIFT) + 1 : 1;
-		fastpath = atomic_read(&skb_shinfo(skb)->dataref) == delta;
-	}
-
-	if (fastpath &&
-	    size + sizeof(struct skb_shared_info) <= ksize(skb->head)) {
-		memmove(skb->head + size, skb_shinfo(skb),
-			offsetof(struct skb_shared_info,
-				 frags[skb_shinfo(skb)->nr_frags]));
-		memmove(skb->head + nhead, skb->head,
-			skb_tail_pointer(skb) - skb->head);
-		off = nhead;
-		goto adjust_others;
-	}
-
-	data = kmalloc(size + SKB_DATA_ALIGN(sizeof(struct skb_shared_info)),
-		       gfp_mask);
-	if (!data)
-		goto nodata;
-	size = SKB_WITH_OVERHEAD(ksize(data));
-=======
 	unsigned int osize = skb_end_offset(skb);
 	unsigned int size = osize + nhead + ntail;
 	long off;
@@ -2981,7 +2252,6 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
 	if (!data)
 		goto nodata;
 	size = SKB_WITH_OVERHEAD(size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy only real data... and, alas, header. This should be
 	 * optimized for the cases when header is void.
@@ -2992,16 +2262,6 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
 	       skb_shinfo(skb),
 	       offsetof(struct skb_shared_info, frags[skb_shinfo(skb)->nr_frags]));
 
-<<<<<<< HEAD
-	if (fastpath) {
-		kfree(skb->head);
-	} else {
-		/* copy this zero copy skb frags */
-		if (skb_shinfo(skb)->tx_flags & SKBTX_DEV_ZEROCOPY) {
-			if (skb_copy_ubufs(skb, gfp_mask))
-				goto nofrags;
-		}
-=======
 	/*
 	 * if shinfo is shared we must drop the old head gracefully, but if it
 	 * is not we can just drop the old head and let the existing refcount
@@ -3012,43 +2272,19 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
 			goto nofrags;
 		if (skb_zcopy(skb))
 			refcount_inc(&skb_uarg(skb)->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
 			skb_frag_ref(skb, i);
 
 		if (skb_has_frag_list(skb))
 			skb_clone_fraglist(skb);
 
-<<<<<<< HEAD
-		skb_release_data(skb);
-=======
 		skb_release_data(skb, SKB_CONSUMED, false);
 	} else {
 		skb_free_head(skb, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	off = (data + nhead) - skb->head;
 
 	skb->head     = data;
-<<<<<<< HEAD
-adjust_others:
-	skb->data    += off;
-#ifdef NET_SKBUFF_DATA_USES_OFFSET
-	skb->end      = size;
-	off           = nhead;
-#else
-	skb->end      = skb->head + size;
-#endif
-	/* {transport,network,mac}_header and tail are relative to skb->head */
-	skb->tail	      += off;
-	skb->transport_header += off;
-	skb->network_header   += off;
-	if (skb_mac_header_was_set(skb))
-		skb->mac_header += off;
-	/* Only adjust this if it actually is csum_start rather than csum */
-	if (skb->ip_summed == CHECKSUM_PARTIAL)
-		skb->csum_start += nhead;
-=======
 	skb->head_frag = 0;
 	skb->data    += off;
 
@@ -3058,17 +2294,10 @@ adjust_others:
 #endif
 	skb->tail	      += off;
 	skb_headers_offset_update(skb, nhead);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->cloned   = 0;
 	skb->hdr_len  = 0;
 	skb->nohdr    = 0;
 	atomic_set(&skb_shinfo(skb)->dataref, 1);
-<<<<<<< HEAD
-	return 0;
-
-nofrags:
-	kfree(data);
-=======
 
 	skb_metadata_clear(skb);
 
@@ -3083,7 +2312,6 @@ nofrags:
 
 nofrags:
 	skb_kfree_head(data, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nodata:
 	return -ENOMEM;
 }
@@ -3110,8 +2338,6 @@ struct sk_buff *skb_realloc_headroom(struct sk_buff *skb, unsigned int headroom)
 }
 EXPORT_SYMBOL(skb_realloc_headroom);
 
-<<<<<<< HEAD
-=======
 /* Note: We plan to rework this in linux-6.4 */
 int __skb_unclone_keeptruesize(struct sk_buff *skb, gfp_t pri)
 {
@@ -3210,7 +2436,6 @@ fail:
 }
 EXPORT_SYMBOL(skb_expand_head);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	skb_copy_expand	-	copy and expand sk_buff
  *	@skb: buffer to copy
@@ -3236,14 +2461,6 @@ struct sk_buff *skb_copy_expand(const struct sk_buff *skb,
 	/*
 	 *	Allocate the copy buffer
 	 */
-<<<<<<< HEAD
-	struct sk_buff *n = alloc_skb(newheadroom + skb->len + newtailroom,
-				      gfp_mask);
-	int oldheadroom = skb_headroom(skb);
-	int head_copy_len, head_copy_off;
-	int off;
-
-=======
 	int head_copy_len, head_copy_off;
 	struct sk_buff *n;
 	int oldheadroom;
@@ -3255,7 +2472,6 @@ struct sk_buff *skb_copy_expand(const struct sk_buff *skb,
 	n = __alloc_skb(newheadroom + skb->len + newtailroom,
 			gfp_mask, skb_alloc_rx_flag(skb),
 			NUMA_NO_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!n)
 		return NULL;
 
@@ -3272,63 +2488,32 @@ struct sk_buff *skb_copy_expand(const struct sk_buff *skb,
 		head_copy_off = newheadroom - head_copy_len;
 
 	/* Copy the linear header and data. */
-<<<<<<< HEAD
-	if (skb_copy_bits(skb, -head_copy_len, n->head + head_copy_off,
-			  skb->len + head_copy_len))
-		BUG();
-
-	copy_skb_header(n, skb);
-
-	off                  = newheadroom - oldheadroom;
-	if (n->ip_summed == CHECKSUM_PARTIAL)
-		n->csum_start += off;
-#ifdef NET_SKBUFF_DATA_USES_OFFSET
-	n->transport_header += off;
-	n->network_header   += off;
-	if (skb_mac_header_was_set(skb))
-		n->mac_header += off;
-#endif
-=======
 	BUG_ON(skb_copy_bits(skb, -head_copy_len, n->head + head_copy_off,
 			     skb->len + head_copy_len));
 
 	skb_copy_header(n, skb);
 
 	skb_headers_offset_update(n, newheadroom - oldheadroom);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return n;
 }
 EXPORT_SYMBOL(skb_copy_expand);
 
 /**
-<<<<<<< HEAD
- *	skb_pad			-	zero pad the tail of an skb
- *	@skb: buffer to pad
- *	@pad: space to pad
-=======
  *	__skb_pad		-	zero pad the tail of an skb
  *	@skb: buffer to pad
  *	@pad: space to pad
  *	@free_on_error: free buffer on error
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Ensure that a buffer is followed by a padding area that is zero
  *	filled. Used by network drivers which may DMA or transfer data
  *	beyond the buffer end onto the wire.
  *
-<<<<<<< HEAD
- *	May return error in out of memory cases. The skb is freed on error.
- */
-
-int skb_pad(struct sk_buff *skb, int pad)
-=======
  *	May return error in out of memory cases. The skb is freed on error
  *	if @free_on_error is true.
  */
 
 int __skb_pad(struct sk_buff *skb, int pad, bool free_on_error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	int ntail;
@@ -3357,12 +2542,6 @@ int __skb_pad(struct sk_buff *skb, int pad, bool free_on_error)
 	return 0;
 
 free_skb:
-<<<<<<< HEAD
-	kfree_skb(skb);
-	return err;
-}
-EXPORT_SYMBOL(skb_pad);
-=======
 	if (free_on_error)
 		kfree_skb(skb);
 	return err;
@@ -3391,7 +2570,6 @@ void *pskb_put(struct sk_buff *skb, struct sk_buff *tail, int len)
 	return skb_put(tail, len);
 }
 EXPORT_SYMBOL_GPL(pskb_put);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	skb_put - add data to a buffer
@@ -3402,15 +2580,9 @@ EXPORT_SYMBOL_GPL(pskb_put);
  *	exceed the total buffer size the kernel will panic. A pointer to the
  *	first byte of the extra data is returned.
  */
-<<<<<<< HEAD
-unsigned char *skb_put(struct sk_buff *skb, unsigned int len)
-{
-	unsigned char *tmp = skb_tail_pointer(skb);
-=======
 void *skb_put(struct sk_buff *skb, unsigned int len)
 {
 	void *tmp = skb_tail_pointer(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SKB_LINEAR_ASSERT(skb);
 	skb->tail += len;
 	skb->len  += len;
@@ -3429,19 +2601,11 @@ EXPORT_SYMBOL(skb_put);
  *	start. If this would exceed the total buffer headroom the kernel will
  *	panic. A pointer to the first byte of the extra data is returned.
  */
-<<<<<<< HEAD
-unsigned char *skb_push(struct sk_buff *skb, unsigned int len)
-{
-	skb->data -= len;
-	skb->len  += len;
-	if (unlikely(skb->data<skb->head))
-=======
 void *skb_push(struct sk_buff *skb, unsigned int len)
 {
 	skb->data -= len;
 	skb->len  += len;
 	if (unlikely(skb->data < skb->head))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_under_panic(skb, len, __builtin_return_address(0));
 	return skb->data;
 }
@@ -3457,19 +2621,13 @@ EXPORT_SYMBOL(skb_push);
  *	is returned. Once the data has been pulled future pushes will overwrite
  *	the old data.
  */
-<<<<<<< HEAD
-unsigned char *skb_pull(struct sk_buff *skb, unsigned int len)
-=======
 void *skb_pull(struct sk_buff *skb, unsigned int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return skb_pull_inline(skb, len);
 }
 EXPORT_SYMBOL(skb_pull);
 
 /**
-<<<<<<< HEAD
-=======
  *	skb_pull_data - remove data from the start of a buffer returning its
  *	original position.
  *	@skb: buffer to use
@@ -3494,7 +2652,6 @@ void *skb_pull_data(struct sk_buff *skb, size_t len)
 EXPORT_SYMBOL(skb_pull_data);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	skb_trim - remove end from a buffer
  *	@skb: buffer to alter
  *	@len: new length
@@ -3563,11 +2720,7 @@ drop_pages:
 				return -ENOMEM;
 
 			nfrag->next = frag->next;
-<<<<<<< HEAD
-			kfree_skb(frag);
-=======
 			consume_skb(frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			frag = nfrag;
 			*fragp = frag;
 		}
@@ -3596,17 +2749,12 @@ done:
 		skb_set_tail_pointer(skb, len);
 	}
 
-<<<<<<< HEAD
-=======
 	if (!skb->sk || skb->destructor == sock_edemux)
 		skb_condense(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(___pskb_trim);
 
-<<<<<<< HEAD
-=======
 /* Note : use pskb_trim_rcsum() instead of calling this directly
  */
 int pskb_trim_rcsum_slow(struct sk_buff *skb, unsigned int len)
@@ -3628,7 +2776,6 @@ int pskb_trim_rcsum_slow(struct sk_buff *skb, unsigned int len)
 }
 EXPORT_SYMBOL(pskb_trim_rcsum_slow);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	__pskb_pull_tail - advance tail of skb header
  *	@skb: buffer to reallocate
@@ -3654,11 +2801,7 @@ EXPORT_SYMBOL(pskb_trim_rcsum_slow);
  *
  * It is pretty complicated. Luckily, it is called only in exceptional cases.
  */
-<<<<<<< HEAD
-unsigned char *__pskb_pull_tail(struct sk_buff *skb, int delta)
-=======
 void *__pskb_pull_tail(struct sk_buff *skb, int delta)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* If skb has not enough free space at tail, get new one
 	 * plus 128 bytes for future expansions. If we have enough
@@ -3672,13 +2815,8 @@ void *__pskb_pull_tail(struct sk_buff *skb, int delta)
 			return NULL;
 	}
 
-<<<<<<< HEAD
-	if (skb_copy_bits(skb, skb_headlen(skb), skb_tail_pointer(skb), delta))
-		BUG();
-=======
 	BUG_ON(skb_copy_bits(skb, skb_headlen(skb),
 			     skb_tail_pointer(skb), delta));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Optimization: no fragments, no reasons to preestimate
 	 * size of pulled pages. Superb.
@@ -3697,11 +2835,7 @@ void *__pskb_pull_tail(struct sk_buff *skb, int delta)
 	}
 
 	/* If we need update frag list, we are in troubles.
-<<<<<<< HEAD
-	 * Certainly, it possible to add an offset to skb data,
-=======
 	 * Certainly, it is possible to add an offset to skb data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * but taking into account that pulling is expected to
 	 * be very rare operation, it is worth to fight against
 	 * further bloating skb head and crucify ourselves here instead.
@@ -3713,11 +2847,6 @@ void *__pskb_pull_tail(struct sk_buff *skb, int delta)
 		struct sk_buff *insp = NULL;
 
 		do {
-<<<<<<< HEAD
-			BUG_ON(!list);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (list->len <= eat) {
 				/* Eaten as whole. */
 				eat -= list->len;
@@ -3725,12 +2854,9 @@ void *__pskb_pull_tail(struct sk_buff *skb, int delta)
 				insp = list;
 			} else {
 				/* Eaten partially. */
-<<<<<<< HEAD
-=======
 				if (skb_is_gso(skb) && !list->head_frag &&
 				    skb_headlen(list))
 					skb_shinfo(skb)->gso_type |= SKB_GSO_DODGY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if (skb_shared(list)) {
 					/* Sucks! We need to fork list. :-( */
@@ -3755,11 +2881,7 @@ void *__pskb_pull_tail(struct sk_buff *skb, int delta)
 		/* Free pulled out fragments. */
 		while ((list = skb_shinfo(skb)->frag_list) != insp) {
 			skb_shinfo(skb)->frag_list = list->next;
-<<<<<<< HEAD
-			kfree_skb(list);
-=======
 			consume_skb(list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* And insert new clone at head. */
 		if (clone) {
@@ -3779,12 +2901,6 @@ pull_pages:
 			skb_frag_unref(skb, i);
 			eat -= size;
 		} else {
-<<<<<<< HEAD
-			skb_shinfo(skb)->frags[k] = skb_shinfo(skb)->frags[i];
-			if (eat) {
-				skb_shinfo(skb)->frags[k].page_offset += eat;
-				skb_frag_size_sub(&skb_shinfo(skb)->frags[k], eat);
-=======
 			skb_frag_t *frag = &skb_shinfo(skb)->frags[k];
 
 			*frag = skb_shinfo(skb)->frags[i];
@@ -3793,7 +2909,6 @@ pull_pages:
 				skb_frag_size_sub(frag, eat);
 				if (!i)
 					goto end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				eat = 0;
 			}
 			k++;
@@ -3801,11 +2916,6 @@ pull_pages:
 	}
 	skb_shinfo(skb)->nr_frags = k;
 
-<<<<<<< HEAD
-	skb->tail     += delta;
-	skb->data_len -= delta;
-
-=======
 end:
 	skb->tail     += delta;
 	skb->data_len -= delta;
@@ -3813,7 +2923,6 @@ end:
 	if (!skb->data_len)
 		skb_zcopy_clear(skb, false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return skb_tail_pointer(skb);
 }
 EXPORT_SYMBOL(__pskb_pull_tail);
@@ -3855,13 +2964,6 @@ int skb_copy_bits(const struct sk_buff *skb, int offset, void *to, int len)
 
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 		int end;
-<<<<<<< HEAD
-
-		WARN_ON(start > offset + len);
-
-		end = start + skb_frag_size(&skb_shinfo(skb)->frags[i]);
-		if ((copy = end - offset) > 0) {
-=======
 		skb_frag_t *f = &skb_shinfo(skb)->frags[i];
 
 		WARN_ON(start > offset + len);
@@ -3870,19 +2972,11 @@ int skb_copy_bits(const struct sk_buff *skb, int offset, void *to, int len)
 		if ((copy = end - offset) > 0) {
 			u32 p_off, p_len, copied;
 			struct page *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8 *vaddr;
 
 			if (copy > len)
 				copy = len;
 
-<<<<<<< HEAD
-			vaddr = kmap_skb_frag(&skb_shinfo(skb)->frags[i]);
-			memcpy(to,
-			       vaddr + skb_shinfo(skb)->frags[i].page_offset+
-			       offset - start, copy);
-			kunmap_skb_frag(vaddr);
-=======
 			skb_frag_foreach_page(f,
 					      skb_frag_off(f) + offset - start,
 					      copy, p, p_off, p_len, copied) {
@@ -3890,7 +2984,6 @@ int skb_copy_bits(const struct sk_buff *skb, int offset, void *to, int len)
 				memcpy(to + copied, vaddr + p_off, p_len);
 				kunmap_atomic(vaddr);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if ((len -= copy) == 0)
 				return 0;
@@ -3936,42 +3029,6 @@ static void sock_spd_release(struct splice_pipe_desc *spd, unsigned int i)
 	put_page(spd->pages[i]);
 }
 
-<<<<<<< HEAD
-static inline struct page *linear_to_page(struct page *page, unsigned int *len,
-					  unsigned int *offset,
-					  struct sk_buff *skb, struct sock *sk)
-{
-	struct page *p = sk->sk_sndmsg_page;
-	unsigned int off;
-
-	if (!p) {
-new_page:
-		p = sk->sk_sndmsg_page = alloc_pages(sk->sk_allocation, 0);
-		if (!p)
-			return NULL;
-
-		off = sk->sk_sndmsg_off = 0;
-		/* hold one ref to this page until it's full */
-	} else {
-		unsigned int mlen;
-
-		off = sk->sk_sndmsg_off;
-		mlen = PAGE_SIZE - off;
-		if (mlen < 64 && mlen < *len) {
-			put_page(p);
-			goto new_page;
-		}
-
-		*len = min_t(unsigned int, *len, mlen);
-	}
-
-	memcpy(page_address(p) + off, page_address(page) + *offset, *len);
-	sk->sk_sndmsg_off += *len;
-	*offset = off;
-	get_page(p);
-
-	return p;
-=======
 static struct page *linear_to_page(struct page *page, unsigned int *len,
 				   unsigned int *offset,
 				   struct sock *sk)
@@ -3999,30 +3056,11 @@ static bool spd_can_coalesce(const struct splice_pipe_desc *spd,
 		spd->pages[spd->nr_pages - 1] == page &&
 		(spd->partial[spd->nr_pages - 1].offset +
 		 spd->partial[spd->nr_pages - 1].len == offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Fill page/offset/length into spd, if it can hold more pages.
  */
-<<<<<<< HEAD
-static inline int spd_fill_page(struct splice_pipe_desc *spd,
-				struct pipe_inode_info *pipe, struct page *page,
-				unsigned int *len, unsigned int offset,
-				struct sk_buff *skb, int linear,
-				struct sock *sk)
-{
-	if (unlikely(spd->nr_pages == pipe->buffers))
-		return 1;
-
-	if (linear) {
-		page = linear_to_page(page, len, &offset, skb, sk);
-		if (!page)
-			return 1;
-	} else
-		get_page(page);
-
-=======
 static bool spd_fill_page(struct splice_pipe_desc *spd,
 			  struct pipe_inode_info *pipe, struct page *page,
 			  unsigned int *len, unsigned int offset,
@@ -4042,40 +3080,11 @@ static bool spd_fill_page(struct splice_pipe_desc *spd,
 		return false;
 	}
 	get_page(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spd->pages[spd->nr_pages] = page;
 	spd->partial[spd->nr_pages].len = *len;
 	spd->partial[spd->nr_pages].offset = offset;
 	spd->nr_pages++;
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static inline void __segment_seek(struct page **page, unsigned int *poff,
-				  unsigned int *plen, unsigned int off)
-{
-	unsigned long n;
-
-	*poff += off;
-	n = *poff / PAGE_SIZE;
-	if (n)
-		*page = nth_page(*page, n);
-
-	*poff = *poff % PAGE_SIZE;
-	*plen -= off;
-}
-
-static inline int __splice_segment(struct page *page, unsigned int poff,
-				   unsigned int plen, unsigned int *off,
-				   unsigned int *len, struct sk_buff *skb,
-				   struct splice_pipe_desc *spd, int linear,
-				   struct sock *sk,
-				   struct pipe_inode_info *pipe)
-{
-	if (!*len)
-		return 1;
-=======
 	return false;
 }
 
@@ -4088,21 +3097,10 @@ static bool __splice_segment(struct page *page, unsigned int poff,
 {
 	if (!*len)
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* skip this segment if already processed */
 	if (*off >= plen) {
 		*off -= plen;
-<<<<<<< HEAD
-		return 0;
-	}
-
-	/* ignore any bits we already processed */
-	if (*off) {
-		__segment_seek(&page, &poff, &plen, *off);
-		*off = 0;
-	}
-=======
 		return false;
 	}
 
@@ -4110,39 +3108,10 @@ static bool __splice_segment(struct page *page, unsigned int poff,
 	poff += *off;
 	plen -= *off;
 	*off = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		unsigned int flen = min(*len, plen);
 
-<<<<<<< HEAD
-		/* the linear region may spread across several pages  */
-		flen = min_t(unsigned int, flen, PAGE_SIZE - poff);
-
-		if (spd_fill_page(spd, pipe, page, &flen, poff, skb, linear, sk))
-			return 1;
-
-		__segment_seek(&page, &poff, &plen, flen);
-		*len -= flen;
-
-	} while (*len && plen);
-
-	return 0;
-}
-
-/*
- * Map linear and fragment data from the skb to spd. It reports failure if the
- * pipe is full or if we already spliced the requested length.
- */
-static int __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
-			     unsigned int *offset, unsigned int *len,
-			     struct splice_pipe_desc *spd, struct sock *sk)
-{
-	int seg;
-
-	/*
-	 * map the linear part
-=======
 		if (spd_fill_page(spd, pipe, page, &flen, poff,
 				  linear, sk))
 			return true;
@@ -4169,20 +3138,14 @@ static bool __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
 	 * If skb->head_frag is set, this 'linear' part is backed by a
 	 * fragment, and if the head is not shared with any clones then
 	 * we can avoid a copy since we own the head portion of this page.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (__splice_segment(virt_to_page(skb->data),
 			     (unsigned long) skb->data & (PAGE_SIZE - 1),
 			     skb_headlen(skb),
-<<<<<<< HEAD
-			     offset, len, skb, spd, 1, sk, pipe))
-		return 1;
-=======
 			     offset, len, spd,
 			     skb_head_is_locked(skb),
 			     sk, pipe))
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * then map the fragments
@@ -4191,14 +3154,6 @@ static bool __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
 		const skb_frag_t *f = &skb_shinfo(skb)->frags[seg];
 
 		if (__splice_segment(skb_frag_page(f),
-<<<<<<< HEAD
-				     f->page_offset, skb_frag_size(f),
-				     offset, len, skb, spd, 0, sk, pipe))
-			return 1;
-	}
-
-	return 0;
-=======
 				     skb_frag_off(f), skb_frag_size(f),
 				     offset, len, spd, false, sk, pipe))
 			return true;
@@ -4218,23 +3173,10 @@ static bool __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
 	}
 
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Map data from the skb to a pipe. Should handle both the linear part,
-<<<<<<< HEAD
- * the fragments, and the frag list. It does NOT handle frag lists within
- * the frag list, if such a thing exists. We'd probably need to recurse to
- * handle that cleanly.
- */
-int skb_splice_bits(struct sk_buff *skb, unsigned int offset,
-		    struct pipe_inode_info *pipe, unsigned int tlen,
-		    unsigned int flags)
-{
-	struct partial_page partial[PIPE_DEF_BUFFERS];
-	struct page *pages[PIPE_DEF_BUFFERS];
-=======
  * the fragments, and the frag list.
  */
 int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
@@ -4243,61 +3185,10 @@ int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
 {
 	struct partial_page partial[MAX_SKB_FRAGS];
 	struct page *pages[MAX_SKB_FRAGS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct splice_pipe_desc spd = {
 		.pages = pages,
 		.partial = partial,
 		.nr_pages_max = MAX_SKB_FRAGS,
-<<<<<<< HEAD
-		.flags = flags,
-		.ops = &sock_pipe_buf_ops,
-		.spd_release = sock_spd_release,
-	};
-	struct sk_buff *frag_iter;
-	struct sock *sk = skb->sk;
-	int ret = 0;
-
-	if (splice_grow_spd(pipe, &spd))
-		return -ENOMEM;
-
-	/*
-	 * __skb_splice_bits() only fails if the output has no room left,
-	 * so no point in going over the frag_list for the error case.
-	 */
-	if (__skb_splice_bits(skb, pipe, &offset, &tlen, &spd, sk))
-		goto done;
-	else if (!tlen)
-		goto done;
-
-	/*
-	 * now see if we have a frag_list to map
-	 */
-	skb_walk_frags(skb, frag_iter) {
-		if (!tlen)
-			break;
-		if (__skb_splice_bits(frag_iter, pipe, &offset, &tlen, &spd, sk))
-			break;
-	}
-
-done:
-	if (spd.nr_pages) {
-		/*
-		 * Drop the socket lock, otherwise we have reverse
-		 * locking dependencies between sk_lock and i_mutex
-		 * here as compared to sendfile(). We enter here
-		 * with the socket lock held, and splice_to_pipe() will
-		 * grab the pipe inode lock. For sendfile() emulation,
-		 * we call into ->sendpage() with the i_mutex lock held
-		 * and networking will grab the socket lock.
-		 */
-		release_sock(sk);
-		ret = splice_to_pipe(pipe, &spd);
-		lock_sock(sk);
-	}
-
-	splice_shrink_spd(&spd);
-	return ret;
-=======
 		.ops = &nosteal_pipe_buf_ops,
 		.spd_release = sock_spd_release,
 	};
@@ -4446,7 +3337,6 @@ EXPORT_SYMBOL_GPL(skb_send_sock_locked);
 int skb_send_sock(struct sock *sk, struct sk_buff *skb, int offset, int len)
 {
 	return __skb_send_sock(sk, skb, offset, len, sendmsg_unlocked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4488,22 +3378,13 @@ int skb_store_bits(struct sk_buff *skb, int offset, const void *from, int len)
 
 		end = start + skb_frag_size(frag);
 		if ((copy = end - offset) > 0) {
-<<<<<<< HEAD
-=======
 			u32 p_off, p_len, copied;
 			struct page *p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8 *vaddr;
 
 			if (copy > len)
 				copy = len;
 
-<<<<<<< HEAD
-			vaddr = kmap_skb_frag(frag);
-			memcpy(vaddr + frag->page_offset + offset - start,
-			       from, copy);
-			kunmap_skb_frag(vaddr);
-=======
 			skb_frag_foreach_page(frag,
 					      skb_frag_off(frag) + offset - start,
 					      copy, p, p_off, p_len, copied) {
@@ -4511,7 +3392,6 @@ int skb_store_bits(struct sk_buff *skb, int offset, const void *from, int len)
 				memcpy(vaddr + p_off, from + copied, p_len);
 				kunmap_atomic(vaddr);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if ((len -= copy) == 0)
 				return 0;
@@ -4549,14 +3429,8 @@ fault:
 EXPORT_SYMBOL(skb_store_bits);
 
 /* Checksum skb data. */
-<<<<<<< HEAD
-
-__wsum skb_checksum(const struct sk_buff *skb, int offset,
-			  int len, __wsum csum)
-=======
 __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
 		      __wsum csum, const struct skb_checksum_ops *ops)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int start = skb_headlen(skb);
 	int i, copy = start - offset;
@@ -4567,12 +3441,8 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
 	if (copy > 0) {
 		if (copy > len)
 			copy = len;
-<<<<<<< HEAD
-		csum = csum_partial(skb->data + offset, copy, csum);
-=======
 		csum = INDIRECT_CALL_1(ops->update, csum_partial_ext,
 				       skb->data + offset, copy, csum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((len -= copy) == 0)
 			return csum;
 		offset += copy;
@@ -4581,28 +3451,6 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
 
 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
 		int end;
-<<<<<<< HEAD
-
-		WARN_ON(start > offset + len);
-
-		end = start + skb_frag_size(&skb_shinfo(skb)->frags[i]);
-		if ((copy = end - offset) > 0) {
-			__wsum csum2;
-			u8 *vaddr;
-			skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-
-			if (copy > len)
-				copy = len;
-			vaddr = kmap_skb_frag(frag);
-			csum2 = csum_partial(vaddr + frag->page_offset +
-					     offset - start, copy, 0);
-			kunmap_skb_frag(vaddr);
-			csum = csum_block_add(csum, csum2, pos);
-			if (!(len -= copy))
-				return csum;
-			offset += copy;
-			pos    += copy;
-=======
 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 
 		WARN_ON(start > offset + len);
@@ -4634,7 +3482,6 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
 			if (!(len -= copy))
 				return csum;
 			offset += copy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		start = end;
 	}
@@ -4649,16 +3496,10 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
 			__wsum csum2;
 			if (copy > len)
 				copy = len;
-<<<<<<< HEAD
-			csum2 = skb_checksum(frag_iter, offset - start,
-					     copy, 0);
-			csum = csum_block_add(csum, csum2, pos);
-=======
 			csum2 = __skb_checksum(frag_iter, offset - start,
 					       copy, 0, ops);
 			csum = INDIRECT_CALL_1(ops->combine, csum_block_add_ext,
 					       csum, csum2, pos, copy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((len -= copy) == 0)
 				return csum;
 			offset += copy;
@@ -4670,8 +3511,6 @@ __wsum __skb_checksum(const struct sk_buff *skb, int offset, int len,
 
 	return csum;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__skb_checksum);
 
 __wsum skb_checksum(const struct sk_buff *skb, int offset,
@@ -4684,37 +3523,25 @@ __wsum skb_checksum(const struct sk_buff *skb, int offset,
 
 	return __skb_checksum(skb, offset, len, csum, &ops);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(skb_checksum);
 
 /* Both of above in one bottle. */
 
 __wsum skb_copy_and_csum_bits(const struct sk_buff *skb, int offset,
-<<<<<<< HEAD
-				    u8 *to, int len, __wsum csum)
-=======
 				    u8 *to, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int start = skb_headlen(skb);
 	int i, copy = start - offset;
 	struct sk_buff *frag_iter;
 	int pos = 0;
-<<<<<<< HEAD
-=======
 	__wsum csum = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy header. */
 	if (copy > 0) {
 		if (copy > len)
 			copy = len;
 		csum = csum_partial_copy_nocheck(skb->data + offset, to,
-<<<<<<< HEAD
-						 copy, csum);
-=======
 						 copy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((len -= copy) == 0)
 			return csum;
 		offset += copy;
@@ -4729,21 +3556,6 @@ __wsum skb_copy_and_csum_bits(const struct sk_buff *skb, int offset,
 
 		end = start + skb_frag_size(&skb_shinfo(skb)->frags[i]);
 		if ((copy = end - offset) > 0) {
-<<<<<<< HEAD
-			__wsum csum2;
-			u8 *vaddr;
-			skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-
-			if (copy > len)
-				copy = len;
-			vaddr = kmap_skb_frag(frag);
-			csum2 = csum_partial_copy_nocheck(vaddr +
-							  frag->page_offset +
-							  offset - start, to,
-							  copy, 0);
-			kunmap_skb_frag(vaddr);
-			csum = csum_block_add(csum, csum2, pos);
-=======
 			skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
 			u32 p_off, p_len, copied;
 			struct page *p;
@@ -4765,15 +3577,10 @@ __wsum skb_copy_and_csum_bits(const struct sk_buff *skb, int offset,
 				pos += p_len;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(len -= copy))
 				return csum;
 			offset += copy;
 			to     += copy;
-<<<<<<< HEAD
-			pos    += copy;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		start = end;
 	}
@@ -4790,11 +3597,7 @@ __wsum skb_copy_and_csum_bits(const struct sk_buff *skb, int offset,
 				copy = len;
 			csum2 = skb_copy_and_csum_bits(frag_iter,
 						       offset - start,
-<<<<<<< HEAD
-						       to, copy, 0);
-=======
 						       to, copy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			csum = csum_block_add(csum, csum2, pos);
 			if ((len -= copy) == 0)
 				return csum;
@@ -4809,8 +3612,6 @@ __wsum skb_copy_and_csum_bits(const struct sk_buff *skb, int offset,
 }
 EXPORT_SYMBOL(skb_copy_and_csum_bits);
 
-<<<<<<< HEAD
-=======
 __sum16 __skb_checksum_complete_head(struct sk_buff *skb, int len)
 {
 	__sum16 sum;
@@ -5001,7 +3802,6 @@ skb_zerocopy(struct sk_buff *to, struct sk_buff *from, int len, int hlen)
 }
 EXPORT_SYMBOL_GPL(skb_zerocopy);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void skb_copy_and_csum_dev(const struct sk_buff *skb, u8 *to)
 {
 	__wsum csum;
@@ -5019,11 +3819,7 @@ void skb_copy_and_csum_dev(const struct sk_buff *skb, u8 *to)
 	csum = 0;
 	if (csstart != skb->len)
 		csum = skb_copy_and_csum_bits(skb, csstart, to + csstart,
-<<<<<<< HEAD
-					      skb->len - csstart, 0);
-=======
 					      skb->len - csstart);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		long csstuff = csstart + skb->csum_offset;
@@ -5075,28 +3871,14 @@ struct sk_buff *skb_dequeue_tail(struct sk_buff_head *list)
 EXPORT_SYMBOL(skb_dequeue_tail);
 
 /**
-<<<<<<< HEAD
- *	skb_queue_purge - empty a list
- *	@list: list to empty
-=======
  *	skb_queue_purge_reason - empty a list
  *	@list: list to empty
  *	@reason: drop reason
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Delete all buffers on an &sk_buff list. Each buffer is removed from
  *	the list and one reference dropped. This function takes the list
  *	lock and is atomic with respect to other list locking functions.
  */
-<<<<<<< HEAD
-void skb_queue_purge(struct sk_buff_head *list)
-{
-	struct sk_buff *skb;
-	while ((skb = skb_dequeue(list)) != NULL)
-		kfree_skb(skb);
-}
-EXPORT_SYMBOL(skb_queue_purge);
-=======
 void skb_queue_purge_reason(struct sk_buff_head *list,
 			    enum skb_drop_reason reason)
 {
@@ -5162,7 +3944,6 @@ void skb_errqueue_purge(struct sk_buff_head *list)
 	__skb_queue_purge(&kill);
 }
 EXPORT_SYMBOL(skb_errqueue_purge);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	skb_queue_head - queue a buffer at the list head
@@ -5246,31 +4027,6 @@ void skb_append(struct sk_buff *old, struct sk_buff *newsk, struct sk_buff_head 
 }
 EXPORT_SYMBOL(skb_append);
 
-<<<<<<< HEAD
-/**
- *	skb_insert	-	insert a buffer
- *	@old: buffer to insert before
- *	@newsk: buffer to insert
- *	@list: list to use
- *
- *	Place a packet before a given packet in a list. The list locks are
- * 	taken and this function is atomic with respect to other list locked
- *	calls.
- *
- *	A buffer cannot be placed on two lists at the same time.
- */
-void skb_insert(struct sk_buff *old, struct sk_buff *newsk, struct sk_buff_head *list)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&list->lock, flags);
-	__skb_insert(newsk, old->prev, old, list);
-	spin_unlock_irqrestore(&list->lock, flags);
-}
-EXPORT_SYMBOL(skb_insert);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void skb_split_inside_header(struct sk_buff *skb,
 					   struct sk_buff* skb1,
 					   const u32 len, const int pos)
@@ -5320,11 +4076,7 @@ static inline void skb_split_no_header(struct sk_buff *skb,
 				 * 2. Split is accurately. We make this.
 				 */
 				skb_frag_ref(skb, i);
-<<<<<<< HEAD
-				skb_shinfo(skb1)->frags[0].page_offset += len - pos;
-=======
 				skb_frag_off_add(&skb_shinfo(skb1)->frags[0], len - pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				skb_frag_size_sub(&skb_shinfo(skb1)->frags[0], len - pos);
 				skb_frag_size_set(&skb_shinfo(skb)->frags[i], len - pos);
 				skb_shinfo(skb)->nr_frags++;
@@ -5346,16 +4098,12 @@ static inline void skb_split_no_header(struct sk_buff *skb,
 void skb_split(struct sk_buff *skb, struct sk_buff *skb1, const u32 len)
 {
 	int pos = skb_headlen(skb);
-<<<<<<< HEAD
-
-=======
 	const int zc_flags = SKBFL_SHARED_FRAG | SKBFL_PURE_ZEROCOPY;
 
 	skb_zcopy_downgrade_managed(skb);
 
 	skb_shinfo(skb1)->flags |= skb_shinfo(skb)->flags & zc_flags;
 	skb_zerocopy_clone(skb1, skb, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < pos)	/* Split line is inside header. */
 		skb_split_inside_header(skb, skb1, len, pos);
 	else		/* Second chunk has no header, nothing to copy. */
@@ -5369,11 +4117,7 @@ EXPORT_SYMBOL(skb_split);
  */
 static int skb_prepare_for_shift(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	return skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
-=======
 	return skb_unclone_keeptruesize(skb, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -5397,12 +4141,6 @@ static int skb_prepare_for_shift(struct sk_buff *skb)
 int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
 {
 	int from, to, merge, todo;
-<<<<<<< HEAD
-	struct skb_frag_struct *fragfrom, *fragto;
-
-	BUG_ON(shiftlen > skb->len);
-	BUG_ON(skb_headlen(skb));	/* Would corrupt stream */
-=======
 	skb_frag_t *fragfrom, *fragto;
 
 	BUG_ON(shiftlen > skb->len);
@@ -5411,7 +4149,6 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
 		return 0;
 	if (skb_zcopy(tgt) || skb_zcopy(skb))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	todo = shiftlen;
 	from = 0;
@@ -5423,11 +4160,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
 	 */
 	if (!to ||
 	    !skb_can_coalesce(tgt, to, skb_frag_page(fragfrom),
-<<<<<<< HEAD
-			      fragfrom->page_offset)) {
-=======
 			      skb_frag_off(fragfrom))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		merge = -1;
 	} else {
 		merge = to - 1;
@@ -5444,11 +4177,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
 
 			skb_frag_size_add(fragto, shiftlen);
 			skb_frag_size_sub(fragfrom, shiftlen);
-<<<<<<< HEAD
-			fragfrom->page_offset += shiftlen;
-=======
 			skb_frag_off_add(fragfrom, shiftlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			goto onlymerged;
 		}
@@ -5479,19 +4208,11 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
 
 		} else {
 			__skb_frag_ref(fragfrom);
-<<<<<<< HEAD
-			fragto->page = fragfrom->page;
-			fragto->page_offset = fragfrom->page_offset;
-			skb_frag_size_set(fragto, todo);
-
-			fragfrom->page_offset += todo;
-=======
 			skb_frag_page_copy(fragto, fragfrom);
 			skb_frag_off_copy(fragto, fragfrom);
 			skb_frag_size_set(fragto, todo);
 
 			skb_frag_off_add(fragfrom, todo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_frag_size_sub(fragfrom, todo);
 			todo = 0;
 
@@ -5508,11 +4229,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
 		fragto = &skb_shinfo(tgt)->frags[merge];
 
 		skb_frag_size_add(fragto, skb_frag_size(fragfrom));
-<<<<<<< HEAD
-		__skb_frag_unref(fragfrom);
-=======
 		__skb_frag_unref(fragfrom, skb->pp_recycle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Reposition in the original skb */
@@ -5530,18 +4247,8 @@ onlymerged:
 	tgt->ip_summed = CHECKSUM_PARTIAL;
 	skb->ip_summed = CHECKSUM_PARTIAL;
 
-<<<<<<< HEAD
-	/* Yak, is it really working this way? Some helper please? */
-	skb->len -= shiftlen;
-	skb->data_len -= shiftlen;
-	skb->truesize -= shiftlen;
-	tgt->len += shiftlen;
-	tgt->data_len += shiftlen;
-	tgt->truesize += shiftlen;
-=======
 	skb_len_add(skb, -shiftlen);
 	skb_len_add(tgt, shiftlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return shiftlen;
 }
@@ -5564,10 +4271,7 @@ void skb_prepare_seq_read(struct sk_buff *skb, unsigned int from,
 	st->root_skb = st->cur_skb = skb;
 	st->frag_idx = st->stepped_offset = 0;
 	st->frag_data = NULL;
-<<<<<<< HEAD
-=======
 	st->frag_off = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(skb_prepare_seq_read);
 
@@ -5577,33 +4281,19 @@ EXPORT_SYMBOL(skb_prepare_seq_read);
  * @data: destination pointer for data to be returned
  * @st: state variable
  *
-<<<<<<< HEAD
- * Reads a block of skb data at &consumed relative to the
- * lower offset specified to skb_prepare_seq_read(). Assigns
- * the head of the data block to &data and returns the length
-=======
  * Reads a block of skb data at @consumed relative to the
  * lower offset specified to skb_prepare_seq_read(). Assigns
  * the head of the data block to @data and returns the length
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * of the block or 0 if the end of the skb data or the upper
  * offset has been reached.
  *
  * The caller is not required to consume all of the data
-<<<<<<< HEAD
- * returned, i.e. &consumed is typically set to the number
-=======
  * returned, i.e. @consumed is typically set to the number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * of bytes already consumed and the next call to
  * skb_seq_read() will return the remaining part of the block.
  *
  * Note 1: The size of each block of data returned can be arbitrary,
-<<<<<<< HEAD
- *       this limitation is the cost for zerocopy seqeuental
-=======
  *       this limitation is the cost for zerocopy sequential
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *       reads of potentially non linear data.
  *
  * Note 2: Fragment lists within fragments are not implemented
@@ -5616,10 +4306,6 @@ unsigned int skb_seq_read(unsigned int consumed, const u8 **data,
 	unsigned int block_limit, abs_offset = consumed + st->lower_offset;
 	skb_frag_t *frag;
 
-<<<<<<< HEAD
-	if (unlikely(abs_offset >= st->upper_offset))
-		return 0;
-=======
 	if (unlikely(abs_offset >= st->upper_offset)) {
 		if (st->frag_data) {
 			kunmap_atomic(st->frag_data);
@@ -5627,7 +4313,6 @@ unsigned int skb_seq_read(unsigned int consumed, const u8 **data,
 		}
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 next_skb:
 	block_limit = skb_headlen(st->cur_skb) + st->stepped_offset;
@@ -5641,16 +4326,6 @@ next_skb:
 		st->stepped_offset += skb_headlen(st->cur_skb);
 
 	while (st->frag_idx < skb_shinfo(st->cur_skb)->nr_frags) {
-<<<<<<< HEAD
-		frag = &skb_shinfo(st->cur_skb)->frags[st->frag_idx];
-		block_limit = skb_frag_size(frag) + st->stepped_offset;
-
-		if (abs_offset < block_limit) {
-			if (!st->frag_data)
-				st->frag_data = kmap_skb_frag(frag);
-
-			*data = (u8 *) st->frag_data + frag->page_offset +
-=======
 		unsigned int pg_idx, pg_off, pg_sz;
 
 		frag = &skb_shinfo(st->cur_skb)->frags[st->frag_idx];
@@ -5672,25 +4347,12 @@ next_skb:
 				st->frag_data = kmap_atomic(skb_frag_page(frag) + pg_idx);
 
 			*data = (u8 *)st->frag_data + pg_off +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(abs_offset - st->stepped_offset);
 
 			return block_limit - abs_offset;
 		}
 
 		if (st->frag_data) {
-<<<<<<< HEAD
-			kunmap_skb_frag(st->frag_data);
-			st->frag_data = NULL;
-		}
-
-		st->frag_idx++;
-		st->stepped_offset += skb_frag_size(frag);
-	}
-
-	if (st->frag_data) {
-		kunmap_skb_frag(st->frag_data);
-=======
 			kunmap_atomic(st->frag_data);
 			st->frag_data = NULL;
 		}
@@ -5705,7 +4367,6 @@ next_skb:
 
 	if (st->frag_data) {
 		kunmap_atomic(st->frag_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		st->frag_data = NULL;
 	}
 
@@ -5733,11 +4394,7 @@ EXPORT_SYMBOL(skb_seq_read);
 void skb_abort_seq_read(struct skb_seq_state *st)
 {
 	if (st->frag_data)
-<<<<<<< HEAD
-		kunmap_skb_frag(st->frag_data);
-=======
 		kunmap_atomic(st->frag_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(skb_abort_seq_read);
 
@@ -5761,10 +4418,6 @@ static void skb_ts_finish(struct ts_config *conf, struct ts_state *state)
  * @from: search offset
  * @to: search limit
  * @config: textsearch configuration
-<<<<<<< HEAD
- * @state: uninitialized textsearch state variable
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Finds a pattern in the skb data according to the specified
  * textsearch configuration. Use textsearch_next() to retrieve
@@ -5772,91 +4425,6 @@ static void skb_ts_finish(struct ts_config *conf, struct ts_state *state)
  * to the first occurrence or UINT_MAX if no match was found.
  */
 unsigned int skb_find_text(struct sk_buff *skb, unsigned int from,
-<<<<<<< HEAD
-			   unsigned int to, struct ts_config *config,
-			   struct ts_state *state)
-{
-	unsigned int ret;
-
-	config->get_next_block = skb_ts_get_next_block;
-	config->finish = skb_ts_finish;
-
-	skb_prepare_seq_read(skb, from, to, TS_SKB_CB(state));
-
-	ret = textsearch_find(config, state);
-	return (ret <= to - from ? ret : UINT_MAX);
-}
-EXPORT_SYMBOL(skb_find_text);
-
-/**
- * skb_append_datato_frags: - append the user data to a skb
- * @sk: sock  structure
- * @skb: skb structure to be appened with user data.
- * @getfrag: call back function to be used for getting the user data
- * @from: pointer to user message iov
- * @length: length of the iov message
- *
- * Description: This procedure append the user data in the fragment part
- * of the skb if any page alloc fails user this procedure returns  -ENOMEM
- */
-int skb_append_datato_frags(struct sock *sk, struct sk_buff *skb,
-			int (*getfrag)(void *from, char *to, int offset,
-					int len, int odd, struct sk_buff *skb),
-			void *from, int length)
-{
-	int frg_cnt = 0;
-	skb_frag_t *frag = NULL;
-	struct page *page = NULL;
-	int copy, left;
-	int offset = 0;
-	int ret;
-
-	do {
-		/* Return error if we don't have space for new frag */
-		frg_cnt = skb_shinfo(skb)->nr_frags;
-		if (frg_cnt >= MAX_SKB_FRAGS)
-			return -EFAULT;
-
-		/* allocate a new page for next frag */
-		page = alloc_pages(sk->sk_allocation, 0);
-
-		/* If alloc_page fails just return failure and caller will
-		 * free previous allocated pages by doing kfree_skb()
-		 */
-		if (page == NULL)
-			return -ENOMEM;
-
-		/* initialize the next frag */
-		skb_fill_page_desc(skb, frg_cnt, page, 0, 0);
-		skb->truesize += PAGE_SIZE;
-		atomic_add(PAGE_SIZE, &sk->sk_wmem_alloc);
-
-		/* get the new initialized frag */
-		frg_cnt = skb_shinfo(skb)->nr_frags;
-		frag = &skb_shinfo(skb)->frags[frg_cnt - 1];
-
-		/* copy the user data to page */
-		left = PAGE_SIZE - frag->page_offset;
-		copy = (length > left)? left : length;
-
-		ret = getfrag(from, skb_frag_address(frag) + skb_frag_size(frag),
-			    offset, copy, 0, skb);
-		if (ret < 0)
-			return -EFAULT;
-
-		/* copy was successful so update the size parameters */
-		skb_frag_size_add(frag, copy);
-		skb->len += copy;
-		skb->data_len += copy;
-		offset += copy;
-		length -= copy;
-
-	} while (length > 0);
-
-	return 0;
-}
-EXPORT_SYMBOL(skb_append_datato_frags);
-=======
 			   unsigned int to, struct ts_config *config)
 {
 	unsigned int patlen = config->ops->get_pattern_len(config);
@@ -5893,7 +4461,6 @@ int skb_append_pagefrags(struct sk_buff *skb, struct page *page,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(skb_append_pagefrags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	skb_pull_rcsum - pull skb and update receive checksum
@@ -5906,21 +4473,6 @@ EXPORT_SYMBOL_GPL(skb_append_pagefrags);
  *	that the checksum difference is zero (e.g., a valid IP header)
  *	or you are setting ip_summed to CHECKSUM_NONE.
  */
-<<<<<<< HEAD
-unsigned char *skb_pull_rcsum(struct sk_buff *skb, unsigned int len)
-{
-	BUG_ON(len > skb->len);
-	skb->len -= len;
-	BUG_ON(skb->len < skb->data_len);
-	skb_postpull_rcsum(skb, skb->data, len);
-	return skb->data += len;
-}
-EXPORT_SYMBOL_GPL(skb_pull_rcsum);
-
-/**
- *	skb_segment - Perform protocol segmentation on skb.
- *	@skb: buffer to segment
-=======
 void *skb_pull_rcsum(struct sk_buff *skb, unsigned int len)
 {
 	unsigned char *data = skb->data;
@@ -6039,61 +4591,12 @@ EXPORT_SYMBOL_GPL(skb_segment_list);
 /**
  *	skb_segment - Perform protocol segmentation on skb.
  *	@head_skb: buffer to segment
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@features: features for the output path (see dev->features)
  *
  *	This function performs segmentation on the given skb.  It returns
  *	a pointer to the first in a list of new skbs for the segments.
  *	In case of error it returns ERR_PTR(err).
  */
-<<<<<<< HEAD
-struct sk_buff *skb_segment(struct sk_buff *skb, netdev_features_t features)
-{
-	struct sk_buff *segs = NULL;
-	struct sk_buff *tail = NULL;
-	struct sk_buff *fskb = skb_shinfo(skb)->frag_list;
-	unsigned int mss = skb_shinfo(skb)->gso_size;
-	unsigned int doffset = skb->data - skb_mac_header(skb);
-	unsigned int offset = doffset;
-	unsigned int headroom;
-	unsigned int len;
-	int sg = !!(features & NETIF_F_SG);
-	int nfrags = skb_shinfo(skb)->nr_frags;
-	int err = -ENOMEM;
-	int i = 0;
-	int pos;
-
-	__skb_push(skb, doffset);
-	headroom = skb_headroom(skb);
-	pos = skb_headlen(skb);
-
-	do {
-		struct sk_buff *nskb;
-		skb_frag_t *frag;
-		int hsize;
-		int size;
-
-		len = skb->len - offset;
-		if (len > mss)
-			len = mss;
-
-		hsize = skb_headlen(skb) - offset;
-		if (hsize < 0)
-			hsize = 0;
-		if (hsize > len || !sg)
-			hsize = len;
-
-		if (!hsize && i >= nfrags) {
-			BUG_ON(fskb->len != len);
-
-			pos += len;
-			nskb = skb_clone(fskb, GFP_ATOMIC);
-			fskb = fskb->next;
-
-			if (unlikely(!nskb))
-				goto err;
-
-=======
 struct sk_buff *skb_segment(struct sk_buff *head_skb,
 			    netdev_features_t features)
 {
@@ -6247,7 +4750,6 @@ normal:
 				goto err;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hsize = skb_end_offset(nskb);
 			if (skb_cow_head(nskb, doffset + headroom)) {
 				kfree_skb(nskb);
@@ -6258,10 +4760,6 @@ normal:
 			skb_release_head_state(nskb);
 			__skb_push(nskb, doffset);
 		} else {
-<<<<<<< HEAD
-			nskb = alloc_skb(hsize + doffset + headroom,
-					 GFP_ATOMIC);
-=======
 			if (hsize < 0)
 				hsize = 0;
 			if (hsize > len || !sg)
@@ -6270,7 +4768,6 @@ normal:
 			nskb = __alloc_skb(hsize + doffset + headroom,
 					   GFP_ATOMIC, skb_alloc_rx_flag(head_skb),
 					   NUMA_NO_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (unlikely(!nskb))
 				goto err;
@@ -6285,48 +4782,6 @@ normal:
 			segs = nskb;
 		tail = nskb;
 
-<<<<<<< HEAD
-		__copy_skb_header(nskb, skb);
-
-		/* nskb and skb might have different headroom */
-		if (nskb->ip_summed == CHECKSUM_PARTIAL)
-			nskb->csum_start += skb_headroom(nskb) - headroom;
-
-		skb_reset_mac_header(nskb);
-		skb_set_network_header(nskb, skb->mac_len);
-		nskb->transport_header = (nskb->network_header +
-					  skb_network_header_len(skb));
-		skb_reset_mac_len(nskb);
-		skb_copy_from_linear_data(skb, nskb->data, doffset);
-
-		if (fskb != skb_shinfo(skb)->frag_list)
-			continue;
-
-		if (!sg) {
-			nskb->ip_summed = CHECKSUM_NONE;
-			nskb->csum = skb_copy_and_csum_bits(skb, offset,
-							    skb_put(nskb, len),
-							    len, 0);
-			continue;
-		}
-
-		frag = skb_shinfo(nskb)->frags;
-
-		skb_copy_from_linear_data_offset(skb, offset,
-						 skb_put(nskb, hsize), hsize);
-
-		while (pos < offset + len && i < nfrags) {
-			if (unlikely(skb_orphan_frags(skb, GFP_ATOMIC)))
-				goto err;
-
-			*frag = skb_shinfo(skb)->frags[i];
-			__skb_frag_ref(frag);
-			size = skb_frag_size(frag);
-
-			if (pos < offset) {
-				frag->page_offset += offset - pos;
-				skb_frag_size_sub(frag, offset - pos);
-=======
 		__copy_skb_header(nskb, head_skb);
 
 		skb_headers_offset_update(nskb, skb_headroom(nskb) - headroom);
@@ -6408,41 +4863,12 @@ normal:
 			if (pos < offset) {
 				skb_frag_off_add(nskb_frag, offset - pos);
 				skb_frag_size_sub(nskb_frag, offset - pos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			skb_shinfo(nskb)->nr_frags++;
 
 			if (pos + size <= offset + len) {
 				i++;
-<<<<<<< HEAD
-				pos += size;
-			} else {
-				skb_frag_size_sub(frag, pos + size - (offset + len));
-				goto skip_fraglist;
-			}
-
-			frag++;
-		}
-
-		if (pos < offset + len) {
-			struct sk_buff *fskb2 = fskb;
-
-			BUG_ON(pos + fskb->len != offset + len);
-
-			pos += fskb->len;
-			fskb = fskb->next;
-
-			if (fskb2->next) {
-				fskb2 = skb_clone(fskb2, GFP_ATOMIC);
-				if (!fskb2)
-					goto err;
-			} else
-				skb_get(fskb2);
-
-			SKB_FRAG_ASSERT(nskb);
-			skb_shinfo(nskb)->frag_list = fskb2;
-=======
 				frag++;
 				pos += size;
 			} else {
@@ -6451,24 +4877,12 @@ normal:
 			}
 
 			nskb_frag++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 skip_fraglist:
 		nskb->data_len = len - hsize;
 		nskb->len += nskb->data_len;
 		nskb->truesize += nskb->data_len;
-<<<<<<< HEAD
-	} while ((offset += len) < skb->len);
-
-	return segs;
-
-err:
-	while ((skb = segs)) {
-		segs = skb->next;
-		kfree_skb(skb);
-	}
-=======
 
 perform_csum_check:
 		if (!csum) {
@@ -6530,153 +4944,10 @@ perform_csum_check:
 
 err:
 	kfree_skb_list(segs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(err);
 }
 EXPORT_SYMBOL_GPL(skb_segment);
 
-<<<<<<< HEAD
-int skb_gro_receive(struct sk_buff **head, struct sk_buff *skb)
-{
-	struct sk_buff *p = *head;
-	struct sk_buff *nskb;
-	struct skb_shared_info *skbinfo = skb_shinfo(skb);
-	struct skb_shared_info *pinfo = skb_shinfo(p);
-	unsigned int headroom;
-	unsigned int len = skb_gro_len(skb);
-	unsigned int offset = skb_gro_offset(skb);
-	unsigned int headlen = skb_headlen(skb);
-
-	if (p->len + len >= 65536)
-		return -E2BIG;
-
-	if (pinfo->frag_list)
-		goto merge;
-	else if (headlen <= offset) {
-		skb_frag_t *frag;
-		skb_frag_t *frag2;
-		int i = skbinfo->nr_frags;
-		int nr_frags = pinfo->nr_frags + i;
-
-		offset -= headlen;
-
-		if (nr_frags > MAX_SKB_FRAGS)
-			return -E2BIG;
-
-		pinfo->nr_frags = nr_frags;
-		skbinfo->nr_frags = 0;
-
-		frag = pinfo->frags + nr_frags;
-		frag2 = skbinfo->frags + i;
-		do {
-			*--frag = *--frag2;
-		} while (--i);
-
-		frag->page_offset += offset;
-		skb_frag_size_sub(frag, offset);
-
-		skb->truesize -= skb->data_len;
-		skb->len -= skb->data_len;
-		skb->data_len = 0;
-
-		NAPI_GRO_CB(skb)->free = 1;
-		goto done;
-	} else if (skb_gro_len(p) != pinfo->gso_size)
-		return -E2BIG;
-
-	headroom = skb_headroom(p);
-	nskb = alloc_skb(headroom + skb_gro_offset(p), GFP_ATOMIC);
-	if (unlikely(!nskb))
-		return -ENOMEM;
-
-	__copy_skb_header(nskb, p);
-	nskb->mac_len = p->mac_len;
-
-	skb_reserve(nskb, headroom);
-	__skb_put(nskb, skb_gro_offset(p));
-
-	skb_set_mac_header(nskb, skb_mac_header(p) - p->data);
-	skb_set_network_header(nskb, skb_network_offset(p));
-	skb_set_transport_header(nskb, skb_transport_offset(p));
-
-	__skb_pull(p, skb_gro_offset(p));
-	memcpy(skb_mac_header(nskb), skb_mac_header(p),
-	       p->data - skb_mac_header(p));
-
-	*NAPI_GRO_CB(nskb) = *NAPI_GRO_CB(p);
-	skb_shinfo(nskb)->frag_list = p;
-	skb_shinfo(nskb)->gso_size = pinfo->gso_size;
-	pinfo->gso_size = 0;
-	skb_header_release(p);
-	nskb->prev = p;
-
-	nskb->data_len += p->len;
-	nskb->truesize += p->truesize;
-	nskb->len += p->len;
-
-	*head = nskb;
-	nskb->next = p->next;
-	p->next = NULL;
-
-	p = nskb;
-
-merge:
-	p->truesize += skb->truesize - len;
-	if (offset > headlen) {
-		unsigned int eat = offset - headlen;
-
-		skbinfo->frags[0].page_offset += eat;
-		skb_frag_size_sub(&skbinfo->frags[0], eat);
-		skb->data_len -= eat;
-		skb->len -= eat;
-		offset = headlen;
-	}
-
-	__skb_pull(skb, offset);
-
-	p->prev->next = skb;
-	p->prev = skb;
-	skb_header_release(skb);
-
-done:
-	NAPI_GRO_CB(p)->count++;
-	p->data_len += len;
-	p->truesize += len;
-	p->len += len;
-
-	NAPI_GRO_CB(skb)->same_flow = 1;
-	return 0;
-}
-EXPORT_SYMBOL_GPL(skb_gro_receive);
-
-void __init skb_init(void)
-{
-	skbuff_head_cache = kmem_cache_create("skbuff_head_cache",
-					      sizeof(struct sk_buff),
-					      0,
-					      SLAB_HWCACHE_ALIGN|SLAB_PANIC,
-					      NULL);
-	skbuff_fclone_cache = kmem_cache_create("skbuff_fclone_cache",
-						(2*sizeof(struct sk_buff)) +
-						sizeof(atomic_t),
-						0,
-						SLAB_HWCACHE_ALIGN|SLAB_PANIC,
-						NULL);
-}
-
-/**
- *	skb_to_sgvec - Fill a scatter-gather list from a socket buffer
- *	@skb: Socket buffer containing the buffers to be mapped
- *	@sg: The scatter-gather list to map into
- *	@offset: The offset into the buffer's contents to start mapping
- *	@len: Length of buffer space to be mapped
- *
- *	Fill the specified scatter-gather list with mappings/pointers into a
- *	region of the buffer space attached to a socket buffer.
- */
-static int
-__skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len)
-=======
 #ifdef CONFIG_SKB_EXTENSIONS
 #define SKB_EXT_ALIGN_VALUE	8
 #define SKB_EXT_CHUNKSIZEOF(x)	(ALIGN((sizeof(x)), SKB_EXT_ALIGN_VALUE) / SKB_EXT_ALIGN_VALUE)
@@ -6769,19 +5040,15 @@ void __init skb_init(void)
 static int
 __skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len,
 	       unsigned int recursion_level)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int start = skb_headlen(skb);
 	int i, copy = start - offset;
 	struct sk_buff *frag_iter;
 	int elt = 0;
 
-<<<<<<< HEAD
-=======
 	if (unlikely(recursion_level >= 24))
 		return -EMSGSIZE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy > 0) {
 		if (copy > len)
 			copy = len;
@@ -6800,20 +5067,13 @@ __skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len,
 		end = start + skb_frag_size(&skb_shinfo(skb)->frags[i]);
 		if ((copy = end - offset) > 0) {
 			skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
-<<<<<<< HEAD
-=======
 			if (unlikely(elt && sg_is_last(&sg[elt - 1])))
 				return -EMSGSIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (copy > len)
 				copy = len;
 			sg_set_page(&sg[elt], skb_frag_page(frag), copy,
-<<<<<<< HEAD
-					frag->page_offset+offset-start);
-=======
 				    skb_frag_off(frag) + offset - start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			elt++;
 			if (!(len -= copy))
 				return elt;
@@ -6823,22 +5083,12 @@ __skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len,
 	}
 
 	skb_walk_frags(skb, frag_iter) {
-<<<<<<< HEAD
-		int end;
-=======
 		int end, ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		WARN_ON(start > offset + len);
 
 		end = start + frag_iter->len;
 		if ((copy = end - offset) > 0) {
-<<<<<<< HEAD
-			if (copy > len)
-				copy = len;
-			elt += __skb_to_sgvec(frag_iter, sg+elt, offset - start,
-					      copy);
-=======
 			if (unlikely(elt && sg_is_last(&sg[elt - 1])))
 				return -EMSGSIZE;
 
@@ -6849,7 +5099,6 @@ __skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len,
 			if (unlikely(ret < 0))
 				return ret;
 			elt += ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((len -= copy) == 0)
 				return elt;
 			offset += copy;
@@ -6860,11 +5109,6 @@ __skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len,
 	return elt;
 }
 
-<<<<<<< HEAD
-int skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int len)
-{
-	int nsg = __skb_to_sgvec(skb, sg, offset, len);
-=======
 /**
  *	skb_to_sgvec - Fill a scatter-gather list from a socket buffer
  *	@skb: Socket buffer containing the buffers to be mapped
@@ -6883,7 +5127,6 @@ int skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int le
 
 	if (nsg <= 0)
 		return nsg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg_mark_end(&sg[nsg - 1]);
 
@@ -6891,8 +5134,6 @@ int skb_to_sgvec(struct sk_buff *skb, struct scatterlist *sg, int offset, int le
 }
 EXPORT_SYMBOL_GPL(skb_to_sgvec);
 
-<<<<<<< HEAD
-=======
 /* As compared with skb_to_sgvec, skb_to_sgvec_nomark only map skb to given
  * sglist without mark the sg which contain last skb data as the end.
  * So the caller can mannipulate sg list as will when padding new data after
@@ -6921,7 +5162,6 @@ EXPORT_SYMBOL_GPL(skb_to_sgvec_nomark);
 
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	skb_cow_data - Check that a socket buffer's data buffers are writable
  *	@skb: The socket buffer to check.
@@ -6950,11 +5190,7 @@ int skb_cow_data(struct sk_buff *skb, int tailbits, struct sk_buff **trailer)
 	 * at the moment even if they are anonymous).
 	 */
 	if ((skb_cloned(skb) || skb_shinfo(skb)->nr_frags) &&
-<<<<<<< HEAD
-	    __pskb_pull_tail(skb, skb_pagelen(skb)-skb_headlen(skb)) == NULL)
-=======
 	    !__pskb_pull_tail(skb, __skb_pagelen(skb)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	/* Easy case. Most of packets will go this way. */
@@ -7043,8 +5279,6 @@ static void sock_rmem_free(struct sk_buff *skb)
 	atomic_sub(skb->truesize, &sk->sk_rmem_alloc);
 }
 
-<<<<<<< HEAD
-=======
 static void skb_set_err_queue(struct sk_buff *skb)
 {
 	/* pkt_type of skbs received on local sockets is never PACKET_OUTGOING.
@@ -7054,74 +5288,31 @@ static void skb_set_err_queue(struct sk_buff *skb)
 	BUILD_BUG_ON(PACKET_OUTGOING == 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Note: We dont mem charge error packets (no sk_forward_alloc changes)
  */
 int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	int len = skb->len;
-
-	if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
-	    (unsigned)sk->sk_rcvbuf)
-=======
 	if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
 	    (unsigned int)READ_ONCE(sk->sk_rcvbuf))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	skb_orphan(skb);
 	skb->sk = sk;
 	skb->destructor = sock_rmem_free;
 	atomic_add(skb->truesize, &sk->sk_rmem_alloc);
-<<<<<<< HEAD
-=======
 	skb_set_err_queue(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* before exiting rcu section, make sure dst is refcounted */
 	skb_dst_force(skb);
 
 	skb_queue_tail(&sk->sk_error_queue, skb);
 	if (!sock_flag(sk, SOCK_DEAD))
-<<<<<<< HEAD
-		sk->sk_data_ready(sk, len);
-=======
 		sk_error_report(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(sock_queue_err_skb);
 
-<<<<<<< HEAD
-void skb_tstamp_tx(struct sk_buff *orig_skb,
-		struct skb_shared_hwtstamps *hwtstamps)
-{
-	struct sock *sk = orig_skb->sk;
-	struct sock_exterr_skb *serr;
-	struct sk_buff *skb;
-	int err;
-
-	if (!sk)
-		return;
-
-	skb = skb_clone(orig_skb, GFP_ATOMIC);
-	if (!skb)
-		return;
-
-	if (hwtstamps) {
-		*skb_hwtstamps(skb) =
-			*hwtstamps;
-	} else {
-		/*
-		 * no hardware time stamps available,
-		 * so keep the shared tx_flags and only
-		 * store software time stamp
-		 */
-		skb->tstamp = ktime_get_real();
-	}
-=======
 static bool is_icmp_err_skb(const struct sk_buff *skb)
 {
 	return skb && (SKB_EXT_ERR(skb)->ee.ee_origin == SO_EE_ORIGIN_ICMP ||
@@ -7200,14 +5391,11 @@ static void __skb_complete_tx_timestamp(struct sk_buff *skb,
 	int err;
 
 	BUILD_BUG_ON(sizeof(struct sock_exterr_skb) > sizeof(skb->cb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	serr = SKB_EXT_ERR(skb);
 	memset(serr, 0, sizeof(*serr));
 	serr->ee.ee_errno = ENOMSG;
 	serr->ee.ee_origin = SO_EE_ORIGIN_TIMESTAMPING;
-<<<<<<< HEAD
-=======
 	serr->ee.ee_info = tstype;
 	serr->opt_stats = opt_stats;
 	serr->header.h4.iif = skb->dev ? skb->dev->ifindex : 0;
@@ -7216,17 +5404,12 @@ static void __skb_complete_tx_timestamp(struct sk_buff *skb,
 		if (sk_is_tcp(sk))
 			serr->ee.ee_data -= atomic_read(&sk->sk_tskey);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sock_queue_err_skb(sk, skb);
 
 	if (err)
 		kfree_skb(skb);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(skb_tstamp_tx);
-
-=======
 
 static bool skb_may_tx_timestamp(struct sock *sk, bool tsonly)
 {
@@ -7331,16 +5514,11 @@ void skb_tstamp_tx(struct sk_buff *orig_skb,
 EXPORT_SYMBOL_GPL(skb_tstamp_tx);
 
 #ifdef CONFIG_WIRELESS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void skb_complete_wifi_ack(struct sk_buff *skb, bool acked)
 {
 	struct sock *sk = skb->sk;
 	struct sock_exterr_skb *serr;
-<<<<<<< HEAD
-	int err;
-=======
 	int err = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb->wifi_acked_valid = 1;
 	skb->wifi_acked = acked;
@@ -7350,9 +5528,6 @@ void skb_complete_wifi_ack(struct sk_buff *skb, bool acked)
 	serr->ee.ee_errno = ENOMSG;
 	serr->ee.ee_origin = SO_EE_ORIGIN_TXSTATUS;
 
-<<<<<<< HEAD
-	err = sock_queue_err_skb(sk, skb);
-=======
 	/* Take a reference to prevent skb_orphan() from freeing the socket,
 	 * but only if the socket refcount is not zero.
 	 */
@@ -7360,16 +5535,11 @@ void skb_complete_wifi_ack(struct sk_buff *skb, bool acked)
 		err = sock_queue_err_skb(sk, skb);
 		sock_put(sk);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		kfree_skb(skb);
 }
 EXPORT_SYMBOL_GPL(skb_complete_wifi_ack);
-<<<<<<< HEAD
-
-=======
 #endif /* CONFIG_WIRELESS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * skb_partial_csum_set - set up and verify partial csum values for packet
@@ -7385,19 +5555,6 @@ EXPORT_SYMBOL_GPL(skb_complete_wifi_ack);
  */
 bool skb_partial_csum_set(struct sk_buff *skb, u16 start, u16 off)
 {
-<<<<<<< HEAD
-	if (unlikely(start > skb_headlen(skb)) ||
-	    unlikely((int)start + off > skb_headlen(skb) - 2)) {
-		if (net_ratelimit())
-			printk(KERN_WARNING
-			       "bad partial csum: csum=%u/%u len=%u\n",
-			       start, off, skb_headlen(skb));
-		return false;
-	}
-	skb->ip_summed = CHECKSUM_PARTIAL;
-	skb->csum_start = skb_headroom(skb) + start;
-	skb->csum_offset = off;
-=======
 	u32 csum_end = (u32)start + (u32)off + sizeof(__sum16);
 	u32 csum_start = skb_headroom(skb) + (u32)start;
 
@@ -7410,45 +5567,10 @@ bool skb_partial_csum_set(struct sk_buff *skb, u16 start, u16 off)
 	skb->csum_start = csum_start;
 	skb->csum_offset = off;
 	skb->transport_header = csum_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 EXPORT_SYMBOL_GPL(skb_partial_csum_set);
 
-<<<<<<< HEAD
-void __skb_warn_lro_forwarding(const struct sk_buff *skb)
-{
-	if (net_ratelimit())
-		pr_warning("%s: received packets cannot be forwarded"
-			   " while LRO is enabled\n", skb->dev->name);
-}
-EXPORT_SYMBOL(__skb_warn_lro_forwarding);
-
-/**
- * skb_gso_transport_seglen - Return length of individual segments of a gso packet
- *
- * @skb: GSO skb
- *
- * skb_gso_transport_seglen is used to determine the real size of the
- * individual segments, including Layer4 headers (TCP/UDP).
- *
- * The MAC/L2 or network (IP, IPv6) headers are not accounted for.
- */
-unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
-{
-	const struct skb_shared_info *shinfo = skb_shinfo(skb);
-
-	if (likely(shinfo->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6)))
-		return tcp_hdrlen(skb) + shinfo->gso_size;
-
-	/* UFO sets gso_size to the size of the fragmentation
-	 * payload, i.e. the size of the L4 (UDP) header is already
-	 * accounted for.
-	 */
-	return shinfo->gso_size;
-}
-EXPORT_SYMBOL_GPL(skb_gso_transport_seglen);
-=======
 static int skb_maybe_pull_tail(struct sk_buff *skb, unsigned int len,
 			       unsigned int max)
 {
@@ -9058,4 +7180,3 @@ bool csum_and_copy_from_iter_full(void *addr, size_t bytes,
 	return false;
 }
 EXPORT_SYMBOL(csum_and_copy_from_iter_full);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

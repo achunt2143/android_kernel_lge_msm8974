@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sun4m irq support
  *
@@ -13,19 +10,12 @@
  *  Copyright (C) 1996 Dave Redman (djhr@tadpole.co.uk)
  */
 
-<<<<<<< HEAD
-#include <asm/timer.h>
-#include <asm/traps.h>
-#include <asm/pgalloc.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/slab.h>
 #include <linux/sched/debug.h>
 #include <linux/pgtable.h>
 
 #include <asm/timer.h>
 #include <asm/traps.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/io.h>
 #include <asm/cacheflush.h>
@@ -125,12 +115,6 @@ struct sun4m_handler_data {
 #define SUN4M_INT_E14		0x00000080
 #define SUN4M_INT_E10		0x00080000
 
-<<<<<<< HEAD
-#define SUN4M_HARD_INT(x)	(0x000000001 << (x))
-#define SUN4M_SOFT_INT(x)	(0x000010000 << (x))
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	SUN4M_INT_MASKALL	0x80000000	  /* mask all interrupts */
 #define	SUN4M_INT_MODULE_ERR	0x40000000	  /* module error */
 #define	SUN4M_INT_M2S_WRITE_ERR	0x20000000	  /* write buffer error */
@@ -205,16 +189,10 @@ static unsigned long sun4m_imask[0x50] = {
 
 static void sun4m_mask_irq(struct irq_data *data)
 {
-<<<<<<< HEAD
-	struct sun4m_handler_data *handler_data = data->handler_data;
-	int cpu = smp_processor_id();
-
-=======
 	struct sun4m_handler_data *handler_data;
 	int cpu = smp_processor_id();
 
 	handler_data = irq_data_get_irq_handler_data(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (handler_data->mask) {
 		unsigned long flags;
 
@@ -230,16 +208,10 @@ static void sun4m_mask_irq(struct irq_data *data)
 
 static void sun4m_unmask_irq(struct irq_data *data)
 {
-<<<<<<< HEAD
-	struct sun4m_handler_data *handler_data = data->handler_data;
-	int cpu = smp_processor_id();
-
-=======
 	struct sun4m_handler_data *handler_data;
 	int cpu = smp_processor_id();
 
 	handler_data = irq_data_get_irq_handler_data(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (handler_data->mask) {
 		unsigned long flags;
 
@@ -312,26 +284,6 @@ out:
 	return irq;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-static void sun4m_send_ipi(int cpu, int level)
-{
-	sbus_writel(SUN4M_SOFT_INT(level), &sun4m_irq_percpu[cpu]->set);
-}
-
-static void sun4m_clear_ipi(int cpu, int level)
-{
-	sbus_writel(SUN4M_SOFT_INT(level), &sun4m_irq_percpu[cpu]->clear);
-}
-
-static void sun4m_set_udt(int cpu)
-{
-	sbus_writel(cpu, &sun4m_irq_global->interrupt_target);
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sun4m_timer_percpu {
 	u32		l14_limit;
 	u32		l14_count;
@@ -351,12 +303,6 @@ struct sun4m_timer_global {
 
 static struct sun4m_timer_global __iomem *timers_global;
 
-<<<<<<< HEAD
-
-unsigned int lvl14_resolution = (((1000000/HZ) + 1) << 10);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sun4m_clear_clock_irq(void)
 {
 	sbus_readl(&timers_global->l10_limit);
@@ -405,18 +351,11 @@ void sun4m_clear_profile_irq(int cpu)
 
 static void sun4m_load_profile_irq(int cpu, unsigned int limit)
 {
-<<<<<<< HEAD
-	sbus_writel(limit, &timers_percpu[cpu]->l14_limit);
-}
-
-static void __init sun4m_init_timers(irq_handler_t counter_fn)
-=======
 	unsigned int value = limit ? timer_value(limit) : 0;
 	sbus_writel(value, &timers_percpu[cpu]->l14_limit);
 }
 
 static void __init sun4m_init_timers(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = of_find_node_by_name(NULL, "counter");
 	int i, err, len, num_cpu_timers;
@@ -446,9 +385,6 @@ static void __init sun4m_init_timers(void)
 	/* Every per-cpu timer works in timer mode */
 	sbus_writel(0x00000000, &timers_global->timer_config);
 
-<<<<<<< HEAD
-	sbus_writel((((1000000/HZ) + 1) << 10), &timers_global->l10_limit);
-=======
 #ifdef CONFIG_SMP
 	sparc_config.cs_period = SBUS_CLOCK_RATE * 2;  /* 2 seconds */
 	sparc_config.features |= FEAT_L14_ONESHOT;
@@ -459,17 +395,12 @@ static void __init sun4m_init_timers(void)
 	sparc_config.features |= FEAT_L10_CLOCKSOURCE;
 	sbus_writel(timer_value(sparc_config.cs_period),
 	            &timers_global->l10_limit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	master_l10_counter = &timers_global->l10_count;
 
 	irq = sun4m_build_device_irq(NULL, SUN4M_TIMER_IRQ);
 
-<<<<<<< HEAD
-	err = request_irq(irq, counter_fn, IRQF_TIMER, "timer", NULL);
-=======
 	err = request_irq(irq, timer_interrupt, IRQF_TIMER, "timer", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		printk(KERN_ERR "sun4m_init_timers: Register IRQ error %d.\n",
 			err);
@@ -495,11 +426,7 @@ static void __init sun4m_init_timers(void)
 		trap_table->inst_two = lvl14_save[1];
 		trap_table->inst_three = lvl14_save[2];
 		trap_table->inst_four = lvl14_save[3];
-<<<<<<< HEAD
-		local_flush_cache_all();
-=======
 		local_ops->cache_all();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_restore(flags);
 	}
 #endif
@@ -540,26 +467,12 @@ void __init sun4m_init_IRQ(void)
 	if (num_cpu_iregs == 4)
 		sbus_writel(0, &sun4m_irq_global->interrupt_target);
 
-<<<<<<< HEAD
-	BTFIXUPSET_CALL(clear_clock_irq, sun4m_clear_clock_irq, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(load_profile_irq, sun4m_load_profile_irq, BTFIXUPCALL_NORM);
-
-	sparc_irq_config.init_timers = sun4m_init_timers;
-	sparc_irq_config.build_device_irq = sun4m_build_device_irq;
-
-#ifdef CONFIG_SMP
-	BTFIXUPSET_CALL(set_cpu_int, sun4m_send_ipi, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(clear_cpu_int, sun4m_clear_ipi, BTFIXUPCALL_NORM);
-	BTFIXUPSET_CALL(set_irq_udt, sun4m_set_udt, BTFIXUPCALL_NORM);
-#endif
-=======
 	sparc_config.init_timers      = sun4m_init_timers;
 	sparc_config.build_device_irq = sun4m_build_device_irq;
 	sparc_config.clock_rate       = SBUS_CLOCK_RATE;
 	sparc_config.clear_clock_irq  = sun4m_clear_clock_irq;
 	sparc_config.load_profile_irq = sun4m_load_profile_irq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cannot enable interrupts until OBP ticker is disabled. */
 }

@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-obj-$(CONFIG_NET_DSA_MV88E6060) += mv88e6060.o
-obj-$(CONFIG_NET_DSA_MV88E6XXX) += mv88e6xxx_drv.o
-mv88e6xxx_drv-y += mv88e6xxx.o
-ifdef CONFIG_NET_DSA_MV88E6123_61_65
-mv88e6xxx_drv-y += mv88e6123_61_65.o
-endif
-ifdef CONFIG_NET_DSA_MV88E6131
-mv88e6xxx_drv-y += mv88e6131.o
-endif
-=======
 # SPDX-License-Identifier: GPL-2.0
 obj-$(CONFIG_NET_DSA_BCM_SF2)	+= bcm-sf2.o
 bcm-sf2-objs			:= bcm_sf2.o bcm_sf2_cfp.o
@@ -37,4 +26,3 @@ obj-y				+= qca/
 obj-y				+= realtek/
 obj-y				+= sja1105/
 obj-y				+= xrs700x/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

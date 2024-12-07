@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#include "../perf.h"
-#include "util.h"
-#include <sys/mman.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include "util.h"
 #include "debug.h"
@@ -28,13 +23,10 @@
 #include "cap.h"
 #include "strlist.h"
 #include "string2.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * XXX We need to find a better place for these things...
  */
-<<<<<<< HEAD
-=======
 
 const char *input_name;
 
@@ -86,7 +78,6 @@ bool sysctl__nmi_watchdog_enabled(void)
 
 bool test_attr__enabled;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool perf_host  = true;
 bool perf_guest = false;
 
@@ -126,112 +117,6 @@ int mkdir_p(char *path, mode_t mode)
 	return (stat(path, &st) && mkdir(path, mode)) ? -1 : 0;
 }
 
-<<<<<<< HEAD
-static int slow_copyfile(const char *from, const char *to)
-{
-	int err = 0;
-	char *line = NULL;
-	size_t n;
-	FILE *from_fp = fopen(from, "r"), *to_fp;
-
-	if (from_fp == NULL)
-		goto out;
-
-	to_fp = fopen(to, "w");
-	if (to_fp == NULL)
-		goto out_fclose_from;
-
-	while (getline(&line, &n, from_fp) > 0)
-		if (fputs(line, to_fp) == EOF)
-			goto out_fclose_to;
-	err = 0;
-out_fclose_to:
-	fclose(to_fp);
-	free(line);
-out_fclose_from:
-	fclose(from_fp);
-out:
-	return err;
-}
-
-int copyfile(const char *from, const char *to)
-{
-	int fromfd, tofd;
-	struct stat st;
-	void *addr;
-	int err = -1;
-
-	if (stat(from, &st))
-		goto out;
-
-	if (st.st_size == 0) /* /proc? do it slowly... */
-		return slow_copyfile(from, to);
-
-	fromfd = open(from, O_RDONLY);
-	if (fromfd < 0)
-		goto out;
-
-	tofd = creat(to, 0755);
-	if (tofd < 0)
-		goto out_close_from;
-
-	addr = mmap(NULL, st.st_size, PROT_READ, MAP_PRIVATE, fromfd, 0);
-	if (addr == MAP_FAILED)
-		goto out_close_to;
-
-	if (write(tofd, addr, st.st_size) == st.st_size)
-		err = 0;
-
-	munmap(addr, st.st_size);
-out_close_to:
-	close(tofd);
-	if (err)
-		unlink(to);
-out_close_from:
-	close(fromfd);
-out:
-	return err;
-}
-
-unsigned long convert_unit(unsigned long value, char *unit)
-{
-	*unit = ' ';
-
-	if (value > 1000) {
-		value /= 1000;
-		*unit = 'K';
-	}
-
-	if (value > 1000) {
-		value /= 1000;
-		*unit = 'M';
-	}
-
-	if (value > 1000) {
-		value /= 1000;
-		*unit = 'G';
-	}
-
-	return value;
-}
-
-int readn(int fd, void *buf, size_t n)
-{
-	void *buf_start = buf;
-
-	while (n) {
-		int ret = read(fd, buf, n);
-
-		if (ret <= 0)
-			return ret;
-
-		n -= ret;
-		buf += ret;
-	}
-
-	return buf - buf_start;
-}
-=======
 static bool match_pat(char *file, const char **pat)
 {
 	int i = 0;
@@ -686,4 +571,3 @@ int scandirat(int dirfd, const char *dirp,
 	return err;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

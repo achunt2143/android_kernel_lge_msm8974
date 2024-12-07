@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ALPHA_CHECKSUM_H
 #define _ALPHA_CHECKSUM_H
 
@@ -17,22 +14,11 @@ extern __sum16 ip_fast_csum(const void *iph, unsigned int ihl);
  * computes the checksum of the TCP/UDP pseudo-header
  * returns a 16-bit checksum, already complemented
  */
-<<<<<<< HEAD
-extern __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
-					   unsigned short len,
-					   unsigned short proto,
-					   __wsum sum);
-
-__wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
-				unsigned short len, unsigned short proto,
-				__wsum sum);
-=======
 __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
 			  __u32 len, __u8 proto, __wsum sum);
 
 __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
 			  __u32 len, __u8 proto, __wsum sum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * computes the checksum of a memory block at buff, length len,
@@ -55,17 +41,11 @@ extern __wsum csum_partial(const void *buff, int len, __wsum sum);
  * here even more important to align src and dst on a 32-bit (or even
  * better 64-bit) boundary
  */
-<<<<<<< HEAD
-__wsum csum_partial_copy_from_user(const void __user *src, void *dst, int len, __wsum sum, int *errp);
-
-__wsum csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum);
-=======
 #define _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
 #define _HAVE_ARCH_CSUM_AND_COPY
 __wsum csum_and_copy_from_user(const void __user *src, void *dst, int len);
 
 __wsum csum_partial_copy_nocheck(const void *src, void *dst, int len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -90,10 +70,5 @@ static inline __sum16 csum_fold(__wsum csum)
 #define _HAVE_ARCH_IPV6_CSUM
 extern __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 			       const struct in6_addr *daddr,
-<<<<<<< HEAD
-			       __u32 len, unsigned short proto,
-			       __wsum sum);
-=======
 			       __u32 len, __u8 proto, __wsum sum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

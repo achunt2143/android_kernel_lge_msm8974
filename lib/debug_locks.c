@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lib/debug_locks.c
  *
@@ -25,11 +22,7 @@
  * that would just muddy the log. So we report the first one and
  * shut up after that.
  */
-<<<<<<< HEAD
-int debug_locks = 1;
-=======
 int debug_locks __read_mostly = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(debug_locks);
 
 /*
@@ -37,23 +30,15 @@ EXPORT_SYMBOL_GPL(debug_locks);
  * 'silent failure': nothing is printed to the console when
  * a locking bug is detected.
  */
-<<<<<<< HEAD
-int debug_locks_silent;
-=======
 int debug_locks_silent __read_mostly;
 EXPORT_SYMBOL_GPL(debug_locks_silent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic 'turn off all lock debugging' function:
  */
 int debug_locks_off(void)
 {
-<<<<<<< HEAD
-	if (__debug_locks_off()) {
-=======
 	if (debug_locks && __debug_locks_off()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!debug_locks_silent) {
 			console_verbose();
 			return 1;
@@ -61,7 +46,4 @@ int debug_locks_off(void)
 	}
 	return 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(debug_locks_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

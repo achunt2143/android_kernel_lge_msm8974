@@ -1,54 +1,21 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * double precision: common utilities
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
-<<<<<<< HEAD
- *
- * ########################################################################
- *
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
- *
- * ########################################################################
- */
-
-
-#include "ieee754dp.h"
-
-ieee754dp ieee754dp_flong(s64 x)
-=======
  */
 
 #include "ieee754dp.h"
 
 union ieee754dp ieee754dp_flong(s64 x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 xm;
 	int xe;
 	int xs;
 
-<<<<<<< HEAD
-	CLEARCX;
-=======
 	ieee754_clearcx();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (x == 0)
 		return ieee754dp_zero(0);
@@ -68,42 +35,19 @@ union ieee754dp ieee754dp_flong(s64 x)
 	}
 
 	/* normalize */
-<<<<<<< HEAD
-	xe = DP_MBITS + 3;
-	if (xm >> (DP_MBITS + 1 + 3)) {
-		/* shunt out overflow bits */
-		while (xm >> (DP_MBITS + 1 + 3)) {
-=======
 	xe = DP_FBITS + 3;
 	if (xm >> (DP_FBITS + 1 + 3)) {
 		/* shunt out overflow bits */
 		while (xm >> (DP_FBITS + 1 + 3)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XDPSRSX1();
 		}
 	} else {
 		/* normalize in grs extended double precision */
-<<<<<<< HEAD
-		while ((xm >> (DP_MBITS + 3)) == 0) {
-=======
 		while ((xm >> (DP_FBITS + 3)) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xm <<= 1;
 			xe--;
 		}
 	}
-<<<<<<< HEAD
-	DPNORMRET1(xs, xe, xm, "dp_flong", x);
-}
-
-ieee754dp ieee754dp_fulong(u64 u)
-{
-	if ((s64) u < 0)
-		return ieee754dp_add(ieee754dp_1e63(),
-				     ieee754dp_flong(u & ~(1ULL << 63)));
-	return ieee754dp_flong(u);
-=======
 
 	return ieee754dp_format(xs, xe, xm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

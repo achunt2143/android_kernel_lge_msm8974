@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2000 Anton Blanchard (anton@linuxcare.com)
  *
@@ -9,10 +6,7 @@
  * This can also be tweaked for kernel stack overflow detection.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 
 /*
@@ -24,10 +18,7 @@
 	.align		32
 	.globl		_mcount
 	.type		_mcount,#function
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(_mcount)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl		mcount
 	.type		mcount,#function
 _mcount:
@@ -36,14 +27,7 @@ mcount:
 #ifdef CONFIG_DYNAMIC_FTRACE
 	/* Do nothing, the retl/nop below is all we need.  */
 #else
-<<<<<<< HEAD
-	sethi		%hi(function_trace_stop), %g1
-	lduw		[%g1 + %lo(function_trace_stop)], %g2
-	brnz,pn		%g2, 2f
-	 sethi		%hi(ftrace_trace_function), %g1
-=======
 	sethi		%hi(ftrace_trace_function), %g1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sethi		%hi(ftrace_stub), %g2
 	ldx		[%g1 + %lo(ftrace_trace_function)], %g1
 	or		%g2, %lo(ftrace_stub), %g2
@@ -96,16 +80,8 @@ ftrace_stub:
 	.globl		ftrace_caller
 	.type		ftrace_caller,#function
 ftrace_caller:
-<<<<<<< HEAD
-	sethi		%hi(function_trace_stop), %g1
-	mov		%i7, %g2
-	lduw		[%g1 + %lo(function_trace_stop)], %g1
-	brnz,pn		%g1, ftrace_stub
-	 mov		%fp, %g3
-=======
 	mov		%i7, %g2
 	mov		%fp, %g3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	save		%sp, -176, %sp
 	mov		%g2, %o1
 	mov		%g2, %l0

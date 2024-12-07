@@ -143,14 +143,8 @@ static struct map_info dc21285_map = {
 	.copy_from = dc21285_copy_from,
 };
 
-<<<<<<< HEAD
-
-/* Partition stuff */
-static const char *probes[] = { "RedBoot", "cmdlinepart", NULL };
-=======
 /* Partition stuff */
 static const char * const probes[] = { "RedBoot", "cmdlinepart", NULL };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init init_dc21285(void)
 {

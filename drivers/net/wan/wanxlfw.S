@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .psize 0
 /*
   wanXL serial card driver for Linux
@@ -9,12 +6,6 @@
 
   Copyright (C) 2003 Krzysztof Halasa <khc@pm.waw.pl>
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify it
-  under the terms of version 2 of the GNU General Public License
-  as published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -42,10 +33,7 @@
 */
 
 #include <linux/hdlc.h>
-<<<<<<< HEAD
-=======
 #include <linux/hdlc/ioctl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "wanxl.h"
 
 /* memory addresses and offsets */

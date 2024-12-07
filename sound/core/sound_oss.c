@@ -1,39 +1,9 @@
-<<<<<<< HEAD
-/*
- *  Advanced Linux Sound Architecture
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-#ifdef CONFIG_SND_OSSEMUL
-
-#if !defined(CONFIG_SOUND) && !(defined(MODULE) && defined(CONFIG_SOUND_MODULE))
-#error "Enable the OSS soundcore multiplexer (CONFIG_SOUND) in the kernel."
-#endif
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Advanced Linux Sound Architecture
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/slab.h>
@@ -44,11 +14,7 @@
 #include <linux/sound.h>
 #include <linux/mutex.h>
 
-<<<<<<< HEAD
-#define SNDRV_OSS_MINORS 128
-=======
 #define SNDRV_OSS_MINORS 256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct snd_minor *snd_oss_minors[SNDRV_OSS_MINORS];
 static DEFINE_MUTEX(sound_oss_mutex);
@@ -63,30 +29,16 @@ void *snd_lookup_oss_minor_data(unsigned int minor, int type)
 
 	if (minor >= ARRAY_SIZE(snd_oss_minors))
 		return NULL;
-<<<<<<< HEAD
-	mutex_lock(&sound_oss_mutex);
-=======
 	guard(mutex)(&sound_oss_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mreg = snd_oss_minors[minor];
 	if (mreg && mreg->type == type) {
 		private_data = mreg->private_data;
 		if (private_data && mreg->card_ptr)
-<<<<<<< HEAD
-			atomic_inc(&mreg->card_ptr->refcount);
-	} else
-		private_data = NULL;
-	mutex_unlock(&sound_oss_mutex);
-	return private_data;
-}
-
-=======
 			get_device(&mreg->card_ptr->card_dev);
 	} else
 		private_data = NULL;
 	return private_data;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_lookup_oss_minor_data);
 
 static int snd_oss_kernel_minor(int type, struct snd_card *card, int dev)
@@ -130,12 +82,7 @@ static int snd_oss_kernel_minor(int type, struct snd_card *card, int dev)
 }
 
 int snd_register_oss_device(int type, struct snd_card *card, int dev,
-<<<<<<< HEAD
-			    const struct file_operations *f_ops, void *private_data,
-			    const char *name)
-=======
 			    const struct file_operations *f_ops, void *private_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int minor = snd_oss_kernel_minor(type, card, dev);
 	int minor_unit;
@@ -145,11 +92,7 @@ int snd_register_oss_device(int type, struct snd_card *card, int dev,
 	int register1 = -1, register2 = -1;
 	struct device *carddev = snd_card_get_device_link(card);
 
-<<<<<<< HEAD
-	if (card && card->number >= 8)
-=======
 	if (card && card->number >= SNDRV_MINOR_OSS_DEVICES)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0; /* ignore silently */
 	if (minor < 0)
 		return minor;
@@ -162,11 +105,7 @@ int snd_register_oss_device(int type, struct snd_card *card, int dev,
 	preg->f_ops = f_ops;
 	preg->private_data = private_data;
 	preg->card_ptr = card;
-<<<<<<< HEAD
-	mutex_lock(&sound_oss_mutex);
-=======
 	guard(mutex)(&sound_oss_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_oss_minors[minor] = preg;
 	minor_unit = SNDRV_MINOR_OSS_DEVICE(minor);
 	switch (minor_unit) {
@@ -190,10 +129,6 @@ int snd_register_oss_device(int type, struct snd_card *card, int dev,
 			goto __end;
 		snd_oss_minors[track2] = preg;
 	}
-<<<<<<< HEAD
-	mutex_unlock(&sound_oss_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
       __end:
@@ -202,17 +137,9 @@ int snd_register_oss_device(int type, struct snd_card *card, int dev,
       	if (register1 >= 0)
       		unregister_sound_special(register1);
 	snd_oss_minors[minor] = NULL;
-<<<<<<< HEAD
-	mutex_unlock(&sound_oss_mutex);
 	kfree(preg);
       	return -EBUSY;
 }
-
-=======
-	kfree(preg);
-      	return -EBUSY;
-}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_register_oss_device);
 
 int snd_unregister_oss_device(int type, struct snd_card *card, int dev)
@@ -222,19 +149,6 @@ int snd_unregister_oss_device(int type, struct snd_card *card, int dev)
 	int track2 = -1;
 	struct snd_minor *mptr;
 
-<<<<<<< HEAD
-	if (card && card->number >= 8)
-		return 0;
-	if (minor < 0)
-		return minor;
-	mutex_lock(&sound_oss_mutex);
-	mptr = snd_oss_minors[minor];
-	if (mptr == NULL) {
-		mutex_unlock(&sound_oss_mutex);
-		return -ENOENT;
-	}
-	unregister_sound_special(minor);
-=======
 	if (card && card->number >= SNDRV_MINOR_OSS_DEVICES)
 		return 0;
 	if (minor < 0)
@@ -243,7 +157,6 @@ int snd_unregister_oss_device(int type, struct snd_card *card, int dev)
 	mptr = snd_oss_minors[minor];
 	if (mptr == NULL)
 		return -ENOENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (SNDRV_MINOR_OSS_DEVICE(minor)) {
 	case SNDRV_MINOR_OSS_PCM:
 		track2 = SNDRV_MINOR_OSS(cidx, SNDRV_MINOR_OSS_AUDIO);
@@ -255,18 +168,6 @@ int snd_unregister_oss_device(int type, struct snd_card *card, int dev)
 		track2 = SNDRV_MINOR_OSS(cidx, SNDRV_MINOR_OSS_DMMIDI1);
 		break;
 	}
-<<<<<<< HEAD
-	if (track2 >= 0) {
-		unregister_sound_special(track2);
-		snd_oss_minors[track2] = NULL;
-	}
-	snd_oss_minors[minor] = NULL;
-	mutex_unlock(&sound_oss_mutex);
-	kfree(mptr);
-	return 0;
-}
-
-=======
 	if (track2 >= 0)
 		snd_oss_minors[track2] = NULL;
 	snd_oss_minors[minor] = NULL;
@@ -281,21 +182,13 @@ int snd_unregister_oss_device(int type, struct snd_card *card, int dev)
 	kfree(mptr);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_unregister_oss_device);
 
 /*
  *  INFO PART
  */
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-
-static struct snd_info_entry *snd_minor_info_oss_entry;
-
-=======
 #ifdef CONFIG_SND_PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *snd_oss_device_type_name(int type)
 {
 	switch (type) {
@@ -321,16 +214,10 @@ static void snd_minor_info_oss_read(struct snd_info_entry *entry,
 	int minor;
 	struct snd_minor *mptr;
 
-<<<<<<< HEAD
-	mutex_lock(&sound_oss_mutex);
-	for (minor = 0; minor < SNDRV_OSS_MINORS; ++minor) {
-		if (!(mptr = snd_oss_minors[minor]))
-=======
 	guard(mutex)(&sound_oss_mutex);
 	for (minor = 0; minor < SNDRV_OSS_MINORS; ++minor) {
 		mptr = snd_oss_minors[minor];
 		if (!mptr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (mptr->card >= 0)
 			snd_iprintf(buffer, "%3i: [%i-%2i]: %s\n", minor,
@@ -340,10 +227,6 @@ static void snd_minor_info_oss_read(struct snd_info_entry *entry,
 			snd_iprintf(buffer, "%3i:       : %s\n", minor,
 				    snd_oss_device_type_name(mptr->type));
 	}
-<<<<<<< HEAD
-	mutex_unlock(&sound_oss_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -352,31 +235,9 @@ int __init snd_minor_info_oss_init(void)
 	struct snd_info_entry *entry;
 
 	entry = snd_info_create_module_entry(THIS_MODULE, "devices", snd_oss_root);
-<<<<<<< HEAD
-	if (entry) {
-		entry->c.text.read = snd_minor_info_oss_read;
-		if (snd_info_register(entry) < 0) {
-			snd_info_free_entry(entry);
-			entry = NULL;
-		}
-	}
-	snd_minor_info_oss_entry = entry;
-	return 0;
-}
-
-int __exit snd_minor_info_oss_done(void)
-{
-	snd_info_free_entry(snd_minor_info_oss_entry);
-	return 0;
-}
-#endif /* CONFIG_PROC_FS */
-
-#endif /* CONFIG_SND_OSSEMUL */
-=======
 	if (!entry)
 		return -ENOMEM;
 	entry->c.text.read = snd_minor_info_oss_read;
 	return snd_info_register(entry); /* freed in error path */
 }
 #endif /* CONFIG_SND_PROC_FS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

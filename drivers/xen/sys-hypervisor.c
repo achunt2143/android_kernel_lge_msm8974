@@ -1,29 +1,14 @@
-<<<<<<< HEAD
-/*
- *  copyright (c) 2006 IBM Corporation
- *  Authored by: Mike D. Day <ncmike@us.ibm.com>
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  copyright (c) 2006 IBM Corporation
  *  Authored by: Mike D. Day <ncmike@us.ibm.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/kobject.h>
-=======
 #include <linux/init.h>
 #include <linux/kobject.h>
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/xen/hypervisor.h>
 #include <asm/xen/hypercall.h>
@@ -32,15 +17,6 @@
 #include <xen/xenbus.h>
 #include <xen/interface/xen.h>
 #include <xen/interface/version.h>
-<<<<<<< HEAD
-
-#define HYPERVISOR_ATTR_RO(_name) \
-static struct hyp_sysfs_attr  _name##_attr = __ATTR_RO(_name)
-
-#define HYPERVISOR_ATTR_RW(_name) \
-static struct hyp_sysfs_attr _name##_attr = \
-	__ATTR(_name, 0644, _name##_show, _name##_store)
-=======
 #ifdef CONFIG_XEN_HAVE_VPMU
 #include <xen/interface/xenpmu.h>
 #endif
@@ -50,20 +26,15 @@ static struct hyp_sysfs_attr _name##_attr = __ATTR_RO(_name)
 
 #define HYPERVISOR_ATTR_RW(_name) \
 static struct hyp_sysfs_attr _name##_attr = __ATTR_RW(_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hyp_sysfs_attr {
 	struct attribute attr;
 	ssize_t (*show)(struct hyp_sysfs_attr *, char *);
 	ssize_t (*store)(struct hyp_sysfs_attr *, const char *, size_t);
-<<<<<<< HEAD
-	void *hyp_attr_data;
-=======
 	union {
 		void *hyp_attr_data;
 		unsigned long hyp_attr_value;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static ssize_t type_show(struct hyp_sysfs_attr *attr, char *buffer)
@@ -78,11 +49,6 @@ static int __init xen_sysfs_type_init(void)
 	return sysfs_create_file(hypervisor_kobj, &type_attr.attr);
 }
 
-<<<<<<< HEAD
-static void xen_sysfs_type_destroy(void)
-{
-	sysfs_remove_file(hypervisor_kobj, &type_attr.attr);
-=======
 static ssize_t guest_type_show(struct hyp_sysfs_attr *attr, char *buffer)
 {
 	const char *type;
@@ -110,7 +76,6 @@ HYPERVISOR_ATTR_RO(guest_type);
 static int __init xen_sysfs_guest_type_init(void)
 {
 	return sysfs_create_file(hypervisor_kobj, &guest_type_attr.attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* xen version attributes */
@@ -169,20 +134,9 @@ static int __init xen_sysfs_version_init(void)
 	return sysfs_create_group(hypervisor_kobj, &version_group);
 }
 
-<<<<<<< HEAD
-static void xen_sysfs_version_destroy(void)
-{
-	sysfs_remove_group(hypervisor_kobj, &version_group);
-}
-
-/* UUID */
-
-static ssize_t uuid_show(struct hyp_sysfs_attr *attr, char *buffer)
-=======
 /* UUID */
 
 static ssize_t uuid_show_fallback(struct hyp_sysfs_attr *attr, char *buffer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *vm, *val;
 	int ret;
@@ -203,8 +157,6 @@ static ssize_t uuid_show_fallback(struct hyp_sysfs_attr *attr, char *buffer)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t uuid_show(struct hyp_sysfs_attr *attr, char *buffer)
 {
 	xen_domain_handle_t uuid;
@@ -216,7 +168,6 @@ static ssize_t uuid_show(struct hyp_sysfs_attr *attr, char *buffer)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 HYPERVISOR_ATTR_RO(uuid);
 
 static int __init xen_sysfs_uuid_init(void)
@@ -224,14 +175,6 @@ static int __init xen_sysfs_uuid_init(void)
 	return sysfs_create_file(hypervisor_kobj, &uuid_attr.attr);
 }
 
-<<<<<<< HEAD
-static void xen_sysfs_uuid_destroy(void)
-{
-	sysfs_remove_file(hypervisor_kobj, &uuid_attr.attr);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* xen compilation attributes */
 
 static ssize_t compiler_show(struct hyp_sysfs_attr *attr, char *buffer)
@@ -300,23 +243,11 @@ static const struct attribute_group xen_compilation_group = {
 	.attrs = xen_compile_attrs,
 };
 
-<<<<<<< HEAD
-static int __init xen_compilation_init(void)
-=======
 static int __init xen_sysfs_compilation_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sysfs_create_group(hypervisor_kobj, &xen_compilation_group);
 }
 
-<<<<<<< HEAD
-static void xen_compilation_destroy(void)
-{
-	sysfs_remove_group(hypervisor_kobj, &xen_compilation_group);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* xen properties info */
 
 static ssize_t capabilities_show(struct hyp_sysfs_attr *attr, char *buffer)
@@ -365,12 +296,8 @@ static ssize_t virtual_start_show(struct hyp_sysfs_attr *attr, char *buffer)
 		ret = HYPERVISOR_xen_version(XENVER_platform_parameters,
 					     parms);
 		if (!ret)
-<<<<<<< HEAD
-			ret = sprintf(buffer, "%lx\n", parms->virt_start);
-=======
 			ret = sprintf(buffer, "%"PRI_xen_ulong"\n",
 				      parms->virt_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(parms);
 	}
 
@@ -428,8 +355,6 @@ static ssize_t features_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(features);
 
-<<<<<<< HEAD
-=======
 static ssize_t buildid_show(struct hyp_sysfs_attr *attr, char *buffer)
 {
 	ssize_t ret;
@@ -457,17 +382,13 @@ static ssize_t buildid_show(struct hyp_sysfs_attr *attr, char *buffer)
 
 HYPERVISOR_ATTR_RO(buildid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *xen_properties_attrs[] = {
 	&capabilities_attr.attr,
 	&changeset_attr.attr,
 	&virtual_start_attr.attr,
 	&pagesize_attr.attr,
 	&features_attr.attr,
-<<<<<<< HEAD
-=======
 	&buildid_attr.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
@@ -476,22 +397,11 @@ static const struct attribute_group xen_properties_group = {
 	.attrs = xen_properties_attrs,
 };
 
-<<<<<<< HEAD
-static int __init xen_properties_init(void)
-=======
 static int __init xen_sysfs_properties_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sysfs_create_group(hypervisor_kobj, &xen_properties_group);
 }
 
-<<<<<<< HEAD
-static void xen_properties_destroy(void)
-{
-	sysfs_remove_group(hypervisor_kobj, &xen_properties_group);
-}
-
-=======
 #define FLAG_UNAME "unknown"
 #define FLAG_UNAME_FMT FLAG_UNAME "%02u"
 #define FLAG_UNAME_MAX sizeof(FLAG_UNAME "XX")
@@ -661,7 +571,6 @@ static int __init xen_sysfs_pmu_init(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init hyper_sysfs_init(void)
 {
 	int ret;
@@ -672,12 +581,6 @@ static int __init hyper_sysfs_init(void)
 	ret = xen_sysfs_type_init();
 	if (ret)
 		goto out;
-<<<<<<< HEAD
-	ret = xen_sysfs_version_init();
-	if (ret)
-		goto version_out;
-	ret = xen_compilation_init();
-=======
 	ret = xen_sysfs_guest_type_init();
 	if (ret)
 		goto guest_type_out;
@@ -685,43 +588,11 @@ static int __init hyper_sysfs_init(void)
 	if (ret)
 		goto version_out;
 	ret = xen_sysfs_compilation_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto comp_out;
 	ret = xen_sysfs_uuid_init();
 	if (ret)
 		goto uuid_out;
-<<<<<<< HEAD
-	ret = xen_properties_init();
-	if (ret)
-		goto prop_out;
-
-	goto out;
-
-prop_out:
-	xen_sysfs_uuid_destroy();
-uuid_out:
-	xen_compilation_destroy();
-comp_out:
-	xen_sysfs_version_destroy();
-version_out:
-	xen_sysfs_type_destroy();
-out:
-	return ret;
-}
-
-static void __exit hyper_sysfs_exit(void)
-{
-	xen_properties_destroy();
-	xen_compilation_destroy();
-	xen_sysfs_uuid_destroy();
-	xen_sysfs_version_destroy();
-	xen_sysfs_type_destroy();
-
-}
-module_init(hyper_sysfs_init);
-module_exit(hyper_sysfs_exit);
-=======
 	ret = xen_sysfs_properties_init();
 	if (ret)
 		goto prop_out;
@@ -755,7 +626,6 @@ out:
 	return ret;
 }
 device_initcall(hyper_sysfs_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t hyp_sysfs_show(struct kobject *kobj,
 			      struct attribute *attr,
@@ -785,11 +655,7 @@ static const struct sysfs_ops hyp_sysfs_ops = {
 	.store = hyp_sysfs_store,
 };
 
-<<<<<<< HEAD
-static struct kobj_type hyp_sysfs_kobj_type = {
-=======
 static const struct kobj_type hyp_sysfs_kobj_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysfs_ops = &hyp_sysfs_ops,
 };
 

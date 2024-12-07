@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Uros Bizjak <uros@kss-loka.si>
@@ -9,24 +6,6 @@
  *  Routines for control of 8-bit SoundBlaster cards and clones
  *  Please note: I don't have access to old SB8 soundcards.
  *
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * --
  *
  * Thu Apr 29 20:36:17 BST 1999 George David Morrison <gdm@gedamo.demon.co.uk>
@@ -37,11 +16,7 @@
  *   Cleaned up and rewrote lowlevel routines.
  */
 
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 #include <linux/init.h>
 #include <linux/time.h>
@@ -57,31 +32,19 @@ MODULE_LICENSE("GPL");
 #define SB8_DEN(v)	((SB8_CLOCK + (v) / 2) / (v))
 #define SB8_RATE(v)	(SB8_CLOCK / SB8_DEN(v))
 
-<<<<<<< HEAD
-static struct snd_ratnum clock = {
-=======
 static const struct snd_ratnum clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num = SB8_CLOCK,
 	.den_min = 1,
 	.den_max = 256,
 	.den_step = 1,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hw_constraint_ratnums hw_constraints_clock = {
-=======
 static const struct snd_pcm_hw_constraint_ratnums hw_constraints_clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nrats = 1,
 	.rats = &clock,
 };
 
-<<<<<<< HEAD
-static struct snd_ratnum stereo_clocks[] = {
-=======
 static const struct snd_ratnum stereo_clocks[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.num = SB8_CLOCK,
 		.den_min = SB8_DEN(22050),
@@ -153,21 +116,13 @@ static int snd_sb8_playback_prepare(struct snd_pcm_substream *substream)
 			chip->playback_format = SB_DSP_HI_OUTPUT_AUTO;
 			break;
 		}
-<<<<<<< HEAD
-		/* fallthru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SB_HW_201:
 		if (rate > 23000) {
 			chip->playback_format = SB_DSP_HI_OUTPUT_AUTO;
 			break;
 		}
-<<<<<<< HEAD
-		/* fallthru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SB_HW_20:
 		chip->playback_format = SB_DSP_LO_OUTPUT_AUTO;
 		break;
@@ -270,21 +225,6 @@ static int snd_sb8_playback_trigger(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_sb8_hw_params(struct snd_pcm_substream *substream,
-			     struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
-}
-
-static int snd_sb8_hw_free(struct snd_pcm_substream *substream)
-{
-	snd_pcm_lib_free_pages(substream);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_sb8_capture_prepare(struct snd_pcm_substream *substream)
 {
 	unsigned long flags;
@@ -321,11 +261,7 @@ static int snd_sb8_capture_prepare(struct snd_pcm_substream *substream)
 			chip->capture_format = SB_DSP_HI_INPUT_AUTO;
 			break;
 		}
-<<<<<<< HEAD
-		/* fallthru */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SB_HW_20:
 		chip->capture_format = SB_DSP_LO_INPUT_AUTO;
 		break;
@@ -419,26 +355,15 @@ static int snd_sb8_capture_trigger(struct snd_pcm_substream *substream,
 irqreturn_t snd_sb8dsp_interrupt(struct snd_sb *chip)
 {
 	struct snd_pcm_substream *substream;
-<<<<<<< HEAD
-	struct snd_pcm_runtime *runtime;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_sb_ack_8bit(chip);
 	switch (chip->mode) {
 	case SB_MODE_PLAYBACK_16:	/* ok.. playback is active */
 		if (chip->hardware != SB_HW_JAZZ16)
 			break;
-<<<<<<< HEAD
-		/* fallthru */
-	case SB_MODE_PLAYBACK_8:
-		substream = chip->playback_substream;
-		runtime = substream->runtime;
-=======
 		fallthrough;
 	case SB_MODE_PLAYBACK_8:
 		substream = chip->playback_substream;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (chip->playback_format == SB_DSP_OUTPUT)
 		    	snd_sb8_playback_trigger(substream, SNDRV_PCM_TRIGGER_START);
 		snd_pcm_period_elapsed(substream);
@@ -446,16 +371,9 @@ irqreturn_t snd_sb8dsp_interrupt(struct snd_sb *chip)
 	case SB_MODE_CAPTURE_16:
 		if (chip->hardware != SB_HW_JAZZ16)
 			break;
-<<<<<<< HEAD
-		/* fallthru */
-	case SB_MODE_CAPTURE_8:
-		substream = chip->capture_substream;
-		runtime = substream->runtime;
-=======
 		fallthrough;
 	case SB_MODE_CAPTURE_8:
 		substream = chip->capture_substream;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (chip->capture_format == SB_DSP_INPUT)
 		    	snd_sb8_capture_trigger(substream, SNDRV_PCM_TRIGGER_START);
 		snd_pcm_period_elapsed(substream);
@@ -500,11 +418,7 @@ static snd_pcm_uframes_t snd_sb8_capture_pointer(struct snd_pcm_substream *subst
 
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_sb8_playback =
-=======
 static const struct snd_pcm_hardware snd_sb8_playback =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -523,11 +437,7 @@ static const struct snd_pcm_hardware snd_sb8_playback =
 	.fifo_size =		0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_sb8_capture =
-=======
 static const struct snd_pcm_hardware snd_sb8_capture =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -596,10 +506,7 @@ static int snd_sb8_open(struct snd_pcm_substream *substream)
 		} else {
 			runtime->hw.rate_max = 15000;
 		}
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -637,59 +544,31 @@ static int snd_sb8_close(struct snd_pcm_substream *substream)
  *  Initialization part
  */
  
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_sb8_playback_ops = {
-	.open =			snd_sb8_open,
-	.close =		snd_sb8_close,
-	.ioctl =		snd_pcm_lib_ioctl,
-	.hw_params =		snd_sb8_hw_params,
-	.hw_free =		snd_sb8_hw_free,
-=======
 static const struct snd_pcm_ops snd_sb8_playback_ops = {
 	.open =			snd_sb8_open,
 	.close =		snd_sb8_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =		snd_sb8_playback_prepare,
 	.trigger =		snd_sb8_playback_trigger,
 	.pointer =		snd_sb8_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_sb8_capture_ops = {
-	.open =			snd_sb8_open,
-	.close =		snd_sb8_close,
-	.ioctl =		snd_pcm_lib_ioctl,
-	.hw_params =		snd_sb8_hw_params,
-	.hw_free =		snd_sb8_hw_free,
-=======
 static const struct snd_pcm_ops snd_sb8_capture_ops = {
 	.open =			snd_sb8_open,
 	.close =		snd_sb8_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =		snd_sb8_capture_prepare,
 	.trigger =		snd_sb8_capture_trigger,
 	.pointer =		snd_sb8_capture_pointer,
 };
 
-<<<<<<< HEAD
-int snd_sb8dsp_pcm(struct snd_sb *chip, int device, struct snd_pcm ** rpcm)
-=======
 int snd_sb8dsp_pcm(struct snd_sb *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = chip->card;
 	struct snd_pcm *pcm;
 	int err;
 	size_t max_prealloc = 64 * 1024;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-	if ((err = snd_pcm_new(card, "SB8 DSP", device, 1, 1, &pcm)) < 0)
-=======
 	err = snd_pcm_new(card, "SB8 DSP", device, 1, 1, &pcm);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	sprintf(pcm->name, "DSP v%i.%i", chip->version >> 8, chip->version & 0xff);
 	pcm->info_flags = SNDRV_PCM_INFO_HALF_DUPLEX;
@@ -700,18 +579,9 @@ int snd_sb8dsp_pcm(struct snd_sb *chip, int device)
 
 	if (chip->dma8 > 3 || chip->dma16 >= 0)
 		max_prealloc = 128 * 1024;
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_isa_data(),
-					      64*1024, max_prealloc);
-
-	if (rpcm)
-		*rpcm = pcm;
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
 				       card->dev, 64*1024, max_prealloc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -720,22 +590,3 @@ EXPORT_SYMBOL(snd_sb8dsp_interrupt);
   /* sb8_midi.c */
 EXPORT_SYMBOL(snd_sb8dsp_midi_interrupt);
 EXPORT_SYMBOL(snd_sb8dsp_midi);
-<<<<<<< HEAD
-
-/*
- *  INIT part
- */
-
-static int __init alsa_sb8_init(void)
-{
-	return 0;
-}
-
-static void __exit alsa_sb8_exit(void)
-{
-}
-
-module_init(alsa_sb8_init)
-module_exit(alsa_sb8_exit)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

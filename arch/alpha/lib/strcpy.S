@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/strcpy.S
  * Contributed by Richard Henderson (rth@tamu.edu)
@@ -9,11 +6,7 @@
  * Copy a null-terminated string from SRC to DST.  Return a pointer
  * to the null-terminator in the source.
  */
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text
 
 	.align 3
@@ -29,7 +22,4 @@ strcpy:
 	br	__stxcpy	# do the copy
 
 	.end strcpy
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(strcpy)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * Sally Floyd's High Speed TCP (RFC 3649) congestion control
- *
- * See http://www.icir.org/floyd/hstcp.html
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Sally Floyd's High Speed TCP (RFC 3649) congestion control
  *
  * See https://www.icir.org/floyd/hstcp.html
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * John Heffner <jheffner@psc.edu>
  */
@@ -17,10 +10,6 @@
 #include <linux/module.h>
 #include <net/tcp.h>
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* From AIMD tables from RFC 3649 appendix B,
  * with fixed-point MD scaled <<8.
  */
@@ -28,80 +17,6 @@ static const struct hstcp_aimd_val {
 	unsigned int cwnd;
 	unsigned int md;
 } hstcp_aimd_vals[] = {
-<<<<<<< HEAD
- {     38,  128, /*  0.50 */ },
- {    118,  112, /*  0.44 */ },
- {    221,  104, /*  0.41 */ },
- {    347,   98, /*  0.38 */ },
- {    495,   93, /*  0.37 */ },
- {    663,   89, /*  0.35 */ },
- {    851,   86, /*  0.34 */ },
- {   1058,   83, /*  0.33 */ },
- {   1284,   81, /*  0.32 */ },
- {   1529,   78, /*  0.31 */ },
- {   1793,   76, /*  0.30 */ },
- {   2076,   74, /*  0.29 */ },
- {   2378,   72, /*  0.28 */ },
- {   2699,   71, /*  0.28 */ },
- {   3039,   69, /*  0.27 */ },
- {   3399,   68, /*  0.27 */ },
- {   3778,   66, /*  0.26 */ },
- {   4177,   65, /*  0.26 */ },
- {   4596,   64, /*  0.25 */ },
- {   5036,   62, /*  0.25 */ },
- {   5497,   61, /*  0.24 */ },
- {   5979,   60, /*  0.24 */ },
- {   6483,   59, /*  0.23 */ },
- {   7009,   58, /*  0.23 */ },
- {   7558,   57, /*  0.22 */ },
- {   8130,   56, /*  0.22 */ },
- {   8726,   55, /*  0.22 */ },
- {   9346,   54, /*  0.21 */ },
- {   9991,   53, /*  0.21 */ },
- {  10661,   52, /*  0.21 */ },
- {  11358,   52, /*  0.20 */ },
- {  12082,   51, /*  0.20 */ },
- {  12834,   50, /*  0.20 */ },
- {  13614,   49, /*  0.19 */ },
- {  14424,   48, /*  0.19 */ },
- {  15265,   48, /*  0.19 */ },
- {  16137,   47, /*  0.19 */ },
- {  17042,   46, /*  0.18 */ },
- {  17981,   45, /*  0.18 */ },
- {  18955,   45, /*  0.18 */ },
- {  19965,   44, /*  0.17 */ },
- {  21013,   43, /*  0.17 */ },
- {  22101,   43, /*  0.17 */ },
- {  23230,   42, /*  0.17 */ },
- {  24402,   41, /*  0.16 */ },
- {  25618,   41, /*  0.16 */ },
- {  26881,   40, /*  0.16 */ },
- {  28193,   39, /*  0.16 */ },
- {  29557,   39, /*  0.15 */ },
- {  30975,   38, /*  0.15 */ },
- {  32450,   38, /*  0.15 */ },
- {  33986,   37, /*  0.15 */ },
- {  35586,   36, /*  0.14 */ },
- {  37253,   36, /*  0.14 */ },
- {  38992,   35, /*  0.14 */ },
- {  40808,   35, /*  0.14 */ },
- {  42707,   34, /*  0.13 */ },
- {  44694,   33, /*  0.13 */ },
- {  46776,   33, /*  0.13 */ },
- {  48961,   32, /*  0.13 */ },
- {  51258,   32, /*  0.13 */ },
- {  53677,   31, /*  0.12 */ },
- {  56230,   30, /*  0.12 */ },
- {  58932,   30, /*  0.12 */ },
- {  61799,   29, /*  0.12 */ },
- {  64851,   28, /*  0.11 */ },
- {  68113,   28, /*  0.11 */ },
- {  71617,   27, /*  0.11 */ },
- {  75401,   26, /*  0.10 */ },
- {  79517,   26, /*  0.10 */ },
- {  84035,   25, /*  0.10 */ },
- {  89053,   24, /*  0.10 */ },
-=======
 	{     38,  128, /*  0.50 */ },
 	{    118,  112, /*  0.44 */ },
 	{    221,  104, /*  0.41 */ },
@@ -174,7 +89,6 @@ static const struct hstcp_aimd_val {
 	{  79517,   26, /*  0.10 */ },
 	{  84035,   25, /*  0.10 */ },
 	{  89053,   24, /*  0.10 */ },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define HSTCP_AIMD_MAX	ARRAY_SIZE(hstcp_aimd_vals)
@@ -195,28 +109,16 @@ static void hstcp_init(struct sock *sk)
 	tp->snd_cwnd_clamp = min_t(u32, tp->snd_cwnd_clamp, 0xffffffff/128);
 }
 
-<<<<<<< HEAD
-static void hstcp_cong_avoid(struct sock *sk, u32 adk, u32 in_flight)
-=======
 static void hstcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct hstcp *ca = inet_csk_ca(sk);
 
-<<<<<<< HEAD
-	if (!tcp_is_cwnd_limited(sk, in_flight))
-		return;
-
-	if (tp->snd_cwnd <= tp->snd_ssthresh)
-		tcp_slow_start(tp);
-=======
 	if (!tcp_is_cwnd_limited(sk))
 		return;
 
 	if (tcp_in_slow_start(tp))
 		tcp_slow_start(tp, acked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		/* Update AIMD parameters.
 		 *
@@ -225,40 +127,22 @@ static void hstcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 		 *     snd_cwnd <=
 		 *     hstcp_aimd_vals[ca->ai].cwnd
 		 */
-<<<<<<< HEAD
-		if (tp->snd_cwnd > hstcp_aimd_vals[ca->ai].cwnd) {
-			while (tp->snd_cwnd > hstcp_aimd_vals[ca->ai].cwnd &&
-			       ca->ai < HSTCP_AIMD_MAX - 1)
-				ca->ai++;
-		} else if (ca->ai && tp->snd_cwnd <= hstcp_aimd_vals[ca->ai-1].cwnd) {
-			while (ca->ai && tp->snd_cwnd <= hstcp_aimd_vals[ca->ai-1].cwnd)
-=======
 		if (tcp_snd_cwnd(tp) > hstcp_aimd_vals[ca->ai].cwnd) {
 			while (tcp_snd_cwnd(tp) > hstcp_aimd_vals[ca->ai].cwnd &&
 			       ca->ai < HSTCP_AIMD_MAX - 1)
 				ca->ai++;
 		} else if (ca->ai && tcp_snd_cwnd(tp) <= hstcp_aimd_vals[ca->ai-1].cwnd) {
 			while (ca->ai && tcp_snd_cwnd(tp) <= hstcp_aimd_vals[ca->ai-1].cwnd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ca->ai--;
 		}
 
 		/* Do additive increase */
-<<<<<<< HEAD
-		if (tp->snd_cwnd < tp->snd_cwnd_clamp) {
-			/* cwnd = cwnd + a(w) / cwnd */
-			tp->snd_cwnd_cnt += ca->ai + 1;
-			if (tp->snd_cwnd_cnt >= tp->snd_cwnd) {
-				tp->snd_cwnd_cnt -= tp->snd_cwnd;
-				tp->snd_cwnd++;
-=======
 		if (tcp_snd_cwnd(tp) < tp->snd_cwnd_clamp) {
 			/* cwnd = cwnd + a(w) / cwnd */
 			tp->snd_cwnd_cnt += ca->ai + 1;
 			if (tp->snd_cwnd_cnt >= tcp_snd_cwnd(tp)) {
 				tp->snd_cwnd_cnt -= tcp_snd_cwnd(tp);
 				tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -267,20 +151,6 @@ static void hstcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 static u32 hstcp_ssthresh(struct sock *sk)
 {
 	const struct tcp_sock *tp = tcp_sk(sk);
-<<<<<<< HEAD
-	const struct hstcp *ca = inet_csk_ca(sk);
-
-	/* Do multiplicative decrease */
-	return max(tp->snd_cwnd - ((tp->snd_cwnd * hstcp_aimd_vals[ca->ai].md) >> 8), 2U);
-}
-
-
-static struct tcp_congestion_ops tcp_highspeed __read_mostly = {
-	.init		= hstcp_init,
-	.ssthresh	= hstcp_ssthresh,
-	.cong_avoid	= hstcp_cong_avoid,
-	.min_cwnd	= tcp_reno_min_cwnd,
-=======
 	struct hstcp *ca = inet_csk_ca(sk);
 
 	/* Do multiplicative decrease */
@@ -292,7 +162,6 @@ static struct tcp_congestion_ops tcp_highspeed __read_mostly = {
 	.ssthresh	= hstcp_ssthresh,
 	.undo_cwnd	= tcp_reno_undo_cwnd,
 	.cong_avoid	= hstcp_cong_avoid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.owner		= THIS_MODULE,
 	.name		= "highspeed"

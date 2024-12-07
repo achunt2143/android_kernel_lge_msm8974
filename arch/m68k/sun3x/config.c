@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup kernel for a Sun3x machine
  *
@@ -22,16 +19,6 @@
 #include <asm/sun3ints.h>
 #include <asm/setup.h>
 #include <asm/oplib.h>
-<<<<<<< HEAD
-
-#include "time.h"
-
-volatile char *clock_va;
-
-extern void sun3_get_model(char *model);
-
-void sun3_leds(unsigned int i)
-=======
 #include <asm/config.h>
 
 #include "time.h"
@@ -40,7 +27,6 @@ void sun3_leds(unsigned int i)
 volatile char *clock_va;
 
 void sun3_leds(unsigned char byte)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 }
@@ -58,18 +44,9 @@ void __init config_sun3x(void)
 
 	sun3x_prom_init();
 
-<<<<<<< HEAD
-	mach_max_dma_address = 0xffffffff; /* we can DMA anywhere, whee */
-
 	mach_sched_init      = sun3x_sched_init;
 	mach_init_IRQ        = sun3_init_IRQ;
 
-	mach_gettimeoffset   = sun3x_gettimeoffset;
-=======
-	mach_sched_init      = sun3x_sched_init;
-	mach_init_IRQ        = sun3_init_IRQ;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mach_reset           = sun3x_reboot;
 
 	mach_hwclk           = sun3x_hwclk;
@@ -91,10 +68,6 @@ void __init config_sun3x(void)
 		break;
 	default:
 		serial_console = 0;
-<<<<<<< HEAD
-		conswitchp = &dummy_con;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 #endif

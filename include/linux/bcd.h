@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _BCD_H
 #define _BCD_H
 
 #include <linux/compiler.h>
 
-<<<<<<< HEAD
-unsigned bcd2bin(unsigned char val) __attribute_const__;
-unsigned char bin2bcd(unsigned val) __attribute_const__;
-=======
 #define bcd2bin(x)					\
 		(__builtin_constant_p((u8 )(x)) ?	\
 		const_bcd2bin(x) :			\
@@ -30,6 +23,5 @@ unsigned char bin2bcd(unsigned val) __attribute_const__;
 
 unsigned _bcd2bin(unsigned char val) __attribute_const__;
 unsigned char _bin2bcd(unsigned val) __attribute_const__;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _BCD_H */

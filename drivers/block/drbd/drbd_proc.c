@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
    drbd_proc.c
 
@@ -11,32 +8,12 @@
    Copyright (C) 1999-2008, Philipp Reisner <philipp.reisner@linbit.com>.
    Copyright (C) 2002-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
 
-<<<<<<< HEAD
-   drbd is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   drbd is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with drbd; see the file COPYING.  If not, write to
-   the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  */
 
 #include <linux/module.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/file.h>
 #include <linux/proc_fs.h>
@@ -44,36 +21,15 @@
 #include <linux/drbd.h>
 #include "drbd_int.h"
 
-<<<<<<< HEAD
-static int drbd_proc_open(struct inode *inode, struct file *file);
-static int drbd_proc_release(struct inode *inode, struct file *file);
-
-
-struct proc_dir_entry *drbd_proc;
-const struct file_operations drbd_proc_fops = {
-	.owner		= THIS_MODULE,
-	.open		= drbd_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= drbd_proc_release,
-};
-
-void seq_printf_with_thousands_grouping(struct seq_file *seq, long v)
-=======
 struct proc_dir_entry *drbd_proc;
 
 static void seq_printf_with_thousands_grouping(struct seq_file *seq, long v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* v is in kB/sec. We don't expect TiByte/sec yet. */
 	if (unlikely(v >= 1000000)) {
 		/* cool: > GiByte/s */
 		seq_printf(seq, "%ld,", v / 1000000);
-<<<<<<< HEAD
-		v /= 1000000;
-=======
 		v %= 1000000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(seq, "%03ld,%03ld", v/1000, v % 1000);
 	} else if (likely(v >= 1000))
 		seq_printf(seq, "%ld,%03ld", v/1000, v % 1000);
@@ -81,8 +37,6 @@ static void seq_printf_with_thousands_grouping(struct seq_file *seq, long v)
 		seq_printf(seq, "%ld", v);
 }
 
-<<<<<<< HEAD
-=======
 static void drbd_get_syncer_progress(struct drbd_device *device,
 		union drbd_dev_state state, unsigned long *rs_total,
 		unsigned long *bits_left, unsigned int *per_mil_done)
@@ -127,56 +81,20 @@ static void drbd_get_syncer_progress(struct drbd_device *device,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*lge
  * progress bars shamelessly adapted from driver/md/md.c
  * output looks like
  *	[=====>..............] 33.5% (23456/123456)
  *	finish: 2:20:20 speed: 6,345 (6,456) K/sec
  */
-<<<<<<< HEAD
-static void drbd_syncer_progress(struct drbd_conf *mdev, struct seq_file *seq)
-{
-	unsigned long db, dt, dbdt, rt, rs_left;
-=======
 static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *seq,
 		union drbd_dev_state state)
 {
 	unsigned long db, dt, dbdt, rt, rs_total, rs_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int res;
 	int i, x, y;
 	int stalled = 0;
 
-<<<<<<< HEAD
-	drbd_get_syncer_progress(mdev, &rs_left, &res);
-
-	x = res/50;
-	y = 20-x;
-	seq_printf(seq, "\t[");
-	for (i = 1; i < x; i++)
-		seq_printf(seq, "=");
-	seq_printf(seq, ">");
-	for (i = 0; i < y; i++)
-		seq_printf(seq, ".");
-	seq_printf(seq, "] ");
-
-	if (mdev->state.conn == C_VERIFY_S || mdev->state.conn == C_VERIFY_T)
-		seq_printf(seq, "verified:");
-	else
-		seq_printf(seq, "sync'ed:");
-	seq_printf(seq, "%3u.%u%% ", res / 10, res % 10);
-
-	/* if more than a few GB, display in MB */
-	if (mdev->rs_total > (4UL << (30 - BM_BLOCK_SHIFT)))
-		seq_printf(seq, "(%lu/%lu)M",
-			    (unsigned long) Bit2KB(rs_left >> 10),
-			    (unsigned long) Bit2KB(mdev->rs_total >> 10));
-	else
-		seq_printf(seq, "(%lu/%lu)K\n\t",
-			    (unsigned long) Bit2KB(rs_left),
-			    (unsigned long) Bit2KB(mdev->rs_total));
-=======
 	drbd_get_syncer_progress(device, state, &rs_total, &rs_left, &res);
 
 	x = res/50;
@@ -206,7 +124,6 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 			    (unsigned long) Bit2KB(rs_total));
 
 	seq_puts(seq, "\n\t");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* see drivers/md/md.c
 	 * We do not want to overflow, so the order of operands and
@@ -221,46 +138,20 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 	 * at least (DRBD_SYNC_MARKS-2)*DRBD_SYNC_MARK_STEP old, and has at
 	 * least DRBD_SYNC_MARK_STEP time before it will be modified. */
 	/* ------------------------ ~18s average ------------------------ */
-<<<<<<< HEAD
-	i = (mdev->rs_last_mark + 2) % DRBD_SYNC_MARKS;
-	dt = (jiffies - mdev->rs_mark_time[i]) / HZ;
-	if (dt > (DRBD_SYNC_MARK_STEP * DRBD_SYNC_MARKS))
-=======
 	i = (device->rs_last_mark + 2) % DRBD_SYNC_MARKS;
 	dt = (jiffies - device->rs_mark_time[i]) / HZ;
 	if (dt > 180)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stalled = 1;
 
 	if (!dt)
 		dt++;
-<<<<<<< HEAD
-	db = mdev->rs_mark_left[i] - rs_left;
-=======
 	db = device->rs_mark_left[i] - rs_left;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rt = (dt * (rs_left / (db/100+1)))/100; /* seconds */
 
 	seq_printf(seq, "finish: %lu:%02lu:%02lu",
 		rt / 3600, (rt % 3600) / 60, rt % 60);
 
 	dbdt = Bit2KB(db/dt);
-<<<<<<< HEAD
-	seq_printf(seq, " speed: ");
-	seq_printf_with_thousands_grouping(seq, dbdt);
-	seq_printf(seq, " (");
-	/* ------------------------- ~3s average ------------------------ */
-	if (proc_details >= 1) {
-		/* this is what drbd_rs_should_slow_down() uses */
-		i = (mdev->rs_last_mark + DRBD_SYNC_MARKS-1) % DRBD_SYNC_MARKS;
-		dt = (jiffies - mdev->rs_mark_time[i]) / HZ;
-		if (!dt)
-			dt++;
-		db = mdev->rs_mark_left[i] - rs_left;
-		dbdt = Bit2KB(db/dt);
-		seq_printf_with_thousands_grouping(seq, dbdt);
-		seq_printf(seq, " -- ");
-=======
 	seq_puts(seq, " speed: ");
 	seq_printf_with_thousands_grouping(seq, dbdt);
 	seq_puts(seq, " (");
@@ -275,73 +166,11 @@ static void drbd_syncer_progress(struct drbd_device *device, struct seq_file *se
 		dbdt = Bit2KB(db/dt);
 		seq_printf_with_thousands_grouping(seq, dbdt);
 		seq_puts(seq, " -- ");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* --------------------- long term average ---------------------- */
 	/* mean speed since syncer started
 	 * we do account for PausedSync periods */
-<<<<<<< HEAD
-	dt = (jiffies - mdev->rs_start - mdev->rs_paused) / HZ;
-	if (dt == 0)
-		dt = 1;
-	db = mdev->rs_total - rs_left;
-	dbdt = Bit2KB(db/dt);
-	seq_printf_with_thousands_grouping(seq, dbdt);
-	seq_printf(seq, ")");
-
-	if (mdev->state.conn == C_SYNC_TARGET ||
-	    mdev->state.conn == C_VERIFY_S) {
-		seq_printf(seq, " want: ");
-		seq_printf_with_thousands_grouping(seq, mdev->c_sync_rate);
-	}
-	seq_printf(seq, " K/sec%s\n", stalled ? " (stalled)" : "");
-
-	if (proc_details >= 1) {
-		/* 64 bit:
-		 * we convert to sectors in the display below. */
-		unsigned long bm_bits = drbd_bm_bits(mdev);
-		unsigned long bit_pos;
-		if (mdev->state.conn == C_VERIFY_S ||
-		    mdev->state.conn == C_VERIFY_T)
-			bit_pos = bm_bits - mdev->ov_left;
-		else
-			bit_pos = mdev->bm_resync_fo;
-		/* Total sectors may be slightly off for oddly
-		 * sized devices. So what. */
-		seq_printf(seq,
-			"\t%3d%% sector pos: %llu/%llu\n",
-			(int)(bit_pos / (bm_bits/100+1)),
-			(unsigned long long)bit_pos * BM_SECT_PER_BIT,
-			(unsigned long long)bm_bits * BM_SECT_PER_BIT);
-	}
-}
-
-static void resync_dump_detail(struct seq_file *seq, struct lc_element *e)
-{
-	struct bm_extent *bme = lc_entry(e, struct bm_extent, lce);
-
-	seq_printf(seq, "%5d %s %s\n", bme->rs_left,
-		   bme->flags & BME_NO_WRITES ? "NO_WRITES" : "---------",
-		   bme->flags & BME_LOCKED ? "LOCKED" : "------"
-		   );
-}
-
-static int drbd_seq_show(struct seq_file *seq, void *v)
-{
-	int i, hole = 0;
-	const char *sn;
-	struct drbd_conf *mdev;
-
-	static char write_ordering_chars[] = {
-		[WO_none] = 'n',
-		[WO_drain_io] = 'd',
-		[WO_bdev_flush] = 'f',
-	};
-
-	seq_printf(seq, "version: " REL_VERSION " (api:%d/proto:%d-%d)\n%s\n",
-		   API_VERSION, PRO_VERSION_MIN, PRO_VERSION_MAX, drbd_buildtag());
-=======
 	dt = (jiffies - device->rs_start - device->rs_paused) / HZ;
 	if (dt == 0)
 		dt = 1;
@@ -400,7 +229,6 @@ int drbd_seq_show(struct seq_file *seq, void *v)
 
 	seq_printf(seq, "version: " REL_VERSION " (api:%d/proto:%d-%d)\n%s\n",
 		   GENL_MAGIC_VERSION, PRO_VERSION_MIN, PRO_VERSION_MAX, drbd_buildtag());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	  cs .. connection state
@@ -422,26 +250,6 @@ int drbd_seq_show(struct seq_file *seq, void *v)
 	 oos .. known out-of-sync kB
 	*/
 
-<<<<<<< HEAD
-	for (i = 0; i < minor_count; i++) {
-		mdev = minor_to_mdev(i);
-		if (!mdev) {
-			hole = 1;
-			continue;
-		}
-		if (hole) {
-			hole = 0;
-			seq_printf(seq, "\n");
-		}
-
-		sn = drbd_conn_str(mdev->state.conn);
-
-		if (mdev->state.conn == C_STANDALONE &&
-		    mdev->state.disk == D_DISKLESS &&
-		    mdev->state.role == R_SECONDARY) {
-			seq_printf(seq, "%2d: cs:Unconfigured\n", i);
-		} else {
-=======
 	rcu_read_lock();
 	idr_for_each_entry(&drbd_devices, device, i) {
 		if (prev_i != i - 1)
@@ -460,81 +268,11 @@ int drbd_seq_show(struct seq_file *seq, void *v)
 
 			nc = rcu_dereference(first_peer_device(device)->connection->net_conf);
 			wp = nc ? nc->wire_protocol - DRBD_PROT_A + 'A' : ' ';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seq_printf(seq,
 			   "%2d: cs:%s ro:%s/%s ds:%s/%s %c %c%c%c%c%c%c\n"
 			   "    ns:%u nr:%u dw:%u dr:%u al:%u bm:%u "
 			   "lo:%d pe:%d ua:%d ap:%d ep:%d wo:%c",
 			   i, sn,
-<<<<<<< HEAD
-			   drbd_role_str(mdev->state.role),
-			   drbd_role_str(mdev->state.peer),
-			   drbd_disk_str(mdev->state.disk),
-			   drbd_disk_str(mdev->state.pdsk),
-			   (mdev->net_conf == NULL ? ' ' :
-			    (mdev->net_conf->wire_protocol - DRBD_PROT_A+'A')),
-			   is_susp(mdev->state) ? 's' : 'r',
-			   mdev->state.aftr_isp ? 'a' : '-',
-			   mdev->state.peer_isp ? 'p' : '-',
-			   mdev->state.user_isp ? 'u' : '-',
-			   mdev->congestion_reason ?: '-',
-			   test_bit(AL_SUSPENDED, &mdev->flags) ? 's' : '-',
-			   mdev->send_cnt/2,
-			   mdev->recv_cnt/2,
-			   mdev->writ_cnt/2,
-			   mdev->read_cnt/2,
-			   mdev->al_writ_cnt,
-			   mdev->bm_writ_cnt,
-			   atomic_read(&mdev->local_cnt),
-			   atomic_read(&mdev->ap_pending_cnt) +
-			   atomic_read(&mdev->rs_pending_cnt),
-			   atomic_read(&mdev->unacked_cnt),
-			   atomic_read(&mdev->ap_bio_cnt),
-			   mdev->epochs,
-			   write_ordering_chars[mdev->write_ordering]
-			);
-			seq_printf(seq, " oos:%llu\n",
-				   Bit2KB((unsigned long long)
-					   drbd_bm_total_weight(mdev)));
-		}
-		if (mdev->state.conn == C_SYNC_SOURCE ||
-		    mdev->state.conn == C_SYNC_TARGET ||
-		    mdev->state.conn == C_VERIFY_S ||
-		    mdev->state.conn == C_VERIFY_T)
-			drbd_syncer_progress(mdev, seq);
-
-		if (proc_details >= 1 && get_ldev_if_state(mdev, D_FAILED)) {
-			lc_seq_printf_stats(seq, mdev->resync);
-			lc_seq_printf_stats(seq, mdev->act_log);
-			put_ldev(mdev);
-		}
-
-		if (proc_details >= 2) {
-			if (mdev->resync) {
-				lc_seq_dump_details(seq, mdev->resync, "rs_left",
-					resync_dump_detail);
-			}
-		}
-	}
-
-	return 0;
-}
-
-static int drbd_proc_open(struct inode *inode, struct file *file)
-{
-	if (try_module_get(THIS_MODULE))
-		return single_open(file, drbd_seq_show, PDE(inode)->data);
-	return -ENODEV;
-}
-
-static int drbd_proc_release(struct inode *inode, struct file *file)
-{
-	module_put(THIS_MODULE);
-	return single_release(inode, file);
-}
-
-/* PROC FS stuff end */
-=======
 			   drbd_role_str(state.role),
 			   drbd_role_str(state.peer),
 			   drbd_disk_str(state.disk),
@@ -583,4 +321,3 @@ static int drbd_proc_release(struct inode *inode, struct file *file)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

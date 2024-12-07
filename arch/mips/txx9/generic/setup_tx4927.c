@@ -29,13 +29,8 @@ static void __init tx4927_wdr_init(void)
 {
 	/* report watchdog reset status */
 	if (____raw_readq(&tx4927_ccfgptr->ccfg) & TX4927_CCFG_WDRST)
-<<<<<<< HEAD
-		pr_warning("Watchdog reset detected at 0x%lx\n",
-			   read_c0_errorepc());
-=======
 		pr_warn("Watchdog reset detected at 0x%lx\n",
 			read_c0_errorepc());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear WatchDogReset (W1C) */
 	tx4927_ccfg_set(TX4927_CCFG_WDRST);
 	/* do reset on watchdog */
@@ -85,11 +80,7 @@ static int tx4927_be_handler(struct pt_regs *regs, int is_fixup)
 }
 static void __init tx4927_be_init(void)
 {
-<<<<<<< HEAD
-	board_be_handler = tx4927_be_handler;
-=======
 	mips_set_be_handler(tx4927_be_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct resource tx4927_sdram_resource[4];
@@ -192,17 +183,6 @@ void __init tx4927_setup(void)
 	if (!(____raw_readq(&tx4927_ccfgptr->ccfg) & TX4927_CCFG_PCIARB))
 		txx9_clear64(&tx4927_ccfgptr->pcfg, TX4927_PCFG_PCICLKEN_ALL);
 
-<<<<<<< HEAD
-	printk(KERN_INFO "%s -- %dMHz(M%dMHz) CRIR:%08x CCFG:%llx PCFG:%llx\n",
-	       txx9_pcode_str,
-	       (cpuclk + 500000) / 1000000,
-	       (txx9_master_clock + 500000) / 1000000,
-	       (__u32)____raw_readq(&tx4927_ccfgptr->crir),
-	       (unsigned long long)____raw_readq(&tx4927_ccfgptr->ccfg),
-	       (unsigned long long)____raw_readq(&tx4927_ccfgptr->pcfg));
-
-	printk(KERN_INFO "%s SDRAMC --", txx9_pcode_str);
-=======
 	pr_info("%s -- %dMHz(M%dMHz) CRIR:%08x CCFG:%llx PCFG:%llx\n",
 		txx9_pcode_str, (cpuclk + 500000) / 1000000,
 		(txx9_master_clock + 500000) / 1000000,
@@ -211,7 +191,6 @@ void __init tx4927_setup(void)
 		____raw_readq(&tx4927_ccfgptr->pcfg));
 
 	pr_info("%s SDRAMC --", txx9_pcode_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 4; i++) {
 		__u64 cr = TX4927_SDRAMC_CR(i);
 		unsigned long base, size;
@@ -219,23 +198,14 @@ void __init tx4927_setup(void)
 			continue;	/* disabled */
 		base = (unsigned long)(cr >> 49) << 21;
 		size = (((unsigned long)(cr >> 33) & 0x7fff) + 1) << 21;
-<<<<<<< HEAD
-		printk(" CR%d:%016llx", i, (unsigned long long)cr);
-=======
 		pr_cont(" CR%d:%016llx", i, cr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx4927_sdram_resource[i].name = "SDRAM";
 		tx4927_sdram_resource[i].start = base;
 		tx4927_sdram_resource[i].end = base + size - 1;
 		tx4927_sdram_resource[i].flags = IORESOURCE_MEM;
 		request_resource(&iomem_resource, &tx4927_sdram_resource[i]);
 	}
-<<<<<<< HEAD
-	printk(" TR:%09llx\n",
-	       (unsigned long long)____raw_readq(&tx4927_sdramcptr->tr));
-=======
 	pr_cont(" TR:%09llx\n", ____raw_readq(&tx4927_sdramcptr->tr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TMR */
 	/* disable all timers */
@@ -243,10 +213,6 @@ void __init tx4927_setup(void)
 		txx9_tmr_init(TX4927_TMR_REG(i) & 0xfffffffffULL);
 
 	/* PIO */
-<<<<<<< HEAD
-	txx9_gpio_init(TX4927_PIO_REG & 0xfffffffffULL, 0, TX4927_NUM_PIO);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writel(0, &tx4927_pioptr->maskcpu);
 	__raw_writel(0, &tx4927_pioptr->maskext);
 
@@ -281,11 +247,7 @@ void __init tx4927_mtd_init(int ch)
 	unsigned long size = txx9_ce_res[ch].end - start + 1;
 
 	if (!(TX4927_EBUSC_CR(ch) & 0x8))
-<<<<<<< HEAD
-		return;	/* disabled */
-=======
 		return; /* disabled */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txx9_physmap_flash_init(ch, start, size, &pdata);
 }
 

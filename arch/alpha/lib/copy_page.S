@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/copy_page.S
  *
  * Copy an entire page.
  */
-<<<<<<< HEAD
-
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text
 	.align 4
 	.global copy_page
@@ -55,7 +48,4 @@ copy_page:
 	nop
 
 	.end copy_page
-<<<<<<< HEAD
-=======
 	EXPORT_SYMBOL(copy_page)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

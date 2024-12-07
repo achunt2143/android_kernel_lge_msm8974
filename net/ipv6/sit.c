@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	IPv6 over IPv4 tunnel device - Simple Internet Transition (SIT)
  *	Linux INET6 implementation
@@ -10,25 +7,14 @@
  *	Pedro Roque		<roque@di.fc.ul.pt>
  *	Alexey Kuznetsov	<kuznet@ms2.inr.ac.ru>
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Changes:
  * Roger Venning <r.venning@telstra.com>:	6to4 support
  * Nate Thompson <nate@thebog.net>:		6to4 support
  * Fred Templin <fred.l.templin@boeing.com>:	isatap support
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/capability.h>
 #include <linux/errno.h>
@@ -41,11 +27,7 @@
 #include <linux/if_arp.h>
 #include <linux/icmp.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/if_ether.h>
@@ -63,11 +45,7 @@
 #include <net/ip.h>
 #include <net/udp.h>
 #include <net/icmp.h>
-<<<<<<< HEAD
-#include <net/ipip.h>
-=======
 #include <net/ip_tunnels.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/inet_ecn.h>
 #include <net/xfrm.h>
 #include <net/dsfield.h>
@@ -80,20 +58,6 @@
    For comments look at net/ipv4/ip_gre.c --ANK
  */
 
-<<<<<<< HEAD
-#define HASH_SIZE  16
-#define HASH(addr) (((__force u32)addr^((__force u32)addr>>4))&0xF)
-
-static int ipip6_tunnel_init(struct net_device *dev);
-static void ipip6_tunnel_setup(struct net_device *dev);
-static void ipip6_dev_free(struct net_device *dev);
-
-static int sit_net_id __read_mostly;
-struct sit_net {
-	struct ip_tunnel __rcu *tunnels_r_l[HASH_SIZE];
-	struct ip_tunnel __rcu *tunnels_r[HASH_SIZE];
-	struct ip_tunnel __rcu *tunnels_l[HASH_SIZE];
-=======
 #define IP6_SIT_HASH_SIZE  16
 #define HASH(addr) (((__force u32)addr^((__force u32)addr>>4))&0xF)
 
@@ -113,107 +77,31 @@ struct sit_net {
 	struct ip_tunnel __rcu *tunnels_r_l[IP6_SIT_HASH_SIZE];
 	struct ip_tunnel __rcu *tunnels_r[IP6_SIT_HASH_SIZE];
 	struct ip_tunnel __rcu *tunnels_l[IP6_SIT_HASH_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_tunnel __rcu *tunnels_wc[1];
 	struct ip_tunnel __rcu **tunnels[4];
 
 	struct net_device *fb_tunnel_dev;
 };
 
-<<<<<<< HEAD
-/*
- * Locking : hash tables are protected by RCU and RTNL
- */
-
-#define for_each_ip_tunnel_rcu(start) \
-	for (t = rcu_dereference(start); t; t = rcu_dereference(t->next))
-
-/* often modified stats are per cpu, other are shared (netdev->stats) */
-struct pcpu_tstats {
-	u64	rx_packets;
-	u64	rx_bytes;
-	u64	tx_packets;
-	u64	tx_bytes;
-	struct u64_stats_sync	syncp;
-};
-
-static struct rtnl_link_stats64 *ipip6_get_stats64(struct net_device *dev,
-						   struct rtnl_link_stats64 *tot)
-{
-	int i;
-
-	for_each_possible_cpu(i) {
-		const struct pcpu_tstats *tstats = per_cpu_ptr(dev->tstats, i);
-		u64 rx_packets, rx_bytes, tx_packets, tx_bytes;
-		unsigned int start;
-
-		do {
-			start = u64_stats_fetch_begin_irq(&tstats->syncp);
-			rx_packets = tstats->rx_packets;
-			tx_packets = tstats->tx_packets;
-			rx_bytes = tstats->rx_bytes;
-			tx_bytes = tstats->tx_bytes;
-		} while (u64_stats_fetch_retry_irq(&tstats->syncp, start));
-
-		tot->rx_packets += rx_packets;
-		tot->tx_packets += tx_packets;
-		tot->rx_bytes   += rx_bytes;
-		tot->tx_bytes   += tx_bytes;
-	}
-
-	tot->rx_errors = dev->stats.rx_errors;
-	tot->tx_fifo_errors = dev->stats.tx_fifo_errors;
-	tot->tx_carrier_errors = dev->stats.tx_carrier_errors;
-	tot->tx_dropped = dev->stats.tx_dropped;
-	tot->tx_aborted_errors = dev->stats.tx_aborted_errors;
-	tot->tx_errors = dev->stats.tx_errors;
-
-	return tot;
-=======
 static inline struct sit_net *dev_to_sit_net(struct net_device *dev)
 {
 	struct ip_tunnel *t = netdev_priv(dev);
 
 	return net_generic(t->net, sit_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Must be invoked with rcu_read_lock
  */
-<<<<<<< HEAD
-static struct ip_tunnel * ipip6_tunnel_lookup(struct net *net,
-		struct net_device *dev, __be32 remote, __be32 local)
-=======
 static struct ip_tunnel *ipip6_tunnel_lookup(struct net *net,
 					     struct net_device *dev,
 					     __be32 remote, __be32 local,
 					     int sifindex)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int h0 = HASH(remote);
 	unsigned int h1 = HASH(local);
 	struct ip_tunnel *t;
 	struct sit_net *sitn = net_generic(net, sit_net_id);
-<<<<<<< HEAD
-
-	for_each_ip_tunnel_rcu(sitn->tunnels_r_l[h0 ^ h1]) {
-		if (local == t->parms.iph.saddr &&
-		    remote == t->parms.iph.daddr &&
-		    (!dev || !t->parms.link || dev->iflink == t->parms.link) &&
-		    (t->dev->flags & IFF_UP))
-			return t;
-	}
-	for_each_ip_tunnel_rcu(sitn->tunnels_r[h0]) {
-		if (remote == t->parms.iph.daddr &&
-		    (!dev || !t->parms.link || dev->iflink == t->parms.link) &&
-		    (t->dev->flags & IFF_UP))
-			return t;
-	}
-	for_each_ip_tunnel_rcu(sitn->tunnels_l[h1]) {
-		if (local == t->parms.iph.saddr &&
-		    (!dev || !t->parms.link || dev->iflink == t->parms.link) &&
-=======
 	int ifindex = dev ? dev->ifindex : 0;
 
 	for_each_ip_tunnel_rcu(t, sitn->tunnels_r_l[h0 ^ h1]) {
@@ -235,16 +123,11 @@ static struct ip_tunnel *ipip6_tunnel_lookup(struct net *net,
 		if (local == t->parms.iph.saddr &&
 		    (!dev || !t->parms.link || ifindex == t->parms.link ||
 		     sifindex == t->parms.link) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (t->dev->flags & IFF_UP))
 			return t;
 	}
 	t = rcu_dereference(sitn->tunnels_wc[0]);
-<<<<<<< HEAD
-	if ((t != NULL) && (t->dev->flags & IFF_UP))
-=======
 	if (t && (t->dev->flags & IFF_UP))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return t;
 	return NULL;
 }
@@ -302,11 +185,7 @@ static void ipip6_tunnel_clone_6rd(struct net_device *dev, struct sit_net *sitn)
 #ifdef CONFIG_IPV6_SIT_6RD
 	struct ip_tunnel *t = netdev_priv(dev);
 
-<<<<<<< HEAD
-	if (t->dev == sitn->fb_tunnel_dev) {
-=======
 	if (dev == sitn->fb_tunnel_dev || !sitn->fb_tunnel_dev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipv6_addr_set(&t->ip6rd.prefix, htonl(0x20020000), 0, 0, 0);
 		t->ip6rd.relay_prefix = 0;
 		t->ip6rd.prefixlen = 16;
@@ -318,8 +197,6 @@ static void ipip6_tunnel_clone_6rd(struct net_device *dev, struct sit_net *sitn)
 #endif
 }
 
-<<<<<<< HEAD
-=======
 static int ipip6_tunnel_create(struct net_device *dev)
 {
 	struct ip_tunnel *t = netdev_priv(dev);
@@ -348,7 +225,6 @@ out:
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ip_tunnel *ipip6_tunnel_locate(struct net *net,
 		struct ip_tunnel_parm *parms, int create)
 {
@@ -375,15 +251,6 @@ static struct ip_tunnel *ipip6_tunnel_locate(struct net *net,
 	if (!create)
 		goto failed;
 
-<<<<<<< HEAD
-	if (parms->name[0])
-		strlcpy(name, parms->name, IFNAMSIZ);
-	else
-		strcpy(name, "sit%d");
-
-	dev = alloc_netdev(sizeof(*t), name, ipip6_tunnel_setup);
-	if (dev == NULL)
-=======
 	if (parms->name[0]) {
 		if (!dev_valid_name(parms->name))
 			goto failed;
@@ -394,7 +261,6 @@ static struct ip_tunnel *ipip6_tunnel_locate(struct net *net,
 	dev = alloc_netdev(sizeof(*t), name, NET_NAME_UNKNOWN,
 			   ipip6_tunnel_setup);
 	if (!dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	dev_net_set(dev, net);
@@ -402,27 +268,6 @@ static struct ip_tunnel *ipip6_tunnel_locate(struct net *net,
 	nt = netdev_priv(dev);
 
 	nt->parms = *parms;
-<<<<<<< HEAD
-	if (ipip6_tunnel_init(dev) < 0)
-		goto failed_free;
-	ipip6_tunnel_clone_6rd(dev, sitn);
-
-	if (parms->i_flags & SIT_ISATAP)
-		dev->priv_flags |= IFF_ISATAP;
-
-	if (register_netdevice(dev) < 0)
-		goto failed_free;
-
-	strcpy(nt->parms.name, dev->name);
-
-	dev_hold(dev);
-
-	ipip6_tunnel_link(sitn, nt);
-	return nt;
-
-failed_free:
-	ipip6_dev_free(dev);
-=======
 	if (ipip6_tunnel_create(dev) < 0)
 		goto failed_free;
 
@@ -433,7 +278,6 @@ failed_free:
 
 failed_free:
 	free_netdev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 failed:
 	return NULL;
 }
@@ -455,26 +299,17 @@ __ipip6_tunnel_locate_prl(struct ip_tunnel *t, __be32 addr)
 
 }
 
-<<<<<<< HEAD
-static int ipip6_tunnel_get_prl(struct ip_tunnel *t,
-				struct ip_tunnel_prl __user *a)
-{
-=======
 static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __user *a)
 {
 	struct ip_tunnel *t = netdev_priv(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_tunnel_prl kprl, *kp;
 	struct ip_tunnel_prl_entry *prl;
 	unsigned int cmax, c = 0, ca, len;
 	int ret = 0;
 
-<<<<<<< HEAD
-=======
 	if (dev == dev_to_sit_net(dev)->fb_tunnel_dev)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_from_user(&kprl, a, sizeof(kprl)))
 		return -EFAULT;
 	cmax = kprl.datalen / sizeof(kprl);
@@ -485,19 +320,10 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
 	 * we try harder to allocate.
 	 */
 	kp = (cmax <= 1 || capable(CAP_NET_ADMIN)) ?
-<<<<<<< HEAD
-		kcalloc(cmax, sizeof(*kp), GFP_KERNEL) :
-		NULL;
-
-	rcu_read_lock();
-
-	ca = t->prl_count < cmax ? t->prl_count : cmax;
-=======
 		kcalloc(cmax, sizeof(*kp), GFP_KERNEL_ACCOUNT | __GFP_NOWARN) :
 		NULL;
 
 	ca = min(t->prl_count, cmax);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!kp) {
 		/* We don't try hard to allocate much memory for
@@ -505,23 +331,15 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
 		 * For root users, retry allocating enough memory for
 		 * the answer.
 		 */
-<<<<<<< HEAD
-		kp = kcalloc(ca, sizeof(*kp), GFP_ATOMIC);
-=======
 		kp = kcalloc(ca, sizeof(*kp), GFP_ATOMIC | __GFP_ACCOUNT |
 					      __GFP_NOWARN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!kp) {
 			ret = -ENOMEM;
 			goto out;
 		}
 	}
 
-<<<<<<< HEAD
-	c = 0;
-=======
 	rcu_read_lock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_prl_rcu(t->prl) {
 		if (c >= cmax)
 			break;
@@ -533,11 +351,7 @@ static int ipip6_tunnel_get_prl(struct net_device *dev, struct ip_tunnel_prl __u
 		if (kprl.addr != htonl(INADDR_ANY))
 			break;
 	}
-<<<<<<< HEAD
-out:
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	len = sizeof(*kp) * c;
@@ -546,11 +360,7 @@ out:
 		ret = -EFAULT;
 
 	kfree(kp);
-<<<<<<< HEAD
-
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -641,8 +451,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int ipip6_tunnel_prl_ctl(struct net_device *dev,
 				struct ip_tunnel_prl __user *data, int cmd)
 {
@@ -672,7 +480,6 @@ static int ipip6_tunnel_prl_ctl(struct net_device *dev,
 	return err;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 isatap_chksrc(struct sk_buff *skb, const struct iphdr *iph, struct ip_tunnel *t)
 {
@@ -702,37 +509,12 @@ isatap_chksrc(struct sk_buff *skb, const struct iphdr *iph, struct ip_tunnel *t)
 
 static void ipip6_tunnel_uninit(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct net *net = dev_net(dev);
-	struct sit_net *sitn = net_generic(net, sit_net_id);
-=======
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 	struct sit_net *sitn = net_generic(tunnel->net, sit_net_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev == sitn->fb_tunnel_dev) {
 		RCU_INIT_POINTER(sitn->tunnels_wc[0], NULL);
 	} else {
-<<<<<<< HEAD
-		ipip6_tunnel_unlink(sitn, netdev_priv(dev));
-		ipip6_tunnel_del_prl(netdev_priv(dev), NULL);
-	}
-	dev_put(dev);
-}
-
-
-static int ipip6_err(struct sk_buff *skb, u32 info)
-{
-
-/* All the routers (except for Linux) return only
-   8 bytes of packet payload. It means, that precise relaying of
-   ICMP in the real Internet is absolutely infeasible.
- */
-	const struct iphdr *iph = (const struct iphdr *)skb->data;
-	const int type = icmp_hdr(skb)->type;
-	const int code = icmp_hdr(skb)->code;
-	struct ip_tunnel *t;
-=======
 		ipip6_tunnel_unlink(sitn, tunnel);
 		ipip6_tunnel_del_prl(tunnel, NULL);
 	}
@@ -748,7 +530,6 @@ static int ipip6_err(struct sk_buff *skb, u32 info)
 	unsigned int data_len = 0;
 	struct ip_tunnel *t;
 	int sifindex;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	switch (type) {
@@ -759,17 +540,8 @@ static int ipip6_err(struct sk_buff *skb, u32 info)
 	case ICMP_DEST_UNREACH:
 		switch (code) {
 		case ICMP_SR_FAILED:
-<<<<<<< HEAD
-		case ICMP_PORT_UNREACH:
 			/* Impossible event. */
 			return 0;
-		case ICMP_FRAG_NEEDED:
-			/* Soft state for pmtu is maintained by IP core. */
-			return 0;
-=======
-			/* Impossible event. */
-			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			/* All others are translated to HOST_UNREACH.
 			   rfc2003 contains "deep thoughts" about NET_UNREACH,
@@ -781,28 +553,14 @@ static int ipip6_err(struct sk_buff *skb, u32 info)
 	case ICMP_TIME_EXCEEDED:
 		if (code != ICMP_EXC_TTL)
 			return 0;
-<<<<<<< HEAD
-=======
 		data_len = icmp_hdr(skb)->un.reserved[1] * 4; /* RFC 4884 4.1 */
 		break;
 	case ICMP_REDIRECT:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	err = -ENOENT;
 
-<<<<<<< HEAD
-	rcu_read_lock();
-	t = ipip6_tunnel_lookup(dev_net(skb->dev),
-				skb->dev,
-				iph->daddr,
-				iph->saddr);
-	if (t == NULL || t->parms.iph.daddr == 0)
-		goto out;
-
-	err = 0;
-=======
 	sifindex = netif_is_l3_master(skb->dev) ? IPCB(skb)->iif : 0;
 	t = ipip6_tunnel_lookup(dev_net(skb->dev), skb->dev,
 				iph->daddr, iph->saddr, sifindex);
@@ -830,7 +588,6 @@ static int ipip6_err(struct sk_buff *skb, u32 info)
 	if (t->parms.iph.daddr == 0)
 		goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (t->parms.iph.ttl == 0 && type == ICMP_TIME_EXCEEDED)
 		goto out;
 
@@ -840,16 +597,6 @@ static int ipip6_err(struct sk_buff *skb, u32 info)
 		t->err_count = 1;
 	t->err_time = jiffies;
 out:
-<<<<<<< HEAD
-	rcu_read_unlock();
-	return err;
-}
-
-static inline void ipip6_ecn_decapsulate(const struct iphdr *iph, struct sk_buff *skb)
-{
-	if (INET_ECN_is_ce(iph->tos))
-		IP6_ECN_set_ce(ipv6_hdr(skb));
-=======
 	return err;
 }
 
@@ -924,55 +671,10 @@ static bool packet_is_spoofed(struct sk_buff *skb,
 			     &iph->saddr, &ipv6h->saddr,
 			     &iph->daddr, &ipv6h->daddr);
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ipip6_rcv(struct sk_buff *skb)
 {
-<<<<<<< HEAD
-	const struct iphdr *iph;
-	struct ip_tunnel *tunnel;
-
-	if (!pskb_may_pull(skb, sizeof(struct ipv6hdr)))
-		goto out;
-
-	iph = ip_hdr(skb);
-
-	rcu_read_lock();
-	tunnel = ipip6_tunnel_lookup(dev_net(skb->dev), skb->dev,
-				     iph->saddr, iph->daddr);
-	if (tunnel != NULL) {
-		struct pcpu_tstats *tstats;
-
-		secpath_reset(skb);
-		skb->mac_header = skb->network_header;
-		skb_reset_network_header(skb);
-		IPCB(skb)->flags = 0;
-		skb->protocol = htons(ETH_P_IPV6);
-		skb->pkt_type = PACKET_HOST;
-
-		if ((tunnel->dev->priv_flags & IFF_ISATAP) &&
-		    !isatap_chksrc(skb, iph, tunnel)) {
-			tunnel->dev->stats.rx_errors++;
-			rcu_read_unlock();
-			kfree_skb(skb);
-			return 0;
-		}
-
-		tstats = this_cpu_ptr(tunnel->dev->tstats);
-		u64_stats_update_begin(&tstats->syncp);
-		tstats->rx_packets++;
-		tstats->rx_bytes += skb->len;
-		u64_stats_update_end(&tstats->syncp);
-
-		__skb_tunnel_rx(skb, tunnel->dev);
-
-		ipip6_ecn_decapsulate(iph, skb);
-
-		netif_rx(skb);
-
-		rcu_read_unlock();
-=======
 	const struct iphdr *iph = ip_hdr(skb);
 	struct ip_tunnel *tunnel;
 	int sifindex;
@@ -1022,32 +724,16 @@ static int ipip6_rcv(struct sk_buff *skb)
 
 		netif_rx(skb);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	/* no tunnel matched,  let upstream know, ipsec may handle it */
-<<<<<<< HEAD
-	rcu_read_unlock();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 out:
 	kfree_skb(skb);
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * Returns the embedded IPv4 address if the IPv6 address
- * comes from 6rd / 6to4 (RFC 3056) addr space.
- */
-static inline
-__be32 try_6rd(const struct in6_addr *v6dst, struct ip_tunnel *tunnel)
-{
-	__be32 dst = 0;
-
-=======
 static const struct tnl_ptk_info ipip_tpi = {
 	/* no tunnel info required for ipip. */
 	.proto = htons(ETH_P_IP),
@@ -1119,7 +805,6 @@ static int mplsip_rcv(struct sk_buff *skb)
 static bool check_6rd(struct ip_tunnel *tunnel, const struct in6_addr *v6dst,
 		      __be32 *v4dst)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IPV6_SIT_6RD
 	if (ipv6_prefix_equal(v6dst, &tunnel->ip6rd.prefix,
 			      tunnel->ip6rd.prefixlen)) {
@@ -1130,35 +815,21 @@ static bool check_6rd(struct ip_tunnel *tunnel, const struct in6_addr *v6dst,
 		pbw0 = tunnel->ip6rd.prefixlen >> 5;
 		pbi0 = tunnel->ip6rd.prefixlen & 0x1f;
 
-<<<<<<< HEAD
-		d = (ntohl(v6dst->s6_addr32[pbw0]) << pbi0) >>
-		    tunnel->ip6rd.relay_prefixlen;
-=======
 		d = tunnel->ip6rd.relay_prefixlen < 32 ?
 			(ntohl(v6dst->s6_addr32[pbw0]) << pbi0) >>
 		    tunnel->ip6rd.relay_prefixlen : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pbi1 = pbi0 - tunnel->ip6rd.relay_prefixlen;
 		if (pbi1 > 0)
 			d |= ntohl(v6dst->s6_addr32[pbw0 + 1]) >>
 			     (32 - pbi1);
 
-<<<<<<< HEAD
-		dst = tunnel->ip6rd.relay_prefix | htonl(d);
-=======
 		*v4dst = tunnel->ip6rd.relay_prefix | htonl(d);
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #else
 	if (v6dst->s6_addr16[0] == htons(0x2002)) {
 		/* 6to4 v6 addr has 16 bits prefix, 32 v4addr, 16 SLA, ... */
-<<<<<<< HEAD
-		memcpy(&dst, &v6dst->s6_addr16[1], 4);
-	}
-#endif
-=======
 		memcpy(v4dst, &v6dst->s6_addr16[1], 4);
 		return true;
 	}
@@ -1171,7 +842,6 @@ static inline __be32 try_6rd(struct ip_tunnel *tunnel,
 {
 	__be32 dst = 0;
 	check_6rd(tunnel, v6dst, &dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dst;
 }
 
@@ -1184,38 +854,21 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 				     struct net_device *dev)
 {
 	struct ip_tunnel *tunnel = netdev_priv(dev);
-<<<<<<< HEAD
-	struct pcpu_tstats *tstats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct iphdr  *tiph = &tunnel->parms.iph;
 	const struct ipv6hdr *iph6 = ipv6_hdr(skb);
 	u8     tos = tunnel->parms.iph.tos;
 	__be16 df = tiph->frag_off;
-<<<<<<< HEAD
-	struct rtable *rt;     			/* Route to the other host */
-	struct net_device *tdev;		/* Device to other host */
-	struct iphdr  *iph;			/* Our new IP header */
-	unsigned int max_headroom;		/* The extra header space needed */
-=======
 	struct rtable *rt;		/* Route to the other host */
 	struct net_device *tdev;	/* Device to other host */
 	unsigned int max_headroom;	/* The extra header space needed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 dst = tiph->daddr;
 	struct flowi4 fl4;
 	int    mtu;
 	const struct in6_addr *addr6;
 	int addr_type;
-<<<<<<< HEAD
-
-	if (skb->protocol != htons(ETH_P_IPV6))
-		goto tx_error;
-=======
 	u8 ttl;
 	u8 protocol = IPPROTO_IPV6;
 	int t_hlen = tunnel->hlen + sizeof(struct iphdr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tos == 1)
 		tos = ipv6_get_dsfield(iph6);
@@ -1228,22 +881,12 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 		if (skb_dst(skb))
 			neigh = dst_neigh_lookup(skb_dst(skb), &iph6->daddr);
 
-<<<<<<< HEAD
-		if (neigh == NULL) {
-			if (net_ratelimit())
-				printk(KERN_DEBUG "sit: nexthop == NULL\n");
-			goto tx_error;
-		}
-
-		addr6 = (const struct in6_addr*)&neigh->primary_key;
-=======
 		if (!neigh) {
 			net_dbg_ratelimited("nexthop == NULL\n");
 			goto tx_error;
 		}
 
 		addr6 = (const struct in6_addr *)&neigh->primary_key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addr_type = ipv6_addr_type(addr6);
 
 		if ((addr_type & IPV6_ADDR_UNICAST) &&
@@ -1258,11 +901,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 	}
 
 	if (!dst)
-<<<<<<< HEAD
-		dst = try_6rd(&iph6->daddr, tunnel);
-=======
 		dst = try_6rd(tunnel, &iph6->daddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dst) {
 		struct neighbour *neigh = NULL;
@@ -1271,22 +910,12 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 		if (skb_dst(skb))
 			neigh = dst_neigh_lookup(skb_dst(skb), &iph6->daddr);
 
-<<<<<<< HEAD
-		if (neigh == NULL) {
-			if (net_ratelimit())
-				printk(KERN_DEBUG "sit: nexthop == NULL\n");
-			goto tx_error;
-		}
-
-		addr6 = (const struct in6_addr*)&neigh->primary_key;
-=======
 		if (!neigh) {
 			net_dbg_ratelimited("nexthop == NULL\n");
 			goto tx_error;
 		}
 
 		addr6 = (const struct in6_addr *)&neigh->primary_key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addr_type = ipv6_addr_type(addr6);
 
 		if (addr_type == IPV6_ADDR_ANY) {
@@ -1304,20 +933,6 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 			goto tx_error;
 	}
 
-<<<<<<< HEAD
-	rt = ip_route_output_ports(dev_net(dev), &fl4, NULL,
-				   dst, tiph->saddr,
-				   0, 0,
-				   IPPROTO_IPV6, RT_TOS(tos),
-				   tunnel->parms.link);
-	if (IS_ERR(rt)) {
-		dev->stats.tx_carrier_errors++;
-		goto tx_error_icmp;
-	}
-	if (rt->rt_type != RTN_UNICAST) {
-		ip_rt_put(rt);
-		dev->stats.tx_carrier_errors++;
-=======
 	flowi4_init_output(&fl4, tunnel->parms.link, tunnel->fwmark,
 			   RT_TOS(tos), RT_SCOPE_UNIVERSE, IPPROTO_IPV6,
 			   0, dst, tiph->saddr, 0, 0,
@@ -1336,38 +951,26 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 	if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
 		ip_rt_put(rt);
 		DEV_STATS_INC(dev, tx_carrier_errors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto tx_error_icmp;
 	}
 	tdev = rt->dst.dev;
 
 	if (tdev == dev) {
 		ip_rt_put(rt);
-<<<<<<< HEAD
-		dev->stats.collisions++;
-=======
 		DEV_STATS_INC(dev, collisions);
 		goto tx_error;
 	}
 
 	if (iptunnel_handle_offloads(skb, SKB_GSO_IPXIP4)) {
 		ip_rt_put(rt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto tx_error;
 	}
 
 	if (df) {
-<<<<<<< HEAD
-		mtu = dst_mtu(&rt->dst) - sizeof(struct iphdr);
-
-		if (mtu < 68) {
-			dev->stats.collisions++;
-=======
 		mtu = dst_mtu(&rt->dst) - t_hlen;
 
 		if (mtu < IPV4_MIN_MTU) {
 			DEV_STATS_INC(dev, collisions);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ip_rt_put(rt);
 			goto tx_error;
 		}
@@ -1377,19 +980,11 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 			df = 0;
 		}
 
-<<<<<<< HEAD
-		if (tunnel->parms.iph.daddr && skb_dst(skb))
-			skb_dst(skb)->ops->update_pmtu(skb_dst(skb), mtu);
-
-		if (skb->len > mtu) {
-			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
-=======
 		if (tunnel->parms.iph.daddr)
 			skb_dst_update_pmtu_no_confirm(skb, mtu);
 
 		if (skb->len > mtu && !skb_is_gso(skb)) {
 			icmpv6_ndo_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ip_rt_put(rt);
 			goto tx_error;
 		}
@@ -1407,24 +1002,15 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 	/*
 	 * Okay, now see if we can stuff it in the buffer as-is.
 	 */
-<<<<<<< HEAD
-	max_headroom = LL_RESERVED_SPACE(tdev)+sizeof(struct iphdr);
-=======
 	max_headroom = LL_RESERVED_SPACE(tdev) + t_hlen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb_headroom(skb) < max_headroom || skb_shared(skb) ||
 	    (skb_cloned(skb) && !skb_clone_writable(skb, 0))) {
 		struct sk_buff *new_skb = skb_realloc_headroom(skb, max_headroom);
 		if (!new_skb) {
 			ip_rt_put(rt);
-<<<<<<< HEAD
-			dev->stats.tx_dropped++;
-			dev_kfree_skb(skb);
-=======
 			DEV_STATS_INC(dev, tx_dropped);
 			kfree_skb(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NETDEV_TX_OK;
 		}
 		if (skb->sk)
@@ -1433,36 +1019,6 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 		skb = new_skb;
 		iph6 = ipv6_hdr(skb);
 	}
-<<<<<<< HEAD
-
-	skb->transport_header = skb->network_header;
-	skb_push(skb, sizeof(struct iphdr));
-	skb_reset_network_header(skb);
-	memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
-	IPCB(skb)->flags = 0;
-	skb_dst_drop(skb);
-	skb_dst_set(skb, &rt->dst);
-
-	/*
-	 *	Push down and install the IPIP header.
-	 */
-
-	iph 			=	ip_hdr(skb);
-	iph->version		=	4;
-	iph->ihl		=	sizeof(struct iphdr)>>2;
-	iph->frag_off		=	df;
-	iph->protocol		=	IPPROTO_IPV6;
-	iph->tos		=	INET_ECN_encapsulate(tos, ipv6_get_dsfield(iph6));
-	iph->daddr		=	fl4.daddr;
-	iph->saddr		=	fl4.saddr;
-
-	if ((iph->ttl = tiph->ttl) == 0)
-		iph->ttl	=	iph6->hop_limit;
-
-	nf_reset(skb);
-	tstats = this_cpu_ptr(dev->tstats);
-	__IPTUNNEL_XMIT(tstats, &dev->stats);
-=======
 	ttl = tiph->ttl;
 	if (ttl == 0)
 		ttl = iph6->hop_limit;
@@ -1477,31 +1033,11 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
 
 	iptunnel_xmit(NULL, rt, skb, fl4.saddr, fl4.daddr, protocol, tos, ttl,
 		      df, !net_eq(tunnel->net, dev_net(dev)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_OK;
 
 tx_error_icmp:
 	dst_link_failure(skb);
 tx_error:
-<<<<<<< HEAD
-	dev->stats.tx_errors++;
-	dev_kfree_skb(skb);
-	return NETDEV_TX_OK;
-}
-
-static void ipip6_tunnel_bind_dev(struct net_device *dev)
-{
-	struct net_device *tdev = NULL;
-	struct ip_tunnel *tunnel;
-	const struct iphdr *iph;
-	struct flowi4 fl4;
-
-	tunnel = netdev_priv(dev);
-	iph = &tunnel->parms.iph;
-
-	if (iph->daddr) {
-		struct rtable *rt = ip_route_output_ports(dev_net(dev), &fl4, NULL,
-=======
 	kfree_skb(skb);
 	DEV_STATS_INC(dev, tx_errors);
 	return NETDEV_TX_OK;
@@ -1571,7 +1107,6 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
 	if (iph->daddr) {
 		struct rtable *rt = ip_route_output_ports(tunnel->net, &fl4,
 							  NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							  iph->daddr, iph->saddr,
 							  0, 0,
 							  IPPROTO_IPV6,
@@ -1586,257 +1121,6 @@ static void ipip6_tunnel_bind_dev(struct net_device *dev)
 	}
 
 	if (!tdev && tunnel->parms.link)
-<<<<<<< HEAD
-		tdev = __dev_get_by_index(dev_net(dev), tunnel->parms.link);
-
-	if (tdev) {
-		dev->hard_header_len = tdev->hard_header_len + sizeof(struct iphdr);
-		dev->mtu = tdev->mtu - sizeof(struct iphdr);
-		if (dev->mtu < IPV6_MIN_MTU)
-			dev->mtu = IPV6_MIN_MTU;
-	}
-	dev->iflink = tunnel->parms.link;
-}
-
-static int
-ipip6_tunnel_ioctl (struct net_device *dev, struct ifreq *ifr, int cmd)
-{
-	int err = 0;
-	struct ip_tunnel_parm p;
-	struct ip_tunnel_prl prl;
-	struct ip_tunnel *t;
-	struct net *net = dev_net(dev);
-	struct sit_net *sitn = net_generic(net, sit_net_id);
-#ifdef CONFIG_IPV6_SIT_6RD
-	struct ip_tunnel_6rd ip6rd;
-#endif
-
-	switch (cmd) {
-	case SIOCGETTUNNEL:
-#ifdef CONFIG_IPV6_SIT_6RD
-	case SIOCGET6RD:
-#endif
-		t = NULL;
-		if (dev == sitn->fb_tunnel_dev) {
-			if (copy_from_user(&p, ifr->ifr_ifru.ifru_data, sizeof(p))) {
-				err = -EFAULT;
-				break;
-			}
-			t = ipip6_tunnel_locate(net, &p, 0);
-		}
-		if (t == NULL)
-			t = netdev_priv(dev);
-
-		err = -EFAULT;
-		if (cmd == SIOCGETTUNNEL) {
-			memcpy(&p, &t->parms, sizeof(p));
-			if (copy_to_user(ifr->ifr_ifru.ifru_data, &p,
-					 sizeof(p)))
-				goto done;
-#ifdef CONFIG_IPV6_SIT_6RD
-		} else {
-			ip6rd.prefix = t->ip6rd.prefix;
-			ip6rd.relay_prefix = t->ip6rd.relay_prefix;
-			ip6rd.prefixlen = t->ip6rd.prefixlen;
-			ip6rd.relay_prefixlen = t->ip6rd.relay_prefixlen;
-			if (copy_to_user(ifr->ifr_ifru.ifru_data, &ip6rd,
-					 sizeof(ip6rd)))
-				goto done;
-#endif
-		}
-		err = 0;
-		break;
-
-	case SIOCADDTUNNEL:
-	case SIOCCHGTUNNEL:
-		err = -EPERM;
-		if (!capable(CAP_NET_ADMIN))
-			goto done;
-
-		err = -EFAULT;
-		if (copy_from_user(&p, ifr->ifr_ifru.ifru_data, sizeof(p)))
-			goto done;
-
-		err = -EINVAL;
-		if (p.iph.version != 4 || p.iph.protocol != IPPROTO_IPV6 ||
-		    p.iph.ihl != 5 || (p.iph.frag_off&htons(~IP_DF)))
-			goto done;
-		if (p.iph.ttl)
-			p.iph.frag_off |= htons(IP_DF);
-
-		t = ipip6_tunnel_locate(net, &p, cmd == SIOCADDTUNNEL);
-
-		if (dev != sitn->fb_tunnel_dev && cmd == SIOCCHGTUNNEL) {
-			if (t != NULL) {
-				if (t->dev != dev) {
-					err = -EEXIST;
-					break;
-				}
-			} else {
-				if (((dev->flags&IFF_POINTOPOINT) && !p.iph.daddr) ||
-				    (!(dev->flags&IFF_POINTOPOINT) && p.iph.daddr)) {
-					err = -EINVAL;
-					break;
-				}
-				t = netdev_priv(dev);
-				ipip6_tunnel_unlink(sitn, t);
-				synchronize_net();
-				t->parms.iph.saddr = p.iph.saddr;
-				t->parms.iph.daddr = p.iph.daddr;
-				memcpy(dev->dev_addr, &p.iph.saddr, 4);
-				memcpy(dev->broadcast, &p.iph.daddr, 4);
-				ipip6_tunnel_link(sitn, t);
-				netdev_state_change(dev);
-			}
-		}
-
-		if (t) {
-			err = 0;
-			if (cmd == SIOCCHGTUNNEL) {
-				t->parms.iph.ttl = p.iph.ttl;
-				t->parms.iph.tos = p.iph.tos;
-				if (t->parms.link != p.link) {
-					t->parms.link = p.link;
-					ipip6_tunnel_bind_dev(dev);
-					netdev_state_change(dev);
-				}
-			}
-			if (copy_to_user(ifr->ifr_ifru.ifru_data, &t->parms, sizeof(p)))
-				err = -EFAULT;
-		} else
-			err = (cmd == SIOCADDTUNNEL ? -ENOBUFS : -ENOENT);
-		break;
-
-	case SIOCDELTUNNEL:
-		err = -EPERM;
-		if (!capable(CAP_NET_ADMIN))
-			goto done;
-
-		if (dev == sitn->fb_tunnel_dev) {
-			err = -EFAULT;
-			if (copy_from_user(&p, ifr->ifr_ifru.ifru_data, sizeof(p)))
-				goto done;
-			err = -ENOENT;
-			if ((t = ipip6_tunnel_locate(net, &p, 0)) == NULL)
-				goto done;
-			err = -EPERM;
-			if (t == netdev_priv(sitn->fb_tunnel_dev))
-				goto done;
-			dev = t->dev;
-		}
-		unregister_netdevice(dev);
-		err = 0;
-		break;
-
-	case SIOCGETPRL:
-		err = -EINVAL;
-		if (dev == sitn->fb_tunnel_dev)
-			goto done;
-		err = -ENOENT;
-		if (!(t = netdev_priv(dev)))
-			goto done;
-		err = ipip6_tunnel_get_prl(t, ifr->ifr_ifru.ifru_data);
-		break;
-
-	case SIOCADDPRL:
-	case SIOCDELPRL:
-	case SIOCCHGPRL:
-		err = -EPERM;
-		if (!capable(CAP_NET_ADMIN))
-			goto done;
-		err = -EINVAL;
-		if (dev == sitn->fb_tunnel_dev)
-			goto done;
-		err = -EFAULT;
-		if (copy_from_user(&prl, ifr->ifr_ifru.ifru_data, sizeof(prl)))
-			goto done;
-		err = -ENOENT;
-		if (!(t = netdev_priv(dev)))
-			goto done;
-
-		switch (cmd) {
-		case SIOCDELPRL:
-			err = ipip6_tunnel_del_prl(t, &prl);
-			break;
-		case SIOCADDPRL:
-		case SIOCCHGPRL:
-			err = ipip6_tunnel_add_prl(t, &prl, cmd == SIOCCHGPRL);
-			break;
-		}
-		netdev_state_change(dev);
-		break;
-
-#ifdef CONFIG_IPV6_SIT_6RD
-	case SIOCADD6RD:
-	case SIOCCHG6RD:
-	case SIOCDEL6RD:
-		err = -EPERM;
-		if (!capable(CAP_NET_ADMIN))
-			goto done;
-
-		err = -EFAULT;
-		if (copy_from_user(&ip6rd, ifr->ifr_ifru.ifru_data,
-				   sizeof(ip6rd)))
-			goto done;
-
-		t = netdev_priv(dev);
-
-		if (cmd != SIOCDEL6RD) {
-			struct in6_addr prefix;
-			__be32 relay_prefix;
-
-			err = -EINVAL;
-			if (ip6rd.relay_prefixlen > 32 ||
-			    ip6rd.prefixlen + (32 - ip6rd.relay_prefixlen) > 64)
-				goto done;
-
-			ipv6_addr_prefix(&prefix, &ip6rd.prefix,
-					 ip6rd.prefixlen);
-			if (!ipv6_addr_equal(&prefix, &ip6rd.prefix))
-				goto done;
-			if (ip6rd.relay_prefixlen)
-				relay_prefix = ip6rd.relay_prefix &
-					       htonl(0xffffffffUL <<
-						     (32 - ip6rd.relay_prefixlen));
-			else
-				relay_prefix = 0;
-			if (relay_prefix != ip6rd.relay_prefix)
-				goto done;
-
-			t->ip6rd.prefix = prefix;
-			t->ip6rd.relay_prefix = relay_prefix;
-			t->ip6rd.prefixlen = ip6rd.prefixlen;
-			t->ip6rd.relay_prefixlen = ip6rd.relay_prefixlen;
-		} else
-			ipip6_tunnel_clone_6rd(dev, sitn);
-
-		err = 0;
-		break;
-#endif
-
-	default:
-		err = -EINVAL;
-	}
-
-done:
-	return err;
-}
-
-static int ipip6_tunnel_change_mtu(struct net_device *dev, int new_mtu)
-{
-	if (new_mtu < IPV6_MIN_MTU || new_mtu > 0xFFF8 - sizeof(struct iphdr))
-		return -EINVAL;
-	dev->mtu = new_mtu;
-	return 0;
-}
-
-static const struct net_device_ops ipip6_netdev_ops = {
-	.ndo_uninit	= ipip6_tunnel_uninit,
-	.ndo_start_xmit	= ipip6_tunnel_xmit,
-	.ndo_do_ioctl	= ipip6_tunnel_ioctl,
-	.ndo_change_mtu	= ipip6_tunnel_change_mtu,
-	.ndo_get_stats64= ipip6_get_stats64,
-=======
 		tdev = __dev_get_by_index(tunnel->net, tunnel->parms.link);
 
 	if (tdev && !netif_is_l3_master(tdev)) {
@@ -2116,31 +1400,10 @@ static const struct net_device_ops ipip6_netdev_ops = {
 	.ndo_siocdevprivate = ipip6_tunnel_siocdevprivate,
 	.ndo_get_iflink = ip_tunnel_get_iflink,
 	.ndo_tunnel_ctl = ipip6_tunnel_ctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ipip6_dev_free(struct net_device *dev)
 {
-<<<<<<< HEAD
-	free_percpu(dev->tstats);
-	free_netdev(dev);
-}
-
-static void ipip6_tunnel_setup(struct net_device *dev)
-{
-	dev->netdev_ops		= &ipip6_netdev_ops;
-	dev->destructor 	= ipip6_dev_free;
-
-	dev->type		= ARPHRD_SIT;
-	dev->hard_header_len 	= LL_MAX_HEADER + sizeof(struct iphdr);
-	dev->mtu		= ETH_DATA_LEN - sizeof(struct iphdr);
-	dev->flags		= IFF_NOARP;
-	dev->priv_flags	       &= ~IFF_XMIT_DST_RELEASE;
-	dev->iflink		= 0;
-	dev->addr_len		= 4;
-	dev->features		|= NETIF_F_NETNS_LOCAL;
-	dev->features		|= NETIF_F_LLTX;
-=======
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 
 	dst_cache_destroy(&tunnel->dst_cache);
@@ -2174,36 +1437,11 @@ static void ipip6_tunnel_setup(struct net_device *dev)
 	dev->hw_features	|= SIT_FEATURES;
 	dev->pcpu_stat_type	= NETDEV_PCPU_STAT_TSTATS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ipip6_tunnel_init(struct net_device *dev)
 {
 	struct ip_tunnel *tunnel = netdev_priv(dev);
-<<<<<<< HEAD
-	int i;
-
-	tunnel->dev = dev;
-
-	memcpy(dev->dev_addr, &tunnel->parms.iph.saddr, 4);
-	memcpy(dev->broadcast, &tunnel->parms.iph.daddr, 4);
-
-	ipip6_tunnel_bind_dev(dev);
-	dev->tstats = alloc_percpu(struct pcpu_tstats);
-	if (!dev->tstats)
-		return -ENOMEM;
-
-	for_each_possible_cpu(i) {
-		struct pcpu_tstats *ipip6_tunnel_stats;
-		ipip6_tunnel_stats = per_cpu_ptr(dev->tstats, i);
-		u64_stats_init(&ipip6_tunnel_stats->syncp);
-	}
-
-	return 0;
-}
-
-static int __net_init ipip6_fb_tunnel_init(struct net_device *dev)
-=======
 	int err;
 
 	tunnel->dev = dev;
@@ -2222,42 +1460,17 @@ static int __net_init ipip6_fb_tunnel_init(struct net_device *dev)
 }
 
 static void __net_init ipip6_fb_tunnel_init(struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 	struct iphdr *iph = &tunnel->parms.iph;
 	struct net *net = dev_net(dev);
 	struct sit_net *sitn = net_generic(net, sit_net_id);
-<<<<<<< HEAD
-	int i;
-
-	tunnel->dev = dev;
-	strcpy(tunnel->parms.name, dev->name);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iph->version		= 4;
 	iph->protocol		= IPPROTO_IPV6;
 	iph->ihl		= 5;
 	iph->ttl		= 64;
 
-<<<<<<< HEAD
-	dev->tstats = alloc_percpu(struct pcpu_tstats);
-	if (!dev->tstats)
-		return -ENOMEM;
-
-	for_each_possible_cpu(i) {
-		struct pcpu_tstats *ipip6_fb_stats;
-		ipip6_fb_stats = per_cpu_ptr(dev->tstats, i);
-		u64_stats_init(&ipip6_fb_stats->syncp);
-	}
-
-	dev_hold(dev);
-	rcu_assign_pointer(sitn->tunnels_wc[0], tunnel);
-	return 0;
-}
-
-=======
 	rcu_assign_pointer(sitn->tunnels_wc[0], tunnel);
 }
 
@@ -2562,27 +1775,12 @@ static struct rtnl_link_ops sit_link_ops __read_mostly = {
 	.get_link_net	= ip_tunnel_get_link_net,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xfrm_tunnel sit_handler __read_mostly = {
 	.handler	=	ipip6_rcv,
 	.err_handler	=	ipip6_err,
 	.priority	=	1,
 };
 
-<<<<<<< HEAD
-static void __net_exit sit_destroy_tunnels(struct sit_net *sitn, struct list_head *head)
-{
-	int prio;
-
-	for (prio = 1; prio < 4; prio++) {
-		int h;
-		for (h = 0; h < HASH_SIZE; h++) {
-			struct ip_tunnel *t;
-
-			t = rtnl_dereference(sitn->tunnels[prio][h]);
-			while (t != NULL) {
-				unregister_netdevice_queue(t->dev, head);
-=======
 static struct xfrm_tunnel ipip_handler __read_mostly = {
 	.handler	=	ipip_rcv,
 	.err_handler	=	ipip6_err,
@@ -2621,7 +1819,6 @@ static void __net_exit sit_destroy_tunnels(struct net *net,
 				if (!net_eq(dev_net(t->dev), net))
 					unregister_netdevice_queue(t->dev,
 								   head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				t = rtnl_dereference(t->next);
 			}
 		}
@@ -2639,32 +1836,17 @@ static int __net_init sit_init_net(struct net *net)
 	sitn->tunnels[2] = sitn->tunnels_r;
 	sitn->tunnels[3] = sitn->tunnels_r_l;
 
-<<<<<<< HEAD
-	sitn->fb_tunnel_dev = alloc_netdev(sizeof(struct ip_tunnel), "sit0",
-=======
 	if (!net_has_fallback_tunnels(net))
 		return 0;
 
 	sitn->fb_tunnel_dev = alloc_netdev(sizeof(struct ip_tunnel), "sit0",
 					   NET_NAME_UNKNOWN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   ipip6_tunnel_setup);
 	if (!sitn->fb_tunnel_dev) {
 		err = -ENOMEM;
 		goto err_alloc_dev;
 	}
 	dev_net_set(sitn->fb_tunnel_dev, net);
-<<<<<<< HEAD
-
-	err = ipip6_fb_tunnel_init(sitn->fb_tunnel_dev);
-	if (err)
-		goto err_dev_free;
-
-	ipip6_tunnel_clone_6rd(sitn->fb_tunnel_dev, sitn);
-
-	if ((err = register_netdev(sitn->fb_tunnel_dev)))
-		goto err_reg_dev;
-=======
 	sitn->fb_tunnel_dev->rtnl_link_ops = &sit_link_ops;
 	/* FB netdevice is special: we have one, and only one per netns.
 	 * Allowing to move it to another netns is clearly unsafe.
@@ -2677,7 +1859,6 @@ static int __net_init sit_init_net(struct net *net)
 
 	ipip6_tunnel_clone_6rd(sitn->fb_tunnel_dev, sitn);
 	ipip6_fb_tunnel_init(sitn->fb_tunnel_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	t = netdev_priv(sitn->fb_tunnel_dev);
 
@@ -2685,29 +1866,11 @@ static int __net_init sit_init_net(struct net *net)
 	return 0;
 
 err_reg_dev:
-<<<<<<< HEAD
-	dev_put(sitn->fb_tunnel_dev);
-err_dev_free:
-	ipip6_dev_free(sitn->fb_tunnel_dev);
-=======
 	free_netdev(sitn->fb_tunnel_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_alloc_dev:
 	return err;
 }
 
-<<<<<<< HEAD
-static void __net_exit sit_exit_net(struct net *net)
-{
-	struct sit_net *sitn = net_generic(net, sit_net_id);
-	LIST_HEAD(list);
-
-	rtnl_lock();
-	sit_destroy_tunnels(sitn, &list);
-	unregister_netdevice_queue(sitn->fb_tunnel_dev, &list);
-	unregister_netdevice_many(&list);
-	rtnl_unlock();
-=======
 static void __net_exit sit_exit_batch_rtnl(struct list_head *net_list,
 					   struct list_head *dev_to_kill)
 {
@@ -2716,32 +1879,23 @@ static void __net_exit sit_exit_batch_rtnl(struct list_head *net_list,
 	ASSERT_RTNL();
 	list_for_each_entry(net, net_list, exit_list)
 		sit_destroy_tunnels(net, dev_to_kill);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations sit_net_ops = {
 	.init = sit_init_net,
-<<<<<<< HEAD
-	.exit = sit_exit_net,
-=======
 	.exit_batch_rtnl = sit_exit_batch_rtnl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id   = &sit_net_id,
 	.size = sizeof(struct sit_net),
 };
 
 static void __exit sit_cleanup(void)
 {
-<<<<<<< HEAD
-	xfrm4_tunnel_deregister(&sit_handler, AF_INET6);
-=======
 	rtnl_link_unregister(&sit_link_ops);
 	xfrm4_tunnel_deregister(&sit_handler, AF_INET6);
 	xfrm4_tunnel_deregister(&ipip_handler, AF_INET);
 #if IS_ENABLED(CONFIG_MPLS)
 	xfrm4_tunnel_deregister(&mplsip_handler, AF_MPLS);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unregister_pernet_device(&sit_net_ops);
 	rcu_barrier(); /* Wait for completion of call_rcu()'s */
@@ -2751,23 +1905,13 @@ static int __init sit_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "IPv6 over IPv4 tunneling driver\n");
-=======
 	pr_info("IPv6, IPv4 and MPLS over IPv4 tunneling driver\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = register_pernet_device(&sit_net_ops);
 	if (err < 0)
 		return err;
 	err = xfrm4_tunnel_register(&sit_handler, AF_INET6);
 	if (err < 0) {
-<<<<<<< HEAD
-		unregister_pernet_device(&sit_net_ops);
-		printk(KERN_INFO "sit init: Can't add protocol\n");
-	}
-	return err;
-=======
 		pr_info("%s: can't register ip6ip4\n", __func__);
 		goto xfrm_tunnel_failed;
 	}
@@ -2801,15 +1945,11 @@ xfrm_tunnel4_failed:
 xfrm_tunnel_failed:
 	unregister_pernet_device(&sit_net_ops);
 	goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(sit_init);
 module_exit(sit_cleanup);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("IPv6-in-IPv4 tunnel SIT driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_RTNL_LINK("sit");
 MODULE_ALIAS_NETDEV("sit0");

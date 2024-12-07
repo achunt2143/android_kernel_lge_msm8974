@@ -1,40 +1,16 @@
-<<<<<<< HEAD
-/*
- * Timberdale FPGA GPIO driver
- * Copyright (c) 2009 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Timberdale FPGA GPIO driver
  * Author: Mocean Laboratories
  * Copyright (c) 2009 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Supports:
  * Timberdale FPGA GPIO
  */
 
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/gpio.h>
-=======
 #include <linux/init.h>
 #include <linux/gpio/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/irq.h>
 #include <linux/io.h>
@@ -66,18 +42,11 @@ struct timbgpio {
 static int timbgpio_update_bit(struct gpio_chip *gpio, unsigned index,
 	unsigned offset, bool enabled)
 {
-<<<<<<< HEAD
-	struct timbgpio *tgpio = container_of(gpio, struct timbgpio, gpio);
-	u32 reg;
-
-	spin_lock(&tgpio->lock);
-=======
 	struct timbgpio *tgpio = gpiochip_get_data(gpio);
 	unsigned long flags;
 	u32 reg;
 
 	spin_lock_irqsave(&tgpio->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = ioread32(tgpio->membase + offset);
 
 	if (enabled)
@@ -86,11 +55,7 @@ static int timbgpio_update_bit(struct gpio_chip *gpio, unsigned index,
 		reg &= ~(1 << index);
 
 	iowrite32(reg, tgpio->membase + offset);
-<<<<<<< HEAD
-	spin_unlock(&tgpio->lock);
-=======
 	spin_unlock_irqrestore(&tgpio->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -102,11 +67,7 @@ static int timbgpio_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 
 static int timbgpio_gpio_get(struct gpio_chip *gpio, unsigned nr)
 {
-<<<<<<< HEAD
-	struct timbgpio *tgpio = container_of(gpio, struct timbgpio, gpio);
-=======
 	struct timbgpio *tgpio = gpiochip_get_data(gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 value;
 
 	value = ioread32(tgpio->membase + TGPIOVAL);
@@ -127,11 +88,7 @@ static void timbgpio_gpio_set(struct gpio_chip *gpio,
 
 static int timbgpio_to_irq(struct gpio_chip *gpio, unsigned offset)
 {
-<<<<<<< HEAD
-	struct timbgpio *tgpio = container_of(gpio, struct timbgpio, gpio);
-=======
 	struct timbgpio *tgpio = gpiochip_get_data(gpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tgpio->irq_base <= 0)
 		return -EINVAL;
@@ -200,12 +157,7 @@ static int timbgpio_irq_type(struct irq_data *d, unsigned trigger)
 		if (ver < 3) {
 			ret = -EINVAL;
 			goto out;
-<<<<<<< HEAD
-		}
-		else {
-=======
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flr |= 1 << offset;
 			bflr |= 1 << offset;
 		}
@@ -230,15 +182,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void timbgpio_irq(unsigned int irq, struct irq_desc *desc)
-{
-	struct timbgpio *tgpio = irq_get_handler_data(irq);
-	unsigned long ipr;
-	int offset;
-
-	desc->irq_data.chip->irq_ack(irq_get_irq_data(irq));
-=======
 static void timbgpio_irq(struct irq_desc *desc)
 {
 	struct timbgpio *tgpio = irq_desc_get_handler_data(desc);
@@ -247,7 +190,6 @@ static void timbgpio_irq(struct irq_desc *desc)
 	int offset;
 
 	data->chip->irq_ack(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr = ioread32(tgpio->membase + TGPIO_IPR);
 	iowrite32(ipr, tgpio->membase + TGPIO_ICR);
 
@@ -270,33 +212,6 @@ static struct irq_chip timbgpio_irqchip = {
 	.irq_set_type	= timbgpio_irq_type,
 };
 
-<<<<<<< HEAD
-static int __devinit timbgpio_probe(struct platform_device *pdev)
-{
-	int err, i;
-	struct gpio_chip *gc;
-	struct timbgpio *tgpio;
-	struct resource *iomem;
-	struct timbgpio_platform_data *pdata = pdev->dev.platform_data;
-	int irq = platform_get_irq(pdev, 0);
-
-	if (!pdata || pdata->nr_pins > 32) {
-		err = -EINVAL;
-		goto err_mem;
-	}
-
-	iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!iomem) {
-		err = -EINVAL;
-		goto err_mem;
-	}
-
-	tgpio = kzalloc(sizeof(*tgpio), GFP_KERNEL);
-	if (!tgpio) {
-		err = -EINVAL;
-		goto err_mem;
-	}
-=======
 static int timbgpio_probe(struct platform_device *pdev)
 {
 	int err, i;
@@ -315,38 +230,19 @@ static int timbgpio_probe(struct platform_device *pdev)
 	if (!tgpio)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tgpio->irq_base = pdata->irq_base;
 
 	spin_lock_init(&tgpio->lock);
 
-<<<<<<< HEAD
-	if (!request_mem_region(iomem->start, resource_size(iomem),
-		DRIVER_NAME)) {
-		err = -EBUSY;
-		goto err_request;
-	}
-
-	tgpio->membase = ioremap(iomem->start, resource_size(iomem));
-	if (!tgpio->membase) {
-		err = -ENOMEM;
-		goto err_ioremap;
-	}
-=======
 	tgpio->membase = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(tgpio->membase))
 		return PTR_ERR(tgpio->membase);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gc = &tgpio->gpio;
 
 	gc->label = dev_name(&pdev->dev);
 	gc->owner = THIS_MODULE;
-<<<<<<< HEAD
-	gc->dev = &pdev->dev;
-=======
 	gc->parent = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gc->direction_input = timbgpio_gpio_direction_input;
 	gc->get = timbgpio_gpio_get;
 	gc->direction_output = timbgpio_gpio_direction_output;
@@ -355,21 +251,11 @@ static int timbgpio_probe(struct platform_device *pdev)
 	gc->dbg_show = NULL;
 	gc->base = pdata->gpio_base;
 	gc->ngpio = pdata->nr_pins;
-<<<<<<< HEAD
-	gc->can_sleep = 0;
-
-	err = gpiochip_add(gc);
-	if (err)
-		goto err_chipadd;
-
-	platform_set_drvdata(pdev, tgpio);
-=======
 	gc->can_sleep = false;
 
 	err = devm_gpiochip_add_data(&pdev->dev, gc, tgpio);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make sure to disable interrupts */
 	iowrite32(0x0, tgpio->membase + TGPIO_IER);
@@ -378,61 +264,6 @@ static int timbgpio_probe(struct platform_device *pdev)
 		return 0;
 
 	for (i = 0; i < pdata->nr_pins; i++) {
-<<<<<<< HEAD
-		irq_set_chip_and_handler_name(tgpio->irq_base + i,
-			&timbgpio_irqchip, handle_simple_irq, "mux");
-		irq_set_chip_data(tgpio->irq_base + i, tgpio);
-#ifdef CONFIG_ARM
-		set_irq_flags(tgpio->irq_base + i, IRQF_VALID | IRQF_PROBE);
-#endif
-	}
-
-	irq_set_handler_data(irq, tgpio);
-	irq_set_chained_handler(irq, timbgpio_irq);
-
-	return 0;
-
-err_chipadd:
-	iounmap(tgpio->membase);
-err_ioremap:
-	release_mem_region(iomem->start, resource_size(iomem));
-err_request:
-	kfree(tgpio);
-err_mem:
-	printk(KERN_ERR DRIVER_NAME": Failed to register GPIOs: %d\n", err);
-
-	return err;
-}
-
-static int __devexit timbgpio_remove(struct platform_device *pdev)
-{
-	int err;
-	struct timbgpio_platform_data *pdata = pdev->dev.platform_data;
-	struct timbgpio *tgpio = platform_get_drvdata(pdev);
-	struct resource *iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	int irq = platform_get_irq(pdev, 0);
-
-	if (irq >= 0 && tgpio->irq_base > 0) {
-		int i;
-		for (i = 0; i < pdata->nr_pins; i++) {
-			irq_set_chip(tgpio->irq_base + i, NULL);
-			irq_set_chip_data(tgpio->irq_base + i, NULL);
-		}
-
-		irq_set_handler(irq, NULL);
-		irq_set_handler_data(irq, NULL);
-	}
-
-	err = gpiochip_remove(&tgpio->gpio);
-	if (err)
-		printk(KERN_ERR DRIVER_NAME": failed to remove gpio_chip\n");
-
-	iounmap(tgpio->membase);
-	release_mem_region(iomem->start, resource_size(iomem));
-	kfree(tgpio);
-
-	platform_set_drvdata(pdev, NULL);
-=======
 		irq_set_chip_and_handler(tgpio->irq_base + i,
 			&timbgpio_irqchip, handle_simple_irq);
 		irq_set_chip_data(tgpio->irq_base + i, tgpio);
@@ -440,37 +271,18 @@ static int __devexit timbgpio_remove(struct platform_device *pdev)
 	}
 
 	irq_set_chained_handler_and_data(irq, timbgpio_irq, tgpio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static struct platform_driver timbgpio_platform_driver = {
 	.driver = {
-<<<<<<< HEAD
-		.name	= DRIVER_NAME,
-		.owner	= THIS_MODULE,
-	},
-	.probe		= timbgpio_probe,
-	.remove		= timbgpio_remove,
-=======
 		.name			= DRIVER_NAME,
 		.suppress_bind_attrs	= true,
 	},
 	.probe		= timbgpio_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*--------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-module_platform_driver(timbgpio_platform_driver);
-
-MODULE_DESCRIPTION("Timberdale GPIO driver");
-MODULE_LICENSE("GPL v2");
-MODULE_AUTHOR("Mocean Laboratories");
-MODULE_ALIAS("platform:"DRIVER_NAME);
-
-=======
 builtin_platform_driver(timbgpio_platform_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

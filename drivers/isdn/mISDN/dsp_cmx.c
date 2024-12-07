@@ -141,20 +141,6 @@
 /*#define CMX_DELAY_DEBUG * gives rx-buffer delay overview */
 /*#define CMX_TX_DEBUG * massive read/write on tx-buffer with content */
 
-<<<<<<< HEAD
-static inline int
-count_list_member(struct list_head *head)
-{
-	int			cnt = 0;
-	struct list_head	*m;
-
-	list_for_each(m, head)
-		cnt++;
-	return cnt;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * debug cmx memory structure
  */
@@ -298,11 +284,7 @@ dsp_cmx_del_conf_member(struct dsp *dsp)
 		}
 	}
 	printk(KERN_WARNING
-<<<<<<< HEAD
-	       "%s: dsp is not present in its own conf_meber list.\n",
-=======
 	       "%s: dsp is not present in its own conf_member list.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       __func__);
 
 	return -EINVAL;
@@ -513,11 +495,7 @@ dsp_cmx_hardware(struct dsp_conf *conf, struct dsp *dsp)
 		       __func__, conf->id);
 
 	if (list_empty(&conf->mlist)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "%s: conference whithout members\n",
-=======
 		printk(KERN_ERR "%s: conference without members\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       __func__);
 		return;
 	}
@@ -753,13 +731,8 @@ dsp_cmx_hardware(struct dsp_conf *conf, struct dsp *dsp)
 					       member->dsp->pcm_slot_tx,
 					       member->dsp->pcm_bank_tx,
 					       member->dsp->pcm_bank_rx);
-<<<<<<< HEAD
-				conf->hardware = 0;
-				conf->software = 1;
-=======
 				conf->hardware = 1;
 				conf->software = tx_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 			/* find a new slot */
@@ -850,13 +823,8 @@ dsp_cmx_hardware(struct dsp_conf *conf, struct dsp *dsp)
 					       nextm->dsp->name,
 					       member->dsp->pcm_slot_tx,
 					       member->dsp->pcm_slot_rx);
-<<<<<<< HEAD
-				conf->hardware = 0;
-				conf->software = 1;
-=======
 				conf->hardware = 1;
 				conf->software = tx_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 			/* find two new slot */
@@ -960,16 +928,11 @@ dsp_cmx_hardware(struct dsp_conf *conf, struct dsp *dsp)
 	/* for more than two members.. */
 
 	/* if all members already have the same conference */
-<<<<<<< HEAD
-	if (all_conf)
-		return;
-=======
 	if (all_conf) {
 		conf->hardware = 1;
 		conf->software = tx_data;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if there is an existing conference, but not all members have joined
@@ -1042,11 +1005,8 @@ dsp_cmx_hardware(struct dsp_conf *conf, struct dsp *dsp)
 			dsp_cmx_hw_message(member->dsp,
 					   MISDN_CTRL_HFC_CONF_JOIN, current_conf, 0, 0, 0);
 		}
-<<<<<<< HEAD
-=======
 		conf->hardware = 1;
 		conf->software = tx_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1362,11 +1322,7 @@ dsp_cmx_send_member(struct dsp *dsp, int len, s32 *c, int members)
 		}
 		if (dsp->conf && dsp->conf->software && dsp->conf->hardware)
 			tx_data_only = 1;
-<<<<<<< HEAD
-		if (dsp->conf->software && dsp->echo.hardware)
-=======
 		if (dsp->echo.software && dsp->echo.hardware)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tx_data_only = 1;
 	}
 
@@ -1487,68 +1443,6 @@ dsp_cmx_send_member(struct dsp *dsp, int len, s32 *c, int members)
 #ifdef CMX_CONF_DEBUG
 	if (0) {
 #else
-<<<<<<< HEAD
-		if (members == 2) {
-#endif
-			/* "other" becomes other party */
-			other = (list_entry(conf->mlist.next,
-					    struct dsp_conf_member, list))->dsp;
-			if (other == member)
-				other = (list_entry(conf->mlist.prev,
-						    struct dsp_conf_member, list))->dsp;
-			o_q = other->rx_buff; /* received data */
-			o_rr = (other->rx_R + len) & CMX_BUFF_MASK;
-			/* end of rx-pointer */
-			o_r = (o_rr - rr + r) & CMX_BUFF_MASK;
-			/* start rx-pointer at current read position*/
-			/* -> if echo is NOT enabled */
-			if (!dsp->echo.software) {
-				/*
-				 * -> copy other member's rx-data,
-				 * if tx-data is available, mix
-				 */
-				while (o_r != o_rr && t != tt) {
-					*d++ = dsp_audio_mix_law[(p[t] << 8) | o_q[o_r]];
-					t = (t + 1) & CMX_BUFF_MASK;
-					o_r = (o_r + 1) & CMX_BUFF_MASK;
-				}
-				while (o_r != o_rr) {
-					*d++ = o_q[o_r];
-					o_r = (o_r + 1) & CMX_BUFF_MASK;
-				}
-				/* -> if echo is enabled */
-			} else {
-				/*
-				 * -> mix other member's rx-data with echo,
-				 * if tx-data is available, mix
-				 */
-				while (r != rr && t != tt) {
-					sample = dsp_audio_law_to_s32[p[t]] +
-						dsp_audio_law_to_s32[q[r]] +
-						dsp_audio_law_to_s32[o_q[o_r]];
-					if (sample < -32768)
-						sample = -32768;
-					else if (sample > 32767)
-						sample = 32767;
-					*d++ = dsp_audio_s16_to_law[sample & 0xffff];
-					/* tx-data + rx_data + echo */
-					t = (t + 1) & CMX_BUFF_MASK;
-					r = (r + 1) & CMX_BUFF_MASK;
-					o_r = (o_r + 1) & CMX_BUFF_MASK;
-				}
-				while (r != rr) {
-					*d++ = dsp_audio_mix_law[(q[r] << 8) | o_q[o_r]];
-					r = (r + 1) & CMX_BUFF_MASK;
-					o_r = (o_r + 1) & CMX_BUFF_MASK;
-				}
-			}
-			dsp->tx_R = t;
-			goto send_packet;
-		}
-#ifdef DSP_NEVER_DEFINED
-	}
-#endif
-=======
 	if (members == 2) {
 #endif
 		/* "other" becomes other party */
@@ -1606,7 +1500,6 @@ dsp_cmx_send_member(struct dsp *dsp, int len, s32 *c, int members)
 		dsp->tx_R = t;
 		goto send_packet;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* PROCESS DATA (three or more members) */
 	/* -> if echo is NOT enabled */
 	if (!dsp->echo.software) {
@@ -1691,12 +1584,7 @@ send_packet:
 				thh = mISDN_HEAD_P(txskb);
 				thh->prim = DL_DATA_REQ;
 				thh->id = 0;
-<<<<<<< HEAD
-				memcpy(skb_put(txskb, len), nskb->data + preload,
-				       len);
-=======
 				skb_put_data(txskb, nskb->data + preload, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* queue (trigger later) */
 				skb_queue_tail(&dsp->sendq, txskb);
 			}
@@ -1721,20 +1609,12 @@ send_packet:
 
 static u32	jittercount; /* counter for jitter check */
 struct timer_list dsp_spl_tl;
-<<<<<<< HEAD
-u32	dsp_spl_jiffies; /* calculate the next time to fire */
-=======
 unsigned long	dsp_spl_jiffies; /* calculate the next time to fire */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u16	dsp_count; /* last sample count */
 static int	dsp_count_valid; /* if we have last sample count */
 
 void
-<<<<<<< HEAD
-dsp_cmx_send(void *arg)
-=======
 dsp_cmx_send(struct timer_list *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dsp_conf *conf;
 	struct dsp_conf_member *member;
@@ -1781,15 +1661,6 @@ dsp_cmx_send(struct timer_list *arg)
 		mustmix = 0;
 		members = 0;
 		if (conf) {
-<<<<<<< HEAD
-			members = count_list_member(&conf->mlist);
-#ifdef CMX_CONF_DEBUG
-			if (conf->software && members > 1)
-#else
-				if (conf->software && members > 2)
-#endif
-					mustmix = 1;
-=======
 			members = list_count_nodes(&conf->mlist);
 #ifdef CMX_CONF_DEBUG
 			if (conf->software && members > 1)
@@ -1797,7 +1668,6 @@ dsp_cmx_send(struct timer_list *arg)
 			if (conf->software && members > 2)
 #endif
 				mustmix = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* transmission required */
@@ -1814,54 +1684,6 @@ dsp_cmx_send(struct timer_list *arg)
 	/* loop all members that require conference mixing */
 	list_for_each_entry(conf, &conf_ilist, list) {
 		/* count members and check hardware */
-<<<<<<< HEAD
-		members = count_list_member(&conf->mlist);
-#ifdef CMX_CONF_DEBUG
-		if (conf->software && members > 1) {
-#else
-			if (conf->software && members > 2) {
-#endif
-				/* check for hdlc conf */
-				member = list_entry(conf->mlist.next,
-						    struct dsp_conf_member, list);
-				if (member->dsp->hdlc)
-					continue;
-				/* mix all data */
-				memset(mixbuffer, 0, length * sizeof(s32));
-				list_for_each_entry(member, &conf->mlist, list) {
-					dsp = member->dsp;
-					/* get range of data to mix */
-					c = mixbuffer;
-					q = dsp->rx_buff;
-					r = dsp->rx_R;
-					rr = (r + length) & CMX_BUFF_MASK;
-					/* add member's data */
-					while (r != rr) {
-						*c++ += dsp_audio_law_to_s32[q[r]];
-						r = (r + 1) & CMX_BUFF_MASK;
-					}
-				}
-
-				/* process each member */
-				list_for_each_entry(member, &conf->mlist, list) {
-					/* transmission */
-					dsp_cmx_send_member(member->dsp, length,
-							    mixbuffer, members);
-				}
-			}
-		}
-
-		/* delete rx-data, increment buffers, change pointers */
-		list_for_each_entry(dsp, &dsp_ilist, list) {
-			if (dsp->hdlc)
-				continue;
-			p = dsp->rx_buff;
-			q = dsp->tx_buff;
-			r = dsp->rx_R;
-			/* move receive pointer when receiving */
-			if (!dsp->rx_is_off) {
-				rr = (r + length) & CMX_BUFF_MASK;
-=======
 		members = list_count_nodes(&conf->mlist);
 #ifdef CMX_CONF_DEBUG
 		if (conf->software && members > 1) {
@@ -1955,177 +1777,12 @@ dsp_cmx_send(struct timer_list *arg)
 				r = dsp->rx_R;
 				rr = (r + delay - (dsp_poll >> 1))
 					& CMX_BUFF_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* delete rx-data */
 				while (r != rr) {
 					p[r] = dsp_silence;
 					r = (r + 1) & CMX_BUFF_MASK;
 				}
 				/* increment rx-buffer pointer */
-<<<<<<< HEAD
-				dsp->rx_R = r; /* write incremented read pointer */
-			}
-
-			/* check current rx_delay */
-			delay = (dsp->rx_W-dsp->rx_R) & CMX_BUFF_MASK;
-			if (delay >= CMX_BUFF_HALF)
-				delay = 0; /* will be the delay before next write */
-			/* check for lower delay */
-			if (delay < dsp->rx_delay[0])
-				dsp->rx_delay[0] = delay;
-			/* check current tx_delay */
-			delay = (dsp->tx_W-dsp->tx_R) & CMX_BUFF_MASK;
-			if (delay >= CMX_BUFF_HALF)
-				delay = 0; /* will be the delay before next write */
-			/* check for lower delay */
-			if (delay < dsp->tx_delay[0])
-				dsp->tx_delay[0] = delay;
-			if (jittercheck) {
-				/* find the lowest of all rx_delays */
-				delay = dsp->rx_delay[0];
-				i = 1;
-				while (i < MAX_SECONDS_JITTER_CHECK) {
-					if (delay > dsp->rx_delay[i])
-						delay = dsp->rx_delay[i];
-					i++;
-				}
-				/*
-				 * remove rx_delay only if we have delay AND we
-				 * have not preset cmx_delay AND
-				 * the delay is greater dsp_poll
-				 */
-				if (delay > dsp_poll && !dsp->cmx_delay) {
-					if (dsp_debug & DEBUG_DSP_CLOCK)
-						printk(KERN_DEBUG
-						       "%s lowest rx_delay of %d bytes for"
-						       " dsp %s are now removed.\n",
-						       __func__, delay,
-						       dsp->name);
-					r = dsp->rx_R;
-					rr = (r + delay - (dsp_poll >> 1))
-						& CMX_BUFF_MASK;
-					/* delete rx-data */
-					while (r != rr) {
-						p[r] = dsp_silence;
-						r = (r + 1) & CMX_BUFF_MASK;
-					}
-					/* increment rx-buffer pointer */
-					dsp->rx_R = r;
-					/* write incremented read pointer */
-				}
-				/* find the lowest of all tx_delays */
-				delay = dsp->tx_delay[0];
-				i = 1;
-				while (i < MAX_SECONDS_JITTER_CHECK) {
-					if (delay > dsp->tx_delay[i])
-						delay = dsp->tx_delay[i];
-					i++;
-				}
-				/*
-				 * remove delay only if we have delay AND we
-				 * have enabled tx_dejitter
-				 */
-				if (delay > dsp_poll && dsp->tx_dejitter) {
-					if (dsp_debug & DEBUG_DSP_CLOCK)
-						printk(KERN_DEBUG
-						       "%s lowest tx_delay of %d bytes for"
-						       " dsp %s are now removed.\n",
-						       __func__, delay,
-						       dsp->name);
-					r = dsp->tx_R;
-					rr = (r + delay - (dsp_poll >> 1))
-						& CMX_BUFF_MASK;
-					/* delete tx-data */
-					while (r != rr) {
-						q[r] = dsp_silence;
-						r = (r + 1) & CMX_BUFF_MASK;
-					}
-					/* increment rx-buffer pointer */
-					dsp->tx_R = r;
-					/* write incremented read pointer */
-				}
-				/* scroll up delays */
-				i = MAX_SECONDS_JITTER_CHECK - 1;
-				while (i) {
-					dsp->rx_delay[i] = dsp->rx_delay[i - 1];
-					dsp->tx_delay[i] = dsp->tx_delay[i - 1];
-					i--;
-				}
-				dsp->tx_delay[0] = CMX_BUFF_HALF; /* (infinite) delay */
-				dsp->rx_delay[0] = CMX_BUFF_HALF; /* (infinite) delay */
-			}
-		}
-
-		/* if next event would be in the past ... */
-		if ((s32)(dsp_spl_jiffies + dsp_tics-jiffies) <= 0)
-			dsp_spl_jiffies = jiffies + 1;
-		else
-			dsp_spl_jiffies += dsp_tics;
-
-		dsp_spl_tl.expires = dsp_spl_jiffies;
-		add_timer(&dsp_spl_tl);
-
-		/* unlock */
-		spin_unlock_irqrestore(&dsp_lock, flags);
-	}
-
-/*
- * audio data is transmitted from upper layer to the dsp
- */
-	void
-		dsp_cmx_transmit(struct dsp *dsp, struct sk_buff *skb)
-	{
-		u_int w, ww;
-		u8 *d, *p;
-		int space; /* todo: , l = skb->len; */
-#ifdef CMX_TX_DEBUG
-		char debugbuf[256] = "";
-#endif
-
-		/* check if there is enough space, and then copy */
-		w = dsp->tx_W;
-		ww = dsp->tx_R;
-		p = dsp->tx_buff;
-		d = skb->data;
-		space = (ww - w - 1) & CMX_BUFF_MASK;
-		/* write-pointer should not overrun nor reach read pointer */
-		if (space < skb->len) {
-			/* write to the space we have left */
-			ww = (ww - 1) & CMX_BUFF_MASK; /* end one byte prior tx_R */
-			if (dsp_debug & DEBUG_DSP_CLOCK)
-				printk(KERN_DEBUG "%s: TX overflow space=%d skb->len="
-				       "%d, w=0x%04x, ww=0x%04x\n", __func__, space,
-				       skb->len, w, ww);
-		} else
-			/* write until all byte are copied */
-			ww = (w + skb->len) & CMX_BUFF_MASK;
-		dsp->tx_W = ww;
-
-		/* show current buffer */
-#ifdef CMX_DEBUG
-		printk(KERN_DEBUG
-		       "cmx_transmit(dsp=%lx) %d bytes to 0x%x-0x%x. %s\n",
-		       (u_long)dsp, (ww - w) & CMX_BUFF_MASK, w, ww, dsp->name);
-#endif
-
-		/* copy transmit data to tx-buffer */
-#ifdef CMX_TX_DEBUG
-		sprintf(debugbuf, "TX getting (%04x-%04x)%p: ", w, ww, p);
-#endif
-		while (w != ww) {
-#ifdef CMX_TX_DEBUG
-			if (strlen(debugbuf) < 48)
-				sprintf(debugbuf + strlen(debugbuf), " %02x", *d);
-#endif
-			p[w] = *d++;
-			w = (w + 1) & CMX_BUFF_MASK;
-		}
-#ifdef CMX_TX_DEBUG
-		printk(KERN_DEBUG "%s\n", debugbuf);
-#endif
-
-	}
-=======
 				dsp->rx_R = r;
 				/* write incremented read pointer */
 			}
@@ -2240,59 +1897,10 @@ dsp_cmx_transmit(struct dsp *dsp, struct sk_buff *skb)
 #endif
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * hdlc data is received from card and sent to all members.
  */
-<<<<<<< HEAD
-	void
-		dsp_cmx_hdlc(struct dsp *dsp, struct sk_buff *skb)
-	{
-		struct sk_buff *nskb = NULL;
-		struct dsp_conf_member *member;
-		struct mISDNhead *hh;
-
-		/* not if not active */
-		if (!dsp->b_active)
-			return;
-
-		/* check if we have sompen */
-		if (skb->len < 1)
-			return;
-
-		/* no conf */
-		if (!dsp->conf) {
-			/* in case of software echo */
-			if (dsp->echo.software) {
-				nskb = skb_clone(skb, GFP_ATOMIC);
-				if (nskb) {
-					hh = mISDN_HEAD_P(nskb);
-					hh->prim = PH_DATA_REQ;
-					hh->id = 0;
-					skb_queue_tail(&dsp->sendq, nskb);
-					schedule_work(&dsp->workq);
-				}
-			}
-			return;
-		}
-		/* in case of hardware conference */
-		if (dsp->conf->hardware)
-			return;
-		list_for_each_entry(member, &dsp->conf->mlist, list) {
-			if (dsp->echo.software || member->dsp != dsp) {
-				nskb = skb_clone(skb, GFP_ATOMIC);
-				if (nskb) {
-					hh = mISDN_HEAD_P(nskb);
-					hh->prim = PH_DATA_REQ;
-					hh->id = 0;
-					skb_queue_tail(&member->dsp->sendq, nskb);
-					schedule_work(&member->dsp->workq);
-				}
-			}
-		}
-	}
-=======
 void
 dsp_cmx_hdlc(struct dsp *dsp, struct sk_buff *skb)
 {
@@ -2339,4 +1947,3 @@ dsp_cmx_hdlc(struct dsp *dsp, struct sk_buff *skb)
 		}
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

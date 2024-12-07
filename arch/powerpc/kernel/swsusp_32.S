@@ -1,11 +1,7 @@
-<<<<<<< HEAD
-#include <linux/threads.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/threads.h>
 #include <linux/linkage.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/page.h>
 #include <asm/cputable.h>
@@ -13,10 +9,7 @@
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/mmu.h>
-<<<<<<< HEAD
-=======
 #include <asm/feature-fixups.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Structure for storing CPU registers on the save area.
@@ -34,13 +27,6 @@
 #define SL_IBAT2	0x48
 #define SL_DBAT3	0x50
 #define SL_IBAT3	0x58
-<<<<<<< HEAD
-#define SL_TB		0x60
-#define SL_R2		0x68
-#define SL_CR		0x6c
-#define SL_LR		0x70
-#define SL_R12		0x74	/* r12 to r31 */
-=======
 #define SL_DBAT4	0x60
 #define SL_IBAT4	0x68
 #define SL_DBAT5	0x70
@@ -54,7 +40,6 @@
 #define SL_CR		0xac
 #define SL_LR		0xb0
 #define SL_R12		0xb4	/* r12 to r31 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SL_SIZE		(SL_R12 + 80)
 
 	.section .data
@@ -139,8 +124,6 @@ _GLOBAL(swsusp_arch_suspend)
 	mfibatl	r4,3
 	stw	r4,SL_IBAT3+4(r11)
 
-<<<<<<< HEAD
-=======
 BEGIN_MMU_FTR_SECTION
 	mfspr	r4,SPRN_DBAT4U
 	stw	r4,SL_DBAT4(r11)
@@ -176,7 +159,6 @@ BEGIN_MMU_FTR_SECTION
 	stw	r4,SL_IBAT7+4(r11)
 END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if  0
 	/* Backup various CPU config stuffs */
 	bl	__save_cpu_setup
@@ -201,11 +183,7 @@ _GLOBAL(swsusp_arch_resume)
 #ifdef CONFIG_ALTIVEC
 	/* Stop pending alitvec streams and memory accesses */
 BEGIN_FTR_SECTION
-<<<<<<< HEAD
-	DSSALL
-=======
 	PPC_DSSALL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 #endif
  	sync
@@ -346,29 +324,6 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 	mtibatu	3,r4
 	lwz	r4,SL_IBAT3+4(r11)
 	mtibatl	3,r4
-<<<<<<< HEAD
-#endif
-
-BEGIN_MMU_FTR_SECTION
-	li	r4,0
-	mtspr	SPRN_DBAT4U,r4
-	mtspr	SPRN_DBAT4L,r4
-	mtspr	SPRN_DBAT5U,r4
-	mtspr	SPRN_DBAT5L,r4
-	mtspr	SPRN_DBAT6U,r4
-	mtspr	SPRN_DBAT6L,r4
-	mtspr	SPRN_DBAT7U,r4
-	mtspr	SPRN_DBAT7L,r4
-	mtspr	SPRN_IBAT4U,r4
-	mtspr	SPRN_IBAT4L,r4
-	mtspr	SPRN_IBAT5U,r4
-	mtspr	SPRN_IBAT5L,r4
-	mtspr	SPRN_IBAT6U,r4
-	mtspr	SPRN_IBAT6L,r4
-	mtspr	SPRN_IBAT7U,r4
-	mtspr	SPRN_IBAT7L,r4
-END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
-=======
 BEGIN_MMU_FTR_SECTION
 	lwz	r4,SL_DBAT4(r11)
 	mtspr	SPRN_DBAT4U,r4
@@ -404,7 +359,6 @@ BEGIN_MMU_FTR_SECTION
 	mtspr	SPRN_IBAT7L,r4
 END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flush all TLBs */
 	lis	r4,0x1000
@@ -443,28 +397,18 @@ END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 
 	li	r3,0
 	blr
-<<<<<<< HEAD
-=======
 _ASM_NOKPROBE_SYMBOL(swsusp_arch_resume)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FIXME:This construct is actually not useful since we don't shut
  * down the instruction MMU, we could just flip back MSR-DR on.
  */
-<<<<<<< HEAD
-turn_on_mmu:
-=======
 SYM_FUNC_START_LOCAL(turn_on_mmu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mflr	r4
 	mtsrr0	r4
 	mtsrr1	r3
 	sync
 	isync
 	rfi
-<<<<<<< HEAD
-=======
 _ASM_NOKPROBE_SYMBOL(turn_on_mmu)
 SYM_FUNC_END(turn_on_mmu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

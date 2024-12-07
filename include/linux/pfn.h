@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_PFN_H_
 #define _LINUX_PFN_H_
 
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 
 /*
  * pfn_t: encapsulates a page-frame number that is optionally backed
@@ -18,16 +13,12 @@
 typedef struct {
 	u64 val;
 } pfn_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define PFN_ALIGN(x)	(((unsigned long)(x) + (PAGE_SIZE - 1)) & PAGE_MASK)
 #define PFN_UP(x)	(((x) + PAGE_SIZE-1) >> PAGE_SHIFT)
 #define PFN_DOWN(x)	((x) >> PAGE_SHIFT)
 #define PFN_PHYS(x)	((phys_addr_t)(x) << PAGE_SHIFT)
-<<<<<<< HEAD
-=======
 #define PHYS_PFN(x)	((unsigned long)((x) >> PAGE_SHIFT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

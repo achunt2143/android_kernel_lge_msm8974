@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bootwrapper for ePAPR compliant firmwares
  *
@@ -12,13 +9,6 @@
  *   and
  * Scott Wood <scottwood@freescale.com>
  * Copyright (c) 2007 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ops.h"
@@ -55,13 +45,8 @@ static void platform_fixups(void)
 		       fdt_addr, fdt_totalsize((void *)fdt_addr), ima_size);
 }
 
-<<<<<<< HEAD
-void platform_init(unsigned long r3, unsigned long r4, unsigned long r5,
-		   unsigned long r6, unsigned long r7)
-=======
 void epapr_platform_init(unsigned long r3, unsigned long r4, unsigned long r5,
 			 unsigned long r6, unsigned long r7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	epapr_magic = r6;
 	ima_size = r7;

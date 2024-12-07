@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * twl4030-vibra.c - TWL4030 Vibrator driver
  *
@@ -10,37 +7,14 @@
  * Written by Henrik Saari <henrik.saari@nokia.com>
  * Updates by Felipe Balbi <felipe.balbi@nokia.com>
  * Input by Jari Vanhala <ext-jari.vanhala@nokia.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/jiffies.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-#include <linux/i2c/twl.h>
-=======
 #include <linux/of.h>
 #include <linux/workqueue.h>
 #include <linux/mfd/twl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mfd/twl4030-audio.h>
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -55,10 +29,6 @@ struct vibra_info {
 	struct device		*dev;
 	struct input_dev	*input_dev;
 
-<<<<<<< HEAD
-	struct workqueue_struct *workqueue;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct	play_work;
 
 	bool			enabled;
@@ -158,23 +128,7 @@ static int vibra_play(struct input_dev *input, void *data,
 	if (!info->speed)
 		info->speed = effect->u.rumble.weak_magnitude >> 9;
 	info->direction = effect->direction < EFFECT_DIR_180_DEG ? 0 : 1;
-<<<<<<< HEAD
-	queue_work(info->workqueue, &info->play_work);
-	return 0;
-}
-
-static int twl4030_vibra_open(struct input_dev *input)
-{
-	struct vibra_info *info = input_get_drvdata(input);
-
-	info->workqueue = create_singlethread_workqueue("vibra");
-	if (info->workqueue == NULL) {
-		dev_err(&input->dev, "couldn't create workqueue\n");
-		return -ENOMEM;
-	}
-=======
 	schedule_work(&info->play_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -183,22 +137,12 @@ static void twl4030_vibra_close(struct input_dev *input)
 	struct vibra_info *info = input_get_drvdata(input);
 
 	cancel_work_sync(&info->play_work);
-<<<<<<< HEAD
-	INIT_WORK(&info->play_work, vibra_play_work); /* cleanup */
-	destroy_workqueue(info->workqueue);
-	info->workqueue = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->enabled)
 		vibra_disable(info);
 }
 
 /*** Module ***/
-<<<<<<< HEAD
-#ifdef CONFIG_PM_SLEEP
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int twl4030_vibra_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -215,25 +159,6 @@ static int twl4030_vibra_resume(struct device *dev)
 	vibra_disable_leds();
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static SIMPLE_DEV_PM_OPS(twl4030_vibra_pm_ops,
-			 twl4030_vibra_suspend, twl4030_vibra_resume);
-
-static int __devinit twl4030_vibra_probe(struct platform_device *pdev)
-{
-	struct twl4030_vibra_data *pdata = pdev->dev.platform_data;
-	struct vibra_info *info;
-	int ret;
-
-	if (!pdata) {
-		dev_dbg(&pdev->dev, "platform_data not available\n");
-		return -EINVAL;
-	}
-
-	info = kzalloc(sizeof(*info), GFP_KERNEL);
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(twl4030_vibra_pm_ops,
 				twl4030_vibra_suspend, twl4030_vibra_resume);
@@ -263,21 +188,10 @@ static int twl4030_vibra_probe(struct platform_device *pdev)
 	}
 
 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 
 	info->dev = &pdev->dev;
-<<<<<<< HEAD
-	info->coexist = pdata->coexist;
-	INIT_WORK(&info->play_work, vibra_play_work);
-
-	info->input_dev = input_allocate_device();
-	if (info->input_dev == NULL) {
-		dev_err(&pdev->dev, "couldn't allocate input device\n");
-		ret = -ENOMEM;
-		goto err_kzalloc;
-=======
 	info->coexist = twl4030_vibra_check_coexist(twl4030_core_node);
 	INIT_WORK(&info->play_work, vibra_play_work);
 
@@ -285,29 +199,19 @@ static int twl4030_vibra_probe(struct platform_device *pdev)
 	if (info->input_dev == NULL) {
 		dev_err(&pdev->dev, "couldn't allocate input device\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input_set_drvdata(info->input_dev, info);
 
 	info->input_dev->name = "twl4030:vibrator";
 	info->input_dev->id.version = 1;
-<<<<<<< HEAD
-	info->input_dev->dev.parent = pdev->dev.parent;
-	info->input_dev->open = twl4030_vibra_open;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->input_dev->close = twl4030_vibra_close;
 	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
 
 	ret = input_ff_create_memless(info->input_dev, NULL, vibra_play);
 	if (ret < 0) {
 		dev_dbg(&pdev->dev, "couldn't register vibrator to FF\n");
-<<<<<<< HEAD
-		goto err_ialloc;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = input_register_device(info->input_dev);
@@ -323,34 +227,6 @@ static int twl4030_vibra_probe(struct platform_device *pdev)
 
 err_iff:
 	input_ff_destroy(info->input_dev);
-<<<<<<< HEAD
-err_ialloc:
-	input_free_device(info->input_dev);
-err_kzalloc:
-	kfree(info);
-	return ret;
-}
-
-static int __devexit twl4030_vibra_remove(struct platform_device *pdev)
-{
-	struct vibra_info *info = platform_get_drvdata(pdev);
-
-	/* this also free ff-memless and calls close if needed */
-	input_unregister_device(info->input_dev);
-	kfree(info);
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-}
-
-static struct platform_driver twl4030_vibra_driver = {
-	.probe		= twl4030_vibra_probe,
-	.remove		= __devexit_p(twl4030_vibra_remove),
-	.driver		= {
-		.name	= "twl4030-vibra",
-		.owner	= THIS_MODULE,
-		.pm	= &twl4030_vibra_pm_ops,
-=======
 	return ret;
 }
 
@@ -359,7 +235,6 @@ static struct platform_driver twl4030_vibra_driver = {
 	.driver		= {
 		.name	= "twl4030-vibra",
 		.pm	= pm_sleep_ptr(&twl4030_vibra_pm_ops),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(twl4030_vibra_driver);

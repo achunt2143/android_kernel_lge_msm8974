@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef IOCONTEXT_H
 #define IOCONTEXT_H
 
@@ -10,16 +7,8 @@
 #include <linux/workqueue.h>
 
 enum {
-<<<<<<< HEAD
-	ICQ_IOPRIO_CHANGED	= 1 << 0,
-	ICQ_CGROUP_CHANGED	= 1 << 1,
-	ICQ_EXITED		= 1 << 2,
-
-	ICQ_CHANGED_MASK	= ICQ_IOPRIO_CHANGED | ICQ_CGROUP_CHANGED,
-=======
 	ICQ_EXITED		= 1 << 2,
 	ICQ_DESTROYED		= 1 << 3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -109,20 +98,6 @@ struct io_cq {
  */
 struct io_context {
 	atomic_long_t refcount;
-<<<<<<< HEAD
-	atomic_t nr_tasks;
-
-	/* all the fields below are protected by this lock */
-	spinlock_t lock;
-
-	unsigned short ioprio;
-
-	/*
-	 * For request batching
-	 */
-	int nr_batch_requests;     /* Number of requests left in the batch */
-	unsigned long last_waited; /* Time last woken after wait for request */
-=======
 	atomic_t active_ref;
 
 	unsigned short ioprio;
@@ -130,46 +105,19 @@ struct io_context {
 #ifdef CONFIG_BLK_ICQ
 	/* all the fields below are protected by this lock */
 	spinlock_t lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct radix_tree_root	icq_tree;
 	struct io_cq __rcu	*icq_hint;
 	struct hlist_head	icq_list;
 
 	struct work_struct release_work;
-<<<<<<< HEAD
-};
-
-static inline struct io_context *ioc_task_link(struct io_context *ioc)
-{
-	/*
-	 * if ref count is zero, don't allow sharing (ioc is going away, it's
-	 * a race).
-	 */
-	if (ioc && atomic_long_inc_not_zero(&ioc->refcount)) {
-		atomic_inc(&ioc->nr_tasks);
-		return ioc;
-	}
-
-	return NULL;
-}
-
-=======
 #endif /* CONFIG_BLK_ICQ */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct task_struct;
 #ifdef CONFIG_BLOCK
 void put_io_context(struct io_context *ioc);
 void exit_io_context(struct task_struct *task);
-<<<<<<< HEAD
-struct io_context *get_task_io_context(struct task_struct *task,
-				       gfp_t gfp_flags, int node);
-void ioc_ioprio_changed(struct io_context *ioc, int ioprio);
-void ioc_cgroup_changed(struct io_context *ioc);
-unsigned int icq_get_changed(struct io_cq *icq);
-=======
 int __copy_io(unsigned long clone_flags, struct task_struct *tsk);
 static inline int copy_io(unsigned long clone_flags, struct task_struct *tsk)
 {
@@ -177,16 +125,10 @@ static inline int copy_io(unsigned long clone_flags, struct task_struct *tsk)
 		return 0;
 	return __copy_io(clone_flags, tsk);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 struct io_context;
 static inline void put_io_context(struct io_context *ioc) { }
 static inline void exit_io_context(struct task_struct *task) { }
-<<<<<<< HEAD
-#endif
-
-#endif
-=======
 static inline int copy_io(unsigned long clone_flags, struct task_struct *tsk)
 {
 	return 0;
@@ -194,4 +136,3 @@ static inline int copy_io(unsigned long clone_flags, struct task_struct *tsk)
 #endif /* CONFIG_BLOCK */
 
 #endif /* IOCONTEXT_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -43,11 +43,7 @@ struct __large_pstruct { unsigned long buf[100]; };
 	case 1: __get_dbe_asm("lb"); break;				\
 	case 2: __get_dbe_asm("lh"); break;				\
 	case 4: __get_dbe_asm("lw"); break;				\
-<<<<<<< HEAD
-	case 8:  __get_dbe_asm("ld"); break;				\
-=======
 	case 8:	 __get_dbe_asm("ld"); break;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default: __get_dbe_unknown(); break;				\
 	}								\
 	x = (__typeof__(*(ptr))) __gu_val;				\
@@ -60,10 +56,7 @@ struct __large_pstruct { unsigned long buf[100]; };
 	"1:\t" insn "\t%1,%2\n\t"					\
 	"move\t%0,$0\n"							\
 	"2:\n\t"							\
-<<<<<<< HEAD
-=======
 	".insn\n\t"							\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	".section\t.fixup,\"ax\"\n"					\
 	"3:\tli\t%0,%3\n\t"						\
 	"move\t%1,$0\n\t"						\
@@ -102,10 +95,7 @@ extern void __get_dbe_unknown(void);
 	"1:\t" insn "\t%1,%2\n\t"					\
 	"move\t%0,$0\n"							\
 	"2:\n\t"							\
-<<<<<<< HEAD
-=======
 	".insn\n\t"							\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	".section\t.fixup,\"ax\"\n"					\
 	"3:\tli\t%0,%3\n\t"						\
 	"j\t2b\n\t"							\

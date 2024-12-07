@@ -11,8 +11,6 @@ Description:
 		guaranteed.  The 'isci_id' attribute unambiguously identifies
 		the controller index: '0' for the first controller,
 		'1' for the second.
-<<<<<<< HEAD
-=======
 
 What:		/sys/class/scsi_host/hostX/acciopath_status
 Date:		November 2013
@@ -119,4 +117,3 @@ KernelVersion:	v2.6.39
 Contact:	linux-ide@vger.kernel.org
 Description:
 		(RO) Displays supported enclosure management message types.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

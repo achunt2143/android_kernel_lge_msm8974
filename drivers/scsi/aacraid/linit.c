@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Adaptec AAC series RAID controller driver
  *	(c) Copyright 2001 Red Hat Inc.
@@ -10,26 +7,8 @@
  * Adaptec aacraid device driver for Linux.
  *
  * Copyright (c) 2000-2010 Adaptec, Inc.
-<<<<<<< HEAD
- *               2010 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
  *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Module Name:
  *   linit.c
@@ -47,20 +26,13 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/pci-aspm.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/syscalls.h>
 #include <linux/delay.h>
 #include <linux/kthread.h>
-<<<<<<< HEAD
-=======
 #include <linux/msdos_partition.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -72,11 +44,7 @@
 
 #include "aacraid.h"
 
-<<<<<<< HEAD
-#define AAC_DRIVER_VERSION		"1.2-0"
-=======
 #define AAC_DRIVER_VERSION		"1.2.1"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef AAC_DRIVER_BRANCH
 #define AAC_DRIVER_BRANCH		""
 #endif
@@ -99,11 +67,7 @@ MODULE_VERSION(AAC_DRIVER_FULL_VERSION);
 
 static DEFINE_MUTEX(aac_mutex);
 static LIST_HEAD(aac_devices);
-<<<<<<< HEAD
-static int aac_cfg_major = -1;
-=======
 static int aac_cfg_major = AAC_CHARDEV_UNREGISTERED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
 
 /*
@@ -112,17 +76,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
  *
  * Note: The last field is used to index into aac_drivers below.
  */
-<<<<<<< HEAD
-#ifdef DECLARE_PCI_DEVICE_TABLE
-static DECLARE_PCI_DEVICE_TABLE(aac_pci_tbl) = {
-#elif defined(__devinitconst)
-static const struct pci_device_id aac_pci_tbl[] __devinitconst = {
-#else
-static const struct pci_device_id aac_pci_tbl[] __devinitdata = {
-#endif
-=======
 static const struct pci_device_id aac_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1028, 0x0001, 0x1028, 0x0001, 0, 0, 0 }, /* PERC 2/Si (Iguana/PERC2Si) */
 	{ 0x1028, 0x0002, 0x1028, 0x0002, 0, 0, 1 }, /* PERC 3/Di (Opal/PERC3Di) */
 	{ 0x1028, 0x0003, 0x1028, 0x0003, 0, 0, 2 }, /* PERC 3/Si (SlimFast/PERC3Si */
@@ -193,10 +147,6 @@ static const struct pci_device_id aac_pci_tbl[] = {
 	{ 0x9005, 0x028b, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 62 }, /* Adaptec PMC Series 6 (Tupelo) */
 	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
 	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
-<<<<<<< HEAD
-	{ 0x9005, 0x028f, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 65 }, /* Adaptec PMC Series 9 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0,}
 };
 MODULE_DEVICE_TABLE(pci, aac_pci_tbl);
@@ -272,55 +222,21 @@ static struct aac_driver_ident aac_drivers[] = {
 	{ aac_rx_init, "aacraid",  "ADAPTEC ", "RAID            ", 2 }, /* Adaptec Catch All */
 	{ aac_rkt_init, "aacraid", "ADAPTEC ", "RAID            ", 2 }, /* Adaptec Rocket Catch All */
 	{ aac_nark_init, "aacraid", "ADAPTEC ", "RAID           ", 2 }, /* Adaptec NEMER/ARK Catch All */
-<<<<<<< HEAD
-	{ aac_src_init, "aacraid", "ADAPTEC ", "RAID            ", 2 }, /* Adaptec PMC Series 6 (Tupelo) */
-	{ aac_srcv_init, "aacraid", "ADAPTEC ", "RAID            ", 2 }, /* Adaptec PMC Series 7 (Denali) */
-	{ aac_srcv_init, "aacraid", "ADAPTEC ", "RAID            ", 2 }, /* Adaptec PMC Series 8 */
-	{ aac_srcv_init, "aacraid", "ADAPTEC ", "RAID            ", 2 } /* Adaptec PMC Series 9 */
-=======
 	{ aac_src_init, "aacraid", "ADAPTEC ", "RAID            ", 2, AAC_QUIRK_SRC }, /* Adaptec PMC Series 6 (Tupelo) */
 	{ aac_srcv_init, "aacraid", "ADAPTEC ", "RAID            ", 2, AAC_QUIRK_SRC }, /* Adaptec PMC Series 7 (Denali) */
 	{ aac_srcv_init, "aacraid", "ADAPTEC ", "RAID            ", 2, AAC_QUIRK_SRC }, /* Adaptec PMC Series 8 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  *	aac_queuecommand	-	queue a SCSI command
-<<<<<<< HEAD
- *	@cmd:		SCSI command to queue
- *	@done:		Function to call on command completion
-=======
  *	@shost:		Scsi host to queue command on
  *	@cmd:		SCSI command to queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Queues a command for execution by the associated Host Adapter.
  *
  *	TODO: unify with aac_scsi_cmd().
  */
 
-<<<<<<< HEAD
-static int aac_queuecommand_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
-{
-	struct Scsi_Host *host = cmd->device->host;
-	struct aac_dev *dev = (struct aac_dev *)host->hostdata;
-	u32 count = 0;
-	cmd->scsi_done = done;
-	for (; count < (host->can_queue + AAC_NUM_MGT_FIB); ++count) {
-		struct fib * fib = &dev->fibs[count];
-		struct scsi_cmnd * command;
-		if (fib->hw_fib_va->header.XferState &&
-		    ((command = fib->callback_data)) &&
-		    (command == cmd) &&
-		    (cmd->SCp.phase == AAC_OWNER_FIRMWARE))
-			return 0; /* Already owned by Adapter */
-	}
-	cmd->SCp.phase = AAC_OWNER_LOWLEVEL;
-	return (aac_scsi_cmd(cmd) ? FAILED : 0);
-}
-
-static DEF_SCSI_QCMD(aac_queuecommand)
-=======
 static int aac_queuecommand(struct Scsi_Host *shost,
 			    struct scsi_cmnd *cmd)
 {
@@ -328,7 +244,6 @@ static int aac_queuecommand(struct Scsi_Host *shost,
 
 	return aac_scsi_cmd(cmd) ? FAILED : 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	aac_info		-	Returns the host adapter name
@@ -412,15 +327,9 @@ static int aac_biosparm(struct scsi_device *sdev, struct block_device *bdev,
 	buf = scsi_bios_ptable(bdev);
 	if (!buf)
 		return 0;
-<<<<<<< HEAD
-	if(*(__le16 *)(buf + 0x40) == cpu_to_le16(0xaa55)) {
-		struct partition *first = (struct partition * )buf;
-		struct partition *entry = first;
-=======
 	if (*(__le16 *)(buf + 0x40) == cpu_to_le16(MSDOS_LABEL_MAGIC)) {
 		struct msdos_partition *first = (struct msdos_partition *)buf;
 		struct msdos_partition *entry = first;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int saved_cylinders = param->cylinders;
 		int num;
 		unsigned char end_head, end_sec;
@@ -452,16 +361,10 @@ static int aac_biosparm(struct scsi_device *sdev, struct block_device *bdev,
 
 		param->cylinders = cap_to_cyls(capacity, param->heads * param->sectors);
 		if (num < 4 && end_sec == param->sectors) {
-<<<<<<< HEAD
-			if (param->cylinders != saved_cylinders)
-				dprintk((KERN_DEBUG "Adopting geometry: heads=%d, sectors=%d from partition table %d.\n",
-					param->heads, param->sectors, num));
-=======
 			if (param->cylinders != saved_cylinders) {
 				dprintk((KERN_DEBUG "Adopting geometry: heads=%d, sectors=%d from partition table %d.\n",
 					param->heads, param->sectors, num));
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (end_head > 0 || end_sec > 0) {
 			dprintk((KERN_DEBUG "Strange geometry: heads=%d, sectors=%d in partition table %d.\n",
 				end_head + 1, end_sec, num));
@@ -485,22 +388,6 @@ static int aac_biosparm(struct scsi_device *sdev, struct block_device *bdev,
 static int aac_slave_configure(struct scsi_device *sdev)
 {
 	struct aac_dev *aac = (struct aac_dev *)sdev->host->hostdata;
-<<<<<<< HEAD
-	if (aac->jbod && (sdev->type == TYPE_DISK))
-		sdev->removable = 1;
-	if ((sdev->type == TYPE_DISK) &&
-			(sdev_channel(sdev) != CONTAINER_CHANNEL) &&
-			(!aac->jbod || sdev->inq_periph_qual) &&
-			(!aac->raid_scsi_mode || (sdev_channel(sdev) != 2))) {
-		if (expose_physicals == 0)
-			return -ENXIO;
-		if (expose_physicals < 0)
-			sdev->no_uld_attach = 1;
-	}
-	if (sdev->tagged_supported && (sdev->type == TYPE_DISK) &&
-			(!aac->raid_scsi_mode || (sdev_channel(sdev) != 2)) &&
-			!sdev->no_uld_attach) {
-=======
 	int chn, tid;
 	unsigned int depth = 0;
 	unsigned int set_timeout = 0;
@@ -545,46 +432,10 @@ static int aac_slave_configure(struct scsi_device *sdev)
 	 &&  (!aac->raid_scsi_mode || (sdev_channel(sdev) != 2))
 	 && !sdev->no_uld_attach) {
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct scsi_device * dev;
 		struct Scsi_Host *host = sdev->host;
 		unsigned num_lsu = 0;
 		unsigned num_one = 0;
-<<<<<<< HEAD
-		unsigned depth;
-		unsigned cid;
-
-		/*
-		 * Firmware has an individual device recovery time typically
-		 * of 35 seconds, give us a margin.
-		 */
-		if (sdev->request_queue->rq_timeout < (45 * HZ))
-			blk_queue_rq_timeout(sdev->request_queue, 45*HZ);
-		for (cid = 0; cid < aac->maximum_num_containers; ++cid)
-			if (aac->fsa_dev[cid].valid)
-				++num_lsu;
-		__shost_for_each_device(dev, host) {
-			if (dev->tagged_supported && (dev->type == TYPE_DISK) &&
-					(!aac->raid_scsi_mode ||
-						(sdev_channel(sdev) != 2)) &&
-					!dev->no_uld_attach) {
-				if ((sdev_channel(dev) != CONTAINER_CHANNEL)
-				 || !aac->fsa_dev[sdev_id(dev)].valid)
-					++num_lsu;
-			} else
-				++num_one;
-		}
-		if (num_lsu == 0)
-			++num_lsu;
-		depth = (host->can_queue - num_one) / num_lsu;
-		if (depth > 256)
-			depth = 256;
-		else if (depth < 2)
-			depth = 2;
-		scsi_adjust_queue_depth(sdev, MSG_ORDERED_TAG, depth);
-	} else
-		scsi_adjust_queue_depth(sdev, 0, 1);
-=======
 		unsigned cid;
 
 		set_timeout = 1;
@@ -649,7 +500,6 @@ common_config:
 	scsi_change_queue_depth(sdev, depth);
 
 	sdev->tagged_supported = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -663,13 +513,6 @@ common_config:
  *	total capacity and the queue depth supported by the target device.
  */
 
-<<<<<<< HEAD
-static int aac_change_queue_depth(struct scsi_device *sdev, int depth,
-				  int reason)
-{
-	if (reason != SCSI_QDEPTH_DEFAULT)
-		return -EOPNOTSUPP;
-=======
 static int aac_change_queue_depth(struct scsi_device *sdev, int depth)
 {
 	struct aac_dev *aac = (struct aac_dev *)(sdev->host->hostdata);
@@ -680,7 +523,6 @@ static int aac_change_queue_depth(struct scsi_device *sdev, int depth)
 	if (chn < AAC_MAX_BUSES && tid < AAC_MAX_TARGETS &&
 		aac->hba_map[chn][tid].devtype == AAC_DEVTYPE_NATIVE_RAW)
 		is_native_device = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sdev->tagged_supported && (sdev->type == TYPE_DISK) &&
 	    (sdev_channel(sdev) == CONTAINER_CHANNEL)) {
@@ -702,18 +544,12 @@ static int aac_change_queue_depth(struct scsi_device *sdev, int depth)
 			depth = 256;
 		else if (depth < 2)
 			depth = 2;
-<<<<<<< HEAD
-		scsi_adjust_queue_depth(sdev, MSG_ORDERED_TAG, depth);
-	} else
-		scsi_adjust_queue_depth(sdev, 0, 1);
-=======
 		return scsi_change_queue_depth(sdev, depth);
 	} else if (is_native_device) {
 		scsi_change_queue_depth(sdev, aac->hba_map[chn][tid].qd_limit);
 	} else {
 		scsi_change_queue_depth(sdev, 1);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sdev->queue_depth;
 }
 
@@ -737,66 +573,6 @@ static struct device_attribute aac_raid_level_attr = {
 	.show = aac_show_raid_level
 };
 
-<<<<<<< HEAD
-static struct device_attribute *aac_dev_attrs[] = {
-	&aac_raid_level_attr,
-	NULL,
-};
-
-static int aac_ioctl(struct scsi_device *sdev, int cmd, void __user * arg)
-{
-	struct aac_dev *dev = (struct aac_dev *)sdev->host->hostdata;
-	if (!capable(CAP_SYS_RAWIO))
-		return -EPERM;
-	return aac_do_ioctl(dev, cmd, arg);
-}
-
-static int aac_eh_abort(struct scsi_cmnd* cmd)
-{
-	struct scsi_device * dev = cmd->device;
-	struct Scsi_Host * host = dev->host;
-	struct aac_dev * aac = (struct aac_dev *)host->hostdata;
-	int count;
-	int ret = FAILED;
-
-	printk(KERN_ERR "%s: Host adapter abort request (%d,%d,%d,%d)\n",
-		AAC_DRIVERNAME,
-		host->host_no, sdev_channel(dev), sdev_id(dev), dev->lun);
-	switch (cmd->cmnd[0]) {
-	case SERVICE_ACTION_IN:
-		if (!(aac->raw_io_interface) ||
-		    !(aac->raw_io_64) ||
-		    ((cmd->cmnd[1] & 0x1f) != SAI_READ_CAPACITY_16))
-			break;
-	case INQUIRY:
-	case READ_CAPACITY:
-		/* Mark associated FIB to not complete, eh handler does this */
-		for (count = 0; count < (host->can_queue + AAC_NUM_MGT_FIB); ++count) {
-			struct fib * fib = &aac->fibs[count];
-			if (fib->hw_fib_va->header.XferState &&
-			  (fib->flags & FIB_CONTEXT_FLAG) &&
-			  (fib->callback_data == cmd)) {
-				fib->flags |= FIB_CONTEXT_FLAG_TIMED_OUT;
-				cmd->SCp.phase = AAC_OWNER_ERROR_HANDLER;
-				ret = SUCCESS;
-			}
-		}
-		break;
-	case TEST_UNIT_READY:
-		/* Mark associated FIB to not complete, eh handler does this */
-		for (count = 0; count < (host->can_queue + AAC_NUM_MGT_FIB); ++count) {
-			struct scsi_cmnd * command;
-			struct fib * fib = &aac->fibs[count];
-			if ((fib->hw_fib_va->header.XferState & cpu_to_le32(Async | NoResponseExpected)) &&
-			  (fib->flags & FIB_CONTEXT_FLAG) &&
-			  ((command = fib->callback_data)) &&
-			  (command->device == cmd->device)) {
-				fib->flags |= FIB_CONTEXT_FLAG_TIMED_OUT;
-				command->SCp.phase = AAC_OWNER_ERROR_HANDLER;
-				if (command == cmd)
-					ret = SUCCESS;
-			}
-=======
 static ssize_t aac_show_unique_id(struct device *dev,
 	     struct device_attribute *attr, char *buf)
 {
@@ -1041,87 +817,11 @@ static int aac_eh_abort(struct scsi_cmnd* cmd)
 				}
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- *	aac_eh_reset	- Reset command handling
- *	@scsi_cmd:	SCSI command block causing the reset
- *
- */
-static int aac_eh_reset(struct scsi_cmnd* cmd)
-{
-	struct scsi_device * dev = cmd->device;
-	struct Scsi_Host * host = dev->host;
-	struct scsi_cmnd * command;
-	int count;
-	struct aac_dev * aac = (struct aac_dev *)host->hostdata;
-	unsigned long flags;
-
-	/* Mark the associated FIB to not complete, eh handler does this */
-	for (count = 0; count < (host->can_queue + AAC_NUM_MGT_FIB); ++count) {
-		struct fib * fib = &aac->fibs[count];
-		if (fib->hw_fib_va->header.XferState &&
-		  (fib->flags & FIB_CONTEXT_FLAG) &&
-		  (fib->callback_data == cmd)) {
-			fib->flags |= FIB_CONTEXT_FLAG_TIMED_OUT;
-			cmd->SCp.phase = AAC_OWNER_ERROR_HANDLER;
-		}
-	}
-	printk(KERN_ERR "%s: Host adapter reset request. SCSI hang ?\n",
-					AAC_DRIVERNAME);
-
-	if ((count = aac_check_health(aac)))
-		return count;
-	/*
-	 * Wait for all commands to complete to this specific
-	 * target (block maximum 60 seconds).
-	 */
-	for (count = 60; count; --count) {
-		int active = aac->in_reset;
-
-		if (active == 0)
-		__shost_for_each_device(dev, host) {
-			spin_lock_irqsave(&dev->list_lock, flags);
-			list_for_each_entry(command, &dev->cmd_list, list) {
-				if ((command != cmd) &&
-				    (command->SCp.phase == AAC_OWNER_FIRMWARE)) {
-					active++;
-					break;
-				}
-			}
-			spin_unlock_irqrestore(&dev->list_lock, flags);
-			if (active)
-				break;
-
-		}
-		/*
-		 * We can exit If all the commands are complete
-		 */
-		if (active == 0)
-			return SUCCESS;
-		ssleep(1);
-	}
-	printk(KERN_ERR "%s: SCSI bus appears hung\n", AAC_DRIVERNAME);
-	/*
-	 * This adapter needs a blind reset, only do so for Adapters that
-	 * support a register, instead of a commanded, reset.
-	 */
-	if (((aac->supplement_adapter_info.SupportedOptions2 &
-	  AAC_OPTION_MU_RESET) ||
-	  (aac->supplement_adapter_info.SupportedOptions2 &
-	  AAC_OPTION_DOORBELL_RESET)) &&
-	  aac_check_reset &&
-	  ((aac_check_reset != 1) ||
-	   !(aac->supplement_adapter_info.SupportedOptions2 &
-	    AAC_OPTION_IGNORE_RESET)))
-		aac_reset_adapter(aac, 2); /* Bypass wait for command quiesce */
-	return SUCCESS; /* Cause an immediate retry of the command with a ten second delay after successful tur */
-=======
 static u8 aac_eh_tmf_lun_reset_fib(struct aac_hba_map_info *info,
 				   struct fib *fib, u64 tmf_lun)
 {
@@ -1426,7 +1126,6 @@ static int aac_eh_host_reset(struct scsi_cmnd *cmd)
 		}
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1462,10 +1161,6 @@ static int aac_cfg_open(struct inode *inode, struct file *file)
 
 /**
  *	aac_cfg_ioctl		-	AAC configuration request
-<<<<<<< HEAD
- *	@inode: inode of device
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@file: file handle
  *	@cmd: ioctl command code
  *	@arg: argument
@@ -1480,76 +1175,6 @@ static int aac_cfg_open(struct inode *inode, struct file *file)
 static long aac_cfg_ioctl(struct file *file,
 		unsigned int cmd, unsigned long arg)
 {
-<<<<<<< HEAD
-	int ret;
-	if (!capable(CAP_SYS_RAWIO))
-		return -EPERM;
-	mutex_lock(&aac_mutex);
-	ret = aac_do_ioctl(file->private_data, cmd, (void __user *)arg);
-	mutex_unlock(&aac_mutex);
-
-	return ret;
-}
-
-#ifdef CONFIG_COMPAT
-static long aac_compat_do_ioctl(struct aac_dev *dev, unsigned cmd, unsigned long arg)
-{
-	long ret;
-	mutex_lock(&aac_mutex);
-	switch (cmd) {
-	case FSACTL_MINIPORT_REV_CHECK:
-	case FSACTL_SENDFIB:
-	case FSACTL_OPEN_GET_ADAPTER_FIB:
-	case FSACTL_CLOSE_GET_ADAPTER_FIB:
-	case FSACTL_SEND_RAW_SRB:
-	case FSACTL_GET_PCI_INFO:
-	case FSACTL_QUERY_DISK:
-	case FSACTL_DELETE_DISK:
-	case FSACTL_FORCE_DELETE_DISK:
-	case FSACTL_GET_CONTAINERS:
-	case FSACTL_SEND_LARGE_FIB:
-		ret = aac_do_ioctl(dev, cmd, (void __user *)arg);
-		break;
-
-	case FSACTL_GET_NEXT_ADAPTER_FIB: {
-		struct fib_ioctl __user *f;
-
-		f = compat_alloc_user_space(sizeof(*f));
-		ret = 0;
-		if (clear_user(f, sizeof(*f)))
-			ret = -EFAULT;
-		if (copy_in_user(f, (void __user *)arg, sizeof(struct fib_ioctl) - sizeof(u32)))
-			ret = -EFAULT;
-		if (!ret)
-			ret = aac_do_ioctl(dev, cmd, f);
-		break;
-	}
-
-	default:
-		ret = -ENOIOCTLCMD;
-		break;
-	}
-	mutex_unlock(&aac_mutex);
-	return ret;
-}
-
-static int aac_compat_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
-{
-	struct aac_dev *dev = (struct aac_dev *)sdev->host->hostdata;
-	if (!capable(CAP_SYS_RAWIO))
-		return -EPERM;
-	return aac_compat_do_ioctl(dev, cmd, (unsigned long)arg);
-}
-
-static long aac_compat_cfg_ioctl(struct file *file, unsigned cmd, unsigned long arg)
-{
-	if (!capable(CAP_SYS_RAWIO))
-		return -EPERM;
-	return aac_compat_do_ioctl(file->private_data, cmd, arg);
-}
-#endif
-
-=======
 	struct aac_dev *aac = (struct aac_dev *)file->private_data;
 
 	if (!capable(CAP_SYS_RAWIO))
@@ -1558,20 +1183,14 @@ static long aac_compat_cfg_ioctl(struct file *file, unsigned cmd, unsigned long 
 	return aac_do_ioctl(aac, cmd, (void __user *)arg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t aac_show_model(struct device *device,
 			      struct device_attribute *attr, char *buf)
 {
 	struct aac_dev *dev = (struct aac_dev*)class_to_shost(device)->hostdata;
 	int len;
 
-<<<<<<< HEAD
-	if (dev->supplement_adapter_info.AdapterTypeText[0]) {
-		char * cp = dev->supplement_adapter_info.AdapterTypeText;
-=======
 	if (dev->supplement_adapter_info.adapter_type_text[0]) {
 		char *cp = dev->supplement_adapter_info.adapter_type_text;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (*cp && *cp != ' ')
 			++cp;
 		while (*cp == ' ')
@@ -1587,20 +1206,6 @@ static ssize_t aac_show_vendor(struct device *device,
 			       struct device_attribute *attr, char *buf)
 {
 	struct aac_dev *dev = (struct aac_dev*)class_to_shost(device)->hostdata;
-<<<<<<< HEAD
-	int len;
-
-	if (dev->supplement_adapter_info.AdapterTypeText[0]) {
-		char * cp = dev->supplement_adapter_info.AdapterTypeText;
-		while (*cp && *cp != ' ')
-			++cp;
-		len = snprintf(buf, PAGE_SIZE, "%.*s\n",
-		  (int)(cp - (char *)dev->supplement_adapter_info.AdapterTypeText),
-		  dev->supplement_adapter_info.AdapterTypeText);
-	} else
-		len = snprintf(buf, PAGE_SIZE, "%s\n",
-		  aac_drivers[dev->cardtype].vname);
-=======
 	struct aac_supplement_adapter_info *sup_adap_info;
 	int len;
 
@@ -1615,7 +1220,6 @@ static ssize_t aac_show_vendor(struct device *device,
 	} else
 		len = snprintf(buf, PAGE_SIZE, "%s\n",
 			aac_drivers[dev->cardtype].vname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -1628,22 +1232,6 @@ static ssize_t aac_show_flags(struct device *cdev,
 	if (nblank(dprintk(x)))
 		len = snprintf(buf, PAGE_SIZE, "dprintk\n");
 #ifdef AAC_DETAILED_STATUS_INFO
-<<<<<<< HEAD
-	len += snprintf(buf + len, PAGE_SIZE - len,
-			"AAC_DETAILED_STATUS_INFO\n");
-#endif
-	if (dev->raw_io_interface && dev->raw_io_64)
-		len += snprintf(buf + len, PAGE_SIZE - len,
-				"SAI_READ_CAPACITY_16\n");
-	if (dev->jbod)
-		len += snprintf(buf + len, PAGE_SIZE - len, "SUPPORTED_JBOD\n");
-	if (dev->supplement_adapter_info.SupportedOptions2 &
-		AAC_OPTION_POWER_MANAGEMENT)
-		len += snprintf(buf + len, PAGE_SIZE - len,
-				"SUPPORTED_POWER_MANAGEMENT\n");
-	if (dev->msi)
-		len += snprintf(buf + len, PAGE_SIZE - len, "PCI_HAS_MSI\n");
-=======
 	len += scnprintf(buf + len, PAGE_SIZE - len,
 			 "AAC_DETAILED_STATUS_INFO\n");
 #endif
@@ -1659,7 +1247,6 @@ static ssize_t aac_show_flags(struct device *cdev,
 				 "SUPPORTED_POWER_MANAGEMENT\n");
 	if (dev->msi)
 		len += scnprintf(buf + len, PAGE_SIZE - len, "PCI_HAS_MSI\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -1705,8 +1292,6 @@ static ssize_t aac_show_bios_version(struct device *device,
 	return len;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t aac_show_driver_version(struct device *device,
 					struct device_attribute *attr,
 					char *buf)
@@ -1714,7 +1299,6 @@ static ssize_t aac_show_driver_version(struct device *device,
 	return snprintf(buf, PAGE_SIZE, "%s\n", aac_driver_version);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t aac_show_serial_number(struct device *device,
 			       struct device_attribute *attr, char *buf)
 {
@@ -1725,21 +1309,12 @@ static ssize_t aac_show_serial_number(struct device *device,
 		len = snprintf(buf, 16, "%06X\n",
 		  le32_to_cpu(dev->adapter_info.serial[0]));
 	if (len &&
-<<<<<<< HEAD
-	  !memcmp(&dev->supplement_adapter_info.MfgPcbaSerialNo[
-	    sizeof(dev->supplement_adapter_info.MfgPcbaSerialNo)-len],
-	  buf, len-1))
-		len = snprintf(buf, 16, "%.*s\n",
-		  (int)sizeof(dev->supplement_adapter_info.MfgPcbaSerialNo),
-		  dev->supplement_adapter_info.MfgPcbaSerialNo);
-=======
 	  !memcmp(&dev->supplement_adapter_info.mfg_pcba_serial_no[
 	    sizeof(dev->supplement_adapter_info.mfg_pcba_serial_no)-len],
 	  buf, len-1))
 		len = snprintf(buf, 16, "%.*s\n",
 		  (int)sizeof(dev->supplement_adapter_info.mfg_pcba_serial_no),
 		  dev->supplement_adapter_info.mfg_pcba_serial_no);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return min(len, 16);
 }
@@ -1766,18 +1341,12 @@ static ssize_t aac_store_reset_adapter(struct device *device,
 
 	if (!capable(CAP_SYS_ADMIN))
 		return retval;
-<<<<<<< HEAD
-	retval = aac_reset_adapter((struct aac_dev*)class_to_shost(device)->hostdata, buf[0] == '!');
-	if (retval >= 0)
-		retval = count;
-=======
 
 	retval = aac_reset_adapter(shost_priv(class_to_shost(device)),
 					buf[0] == '!', IOP_HWSOFT_RESET);
 	if (retval >= 0)
 		retval = count;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -1837,8 +1406,6 @@ static struct device_attribute aac_bios_version = {
 	},
 	.show = aac_show_bios_version,
 };
-<<<<<<< HEAD
-=======
 static struct device_attribute aac_lld_version = {
 	.attr = {
 		.name = "driver_version",
@@ -1846,7 +1413,6 @@ static struct device_attribute aac_lld_version = {
 	},
 	.show = aac_show_driver_version,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct device_attribute aac_serial_number = {
 	.attr = {
 		.name = "serial_number",
@@ -1877,22 +1443,6 @@ static struct device_attribute aac_reset = {
 	.show = aac_show_reset_adapter,
 };
 
-<<<<<<< HEAD
-static struct device_attribute *aac_attrs[] = {
-	&aac_model,
-	&aac_vendor,
-	&aac_flags,
-	&aac_kernel_version,
-	&aac_monitor_version,
-	&aac_bios_version,
-	&aac_serial_number,
-	&aac_max_channel,
-	&aac_max_id,
-	&aac_reset,
-	NULL
-};
-
-=======
 static struct attribute *aac_host_attrs[] = {
 	&aac_model.attr,
 	&aac_vendor.attr,
@@ -1910,7 +1460,6 @@ static struct attribute *aac_host_attrs[] = {
 
 ATTRIBUTE_GROUPS(aac_host);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ssize_t aac_get_serial_number(struct device *device, char *buf)
 {
 	return aac_show_serial_number(device, &aac_serial_number, buf);
@@ -1920,39 +1469,19 @@ static const struct file_operations aac_cfg_fops = {
 	.owner		= THIS_MODULE,
 	.unlocked_ioctl	= aac_cfg_ioctl,
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-	.compat_ioctl   = aac_compat_cfg_ioctl,
-=======
 	.compat_ioctl   = aac_cfg_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	.open		= aac_cfg_open,
 	.llseek		= noop_llseek,
 };
 
-<<<<<<< HEAD
-static struct scsi_host_template aac_driver_template = {
-=======
 static const struct scsi_host_template aac_driver_template = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module				= THIS_MODULE,
 	.name				= "AAC",
 	.proc_name			= AAC_DRIVERNAME,
 	.info				= aac_info,
 	.ioctl				= aac_ioctl,
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-	.compat_ioctl			= aac_compat_ioctl,
-#endif
-	.queuecommand			= aac_queuecommand,
-	.bios_param			= aac_biosparm,
-	.shost_attrs			= aac_attrs,
-	.slave_configure		= aac_slave_configure,
-	.change_queue_depth		= aac_change_queue_depth,
-	.sdev_attrs			= aac_dev_attrs,
-	.eh_abort_handler		= aac_eh_abort,
-	.eh_host_reset_handler		= aac_eh_reset,
-=======
 	.compat_ioctl			= aac_ioctl,
 #endif
 	.queuecommand			= aac_queuecommand,
@@ -1966,7 +1495,6 @@ static const struct scsi_host_template aac_driver_template = {
 	.eh_target_reset_handler	= aac_eh_target_reset,
 	.eh_bus_reset_handler		= aac_eh_bus_reset,
 	.eh_host_reset_handler		= aac_eh_host_reset,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.can_queue			= AAC_NUM_IO_FIB,
 	.this_id			= MAXIMUM_NUM_CONTAINERS,
 	.sg_tablesize			= 16,
@@ -1976,31 +1504,13 @@ static const struct scsi_host_template aac_driver_template = {
 #else
 	.cmd_per_lun			= AAC_NUM_IO_FIB,
 #endif
-<<<<<<< HEAD
-	.use_clustering			= ENABLE_CLUSTERING,
-	.emulated			= 1,
-=======
 	.emulated			= 1,
 	.no_write_same			= 1,
 	.cmd_size			= sizeof(struct aac_cmd_priv),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __aac_shutdown(struct aac_dev * aac)
 {
-<<<<<<< HEAD
-	if (aac->aif_thread)
-		kthread_stop(aac->thread);
-	aac_send_shutdown(aac);
-	aac_adapter_disable_int(aac);
-	free_irq(aac->pdev->irq, aac);
-	if (aac->msi)
-		pci_disable_msi(aac->pdev);
-}
-
-static int __devinit aac_probe_one(struct pci_dev *pdev,
-		const struct pci_device_id *id)
-=======
 	int i;
 
 	mutex_lock(&aac->ioctl_mutex);
@@ -2064,19 +1574,11 @@ void aac_reinit_aif(struct aac_dev *aac, unsigned int index)
 }
 
 static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned index = id->driver_data;
 	struct Scsi_Host *shost;
 	struct aac_dev *aac;
 	struct list_head *insert = &aac_devices;
-<<<<<<< HEAD
-	int error = -ENODEV;
-	int unique_id = 0;
-	u64 dmamask;
-	extern int aac_sync_mode;
-
-=======
 	int error;
 	int unique_id = 0;
 	u64 dmamask;
@@ -2089,7 +1591,6 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (pdev->device == PMC_DEVICE_S7)
 		pdev->needs_freset = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(aac, &aac_devices, entry) {
 		if (aac->id > unique_id)
 			break;
@@ -2103,9 +1604,6 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	error = pci_enable_device(pdev);
 	if (error)
 		goto out;
-<<<<<<< HEAD
-	error = -ENODEV;
-=======
 
 	if (!(aac_drivers[index].quirks & AAC_QUIRK_SRC)) {
 		error = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
@@ -2114,22 +1612,11 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 			goto out_disable_pdev;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the quirk31 bit is set, the adapter needs adapter
 	 * to driver communication memory to be allocated below 2gig
 	 */
-<<<<<<< HEAD
-	if (aac_drivers[index].quirks & AAC_QUIRK_31BIT)
-		dmamask = DMA_BIT_MASK(31);
-	else
-		dmamask = DMA_BIT_MASK(32);
-
-	if (pci_set_dma_mask(pdev, dmamask) ||
-			pci_set_consistent_dma_mask(pdev, dmamask))
-		goto out_disable_pdev;
-=======
 	if (aac_drivers[index].quirks & AAC_QUIRK_31BIT) {
 		dmamask = DMA_BIT_MASK(31);
 		mask_bits = 31;
@@ -2144,22 +1631,10 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 				, mask_bits);
 		goto out_disable_pdev;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_master(pdev);
 
 	shost = scsi_host_alloc(&aac_driver_template, sizeof(struct aac_dev));
-<<<<<<< HEAD
-	if (!shost)
-		goto out_disable_pdev;
-
-	shost->irq = pdev->irq;
-	shost->base = pci_resource_start(pdev, 0);
-	shost->unique_id = unique_id;
-	shost->max_cmd_len = 16;
-
-	aac = (struct aac_dev *)shost->hostdata;
-=======
 	if (!shost) {
 		error = -ENOMEM;
 		goto out_disable_pdev;
@@ -2174,7 +1649,6 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	aac = (struct aac_dev *)shost->hostdata;
 	aac->base_start = pci_resource_start(pdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac->scsi_host_ptr = shost;
 	aac->pdev = pdev;
 	aac->name = aac_driver_template.name;
@@ -2182,13 +1656,6 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	aac->cardtype = index;
 	INIT_LIST_HEAD(&aac->entry);
 
-<<<<<<< HEAD
-	aac->fibs = kmalloc(sizeof(struct fib) * (shost->can_queue + AAC_NUM_MGT_FIB), GFP_KERNEL);
-	if (!aac->fibs)
-		goto out_free_host;
-	spin_lock_init(&aac->fib_lock);
-
-=======
 	if (aac_reset_devices || reset_devices)
 		aac->init_reset = true;
 
@@ -2208,20 +1675,14 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	INIT_DELAYED_WORK(&aac->safw_rescan_work, aac_safw_rescan_worker);
 	INIT_DELAYED_WORK(&aac->src_reinit_aif_worker,
 				aac_src_reinit_aif_worker);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Map in the registers from the adapter.
 	 */
 	aac->base_size = AAC_MIN_FOOTPRINT_SIZE;
-<<<<<<< HEAD
-	if ((*aac_drivers[index].init)(aac))
-		goto out_unmap;
-=======
 	if ((*aac_drivers[index].init)(aac)) {
 		error = -ENODEV;
 		goto out_unmap;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (aac->sync_mode) {
 		if (aac_sync_mode)
@@ -2245,25 +1706,10 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (IS_ERR(aac->thread)) {
 		printk(KERN_ERR "aacraid: Unable to create command thread.\n");
 		error = PTR_ERR(aac->thread);
-<<<<<<< HEAD
-		goto out_deinit;
-	}
-
-	/*
-	 * If we had set a smaller DMA mask earlier, set it to 4gig
-	 * now since the adapter can dma data to at least a 4gig
-	 * address space.
-	 */
-	if (aac_drivers[index].quirks & AAC_QUIRK_31BIT)
-		if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))
-			goto out_deinit;
-
-=======
 		aac->thread = NULL;
 		goto out_deinit;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac->maximum_num_channels = aac_drivers[index].channels;
 	error = aac_get_adapter_info(aac);
 	if (error < 0)
@@ -2284,18 +1730,10 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		shost->max_sectors = (shost->sg_tablesize * 8) + 112;
 	}
 
-<<<<<<< HEAD
-	error = pci_set_dma_max_seg_size(pdev,
-		(aac->adapter_info.options & AAC_OPT_NEW_COMM) ?
-			(shost->max_sectors << 9) : 65536);
-	if (error)
-		goto out_deinit;
-=======
 	if (aac->adapter_info.options & AAC_OPT_NEW_COMM)
 		shost->max_segment_size = shost->max_sectors << 9;
 	else
 		shost->max_segment_size = 65536;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Firmware printf works only with older firmware.
@@ -2327,12 +1765,9 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	else
 		shost->this_id = shost->max_id;
 
-<<<<<<< HEAD
-=======
 	if (!aac->sa_firmware && aac_drivers[index].quirks & AAC_QUIRK_SRC)
 		aac_intr_normal(aac, 0, 2, 0, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * dmb - we may need to move the setting of these parms somewhere else once
 	 * we get a fib that can report the actual numbers
@@ -2344,14 +1779,10 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	error = scsi_add_host(shost, &pdev->dev);
 	if (error)
 		goto out_deinit;
-<<<<<<< HEAD
-	scsi_scan_host(shost);
-=======
 
 	aac_scan_host(aac);
 
 	pci_save_state(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -2360,13 +1791,8 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
  out_unmap:
 	aac_fib_map_free(aac);
 	if (aac->comm_addr)
-<<<<<<< HEAD
-		pci_free_consistent(aac->pdev, aac->comm_size, aac->comm_addr,
-		  aac->comm_phys);
-=======
 		dma_free_coherent(&aac->pdev->dev, aac->comm_size,
 				  aac->comm_addr, aac->comm_phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(aac->queues);
 	aac_adapter_ioremap(aac, 0);
 	kfree(aac->fibs);
@@ -2379,16 +1805,6 @@ static int aac_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	return error;
 }
 
-<<<<<<< HEAD
-static void aac_shutdown(struct pci_dev *dev)
-{
-	struct Scsi_Host *shost = pci_get_drvdata(dev);
-	scsi_block_requests(shost);
-	__aac_shutdown((struct aac_dev *)shost->hostdata);
-}
-
-static void __devexit aac_remove_one(struct pci_dev *pdev)
-=======
 static void aac_release_resources(struct aac_dev *aac)
 {
 	aac_adapter_disable_int(aac);
@@ -2485,26 +1901,17 @@ static void aac_shutdown(struct pci_dev *dev)
 }
 
 static void aac_remove_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *shost = pci_get_drvdata(pdev);
 	struct aac_dev *aac = (struct aac_dev *)shost->hostdata;
 
-<<<<<<< HEAD
-=======
 	aac_cancel_rescan_worker(aac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_remove_host(shost);
 
 	__aac_shutdown(aac);
 	aac_fib_map_free(aac);
-<<<<<<< HEAD
-	pci_free_consistent(aac->pdev, aac->comm_size, aac->comm_addr,
-			aac->comm_phys);
-=======
 	dma_free_coherent(&aac->pdev->dev, aac->comm_size, aac->comm_addr,
 			  aac->comm_phys);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(aac->queues);
 
 	aac_adapter_ioremap(aac, 0);
@@ -2517,12 +1924,6 @@ static void aac_remove_one(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 	if (list_empty(&aac_devices)) {
 		unregister_chrdev(aac_cfg_major, "aac");
-<<<<<<< HEAD
-		aac_cfg_major = -1;
-	}
-}
-
-=======
 		aac_cfg_major = AAC_CHARDEV_NEEDS_REINIT;
 	}
 }
@@ -2635,20 +2036,14 @@ static struct pci_error_handlers aac_pci_err_handler = {
 
 static SIMPLE_DEV_PM_OPS(aac_pm_ops, aac_suspend, aac_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver aac_pci_driver = {
 	.name		= AAC_DRIVERNAME,
 	.id_table	= aac_pci_tbl,
 	.probe		= aac_probe_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(aac_remove_one),
-	.shutdown	= aac_shutdown,
-=======
 	.remove		= aac_remove_one,
 	.driver.pm      = &aac_pm_ops,
 	.shutdown	= aac_shutdown,
 	.err_handler    = &aac_pci_err_handler,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init aac_init(void)
@@ -2662,16 +2057,8 @@ static int __init aac_init(void)
 	if (error < 0)
 		return error;
 
-<<<<<<< HEAD
-	aac_cfg_major = register_chrdev( 0, "aac", &aac_cfg_fops);
-	if (aac_cfg_major < 0) {
-		printk(KERN_WARNING
-			"aacraid: unable to register \"aac\" device.\n");
-	}
-=======
 	aac_init_char();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

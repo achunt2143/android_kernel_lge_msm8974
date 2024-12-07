@@ -36,14 +36,6 @@
 #ifndef __T4VF_COMMON_H__
 #define __T4VF_COMMON_H__
 
-<<<<<<< HEAD
-#include "../cxgb4/t4fw_api.h"
-
-/*
- * The "len16" field of a Firmware Command Structure ...
- */
-#define FW_LEN16(fw_struct) FW_CMD_LEN16(sizeof(fw_struct) / 16)
-=======
 #include "../cxgb4/t4_hw.h"
 #include "../cxgb4/t4fw_api.h"
 
@@ -78,7 +70,6 @@ enum chip_type {
  * The "len16" field of a Firmware Command Structure ...
  */
 #define FW_LEN16(fw_struct) FW_CMD_LEN16_V(sizeof(fw_struct) / 16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Per-VF statistics.
@@ -113,25 +104,6 @@ struct t4vf_port_stats {
 /*
  * Per-"port" (Virtual Interface) link configuration ...
  */
-<<<<<<< HEAD
-struct link_config {
-	unsigned int   supported;        /* link capabilities */
-	unsigned int   advertising;      /* advertised capabilities */
-	unsigned short requested_speed;  /* speed user has requested */
-	unsigned short speed;            /* actual link speed */
-	unsigned char  requested_fc;     /* flow control user has requested */
-	unsigned char  fc;               /* actual link flow control */
-	unsigned char  autoneg;          /* autonegotiating? */
-	unsigned char  link_ok;          /* link up? */
-};
-
-enum {
-	PAUSE_RX      = 1 << 0,
-	PAUSE_TX      = 1 << 1,
-	PAUSE_AUTONEG = 1 << 2
-};
-
-=======
 typedef u16 fw_port_cap16_t;    /* 16-bit Port Capabilities integral value */
 typedef u32 fw_port_cap32_t;    /* 32-bit Port Capabilities integral value */
 
@@ -189,7 +161,6 @@ static inline bool is_x_10g_port(const struct link_config *lc)
 	return high_speeds != 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * General device parameters ...
  */
@@ -205,13 +176,6 @@ struct dev_params {
  */
 struct sge_params {
 	u32 sge_control;		/* padding, boundaries, lengths, etc. */
-<<<<<<< HEAD
-	u32 sge_host_page_size;		/* RDMA page sizes */
-	u32 sge_queues_per_page;	/* RDMA queues/page */
-	u32 sge_user_mode_limits;	/* limits for BAR2 user mode accesses */
-	u32 sge_fl_buffer_size[16];	/* free list buffer sizes */
-	u32 sge_ingress_rx_threshold;	/* RX counter interrupt threshold[4] */
-=======
 	u32 sge_control2;		/* T5: more of the same */
 	u32 sge_host_page_size;		/* PF0-7 page sizes */
 	u32 sge_egress_queues_per_page;	/* PF0-7 egress queues/page */
@@ -222,7 +186,6 @@ struct sge_params {
 	u32 sge_fl_buffer_size[16];	/* free list buffer sizes */
 	u32 sge_ingress_rx_threshold;	/* RX counter interrupt threshold[4] */
 	u32 sge_congestion_control;     /* congestion thresholds, etc. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sge_timer_value_0_and_1;	/* interrupt coalescing timer values */
 	u32 sge_timer_value_2_and_3;
 	u32 sge_timer_value_4_and_5;
@@ -235,15 +198,12 @@ struct vpd_params {
 	u32 cclk;			/* Core Clock (KHz) */
 };
 
-<<<<<<< HEAD
-=======
 /* Stores chip specific parameters */
 struct arch_specific_params {
 	u32 sge_fl_db;
 	u16 mps_tcam_size;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Global Receive Side Scaling (RSS) parameters in host-native format.
  */
@@ -303,11 +263,6 @@ struct adapter_params {
 	struct vpd_params vpd;		/* Vital Product Data */
 	struct rss_params rss;		/* Receive Side Scaling */
 	struct vf_resources vfres;	/* Virtual Function Resource limits */
-<<<<<<< HEAD
-	u8 nports;			/* # of Ethernet "ports" */
-};
-
-=======
 	struct arch_specific_params arch; /* chip specific params */
 	enum chip_type chip;		/* chip code */
 	u8 nports;			/* # of Ethernet "ports" */
@@ -342,7 +297,6 @@ static inline struct mbox_cmd *mbox_cmd_log_entry(struct mbox_cmd_log *log,
 	return &((struct mbox_cmd *)&(log)[1])[entry_idx];
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "adapter.h"
 
 #ifndef PCI_VENDOR_ID_CHELSIO
@@ -352,14 +306,6 @@ static inline struct mbox_cmd *mbox_cmd_log_entry(struct mbox_cmd_log *log,
 #define for_each_port(adapter, iter) \
 	for (iter = 0; iter < (adapter)->params.nports; iter++)
 
-<<<<<<< HEAD
-static inline bool is_10g_port(const struct link_config *lc)
-{
-	return (lc->supported & SUPPORTED_10000baseT_Full) != 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int core_ticks_per_usec(const struct adapter *adapter)
 {
 	return adapter->params.vpd.cclk / 1000;
@@ -391,15 +337,6 @@ static inline int t4vf_wr_mbox_ns(struct adapter *adapter, const void *cmd,
 	return t4vf_wr_mbox_core(adapter, cmd, size, rpl, false);
 }
 
-<<<<<<< HEAD
-int __devinit t4vf_wait_dev_ready(struct adapter *);
-int __devinit t4vf_port_init(struct adapter *, int);
-
-int t4vf_fw_reset(struct adapter *);
-int t4vf_query_params(struct adapter *, unsigned int, const u32 *, u32 *);
-int t4vf_set_params(struct adapter *, unsigned int, const u32 *, const u32 *);
-
-=======
 #define CHELSIO_PCI_ID_VER(dev_id)  ((dev_id) >> 12)
 
 static inline int is_t4(enum chip_type chip)
@@ -440,7 +377,6 @@ int t4vf_bar2_sge_qregs(struct adapter *adapter,
 			unsigned int *pbar2_qid);
 
 unsigned int t4vf_get_pf_from_vf(struct adapter *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4vf_get_sge_params(struct adapter *);
 int t4vf_get_vpd_params(struct adapter *);
 int t4vf_get_dev_params(struct adapter *);
@@ -456,25 +392,18 @@ int t4vf_config_rss_range(struct adapter *, unsigned int, int, int,
 
 int t4vf_alloc_vi(struct adapter *, int);
 int t4vf_free_vi(struct adapter *, int);
-<<<<<<< HEAD
-int t4vf_enable_vi(struct adapter *, unsigned int, bool, bool);
-=======
 int t4vf_enable_vi(struct adapter *adapter, unsigned int viid, bool rx_en,
 		   bool tx_en);
 int t4vf_enable_pi(struct adapter *adapter, struct port_info *pi, bool rx_en,
 		   bool tx_en);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4vf_identify_port(struct adapter *, unsigned int, unsigned int);
 
 int t4vf_set_rxmode(struct adapter *, unsigned int, int, int, int, int, int,
 		    bool);
 int t4vf_alloc_mac_filt(struct adapter *, unsigned int, bool, unsigned int,
 			const u8 **, u16 *, u64 *, bool);
-<<<<<<< HEAD
-=======
 int t4vf_free_mac_filt(struct adapter *, unsigned int, unsigned int naddr,
 		       const u8 **, bool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int t4vf_change_mac(struct adapter *, unsigned int, int, const u8 *, bool);
 int t4vf_set_addr_hash(struct adapter *, unsigned int, bool, u64, bool);
 int t4vf_get_port_stats(struct adapter *, int, struct t4vf_port_stats *);
@@ -483,15 +412,11 @@ int t4vf_iq_free(struct adapter *, unsigned int, unsigned int, unsigned int,
 		 unsigned int);
 int t4vf_eth_eq_free(struct adapter *, unsigned int);
 
-<<<<<<< HEAD
-int t4vf_handle_fw_rpl(struct adapter *, const __be64 *);
-=======
 int t4vf_update_port_info(struct port_info *pi);
 int t4vf_handle_fw_rpl(struct adapter *, const __be64 *);
 int t4vf_prep_adapter(struct adapter *);
 int t4vf_get_vf_mac_acl(struct adapter *adapter, unsigned int port,
 			unsigned int *naddr, u8 *addr);
 int t4vf_get_vf_vlan_acl(struct adapter *adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __T4VF_COMMON_H__ */

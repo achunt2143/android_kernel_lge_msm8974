@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef GVP11_H
 
 /* $Id: gvp11.h,v 1.4 1997/01/19 23:07:12 davem Exp $

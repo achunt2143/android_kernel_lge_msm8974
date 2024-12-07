@@ -2,11 +2,7 @@
  * Toshiba rbtx4927 specific setup
  *
  * Author: MontaVista Software, Inc.
-<<<<<<< HEAD
- *         source@mvista.com
-=======
  *	   source@mvista.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2001-2002 MontaVista Software Inc.
  *
@@ -56,10 +52,7 @@
 #include <linux/leds.h>
 #include <asm/io.h>
 #include <asm/reboot.h>
-<<<<<<< HEAD
-=======
 #include <asm/txx9pio.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/txx9/generic.h>
 #include <asm/txx9/pci.h>
 #include <asm/txx9/rbtx4927.h>
@@ -159,11 +152,6 @@ static void __init tx4937_pci_setup(void)
 	}
 	tx4938_setup_pcierr_irq();
 }
-<<<<<<< HEAD
-
-static void __init rbtx4927_arch_init(void)
-{
-=======
 #else
 static inline void tx4927_pci_setup(void) {}
 static inline void tx4937_pci_setup(void) {}
@@ -184,27 +172,17 @@ static void __init rbtx4927_arch_init(void)
 
 	rbtx4927_gpio_init();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tx4927_pci_setup();
 }
 
 static void __init rbtx4937_arch_init(void)
 {
-<<<<<<< HEAD
-	tx4937_pci_setup();
-}
-#else
-#define rbtx4927_arch_init NULL
-#define rbtx4937_arch_init NULL
-#endif /* CONFIG_PCI */
-=======
 	txx9_gpio_init(TX4938_PIO_REG & 0xfffffffffULL, 0, TX4938_NUM_PIO);
 
 	rbtx4927_gpio_init();
 
 	tx4937_pci_setup();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void toshiba_rbtx4927_restart(char *command)
 {
@@ -245,15 +223,6 @@ static void __init rbtx4927_mem_setup(void)
 #else
 	set_io_port_base(KSEG1 + RBTX4927_ISA_IO_OFFSET);
 #endif
-<<<<<<< HEAD
-
-	/* TX4927-SIO DTR on (PIO[15]) */
-	gpio_request(15, "sio-dtr");
-	gpio_direction_output(15, 1);
-
-	tx4927_sio_init(0, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init rbtx4927_clock_init(void)
@@ -350,11 +319,7 @@ static void __init rbtx4927_mtd_init(void)
 
 static void __init rbtx4927_gpioled_init(void)
 {
-<<<<<<< HEAD
-	static struct gpio_led leds[] = {
-=======
 	static const struct gpio_led leds[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ .name = "gpioled:green:0", .gpio = 0, .active_low = 1, },
 		{ .name = "gpioled:green:1", .gpio = 1, .active_low = 1, },
 	};

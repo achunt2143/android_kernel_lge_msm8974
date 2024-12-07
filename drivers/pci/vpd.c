@@ -1,57 +1,11 @@
-<<<<<<< HEAD
-/*
- * File:	vpd.c
- * Purpose:	Provide PCI VPD support
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * PCI VPD support
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2010 Broadcom Corporation.
  */
 
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/export.h>
-
-int pci_vpd_find_tag(const u8 *buf, unsigned int off, unsigned int len, u8 rdt)
-{
-	int i;
-
-	for (i = off; i < len; ) {
-		u8 val = buf[i];
-
-		if (val & PCI_VPD_LRDT) {
-			/* Don't return success of the tag isn't complete */
-			if (i + PCI_VPD_LRDT_TAG_SIZE > len)
-				break;
-
-			if (val == rdt)
-				return i;
-
-			i += PCI_VPD_LRDT_TAG_SIZE +
-			     pci_vpd_lrdt_size(&buf[i]);
-		} else {
-			u8 tag = val & ~PCI_VPD_SRDT_LEN_MASK;
-
-			if (tag == rdt)
-				return i;
-
-			if (tag == PCI_VPD_SRDT_END)
-				break;
-
-			i += PCI_VPD_SRDT_TAG_SIZE +
-			     pci_vpd_srdt_size(&buf[i]);
-		}
-	}
-
-	return -ENOENT;
-}
-EXPORT_SYMBOL_GPL(pci_vpd_find_tag);
-
-int pci_vpd_find_info_keyword(const u8 *buf, unsigned int off,
-=======
 #include <linux/delay.h>
 #include <linux/export.h>
 #include <linux/sched/signal.h>
@@ -444,7 +398,6 @@ int pci_vpd_find_id_string(const u8 *buf, unsigned int len, unsigned int *size)
 EXPORT_SYMBOL_GPL(pci_vpd_find_id_string);
 
 static int pci_vpd_find_info_keyword(const u8 *buf, unsigned int off,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      unsigned int len, const char *kw)
 {
 	int i;
@@ -460,9 +413,6 @@ static int pci_vpd_find_info_keyword(const u8 *buf, unsigned int off,
 
 	return -ENOENT;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(pci_vpd_find_info_keyword);
-=======
 
 static ssize_t __pci_read_vpd(struct pci_dev *dev, loff_t pos, size_t count, void *buf,
 			      bool check_size)
@@ -674,4 +624,3 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_CHELSIO, PCI_ANY_ID,
 			 quirk_chelsio_extend_vpd);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

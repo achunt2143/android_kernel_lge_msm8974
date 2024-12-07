@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1991, 1992  Linus Torvalds
  *  Copyright (C) 2000, 2001, 2002 Andi Kleen, SuSE Labs
@@ -17,21 +14,6 @@
 #include <linux/spinlock.h>
 #include <linux/kprobes.h>
 #include <linux/kdebug.h>
-<<<<<<< HEAD
-#include <linux/nmi.h>
-#include <linux/delay.h>
-#include <linux/hardirq.h>
-#include <linux/slab.h>
-#include <linux/export.h>
-
-#include <linux/mca.h>
-
-#if defined(CONFIG_EDAC)
-#include <linux/edac.h>
-#endif
-
-#include <linux/atomic.h>
-=======
 #include <linux/sched/debug.h>
 #include <linux/nmi.h>
 #include <linux/debugfs.h>
@@ -44,24 +26,10 @@
 #include <linux/sched/clock.h>
 
 #include <asm/cpu_entry_area.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/traps.h>
 #include <asm/mach_traps.h>
 #include <asm/nmi.h>
 #include <asm/x86_init.h>
-<<<<<<< HEAD
-
-#define NMI_MAX_NAMELEN	16
-struct nmiaction {
-	struct list_head list;
-	nmi_handler_t handler;
-	unsigned int flags;
-	char *name;
-};
-
-struct nmi_desc {
-	spinlock_t lock;
-=======
 #include <asm/reboot.h>
 #include <asm/cache.h>
 #include <asm/nospec-branch.h>
@@ -74,22 +42,12 @@ struct nmi_desc {
 
 struct nmi_desc {
 	raw_spinlock_t lock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head head;
 };
 
 static struct nmi_desc nmi_desc[NMI_MAX] = 
 {
 	{
-<<<<<<< HEAD
-		.lock = __SPIN_LOCK_UNLOCKED(&nmi_desc[0].lock),
-		.head = LIST_HEAD_INIT(nmi_desc[0].head),
-	},
-	{
-		.lock = __SPIN_LOCK_UNLOCKED(&nmi_desc[1].lock),
-		.head = LIST_HEAD_INIT(nmi_desc[1].head),
-	},
-=======
 		.lock = __RAW_SPIN_LOCK_UNLOCKED(&nmi_desc[0].lock),
 		.head = LIST_HEAD_INIT(nmi_desc[0].head),
 	},
@@ -105,7 +63,6 @@ static struct nmi_desc nmi_desc[NMI_MAX] =
 		.lock = __RAW_SPIN_LOCK_UNLOCKED(&nmi_desc[3].lock),
 		.head = LIST_HEAD_INIT(nmi_desc[3].head),
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 };
 
@@ -114,8 +71,6 @@ struct nmi_stats {
 	unsigned int unknown;
 	unsigned int external;
 	unsigned int swallow;
-<<<<<<< HEAD
-=======
 	unsigned long recv_jiffies;
 	unsigned long idt_seq;
 	unsigned long idt_nmi_seq;
@@ -125,16 +80,11 @@ struct nmi_stats {
 	unsigned long idt_nmi_seq_snap;
 	unsigned long idt_ignored_snap;
 	long idt_calls_snap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_PER_CPU(struct nmi_stats, nmi_stats);
 
-<<<<<<< HEAD
-static int ignore_nmis;
-=======
 static int ignore_nmis __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int unknown_nmi_panic;
 /*
@@ -152,9 +102,6 @@ __setup("unknown_nmi_panic", setup_unknown_nmi_panic);
 
 #define nmi_to_desc(type) (&nmi_desc[type])
 
-<<<<<<< HEAD
-static int notrace __kprobes nmi_handle(unsigned int type, struct pt_regs *regs, bool b2b)
-=======
 static u64 nmi_longest_ns = 1 * NSEC_PER_MSEC;
 
 static int __init nmi_warning_debugfs(void)
@@ -183,7 +130,6 @@ static void nmi_check_duration(struct nmiaction *action, u64 duration)
 }
 
 static int nmi_handle(unsigned int type, struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nmi_desc *desc = nmi_to_desc(type);
 	struct nmiaction *a;
@@ -197,10 +143,6 @@ static int nmi_handle(unsigned int type, struct pt_regs *regs)
 	 * can be latched at any given time.  Walk the whole list
 	 * to handle those situations.
 	 */
-<<<<<<< HEAD
-	list_for_each_entry_rcu(a, &desc->head, list)
-		handled += a->handler(type, regs);
-=======
 	list_for_each_entry_rcu(a, &desc->head, list) {
 		int thishandled;
 		u64 delta;
@@ -213,35 +155,19 @@ static int nmi_handle(unsigned int type, struct pt_regs *regs)
 
 		nmi_check_duration(a, delta);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_unlock();
 
 	/* return total number of NMI events handled */
 	return handled;
 }
-<<<<<<< HEAD
-
-static int __setup_nmi(unsigned int type, struct nmiaction *action)
-=======
 NOKPROBE_SYMBOL(nmi_handle);
 
 int __register_nmi_handler(unsigned int type, struct nmiaction *action)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nmi_desc *desc = nmi_to_desc(type);
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&desc->lock, flags);
-
-	/*
-	 * most handlers of type NMI_UNKNOWN never return because
-	 * they just assume the NMI is theirs.  Just a sanity check
-	 * to manage expectations
-	 */
-	WARN_ON_ONCE(type == NMI_UNKNOWN && !list_empty(&desc->head));
-=======
 	if (WARN_ON_ONCE(!action->handler || !list_empty(&action->list)))
 		return -EINVAL;
 
@@ -253,7 +179,6 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
 	 */
 	WARN_ON_ONCE(type == NMI_SERR && !list_empty(&desc->head));
 	WARN_ON_ONCE(type == NMI_IO_CHECK && !list_empty(&desc->head));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * some handlers need to be executed first otherwise a fake
@@ -263,20 +188,6 @@ int __register_nmi_handler(unsigned int type, struct nmiaction *action)
 		list_add_rcu(&action->list, &desc->head);
 	else
 		list_add_tail_rcu(&action->list, &desc->head);
-<<<<<<< HEAD
-	
-	spin_unlock_irqrestore(&desc->lock, flags);
-	return 0;
-}
-
-static struct nmiaction *__free_nmi(unsigned int type, const char *name)
-{
-	struct nmi_desc *desc = nmi_to_desc(type);
-	struct nmiaction *n;
-	unsigned long flags;
-
-	spin_lock_irqsave(&desc->lock, flags);
-=======
 
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 	return 0;
@@ -290,7 +201,6 @@ void unregister_nmi_handler(unsigned int type, const char *name)
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&desc->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry_rcu(n, &desc->head, list) {
 		/*
@@ -301,89 +211,11 @@ void unregister_nmi_handler(unsigned int type, const char *name)
 			WARN(in_nmi(),
 				"Trying to free NMI (%s) from NMI context!\n", n->name);
 			list_del_rcu(&n->list);
-<<<<<<< HEAD
-=======
 			found = n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&desc->lock, flags);
-	synchronize_rcu();
-	return (n);
-}
-
-int register_nmi_handler(unsigned int type, nmi_handler_t handler,
-			unsigned long nmiflags, const char *devname)
-{
-	struct nmiaction *action;
-	int retval = -ENOMEM;
-
-	if (!handler)
-		return -EINVAL;
-
-	action = kzalloc(sizeof(struct nmiaction), GFP_KERNEL);
-	if (!action)
-		goto fail_action;
-
-	action->handler = handler;
-	action->flags = nmiflags;
-	action->name = kstrndup(devname, NMI_MAX_NAMELEN, GFP_KERNEL);
-	if (!action->name)
-		goto fail_action_name;
-
-	retval = __setup_nmi(type, action);
-
-	if (retval)
-		goto fail_setup_nmi;
-
-	return retval;
-
-fail_setup_nmi:
-	kfree(action->name);
-fail_action_name:
-	kfree(action);
-fail_action:	
-
-	return retval;
-}
-EXPORT_SYMBOL_GPL(register_nmi_handler);
-
-void unregister_nmi_handler(unsigned int type, const char *name)
-{
-	struct nmiaction *a;
-
-	a = __free_nmi(type, name);
-	if (a) {
-		kfree(a->name);
-		kfree(a);
-	}
-}
-
-EXPORT_SYMBOL_GPL(unregister_nmi_handler);
-
-static notrace __kprobes void
-pci_serr_error(unsigned char reason, struct pt_regs *regs)
-{
-	pr_emerg("NMI: PCI system error (SERR) for reason %02x on CPU %d.\n",
-		 reason, smp_processor_id());
-
-	/*
-	 * On some machines, PCI SERR line is used to report memory
-	 * errors. EDAC makes use of it.
-	 */
-#if defined(CONFIG_EDAC)
-	if (edac_handler_set()) {
-		edac_atomic_assert_error();
-		return;
-	}
-#endif
-
-	if (panic_on_unrecovered_nmi)
-		panic("NMI: Not continuing");
-=======
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 	if (found) {
 		synchronize_rcu();
@@ -404,7 +236,6 @@ pci_serr_error(unsigned char reason, struct pt_regs *regs)
 
 	if (panic_on_unrecovered_nmi)
 		nmi_panic(regs, "NMI: Not continuing");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_emerg("Dazed and confused, but trying to continue\n");
 
@@ -412,27 +243,13 @@ pci_serr_error(unsigned char reason, struct pt_regs *regs)
 	reason = (reason & NMI_REASON_CLEAR_MASK) | NMI_REASON_CLEAR_SERR;
 	outb(reason, NMI_REASON_PORT);
 }
-<<<<<<< HEAD
-
-static notrace __kprobes void
-=======
 NOKPROBE_SYMBOL(pci_serr_error);
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 io_check_error(unsigned char reason, struct pt_regs *regs)
 {
 	unsigned long i;
 
-<<<<<<< HEAD
-	pr_emerg(
-	"NMI: IOCK error (debug interrupt?) for reason %02x on CPU %d.\n",
-		 reason, smp_processor_id());
-	show_registers(regs);
-
-	if (panic_on_io_nmi)
-		panic("NMI IOCK error: Not continuing");
-=======
 	/* check to see if anyone registered against these types of errors */
 	if (nmi_handle(NMI_IO_CHECK, regs))
 		return;
@@ -452,7 +269,6 @@ io_check_error(unsigned char reason, struct pt_regs *regs)
 		 */
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Re-enable the IOCK line, wait for a few seconds */
 	reason = (reason & NMI_REASON_CLEAR_MASK) | NMI_REASON_CLEAR_IOCHK;
@@ -467,14 +283,9 @@ io_check_error(unsigned char reason, struct pt_regs *regs)
 	reason &= ~NMI_REASON_CLEAR_IOCHK;
 	outb(reason, NMI_REASON_PORT);
 }
-<<<<<<< HEAD
-
-static notrace __kprobes void
-=======
 NOKPROBE_SYMBOL(io_check_error);
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unknown_nmi_error(unsigned char reason, struct pt_regs *regs)
 {
 	int handled;
@@ -485,11 +296,7 @@ unknown_nmi_error(unsigned char reason, struct pt_regs *regs)
 	 * as only the first one is ever run (unless it can actually determine
 	 * if it caused the NMI)
 	 */
-<<<<<<< HEAD
-	handled = nmi_handle(NMI_UNKNOWN, regs, false);
-=======
 	handled = nmi_handle(NMI_UNKNOWN, regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (handled) {
 		__this_cpu_add(nmi_stats.unknown, handled);
 		return;
@@ -497,27 +304,6 @@ unknown_nmi_error(unsigned char reason, struct pt_regs *regs)
 
 	__this_cpu_add(nmi_stats.unknown, 1);
 
-<<<<<<< HEAD
-#ifdef CONFIG_MCA
-	/*
-	 * Might actually be able to figure out what the guilty party
-	 * is:
-	 */
-	if (MCA_bus) {
-		mca_handle_nmi();
-		return;
-	}
-#endif
-	pr_emerg("Uhhuh. NMI received for unknown reason %02x on CPU %d.\n",
-		 reason, smp_processor_id());
-
-	pr_emerg("Do you have a strange power saving mode enabled?\n");
-	if (unknown_nmi_panic || panic_on_unrecovered_nmi)
-		panic("NMI: Not continuing");
-
-	pr_emerg("Dazed and confused, but trying to continue\n");
-}
-=======
 	pr_emerg_ratelimited("Uhhuh. NMI received for unknown reason %02x on CPU %d.\n",
 			     reason, smp_processor_id());
 
@@ -527,16 +313,11 @@ unknown_nmi_error(unsigned char reason, struct pt_regs *regs)
 	pr_emerg_ratelimited("Dazed and confused, but trying to continue\n");
 }
 NOKPROBE_SYMBOL(unknown_nmi_error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_PER_CPU(bool, swallow_nmi);
 static DEFINE_PER_CPU(unsigned long, last_nmi_rip);
 
-<<<<<<< HEAD
-static notrace __kprobes void default_do_nmi(struct pt_regs *regs)
-=======
 static noinstr void default_do_nmi(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char reason = 0;
 	int handled;
@@ -562,16 +343,12 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
 
 	__this_cpu_write(last_nmi_rip, regs->ip);
 
-<<<<<<< HEAD
-	handled = nmi_handle(NMI_LOCAL, regs, b2b);
-=======
 	instrumentation_begin();
 
 	if (microcode_nmi_handler_enabled() && microcode_nmi_handler())
 		goto out;
 
 	handled = nmi_handle(NMI_LOCAL, regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__this_cpu_add(nmi_stats.normal, handled);
 	if (handled) {
 		/*
@@ -584,13 +361,6 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
 		 */
 		if (handled > 1)
 			__this_cpu_write(swallow_nmi, true);
-<<<<<<< HEAD
-		return;
-	}
-
-	/* Non-CPU-specific NMI: NMI sources can be processed on any CPU */
-	raw_spin_lock(&nmi_reason_lock);
-=======
 		goto out;
 	}
 
@@ -607,7 +377,6 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
 		cpu_relax();
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reason = x86_platform.get_nmi_reason();
 
 	if (reason & NMI_REASON_MASK) {
@@ -624,11 +393,7 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
 #endif
 		__this_cpu_add(nmi_stats.external, 1);
 		raw_spin_unlock(&nmi_reason_lock);
-<<<<<<< HEAD
-		return;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	raw_spin_unlock(&nmi_reason_lock);
 
@@ -653,15 +418,9 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
 	 * a 'real' unknown NMI.  For example, while processing
 	 * a perf NMI another perf NMI comes in along with a
 	 * 'real' unknown NMI.  These two NMIs get combined into
-<<<<<<< HEAD
-	 * one (as descibed above).  When the next NMI gets
-	 * processed, it will be flagged by perf as handled, but
-	 * noone will know that there was a 'real' unknown NMI sent
-=======
 	 * one (as described above).  When the next NMI gets
 	 * processed, it will be flagged by perf as handled, but
 	 * no one will know that there was a 'real' unknown NMI sent
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * also.  As a result it gets swallowed.  Or if the first
 	 * perf NMI returns two events handled then the second
 	 * NMI will get eaten by the logic below, again losing a
@@ -672,19 +431,6 @@ static noinstr void default_do_nmi(struct pt_regs *regs)
 		__this_cpu_add(nmi_stats.swallow, 1);
 	else
 		unknown_nmi_error(reason, regs);
-<<<<<<< HEAD
-}
-
-/*
- * NMIs can hit breakpoints which will cause it to lose its
- * NMI context with the CPU when the breakpoint does an iret.
- */
-#ifdef CONFIG_X86_32
-/*
- * For i386, NMIs use the same stack as the kernel, and we can
- * add a workaround to the iret problem in C. Simply have 3 states
- * the NMI can be in.
-=======
 
 out:
 	instrumentation_end();
@@ -700,7 +446,6 @@ out:
  * outer NMI came from user mode.
  *
  * To handle these nested NMIs, we have three states:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  1) not running
  *  2) executing
@@ -714,18 +459,6 @@ out:
  * (Note, the latch is binary, thus multiple NMIs triggering,
  *  when one is running, are ignored. Only one NMI is restarted.)
  *
-<<<<<<< HEAD
- * If an NMI hits a breakpoint that executes an iret, another
- * NMI can preempt it. We do not want to allow this new NMI
- * to run, but we want to execute it when the first one finishes.
- * We set the state to "latched", and the first NMI will perform
- * an cmpxchg on the state, and if it doesn't successfully
- * reset the state to "not running" it will restart the next
- * NMI.
- */
-enum nmi_states {
-	NMI_NOT_RUNNING,
-=======
  * If an NMI executes an iret, another NMI can preempt it. We do not
  * want to allow this new NMI to run, but we want to execute it when the
  * first one finishes.  We set the state to "latched", and the exit of
@@ -750,94 +483,10 @@ enum nmi_states {
  */
 enum nmi_states {
 	NMI_NOT_RUNNING = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NMI_EXECUTING,
 	NMI_LATCHED,
 };
 static DEFINE_PER_CPU(enum nmi_states, nmi_state);
-<<<<<<< HEAD
-
-#define nmi_nesting_preprocess(regs)					\
-	do {								\
-		if (__get_cpu_var(nmi_state) != NMI_NOT_RUNNING) {	\
-			__get_cpu_var(nmi_state) = NMI_LATCHED;		\
-			return;						\
-		}							\
-	nmi_restart:							\
-		__get_cpu_var(nmi_state) = NMI_EXECUTING;		\
-	} while (0)
-
-#define nmi_nesting_postprocess()					\
-	do {								\
-		if (cmpxchg(&__get_cpu_var(nmi_state),			\
-		    NMI_EXECUTING, NMI_NOT_RUNNING) != NMI_EXECUTING)	\
-			goto nmi_restart;				\
-	} while (0)
-#else /* x86_64 */
-/*
- * In x86_64 things are a bit more difficult. This has the same problem
- * where an NMI hitting a breakpoint that calls iret will remove the
- * NMI context, allowing a nested NMI to enter. What makes this more
- * difficult is that both NMIs and breakpoints have their own stack.
- * When a new NMI or breakpoint is executed, the stack is set to a fixed
- * point. If an NMI is nested, it will have its stack set at that same
- * fixed address that the first NMI had, and will start corrupting the
- * stack. This is handled in entry_64.S, but the same problem exists with
- * the breakpoint stack.
- *
- * If a breakpoint is being processed, and the debug stack is being used,
- * if an NMI comes in and also hits a breakpoint, the stack pointer
- * will be set to the same fixed address as the breakpoint that was
- * interrupted, causing that stack to be corrupted. To handle this case,
- * check if the stack that was interrupted is the debug stack, and if
- * so, change the IDT so that new breakpoints will use the current stack
- * and not switch to the fixed address. On return of the NMI, switch back
- * to the original IDT.
- */
-static DEFINE_PER_CPU(int, update_debug_stack);
-
-static inline void nmi_nesting_preprocess(struct pt_regs *regs)
-{
-	/*
-	 * If we interrupted a breakpoint, it is possible that
-	 * the nmi handler will have breakpoints too. We need to
-	 * change the IDT such that breakpoints that happen here
-	 * continue to use the NMI stack.
-	 */
-	if (unlikely(is_debug_stack(regs->sp))) {
-		debug_stack_set_zero();
-		this_cpu_write(update_debug_stack, 1);
-	}
-}
-
-static inline void nmi_nesting_postprocess(void)
-{
-	if (unlikely(this_cpu_read(update_debug_stack))) {
-		debug_stack_reset();
-		this_cpu_write(update_debug_stack, 0);
-	}
-}
-#endif
-
-dotraplinkage notrace __kprobes void
-do_nmi(struct pt_regs *regs, long error_code)
-{
-	nmi_nesting_preprocess(regs);
-
-	nmi_enter();
-
-	inc_irq_stat(__nmi_count);
-
-	if (!ignore_nmis)
-		default_do_nmi(regs);
-
-	nmi_exit();
-
-	/* On i386, may loop back to preprocess */
-	nmi_nesting_postprocess();
-}
-
-=======
 static DEFINE_PER_CPU(unsigned long, nmi_cr2);
 static DEFINE_PER_CPU(unsigned long, nmi_dr7);
 
@@ -1045,7 +694,6 @@ DEFINE_FREDENTRY_NMI(exc_nmi)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void stop_nmi(void)
 {
 	ignore_nmis++;
@@ -1061,7 +709,4 @@ void local_touch_nmi(void)
 {
 	__this_cpu_write(last_nmi_rip, 0);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(local_touch_nmi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

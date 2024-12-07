@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * Author: Naveen Kumar G <naveen.gaddipati@stericsson.com> for ST-Ericsson
  * Author: Sundar Iyer <sundar.iyer@stericsson.com> for ST-Ericsson
  *
-<<<<<<< HEAD
- * License terms:GNU General Public License (GPL) version 2
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Keypad controller driver for the SKE (Scroll Key Encoder) module used in
  * the Nomadik 8815 and Ux500 platforms.
  */
@@ -27,11 +19,7 @@
 #include <linux/clk.h>
 #include <linux/module.h>
 
-<<<<<<< HEAD
-#include <plat/ske.h>
-=======
 #include <linux/platform_data/keypad-nomadik-ske.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SKE_CR bits */
 #define SKE_KPMLT	(0x1 << 6)
@@ -50,12 +38,8 @@
 #define SKE_KPRISA	(0x1 << 2)
 
 #define SKE_KEYPAD_ROW_SHIFT	3
-<<<<<<< HEAD
-#define SKE_KPD_KEYMAP_SIZE	(8 * 8)
-=======
 #define SKE_KPD_NUM_ROWS	8
 #define SKE_KPD_NUM_COLS	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* keypad auto scan registers */
 #define SKE_ASR0	0x20
@@ -64,42 +48,27 @@
 #define SKE_ASR3	0x2C
 
 #define SKE_NUM_ASRX_REGISTERS	(4)
-<<<<<<< HEAD
-=======
 #define	KEY_PRESSED_DELAY	10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct ske_keypad  - data structure used by keypad driver
  * @irq:	irq no
-<<<<<<< HEAD
- * @reg_base:	ske regsiters base address
-=======
  * @reg_base:	ske registers base address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @input:	pointer to input device object
  * @board:	keypad platform device
  * @keymap:	matrix scan code table for keycodes
  * @clk:	clock structure pointer
-<<<<<<< HEAD
-=======
  * @pclk:	clock structure pointer
  * @ske_keypad_lock: spinlock protecting the keypad read/writes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ske_keypad {
 	int irq;
 	void __iomem *reg_base;
 	struct input_dev *input;
 	const struct ske_keypad_platform_data *board;
-<<<<<<< HEAD
-	unsigned short keymap[SKE_KPD_KEYMAP_SIZE];
-	struct clk *clk;
-=======
 	unsigned short keymap[SKE_KPD_NUM_ROWS * SKE_KPD_NUM_COLS];
 	struct clk *clk;
 	struct clk *pclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t ske_keypad_lock;
 };
 
@@ -126,21 +95,13 @@ static void ske_keypad_set_bits(struct ske_keypad *keypad, u16 addr,
 static int __init ske_keypad_chip_init(struct ske_keypad *keypad)
 {
 	u32 value;
-<<<<<<< HEAD
-	int timeout = 50;
-=======
 	int timeout = keypad->board->debounce_ms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check SKE_RIS to be 0 */
 	while ((readl(keypad->reg_base + SKE_RIS) != 0x00000000) && timeout--)
 		cpu_relax();
 
-<<<<<<< HEAD
-	if (!timeout)
-=======
 	if (timeout == -1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/*
@@ -177,14 +138,6 @@ static int __init ske_keypad_chip_init(struct ske_keypad *keypad)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void ske_keypad_read_data(struct ske_keypad *keypad)
-{
-	struct input_dev *input = keypad->input;
-	u16 status;
-	int col = 0, row = 0, code;
-	int ske_asr, ske_ris, key_pressed, i;
-=======
 static void ske_keypad_report(struct ske_keypad *keypad, u8 status, int col)
 {
 	int row = 0, code, pos;
@@ -216,7 +169,6 @@ static void ske_keypad_read_data(struct ske_keypad *keypad)
 	u8 status;
 	int col = 0;
 	int ske_asr, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Read the auto scan registers
@@ -230,27 +182,6 @@ static void ske_keypad_read_data(struct ske_keypad *keypad)
 		if (!ske_asr)
 			continue;
 
-<<<<<<< HEAD
-		/* now that ASRx is zero, find out the column x and row y*/
-		if (ske_asr & 0xff) {
-			col = i * 2;
-			status = ske_asr & 0xff;
-		} else {
-			col = (i * 2) + 1;
-			status = (ske_asr & 0xff00) >> 8;
-		}
-
-		/* find out the row */
-		row = __ffs(status);
-
-		code = MATRIX_SCAN_CODE(row, col, SKE_KEYPAD_ROW_SHIFT);
-		ske_ris = readl(keypad->reg_base + SKE_RIS);
-		key_pressed = ske_ris & SKE_KPRISA;
-
-		input_event(input, EV_MSC, MSC_SCAN, code);
-		input_report_key(input, keypad->keymap[code], key_pressed);
-		input_sync(input);
-=======
 		/* now that ASRx is zero, find out the coloumn x and row y */
 		status = ske_asr & 0xff;
 		if (status) {
@@ -262,32 +193,18 @@ static void ske_keypad_read_data(struct ske_keypad *keypad)
 			col = (i * 2) + 1;
 			ske_keypad_report(keypad, status, col);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static irqreturn_t ske_keypad_irq(int irq, void *dev_id)
 {
 	struct ske_keypad *keypad = dev_id;
-<<<<<<< HEAD
-	int retries = 20;
-=======
 	int timeout = keypad->board->debounce_ms;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable auto scan interrupt; mask the interrupt generated */
 	ske_keypad_set_bits(keypad, SKE_IMSC, ~SKE_KPIMA, 0x0);
 	ske_keypad_set_bits(keypad, SKE_ICR, 0x0, SKE_KPICA);
 
-<<<<<<< HEAD
-	while ((readl(keypad->reg_base + SKE_CR) & SKE_KPASON) && --retries)
-		msleep(5);
-
-	if (retries) {
-		/* SKEx registers are stable and can be read */
-		ske_keypad_read_data(keypad);
-	}
-=======
 	while ((readl(keypad->reg_base + SKE_CR) & SKE_KPASON) && --timeout)
 		cpu_relax();
 
@@ -297,7 +214,6 @@ static irqreturn_t ske_keypad_irq(int irq, void *dev_id)
 	/* wait until raw interrupt is clear */
 	while ((readl(keypad->reg_base + SKE_RIS)) && --timeout)
 		msleep(KEY_PRESSED_DELAY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable auto scan interrupts */
 	ske_keypad_set_bits(keypad, SKE_IMSC, 0x0, SKE_KPIMA);
@@ -305,14 +221,6 @@ static irqreturn_t ske_keypad_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __init ske_keypad_probe(struct platform_device *pdev)
-{
-	const struct ske_keypad_platform_data *plat = pdev->dev.platform_data;
-	struct ske_keypad *keypad;
-	struct input_dev *input;
-	struct resource *res;
-=======
 static void ske_keypad_board_exit(void *data)
 {
 	struct ske_keypad *keypad = data;
@@ -327,7 +235,6 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct ske_keypad *keypad;
 	struct input_dev *input;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq;
 	int error;
 
@@ -337,25 +244,6 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	}
 
 	irq = platform_get_irq(pdev, 0);
-<<<<<<< HEAD
-	if (irq < 0) {
-		dev_err(&pdev->dev, "failed to get keypad irq\n");
-		return -EINVAL;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "missing platform resources\n");
-		return -EINVAL;
-	}
-
-	keypad = kzalloc(sizeof(struct ske_keypad), GFP_KERNEL);
-	input = input_allocate_device();
-	if (!keypad || !input) {
-		dev_err(&pdev->dev, "failed to allocate keypad memory\n");
-		error = -ENOMEM;
-		goto err_free_mem;
-=======
 	if (irq < 0)
 		return irq;
 
@@ -365,7 +253,6 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	if (!keypad || !input) {
 		dev_err(&pdev->dev, "failed to allocate keypad memory\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	keypad->irq = irq;
@@ -373,26 +260,6 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	keypad->input = input;
 	spin_lock_init(&keypad->ske_keypad_lock);
 
-<<<<<<< HEAD
-	if (!request_mem_region(res->start, resource_size(res), pdev->name)) {
-		dev_err(&pdev->dev, "failed to request I/O memory\n");
-		error = -EBUSY;
-		goto err_free_mem;
-	}
-
-	keypad->reg_base = ioremap(res->start, resource_size(res));
-	if (!keypad->reg_base) {
-		dev_err(&pdev->dev, "failed to remap I/O memory\n");
-		error = -ENXIO;
-		goto err_free_mem_region;
-	}
-
-	keypad->clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(keypad->clk)) {
-		dev_err(&pdev->dev, "failed to get clk\n");
-		error = PTR_ERR(keypad->clk);
-		goto err_iounmap;
-=======
 	keypad->reg_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(keypad->reg_base))
 		return PTR_ERR(keypad->reg_base);
@@ -407,30 +274,12 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	if (IS_ERR(keypad->clk)) {
 		dev_err(&pdev->dev, "failed to get clk\n");
 		return PTR_ERR(keypad->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input->id.bustype = BUS_HOST;
 	input->name = "ux500-ske-keypad";
 	input->dev.parent = &pdev->dev;
 
-<<<<<<< HEAD
-	input->keycode = keypad->keymap;
-	input->keycodesize = sizeof(keypad->keymap[0]);
-	input->keycodemax = ARRAY_SIZE(keypad->keymap);
-
-	input_set_capability(input, EV_MSC, MSC_SCAN);
-
-	__set_bit(EV_KEY, input->evbit);
-	if (!plat->no_autorepeat)
-		__set_bit(EV_REP, input->evbit);
-
-	matrix_keypad_build_keymap(plat->keymap_data, SKE_KEYPAD_ROW_SHIFT,
-			input->keycode, input->keybit);
-
-	clk_enable(keypad->clk);
-
-=======
 	error = matrix_keypad_build_keymap(plat->keymap_data, NULL,
 					   SKE_KPD_NUM_ROWS, SKE_KPD_NUM_COLS,
 					   keypad->keymap, input);
@@ -443,24 +292,10 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	if (!plat->no_autorepeat)
 		__set_bit(EV_REP, input->evbit);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* go through board initialization helpers */
 	if (keypad->board->init)
 		keypad->board->init();
 
-<<<<<<< HEAD
-	error = ske_keypad_chip_init(keypad);
-	if (error) {
-		dev_err(&pdev->dev, "unable to init keypad hardware\n");
-		goto err_clk_disable;
-	}
-
-	error = request_threaded_irq(keypad->irq, NULL, ske_keypad_irq,
-				     IRQF_ONESHOT, "ske-keypad", keypad);
-	if (error) {
-		dev_err(&pdev->dev, "allocate irq %d failed\n", keypad->irq);
-		goto err_clk_disable;
-=======
 	if (keypad->board->exit) {
 		error = devm_add_action_or_reset(dev, ske_keypad_board_exit,
 						 keypad);
@@ -480,19 +315,13 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	if (error) {
 		dev_err(&pdev->dev, "allocate irq %d failed\n", keypad->irq);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&pdev->dev,
-<<<<<<< HEAD
-				"unable to register input device: %d\n", error);
-		goto err_free_irq;
-=======
 			"unable to register input device: %d\n", error);
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (plat->wakeup_enable)
@@ -501,50 +330,8 @@ static int __init ske_keypad_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, keypad);
 
 	return 0;
-<<<<<<< HEAD
-
-err_free_irq:
-	free_irq(keypad->irq, keypad);
-err_clk_disable:
-	clk_disable(keypad->clk);
-	clk_put(keypad->clk);
-err_iounmap:
-	iounmap(keypad->reg_base);
-err_free_mem_region:
-	release_mem_region(res->start, resource_size(res));
-err_free_mem:
-	input_free_device(input);
-	kfree(keypad);
-	return error;
 }
 
-static int __devexit ske_keypad_remove(struct platform_device *pdev)
-{
-	struct ske_keypad *keypad = platform_get_drvdata(pdev);
-	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-
-	free_irq(keypad->irq, keypad);
-
-	input_unregister_device(keypad->input);
-
-	clk_disable(keypad->clk);
-	clk_put(keypad->clk);
-
-	if (keypad->board->exit)
-		keypad->board->exit();
-
-	iounmap(keypad->reg_base);
-	release_mem_region(res->start, resource_size(res));
-	kfree(keypad);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM_SLEEP
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ske_keypad_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -572,45 +359,18 @@ static int ske_keypad_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-#endif
-
-static SIMPLE_DEV_PM_OPS(ske_keypad_dev_pm_ops,
-			 ske_keypad_suspend, ske_keypad_resume);
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(ske_keypad_dev_pm_ops,
 				ske_keypad_suspend, ske_keypad_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver ske_keypad_driver = {
 	.driver = {
 		.name = "nmk-ske-keypad",
-<<<<<<< HEAD
-		.owner  = THIS_MODULE,
-		.pm = &ske_keypad_dev_pm_ops,
-	},
-	.remove = __devexit_p(ske_keypad_remove),
-};
-
-static int __init ske_keypad_init(void)
-{
-	return platform_driver_probe(&ske_keypad_driver, ske_keypad_probe);
-}
-module_init(ske_keypad_init);
-
-static void __exit ske_keypad_exit(void)
-{
-	platform_driver_unregister(&ske_keypad_driver);
-}
-module_exit(ske_keypad_exit);
-=======
 		.pm = pm_sleep_ptr(&ske_keypad_dev_pm_ops),
 	},
 };
 
 module_platform_driver_probe(ske_keypad_driver, ske_keypad_probe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Naveen Kumar <naveen.gaddipati@stericsson.com> / Sundar Iyer <sundar.iyer@stericsson.com>");

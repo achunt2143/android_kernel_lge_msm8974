@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Routines for control of 16-bit SoundBlaster cards and clones
@@ -19,31 +16,9 @@
  *        16bit DMA transfers from DSP chip (capture) until 8bit transfer
  *        to DSP chip (playback) starts. This bug can be avoided with
  *        "16bit DMA Allocation" setting set to Playback or Capture.
-<<<<<<< HEAD
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-#include <asm/io.h>
-=======
  */
 
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 #include <linux/init.h>
 #include <linux/time.h>
@@ -59,12 +34,9 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Routines for control of 16-bit SoundBlaster cards and clones");
 MODULE_LICENSE("GPL");
 
-<<<<<<< HEAD
-=======
 #define runtime_format_bits(runtime) \
 	((unsigned int)pcm_format_to_bits((runtime)->format))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SND_SB16_CSP
 static void snd_sb16_csp_playback_prepare(struct snd_sb *chip, struct snd_pcm_runtime *runtime)
 {
@@ -74,11 +46,7 @@ static void snd_sb16_csp_playback_prepare(struct snd_sb *chip, struct snd_pcm_ru
 		if (csp->running & SNDRV_SB_CSP_ST_LOADED) {
 			/* manually loaded codec */
 			if ((csp->mode & SNDRV_SB_CSP_MODE_DSP_WRITE) &&
-<<<<<<< HEAD
-			    ((1U << runtime->format) == csp->acc_format)) {
-=======
 			    (runtime_format_bits(runtime) == csp->acc_format)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Supported runtime PCM format for playback */
 				if (csp->ops.csp_use(csp) == 0) {
 					/* If CSP was successfully acquired */
@@ -86,11 +54,7 @@ static void snd_sb16_csp_playback_prepare(struct snd_sb *chip, struct snd_pcm_ru
 				}
 			} else if ((csp->mode & SNDRV_SB_CSP_MODE_QSOUND) && (csp->q_enabled)) {
 				/* QSound decoder is loaded and enabled */
-<<<<<<< HEAD
-				if ((1 << runtime->format) & (SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_U8 |
-=======
 				if (runtime_format_bits(runtime) & (SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_U8 |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							      SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_U16_LE)) {
 					/* Only for simple PCM formats */
 					if (csp->ops.csp_use(csp) == 0) {
@@ -130,11 +94,7 @@ static void snd_sb16_csp_capture_prepare(struct snd_sb *chip, struct snd_pcm_run
 		if (csp->running & SNDRV_SB_CSP_ST_LOADED) {
 			/* manually loaded codec */
 			if ((csp->mode & SNDRV_SB_CSP_MODE_DSP_READ) &&
-<<<<<<< HEAD
-			    ((1U << runtime->format) == csp->acc_format)) {
-=======
 			    (runtime_format_bits(runtime) == csp->acc_format)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Supported runtime PCM format for capture */
 				if (csp->ops.csp_use(csp) == 0) {
 					/* If CSP was successfully acquired */
@@ -272,21 +232,6 @@ static void snd_sb16_setup_rate(struct snd_sb *chip,
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 }
 
-<<<<<<< HEAD
-static int snd_sb16_hw_params(struct snd_pcm_substream *substream,
-			      struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
-}
-
-static int snd_sb16_hw_free(struct snd_pcm_substream *substream)
-{
-	snd_pcm_lib_free_pages(substream);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_sb16_playback_prepare(struct snd_pcm_substream *substream)
 {
 	unsigned long flags;
@@ -504,11 +449,7 @@ static snd_pcm_uframes_t snd_sb16_capture_pointer(struct snd_pcm_substream *subs
 
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_sb16_playback =
-=======
 static const struct snd_pcm_hardware snd_sb16_playback =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -526,11 +467,7 @@ static const struct snd_pcm_hardware snd_sb16_playback =
 	.fifo_size =		0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_sb16_capture =
-=======
 static const struct snd_pcm_hardware snd_sb16_capture =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -741,25 +678,11 @@ static int snd_sb16_get_dma_mode(struct snd_sb *chip)
 
 static int snd_sb16_dma_control_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[3] = {
-		"Auto", "Playback", "Capture"
-	};
-
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 3;
-	if (uinfo->value.enumerated.item > 2)
-		uinfo->value.enumerated.item = 2;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	static const char * const texts[3] = {
 		"Auto", "Playback", "Capture"
 	};
 
 	return snd_ctl_enum_info(uinfo, 1, 3, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_sb16_dma_control_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -780,12 +703,8 @@ static int snd_sb16_dma_control_put(struct snd_kcontrol *kcontrol, struct snd_ct
 	unsigned char nval, oval;
 	int change;
 	
-<<<<<<< HEAD
-	if ((nval = ucontrol->value.enumerated.item[0]) > 2)
-=======
 	nval = ucontrol->value.enumerated.item[0];
 	if (nval > 2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	oval = snd_sb16_get_dma_mode(chip);
@@ -795,11 +714,7 @@ static int snd_sb16_dma_control_put(struct snd_kcontrol *kcontrol, struct snd_ct
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_sb16_dma_control = {
-=======
 static const struct snd_kcontrol_new snd_sb16_dma_control = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.name = "16-bit DMA Allocation",
 	.info = snd_sb16_dma_control_info,
@@ -900,66 +815,35 @@ int snd_sb16dsp_configure(struct snd_sb * chip)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_sb16_playback_ops = {
-	.open =		snd_sb16_playback_open,
-	.close =	snd_sb16_playback_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_sb16_hw_params,
-	.hw_free =	snd_sb16_hw_free,
-=======
 static const struct snd_pcm_ops snd_sb16_playback_ops = {
 	.open =		snd_sb16_playback_open,
 	.close =	snd_sb16_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_sb16_playback_prepare,
 	.trigger =	snd_sb16_playback_trigger,
 	.pointer =	snd_sb16_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_sb16_capture_ops = {
-	.open =		snd_sb16_capture_open,
-	.close =	snd_sb16_capture_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_sb16_hw_params,
-	.hw_free =	snd_sb16_hw_free,
-=======
 static const struct snd_pcm_ops snd_sb16_capture_ops = {
 	.open =		snd_sb16_capture_open,
 	.close =	snd_sb16_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_sb16_capture_prepare,
 	.trigger =	snd_sb16_capture_trigger,
 	.pointer =	snd_sb16_capture_pointer,
 };
 
-<<<<<<< HEAD
-int snd_sb16dsp_pcm(struct snd_sb * chip, int device, struct snd_pcm ** rpcm)
-=======
 int snd_sb16dsp_pcm(struct snd_sb *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = chip->card;
 	struct snd_pcm *pcm;
 	int err;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-	if ((err = snd_pcm_new(card, "SB16 DSP", device, 1, 1, &pcm)) < 0)
-=======
 	err = snd_pcm_new(card, "SB16 DSP", device, 1, 1, &pcm);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	sprintf(pcm->name, "DSP v%i.%i", chip->version >> 8, chip->version & 0xff);
 	pcm->info_flags = SNDRV_PCM_INFO_JOINT_DUPLEX;
 	pcm->private_data = chip;
-<<<<<<< HEAD
-=======
 	chip->pcm = pcm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_sb16_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_sb16_capture_ops);
@@ -969,17 +853,8 @@ int snd_sb16dsp_pcm(struct snd_sb *chip, int device)
 	else
 		pcm->info_flags = SNDRV_PCM_INFO_HALF_DUPLEX;
 
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_isa_data(),
-					      64*1024, 128*1024);
-
-	if (rpcm)
-		*rpcm = pcm;
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
 				       card->dev, 64*1024, 128*1024);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -993,22 +868,3 @@ EXPORT_SYMBOL(snd_sb16dsp_pcm);
 EXPORT_SYMBOL(snd_sb16dsp_get_pcm_ops);
 EXPORT_SYMBOL(snd_sb16dsp_configure);
 EXPORT_SYMBOL(snd_sb16dsp_interrupt);
-<<<<<<< HEAD
-
-/*
- *  INIT part
- */
-
-static int __init alsa_sb16_init(void)
-{
-	return 0;
-}
-
-static void __exit alsa_sb16_exit(void)
-{
-}
-
-module_init(alsa_sb16_init)
-module_exit(alsa_sb16_exit)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

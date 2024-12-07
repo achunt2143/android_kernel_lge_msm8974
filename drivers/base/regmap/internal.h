@@ -1,41 +1,24 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Register map access API internal header
  *
  * Copyright 2011 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _REGMAP_INTERNAL_H
 #define _REGMAP_INTERNAL_H
 
-<<<<<<< HEAD
-#include <linux/regmap.h>
-#include <linux/fs.h>
-=======
 #include <linux/device.h>
 #include <linux/regmap.h>
 #include <linux/fs.h>
 #include <linux/list.h>
 #include <linux/wait.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct regmap;
 struct regcache_ops;
 
-<<<<<<< HEAD
-=======
 struct regmap_debugfs_off_cache {
 	struct list_head list;
 	off_t min;
@@ -44,23 +27,11 @@ struct regmap_debugfs_off_cache {
 	unsigned int max_reg;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct regmap_format {
 	size_t buf_size;
 	size_t reg_bytes;
 	size_t pad_bytes;
 	size_t val_bytes;
-<<<<<<< HEAD
-	void (*format_write)(struct regmap *map,
-			     unsigned int reg, unsigned int val);
-	void (*format_reg)(void *buf, unsigned int reg);
-	void (*format_val)(void *buf, unsigned int val);
-	unsigned int (*parse_val)(void *buf);
-};
-
-struct regmap {
-	struct mutex lock;
-=======
 	s8 reg_shift;
 	void (*format_write)(struct regmap *map,
 			     unsigned int reg, unsigned int val);
@@ -93,20 +64,11 @@ struct regmap {
 	void *lock_arg; /* This is passed to lock/unlock functions */
 	gfp_t alloc_flags;
 	unsigned int reg_base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct device *dev; /* Device we do I/O on */
 	void *work_buf;     /* Scratch buffer used to format I/O */
 	struct regmap_format format;  /* Buffer format */
 	const struct regmap_bus *bus;
-<<<<<<< HEAD
-
-#ifdef CONFIG_DEBUG_FS
-	struct dentry *debugfs;
-#endif
-
-	unsigned int max_register;
-=======
 	void *bus_context;
 	const char *name;
 
@@ -132,16 +94,10 @@ struct regmap {
 
 	unsigned int max_register;
 	bool max_register_is_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool (*writeable_reg)(struct device *dev, unsigned int reg);
 	bool (*readable_reg)(struct device *dev, unsigned int reg);
 	bool (*volatile_reg)(struct device *dev, unsigned int reg);
 	bool (*precious_reg)(struct device *dev, unsigned int reg);
-<<<<<<< HEAD
-
-	u8 read_flag_mask;
-	u8 write_flag_mask;
-=======
 	bool (*writeable_noinc_reg)(struct device *dev, unsigned int reg);
 	bool (*readable_noinc_reg)(struct device *dev, unsigned int reg);
 	const struct regmap_access_table *wr_table;
@@ -172,7 +128,6 @@ struct regmap {
 
 	/* If set, will always write field to HW. */
 	bool force_write_field;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* regcache specific members */
 	const struct regcache_ops *cache_ops;
@@ -188,27 +143,15 @@ struct regmap {
 	unsigned int num_reg_defaults_raw;
 
 	/* if set, only the cache is modified not the HW */
-<<<<<<< HEAD
-	u32 cache_only;
-	/* if set, only the HW is modified not the cache */
-	u32 cache_bypass;
-=======
 	bool cache_only;
 	/* if set, only the HW is modified not the cache */
 	bool cache_bypass;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* if set, remember to free reg_defaults_raw */
 	bool cache_free;
 
 	struct reg_default *reg_defaults;
 	const void *reg_defaults_raw;
 	void *cache;
-<<<<<<< HEAD
-	u32 cache_dirty;
-
-	struct reg_default *patch;
-	int patch_regs;
-=======
 	/* if set, the cache contains newer data than the HW */
 	bool cache_dirty;
 	/* if set, the HW registers are known to match map->reg_defaults */
@@ -235,7 +178,6 @@ struct regmap {
 
 	/* if set, the regmap core can sleep */
 	bool can_sleep;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct regcache_ops {
@@ -243,13 +185,6 @@ struct regcache_ops {
 	enum regcache_type type;
 	int (*init)(struct regmap *map);
 	int (*exit)(struct regmap *map);
-<<<<<<< HEAD
-	int (*read)(struct regmap *map, unsigned int reg, unsigned int *value);
-	int (*write)(struct regmap *map, unsigned int reg, unsigned int value);
-	int (*sync)(struct regmap *map, unsigned int min, unsigned int max);
-};
-
-=======
 #ifdef CONFIG_DEBUG_FS
 	void (*debugfs_init)(struct regmap *map);
 #endif
@@ -260,22 +195,16 @@ struct regcache_ops {
 };
 
 bool regmap_cached(struct regmap *map, unsigned int reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool regmap_writeable(struct regmap *map, unsigned int reg);
 bool regmap_readable(struct regmap *map, unsigned int reg);
 bool regmap_volatile(struct regmap *map, unsigned int reg);
 bool regmap_precious(struct regmap *map, unsigned int reg);
-<<<<<<< HEAD
-=======
 bool regmap_writeable_noinc(struct regmap *map, unsigned int reg);
 bool regmap_readable_noinc(struct regmap *map, unsigned int reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int _regmap_write(struct regmap *map, unsigned int reg,
 		  unsigned int val);
 
-<<<<<<< HEAD
-=======
 struct regmap_range_node {
 	struct rb_node node;
 	const char *name;
@@ -303,28 +232,21 @@ struct regmap_field {
 	unsigned int id_offset;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_FS
 extern void regmap_debugfs_initcall(void);
 extern void regmap_debugfs_init(struct regmap *map);
 extern void regmap_debugfs_exit(struct regmap *map);
-<<<<<<< HEAD
-=======
 
 static inline void regmap_debugfs_disable(struct regmap *map)
 {
 	map->debugfs_disable = true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void regmap_debugfs_initcall(void) { }
 static inline void regmap_debugfs_init(struct regmap *map) { }
 static inline void regmap_debugfs_exit(struct regmap *map) { }
-<<<<<<< HEAD
-=======
 static inline void regmap_debugfs_disable(struct regmap *map) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* regcache core declarations */
@@ -335,17 +257,6 @@ int regcache_read(struct regmap *map,
 int regcache_write(struct regmap *map,
 			unsigned int reg, unsigned int value);
 int regcache_sync(struct regmap *map);
-<<<<<<< HEAD
-
-unsigned int regcache_get_val(const void *base, unsigned int idx,
-			      unsigned int word_size);
-bool regcache_set_val(void *base, unsigned int idx,
-		      unsigned int val, unsigned int word_size);
-int regcache_lookup_reg(struct regmap *map, unsigned int reg);
-
-extern struct regcache_ops regcache_rbtree_ops;
-extern struct regcache_ops regcache_lzo_ops;
-=======
 int regcache_sync_block(struct regmap *map, void *block,
 			unsigned long *cache_present,
 			unsigned int block_base, unsigned int start,
@@ -430,6 +341,5 @@ struct regmap *__regmap_init_raw_ram(const struct regmap_config *config,
 
 #define regmap_init_raw_ram(config, data)				\
 	__regmap_lockdep_wrapper(__regmap_init_raw_ram, #config, config, data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

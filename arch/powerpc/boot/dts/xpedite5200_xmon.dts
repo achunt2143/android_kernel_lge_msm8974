@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2009 Extreme Engineering Solutions, Inc.
  * Based on TQM8548 device tree
  *
  * XPedite5200 PrPMC/XMC module based on MPC8548E.  This dts is for the
  * xMon boot loader memory map which differs from U-Boot's.
-<<<<<<< HEAD
- *
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -141,20 +131,12 @@
 			};
 
 			rtc@68 {
-<<<<<<< HEAD
-				compatible = "stm,m41t00",
-=======
 				compatible = "st,m41t00",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     "dallas,ds1338";
 				reg = <0x68>;
 			};
 
-<<<<<<< HEAD
-			dtt@48 {
-=======
 			dtt@34 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				compatible = "maxim,max1237";
 				reg = <0x34>;
 			};
@@ -518,10 +500,6 @@
 
 	/* Needed for dtbImage boot wrapper compatibility */
 	chosen {
-<<<<<<< HEAD
-		linux,stdout-path = &serial0;
-=======
 		stdout-path = &serial0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

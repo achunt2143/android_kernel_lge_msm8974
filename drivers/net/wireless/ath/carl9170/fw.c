@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Atheros CARL9170 driver
  *
  * firmware parser
  *
  * Copyright 2009, 2010, Christian Lamparter <chunkeey@googlemail.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, see
- * http://www.gnu.org/licenses/.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -35,14 +15,6 @@
 #include "fwcmd.h"
 #include "version.h"
 
-<<<<<<< HEAD
-#define MAKE_STR(symbol) #symbol
-#define TO_STR(symbol) MAKE_STR(symbol)
-#define CARL9170FW_API_VER_STR TO_STR(CARL9170FW_API_MAX_VER)
-MODULE_VERSION(CARL9170FW_API_VER_STR ":" CARL9170FW_VERSION_GIT);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u8 otus_magic[4] = { OTUS_MAGIC };
 
 static const void *carl9170_fw_find_desc(struct ar9170 *ar, const u8 descid[4],
@@ -133,11 +105,7 @@ static void carl9170_fw_info(struct ar9170 *ar)
 			 CARL9170FW_GET_MONTH(fw_date),
 			 CARL9170FW_GET_DAY(fw_date));
 
-<<<<<<< HEAD
-		strlcpy(ar->hw->wiphy->fw_version, motd_desc->release,
-=======
 		strscpy(ar->hw->wiphy->fw_version, motd_desc->release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(ar->hw->wiphy->fw_version));
 	}
 }
@@ -234,8 +202,6 @@ static int carl9170_fw_tx_sequence(struct ar9170 *ar)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void carl9170_fw_set_if_combinations(struct ar9170 *ar,
 					    u16 if_comb_types)
 {
@@ -254,7 +220,6 @@ static void carl9170_fw_set_if_combinations(struct ar9170 *ar,
 	ar->hw->wiphy->n_iface_combinations = ARRAY_SIZE(ar->if_combs);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 {
 	const struct carl9170fw_otus_desc *otus_desc;
@@ -304,19 +269,11 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 	if (!SUPP(CARL9170FW_COMMAND_CAM)) {
 		dev_info(&ar->udev->dev, "crypto offloading is disabled "
 			 "by firmware.\n");
-<<<<<<< HEAD
-		ar->disable_offload = true;
-	}
-
-	if (SUPP(CARL9170FW_PSM) && SUPP(CARL9170FW_FIXED_5GHZ_PSM))
-		ar->hw->flags |= IEEE80211_HW_SUPPORTS_PS;
-=======
 		ar->fw.disable_offload_fw = true;
 	}
 
 	if (SUPP(CARL9170FW_PSM) && SUPP(CARL9170FW_FIXED_5GHZ_PSM))
 		ieee80211_hw_set(ar->hw, SUPPORTS_PS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!SUPP(CARL9170FW_USB_INIT_FIRMWARE)) {
 		dev_err(&ar->udev->dev, "firmware does not provide "
@@ -340,12 +297,7 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 	if (SUPP(CARL9170FW_RX_FILTER)) {
 		ar->fw.rx_filter = true;
 		ar->rx_filter_caps = FIF_FCSFAIL | FIF_PLCPFAIL |
-<<<<<<< HEAD
-			FIF_CONTROL | FIF_PSPOLL | FIF_OTHER_BSS |
-			FIF_PROMISC_IN_BSS;
-=======
 			FIF_CONTROL | FIF_PSPOLL | FIF_OTHER_BSS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (SUPP(CARL9170FW_HW_COUNTERS))
@@ -354,12 +306,9 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 	if (SUPP(CARL9170FW_WOL))
 		device_set_wakeup_enable(&ar->udev->dev, true);
 
-<<<<<<< HEAD
-=======
 	if (SUPP(CARL9170FW_RX_BA_FILTER))
 		ar->fw.ba_filter = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if_comb_types = BIT(NL80211_IFTYPE_STATION) |
 			BIT(NL80211_IFTYPE_P2P_CLIENT);
 
@@ -389,27 +338,6 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 		ar->hw->wiphy->interface_modes |= BIT(NL80211_IFTYPE_ADHOC);
 
 		if (SUPP(CARL9170FW_WLANTX_CAB)) {
-<<<<<<< HEAD
-			if_comb_types |=
-				BIT(NL80211_IFTYPE_AP) |
-				BIT(NL80211_IFTYPE_P2P_GO);
-		}
-	}
-
-	ar->if_comb_limits[0].max = ar->fw.vif_num;
-	ar->if_comb_limits[0].types = if_comb_types;
-
-	ar->if_combs[0].num_different_channels = 1;
-	ar->if_combs[0].max_interfaces = ar->fw.vif_num;
-	ar->if_combs[0].limits = ar->if_comb_limits;
-	ar->if_combs[0].n_limits = ARRAY_SIZE(ar->if_comb_limits);
-
-	ar->hw->wiphy->iface_combinations = ar->if_combs;
-	ar->hw->wiphy->n_iface_combinations = ARRAY_SIZE(ar->if_combs);
-
-	ar->hw->wiphy->interface_modes |= if_comb_types;
-
-=======
 			if_comb_types |= BIT(NL80211_IFTYPE_AP);
 
 #ifdef CONFIG_MAC80211_MESH
@@ -429,7 +357,6 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 	ar->hw->wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
 		 WIPHY_FLAG_IBSS_RSN | WIPHY_FLAG_SUPPORTS_TDLS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef SUPPORTED
 	return carl9170_fw_tx_sequence(ar);
 }

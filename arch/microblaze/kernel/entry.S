@@ -27,17 +27,11 @@
 
 #include <asm/page.h>
 #include <asm/unistd.h>
-<<<<<<< HEAD
-
-#include <linux/errno.h>
-#include <asm/signal.h>
-=======
 #include <asm/xilinx_mb_manager.h>
 
 #include <linux/errno.h>
 #include <asm/signal.h>
 #include <asm/mmu.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG
 
@@ -216,13 +210,7 @@ syscall_debug_table:
 	mfs	r11, rmsr;		/* save MSR */			\
 	swi	r11, r1, PT_MSR;
 
-<<<<<<< HEAD
-#define RESTORE_REGS \
-	lwi	r11, r1, PT_MSR;					\
-	mts	rmsr , r11;						\
-=======
 #define RESTORE_REGS_GP \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwi	r2, r1, PT_R2;	/* restore SDA */		\
 	lwi	r3, r1, PT_R3;					\
 	lwi	r4, r1, PT_R4;					\
@@ -254,8 +242,6 @@ syscall_debug_table:
 	lwi	r30, r1, PT_R30;					\
 	lwi	r31, r1, PT_R31;	/* Restore cur task reg */
 
-<<<<<<< HEAD
-=======
 #define RESTORE_REGS \
 	lwi	r11, r1, PT_MSR;					\
 	mts	rmsr , r11;						\
@@ -268,7 +254,6 @@ syscall_debug_table:
 	mts	rmsr , r11;						\
 	RESTORE_REGS_GP
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SAVE_STATE	\
 	swi	r1, r0, TOPHYS(PER_CPU(ENTRY_SP)); /* save stack */	\
 	/* See if already in kernel mode.*/				\
@@ -304,8 +289,6 @@ syscall_debug_table:
 
 .text
 
-<<<<<<< HEAD
-=======
 .extern cpuinfo
 
 C_ENTRY(mb_flush_dcache):
@@ -344,7 +327,6 @@ C_ENTRY(mb_invalidate_icache):
 	rtsd	r15, 8
 	nop
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User trap.
  *
@@ -361,27 +343,6 @@ C_ENTRY(_user_exception):
 	swi	r1, r0, TOPHYS(PER_CPU(ENTRY_SP)) /* save stack */
 	addi	r14, r14, 4	/* return address is 4 byte after call */
 
-<<<<<<< HEAD
-	mfs	r1, rmsr
-	nop
-	andi	r1, r1, MSR_UMS
-	bnei	r1, 1f
-
-/* Kernel-mode state save - kernel execve */
-	lwi	r1, r0, TOPHYS(PER_CPU(ENTRY_SP)); /* Reload kernel stack-ptr*/
-	tophys(r1,r1);
-
-	addik	r1, r1, -PT_SIZE; /* Make room on the stack. */
-	SAVE_REGS
-
-	swi	r1, r1, PT_MODE; /* pt_regs -> kernel mode */
-	brid	2f;
-	nop;				/* Fill delay slot */
-
-/* User-mode state save.  */
-1:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwi	r1, r0, TOPHYS(PER_CPU(CURRENT_SAVE)); /* get saved current */
 	tophys(r1,r1);
 	lwi	r1, r1, TS_THREAD_INFO;	/* get stack from task_struct */
@@ -437,22 +398,14 @@ C_ENTRY(_user_exception):
  * The LP register should point to the location where the called function
  * should return.  [note that MAKE_SYS_CALL uses label 1] */
 	/* See if the system call number is valid */
-<<<<<<< HEAD
-	addi	r11, r12, -__NR_syscalls;
-	bgei	r11,5f;
-=======
 	blti	r12, 5f
 	addi	r11, r12, -__NR_syscalls;
 	bgei	r11, 5f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Figure out which function to use for this system call.  */
 	/* Note Microblaze barrel shift is optional, so don't rely on it */
 	add	r12, r12, r12;			/* convert num -> ptr */
 	add	r12, r12, r12;
-<<<<<<< HEAD
-=======
 	addi	r30, r0, 1			/* restarts allowed */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG
 	/* Trac syscalls and stored them to syscall_debug_table */
@@ -473,11 +426,7 @@ C_ENTRY(_user_exception):
 
 	/* The syscall number is invalid, return an error.  */
 5:
-<<<<<<< HEAD
-	rtsd	r15, 8;		/* looks like a normal subroutine return */
-=======
 	braid	ret_from_trap
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r3, r0, -ENOSYS;
 
 /* Entry point used to return from a syscall/trap */
@@ -504,38 +453,12 @@ C_ENTRY(ret_from_trap):
 	 * trigger rescheduling. */
 	/* get thread info from current task */
 	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;
-<<<<<<< HEAD
-	lwi	r11, r11, TI_FLAGS;		/* get flags in thread info */
-	andi	r11, r11, _TIF_NEED_RESCHED;
-=======
 	lwi	r19, r11, TI_FLAGS;		/* get flags in thread info */
 	andi	r11, r19, _TIF_NEED_RESCHED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beqi	r11, 5f;
 
 	bralid	r15, schedule;	/* Call scheduler */
 	nop;				/* delay slot */
-<<<<<<< HEAD
-
-	/* Maybe handle a signal */
-5:	/* get thread info from current task*/
-	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;
-	lwi	r11, r11, TI_FLAGS;	/* get flags in thread info */
-	andi	r11, r11, _TIF_SIGPENDING;
-	beqi	r11, 1f;		/* Signals to handle, handle them */
-
-	addik	r5, r1, 0;		/* Arg 1: struct pt_regs *regs */
-	addi	r7, r0, 1;		/* Arg 3: int in_syscall */
-	bralid	r15, do_signal;	/* Handle any signals */
-	add	r6, r0, r0;		/* Arg 2: sigset_t *oldset */
-
-/* Finally, return to user state.  */
-1:	set_bip;			/*  Ints masked for state restore */
-	swi	CURRENT_TASK, r0, PER_CPU(CURRENT_SAVE); /* save current */
-	VM_OFF;
-	tophys(r1,r1);
-	RESTORE_REGS;
-=======
 	bri	1b
 
 	/* Maybe handle a signal */
@@ -555,7 +478,6 @@ C_ENTRY(ret_from_trap):
 	VM_OFF;
 	tophys(r1,r1);
 	RESTORE_REGS_RTBD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addik	r1, r1, PT_SIZE		/* Clean up stack space.  */
 	lwi	r1, r1, PT_R1 - PT_SIZE;/* Restore user stack pointer. */
 	bri	6f;
@@ -564,11 +486,7 @@ C_ENTRY(ret_from_trap):
 2:	set_bip;			/*  Ints masked for state restore */
 	VM_OFF;
 	tophys(r1,r1);
-<<<<<<< HEAD
-	RESTORE_REGS;
-=======
 	RESTORE_REGS_RTBD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addik	r1, r1, PT_SIZE		/* Clean up stack space.  */
 	tovirt(r1,r1);
 6:
@@ -577,59 +495,18 @@ TRAP_return:		/* Make global symbol for debugging */
 	nop;
 
 
-<<<<<<< HEAD
-/* These syscalls need access to the struct pt_regs on the stack, so we
-   implement them in assembly (they're basically all wrappers anyway).  */
-
-C_ENTRY(sys_fork_wrapper):
-	addi	r5, r0, SIGCHLD			/* Arg 0: flags */
-	lwi	r6, r1, PT_R1	/* Arg 1: child SP (use parent's) */
-	addik	r7, r1, 0			/* Arg 2: parent context */
-	add	r8, r0, r0			/* Arg 3: (unused) */
-	add	r9, r0, r0;			/* Arg 4: (unused) */
-	brid	do_fork		/* Do real work (tail-call) */
-	add	r10, r0, r0;			/* Arg 5: (unused) */
-
-/* This the initial entry point for a new child thread, with an appropriate
-   stack in place that makes it look the the child is in the middle of an
-=======
 /* This the initial entry point for a new child thread, with an appropriate
    stack in place that makes it look like the child is in the middle of a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    syscall.  This function is actually `returned to' from switch_thread
    (copy_thread makes ret_from_fork the return address in each new thread's
    saved context).  */
 C_ENTRY(ret_from_fork):
 	bralid	r15, schedule_tail; /* ...which is schedule_tail's arg */
-<<<<<<< HEAD
-	add	r3, r5, r0;	/* switch_thread returns the prev task */
-=======
 	add	r5, r3, r0;	/* switch_thread returns the prev task */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* ( in the delay slot ) */
 	brid	ret_from_trap;	/* Do normal trap return */
 	add	r3, r0, r0;	/* Child's fork call should return 0. */
 
-<<<<<<< HEAD
-C_ENTRY(sys_vfork):
-	brid	microblaze_vfork	/* Do real work (tail-call) */
-	addik	r5, r1, 0
-
-C_ENTRY(sys_clone):
-	bnei	r6, 1f;			/* See if child SP arg (arg 1) is 0. */
-	lwi	r6, r1, PT_R1;	/* If so, use paret's stack ptr */
-1:	addik	r7, r1, 0;			/* Arg 2: parent context */
-	add	r8, r0, r0;			/* Arg 3: (unused) */
-	add	r9, r0, r0;			/* Arg 4: (unused) */
-	brid	do_fork		/* Do real work (tail-call) */
-	add	r10, r0, r0;			/* Arg 5: (unused) */
-
-C_ENTRY(sys_execve):
-	brid	microblaze_execve;	/* Do real work (tail-call).*/
-	addik	r8, r1, 0;		/* add user context as 4th arg */
-
-C_ENTRY(sys_rt_sigreturn_wrapper):
-=======
 C_ENTRY(ret_from_kernel_thread):
 	bralid	r15, schedule_tail; /* ...which is schedule_tail's arg */
 	add	r5, r3, r0;	/* switch_thread returns the prev task */
@@ -641,7 +518,6 @@ C_ENTRY(ret_from_kernel_thread):
 
 C_ENTRY(sys_rt_sigreturn_wrapper):
 	addik	r30, r0, 0		/* no restarts */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brid	sys_rt_sigreturn	/* Do real work */
 	addik	r5, r1, 0;		/* add user context as 1st arg */
 
@@ -749,35 +625,20 @@ C_ENTRY(ret_from_exc):
 
 	/* We're returning to user mode, so check for various conditions that
 	   trigger rescheduling. */
-<<<<<<< HEAD
-	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
-	lwi	r11, r11, TI_FLAGS;	/* get flags in thread info */
-	andi	r11, r11, _TIF_NEED_RESCHED;
-=======
 1:
 	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
 	lwi	r19, r11, TI_FLAGS;	/* get flags in thread info */
 	andi	r11, r19, _TIF_NEED_RESCHED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beqi	r11, 5f;
 
 /* Call the scheduler before returning from a syscall/trap. */
 	bralid	r15, schedule;	/* Call scheduler */
 	nop;				/* delay slot */
-<<<<<<< HEAD
-
-	/* Maybe handle a signal */
-5:	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
-	lwi	r11, r11, TI_FLAGS;	/* get flags in thread info */
-	andi	r11, r11, _TIF_SIGPENDING;
-	beqi	r11, 1f;		/* Signals to handle, handle them */
-=======
 	bri	1b
 
 	/* Maybe handle a signal */
 5:	andi	r11, r19, _TIF_SIGPENDING | _TIF_NOTIFY_RESUME;
 	beqi	r11, 4f;		/* Signals to handle, handle them */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Handle a signal return; Pending signals should be in r18.
@@ -789,16 +650,6 @@ C_ENTRY(ret_from_exc):
 	 * traps), but signal handlers may want to examine or change the
 	 * complete register state.  Here we save anything not saved by
 	 * the normal entry sequence, so that it may be safely restored
-<<<<<<< HEAD
-	 * (in a possibly modified form) after do_signal returns. */
-	addik	r5, r1, 0;		/* Arg 1: struct pt_regs *regs */
-	addi	r7, r0, 0;		/* Arg 3: int in_syscall */
-	bralid	r15, do_signal;	/* Handle any signals */
-	add	r6, r0, r0;		/* Arg 2: sigset_t *oldset */
-
-/* Finally, return to user state.  */
-1:	set_bip;			/* Ints masked for state restore */
-=======
 	 * (in a possibly modified form) after do_notify_resume returns. */
 	addik	r5, r1, 0;		/* Arg 1: struct pt_regs *regs */
 	bralid	r15, do_notify_resume;	/* Handle any signals */
@@ -807,16 +658,11 @@ C_ENTRY(ret_from_exc):
 
 /* Finally, return to user state.  */
 4:	set_bip;			/* Ints masked for state restore */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	swi	CURRENT_TASK, r0, PER_CPU(CURRENT_SAVE); /* save current */
 	VM_OFF;
 	tophys(r1,r1);
 
-<<<<<<< HEAD
-	RESTORE_REGS;
-=======
 	RESTORE_REGS_RTBD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addik	r1, r1, PT_SIZE		/* Clean up stack space.  */
 
 	lwi	r1, r1, PT_R1 - PT_SIZE; /* Restore user stack pointer. */
@@ -825,11 +671,7 @@ C_ENTRY(ret_from_exc):
 2:	set_bip;			/* Ints masked for state restore */
 	VM_OFF;
 	tophys(r1,r1);
-<<<<<<< HEAD
-	RESTORE_REGS;
-=======
 	RESTORE_REGS_RTBD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addik	r1, r1, PT_SIZE		/* Clean up stack space.  */
 
 	tovirt(r1,r1);
@@ -895,25 +737,6 @@ ret_from_irq:
 	lwi	r11, r1, PT_MODE;
 	bnei	r11, 2f;
 
-<<<<<<< HEAD
-	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;
-	lwi	r11, r11, TI_FLAGS; /* MS: get flags from thread info */
-	andi	r11, r11, _TIF_NEED_RESCHED;
-	beqi	r11, 5f
-	bralid	r15, schedule;
-	nop; /* delay slot */
-
-    /* Maybe handle a signal */
-5:	lwi	r11, CURRENT_TASK, TS_THREAD_INFO; /* MS: get thread info */
-	lwi	r11, r11, TI_FLAGS; /* get flags in thread info */
-	andi	r11, r11, _TIF_SIGPENDING;
-	beqid	r11, no_intr_resched
-/* Handle a signal return; Pending signals should be in r18. */
-	addi	r7, r0, 0; /* Arg 3: int in_syscall */
-	addik	r5, r1, 0; /* Arg 1: struct pt_regs *regs */
-	bralid	r15, do_signal;	/* Handle any signals */
-	add	r6, r0, r0; /* Arg 2: sigset_t *oldset */
-=======
 1:
 	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;
 	lwi	r19, r11, TI_FLAGS; /* MS: get flags from thread info */
@@ -931,7 +754,6 @@ ret_from_irq:
 	bralid	r15, do_notify_resume;	/* Handle any signals */
 	addi	r6, r0, 0; /* Arg 2: int in_syscall */
 	bri	1b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Finally, return to user state. */
 no_intr_resched:
@@ -946,11 +768,7 @@ no_intr_resched:
 	bri	6f;
 /* MS: Return to kernel state. */
 2:
-<<<<<<< HEAD
-#ifdef CONFIG_PREEMPT
-=======
 #ifdef CONFIG_PREEMPTION
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;
 	/* MS: get preempt_count from thread info */
 	lwi	r5, r11, TI_PREEMPT_COUNT;
@@ -960,20 +778,9 @@ no_intr_resched:
 	andi	r5, r5, _TIF_NEED_RESCHED;
 	beqi	r5, restore /* if zero jump over */
 
-<<<<<<< HEAD
-preempt:
 	/* interrupts are off that's why I am calling preempt_chedule_irq */
 	bralid	r15, preempt_schedule_irq
 	nop
-	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
-	lwi	r5, r11, TI_FLAGS;		/* get flags in thread info */
-	andi	r5, r5, _TIF_NEED_RESCHED;
-	bnei	r5, preempt /* if non zero jump to resched */
-=======
-	/* interrupts are off that's why I am calling preempt_chedule_irq */
-	bralid	r15, preempt_schedule_irq
-	nop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 restore:
 #endif
 	VM_OFF /* MS: turn off MMU */
@@ -986,8 +793,6 @@ IRQ_return: /* MS: Make global symbol for debugging */
 	rtid	r14, 0
 	nop
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_MB_MANAGER
 
 #define	PT_PID		PT_SIZE
@@ -1142,7 +947,6 @@ ret_from_break:
 	nop
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Debug trap for KGDB. Enter to _debug_exception by brki r16, 0x18
  * and call handling function with saved pt_regs
@@ -1216,43 +1020,16 @@ dbtrap_call: /* Return point for kernel/user entry + 8 because of rtsd r15, 8 */
 	lwi	r11, r1, PT_MODE;
 	bnei	r11, 2f;
 /* MS: Return to user space - gdb */
-<<<<<<< HEAD
-	/* Get current task ptr into r11 */
-	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
-	lwi	r11, r11, TI_FLAGS;	/* get flags in thread info */
-	andi	r11, r11, _TIF_NEED_RESCHED;
-=======
 1:
 	/* Get current task ptr into r11 */
 	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
 	lwi	r19, r11, TI_FLAGS;	/* get flags in thread info */
 	andi	r11, r19, _TIF_NEED_RESCHED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beqi	r11, 5f;
 
 	/* Call the scheduler before returning from a syscall/trap. */
 	bralid	r15, schedule;	/* Call scheduler */
 	nop;				/* delay slot */
-<<<<<<< HEAD
-
-	/* Maybe handle a signal */
-5:	lwi	r11, CURRENT_TASK, TS_THREAD_INFO;	/* get thread info */
-	lwi	r11, r11, TI_FLAGS;	/* get flags in thread info */
-	andi	r11, r11, _TIF_SIGPENDING;
-	beqi	r11, 1f;		/* Signals to handle, handle them */
-
-	addik	r5, r1, 0;		/* Arg 1: struct pt_regs *regs */
-	addi  r7, r0, 0;	/* Arg 3: int in_syscall */
-	bralid	r15, do_signal;	/* Handle any signals */
-	add	r6, r0, r0;		/* Arg 2: sigset_t *oldset */
-
-/* Finally, return to user state.  */
-1:	swi	CURRENT_TASK, r0, PER_CPU(CURRENT_SAVE); /* save current */
-	VM_OFF;
-	tophys(r1,r1);
-	/* MS: Restore all regs */
-	RESTORE_REGS
-=======
 	bri	1b
 
 	/* Maybe handle a signal */
@@ -1270,7 +1047,6 @@ dbtrap_call: /* Return point for kernel/user entry + 8 because of rtsd r15, 8 */
 	tophys(r1,r1);
 	/* MS: Restore all regs */
 	RESTORE_REGS_RTBD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addik	r1, r1, PT_SIZE	 /* Clean up stack space */
 	lwi	r1, r1, PT_R1 - PT_SIZE; /* Restore user stack pointer */
 DBTRAP_return_user: /* MS: Make global symbol for debugging */
@@ -1281,11 +1057,7 @@ DBTRAP_return_user: /* MS: Make global symbol for debugging */
 2:	VM_OFF;
 	tophys(r1,r1);
 	/* MS: Restore all regs */
-<<<<<<< HEAD
-	RESTORE_REGS
-=======
 	RESTORE_REGS_RTBD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwi	r14, r1, PT_R14;
 	lwi	r16, r1, PT_PC;
 	addik	r1, r1, PT_SIZE; /* MS: Clean up stack space */
@@ -1379,9 +1151,6 @@ ENTRY(_switch_to)
 	rtsd	r15, 8
 	nop
 
-<<<<<<< HEAD
-ENTRY(_reset)
-=======
 #ifdef CONFIG_MB_MANAGER
 .global xmb_inject_err
 .section .text
@@ -1466,36 +1235,22 @@ xmb_manager_register:
 
 ENTRY(_reset)
 	VM_OFF
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brai	0; /* Jump to reset vector */
 
 	/* These are compiled and loaded into high memory, then
 	 * copied into place in mach_early_setup */
 	.section	.init.ivt, "ax"
-<<<<<<< HEAD
-#if CONFIG_MANUAL_RESET_VECTOR
-	.org	0x0
-	brai	CONFIG_MANUAL_RESET_VECTOR
-=======
 #if CONFIG_MANUAL_RESET_VECTOR && !defined(CONFIG_MB_MANAGER)
 	.org	0x0
 	brai	CONFIG_MANUAL_RESET_VECTOR
 #elif defined(CONFIG_MB_MANAGER)
 	.org	0x0
 	brai	TOPHYS(_xtmr_manager_reset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	.org	0x8
 	brai	TOPHYS(_user_exception); /* syscall handler */
 	.org	0x10
 	brai	TOPHYS(_interrupt);	/* Interrupt handler */
-<<<<<<< HEAD
-	.org	0x18
-	brai	TOPHYS(_debug_exception);	/* debug trap handler */
-	.org	0x20
-	brai	TOPHYS(_hw_exception_handler);	/* HW exception handler */
-
-=======
 #ifdef CONFIG_MB_MANAGER
 	.org	0x18
 	brai	TOPHYS(_xmb_manager_break);	/* microblaze manager break handler */
@@ -1522,7 +1277,6 @@ xmb_inject_error:
 	nop
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .section .rodata,"a"
 #include "syscall_table.S"
 

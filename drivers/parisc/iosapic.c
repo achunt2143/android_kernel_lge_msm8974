@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 ** I/O Sapic Driver - PCI interrupt line support
 **
 **      (c) Copyright 1999 Grant Grundler
 **      (c) Copyright 1999 Hewlett-Packard Company
 **
-<<<<<<< HEAD
-**      This program is free software; you can redistribute it and/or modify
-**      it under the terms of the GNU General Public License as published by
-**      the Free Software Foundation; either version 2 of the License, or
-**      (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 ** The I/O sapic driver manages the Interrupt Redirection Table which is
 ** the control logic to convert PCI line based interrupts into a Message
@@ -133,38 +123,16 @@
 **   o disable IRdT - call disable_irq(vector[line]->processor_irq)
 */
 
-<<<<<<< HEAD
-
-/* FIXME: determine which include files are really needed */
-#include <linux/types.h>
-#include <linux/kernel.h>
-#include <linux/spinlock.h>
-#include <linux/pci.h>
-#include <linux/init.h>
-#include <linux/slab.h>
-#include <linux/interrupt.h>
-
-#include <asm/byteorder.h>	/* get in-line asm for swab */
-#include <asm/pdc.h>
-#include <asm/pdcpat.h>
-#include <asm/page.h>
-#include <asm/io.h>		/* read/write functions */
-=======
 #include <linux/pci.h>
 
 #include <asm/pdc.h>
 #include <asm/pdcpat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SUPERIO
 #include <asm/superio.h>
 #endif
 
 #include <asm/ropes.h>
-<<<<<<< HEAD
-#include "./iosapic_private.h"
-=======
 #include "iosapic_private.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MODULE_NAME "iosapic"
 
@@ -234,15 +202,9 @@ static inline void iosapic_write(void __iomem *iosapic, unsigned int reg, u32 va
 
 static DEFINE_SPINLOCK(iosapic_lock);
 
-<<<<<<< HEAD
-static inline void iosapic_eoi(void __iomem *addr, unsigned int data)
-{
-	__raw_writel(data, addr);
-=======
 static inline void iosapic_eoi(__le32 __iomem *addr, __le32 data)
 {
 	__raw_writel((__force u32)data, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -259,20 +221,7 @@ static size_t irt_num_entry;
 
 static struct irt_entry *iosapic_alloc_irt(int num_entries)
 {
-<<<<<<< HEAD
-	unsigned long a;
-
-	/* The IRT needs to be 8-byte aligned for the PDC call. 
-	 * Normally kmalloc would guarantee larger alignment, but
-	 * if CONFIG_DEBUG_SLAB is enabled, then we can get only
-	 * 4-byte alignment on 32-bit kernels
-	 */
-	a = (unsigned long)kmalloc(sizeof(struct irt_entry) * num_entries + 8, GFP_KERNEL);
-	a = (a + 7UL) & ~7UL;
-	return (struct irt_entry *)a;
-=======
 	return kcalloc(num_entries, sizeof(struct irt_entry), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -399,20 +348,10 @@ iosapic_load_irt(unsigned long cell_num, struct irt_entry **irt)
 }
 
 
-<<<<<<< HEAD
-
-void __init iosapic_init(void)
-{
-	unsigned long cell = 0;
-
-	DBG("iosapic_init()\n");
-
-=======
 static int __init iosapic_init(void)
 {
 	unsigned long cell = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __LP64__
 	if (is_pdc_pat()) {
 		int status;
@@ -429,14 +368,10 @@ static int __init iosapic_init(void)
 	irt_num_entry = iosapic_load_irt(cell, &irt_cell);
 	if (irt_num_entry == 0)
 		irt_cell = NULL;	/* old PDC w/o iosapic */
-<<<<<<< HEAD
-}
-=======
 
 	return 0;
 }
 arch_initcall(iosapic_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -574,11 +509,7 @@ iosapic_xlate_pin(struct iosapic_info *isi, struct pci_dev *pcidev)
 		intr_slot = PCI_SLOT(pcidev->devfn);
 	}
 	DBG_IRT("iosapic_xlate_pin:  bus %d slot %d pin %d\n",
-<<<<<<< HEAD
-				pcidev->bus->secondary, intr_slot, intr_pin);
-=======
 			pcidev->bus->busn_res.start, intr_slot, intr_pin);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return irt_find_irqline(isi, intr_slot, intr_pin);
 }
@@ -737,11 +668,7 @@ static int iosapic_set_affinity_irq(struct irq_data *d,
 	if (dest_cpu < 0)
 		return -1;
 
-<<<<<<< HEAD
-	cpumask_copy(d->affinity, cpumask_of(dest_cpu));
-=======
 	irq_data_update_affinity(d, cpumask_of(dest_cpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vi->txn_addr = txn_affinity_addr(d->irq, dest_cpu);
 
 	spin_lock_irqsave(&iosapic_lock, flags);
@@ -861,8 +788,6 @@ int iosapic_fixup_irq(void *isi_obj, struct pci_dev *pcidev)
 	return pcidev->irq;
 }
 
-<<<<<<< HEAD
-=======
 static struct iosapic_info *iosapic_list;
 
 #ifdef CONFIG_64BIT
@@ -944,7 +869,6 @@ int iosapic_serial_irq(struct parisc_device *dev)
 EXPORT_SYMBOL(iosapic_serial_irq);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 ** squirrel away the I/O Sapic Version
@@ -966,11 +890,7 @@ iosapic_rd_version(struct iosapic_info *isi)
 **	o allocate and initialize isi_vector[]
 **	o allocate irq region
 */
-<<<<<<< HEAD
-void *iosapic_register(unsigned long hpa)
-=======
 void *iosapic_register(unsigned long hpa, void __iomem *vaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iosapic_info *isi = NULL;
 	struct irt_entry *irte = irt_cell;
@@ -999,11 +919,7 @@ void *iosapic_register(unsigned long hpa, void __iomem *vaddr)
 		return NULL;
 	}
 
-<<<<<<< HEAD
-	isi->addr = ioremap_nocache(hpa, 4096);
-=======
 	isi->addr = vaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isi->isi_hpa = hpa;
 	isi->isi_version = iosapic_rd_version(isi);
 	isi->isi_num_vectors = IOSAPIC_IRDT_MAX_ENTRY(isi->isi_version) + 1;
@@ -1019,11 +935,8 @@ void *iosapic_register(unsigned long hpa, void __iomem *vaddr)
 		vip->irqline = (unsigned char) cnt;
 		vip->iosapic = isi;
 	}
-<<<<<<< HEAD
-=======
 	isi->isi_next = iosapic_list;
 	iosapic_list = isi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return isi;
 }
 

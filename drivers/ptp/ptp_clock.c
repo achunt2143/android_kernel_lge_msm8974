@@ -1,31 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PTP 1588 clock support
  *
  * Copyright (C) 2010 OMICRON electronics GmbH
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-#include <linux/bitops.h>
-=======
- */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/init.h>
@@ -36,33 +14,17 @@
 #include <linux/slab.h>
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-=======
 #include <linux/debugfs.h>
 #include <linux/xarray.h>
 #include <uapi/linux/sched/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ptp_private.h"
 
 #define PTP_MAX_ALARMS 4
-<<<<<<< HEAD
-#define PTP_MAX_CLOCKS 8
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PTP_PPS_DEFAULTS (PPS_CAPTUREASSERT | PPS_OFFSETASSERT)
 #define PTP_PPS_EVENT PPS_CAPTUREASSERT
 #define PTP_PPS_MODE (PTP_PPS_DEFAULTS | PPS_CANWAIT | PPS_TSFMT_TSPEC)
 
-<<<<<<< HEAD
-/* private globals */
-
-static dev_t ptp_devt;
-static struct class *ptp_class;
-
-static DECLARE_BITMAP(ptp_clocks_map, PTP_MAX_CLOCKS);
-static DEFINE_MUTEX(ptp_clocks_mutex); /* protects 'ptp_clocks_map' */
-=======
 const struct class ptp_class = {
 	.name = "ptp",
 	.dev_groups = ptp_groups
@@ -73,7 +35,6 @@ const struct class ptp_class = {
 static dev_t ptp_devt;
 
 static DEFINE_XARRAY_ALLOC(ptp_clocks_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* time stamp event queue operations */
 
@@ -86,17 +47,11 @@ static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
 				       struct ptp_clock_event *src)
 {
 	struct ptp_extts_event *dst;
-<<<<<<< HEAD
-=======
 	struct timespec64 offset_ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	s64 seconds;
 	u32 remainder;
 
-<<<<<<< HEAD
-	seconds = div_u64_rem(src->timestamp, 1000000000, &remainder);
-=======
 	if (src->type == PTP_CLOCK_EXTTS) {
 		seconds = div_u64_rem(src->timestamp, 1000000000, &remainder);
 	} else if (src->type == PTP_CLOCK_EXTOFF) {
@@ -107,21 +62,11 @@ static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
 		WARN(1, "%s: unknown type %d\n", __func__, src->type);
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&queue->lock, flags);
 
 	dst = &queue->buf[queue->tail];
 	dst->index = src->index;
-<<<<<<< HEAD
-	dst->t.sec = seconds;
-	dst->t.nsec = remainder;
-
-	if (!queue_free(queue))
-		queue->head = (queue->head + 1) % PTP_MAX_TIMESTAMPS;
-
-	queue->tail = (queue->tail + 1) % PTP_MAX_TIMESTAMPS;
-=======
 	dst->flags = PTP_EXTTS_EVENT_VALID;
 	dst->t.sec = seconds;
 	dst->t.nsec = remainder;
@@ -133,61 +78,19 @@ static void enqueue_external_timestamp(struct timestamp_event_queue *queue,
 		WRITE_ONCE(queue->head, (queue->head + 1) % PTP_MAX_TIMESTAMPS);
 
 	WRITE_ONCE(queue->tail, (queue->tail + 1) % PTP_MAX_TIMESTAMPS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&queue->lock, flags);
 }
 
-<<<<<<< HEAD
-static s32 scaled_ppm_to_ppb(long ppm)
-{
-	/*
-	 * The 'freq' field in the 'struct timex' is in parts per
-	 * million, but with a 16 bit binary fractional field.
-	 *
-	 * We want to calculate
-	 *
-	 *    ppb = scaled_ppm * 1000 / 2^16
-	 *
-	 * which simplifies to
-	 *
-	 *    ppb = scaled_ppm * 125 / 2^13
-	 */
-	s64 ppb = 1 + ppm;
-	ppb *= 125;
-	ppb >>= 13;
-	return (s32) ppb;
-}
-
-/* posix clock implementation */
-
-static int ptp_clock_getres(struct posix_clock *pc, struct timespec *tp)
-=======
 /* posix clock implementation */
 
 static int ptp_clock_getres(struct posix_clock *pc, struct timespec64 *tp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	tp->tv_sec = 0;
 	tp->tv_nsec = 1;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ptp_clock_settime(struct posix_clock *pc, const struct timespec *tp)
-{
-	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
-	return ptp->info->settime(ptp->info, tp);
-}
-
-static int ptp_clock_gettime(struct posix_clock *pc, struct timespec *tp)
-{
-	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
-	return ptp->info->gettime(ptp->info, tp);
-}
-
-static int ptp_clock_adjtime(struct posix_clock *pc, struct timex *tx)
-=======
 static int ptp_clock_settime(struct posix_clock *pc, const struct timespec64 *tp)
 {
 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
@@ -213,18 +116,11 @@ static int ptp_clock_gettime(struct posix_clock *pc, struct timespec64 *tp)
 }
 
 static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
 	struct ptp_clock_info *ops;
 	int err = -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	ops = ptp->info;
-
-	if (tx->modes & ADJ_SETOFFSET) {
-		struct timespec ts;
-=======
 	if (ptp_clock_freerun(ptp)) {
 		pr_err("ptp: physical clock is free running\n");
 		return -EBUSY;
@@ -234,7 +130,6 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
 
 	if (tx->modes & ADJ_SETOFFSET) {
 		struct timespec64 ts;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ktime_t kt;
 		s64 delta;
 
@@ -247,15 +142,6 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
 		if ((unsigned long) ts.tv_nsec >= NSEC_PER_SEC)
 			return -EINVAL;
 
-<<<<<<< HEAD
-		kt = timespec_to_ktime(ts);
-		delta = ktime_to_ns(kt);
-		err = ops->adjtime(ops, delta);
-
-	} else if (tx->modes & ADJ_FREQUENCY) {
-
-		err = ops->adjfreq(ops, scaled_ppm_to_ppb(tx->freq));
-=======
 		kt = timespec64_to_ktime(ts);
 		delta = ktime_to_ns(kt);
 		err = ops->adjtime(ops, delta);
@@ -281,7 +167,6 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
 	} else if (tx->modes == 0) {
 		tx->freq = ptp->dialed_frequency;
 		err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -295,36 +180,11 @@ static struct posix_clock_operations ptp_clock_ops = {
 	.clock_settime	= ptp_clock_settime,
 	.ioctl		= ptp_ioctl,
 	.open		= ptp_open,
-<<<<<<< HEAD
-=======
 	.release	= ptp_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.poll		= ptp_poll,
 	.read		= ptp_read,
 };
 
-<<<<<<< HEAD
-static void delete_ptp_clock(struct posix_clock *pc)
-{
-	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
-
-	mutex_destroy(&ptp->tsevq_mux);
-
-	/* Remove the clock from the bit map. */
-	mutex_lock(&ptp_clocks_mutex);
-	clear_bit(ptp->index, ptp_clocks_map);
-	mutex_unlock(&ptp_clocks_mutex);
-
-	kfree(ptp);
-}
-
-/* public interface */
-
-struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info)
-{
-	struct ptp_clock *ptp;
-	int err = 0, index, major = MAJOR(ptp_devt);
-=======
 static void ptp_clock_release(struct device *dev)
 {
 	struct ptp_clock *ptp = container_of(dev, struct ptp_clock, dev);
@@ -379,48 +239,10 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	int err, index, major = MAJOR(ptp_devt);
 	char debugfsname[16];
 	size_t size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->n_alarm > PTP_MAX_ALARMS)
 		return ERR_PTR(-EINVAL);
 
-<<<<<<< HEAD
-	/* Find a free clock slot and reserve it. */
-	err = -EBUSY;
-	mutex_lock(&ptp_clocks_mutex);
-	index = find_first_zero_bit(ptp_clocks_map, PTP_MAX_CLOCKS);
-	if (index < PTP_MAX_CLOCKS)
-		set_bit(index, ptp_clocks_map);
-	else
-		goto no_slot;
-
-	/* Initialize a clock structure. */
-	err = -ENOMEM;
-	ptp = kzalloc(sizeof(struct ptp_clock), GFP_KERNEL);
-	if (ptp == NULL)
-		goto no_memory;
-
-	ptp->clock.ops = ptp_clock_ops;
-	ptp->clock.release = delete_ptp_clock;
-	ptp->info = info;
-	ptp->devid = MKDEV(major, index);
-	ptp->index = index;
-	spin_lock_init(&ptp->tsevq.lock);
-	mutex_init(&ptp->tsevq_mux);
-	init_waitqueue_head(&ptp->tsev_wq);
-
-	/* Create a new device in our class. */
-	ptp->dev = device_create(ptp_class, NULL, ptp->devid, ptp,
-				 "ptp%d", ptp->index);
-	if (IS_ERR(ptp->dev))
-		goto no_device;
-
-	dev_set_drvdata(ptp->dev, ptp);
-
-	err = ptp_populate_sysfs(ptp);
-	if (err)
-		goto no_sysfs;
-=======
 	/* Initialize a clock structure. */
 	ptp = kzalloc(sizeof(struct ptp_clock), GFP_KERNEL);
 	if (!ptp) {
@@ -500,7 +322,6 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 	err = ptp_populate_pin_groups(ptp);
 	if (err)
 		goto no_pin_groups;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register a new PPS source. */
 	if (info->pps) {
@@ -510,38 +331,6 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
 		pps.mode = PTP_PPS_MODE;
 		pps.owner = info->owner;
 		ptp->pps_source = pps_register_source(&pps, PTP_PPS_DEFAULTS);
-<<<<<<< HEAD
-		if (!ptp->pps_source) {
-			pr_err("failed to register pps source\n");
-			goto no_pps;
-		}
-	}
-
-	/* Create a posix clock. */
-	err = posix_clock_register(&ptp->clock, ptp->devid);
-	if (err) {
-		pr_err("failed to create posix clock\n");
-		goto no_clock;
-	}
-
-	mutex_unlock(&ptp_clocks_mutex);
-	return ptp;
-
-no_clock:
-	if (ptp->pps_source)
-		pps_unregister_source(ptp->pps_source);
-no_pps:
-	ptp_cleanup_sysfs(ptp);
-no_sysfs:
-	device_destroy(ptp_class, ptp->devid);
-no_device:
-	mutex_destroy(&ptp->tsevq_mux);
-	kfree(ptp);
-no_memory:
-	clear_bit(index, ptp_clocks_map);
-no_slot:
-	mutex_unlock(&ptp_clocks_mutex);
-=======
 		if (IS_ERR(ptp->pps_source)) {
 			err = PTR_ERR(ptp->pps_source);
 			pr_err("failed to register pps source\n");
@@ -600,25 +389,10 @@ no_memory_queue:
 no_slot:
 	kfree(ptp);
 no_memory:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(err);
 }
 EXPORT_SYMBOL(ptp_clock_register);
 
-<<<<<<< HEAD
-int ptp_clock_unregister(struct ptp_clock *ptp)
-{
-	ptp->defunct = 1;
-	wake_up_interruptible(&ptp->tsev_wq);
-
-	/* Release the clock's resources. */
-	if (ptp->pps_source)
-		pps_unregister_source(ptp->pps_source);
-	ptp_cleanup_sysfs(ptp);
-	device_destroy(ptp_class, ptp->devid);
-
-	posix_clock_unregister(&ptp->clock);
-=======
 static int unregister_vclock(struct device *dev, void *data)
 {
 	struct ptp_clock *ptp = dev_get_drvdata(dev);
@@ -647,20 +421,15 @@ int ptp_clock_unregister(struct ptp_clock *ptp)
 
 	posix_clock_unregister(&ptp->clock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(ptp_clock_unregister);
 
 void ptp_clock_event(struct ptp_clock *ptp, struct ptp_clock_event *event)
 {
-<<<<<<< HEAD
-	struct pps_event_time evt;
-=======
 	struct timestamp_event_queue *tsevq;
 	struct pps_event_time evt;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event->type) {
 
@@ -668,9 +437,6 @@ void ptp_clock_event(struct ptp_clock *ptp, struct ptp_clock_event *event)
 		break;
 
 	case PTP_CLOCK_EXTTS:
-<<<<<<< HEAD
-		enqueue_external_timestamp(&ptp->tsevq, event);
-=======
 	case PTP_CLOCK_EXTOFF:
 		/* Enqueue timestamp on selected queues */
 		spin_lock_irqsave(&ptp->tsevqs_lock, flags);
@@ -679,7 +445,6 @@ void ptp_clock_event(struct ptp_clock *ptp, struct ptp_clock_event *event)
 				enqueue_external_timestamp(tsevq, event);
 		}
 		spin_unlock_irqrestore(&ptp->tsevqs_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_interruptible(&ptp->tsev_wq);
 		break;
 
@@ -687,20 +452,15 @@ void ptp_clock_event(struct ptp_clock *ptp, struct ptp_clock_event *event)
 		pps_get_ts(&evt);
 		pps_event(ptp->pps_source, &evt, PTP_PPS_EVENT, NULL);
 		break;
-<<<<<<< HEAD
-=======
 
 	case PTP_CLOCK_PPSUSR:
 		pps_event(ptp->pps_source, &event->pps_times,
 			  PTP_PPS_EVENT, NULL);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL(ptp_clock_event);
 
-<<<<<<< HEAD
-=======
 int ptp_clock_index(struct ptp_clock *ptp)
 {
 	return ptp->index;
@@ -752,34 +512,19 @@ void ptp_cancel_worker_sync(struct ptp_clock *ptp)
 }
 EXPORT_SYMBOL(ptp_cancel_worker_sync);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* module operations */
 
 static void __exit ptp_exit(void)
 {
-<<<<<<< HEAD
-	class_destroy(ptp_class);
-	unregister_chrdev_region(ptp_devt, PTP_MAX_CLOCKS);
-=======
 	class_unregister(&ptp_class);
 	unregister_chrdev_region(ptp_devt, MINORMASK + 1);
 	xa_destroy(&ptp_clocks_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init ptp_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	ptp_class = class_create(THIS_MODULE, "ptp");
-	if (IS_ERR(ptp_class)) {
-		pr_err("ptp: failed to allocate class\n");
-		return PTR_ERR(ptp_class);
-	}
-
-	err = alloc_chrdev_region(&ptp_devt, 0, PTP_MAX_CLOCKS, "ptp");
-=======
 	err = class_register(&ptp_class);
 	if (err) {
 		pr_err("ptp: failed to allocate class\n");
@@ -787,25 +532,16 @@ static int __init ptp_init(void)
 	}
 
 	err = alloc_chrdev_region(&ptp_devt, 0, MINORMASK + 1, "ptp");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		pr_err("ptp: failed to allocate device region\n");
 		goto no_region;
 	}
 
-<<<<<<< HEAD
-	ptp_class->dev_attrs = ptp_dev_attrs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_info("PTP clock support registered\n");
 	return 0;
 
 no_region:
-<<<<<<< HEAD
-	class_destroy(ptp_class);
-=======
 	class_unregister(&ptp_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 

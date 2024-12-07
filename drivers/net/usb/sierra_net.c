@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB-to-WWAN Driver for Sierra Wireless modems
  *
@@ -13,23 +10,6 @@
  *
  * IMPORTANT DISCLAIMER: This driver is not commercially supported by
  * Sierra Wireless. Use at your own risk.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define DRIVER_VERSION "v.2.0"
@@ -75,30 +55,12 @@ static	atomic_t iface_counter = ATOMIC_INIT(0);
  */
 #define SIERRA_NET_USBCTL_BUF_LEN	1024
 
-<<<<<<< HEAD
-/* list of interface numbers - used for constructing interface lists */
-struct sierra_net_iface_info {
-	const u32 infolen;	/* number of interface numbers on list */
-	const u8  *ifaceinfo;	/* pointer to the array holding the numbers */
-};
-
-struct sierra_net_info_data {
-	u16 rx_urb_size;
-	struct sierra_net_iface_info whitelist;
-};
-=======
 /* Overriding the default usbnet rx_urb_size */
 #define SIERRA_NET_RX_URB_SIZE		(8 * 1024)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Private data structure */
 struct sierra_net_data {
 
-<<<<<<< HEAD
-	u8 ethr_hdr_tmpl[ETH_HLEN]; /* ethernet header template for rx'd pkts */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 link_up;		/* air link up or down */
 	u8 tx_hdr_template[4];	/* part of HIP hdr for tx'd packets */
 
@@ -146,10 +108,7 @@ struct param {
 
 /* LSI Protocol types */
 #define SIERRA_NET_PROTOCOL_UMTS      0x01
-<<<<<<< HEAD
-=======
 #define SIERRA_NET_PROTOCOL_UMTS_DS   0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* LSI Coverage */
 #define SIERRA_NET_COVERAGE_NONE      0x00
 #define SIERRA_NET_COVERAGE_NOPACKET  0x01
@@ -157,12 +116,8 @@ struct param {
 /* LSI Session */
 #define SIERRA_NET_SESSION_IDLE       0x00
 /* LSI Link types */
-<<<<<<< HEAD
-#define SIERRA_NET_AS_LINK_TYPE_IPv4  0x00
-=======
 #define SIERRA_NET_AS_LINK_TYPE_IPV4  0x00
 #define SIERRA_NET_AS_LINK_TYPE_IPV6  0x02
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct lsi_umts {
 	u8 protocol;
@@ -170,11 +125,6 @@ struct lsi_umts {
 	__be16 length;
 	/* eventually use a union for the rest - assume umts for now */
 	u8 coverage;
-<<<<<<< HEAD
-	u8 unused2[41];
-	u8 session_state;
-	u8 unused3[33];
-=======
 	u8 network_len; /* network name len */
 	u8 network[40]; /* network name (UCS2, bigendian) */
 	u8 session_state;
@@ -183,7 +133,6 @@ struct lsi_umts {
 
 struct lsi_umts_single {
 	struct lsi_umts lsi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 link_type;
 	u8 pdp_addr_len; /* NW-supplied PDP address len */
 	u8 pdp_addr[16]; /* NW-supplied PDP address (bigendian)) */
@@ -202,16 +151,6 @@ struct lsi_umts_single {
 	u8 reserved[8];
 } __packed;
 
-<<<<<<< HEAD
-#define SIERRA_NET_LSI_COMMON_LEN      4
-#define SIERRA_NET_LSI_UMTS_LEN        (sizeof(struct lsi_umts))
-#define SIERRA_NET_LSI_UMTS_STATUS_LEN \
-	(SIERRA_NET_LSI_UMTS_LEN - SIERRA_NET_LSI_COMMON_LEN)
-
-/* Forward definitions */
-static void sierra_sync_timer(unsigned long syncdata);
-static int sierra_net_change_mtu(struct net_device *net, int new_mtu);
-=======
 struct lsi_umts_dual {
 	struct lsi_umts lsi;
 	u8 pdp_addr4_len; /* NW-supplied PDP IPv4 address len */
@@ -237,7 +176,6 @@ struct lsi_umts_dual {
 #define SIERRA_NET_LSI_UMTS_DS_LEN     (sizeof(struct lsi_umts_dual))
 #define SIERRA_NET_LSI_UMTS_DS_STATUS_LEN \
 	(SIERRA_NET_LSI_UMTS_DS_LEN - SIERRA_NET_LSI_COMMON_LEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Our own net device operations structure */
 static const struct net_device_ops sierra_net_device_ops = {
@@ -245,12 +183,8 @@ static const struct net_device_ops sierra_net_device_ops = {
 	.ndo_stop               = usbnet_stop,
 	.ndo_start_xmit         = usbnet_start_xmit,
 	.ndo_tx_timeout         = usbnet_tx_timeout,
-<<<<<<< HEAD
-	.ndo_change_mtu         = sierra_net_change_mtu,
-=======
 	.ndo_change_mtu         = usbnet_change_mtu,
 	.ndo_get_stats64        = dev_get_tstats64,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address    = eth_mac_addr,
 	.ndo_validate_addr      = eth_validate_addr,
 };
@@ -268,18 +202,11 @@ static inline void sierra_net_set_private(struct usbnet *dev,
 	dev->data[0] = (unsigned long)priv;
 }
 
-<<<<<<< HEAD
-/* is packet IPv4 */
-static inline int is_ip(struct sk_buff *skb)
-{
-	return skb->protocol == cpu_to_be16(ETH_P_IP);
-=======
 /* is packet IPv4/IPv6 */
 static inline int is_ip(struct sk_buff *skb)
 {
 	return skb->protocol == cpu_to_be16(ETH_P_IP) ||
 	       skb->protocol == cpu_to_be16(ETH_P_IPV6);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -395,16 +322,9 @@ static int sierra_net_send_cmd(struct usbnet *dev,
 	struct sierra_net_data *priv = sierra_net_get_private(dev);
 	int  status;
 
-<<<<<<< HEAD
-	status = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
-			USB_CDC_SEND_ENCAPSULATED_COMMAND,
-			USB_DIR_OUT|USB_TYPE_CLASS|USB_RECIP_INTERFACE,	0,
-			priv->ifnum, cmd, cmdlen, USB_CTRL_SET_TIMEOUT);
-=======
 	status = usbnet_write_cmd(dev, USB_CDC_SEND_ENCAPSULATED_COMMAND,
 				  USB_DIR_OUT|USB_TYPE_CLASS|USB_RECIP_INTERFACE,
 				  0, priv->ifnum, cmd, cmdlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status != cmdlen && status != -ENODEV)
 		netdev_err(dev->net, "Submit %s failed %d\n", cmd_name, status);
@@ -430,60 +350,6 @@ static void sierra_net_set_ctx_index(struct sierra_net_data *priv, u8 ctx_ix)
 	dev_dbg(&(priv->usbnet->udev->dev), "%s %d", __func__, ctx_ix);
 	priv->tx_hdr_template[0] = 0x3F;
 	priv->tx_hdr_template[1] = ctx_ix;
-<<<<<<< HEAD
-	*((u16 *)&priv->tx_hdr_template[2]) =
-		cpu_to_be16(SIERRA_NET_HIP_EXT_IP_OUT_ID);
-}
-
-static inline int sierra_net_is_valid_addrlen(u8 len)
-{
-	return len == sizeof(struct in_addr);
-}
-
-static int sierra_net_parse_lsi(struct usbnet *dev, char *data, int datalen)
-{
-	struct lsi_umts *lsi = (struct lsi_umts *)data;
-
-	if (datalen < sizeof(struct lsi_umts)) {
-		netdev_err(dev->net, "%s: Data length %d, exp %Zu\n",
-				__func__, datalen,
-				sizeof(struct lsi_umts));
-		return -1;
-	}
-
-	if (lsi->length != cpu_to_be16(SIERRA_NET_LSI_UMTS_STATUS_LEN)) {
-		netdev_err(dev->net, "%s: LSI_UMTS_STATUS_LEN %d, exp %u\n",
-				__func__, be16_to_cpu(lsi->length),
-				(u32)SIERRA_NET_LSI_UMTS_STATUS_LEN);
-		return -1;
-	}
-
-	/* Validate the protocol  - only support UMTS for now */
-	if (lsi->protocol != SIERRA_NET_PROTOCOL_UMTS) {
-		netdev_err(dev->net, "Protocol unsupported, 0x%02x\n",
-			lsi->protocol);
-		return -1;
-	}
-
-	/* Validate the link type */
-	if (lsi->link_type != SIERRA_NET_AS_LINK_TYPE_IPv4) {
-		netdev_err(dev->net, "Link type unsupported: 0x%02x\n",
-			lsi->link_type);
-		return -1;
-	}
-
-	/* Validate the coverage */
-	if (lsi->coverage == SIERRA_NET_COVERAGE_NONE
-	   || lsi->coverage == SIERRA_NET_COVERAGE_NOPACKET) {
-		netdev_err(dev->net, "No coverage, 0x%02x\n", lsi->coverage);
-		return 0;
-	}
-
-	/* Validate the session state */
-	if (lsi->session_state == SIERRA_NET_SESSION_IDLE) {
-		netdev_err(dev->net, "Session idle, 0x%02x\n",
-			lsi->session_state);
-=======
 	*((__be16 *)&priv->tx_hdr_template[2]) =
 		cpu_to_be16(SIERRA_NET_HIP_EXT_IP_OUT_ID);
 }
@@ -536,7 +402,6 @@ static int sierra_net_parse_lsi(struct usbnet *dev, char *data, int datalen)
 	if (lsi->coverage == SIERRA_NET_COVERAGE_NONE ||
 	    lsi->coverage == SIERRA_NET_COVERAGE_NOPACKET) {
 		netdev_err(dev->net, "No coverage, 0x%02x\n", lsi->coverage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -559,18 +424,10 @@ static void sierra_net_handle_lsi(struct usbnet *dev, char *data,
 	if (link_up) {
 		sierra_net_set_ctx_index(priv, hh->msgspecific.byte);
 		priv->link_up = 1;
-<<<<<<< HEAD
-		netif_carrier_on(dev->net);
-	} else {
-		priv->link_up = 0;
-		netif_carrier_off(dev->net);
-	}
-=======
 	} else {
 		priv->link_up = 0;
 	}
 	usbnet_link_change(dev, link_up, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sierra_net_dosync(struct usbnet *dev)
@@ -580,8 +437,6 @@ static void sierra_net_dosync(struct usbnet *dev)
 
 	dev_dbg(&dev->udev->dev, "%s", __func__);
 
-<<<<<<< HEAD
-=======
 	/* The SIERRA_NET_HIP_MSYNC_ID command appears to request that the
 	 * firmware restart itself.  After restarting, the modem will respond
 	 * with the SIERRA_NET_HIP_RESTART_ID indication.  The driver continues
@@ -589,7 +444,6 @@ static void sierra_net_dosync(struct usbnet *dev)
 	 * RESTART event from the firmware
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* tell modem we are ready */
 	status = sierra_net_send_sync(dev);
 	if (status < 0)
@@ -601,11 +455,6 @@ static void sierra_net_dosync(struct usbnet *dev)
 			"Send SYNC failed, status %d\n", status);
 
 	/* Now, start a timer and make sure we get the Restart Indication */
-<<<<<<< HEAD
-	priv->sync_timer.function = sierra_sync_timer;
-	priv->sync_timer.data = (unsigned long) dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->sync_timer.expires = jiffies + SIERRA_NET_SYNCDELAY;
 	add_timer(&priv->sync_timer);
 }
@@ -625,17 +474,9 @@ static void sierra_net_kevent(struct work_struct *work)
 
 		/* Query the modem for the LSI message */
 		buf = kzalloc(SIERRA_NET_USBCTL_BUF_LEN, GFP_KERNEL);
-<<<<<<< HEAD
-		if (!buf) {
-			netdev_err(dev->net,
-				"failed to allocate buf for LS msg\n");
-			return;
-		}
-=======
 		if (!buf)
 			return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ifnum = priv->ifnum;
 		len = usb_control_msg(dev->udev, usb_rcvctrlpipe(dev->udev, 0),
 				USB_CDC_GET_ENCAPSULATED_RESPONSE,
@@ -730,16 +571,10 @@ static void sierra_net_defer_kevent(struct usbnet *dev, int work)
 /*
  * Sync Retransmit Timer Handler. On expiry, kick the work queue
  */
-<<<<<<< HEAD
-void sierra_sync_timer(unsigned long syncdata)
-{
-	struct usbnet *dev = (struct usbnet *)syncdata;
-=======
 static void sierra_sync_timer(struct timer_list *t)
 {
 	struct sierra_net_data *priv = from_timer(priv, t, sync_timer);
 	struct usbnet *dev = priv->usbnet;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&dev->udev->dev, "%s", __func__);
 	/* Kick the tasklet */
@@ -777,13 +612,8 @@ static void sierra_net_get_drvinfo(struct net_device *net,
 {
 	/* Inherit standard device info */
 	usbnet_get_drvinfo(net, info);
-<<<<<<< HEAD
-	strncpy(info->driver, driver_name, sizeof info->driver);
-	strncpy(info->version, DRIVER_VERSION, sizeof info->version);
-=======
 	strscpy(info->driver, driver_name, sizeof(info->driver));
 	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 sierra_net_get_link(struct net_device *net)
@@ -798,66 +628,6 @@ static const struct ethtool_ops sierra_net_ethtool_ops = {
 	.get_link = sierra_net_get_link,
 	.get_msglevel = usbnet_get_msglevel,
 	.set_msglevel = usbnet_set_msglevel,
-<<<<<<< HEAD
-	.get_settings = usbnet_get_settings,
-	.set_settings = usbnet_set_settings,
-	.nway_reset = usbnet_nway_reset,
-};
-
-/* MTU can not be more than 1500 bytes, enforce it. */
-static int sierra_net_change_mtu(struct net_device *net, int new_mtu)
-{
-	if (new_mtu > SIERRA_NET_MAX_SUPPORTED_MTU)
-		return -EINVAL;
-
-	return usbnet_change_mtu(net, new_mtu);
-}
-
-static int is_whitelisted(const u8 ifnum,
-			const struct sierra_net_iface_info *whitelist)
-{
-	if (whitelist) {
-		const u8 *list = whitelist->ifaceinfo;
-		int i;
-
-		for (i = 0; i < whitelist->infolen; i++) {
-			if (list[i] == ifnum)
-				return 1;
-		}
-	}
-	return 0;
-}
-
-static int sierra_net_get_fw_attr(struct usbnet *dev, u16 *datap)
-{
-	int result = 0;
-	u16 *attrdata;
-
-	attrdata = kmalloc(sizeof(*attrdata), GFP_KERNEL);
-	if (!attrdata)
-		return -ENOMEM;
-
-	result = usb_control_msg(
-			dev->udev,
-			usb_rcvctrlpipe(dev->udev, 0),
-			/* _u8 vendor specific request */
-			SWI_USB_REQUEST_GET_FW_ATTR,
-			USB_DIR_IN | USB_TYPE_VENDOR,	/* __u8 request type */
-			0x0000,		/* __u16 value not used */
-			0x0000,		/* __u16 index  not used */
-			attrdata,	/* char *data */
-			sizeof(*attrdata),		/* __u16 size */
-			USB_CTRL_SET_TIMEOUT);	/* int timeout */
-
-	if (result < 0) {
-		kfree(attrdata);
-		return -EIO;
-	}
-
-	*datap = le16_to_cpu(*attrdata);
-
-	kfree(attrdata);
-=======
 	.nway_reset = usbnet_nway_reset,
 	.get_link_ksettings = usbnet_get_link_ksettings_mii,
 	.set_link_ksettings = usbnet_set_link_ksettings_mii,
@@ -882,7 +652,6 @@ static int sierra_net_get_fw_attr(struct usbnet *dev, u16 *datap)
 		return -EIO;
 
 	*datap = le16_to_cpu(attrdata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -895,34 +664,16 @@ static int sierra_net_bind(struct usbnet *dev, struct usb_interface *intf)
 	u8	numendpoints;
 	u16	fwattr = 0;
 	int	status;
-<<<<<<< HEAD
-	struct ethhdr *eth;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sierra_net_data *priv;
 	static const u8 sync_tmplate[sizeof(priv->sync_msg)] = {
 		0x00, 0x00, SIERRA_NET_HIP_MSYNC_ID, 0x00};
 	static const u8 shdwn_tmplate[sizeof(priv->shdwn_msg)] = {
 		0x00, 0x00, SIERRA_NET_HIP_SHUTD_ID, 0x00};
-<<<<<<< HEAD
-
-	struct sierra_net_info_data *data =
-			(struct sierra_net_info_data *)dev->driver_info->data;
-=======
 	u8 mod[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&dev->udev->dev, "%s", __func__);
 
 	ifacenum = intf->cur_altsetting->desc.bInterfaceNumber;
-<<<<<<< HEAD
-	/* We only accept certain interfaces */
-	if (!is_whitelisted(ifacenum, &data->whitelist)) {
-		dev_dbg(&dev->udev->dev, "Ignoring interface: %d", ifacenum);
-		return -ENODEV;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	numendpoints = intf->cur_altsetting->desc.bNumEndpoints;
 	/* We have three endpoints, bulk in and out, and a status */
 	if (numendpoints != 3) {
@@ -940,49 +691,23 @@ static int sierra_net_bind(struct usbnet *dev, struct usb_interface *intf)
 	}
 	/* Initialize sierra private data */
 	priv = kzalloc(sizeof *priv, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!priv) {
-		dev_err(&dev->udev->dev, "No memory");
-		return -ENOMEM;
-	}
-=======
 	if (!priv)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->usbnet = dev;
 	priv->ifnum = ifacenum;
 	dev->net->netdev_ops = &sierra_net_device_ops;
 
 	/* change MAC addr to include, ifacenum, and to be unique */
-<<<<<<< HEAD
-	dev->net->dev_addr[ETH_ALEN-2] = atomic_inc_return(&iface_counter);
-	dev->net->dev_addr[ETH_ALEN-1] = ifacenum;
-
-	/* we will have to manufacture ethernet headers, prepare template */
-	eth = (struct ethhdr *)priv->ethr_hdr_tmpl;
-	memcpy(&eth->h_dest, dev->net->dev_addr, ETH_ALEN);
-	eth->h_proto = cpu_to_be16(ETH_P_IP);
-=======
 	mod[0] = atomic_inc_return(&iface_counter);
 	mod[1] = ifacenum;
 	dev_addr_mod(dev->net, ETH_ALEN - 2, mod, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* prepare shutdown message template */
 	memcpy(priv->shdwn_msg, shdwn_tmplate, sizeof(priv->shdwn_msg));
 	/* set context index initially to 0 - prepares tx hdr template */
 	sierra_net_set_ctx_index(priv, 0);
 
-<<<<<<< HEAD
-	/* decrease the rx_urb_size and max_tx_size to 4k on USB 1.1 */
-	dev->rx_urb_size  = data->rx_urb_size;
-	if (dev->udev->speed != USB_SPEED_HIGH)
-		dev->rx_urb_size  = min_t(size_t, 4096, data->rx_urb_size);
-
-	dev->net->hard_header_len += SIERRA_NET_HIP_EXT_HDR_LEN;
-	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
-=======
 	/* prepare sync message template */
 	memcpy(priv->sync_msg, sync_tmplate, sizeof(priv->sync_msg));
 
@@ -994,7 +719,6 @@ static int sierra_net_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->hard_header_len += SIERRA_NET_HIP_EXT_HDR_LEN;
 	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
 	dev->net->max_mtu = SIERRA_NET_MAX_SUPPORTED_MTU;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up the netdev */
 	dev->net->flags |= IFF_NOARP;
@@ -1009,11 +733,7 @@ static int sierra_net_bind(struct usbnet *dev, struct usb_interface *intf)
 	INIT_WORK(&priv->sierra_net_kevent, sierra_net_kevent);
 
 	/* Only need to do this once */
-<<<<<<< HEAD
-	init_timer(&priv->sync_timer);
-=======
 	timer_setup(&priv->sync_timer, sierra_sync_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* verify fw attributes */
 	status = sierra_net_get_fw_attr(dev, &fwattr);
@@ -1027,14 +747,6 @@ static int sierra_net_bind(struct usbnet *dev, struct usb_interface *intf)
 		kfree(priv);
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-	/* prepare sync message from template */
-	memcpy(priv->sync_msg, sync_tmplate, sizeof(priv->sync_msg));
-
-	/* initiate the sync sequence */
-	sierra_net_dosync(dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1047,11 +759,7 @@ static void sierra_net_unbind(struct usbnet *dev, struct usb_interface *intf)
 	dev_dbg(&dev->udev->dev, "%s", __func__);
 
 	/* kill the timer and work */
-<<<<<<< HEAD
-	del_timer_sync(&priv->sync_timer);
-=======
 	timer_shutdown_sync(&priv->sync_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cancel_work_sync(&priv->sierra_net_kevent);
 
 	/* tell modem we are going away */
@@ -1061,14 +769,9 @@ static void sierra_net_unbind(struct usbnet *dev, struct usb_interface *intf)
 		netdev_err(dev->net,
 			"usb_control_msg failed, status %d\n", status);
 
-<<<<<<< HEAD
-	sierra_net_set_private(dev, NULL);
-
-=======
 	usbnet_status_stop(dev);
 
 	sierra_net_set_private(dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv);
 }
 
@@ -1123,21 +826,12 @@ static int sierra_net_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 				netdev_err(dev->net, "HIP/ETH: Invalid pkt\n");
 
 			dev->net->stats.rx_frame_errors++;
-<<<<<<< HEAD
-			/* dev->net->stats.rx_errors incremented by caller */;
-=======
 			/* dev->net->stats.rx_errors incremented by caller */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
 		skb_pull(skb, hh.hdrlen);
 
-<<<<<<< HEAD
-		/* We are going to accept this packet, prepare it */
-		memcpy(skb->data, sierra_net_get_private(dev)->ethr_hdr_tmpl,
-			ETH_HLEN);
-=======
 		/* We are going to accept this packet, prepare it.
 		 * In case protocol is IPv6, keep it, otherwise force IPv4.
 		 */
@@ -1146,7 +840,6 @@ static int sierra_net_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			eth_hdr(skb)->h_proto = cpu_to_be16(ETH_P_IP);
 		eth_zero_addr(eth_hdr(skb)->h_source);
 		memcpy(eth_hdr(skb)->h_dest, dev->net->dev_addr, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Last packet in batch handled by usbnet */
 		if (hh.payload_len.word == skb->len)
@@ -1162,23 +855,14 @@ static int sierra_net_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 }
 
 /* ---------------------------- Transmit data path ----------------------*/
-<<<<<<< HEAD
-struct sk_buff *sierra_net_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
-		gfp_t flags)
-=======
 static struct sk_buff *sierra_net_tx_fixup(struct usbnet *dev,
 					   struct sk_buff *skb, gfp_t flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sierra_net_data *priv = sierra_net_get_private(dev);
 	u16 len;
 	bool need_tail;
 
-<<<<<<< HEAD
-	BUILD_BUG_ON(FIELD_SIZEOF(struct usbnet, data)
-=======
 	BUILD_BUG_ON(sizeof_field(struct usbnet, data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				< sizeof(struct cdc_state));
 
 	dev_dbg(&dev->udev->dev, "%s", __func__);
@@ -1223,18 +907,6 @@ static struct sk_buff *sierra_net_tx_fixup(struct usbnet *dev,
 	return NULL;
 }
 
-<<<<<<< HEAD
-static const u8 sierra_net_ifnum_list[] = { 7, 10, 11 };
-static const struct sierra_net_info_data sierra_net_info_data_direct_ip = {
-	.rx_urb_size = 8 * 1024,
-	.whitelist = {
-		.infolen = ARRAY_SIZE(sierra_net_ifnum_list),
-		.ifaceinfo = sierra_net_ifnum_list
-	}
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct driver_info sierra_net_info_direct_ip = {
 	.description = "Sierra Wireless USB-to-WWAN Modem",
 	.flags = FLAG_WWAN | FLAG_SEND_ZLP,
@@ -1243,20 +915,6 @@ static const struct driver_info sierra_net_info_direct_ip = {
 	.status = sierra_net_status,
 	.rx_fixup = sierra_net_rx_fixup,
 	.tx_fixup = sierra_net_tx_fixup,
-<<<<<<< HEAD
-	.data = (unsigned long)&sierra_net_info_data_direct_ip,
-};
-
-static const struct usb_device_id products[] = {
-	{USB_DEVICE(0x1199, 0x68A3), /* Sierra Wireless USB-to-WWAN modem */
-	.driver_info = (unsigned long) &sierra_net_info_direct_ip},
-	{USB_DEVICE(0x0F3D, 0x68A3), /* AT&T Direct IP modem */
-	.driver_info = (unsigned long) &sierra_net_info_direct_ip},
-	{USB_DEVICE(0x1199, 0x68AA), /* Sierra Wireless Direct IP LTE modem */
-	.driver_info = (unsigned long) &sierra_net_info_direct_ip},
-	{USB_DEVICE(0x0F3D, 0x68AA), /* AT&T Direct IP LTE modem */
-	.driver_info = (unsigned long) &sierra_net_info_direct_ip},
-=======
 };
 
 static int
@@ -1290,7 +948,6 @@ static const struct usb_device_id products[] = {
 	DIRECT_IP_DEVICE(0x0F3D, 0x68A3), /* AT&T Direct IP modem */
 	DIRECT_IP_DEVICE(0x1199, 0x68AA), /* Sierra Wireless Direct IP LTE modem */
 	DIRECT_IP_DEVICE(0x0F3D, 0x68AA), /* AT&T Direct IP LTE modem */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{}, /* last item */
 };
@@ -1300,19 +957,12 @@ MODULE_DEVICE_TABLE(usb, products);
 static struct usb_driver sierra_net_driver = {
 	.name = "sierra_net",
 	.id_table = products,
-<<<<<<< HEAD
-	.probe = usbnet_probe,
-=======
 	.probe = sierra_net_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.disconnect = usbnet_disconnect,
 	.suspend = usbnet_suspend,
 	.resume = usbnet_resume,
 	.no_dynamic_id = 1,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(sierra_net_driver);

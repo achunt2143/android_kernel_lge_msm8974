@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_IRQFLAGS_H
 #define _M68K_IRQFLAGS_H
 
 #include <linux/types.h>
-<<<<<<< HEAD
-#ifdef CONFIG_MMU
-#include <linux/hardirq.h>
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/preempt.h>
 #include <asm/thread_info.h>
 #include <asm/entry.h>
@@ -74,13 +65,10 @@ static inline void arch_local_irq_restore(unsigned long flags)
 
 static inline bool arch_irqs_disabled_flags(unsigned long flags)
 {
-<<<<<<< HEAD
-=======
 	if (MACH_IS_ATARI) {
 		/* Ignore HSYNC = ipl 2 on Atari */
 		return (flags & ~(ALLOWINT | 0x200)) != 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (flags & ~ALLOWINT) != 0;
 }
 

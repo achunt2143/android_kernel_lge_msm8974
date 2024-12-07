@@ -40,14 +40,6 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 {
 	int err;
 
-<<<<<<< HEAD
-	DE_INIT(("init_hw() - Layla20\n"));
-	if (snd_BUG_ON((subdevice_id & 0xfff0) != LAYLA20))
-		return -ENODEV;
-
-	if ((err = init_dsp_comm_page(chip))) {
-		DE_INIT(("init_hw - could not initialize DSP comm page\n"));
-=======
 	if (snd_BUG_ON((subdevice_id & 0xfff0) != LAYLA20))
 		return -ENODEV;
 
@@ -55,19 +47,13 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 	if (err) {
 		dev_err(chip->card->dev,
 			"init_hw - could not initialize DSP comm page\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	chip->device_id = device_id;
 	chip->subdevice_id = subdevice_id;
-<<<<<<< HEAD
-	chip->bad_board = TRUE;
-	chip->has_midi = TRUE;
-=======
 	chip->bad_board = true;
 	chip->has_midi = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->dsp_code_to_load = FW_LAYLA20_DSP;
 	chip->input_clock_types =
 		ECHO_CLOCK_BIT_INTERNAL | ECHO_CLOCK_BIT_SPDIF |
@@ -75,19 +61,11 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 	chip->output_clock_types =
 		ECHO_CLOCK_BIT_WORD | ECHO_CLOCK_BIT_SUPER;
 
-<<<<<<< HEAD
-	if ((err = load_firmware(chip)) < 0)
-		return err;
-	chip->bad_board = FALSE;
-
-	DE_INIT(("init_hw done\n"));
-=======
 	err = load_firmware(chip);
 	if (err < 0)
 		return err;
 	chip->bad_board = false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -95,11 +73,7 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 
 static int set_mixer_defaults(struct echoaudio *chip)
 {
-<<<<<<< HEAD
-	chip->professional_spdif = FALSE;
-=======
 	chip->professional_spdif = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return init_line_levels(chip);
 }
 
@@ -141,33 +115,21 @@ static int check_asic_status(struct echoaudio *chip)
 	u32 asic_status;
 	int goodcnt, i;
 
-<<<<<<< HEAD
-	chip->asic_loaded = FALSE;
-=======
 	chip->asic_loaded = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = goodcnt = 0; i < 5; i++) {
 		send_vector(chip, DSP_VC_TEST_ASIC);
 
 		/* The DSP will return a value to indicate whether or not
 		   the ASIC is currently loaded */
 		if (read_dsp(chip, &asic_status) < 0) {
-<<<<<<< HEAD
-			DE_ACT(("check_asic_status: failed on read_dsp\n"));
-=======
 			dev_err(chip->card->dev,
 				"check_asic_status: failed on read_dsp\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 
 		if (asic_status == ASIC_ALREADY_LOADED) {
 			if (++goodcnt == 3) {
-<<<<<<< HEAD
-				chip->asic_loaded = TRUE;
-=======
 				chip->asic_loaded = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 		}
@@ -204,13 +166,8 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 	/* Only set the clock for internal mode. Do not return failure,
 	   simply treat it as a non-event. */
 	if (chip->input_clock != ECHO_CLOCK_INTERNAL) {
-<<<<<<< HEAD
-		DE_ACT(("set_sample_rate: Cannot set sample rate - "
-			"clock not set to CLK_CLOCKININTERNAL\n"));
-=======
 		dev_warn(chip->card->dev,
 			 "Cannot set sample rate - clock not set to CLK_CLOCKININTERNAL\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->comm_page->sample_rate = cpu_to_le32(rate);
 		chip->sample_rate = rate;
 		return 0;
@@ -219,11 +176,7 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 	if (wait_handshake(chip))
 		return -EIO;
 
-<<<<<<< HEAD
-	DE_ACT(("set_sample_rate(%d)\n", rate));
-=======
 	dev_dbg(chip->card->dev, "set_sample_rate(%d)\n", rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->sample_rate = rate;
 	chip->comm_page->sample_rate = cpu_to_le32(rate);
 	clear_handshake(chip);
@@ -237,37 +190,13 @@ static int set_input_clock(struct echoaudio *chip, u16 clock_source)
 	u16 clock;
 	u32 rate;
 
-<<<<<<< HEAD
-	DE_ACT(("set_input_clock:\n"));
 	rate = 0;
 	switch (clock_source) {
 	case ECHO_CLOCK_INTERNAL:
-		DE_ACT(("Set Layla20 clock to INTERNAL\n"));
-=======
-	rate = 0;
-	switch (clock_source) {
-	case ECHO_CLOCK_INTERNAL:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rate = chip->sample_rate;
 		clock = LAYLA20_CLOCK_INTERNAL;
 		break;
 	case ECHO_CLOCK_SPDIF:
-<<<<<<< HEAD
-		DE_ACT(("Set Layla20 clock to SPDIF\n"));
-		clock = LAYLA20_CLOCK_SPDIF;
-		break;
-	case ECHO_CLOCK_WORD:
-		DE_ACT(("Set Layla20 clock to WORD\n"));
-		clock = LAYLA20_CLOCK_WORD;
-		break;
-	case ECHO_CLOCK_SUPER:
-		DE_ACT(("Set Layla20 clock to SUPER\n"));
-		clock = LAYLA20_CLOCK_SUPER;
-		break;
-	default:
-		DE_ACT(("Input clock 0x%x not supported for Layla24\n",
-			clock_source));
-=======
 		clock = LAYLA20_CLOCK_SPDIF;
 		break;
 	case ECHO_CLOCK_WORD:
@@ -280,7 +209,6 @@ static int set_input_clock(struct echoaudio *chip, u16 clock_source)
 		dev_err(chip->card->dev,
 			"Input clock 0x%x not supported for Layla24\n",
 			clock_source);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	chip->input_clock = clock_source;
@@ -299,10 +227,6 @@ static int set_input_clock(struct echoaudio *chip, u16 clock_source)
 
 static int set_output_clock(struct echoaudio *chip, u16 clock)
 {
-<<<<<<< HEAD
-	DE_ACT(("set_output_clock: %d\n", clock));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (clock) {
 	case ECHO_CLOCK_SUPER:
 		clock = LAYLA20_OUTPUT_CLOCK_SUPER;
@@ -311,11 +235,7 @@ static int set_output_clock(struct echoaudio *chip, u16 clock)
 		clock = LAYLA20_OUTPUT_CLOCK_WORD;
 		break;
 	default:
-<<<<<<< HEAD
-		DE_ACT(("set_output_clock wrong clock\n"));
-=======
 		dev_err(chip->card->dev, "set_output_clock wrong clock\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -360,10 +280,6 @@ static int update_flags(struct echoaudio *chip)
 
 static int set_professional_spdif(struct echoaudio *chip, char prof)
 {
-<<<<<<< HEAD
-	DE_ACT(("set_professional_spdif %d\n", prof));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prof)
 		chip->comm_page->flags |=
 			cpu_to_le32(DSP_FLAG_PROFESSIONAL_SPDIF);

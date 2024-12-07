@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/se/770x/setup.c
  *
@@ -12,10 +9,7 @@
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-=======
 #include <linux/sh_eth.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach-se/mach/se.h>
 #include <mach-se/mach/mrshpc.h>
 #include <asm/machvec.h>
@@ -122,15 +116,6 @@ static struct platform_device heartbeat_device = {
 #if defined(CONFIG_CPU_SUBTYPE_SH7710) ||\
 	defined(CONFIG_CPU_SUBTYPE_SH7712)
 /* SH771X Ethernet driver */
-<<<<<<< HEAD
-static struct resource sh_eth0_resources[] = {
-	[0] = {
-		.start = SH_ETH0_BASE,
-		.end = SH_ETH0_BASE + 0x1B8,
-		.flags = IORESOURCE_MEM,
-	},
-	[1] = {
-=======
 static struct sh_eth_plat_data sh_eth_plat = {
 	.phy = PHY_ID,
 	.phy_interface = PHY_INTERFACE_MODE_MII,
@@ -148,7 +133,6 @@ static struct resource sh_eth0_resources[] = {
 		.flags = IORESOURCE_MEM,
 	},
 	[2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.start = SH_ETH0_IRQ,
 		.end = SH_ETH0_IRQ,
 		.flags = IORESOURCE_IRQ,
@@ -156,17 +140,10 @@ static struct resource sh_eth0_resources[] = {
 };
 
 static struct platform_device sh_eth0_device = {
-<<<<<<< HEAD
-	.name = "sh-eth",
-	.id	= 0,
-	.dev = {
-		.platform_data = PHY_ID,
-=======
 	.name = "sh771x-ether",
 	.id = 0,
 	.dev = {
 		.platform_data = &sh_eth_plat,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.num_resources = ARRAY_SIZE(sh_eth0_resources),
 	.resource = sh_eth0_resources,
@@ -175,12 +152,6 @@ static struct platform_device sh_eth0_device = {
 static struct resource sh_eth1_resources[] = {
 	[0] = {
 		.start = SH_ETH1_BASE,
-<<<<<<< HEAD
-		.end = SH_ETH1_BASE + 0x1B8,
-		.flags = IORESOURCE_MEM,
-	},
-	[1] = {
-=======
 		.end = SH_ETH1_BASE + 0x1B8 - 1,
 		.flags = IORESOURCE_MEM,
 	},
@@ -190,7 +161,6 @@ static struct resource sh_eth1_resources[] = {
 		.flags = IORESOURCE_MEM,
 	},
 	[2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.start = SH_ETH1_IRQ,
 		.end = SH_ETH1_IRQ,
 		.flags = IORESOURCE_IRQ,
@@ -198,17 +168,10 @@ static struct resource sh_eth1_resources[] = {
 };
 
 static struct platform_device sh_eth1_device = {
-<<<<<<< HEAD
-	.name = "sh-eth",
-	.id	= 1,
-	.dev = {
-		.platform_data = PHY_ID,
-=======
 	.name = "sh771x-ether",
 	.id = 1,
 	.dev = {
 		.platform_data = &sh_eth_plat,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.num_resources = ARRAY_SIZE(sh_eth1_resources),
 	.resource = sh_eth1_resources,
@@ -238,19 +201,5 @@ device_initcall(se_devices_setup);
 static struct sh_machine_vector mv_se __initmv = {
 	.mv_name		= "SolutionEngine",
 	.mv_setup		= smsc_setup,
-<<<<<<< HEAD
-#if defined(CONFIG_CPU_SH4)
-	.mv_nr_irqs		= 48,
-#elif defined(CONFIG_CPU_SUBTYPE_SH7708)
-	.mv_nr_irqs		= 32,
-#elif defined(CONFIG_CPU_SUBTYPE_SH7709)
-	.mv_nr_irqs		= 61,
-#elif defined(CONFIG_CPU_SUBTYPE_SH7705)
-	.mv_nr_irqs		= 86,
-#elif defined(CONFIG_CPU_SUBTYPE_SH7710) || defined(CONFIG_CPU_SUBTYPE_SH7712)
-	.mv_nr_irqs             = 104,
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq		= init_se_IRQ,
 };

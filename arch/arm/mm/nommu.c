@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/nommu.c
  *
@@ -12,27 +9,15 @@
 #include <linux/pagemap.h>
 #include <linux/io.h>
 #include <linux/memblock.h>
-<<<<<<< HEAD
-
-#include <asm/cacheflush.h>
-=======
 #include <linux/kernel.h>
 
 #include <asm/cacheflush.h>
 #include <asm/cp15.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sections.h>
 #include <asm/page.h>
 #include <asm/setup.h>
 #include <asm/traps.h>
 #include <asm/mach/arch.h>
-<<<<<<< HEAD
-
-#include "mm.h"
-
-void __init arm_mm_memblock_reserve(void)
-{
-=======
 #include <asm/cputype.h>
 #include <asm/mpu.h>
 #include <asm/procinfo.h>
@@ -105,21 +90,11 @@ void __init arm_mm_memblock_reserve(void)
 {
 #ifndef CONFIG_CPU_V7M
 	vectors_base = IS_ENABLED(CONFIG_CPU_CP15) ? setup_vectors_base() : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Register the exception vector page.
 	 * some architectures which the DRAM is the exception vector to trap,
 	 * alloc_page breaks with error, although it is not NULL, but "0."
 	 */
-<<<<<<< HEAD
-	memblock_reserve(CONFIG_VECTORS_BASE, PAGE_SIZE);
-}
-
-void __init sanity_check_meminfo(void)
-{
-	phys_addr_t end = bank_phys_end(&meminfo.bank[meminfo.nr_banks - 1]);
-	high_memory = __va(end - 1) + 1;
-=======
 	memblock_reserve(vectors_base, 2 * PAGE_SIZE);
 #else /* ifndef CONFIG_CPU_V7M */
 	/*
@@ -173,19 +148,12 @@ void __init adjust_lowmem_bounds(void)
 	end = memblock_end_of_DRAM();
 	high_memory = __va(end - 1) + 1;
 	memblock_set_current_limit(end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * paging_init() sets up the page tables, initialises the zone memory
  * maps, and sets up the zero page, bad page and bad page tables.
  */
-<<<<<<< HEAD
-void __init paging_init(struct machine_desc *mdesc)
-{
-	early_trap_init((void *)CONFIG_VECTORS_BASE);
-	bootmem_init();
-=======
 void __init paging_init(const struct machine_desc *mdesc)
 {
 	void *zero_page;
@@ -203,7 +171,6 @@ void __init paging_init(const struct machine_desc *mdesc)
 
 	empty_zero_page = virt_to_page(zero_page);
 	flush_dcache_page(empty_zero_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -213,30 +180,18 @@ void setup_mm_for_reboot(void)
 {
 }
 
-<<<<<<< HEAD
-=======
 void flush_dcache_folio(struct folio *folio)
 {
 	__cpuc_flush_dcache_area(folio_address(folio), folio_size(folio));
 }
 EXPORT_SYMBOL(flush_dcache_folio);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void flush_dcache_page(struct page *page)
 {
 	__cpuc_flush_dcache_area(page_address(page), PAGE_SIZE);
 }
 EXPORT_SYMBOL(flush_dcache_page);
 
-<<<<<<< HEAD
-void flush_kernel_dcache_page(struct page *page)
-{
-	__cpuc_flush_dcache_area(page_address(page), PAGE_SIZE);
-}
-EXPORT_SYMBOL(flush_kernel_dcache_page);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void copy_to_user_page(struct vm_area_struct *vma, struct page *page,
 		       unsigned long uaddr, void *dst, const void *src,
 		       unsigned long len)
@@ -255,35 +210,6 @@ void __iomem *__arm_ioremap_pfn(unsigned long pfn, unsigned long offset,
 }
 EXPORT_SYMBOL(__arm_ioremap_pfn);
 
-<<<<<<< HEAD
-void __iomem *__arm_ioremap_pfn_caller(unsigned long pfn, unsigned long offset,
-			   size_t size, unsigned int mtype, void *caller)
-{
-	return __arm_ioremap_pfn(pfn, offset, size, mtype);
-}
-
-void __iomem *__arm_ioremap(unsigned long phys_addr, size_t size,
-			    unsigned int mtype)
-{
-	return (void __iomem *)phys_addr;
-}
-EXPORT_SYMBOL(__arm_ioremap);
-
-void __iomem * (*arch_ioremap_caller)(unsigned long, size_t, unsigned int, void *);
-
-void __iomem *__arm_ioremap_caller(unsigned long phys_addr, size_t size,
-				   unsigned int mtype, void *caller)
-{
-	return __arm_ioremap(phys_addr, size, mtype);
-}
-
-void (*arch_iounmap)(volatile void __iomem *);
-
-void __arm_iounmap(volatile void __iomem *addr)
-{
-}
-EXPORT_SYMBOL(__arm_iounmap);
-=======
 void __iomem *__arm_ioremap_caller(phys_addr_t phys_addr, size_t size,
 				   unsigned int mtype, void *caller)
 {
@@ -334,4 +260,3 @@ void iounmap(volatile void __iomem *io_addr)
 {
 }
 EXPORT_SYMBOL(iounmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

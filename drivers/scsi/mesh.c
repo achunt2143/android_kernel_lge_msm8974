@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SCSI low-level driver for the MESH (Macintosh Enhanced SCSI Hardware)
  * bus adaptor found on Power Macintosh computers.
@@ -33,28 +30,16 @@
 #include <linux/interrupt.h>
 #include <linux/reboot.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <asm/dbdma.h>
-#include <asm/io.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/pci.h>
 #include <linux/pgtable.h>
 #include <asm/dbdma.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/prom.h>
 #include <asm/irq.h>
 #include <asm/hydra.h>
 #include <asm/processor.h>
-<<<<<<< HEAD
-#include <asm/machdep.h>
-#include <asm/pmac_feature.h>
-#include <asm/pci-bridge.h>
-=======
 #include <asm/setup.h>
 #include <asm/pmac_feature.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/macio.h>
 
 #include <scsi/scsi.h>
@@ -69,11 +54,7 @@
 #define KERN_DEBUG KERN_WARNING
 #endif
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Paul Mackerras (paulus@samba.org)");
-=======
 MODULE_AUTHOR("Paul Mackerras <paulus@samba.org>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("PowerMac MESH SCSI driver");
 MODULE_LICENSE("GPL");
 
@@ -361,18 +342,6 @@ static inline void mesh_flush_io(volatile struct mesh_regs __iomem *mr)
 }
 
 
-<<<<<<< HEAD
-/*
- * Complete a SCSI command
- */
-static void mesh_completed(struct mesh_state *ms, struct scsi_cmnd *cmd)
-{
-	(*cmd->scsi_done)(cmd);
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Called with  meshinterrupt disabled, initialize the chipset
  * and eventually do the initial bus reset. The lock must not be
  * held since we can schedule.
@@ -617,18 +586,12 @@ static void mesh_done(struct mesh_state *ms, int start_next)
 	ms->current_req = NULL;
 	tp->current_req = NULL;
 	if (cmd) {
-<<<<<<< HEAD
-		cmd->result = (ms->stat << 16) + cmd->SCp.Status;
-		if (ms->stat == DID_OK)
-			cmd->result += (cmd->SCp.Message << 8);
-=======
 		struct mesh_cmd_priv *mcmd = mesh_priv(cmd);
 
 		set_host_byte(cmd, ms->stat);
 		set_status_byte(cmd, mcmd->status);
 		if (ms->stat == DID_OK)
 			scsi_msg_to_host_byte(cmd, mcmd->message);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (DEBUG_TARGET(cmd)) {
 			printk(KERN_DEBUG "mesh_done: result = %x, data_ptr=%d, buflen=%d\n",
 			       cmd->result, ms->data_ptr, scsi_bufflen(cmd));
@@ -642,13 +605,8 @@ static void mesh_done(struct mesh_state *ms, int start_next)
 			}
 #endif
 		}
-<<<<<<< HEAD
-		cmd->SCp.this_residual -= ms->data_ptr;
-		mesh_completed(ms, cmd);
-=======
 		mcmd->this_residual -= ms->data_ptr;
 		scsi_done(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (start_next) {
 		out_8(&ms->mesh->sequence, SEQ_ENBRESEL);
@@ -1029,15 +987,9 @@ static void handle_reset(struct mesh_state *ms)
 	for (tgt = 0; tgt < 8; ++tgt) {
 		tp = &ms->tgts[tgt];
 		if ((cmd = tp->current_req) != NULL) {
-<<<<<<< HEAD
-			cmd->result = DID_RESET << 16;
-			tp->current_req = NULL;
-			mesh_completed(ms, cmd);
-=======
 			set_host_byte(cmd, DID_RESET);
 			tp->current_req = NULL;
 			scsi_done(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ms->tgts[tgt].sdtr_state = do_sdtr;
 		ms->tgts[tgt].sync_params = ASYNC_PARAMS;
@@ -1045,13 +997,8 @@ static void handle_reset(struct mesh_state *ms)
 	ms->current_req = NULL;
 	while ((cmd = ms->request_q) != NULL) {
 		ms->request_q = (struct scsi_cmnd *) cmd->host_scribble;
-<<<<<<< HEAD
-		cmd->result = DID_RESET << 16;
-		mesh_completed(ms, cmd);
-=======
 		set_host_byte(cmd, DID_RESET);
 		scsi_done(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ms->phase = idle;
 	ms->msgphase = msg_none;
@@ -1092,11 +1039,8 @@ static void handle_error(struct mesh_state *ms)
 		while ((in_8(&mr->bus_status1) & BS1_RST) != 0)
 			udelay(1);
 		printk("done\n");
-<<<<<<< HEAD
-=======
 		if (ms->dma_started)
 			halt_dma(ms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handle_reset(ms);
 		/* request_q is empty, no point in mesh_start() */
 		return;
@@ -1229,11 +1173,7 @@ static void handle_msgin(struct mesh_state *ms)
 	if (ms->n_msgin < msgin_length(ms))
 		goto reject;
 	if (cmd)
-<<<<<<< HEAD
-		cmd->SCp.Message = code;
-=======
 		mesh_priv(cmd)->message = code;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (code) {
 	case COMMAND_COMPLETE:
 		break;
@@ -1287,11 +1227,7 @@ static void handle_msgin(struct mesh_state *ms)
 				ms->msgphase = msg_out;
 			} else if (code != cmd->device->lun + IDENTIFY_BASE) {
 				printk(KERN_WARNING "mesh: lun mismatch "
-<<<<<<< HEAD
-				       "(%d != %d) on reselection from "
-=======
 				       "(%d != %llu) on reselection from "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "target %d\n", code - IDENTIFY_BASE,
 				       cmd->device->lun, ms->conn_tgt);
 			}
@@ -1328,11 +1264,7 @@ static void set_dma_cmds(struct mesh_state *ms, struct scsi_cmnd *cmd)
 	if (cmd) {
 		int nseg;
 
-<<<<<<< HEAD
-		cmd->SCp.this_residual = scsi_bufflen(cmd);
-=======
 		mesh_priv(cmd)->this_residual = scsi_bufflen(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nseg = scsi_dma_map(cmd);
 		BUG_ON(nseg < 0);
@@ -1352,15 +1284,9 @@ static void set_dma_cmds(struct mesh_state *ms, struct scsi_cmnd *cmd)
 				}
 				if (dma_len > 0xffff)
 					panic("mesh: scatterlist element >= 64k");
-<<<<<<< HEAD
-				st_le16(&dcmds->req_count, dma_len - off);
-				st_le16(&dcmds->command, dma_cmd);
-				st_le32(&dcmds->phy_addr, dma_addr + off);
-=======
 				dcmds->req_count = cpu_to_le16(dma_len - off);
 				dcmds->command = cpu_to_le16(dma_cmd);
 				dcmds->phy_addr = cpu_to_le32(dma_addr + off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dcmds->xfer_status = 0;
 				++dcmds;
 				dtot += dma_len - off;
@@ -1374,26 +1300,15 @@ static void set_dma_cmds(struct mesh_state *ms, struct scsi_cmnd *cmd)
 		static char mesh_extra_buf[64];
 
 		dtot = sizeof(mesh_extra_buf);
-<<<<<<< HEAD
-		st_le16(&dcmds->req_count, dtot);
-		st_le32(&dcmds->phy_addr, virt_to_phys(mesh_extra_buf));
-=======
 		dcmds->req_count = cpu_to_le16(dtot);
 		dcmds->phy_addr = cpu_to_le32(virt_to_phys(mesh_extra_buf));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dcmds->xfer_status = 0;
 		++dcmds;
 	}
 	dma_cmd += OUTPUT_LAST - OUTPUT_MORE;
-<<<<<<< HEAD
-	st_le16(&dcmds[-1].command, dma_cmd);
-	memset(dcmds, 0, sizeof(*dcmds));
-	st_le16(&dcmds->command, DBDMA_STOP);
-=======
 	dcmds[-1].command = cpu_to_le16(dma_cmd);
 	memset(dcmds, 0, sizeof(*dcmds));
 	dcmds->command = cpu_to_le16(DBDMA_STOP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ms->dma_count = dtot;
 }
 
@@ -1438,12 +1353,8 @@ static void halt_dma(struct mesh_state *ms)
 		       ms->conn_tgt, ms->data_ptr, scsi_bufflen(cmd),
 		       ms->tgts[ms->conn_tgt].data_goes_out);
 	}
-<<<<<<< HEAD
-	scsi_dma_unmap(cmd);
-=======
 	if (cmd)
 		scsi_dma_unmap(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ms->dma_started = 0;
 }
 
@@ -1540,11 +1451,7 @@ static void cmd_complete(struct mesh_state *ms)
 		/* huh?  we expected a phase mismatch */
 		ms->n_msgin = 0;
 		ms->msgphase = msg_in;
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case msg_in:
 		/* should have some message bytes in fifo */
@@ -1687,19 +1594,12 @@ static void cmd_complete(struct mesh_state *ms)
 			break;
 		case statusing:
 			if (cmd) {
-<<<<<<< HEAD
-				cmd->SCp.Status = mr->fifo;
-				if (DEBUG_TARGET(cmd))
-					printk(KERN_DEBUG "mesh: status is %x\n",
-					       cmd->SCp.Status);
-=======
 				struct mesh_cmd_priv *mcmd = mesh_priv(cmd);
 
 				mcmd->status = mr->fifo;
 				if (DEBUG_TARGET(cmd))
 					printk(KERN_DEBUG "mesh: status is %x\n",
 					       mcmd->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			ms->msgphase = msg_in;
 			break;
@@ -1725,18 +1625,10 @@ static void cmd_complete(struct mesh_state *ms)
  * Called by midlayer with host locked to queue a new
  * request
  */
-<<<<<<< HEAD
-static int mesh_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
-{
-	struct mesh_state *ms;
-
-	cmd->scsi_done = done;
-=======
 static int mesh_queue_lck(struct scsi_cmnd *cmd)
 {
 	struct mesh_state *ms;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->host_scribble = NULL;
 
 	ms = (struct mesh_state *) cmd->device->host->hostdata;
@@ -1818,12 +1710,9 @@ static int mesh_host_reset(struct scsi_cmnd *cmd)
 
 	spin_lock_irqsave(ms->host->host_lock, flags);
 
-<<<<<<< HEAD
-=======
 	if (ms->dma_started)
 		halt_dma(ms);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset the controller & dbdma channel */
 	out_le32(&md->control, (RUN|PAUSE|FLUSH|WAKE) << 16);	/* stop dma */
 	out_8(&mr->exception, 0xff);	/* clear all exception bits */
@@ -1941,11 +1830,7 @@ static int mesh_shutdown(struct macio_dev *mdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template mesh_template = {
-=======
 static const struct scsi_host_template mesh_template = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.proc_name			= "mesh",
 	.name				= "MESH",
 	.queuecommand			= mesh_queue,
@@ -1955,12 +1840,8 @@ static const struct scsi_host_template mesh_template = {
 	.this_id			= 7,
 	.sg_tablesize			= SG_ALL,
 	.cmd_per_lun			= 2,
-<<<<<<< HEAD
-	.use_clustering			= DISABLE_CLUSTERING,
-=======
 	.max_segment_size		= 65535,
 	.cmd_size			= sizeof(struct mesh_cmd_priv),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mesh_probe(struct macio_dev *mdev, const struct of_device_id *match)
@@ -2001,14 +1882,6 @@ static int mesh_probe(struct macio_dev *mdev, const struct of_device_id *match)
 		goto out_release;
 	}
 	
-<<<<<<< HEAD
-	/* Old junk for root discovery, that will die ultimately */
-#if !defined(MODULE)
-       	note_scsi_host(mesh, mesh_host);
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mesh_host->base = macio_resource_start(mdev, 0);
 	mesh_host->irq = macio_irq(mdev, 0);
        	ms = (struct mesh_state *) mesh_host->hostdata;
@@ -2040,23 +1913,13 @@ static int mesh_probe(struct macio_dev *mdev, const struct of_device_id *match)
 	/* We use the PCI APIs for now until the generic one gets fixed
 	 * enough or until we get some macio-specific versions
 	 */
-<<<<<<< HEAD
-	dma_cmd_space = pci_alloc_consistent(macio_get_pci_dev(mdev),
-					     ms->dma_cmd_size,
-					     &dma_cmd_bus);
-=======
 	dma_cmd_space = dma_alloc_coherent(&macio_get_pci_dev(mdev)->dev,
 					   ms->dma_cmd_size, &dma_cmd_bus,
 					   GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma_cmd_space == NULL) {
 		printk(KERN_ERR "mesh: can't allocate DMA table\n");
 		goto out_unmap;
 	}
-<<<<<<< HEAD
-	memset(dma_cmd_space, 0, ms->dma_cmd_size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ms->dma_cmds = (struct dbdma_cmd *) DBDMA_ALIGN(dma_cmd_space);
        	ms->dma_cmd_space = dma_cmd_space;
@@ -2110,11 +1973,7 @@ static int mesh_probe(struct macio_dev *mdev, const struct of_device_id *match)
 	 */
 	mesh_shutdown(mdev);
 	set_mesh_power(ms, 0);
-<<<<<<< HEAD
-	pci_free_consistent(macio_get_pci_dev(mdev), ms->dma_cmd_size,
-=======
 	dma_free_coherent(&macio_get_pci_dev(mdev)->dev, ms->dma_cmd_size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    ms->dma_cmd_space, ms->dma_cmd_bus);
  out_unmap:
 	iounmap(ms->dma);
@@ -2127,11 +1986,7 @@ static int mesh_probe(struct macio_dev *mdev, const struct of_device_id *match)
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int mesh_remove(struct macio_dev *mdev)
-=======
 static void mesh_remove(struct macio_dev *mdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mesh_state *ms = (struct mesh_state *)macio_get_drvdata(mdev);
 	struct Scsi_Host *mesh_host = ms->host;
@@ -2151,27 +2006,15 @@ static void mesh_remove(struct macio_dev *mdev)
        	iounmap(ms->dma);
 
 	/* Free DMA commands memory */
-<<<<<<< HEAD
-	pci_free_consistent(macio_get_pci_dev(mdev), ms->dma_cmd_size,
-=======
 	dma_free_coherent(&macio_get_pci_dev(mdev)->dev, ms->dma_cmd_size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    ms->dma_cmd_space, ms->dma_cmd_bus);
 
 	/* Release memory resources */
 	macio_release_resources(mdev);
 
 	scsi_host_put(mesh_host);
-<<<<<<< HEAD
-
-	return 0;
 }
 
-
-=======
-}
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct of_device_id mesh_match[] = 
 {
 	{

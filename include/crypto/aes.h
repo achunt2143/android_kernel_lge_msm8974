@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common values for AES algorithms
  */
@@ -31,17 +28,6 @@ struct crypto_aes_ctx {
 	u32 key_length;
 };
 
-<<<<<<< HEAD
-extern const u32 crypto_ft_tab[4][256];
-extern const u32 crypto_fl_tab[4][256];
-extern const u32 crypto_it_tab[4][256];
-extern const u32 crypto_il_tab[4][256];
-
-int crypto_aes_set_key(struct crypto_tfm *tfm, const u8 *in_key,
-		unsigned int key_len);
-int crypto_aes_expand_key(struct crypto_aes_ctx *ctx, const u8 *in_key,
-		unsigned int key_len);
-=======
 extern const u32 crypto_ft_tab[4][256] ____cacheline_aligned;
 extern const u32 crypto_it_tab[4][256] ____cacheline_aligned;
 
@@ -101,5 +87,4 @@ void aes_decrypt(const struct crypto_aes_ctx *ctx, u8 *out, const u8 *in);
 extern const u8 crypto_aes_sbox[];
 extern const u8 crypto_aes_inv_sbox[];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

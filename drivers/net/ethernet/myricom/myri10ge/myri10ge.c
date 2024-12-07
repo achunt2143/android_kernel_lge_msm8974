@@ -50,10 +50,6 @@
 #include <linux/etherdevice.h>
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
-<<<<<<< HEAD
-#include <linux/inet_lro.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dca.h>
 #include <linux/ip.h>
 #include <linux/inet.h>
@@ -70,22 +66,11 @@
 #include <linux/slab.h>
 #include <linux/prefetch.h>
 #include <net/checksum.h>
-<<<<<<< HEAD
-#include <net/ip.h>
-#include <net/tcp.h>
-#include <asm/byteorder.h>
-#include <asm/io.h>
-#include <asm/processor.h>
-#ifdef CONFIG_MTRR
-#include <asm/mtrr.h>
-#endif
-=======
 #include <net/gso.h>
 #include <net/ip.h>
 #include <net/tcp.h>
 #include <asm/byteorder.h>
 #include <asm/processor.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "myri10ge_mcp.h"
 #include "myri10ge_mcp_gen_header.h"
@@ -107,11 +92,6 @@ MODULE_LICENSE("Dual BSD/GPL");
 
 #define MYRI10GE_EEPROM_STRINGS_SIZE 256
 #define MYRI10GE_MAX_SEND_DESC_TSO ((65536 / 2048) * 2)
-<<<<<<< HEAD
-#define MYRI10GE_MAX_LRO_DESCRIPTORS 8
-#define MYRI10GE_LRO_MAX_PKTS 64
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MYRI10GE_NO_CONFIRM_DATA htonl(0xffffffff)
 #define MYRI10GE_NO_RESPONSE_RESULT 0xffffffff
@@ -179,11 +159,6 @@ struct myri10ge_rx_done {
 	dma_addr_t bus;
 	int cnt;
 	int idx;
-<<<<<<< HEAD
-	struct net_lro_mgr lro_mgr;
-	struct net_lro_desc lro_desc[MYRI10GE_MAX_LRO_DESCRIPTORS];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct myri10ge_slice_netstats {
@@ -248,12 +223,7 @@ struct myri10ge_priv {
 	unsigned int rdma_tags_available;
 	int intr_coal_delay;
 	__be32 __iomem *intr_coal_delay_ptr;
-<<<<<<< HEAD
-	int mtrr;
-	int wc_enabled;
-=======
 	int wc_cookie;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int down_cnt;
 	wait_queue_head_t down_wq;
 	struct work_struct watchdog_work;
@@ -270,11 +240,7 @@ struct myri10ge_priv {
 	int fw_ver_minor;
 	int fw_ver_tiny;
 	int adopted_rx_filter_bug;
-<<<<<<< HEAD
-	u8 mac_addr[6];		/* eeprom mac address */
-=======
 	u8 mac_addr[ETH_ALEN];		/* eeprom mac address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long serial_number;
 	int vendor_specific_offset;
 	int fw_multicast_support;
@@ -298,15 +264,9 @@ MODULE_FIRMWARE("myri10ge_eth_z8e.dat");
 MODULE_FIRMWARE("myri10ge_rss_ethp_z8e.dat");
 MODULE_FIRMWARE("myri10ge_rss_eth_z8e.dat");
 
-<<<<<<< HEAD
-/* Careful: must be accessed under kparam_block_sysfs_write */
-static char *myri10ge_fw_name = NULL;
-module_param(myri10ge_fw_name, charp, S_IRUGO | S_IWUSR);
-=======
 /* Careful: must be accessed under kernel_param_lock() */
 static char *myri10ge_fw_name = NULL;
 module_param(myri10ge_fw_name, charp, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(myri10ge_fw_name, "Firmware image name");
 
 #define MYRI10GE_MAX_BOARDS 8
@@ -314,32 +274,6 @@ static char *myri10ge_fw_names[MYRI10GE_MAX_BOARDS] =
     {[0 ... (MYRI10GE_MAX_BOARDS - 1)] = NULL };
 module_param_array_named(myri10ge_fw_names, myri10ge_fw_names, charp, NULL,
 			 0444);
-<<<<<<< HEAD
-MODULE_PARM_DESC(myri10ge_fw_name, "Firmware image names per board");
-
-static int myri10ge_ecrc_enable = 1;
-module_param(myri10ge_ecrc_enable, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_ecrc_enable, "Enable Extended CRC on PCI-E");
-
-static int myri10ge_small_bytes = -1;	/* -1 == auto */
-module_param(myri10ge_small_bytes, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(myri10ge_small_bytes, "Threshold of small packets");
-
-static int myri10ge_msi = 1;	/* enable msi by default */
-module_param(myri10ge_msi, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(myri10ge_msi, "Enable Message Signalled Interrupts");
-
-static int myri10ge_intr_coal_delay = 75;
-module_param(myri10ge_intr_coal_delay, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_intr_coal_delay, "Interrupt coalescing delay");
-
-static int myri10ge_flow_control = 1;
-module_param(myri10ge_flow_control, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_flow_control, "Pause parameter");
-
-static int myri10ge_deassert_wait = 1;
-module_param(myri10ge_deassert_wait, int, S_IRUGO | S_IWUSR);
-=======
 MODULE_PARM_DESC(myri10ge_fw_names, "Firmware image names per board");
 
 static int myri10ge_ecrc_enable = 1;
@@ -364,35 +298,15 @@ MODULE_PARM_DESC(myri10ge_flow_control, "Pause parameter");
 
 static int myri10ge_deassert_wait = 1;
 module_param(myri10ge_deassert_wait, int, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(myri10ge_deassert_wait,
 		 "Wait when deasserting legacy interrupts");
 
 static int myri10ge_force_firmware = 0;
-<<<<<<< HEAD
-module_param(myri10ge_force_firmware, int, S_IRUGO);
-=======
 module_param(myri10ge_force_firmware, int, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(myri10ge_force_firmware,
 		 "Force firmware to assume aligned completions");
 
 static int myri10ge_initial_mtu = MYRI10GE_MAX_ETHER_MTU - ETH_HLEN;
-<<<<<<< HEAD
-module_param(myri10ge_initial_mtu, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_initial_mtu, "Initial MTU");
-
-static int myri10ge_napi_weight = 64;
-module_param(myri10ge_napi_weight, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_napi_weight, "Set NAPI weight");
-
-static int myri10ge_watchdog_timeout = 1;
-module_param(myri10ge_watchdog_timeout, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_watchdog_timeout, "Set watchdog timeout");
-
-static int myri10ge_max_irq_loops = 1048576;
-module_param(myri10ge_max_irq_loops, int, S_IRUGO);
-=======
 module_param(myri10ge_initial_mtu, int, 0444);
 MODULE_PARM_DESC(myri10ge_initial_mtu, "Initial MTU");
 
@@ -406,7 +320,6 @@ MODULE_PARM_DESC(myri10ge_watchdog_timeout, "Set watchdog timeout");
 
 static int myri10ge_max_irq_loops = 1048576;
 module_param(myri10ge_max_irq_loops, int, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(myri10ge_max_irq_loops,
 		 "Set stuck legacy IRQ detection threshold");
 
@@ -416,34 +329,13 @@ static int myri10ge_debug = -1;	/* defaults above */
 module_param(myri10ge_debug, int, 0);
 MODULE_PARM_DESC(myri10ge_debug, "Debug level (0=none,...,16=all)");
 
-<<<<<<< HEAD
-static int myri10ge_lro_max_pkts = MYRI10GE_LRO_MAX_PKTS;
-module_param(myri10ge_lro_max_pkts, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_lro_max_pkts,
-		 "Number of LRO packets to be aggregated");
-
-static int myri10ge_fill_thresh = 256;
-module_param(myri10ge_fill_thresh, int, S_IRUGO | S_IWUSR);
-=======
 static int myri10ge_fill_thresh = 256;
 module_param(myri10ge_fill_thresh, int, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(myri10ge_fill_thresh, "Number of empty rx slots allowed");
 
 static int myri10ge_reset_recover = 1;
 
 static int myri10ge_max_slices = 1;
-<<<<<<< HEAD
-module_param(myri10ge_max_slices, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_max_slices, "Max tx/rx queues");
-
-static int myri10ge_rss_hash = MXGEFW_RSS_HASH_TYPE_SRC_DST_PORT;
-module_param(myri10ge_rss_hash, int, S_IRUGO);
-MODULE_PARM_DESC(myri10ge_rss_hash, "Type of RSS hashing to do");
-
-static int myri10ge_dca = 1;
-module_param(myri10ge_dca, int, S_IRUGO);
-=======
 module_param(myri10ge_max_slices, int, 0444);
 MODULE_PARM_DESC(myri10ge_max_slices, "Max tx/rx queues");
 
@@ -453,7 +345,6 @@ MODULE_PARM_DESC(myri10ge_rss_hash, "Type of RSS hashing to do");
 
 static int myri10ge_dca = 1;
 module_param(myri10ge_dca, int, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(myri10ge_dca, "Enable DCA if possible");
 
 #define MYRI10GE_FW_OFFSET 1024*1024
@@ -472,13 +363,8 @@ static inline void put_be32(__be32 val, __be32 __iomem * p)
 	__raw_writel((__force __u32) val, (__force void __iomem *)p);
 }
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *myri10ge_get_stats(struct net_device *dev,
-						    struct rtnl_link_stats64 *stats);
-=======
 static void myri10ge_get_stats(struct net_device *dev,
 			       struct rtnl_link_stats64 *stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void set_fw_name(struct myri10ge_priv *mgp, char *name, bool allocated)
 {
@@ -667,11 +553,7 @@ myri10ge_validate_firmware(struct myri10ge_priv *mgp,
 	}
 
 	/* save firmware version for ethtool */
-<<<<<<< HEAD
-	strncpy(mgp->fw_version, hdr->version, sizeof(mgp->fw_version));
-=======
 	strscpy(mgp->fw_version, hdr->version, sizeof(mgp->fw_version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sscanf(mgp->fw_version, "%d.%d.%d", &mgp->fw_ver_major,
 	       &mgp->fw_ver_minor, &mgp->fw_ver_tiny);
@@ -697,11 +579,7 @@ static int myri10ge_load_hotplug_firmware(struct myri10ge_priv *mgp, u32 * size)
 	int status;
 	unsigned i;
 
-<<<<<<< HEAD
-	if ((status = request_firmware(&fw, mgp->fw_name, dev)) < 0) {
-=======
 	if (request_firmware(&fw, mgp->fw_name, dev) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(dev, "Unable to load %s firmware image via hotplug\n",
 			mgp->fw_name);
 		status = -EINVAL;
@@ -782,16 +660,9 @@ static int myri10ge_adopt_running_firmware(struct myri10ge_priv *mgp)
 	/* copy header of running firmware from SRAM to host memory to
 	 * validate firmware */
 	hdr = kmalloc(bytes, GFP_KERNEL);
-<<<<<<< HEAD
-	if (hdr == NULL) {
-		dev_err(dev, "could not malloc firmware hdr\n");
-		return -ENOMEM;
-	}
-=======
 	if (hdr == NULL)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy_fromio(hdr, mgp->sram + hdr_offset, bytes);
 	status = myri10ge_validate_firmware(mgp, hdr);
 	kfree(hdr);
@@ -925,12 +796,8 @@ static int myri10ge_load_firmware(struct myri10ge_priv *mgp, int adopt)
 	return status;
 }
 
-<<<<<<< HEAD
-static int myri10ge_update_mac_address(struct myri10ge_priv *mgp, u8 * addr)
-=======
 static int myri10ge_update_mac_address(struct myri10ge_priv *mgp,
 				       const u8 * addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct myri10ge_cmd cmd;
 	int status;
@@ -984,17 +851,12 @@ static int myri10ge_dma_test(struct myri10ge_priv *mgp, int test_type)
 	dmatest_page = alloc_page(GFP_KERNEL);
 	if (!dmatest_page)
 		return -ENOMEM;
-<<<<<<< HEAD
-	dmatest_bus = pci_map_page(mgp->pdev, dmatest_page, 0, PAGE_SIZE,
-				   DMA_BIDIRECTIONAL);
-=======
 	dmatest_bus = dma_map_page(&mgp->pdev->dev, dmatest_page, 0,
 				   PAGE_SIZE, DMA_BIDIRECTIONAL);
 	if (unlikely(dma_mapping_error(&mgp->pdev->dev, dmatest_bus))) {
 		__free_page(dmatest_page);
 		return -ENOMEM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Run a small DMA test.
 	 * The magic multipliers to the length tell the firmware
@@ -1038,12 +900,8 @@ static int myri10ge_dma_test(struct myri10ge_priv *mgp, int test_type)
 	    (cmd.data0 & 0xffff);
 
 abort:
-<<<<<<< HEAD
-	pci_unmap_page(mgp->pdev, dmatest_bus, PAGE_SIZE, DMA_BIDIRECTIONAL);
-=======
 	dma_unmap_page(&mgp->pdev->dev, dmatest_bus, PAGE_SIZE,
 		       DMA_BIDIRECTIONAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_page(dmatest_page);
 
 	if (status != 0 && test_type != MXGEFW_CMD_UNALIGNED_TEST)
@@ -1211,33 +1069,16 @@ static int myri10ge_reset(struct myri10ge_priv *mgp)
 #ifdef CONFIG_MYRI10GE_DCA
 static int myri10ge_toggle_relaxed(struct pci_dev *pdev, int on)
 {
-<<<<<<< HEAD
-	int ret, cap, err;
-	u16 ctl;
-
-	cap = pci_pcie_cap(pdev);
-	if (!cap)
-		return 0;
-
-	err = pci_read_config_word(pdev, cap + PCI_EXP_DEVCTL, &ctl);
-	if (err)
-		return 0;
-=======
 	int ret;
 	u16 ctl;
 
 	pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = (ctl & PCI_EXP_DEVCTL_RELAX_EN) >> 4;
 	if (ret != on) {
 		ctl &= ~PCI_EXP_DEVCTL_RELAX_EN;
 		ctl |= (on << 4);
-<<<<<<< HEAD
-		pci_write_config_word(pdev, cap + PCI_EXP_DEVCTL, ctl);
-=======
 		pcie_capability_write_word(pdev, PCI_EXP_DEVCTL, ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -1335,60 +1176,12 @@ myri10ge_submit_8rx(struct mcp_kreq_ether_recv __iomem * dst,
 	mb();
 }
 
-<<<<<<< HEAD
-static inline void myri10ge_vlan_ip_csum(struct sk_buff *skb, __wsum hw_csum)
-{
-	struct vlan_hdr *vh = (struct vlan_hdr *)(skb->data);
-
-	if ((skb->protocol == htons(ETH_P_8021Q)) &&
-	    (vh->h_vlan_encapsulated_proto == htons(ETH_P_IP) ||
-	     vh->h_vlan_encapsulated_proto == htons(ETH_P_IPV6))) {
-		skb->csum = hw_csum;
-		skb->ip_summed = CHECKSUM_COMPLETE;
-	}
-}
-
-static inline void
-myri10ge_rx_skb_build(struct sk_buff *skb, u8 * va,
-		      struct skb_frag_struct *rx_frags, int len, int hlen)
-{
-	struct skb_frag_struct *skb_frags;
-
-	skb->len = skb->data_len = len;
-	/* attach the page(s) */
-
-	skb_frags = skb_shinfo(skb)->frags;
-	while (len > 0) {
-		memcpy(skb_frags, rx_frags, sizeof(*skb_frags));
-		len -= skb_frag_size(rx_frags);
-		skb_frags++;
-		rx_frags++;
-		skb_shinfo(skb)->nr_frags++;
-	}
-
-	/* pskb_may_pull is not available in irq context, but
-	 * skb_pull() (for ether_pad and eth_type_trans()) requires
-	 * the beginning of the packet in skb_headlen(), move it
-	 * manually */
-	skb_copy_to_linear_data(skb, va, hlen);
-	skb_shinfo(skb)->frags[0].page_offset += hlen;
-	skb_frag_size_sub(&skb_shinfo(skb)->frags[0], hlen);
-	skb->data_len -= hlen;
-	skb->tail += hlen;
-	skb_pull(skb, MXGEFW_PAD);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 myri10ge_alloc_rx_pages(struct myri10ge_priv *mgp, struct myri10ge_rx_buf *rx,
 			int bytes, int watchdog)
 {
 	struct page *page;
-<<<<<<< HEAD
-=======
 	dma_addr_t bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int idx;
 #if MYRI10GE_ALLOC_SIZE > 4096
 	int end_offset;
@@ -1413,13 +1206,6 @@ myri10ge_alloc_rx_pages(struct myri10ge_priv *mgp, struct myri10ge_rx_buf *rx,
 					rx->watchdog_needed = 1;
 				return;
 			}
-<<<<<<< HEAD
-			rx->page = page;
-			rx->page_offset = 0;
-			rx->bus = pci_map_page(mgp->pdev, page, 0,
-					       MYRI10GE_ALLOC_SIZE,
-					       PCI_DMA_FROMDEVICE);
-=======
 
 			bus = dma_map_page(&mgp->pdev->dev, page, 0,
 					   MYRI10GE_ALLOC_SIZE,
@@ -1435,7 +1221,6 @@ myri10ge_alloc_rx_pages(struct myri10ge_priv *mgp, struct myri10ge_rx_buf *rx,
 			rx->page_offset = 0;
 			rx->bus = bus;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		rx->info[idx].page = rx->page;
 		rx->info[idx].page_offset = rx->page_offset;
@@ -1473,26 +1258,6 @@ myri10ge_unmap_rx_page(struct pci_dev *pdev,
 	/* unmap the recvd page if we're the only or last user of it */
 	if (bytes >= MYRI10GE_ALLOC_SIZE / 2 ||
 	    (info->page_offset + 2 * bytes) > MYRI10GE_ALLOC_SIZE) {
-<<<<<<< HEAD
-		pci_unmap_page(pdev, (dma_unmap_addr(info, bus)
-				      & ~(MYRI10GE_ALLOC_SIZE - 1)),
-			       MYRI10GE_ALLOC_SIZE, PCI_DMA_FROMDEVICE);
-	}
-}
-
-#define MYRI10GE_HLEN 64	/* The number of bytes to copy from a
-				 * page into an skb */
-
-static inline int
-myri10ge_rx_done(struct myri10ge_slice_state *ss, int len, __wsum csum,
-		 bool lro_enabled)
-{
-	struct myri10ge_priv *mgp = ss->mgp;
-	struct sk_buff *skb;
-	struct skb_frag_struct rx_frags[MYRI10GE_MAX_FRAGS_PER_FRAME];
-	struct myri10ge_rx_buf *rx;
-	int i, idx, hlen, remainder, bytes;
-=======
 		dma_unmap_page(&pdev->dev, (dma_unmap_addr(info, bus)
 					    & ~(MYRI10GE_ALLOC_SIZE - 1)),
 			       MYRI10GE_ALLOC_SIZE, DMA_FROM_DEVICE);
@@ -1546,7 +1311,6 @@ myri10ge_rx_done(struct myri10ge_slice_state *ss, int len, __wsum csum)
 	skb_frag_t *rx_frags;
 	struct myri10ge_rx_buf *rx;
 	int i, idx, remainder, bytes;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev = mgp->pdev;
 	struct net_device *dev = mgp->dev;
 	u8 *va;
@@ -1563,17 +1327,6 @@ myri10ge_rx_done(struct myri10ge_slice_state *ss, int len, __wsum csum)
 	idx = rx->cnt & rx->mask;
 	va = page_address(rx->info[idx].page) + rx->info[idx].page_offset;
 	prefetch(va);
-<<<<<<< HEAD
-	/* Fill skb_frag_struct(s) with data from our receive */
-	for (i = 0, remainder = len; remainder > 0; i++) {
-		myri10ge_unmap_rx_page(pdev, &rx->info[idx], bytes);
-		__skb_frag_set_page(&rx_frags[i], rx->info[idx].page);
-		rx_frags[i].page_offset = rx->info[idx].page_offset;
-		if (remainder < MYRI10GE_ALLOC_SIZE)
-			skb_frag_size_set(&rx_frags[i], remainder);
-		else
-			skb_frag_size_set(&rx_frags[i], MYRI10GE_ALLOC_SIZE);
-=======
 
 	skb = napi_get_frags(&ss->napi);
 	if (unlikely(skb == NULL)) {
@@ -1595,61 +1348,11 @@ myri10ge_rx_done(struct myri10ge_slice_state *ss, int len, __wsum csum)
 				   rx->info[idx].page_offset,
 				   remainder < MYRI10GE_ALLOC_SIZE ?
 				   remainder : MYRI10GE_ALLOC_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rx->cnt++;
 		idx = rx->cnt & rx->mask;
 		remainder -= MYRI10GE_ALLOC_SIZE;
 	}
 
-<<<<<<< HEAD
-	if (lro_enabled) {
-		rx_frags[0].page_offset += MXGEFW_PAD;
-		skb_frag_size_sub(&rx_frags[0], MXGEFW_PAD);
-		len -= MXGEFW_PAD;
-		lro_receive_frags(&ss->rx_done.lro_mgr, rx_frags,
-				  /* opaque, will come back in get_frag_header */
-				  len, len,
-				  (void *)(__force unsigned long)csum, csum);
-
-		return 1;
-	}
-
-	hlen = MYRI10GE_HLEN > len ? len : MYRI10GE_HLEN;
-
-	/* allocate an skb to attach the page(s) to. This is done
-	 * after trying LRO, so as to avoid skb allocation overheads */
-
-	skb = netdev_alloc_skb(dev, MYRI10GE_HLEN + 16);
-	if (unlikely(skb == NULL)) {
-		ss->stats.rx_dropped++;
-		do {
-			i--;
-			__skb_frag_unref(&rx_frags[i]);
-		} while (i != 0);
-		return 0;
-	}
-
-	/* Attach the pages to the skb, and trim off any padding */
-	myri10ge_rx_skb_build(skb, va, rx_frags, len, hlen);
-	if (skb_frag_size(&skb_shinfo(skb)->frags[0]) <= 0) {
-		skb_frag_unref(skb, 0);
-		skb_shinfo(skb)->nr_frags = 0;
-	} else {
-		skb->truesize += bytes * skb_shinfo(skb)->nr_frags;
-	}
-	skb->protocol = eth_type_trans(skb, dev);
-	skb_record_rx_queue(skb, ss - &mgp->ss[0]);
-
-	if (dev->features & NETIF_F_RXCSUM) {
-		if ((skb->protocol == htons(ETH_P_IP)) ||
-		    (skb->protocol == htons(ETH_P_IPV6))) {
-			skb->csum = csum;
-			skb->ip_summed = CHECKSUM_COMPLETE;
-		} else
-			myri10ge_vlan_ip_csum(skb, csum);
-	}
-	netif_receive_skb(skb);
-=======
 	/* remove padding */
 	skb_frag_off_add(&rx_frags[0], MXGEFW_PAD);
 	skb_frag_size_sub(&rx_frags[0], MXGEFW_PAD);
@@ -1667,7 +1370,6 @@ myri10ge_rx_done(struct myri10ge_slice_state *ss, int len, __wsum csum)
 
 	napi_gro_frags(&ss->napi);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1696,20 +1398,6 @@ myri10ge_tx_done(struct myri10ge_slice_state *ss, int mcp_index)
 		if (skb) {
 			ss->stats.tx_bytes += skb->len;
 			ss->stats.tx_packets++;
-<<<<<<< HEAD
-			dev_kfree_skb_irq(skb);
-			if (len)
-				pci_unmap_single(pdev,
-						 dma_unmap_addr(&tx->info[idx],
-								bus), len,
-						 PCI_DMA_TODEVICE);
-		} else {
-			if (len)
-				pci_unmap_page(pdev,
-					       dma_unmap_addr(&tx->info[idx],
-							      bus), len,
-					       PCI_DMA_TODEVICE);
-=======
 			dev_consume_skb_irq(skb);
 			if (len)
 				dma_unmap_single(&pdev->dev,
@@ -1722,7 +1410,6 @@ myri10ge_tx_done(struct myri10ge_slice_state *ss, int mcp_index)
 					       dma_unmap_addr(&tx->info[idx],
 							      bus), len,
 					       DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1742,10 +1429,6 @@ myri10ge_tx_done(struct myri10ge_slice_state *ss, int mcp_index)
 			tx->queue_active = 0;
 			put_be32(htonl(1), tx->send_stop);
 			mb();
-<<<<<<< HEAD
-			mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		__netif_tx_unlock(dev_queue);
 	}
@@ -1773,25 +1456,11 @@ myri10ge_clean_rx_done(struct myri10ge_slice_state *ss, int budget)
 	u16 length;
 	__wsum checksum;
 
-<<<<<<< HEAD
-	/*
-	 * Prevent compiler from generating more than one ->features memory
-	 * access to avoid theoretical race condition with functions that
-	 * change NETIF_F_LRO flag at runtime.
-	 */
-	bool lro_enabled = !!(ACCESS_ONCE(mgp->dev->features) & NETIF_F_LRO);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (rx_done->entry[idx].length != 0 && work_done < budget) {
 		length = ntohs(rx_done->entry[idx].length);
 		rx_done->entry[idx].length = 0;
 		checksum = csum_unfold(rx_done->entry[idx].checksum);
-<<<<<<< HEAD
-		rx_ok = myri10ge_rx_done(ss, length, checksum, lro_enabled);
-=======
 		rx_ok = myri10ge_rx_done(ss, length, checksum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rx_packets += rx_ok;
 		rx_bytes += rx_ok * (unsigned long)length;
 		cnt++;
@@ -1803,12 +1472,6 @@ myri10ge_clean_rx_done(struct myri10ge_slice_state *ss, int budget)
 	ss->stats.rx_packets += rx_packets;
 	ss->stats.rx_bytes += rx_bytes;
 
-<<<<<<< HEAD
-	if (lro_enabled)
-		lro_flush_all(&rx_done->lro_mgr);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* restock receive rings if needed */
 	if (ss->rx_small.fill_cnt - ss->rx_small.cnt < myri10ge_fill_thresh)
 		myri10ge_alloc_rx_pages(mgp, &ss->rx_small,
@@ -1864,19 +1527,11 @@ static int myri10ge_poll(struct napi_struct *napi, int budget)
 	if (ss->mgp->dca_enabled)
 		myri10ge_update_dca(ss);
 #endif
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* process as many rx events as NAPI will allow */
 	work_done = myri10ge_clean_rx_done(ss, budget);
 
 	if (work_done < budget) {
-<<<<<<< HEAD
-		napi_complete(napi);
-=======
 		napi_complete_done(napi, work_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_be32(htonl(3), ss->irq_claim);
 	}
 	return work_done;
@@ -1943,26 +1598,16 @@ static irqreturn_t myri10ge_intr(int irq, void *arg)
 }
 
 static int
-<<<<<<< HEAD
-myri10ge_get_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
-=======
 myri10ge_get_link_ksettings(struct net_device *netdev,
 			    struct ethtool_link_ksettings *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct myri10ge_priv *mgp = netdev_priv(netdev);
 	char *ptr;
 	int i;
 
-<<<<<<< HEAD
-	cmd->autoneg = AUTONEG_DISABLE;
-	ethtool_cmd_speed_set(cmd, SPEED_10000);
-	cmd->duplex = DUPLEX_FULL;
-=======
 	cmd->base.autoneg = AUTONEG_DISABLE;
 	cmd->base.speed = SPEED_10000;
 	cmd->base.duplex = DUPLEX_FULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * parse the product code to deterimine the interface type
@@ -1987,25 +1632,12 @@ myri10ge_get_link_ksettings(struct net_device *netdev,
 		ptr++;
 	if (*ptr == 'R' || *ptr == 'Q' || *ptr == 'S') {
 		/* We've found either an XFP, quad ribbon fiber, or SFP+ */
-<<<<<<< HEAD
-		cmd->port = PORT_FIBRE;
-		cmd->supported |= SUPPORTED_FIBRE;
-		cmd->advertising |= ADVERTISED_FIBRE;
-	} else {
-		cmd->port = PORT_OTHER;
-	}
-	if (*ptr == 'R' || *ptr == 'S')
-		cmd->transceiver = XCVR_EXTERNAL;
-	else
-		cmd->transceiver = XCVR_INTERNAL;
-=======
 		cmd->base.port = PORT_FIBRE;
 		ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
 		ethtool_link_ksettings_add_link_mode(cmd, advertising, FIBRE);
 	} else {
 		cmd->base.port = PORT_OTHER;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2015,16 +1647,6 @@ myri10ge_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info)
 {
 	struct myri10ge_priv *mgp = netdev_priv(netdev);
 
-<<<<<<< HEAD
-	strlcpy(info->driver, "myri10ge", sizeof(info->driver));
-	strlcpy(info->version, MYRI10GE_VERSION_STR, sizeof(info->version));
-	strlcpy(info->fw_version, mgp->fw_version, sizeof(info->fw_version));
-	strlcpy(info->bus_info, pci_name(mgp->pdev), sizeof(info->bus_info));
-}
-
-static int
-myri10ge_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *coal)
-=======
 	strscpy(info->driver, "myri10ge", sizeof(info->driver));
 	strscpy(info->version, MYRI10GE_VERSION_STR, sizeof(info->version));
 	strscpy(info->fw_version, mgp->fw_version, sizeof(info->fw_version));
@@ -2035,7 +1657,6 @@ static int myri10ge_get_coalesce(struct net_device *netdev,
 				 struct ethtool_coalesce *coal,
 				 struct kernel_ethtool_coalesce *kernel_coal,
 				 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct myri10ge_priv *mgp = netdev_priv(netdev);
 
@@ -2043,15 +1664,10 @@ static int myri10ge_get_coalesce(struct net_device *netdev,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-myri10ge_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *coal)
-=======
 static int myri10ge_set_coalesce(struct net_device *netdev,
 				 struct ethtool_coalesce *coal,
 				 struct kernel_ethtool_coalesce *kernel_coal,
 				 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct myri10ge_priv *mgp = netdev_priv(netdev);
 
@@ -2088,13 +1704,9 @@ myri10ge_set_pauseparam(struct net_device *netdev,
 
 static void
 myri10ge_get_ringparam(struct net_device *netdev,
-<<<<<<< HEAD
-		       struct ethtool_ringparam *ring)
-=======
 		       struct ethtool_ringparam *ring,
 		       struct kernel_ethtool_ringparam *kernel_ring,
 		       struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct myri10ge_priv *mgp = netdev_priv(netdev);
 
@@ -2116,11 +1728,7 @@ static const char myri10ge_gstrings_main_stats[][ETH_GSTRING_LEN] = {
 	"tx_aborted_errors", "tx_carrier_errors", "tx_fifo_errors",
 	"tx_heartbeat_errors", "tx_window_errors",
 	/* device-specific stats */
-<<<<<<< HEAD
-	"tx_boundary", "WC", "irq", "MSI", "MSIX",
-=======
 	"tx_boundary", "irq", "MSI", "MSIX",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"read_dma_bw_MBs", "write_dma_bw_MBs", "read_write_dma_bw_MBs",
 	"serial_number", "watchdog_resets",
 #ifdef CONFIG_MYRI10GE_DCA
@@ -2139,10 +1747,6 @@ static const char myri10ge_gstrings_slice_stats[][ETH_GSTRING_LEN] = {
 	"tx_pkt_start", "tx_pkt_done", "tx_req", "tx_done",
 	"rx_small_cnt", "rx_big_cnt",
 	"wake_queue", "stop_queue", "tx_linearized",
-<<<<<<< HEAD
-	"LRO aggregated", "LRO flushed", "LRO avg aggr", "LRO no_desc",
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MYRI10GE_NET_STATS_LEN      21
@@ -2199,10 +1803,6 @@ myri10ge_get_ethtool_stats(struct net_device *netdev,
 		data[i] = ((u64 *)&link_stats)[i];
 
 	data[i++] = (unsigned int)mgp->tx_boundary;
-<<<<<<< HEAD
-	data[i++] = (unsigned int)mgp->wc_enabled;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data[i++] = (unsigned int)mgp->pdev->irq;
 	data[i++] = (unsigned int)mgp->msi_enabled;
 	data[i++] = (unsigned int)mgp->msix_enabled;
@@ -2246,17 +1846,6 @@ myri10ge_get_ethtool_stats(struct net_device *netdev,
 		data[i++] = (unsigned int)ss->tx.wake_queue;
 		data[i++] = (unsigned int)ss->tx.stop_queue;
 		data[i++] = (unsigned int)ss->tx.linearized;
-<<<<<<< HEAD
-		data[i++] = ss->rx_done.lro_mgr.stats.aggregated;
-		data[i++] = ss->rx_done.lro_mgr.stats.flushed;
-		if (ss->rx_done.lro_mgr.stats.flushed)
-			data[i++] = ss->rx_done.lro_mgr.stats.aggregated /
-			    ss->rx_done.lro_mgr.stats.flushed;
-		else
-			data[i++] = 0;
-		data[i++] = ss->rx_done.lro_mgr.stats.no_desc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2300,11 +1889,7 @@ static int myri10ge_led(struct myri10ge_priv *mgp, int on)
 	}
 	if (!on)
 		pattern = swab32(readl(mgp->sram + pattern_off + 4));
-<<<<<<< HEAD
-	writel(htonl(pattern), mgp->sram + pattern_off);
-=======
 	writel(swab32(pattern), mgp->sram + pattern_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2331,11 +1916,7 @@ myri10ge_phys_id(struct net_device *netdev, enum ethtool_phys_id_state state)
 }
 
 static const struct ethtool_ops myri10ge_ethtool_ops = {
-<<<<<<< HEAD
-	.get_settings = myri10ge_get_settings,
-=======
 	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = myri10ge_get_drvinfo,
 	.get_coalesce = myri10ge_get_coalesce,
 	.set_coalesce = myri10ge_set_coalesce,
@@ -2349,10 +1930,7 @@ static const struct ethtool_ops myri10ge_ethtool_ops = {
 	.set_msglevel = myri10ge_set_msglevel,
 	.get_msglevel = myri10ge_get_msglevel,
 	.set_phys_id = myri10ge_phys_id,
-<<<<<<< HEAD
-=======
 	.get_link_ksettings = myri10ge_get_link_ksettings,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int myri10ge_allocate_rings(struct myri10ge_slice_state *ss)
@@ -2540,18 +2118,6 @@ static void myri10ge_free_rings(struct myri10ge_slice_state *ss)
 			ss->stats.tx_dropped++;
 			dev_kfree_skb_any(skb);
 			if (len)
-<<<<<<< HEAD
-				pci_unmap_single(mgp->pdev,
-						 dma_unmap_addr(&tx->info[idx],
-								bus), len,
-						 PCI_DMA_TODEVICE);
-		} else {
-			if (len)
-				pci_unmap_page(mgp->pdev,
-					       dma_unmap_addr(&tx->info[idx],
-							      bus), len,
-					       PCI_DMA_TODEVICE);
-=======
 				dma_unmap_single(&mgp->pdev->dev,
 						 dma_unmap_addr(&tx->info[idx],
 								bus), len,
@@ -2562,7 +2128,6 @@ static void myri10ge_free_rings(struct myri10ge_slice_state *ss)
 					       dma_unmap_addr(&tx->info[idx],
 							      bus), len,
 					       DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	kfree(ss->rx_big.info);
@@ -2593,26 +2158,14 @@ static int myri10ge_request_irq(struct myri10ge_priv *mgp)
 	status = 0;
 	if (myri10ge_msi) {
 		if (mgp->num_slices > 1) {
-<<<<<<< HEAD
-			status =
-			    pci_enable_msix(pdev, mgp->msix_vectors,
-					    mgp->num_slices);
-			if (status == 0) {
-				mgp->msix_enabled = 1;
-			} else {
-=======
 			status = pci_enable_msix_range(pdev, mgp->msix_vectors,
 					mgp->num_slices, mgp->num_slices);
 			if (status < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_err(&pdev->dev,
 					"Error %d setting up MSI-X\n", status);
 				return status;
 			}
-<<<<<<< HEAD
-=======
 			mgp->msix_enabled = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (mgp->msix_enabled == 0) {
 			status = pci_enable_msi(pdev);
@@ -2675,70 +2228,6 @@ static void myri10ge_free_irq(struct myri10ge_priv *mgp)
 		pci_disable_msix(pdev);
 }
 
-<<<<<<< HEAD
-static int
-myri10ge_get_frag_header(struct skb_frag_struct *frag, void **mac_hdr,
-			 void **ip_hdr, void **tcpudp_hdr,
-			 u64 * hdr_flags, void *priv)
-{
-	struct ethhdr *eh;
-	struct vlan_ethhdr *veh;
-	struct iphdr *iph;
-	u8 *va = skb_frag_address(frag);
-	unsigned long ll_hlen;
-	/* passed opaque through lro_receive_frags() */
-	__wsum csum = (__force __wsum) (unsigned long)priv;
-
-	/* find the mac header, aborting if not IPv4 */
-
-	eh = (struct ethhdr *)va;
-	*mac_hdr = eh;
-	ll_hlen = ETH_HLEN;
-	if (eh->h_proto != htons(ETH_P_IP)) {
-		if (eh->h_proto == htons(ETH_P_8021Q)) {
-			veh = (struct vlan_ethhdr *)va;
-			if (veh->h_vlan_encapsulated_proto != htons(ETH_P_IP))
-				return -1;
-
-			ll_hlen += VLAN_HLEN;
-
-			/*
-			 *  HW checksum starts ETH_HLEN bytes into
-			 *  frame, so we must subtract off the VLAN
-			 *  header's checksum before csum can be used
-			 */
-			csum = csum_sub(csum, csum_partial(va + ETH_HLEN,
-							   VLAN_HLEN, 0));
-		} else {
-			return -1;
-		}
-	}
-	*hdr_flags = LRO_IPV4;
-
-	iph = (struct iphdr *)(va + ll_hlen);
-	*ip_hdr = iph;
-	if (iph->protocol != IPPROTO_TCP)
-		return -1;
-	if (ip_is_fragment(iph))
-		return -1;
-	*hdr_flags |= LRO_TCP;
-	*tcpudp_hdr = (u8 *) (*ip_hdr) + (iph->ihl << 2);
-
-	/* verify the IP checksum */
-	if (unlikely(ip_fast_csum((u8 *) iph, iph->ihl)))
-		return -1;
-
-	/* verify the  checksum */
-	if (unlikely(csum_tcpudp_magic(iph->saddr, iph->daddr,
-				       ntohs(iph->tot_len) - (iph->ihl << 2),
-				       IPPROTO_TCP, csum)))
-		return -1;
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int myri10ge_get_txrx(struct myri10ge_priv *mgp, int slice)
 {
 	struct myri10ge_cmd cmd;
@@ -2808,12 +2297,7 @@ static int myri10ge_open(struct net_device *dev)
 	struct myri10ge_priv *mgp = netdev_priv(dev);
 	struct myri10ge_cmd cmd;
 	int i, status, big_pow2, slice;
-<<<<<<< HEAD
-	u8 *itable;
-	struct net_lro_mgr *lro_mgr;
-=======
 	u8 __iomem *itable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mgp->running != MYRI10GE_ETH_STOPPED)
 		return -EBUSY;
@@ -2924,22 +2408,6 @@ static int myri10ge_open(struct net_device *dev)
 			goto abort_with_rings;
 		}
 
-<<<<<<< HEAD
-		lro_mgr = &ss->rx_done.lro_mgr;
-		lro_mgr->dev = dev;
-		lro_mgr->features = LRO_F_NAPI;
-		lro_mgr->ip_summed = CHECKSUM_COMPLETE;
-		lro_mgr->ip_summed_aggr = CHECKSUM_UNNECESSARY;
-		lro_mgr->max_desc = MYRI10GE_MAX_LRO_DESCRIPTORS;
-		lro_mgr->lro_arr = ss->rx_done.lro_desc;
-		lro_mgr->get_frag_header = myri10ge_get_frag_header;
-		lro_mgr->max_aggr = myri10ge_lro_max_pkts;
-		lro_mgr->frag_align_pad = 2;
-		if (lro_mgr->max_aggr > MAX_SKB_FRAGS)
-			lro_mgr->max_aggr = MAX_SKB_FRAGS;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* must happen prior to any irq */
 		napi_enable(&(ss)->napi);
 	}
@@ -3016,15 +2484,9 @@ static int myri10ge_close(struct net_device *dev)
 
 	del_timer_sync(&mgp->watchdog_timer);
 	mgp->running = MYRI10GE_ETH_STOPPING;
-<<<<<<< HEAD
-	for (i = 0; i < mgp->num_slices; i++) {
-		napi_disable(&mgp->ss[i].napi);
-	}
-=======
 	for (i = 0; i < mgp->num_slices; i++)
 		napi_disable(&mgp->ss[i].napi);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_carrier_off(dev);
 
 	netif_tx_stop_all_queues(dev);
@@ -3117,8 +2579,6 @@ myri10ge_submit_req(struct myri10ge_tx_buf *tx, struct mcp_kreq_ether_send *src,
 	mb();
 }
 
-<<<<<<< HEAD
-=======
 static void myri10ge_unmap_tx_dma(struct myri10ge_priv *mgp,
 				  struct myri10ge_tx_buf *tx, int idx)
 {
@@ -3148,7 +2608,6 @@ static void myri10ge_unmap_tx_dma(struct myri10ge_priv *mgp,
 	} while (idx != last_idx);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Transmit a packet.  We need to split the packet so that a single
  * segment does not cross myri10ge->tx_boundary, so this makes segment
@@ -3166,21 +2625,13 @@ static netdev_tx_t myri10ge_xmit(struct sk_buff *skb,
 	struct myri10ge_slice_state *ss;
 	struct mcp_kreq_ether_send *req;
 	struct myri10ge_tx_buf *tx;
-<<<<<<< HEAD
-	struct skb_frag_struct *frag;
-=======
 	skb_frag_t *frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netdev_queue *netdev_queue;
 	dma_addr_t bus;
 	u32 low;
 	__be32 high_swapped;
 	unsigned int len;
-<<<<<<< HEAD
-	int idx, last_idx, avail, frag_cnt, frag_idx, count, mss, max_segments;
-=======
 	int idx, avail, frag_cnt, frag_idx, count, mss, max_segments;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 pseudo_hdr_offset, cksum_offset, queue;
 	int cum_len, seglen, boundary, rdma_count;
 	u8 flags, odd_flag;
@@ -3241,11 +2692,7 @@ again:
 		 * send loop that we are still in the
 		 * header portion of the TSO packet.
 		 * TSO header can be at most 1KB long */
-<<<<<<< HEAD
-		cum_len = -(skb_transport_offset(skb) + tcp_hdrlen(skb));
-=======
 		cum_len = -skb_tcp_all_headers(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* for IPv6 TSO, the checksum offset stores the
 		 * TCP header length, to save the firmware from
@@ -3266,41 +2713,22 @@ again:
 		flags |= MXGEFW_FLAGS_SMALL;
 
 		/* pad frames to at least ETH_ZLEN bytes */
-<<<<<<< HEAD
-		if (unlikely(skb->len < ETH_ZLEN)) {
-			if (skb_padto(skb, ETH_ZLEN)) {
-				/* The packet is gone, so we must
-				 * return 0 */
-				ss->stats.tx_dropped += 1;
-				return NETDEV_TX_OK;
-			}
-			/* adjust the len to account for the zero pad
-			 * so that the nic can know how long it is */
-			skb->len = ETH_ZLEN;
-=======
 		if (eth_skb_pad(skb)) {
 			/* The packet is gone, so we must
 			 * return 0 */
 			ss->stats.tx_dropped += 1;
 			return NETDEV_TX_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* map the skb for DMA */
 	len = skb_headlen(skb);
-<<<<<<< HEAD
-	idx = tx->req & tx->mask;
-	tx->info[idx].skb = skb;
-	bus = pci_map_single(mgp->pdev, skb->data, len, PCI_DMA_TODEVICE);
-=======
 	bus = dma_map_single(&mgp->pdev->dev, skb->data, len, DMA_TO_DEVICE);
 	if (unlikely(dma_mapping_error(&mgp->pdev->dev, bus)))
 		goto drop;
 
 	idx = tx->req & tx->mask;
 	tx->info[idx].skb = skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_unmap_addr_set(&tx->info[idx], bus, bus);
 	dma_unmap_len_set(&tx->info[idx], len, len);
 
@@ -3359,11 +2787,7 @@ again:
 					flags_next |= next_is_first *
 					    MXGEFW_FLAGS_FIRST;
 					rdma_count |= -(chop | next_is_first);
-<<<<<<< HEAD
-					rdma_count += chop & !next_is_first;
-=======
 					rdma_count += chop & ~next_is_first;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else if (likely(cum_len_next >= 0)) {	/* header ends */
 					int small;
 
@@ -3403,23 +2827,16 @@ again:
 			break;
 
 		/* map next fragment for DMA */
-<<<<<<< HEAD
-		idx = (count + tx->req) & tx->mask;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		frag = &skb_shinfo(skb)->frags[frag_idx];
 		frag_idx++;
 		len = skb_frag_size(frag);
 		bus = skb_frag_dma_map(&mgp->pdev->dev, frag, 0, len,
 				       DMA_TO_DEVICE);
-<<<<<<< HEAD
-=======
 		if (unlikely(dma_mapping_error(&mgp->pdev->dev, bus))) {
 			myri10ge_unmap_tx_dma(mgp, tx, idx);
 			goto drop;
 		}
 		idx = (count + tx->req) & tx->mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dma_unmap_addr_set(&tx->info[idx], bus, bus);
 		dma_unmap_len_set(&tx->info[idx], len, len);
 	}
@@ -3440,10 +2857,6 @@ again:
 		tx->queue_active = 1;
 		put_be32(htonl(1), tx->send_go);
 		mb();
-<<<<<<< HEAD
-		mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	tx->pkt_start++;
 	if ((avail - count) < MXGEFW_MAX_SEND_DESC) {
@@ -3453,36 +2866,8 @@ again:
 	return NETDEV_TX_OK;
 
 abort_linearize:
-<<<<<<< HEAD
-	/* Free any DMA resources we've alloced and clear out the skb
-	 * slot so as to not trip up assertions, and to avoid a
-	 * double-free if linearizing fails */
-
-	last_idx = (idx + 1) & tx->mask;
-	idx = tx->req & tx->mask;
-	tx->info[idx].skb = NULL;
-	do {
-		len = dma_unmap_len(&tx->info[idx], len);
-		if (len) {
-			if (tx->info[idx].skb != NULL)
-				pci_unmap_single(mgp->pdev,
-						 dma_unmap_addr(&tx->info[idx],
-								bus), len,
-						 PCI_DMA_TODEVICE);
-			else
-				pci_unmap_page(mgp->pdev,
-					       dma_unmap_addr(&tx->info[idx],
-							      bus), len,
-					       PCI_DMA_TODEVICE);
-			dma_unmap_len_set(&tx->info[idx], len, 0);
-			tx->info[idx].skb = NULL;
-		}
-		idx = (idx + 1) & tx->mask;
-	} while (idx != last_idx);
-=======
 	myri10ge_unmap_tx_dma(mgp, tx, idx);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (skb_is_gso(skb)) {
 		netdev_err(mgp->dev, "TSO but wanted to linearize?!?!?\n");
 		goto drop;
@@ -3504,11 +2889,7 @@ drop:
 static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
 					 struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct sk_buff *segs, *curr;
-=======
 	struct sk_buff *segs, *curr, *next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct myri10ge_priv *mgp = netdev_priv(dev);
 	struct myri10ge_slice_state *ss;
 	netdev_tx_t status;
@@ -3517,20 +2898,6 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
 	if (IS_ERR(segs))
 		goto drop;
 
-<<<<<<< HEAD
-	while (segs) {
-		curr = segs;
-		segs = segs->next;
-		curr->next = NULL;
-		status = myri10ge_xmit(curr, dev);
-		if (status != 0) {
-			dev_kfree_skb_any(curr);
-			if (segs != NULL) {
-				curr = segs;
-				segs = segs->next;
-				curr->next = NULL;
-				dev_kfree_skb_any(segs);
-=======
 	skb_list_walk_safe(segs, curr, next) {
 		skb_mark_not_on_list(curr);
 		status = myri10ge_xmit(curr, dev);
@@ -3539,7 +2906,6 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
 			skb_list_walk_safe(next, curr, next) {
 				curr->next = NULL;
 				dev_kfree_skb_any(curr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			goto drop;
 		}
@@ -3554,13 +2920,8 @@ drop:
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-static struct rtnl_link_stats64 *myri10ge_get_stats(struct net_device *dev,
-						    struct rtnl_link_stats64 *stats)
-=======
 static void myri10ge_get_stats(struct net_device *dev,
 			       struct rtnl_link_stats64 *stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct myri10ge_priv *mgp = netdev_priv(dev);
 	const struct myri10ge_slice_netstats *slice_stats;
@@ -3575,10 +2936,6 @@ static void myri10ge_get_stats(struct net_device *dev,
 		stats->rx_dropped += slice_stats->rx_dropped;
 		stats->tx_dropped += slice_stats->tx_dropped;
 	}
-<<<<<<< HEAD
-	return stats;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void myri10ge_set_multicast_list(struct net_device *dev)
@@ -3623,11 +2980,7 @@ static void myri10ge_set_multicast_list(struct net_device *dev)
 
 	/* Walk the multicast list, and add each address */
 	netdev_for_each_mc_addr(ha, dev) {
-<<<<<<< HEAD
-		memcpy(data, &ha->addr, 6);
-=======
 		memcpy(data, &ha->addr, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd.data0 = ntohl(data[0]);
 		cmd.data1 = ntohl(data[1]);
 		err = myri10ge_send_cmd(mgp, MXGEFW_JOIN_MULTICAST_GROUP,
@@ -3670,30 +3023,6 @@ static int myri10ge_set_mac_address(struct net_device *dev, void *addr)
 	}
 
 	/* change the dev structure */
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, sa->sa_data, 6);
-	return 0;
-}
-
-static netdev_features_t myri10ge_fix_features(struct net_device *dev,
-	netdev_features_t features)
-{
-	if (!(features & NETIF_F_RXCSUM))
-		features &= ~NETIF_F_LRO;
-
-	return features;
-}
-
-static int myri10ge_change_mtu(struct net_device *dev, int new_mtu)
-{
-	struct myri10ge_priv *mgp = netdev_priv(dev);
-	int error = 0;
-
-	if ((new_mtu < 68) || (ETH_HLEN + new_mtu > MYRI10GE_MAX_ETHER_MTU)) {
-		netdev_err(dev, "new mtu (%d) is not valid\n", new_mtu);
-		return -EINVAL;
-	}
-=======
 	eth_hw_addr_set(dev, sa->sa_data);
 	return 0;
 }
@@ -3702,7 +3031,6 @@ static int myri10ge_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct myri10ge_priv *mgp = netdev_priv(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev_info(dev, "changing mtu from %d to %d\n", dev->mtu, new_mtu);
 	if (mgp->running) {
 		/* if we change the mtu on an active device, we must
@@ -3713,11 +3041,7 @@ static int myri10ge_change_mtu(struct net_device *dev, int new_mtu)
 	} else
 		dev->mtu = new_mtu;
 
-<<<<<<< HEAD
-	return error;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3732,25 +3056,13 @@ static void myri10ge_enable_ecrc(struct myri10ge_priv *mgp)
 	struct device *dev = &mgp->pdev->dev;
 	int cap;
 	unsigned err_cap;
-<<<<<<< HEAD
-	u16 val;
-	u8 ext_type;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (!myri10ge_ecrc_enable || !bridge)
 		return;
 
 	/* check that the bridge is a root port */
-<<<<<<< HEAD
-	cap = pci_pcie_cap(bridge);
-	pci_read_config_word(bridge, cap + PCI_CAP_FLAGS, &val);
-	ext_type = (val & PCI_EXP_FLAGS_TYPE) >> 4;
-	if (ext_type != PCI_EXP_TYPE_ROOT_PORT) {
-=======
 	if (pci_pcie_type(bridge) != PCI_EXP_TYPE_ROOT_PORT) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (myri10ge_ecrc_enable > 1) {
 			struct pci_dev *prev_bridge, *old_bridge = bridge;
 
@@ -3765,16 +3077,8 @@ static void myri10ge_enable_ecrc(struct myri10ge_priv *mgp)
 						" to force ECRC\n");
 					return;
 				}
-<<<<<<< HEAD
-				cap = pci_pcie_cap(bridge);
-				pci_read_config_word(bridge,
-						     cap + PCI_CAP_FLAGS, &val);
-				ext_type = (val & PCI_EXP_FLAGS_TYPE) >> 4;
-			} while (ext_type != PCI_EXP_TYPE_ROOT_PORT);
-=======
 			} while (pci_pcie_type(bridge) !=
 				 PCI_EXP_TYPE_ROOT_PORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dev_info(dev,
 				 "Forcing ECRC on non-root port %s"
@@ -3887,18 +3191,10 @@ static void myri10ge_select_firmware(struct myri10ge_priv *mgp)
 	int overridden = 0;
 
 	if (myri10ge_force_firmware == 0) {
-<<<<<<< HEAD
-		int link_width, exp_cap;
-		u16 lnk;
-
-		exp_cap = pci_pcie_cap(mgp->pdev);
-		pci_read_config_word(mgp->pdev, exp_cap + PCI_EXP_LNKSTA, &lnk);
-=======
 		int link_width;
 		u16 lnk;
 
 		pcie_capability_read_word(mgp->pdev, PCI_EXP_LNKSTA, &lnk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		link_width = (lnk >> 4) & 0x3f;
 
 		/* Check to see if Link is less than 8 or if the
@@ -3926,11 +3222,7 @@ static void myri10ge_select_firmware(struct myri10ge_priv *mgp)
 		}
 	}
 
-<<<<<<< HEAD
-	kparam_block_sysfs_write(myri10ge_fw_name);
-=======
 	kernel_param_lock(THIS_MODULE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (myri10ge_fw_name != NULL) {
 		char *fw_name = kstrdup(myri10ge_fw_name, GFP_KERNEL);
 		if (fw_name) {
@@ -3938,11 +3230,7 @@ static void myri10ge_select_firmware(struct myri10ge_priv *mgp)
 			set_fw_name(mgp, fw_name, true);
 		}
 	}
-<<<<<<< HEAD
-	kparam_unblock_sysfs_write(myri10ge_fw_name);
-=======
 	kernel_param_unlock(THIS_MODULE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mgp->board_number < MYRI10GE_MAX_BOARDS &&
 	    myri10ge_fw_names[mgp->board_number] != NULL &&
@@ -3975,21 +3263,12 @@ static void myri10ge_mask_surprise_down(struct pci_dev *pdev)
 	}
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int myri10ge_suspend(struct pci_dev *pdev, pm_message_t state)
-=======
 static int __maybe_unused myri10ge_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct myri10ge_priv *mgp;
 	struct net_device *netdev;
 
-<<<<<<< HEAD
-	mgp = pci_get_drvdata(pdev);
-=======
 	mgp = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mgp == NULL)
 		return -EINVAL;
 	netdev = mgp->dev;
@@ -4002,16 +3281,6 @@ static int __maybe_unused myri10ge_suspend(struct device *dev)
 		rtnl_unlock();
 	}
 	myri10ge_dummy_rdma(mgp, 0);
-<<<<<<< HEAD
-	pci_save_state(pdev);
-	pci_disable_device(pdev);
-
-	return pci_set_power_state(pdev, pci_choose_state(pdev, state));
-}
-
-static int myri10ge_resume(struct pci_dev *pdev)
-{
-=======
 
 	return 0;
 }
@@ -4019,7 +3288,6 @@ static int myri10ge_resume(struct pci_dev *pdev)
 static int __maybe_unused myri10ge_resume(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct myri10ge_priv *mgp;
 	struct net_device *netdev;
 	int status;
@@ -4029,10 +3297,6 @@ static int __maybe_unused myri10ge_resume(struct device *dev)
 	if (mgp == NULL)
 		return -EINVAL;
 	netdev = mgp->dev;
-<<<<<<< HEAD
-	pci_set_power_state(pdev, 0);	/* zeros conf space as a side effect */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(5);		/* give card time to respond */
 	pci_read_config_word(mgp->pdev, PCI_VENDOR_ID, &vendor);
 	if (vendor == 0xffff) {
@@ -4040,29 +3304,9 @@ static int __maybe_unused myri10ge_resume(struct device *dev)
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	pci_restore_state(pdev);
-
-	status = pci_enable_device(pdev);
-	if (status) {
-		dev_err(&pdev->dev, "failed to enable device\n");
-		return status;
-	}
-
-	pci_set_master(pdev);
-
 	myri10ge_reset(mgp);
 	myri10ge_dummy_rdma(mgp, 1);
 
-	/* Save configuration space to be restored if the
-	 * nic resets due to a parity error */
-	pci_save_state(pdev);
-
-=======
-	myri10ge_reset(mgp);
-	myri10ge_dummy_rdma(mgp, 1);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_running(netdev)) {
 		rtnl_lock();
 		status = myri10ge_open(netdev);
@@ -4076,16 +3320,8 @@ static int __maybe_unused myri10ge_resume(struct device *dev)
 	return 0;
 
 abort_with_enabled:
-<<<<<<< HEAD
-	pci_disable_device(pdev);
-	return -EIO;
-
-}
-#endif				/* CONFIG_PM */
-=======
 	return -EIO;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static u32 myri10ge_read_reboot(struct myri10ge_priv *mgp)
 {
@@ -4234,11 +3470,7 @@ static void myri10ge_watchdog(struct work_struct *work)
  * cannot detect a NIC with a parity error in a timely fashion if the
  * NIC is lightly loaded.
  */
-<<<<<<< HEAD
-static void myri10ge_watchdog_timer(unsigned long arg)
-=======
 static void myri10ge_watchdog_timer(struct timer_list *t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct myri10ge_priv *mgp;
 	struct myri10ge_slice_state *ss;
@@ -4246,11 +3478,7 @@ static void myri10ge_watchdog_timer(struct timer_list *t)
 	u32 rx_pause_cnt;
 	u16 cmd;
 
-<<<<<<< HEAD
-	mgp = (struct myri10ge_priv *)arg;
-=======
 	mgp = from_timer(mgp, t, watchdog_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rx_pause_cnt = ntohl(mgp->ss[0].fw_stats->dropped_pause);
 	busy_slice_cnt = 0;
@@ -4321,15 +3549,10 @@ static void myri10ge_free_slices(struct myri10ge_priv *mgp)
 					  ss->fw_stats, ss->fw_stats_bus);
 			ss->fw_stats = NULL;
 		}
-<<<<<<< HEAD
-		netif_napi_del(&ss->napi);
-	}
-=======
 		__netif_napi_del(&ss->napi);
 	}
 	/* Wait till napi structs are no longer used, and then free ss. */
 	synchronize_net();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mgp->ss);
 	mgp->ss = NULL;
 }
@@ -4355,10 +3578,6 @@ static int myri10ge_alloc_slices(struct myri10ge_priv *mgp)
 						       GFP_KERNEL);
 		if (ss->rx_done.entry == NULL)
 			goto abort;
-<<<<<<< HEAD
-		memset(ss->rx_done.entry, 0, bytes);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bytes = sizeof(*ss->fw_stats);
 		ss->fw_stats = dma_alloc_coherent(&pdev->dev, bytes,
 						  &ss->fw_stats_bus,
@@ -4367,13 +3586,8 @@ static int myri10ge_alloc_slices(struct myri10ge_priv *mgp)
 			goto abort;
 		ss->mgp = mgp;
 		ss->dev = mgp->dev;
-<<<<<<< HEAD
-		netif_napi_add(ss->dev, &ss->napi, myri10ge_poll,
-			       myri10ge_napi_weight);
-=======
 		netif_napi_add_weight(ss->dev, &ss->napi, myri10ge_poll,
 				      myri10ge_napi_weight);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 abort:
@@ -4393,22 +3607,12 @@ static void myri10ge_probe_slices(struct myri10ge_priv *mgp)
 	struct pci_dev *pdev = mgp->pdev;
 	char *old_fw;
 	bool old_allocated;
-<<<<<<< HEAD
-	int i, status, ncpus, msix_cap;
-
-	mgp->num_slices = 1;
-	msix_cap = pci_find_capability(pdev, PCI_CAP_ID_MSIX);
-	ncpus = num_online_cpus();
-
-	if (myri10ge_max_slices == 1 || msix_cap == 0 ||
-=======
 	int i, status, ncpus;
 
 	mgp->num_slices = 1;
 	ncpus = netif_get_num_default_rss_queues();
 
 	if (myri10ge_max_slices == 1 || !pdev->msix_cap ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (myri10ge_max_slices == -1 && ncpus < 2))
 		return;
 
@@ -4480,38 +3684,12 @@ static void myri10ge_probe_slices(struct myri10ge_priv *mgp)
 	mgp->msix_vectors = kcalloc(mgp->num_slices, sizeof(*mgp->msix_vectors),
 				    GFP_KERNEL);
 	if (mgp->msix_vectors == NULL)
-<<<<<<< HEAD
-		goto disable_msix;
-=======
 		goto no_msix;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < mgp->num_slices; i++) {
 		mgp->msix_vectors[i].entry = i;
 	}
 
 	while (mgp->num_slices > 1) {
-<<<<<<< HEAD
-		/* make sure it is a power of two */
-		while (!is_power_of_2(mgp->num_slices))
-			mgp->num_slices--;
-		if (mgp->num_slices == 1)
-			goto disable_msix;
-		status = pci_enable_msix(pdev, mgp->msix_vectors,
-					 mgp->num_slices);
-		if (status == 0) {
-			pci_disable_msix(pdev);
-			if (old_allocated)
-				kfree(old_fw);
-			return;
-		}
-		if (status > 0)
-			mgp->num_slices = status;
-		else
-			goto disable_msix;
-	}
-
-disable_msix:
-=======
 		mgp->num_slices = rounddown_pow_of_two(mgp->num_slices);
 		if (mgp->num_slices == 1)
 			goto no_msix;
@@ -4534,7 +3712,6 @@ disable_msix:
 	}
 
 no_msix:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mgp->msix_vectors != NULL) {
 		kfree(mgp->msix_vectors);
 		mgp->msix_vectors = NULL;
@@ -4553,10 +3730,6 @@ static const struct net_device_ops myri10ge_netdev_ops = {
 	.ndo_get_stats64	= myri10ge_get_stats,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_change_mtu		= myri10ge_change_mtu,
-<<<<<<< HEAD
-	.ndo_fix_features	= myri10ge_fix_features,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_rx_mode	= myri10ge_set_multicast_list,
 	.ndo_set_mac_address	= myri10ge_set_mac_address,
 };
@@ -4566,13 +3739,7 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	struct net_device *netdev;
 	struct myri10ge_priv *mgp;
 	struct device *dev = &pdev->dev;
-<<<<<<< HEAD
-	int i;
 	int status = -ENXIO;
-	int dac_enabled;
-=======
-	int status = -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned hdr_offset, ss_offset;
 	static int board_number;
 
@@ -4612,41 +3779,11 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	myri10ge_mask_surprise_down(pdev);
 	pci_set_master(pdev);
-<<<<<<< HEAD
-	dac_enabled = 1;
-	status = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-	if (status != 0) {
-		dac_enabled = 0;
-		dev_err(&pdev->dev,
-			"64-bit pci address mask was refused, "
-			"trying 32-bit\n");
-		status = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-	}
-=======
 	status = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != 0) {
 		dev_err(&pdev->dev, "Error %d setting DMA mask\n", status);
 		goto abort_with_enabled;
 	}
-<<<<<<< HEAD
-	(void)pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-	mgp->cmd = dma_alloc_coherent(&pdev->dev, sizeof(*mgp->cmd),
-				      &mgp->cmd_bus, GFP_KERNEL);
-	if (mgp->cmd == NULL)
-		goto abort_with_enabled;
-
-	mgp->board_span = pci_resource_len(pdev, 0);
-	mgp->iomem_base = pci_resource_start(pdev, 0);
-	mgp->mtrr = -1;
-	mgp->wc_enabled = 0;
-#ifdef CONFIG_MTRR
-	mgp->mtrr = mtrr_add(mgp->iomem_base, mgp->board_span,
-			     MTRR_TYPE_WRCOMB, 1);
-	if (mgp->mtrr >= 0)
-		mgp->wc_enabled = 1;
-#endif
-=======
 	mgp->cmd = dma_alloc_coherent(&pdev->dev, sizeof(*mgp->cmd),
 				      &mgp->cmd_bus, GFP_KERNEL);
 	if (!mgp->cmd) {
@@ -4657,7 +3794,6 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	mgp->board_span = pci_resource_len(pdev, 0);
 	mgp->iomem_base = pci_resource_start(pdev, 0);
 	mgp->wc_cookie = arch_phys_wc_add(mgp->iomem_base, mgp->board_span);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mgp->sram = ioremap_wc(mgp->iomem_base, mgp->board_span);
 	if (mgp->sram == NULL) {
 		dev_err(&pdev->dev, "ioremap failed for %ld bytes at 0x%lx\n",
@@ -4666,24 +3802,15 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto abort_with_mtrr;
 	}
 	hdr_offset =
-<<<<<<< HEAD
-	    ntohl(__raw_readl(mgp->sram + MCP_HEADER_PTR_OFFSET)) & 0xffffc;
-	ss_offset = hdr_offset + offsetof(struct mcp_gen_header, string_specs);
-	mgp->sram_size = ntohl(__raw_readl(mgp->sram + ss_offset));
-=======
 	    swab32(readl(mgp->sram + MCP_HEADER_PTR_OFFSET)) & 0xffffc;
 	ss_offset = hdr_offset + offsetof(struct mcp_gen_header, string_specs);
 	mgp->sram_size = swab32(readl(mgp->sram + ss_offset));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mgp->sram_size > mgp->board_span ||
 	    mgp->sram_size <= MYRI10GE_FW_OFFSET) {
 		dev_err(&pdev->dev,
 			"invalid sram_size %dB or board span %ldB\n",
 			mgp->sram_size, mgp->board_span);
-<<<<<<< HEAD
-=======
 		status = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto abort_with_ioremap;
 	}
 	memcpy_fromio(mgp->eeprom_strings,
@@ -4693,12 +3820,7 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (status)
 		goto abort_with_ioremap;
 
-<<<<<<< HEAD
-	for (i = 0; i < ETH_ALEN; i++)
-		netdev->dev_addr[i] = mgp->mac_addr[i];
-=======
 	eth_hw_addr_set(netdev, mgp->mac_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	myri10ge_select_firmware(mgp);
 
@@ -4724,21 +3846,6 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	myri10ge_setup_dca(mgp);
 #endif
 	pci_set_drvdata(pdev, mgp);
-<<<<<<< HEAD
-	if ((myri10ge_initial_mtu + ETH_HLEN) > MYRI10GE_MAX_ETHER_MTU)
-		myri10ge_initial_mtu = MYRI10GE_MAX_ETHER_MTU - ETH_HLEN;
-	if ((myri10ge_initial_mtu + ETH_HLEN) < 68)
-		myri10ge_initial_mtu = 68;
-
-	netdev->netdev_ops = &myri10ge_netdev_ops;
-	netdev->mtu = myri10ge_initial_mtu;
-	netdev->base_addr = mgp->iomem_base;
-	netdev->hw_features = mgp->features | NETIF_F_LRO | NETIF_F_RXCSUM;
-	netdev->features = netdev->hw_features;
-
-	if (dac_enabled)
-		netdev->features |= NETIF_F_HIGHDMA;
-=======
 
 	/* MTU range: 68 - 9000 */
 	netdev->min_mtu = ETH_MIN_MTU;
@@ -4758,7 +3865,6 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	netdev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX;
 
 	netdev->features = netdev->hw_features | NETIF_F_HIGHDMA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->vlan_features |= mgp->features;
 	if (mgp->fw_ver_tiny < 37)
@@ -4767,19 +3873,10 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		netdev->vlan_features &= ~NETIF_F_TSO;
 
 	/* make sure we can get an irq, and that MSI can be
-<<<<<<< HEAD
-	 * setup (if available).  Also ensure netdev->irq
-	 * is set to correct value if MSI is enabled */
-	status = myri10ge_request_irq(mgp);
-	if (status != 0)
-		goto abort_with_firmware;
-	netdev->irq = pdev->irq;
-=======
 	 * setup (if available). */
 	status = myri10ge_request_irq(mgp);
 	if (status != 0)
 		goto abort_with_slices;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	myri10ge_free_irq(mgp);
 
 	/* Save configuration space to be restored if the
@@ -4787,16 +3884,9 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pci_save_state(pdev);
 
 	/* Setup the watchdog timer */
-<<<<<<< HEAD
-	setup_timer(&mgp->watchdog_timer, myri10ge_watchdog_timer,
-		    (unsigned long)mgp);
-
-	SET_ETHTOOL_OPS(netdev, &myri10ge_ethtool_ops);
-=======
 	timer_setup(&mgp->watchdog_timer, myri10ge_watchdog_timer, 0);
 
 	netdev->ethtool_ops = &myri10ge_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_WORK(&mgp->watchdog_work, myri10ge_watchdog);
 	status = register_netdev(netdev);
 	if (status != 0) {
@@ -4804,16 +3894,6 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto abort_with_state;
 	}
 	if (mgp->msix_enabled)
-<<<<<<< HEAD
-		dev_info(dev, "%d MSI-X IRQs, tx bndry %d, fw %s, WC %s\n",
-			 mgp->num_slices, mgp->tx_boundary, mgp->fw_name,
-			 (mgp->wc_enabled ? "Enabled" : "Disabled"));
-	else
-		dev_info(dev, "%s IRQ %d, tx bndry %d, fw %s, WC %s\n",
-			 mgp->msi_enabled ? "MSI" : "xPIC",
-			 netdev->irq, mgp->tx_boundary, mgp->fw_name,
-			 (mgp->wc_enabled ? "Enabled" : "Disabled"));
-=======
 		dev_info(dev, "%d MSI-X IRQs, tx bndry %d, fw %s, MTRR %s, WC Enabled\n",
 			 mgp->num_slices, mgp->tx_boundary, mgp->fw_name,
 			 (mgp->wc_cookie > 0 ? "Enabled" : "Disabled"));
@@ -4822,7 +3902,6 @@ static int myri10ge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 			 mgp->msi_enabled ? "MSI" : "xPIC",
 			 pdev->irq, mgp->tx_boundary, mgp->fw_name,
 			 (mgp->wc_cookie > 0 ? "Enabled" : "Disabled"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	board_number++;
 	return 0;
@@ -4834,10 +3913,7 @@ abort_with_slices:
 	myri10ge_free_slices(mgp);
 
 abort_with_firmware:
-<<<<<<< HEAD
-=======
 	kfree(mgp->msix_vectors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	myri10ge_dummy_rdma(mgp, 0);
 
 abort_with_ioremap:
@@ -4848,14 +3924,7 @@ abort_with_ioremap:
 	iounmap(mgp->sram);
 
 abort_with_mtrr:
-<<<<<<< HEAD
-#ifdef CONFIG_MTRR
-	if (mgp->mtrr >= 0)
-		mtrr_del(mgp->mtrr, mgp->iomem_base, mgp->board_span);
-#endif
-=======
 	arch_phys_wc_del(mgp->wc_cookie);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_free_coherent(&pdev->dev, sizeof(*mgp->cmd),
 			  mgp->cmd, mgp->cmd_bus);
 
@@ -4897,40 +3966,21 @@ static void myri10ge_remove(struct pci_dev *pdev)
 	pci_restore_state(pdev);
 
 	iounmap(mgp->sram);
-<<<<<<< HEAD
-
-#ifdef CONFIG_MTRR
-	if (mgp->mtrr >= 0)
-		mtrr_del(mgp->mtrr, mgp->iomem_base, mgp->board_span);
-#endif
-	myri10ge_free_slices(mgp);
-	if (mgp->msix_vectors != NULL)
-		kfree(mgp->msix_vectors);
-=======
 	arch_phys_wc_del(mgp->wc_cookie);
 	myri10ge_free_slices(mgp);
 	kfree(mgp->msix_vectors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_free_coherent(&pdev->dev, sizeof(*mgp->cmd),
 			  mgp->cmd, mgp->cmd_bus);
 
 	set_fw_name(mgp, NULL, false);
 	free_netdev(netdev);
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define PCI_DEVICE_ID_MYRICOM_MYRI10GE_Z8E 	0x0008
 #define PCI_DEVICE_ID_MYRICOM_MYRI10GE_Z8E_9	0x0009
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(myri10ge_pci_tbl) = {
-=======
 static const struct pci_device_id myri10ge_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_MYRICOM, PCI_DEVICE_ID_MYRICOM_MYRI10GE_Z8E)},
 	{PCI_DEVICE
 	 (PCI_VENDOR_ID_MYRICOM, PCI_DEVICE_ID_MYRICOM_MYRI10GE_Z8E_9)},
@@ -4939,24 +3989,14 @@ static const struct pci_device_id myri10ge_pci_tbl[] = {
 
 MODULE_DEVICE_TABLE(pci, myri10ge_pci_tbl);
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(myri10ge_pm_ops, myri10ge_suspend, myri10ge_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver myri10ge_driver = {
 	.name = "myri10ge",
 	.probe = myri10ge_probe,
 	.remove = myri10ge_remove,
 	.id_table = myri10ge_pci_tbl,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	.suspend = myri10ge_suspend,
-	.resume = myri10ge_resume,
-#endif
-=======
 	.driver.pm = &myri10ge_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_MYRI10GE_DCA

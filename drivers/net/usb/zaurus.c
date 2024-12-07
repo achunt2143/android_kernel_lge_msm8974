@@ -1,37 +1,13 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 Pavel Machek <pavel@ucw.cz>
- * Copyright (C) 2002-2005 by David Brownell
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2002 Pavel Machek <pavel@ucw.cz>
  * Copyright (C) 2002-2005 by David Brownell
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 // #define	DEBUG			// error path messages, extra info
 // #define	VERBOSE			// more; success messages
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
 #include <linux/workqueue.h>
@@ -86,17 +62,10 @@ done:
 		fcs = crc32_le(~0, skb->data, skb->len);
 		fcs = ~fcs;
 
-<<<<<<< HEAD
-		*skb_put (skb, 1) = fcs       & 0xff;
-		*skb_put (skb, 1) = (fcs>> 8) & 0xff;
-		*skb_put (skb, 1) = (fcs>>16) & 0xff;
-		*skb_put (skb, 1) = (fcs>>24) & 0xff;
-=======
 		skb_put_u8(skb, fcs & 0xff);
 		skb_put_u8(skb, (fcs >> 8) & 0xff);
 		skb_put_u8(skb, (fcs >> 16) & 0xff);
 		skb_put_u8(skb, (fcs >> 24) & 0xff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return skb;
 }
@@ -287,14 +256,11 @@ static const struct usb_device_id	products [] = {
 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 
-<<<<<<< HEAD
-=======
 #define ZAURUS_FAKE_INTERFACE \
 	.bInterfaceClass	= USB_CLASS_COMM, \
 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
 {
 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
@@ -323,8 +289,6 @@ static const struct usb_device_id	products [] = {
 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
-<<<<<<< HEAD
-=======
 	.idProduct		= 0x8005,	/* A-300 */
 	ZAURUS_FAKE_INTERFACE,
 	.driver_info = (unsigned long)&bogus_mdlm_info,
@@ -332,14 +296,11 @@ static const struct usb_device_id	products [] = {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.idProduct		= 0x8006,	/* B-500/SL-5600 */
 	ZAURUS_MASTER_INTERFACE,
 	.driver_info = ZAURUS_PXA_INFO,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-<<<<<<< HEAD
-=======
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
 	.idProduct		= 0x8006,	/* B-500/SL-5600 */
@@ -347,7 +308,6 @@ static const struct usb_device_id	products [] = {
 	.driver_info = (unsigned long)&bogus_mdlm_info,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	          | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
 	.idProduct		= 0x8007,	/* C-700 */
@@ -355,8 +315,6 @@ static const struct usb_device_id	products [] = {
 	.driver_info = ZAURUS_PXA_INFO,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-<<<<<<< HEAD
-=======
 			  | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
 	.idProduct		= 0x8007,	/* C-700 */
@@ -364,7 +322,6 @@ static const struct usb_device_id	products [] = {
 	.driver_info = (unsigned long)&bogus_mdlm_info,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor               = 0x04DD,
 	.idProduct              = 0x9031,	/* C-750 C-760 */
@@ -384,8 +341,6 @@ static const struct usb_device_id	products [] = {
 	.driver_info = ZAURUS_PXA_INFO,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-<<<<<<< HEAD
-=======
 			    | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor		= 0x04DD,
 	.idProduct		= 0x9032,	/* SL-6000 */
@@ -393,7 +348,6 @@ static const struct usb_device_id	products [] = {
 	.driver_info = (unsigned long)&bogus_mdlm_info,
 }, {
 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 | USB_DEVICE_ID_MATCH_DEVICE,
 	.idVendor               = 0x04DD,
 	/* reported with some C860 units */
@@ -442,10 +396,7 @@ static struct usb_driver zaurus_driver = {
 	.disconnect =	usbnet_disconnect,
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
-<<<<<<< HEAD
-=======
 	.disable_hub_initiated_lpm = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(zaurus_driver);

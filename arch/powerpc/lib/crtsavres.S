@@ -41,18 +41,11 @@
 #include <asm/ppc_asm.h>
 
 	.file	"crtsavres.S"
-<<<<<<< HEAD
-	.section ".text"
-
-#ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-
-=======
 
 #ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 
 	.section ".text"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_PPC64
 
 /* Routines for saving integer registers, called by the compiler.  */
@@ -243,42 +236,6 @@ _GLOBAL(_rest32gpr_31_x)
 
 _GLOBAL(_savevr_20)
 	li	r11,-192
-<<<<<<< HEAD
-	stvx	vr20,r11,r0
-_GLOBAL(_savevr_21)
-	li	r11,-176
-	stvx	vr21,r11,r0
-_GLOBAL(_savevr_22)
-	li	r11,-160
-	stvx	vr22,r11,r0
-_GLOBAL(_savevr_23)
-	li	r11,-144
-	stvx	vr23,r11,r0
-_GLOBAL(_savevr_24)
-	li	r11,-128
-	stvx	vr24,r11,r0
-_GLOBAL(_savevr_25)
-	li	r11,-112
-	stvx	vr25,r11,r0
-_GLOBAL(_savevr_26)
-	li	r11,-96
-	stvx	vr26,r11,r0
-_GLOBAL(_savevr_27)
-	li	r11,-80
-	stvx	vr27,r11,r0
-_GLOBAL(_savevr_28)
-	li	r11,-64
-	stvx	vr28,r11,r0
-_GLOBAL(_savevr_29)
-	li	r11,-48
-	stvx	vr29,r11,r0
-_GLOBAL(_savevr_30)
-	li	r11,-32
-	stvx	vr30,r11,r0
-_GLOBAL(_savevr_31)
-	li	r11,-16
-	stvx	vr31,r11,r0
-=======
 	stvx	v20,r11,r0
 _GLOBAL(_savevr_21)
 	li	r11,-176
@@ -313,47 +270,10 @@ _GLOBAL(_savevr_30)
 _GLOBAL(_savevr_31)
 	li	r11,-16
 	stvx	v31,r11,r0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blr
 
 _GLOBAL(_restvr_20)
 	li	r11,-192
-<<<<<<< HEAD
-	lvx	vr20,r11,r0
-_GLOBAL(_restvr_21)
-	li	r11,-176
-	lvx	vr21,r11,r0
-_GLOBAL(_restvr_22)
-	li	r11,-160
-	lvx	vr22,r11,r0
-_GLOBAL(_restvr_23)
-	li	r11,-144
-	lvx	vr23,r11,r0
-_GLOBAL(_restvr_24)
-	li	r11,-128
-	lvx	vr24,r11,r0
-_GLOBAL(_restvr_25)
-	li	r11,-112
-	lvx	vr25,r11,r0
-_GLOBAL(_restvr_26)
-	li	r11,-96
-	lvx	vr26,r11,r0
-_GLOBAL(_restvr_27)
-	li	r11,-80
-	lvx	vr27,r11,r0
-_GLOBAL(_restvr_28)
-	li	r11,-64
-	lvx	vr28,r11,r0
-_GLOBAL(_restvr_29)
-	li	r11,-48
-	lvx	vr29,r11,r0
-_GLOBAL(_restvr_30)
-	li	r11,-32
-	lvx	vr30,r11,r0
-_GLOBAL(_restvr_31)
-	li	r11,-16
-	lvx	vr31,r11,r0
-=======
 	lvx	v20,r11,r0
 _GLOBAL(_restvr_21)
 	li	r11,-176
@@ -388,7 +308,6 @@ _GLOBAL(_restvr_30)
 _GLOBAL(_restvr_31)
 	li	r11,-16
 	lvx	v31,r11,r0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blr
 
 #endif /* CONFIG_ALTIVEC */
@@ -522,53 +441,6 @@ _restgpr0_31:
 .globl	_savevr_20
 _savevr_20:
 	li	r12,-192
-<<<<<<< HEAD
-	stvx	vr20,r12,r0
-.globl	_savevr_21
-_savevr_21:
-	li	r12,-176
-	stvx	vr21,r12,r0
-.globl	_savevr_22
-_savevr_22:
-	li	r12,-160
-	stvx	vr22,r12,r0
-.globl	_savevr_23
-_savevr_23:
-	li	r12,-144
-	stvx	vr23,r12,r0
-.globl	_savevr_24
-_savevr_24:
-	li	r12,-128
-	stvx	vr24,r12,r0
-.globl	_savevr_25
-_savevr_25:
-	li	r12,-112
-	stvx	vr25,r12,r0
-.globl	_savevr_26
-_savevr_26:
-	li	r12,-96
-	stvx	vr26,r12,r0
-.globl	_savevr_27
-_savevr_27:
-	li	r12,-80
-	stvx	vr27,r12,r0
-.globl	_savevr_28
-_savevr_28:
-	li	r12,-64
-	stvx	vr28,r12,r0
-.globl	_savevr_29
-_savevr_29:
-	li	r12,-48
-	stvx	vr29,r12,r0
-.globl	_savevr_30
-_savevr_30:
-	li	r12,-32
-	stvx	vr30,r12,r0
-.globl	_savevr_31
-_savevr_31:
-	li	r12,-16
-	stvx	vr31,r12,r0
-=======
 	stvx	v20,r12,r0
 .globl	_savevr_21
 _savevr_21:
@@ -614,59 +486,11 @@ _savevr_30:
 _savevr_31:
 	li	r12,-16
 	stvx	v31,r12,r0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blr
 
 .globl	_restvr_20
 _restvr_20:
 	li	r12,-192
-<<<<<<< HEAD
-	lvx	vr20,r12,r0
-.globl	_restvr_21
-_restvr_21:
-	li	r12,-176
-	lvx	vr21,r12,r0
-.globl	_restvr_22
-_restvr_22:
-	li	r12,-160
-	lvx	vr22,r12,r0
-.globl	_restvr_23
-_restvr_23:
-	li	r12,-144
-	lvx	vr23,r12,r0
-.globl	_restvr_24
-_restvr_24:
-	li	r12,-128
-	lvx	vr24,r12,r0
-.globl	_restvr_25
-_restvr_25:
-	li	r12,-112
-	lvx	vr25,r12,r0
-.globl	_restvr_26
-_restvr_26:
-	li	r12,-96
-	lvx	vr26,r12,r0
-.globl	_restvr_27
-_restvr_27:
-	li	r12,-80
-	lvx	vr27,r12,r0
-.globl	_restvr_28
-_restvr_28:
-	li	r12,-64
-	lvx	vr28,r12,r0
-.globl	_restvr_29
-_restvr_29:
-	li	r12,-48
-	lvx	vr29,r12,r0
-.globl	_restvr_30
-_restvr_30:
-	li	r12,-32
-	lvx	vr30,r12,r0
-.globl	_restvr_31
-_restvr_31:
-	li	r12,-16
-	lvx	vr31,r12,r0
-=======
 	lvx	v20,r12,r0
 .globl	_restvr_21
 _restvr_21:
@@ -712,7 +536,6 @@ _restvr_30:
 _restvr_31:
 	li	r12,-16
 	lvx	v31,r12,r0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blr
 
 #endif /* CONFIG_ALTIVEC */

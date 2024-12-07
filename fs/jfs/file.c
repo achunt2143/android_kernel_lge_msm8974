@@ -1,35 +1,12 @@
-<<<<<<< HEAD
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2002
- *   Portions Copyright (C) Christoph Hellwig, 2001-2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2002
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mm.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/posix_acl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/quotaops.h>
 #include "jfs_incore.h"
 #include "jfs_inode.h"
@@ -44,18 +21,6 @@ int jfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	struct inode *inode = file->f_mapping->host;
 	int rc = 0;
 
-<<<<<<< HEAD
-	rc = filemap_write_and_wait_range(inode->i_mapping, start, end);
-	if (rc)
-		return rc;
-
-	mutex_lock(&inode->i_mutex);
-	if (!(inode->i_state & I_DIRTY) ||
-	    (datasync && !(inode->i_state & I_DIRTY_DATASYNC))) {
-		/* Make sure committed changes hit the disk */
-		jfs_flush_journal(JFS_SBI(inode->i_sb)->log, 1);
-		mutex_unlock(&inode->i_mutex);
-=======
 	rc = file_write_and_wait_range(file, start, end);
 	if (rc)
 		return rc;
@@ -66,16 +31,11 @@ int jfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 		/* Make sure committed changes hit the disk */
 		jfs_flush_journal(JFS_SBI(inode->i_sb)->log, 1);
 		inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 
 	rc |= jfs_commit_inode(inode, 1);
-<<<<<<< HEAD
-	mutex_unlock(&inode->i_mutex);
-=======
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc ? -EIO : 0;
 }
@@ -103,11 +63,7 @@ static int jfs_open(struct inode *inode, struct file *file)
 		if (ji->active_ag == -1) {
 			struct jfs_sb_info *jfs_sb = JFS_SBI(inode->i_sb);
 			ji->active_ag = BLKTOAG(addressPXD(&ji->ixpxd), jfs_sb);
-<<<<<<< HEAD
-			atomic_inc( &jfs_sb->bmap->db_active[ji->active_ag]);
-=======
 			atomic_inc(&jfs_sb->bmap->db_active[ji->active_ag]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		spin_unlock_irq(&ji->ag_lock);
 	}
@@ -129,22 +85,6 @@ static int jfs_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-<<<<<<< HEAD
-int jfs_setattr(struct dentry *dentry, struct iattr *iattr)
-{
-	struct inode *inode = dentry->d_inode;
-	int rc;
-
-	rc = inode_change_ok(inode, iattr);
-	if (rc)
-		return rc;
-
-	if (is_quota_modification(inode, iattr))
-		dquot_initialize(inode);
-	if ((iattr->ia_valid & ATTR_UID && iattr->ia_uid != inode->i_uid) ||
-	    (iattr->ia_valid & ATTR_GID && iattr->ia_gid != inode->i_gid)) {
-		rc = dquot_transfer(inode, iattr);
-=======
 int jfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		struct iattr *iattr)
 {
@@ -163,7 +103,6 @@ int jfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	if ((iattr->ia_valid & ATTR_UID && !uid_eq(iattr->ia_uid, inode->i_uid)) ||
 	    (iattr->ia_valid & ATTR_GID && !gid_eq(iattr->ia_gid, inode->i_gid))) {
 		rc = dquot_transfer(&nop_mnt_idmap, inode, iattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return rc;
 	}
@@ -172,18 +111,6 @@ int jfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	    iattr->ia_size != i_size_read(inode)) {
 		inode_dio_wait(inode);
 
-<<<<<<< HEAD
-		rc = vmtruncate(inode, iattr->ia_size);
-		if (rc)
-			return rc;
-	}
-
-	setattr_copy(inode, iattr);
-	mark_inode_dirty(inode);
-
-	if (iattr->ia_valid & ATTR_MODE)
-		rc = jfs_acl_chmod(inode);
-=======
 		rc = inode_newsize_ok(inode, iattr->ia_size);
 		if (rc)
 			return rc;
@@ -197,21 +124,10 @@ int jfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 
 	if (iattr->ia_valid & ATTR_MODE)
 		rc = posix_acl_chmod(&nop_mnt_idmap, dentry, inode->i_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 const struct inode_operations jfs_file_inode_operations = {
-<<<<<<< HEAD
-	.truncate	= jfs_truncate,
-	.setxattr	= jfs_setxattr,
-	.getxattr	= jfs_getxattr,
-	.listxattr	= jfs_listxattr,
-	.removexattr	= jfs_removexattr,
-	.setattr	= jfs_setattr,
-#ifdef CONFIG_JFS_POSIX_ACL
-	.get_acl	= jfs_get_acl,
-=======
 	.listxattr	= jfs_listxattr,
 	.setattr	= jfs_setattr,
 	.fileattr_get	= jfs_fileattr_get,
@@ -219,28 +135,12 @@ const struct inode_operations jfs_file_inode_operations = {
 #ifdef CONFIG_JFS_POSIX_ACL
 	.get_inode_acl	= jfs_get_acl,
 	.set_acl	= jfs_set_acl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 const struct file_operations jfs_file_operations = {
 	.open		= jfs_open,
 	.llseek		= generic_file_llseek,
-<<<<<<< HEAD
-	.write		= do_sync_write,
-	.read		= do_sync_read,
-	.aio_read	= generic_file_aio_read,
-	.aio_write	= generic_file_aio_write,
-	.mmap		= generic_file_mmap,
-	.splice_read	= generic_file_splice_read,
-	.splice_write	= generic_file_splice_write,
-	.fsync		= jfs_fsync,
-	.release	= jfs_release,
-	.unlocked_ioctl = jfs_ioctl,
-#ifdef CONFIG_COMPAT
-	.compat_ioctl	= jfs_compat_ioctl,
-#endif
-=======
 	.read_iter	= generic_file_read_iter,
 	.write_iter	= generic_file_write_iter,
 	.mmap		= generic_file_mmap,
@@ -250,5 +150,4 @@ const struct file_operations jfs_file_operations = {
 	.release	= jfs_release,
 	.unlocked_ioctl = jfs_ioctl,
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

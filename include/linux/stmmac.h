@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
 
   Header file for stmmac platform data
 
   Copyright (C) 2009  STMicroelectronics Ltd
 
-<<<<<<< HEAD
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
 *******************************************************************************/
@@ -34,8 +13,6 @@
 #define __STMMAC_PLATFORM_DATA
 
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-=======
 #include <linux/phy.h>
 
 #define MTL_MAX_RX_QUEUES	8
@@ -100,26 +77,10 @@
 			| DMA_AXI_BLEN_128 | DMA_AXI_BLEN_256)
 
 struct stmmac_priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Platfrom data for platform device structure's platform_data field */
 
 struct stmmac_mdio_bus_data {
-<<<<<<< HEAD
-	int bus_id;
-	int (*phy_reset)(void *priv);
-	unsigned int phy_mask;
-	int *irqs;
-	int probed_phy_irq;
-};
-
-struct plat_stmmacenet_data {
-	int bus_id;
-	int phy_addr;
-	int interface;
-	struct stmmac_mdio_bus_data *mdio_bus_data;
-	int pbl;
-=======
 	unsigned int phy_mask;
 	unsigned int has_xpcs;
 	unsigned int xpcs_an_inband;
@@ -288,22 +249,10 @@ struct plat_stmmacenet_data {
 	struct stmmac_est *est;
 	struct stmmac_fpe_cfg *fpe_cfg;
 	struct stmmac_safety_feature_cfg *safety_feat_cfg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int clk_csr;
 	int has_gmac;
 	int enh_desc;
 	int tx_coe;
-<<<<<<< HEAD
-	int bugged_jumbo;
-	int pmt;
-	int force_sf_dma_mode;
-	void (*fix_mac_speed)(void *priv, unsigned int speed);
-	void (*bus_setup)(void __iomem *ioaddr);
-	int (*init)(struct platform_device *pdev);
-	void (*exit)(struct platform_device *pdev);
-	void *custom_cfg;
-	void *bsp_priv;
-=======
 	int rx_coe;
 	int bugged_jumbo;
 	int pmt;
@@ -365,6 +314,5 @@ struct plat_stmmacenet_data {
 	int msi_tx_base_vec;
 	const struct dwmac4_addrs *dwmac4_addrs;
 	unsigned int flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif

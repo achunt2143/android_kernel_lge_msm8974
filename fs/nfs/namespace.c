@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/nfs/namespace.c
  *
@@ -11,10 +8,7 @@
  * NFS namespace
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dcache.h>
 #include <linux/gfp.h>
 #include <linux/mount.h>
@@ -25,10 +19,7 @@
 #include <linux/vfs.h>
 #include <linux/sunrpc/gss_api.h>
 #include "internal.h"
-<<<<<<< HEAD
-=======
 #include "nfs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSDBG_FACILITY		NFSDBG_VFS
 
@@ -38,26 +29,12 @@ static LIST_HEAD(nfs_automount_list);
 static DECLARE_DELAYED_WORK(nfs_automount_task, nfs_expire_automounts);
 int nfs_mountpoint_expiry_timeout = 500 * HZ;
 
-<<<<<<< HEAD
-static struct vfsmount *nfs_do_submount(struct dentry *dentry,
-					struct nfs_fh *fh,
-					struct nfs_fattr *fattr,
-					rpc_authflavor_t authflavor);
-
-/*
- * nfs_path - reconstruct the path given an arbitrary dentry
- * @base - used to return pointer to the end of devname part of path
- * @dentry - pointer to dentry
- * @buffer - result buffer
- * @buflen - length of buffer
-=======
 /*
  * nfs_path - reconstruct the path given an arbitrary dentry
  * @base - used to return pointer to the end of devname part of path
  * @dentry_in - pointer to dentry
  * @buffer - result buffer
  * @buflen_in - length of buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flags - options (see below)
  *
  * Helper function for constructing the server pathname
@@ -72,29 +49,19 @@ static struct vfsmount *nfs_do_submount(struct dentry *dentry,
  *		       the original device (export) name
  *		       (if unset, the original name is returned verbatim)
  */
-<<<<<<< HEAD
-char *nfs_path(char **p, struct dentry *dentry, char *buffer, ssize_t buflen,
-	       unsigned flags)
-=======
 char *nfs_path(char **p, struct dentry *dentry_in, char *buffer,
 	       ssize_t buflen_in, unsigned flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *end;
 	int namelen;
 	unsigned seq;
 	const char *base;
-<<<<<<< HEAD
-
-rename_retry:
-=======
 	struct dentry *dentry;
 	ssize_t buflen;
 
 rename_retry:
 	buflen = buflen_in;
 	dentry = dentry_in;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	end = buffer+buflen;
 	*--end = '\0';
 	buflen--;
@@ -137,11 +104,7 @@ rename_retry:
 		return end;
 	}
 	namelen = strlen(base);
-<<<<<<< HEAD
-	if (flags & NFS_PATH_CANONICAL) {
-=======
 	if (*end == '/') {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Strip off excess slashes in base string */
 		while (namelen > 0 && base[namelen - 1] == '/')
 			namelen--;
@@ -165,68 +128,7 @@ Elong_unlock:
 Elong:
 	return ERR_PTR(-ENAMETOOLONG);
 }
-<<<<<<< HEAD
-
-#ifdef CONFIG_NFS_V4
-rpc_authflavor_t nfs_find_best_sec(struct nfs4_secinfo_flavors *flavors)
-{
-	struct gss_api_mech *mech;
-	struct xdr_netobj oid;
-	int i;
-	rpc_authflavor_t pseudoflavor = RPC_AUTH_UNIX;
-
-	for (i = 0; i < flavors->num_flavors; i++) {
-		struct nfs4_secinfo_flavor *flavor;
-		flavor = &flavors->flavors[i];
-
-		if (flavor->flavor == RPC_AUTH_NULL || flavor->flavor == RPC_AUTH_UNIX) {
-			pseudoflavor = flavor->flavor;
-			break;
-		} else if (flavor->flavor == RPC_AUTH_GSS) {
-			oid.len  = flavor->gss.sec_oid4.len;
-			oid.data = flavor->gss.sec_oid4.data;
-			mech = gss_mech_get_by_OID(&oid);
-			if (!mech)
-				continue;
-			pseudoflavor = gss_svc_to_pseudoflavor(mech, flavor->gss.service);
-			gss_mech_put(mech);
-			break;
-		}
-	}
-
-	return pseudoflavor;
-}
-
-static struct rpc_clnt *nfs_lookup_mountpoint(struct inode *dir,
-					      struct qstr *name,
-					      struct nfs_fh *fh,
-					      struct nfs_fattr *fattr)
-{
-	int err;
-
-	if (NFS_PROTO(dir)->version == 4)
-		return nfs4_proc_lookup_mountpoint(dir, name, fh, fattr);
-
-	err = NFS_PROTO(dir)->lookup(NFS_SERVER(dir)->client, dir, name, fh, fattr);
-	if (err)
-		return ERR_PTR(err);
-	return rpc_clone_client(NFS_SERVER(dir)->client);
-}
-#else /* CONFIG_NFS_V4 */
-static inline struct rpc_clnt *nfs_lookup_mountpoint(struct inode *dir,
-						     struct qstr *name,
-						     struct nfs_fh *fh,
-						     struct nfs_fattr *fattr)
-{
-	int err = NFS_PROTO(dir)->lookup(NFS_SERVER(dir)->client, dir, name, fh, fattr);
-	if (err)
-		return ERR_PTR(err);
-	return rpc_clone_client(NFS_SERVER(dir)->client);
-}
-#endif /* CONFIG_NFS_V4 */
-=======
 EXPORT_SYMBOL_GPL(nfs_path);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * nfs_d_automount - Handle crossing a mountpoint on the server
@@ -242,59 +144,6 @@ EXPORT_SYMBOL_GPL(nfs_path);
  */
 struct vfsmount *nfs_d_automount(struct path *path)
 {
-<<<<<<< HEAD
-	struct vfsmount *mnt;
-	struct dentry *parent;
-	struct nfs_fh *fh = NULL;
-	struct nfs_fattr *fattr = NULL;
-	struct rpc_clnt *client;
-
-	dprintk("--> nfs_d_automount()\n");
-
-	mnt = ERR_PTR(-ESTALE);
-	if (IS_ROOT(path->dentry))
-		goto out_nofree;
-
-	mnt = ERR_PTR(-ENOMEM);
-	fh = nfs_alloc_fhandle();
-	fattr = nfs_alloc_fattr();
-	if (fh == NULL || fattr == NULL)
-		goto out;
-
-	dprintk("%s: enter\n", __func__);
-
-	/* Look it up again to get its attributes */
-	parent = dget_parent(path->dentry);
-	client = nfs_lookup_mountpoint(parent->d_inode, &path->dentry->d_name, fh, fattr);
-	dput(parent);
-	if (IS_ERR(client)) {
-		mnt = ERR_CAST(client);
-		goto out;
-	}
-
-	if (fattr->valid & NFS_ATTR_FATTR_V4_REFERRAL)
-		mnt = nfs_do_refmount(client, path->dentry);
-	else
-		mnt = nfs_do_submount(path->dentry, fh, fattr, client->cl_auth->au_flavor);
-	rpc_shutdown_client(client);
-
-	if (IS_ERR(mnt))
-		goto out;
-
-	dprintk("%s: done, success\n", __func__);
-	mntget(mnt); /* prevent immediate expiration */
-	mnt_set_expiry(mnt, &nfs_automount_list);
-	schedule_delayed_work(&nfs_automount_task, nfs_mountpoint_expiry_timeout);
-
-out:
-	nfs_free_fattr(fattr);
-	nfs_free_fhandle(fh);
-out_nofree:
-	if (IS_ERR(mnt))
-		dprintk("<-- %s(): error %ld\n", __func__, PTR_ERR(mnt));
-	else
-		dprintk("<-- %s() = %p\n", __func__, mnt);
-=======
 	struct nfs_fs_context *ctx;
 	struct fs_context *fc;
 	struct vfsmount *mnt = ERR_PTR(-ENOMEM);
@@ -355,18 +204,10 @@ out_nofree:
 
 out_fc:
 	put_fs_context(fc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mnt;
 }
 
 static int
-<<<<<<< HEAD
-nfs_namespace_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
-{
-	if (NFS_FH(dentry->d_inode)->size != 0)
-		return nfs_getattr(mnt, dentry, stat);
-	generic_fillattr(dentry->d_inode, stat);
-=======
 nfs_namespace_getattr(struct mnt_idmap *idmap,
 		      const struct path *path, struct kstat *stat,
 		      u32 request_mask, unsigned int query_flags)
@@ -376,23 +217,15 @@ nfs_namespace_getattr(struct mnt_idmap *idmap,
 				   query_flags);
 	generic_fillattr(&nop_mnt_idmap, request_mask, d_inode(path->dentry),
 			 stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
-<<<<<<< HEAD
-nfs_namespace_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	if (NFS_FH(dentry->d_inode)->size != 0)
-		return nfs_setattr(dentry, attr);
-=======
 nfs_namespace_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		      struct iattr *attr)
 {
 	if (NFS_FH(d_inode(dentry))->size != 0)
 		return nfs_setattr(idmap, dentry, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EACCES;
 }
 
@@ -409,18 +242,11 @@ const struct inode_operations nfs_referral_inode_operations = {
 static void nfs_expire_automounts(struct work_struct *work)
 {
 	struct list_head *list = &nfs_automount_list;
-<<<<<<< HEAD
-
-	mark_mounts_for_expiry(list);
-	if (!list_empty(list))
-		schedule_delayed_work(&nfs_automount_task, nfs_mountpoint_expiry_timeout);
-=======
 	int timeout = READ_ONCE(nfs_mountpoint_expiry_timeout);
 
 	mark_mounts_for_expiry(list);
 	if (!list_empty(list) && timeout > 0)
 		schedule_delayed_work(&nfs_automount_task, timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nfs_release_automount_timer(void)
@@ -429,75 +255,6 @@ void nfs_release_automount_timer(void)
 		cancel_delayed_work(&nfs_automount_task);
 }
 
-<<<<<<< HEAD
-/*
- * Clone a mountpoint of the appropriate type
- */
-static struct vfsmount *nfs_do_clone_mount(struct nfs_server *server,
-					   const char *devname,
-					   struct nfs_clone_mount *mountdata)
-{
-#ifdef CONFIG_NFS_V4
-	struct vfsmount *mnt = ERR_PTR(-EINVAL);
-	switch (server->nfs_client->rpc_ops->version) {
-		case 2:
-		case 3:
-			mnt = vfs_kern_mount(&nfs_xdev_fs_type, 0, devname, mountdata);
-			break;
-		case 4:
-			mnt = vfs_kern_mount(&nfs4_xdev_fs_type, 0, devname, mountdata);
-	}
-	return mnt;
-#else
-	return vfs_kern_mount(&nfs_xdev_fs_type, 0, devname, mountdata);
-#endif
-}
-
-/**
- * nfs_do_submount - set up mountpoint when crossing a filesystem boundary
- * @dentry - parent directory
- * @fh - filehandle for new root dentry
- * @fattr - attributes for new root inode
- * @authflavor - security flavor to use when performing the mount
- *
- */
-static struct vfsmount *nfs_do_submount(struct dentry *dentry,
-					struct nfs_fh *fh,
-					struct nfs_fattr *fattr,
-					rpc_authflavor_t authflavor)
-{
-	struct nfs_clone_mount mountdata = {
-		.sb = dentry->d_sb,
-		.dentry = dentry,
-		.fh = fh,
-		.fattr = fattr,
-		.authflavor = authflavor,
-	};
-	struct vfsmount *mnt = ERR_PTR(-ENOMEM);
-	char *page = (char *) __get_free_page(GFP_USER);
-	char *devname;
-
-	dprintk("--> nfs_do_submount()\n");
-
-	dprintk("%s: submounting on %s/%s\n", __func__,
-			dentry->d_parent->d_name.name,
-			dentry->d_name.name);
-	if (page == NULL)
-		goto out;
-	devname = nfs_devname(dentry, page, PAGE_SIZE);
-	mnt = (struct vfsmount *)devname;
-	if (IS_ERR(devname))
-		goto free_page;
-	mnt = nfs_do_clone_mount(NFS_SB(dentry->d_sb), devname, &mountdata);
-free_page:
-	free_page((unsigned long)page);
-out:
-	dprintk("%s: done\n", __func__);
-
-	dprintk("<-- nfs_do_submount() = %p\n", mnt);
-	return mnt;
-}
-=======
 /**
  * nfs_do_submount - set up mountpoint when crossing a filesystem boundary
  * @fc: pointer to struct nfs_fs_context
@@ -611,4 +368,3 @@ module_param(nfs_mountpoint_expiry_timeout, nfs_timeout, 0644);
 MODULE_PARM_DESC(nfs_mountpoint_expiry_timeout,
 		"Set the NFS automounted mountpoint timeout value (seconds)."
 		"Values <= 0 turn expiration off.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

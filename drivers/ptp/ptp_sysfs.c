@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PTP 1588 clock support - sysfs interface.
  *
  * Copyright (C) 2010 OMICRON electronics GmbH
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-#include <linux/capability.h>
-=======
  * Copyright 2021 NXP
  */
 #include <linux/capability.h>
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ptp_private.h"
 
@@ -36,39 +14,6 @@ static ssize_t clock_name_show(struct device *dev,
 			       struct device_attribute *attr, char *page)
 {
 	struct ptp_clock *ptp = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	return snprintf(page, PAGE_SIZE-1, "%s\n", ptp->info->name);
-}
-
-#define PTP_SHOW_INT(name)						\
-static ssize_t name##_show(struct device *dev,				\
-			   struct device_attribute *attr, char *page)	\
-{									\
-	struct ptp_clock *ptp = dev_get_drvdata(dev);			\
-	return snprintf(page, PAGE_SIZE-1, "%d\n", ptp->info->name);	\
-}
-
-PTP_SHOW_INT(max_adj);
-PTP_SHOW_INT(n_alarm);
-PTP_SHOW_INT(n_ext_ts);
-PTP_SHOW_INT(n_per_out);
-PTP_SHOW_INT(pps);
-
-#define PTP_RO_ATTR(_var, _name) {				\
-	.attr	= { .name = __stringify(_name), .mode = 0444 },	\
-	.show	= _var##_show,					\
-}
-
-struct device_attribute ptp_dev_attrs[] = {
-	PTP_RO_ATTR(clock_name,	clock_name),
-	PTP_RO_ATTR(max_adj,	max_adjustment),
-	PTP_RO_ATTR(n_alarm,	n_alarms),
-	PTP_RO_ATTR(n_ext_ts,	n_external_timestamps),
-	PTP_RO_ATTR(n_per_out,	n_periodic_outputs),
-	PTP_RO_ATTR(pps,	pps_available),
-	__ATTR_NULL,
-};
-=======
 	return sysfs_emit(page, "%s\n", ptp->info->name);
 }
 static DEVICE_ATTR_RO(clock_name);
@@ -98,7 +43,6 @@ PTP_SHOW_INT(n_external_timestamps, n_ext_ts);
 PTP_SHOW_INT(n_periodic_outputs, n_per_out);
 PTP_SHOW_INT(n_programmable_pins, n_pins);
 PTP_SHOW_INT(pps_available, pps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t extts_enable_store(struct device *dev,
 				  struct device_attribute *attr,
@@ -124,32 +68,18 @@ static ssize_t extts_enable_store(struct device *dev,
 out:
 	return err;
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR(extts_enable, 0220, NULL, extts_enable_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t extts_fifo_show(struct device *dev,
 			       struct device_attribute *attr, char *page)
 {
 	struct ptp_clock *ptp = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	struct timestamp_event_queue *queue = &ptp->tsevq;
-=======
 	struct timestamp_event_queue *queue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ptp_extts_event event;
 	unsigned long flags;
 	size_t qcnt;
 	int cnt = 0;
 
-<<<<<<< HEAD
-	memset(&event, 0, sizeof(event));
-
-	if (mutex_lock_interruptible(&ptp->tsevq_mux))
-		return -ERESTARTSYS;
-
-=======
 	cnt = list_count_nodes(&ptp->tsevqs);
 	if (cnt <= 0)
 		goto out;
@@ -159,38 +89,24 @@ static ssize_t extts_fifo_show(struct device *dev,
 				 qlist);
 
 	memset(&event, 0, sizeof(event));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&queue->lock, flags);
 	qcnt = queue_cnt(queue);
 	if (qcnt) {
 		event = queue->buf[queue->head];
-<<<<<<< HEAD
-		queue->head = (queue->head + 1) % PTP_MAX_TIMESTAMPS;
-=======
 		/* Paired with READ_ONCE() in queue_cnt() */
 		WRITE_ONCE(queue->head, (queue->head + 1) % PTP_MAX_TIMESTAMPS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&queue->lock, flags);
 
 	if (!qcnt)
 		goto out;
 
-<<<<<<< HEAD
-	cnt = snprintf(page, PAGE_SIZE, "%u %lld %u\n",
-		       event.index, event.t.sec, event.t.nsec);
-out:
-	mutex_unlock(&ptp->tsevq_mux);
-	return cnt;
-}
-=======
 	cnt = sysfs_emit(page, "%u %lld %u\n",
 			 event.index, event.t.sec, event.t.nsec);
 out:
 	return cnt;
 }
 static DEVICE_ATTR(fifo, 0444, extts_fifo_show, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t period_store(struct device *dev,
 			    struct device_attribute *attr,
@@ -218,10 +134,7 @@ static ssize_t period_store(struct device *dev,
 out:
 	return err;
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR(period, 0220, NULL, period_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t pps_enable_store(struct device *dev,
 				struct device_attribute *attr,
@@ -248,28 +161,6 @@ static ssize_t pps_enable_store(struct device *dev,
 out:
 	return err;
 }
-<<<<<<< HEAD
-
-static DEVICE_ATTR(extts_enable, 0220, NULL, extts_enable_store);
-static DEVICE_ATTR(fifo,         0444, extts_fifo_show, NULL);
-static DEVICE_ATTR(period,       0220, NULL, period_store);
-static DEVICE_ATTR(pps_enable,   0220, NULL, pps_enable_store);
-
-int ptp_cleanup_sysfs(struct ptp_clock *ptp)
-{
-	struct device *dev = ptp->dev;
-	struct ptp_clock_info *info = ptp->info;
-
-	if (info->n_ext_ts) {
-		device_remove_file(dev, &dev_attr_extts_enable);
-		device_remove_file(dev, &dev_attr_fifo);
-	}
-	if (info->n_per_out)
-		device_remove_file(dev, &dev_attr_period);
-
-	if (info->pps)
-		device_remove_file(dev, &dev_attr_pps_enable);
-=======
 static DEVICE_ATTR(pps_enable, 0220, NULL, pps_enable_store);
 
 static int unregister_vclock(struct device *dev, void *data)
@@ -289,50 +180,10 @@ static int unregister_vclock(struct device *dev, void *data)
 	/* For break. Not error. */
 	if (*num == 0)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-int ptp_populate_sysfs(struct ptp_clock *ptp)
-{
-	struct device *dev = ptp->dev;
-	struct ptp_clock_info *info = ptp->info;
-	int err;
-
-	if (info->n_ext_ts) {
-		err = device_create_file(dev, &dev_attr_extts_enable);
-		if (err)
-			goto out1;
-		err = device_create_file(dev, &dev_attr_fifo);
-		if (err)
-			goto out2;
-	}
-	if (info->n_per_out) {
-		err = device_create_file(dev, &dev_attr_period);
-		if (err)
-			goto out3;
-	}
-	if (info->pps) {
-		err = device_create_file(dev, &dev_attr_pps_enable);
-		if (err)
-			goto out4;
-	}
-	return 0;
-out4:
-	if (info->n_per_out)
-		device_remove_file(dev, &dev_attr_period);
-out3:
-	if (info->n_ext_ts)
-		device_remove_file(dev, &dev_attr_fifo);
-out2:
-	if (info->n_ext_ts)
-		device_remove_file(dev, &dev_attr_extts_enable);
-out1:
-	return err;
-}
-=======
 static ssize_t n_vclocks_show(struct device *dev,
 			      struct device_attribute *attr, char *page)
 {
@@ -630,4 +481,3 @@ void ptp_cleanup_pin_groups(struct ptp_clock *ptp)
 	kfree(ptp->pin_attr);
 	kfree(ptp->pin_dev_attr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

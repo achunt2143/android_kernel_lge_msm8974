@@ -1,31 +1,11 @@
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/kernel.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/kernel.h>
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/string.h>
 #include <linux/bitops.h>
 #include <linux/smp.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/thread_info.h>
-#include <linux/module.h>
-#include <linux/uaccess.h>
-
-#include <asm/processor.h>
-#include <asm/pgtable.h>
-#include <asm/msr.h>
-#include <asm/bugs.h>
-#include <asm/cpu.h>
-
-#ifdef CONFIG_X86_64
-#include <linux/topology.h>
-#include <asm/numa_64.h>
-=======
 #include <linux/sched/clock.h>
 #include <linux/semaphore.h>
 #include <linux/thread_info.h>
@@ -52,7 +32,6 @@
 
 #ifdef CONFIG_X86_64
 #include <linux/topology.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #include "cpu.h"
@@ -62,9 +41,6 @@
 #include <asm/apic.h>
 #endif
 
-<<<<<<< HEAD
-static void __cpuinit early_init_intel(struct cpuinfo_x86 *c)
-=======
 enum split_lock_detect_state {
 	sld_off = 0,
 	sld_warn,
@@ -293,22 +269,13 @@ detect_keyid_bits:
 }
 
 static void early_init_intel(struct cpuinfo_x86 *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 misc_enable;
 
 	/* Unmask CPUID levels if masked: */
 	if (c->x86 > 6 || (c->x86 == 6 && c->x86_model >= 0xd)) {
-<<<<<<< HEAD
-		rdmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
-
-		if (misc_enable & MSR_IA32_MISC_ENABLE_LIMIT_CPUID) {
-			misc_enable &= ~MSR_IA32_MISC_ENABLE_LIMIT_CPUID;
-			wrmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
-=======
 		if (msr_clear_bit(MSR_IA32_MISC_ENABLE,
 				  MSR_IA32_MISC_ENABLE_LIMIT_CPUID_BIT) > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			c->cpuid_level = cpuid_eax(0);
 			get_cpu_cap(c);
 		}
@@ -318,15 +285,6 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 		(c->x86 == 0x6 && c->x86_model >= 0x0e))
 		set_cpu_cap(c, X86_FEATURE_CONSTANT_TSC);
 
-<<<<<<< HEAD
-	if (c->x86 >= 6 && !cpu_has(c, X86_FEATURE_IA64)) {
-		unsigned lower_word;
-
-		wrmsr(MSR_IA32_UCODE_REV, 0, 0);
-		/* Required by the SDM */
-		sync_core();
-		rdmsr(MSR_IA32_UCODE_REV, lower_word, c->microcode);
-=======
 	if (c->x86 >= 6 && !cpu_has(c, X86_FEATURE_IA64))
 		c->microcode = intel_get_microcode_revision();
 
@@ -344,7 +302,6 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 		setup_clear_cpu_cap(X86_FEATURE_INTEL_STIBP);
 		setup_clear_cpu_cap(X86_FEATURE_SSBD);
 		setup_clear_cpu_cap(X86_FEATURE_SPEC_CTRL_SSBD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -355,15 +312,9 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 	 * need the microcode to have already been loaded... so if it is
 	 * not, recommend a BIOS update and disable large pages.
 	 */
-<<<<<<< HEAD
-	if (c->x86 == 6 && c->x86_model == 0x1c && c->x86_mask <= 2 &&
-	    c->microcode < 0x20e) {
-		printk(KERN_WARNING "Atom PSE erratum detected, BIOS microcode update recommended\n");
-=======
 	if (c->x86 == 6 && c->x86_model == 0x1c && c->x86_stepping <= 2 &&
 	    c->microcode < 0x20e) {
 		pr_warn("Atom PSE erratum detected, BIOS microcode update recommended\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_cpu_cap(c, X86_FEATURE_PSE);
 	}
 
@@ -377,11 +328,7 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 
 	/* CPUID workaround for 0F33/0F34 CPU */
 	if (c->x86 == 0xF && c->x86_model == 0x3
-<<<<<<< HEAD
-	    && (c->x86_mask == 0x3 || c->x86_mask == 0x4))
-=======
 	    && (c->x86_stepping == 0x3 || c->x86_stepping == 0x4))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->x86_phys_bits = 36;
 
 	/*
@@ -394,10 +341,6 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 	if (c->x86_power & (1 << 8)) {
 		set_cpu_cap(c, X86_FEATURE_CONSTANT_TSC);
 		set_cpu_cap(c, X86_FEATURE_NONSTOP_TSC);
-<<<<<<< HEAD
-		if (!check_tsc_unstable())
-			sched_clock_stable = 1;
-=======
 	}
 
 	/* Penwell and Cloverview have the TSC which doesn't sleep on S3 */
@@ -412,7 +355,6 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 		default:
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -428,30 +370,6 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 	if (c->x86 == 6 && c->x86_model < 15)
 		clear_cpu_cap(c, X86_FEATURE_PAT);
 
-<<<<<<< HEAD
-#ifdef CONFIG_KMEMCHECK
-	/*
-	 * P4s have a "fast strings" feature which causes single-
-	 * stepping REP instructions to only generate a #DB on
-	 * cache-line boundaries.
-	 *
-	 * Ingo Molnar reported a Pentium D (model 6) and a Xeon
-	 * (model 2) with the same problem.
-	 */
-	if (c->x86 == 15) {
-		rdmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
-
-		if (misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING) {
-			printk(KERN_INFO "kmemcheck: Disabling fast string operations\n");
-
-			misc_enable &= ~MSR_IA32_MISC_ENABLE_FAST_STRING;
-			wrmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
-		}
-	}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If fast string is not enabled in IA32_MISC_ENABLE for any reason,
 	 * clear the fast string and enhanced fast string CPU capabilities.
@@ -459,11 +377,7 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 	if (c->x86 > 6 || (c->x86 == 6 && c->x86_model >= 0xd)) {
 		rdmsrl(MSR_IA32_MISC_ENABLE, misc_enable);
 		if (!(misc_enable & MSR_IA32_MISC_ENABLE_FAST_STRING)) {
-<<<<<<< HEAD
-			printk(KERN_INFO "Disabled fast string operations\n");
-=======
 			pr_info("Disabled fast string operations\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			setup_clear_cpu_cap(X86_FEATURE_REP_GOOD);
 			setup_clear_cpu_cap(X86_FEATURE_ERMS);
 		}
@@ -475,22 +389,14 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 	 *  the TLB when any changes are made to any of the page table entries.
 	 *  The operating system must reload CR3 to cause the TLB to be flushed"
 	 *
-<<<<<<< HEAD
-	 * As a result cpu_has_pge() in arch/x86/include/asm/tlbflush.h should
-	 * be false so that __flush_tlb_all() causes CR3 insted of CR4.PGE
-	 * to be modified
-=======
 	 * As a result, boot_cpu_has(X86_FEATURE_PGE) in arch/x86/include/asm/tlbflush.h
 	 * should be false so that __flush_tlb_all() causes CR3 instead of CR4.PGE
 	 * to be modified.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (c->x86 == 5 && c->x86_model == 9) {
 		pr_info("Disabling PGE capability bit\n");
 		setup_clear_cpu_cap(X86_FEATURE_PGE);
 	}
-<<<<<<< HEAD
-=======
 
 	check_memory_type_self_snoop_errata(c);
 
@@ -505,7 +411,6 @@ static void early_init_intel(struct cpuinfo_x86 *c)
 static void bsp_init_intel(struct cpuinfo_x86 *c)
 {
 	resctrl_cpu_detect(c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_X86_32
@@ -515,47 +420,20 @@ static void bsp_init_intel(struct cpuinfo_x86 *c)
  *	This is called before we do cpu ident work
  */
 
-<<<<<<< HEAD
-int __cpuinit ppro_with_ram_bug(void)
-=======
 int ppro_with_ram_bug(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Uses data from early_cpu_detect now */
 	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL &&
 	    boot_cpu_data.x86 == 6 &&
 	    boot_cpu_data.x86_model == 1 &&
-<<<<<<< HEAD
-	    boot_cpu_data.x86_mask < 8) {
-		printk(KERN_INFO "Pentium Pro with Errata#50 detected. Taking evasive action.\n");
-=======
 	    boot_cpu_data.x86_stepping < 8) {
 		pr_info("Pentium Pro with Errata#50 detected. Taking evasive action.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_F00F_BUG
-static void __cpuinit trap_init_f00f_bug(void)
-{
-	__set_fixmap(FIX_F00F_IDT, __pa(&idt_table), PAGE_KERNEL_RO);
-
-	/*
-	 * Update the IDT descriptor and reload the IDT so that
-	 * it uses the read-only mapped virtual address.
-	 */
-	idt_descr.address = fix_to_virt(FIX_F00F_IDT);
-	load_idt(&idt_descr);
-}
-#endif
-
-static void __cpuinit intel_smp_check(struct cpuinfo_x86 *c)
-=======
 static void intel_smp_check(struct cpuinfo_x86 *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* calling is from identify_secondary_cpu() ? */
 	if (!c->cpu_index)
@@ -565,11 +443,7 @@ static void intel_smp_check(struct cpuinfo_x86 *c)
 	 * Mask B, Pentium, but not Pentium MMX
 	 */
 	if (c->x86 == 5 &&
-<<<<<<< HEAD
-	    c->x86_mask >= 1 && c->x86_mask <= 4 &&
-=======
 	    c->x86_stepping >= 1 && c->x86_stepping <= 4 &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    c->x86_model <= 3) {
 		/*
 		 * Remember we have B step Pentia with bugs
@@ -579,27 +453,6 @@ static void intel_smp_check(struct cpuinfo_x86 *c)
 	}
 }
 
-<<<<<<< HEAD
-static void __cpuinit intel_workarounds(struct cpuinfo_x86 *c)
-{
-	unsigned long lo, hi;
-
-#ifdef CONFIG_X86_F00F_BUG
-	/*
-	 * All current models of Pentium and Pentium with MMX technology CPUs
-	 * have the F0 0F bug, which lets nonprivileged users lock up the
-	 * system.
-	 * Note that the workaround only should be initialized once...
-	 */
-	c->f00f_bug = 0;
-	if (!paravirt_enabled() && c->x86 == 5) {
-		static int f00f_workaround_enabled;
-
-		c->f00f_bug = 1;
-		if (!f00f_workaround_enabled) {
-			trap_init_f00f_bug();
-			printk(KERN_NOTICE "Intel Pentium with F0 0F bug - workaround enabled.\n");
-=======
 static int forcepae;
 static int __init forcepae_setup(char *__unused)
 {
@@ -624,7 +477,6 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 		set_cpu_bug(c, X86_BUG_F00F);
 		if (!f00f_workaround_enabled) {
 			pr_notice("Intel Pentium with F0 0F bug - workaround enabled.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			f00f_workaround_enabled = 1;
 		}
 	}
@@ -634,22 +486,6 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 	 * SEP CPUID bug: Pentium Pro reports SEP but doesn't have it until
 	 * model 3 mask 3
 	 */
-<<<<<<< HEAD
-	if ((c->x86<<8 | c->x86_model<<4 | c->x86_mask) < 0x633)
-		clear_cpu_cap(c, X86_FEATURE_SEP);
-
-	/*
-	 * P4 Xeon errata 037 workaround.
-	 * Hardware prefetcher may cause stale data to be loaded into the cache.
-	 */
-	if ((c->x86 == 15) && (c->x86_model == 1) && (c->x86_mask == 1)) {
-		rdmsr(MSR_IA32_MISC_ENABLE, lo, hi);
-		if ((lo & MSR_IA32_MISC_ENABLE_PREFETCH_DISABLE) == 0) {
-			printk (KERN_INFO "CPU: C0 stepping P4 Xeon detected.\n");
-			printk (KERN_INFO "CPU: Disabling hardware prefetching (Errata 037)\n");
-			lo |= MSR_IA32_MISC_ENABLE_PREFETCH_DISABLE;
-			wrmsr(MSR_IA32_MISC_ENABLE, lo, hi);
-=======
 	if ((c->x86<<8 | c->x86_model<<4 | c->x86_stepping) < 0x633)
 		clear_cpu_cap(c, X86_FEATURE_SEP);
 
@@ -673,7 +509,6 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 				MSR_IA32_MISC_ENABLE_PREFETCH_DISABLE_BIT) > 0) {
 			pr_info("CPU: C0 stepping P4 Xeon detected.\n");
 			pr_info("CPU: Disabling hardware prefetching (Erratum 037)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -683,15 +518,9 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 	 * integrated APIC (see 11AP erratum in "Pentium Processor
 	 * Specification Update").
 	 */
-<<<<<<< HEAD
-	if (cpu_has_apic && (c->x86<<8 | c->x86_model<<4) == 0x520 &&
-	    (c->x86_mask < 0x6 || c->x86_mask == 0xb))
-		set_cpu_cap(c, X86_FEATURE_11AP);
-=======
 	if (boot_cpu_has(X86_FEATURE_APIC) && (c->x86<<8 | c->x86_model<<4) == 0x520 &&
 	    (c->x86_stepping < 0x6 || c->x86_stepping == 0xb))
 		set_cpu_bug(c, X86_BUG_11AP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #ifdef CONFIG_X86_INTEL_USERCOPY
@@ -712,30 +541,15 @@ static void intel_workarounds(struct cpuinfo_x86 *c)
 	}
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_X86_NUMAQ
-	numaq_tsc_disable();
-#endif
-
-	intel_smp_check(c);
-}
-#else
-static void __cpuinit intel_workarounds(struct cpuinfo_x86 *c)
-=======
 	intel_smp_check(c);
 }
 #else
 static void intel_workarounds(struct cpuinfo_x86 *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif
 
-<<<<<<< HEAD
-static void __cpuinit srat_detect_node(struct cpuinfo_x86 *c)
-=======
 static void srat_detect_node(struct cpuinfo_x86 *c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_NUMA
 	unsigned node;
@@ -752,68 +566,6 @@ static void srat_detect_node(struct cpuinfo_x86 *c)
 #endif
 }
 
-<<<<<<< HEAD
-/*
- * find out the number of processor cores on the die
- */
-static int __cpuinit intel_num_cpu_cores(struct cpuinfo_x86 *c)
-{
-	unsigned int eax, ebx, ecx, edx;
-
-	if (c->cpuid_level < 4)
-		return 1;
-
-	/* Intel has a non-standard dependency on %ecx for this CPUID level. */
-	cpuid_count(4, 0, &eax, &ebx, &ecx, &edx);
-	if (eax & 0x1f)
-		return (eax >> 26) + 1;
-	else
-		return 1;
-}
-
-static void __cpuinit detect_vmx_virtcap(struct cpuinfo_x86 *c)
-{
-	/* Intel VMX MSR indicated features */
-#define X86_VMX_FEATURE_PROC_CTLS_TPR_SHADOW	0x00200000
-#define X86_VMX_FEATURE_PROC_CTLS_VNMI		0x00400000
-#define X86_VMX_FEATURE_PROC_CTLS_2ND_CTLS	0x80000000
-#define X86_VMX_FEATURE_PROC_CTLS2_VIRT_APIC	0x00000001
-#define X86_VMX_FEATURE_PROC_CTLS2_EPT		0x00000002
-#define X86_VMX_FEATURE_PROC_CTLS2_VPID		0x00000020
-
-	u32 vmx_msr_low, vmx_msr_high, msr_ctl, msr_ctl2;
-
-	clear_cpu_cap(c, X86_FEATURE_TPR_SHADOW);
-	clear_cpu_cap(c, X86_FEATURE_VNMI);
-	clear_cpu_cap(c, X86_FEATURE_FLEXPRIORITY);
-	clear_cpu_cap(c, X86_FEATURE_EPT);
-	clear_cpu_cap(c, X86_FEATURE_VPID);
-
-	rdmsr(MSR_IA32_VMX_PROCBASED_CTLS, vmx_msr_low, vmx_msr_high);
-	msr_ctl = vmx_msr_high | vmx_msr_low;
-	if (msr_ctl & X86_VMX_FEATURE_PROC_CTLS_TPR_SHADOW)
-		set_cpu_cap(c, X86_FEATURE_TPR_SHADOW);
-	if (msr_ctl & X86_VMX_FEATURE_PROC_CTLS_VNMI)
-		set_cpu_cap(c, X86_FEATURE_VNMI);
-	if (msr_ctl & X86_VMX_FEATURE_PROC_CTLS_2ND_CTLS) {
-		rdmsr(MSR_IA32_VMX_PROCBASED_CTLS2,
-		      vmx_msr_low, vmx_msr_high);
-		msr_ctl2 = vmx_msr_high | vmx_msr_low;
-		if ((msr_ctl2 & X86_VMX_FEATURE_PROC_CTLS2_VIRT_APIC) &&
-		    (msr_ctl & X86_VMX_FEATURE_PROC_CTLS_TPR_SHADOW))
-			set_cpu_cap(c, X86_FEATURE_FLEXPRIORITY);
-		if (msr_ctl2 & X86_VMX_FEATURE_PROC_CTLS2_EPT)
-			set_cpu_cap(c, X86_FEATURE_EPT);
-		if (msr_ctl2 & X86_VMX_FEATURE_PROC_CTLS2_VPID)
-			set_cpu_cap(c, X86_FEATURE_VPID);
-	}
-}
-
-static void __cpuinit init_intel(struct cpuinfo_x86 *c)
-{
-	unsigned int l2 = 0;
-
-=======
 static void init_cpuid_fault(struct cpuinfo_x86 *c)
 {
 	u64 msr;
@@ -847,24 +599,12 @@ static void bus_lock_init(void);
 
 static void init_intel(struct cpuinfo_x86 *c)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	early_init_intel(c);
 
 	intel_workarounds(c);
 
-<<<<<<< HEAD
-	/*
-	 * Detect the extended topology information if available. This
-	 * will reinitialise the initial_apicid which will be used
-	 * in init_intel_cacheinfo()
-	 */
-	detect_extended_topology(c);
-
-	l2 = init_intel_cacheinfo(c);
-=======
 	init_intel_cacheinfo(c);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (c->cpuid_level > 9) {
 		unsigned eax = cpuid_eax(10);
 		/* Check for version and the number of counters */
@@ -872,21 +612,6 @@ static void init_intel(struct cpuinfo_x86 *c)
 			set_cpu_cap(c, X86_FEATURE_ARCH_PERFMON);
 	}
 
-<<<<<<< HEAD
-	if (cpu_has_xmm2)
-		set_cpu_cap(c, X86_FEATURE_LFENCE_RDTSC);
-	if (cpu_has_ds) {
-		unsigned int l1;
-		rdmsr(MSR_IA32_MISC_ENABLE, l1, l2);
-		if (!(l1 & (1<<11)))
-			set_cpu_cap(c, X86_FEATURE_BTS);
-		if (!(l1 & (1<<12)))
-			set_cpu_cap(c, X86_FEATURE_PEBS);
-	}
-
-	if (c->x86 == 6 && c->x86_model == 29 && cpu_has_clflush)
-		set_cpu_cap(c, X86_FEATURE_CLFLUSH_MONITOR);
-=======
 	if (cpu_has(c, X86_FEATURE_XMM2))
 		set_cpu_cap(c, X86_FEATURE_LFENCE_RDTSC);
 
@@ -907,7 +632,6 @@ static void init_intel(struct cpuinfo_x86 *c)
 	if (c->x86 == 6 && boot_cpu_has(X86_FEATURE_MWAIT) &&
 		((c->x86_model == INTEL_FAM6_ATOM_GOLDMONT)))
 		set_cpu_bug(c, X86_BUG_MONITOR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_64
 	if (c->x86 == 15)
@@ -921,10 +645,7 @@ static void init_intel(struct cpuinfo_x86 *c)
 	 * Dixon is NOT a Celeron.
 	 */
 	if (c->x86 == 6) {
-<<<<<<< HEAD
-=======
 		unsigned int l2 = c->x86_cache_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *p = NULL;
 
 		switch (c->x86_model) {
@@ -938,11 +659,7 @@ static void init_intel(struct cpuinfo_x86 *c)
 		case 6:
 			if (l2 == 128)
 				p = "Celeron (Mendocino)";
-<<<<<<< HEAD
-			else if (c->x86_mask == 0 || c->x86_mask == 5)
-=======
 			else if (c->x86_stepping == 0 || c->x86_stepping == 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				p = "Celeron-A";
 			break;
 
@@ -962,46 +679,6 @@ static void init_intel(struct cpuinfo_x86 *c)
 		set_cpu_cap(c, X86_FEATURE_P3);
 #endif
 
-<<<<<<< HEAD
-	if (!cpu_has(c, X86_FEATURE_XTOPOLOGY)) {
-		/*
-		 * let's use the legacy cpuid vector 0x1 and 0x4 for topology
-		 * detection.
-		 */
-		c->x86_max_cores = intel_num_cpu_cores(c);
-#ifdef CONFIG_X86_32
-		detect_ht(c);
-#endif
-	}
-
-	/* Work around errata */
-	srat_detect_node(c);
-
-	if (cpu_has(c, X86_FEATURE_VMX))
-		detect_vmx_virtcap(c);
-
-	/*
-	 * Initialize MSR_IA32_ENERGY_PERF_BIAS if BIOS did not.
-	 * x86_energy_perf_policy(8) is available to change it at run-time
-	 */
-	if (cpu_has(c, X86_FEATURE_EPB)) {
-		u64 epb;
-
-		rdmsrl(MSR_IA32_ENERGY_PERF_BIAS, epb);
-		if ((epb & 0xF) == ENERGY_PERF_BIAS_PERFORMANCE) {
-			printk_once(KERN_WARNING "ENERGY_PERF_BIAS:"
-				" Set to 'normal', was 'performance'\n"
-				"ENERGY_PERF_BIAS: View and update with"
-				" x86_energy_perf_policy(8)\n");
-			epb = (epb & ~0xF) | ENERGY_PERF_BIAS_NORMAL;
-			wrmsrl(MSR_IA32_ENERGY_PERF_BIAS, epb);
-		}
-	}
-}
-
-#ifdef CONFIG_X86_32
-static unsigned int __cpuinit intel_size_cache(struct cpuinfo_x86 *c, unsigned int size)
-=======
 	/* Work around errata */
 	srat_detect_node(c);
 
@@ -1017,7 +694,6 @@ static unsigned int __cpuinit intel_size_cache(struct cpuinfo_x86 *c, unsigned i
 
 #ifdef CONFIG_X86_32
 static unsigned int intel_size_cache(struct cpuinfo_x86 *c, unsigned int size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Intel PIII Tualatin. This comes in two flavours.
@@ -1027,8 +703,6 @@ static unsigned int intel_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 	 */
 	if ((c->x86 == 6) && (c->x86_model == 11) && (size == 0))
 		size = 256;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * Intel Quark SoC X1000 contains a 4-way set associative
@@ -1036,19 +710,10 @@ static unsigned int intel_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 	 */
 	if ((c->x86 == 5) && (c->x86_model == 9))
 		size = 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return size;
 }
 #endif
 
-<<<<<<< HEAD
-static const struct cpu_dev __cpuinitconst intel_cpu_dev = {
-	.c_vendor	= "Intel",
-	.c_ident	= { "GenuineIntel" },
-#ifdef CONFIG_X86_32
-	.c_models = {
-		{ .vendor = X86_VENDOR_INTEL, .family = 4, .model_names =
-=======
 #define TLB_INST_4K	0x01
 #define TLB_INST_4M	0x02
 #define TLB_INST_2M_4M	0x03
@@ -1229,7 +894,6 @@ static const struct cpu_dev intel_cpu_dev = {
 #ifdef CONFIG_X86_32
 	.legacy_models = {
 		{ .family = 4, .model_names =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  {
 			  [0] = "486 DX-25/33",
 			  [1] = "486 DX-50",
@@ -1242,11 +906,7 @@ static const struct cpu_dev intel_cpu_dev = {
 			  [9] = "486 DX/4-WB"
 		  }
 		},
-<<<<<<< HEAD
-		{ .vendor = X86_VENDOR_INTEL, .family = 5, .model_names =
-=======
 		{ .family = 5, .model_names =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  {
 			  [0] = "Pentium 60/66 A-step",
 			  [1] = "Pentium 60/66",
@@ -1254,18 +914,11 @@ static const struct cpu_dev intel_cpu_dev = {
 			  [3] = "OverDrive PODP5V83",
 			  [4] = "Pentium MMX",
 			  [7] = "Mobile Pentium 75 - 200",
-<<<<<<< HEAD
-			  [8] = "Mobile Pentium MMX"
-		  }
-		},
-		{ .vendor = X86_VENDOR_INTEL, .family = 6, .model_names =
-=======
 			  [8] = "Mobile Pentium MMX",
 			  [9] = "Quark SoC X1000",
 		  }
 		},
 		{ .family = 6, .model_names =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  {
 			  [0] = "Pentium Pro A-step",
 			  [1] = "Pentium Pro",
@@ -1279,11 +932,7 @@ static const struct cpu_dev intel_cpu_dev = {
 			  [11] = "Pentium III (Tualatin)",
 		  }
 		},
-<<<<<<< HEAD
-		{ .vendor = X86_VENDOR_INTEL, .family = 15, .model_names =
-=======
 		{ .family = 15, .model_names =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  {
 			  [0] = "Pentium 4 (Unknown)",
 			  [1] = "Pentium 4 (Willamette)",
@@ -1293,25 +942,17 @@ static const struct cpu_dev intel_cpu_dev = {
 		  }
 		},
 	},
-<<<<<<< HEAD
-	.c_size_cache	= intel_size_cache,
-#endif
-	.c_early_init   = early_init_intel,
-=======
 	.legacy_cache_size = intel_size_cache,
 #endif
 	.c_detect_tlb	= intel_detect_tlb,
 	.c_early_init   = early_init_intel,
 	.c_bsp_init	= bsp_init_intel,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_init		= init_intel,
 	.c_x86_vendor	= X86_VENDOR_INTEL,
 };
 
 cpu_dev_register(intel_cpu_dev);
 
-<<<<<<< HEAD
-=======
 #undef pr_fmt
 #define pr_fmt(fmt) "x86/split lock detection: " fmt
 
@@ -1702,4 +1343,3 @@ u8 get_this_hybrid_cpu_type(void)
 
 	return cpuid_eax(0x0000001a) >> X86_HYBRID_CPU_TYPE_ID_SHIFT;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

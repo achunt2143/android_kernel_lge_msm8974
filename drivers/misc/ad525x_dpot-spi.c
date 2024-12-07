@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the Analog Devices digital potentiometers (SPI bus)
  *
  * Copyright (C) 2010-2011 Michael Hennerich, Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2 or later.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spi/spi.h>
@@ -22,30 +14,21 @@
 static int write8(void *client, u8 val)
 {
 	u8 data = val;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return spi_write(client, &data, 1);
 }
 
 static int write16(void *client, u8 reg, u8 val)
 {
 	u8 data[2] = {reg, val};
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return spi_write(client, data, 2);
 }
 
 static int write24(void *client, u8 reg, u16 val)
 {
 	u8 data[3] = {reg, val >> 8, val};
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return spi_write(client, data, 3);
 }
 
@@ -53,10 +36,7 @@ static int read8(void *client)
 {
 	int ret;
 	u8 data;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spi_read(client, &data, 1);
 	if (ret < 0)
 		return ret;
@@ -98,11 +78,7 @@ static const struct ad_dpot_bus_ops bops = {
 	.write_r8d8	= write16,
 	.write_r8d16	= write24,
 };
-<<<<<<< HEAD
-static int __devinit ad_dpot_spi_probe(struct spi_device *spi)
-=======
 static int ad_dpot_spi_probe(struct spi_device *spi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ad_dpot_bus_data bdata = {
 		.client = spi,
@@ -114,15 +90,9 @@ static int ad_dpot_spi_probe(struct spi_device *spi)
 			     spi_get_device_id(spi)->name);
 }
 
-<<<<<<< HEAD
-static int __devexit ad_dpot_spi_remove(struct spi_device *spi)
-{
-	return ad_dpot_remove(&spi->dev);
-=======
 static void ad_dpot_spi_remove(struct spi_device *spi)
 {
 	ad_dpot_remove(&spi->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct spi_device_id ad_dpot_spi_id[] = {
@@ -161,26 +131,15 @@ MODULE_DEVICE_TABLE(spi, ad_dpot_spi_id);
 static struct spi_driver ad_dpot_spi_driver = {
 	.driver = {
 		.name	= "ad_dpot",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe		= ad_dpot_spi_probe,
-	.remove		= __devexit_p(ad_dpot_spi_remove),
-=======
 	},
 	.probe		= ad_dpot_spi_probe,
 	.remove		= ad_dpot_spi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= ad_dpot_spi_id,
 };
 
 module_spi_driver(ad_dpot_spi_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-=======
 MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("digital potentiometer SPI bus driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("spi:ad_dpot");

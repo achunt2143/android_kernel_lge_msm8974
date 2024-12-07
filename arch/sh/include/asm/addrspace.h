@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 1999 by Kaz Kojima
  *
@@ -14,11 +7,6 @@
 #ifndef __ASM_SH_ADDRSPACE_H
 #define __ASM_SH_ADDRSPACE_H
 
-<<<<<<< HEAD
-#ifdef __KERNEL__
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <cpu/addrspace.h>
 
 /* If this CPU supports segmentation, hook up the helpers */
@@ -72,8 +60,4 @@
 #define P3_ADDR_MAX		P4SEG
 #endif
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_ADDRSPACE_H */

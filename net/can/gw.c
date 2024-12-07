@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/*
- * gw.c - CAN frame Gateway/Router/Bridge with netlink interface
- *
- * Copyright (c) 2011 Volkswagen Group Electronic Research
-=======
 // SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
 /* gw.c - CAN frame Gateway/Router/Bridge with netlink interface
  *
  * Copyright (c) 2019 Volkswagen Group Electronic Research
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,10 +42,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-=======
 #include <linux/kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/spinlock.h>
 #include <linux/rcupdate.h>
@@ -63,33 +53,17 @@
 #include <linux/skbuff.h>
 #include <linux/can.h>
 #include <linux/can/core.h>
-<<<<<<< HEAD
-=======
 #include <linux/can/skb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/can/gw.h>
 #include <net/rtnetlink.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
 
-<<<<<<< HEAD
-#define CAN_GW_VERSION "20101209"
-static __initdata const char banner[] =
-	KERN_INFO "can: netlink gateway (rev " CAN_GW_VERSION ")\n";
-=======
 #define CAN_GW_NAME "can-gw"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("PF_CAN netlink gateway");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_AUTHOR("Oliver Hartkopp <oliver.hartkopp@volkswagen.de>");
-<<<<<<< HEAD
-MODULE_ALIAS("can-gw");
-
-HLIST_HEAD(cgw_list);
-static struct notifier_block notifier;
-
-=======
 MODULE_ALIAS(CAN_GW_NAME);
 
 #define CGW_MIN_HOPS 1
@@ -105,23 +79,15 @@ MODULE_PARM_DESC(max_hops,
 		 "default: " __stringify(CGW_DEFAULT_HOPS) ")");
 
 static struct notifier_block notifier;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct kmem_cache *cgw_cache __read_mostly;
 
 /* structure that contains the (on-the-fly) CAN frame modifications */
 struct cf_mod {
 	struct {
-<<<<<<< HEAD
-		struct can_frame and;
-		struct can_frame or;
-		struct can_frame xor;
-		struct can_frame set;
-=======
 		struct canfd_frame and;
 		struct canfd_frame or;
 		struct canfd_frame xor;
 		struct canfd_frame set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} modframe;
 	struct {
 		u8 and;
@@ -129,11 +95,7 @@ struct cf_mod {
 		u8 xor;
 		u8 set;
 	} modtype;
-<<<<<<< HEAD
-	void (*modfunc[MAX_MODFUNCTIONS])(struct can_frame *cf,
-=======
 	void (*modfunc[MAX_MODFUNCTIONS])(struct canfd_frame *cf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  struct cf_mod *mod);
 
 	/* CAN frame checksum calculation after CAN frame modifications */
@@ -142,16 +104,6 @@ struct cf_mod {
 		struct cgw_csum_crc8 crc8;
 	} csum;
 	struct {
-<<<<<<< HEAD
-		void (*xor)(struct can_frame *cf, struct cgw_csum_xor *xor);
-		void (*crc8)(struct can_frame *cf, struct cgw_csum_crc8 *crc8);
-	} csumfunc;
-};
-
-
-/*
- * So far we just support CAN -> CAN routing and frame modifications.
-=======
 		void (*xor)(struct canfd_frame *cf,
 			    struct cgw_csum_xor *xor);
 		void (*crc8)(struct canfd_frame *cf,
@@ -161,7 +113,6 @@ struct cf_mod {
 };
 
 /* So far we just support CAN -> CAN routing and frame modifications.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The internal can_can_gw structure contains data and attributes for
  * a CAN -> CAN gateway job.
@@ -178,10 +129,7 @@ struct cgw_job {
 	struct rcu_head rcu;
 	u32 handled_frames;
 	u32 dropped_frames;
-<<<<<<< HEAD
-=======
 	u32 deleted_frames;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cf_mod mod;
 	union {
 		/* CAN frame data source */
@@ -196,37 +144,12 @@ struct cgw_job {
 		/* tbc */
 	};
 	u8 gwtype;
-<<<<<<< HEAD
-=======
 	u8 limit_hops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 flags;
 };
 
 /* modification functions that are invoked in the hot path in can_can_gw_rcv */
 
-<<<<<<< HEAD
-#define MODFUNC(func, op) static void func(struct can_frame *cf, \
-					   struct cf_mod *mod) { op ; }
-
-MODFUNC(mod_and_id, cf->can_id &= mod->modframe.and.can_id)
-MODFUNC(mod_and_dlc, cf->can_dlc &= mod->modframe.and.can_dlc)
-MODFUNC(mod_and_data, *(u64 *)cf->data &= *(u64 *)mod->modframe.and.data)
-MODFUNC(mod_or_id, cf->can_id |= mod->modframe.or.can_id)
-MODFUNC(mod_or_dlc, cf->can_dlc |= mod->modframe.or.can_dlc)
-MODFUNC(mod_or_data, *(u64 *)cf->data |= *(u64 *)mod->modframe.or.data)
-MODFUNC(mod_xor_id, cf->can_id ^= mod->modframe.xor.can_id)
-MODFUNC(mod_xor_dlc, cf->can_dlc ^= mod->modframe.xor.can_dlc)
-MODFUNC(mod_xor_data, *(u64 *)cf->data ^= *(u64 *)mod->modframe.xor.data)
-MODFUNC(mod_set_id, cf->can_id = mod->modframe.set.can_id)
-MODFUNC(mod_set_dlc, cf->can_dlc = mod->modframe.set.can_dlc)
-MODFUNC(mod_set_data, *(u64 *)cf->data = *(u64 *)mod->modframe.set.data)
-
-static inline void canframecpy(struct can_frame *dst, struct can_frame *src)
-{
-	/*
-	 * Copy the struct members separately to ensure that no uninitialized
-=======
 #define MODFUNC(func, op) static void func(struct canfd_frame *cf, \
 					   struct cf_mod *mod) { op ; }
 
@@ -341,22 +264,11 @@ static void mod_set_ccdlc(struct canfd_frame *cf, struct cf_mod *mod)
 static void canframecpy(struct canfd_frame *dst, struct can_frame *src)
 {
 	/* Copy the struct members separately to ensure that no uninitialized
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * data are copied in the 3 bytes hole of the struct. This is needed
 	 * to make easy compares of the data in the struct cf_mod.
 	 */
 
 	dst->can_id = src->can_id;
-<<<<<<< HEAD
-	dst->can_dlc = src->can_dlc;
-	*(u64 *)dst->data = *(u64 *)src->data;
-}
-
-static int cgw_chk_csum_parms(s8 fr, s8 to, s8 re)
-{
-	/*
-	 * absolute dlc values 0 .. 7 => 0 .. 7, e.g. data [0]
-=======
 	dst->len = src->len;
 	*(u64 *)dst->data = *(u64 *)src->data;
 }
@@ -382,7 +294,6 @@ static int cgw_chk_csum_parms(s8 fr, s8 to, s8 re, struct rtcanmsg *r)
 		dlen = CANFD_MAX_DLEN;
 
 	/* absolute dlc values 0 .. 7 => 0 .. 7, e.g. data [0]
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * relative to received dlc -1 .. -8 :
 	 * e.g. for received dlc = 8
 	 * -1 => index = 7 (data[7])
@@ -390,48 +301,27 @@ static int cgw_chk_csum_parms(s8 fr, s8 to, s8 re, struct rtcanmsg *r)
 	 * -8 => index = 0 (data[0])
 	 */
 
-<<<<<<< HEAD
-	if (fr > -9 && fr < 8 &&
-	    to > -9 && to < 8 &&
-	    re > -9 && re < 8)
-=======
 	if (fr >= -dlen && fr < dlen &&
 	    to >= -dlen && to < dlen &&
 	    re >= -dlen && re < dlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	else
 		return -EINVAL;
 }
 
-<<<<<<< HEAD
-static inline int calc_idx(int idx, int rx_dlc)
-{
-	if (idx < 0)
-		return rx_dlc + idx;
-=======
 static inline int calc_idx(int idx, int rx_len)
 {
 	if (idx < 0)
 		return rx_len + idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return idx;
 }
 
-<<<<<<< HEAD
-static void cgw_csum_xor_rel(struct can_frame *cf, struct cgw_csum_xor *xor)
-{
-	int from = calc_idx(xor->from_idx, cf->can_dlc);
-	int to = calc_idx(xor->to_idx, cf->can_dlc);
-	int res = calc_idx(xor->result_idx, cf->can_dlc);
-=======
 static void cgw_csum_xor_rel(struct canfd_frame *cf, struct cgw_csum_xor *xor)
 {
 	int from = calc_idx(xor->from_idx, cf->len);
 	int to = calc_idx(xor->to_idx, cf->len);
 	int res = calc_idx(xor->result_idx, cf->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 val = xor->init_xor_val;
 	int i;
 
@@ -449,11 +339,7 @@ static void cgw_csum_xor_rel(struct canfd_frame *cf, struct cgw_csum_xor *xor)
 	cf->data[res] = val;
 }
 
-<<<<<<< HEAD
-static void cgw_csum_xor_pos(struct can_frame *cf, struct cgw_csum_xor *xor)
-=======
 static void cgw_csum_xor_pos(struct canfd_frame *cf, struct cgw_csum_xor *xor)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 val = xor->init_xor_val;
 	int i;
@@ -464,11 +350,7 @@ static void cgw_csum_xor_pos(struct canfd_frame *cf, struct cgw_csum_xor *xor)
 	cf->data[xor->result_idx] = val;
 }
 
-<<<<<<< HEAD
-static void cgw_csum_xor_neg(struct can_frame *cf, struct cgw_csum_xor *xor)
-=======
 static void cgw_csum_xor_neg(struct canfd_frame *cf, struct cgw_csum_xor *xor)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 val = xor->init_xor_val;
 	int i;
@@ -479,20 +361,12 @@ static void cgw_csum_xor_neg(struct canfd_frame *cf, struct cgw_csum_xor *xor)
 	cf->data[xor->result_idx] = val;
 }
 
-<<<<<<< HEAD
-static void cgw_csum_crc8_rel(struct can_frame *cf, struct cgw_csum_crc8 *crc8)
-{
-	int from = calc_idx(crc8->from_idx, cf->can_dlc);
-	int to = calc_idx(crc8->to_idx, cf->can_dlc);
-	int res = calc_idx(crc8->result_idx, cf->can_dlc);
-=======
 static void cgw_csum_crc8_rel(struct canfd_frame *cf,
 			      struct cgw_csum_crc8 *crc8)
 {
 	int from = calc_idx(crc8->from_idx, cf->len);
 	int to = calc_idx(crc8->to_idx, cf->len);
 	int res = calc_idx(crc8->result_idx, cf->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 crc = crc8->init_crc_val;
 	int i;
 
@@ -501,35 +375,6 @@ static void cgw_csum_crc8_rel(struct canfd_frame *cf,
 
 	if (from <= to) {
 		for (i = crc8->from_idx; i <= crc8->to_idx; i++)
-<<<<<<< HEAD
-			crc = crc8->crctab[crc^cf->data[i]];
-	} else {
-		for (i = crc8->from_idx; i >= crc8->to_idx; i--)
-			crc = crc8->crctab[crc^cf->data[i]];
-	}
-
-	switch (crc8->profile) {
-
-	case CGW_CRC8PRF_1U8:
-		crc = crc8->crctab[crc^crc8->profile_data[0]];
-		break;
-
-	case  CGW_CRC8PRF_16U8:
-		crc = crc8->crctab[crc^crc8->profile_data[cf->data[1] & 0xF]];
-		break;
-
-	case CGW_CRC8PRF_SFFID_XOR:
-		crc = crc8->crctab[crc^(cf->can_id & 0xFF)^
-				   (cf->can_id >> 8 & 0xFF)];
-		break;
-
-	}
-
-	cf->data[crc8->result_idx] = crc^crc8->final_xor_val;
-}
-
-static void cgw_csum_crc8_pos(struct can_frame *cf, struct cgw_csum_crc8 *crc8)
-=======
 			crc = crc8->crctab[crc ^ cf->data[i]];
 	} else {
 		for (i = crc8->from_idx; i >= crc8->to_idx; i--)
@@ -556,28 +401,11 @@ static void cgw_csum_crc8_pos(struct can_frame *cf, struct cgw_csum_crc8 *crc8)
 
 static void cgw_csum_crc8_pos(struct canfd_frame *cf,
 			      struct cgw_csum_crc8 *crc8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 crc = crc8->init_crc_val;
 	int i;
 
 	for (i = crc8->from_idx; i <= crc8->to_idx; i++)
-<<<<<<< HEAD
-		crc = crc8->crctab[crc^cf->data[i]];
-
-	switch (crc8->profile) {
-
-	case CGW_CRC8PRF_1U8:
-		crc = crc8->crctab[crc^crc8->profile_data[0]];
-		break;
-
-	case  CGW_CRC8PRF_16U8:
-		crc = crc8->crctab[crc^crc8->profile_data[cf->data[1] & 0xF]];
-		break;
-
-	case CGW_CRC8PRF_SFFID_XOR:
-		crc = crc8->crctab[crc^(cf->can_id & 0xFF)^
-=======
 		crc = crc8->crctab[crc ^ cf->data[i]];
 
 	switch (crc8->profile) {
@@ -591,44 +419,20 @@ static void cgw_csum_crc8_pos(struct canfd_frame *cf,
 
 	case CGW_CRC8PRF_SFFID_XOR:
 		crc = crc8->crctab[crc ^ (cf->can_id & 0xFF) ^
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   (cf->can_id >> 8 & 0xFF)];
 		break;
 	}
 
-<<<<<<< HEAD
-	cf->data[crc8->result_idx] = crc^crc8->final_xor_val;
-}
-
-static void cgw_csum_crc8_neg(struct can_frame *cf, struct cgw_csum_crc8 *crc8)
-=======
 	cf->data[crc8->result_idx] = crc ^ crc8->final_xor_val;
 }
 
 static void cgw_csum_crc8_neg(struct canfd_frame *cf,
 			      struct cgw_csum_crc8 *crc8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 crc = crc8->init_crc_val;
 	int i;
 
 	for (i = crc8->from_idx; i >= crc8->to_idx; i--)
-<<<<<<< HEAD
-		crc = crc8->crctab[crc^cf->data[i]];
-
-	switch (crc8->profile) {
-
-	case CGW_CRC8PRF_1U8:
-		crc = crc8->crctab[crc^crc8->profile_data[0]];
-		break;
-
-	case  CGW_CRC8PRF_16U8:
-		crc = crc8->crctab[crc^crc8->profile_data[cf->data[1] & 0xF]];
-		break;
-
-	case CGW_CRC8PRF_SFFID_XOR:
-		crc = crc8->crctab[crc^(cf->can_id & 0xFF)^
-=======
 		crc = crc8->crctab[crc ^ cf->data[i]];
 
 	switch (crc8->profile) {
@@ -642,31 +446,17 @@ static void cgw_csum_crc8_neg(struct canfd_frame *cf,
 
 	case CGW_CRC8PRF_SFFID_XOR:
 		crc = crc8->crctab[crc ^ (cf->can_id & 0xFF) ^
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   (cf->can_id >> 8 & 0xFF)];
 		break;
 	}
 
-<<<<<<< HEAD
-	cf->data[crc8->result_idx] = crc^crc8->final_xor_val;
-=======
 	cf->data[crc8->result_idx] = crc ^ crc8->final_xor_val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* the receive & process & send function */
 static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 {
 	struct cgw_job *gwj = (struct cgw_job *)data;
-<<<<<<< HEAD
-	struct can_frame *cf;
-	struct sk_buff *nskb;
-	int modidx = 0;
-
-	/* do not handle already routed frames - see comment below */
-	if (skb_mac_header_was_set(skb))
-		return;
-=======
 	struct canfd_frame *cf;
 	struct sk_buff *nskb;
 	int modidx = 0;
@@ -700,24 +490,18 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 		gwj->deleted_frames++;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(gwj->dst.dev->flags & IFF_UP)) {
 		gwj->dropped_frames++;
 		return;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * clone the given skb, which has not been done in can_rcv()
-=======
 	/* is sending the skb back to the incoming interface not allowed? */
 	if (!(gwj->flags & CGW_FLAGS_CAN_IIF_TX_OK) &&
 	    can_skb_prv(skb)->ifindex == gwj->dst.dev->ifindex)
 		return;
 
 	/* clone the given skb, which has not been done in can_rcv()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * When there is at least one modification function activated,
 	 * we need to copy the skb as we want to modify skb->data.
@@ -732,21 +516,6 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 		return;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Mark routed frames by setting some mac header length which is
-	 * not relevant for the CAN frames located in the skb->data section.
-	 *
-	 * As dev->header_ops is not set in CAN netdevices no one is ever
-	 * accessing the various header offsets in the CAN skbuffs anyway.
-	 * E.g. using the packet socket to read CAN frames is still working.
-	 */
-	skb_set_mac_header(nskb, 8);
-	nskb->dev = gwj->dst.dev;
-
-	/* pointer to modifiable CAN frame */
-	cf = (struct can_frame *)nskb->data;
-=======
 	/* put the incremented hop counter in the cloned skb */
 	cgw_hops(nskb) = cgw_hops(skb) + 1;
 
@@ -758,16 +527,11 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 
 	/* pointer to modifiable CAN frame */
 	cf = (struct canfd_frame *)nskb->data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* perform preprocessed modification functions if there are any */
 	while (modidx < MAX_MODFUNCTIONS && gwj->mod.modfunc[modidx])
 		(*gwj->mod.modfunc[modidx++])(cf, &gwj->mod);
 
-<<<<<<< HEAD
-	/* check for checksum updates when the CAN frame has been modified */
-	if (modidx) {
-=======
 	/* Has the CAN frame been modified? */
 	if (modidx) {
 		/* get available space for the processed CAN frame type */
@@ -782,7 +546,6 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 		}
 
 		/* check for checksum updates */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (gwj->mod.csumfunc.crc8)
 			(*gwj->mod.csumfunc.crc8)(cf, &gwj->mod.csum.crc8);
 
@@ -792,11 +555,7 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 
 	/* clear the skb timestamp if not configured the other way */
 	if (!(gwj->flags & CGW_FLAGS_CAN_SRC_TSTAMP))
-<<<<<<< HEAD
-		nskb->tstamp.tv64 = 0;
-=======
 		nskb->tstamp = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* send to netdevice */
 	if (can_send(nskb, gwj->flags & CGW_FLAGS_CAN_ECHO))
@@ -805,28 +564,6 @@ static void can_can_gw_rcv(struct sk_buff *skb, void *data)
 		gwj->handled_frames++;
 }
 
-<<<<<<< HEAD
-static inline int cgw_register_filter(struct cgw_job *gwj)
-{
-	return can_rx_register(gwj->src.dev, gwj->ccgw.filter.can_id,
-			       gwj->ccgw.filter.can_mask, can_can_gw_rcv,
-			       gwj, "gw");
-}
-
-static inline void cgw_unregister_filter(struct cgw_job *gwj)
-{
-	can_rx_unregister(gwj->src.dev, gwj->ccgw.filter.can_id,
-			  gwj->ccgw.filter.can_mask, can_can_gw_rcv, gwj);
-}
-
-static int cgw_notifier(struct notifier_block *nb,
-			unsigned long msg, void *data)
-{
-	struct net_device *dev = (struct net_device *)data;
-
-	if (!net_eq(dev_net(dev), &init_net))
-		return NOTIFY_DONE;
-=======
 static inline int cgw_register_filter(struct net *net, struct cgw_job *gwj)
 {
 	return can_rx_register(net, gwj->src.dev, gwj->ccgw.filter.can_id,
@@ -853,25 +590,10 @@ static int cgw_notifier(struct notifier_block *nb,
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
 	struct net *net = dev_net(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->type != ARPHRD_CAN)
 		return NOTIFY_DONE;
 
 	if (msg == NETDEV_UNREGISTER) {
-<<<<<<< HEAD
-
-		struct cgw_job *gwj = NULL;
-		struct hlist_node *n, *nx;
-
-		ASSERT_RTNL();
-
-		hlist_for_each_entry_safe(gwj, n, nx, &cgw_list, list) {
-
-			if (gwj->src.dev == dev || gwj->dst.dev == dev) {
-				hlist_del(&gwj->list);
-				cgw_unregister_filter(gwj);
-				kmem_cache_free(cgw_cache, gwj);
-=======
 		struct cgw_job *gwj = NULL;
 		struct hlist_node *nx;
 
@@ -882,7 +604,6 @@ static int cgw_notifier(struct notifier_block *nb,
 				hlist_del(&gwj->list);
 				cgw_unregister_filter(net, gwj);
 				call_rcu(&gwj->rcu, cgw_job_free_rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -890,13 +611,6 @@ static int cgw_notifier(struct notifier_block *nb,
 	return NOTIFY_DONE;
 }
 
-<<<<<<< HEAD
-static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj)
-{
-	struct cgw_frame_mod mb;
-	struct rtcanmsg *rtcan;
-	struct nlmsghdr *nlh = nlmsg_put(skb, 0, 0, 0, sizeof(*rtcan), 0);
-=======
 static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj, int type,
 		       u32 pid, u32 seq, int flags)
 {
@@ -904,7 +618,6 @@ static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj, int type,
 	struct nlmsghdr *nlh;
 
 	nlh = nlmsg_put(skb, pid, seq, type, sizeof(*rtcan), flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nlh)
 		return -EMSGSIZE;
 
@@ -918,66 +631,20 @@ static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj, int type,
 	if (gwj->handled_frames) {
 		if (nla_put_u32(skb, CGW_HANDLED, gwj->handled_frames) < 0)
 			goto cancel;
-<<<<<<< HEAD
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(u32));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (gwj->dropped_frames) {
 		if (nla_put_u32(skb, CGW_DROPPED, gwj->dropped_frames) < 0)
 			goto cancel;
-<<<<<<< HEAD
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(u32));
-=======
 	}
 
 	if (gwj->deleted_frames) {
 		if (nla_put_u32(skb, CGW_DELETED, gwj->deleted_frames) < 0)
 			goto cancel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* check non default settings of attributes */
 
-<<<<<<< HEAD
-	if (gwj->mod.modtype.and) {
-		memcpy(&mb.cf, &gwj->mod.modframe.and, sizeof(mb.cf));
-		mb.modtype = gwj->mod.modtype.and;
-		if (nla_put(skb, CGW_MOD_AND, sizeof(mb), &mb) < 0)
-			goto cancel;
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(mb));
-	}
-
-	if (gwj->mod.modtype.or) {
-		memcpy(&mb.cf, &gwj->mod.modframe.or, sizeof(mb.cf));
-		mb.modtype = gwj->mod.modtype.or;
-		if (nla_put(skb, CGW_MOD_OR, sizeof(mb), &mb) < 0)
-			goto cancel;
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(mb));
-	}
-
-	if (gwj->mod.modtype.xor) {
-		memcpy(&mb.cf, &gwj->mod.modframe.xor, sizeof(mb.cf));
-		mb.modtype = gwj->mod.modtype.xor;
-		if (nla_put(skb, CGW_MOD_XOR, sizeof(mb), &mb) < 0)
-			goto cancel;
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(mb));
-	}
-
-	if (gwj->mod.modtype.set) {
-		memcpy(&mb.cf, &gwj->mod.modframe.set, sizeof(mb.cf));
-		mb.modtype = gwj->mod.modtype.set;
-		if (nla_put(skb, CGW_MOD_SET, sizeof(mb), &mb) < 0)
-			goto cancel;
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(mb));
-=======
 	if (gwj->limit_hops) {
 		if (nla_put_u8(skb, CGW_LIM_HOPS, gwj->limit_hops) < 0)
 			goto cancel;
@@ -1048,64 +715,29 @@ static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj, int type,
 	if (gwj->mod.uid) {
 		if (nla_put_u32(skb, CGW_MOD_UID, gwj->mod.uid) < 0)
 			goto cancel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (gwj->mod.csumfunc.crc8) {
 		if (nla_put(skb, CGW_CS_CRC8, CGW_CS_CRC8_LEN,
 			    &gwj->mod.csum.crc8) < 0)
 			goto cancel;
-<<<<<<< HEAD
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + \
-				NLA_ALIGN(CGW_CS_CRC8_LEN);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (gwj->mod.csumfunc.xor) {
 		if (nla_put(skb, CGW_CS_XOR, CGW_CS_XOR_LEN,
 			    &gwj->mod.csum.xor) < 0)
 			goto cancel;
-<<<<<<< HEAD
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + \
-				NLA_ALIGN(CGW_CS_XOR_LEN);
 	}
 
 	if (gwj->gwtype == CGW_TYPE_CAN_CAN) {
-
-=======
-	}
-
-	if (gwj->gwtype == CGW_TYPE_CAN_CAN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (gwj->ccgw.filter.can_id || gwj->ccgw.filter.can_mask) {
 			if (nla_put(skb, CGW_FILTER, sizeof(struct can_filter),
 				    &gwj->ccgw.filter) < 0)
 				goto cancel;
-<<<<<<< HEAD
-			else
-				nlh->nlmsg_len += NLA_HDRLEN +
-					NLA_ALIGN(sizeof(struct can_filter));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (nla_put_u32(skb, CGW_SRC_IF, gwj->ccgw.src_idx) < 0)
 			goto cancel;
-<<<<<<< HEAD
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(u32));
-
-		if (nla_put_u32(skb, CGW_DST_IF, gwj->ccgw.dst_idx) < 0)
-			goto cancel;
-		else
-			nlh->nlmsg_len += NLA_HDRLEN + NLA_ALIGN(sizeof(u32));
-	}
-
-	return skb->len;
-=======
 
 		if (nla_put_u32(skb, CGW_DST_IF, gwj->ccgw.dst_idx) < 0)
 			goto cancel;
@@ -1113,7 +745,6 @@ static int cgw_put_job(struct sk_buff *skb, struct cgw_job *gwj, int type,
 
 	nlmsg_end(skb, nlh);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 cancel:
 	nlmsg_cancel(skb, nlh);
@@ -1123,24 +754,12 @@ cancel:
 /* Dump information about all CAN gateway jobs, in response to RTM_GETROUTE */
 static int cgw_dump_jobs(struct sk_buff *skb, struct netlink_callback *cb)
 {
-<<<<<<< HEAD
-	struct cgw_job *gwj = NULL;
-	struct hlist_node *n;
-=======
 	struct net *net = sock_net(skb->sk);
 	struct cgw_job *gwj = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int idx = 0;
 	int s_idx = cb->args[0];
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	hlist_for_each_entry_rcu(gwj, n, &cgw_list, list) {
-		if (idx < s_idx)
-			goto cont;
-
-		if (cgw_put_job(skb, gwj) < 0)
-=======
 	hlist_for_each_entry_rcu(gwj, &net->can.cgw_list, list) {
 		if (idx < s_idx)
 			goto cont;
@@ -1148,7 +767,6 @@ static int cgw_dump_jobs(struct sk_buff *skb, struct netlink_callback *cb)
 		if (cgw_put_job(skb, gwj, RTM_NEWROUTE,
 				NETLINK_CB(cb->skb).portid,
 				cb->nlh->nlmsg_seq, NLM_F_MULTI) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 cont:
 		idx++;
@@ -1160,14 +778,6 @@ cont:
 	return skb->len;
 }
 
-<<<<<<< HEAD
-/* check for common and gwtype specific attributes */
-static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
-			  u8 gwtype, void *gwtypeattr)
-{
-	struct nlattr *tb[CGW_MAX+1];
-	struct cgw_frame_mod mb;
-=======
 static const struct nla_policy cgw_policy[CGW_MAX + 1] = {
 	[CGW_MOD_AND]	= { .len = sizeof(struct cgw_frame_mod) },
 	[CGW_MOD_OR]	= { .len = sizeof(struct cgw_frame_mod) },
@@ -1192,87 +802,12 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 {
 	struct nlattr *tb[CGW_MAX + 1];
 	struct rtcanmsg *r = nlmsg_data(nlh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int modidx = 0;
 	int err = 0;
 
 	/* initialize modification & checksum data space */
 	memset(mod, 0, sizeof(*mod));
 
-<<<<<<< HEAD
-	err = nlmsg_parse(nlh, sizeof(struct rtcanmsg), tb, CGW_MAX, NULL);
-	if (err < 0)
-		return err;
-
-	/* check for AND/OR/XOR/SET modifications */
-
-	if (tb[CGW_MOD_AND] &&
-	    nla_len(tb[CGW_MOD_AND]) == CGW_MODATTR_LEN) {
-		nla_memcpy(&mb, tb[CGW_MOD_AND], CGW_MODATTR_LEN);
-
-		canframecpy(&mod->modframe.and, &mb.cf);
-		mod->modtype.and = mb.modtype;
-
-		if (mb.modtype & CGW_MOD_ID)
-			mod->modfunc[modidx++] = mod_and_id;
-
-		if (mb.modtype & CGW_MOD_DLC)
-			mod->modfunc[modidx++] = mod_and_dlc;
-
-		if (mb.modtype & CGW_MOD_DATA)
-			mod->modfunc[modidx++] = mod_and_data;
-	}
-
-	if (tb[CGW_MOD_OR] &&
-	    nla_len(tb[CGW_MOD_OR]) == CGW_MODATTR_LEN) {
-		nla_memcpy(&mb, tb[CGW_MOD_OR], CGW_MODATTR_LEN);
-
-		canframecpy(&mod->modframe.or, &mb.cf);
-		mod->modtype.or = mb.modtype;
-
-		if (mb.modtype & CGW_MOD_ID)
-			mod->modfunc[modidx++] = mod_or_id;
-
-		if (mb.modtype & CGW_MOD_DLC)
-			mod->modfunc[modidx++] = mod_or_dlc;
-
-		if (mb.modtype & CGW_MOD_DATA)
-			mod->modfunc[modidx++] = mod_or_data;
-	}
-
-	if (tb[CGW_MOD_XOR] &&
-	    nla_len(tb[CGW_MOD_XOR]) == CGW_MODATTR_LEN) {
-		nla_memcpy(&mb, tb[CGW_MOD_XOR], CGW_MODATTR_LEN);
-
-		canframecpy(&mod->modframe.xor, &mb.cf);
-		mod->modtype.xor = mb.modtype;
-
-		if (mb.modtype & CGW_MOD_ID)
-			mod->modfunc[modidx++] = mod_xor_id;
-
-		if (mb.modtype & CGW_MOD_DLC)
-			mod->modfunc[modidx++] = mod_xor_dlc;
-
-		if (mb.modtype & CGW_MOD_DATA)
-			mod->modfunc[modidx++] = mod_xor_data;
-	}
-
-	if (tb[CGW_MOD_SET] &&
-	    nla_len(tb[CGW_MOD_SET]) == CGW_MODATTR_LEN) {
-		nla_memcpy(&mb, tb[CGW_MOD_SET], CGW_MODATTR_LEN);
-
-		canframecpy(&mod->modframe.set, &mb.cf);
-		mod->modtype.set = mb.modtype;
-
-		if (mb.modtype & CGW_MOD_ID)
-			mod->modfunc[modidx++] = mod_set_id;
-
-		if (mb.modtype & CGW_MOD_DLC)
-			mod->modfunc[modidx++] = mod_set_dlc;
-
-		if (mb.modtype & CGW_MOD_DATA)
-			mod->modfunc[modidx++] = mod_set_data;
-=======
 	err = nlmsg_parse_deprecated(nlh, sizeof(struct rtcanmsg), tb,
 				     CGW_MAX, cgw_policy, NULL);
 	if (err < 0)
@@ -1430,40 +965,22 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 			if (mb.modtype & CGW_MOD_DATA)
 				mod->modfunc[modidx++] = mod_set_data;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* check for checksum operations after CAN frame modifications */
 	if (modidx) {
-<<<<<<< HEAD
-
-		if (tb[CGW_CS_CRC8] &&
-		    nla_len(tb[CGW_CS_CRC8]) == CGW_CS_CRC8_LEN) {
-
-			struct cgw_csum_crc8 *c = (struct cgw_csum_crc8 *)\
-				nla_data(tb[CGW_CS_CRC8]);
-
-			err = cgw_chk_csum_parms(c->from_idx, c->to_idx,
-						 c->result_idx);
-=======
 		if (tb[CGW_CS_CRC8]) {
 			struct cgw_csum_crc8 *c = nla_data(tb[CGW_CS_CRC8]);
 
 			err = cgw_chk_csum_parms(c->from_idx, c->to_idx,
 						 c->result_idx, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				return err;
 
 			nla_memcpy(&mod->csum.crc8, tb[CGW_CS_CRC8],
 				   CGW_CS_CRC8_LEN);
 
-<<<<<<< HEAD
-			/*
-			 * select dedicated processing function to reduce
-=======
 			/* select dedicated processing function to reduce
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * runtime operations in receive hot path.
 			 */
 			if (c->from_idx < 0 || c->to_idx < 0 ||
@@ -1475,34 +992,18 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 				mod->csumfunc.crc8 = cgw_csum_crc8_neg;
 		}
 
-<<<<<<< HEAD
-		if (tb[CGW_CS_XOR] &&
-		    nla_len(tb[CGW_CS_XOR]) == CGW_CS_XOR_LEN) {
-
-			struct cgw_csum_xor *c = (struct cgw_csum_xor *)\
-				nla_data(tb[CGW_CS_XOR]);
-
-			err = cgw_chk_csum_parms(c->from_idx, c->to_idx,
-						 c->result_idx);
-=======
 		if (tb[CGW_CS_XOR]) {
 			struct cgw_csum_xor *c = nla_data(tb[CGW_CS_XOR]);
 
 			err = cgw_chk_csum_parms(c->from_idx, c->to_idx,
 						 c->result_idx, r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				return err;
 
 			nla_memcpy(&mod->csum.xor, tb[CGW_CS_XOR],
 				   CGW_CS_XOR_LEN);
 
-<<<<<<< HEAD
-			/*
-			 * select dedicated processing function to reduce
-=======
 			/* select dedicated processing function to reduce
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * runtime operations in receive hot path.
 			 */
 			if (c->from_idx < 0 || c->to_idx < 0 ||
@@ -1513,20 +1014,6 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 			else
 				mod->csumfunc.xor = cgw_csum_xor_neg;
 		}
-<<<<<<< HEAD
-	}
-
-	if (gwtype == CGW_TYPE_CAN_CAN) {
-
-		/* check CGW_TYPE_CAN_CAN specific attributes */
-
-		struct can_can_gw *ccgw = (struct can_can_gw *)gwtypeattr;
-		memset(ccgw, 0, sizeof(*ccgw));
-
-		/* check for can_filter in attributes */
-		if (tb[CGW_FILTER] &&
-		    nla_len(tb[CGW_FILTER]) == sizeof(struct can_filter))
-=======
 
 		if (tb[CGW_MOD_UID])
 			nla_memcpy(&mod->uid, tb[CGW_MOD_UID], sizeof(u32));
@@ -1540,7 +1027,6 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 
 		/* check for can_filter in attributes */
 		if (tb[CGW_FILTER])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nla_memcpy(&ccgw->filter, tb[CGW_FILTER],
 				   sizeof(struct can_filter));
 
@@ -1550,18 +1036,8 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 		if (!tb[CGW_SRC_IF] || !tb[CGW_DST_IF])
 			return err;
 
-<<<<<<< HEAD
-		if (nla_len(tb[CGW_SRC_IF]) == sizeof(u32))
-			nla_memcpy(&ccgw->src_idx, tb[CGW_SRC_IF],
-				   sizeof(u32));
-
-		if (nla_len(tb[CGW_DST_IF]) == sizeof(u32))
-			nla_memcpy(&ccgw->dst_idx, tb[CGW_DST_IF],
-				   sizeof(u32));
-=======
 		ccgw->src_idx = nla_get_u32(tb[CGW_SRC_IF]);
 		ccgw->dst_idx = nla_get_u32(tb[CGW_DST_IF]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* both indices set to 0 for flushing all routing entries */
 		if (!ccgw->src_idx && !ccgw->dst_idx)
@@ -1578,14 +1054,6 @@ static int cgw_parse_attr(struct nlmsghdr *nlh, struct cf_mod *mod,
 }
 
 static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
-<<<<<<< HEAD
-			  void *arg)
-{
-	struct rtcanmsg *r;
-	struct cgw_job *gwj;
-	int err = 0;
-
-=======
 			  struct netlink_ext_ack *extack)
 {
 	struct net *net = sock_net(skb->sk);
@@ -1599,7 +1067,6 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	if (!netlink_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlmsg_len(nlh) < sizeof(*r))
 		return -EINVAL;
 
@@ -1611,8 +1078,6 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	if (r->gwtype != CGW_TYPE_CAN_CAN)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	err = cgw_parse_attr(nlh, &mod, CGW_TYPE_CAN_CAN, &ccgw, &limhops);
 	if (err < 0)
 		return err;
@@ -1641,29 +1106,12 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	if (!ccgw.src_idx || !ccgw.dst_idx)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gwj = kmem_cache_alloc(cgw_cache, GFP_KERNEL);
 	if (!gwj)
 		return -ENOMEM;
 
 	gwj->handled_frames = 0;
 	gwj->dropped_frames = 0;
-<<<<<<< HEAD
-	gwj->flags = r->flags;
-	gwj->gwtype = r->gwtype;
-
-	err = cgw_parse_attr(nlh, &gwj->mod, CGW_TYPE_CAN_CAN, &gwj->ccgw);
-	if (err < 0)
-		goto out;
-
-	err = -ENODEV;
-
-	/* ifindex == 0 is not allowed for job creation */
-	if (!gwj->ccgw.src_idx || !gwj->ccgw.dst_idx)
-		goto out;
-
-	gwj->src.dev = dev_get_by_index(&init_net, gwj->ccgw.src_idx);
-=======
 	gwj->deleted_frames = 0;
 	gwj->flags = r->flags;
 	gwj->gwtype = r->gwtype;
@@ -1676,36 +1124,10 @@ static int cgw_create_job(struct sk_buff *skb,  struct nlmsghdr *nlh,
 	err = -ENODEV;
 
 	gwj->src.dev = __dev_get_by_index(net, gwj->ccgw.src_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!gwj->src.dev)
 		goto out;
 
-<<<<<<< HEAD
-	/* check for CAN netdev not using header_ops - see gw_rcv() */
-	if (gwj->src.dev->type != ARPHRD_CAN || gwj->src.dev->header_ops)
-		goto put_src_out;
-
-	gwj->dst.dev = dev_get_by_index(&init_net, gwj->ccgw.dst_idx);
-
-	if (!gwj->dst.dev)
-		goto put_src_out;
-
-	/* check for CAN netdev not using header_ops - see gw_rcv() */
-	if (gwj->dst.dev->type != ARPHRD_CAN || gwj->dst.dev->header_ops)
-		goto put_src_dst_out;
-
-	ASSERT_RTNL();
-
-	err = cgw_register_filter(gwj);
-	if (!err)
-		hlist_add_head_rcu(&gwj->list, &cgw_list);
-
-put_src_dst_out:
-	dev_put(gwj->dst.dev);
-put_src_out:
-	dev_put(gwj->src.dev);
-=======
 	if (gwj->src.dev->type != ARPHRD_CAN)
 		goto out;
 
@@ -1729,7 +1151,6 @@ put_src_out:
 	err = cgw_register_filter(net, gwj);
 	if (!err)
 		hlist_add_head_rcu(&gwj->list, &net->can.cgw_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (err)
 		kmem_cache_free(cgw_cache, gwj);
@@ -1737,31 +1158,6 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void cgw_remove_all_jobs(void)
-{
-	struct cgw_job *gwj = NULL;
-	struct hlist_node *n, *nx;
-
-	ASSERT_RTNL();
-
-	hlist_for_each_entry_safe(gwj, n, nx, &cgw_list, list) {
-		hlist_del(&gwj->list);
-		cgw_unregister_filter(gwj);
-		kmem_cache_free(cgw_cache, gwj);
-	}
-}
-
-static int cgw_remove_job(struct sk_buff *skb,  struct nlmsghdr *nlh, void *arg)
-{
-	struct cgw_job *gwj = NULL;
-	struct hlist_node *n, *nx;
-	struct rtcanmsg *r;
-	struct cf_mod mod;
-	struct can_can_gw ccgw;
-	int err = 0;
-
-=======
 static void cgw_remove_all_jobs(struct net *net)
 {
 	struct cgw_job *gwj = NULL;
@@ -1791,7 +1187,6 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (!netlink_capable(skb, CAP_NET_ADMIN))
 		return -EPERM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nlmsg_len(nlh) < sizeof(*r))
 		return -EINVAL;
 
@@ -1803,21 +1198,13 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (r->gwtype != CGW_TYPE_CAN_CAN)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	err = cgw_parse_attr(nlh, &mod, CGW_TYPE_CAN_CAN, &ccgw);
-=======
 	err = cgw_parse_attr(nlh, &mod, CGW_TYPE_CAN_CAN, &ccgw, &limhops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	/* two interface indices both set to 0 => remove all entries */
 	if (!ccgw.src_idx && !ccgw.dst_idx) {
-<<<<<<< HEAD
-		cgw_remove_all_jobs();
-=======
 		cgw_remove_all_jobs(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1826,16 +1213,6 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 	ASSERT_RTNL();
 
 	/* remove only the first matching entry */
-<<<<<<< HEAD
-	hlist_for_each_entry_safe(gwj, n, nx, &cgw_list, list) {
-
-		if (gwj->flags != r->flags)
-			continue;
-
-		if (memcmp(&gwj->mod, &mod, sizeof(mod)))
-			continue;
-
-=======
 	hlist_for_each_entry_safe(gwj, nx, &net->can.cgw_list, list) {
 		if (gwj->flags != r->flags)
 			continue;
@@ -1853,19 +1230,13 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 				continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* if (r->gwtype == CGW_TYPE_CAN_CAN) - is made sure here */
 		if (memcmp(&gwj->ccgw, &ccgw, sizeof(ccgw)))
 			continue;
 
 		hlist_del(&gwj->list);
-<<<<<<< HEAD
-		cgw_unregister_filter(gwj);
-		kmem_cache_free(cgw_cache, gwj);
-=======
 		cgw_unregister_filter(net, gwj);
 		call_rcu(&gwj->rcu, cgw_job_free_rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 0;
 		break;
 	}
@@ -1873,33 +1244,6 @@ static int cgw_remove_job(struct sk_buff *skb, struct nlmsghdr *nlh,
 	return err;
 }
 
-<<<<<<< HEAD
-static __init int cgw_module_init(void)
-{
-	printk(banner);
-
-	cgw_cache = kmem_cache_create("can_gw", sizeof(struct cgw_job),
-				      0, 0, NULL);
-
-	if (!cgw_cache)
-		return -ENOMEM;
-
-	/* set notifier */
-	notifier.notifier_call = cgw_notifier;
-	register_netdevice_notifier(&notifier);
-
-	if (__rtnl_register(PF_CAN, RTM_GETROUTE, NULL, cgw_dump_jobs, NULL)) {
-		unregister_netdevice_notifier(&notifier);
-		kmem_cache_destroy(cgw_cache);
-		return -ENOBUFS;
-	}
-
-	/* Only the first call to __rtnl_register can fail */
-	__rtnl_register(PF_CAN, RTM_NEWROUTE, cgw_create_job, NULL, NULL);
-	__rtnl_register(PF_CAN, RTM_DELROUTE, cgw_remove_job, NULL, NULL);
-
-	return 0;
-=======
 static int __net_init cangw_pernet_init(struct net *net)
 {
 	INIT_HLIST_HEAD(&net->can.cgw_list);
@@ -1974,7 +1318,6 @@ out_cache_create:
 	unregister_pernet_subsys(&cangw_pernet_ops);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __exit void cgw_module_exit(void)
@@ -1983,14 +1326,7 @@ static __exit void cgw_module_exit(void)
 
 	unregister_netdevice_notifier(&notifier);
 
-<<<<<<< HEAD
-	rtnl_lock();
-	cgw_remove_all_jobs();
-	rtnl_unlock();
-
-=======
 	unregister_pernet_subsys(&cangw_pernet_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_barrier(); /* Wait for completion of call_rcu()'s */
 
 	kmem_cache_destroy(cgw_cache);

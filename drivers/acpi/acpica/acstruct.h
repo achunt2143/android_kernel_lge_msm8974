@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acstruct.h - Internal structs
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACSTRUCT_H__
 #define __ACSTRUCT_H__
 
@@ -64,11 +19,7 @@
  ****************************************************************************/
 
 /*
-<<<<<<< HEAD
- * Walk state - current state of a parse tree walk.  Used for both a leisurely
-=======
  * Walk state - current state of a parse tree walk. Used for both a leisurely
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stroll through the tree (for whatever reason), and for control method
  * execution.
  */
@@ -83,14 +34,6 @@
 #define ACPI_WALK_METHOD            0x01
 #define ACPI_WALK_METHOD_RESTART    0x02
 
-<<<<<<< HEAD
-/* Flags for i_aSL compiler only */
-
-#define ACPI_WALK_CONST_REQUIRED    0x10
-#define ACPI_WALK_CONST_OPTIONAL    0x20
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct acpi_walk_state {
 	struct acpi_walk_state *next;	/* Next walk_state in list */
 	u8 descriptor_type;	/* To differentiate various internal objs */
@@ -105,16 +48,10 @@ struct acpi_walk_state {
 	u8 return_used;
 	u8 scope_depth;
 	u8 pass_number;		/* Parse pass during table load */
-<<<<<<< HEAD
-	u8 result_size;		/* Total elements for the result stack */
-	u8 result_count;	/* Current number of occupied elements of result stack */
-	u32 aml_offset;
-=======
 	u8 namespace_override;	/* Override existing objects */
 	u8 result_size;		/* Total elements for the result stack */
 	u8 result_count;	/* Current number of occupied elements of result stack */
 	u8 *aml;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 arg_types;
 	u32 method_breakpoint;	/* For single stepping */
 	u32 user_breakpoint;	/* User AML breakpoint */
@@ -123,11 +60,8 @@ struct acpi_walk_state {
 	struct acpi_parse_state parser_state;	/* Current state of parser */
 	u32 prev_arg_types;
 	u32 arg_count;		/* push for fixed or var args */
-<<<<<<< HEAD
-=======
 	u16 method_nesting_depth;
 	u8 method_is_nested;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct acpi_namespace_node arguments[ACPI_METHOD_NUM_ARGS];	/* Control method arguments */
 	struct acpi_namespace_node local_variables[ACPI_METHOD_NUM_LOCALS];	/* Control method locals */
@@ -142,12 +76,8 @@ struct acpi_walk_state {
 	struct acpi_namespace_node *method_call_node;	/* Called method Node */
 	union acpi_parse_object *method_call_op;	/* method_call Op if running a method */
 	union acpi_operand_object *method_desc;	/* Method descriptor if running a method */
-<<<<<<< HEAD
-	struct acpi_namespace_node *method_node;	/* Method node if running a method. */
-=======
 	struct acpi_namespace_node *method_node;	/* Method node if running a method */
 	char *method_pathname;	/* Full pathname of running method */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union acpi_parse_object *op;	/* Current parser op */
 	const struct acpi_opcode_info *op_info;	/* Info on current opcode */
 	union acpi_parse_object *origin;	/* Start of walk [Obsolete] */
@@ -168,12 +98,9 @@ struct acpi_init_walk_info {
 	u32 table_index;
 	u32 object_count;
 	u32 method_count;
-<<<<<<< HEAD
-=======
 	u32 serial_method_count;
 	u32 non_serial_method_count;
 	u32 serialized_method_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 device_count;
 	u32 op_region_count;
 	u32 field_count;
@@ -219,22 +146,6 @@ union acpi_aml_operands {
 };
 
 /*
-<<<<<<< HEAD
- * Structure used to pass object evaluation parameters.
- * Purpose is to reduce CPU stack use.
- */
-struct acpi_evaluate_info {
-	struct acpi_namespace_node *prefix_node;
-	char *pathname;
-	union acpi_operand_object *obj_desc;
-	union acpi_operand_object **parameters;
-	struct acpi_namespace_node *resolved_node;
-	union acpi_operand_object *return_object;
-	u8 param_count;
-	u8 pass_number;
-	u8 return_object_type;
-	u8 flags;
-=======
  * Structure used to pass object evaluation information and parameters.
  * Purpose is to reduce CPU stack use.
  */
@@ -260,21 +171,16 @@ struct acpi_evaluate_info {
 	u8 pass_number;		/* Parser pass number */
 	u8 return_object_type;	/* Object type of the returned object */
 	u8 flags;		/* General flags */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Values for Flags above */
 
-<<<<<<< HEAD
-#define ACPI_IGNORE_RETURN_VALUE        1
-=======
 #define ACPI_IGNORE_RETURN_VALUE    1
 
 /* Defines for return_flags field above */
 
 #define ACPI_OBJECT_REPAIRED        1
 #define ACPI_OBJECT_WRAPPED         2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Info used by acpi_ns_initialize_devices */
 
@@ -286,8 +192,6 @@ struct acpi_device_walk_info {
 	u32 num_INI;
 };
 
-<<<<<<< HEAD
-=======
 /* Info used by Acpi  acpi_db_display_fields */
 
 struct acpi_region_walk_info {
@@ -298,7 +202,6 @@ struct acpi_region_walk_info {
 	u32 address_space_id;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TBD: [Restructure] Merge with struct above */
 
 struct acpi_walk_info {

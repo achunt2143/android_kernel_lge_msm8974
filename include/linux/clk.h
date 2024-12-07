@@ -1,42 +1,22 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/clk.h
  *
  *  Copyright (C) 2004 ARM Limited.
  *  Written by Deep Blue Solutions Limited.
  *  Copyright (C) 2011-2012 Linaro Ltd <mturquette@linaro.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __LINUX_CLK_H
 #define __LINUX_CLK_H
 
-<<<<<<< HEAD
-=======
 #include <linux/err.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/notifier.h>
 
 struct device;
-<<<<<<< HEAD
-
-struct clk;
-
-#ifdef CONFIG_COMMON_CLK
-=======
 struct clk;
 struct device_node;
 struct of_phandle_args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * DOC: clk notifier callback types
@@ -44,28 +24,16 @@ struct of_phandle_args;
  * PRE_RATE_CHANGE - called immediately before the clk rate is changed,
  *     to indicate that the rate change will proceed.  Drivers must
  *     immediately terminate any operations that will be affected by the
-<<<<<<< HEAD
- *     rate change.  Callbacks may either return NOTIFY_DONE or
- *     NOTIFY_STOP.
-=======
  *     rate change.  Callbacks may either return NOTIFY_DONE, NOTIFY_OK,
  *     NOTIFY_STOP or NOTIFY_BAD.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * ABORT_RATE_CHANGE: called if the rate change failed for some reason
  *     after PRE_RATE_CHANGE.  In this case, all registered notifiers on
  *     the clk will be called with ABORT_RATE_CHANGE. Callbacks must
-<<<<<<< HEAD
- *     always return NOTIFY_DONE.
- *
- * POST_RATE_CHANGE - called after the clk rate change has successfully
- *     completed.  Callbacks must always return NOTIFY_DONE.
-=======
  *     always return NOTIFY_DONE or NOTIFY_OK.
  *
  * POST_RATE_CHANGE - called after the clk rate change has successfully
  *     completed.  Callbacks must always return NOTIFY_DONE or NOTIFY_OK.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #define PRE_RATE_CHANGE			BIT(0)
@@ -106,18 +74,6 @@ struct clk_notifier_data {
 	unsigned long		new_rate;
 };
 
-<<<<<<< HEAD
-int clk_notifier_register(struct clk *clk, struct notifier_block *nb);
-
-int clk_notifier_unregister(struct clk *clk, struct notifier_block *nb);
-
-#endif /* !CONFIG_COMMON_CLK */
-
-/**
- * clk_get - lookup and obtain a reference to a clock producer.
- * @dev: device for clock "consumer"
- * @id: clock comsumer ID
-=======
 /**
  * struct clk_bulk_data - Data used for bulk clk operations.
  *
@@ -417,7 +373,6 @@ static inline void clk_bulk_unprepare(int num_clks,
  * clk_get - lookup and obtain a reference to a clock producer.
  * @dev: device for clock "consumer"
  * @id: clock consumer ID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns a struct clk corresponding to the clock producer, or
  * valid IS_ERR() condition containing errno.  The implementation
@@ -432,14 +387,6 @@ static inline void clk_bulk_unprepare(int num_clks,
 struct clk *clk_get(struct device *dev, const char *id);
 
 /**
-<<<<<<< HEAD
- * devm_clk_get - Resource managed clk_get()
- * @dev: device for clk "consumer"
- * @id: clk ID.
- *
- * Managed clk_get(). Clocks returned from this function are
- * automatically clk_put() on driver detach.
-=======
  * clk_bulk_get - lookup and obtain a number of references to clock producer.
  * @dev: device for clock "consumer"
  * @num_clks: the number of clk_bulk_data
@@ -582,29 +529,10 @@ int __must_check devm_clk_bulk_get_all_enable(struct device *dev,
  *
  * The clock will automatically be freed when the device is unbound
  * from the bus.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct clk *devm_clk_get(struct device *dev, const char *id);
 
 /**
-<<<<<<< HEAD
- * clk_prepare - prepare a clock source
- * @clk: clock source
- *
- * This prepares the clock source for use.
- *
- * Must not be called from within atomic context.
- */
-#ifdef CONFIG_HAVE_CLK_PREPARE
-int clk_prepare(struct clk *clk);
-#else
-static inline int clk_prepare(struct clk *clk)
-{
-	might_sleep();
-	return 0;
-}
-#endif
-=======
  * devm_clk_get_prepared - devm_clk_get() + clk_prepare()
  * @dev: device for clock "consumer"
  * @id: clock consumer ID
@@ -728,7 +656,6 @@ struct clk *devm_clk_get_optional_enabled(struct device *dev, const char *id);
  */
 struct clk *devm_get_clk_from_child(struct device *dev,
 				    struct device_node *np, const char *con_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * clk_enable - inform the system when the clock source should be running.
@@ -743,8 +670,6 @@ struct clk *devm_get_clk_from_child(struct device *dev,
 int clk_enable(struct clk *clk);
 
 /**
-<<<<<<< HEAD
-=======
  * clk_bulk_enable - inform the system when the set of clks should be running.
  * @num_clks: the number of clk_bulk_data
  * @clks: the clk_bulk_data table of consumer
@@ -757,7 +682,6 @@ int __must_check clk_bulk_enable(int num_clks,
 				 const struct clk_bulk_data *clks);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * clk_disable - inform the system when the clock source is no longer required.
  * @clk: clock source
  *
@@ -773,48 +697,6 @@ int __must_check clk_bulk_enable(int num_clks,
  */
 void clk_disable(struct clk *clk);
 
-<<<<<<< HEAD
-
-/**
- * clk_unprepare - undo preparation of a clock source
- * @clk: clock source
- *
- * This undoes a previously prepared clock.  The caller must balance
- * the number of prepare and unprepare calls.
- *
- * Must not be called from within atomic context.
- */
-#ifdef CONFIG_HAVE_CLK_PREPARE
-void clk_unprepare(struct clk *clk);
-#else
-static inline void clk_unprepare(struct clk *clk)
-{
-	might_sleep();
-}
-#endif
-
-/* clk_prepare_enable helps cases using clk_enable in non-atomic context. */
-static inline int clk_prepare_enable(struct clk *clk)
-{
-	int ret;
-
-	ret = clk_prepare(clk);
-	if (ret)
-		return ret;
-	ret = clk_enable(clk);
-	if (ret)
-		clk_unprepare(clk);
-
-	return ret;
-}
-
-/* clk_disable_unprepare helps cases using clk_disable in non-atomic context. */
-static inline void clk_disable_unprepare(struct clk *clk)
-{
-	clk_disable(clk);
-	clk_unprepare(clk);
-}
-=======
 /**
  * clk_bulk_disable - inform the system when the set of clks is no
  *		      longer required.
@@ -832,7 +714,6 @@ static inline void clk_disable_unprepare(struct clk *clk)
  * disabled.
  */
 void clk_bulk_disable(int num_clks, const struct clk_bulk_data *clks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * clk_get_rate - obtain the current clock rate (in Hz) for a clock source.
@@ -853,8 +734,6 @@ unsigned long clk_get_rate(struct clk *clk);
  */
 void clk_put(struct clk *clk);
 
-<<<<<<< HEAD
-=======
 /**
  * clk_bulk_put	- "free" the clock source
  * @num_clks: the number of clk_bulk_data
@@ -893,7 +772,6 @@ void clk_bulk_put_all(int num_clks, struct clk_bulk_data *clks);
  * clk_put should not be called from within interrupt context.
  */
 void devm_clk_put(struct device *dev, struct clk *clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The remaining APIs are optional for machine class support.
@@ -905,8 +783,6 @@ void devm_clk_put(struct device *dev, struct clk *clk);
  * @clk: clock source
  * @rate: desired clock rate in Hz
  *
-<<<<<<< HEAD
-=======
  * This answers the question "if I were to pass @rate to clk_set_rate(),
  * what clock rate would I end up with?" without changing the hardware
  * in any way.  In other words:
@@ -921,7 +797,6 @@ void devm_clk_put(struct device *dev, struct clk *clk);
  * are equivalent except the former does not modify the clock hardware
  * in any way.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns rounded clock rate in Hz, or negative errno.
  */
 long clk_round_rate(struct clk *clk, unsigned long rate);
@@ -931,19 +806,14 @@ long clk_round_rate(struct clk *clk, unsigned long rate);
  * @clk: clock source
  * @rate: desired clock rate in Hz
  *
-<<<<<<< HEAD
-=======
  * Updating the rate starts at the top-most affected clock and then
  * walks the tree down to the bottom-most clock that needs updating.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns success (0) or negative errno.
  */
 int clk_set_rate(struct clk *clk, unsigned long rate);
 
 /**
-<<<<<<< HEAD
-=======
  * clk_set_rate_exclusive- set the clock rate and claim exclusivity over
  *                         clock source
  * @clk: clock source
@@ -1001,33 +871,14 @@ int clk_set_min_rate(struct clk *clk, unsigned long rate);
 int clk_set_max_rate(struct clk *clk, unsigned long rate);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * clk_set_parent - set the parent clock source for this clock
  * @clk: clock source
  * @parent: parent clock source
  *
  * Returns success (0) or negative errno.
  */
-<<<<<<< HEAD
-
 int clk_set_parent(struct clk *clk, struct clk *parent);
 
-#ifdef CONFIG_ANDROID_SW_IRRC
-/**
- * get_clk_count - get count of clock source for this clock
- * @clk: clock source
- *
- * Returns success clk's count.
- */
-
-unsigned int get_clk_count(struct clk *clk);
-#endif  // CONFIG_ANDROID_SW_IRRC
-
-
-=======
-int clk_set_parent(struct clk *clk, struct clk *parent);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * clk_get_parent - get the parent clock source for this clock
  * @clk: clock source
@@ -1055,19 +906,6 @@ struct clk *clk_get_parent(struct clk *clk);
 struct clk *clk_get_sys(const char *dev_id, const char *con_id);
 
 /**
-<<<<<<< HEAD
- * clk_add_alias - add a new clock alias
- * @alias: name for clock alias
- * @alias_dev_name: device name
- * @id: platform specific clock name
- * @dev: device
- *
- * Allows using generic clock names for drivers by adding a new alias.
- * Assumes clkdev, see clkdev.h for more info.
- */
-int clk_add_alias(const char *alias, const char *alias_dev_name, char *id,
-			struct device *dev);
-=======
  * clk_save_context - save clock context for poweroff
  *
  * Saves the context of the clock register for powerstates in which the
@@ -1358,6 +1196,5 @@ static inline struct clk *of_clk_get_from_provider(struct of_phandle_args *clksp
 	return ERR_PTR(-ENOENT);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -26,21 +26,14 @@ struct kgdb_state {
 	unsigned long		threadid;
 	long			kgdb_usethreadid;
 	struct pt_regs		*linux_regs;
-<<<<<<< HEAD
-=======
 	atomic_t		*send_ready;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Exception state values */
 #define DCPU_WANT_MASTER 0x1 /* Waiting to become a master kgdb cpu */
 #define DCPU_NEXT_MASTER 0x2 /* Transition from one master cpu to another */
 #define DCPU_IS_SLAVE    0x4 /* Slave cpu enter exception */
-<<<<<<< HEAD
-#define DCPU_SSTEP       0x8 /* CPU is single stepping */
-=======
 #define DCPU_WANT_BT     0x8 /* Slave cpu should backtrace then clear flag */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct debuggerinfo_struct {
 	void			*debuggerinfo;
@@ -49,10 +42,7 @@ struct debuggerinfo_struct {
 	int			ret_state;
 	int			irq_depth;
 	int			enter_kgdb;
-<<<<<<< HEAD
-=======
 	bool			rounding_up;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct debuggerinfo_struct kgdb_info[];
@@ -84,12 +74,9 @@ extern int dbg_kdb_mode;
 #ifdef CONFIG_KGDB_KDB
 extern int kdb_stub(struct kgdb_state *ks);
 extern int kdb_parse(const char *cmdstr);
-<<<<<<< HEAD
-=======
 extern int kdb_common_init_state(struct kgdb_state *ks);
 extern int kdb_common_deinit_state(void);
 extern void kdb_dump_stack_on_cpu(int cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* ! CONFIG_KGDB_KDB */
 static inline int kdb_stub(struct kgdb_state *ks)
 {

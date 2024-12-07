@@ -1,11 +1,7 @@
 /*
  * This file is part of the Chelsio T4 Ethernet driver for Linux.
  *
-<<<<<<< HEAD
- * Copyright (c) 2003-2010 Chelsio Communications, Inc. All rights reserved.
-=======
  * Copyright (c) 2003-2014 Chelsio Communications, Inc. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -42,24 +38,6 @@
 #include <linux/types.h>
 
 enum {
-<<<<<<< HEAD
-	NCHAN          = 4,     /* # of HW channels */
-	MAX_MTU        = 9600,  /* max MAC MTU, excluding header + FCS */
-	EEPROMSIZE     = 17408, /* Serial EEPROM physical size */
-	EEPROMVSIZE    = 32768, /* Serial EEPROM virtual address space size */
-	EEPROMPFSIZE   = 1024,  /* EEPROM writable area size for PFn, n>0 */
-	RSS_NENTRIES   = 2048,  /* # of entries in RSS mapping table */
-	TCB_SIZE       = 128,   /* TCB size */
-	NMTUS          = 16,    /* size of MTU table */
-	NCCTRL_WIN     = 32,    /* # of congestion control windows */
-	NEXACT_MAC     = 336,   /* # of exact MAC address filters */
-	L2T_SIZE       = 4096,  /* # of L2T entries */
-	MBOX_LEN       = 64,    /* mailbox size in bytes */
-	TRACE_LEN      = 112,   /* length of trace data and mask */
-	FILTER_OPT_LEN = 36,    /* filter tuple width for optional components */
-	NWOL_PAT       = 8,     /* # of WoL patterns */
-	WOL_PAT_LEN    = 128,   /* length of WoL patterns */
-=======
 	NCHAN           = 4,    /* # of HW channels */
 	MAX_MTU         = 9600, /* max MAC MTU, excluding header + FCS */
 	EEPROMSIZE      = 17408,/* Serial EEPROM physical size */
@@ -97,15 +75,11 @@ enum ctxt_type {
 	CTXT_INGRESS,
 	CTXT_FLM,
 	CTXT_CNM,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
 	SF_PAGE_SIZE = 256,           /* serial flash page size */
-<<<<<<< HEAD
-=======
 	SF_SEC_SIZE = 64 * 1024,      /* serial flash sector size */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum { RSP_TYPE_FLBUF, RSP_TYPE_CPL, RSP_TYPE_INTR }; /* response entry types */
@@ -114,16 +88,11 @@ enum { MBOX_OWNER_NONE, MBOX_OWNER_FW, MBOX_OWNER_DRV };    /* mailbox owners */
 
 enum {
 	SGE_MAX_WR_LEN = 512,     /* max WR size in bytes */
-<<<<<<< HEAD
-	SGE_NTIMERS = 6,          /* # of interrupt holdoff timer values */
-	SGE_NCOUNTERS = 4,        /* # of interrupt packet counter values */
-=======
 	SGE_CTXT_SIZE = 24,       /* size of SGE context */
 	SGE_NTIMERS = 6,          /* # of interrupt holdoff timer values */
 	SGE_NCOUNTERS = 4,        /* # of interrupt packet counter values */
 	SGE_NDBQTIMERS = 8,       /* # of Doorbell Queue Timer values */
 	SGE_MAX_IQ_SIZE = 65520,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SGE_TIMER_RSTRT_CNTR = 6, /* restart RX packet threshold counter */
 	SGE_TIMER_UPD_CIDX = 7,   /* update cidx only */
@@ -165,8 +134,6 @@ enum {
 	SGE_INGPADBOUNDARY_SHIFT = 5,/* ingress queue pad boundary */
 };
 
-<<<<<<< HEAD
-=======
 /* PCI-e memory window access */
 enum pcie_memwin {
 	MEMWIN_NIC      = 0,
@@ -179,7 +146,6 @@ enum pcie_memwin {
 	MEMWIN_RSVD7    = 7,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sge_qstat {                /* data written to SGE queue status entries */
 	__be32 qid;
 	__be16 cidx;
@@ -198,18 +164,6 @@ struct rsp_ctrl {
 	};
 };
 
-<<<<<<< HEAD
-#define RSPD_NEWBUF 0x80000000U
-#define RSPD_LEN(x) (((x) >> 0) & 0x7fffffffU)
-#define RSPD_QID(x) RSPD_LEN(x)
-
-#define RSPD_GEN(x)  ((x) >> 7)
-#define RSPD_TYPE(x) (((x) >> 4) & 3)
-
-#define QINTR_CNT_EN       0x1
-#define QINTR_TIMER_IDX(x) ((x) << 1)
-#define QINTR_TIMER_IDX_GET(x) (((x) >> 1) & 0x7)
-=======
 #define RSPD_NEWBUF_S    31
 #define RSPD_NEWBUF_V(x) ((x) << RSPD_NEWBUF_S)
 #define RSPD_NEWBUF_F    RSPD_NEWBUF_V(1U)
@@ -346,5 +300,4 @@ enum {
 #define SFF_REV_ADDR		0x1
 #define SFF_REV_LEN		0x1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __T4_HW_H */

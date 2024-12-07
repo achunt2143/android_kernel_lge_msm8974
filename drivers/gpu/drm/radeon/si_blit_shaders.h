@@ -25,11 +25,6 @@
 #ifndef SI_BLIT_SHADERS_H
 #define SI_BLIT_SHADERS_H
 
-<<<<<<< HEAD
-extern const u32 si_default_state[];
-
-extern const u32 si_default_size;
-=======
 static const u32 si_default_state[] = {
 	0xc0066900,
 	0x00000000,
@@ -252,6 +247,5 @@ static const u32 si_default_state[] = {
 };
 
 static const u32 si_default_size = ARRAY_SIZE(si_default_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

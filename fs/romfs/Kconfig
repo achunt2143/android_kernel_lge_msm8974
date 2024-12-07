@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-config ROMFS_FS
-	tristate "ROM file system support"
-	depends on BLOCK || MTD
-	---help---
-	  This is a very small read-only file system mainly intended for
-	  initial ram disks of installation disks, but it could be used for
-	  other read-only media as well.  Read
-	  <file:Documentation/filesystems/romfs.txt> for details.
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config ROMFS_FS
 	tristate "ROM file system support"
@@ -17,7 +7,6 @@ config ROMFS_FS
 	  initial ram disks of installation disks, but it could be used for
 	  other read-only media as well.  Read
 	  <file:Documentation/filesystems/romfs.rst> for details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this file system support as a module, choose M here: the
 	  module will be called romfs.  Note that the file system of your
@@ -68,10 +57,7 @@ endchoice
 config ROMFS_ON_BLOCK
 	bool
 	default y if ROMFS_BACKED_BY_BLOCK || ROMFS_BACKED_BY_BOTH
-<<<<<<< HEAD
-=======
 	select BUFFER_HEAD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ROMFS_ON_MTD
 	bool

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Various workarounds for chipset bugs.
    This code runs very early and can't use the regular PCI subsystem
    The entries are keyed to PCI bridges which usually identify chipsets
@@ -15,9 +12,6 @@
 
 #include <linux/pci.h>
 #include <linux/acpi.h>
-<<<<<<< HEAD
-#include <linux/pci_ids.h>
-=======
 #include <linux/delay.h>
 #include <linux/pci_ids.h>
 #include <linux/bcma/bcma.h>
@@ -25,21 +19,15 @@
 #include <linux/platform_data/x86/apple.h>
 #include <drm/i915_drm.h>
 #include <drm/i915_pciids.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-direct.h>
 #include <asm/dma.h>
 #include <asm/io_apic.h>
 #include <asm/apic.h>
-<<<<<<< HEAD
-#include <asm/iommu.h>
-#include <asm/gart.h>
-=======
 #include <asm/hpet.h>
 #include <asm/iommu.h>
 #include <asm/gart.h>
 #include <asm/irq_remapping.h>
 #include <asm/early_ioremap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init fix_hypertransport_config(int num, int slot, int func)
 {
@@ -95,8 +83,6 @@ static void __init nvidia_bugs(int num, int slot, int func)
 #ifdef CONFIG_ACPI
 #ifdef CONFIG_X86_IO_APIC
 	/*
-<<<<<<< HEAD
-=======
 	 * Only applies to Nvidia root ports (bus 0) and not to
 	 * Nvidia graphics cards with PCI ports on secondary buses.
 	 */
@@ -104,7 +90,6 @@ static void __init nvidia_bugs(int num, int slot, int func)
 		return;
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * All timer overrides on Nvidia are
 	 * wrong unless HPET is enabled.
 	 * Unfortunately that's not true on many Asus boards.
@@ -224,8 +209,6 @@ static void __init ati_bugs_contd(int num, int slot, int func)
 }
 #endif
 
-<<<<<<< HEAD
-=======
 static void __init intel_remapping_check(int num, int slot, int func)
 {
 	u8 revision;
@@ -702,7 +685,6 @@ static void __init apple_airport_reset(int bus, int slot, int func)
 	early_iounmap(mmio, BCM4331_MMIO_SIZE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define QFLAG_APPLY_ONCE 	0x1
 #define QFLAG_APPLIED		0x2
 #define QFLAG_DONE		(QFLAG_APPLY_ONCE|QFLAG_APPLIED)
@@ -715,15 +697,6 @@ struct chipset {
 	void (*f)(int num, int slot, int func);
 };
 
-<<<<<<< HEAD
-/*
- * Only works for devices on the root bus. If you add any devices
- * not on bus 0 readd another loop level in early_quirks(). But
- * be careful because at least the Nvidia quirk here relies on
- * only matching on bus 0.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct chipset early_qrk[] __initdata = {
 	{ PCI_VENDOR_ID_NVIDIA, PCI_ANY_ID,
 	  PCI_CLASS_BRIDGE_PCI, PCI_ANY_ID, QFLAG_APPLY_ONCE, nvidia_bugs },
@@ -735,11 +708,6 @@ static struct chipset early_qrk[] __initdata = {
 	  PCI_CLASS_SERIAL_SMBUS, PCI_ANY_ID, 0, ati_bugs },
 	{ PCI_VENDOR_ID_ATI, PCI_DEVICE_ID_ATI_SBX00_SMBUS,
 	  PCI_CLASS_SERIAL_SMBUS, PCI_ANY_ID, 0, ati_bugs_contd },
-<<<<<<< HEAD
-	{}
-};
-
-=======
 	{ PCI_VENDOR_ID_INTEL, 0x3403, PCI_CLASS_BRIDGE_HOST,
 	  PCI_BASE_CLASS_BRIDGE, 0, intel_remapping_check },
 	{ PCI_VENDOR_ID_INTEL, 0x3405, PCI_CLASS_BRIDGE_HOST,
@@ -765,7 +733,6 @@ static struct chipset early_qrk[] __initdata = {
 
 static void __init early_pci_scan_bus(int bus);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * check_dev_quirk - apply early quirks to a given PCI device
  * @num: bus number
@@ -774,11 +741,7 @@ static void __init early_pci_scan_bus(int bus);
  *
  * Check the vendor & device ID against the early quirks table.
  *
-<<<<<<< HEAD
- * If the device is single function, let early_quirks() know so we don't
-=======
  * If the device is single function, let early_pci_scan_bus() know so we don't
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * poke at this device again.
  */
 static int __init check_dev_quirk(int num, int slot, int func)
@@ -787,10 +750,7 @@ static int __init check_dev_quirk(int num, int slot, int func)
 	u16 vendor;
 	u16 device;
 	u8 type;
-<<<<<<< HEAD
-=======
 	u8 sec;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	class = read_pci_config_16(num, slot, func, PCI_CLASS_DEVICE);
@@ -818,9 +778,6 @@ static int __init check_dev_quirk(int num, int slot, int func)
 
 	type = read_pci_config_byte(num, slot, func,
 				    PCI_HEADER_TYPE);
-<<<<<<< HEAD
-	if (!(type & 0x80))
-=======
 
 	if ((type & PCI_HEADER_TYPE_MASK) == PCI_HEADER_TYPE_BRIDGE) {
 		sec = read_pci_config_byte(num, slot, func, PCI_SECONDARY_BUS);
@@ -829,30 +786,11 @@ static int __init check_dev_quirk(int num, int slot, int func)
 	}
 
 	if (!(type & PCI_HEADER_TYPE_MFD))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 
 	return 0;
 }
 
-<<<<<<< HEAD
-void __init early_quirks(void)
-{
-	int slot, func;
-
-	if (!early_pci_allowed())
-		return;
-
-	/* Poor man's PCI discovery */
-	/* Only scan the root bus */
-	for (slot = 0; slot < 32; slot++)
-		for (func = 0; func < 8; func++) {
-			/* Only probe function 0 on single fn devices */
-			if (check_dev_quirk(0, slot, func))
-				break;
-		}
-}
-=======
 static void __init early_pci_scan_bus(int bus)
 {
 	int slot, func;
@@ -873,4 +811,3 @@ void __init early_quirks(void)
 
 	early_pci_scan_bus(0);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

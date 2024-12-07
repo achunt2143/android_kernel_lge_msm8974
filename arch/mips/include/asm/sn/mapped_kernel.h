@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File created by Kanoj Sarcar 06/06/00.
  * Copyright 2000 Silicon Graphics, Inc.
@@ -40,17 +37,10 @@
 
 #define MAPPED_KERN_RO_TO_PHYS(x) \
 				((unsigned long)MAPPED_ADDR_RO_TO_PHYS(x) | \
-<<<<<<< HEAD
-				MAPPED_KERN_RO_PHYSBASE(get_compact_nodeid()))
-#define MAPPED_KERN_RW_TO_PHYS(x) \
-				((unsigned long)MAPPED_ADDR_RW_TO_PHYS(x) | \
-				MAPPED_KERN_RW_PHYSBASE(get_compact_nodeid()))
-=======
 				MAPPED_KERN_RO_PHYSBASE(get_nasid()))
 #define MAPPED_KERN_RW_TO_PHYS(x) \
 				((unsigned long)MAPPED_ADDR_RW_TO_PHYS(x) | \
 				MAPPED_KERN_RW_PHYSBASE(get_nasid()))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* CONFIG_MAPPED_KERNEL */
 
@@ -59,12 +49,7 @@
 
 #endif /* CONFIG_MAPPED_KERNEL */
 
-<<<<<<< HEAD
-#define MAPPED_KERN_RO_TO_K0(x)	PHYS_TO_K0(MAPPED_KERN_RO_TO_PHYS(x))
-#define MAPPED_KERN_RW_TO_K0(x)	PHYS_TO_K0(MAPPED_KERN_RW_TO_PHYS(x))
-=======
 #define MAPPED_KERN_RO_TO_K0(x) PHYS_TO_K0(MAPPED_KERN_RO_TO_PHYS(x))
 #define MAPPED_KERN_RW_TO_K0(x) PHYS_TO_K0(MAPPED_KERN_RW_TO_PHYS(x))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SN_MAPPED_KERNEL_H  */

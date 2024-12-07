@@ -1,59 +1,7 @@
-<<<<<<< HEAD
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- *
- * libfdt is dual licensed: you can use it either under the terms of
- * the GPL, or the BSD license, at your option.
- *
- *  a) This library is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the
- *     License, or (at your option) any later version.
- *
- *     This library is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public
- *     License along with this library; if not, write to the Free
- *     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- *     MA 02110-1301 USA
- *
- * Alternatively,
- *
- *  b) Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *     1. Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *     2. Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- *     CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- *     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- *     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- *     CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *     SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- *     NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- *     HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-=======
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
 /*
  * libfdt - Flat Device Tree manipulation
  * Copyright (C) 2006 David Gibson, IBM Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "libfdt_env.h"
 
@@ -62,13 +10,8 @@
 
 #include "libfdt_internal.h"
 
-<<<<<<< HEAD
-static int _fdt_blocks_misordered(const void *fdt,
-			      int mem_rsv_size, int struct_size)
-=======
 static int fdt_blocks_misordered_(const void *fdt,
 				  int mem_rsv_size, int struct_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (fdt_off_mem_rsvmap(fdt) < FDT_ALIGN(sizeof(struct fdt_header), 8))
 		|| (fdt_off_dt_struct(fdt) <
@@ -79,18 +22,6 @@ static int fdt_blocks_misordered_(const void *fdt,
 		    (fdt_off_dt_strings(fdt) + fdt_size_dt_strings(fdt)));
 }
 
-<<<<<<< HEAD
-static int _fdt_rw_check_header(void *fdt)
-{
-	FDT_CHECK_HEADER(fdt);
-
-	if (fdt_version(fdt) < 17)
-		return -FDT_ERR_BADVERSION;
-	if (_fdt_blocks_misordered(fdt, sizeof(struct fdt_reserve_entry),
-				   fdt_size_dt_struct(fdt)))
-		return -FDT_ERR_BADLAYOUT;
-	if (fdt_version(fdt) > 17)
-=======
 static int fdt_rw_probe_(void *fdt)
 {
 	if (can_assume(VALID_DTB))
@@ -103,22 +34,11 @@ static int fdt_rw_probe_(void *fdt)
 				   fdt_size_dt_struct(fdt)))
 		return -FDT_ERR_BADLAYOUT;
 	if (!can_assume(LATEST) && fdt_version(fdt) > 17)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fdt_set_version(fdt, 17);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-#define FDT_RW_CHECK_HEADER(fdt) \
-	{ \
-		int err; \
-		if ((err = _fdt_rw_check_header(fdt)) != 0) \
-			return err; \
-	}
-
-static inline int _fdt_data_size(void *fdt)
-=======
 #define FDT_RW_PROBE(fdt) \
 	{ \
 		int err_; \
@@ -127,27 +47,10 @@ static inline int _fdt_data_size(void *fdt)
 	}
 
 static inline unsigned int fdt_data_size_(void *fdt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return fdt_off_dt_strings(fdt) + fdt_size_dt_strings(fdt);
 }
 
-<<<<<<< HEAD
-static int _fdt_splice(void *fdt, void *splicepoint, int oldlen, int newlen)
-{
-	char *p = splicepoint;
-	char *end = (char *)fdt + _fdt_data_size(fdt);
-
-	if (((p + oldlen) < p) || ((p + oldlen) > end))
-		return -FDT_ERR_BADOFFSET;
-	if ((end - oldlen + newlen) > ((char *)fdt + fdt_totalsize(fdt)))
-		return -FDT_ERR_NOSPACE;
-	memmove(p + newlen, p + oldlen, end - p - oldlen);
-	return 0;
-}
-
-static int _fdt_splice_mem_rsv(void *fdt, struct fdt_reserve_entry *p,
-=======
 static int fdt_splice_(void *fdt, void *splicepoint, int oldlen, int newlen)
 {
 	char *p = splicepoint;
@@ -165,16 +68,11 @@ static int fdt_splice_(void *fdt, void *splicepoint, int oldlen, int newlen)
 }
 
 static int fdt_splice_mem_rsv_(void *fdt, struct fdt_reserve_entry *p,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       int oldn, int newn)
 {
 	int delta = (newn - oldn) * sizeof(*p);
 	int err;
-<<<<<<< HEAD
-	err = _fdt_splice(fdt, p, oldn * sizeof(*p), newn * sizeof(*p));
-=======
 	err = fdt_splice_(fdt, p, oldn * sizeof(*p), newn * sizeof(*p));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 	fdt_set_off_dt_struct(fdt, fdt_off_dt_struct(fdt) + delta);
@@ -182,21 +80,13 @@ static int fdt_splice_mem_rsv_(void *fdt, struct fdt_reserve_entry *p,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int _fdt_splice_struct(void *fdt, void *p,
-=======
 static int fdt_splice_struct_(void *fdt, void *p,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      int oldlen, int newlen)
 {
 	int delta = newlen - oldlen;
 	int err;
 
-<<<<<<< HEAD
-	if ((err = _fdt_splice(fdt, p, oldlen, newlen)))
-=======
 	if ((err = fdt_splice_(fdt, p, oldlen, newlen)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	fdt_set_size_dt_struct(fdt, fdt_size_dt_struct(fdt) + delta);
@@ -204,9 +94,6 @@ static int fdt_splice_struct_(void *fdt, void *p,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int _fdt_splice_string(void *fdt, int newlen)
-=======
 /* Must only be used to roll back in case of error */
 static void fdt_del_last_string_(void *fdt, const char *s)
 {
@@ -216,26 +103,18 @@ static void fdt_del_last_string_(void *fdt, const char *s)
 }
 
 static int fdt_splice_string_(void *fdt, int newlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *p = (char *)fdt
 		+ fdt_off_dt_strings(fdt) + fdt_size_dt_strings(fdt);
 	int err;
 
-<<<<<<< HEAD
-	if ((err = _fdt_splice(fdt, p, 0, newlen)))
-=======
 	if ((err = fdt_splice_(fdt, p, 0, newlen)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	fdt_set_size_dt_strings(fdt, fdt_size_dt_strings(fdt) + newlen);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int _fdt_find_add_string(void *fdt, const char *s)
-=======
 /**
  * fdt_find_add_string_() - Find or allocate a string
  *
@@ -246,7 +125,6 @@ static int _fdt_find_add_string(void *fdt, const char *s)
  * @return offset of string in the string table (whether found or added)
  */
 static int fdt_find_add_string_(void *fdt, const char *s, int *allocated)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *strtab = (char *)fdt + fdt_off_dt_strings(fdt);
 	const char *p;
@@ -254,25 +132,15 @@ static int fdt_find_add_string_(void *fdt, const char *s, int *allocated)
 	int len = strlen(s) + 1;
 	int err;
 
-<<<<<<< HEAD
-	p = _fdt_find_string(strtab, fdt_size_dt_strings(fdt), s);
-=======
 	if (!can_assume(NO_ROLLBACK))
 		*allocated = 0;
 
 	p = fdt_find_string_(strtab, fdt_size_dt_strings(fdt), s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p)
 		/* found it */
 		return (p - strtab);
 
 	new = strtab + fdt_size_dt_strings(fdt);
-<<<<<<< HEAD
-	err = _fdt_splice_string(fdt, len);
-	if (err)
-		return err;
-
-=======
 	err = fdt_splice_string_(fdt, len);
 	if (err)
 		return err;
@@ -280,7 +148,6 @@ static int fdt_find_add_string_(void *fdt, const char *s, int *allocated)
 	if (!can_assume(NO_ROLLBACK))
 		*allocated = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(new, s, len);
 	return (new - strtab);
 }
@@ -290,17 +157,10 @@ int fdt_add_mem_rsv(void *fdt, uint64_t address, uint64_t size)
 	struct fdt_reserve_entry *re;
 	int err;
 
-<<<<<<< HEAD
-	FDT_RW_CHECK_HEADER(fdt);
-
-	re = _fdt_mem_rsv_w(fdt, fdt_num_mem_rsv(fdt));
-	err = _fdt_splice_mem_rsv(fdt, re, 0, 1);
-=======
 	FDT_RW_PROBE(fdt);
 
 	re = fdt_mem_rsv_w_(fdt, fdt_num_mem_rsv(fdt));
 	err = fdt_splice_mem_rsv_(fdt, re, 0, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -311,51 +171,27 @@ int fdt_add_mem_rsv(void *fdt, uint64_t address, uint64_t size)
 
 int fdt_del_mem_rsv(void *fdt, int n)
 {
-<<<<<<< HEAD
-	struct fdt_reserve_entry *re = _fdt_mem_rsv_w(fdt, n);
-	int err;
-
-	FDT_RW_CHECK_HEADER(fdt);
-=======
 	struct fdt_reserve_entry *re = fdt_mem_rsv_w_(fdt, n);
 
 	FDT_RW_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (n >= fdt_num_mem_rsv(fdt))
 		return -FDT_ERR_NOTFOUND;
 
-<<<<<<< HEAD
-	err = _fdt_splice_mem_rsv(fdt, re, 1, 0);
-	if (err)
-		return err;
-	return 0;
-}
-
-static int _fdt_resize_property(void *fdt, int nodeoffset, const char *name,
-=======
 	return fdt_splice_mem_rsv_(fdt, re, 1, 0);
 }
 
 static int fdt_resize_property_(void *fdt, int nodeoffset, const char *name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int len, struct fdt_property **prop)
 {
 	int oldlen;
 	int err;
 
 	*prop = fdt_get_property_w(fdt, nodeoffset, name, &oldlen);
-<<<<<<< HEAD
-	if (! (*prop))
-		return oldlen;
-
-	if ((err = _fdt_splice_struct(fdt, (*prop)->data, FDT_TAGALIGN(oldlen),
-=======
 	if (!*prop)
 		return oldlen;
 
 	if ((err = fdt_splice_struct_(fdt, (*prop)->data, FDT_TAGALIGN(oldlen),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      FDT_TAGALIGN(len))))
 		return err;
 
@@ -363,33 +199,13 @@ static int fdt_resize_property_(void *fdt, int nodeoffset, const char *name,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int _fdt_add_property(void *fdt, int nodeoffset, const char *name,
-=======
 static int fdt_add_property_(void *fdt, int nodeoffset, const char *name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     int len, struct fdt_property **prop)
 {
 	int proplen;
 	int nextoffset;
 	int namestroff;
 	int err;
-<<<<<<< HEAD
-
-	if ((nextoffset = _fdt_check_node_offset(fdt, nodeoffset)) < 0)
-		return nextoffset;
-
-	namestroff = _fdt_find_add_string(fdt, name);
-	if (namestroff < 0)
-		return namestroff;
-
-	*prop = _fdt_offset_ptr_w(fdt, nextoffset);
-	proplen = sizeof(**prop) + FDT_TAGALIGN(len);
-
-	err = _fdt_splice_struct(fdt, *prop, 0, proplen);
-	if (err)
-		return err;
-=======
 	int allocated;
 
 	if ((nextoffset = fdt_check_node_offset_(fdt, nodeoffset)) < 0)
@@ -409,7 +225,6 @@ static int fdt_add_property_(void *fdt, int nodeoffset, const char *name,
 			fdt_del_last_string_(fdt, name);
 		return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	(*prop)->tag = cpu_to_fdt32(FDT_PROP);
 	(*prop)->nameoff = cpu_to_fdt32(namestroff);
@@ -423,11 +238,7 @@ int fdt_set_name(void *fdt, int nodeoffset, const char *name)
 	int oldlen, newlen;
 	int err;
 
-<<<<<<< HEAD
-	FDT_RW_CHECK_HEADER(fdt);
-=======
 	FDT_RW_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	namep = (char *)(uintptr_t)fdt_get_name(fdt, nodeoffset, &oldlen);
 	if (!namep)
@@ -435,11 +246,7 @@ int fdt_set_name(void *fdt, int nodeoffset, const char *name)
 
 	newlen = strlen(name);
 
-<<<<<<< HEAD
-	err = _fdt_splice_struct(fdt, namep, FDT_TAGALIGN(oldlen+1),
-=======
 	err = fdt_splice_struct_(fdt, namep, FDT_TAGALIGN(oldlen+1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 FDT_TAGALIGN(newlen+1));
 	if (err)
 		return err;
@@ -448,28 +255,12 @@ int fdt_set_name(void *fdt, int nodeoffset, const char *name)
 	return 0;
 }
 
-<<<<<<< HEAD
-int fdt_setprop(void *fdt, int nodeoffset, const char *name,
-		const void *val, int len)
-=======
 int fdt_setprop_placeholder(void *fdt, int nodeoffset, const char *name,
 			    int len, void **prop_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fdt_property *prop;
 	int err;
 
-<<<<<<< HEAD
-	FDT_RW_CHECK_HEADER(fdt);
-
-	err = _fdt_resize_property(fdt, nodeoffset, name, len, &prop);
-	if (err == -FDT_ERR_NOTFOUND)
-		err = _fdt_add_property(fdt, nodeoffset, name, len, &prop);
-	if (err)
-		return err;
-
-	memcpy(prop->data, val, len);
-=======
 	FDT_RW_PROBE(fdt);
 
 	err = fdt_resize_property_(fdt, nodeoffset, name, len, &prop);
@@ -494,7 +285,6 @@ int fdt_setprop(void *fdt, int nodeoffset, const char *name,
 
 	if (len)
 		memcpy(prop_data, val, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -504,20 +294,12 @@ int fdt_appendprop(void *fdt, int nodeoffset, const char *name,
 	struct fdt_property *prop;
 	int err, oldlen, newlen;
 
-<<<<<<< HEAD
-	FDT_RW_CHECK_HEADER(fdt);
-=======
 	FDT_RW_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prop = fdt_get_property_w(fdt, nodeoffset, name, &oldlen);
 	if (prop) {
 		newlen = len + oldlen;
-<<<<<<< HEAD
-		err = _fdt_splice_struct(fdt, prop->data,
-=======
 		err = fdt_splice_struct_(fdt, prop->data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 FDT_TAGALIGN(oldlen),
 					 FDT_TAGALIGN(newlen));
 		if (err)
@@ -525,11 +307,7 @@ int fdt_appendprop(void *fdt, int nodeoffset, const char *name,
 		prop->len = cpu_to_fdt32(newlen);
 		memcpy(prop->data + oldlen, val, len);
 	} else {
-<<<<<<< HEAD
-		err = _fdt_add_property(fdt, nodeoffset, name, len, &prop);
-=======
 		err = fdt_add_property_(fdt, nodeoffset, name, len, &prop);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 		memcpy(prop->data, val, len);
@@ -542,16 +320,6 @@ int fdt_delprop(void *fdt, int nodeoffset, const char *name)
 	struct fdt_property *prop;
 	int len, proplen;
 
-<<<<<<< HEAD
-	FDT_RW_CHECK_HEADER(fdt);
-
-	prop = fdt_get_property_w(fdt, nodeoffset, name, &len);
-	if (! prop)
-		return len;
-
-	proplen = sizeof(*prop) + FDT_TAGALIGN(len);
-	return _fdt_splice_struct(fdt, prop, proplen, 0);
-=======
 	FDT_RW_PROBE(fdt);
 
 	prop = fdt_get_property_w(fdt, nodeoffset, name, &len);
@@ -560,7 +328,6 @@ int fdt_delprop(void *fdt, int nodeoffset, const char *name)
 
 	proplen = sizeof(*prop) + FDT_TAGALIGN(len);
 	return fdt_splice_struct_(fdt, prop, proplen, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fdt_add_subnode_namelen(void *fdt, int parentoffset,
@@ -571,15 +338,9 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
 	int nodelen;
 	int err;
 	uint32_t tag;
-<<<<<<< HEAD
-	uint32_t *endtag;
-
-	FDT_RW_CHECK_HEADER(fdt);
-=======
 	fdt32_t *endtag;
 
 	FDT_RW_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = fdt_subnode_offset_namelen(fdt, parentoffset, name, namelen);
 	if (offset >= 0)
@@ -588,41 +349,26 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
 		return offset;
 
 	/* Try to place the new node after the parent's properties */
-<<<<<<< HEAD
-	fdt_next_tag(fdt, parentoffset, &nextoffset); /* skip the BEGIN_NODE */
-=======
 	tag = fdt_next_tag(fdt, parentoffset, &nextoffset);
 	/* the fdt_subnode_offset_namelen() should ensure this never hits */
 	if (!can_assume(LIBFDT_FLAWLESS) && (tag != FDT_BEGIN_NODE))
 		return -FDT_ERR_INTERNAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		offset = nextoffset;
 		tag = fdt_next_tag(fdt, offset, &nextoffset);
 	} while ((tag == FDT_PROP) || (tag == FDT_NOP));
 
-<<<<<<< HEAD
-	nh = _fdt_offset_ptr_w(fdt, offset);
-	nodelen = sizeof(*nh) + FDT_TAGALIGN(namelen+1) + FDT_TAGSIZE;
-
-	err = _fdt_splice_struct(fdt, nh, 0, nodelen);
-=======
 	nh = fdt_offset_ptr_w_(fdt, offset);
 	nodelen = sizeof(*nh) + FDT_TAGALIGN(namelen+1) + FDT_TAGSIZE;
 
 	err = fdt_splice_struct_(fdt, nh, 0, nodelen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
 	nh->tag = cpu_to_fdt32(FDT_BEGIN_NODE);
 	memset(nh->name, 0, FDT_TAGALIGN(namelen+1));
 	memcpy(nh->name, name, namelen);
-<<<<<<< HEAD
-	endtag = (uint32_t *)((char *)nh + nodelen - FDT_TAGSIZE);
-=======
 	endtag = (fdt32_t *)((char *)nh + nodelen - FDT_TAGSIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*endtag = cpu_to_fdt32(FDT_END_NODE);
 
 	return offset;
@@ -637,22 +383,6 @@ int fdt_del_node(void *fdt, int nodeoffset)
 {
 	int endoffset;
 
-<<<<<<< HEAD
-	FDT_RW_CHECK_HEADER(fdt);
-
-	endoffset = _fdt_node_end_offset(fdt, nodeoffset);
-	if (endoffset < 0)
-		return endoffset;
-
-	return _fdt_splice_struct(fdt, _fdt_offset_ptr_w(fdt, nodeoffset),
-				  endoffset - nodeoffset, 0);
-}
-
-static void _fdt_packblocks(const char *old, char *new,
-			    int mem_rsv_size, int struct_size)
-{
-	uint32_t mem_rsv_off, struct_off, strings_off;
-=======
 	FDT_RW_PROBE(fdt);
 
 	endoffset = fdt_node_end_offset_(fdt, nodeoffset);
@@ -669,7 +399,6 @@ static void fdt_packblocks_(const char *old, char *new,
 			    int strings_size)
 {
 	int mem_rsv_off, struct_off, strings_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mem_rsv_off = FDT_ALIGN(sizeof(struct fdt_header), 8);
 	struct_off = mem_rsv_off + mem_rsv_size;
@@ -682,12 +411,7 @@ static void fdt_packblocks_(const char *old, char *new,
 	fdt_set_off_dt_struct(new, struct_off);
 	fdt_set_size_dt_struct(new, struct_size);
 
-<<<<<<< HEAD
-	memmove(new + strings_off, old + fdt_off_dt_strings(old),
-		fdt_size_dt_strings(old));
-=======
 	memmove(new + strings_off, old + fdt_off_dt_strings(old), strings_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fdt_set_off_dt_strings(new, strings_off);
 	fdt_set_size_dt_strings(new, fdt_size_dt_strings(old));
 }
@@ -701,41 +425,25 @@ int fdt_open_into(const void *fdt, void *buf, int bufsize)
 	const char *fdtend = fdtstart + fdt_totalsize(fdt);
 	char *tmp;
 
-<<<<<<< HEAD
-	FDT_CHECK_HEADER(fdt);
-=======
 	FDT_RO_PROBE(fdt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mem_rsv_size = (fdt_num_mem_rsv(fdt)+1)
 		* sizeof(struct fdt_reserve_entry);
 
-<<<<<<< HEAD
-	if (fdt_version(fdt) >= 17) {
-		struct_size = fdt_size_dt_struct(fdt);
-	} else {
-=======
 	if (can_assume(LATEST) || fdt_version(fdt) >= 17) {
 		struct_size = fdt_size_dt_struct(fdt);
 	} else if (fdt_version(fdt) == 16) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct_size = 0;
 		while (fdt_next_tag(fdt, struct_size, &struct_size) != FDT_END)
 			;
 		if (struct_size < 0)
 			return struct_size;
-<<<<<<< HEAD
-	}
-
-	if (!_fdt_blocks_misordered(fdt, mem_rsv_size, struct_size)) {
-=======
 	} else {
 		return -FDT_ERR_BADVERSION;
 	}
 
 	if (can_assume(LIBFDT_ORDER) ||
 	    !fdt_blocks_misordered_(fdt, mem_rsv_size, struct_size)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* no further work necessary */
 		err = fdt_move(fdt, buf, bufsize);
 		if (err)
@@ -763,12 +471,8 @@ int fdt_open_into(const void *fdt, void *buf, int bufsize)
 			return -FDT_ERR_NOSPACE;
 	}
 
-<<<<<<< HEAD
-	_fdt_packblocks(fdt, tmp, mem_rsv_size, struct_size);
-=======
 	fdt_packblocks_(fdt, tmp, mem_rsv_size, struct_size,
 			fdt_size_dt_strings(fdt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memmove(buf, tmp, newsize);
 
 	fdt_set_magic(buf, FDT_MAGIC);
@@ -784,14 +488,6 @@ int fdt_pack(void *fdt)
 {
 	int mem_rsv_size;
 
-<<<<<<< HEAD
-	FDT_RW_CHECK_HEADER(fdt);
-
-	mem_rsv_size = (fdt_num_mem_rsv(fdt)+1)
-		* sizeof(struct fdt_reserve_entry);
-	_fdt_packblocks(fdt, fdt, mem_rsv_size, fdt_size_dt_struct(fdt));
-	fdt_set_totalsize(fdt, _fdt_data_size(fdt));
-=======
 	FDT_RW_PROBE(fdt);
 
 	mem_rsv_size = (fdt_num_mem_rsv(fdt)+1)
@@ -799,7 +495,6 @@ int fdt_pack(void *fdt)
 	fdt_packblocks_(fdt, fdt, mem_rsv_size, fdt_size_dt_struct(fdt),
 			fdt_size_dt_strings(fdt));
 	fdt_set_totalsize(fdt, fdt_data_size_(fdt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

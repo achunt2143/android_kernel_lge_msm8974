@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8994-regmap.c  --  Register map data for WM8994 series devices
  *
  * Copyright 2011 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mfd/wm8994/core.h>
@@ -26,11 +14,7 @@
 
 #include "wm8994.h"
 
-<<<<<<< HEAD
-static struct reg_default wm1811_defaults[] = {
-=======
 static const struct reg_default wm1811_defaults[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0001, 0x0000 },    /* R1    - Power Management (1) */
 	{ 0x0002, 0x6000 },    /* R2    - Power Management (2) */
 	{ 0x0003, 0x0000 },    /* R3    - Power Management (3) */
@@ -134,11 +118,6 @@ static const struct reg_default wm1811_defaults[] = {
 	{ 0x0402, 0x00C0 },    /* R1026 - AIF1 DAC1 Left Volume */
 	{ 0x0403, 0x00C0 },    /* R1027 - AIF1 DAC1 Right Volume */
 	{ 0x0410, 0x0000 },    /* R1040 - AIF1 ADC1 Filters */
-<<<<<<< HEAD
-	{ 0x0420, 0x0200 },    /* R1056 - AIF1 DAC1 Filters (1) */
-	{ 0x0421, 0x0010 },    /* R1057 - AIF1 DAC1 Filters (2) */
-	{ 0x0430, 0x0068 },    /* R1072 - AIF1 DAC1 Noise Gate */
-=======
 	{ 0x0411, 0x0000 },    /* R1041 - AIF1 ADC2 Filters */
 	{ 0x0420, 0x0200 },    /* R1056 - AIF1 DAC1 Filters (1) */
 	{ 0x0421, 0x0010 },    /* R1057 - AIF1 DAC1 Filters (2) */
@@ -146,20 +125,16 @@ static const struct reg_default wm1811_defaults[] = {
 	{ 0x0423, 0x0010 },    /* R1059 - AIF1 DAC2 Filters (2) */
 	{ 0x0430, 0x0068 },    /* R1072 - AIF1 DAC1 Noise Gate */
 	{ 0x0431, 0x0068 },    /* R1073 - AIF1 DAC2 Noise Gate */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0440, 0x0098 },    /* R1088 - AIF1 DRC1 (1) */
 	{ 0x0441, 0x0845 },    /* R1089 - AIF1 DRC1 (2) */
 	{ 0x0442, 0x0000 },    /* R1090 - AIF1 DRC1 (3) */
 	{ 0x0443, 0x0000 },    /* R1091 - AIF1 DRC1 (4) */
 	{ 0x0444, 0x0000 },    /* R1092 - AIF1 DRC1 (5) */
-<<<<<<< HEAD
-=======
 	{ 0x0450, 0x0098 },    /* R1104 - AIF1 DRC2 (1) */
 	{ 0x0451, 0x0845 },    /* R1105 - AIF1 DRC2 (2) */
 	{ 0x0452, 0x0000 },    /* R1106 - AIF1 DRC2 (3) */
 	{ 0x0453, 0x0000 },    /* R1107 - AIF1 DRC2 (4) */
 	{ 0x0454, 0x0000 },    /* R1108 - AIF1 DRC2 (5) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0480, 0x6318 },    /* R1152 - AIF1 DAC1 EQ Gains (1) */
 	{ 0x0481, 0x6300 },    /* R1153 - AIF1 DAC1 EQ Gains (2) */
 	{ 0x0482, 0x0FCA },    /* R1154 - AIF1 DAC1 EQ Band 1 A */
@@ -181,8 +156,6 @@ static const struct reg_default wm1811_defaults[] = {
 	{ 0x0492, 0x0559 },    /* R1170 - AIF1 DAC1 EQ Band 5 B */
 	{ 0x0493, 0x4000 },    /* R1171 - AIF1 DAC1 EQ Band 5 PG */
 	{ 0x0494, 0x0000 },    /* R1172 - AIF1 DAC1 EQ Band 1 C */
-<<<<<<< HEAD
-=======
 	{ 0x04A0, 0x6318 },    /* R1184 - AIF1 DAC2 EQ Gains (1) */
 	{ 0x04A1, 0x6300 },    /* R1185 - AIF1 DAC2 EQ Gains (2) */
 	{ 0x04A2, 0x0FCA },    /* R1186 - AIF1 DAC2 EQ Band 1 A */
@@ -204,7 +177,6 @@ static const struct reg_default wm1811_defaults[] = {
 	{ 0x04B2, 0x0559 },    /* R1202 - AIF1 DAC2 EQ Band 5 B */
 	{ 0x04B3, 0x4000 },    /* R1203 - AIF1 DAC2 EQ Band 5 PG */
 	{ 0x04B4, 0x0000 },    /* R1204 - AIF1 DAC2 EQ Band 1 C */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0500, 0x00C0 },    /* R1280 - AIF2 ADC Left Volume */
 	{ 0x0501, 0x00C0 },    /* R1281 - AIF2 ADC Right Volume */
 	{ 0x0502, 0x00C0 },    /* R1282 - AIF2 DAC Left Volume */
@@ -247,11 +219,8 @@ static const struct reg_default wm1811_defaults[] = {
 	{ 0x0605, 0x0000 },    /* R1541 - AIF2ADC Right Mixer Routing */
 	{ 0x0606, 0x0000 },    /* R1542 - AIF1 ADC1 Left Mixer Routing */
 	{ 0x0607, 0x0000 },    /* R1543 - AIF1 ADC1 Right Mixer Routing */
-<<<<<<< HEAD
-=======
 	{ 0x0608, 0x0000 },    /* R1544 - AIF1 ADC2 Left Mixer Routing */
 	{ 0x0609, 0x0000 },    /* R1545 - AIF1 ADC2 Right Mixer Routing */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0610, 0x02C0 },    /* R1552 - DAC1 Left Volume */
 	{ 0x0611, 0x02C0 },    /* R1553 - DAC1 Right Volume */
 	{ 0x0612, 0x02C0 },    /* R1554 - AIF2TX Left Volume */
@@ -277,11 +246,7 @@ static const struct reg_default wm1811_defaults[] = {
 	{ 0x0748, 0x003F },    /* R1864 - IRQ Debounce */
 };
 
-<<<<<<< HEAD
-static struct reg_default wm8994_defaults[] = {
-=======
 static const struct reg_default wm8994_defaults[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0001, 0x0000 },    /* R1     - Power Management (1) */ 
 	{ 0x0002, 0x6000 },    /* R2     - Power Management (2) */ 
 	{ 0x0003, 0x0000 },    /* R3     - Power Management (3) */ 
@@ -500,11 +465,7 @@ static const struct reg_default wm8994_defaults[] = {
 	{ 0x0748, 0x003F },    /* R1864  - IRQ Debounce */ 
 };
 
-<<<<<<< HEAD
-static struct reg_default wm8958_defaults[] = {
-=======
 static const struct reg_default wm8958_defaults[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0001, 0x0000 },    /* R1     - Power Management (1) */
 	{ 0x0002, 0x6000 },    /* R2     - Power Management (2) */
 	{ 0x0003, 0x0000 },    /* R3     - Power Management (3) */
@@ -912,11 +873,6 @@ static bool wm1811_readable_register(struct device *dev, unsigned int reg)
 	case WM8994_AIF1_DAC1_LEFT_VOLUME:
 	case WM8994_AIF1_DAC1_RIGHT_VOLUME:
 	case WM8994_AIF1_ADC1_FILTERS:
-<<<<<<< HEAD
-	case WM8994_AIF1_DAC1_FILTERS_1:
-	case WM8994_AIF1_DAC1_FILTERS_2:
-	case WM8958_AIF1_DAC1_NOISE_GATE:
-=======
 	case WM8994_AIF1_ADC2_FILTERS:
 	case WM8994_AIF1_DAC1_FILTERS_1:
 	case WM8994_AIF1_DAC1_FILTERS_2:
@@ -924,20 +880,16 @@ static bool wm1811_readable_register(struct device *dev, unsigned int reg)
 	case WM8994_AIF1_DAC2_FILTERS_2:
 	case WM8958_AIF1_DAC1_NOISE_GATE:
 	case WM8958_AIF1_DAC2_NOISE_GATE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WM8994_AIF1_DRC1_1:
 	case WM8994_AIF1_DRC1_2:
 	case WM8994_AIF1_DRC1_3:
 	case WM8994_AIF1_DRC1_4:
 	case WM8994_AIF1_DRC1_5:
-<<<<<<< HEAD
-=======
 	case WM8994_AIF1_DRC2_1:
 	case WM8994_AIF1_DRC2_2:
 	case WM8994_AIF1_DRC2_3:
 	case WM8994_AIF1_DRC2_4:
 	case WM8994_AIF1_DRC2_5:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WM8994_AIF1_DAC1_EQ_GAINS_1:
 	case WM8994_AIF1_DAC1_EQ_GAINS_2:
 	case WM8994_AIF1_DAC1_EQ_BAND_1_A:
@@ -959,8 +911,6 @@ static bool wm1811_readable_register(struct device *dev, unsigned int reg)
 	case WM8994_AIF1_DAC1_EQ_BAND_5_B:
 	case WM8994_AIF1_DAC1_EQ_BAND_5_PG:
 	case WM8994_AIF1_DAC1_EQ_BAND_1_C:
-<<<<<<< HEAD
-=======
 	case WM8994_AIF1_DAC2_EQ_GAINS_1:
 	case WM8994_AIF1_DAC2_EQ_GAINS_2:
 	case WM8994_AIF1_DAC2_EQ_BAND_1_A:
@@ -982,7 +932,6 @@ static bool wm1811_readable_register(struct device *dev, unsigned int reg)
 	case WM8994_AIF1_DAC2_EQ_BAND_5_B:
 	case WM8994_AIF1_DAC2_EQ_BAND_5_PG:
 	case WM8994_AIF1_DAC2_EQ_BAND_1_C:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WM8994_AIF2_ADC_LEFT_VOLUME:
 	case WM8994_AIF2_ADC_RIGHT_VOLUME:
 	case WM8994_AIF2_DAC_LEFT_VOLUME:
@@ -1025,11 +974,8 @@ static bool wm1811_readable_register(struct device *dev, unsigned int reg)
 	case WM8994_DAC2_RIGHT_MIXER_ROUTING:
 	case WM8994_AIF1_ADC1_LEFT_MIXER_ROUTING:
 	case WM8994_AIF1_ADC1_RIGHT_MIXER_ROUTING:
-<<<<<<< HEAD
-=======
 	case WM8994_AIF1_ADC2_LEFT_MIXER_ROUTING:
 	case WM8994_AIF1_ADC2_RIGHT_MIXER_ROUTING:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WM8994_DAC1_LEFT_VOLUME:
 	case WM8994_DAC1_RIGHT_VOLUME:
 	case WM8994_DAC2_LEFT_VOLUME:
@@ -1235,10 +1181,6 @@ static bool wm8994_volatile_register(struct device *dev, unsigned int reg)
 	case WM8994_RATE_STATUS:
 	case WM8958_MIC_DETECT_3:
 	case WM8994_DC_SERVO_4E:
-<<<<<<< HEAD
-	case WM8994_CHIP_REVISION:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WM8994_INTERRUPT_STATUS_1:
 	case WM8994_INTERRUPT_STATUS_2:
 		return true;
@@ -1253,11 +1195,7 @@ static bool wm1811_volatile_register(struct device *dev, unsigned int reg)
 
 	switch (reg) {
 	case WM8994_GPIO_6:
-<<<<<<< HEAD
-		if (wm8994->revision > 1)
-=======
 		if (wm8994->cust_id > 1 || wm8994->revision > 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return true;
 		else
 			return false;
@@ -1300,11 +1238,7 @@ struct regmap_config wm1811_regmap_config = {
 	.reg_bits = 16,
 	.val_bits = 16,
 
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-=======
 	.cache_type = REGCACHE_MAPLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.reg_defaults = wm1811_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm1811_defaults),
@@ -1313,20 +1247,13 @@ struct regmap_config wm1811_regmap_config = {
 	.volatile_reg = wm1811_volatile_register,
 	.readable_reg = wm1811_readable_register,
 };
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(wm1811_regmap_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct regmap_config wm8994_regmap_config = {
 	.reg_bits = 16,
 	.val_bits = 16,
 
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-=======
 	.cache_type = REGCACHE_MAPLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.reg_defaults = wm8994_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8994_defaults),
@@ -1335,20 +1262,13 @@ struct regmap_config wm8994_regmap_config = {
 	.volatile_reg = wm8994_volatile_register,
 	.readable_reg = wm8994_readable_register,
 };
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(wm8994_regmap_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct regmap_config wm8958_regmap_config = {
 	.reg_bits = 16,
 	.val_bits = 16,
 
-<<<<<<< HEAD
-	.cache_type = REGCACHE_RBTREE,
-=======
 	.cache_type = REGCACHE_MAPLE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.reg_defaults = wm8958_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8958_defaults),
@@ -1357,16 +1277,10 @@ struct regmap_config wm8958_regmap_config = {
 	.volatile_reg = wm8958_volatile_register,
 	.readable_reg = wm8958_readable_register,
 };
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(wm8958_regmap_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct regmap_config wm8994_base_regmap_config = {
 	.reg_bits = 16,
 	.val_bits = 16,
 };
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(wm8994_base_regmap_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

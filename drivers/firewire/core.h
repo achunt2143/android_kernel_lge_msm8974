@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FIREWIRE_CORE_H
 #define _FIREWIRE_CORE_H
 
 #include <linux/compiler.h>
 #include <linux/device.h>
-<<<<<<< HEAD
-=======
 #include <linux/dma-mapping.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/list.h>
 #include <linux/idr.h>
@@ -19,11 +13,7 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 
-<<<<<<< HEAD
-#include <linux/atomic.h>
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct device;
 struct fw_card;
@@ -129,29 +119,8 @@ int fw_card_add(struct fw_card *card,
 		u32 max_receive, u32 link_speed, u64 guid);
 void fw_core_remove_card(struct fw_card *card);
 int fw_compute_block_crc(__be32 *block);
-<<<<<<< HEAD
-void fw_schedule_bus_reset(struct fw_card *card, bool delayed, bool short_reset);
 void fw_schedule_bm_work(struct fw_card *card, unsigned long delay);
 
-static inline struct fw_card *fw_card_get(struct fw_card *card)
-{
-	kref_get(&card->kref);
-
-	return card;
-}
-
-void fw_card_release(struct kref *kref);
-
-static inline void fw_card_put(struct fw_card *card)
-{
-	kref_put(&card->kref, fw_card_release);
-}
-
-
-=======
-void fw_schedule_bm_work(struct fw_card *card, unsigned long delay);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -cdev */
 
 extern const struct file_operations fw_device_ops;
@@ -186,13 +155,9 @@ void fw_node_event(struct fw_card *card, struct fw_node *node, int event);
 
 /* -iso */
 
-<<<<<<< HEAD
-int fw_iso_buffer_map(struct fw_iso_buffer *buffer, struct vm_area_struct *vma);
-=======
 int fw_iso_buffer_alloc(struct fw_iso_buffer *buffer, int page_count);
 int fw_iso_buffer_map_dma(struct fw_iso_buffer *buffer, struct fw_card *card,
 			  enum dma_data_direction direction);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* -topology */
@@ -218,11 +183,7 @@ struct fw_node {
 			 * local node to this node. */
 	u8 max_depth:4;	/* Maximum depth to any leaf node */
 	u8 max_hops:4;	/* Max hops in this sub tree */
-<<<<<<< HEAD
-	atomic_t ref_count;
-=======
 	refcount_t ref_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* For serializing node topology into a list. */
 	struct list_head link;
@@ -230,31 +191,19 @@ struct fw_node {
 	/* Upper layer specific data. */
 	void *data;
 
-<<<<<<< HEAD
-	struct fw_node *ports[0];
-=======
 	struct fw_node *ports[] __counted_by(port_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct fw_node *fw_node_get(struct fw_node *node)
 {
-<<<<<<< HEAD
-	atomic_inc(&node->ref_count);
-=======
 	refcount_inc(&node->ref_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return node;
 }
 
 static inline void fw_node_put(struct fw_node *node)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&node->ref_count))
-=======
 	if (refcount_dec_and_test(&node->ref_count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(node);
 }
 
@@ -286,20 +235,15 @@ static inline bool is_next_generation(int new_generation, int old_generation)
 
 #define LOCAL_BUS 0xffc0
 
-<<<<<<< HEAD
-=======
 /* OHCI-1394's default upper bound for physical DMA: 4 GB */
 #define FW_MAX_PHYSICAL_RANGE		(1ULL << 32)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fw_core_handle_request(struct fw_card *card, struct fw_packet *request);
 void fw_core_handle_response(struct fw_card *card, struct fw_packet *packet);
 int fw_get_response_length(struct fw_request *request);
 void fw_fill_response(struct fw_packet *response, u32 *request_header,
 		      int rcode, void *payload, size_t length);
 
-<<<<<<< HEAD
-=======
 void fw_request_get(struct fw_request *request);
 void fw_request_put(struct fw_request *request);
 
@@ -310,7 +254,6 @@ static inline u32 cycle_time_to_ohci_tstamp(u32 tstamp)
 	return (tstamp & 0x0ffff000) >> 12;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FW_PHY_CONFIG_NO_NODE_ID	-1
 #define FW_PHY_CONFIG_CURRENT_GAP_COUNT	-1
 void fw_send_phy_config(struct fw_card *card,
@@ -321,13 +264,10 @@ static inline bool is_ping_packet(u32 *data)
 	return (data[0] & 0xc0ffffff) == 0 && ~data[0] == data[1];
 }
 
-<<<<<<< HEAD
-=======
 static inline bool is_in_fcp_region(u64 offset, size_t length)
 {
 	return offset >= (CSR_REGISTER_BASE | CSR_FCP_COMMAND) &&
 		offset + length <= (CSR_REGISTER_BASE | CSR_FCP_END);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _FIREWIRE_CORE_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Nokia Corporation
  * Copyright (C) 2011 Intel Corporation
@@ -10,13 +7,6 @@
  * Dmitry Kasatkin <dmitry.kasatkin@nokia.com>
  *                 <dmitry.kasatkin@intel.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 2 of the License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File: sign.c
  *	implements signature (RSA) verification
  *	pkcs decoding is based on LibTomCrypt code
@@ -30,29 +20,17 @@
 #include <linux/key.h>
 #include <linux/crypto.h>
 #include <crypto/hash.h>
-<<<<<<< HEAD
-#include <crypto/sha.h>
-=======
 #include <crypto/sha1.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <keys/user-type.h>
 #include <linux/mpi.h>
 #include <linux/digsig.h>
 
 static struct crypto_shash *shash;
 
-<<<<<<< HEAD
-static int pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
-			unsigned long  msglen,
-			unsigned long  modulus_bitlen,
-			unsigned char *out,
-			unsigned long *outlen)
-=======
 static const char *pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
 						unsigned long  msglen,
 						unsigned long  modulus_bitlen,
 						unsigned long *outlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long modulus_len, ps_len, i;
 
@@ -60,19 +38,11 @@ static const char *pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
 
 	/* test message size */
 	if ((msglen > modulus_len) || (modulus_len < 11))
-<<<<<<< HEAD
-		return -EINVAL;
-
-	/* separate encoded message */
-	if ((msg[0] != 0x00) || (msg[1] != (unsigned char)1))
-		return -EINVAL;
-=======
 		return NULL;
 
 	/* separate encoded message */
 	if (msg[0] != 0x00 || msg[1] != 0x01)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 2; i < modulus_len - 1; i++)
 		if (msg[i] != 0xFF)
@@ -82,21 +52,6 @@ static const char *pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
 	if (msg[i] != 0)
 		/* There was no octet with hexadecimal value 0x00
 		to separate ps from m. */
-<<<<<<< HEAD
-		return -EINVAL;
-
-	ps_len = i - 2;
-
-	if (*outlen < (msglen - (2 + ps_len + 1))) {
-		*outlen = msglen - (2 + ps_len + 1);
-		return -EOVERFLOW;
-	}
-
-	*outlen = (msglen - (2 + ps_len + 1));
-	memcpy(out, &msg[2 + ps_len + 1], *outlen);
-
-	return 0;
-=======
 		return NULL;
 
 	ps_len = i - 2;
@@ -104,7 +59,6 @@ static const char *pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
 	*outlen = (msglen - (2 + ps_len + 1));
 
 	return msg + 2 + ps_len + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -119,16 +73,6 @@ static int digsig_verify_rsa(struct key *key,
 	unsigned long mlen, mblen;
 	unsigned nret, l;
 	int head, i;
-<<<<<<< HEAD
-	unsigned char *out1 = NULL, *out2 = NULL;
-	MPI in = NULL, res = NULL, pkey[2];
-	uint8_t *p, *datap, *endp;
-	struct user_key_payload *ukp;
-	struct pubkey_hdr *pkh;
-
-	down_read(&key->sem);
-	ukp = key->payload.data;
-=======
 	unsigned char *out1 = NULL;
 	const char *m;
 	MPI in = NULL, res = NULL, pkey[2];
@@ -145,7 +89,6 @@ static int digsig_verify_rsa(struct key *key,
 		err = -EKEYREVOKED;
 		goto err1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ukp->datalen < sizeof(*pkh))
 		goto err1;
@@ -164,15 +107,6 @@ static int digsig_verify_rsa(struct key *key,
 	datap = pkh->mpi;
 	endp = ukp->data + ukp->datalen;
 
-<<<<<<< HEAD
-	err = -ENOMEM;
-
-	for (i = 0; i < pkh->nmpi; i++) {
-		unsigned int remaining = endp - datap;
-		pkey[i] = mpi_read_from_buffer(datap, &remaining);
-		if (!pkey[i])
-			goto err;
-=======
 	for (i = 0; i < pkh->nmpi; i++) {
 		unsigned int remaining = endp - datap;
 		pkey[i] = mpi_read_from_buffer(datap, &remaining);
@@ -180,17 +114,10 @@ static int digsig_verify_rsa(struct key *key,
 			err = PTR_ERR(pkey[i]);
 			goto err;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		datap += remaining;
 	}
 
 	mblen = mpi_get_nbits(pkey[0]);
-<<<<<<< HEAD
-	mlen = (mblen + 7)/8;
-
-	if (mlen == 0)
-		goto err;
-=======
 	mlen = DIV_ROUND_UP(mblen, 8);
 
 	if (mlen == 0) {
@@ -199,29 +126,17 @@ static int digsig_verify_rsa(struct key *key,
 	}
 
 	err = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	out1 = kzalloc(mlen, GFP_KERNEL);
 	if (!out1)
 		goto err;
 
-<<<<<<< HEAD
-	out2 = kzalloc(mlen, GFP_KERNEL);
-	if (!out2)
-		goto err;
-
-	nret = siglen;
-	in = mpi_read_from_buffer(sig, &nret);
-	if (!in)
-		goto err;
-=======
 	nret = siglen;
 	in = mpi_read_from_buffer(sig, &nret);
 	if (IS_ERR(in)) {
 		err = PTR_ERR(in);
 		goto err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = mpi_alloc(mpi_get_nlimbs(in) * 2);
 	if (!res)
@@ -249,27 +164,15 @@ static int digsig_verify_rsa(struct key *key,
 
 	kfree(p);
 
-<<<<<<< HEAD
-	err = pkcs_1_v1_5_decode_emsa(out1, len, mblen, out2, &len);
-	if (err)
-		goto err;
-
-	if (len != hlen || memcmp(out2, h, hlen))
-=======
 	m = pkcs_1_v1_5_decode_emsa(out1, len, mblen, &len);
 
 	if (!m || len != hlen || memcmp(m, h, hlen))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 
 err:
 	mpi_free(in);
 	mpi_free(res);
 	kfree(out1);
-<<<<<<< HEAD
-	kfree(out2);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (--i >= 0)
 		mpi_free(pkey[i]);
 err1:
@@ -282,18 +185,11 @@ err1:
  * digsig_verify() - digital signature verification with public key
  * @keyring:	keyring to search key in
  * @sig:	digital signature
-<<<<<<< HEAD
- * @sigen:	length of the signature
- * @data:	data
- * @datalen:	length of the data
- * @return:	0 on success, -EINVAL otherwise
-=======
  * @siglen:	length of the signature
  * @data:	data
  * @datalen:	length of the data
  *
  * Returns 0 on success, -EINVAL otherwise
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Verifies data integrity against digital signature.
  * Currently only RSA is supported.
@@ -322,15 +218,9 @@ int digsig_verify(struct key *keyring, const char *sig, int siglen,
 		/* search in specific keyring */
 		key_ref_t kref;
 		kref = keyring_search(make_key_ref(keyring, 1UL),
-<<<<<<< HEAD
-						&key_type_user, name);
-		if (IS_ERR(kref))
-			key = ERR_PTR(PTR_ERR(kref));
-=======
 				      &key_type_user, name, true);
 		if (IS_ERR(kref))
 			key = ERR_CAST(kref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			key = key_ref_to_ptr(kref);
 	} else {
@@ -347,10 +237,6 @@ int digsig_verify(struct key *keyring, const char *sig, int siglen,
 		goto err;
 
 	desc->tfm = shash;
-<<<<<<< HEAD
-	desc->flags = CRYPTO_TFM_REQ_MAY_SLEEP;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	crypto_shash_init(desc);
 	crypto_shash_update(desc, data, datalen);

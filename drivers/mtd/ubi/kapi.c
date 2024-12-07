@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) International Business Machines Corp., 2006
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines Corp., 2006
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Artem Bityutskiy (Битюцкий Артём)
  */
 
@@ -99,10 +79,7 @@ void ubi_do_get_volume_info(struct ubi_device *ubi, struct ubi_volume *vol,
 	vi->name_len = vol->name_len;
 	vi->name = vol->name;
 	vi->cdev = vol->cdev.dev;
-<<<<<<< HEAD
-=======
 	vi->dev = &vol->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -148,11 +125,7 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 		return ERR_PTR(-EINVAL);
 
 	if (mode != UBI_READONLY && mode != UBI_READWRITE &&
-<<<<<<< HEAD
-	    mode != UBI_EXCLUSIVE)
-=======
 	    mode != UBI_EXCLUSIVE && mode != UBI_METAONLY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-EINVAL);
 
 	/*
@@ -179,11 +152,7 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 
 	spin_lock(&ubi->volumes_lock);
 	vol = ubi->volumes[vol_id];
-<<<<<<< HEAD
-	if (!vol)
-=======
 	if (!vol || vol->is_dead)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 
 	err = -EBUSY;
@@ -201,12 +170,6 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 		break;
 
 	case UBI_EXCLUSIVE:
-<<<<<<< HEAD
-		if (vol->exclusive || vol->writers || vol->readers)
-			goto out_unlock;
-		vol->exclusive = 1;
-		break;
-=======
 		if (vol->exclusive || vol->writers || vol->readers ||
 		    vol->metaonly)
 			goto out_unlock;
@@ -218,7 +181,6 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 			goto out_unlock;
 		vol->metaonly = 1;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	get_device(&vol->dev);
 	vol->ref_count += 1;
@@ -228,11 +190,7 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 	desc->mode = mode;
 
 	mutex_lock(&ubi->ckvol_mutex);
-<<<<<<< HEAD
-	if (!vol->checked) {
-=======
 	if (!vol->checked && !vol->skip_check) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This is the first open - check the volume */
 		err = ubi_check_volume(ubi, vol_id);
 		if (err < 0) {
@@ -241,11 +199,7 @@ struct ubi_volume_desc *ubi_open_volume(int ubi_num, int vol_id, int mode)
 			return ERR_PTR(err);
 		}
 		if (err == 1) {
-<<<<<<< HEAD
-			ubi_warn("volume %d on UBI device %d is corrupted",
-=======
 			ubi_warn(ubi, "volume %d on UBI device %d is corrupted",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 vol_id, ubi->ubi_num);
 			vol->corrupted = 1;
 		}
@@ -261,15 +215,9 @@ out_unlock:
 out_free:
 	kfree(desc);
 out_put_ubi:
-<<<<<<< HEAD
-	ubi_put_device(ubi);
-	dbg_err("cannot open device %d, volume %d, error %d",
-		ubi_num, vol_id, err);
-=======
 	ubi_err(ubi, "cannot open device %d, volume %d, error %d",
 		ubi_num, vol_id, err);
 	ubi_put_device(ubi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(err);
 }
 EXPORT_SYMBOL_GPL(ubi_open_volume);
@@ -332,8 +280,6 @@ struct ubi_volume_desc *ubi_open_volume_nm(int ubi_num, const char *name,
 EXPORT_SYMBOL_GPL(ubi_open_volume_nm);
 
 /**
-<<<<<<< HEAD
-=======
  * ubi_get_num_by_path - get UBI device and volume number from device path
  * @pathname: volume character device node path
  * @ubi_num: pointer to UBI device number to be set
@@ -369,7 +315,6 @@ int ubi_get_num_by_path(const char *pathname, int *ubi_num, int *vol_id)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ubi_open_volume_path - open UBI volume by its character device node path.
  * @pathname: volume character device node path
  * @mode: open mode
@@ -379,42 +324,18 @@ int ubi_get_num_by_path(const char *pathname, int *ubi_num, int *vol_id)
  */
 struct ubi_volume_desc *ubi_open_volume_path(const char *pathname, int mode)
 {
-<<<<<<< HEAD
-	int error, ubi_num, vol_id, mod;
-	struct inode *inode;
-	struct path path;
-=======
 	int error, ubi_num, vol_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_gen("open volume %s, mode %d", pathname, mode);
 
 	if (!pathname || !*pathname)
 		return ERR_PTR(-EINVAL);
 
-<<<<<<< HEAD
-	error = kern_path(pathname, LOOKUP_FOLLOW, &path);
-	if (error)
-		return ERR_PTR(error);
-
-	inode = path.dentry->d_inode;
-	mod = inode->i_mode;
-	ubi_num = ubi_major2num(imajor(inode));
-	vol_id = iminor(inode) - 1;
-	path_put(&path);
-
-	if (!S_ISCHR(mod))
-		return ERR_PTR(-EINVAL);
-	if (vol_id >= 0 && ubi_num >= 0)
-		return ubi_open_volume(ubi_num, vol_id, mode);
-	return ERR_PTR(-ENODEV);
-=======
 	error = ubi_get_num_by_path(pathname, &ubi_num, &vol_id);
 	if (error)
 		return ERR_PTR(error);
 
 	return ubi_open_volume(ubi_num, vol_id, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ubi_open_volume_path);
 
@@ -440,13 +361,10 @@ void ubi_close_volume(struct ubi_volume_desc *desc)
 		break;
 	case UBI_EXCLUSIVE:
 		vol->exclusive = 0;
-<<<<<<< HEAD
-=======
 		break;
 	case UBI_METAONLY:
 		vol->metaonly = 0;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	vol->ref_count -= 1;
 	spin_unlock(&ubi->volumes_lock);
@@ -459,8 +377,6 @@ void ubi_close_volume(struct ubi_volume_desc *desc)
 EXPORT_SYMBOL_GPL(ubi_close_volume);
 
 /**
-<<<<<<< HEAD
-=======
  * leb_read_sanity_check - does sanity checks on read requests.
  * @desc: volume descriptor
  * @lnum: logical eraseblock number to read from
@@ -498,7 +414,6 @@ static int leb_read_sanity_check(struct ubi_volume_desc *desc, int lnum,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ubi_leb_read - read data.
  * @desc: volume descriptor
  * @lnum: logical eraseblock number to read from
@@ -534,39 +449,16 @@ int ubi_leb_read(struct ubi_volume_desc *desc, int lnum, char *buf, int offset,
 
 	dbg_gen("read %d bytes from LEB %d:%d:%d", len, vol_id, lnum, offset);
 
-<<<<<<< HEAD
-	if (vol_id < 0 || vol_id >= ubi->vtbl_slots || lnum < 0 ||
-	    lnum >= vol->used_ebs || offset < 0 || len < 0 ||
-	    offset + len > vol->usable_leb_size)
-		return -EINVAL;
-
-	if (vol->vol_type == UBI_STATIC_VOLUME) {
-		if (vol->used_ebs == 0)
-			/* Empty static UBI volume */
-			return 0;
-		if (lnum == vol->used_ebs - 1 &&
-		    offset + len > vol->last_eb_bytes)
-			return -EINVAL;
-	}
-
-	if (vol->upd_marker)
-		return -EBADF;
-=======
 	err = leb_read_sanity_check(desc, lnum, offset, len);
 	if (err < 0)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len == 0)
 		return 0;
 
 	err = ubi_eba_read_leb(ubi, vol, lnum, buf, offset, len, check);
 	if (err && mtd_is_eccerr(err) && vol->vol_type == UBI_STATIC_VOLUME) {
-<<<<<<< HEAD
-		ubi_warn("mark volume %d as corrupted", vol_id);
-=======
 		ubi_warn(ubi, "mark volume %d as corrupted", vol_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vol->corrupted = 1;
 	}
 
@@ -574,8 +466,6 @@ int ubi_leb_read(struct ubi_volume_desc *desc, int lnum, char *buf, int offset,
 }
 EXPORT_SYMBOL_GPL(ubi_leb_read);
 
-<<<<<<< HEAD
-=======
 
 /**
  * ubi_leb_read_sg - read data into a scatter gather list.
@@ -616,7 +506,6 @@ int ubi_leb_read_sg(struct ubi_volume_desc *desc, int lnum, struct ubi_sgl *sgl,
 }
 EXPORT_SYMBOL_GPL(ubi_leb_read_sg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ubi_leb_write - write data.
  * @desc: volume descriptor
@@ -624,17 +513,9 @@ EXPORT_SYMBOL_GPL(ubi_leb_read_sg);
  * @buf: data to write
  * @offset: offset within the logical eraseblock where to write
  * @len: how many bytes to write
-<<<<<<< HEAD
- * @dtype: expected data type
- *
- * This function writes @len bytes of data from @buf to offset @offset of
- * logical eraseblock @lnum. The @dtype argument describes expected lifetime of
- * the data.
-=======
  *
  * This function writes @len bytes of data from @buf to offset @offset of
  * logical eraseblock @lnum.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function takes care of physical eraseblock write failures. If write to
  * the physical eraseblock write operation fails, the logical eraseblock is
@@ -651,11 +532,7 @@ EXPORT_SYMBOL_GPL(ubi_leb_read_sg);
  * returns immediately with %-EBADF code.
  */
 int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
-<<<<<<< HEAD
-		  int offset, int len, int dtype)
-=======
 		  int offset, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ubi_volume *vol = desc->vol;
 	struct ubi_device *ubi = vol->ubi;
@@ -669,33 +546,18 @@ int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
-<<<<<<< HEAD
-	if (lnum < 0 || lnum >= vol->reserved_pebs || offset < 0 || len < 0 ||
-=======
 	if (!ubi_leb_valid(vol, lnum) || offset < 0 || len < 0 ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    offset + len > vol->usable_leb_size ||
 	    offset & (ubi->min_io_size - 1) || len & (ubi->min_io_size - 1))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (dtype != UBI_LONGTERM && dtype != UBI_SHORTTERM &&
-	    dtype != UBI_UNKNOWN)
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vol->upd_marker)
 		return -EBADF;
 
 	if (len == 0)
 		return 0;
 
-<<<<<<< HEAD
-	return ubi_eba_write_leb(ubi, vol, lnum, buf, offset, len, dtype);
-=======
 	return ubi_eba_write_leb(ubi, vol, lnum, buf, offset, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ubi_leb_write);
 
@@ -705,10 +567,6 @@ EXPORT_SYMBOL_GPL(ubi_leb_write);
  * @lnum: logical eraseblock number to change
  * @buf: data to write
  * @len: how many bytes to write
-<<<<<<< HEAD
- * @dtype: expected data type
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function changes the contents of a logical eraseblock atomically. @buf
  * has to contain new logical eraseblock data, and @len - the length of the
@@ -719,11 +577,7 @@ EXPORT_SYMBOL_GPL(ubi_leb_write);
  * code in case of failure.
  */
 int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
-<<<<<<< HEAD
-		   int len, int dtype)
-=======
 		   int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ubi_volume *vol = desc->vol;
 	struct ubi_device *ubi = vol->ubi;
@@ -737,32 +591,17 @@ int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
-<<<<<<< HEAD
-	if (lnum < 0 || lnum >= vol->reserved_pebs || len < 0 ||
-	    len > vol->usable_leb_size || len & (ubi->min_io_size - 1))
-		return -EINVAL;
-
-	if (dtype != UBI_LONGTERM && dtype != UBI_SHORTTERM &&
-	    dtype != UBI_UNKNOWN)
-		return -EINVAL;
-
-=======
 	if (!ubi_leb_valid(vol, lnum) || len < 0 ||
 	    len > vol->usable_leb_size || len & (ubi->min_io_size - 1))
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vol->upd_marker)
 		return -EBADF;
 
 	if (len == 0)
 		return 0;
 
-<<<<<<< HEAD
-	return ubi_eba_atomic_leb_change(ubi, vol, lnum, buf, len, dtype);
-=======
 	return ubi_eba_atomic_leb_change(ubi, vol, lnum, buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ubi_leb_change);
 
@@ -789,11 +628,7 @@ int ubi_leb_erase(struct ubi_volume_desc *desc, int lnum)
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
-<<<<<<< HEAD
-	if (lnum < 0 || lnum >= vol->reserved_pebs)
-=======
 	if (!ubi_leb_valid(vol, lnum))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (vol->upd_marker)
@@ -803,11 +638,7 @@ int ubi_leb_erase(struct ubi_volume_desc *desc, int lnum)
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	return ubi_wl_flush(ubi);
-=======
 	return ubi_wl_flush(ubi, vol->vol_id, lnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ubi_leb_erase);
 
@@ -857,11 +688,7 @@ int ubi_leb_unmap(struct ubi_volume_desc *desc, int lnum)
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
-<<<<<<< HEAD
-	if (lnum < 0 || lnum >= vol->reserved_pebs)
-=======
 	if (!ubi_leb_valid(vol, lnum))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (vol->upd_marker)
@@ -875,10 +702,6 @@ EXPORT_SYMBOL_GPL(ubi_leb_unmap);
  * ubi_leb_map - map logical eraseblock to a physical eraseblock.
  * @desc: volume descriptor
  * @lnum: logical eraseblock number
-<<<<<<< HEAD
- * @dtype: expected data type
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function maps an un-mapped logical eraseblock @lnum to a physical
  * eraseblock. This means, that after a successful invocation of this
@@ -891,49 +714,26 @@ EXPORT_SYMBOL_GPL(ubi_leb_unmap);
  * eraseblock is already mapped, and other negative error codes in case of
  * other failures.
  */
-<<<<<<< HEAD
-int ubi_leb_map(struct ubi_volume_desc *desc, int lnum, int dtype)
-=======
 int ubi_leb_map(struct ubi_volume_desc *desc, int lnum)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ubi_volume *vol = desc->vol;
 	struct ubi_device *ubi = vol->ubi;
 
-<<<<<<< HEAD
-	dbg_gen("unmap LEB %d:%d", vol->vol_id, lnum);
-=======
 	dbg_gen("map LEB %d:%d", vol->vol_id, lnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
-<<<<<<< HEAD
-	if (lnum < 0 || lnum >= vol->reserved_pebs)
-		return -EINVAL;
-
-	if (dtype != UBI_LONGTERM && dtype != UBI_SHORTTERM &&
-	    dtype != UBI_UNKNOWN)
-=======
 	if (!ubi_leb_valid(vol, lnum))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (vol->upd_marker)
 		return -EBADF;
 
-<<<<<<< HEAD
-	if (vol->eba_tbl[lnum] >= 0)
-		return -EBADMSG;
-
-	return ubi_eba_write_leb(ubi, vol, lnum, NULL, 0, 0, dtype);
-=======
 	if (ubi_eba_is_mapped(vol, lnum))
 		return -EBADMSG;
 
 	return ubi_eba_write_leb(ubi, vol, lnum, NULL, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ubi_leb_map);
 
@@ -959,21 +759,13 @@ int ubi_is_mapped(struct ubi_volume_desc *desc, int lnum)
 
 	dbg_gen("test LEB %d:%d", vol->vol_id, lnum);
 
-<<<<<<< HEAD
-	if (lnum < 0 || lnum >= vol->reserved_pebs)
-=======
 	if (!ubi_leb_valid(vol, lnum))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (vol->upd_marker)
 		return -EBADF;
 
-<<<<<<< HEAD
-	return vol->eba_tbl[lnum] >= 0;
-=======
 	return ubi_eba_is_mapped(vol, lnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ubi_is_mapped);
 
@@ -999,8 +791,6 @@ int ubi_sync(int ubi_num)
 }
 EXPORT_SYMBOL_GPL(ubi_sync);
 
-<<<<<<< HEAD
-=======
 /**
  * ubi_flush - flush UBI work queue.
  * @ubi_num: UBI device to flush work queue
@@ -1028,7 +818,6 @@ int ubi_flush(int ubi_num, int vol_id, int lnum)
 }
 EXPORT_SYMBOL_GPL(ubi_flush);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BLOCKING_NOTIFIER_HEAD(ubi_notifiers);
 
 /**

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_LOCAL_H
 #define _ASM_X86_LOCAL_H
 
@@ -54,20 +51,9 @@ static inline void local_sub(long i, local_t *l)
  * true if the result is zero, or false for all
  * other cases.
  */
-<<<<<<< HEAD
-static inline int local_sub_and_test(long i, local_t *l)
-{
-	unsigned char c;
-
-	asm volatile(_ASM_SUB "%2,%0; sete %1"
-		     : "+m" (l->a.counter), "=qm" (c)
-		     : "ir" (i) : "memory");
-	return c;
-=======
 static inline bool local_sub_and_test(long i, local_t *l)
 {
 	return GEN_BINARY_RMWcc(_ASM_SUB, l->a.counter, e, "er", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -78,20 +64,9 @@ static inline bool local_sub_and_test(long i, local_t *l)
  * returns true if the result is 0, or false for all other
  * cases.
  */
-<<<<<<< HEAD
-static inline int local_dec_and_test(local_t *l)
-{
-	unsigned char c;
-
-	asm volatile(_ASM_DEC "%0; sete %1"
-		     : "+m" (l->a.counter), "=qm" (c)
-		     : : "memory");
-	return c != 0;
-=======
 static inline bool local_dec_and_test(local_t *l)
 {
 	return GEN_UNARY_RMWcc(_ASM_DEC, l->a.counter, e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -102,20 +77,9 @@ static inline bool local_dec_and_test(local_t *l)
  * and returns true if the result is zero, or false for all
  * other cases.
  */
-<<<<<<< HEAD
-static inline int local_inc_and_test(local_t *l)
-{
-	unsigned char c;
-
-	asm volatile(_ASM_INC "%0; sete %1"
-		     : "+m" (l->a.counter), "=qm" (c)
-		     : : "memory");
-	return c != 0;
-=======
 static inline bool local_inc_and_test(local_t *l)
 {
 	return GEN_UNARY_RMWcc(_ASM_INC, l->a.counter, e);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -127,20 +91,9 @@ static inline bool local_inc_and_test(local_t *l)
  * if the result is negative, or false when
  * result is greater than or equal to zero.
  */
-<<<<<<< HEAD
-static inline int local_add_negative(long i, local_t *l)
-{
-	unsigned char c;
-
-	asm volatile(_ASM_ADD "%2,%0; sets %1"
-		     : "+m" (l->a.counter), "=qm" (c)
-		     : "ir" (i) : "memory");
-	return c;
-=======
 static inline bool local_add_negative(long i, local_t *l)
 {
 	return GEN_BINARY_RMWcc(_ASM_ADD, l->a.counter, s, "er", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -152,34 +105,11 @@ static inline bool local_add_negative(long i, local_t *l)
  */
 static inline long local_add_return(long i, local_t *l)
 {
-<<<<<<< HEAD
-	long __i;
-#ifdef CONFIG_M386
-	unsigned long flags;
-	if (unlikely(boot_cpu_data.x86 <= 3))
-		goto no_xadd;
-#endif
-	/* Modern 486+ processor */
-	__i = i;
-=======
 	long __i = i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asm volatile(_ASM_XADD "%0, %1;"
 		     : "+r" (i), "+m" (l->a.counter)
 		     : : "memory");
 	return i + __i;
-<<<<<<< HEAD
-
-#ifdef CONFIG_M386
-no_xadd: /* Legacy 386 processor */
-	local_irq_save(flags);
-	__i = local_read(l);
-	local_set(l, i + __i);
-	local_irq_restore(flags);
-	return i + __i;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline long local_sub_return(long i, local_t *l)
@@ -190,15 +120,6 @@ static inline long local_sub_return(long i, local_t *l)
 #define local_inc_return(l)  (local_add_return(1, l))
 #define local_dec_return(l)  (local_sub_return(1, l))
 
-<<<<<<< HEAD
-#define local_cmpxchg(l, o, n) \
-	(cmpxchg_local(&((l)->a.counter), (o), (n)))
-/* Always has a lock prefix */
-#define local_xchg(l, n) (xchg(&((l)->a.counter), (n)))
-
-/**
- * local_add_unless - add unless the number is a given value
-=======
 static inline long local_cmpxchg(local_t *l, long old, long new)
 {
 	return cmpxchg_local(&l->a.counter, old, new);
@@ -227,30 +148,10 @@ local_xchg(local_t *l, long n)
 
 /**
  * local_add_unless - add unless the number is already a given value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @l: pointer of type local_t
  * @a: the amount to add to l...
  * @u: ...unless l is equal to u.
  *
-<<<<<<< HEAD
- * Atomically adds @a to @l, so long as it was not @u.
- * Returns non-zero if @l was not @u, and zero otherwise.
- */
-#define local_add_unless(l, a, u)				\
-({								\
-	long c, old;						\
-	c = local_read((l));					\
-	for (;;) {						\
-		if (unlikely(c == (u)))				\
-			break;					\
-		old = local_cmpxchg((l), c, c + (a));		\
-		if (likely(old == c))				\
-			break;					\
-		c = old;					\
-	}							\
-	c != (u);						\
-})
-=======
  * Atomically adds @a to @l, if @v was not already @u.
  * Returns true if the addition was done.
  */
@@ -267,7 +168,6 @@ local_add_unless(local_t *l, long a, long u)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define local_inc_not_zero(l) local_add_unless((l), 1, 0)
 
 /* On x86_32, these are no better than the atomic variants.

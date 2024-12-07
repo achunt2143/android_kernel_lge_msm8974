@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-/* rc-main.c - Remote Controller core module
- *
- * Copyright (C) 2009-2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- */
-
-#include <media/rc-core.h>
-#include <linux/spinlock.h>
-#include <linux/delay.h>
-#include <linux/input.h>
-#include <linux/slab.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 // rc-main.c - Remote Controller core module
 //
@@ -34,7 +13,6 @@
 #include <linux/leds.h>
 #include <linux/slab.h>
 #include <linux/idr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/module.h>
 #include "rc-core-priv.h"
@@ -43,10 +21,6 @@
 #define IR_TAB_MIN_SIZE	256
 #define IR_TAB_MAX_SIZE	8192
 
-<<<<<<< HEAD
-/* FIXME: IR_KEYPRESS_TIMEOUT should be protocol specific */
-#define IR_KEYPRESS_TIMEOUT 250
-=======
 static const struct {
 	const char *name;
 	unsigned int repeat_period;
@@ -104,18 +78,14 @@ static const struct {
 		.scancode_bits = 0xffffffff, .repeat_period = 114 },
 	[RC_PROTO_XBOX_DVD] = { .name = "xbox-dvd", .repeat_period = 64 },
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Used to keep track of known keymaps */
 static LIST_HEAD(rc_map_list);
 static DEFINE_SPINLOCK(rc_map_lock);
-<<<<<<< HEAD
-=======
 static struct led_trigger *led_feedback;
 
 /* Used to keep track of rc devices */
 static DEFINE_IDA(rc_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct rc_map_list *seek_rc_map(const char *name)
 {
@@ -139,19 +109,11 @@ struct rc_map *rc_map_get(const char *name)
 	struct rc_map_list *map;
 
 	map = seek_rc_map(name);
-<<<<<<< HEAD
-#ifdef MODULE
-	if (!map) {
-		int rc = request_module(name);
-		if (rc < 0) {
-			printk(KERN_ERR "Couldn't load IR keymap %s\n", name);
-=======
 #ifdef CONFIG_MODULES
 	if (!map) {
 		int rc = request_module("%s", name);
 		if (rc < 0) {
 			pr_err("Couldn't load IR keymap %s\n", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 		msleep(20);	/* Give some time for IR to register */
@@ -160,11 +122,7 @@ struct rc_map *rc_map_get(const char *name)
 	}
 #endif
 	if (!map) {
-<<<<<<< HEAD
-		printk(KERN_ERR "IR keymap %s not found\n", name);
-=======
 		pr_err("IR keymap %s not found\n", name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -198,46 +156,14 @@ static struct rc_map_table empty[] = {
 
 static struct rc_map_list empty_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = empty,
-		.size    = ARRAY_SIZE(empty),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_EMPTY,
-=======
 		.scan     = empty,
 		.size     = ARRAY_SIZE(empty),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_EMPTY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
 /**
-<<<<<<< HEAD
- * ir_create_table() - initializes a scancode table
- * @rc_map:	the rc_map to initialize
- * @name:	name to assign to the table
- * @rc_type:	ir type to assign to the new table
- * @size:	initial size of the table
- * @return:	zero on success or a negative error code
- *
- * This routine will initialize the rc_map and will allocate
- * memory to hold at least the specified number of elements.
- */
-static int ir_create_table(struct rc_map *rc_map,
-			   const char *name, u64 rc_type, size_t size)
-{
-	rc_map->name = name;
-	rc_map->rc_type = rc_type;
-	rc_map->alloc = roundup_pow_of_two(size * sizeof(struct rc_map_table));
-	rc_map->size = rc_map->alloc / sizeof(struct rc_map_table);
-	rc_map->scan = kmalloc(rc_map->alloc, GFP_KERNEL);
-	if (!rc_map->scan)
-		return -ENOMEM;
-
-	IR_dprintk(1, "Allocated space for %u keycode entries (%u bytes)\n",
-		   rc_map->size, rc_map->alloc);
-=======
  * scancode_to_u64() - converts scancode in &struct input_keymap_entry
  * @ke: keymap entry containing scancode to be converted.
  * @scancode: pointer to the location where converted scancode should
@@ -303,7 +229,6 @@ static int ir_create_table(struct rc_dev *dev, struct rc_map *rc_map,
 
 	dev_dbg(&dev->dev, "Allocated space for %u keycode entries (%u bytes)\n",
 		rc_map->size, rc_map->alloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -317,27 +242,14 @@ static int ir_create_table(struct rc_dev *dev, struct rc_map *rc_map,
 static void ir_free_table(struct rc_map *rc_map)
 {
 	rc_map->size = 0;
-<<<<<<< HEAD
-=======
 	kfree(rc_map->name);
 	rc_map->name = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(rc_map->scan);
 	rc_map->scan = NULL;
 }
 
 /**
  * ir_resize_table() - resizes a scancode table if necessary
-<<<<<<< HEAD
- * @rc_map:	the rc_map to resize
- * @gfp_flags:	gfp flags to use when allocating memory
- * @return:	zero on success or a negative error code
- *
- * This routine will shrink the rc_map if it has lots of
- * unused entries and grow it if it is full.
- */
-static int ir_resize_table(struct rc_map *rc_map, gfp_t gfp_flags)
-=======
  * @dev:	the rc_dev device
  * @rc_map:	the rc_map to resize
  * @gfp_flags:	gfp flags to use when allocating memory
@@ -349,7 +261,6 @@ static int ir_resize_table(struct rc_map *rc_map, gfp_t gfp_flags)
  */
 static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
 			   gfp_t gfp_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int oldalloc = rc_map->alloc;
 	unsigned int newalloc = oldalloc;
@@ -362,36 +273,21 @@ static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
 			return -ENOMEM;
 
 		newalloc *= 2;
-<<<<<<< HEAD
-		IR_dprintk(1, "Growing table to %u bytes\n", newalloc);
-=======
 		dev_dbg(&dev->dev, "Growing table to %u bytes\n", newalloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((rc_map->len * 3 < rc_map->size) && (oldalloc > IR_TAB_MIN_SIZE)) {
 		/* Less than 1/3 of entries in use -> shrink keytable */
 		newalloc /= 2;
-<<<<<<< HEAD
-		IR_dprintk(1, "Shrinking table to %u bytes\n", newalloc);
-=======
 		dev_dbg(&dev->dev, "Shrinking table to %u bytes\n", newalloc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (newalloc == oldalloc)
 		return 0;
 
 	newscan = kmalloc(newalloc, gfp_flags);
-<<<<<<< HEAD
-	if (!newscan) {
-		IR_dprintk(1, "Failed to kmalloc %u bytes\n", newalloc);
-		return -ENOMEM;
-	}
-=======
 	if (!newscan)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(newscan, rc_map->scan, rc_map->len * sizeof(struct rc_map_table));
 	rc_map->scan = newscan;
@@ -406,13 +302,6 @@ static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
  * @dev:	the struct rc_dev device descriptor
  * @rc_map:	scancode table to be adjusted
  * @index:	index of the mapping that needs to be updated
-<<<<<<< HEAD
- * @keycode:	the desired keycode
- * @return:	previous keycode assigned to the mapping
- *
- * This routine is used to update scancode->keycode mapping at given
- * position.
-=======
  * @new_keycode: the desired keycode
  *
  * This routine is used to update scancode->keycode mapping at given
@@ -420,7 +309,6 @@ static int ir_resize_table(struct rc_dev *dev, struct rc_map *rc_map,
  *
  * return:	previous keycode assigned to the mapping
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static unsigned int ir_update_mapping(struct rc_dev *dev,
 				      struct rc_map *rc_map,
@@ -432,28 +320,16 @@ static unsigned int ir_update_mapping(struct rc_dev *dev,
 
 	/* Did the user wish to remove the mapping? */
 	if (new_keycode == KEY_RESERVED || new_keycode == KEY_UNKNOWN) {
-<<<<<<< HEAD
-		IR_dprintk(1, "#%d: Deleting scan 0x%04x\n",
-			   index, rc_map->scan[index].scancode);
-=======
 		dev_dbg(&dev->dev, "#%d: Deleting scan 0x%04llx\n",
 			index, rc_map->scan[index].scancode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc_map->len--;
 		memmove(&rc_map->scan[index], &rc_map->scan[index+ 1],
 			(rc_map->len - index) * sizeof(struct rc_map_table));
 	} else {
-<<<<<<< HEAD
-		IR_dprintk(1, "#%d: %s scan 0x%04x with key 0x%04x\n",
-			   index,
-			   old_keycode == KEY_RESERVED ? "New" : "Replacing",
-			   rc_map->scan[index].scancode, new_keycode);
-=======
 		dev_dbg(&dev->dev, "#%d: %s scan 0x%04llx with key 0x%04x\n",
 			index,
 			old_keycode == KEY_RESERVED ? "New" : "Replacing",
 			rc_map->scan[index].scancode, new_keycode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc_map->scan[index].keycode = new_keycode;
 		__set_bit(new_keycode, dev->input_dev->keybit);
 	}
@@ -470,11 +346,7 @@ static unsigned int ir_update_mapping(struct rc_dev *dev,
 		}
 
 		/* Possibly shrink the keytable, failure is not a problem */
-<<<<<<< HEAD
-		ir_resize_table(rc_map, GFP_ATOMIC);
-=======
 		ir_resize_table(dev, rc_map, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return old_keycode;
@@ -487,22 +359,10 @@ static unsigned int ir_update_mapping(struct rc_dev *dev,
  * @scancode:	the desired scancode
  * @resize:	controls whether we allowed to resize the table to
  *		accommodate not yet present scancodes
-<<<<<<< HEAD
- * @return:	index of the mapping containing scancode in question
- *		or -1U in case of failure.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is used to locate given scancode in rc_map.
  * If scancode is not yet present the routine will allocate a new slot
  * for it.
-<<<<<<< HEAD
- */
-static unsigned int ir_establish_scancode(struct rc_dev *dev,
-					  struct rc_map *rc_map,
-					  unsigned int scancode,
-					  bool resize)
-=======
  *
  * return:	index of the mapping containing scancode in question
  *		or -1U in case of failure.
@@ -510,7 +370,6 @@ static unsigned int ir_establish_scancode(struct rc_dev *dev,
 static unsigned int ir_establish_scancode(struct rc_dev *dev,
 					  struct rc_map *rc_map,
 					  u64 scancode, bool resize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
@@ -522,13 +381,8 @@ static unsigned int ir_establish_scancode(struct rc_dev *dev,
 	 * IR tables from other remotes. So, we support specifying a mask to
 	 * indicate the valid bits of the scancodes.
 	 */
-<<<<<<< HEAD
-	if (dev->scanmask)
-		scancode &= dev->scanmask;
-=======
 	if (dev->scancode_mask)
 		scancode &= dev->scancode_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First check if we already have a mapping for this ir command */
 	for (i = 0; i < rc_map->len; i++) {
@@ -542,11 +396,7 @@ static unsigned int ir_establish_scancode(struct rc_dev *dev,
 
 	/* No previous mapping found, we might need to grow the table */
 	if (rc_map->size == rc_map->len) {
-<<<<<<< HEAD
-		if (!resize || ir_resize_table(rc_map, GFP_ATOMIC))
-=======
 		if (!resize || ir_resize_table(dev, rc_map, GFP_ATOMIC))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1U;
 	}
 
@@ -564,20 +414,12 @@ static unsigned int ir_establish_scancode(struct rc_dev *dev,
 /**
  * ir_setkeycode() - set a keycode in the scancode->keycode table
  * @idev:	the struct input_dev device descriptor
-<<<<<<< HEAD
- * @scancode:	the desired scancode
- * @keycode:	result
- * @return:	-EINVAL if the keycode could not be inserted, otherwise zero.
- *
- * This routine is used to handle evdev EVIOCSKEY ioctl.
-=======
  * @ke:		Input keymap entry
  * @old_keycode: result
  *
  * This routine is used to handle evdev EVIOCSKEY ioctl.
  *
  * return:	-EINVAL if the keycode could not be inserted, otherwise zero.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ir_setkeycode(struct input_dev *idev,
 			 const struct input_keymap_entry *ke,
@@ -586,11 +428,7 @@ static int ir_setkeycode(struct input_dev *idev,
 	struct rc_dev *rdev = input_get_drvdata(idev);
 	struct rc_map *rc_map = &rdev->rc_map;
 	unsigned int index;
-<<<<<<< HEAD
-	unsigned int scancode;
-=======
 	u64 scancode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = 0;
 	unsigned long flags;
 
@@ -603,11 +441,7 @@ static int ir_setkeycode(struct input_dev *idev,
 			goto out;
 		}
 	} else {
-<<<<<<< HEAD
-		retval = input_scancode_to_scalar(ke, &scancode);
-=======
 		retval = scancode_to_u64(ke, &scancode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval)
 			goto out;
 
@@ -628,16 +462,6 @@ out:
 /**
  * ir_setkeytable() - sets several entries in the scancode->keycode table
  * @dev:	the struct rc_dev device descriptor
-<<<<<<< HEAD
- * @to:		the struct rc_map to copy entries to
- * @from:	the struct rc_map to copy entries from
- * @return:	-ENOMEM if all keycodes could not be inserted, otherwise zero.
- *
- * This routine is used to handle table initialization.
- */
-static int ir_setkeytable(struct rc_dev *dev,
-			  const struct rc_map *from)
-=======
  * @from:	the struct rc_map to copy entries from
  *
  * This routine is used to handle table initialization.
@@ -645,28 +469,16 @@ static int ir_setkeytable(struct rc_dev *dev,
  * return:	-ENOMEM if all keycodes could not be inserted, otherwise zero.
  */
 static int ir_setkeytable(struct rc_dev *dev, const struct rc_map *from)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rc_map *rc_map = &dev->rc_map;
 	unsigned int i, index;
 	int rc;
 
-<<<<<<< HEAD
-	rc = ir_create_table(rc_map, from->name,
-			     from->rc_type, from->size);
-	if (rc)
-		return rc;
-
-	IR_dprintk(1, "Allocated space for %u keycode entries (%u bytes)\n",
-		   rc_map->size, rc_map->alloc);
-
-=======
 	rc = ir_create_table(dev, rc_map, from->name, from->rc_proto,
 			     from->size);
 	if (rc)
 		return rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < from->size; i++) {
 		index = ir_establish_scancode(dev, rc_map,
 					      from->scan[i].scancode, false);
@@ -685,8 +497,6 @@ static int ir_setkeytable(struct rc_dev *dev, const struct rc_map *from)
 	return rc;
 }
 
-<<<<<<< HEAD
-=======
 static int rc_map_cmp(const void *key, const void *elt)
 {
 	const u64 *scancode = key;
@@ -699,36 +509,10 @@ static int rc_map_cmp(const void *key, const void *elt)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ir_lookup_by_scancode() - locate mapping by scancode
  * @rc_map:	the struct rc_map to search
  * @scancode:	scancode to look for in the table
-<<<<<<< HEAD
- * @return:	index in the table, -1U if not found
- *
- * This routine performs binary search in RC keykeymap table for
- * given scancode.
- */
-static unsigned int ir_lookup_by_scancode(const struct rc_map *rc_map,
-					  unsigned int scancode)
-{
-	int start = 0;
-	int end = rc_map->len - 1;
-	int mid;
-
-	while (start <= end) {
-		mid = (start + end) / 2;
-		if (rc_map->scan[mid].scancode < scancode)
-			start = mid + 1;
-		else if (rc_map->scan[mid].scancode > scancode)
-			end = mid - 1;
-		else
-			return mid;
-	}
-
-	return -1U;
-=======
  *
  * This routine performs binary search in RC keykeymap table for
  * given scancode.
@@ -746,25 +530,16 @@ static unsigned int ir_lookup_by_scancode(const struct rc_map *rc_map,
 		return -1U;
 	else
 		return res - rc_map->scan;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ir_getkeycode() - get a keycode from the scancode->keycode table
  * @idev:	the struct input_dev device descriptor
-<<<<<<< HEAD
- * @scancode:	the desired scancode
- * @keycode:	used to return the keycode, if found, or KEY_RESERVED
- * @return:	always returns zero.
- *
- * This routine is used to handle evdev EVIOCGKEY ioctl.
-=======
  * @ke:		Input keymap entry
  *
  * This routine is used to handle evdev EVIOCGKEY ioctl.
  *
  * return:	always returns zero.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ir_getkeycode(struct input_dev *idev,
 			 struct input_keymap_entry *ke)
@@ -774,11 +549,7 @@ static int ir_getkeycode(struct input_dev *idev,
 	struct rc_map_table *entry;
 	unsigned long flags;
 	unsigned int index;
-<<<<<<< HEAD
-	unsigned int scancode;
-=======
 	u64 scancode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	spin_lock_irqsave(&rc_map->lock, flags);
@@ -786,11 +557,7 @@ static int ir_getkeycode(struct input_dev *idev,
 	if (ke->flags & INPUT_KEYMAP_BY_INDEX) {
 		index = ke->index;
 	} else {
-<<<<<<< HEAD
-		retval = input_scancode_to_scalar(ke, &scancode);
-=======
 		retval = scancode_to_u64(ke, &scancode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval)
 			goto out;
 
@@ -804,10 +571,6 @@ static int ir_getkeycode(struct input_dev *idev,
 		ke->keycode = entry->keycode;
 		ke->len = sizeof(entry->scancode);
 		memcpy(ke->scancode, &entry->scancode, sizeof(entry->scancode));
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!(ke->flags & INPUT_KEYMAP_BY_INDEX)) {
 		/*
 		 * We do not really know the valid range of scancodes
@@ -832,23 +595,14 @@ out:
  * rc_g_keycode_from_table() - gets the keycode that corresponds to a scancode
  * @dev:	the struct rc_dev descriptor of the device
  * @scancode:	the scancode to look for
-<<<<<<< HEAD
- * @return:	the corresponding keycode, or KEY_RESERVED
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is used by drivers which need to convert a scancode to a
  * keycode. Normally it should not be used since drivers should have no
  * interest in keycodes.
-<<<<<<< HEAD
- */
-u32 rc_g_keycode_from_table(struct rc_dev *dev, u32 scancode)
-=======
  *
  * return:	the corresponding keycode, or KEY_RESERVED
  */
 u32 rc_g_keycode_from_table(struct rc_dev *dev, u64 scancode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rc_map *rc_map = &dev->rc_map;
 	unsigned int keycode;
@@ -864,13 +618,8 @@ u32 rc_g_keycode_from_table(struct rc_dev *dev, u64 scancode)
 	spin_unlock_irqrestore(&rc_map->lock, flags);
 
 	if (keycode != KEY_RESERVED)
-<<<<<<< HEAD
-		IR_dprintk(1, "%s: scancode 0x%04x keycode 0x%02x\n",
-			   dev->input_name, scancode, keycode);
-=======
 		dev_dbg(&dev->dev, "%s: scancode 0x%04llx keycode 0x%02x\n",
 			dev->device_name, scancode, keycode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return keycode;
 }
@@ -889,15 +638,10 @@ static void ir_do_keyup(struct rc_dev *dev, bool sync)
 	if (!dev->keypressed)
 		return;
 
-<<<<<<< HEAD
-	IR_dprintk(1, "keyup key 0x%04x\n", dev->last_keycode);
-	input_report_key(dev->input_dev, dev->last_keycode, 0);
-=======
 	dev_dbg(&dev->dev, "keyup key 0x%04x\n", dev->last_keycode);
 	del_timer(&dev->timer_repeat);
 	input_report_key(dev->input_dev, dev->last_keycode, 0);
 	led_trigger_event(led_feedback, LED_OFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sync)
 		input_sync(dev->input_dev);
 	dev->keypressed = false;
@@ -922,25 +666,15 @@ EXPORT_SYMBOL_GPL(rc_keyup);
 
 /**
  * ir_timer_keyup() - generates a keyup event after a timeout
-<<<<<<< HEAD
- * @cookie:	a pointer to the struct rc_dev for the device
-=======
  *
  * @t:		a pointer to the struct timer_list
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine will generate a keyup event some time after a keydown event
  * is generated when no further activity has been detected.
  */
-<<<<<<< HEAD
-static void ir_timer_keyup(unsigned long cookie)
-{
-	struct rc_dev *dev = (struct rc_dev *)cookie;
-=======
 static void ir_timer_keyup(struct timer_list *t)
 {
 	struct rc_dev *dev = from_timer(dev, t, timer_keyup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	/*
@@ -960,8 +694,6 @@ static void ir_timer_keyup(struct timer_list *t)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ir_timer_repeat() - generates a repeat event after a timeout
  *
  * @t:		a pointer to the struct timer_list
@@ -995,7 +727,6 @@ static unsigned int repeat_period(int protocol)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * rc_repeat() - signals that a key is still pressed
  * @dev:	the struct rc_dev descriptor of the device
  *
@@ -1006,21 +737,6 @@ static unsigned int repeat_period(int protocol)
 void rc_repeat(struct rc_dev *dev)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-
-	spin_lock_irqsave(&dev->keylock, flags);
-
-	input_event(dev->input_dev, EV_MSC, MSC_SCAN, dev->last_scancode);
-	input_sync(dev->input_dev);
-
-	if (!dev->keypressed)
-		goto out;
-
-	dev->keyup_jiffies = jiffies + msecs_to_jiffies(IR_KEYPRESS_TIMEOUT);
-	mod_timer(&dev->timer_keyup, dev->keyup_jiffies);
-
-out:
-=======
 	unsigned int timeout = usecs_to_jiffies(dev->timeout) +
 		msecs_to_jiffies(repeat_period(dev->last_protocol));
 	struct lirc_scancode sc = {
@@ -1046,7 +762,6 @@ out:
 		mod_timer(&dev->timer_keyup, dev->keyup_jiffies);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dev->keylock, flags);
 }
 EXPORT_SYMBOL_GPL(rc_repeat);
@@ -1054,10 +769,7 @@ EXPORT_SYMBOL_GPL(rc_repeat);
 /**
  * ir_do_keydown() - internal function to process a keypress
  * @dev:	the struct rc_dev descriptor of the device
-<<<<<<< HEAD
-=======
  * @protocol:	the protocol of the keypress
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @scancode:   the scancode of the keypress
  * @keycode:    the keycode of the keypress
  * @toggle:     the toggle value of the keypress
@@ -1065,14 +777,6 @@ EXPORT_SYMBOL_GPL(rc_repeat);
  * This function is used internally to register a keypress, it must be
  * called with keylock held.
  */
-<<<<<<< HEAD
-static void ir_do_keydown(struct rc_dev *dev, int scancode,
-			  u32 keycode, u8 toggle)
-{
-	bool new_event = !dev->keypressed ||
-			 dev->last_scancode != scancode ||
-			 dev->last_toggle != toggle;
-=======
 static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 			  u64 scancode, u32 keycode, u8 toggle)
 {
@@ -1089,14 +793,10 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 
 	if (dev->allowed_protocols != RC_PROTO_BIT_CEC)
 		lirc_scancode_event(dev, &sc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new_event && dev->keypressed)
 		ir_do_keyup(dev, false);
 
-<<<<<<< HEAD
-	input_event(dev->input_dev, EV_MSC, MSC_SCAN, scancode);
-=======
 	if (scancode <= U32_MAX)
 		input_event(dev->input_dev, EV_MSC, MSC_SCAN, scancode);
 
@@ -1104,21 +804,10 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 	dev->last_scancode = scancode;
 	dev->last_toggle = toggle;
 	dev->last_keycode = keycode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new_event && keycode != KEY_RESERVED) {
 		/* Register a keypress */
 		dev->keypressed = true;
-<<<<<<< HEAD
-		dev->last_scancode = scancode;
-		dev->last_toggle = toggle;
-		dev->last_keycode = keycode;
-
-		IR_dprintk(1, "%s: key down event, "
-			   "key 0x%04x, scancode 0x%04x\n",
-			   dev->input_name, keycode, scancode);
-		input_report_key(dev->input_dev, keycode, 1);
-=======
 
 		dev_dbg(&dev->dev, "%s: key down event, key 0x%04x, protocol 0x%04x, scancode 0x%08llx\n",
 			dev->device_name, keycode, protocol, scancode);
@@ -1141,7 +830,6 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 		input_event(dev->input_dev, EV_KEY, keycode, 2);
 		mod_timer(&dev->timer_repeat, jiffies +
 			  msecs_to_jiffies(dev->input_dev->rep[REP_PERIOD]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input_sync(dev->input_dev);
@@ -1150,41 +838,26 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
 /**
  * rc_keydown() - generates input event for a key press
  * @dev:	the struct rc_dev descriptor of the device
-<<<<<<< HEAD
- * @scancode:   the scancode that we're seeking
-=======
  * @protocol:	the protocol for the keypress
  * @scancode:	the scancode for the keypress
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @toggle:     the toggle value (protocol dependent, if the protocol doesn't
  *              support toggle values, this should be set to zero)
  *
  * This routine is used to signal that a key has been pressed on the
  * remote control.
  */
-<<<<<<< HEAD
-void rc_keydown(struct rc_dev *dev, int scancode, u8 toggle)
-=======
 void rc_keydown(struct rc_dev *dev, enum rc_proto protocol, u64 scancode,
 		u8 toggle)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	u32 keycode = rc_g_keycode_from_table(dev, scancode);
 
 	spin_lock_irqsave(&dev->keylock, flags);
-<<<<<<< HEAD
-	ir_do_keydown(dev, scancode, keycode, toggle);
-
-	if (dev->keypressed) {
-		dev->keyup_jiffies = jiffies + msecs_to_jiffies(IR_KEYPRESS_TIMEOUT);
-=======
 	ir_do_keydown(dev, protocol, scancode, keycode, toggle);
 
 	if (dev->keypressed) {
 		dev->keyup_jiffies = jiffies + usecs_to_jiffies(dev->timeout) +
 			msecs_to_jiffies(repeat_period(protocol));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mod_timer(&dev->timer_keyup, dev->keyup_jiffies);
 	}
 	spin_unlock_irqrestore(&dev->keylock, flags);
@@ -1195,40 +868,26 @@ EXPORT_SYMBOL_GPL(rc_keydown);
  * rc_keydown_notimeout() - generates input event for a key press without
  *                          an automatic keyup event at a later time
  * @dev:	the struct rc_dev descriptor of the device
-<<<<<<< HEAD
- * @scancode:   the scancode that we're seeking
-=======
  * @protocol:	the protocol for the keypress
  * @scancode:	the scancode for the keypress
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @toggle:     the toggle value (protocol dependent, if the protocol doesn't
  *              support toggle values, this should be set to zero)
  *
  * This routine is used to signal that a key has been pressed on the
  * remote control. The driver must manually call rc_keyup() at a later stage.
  */
-<<<<<<< HEAD
-void rc_keydown_notimeout(struct rc_dev *dev, int scancode, u8 toggle)
-=======
 void rc_keydown_notimeout(struct rc_dev *dev, enum rc_proto protocol,
 			  u64 scancode, u8 toggle)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	u32 keycode = rc_g_keycode_from_table(dev, scancode);
 
 	spin_lock_irqsave(&dev->keylock, flags);
-<<<<<<< HEAD
-	ir_do_keydown(dev, scancode, keycode, toggle);
-=======
 	ir_do_keydown(dev, protocol, scancode, keycode, toggle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dev->keylock, flags);
 }
 EXPORT_SYMBOL_GPL(rc_keydown_notimeout);
 
-<<<<<<< HEAD
-=======
 /**
  * rc_validate_scancode() - checks that a scancode is valid for a protocol.
  *	For nec, it should do the opposite of ir_nec_bytes_to_scancode()
@@ -1332,14 +991,10 @@ int rc_open(struct rc_dev *rdev)
 	return rval;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ir_open(struct input_dev *idev)
 {
 	struct rc_dev *rdev = input_get_drvdata(idev);
 
-<<<<<<< HEAD
-	return rdev->open(rdev);
-=======
 	return rc_open(rdev);
 }
 
@@ -1353,56 +1008,20 @@ void rc_close(struct rc_dev *rdev)
 
 		mutex_unlock(&rdev->lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ir_close(struct input_dev *idev)
 {
 	struct rc_dev *rdev = input_get_drvdata(idev);
-<<<<<<< HEAD
-
-	 if (rdev)
-		rdev->close(rdev);
-}
-
-/* class for /sys/class/rc */
-static char *ir_devnode(struct device *dev, umode_t *mode)
-=======
 	rc_close(rdev);
 }
 
 /* class for /sys/class/rc */
 static char *rc_devnode(const struct device *dev, umode_t *mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kasprintf(GFP_KERNEL, "rc/%s", dev_name(dev));
 }
 
-<<<<<<< HEAD
-static struct class ir_input_class = {
-	.name		= "rc",
-	.devnode	= ir_devnode,
-};
-
-static struct {
-	u64	type;
-	char	*name;
-} proto_names[] = {
-	{ RC_TYPE_UNKNOWN,	"unknown"	},
-	{ RC_TYPE_RC5,		"rc-5"		},
-	{ RC_TYPE_NEC,		"nec"		},
-	{ RC_TYPE_RC6,		"rc-6"		},
-	{ RC_TYPE_JVC,		"jvc"		},
-	{ RC_TYPE_SONY,		"sony"		},
-	{ RC_TYPE_RC5_SZ,	"rc-5-sz"	},
-	{ RC_TYPE_SANYO,	"sanyo"		},
-	{ RC_TYPE_MCE_KBD,	"mce_kbd"	},
-	{ RC_TYPE_LIRC,		"lirc"		},
-	{ RC_TYPE_OTHER,	"other"		},
-};
-
-#define PROTO_NONE	"none"
-=======
 static struct class rc_class = {
 	.name		= "rc",
 	.devnode	= rc_devnode,
@@ -1468,23 +1087,10 @@ struct rc_filter_attribute {
 		.type = (_type),					\
 		.mask = (_mask),					\
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * show_protocols() - shows the current IR protocol(s)
  * @device:	the device descriptor
-<<<<<<< HEAD
- * @mattr:	the device attribute struct (unused)
- * @buf:	a pointer to the output buffer
- *
- * This routine is a callback routine for input read the IR protocol type(s).
- * it is trigged by reading /sys/class/rc/rc?/protocols.
- * It returns the protocol names of supported protocols.
- * Enabled protocols are printed in brackets.
- *
- * dev->lock is taken to guard against races between device
- * registration, store_protocols and show_protocols.
-=======
  * @mattr:	the device attribute struct
  * @buf:	a pointer to the output buffer
  *
@@ -1495,7 +1101,6 @@ struct rc_filter_attribute {
  *
  * dev->lock is taken to guard against races between
  * store_protocols and show_protocols.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static ssize_t show_protocols(struct device *device,
 			      struct device_attribute *mattr, char *buf)
@@ -1505,28 +1110,6 @@ static ssize_t show_protocols(struct device *device,
 	char *tmp = buf;
 	int i;
 
-<<<<<<< HEAD
-	/* Device is being removed */
-	if (!dev)
-		return -EINVAL;
-
-	mutex_lock(&dev->lock);
-
-	if (dev->driver_type == RC_DRIVER_SCANCODE) {
-		enabled = dev->rc_map.rc_type;
-		allowed = dev->allowed_protos;
-	} else if (dev->raw) {
-		enabled = dev->raw->enabled_protocols;
-		allowed = ir_raw_get_allowed_protocols();
-	} else {
-		mutex_unlock(&dev->lock);
-		return -ENODEV;
-	}
-
-	IR_dprintk(1, "allowed - 0x%llx, enabled - 0x%llx\n",
-		   (long long)allowed,
-		   (long long)enabled);
-=======
 	mutex_lock(&dev->lock);
 
 	enabled = dev->enabled_protocols;
@@ -1538,17 +1121,12 @@ static ssize_t show_protocols(struct device *device,
 
 	dev_dbg(&dev->dev, "%s: allowed - 0x%llx, enabled - 0x%llx\n",
 		__func__, (long long)allowed, (long long)enabled);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(proto_names); i++) {
 		if (allowed & enabled & proto_names[i].type)
 			tmp += sprintf(tmp, "[%s] ", proto_names[i].name);
 		else if (allowed & proto_names[i].type)
 			tmp += sprintf(tmp, "%s ", proto_names[i].name);
-<<<<<<< HEAD
-	}
-
-=======
 
 		if (allowed & proto_names[i].type)
 			allowed &= ~proto_names[i].type;
@@ -1559,71 +1137,14 @@ static ssize_t show_protocols(struct device *device,
 		tmp += sprintf(tmp, "[lirc] ");
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tmp != buf)
 		tmp--;
 	*tmp = '\n';
 
-<<<<<<< HEAD
-	mutex_unlock(&dev->lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return tmp + 1 - buf;
 }
 
 /**
-<<<<<<< HEAD
- * store_protocols() - changes the current IR protocol(s)
- * @device:	the device descriptor
- * @mattr:	the device attribute struct (unused)
- * @buf:	a pointer to the input buffer
- * @len:	length of the input buffer
- *
- * This routine is for changing the IR protocol type.
- * It is trigged by writing to /sys/class/rc/rc?/protocols.
- * Writing "+proto" will add a protocol to the list of enabled protocols.
- * Writing "-proto" will remove a protocol from the list of enabled protocols.
- * Writing "proto" will enable only "proto".
- * Writing "none" will disable all protocols.
- * Returns -EINVAL if an invalid protocol combination or unknown protocol name
- * is used, otherwise @len.
- *
- * dev->lock is taken to guard against races between device
- * registration, store_protocols and show_protocols.
- */
-static ssize_t store_protocols(struct device *device,
-			       struct device_attribute *mattr,
-			       const char *data,
-			       size_t len)
-{
-	struct rc_dev *dev = to_rc_dev(device);
-	bool enable, disable;
-	const char *tmp;
-	u64 type;
-	u64 mask;
-	int rc, i, count = 0;
-	unsigned long flags;
-	ssize_t ret;
-
-	/* Device is being removed */
-	if (!dev)
-		return -EINVAL;
-
-	mutex_lock(&dev->lock);
-
-	if (dev->driver_type == RC_DRIVER_SCANCODE)
-		type = dev->rc_map.rc_type;
-	else if (dev->raw)
-		type = dev->raw->enabled_protocols;
-	else {
-		IR_dprintk(1, "Protocol switching not supported\n");
-		ret = -EINVAL;
-		goto out;
-	}
-
-	while ((tmp = strsep((char **) &data, " \n")) != NULL) {
-=======
  * parse_protocol_change() - parses a protocol change request
  * @dev:	rc_dev device
  * @protocols:	pointer to the bitmask of current protocols
@@ -1645,7 +1166,6 @@ static int parse_protocol_change(struct rc_dev *dev, u64 *protocols,
 	int i;
 
 	while ((tmp = strsep((char **)&buf, " \n")) != NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*tmp)
 			break;
 
@@ -1662,68 +1182,6 @@ static int parse_protocol_change(struct rc_dev *dev, u64 *protocols,
 			disable = false;
 		}
 
-<<<<<<< HEAD
-		if (!enable && !disable && !strncasecmp(tmp, PROTO_NONE, sizeof(PROTO_NONE))) {
-			tmp += sizeof(PROTO_NONE);
-			mask = 0;
-			count++;
-		} else {
-			for (i = 0; i < ARRAY_SIZE(proto_names); i++) {
-				if (!strcasecmp(tmp, proto_names[i].name)) {
-					tmp += strlen(proto_names[i].name);
-					mask = proto_names[i].type;
-					break;
-				}
-			}
-			if (i == ARRAY_SIZE(proto_names)) {
-				IR_dprintk(1, "Unknown protocol: '%s'\n", tmp);
-				ret = -EINVAL;
-				goto out;
-			}
-			count++;
-		}
-
-		if (enable)
-			type |= mask;
-		else if (disable)
-			type &= ~mask;
-		else
-			type = mask;
-	}
-
-	if (!count) {
-		IR_dprintk(1, "Protocol not specified\n");
-		ret = -EINVAL;
-		goto out;
-	}
-
-	if (dev->change_protocol) {
-		rc = dev->change_protocol(dev, type);
-		if (rc < 0) {
-			IR_dprintk(1, "Error setting protocols to 0x%llx\n",
-				   (long long)type);
-			ret = -EINVAL;
-			goto out;
-		}
-	}
-
-	if (dev->driver_type == RC_DRIVER_SCANCODE) {
-		spin_lock_irqsave(&dev->rc_map.lock, flags);
-		dev->rc_map.rc_type = type;
-		spin_unlock_irqrestore(&dev->rc_map.lock, flags);
-	} else {
-		dev->raw->enabled_protocols = type;
-	}
-
-	IR_dprintk(1, "Current protocol(s): 0x%llx\n",
-		   (long long)type);
-
-	ret = len;
-
-out:
-	mutex_unlock(&dev->lock);
-	return ret;
-=======
 		for (i = 0; i < ARRAY_SIZE(proto_names); i++) {
 			if (!strcasecmp(tmp, proto_names[i].name)) {
 				mask = proto_names[i].type;
@@ -2147,32 +1605,10 @@ static ssize_t store_wakeup_protocols(struct device *device,
 out:
 	mutex_unlock(&dev->lock);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rc_dev_release(struct device *device)
 {
-<<<<<<< HEAD
-}
-
-#define ADD_HOTPLUG_VAR(fmt, val...)					\
-	do {								\
-		int err = add_uevent_var(env, fmt, val);		\
-		if (err)						\
-			return err;					\
-	} while (0)
-
-static int rc_dev_uevent(struct device *device, struct kobj_uevent_env *env)
-{
-	struct rc_dev *dev = to_rc_dev(device);
-
-	if (dev->rc_map.name)
-		ADD_HOTPLUG_VAR("NAME=%s", dev->rc_map.name);
-	if (dev->driver_name)
-		ADD_HOTPLUG_VAR("DRV_NAME=%s", dev->driver_name);
-
-	return 0;
-=======
 	struct rc_dev *dev = to_rc_dev(device);
 
 	kfree(dev);
@@ -2197,33 +1633,11 @@ static int rc_dev_uevent(const struct device *device, struct kobj_uevent_env *en
 	mutex_unlock(&dev->lock);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Static device attribute struct with the sysfs attributes for IR's
  */
-<<<<<<< HEAD
-static DEVICE_ATTR(protocols, S_IRUGO | S_IWUSR,
-		   show_protocols, store_protocols);
-
-static struct attribute *rc_dev_attrs[] = {
-	&dev_attr_protocols.attr,
-	NULL,
-};
-
-static struct attribute_group rc_dev_attr_grp = {
-	.attrs	= rc_dev_attrs,
-};
-
-static const struct attribute_group *rc_dev_attr_groups[] = {
-	&rc_dev_attr_grp,
-	NULL
-};
-
-static struct device_type rc_dev_type = {
-	.groups		= rc_dev_attr_groups,
-=======
 static struct device_attribute dev_attr_ro_protocols =
 __ATTR(protocols, 0444, show_protocols, NULL);
 static struct device_attribute dev_attr_rw_protocols =
@@ -2279,16 +1693,11 @@ static const struct attribute_group rc_dev_wakeup_filter_attr_grp = {
 };
 
 static const struct device_type rc_dev_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release	= rc_dev_release,
 	.uevent		= rc_dev_uevent,
 };
 
-<<<<<<< HEAD
-struct rc_dev *rc_allocate_device(void)
-=======
 struct rc_dev *rc_allocate_device(enum rc_driver_type type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rc_dev *dev;
 
@@ -2296,27 +1705,6 @@ struct rc_dev *rc_allocate_device(enum rc_driver_type type)
 	if (!dev)
 		return NULL;
 
-<<<<<<< HEAD
-	dev->input_dev = input_allocate_device();
-	if (!dev->input_dev) {
-		kfree(dev);
-		return NULL;
-	}
-
-	dev->input_dev->getkeycode = ir_getkeycode;
-	dev->input_dev->setkeycode = ir_setkeycode;
-	input_set_drvdata(dev->input_dev, dev);
-
-	spin_lock_init(&dev->rc_map.lock);
-	spin_lock_init(&dev->keylock);
-	mutex_init(&dev->lock);
-	setup_timer(&dev->timer_keyup, ir_timer_keyup, (unsigned long)dev);
-
-	dev->dev.type = &rc_dev_type;
-	dev->dev.class = &ir_input_class;
-	device_initialize(&dev->dev);
-
-=======
 	if (type != RC_DRIVER_IR_RAW_TX) {
 		dev->input_dev = input_allocate_device();
 		if (!dev->input_dev) {
@@ -2343,7 +1731,6 @@ struct rc_dev *rc_allocate_device(enum rc_driver_type type)
 
 	dev->driver_type = type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__module_get(THIS_MODULE);
 	return dev;
 }
@@ -2354,14 +1741,6 @@ void rc_free_device(struct rc_dev *dev)
 	if (!dev)
 		return;
 
-<<<<<<< HEAD
-	if (dev->input_dev)
-		input_free_device(dev->input_dev);
-
-	put_device(&dev->dev);
-
-	kfree(dev);
-=======
 	input_free_device(dev->input_dev);
 
 	put_device(&dev->dev);
@@ -2369,22 +1748,10 @@ void rc_free_device(struct rc_dev *dev)
 	/* kfree(dev) will be called by the callback function
 	   rc_dev_release() */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	module_put(THIS_MODULE);
 }
 EXPORT_SYMBOL_GPL(rc_free_device);
 
-<<<<<<< HEAD
-int rc_register_device(struct rc_dev *dev)
-{
-	static bool raw_init = false; /* raw decoders loaded? */
-	static atomic_t devno = ATOMIC_INIT(0);
-	struct rc_map *rc_map;
-	const char *path;
-	int rc;
-
-	if (!dev || !dev->map_name)
-=======
 static void devm_rc_alloc_release(struct device *dev, void *res)
 {
 	rc_free_device(*(struct rc_dev **)res);
@@ -2421,7 +1788,6 @@ static int rc_prepare_rx_device(struct rc_dev *dev)
 	u64 rc_proto;
 
 	if (!dev->map_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	rc_map = rc_map_get(dev->map_name);
@@ -2430,8 +1796,6 @@ static int rc_prepare_rx_device(struct rc_dev *dev)
 	if (!rc_map || !rc_map->scan || rc_map->size == 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-=======
 	rc = ir_setkeytable(dev, rc_map);
 	if (rc)
 		return rc;
@@ -2452,13 +1816,10 @@ static int rc_prepare_rx_device(struct rc_dev *dev)
 	}
 
 	/* Keyboard events */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(EV_KEY, dev->input_dev->evbit);
 	set_bit(EV_REP, dev->input_dev->evbit);
 	set_bit(EV_MSC, dev->input_dev->evbit);
 	set_bit(MSC_SCAN, dev->input_dev->mscbit);
-<<<<<<< HEAD
-=======
 
 	/* Pointer/mouse events */
 	set_bit(INPUT_PROP_POINTING_STICK, dev->input_dev->propbit);
@@ -2466,41 +1827,11 @@ static int rc_prepare_rx_device(struct rc_dev *dev)
 	set_bit(REL_X, dev->input_dev->relbit);
 	set_bit(REL_Y, dev->input_dev->relbit);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->open)
 		dev->input_dev->open = ir_open;
 	if (dev->close)
 		dev->input_dev->close = ir_close;
 
-<<<<<<< HEAD
-	/*
-	 * Take the lock here, as the device sysfs node will appear
-	 * when device_add() is called, which may trigger an ir-keytable udev
-	 * rule, which will in turn call show_protocols and access either
-	 * dev->rc_map.rc_type or dev->raw->enabled_protocols before it has
-	 * been initialized.
-	 */
-	mutex_lock(&dev->lock);
-
-	dev->devno = (unsigned long)(atomic_inc_return(&devno) - 1);
-	dev_set_name(&dev->dev, "rc%ld", dev->devno);
-	dev_set_drvdata(&dev->dev, dev);
-	rc = device_add(&dev->dev);
-	if (rc)
-		goto out_unlock;
-
-	rc = ir_setkeytable(dev, rc_map);
-	if (rc)
-		goto out_dev;
-
-	dev->input_dev->dev.parent = &dev->dev;
-	memcpy(&dev->input_dev->id, &dev->input_id, sizeof(dev->input_id));
-	dev->input_dev->phys = dev->input_phys;
-	dev->input_dev->name = dev->input_name;
-	rc = input_register_device(dev->input_dev);
-	if (rc)
-		goto out_table;
-=======
 	dev->input_dev->dev.parent = &dev->dev;
 	memcpy(&dev->input_dev->id, &dev->input_id, sizeof(dev->input_id));
 	dev->input_dev->phys = dev->input_phys;
@@ -2522,7 +1853,6 @@ static int rc_setup_rx_device(struct rc_dev *dev)
 	rc = input_register_device(dev->input_dev);
 	if (rc)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Default delay of 250ms is too short for some protocols, especially
@@ -2530,14 +1860,10 @@ static int rc_setup_rx_device(struct rc_dev *dev)
 	 * to avoid wrong repetition of the keycodes. Note that this must be
 	 * set after the call to input_register_device().
 	 */
-<<<<<<< HEAD
-	dev->input_dev->rep[REP_DELAY] = 500;
-=======
 	if (dev->allowed_protocols == RC_PROTO_BIT_CEC)
 		dev->input_dev->rep[REP_DELAY] = 0;
 	else
 		dev->input_dev->rep[REP_DELAY] = 500;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * As a repeat event on protocols like RC-5 and NEC take as long as
@@ -2546,55 +1872,6 @@ static int rc_setup_rx_device(struct rc_dev *dev)
 	 */
 	dev->input_dev->rep[REP_PERIOD] = 125;
 
-<<<<<<< HEAD
-	path = kobject_get_path(&dev->dev.kobj, GFP_KERNEL);
-	printk(KERN_INFO "%s: %s as %s\n",
-		dev_name(&dev->dev),
-		dev->input_name ? dev->input_name : "Unspecified device",
-		path ? path : "N/A");
-	kfree(path);
-
-	if (dev->driver_type == RC_DRIVER_IR_RAW) {
-		/* Load raw decoders, if they aren't already */
-		if (!raw_init) {
-			IR_dprintk(1, "Loading raw decoders\n");
-			ir_raw_init();
-			raw_init = true;
-		}
-		rc = ir_raw_event_register(dev);
-		if (rc < 0)
-			goto out_input;
-	}
-
-	if (dev->change_protocol) {
-		rc = dev->change_protocol(dev, rc_map->rc_type);
-		if (rc < 0)
-			goto out_raw;
-	}
-
-	mutex_unlock(&dev->lock);
-
-	IR_dprintk(1, "Registered rc%ld (driver: %s, remote: %s, mode %s)\n",
-		   dev->devno,
-		   dev->driver_name ? dev->driver_name : "unknown",
-		   rc_map->name ? rc_map->name : "unknown",
-		   dev->driver_type == RC_DRIVER_IR_RAW ? "raw" : "cooked");
-
-	return 0;
-
-out_raw:
-	if (dev->driver_type == RC_DRIVER_IR_RAW)
-		ir_raw_event_unregister(dev);
-out_input:
-	input_unregister_device(dev->input_dev);
-	dev->input_dev = NULL;
-out_table:
-	ir_free_table(&dev->rc_map);
-out_dev:
-	device_del(&dev->dev);
-out_unlock:
-	mutex_unlock(&dev->lock);
-=======
 	return 0;
 }
 
@@ -2705,13 +1982,10 @@ out_raw:
 	ir_raw_event_free(dev);
 out_minor:
 	ida_free(&rc_ida, minor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 EXPORT_SYMBOL_GPL(rc_register_device);
 
-<<<<<<< HEAD
-=======
 static void devm_rc_release(struct device *dev, void *res)
 {
 	rc_unregister_device(*(struct rc_dev **)res);
@@ -2739,29 +2013,11 @@ int devm_rc_register_device(struct device *parent, struct rc_dev *dev)
 }
 EXPORT_SYMBOL_GPL(devm_rc_register_device);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void rc_unregister_device(struct rc_dev *dev)
 {
 	if (!dev)
 		return;
 
-<<<<<<< HEAD
-	del_timer_sync(&dev->timer_keyup);
-
-	if (dev->driver_type == RC_DRIVER_IR_RAW)
-		ir_raw_event_unregister(dev);
-
-	/* Freeing the table should also call the stop callback */
-	ir_free_table(&dev->rc_map);
-	IR_dprintk(1, "Freed keycode table\n");
-
-	input_unregister_device(dev->input_dev);
-	dev->input_dev = NULL;
-
-	device_del(&dev->dev);
-
-	rc_free_device(dev);
-=======
 	if (dev->driver_type == RC_DRIVER_IR_RAW)
 		ir_raw_event_unregister(dev);
 
@@ -2789,7 +2045,6 @@ void rc_unregister_device(struct rc_dev *dev)
 
 	if (!dev->managed_alloc)
 		rc_free_device(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL_GPL(rc_unregister_device);
@@ -2800,15 +2055,6 @@ EXPORT_SYMBOL_GPL(rc_unregister_device);
 
 static int __init rc_core_init(void)
 {
-<<<<<<< HEAD
-	int rc = class_register(&ir_input_class);
-	if (rc) {
-		printk(KERN_ERR "rc_core: unable to register rc class\n");
-		return rc;
-	}
-
-	rc_map_register(&empty_map);
-=======
 	int rc = class_register(&rc_class);
 	if (rc) {
 		pr_err("rc_core: unable to register rc class\n");
@@ -2827,28 +2073,12 @@ static int __init rc_core_init(void)
 #ifdef CONFIG_MEDIA_CEC_RC
 	rc_map_register(&cec_map);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void __exit rc_core_exit(void)
 {
-<<<<<<< HEAD
-	class_unregister(&ir_input_class);
-	rc_map_unregister(&empty_map);
-}
-
-module_init(rc_core_init);
-module_exit(rc_core_exit);
-
-int rc_core_debug;    /* ir_debug level (0,1,2) */
-EXPORT_SYMBOL_GPL(rc_core_debug);
-module_param_named(debug, rc_core_debug, int, 0644);
-
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-MODULE_LICENSE("GPL");
-=======
 	lirc_dev_exit();
 	class_unregister(&rc_class);
 	led_trigger_unregister_simple(led_feedback);
@@ -2863,4 +2093,3 @@ module_exit(rc_core_exit);
 
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

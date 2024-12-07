@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/powerpc/platforms/powermac/low_i2c.c
  *
  *  Copyright (C) 2003-2005 Ben. Herrenschmidt (benh@kernel.crashing.org)
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The linux i2c layer isn't completely suitable for our needs for various
  * reasons ranging from too late initialisation to semantics not perfectly
  * matching some requirements of the apple platform functions etc...
@@ -22,11 +11,7 @@
  * This file thus provides a simple low level unified i2c interface for
  * powermac that covers the various types of i2c busses used in Apple machines.
  * For now, keywest, PMU and SMU, though we could add Cuda, or other bit
-<<<<<<< HEAD
- * banging busses found on older chipstes in earlier machines if we ever need
-=======
  * banging busses found on older chipsets in earlier machines if we ever need
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * one of them.
  *
  * The drivers in this file are synchronous/blocking. In addition, the
@@ -55,17 +40,10 @@
 #include <linux/mutex.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/keylargo.h>
-#include <asm/uninorth.h>
-#include <asm/io.h>
-#include <asm/prom.h>
-=======
 #include <linux/of_irq.h>
 #include <asm/keylargo.h>
 #include <asm/uninorth.h>
 #include <asm/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/smu.h>
 #include <asm/pmac_pfunc.h>
@@ -108,10 +86,7 @@ struct pmac_i2c_bus
 	int			opened;
 	int			polled;		/* open mode */
 	struct platform_device	*platform_dev;
-<<<<<<< HEAD
-=======
 	struct lock_class_key   lock_key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ops */
 	int (*open)(struct pmac_i2c_bus *bus);
@@ -382,15 +357,9 @@ static irqreturn_t kw_i2c_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static void kw_i2c_timeout(unsigned long data)
-{
-	struct pmac_i2c_host_kw *host = (struct pmac_i2c_host_kw *)data;
-=======
 static void kw_i2c_timeout(struct timer_list *t)
 {
 	struct pmac_i2c_host_kw *host = from_timer(host, t, timeout_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&host->lock, flags);
@@ -429,11 +398,7 @@ static int kw_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 {
 	struct pmac_i2c_host_kw *host = bus->hostdata;
 	u8 mode_reg = host->speed;
-<<<<<<< HEAD
-	int use_irq = host->irq != NO_IRQ && !bus->polled;
-=======
 	int use_irq = host->irq && !bus->polled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup mode & subaddress if any */
 	switch(bus->mode) {
@@ -484,11 +449,7 @@ static int kw_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 	 */
 	if (use_irq) {
 		/* Clear completion */
-<<<<<<< HEAD
-		INIT_COMPLETION(host->complete);
-=======
 		reinit_completion(&host->complete);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Ack stale interrupts */
 		kw_write_reg(reg_isr, kw_read_reg(reg_isr));
 		/* Arm timeout */
@@ -527,17 +488,10 @@ static struct pmac_i2c_host_kw *__init kw_i2c_host_init(struct device_node *np)
 	const u32		*psteps, *prate, *addrp;
 	u32			steps;
 
-<<<<<<< HEAD
-	host = kzalloc(sizeof(struct pmac_i2c_host_kw), GFP_KERNEL);
-	if (host == NULL) {
-		printk(KERN_ERR "low_i2c: Can't allocate host for %s\n",
-		       np->full_name);
-=======
 	host = kzalloc(sizeof(*host), GFP_KERNEL);
 	if (host == NULL) {
 		printk(KERN_ERR "low_i2c: Can't allocate host for %pOF\n",
 		       np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -547,26 +501,15 @@ static struct pmac_i2c_host_kw *__init kw_i2c_host_init(struct device_node *np)
 	 */
 	addrp = of_get_property(np, "AAPL,address", NULL);
 	if (addrp == NULL) {
-<<<<<<< HEAD
-		printk(KERN_ERR "low_i2c: Can't find address for %s\n",
-		       np->full_name);
-=======
 		printk(KERN_ERR "low_i2c: Can't find address for %pOF\n",
 		       np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(host);
 		return NULL;
 	}
 	mutex_init(&host->mutex);
 	init_completion(&host->complete);
 	spin_lock_init(&host->lock);
-<<<<<<< HEAD
-	init_timer(&host->timeout_timer);
-	host->timeout_timer.function = kw_i2c_timeout;
-	host->timeout_timer.data = (unsigned long)host;
-=======
 	timer_setup(&host->timeout_timer, kw_i2c_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	psteps = of_get_property(np, "AAPL,address-step", NULL);
 	steps = psteps ? (*psteps) : 0x10;
@@ -587,17 +530,6 @@ static struct pmac_i2c_host_kw *__init kw_i2c_host_init(struct device_node *np)
 		break;
 	}	
 	host->irq = irq_of_parse_and_map(np, 0);
-<<<<<<< HEAD
-	if (host->irq == NO_IRQ)
-		printk(KERN_WARNING
-		       "low_i2c: Failed to map interrupt for %s\n",
-		       np->full_name);
-
-	host->base = ioremap((*addrp), 0x1000);
-	if (host->base == NULL) {
-		printk(KERN_ERR "low_i2c: Can't map registers for %s\n",
-		       np->full_name);
-=======
 	if (!host->irq)
 		printk(KERN_WARNING
 		       "low_i2c: Failed to map interrupt for %pOF\n",
@@ -607,7 +539,6 @@ static struct pmac_i2c_host_kw *__init kw_i2c_host_init(struct device_node *np)
 	if (host->base == NULL) {
 		printk(KERN_ERR "low_i2c: Can't map registers for %pOF\n",
 		       np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(host);
 		return NULL;
 	}
@@ -621,17 +552,10 @@ static struct pmac_i2c_host_kw *__init kw_i2c_host_init(struct device_node *np)
 	 */
 	if (request_irq(host->irq, kw_i2c_irq, IRQF_NO_SUSPEND,
 			"keywest i2c", host))
-<<<<<<< HEAD
-		host->irq = NO_IRQ;
-
-	printk(KERN_INFO "KeyWest i2c @0x%08x irq %d %s\n",
-	       *addrp, host->irq, np->full_name);
-=======
 		host->irq = 0;
 
 	printk(KERN_INFO "KeyWest i2c @0x%08x irq %d %pOF\n",
 	       *addrp, host->irq, np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return host;
 }
@@ -658,11 +582,8 @@ static void __init kw_i2c_add(struct pmac_i2c_host_kw *host,
 	bus->close = kw_i2c_close;
 	bus->xfer = kw_i2c_xfer;
 	mutex_init(&bus->mutex);
-<<<<<<< HEAD
-=======
 	lockdep_register_key(&bus->lock_key);
 	lockdep_set_class(&bus->mutex, &bus->lock_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (controller == busnode)
 		bus->flags = pmac_i2c_multibus;
 	list_add(&bus->link, &pmac_i2c_busses);
@@ -693,11 +614,7 @@ static void __init kw_i2c_probe(void)
 		 * but not for now
 		 */
 		child = of_get_next_child(np, NULL);
-<<<<<<< HEAD
-		multibus = !child || strcmp(child->name, "i2c-bus");
-=======
 		multibus = !of_node_name_eq(child, "i2c-bus");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(child);
 
 		/* For a multibus setup, we get the bus count based on the
@@ -710,19 +627,11 @@ static void __init kw_i2c_probe(void)
 			if (parent == NULL)
 				continue;
 			chans = parent->name[0] == 'u' ? 2 : 1;
-<<<<<<< HEAD
-			for (i = 0; i < chans; i++)
-				kw_i2c_add(host, np, np, i);
-		} else {
-			for (child = NULL;
-			     (child = of_get_next_child(np, child)) != NULL;) {
-=======
 			of_node_put(parent);
 			for (i = 0; i < chans; i++)
 				kw_i2c_add(host, np, np, i);
 		} else {
 			for_each_child_of_node(np, child) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const u32 *reg = of_get_property(child,
 						"reg", NULL);
 				if (reg == NULL)
@@ -805,11 +714,7 @@ static int pmu_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 			return -EINVAL;
 		}
 
-<<<<<<< HEAD
-		INIT_COMPLETION(comp);
-=======
 		reinit_completion(&comp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->data[0] = PMU_I2C_CMD;
 		req->reply[0] = 0xff;
 		req->nbytes = sizeof(struct pmu_i2c_hdr) + 1;
@@ -840,11 +745,7 @@ static int pmu_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 
 		hdr->bus = PMU_I2C_BUS_STATUS;
 
-<<<<<<< HEAD
-		INIT_COMPLETION(comp);
-=======
 		reinit_completion(&comp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->data[0] = PMU_I2C_CMD;
 		req->reply[0] = 0xff;
 		req->nbytes = 2;
@@ -892,11 +793,7 @@ static void __init pmu_i2c_probe(void)
 	if (busnode == NULL)
 		return;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "PMU i2c %s\n", busnode->full_name);
-=======
 	printk(KERN_INFO "PMU i2c %pOF\n", busnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We add bus 1 and 2 only for now, bus 0 is "special"
@@ -915,11 +812,8 @@ static void __init pmu_i2c_probe(void)
 		bus->hostdata = bus + 1;
 		bus->xfer = pmu_i2c_xfer;
 		mutex_init(&bus->mutex);
-<<<<<<< HEAD
-=======
 		lockdep_register_key(&bus->lock_key);
 		lockdep_set_class(&bus->mutex, &bus->lock_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bus->flags = pmac_i2c_multibus;
 		list_add(&bus->link, &pmac_i2c_busses);
 
@@ -1015,26 +909,15 @@ static void __init smu_i2c_probe(void)
 	if (controller == NULL)
 		return;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "SMU i2c %s\n", controller->full_name);
-=======
 	printk(KERN_INFO "SMU i2c %pOF\n", controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Look for childs, note that they might not be of the right
 	 * type as older device trees mix i2c busses and other things
 	 * at the same level
 	 */
-<<<<<<< HEAD
-	for (busnode = NULL;
-	     (busnode = of_get_next_child(controller, busnode)) != NULL;) {
-		if (strcmp(busnode->type, "i2c") &&
-		    strcmp(busnode->type, "i2c-bus"))
-=======
 	for_each_child_of_node(controller, busnode) {
 		if (!of_node_is_type(busnode, "i2c") &&
 		    !of_node_is_type(busnode, "i2c-bus"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		reg = of_get_property(busnode, "reg", NULL);
 		if (reg == NULL)
@@ -1042,15 +925,10 @@ static void __init smu_i2c_probe(void)
 
 		sz = sizeof(struct pmac_i2c_bus) + sizeof(struct smu_i2c_cmd);
 		bus = kzalloc(sz, GFP_KERNEL);
-<<<<<<< HEAD
-		if (bus == NULL)
-			return;
-=======
 		if (bus == NULL) {
 			of_node_put(busnode);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		bus->controller = controller;
 		bus->busnode = of_node_get(busnode);
@@ -1060,13 +938,6 @@ static void __init smu_i2c_probe(void)
 		bus->hostdata = bus + 1;
 		bus->xfer = smu_i2c_xfer;
 		mutex_init(&bus->mutex);
-<<<<<<< HEAD
-		bus->flags = 0;
-		list_add(&bus->link, &pmac_i2c_busses);
-
-		printk(KERN_INFO " channel %x bus %s\n",
-		       bus->channel, busnode->full_name);
-=======
 		lockdep_register_key(&bus->lock_key);
 		lockdep_set_class(&bus->mutex, &bus->lock_key);
 		bus->flags = 0;
@@ -1074,7 +945,6 @@ static void __init smu_i2c_probe(void)
 
 		printk(KERN_INFO " channel %x bus %pOF\n",
 		       bus->channel, busnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1257,11 +1127,7 @@ int pmac_i2c_setmode(struct pmac_i2c_bus *bus, int mode)
 	 */
 	if (mode < pmac_i2c_mode_dumb || mode > pmac_i2c_mode_combined) {
 		printk(KERN_ERR "low_i2c: Invalid mode %d requested on"
-<<<<<<< HEAD
-		       " bus %s !\n", mode, bus->busnode->full_name);
-=======
 		       " bus %pOF !\n", mode, bus->busnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	bus->mode = mode;
@@ -1278,13 +1144,8 @@ int pmac_i2c_xfer(struct pmac_i2c_bus *bus, u8 addrdir, int subsize,
 	WARN_ON(!bus->opened);
 
 	DBG("xfer() chan=%d, addrdir=0x%x, mode=%d, subsize=%d, subaddr=0x%x,"
-<<<<<<< HEAD
-	    " %d bytes, bus %s\n", bus->channel, addrdir, bus->mode, subsize,
-	    subaddr, len, bus->busnode->full_name);
-=======
 	    " %d bytes, bus %pOF\n", bus->channel, addrdir, bus->mode, subsize,
 	    subaddr, len, bus->busnode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = bus->xfer(bus, addrdir, subsize, subaddr, data, len);
 
@@ -1331,33 +1192,20 @@ static void pmac_i2c_devscan(void (*callback)(struct device_node *dev,
 		{ NULL, NULL, 0 },
 	};
 
-<<<<<<< HEAD
-	/* Only some devices need to have platform functions instanciated
-=======
 	/* Only some devices need to have platform functions instantiated
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * here. For now, we have a table. Others, like 9554 i2c GPIOs used
 	 * on Xserve, if we ever do a driver for them, will use their own
 	 * platform function instance
 	 */
 	list_for_each_entry(bus, &pmac_i2c_busses, link) {
-<<<<<<< HEAD
-		for (np = NULL;
-		     (np = of_get_next_child(bus->busnode, np)) != NULL;) {
-=======
 		for_each_child_of_node(bus->busnode, np) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct whitelist_ent *p;
 			/* If multibus, check if device is on that bus */
 			if (bus->flags & pmac_i2c_multibus)
 				if (bus != pmac_i2c_find_bus(np))
 					continue;
 			for (p = whitelist; p->name != NULL; p++) {
-<<<<<<< HEAD
-				if (strcmp(np->name, p->name))
-=======
 				if (!of_node_name_eq(np, p->name))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					continue;
 				if (p->compatible &&
 				    !of_device_is_compatible(np, p->compatible))
@@ -1390,15 +1238,6 @@ static void* pmac_i2c_do_begin(struct pmf_function *func, struct pmf_args *args)
 
 	bus = pmac_i2c_find_bus(func->node);
 	if (bus == NULL) {
-<<<<<<< HEAD
-		printk(KERN_ERR "low_i2c: Can't find bus for %s (pfunc)\n",
-		       func->node->full_name);
-		return NULL;
-	}
-	if (pmac_i2c_open(bus, 0)) {
-		printk(KERN_ERR "low_i2c: Can't open i2c bus for %s (pfunc)\n",
-		       func->node->full_name);
-=======
 		printk(KERN_ERR "low_i2c: Can't find bus for %pOF (pfunc)\n",
 		       func->node);
 		return NULL;
@@ -1406,7 +1245,6 @@ static void* pmac_i2c_do_begin(struct pmf_function *func, struct pmf_args *args)
 	if (pmac_i2c_open(bus, 0)) {
 		printk(KERN_ERR "low_i2c: Can't open i2c bus for %pOF (pfunc)\n",
 		       func->node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -1576,11 +1414,7 @@ static struct pmf_handlers pmac_i2c_pfunc_handlers = {
 
 static void __init pmac_i2c_dev_create(struct device_node *np, int quirks)
 {
-<<<<<<< HEAD
-	DBG("dev_create(%s)\n", np->full_name);
-=======
 	DBG("dev_create(%pOF)\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmf_register_driver(np, &pmac_i2c_pfunc_handlers,
 			    (void *)(long)quirks);
@@ -1588,32 +1422,20 @@ static void __init pmac_i2c_dev_create(struct device_node *np, int quirks)
 
 static void __init pmac_i2c_dev_init(struct device_node *np, int quirks)
 {
-<<<<<<< HEAD
-	DBG("dev_create(%s)\n", np->full_name);
-=======
 	DBG("dev_create(%pOF)\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmf_do_functions(np, NULL, 0, PMF_FLAGS_ON_INIT, NULL);
 }
 
 static void pmac_i2c_dev_suspend(struct device_node *np, int quirks)
 {
-<<<<<<< HEAD
-	DBG("dev_suspend(%s)\n", np->full_name);
-=======
 	DBG("dev_suspend(%pOF)\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmf_do_functions(np, NULL, 0, PMF_FLAGS_ON_SLEEP, NULL);
 }
 
 static void pmac_i2c_dev_resume(struct device_node *np, int quirks)
 {
-<<<<<<< HEAD
-	DBG("dev_resume(%s)\n", np->full_name);
-=======
 	DBG("dev_resume(%pOF)\n", np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmf_do_functions(np, NULL, 0, PMF_FLAGS_ON_WAKE, NULL);
 }
 
@@ -1653,11 +1475,7 @@ int __init pmac_i2c_init(void)
 	smu_i2c_probe();
 #endif
 
-<<<<<<< HEAD
-	/* Now add plaform functions for some known devices */
-=======
 	/* Now add platform functions for some known devices */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmac_i2c_devscan(pmac_i2c_dev_create);
 
 	return 0;
@@ -1686,10 +1504,7 @@ static int __init pmac_i2c_create_platform_devices(void)
 		if (bus->platform_dev == NULL)
 			return -ENOMEM;
 		bus->platform_dev->dev.platform_data = bus;
-<<<<<<< HEAD
-=======
 		bus->platform_dev->dev.of_node = bus->busnode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		platform_device_add(bus->platform_dev);
 	}
 

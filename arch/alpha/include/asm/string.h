@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ALPHA_STRING_H__
 #define __ALPHA_STRING_H__
 
@@ -26,17 +23,6 @@ extern void * __memcpy(void *, const void *, size_t);
 
 #define __HAVE_ARCH_MEMSET
 extern void * __constant_c_memset(void *, unsigned long, size_t);
-<<<<<<< HEAD
-extern void * __memset(void *, int, size_t);
-extern void * memset(void *, int, size_t);
-
-#define memset(s, c, n)							    \
-(__builtin_constant_p(c)						    \
- ? (__builtin_constant_p(n) && (c) == 0					    \
-    ? __builtin_memset((s),0,(n)) 					    \
-    : __constant_c_memset((s),0x0101010101010101UL*(unsigned char)(c),(n))) \
- : __memset((s),(c),(n)))
-=======
 extern void * ___memset(void *, int, size_t);
 extern void * __memset(void *, int, size_t);
 extern void * memset(void *, int, size_t);
@@ -58,7 +44,6 @@ extern inline void *__memset(void *s, int c, size_t n)
 }
 
 #define memset __memset
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __HAVE_ARCH_STRCPY
 extern char * strcpy(char *,const char *);
@@ -81,15 +66,6 @@ extern void * memchr(const void *, int, size_t);
    aligned values.  The DEST and COUNT parameters must be even for 
    correct operation.  */
 
-<<<<<<< HEAD
-#define __HAVE_ARCH_MEMSETW
-extern void * __memsetw(void *dest, unsigned short, size_t count);
-
-#define memsetw(s, c, n)						 \
-(__builtin_constant_p(c)						 \
- ? __constant_c_memset((s),0x0001000100010001UL*(unsigned short)(c),(n)) \
- : __memsetw((s),(c),(n)))
-=======
 #define __HAVE_ARCH_MEMSET16
 extern void * __memset16(void *dest, unsigned short, size_t count);
 static inline void *memset16(uint16_t *p, uint16_t v, size_t n)
@@ -98,7 +74,6 @@ static inline void *memset16(uint16_t *p, uint16_t v, size_t n)
 		return __constant_c_memset(p, 0x0001000100010001UL * v, n * 2);
 	return __memset16(p, v, n * 2);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 

@@ -1,32 +1,18 @@
-<<<<<<< HEAD
-/*
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SH7786 Pinmux
  *
  * Copyright (C) 2008, 2009  Renesas Solutions Corp.
  * Kuninori Morimoto <morimoto.kuninori@renesas.com>
  *
  *  Based on sh7785.h
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __CPU_SH7786_H__
 #define __CPU_SH7786_H__
 
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	/* PA */
 	GPIO_PA7, GPIO_PA6, GPIO_PA5, GPIO_PA4,
@@ -45,24 +31,14 @@ enum {
 	GPIO_PD3, GPIO_PD2, GPIO_PD1, GPIO_PD0,
 
 	/* PE */
-<<<<<<< HEAD
-	GPIO_PE5, GPIO_PE4, GPIO_PE3, GPIO_PE2,
-	GPIO_PE1, GPIO_PE0,
-=======
 	GPIO_PE7, GPIO_PE6,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PF */
 	GPIO_PF7, GPIO_PF6, GPIO_PF5, GPIO_PF4,
 	GPIO_PF3, GPIO_PF2, GPIO_PF1, GPIO_PF0,
 
 	/* PG */
-<<<<<<< HEAD
-	GPIO_PG7, GPIO_PG6, GPIO_PG5, GPIO_PG4,
-	GPIO_PG3, GPIO_PG2, GPIO_PG1, GPIO_PG0,
-=======
 	GPIO_PG7, GPIO_PG6, GPIO_PG5,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* PH */
 	GPIO_PH7, GPIO_PH6, GPIO_PH5, GPIO_PH4,
@@ -70,11 +46,7 @@ enum {
 
 	/* PJ */
 	GPIO_PJ7, GPIO_PJ6, GPIO_PJ5, GPIO_PJ4,
-<<<<<<< HEAD
-	GPIO_PJ3, GPIO_PJ2, GPIO_PJ1, GPIO_PJ0,
-=======
 	GPIO_PJ3, GPIO_PJ2, GPIO_PJ1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DU */
 	GPIO_FN_DCLKIN, GPIO_FN_DCLKOUT, GPIO_FN_ODDF,
@@ -158,12 +130,9 @@ enum {
 	GPIO_FN_IRL7, GPIO_FN_IRL6, GPIO_FN_IRL5, GPIO_FN_IRL4,
 };
 
-<<<<<<< HEAD
-=======
 static inline u32 sh7786_mm_sel(void)
 {
 	return __raw_readl((const volatile void __iomem *)0xFC400020) & 0x7;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __CPU_SH7786_H__ */

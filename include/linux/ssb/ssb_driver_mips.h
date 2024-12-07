@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_SSB_MIPSCORE_H_
 #define LINUX_SSB_MIPSCORE_H_
 
@@ -17,8 +14,6 @@ struct ssb_serial_port {
 	unsigned int reg_shift;
 };
 
-<<<<<<< HEAD
-=======
 struct ssb_pflash {
 	bool present;
 	u8 buswidth;
@@ -37,7 +32,6 @@ struct ssb_sflash {
 	void *priv;
 };
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ssb_mipscore {
 	struct ssb_device *dev;
@@ -45,16 +39,10 @@ struct ssb_mipscore {
 	int nr_serial_ports;
 	struct ssb_serial_port serial_ports[4];
 
-<<<<<<< HEAD
-	u8 flash_buswidth;
-	u32 flash_window;
-	u32 flash_window_size;
-=======
 	struct ssb_pflash pflash;
 #ifdef CONFIG_SSB_SFLASH
 	struct ssb_sflash sflash;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern void ssb_mipscore_init(struct ssb_mipscore *mcore);
@@ -73,14 +61,11 @@ void ssb_mipscore_init(struct ssb_mipscore *mcore)
 {
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned int ssb_mips_irq(struct ssb_device *dev)
 {
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SSB_DRIVER_MIPS */
 
 #endif /* LINUX_SSB_MIPSCORE_H_ */

@@ -1,28 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas Technology Europe SDK7786 Support.
  *
  * Copyright (C) 2010  Matt Fleming
  * Copyright (C) 2010  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smsc911x.h>
 #include <linux/i2c.h>
 #include <linux/irq.h>
@@ -32,11 +19,7 @@
 #include <mach/irq.h>
 #include <asm/machvec.h>
 #include <asm/heartbeat.h>
-<<<<<<< HEAD
-#include <asm/sizes.h>
-=======
 #include <linux/sizes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/clock.h>
 #include <asm/reboot.h>
 #include <asm/smp-ops.h>
@@ -54,15 +37,12 @@ static struct platform_device heartbeat_device = {
 	.resource	= &heartbeat_resource,
 };
 
-<<<<<<< HEAD
-=======
 /* Dummy supplies, where voltage doesn't matter */
 static struct regulator_consumer_supply dummy_supplies[] = {
 	REGULATOR_SUPPLY("vddvario", "smsc911x"),
 	REGULATOR_SUPPLY("vdd33a", "smsc911x"),
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource smsc911x_resources[] = {
 	[0] = {
 		.name		= "smsc911x-memory",
@@ -261,11 +241,8 @@ static void __init sdk7786_setup(char **cmdline_p)
 {
 	pr_info("Renesas Technology Europe SDK7786 support:\n");
 
-<<<<<<< HEAD
-=======
 	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdk7786_fpga_init();
 	sdk7786_nmi_init();
 

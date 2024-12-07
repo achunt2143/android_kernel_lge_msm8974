@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/eventfd.c
  *
@@ -13,11 +10,7 @@
 #include <linux/poll.h>
 #include <linux/init.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/list.h>
@@ -27,15 +20,12 @@
 #include <linux/export.h>
 #include <linux/kref.h>
 #include <linux/eventfd.h>
-<<<<<<< HEAD
-=======
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/idr.h>
 #include <linux/uio.h>
 
 static DEFINE_IDA(eventfd_ida);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct eventfd_ctx {
 	struct kref kref;
@@ -43,53 +33,6 @@ struct eventfd_ctx {
 	/*
 	 * Every time that a write(2) is performed on an eventfd, the
 	 * value of the __u64 being written is added to "count" and a
-<<<<<<< HEAD
-	 * wakeup is performed on "wqh". A read(2) will return the "count"
-	 * value to userspace, and will reset "count" to zero. The kernel
-	 * side eventfd_signal() also, adds to the "count" counter and
-	 * issue a wakeup.
-	 */
-	__u64 count;
-	unsigned int flags;
-};
-
-/**
- * eventfd_signal - Adds @n to the eventfd counter.
- * @ctx: [in] Pointer to the eventfd context.
- * @n: [in] Value of the counter to be added to the eventfd internal counter.
- *          The value cannot be negative.
- *
- * This function is supposed to be called by the kernel in paths that do not
- * allow sleeping. In this function we allow the counter to reach the ULLONG_MAX
- * value, and we signal this as overflow condition by returining a POLLERR
- * to poll(2).
- *
- * Returns @n in case of success, a non-negative number lower than @n in case
- * of overflow, or the following error codes:
- *
- * -EINVAL    : The value of @n is negative.
- */
-int eventfd_signal(struct eventfd_ctx *ctx, int n)
-{
-	unsigned long flags;
-
-	if (n < 0)
-		return -EINVAL;
-	spin_lock_irqsave(&ctx->wqh.lock, flags);
-	if (ULLONG_MAX - ctx->count < n)
-		n = (int) (ULLONG_MAX - ctx->count);
-	ctx->count += n;
-	if (waitqueue_active(&ctx->wqh))
-		wake_up_locked_poll(&ctx->wqh, POLLIN);
-	spin_unlock_irqrestore(&ctx->wqh.lock, flags);
-
-	return n;
-}
-EXPORT_SYMBOL_GPL(eventfd_signal);
-
-static void eventfd_free_ctx(struct eventfd_ctx *ctx)
-{
-=======
 	 * wakeup is performed on "wqh". If EFD_SEMAPHORE flag was not
 	 * specified, a read(2) will return the "count" value to userspace,
 	 * and will reset "count" to zero. The kernel side eventfd_signal()
@@ -140,7 +83,6 @@ static void eventfd_free_ctx(struct eventfd_ctx *ctx)
 {
 	if (ctx->id >= 0)
 		ida_free(&eventfd_ida, ctx->id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ctx);
 }
 
@@ -152,31 +94,11 @@ static void eventfd_free(struct kref *kref)
 }
 
 /**
-<<<<<<< HEAD
- * eventfd_ctx_get - Acquires a reference to the internal eventfd context.
- * @ctx: [in] Pointer to the eventfd context.
- *
- * Returns: In case of success, returns a pointer to the eventfd context.
- */
-struct eventfd_ctx *eventfd_ctx_get(struct eventfd_ctx *ctx)
-{
-	kref_get(&ctx->kref);
-	return ctx;
-}
-EXPORT_SYMBOL_GPL(eventfd_ctx_get);
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eventfd_ctx_put - Releases a reference to the internal eventfd context.
  * @ctx: [in] Pointer to eventfd context.
  *
  * The eventfd context reference must have been previously acquired either
-<<<<<<< HEAD
- * with eventfd_ctx_get() or eventfd_ctx_fdget().
-=======
  * with eventfd_ctx_fdget() or eventfd_ctx_fileget().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void eventfd_ctx_put(struct eventfd_ctx *ctx)
 {
@@ -188,33 +110,11 @@ static int eventfd_release(struct inode *inode, struct file *file)
 {
 	struct eventfd_ctx *ctx = file->private_data;
 
-<<<<<<< HEAD
-	wake_up_poll(&ctx->wqh, POLLHUP);
-=======
 	wake_up_poll(&ctx->wqh, EPOLLHUP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eventfd_ctx_put(ctx);
 	return 0;
 }
 
-<<<<<<< HEAD
-static unsigned int eventfd_poll(struct file *file, poll_table *wait)
-{
-	struct eventfd_ctx *ctx = file->private_data;
-	unsigned int events = 0;
-	unsigned long flags;
-
-	poll_wait(file, &ctx->wqh, wait);
-
-	spin_lock_irqsave(&ctx->wqh.lock, flags);
-	if (ctx->count > 0)
-		events |= POLLIN;
-	if (ctx->count == ULLONG_MAX)
-		events |= POLLERR;
-	if (ULLONG_MAX - 1 > ctx->count)
-		events |= POLLOUT;
-	spin_unlock_irqrestore(&ctx->wqh.lock, flags);
-=======
 static __poll_t eventfd_poll(struct file *file, poll_table *wait)
 {
 	struct eventfd_ctx *ctx = file->private_data;
@@ -269,18 +169,10 @@ static __poll_t eventfd_poll(struct file *file, poll_table *wait)
 		events |= EPOLLERR;
 	if (ULLONG_MAX - 1 > count)
 		events |= EPOLLOUT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return events;
 }
 
-<<<<<<< HEAD
-static void eventfd_ctx_do_read(struct eventfd_ctx *ctx, __u64 *cnt)
-{
-	*cnt = (ctx->flags & EFD_SEMAPHORE) ? 1 : ctx->count;
-	ctx->count -= *cnt;
-}
-=======
 void eventfd_ctx_do_read(struct eventfd_ctx *ctx, __u64 *cnt)
 {
 	lockdep_assert_held(&ctx->wqh.lock);
@@ -289,7 +181,6 @@ void eventfd_ctx_do_read(struct eventfd_ctx *ctx, __u64 *cnt)
 	ctx->count -= *cnt;
 }
 EXPORT_SYMBOL_GPL(eventfd_ctx_do_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * eventfd_ctx_remove_wait_queue - Read the current counter and removes wait queue.
@@ -304,11 +195,7 @@ EXPORT_SYMBOL_GPL(eventfd_ctx_do_read);
  * This is used to atomically remove a wait queue entry from the eventfd wait
  * queue head, and read/reset the counter value.
  */
-<<<<<<< HEAD
-int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_t *wait,
-=======
 int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_entry_t *wait,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  __u64 *cnt)
 {
 	unsigned long flags;
@@ -317,87 +204,13 @@ int eventfd_ctx_remove_wait_queue(struct eventfd_ctx *ctx, wait_queue_entry_t *w
 	eventfd_ctx_do_read(ctx, cnt);
 	__remove_wait_queue(&ctx->wqh, wait);
 	if (*cnt != 0 && waitqueue_active(&ctx->wqh))
-<<<<<<< HEAD
-		wake_up_locked_poll(&ctx->wqh, POLLOUT);
-=======
 		wake_up_locked_poll(&ctx->wqh, EPOLLOUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&ctx->wqh.lock, flags);
 
 	return *cnt != 0 ? 0 : -EAGAIN;
 }
 EXPORT_SYMBOL_GPL(eventfd_ctx_remove_wait_queue);
 
-<<<<<<< HEAD
-/**
- * eventfd_ctx_read - Reads the eventfd counter or wait if it is zero.
- * @ctx: [in] Pointer to eventfd context.
- * @no_wait: [in] Different from zero if the operation should not block.
- * @cnt: [out] Pointer to the 64-bit counter value.
- *
- * Returns %0 if successful, or the following error codes:
- *
- * -EAGAIN      : The operation would have blocked but @no_wait was non-zero.
- * -ERESTARTSYS : A signal interrupted the wait operation.
- *
- * If @no_wait is zero, the function might sleep until the eventfd internal
- * counter becomes greater than zero.
- */
-ssize_t eventfd_ctx_read(struct eventfd_ctx *ctx, int no_wait, __u64 *cnt)
-{
-	ssize_t res;
-	DECLARE_WAITQUEUE(wait, current);
-
-	spin_lock_irq(&ctx->wqh.lock);
-	*cnt = 0;
-	res = -EAGAIN;
-	if (ctx->count > 0)
-		res = 0;
-	else if (!no_wait) {
-		__add_wait_queue(&ctx->wqh, &wait);
-		for (;;) {
-			set_current_state(TASK_INTERRUPTIBLE);
-			if (ctx->count > 0) {
-				res = 0;
-				break;
-			}
-			if (signal_pending(current)) {
-				res = -ERESTARTSYS;
-				break;
-			}
-			spin_unlock_irq(&ctx->wqh.lock);
-			schedule();
-			spin_lock_irq(&ctx->wqh.lock);
-		}
-		__remove_wait_queue(&ctx->wqh, &wait);
-		__set_current_state(TASK_RUNNING);
-	}
-	if (likely(res == 0)) {
-		eventfd_ctx_do_read(ctx, cnt);
-		if (waitqueue_active(&ctx->wqh))
-			wake_up_locked_poll(&ctx->wqh, POLLOUT);
-	}
-	spin_unlock_irq(&ctx->wqh.lock);
-
-	return res;
-}
-EXPORT_SYMBOL_GPL(eventfd_ctx_read);
-
-static ssize_t eventfd_read(struct file *file, char __user *buf, size_t count,
-			    loff_t *ppos)
-{
-	struct eventfd_ctx *ctx = file->private_data;
-	ssize_t res;
-	__u64 cnt;
-
-	if (count < sizeof(cnt))
-		return -EINVAL;
-	res = eventfd_ctx_read(ctx, file->f_flags & O_NONBLOCK, &cnt);
-	if (res < 0)
-		return res;
-
-	return put_user(cnt, (__u64 __user *) buf) ? -EFAULT : sizeof(cnt);
-=======
 static ssize_t eventfd_read(struct kiocb *iocb, struct iov_iter *to)
 {
 	struct file *file = iocb->ki_filp;
@@ -429,7 +242,6 @@ static ssize_t eventfd_read(struct kiocb *iocb, struct iov_iter *to)
 		return -EFAULT;
 
 	return sizeof(ucnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t eventfd_write(struct file *file, const char __user *buf, size_t count,
@@ -438,14 +250,8 @@ static ssize_t eventfd_write(struct file *file, const char __user *buf, size_t c
 	struct eventfd_ctx *ctx = file->private_data;
 	ssize_t res;
 	__u64 ucnt;
-<<<<<<< HEAD
-	DECLARE_WAITQUEUE(wait, current);
-
-	if (count < sizeof(ucnt))
-=======
 
 	if (count != sizeof(ucnt))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (copy_from_user(&ucnt, buf, sizeof(ucnt)))
 		return -EFAULT;
@@ -456,30 +262,6 @@ static ssize_t eventfd_write(struct file *file, const char __user *buf, size_t c
 	if (ULLONG_MAX - ctx->count > ucnt)
 		res = sizeof(ucnt);
 	else if (!(file->f_flags & O_NONBLOCK)) {
-<<<<<<< HEAD
-		__add_wait_queue(&ctx->wqh, &wait);
-		for (res = 0;;) {
-			set_current_state(TASK_INTERRUPTIBLE);
-			if (ULLONG_MAX - ctx->count > ucnt) {
-				res = sizeof(ucnt);
-				break;
-			}
-			if (signal_pending(current)) {
-				res = -ERESTARTSYS;
-				break;
-			}
-			spin_unlock_irq(&ctx->wqh.lock);
-			schedule();
-			spin_lock_irq(&ctx->wqh.lock);
-		}
-		__remove_wait_queue(&ctx->wqh, &wait);
-		__set_current_state(TASK_RUNNING);
-	}
-	if (likely(res > 0)) {
-		ctx->count += ucnt;
-		if (waitqueue_active(&ctx->wqh))
-			wake_up_locked_poll(&ctx->wqh, POLLIN);
-=======
 		res = wait_event_interruptible_locked_irq(ctx->wqh,
 				ULLONG_MAX - ctx->count > ucnt);
 		if (!res)
@@ -491,19 +273,12 @@ static ssize_t eventfd_write(struct file *file, const char __user *buf, size_t c
 		if (waitqueue_active(&ctx->wqh))
 			wake_up_locked_poll(&ctx->wqh, EPOLLIN);
 		current->in_eventfd = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irq(&ctx->wqh.lock);
 
 	return res;
 }
 
-<<<<<<< HEAD
-static const struct file_operations eventfd_fops = {
-	.release	= eventfd_release,
-	.poll		= eventfd_poll,
-	.read		= eventfd_read,
-=======
 #ifdef CONFIG_PROC_FS
 static void eventfd_show_fdinfo(struct seq_file *m, struct file *f)
 {
@@ -531,7 +306,6 @@ static const struct file_operations eventfd_fops = {
 	.release	= eventfd_release,
 	.poll		= eventfd_poll,
 	.read_iter	= eventfd_read,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write		= eventfd_write,
 	.llseek		= noop_llseek,
 };
@@ -573,24 +347,12 @@ EXPORT_SYMBOL_GPL(eventfd_fget);
  */
 struct eventfd_ctx *eventfd_ctx_fdget(int fd)
 {
-<<<<<<< HEAD
-	struct file *file;
-	struct eventfd_ctx *ctx;
-
-	file = eventfd_fget(fd);
-	if (IS_ERR(file))
-		return (struct eventfd_ctx *) file;
-	ctx = eventfd_ctx_get(file->private_data);
-	fput(file);
-
-=======
 	struct eventfd_ctx *ctx;
 	struct fd f = fdget(fd);
 	if (!f.file)
 		return ERR_PTR(-EBADF);
 	ctx = eventfd_ctx_fileget(f.file);
 	fdput(f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ctx;
 }
 EXPORT_SYMBOL_GPL(eventfd_ctx_fdget);
@@ -606,33 +368,6 @@ EXPORT_SYMBOL_GPL(eventfd_ctx_fdget);
  */
 struct eventfd_ctx *eventfd_ctx_fileget(struct file *file)
 {
-<<<<<<< HEAD
-	if (file->f_op != &eventfd_fops)
-		return ERR_PTR(-EINVAL);
-
-	return eventfd_ctx_get(file->private_data);
-}
-EXPORT_SYMBOL_GPL(eventfd_ctx_fileget);
-
-/**
- * eventfd_file_create - Creates an eventfd file pointer.
- * @count: Initial eventfd counter value.
- * @flags: Flags for the eventfd file.
- *
- * This function creates an eventfd file pointer, w/out installing it into
- * the fd table. This is useful when the eventfd file is used during the
- * initialization of data structures that require extra setup after the eventfd
- * creation. So the eventfd creation is split into the file pointer creation
- * phase, and the file descriptor installation phase.
- * In this way races with userspace closing the newly installed file descriptor
- * can be avoided.
- * Returns an eventfd file pointer, or a proper error pointer.
- */
-struct file *eventfd_file_create(unsigned int count, int flags)
-{
-	struct file *file;
-	struct eventfd_ctx *ctx;
-=======
 	struct eventfd_ctx *ctx;
 
 	if (file->f_op != &eventfd_fops)
@@ -649,20 +384,10 @@ static int do_eventfd(unsigned int count, int flags)
 	struct eventfd_ctx *ctx;
 	struct file *file;
 	int fd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check the EFD_* constants for consistency.  */
 	BUILD_BUG_ON(EFD_CLOEXEC != O_CLOEXEC);
 	BUILD_BUG_ON(EFD_NONBLOCK != O_NONBLOCK);
-<<<<<<< HEAD
-
-	if (flags & ~EFD_FLAGS_SET)
-		return ERR_PTR(-EINVAL);
-
-	ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
-	if (!ctx)
-		return ERR_PTR(-ENOMEM);
-=======
 	BUILD_BUG_ON(EFD_SEMAPHORE != (1 << 0));
 
 	if (flags & ~EFD_FLAGS_SET)
@@ -671,21 +396,11 @@ static int do_eventfd(unsigned int count, int flags)
 	ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
 	if (!ctx)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kref_init(&ctx->kref);
 	init_waitqueue_head(&ctx->wqh);
 	ctx->count = count;
 	ctx->flags = flags;
-<<<<<<< HEAD
-
-	file = anon_inode_getfile("[eventfd]", &eventfd_fops, ctx,
-				  O_RDWR | (flags & EFD_SHARED_FCNTL_FLAGS));
-	if (IS_ERR(file))
-		eventfd_free_ctx(ctx);
-
-	return file;
-=======
 	ctx->id = ida_alloc(&eventfd_ida, GFP_KERNEL);
 
 	flags &= EFD_SHARED_FCNTL_FLAGS;
@@ -707,44 +422,15 @@ static int do_eventfd(unsigned int count, int flags)
 err:
 	eventfd_free_ctx(ctx);
 	return fd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE2(eventfd2, unsigned int, count, int, flags)
 {
-<<<<<<< HEAD
-	int fd, error;
-	struct file *file;
-
-	error = get_unused_fd_flags(flags & EFD_SHARED_FCNTL_FLAGS);
-	if (error < 0)
-		return error;
-	fd = error;
-
-	file = eventfd_file_create(count, flags);
-	if (IS_ERR(file)) {
-		error = PTR_ERR(file);
-		goto err_put_unused_fd;
-	}
-	fd_install(fd, file);
-
-	return fd;
-
-err_put_unused_fd:
-	put_unused_fd(fd);
-
-	return error;
-=======
 	return do_eventfd(count, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 SYSCALL_DEFINE1(eventfd, unsigned int, count)
 {
-<<<<<<< HEAD
-	return sys_eventfd2(count, 0);
-=======
 	return do_eventfd(count, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

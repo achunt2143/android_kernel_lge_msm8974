@@ -1,21 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2007
  * Copyright 2011 Freescale Semiconductor, Inc.
@@ -26,18 +10,9 @@
 #include <asm/ppc_asm.h>
 #include <asm/kvm_asm.h>
 #include <asm/reg.h>
-<<<<<<< HEAD
-#include <asm/mmu-44x.h>
 #include <asm/page.h>
 #include <asm/asm-offsets.h>
 
-#define VCPU_GPR(n)     (VCPU_GPRS + (n * 4))
-
-=======
-#include <asm/page.h>
-#include <asm/asm-offsets.h>
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The host stack layout: */
 #define HOST_R1         0 /* Implied by stwu. */
 #define HOST_CALLEE_LR  4
@@ -47,14 +22,9 @@
 #define HOST_R2         12
 #define HOST_CR         16
 #define HOST_NV_GPRS    20
-<<<<<<< HEAD
-#define HOST_NV_GPR(n)  (HOST_NV_GPRS + ((n - 14) * 4))
-#define HOST_MIN_STACK_SIZE (HOST_NV_GPR(31) + 4)
-=======
 #define __HOST_NV_GPR(n)  (HOST_NV_GPRS + ((n - 14) * 4))
 #define HOST_NV_GPR(n)  __HOST_NV_GPR(__REG_##n)
 #define HOST_MIN_STACK_SIZE (HOST_NV_GPR(R31) + 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HOST_STACK_SIZE (((HOST_MIN_STACK_SIZE + 15) / 16) * 16) /* Align. */
 #define HOST_STACK_LR   (HOST_STACK_SIZE + 4) /* In caller stack frame. */
 
@@ -63,30 +33,12 @@
                         (1<<BOOKE_INTERRUPT_DEBUG))
 
 #define NEED_DEAR_MASK ((1<<BOOKE_INTERRUPT_DATA_STORAGE) | \
-<<<<<<< HEAD
-                        (1<<BOOKE_INTERRUPT_DTLB_MISS))
-=======
                         (1<<BOOKE_INTERRUPT_DTLB_MISS) | \
                         (1<<BOOKE_INTERRUPT_ALIGNMENT))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NEED_ESR_MASK ((1<<BOOKE_INTERRUPT_DATA_STORAGE) | \
                        (1<<BOOKE_INTERRUPT_INST_STORAGE) | \
                        (1<<BOOKE_INTERRUPT_PROGRAM) | \
-<<<<<<< HEAD
-                       (1<<BOOKE_INTERRUPT_DTLB_MISS))
-
-.macro KVM_HANDLER ivor_nr
-_GLOBAL(kvmppc_handler_\ivor_nr)
-	/* Get pointer to vcpu and record exit number. */
-	mtspr	SPRN_SPRG_WSCRATCH0, r4
-	mfspr	r4, SPRN_SPRG_RVCPU
-	stw	r5, VCPU_GPR(r5)(r4)
-	stw	r6, VCPU_GPR(r6)(r4)
-	mfctr	r5
-	lis	r6, kvmppc_resume_host@h
-	stw	r5, VCPU_CTR(r4)
-=======
                        (1<<BOOKE_INTERRUPT_DTLB_MISS) | \
                        (1<<BOOKE_INTERRUPT_ALIGNMENT))
 
@@ -105,39 +57,12 @@ _GLOBAL(kvmppc_handler_\ivor_nr)
 	mfspr	r3, \srr0
 	lis	r6, kvmppc_resume_host@h
 	stw	r3, VCPU_PC(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r5, \ivor_nr
 	ori	r6, r6, kvmppc_resume_host@l
 	mtctr	r6
 	bctr
 .endm
 
-<<<<<<< HEAD
-_GLOBAL(kvmppc_handlers_start)
-KVM_HANDLER BOOKE_INTERRUPT_CRITICAL
-KVM_HANDLER BOOKE_INTERRUPT_MACHINE_CHECK
-KVM_HANDLER BOOKE_INTERRUPT_DATA_STORAGE
-KVM_HANDLER BOOKE_INTERRUPT_INST_STORAGE
-KVM_HANDLER BOOKE_INTERRUPT_EXTERNAL
-KVM_HANDLER BOOKE_INTERRUPT_ALIGNMENT
-KVM_HANDLER BOOKE_INTERRUPT_PROGRAM
-KVM_HANDLER BOOKE_INTERRUPT_FP_UNAVAIL
-KVM_HANDLER BOOKE_INTERRUPT_SYSCALL
-KVM_HANDLER BOOKE_INTERRUPT_AP_UNAVAIL
-KVM_HANDLER BOOKE_INTERRUPT_DECREMENTER
-KVM_HANDLER BOOKE_INTERRUPT_FIT
-KVM_HANDLER BOOKE_INTERRUPT_WATCHDOG
-KVM_HANDLER BOOKE_INTERRUPT_DTLB_MISS
-KVM_HANDLER BOOKE_INTERRUPT_ITLB_MISS
-KVM_HANDLER BOOKE_INTERRUPT_DEBUG
-KVM_HANDLER BOOKE_INTERRUPT_SPE_UNAVAIL
-KVM_HANDLER BOOKE_INTERRUPT_SPE_FP_DATA
-KVM_HANDLER BOOKE_INTERRUPT_SPE_FP_ROUND
-
-_GLOBAL(kvmppc_handler_len)
-	.long kvmppc_handler_1 - kvmppc_handler_0
-
-=======
 .macro KVM_HANDLER ivor_nr scratch srr0
 _GLOBAL(kvmppc_handler_\ivor_nr)
 	__KVM_HANDLER \ivor_nr \scratch \srr0
@@ -204,7 +129,6 @@ KVM_HANDLER BOOKE_INTERRUPT_SPE_UNAVAIL SPRN_SPRG_RSCRATCH0 SPRN_SRR0
 KVM_HANDLER BOOKE_INTERRUPT_SPE_FP_DATA SPRN_SPRG_RSCRATCH0 SPRN_SRR0
 KVM_HANDLER BOOKE_INTERRUPT_SPE_FP_ROUND SPRN_SPRG_RSCRATCH0 SPRN_SRR0
 _GLOBAL(kvmppc_handlers_end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Registers:
  *  SPRG_SCRATCH0: guest r4
@@ -212,20 +136,11 @@ _GLOBAL(kvmppc_handlers_end)
  *  r5: KVM exit number
  */
 _GLOBAL(kvmppc_resume_host)
-<<<<<<< HEAD
-	stw	r3, VCPU_GPR(r3)(r4)
-	mfcr	r3
-	stw	r3, VCPU_CR(r4)
-	stw	r7, VCPU_GPR(r7)(r4)
-	stw	r8, VCPU_GPR(r8)(r4)
-	stw	r9, VCPU_GPR(r9)(r4)
-=======
 	mfcr	r3
 	stw	r3, VCPU_CR(r4)
 	stw	r7, VCPU_GPR(R7)(r4)
 	stw	r8, VCPU_GPR(R8)(r4)
 	stw	r9, VCPU_GPR(R9)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	li	r6, 1
 	slw	r6, r6, r5
@@ -255,25 +170,6 @@ _GLOBAL(kvmppc_resume_host)
 	isync
 	stw	r9, VCPU_LAST_INST(r4)
 
-<<<<<<< HEAD
-	stw	r15, VCPU_GPR(r15)(r4)
-	stw	r16, VCPU_GPR(r16)(r4)
-	stw	r17, VCPU_GPR(r17)(r4)
-	stw	r18, VCPU_GPR(r18)(r4)
-	stw	r19, VCPU_GPR(r19)(r4)
-	stw	r20, VCPU_GPR(r20)(r4)
-	stw	r21, VCPU_GPR(r21)(r4)
-	stw	r22, VCPU_GPR(r22)(r4)
-	stw	r23, VCPU_GPR(r23)(r4)
-	stw	r24, VCPU_GPR(r24)(r4)
-	stw	r25, VCPU_GPR(r25)(r4)
-	stw	r26, VCPU_GPR(r26)(r4)
-	stw	r27, VCPU_GPR(r27)(r4)
-	stw	r28, VCPU_GPR(r28)(r4)
-	stw	r29, VCPU_GPR(r29)(r4)
-	stw	r30, VCPU_GPR(r30)(r4)
-	stw	r31, VCPU_GPR(r31)(r4)
-=======
 	stw	r15, VCPU_GPR(R15)(r4)
 	stw	r16, VCPU_GPR(R16)(r4)
 	stw	r17, VCPU_GPR(R17)(r4)
@@ -291,7 +187,6 @@ _GLOBAL(kvmppc_resume_host)
 	stw	r29, VCPU_GPR(R29)(r4)
 	stw	r30, VCPU_GPR(R30)(r4)
 	stw	r31, VCPU_GPR(R31)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ..skip_inst_copy:
 
 	/* Also grab DEAR and ESR before the host can clobber them. */
@@ -309,16 +204,6 @@ _GLOBAL(kvmppc_resume_host)
 ..skip_esr:
 
 	/* Save remaining volatile guest register state to vcpu. */
-<<<<<<< HEAD
-	stw	r0, VCPU_GPR(r0)(r4)
-	stw	r1, VCPU_GPR(r1)(r4)
-	stw	r2, VCPU_GPR(r2)(r4)
-	stw	r10, VCPU_GPR(r10)(r4)
-	stw	r11, VCPU_GPR(r11)(r4)
-	stw	r12, VCPU_GPR(r12)(r4)
-	stw	r13, VCPU_GPR(r13)(r4)
-	stw	r14, VCPU_GPR(r14)(r4) /* We need a NV GPR below. */
-=======
 	stw	r0, VCPU_GPR(R0)(r4)
 	stw	r1, VCPU_GPR(R1)(r4)
 	stw	r2, VCPU_GPR(R2)(r4)
@@ -327,18 +212,10 @@ _GLOBAL(kvmppc_resume_host)
 	stw	r12, VCPU_GPR(R12)(r4)
 	stw	r13, VCPU_GPR(R13)(r4)
 	stw	r14, VCPU_GPR(R14)(r4) /* We need a NV GPR below. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mflr	r3
 	stw	r3, VCPU_LR(r4)
 	mfxer	r3
 	stw	r3, VCPU_XER(r4)
-<<<<<<< HEAD
-	mfspr	r3, SPRN_SPRG_RSCRATCH0
-	stw	r3, VCPU_GPR(r4)(r4)
-	mfspr	r3, SPRN_SRR0
-	stw	r3, VCPU_PC(r4)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore host stack pointer and PID before IVPR, since the host
 	 * exception handlers use them. */
@@ -346,11 +223,7 @@ _GLOBAL(kvmppc_resume_host)
 	lwz	r3, VCPU_HOST_PID(r4)
 	mtspr	SPRN_PID, r3
 
-<<<<<<< HEAD
-#ifdef CONFIG_FSL_BOOKE
-=======
 #ifdef CONFIG_PPC_85xx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* we cheat and know that Linux doesn't use PID1 which is always 0 */
 	lis	r3, 0
 	mtspr	SPRN_PID1, r3
@@ -364,11 +237,7 @@ _GLOBAL(kvmppc_resume_host)
 	/* Switch to kernel stack and jump to handler. */
 	LOAD_REG_ADDR(r3, kvmppc_handle_exit)
 	mtctr	r3
-<<<<<<< HEAD
-	lwz	r3, HOST_RUN(r1)
-=======
 	mr	r3, r4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r2, HOST_R2(r1)
 	mr	r14, r4 /* Save vcpu pointer. */
 
@@ -376,34 +245,11 @@ _GLOBAL(kvmppc_resume_host)
 
 	/* Restore vcpu pointer and the nonvolatiles we used. */
 	mr	r4, r14
-<<<<<<< HEAD
-	lwz	r14, VCPU_GPR(r14)(r4)
-=======
 	lwz	r14, VCPU_GPR(R14)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Sometimes instruction emulation must restore complete GPR state. */
 	andi.	r5, r3, RESUME_FLAG_NV
 	beq	..skip_nv_load
-<<<<<<< HEAD
-	lwz	r15, VCPU_GPR(r15)(r4)
-	lwz	r16, VCPU_GPR(r16)(r4)
-	lwz	r17, VCPU_GPR(r17)(r4)
-	lwz	r18, VCPU_GPR(r18)(r4)
-	lwz	r19, VCPU_GPR(r19)(r4)
-	lwz	r20, VCPU_GPR(r20)(r4)
-	lwz	r21, VCPU_GPR(r21)(r4)
-	lwz	r22, VCPU_GPR(r22)(r4)
-	lwz	r23, VCPU_GPR(r23)(r4)
-	lwz	r24, VCPU_GPR(r24)(r4)
-	lwz	r25, VCPU_GPR(r25)(r4)
-	lwz	r26, VCPU_GPR(r26)(r4)
-	lwz	r27, VCPU_GPR(r27)(r4)
-	lwz	r28, VCPU_GPR(r28)(r4)
-	lwz	r29, VCPU_GPR(r29)(r4)
-	lwz	r30, VCPU_GPR(r30)(r4)
-	lwz	r31, VCPU_GPR(r31)(r4)
-=======
 	lwz	r15, VCPU_GPR(R15)(r4)
 	lwz	r16, VCPU_GPR(R16)(r4)
 	lwz	r17, VCPU_GPR(R17)(r4)
@@ -421,7 +267,6 @@ _GLOBAL(kvmppc_resume_host)
 	lwz	r29, VCPU_GPR(R29)(r4)
 	lwz	r30, VCPU_GPR(R30)(r4)
 	lwz	r31, VCPU_GPR(R31)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ..skip_nv_load:
 
 	/* Should we return to the guest? */
@@ -443,45 +288,6 @@ heavyweight_exit:
 
 	/* We already saved guest volatile register state; now save the
 	 * non-volatiles. */
-<<<<<<< HEAD
-	stw	r15, VCPU_GPR(r15)(r4)
-	stw	r16, VCPU_GPR(r16)(r4)
-	stw	r17, VCPU_GPR(r17)(r4)
-	stw	r18, VCPU_GPR(r18)(r4)
-	stw	r19, VCPU_GPR(r19)(r4)
-	stw	r20, VCPU_GPR(r20)(r4)
-	stw	r21, VCPU_GPR(r21)(r4)
-	stw	r22, VCPU_GPR(r22)(r4)
-	stw	r23, VCPU_GPR(r23)(r4)
-	stw	r24, VCPU_GPR(r24)(r4)
-	stw	r25, VCPU_GPR(r25)(r4)
-	stw	r26, VCPU_GPR(r26)(r4)
-	stw	r27, VCPU_GPR(r27)(r4)
-	stw	r28, VCPU_GPR(r28)(r4)
-	stw	r29, VCPU_GPR(r29)(r4)
-	stw	r30, VCPU_GPR(r30)(r4)
-	stw	r31, VCPU_GPR(r31)(r4)
-
-	/* Load host non-volatile register state from host stack. */
-	lwz	r14, HOST_NV_GPR(r14)(r1)
-	lwz	r15, HOST_NV_GPR(r15)(r1)
-	lwz	r16, HOST_NV_GPR(r16)(r1)
-	lwz	r17, HOST_NV_GPR(r17)(r1)
-	lwz	r18, HOST_NV_GPR(r18)(r1)
-	lwz	r19, HOST_NV_GPR(r19)(r1)
-	lwz	r20, HOST_NV_GPR(r20)(r1)
-	lwz	r21, HOST_NV_GPR(r21)(r1)
-	lwz	r22, HOST_NV_GPR(r22)(r1)
-	lwz	r23, HOST_NV_GPR(r23)(r1)
-	lwz	r24, HOST_NV_GPR(r24)(r1)
-	lwz	r25, HOST_NV_GPR(r25)(r1)
-	lwz	r26, HOST_NV_GPR(r26)(r1)
-	lwz	r27, HOST_NV_GPR(r27)(r1)
-	lwz	r28, HOST_NV_GPR(r28)(r1)
-	lwz	r29, HOST_NV_GPR(r29)(r1)
-	lwz	r30, HOST_NV_GPR(r30)(r1)
-	lwz	r31, HOST_NV_GPR(r31)(r1)
-=======
 	stw	r15, VCPU_GPR(R15)(r4)
 	stw	r16, VCPU_GPR(R16)(r4)
 	stw	r17, VCPU_GPR(R17)(r4)
@@ -519,7 +325,6 @@ heavyweight_exit:
 	lwz	r29, HOST_NV_GPR(R29)(r1)
 	lwz	r30, HOST_NV_GPR(R30)(r1)
 	lwz	r31, HOST_NV_GPR(R31)(r1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Return to kvm_vcpu_run(). */
 	lwz	r4, HOST_STACK_LR(r1)
@@ -532,17 +337,6 @@ heavyweight_exit:
 
 
 /* Registers:
-<<<<<<< HEAD
- *  r3: kvm_run pointer
- *  r4: vcpu pointer
- */
-_GLOBAL(__kvmppc_vcpu_run)
-	stwu	r1, -HOST_STACK_SIZE(r1)
-	stw	r1, VCPU_HOST_STACK(r4)	/* Save stack pointer to vcpu. */
-
-	/* Save host state to stack. */
-	stw	r3, HOST_RUN(r1)
-=======
  *  r3: vcpu pointer
  */
 _GLOBAL(__kvmppc_vcpu_run)
@@ -551,53 +345,12 @@ _GLOBAL(__kvmppc_vcpu_run)
 
 	/* Save host state to stack. */
 	mr	r4, r3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mflr	r3
 	stw	r3, HOST_STACK_LR(r1)
 	mfcr	r5
 	stw	r5, HOST_CR(r1)
 
 	/* Save host non-volatile register state to stack. */
-<<<<<<< HEAD
-	stw	r14, HOST_NV_GPR(r14)(r1)
-	stw	r15, HOST_NV_GPR(r15)(r1)
-	stw	r16, HOST_NV_GPR(r16)(r1)
-	stw	r17, HOST_NV_GPR(r17)(r1)
-	stw	r18, HOST_NV_GPR(r18)(r1)
-	stw	r19, HOST_NV_GPR(r19)(r1)
-	stw	r20, HOST_NV_GPR(r20)(r1)
-	stw	r21, HOST_NV_GPR(r21)(r1)
-	stw	r22, HOST_NV_GPR(r22)(r1)
-	stw	r23, HOST_NV_GPR(r23)(r1)
-	stw	r24, HOST_NV_GPR(r24)(r1)
-	stw	r25, HOST_NV_GPR(r25)(r1)
-	stw	r26, HOST_NV_GPR(r26)(r1)
-	stw	r27, HOST_NV_GPR(r27)(r1)
-	stw	r28, HOST_NV_GPR(r28)(r1)
-	stw	r29, HOST_NV_GPR(r29)(r1)
-	stw	r30, HOST_NV_GPR(r30)(r1)
-	stw	r31, HOST_NV_GPR(r31)(r1)
-
-	/* Load guest non-volatiles. */
-	lwz	r14, VCPU_GPR(r14)(r4)
-	lwz	r15, VCPU_GPR(r15)(r4)
-	lwz	r16, VCPU_GPR(r16)(r4)
-	lwz	r17, VCPU_GPR(r17)(r4)
-	lwz	r18, VCPU_GPR(r18)(r4)
-	lwz	r19, VCPU_GPR(r19)(r4)
-	lwz	r20, VCPU_GPR(r20)(r4)
-	lwz	r21, VCPU_GPR(r21)(r4)
-	lwz	r22, VCPU_GPR(r22)(r4)
-	lwz	r23, VCPU_GPR(r23)(r4)
-	lwz	r24, VCPU_GPR(r24)(r4)
-	lwz	r25, VCPU_GPR(r25)(r4)
-	lwz	r26, VCPU_GPR(r26)(r4)
-	lwz	r27, VCPU_GPR(r27)(r4)
-	lwz	r28, VCPU_GPR(r28)(r4)
-	lwz	r29, VCPU_GPR(r29)(r4)
-	lwz	r30, VCPU_GPR(r30)(r4)
-	lwz	r31, VCPU_GPR(r31)(r4)
-=======
 	stw	r14, HOST_NV_GPR(R14)(r1)
 	stw	r15, HOST_NV_GPR(R15)(r1)
 	stw	r16, HOST_NV_GPR(R16)(r1)
@@ -636,7 +389,6 @@ _GLOBAL(__kvmppc_vcpu_run)
 	lwz	r29, VCPU_GPR(R29)(r4)
 	lwz	r30, VCPU_GPR(R30)(r4)
 	lwz	r31, VCPU_GPR(R31)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SPE
 	/* save host SPEFSCR and load guest SPEFSCR */
@@ -654,29 +406,11 @@ lightweight_exit:
 	lwz	r3, VCPU_SHADOW_PID(r4)
 	mtspr	SPRN_PID, r3
 
-<<<<<<< HEAD
-#ifdef CONFIG_FSL_BOOKE
-=======
 #ifdef CONFIG_PPC_85xx
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r3, VCPU_SHADOW_PID1(r4)
 	mtspr	SPRN_PID1, r3
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_44x
-	iccci	0, 0 /* XXX hack */
-#endif
-
-	/* Load some guest volatiles. */
-	lwz	r0, VCPU_GPR(r0)(r4)
-	lwz	r2, VCPU_GPR(r2)(r4)
-	lwz	r9, VCPU_GPR(r9)(r4)
-	lwz	r10, VCPU_GPR(r10)(r4)
-	lwz	r11, VCPU_GPR(r11)(r4)
-	lwz	r12, VCPU_GPR(r12)(r4)
-	lwz	r13, VCPU_GPR(r13)(r4)
-=======
 	/* Load some guest volatiles. */
 	lwz	r0, VCPU_GPR(R0)(r4)
 	lwz	r2, VCPU_GPR(R2)(r4)
@@ -685,7 +419,6 @@ lightweight_exit:
 	lwz	r11, VCPU_GPR(R11)(r4)
 	lwz	r12, VCPU_GPR(R12)(r4)
 	lwz	r13, VCPU_GPR(R13)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r3, VCPU_LR(r4)
 	mtlr	r3
 	lwz	r3, VCPU_XER(r4)
@@ -697,21 +430,11 @@ lightweight_exit:
 	lwz	r8, kvmppc_booke_handlers@l(r8)
 	mtspr	SPRN_IVPR, r8
 
-<<<<<<< HEAD
-	/* Save vcpu pointer for the exception handlers. */
-	mtspr	SPRN_SPRG_WVCPU, r4
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lwz	r5, VCPU_SHARED(r4)
 
 	/* Can't switch the stack pointer until after IVPR is switched,
 	 * because host interrupt handlers would get confused. */
-<<<<<<< HEAD
-	lwz	r1, VCPU_GPR(r1)(r4)
-=======
 	lwz	r1, VCPU_GPR(R1)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Host interrupt handlers may have clobbered these
@@ -719,15 +442,6 @@ lightweight_exit:
 	 * written directly to the shared area, so we
 	 * need to reload them here with the guest's values.
 	 */
-<<<<<<< HEAD
-	lwz	r3, VCPU_SHARED_SPRG4(r5)
-	mtspr	SPRN_SPRG4W, r3
-	lwz	r3, VCPU_SHARED_SPRG5(r5)
-	mtspr	SPRN_SPRG5W, r3
-	lwz	r3, VCPU_SHARED_SPRG6(r5)
-	mtspr	SPRN_SPRG6W, r3
-	lwz	r3, VCPU_SHARED_SPRG7(r5)
-=======
 	PPC_LD(r3, VCPU_SHARED_SPRG4, r5)
 	mtspr	SPRN_SPRG4W, r3
 	PPC_LD(r3, VCPU_SHARED_SPRG5, r5)
@@ -735,7 +449,6 @@ lightweight_exit:
 	PPC_LD(r3, VCPU_SHARED_SPRG6, r5)
 	mtspr	SPRN_SPRG6W, r3
 	PPC_LD(r3, VCPU_SHARED_SPRG7, r5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtspr	SPRN_SPRG7W, r3
 
 #ifdef CONFIG_KVM_EXIT_TIMING
@@ -759,17 +472,10 @@ lightweight_exit:
 	mtcr	r5
 	mtsrr0	r6
 	mtsrr1	r7
-<<<<<<< HEAD
-	lwz	r5, VCPU_GPR(r5)(r4)
-	lwz	r6, VCPU_GPR(r6)(r4)
-	lwz	r7, VCPU_GPR(r7)(r4)
-	lwz	r8, VCPU_GPR(r8)(r4)
-=======
 	lwz	r5, VCPU_GPR(R5)(r4)
 	lwz	r6, VCPU_GPR(R6)(r4)
 	lwz	r7, VCPU_GPR(R7)(r4)
 	lwz	r8, VCPU_GPR(R8)(r4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear any debug events which occurred since we disabled MSR[DE].
 	 * XXX This gives us a 3-instruction window in which a breakpoint
@@ -778,12 +484,6 @@ lightweight_exit:
 	ori	r3, r3, 0xffff
 	mtspr	SPRN_DBSR, r3
 
-<<<<<<< HEAD
-	lwz	r3, VCPU_GPR(r3)(r4)
-	lwz	r4, VCPU_GPR(r4)(r4)
-	rfi
-
-=======
 	lwz	r3, VCPU_GPR(R3)(r4)
 	lwz	r4, VCPU_GPR(R4)(r4)
 	rfi
@@ -813,7 +513,6 @@ KVM_HANDLER_ADDR BOOKE_INTERRUPT_SPE_FP_DATA
 KVM_HANDLER_ADDR BOOKE_INTERRUPT_SPE_FP_ROUND
 KVM_HANDLER_END /*Always keep this in end*/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SPE
 _GLOBAL(kvmppc_save_guest_spe)
 	cmpi	0,r3,0

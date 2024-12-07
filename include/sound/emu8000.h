@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_EMU8000_H
 #define __SOUND_EMU8000_H
 /*
@@ -9,31 +6,10 @@
  *
  *  Copyright (C) 1999 Steve Ratcliffe
  *  Copyright (C) 1999-2000 Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-#include "emux_synth.h"
-#include "seq_kernel.h"
-=======
  */
 
 #include <sound/emux_synth.h>
 #include <sound/seq_kernel.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Hardware parameters.
@@ -80,12 +56,6 @@ struct snd_emu8000 {
 	unsigned long port1;	/* Port usually base+0 */
 	unsigned long port2;	/* Port usually at base+0x400 */
 	unsigned long port3;	/* Port usually at base+0x800 */
-<<<<<<< HEAD
-	struct resource *res_port1;
-	struct resource *res_port2;
-	struct resource *res_port3;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short last_reg;/* Last register command */
 	spinlock_t reg_lock;
 

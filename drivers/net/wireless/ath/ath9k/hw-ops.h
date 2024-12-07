@@ -41,30 +41,17 @@ static inline void ath9k_hw_set_desc_link(struct ath_hw *ah, void *ds,
 	ath9k_hw_ops(ah)->set_desc_link(ds, link);
 }
 
-<<<<<<< HEAD
-static inline bool ath9k_hw_calibrate(struct ath_hw *ah,
-				      struct ath9k_channel *chan,
-				      u8 rxchainmask,
-				      bool longcal)
-=======
 static inline int ath9k_hw_calibrate(struct ath_hw *ah,
 				     struct ath9k_channel *chan,
 				     u8 rxchainmask, bool longcal)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ath9k_hw_ops(ah)->calibrate(ah, chan, rxchainmask, longcal);
 }
 
-<<<<<<< HEAD
-static inline bool ath9k_hw_getisr(struct ath_hw *ah, enum ath9k_int *masked)
-{
-	return ath9k_hw_ops(ah)->get_isr(ah, masked);
-=======
 static inline bool ath9k_hw_getisr(struct ath_hw *ah, enum ath9k_int *masked,
 				   u32 *sync_cause_p)
 {
 	return ath9k_hw_ops(ah)->get_isr(ah, masked, sync_cause_p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void ath9k_hw_set_txdesc(struct ath_hw *ah, void *ds,
@@ -79,15 +66,12 @@ static inline int ath9k_hw_txprocdesc(struct ath_hw *ah, void *ds,
 	return ath9k_hw_ops(ah)->proc_txdesc(ah, ds, ts);
 }
 
-<<<<<<< HEAD
-=======
 static inline int ath9k_hw_get_duration(struct ath_hw *ah, const void *ds,
 					int index)
 {
 	return ath9k_hw_ops(ah)->get_duration(ah, ds, index);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ath9k_hw_antdiv_comb_conf_get(struct ath_hw *ah,
 		struct ath_hw_antcomb_conf *antconf)
 {
@@ -100,10 +84,6 @@ static inline void ath9k_hw_antdiv_comb_conf_set(struct ath_hw *ah,
 	ath9k_hw_ops(ah)->antdiv_comb_conf_set(ah, antconf);
 }
 
-<<<<<<< HEAD
-/* Private hardware call ops */
-
-=======
 static inline void ath9k_hw_tx99_start(struct ath_hw *ah, u32 qnum)
 {
 	ath9k_hw_ops(ah)->tx99_start(ah, qnum);
@@ -155,7 +135,6 @@ static inline bool ath9k_hw_detect_bb_hang(struct ath_hw *ah)
 	return ath9k_hw_private_ops(ah)->detect_bb_hang(ah);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PHY ops */
 
 static inline int ath9k_hw_rf_set_freq(struct ath_hw *ah,
@@ -170,25 +149,6 @@ static inline void ath9k_hw_spur_mitigate_freq(struct ath_hw *ah,
 	ath9k_hw_private_ops(ah)->spur_mitigate_freq(ah, chan);
 }
 
-<<<<<<< HEAD
-static inline int ath9k_hw_rf_alloc_ext_banks(struct ath_hw *ah)
-{
-	if (!ath9k_hw_private_ops(ah)->rf_alloc_ext_banks)
-		return 0;
-
-	return ath9k_hw_private_ops(ah)->rf_alloc_ext_banks(ah);
-}
-
-static inline void ath9k_hw_rf_free_ext_banks(struct ath_hw *ah)
-{
-	if (!ath9k_hw_private_ops(ah)->rf_free_ext_banks)
-		return;
-
-	ath9k_hw_private_ops(ah)->rf_free_ext_banks(ah);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool ath9k_hw_set_rf_regs(struct ath_hw *ah,
 					struct ath9k_channel *chan,
 					u16 modesIndex)
@@ -300,8 +260,6 @@ static inline void ath9k_hw_set_radar_params(struct ath_hw *ah)
 	ath9k_hw_private_ops(ah)->set_radar_params(ah, &ah->radar_conf);
 }
 
-<<<<<<< HEAD
-=======
 static inline void ath9k_hw_init_cal_settings(struct ath_hw *ah)
 {
 	ath9k_hw_private_ops(ah)->init_cal_settings(ah);
@@ -329,5 +287,4 @@ static inline void ath9k_hw_ani_cache_ini_regs(struct ath_hw *ah)
 	ath9k_hw_private_ops(ah)->ani_cache_ini_regs(ah);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ATH9K_HW_OPS_H */

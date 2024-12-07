@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Sound Core PDAudioCF soundcard
  *
  * Copyright (c) 2003 by Jaroslav Kysela <perex@perex.cz>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/core.h>
@@ -37,10 +17,7 @@ irqreturn_t pdacf_interrupt(int irq, void *dev)
 {
 	struct snd_pdacf *chip = dev;
 	unsigned short stat;
-<<<<<<< HEAD
-=======
 	bool wake_thread = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((chip->chip_status & (PDAUDIOCF_STAT_IS_STALE|
 				  PDAUDIOCF_STAT_IS_CONFIGURED|
@@ -52,21 +29,13 @@ irqreturn_t pdacf_interrupt(int irq, void *dev)
 		if (stat & PDAUDIOCF_IRQOVR)	/* should never happen */
 			snd_printk(KERN_ERR "PDAUDIOCF SRAM buffer overrun detected!\n");
 		if (chip->pcm_substream)
-<<<<<<< HEAD
-			tasklet_schedule(&chip->tq);
-=======
 			wake_thread = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(stat & PDAUDIOCF_IRQAKM))
 			stat |= PDAUDIOCF_IRQAKM;	/* check rate */
 	}
 	if (get_irq_regs() != NULL)
 		snd_ak4117_check_rate_and_errors(chip->ak4117, 0);
-<<<<<<< HEAD
-	return IRQ_HANDLED;
-=======
 	return wake_thread ? IRQ_WAKE_THREAD : IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void pdacf_transfer_mono16(u16 *dst, u16 xor, unsigned int size, unsigned long rdp_port)
@@ -275,18 +244,6 @@ static void pdacf_transfer(struct snd_pdacf *chip, unsigned int size, unsigned i
 	}
 }
 
-<<<<<<< HEAD
-void pdacf_tasklet(unsigned long private_data)
-{
-	struct snd_pdacf *chip = (struct snd_pdacf *) private_data;
-	int size, off, cont, rdp, wdp;
-
-	if ((chip->chip_status & (PDAUDIOCF_STAT_IS_STALE|PDAUDIOCF_STAT_IS_CONFIGURED)) != PDAUDIOCF_STAT_IS_CONFIGURED)
-		return;
-	
-	if (chip->pcm_substream == NULL || chip->pcm_substream->runtime == NULL || !snd_pcm_running(chip->pcm_substream))
-		return;
-=======
 irqreturn_t pdacf_threaded_irq(int irq, void *dev)
 {
 	struct snd_pdacf *chip = dev;
@@ -297,7 +254,6 @@ irqreturn_t pdacf_threaded_irq(int irq, void *dev)
 	
 	if (chip->pcm_substream == NULL || chip->pcm_substream->runtime == NULL || !snd_pcm_running(chip->pcm_substream))
 		return IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdp = inw(chip->port + PDAUDIOCF_REG_RDP);
 	wdp = inw(chip->port + PDAUDIOCF_REG_WDP);
@@ -343,28 +299,15 @@ irqreturn_t pdacf_threaded_irq(int irq, void *dev)
 		size -= cont;
 	}
 #endif
-<<<<<<< HEAD
-	spin_lock(&chip->reg_lock);
-=======
 	mutex_lock(&chip->reg_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (chip->pcm_tdone >= chip->pcm_period) {
 		chip->pcm_hwptr += chip->pcm_period;
 		chip->pcm_hwptr %= chip->pcm_size;
 		chip->pcm_tdone -= chip->pcm_period;
-<<<<<<< HEAD
-		spin_unlock(&chip->reg_lock);
-		snd_pcm_period_elapsed(chip->pcm_substream);
-		spin_lock(&chip->reg_lock);
-	}
-	spin_unlock(&chip->reg_lock);
-	/* printk(KERN_DEBUG "TASKLET: end\n"); */
-=======
 		mutex_unlock(&chip->reg_lock);
 		snd_pcm_period_elapsed(chip->pcm_substream);
 		mutex_lock(&chip->reg_lock);
 	}
 	mutex_unlock(&chip->reg_lock);
 	return IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

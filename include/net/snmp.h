@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *		SNMP MIB entries for the IP subsystem.
@@ -12,15 +9,6 @@
  *		be silly as SNMP is a pain in the backside in places). We do
  *		however need to collect the MIB statistics and export them
  *		out of /proc (eventually)
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
  
 #ifndef _SNMP_H
@@ -123,22 +111,6 @@ struct linux_xfrm_mib {
 	unsigned long	mibs[LINUX_MIB_XFRMMAX];
 };
 
-<<<<<<< HEAD
-#define SNMP_ARRAY_SZ 1
-
-#define DEFINE_SNMP_STAT(type, name)	\
-	__typeof__(type) __percpu *name[SNMP_ARRAY_SZ]
-#define DEFINE_SNMP_STAT_ATOMIC(type, name)	\
-	__typeof__(type) *name
-#define DECLARE_SNMP_STAT(type, name)	\
-	extern __typeof__(type) __percpu *name[SNMP_ARRAY_SZ]
-
-#define SNMP_INC_STATS_BH(mib, field)	\
-			__this_cpu_inc(mib[0]->mibs[field])
-
-#define SNMP_INC_STATS_USER(mib, field)	\
-			this_cpu_inc(mib[0]->mibs[field])
-=======
 /* Linux TLS */
 #define LINUX_MIB_TLSMAX	__LINUX_MIB_TLSMAX
 struct linux_tls_mib {
@@ -154,40 +126,11 @@ struct linux_tls_mib {
 
 #define __SNMP_INC_STATS(mib, field)	\
 			__this_cpu_inc(mib->mibs[field])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SNMP_INC_STATS_ATOMIC_LONG(mib, field)	\
 			atomic_long_inc(&mib->mibs[field])
 
 #define SNMP_INC_STATS(mib, field)	\
-<<<<<<< HEAD
-			this_cpu_inc(mib[0]->mibs[field])
-
-#define SNMP_DEC_STATS(mib, field)	\
-			this_cpu_dec(mib[0]->mibs[field])
-
-#define SNMP_ADD_STATS_BH(mib, field, addend)	\
-			__this_cpu_add(mib[0]->mibs[field], addend)
-
-#define SNMP_ADD_STATS_USER(mib, field, addend)	\
-			this_cpu_add(mib[0]->mibs[field], addend)
-
-#define SNMP_ADD_STATS(mib, field, addend)	\
-			this_cpu_add(mib[0]->mibs[field], addend)
-/*
- * Use "__typeof__(*mib[0]) *ptr" instead of "__typeof__(mib[0]) ptr"
- * to make @ptr a non-percpu pointer.
- */
-#define SNMP_UPD_PO_STATS(mib, basefield, addend)	\
-	do { \
-		this_cpu_inc(mib[0]->mibs[basefield##PKTS]);		\
-		this_cpu_add(mib[0]->mibs[basefield##OCTETS], addend);	\
-	} while (0)
-#define SNMP_UPD_PO_STATS_BH(mib, basefield, addend)	\
-	do { \
-		__this_cpu_inc(mib[0]->mibs[basefield##PKTS]);		\
-		__this_cpu_add(mib[0]->mibs[basefield##OCTETS], addend);	\
-=======
 			this_cpu_inc(mib->mibs[field])
 
 #define SNMP_DEC_STATS(mib, field)	\
@@ -209,45 +152,19 @@ struct linux_tls_mib {
 		__typeof__((mib->mibs) + 0) ptr = mib->mibs;	\
 		__this_cpu_inc(ptr[basefield##PKTS]);		\
 		__this_cpu_add(ptr[basefield##OCTETS], addend);	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 
 #if BITS_PER_LONG==32
 
-<<<<<<< HEAD
-#define SNMP_ADD_STATS64_BH(mib, field, addend) 			\
-	do {								\
-		__typeof__(*mib[0]) *ptr = __this_cpu_ptr((mib)[0]);	\
-=======
 #define __SNMP_ADD_STATS64(mib, field, addend) 				\
 	do {								\
 		__typeof__(*mib) *ptr = raw_cpu_ptr(mib);		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64_stats_update_begin(&ptr->syncp);			\
 		ptr->mibs[field] += addend;				\
 		u64_stats_update_end(&ptr->syncp);			\
 	} while (0)
 
-<<<<<<< HEAD
-#define SNMP_ADD_STATS64_USER(mib, field, addend) 			\
-	do {								\
-		local_bh_disable();					\
-		SNMP_ADD_STATS64_BH(mib, field, addend);		\
-		local_bh_enable();					\
-	} while (0)
-
-#define SNMP_ADD_STATS64(mib, field, addend)				\
-		SNMP_ADD_STATS64_USER(mib, field, addend)
-
-#define SNMP_INC_STATS64_BH(mib, field) SNMP_ADD_STATS64_BH(mib, field, 1)
-#define SNMP_INC_STATS64_USER(mib, field) SNMP_ADD_STATS64_USER(mib, field, 1)
-#define SNMP_INC_STATS64(mib, field) SNMP_ADD_STATS64(mib, field, 1)
-#define SNMP_UPD_PO_STATS64_BH(mib, basefield, addend)			\
-	do {								\
-		__typeof__(*mib[0]) *ptr;				\
-		ptr = __this_cpu_ptr((mib)[0]);				\
-=======
 #define SNMP_ADD_STATS64(mib, field, addend) 				\
 	do {								\
 		local_bh_disable();					\
@@ -261,7 +178,6 @@ struct linux_tls_mib {
 	do {								\
 		__typeof__(*mib) *ptr;				\
 		ptr = raw_cpu_ptr((mib));				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64_stats_update_begin(&ptr->syncp);			\
 		ptr->mibs[basefield##PKTS]++;				\
 		ptr->mibs[basefield##OCTETS] += addend;			\
@@ -270,21 +186,6 @@ struct linux_tls_mib {
 #define SNMP_UPD_PO_STATS64(mib, basefield, addend)			\
 	do {								\
 		local_bh_disable();					\
-<<<<<<< HEAD
-		SNMP_UPD_PO_STATS64_BH(mib, basefield, addend);		\
-		local_bh_enable();					\
-	} while (0)
-#else
-#define SNMP_INC_STATS64_BH(mib, field)		SNMP_INC_STATS_BH(mib, field)
-#define SNMP_INC_STATS64_USER(mib, field)	SNMP_INC_STATS_USER(mib, field)
-#define SNMP_INC_STATS64(mib, field)		SNMP_INC_STATS(mib, field)
-#define SNMP_DEC_STATS64(mib, field)		SNMP_DEC_STATS(mib, field)
-#define SNMP_ADD_STATS64_BH(mib, field, addend) SNMP_ADD_STATS_BH(mib, field, addend)
-#define SNMP_ADD_STATS64_USER(mib, field, addend) SNMP_ADD_STATS_USER(mib, field, addend)
-#define SNMP_ADD_STATS64(mib, field, addend)	SNMP_ADD_STATS(mib, field, addend)
-#define SNMP_UPD_PO_STATS64(mib, basefield, addend) SNMP_UPD_PO_STATS(mib, basefield, addend)
-#define SNMP_UPD_PO_STATS64_BH(mib, basefield, addend) SNMP_UPD_PO_STATS_BH(mib, basefield, addend)
-=======
 		__SNMP_UPD_PO_STATS64(mib, basefield, addend);		\
 		local_bh_enable();				\
 	} while (0)
@@ -296,7 +197,6 @@ struct linux_tls_mib {
 #define SNMP_ADD_STATS64(mib, field, addend)	SNMP_ADD_STATS(mib, field, addend)
 #define SNMP_UPD_PO_STATS64(mib, basefield, addend) SNMP_UPD_PO_STATS(mib, basefield, addend)
 #define __SNMP_UPD_PO_STATS64(mib, basefield, addend) __SNMP_UPD_PO_STATS(mib, basefield, addend)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

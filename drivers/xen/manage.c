@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-/*
- * Handle extern requests for shutdown, reboot and sysrq
- */
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Handle extern requests for shutdown, reboot and sysrq
@@ -10,7 +5,6 @@
 
 #define pr_fmt(fmt) "xen:" KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -26,17 +20,10 @@
 #include <xen/grant_table.h>
 #include <xen/events.h>
 #include <xen/hvc-console.h>
-<<<<<<< HEAD
-#include <xen/xen-ops.h>
-
-#include <asm/xen/hypercall.h>
-#include <asm/xen/page.h>
-=======
 #include <xen/page.h>
 #include <xen/xen-ops.h>
 
 #include <asm/xen/hypercall.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/xen/hypervisor.h>
 
 enum shutdown_state {
@@ -55,32 +42,6 @@ static enum shutdown_state shutting_down = SHUTDOWN_INVALID;
 
 struct suspend_info {
 	int cancelled;
-<<<<<<< HEAD
-	unsigned long arg; /* extra hypercall argument */
-	void (*pre)(void);
-	void (*post)(int cancelled);
-};
-
-static void xen_hvm_post_suspend(int cancelled)
-{
-	xen_arch_hvm_post_suspend(cancelled);
-	gnttab_resume();
-}
-
-static void xen_pre_suspend(void)
-{
-	xen_mm_pin_all();
-	gnttab_suspend();
-	xen_arch_pre_suspend();
-}
-
-static void xen_post_suspend(int cancelled)
-{
-	xen_arch_post_suspend(cancelled);
-	gnttab_resume();
-	xen_mm_unpin_all();
-}
-=======
 };
 
 static RAW_NOTIFIER_HEAD(xen_resume_notifier);
@@ -96,7 +57,6 @@ void xen_resume_notifier_unregister(struct notifier_block *nb)
 	raw_notifier_chain_unregister(&xen_resume_notifier, nb);
 }
 EXPORT_SYMBOL_GPL(xen_resume_notifier_unregister);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_HIBERNATE_CALLBACKS
 static int xen_suspend(void *data)
@@ -108,29 +68,6 @@ static int xen_suspend(void *data)
 
 	err = syscore_suspend();
 	if (err) {
-<<<<<<< HEAD
-		printk(KERN_ERR "xen_suspend: system core suspend failed: %d\n",
-			err);
-		return err;
-	}
-
-	if (si->pre)
-		si->pre();
-
-	/*
-	 * This hypercall returns 1 if suspend was cancelled
-	 * or the domain was merely checkpointed, and 0 if it
-	 * is resuming in a new domain.
-	 */
-	si->cancelled = HYPERVISOR_suspend(si->arg);
-
-	if (si->post)
-		si->post(si->cancelled);
-
-	if (!si->cancelled) {
-		xen_irq_resume();
-		xen_console_resume();
-=======
 		pr_err("%s: system core suspend failed: %d\n", __func__, err);
 		return err;
 	}
@@ -149,7 +86,6 @@ static int xen_suspend(void *data)
 
 	if (!si->cancelled) {
 		xen_irq_resume();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xen_timer_resume();
 	}
 
@@ -167,15 +103,6 @@ static void do_suspend(void)
 
 	err = freeze_processes();
 	if (err) {
-<<<<<<< HEAD
-		printk(KERN_ERR "xen suspend: freeze failed %d\n", err);
-		goto out;
-	}
-
-	err = dpm_suspend_start(PMSG_FREEZE);
-	if (err) {
-		printk(KERN_ERR "xen suspend: dpm_suspend_start %d\n", err);
-=======
 		pr_err("%s: freeze processes failed %d\n", __func__, err);
 		goto out;
 	}
@@ -189,7 +116,6 @@ static void do_suspend(void)
 	err = dpm_suspend_start(PMSG_FREEZE);
 	if (err) {
 		pr_err("%s: dpm_suspend_start %d\n", __func__, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_thaw;
 	}
 
@@ -198,35 +124,11 @@ static void do_suspend(void)
 
 	err = dpm_suspend_end(PMSG_FREEZE);
 	if (err) {
-<<<<<<< HEAD
-		printk(KERN_ERR "dpm_suspend_end failed: %d\n", err);
-=======
 		pr_err("dpm_suspend_end failed: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		si.cancelled = 0;
 		goto out_resume;
 	}
 
-<<<<<<< HEAD
-	si.cancelled = 1;
-
-	if (xen_hvm_domain()) {
-		si.arg = 0UL;
-		si.pre = NULL;
-		si.post = &xen_hvm_post_suspend;
-	} else {
-		si.arg = virt_to_mfn(xen_start_info);
-		si.pre = &xen_pre_suspend;
-		si.post = &xen_post_suspend;
-	}
-
-	err = stop_machine(xen_suspend, &si, cpumask_of(0));
-
-	dpm_resume_start(si.cancelled ? PMSG_THAW : PMSG_RESTORE);
-
-	if (err) {
-		printk(KERN_ERR "failed to start xen_suspend: %d\n", err);
-=======
 	xen_arch_suspend();
 
 	si.cancelled = 1;
@@ -245,31 +147,17 @@ static void do_suspend(void)
 
 	if (err) {
 		pr_err("failed to start xen_suspend: %d\n", err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		si.cancelled = 1;
 	}
 
 out_resume:
-<<<<<<< HEAD
-	if (!si.cancelled) {
-		xen_arch_resume();
-		xs_resume();
-	} else
-=======
 	if (!si.cancelled)
 		xs_resume();
 	else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xs_suspend_cancel();
 
 	dpm_resume_end(si.cancelled ? PMSG_THAW : PMSG_RESTORE);
 
-<<<<<<< HEAD
-	/* Make sure timer events get retriggered on all CPUs */
-	clock_was_set();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_thaw:
 	thaw_processes();
 out:
@@ -278,16 +166,6 @@ out:
 #endif	/* CONFIG_HIBERNATE_CALLBACKS */
 
 struct shutdown_handler {
-<<<<<<< HEAD
-	const char *command;
-	void (*cb)(void);
-};
-
-static void do_poweroff(void)
-{
-	shutting_down = SHUTDOWN_POWEROFF;
-	orderly_poweroff(false);
-=======
 #define SHUTDOWN_CMD_SIZE 11
 	const char command[SHUTDOWN_CMD_SIZE];
 	bool flag;
@@ -322,19 +200,11 @@ static void do_poweroff(void)
 		pr_info("Ignoring Xen toolstack shutdown.\n");
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void do_reboot(void)
 {
 	shutting_down = SHUTDOWN_POWEROFF; /* ? */
-<<<<<<< HEAD
-	ctrl_alt_del();
-}
-
-static void shutdown_handler(struct xenbus_watch *watch,
-			     const char **vec, unsigned int len)
-=======
 	orderly_reboot();
 }
 
@@ -349,25 +219,11 @@ static struct shutdown_handler shutdown_handlers[] = {
 
 static void shutdown_handler(struct xenbus_watch *watch,
 			     const char *path, const char *token)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *str;
 	struct xenbus_transaction xbt;
 	int err;
-<<<<<<< HEAD
-	static struct shutdown_handler handlers[] = {
-		{ "poweroff",	do_poweroff },
-		{ "halt",	do_poweroff },
-		{ "reboot",	do_reboot   },
-#ifdef CONFIG_HIBERNATE_CALLBACKS
-		{ "suspend",	do_suspend  },
-#endif
-		{NULL, NULL},
-	};
-	static struct shutdown_handler *handler;
-=======
 	int idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (shutting_down != SHUTDOWN_INVALID)
 		return;
@@ -384,22 +240,13 @@ static void shutdown_handler(struct xenbus_watch *watch,
 		return;
 	}
 
-<<<<<<< HEAD
-	for (handler = &handlers[0]; handler->command; handler++) {
-		if (strcmp(str, handler->command) == 0)
-=======
 	for (idx = 0; idx < ARRAY_SIZE(shutdown_handlers); idx++) {
 		if (strcmp(str, shutdown_handlers[idx].command) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
 	/* Only acknowledge commands which we are prepared to handle. */
-<<<<<<< HEAD
-	if (handler->cb)
-=======
 	if (idx < ARRAY_SIZE(shutdown_handlers))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xenbus_write(xbt, "control", "shutdown", "");
 
 	err = xenbus_transaction_end(xbt, 0);
@@ -408,17 +255,10 @@ static void shutdown_handler(struct xenbus_watch *watch,
 		goto again;
 	}
 
-<<<<<<< HEAD
-	if (handler->cb) {
-		handler->cb();
-	} else {
-		printk(KERN_INFO "Ignoring shutdown request: %s\n", str);
-=======
 	if (idx < ARRAY_SIZE(shutdown_handlers)) {
 		shutdown_handlers[idx].cb();
 	} else {
 		pr_info("Ignoring shutdown request: %s\n", str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		shutting_down = SHUTDOWN_INVALID;
 	}
 
@@ -426,13 +266,8 @@ static void shutdown_handler(struct xenbus_watch *watch,
 }
 
 #ifdef CONFIG_MAGIC_SYSRQ
-<<<<<<< HEAD
-static void sysrq_handler(struct xenbus_watch *watch, const char **vec,
-			  unsigned int len)
-=======
 static void sysrq_handler(struct xenbus_watch *watch, const char *path,
 			  const char *token)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char sysrq_key = '\0';
 	struct xenbus_transaction xbt;
@@ -442,11 +277,6 @@ static void sysrq_handler(struct xenbus_watch *watch, const char *path,
 	err = xenbus_transaction_start(&xbt);
 	if (err)
 		return;
-<<<<<<< HEAD
-	if (!xenbus_scanf(xbt, "control", "sysrq", "%c", &sysrq_key)) {
-		printk(KERN_ERR "Unable to read sysrq code in "
-		       "control/sysrq\n");
-=======
 	err = xenbus_scanf(xbt, "control", "sysrq", "%c", &sysrq_key);
 	if (err < 0) {
 		/*
@@ -459,15 +289,10 @@ static void sysrq_handler(struct xenbus_watch *watch, const char *path,
 		if (err != -ENOENT && err != -ERANGE)
 			pr_err("Error %d reading sysrq code in control/sysrq\n",
 			       err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xenbus_transaction_end(xbt, 1);
 		return;
 	}
 
-<<<<<<< HEAD
-	if (sysrq_key != '\0')
-		xenbus_printf(xbt, "control", "sysrq", "%c", '\0');
-=======
 	if (sysrq_key != '\0') {
 		err = xenbus_printf(xbt, "control", "sysrq", "%c", '\0');
 		if (err) {
@@ -477,7 +302,6 @@ static void sysrq_handler(struct xenbus_watch *watch, const char *path,
 			return;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = xenbus_transaction_end(xbt, 0);
 	if (err == -EAGAIN)
@@ -498,22 +322,6 @@ static struct xenbus_watch shutdown_watch = {
 	.callback = shutdown_handler
 };
 
-<<<<<<< HEAD
-static int setup_shutdown_watcher(void)
-{
-	int err;
-
-	err = register_xenbus_watch(&shutdown_watch);
-	if (err) {
-		printk(KERN_ERR "Failed to set shutdown watcher\n");
-		return err;
-	}
-
-#ifdef CONFIG_MAGIC_SYSRQ
-	err = register_xenbus_watch(&sysrq_watch);
-	if (err) {
-		printk(KERN_ERR "Failed to set sysrq watcher\n");
-=======
 static struct notifier_block xen_reboot_nb = {
 	.notifier_call = poweroff_nb,
 };
@@ -536,13 +344,10 @@ static int setup_shutdown_watcher(void)
 	err = register_xenbus_watch(&sysrq_watch);
 	if (err) {
 		pr_err("Failed to set sysrq watcher\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 #endif
 
-<<<<<<< HEAD
-=======
 	for (idx = 0; idx < ARRAY_SIZE(shutdown_handlers); idx++) {
 		if (!shutdown_handlers[idx].flag)
 			continue;
@@ -556,7 +361,6 @@ static int setup_shutdown_watcher(void)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -577,10 +381,7 @@ int xen_setup_shutdown_event(void)
 	if (!xen_domain())
 		return -ENODEV;
 	register_xenstore_notifier(&xenstore_notifier);
-<<<<<<< HEAD
-=======
 	register_reboot_notifier(&xen_reboot_nb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

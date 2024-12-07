@@ -1,24 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Sony MemoryStick support
  *
  *  Copyright (C) 2007 Alex Dubov <oakad@yahoo.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
  * Special thanks to Carlos Corbacho for providing various MemoryStick cards
  * that made this driver possible.
- *
-=======
- * Special thanks to Carlos Corbacho for providing various MemoryStick cards
- * that made this driver possible.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/memstick.h>
@@ -27,10 +14,7 @@
 #include <linux/delay.h>
 #include <linux/slab.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/pm_runtime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME "memstick"
 
@@ -73,17 +57,10 @@ static int memstick_bus_match(struct device *dev, struct device_driver *drv)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int memstick_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	struct memstick_dev *card = container_of(dev, struct memstick_dev,
-						  dev);
-=======
 static int memstick_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct memstick_dev *card = container_of_const(dev, struct memstick_dev,
 							     dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (add_uevent_var(env, "MEMSTICK_TYPE=%02X", card->id.type))
 		return -ENOMEM;
@@ -114,11 +91,7 @@ static int memstick_device_probe(struct device *dev)
 	return rc;
 }
 
-<<<<<<< HEAD
-static int memstick_device_remove(struct device *dev)
-=======
 static void memstick_device_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct memstick_dev *card = container_of(dev, struct memstick_dev,
 						  dev);
@@ -132,10 +105,6 @@ static void memstick_device_remove(struct device *dev)
 	}
 
 	put_device(dev);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -180,31 +149,13 @@ static ssize_t name##_show(struct device *dev, struct device_attribute *attr, \
 	struct memstick_dev *card = container_of(dev, struct memstick_dev,    \
 						 dev);                        \
 	return sprintf(buf, format, card->id.name);                           \
-<<<<<<< HEAD
-}
-=======
 }                                                                             \
 static DEVICE_ATTR_RO(name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MEMSTICK_ATTR(type, "%02X");
 MEMSTICK_ATTR(category, "%02X");
 MEMSTICK_ATTR(class, "%02X");
 
-<<<<<<< HEAD
-#define MEMSTICK_ATTR_RO(name) __ATTR(name, S_IRUGO, name##_show, NULL)
-
-static struct device_attribute memstick_dev_attrs[] = {
-	MEMSTICK_ATTR_RO(type),
-	MEMSTICK_ATTR_RO(category),
-	MEMSTICK_ATTR_RO(class),
-	__ATTR_NULL
-};
-
-static struct bus_type memstick_bus_type = {
-	.name           = "memstick",
-	.dev_attrs      = memstick_dev_attrs,
-=======
 static struct attribute *memstick_dev_attrs[] = {
 	&dev_attr_type.attr,
 	&dev_attr_category.attr,
@@ -216,7 +167,6 @@ ATTRIBUTE_GROUPS(memstick_dev);
 static const struct bus_type memstick_bus_type = {
 	.name           = "memstick",
 	.dev_groups	= memstick_dev_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match          = memstick_bus_match,
 	.uevent         = memstick_uevent,
 	.probe          = memstick_device_probe,
@@ -299,11 +249,7 @@ void memstick_new_req(struct memstick_host *host)
 {
 	if (host->card) {
 		host->retries = cmd_retries;
-<<<<<<< HEAD
-		INIT_COMPLETION(host->card->mrq_complete);
-=======
 		reinit_completion(&host->card->mrq_complete);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		host->request(host);
 	}
 }
@@ -380,24 +326,6 @@ static int h_memstick_read_dev_id(struct memstick_dev *card,
 	struct ms_id_register id_reg;
 
 	if (!(*mrq)) {
-<<<<<<< HEAD
-		memstick_init_req(&card->current_mrq, MS_TPC_READ_REG, NULL,
-				  sizeof(struct ms_id_register));
-		*mrq = &card->current_mrq;
-		return 0;
-	} else {
-		if (!(*mrq)->error) {
-			memcpy(&id_reg, (*mrq)->data, sizeof(id_reg));
-			card->id.match_flags = MEMSTICK_MATCH_ALL;
-			card->id.type = id_reg.type;
-			card->id.category = id_reg.category;
-			card->id.class = id_reg.class;
-			dev_dbg(&card->dev, "if_mode = %02x\n", id_reg.if_mode);
-		}
-		complete(&card->mrq_complete);
-		return -EAGAIN;
-	}
-=======
 		memstick_init_req(&card->current_mrq, MS_TPC_READ_REG, &id_reg,
 				  sizeof(struct ms_id_register));
 		*mrq = &card->current_mrq;
@@ -413,7 +341,6 @@ static int h_memstick_read_dev_id(struct memstick_dev *card,
 	}
 	complete(&card->mrq_complete);
 	return -EAGAIN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int h_memstick_set_rw_addr(struct memstick_dev *card,
@@ -483,10 +410,7 @@ static struct memstick_dev *memstick_alloc_card(struct memstick_host *host)
 	return card;
 err_out:
 	host->card = old_card;
-<<<<<<< HEAD
-=======
 	kfree_const(card->dev.kobj.name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(card);
 	return NULL;
 }
@@ -508,10 +432,7 @@ static void memstick_check(struct work_struct *work)
 	struct memstick_dev *card;
 
 	dev_dbg(&host->dev, "memstick_check started\n");
-<<<<<<< HEAD
-=======
 	pm_runtime_get_noresume(host->dev.parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&host->lock);
 	if (!host->card) {
 		if (memstick_power_on(host))
@@ -519,12 +440,9 @@ static void memstick_check(struct work_struct *work)
 	} else if (host->card->stop)
 		host->card->stop(host->card);
 
-<<<<<<< HEAD
-=======
 	if (host->removing)
 		goto out_power_off;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card = memstick_alloc_card(host);
 
 	if (!card) {
@@ -549,20 +467,12 @@ static void memstick_check(struct work_struct *work)
 			host->card = card;
 			if (device_register(&card->dev)) {
 				put_device(&card->dev);
-<<<<<<< HEAD
-				kfree(host->card);
-				host->card = NULL;
-			}
-		} else
-			kfree(card);
-=======
 				host->card = NULL;
 			}
 		} else {
 			kfree_const(card->dev.kobj.name);
 			kfree(card);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out_power_off:
@@ -570,10 +480,7 @@ out_power_off:
 		host->set_param(host, MEMSTICK_POWER, MEMSTICK_POWER_OFF);
 
 	mutex_unlock(&host->lock);
-<<<<<<< HEAD
-=======
 	pm_runtime_put(host->dev.parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(&host->dev, "memstick_check finished\n");
 }
 
@@ -607,20 +514,6 @@ int memstick_add_host(struct memstick_host *host)
 {
 	int rc;
 
-<<<<<<< HEAD
-	while (1) {
-		if (!idr_pre_get(&memstick_host_idr, GFP_KERNEL))
-			return -ENOMEM;
-
-		spin_lock(&memstick_host_lock);
-		rc = idr_get_new(&memstick_host_idr, host, &host->id);
-		spin_unlock(&memstick_host_lock);
-		if (!rc)
-			break;
-		else if (rc != -EAGAIN)
-			return rc;
-	}
-=======
 	idr_preload(GFP_KERNEL);
 	spin_lock(&memstick_host_lock);
 
@@ -632,7 +525,6 @@ int memstick_add_host(struct memstick_host *host)
 	idr_preload_end();
 	if (rc < 0)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_name(&host->dev, "memstick%u", host->id);
 
@@ -656,10 +548,7 @@ EXPORT_SYMBOL(memstick_add_host);
  */
 void memstick_remove_host(struct memstick_host *host)
 {
-<<<<<<< HEAD
-=======
 	host->removing = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_workqueue(workqueue);
 	mutex_lock(&host->lock);
 	if (host->card)
@@ -740,15 +629,6 @@ static int __init memstick_init(void)
 		return -ENOMEM;
 
 	rc = bus_register(&memstick_bus_type);
-<<<<<<< HEAD
-	if (!rc)
-		rc = class_register(&memstick_host_class);
-
-	if (!rc)
-		return 0;
-
-	bus_unregister(&memstick_bus_type);
-=======
 	if (rc)
 		goto error_destroy_workqueue;
 
@@ -761,7 +641,6 @@ static int __init memstick_init(void)
 error_bus_unregister:
 	bus_unregister(&memstick_bus_type);
 error_destroy_workqueue:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(workqueue);
 
 	return rc;

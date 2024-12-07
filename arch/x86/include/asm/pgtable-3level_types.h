@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_PGTABLE_3LEVEL_DEFS_H
 #define _ASM_X86_PGTABLE_3LEVEL_DEFS_H
 
@@ -11,10 +8,7 @@
 typedef u64	pteval_t;
 typedef u64	pmdval_t;
 typedef u64	pudval_t;
-<<<<<<< HEAD
-=======
 typedef u64	p4dval_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef u64	pgdval_t;
 typedef u64	pgprotval_t;
 
@@ -24,17 +18,6 @@ typedef union {
 	};
 	pteval_t pte;
 } pte_t;
-<<<<<<< HEAD
-#endif	/* !__ASSEMBLY__ */
-
-#ifdef CONFIG_PARAVIRT
-#define SHARED_KERNEL_PMD	(pv_info.shared_kernel_pmd)
-#else
-#define SHARED_KERNEL_PMD	1
-#endif
-
-#define PAGETABLE_LEVELS	3
-=======
 
 typedef union {
 	struct {
@@ -47,7 +30,6 @@ typedef union {
 #define SHARED_KERNEL_PMD	(!static_cpu_has(X86_FEATURE_PTI))
 
 #define ARCH_PAGE_TABLE_SYNC_MASK	(SHARED_KERNEL_PMD ? 0 : PGTBL_PMD_MODIFIED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PGDIR_SHIFT determines what a top-level page table entry can map
@@ -67,10 +49,7 @@ typedef union {
  */
 #define PTRS_PER_PTE	512
 
-<<<<<<< HEAD
-=======
 #define MAX_POSSIBLE_PHYSMEM_BITS	36
 #define PGD_KERNEL_START	(CONFIG_PAGE_OFFSET >> PGDIR_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_PGTABLE_3LEVEL_DEFS_H */

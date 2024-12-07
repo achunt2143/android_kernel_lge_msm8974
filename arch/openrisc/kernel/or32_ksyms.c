@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC or32_ksyms.c
  *
@@ -12,44 +9,23 @@
  * Modifications for the OpenRISC architecture:
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
-
-#include <linux/module.h>
-=======
  */
 
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/elfcore.h>
 #include <linux/sched.h>
 #include <linux/in6.h>
 #include <linux/interrupt.h>
 #include <linux/vmalloc.h>
 #include <linux/semaphore.h>
-<<<<<<< HEAD
-
-#include <asm/processor.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/pgtable.h>
 
 #include <asm/processor.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/checksum.h>
 #include <asm/io.h>
 #include <asm/hardirq.h>
 #include <asm/delay.h>
-<<<<<<< HEAD
-#include <asm/pgalloc.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DECLARE_EXPORT(name) extern void name(void); EXPORT_SYMBOL(name)
 
@@ -62,14 +38,9 @@ DECLARE_EXPORT(__muldi3);
 DECLARE_EXPORT(__ashrdi3);
 DECLARE_EXPORT(__ashldi3);
 DECLARE_EXPORT(__lshrdi3);
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(__copy_tofrom_user);
-=======
 DECLARE_EXPORT(__ucmpdi2);
 
 EXPORT_SYMBOL(empty_zero_page);
 EXPORT_SYMBOL(__copy_tofrom_user);
 EXPORT_SYMBOL(__clear_user);
 EXPORT_SYMBOL(memset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

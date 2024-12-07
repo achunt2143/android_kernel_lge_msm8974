@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel SpeedStep SMI driver.
  *
  * (C) 2003  Hiroshi Miura <miura@da-cha.org>
-<<<<<<< HEAD
- *
- *  Licensed under the terms of the GNU GPL License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -19,11 +10,8 @@
  *                        SPEEDSTEP - DEFINITIONS                    *
  *********************************************************************/
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "cpufreq: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -54,15 +42,9 @@ static enum speedstep_processor speedstep_processor;
  * are in kHz for the time being.
  */
 static struct cpufreq_frequency_table speedstep_freqs[] = {
-<<<<<<< HEAD
-	{SPEEDSTEP_HIGH,	0},
-	{SPEEDSTEP_LOW,		0},
-	{0,			CPUFREQ_TABLE_END},
-=======
 	{0, SPEEDSTEP_HIGH,	0},
 	{0, SPEEDSTEP_LOW,	0},
 	{0, 0,			CPUFREQ_TABLE_END},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define GET_SPEEDSTEP_OWNER 0
@@ -159,41 +141,6 @@ static int speedstep_smi_get_freqs(unsigned int *low, unsigned int *high)
 }
 
 /**
-<<<<<<< HEAD
- * speedstep_get_state - set the SpeedStep state
- * @state: processor frequency state (SPEEDSTEP_LOW or SPEEDSTEP_HIGH)
- *
- */
-static int speedstep_get_state(void)
-{
-	u32 function = GET_SPEEDSTEP_STATE;
-	u32 result, state, edi, command, dummy;
-
-	command = (smi_sig & 0xffffff00) | (smi_cmd & 0xff);
-
-	pr_debug("trying to determine current setting with command %x "
-		"at port %x\n", command, smi_port);
-
-	__asm__ __volatile__(
-		"push %%ebp\n"
-		"out %%al, (%%dx)\n"
-		"pop %%ebp\n"
-		: "=a" (result),
-		  "=b" (state), "=D" (edi),
-		  "=c" (dummy), "=d" (dummy), "=S" (dummy)
-		: "a" (command), "b" (function), "c" (0),
-		  "d" (smi_port), "S" (0), "D" (0)
-	);
-
-	pr_debug("state is %x, result is %x\n", state, result);
-
-	return state & 1;
-}
-
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * speedstep_set_state - set the SpeedStep state
  * @state: new processor frequency state (SPEEDSTEP_LOW or SPEEDSTEP_HIGH)
  *
@@ -257,14 +204,8 @@ static void speedstep_set_state(unsigned int state)
 			(speedstep_freqs[new_state].frequency / 1000),
 			retry, result);
 	else
-<<<<<<< HEAD
-		printk(KERN_ERR "cpufreq: change to state %u "
-			"failed with new_state %u and result %u\n",
-			state, new_state, result);
-=======
 		pr_err("change to state %u failed with new_state %u and result %u\n",
 		       state, new_state, result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -273,33 +214,6 @@ static void speedstep_set_state(unsigned int state)
 /**
  * speedstep_target - set a new CPUFreq policy
  * @policy: new policy
-<<<<<<< HEAD
- * @target_freq: new freq
- * @relation:
- *
- * Sets a new CPUFreq policy/freq.
- */
-static int speedstep_target(struct cpufreq_policy *policy,
-			unsigned int target_freq, unsigned int relation)
-{
-	unsigned int newstate = 0;
-	struct cpufreq_freqs freqs;
-
-	if (cpufreq_frequency_table_target(policy, &speedstep_freqs[0],
-				target_freq, relation, &newstate))
-		return -EINVAL;
-
-	freqs.old = speedstep_freqs[speedstep_get_state()].frequency;
-	freqs.new = speedstep_freqs[newstate].frequency;
-	freqs.cpu = 0; /* speedstep.c is UP only driver */
-
-	if (freqs.old == freqs.new)
-		return 0;
-
-	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
-	speedstep_set_state(newstate);
-	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
-=======
  * @index: index of new freq
  *
  * Sets a new CPUFreq policy/freq.
@@ -307,35 +221,14 @@ static int speedstep_target(struct cpufreq_policy *policy,
 static int speedstep_target(struct cpufreq_policy *policy, unsigned int index)
 {
 	speedstep_set_state(index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
-<<<<<<< HEAD
-/**
- * speedstep_verify - verifies a new CPUFreq policy
- * @policy: new policy
- *
- * Limit must be within speedstep_low_freq and speedstep_high_freq, with
- * at least one border included.
- */
-static int speedstep_verify(struct cpufreq_policy *policy)
-{
-	return cpufreq_frequency_table_verify(policy, &speedstep_freqs[0]);
-}
-
-
 static int speedstep_cpu_init(struct cpufreq_policy *policy)
 {
 	int result;
-	unsigned int speed, state;
-=======
-static int speedstep_cpu_init(struct cpufreq_policy *policy)
-{
-	int result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int *low, *high;
 
 	/* capability check */
@@ -371,36 +264,8 @@ static int speedstep_cpu_init(struct cpufreq_policy *policy)
 			pr_debug("workaround worked.\n");
 	}
 
-<<<<<<< HEAD
-	/* get current speed setting */
-	state = speedstep_get_state();
-	speed = speedstep_freqs[state].frequency;
-
-	pr_debug("currently at %s speed setting - %i MHz\n",
-		(speed == speedstep_freqs[SPEEDSTEP_LOW].frequency)
-		? "low" : "high",
-		(speed / 1000));
-
-	/* cpuinfo and default policy values */
-	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
-	policy->cur = speed;
-
-	result = cpufreq_frequency_table_cpuinfo(policy, speedstep_freqs);
-	if (result)
-		return result;
-
-	cpufreq_frequency_table_get_attr(speedstep_freqs, policy->cpu);
-
-	return 0;
-}
-
-static int speedstep_cpu_exit(struct cpufreq_policy *policy)
-{
-	cpufreq_frequency_table_put_attr(policy->cpu);
-=======
 	policy->freq_table = speedstep_freqs;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -422,35 +287,6 @@ static int speedstep_resume(struct cpufreq_policy *policy)
 	return result;
 }
 
-<<<<<<< HEAD
-static struct freq_attr *speedstep_attr[] = {
-	&cpufreq_freq_attr_scaling_available_freqs,
-	NULL,
-};
-
-static struct cpufreq_driver speedstep_driver = {
-	.name		= "speedstep-smi",
-	.verify		= speedstep_verify,
-	.target		= speedstep_target,
-	.init		= speedstep_cpu_init,
-	.exit		= speedstep_cpu_exit,
-	.get		= speedstep_get,
-	.resume		= speedstep_resume,
-	.owner		= THIS_MODULE,
-	.attr		= speedstep_attr,
-};
-
-static const struct x86_cpu_id ss_smi_ids[] = {
-	{ X86_VENDOR_INTEL, 6, 0xb, },
-	{ X86_VENDOR_INTEL, 6, 0x8, },
-	{ X86_VENDOR_INTEL, 15, 2 },
-	{}
-};
-#if 0
-/* Not auto loaded currently */
-MODULE_DEVICE_TABLE(x86cpu, ss_smi_ids);
-#endif
-=======
 static struct cpufreq_driver speedstep_driver = {
 	.name		= "speedstep-smi",
 	.flags		= CPUFREQ_NO_AUTO_DYNAMIC_SWITCHING,
@@ -468,7 +304,6 @@ static const struct x86_cpu_id ss_smi_ids[] = {
 	X86_MATCH_VENDOR_FAM_MODEL(INTEL, 15, 0x2, 0),
 	{}
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * speedstep_init - initializes the SpeedStep CPUFreq driver
@@ -498,13 +333,8 @@ static int __init speedstep_init(void)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	pr_debug("signature:0x%.8ulx, command:0x%.8ulx, "
-		"event:0x%.8ulx, perf_level:0x%.8ulx.\n",
-=======
 	pr_debug("signature:0x%.8x, command:0x%.8x, "
 		"event:0x%.8x, perf_level:0x%.8x.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ist_info.signature, ist_info.command,
 		ist_info.event, ist_info.perf_level);
 
@@ -544,11 +374,7 @@ static void __exit speedstep_exit(void)
 	cpufreq_unregister_driver(&speedstep_driver);
 }
 
-<<<<<<< HEAD
-module_param(smi_port, int, 0444);
-=======
 module_param_hw(smi_port, int, ioport, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(smi_cmd,  int, 0444);
 module_param(smi_sig, uint, 0444);
 

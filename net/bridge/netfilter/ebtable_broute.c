@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebtable_broute
  *
@@ -19,11 +16,8 @@
 #include <linux/module.h>
 #include <linux/if_bridge.h>
 
-<<<<<<< HEAD
-=======
 #include "../br_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* EBT_ACCEPT means the frame will be bridged
  * EBT_DROP means the frame will be routed
  */
@@ -32,12 +26,7 @@ static struct ebt_entries initial_chain = {
 	.policy		= EBT_ACCEPT,
 };
 
-<<<<<<< HEAD
-static struct ebt_replace_kernel initial_table =
-{
-=======
 static struct ebt_replace_kernel initial_table = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "broute",
 	.valid_hooks	= 1 << NF_BR_BROUTING,
 	.entries_size	= sizeof(struct ebt_entries),
@@ -47,41 +36,6 @@ static struct ebt_replace_kernel initial_table = {
 	.entries	= (char *)&initial_chain,
 };
 
-<<<<<<< HEAD
-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
-{
-	if (valid_hooks & ~(1 << NF_BR_BROUTING))
-		return -EINVAL;
-	return 0;
-}
-
-static const struct ebt_table broute_table =
-{
-	.name		= "broute",
-	.table		= &initial_table,
-	.valid_hooks	= 1 << NF_BR_BROUTING,
-	.check		= check,
-	.me		= THIS_MODULE,
-};
-
-static int ebt_broute(struct sk_buff *skb)
-{
-	int ret;
-
-	ret = ebt_do_table(NF_BR_BROUTING, skb, skb->dev, NULL,
-			   dev_net(skb->dev)->xt.broute_table);
-	if (ret == NF_DROP)
-		return 1; /* route it */
-	return 0; /* bridge it */
-}
-
-static int __net_init broute_net_init(struct net *net)
-{
-	net->xt.broute_table = ebt_register_table(net, &broute_table);
-	if (IS_ERR(net->xt.broute_table))
-		return PTR_ERR(net->xt.broute_table);
-	return 0;
-=======
 static const struct ebt_table broute_table = {
 	.name		= "broute",
 	.table		= &initial_table,
@@ -144,40 +98,20 @@ static int broute_table_init(struct net *net)
 static void __net_exit broute_net_pre_exit(struct net *net)
 {
 	ebt_unregister_table_pre_exit(net, "broute");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __net_exit broute_net_exit(struct net *net)
 {
-<<<<<<< HEAD
-	ebt_unregister_table(net, net->xt.broute_table);
-}
-
-static struct pernet_operations broute_net_ops = {
-	.init = broute_net_init,
-	.exit = broute_net_exit,
-=======
 	ebt_unregister_table(net, "broute");
 }
 
 static struct pernet_operations broute_net_ops = {
 	.exit = broute_net_exit,
 	.pre_exit = broute_net_pre_exit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ebtable_broute_init(void)
 {
-<<<<<<< HEAD
-	int ret;
-
-	ret = register_pernet_subsys(&broute_net_ops);
-	if (ret < 0)
-		return ret;
-	/* see br_input.c */
-	RCU_INIT_POINTER(br_should_route_hook,
-			   (br_should_route_hook_t *)ebt_broute);
-=======
 	int ret = ebt_register_template(&broute_table, broute_table_init);
 
 	if (ret)
@@ -189,26 +123,16 @@ static int __init ebtable_broute_init(void)
 		return ret;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit ebtable_broute_fini(void)
 {
-<<<<<<< HEAD
-	RCU_INIT_POINTER(br_should_route_hook, NULL);
-	synchronize_net();
-	unregister_pernet_subsys(&broute_net_ops);
-=======
 	unregister_pernet_subsys(&broute_net_ops);
 	ebt_unregister_template(&broute_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ebtable_broute_init);
 module_exit(ebtable_broute_fini);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("Force packets to be routed instead of bridged");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

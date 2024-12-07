@@ -1,68 +1,38 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/iomap.c
  *
  * Copyright (C) 2000  Niibe Yutaka
  * Copyright (C) 2005 - 2007 Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/io.h>
 
-<<<<<<< HEAD
-unsigned int ioread8(void __iomem *addr)
-=======
 unsigned int ioread8(const void __iomem *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readb(addr);
 }
 EXPORT_SYMBOL(ioread8);
 
-<<<<<<< HEAD
-unsigned int ioread16(void __iomem *addr)
-=======
 unsigned int ioread16(const void __iomem *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readw(addr);
 }
 EXPORT_SYMBOL(ioread16);
 
-<<<<<<< HEAD
-unsigned int ioread16be(void __iomem *addr)
-=======
 unsigned int ioread16be(const void __iomem *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return be16_to_cpu(__raw_readw(addr));
 }
 EXPORT_SYMBOL(ioread16be);
 
-<<<<<<< HEAD
-unsigned int ioread32(void __iomem *addr)
-=======
 unsigned int ioread32(const void __iomem *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readl(addr);
 }
 EXPORT_SYMBOL(ioread32);
 
-<<<<<<< HEAD
-unsigned int ioread32be(void __iomem *addr)
-=======
 unsigned int ioread32be(const void __iomem *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return be32_to_cpu(__raw_readl(addr));
 }
@@ -104,11 +74,7 @@ EXPORT_SYMBOL(iowrite32be);
  * convert to CPU byte order. We write in "IO byte
  * order" (we also don't have IO barriers).
  */
-<<<<<<< HEAD
-static inline void mmio_insb(void __iomem *addr, u8 *dst, int count)
-=======
 static inline void mmio_insb(const void __iomem *addr, u8 *dst, int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (--count >= 0) {
 		u8 data = __raw_readb(addr);
@@ -117,11 +83,7 @@ static inline void mmio_insb(const void __iomem *addr, u8 *dst, int count)
 	}
 }
 
-<<<<<<< HEAD
-static inline void mmio_insw(void __iomem *addr, u16 *dst, int count)
-=======
 static inline void mmio_insw(const void __iomem *addr, u16 *dst, int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (--count >= 0) {
 		u16 data = __raw_readw(addr);
@@ -130,11 +92,7 @@ static inline void mmio_insw(const void __iomem *addr, u16 *dst, int count)
 	}
 }
 
-<<<<<<< HEAD
-static inline void mmio_insl(void __iomem *addr, u32 *dst, int count)
-=======
 static inline void mmio_insl(const void __iomem *addr, u32 *dst, int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (--count >= 0) {
 		u32 data = __raw_readl(addr);
@@ -167,31 +125,19 @@ static inline void mmio_outsl(void __iomem *addr, const u32 *src, int count)
 	}
 }
 
-<<<<<<< HEAD
-void ioread8_rep(void __iomem *addr, void *dst, unsigned long count)
-=======
 void ioread8_rep(const void __iomem *addr, void *dst, unsigned long count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mmio_insb(addr, dst, count);
 }
 EXPORT_SYMBOL(ioread8_rep);
 
-<<<<<<< HEAD
-void ioread16_rep(void __iomem *addr, void *dst, unsigned long count)
-=======
 void ioread16_rep(const void __iomem *addr, void *dst, unsigned long count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mmio_insw(addr, dst, count);
 }
 EXPORT_SYMBOL(ioread16_rep);
 
-<<<<<<< HEAD
-void ioread32_rep(void __iomem *addr, void *dst, unsigned long count)
-=======
 void ioread32_rep(const void __iomem *addr, void *dst, unsigned long count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mmio_insl(addr, dst, count);
 }

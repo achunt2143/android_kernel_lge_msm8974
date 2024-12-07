@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000 Justin Cormack
  */
@@ -10,36 +7,9 @@
  * Newton keyboard driver for Linux
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <j.cormack@doc.ic.ac.uk>, or by paper mail:
- * Justin Cormack, 68 Dartmouth Park Road, London NW5 1SN, UK.
- */
-
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/input.h>
-#include <linux/init.h>
-=======
-#include <linux/slab.h>
-#include <linux/module.h>
-#include <linux/input.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serio.h>
 
 #define DRIVER_DESC	"Newton keyboard driver"
@@ -153,11 +123,7 @@ static void nkbd_disconnect(struct serio *serio)
 	kfree(nkbd);
 }
 
-<<<<<<< HEAD
-static struct serio_device_id nkbd_serio_ids[] = {
-=======
 static const struct serio_device_id nkbd_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_NEWTON,
@@ -180,19 +146,4 @@ static struct serio_driver nkbd_drv = {
 	.disconnect	= nkbd_disconnect,
 };
 
-<<<<<<< HEAD
-static int __init nkbd_init(void)
-{
-	return serio_register_driver(&nkbd_drv);
-}
-
-static void __exit nkbd_exit(void)
-{
-	serio_unregister_driver(&nkbd_drv);
-}
-
-module_init(nkbd_init);
-module_exit(nkbd_exit);
-=======
 module_serio_driver(nkbd_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

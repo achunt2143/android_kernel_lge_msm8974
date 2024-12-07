@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_PGTABLE_64_DEFS_H
-#define _ASM_X86_PGTABLE_64_DEFS_H
-
-#ifndef __ASSEMBLY__
-#include <linux/types.h>
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_PGTABLE_64_DEFS_H
 #define _ASM_X86_PGTABLE_64_DEFS_H
@@ -14,7 +7,6 @@
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
 #include <asm/kaslr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are used to make use of C type-checking..
@@ -22,16 +14,11 @@
 typedef unsigned long	pteval_t;
 typedef unsigned long	pmdval_t;
 typedef unsigned long	pudval_t;
-<<<<<<< HEAD
-=======
 typedef unsigned long	p4dval_t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef unsigned long	pgdval_t;
 typedef unsigned long	pgprotval_t;
 
 typedef struct { pteval_t pte; } pte_t;
-<<<<<<< HEAD
-=======
 typedef struct { pmdval_t pmd; } pmd_t;
 
 extern unsigned int __pgtable_l5_enabled;
@@ -56,27 +43,16 @@ static inline bool pgtable_l5_enabled(void)
 
 extern unsigned int pgdir_shift;
 extern unsigned int ptrs_per_p4d;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* !__ASSEMBLY__ */
 
 #define SHARED_KERNEL_PMD	0
-<<<<<<< HEAD
-#define PAGETABLE_LEVELS	4
-=======
 
 #ifdef CONFIG_X86_5LEVEL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * PGDIR_SHIFT determines what a top-level page table entry can map
  */
-<<<<<<< HEAD
-#define PGDIR_SHIFT	39
-#define PTRS_PER_PGD	512
-
-/*
-=======
 #define PGDIR_SHIFT	pgdir_shift
 #define PTRS_PER_PGD	512
 
@@ -103,7 +79,6 @@ extern unsigned int ptrs_per_p4d;
 #endif /* CONFIG_X86_5LEVEL */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 3rd level page
  */
 #define PUD_SHIFT	30
@@ -128,18 +103,6 @@ extern unsigned int ptrs_per_p4d;
 #define PGDIR_SIZE	(_AC(1, UL) << PGDIR_SHIFT)
 #define PGDIR_MASK	(~(PGDIR_SIZE - 1))
 
-<<<<<<< HEAD
-/* See Documentation/x86/x86_64/mm.txt for a description of the memory map. */
-#define MAXMEM		 _AC(__AC(1, UL) << MAX_PHYSMEM_BITS, UL)
-#define VMALLOC_START    _AC(0xffffc90000000000, UL)
-#define VMALLOC_END      _AC(0xffffe8ffffffffff, UL)
-#define VMEMMAP_START	 _AC(0xffffea0000000000, UL)
-#define MODULES_VADDR    _AC(0xffffffffa0000000, UL)
-#define MODULES_END      _AC(0xffffffffff000000, UL)
-#define MODULES_LEN   (MODULES_END - MODULES_VADDR)
-#define ESPFIX_PGD_ENTRY _AC(-2, UL)
-#define ESPFIX_BASE_ADDR (ESPFIX_PGD_ENTRY << PGDIR_SHIFT)
-=======
 /*
  * See Documentation/arch/x86/x86_64/mm.rst for a description of the memory map.
  *
@@ -250,6 +213,5 @@ extern unsigned int ptrs_per_p4d;
  * We borrow bit 3 to remember PG_anon_exclusive.
  */
 #define _PAGE_SWP_EXCLUSIVE	_PAGE_PWT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_PGTABLE_64_DEFS_H */

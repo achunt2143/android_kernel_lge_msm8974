@@ -26,28 +26,8 @@
  */
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/errno.h>
-#include <linux/kernel.h>
-#include <linux/sched.h>
-#include <linux/signal.h>
-#include <linux/init.h>
-#include <linux/wait.h>
-#include <linux/device.h>
-#include <linux/debugfs.h>
-#include <linux/seq_file.h>
-#include <linux/net.h>
-#include <linux/mutex.h>
-#include <linux/kthread.h>
-#include <linux/slab.h>
-#include <linux/interrupt.h>
-
-#include <net/sock.h>
-#include <linux/uaccess.h>
-=======
 #include <linux/debugfs.h>
 #include <linux/kthread.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 
 #include <net/bluetooth/bluetooth.h>
@@ -55,24 +35,13 @@
 #include <net/bluetooth/l2cap.h>
 #include <net/bluetooth/rfcomm.h>
 
-<<<<<<< HEAD
-#define VERSION "1.11"
-/* 1 Byte DLCI, 1 Byte Control filed, 2 Bytes Length, 1 Byte for Credits,
- * 1 Byte FCS */
-#define RFCOMM_HDR_SIZE 6
-=======
 #include <trace/events/sock.h>
 
 #define VERSION "1.11"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool disable_cfc;
 static bool l2cap_ertm;
 static int channel_mtu = -1;
-<<<<<<< HEAD
-static unsigned int l2cap_mtu = RFCOMM_MAX_L2CAP_MTU;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct task_struct *rfcomm_thread;
 
@@ -80,10 +49,6 @@ static DEFINE_MUTEX(rfcomm_mutex);
 #define rfcomm_lock()	mutex_lock(&rfcomm_mutex)
 #define rfcomm_unlock()	mutex_unlock(&rfcomm_mutex)
 
-<<<<<<< HEAD
-static unsigned long rfcomm_event;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(session_list);
 
@@ -103,23 +68,6 @@ static void rfcomm_process_connect(struct rfcomm_session *s);
 static struct rfcomm_session *rfcomm_session_create(bdaddr_t *src,
 							bdaddr_t *dst,
 							u8 sec_level,
-<<<<<<< HEAD
-							int *err,
-							u8 channel,
-							struct rfcomm_dlc *d);
-static struct rfcomm_session *rfcomm_session_get(bdaddr_t *src, bdaddr_t *dst);
-static void rfcomm_session_del(struct rfcomm_session *s);
-
-/* ---- RFCOMM frame parsing macros ---- */
-#define __get_dlci(b)     ((b & 0xfc) >> 2)
-#define __get_channel(b)  ((b & 0xf8) >> 3)
-#define __get_dir(b)      ((b & 0x04) >> 2)
-#define __get_type(b)     ((b & 0xef))
-
-#define __test_ea(b)      ((b & 0x01))
-#define __test_cr(b)      ((b & 0x02))
-#define __test_pf(b)      ((b & 0x10))
-=======
 							int *err);
 static struct rfcomm_session *rfcomm_session_get(bdaddr_t *src, bdaddr_t *dst);
 static struct rfcomm_session *rfcomm_session_del(struct rfcomm_session *s);
@@ -133,16 +81,11 @@ static struct rfcomm_session *rfcomm_session_del(struct rfcomm_session *s);
 #define __test_pf(b)      (!!(b & 0x10))
 
 #define __session_dir(s)  ((s)->initiator ? 0x00 : 0x01)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __addr(cr, dlci)       (((dlci & 0x3f) << 2) | (cr << 1) | 0x01)
 #define __ctrl(type, pf)       (((type & 0xef) | (pf << 4)))
 #define __dlci(dir, chn)       (((chn & 0x1f) << 1) | dir)
 #define __srv_channel(dlci)    (dlci >> 1)
-<<<<<<< HEAD
-#define __dir(dlci)            (dlci & 0x01)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __len8(len)       (((len) << 1) | 1)
 #define __len16(len)      ((len) << 1)
@@ -158,47 +101,11 @@ static struct rfcomm_session *rfcomm_session_del(struct rfcomm_session *s);
 #define __get_rpn_stop_bits(line) (((line) >> 2) & 0x1)
 #define __get_rpn_parity(line)    (((line) >> 3) & 0x7)
 
-<<<<<<< HEAD
-struct rfcomm_sock_release_work {
-	struct work_struct work;
-	struct socket *sock;
-	int state;
-};
-
-static inline void rfcomm_schedule(void)
-{
-	if (!rfcomm_thread)
-		return;
-	set_bit(RFCOMM_SCHED_WAKEUP, &rfcomm_event);
-	wake_up_process(rfcomm_thread);
-}
-
-static inline void rfcomm_session_put(struct rfcomm_session *s)
-{
-	bool match = false;
-	struct rfcomm_session *sess;
-	struct list_head *p, *n;
-	list_for_each_safe(p, n, &session_list) {
-		sess = list_entry(p, struct rfcomm_session, list);
-		if (s == sess) {
-			match = true;
-			break;
-		}
-	}
-	if (!match) {
-		BT_ERR("session already freed previously");
-		dump_stack();
-		return;
-	}
-	if (atomic_dec_and_test(&s->refcnt))
-		rfcomm_session_del(s);
-=======
 static DECLARE_WAIT_QUEUE_HEAD(rfcomm_wq);
 
 static void rfcomm_schedule(void)
 {
 	wake_up_all(&rfcomm_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---- RFCOMM FCS computation ---- */
@@ -279,17 +186,11 @@ static void rfcomm_l2state_change(struct sock *sk)
 	rfcomm_schedule();
 }
 
-<<<<<<< HEAD
-static void rfcomm_l2data_ready(struct sock *sk, int bytes)
-{
-	BT_DBG("%p bytes %d", sk, bytes);
-=======
 static void rfcomm_l2data_ready(struct sock *sk)
 {
 	trace_sk_data_ready(sk);
 
 	BT_DBG("%p", sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_schedule();
 }
 
@@ -299,11 +200,7 @@ static int rfcomm_l2sock_create(struct socket **sock)
 
 	BT_DBG("");
 
-<<<<<<< HEAD
-	err = sock_create_kern(PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP, sock);
-=======
 	err = sock_create_kern(&init_net, PF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP, sock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err) {
 		struct sock *sk = (*sock)->sk;
 		sk->sk_data_ready   = rfcomm_l2data_ready;
@@ -312,16 +209,6 @@ static int rfcomm_l2sock_create(struct socket **sock)
 	return err;
 }
 
-<<<<<<< HEAD
-static inline int rfcomm_check_security(struct rfcomm_dlc *d)
-{
-	struct sock *sk = d->session->sock->sk;
-	__u8 auth_type;
-
-	switch (d->sec_level) {
-	case BT_SECURITY_VERY_HIGH:
-	case BT_SECURITY_HIGH:
-=======
 static int rfcomm_check_security(struct rfcomm_dlc *d)
 {
 	struct sock *sk = d->session->sock->sk;
@@ -332,7 +219,6 @@ static int rfcomm_check_security(struct rfcomm_dlc *d)
 	switch (d->sec_level) {
 	case BT_SECURITY_HIGH:
 	case BT_SECURITY_FIPS:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		auth_type = HCI_AT_GENERAL_BONDING_MITM;
 		break;
 	case BT_SECURITY_MEDIUM:
@@ -343,15 +229,6 @@ static int rfcomm_check_security(struct rfcomm_dlc *d)
 		break;
 	}
 
-<<<<<<< HEAD
-	return hci_conn_security(l2cap_pi(sk)->conn->hcon, d->sec_level,
-								auth_type);
-}
-
-static void rfcomm_session_timeout(unsigned long arg)
-{
-	struct rfcomm_session *s = (void *) arg;
-=======
 	return hci_conn_security(conn->hcon, d->sec_level, auth_type,
 				 d->out);
 }
@@ -359,7 +236,6 @@ static void rfcomm_session_timeout(unsigned long arg)
 static void rfcomm_session_timeout(struct timer_list *t)
 {
 	struct rfcomm_session *s = from_timer(s, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("session %p state %ld", s, s->state);
 
@@ -371,28 +247,13 @@ static void rfcomm_session_set_timer(struct rfcomm_session *s, long timeout)
 {
 	BT_DBG("session %p state %ld timeout %ld", s, s->state, timeout);
 
-<<<<<<< HEAD
-	if (!mod_timer(&s->timer, jiffies + timeout))
-		rfcomm_session_hold(s);
-=======
 	mod_timer(&s->timer, jiffies + timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rfcomm_session_clear_timer(struct rfcomm_session *s)
 {
 	BT_DBG("session %p state %ld", s, s->state);
 
-<<<<<<< HEAD
-	if (timer_pending(&s->timer) && del_timer(&s->timer))
-		rfcomm_session_put(s);
-}
-
-/* ---- RFCOMM DLCs ---- */
-static void rfcomm_dlc_timeout(unsigned long arg)
-{
-	struct rfcomm_dlc *d = (void *) arg;
-=======
 	del_timer_sync(&s->timer);
 }
 
@@ -400,7 +261,6 @@ static void rfcomm_dlc_timeout(unsigned long arg)
 static void rfcomm_dlc_timeout(struct timer_list *t)
 {
 	struct rfcomm_dlc *d = from_timer(d, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("dlc %p state %ld", d, d->state);
 
@@ -421,11 +281,7 @@ static void rfcomm_dlc_clear_timer(struct rfcomm_dlc *d)
 {
 	BT_DBG("dlc %p state %ld", d, d->state);
 
-<<<<<<< HEAD
-	if (timer_pending(&d->timer) && del_timer(&d->timer))
-=======
 	if (del_timer(&d->timer))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rfcomm_dlc_put(d);
 }
 
@@ -451,19 +307,11 @@ struct rfcomm_dlc *rfcomm_dlc_alloc(gfp_t prio)
 	if (!d)
 		return NULL;
 
-<<<<<<< HEAD
-	setup_timer(&d->timer, rfcomm_dlc_timeout, (unsigned long)d);
-
-	skb_queue_head_init(&d->tx_queue);
-	spin_lock_init(&d->lock);
-	atomic_set(&d->refcnt, 1);
-=======
 	timer_setup(&d->timer, rfcomm_dlc_timeout, 0);
 
 	skb_queue_head_init(&d->tx_queue);
 	mutex_init(&d->lock);
 	refcount_set(&d->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rfcomm_dlc_clear_state(d);
 
@@ -484,11 +332,6 @@ static void rfcomm_dlc_link(struct rfcomm_session *s, struct rfcomm_dlc *d)
 {
 	BT_DBG("dlc %p session %p", d, s);
 
-<<<<<<< HEAD
-	rfcomm_session_hold(s);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_session_clear_timer(s);
 	rfcomm_dlc_hold(d);
 	list_add(&d->list, &s->dlcs);
@@ -499,11 +342,7 @@ static void rfcomm_dlc_unlink(struct rfcomm_dlc *d)
 {
 	struct rfcomm_session *s = d->session;
 
-<<<<<<< HEAD
-	BT_DBG("dlc %p refcnt %d session %p", d, atomic_read(&d->refcnt), s);
-=======
 	BT_DBG("dlc %p refcnt %d session %p", d, refcount_read(&d->refcnt), s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_del(&d->list);
 	d->session = NULL;
@@ -511,28 +350,11 @@ static void rfcomm_dlc_unlink(struct rfcomm_dlc *d)
 
 	if (list_empty(&s->dlcs))
 		rfcomm_session_set_timer(s, RFCOMM_IDLE_TIMEOUT);
-<<<<<<< HEAD
-
-	rfcomm_session_put(s);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct rfcomm_dlc *rfcomm_dlc_get(struct rfcomm_session *s, u8 dlci)
 {
 	struct rfcomm_dlc *d;
-<<<<<<< HEAD
-	struct list_head *p;
-
-	list_for_each(p, &s->dlcs) {
-		d = list_entry(p, struct rfcomm_dlc, list);
-		if (d->dlci == dlci)
-			return d;
-	}
-	return NULL;
-}
-
-=======
 
 	list_for_each_entry(d, &s->dlcs, list)
 		if (d->dlci == dlci)
@@ -546,24 +368,16 @@ static int rfcomm_check_channel(u8 channel)
 	return channel < 1 || channel > 30;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __rfcomm_dlc_open(struct rfcomm_dlc *d, bdaddr_t *src, bdaddr_t *dst, u8 channel)
 {
 	struct rfcomm_session *s;
 	int err = 0;
 	u8 dlci;
 
-<<<<<<< HEAD
-	BT_DBG("dlc %p state %ld %s %s channel %d",
-			d, d->state, batostr(src), batostr(dst), channel);
-
-	if (channel < 1 || channel > 30)
-=======
 	BT_DBG("dlc %p state %ld %pMR -> %pMR channel %d",
 	       d, d->state, src, dst, channel);
 
 	if (rfcomm_check_channel(channel))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (d->state != BT_OPEN && d->state != BT_CLOSED)
@@ -571,33 +385,6 @@ static int __rfcomm_dlc_open(struct rfcomm_dlc *d, bdaddr_t *src, bdaddr_t *dst,
 
 	s = rfcomm_session_get(src, dst);
 	if (!s) {
-<<<<<<< HEAD
-		s = rfcomm_session_create(src, dst,
-						d->sec_level, &err, channel, d);
-		if (!s)
-			return err;
-	} else {
-		dlci = __dlci(!s->initiator, channel);
-
-		/* Check if DLCI already exists */
-		if (rfcomm_dlc_get(s, dlci))
-			return -EBUSY;
-
-		rfcomm_dlc_clear_state(d);
-
-		d->dlci     = dlci;
-		d->addr     = __addr(s->initiator, dlci);
-		d->priority = 7;
-
-		d->state = BT_CONFIG;
-		rfcomm_dlc_link(s, d);
-
-		d->out = 1;
-
-		d->mtu = s->mtu;
-		d->cfc = (s->cfc == RFCOMM_CFC_UNKNOWN) ? 0 : s->cfc;
-	}
-=======
 		s = rfcomm_session_create(src, dst, d->sec_level, &err);
 		if (!s)
 			return err;
@@ -623,7 +410,6 @@ static int __rfcomm_dlc_open(struct rfcomm_dlc *d, bdaddr_t *src, bdaddr_t *dst,
 	d->mtu = s->mtu;
 	d->cfc = (s->cfc == RFCOMM_CFC_UNKNOWN) ? 0 : s->cfc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (s->state == BT_CONNECTED) {
 		if (rfcomm_check_security(d))
 			rfcomm_send_pn(s, 1, d);
@@ -648,8 +434,6 @@ int rfcomm_dlc_open(struct rfcomm_dlc *d, bdaddr_t *src, bdaddr_t *dst, u8 chann
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 static void __rfcomm_dlc_disconn(struct rfcomm_dlc *d)
 {
 	struct rfcomm_session *s = d->session;
@@ -664,7 +448,6 @@ static void __rfcomm_dlc_disconn(struct rfcomm_dlc *d)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __rfcomm_dlc_close(struct rfcomm_dlc *d, int err)
 {
 	struct rfcomm_session *s = d->session;
@@ -676,38 +459,12 @@ static int __rfcomm_dlc_close(struct rfcomm_dlc *d, int err)
 
 	switch (d->state) {
 	case BT_CONNECT:
-<<<<<<< HEAD
-		if (test_and_clear_bit(RFCOMM_DEFER_SETUP, &d->flags)) {
-			set_bit(RFCOMM_AUTH_REJECT, &d->flags);
-			rfcomm_schedule();
-			break;
-		}
-		/* Fall through */
-
-	case BT_CONNECTED:
-		d->state = BT_DISCONN;
-		if (skb_queue_empty(&d->tx_queue)) {
-			rfcomm_send_disc(s, d->dlci);
-			rfcomm_dlc_set_timer(d, RFCOMM_DISC_TIMEOUT);
-		} else {
-			rfcomm_queue_disc(d);
-			rfcomm_dlc_set_timer(d, RFCOMM_DISC_TIMEOUT * 2);
-		}
-		break;
-
-=======
 	case BT_CONFIG:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BT_OPEN:
 	case BT_CONNECT2:
 		if (test_and_clear_bit(RFCOMM_DEFER_SETUP, &d->flags)) {
 			set_bit(RFCOMM_AUTH_REJECT, &d->flags);
 			rfcomm_schedule();
-<<<<<<< HEAD
-			break;
-		}
-		/* Fall through */
-=======
 			return 0;
 		}
 	}
@@ -727,7 +484,6 @@ static int __rfcomm_dlc_close(struct rfcomm_dlc *d, int err)
 		 * just close and unlink the dlc
 		 */
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		rfcomm_dlc_clear_timer(d);
@@ -746,14 +502,6 @@ static int __rfcomm_dlc_close(struct rfcomm_dlc *d, int err)
 
 int rfcomm_dlc_close(struct rfcomm_dlc *d, int err)
 {
-<<<<<<< HEAD
-	int r;
-
-	rfcomm_lock();
-
-	r = __rfcomm_dlc_close(d, err);
-
-=======
 	int r = 0;
 	struct rfcomm_dlc *d_list;
 	struct rfcomm_session *s, *s_list;
@@ -782,19 +530,10 @@ int rfcomm_dlc_close(struct rfcomm_dlc *d, int err)
 	}
 
 no_session:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_unlock();
 	return r;
 }
 
-<<<<<<< HEAD
-int rfcomm_dlc_send(struct rfcomm_dlc *d, struct sk_buff *skb)
-{
-	int len = skb->len;
-
-	if (d->state != BT_CONNECTED)
-		return -ENOTCONN;
-=======
 struct rfcomm_dlc *rfcomm_dlc_exists(bdaddr_t *src, bdaddr_t *dst, u8 channel)
 {
 	struct rfcomm_session *s;
@@ -817,21 +556,12 @@ struct rfcomm_dlc *rfcomm_dlc_exists(bdaddr_t *src, bdaddr_t *dst, u8 channel)
 static int rfcomm_dlc_send_frag(struct rfcomm_dlc *d, struct sk_buff *frag)
 {
 	int len = frag->len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
 
 	if (len > d->mtu)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	rfcomm_make_uih(skb, d->addr);
-	skb_queue_tail(&d->tx_queue, skb);
-
-	if (!test_bit(RFCOMM_TX_THROTTLED, &d->flags))
-		rfcomm_schedule();
-	return len;
-=======
 	rfcomm_make_uih(frag, d->addr);
 	__skb_queue_tail(&d->tx_queue, frag);
 
@@ -891,7 +621,6 @@ void rfcomm_dlc_send_noerror(struct rfcomm_dlc *d, struct sk_buff *skb)
 	if (d->state == BT_CONNECTED &&
 	    !test_bit(RFCOMM_TX_THROTTLED, &d->flags))
 		rfcomm_schedule();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __rfcomm_dlc_throttle(struct rfcomm_dlc *d)
@@ -958,11 +687,7 @@ static struct rfcomm_session *rfcomm_session_add(struct socket *sock, int state)
 
 	BT_DBG("session %p sock %p", s, sock);
 
-<<<<<<< HEAD
-	setup_timer(&s->timer, rfcomm_session_timeout, (unsigned long) s);
-=======
 	timer_setup(&s->timer, rfcomm_session_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&s->dlcs);
 	s->state = state;
@@ -984,55 +709,14 @@ static struct rfcomm_session *rfcomm_session_add(struct socket *sock, int state)
 	return s;
 }
 
-<<<<<<< HEAD
-static void rfcomm_sock_release_worker(struct work_struct *work)
-{
-	struct rfcomm_sock_release_work *release_work =
-		container_of(work, struct rfcomm_sock_release_work, work);
-
-	BT_DBG("sock %p", release_work->sock);
-
-	sock_release(release_work->sock);
-	if (release_work->state != BT_LISTEN)
-		module_put(THIS_MODULE);
-
-	kfree(release_work);
-}
-
-static void rfcomm_session_del(struct rfcomm_session *s)
-{
-	int state = s->state;
-	struct socket *sock = s->sock;
-	struct rfcomm_sock_release_work *release_work;
-=======
 static struct rfcomm_session *rfcomm_session_del(struct rfcomm_session *s)
 {
 	int state = s->state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("session %p state %ld", s, s->state);
 
 	list_del(&s->list);
 
-<<<<<<< HEAD
-	if (state == BT_CONNECTED)
-		rfcomm_send_disc(s, 0);
-
-	rfcomm_session_clear_timer(s);
-
-	kfree(s);
-
-	release_work = kzalloc(sizeof(*release_work), GFP_ATOMIC);
-	if (release_work) {
-		INIT_WORK(&release_work->work, rfcomm_sock_release_worker);
-		release_work->sock = sock;
-		release_work->state = state;
-
-		if (!schedule_work(&release_work->work))
-			kfree(release_work);
-	}
-
-=======
 	rfcomm_session_clear_timer(s);
 	sock_release(s->sock);
 	kfree(s);
@@ -1041,22 +725,10 @@ static struct rfcomm_session *rfcomm_session_del(struct rfcomm_session *s)
 		module_put(THIS_MODULE);
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct rfcomm_session *rfcomm_session_get(bdaddr_t *src, bdaddr_t *dst)
 {
-<<<<<<< HEAD
-	struct rfcomm_session *s;
-	struct list_head *p, *n;
-	struct bt_sock *sk;
-	list_for_each_safe(p, n, &session_list) {
-		s = list_entry(p, struct rfcomm_session, list);
-		sk = bt_sk(s->sock->sk);
-
-		if ((!bacmp(src, BDADDR_ANY) || !bacmp(&sk->src, src)) &&
-				!bacmp(&sk->dst, dst))
-=======
 	struct rfcomm_session *s, *n;
 	struct l2cap_chan *chan;
 	list_for_each_entry_safe(s, n, &session_list, list) {
@@ -1064,28 +736,11 @@ static struct rfcomm_session *rfcomm_session_get(bdaddr_t *src, bdaddr_t *dst)
 
 		if ((!bacmp(src, BDADDR_ANY) || !bacmp(&chan->src, src)) &&
 		    !bacmp(&chan->dst, dst))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return s;
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-static void rfcomm_session_close(struct rfcomm_session *s, int err)
-{
-	struct rfcomm_dlc *d;
-	struct list_head *p, *n;
-
-	BT_DBG("session %p state %ld err %d", s, s->state, err);
-
-	rfcomm_session_hold(s);
-
-	s->state = BT_CLOSED;
-
-	/* Close all dlcs */
-	list_for_each_safe(p, n, &s->dlcs) {
-		d = list_entry(p, struct rfcomm_dlc, list);
-=======
 static struct rfcomm_session *rfcomm_session_close(struct rfcomm_session *s,
 						   int err)
 {
@@ -1097,42 +752,25 @@ static struct rfcomm_session *rfcomm_session_close(struct rfcomm_session *s,
 
 	/* Close all dlcs */
 	list_for_each_entry_safe(d, n, &s->dlcs, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		d->state = BT_CLOSED;
 		__rfcomm_dlc_close(d, err);
 	}
 
 	rfcomm_session_clear_timer(s);
-<<<<<<< HEAD
-	rfcomm_session_put(s);
-=======
 	return rfcomm_session_del(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct rfcomm_session *rfcomm_session_create(bdaddr_t *src,
 							bdaddr_t *dst,
 							u8 sec_level,
-<<<<<<< HEAD
-							int *err,
-							u8 channel,
-							struct rfcomm_dlc *d)
-=======
 							int *err)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rfcomm_session *s = NULL;
 	struct sockaddr_l2 addr;
 	struct socket *sock;
 	struct sock *sk;
-<<<<<<< HEAD
-	u8 dlci;
-
-	BT_DBG("%s %s", batostr(src), batostr(dst));
-=======
 
 	BT_DBG("%pMR -> %pMR", src, dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*err = rfcomm_l2sock_create(&sock);
 	if (*err < 0)
@@ -1142,10 +780,7 @@ static struct rfcomm_session *rfcomm_session_create(bdaddr_t *src,
 	addr.l2_family = AF_BLUETOOTH;
 	addr.l2_psm    = 0;
 	addr.l2_cid    = 0;
-<<<<<<< HEAD
-=======
 	addr.l2_bdaddr_type = BDADDR_BREDR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*err = kernel_bind(sock, (struct sockaddr *) &addr, sizeof(addr));
 	if (*err < 0)
 		goto failed;
@@ -1153,18 +788,11 @@ static struct rfcomm_session *rfcomm_session_create(bdaddr_t *src,
 	/* Set L2CAP options */
 	sk = sock->sk;
 	lock_sock(sk);
-<<<<<<< HEAD
-	l2cap_pi(sk)->imtu = l2cap_mtu;
-	l2cap_pi(sk)->sec_level = sec_level;
-	if (l2cap_ertm)
-		l2cap_pi(sk)->mode = L2CAP_MODE_ERTM;
-=======
 	/* Set MTU to 0 so L2CAP can auto select the MTU */
 	l2cap_pi(sk)->chan->imtu = 0;
 	l2cap_pi(sk)->chan->sec_level = sec_level;
 	if (l2cap_ertm)
 		l2cap_pi(sk)->chan->mode = L2CAP_MODE_ERTM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 
 	s = rfcomm_session_add(sock, BT_BOUND);
@@ -1177,35 +805,6 @@ static struct rfcomm_session *rfcomm_session_create(bdaddr_t *src,
 
 	bacpy(&addr.l2_bdaddr, dst);
 	addr.l2_family = AF_BLUETOOTH;
-<<<<<<< HEAD
-	addr.l2_psm    = cpu_to_le16(RFCOMM_PSM);
-	addr.l2_cid    = 0;
-	dlci = __dlci(!s->initiator, channel);
-
-	/* Check if DLCI already exists */
-	if (rfcomm_dlc_get(s, dlci))
-		return NULL;
-
-	rfcomm_dlc_clear_state(d);
-
-	d->dlci     = dlci;
-	d->addr     = __addr(s->initiator, dlci);
-	d->priority = 7;
-
-	d->state = BT_CONFIG;
-	rfcomm_dlc_link(s, d);
-
-	d->out = 1;
-
-	d->mtu = s->mtu;
-	d->cfc = (s->cfc == RFCOMM_CFC_UNKNOWN) ? 0 : s->cfc;
-	*err = kernel_connect(sock, (struct sockaddr *) &addr, sizeof(addr), O_NONBLOCK);
-	if (*err == 0 || *err == -EINPROGRESS)
-		return s;
-	BT_ERR("error ret is %d, going to delete session", *err);
-	rfcomm_dlc_unlink(d);
-	return NULL;
-=======
 	addr.l2_psm    = cpu_to_le16(L2CAP_PSM_RFCOMM);
 	addr.l2_cid    = 0;
 	addr.l2_bdaddr_type = BDADDR_BREDR;
@@ -1214,7 +813,6 @@ static struct rfcomm_session *rfcomm_session_create(bdaddr_t *src,
 		return s;
 
 	return rfcomm_session_del(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 failed:
 	sock_release(sock);
@@ -1223,28 +821,16 @@ failed:
 
 void rfcomm_session_getaddr(struct rfcomm_session *s, bdaddr_t *src, bdaddr_t *dst)
 {
-<<<<<<< HEAD
-	struct sock *sk = s->sock->sk;
-	if (src)
-		bacpy(src, &bt_sk(sk)->src);
-	if (dst)
-		bacpy(dst, &bt_sk(sk)->dst);
-=======
 	struct l2cap_chan *chan = l2cap_pi(s->sock->sk)->chan;
 	if (src)
 		bacpy(src, &chan->src);
 	if (dst)
 		bacpy(dst, &chan->dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---- RFCOMM frame sending ---- */
 static int rfcomm_send_frame(struct rfcomm_session *s, u8 *data, int len)
 {
-<<<<<<< HEAD
-	struct socket *sock = s->sock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kvec iv = { data, len };
 	struct msghdr msg;
 
@@ -1252,9 +838,6 @@ static int rfcomm_send_frame(struct rfcomm_session *s, u8 *data, int len)
 
 	memset(&msg, 0, sizeof(msg));
 
-<<<<<<< HEAD
-	return kernel_sendmsg(sock, &msg, &iv, 1, len);
-=======
 	return kernel_sendmsg(s->sock, &msg, &iv, 1, len);
 }
 
@@ -1263,7 +846,6 @@ static int rfcomm_send_cmd(struct rfcomm_session *s, struct rfcomm_cmd *cmd)
 	BT_DBG("%p cmd %u", s, cmd->ctrl);
 
 	return rfcomm_send_frame(s, (void *) cmd, sizeof(*cmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfcomm_send_sabm(struct rfcomm_session *s, u8 dlci)
@@ -1277,11 +859,7 @@ static int rfcomm_send_sabm(struct rfcomm_session *s, u8 dlci)
 	cmd.len  = __len8(0);
 	cmd.fcs  = __fcs2((u8 *) &cmd);
 
-<<<<<<< HEAD
-	return rfcomm_send_frame(s, (void *) &cmd, sizeof(cmd));
-=======
 	return rfcomm_send_cmd(s, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfcomm_send_ua(struct rfcomm_session *s, u8 dlci)
@@ -1295,11 +873,7 @@ static int rfcomm_send_ua(struct rfcomm_session *s, u8 dlci)
 	cmd.len  = __len8(0);
 	cmd.fcs  = __fcs2((u8 *) &cmd);
 
-<<<<<<< HEAD
-	return rfcomm_send_frame(s, (void *) &cmd, sizeof(cmd));
-=======
 	return rfcomm_send_cmd(s, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfcomm_send_disc(struct rfcomm_session *s, u8 dlci)
@@ -1313,11 +887,7 @@ static int rfcomm_send_disc(struct rfcomm_session *s, u8 dlci)
 	cmd.len  = __len8(0);
 	cmd.fcs  = __fcs2((u8 *) &cmd);
 
-<<<<<<< HEAD
-	return rfcomm_send_frame(s, (void *) &cmd, sizeof(cmd));
-=======
 	return rfcomm_send_cmd(s, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfcomm_queue_disc(struct rfcomm_dlc *d)
@@ -1331,11 +901,7 @@ static int rfcomm_queue_disc(struct rfcomm_dlc *d)
 	if (!skb)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	cmd = (void *) __skb_put(skb, sizeof(*cmd));
-=======
 	cmd = __skb_put(skb, sizeof(*cmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->addr = d->addr;
 	cmd->ctrl = __ctrl(RFCOMM_DISC, 1);
 	cmd->len  = __len8(0);
@@ -1357,11 +923,7 @@ static int rfcomm_send_dm(struct rfcomm_session *s, u8 dlci)
 	cmd.len  = __len8(0);
 	cmd.fcs  = __fcs2((u8 *) &cmd);
 
-<<<<<<< HEAD
-	return rfcomm_send_frame(s, (void *) &cmd, sizeof(cmd));
-=======
 	return rfcomm_send_cmd(s, &cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfcomm_send_nsc(struct rfcomm_session *s, int cr, u8 type)
@@ -1378,11 +940,7 @@ static int rfcomm_send_nsc(struct rfcomm_session *s, int cr, u8 type)
 	hdr->len  = __len8(sizeof(*mcc) + 1);
 
 	mcc = (void *) ptr; ptr += sizeof(*mcc);
-<<<<<<< HEAD
-	mcc->type = __mcc_type(cr, RFCOMM_NSC);
-=======
 	mcc->type = __mcc_type(0, RFCOMM_NSC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcc->len  = __len8(1);
 
 	/* Type that we didn't like */
@@ -1629,17 +1187,10 @@ static void rfcomm_make_uih(struct sk_buff *skb, u8 addr)
 	u8 *crc;
 
 	if (len > 127) {
-<<<<<<< HEAD
-		hdr = (void *) skb_push(skb, 4);
-		put_unaligned(cpu_to_le16(__len16(len)), (__le16 *) &hdr->len);
-	} else {
-		hdr = (void *) skb_push(skb, 3);
-=======
 		hdr = skb_push(skb, 4);
 		put_unaligned(cpu_to_le16(__len16(len)), (__le16 *) &hdr->len);
 	} else {
 		hdr = skb_push(skb, 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdr->len = __len8(len);
 	}
 	hdr->addr = addr;
@@ -1650,11 +1201,7 @@ static void rfcomm_make_uih(struct sk_buff *skb, u8 addr)
 }
 
 /* ---- RFCOMM frame reception ---- */
-<<<<<<< HEAD
-static int rfcomm_recv_ua(struct rfcomm_session *s, u8 dlci)
-=======
 static struct rfcomm_session *rfcomm_recv_ua(struct rfcomm_session *s, u8 dlci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BT_DBG("session %p state %ld dlci %d", s, s->state, dlci);
 
@@ -1663,11 +1210,7 @@ static struct rfcomm_session *rfcomm_recv_ua(struct rfcomm_session *s, u8 dlci)
 		struct rfcomm_dlc *d = rfcomm_dlc_get(s, dlci);
 		if (!d) {
 			rfcomm_send_dm(s, dlci);
-<<<<<<< HEAD
-			return 0;
-=======
 			return s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		switch (d->state) {
@@ -1703,21 +1246,6 @@ static struct rfcomm_session *rfcomm_recv_ua(struct rfcomm_session *s, u8 dlci)
 			break;
 
 		case BT_DISCONN:
-<<<<<<< HEAD
-			/* When socket is closed and we are not RFCOMM
-			 * initiator rfcomm_process_rx already calls
-			 * rfcomm_session_put() */
-			if (s->sock->sk->sk_state != BT_CLOSED)
-				if (list_empty(&s->dlcs))
-					rfcomm_session_put(s);
-			break;
-		}
-	}
-	return 0;
-}
-
-static int rfcomm_recv_dm(struct rfcomm_session *s, u8 dlci)
-=======
 			s = rfcomm_session_close(s, ECONNRESET);
 			break;
 		}
@@ -1726,7 +1254,6 @@ static int rfcomm_recv_dm(struct rfcomm_session *s, u8 dlci)
 }
 
 static struct rfcomm_session *rfcomm_recv_dm(struct rfcomm_session *s, u8 dlci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -1750,15 +1277,6 @@ static struct rfcomm_session *rfcomm_recv_dm(struct rfcomm_session *s, u8 dlci)
 		else
 			err = ECONNRESET;
 
-<<<<<<< HEAD
-		s->state = BT_CLOSED;
-		rfcomm_session_close(s, err);
-	}
-	return 0;
-}
-
-static int rfcomm_recv_disc(struct rfcomm_session *s, u8 dlci)
-=======
 		s = rfcomm_session_close(s, err);
 	}
 	return s;
@@ -1766,7 +1284,6 @@ static int rfcomm_recv_disc(struct rfcomm_session *s, u8 dlci)
 
 static struct rfcomm_session *rfcomm_recv_disc(struct rfcomm_session *s,
 					       u8 dlci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -1795,26 +1312,15 @@ static struct rfcomm_session *rfcomm_recv_disc(struct rfcomm_session *s,
 		else
 			err = ECONNRESET;
 
-<<<<<<< HEAD
-		s->state = BT_CLOSED;
-		rfcomm_session_close(s, err);
-	}
-
-	return 0;
-=======
 		s = rfcomm_session_close(s, err);
 	}
 	return s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rfcomm_dlc_accept(struct rfcomm_dlc *d)
 {
 	struct sock *sk = d->session->sock->sk;
-<<<<<<< HEAD
-=======
 	struct l2cap_conn *conn = l2cap_pi(sk)->chan->conn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("dlc %p", d);
 
@@ -1828,11 +1334,7 @@ void rfcomm_dlc_accept(struct rfcomm_dlc *d)
 	rfcomm_dlc_unlock(d);
 
 	if (d->role_switch)
-<<<<<<< HEAD
-		hci_conn_switch_role(l2cap_pi(sk)->conn->hcon, 0x00);
-=======
 		hci_conn_switch_role(conn->hcon, 0x00);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rfcomm_send_msc(d->session, 1, d->dlci, d->v24_sig);
 }
@@ -2233,25 +1735,18 @@ drop:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int rfcomm_recv_frame(struct rfcomm_session *s, struct sk_buff *skb)
-=======
 static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
 						struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rfcomm_hdr *hdr = (void *) skb->data;
 	u8 type, dlci, fcs;
 
-<<<<<<< HEAD
-=======
 	if (!s) {
 		/* no session, so free socket data */
 		kfree_skb(skb);
 		return s;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlci = __get_dlci(hdr->addr);
 	type = __get_type(hdr->ctrl);
 
@@ -2262,11 +1757,7 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
 	if (__check_fcs(skb->data, type, fcs)) {
 		BT_ERR("bad checksum in packet");
 		kfree_skb(skb);
-<<<<<<< HEAD
-		return -EILSEQ;
-=======
 		return s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (__test_ea(hdr->len))
@@ -2282,28 +1773,11 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
 
 	case RFCOMM_DISC:
 		if (__test_pf(hdr->ctrl))
-<<<<<<< HEAD
-			rfcomm_recv_disc(s, dlci);
-=======
 			s = rfcomm_recv_disc(s, dlci);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case RFCOMM_UA:
 		if (__test_pf(hdr->ctrl))
-<<<<<<< HEAD
-			rfcomm_recv_ua(s, dlci);
-		break;
-
-	case RFCOMM_DM:
-		rfcomm_recv_dm(s, dlci);
-		break;
-
-	case RFCOMM_UIH:
-		if (dlci)
-			return rfcomm_recv_data(s, dlci, __test_pf(hdr->ctrl), skb);
-
-=======
 			s = rfcomm_recv_ua(s, dlci);
 		break;
 
@@ -2316,7 +1790,6 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
 			rfcomm_recv_data(s, dlci, __test_pf(hdr->ctrl), skb);
 			return s;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rfcomm_recv_mcc(s, skb);
 		break;
 
@@ -2325,32 +1798,18 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
 		break;
 	}
 	kfree_skb(skb);
-<<<<<<< HEAD
-	return 0;
-=======
 	return s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---- Connection and data processing ---- */
 
 static void rfcomm_process_connect(struct rfcomm_session *s)
 {
-<<<<<<< HEAD
-	struct rfcomm_dlc *d;
-	struct list_head *p, *n;
-
-	BT_DBG("session %p state %ld", s, s->state);
-
-	list_for_each_safe(p, n, &s->dlcs) {
-		d = list_entry(p, struct rfcomm_dlc, list);
-=======
 	struct rfcomm_dlc *d, *n;
 
 	BT_DBG("session %p state %ld", s, s->state);
 
 	list_for_each_entry_safe(d, n, &s->dlcs, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (d->state == BT_CONFIG) {
 			d->mtu = s->mtu;
 			if (rfcomm_check_security(d)) {
@@ -2366,11 +1825,7 @@ static void rfcomm_process_connect(struct rfcomm_session *s)
 /* Send data queued for the DLC.
  * Return number of frames left in the queue.
  */
-<<<<<<< HEAD
-static inline int rfcomm_process_tx(struct rfcomm_dlc *d)
-=======
 static int rfcomm_process_tx(struct rfcomm_dlc *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	int err;
@@ -2418,18 +1873,6 @@ static int rfcomm_process_tx(struct rfcomm_dlc *d)
 	return skb_queue_len(&d->tx_queue);
 }
 
-<<<<<<< HEAD
-static inline void rfcomm_process_dlcs(struct rfcomm_session *s)
-{
-	struct rfcomm_dlc *d;
-	struct list_head *p, *n;
-
-	BT_DBG("session %p state %ld", s, s->state);
-
-	list_for_each_safe(p, n, &s->dlcs) {
-		d = list_entry(p, struct rfcomm_dlc, list);
-
-=======
 static void rfcomm_process_dlcs(struct rfcomm_session *s)
 {
 	struct rfcomm_dlc *d, *n;
@@ -2437,20 +1880,16 @@ static void rfcomm_process_dlcs(struct rfcomm_session *s)
 	BT_DBG("session %p state %ld", s, s->state);
 
 	list_for_each_entry_safe(d, n, &s->dlcs, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_bit(RFCOMM_TIMED_OUT, &d->flags)) {
 			__rfcomm_dlc_close(d, ETIMEDOUT);
 			continue;
 		}
 
-<<<<<<< HEAD
-=======
 		if (test_bit(RFCOMM_ENC_DROP, &d->flags)) {
 			__rfcomm_dlc_close(d, ECONNREFUSED);
 			continue;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_and_clear_bit(RFCOMM_AUTH_ACCEPT, &d->flags)) {
 			rfcomm_dlc_clear_timer(d);
 			if (d->out) {
@@ -2491,11 +1930,7 @@ static void rfcomm_process_dlcs(struct rfcomm_session *s)
 	}
 }
 
-<<<<<<< HEAD
-static inline void rfcomm_process_rx(struct rfcomm_session *s)
-=======
 static struct rfcomm_session *rfcomm_process_rx(struct rfcomm_session *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct socket *sock = s->sock;
 	struct sock *sk = sock->sk;
@@ -2506,23 +1941,6 @@ static struct rfcomm_session *rfcomm_process_rx(struct rfcomm_session *s)
 	/* Get data directly from socket receive queue without copying it. */
 	while ((skb = skb_dequeue(&sk->sk_receive_queue))) {
 		skb_orphan(skb);
-<<<<<<< HEAD
-		if (!skb_linearize(skb))
-			rfcomm_recv_frame(s, skb);
-		else
-			kfree_skb(skb);
-	}
-
-	if (sk->sk_state == BT_CLOSED) {
-		if (!s->initiator)
-			rfcomm_session_put(s);
-
-		rfcomm_session_close(s, sk->sk_err);
-	}
-}
-
-static inline void rfcomm_accept_connection(struct rfcomm_session *s)
-=======
 		if (!skb_linearize(skb) && sk->sk_state != BT_CLOSED) {
 			s = rfcomm_recv_frame(s, skb);
 			if (!s)
@@ -2539,7 +1957,6 @@ static inline void rfcomm_accept_connection(struct rfcomm_session *s)
 }
 
 static void rfcomm_accept_connection(struct rfcomm_session *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct socket *sock = s->sock, *nsock;
 	int err;
@@ -2561,31 +1978,17 @@ static void rfcomm_accept_connection(struct rfcomm_session *s)
 
 	s = rfcomm_session_add(nsock, BT_OPEN);
 	if (s) {
-<<<<<<< HEAD
-		rfcomm_session_hold(s);
-
-		/* We should adjust MTU on incoming sessions.
-		 * L2CAP MTU minus UIH header and FCS.
-		 * Need to accomodate 1 Byte credits information */
-		s->mtu = min(l2cap_pi(nsock->sk)->omtu,
-				l2cap_pi(nsock->sk)->imtu) - RFCOMM_HDR_SIZE;
-=======
 		/* We should adjust MTU on incoming sessions.
 		 * L2CAP MTU minus UIH header and FCS. */
 		s->mtu = min(l2cap_pi(nsock->sk)->chan->omtu,
 				l2cap_pi(nsock->sk)->chan->imtu) - 5;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rfcomm_schedule();
 	} else
 		sock_release(nsock);
 }
 
-<<<<<<< HEAD
-static inline void rfcomm_check_connection(struct rfcomm_session *s)
-=======
 static struct rfcomm_session *rfcomm_check_connection(struct rfcomm_session *s)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = s->sock->sk;
 
@@ -2596,64 +1999,13 @@ static struct rfcomm_session *rfcomm_check_connection(struct rfcomm_session *s)
 		s->state = BT_CONNECT;
 
 		/* We can adjust MTU on outgoing sessions.
-<<<<<<< HEAD
-		 * L2CAP MTU minus UIH header, Credits and FCS. */
-		s->mtu = min(l2cap_pi(sk)->omtu, l2cap_pi(sk)->imtu) -
-						RFCOMM_HDR_SIZE;
-=======
 		 * L2CAP MTU minus UIH header and FCS. */
 		s->mtu = min(l2cap_pi(sk)->chan->omtu, l2cap_pi(sk)->chan->imtu) - 5;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rfcomm_send_sabm(s, 0);
 		break;
 
 	case BT_CLOSED:
-<<<<<<< HEAD
-		s->state = BT_CLOSED;
-		rfcomm_session_close(s, sk->sk_err);
-		break;
-	}
-}
-
-static inline void rfcomm_process_sessions(void)
-{
-	struct list_head *p, *n;
-
-	rfcomm_lock();
-
-	list_for_each_safe(p, n, &session_list) {
-		struct rfcomm_session *s;
-		s = list_entry(p, struct rfcomm_session, list);
-
-		if (test_and_clear_bit(RFCOMM_TIMED_OUT, &s->flags)) {
-			s->state = BT_DISCONN;
-			rfcomm_send_disc(s, 0);
-			rfcomm_session_put(s);
-			continue;
-		}
-
-		if (s->state == BT_LISTEN) {
-			rfcomm_accept_connection(s);
-			continue;
-		}
-
-		rfcomm_session_hold(s);
-
-		switch (s->state) {
-		case BT_BOUND:
-			rfcomm_check_connection(s);
-			break;
-
-		default:
-			rfcomm_process_rx(s);
-			break;
-		}
-
-		rfcomm_process_dlcs(s);
-
-		rfcomm_session_put(s);
-=======
 		s = rfcomm_session_close(s, sk->sk_err);
 		break;
 	}
@@ -2689,7 +2041,6 @@ static void rfcomm_process_sessions(void)
 
 		if (s)
 			rfcomm_process_dlcs(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rfcomm_unlock();
@@ -2713,14 +2064,9 @@ static int rfcomm_add_listener(bdaddr_t *ba)
 	/* Bind socket */
 	bacpy(&addr.l2_bdaddr, ba);
 	addr.l2_family = AF_BLUETOOTH;
-<<<<<<< HEAD
-	addr.l2_psm    = cpu_to_le16(RFCOMM_PSM);
-	addr.l2_cid    = 0;
-=======
 	addr.l2_psm    = cpu_to_le16(L2CAP_PSM_RFCOMM);
 	addr.l2_cid    = 0;
 	addr.l2_bdaddr_type = BDADDR_BREDR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = kernel_bind(sock, (struct sockaddr *) &addr, sizeof(addr));
 	if (err < 0) {
 		BT_ERR("Bind failed %d", err);
@@ -2730,12 +2076,8 @@ static int rfcomm_add_listener(bdaddr_t *ba)
 	/* Set L2CAP options */
 	sk = sock->sk;
 	lock_sock(sk);
-<<<<<<< HEAD
-	l2cap_pi(sk)->imtu = l2cap_mtu;
-=======
 	/* Set MTU to 0 so L2CAP can auto select the MTU */
 	l2cap_pi(sk)->chan->imtu = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_sock(sk);
 
 	/* Start listening on the socket */
@@ -2747,18 +2089,11 @@ static int rfcomm_add_listener(bdaddr_t *ba)
 
 	/* Add listening session */
 	s = rfcomm_session_add(sock, BT_LISTEN);
-<<<<<<< HEAD
-	if (!s)
-		goto failed;
-
-	rfcomm_session_hold(s);
-=======
 	if (!s) {
 		err = -ENOMEM;
 		goto failed;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 failed:
 	sock_release(sock);
@@ -2767,53 +2102,23 @@ failed:
 
 static void rfcomm_kill_listener(void)
 {
-<<<<<<< HEAD
-	struct rfcomm_session *s;
-	struct list_head *p, *n;
-
-	BT_DBG("");
-
-	list_for_each_safe(p, n, &session_list) {
-		s = list_entry(p, struct rfcomm_session, list);
-		rfcomm_session_del(s);
-	}
-=======
 	struct rfcomm_session *s, *n;
 
 	BT_DBG("");
 
 	list_for_each_entry_safe(s, n, &session_list, list)
 		rfcomm_session_del(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rfcomm_run(void *unused)
 {
-<<<<<<< HEAD
-=======
 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BT_DBG("");
 
 	set_user_nice(current, -10);
 
 	rfcomm_add_listener(BDADDR_ANY);
 
-<<<<<<< HEAD
-	while (!kthread_should_stop()) {
-		set_current_state(TASK_INTERRUPTIBLE);
-		if (!test_bit(RFCOMM_SCHED_WAKEUP, &rfcomm_event)) {
-			/* No pending events. Let's sleep.
-			 * Incoming connections and data will wake us up. */
-			schedule();
-		}
-		set_current_state(TASK_RUNNING);
-
-		/* Process stuff */
-		clear_bit(RFCOMM_SCHED_WAKEUP, &rfcomm_event);
-		rfcomm_process_sessions();
-	}
-=======
 	add_wait_queue(&rfcomm_wq, &wait);
 	while (!kthread_should_stop()) {
 
@@ -2823,7 +2128,6 @@ static int rfcomm_run(void *unused)
 		wait_woken(&wait, TASK_INTERRUPTIBLE, MAX_SCHEDULE_TIMEOUT);
 	}
 	remove_wait_queue(&rfcomm_wq, &wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rfcomm_kill_listener();
 
@@ -2833,12 +2137,7 @@ static int rfcomm_run(void *unused)
 static void rfcomm_security_cfm(struct hci_conn *conn, u8 status, u8 encrypt)
 {
 	struct rfcomm_session *s;
-<<<<<<< HEAD
-	struct rfcomm_dlc *d;
-	struct list_head *p, *n;
-=======
 	struct rfcomm_dlc *d, *n;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("conn %p status 0x%02x encrypt 0x%02x", conn, status, encrypt);
 
@@ -2846,23 +2145,11 @@ static void rfcomm_security_cfm(struct hci_conn *conn, u8 status, u8 encrypt)
 	if (!s)
 		return;
 
-<<<<<<< HEAD
-	rfcomm_session_hold(s);
-
-	list_for_each_safe(p, n, &s->dlcs) {
-		d = list_entry(p, struct rfcomm_dlc, list);
-
-		if (test_and_clear_bit(RFCOMM_SEC_PENDING, &d->flags)) {
-			rfcomm_dlc_clear_timer(d);
-			if (status || encrypt == 0x00) {
-				__rfcomm_dlc_close(d, ECONNREFUSED);
-=======
 	list_for_each_entry_safe(d, n, &s->dlcs, list) {
 		if (test_and_clear_bit(RFCOMM_SEC_PENDING, &d->flags)) {
 			rfcomm_dlc_clear_timer(d);
 			if (status || encrypt == 0x00) {
 				set_bit(RFCOMM_ENC_DROP, &d->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		}
@@ -2873,13 +2160,8 @@ static void rfcomm_security_cfm(struct hci_conn *conn, u8 status, u8 encrypt)
 				rfcomm_dlc_set_timer(d, RFCOMM_AUTH_TIMEOUT);
 				continue;
 			} else if (d->sec_level == BT_SECURITY_HIGH ||
-<<<<<<< HEAD
-				d->sec_level == BT_SECURITY_VERY_HIGH) {
-				__rfcomm_dlc_close(d, ECONNREFUSED);
-=======
 				   d->sec_level == BT_SECURITY_FIPS) {
 				set_bit(RFCOMM_ENC_DROP, &d->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		}
@@ -2887,21 +2169,12 @@ static void rfcomm_security_cfm(struct hci_conn *conn, u8 status, u8 encrypt)
 		if (!test_and_clear_bit(RFCOMM_AUTH_PENDING, &d->flags))
 			continue;
 
-<<<<<<< HEAD
-		if (!status)
-=======
 		if (!status && hci_conn_check_secure(conn, d->sec_level))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_bit(RFCOMM_AUTH_ACCEPT, &d->flags);
 		else
 			set_bit(RFCOMM_AUTH_REJECT, &d->flags);
 	}
 
-<<<<<<< HEAD
-	rfcomm_session_put(s);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_schedule();
 }
 
@@ -2913,23 +2186,6 @@ static struct hci_cb rfcomm_cb = {
 static int rfcomm_dlc_debugfs_show(struct seq_file *f, void *x)
 {
 	struct rfcomm_session *s;
-<<<<<<< HEAD
-	struct list_head *pp, *p;
-
-	rfcomm_lock();
-
-	list_for_each(p, &session_list) {
-		s = list_entry(p, struct rfcomm_session, list);
-		list_for_each(pp, &s->dlcs) {
-			struct sock *sk = s->sock->sk;
-			struct rfcomm_dlc *d = list_entry(pp, struct rfcomm_dlc, list);
-
-			seq_printf(f, "%s %s %ld %d %d %d %d\n",
-						batostr(&bt_sk(sk)->src),
-						batostr(&bt_sk(sk)->dst),
-						d->state, d->dlci, d->mtu,
-						d->rx_credits, d->tx_credits);
-=======
 
 	rfcomm_lock();
 
@@ -2941,7 +2197,6 @@ static int rfcomm_dlc_debugfs_show(struct seq_file *f, void *x)
 				   &chan->src, &chan->dst,
 				   d->state, d->dlci, d->mtu,
 				   d->rx_credits, d->tx_credits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -2950,21 +2205,7 @@ static int rfcomm_dlc_debugfs_show(struct seq_file *f, void *x)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int rfcomm_dlc_debugfs_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, rfcomm_dlc_debugfs_show, inode->i_private);
-}
-
-static const struct file_operations rfcomm_dlc_debugfs_fops = {
-	.open		= rfcomm_dlc_debugfs_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-=======
 DEFINE_SHOW_ATTRIBUTE(rfcomm_dlc_debugfs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct dentry *rfcomm_dlc_debugfs;
 
@@ -2981,16 +2222,6 @@ static int __init rfcomm_init(void)
 		goto unregister;
 	}
 
-<<<<<<< HEAD
-	if (bt_debugfs) {
-		rfcomm_dlc_debugfs = debugfs_create_file("rfcomm_dlc", 0444,
-				bt_debugfs, NULL, &rfcomm_dlc_debugfs_fops);
-		if (!rfcomm_dlc_debugfs)
-			BT_ERR("Failed to create RFCOMM debug file");
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = rfcomm_init_ttys();
 	if (err < 0)
 		goto stop;
@@ -3001,8 +2232,6 @@ static int __init rfcomm_init(void)
 
 	BT_INFO("RFCOMM ver %s", VERSION);
 
-<<<<<<< HEAD
-=======
 	if (IS_ERR_OR_NULL(bt_debugfs))
 		return 0;
 
@@ -3010,7 +2239,6 @@ static int __init rfcomm_init(void)
 						 bt_debugfs, NULL,
 						 &rfcomm_dlc_debugfs_fops);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 cleanup:
@@ -3047,12 +2275,6 @@ MODULE_PARM_DESC(disable_cfc, "Disable credit based flow control");
 module_param(channel_mtu, int, 0644);
 MODULE_PARM_DESC(channel_mtu, "Default MTU for the RFCOMM channel");
 
-<<<<<<< HEAD
-module_param(l2cap_mtu, uint, 0644);
-MODULE_PARM_DESC(l2cap_mtu, "Default MTU for the L2CAP connection");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(l2cap_ertm, bool, 0644);
 MODULE_PARM_DESC(l2cap_ertm, "Use L2CAP ERTM mode for connection");
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * DES & Triple DES EDE Cipher Algorithms.
  */
@@ -9,11 +6,8 @@
 #ifndef __CRYPTO_DES_H
 #define __CRYPTO_DES_H
 
-<<<<<<< HEAD
-=======
 #include <linux/types.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DES_KEY_SIZE		8
 #define DES_EXPKEY_WORDS	32
 #define DES_BLOCK_SIZE		8
@@ -22,10 +16,6 @@
 #define DES3_EDE_EXPKEY_WORDS	(3 * DES_EXPKEY_WORDS)
 #define DES3_EDE_BLOCK_SIZE	DES_BLOCK_SIZE
 
-<<<<<<< HEAD
-
-extern unsigned long des_ekey(u32 *pe, const u8 *k);
-=======
 struct des_ctx {
 	u32 expkey[DES_EXPKEY_WORDS];
 };
@@ -63,6 +53,5 @@ int des_expand_key(struct des_ctx *ctx, const u8 *key, unsigned int keylen);
  */
 int des3_ede_expand_key(struct des3_ede_ctx *ctx, const u8 *key,
 			unsigned int keylen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __CRYPTO_DES_H */

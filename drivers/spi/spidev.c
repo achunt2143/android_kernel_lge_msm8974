@@ -1,62 +1,30 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Simple synchronous userspace interface to SPI devices
  *
  * Copyright (C) 2006 SWAPP
  *	Andrea Paterniani <a.paterniani@swapp-eng.it>
  * Copyright (C) 2007 David Brownell (simplification, cleanup)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 #include <linux/init.h>
-#include <linux/module.h>
-=======
- */
-
-#include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioctl.h>
 #include <linux/fs.h>
 #include <linux/device.h>
 #include <linux/err.h>
 #include <linux/list.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/mutex.h>
-=======
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/property.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/compat.h>
 
 #include <linux/spi/spi.h>
 #include <linux/spi/spidev.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -77,10 +45,7 @@
 
 static DECLARE_BITMAP(minors, N_SPI_MINORS);
 
-<<<<<<< HEAD
-=======
 static_assert(N_SPI_MINORS > 0 && N_SPI_MINORS <= 256);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bit masks for spi_device.mode management.  Note that incorrect
  * settings for some settings can cause *lots* of trouble for other
@@ -94,23 +59,6 @@ static_assert(N_SPI_MINORS > 0 && N_SPI_MINORS <= 256);
  *
  * REVISIT should changing those flags be privileged?
  */
-<<<<<<< HEAD
-#define SPI_MODE_MASK		(SPI_CPHA | SPI_CPOL | SPI_CS_HIGH \
-				| SPI_LSB_FIRST | SPI_3WIRE | SPI_LOOP \
-				| SPI_NO_CS | SPI_READY)
-
-struct spidev_data {
-	dev_t			devt;
-	spinlock_t		spi_lock;
-	struct spi_device	*spi;
-	struct list_head	device_entry;
-
-	/* buffer is NULL unless this device is open (users > 0) */
-	struct mutex		buf_lock;
-	unsigned		users;
-	u8			*buffer;
-	u8			*bufferrx;
-=======
 #define SPI_MODE_MASK		(SPI_MODE_X_MASK | SPI_CS_HIGH \
 				| SPI_LSB_FIRST | SPI_3WIRE | SPI_LOOP \
 				| SPI_NO_CS | SPI_READY | SPI_TX_DUAL \
@@ -131,7 +79,6 @@ struct spidev_data {
 	u8			*tx_buffer;
 	u8			*rx_buffer;
 	u32			speed_hz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static LIST_HEAD(device_list);
@@ -141,41 +88,6 @@ static unsigned bufsiz = 4096;
 module_param(bufsiz, uint, S_IRUGO);
 MODULE_PARM_DESC(bufsiz, "data bytes in biggest supported SPI message");
 
-<<<<<<< HEAD
-/*
- * This can be used for testing the controller, given the busnum and the
- * cs required to use. If those parameters are used, spidev is
- * dynamically added as device on the busnum, and messages can be sent
- * via this interface.
- */
-static int busnum = -1;
-module_param(busnum, int, S_IRUGO);
-MODULE_PARM_DESC(busnum, "bus num of the controller");
-
-static int chipselect = -1;
-module_param(chipselect, int, S_IRUGO);
-MODULE_PARM_DESC(chipselect, "chip select of the desired device");
-
-static int maxspeed = 10000000;
-module_param(maxspeed, int, S_IRUGO);
-MODULE_PARM_DESC(maxspeed, "max_speed of the desired device");
-
-static int spimode = SPI_MODE_3;
-module_param(spimode, int, S_IRUGO);
-MODULE_PARM_DESC(spimode, "mode of the desired device");
-
-static struct spi_device *spi;
-
-/*-------------------------------------------------------------------------*/
-
-/*
- * We can't use the standard synchronous wrappers for file I/O; we
- * need to protect against async removal of the underlying spi_device.
- */
-static void spidev_complete(void *arg)
-{
-	complete(arg);
-=======
 /*-------------------------------------------------------------------------*/
 
 static ssize_t
@@ -188,33 +100,11 @@ spidev_sync_unlocked(struct spi_device *spi, struct spi_message *message)
 		status = message->actual_length;
 
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 spidev_sync(struct spidev_data *spidev, struct spi_message *message)
 {
-<<<<<<< HEAD
-	DECLARE_COMPLETION_ONSTACK(done);
-	int status;
-
-	message->complete = spidev_complete;
-	message->context = &done;
-
-	spin_lock_irq(&spidev->spi_lock);
-	if (spidev->spi == NULL)
-		status = -ESHUTDOWN;
-	else
-		status = spi_async(spidev->spi, message);
-	spin_unlock_irq(&spidev->spi_lock);
-
-	if (status == 0) {
-		wait_for_completion(&done);
-		status = message->status;
-		if (status == 0)
-			status = message->actual_length;
-	}
-=======
 	ssize_t status;
 	struct spi_device *spi;
 
@@ -227,7 +117,6 @@ spidev_sync(struct spidev_data *spidev, struct spi_message *message)
 		status = spidev_sync_unlocked(spi, message);
 
 	mutex_unlock(&spidev->spi_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -235,14 +124,9 @@ static inline ssize_t
 spidev_sync_write(struct spidev_data *spidev, size_t len)
 {
 	struct spi_transfer	t = {
-<<<<<<< HEAD
-			.tx_buf		= spidev->buffer,
-			.len		= len,
-=======
 			.tx_buf		= spidev->tx_buffer,
 			.len		= len,
 			.speed_hz	= spidev->speed_hz,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		};
 	struct spi_message	m;
 
@@ -255,14 +139,9 @@ static inline ssize_t
 spidev_sync_read(struct spidev_data *spidev, size_t len)
 {
 	struct spi_transfer	t = {
-<<<<<<< HEAD
-			.rx_buf		= spidev->buffer,
-			.len		= len,
-=======
 			.rx_buf		= spidev->rx_buffer,
 			.len		= len,
 			.speed_hz	= spidev->speed_hz,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		};
 	struct spi_message	m;
 
@@ -278,11 +157,7 @@ static ssize_t
 spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
 	struct spidev_data	*spidev;
-<<<<<<< HEAD
-	ssize_t			status = 0;
-=======
 	ssize_t			status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* chipselect only toggles at start or end of operation */
 	if (count > bufsiz)
@@ -295,11 +170,7 @@ spidev_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 	if (status > 0) {
 		unsigned long	missing;
 
-<<<<<<< HEAD
-		missing = copy_to_user(buf, spidev->buffer, status);
-=======
 		missing = copy_to_user(buf, spidev->rx_buffer, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (missing == status)
 			status = -EFAULT;
 		else
@@ -316,11 +187,7 @@ spidev_write(struct file *filp, const char __user *buf,
 		size_t count, loff_t *f_pos)
 {
 	struct spidev_data	*spidev;
-<<<<<<< HEAD
-	ssize_t			status = 0;
-=======
 	ssize_t			status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		missing;
 
 	/* chipselect only toggles at start or end of operation */
@@ -330,17 +197,10 @@ spidev_write(struct file *filp, const char __user *buf,
 	spidev = filp->private_data;
 
 	mutex_lock(&spidev->buf_lock);
-<<<<<<< HEAD
-	missing = copy_from_user(spidev->buffer, buf, count);
-	if (missing == 0) {
-		status = spidev_sync_write(spidev, count);
-	} else
-=======
 	missing = copy_from_user(spidev->tx_buffer, buf, count);
 	if (missing == 0)
 		status = spidev_sync_write(spidev, count);
 	else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -EFAULT;
 	mutex_unlock(&spidev->buf_lock);
 
@@ -354,13 +214,8 @@ static int spidev_message(struct spidev_data *spidev,
 	struct spi_transfer	*k_xfers;
 	struct spi_transfer	*k_tmp;
 	struct spi_ioc_transfer *u_tmp;
-<<<<<<< HEAD
-	unsigned		n, total;
-	u8			*buf, *bufrx;
-=======
 	unsigned		n, total, tx_total, rx_total;
 	u8			*tx_buf, *rx_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			status = -EFAULT;
 
 	spi_message_init(&msg);
@@ -372,21 +227,6 @@ static int spidev_message(struct spidev_data *spidev,
 	 * We walk the array of user-provided transfers, using each one
 	 * to initialize a kernel version of the same transfer.
 	 */
-<<<<<<< HEAD
-	buf = spidev->buffer;
-	bufrx = spidev->bufferrx;
-	total = 0;
-	for (n = n_xfers, k_tmp = k_xfers, u_tmp = u_xfers;
-			n;
-			n--, k_tmp++, u_tmp++) {
-		k_tmp->len = u_tmp->len;
-
-		total += k_tmp->len;
-		/* Check total length of transfers.  Also check each
-		 * transfer length to avoid arithmetic overflow.
-		 */
-		if (total > bufsiz || k_tmp->len > bufsiz) {
-=======
 	tx_buf = spidev->tx_buffer;
 	rx_buf = spidev->rx_buffer;
 	total = 0;
@@ -409,44 +249,11 @@ static int spidev_message(struct spidev_data *spidev,
 		 * each transfer length to avoid arithmetic overflow.
 		 */
 		if (total > INT_MAX || k_tmp->len > INT_MAX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = -EMSGSIZE;
 			goto done;
 		}
 
 		if (u_tmp->rx_buf) {
-<<<<<<< HEAD
-			k_tmp->rx_buf = bufrx;
-			if (!access_ok(VERIFY_WRITE, (u8 __user *)
-						(uintptr_t) u_tmp->rx_buf,
-						u_tmp->len))
-				goto done;
-		}
-		if (u_tmp->tx_buf) {
-			k_tmp->tx_buf = buf;
-			if (copy_from_user(buf, (const u8 __user *)
-						(uintptr_t) u_tmp->tx_buf,
-					u_tmp->len))
-				goto done;
-		}
-		buf += k_tmp->len;
-		bufrx += k_tmp->len;
-
-		k_tmp->cs_change = !!u_tmp->cs_change;
-		k_tmp->bits_per_word = u_tmp->bits_per_word;
-		k_tmp->delay_usecs = u_tmp->delay_usecs;
-		k_tmp->speed_hz = u_tmp->speed_hz;
-#ifdef VERBOSE
-		dev_dbg(&spidev->spi->dev,
-			"  xfer len %zd %s%s%s%dbits %u usec %uHz\n",
-			u_tmp->len,
-			u_tmp->rx_buf ? "rx " : "",
-			u_tmp->tx_buf ? "tx " : "",
-			u_tmp->cs_change ? "cs " : "",
-			u_tmp->bits_per_word ? : spidev->spi->bits_per_word,
-			u_tmp->delay_usecs,
-			u_tmp->speed_hz ? : spidev->spi->max_speed_hz);
-=======
 			/* this transfer needs space in RX bounce buffer */
 			rx_total += len_aligned;
 			if (rx_total > bufsiz) {
@@ -493,43 +300,26 @@ static int spidev_message(struct spidev_data *spidev,
 			k_tmp->delay.value,
 			k_tmp->word_delay.value,
 			k_tmp->speed_hz ? : spidev->spi->max_speed_hz);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		spi_message_add_tail(k_tmp, &msg);
 	}
 
-<<<<<<< HEAD
-	status = spidev_sync(spidev, &msg);
-=======
 	status = spidev_sync_unlocked(spidev->spi, &msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		goto done;
 
 	/* copy any rx data out of bounce buffer */
-<<<<<<< HEAD
-	buf = spidev->bufferrx;
-	for (n = n_xfers, u_tmp = u_xfers; n; n--, u_tmp++) {
-		if (u_tmp->rx_buf) {
-			if (__copy_to_user((u8 __user *)
-					(uintptr_t) u_tmp->rx_buf, buf,
-=======
 	for (n = n_xfers, k_tmp = k_xfers, u_tmp = u_xfers;
 			n;
 			n--, k_tmp++, u_tmp++) {
 		if (u_tmp->rx_buf) {
 			if (copy_to_user((u8 __user *)
 					(uintptr_t) u_tmp->rx_buf, k_tmp->rx_buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					u_tmp->len)) {
 				status = -EFAULT;
 				goto done;
 			}
 		}
-<<<<<<< HEAD
-		buf += u_tmp->len;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	status = total;
 
@@ -538,15 +328,6 @@ done:
 	return status;
 }
 
-<<<<<<< HEAD
-static long
-spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-{
-	int			err = 0;
-	int			retval = 0;
-	struct spidev_data	*spidev;
-	struct spi_device	*spi;
-=======
 static struct spi_ioc_transfer *
 spidev_get_ioc_message(unsigned int cmd, struct spi_ioc_transfer __user *u_ioc,
 		unsigned *n_ioc)
@@ -577,7 +358,6 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	struct spidev_data	*spidev;
 	struct spi_device	*spi;
 	struct spi_controller	*ctlr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			tmp;
 	unsigned		n_ioc;
 	struct spi_ioc_transfer	*ioc;
@@ -586,34 +366,10 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	if (_IOC_TYPE(cmd) != SPI_IOC_MAGIC)
 		return -ENOTTY;
 
-<<<<<<< HEAD
-	/* Check access direction once here; don't repeat below.
-	 * IOC_DIR is from the user perspective, while access_ok is
-	 * from the kernel perspective; so they look reversed.
-	 */
-	if (_IOC_DIR(cmd) & _IOC_READ)
-		err = !access_ok(VERIFY_WRITE,
-				(void __user *)arg, _IOC_SIZE(cmd));
-	if (err == 0 && _IOC_DIR(cmd) & _IOC_WRITE)
-		err = !access_ok(VERIFY_READ,
-				(void __user *)arg, _IOC_SIZE(cmd));
-	if (err)
-		return -EFAULT;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* guard against device removal before, or while,
 	 * we issue this ioctl.
 	 */
 	spidev = filp->private_data;
-<<<<<<< HEAD
-	spin_lock_irq(&spidev->spi_lock);
-	spi = spi_dev_get(spidev->spi);
-	spin_unlock_irq(&spidev->spi_lock);
-
-	if (spi == NULL)
-		return -ESHUTDOWN;
-=======
 	mutex_lock(&spidev->spi_lock);
 	spi = spi_dev_get(spidev->spi);
 	if (spi == NULL) {
@@ -622,7 +378,6 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	}
 
 	ctlr = spi->controller;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* use the buffer lock here for triple duty:
 	 *  - prevent I/O (from us) so calling spi_setup() is safe;
@@ -635,20 +390,6 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	switch (cmd) {
 	/* read requests */
 	case SPI_IOC_RD_MODE:
-<<<<<<< HEAD
-		retval = __put_user(spi->mode & SPI_MODE_MASK,
-					(__u8 __user *)arg);
-		break;
-	case SPI_IOC_RD_LSB_FIRST:
-		retval = __put_user((spi->mode & SPI_LSB_FIRST) ?  1 : 0,
-					(__u8 __user *)arg);
-		break;
-	case SPI_IOC_RD_BITS_PER_WORD:
-		retval = __put_user(spi->bits_per_word, (__u8 __user *)arg);
-		break;
-	case SPI_IOC_RD_MAX_SPEED_HZ:
-		retval = __put_user(spi->max_speed_hz, (__u32 __user *)arg);
-=======
 	case SPI_IOC_RD_MODE32:
 		tmp = spi->mode & SPI_MODE_MASK;
 
@@ -669,16 +410,10 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		break;
 	case SPI_IOC_RD_MAX_SPEED_HZ:
 		retval = put_user(spidev->speed_hz, (__u32 __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* write requests */
 	case SPI_IOC_WR_MODE:
-<<<<<<< HEAD
-		retval = __get_user(tmp, (u8 __user *)arg);
-		if (retval == 0) {
-			u8	save = spi->mode;
-=======
 	case SPI_IOC_WR_MODE32:
 		if (cmd == SPI_IOC_WR_MODE)
 			retval = get_user(tmp, (u8 __user *)arg);
@@ -686,36 +421,21 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			retval = get_user(tmp, (u32 __user *)arg);
 		if (retval == 0) {
 			u32	save = spi->mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (tmp & ~SPI_MODE_MASK) {
 				retval = -EINVAL;
 				break;
 			}
 
-<<<<<<< HEAD
-			tmp |= spi->mode & ~SPI_MODE_MASK;
-			spi->mode = (u8)tmp;
-=======
 			if (ctlr->use_gpio_descriptors && spi_get_csgpiod(spi, 0))
 				tmp |= SPI_CS_HIGH;
 
 			tmp |= spi->mode & ~SPI_MODE_MASK;
 			spi->mode = tmp & SPI_MODE_USER_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = spi_setup(spi);
 			if (retval < 0)
 				spi->mode = save;
 			else
-<<<<<<< HEAD
-				dev_dbg(&spi->dev, "spi mode %02x\n", tmp);
-		}
-		break;
-	case SPI_IOC_WR_LSB_FIRST:
-		retval = __get_user(tmp, (__u8 __user *)arg);
-		if (retval == 0) {
-			u8	save = spi->mode;
-=======
 				dev_dbg(&spi->dev, "spi mode %x\n", tmp);
 		}
 		break;
@@ -723,7 +443,6 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		retval = get_user(tmp, (__u8 __user *)arg);
 		if (retval == 0) {
 			u32	save = spi->mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (tmp)
 				spi->mode |= SPI_LSB_FIRST;
@@ -738,11 +457,7 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		}
 		break;
 	case SPI_IOC_WR_BITS_PER_WORD:
-<<<<<<< HEAD
-		retval = __get_user(tmp, (__u8 __user *)arg);
-=======
 		retval = get_user(tmp, (__u8 __user *)arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval == 0) {
 			u8	save = spi->bits_per_word;
 
@@ -754,50 +469,6 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 				dev_dbg(&spi->dev, "%d bits per word\n", tmp);
 		}
 		break;
-<<<<<<< HEAD
-	case SPI_IOC_WR_MAX_SPEED_HZ:
-		retval = __get_user(tmp, (__u32 __user *)arg);
-		if (retval == 0) {
-			u32	save = spi->max_speed_hz;
-
-			spi->max_speed_hz = tmp;
-			retval = spi_setup(spi);
-			if (retval < 0)
-				spi->max_speed_hz = save;
-			else
-				dev_dbg(&spi->dev, "%d Hz (max)\n", tmp);
-		}
-		break;
-
-	default:
-		/* segmented and/or full-duplex I/O request */
-		if (_IOC_NR(cmd) != _IOC_NR(SPI_IOC_MESSAGE(0))
-				|| _IOC_DIR(cmd) != _IOC_WRITE) {
-			retval = -ENOTTY;
-			break;
-		}
-
-		tmp = _IOC_SIZE(cmd);
-		if ((tmp % sizeof(struct spi_ioc_transfer)) != 0) {
-			retval = -EINVAL;
-			break;
-		}
-		n_ioc = tmp / sizeof(struct spi_ioc_transfer);
-		if (n_ioc == 0)
-			break;
-
-		/* copy into scratch area */
-		ioc = kmalloc(tmp, GFP_KERNEL);
-		if (!ioc) {
-			retval = -ENOMEM;
-			break;
-		}
-		if (__copy_from_user(ioc, (void __user *)arg, tmp)) {
-			kfree(ioc);
-			retval = -EFAULT;
-			break;
-		}
-=======
 	case SPI_IOC_WR_MAX_SPEED_HZ: {
 		u32 save;
 
@@ -832,7 +503,6 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		}
 		if (!ioc)
 			break;	/* n_ioc is also 0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* translate to spi_message, execute */
 		retval = spidev_message(spidev, ioc, n_ioc);
@@ -842,19 +512,12 @@ spidev_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	mutex_unlock(&spidev->buf_lock);
 	spi_dev_put(spi);
-<<<<<<< HEAD
-=======
 	mutex_unlock(&spidev->spi_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 #ifdef CONFIG_COMPAT
 static long
-<<<<<<< HEAD
-spidev_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
-{
-=======
 spidev_compat_ioc_message(struct file *filp, unsigned int cmd,
 		unsigned long arg)
 {
@@ -915,7 +578,6 @@ spidev_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			&& _IOC_DIR(cmd) == _IOC_WRITE)
 		return spidev_compat_ioc_message(filp, cmd, arg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return spidev_ioctl(filp, cmd, (unsigned long)compat_ptr(arg));
 }
 #else
@@ -924,48 +586,11 @@ spidev_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 static int spidev_open(struct inode *inode, struct file *filp)
 {
-<<<<<<< HEAD
-	struct spidev_data	*spidev;
-=======
 	struct spidev_data	*spidev = NULL, *iter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			status = -ENXIO;
 
 	mutex_lock(&device_list_lock);
 
-<<<<<<< HEAD
-	list_for_each_entry(spidev, &device_list, device_entry) {
-		if (spidev->devt == inode->i_rdev) {
-			status = 0;
-			break;
-		}
-	}
-	if (status == 0) {
-		if (!spidev->buffer) {
-			spidev->buffer = kmalloc(bufsiz, GFP_KERNEL);
-			if (!spidev->buffer) {
-				dev_dbg(&spidev->spi->dev, "open/ENOMEM\n");
-				status = -ENOMEM;
-			}
-		}
-		if (!spidev->bufferrx) {
-			spidev->bufferrx = kmalloc(bufsiz, GFP_KERNEL);
-			if (!spidev->bufferrx) {
-				dev_dbg(&spidev->spi->dev, "open/ENOMEM\n");
-				kfree(spidev->buffer);
-				spidev->buffer = NULL;
-				status = -ENOMEM;
-			}
-		}
-		if (status == 0) {
-			spidev->users++;
-			filp->private_data = spidev;
-			nonseekable_open(inode, filp);
-		}
-	} else
-		pr_debug("spidev: nothing for minor %d\n", iminor(inode));
-
-=======
 	list_for_each_entry(iter, &device_list, device_entry) {
 		if (iter->devt == inode->i_rdev) {
 			status = 0;
@@ -1006,7 +631,6 @@ err_alloc_rx_buf:
 	kfree(spidev->tx_buffer);
 	spidev->tx_buffer = NULL;
 err_find_dev:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&device_list_lock);
 	return status;
 }
@@ -1014,39 +638,12 @@ err_find_dev:
 static int spidev_release(struct inode *inode, struct file *filp)
 {
 	struct spidev_data	*spidev;
-<<<<<<< HEAD
-	int			status = 0;
-=======
 	int			dofree;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&device_list_lock);
 	spidev = filp->private_data;
 	filp->private_data = NULL;
 
-<<<<<<< HEAD
-	/* last close? */
-	spidev->users--;
-	if (!spidev->users) {
-		int		dofree;
-
-		kfree(spidev->buffer);
-		spidev->buffer = NULL;
-		kfree(spidev->bufferrx);
-		spidev->bufferrx = NULL;
-
-		/* ... after we unbound from the underlying device? */
-		spin_lock_irq(&spidev->spi_lock);
-		dofree = (spidev->spi == NULL);
-		spin_unlock_irq(&spidev->spi_lock);
-
-		if (dofree)
-			kfree(spidev);
-	}
-	mutex_unlock(&device_list_lock);
-
-	return status;
-=======
 	mutex_lock(&spidev->spi_lock);
 	/* ... after we unbound from the underlying device? */
 	dofree = (spidev->spi == NULL);
@@ -1074,7 +671,6 @@ static int spidev_release(struct inode *inode, struct file *filp)
 	mutex_unlock(&device_list_lock);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations spidev_fops = {
@@ -1099,14 +695,6 @@ static const struct file_operations spidev_fops = {
  * It also simplifies memory management.
  */
 
-<<<<<<< HEAD
-static struct class *spidev_class;
-
-/*-------------------------------------------------------------------------*/
-
-static int __devinit spidev_probe(struct spi_device *spi)
-{
-=======
 static const struct class spidev_class = {
 	.name = "spidev",
 };
@@ -1180,13 +768,10 @@ MODULE_DEVICE_TABLE(acpi, spidev_acpi_ids);
 static int spidev_probe(struct spi_device *spi)
 {
 	int (*match)(struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spidev_data	*spidev;
 	int			status;
 	unsigned long		minor;
 
-<<<<<<< HEAD
-=======
 	match = device_get_match_data(&spi->dev);
 	if (match) {
 		status = match(&spi->dev);
@@ -1194,7 +779,6 @@ static int spidev_probe(struct spi_device *spi)
 			return status;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allocate driver data */
 	spidev = kzalloc(sizeof(*spidev), GFP_KERNEL);
 	if (!spidev)
@@ -1202,11 +786,7 @@ static int spidev_probe(struct spi_device *spi)
 
 	/* Initialize the driver data */
 	spidev->spi = spi;
-<<<<<<< HEAD
-	spin_lock_init(&spidev->spi_lock);
-=======
 	mutex_init(&spidev->spi_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&spidev->buf_lock);
 
 	INIT_LIST_HEAD(&spidev->device_entry);
@@ -1220,17 +800,10 @@ static int spidev_probe(struct spi_device *spi)
 		struct device *dev;
 
 		spidev->devt = MKDEV(SPIDEV_MAJOR, minor);
-<<<<<<< HEAD
-		dev = device_create(spidev_class, &spi->dev, spidev->devt,
-				    spidev, "spidev%d.%d",
-				    spi->master->bus_num, spi->chip_select);
-		status = IS_ERR(dev) ? PTR_ERR(dev) : 0;
-=======
 		dev = device_create(&spidev_class, &spi->dev, spidev->devt,
 				    spidev, "spidev%d.%d",
 				    spi->controller->bus_num, spi_get_chipselect(spi, 0));
 		status = PTR_ERR_OR_ZERO(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		dev_dbg(&spi->dev, "no minor number available!\n");
 		status = -ENODEV;
@@ -1241,11 +814,8 @@ static int spidev_probe(struct spi_device *spi)
 	}
 	mutex_unlock(&device_list_lock);
 
-<<<<<<< HEAD
-=======
 	spidev->speed_hz = spi->max_speed_hz;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status == 0)
 		spi_set_drvdata(spi, spidev);
 	else
@@ -1254,22 +824,6 @@ static int spidev_probe(struct spi_device *spi)
 	return status;
 }
 
-<<<<<<< HEAD
-static int __devexit spidev_remove(struct spi_device *spi)
-{
-	struct spidev_data	*spidev = spi_get_drvdata(spi);
-
-	/* make sure ops on existing fds can abort cleanly */
-	spin_lock_irq(&spidev->spi_lock);
-	spidev->spi = NULL;
-	spi_set_drvdata(spi, NULL);
-	spin_unlock_irq(&spidev->spi_lock);
-
-	/* prevent new opens */
-	mutex_lock(&device_list_lock);
-	list_del(&spidev->device_entry);
-	device_destroy(spidev_class, spidev->devt);
-=======
 static void spidev_remove(struct spi_device *spi)
 {
 	struct spidev_data	*spidev = spi_get_drvdata(spi);
@@ -1283,34 +837,21 @@ static void spidev_remove(struct spi_device *spi)
 
 	list_del(&spidev->device_entry);
 	device_destroy(&spidev_class, spidev->devt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(MINOR(spidev->devt), minors);
 	if (spidev->users == 0)
 		kfree(spidev);
 	mutex_unlock(&device_list_lock);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver spidev_spi_driver = {
 	.driver = {
 		.name =		"spidev",
-<<<<<<< HEAD
-		.owner =	THIS_MODULE,
-	},
-	.probe =	spidev_probe,
-	.remove =	__devexit_p(spidev_remove),
-=======
 		.of_match_table = spidev_dt_ids,
 		.acpi_match_table = spidev_acpi_ids,
 	},
 	.probe =	spidev_probe,
 	.remove =	spidev_remove,
 	.id_table =	spidev_spi_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* NOTE:  suspend/resume methods are not necessary here.
 	 * We don't do anything except pass the requests to/from
@@ -1329,60 +870,10 @@ static int __init spidev_init(void)
 	 * that will key udev/mdev to add/remove /dev nodes.  Last, register
 	 * the driver which manages those device numbers.
 	 */
-<<<<<<< HEAD
-	BUILD_BUG_ON(N_SPI_MINORS > 256);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = register_chrdev(SPIDEV_MAJOR, "spi", &spidev_fops);
 	if (status < 0)
 		return status;
 
-<<<<<<< HEAD
-	spidev_class = class_create(THIS_MODULE, "spidev");
-	if (IS_ERR(spidev_class)) {
-		status = PTR_ERR(spidev_class);
-		goto error_class;
-	}
-
-	status = spi_register_driver(&spidev_spi_driver);
-	if (status < 0)
-		goto error_register;
-
-	if (busnum != -1 && chipselect != -1) {
-		struct spi_board_info chip = {
-					.modalias	= "spidev",
-					.mode		= spimode,
-					.bus_num	= busnum,
-					.chip_select	= chipselect,
-					.max_speed_hz	= maxspeed,
-		};
-
-		struct spi_master *master;
-
-		master = spi_busnum_to_master(busnum);
-		if (!master) {
-			status = -ENODEV;
-			goto error_busnum;
-		}
-
-		/* We create a virtual device that will sit on the bus */
-		spi = spi_new_device(master, &chip);
-		if (!spi) {
-			status = -EBUSY;
-			goto error_mem;
-		}
-		dev_dbg(&spi->dev, "busnum=%d cs=%d bufsiz=%d maxspeed=%d",
-			busnum, chipselect, bufsiz, maxspeed);
-	}
-	return 0;
-error_mem:
-error_busnum:
-	spi_unregister_driver(&spidev_spi_driver);
-error_register:
-	class_destroy(spidev_class);
-error_class:
-	unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);
-=======
 	status = class_register(&spidev_class);
 	if (status) {
 		unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);
@@ -1394,24 +885,14 @@ error_class:
 		class_unregister(&spidev_class);
 		unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 module_init(spidev_init);
 
 static void __exit spidev_exit(void)
 {
-<<<<<<< HEAD
-	if (spi) {
-		spi_unregister_device(spi);
-		spi = NULL;
-	}
-	spi_unregister_driver(&spidev_spi_driver);
-	class_destroy(spidev_class);
-=======
 	spi_unregister_driver(&spidev_spi_driver);
 	class_unregister(&spidev_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_chrdev(SPIDEV_MAJOR, spidev_spi_driver.driver.name);
 }
 module_exit(spidev_exit);

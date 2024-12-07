@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver for the pin control subsystem
  *
@@ -12,40 +9,6 @@
  * Author: Linus Walleij <linus.walleij@linaro.org>
  *
  * Copyright (C) 2012 NVIDIA CORPORATION. All rights reserved.
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
- */
-#define pr_fmt(fmt) "pinctrl core: " fmt
-
-#include <linux/kernel.h>
-#include <linux/kref.h>
-#include <linux/export.h>
-#include <linux/init.h>
-#include <linux/device.h>
-#include <linux/slab.h>
-#include <linux/err.h>
-#include <linux/list.h>
-#include <linux/sysfs.h>
-#include <linux/debugfs.h>
-#include <linux/seq_file.h>
-#include <linux/pinctrl/consumer.h>
-#include <linux/pinctrl/pinctrl.h>
-#include <linux/pinctrl/machine.h>
-#include "core.h"
-#include "devicetree.h"
-#include "pinmux.h"
-#include "pinconf.h"
-
-
-static bool pinctrl_dummy_state;
-
-/* Mutex taken by all entry points */
-DEFINE_MUTEX(pinctrl_mutex);
-
-/* Global list of pin control devices (struct pinctrl_dev) */
-LIST_HEAD(pinctrldev_list);
-=======
  */
 #define pr_fmt(fmt) "pinctrl core: " fmt
 
@@ -87,7 +50,6 @@ static DEFINE_MUTEX(pinctrldev_list_mutex);
 
 /* Global list of pin control devices (struct pinctrl_dev) */
 static LIST_HEAD(pinctrldev_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* List of pin controller handles (struct pinctrl) */
 static LIST_HEAD(pinctrl_list);
@@ -137,27 +99,11 @@ EXPORT_SYMBOL_GPL(pinctrl_dev_get_drvdata);
  */
 struct pinctrl_dev *get_pinctrl_dev_from_devname(const char *devname)
 {
-<<<<<<< HEAD
-	struct pinctrl_dev *pctldev = NULL;
-	bool found = false;
-=======
 	struct pinctrl_dev *pctldev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!devname)
 		return NULL;
 
-<<<<<<< HEAD
-	list_for_each_entry(pctldev, &pinctrldev_list, node) {
-		if (!strcmp(dev_name(pctldev->dev), devname)) {
-			/* Matched on device name */
-			found = true;
-			break;
-		}
-	}
-
-	return found ? pctldev : NULL;
-=======
 	mutex_lock(&pinctrldev_list_mutex);
 
 	list_for_each_entry(pctldev, &pinctrldev_list, node) {
@@ -188,7 +134,6 @@ struct pinctrl_dev *get_pinctrl_dev_from_of_node(struct device_node *np)
 	mutex_unlock(&pinctrldev_list_mutex);
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -198,11 +143,7 @@ struct pinctrl_dev *get_pinctrl_dev_from_of_node(struct device_node *np)
  */
 int pin_get_from_name(struct pinctrl_dev *pctldev, const char *name)
 {
-<<<<<<< HEAD
-	unsigned i, pin;
-=======
 	unsigned int i, pin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The pin number can be retrived from the pin controller descriptor */
 	for (i = 0; i < pctldev->desc->npins; i++) {
@@ -211,13 +152,7 @@ int pin_get_from_name(struct pinctrl_dev *pctldev, const char *name)
 		pin = pctldev->desc->pins[i].number;
 		desc = pin_desc_get(pctldev, pin);
 		/* Pin space may be sparse */
-<<<<<<< HEAD
-		if (desc == NULL)
-			continue;
-		if (desc->name && !strcmp(name, desc->name))
-=======
 		if (desc && !strcmp(name, desc->name))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pin;
 	}
 
@@ -225,28 +160,16 @@ int pin_get_from_name(struct pinctrl_dev *pctldev, const char *name)
 }
 
 /**
-<<<<<<< HEAD
- * pin_get_name_from_id() - look up a pin name from a pin id
- * @pctldev: the pin control device to lookup the pin on
- * @name: the name of the pin to look up
- */
-const char *pin_get_name(struct pinctrl_dev *pctldev, const unsigned pin)
-=======
  * pin_get_name() - look up a pin name from a pin id
  * @pctldev: the pin control device to lookup the pin on
  * @pin: pin number/id to look up
  */
 const char *pin_get_name(struct pinctrl_dev *pctldev, const unsigned int pin)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct pin_desc *desc;
 
 	desc = pin_desc_get(pctldev, pin);
-<<<<<<< HEAD
-	if (desc == NULL) {
-=======
 	if (!desc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(pctldev->dev, "failed to get pin(%d) name\n",
 			pin);
 		return NULL;
@@ -254,42 +177,12 @@ const char *pin_get_name(struct pinctrl_dev *pctldev, const unsigned int pin)
 
 	return desc->name;
 }
-<<<<<<< HEAD
-
-/**
- * pin_is_valid() - check if pin exists on controller
- * @pctldev: the pin control device to check the pin on
- * @pin: pin to check, use the local pin controller index number
- *
- * This tells us whether a certain pin exist on a certain pin controller or
- * not. Pin lists may be sparse, so some pins may not exist.
- */
-bool pin_is_valid(struct pinctrl_dev *pctldev, int pin)
-{
-	struct pin_desc *pindesc;
-
-	if (pin < 0)
-		return false;
-
-	mutex_lock(&pinctrl_mutex);
-	pindesc = pin_desc_get(pctldev, pin);
-	mutex_unlock(&pinctrl_mutex);
-
-	return pindesc != NULL;
-}
-EXPORT_SYMBOL_GPL(pin_is_valid);
-=======
 EXPORT_SYMBOL_GPL(pin_get_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Deletes a range of pin descriptors */
 static void pinctrl_free_pindescs(struct pinctrl_dev *pctldev,
 				  const struct pinctrl_pin_desc *pins,
-<<<<<<< HEAD
-				  unsigned num_pins)
-=======
 				  unsigned int num_pins)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -298,11 +191,7 @@ static void pinctrl_free_pindescs(struct pinctrl_dev *pctldev,
 
 		pindesc = radix_tree_lookup(&pctldev->pin_desc_tree,
 					    pins[i].number);
-<<<<<<< HEAD
-		if (pindesc != NULL) {
-=======
 		if (pindesc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radix_tree_delete(&pctldev->pin_desc_tree,
 					  pins[i].number);
 			if (pindesc->dynamic_name)
@@ -313,16 +202,6 @@ static void pinctrl_free_pindescs(struct pinctrl_dev *pctldev,
 }
 
 static int pinctrl_register_one_pin(struct pinctrl_dev *pctldev,
-<<<<<<< HEAD
-				    unsigned number, const char *name)
-{
-	struct pin_desc *pindesc;
-
-	pindesc = pin_desc_get(pctldev, number);
-	if (pindesc != NULL) {
-		pr_err("pin %d already registered on %s\n", number,
-		       pctldev->desc->name);
-=======
 				    const struct pinctrl_pin_desc *pin)
 {
 	struct pin_desc *pindesc;
@@ -332,34 +211,17 @@ static int pinctrl_register_one_pin(struct pinctrl_dev *pctldev,
 	if (pindesc) {
 		dev_err(pctldev->dev, "pin %d already registered\n",
 			pin->number);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	pindesc = kzalloc(sizeof(*pindesc), GFP_KERNEL);
-<<<<<<< HEAD
-	if (pindesc == NULL) {
-		dev_err(pctldev->dev, "failed to alloc struct pin_desc\n");
-		return -ENOMEM;
-	}
-=======
 	if (!pindesc)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set owner */
 	pindesc->pctldev = pctldev;
 
 	/* Copy basic pin info */
-<<<<<<< HEAD
-	if (name) {
-		pindesc->name = name;
-	} else {
-		pindesc->name = kasprintf(GFP_KERNEL, "PIN%u", number);
-		if (pindesc->name == NULL) {
-			kfree(pindesc);
-			return -ENOMEM;
-=======
 	if (pin->name) {
 		pindesc->name = pin->name;
 	} else {
@@ -367,29 +229,10 @@ static int pinctrl_register_one_pin(struct pinctrl_dev *pctldev,
 		if (!pindesc->name) {
 			error = -ENOMEM;
 			goto failed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		pindesc->dynamic_name = true;
 	}
 
-<<<<<<< HEAD
-	radix_tree_insert(&pctldev->pin_desc_tree, number, pindesc);
-	pr_debug("registered pin %d (%s) on %s\n",
-		 number, pindesc->name, pctldev->desc->name);
-	return 0;
-}
-
-static int pinctrl_register_pins(struct pinctrl_dev *pctldev,
-				 struct pinctrl_pin_desc const *pins,
-				 unsigned num_descs)
-{
-	unsigned i;
-	int ret = 0;
-
-	for (i = 0; i < num_descs; i++) {
-		ret = pinctrl_register_one_pin(pctldev,
-					       pins[i].number, pins[i].name);
-=======
 	pindesc->drv_data = pin->drv_data;
 
 	error = radix_tree_insert(&pctldev->pin_desc_tree, pin->number, pindesc);
@@ -414,7 +257,6 @@ static int pinctrl_register_pins(struct pinctrl_dev *pctldev,
 
 	for (i = 0; i < num_descs; i++) {
 		ret = pinctrl_register_one_pin(pctldev, &pins[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
@@ -423,11 +265,6 @@ static int pinctrl_register_pins(struct pinctrl_dev *pctldev,
 }
 
 /**
-<<<<<<< HEAD
- * pinctrl_match_gpio_range() - check if a certain GPIO pin is in range
- * @pctldev: pin controller device to check
- * @gpio: gpio pin to check taken from the global GPIO pin space
-=======
  * gpio_to_pin() - GPIO range GPIO number to pin number translation
  * @range: GPIO range used for the translation
  * @gc: GPIO chip structure from the GPIO subsystem
@@ -456,27 +293,11 @@ static inline int gpio_to_pin(struct pinctrl_gpio_range *range,
  * @pctldev: pin controller device to check
  * @gc: GPIO chip structure from the GPIO subsystem
  * @offset: hardware offset of the GPIO relative to the controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Tries to match a GPIO pin number to the ranges handled by a certain pin
  * controller, return the range or NULL
  */
 static struct pinctrl_gpio_range *
-<<<<<<< HEAD
-pinctrl_match_gpio_range(struct pinctrl_dev *pctldev, unsigned gpio)
-{
-	struct pinctrl_gpio_range *range = NULL;
-
-	/* Loop over the ranges */
-	list_for_each_entry(range, &pctldev->gpio_ranges, node) {
-		/* Check if we're in the valid range */
-		if (gpio >= range->base &&
-		    gpio < range->base + range->npins) {
-			return range;
-		}
-	}
-
-=======
 pinctrl_match_gpio_range(struct pinctrl_dev *pctldev, struct gpio_chip *gc,
 			 unsigned int offset)
 {
@@ -493,15 +314,10 @@ pinctrl_match_gpio_range(struct pinctrl_dev *pctldev, struct gpio_chip *gc,
 		}
 	}
 	mutex_unlock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 /**
-<<<<<<< HEAD
- * pinctrl_get_device_gpio_range() - find device for GPIO range
- * @gpio: the pin to locate the pin controller for
-=======
  * pinctrl_ready_for_gpio_range() - check if other GPIO pins of
  * the same GPIO chip are in range
  * @gc: GPIO chip structure from the GPIO subsystem
@@ -556,7 +372,6 @@ pinctrl_ready_for_gpio_range(struct gpio_chip *gc, unsigned int offset)
  * pinctrl_get_device_gpio_range() - find device for GPIO range
  * @gc: GPIO chip structure from the GPIO subsystem
  * @offset: hardware offset of the GPIO relative to the controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @outdev: the pin control device if found
  * @outrange: the GPIO range if found
  *
@@ -565,13 +380,6 @@ pinctrl_ready_for_gpio_range(struct gpio_chip *gc, unsigned int offset)
  * -EPROBE_DEFER if the GPIO range could not be found in any device since it
  * may still have not been registered.
  */
-<<<<<<< HEAD
-static int pinctrl_get_device_gpio_range(unsigned gpio,
-					 struct pinctrl_dev **outdev,
-					 struct pinctrl_gpio_range **outrange)
-{
-	struct pinctrl_dev *pctldev = NULL;
-=======
 static int pinctrl_get_device_gpio_range(struct gpio_chip *gc,
 					 unsigned int offset,
 					 struct pinctrl_dev **outdev,
@@ -580,33 +388,22 @@ static int pinctrl_get_device_gpio_range(struct gpio_chip *gc,
 	struct pinctrl_dev *pctldev;
 
 	mutex_lock(&pinctrldev_list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Loop over the pin controllers */
 	list_for_each_entry(pctldev, &pinctrldev_list, node) {
 		struct pinctrl_gpio_range *range;
 
-<<<<<<< HEAD
-		range = pinctrl_match_gpio_range(pctldev, gpio);
-		if (range != NULL) {
-			*outdev = pctldev;
-			*outrange = range;
-=======
 		range = pinctrl_match_gpio_range(pctldev, gc, offset);
 		if (range) {
 			*outdev = pctldev;
 			*outrange = range;
 			mutex_unlock(&pinctrldev_list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	mutex_unlock(&pinctrldev_list_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EPROBE_DEFER;
 }
 
@@ -615,38 +412,25 @@ static int pinctrl_get_device_gpio_range(struct gpio_chip *gc,
  * @pctldev: pin controller device to add the range to
  * @range: the GPIO range to add
  *
-<<<<<<< HEAD
-=======
  * DEPRECATED: Don't use this function in new code.  See section 2 of
  * Documentation/devicetree/bindings/gpio/gpio.txt on how to bind pinctrl and
  * gpio drivers.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This adds a range of GPIOs to be handled by a certain pin controller. Call
  * this to register handled ranges after registering your pin controller.
  */
 void pinctrl_add_gpio_range(struct pinctrl_dev *pctldev,
 			    struct pinctrl_gpio_range *range)
 {
-<<<<<<< HEAD
-	mutex_lock(&pinctrl_mutex);
-	list_add_tail(&range->node, &pctldev->gpio_ranges);
-	mutex_unlock(&pinctrl_mutex);
-=======
 	mutex_lock(&pctldev->mutex);
 	list_add_tail(&range->node, &pctldev->gpio_ranges);
 	mutex_unlock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pinctrl_add_gpio_range);
 
 void pinctrl_add_gpio_ranges(struct pinctrl_dev *pctldev,
 			     struct pinctrl_gpio_range *ranges,
-<<<<<<< HEAD
-			     unsigned nranges)
-=======
 			     unsigned int nranges)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -658,13 +442,9 @@ EXPORT_SYMBOL_GPL(pinctrl_add_gpio_ranges);
 struct pinctrl_dev *pinctrl_find_and_add_gpio_range(const char *devname,
 		struct pinctrl_gpio_range *range)
 {
-<<<<<<< HEAD
-	struct pinctrl_dev *pctldev = get_pinctrl_dev_from_devname(devname);
-=======
 	struct pinctrl_dev *pctldev;
 
 	pctldev = get_pinctrl_dev_from_devname(devname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we can't find this device, let's assume that is because
@@ -675,16 +455,11 @@ struct pinctrl_dev *pinctrl_find_and_add_gpio_range(const char *devname,
 		return ERR_PTR(-EPROBE_DEFER);
 
 	pinctrl_add_gpio_range(pctldev, range);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pctldev;
 }
 EXPORT_SYMBOL_GPL(pinctrl_find_and_add_gpio_range);
 
-<<<<<<< HEAD
-=======
 int pinctrl_get_group_pins(struct pinctrl_dev *pctldev, const char *pin_group,
 			   const unsigned int **pins, unsigned int *num_pins)
 {
@@ -726,7 +501,6 @@ pinctrl_find_gpio_range_from_pin_nolock(struct pinctrl_dev *pctldev,
 }
 EXPORT_SYMBOL_GPL(pinctrl_find_gpio_range_from_pin_nolock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pinctrl_find_gpio_range_from_pin() - locate the GPIO range for a pin
  * @pctldev: the pin controller device to look in
@@ -736,20 +510,6 @@ struct pinctrl_gpio_range *
 pinctrl_find_gpio_range_from_pin(struct pinctrl_dev *pctldev,
 				 unsigned int pin)
 {
-<<<<<<< HEAD
-	struct pinctrl_gpio_range *range = NULL;
-
-	/* Loop over the ranges */
-	list_for_each_entry(range, &pctldev->gpio_ranges, node) {
-		/* Check if we're in the valid range */
-		if (pin >= range->pin_base &&
-		    pin < range->pin_base + range->npins) {
-			return range;
-		}
-	}
-
-	return NULL;
-=======
 	struct pinctrl_gpio_range *range;
 
 	mutex_lock(&pctldev->mutex);
@@ -757,30 +517,17 @@ pinctrl_find_gpio_range_from_pin(struct pinctrl_dev *pctldev,
 	mutex_unlock(&pctldev->mutex);
 
 	return range;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pinctrl_find_gpio_range_from_pin);
 
 /**
-<<<<<<< HEAD
- * pinctrl_remove_gpio_range() - remove a range of GPIOs fro a pin controller
-=======
  * pinctrl_remove_gpio_range() - remove a range of GPIOs from a pin controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pctldev: pin controller device to remove the range from
  * @range: the GPIO range to remove
  */
 void pinctrl_remove_gpio_range(struct pinctrl_dev *pctldev,
 			       struct pinctrl_gpio_range *range)
 {
-<<<<<<< HEAD
-	mutex_lock(&pinctrl_mutex);
-	list_del(&range->node);
-	mutex_unlock(&pinctrl_mutex);
-}
-EXPORT_SYMBOL_GPL(pinctrl_remove_gpio_range);
-
-=======
 	mutex_lock(&pctldev->mutex);
 	list_del(&range->node);
 	mutex_unlock(&pctldev->mutex);
@@ -977,7 +724,6 @@ static inline void pinctrl_generic_free_groups(struct pinctrl_dev *pctldev)
 }
 #endif /* CONFIG_GENERIC_PINCTRL_GROUPS */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pinctrl_get_group_selector() - returns the group selector for a group
  * @pctldev: the pin controller handling the group
@@ -987,22 +733,13 @@ int pinctrl_get_group_selector(struct pinctrl_dev *pctldev,
 			       const char *pin_group)
 {
 	const struct pinctrl_ops *pctlops = pctldev->desc->pctlops;
-<<<<<<< HEAD
-	unsigned ngroups = pctlops->get_groups_count(pctldev);
-	unsigned group_selector = 0;
-=======
 	unsigned int ngroups = pctlops->get_groups_count(pctldev);
 	unsigned int group_selector = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (group_selector < ngroups) {
 		const char *gname = pctlops->get_group_name(pctldev,
 							    group_selector);
-<<<<<<< HEAD
-		if (!strcmp(gname, pin_group)) {
-=======
 		if (gname && !strcmp(gname, pin_group)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_dbg(pctldev->dev,
 				"found group selector %u for %s\n",
 				group_selector,
@@ -1019,11 +756,6 @@ int pinctrl_get_group_selector(struct pinctrl_dev *pctldev,
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-/**
- * pinctrl_request_gpio() - request a single pin to be used in as GPIO
- * @gpio: the GPIO pin number from the GPIO subsystem number space
-=======
 bool pinctrl_gpio_can_use_line(struct gpio_chip *gc, unsigned int offset)
 {
 	struct pinctrl_dev *pctldev;
@@ -1056,72 +788,11 @@ EXPORT_SYMBOL_GPL(pinctrl_gpio_can_use_line);
  * pinctrl_gpio_request() - request a single pin to be used as GPIO
  * @gc: GPIO chip structure from the GPIO subsystem
  * @offset: hardware offset of the GPIO relative to the controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_request() semantics, platforms and individual drivers
  * shall *NOT* request GPIO pins to be muxed in.
  */
-<<<<<<< HEAD
-int pinctrl_request_gpio(unsigned gpio)
-{
-	struct pinctrl_dev *pctldev;
-	struct pinctrl_gpio_range *range;
-	int ret;
-	int pin;
-
-	mutex_lock(&pinctrl_mutex);
-
-	ret = pinctrl_get_device_gpio_range(gpio, &pctldev, &range);
-	if (ret) {
-		mutex_unlock(&pinctrl_mutex);
-		return ret;
-	}
-
-	/* Convert to the pin controllers number space */
-	pin = gpio - range->base + range->pin_base;
-
-	ret = pinmux_request_gpio(pctldev, range, pin, gpio);
-
-	mutex_unlock(&pinctrl_mutex);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(pinctrl_request_gpio);
-
-/**
- * pinctrl_free_gpio() - free control on a single pin, currently used as GPIO
- * @gpio: the GPIO pin number from the GPIO subsystem number space
- *
- * This function should *ONLY* be used from gpiolib-based GPIO drivers,
- * as part of their gpio_free() semantics, platforms and individual drivers
- * shall *NOT* request GPIO pins to be muxed out.
- */
-void pinctrl_free_gpio(unsigned gpio)
-{
-	struct pinctrl_dev *pctldev;
-	struct pinctrl_gpio_range *range;
-	int ret;
-	int pin;
-
-	mutex_lock(&pinctrl_mutex);
-
-	ret = pinctrl_get_device_gpio_range(gpio, &pctldev, &range);
-	if (ret) {
-		mutex_unlock(&pinctrl_mutex);
-		return;
-	}
-
-	/* Convert to the pin controllers number space */
-	pin = gpio - range->base + range->pin_base;
-
-	pinmux_free_gpio(pctldev, pin, range);
-
-	mutex_unlock(&pinctrl_mutex);
-}
-EXPORT_SYMBOL_GPL(pinctrl_free_gpio);
-
-static int pinctrl_gpio_direction(unsigned gpio, bool input)
-=======
 int pinctrl_gpio_request(struct gpio_chip *gc, unsigned int offset)
 {
 	struct pinctrl_gpio_range *range;
@@ -1180,23 +851,12 @@ EXPORT_SYMBOL_GPL(pinctrl_gpio_free);
 
 static int pinctrl_gpio_direction(struct gpio_chip *gc, unsigned int offset,
 				  bool input)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl_dev *pctldev;
 	struct pinctrl_gpio_range *range;
 	int ret;
 	int pin;
 
-<<<<<<< HEAD
-	ret = pinctrl_get_device_gpio_range(gpio, &pctldev, &range);
-	if (ret)
-		return ret;
-
-	/* Convert to the pin controllers number space */
-	pin = gpio - range->base + range->pin_base;
-
-	return pinmux_gpio_direction(pctldev, range, pin, input);
-=======
 	ret = pinctrl_get_device_gpio_range(gc, offset, &pctldev, &range);
 	if (ret) {
 		return ret;
@@ -1211,63 +871,32 @@ static int pinctrl_gpio_direction(struct gpio_chip *gc, unsigned int offset,
 	mutex_unlock(&pctldev->mutex);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * pinctrl_gpio_direction_input() - request a GPIO pin to go into input mode
-<<<<<<< HEAD
- * @gpio: the GPIO pin number from the GPIO subsystem number space
-=======
  * @gc: GPIO chip structure from the GPIO subsystem
  * @offset: hardware offset of the GPIO relative to the controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_direction_input() semantics, platforms and individual
  * drivers shall *NOT* touch pin control GPIO calls.
  */
-<<<<<<< HEAD
-int pinctrl_gpio_direction_input(unsigned gpio)
-{
-	int ret;
-	mutex_lock(&pinctrl_mutex);
-	ret = pinctrl_gpio_direction(gpio, true);
-	mutex_unlock(&pinctrl_mutex);
-	return ret;
-=======
 int pinctrl_gpio_direction_input(struct gpio_chip *gc, unsigned int offset)
 {
 	return pinctrl_gpio_direction(gc, offset, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pinctrl_gpio_direction_input);
 
 /**
  * pinctrl_gpio_direction_output() - request a GPIO pin to go into output mode
-<<<<<<< HEAD
- * @gpio: the GPIO pin number from the GPIO subsystem number space
-=======
  * @gc: GPIO chip structure from the GPIO subsystem
  * @offset: hardware offset of the GPIO relative to the controller
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function should *ONLY* be used from gpiolib-based GPIO drivers,
  * as part of their gpio_direction_output() semantics, platforms and individual
  * drivers shall *NOT* touch pin control GPIO calls.
  */
-<<<<<<< HEAD
-int pinctrl_gpio_direction_output(unsigned gpio)
-{
-	int ret;
-	mutex_lock(&pinctrl_mutex);
-	ret = pinctrl_gpio_direction(gpio, false);
-	mutex_unlock(&pinctrl_mutex);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(pinctrl_gpio_direction_output);
-
-=======
 int pinctrl_gpio_direction_output(struct gpio_chip *gc, unsigned int offset)
 {
 	return pinctrl_gpio_direction(gc, offset, false);
@@ -1305,7 +934,6 @@ int pinctrl_gpio_set_config(struct gpio_chip *gc, unsigned int offset,
 }
 EXPORT_SYMBOL_GPL(pinctrl_gpio_set_config);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pinctrl_state *find_state(struct pinctrl *p,
 					const char *name)
 {
@@ -1324,16 +952,8 @@ static struct pinctrl_state *create_state(struct pinctrl *p,
 	struct pinctrl_state *state;
 
 	state = kzalloc(sizeof(*state), GFP_KERNEL);
-<<<<<<< HEAD
-	if (state == NULL) {
-		dev_err(p->dev,
-			"failed to alloc struct pinctrl_state\n");
-		return ERR_PTR(-ENOMEM);
-	}
-=======
 	if (!state)
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	state->name = name;
 	INIT_LIST_HEAD(&state->settings);
@@ -1343,12 +963,8 @@ static struct pinctrl_state *create_state(struct pinctrl *p,
 	return state;
 }
 
-<<<<<<< HEAD
-static int add_setting(struct pinctrl *p, struct pinctrl_map const *map)
-=======
 static int add_setting(struct pinctrl *p, struct pinctrl_dev *pctldev,
 		       const struct pinctrl_map *map)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl_state *state;
 	struct pinctrl_setting *setting;
@@ -1364,18 +980,6 @@ static int add_setting(struct pinctrl *p, struct pinctrl_dev *pctldev,
 		return 0;
 
 	setting = kzalloc(sizeof(*setting), GFP_KERNEL);
-<<<<<<< HEAD
-	if (setting == NULL) {
-		dev_err(p->dev,
-			"failed to alloc struct pinctrl_setting\n");
-		return -ENOMEM;
-	}
-
-	setting->type = map->type;
-
-	setting->pctldev = get_pinctrl_dev_from_devname(map->ctrl_dev_name);
-	if (setting->pctldev == NULL) {
-=======
 	if (!setting)
 		return -ENOMEM;
 
@@ -1387,7 +991,6 @@ static int add_setting(struct pinctrl *p, struct pinctrl_dev *pctldev,
 		setting->pctldev =
 			get_pinctrl_dev_from_devname(map->ctrl_dev_name);
 	if (!setting->pctldev) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(setting);
 		/* Do not defer probing of hogs (circular loop) */
 		if (!strcmp(map->ctrl_dev_name, map->dev_name))
@@ -1429,18 +1032,6 @@ static struct pinctrl *find_pinctrl(struct device *dev)
 {
 	struct pinctrl *p;
 
-<<<<<<< HEAD
-	list_for_each_entry(p, &pinctrl_list, node)
-		if (p->dev == dev)
-			return p;
-
-	return NULL;
-}
-
-static void pinctrl_put_locked(struct pinctrl *p, bool inlist);
-
-static struct pinctrl *create_pinctrl(struct device *dev)
-=======
 	mutex_lock(&pinctrl_list_mutex);
 	list_for_each_entry(p, &pinctrl_list, node)
 		if (p->dev == dev) {
@@ -1456,17 +1047,11 @@ static void pinctrl_free(struct pinctrl *p, bool inlist);
 
 static struct pinctrl *create_pinctrl(struct device *dev,
 				      struct pinctrl_dev *pctldev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl *p;
 	const char *devname;
 	struct pinctrl_maps *maps_node;
-<<<<<<< HEAD
-	int i;
-	struct pinctrl_map const *map;
-=======
 	const struct pinctrl_map *map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
@@ -1475,24 +1060,13 @@ static struct pinctrl *create_pinctrl(struct device *dev,
 	 * a pin control handle with pinctrl_get()
 	 */
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
-<<<<<<< HEAD
-	if (p == NULL) {
-		dev_err(dev, "failed to alloc struct pinctrl\n");
-		return ERR_PTR(-ENOMEM);
-	}
-=======
 	if (!p)
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->dev = dev;
 	INIT_LIST_HEAD(&p->states);
 	INIT_LIST_HEAD(&p->dt_maps);
 
-<<<<<<< HEAD
-	ret = pinctrl_dt_to_map(p);
-=======
 	ret = pinctrl_dt_to_map(p, pctldev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		kfree(p);
 		return ERR_PTR(ret);
@@ -1500,15 +1074,6 @@ static struct pinctrl *create_pinctrl(struct device *dev,
 
 	devname = dev_name(dev);
 
-<<<<<<< HEAD
-	/* Iterate over the pin control maps to locate the right ones */
-	for_each_maps(maps_node, i, map) {
-		/* Map must be for this device */
-		if (strcmp(map->dev_name, devname))
-			continue;
-
-		ret = add_setting(p, map);
-=======
 	mutex_lock(&pinctrl_maps_mutex);
 	/* Iterate over the pin control maps to locate the right ones */
 	for_each_pin_map(maps_node, map) {
@@ -1527,7 +1092,6 @@ static struct pinctrl *create_pinctrl(struct device *dev,
 			continue;
 
 		ret = add_setting(p, pctldev, map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * At this point the adding of a setting may:
 		 *
@@ -1542,15 +1106,6 @@ static struct pinctrl *create_pinctrl(struct device *dev,
 		 * an -EPROBE_DEFER later, as that is the worst case.
 		 */
 		if (ret == -EPROBE_DEFER) {
-<<<<<<< HEAD
-			pinctrl_put_locked(p, false);
-			return ERR_PTR(ret);
-		}
-	}
-	if (ret < 0) {
-		/* If some other error than deferral occured, return here */
-		pinctrl_put_locked(p, false);
-=======
 			pinctrl_free(p, false);
 			mutex_unlock(&pinctrl_maps_mutex);
 			return ERR_PTR(ret);
@@ -1561,33 +1116,24 @@ static struct pinctrl *create_pinctrl(struct device *dev,
 	if (ret < 0) {
 		/* If some other error than deferral occurred, return here */
 		pinctrl_free(p, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(ret);
 	}
 
 	kref_init(&p->users);
 
 	/* Add the pinctrl handle to the global list */
-<<<<<<< HEAD
-	list_add_tail(&p->node, &pinctrl_list);
-=======
 	mutex_lock(&pinctrl_list_mutex);
 	list_add_tail(&p->node, &pinctrl_list);
 	mutex_unlock(&pinctrl_list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return p;
 }
 
-<<<<<<< HEAD
-static struct pinctrl *pinctrl_get_locked(struct device *dev)
-=======
 /**
  * pinctrl_get() - retrieves the pinctrl handle for a device
  * @dev: the device to obtain the handle for
  */
 struct pinctrl *pinctrl_get(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl *p;
 
@@ -1600,38 +1146,12 @@ struct pinctrl *pinctrl_get(struct device *dev)
 	 * return another pointer to it.
 	 */
 	p = find_pinctrl(dev);
-<<<<<<< HEAD
-	if (p != NULL) {
-=======
 	if (p) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(dev, "obtain a copy of previously claimed pinctrl\n");
 		kref_get(&p->users);
 		return p;
 	}
 
-<<<<<<< HEAD
-	return create_pinctrl(dev);
-}
-
-/**
- * pinctrl_get() - retrieves the pinctrl handle for a device
- * @dev: the device to obtain the handle for
- */
-struct pinctrl *pinctrl_get(struct device *dev)
-{
-	struct pinctrl *p;
-
-	mutex_lock(&pinctrl_mutex);
-	p = pinctrl_get_locked(dev);
-	mutex_unlock(&pinctrl_mutex);
-
-	return p;
-}
-EXPORT_SYMBOL_GPL(pinctrl_get);
-
-static void pinctrl_put_locked(struct pinctrl *p, bool inlist)
-=======
 	return create_pinctrl(dev, NULL);
 }
 EXPORT_SYMBOL_GPL(pinctrl_get);
@@ -1655,33 +1175,14 @@ static void pinctrl_free_setting(bool disable_setting,
 }
 
 static void pinctrl_free(struct pinctrl *p, bool inlist)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl_state *state, *n1;
 	struct pinctrl_setting *setting, *n2;
 
-<<<<<<< HEAD
-	list_for_each_entry_safe(state, n1, &p->states, node) {
-		list_for_each_entry_safe(setting, n2, &state->settings, node) {
-			switch (setting->type) {
-			case PIN_MAP_TYPE_MUX_GROUP:
-				if (state == p->state)
-					pinmux_disable_setting(setting);
-				pinmux_free_setting(setting);
-				break;
-			case PIN_MAP_TYPE_CONFIGS_PIN:
-			case PIN_MAP_TYPE_CONFIGS_GROUP:
-				pinconf_free_setting(setting);
-				break;
-			default:
-				break;
-			}
-=======
 	mutex_lock(&pinctrl_list_mutex);
 	list_for_each_entry_safe(state, n1, &p->states, node) {
 		list_for_each_entry_safe(setting, n2, &state->settings, node) {
 			pinctrl_free_setting(state == p->state, setting);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_del(&setting->node);
 			kfree(setting);
 		}
@@ -1694,10 +1195,7 @@ static void pinctrl_free(struct pinctrl *p, bool inlist)
 	if (inlist)
 		list_del(&p->node);
 	kfree(p);
-<<<<<<< HEAD
-=======
 	mutex_unlock(&pinctrl_list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1708,11 +1206,7 @@ static void pinctrl_release(struct kref *kref)
 {
 	struct pinctrl *p = container_of(kref, struct pinctrl, users);
 
-<<<<<<< HEAD
-	pinctrl_put_locked(p, true);
-=======
 	pinctrl_free(p, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1721,16 +1215,6 @@ static void pinctrl_release(struct kref *kref)
  */
 void pinctrl_put(struct pinctrl *p)
 {
-<<<<<<< HEAD
-	mutex_lock(&pinctrl_mutex);
-	kref_put(&p->users, pinctrl_release);
-	mutex_unlock(&pinctrl_mutex);
-}
-EXPORT_SYMBOL_GPL(pinctrl_put);
-
-static struct pinctrl_state *pinctrl_lookup_state_locked(struct pinctrl *p,
-							 const char *name)
-=======
 	kref_put(&p->users, pinctrl_release);
 }
 EXPORT_SYMBOL_GPL(pinctrl_put);
@@ -1742,7 +1226,6 @@ EXPORT_SYMBOL_GPL(pinctrl_put);
  */
 struct pinctrl_state *pinctrl_lookup_state(struct pinctrl *p,
 						 const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl_state *state;
 
@@ -1759,66 +1242,6 @@ struct pinctrl_state *pinctrl_lookup_state(struct pinctrl *p,
 
 	return state;
 }
-<<<<<<< HEAD
-
-/**
- * pinctrl_lookup_state() - retrieves a state handle from a pinctrl handle
- * @p: the pinctrl handle to retrieve the state from
- * @name: the state name to retrieve
- */
-struct pinctrl_state *pinctrl_lookup_state(struct pinctrl *p, const char *name)
-{
-	struct pinctrl_state *s;
-
-	mutex_lock(&pinctrl_mutex);
-	s = pinctrl_lookup_state_locked(p, name);
-	mutex_unlock(&pinctrl_mutex);
-
-	return s;
-}
-EXPORT_SYMBOL_GPL(pinctrl_lookup_state);
-
-static int pinctrl_select_state_locked(struct pinctrl *p,
-				       struct pinctrl_state *state)
-{
-	struct pinctrl_setting *setting, *setting2;
-	int ret;
-
-	if (p->state == state)
-		return 0;
-
-	if (p->state) {
-		/*
-		 * The set of groups with a mux configuration in the old state
-		 * may not be identical to the set of groups with a mux setting
-		 * in the new state. While this might be unusual, it's entirely
-		 * possible for the "user"-supplied mapping table to be written
-		 * that way. For each group that was configured in the old state
-		 * but not in the new state, this code puts that group into a
-		 * safe/disabled state.
-		 */
-		list_for_each_entry(setting, &p->state->settings, node) {
-			bool found = false;
-			if (setting->type != PIN_MAP_TYPE_MUX_GROUP)
-				continue;
-			list_for_each_entry(setting2, &state->settings, node) {
-				if (setting2->type != PIN_MAP_TYPE_MUX_GROUP)
-					continue;
-				if (setting2->data.mux.group ==
-						setting->data.mux.group) {
-					found = true;
-					break;
-				}
-			}
-			if (!found)
-				pinmux_disable_setting(setting);
-		}
-	}
-
-	p->state = state;
-
-	/* Apply all the settings for the new state */
-=======
 EXPORT_SYMBOL_GPL(pinctrl_lookup_state);
 
 static void pinctrl_link_add(struct pinctrl_dev *pctldev,
@@ -1858,7 +1281,6 @@ static int pinctrl_commit_state(struct pinctrl *p, struct pinctrl_state *state)
 	p->state = NULL;
 
 	/* Apply all the settings for the new state - pinmux first */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(setting, &state->settings, node) {
 		switch (setting->type) {
 		case PIN_MAP_TYPE_MUX_GROUP:
@@ -1866,8 +1288,6 @@ static int pinctrl_commit_state(struct pinctrl *p, struct pinctrl_state *state)
 			break;
 		case PIN_MAP_TYPE_CONFIGS_PIN:
 		case PIN_MAP_TYPE_CONFIGS_GROUP:
-<<<<<<< HEAD
-=======
 			ret = 0;
 			break;
 		default:
@@ -1891,27 +1311,12 @@ static int pinctrl_commit_state(struct pinctrl *p, struct pinctrl_state *state)
 			break;
 		case PIN_MAP_TYPE_CONFIGS_PIN:
 		case PIN_MAP_TYPE_CONFIGS_GROUP:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = pinconf_apply_setting(setting);
 			break;
 		default:
 			ret = -EINVAL;
 			break;
 		}
-<<<<<<< HEAD
-		if (ret < 0) {
-			/* FIXME: Difficult to return to prev state */
-			return ret;
-		}
-	}
-
-	return 0;
-}
-
-/**
- * pinctrl_select() - select/activate/program a pinctrl state to HW
- * @p: the pinctrl handle for the device that requests configuratio
-=======
 
 		if (ret < 0) {
 			goto unapply_new_state;
@@ -1953,25 +1358,14 @@ unapply_new_state:
 /**
  * pinctrl_select_state() - select/activate/program a pinctrl state to HW
  * @p: the pinctrl handle for the device that requests configuration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @state: the state handle to select/activate/program
  */
 int pinctrl_select_state(struct pinctrl *p, struct pinctrl_state *state)
 {
-<<<<<<< HEAD
-	int ret;
-
-	mutex_lock(&pinctrl_mutex);
-	ret = pinctrl_select_state_locked(p, state);
-	mutex_unlock(&pinctrl_mutex);
-
-	return ret;
-=======
 	if (p->state == state)
 		return 0;
 
 	return pinctrl_commit_state(p, state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pinctrl_select_state);
 
@@ -1981,11 +1375,7 @@ static void devm_pinctrl_release(struct device *dev, void *res)
 }
 
 /**
-<<<<<<< HEAD
- * struct devm_pinctrl_get() - Resource managed pinctrl_get()
-=======
  * devm_pinctrl_get() - Resource managed pinctrl_get()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: the device to obtain the handle for
  *
  * If there is a need to explicitly destroy the returned struct pinctrl,
@@ -2028,16 +1418,6 @@ static int devm_pinctrl_match(struct device *dev, void *res, void *data)
  */
 void devm_pinctrl_put(struct pinctrl *p)
 {
-<<<<<<< HEAD
-	WARN_ON(devres_destroy(p->dev, devm_pinctrl_release,
-			       devm_pinctrl_match, p));
-	pinctrl_put(p);
-}
-EXPORT_SYMBOL_GPL(devm_pinctrl_put);
-
-int pinctrl_register_map(struct pinctrl_map const *maps, unsigned num_maps,
-			 bool dup, bool locked)
-=======
 	WARN_ON(devres_release(p->dev, devm_pinctrl_release,
 			       devm_pinctrl_match, p));
 }
@@ -2052,16 +1432,11 @@ EXPORT_SYMBOL_GPL(devm_pinctrl_put);
  */
 int pinctrl_register_mappings(const struct pinctrl_map *maps,
 			      unsigned int num_maps)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ret;
 	struct pinctrl_maps *maps_node;
 
-<<<<<<< HEAD
-	pr_debug("add %d pinmux maps\n", num_maps);
-=======
 	pr_debug("add %u pinctrl maps\n", num_maps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First sanity check the new mapping */
 	for (i = 0; i < num_maps; i++) {
@@ -2106,59 +1481,6 @@ int pinctrl_register_mappings(const struct pinctrl_map *maps,
 	}
 
 	maps_node = kzalloc(sizeof(*maps_node), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!maps_node) {
-		pr_err("failed to alloc struct pinctrl_maps\n");
-		return -ENOMEM;
-	}
-
-	maps_node->num_maps = num_maps;
-	if (dup) {
-		maps_node->maps = kmemdup(maps, sizeof(*maps) * num_maps,
-					  GFP_KERNEL);
-		if (!maps_node->maps) {
-			pr_err("failed to duplicate mapping table\n");
-			kfree(maps_node);
-			return -ENOMEM;
-		}
-	} else {
-		maps_node->maps = maps;
-	}
-
-	if (!locked)
-		mutex_lock(&pinctrl_mutex);
-	list_add_tail(&maps_node->node, &pinctrl_maps);
-	if (!locked)
-		mutex_unlock(&pinctrl_mutex);
-
-	return 0;
-}
-
-/**
- * pinctrl_register_mappings() - register a set of pin controller mappings
- * @maps: the pincontrol mappings table to register. This should probably be
- *	marked with __initdata so it can be discarded after boot. This
- *	function will perform a shallow copy for the mapping entries.
- * @num_maps: the number of maps in the mapping table
- */
-int pinctrl_register_mappings(struct pinctrl_map const *maps,
-			      unsigned num_maps)
-{
-	return pinctrl_register_map(maps, num_maps, true, false);
-}
-
-void pinctrl_unregister_map(struct pinctrl_map const *map)
-{
-	struct pinctrl_maps *maps_node;
-
-	list_for_each_entry(maps_node, &pinctrl_maps, node) {
-		if (maps_node->maps == map) {
-			list_del(&maps_node->node);
-			return;
-		}
-	}
-}
-=======
 	if (!maps_node)
 		return -ENOMEM;
 
@@ -2194,7 +1516,6 @@ void pinctrl_unregister_mappings(const struct pinctrl_map *map)
 	mutex_unlock(&pinctrl_maps_mutex);
 }
 EXPORT_SYMBOL_GPL(pinctrl_unregister_mappings);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pinctrl_force_sleep() - turn a given controller device into sleep state
@@ -2203,11 +1524,7 @@ EXPORT_SYMBOL_GPL(pinctrl_unregister_mappings);
 int pinctrl_force_sleep(struct pinctrl_dev *pctldev)
 {
 	if (!IS_ERR(pctldev->p) && !IS_ERR(pctldev->hog_sleep))
-<<<<<<< HEAD
-		return pinctrl_select_state(pctldev->p, pctldev->hog_sleep);
-=======
 		return pinctrl_commit_state(pctldev->p, pctldev->hog_sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pinctrl_force_sleep);
@@ -2219,17 +1536,11 @@ EXPORT_SYMBOL_GPL(pinctrl_force_sleep);
 int pinctrl_force_default(struct pinctrl_dev *pctldev)
 {
 	if (!IS_ERR(pctldev->p) && !IS_ERR(pctldev->hog_default))
-<<<<<<< HEAD
-		return pinctrl_select_state(pctldev->p, pctldev->hog_default);
-=======
 		return pinctrl_commit_state(pctldev->p, pctldev->hog_default);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(pinctrl_force_default);
 
-<<<<<<< HEAD
-=======
 /**
  * pinctrl_init_done() - tell pinctrl probe is done
  *
@@ -2329,20 +1640,12 @@ int pinctrl_pm_select_idle_state(struct device *dev)
 EXPORT_SYMBOL_GPL(pinctrl_pm_select_idle_state);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_FS
 
 static int pinctrl_pins_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_dev *pctldev = s->private;
 	const struct pinctrl_ops *ops = pctldev->desc->pctlops;
-<<<<<<< HEAD
-	unsigned i, pin;
-
-	seq_printf(s, "registered pins: %d\n", pctldev->desc->npins);
-
-	mutex_lock(&pinctrl_mutex);
-=======
 	unsigned int i, pin;
 #ifdef CONFIG_GPIOLIB
 	struct gpio_device *gdev = NULL;
@@ -2353,7 +1656,6 @@ static int pinctrl_pins_show(struct seq_file *s, void *what)
 	seq_printf(s, "registered pins: %d\n", pctldev->desc->npins);
 
 	mutex_lock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The pin number can be retrived from the pin controller descriptor */
 	for (i = 0; i < pctldev->desc->npins; i++) {
@@ -2362,13 +1664,6 @@ static int pinctrl_pins_show(struct seq_file *s, void *what)
 		pin = pctldev->desc->pins[i].number;
 		desc = pin_desc_get(pctldev, pin);
 		/* Pin space may be sparse */
-<<<<<<< HEAD
-		if (desc == NULL)
-			continue;
-
-		seq_printf(s, "pin %d (%s) ", pin,
-			   desc->name ? desc->name : "unnamed");
-=======
 		if (!desc)
 			continue;
 
@@ -2397,7 +1692,6 @@ static int pinctrl_pins_show(struct seq_file *s, void *what)
 		else
 			seq_puts(s, "0:? ");
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Driver-specific info per pin */
 		if (ops->pin_dbg_show)
@@ -2406,41 +1700,16 @@ static int pinctrl_pins_show(struct seq_file *s, void *what)
 		seq_puts(s, "\n");
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&pinctrl_mutex);
-
-	return 0;
-}
-=======
 	mutex_unlock(&pctldev->mutex);
 
 	return 0;
 }
 DEFINE_SHOW_ATTRIBUTE(pinctrl_pins);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pinctrl_groups_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_dev *pctldev = s->private;
 	const struct pinctrl_ops *ops = pctldev->desc->pctlops;
-<<<<<<< HEAD
-	unsigned ngroups, selector = 0;
-
-	ngroups = ops->get_groups_count(pctldev);
-	mutex_lock(&pinctrl_mutex);
-
-	seq_puts(s, "registered pin groups:\n");
-	while (selector < ngroups) {
-		const unsigned *pins;
-		unsigned num_pins;
-		const char *gname = ops->get_group_name(pctldev, selector);
-		const char *pname;
-		int ret;
-		int i;
-
-		ret = ops->get_group_pins(pctldev, selector,
-					  &pins, &num_pins);
-=======
 	unsigned int ngroups, selector = 0;
 
 	mutex_lock(&pctldev->mutex);
@@ -2459,7 +1728,6 @@ static int pinctrl_groups_show(struct seq_file *s, void *what)
 		if (ops->get_group_pins)
 			ret = ops->get_group_pins(pctldev, selector,
 						  &pins, &num_pins);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			seq_printf(s, "%s [ERROR GETTING PINS]\n",
 				   gname);
@@ -2468,11 +1736,7 @@ static int pinctrl_groups_show(struct seq_file *s, void *what)
 			for (i = 0; i < num_pins; i++) {
 				pname = pin_get_name(pctldev, pins[i]);
 				if (WARN_ON(!pname)) {
-<<<<<<< HEAD
-					mutex_unlock(&pinctrl_mutex);
-=======
 					mutex_unlock(&pctldev->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return -EINVAL;
 				}
 				seq_printf(s, "pin %d (%s)\n", pins[i], pname);
@@ -2482,43 +1746,15 @@ static int pinctrl_groups_show(struct seq_file *s, void *what)
 		selector++;
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&pinctrl_mutex);
-
-	return 0;
-}
-=======
 	mutex_unlock(&pctldev->mutex);
 
 	return 0;
 }
 DEFINE_SHOW_ATTRIBUTE(pinctrl_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pinctrl_gpioranges_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_dev *pctldev = s->private;
-<<<<<<< HEAD
-	struct pinctrl_gpio_range *range = NULL;
-
-	seq_puts(s, "GPIO ranges handled:\n");
-
-	mutex_lock(&pinctrl_mutex);
-
-	/* Loop over the ranges */
-	list_for_each_entry(range, &pctldev->gpio_ranges, node) {
-		seq_printf(s, "%u: %s GPIOS [%u - %u] PINS [%u - %u]\n",
-			   range->id, range->name,
-			   range->base, (range->base + range->npins - 1),
-			   range->pin_base,
-			   (range->pin_base + range->npins - 1));
-	}
-
-	mutex_unlock(&pinctrl_mutex);
-
-	return 0;
-}
-=======
 	struct pinctrl_gpio_range *range;
 
 	seq_puts(s, "GPIO ranges handled:\n");
@@ -2549,7 +1785,6 @@ static int pinctrl_gpioranges_show(struct seq_file *s, void *what)
 	return 0;
 }
 DEFINE_SHOW_ATTRIBUTE(pinctrl_gpioranges);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pinctrl_devices_show(struct seq_file *s, void *what)
 {
@@ -2557,11 +1792,7 @@ static int pinctrl_devices_show(struct seq_file *s, void *what)
 
 	seq_puts(s, "name [pinmux] [pinconf]\n");
 
-<<<<<<< HEAD
-	mutex_lock(&pinctrl_mutex);
-=======
 	mutex_lock(&pinctrldev_list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(pctldev, &pinctrldev_list, node) {
 		seq_printf(s, "%s ", pctldev->desc->name);
@@ -2576,18 +1807,11 @@ static int pinctrl_devices_show(struct seq_file *s, void *what)
 		seq_puts(s, "\n");
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&pinctrl_mutex);
-
-	return 0;
-}
-=======
 	mutex_unlock(&pinctrldev_list_mutex);
 
 	return 0;
 }
 DEFINE_SHOW_ATTRIBUTE(pinctrl_devices);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline const char *map_type(enum pinctrl_map_type type)
 {
@@ -2608,23 +1832,12 @@ static inline const char *map_type(enum pinctrl_map_type type)
 static int pinctrl_maps_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_maps *maps_node;
-<<<<<<< HEAD
-	int i;
-	struct pinctrl_map const *map;
-
-	seq_puts(s, "Pinctrl maps:\n");
-
-	mutex_lock(&pinctrl_mutex);
-
-	for_each_maps(maps_node, i, map) {
-=======
 	const struct pinctrl_map *map;
 
 	seq_puts(s, "Pinctrl maps:\n");
 
 	mutex_lock(&pinctrl_maps_mutex);
 	for_each_pin_map(maps_node, map) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(s, "device %s\nstate %s\ntype %s (%d)\n",
 			   map->dev_name, map->name, map_type(map->type),
 			   map->type);
@@ -2645,15 +1858,6 @@ static int pinctrl_maps_show(struct seq_file *s, void *what)
 			break;
 		}
 
-<<<<<<< HEAD
-		seq_printf(s, "\n");
-	}
-
-	mutex_unlock(&pinctrl_mutex);
-
-	return 0;
-}
-=======
 		seq_putc(s, '\n');
 	}
 	mutex_unlock(&pinctrl_maps_mutex);
@@ -2661,7 +1865,6 @@ static int pinctrl_maps_show(struct seq_file *s, void *what)
 	return 0;
 }
 DEFINE_SHOW_ATTRIBUTE(pinctrl_maps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pinctrl_show(struct seq_file *s, void *what)
 {
@@ -2671,11 +1874,7 @@ static int pinctrl_show(struct seq_file *s, void *what)
 
 	seq_puts(s, "Requested pin control handlers their pinmux maps:\n");
 
-<<<<<<< HEAD
-	mutex_lock(&pinctrl_mutex);
-=======
 	mutex_lock(&pinctrl_list_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(p, &pinctrl_list, node) {
 		seq_printf(s, "device: %s current state: %s\n",
@@ -2707,101 +1906,17 @@ static int pinctrl_show(struct seq_file *s, void *what)
 		}
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&pinctrl_mutex);
-
-	return 0;
-}
-
-static int pinctrl_pins_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinctrl_pins_show, inode->i_private);
-}
-
-static int pinctrl_groups_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinctrl_groups_show, inode->i_private);
-}
-
-static int pinctrl_gpioranges_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinctrl_gpioranges_show, inode->i_private);
-}
-
-static int pinctrl_devices_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinctrl_devices_show, NULL);
-}
-
-static int pinctrl_maps_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinctrl_maps_show, NULL);
-}
-
-static int pinctrl_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, pinctrl_show, NULL);
-}
-
-static const struct file_operations pinctrl_pins_ops = {
-	.open		= pinctrl_pins_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static const struct file_operations pinctrl_groups_ops = {
-	.open		= pinctrl_groups_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static const struct file_operations pinctrl_gpioranges_ops = {
-	.open		= pinctrl_gpioranges_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static const struct file_operations pinctrl_devices_ops = {
-	.open		= pinctrl_devices_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static const struct file_operations pinctrl_maps_ops = {
-	.open		= pinctrl_maps_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-static const struct file_operations pinctrl_ops = {
-	.open		= pinctrl_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-=======
 	mutex_unlock(&pinctrl_list_mutex);
 
 	return 0;
 }
 DEFINE_SHOW_ATTRIBUTE(pinctrl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct dentry *debugfs_root;
 
 static void pinctrl_init_device_debugfs(struct pinctrl_dev *pctldev)
 {
 	struct dentry *device_root;
-<<<<<<< HEAD
-
-	device_root = debugfs_create_dir(dev_name(pctldev->dev),
-					 debugfs_root);
-=======
 	const char *debugfs_name;
 
 	if (pctldev->desc->name &&
@@ -2819,7 +1934,6 @@ static void pinctrl_init_device_debugfs(struct pinctrl_dev *pctldev)
 	}
 
 	device_root = debugfs_create_dir(debugfs_name, debugfs_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pctldev->device_root = device_root;
 
 	if (IS_ERR(device_root) || !device_root) {
@@ -2827,16 +1941,6 @@ static void pinctrl_init_device_debugfs(struct pinctrl_dev *pctldev)
 			dev_name(pctldev->dev));
 		return;
 	}
-<<<<<<< HEAD
-	debugfs_create_file("pins", S_IFREG | S_IRUGO,
-			    device_root, pctldev, &pinctrl_pins_ops);
-	debugfs_create_file("pingroups", S_IFREG | S_IRUGO,
-			    device_root, pctldev, &pinctrl_groups_ops);
-	debugfs_create_file("gpio-ranges", S_IFREG | S_IRUGO,
-			    device_root, pctldev, &pinctrl_gpioranges_ops);
-	pinmux_init_device_debugfs(device_root, pctldev);
-	pinconf_init_device_debugfs(device_root, pctldev);
-=======
 	debugfs_create_file("pins", 0444,
 			    device_root, pctldev, &pinctrl_pins_fops);
 	debugfs_create_file("pingroups", 0444,
@@ -2847,7 +1951,6 @@ static void pinctrl_init_device_debugfs(struct pinctrl_dev *pctldev)
 		pinmux_init_device_debugfs(device_root, pctldev);
 	if (pctldev->desc->confops)
 		pinconf_init_device_debugfs(device_root, pctldev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pinctrl_remove_device_debugfs(struct pinctrl_dev *pctldev)
@@ -2864,21 +1967,12 @@ static void pinctrl_init_debugfs(void)
 		return;
 	}
 
-<<<<<<< HEAD
-	debugfs_create_file("pinctrl-devices", S_IFREG | S_IRUGO,
-			    debugfs_root, NULL, &pinctrl_devices_ops);
-	debugfs_create_file("pinctrl-maps", S_IFREG | S_IRUGO,
-			    debugfs_root, NULL, &pinctrl_maps_ops);
-	debugfs_create_file("pinctrl-handles", S_IFREG | S_IRUGO,
-			    debugfs_root, NULL, &pinctrl_ops);
-=======
 	debugfs_create_file("pinctrl-devices", 0444,
 			    debugfs_root, NULL, &pinctrl_devices_fops);
 	debugfs_create_file("pinctrl-maps", 0444,
 			    debugfs_root, NULL, &pinctrl_maps_fops);
 	debugfs_create_file("pinctrl-handles", 0444,
 			    debugfs_root, NULL, &pinctrl_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else /* CONFIG_DEBUG_FS */
@@ -2903,54 +1997,26 @@ static int pinctrl_check_ops(struct pinctrl_dev *pctldev)
 
 	if (!ops ||
 	    !ops->get_groups_count ||
-<<<<<<< HEAD
-	    !ops->get_group_name ||
-	    !ops->get_group_pins)
-		return -EINVAL;
-
-	if (ops->dt_node_to_map && !ops->dt_free_map)
-=======
 	    !ops->get_group_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * pinctrl_register() - register a pin controller device
-=======
  * pinctrl_init_controller() - init a pin controller device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pctldesc: descriptor for this pin controller
  * @dev: parent device for this pin controller
  * @driver_data: private pin controller data for this pin controller
  */
-<<<<<<< HEAD
-struct pinctrl_dev *pinctrl_register(struct pinctrl_desc *pctldesc,
-				    struct device *dev, void *driver_data)
-=======
 static struct pinctrl_dev *
 pinctrl_init_controller(struct pinctrl_desc *pctldesc, struct device *dev,
 			void *driver_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pinctrl_dev *pctldev;
 	int ret;
 
 	if (!pctldesc)
-<<<<<<< HEAD
-		return NULL;
-	if (!pctldesc->name)
-		return NULL;
-
-	pctldev = kzalloc(sizeof(*pctldev), GFP_KERNEL);
-	if (pctldev == NULL) {
-		dev_err(dev, "failed to alloc struct pinctrl_dev\n");
-		return NULL;
-	}
-=======
 		return ERR_PTR(-EINVAL);
 	if (!pctldesc->name)
 		return ERR_PTR(-EINVAL);
@@ -2958,20 +2024,12 @@ pinctrl_init_controller(struct pinctrl_desc *pctldesc, struct device *dev,
 	pctldev = kzalloc(sizeof(*pctldev), GFP_KERNEL);
 	if (!pctldev)
 		return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize pin control device struct */
 	pctldev->owner = pctldesc->owner;
 	pctldev->desc = pctldesc;
 	pctldev->driver_data = driver_data;
 	INIT_RADIX_TREE(&pctldev->pin_desc_tree, GFP_KERNEL);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&pctldev->gpio_ranges);
-	pctldev->dev = dev;
-
-	/* check core ops for sanity */
-	if (pinctrl_check_ops(pctldev)) {
-=======
 #ifdef CONFIG_GENERIC_PINCTRL_GROUPS
 	INIT_RADIX_TREE(&pctldev->pin_group_tree, GFP_KERNEL);
 #endif
@@ -2986,30 +2044,21 @@ pinctrl_init_controller(struct pinctrl_desc *pctldesc, struct device *dev,
 	/* check core ops for sanity */
 	ret = pinctrl_check_ops(pctldev);
 	if (ret) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(dev, "pinctrl ops lacks necessary functions\n");
 		goto out_err;
 	}
 
 	/* If we're implementing pinmuxing, check the ops for sanity */
 	if (pctldesc->pmxops) {
-<<<<<<< HEAD
-		if (pinmux_check_ops(pctldev))
-=======
 		ret = pinmux_check_ops(pctldev);
 		if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_err;
 	}
 
 	/* If we're implementing pinconfig, check the ops for sanity */
 	if (pctldesc->confops) {
-<<<<<<< HEAD
-		if (pinconf_check_ops(pctldev))
-=======
 		ret = pinconf_check_ops(pctldev);
 		if (ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_err;
 	}
 
@@ -3023,42 +2072,6 @@ pinctrl_init_controller(struct pinctrl_desc *pctldesc, struct device *dev,
 		goto out_err;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&pinctrl_mutex);
-
-	list_add_tail(&pctldev->node, &pinctrldev_list);
-
-	pctldev->p = pinctrl_get_locked(pctldev->dev);
-	if (!IS_ERR(pctldev->p)) {
-		pctldev->hog_default =
-			pinctrl_lookup_state_locked(pctldev->p,
-						    PINCTRL_STATE_DEFAULT);
-		if (IS_ERR(pctldev->hog_default)) {
-			dev_dbg(dev, "failed to lookup the default state\n");
-		} else {
-			if (pinctrl_select_state_locked(pctldev->p,
-						pctldev->hog_default))
-				dev_err(dev,
-					"failed to select default state\n");
-		}
-
-		pctldev->hog_sleep =
-			pinctrl_lookup_state_locked(pctldev->p,
-						    PINCTRL_STATE_SLEEP);
-		if (IS_ERR(pctldev->hog_sleep))
-			dev_dbg(dev, "failed to lookup the sleep state\n");
-	}
-
-	mutex_unlock(&pinctrl_mutex);
-
-	pinctrl_init_device_debugfs(pctldev);
-
-	return pctldev;
-
-out_err:
-	kfree(pctldev);
-	return NULL;
-=======
 	return pctldev;
 
 out_err:
@@ -3151,13 +2164,10 @@ struct pinctrl_dev *pinctrl_register(struct pinctrl_desc *pctldesc,
 		return ERR_PTR(error);
 
 	return pctldev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pinctrl_register);
 
 /**
-<<<<<<< HEAD
-=======
  * pinctrl_register_and_init() - register and init pin controller device
  * @pctldesc: descriptor for this pin controller
  * @dev: parent device for this pin controller
@@ -3190,7 +2200,6 @@ int pinctrl_register_and_init(struct pinctrl_desc *pctldesc,
 EXPORT_SYMBOL_GPL(pinctrl_register_and_init);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pinctrl_unregister() - unregister pinmux
  * @pctldev: pin controller to unregister
  *
@@ -3199,20 +2208,6 @@ EXPORT_SYMBOL_GPL(pinctrl_register_and_init);
 void pinctrl_unregister(struct pinctrl_dev *pctldev)
 {
 	struct pinctrl_gpio_range *range, *n;
-<<<<<<< HEAD
-	if (pctldev == NULL)
-		return;
-
-	pinctrl_remove_device_debugfs(pctldev);
-
-	mutex_lock(&pinctrl_mutex);
-
-	if (!IS_ERR(pctldev->p))
-		pinctrl_put_locked(pctldev->p, true);
-
-	/* TODO: check that no pinmuxes are still active? */
-	list_del(&pctldev->node);
-=======
 
 	if (!pctldev)
 		return;
@@ -3230,7 +2225,6 @@ void pinctrl_unregister(struct pinctrl_dev *pctldev)
 	list_del(&pctldev->node);
 	pinmux_generic_free_functions(pctldev);
 	pinctrl_generic_free_groups(pctldev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Destroy descriptor tree */
 	pinctrl_free_pindescs(pctldev, pctldev->desc->pins,
 			      pctldev->desc->npins);
@@ -3238,14 +2232,6 @@ void pinctrl_unregister(struct pinctrl_dev *pctldev)
 	list_for_each_entry_safe(range, n, &pctldev->gpio_ranges, node)
 		list_del(&range->node);
 
-<<<<<<< HEAD
-	kfree(pctldev);
-
-	mutex_unlock(&pinctrl_mutex);
-}
-EXPORT_SYMBOL_GPL(pinctrl_unregister);
-
-=======
 	mutex_unlock(&pctldev->mutex);
 	mutex_destroy(&pctldev->mutex);
 	kfree(pctldev);
@@ -3352,7 +2338,6 @@ void devm_pinctrl_unregister(struct device *dev, struct pinctrl_dev *pctldev)
 }
 EXPORT_SYMBOL_GPL(devm_pinctrl_unregister);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init pinctrl_init(void)
 {
 	pr_info("initialized pinctrl subsystem\n");

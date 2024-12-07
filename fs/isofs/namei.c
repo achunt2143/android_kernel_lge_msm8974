@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/isofs/namei.c
  *
@@ -22,35 +19,11 @@ static int
 isofs_cmp(struct dentry *dentry, const char *compare, int dlen)
 {
 	struct qstr qstr;
-<<<<<<< HEAD
-
-	if (!compare)
-		return 1;
-
-	/* check special "." and ".." files */
-	if (dlen == 1) {
-		/* "." */
-		if (compare[0] == 0) {
-			if (!dentry->d_name.len)
-				return 0;
-			compare = ".";
-		} else if (compare[0] == 1) {
-			compare = "..";
-			dlen = 2;
-		}
-	}
-
-	qstr.name = compare;
-	qstr.len = dlen;
-	return dentry->d_op->d_compare(NULL, NULL, NULL, NULL,
-			dentry->d_name.len, dentry->d_name.name, &qstr);
-=======
 	qstr.name = compare;
 	qstr.len = dlen;
 	if (likely(!dentry->d_op))
 		return dentry->d_name.len != dlen || memcmp(dentry->d_name.name, compare, dlen);
 	return dentry->d_op->d_compare(NULL, dentry->d_name.len, dentry->d_name.name, &qstr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -129,10 +102,7 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 			printk(KERN_NOTICE "iso9660: Corrupted directory entry"
 			       " in block %lu of inode %lu\n", block,
 			       dir->i_ino);
-<<<<<<< HEAD
-=======
 			brelse(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 
@@ -163,12 +133,8 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 				(!(de->flags[-sbi->s_high_sierra] & 1))) &&
 			(sbi->s_showassoc ||
 				(!(de->flags[-sbi->s_high_sierra] & 4)))) {
-<<<<<<< HEAD
-			match = (isofs_cmp(dentry, dpnt, dlen) == 0);
-=======
 			if (dpnt && (dlen > 1 || dpnt[0] > 1))
 				match = (isofs_cmp(dentry, dpnt, dlen) == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (match) {
 			isofs_normalize_block_and_offset(de,
@@ -187,13 +153,8 @@ isofs_find_entry(struct inode *dir, struct dentry *dentry,
 struct dentry *isofs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 {
 	int found;
-<<<<<<< HEAD
-	unsigned long uninitialized_var(block);
-	unsigned long uninitialized_var(offset);
-=======
 	unsigned long block;
 	unsigned long offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode;
 	struct page *page;
 

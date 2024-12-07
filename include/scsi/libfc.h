@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2007 Intel Corporation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright(c) 2007 Intel Corporation. All rights reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -30,10 +11,7 @@
 #include <linux/timer.h>
 #include <linux/if.h>
 #include <linux/percpu.h>
-<<<<<<< HEAD
-=======
 #include <linux/refcount.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_transport_fc.h>
@@ -55,14 +33,11 @@
 #define	FC_NO_ERR	0	/* no error */
 #define	FC_EX_TIMEOUT	1	/* Exchange timeout */
 #define	FC_EX_CLOSED	2	/* Exchange closed */
-<<<<<<< HEAD
-=======
 #define FC_EX_ALLOC_ERR	3	/* Exchange allocation failed */
 #define FC_EX_XMIT_ERR	4	/* Exchange transmit failed */
 #define FC_EX_ELS_RJT	5	/* ELS rejected */
 #define FC_EX_INV_LOGIN	6	/* Login not completed */
 #define FC_EX_SEQ_ERR	6	/* Exchange sequence error */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * enum fc_lport_state - Local port states
@@ -140,11 +115,7 @@ struct fc_disc_port {
 	struct fc_lport    *lp;
 	struct list_head   peers;
 	struct work_struct rport_work;
-<<<<<<< HEAD
-	u32                port_id;
-=======
 	u32		   port_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -184,23 +155,14 @@ struct fc_rport_operations {
  */
 struct fc_rport_libfc_priv {
 	struct fc_lport		   *local_port;
-<<<<<<< HEAD
-	enum fc_rport_state        rp_state;
-=======
 	enum fc_rport_state	   rp_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16			   flags;
 	#define FC_RP_FLAGS_REC_SUPPORTED	(1 << 0)
 	#define FC_RP_FLAGS_RETRY		(1 << 1)
 	#define FC_RP_STARTED			(1 << 2)
 	#define FC_RP_FLAGS_CONF_REQ		(1 << 3)
-<<<<<<< HEAD
-	unsigned int	           e_d_tov;
-	unsigned int	           r_a_tov;
-=======
 	unsigned int		   e_d_tov;
 	unsigned int		   r_a_tov;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -229,26 +191,6 @@ struct fc_rport_priv {
 	struct fc_lport		    *local_port;
 	struct fc_rport		    *rport;
 	struct kref		    kref;
-<<<<<<< HEAD
-	enum fc_rport_state         rp_state;
-	struct fc_rport_identifiers ids;
-	u16			    flags;
-	u16		            max_seq;
-	u16			    disc_id;
-	u16			    maxframe_size;
-	unsigned int	            retries;
-	unsigned int	            major_retries;
-	unsigned int	            e_d_tov;
-	unsigned int	            r_a_tov;
-	struct mutex                rp_mutex;
-	struct delayed_work	    retry_work;
-	enum fc_rport_event         event;
-	struct fc_rport_operations  *ops;
-	struct list_head            peers;
-	struct work_struct          event_work;
-	u32			    supported_classes;
-	u16                         prli_count;
-=======
 	enum fc_rport_state	    rp_state;
 	struct fc_rport_identifiers ids;
 	u16			    flags;
@@ -267,7 +209,6 @@ struct fc_rport_priv {
 	struct work_struct	    event_work;
 	u32			    supported_classes;
 	u16			    prli_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rcu_head		    rcu;
 	u16			    sp_features;
 	u8			    spp_type;
@@ -277,11 +218,7 @@ struct fc_rport_priv {
 };
 
 /**
-<<<<<<< HEAD
- * struct fcoe_dev_stats - fcoe stats structure
-=======
  * struct fc_stats - fc stats structure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @SecondsSinceLastReset: Seconds since the last reset
  * @TxFrames:              Number of transmitted frames
  * @TxWords:               Number of transmitted words
@@ -289,12 +226,9 @@ struct fc_rport_priv {
  * @RxWords:               Number of received words
  * @ErrorFrames:           Number of received error frames
  * @DumpedFrames:          Number of dumped frames
-<<<<<<< HEAD
-=======
  * @FcpPktAllocFails:      Number of fcp packet allocation failures
  * @FcpPktAborts:          Number of fcp packet aborts
  * @FcpFrameAllocFails:    Number of fcp frame allocation failures
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @LinkFailureCount:      Number of link failures
  * @LossOfSignalCount:     Number for signal losses
  * @InvalidTxWordCount:    Number of invalid transmitted words
@@ -307,11 +241,7 @@ struct fc_rport_priv {
  * @VLinkFailureCount:     Number of virtual link failures
  * @MissDiscAdvCount:      Number of missing FIP discovery advertisement
  */
-<<<<<<< HEAD
-struct fcoe_dev_stats {
-=======
 struct fc_stats {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64		SecondsSinceLastReset;
 	u64		TxFrames;
 	u64		TxWords;
@@ -319,12 +249,9 @@ struct fc_stats {
 	u64		RxWords;
 	u64		ErrorFrames;
 	u64		DumpedFrames;
-<<<<<<< HEAD
-=======
 	u64		FcpPktAllocFails;
 	u64		FcpPktAborts;
 	u64		FcpFrameAllocFails;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64		LinkFailureCount;
 	u64		LossOfSignalCount;
 	u64		InvalidTxWordCount;
@@ -383,11 +310,7 @@ struct fc_seq_els_data {
  */
 struct fc_fcp_pkt {
 	spinlock_t	  scsi_pkt_lock;
-<<<<<<< HEAD
-	atomic_t	  ref_cnt;
-=======
 	refcount_t	  ref_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SCSI command and data transfer information */
 	u32		  data_len;
@@ -421,20 +344,14 @@ struct fc_fcp_pkt {
 
 	/* Timeout/error related information */
 	struct timer_list timer;
-<<<<<<< HEAD
-	int	          wait_for_comp;
-=======
 	int		  wait_for_comp;
 	int		  timer_delay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		  recov_retry;
 	struct fc_seq	  *recov_seq;
 	struct completion tm_done;
 } ____cacheline_aligned_in_smp;
 
 /*
-<<<<<<< HEAD
-=======
  * @fsp should be tested and set under the scsi_pkt_queue lock
  */
 struct libfc_cmd_priv {
@@ -444,7 +361,6 @@ struct libfc_cmd_priv {
 };
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Structure and function definitions for managing Fibre Channel Exchanges
  * and Sequences
  *
@@ -473,10 +389,7 @@ struct fc_seq {
 
 #define FC_EX_DONE		(1 << 0) /* ep is completed */
 #define FC_EX_RST_CLEANUP	(1 << 1) /* reset is forcing completion */
-<<<<<<< HEAD
-=======
 #define FC_EX_QUARANTINE	(1 << 2) /* exch is quarantined */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct fc_exch - Fibre Channel Exchange
@@ -495,26 +408,19 @@ struct fc_seq {
  * @sid:          Source FCID
  * @did:          Destination FCID
  * @esb_stat:     ESB exchange status
-<<<<<<< HEAD
- * @r_a_tov:      Resouce allocation time out value (in msecs)
-=======
  * @r_a_tov:      Resource allocation time out value (in msecs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @seq_id:       The next sequence ID to use
  * @encaps:       encapsulation information for lower-level driver
  * @f_ctl:        F_CTL flags for the sequence
  * @fh_type:      The frame type
  * @class:        The class of service
  * @seq:          The sequence in use on this exchange
-<<<<<<< HEAD
-=======
  * @resp_active:  Number of tasks that are concurrently executing @resp().
  * @resp_task:    If @resp_active > 0, either the task executing @resp(), the
  *                task that has been interrupted to execute the soft-IRQ
  *                executing @resp() or NULL if more than one task is executing
  *                @resp concurrently.
  * @resp_wq:      Waitqueue for the tasks waiting on @resp_active.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @resp:         Callback for responses on this exchange
  * @destructor:   Called when destroying the exchange
  * @arg:          Passed as a void pointer to the resp() callback
@@ -546,12 +452,9 @@ struct fc_exch {
 	u32		    r_a_tov;
 	u32		    f_ctl;
 	struct fc_seq       seq;
-<<<<<<< HEAD
-=======
 	int		    resp_active;
 	struct task_struct  *resp_task;
 	wait_queue_head_t   resp_wq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void		    (*resp)(struct fc_seq *, struct fc_frame *, void *);
 	void		    *arg;
 	void		    (*destructor)(struct fc_seq *, void *);
@@ -580,40 +483,6 @@ struct libfc_function_template {
 				     void *arg, u32 timer_msec);
 
 	/*
-<<<<<<< HEAD
-	 * Send the FC frame payload using a new exchange and sequence.
-	 *
-	 * The exchange response handler is set in this routine to resp()
-	 * function pointer. It can be called in two scenarios: if a timeout
-	 * occurs or if a response frame is received for the exchange. The
-	 * fc_frame pointer in response handler will also indicate timeout
-	 * as error using IS_ERR related macros.
-	 *
-	 * The exchange destructor handler is also set in this routine.
-	 * The destructor handler is invoked by EM layer when exchange
-	 * is about to free, this can be used by caller to free its
-	 * resources along with exchange free.
-	 *
-	 * The arg is passed back to resp and destructor handler.
-	 *
-	 * The timeout value (in msec) for an exchange is set if non zero
-	 * timer_msec argument is specified. The timer is canceled when
-	 * it fires or when the exchange is done. The exchange timeout handler
-	 * is registered by EM layer.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	struct fc_seq *(*exch_seq_send)(struct fc_lport *, struct fc_frame *,
-					void (*resp)(struct fc_seq *,
-						     struct fc_frame *,
-						     void *),
-					void (*destructor)(struct fc_seq *,
-							   void *),
-					void *, unsigned int timer_msec);
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Sets up the DDP context for a given exchange id on the given
 	 * scatterlist if LLD supports DDP for large receive.
 	 *
@@ -630,11 +499,7 @@ struct libfc_function_template {
 	int (*ddp_done)(struct fc_lport *, u16);
 	/*
 	 * Sets up the DDP context for a given exchange id on the given
-<<<<<<< HEAD
-	 * scatterlist if LLD supports DDP for FCoE target.
-=======
 	 * scatterlist if LLD supports DDP for target.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * STATUS: OPTIONAL
 	 */
@@ -646,76 +511,6 @@ struct libfc_function_template {
 	 * STATUS: OPTIONAL
 	 */
 	void (*get_lesb)(struct fc_lport *, struct fc_els_lesb *lesb);
-<<<<<<< HEAD
-	/*
-	 * Send a frame using an existing sequence and exchange.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	int (*seq_send)(struct fc_lport *, struct fc_seq *,
-			struct fc_frame *);
-
-	/*
-	 * Send an ELS response using information from the received frame.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	void (*seq_els_rsp_send)(struct fc_frame *, enum fc_els_cmd,
-				 struct fc_seq_els_data *);
-
-	/*
-	 * Abort an exchange and sequence. Generally called because of a
-	 * exchange timeout or an abort from the upper layer.
-	 *
-	 * A timer_msec can be specified for abort timeout, if non-zero
-	 * timer_msec value is specified then exchange resp handler
-	 * will be called with timeout error if no response to abort.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	int (*seq_exch_abort)(const struct fc_seq *,
-			      unsigned int timer_msec);
-
-	/*
-	 * Indicate that an exchange/sequence tuple is complete and the memory
-	 * allocated for the related objects may be freed.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	void (*exch_done)(struct fc_seq *);
-
-	/*
-	 * Start a new sequence on the same exchange/sequence tuple.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	struct fc_seq *(*seq_start_next)(struct fc_seq *);
-
-	/*
-	 * Set a response handler for the exchange of the sequence.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	void (*seq_set_resp)(struct fc_seq *sp,
-			     void (*resp)(struct fc_seq *, struct fc_frame *,
-					  void *),
-			     void *arg);
-
-	/*
-	 * Assign a sequence for an incoming request frame.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	struct fc_seq *(*seq_assign)(struct fc_lport *, struct fc_frame *);
-
-	/*
-	 * Release the reference on the sequence returned by seq_assign().
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	void (*seq_release)(struct fc_seq *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Reset an exchange manager, completing all sequences and exchanges.
@@ -727,30 +522,6 @@ struct libfc_function_template {
 	void (*exch_mgr_reset)(struct fc_lport *, u32 s_id, u32 d_id);
 
 	/*
-<<<<<<< HEAD
-	 * Flush the rport work queue. Generally used before shutdown.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	void (*rport_flush_queue)(void);
-
-	/*
-	 * Receive a frame for a local port.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	void (*lport_recv)(struct fc_lport *, struct fc_frame *);
-
-	/*
-	 * Reset the local port.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	int (*lport_reset)(struct fc_lport *);
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Set the local port FC_ID.
 	 *
 	 * This may be provided by the LLD to allow it to be
@@ -771,57 +542,6 @@ struct libfc_function_template {
 				  struct fc_frame *);
 
 	/*
-<<<<<<< HEAD
-	 * Create a remote port with a given port ID
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	struct fc_rport_priv *(*rport_create)(struct fc_lport *, u32);
-
-	/*
-	 * Initiates the RP state machine. It is called from the LP module.
-	 * This function will issue the following commands to the N_Port
-	 * identified by the FC ID provided.
-	 *
-	 * - PLOGI
-	 * - PRLI
-	 * - RTV
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	int (*rport_login)(struct fc_rport_priv *);
-
-	/*
-	 * Logoff, and remove the rport from the transport if
-	 * it had been added. This will send a LOGO to the target.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	int (*rport_logoff)(struct fc_rport_priv *);
-
-	/*
-	 * Receive a request from a remote port.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	void (*rport_recv_req)(struct fc_lport *, struct fc_frame *);
-
-	/*
-	 * lookup an rport by it's port ID.
-	 *
-	 * STATUS: OPTIONAL
-	 */
-	struct fc_rport_priv *(*rport_lookup)(const struct fc_lport *, u32);
-
-	/*
-	 * Destroy an rport after final kref_put().
-	 * The argument is a pointer to the kref inside the fc_rport_priv.
-	 */
-	void (*rport_destroy)(struct kref *);
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Callback routine after the remote port is logged in
 	 *
 	 * STATUS: OPTIONAL
@@ -907,21 +627,12 @@ struct libfc_function_template {
  * @disc_callback: Callback routine called when discovery completes
  */
 struct fc_disc {
-<<<<<<< HEAD
-	unsigned char         retry_count;
-	unsigned char         pending;
-	unsigned char         requested;
-	unsigned short        seq_count;
-	unsigned char         buf_len;
-	u16                   disc_id;
-=======
 	unsigned char	      retry_count;
 	unsigned char	      pending;
 	unsigned char	      requested;
 	unsigned short	      seq_count;
 	unsigned char	      buf_len;
 	u16		      disc_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct list_head      rports;
 	void		      *priv;
@@ -959,23 +670,14 @@ enum fc_lport_event {
  * @state:                 Identifies the state
  * @boot_time:             Timestamp indicating when the local port came online
  * @host_stats:            SCSI host statistics
-<<<<<<< HEAD
- * @dev_stats:             FCoE device stats (TODO: libfc should not be
- *                         FCoE aware)
-=======
  * @stats:                 FC local port stats (TODO separate libfc LLD stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @retry_count:           Number of retries in the current state
  * @port_id:               FC Port ID
  * @wwpn:                  World Wide Port Name
  * @wwnn:                  World Wide Node Name
  * @service_params:        Common service parameters
  * @e_d_tov:               Error detection timeout value
-<<<<<<< HEAD
- * @r_a_tov:               Resouce allocation timeout value
-=======
  * @r_a_tov:               Resource allocation timeout value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rnid_gen:              RNID information
  * @sg_supp:               Indicates if scatter gather is supported
  * @seq_offload:           Indicates if sequence offload is supported
@@ -1004,11 +706,7 @@ struct fc_lport {
 	struct fc_rport_priv	       *ms_rdata;
 	struct fc_rport_priv	       *ptp_rdata;
 	void			       *scsi_priv;
-<<<<<<< HEAD
-	struct fc_disc                 disc;
-=======
 	struct fc_disc		       disc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Virtual port information */
 	struct list_head	       vports;
@@ -1018,16 +716,6 @@ struct fc_lport {
 	struct libfc_function_template tt;
 	u8			       link_up;
 	u8			       qfull;
-<<<<<<< HEAD
-	enum fc_lport_state	       state;
-	unsigned long		       boot_time;
-	struct fc_host_statistics      host_stats;
-	struct fcoe_dev_stats __percpu *dev_stats;
-	u8			       retry_count;
-
-	/* Fabric information */
-	u32                            port_id;
-=======
 	u16			       vlan;
 	enum fc_lport_state	       state;
 	unsigned long		       boot_time;
@@ -1037,7 +725,6 @@ struct fc_lport {
 
 	/* Fabric information */
 	u32			       port_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64			       wwpn;
 	u64			       wwnn;
 	unsigned int		       service_params;
@@ -1065,19 +752,11 @@ struct fc_lport {
 	struct fc_ns_fts	       fcts;
 
 	/* Miscellaneous */
-<<<<<<< HEAD
-	struct mutex                   lp_mutex;
-	struct list_head               list;
-	struct delayed_work	       retry_work;
-	void			       *prov[FC_FC4_PROV_SIZE];
-	struct list_head               lport_list;
-=======
 	struct mutex		       lp_mutex;
 	struct list_head	       list;
 	struct delayed_work	       retry_work;
 	void			       *prov[FC_FC4_PROV_SIZE];
 	struct list_head	       lport_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -1128,19 +807,11 @@ static inline void fc_set_wwnn(struct fc_lport *lport, u64 wwnn)
 /**
  * fc_set_wwpn() - Set the World Wide Port Name of a local port
  * @lport: The local port whose WWPN is to be set
-<<<<<<< HEAD
- * @wwnn:  The new WWPN
- */
-static inline void fc_set_wwpn(struct fc_lport *lport, u64 wwnn)
-{
-	lport->wwpn = wwnn;
-=======
  * @wwpn:  The new WWPN
  */
 static inline void fc_set_wwpn(struct fc_lport *lport, u64 wwpn)
 {
 	lport->wwpn = wwpn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1162,13 +833,8 @@ static inline void fc_lport_state_enter(struct fc_lport *lport,
  */
 static inline int fc_lport_init_stats(struct fc_lport *lport)
 {
-<<<<<<< HEAD
-	lport->dev_stats = alloc_percpu(struct fcoe_dev_stats);
-	if (!lport->dev_stats)
-=======
 	lport->stats = alloc_percpu(struct fc_stats);
 	if (!lport->stats)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	return 0;
 }
@@ -1179,20 +845,12 @@ static inline int fc_lport_init_stats(struct fc_lport *lport)
  */
 static inline void fc_lport_free_stats(struct fc_lport *lport)
 {
-<<<<<<< HEAD
-	free_percpu(lport->dev_stats);
-=======
 	free_percpu(lport->stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * lport_priv() - Return the private data from a local port
-<<<<<<< HEAD
- * @lport: The local port whose private data is to be retreived
-=======
  * @lport: The local port whose private data is to be retrieved
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void *lport_priv(const struct fc_lport *lport)
 {
@@ -1208,11 +866,7 @@ static inline void *lport_priv(const struct fc_lport *lport)
  * Returns: libfc lport
  */
 static inline struct fc_lport *
-<<<<<<< HEAD
-libfc_host_alloc(struct scsi_host_template *sht, int priv_size)
-=======
 libfc_host_alloc(const struct scsi_host_template *sht, int priv_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_lport *lport;
 	struct Scsi_Host *shost;
@@ -1252,28 +906,17 @@ void fc_vport_setlink(struct fc_lport *);
 void fc_vports_linkchange(struct fc_lport *);
 int fc_lport_config(struct fc_lport *);
 int fc_lport_reset(struct fc_lport *);
-<<<<<<< HEAD
-int fc_set_mfs(struct fc_lport *, u32 mfs);
-struct fc_lport *libfc_vport_create(struct fc_vport *, int privsize);
-struct fc_lport *fc_vport_id_lookup(struct fc_lport *, u32 port_id);
-int fc_lport_bsg_request(struct fc_bsg_job *);
-=======
 void fc_lport_recv(struct fc_lport *lport, struct fc_frame *fp);
 int fc_set_mfs(struct fc_lport *, u32 mfs);
 struct fc_lport *libfc_vport_create(struct fc_vport *, int privsize);
 struct fc_lport *fc_vport_id_lookup(struct fc_lport *, u32 port_id);
 int fc_lport_bsg_request(struct bsg_job *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fc_lport_set_local_id(struct fc_lport *, u32 port_id);
 void fc_lport_iterate(void (*func)(struct fc_lport *, void *), void *);
 
 /*
  * REMOTE PORT LAYER
  *****************************/
-<<<<<<< HEAD
-int fc_rport_init(struct fc_lport *);
-void fc_rport_terminate_io(struct fc_rport *);
-=======
 void fc_rport_terminate_io(struct fc_rport *);
 struct fc_rport_priv *fc_rport_lookup(const struct fc_lport *lport,
 				      u32 port_id);
@@ -1283,17 +926,12 @@ int fc_rport_login(struct fc_rport_priv *rdata);
 int fc_rport_logoff(struct fc_rport_priv *rdata);
 void fc_rport_recv_req(struct fc_lport *lport, struct fc_frame *fp);
 void fc_rport_flush_queue(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DISCOVERY LAYER
  *****************************/
-<<<<<<< HEAD
-int fc_disc_init(struct fc_lport *);
-=======
 void fc_disc_init(struct fc_lport *);
 void fc_disc_config(struct fc_lport *, void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct fc_lport *fc_disc_lport(struct fc_disc *disc)
 {
@@ -1314,11 +952,6 @@ int fc_eh_abort(struct scsi_cmnd *);
 int fc_eh_device_reset(struct scsi_cmnd *);
 int fc_eh_host_reset(struct scsi_cmnd *);
 int fc_slave_alloc(struct scsi_device *);
-<<<<<<< HEAD
-int fc_change_queue_depth(struct scsi_device *, int qdepth, int reason);
-int fc_change_queue_type(struct scsi_device *, int tag_type);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ELS/CT interface
@@ -1343,8 +976,6 @@ void fc_fill_hdr(struct fc_frame *, const struct fc_frame *,
  * EXCHANGE MANAGER LAYER
  *****************************/
 int fc_exch_init(struct fc_lport *);
-<<<<<<< HEAD
-=======
 void fc_exch_update_stats(struct fc_lport *lport);
 struct fc_seq *fc_exch_seq_send(struct fc_lport *lport,
 				struct fc_frame *fp,
@@ -1361,7 +992,6 @@ void fc_seq_set_resp(struct fc_seq *sp,
 		     void *arg);
 struct fc_seq *fc_seq_assign(struct fc_lport *lport, struct fc_frame *fp);
 void fc_seq_release(struct fc_seq *sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fc_exch_mgr_anchor *fc_exch_mgr_add(struct fc_lport *,
 					   struct fc_exch_mgr *,
 					   bool (*match)(struct fc_frame *));
@@ -1373,12 +1003,9 @@ struct fc_exch_mgr *fc_exch_mgr_alloc(struct fc_lport *, enum fc_class class,
 void fc_exch_mgr_free(struct fc_lport *);
 void fc_exch_recv(struct fc_lport *, struct fc_frame *);
 void fc_exch_mgr_reset(struct fc_lport *, u32 s_id, u32 d_id);
-<<<<<<< HEAD
-=======
 int fc_seq_send(struct fc_lport *lport, struct fc_seq *sp, struct fc_frame *fp);
 int fc_seq_exch_abort(const struct fc_seq *, unsigned int timer_msec);
 void fc_exch_done(struct fc_seq *sp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Functions for fc_functions_template

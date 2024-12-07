@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef VM_EVENT_ITEM_H_INCLUDED
 #define VM_EVENT_ITEM_H_INCLUDED
 
@@ -18,28 +15,11 @@
 #endif
 
 #ifdef CONFIG_HIGHMEM
-<<<<<<< HEAD
-#define HIGHMEM_ZONE(xx) , xx##_HIGH
-=======
 #define HIGHMEM_ZONE(xx) xx##_HIGH,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define HIGHMEM_ZONE(xx)
 #endif
 
-<<<<<<< HEAD
-#define FOR_ALL_ZONES(xx) DMA_ZONE(xx) DMA32_ZONE(xx) xx##_NORMAL HIGHMEM_ZONE(xx) , xx##_MOVABLE
-
-enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
-		FOR_ALL_ZONES(PGALLOC),
-		PGFREE, PGACTIVATE, PGDEACTIVATE,
-		PGFAULT, PGMAJFAULT,
-		FOR_ALL_ZONES(PGREFILL),
-		FOR_ALL_ZONES(PGSTEAL_KSWAPD),
-		FOR_ALL_ZONES(PGSTEAL_DIRECT),
-		FOR_ALL_ZONES(PGSCAN_KSWAPD),
-		FOR_ALL_ZONES(PGSCAN_DIRECT),
-=======
 #ifdef CONFIG_ZONE_DEVICE
 #define DEVICE_ZONE(xx) xx##_DEVICE,
 #else
@@ -69,18 +49,11 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		PGSCAN_FILE,
 		PGSTEAL_ANON,
 		PGSTEAL_FILE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NUMA
 		PGSCAN_ZONE_RECLAIM_FAILED,
 #endif
 		PGINODESTEAL, SLABS_SCANNED, KSWAPD_INODESTEAL,
 		KSWAPD_LOW_WMARK_HIT_QUICKLY, KSWAPD_HIGH_WMARK_HIT_QUICKLY,
-<<<<<<< HEAD
-		KSWAPD_SKIP_CONGESTION_WAIT,
-		PAGEOUTRUN, ALLOCSTALL, PGROTATED,
-#ifdef CONFIG_MIGRATION
-		PGMIGRATE_SUCCESS, PGMIGRATE_FAIL,
-=======
 		PAGEOUTRUN, PGROTATED,
 		DROP_PAGECACHE, DROP_SLAB,
 		OOM_KILL,
@@ -96,28 +69,21 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		THP_MIGRATION_SUCCESS,
 		THP_MIGRATION_FAIL,
 		THP_MIGRATION_SPLIT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef CONFIG_COMPACTION
 		COMPACTMIGRATE_SCANNED, COMPACTFREE_SCANNED,
 		COMPACTISOLATED,
 		COMPACTSTALL, COMPACTFAIL, COMPACTSUCCESS,
-<<<<<<< HEAD
-=======
 		KCOMPACTD_WAKE,
 		KCOMPACTD_MIGRATE_SCANNED, KCOMPACTD_FREE_SCANNED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef CONFIG_HUGETLB_PAGE
 		HTLB_BUDDY_PGALLOC, HTLB_BUDDY_PGALLOC_FAIL,
 #endif
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CMA
 		CMA_ALLOC_SUCCESS,
 		CMA_ALLOC_FAIL,
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		UNEVICTABLE_PGCULLED,	/* culled to noreclaim list */
 		UNEVICTABLE_PGSCANNED,	/* scanned for reclaimability */
 		UNEVICTABLE_PGRESCUED,	/* rescued from noreclaim list */
@@ -125,15 +91,6 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		UNEVICTABLE_PGMUNLOCKED,
 		UNEVICTABLE_PGCLEARED,	/* on COW, page truncate */
 		UNEVICTABLE_PGSTRANDED,	/* unable to isolate on unlock */
-<<<<<<< HEAD
-		UNEVICTABLE_MLOCKFREED,
-#ifdef CONFIG_TRANSPARENT_HUGEPAGE
-		THP_FAULT_ALLOC,
-		THP_FAULT_FALLBACK,
-		THP_COLLAPSE_ALLOC,
-		THP_COLLAPSE_ALLOC_FAILED,
-		THP_SPLIT,
-=======
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 		THP_FAULT_ALLOC,
 		THP_FAULT_FALLBACK,
@@ -196,13 +153,10 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		VMA_LOCK_ABORT,
 		VMA_LOCK_RETRY,
 		VMA_LOCK_MISS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		NR_VM_EVENT_ITEMS
 };
 
-<<<<<<< HEAD
-=======
 #ifndef CONFIG_TRANSPARENT_HUGEPAGE
 #define THP_FILE_ALLOC ({ BUILD_BUG(); 0; })
 #define THP_FILE_FALLBACK ({ BUILD_BUG(); 0; })
@@ -210,5 +164,4 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 #define THP_FILE_MAPPED ({ BUILD_BUG(); 0; })
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif		/* VM_EVENT_ITEM_H_INCLUDED */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * blkif.h
  *
@@ -13,13 +10,8 @@
 #ifndef __XEN_PUBLIC_IO_BLKIF_H__
 #define __XEN_PUBLIC_IO_BLKIF_H__
 
-<<<<<<< HEAD
-#include "ring.h"
-#include "../grant_table.h"
-=======
 #include <xen/interface/io/ring.h>
 #include <xen/interface/grant_table.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Front->back notifications: When enqueuing a new request, sending a
@@ -37,8 +29,6 @@ typedef uint16_t blkif_vdev_t;
 typedef uint64_t blkif_sector_t;
 
 /*
-<<<<<<< HEAD
-=======
  * Multiple hardware queues/rings:
  * If supported, the backend will write the key "multi-queue-max-queues" to
  * the directory for that vbd, and set its value to the maximum supported
@@ -87,7 +77,6 @@ typedef uint64_t blkif_sector_t;
  */
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * REQUEST CODES.
  */
 #define BLKIF_OP_READ              0
@@ -146,11 +135,7 @@ typedef uint64_t blkif_sector_t;
  *     Interface%20manuals/100293068c.pdf
  * The backend can optionally provide three extra XenBus attributes to
  * further optimize the discard functionality:
-<<<<<<< HEAD
- * 'discard-aligment' - Devices that support discard functionality may
-=======
  * 'discard-alignment' - Devices that support discard functionality may
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * internally allocate space in units that are bigger than the exported
  * logical block size. The discard-alignment parameter indicates how many bytes
  * the beginning of the partition is offset from the internal allocation unit's
@@ -167,8 +152,6 @@ typedef uint64_t blkif_sector_t;
 #define BLKIF_OP_DISCARD           5
 
 /*
-<<<<<<< HEAD
-=======
  * Recognized if "feature-max-indirect-segments" in present in the backend
  * xenbus info. The "feature-max-indirect-segments" node contains the maximum
  * number of segments allowed by the backend per request. If the node is
@@ -193,35 +176,19 @@ typedef uint64_t blkif_sector_t;
 #define BLKIF_OP_INDIRECT          6
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maximum scatter/gather segments per request.
  * This is carefully chosen so that sizeof(struct blkif_ring) <= PAGE_SIZE.
  * NB. This could be 12 if the ring indexes weren't stored in the same page.
  */
 #define BLKIF_MAX_SEGMENTS_PER_REQUEST 11
 
-<<<<<<< HEAD
-struct blkif_request_rw {
-	uint8_t        nr_segments;  /* number of segments                   */
-	blkif_vdev_t   handle;       /* only for read/write requests         */
-#ifdef CONFIG_X86_64
-	uint32_t       _pad1;	     /* offsetof(blkif_request,u.rw.id) == 8 */
-#endif
-	uint64_t       id;           /* private guest value, echoed in resp  */
-	blkif_sector_t sector_number;/* start sector idx on disk (r/w only)  */
-	struct blkif_request_segment {
-=======
 #define BLKIF_MAX_INDIRECT_PAGES_PER_REQUEST 8
 
 struct blkif_request_segment {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		grant_ref_t gref;        /* reference to I/O buffer frame        */
 		/* @first_sect: first sector in frame to transfer (inclusive).   */
 		/* @last_sect: last sector in frame to transfer (inclusive).     */
 		uint8_t     first_sect, last_sect;
-<<<<<<< HEAD
-	} seg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-=======
 };
 
 struct blkif_request_rw {
@@ -233,18 +200,13 @@ struct blkif_request_rw {
 	uint64_t       id;           /* private guest value, echoed in resp  */
 	blkif_sector_t sector_number;/* start sector idx on disk (r/w only)  */
 	struct blkif_request_segment seg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((__packed__));
 
 struct blkif_request_discard {
 	uint8_t        flag;         /* BLKIF_DISCARD_SECURE or zero.        */
 #define BLKIF_DISCARD_SECURE (1<<0)  /* ignored if discard-secure=0          */
 	blkif_vdev_t   _pad1;        /* only for read/write requests         */
-<<<<<<< HEAD
-#ifdef CONFIG_X86_64
-=======
 #ifndef CONFIG_X86_32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t       _pad2;        /* offsetof(blkif_req..,u.discard.id)==8*/
 #endif
 	uint64_t       id;           /* private guest value, echoed in resp  */
@@ -256,18 +218,12 @@ struct blkif_request_discard {
 struct blkif_request_other {
 	uint8_t      _pad1;
 	blkif_vdev_t _pad2;        /* only for read/write requests         */
-<<<<<<< HEAD
-#ifdef CONFIG_X86_64
-=======
 #ifndef CONFIG_X86_32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t     _pad3;        /* offsetof(blkif_req..,u.other.id)==8*/
 #endif
 	uint64_t     id;           /* private guest value, echoed in resp  */
 } __attribute__((__packed__));
 
-<<<<<<< HEAD
-=======
 struct blkif_request_indirect {
 	uint8_t        indirect_op;
 	uint16_t       nr_segments;
@@ -286,17 +242,13 @@ struct blkif_request_indirect {
 #endif
 } __attribute__((__packed__));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct blkif_request {
 	uint8_t        operation;    /* BLKIF_OP_???                         */
 	union {
 		struct blkif_request_rw rw;
 		struct blkif_request_discard discard;
 		struct blkif_request_other other;
-<<<<<<< HEAD
-=======
 		struct blkif_request_indirect indirect;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 } __attribute__((__packed__));
 

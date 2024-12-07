@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ALPHA_PCI_H
 #define __ALPHA_PCI_H
 
@@ -9,25 +6,13 @@
 
 #include <linux/spinlock.h>
 #include <linux/dma-mapping.h>
-<<<<<<< HEAD
-#include <asm/scatterlist.h>
-#include <asm/machvec.h>
-#include <asm-generic/pci-bridge.h>
-=======
 #include <linux/scatterlist.h>
 #include <asm/machvec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following structure is used to manage multiple PCI busses.
  */
 
-<<<<<<< HEAD
-struct pci_dev;
-struct pci_bus;
-struct resource;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_iommu_arena;
 struct page;
 
@@ -69,54 +54,8 @@ struct pci_controller {
 #define PCIBIOS_MIN_IO		alpha_mv.min_io_address
 #define PCIBIOS_MIN_MEM		alpha_mv.min_mem_address
 
-<<<<<<< HEAD
-extern void pcibios_set_master(struct pci_dev *dev);
-
-extern inline void pcibios_penalize_isa_irq(int irq, int active)
-{
-	/* We don't do dynamic PCI IRQ allocation */
-}
-
 /* IOMMU controls.  */
 
-/* The PCI address space does not equal the physical memory address space.
-   The networking and block device layers use this boolean for bounce buffer
-   decisions.  */
-#define PCI_DMA_BUS_IS_PHYS  0
-
-#ifdef CONFIG_PCI
-
-/* implement the pci_ DMA API in terms of the generic device dma_ one */
-#include <asm-generic/pci-dma-compat.h>
-
-static inline void pci_dma_burst_advice(struct pci_dev *pdev,
-					enum pci_dma_burst_strategy *strat,
-					unsigned long *strategy_parameter)
-{
-	unsigned long cacheline_size;
-	u8 byte;
-
-	pci_read_config_byte(pdev, PCI_CACHE_LINE_SIZE, &byte);
-	if (byte == 0)
-		cacheline_size = 1024;
-	else
-		cacheline_size = (int) byte * 4;
-
-	*strat = PCI_DMA_BURST_BOUNDARY;
-	*strategy_parameter = cacheline_size;
-}
-#endif
-
-/* TODO: integrate with include/asm-generic/pci.h ? */
-static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
-{
-	return channel ? 15 : 14;
-}
-
-=======
-/* IOMMU controls.  */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
 
 static inline int pci_proc_domain(struct pci_bus *bus)
@@ -149,10 +88,4 @@ extern void pci_adjust_legacy_attr(struct pci_bus *bus,
 				   enum pci_mmap_state mmap_type);
 #define HAVE_PCI_LEGACY	1
 
-<<<<<<< HEAD
-extern int pci_create_resource_files(struct pci_dev *dev);
-extern void pci_remove_resource_files(struct pci_dev *dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ALPHA_PCI_H */

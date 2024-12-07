@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/pci_impl.h
  *
@@ -147,12 +144,8 @@ struct pci_iommu_arena
 };
 
 #if defined(CONFIG_ALPHA_SRM) && \
-<<<<<<< HEAD
-    (defined(CONFIG_ALPHA_CIA) || defined(CONFIG_ALPHA_LCA))
-=======
     (defined(CONFIG_ALPHA_CIA) || defined(CONFIG_ALPHA_LCA) || \
      defined(CONFIG_ALPHA_AVANTI))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define NEED_SRM_SAVE_RESTORE
 #else
 # undef NEED_SRM_SAVE_RESTORE
@@ -165,21 +158,8 @@ struct pci_iommu_arena
 #endif
 
 #ifdef ALPHA_RESTORE_SRM_SETUP
-<<<<<<< HEAD
-/* Store PCI device configuration left by SRM here. */
-struct pdev_srm_saved_conf
-{
-	struct pdev_srm_saved_conf *next;
-	struct pci_dev *dev;
-};
-
 extern void pci_restore_srm_config(void);
 #else
-#define pdev_save_srm_config(dev)	do {} while (0)
-=======
-extern void pci_restore_srm_config(void);
-#else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pci_restore_srm_config()	do {} while (0)
 #endif
 

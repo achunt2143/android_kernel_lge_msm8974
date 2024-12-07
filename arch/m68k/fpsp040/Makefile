@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for Linux arch/m68k/fpsp040 source directory
 #
@@ -13,10 +10,3 @@ obj-y    := bindec.o binstr.o decbin.o do_func.o gen_except.o get_op.o \
 	    ssin.o ssinh.o stan.o stanh.o sto_res.o stwotox.o tbldo.o util.o \
 	    x_bsun.o x_fline.o x_operr.o x_ovfl.o x_snan.o x_store.o \
 	    x_unfl.o x_unimp.o x_unsupp.o bugfix.o skeleton.o
-<<<<<<< HEAD
-
-EXTRA_LDFLAGS := -x
-
-$(OS_OBJS): fpsp.h
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

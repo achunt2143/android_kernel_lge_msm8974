@@ -1,25 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2012 Hans Verkuil <hverkuil@xs4all.nl>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2012 Hans Verkuil <hverkuil@xs4all.nl>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* kernel includes */
@@ -34,10 +15,6 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-event.h>
 #include <linux/usb.h>
-<<<<<<< HEAD
-#include <linux/version.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 
 /* driver and module definitions */
@@ -59,11 +36,7 @@ MODULE_LICENSE("GPL");
 #define FREQ_MUL 16000U
 
 /* USB Device ID List */
-<<<<<<< HEAD
-static struct usb_device_id usb_keene_device_table[] = {
-=======
 static const struct usb_device_id usb_keene_device_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{USB_DEVICE_AND_INTERFACE_INFO(USB_KEENE_VENDOR, USB_KEENE_PRODUCT,
 							USB_CLASS_HID, 0, 0) },
 	{ }						/* Terminating entry */
@@ -107,11 +80,7 @@ static int keene_cmd_main(struct keene_device *radio, unsigned freq, bool play)
 	/* If bit 4 is set, then tune to the frequency.
 	   If bit 3 is set, then unmute; if bit 2 is set, then mute.
 	   If bit 1 is set, then enter idle mode; if bit 0 is set,
-<<<<<<< HEAD
-	   then enter transit mode.
-=======
 	   then enter transmit mode.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	radio->buffer[5] = (radio->muted ? 4 : 8) | (play ? 1 : 2) |
 							(freq ? 0x10 : 0);
@@ -141,11 +110,7 @@ static int keene_cmd_set(struct keene_device *radio)
 	/* If bit 0 is set, then transmit mono, otherwise stereo.
 	   If bit 2 is set, then enable 75 us preemphasis, otherwise
 	   it is 50 us. */
-<<<<<<< HEAD
-	radio->buffer[3] = (!radio->stereo) | (radio->preemph_75_us ? 4 : 0);
-=======
 	radio->buffer[3] = (radio->stereo ? 0 : 1) | (radio->preemph_75_us ? 4 : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radio->buffer[4] = 0x00;
 	radio->buffer[5] = 0x00;
 	radio->buffer[6] = 0x00;
@@ -170,10 +135,6 @@ static void usb_keene_disconnect(struct usb_interface *intf)
 {
 	struct keene_device *radio = to_keene_dev(usb_get_intfdata(intf));
 
-<<<<<<< HEAD
-	v4l2_device_get(&radio->v4l2_dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&radio->lock);
 	usb_set_intfdata(intf, NULL);
 	video_unregister_device(&radio->vdev);
@@ -182,8 +143,6 @@ static void usb_keene_disconnect(struct usb_interface *intf)
 	v4l2_device_put(&radio->v4l2_dev);
 }
 
-<<<<<<< HEAD
-=======
 static int usb_keene_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct keene_device *radio = to_keene_dev(usb_get_intfdata(intf));
@@ -201,23 +160,14 @@ static int usb_keene_resume(struct usb_interface *intf)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vidioc_querycap(struct file *file, void *priv,
 					struct v4l2_capability *v)
 {
 	struct keene_device *radio = video_drvdata(file);
 
-<<<<<<< HEAD
-	strlcpy(v->driver, "radio-keene", sizeof(v->driver));
-	strlcpy(v->card, "Keene FM Transmitter", sizeof(v->card));
-	usb_make_path(radio->usbdev, v->bus_info, sizeof(v->bus_info));
-	v->device_caps = V4L2_CAP_RADIO | V4L2_CAP_MODULATOR;
-	v->capabilities = v->device_caps | V4L2_CAP_DEVICE_CAPS;
-=======
 	strscpy(v->driver, "radio-keene", sizeof(v->driver));
 	strscpy(v->card, "Keene FM Transmitter", sizeof(v->card));
 	usb_make_path(radio->usbdev, v->bus_info, sizeof(v->bus_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -229,11 +179,7 @@ static int vidioc_g_modulator(struct file *file, void *priv,
 	if (v->index > 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	strlcpy(v->name, "FM", sizeof(v->name));
-=======
 	strscpy(v->name, "FM", sizeof(v->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v->rangelow = FREQ_MIN * FREQ_MUL;
 	v->rangehigh = FREQ_MAX * FREQ_MUL;
 	v->txsubchans = radio->stereo ? V4L2_TUNER_SUB_STEREO : V4L2_TUNER_SUB_MONO;
@@ -242,11 +188,7 @@ static int vidioc_g_modulator(struct file *file, void *priv,
 }
 
 static int vidioc_s_modulator(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_modulator *v)
-=======
 				const struct v4l2_modulator *v)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct keene_device *radio = video_drvdata(file);
 
@@ -258,17 +200,6 @@ static int vidioc_s_modulator(struct file *file, void *priv,
 }
 
 static int vidioc_s_frequency(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_frequency *f)
-{
-	struct keene_device *radio = video_drvdata(file);
-
-	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
-		return -EINVAL;
-	f->frequency = clamp(f->frequency,
-			FREQ_MIN * FREQ_MUL, FREQ_MAX * FREQ_MUL);
-	return keene_cmd_main(radio, f->frequency, true);
-=======
 				const struct v4l2_frequency *f)
 {
 	struct keene_device *radio = video_drvdata(file);
@@ -278,7 +209,6 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 		return -EINVAL;
 	freq = clamp(freq, FREQ_MIN * FREQ_MUL, FREQ_MAX * FREQ_MUL);
 	return keene_cmd_main(radio, freq, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vidioc_g_frequency(struct file *file, void *priv,
@@ -320,31 +250,12 @@ static int keene_s_ctrl(struct v4l2_ctrl *ctrl)
 		return keene_cmd_set(radio);
 
 	case V4L2_CID_AUDIO_COMPRESSION_GAIN:
-<<<<<<< HEAD
-		radio->tx = db2tx[(ctrl->val - ctrl->minimum) / ctrl->step];
-=======
 		radio->tx = db2tx[(ctrl->val - (s32)ctrl->minimum) / (s32)ctrl->step];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return keene_cmd_set(radio);
 	}
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int vidioc_subscribe_event(struct v4l2_fh *fh,
-				struct v4l2_event_subscription *sub)
-{
-	switch (sub->type) {
-	case V4L2_EVENT_CTRL:
-		return v4l2_event_subscribe(fh, sub, 0);
-	default:
-		return -EINVAL;
-	}
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* File system interface */
 static const struct v4l2_file_operations usb_keene_fops = {
 	.owner		= THIS_MODULE,
@@ -365,11 +276,7 @@ static const struct v4l2_ioctl_ops usb_keene_ioctl_ops = {
 	.vidioc_g_frequency = vidioc_g_frequency,
 	.vidioc_s_frequency = vidioc_s_frequency,
 	.vidioc_log_status = v4l2_ctrl_log_status,
-<<<<<<< HEAD
-	.vidioc_subscribe_event = vidioc_subscribe_event,
-=======
 	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
 };
 
@@ -428,10 +335,6 @@ static int usb_keene_probe(struct usb_interface *intf,
 	radio->pa = 118;
 	radio->tx = 0x32;
 	radio->stereo = true;
-<<<<<<< HEAD
-	radio->curfreq = 95.16 * FREQ_MUL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hdl->error) {
 		retval = hdl->error;
 
@@ -448,36 +351,25 @@ static int usb_keene_probe(struct usb_interface *intf,
 
 	radio->v4l2_dev.ctrl_handler = hdl;
 	radio->v4l2_dev.release = usb_keene_video_device_release;
-<<<<<<< HEAD
-	strlcpy(radio->vdev.name, radio->v4l2_dev.name,
-=======
 	strscpy(radio->vdev.name, radio->v4l2_dev.name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(radio->vdev.name));
 	radio->vdev.v4l2_dev = &radio->v4l2_dev;
 	radio->vdev.fops = &usb_keene_fops;
 	radio->vdev.ioctl_ops = &usb_keene_ioctl_ops;
 	radio->vdev.lock = &radio->lock;
 	radio->vdev.release = video_device_release_empty;
-<<<<<<< HEAD
-=======
 	radio->vdev.vfl_dir = VFL_DIR_TX;
 	radio->vdev.device_caps = V4L2_CAP_RADIO | V4L2_CAP_MODULATOR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	radio->usbdev = interface_to_usbdev(intf);
 	radio->intf = intf;
 	usb_set_intfdata(intf, &radio->v4l2_dev);
 
 	video_set_drvdata(&radio->vdev, radio);
-<<<<<<< HEAD
-	set_bit(V4L2_FL_USE_FH_PRIO, &radio->vdev.flags);
-=======
 
 	/* at least 11ms is needed in order to settle hardware */
 	msleep(20);
 	keene_cmd_main(radio, 95.16 * FREQ_MUL, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = video_register_device(&radio->vdev, VFL_TYPE_RADIO, -1);
 	if (retval < 0) {
@@ -504,33 +396,10 @@ static struct usb_driver usb_keene_driver = {
 	.probe			= usb_keene_probe,
 	.disconnect		= usb_keene_disconnect,
 	.id_table		= usb_keene_device_table,
-<<<<<<< HEAD
-};
-
-static int __init keene_init(void)
-{
-	int retval = usb_register(&usb_keene_driver);
-
-	if (retval)
-		pr_err(KBUILD_MODNAME
-			": usb_register failed. Error number %d\n", retval);
-
-	return retval;
-}
-
-static void __exit keene_exit(void)
-{
-	usb_deregister(&usb_keene_driver);
-}
-
-module_init(keene_init);
-module_exit(keene_exit);
-=======
 	.suspend		= usb_keene_suspend,
 	.resume			= usb_keene_resume,
 	.reset_resume		= usb_keene_resume,
 };
 
 module_usb_driver(usb_keene_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

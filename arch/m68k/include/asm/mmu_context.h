@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __M68K_MMU_CONTEXT_H
 #define __M68K_MMU_CONTEXT_H
 
 #include <asm-generic/mm_hooks.h>
-<<<<<<< HEAD
-
-static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
-{
-}
-=======
 #include <linux/mm_types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MMU
 
@@ -41,11 +31,7 @@ static inline void get_mmu_context(struct mm_struct *mm)
 
 	if (mm->context != NO_CONTEXT)
 		return;
-<<<<<<< HEAD
-	while (atomic_dec_and_test_lt(&nr_free_contexts)) {
-=======
 	while (arch_atomic_dec_and_test_lt(&nr_free_contexts)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&nr_free_contexts);
 		steal_context();
 	}
@@ -68,10 +54,7 @@ static inline void get_mmu_context(struct mm_struct *mm)
 /*
  * We're finished using the context for an address space.
  */
-<<<<<<< HEAD
-=======
 #define destroy_context destroy_context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void destroy_context(struct mm_struct *mm)
 {
 	if (mm->context != NO_CONTEXT) {
@@ -97,10 +80,7 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
  * After we have set current->mm to a new value, this activates
  * the context for the new mm so we see the new mappings.
  */
-<<<<<<< HEAD
-=======
 #define activate_mm activate_mm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void activate_mm(struct mm_struct *active_mm,
 	struct mm_struct *mm)
 {
@@ -108,12 +88,6 @@ static inline void activate_mm(struct mm_struct *active_mm,
 	set_context(mm->context, mm->pgd);
 }
 
-<<<<<<< HEAD
-#define deactivate_mm(tsk, mm) do { } while (0)
-
-extern void mmu_context_init(void);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define prepare_arch_switch(next) load_ksp_mmu(next)
 
 static inline void load_ksp_mmu(struct task_struct *task)
@@ -122,15 +96,10 @@ static inline void load_ksp_mmu(struct task_struct *task)
 	struct mm_struct *mm;
 	int asid;
 	pgd_t *pgd;
-<<<<<<< HEAD
-	pmd_t *pmd;
-	pte_t *pte;
-=======
 	p4d_t *p4d;
 	pud_t *pud;
 	pmd_t *pmd;
 	pte_t *pte = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long mmuar;
 
 	local_irq_save(flags);
@@ -156,9 +125,6 @@ static inline void load_ksp_mmu(struct task_struct *task)
 	if (pgd_none(*pgd))
 		goto bug;
 
-<<<<<<< HEAD
-	pmd = pmd_offset(pgd, mmuar);
-=======
 	p4d = p4d_offset(pgd, mmuar);
 	if (p4d_none(*p4d))
 		goto bug;
@@ -168,17 +134,12 @@ static inline void load_ksp_mmu(struct task_struct *task)
 		goto bug;
 
 	pmd = pmd_offset(pud, mmuar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pmd_none(*pmd))
 		goto bug;
 
 	pte = (mmuar >= PAGE_OFFSET) ? pte_offset_kernel(pmd, mmuar)
 				     : pte_offset_map(pmd, mmuar);
-<<<<<<< HEAD
-	if (pte_none(*pte) || !pte_present(*pte))
-=======
 	if (!pte || pte_none(*pte) || !pte_present(*pte))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bug;
 
 	set_pte(pte, pte_mkyoung(*pte));
@@ -200,11 +161,8 @@ static inline void load_ksp_mmu(struct task_struct *task)
 bug:
 	pr_info("ksp load failed: mm=0x%p ksp=0x08%lx\n", mm, mmuar);
 end:
-<<<<<<< HEAD
-=======
 	if (pte && mmuar < PAGE_OFFSET)
 		pte_unmap(pte);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 }
 
@@ -216,10 +174,7 @@ extern unsigned long get_free_context(struct mm_struct *mm);
 extern void clear_context(unsigned long context);
 
 /* set the context for a new task to unmapped */
-<<<<<<< HEAD
-=======
 #define init_new_context init_new_context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int init_new_context(struct task_struct *tsk,
 				   struct mm_struct *mm)
 {
@@ -236,10 +191,7 @@ static inline void get_mmu_context(struct mm_struct *mm)
 }
 
 /* flush context if allocated... */
-<<<<<<< HEAD
-=======
 #define destroy_context destroy_context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void destroy_context(struct mm_struct *mm)
 {
 	if (mm->context != SUN3_INVALID_CONTEXT)
@@ -258,12 +210,7 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 	activate_context(tsk->mm);
 }
 
-<<<<<<< HEAD
-#define deactivate_mm(tsk, mm)	do { } while (0)
-
-=======
 #define activate_mm activate_mm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void activate_mm(struct mm_struct *prev_mm,
 			       struct mm_struct *next_mm)
 {
@@ -274,14 +221,9 @@ static inline void activate_mm(struct mm_struct *prev_mm,
 
 #include <asm/setup.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgalloc.h>
-
-=======
 #include <asm/cacheflush.h>
 
 #define init_new_context init_new_context
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int init_new_context(struct task_struct *tsk,
 				   struct mm_struct *mm)
 {
@@ -289,11 +231,6 @@ static inline int init_new_context(struct task_struct *tsk,
 	return 0;
 }
 
-<<<<<<< HEAD
-#define destroy_context(mm)		do { } while(0)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void switch_mm_0230(struct mm_struct *mm)
 {
 	unsigned long crp[2] = {
@@ -361,12 +298,7 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next, str
 	}
 }
 
-<<<<<<< HEAD
-#define deactivate_mm(tsk,mm)	do { } while (0)
-
-=======
 #define activate_mm activate_mm
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void activate_mm(struct mm_struct *prev_mm,
 			       struct mm_struct *next_mm)
 {
@@ -380,32 +312,11 @@ static inline void activate_mm(struct mm_struct *prev_mm,
 
 #endif
 
-<<<<<<< HEAD
-#else /* !CONFIG_MMU */
-
-static inline int init_new_context(struct task_struct *tsk, struct mm_struct *mm)
-{
-	return 0;
-}
-
-
-static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next, struct task_struct *tsk)
-{
-}
-
-#define destroy_context(mm)	do { } while (0)
-#define deactivate_mm(tsk,mm)	do { } while (0)
-
-static inline void activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
-{
-}
-=======
 #include <asm-generic/mmu_context.h>
 
 #else /* !CONFIG_MMU */
 
 #include <asm-generic/nommu_context.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_MMU */
 #endif /* __M68K_MMU_CONTEXT_H */

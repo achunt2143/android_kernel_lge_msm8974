@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2008 Rodolfo Giometti <giometti@linux.it>
  * Copyright (c) 2008 Eurotech S.p.A. <info@eurtech.it>
  *
  * This code is *strongly* based on EHCI-HCD code by David Brownell since
  * the chip is a quasi-EHCI compatible.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation,
- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -36,10 +16,6 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/list.h>
 #include <linux/interrupt.h>
@@ -48,10 +24,7 @@
 #include <linux/moduleparam.h>
 #include <linux/dma-mapping.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/iopoll.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq.h>
 #include <asm/unaligned.h>
@@ -59,12 +32,6 @@
 #include <linux/irq.h>
 #include <linux/platform_device.h>
 
-<<<<<<< HEAD
-#include "oxu210hp.h"
-
-#define DRIVER_VERSION "0.0.50"
-
-=======
 #define DRIVER_VERSION "0.0.50"
 
 #define OXU_DEVICEID			0x00
@@ -508,7 +475,6 @@ enum ehci_timer_action {
 	TIMER_ASYNC_OFF,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Main defines
  */
@@ -520,13 +486,10 @@ enum ehci_timer_action {
 #define oxu_info(oxu, fmt, args...) \
 		dev_info(oxu_to_hcd(oxu)->self.controller , fmt , ## args)
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DYNAMIC_DEBUG
 #define DEBUG
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct usb_hcd *oxu_to_hcd(struct oxu_hcd *oxu)
 {
 	return container_of((void *) oxu, struct usb_hcd, hcd_priv);
@@ -714,20 +677,12 @@ static int oxu_hub_control(struct usb_hcd *hcd,
  */
 
 /* Low level read/write registers functions */
-<<<<<<< HEAD
-static inline u32 oxu_readl(void *base, u32 reg)
-=======
 static inline u32 oxu_readl(void __iomem *base, u32 reg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return readl(base + reg);
 }
 
-<<<<<<< HEAD
-static inline void oxu_writel(void *base, u32 reg, u32 val)
-=======
 static inline void oxu_writel(void __iomem *base, u32 reg, u32 val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	writel(val, base + reg);
 }
@@ -794,20 +749,6 @@ static int handshake(struct oxu_hcd *oxu, void __iomem *ptr,
 					u32 mask, u32 done, int usec)
 {
 	u32 result;
-<<<<<<< HEAD
-
-	do {
-		result = readl(ptr);
-		if (result == ~(u32)0)		/* card removed */
-			return -ENODEV;
-		result &= mask;
-		if (result == done)
-			return 0;
-		udelay(1);
-		usec--;
-	} while (usec > 0);
-	return -ETIMEDOUT;
-=======
 	int ret;
 
 	ret = readl_poll_timeout_atomic(ptr, result,
@@ -818,7 +759,6 @@ static int handshake(struct oxu_hcd *oxu, void __iomem *ptr,
 		return -ENODEV;
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Force HC to halt state from unknown (EHCI spec section 2.3) */
@@ -879,12 +819,7 @@ static void ehci_quiesce(struct oxu_hcd *oxu)
 	u32	temp;
 
 #ifdef DEBUG
-<<<<<<< HEAD
-	if (!HC_IS_RUNNING(oxu_to_hcd(oxu)->state))
-		BUG();
-=======
 	BUG_ON(!HC_IS_RUNNING(oxu_to_hcd(oxu)->state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* wait for any schedule enables/disables to take effect */
@@ -934,11 +869,7 @@ static void ehci_hub_descriptor(struct oxu_hcd *oxu,
 	int ports = HCS_N_PORTS(oxu->hcs_params);
 	u16 temp;
 
-<<<<<<< HEAD
-	desc->bDescriptorType = 0x29;
-=======
 	desc->bDescriptorType = USB_DT_HUB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->bPwrOn2PwrGood = 10;	/* oxu 1.0, 2.3.9 says 20ms max */
 	desc->bHubContrCurrent = 0;
 
@@ -950,19 +881,11 @@ static void ehci_hub_descriptor(struct oxu_hcd *oxu,
 	memset(&desc->u.hs.DeviceRemovable[0], 0, temp);
 	memset(&desc->u.hs.DeviceRemovable[temp], 0xff, temp);
 
-<<<<<<< HEAD
-	temp = 0x0008;			/* per-port overcurrent reporting */
-	if (HCS_PPC(oxu->hcs_params))
-		temp |= 0x0001;		/* per-port power control */
-	else
-		temp |= 0x0002;		/* no power switching */
-=======
 	temp = HUB_CHAR_INDV_PORT_OCPM;	/* per-port overcurrent reporting */
 	if (HCS_PPC(oxu->hcs_params))
 		temp |= HUB_CHAR_INDV_PORT_LPSM; /* per-port power control */
 	else
 		temp |= HUB_CHAR_NO_LPSM; /* no power switching */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->wHubCharacteristics = (__force __u16)cpu_to_le16(temp);
 }
 
@@ -1442,10 +1365,7 @@ __acquires(oxu->lock)
 	switch (urb->status) {
 	case -EINPROGRESS:		/* success */
 		urb->status = 0;
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:			/* fault */
 		break;
 	case -EREMOTEIO:		/* fault or normal */
@@ -1487,11 +1407,7 @@ static int qh_schedule(struct oxu_hcd *oxu, struct ehci_qh *qh);
 static unsigned qh_completions(struct oxu_hcd *oxu, struct ehci_qh *qh)
 {
 	struct ehci_qtd *last = NULL, *end = qh->dummy;
-<<<<<<< HEAD
-	struct list_head *entry, *tmp;
-=======
 	struct ehci_qtd	*qtd, *tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int stopped;
 	unsigned count = 0;
 	int do_status = 0;
@@ -1516,19 +1432,10 @@ static unsigned qh_completions(struct oxu_hcd *oxu, struct ehci_qh *qh)
 	 * then let the queue advance.
 	 * if queue is stopped, handles unlinks.
 	 */
-<<<<<<< HEAD
-	list_for_each_safe(entry, tmp, &qh->qtd_list) {
-		struct ehci_qtd	*qtd;
-		struct urb *urb;
-		u32 token = 0;
-
-		qtd = list_entry(entry, struct ehci_qtd, qtd_list);
-=======
 	list_for_each_entry_safe(qtd, tmp, &qh->qtd_list, qtd_list) {
 		struct urb *urb;
 		u32 token = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		urb = qtd->urb;
 
 		/* Clean up any state from previous QTD ...*/
@@ -1691,22 +1598,11 @@ halt:
  * used for cleanup after errors, before HC sees an URB's TDs.
  */
 static void qtd_list_free(struct oxu_hcd *oxu,
-<<<<<<< HEAD
-				struct urb *urb, struct list_head *qtd_list)
-{
-	struct list_head *entry, *temp;
-
-	list_for_each_safe(entry, temp, qtd_list) {
-		struct ehci_qtd	*qtd;
-
-		qtd = list_entry(entry, struct ehci_qtd, qtd_list);
-=======
 				struct urb *urb, struct list_head *head)
 {
 	struct ehci_qtd	*qtd, *temp;
 
 	list_for_each_entry_safe(qtd, temp, head, qtd_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&qtd->qtd_list);
 		oxu_qtd_free(oxu, qtd);
 	}
@@ -1789,11 +1685,7 @@ static struct list_head *qh_urb_transaction(struct oxu_hcd *oxu,
 		token |= (1 /* "in" */ << 8);
 	/* else it's already initted to "out" pid (0 << 8) */
 
-<<<<<<< HEAD
-	maxpacket = max_packet(usb_maxpacket(urb->dev, urb->pipe, !is_input));
-=======
 	maxpacket = usb_maxpacket(urb->dev, urb->pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * buffer gets wrapped in one or more qtds;
@@ -1870,11 +1762,7 @@ static struct list_head *qh_urb_transaction(struct oxu_hcd *oxu,
 	}
 
 	/* by default, enable interrupt on urb completion */
-<<<<<<< HEAD
-		qtd->hw_token |= cpu_to_le32(QTD_IOC);
-=======
 	qtd->hw_token |= cpu_to_le32(QTD_IOC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return head;
 
 cleanup:
@@ -1908,11 +1796,7 @@ static struct ehci_qh *qh_make(struct oxu_hcd *oxu,
 
 	is_input = usb_pipein(urb->pipe);
 	type = usb_pipetype(urb->pipe);
-<<<<<<< HEAD
-	maxp = usb_maxpacket(urb->dev, urb->pipe, !is_input);
-=======
 	maxp = usb_maxpacket(urb->dev, urb->pipe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Compute interrupt scheduling parameters just once, and save.
 	 * - allowing for high bandwidth, how many nsec/uframe are used?
@@ -1938,13 +1822,8 @@ static struct ehci_qh *qh_make(struct oxu_hcd *oxu,
 				 * But interval 1 scheduling is simpler, and
 				 * includes high bandwidth.
 				 */
-<<<<<<< HEAD
-				dbg("intr period %d uframes, NYET!",
-						urb->interval);
-=======
 				oxu_dbg(oxu, "intr period %d uframes, NYET!\n",
 					urb->interval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto done;
 			}
 		} else {
@@ -1979,11 +1858,7 @@ static struct ehci_qh *qh_make(struct oxu_hcd *oxu,
 	switch (urb->dev->speed) {
 	case USB_SPEED_LOW:
 		info1 |= (1 << 12);	/* EPS "low" */
-<<<<<<< HEAD
-		/* FALL THROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case USB_SPEED_FULL:
 		/* EPS 0 means "full" */
@@ -2019,11 +1894,7 @@ static struct ehci_qh *qh_make(struct oxu_hcd *oxu,
 		}
 		break;
 	default:
-<<<<<<< HEAD
-		dbg("bogus dev %p speed %d", urb->dev, urb->dev->speed);
-=======
 		oxu_dbg(oxu, "bogus dev %p speed %d\n", urb->dev, urb->dev->speed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 		qh_put(qh);
 		return NULL;
@@ -2166,18 +2037,6 @@ static struct ehci_qh *qh_append_tds(struct oxu_hcd *oxu,
 static int submit_async(struct oxu_hcd	*oxu, struct urb *urb,
 			struct list_head *qtd_list, gfp_t mem_flags)
 {
-<<<<<<< HEAD
-	struct ehci_qtd	*qtd;
-	int epnum;
-	unsigned long flags;
-	struct ehci_qh *qh = NULL;
-	int rc = 0;
-
-	qtd = list_entry(qtd_list->next, struct ehci_qtd, qtd_list);
-	epnum = urb->ep->desc.bEndpointAddress;
-
-#ifdef OXU_URB_TRACE
-=======
 	int epnum = urb->ep->desc.bEndpointAddress;
 	unsigned long flags;
 	struct ehci_qh *qh = NULL;
@@ -2187,7 +2046,6 @@ static int submit_async(struct oxu_hcd	*oxu, struct urb *urb,
 
 	qtd = list_entry(qtd_list->next, struct ehci_qtd, qtd_list);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oxu_dbg(oxu, "%s %s urb %p ep%d%s len %d, qtd %p [qh %p]\n",
 		__func__, urb->dev->devpath, urb,
 		epnum & 0x0f, (epnum & USB_DIR_IN) ? "in" : "out",
@@ -2270,14 +2128,8 @@ static void start_unlink_async(struct oxu_hcd *oxu, struct ehci_qh *qh)
 
 #ifdef DEBUG
 	assert_spin_locked(&oxu->lock);
-<<<<<<< HEAD
-	if (oxu->reclaim || (qh->qh_state != QH_STATE_LINKED
-				&& qh->qh_state != QH_STATE_UNLINK_WAIT))
-		BUG();
-=======
 	BUG_ON(oxu->reclaim || (qh->qh_state != QH_STATE_LINKED
 				&& qh->qh_state != QH_STATE_UNLINK_WAIT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* stop async schedule right now? */
@@ -2612,11 +2464,7 @@ static void intr_deschedule(struct oxu_hcd *oxu, struct ehci_qh *qh)
 
 	/* simple/paranoid:  always delay, expecting the HC needs to read
 	 * qh->hw_next or finish a writeback after SPLIT/CSPLIT ... and
-<<<<<<< HEAD
-	 * expect khubd to clean up after any CSPLITs we won't issue.
-=======
 	 * expect hub_wq to clean up after any CSPLITs we won't issue.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * active high speed queues may need bigger delays...
 	 */
 	if (list_empty(&qh->qtd_list)
@@ -2843,25 +2691,12 @@ static void scan_periodic(struct oxu_hcd *oxu)
 	for (;;) {
 		union ehci_shadow	q, *q_p;
 		__le32			type, *hw_p;
-<<<<<<< HEAD
-		unsigned		uframes;
-
-		/* don't scan past the live uframe */
-		frame = now_uframe >> 3;
-		if (frame == (clock >> 3))
-			uframes = now_uframe & 0x07;
-		else {
-			/* safe to scan the whole frame at once */
-			now_uframe |= 0x07;
-			uframes = 8;
-=======
 
 		/* don't scan past the live uframe */
 		frame = now_uframe >> 3;
 		if (frame != (clock >> 3)) {
 			/* safe to scan the whole frame at once */
 			now_uframe |= 0x07;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 restart:
@@ -2874,13 +2709,7 @@ restart:
 
 		while (q.ptr != NULL) {
 			union ehci_shadow temp;
-<<<<<<< HEAD
-			int live;
 
-			live = HC_IS_RUNNING(oxu_to_hcd(oxu)->state);
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (type) {
 			case Q_TYPE_QH:
 				/* handle any completions */
@@ -2893,11 +2722,7 @@ restart:
 				qh_put(temp.qh);
 				break;
 			default:
-<<<<<<< HEAD
-				dbg("corrupt type %d frame %d shadow %p",
-=======
 				oxu_dbg(oxu, "corrupt type %d frame %d shadow %p\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					type, frame, q.ptr);
 				q.ptr = NULL;
 			}
@@ -2957,13 +2782,6 @@ static void ehci_port_power(struct oxu_hcd *oxu, int is_on)
 		return;
 
 	oxu_dbg(oxu, "...power%s ports...\n", is_on ? "up" : "down");
-<<<<<<< HEAD
-	for (port = HCS_N_PORTS(oxu->hcs_params); port > 0; )
-		(void) oxu_hub_control(oxu_to_hcd(oxu),
-				is_on ? SetPortFeature : ClearPortFeature,
-				USB_PORT_FEAT_POWER,
-				port--, NULL, 0);
-=======
 	for (port = HCS_N_PORTS(oxu->hcs_params); port > 0; ) {
 		if (is_on)
 			oxu_hub_control(oxu_to_hcd(oxu), SetPortFeature,
@@ -2973,7 +2791,6 @@ static void ehci_port_power(struct oxu_hcd *oxu, int is_on)
 				USB_PORT_FEAT_POWER, port--, NULL, 0);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(20);
 }
 
@@ -3099,20 +2916,12 @@ static irqreturn_t oxu210_hcd_irq(struct usb_hcd *hcd)
 					|| oxu->reset_done[i] != 0)
 				continue;
 
-<<<<<<< HEAD
-			/* start 20 msec resume signaling from this port,
-			 * and make khubd collect PORT_STAT_C_SUSPEND to
-			 * stop that signaling.
-			 */
-			oxu->reset_done[i] = jiffies + msecs_to_jiffies(20);
-=======
 			/* start USB_RESUME_TIMEOUT resume signaling from this
 			 * port, and make hub_wq collect PORT_STAT_C_SUSPEND to
 			 * stop that signaling.
 			 */
 			oxu->reset_done[i] = jiffies +
 				msecs_to_jiffies(USB_RESUME_TIMEOUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			oxu_dbg(oxu, "port %d remote wakeup\n", i + 1);
 			mod_timer(&hcd->rh_timer, oxu->reset_done[i]);
 		}
@@ -3168,15 +2977,9 @@ static irqreturn_t oxu_irq(struct usb_hcd *hcd)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void oxu_watchdog(unsigned long param)
-{
-	struct oxu_hcd	*oxu = (struct oxu_hcd *) param;
-=======
 static void oxu_watchdog(struct timer_list *t)
 {
 	struct oxu_hcd	*oxu = from_timer(oxu, t, watchdog);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&oxu->lock, flags);
@@ -3212,13 +3015,7 @@ static int oxu_hcd_init(struct usb_hcd *hcd)
 
 	spin_lock_init(&oxu->lock);
 
-<<<<<<< HEAD
-	init_timer(&oxu->watchdog);
-	oxu->watchdog.function = oxu_watchdog;
-	oxu->watchdog.data = (unsigned long) oxu;
-=======
 	timer_setup(&oxu->watchdog, oxu_watchdog, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * hw default: 1K periodic list heads, one per frame.
@@ -3289,21 +3086,11 @@ static int oxu_hcd_init(struct usb_hcd *hcd)
 static int oxu_reset(struct usb_hcd *hcd)
 {
 	struct oxu_hcd *oxu = hcd_to_oxu(hcd);
-<<<<<<< HEAD
-	int ret;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&oxu->mem_lock);
 	INIT_LIST_HEAD(&oxu->urb_list);
 	oxu->urb_len = 0;
 
-<<<<<<< HEAD
-	/* FIMXE */
-	hcd->self.controller->dma_mask = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (oxu->is_otg) {
 		oxu->caps = hcd->regs + OXU_OTG_CAP_OFFSET;
 		oxu->regs = hcd->regs + OXU_OTG_CAP_OFFSET + \
@@ -3321,15 +3108,7 @@ static int oxu_reset(struct usb_hcd *hcd)
 	oxu->hcs_params = readl(&oxu->caps->hcs_params);
 	oxu->sbrn = 0x20;
 
-<<<<<<< HEAD
-	ret = oxu_hcd_init(hcd);
-	if (ret)
-		return ret;
-
-	return 0;
-=======
 	return oxu_hcd_init(hcd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int oxu_run(struct usb_hcd *hcd)
@@ -3351,19 +3130,11 @@ static int oxu_run(struct usb_hcd *hcd)
 
 	/* hcc_params controls whether oxu->regs->segment must (!!!)
 	 * be used; it constrains QH/ITD/SITD and QTD locations.
-<<<<<<< HEAD
-	 * pci_pool consistent memory always uses segment zero.
-	 * streaming mappings for I/O buffers, like pci_map_single(),
-	 * can return segments above 4GB, if the device allows.
-	 *
-	 * NOTE:  the dma mask is visible through dma_supported(), so
-=======
 	 * dma_pool consistent memory always uses segment zero.
 	 * streaming mappings for I/O buffers, like dma_map_single(),
 	 * can return segments above 4GB, if the device allows.
 	 *
 	 * NOTE:  the dma mask is visible through dev->dma_mask, so
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * drivers can pass this info along ... like NETIF_F_HIGHDMA,
 	 * Scsi_Host.highmem_io, and so forth.  It's readonly to all
 	 * host side drivers though.
@@ -3496,10 +3267,6 @@ static int oxu_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 {
 	struct oxu_hcd *oxu = hcd_to_oxu(hcd);
 	int num, rem;
-<<<<<<< HEAD
-	int transfer_buffer_length;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *transfer_buffer;
 	struct urb *murb;
 	int i, ret;
@@ -3510,10 +3277,6 @@ static int oxu_urb_enqueue(struct usb_hcd *hcd, struct urb *urb,
 
 	/* Otherwise we should verify the USB transfer buffer size! */
 	transfer_buffer = urb->transfer_buffer;
-<<<<<<< HEAD
-	transfer_buffer_length = urb->transfer_buffer_length;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	num = urb->transfer_buffer_length / 4096;
 	rem = urb->transfer_buffer_length % 4096;
@@ -3614,11 +3377,7 @@ static int oxu_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 		switch (qh->qh_state) {
 		case QH_STATE_LINKED:
 			intr_deschedule(oxu, qh);
-<<<<<<< HEAD
-			/* FALL THROUGH */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case QH_STATE_IDLE:
 			qh_completions(oxu, qh);
 			break;
@@ -3640,14 +3399,9 @@ static int oxu_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
 				/* shouldn't happen often, but ...
 				 * FIXME kill those tds' urbs
 				 */
-<<<<<<< HEAD
-				err("can't reschedule qh %p, err %d",
-					qh, status);
-=======
 				dev_err(hcd->self.controller,
 					"can't reschedule qh %p, err %d\n", qh,
 					status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			return status;
 		}
@@ -3695,11 +3449,7 @@ rescan:
 		if (!tmp)
 			goto nogood;
 		unlink_async(oxu, qh);
-<<<<<<< HEAD
-		/* FALL THROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case QH_STATE_UNLINK:		/* wait for hw to finish? */
 idle_timeout:
 		spin_unlock_irqrestore(&oxu->lock, flags);
@@ -3710,11 +3460,7 @@ idle_timeout:
 			qh_put(qh);
 			break;
 		}
-<<<<<<< HEAD
-		/* else FALL THROUGH */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 nogood:
 		/* caller was supposed to have unlinked any requests;
@@ -3746,11 +3492,7 @@ static int oxu_hub_status_data(struct usb_hcd *hcd, char *buf)
 	int ports, i, retval = 1;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	/* if !USB_SUSPEND, root hub timers won't get shut down ... */
-=======
 	/* if !PM, root hub timers won't get shut down ... */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!HC_IS_RUNNING(hcd->state))
 		return 0;
 
@@ -3782,11 +3524,7 @@ static int oxu_hub_status_data(struct usb_hcd *hcd, char *buf)
 
 		/*
 		 * Return status information even for ports with OWNER set.
-<<<<<<< HEAD
-		 * Otherwise khubd wouldn't see the disconnect event when a
-=======
 		 * Otherwise hub_wq wouldn't see the disconnect event when a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * high-speed device is switched over to the companion
 		 * controller by the user.
 		 */
@@ -3861,11 +3599,7 @@ static int oxu_hub_control(struct usb_hcd *hcd, u16 typeReq,
 
 		/*
 		 * Even if OWNER is set, so the port is owned by the
-<<<<<<< HEAD
-		 * companion controller, khubd needs to be able to clear
-=======
 		 * companion controller, hub_wq needs to be able to clear
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * the port-change status bits (especially
 		 * USB_PORT_STAT_C_CONNECTION).
 		 */
@@ -4007,11 +3741,7 @@ static int oxu_hub_control(struct usb_hcd *hcd, u16 typeReq,
 		}
 
 		/*
-<<<<<<< HEAD
-		 * Even if OWNER is set, there's no harm letting khubd
-=======
 		 * Even if OWNER is set, there's no harm letting hub_wq
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * see the wPortStatus values (they should all be 0 except
 		 * for PORT_POWER anyway).
 		 */
@@ -4179,15 +3909,10 @@ static int oxu_bus_suspend(struct usb_hcd *hcd)
 		}
 	}
 
-<<<<<<< HEAD
-	/* turn off now-idle HC */
-	del_timer_sync(&oxu->watchdog);
-=======
 	spin_unlock_irq(&oxu->lock);
 	/* turn off now-idle HC */
 	del_timer_sync(&oxu->watchdog);
 	spin_lock_irq(&oxu->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ehci_halt(oxu);
 	hcd->state = HC_STATE_SUSPENDED;
 
@@ -4343,11 +4068,7 @@ static const struct hc_driver oxu_hc_driver = {
  * Module stuff
  */
 
-<<<<<<< HEAD
-static void oxu_configuration(struct platform_device *pdev, void *base)
-=======
 static void oxu_configuration(struct platform_device *pdev, void __iomem *base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 
@@ -4377,11 +4098,7 @@ static void oxu_configuration(struct platform_device *pdev, void __iomem *base)
 	oxu_writel(base, OXU_CHIPIRQEN_SET, OXU_USBSPHLPWUI | OXU_USBOTGLPWUI);
 }
 
-<<<<<<< HEAD
-static int oxu_verify_id(struct platform_device *pdev, void *base)
-=======
 static int oxu_verify_id(struct platform_device *pdev, void __iomem *base)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 id;
 	static const char * const bo[] = {
@@ -4409,11 +4126,7 @@ static int oxu_verify_id(struct platform_device *pdev, void __iomem *base)
 static const struct hc_driver oxu_hc_driver;
 static struct usb_hcd *oxu_create(struct platform_device *pdev,
 				unsigned long memstart, unsigned long memlen,
-<<<<<<< HEAD
-				void *base, int irq, int otg)
-=======
 				void __iomem *base, int irq, int otg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &pdev->dev;
 
@@ -4441,28 +4154,18 @@ static struct usb_hcd *oxu_create(struct platform_device *pdev,
 	oxu->is_otg = otg;
 
 	ret = usb_add_hcd(hcd, irq, IRQF_SHARED);
-<<<<<<< HEAD
-	if (ret < 0)
-		return ERR_PTR(ret);
-
-=======
 	if (ret < 0) {
 		usb_put_hcd(hcd);
 		return ERR_PTR(ret);
 	}
 
 	device_wakeup_enable(hcd->self.controller);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hcd;
 }
 
 static int oxu_init(struct platform_device *pdev,
 				unsigned long memstart, unsigned long memlen,
-<<<<<<< HEAD
-				void *base, int irq)
-=======
 				void __iomem *base, int irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct oxu_info *info = platform_get_drvdata(pdev);
 	struct usb_hcd *hcd;
@@ -4511,11 +4214,7 @@ error_create_otg:
 static int oxu_drv_probe(struct platform_device *pdev)
 {
 	struct resource *res;
-<<<<<<< HEAD
-	void *base;
-=======
 	void __iomem *base;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long memstart, memlen;
 	int irq, ret;
 	struct oxu_info *info;
@@ -4526,31 +4225,6 @@ static int oxu_drv_probe(struct platform_device *pdev)
 	/*
 	 * Get the platform resources
 	 */
-<<<<<<< HEAD
-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	if (!res) {
-		dev_err(&pdev->dev,
-			"no IRQ! Check %s setup!\n", dev_name(&pdev->dev));
-		return -ENODEV;
-	}
-	irq = res->start;
-	dev_dbg(&pdev->dev, "IRQ resource %d\n", irq);
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "no registers address! Check %s setup!\n",
-			dev_name(&pdev->dev));
-		return -ENODEV;
-	}
-	memstart = res->start;
-	memlen = resource_size(res);
-	dev_dbg(&pdev->dev, "MEM resource %lx-%lx\n", memstart, memlen);
-	if (!request_mem_region(memstart, memlen,
-				oxu_hc_driver.description)) {
-		dev_dbg(&pdev->dev, "memory area already in use\n");
-		return -EBUSY;
-	}
-=======
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -4563,52 +4237,28 @@ static int oxu_drv_probe(struct platform_device *pdev)
 	}
 	memstart = res->start;
 	memlen = resource_size(res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = irq_set_irq_type(irq, IRQF_TRIGGER_FALLING);
 	if (ret) {
 		dev_err(&pdev->dev, "error setting irq type\n");
 		ret = -EFAULT;
-<<<<<<< HEAD
-		goto error_set_irq_type;
-	}
-
-	base = ioremap(memstart, memlen);
-	if (!base) {
-		dev_dbg(&pdev->dev, "error mapping memory\n");
-		ret = -EFAULT;
-		goto error_ioremap;
-=======
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Allocate a driver data struct to hold useful info for both
 	 * SPH & OTG devices
 	 */
-<<<<<<< HEAD
-	info = kzalloc(sizeof(struct oxu_info), GFP_KERNEL);
-	if (!info) {
-		dev_dbg(&pdev->dev, "error allocating memory\n");
-		ret = -EFAULT;
-		goto error_alloc;
-=======
 	info = devm_kzalloc(&pdev->dev, sizeof(struct oxu_info), GFP_KERNEL);
 	if (!info) {
 		ret = -EFAULT;
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	platform_set_drvdata(pdev, info);
 
 	ret = oxu_init(pdev, memstart, memlen, base, irq);
 	if (ret < 0) {
 		dev_dbg(&pdev->dev, "cannot init USB devices\n");
-<<<<<<< HEAD
-		goto error_init;
-=======
 		goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_info(&pdev->dev, "devices enabled and running\n");
@@ -4616,21 +4266,7 @@ static int oxu_drv_probe(struct platform_device *pdev)
 
 	return 0;
 
-<<<<<<< HEAD
-error_init:
-	kfree(info);
-	platform_set_drvdata(pdev, NULL);
-
-error_alloc:
-	iounmap(base);
-
-error_set_irq_type:
-error_ioremap:
-	release_mem_region(memstart, memlen);
-
-=======
 error:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_err(&pdev->dev, "init %s fail, %d\n", dev_name(&pdev->dev), ret);
 	return ret;
 }
@@ -4641,32 +4277,12 @@ static void oxu_remove(struct platform_device *pdev, struct usb_hcd *hcd)
 	usb_put_hcd(hcd);
 }
 
-<<<<<<< HEAD
-static int oxu_drv_remove(struct platform_device *pdev)
-{
-	struct oxu_info *info = platform_get_drvdata(pdev);
-	unsigned long memstart = info->hcd[0]->rsrc_start,
-			memlen = info->hcd[0]->rsrc_len;
-	void *base = info->hcd[0]->regs;
-
-	oxu_remove(pdev, info->hcd[0]);
-	oxu_remove(pdev, info->hcd[1]);
-
-	iounmap(base);
-	release_mem_region(memstart, memlen);
-
-	kfree(info);
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-=======
 static void oxu_drv_remove(struct platform_device *pdev)
 {
 	struct oxu_info *info = platform_get_drvdata(pdev);
 
 	oxu_remove(pdev, info->hcd[0]);
 	oxu_remove(pdev, info->hcd[1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void oxu_drv_shutdown(struct platform_device *pdev)
@@ -4698,11 +4314,7 @@ static int oxu_drv_resume(struct device *dev)
 
 static struct platform_driver oxu_driver = {
 	.probe		= oxu_drv_probe,
-<<<<<<< HEAD
-	.remove		= oxu_drv_remove,
-=======
 	.remove_new	= oxu_drv_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= oxu_drv_shutdown,
 	.suspend	= oxu_drv_suspend,
 	.resume		= oxu_drv_resume,

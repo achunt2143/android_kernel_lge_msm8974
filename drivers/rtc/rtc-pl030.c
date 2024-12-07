@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/rtc/rtc-pl030.c
  *
  *  Copyright (C) 2000-2001 Deep Blue Solutions Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/rtc.h>
@@ -46,47 +36,24 @@ static int pl030_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct pl030_rtc *rtc = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	rtc_time_to_tm(readl(rtc->base + RTC_MR), &alrm->time);
-=======
 	rtc_time64_to_tm(readl(rtc->base + RTC_MR), &alrm->time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int pl030_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct pl030_rtc *rtc = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	unsigned long time;
-	int ret;
-
-	/*
-	 * At the moment, we can only deal with non-wildcarded alarm times.
-	 */
-	ret = rtc_valid_tm(&alrm->time);
-	if (ret == 0)
-		ret = rtc_tm_to_time(&alrm->time, &time);
-	if (ret == 0)
-		writel(time, rtc->base + RTC_MR);
-	return ret;
-=======
 
 	writel(rtc_tm_to_time64(&alrm->time), rtc->base + RTC_MR);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pl030_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct pl030_rtc *rtc = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	rtc_time_to_tm(readl(rtc->base + RTC_DR), tm);
-=======
 	rtc_time64_to_tm(readl(rtc->base + RTC_DR), tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -102,21 +69,10 @@ static int pl030_read_time(struct device *dev, struct rtc_time *tm)
 static int pl030_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct pl030_rtc *rtc = dev_get_drvdata(dev);
-<<<<<<< HEAD
-	unsigned long time;
-	int ret;
-
-	ret = rtc_tm_to_time(tm, &time);
-	if (ret == 0)
-		writel(time + 1, rtc->base + RTC_LR);
-
-	return ret;
-=======
 
 	writel(rtc_tm_to_time64(tm) + 1, rtc->base + RTC_LR);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rtc_class_ops pl030_ops = {
@@ -135,22 +91,12 @@ static int pl030_probe(struct amba_device *dev, const struct amba_id *id)
 	if (ret)
 		goto err_req;
 
-<<<<<<< HEAD
-	rtc = kmalloc(sizeof(*rtc), GFP_KERNEL);
-=======
 	rtc = devm_kzalloc(&dev->dev, sizeof(*rtc), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rtc) {
 		ret = -ENOMEM;
 		goto err_rtc;
 	}
 
-<<<<<<< HEAD
-	rtc->base = ioremap(dev->res.start, resource_size(&dev->res));
-	if (!rtc->base) {
-		ret = -ENOMEM;
-		goto err_map;
-=======
 	rtc->rtc = devm_rtc_allocate_device(&dev->dev);
 	if (IS_ERR(rtc->rtc)) {
 		ret = PTR_ERR(rtc->rtc);
@@ -163,7 +109,6 @@ static int pl030_probe(struct amba_device *dev, const struct amba_id *id)
 	if (!rtc->base) {
 		ret = -ENOMEM;
 		goto err_rtc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	__raw_writel(0, rtc->base + RTC_CR);
@@ -176,18 +121,9 @@ static int pl030_probe(struct amba_device *dev, const struct amba_id *id)
 	if (ret)
 		goto err_irq;
 
-<<<<<<< HEAD
-	rtc->rtc = rtc_device_register("pl030", &dev->dev, &pl030_ops,
-				       THIS_MODULE);
-	if (IS_ERR(rtc->rtc)) {
-		ret = PTR_ERR(rtc->rtc);
-		goto err_reg;
-	}
-=======
 	ret = devm_rtc_register_device(rtc->rtc);
 	if (ret)
 		goto err_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -195,34 +131,12 @@ static int pl030_probe(struct amba_device *dev, const struct amba_id *id)
 	free_irq(dev->irq[0], rtc);
  err_irq:
 	iounmap(rtc->base);
-<<<<<<< HEAD
- err_map:
-	kfree(rtc);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_rtc:
 	amba_release_regions(dev);
  err_req:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int pl030_remove(struct amba_device *dev)
-{
-	struct pl030_rtc *rtc = amba_get_drvdata(dev);
-
-	amba_set_drvdata(dev, NULL);
-
-	writel(0, rtc->base + RTC_CR);
-
-	free_irq(dev->irq[0], rtc);
-	rtc_device_unregister(rtc->rtc);
-	iounmap(rtc->base);
-	kfree(rtc);
-	amba_release_regions(dev);
-
-	return 0;
-=======
 static void pl030_remove(struct amba_device *dev)
 {
 	struct pl030_rtc *rtc = amba_get_drvdata(dev);
@@ -232,7 +146,6 @@ static void pl030_remove(struct amba_device *dev)
 	free_irq(dev->irq[0], rtc);
 	iounmap(rtc->base);
 	amba_release_regions(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct amba_id pl030_ids[] = {

@@ -1,43 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Kernel module help for powerpc.
     Copyright (C) 2001, 2003 Rusty Russell IBM Corporation.
     Copyright (C) 2008 Freescale Semiconductor, Inc.
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 #include <linux/elf.h>
 #include <linux/moduleloader.h>
 #include <linux/err.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-#include <linux/bug.h>
-#include <asm/module.h>
-#include <asm/uaccess.h>
-#include <asm/firmware.h>
-#include <linux/sort.h>
-
-#include "setup.h"
-
-LIST_HEAD(module_bug_list);
-=======
 #include <linux/mm.h>
 #include <linux/bug.h>
 #include <asm/module.h>
@@ -48,7 +18,6 @@ LIST_HEAD(module_bug_list);
 #include <asm/sections.h>
 
 static LIST_HEAD(module_bug_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const Elf_Shdr *find_section(const Elf_Ehdr *hdr,
 				    const Elf_Shdr *sechdrs,
@@ -68,14 +37,11 @@ int module_finalize(const Elf_Ehdr *hdr,
 		const Elf_Shdr *sechdrs, struct module *me)
 {
 	const Elf_Shdr *sect;
-<<<<<<< HEAD
-=======
 	int rc;
 
 	rc = module_finalize_ftrace(me, sechdrs);
 	if (rc)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Apply feature fixups */
 	sect = find_section(hdr, sechdrs, "__ftr_fixup");
@@ -96,9 +62,6 @@ int module_finalize(const Elf_Ehdr *hdr,
 		do_feature_fixups(powerpc_firmware_features,
 				  (void *)sect->sh_addr,
 				  (void *)sect->sh_addr + sect->sh_size);
-<<<<<<< HEAD
-#endif
-=======
 #endif /* CONFIG_PPC64 */
 
 #ifdef CONFIG_PPC64_ELF_ABI_V1
@@ -116,7 +79,6 @@ int module_finalize(const Elf_Ehdr *hdr,
 				  (void *)sect->sh_addr,
 				  (void *)sect->sh_addr + sect->sh_size);
 #endif /* CONFIG_PPC_BARRIER_NOSPEC */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sect = find_section(hdr, sechdrs, "__lwsync_fixup");
 	if (sect != NULL)
@@ -126,8 +88,6 @@ int module_finalize(const Elf_Ehdr *hdr,
 
 	return 0;
 }
-<<<<<<< HEAD
-=======
 
 static __always_inline void *
 __module_alloc(unsigned long size, unsigned long start, unsigned long end, bool nowarn)
@@ -165,4 +125,3 @@ void *module_alloc(unsigned long size)
 	return __module_alloc(size, VMALLOC_START, VMALLOC_END, false);
 #endif
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

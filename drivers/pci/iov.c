@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-/*
- * drivers/pci/iov.c
- *
- * Copyright (C) 2009 Intel Corporation, Yu Zhao <yu.zhao@intel.com>
- *
- * PCI Express I/O Virtualization (IOV) support.
- *   Single Root IOV 1.0
- *   Address Translation Service 1.0
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * PCI Express I/O Virtualization (IOV) support
@@ -15,32 +5,10 @@
  *   Address Translation Service 1.0
  *
  * Copyright (C) 2009 Intel Corporation, Yu Zhao <yu.zhao@intel.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pci.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/mutex.h>
-#include <linux/export.h>
-#include <linux/string.h>
-#include <linux/delay.h>
-#include <linux/pci-ats.h>
-#include "pci.h"
-
-#define VIRTFN_ID_LEN	16
-
-static inline u8 virtfn_bus(struct pci_dev *dev, int id)
-{
-	return dev->bus->number + ((dev->devfn + dev->sriov->offset +
-				    dev->sriov->stride * id) >> 8);
-}
-
-static inline u8 virtfn_devfn(struct pci_dev *dev, int id)
-{
-	return (dev->devfn + dev->sriov->offset +
-		dev->sriov->stride * id) & 0xff;
-=======
 #include <linux/export.h>
 #include <linux/string.h>
 #include <linux/delay.h>
@@ -149,15 +117,10 @@ static int compute_max_vf_buses(struct pci_dev *dev)
 out:
 	pci_iov_set_numvfs(dev, 0);
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_bus *virtfn_add_bus(struct pci_bus *bus, int busnr)
 {
-<<<<<<< HEAD
-	int rc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_bus *child;
 
 	if (bus->number == busnr)
@@ -171,66 +134,11 @@ static struct pci_bus *virtfn_add_bus(struct pci_bus *bus, int busnr)
 	if (!child)
 		return NULL;
 
-<<<<<<< HEAD
-	child->subordinate = busnr;
-	child->dev.parent = bus->bridge;
-	rc = pci_bus_add_child(child);
-	if (rc) {
-		pci_remove_bus(child);
-		return NULL;
-	}
-=======
 	pci_bus_insert_busn_res(child, busnr, busnr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return child;
 }
 
-<<<<<<< HEAD
-static void virtfn_remove_bus(struct pci_bus *bus, int busnr)
-{
-	struct pci_bus *child;
-
-	if (bus->number == busnr)
-		return;
-
-	child = pci_find_bus(pci_domain_nr(bus), busnr);
-	BUG_ON(!child);
-
-	if (list_empty(&child->devices))
-		pci_remove_bus(child);
-}
-
-static int virtfn_add(struct pci_dev *dev, int id, int reset)
-{
-	int i;
-	int rc;
-	u64 size;
-	char buf[VIRTFN_ID_LEN];
-	struct pci_dev *virtfn;
-	struct resource *res;
-	struct pci_sriov *iov = dev->sriov;
-
-	virtfn = alloc_pci_dev();
-	if (!virtfn)
-		return -ENOMEM;
-
-	mutex_lock(&iov->dev->sriov->lock);
-	virtfn->bus = virtfn_add_bus(dev->bus, virtfn_bus(dev, id));
-	if (!virtfn->bus) {
-		kfree(virtfn);
-		mutex_unlock(&iov->dev->sriov->lock);
-		return -ENOMEM;
-	}
-	virtfn->devfn = virtfn_devfn(dev, id);
-	virtfn->vendor = dev->vendor;
-	pci_read_config_word(dev, iov->pos + PCI_SRIOV_VF_DID, &virtfn->device);
-	pci_setup_device(virtfn);
-	virtfn->dev.parent = dev->dev.parent;
-
-	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
-		res = dev->resource + PCI_IOV_RESOURCES + i;
-=======
 static void virtfn_remove_bus(struct pci_bus *physbus, struct pci_bus *virtbus)
 {
 	if (physbus != virtbus && list_empty(&virtbus->devices))
@@ -414,57 +322,17 @@ int pci_iov_add_virtfn(struct pci_dev *dev, int id)
 
 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
 		res = &dev->resource[i + PCI_IOV_RESOURCES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!res->parent)
 			continue;
 		virtfn->resource[i].name = pci_name(virtfn);
 		virtfn->resource[i].flags = res->flags;
-<<<<<<< HEAD
-		size = resource_size(res);
-		do_div(size, iov->total);
-=======
 		size = pci_iov_resource_size(dev, i + PCI_IOV_RESOURCES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		virtfn->resource[i].start = res->start + size * id;
 		virtfn->resource[i].end = virtfn->resource[i].start + size - 1;
 		rc = request_resource(res, &virtfn->resource[i]);
 		BUG_ON(rc);
 	}
 
-<<<<<<< HEAD
-	if (reset)
-		__pci_reset_function(virtfn);
-
-	pci_device_add(virtfn, virtfn->bus);
-	mutex_unlock(&iov->dev->sriov->lock);
-
-	virtfn->physfn = pci_dev_get(dev);
-	virtfn->is_virtfn = 1;
-
-	rc = pci_bus_add_device(virtfn);
-	if (rc)
-		goto failed1;
-	sprintf(buf, "virtfn%u", id);
-	rc = sysfs_create_link(&dev->dev.kobj, &virtfn->dev.kobj, buf);
-	if (rc)
-		goto failed1;
-	rc = sysfs_create_link(&virtfn->dev.kobj, &dev->dev.kobj, "physfn");
-	if (rc)
-		goto failed2;
-
-	kobject_uevent(&virtfn->dev.kobj, KOBJ_CHANGE);
-
-	return 0;
-
-failed2:
-	sysfs_remove_link(&dev->dev.kobj, buf);
-failed1:
-	pci_dev_put(dev);
-	mutex_lock(&iov->dev->sriov->lock);
-	pci_stop_and_remove_bus_device(virtfn);
-	virtfn_remove_bus(dev->bus, virtfn_bus(dev, id));
-	mutex_unlock(&iov->dev->sriov->lock);
-=======
 	pci_device_add(virtfn, virtfn->bus);
 	rc = pci_iov_sysfs_link(dev, virtfn, id);
 	if (rc)
@@ -480,35 +348,10 @@ failed1:
 failed0:
 	virtfn_remove_bus(dev->bus, bus);
 failed:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
 
-<<<<<<< HEAD
-static void virtfn_remove(struct pci_dev *dev, int id, int reset)
-{
-	char buf[VIRTFN_ID_LEN];
-	struct pci_bus *bus;
-	struct pci_dev *virtfn;
-	struct pci_sriov *iov = dev->sriov;
-
-	bus = pci_find_bus(pci_domain_nr(dev->bus), virtfn_bus(dev, id));
-	if (!bus)
-		return;
-
-	virtfn = pci_get_slot(bus, virtfn_devfn(dev, id));
-	if (!virtfn)
-		return;
-
-	pci_dev_put(virtfn);
-
-	if (reset) {
-		device_release_driver(&virtfn->dev);
-		__pci_reset_function(virtfn);
-	}
-
-=======
 void pci_iov_remove_virtfn(struct pci_dev *dev, int id)
 {
 	char buf[VIRTFN_ID_LEN];
@@ -520,7 +363,6 @@ void pci_iov_remove_virtfn(struct pci_dev *dev, int id)
 	if (!virtfn)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sprintf(buf, "virtfn%u", id);
 	sysfs_remove_link(&dev->dev.kobj, buf);
 	/*
@@ -531,105 +373,6 @@ void pci_iov_remove_virtfn(struct pci_dev *dev, int id)
 	if (virtfn->dev.kobj.sd)
 		sysfs_remove_link(&virtfn->dev.kobj, "physfn");
 
-<<<<<<< HEAD
-	mutex_lock(&iov->dev->sriov->lock);
-	pci_stop_and_remove_bus_device(virtfn);
-	virtfn_remove_bus(dev->bus, virtfn_bus(dev, id));
-	mutex_unlock(&iov->dev->sriov->lock);
-
-	pci_dev_put(dev);
-}
-
-static int sriov_migration(struct pci_dev *dev)
-{
-	u16 status;
-	struct pci_sriov *iov = dev->sriov;
-
-	if (!iov->nr_virtfn)
-		return 0;
-
-	if (!(iov->cap & PCI_SRIOV_CAP_VFM))
-		return 0;
-
-	pci_read_config_word(dev, iov->pos + PCI_SRIOV_STATUS, &status);
-	if (!(status & PCI_SRIOV_STATUS_VFM))
-		return 0;
-
-	schedule_work(&iov->mtask);
-
-	return 1;
-}
-
-static void sriov_migration_task(struct work_struct *work)
-{
-	int i;
-	u8 state;
-	u16 status;
-	struct pci_sriov *iov = container_of(work, struct pci_sriov, mtask);
-
-	for (i = iov->initial; i < iov->nr_virtfn; i++) {
-		state = readb(iov->mstate + i);
-		if (state == PCI_SRIOV_VFM_MI) {
-			writeb(PCI_SRIOV_VFM_AV, iov->mstate + i);
-			state = readb(iov->mstate + i);
-			if (state == PCI_SRIOV_VFM_AV)
-				virtfn_add(iov->self, i, 1);
-		} else if (state == PCI_SRIOV_VFM_MO) {
-			virtfn_remove(iov->self, i, 1);
-			writeb(PCI_SRIOV_VFM_UA, iov->mstate + i);
-			state = readb(iov->mstate + i);
-			if (state == PCI_SRIOV_VFM_AV)
-				virtfn_add(iov->self, i, 0);
-		}
-	}
-
-	pci_read_config_word(iov->self, iov->pos + PCI_SRIOV_STATUS, &status);
-	status &= ~PCI_SRIOV_STATUS_VFM;
-	pci_write_config_word(iov->self, iov->pos + PCI_SRIOV_STATUS, status);
-}
-
-static int sriov_enable_migration(struct pci_dev *dev, int nr_virtfn)
-{
-	int bir;
-	u32 table;
-	resource_size_t pa;
-	struct pci_sriov *iov = dev->sriov;
-
-	if (nr_virtfn <= iov->initial)
-		return 0;
-
-	pci_read_config_dword(dev, iov->pos + PCI_SRIOV_VFM, &table);
-	bir = PCI_SRIOV_VFM_BIR(table);
-	if (bir > PCI_STD_RESOURCE_END)
-		return -EIO;
-
-	table = PCI_SRIOV_VFM_OFFSET(table);
-	if (table + nr_virtfn > pci_resource_len(dev, bir))
-		return -EIO;
-
-	pa = pci_resource_start(dev, bir) + table;
-	iov->mstate = ioremap(pa, nr_virtfn);
-	if (!iov->mstate)
-		return -ENOMEM;
-
-	INIT_WORK(&iov->mtask, sriov_migration_task);
-
-	iov->ctrl |= PCI_SRIOV_CTRL_VFM | PCI_SRIOV_CTRL_INTR;
-	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
-
-	return 0;
-}
-
-static void sriov_disable_migration(struct pci_dev *dev)
-{
-	struct pci_sriov *iov = dev->sriov;
-
-	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFM | PCI_SRIOV_CTRL_INTR);
-	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
-
-	cancel_work_sync(&iov->mtask);
-	iounmap(iov->mstate);
-=======
 	pci_stop_and_remove_bus_device(virtfn);
 	virtfn_remove_bus(dev->bus, virtfn->bus);
 
@@ -849,57 +592,23 @@ failed:
 		pci_iov_remove_virtfn(dev, i);
 
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
 {
 	int rc;
-<<<<<<< HEAD
-	int i, j;
-	int nres;
-	u16 offset, stride, initial;
-=======
 	int i;
 	int nres;
 	u16 initial;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *res;
 	struct pci_dev *pdev;
 	struct pci_sriov *iov = dev->sriov;
 	int bars = 0;
-<<<<<<< HEAD
-=======
 	int bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nr_virtfn)
 		return 0;
 
-<<<<<<< HEAD
-	if (iov->nr_virtfn)
-		return -EINVAL;
-
-	pci_read_config_word(dev, iov->pos + PCI_SRIOV_INITIAL_VF, &initial);
-	if (initial > iov->total ||
-	    (!(iov->cap & PCI_SRIOV_CAP_VFM) && (initial != iov->total)))
-		return -EIO;
-
-	if (nr_virtfn < 0 || nr_virtfn > iov->total ||
-	    (!(iov->cap & PCI_SRIOV_CAP_VFM) && (nr_virtfn > initial)))
-		return -EINVAL;
-
-	pci_write_config_word(dev, iov->pos + PCI_SRIOV_NUM_VF, nr_virtfn);
-	pci_read_config_word(dev, iov->pos + PCI_SRIOV_VF_OFFSET, &offset);
-	pci_read_config_word(dev, iov->pos + PCI_SRIOV_VF_STRIDE, &stride);
-	if (!offset || (nr_virtfn > 1 && !stride))
-		return -EIO;
-
-	nres = 0;
-	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
-		bars |= (1 << (i + PCI_IOV_RESOURCES));
-		res = dev->resource + PCI_IOV_RESOURCES + i;
-=======
 	if (iov->num_VFs)
 		return -EINVAL;
 
@@ -916,22 +625,10 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
 	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
 		bars |= (1 << (i + PCI_IOV_RESOURCES));
 		res = &dev->resource[i + PCI_IOV_RESOURCES];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res->parent)
 			nres++;
 	}
 	if (nres != iov->nres) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "not enough MMIO resources for SR-IOV\n");
-		return -ENOMEM;
-	}
-
-	iov->offset = offset;
-	iov->stride = stride;
-
-	if (virtfn_bus(dev, nr_virtfn - 1) > dev->bus->subordinate) {
-		dev_err(&dev->dev, "SR-IOV: bus number out of range\n");
-=======
 		pci_err(dev, "not enough MMIO resources for SR-IOV\n");
 		return -ENOMEM;
 	}
@@ -940,16 +637,11 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
 	if (bus > dev->bus->busn_res.end) {
 		pci_err(dev, "can't enable %d VFs (bus %02x out of range of %pR)\n",
 			nr_virtfn, bus, &dev->bus->busn_res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	if (pci_enable_resources(dev, bars)) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "SR-IOV: IOV BARS not allocated\n");
-=======
 		pci_err(dev, "SR-IOV: IOV BARS not allocated\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -958,15 +650,6 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
 		if (!pdev)
 			return -ENODEV;
 
-<<<<<<< HEAD
-		pci_dev_put(pdev);
-
-		if (!pdev->is_physfn)
-			return -ENODEV;
-
-		rc = sysfs_create_link(&dev->dev.kobj,
-					&pdev->dev.kobj, "dep_link");
-=======
 		if (!pdev->is_physfn) {
 			pci_dev_put(pdev);
 			return -ENOSYS;
@@ -975,13 +658,10 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
 		rc = sysfs_create_link(&dev->dev.kobj,
 					&pdev->dev.kobj, "dep_link");
 		pci_dev_put(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return rc;
 	}
 
-<<<<<<< HEAD
-=======
 	iov->initial_VFs = initial;
 	if (nr_virtfn < initial)
 		initial = nr_virtfn;
@@ -993,40 +673,12 @@ static int sriov_enable(struct pci_dev *dev, int nr_virtfn)
 	}
 
 	pci_iov_set_numvfs(dev, nr_virtfn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iov->ctrl |= PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE;
 	pci_cfg_access_lock(dev);
 	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
 	msleep(100);
 	pci_cfg_access_unlock(dev);
 
-<<<<<<< HEAD
-	iov->initial = initial;
-	if (nr_virtfn < initial)
-		initial = nr_virtfn;
-
-	for (i = 0; i < initial; i++) {
-		rc = virtfn_add(dev, i, 0);
-		if (rc)
-			goto failed;
-	}
-
-	if (iov->cap & PCI_SRIOV_CAP_VFM) {
-		rc = sriov_enable_migration(dev, nr_virtfn);
-		if (rc)
-			goto failed;
-	}
-
-	kobject_uevent(&dev->dev.kobj, KOBJ_CHANGE);
-	iov->nr_virtfn = nr_virtfn;
-
-	return 0;
-
-failed:
-	for (j = 0; j < i; j++)
-		virtfn_remove(dev, j, 0);
-
-=======
 	rc = sriov_add_vfs(dev, initial);
 	if (rc)
 		goto err_pcibios;
@@ -1037,35 +689,12 @@ failed:
 	return 0;
 
 err_pcibios:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
 	pci_cfg_access_lock(dev);
 	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
 	ssleep(1);
 	pci_cfg_access_unlock(dev);
 
-<<<<<<< HEAD
-	if (iov->link != dev->devfn)
-		sysfs_remove_link(&dev->dev.kobj, "dep_link");
-
-	return rc;
-}
-
-static void sriov_disable(struct pci_dev *dev)
-{
-	int i;
-	struct pci_sriov *iov = dev->sriov;
-
-	if (!iov->nr_virtfn)
-		return;
-
-	if (iov->cap & PCI_SRIOV_CAP_VFM)
-		sriov_disable_migration(dev);
-
-	for (i = 0; i < iov->nr_virtfn; i++)
-		virtfn_remove(dev, i, 0);
-
-=======
 	pcibios_sriov_disable(dev);
 
 	if (iov->link != dev->devfn)
@@ -1092,19 +721,12 @@ static void sriov_disable(struct pci_dev *dev)
 		return;
 
 	sriov_del_vfs(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iov->ctrl &= ~(PCI_SRIOV_CTRL_VFE | PCI_SRIOV_CTRL_MSE);
 	pci_cfg_access_lock(dev);
 	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
 	ssleep(1);
 	pci_cfg_access_unlock(dev);
 
-<<<<<<< HEAD
-	if (iov->link != dev->devfn)
-		sysfs_remove_link(&dev->dev.kobj, "dep_link");
-
-	iov->nr_virtfn = 0;
-=======
 	pcibios_sriov_disable(dev);
 
 	if (iov->link != dev->devfn)
@@ -1112,26 +734,10 @@ static void sriov_disable(struct pci_dev *dev)
 
 	iov->num_VFs = 0;
 	pci_iov_set_numvfs(dev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sriov_init(struct pci_dev *dev, int pos)
 {
-<<<<<<< HEAD
-	int i;
-	int rc;
-	int nres;
-	u32 pgsz;
-	u16 ctrl, total, offset, stride;
-	struct pci_sriov *iov;
-	struct resource *res;
-	struct pci_dev *pdev;
-
-	if (dev->pcie_type != PCI_EXP_TYPE_RC_END &&
-	    dev->pcie_type != PCI_EXP_TYPE_ENDPOINT)
-		return -ENODEV;
-
-=======
 	int i, bar64;
 	int rc;
 	int nres;
@@ -1142,20 +748,12 @@ static int sriov_init(struct pci_dev *dev, int pos)
 	const char *res_name;
 	struct pci_dev *pdev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_word(dev, pos + PCI_SRIOV_CTRL, &ctrl);
 	if (ctrl & PCI_SRIOV_CTRL_VFE) {
 		pci_write_config_word(dev, pos + PCI_SRIOV_CTRL, 0);
 		ssleep(1);
 	}
 
-<<<<<<< HEAD
-	pci_read_config_word(dev, pos + PCI_SRIOV_TOTAL_VF, &total);
-	if (!total)
-		return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl = 0;
 	list_for_each_entry(pdev, &dev->bus->devices, bus_list)
 		if (pdev->is_physfn)
@@ -1167,17 +765,10 @@ static int sriov_init(struct pci_dev *dev, int pos)
 
 found:
 	pci_write_config_word(dev, pos + PCI_SRIOV_CTRL, ctrl);
-<<<<<<< HEAD
-	pci_read_config_word(dev, pos + PCI_SRIOV_VF_OFFSET, &offset);
-	pci_read_config_word(dev, pos + PCI_SRIOV_VF_STRIDE, &stride);
-	if (!offset || (total > 1 && !stride))
-		return -EIO;
-=======
 
 	pci_read_config_word(dev, pos + PCI_SRIOV_TOTAL_VF, &total);
 	if (!total)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_dword(dev, pos + PCI_SRIOV_SUP_PGSIZE, &pgsz);
 	i = PAGE_SHIFT > 12 ? PAGE_SHIFT - 12 : 0;
@@ -1188,13 +779,6 @@ found:
 	pgsz &= ~(pgsz - 1);
 	pci_write_config_dword(dev, pos + PCI_SRIOV_SYS_PGSIZE, pgsz);
 
-<<<<<<< HEAD
-	nres = 0;
-	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
-		res = dev->resource + PCI_IOV_RESOURCES + i;
-		i += __pci_read_base(dev, pci_bar_unknown, res,
-				     pos + PCI_SRIOV_BAR + i * 4);
-=======
 	iov = kzalloc(sizeof(*iov), GFP_KERNEL);
 	if (!iov)
 		return -ENOMEM;
@@ -1213,36 +797,12 @@ found:
 		else
 			bar64 = __pci_read_base(dev, pci_bar_unknown, res,
 						pos + PCI_SRIOV_BAR + i * 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!res->flags)
 			continue;
 		if (resource_size(res) & (PAGE_SIZE - 1)) {
 			rc = -EIO;
 			goto failed;
 		}
-<<<<<<< HEAD
-		res->end = res->start + resource_size(res) * total - 1;
-		nres++;
-	}
-
-	iov = kzalloc(sizeof(*iov), GFP_KERNEL);
-	if (!iov) {
-		rc = -ENOMEM;
-		goto failed;
-	}
-
-	iov->pos = pos;
-	iov->nres = nres;
-	iov->ctrl = ctrl;
-	iov->total = total;
-	iov->offset = offset;
-	iov->stride = stride;
-	iov->pgsz = pgsz;
-	iov->self = dev;
-	pci_read_config_dword(dev, pos + PCI_SRIOV_CAP, &iov->cap);
-	pci_read_config_byte(dev, pos + PCI_SRIOV_FUNC_LINK, &iov->link);
-	if (dev->pcie_type == PCI_EXP_TYPE_RC_END)
-=======
 		iov->barsz[i] = resource_size(res);
 		res->end = res->start + resource_size(res) * total - 1;
 		pci_info(dev, "%s %pR: contains BAR %d for %d VFs\n",
@@ -1263,7 +823,6 @@ found:
 	pci_read_config_dword(dev, pos + PCI_SRIOV_CAP, &iov->cap);
 	pci_read_config_byte(dev, pos + PCI_SRIOV_FUNC_LINK, &iov->link);
 	if (pci_pcie_type(dev) == PCI_EXP_TYPE_RC_END)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iov->link = PCI_DEVFN(PCI_SLOT(dev->devfn), iov->link);
 
 	if (pdev)
@@ -1271,21 +830,6 @@ found:
 	else
 		iov->dev = dev;
 
-<<<<<<< HEAD
-	mutex_init(&iov->lock);
-
-	dev->sriov = iov;
-	dev->is_physfn = 1;
-
-	return 0;
-
-failed:
-	for (i = 0; i < PCI_SRIOV_NUM_BARS; i++) {
-		res = dev->resource + PCI_IOV_RESOURCES + i;
-		res->flags = 0;
-	}
-
-=======
 	dev->sriov = iov;
 	dev->is_physfn = 1;
 	rc = compute_max_vf_buses(dev);
@@ -1304,26 +848,16 @@ failed:
 	}
 
 	kfree(iov);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 static void sriov_release(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	BUG_ON(dev->sriov->nr_virtfn);
-=======
 	BUG_ON(dev->sriov->num_VFs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev != dev->sriov->dev)
 		pci_dev_put(dev->sriov->dev);
 
-<<<<<<< HEAD
-	mutex_destroy(&dev->sriov->lock);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dev->sriov);
 	dev->sriov = NULL;
 }
@@ -1338,13 +872,6 @@ static void sriov_restore_state(struct pci_dev *dev)
 	if (ctrl & PCI_SRIOV_CTRL_VFE)
 		return;
 
-<<<<<<< HEAD
-	for (i = PCI_IOV_RESOURCES; i <= PCI_IOV_RESOURCE_END; i++)
-		pci_update_resource(dev, i);
-
-	pci_write_config_dword(dev, iov->pos + PCI_SRIOV_SYS_PGSIZE, iov->pgsz);
-	pci_write_config_word(dev, iov->pos + PCI_SRIOV_NUM_VF, iov->nr_virtfn);
-=======
 	/*
 	 * Restore PCI_SRIOV_CTRL_ARI before pci_iov_set_numvfs() because
 	 * it reads offset & stride, which depend on PCI_SRIOV_CTRL_ARI.
@@ -1358,7 +885,6 @@ static void sriov_restore_state(struct pci_dev *dev)
 
 	pci_write_config_dword(dev, iov->pos + PCI_SRIOV_SYS_PGSIZE, iov->pgsz);
 	pci_iov_set_numvfs(dev, iov->num_VFs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_word(dev, iov->pos + PCI_SRIOV_CTRL, iov->ctrl);
 	if (iov->ctrl & PCI_SRIOV_CTRL_VFE)
 		msleep(100);
@@ -1395,27 +921,6 @@ void pci_iov_release(struct pci_dev *dev)
 }
 
 /**
-<<<<<<< HEAD
- * pci_iov_resource_bar - get position of the SR-IOV BAR
- * @dev: the PCI device
- * @resno: the resource number
- * @type: the BAR type to be filled in
- *
- * Returns position of the BAR encapsulated in the SR-IOV capability.
- */
-int pci_iov_resource_bar(struct pci_dev *dev, int resno,
-			 enum pci_bar_type *type)
-{
-	if (resno < PCI_IOV_RESOURCES || resno > PCI_IOV_RESOURCE_END)
-		return 0;
-
-	BUG_ON(!dev->is_physfn);
-
-	*type = pci_bar_unknown;
-
-	return dev->sriov->pos + PCI_SRIOV_BAR +
-		4 * (resno - PCI_IOV_RESOURCES);
-=======
  * pci_iov_remove - clean up SR-IOV state after PF driver is detached
  * @dev: the PCI device
  */
@@ -1493,7 +998,6 @@ resource_size_t __weak pcibios_iov_resource_alignment(struct pci_dev *dev,
 						      int resno)
 {
 	return pci_iov_resource_size(dev, resno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1508,19 +1012,7 @@ resource_size_t __weak pcibios_iov_resource_alignment(struct pci_dev *dev,
  */
 resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno)
 {
-<<<<<<< HEAD
-	struct resource tmp;
-	enum pci_bar_type type;
-	int reg = pci_iov_resource_bar(dev, resno, &type);
-	
-	if (!reg)
-		return 0;
-
-	 __pci_read_base(dev, type, &tmp, reg);
-	return resource_alignment(&tmp);
-=======
 	return pcibios_iov_resource_alignment(dev, resno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1534,8 +1026,6 @@ void pci_restore_iov_state(struct pci_dev *dev)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pci_vf_drivers_autoprobe - set PF property drivers_autoprobe for VFs
  * @dev: the PCI device
  * @auto_probe: set VF drivers auto probe flag
@@ -1547,7 +1037,6 @@ void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool auto_probe)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pci_iov_bus_range - find bus range used by Virtual Function
  * @bus: the PCI bus
  *
@@ -1557,23 +1046,13 @@ void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool auto_probe)
 int pci_iov_bus_range(struct pci_bus *bus)
 {
 	int max = 0;
-<<<<<<< HEAD
-	u8 busnr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *dev;
 
 	list_for_each_entry(dev, &bus->devices, bus_list) {
 		if (!dev->is_physfn)
 			continue;
-<<<<<<< HEAD
-		busnr = virtfn_bus(dev, dev->sriov->total - 1);
-		if (busnr > max)
-			max = busnr;
-=======
 		if (dev->sriov->max_VF_buses > max)
 			max = dev->sriov->max_VF_buses;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return max ? max - bus->number : 0;
@@ -1591,11 +1070,7 @@ int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn)
 	might_sleep();
 
 	if (!dev->is_physfn)
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		return -ENOSYS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sriov_enable(dev, nr_virtfn);
 }
@@ -1617,28 +1092,6 @@ void pci_disable_sriov(struct pci_dev *dev)
 EXPORT_SYMBOL_GPL(pci_disable_sriov);
 
 /**
-<<<<<<< HEAD
- * pci_sriov_migration - notify SR-IOV core of Virtual Function Migration
- * @dev: the PCI device
- *
- * Returns IRQ_HANDLED if the IRQ is handled, or IRQ_NONE if not.
- *
- * Physical Function driver is responsible to register IRQ handler using
- * VF Migration Interrupt Message Number, and call this function when the
- * interrupt is generated by the hardware.
- */
-irqreturn_t pci_sriov_migration(struct pci_dev *dev)
-{
-	if (!dev->is_physfn)
-		return IRQ_NONE;
-
-	return sriov_migration(dev) ? IRQ_HANDLED : IRQ_NONE;
-}
-EXPORT_SYMBOL_GPL(pci_sriov_migration);
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pci_num_vf - return number of VFs associated with a PF device_release_driver
  * @dev: the PCI device
  *
@@ -1646,14 +1099,6 @@ EXPORT_SYMBOL_GPL(pci_sriov_migration);
  */
 int pci_num_vf(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	if (!dev || !dev->is_physfn)
-		return 0;
-	else
-		return dev->sriov->nr_virtfn;
-}
-EXPORT_SYMBOL_GPL(pci_num_vf);
-=======
 	if (!dev->is_physfn)
 		return 0;
 
@@ -1784,4 +1229,3 @@ int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn)
 	return nr_virtfn;
 }
 EXPORT_SYMBOL_GPL(pci_sriov_configure_simple);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

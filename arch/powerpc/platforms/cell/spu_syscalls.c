@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SPU file system -- system call stubs
  *
@@ -9,33 +6,13 @@
  * (C) Copyright 2006-2007, IBM Corporation
  *
  * Author: Arnd Bergmann <arndb@de.ibm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/syscalls.h>
 #include <linux/rcupdate.h>
-<<<<<<< HEAD
-=======
 #include <linux/binfmts.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/spu.h>
 
@@ -80,11 +57,6 @@ SYSCALL_DEFINE4(spu_create, const char __user *, name, unsigned int, flags,
 	umode_t, mode, int, neighbor_fd)
 {
 	long ret;
-<<<<<<< HEAD
-	struct file *neighbor;
-	int fput_needed;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spufs_calls *calls;
 
 	calls = spufs_calls_get();
@@ -92,19 +64,11 @@ SYSCALL_DEFINE4(spu_create, const char __user *, name, unsigned int, flags,
 		return -ENOSYS;
 
 	if (flags & SPU_CREATE_AFFINITY_SPU) {
-<<<<<<< HEAD
-		ret = -EBADF;
-		neighbor = fget_light(neighbor_fd, &fput_needed);
-		if (neighbor) {
-			ret = calls->create_thread(name, flags, mode, neighbor);
-			fput_light(neighbor, fput_needed);
-=======
 		struct fd neighbor = fdget(neighbor_fd);
 		ret = -EBADF;
 		if (neighbor.file) {
 			ret = calls->create_thread(name, flags, mode, neighbor.file);
 			fdput(neighbor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		ret = calls->create_thread(name, flags, mode, NULL);
@@ -113,18 +77,10 @@ SYSCALL_DEFINE4(spu_create, const char __user *, name, unsigned int, flags,
 	return ret;
 }
 
-<<<<<<< HEAD
-asmlinkage long sys_spu_run(int fd, __u32 __user *unpc, __u32 __user *ustatus)
-{
-	long ret;
-	struct file *filp;
-	int fput_needed;
-=======
 SYSCALL_DEFINE3(spu_run,int, fd, __u32 __user *, unpc, __u32 __user *, ustatus)
 {
 	long ret;
 	struct fd arg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spufs_calls *calls;
 
 	calls = spufs_calls_get();
@@ -132,27 +88,17 @@ SYSCALL_DEFINE3(spu_run,int, fd, __u32 __user *, unpc, __u32 __user *, ustatus)
 		return -ENOSYS;
 
 	ret = -EBADF;
-<<<<<<< HEAD
-	filp = fget_light(fd, &fput_needed);
-	if (filp) {
-		ret = calls->spu_run(filp, unpc, ustatus);
-		fput_light(filp, fput_needed);
-=======
 	arg = fdget(fd);
 	if (arg.file) {
 		ret = calls->spu_run(arg.file, unpc, ustatus);
 		fdput(arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spufs_calls_put(calls);
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_COREDUMP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int elf_coredump_extra_notes_size(void)
 {
 	struct spufs_calls *calls;
@@ -169,11 +115,7 @@ int elf_coredump_extra_notes_size(void)
 	return ret;
 }
 
-<<<<<<< HEAD
-int elf_coredump_extra_notes_write(struct file *file, loff_t *foffset)
-=======
 int elf_coredump_extra_notes_write(struct coredump_params *cprm)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spufs_calls *calls;
 	int ret;
@@ -182,20 +124,13 @@ int elf_coredump_extra_notes_write(struct coredump_params *cprm)
 	if (!calls)
 		return 0;
 
-<<<<<<< HEAD
-	ret = calls->coredump_extra_notes_write(file, foffset);
-=======
 	ret = calls->coredump_extra_notes_write(cprm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spufs_calls_put(calls);
 
 	return ret;
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void notify_spus_active(void)
 {
@@ -224,11 +159,7 @@ EXPORT_SYMBOL_GPL(register_spu_syscalls);
 void unregister_spu_syscalls(struct spufs_calls *calls)
 {
 	BUG_ON(spufs_calls->owner != calls->owner);
-<<<<<<< HEAD
-	rcu_assign_pointer(spufs_calls, NULL);
-=======
 	RCU_INIT_POINTER(spufs_calls, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	synchronize_rcu();
 }
 EXPORT_SYMBOL_GPL(unregister_spu_syscalls);

@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2002-2005, Instant802 Networks, Inc.
  * Copyright 2005-2006, Devicescape Software, Inc.
  * Copyright 2006-2007	Jiri Benc <jbenc@suse.cz>
  * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  * Copyright 2013-2014  Intel Mobile Communications GmbH
  * Copyright (C) 2015-2017	Intel Deutschland GmbH
  * Copyright (C) 2018-2024 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * utilities for mac80211
  */
@@ -34,10 +24,7 @@
 #include <net/net_namespace.h>
 #include <net/cfg80211.h>
 #include <net/rtnetlink.h>
-<<<<<<< HEAD
-=======
 #include <kunit/visibility.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ieee80211_i.h"
 #include "driver-ops.h"
@@ -48,45 +35,27 @@
 #include "wep.h"
 
 /* privid for wiphys to determine whether they belong to us or not */
-<<<<<<< HEAD
-void *mac80211_wiphy_privid = &mac80211_wiphy_privid;
-=======
 const void *const mac80211_wiphy_privid = &mac80211_wiphy_privid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ieee80211_hw *wiphy_to_ieee80211_hw(struct wiphy *wiphy)
 {
 	struct ieee80211_local *local;
-<<<<<<< HEAD
-	BUG_ON(!wiphy);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local = wiphy_priv(wiphy);
 	return &local->hw;
 }
 EXPORT_SYMBOL(wiphy_to_ieee80211_hw);
 
-<<<<<<< HEAD
-=======
 const struct ieee80211_conn_settings ieee80211_conn_settings_unlimited = {
 	.mode = IEEE80211_CONN_MODE_EHT,
 	.bw_limit = IEEE80211_CONN_BW_LIMIT_320,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
 			enum nl80211_iftype type)
 {
 	__le16 fc = hdr->frame_control;
 
-<<<<<<< HEAD
-	 /* drop ACK/CTS frames and incorrect hdr len (ctrl) */
-	if (len < 16)
-		return NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ieee80211_is_data(fc)) {
 		if (len < 24) /* drop incorrect hdr len (data) */
 			return NULL;
@@ -101,15 +70,12 @@ u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
 		return hdr->addr3;
 	}
 
-<<<<<<< HEAD
-=======
 	if (ieee80211_is_s1g_beacon(fc)) {
 		struct ieee80211_ext *ext = (void *) hdr;
 
 		return ext->u.s1g_beacon.sa;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ieee80211_is_mgmt(fc)) {
 		if (len < 24) /* drop incorrect hdr len (mgmt) */
 			return NULL;
@@ -117,11 +83,7 @@ u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
 	}
 
 	if (ieee80211_is_ctl(fc)) {
-<<<<<<< HEAD
-		if(ieee80211_is_pspoll(fc))
-=======
 		if (ieee80211_is_pspoll(fc))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return hdr->addr1;
 
 		if (ieee80211_is_back_req(fc)) {
@@ -139,10 +101,7 @@ u8 *ieee80211_get_bssid(struct ieee80211_hdr *hdr, size_t len,
 
 	return NULL;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(ieee80211_get_bssid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ieee80211_tx_set_protected(struct ieee80211_tx_data *tx)
 {
@@ -155,11 +114,7 @@ void ieee80211_tx_set_protected(struct ieee80211_tx_data *tx)
 	}
 }
 
-<<<<<<< HEAD
-int ieee80211_frame_duration(struct ieee80211_local *local, size_t len,
-=======
 int ieee80211_frame_duration(enum nl80211_band band, size_t len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     int rate, int erp, int short_preamble)
 {
 	int dur;
@@ -173,11 +128,7 @@ int ieee80211_frame_duration(enum nl80211_band band, size_t len,
 	 * DIV_ROUND_UP() operations.
 	 */
 
-<<<<<<< HEAD
-	if (local->hw.conf.channel->band == IEEE80211_BAND_5GHZ || erp) {
-=======
 	if (band == NL80211_BAND_5GHZ || erp) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * OFDM:
 		 *
@@ -187,26 +138,17 @@ int ieee80211_frame_duration(enum nl80211_band band, size_t len,
 		 * TXTIME = T_PREAMBLE + T_SIGNAL + T_SYM x N_SYM + Signal Ext
 		 *
 		 * T_SYM = 4 usec
-<<<<<<< HEAD
-		 * 802.11a - 17.5.2: aSIFSTime = 16 usec
-=======
 		 * 802.11a - 18.5.2: aSIFSTime = 16 usec
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * 802.11g - 19.8.4: aSIFSTime = 10 usec +
 		 *	signal ext = 6 usec
 		 */
 		dur = 16; /* SIFS + signal ext */
-<<<<<<< HEAD
-		dur += 16; /* 17.3.2.3: T_PREAMBLE = 16 usec */
-		dur += 4; /* 17.3.2.3: T_SIGNAL = 4 usec */
-=======
 		dur += 16; /* IEEE 802.11-2012 18.3.2.4: T_PREAMBLE = 16 usec */
 		dur += 4; /* IEEE 802.11-2012 18.3.2.4: T_SIGNAL = 4 usec */
 
 		/* rates should already consider the channel bandwidth,
 		 * don't apply divisor again.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dur += 4 * DIV_ROUND_UP((16 + 8 * (len + 4) + 6) * 10,
 					4 * rate); /* T_SYM x N_SYM */
 	} else {
@@ -232,17 +174,10 @@ int ieee80211_frame_duration(enum nl80211_band band, size_t len,
 /* Exported duration function for driver use */
 __le16 ieee80211_generic_frame_duration(struct ieee80211_hw *hw,
 					struct ieee80211_vif *vif,
-<<<<<<< HEAD
-					size_t frame_len,
-					struct ieee80211_rate *rate)
-{
-	struct ieee80211_local *local = hw_to_local(hw);
-=======
 					enum nl80211_band band,
 					size_t frame_len,
 					struct ieee80211_rate *rate)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_sub_if_data *sdata;
 	u16 dur;
 	int erp;
@@ -252,19 +187,11 @@ __le16 ieee80211_generic_frame_duration(struct ieee80211_hw *hw,
 	if (vif) {
 		sdata = vif_to_sdata(vif);
 		short_preamble = sdata->vif.bss_conf.use_short_preamble;
-<<<<<<< HEAD
-		if (sdata->flags & IEEE80211_SDATA_OPERATING_GMODE)
-			erp = rate->flags & IEEE80211_RATE_ERP_G;
-	}
-
-	dur = ieee80211_frame_duration(local, frame_len, rate->bitrate, erp,
-=======
 		if (sdata->deflink.operating_11g_mode)
 			erp = rate->flags & IEEE80211_RATE_ERP_G;
 	}
 
 	dur = ieee80211_frame_duration(band, frame_len, rate->bitrate, erp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       short_preamble);
 
 	return cpu_to_le16(dur);
@@ -279,19 +206,11 @@ __le16 ieee80211_rts_duration(struct ieee80211_hw *hw,
 	struct ieee80211_rate *rate;
 	struct ieee80211_sub_if_data *sdata;
 	bool short_preamble;
-<<<<<<< HEAD
-	int erp;
-	u16 dur;
-	struct ieee80211_supported_band *sband;
-
-	sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-=======
 	int erp, bitrate;
 	u16 dur;
 	struct ieee80211_supported_band *sband;
 
 	sband = local->hw.wiphy->bands[frame_txctl->band];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	short_preamble = false;
 
@@ -301,20 +220,6 @@ __le16 ieee80211_rts_duration(struct ieee80211_hw *hw,
 	if (vif) {
 		sdata = vif_to_sdata(vif);
 		short_preamble = sdata->vif.bss_conf.use_short_preamble;
-<<<<<<< HEAD
-		if (sdata->flags & IEEE80211_SDATA_OPERATING_GMODE)
-			erp = rate->flags & IEEE80211_RATE_ERP_G;
-	}
-
-	/* CTS duration */
-	dur = ieee80211_frame_duration(local, 10, rate->bitrate,
-				       erp, short_preamble);
-	/* Data frame duration */
-	dur += ieee80211_frame_duration(local, frame_len, rate->bitrate,
-					erp, short_preamble);
-	/* ACK duration */
-	dur += ieee80211_frame_duration(local, 10, rate->bitrate,
-=======
 		if (sdata->deflink.operating_11g_mode)
 			erp = rate->flags & IEEE80211_RATE_ERP_G;
 	}
@@ -329,7 +234,6 @@ __le16 ieee80211_rts_duration(struct ieee80211_hw *hw,
 					erp, short_preamble);
 	/* ACK duration */
 	dur += ieee80211_frame_duration(sband->band, 10, bitrate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					erp, short_preamble);
 
 	return cpu_to_le16(dur);
@@ -345,19 +249,11 @@ __le16 ieee80211_ctstoself_duration(struct ieee80211_hw *hw,
 	struct ieee80211_rate *rate;
 	struct ieee80211_sub_if_data *sdata;
 	bool short_preamble;
-<<<<<<< HEAD
-	int erp;
-	u16 dur;
-	struct ieee80211_supported_band *sband;
-
-	sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-=======
 	int erp, bitrate;
 	u16 dur;
 	struct ieee80211_supported_band *sband;
 
 	sband = local->hw.wiphy->bands[frame_txctl->band];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	short_preamble = false;
 
@@ -366,18 +262,6 @@ __le16 ieee80211_ctstoself_duration(struct ieee80211_hw *hw,
 	if (vif) {
 		sdata = vif_to_sdata(vif);
 		short_preamble = sdata->vif.bss_conf.use_short_preamble;
-<<<<<<< HEAD
-		if (sdata->flags & IEEE80211_SDATA_OPERATING_GMODE)
-			erp = rate->flags & IEEE80211_RATE_ERP_G;
-	}
-
-	/* Data frame duration */
-	dur = ieee80211_frame_duration(local, frame_len, rate->bitrate,
-				       erp, short_preamble);
-	if (!(frame_txctl->flags & IEEE80211_TX_CTL_NO_ACK)) {
-		/* ACK duration */
-		dur += ieee80211_frame_duration(local, 10, rate->bitrate,
-=======
 		if (sdata->deflink.operating_11g_mode)
 			erp = rate->flags & IEEE80211_RATE_ERP_G;
 	}
@@ -390,7 +274,6 @@ __le16 ieee80211_ctstoself_duration(struct ieee80211_hw *hw,
 	if (!(frame_txctl->flags & IEEE80211_TX_CTL_NO_ACK)) {
 		/* ACK duration */
 		dur += ieee80211_frame_duration(sband->band, 10, bitrate,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						erp, short_preamble);
 	}
 
@@ -398,13 +281,6 @@ __le16 ieee80211_ctstoself_duration(struct ieee80211_hw *hw,
 }
 EXPORT_SYMBOL(ieee80211_ctstoself_duration);
 
-<<<<<<< HEAD
-static void __ieee80211_wake_queue(struct ieee80211_hw *hw, int queue,
-				   enum queue_stop_reason reason)
-{
-	struct ieee80211_local *local = hw_to_local(hw);
-	struct ieee80211_sub_if_data *sdata;
-=======
 static void wake_tx_push_queue(struct ieee80211_local *local,
 			       struct ieee80211_sub_if_data *sdata,
 			       struct ieee80211_txq *queue)
@@ -560,16 +436,12 @@ static void __ieee80211_wake_queue(struct ieee80211_hw *hw, int queue,
 				   unsigned long *flags)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_wake_queue(local, queue, reason);
 
 	if (WARN_ON(queue >= hw->queues))
 		return;
 
-<<<<<<< HEAD
-	__clear_bit(reason, &local->queue_stop_reasons[queue]);
-=======
 	if (!test_bit(reason, &local->queue_stop_reasons[queue]))
 		return;
 
@@ -583,28 +455,11 @@ static void __ieee80211_wake_queue(struct ieee80211_hw *hw, int queue,
 
 	if (local->q_stop_reasons[queue][reason] == 0)
 		__clear_bit(reason, &local->queue_stop_reasons[queue]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (local->queue_stop_reasons[queue] != 0)
 		/* someone still has this queue stopped */
 		return;
 
-<<<<<<< HEAD
-	if (skb_queue_empty(&local->pending[queue])) {
-		rcu_read_lock();
-		list_for_each_entry_rcu(sdata, &local->interfaces, list) {
-			if (test_bit(SDATA_STATE_OFFCHANNEL, &sdata->state))
-				continue;
-			netif_wake_subqueue(sdata->dev, queue);
-		}
-		rcu_read_unlock();
-	} else
-		tasklet_schedule(&local->tx_pending_tasklet);
-}
-
-void ieee80211_wake_queue_by_reason(struct ieee80211_hw *hw, int queue,
-				    enum queue_stop_reason reason)
-=======
 	if (!skb_queue_empty(&local->pending[queue]))
 		tasklet_schedule(&local->tx_pending_tasklet);
 
@@ -624,62 +479,34 @@ void ieee80211_wake_queue_by_reason(struct ieee80211_hw *hw, int queue,
 void ieee80211_wake_queue_by_reason(struct ieee80211_hw *hw, int queue,
 				    enum queue_stop_reason reason,
 				    bool refcounted)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
 	unsigned long flags;
 
 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
-<<<<<<< HEAD
-	__ieee80211_wake_queue(hw, queue, reason);
-=======
 	__ieee80211_wake_queue(hw, queue, reason, refcounted, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
 }
 
 void ieee80211_wake_queue(struct ieee80211_hw *hw, int queue)
 {
 	ieee80211_wake_queue_by_reason(hw, queue,
-<<<<<<< HEAD
-				       IEEE80211_QUEUE_STOP_REASON_DRIVER);
-=======
 				       IEEE80211_QUEUE_STOP_REASON_DRIVER,
 				       false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ieee80211_wake_queue);
 
 static void __ieee80211_stop_queue(struct ieee80211_hw *hw, int queue,
-<<<<<<< HEAD
-				   enum queue_stop_reason reason)
-{
-	struct ieee80211_local *local = hw_to_local(hw);
-	struct ieee80211_sub_if_data *sdata;
-=======
 				   enum queue_stop_reason reason,
 				   bool refcounted)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_stop_queue(local, queue, reason);
 
 	if (WARN_ON(queue >= hw->queues))
 		return;
 
-<<<<<<< HEAD
-	__set_bit(reason, &local->queue_stop_reasons[queue]);
-
-	rcu_read_lock();
-	list_for_each_entry_rcu(sdata, &local->interfaces, list)
-		netif_stop_subqueue(sdata->dev, queue);
-	rcu_read_unlock();
-}
-
-void ieee80211_stop_queue_by_reason(struct ieee80211_hw *hw, int queue,
-				    enum queue_stop_reason reason)
-=======
 	if (!refcounted)
 		local->q_stop_reasons[queue][reason] = 1;
 	else
@@ -691,29 +518,20 @@ void ieee80211_stop_queue_by_reason(struct ieee80211_hw *hw, int queue,
 void ieee80211_stop_queue_by_reason(struct ieee80211_hw *hw, int queue,
 				    enum queue_stop_reason reason,
 				    bool refcounted)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
 	unsigned long flags;
 
 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
-<<<<<<< HEAD
-	__ieee80211_stop_queue(hw, queue, reason);
-=======
 	__ieee80211_stop_queue(hw, queue, reason, refcounted);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
 }
 
 void ieee80211_stop_queue(struct ieee80211_hw *hw, int queue)
 {
 	ieee80211_stop_queue_by_reason(hw, queue,
-<<<<<<< HEAD
-				       IEEE80211_QUEUE_STOP_REASON_DRIVER);
-=======
 				       IEEE80211_QUEUE_STOP_REASON_DRIVER,
 				       false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ieee80211_stop_queue);
 
@@ -722,34 +540,15 @@ void ieee80211_add_pending_skb(struct ieee80211_local *local,
 {
 	struct ieee80211_hw *hw = &local->hw;
 	unsigned long flags;
-<<<<<<< HEAD
-	int queue = skb_get_queue_mapping(skb);
-	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
-
-	if (WARN_ON(!info->control.vif)) {
-		kfree_skb(skb);
-=======
 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
 	int queue = info->hw_queue;
 
 	if (WARN_ON(!info->control.vif)) {
 		ieee80211_free_txskb(&local->hw, skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
-<<<<<<< HEAD
-	__ieee80211_stop_queue(hw, queue, IEEE80211_QUEUE_STOP_REASON_SKB_ADD);
-	__skb_queue_tail(&local->pending[queue], skb);
-	__ieee80211_wake_queue(hw, queue, IEEE80211_QUEUE_STOP_REASON_SKB_ADD);
-	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
-}
-
-void ieee80211_add_pending_skbs_fn(struct ieee80211_local *local,
-				   struct sk_buff_head *skbs,
-				   void (*fn)(void *data), void *data)
-=======
 	__ieee80211_stop_queue(hw, queue, IEEE80211_QUEUE_STOP_REASON_SKB_ADD,
 			       false);
 	__skb_queue_tail(&local->pending[queue], skb);
@@ -760,7 +559,6 @@ void ieee80211_add_pending_skbs_fn(struct ieee80211_local *local,
 
 void ieee80211_add_pending_skbs(struct ieee80211_local *local,
 				struct sk_buff_head *skbs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_hw *hw = &local->hw;
 	struct sk_buff *skb;
@@ -768,44 +566,10 @@ void ieee80211_add_pending_skbs(struct ieee80211_local *local,
 	int queue, i;
 
 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
-<<<<<<< HEAD
-	for (i = 0; i < hw->queues; i++)
-		__ieee80211_stop_queue(hw, i,
-			IEEE80211_QUEUE_STOP_REASON_SKB_ADD);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((skb = skb_dequeue(skbs))) {
 		struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
 
 		if (WARN_ON(!info->control.vif)) {
-<<<<<<< HEAD
-			kfree_skb(skb);
-			continue;
-		}
-
-		queue = skb_get_queue_mapping(skb);
-		__skb_queue_tail(&local->pending[queue], skb);
-	}
-
-	if (fn)
-		fn(data);
-
-	for (i = 0; i < hw->queues; i++)
-		__ieee80211_wake_queue(hw, i,
-			IEEE80211_QUEUE_STOP_REASON_SKB_ADD);
-	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
-}
-
-void ieee80211_add_pending_skbs(struct ieee80211_local *local,
-				struct sk_buff_head *skbs)
-{
-	ieee80211_add_pending_skbs_fn(local, skbs, NULL, NULL);
-}
-
-void ieee80211_stop_queues_by_reason(struct ieee80211_hw *hw,
-				    enum queue_stop_reason reason)
-=======
 			ieee80211_free_txskb(&local->hw, skb);
 			continue;
 		}
@@ -830,7 +594,6 @@ void ieee80211_stop_queues_by_reason(struct ieee80211_hw *hw,
 				     unsigned long queues,
 				     enum queue_stop_reason reason,
 				     bool refcounted)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
 	unsigned long flags;
@@ -838,27 +601,17 @@ void ieee80211_stop_queues_by_reason(struct ieee80211_hw *hw,
 
 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
 
-<<<<<<< HEAD
-	for (i = 0; i < hw->queues; i++)
-		__ieee80211_stop_queue(hw, i, reason);
-=======
 	for_each_set_bit(i, &queues, hw->queues)
 		__ieee80211_stop_queue(hw, i, reason, refcounted);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
 }
 
 void ieee80211_stop_queues(struct ieee80211_hw *hw)
 {
-<<<<<<< HEAD
-	ieee80211_stop_queues_by_reason(hw,
-					IEEE80211_QUEUE_STOP_REASON_DRIVER);
-=======
 	ieee80211_stop_queues_by_reason(hw, IEEE80211_MAX_QUEUE_MAP,
 					IEEE80211_QUEUE_STOP_REASON_DRIVER,
 					false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ieee80211_stop_queues);
 
@@ -872,25 +625,17 @@ int ieee80211_queue_stopped(struct ieee80211_hw *hw, int queue)
 		return true;
 
 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
-<<<<<<< HEAD
-	ret = !!local->queue_stop_reasons[queue];
-=======
 	ret = test_bit(IEEE80211_QUEUE_STOP_REASON_DRIVER,
 		       &local->queue_stop_reasons[queue]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
 	return ret;
 }
 EXPORT_SYMBOL(ieee80211_queue_stopped);
 
 void ieee80211_wake_queues_by_reason(struct ieee80211_hw *hw,
-<<<<<<< HEAD
-				     enum queue_stop_reason reason)
-=======
 				     unsigned long queues,
 				     enum queue_stop_reason reason,
 				     bool refcounted)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = hw_to_local(hw);
 	unsigned long flags;
@@ -898,63 +643,14 @@ void ieee80211_wake_queues_by_reason(struct ieee80211_hw *hw,
 
 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
 
-<<<<<<< HEAD
-	for (i = 0; i < hw->queues; i++)
-		__ieee80211_wake_queue(hw, i, reason);
-=======
 	for_each_set_bit(i, &queues, hw->queues)
 		__ieee80211_wake_queue(hw, i, reason, refcounted, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&local->queue_stop_reason_lock, flags);
 }
 
 void ieee80211_wake_queues(struct ieee80211_hw *hw)
 {
-<<<<<<< HEAD
-	ieee80211_wake_queues_by_reason(hw, IEEE80211_QUEUE_STOP_REASON_DRIVER);
-}
-EXPORT_SYMBOL(ieee80211_wake_queues);
-
-void ieee80211_iterate_active_interfaces(
-	struct ieee80211_hw *hw,
-	void (*iterator)(void *data, u8 *mac,
-			 struct ieee80211_vif *vif),
-	void *data)
-{
-	struct ieee80211_local *local = hw_to_local(hw);
-	struct ieee80211_sub_if_data *sdata;
-
-	mutex_lock(&local->iflist_mtx);
-
-	list_for_each_entry(sdata, &local->interfaces, list) {
-		switch (sdata->vif.type) {
-		case NL80211_IFTYPE_MONITOR:
-		case NL80211_IFTYPE_AP_VLAN:
-			continue;
-		default:
-			break;
-		}
-		if (ieee80211_sdata_running(sdata))
-			iterator(data, sdata->vif.addr,
-				 &sdata->vif);
-	}
-
-	mutex_unlock(&local->iflist_mtx);
-}
-EXPORT_SYMBOL_GPL(ieee80211_iterate_active_interfaces);
-
-void ieee80211_iterate_active_interfaces_atomic(
-	struct ieee80211_hw *hw,
-	void (*iterator)(void *data, u8 *mac,
-			 struct ieee80211_vif *vif),
-	void *data)
-{
-	struct ieee80211_local *local = hw_to_local(hw);
-	struct ieee80211_sub_if_data *sdata;
-
-	rcu_read_lock();
-=======
 	ieee80211_wake_queues_by_reason(hw, IEEE80211_MAX_QUEUE_MAP,
 					IEEE80211_QUEUE_STOP_REASON_DRIVER,
 					false);
@@ -1054,25 +750,18 @@ static void __iterate_interfaces(struct ieee80211_local *local,
 {
 	struct ieee80211_sub_if_data *sdata;
 	bool active_only = iter_flags & IEEE80211_IFACE_ITER_ACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
 		switch (sdata->vif.type) {
 		case NL80211_IFTYPE_MONITOR:
-<<<<<<< HEAD
-=======
 			if (!(sdata->u.mntr.flags & MONITOR_FLAG_ACTIVE))
 				continue;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case NL80211_IFTYPE_AP_VLAN:
 			continue;
 		default:
 			break;
 		}
-<<<<<<< HEAD
-		if (ieee80211_sdata_running(sdata))
-=======
 		if (!(iter_flags & IEEE80211_IFACE_ITER_RESUME_ALL) &&
 		    active_only && !(sdata->flags & IEEE80211_SDATA_IN_DRIVER))
 			continue;
@@ -1080,13 +769,10 @@ static void __iterate_interfaces(struct ieee80211_local *local,
 		    !(sdata->flags & IEEE80211_SDATA_IN_DRIVER))
 			continue;
 		if (ieee80211_sdata_running(sdata) || !active_only)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iterator(data, sdata->vif.addr,
 				 &sdata->vif);
 	}
 
-<<<<<<< HEAD
-=======
 	sdata = rcu_dereference_check(local->monitor_sdata,
 				      lockdep_is_held(&local->iflist_mtx) ||
 				      lockdep_is_held(&local->hw.wiphy->mtx));
@@ -1121,25 +807,10 @@ void ieee80211_iterate_active_interfaces_atomic(
 	rcu_read_lock();
 	__iterate_interfaces(local, iter_flags | IEEE80211_IFACE_ITER_ACTIVE,
 			     iterator, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 }
 EXPORT_SYMBOL_GPL(ieee80211_iterate_active_interfaces_atomic);
 
-<<<<<<< HEAD
-/*
- * Nothing should have been stuffed into the workqueue during
- * the suspend->resume cycle. If this WARN is seen then there
- * is a bug with either the driver suspend or something in
- * mac80211 stuffing into the workqueue which we haven't yet
- * cleared during mac80211's suspend cycle.
- */
-static bool ieee80211_can_queue_work(struct ieee80211_local *local)
-{
-	if (WARN(local->suspended && !local->resuming,
-		 "queueing ieee80211 work while going to suspend\n"))
-		return false;
-=======
 void ieee80211_iterate_active_interfaces_mtx(
 	struct ieee80211_hw *hw, u32 iter_flags,
 	void (*iterator)(void *data, u8 *mac,
@@ -1218,7 +889,6 @@ static bool ieee80211_can_queue_work(struct ieee80211_local *local)
 		pr_warn("queueing ieee80211 work while going to suspend\n");
 		return false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
@@ -1247,245 +917,6 @@ void ieee80211_queue_delayed_work(struct ieee80211_hw *hw,
 }
 EXPORT_SYMBOL(ieee80211_queue_delayed_work);
 
-<<<<<<< HEAD
-u32 ieee802_11_parse_elems_crc(u8 *start, size_t len,
-			       struct ieee802_11_elems *elems,
-			       u64 filter, u32 crc)
-{
-	size_t left = len;
-	u8 *pos = start;
-	bool calc_crc = filter != 0;
-	DECLARE_BITMAP(seen_elems, 256);
-
-	bitmap_zero(seen_elems, 256);
-	memset(elems, 0, sizeof(*elems));
-	elems->ie_start = start;
-	elems->total_len = len;
-
-	while (left >= 2) {
-		u8 id, elen;
-		bool elem_parse_failed;
-
-		id = *pos++;
-		elen = *pos++;
-		left -= 2;
-
-		if (elen > left) {
-			elems->parse_error = true;
-			break;
-		}
-
-		switch (id) {
-		case WLAN_EID_SSID:
-		case WLAN_EID_SUPP_RATES:
-		case WLAN_EID_FH_PARAMS:
-		case WLAN_EID_DS_PARAMS:
-		case WLAN_EID_CF_PARAMS:
-		case WLAN_EID_TIM:
-		case WLAN_EID_IBSS_PARAMS:
-		case WLAN_EID_CHALLENGE:
-		case WLAN_EID_RSN:
-		case WLAN_EID_ERP_INFO:
-		case WLAN_EID_EXT_SUPP_RATES:
-		case WLAN_EID_HT_CAPABILITY:
-		case WLAN_EID_MESH_ID:
-		case WLAN_EID_MESH_CONFIG:
-		case WLAN_EID_PEER_MGMT:
-		case WLAN_EID_PREQ:
-		case WLAN_EID_PREP:
-		case WLAN_EID_PERR:
-		case WLAN_EID_RANN:
-		case WLAN_EID_CHANNEL_SWITCH:
-		case WLAN_EID_EXT_CHANSWITCH_ANN:
-		case WLAN_EID_COUNTRY:
-		case WLAN_EID_PWR_CONSTRAINT:
-		case WLAN_EID_TIMEOUT_INTERVAL:
-			if (test_bit(id, seen_elems)) {
-				elems->parse_error = true;
-				left -= elen;
-				pos += elen;
-				continue;
-			}
-			break;
-		}
-
-		if (calc_crc && id < 64 && (filter & (1ULL << id)))
-			crc = crc32_be(crc, pos - 2, elen + 2);
-
-		elem_parse_failed = false;
-
-		switch (id) {
-		case WLAN_EID_SSID:
-			elems->ssid = pos;
-			elems->ssid_len = elen;
-			break;
-		case WLAN_EID_SUPP_RATES:
-			elems->supp_rates = pos;
-			elems->supp_rates_len = elen;
-			break;
-		case WLAN_EID_FH_PARAMS:
-			elems->fh_params = pos;
-			elems->fh_params_len = elen;
-			break;
-		case WLAN_EID_DS_PARAMS:
-			elems->ds_params = pos;
-			elems->ds_params_len = elen;
-			break;
-		case WLAN_EID_CF_PARAMS:
-			elems->cf_params = pos;
-			elems->cf_params_len = elen;
-			break;
-		case WLAN_EID_TIM:
-			if (elen >= sizeof(struct ieee80211_tim_ie)) {
-				elems->tim = (void *)pos;
-				elems->tim_len = elen;
-			} else
-				elem_parse_failed = true;
-			break;
-		case WLAN_EID_IBSS_PARAMS:
-			elems->ibss_params = pos;
-			elems->ibss_params_len = elen;
-			break;
-		case WLAN_EID_CHALLENGE:
-			elems->challenge = pos;
-			elems->challenge_len = elen;
-			break;
-		case WLAN_EID_VENDOR_SPECIFIC:
-			if (elen >= 4 && pos[0] == 0x00 && pos[1] == 0x50 &&
-			    pos[2] == 0xf2) {
-				/* Microsoft OUI (00:50:F2) */
-
-				if (calc_crc)
-					crc = crc32_be(crc, pos - 2, elen + 2);
-
-				if (pos[3] == 1) {
-					/* OUI Type 1 - WPA IE */
-					elems->wpa = pos;
-					elems->wpa_len = elen;
-				} else if (elen >= 5 && pos[3] == 2) {
-					/* OUI Type 2 - WMM IE */
-					if (pos[4] == 0) {
-						elems->wmm_info = pos;
-						elems->wmm_info_len = elen;
-					} else if (pos[4] == 1) {
-						elems->wmm_param = pos;
-						elems->wmm_param_len = elen;
-					}
-				}
-			}
-			break;
-		case WLAN_EID_RSN:
-			elems->rsn = pos;
-			elems->rsn_len = elen;
-			break;
-		case WLAN_EID_ERP_INFO:
-			elems->erp_info = pos;
-			elems->erp_info_len = elen;
-			break;
-		case WLAN_EID_EXT_SUPP_RATES:
-			elems->ext_supp_rates = pos;
-			elems->ext_supp_rates_len = elen;
-			break;
-		case WLAN_EID_HT_CAPABILITY:
-			if (elen >= sizeof(struct ieee80211_ht_cap))
-				elems->ht_cap_elem = (void *)pos;
-			else
-				elem_parse_failed = true;
-			break;
-		case WLAN_EID_HT_INFORMATION:
-			if (elen >= sizeof(struct ieee80211_ht_info))
-				elems->ht_info_elem = (void *)pos;
-			else
-				elem_parse_failed = true;
-			break;
-		case WLAN_EID_MESH_ID:
-			elems->mesh_id = pos;
-			elems->mesh_id_len = elen;
-			break;
-		case WLAN_EID_MESH_CONFIG:
-			if (elen >= sizeof(struct ieee80211_meshconf_ie))
-				elems->mesh_config = (void *)pos;
-			else
-				elem_parse_failed = true;
-			break;
-		case WLAN_EID_PEER_MGMT:
-			elems->peering = pos;
-			elems->peering_len = elen;
-			break;
-		case WLAN_EID_PREQ:
-			elems->preq = pos;
-			elems->preq_len = elen;
-			break;
-		case WLAN_EID_PREP:
-			elems->prep = pos;
-			elems->prep_len = elen;
-			break;
-		case WLAN_EID_PERR:
-			elems->perr = pos;
-			elems->perr_len = elen;
-			break;
-		case WLAN_EID_RANN:
-			if (elen >= sizeof(struct ieee80211_rann_ie))
-				elems->rann = (void *)pos;
-			else
-				elem_parse_failed = true;
-			break;
-		case WLAN_EID_CHANNEL_SWITCH:
-			elems->ch_switch_elem = pos;
-			elems->ch_switch_elem_len = elen;
-			break;
-		case WLAN_EID_QUIET:
-			if (!elems->quiet_elem) {
-				elems->quiet_elem = pos;
-				elems->quiet_elem_len = elen;
-			}
-			elems->num_of_quiet_elem++;
-			break;
-		case WLAN_EID_COUNTRY:
-			elems->country_elem = pos;
-			elems->country_elem_len = elen;
-			break;
-		case WLAN_EID_PWR_CONSTRAINT:
-			elems->pwr_constr_elem = pos;
-			elems->pwr_constr_elem_len = elen;
-			break;
-		case WLAN_EID_TIMEOUT_INTERVAL:
-			elems->timeout_int = pos;
-			elems->timeout_int_len = elen;
-			break;
-		default:
-			break;
-		}
-
-		if (elem_parse_failed)
-			elems->parse_error = true;
-		else
-			set_bit(id, seen_elems);
-
-		left -= elen;
-		pos += elen;
-	}
-
-	if (left != 0)
-		elems->parse_error = true;
-
-	return crc;
-}
-
-void ieee802_11_parse_elems(u8 *start, size_t len,
-			    struct ieee802_11_elems *elems)
-{
-	ieee802_11_parse_elems_crc(start, len, elems, 0, 0);
-}
-
-void ieee80211_set_wmm_default(struct ieee80211_sub_if_data *sdata,
-			       bool bss_notify)
-{
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_tx_queue_params qparam;
-	int queue;
-	bool use_11b;
-=======
 void ieee80211_regulatory_limit_wmm_params(struct ieee80211_sub_if_data *sdata,
 					   struct ieee80211_tx_queue_params
 					   *qparam, int ac)
@@ -1537,132 +968,11 @@ void ieee80211_set_wmm_default(struct ieee80211_link_data *link,
 	int ac;
 	bool use_11b;
 	bool is_ocb; /* Use another EDCA parameters if dot11OCBActivated=true */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int aCWmin, aCWmax;
 
 	if (!local->ops->conf_tx)
 		return;
 
-<<<<<<< HEAD
-	memset(&qparam, 0, sizeof(qparam));
-
-	use_11b = (local->hw.conf.channel->band == IEEE80211_BAND_2GHZ) &&
-		 !(sdata->flags & IEEE80211_SDATA_OPERATING_GMODE);
-
-	for (queue = 0; queue < local->hw.queues; queue++) {
-		/* Set defaults according to 802.11-2007 Table 7-37 */
-		aCWmax = 1023;
-		if (use_11b)
-			aCWmin = 31;
-		else
-			aCWmin = 15;
-
-		switch (queue) {
-		case 3: /* AC_BK */
-			qparam.cw_max = aCWmax;
-			qparam.cw_min = aCWmin;
-			qparam.txop = 0;
-			qparam.aifs = 7;
-			break;
-		default: /* never happens but let's not leave undefined */
-		case 2: /* AC_BE */
-			qparam.cw_max = aCWmax;
-			qparam.cw_min = aCWmin;
-			qparam.txop = 0;
-			qparam.aifs = 3;
-			break;
-		case 1: /* AC_VI */
-			qparam.cw_max = aCWmin;
-			qparam.cw_min = (aCWmin + 1) / 2 - 1;
-			if (use_11b)
-				qparam.txop = 6016/32;
-			else
-				qparam.txop = 3008/32;
-			qparam.aifs = 2;
-			break;
-		case 0: /* AC_VO */
-			qparam.cw_max = (aCWmin + 1) / 2 - 1;
-			qparam.cw_min = (aCWmin + 1) / 4 - 1;
-			if (use_11b)
-				qparam.txop = 3264/32;
-			else
-				qparam.txop = 1504/32;
-			qparam.aifs = 2;
-			break;
-		}
-
-		qparam.uapsd = false;
-
-		sdata->tx_conf[queue] = qparam;
-		drv_conf_tx(local, sdata, queue, &qparam);
-	}
-
-	/* after reinitialize QoS TX queues setting to default,
-	 * disable QoS at all */
-
-	if (sdata->vif.type != NL80211_IFTYPE_MONITOR) {
-		sdata->vif.bss_conf.qos =
-			sdata->vif.type != NL80211_IFTYPE_STATION;
-		if (bss_notify)
-			ieee80211_bss_info_change_notify(sdata,
-							 BSS_CHANGED_QOS);
-	}
-}
-
-void ieee80211_sta_def_wmm_params(struct ieee80211_sub_if_data *sdata,
-				  const size_t supp_rates_len,
-				  const u8 *supp_rates)
-{
-	struct ieee80211_local *local = sdata->local;
-	int i, have_higher_than_11mbit = 0;
-
-	/* cf. IEEE 802.11 9.2.12 */
-	for (i = 0; i < supp_rates_len; i++)
-		if ((supp_rates[i] & 0x7f) * 5 > 110)
-			have_higher_than_11mbit = 1;
-
-	if (local->hw.conf.channel->band == IEEE80211_BAND_2GHZ &&
-	    have_higher_than_11mbit)
-		sdata->flags |= IEEE80211_SDATA_OPERATING_GMODE;
-	else
-		sdata->flags &= ~IEEE80211_SDATA_OPERATING_GMODE;
-
-	ieee80211_set_wmm_default(sdata, true);
-}
-
-u32 ieee80211_mandatory_rates(struct ieee80211_local *local,
-			      enum ieee80211_band band)
-{
-	struct ieee80211_supported_band *sband;
-	struct ieee80211_rate *bitrates;
-	u32 mandatory_rates;
-	enum ieee80211_rate_flags mandatory_flag;
-	int i;
-
-	sband = local->hw.wiphy->bands[band];
-	if (!sband) {
-		WARN_ON(1);
-		sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-	}
-
-	if (band == IEEE80211_BAND_2GHZ)
-		mandatory_flag = IEEE80211_RATE_MANDATORY_B;
-	else
-		mandatory_flag = IEEE80211_RATE_MANDATORY_A;
-
-	bitrates = sband->bitrates;
-	mandatory_rates = 0;
-	for (i = 0; i < sband->n_bitrates; i++)
-		if (bitrates[i].flags & mandatory_flag)
-			mandatory_rates |= BIT(i);
-	return mandatory_rates;
-}
-
-void ieee80211_send_auth(struct ieee80211_sub_if_data *sdata,
-			 u16 transaction, u16 auth_alg,
-			 u8 *extra, size_t extra_len, const u8 *da,
-			 const u8 *bssid, const u8 *key, u8 key_len, u8 key_idx)
-=======
 	if (local->hw.queues < IEEE80211_NUM_ACS)
 		return;
 
@@ -1765,24 +1075,10 @@ void ieee80211_send_auth(struct ieee80211_sub_if_data *sdata,
 			 const u8 *extra, size_t extra_len, const u8 *da,
 			 const u8 *bssid, const u8 *key, u8 key_len, u8 key_idx,
 			 u32 tx_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_local *local = sdata->local;
 	struct sk_buff *skb;
 	struct ieee80211_mgmt *mgmt;
-<<<<<<< HEAD
-	int err;
-
-	skb = dev_alloc_skb(local->hw.extra_tx_headroom +
-			    sizeof(*mgmt) + 6 + extra_len);
-	if (!skb)
-		return;
-
-	skb_reserve(skb, local->hw.extra_tx_headroom);
-
-	mgmt = (struct ieee80211_mgmt *) skb_put(skb, 24 + 6);
-	memset(mgmt, 0, 24 + 6);
-=======
 	bool multi_link = ieee80211_vif_is_mld(&sdata->vif);
 	struct {
 		u8 id;
@@ -1811,7 +1107,6 @@ void ieee80211_send_auth(struct ieee80211_sub_if_data *sdata,
 	skb_reserve(skb, local->hw.extra_tx_headroom + IEEE80211_WEP_IV_LEN);
 
 	mgmt = skb_put_zero(skb, 24 + 6);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mgmt->frame_control = cpu_to_le16(IEEE80211_FTYPE_MGMT |
 					  IEEE80211_STYPE_AUTH);
 	memcpy(mgmt->da, da, ETH_ALEN);
@@ -1819,60 +1114,15 @@ void ieee80211_send_auth(struct ieee80211_sub_if_data *sdata,
 	memcpy(mgmt->bssid, bssid, ETH_ALEN);
 	mgmt->u.auth.auth_alg = cpu_to_le16(auth_alg);
 	mgmt->u.auth.auth_transaction = cpu_to_le16(transaction);
-<<<<<<< HEAD
-	mgmt->u.auth.status_code = cpu_to_le16(0);
-	if (extra)
-		memcpy(skb_put(skb, extra_len), extra, extra_len);
-=======
 	mgmt->u.auth.status_code = cpu_to_le16(status);
 	if (extra)
 		skb_put_data(skb, extra, extra_len);
 	if (multi_link)
 		skb_put_data(skb, &mle, sizeof(mle));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (auth_alg == WLAN_AUTH_SHARED_KEY && transaction == 3) {
 		mgmt->frame_control |= cpu_to_le16(IEEE80211_FCTL_PROTECTED);
 		err = ieee80211_wep_encrypt(local, skb, key, key_len, key_idx);
-<<<<<<< HEAD
-		WARN_ON(err);
-	}
-
-	IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_DONT_ENCRYPT;
-	ieee80211_tx_skb(sdata, skb);
-}
-
-int ieee80211_build_preq_ies(struct ieee80211_local *local, u8 *buffer,
-			     const u8 *ie, size_t ie_len,
-			     enum ieee80211_band band, u32 rate_mask,
-			     u8 channel)
-{
-	struct ieee80211_supported_band *sband;
-	u8 *pos;
-	size_t offset = 0, noffset;
-	int supp_rates_len, i;
-	u8 rates[32];
-	int num_rates;
-	int ext_rates_len;
-
-	sband = local->hw.wiphy->bands[band];
-
-	pos = buffer;
-
-	num_rates = 0;
-	for (i = 0; i < sband->n_bitrates; i++) {
-		if ((BIT(i) & rate_mask) == 0)
-			continue; /* skip rate */
-		rates[num_rates++] = (u8) (sband->bitrates[i].bitrate / 5);
-	}
-
-	supp_rates_len = min_t(int, num_rates, 8);
-
-	*pos++ = WLAN_EID_SUPP_RATES;
-	*pos++ = supp_rates_len;
-	memcpy(pos, rates, supp_rates_len);
-	pos += supp_rates_len;
-=======
 		if (WARN_ON(err)) {
 			kfree_skb(skb);
 			return;
@@ -1970,7 +1220,6 @@ static int ieee80211_put_preq_ies_band(struct sk_buff *skb,
 					~rate_mask, WLAN_EID_SUPP_RATES);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* insert "request information" if in custom IEs */
 	if (ie && ie_len) {
@@ -1982,27 +1231,6 @@ static int ieee80211_put_preq_ies_band(struct sk_buff *skb,
 		noffset = ieee80211_ie_split(ie, ie_len,
 					     before_extrates,
 					     ARRAY_SIZE(before_extrates),
-<<<<<<< HEAD
-					     offset);
-		memcpy(pos, ie + offset, noffset - offset);
-		pos += noffset - offset;
-		offset = noffset;
-	}
-
-	ext_rates_len = num_rates - supp_rates_len;
-	if (ext_rates_len > 0) {
-		*pos++ = WLAN_EID_EXT_SUPP_RATES;
-		*pos++ = ext_rates_len;
-		memcpy(pos, rates + supp_rates_len, ext_rates_len);
-		pos += ext_rates_len;
-	}
-
-	if (channel && sband->band == IEEE80211_BAND_2GHZ) {
-		*pos++ = WLAN_EID_DS_PARAMS;
-		*pos++ = 1;
-		*pos++ = channel;
-	}
-=======
 					     *offset);
 		if (skb_tailroom(skb) < noffset - *offset)
 			return -ENOBUFS;
@@ -2026,38 +1254,19 @@ static int ieee80211_put_preq_ies_band(struct sk_buff *skb,
 
 	if (flags & IEEE80211_PROBE_FLAG_MIN_CONTENT)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* insert custom IEs that go before HT */
 	if (ie && ie_len) {
 		static const u8 before_ht[] = {
-<<<<<<< HEAD
-			WLAN_EID_SSID,
-			WLAN_EID_SUPP_RATES,
-			WLAN_EID_REQUEST,
-			WLAN_EID_EXT_SUPP_RATES,
-=======
 			/*
 			 * no need to list the ones split off already
 			 * (or generated here)
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			WLAN_EID_DS_PARAMS,
 			WLAN_EID_SUPPORTED_REGULATORY_CLASSES,
 		};
 		noffset = ieee80211_ie_split(ie, ie_len,
 					     before_ht, ARRAY_SIZE(before_ht),
-<<<<<<< HEAD
-					     offset);
-		memcpy(pos, ie + offset, noffset - offset);
-		pos += noffset - offset;
-		offset = noffset;
-	}
-
-	if (sband->ht_cap.ht_supported)
-		pos = ieee80211_ie_build_ht_cap(pos, &sband->ht_cap,
-						sband->ht_cap.cap);
-=======
 					     *offset);
 		if (skb_tailroom(skb) < noffset - *offset)
 			return -ENOBUFS;
@@ -2159,46 +1368,12 @@ static int ieee80211_put_preq_ies_band(struct sk_buff *skb,
 	err = ieee80211_put_he_6ghz_cap(skb, sdata, IEEE80211_SMPS_OFF);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If adding more here, adjust code in main.c
 	 * that calculates local->scan_ies_len.
 	 */
 
-<<<<<<< HEAD
-	/* add any remaining custom IEs */
-	if (ie && ie_len) {
-		noffset = ie_len;
-		memcpy(pos, ie + offset, noffset - offset);
-		pos += noffset - offset;
-	}
-
-	if (sband->vht_cap.vht_supported)
-		pos = ieee80211_ie_build_vht_cap(pos, &sband->vht_cap,
-						 sband->vht_cap.cap);
-
-	return pos - buffer;
-}
-
-struct sk_buff *ieee80211_build_probe_req(struct ieee80211_sub_if_data *sdata,
-					  u8 *dst, u32 ratemask,
-					  const u8 *ssid, size_t ssid_len,
-					  const u8 *ie, size_t ie_len,
-					  bool directed)
-{
-	struct ieee80211_local *local = sdata->local;
-	struct sk_buff *skb;
-	struct ieee80211_mgmt *mgmt;
-	size_t buf_len;
-	u8 *buf;
-	u8 chan;
-
-	/* FIXME: come up with a proper value */
-	buf = kmalloc(200 + ie_len, GFP_KERNEL);
-	if (!buf)
-		return NULL;
-=======
 	return 0;
 }
 
@@ -2305,30 +1480,12 @@ struct sk_buff *ieee80211_build_probe_req(struct ieee80211_sub_if_data *sdata,
 	struct ieee80211_mgmt *mgmt;
 	u32 rate_masks[NUM_NL80211_BANDS] = {};
 	struct ieee80211_scan_ies dummy_ie_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Do not send DS Channel parameter for directed probe requests
 	 * in order to maximize the chance that we get a response.  Some
 	 * badly-behaved APs don't respond when this parameter is included.
 	 */
-<<<<<<< HEAD
-	if (directed)
-		chan = 0;
-	else
-		chan = ieee80211_frequency_to_channel(
-			local->hw.conf.channel->center_freq);
-
-	buf_len = ieee80211_build_preq_ies(local, buf, ie, ie_len,
-					   local->hw.conf.channel->band,
-					   ratemask, chan);
-
-	skb = ieee80211_probereq_get(&local->hw, &sdata->vif,
-				     ssid, ssid_len,
-				     buf, buf_len);
-	if (!skb)
-		goto out;
-=======
 	chandef.width = sdata->vif.bss_conf.chanreq.oper.width;
 	if (flags & IEEE80211_PROBE_FLAG_DIRECTED)
 		chandef.chan = NULL;
@@ -2344,7 +1501,6 @@ struct sk_buff *ieee80211_build_probe_req(struct ieee80211_sub_if_data *sdata,
 	ieee80211_put_preq_ies(skb, sdata, &dummy_ie_desc,
 			       ie, ie_len, BIT(chan->band),
 			       rate_masks, &chandef, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dst) {
 		mgmt = (struct ieee80211_mgmt *) skb->data;
@@ -2354,48 +1510,6 @@ struct sk_buff *ieee80211_build_probe_req(struct ieee80211_sub_if_data *sdata,
 
 	IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_DONT_ENCRYPT;
 
-<<<<<<< HEAD
- out:
-	kfree(buf);
-
-	return skb;
-}
-
-void ieee80211_send_probe_req(struct ieee80211_sub_if_data *sdata, u8 *dst,
-			      const u8 *ssid, size_t ssid_len,
-			      const u8 *ie, size_t ie_len,
-			      u32 ratemask, bool directed, bool no_cck)
-{
-	struct sk_buff *skb;
-
-	skb = ieee80211_build_probe_req(sdata, dst, ratemask, ssid, ssid_len,
-					ie, ie_len, directed);
-	if (skb) {
-		if (no_cck)
-			IEEE80211_SKB_CB(skb)->flags |=
-				IEEE80211_TX_CTL_NO_CCK_RATE;
-		ieee80211_tx_skb(sdata, skb);
-	}
-}
-
-u32 ieee80211_sta_get_rates(struct ieee80211_local *local,
-			    struct ieee802_11_elems *elems,
-			    enum ieee80211_band band)
-{
-	struct ieee80211_supported_band *sband;
-	struct ieee80211_rate *bitrates;
-	size_t num_rates;
-	u32 supp_rates;
-	int i, j;
-	sband = local->hw.wiphy->bands[band];
-
-	if (!sband) {
-		WARN_ON(1);
-		sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-	}
-
-	bitrates = sband->bitrates;
-=======
 	return skb;
 }
 
@@ -2415,28 +1529,19 @@ u32 ieee80211_sta_get_rates(struct ieee80211_sub_if_data *sdata,
 	rate_flags =
 		ieee80211_chandef_rate_flags(&sdata->vif.bss_conf.chanreq.oper);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	num_rates = sband->n_bitrates;
 	supp_rates = 0;
 	for (i = 0; i < elems->supp_rates_len +
 		     elems->ext_supp_rates_len; i++) {
 		u8 rate = 0;
 		int own_rate;
-<<<<<<< HEAD
-=======
 		bool is_basic;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i < elems->supp_rates_len)
 			rate = elems->supp_rates[i];
 		else if (elems->ext_supp_rates)
 			rate = elems->ext_supp_rates
 				[i - elems->supp_rates_len];
 		own_rate = 5 * (rate & 0x7f);
-<<<<<<< HEAD
-		for (j = 0; j < num_rates; j++)
-			if (bitrates[j].bitrate == own_rate)
-				supp_rates |= BIT(j);
-=======
 		is_basic = !!(rate & 0x80);
 
 		if (is_basic && (rate & 0x7f) == BSS_MEMBERSHIP_SELECTOR_HT_PHY)
@@ -2456,7 +1561,6 @@ u32 ieee80211_sta_get_rates(struct ieee80211_sub_if_data *sdata,
 					*basic_rates |= BIT(j);
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return supp_rates;
 }
@@ -2466,14 +1570,6 @@ void ieee80211_stop_device(struct ieee80211_local *local)
 	ieee80211_led_radio(local, false);
 	ieee80211_mod_tpt_led_trig(local, 0, IEEE80211_TPT_LEDTRIG_FL_RADIO);
 
-<<<<<<< HEAD
-	cancel_work_sync(&local->reconfig_filter);
-
-	flush_workqueue(local->workqueue);
-	drv_stop(local);
-}
-
-=======
 	wiphy_work_cancel(local->hw.wiphy, &local->reconfig_filter);
 
 	flush_workqueue(local->workqueue);
@@ -2651,23 +1747,10 @@ static void ieee80211_reconfig_ap_links(struct ieee80211_local *local,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ieee80211_reconfig(struct ieee80211_local *local)
 {
 	struct ieee80211_hw *hw = &local->hw;
 	struct ieee80211_sub_if_data *sdata;
-<<<<<<< HEAD
-	struct sta_info *sta;
-	int res, i;
-
-#ifdef CONFIG_PM
-	if (local->suspended)
-		local->resuming = true;
-
-	if (local->wowlan) {
-		local->wowlan = false;
-		res = drv_resume(local);
-=======
 	struct ieee80211_chanctx *ctx;
 	struct sta_info *sta;
 	int res, i;
@@ -2698,7 +1781,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		local->suspended = false;
 		res = drv_resume(local);
 		local->wowlan = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res < 0) {
 			local->resuming = false;
 			return res;
@@ -2709,14 +1791,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		/*
 		 * res is 1, which means the driver requested
 		 * to go through a regular reset on wakeup.
-<<<<<<< HEAD
-		 */
-	}
-#endif
-	/* everything else happens only if HW was up & running */
-	if (!local->open_count)
-		goto wake_up;
-=======
 		 * restore local->suspended in this case.
 		 */
 		reconfig_due_to_wowlan = true;
@@ -2735,7 +1809,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		cancel_work_sync(&local->restart_work);
 
 	local->started = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Upon resume hardware can sometimes be goofy due to
@@ -2745,17 +1818,11 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	 */
 	res = drv_start(local);
 	if (res) {
-<<<<<<< HEAD
-		WARN(local->suspended, "Hardware became unavailable "
-		     "upon resume. This could be a software issue "
-		     "prior to suspend or a hardware issue.\n");
-=======
 		if (suspended)
 			WARN(1, "Hardware became unavailable upon resume. This could be a software issue prior to suspend or a hardware issue.\n");
 		else
 			WARN(1, "Hardware became unavailable during restart.\n");
 		ieee80211_handle_reconfig_failure(local);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return res;
 	}
 
@@ -2773,42 +1840,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 				   IEEE80211_TPT_LEDTRIG_FL_RADIO, 0);
 
 	/* add interfaces */
-<<<<<<< HEAD
-	list_for_each_entry(sdata, &local->interfaces, list) {
-		if (sdata->vif.type != NL80211_IFTYPE_AP_VLAN &&
-		    sdata->vif.type != NL80211_IFTYPE_MONITOR &&
-		    ieee80211_sdata_running(sdata))
-			res = drv_add_interface(local, sdata);
-	}
-
-	/* add STAs back */
-	mutex_lock(&local->sta_mtx);
-	list_for_each_entry(sta, &local->sta_list, list) {
-		if (sta->uploaded) {
-			enum ieee80211_sta_state state;
-
-			for (state = IEEE80211_STA_NOTEXIST;
-			     state < sta->sta_state; state++)
-				WARN_ON(drv_sta_state(local, sta->sdata, sta,
-						      state, state + 1));
-		}
-	}
-	mutex_unlock(&local->sta_mtx);
-
-	/* reconfigure tx conf */
-	list_for_each_entry(sdata, &local->interfaces, list) {
-		if (sdata->vif.type == NL80211_IFTYPE_AP_VLAN ||
-		    sdata->vif.type == NL80211_IFTYPE_MONITOR ||
-		    !ieee80211_sdata_running(sdata))
-			continue;
-
-		for (i = 0; i < hw->queues; i++)
-			drv_conf_tx(local, sdata, i, &sdata->tx_conf[i]);
-	}
-
-	/* reconfigure hardware */
-	ieee80211_hw_config(local, ~0);
-=======
 	sdata = wiphy_dereference(local->hw.wiphy, local->monitor_sdata);
 	if (sdata) {
 		/* in HW restart it exists already */
@@ -2860,15 +1891,11 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 				   IEEE80211_CONF_CHANGE_PS |
 				   IEEE80211_CONF_CHANGE_RETRY_LIMITS |
 				   IEEE80211_CONF_CHANGE_IDLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ieee80211_configure_filter(local);
 
 	/* Finally also reconfigure all the BSS information */
 	list_for_each_entry(sdata, &local->interfaces, list) {
-<<<<<<< HEAD
-		u32 changed;
-=======
 		/* common change flags for all interface types - link only */
 		u64 changed = BSS_CHANGED_ERP_CTS_PROT |
 			      BSS_CHANGED_ERP_PREAMBLE |
@@ -2884,53 +1911,10 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		struct ieee80211_link_data *link = NULL;
 		unsigned int link_id;
 		u32 active_links = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!ieee80211_sdata_running(sdata))
 			continue;
 
-<<<<<<< HEAD
-		/* common change flags for all interface types */
-		changed = BSS_CHANGED_ERP_CTS_PROT |
-			  BSS_CHANGED_ERP_PREAMBLE |
-			  BSS_CHANGED_ERP_SLOT |
-			  BSS_CHANGED_HT |
-			  BSS_CHANGED_BASIC_RATES |
-			  BSS_CHANGED_BEACON_INT |
-			  BSS_CHANGED_BSSID |
-			  BSS_CHANGED_CQM |
-			  BSS_CHANGED_QOS |
-			  BSS_CHANGED_IDLE;
-
-		switch (sdata->vif.type) {
-		case NL80211_IFTYPE_STATION:
-			changed |= BSS_CHANGED_ASSOC |
-				   BSS_CHANGED_ARP_FILTER;
-			mutex_lock(&sdata->u.mgd.mtx);
-			ieee80211_bss_info_change_notify(sdata, changed);
-			mutex_unlock(&sdata->u.mgd.mtx);
-			break;
-		case NL80211_IFTYPE_ADHOC:
-			changed |= BSS_CHANGED_IBSS;
-			/* fall through */
-		case NL80211_IFTYPE_AP:
-			changed |= BSS_CHANGED_SSID;
-
-			if (sdata->vif.type == NL80211_IFTYPE_AP)
-				changed |= BSS_CHANGED_AP_PROBE_RESP;
-
-			/* fall through */
-		case NL80211_IFTYPE_MESH_POINT:
-			changed |= BSS_CHANGED_BEACON |
-				   BSS_CHANGED_BEACON_ENABLED;
-			ieee80211_bss_info_change_notify(sdata, changed);
-			break;
-		case NL80211_IFTYPE_WDS:
-			break;
-		case NL80211_IFTYPE_AP_VLAN:
-		case NL80211_IFTYPE_MONITOR:
-			/* ignore virtual */
-=======
 		if (ieee80211_vif_is_mld(&sdata->vif)) {
 			struct ieee80211_bss_conf *old[IEEE80211_MLD_MAX_NUM_LINKS] = {
 				[0] = &sdata->vif.bss_conf,
@@ -3066,20 +2050,11 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		case NL80211_IFTYPE_MONITOR:
 		case NL80211_IFTYPE_P2P_DEVICE:
 			/* nothing to do */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case NL80211_IFTYPE_UNSPECIFIED:
 		case NUM_NL80211_IFTYPES:
 		case NL80211_IFTYPE_P2P_CLIENT:
 		case NL80211_IFTYPE_P2P_GO:
-<<<<<<< HEAD
-			WARN_ON(1);
-			break;
-		}
-	}
-
-	ieee80211_recalc_ps(local, -1);
-=======
 		case NL80211_IFTYPE_WDS:
 			WARN_ON(1);
 			break;
@@ -3090,7 +2065,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	}
 
 	ieee80211_recalc_ps(local);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The sta might be in psm against the ap (e.g. because
@@ -3105,9 +2079,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 			if (!sdata->u.mgd.associated)
 				continue;
 
-<<<<<<< HEAD
-			ieee80211_send_nullfunc(local, sdata, 0);
-=======
 			ieee80211_send_nullfunc(local, sdata, false);
 		}
 	}
@@ -3124,18 +2095,11 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 			break;
 		default:
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* add back keys */
 	list_for_each_entry(sdata, &local->interfaces, list)
-<<<<<<< HEAD
-		if (ieee80211_sdata_running(sdata))
-			ieee80211_enable_keys(sdata);
-
- wake_up:
-=======
 		ieee80211_reenable_keys(sdata);
 
 	/* Reconfigure sched scan if it was interrupted by FW restart */
@@ -3167,7 +2131,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	if (local->monitors == local->open_count && local->monitors > 0)
 		ieee80211_add_virtual_monitor(local);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Clear the WLAN_STA_BLOCK_BA flag so new aggregation
 	 * sessions can be established after a resume.
@@ -3178,22 +2141,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	 * about the sessions, but we and the AP still think they
 	 * are active. This is really a workaround though.
 	 */
-<<<<<<< HEAD
-	if (hw->flags & IEEE80211_HW_AMPDU_AGGREGATION) {
-		mutex_lock(&local->sta_mtx);
-
-		list_for_each_entry(sta, &local->sta_list, list) {
-			ieee80211_sta_tear_down_BA_sessions(sta, true);
-			clear_sta_flag(sta, WLAN_STA_BLOCK_BA);
-		}
-
-		mutex_unlock(&local->sta_mtx);
-	}
-
-	ieee80211_wake_queues_by_reason(hw,
-			IEEE80211_QUEUE_STOP_REASON_SUSPEND);
-
-=======
 	if (ieee80211_hw_check(hw, AMPDU_AGGREGATION)) {
 		list_for_each_entry(sta, &local->sta_list, list) {
 			if (!local->resuming)
@@ -3203,14 +2150,10 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If this is for hw restart things are still running.
 	 * We may want to change that later, however.
 	 */
-<<<<<<< HEAD
-	if (!local->suspended)
-=======
 	if (local->open_count && (!suspended || reconfig_due_to_wowlan))
 		drv_reconfig_complete(local, IEEE80211_RECONFIG_TYPE_RESTART);
 
@@ -3241,7 +2184,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	}
 
 	if (!suspended)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 #ifdef CONFIG_PM
@@ -3250,37 +2192,6 @@ int ieee80211_reconfig(struct ieee80211_local *local)
 	mb();
 	local->resuming = false;
 
-<<<<<<< HEAD
-	list_for_each_entry(sdata, &local->interfaces, list) {
-		switch(sdata->vif.type) {
-		case NL80211_IFTYPE_STATION:
-			ieee80211_sta_restart(sdata);
-			break;
-		case NL80211_IFTYPE_ADHOC:
-			ieee80211_ibss_restart(sdata);
-			break;
-		case NL80211_IFTYPE_MESH_POINT:
-			ieee80211_mesh_restart(sdata);
-			break;
-		default:
-			break;
-		}
-	}
-
-	mod_timer(&local->sta_cleanup, jiffies + 1);
-
-	mutex_lock(&local->sta_mtx);
-	list_for_each_entry(sta, &local->sta_list, list)
-		mesh_plink_restart(sta);
-	mutex_unlock(&local->sta_mtx);
-#else
-	WARN_ON(1);
-#endif
-	return 0;
-}
-
-void ieee80211_resume_disconnect(struct ieee80211_vif *vif)
-=======
 	ieee80211_flush_completed_scan(local, false);
 
 	if (local->open_count && !reconfig_due_to_wowlan)
@@ -3302,7 +2213,6 @@ void ieee80211_resume_disconnect(struct ieee80211_vif *vif)
 }
 
 static void ieee80211_reconfig_disconnect(struct ieee80211_vif *vif, u8 flag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_sub_if_data *sdata;
 	struct ieee80211_local *local;
@@ -3314,9 +2224,6 @@ static void ieee80211_reconfig_disconnect(struct ieee80211_vif *vif, u8 flag)
 	sdata = vif_to_sdata(vif);
 	local = sdata->local;
 
-<<<<<<< HEAD
-	if (WARN_ON(!local->resuming))
-=======
 	lockdep_assert_wiphy(local->hw.wiphy);
 
 	if (WARN_ON(flag & IEEE80211_SDATA_DISCONNECT_RESUME &&
@@ -3325,128 +2232,11 @@ static void ieee80211_reconfig_disconnect(struct ieee80211_vif *vif, u8 flag)
 
 	if (WARN_ON(flag & IEEE80211_SDATA_DISCONNECT_HW_RESTART &&
 		    !local->in_reconfig))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (WARN_ON(vif->type != NL80211_IFTYPE_STATION))
 		return;
 
-<<<<<<< HEAD
-	sdata->flags |= IEEE80211_SDATA_DISCONNECT_RESUME;
-
-	mutex_lock(&local->key_mtx);
-	list_for_each_entry(key, &sdata->key_list, list)
-		key->flags |= KEY_FLAG_TAINTED;
-	mutex_unlock(&local->key_mtx);
-}
-EXPORT_SYMBOL_GPL(ieee80211_resume_disconnect);
-
-static int check_mgd_smps(struct ieee80211_if_managed *ifmgd,
-			  enum ieee80211_smps_mode *smps_mode)
-{
-	if (ifmgd->associated) {
-		*smps_mode = ifmgd->ap_smps;
-
-		if (*smps_mode == IEEE80211_SMPS_AUTOMATIC) {
-			if (ifmgd->powersave)
-				*smps_mode = IEEE80211_SMPS_DYNAMIC;
-			else
-				*smps_mode = IEEE80211_SMPS_OFF;
-		}
-
-		return 1;
-	}
-
-	return 0;
-}
-
-/* must hold iflist_mtx */
-void ieee80211_recalc_smps(struct ieee80211_local *local)
-{
-	struct ieee80211_sub_if_data *sdata;
-	enum ieee80211_smps_mode smps_mode = IEEE80211_SMPS_OFF;
-	int count = 0;
-
-	lockdep_assert_held(&local->iflist_mtx);
-
-	/*
-	 * This function could be improved to handle multiple
-	 * interfaces better, but right now it makes any
-	 * non-station interfaces force SM PS to be turned
-	 * off. If there are multiple station interfaces it
-	 * could also use the best possible mode, e.g. if
-	 * one is in static and the other in dynamic then
-	 * dynamic is ok.
-	 */
-
-	list_for_each_entry(sdata, &local->interfaces, list) {
-		if (!ieee80211_sdata_running(sdata))
-			continue;
-		if (sdata->vif.type != NL80211_IFTYPE_STATION)
-			goto set;
-
-		count += check_mgd_smps(&sdata->u.mgd, &smps_mode);
-
-		if (count > 1) {
-			smps_mode = IEEE80211_SMPS_OFF;
-			break;
-		}
-	}
-
-	if (smps_mode == local->smps_mode)
-		return;
-
- set:
-	local->smps_mode = smps_mode;
-	/* changed flag is auto-detected for this */
-	ieee80211_hw_config(local, 0);
-}
-
-static bool ieee80211_id_in_list(const u8 *ids, int n_ids, u8 id)
-{
-	int i;
-
-	for (i = 0; i < n_ids; i++)
-		if (ids[i] == id)
-			return true;
-	return false;
-}
-
-/**
- * ieee80211_ie_split - split an IE buffer according to ordering
- *
- * @ies: the IE buffer
- * @ielen: the length of the IE buffer
- * @ids: an array with element IDs that are allowed before
- *	the split
- * @n_ids: the size of the element ID array
- * @offset: offset where to start splitting in the buffer
- *
- * This function splits an IE buffer by updating the @offset
- * variable to point to the location where the buffer should be
- * split.
- *
- * It assumes that the given IE buffer is well-formed, this
- * has to be guaranteed by the caller!
- *
- * It also assumes that the IEs in the buffer are ordered
- * correctly, if not the result of using this function will not
- * be ordered correctly either, i.e. it does no reordering.
- *
- * The function returns the offset where the next part of the
- * buffer starts, which may be @ielen if the entire (remainder)
- * of the buffer should be used.
- */
-size_t ieee80211_ie_split(const u8 *ies, size_t ielen,
-			  const u8 *ids, int n_ids, size_t offset)
-{
-	size_t pos = offset;
-
-	while (pos < ielen && ieee80211_id_in_list(ids, n_ids, ies[pos]))
-		pos += 2 + ies[pos + 1];
-
-	return pos;
-=======
 	sdata->flags |= flag;
 
 	list_for_each_entry(key, &sdata->key_list, list)
@@ -3532,7 +2322,6 @@ void ieee80211_recalc_min_chandef(struct ieee80211_sub_if_data *sdata,
 				       conf);
 		ieee80211_recalc_chanctx_min_def(local, chanctx, NULL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 size_t ieee80211_ie_split_vendor(const u8 *ies, size_t ielen, size_t offset)
@@ -3545,49 +2334,6 @@ size_t ieee80211_ie_split_vendor(const u8 *ies, size_t ielen, size_t offset)
 	return pos;
 }
 
-<<<<<<< HEAD
-static void _ieee80211_enable_rssi_reports(struct ieee80211_sub_if_data *sdata,
-					    int rssi_min_thold,
-					    int rssi_max_thold)
-{
-	trace_api_enable_rssi_reports(sdata, rssi_min_thold, rssi_max_thold);
-
-	if (WARN_ON(sdata->vif.type != NL80211_IFTYPE_STATION))
-		return;
-
-	/*
-	 * Scale up threshold values before storing it, as the RSSI averaging
-	 * algorithm uses a scaled up value as well. Change this scaling
-	 * factor if the RSSI averaging algorithm changes.
-	 */
-	sdata->u.mgd.rssi_min_thold = rssi_min_thold*16;
-	sdata->u.mgd.rssi_max_thold = rssi_max_thold*16;
-}
-
-void ieee80211_enable_rssi_reports(struct ieee80211_vif *vif,
-				    int rssi_min_thold,
-				    int rssi_max_thold)
-{
-	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-
-	WARN_ON(rssi_min_thold == rssi_max_thold ||
-		rssi_min_thold > rssi_max_thold);
-
-	_ieee80211_enable_rssi_reports(sdata, rssi_min_thold,
-				       rssi_max_thold);
-}
-EXPORT_SYMBOL(ieee80211_enable_rssi_reports);
-
-void ieee80211_disable_rssi_reports(struct ieee80211_vif *vif)
-{
-	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-
-	_ieee80211_enable_rssi_reports(sdata, 0, 0);
-}
-EXPORT_SYMBOL(ieee80211_disable_rssi_reports);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 *ieee80211_ie_build_ht_cap(u8 *pos, struct ieee80211_sta_ht_cap *ht_cap,
 			      u16 cap)
 {
@@ -3624,11 +2370,7 @@ u8 *ieee80211_ie_build_ht_cap(u8 *pos, struct ieee80211_sta_ht_cap *ht_cap,
 }
 
 u8 *ieee80211_ie_build_vht_cap(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
-<<<<<<< HEAD
-							   u32 cap)
-=======
 			       u32 cap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le32 tmp;
 
@@ -3648,59 +2390,6 @@ u8 *ieee80211_ie_build_vht_cap(u8 *pos, struct ieee80211_sta_vht_cap *vht_cap,
 	return pos;
 }
 
-<<<<<<< HEAD
-u8 *ieee80211_ie_build_ht_info(u8 *pos,
-			       struct ieee80211_sta_ht_cap *ht_cap,
-			       struct ieee80211_channel *channel,
-			       enum nl80211_channel_type channel_type)
-{
-	struct ieee80211_ht_info *ht_info;
-	/* Build HT Information */
-	*pos++ = WLAN_EID_HT_INFORMATION;
-	*pos++ = sizeof(struct ieee80211_ht_info);
-	ht_info = (struct ieee80211_ht_info *)pos;
-	ht_info->control_chan =
-			ieee80211_frequency_to_channel(channel->center_freq);
-	switch (channel_type) {
-	case NL80211_CHAN_HT40MINUS:
-		ht_info->ht_param = IEEE80211_HT_PARAM_CHA_SEC_BELOW;
-		break;
-	case NL80211_CHAN_HT40PLUS:
-		ht_info->ht_param = IEEE80211_HT_PARAM_CHA_SEC_ABOVE;
-		break;
-	case NL80211_CHAN_HT20:
-	default:
-		ht_info->ht_param = IEEE80211_HT_PARAM_CHA_SEC_NONE;
-		break;
-	}
-	if (ht_cap->cap & IEEE80211_HT_CAP_SUP_WIDTH_20_40)
-		ht_info->ht_param |= IEEE80211_HT_PARAM_CHAN_WIDTH_ANY;
-
-	/*
-	 * Note: According to 802.11n-2009 9.13.3.1, HT Protection field and
-	 * RIFS Mode are reserved in IBSS mode, therefore keep them at 0
-	 */
-	ht_info->operation_mode = 0x0000;
-	ht_info->stbc_param = 0x0000;
-
-	/* It seems that Basic MCS set and Supported MCS set
-	   are identical for the first 10 bytes */
-	memset(&ht_info->basic_set, 0, 16);
-	memcpy(&ht_info->basic_set, &ht_cap->mcs, 10);
-
-	return pos + sizeof(struct ieee80211_ht_info);
-}
-
-enum nl80211_channel_type
-ieee80211_ht_info_to_channel_type(struct ieee80211_ht_info *ht_info)
-{
-	enum nl80211_channel_type channel_type;
-
-	if (!ht_info)
-		return NL80211_CHAN_NO_HT;
-
-	switch (ht_info->ht_param & IEEE80211_HT_PARAM_CHA_SEC_OFFSET) {
-=======
 /* this may return more than ieee80211_put_he_6ghz_cap() will need */
 u8 ieee80211_ie_len_he_cap(struct ieee80211_sub_if_data *sdata)
 {
@@ -4203,7 +2892,6 @@ bool ieee80211_chandef_ht_oper(const struct ieee80211_ht_operation *ht_oper,
 		return false;
 
 	switch (ht_oper->ht_param & IEEE80211_HT_PARAM_CHA_SEC_OFFSET) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IEEE80211_HT_PARAM_CHA_SEC_NONE:
 		channel_type = NL80211_CHAN_HT20;
 		break;
@@ -4214,70 +2902,6 @@ bool ieee80211_chandef_ht_oper(const struct ieee80211_ht_operation *ht_oper,
 		channel_type = NL80211_CHAN_HT40MINUS;
 		break;
 	default:
-<<<<<<< HEAD
-		channel_type = NL80211_CHAN_NO_HT;
-	}
-
-	return channel_type;
-}
-
-int ieee80211_add_srates_ie(struct ieee80211_vif *vif, struct sk_buff *skb)
-{
-	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_supported_band *sband;
-	int rate;
-	u8 i, rates, *pos;
-
-	sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-	rates = sband->n_bitrates;
-	if (rates > 8)
-		rates = 8;
-
-	if (skb_tailroom(skb) < rates + 2)
-		return -ENOMEM;
-
-	pos = skb_put(skb, rates + 2);
-	*pos++ = WLAN_EID_SUPP_RATES;
-	*pos++ = rates;
-	for (i = 0; i < rates; i++) {
-		rate = sband->bitrates[i].bitrate;
-		*pos++ = (u8) (rate / 5);
-	}
-
-	return 0;
-}
-
-int ieee80211_add_ext_srates_ie(struct ieee80211_vif *vif, struct sk_buff *skb)
-{
-	struct ieee80211_sub_if_data *sdata = vif_to_sdata(vif);
-	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_supported_band *sband;
-	int rate;
-	u8 i, exrates, *pos;
-
-	sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
-	exrates = sband->n_bitrates;
-	if (exrates > 8)
-		exrates -= 8;
-	else
-		exrates = 0;
-
-	if (skb_tailroom(skb) < exrates + 2)
-		return -ENOMEM;
-
-	if (exrates) {
-		pos = skb_put(skb, exrates + 2);
-		*pos++ = WLAN_EID_EXT_SUPP_RATES;
-		*pos++ = exrates;
-		for (i = 8; i < sband->n_bitrates; i++) {
-			rate = sband->bitrates[i].bitrate;
-			*pos++ = (u8) (rate / 5);
-		}
-	}
-	return 0;
-}
-=======
 		return false;
 	}
 
@@ -5699,4 +4323,3 @@ ieee80211_min_bw_limit_from_chandef(struct cfg80211_chan_def *chandef)
 		return IEEE80211_CONN_BW_LIMIT_20;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

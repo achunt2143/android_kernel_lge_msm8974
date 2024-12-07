@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # KVM configuration
 #
@@ -9,13 +6,8 @@ source "virt/kvm/Kconfig"
 
 menuconfig VIRTUALIZATION
 	def_bool y
-<<<<<<< HEAD
-	prompt "Virtualization"
-	---help---
-=======
 	prompt "KVM"
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to get to see options for using your Linux host to run other
 	  operating systems inside virtual machines (guests).
 	  This option alone does not add any kernel code.
@@ -27,12 +19,6 @@ if VIRTUALIZATION
 config KVM
 	def_tristate y
 	prompt "Kernel-based Virtual Machine (KVM) support"
-<<<<<<< HEAD
-	depends on HAVE_KVM && EXPERIMENTAL
-	select PREEMPT_NOTIFIERS
-	select ANON_INODES
-	---help---
-=======
 	select HAVE_KVM_CPU_RELAX_INTERCEPT
 	select HAVE_KVM_VCPU_ASYNC_IOCTL
 	select KVM_ASYNC_PF
@@ -45,7 +31,6 @@ config KVM
 	select KVM_VFIO
 	select MMU_NOTIFIER
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Support hosting paravirtualized guest machines using the SIE
 	  virtualization capability on the mainframe. This should work
 	  on any 64bit machine.
@@ -61,21 +46,10 @@ config KVM
 config KVM_S390_UCONTROL
 	bool "Userspace controlled virtual machines"
 	depends on KVM
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Allow CAP_SYS_ADMIN users to create KVM virtual machines that are
 	  controlled by userspace.
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-# OK, it's a little counter-intuitive to do this, but it puts it neatly under
-# the virtualization menu.
-source drivers/vhost/Kconfig
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # VIRTUALIZATION

@@ -1,32 +1,19 @@
-<<<<<<< HEAD
-/*
- * Optimized MPEG FS - inode and super operations.
- * Copyright (C) 2006 Bob Copeland <me@bobcopeland.com>
- * Released under GPL v2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Optimized MPEG FS - inode and super operations.
  * Copyright (C) 2006 Bob Copeland <me@bobcopeland.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/fs.h>
 #include <linux/vfs.h>
-<<<<<<< HEAD
-=======
 #include <linux/cred.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/parser.h>
 #include <linux/buffer_head.h>
 #include <linux/vmalloc.h>
 #include <linux/writeback.h>
-<<<<<<< HEAD
-=======
 #include <linux/seq_file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc-itu-t.h>
 #include "omfs.h"
 
@@ -61,17 +48,10 @@ struct inode *omfs_new_inode(struct inode *dir, umode_t mode)
 		goto fail;
 
 	inode->i_ino = new_block;
-<<<<<<< HEAD
-	inode_init_owner(inode, NULL, mode);
-	inode->i_mapping->a_ops = &omfs_aops;
-
-	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
-=======
 	inode_init_owner(&nop_mnt_idmap, inode, NULL, mode);
 	inode->i_mapping->a_ops = &omfs_aops;
 
 	simple_inode_init_ts(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mode & S_IFMT) {
 	case S_IFDIR:
 		inode->i_op = &omfs_dir_inops;
@@ -154,13 +134,8 @@ static int __omfs_write_inode(struct inode *inode, int wait)
 	oi->i_head.h_magic = OMFS_IMAGIC;
 	oi->i_size = cpu_to_be64(inode->i_size);
 
-<<<<<<< HEAD
-	ctime = inode->i_ctime.tv_sec * 1000LL +
-		((inode->i_ctime.tv_nsec + 999)/1000);
-=======
 	ctime = inode_get_ctime_sec(inode) * 1000LL +
 		((inode_get_ctime_nsec(inode) + 999)/1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oi->i_ctime = cpu_to_be64(ctime);
 
 	omfs_update_checksums(oi);
@@ -210,13 +185,8 @@ int omfs_sync_inode(struct inode *inode)
  */
 static void omfs_evict_inode(struct inode *inode)
 {
-<<<<<<< HEAD
-	truncate_inode_pages(&inode->i_data, 0);
-	end_writeback(inode);
-=======
 	truncate_inode_pages_final(&inode->i_data);
 	clear_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (inode->i_nlink)
 		return;
@@ -260,18 +230,9 @@ struct inode *omfs_iget(struct super_block *sb, ino_t ino)
 	ctime = be64_to_cpu(oi->i_ctime);
 	nsecs = do_div(ctime, 1000) * 1000L;
 
-<<<<<<< HEAD
-	inode->i_atime.tv_sec = ctime;
-	inode->i_mtime.tv_sec = ctime;
-	inode->i_ctime.tv_sec = ctime;
-	inode->i_atime.tv_nsec = nsecs;
-	inode->i_mtime.tv_nsec = nsecs;
-	inode->i_ctime.tv_nsec = nsecs;
-=======
 	inode_set_atime(inode, ctime, nsecs);
 	inode_set_mtime(inode, ctime, nsecs);
 	inode_set_ctime(inode, ctime, nsecs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode->i_mapping->a_ops = &omfs_aops;
 
@@ -318,12 +279,7 @@ static int omfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_blocks = sbi->s_num_blocks;
 	buf->f_files = sbi->s_num_blocks;
 	buf->f_namelen = OMFS_NAMELEN;
-<<<<<<< HEAD
-	buf->f_fsid.val[0] = (u32)id;
-	buf->f_fsid.val[1] = (u32)(id >> 32);
-=======
 	buf->f_fsid = u64_to_fsid(id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf->f_bfree = buf->f_bavail = buf->f_ffree =
 		omfs_count_free(s);
@@ -331,8 +287,6 @@ static int omfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Display the mount options in /proc/mounts.
  */
@@ -361,17 +315,12 @@ static int omfs_show_options(struct seq_file *m, struct dentry *root)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct super_operations omfs_sops = {
 	.write_inode	= omfs_write_inode,
 	.evict_inode	= omfs_evict_inode,
 	.put_super	= omfs_put_super,
 	.statfs		= omfs_statfs,
-<<<<<<< HEAD
-	.show_options	= generic_show_options,
-=======
 	.show_options	= omfs_show_options,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -383,12 +332,7 @@ static const struct super_operations omfs_sops = {
  */
 static int omfs_get_imap(struct super_block *sb)
 {
-<<<<<<< HEAD
-	int bitmap_size;
-	int array_size;
-=======
 	unsigned int bitmap_size, array_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int count;
 	struct omfs_sb_info *sbi = OMFS_SB(sb);
 	struct buffer_head *bh;
@@ -402,11 +346,7 @@ static int omfs_get_imap(struct super_block *sb)
 		goto out;
 
 	sbi->s_imap_size = array_size;
-<<<<<<< HEAD
-	sbi->s_imap = kzalloc(array_size * sizeof(unsigned long *), GFP_KERNEL);
-=======
 	sbi->s_imap = kcalloc(array_size, sizeof(unsigned long *), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sbi->s_imap)
 		goto nomem;
 
@@ -419,19 +359,11 @@ static int omfs_get_imap(struct super_block *sb)
 		bh = sb_bread(sb, block++);
 		if (!bh)
 			goto nomem_free;
-<<<<<<< HEAD
-		*ptr = kmalloc(sb->s_blocksize, GFP_KERNEL);
-=======
 		*ptr = kmemdup(bh->b_data, sb->s_blocksize, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*ptr) {
 			brelse(bh);
 			goto nomem_free;
 		}
-<<<<<<< HEAD
-		memcpy(*ptr, bh->b_data, sb->s_blocksize);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (count < sb->s_blocksize)
 			memset((void *)*ptr + count, 0xff,
 				sb->s_blocksize - count);
@@ -484,24 +416,16 @@ static int parse_options(char *options, struct omfs_sb_info *sbi)
 		case Opt_uid:
 			if (match_int(&args[0], &option))
 				return 0;
-<<<<<<< HEAD
-			sbi->s_uid = option;
-=======
 			sbi->s_uid = make_kuid(current_user_ns(), option);
 			if (!uid_valid(sbi->s_uid))
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case Opt_gid:
 			if (match_int(&args[0], &option))
 				return 0;
-<<<<<<< HEAD
-			sbi->s_gid = option;
-=======
 			sbi->s_gid = make_kgid(current_user_ns(), option);
 			if (!gid_valid(sbi->s_gid))
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case Opt_umask:
 			if (match_octal(&args[0], &option))
@@ -534,11 +458,6 @@ static int omfs_fill_super(struct super_block *sb, void *data, int silent)
 	struct inode *root;
 	int ret = -EINVAL;
 
-<<<<<<< HEAD
-	save_mount_options(sb, (char *) data);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi = kzalloc(sizeof(struct omfs_sb_info), GFP_KERNEL);
 	if (!sbi)
 		return -ENOMEM;
@@ -554,13 +473,10 @@ static int omfs_fill_super(struct super_block *sb, void *data, int silent)
 
 	sb->s_maxbytes = 0xffffffff;
 
-<<<<<<< HEAD
-=======
 	sb->s_time_gran = NSEC_PER_MSEC;
 	sb->s_time_min = 0;
 	sb->s_time_max = U64_MAX / MSEC_PER_SEC;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb_set_blocksize(sb, 0x200);
 
 	bh = sb_bread(sb, 0);
@@ -584,15 +500,12 @@ static int omfs_fill_super(struct super_block *sb, void *data, int silent)
 	sbi->s_sys_blocksize = be32_to_cpu(omfs_sb->s_sys_blocksize);
 	mutex_init(&sbi->s_bitmap_lock);
 
-<<<<<<< HEAD
-=======
 	if (sbi->s_num_blocks > OMFS_MAX_BLOCKS) {
 		printk(KERN_ERR "omfs: sysblock number (%llx) is out of range\n",
 		       (unsigned long long)sbi->s_num_blocks);
 		goto out_brelse_bh;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->s_sys_blocksize > PAGE_SIZE) {
 		printk(KERN_ERR "omfs: sysblock size (%d) is out of range\n",
 			sbi->s_sys_blocksize);
@@ -664,15 +577,10 @@ static int omfs_fill_super(struct super_block *sb, void *data, int silent)
 	}
 
 	sb->s_root = d_make_root(root);
-<<<<<<< HEAD
-	if (!sb->s_root)
-		goto out_brelse_bh2;
-=======
 	if (!sb->s_root) {
 		ret = -ENOMEM;
 		goto out_brelse_bh2;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_DEBUG "omfs: Mounted volume %s\n", omfs_rb->r_name);
 
 	ret = 0;

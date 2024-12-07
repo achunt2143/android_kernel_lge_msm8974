@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # MemoryStick subsystem configuration
 #
 
 menuconfig MEMSTICK
-<<<<<<< HEAD
-	tristate "Sony MemoryStick card support (EXPERIMENTAL)"
-=======
 	tristate "Sony MemoryStick card support"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Sony MemoryStick is a proprietary storage/extension card protocol.
 

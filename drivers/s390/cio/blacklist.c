@@ -1,17 +1,8 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/cio/blacklist.c
- *   S/390 common I/O routines -- blacklisting of specific devices
- *
- *    Copyright (C) 1999-2002 IBM Deutschland Entwicklung GmbH,
- *			      IBM Corporation
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  *   S/390 common I/O routines -- blacklisting of specific devices
  *
  *    Copyright IBM Corp. 1999, 2013
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Ingo Adlung (adlung@de.ibm.com)
  *		 Cornelia Huck (cornelia.huck@de.ibm.com)
  *		 Arnd Bergmann (arndb@de.ibm.com)
@@ -27,14 +18,9 @@
 #include <linux/ctype.h>
 #include <linux/device.h>
 
-<<<<<<< HEAD
-#include <asm/cio.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <asm/cio.h>
 #include <asm/ipl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "blacklist.h"
 #include "cio.h"
@@ -66,14 +52,8 @@ static int blacklist_range(range_action action, unsigned int from_ssid,
 {
 	if ((from_ssid > to_ssid) || ((from_ssid == to_ssid) && (from > to))) {
 		if (msgtrigger)
-<<<<<<< HEAD
-			pr_warning("0.%x.%04x to 0.%x.%04x is not a valid "
-				   "range for cio_ignore\n", from_ssid, from,
-				   to_ssid, to);
-=======
 			pr_warn("0.%x.%04x to 0.%x.%04x is not a valid range for cio_ignore\n",
 				from_ssid, from, to_ssid, to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return 1;
 	}
@@ -160,13 +140,8 @@ static int parse_busid(char *str, unsigned int *cssid, unsigned int *ssid,
 	rc = 0;
 out:
 	if (rc && msgtrigger)
-<<<<<<< HEAD
-		pr_warning("%s is not a valid device for the cio_ignore "
-			   "kernel parameter\n", str);
-=======
 		pr_warn("%s is not a valid device for the cio_ignore kernel parameter\n",
 			str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -198,8 +173,6 @@ static int blacklist_parse_parameters(char *str, range_action action,
 			to_cssid = __MAX_CSSID;
 			to_ssid = __MAX_SSID;
 			to = __MAX_SUBCHANNEL;
-<<<<<<< HEAD
-=======
 		} else if (strcmp(parm, "ipldev") == 0) {
 			if (ipl_info.type == IPL_TYPE_CCW) {
 				from_cssid = 0;
@@ -223,7 +196,6 @@ static int blacklist_parse_parameters(char *str, range_action action,
 			from_cssid = to_cssid = 0;
 			from_ssid = to_ssid = 0;
 			from = to = console_devno;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			rc = parse_busid(strsep(&parm, "-"), &from_cssid,
 					 &from_ssid, &from, msgtrigger);
@@ -288,11 +260,6 @@ static int blacklist_parse_proc_parameters(char *buf)
 
 	parm = strsep(&buf, " ");
 
-<<<<<<< HEAD
-	if (strcmp("free", parm) == 0)
-		rc = blacklist_parse_parameters(buf, free, 0);
-	else if (strcmp("add", parm) == 0)
-=======
 	if (strcmp("free", parm) == 0) {
 		rc = blacklist_parse_parameters(buf, free, 0);
 		/*
@@ -302,17 +269,12 @@ static int blacklist_parse_proc_parameters(char *buf)
 		 */
 		css_schedule_eval_cond(CSS_EVAL_NOT_ONLINE, 0);
 	} else if (strcmp("add", parm) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = blacklist_parse_parameters(buf, add, 0);
 	else if (strcmp("purge", parm) == 0)
 		return ccw_purge_blacklisted();
 	else
 		return -EINVAL;
 
-<<<<<<< HEAD
-	css_schedule_reprobe();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -346,15 +308,10 @@ static void *
 cio_ignore_proc_seq_next(struct seq_file *s, void *it, loff_t *offset)
 {
 	struct ccwdev_iter *iter;
-<<<<<<< HEAD
-
-	if (*offset >= (__MAX_SUBCHANNEL + 1) * (__MAX_SSID + 1))
-=======
 	loff_t p = *offset;
 
 	(*offset)++;
 	if (p >= (__MAX_SUBCHANNEL + 1) * (__MAX_SSID + 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	iter = it;
 	if (iter->devno == __MAX_SUBCHANNEL) {
@@ -364,10 +321,6 @@ cio_ignore_proc_seq_next(struct seq_file *s, void *it, loff_t *offset)
 			return NULL;
 	} else
 		iter->devno++;
-<<<<<<< HEAD
-	(*offset)++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return iter;
 }
 
@@ -383,14 +336,6 @@ cio_ignore_proc_seq_show(struct seq_file *s, void *it)
 	if (!iter->in_range) {
 		/* First device in range. */
 		if ((iter->devno == __MAX_SUBCHANNEL) ||
-<<<<<<< HEAD
-		    !is_blacklisted(iter->ssid, iter->devno + 1))
-			/* Singular device. */
-			return seq_printf(s, "0.%x.%04x\n",
-					  iter->ssid, iter->devno);
-		iter->in_range = 1;
-		return seq_printf(s, "0.%x.%04x-", iter->ssid, iter->devno);
-=======
 		    !is_blacklisted(iter->ssid, iter->devno + 1)) {
 			/* Singular device. */
 			seq_printf(s, "0.%x.%04x\n", iter->ssid, iter->devno);
@@ -399,17 +344,12 @@ cio_ignore_proc_seq_show(struct seq_file *s, void *it)
 		iter->in_range = 1;
 		seq_printf(s, "0.%x.%04x-", iter->ssid, iter->devno);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if ((iter->devno == __MAX_SUBCHANNEL) ||
 	    !is_blacklisted(iter->ssid, iter->devno + 1)) {
 		/* Last device in range. */
 		iter->in_range = 0;
-<<<<<<< HEAD
-		return seq_printf(s, "0.%x.%04x\n", iter->ssid, iter->devno);
-=======
 		seq_printf(s, "0.%x.%04x\n", iter->ssid, iter->devno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -464,21 +404,12 @@ cio_ignore_proc_open(struct inode *inode, struct file *file)
 				sizeof(struct ccwdev_iter));
 }
 
-<<<<<<< HEAD
-static const struct file_operations cio_ignore_proc_fops = {
-	.open    = cio_ignore_proc_open,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_private,
-	.write   = cio_ignore_write,
-=======
 static const struct proc_ops cio_ignore_proc_ops = {
 	.proc_open	= cio_ignore_proc_open,
 	.proc_read	= seq_read,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= seq_release_private,
 	.proc_write	= cio_ignore_write,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int
@@ -487,11 +418,7 @@ cio_ignore_proc_init (void)
 	struct proc_dir_entry *entry;
 
 	entry = proc_create("cio_ignore", S_IFREG | S_IRUGO | S_IWUSR, NULL,
-<<<<<<< HEAD
-			    &cio_ignore_proc_fops);
-=======
 			    &cio_ignore_proc_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!entry)
 		return -ENOENT;
 	return 0;

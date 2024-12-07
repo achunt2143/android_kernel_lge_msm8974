@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-/*
- * ak4642.c  --  AK4642/AK4643 ALSA Soc Audio driver
- *
- * Copyright (C) 2009 Renesas Solutions Corp.
- * Kuninori Morimoto <morimoto.kuninori@renesas.com>
- *
- * Based on wm8731.c by Richard Purdie
- * Based on ak4535.c by Richard Purdie
- * Based on wm8753.c by Liam Girdwood
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0
 //
 // ak4642.c  --  AK4642/AK4643 ALSA Soc Audio driver
@@ -24,7 +8,6 @@
 // Based on wm8731.c by Richard Purdie
 // Based on ak4535.c by Richard Purdie
 // Based on wm8753.c by Liam Girdwood
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ** CAUTION **
  *
@@ -36,12 +19,6 @@
  * AK4648 is tested.
  */
 
-<<<<<<< HEAD
-#include <linux/delay.h>
-#include <linux/i2c.h>
-#include <linux/slab.h>
-#include <linux/module.h>
-=======
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -50,7 +27,6 @@
 #include <linux/of.h>
 #include <linux/module.h>
 #include <linux/regmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/soc.h>
 #include <sound/initval.h>
 #include <sound/tlv.h>
@@ -86,23 +62,15 @@
 #define FIL1_0		0x1c
 #define FIL1_1		0x1d
 #define FIL1_2		0x1e
-<<<<<<< HEAD
-#define FIL1_3		0x1f
-=======
 #define FIL1_3		0x1f	/* The maximum valid register for ak4642 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PW_MGMT4	0x20
 #define MD_CTL5		0x21
 #define LO_MS		0x22
 #define HP_MS		0x23
-<<<<<<< HEAD
-#define SPK_MS		0x24
-=======
 #define SPK_MS		0x24	/* The maximum valid register for ak4643 */
 #define EQ_FBEQAB	0x25
 #define EQ_FBEQCD	0x26
 #define EQ_FBEQE	0x27	/* The maximum valid register for ak4648 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PW_MGMT1*/
 #define PMVCM		(1 << 6) /* VCOM Power Management */
@@ -130,16 +98,11 @@
 #define PMMP		(1 << 2) /* MPWR pin Power Management */
 #define MGAIN0		(1 << 0) /* MIC amp gain*/
 
-<<<<<<< HEAD
-/* TIMER */
-#define ZTM(param)	((param & 0x3) << 4) /* ALC Zoro Crossing TimeOut */
-=======
 /* SG_SL2 */
 #define LOPS		(1 << 6) /* Stero Line-out Power Save Mode */
 
 /* TIMER */
 #define ZTM(param)	((param & 0x3) << 4) /* ALC Zero Crossing TimeOut */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WTM(param)	(((param & 0x4) << 4) | ((param & 0x3) << 2))
 
 /* ALC_CTL1 */
@@ -163,16 +126,8 @@
 #define I2S		(3 << 0)
 
 /* MD_CTL2 */
-<<<<<<< HEAD
-#define FS0		(1 << 0)
-#define FS1		(1 << 1)
-#define FS2		(1 << 2)
-#define FS3		(1 << 5)
-#define FS_MASK		(FS0 | FS1 | FS2 | FS3)
-=======
 #define FSs(val)	(((val & 0x7) << 0) | ((val & 0x8) << 2))
 #define PSs(val)	((val & 0x3) << 6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MD_CTL3 */
 #define BST1		(1 << 3)
@@ -180,8 +135,6 @@
 /* MD_CTL4 */
 #define DACH		(1 << 0)
 
-<<<<<<< HEAD
-=======
 struct ak4642_drvdata {
 	const struct regmap_config *regmap_config;
 	int extended_frequencies;
@@ -192,7 +145,6 @@ struct ak4642_priv {
 	struct clk *mcko;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Playback Volume (table 39)
  *
@@ -207,11 +159,8 @@ static const struct snd_kcontrol_new ak4642_snd_controls[] = {
 
 	SOC_DOUBLE_R_TLV("Digital Playback Volume", L_DVC, R_DVC,
 			 0, 0xFF, 1, out_tlv),
-<<<<<<< HEAD
-=======
 	SOC_SINGLE("ALC Capture Switch", ALC_CTL1, 5, 1, 0),
 	SOC_SINGLE("ALC Capture ZC Switch", ALC_CTL1, 4, 1, 1),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_kcontrol_new ak4642_headphone_control =
@@ -221,8 +170,6 @@ static const struct snd_kcontrol_new ak4642_lout_mixer_controls[] = {
 	SOC_DAPM_SINGLE("DACL", SG_SL1, 4, 1, 0),
 };
 
-<<<<<<< HEAD
-=======
 /* event handlers */
 static int ak4642_lout_event(struct snd_soc_dapm_widget *w,
 			     struct snd_kcontrol *kcontrol, int event)
@@ -246,7 +193,6 @@ static int ak4642_lout_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dapm_widget ak4642_dapm_widgets[] = {
 
 	/* Outputs */
@@ -261,14 +207,6 @@ static const struct snd_soc_dapm_widget ak4642_dapm_widgets[] = {
 
 	SND_SOC_DAPM_PGA("DACH", MD_CTL4, 0, 0, NULL, 0),
 
-<<<<<<< HEAD
-	SND_SOC_DAPM_MIXER("LINEOUT Mixer", PW_MGMT1, 3, 0,
-			   &ak4642_lout_mixer_controls[0],
-			   ARRAY_SIZE(ak4642_lout_mixer_controls)),
-
-	/* DAC */
-	SND_SOC_DAPM_DAC("DAC", "HiFi Playback", PW_MGMT1, 2, 0),
-=======
 	SND_SOC_DAPM_MIXER_E("LINEOUT Mixer", PW_MGMT1, 3, 0,
 			   &ak4642_lout_mixer_controls[0],
 			   ARRAY_SIZE(ak4642_lout_mixer_controls),
@@ -278,7 +216,6 @@ static const struct snd_soc_dapm_widget ak4642_dapm_widgets[] = {
 
 	/* DAC */
 	SND_SOC_DAPM_DAC("DAC", NULL, PW_MGMT1, 2, 0),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_soc_dapm_route ak4642_intercon[] = {
@@ -296,48 +233,13 @@ static const struct snd_soc_dapm_route ak4642_intercon[] = {
 	{"DACH", NULL, "DAC"},
 
 	{"LINEOUT Mixer", "DACL", "DAC"},
-<<<<<<< HEAD
-};
-
-/* codec private data */
-struct ak4642_priv {
-	unsigned int sysclk;
-	enum snd_soc_control_type control_type;
-=======
 
 	{ "DAC", NULL, "Playback" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * ak4642 register cache
  */
-<<<<<<< HEAD
-static const u8 ak4642_reg[] = {
-	0x00, 0x00, 0x01, 0x00,
-	0x02, 0x00, 0x00, 0x00,
-	0xe1, 0xe1, 0x18, 0x00,
-	0xe1, 0x18, 0x11, 0x08,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00,
-};
-
-static const u8 ak4648_reg[] = {
-	0x00, 0x00, 0x01, 0x00,
-	0x02, 0x00, 0x00, 0x00,
-	0xe1, 0xe1, 0x18, 0x00,
-	0xe1, 0x18, 0x11, 0xb8,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x00, 0x00, 0x00,
-	0x00, 0x88, 0x88, 0x08,
-=======
 static const struct reg_default ak4643_reg[] = {
 	{  0, 0x00 }, {  1, 0x00 }, {  2, 0x01 }, {  3, 0x00 },
 	{  4, 0x02 }, {  5, 0x00 }, {  6, 0x00 }, {  7, 0x00 },
@@ -370,18 +272,13 @@ static const struct reg_default ak4648_reg[] = {
 	{ 28, 0x00 }, { 29, 0x00 }, { 30, 0x00 }, { 31, 0x00 },
 	{ 32, 0x00 }, { 33, 0x00 }, { 34, 0x00 }, { 35, 0x00 },
 	{ 36, 0x00 }, { 37, 0x88 }, { 38, 0x88 }, { 39, 0x08 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ak4642_dai_startup(struct snd_pcm_substream *substream,
 			      struct snd_soc_dai *dai)
 {
 	int is_play = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-=======
 	struct snd_soc_component *component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_play) {
 		/*
@@ -394,13 +291,8 @@ static int ak4642_dai_startup(struct snd_pcm_substream *substream,
 		 * This operation came from example code of
 		 * "ASAHI KASEI AK4642" (japanese) manual p97.
 		 */
-<<<<<<< HEAD
-		snd_soc_write(codec, L_IVC, 0x91); /* volume */
-		snd_soc_write(codec, R_IVC, 0x91); /* volume */
-=======
 		snd_soc_component_write(component, L_IVC, 0x91); /* volume */
 		snd_soc_component_write(component, R_IVC, 0x91); /* volume */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * start stereo input
@@ -415,19 +307,11 @@ static int ak4642_dai_startup(struct snd_pcm_substream *substream,
 		 * This operation came from example code of
 		 * "ASAHI KASEI AK4642" (japanese) manual p94.
 		 */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, SG_SL1, PMMP | MGAIN0, PMMP | MGAIN0);
-		snd_soc_write(codec, TIMER, ZTM(0x3) | WTM(0x3));
-		snd_soc_write(codec, ALC_CTL1, ALC | LMTH0);
-		snd_soc_update_bits(codec, PW_MGMT1, PMADL, PMADL);
-		snd_soc_update_bits(codec, PW_MGMT3, PMADR, PMADR);
-=======
 		snd_soc_component_update_bits(component, SG_SL1, PMMP | MGAIN0, PMMP | MGAIN0);
 		snd_soc_component_write(component, TIMER, ZTM(0x3) | WTM(0x3));
 		snd_soc_component_write(component, ALC_CTL1, ALC | LMTH0);
 		snd_soc_component_update_bits(component, PW_MGMT1, PMADL, PMADL);
 		snd_soc_component_update_bits(component, PW_MGMT3, PMADR, PMADR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -437,39 +321,24 @@ static void ak4642_dai_shutdown(struct snd_pcm_substream *substream,
 			       struct snd_soc_dai *dai)
 {
 	int is_play = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-=======
 	struct snd_soc_component *component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_play) {
 	} else {
 		/* stop stereo input */
-<<<<<<< HEAD
-		snd_soc_update_bits(codec, PW_MGMT1, PMADL, 0);
-		snd_soc_update_bits(codec, PW_MGMT3, PMADR, 0);
-		snd_soc_update_bits(codec, ALC_CTL1, ALC, 0);
-=======
 		snd_soc_component_update_bits(component, PW_MGMT1, PMADL, 0);
 		snd_soc_component_update_bits(component, PW_MGMT3, PMADR, 0);
 		snd_soc_component_update_bits(component, ALC_CTL1, ALC, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int ak4642_dai_set_sysclk(struct snd_soc_dai *codec_dai,
 	int clk_id, unsigned int freq, int dir)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = codec_dai->codec;
-	u8 pll;
-=======
 	struct snd_soc_component *component = codec_dai->component;
 	struct ak4642_priv *priv = snd_soc_component_get_drvdata(component);
 	u8 pll;
 	int extended_freq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (freq) {
 	case 11289600:
@@ -490,12 +359,6 @@ static int ak4642_dai_set_sysclk(struct snd_soc_dai *codec_dai,
 	case 27000000:
 		pll = PLL3 | PLL2 | PLL0;
 		break;
-<<<<<<< HEAD
-	default:
-		return -EINVAL;
-	}
-	snd_soc_update_bits(codec, MD_CTL1, PLL_MASK, pll);
-=======
 	case 19200000:
 		pll = PLL3;
 		extended_freq = 1;
@@ -516,33 +379,19 @@ static int ak4642_dai_set_sysclk(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 
 	snd_soc_component_update_bits(component, MD_CTL1, PLL_MASK, pll);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int ak4642_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-=======
 	struct snd_soc_component *component = dai->component;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 data;
 	u8 bcko;
 
 	data = MCKO | PMPLL; /* use MCKO */
 	bcko = 0;
 
-<<<<<<< HEAD
-	/* set master/slave audio interface */
-	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
-	case SND_SOC_DAIFMT_CBM_CFM:
-		data |= MS;
-		bcko = BCKO_64;
-		break;
-	case SND_SOC_DAIFMT_CBS_CFS:
-=======
 	/* set clocking for audio interface */
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
@@ -550,18 +399,12 @@ static int ak4642_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		bcko = BCKO_64;
 		break;
 	case SND_SOC_DAIFMT_CBC_CFC:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
-<<<<<<< HEAD
-	snd_soc_update_bits(codec, PW_MGMT2, MS | MCKO | PMPLL, data);
-	snd_soc_update_bits(codec, MD_CTL1, BCKO_MASK, bcko);
-=======
 	snd_soc_component_update_bits(component, PW_MGMT2, MS | MCKO | PMPLL, data);
 	snd_soc_component_update_bits(component, MD_CTL1, BCKO_MASK, bcko);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* format type */
 	data = 0;
@@ -577,11 +420,6 @@ static int ak4642_dai_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	 */
 	default:
 		return -EINVAL;
-<<<<<<< HEAD
-		break;
-	}
-	snd_soc_update_bits(codec, MD_CTL1, DIF_MASK, data);
-=======
 	}
 	snd_soc_component_update_bits(component, MD_CTL1, DIF_MASK, data);
 
@@ -622,7 +460,6 @@ static int ak4642_set_mcko(struct snd_soc_component *component,
 			}
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -631,58 +468,6 @@ static int ak4642_dai_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
 {
-<<<<<<< HEAD
-	struct snd_soc_codec *codec = dai->codec;
-	u8 rate;
-
-	switch (params_rate(params)) {
-	case 7350:
-		rate = FS2;
-		break;
-	case 8000:
-		rate = 0;
-		break;
-	case 11025:
-		rate = FS2 | FS0;
-		break;
-	case 12000:
-		rate = FS0;
-		break;
-	case 14700:
-		rate = FS2 | FS1;
-		break;
-	case 16000:
-		rate = FS1;
-		break;
-	case 22050:
-		rate = FS2 | FS1 | FS0;
-		break;
-	case 24000:
-		rate = FS1 | FS0;
-		break;
-	case 29400:
-		rate = FS3 | FS2 | FS1;
-		break;
-	case 32000:
-		rate = FS3 | FS1;
-		break;
-	case 44100:
-		rate = FS3 | FS2 | FS1 | FS0;
-		break;
-	case 48000:
-		rate = FS3 | FS1 | FS0;
-		break;
-	default:
-		return -EINVAL;
-		break;
-	}
-	snd_soc_update_bits(codec, MD_CTL2, FS_MASK, rate);
-
-	return 0;
-}
-
-static int ak4642_set_bias_level(struct snd_soc_codec *codec,
-=======
 	struct snd_soc_component *component = dai->component;
 	struct ak4642_priv *priv = snd_soc_component_get_drvdata(component);
 	u32 rate = clk_get_rate(priv->mcko);
@@ -694,27 +479,16 @@ static int ak4642_set_bias_level(struct snd_soc_codec *codec,
 }
 
 static int ak4642_set_bias_level(struct snd_soc_component *component,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 enum snd_soc_bias_level level)
 {
 	switch (level) {
 	case SND_SOC_BIAS_OFF:
-<<<<<<< HEAD
-		snd_soc_write(codec, PW_MGMT1, 0x00);
-		break;
-	default:
-		snd_soc_update_bits(codec, PW_MGMT1, PMVCM, PMVCM);
-		break;
-	}
-	codec->dapm.bias_level = level;
-=======
 		snd_soc_component_write(component, PW_MGMT1, 0x00);
 		break;
 	default:
 		snd_soc_component_update_bits(component, PW_MGMT1, PMVCM, PMVCM);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -731,122 +505,17 @@ static struct snd_soc_dai_driver ak4642_dai = {
 	.name = "ak4642-hifi",
 	.playback = {
 		.stream_name = "Playback",
-<<<<<<< HEAD
-		.channels_min = 1,
-=======
 		.channels_min = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.channels_max = 2,
 		.rates = SNDRV_PCM_RATE_8000_48000,
 		.formats = SNDRV_PCM_FMTBIT_S16_LE },
 	.capture = {
 		.stream_name = "Capture",
-<<<<<<< HEAD
-		.channels_min = 1,
-=======
 		.channels_min = 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.channels_max = 2,
 		.rates = SNDRV_PCM_RATE_8000_48000,
 		.formats = SNDRV_PCM_FMTBIT_S16_LE },
 	.ops = &ak4642_dai_ops,
-<<<<<<< HEAD
-	.symmetric_rates = 1,
-};
-
-static int ak4642_resume(struct snd_soc_codec *codec)
-{
-	snd_soc_cache_sync(codec);
-	return 0;
-}
-
-
-static int ak4642_probe(struct snd_soc_codec *codec)
-{
-	struct ak4642_priv *ak4642 = snd_soc_codec_get_drvdata(codec);
-	int ret;
-
-	ret = snd_soc_codec_set_cache_io(codec, 8, 8, ak4642->control_type);
-	if (ret < 0) {
-		dev_err(codec->dev, "Failed to set cache I/O: %d\n", ret);
-		return ret;
-	}
-
-	snd_soc_add_codec_controls(codec, ak4642_snd_controls,
-			     ARRAY_SIZE(ak4642_snd_controls));
-
-	ak4642_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
-
-	return 0;
-}
-
-static int ak4642_remove(struct snd_soc_codec *codec)
-{
-	ak4642_set_bias_level(codec, SND_SOC_BIAS_OFF);
-	return 0;
-}
-
-static struct snd_soc_codec_driver soc_codec_dev_ak4642 = {
-	.probe			= ak4642_probe,
-	.remove			= ak4642_remove,
-	.resume			= ak4642_resume,
-	.set_bias_level		= ak4642_set_bias_level,
-	.reg_cache_default	= ak4642_reg,			/* ak4642 reg */
-	.reg_cache_size		= ARRAY_SIZE(ak4642_reg),	/* ak4642 reg */
-	.reg_word_size		= sizeof(u8),
-	.dapm_widgets		= ak4642_dapm_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(ak4642_dapm_widgets),
-	.dapm_routes		= ak4642_intercon,
-	.num_dapm_routes	= ARRAY_SIZE(ak4642_intercon),
-};
-
-static struct snd_soc_codec_driver soc_codec_dev_ak4648 = {
-	.probe			= ak4642_probe,
-	.remove			= ak4642_remove,
-	.resume			= ak4642_resume,
-	.set_bias_level		= ak4642_set_bias_level,
-	.reg_cache_default	= ak4648_reg,			/* ak4648 reg */
-	.reg_cache_size		= ARRAY_SIZE(ak4648_reg),	/* ak4648 reg */
-	.reg_word_size		= sizeof(u8),
-	.dapm_widgets		= ak4642_dapm_widgets,
-	.num_dapm_widgets	= ARRAY_SIZE(ak4642_dapm_widgets),
-	.dapm_routes		= ak4642_intercon,
-	.num_dapm_routes	= ARRAY_SIZE(ak4642_intercon),
-};
-
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-static __devinit int ak4642_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-{
-	struct ak4642_priv *ak4642;
-	int ret;
-
-	ak4642 = devm_kzalloc(&i2c->dev, sizeof(struct ak4642_priv),
-			      GFP_KERNEL);
-	if (!ak4642)
-		return -ENOMEM;
-
-	i2c_set_clientdata(i2c, ak4642);
-	ak4642->control_type = SND_SOC_I2C;
-
-	ret =  snd_soc_register_codec(&i2c->dev,
-				(struct snd_soc_codec_driver *)id->driver_data,
-				&ak4642_dai, 1);
-	return ret;
-}
-
-static __devexit int ak4642_i2c_remove(struct i2c_client *client)
-{
-	snd_soc_unregister_codec(&client->dev);
-	return 0;
-}
-
-static const struct i2c_device_id ak4642_i2c_id[] = {
-	{ "ak4642", (kernel_ulong_t)&soc_codec_dev_ak4642 },
-	{ "ak4643", (kernel_ulong_t)&soc_codec_dev_ak4642 },
-	{ "ak4648", (kernel_ulong_t)&soc_codec_dev_ak4648 },
-	{ }
-=======
 	.symmetric_rate = 1,
 };
 
@@ -1007,46 +676,12 @@ static const struct i2c_device_id ak4642_i2c_id[] = {
 	{ "ak4643", (kernel_ulong_t)&ak4643_drvdata },
 	{ "ak4648", (kernel_ulong_t)&ak4648_drvdata },
 	{}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_DEVICE_TABLE(i2c, ak4642_i2c_id);
 
 static struct i2c_driver ak4642_i2c_driver = {
 	.driver = {
 		.name = "ak4642-codec",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-	},
-	.probe		= ak4642_i2c_probe,
-	.remove		= __devexit_p(ak4642_i2c_remove),
-	.id_table	= ak4642_i2c_id,
-};
-#endif
-
-static int __init ak4642_modinit(void)
-{
-	int ret = 0;
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	ret = i2c_add_driver(&ak4642_i2c_driver);
-#endif
-	return ret;
-
-}
-module_init(ak4642_modinit);
-
-static void __exit ak4642_exit(void)
-{
-#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
-	i2c_del_driver(&ak4642_i2c_driver);
-#endif
-
-}
-module_exit(ak4642_exit);
-
-MODULE_DESCRIPTION("Soc AK4642 driver");
-MODULE_AUTHOR("Kuninori Morimoto <morimoto.kuninori@renesas.com>");
-MODULE_LICENSE("GPL");
-=======
 		.of_match_table = ak4642_of_match,
 	},
 	.probe		= ak4642_i2c_probe,
@@ -1058,4 +693,3 @@ module_i2c_driver(ak4642_i2c_driver);
 MODULE_DESCRIPTION("Soc AK4642 driver");
 MODULE_AUTHOR("Kuninori Morimoto <morimoto.kuninori@renesas.com>");
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

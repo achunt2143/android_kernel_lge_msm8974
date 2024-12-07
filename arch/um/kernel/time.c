@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2015 Anton Ivanov (aivanov@{brocade.com,kot-begemot.co.uk})
@@ -10,25 +5,12 @@
  * Copyright (C) 2012-2014 Cisco Systems
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Copyright (C) 2019 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/clockchips.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/jiffies.h>
-<<<<<<< HEAD
-#include <linux/threads.h>
-#include <asm/irq.h>
-#include <asm/param.h>
-#include "kern_util.h"
-#include "os.h"
-
-void timer_handler(int sig, struct uml_pt_regs *regs)
-{
-	unsigned long flags;
-
-=======
 #include <linux/mm.h>
 #include <linux/sched.h>
 #include <linux/spinlock.h>
@@ -651,31 +633,11 @@ void timer_handler(int sig, struct siginfo *unused_si, struct uml_pt_regs *regs)
 	if (time_travel_mode == TT_MODE_BASIC)
 		time_travel_handle_real_alarm();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_save(flags);
 	do_IRQ(TIMER_IRQ, regs);
 	local_irq_restore(flags);
 }
 
-<<<<<<< HEAD
-static void itimer_set_mode(enum clock_event_mode mode,
-			    struct clock_event_device *evt)
-{
-	switch (mode) {
-	case CLOCK_EVT_MODE_PERIODIC:
-		set_interval();
-		break;
-
-	case CLOCK_EVT_MODE_SHUTDOWN:
-	case CLOCK_EVT_MODE_UNUSED:
-	case CLOCK_EVT_MODE_ONESHOT:
-		disable_timer();
-		break;
-
-	case CLOCK_EVT_MODE_RESUME:
-		break;
-	}
-=======
 static int itimer_shutdown(struct clock_event_device *evt)
 {
 	if (time_travel_mode != TT_MODE_OFF)
@@ -706,26 +668,11 @@ static int itimer_set_periodic(struct clock_event_device *evt)
 		os_timer_set_interval(interval);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int itimer_next_event(unsigned long delta,
 			     struct clock_event_device *evt)
 {
-<<<<<<< HEAD
-	return timer_one_shot(delta + 1);
-}
-
-static struct clock_event_device itimer_clockevent = {
-	.name		= "itimer",
-	.rating		= 250,
-	.cpumask	= cpu_all_mask,
-	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
-	.set_mode	= itimer_set_mode,
-	.set_next_event = itimer_next_event,
-	.shift		= 32,
-	.irq		= 0,
-=======
 	delta += 1;
 
 	if (time_travel_mode != TT_MODE_OFF) {
@@ -765,14 +712,10 @@ static struct clock_event_device timer_clockevent = {
 	.min_delta_ticks	= TIMER_MIN_DELTA, // microsecond resolution should be enough for anyone, same as 640K RAM
 	.irq			= 0,
 	.mult			= 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t um_timer(int irq, void *dev)
 {
-<<<<<<< HEAD
-	(*itimer_clockevent.event_handler)(&itimer_clockevent);
-=======
 	if (get_current()->mm != NULL)
 	{
         /* userspace - relay signal, results in correct userspace timers */
@@ -780,22 +723,10 @@ static irqreturn_t um_timer(int irq, void *dev)
 	}
 
 	(*timer_clockevent.event_handler)(&timer_clockevent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static cycle_t itimer_read(struct clocksource *cs)
-{
-	return os_nsecs() / 1000;
-}
-
-static struct clocksource itimer_clocksource = {
-	.name		= "itimer",
-	.rating		= 300,
-	.read		= itimer_read,
-=======
 static u64 timer_read(struct clocksource *cs)
 {
 	if (time_travel_mode != TT_MODE_OFF) {
@@ -824,36 +755,19 @@ static struct clocksource timer_clocksource = {
 	.name		= "timer",
 	.rating		= 300,
 	.read		= timer_read,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mask		= CLOCKSOURCE_MASK(64),
 	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
-<<<<<<< HEAD
-static void __init setup_itimer(void)
-{
-	int err;
-
-	err = request_irq(TIMER_IRQ, um_timer, 0, "timer", NULL);
-=======
 static void __init um_timer_setup(void)
 {
 	int err;
 
 	err = request_irq(TIMER_IRQ, um_timer, IRQF_TIMER, "hr timer", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err != 0)
 		printk(KERN_ERR "register_timer : request_irq failed - "
 		       "errno = %d\n", -err);
 
-<<<<<<< HEAD
-	itimer_clockevent.mult = div_sc(HZ, NSEC_PER_SEC, 32);
-	itimer_clockevent.max_delta_ns =
-		clockevent_delta2ns(60 * HZ, &itimer_clockevent);
-	itimer_clockevent.min_delta_ns =
-		clockevent_delta2ns(1, &itimer_clockevent);
-	err = clocksource_register_hz(&itimer_clocksource, USEC_PER_SEC);
-=======
 	err = os_timer_create();
 	if (err != 0) {
 		printk(KERN_ERR "creation of timer failed - errno = %d\n", -err);
@@ -861,22 +775,10 @@ static void __init um_timer_setup(void)
 	}
 
 	err = clocksource_register_hz(&timer_clocksource, NSEC_PER_SEC/TIMER_MULTIPLIER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		printk(KERN_ERR "clocksource_register_hz returned %d\n", err);
 		return;
 	}
-<<<<<<< HEAD
-	clockevents_register_device(&itimer_clockevent);
-}
-
-void read_persistent_clock(struct timespec *ts)
-{
-	long long nsecs = os_nsecs();
-
-	set_normalized_timespec(ts, nsecs / NSEC_PER_SEC,
-				nsecs % NSEC_PER_SEC);
-=======
 	clockevents_register_device(&timer_clockevent);
 }
 
@@ -893,16 +795,10 @@ void read_persistent_clock64(struct timespec64 *ts)
 
 	set_normalized_timespec64(ts, nsecs / NSEC_PER_SEC,
 				  nsecs % NSEC_PER_SEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init time_init(void)
 {
-<<<<<<< HEAD
-	timer_init();
-	late_time_init = setup_itimer;
-}
-=======
 	timer_set_signal_handler();
 	late_time_init = um_timer_setup;
 }
@@ -984,4 +880,3 @@ __uml_help(setup_time_travel_start,
 "Configure the UML instance's wall clock to start at this value rather than\n"
 "the host's wall clock at the time of UML boot.\n");
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

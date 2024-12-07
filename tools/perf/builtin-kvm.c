@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#include "builtin.h"
-#include "perf.h"
-
-#include "util/util.h"
-#include "util/cache.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include "builtin.h"
 #include "perf.h"
@@ -14,58 +7,10 @@
 #include "util/evlist.h"
 #include "util/mmap.h"
 #include "util/term.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "util/symbol.h"
 #include "util/thread.h"
 #include "util/header.h"
 #include "util/session.h"
-<<<<<<< HEAD
-
-#include "util/parse-options.h"
-#include "util/trace-event.h"
-
-#include "util/debug.h"
-
-#include <sys/prctl.h>
-
-#include <semaphore.h>
-#include <pthread.h>
-#include <math.h>
-
-static const char		*file_name;
-static char			name_buffer[256];
-
-static const char * const kvm_usage[] = {
-	"perf kvm [<options>] {top|record|report|diff|buildid-list}",
-	NULL
-};
-
-static const struct option kvm_options[] = {
-	OPT_STRING('i', "input", &file_name, "file",
-		   "Input file name"),
-	OPT_STRING('o', "output", &file_name, "file",
-		   "Output file name"),
-	OPT_BOOLEAN(0, "guest", &perf_guest,
-		    "Collect guest os data"),
-	OPT_BOOLEAN(0, "host", &perf_host,
-		    "Collect host os data"),
-	OPT_STRING(0, "guestmount", &symbol_conf.guestmount, "directory",
-		   "guest mount directory under which every guest os"
-		   " instance has a subdir"),
-	OPT_STRING(0, "guestvmlinux", &symbol_conf.default_guest_vmlinux_name,
-		   "file", "file saving guest os vmlinux"),
-	OPT_STRING(0, "guestkallsyms", &symbol_conf.default_guest_kallsyms,
-		   "file", "file saving guest os /proc/kallsyms"),
-	OPT_STRING(0, "guestmodules", &symbol_conf.default_guest_modules,
-		   "file", "file saving guest os /proc/modules"),
-	OPT_END()
-};
-
-static int __cmd_record(int argc, const char **argv)
-{
-	int rec_argc, i = 0, j;
-	const char **rec_argv;
-=======
 #include "util/intlist.h"
 #include <subcmd/pager.h>
 #include <subcmd/parse-options.h>
@@ -2122,7 +2067,6 @@ static int __cmd_record(const char *file_name, int argc, const char **argv)
 	ret = kvm_add_default_arch_event(&argc, argv);
 	if (ret)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rec_argc = argc + 2;
 	rec_argv = calloc(rec_argc + 1, sizeof(char *));
@@ -2134,17 +2078,10 @@ static int __cmd_record(const char *file_name, int argc, const char **argv)
 
 	BUG_ON(i != rec_argc);
 
-<<<<<<< HEAD
-	return cmd_record(i, rec_argv, NULL);
-}
-
-static int __cmd_report(int argc, const char **argv)
-=======
 	return cmd_record(i, rec_argv);
 }
 
 static int __cmd_report(const char *file_name, int argc, const char **argv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rec_argc, i = 0, j;
 	const char **rec_argv;
@@ -2159,18 +2096,11 @@ static int __cmd_report(const char *file_name, int argc, const char **argv)
 
 	BUG_ON(i != rec_argc);
 
-<<<<<<< HEAD
-	return cmd_report(i, rec_argv, NULL);
-}
-
-static int __cmd_buildid_list(int argc, const char **argv)
-=======
 	return cmd_report(i, rec_argv);
 }
 
 static int
 __cmd_buildid_list(const char *file_name, int argc, const char **argv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rec_argc, i = 0, j;
 	const char **rec_argv;
@@ -2185,18 +2115,6 @@ __cmd_buildid_list(const char *file_name, int argc, const char **argv)
 
 	BUG_ON(i != rec_argc);
 
-<<<<<<< HEAD
-	return cmd_buildid_list(i, rec_argv, NULL);
-}
-
-int cmd_kvm(int argc, const char **argv, const char *prefix __used)
-{
-	perf_host  = 0;
-	perf_guest = 1;
-
-	argc = parse_options(argc, argv, kvm_options, kvm_usage,
-			PARSE_OPT_STOP_AT_NON_OPTION);
-=======
 	return cmd_buildid_list(i, rec_argv);
 }
 
@@ -2237,7 +2155,6 @@ int cmd_kvm(int argc, const char **argv)
 
 	argc = parse_options_subcommand(argc, argv, kvm_options, kvm_subcommands, kvm_usage,
 					PARSE_OPT_STOP_AT_NON_OPTION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!argc)
 		usage_with_options(kvm_usage, kvm_options);
 
@@ -2245,27 +2162,6 @@ int cmd_kvm(int argc, const char **argv)
 		perf_guest = 1;
 
 	if (!file_name) {
-<<<<<<< HEAD
-		if (perf_host && !perf_guest)
-			sprintf(name_buffer, "perf.data.host");
-		else if (!perf_host && perf_guest)
-			sprintf(name_buffer, "perf.data.guest");
-		else
-			sprintf(name_buffer, "perf.data.kvm");
-		file_name = name_buffer;
-	}
-
-	if (!strncmp(argv[0], "rec", 3))
-		return __cmd_record(argc, argv);
-	else if (!strncmp(argv[0], "rep", 3))
-		return __cmd_report(argc, argv);
-	else if (!strncmp(argv[0], "diff", 4))
-		return cmd_diff(argc, argv, NULL);
-	else if (!strncmp(argv[0], "top", 3))
-		return cmd_top(argc, argv, NULL);
-	else if (!strncmp(argv[0], "buildid-list", 12))
-		return __cmd_buildid_list(argc, argv);
-=======
 		file_name = get_filename_for_perf_kvm();
 
 		if (!file_name) {
@@ -2288,7 +2184,6 @@ int cmd_kvm(int argc, const char **argv)
 	else if (strlen(argv[0]) > 2 && strstarts("stat", argv[0]))
 		return kvm_cmd_stat(file_name, argc, argv);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		usage_with_options(kvm_usage, kvm_options);
 

@@ -1,62 +1,3 @@
-<<<<<<< HEAD
-#ifndef _LIBFDT_H
-#define _LIBFDT_H
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- *
- * libfdt is dual licensed: you can use it either under the terms of
- * the GPL, or the BSD license, at your option.
- *
- *  a) This library is free software; you can redistribute it and/or
- *     modify it under the terms of the GNU General Public License as
- *     published by the Free Software Foundation; either version 2 of the
- *     License, or (at your option) any later version.
- *
- *     This library is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public
- *     License along with this library; if not, write to the Free
- *     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- *     MA 02110-1301 USA
- *
- * Alternatively,
- *
- *  b) Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *     1. Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *     2. Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- *     CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- *     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- *     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- *     CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *     SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- *     NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- *     HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-#include <libfdt_env.h>
-#include <fdt.h>
-
-#define FDT_FIRST_SUPPORTED_VERSION	0x10
-=======
 /* SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause) */
 #ifndef LIBFDT_H
 #define LIBFDT_H
@@ -74,18 +15,13 @@ extern "C" {
 
 #define FDT_FIRST_SUPPORTED_VERSION	0x02
 #define FDT_LAST_COMPATIBLE_VERSION 0x10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FDT_LAST_SUPPORTED_VERSION	0x11
 
 /* Error codes: informative error codes */
 #define FDT_ERR_NOTFOUND	1
 	/* FDT_ERR_NOTFOUND: The requested node or property does not exist */
 #define FDT_ERR_EXISTS		2
-<<<<<<< HEAD
-	/* FDT_ERR_EXISTS: Attemped to create a node or property which
-=======
 	/* FDT_ERR_EXISTS: Attempted to create a node or property which
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * already exists */
 #define FDT_ERR_NOSPACE		3
 	/* FDT_ERR_NOSPACE: Operation needed to expand the device
@@ -103,15 +39,10 @@ extern "C" {
 	 * (e.g. missing a leading / for a function which requires an
 	 * absolute path) */
 #define FDT_ERR_BADPHANDLE	6
-<<<<<<< HEAD
-	/* FDT_ERR_BADPHANDLE: Function was passed an invalid phandle
-	 * value.  phandle values of 0 and -1 are not permitted. */
-=======
 	/* FDT_ERR_BADPHANDLE: Function was passed an invalid phandle.
 	 * This can be caused either by an invalid phandle property
 	 * length, or the phandle value was either 0 or -1, which are
 	 * not permitted. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FDT_ERR_BADSTATE	7
 	/* FDT_ERR_BADSTATE: Function was passed an incomplete device
 	 * tree created by the sequential-write functions, which is
@@ -119,14 +50,9 @@ extern "C" {
 
 /* Error codes: codes for bad device tree blobs */
 #define FDT_ERR_TRUNCATED	8
-<<<<<<< HEAD
-	/* FDT_ERR_TRUNCATED: Structure block of the given device tree
-	 * ends without an FDT_END tag. */
-=======
 	/* FDT_ERR_TRUNCATED: FDT or a sub-block is improperly
 	 * terminated (overflows, goes outside allowed bounds, or
 	 * isn't properly terminated).  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FDT_ERR_BADMAGIC	9
 	/* FDT_ERR_BADMAGIC: Given "device tree" appears not to be a
 	 * device tree at all - it is missing the flattened device
@@ -153,9 +79,6 @@ extern "C" {
 	 * Should never be returned, if it is, it indicates a bug in
 	 * libfdt itself. */
 
-<<<<<<< HEAD
-#define FDT_ERR_MAX		13
-=======
 /* Errors in device tree content */
 #define FDT_ERR_BADNCELLS	14
 	/* FDT_ERR_BADNCELLS: Device tree has a #address-cells, #size-cells
@@ -188,19 +111,14 @@ extern "C" {
 /* constants */
 #define FDT_MAX_PHANDLE 0xfffffffe
 	/* Valid values for phandles range from 1 to 2^32-2. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************/
 /* Low-level functions (you probably don't need these)                */
 /**********************************************************************/
 
-<<<<<<< HEAD
-const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int checklen);
-=======
 #ifndef SWIG /* This function is not useful in Python */
 const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int checklen);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void *fdt_offset_ptr_w(void *fdt, int offset, int checklen)
 {
 	return (void *)(uintptr_t)fdt_offset_ptr(fdt, offset, checklen);
@@ -208,8 +126,6 @@ static inline void *fdt_offset_ptr_w(void *fdt, int offset, int checklen)
 
 uint32_t fdt_next_tag(const void *fdt, int offset, int *nextoffset);
 
-<<<<<<< HEAD
-=======
 /*
  * External helpers to access words from a device tree blob. They're built
  * to work even with unaligned pointers on platforms (such as ARMv5) that don't
@@ -270,22 +186,12 @@ static inline void fdt64_st(void *property, uint64_t value)
 	bp[7] = value & 0xff;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**********************************************************************/
 /* Traversal functions                                                */
 /**********************************************************************/
 
 int fdt_next_node(const void *fdt, int offset, int *depth);
 
-<<<<<<< HEAD
-/**********************************************************************/
-/* General functions                                                  */
-/**********************************************************************/
-
-#define fdt_get_header(fdt, field) \
-	(fdt32_to_cpu(((const struct fdt_header *)(fdt))->field))
-#define fdt_magic(fdt) 			(fdt_get_header(fdt, magic))
-=======
 /**
  * fdt_first_subnode() - get offset of first direct subnode
  * @fdt:	FDT blob
@@ -341,44 +247,11 @@ int fdt_next_subnode(const void *fdt, int offset);
 #define fdt_get_header(fdt, field) \
 	(fdt32_ld(&((const struct fdt_header *)(fdt))->field))
 #define fdt_magic(fdt)			(fdt_get_header(fdt, magic))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fdt_totalsize(fdt)		(fdt_get_header(fdt, totalsize))
 #define fdt_off_dt_struct(fdt)		(fdt_get_header(fdt, off_dt_struct))
 #define fdt_off_dt_strings(fdt)		(fdt_get_header(fdt, off_dt_strings))
 #define fdt_off_mem_rsvmap(fdt)		(fdt_get_header(fdt, off_mem_rsvmap))
 #define fdt_version(fdt)		(fdt_get_header(fdt, version))
-<<<<<<< HEAD
-#define fdt_last_comp_version(fdt) 	(fdt_get_header(fdt, last_comp_version))
-#define fdt_boot_cpuid_phys(fdt) 	(fdt_get_header(fdt, boot_cpuid_phys))
-#define fdt_size_dt_strings(fdt) 	(fdt_get_header(fdt, size_dt_strings))
-#define fdt_size_dt_struct(fdt)		(fdt_get_header(fdt, size_dt_struct))
-
-#define __fdt_set_hdr(name) \
-	static inline void fdt_set_##name(void *fdt, uint32_t val) \
-	{ \
-		struct fdt_header *fdth = (struct fdt_header*)fdt; \
-		fdth->name = cpu_to_fdt32(val); \
-	}
-__fdt_set_hdr(magic);
-__fdt_set_hdr(totalsize);
-__fdt_set_hdr(off_dt_struct);
-__fdt_set_hdr(off_dt_strings);
-__fdt_set_hdr(off_mem_rsvmap);
-__fdt_set_hdr(version);
-__fdt_set_hdr(last_comp_version);
-__fdt_set_hdr(boot_cpuid_phys);
-__fdt_set_hdr(size_dt_strings);
-__fdt_set_hdr(size_dt_struct);
-#undef __fdt_set_hdr
-
-/**
- * fdt_check_header - sanity check a device tree or possible device tree
- * @fdt: pointer to data which might be a flattened device tree
- *
- * fdt_check_header() checks that the given buffer contains what
- * appears to be a flattened device tree with sane information in its
- * header.
-=======
 #define fdt_last_comp_version(fdt)	(fdt_get_header(fdt, last_comp_version))
 #define fdt_boot_cpuid_phys(fdt)	(fdt_get_header(fdt, boot_cpuid_phys))
 #define fdt_size_dt_strings(fdt)	(fdt_get_header(fdt, size_dt_strings))
@@ -426,18 +299,13 @@ size_t fdt_header_size_(uint32_t version);
  * appears to be a flattened device tree, and that the header contains
  * valid information (to the extent that can be determined from the
  * header alone).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * returns:
  *     0, if the buffer appears to contain a valid device tree
  *     -FDT_ERR_BADMAGIC,
  *     -FDT_ERR_BADVERSION,
-<<<<<<< HEAD
- *     -FDT_ERR_BADSTATE, standard meanings, as above
-=======
  *     -FDT_ERR_BADSTATE,
  *     -FDT_ERR_TRUNCATED, standard meanings, as above
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int fdt_check_header(const void *fdt);
 
@@ -466,8 +334,6 @@ int fdt_move(const void *fdt, void *buf, int bufsize);
 /* Read-only functions                                                */
 /**********************************************************************/
 
-<<<<<<< HEAD
-=======
 int fdt_check_full(const void *fdt, size_t bufsize);
 
 /**
@@ -486,7 +352,6 @@ int fdt_check_full(const void *fdt, size_t bufsize);
  */
 const char *fdt_get_string(const void *fdt, int stroffset, int *lenp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * fdt_string - retrieve a string from the strings block of a device tree
  * @fdt: pointer to the device tree blob
@@ -497,17 +362,11 @@ const char *fdt_get_string(const void *fdt, int stroffset, int *lenp);
  *
  * returns:
  *     a pointer to the string, on success
-<<<<<<< HEAD
- *     NULL, if stroffset is out of bounds
-=======
  *     NULL, if stroffset is out of bounds, or doesn't point to a valid string
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 const char *fdt_string(const void *fdt, int stroffset);
 
 /**
-<<<<<<< HEAD
-=======
  * fdt_find_max_phandle - find and return the highest phandle in a tree
  * @fdt: pointer to the device tree blob
  * @phandle: return location for the highest phandle value found in the tree
@@ -563,7 +422,6 @@ static inline uint32_t fdt_get_max_phandle(const void *fdt)
 int fdt_generate_phandle(const void *fdt, uint32_t *phandle);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fdt_num_mem_rsv - retrieve the number of memory reserve map entries
  * @fdt: pointer to the device tree blob
  *
@@ -579,17 +437,11 @@ int fdt_num_mem_rsv(const void *fdt);
 /**
  * fdt_get_mem_rsv - retrieve one memory reserve map entry
  * @fdt: pointer to the device tree blob
-<<<<<<< HEAD
- * @address, @size: pointers to 64-bit variables
- *
- * On success, *address and *size will contain the address and size of
-=======
  * @n: index of reserve map entry
  * @address: pointer to 64-bit variable to hold the start address
  * @size: pointer to 64-bit variable to hold the size of the entry
  *
  * On success, @address and @size will contain the address and size of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * the n-th reserve map entry from the device tree blob, in
  * native-endian format.
  *
@@ -612,11 +464,6 @@ int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size);
  * namelen characters of name for matching the subnode name.  This is
  * useful for finding subnodes based on a portion of a larger string,
  * such as a full path.
-<<<<<<< HEAD
- */
-int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
-			       const char *name, int namelen);
-=======
  *
  * Return: offset of the subnode or -FDT_ERR_NOTFOUND if name not found.
  */
@@ -624,7 +471,6 @@ int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
 int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
 			       const char *name, int namelen);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * fdt_subnode_offset - find a subnode of a given node
  * @fdt: pointer to the device tree blob
@@ -641,14 +487,9 @@ int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
  * returns:
  *	structure block offset of the requested subnode (>=0), on success
  *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
-<<<<<<< HEAD
- *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
- *      -FDT_ERR_BADMAGIC,
-=======
  *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE
  *		tag
  *	-FDT_ERR_BADMAGIC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
  *	-FDT_ERR_BADSTRUCTURE,
@@ -657,8 +498,6 @@ int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
 int fdt_subnode_offset(const void *fdt, int parentoffset, const char *name);
 
 /**
-<<<<<<< HEAD
-=======
  * fdt_path_offset_namelen - find a tree node by its full path
  * @fdt: pointer to the device tree blob
  * @path: full path of the node to locate
@@ -674,7 +513,6 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen);
 #endif
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fdt_path_offset - find a tree node by its full path
  * @fdt: pointer to the device tree blob
  * @path: full path of the node to locate
@@ -687,12 +525,8 @@ int fdt_path_offset_namelen(const void *fdt, const char *path, int namelen);
  * address).
  *
  * returns:
-<<<<<<< HEAD
- *	structure block offset of the node with the requested path (>=0), on success
-=======
  *	structure block offset of the node with the requested path (>=0), on
  *		success
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADPATH, given path does not begin with '/' or is invalid
  *	-FDT_ERR_NOTFOUND, if the requested node does not exist
  *      -FDT_ERR_BADMAGIC,
@@ -716,19 +550,12 @@ int fdt_path_offset(const void *fdt, const char *path);
  *
  * returns:
  *	pointer to the node's name, on success
-<<<<<<< HEAD
- *		If lenp is non-NULL, *lenp contains the length of that name (>=0)
- *	NULL, on error
- *		if lenp is non-NULL *lenp contains an error code (<0):
- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
-=======
  *		If lenp is non-NULL, *lenp contains the length of that name
  *			(>=0)
  *	NULL, on error
  *		if lenp is non-NULL *lenp contains an error code (<0):
  *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE
  *			tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		-FDT_ERR_BADMAGIC,
  *		-FDT_ERR_BADVERSION,
  *		-FDT_ERR_BADSTATE, standard meanings
@@ -777,8 +604,6 @@ int fdt_first_property_offset(const void *fdt, int nodeoffset);
 int fdt_next_property_offset(const void *fdt, int offset);
 
 /**
-<<<<<<< HEAD
-=======
  * fdt_for_each_property_offset - iterate over all properties of a node
  *
  * @property:	property offset (int, lvalue)
@@ -806,7 +631,6 @@ int fdt_next_property_offset(const void *fdt, int offset);
 	     property = fdt_next_property_offset(fdt, property))
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fdt_get_property_by_offset - retrieve the property at a given offset
  * @fdt: pointer to the device tree blob
  * @offset: offset of the property to retrieve
@@ -817,12 +641,9 @@ int fdt_next_property_offset(const void *fdt, int offset);
  * offset.  If lenp is non-NULL, the length of the property value is
  * also returned, in the integer pointed to by lenp.
  *
-<<<<<<< HEAD
-=======
  * Note that this code only works on device tree versions >= 16. fdt_getprop()
  * works on all versions.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * returns:
  *	pointer to the structure representing the property
  *		if lenp is non-NULL, *lenp contains the length of the property
@@ -839,8 +660,6 @@ int fdt_next_property_offset(const void *fdt, int offset);
 const struct fdt_property *fdt_get_property_by_offset(const void *fdt,
 						      int offset,
 						      int *lenp);
-<<<<<<< HEAD
-=======
 static inline struct fdt_property *fdt_get_property_by_offset_w(void *fdt,
 								int offset,
 								int *lenp)
@@ -848,7 +667,6 @@ static inline struct fdt_property *fdt_get_property_by_offset_w(void *fdt,
 	return (struct fdt_property *)(uintptr_t)
 		fdt_get_property_by_offset(fdt, offset, lenp);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fdt_get_property_namelen - find a property based on substring
@@ -858,11 +676,6 @@ static inline struct fdt_property *fdt_get_property_by_offset_w(void *fdt,
  * @namelen: number of characters of name to consider
  * @lenp: pointer to an integer variable (will be overwritten) or NULL
  *
-<<<<<<< HEAD
- * Identical to fdt_get_property_namelen(), but only examine the first
- * namelen characters of name for matching the property name.
- */
-=======
  * Identical to fdt_get_property(), but only examine the first namelen
  * characters of name for matching the property name.
  *
@@ -870,15 +683,11 @@ static inline struct fdt_property *fdt_get_property_by_offset_w(void *fdt,
  *         if not found
  */
 #ifndef SWIG /* Not available in Python */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct fdt_property *fdt_get_property_namelen(const void *fdt,
 						    int nodeoffset,
 						    const char *name,
 						    int namelen, int *lenp);
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fdt_get_property - find a given property in a given node
@@ -900,12 +709,8 @@ const struct fdt_property *fdt_get_property_namelen(const void *fdt,
  *	NULL, on error
  *		if lenp is non-NULL, *lenp contains an error code (<0):
  *		-FDT_ERR_NOTFOUND, node does not have named property
-<<<<<<< HEAD
- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
-=======
  *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE
  *			tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		-FDT_ERR_BADMAGIC,
  *		-FDT_ERR_BADVERSION,
  *		-FDT_ERR_BADSTATE,
@@ -925,11 +730,7 @@ static inline struct fdt_property *fdt_get_property_w(void *fdt, int nodeoffset,
 /**
  * fdt_getprop_by_offset - retrieve the value of a property at a given offset
  * @fdt: pointer to the device tree blob
-<<<<<<< HEAD
- * @ffset: offset of the property to read
-=======
  * @offset: offset of the property to read
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @namep: pointer to a string variable (will be overwritten) or NULL
  * @lenp: pointer to an integer variable (will be overwritten) or NULL
  *
@@ -957,15 +758,10 @@ static inline struct fdt_property *fdt_get_property_w(void *fdt, int nodeoffset,
  *		-FDT_ERR_BADSTRUCTURE,
  *		-FDT_ERR_TRUNCATED, standard meanings
  */
-<<<<<<< HEAD
-const void *fdt_getprop_by_offset(const void *fdt, int offset,
-				  const char **namep, int *lenp);
-=======
 #ifndef SWIG /* This function is not useful in Python */
 const void *fdt_getprop_by_offset(const void *fdt, int offset,
 				  const char **namep, int *lenp);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fdt_getprop_namelen - get property value based on substring
@@ -977,11 +773,6 @@ const void *fdt_getprop_by_offset(const void *fdt, int offset,
  *
  * Identical to fdt_getprop(), but only examine the first namelen
  * characters of name for matching the property name.
-<<<<<<< HEAD
- */
-const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
-				const char *name, int namelen, int *lenp);
-=======
  *
  * Return: pointer to the property's value or NULL on error
  */
@@ -996,7 +787,6 @@ static inline void *fdt_getprop_namelen_w(void *fdt, int nodeoffset,
 						      namelen, lenp);
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fdt_getprop - retrieve the value of a given property
@@ -1006,17 +796,10 @@ static inline void *fdt_getprop_namelen_w(void *fdt, int nodeoffset,
  * @lenp: pointer to an integer variable (will be overwritten) or NULL
  *
  * fdt_getprop() retrieves a pointer to the value of the property
-<<<<<<< HEAD
- * named 'name' of the node at offset nodeoffset (this will be a
- * pointer to within the device blob itself, not a copy of the value).
- * If lenp is non-NULL, the length of the property value is also
- * returned, in the integer pointed to by lenp.
-=======
  * named @name of the node at offset @nodeoffset (this will be a
  * pointer to within the device blob itself, not a copy of the value).
  * If @lenp is non-NULL, the length of the property value is also
  * returned, in the integer pointed to by @lenp.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * returns:
  *	pointer to the property's value
@@ -1025,12 +808,8 @@ static inline void *fdt_getprop_namelen_w(void *fdt, int nodeoffset,
  *	NULL, on error
  *		if lenp is non-NULL, *lenp contains an error code (<0):
  *		-FDT_ERR_NOTFOUND, node does not have named property
-<<<<<<< HEAD
- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
-=======
  *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE
  *			tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		-FDT_ERR_BADMAGIC,
  *		-FDT_ERR_BADVERSION,
  *		-FDT_ERR_BADSTATE,
@@ -1065,16 +844,6 @@ uint32_t fdt_get_phandle(const void *fdt, int nodeoffset);
  * @name: name of the alias th look up
  * @namelen: number of characters of name to consider
  *
-<<<<<<< HEAD
- * Identical to fdt_get_alias(), but only examine the first namelen
- * characters of name for matching the alias name.
- */
-const char *fdt_get_alias_namelen(const void *fdt,
-				  const char *name, int namelen);
-
-/**
- * fdt_get_alias - retreive the path referenced by a given alias
-=======
  * Identical to fdt_get_alias(), but only examine the first @namelen
  * characters of @name for matching the alias name.
  *
@@ -1088,22 +857,14 @@ const char *fdt_get_alias_namelen(const void *fdt,
 
 /**
  * fdt_get_alias - retrieve the path referenced by a given alias
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fdt: pointer to the device tree blob
  * @name: name of the alias th look up
  *
  * fdt_get_alias() retrieves the value of a given alias.  That is, the
-<<<<<<< HEAD
- * value of the property named 'name' in the node /aliases.
- *
- * returns:
- *	a pointer to the expansion of the alias named 'name', of it exists
-=======
  * value of the property named @name in the node /aliases.
  *
  * returns:
  *	a pointer to the expansion of the alias named 'name', if it exists
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	NULL, if the given alias or the /aliases node does not exist
  */
 const char *fdt_get_alias(const void *fdt, const char *name);
@@ -1125,11 +886,7 @@ const char *fdt_get_alias(const void *fdt, const char *name);
  *	0, on success
  *		buf contains the absolute path of the node at
  *		nodeoffset, as a NUL-terminated string.
-<<<<<<< HEAD
- * 	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
-=======
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_NOSPACE, the path of the given node is longer than (bufsize-1)
  *		characters and will not fit in the given buffer.
  *	-FDT_ERR_BADMAGIC,
@@ -1159,19 +916,11 @@ int fdt_get_path(const void *fdt, int nodeoffset, char *buf, int buflen);
  * structure from the start to nodeoffset.
  *
  * returns:
-<<<<<<< HEAD
-
- *	structure block offset of the node at node offset's ancestor
- *		of depth supernodedepth (>=0), on success
- * 	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
-*	-FDT_ERR_NOTFOUND, supernodedepth was greater than the depth of nodeoffset
-=======
  *	structure block offset of the node at node offset's ancestor
  *		of depth supernodedepth (>=0), on success
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
  *	-FDT_ERR_NOTFOUND, supernodedepth was greater than the depth of
  *		nodeoffset
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
@@ -1193,11 +942,7 @@ int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset,
  *
  * returns:
  *	depth of the node at nodeoffset (>=0), on success
-<<<<<<< HEAD
- * 	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
-=======
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
@@ -1220,11 +965,7 @@ int fdt_node_depth(const void *fdt, int nodeoffset);
  * returns:
  *	structure block offset of the parent of the node at nodeoffset
  *		(>=0), on success
-<<<<<<< HEAD
- * 	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
-=======
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
@@ -1264,11 +1005,7 @@ int fdt_parent_offset(const void *fdt, int nodeoffset);
  *		 on success
  *	-FDT_ERR_NOTFOUND, no node matching the criterion exists in the
  *		tree after startoffset
-<<<<<<< HEAD
- * 	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
-=======
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
@@ -1300,23 +1037,13 @@ int fdt_node_offset_by_prop_value(const void *fdt, int startoffset,
 int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle);
 
 /**
-<<<<<<< HEAD
- * fdt_node_check_compatible: check a node's compatible property
-=======
  * fdt_node_check_compatible - check a node's compatible property
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of a tree node
  * @compatible: string to match against
  *
-<<<<<<< HEAD
- *
- * fdt_node_check_compatible() returns 0 if the given node contains a
- * 'compatible' property with the given string as one of its elements,
-=======
  * fdt_node_check_compatible() returns 0 if the given node contains a
  * @compatible property with the given string as one of its elements,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * it returns non-zero otherwise, or on error.
  *
  * returns:
@@ -1324,11 +1051,7 @@ int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle);
  *	1, if the node has a 'compatible' property, but it does not list
  *		the given string
  *	-FDT_ERR_NOTFOUND, if the given node has no 'compatible' property
-<<<<<<< HEAD
- * 	-FDT_ERR_BADOFFSET, if nodeoffset does not refer to a BEGIN_NODE tag
-=======
  *	-FDT_ERR_BADOFFSET, if nodeoffset does not refer to a BEGIN_NODE tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
@@ -1365,11 +1088,7 @@ int fdt_node_check_compatible(const void *fdt, int nodeoffset,
  *		 on success
  *	-FDT_ERR_NOTFOUND, no node matching the criterion exists in the
  *		tree after startoffset
-<<<<<<< HEAD
- * 	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
-=======
  *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_BADMAGIC,
  *	-FDT_ERR_BADVERSION,
  *	-FDT_ERR_BADSTATE,
@@ -1378,8 +1097,6 @@ int fdt_node_check_compatible(const void *fdt, int nodeoffset,
 int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
 				  const char *compatible);
 
-<<<<<<< HEAD
-=======
 /**
  * fdt_stringlist_contains - check a string list property for a string
  * @strlist: Property containing a list of strings to check
@@ -1514,14 +1231,11 @@ int fdt_address_cells(const void *fdt, int nodeoffset);
 int fdt_size_cells(const void *fdt, int nodeoffset);
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**********************************************************************/
 /* Write-in-place functions                                           */
 /**********************************************************************/
 
 /**
-<<<<<<< HEAD
-=======
  * fdt_setprop_inplace_namelen_partial - change a property's value,
  *                                       but not its size
  * @fdt: pointer to the device tree blob
@@ -1547,7 +1261,6 @@ int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset,
 #endif
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fdt_setprop_inplace - change a property's value, but not its size
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node whose property to change
@@ -1575,15 +1288,10 @@ int fdt_setprop_inplace_namelen_partial(void *fdt, int nodeoffset,
  *	-FDT_ERR_BADSTRUCTURE,
  *	-FDT_ERR_TRUNCATED, standard meanings
  */
-<<<<<<< HEAD
-int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
-			const void *val, int len);
-=======
 #ifndef SWIG /* Not available in Python */
 int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
 			const void *val, int len);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fdt_setprop_inplace_u32 - change the value of a 32-bit integer property
@@ -1616,13 +1324,8 @@ int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
 static inline int fdt_setprop_inplace_u32(void *fdt, int nodeoffset,
 					  const char *name, uint32_t val)
 {
-<<<<<<< HEAD
-	val = cpu_to_fdt32(val);
-	return fdt_setprop_inplace(fdt, nodeoffset, name, &val, sizeof(val));
-=======
 	fdt32_t tmp = cpu_to_fdt32(val);
 	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1656,21 +1359,12 @@ static inline int fdt_setprop_inplace_u32(void *fdt, int nodeoffset,
 static inline int fdt_setprop_inplace_u64(void *fdt, int nodeoffset,
 					  const char *name, uint64_t val)
 {
-<<<<<<< HEAD
-	val = cpu_to_fdt64(val);
-	return fdt_setprop_inplace(fdt, nodeoffset, name, &val, sizeof(val));
-=======
 	fdt64_t tmp = cpu_to_fdt64(val);
 	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fdt_setprop_inplace_cell - change the value of a single-cell property
-<<<<<<< HEAD
- *
- * This is an alternative name for fdt_setprop_inplace_u32()
-=======
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node containing the property
  * @name: name of the property to change the value of
@@ -1678,7 +1372,6 @@ static inline int fdt_setprop_inplace_u64(void *fdt, int nodeoffset,
  *
  * This is an alternative name for fdt_setprop_inplace_u32()
  * Return: 0 on success, negative libfdt error number otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int fdt_setprop_inplace_cell(void *fdt, int nodeoffset,
 					   const char *name, uint32_t val)
@@ -1740,9 +1433,6 @@ int fdt_nop_node(void *fdt, int nodeoffset);
 /* Sequential write functions                                         */
 /**********************************************************************/
 
-<<<<<<< HEAD
-int fdt_create(void *buf, int bufsize);
-=======
 /* fdt_create_with_flags flags */
 #define FDT_CREATE_FLAG_NO_NAME_DEDUP 0x1
 	/* FDT_CREATE_FLAG_NO_NAME_DEDUP: Do not try to de-duplicate property
@@ -1783,23 +1473,12 @@ int fdt_create_with_flags(void *buf, int bufsize, uint32_t flags);
 int fdt_create(void *buf, int bufsize);
 
 int fdt_resize(void *fdt, void *buf, int bufsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fdt_add_reservemap_entry(void *fdt, uint64_t addr, uint64_t size);
 int fdt_finish_reservemap(void *fdt);
 int fdt_begin_node(void *fdt, const char *name);
 int fdt_property(void *fdt, const char *name, const void *val, int len);
 static inline int fdt_property_u32(void *fdt, const char *name, uint32_t val)
 {
-<<<<<<< HEAD
-	val = cpu_to_fdt32(val);
-	return fdt_property(fdt, name, &val, sizeof(val));
-}
-static inline int fdt_property_u64(void *fdt, const char *name, uint64_t val)
-{
-	val = cpu_to_fdt64(val);
-	return fdt_property(fdt, name, &val, sizeof(val));
-}
-=======
 	fdt32_t tmp = cpu_to_fdt32(val);
 	return fdt_property(fdt, name, &tmp, sizeof(tmp));
 }
@@ -1810,13 +1489,10 @@ static inline int fdt_property_u64(void *fdt, const char *name, uint64_t val)
 }
 
 #ifndef SWIG /* Not available in Python */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int fdt_property_cell(void *fdt, const char *name, uint32_t val)
 {
 	return fdt_property_u32(fdt, name, val);
 }
-<<<<<<< HEAD
-=======
 #endif
 
 /**
@@ -1834,7 +1510,6 @@ static inline int fdt_property_cell(void *fdt, const char *name, uint32_t val)
  */
 int fdt_property_placeholder(void *fdt, const char *name, int len, void **valp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fdt_property_string(fdt, name, str) \
 	fdt_property(fdt, name, str, strlen(str)+1)
 int fdt_end_node(void *fdt);
@@ -1851,12 +1526,8 @@ int fdt_pack(void *fdt);
 /**
  * fdt_add_mem_rsv - add one memory reserve map entry
  * @fdt: pointer to the device tree blob
-<<<<<<< HEAD
- * @address, @size: 64-bit values (native endian)
-=======
  * @address: 64-bit start address of the reserve map entry
  * @size: 64-bit size of the reserved region
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Adds a reserve map entry to the given blob reserving a region at
  * address address of length size.
@@ -1959,8 +1630,6 @@ int fdt_setprop(void *fdt, int nodeoffset, const char *name,
 		const void *val, int len);
 
 /**
-<<<<<<< HEAD
-=======
  * fdt_setprop_placeholder - allocate space for a property
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node whose property to change
@@ -1992,7 +1661,6 @@ int fdt_setprop_placeholder(void *fdt, int nodeoffset, const char *name,
 			    int len, void **prop_data);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fdt_setprop_u32 - set a property to a 32-bit integer
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node whose property to change
@@ -2023,13 +1691,8 @@ int fdt_setprop_placeholder(void *fdt, int nodeoffset, const char *name,
 static inline int fdt_setprop_u32(void *fdt, int nodeoffset, const char *name,
 				  uint32_t val)
 {
-<<<<<<< HEAD
-	val = cpu_to_fdt32(val);
-	return fdt_setprop(fdt, nodeoffset, name, &val, sizeof(val));
-=======
 	fdt32_t tmp = cpu_to_fdt32(val);
 	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2063,21 +1726,12 @@ static inline int fdt_setprop_u32(void *fdt, int nodeoffset, const char *name,
 static inline int fdt_setprop_u64(void *fdt, int nodeoffset, const char *name,
 				  uint64_t val)
 {
-<<<<<<< HEAD
-	val = cpu_to_fdt64(val);
-	return fdt_setprop(fdt, nodeoffset, name, &val, sizeof(val));
-=======
 	fdt64_t tmp = cpu_to_fdt64(val);
 	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fdt_setprop_cell - set a property to a single cell value
-<<<<<<< HEAD
- *
- * This is an alternative name for fdt_setprop_u32()
-=======
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node whose property to change
  * @name: name of the property to change
@@ -2086,7 +1740,6 @@ static inline int fdt_setprop_u64(void *fdt, int nodeoffset, const char *name,
  * This is an alternative name for fdt_setprop_u32()
  *
  * Return: 0 on success, negative libfdt error value otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
 				   uint32_t val)
@@ -2125,8 +1778,6 @@ static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
 #define fdt_setprop_string(fdt, nodeoffset, name, str) \
 	fdt_setprop((fdt), (nodeoffset), (name), (str), strlen(str)+1)
 
-<<<<<<< HEAD
-=======
 
 /**
  * fdt_setprop_empty - set a property to an empty value
@@ -2157,7 +1808,6 @@ static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
 #define fdt_setprop_empty(fdt, nodeoffset, name) \
 	fdt_setprop((fdt), (nodeoffset), (name), NULL, 0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * fdt_appendprop - append to or create a property
  * @fdt: pointer to the device tree blob
@@ -2219,13 +1869,8 @@ int fdt_appendprop(void *fdt, int nodeoffset, const char *name,
 static inline int fdt_appendprop_u32(void *fdt, int nodeoffset,
 				     const char *name, uint32_t val)
 {
-<<<<<<< HEAD
-	val = cpu_to_fdt32(val);
-	return fdt_appendprop(fdt, nodeoffset, name, &val, sizeof(val));
-=======
 	fdt32_t tmp = cpu_to_fdt32(val);
 	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2259,21 +1904,12 @@ static inline int fdt_appendprop_u32(void *fdt, int nodeoffset,
 static inline int fdt_appendprop_u64(void *fdt, int nodeoffset,
 				     const char *name, uint64_t val)
 {
-<<<<<<< HEAD
-	val = cpu_to_fdt64(val);
-	return fdt_appendprop(fdt, nodeoffset, name, &val, sizeof(val));
-=======
 	fdt64_t tmp = cpu_to_fdt64(val);
 	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fdt_appendprop_cell - append a single cell value to a property
-<<<<<<< HEAD
- *
- * This is an alternative name for fdt_appendprop_u32()
-=======
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node whose property to change
  * @name: name of the property to change
@@ -2282,7 +1918,6 @@ static inline int fdt_appendprop_u64(void *fdt, int nodeoffset,
  * This is an alternative name for fdt_appendprop_u32()
  *
  * Return: 0 on success, negative libfdt error value otherwise.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int fdt_appendprop_cell(void *fdt, int nodeoffset,
 				      const char *name, uint32_t val)
@@ -2321,8 +1956,6 @@ static inline int fdt_appendprop_cell(void *fdt, int nodeoffset,
 	fdt_appendprop((fdt), (nodeoffset), (name), (str), strlen(str)+1)
 
 /**
-<<<<<<< HEAD
-=======
  * fdt_appendprop_addrrange - append a address range property
  * @fdt: pointer to the device tree blob
  * @parent: offset of the parent node
@@ -2360,7 +1993,6 @@ int fdt_appendprop_addrrange(void *fdt, int parent, int nodeoffset,
 			     const char *name, uint64_t addr, uint64_t size);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fdt_delprop - delete a property
  * @fdt: pointer to the device tree blob
  * @nodeoffset: offset of the node whose property to nop
@@ -2388,18 +2020,6 @@ int fdt_delprop(void *fdt, int nodeoffset, const char *name);
  * fdt_add_subnode_namelen - creates a new node based on substring
  * @fdt: pointer to the device tree blob
  * @parentoffset: structure block offset of a node
-<<<<<<< HEAD
- * @name: name of the subnode to locate
- * @namelen: number of characters of name to consider
- *
- * Identical to fdt_add_subnode(), but use only the first namelen
- * characters of name as the name of the new node.  This is useful for
- * creating subnodes based on a portion of a larger string, such as a
- * full path.
- */
-int fdt_add_subnode_namelen(void *fdt, int parentoffset,
-			    const char *name, int namelen);
-=======
  * @name: name of the subnode to create
  * @namelen: number of characters of name to consider
  *
@@ -2415,7 +2035,6 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
 int fdt_add_subnode_namelen(void *fdt, int parentoffset,
 			    const char *name, int namelen);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fdt_add_subnode - creates a new node
@@ -2429,13 +2048,6 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
  *
  * This function will insert data into the blob, and will therefore
  * change the offsets of some existing nodes.
-<<<<<<< HEAD
-
- * returns:
- *	structure block offset of the created nodeequested subnode (>=0), on success
- *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
- *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
-=======
  *
  * returns:
  *	structure block offset of the created nodeequested subnode (>=0), on
@@ -2443,7 +2055,6 @@ int fdt_add_subnode_namelen(void *fdt, int parentoffset,
  *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
  *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE
  *		tag
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	-FDT_ERR_EXISTS, if the node at parentoffset already has a subnode of
  *		the given name
  *	-FDT_ERR_NOSPACE, if there is insufficient free space in the
@@ -2481,8 +2092,6 @@ int fdt_add_subnode(void *fdt, int parentoffset, const char *name);
  */
 int fdt_del_node(void *fdt, int nodeoffset);
 
-<<<<<<< HEAD
-=======
 /**
  * fdt_overlay_apply - Applies a DT overlay on a base DT
  * @fdt: pointer to the base device tree blob
@@ -2532,19 +2141,14 @@ int fdt_overlay_apply(void *fdt, void *fdto);
 int fdt_overlay_target_offset(const void *fdt, const void *fdto,
 			      int fragment_offset, char const **pathp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**********************************************************************/
 /* Debugging / informational functions                                */
 /**********************************************************************/
 
 const char *fdt_strerror(int errval);
 
-<<<<<<< HEAD
-#endif /* _LIBFDT_H */
-=======
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* LIBFDT_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

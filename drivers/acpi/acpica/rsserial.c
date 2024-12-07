@@ -1,53 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rsserial - GPIO/serial_bus resource descriptors
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
@@ -60,11 +17,7 @@ ACPI_MODULE_NAME("rsserial")
  * acpi_rs_convert_gpio
  *
  ******************************************************************************/
-<<<<<<< HEAD
-struct acpi_rsconvert_info acpi_rs_convert_gpio[17] = {
-=======
 struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_GPIO,
 	 ACPI_RS_SIZE(struct acpi_resource_gpio),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_gpio)},
@@ -86,12 +39,6 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	 AML_OFFSET(gpio.flags),
 	 0},
 
-<<<<<<< HEAD
-	{ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET(data.gpio.sharable),
-	 AML_OFFSET(gpio.int_flags),
-	 3},
-
-=======
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.gpio.shareable),
 	 AML_OFFSET(gpio.int_flags),
 	 3},
@@ -100,7 +47,6 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 	 AML_OFFSET(gpio.int_flags),
 	 4},
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_2BITFLAG, ACPI_RS_OFFSET(data.gpio.io_restriction),
 	 AML_OFFSET(gpio.int_flags),
 	 0},
@@ -165,8 +111,6 @@ struct acpi_rsconvert_info acpi_rs_convert_gpio[18] = {
 
 /*******************************************************************************
  *
-<<<<<<< HEAD
-=======
  * acpi_rs_convert_clock_input
  *
  ******************************************************************************/
@@ -367,16 +311,11 @@ struct acpi_rsconvert_info acpi_rs_convert_csi2_serial_bus[14] = {
 
 /*******************************************************************************
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * acpi_rs_convert_i2c_serial_bus
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[16] = {
-=======
 struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
 	 ACPI_RS_SIZE(struct acpi_resource_i2c_serialbus),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_i2c_serial_bus)},
@@ -402,14 +341,11 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
 	 AML_OFFSET(common_serial_bus.flags),
 	 1},
 
-<<<<<<< HEAD
-=======
 	{ACPI_RSC_1BITFLAG,
 	 ACPI_RS_OFFSET(data.common_serial_bus.connection_sharing),
 	 AML_OFFSET(common_serial_bus.flags),
 	 2},
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.type_revision_id),
 	 AML_OFFSET(common_serial_bus.type_revision_id),
@@ -470,11 +406,7 @@ struct acpi_rsconvert_info acpi_rs_convert_i2c_serial_bus[17] = {
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[20] = {
-=======
 struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
 	 ACPI_RS_SIZE(struct acpi_resource_spi_serialbus),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_spi_serial_bus)},
@@ -500,14 +432,11 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
 	 AML_OFFSET(common_serial_bus.flags),
 	 1},
 
-<<<<<<< HEAD
-=======
 	{ACPI_RSC_1BITFLAG,
 	 ACPI_RS_OFFSET(data.common_serial_bus.connection_sharing),
 	 AML_OFFSET(common_serial_bus.flags),
 	 2},
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.type_revision_id),
 	 AML_OFFSET(common_serial_bus.type_revision_id),
@@ -584,11 +513,7 @@ struct acpi_rsconvert_info acpi_rs_convert_spi_serial_bus[21] = {
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[22] = {
-=======
 struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_SERIAL_BUS,
 	 ACPI_RS_SIZE(struct acpi_resource_uart_serialbus),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_uart_serial_bus)},
@@ -614,14 +539,11 @@ struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
 	 AML_OFFSET(common_serial_bus.flags),
 	 1},
 
-<<<<<<< HEAD
-=======
 	{ACPI_RSC_1BITFLAG,
 	 ACPI_RS_OFFSET(data.common_serial_bus.connection_sharing),
 	 AML_OFFSET(common_serial_bus.flags),
 	 2},
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_MOVE8,
 	 ACPI_RS_OFFSET(data.common_serial_bus.type_revision_id),
 	 AML_OFFSET(common_serial_bus.type_revision_id),
@@ -700,8 +622,6 @@ struct acpi_rsconvert_info acpi_rs_convert_uart_serial_bus[23] = {
 	 AML_OFFSET(uart_serial_bus.default_baud_rate),
 	 1},
 };
-<<<<<<< HEAD
-=======
 
 /*******************************************************************************
  *
@@ -999,4 +919,3 @@ struct acpi_rsconvert_info acpi_rs_convert_pin_group_config[14] = {
 	 AML_OFFSET(pin_group_config.vendor_offset),
 	 0},
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * I/O access functions for Hexagon
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/io.h>
@@ -47,10 +27,7 @@ void __raw_readsw(const void __iomem *addr, void *data, int len)
 		*dst++ = *src;
 
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__raw_readsw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * __raw_writesw - read words a short at a time
@@ -71,10 +48,7 @@ void __raw_writesw(void __iomem *addr, const void *data, int len)
 
 
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__raw_writesw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  Pretty sure len is pre-adjusted for the length of the access already */
 void __raw_readsl(const void __iomem *addr, void *data, int len)
@@ -90,10 +64,7 @@ void __raw_readsl(const void __iomem *addr, void *data, int len)
 
 
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__raw_readsl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __raw_writesl(void __iomem *addr, const void *data, int len)
 {
@@ -108,7 +79,4 @@ void __raw_writesl(void __iomem *addr, const void *data, int len)
 
 
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(__raw_writesl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -27,21 +27,6 @@ MODULE_AUTHOR("Atheros Communications");
 MODULE_DESCRIPTION("Shared library for Atheros wireless 802.11n LAN cards.");
 MODULE_LICENSE("Dual BSD/GPL");
 
-<<<<<<< HEAD
-int ath9k_cmn_padpos(__le16 frame_control)
-{
-	int padpos = 24;
-	if (ieee80211_has_a4(frame_control)) {
-		padpos += ETH_ALEN;
-	}
-	if (ieee80211_is_data_qos(frame_control)) {
-		padpos += IEEE80211_QOS_CTL_LEN;
-	}
-
-	return padpos;
-}
-EXPORT_SYMBOL(ath9k_cmn_padpos);
-=======
 /* Assumes you've already done the endian to CPU conversion */
 bool ath9k_cmn_rx_accept(struct ath_common *common,
 			 struct ieee80211_hdr *hdr,
@@ -286,7 +271,6 @@ void ath9k_cmn_process_rssi(struct ath_common *common,
 	rxs->signal = ah->noise + rx_stats->rs_rssi;
 }
 EXPORT_SYMBOL(ath9k_cmn_process_rssi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ath9k_cmn_get_hw_crypto_keytype(struct sk_buff *skb)
 {
@@ -310,71 +294,6 @@ int ath9k_cmn_get_hw_crypto_keytype(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(ath9k_cmn_get_hw_crypto_keytype);
 
-<<<<<<< HEAD
-static u32 ath9k_get_extchanmode(struct ieee80211_channel *chan,
-				 enum nl80211_channel_type channel_type)
-{
-	u32 chanmode = 0;
-
-	switch (chan->band) {
-	case IEEE80211_BAND_2GHZ:
-		switch (channel_type) {
-		case NL80211_CHAN_NO_HT:
-		case NL80211_CHAN_HT20:
-			chanmode = CHANNEL_G_HT20;
-			break;
-		case NL80211_CHAN_HT40PLUS:
-			chanmode = CHANNEL_G_HT40PLUS;
-			break;
-		case NL80211_CHAN_HT40MINUS:
-			chanmode = CHANNEL_G_HT40MINUS;
-			break;
-		}
-		break;
-	case IEEE80211_BAND_5GHZ:
-		switch (channel_type) {
-		case NL80211_CHAN_NO_HT:
-		case NL80211_CHAN_HT20:
-			chanmode = CHANNEL_A_HT20;
-			break;
-		case NL80211_CHAN_HT40PLUS:
-			chanmode = CHANNEL_A_HT40PLUS;
-			break;
-		case NL80211_CHAN_HT40MINUS:
-			chanmode = CHANNEL_A_HT40MINUS;
-			break;
-		}
-		break;
-	default:
-		break;
-	}
-
-	return chanmode;
-}
-
-/*
- * Update internal channel flags.
- */
-void ath9k_cmn_update_ichannel(struct ath9k_channel *ichan,
-			       struct ieee80211_channel *chan,
-			       enum nl80211_channel_type channel_type)
-{
-	ichan->channel = chan->center_freq;
-	ichan->chan = chan;
-
-	if (chan->band == IEEE80211_BAND_2GHZ) {
-		ichan->chanmode = CHANNEL_G;
-		ichan->channelFlags = CHANNEL_2GHZ | CHANNEL_OFDM;
-	} else {
-		ichan->chanmode = CHANNEL_A;
-		ichan->channelFlags = CHANNEL_5GHZ | CHANNEL_OFDM;
-	}
-
-	if (channel_type != NL80211_CHAN_NO_HT)
-		ichan->chanmode = ath9k_get_extchanmode(chan, channel_type);
-}
-EXPORT_SYMBOL(ath9k_cmn_update_ichannel);
-=======
 /*
  * Update internal channel flags.
  */
@@ -414,27 +333,10 @@ static void ath9k_cmn_update_ichannel(struct ath9k_channel *ichan,
 
 	ichan->channelFlags = flags;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Get the internal channel reference.
  */
-<<<<<<< HEAD
-struct ath9k_channel *ath9k_cmn_get_curchannel(struct ieee80211_hw *hw,
-					       struct ath_hw *ah)
-{
-	struct ieee80211_channel *curchan = hw->conf.channel;
-	struct ath9k_channel *channel;
-	u8 chan_idx;
-
-	chan_idx = curchan->hw_value;
-	channel = &ah->channels[chan_idx];
-	ath9k_cmn_update_ichannel(channel, curchan, hw->conf.channel_type);
-
-	return channel;
-}
-EXPORT_SYMBOL(ath9k_cmn_get_curchannel);
-=======
 struct ath9k_channel *ath9k_cmn_get_channel(struct ieee80211_hw *hw,
 					    struct ath_hw *ah,
 					    struct cfg80211_chan_def *chandef)
@@ -448,7 +350,6 @@ struct ath9k_channel *ath9k_cmn_get_channel(struct ieee80211_hw *hw,
 	return channel;
 }
 EXPORT_SYMBOL(ath9k_cmn_get_channel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ath9k_cmn_count_streams(unsigned int chainmask, int max)
 {
@@ -468,19 +369,11 @@ void ath9k_cmn_update_txpow(struct ath_hw *ah, u16 cur_txpow,
 {
 	struct ath_regulatory *reg = ath9k_hw_regulatory(ah);
 
-<<<<<<< HEAD
-	if (reg->power_limit != new_txpow) {
-		ath9k_hw_set_txpowerlimit(ah, new_txpow, false);
-		/* read back in case value is clamped */
-		*txpower = reg->max_power_level;
-	}
-=======
 	if (ah->curchan && reg->power_limit != new_txpow)
 		ath9k_hw_set_txpowerlimit(ah, new_txpow, false);
 
 	/* read back in case value is clamped */
 	*txpower = reg->max_power_level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ath9k_cmn_update_txpow);
 

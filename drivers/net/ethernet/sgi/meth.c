@@ -1,26 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * meth.c -- O2 Builtin 10/100 Ethernet driver
  *
  * Copyright (C) 2001-2003 Ilya Volynets
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
  */
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
-#include <linux/init.h>
-=======
- */
-#include <linux/delay.h>
-#include <linux/dma-mapping.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -79,11 +64,8 @@ module_param(timeout, int, 0);
  * packets in and out, so there is place for a packet
  */
 struct meth_private {
-<<<<<<< HEAD
-=======
 	struct platform_device *pdev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* in-memory copy of MAC Control register */
 	u64 mac_ctrl;
 
@@ -108,11 +90,7 @@ struct meth_private {
 	spinlock_t meth_lock;
 };
 
-<<<<<<< HEAD
-static void meth_tx_timeout(struct net_device *dev);
-=======
 static void meth_tx_timeout(struct net_device *dev, unsigned int txqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t meth_interrupt(int irq, void *dev_id);
 
 /* global, initialized in ip32-setup.c */
@@ -231,19 +209,11 @@ static void meth_check_link(struct net_device *dev)
 static int meth_init_tx_ring(struct meth_private *priv)
 {
 	/* Init TX ring */
-<<<<<<< HEAD
-	priv->tx_ring = dma_alloc_coherent(NULL, TX_RING_BUFFER_SIZE,
-	                                   &priv->tx_ring_dma, GFP_ATOMIC);
-	if (!priv->tx_ring)
-		return -ENOMEM;
-	memset(priv->tx_ring, 0, TX_RING_BUFFER_SIZE);
-=======
 	priv->tx_ring = dma_alloc_coherent(&priv->pdev->dev,
 			TX_RING_BUFFER_SIZE, &priv->tx_ring_dma, GFP_ATOMIC);
 	if (!priv->tx_ring)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->tx_count = priv->tx_read = priv->tx_write = 0;
 	mace->eth.tx_ring_base = priv->tx_ring_dma;
 	/* Now init skb save area */
@@ -264,11 +234,7 @@ static int meth_init_rx_ring(struct meth_private *priv)
 		priv->rx_ring[i]=(rx_packet*)(priv->rx_skbs[i]->head);
 		/* I'll need to re-sync it after each RX */
 		priv->rx_ring_dmas[i] =
-<<<<<<< HEAD
-			dma_map_single(NULL, priv->rx_ring[i],
-=======
 			dma_map_single(&priv->pdev->dev, priv->rx_ring[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       METH_RX_BUFF_SIZE, DMA_FROM_DEVICE);
 		mace->eth.rx_fifo = priv->rx_ring_dmas[i];
 	}
@@ -281,18 +247,10 @@ static void meth_free_tx_ring(struct meth_private *priv)
 
 	/* Remove any pending skb */
 	for (i = 0; i < TX_RING_ENTRIES; i++) {
-<<<<<<< HEAD
-		if (priv->tx_skbs[i])
-			dev_kfree_skb(priv->tx_skbs[i]);
-		priv->tx_skbs[i] = NULL;
-	}
-	dma_free_coherent(NULL, TX_RING_BUFFER_SIZE, priv->tx_ring,
-=======
 		dev_kfree_skb(priv->tx_skbs[i]);
 		priv->tx_skbs[i] = NULL;
 	}
 	dma_free_coherent(&priv->pdev->dev, TX_RING_BUFFER_SIZE, priv->tx_ring,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	                  priv->tx_ring_dma);
 }
 
@@ -302,11 +260,7 @@ static void meth_free_rx_ring(struct meth_private *priv)
 	int i;
 
 	for (i = 0; i < RX_RING_ENTRIES; i++) {
-<<<<<<< HEAD
-		dma_unmap_single(NULL, priv->rx_ring_dmas[i],
-=======
 		dma_unmap_single(&priv->pdev->dev, priv->rx_ring_dmas[i],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 METH_RX_BUFF_SIZE, DMA_FROM_DEVICE);
 		priv->rx_ring[i] = 0;
 		priv->rx_ring_dmas[i] = 0;
@@ -436,12 +390,8 @@ static void meth_rx(struct net_device* dev, unsigned long int_status)
 		fifo_rptr = (fifo_rptr - 1) & 0x0f;
 	}
 	while (priv->rx_write != fifo_rptr) {
-<<<<<<< HEAD
-		dma_unmap_single(NULL, priv->rx_ring_dmas[priv->rx_write],
-=======
 		dma_unmap_single(&priv->pdev->dev,
 				 priv->rx_ring_dmas[priv->rx_write],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 METH_RX_BUFF_SIZE, DMA_FROM_DEVICE);
 		status = priv->rx_ring[priv->rx_write]->status.raw;
 #if MFE_DEBUG
@@ -502,12 +452,8 @@ static void meth_rx(struct net_device* dev, unsigned long int_status)
 		priv->rx_ring[priv->rx_write] = (rx_packet*)skb->head;
 		priv->rx_ring[priv->rx_write]->status.raw = 0;
 		priv->rx_ring_dmas[priv->rx_write] =
-<<<<<<< HEAD
-			dma_map_single(NULL, priv->rx_ring[priv->rx_write],
-=======
 			dma_map_single(&priv->pdev->dev,
 				       priv->rx_ring[priv->rx_write],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       METH_RX_BUFF_SIZE, DMA_FROM_DEVICE);
 		mace->eth.rx_fifo = priv->rx_ring_dmas[priv->rx_write];
 		ADVANCE_RX_PTR(priv->rx_write);
@@ -574,11 +520,7 @@ static void meth_tx_cleanup(struct net_device* dev, unsigned long int_status)
 			DPRINTK("RPTR points us here, but packet not done?\n");
 			break;
 		}
-<<<<<<< HEAD
-		dev_kfree_skb_irq(skb);
-=======
 		dev_consume_skb_irq(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->tx_skbs[priv->tx_read] = NULL;
 		priv->tx_ring[priv->tx_read].header.raw = 0;
 		priv->tx_read = (priv->tx_read+1)&(TX_RING_ENTRIES-1);
@@ -694,11 +636,7 @@ static void meth_tx_1page_prepare(struct meth_private *priv,
 	}
 
 	/* first page */
-<<<<<<< HEAD
-	catbuf = dma_map_single(NULL, buffer_data, buffer_len,
-=======
 	catbuf = dma_map_single(&priv->pdev->dev, buffer_data, buffer_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DMA_TO_DEVICE);
 	desc->data.cat_buf[0].form.start_addr = catbuf >> 3;
 	desc->data.cat_buf[0].form.len = buffer_len - 1;
@@ -724,20 +662,12 @@ static void meth_tx_2page_prepare(struct meth_private *priv,
 	}
 
 	/* first page */
-<<<<<<< HEAD
-	catbuf1 = dma_map_single(NULL, buffer1_data, buffer1_len,
-=======
 	catbuf1 = dma_map_single(&priv->pdev->dev, buffer1_data, buffer1_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 DMA_TO_DEVICE);
 	desc->data.cat_buf[0].form.start_addr = catbuf1 >> 3;
 	desc->data.cat_buf[0].form.len = buffer1_len - 1;
 	/* second page */
-<<<<<<< HEAD
-	catbuf2 = dma_map_single(NULL, buffer2_data, buffer2_len,
-=======
 	catbuf2 = dma_map_single(&priv->pdev->dev, buffer2_data, buffer2_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 DMA_TO_DEVICE);
 	desc->data.cat_buf[1].form.start_addr = catbuf2 >> 3;
 	desc->data.cat_buf[1].form.len = buffer2_len - 1;
@@ -766,11 +696,7 @@ static void meth_add_to_tx_ring(struct meth_private *priv, struct sk_buff *skb)
 /*
  * Transmit a packet (called by the kernel)
  */
-<<<<<<< HEAD
-static int meth_tx(struct sk_buff *skb, struct net_device *dev)
-=======
 static netdev_tx_t meth_tx(struct sk_buff *skb, struct net_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct meth_private *priv = netdev_priv(dev);
 	unsigned long flags;
@@ -781,11 +707,7 @@ static netdev_tx_t meth_tx(struct sk_buff *skb, struct net_device *dev)
 	mace->eth.dma_ctrl = priv->dma_ctrl;
 
 	meth_add_to_tx_ring(priv, skb);
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* save the timestamp */
-=======
 	netif_trans_update(dev); /* save the timestamp */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If TX ring is full, tell the upper layer to stop sending packets */
 	if (meth_tx_full(dev)) {
@@ -805,11 +727,7 @@ static netdev_tx_t meth_tx(struct sk_buff *skb, struct net_device *dev)
 /*
  * Deal with a transmit timeout.
  */
-<<<<<<< HEAD
-static void meth_tx_timeout(struct net_device *dev)
-=======
 static void meth_tx_timeout(struct net_device *dev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct meth_private *priv = netdev_priv(dev);
 	unsigned long flags;
@@ -837,11 +755,7 @@ static void meth_tx_timeout(struct net_device *dev, unsigned int txqueue)
 	/* Enable interrupt */
 	spin_unlock_irqrestore(&priv->meth_lock, flags);
 
-<<<<<<< HEAD
-	dev->trans_start = jiffies; /* prevent tx timeout */
-=======
 	netif_trans_update(dev); /* prevent tx timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev);
 }
 
@@ -898,14 +812,8 @@ static const struct net_device_ops meth_netdev_ops = {
 	.ndo_open		= meth_open,
 	.ndo_stop		= meth_release,
 	.ndo_start_xmit		= meth_tx,
-<<<<<<< HEAD
-	.ndo_do_ioctl		= meth_ioctl,
-	.ndo_tx_timeout		= meth_tx_timeout,
-	.ndo_change_mtu		= eth_change_mtu,
-=======
 	.ndo_eth_ioctl		= meth_ioctl,
 	.ndo_tx_timeout		= meth_tx_timeout,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_set_rx_mode    	= meth_set_rx_mode,
@@ -914,11 +822,7 @@ static const struct net_device_ops meth_netdev_ops = {
 /*
  * The init function.
  */
-<<<<<<< HEAD
-static int __devinit meth_probe(struct platform_device *pdev)
-=======
 static int meth_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct meth_private *priv;
@@ -932,16 +836,10 @@ static int meth_probe(struct platform_device *pdev)
 	dev->watchdog_timeo	= timeout;
 	dev->irq		= MACE_ETHERNET_IRQ;
 	dev->base_addr		= (unsigned long)&mace->eth;
-<<<<<<< HEAD
-	memcpy(dev->dev_addr, o2meth_eaddr, 6);
-
-	priv = netdev_priv(dev);
-=======
 	eth_hw_addr_set(dev, o2meth_eaddr);
 
 	priv = netdev_priv(dev);
 	priv->pdev = pdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&priv->meth_lock);
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
@@ -956,36 +854,19 @@ static int meth_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __exit meth_remove(struct platform_device *pdev)
-=======
 static void meth_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 
 	unregister_netdev(dev);
 	free_netdev(dev);
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver meth_driver = {
 	.probe	= meth_probe,
-<<<<<<< HEAD
-	.remove	= __exit_p(meth_remove),
-	.driver = {
-		.name	= "meth",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new = meth_remove,
 	.driver = {
 		.name	= "meth",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 

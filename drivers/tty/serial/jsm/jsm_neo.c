@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************************
  * Copyright 2003 Digi International (www.digi.com)
  *
  * Copyright (C) 2004 IBM Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- * PURPOSE.  See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 * Temple Place - Suite 330, Boston,
- * MA  02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contact Information:
  * Scott H Kilau <Scott_Kilau@digi.com>
  * Wendy Xiong   <wendyx@us.ibm.com>
@@ -59,11 +38,7 @@ static void neo_set_cts_flow_control(struct jsm_channel *ch)
 	ier = readb(&ch->ch_neo_uart->ier);
 	efr = readb(&ch->ch_neo_uart->efr);
 
-<<<<<<< HEAD
-	jsm_printk(PARAM, INFO, &ch->ch_bd->pci_dev, "Setting CTSFLOW\n");
-=======
 	jsm_dbg(PARAM, &ch->ch_bd->pci_dev, "Setting CTSFLOW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn on auto CTS flow control */
 	ier |= (UART_17158_IER_CTSDSR);
@@ -94,11 +69,7 @@ static void neo_set_rts_flow_control(struct jsm_channel *ch)
 	ier = readb(&ch->ch_neo_uart->ier);
 	efr = readb(&ch->ch_neo_uart->efr);
 
-<<<<<<< HEAD
-	jsm_printk(PARAM, INFO, &ch->ch_bd->pci_dev, "Setting RTSFLOW\n");
-=======
 	jsm_dbg(PARAM, &ch->ch_bd->pci_dev, "Setting RTSFLOW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn on auto RTS flow control */
 	ier |= (UART_17158_IER_RTSDTR);
@@ -138,11 +109,7 @@ static void neo_set_ixon_flow_control(struct jsm_channel *ch)
 	ier = readb(&ch->ch_neo_uart->ier);
 	efr = readb(&ch->ch_neo_uart->efr);
 
-<<<<<<< HEAD
-	jsm_printk(PARAM, INFO, &ch->ch_bd->pci_dev, "Setting IXON FLOW\n");
-=======
 	jsm_dbg(PARAM, &ch->ch_bd->pci_dev, "Setting IXON FLOW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn off auto CTS flow control */
 	ier &= ~(UART_17158_IER_CTSDSR);
@@ -179,11 +146,7 @@ static void neo_set_ixoff_flow_control(struct jsm_channel *ch)
 	ier = readb(&ch->ch_neo_uart->ier);
 	efr = readb(&ch->ch_neo_uart->efr);
 
-<<<<<<< HEAD
-	jsm_printk(PARAM, INFO, &ch->ch_bd->pci_dev, "Setting IXOFF FLOW\n");
-=======
 	jsm_dbg(PARAM, &ch->ch_bd->pci_dev, "Setting IXOFF FLOW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn off auto RTS flow control */
 	ier &= ~(UART_17158_IER_RTSDTR);
@@ -221,11 +184,7 @@ static void neo_set_no_input_flow_control(struct jsm_channel *ch)
 	ier = readb(&ch->ch_neo_uart->ier);
 	efr = readb(&ch->ch_neo_uart->efr);
 
-<<<<<<< HEAD
-	jsm_printk(PARAM, INFO, &ch->ch_bd->pci_dev, "Unsetting Input FLOW\n");
-=======
 	jsm_dbg(PARAM, &ch->ch_bd->pci_dev, "Unsetting Input FLOW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn off auto RTS flow control */
 	ier &= ~(UART_17158_IER_RTSDTR);
@@ -264,11 +223,7 @@ static void neo_set_no_output_flow_control(struct jsm_channel *ch)
 	ier = readb(&ch->ch_neo_uart->ier);
 	efr = readb(&ch->ch_neo_uart->efr);
 
-<<<<<<< HEAD
-	jsm_printk(PARAM, INFO, &ch->ch_bd->pci_dev, "Unsetting Output FLOW\n");
-=======
 	jsm_dbg(PARAM, &ch->ch_bd->pci_dev, "Unsetting Output FLOW\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn off auto CTS flow control */
 	ier &= ~(UART_17158_IER_CTSDSR);
@@ -307,11 +262,7 @@ static inline void neo_set_new_start_stop_chars(struct jsm_channel *ch)
 	if (ch->ch_c_cflag & CRTSCTS)
 		return;
 
-<<<<<<< HEAD
-	jsm_printk(PARAM, INFO, &ch->ch_bd->pci_dev, "start\n");
-=======
 	jsm_dbg(PARAM, &ch->ch_bd->pci_dev, "start\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Tell UART what start/stop chars it should be looking for */
 	writeb(ch->ch_startc, &ch->ch_neo_uart->xonchar1);
@@ -331,12 +282,6 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
 	u16 head;
 	u16 tail;
 
-<<<<<<< HEAD
-	if (!ch)
-		return;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* cache head and tail of queue */
 	head = ch->ch_r_head & RQUEUEMASK;
 	tail = ch->ch_r_tail & RQUEUEMASK;
@@ -346,12 +291,8 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
 	ch->ch_cached_lsr = 0;
 
 	/* Store how much space we have left in the queue */
-<<<<<<< HEAD
-	if ((qleft = tail - head - 1) < 0)
-=======
 	qleft = tail - head - 1;
 	if (qleft < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qleft += RQUEUEMASK + 1;
 
 	/*
@@ -498,11 +439,7 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
 		 * I hope thats okay with everyone? Yes? Good.
 		 */
 		while (qleft < 1) {
-<<<<<<< HEAD
-			jsm_printk(READ, INFO, &ch->ch_bd->pci_dev,
-=======
 			jsm_dbg(READ, &ch->ch_bd->pci_dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Queue full, dropping DATA:%x LSR:%x\n",
 				ch->ch_rqueue[tail], ch->ch_equeue[tail]);
 
@@ -514,13 +451,8 @@ static void neo_copy_data_from_uart_to_queue(struct jsm_channel *ch)
 		memcpy_fromio(ch->ch_rqueue + head, &ch->ch_neo_uart->txrxburst, 1);
 		ch->ch_equeue[head] = (u8) linestatus;
 
-<<<<<<< HEAD
-		jsm_printk(READ, INFO, &ch->ch_bd->pci_dev,
-				"DATA/LSR pair: %x %x\n", ch->ch_rqueue[head], ch->ch_equeue[head]);
-=======
 		jsm_dbg(READ, &ch->ch_bd->pci_dev, "DATA/LSR pair: %x %x\n",
 			ch->ch_rqueue[head], ch->ch_equeue[head]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Ditch any remaining linestatus value. */
 		linestatus = 0;
@@ -573,13 +505,8 @@ static void neo_copy_data_from_queue_to_uart(struct jsm_channel *ch)
 			ch->ch_cached_lsr &= ~(UART_LSR_THRE);
 
 			writeb(circ->buf[circ->tail], &ch->ch_neo_uart->txrx);
-<<<<<<< HEAD
-			jsm_printk(WRITE, INFO, &ch->ch_bd->pci_dev,
-					"Tx data: %x\n", circ->buf[circ->tail]);
-=======
 			jsm_dbg(WRITE, &ch->ch_bd->pci_dev,
 				"Tx data: %x\n", circ->buf[circ->tail]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			circ->tail = (circ->tail + 1) & (UART_XMIT_SIZE - 1);
 			ch->ch_txcount++;
 		}
@@ -632,14 +559,9 @@ static void neo_parse_modem(struct jsm_channel *ch, u8 signals)
 {
 	u8 msignals = signals;
 
-<<<<<<< HEAD
-	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
-			"neo_parse_modem: port: %d msignals: %x\n", ch->ch_portnum, msignals);
-=======
 	jsm_dbg(MSIGS, &ch->ch_bd->pci_dev,
 		"neo_parse_modem: port: %d msignals: %x\n",
 		ch->ch_portnum, msignals);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Scrub off lower bits. They signify delta's, which I don't care about */
 	/* Keep DDCD and DDSR though */
@@ -669,13 +591,8 @@ static void neo_parse_modem(struct jsm_channel *ch, u8 signals)
 	else
 		ch->ch_mistat &= ~UART_MSR_CTS;
 
-<<<<<<< HEAD
-	jsm_printk(MSIGS, INFO, &ch->ch_bd->pci_dev,
-			"Port: %d DTR: %d RTS: %d CTS: %d DSR: %d " "RI: %d CD: %d\n",
-=======
 	jsm_dbg(MSIGS, &ch->ch_bd->pci_dev,
 		"Port: %d DTR: %d RTS: %d CTS: %d DSR: %d " "RI: %d CD: %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->ch_portnum,
 		!!((ch->ch_mistat | ch->ch_mostat) & UART_MCR_DTR),
 		!!((ch->ch_mistat | ch->ch_mostat) & UART_MCR_RTS),
@@ -716,15 +633,9 @@ static void neo_flush_uart_write(struct jsm_channel *ch)
 
 		/* Check to see if the UART feels it completely flushed the FIFO. */
 		tmp = readb(&ch->ch_neo_uart->isr_fcr);
-<<<<<<< HEAD
-		if (tmp & 4) {
-			jsm_printk(IOCTL, INFO, &ch->ch_bd->pci_dev,
-					"Still flushing TX UART... i: %d\n", i);
-=======
 		if (tmp & UART_FCR_CLEAR_XMIT) {
 			jsm_dbg(IOCTL, &ch->ch_bd->pci_dev,
 				"Still flushing TX UART... i: %d\n", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(10);
 		}
 		else
@@ -755,13 +666,8 @@ static void neo_flush_uart_read(struct jsm_channel *ch)
 		/* Check to see if the UART feels it completely flushed the FIFO. */
 		tmp = readb(&ch->ch_neo_uart->isr_fcr);
 		if (tmp & 2) {
-<<<<<<< HEAD
-			jsm_printk(IOCTL, INFO, &ch->ch_bd->pci_dev,
-					"Still flushing RX UART... i: %d\n", i);
-=======
 			jsm_dbg(IOCTL, &ch->ch_bd->pci_dev,
 				"Still flushing RX UART... i: %d\n", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(10);
 		}
 		else
@@ -772,11 +678,7 @@ static void neo_flush_uart_read(struct jsm_channel *ch)
 /*
  * No locks are assumed to be held when calling this function.
  */
-<<<<<<< HEAD
-static void neo_clear_break(struct jsm_channel *ch, int force)
-=======
 static void neo_clear_break(struct jsm_channel *ch)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long lock_flags;
 
@@ -788,14 +690,9 @@ static void neo_clear_break(struct jsm_channel *ch)
 		writeb((temp & ~UART_LCR_SBC), &ch->ch_neo_uart->lcr);
 
 		ch->ch_flags &= ~(CH_BREAK_SENDING);
-<<<<<<< HEAD
-		jsm_printk(IOCTL, INFO, &ch->ch_bd->pci_dev,
-				"clear break Finishing UART_LCR_SBC! finished: %lx\n", jiffies);
-=======
 		jsm_dbg(IOCTL, &ch->ch_bd->pci_dev,
 			"clear break Finishing UART_LCR_SBC! finished: %lx\n",
 			jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* flush write operation */
 		neo_pci_posting_flush(ch->ch_bd);
@@ -806,11 +703,7 @@ static void neo_clear_break(struct jsm_channel *ch)
 /*
  * Parse the ISR register.
  */
-<<<<<<< HEAD
-static inline void neo_parse_isr(struct jsm_board *brd, u32 port)
-=======
 static void neo_parse_isr(struct jsm_board *brd, u32 port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jsm_channel *ch;
 	u8 isr;
@@ -820,11 +713,7 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
 	if (!brd)
 		return;
 
-<<<<<<< HEAD
-	if (port > brd->maxports)
-=======
 	if (port >= brd->maxports)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	ch = brd->channels[port];
@@ -845,13 +734,8 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
 		 */
 		isr &= ~(UART_17158_IIR_FIFO_ENABLED);
 
-<<<<<<< HEAD
-		jsm_printk(INTR, INFO, &ch->ch_bd->pci_dev,
-				"%s:%d isr: %x\n", __FILE__, __LINE__, isr);
-=======
 		jsm_dbg(INTR, &ch->ch_bd->pci_dev, "%s:%d isr: %x\n",
 			__FILE__, __LINE__, isr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (isr & (UART_17158_IIR_RDI_TIMEOUT | UART_IIR_RDI)) {
 			/* Read data from uart -> queue */
@@ -874,14 +758,9 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
 		if (isr & UART_17158_IIR_XONXOFF) {
 			cause = readb(&ch->ch_neo_uart->xoffchar1);
 
-<<<<<<< HEAD
-			jsm_printk(INTR, INFO, &ch->ch_bd->pci_dev,
-					"Port %d. Got ISR_XONXOFF: cause:%x\n", port, cause);
-=======
 			jsm_dbg(INTR, &ch->ch_bd->pci_dev,
 				"Port %d. Got ISR_XONXOFF: cause:%x\n",
 				port, cause);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Since the UART detected either an XON or
@@ -894,32 +773,19 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
 				if (brd->channels[port]->ch_flags & CH_STOP) {
 					ch->ch_flags &= ~(CH_STOP);
 				}
-<<<<<<< HEAD
-				jsm_printk(INTR, INFO, &ch->ch_bd->pci_dev,
-						"Port %d. XON detected in incoming data\n", port);
-=======
 				jsm_dbg(INTR, &ch->ch_bd->pci_dev,
 					"Port %d. XON detected in incoming data\n",
 					port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			else if (cause == UART_17158_XOFF_DETECT) {
 				if (!(brd->channels[port]->ch_flags & CH_STOP)) {
 					ch->ch_flags |= CH_STOP;
-<<<<<<< HEAD
-					jsm_printk(INTR, INFO, &ch->ch_bd->pci_dev,
-							"Setting CH_STOP\n");
-				}
-				jsm_printk(INTR, INFO, &ch->ch_bd->pci_dev,
-						"Port: %d. XOFF detected in incoming data\n", port);
-=======
 					jsm_dbg(INTR, &ch->ch_bd->pci_dev,
 						"Setting CH_STOP\n");
 				}
 				jsm_dbg(INTR, &ch->ch_bd->pci_dev,
 					"Port: %d. XOFF detected in incoming data\n",
 					port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			spin_unlock_irqrestore(&ch->ch_lock, lock_flags);
 		}
@@ -948,17 +814,11 @@ static void neo_parse_isr(struct jsm_board *brd, u32 port)
 		}
 
 		/* Parse any modem signal changes */
-<<<<<<< HEAD
-		jsm_printk(INTR, INFO, &ch->ch_bd->pci_dev,
-				"MOD_STAT: sending to parse_modem_sigs\n");
-		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
-=======
 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
 			"MOD_STAT: sending to parse_modem_sigs\n");
 		uart_port_lock_irqsave(&ch->uart_port, &lock_flags);
 		neo_parse_modem(ch, readb(&ch->ch_neo_uart->msr));
 		uart_port_unlock_irqrestore(&ch->uart_port, lock_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -971,11 +831,7 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
 	if (!brd)
 		return;
 
-<<<<<<< HEAD
-	if (port > brd->maxports)
-=======
 	if (port >= brd->maxports)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	ch = brd->channels[port];
@@ -984,13 +840,8 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
 
 	linestatus = readb(&ch->ch_neo_uart->lsr);
 
-<<<<<<< HEAD
-	jsm_printk(INTR, INFO, &ch->ch_bd->pci_dev,
-			"%s:%d port: %d linestatus: %x\n", __FILE__, __LINE__, port, linestatus);
-=======
 	jsm_dbg(INTR, &ch->ch_bd->pci_dev, "%s:%d port: %d linestatus: %x\n",
 		__FILE__, __LINE__, port, linestatus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ch->ch_cached_lsr |= linestatus;
 
@@ -1009,11 +860,7 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
 	 *to do the special RX+LSR read for this FIFO load.
 	 */
 	if (linestatus & UART_17158_RX_FIFO_DATA_ERROR)
-<<<<<<< HEAD
-		jsm_printk(INTR, DEBUG, &ch->ch_bd->pci_dev,
-=======
 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"%s:%d Port: %d Got an RX error, need to parse LSR\n",
 			__FILE__, __LINE__, port);
 
@@ -1024,36 +871,21 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
 
 	if (linestatus & UART_LSR_PE) {
 		ch->ch_err_parity++;
-<<<<<<< HEAD
-		jsm_printk(INTR, DEBUG, &ch->ch_bd->pci_dev,
-			"%s:%d Port: %d. PAR ERR!\n", __FILE__, __LINE__, port);
-=======
 		jsm_dbg(INTR, &ch->ch_bd->pci_dev, "%s:%d Port: %d. PAR ERR!\n",
 			__FILE__, __LINE__, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (linestatus & UART_LSR_FE) {
 		ch->ch_err_frame++;
-<<<<<<< HEAD
-		jsm_printk(INTR, DEBUG, &ch->ch_bd->pci_dev,
-			"%s:%d Port: %d. FRM ERR!\n", __FILE__, __LINE__, port);
-=======
 		jsm_dbg(INTR, &ch->ch_bd->pci_dev, "%s:%d Port: %d. FRM ERR!\n",
 			__FILE__, __LINE__, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (linestatus & UART_LSR_BI) {
 		ch->ch_err_break++;
-<<<<<<< HEAD
-		jsm_printk(INTR, DEBUG, &ch->ch_bd->pci_dev,
-			"%s:%d Port: %d. BRK INTR!\n", __FILE__, __LINE__, port);
-=======
 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
 			"%s:%d Port: %d. BRK INTR!\n",
 			__FILE__, __LINE__, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (linestatus & UART_LSR_OE) {
@@ -1064,14 +896,9 @@ static inline void neo_parse_lsr(struct jsm_board *brd, u32 port)
 		 * Probably we should eventually have an orun stat in our driver...
 		 */
 		ch->ch_err_overrun++;
-<<<<<<< HEAD
-		jsm_printk(INTR, DEBUG, &ch->ch_bd->pci_dev,
-			"%s:%d Port: %d. Rx Overrun!\n", __FILE__, __LINE__, port);
-=======
 		jsm_dbg(INTR, &ch->ch_bd->pci_dev,
 			"%s:%d Port: %d. Rx Overrun!\n",
 			__FILE__, __LINE__, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (linestatus & UART_LSR_THRE) {
@@ -1111,11 +938,7 @@ static void neo_param(struct jsm_channel *ch)
 	/*
 	 * If baud rate is zero, flush queues, and set mval to drop DTR.
 	 */
-<<<<<<< HEAD
-	if ((ch->ch_c_cflag & (CBAUD)) == 0) {
-=======
 	if ((ch->ch_c_cflag & CBAUD) == B0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->ch_r_head = ch->ch_r_tail = 0;
 		ch->ch_e_head = ch->ch_e_tail = 0;
 
@@ -1174,52 +997,17 @@ static void neo_param(struct jsm_channel *ch)
 	if (!(ch->ch_c_cflag & PARODD))
 		lcr |= UART_LCR_EPAR;
 
-<<<<<<< HEAD
-	/*
-	 * Not all platforms support mark/space parity,
-	 * so this will hide behind an ifdef.
-	 */
-#ifdef CMSPAR
 	if (ch->ch_c_cflag & CMSPAR)
 		lcr |= UART_LCR_SPAR;
-#endif
-=======
-	if (ch->ch_c_cflag & CMSPAR)
-		lcr |= UART_LCR_SPAR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ch->ch_c_cflag & CSTOPB)
 		lcr |= UART_LCR_STOP;
 
-<<<<<<< HEAD
-	switch (ch->ch_c_cflag & CSIZE) {
-		case CS5:
-			lcr |= UART_LCR_WLEN5;
-			break;
-		case CS6:
-			lcr |= UART_LCR_WLEN6;
-			break;
-		case CS7:
-			lcr |= UART_LCR_WLEN7;
-			break;
-		case CS8:
-		default:
-			lcr |= UART_LCR_WLEN8;
-		break;
-	}
-=======
 	lcr |= UART_LCR_WLEN(tty_get_char_size(ch->ch_c_cflag));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ier = readb(&ch->ch_neo_uart->ier);
 	uart_lcr = readb(&ch->ch_neo_uart->lcr);
 
-<<<<<<< HEAD
-	if (baud == 0)
-		baud = 9600;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	quot = ch->ch_bd->bd_dividend / baud;
 
 	if (quot != 0) {
@@ -1310,19 +1098,11 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
 	 */
 	uart_poll = readl(brd->re_map_membase + UART_17158_POLL_ADDR_OFFSET);
 
-<<<<<<< HEAD
-	jsm_printk(INTR, INFO, &brd->pci_dev,
-		"%s:%d uart_poll: %x\n", __FILE__, __LINE__, uart_poll);
-
-	if (!uart_poll) {
-		jsm_printk(INTR, INFO, &brd->pci_dev,
-=======
 	jsm_dbg(INTR, &brd->pci_dev, "%s:%d uart_poll: %x\n",
 		__FILE__, __LINE__, uart_poll);
 
 	if (!uart_poll) {
 		jsm_dbg(INTR, &brd->pci_dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Kernel interrupted to me, but no pending interrupts...\n");
 		spin_unlock_irqrestore(&brd->bd_intr_lock, lock_flags);
 		return IRQ_NONE;
@@ -1348,24 +1128,15 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
 			continue;
 		}
 
-<<<<<<< HEAD
-		jsm_printk(INTR, INFO, &brd->pci_dev,
-		"%s:%d port: %x type: %x\n", __FILE__, __LINE__, port, type);
-=======
 		jsm_dbg(INTR, &brd->pci_dev, "%s:%d port: %x type: %x\n",
 			__FILE__, __LINE__, port, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Remove this port + type from uart_poll */
 		uart_poll &= ~(jsm_offset_table[port]);
 
 		if (!type) {
 			/* If no type, just ignore it, and move onto next port */
-<<<<<<< HEAD
-			jsm_printk(INTR, ERR, &brd->pci_dev,
-=======
 			jsm_dbg(INTR, &brd->pci_dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Interrupt with no type! port: %d\n", port);
 			continue;
 		}
@@ -1380,12 +1151,6 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
 			 */
 
 			/* Verify the port is in range. */
-<<<<<<< HEAD
-			if (port > brd->nasync)
-				continue;
-
-			ch = brd->channels[port];
-=======
 			if (port >= brd->nasync)
 				continue;
 
@@ -1393,7 +1158,6 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
 			if (!ch)
 				continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			neo_copy_data_from_uart_to_queue(ch);
 
 			/* Call our tty layer to enforce queue flow control if needed. */
@@ -1440,25 +1204,16 @@ static irqreturn_t neo_intr(int irq, void *voidbrd)
 			 * these once and awhile.
 			 * Its harmless, just ignore it and move on.
 			 */
-<<<<<<< HEAD
-			jsm_printk(INTR, ERR, &brd->pci_dev,
-				"%s:%d Unknown Interrupt type: %x\n", __FILE__, __LINE__, type);
-=======
 			jsm_dbg(INTR, &brd->pci_dev,
 				"%s:%d Unknown Interrupt type: %x\n",
 				__FILE__, __LINE__, type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 	}
 
 	spin_unlock_irqrestore(&brd->bd_intr_lock, lock_flags);
 
-<<<<<<< HEAD
-	jsm_printk(INTR, INFO, &brd->pci_dev, "finish.\n");
-=======
 	jsm_dbg(INTR, &brd->pci_dev, "finish\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -1554,28 +1309,6 @@ static void neo_uart_off(struct jsm_channel *ch)
 	writeb(0, &ch->ch_neo_uart->ier);
 }
 
-<<<<<<< HEAD
-static u32 neo_get_uart_bytes_left(struct jsm_channel *ch)
-{
-	u8 left = 0;
-	u8 lsr = readb(&ch->ch_neo_uart->lsr);
-
-	/* We must cache the LSR as some of the bits get reset once read... */
-	ch->ch_cached_lsr |= lsr;
-
-	/* Determine whether the Transmitter is empty or not */
-	if (!(lsr & UART_LSR_TEMT))
-		left = 1;
-	else {
-		ch->ch_flags |= (CH_TX_FIFO_EMPTY | CH_TX_FIFO_LWM);
-		left = 0;
-	}
-
-	return left;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Channel lock MUST be held by the calling function! */
 static void neo_send_break(struct jsm_channel *ch)
 {
@@ -1596,28 +1329,6 @@ static void neo_send_break(struct jsm_channel *ch)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * neo_send_immediate_char.
- *
- * Sends a specific character as soon as possible to the UART,
- * jumping over any bytes that might be in the write queue.
- *
- * The channel lock MUST be held by the calling function.
- */
-static void neo_send_immediate_char(struct jsm_channel *ch, unsigned char c)
-{
-	if (!ch)
-		return;
-
-	writeb(c, &ch->ch_neo_uart->txrx);
-
-	/* flush write operation */
-	neo_pci_posting_flush(ch->ch_bd);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct board_ops jsm_neo_ops = {
 	.intr				= neo_intr,
 	.uart_init			= neo_uart_init,
@@ -1633,9 +1344,4 @@ struct board_ops jsm_neo_ops = {
 	.send_start_character		= neo_send_start_character,
 	.send_stop_character		= neo_send_stop_character,
 	.copy_data_from_queue_to_uart	= neo_copy_data_from_queue_to_uart,
-<<<<<<< HEAD
-	.get_uart_bytes_left		= neo_get_uart_bytes_left,
-	.send_immediate_char		= neo_send_immediate_char
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

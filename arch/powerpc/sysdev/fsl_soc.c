@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FSL SoC setup code
  *
@@ -9,14 +6,6 @@
  *
  * 2006 (c) MontaVista Software, Inc.
  * Vitaly Bordug <vbordug@ru.mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -30,41 +19,21 @@
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-#include <linux/phy.h>
-#include <linux/phy_fixed.h>
-#include <linux/spi/spi.h>
-#include <linux/fsl_devices.h>
-#include <linux/fs_enet_pd.h>
-#include <linux/fs_uart_pd.h>
-=======
 #include <linux/phy.h>
 #include <linux/spi/spi.h>
 #include <linux/fsl_devices.h>
 #include <linux/reboot.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atomic.h>
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/time.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <sysdev/fsl_soc.h>
 #include <mm/mmu_decl.h>
 #include <asm/cpm2.h>
 #include <asm/fsl_hcalls.h>	/* For the Freescale hypervisor */
 
-<<<<<<< HEAD
-extern void init_fcc_ioports(struct fs_platform_info*);
-extern void init_fec_ioports(struct fs_platform_info*);
-extern void init_smc_ioports(struct fs_uart_platform_info*);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static phys_addr_t immrbase = -1;
 
 phys_addr_t get_immrbase(void)
@@ -76,25 +45,10 @@ phys_addr_t get_immrbase(void)
 
 	soc = of_find_node_by_type(NULL, "soc");
 	if (soc) {
-<<<<<<< HEAD
-		int size;
-		u32 naddr;
-		const u32 *prop = of_get_property(soc, "#address-cells", &size);
-
-		if (prop && size == 4)
-			naddr = *prop;
-		else
-			naddr = 2;
-
-		prop = of_get_property(soc, "ranges", &size);
-		if (prop)
-			immrbase = of_translate_address(soc, prop + naddr);
-=======
 		struct resource res;
 
 		if (!of_range_to_resource(soc, 0, &res))
 			immrbase = res.start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		of_node_put(soc);
 	}
@@ -104,20 +58,10 @@ phys_addr_t get_immrbase(void)
 
 EXPORT_SYMBOL(get_immrbase);
 
-<<<<<<< HEAD
-static u32 sysfreq = -1;
-
-u32 fsl_get_sys_freq(void)
-{
-	struct device_node *soc;
-	const u32 *prop;
-	int size;
-=======
 u32 fsl_get_sys_freq(void)
 {
 	static u32 sysfreq = -1;
 	struct device_node *soc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sysfreq != -1)
 		return sysfreq;
@@ -126,56 +70,28 @@ u32 fsl_get_sys_freq(void)
 	if (!soc)
 		return -1;
 
-<<<<<<< HEAD
-	prop = of_get_property(soc, "clock-frequency", &size);
-	if (!prop || size != sizeof(*prop) || *prop == 0)
-		prop = of_get_property(soc, "bus-frequency", &size);
-
-	if (prop && size == sizeof(*prop))
-		sysfreq = *prop;
-=======
 	of_property_read_u32(soc, "clock-frequency", &sysfreq);
 	if (sysfreq == -1 || !sysfreq)
 		of_property_read_u32(soc, "bus-frequency", &sysfreq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	of_node_put(soc);
 	return sysfreq;
 }
 EXPORT_SYMBOL(fsl_get_sys_freq);
 
-<<<<<<< HEAD
-#if defined(CONFIG_CPM2) || defined(CONFIG_QUICC_ENGINE) || defined(CONFIG_8xx)
-
-static u32 brgfreq = -1;
-
-u32 get_brgfreq(void)
-{
-	struct device_node *node;
-	const unsigned int *prop;
-	int size;
-=======
 #if defined(CONFIG_CPM) || defined(CONFIG_QUICC_ENGINE)
 
 u32 get_brgfreq(void)
 {
 	static u32 brgfreq = -1;
 	struct device_node *node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (brgfreq != -1)
 		return brgfreq;
 
 	node = of_find_compatible_node(NULL, NULL, "fsl,cpm-brg");
 	if (node) {
-<<<<<<< HEAD
-		prop = of_get_property(node, "clock-frequency", &size);
-		if (prop && size == 4)
-			brgfreq = *prop;
-
-=======
 		of_property_read_u32(node, "clock-frequency", &brgfreq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(node);
 		return brgfreq;
 	}
@@ -188,23 +104,11 @@ u32 get_brgfreq(void)
 		node = of_find_node_by_type(NULL, "qe");
 
 	if (node) {
-<<<<<<< HEAD
-		prop = of_get_property(node, "brg-frequency", &size);
-		if (prop && size == 4)
-			brgfreq = *prop;
-
-		if (brgfreq == -1 || brgfreq == 0) {
-			prop = of_get_property(node, "bus-frequency", &size);
-			if (prop && size == 4)
-				brgfreq = *prop / 2;
-		}
-=======
 		of_property_read_u32(node, "brg-frequency", &brgfreq);
 		if (brgfreq == -1 || !brgfreq)
 			if (!of_property_read_u32(node, "bus-frequency",
 						  &brgfreq))
 				brgfreq /= 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(node);
 	}
 
@@ -213,16 +117,9 @@ u32 get_brgfreq(void)
 
 EXPORT_SYMBOL(get_brgfreq);
 
-<<<<<<< HEAD
-static u32 fs_baudrate = -1;
-
-u32 get_baudrate(void)
-{
-=======
 u32 get_baudrate(void)
 {
 	static u32 fs_baudrate = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *node;
 
 	if (fs_baudrate != -1)
@@ -230,16 +127,7 @@ u32 get_baudrate(void)
 
 	node = of_find_node_by_type(NULL, "serial");
 	if (node) {
-<<<<<<< HEAD
-		int size;
-		const unsigned int *prop = of_get_property(node,
-				"current-speed", &size);
-
-		if (prop)
-			fs_baudrate = *prop;
-=======
 		of_property_read_u32(node, "current-speed", &fs_baudrate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(node);
 	}
 
@@ -249,42 +137,6 @@ u32 get_baudrate(void)
 EXPORT_SYMBOL(get_baudrate);
 #endif /* CONFIG_CPM2 */
 
-<<<<<<< HEAD
-#ifdef CONFIG_FIXED_PHY
-static int __init of_add_fixed_phys(void)
-{
-	int ret;
-	struct device_node *np;
-	u32 *fixed_link;
-	struct fixed_phy_status status = {};
-
-	for_each_node_by_name(np, "ethernet") {
-		fixed_link  = (u32 *)of_get_property(np, "fixed-link", NULL);
-		if (!fixed_link)
-			continue;
-
-		status.link = 1;
-		status.duplex = fixed_link[1];
-		status.speed = fixed_link[2];
-		status.pause = fixed_link[3];
-		status.asym_pause = fixed_link[4];
-
-		ret = fixed_phy_add(PHY_POLL, fixed_link[0], &status);
-		if (ret) {
-			of_node_put(np);
-			return ret;
-		}
-	}
-
-	return 0;
-}
-arch_initcall(of_add_fixed_phys);
-#endif /* CONFIG_FIXED_PHY */
-
-#if defined(CONFIG_FSL_SOC_BOOKE) || defined(CONFIG_PPC_86xx)
-static __be32 __iomem *rstcr;
-
-=======
 #if defined(CONFIG_FSL_SOC_BOOKE) || defined(CONFIG_PPC_86xx)
 static __be32 __iomem *rstcr;
 
@@ -298,19 +150,10 @@ static int fsl_rstcr_restart(struct notifier_block *this,
 	return NOTIFY_DONE;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init setup_rstcr(void)
 {
 	struct device_node *np;
 
-<<<<<<< HEAD
-	for_each_node_by_name(np, "global-utilities") {
-		if ((of_get_property(np, "fsl,has-rstcr", NULL))) {
-			rstcr = of_iomap(np, 0) + 0xb0;
-			if (!rstcr)
-				printk (KERN_ERR "Error: reset control "
-						"register not mapped!\n");
-=======
 	static struct notifier_block restart_handler = {
 		.notifier_call = fsl_rstcr_restart,
 		.priority = 128,
@@ -325,38 +168,17 @@ static int __init setup_rstcr(void)
 			} else {
 				register_restart_handler(&restart_handler);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (!rstcr && ppc_md.restart == fsl_rstcr_restart)
-		printk(KERN_ERR "No RSTCR register, warm reboot won't work\n");
-
-	if (np)
-		of_node_put(np);
-=======
 	of_node_put(np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 arch_initcall(setup_rstcr);
 
-<<<<<<< HEAD
-void fsl_rstcr_restart(char *cmd)
-{
-	local_irq_disable();
-	if (rstcr)
-		/* set reset control register */
-		out_be32(rstcr, 0x2);	/* HRESET_REQ */
-
-	while (1) ;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #if defined(CONFIG_FB_FSL_DIU) || defined(CONFIG_FB_FSL_DIU_MODULE)
@@ -364,10 +186,7 @@ struct platform_diu_data_ops diu_ops;
 EXPORT_SYMBOL(diu_ops);
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_EPAPR_PARAVIRT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Restart the current partition
  *
@@ -375,34 +194,16 @@ EXPORT_SYMBOL(diu_ops);
  * to initiate a partition restart when we're running under the Freescale
  * hypervisor.
  */
-<<<<<<< HEAD
-void fsl_hv_restart(char *cmd)
-{
-	pr_info("hv restart\n");
-	fh_partition_restart(-1);
-=======
 void __noreturn fsl_hv_restart(char *cmd)
 {
 	pr_info("hv restart\n");
 	fh_partition_restart(-1);
 	while (1) ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Halt the current partition
  *
-<<<<<<< HEAD
- * This function should be assigned to the ppc_md.power_off and ppc_md.halt
- * function pointers, to shut down the partition when we're running under
- * the Freescale hypervisor.
- */
-void fsl_hv_halt(void)
-{
-	pr_info("hv exit\n");
-	fh_partition_stop(-1);
-}
-=======
  * This function should be assigned to the pm_power_off and ppc_md.halt
  * function pointers, to shut down the partition when we're running under
  * the Freescale hypervisor.
@@ -414,4 +215,3 @@ void __noreturn fsl_hv_halt(void)
 	while (1) ;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

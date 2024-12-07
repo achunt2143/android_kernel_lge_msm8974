@@ -13,13 +13,6 @@
  * License, or (at your option) any later version.
  *
  *
-<<<<<<< HEAD
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * THIS PROGRAM IS PROVIDED "AS IS" AND BOTH THE COPYRIGHT HOLDER AND
  * TECHNISAT DIGITAL UK LTD DISCLAIM ALL WARRANTIES WITH REGARD TO
  * THIS PROGRAM INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY OR
@@ -37,20 +30,6 @@
 
 static struct rc_map_table technisat_usb2[] = {
 	{0x0a0c, KEY_POWER},
-<<<<<<< HEAD
-	{0x0a01, KEY_1},
-	{0x0a02, KEY_2},
-	{0x0a03, KEY_3},
-	{0x0a0d, KEY_MUTE},
-	{0x0a04, KEY_4},
-	{0x0a05, KEY_5},
-	{0x0a06, KEY_6},
-	{0x0a38, KEY_VIDEO}, /* EXT */
-	{0x0a07, KEY_7},
-	{0x0a08, KEY_8},
-	{0x0a09, KEY_9},
-	{0x0a00, KEY_0},
-=======
 	{0x0a01, KEY_NUMERIC_1},
 	{0x0a02, KEY_NUMERIC_2},
 	{0x0a03, KEY_NUMERIC_3},
@@ -63,7 +42,6 @@ static struct rc_map_table technisat_usb2[] = {
 	{0x0a08, KEY_NUMERIC_8},
 	{0x0a09, KEY_NUMERIC_9},
 	{0x0a00, KEY_NUMERIC_0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x0a4f, KEY_INFO},
 	{0x0a20, KEY_CHANNELUP},
 	{0x0a52, KEY_MENU},
@@ -88,17 +66,10 @@ static struct rc_map_table technisat_usb2[] = {
 
 static struct rc_map_list technisat_usb2_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = technisat_usb2,
-		.size    = ARRAY_SIZE(technisat_usb2),
-		.rc_type = RC_TYPE_RC5,
-		.name    = RC_MAP_TECHNISAT_USB2,
-=======
 		.scan     = technisat_usb2,
 		.size     = ARRAY_SIZE(technisat_usb2),
 		.rc_proto = RC_PROTO_RC5,
 		.name     = RC_MAP_TECHNISAT_USB2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -117,7 +88,4 @@ module_exit(exit_rc_map)
 
 MODULE_AUTHOR("Patrick Boettcher <pboettcher@kernellabs.com>");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("TechniSat TS35 remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * console_struct.h
  *
@@ -20,15 +17,6 @@
 #include <linux/vt.h>
 #include <linux/workqueue.h>
 
-<<<<<<< HEAD
-struct vt_struct;
-
-#define NPAR 16
-
-struct vc_data {
-	struct tty_port port;			/* Upper level data */
-
-=======
 struct uni_pagedict;
 
 #define NPAR 16
@@ -107,16 +95,12 @@ struct vc_data {
 
 	struct vc_state state, saved_state;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short	vc_num;			/* Console number */
 	unsigned int	vc_cols;		/* [#] Console size */
 	unsigned int	vc_rows;
 	unsigned int	vc_size_row;		/* Bytes per row */
 	unsigned int	vc_scan_lines;		/* # of scan lines */
-<<<<<<< HEAD
-=======
 	unsigned int	vc_cell_height;		/* CRTC character cell height */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	vc_origin;		/* [!] Start of real screen */
 	unsigned long	vc_scr_end;		/* [!] End of real screen */
 	unsigned long	vc_visible_origin;	/* [!] Top of visible window */
@@ -128,11 +112,6 @@ struct vc_data {
 	/* attributes for all characters on screen */
 	unsigned char	vc_attr;		/* Current attributes */
 	unsigned char	vc_def_color;		/* Default colors */
-<<<<<<< HEAD
-	unsigned char	vc_color;		/* Foreground & background */
-	unsigned char	vc_s_color;		/* Saved foreground & background */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char	vc_ulcolor;		/* Color for underline mode */
 	unsigned char   vc_itcolor;
 	unsigned char	vc_halfcolor;		/* Color for half intensity mode */
@@ -140,11 +119,6 @@ struct vc_data {
 	unsigned int	vc_cursor_type;
 	unsigned short	vc_complement_mask;	/* [#] Xor mask for mouse pointer */
 	unsigned short	vc_s_complement_mask;	/* Saved mouse pointer mask */
-<<<<<<< HEAD
-	unsigned int	vc_x, vc_y;		/* Cursor position */
-	unsigned int	vc_saved_x, vc_saved_y;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	vc_pos;			/* Cursor address */
 	/* fonts */	
 	unsigned short	vc_hi_font_mask;	/* [#] Attribute set for upper 256 chars of font or 0 if not supported */
@@ -159,11 +133,6 @@ struct vc_data {
 	int		vt_newvt;
 	wait_queue_head_t paste_wait;
 	/* mode flags */
-<<<<<<< HEAD
-	unsigned int	vc_charset	: 1;	/* Character set G0 / G1 */
-	unsigned int	vc_s_charset	: 1;	/* Saved character set */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	vc_disp_ctrl	: 1;	/* Display chars < 32? */
 	unsigned int	vc_toggle_meta	: 1;	/* Toggle high bit? */
 	unsigned int	vc_decscnm	: 1;	/* Screen Mode */
@@ -171,47 +140,14 @@ struct vc_data {
 	unsigned int	vc_decawm	: 1;	/* Autowrap Mode */
 	unsigned int	vc_deccm	: 1;	/* Cursor Visible */
 	unsigned int	vc_decim	: 1;	/* Insert Mode */
-<<<<<<< HEAD
-	unsigned int	vc_deccolm	: 1;	/* 80/132 Column Mode */
-	/* attribute flags */
-	unsigned int	vc_intensity	: 2;	/* 0=half-bright, 1=normal, 2=bold */
-	unsigned int    vc_italic:1;
-	unsigned int	vc_underline	: 1;
-	unsigned int	vc_blink	: 1;
-	unsigned int	vc_reverse	: 1;
-	unsigned int	vc_s_intensity	: 2;	/* saved rendition */
-	unsigned int    vc_s_italic:1;
-	unsigned int	vc_s_underline	: 1;
-	unsigned int	vc_s_blink	: 1;
-	unsigned int	vc_s_reverse	: 1;
-	/* misc */
-	unsigned int	vc_ques		: 1;
-=======
 	/* misc */
 	unsigned int	vc_priv		: 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	vc_need_wrap	: 1;
 	unsigned int	vc_can_do_color	: 1;
 	unsigned int	vc_report_mouse : 2;
 	unsigned char	vc_utf		: 1;	/* Unicode UTF-8 encoding */
 	unsigned char	vc_utf_count;
 		 int	vc_utf_char;
-<<<<<<< HEAD
-	unsigned int	vc_tab_stop[8];		/* Tab stops. 256 columns. */
-	unsigned char   vc_palette[16*3];       /* Colour palette for VGA+ */
-	unsigned short * vc_translate;
-	unsigned char 	vc_G0_charset;
-	unsigned char 	vc_G1_charset;
-	unsigned char 	vc_saved_G0;
-	unsigned char 	vc_saved_G1;
-	unsigned int    vc_resize_user;         /* resize request from user */
-	unsigned int	vc_bell_pitch;		/* Console bell pitch */
-	unsigned int	vc_bell_duration;	/* Console bell duration */
-	struct vc_data **vc_display_fg;		/* [!] Ptr to var holding fg console for this display */
-	unsigned long	vc_uni_pagedir;
-	unsigned long	*vc_uni_pagedir_loc;  /* [!] Location of uni_pagedir variable for this console */
-	bool vc_panic_force_write; /* when oops/panic this VC can accept forced output/blanking */
-=======
 	DECLARE_BITMAP(vc_tab_stop, VC_TABSTOPS_COUNT);	/* Tab stops. 256 columns. */
 	unsigned char   vc_palette[16*3];       /* Colour palette for VGA+ */
 	unsigned short * vc_translate;
@@ -222,7 +158,6 @@ struct vc_data {
 	struct uni_pagedict *uni_pagedict;
 	struct uni_pagedict **uni_pagedict_loc; /* [!] Location of uni_pagedict variable for this console */
 	u32 **vc_uni_lines;			/* unicode screen content */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* additional information is in vt_kern.h */
 };
 
@@ -230,34 +165,13 @@ struct vc {
 	struct vc_data *d;
 	struct work_struct SAK_work;
 
-<<<<<<< HEAD
-	/* might add  scrmem, vt_struct, kbd  at some time,
-	   to have everything in one place - the disadvantage
-	   would be that vc_cons etc can no longer be static */
-=======
 	/* might add  scrmem, kbd  at some time,
 	   to have everything in one place */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct vc vc_cons [MAX_NR_CONSOLES];
 extern void vc_SAK(struct work_struct *work);
 
-<<<<<<< HEAD
-#define CUR_DEF		0
-#define CUR_NONE	1
-#define CUR_UNDERLINE	2
-#define CUR_LOWER_THIRD	3
-#define CUR_LOWER_HALF	4
-#define CUR_TWO_THIRDS	5
-#define CUR_BLOCK	6
-#define CUR_HWMASK	0x0f
-#define CUR_SWMASK	0xfff0
-
-#define CUR_DEFAULT CUR_UNDERLINE
-
-#define CON_IS_VISIBLE(conp) (*conp->vc_display_fg == conp)
-=======
 #define CUR_MAKE(size, change, set)	((size) | ((change) << 8) |	\
 		((set) << 16))
 #define CUR_SIZE(c)		 ((c) & 0x00000f)
@@ -277,6 +191,5 @@ extern void vc_SAK(struct work_struct *work);
 #define CUR_SET(c)		(((c) & 0xff0000) >> 8)
 
 bool con_is_visible(const struct vc_data *vc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_CONSOLE_STRUCT_H */

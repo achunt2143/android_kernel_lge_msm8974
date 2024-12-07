@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/svc_xprt.c
  *
@@ -9,34 +6,16 @@
  */
 
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/errno.h>
-#include <linux/freezer.h>
-#include <linux/kthread.h>
-#include <linux/slab.h>
-#include <net/sock.h>
-=======
 #include <linux/sched/mm.h>
 #include <linux/errno.h>
 #include <linux/freezer.h>
 #include <linux/slab.h>
 #include <net/sock.h>
 #include <linux/sunrpc/addr.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sunrpc/stats.h>
 #include <linux/sunrpc/svc_xprt.h>
 #include <linux/sunrpc/svcsock.h>
 #include <linux/sunrpc/xprt.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-
-#define RPCDBG_FACILITY	RPCDBG_SVCXPRT
-
-static struct svc_deferred_req *svc_deferred_dequeue(struct svc_xprt *xprt);
-static int svc_deferred_recv(struct svc_rqst *rqstp);
-static struct cache_deferred_req *svc_defer(struct cache_req *req);
-static void svc_age_temp_xprts(unsigned long closure);
-=======
 #include <linux/sunrpc/bc_xprt.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -52,17 +31,12 @@ static struct svc_deferred_req *svc_deferred_dequeue(struct svc_xprt *xprt);
 static int svc_deferred_recv(struct svc_rqst *rqstp);
 static struct cache_deferred_req *svc_defer(struct cache_req *req);
 static void svc_age_temp_xprts(struct timer_list *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void svc_delete_xprt(struct svc_xprt *xprt);
 
 /* apparently the "standard" is that clients close
  * idle connections after 5 minutes, servers after
  * 6 minutes
-<<<<<<< HEAD
- *   http://www.connectathon.org/talks96/nfstcp.pdf
-=======
  *   http://nfsv4bat.org/Documents/ConnectAThon/1996/nfstcp.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int svc_conn_age_period = 6*60;
 
@@ -75,11 +49,7 @@ static LIST_HEAD(svc_xprt_class_list);
  *	svc_pool->sp_lock protects most of the fields of that pool.
  *	svc_serv->sv_lock protects sv_tempsocks, sv_permsocks, sv_tmpcnt.
  *	when both need to be taken (rare), svc_serv->sv_lock is first.
-<<<<<<< HEAD
- *	BKL protects svc_serv->sv_nrthread.
-=======
  *	The "service mutex" protects svc_serv->sv_nrthread.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	svc_sock->sk_lock protects the svc_sock->sk_deferred list
  *             and the ->sk_info_authunix cache.
  *
@@ -105,25 +75,17 @@ static LIST_HEAD(svc_xprt_class_list);
  *		  try to set XPT_DEAD.
  */
 
-<<<<<<< HEAD
-=======
 /**
  * svc_reg_xprt_class - Register a server-side RPC transport class
  * @xcl: New transport class to be registered
  *
  * Returns zero on success; otherwise a negative errno is returned.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int svc_reg_xprt_class(struct svc_xprt_class *xcl)
 {
 	struct svc_xprt_class *cl;
 	int res = -EEXIST;
 
-<<<<<<< HEAD
-	dprintk("svc: Adding svc transport class '%s'\n", xcl->xcl_name);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&xcl->xcl_list);
 	spin_lock(&svc_xprt_class_lock);
 	/* Make sure there isn't already a class with the same name */
@@ -139,11 +101,6 @@ out:
 }
 EXPORT_SYMBOL_GPL(svc_reg_xprt_class);
 
-<<<<<<< HEAD
-void svc_unreg_xprt_class(struct svc_xprt_class *xcl)
-{
-	dprintk("svc: Removing svc transport class '%s'\n", xcl->xcl_name);
-=======
 /**
  * svc_unreg_xprt_class - Unregister a server-side RPC transport class
  * @xcl: Transport class to be unregistered
@@ -151,17 +108,12 @@ void svc_unreg_xprt_class(struct svc_xprt_class *xcl)
  */
 void svc_unreg_xprt_class(struct svc_xprt_class *xcl)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&svc_xprt_class_lock);
 	list_del_init(&xcl->xcl_list);
 	spin_unlock(&svc_xprt_class_lock);
 }
 EXPORT_SYMBOL_GPL(svc_unreg_xprt_class);
 
-<<<<<<< HEAD
-/*
- * Format the transport list for printing
-=======
 /**
  * svc_print_xprts - Format the transport list for printing
  * @buf: target buffer for formatted address
@@ -173,7 +125,6 @@ EXPORT_SYMBOL_GPL(svc_unreg_xprt_class);
  * complete.
  *
  * Returns positive length of the filled-in string.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int svc_print_xprts(char *buf, int maxlen)
 {
@@ -186,15 +137,9 @@ int svc_print_xprts(char *buf, int maxlen)
 	list_for_each_entry(xcl, &svc_xprt_class_list, xcl_list) {
 		int slen;
 
-<<<<<<< HEAD
-		sprintf(tmpstr, "%s %d\n", xcl->xcl_name, xcl->xcl_max_payload);
-		slen = strlen(tmpstr);
-		if (len + slen > maxlen)
-=======
 		slen = snprintf(tmpstr, sizeof(tmpstr), "%s %d\n",
 				xcl->xcl_name, xcl->xcl_max_payload);
 		if (slen >= sizeof(tmpstr) || len + slen >= maxlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		len += slen;
 		strcat(buf, tmpstr);
@@ -204,8 +149,6 @@ int svc_print_xprts(char *buf, int maxlen)
 	return len;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * svc_xprt_deferred_close - Close a transport
  * @xprt: transport instance
@@ -220,7 +163,6 @@ void svc_xprt_deferred_close(struct svc_xprt *xprt)
 }
 EXPORT_SYMBOL_GPL(svc_xprt_deferred_close);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void svc_xprt_free(struct kref *kref)
 {
 	struct svc_xprt *xprt =
@@ -228,12 +170,6 @@ static void svc_xprt_free(struct kref *kref)
 	struct module *owner = xprt->xpt_class->xcl_owner;
 	if (test_bit(XPT_CACHE_AUTH, &xprt->xpt_flags))
 		svcauth_unix_info_release(xprt);
-<<<<<<< HEAD
-	put_net(xprt->xpt_net);
-	/* See comment on corresponding get in xs_setup_bc_tcp(): */
-	if (xprt->xpt_bc_xprt)
-		xprt_put(xprt->xpt_bc_xprt);
-=======
 	put_cred(xprt->xpt_cred);
 	put_net_track(xprt->xpt_net, &xprt->ns_tracker);
 	/* See comment on corresponding get in xs_setup_bc_tcp(): */
@@ -242,7 +178,6 @@ static void svc_xprt_free(struct kref *kref)
 	if (xprt->xpt_bc_xps)
 		xprt_switch_put(xprt->xpt_bc_xps);
 	trace_svc_xprt_free(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xprt->xpt_ops->xpo_free(xprt);
 	module_put(owner);
 }
@@ -266,22 +201,13 @@ void svc_xprt_init(struct net *net, struct svc_xprt_class *xcl,
 	kref_init(&xprt->xpt_ref);
 	xprt->xpt_server = serv;
 	INIT_LIST_HEAD(&xprt->xpt_list);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&xprt->xpt_ready);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&xprt->xpt_deferred);
 	INIT_LIST_HEAD(&xprt->xpt_users);
 	mutex_init(&xprt->xpt_mutex);
 	spin_lock_init(&xprt->xpt_lock);
 	set_bit(XPT_BUSY, &xprt->xpt_flags);
-<<<<<<< HEAD
-	rpc_init_wait_queue(&xprt->xpt_bc_pending, "xpt_bc_pending");
-	xprt->xpt_net = get_net(net);
-=======
 	xprt->xpt_net = get_net_track(net, &xprt->ns_tracker, GFP_ATOMIC);
 	strcpy(xprt->xpt_remotebuf, "uninitialized");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(svc_xprt_init);
 
@@ -304,10 +230,7 @@ static struct svc_xprt *__svc_xpo_create(struct svc_xprt_class *xcl,
 		.sin6_port		= htons(port),
 	};
 #endif
-<<<<<<< HEAD
-=======
 	struct svc_xprt *xprt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr *sap;
 	size_t len;
 
@@ -326,18 +249,6 @@ static struct svc_xprt *__svc_xpo_create(struct svc_xprt_class *xcl,
 		return ERR_PTR(-EAFNOSUPPORT);
 	}
 
-<<<<<<< HEAD
-	return xcl->xcl_ops->xpo_create(serv, net, sap, len, flags);
-}
-
-int svc_create_xprt(struct svc_serv *serv, const char *xprt_name,
-		    struct net *net, const int family,
-		    const unsigned short port, int flags)
-{
-	struct svc_xprt_class *xcl;
-
-	dprintk("svc: creating transport %s[%d]\n", xprt_name, port);
-=======
 	xprt = xcl->xcl_ops->xpo_create(serv, net, sap, len, flags);
 	if (IS_ERR(xprt))
 		trace_svc_xprt_create_err(serv->sv_program->pg_name,
@@ -389,7 +300,6 @@ static int _svc_xprt_create(struct svc_serv *serv, const char *xprt_name,
 {
 	struct svc_xprt_class *xcl;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&svc_xprt_class_lock);
 	list_for_each_entry(xcl, &svc_xprt_class_list, xcl_list) {
 		struct svc_xprt *newxprt;
@@ -407,35 +317,17 @@ static int _svc_xprt_create(struct svc_serv *serv, const char *xprt_name,
 			module_put(xcl->xcl_owner);
 			return PTR_ERR(newxprt);
 		}
-<<<<<<< HEAD
-
-		clear_bit(XPT_TEMP, &newxprt->xpt_flags);
-		spin_lock_bh(&serv->sv_lock);
-		list_add(&newxprt->xpt_list, &serv->sv_permsocks);
-		spin_unlock_bh(&serv->sv_lock);
-		newport = svc_xprt_local_port(newxprt);
-		clear_bit(XPT_BUSY, &newxprt->xpt_flags);
-=======
 		newxprt->xpt_cred = get_cred(cred);
 		svc_add_new_perm_xprt(serv, newxprt);
 		newport = svc_xprt_local_port(newxprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return newport;
 	}
  err:
 	spin_unlock(&svc_xprt_class_lock);
-<<<<<<< HEAD
-	dprintk("svc: transport %s not found\n", xprt_name);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This errno is exposed to user space.  Provide a reasonable
 	 * perror msg for a bad transport. */
 	return -EPROTONOSUPPORT;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(svc_create_xprt);
-=======
 
 /**
  * svc_xprt_create - Add a new listener to @serv
@@ -466,7 +358,6 @@ int svc_xprt_create(struct svc_serv *serv, const char *xprt_name,
 	return err;
 }
 EXPORT_SYMBOL_GPL(svc_xprt_create);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Copy the local and remote xprt addresses to the rqstp structure
@@ -498,39 +389,6 @@ char *svc_print_addr(struct svc_rqst *rqstp, char *buf, size_t len)
 }
 EXPORT_SYMBOL_GPL(svc_print_addr);
 
-<<<<<<< HEAD
-/*
- * Queue up an idle server thread.  Must have pool->sp_lock held.
- * Note: this is really a stack rather than a queue, so that we only
- * use as many different threads as we need, and the rest don't pollute
- * the cache.
- */
-static void svc_thread_enqueue(struct svc_pool *pool, struct svc_rqst *rqstp)
-{
-	list_add(&rqstp->rq_list, &pool->sp_threads);
-}
-
-/*
- * Dequeue an nfsd thread.  Must have pool->sp_lock held.
- */
-static void svc_thread_dequeue(struct svc_pool *pool, struct svc_rqst *rqstp)
-{
-	list_del(&rqstp->rq_list);
-}
-
-static bool svc_xprt_has_something_to_do(struct svc_xprt *xprt)
-{
-	if (xprt->xpt_flags & ((1<<XPT_CONN)|(1<<XPT_CLOSE)))
-		return true;
-	if (xprt->xpt_flags & ((1<<XPT_DATA)|(1<<XPT_DEFERRED)))
-		return xprt->xpt_ops->xpo_has_wspace(xprt);
-	return false;
-}
-
-/*
- * Queue up a transport with data pending. If there are idle nfsd
- * processes, wake 'em up.
-=======
 static bool svc_xprt_slots_in_range(struct svc_xprt *xprt)
 {
 	unsigned int limit = svc_rpc_per_connection_limit;
@@ -593,75 +451,20 @@ static bool svc_xprt_ready(struct svc_xprt *xprt)
 /**
  * svc_xprt_enqueue - Queue a transport on an idle nfsd thread
  * @xprt: transport with data pending
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 void svc_xprt_enqueue(struct svc_xprt *xprt)
 {
 	struct svc_pool *pool;
-<<<<<<< HEAD
-	struct svc_rqst	*rqstp;
-	int cpu;
-
-	if (!svc_xprt_has_something_to_do(xprt))
-		return;
-
-	cpu = get_cpu();
-	pool = svc_pool_for_cpu(xprt->xpt_server, cpu);
-	put_cpu();
-
-	spin_lock_bh(&pool->sp_lock);
-
-	if (!list_empty(&pool->sp_threads) &&
-	    !list_empty(&pool->sp_sockets))
-		printk(KERN_ERR
-		       "svc_xprt_enqueue: "
-		       "threads and transports both waiting??\n");
-
-	pool->sp_stats.packets++;
-
-=======
 
 	if (!svc_xprt_ready(xprt))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Mark transport as busy. It will remain in this state until
 	 * the provider calls svc_xprt_received. We update XPT_BUSY
 	 * atomically because it also guards against trying to enqueue
 	 * the transport twice.
 	 */
-<<<<<<< HEAD
-	if (test_and_set_bit(XPT_BUSY, &xprt->xpt_flags)) {
-		/* Don't enqueue transport while already enqueued */
-		dprintk("svc: transport %p busy, not enqueued\n", xprt);
-		goto out_unlock;
-	}
-
-	if (!list_empty(&pool->sp_threads)) {
-		rqstp = list_entry(pool->sp_threads.next,
-				   struct svc_rqst,
-				   rq_list);
-		dprintk("svc: transport %p served by daemon %p\n",
-			xprt, rqstp);
-		svc_thread_dequeue(pool, rqstp);
-		if (rqstp->rq_xprt)
-			printk(KERN_ERR
-				"svc_xprt_enqueue: server %p, rq_xprt=%p!\n",
-				rqstp, rqstp->rq_xprt);
-		rqstp->rq_xprt = xprt;
-		svc_xprt_get(xprt);
-		pool->sp_stats.threads_woken++;
-		wake_up(&rqstp->rq_wait);
-	} else {
-		dprintk("svc: transport %p put into queue\n", xprt);
-		list_add_tail(&xprt->xpt_ready, &pool->sp_sockets);
-		pool->sp_stats.sockets_queued++;
-	}
-
-out_unlock:
-	spin_unlock_bh(&pool->sp_lock);
-=======
 	if (test_and_set_bit(XPT_BUSY, &xprt->xpt_flags))
 		return;
 
@@ -671,53 +474,10 @@ out_unlock:
 	lwq_enqueue(&xprt->xpt_ready, &pool->sp_xprts);
 
 	svc_pool_wake_idle_thread(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(svc_xprt_enqueue);
 
 /*
-<<<<<<< HEAD
- * Dequeue the first transport.  Must be called with the pool->sp_lock held.
- */
-static struct svc_xprt *svc_xprt_dequeue(struct svc_pool *pool)
-{
-	struct svc_xprt	*xprt;
-
-	if (list_empty(&pool->sp_sockets))
-		return NULL;
-
-	xprt = list_entry(pool->sp_sockets.next,
-			  struct svc_xprt, xpt_ready);
-	list_del_init(&xprt->xpt_ready);
-
-	dprintk("svc: transport %p dequeued, inuse=%d\n",
-		xprt, atomic_read(&xprt->xpt_ref.refcount));
-
-	return xprt;
-}
-
-/*
- * svc_xprt_received conditionally queues the transport for processing
- * by another thread. The caller must hold the XPT_BUSY bit and must
- * not thereafter touch transport data.
- *
- * Note: XPT_DATA only gets cleared when a read-attempt finds no (or
- * insufficient) data.
- */
-void svc_xprt_received(struct svc_xprt *xprt)
-{
-	BUG_ON(!test_bit(XPT_BUSY, &xprt->xpt_flags));
-	/* As soon as we clear busy, the xprt could be closed and
-	 * 'put', so we need a reference to call svc_xprt_enqueue with:
-	 */
-	svc_xprt_get(xprt);
-	clear_bit(XPT_BUSY, &xprt->xpt_flags);
-	svc_xprt_enqueue(xprt);
-	svc_xprt_put(xprt);
-}
-EXPORT_SYMBOL_GPL(svc_xprt_received);
-
-=======
  * Dequeue the first transport, if there is one.
  */
 static struct svc_xprt *svc_xprt_dequeue(struct svc_pool *pool)
@@ -730,7 +490,6 @@ static struct svc_xprt *svc_xprt_dequeue(struct svc_pool *pool)
 	return xprt;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * svc_reserve - change the space reserved for the reply to a request.
  * @rqstp:  The request in question
@@ -743,15 +502,6 @@ static struct svc_xprt *svc_xprt_dequeue(struct svc_pool *pool)
  */
 void svc_reserve(struct svc_rqst *rqstp, int space)
 {
-<<<<<<< HEAD
-	space += rqstp->rq_res.head[0].iov_len;
-
-	if (space < rqstp->rq_reserved) {
-		struct svc_xprt *xprt = rqstp->rq_xprt;
-		atomic_sub((rqstp->rq_reserved - space), &xprt->xpt_reserved);
-		rqstp->rq_reserved = space;
-
-=======
 	struct svc_xprt *xprt = rqstp->rq_xprt;
 
 	space += rqstp->rq_res.head[0].iov_len;
@@ -760,14 +510,11 @@ void svc_reserve(struct svc_rqst *rqstp, int space)
 		atomic_sub((rqstp->rq_reserved - space), &xprt->xpt_reserved);
 		rqstp->rq_reserved = space;
 		smp_wmb(); /* See smp_rmb() in svc_xprt_ready() */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		svc_xprt_enqueue(xprt);
 	}
 }
 EXPORT_SYMBOL_GPL(svc_reserve);
 
-<<<<<<< HEAD
-=======
 static void free_deferred(struct svc_xprt *xprt, struct svc_deferred_req *dr)
 {
 	if (!dr)
@@ -777,19 +524,10 @@ static void free_deferred(struct svc_xprt *xprt, struct svc_deferred_req *dr)
 	kfree(dr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void svc_xprt_release(struct svc_rqst *rqstp)
 {
 	struct svc_xprt	*xprt = rqstp->rq_xprt;
 
-<<<<<<< HEAD
-	rqstp->rq_xprt->xpt_ops->xpo_release_rqst(rqstp);
-
-	kfree(rqstp->rq_deferred);
-	rqstp->rq_deferred = NULL;
-
-	svc_free_res_pages(rqstp);
-=======
 	xprt->xpt_ops->xpo_release_ctxt(xprt, rqstp->rq_xprt_ctxt);
 	rqstp->rq_xprt_ctxt = NULL;
 
@@ -797,7 +535,6 @@ static void svc_xprt_release(struct svc_rqst *rqstp)
 	rqstp->rq_deferred = NULL;
 
 	svc_rqst_release_pages(rqstp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rqstp->rq_res.page_len = 0;
 	rqstp->rq_res.page_base = 0;
 
@@ -813,41 +550,6 @@ static void svc_xprt_release(struct svc_rqst *rqstp)
 
 	rqstp->rq_res.head[0].iov_len = 0;
 	svc_reserve(rqstp, 0);
-<<<<<<< HEAD
-	rqstp->rq_xprt = NULL;
-
-	svc_xprt_put(xprt);
-}
-
-/*
- * External function to wake up a server waiting for data
- * This really only makes sense for services like lockd
- * which have exactly one thread anyway.
- */
-void svc_wake_up(struct svc_serv *serv)
-{
-	struct svc_rqst	*rqstp;
-	unsigned int i;
-	struct svc_pool *pool;
-
-	for (i = 0; i < serv->sv_nrpools; i++) {
-		pool = &serv->sv_pools[i];
-
-		spin_lock_bh(&pool->sp_lock);
-		if (!list_empty(&pool->sp_threads)) {
-			rqstp = list_entry(pool->sp_threads.next,
-					   struct svc_rqst,
-					   rq_list);
-			dprintk("svc: daemon %p woken up.\n", rqstp);
-			/*
-			svc_thread_dequeue(pool, rqstp);
-			rqstp->rq_xprt = NULL;
-			 */
-			wake_up(&rqstp->rq_wait);
-		}
-		spin_unlock_bh(&pool->sp_lock);
-	}
-=======
 	svc_xprt_release_slot(rqstp);
 	rqstp->rq_xprt = NULL;
 	svc_xprt_put(xprt);
@@ -869,7 +571,6 @@ void svc_wake_up(struct svc_serv *serv)
 
 	set_bit(SP_TASK_PENDING, &pool->sp_flags);
 	svc_pool_wake_idle_thread(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(svc_wake_up);
 
@@ -914,22 +615,11 @@ static void svc_check_conn_limits(struct svc_serv *serv)
 		struct svc_xprt *xprt = NULL;
 		spin_lock_bh(&serv->sv_lock);
 		if (!list_empty(&serv->sv_tempsocks)) {
-<<<<<<< HEAD
-			if (net_ratelimit()) {
-				/* Try to help the admin */
-				printk(KERN_NOTICE "%s: too many open  "
-				       "connections, consider increasing %s\n",
-				       serv->sv_name, serv->sv_maxconn ?
-				       "the max number of connections." :
-				       "the number of threads.");
-			}
-=======
 			/* Try to help the admin */
 			net_notice_ratelimited("%s: too many open connections, consider increasing the %s\n",
 					       serv->sv_name, serv->sv_maxconn ?
 					       "max number of connections" :
 					       "number of threads");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Always select the oldest connection. It's not fair,
 			 * but so is life
@@ -949,56 +639,6 @@ static void svc_check_conn_limits(struct svc_serv *serv)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * Receive the next request on any transport.  This code is carefully
- * organised not to touch any cachelines in the shared svc_serv
- * structure, only cachelines in the local svc_pool.
- */
-int svc_recv(struct svc_rqst *rqstp, long timeout)
-{
-	struct svc_xprt		*xprt = NULL;
-	struct svc_serv		*serv = rqstp->rq_server;
-	struct svc_pool		*pool = rqstp->rq_pool;
-	int			len, i;
-	int			pages;
-	struct xdr_buf		*arg;
-	DECLARE_WAITQUEUE(wait, current);
-	long			time_left;
-
-	dprintk("svc: server %p waiting for data (to = %ld)\n",
-		rqstp, timeout);
-
-	if (rqstp->rq_xprt)
-		printk(KERN_ERR
-			"svc_recv: service %p, transport not NULL!\n",
-			 rqstp);
-	if (waitqueue_active(&rqstp->rq_wait))
-		printk(KERN_ERR
-			"svc_recv: service %p, wait queue active!\n",
-			 rqstp);
-
-	/* now allocate needed pages.  If we get a failure, sleep briefly */
-	pages = (serv->sv_max_mesg + PAGE_SIZE) / PAGE_SIZE;
-	for (i = 0; i < pages ; i++)
-		while (rqstp->rq_pages[i] == NULL) {
-			struct page *p = alloc_page(GFP_KERNEL);
-			if (!p) {
-				set_current_state(TASK_INTERRUPTIBLE);
-				if (signalled() || kthread_should_stop()) {
-					set_current_state(TASK_RUNNING);
-					return -EINTR;
-				}
-				schedule_timeout(msecs_to_jiffies(500));
-			}
-			rqstp->rq_pages[i] = p;
-		}
-	rqstp->rq_pages[i++] = NULL; /* this might be seen in nfs_read_actor */
-	BUG_ON(pages >= RPCSVC_MAXPAGES);
-
-	/* Make arg->head point to first page and arg->pages point to rest */
-	arg = &rqstp->rq_arg;
-=======
 static bool svc_alloc_arg(struct svc_rqst *rqstp)
 {
 	struct svc_serv *serv = rqstp->rq_server;
@@ -1032,7 +672,6 @@ static bool svc_alloc_arg(struct svc_rqst *rqstp)
 	rqstp->rq_pages[pages] = NULL; /* this might be seen in nfsd_splice_actor() */
 
 	/* Make arg->head point to first page and arg->pages point to rest */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	arg->head[0].iov_base = page_address(rqstp->rq_pages[0]);
 	arg->head[0].iov_len = PAGE_SIZE;
 	arg->pages = rqstp->rq_pages + 1;
@@ -1042,80 +681,6 @@ static bool svc_alloc_arg(struct svc_rqst *rqstp)
 	arg->len = (pages-1)*PAGE_SIZE;
 	arg->tail[0].iov_len = 0;
 
-<<<<<<< HEAD
-	try_to_freeze();
-	cond_resched();
-	if (signalled() || kthread_should_stop())
-		return -EINTR;
-
-	/* Normally we will wait up to 5 seconds for any required
-	 * cache information to be provided.
-	 */
-	rqstp->rq_chandle.thread_wait = 5*HZ;
-
-	spin_lock_bh(&pool->sp_lock);
-	xprt = svc_xprt_dequeue(pool);
-	if (xprt) {
-		rqstp->rq_xprt = xprt;
-		svc_xprt_get(xprt);
-
-		/* As there is a shortage of threads and this request
-		 * had to be queued, don't allow the thread to wait so
-		 * long for cache updates.
-		 */
-		rqstp->rq_chandle.thread_wait = 1*HZ;
-	} else {
-		/* No data pending. Go to sleep */
-		svc_thread_enqueue(pool, rqstp);
-
-		/*
-		 * We have to be able to interrupt this wait
-		 * to bring down the daemons ...
-		 */
-		set_current_state(TASK_INTERRUPTIBLE);
-
-		/*
-		 * checking kthread_should_stop() here allows us to avoid
-		 * locking and signalling when stopping kthreads that call
-		 * svc_recv. If the thread has already been woken up, then
-		 * we can exit here without sleeping. If not, then it
-		 * it'll be woken up quickly during the schedule_timeout
-		 */
-		if (kthread_should_stop()) {
-			set_current_state(TASK_RUNNING);
-			spin_unlock_bh(&pool->sp_lock);
-			return -EINTR;
-		}
-
-		add_wait_queue(&rqstp->rq_wait, &wait);
-		spin_unlock_bh(&pool->sp_lock);
-
-		time_left = schedule_timeout(timeout);
-
-		try_to_freeze();
-
-		spin_lock_bh(&pool->sp_lock);
-		remove_wait_queue(&rqstp->rq_wait, &wait);
-		if (!time_left)
-			pool->sp_stats.threads_timedout++;
-
-		xprt = rqstp->rq_xprt;
-		if (!xprt) {
-			svc_thread_dequeue(pool, rqstp);
-			spin_unlock_bh(&pool->sp_lock);
-			dprintk("svc: server %p, no data yet\n", rqstp);
-			if (signalled() || kthread_should_stop())
-				return -EINTR;
-			else
-				return -EAGAIN;
-		}
-	}
-	spin_unlock_bh(&pool->sp_lock);
-
-	len = 0;
-	if (test_bit(XPT_CLOSE, &xprt->xpt_flags)) {
-		dprintk("svc_recv: found XPT_CLOSE\n");
-=======
 	rqstp->rq_xid = xdr_zero;
 	return true;
 }
@@ -1201,42 +766,12 @@ static void svc_handle_xprt(struct svc_rqst *rqstp, struct svc_xprt *xprt)
 	if (test_bit(XPT_CLOSE, &xprt->xpt_flags)) {
 		if (test_and_clear_bit(XPT_KILL_TEMP, &xprt->xpt_flags))
 			xprt->xpt_ops->xpo_kill_temp_xprt(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		svc_delete_xprt(xprt);
 		/* Leave XPT_BUSY set on the dead xprt: */
 		goto out;
 	}
 	if (test_bit(XPT_LISTENER, &xprt->xpt_flags)) {
 		struct svc_xprt *newxpt;
-<<<<<<< HEAD
-		newxpt = xprt->xpt_ops->xpo_accept(xprt);
-		if (newxpt) {
-			/*
-			 * We know this module_get will succeed because the
-			 * listener holds a reference too
-			 */
-			__module_get(newxpt->xpt_class->xcl_owner);
-			svc_check_conn_limits(xprt->xpt_server);
-			spin_lock_bh(&serv->sv_lock);
-			set_bit(XPT_TEMP, &newxpt->xpt_flags);
-			list_add(&newxpt->xpt_list, &serv->sv_tempsocks);
-			serv->sv_tmpcnt++;
-			if (serv->sv_temptimer.function == NULL) {
-				/* setup timer to age temp transports */
-				setup_timer(&serv->sv_temptimer,
-					    svc_age_temp_xprts,
-					    (unsigned long)serv);
-				mod_timer(&serv->sv_temptimer,
-					  jiffies + svc_conn_age_period * HZ);
-			}
-			spin_unlock_bh(&serv->sv_lock);
-			svc_xprt_received(newxpt);
-		}
-	} else if (xprt->xpt_ops->xpo_has_wspace(xprt)) {
-		dprintk("svc: server %p, pool %u, transport %p, inuse=%d\n",
-			rqstp, pool->sp_id, xprt,
-			atomic_read(&xprt->xpt_ref.refcount));
-=======
 		/*
 		 * We know this module_get will succeed because the
 		 * listener holds a reference too
@@ -1257,36 +792,11 @@ static void svc_handle_xprt(struct svc_rqst *rqstp, struct svc_xprt *xprt)
 		svc_xprt_received(xprt);
 	} else if (svc_xprt_reserve_slot(rqstp, xprt)) {
 		/* XPT_DATA|XPT_DEFERRED case: */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rqstp->rq_deferred = svc_deferred_dequeue(xprt);
 		if (rqstp->rq_deferred)
 			len = svc_deferred_recv(rqstp);
 		else
 			len = xprt->xpt_ops->xpo_recvfrom(rqstp);
-<<<<<<< HEAD
-		dprintk("svc: got len=%d\n", len);
-		rqstp->rq_reserved = serv->sv_max_mesg;
-		atomic_add(rqstp->rq_reserved, &xprt->xpt_reserved);
-	}
-	svc_xprt_received(xprt);
-
-	/* No data, incomplete (TCP) read, or accept() */
-	if (len == 0 || len == -EAGAIN)
-		goto out;
-
-	clear_bit(XPT_OLD, &xprt->xpt_flags);
-
-	rqstp->rq_secure = svc_port_is_privileged(svc_addr(rqstp));
-	rqstp->rq_chandle.defer = svc_defer;
-
-	if (serv->sv_stats)
-		serv->sv_stats->netcnt++;
-	return len;
-out:
-	rqstp->rq_res.len = 0;
-	svc_xprt_release(rqstp);
-	return -EAGAIN;
-=======
 		rqstp->rq_reserved = serv->sv_max_mesg;
 		atomic_add(rqstp->rq_reserved, &xprt->xpt_reserved);
 		if (len <= 0)
@@ -1375,7 +885,6 @@ void svc_recv(struct svc_rqst *rqstp)
 		}
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(svc_recv);
 
@@ -1384,28 +893,6 @@ EXPORT_SYMBOL_GPL(svc_recv);
  */
 void svc_drop(struct svc_rqst *rqstp)
 {
-<<<<<<< HEAD
-	dprintk("svc: xprt %p dropped request\n", rqstp->rq_xprt);
-	svc_xprt_release(rqstp);
-}
-EXPORT_SYMBOL_GPL(svc_drop);
-
-/*
- * Return reply to client.
- */
-int svc_send(struct svc_rqst *rqstp)
-{
-	struct svc_xprt	*xprt;
-	int		len;
-	struct xdr_buf	*xb;
-
-	xprt = rqstp->rq_xprt;
-	if (!xprt)
-		return -EFAULT;
-
-	/* release the receive skb before sending the reply */
-	rqstp->rq_xprt->xpt_ops->xpo_release_rqst(rqstp);
-=======
 	trace_svc_drop(rqstp);
 }
 EXPORT_SYMBOL_GPL(svc_drop);
@@ -1422,52 +909,27 @@ void svc_send(struct svc_rqst *rqstp)
 	int status;
 
 	xprt = rqstp->rq_xprt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* calculate over-all length */
 	xb = &rqstp->rq_res;
 	xb->len = xb->head[0].iov_len +
 		xb->page_len +
 		xb->tail[0].iov_len;
-<<<<<<< HEAD
-
-	/* Grab mutex to serialize outgoing data. */
-	mutex_lock(&xprt->xpt_mutex);
-	if (test_bit(XPT_DEAD, &xprt->xpt_flags)
-			|| test_bit(XPT_CLOSE, &xprt->xpt_flags))
-		len = -ENOTCONN;
-	else
-		len = xprt->xpt_ops->xpo_sendto(rqstp);
-	mutex_unlock(&xprt->xpt_mutex);
-	rpc_wake_up(&xprt->xpt_bc_pending);
-	svc_xprt_release(rqstp);
-
-	if (len == -ECONNREFUSED || len == -ENOTCONN || len == -EAGAIN)
-		return 0;
-	return len;
-=======
 	trace_svc_xdr_sendto(rqstp->rq_xid, xb);
 	trace_svc_stats_latency(rqstp);
 
 	status = xprt->xpt_ops->xpo_sendto(rqstp);
 
 	trace_svc_send(rqstp, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Timer function to close old temporary transports, using
  * a mark-and-sweep algorithm.
  */
-<<<<<<< HEAD
-static void svc_age_temp_xprts(unsigned long closure)
-{
-	struct svc_serv *serv = (struct svc_serv *)closure;
-=======
 static void svc_age_temp_xprts(struct timer_list *t)
 {
 	struct svc_serv *serv = from_timer(serv, t, sv_temptimer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct svc_xprt *xprt;
 	struct list_head *le, *next;
 
@@ -1487,19 +949,11 @@ static void svc_age_temp_xprts(struct timer_list *t)
 		 * through, close it. */
 		if (!test_and_set_bit(XPT_OLD, &xprt->xpt_flags))
 			continue;
-<<<<<<< HEAD
-		if (atomic_read(&xprt->xpt_ref.refcount) > 1 ||
-=======
 		if (kref_read(&xprt->xpt_ref) > 1 ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    test_bit(XPT_BUSY, &xprt->xpt_flags))
 			continue;
 		list_del_init(le);
 		set_bit(XPT_CLOSE, &xprt->xpt_flags);
-<<<<<<< HEAD
-		set_bit(XPT_DETACHED, &xprt->xpt_flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk("queuing xprt %p for closing\n", xprt);
 
 		/* a thread will dequeue and close it soon */
@@ -1510,8 +964,6 @@ static void svc_age_temp_xprts(struct timer_list *t)
 	mod_timer(&serv->sv_temptimer, jiffies + svc_conn_age_period * HZ);
 }
 
-<<<<<<< HEAD
-=======
 /* Close temporary transports whose xpt_local matches server_addr immediately
  * instead of waiting for them to be picked up by the timer.
  *
@@ -1548,7 +1000,6 @@ void svc_age_temp_xprts_now(struct svc_serv *serv, struct sockaddr *server_addr)
 }
 EXPORT_SYMBOL_GPL(svc_age_temp_xprts_now);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void call_xpt_users(struct svc_xprt *xprt)
 {
 	struct svc_xpt_user *u;
@@ -1556,11 +1007,7 @@ static void call_xpt_users(struct svc_xprt *xprt)
 	spin_lock(&xprt->xpt_lock);
 	while (!list_empty(&xprt->xpt_users)) {
 		u = list_first_entry(&xprt->xpt_users, struct svc_xpt_user, list);
-<<<<<<< HEAD
-		list_del(&u->list);
-=======
 		list_del_init(&u->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u->callback(u);
 	}
 	spin_unlock(&xprt->xpt_lock);
@@ -1574,19 +1021,6 @@ static void svc_delete_xprt(struct svc_xprt *xprt)
 	struct svc_serv	*serv = xprt->xpt_server;
 	struct svc_deferred_req *dr;
 
-<<<<<<< HEAD
-	/* Only do this once */
-	if (test_and_set_bit(XPT_DEAD, &xprt->xpt_flags))
-		BUG();
-
-	dprintk("svc: svc_delete_xprt(%p)\n", xprt);
-	xprt->xpt_ops->xpo_detach(xprt);
-
-	spin_lock_bh(&serv->sv_lock);
-	if (!test_and_set_bit(XPT_DETACHED, &xprt->xpt_flags))
-		list_del_init(&xprt->xpt_list);
-	BUG_ON(!list_empty(&xprt->xpt_ready));
-=======
 	if (test_and_set_bit(XPT_DEAD, &xprt->xpt_flags))
 		return;
 
@@ -1597,26 +1031,17 @@ static void svc_delete_xprt(struct svc_xprt *xprt)
 
 	spin_lock_bh(&serv->sv_lock);
 	list_del_init(&xprt->xpt_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(XPT_TEMP, &xprt->xpt_flags))
 		serv->sv_tmpcnt--;
 	spin_unlock_bh(&serv->sv_lock);
 
 	while ((dr = svc_deferred_dequeue(xprt)) != NULL)
-<<<<<<< HEAD
-		kfree(dr);
-=======
 		free_deferred(xprt, dr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	call_xpt_users(xprt);
 	svc_xprt_put(xprt);
 }
 
-<<<<<<< HEAD
-void svc_close_xprt(struct svc_xprt *xprt)
-{
-=======
 /**
  * svc_xprt_close - Close a client connection
  * @xprt: transport to disconnect
@@ -1625,7 +1050,6 @@ void svc_close_xprt(struct svc_xprt *xprt)
 void svc_xprt_close(struct svc_xprt *xprt)
 {
 	trace_svc_xprt_close(xprt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(XPT_CLOSE, &xprt->xpt_flags);
 	if (test_and_set_bit(XPT_BUSY, &xprt->xpt_flags))
 		/* someone else will have to effect the close */
@@ -1638,70 +1062,6 @@ void svc_xprt_close(struct svc_xprt *xprt)
 	 */
 	svc_delete_xprt(xprt);
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(svc_close_xprt);
-
-static void svc_close_list(struct list_head *xprt_list, struct net *net)
-{
-	struct svc_xprt *xprt;
-
-	list_for_each_entry(xprt, xprt_list, xpt_list) {
-		if (xprt->xpt_net != net)
-			continue;
-		set_bit(XPT_CLOSE, &xprt->xpt_flags);
-		set_bit(XPT_BUSY, &xprt->xpt_flags);
-	}
-}
-
-static void svc_clear_pools(struct svc_serv *serv, struct net *net)
-{
-	struct svc_pool *pool;
-	struct svc_xprt *xprt;
-	struct svc_xprt *tmp;
-	int i;
-
-	for (i = 0; i < serv->sv_nrpools; i++) {
-		pool = &serv->sv_pools[i];
-
-		spin_lock_bh(&pool->sp_lock);
-		list_for_each_entry_safe(xprt, tmp, &pool->sp_sockets, xpt_ready) {
-			if (xprt->xpt_net != net)
-				continue;
-			list_del_init(&xprt->xpt_ready);
-		}
-		spin_unlock_bh(&pool->sp_lock);
-	}
-}
-
-static void svc_clear_list(struct list_head *xprt_list, struct net *net)
-{
-	struct svc_xprt *xprt;
-	struct svc_xprt *tmp;
-
-	list_for_each_entry_safe(xprt, tmp, xprt_list, xpt_list) {
-		if (xprt->xpt_net != net)
-			continue;
-		svc_delete_xprt(xprt);
-	}
-	list_for_each_entry(xprt, xprt_list, xpt_list)
-		BUG_ON(xprt->xpt_net == net);
-}
-
-void svc_close_net(struct svc_serv *serv, struct net *net)
-{
-	svc_close_list(&serv->sv_tempsocks, net);
-	svc_close_list(&serv->sv_permsocks, net);
-
-	svc_clear_pools(serv, net);
-	/*
-	 * At this point the sp_sockets lists will stay empty, since
-	 * svc_enqueue will not add new entries without taking the
-	 * sp_lock and checking XPT_BUSY.
-	 */
-	svc_clear_list(&serv->sv_tempsocks, net);
-	svc_clear_list(&serv->sv_permsocks, net);
-}
-=======
 EXPORT_SYMBOL_GPL(svc_xprt_close);
 
 static int svc_close_list(struct svc_serv *serv, struct list_head *xprt_list, struct net *net)
@@ -1772,7 +1132,6 @@ void svc_xprt_destroy_all(struct svc_serv *serv, struct net *net)
 	}
 }
 EXPORT_SYMBOL_GPL(svc_xprt_destroy_all);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Handle defer and revisit of requests
@@ -1788,17 +1147,6 @@ static void svc_revisit(struct cache_deferred_req *dreq, int too_many)
 	set_bit(XPT_DEFERRED, &xprt->xpt_flags);
 	if (too_many || test_bit(XPT_DEAD, &xprt->xpt_flags)) {
 		spin_unlock(&xprt->xpt_lock);
-<<<<<<< HEAD
-		dprintk("revisit canceled\n");
-		svc_xprt_put(xprt);
-		kfree(dr);
-		return;
-	}
-	dprintk("revisit queued\n");
-	dr->xprt = NULL;
-	list_add(&dr->handle.recent, &xprt->xpt_deferred);
-	spin_unlock(&xprt->xpt_lock);
-=======
 		trace_svc_defer_drop(dr);
 		free_deferred(xprt, dr);
 		svc_xprt_put(xprt);
@@ -1808,7 +1156,6 @@ static void svc_revisit(struct cache_deferred_req *dreq, int too_many)
 	list_add(&dr->handle.recent, &xprt->xpt_deferred);
 	spin_unlock(&xprt->xpt_lock);
 	trace_svc_defer_queue(dr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	svc_xprt_enqueue(xprt);
 	svc_xprt_put(xprt);
 }
@@ -1827,11 +1174,7 @@ static struct cache_deferred_req *svc_defer(struct cache_req *req)
 	struct svc_rqst *rqstp = container_of(req, struct svc_rqst, rq_chandle);
 	struct svc_deferred_req *dr;
 
-<<<<<<< HEAD
-	if (rqstp->rq_arg.page_len || !rqstp->rq_usedeferral)
-=======
 	if (rqstp->rq_arg.page_len || !test_bit(RQ_USEDEFERRAL, &rqstp->rq_flags))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL; /* if more than a page, give up FIXME */
 	if (rqstp->rq_deferred) {
 		dr = rqstp->rq_deferred;
@@ -1851,28 +1194,18 @@ static struct cache_deferred_req *svc_defer(struct cache_req *req)
 		dr->addrlen = rqstp->rq_addrlen;
 		dr->daddr = rqstp->rq_daddr;
 		dr->argslen = rqstp->rq_arg.len >> 2;
-<<<<<<< HEAD
-		dr->xprt_hlen = rqstp->rq_xprt_hlen;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* back up head to the start of the buffer and copy */
 		skip = rqstp->rq_arg.len - rqstp->rq_arg.head[0].iov_len;
 		memcpy(dr->args, rqstp->rq_arg.head[0].iov_base - skip,
 		       dr->argslen << 2);
 	}
-<<<<<<< HEAD
-	svc_xprt_get(rqstp->rq_xprt);
-	dr->xprt = rqstp->rq_xprt;
-	rqstp->rq_dropme = true;
-=======
 	dr->xprt_ctxt = rqstp->rq_xprt_ctxt;
 	rqstp->rq_xprt_ctxt = NULL;
 	trace_svc_defer(rqstp);
 	svc_xprt_get(rqstp->rq_xprt);
 	dr->xprt = rqstp->rq_xprt;
 	set_bit(RQ_DROPME, &rqstp->rq_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dr->handle.revisit = svc_revisit;
 	return &dr->handle;
@@ -1881,19 +1214,6 @@ static struct cache_deferred_req *svc_defer(struct cache_req *req)
 /*
  * recv data from a deferred request into an active one
  */
-<<<<<<< HEAD
-static int svc_deferred_recv(struct svc_rqst *rqstp)
-{
-	struct svc_deferred_req *dr = rqstp->rq_deferred;
-
-	/* setup iov_base past transport header */
-	rqstp->rq_arg.head[0].iov_base = dr->args + (dr->xprt_hlen>>2);
-	/* The iov_len does not include the transport header bytes */
-	rqstp->rq_arg.head[0].iov_len = (dr->argslen<<2) - dr->xprt_hlen;
-	rqstp->rq_arg.page_len = 0;
-	/* The rq_arg.len includes the transport header bytes */
-	rqstp->rq_arg.len     = dr->argslen<<2;
-=======
 static noinline int svc_deferred_recv(struct svc_rqst *rqstp)
 {
 	struct svc_deferred_req *dr = rqstp->rq_deferred;
@@ -1907,17 +1227,10 @@ static noinline int svc_deferred_recv(struct svc_rqst *rqstp)
 	rqstp->rq_arg.page_len = 0;
 	/* The rq_arg.len includes the transport header bytes */
 	rqstp->rq_arg.len     = dr->argslen << 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rqstp->rq_prot        = dr->prot;
 	memcpy(&rqstp->rq_addr, &dr->addr, dr->addrlen);
 	rqstp->rq_addrlen     = dr->addrlen;
 	/* Save off transport header len in case we get deferred again */
-<<<<<<< HEAD
-	rqstp->rq_xprt_hlen   = dr->xprt_hlen;
-	rqstp->rq_daddr       = dr->daddr;
-	rqstp->rq_respages    = rqstp->rq_pages;
-	return (dr->argslen<<2) - dr->xprt_hlen;
-=======
 	rqstp->rq_daddr       = dr->daddr;
 	rqstp->rq_respages    = rqstp->rq_pages;
 	rqstp->rq_xprt_ctxt   = dr->xprt_ctxt;
@@ -1925,7 +1238,6 @@ static noinline int svc_deferred_recv(struct svc_rqst *rqstp)
 	dr->xprt_ctxt = NULL;
 	svc_xprt_received(rqstp->rq_xprt);
 	return dr->argslen << 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -2050,24 +1362,11 @@ int svc_xprt_names(struct svc_serv *serv, char *buf, const int buflen)
 }
 EXPORT_SYMBOL_GPL(svc_xprt_names);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*----------------------------------------------------------------------------*/
 
 static void *svc_pool_stats_start(struct seq_file *m, loff_t *pos)
 {
 	unsigned int pidx = (unsigned int)*pos;
-<<<<<<< HEAD
-	struct svc_serv *serv = m->private;
-
-	dprintk("svc_pool_stats_start, *pidx=%u\n", pidx);
-
-	if (!pidx)
-		return SEQ_START_TOKEN;
-	return (pidx > serv->sv_nrpools ? NULL : &serv->sv_pools[pidx-1]);
-=======
 	struct svc_info *si = m->private;
 
 	dprintk("svc_pool_stats_start, *pidx=%u\n", pidx);
@@ -2080,19 +1379,11 @@ static void *svc_pool_stats_start(struct seq_file *m, loff_t *pos)
 		return NULL;
 	return pidx > si->serv->sv_nrpools ? NULL
 		: &si->serv->sv_pools[pidx - 1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *svc_pool_stats_next(struct seq_file *m, void *p, loff_t *pos)
 {
 	struct svc_pool *pool = p;
-<<<<<<< HEAD
-	struct svc_serv *serv = m->private;
-
-	dprintk("svc_pool_stats_next, *pos=%llu\n", *pos);
-
-	if (p == SEQ_START_TOKEN) {
-=======
 	struct svc_info *si = m->private;
 	struct svc_serv *serv = si->serv;
 
@@ -2101,7 +1392,6 @@ static void *svc_pool_stats_next(struct seq_file *m, void *p, loff_t *pos)
 	if (!serv) {
 		pool = NULL;
 	} else if (p == SEQ_START_TOKEN) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pool = &serv->sv_pools[0];
 	} else {
 		unsigned int pidx = (pool - &serv->sv_pools[0]);
@@ -2116,12 +1406,9 @@ static void *svc_pool_stats_next(struct seq_file *m, void *p, loff_t *pos)
 
 static void svc_pool_stats_stop(struct seq_file *m, void *p)
 {
-<<<<<<< HEAD
-=======
 	struct svc_info *si = m->private;
 
 	mutex_unlock(si->mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int svc_pool_stats_show(struct seq_file *m, void *p)
@@ -2133,20 +1420,11 @@ static int svc_pool_stats_show(struct seq_file *m, void *p)
 		return 0;
 	}
 
-<<<<<<< HEAD
-	seq_printf(m, "%u %lu %lu %lu %lu\n",
-		pool->sp_id,
-		pool->sp_stats.packets,
-		pool->sp_stats.sockets_queued,
-		pool->sp_stats.threads_woken,
-		pool->sp_stats.threads_timedout);
-=======
 	seq_printf(m, "%u %llu %llu %llu 0\n",
 		   pool->sp_id,
 		   percpu_counter_sum_positive(&pool->sp_messages_arrived),
 		   percpu_counter_sum_positive(&pool->sp_sockets_queued),
 		   percpu_counter_sum_positive(&pool->sp_threads_woken));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2158,16 +1436,6 @@ static const struct seq_operations svc_pool_stats_seq_ops = {
 	.show	= svc_pool_stats_show,
 };
 
-<<<<<<< HEAD
-int svc_pool_stats_open(struct svc_serv *serv, struct file *file)
-{
-	int err;
-
-	err = seq_open(file, &svc_pool_stats_seq_ops);
-	if (!err)
-		((struct seq_file *) file->private_data)->private = serv;
-	return err;
-=======
 int svc_pool_stats_open(struct svc_info *info, struct file *file)
 {
 	struct seq_file *seq;
@@ -2180,7 +1448,6 @@ int svc_pool_stats_open(struct svc_info *info, struct file *file)
 	seq->private = info;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(svc_pool_stats_open);
 

@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-ifndef NO_DWARF
-PERF_HAVE_DWARF_REGS := 1
-LIB_OBJS += $(OUTPUT)arch/$(ARCH)/util/dwarf-regs.o
-endif
-LIB_OBJS += $(OUTPUT)arch/$(ARCH)/util/header.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 ifndef NO_DWARF
 PERF_HAVE_DWARF_REGS := 1
@@ -38,4 +31,3 @@ clean::
 	$(call QUIET_CLEAN, powerpc) $(RM) $(header32) $(header64)
 
 archheaders: $(header32) $(header64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

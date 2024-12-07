@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
- * Copyright (c) 2006 Oracle.  All rights reserved.
-=======
  * Copyright (c) 2006, 2017 Oracle and/or its affiliates. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -37,22 +33,16 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/in.h>
-<<<<<<< HEAD
-
-=======
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
 #include <linux/ipv6.h>
 
 #include "rds_single_path.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rds.h"
 #include "loop.h"
 
 static DEFINE_SPINLOCK(loop_conns_lock);
 static LIST_HEAD(loop_conns);
-<<<<<<< HEAD
-=======
 static atomic_t rds_loop_unloading = ATOMIC_INIT(0);
 
 static void rds_loop_set_unloading(void)
@@ -64,7 +54,6 @@ static bool rds_loop_is_unloading(struct rds_connection *conn)
 {
 	return atomic_read(&rds_loop_unloading) != 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This 'loopback' transport is a special case for flows that originate
@@ -100,19 +89,11 @@ static int rds_loop_xmit(struct rds_connection *conn, struct rds_message *rm,
 
 	BUG_ON(hdr_off || sg || off);
 
-<<<<<<< HEAD
-	rds_inc_init(&rm->m_inc, conn, conn->c_laddr);
-	/* For the embedded inc. Matching put is in loop_inc_free() */
-	rds_message_addref(rm);
-
-	rds_recv_incoming(conn, conn->c_laddr, conn->c_faddr, &rm->m_inc,
-=======
 	rds_inc_init(&rm->m_inc, conn, &conn->c_laddr);
 	/* For the embedded inc. Matching put is in loop_inc_free() */
 	rds_message_addref(rm);
 
 	rds_recv_incoming(conn, &conn->c_laddr, &conn->c_faddr, &rm->m_inc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  GFP_KERNEL);
 
 	rds_send_drop_acked(conn, be64_to_cpu(rm->m_inc.i_hdr.h_sequence),
@@ -129,14 +110,6 @@ out:
  */
 static void rds_loop_inc_free(struct rds_incoming *inc)
 {
-<<<<<<< HEAD
-        struct rds_message *rm = container_of(inc, struct rds_message, m_inc);
-        rds_message_put(rm);
-}
-
-/* we need to at least give the thread something to succeed */
-static int rds_loop_recv(struct rds_connection *conn)
-=======
 	struct rds_message *rm = container_of(inc, struct rds_message, m_inc);
 
 	rds_message_put(rm);
@@ -144,7 +117,6 @@ static int rds_loop_recv(struct rds_connection *conn)
 
 /* we need to at least give the thread something to succeed */
 static int rds_loop_recv_path(struct rds_conn_path *cp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -192,15 +164,6 @@ static void rds_loop_conn_free(void *arg)
 	kfree(lc);
 }
 
-<<<<<<< HEAD
-static int rds_loop_conn_connect(struct rds_connection *conn)
-{
-	rds_connect_complete(conn);
-	return 0;
-}
-
-static void rds_loop_conn_shutdown(struct rds_connection *conn)
-=======
 static int rds_loop_conn_path_connect(struct rds_conn_path *cp)
 {
 	rds_connect_complete(cp->cp_conn);
@@ -208,7 +171,6 @@ static int rds_loop_conn_path_connect(struct rds_conn_path *cp)
 }
 
 static void rds_loop_conn_path_shutdown(struct rds_conn_path *cp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -217,11 +179,8 @@ void rds_loop_exit(void)
 	struct rds_loop_connection *lc, *_lc;
 	LIST_HEAD(tmp_list);
 
-<<<<<<< HEAD
-=======
 	rds_loop_set_unloading();
 	synchronize_rcu();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* avoid calling conn_destroy with irqs off */
 	spin_lock_irq(&loop_conns_lock);
 	list_splice(&loop_conns, &tmp_list);
@@ -234,8 +193,6 @@ void rds_loop_exit(void)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void rds_loop_kill_conns(struct net *net)
 {
 	struct rds_loop_connection *lc, *_lc;
@@ -276,7 +233,6 @@ void rds_loop_net_exit(void)
 	unregister_pernet_device(&rds_loop_net_ops);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is missing .xmit_* because loop doesn't go through generic
  * rds_send_xmit() and doesn't call rds_recv_incoming().  .listen_stop and
@@ -285,16 +241,6 @@ void rds_loop_net_exit(void)
  */
 struct rds_transport rds_loop_transport = {
 	.xmit			= rds_loop_xmit,
-<<<<<<< HEAD
-	.recv			= rds_loop_recv,
-	.conn_alloc		= rds_loop_conn_alloc,
-	.conn_free		= rds_loop_conn_free,
-	.conn_connect		= rds_loop_conn_connect,
-	.conn_shutdown		= rds_loop_conn_shutdown,
-	.inc_copy_to_user	= rds_message_inc_copy_to_user,
-	.inc_free		= rds_loop_inc_free,
-	.t_name			= "loopback",
-=======
 	.recv_path		= rds_loop_recv_path,
 	.conn_alloc		= rds_loop_conn_alloc,
 	.conn_free		= rds_loop_conn_free,
@@ -305,5 +251,4 @@ struct rds_transport rds_loop_transport = {
 	.t_name			= "loopback",
 	.t_type			= RDS_TRANS_LOOP,
 	.t_unloading		= rds_loop_is_unloading,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

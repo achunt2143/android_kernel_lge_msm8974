@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_DEVCMD_H_
@@ -155,10 +135,6 @@ enum vnic_devcmd_cmd {
 	/* del VLAN id in (u16)a0 */
 	CMD_VLAN_DEL            = _CMDCNW(_CMD_DIR_WRITE, _CMD_VTYPE_ENET, 15),
 
-<<<<<<< HEAD
-	/* nic_cfg in (u32)a0 */
-	CMD_NIC_CFG             = _CMDCNW(_CMD_DIR_WRITE, _CMD_VTYPE_ALL, 16),
-=======
 	/* nic_cfg (no wait, always succeeds)
 	 * in: (u32)a0
 	 *
@@ -179,7 +155,6 @@ enum vnic_devcmd_cmd {
 	 * flags are CMD_NIC_CFG_CAPF_xxx
 	 */
 	CMD_NIC_CFG_CHK		= _CMDC(_CMD_DIR_WRITE, _CMD_VTYPE_ALL, 16),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* union vnic_rss_key in mem: (u64)a0=paddr, (u16)a1=len */
 	CMD_RSS_KEY             = _CMDC(_CMD_DIR_WRITE, _CMD_VTYPE_ENET, 17),
@@ -311,8 +286,6 @@ enum vnic_devcmd_cmd {
 	 *              0 if no VIF-CONFIG-INFO TLV was ever received. */
 	CMD_CONFIG_INFO_GET     = _CMDC(_CMD_DIR_RW, _CMD_VTYPE_ALL, 44),
 
-<<<<<<< HEAD
-=======
 	/* INT13 API: (u64)a0=paddr to vnic_int13_params struct
 	 *            (u32)a1=INT13_CMD_xxx
 	 */
@@ -326,17 +299,12 @@ enum vnic_devcmd_cmd {
 	 */
 	CMD_SET_DEFAULT_VLAN = _CMDC(_CMD_DIR_RW, _CMD_VTYPE_ALL, 46),
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* init_prov_info2:
 	 * Variant of CMD_INIT_PROV_INFO, where it will not try to enable
 	 * the vnic until CMD_ENABLE2 is issued.
 	 *     (u64)a0=paddr of vnic_devcmd_provinfo
-<<<<<<< HEAD
-	 *     (u32)a1=sizeof provision info */
-=======
 	 *     (u32)a1=sizeof provision info
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CMD_INIT_PROV_INFO2  = _CMDC(_CMD_DIR_WRITE, _CMD_VTYPE_ENET, 47),
 
 	/* enable2:
@@ -390,18 +358,6 @@ enum vnic_devcmd_cmd {
 	CMD_INTR_COAL_CONVERT = _CMDC(_CMD_DIR_READ, _CMD_VTYPE_ALL, 50),
 
 	/*
-<<<<<<< HEAD
-	 * cmd_set_mac_addr
-	 *	set mac address
-	 * in:
-	 *   (u48)a0 = mac addr
-	 *
-	 */
-	CMD_SET_MAC_ADDR = _CMDC(_CMD_DIR_WRITE, _CMD_VTYPE_ENET, 55),
-};
-
-/* CMD_ENABLE2 flags */
-=======
 	 * Set the predefined mac address as default
 	 * in:
 	 *   (u48)a0 = mac addr
@@ -484,15 +440,11 @@ enum vnic_devcmd_cmd {
 
 /* CMD_ENABLE2 flags */
 #define CMD_ENABLE2_STANDBY 0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CMD_ENABLE2_ACTIVE  0x1
 
 /* flags for CMD_OPEN */
 #define CMD_OPENF_OPROM		0x1	/* open coming from option rom */
-<<<<<<< HEAD
-=======
 #define CMD_OPENF_IG_DESCCACHE	0x2	/* Do not flush IG DESC cache */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* flags for CMD_INIT */
 #define CMD_INITF_DEFAULT_MAC	0x1	/* init with default mac addr */
@@ -504,12 +456,9 @@ enum vnic_devcmd_cmd {
 #define CMD_PFILTER_PROMISCUOUS		0x08
 #define CMD_PFILTER_ALL_MULTICAST	0x10
 
-<<<<<<< HEAD
-=======
 /* Commands for CMD_QP_ENABLE/CM_QP_DISABLE */
 #define CMD_QP_RQWQ                     0x0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* rewrite modes for CMD_IG_VLAN_REWRITE_MODE */
 #define IG_VLAN_REWRITE_MODE_DEFAULT_TRUNK              0
 #define IG_VLAN_REWRITE_MODE_UNTAG_DEFAULT_VLAN         1
@@ -536,10 +485,7 @@ enum vnic_devcmd_error {
 	ERR_EMAXRES = 10,
 	ERR_ENOTSUPPORTED = 11,
 	ERR_EINPROGRESS = 12,
-<<<<<<< HEAD
-=======
 	ERR_MAX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -582,9 +528,6 @@ struct vnic_devcmd_notify {
 struct vnic_devcmd_provinfo {
 	u8 oui[3];
 	u8 type;
-<<<<<<< HEAD
-	u8 data[0];
-=======
 	u8 data[];
 };
 
@@ -700,7 +643,6 @@ struct filter_tlv {
 enum {
 	CLSF_ADD = 0,
 	CLSF_DEL = 1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -724,8 +666,6 @@ struct vnic_devcmd {
 	u64 args[VNIC_DEVCMD_NARGS];	/* RW cmd args (little-endian) */
 };
 
-<<<<<<< HEAD
-=======
 #define DEVCMD2_FNORESULT	0x1	/* Don't copy result to host */
 
 #define VNIC_DEVCMD2_NARGS	VNIC_DEVCMD_NARGS
@@ -778,5 +718,4 @@ enum vic_feature_t {
 	VIC_FEATURE_MAX,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _VNIC_DEVCMD_H_ */

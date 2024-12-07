@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  pata_sch.c - Intel SCH PATA controllers
  *
  *  Copyright (c) 2008 Alek Du <alek.du@intel.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License 2 as published
- *  by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -34,10 +14,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -75,21 +51,13 @@ static struct pci_driver sch_pci_driver = {
 	.id_table		= sch_pci_tbl,
 	.probe			= sch_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static struct scsi_host_template sch_sht = {
-=======
 static const struct scsi_host_template sch_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -100,11 +68,7 @@ static struct ata_port_operations sch_pata_ops = {
 	.set_dmamode		= sch_set_dmamode,
 };
 
-<<<<<<< HEAD
-static struct ata_port_info sch_port_info = {
-=======
 static const struct ata_port_info sch_port_info = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= ATA_FLAG_SLAVE_POSS,
 	.pio_mask	= ATA_PIO4,
 	.mwdma_mask	= ATA_MWDMA2,
@@ -191,12 +155,7 @@ static void sch_set_dmamode(struct ata_port *ap, struct ata_device *adev)
  *	Zero on success, or -ERRNO value.
  */
 
-<<<<<<< HEAD
-static int __devinit sch_init_one(struct pci_dev *pdev,
-				   const struct pci_device_id *ent)
-=======
 static int sch_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ata_port_info *ppi[] = { &sch_port_info, NULL };
 
@@ -205,19 +164,4 @@ static int sch_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return ata_pci_bmdma_init_one(pdev, ppi, &sch_sht, NULL, 0);
 }
 
-<<<<<<< HEAD
-static int __init sch_init(void)
-{
-	return pci_register_driver(&sch_pci_driver);
-}
-
-static void __exit sch_exit(void)
-{
-	pci_unregister_driver(&sch_pci_driver);
-}
-
-module_init(sch_init);
-module_exit(sch_exit);
-=======
 module_pci_driver(sch_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

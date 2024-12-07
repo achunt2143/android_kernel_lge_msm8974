@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-#ifndef _POWERPC_KERNEL_SETUP_H
-#define _POWERPC_KERNEL_SETUP_H
-
-void check_for_initrd(void);
-void do_init_bootmem(void);
-void setup_panic(void);
-extern int do_early_xmon;
-
-#endif /* _POWERPC_KERNEL_SETUP_H */
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Prototypes for functions that are shared between setup_(32|64|common).c
@@ -76,4 +65,3 @@ u32 tau_interrupts(unsigned long cpu);
 #endif /* CONFIG_TAU */
 
 #endif /* __ARCH_POWERPC_KERNEL_SETUP_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  net/dccp/diag.c
  *
  *  An implementation of the DCCP protocol
  *  Arnaldo Carvalho de Melo <acme@mandriva.com>
-<<<<<<< HEAD
- *
- *	This program is free software; you can redistribute it and/or modify it
- *	under the terms of the GNU General Public License version 2 as
- *	published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -56,20 +46,6 @@ static void dccp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
 }
 
 static void dccp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
-<<<<<<< HEAD
-		struct inet_diag_req_v2 *r, struct nlattr *bc)
-{
-	inet_diag_dump_icsk(&dccp_hashinfo, skb, cb, r, bc);
-}
-
-static int dccp_diag_dump_one(struct sk_buff *in_skb, const struct nlmsghdr *nlh,
-		struct inet_diag_req_v2 *req)
-{
-	return inet_diag_dump_one_icsk(&dccp_hashinfo, in_skb, nlh, req);
-}
-
-static const struct inet_diag_handler dccp_diag_handler = {
-=======
 			   const struct inet_diag_req_v2 *r)
 {
 	inet_diag_dump_icsk(&dccp_hashinfo, skb, cb, r);
@@ -83,15 +59,11 @@ static int dccp_diag_dump_one(struct netlink_callback *cb,
 
 static const struct inet_diag_handler dccp_diag_handler = {
 	.owner		 = THIS_MODULE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dump		 = dccp_diag_dump,
 	.dump_one	 = dccp_diag_dump_one,
 	.idiag_get_info	 = dccp_diag_get_info,
 	.idiag_type	 = IPPROTO_DCCP,
-<<<<<<< HEAD
-=======
 	.idiag_info_size = sizeof(struct tcp_info),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init dccp_diag_init(void)

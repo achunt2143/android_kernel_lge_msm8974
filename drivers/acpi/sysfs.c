@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sysfs.c - ACPI sysfs interface to userspace.
  */
 
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/kernel.h>
-#include <linux/moduleparam.h>
-#include <acpi/acpi_drivers.h>
-
-#define _COMPONENT		ACPI_SYSTEM_COMPONENT
-ACPI_MODULE_NAME("sysfs");
-
-#define PREFIX "ACPI: "
-=======
 #define pr_fmt(fmt) "ACPI: " fmt
 
 #include <linux/acpi.h>
@@ -27,7 +13,6 @@ ACPI_MODULE_NAME("sysfs");
 #include <linux/moduleparam.h>
 
 #include "internal.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ACPI_DEBUG
 /*
@@ -65,35 +50,14 @@ static const struct acpi_dlayer acpi_debug_layers[] = {
 	ACPI_DEBUG_INIT(ACPI_CA_DISASSEMBLER),
 	ACPI_DEBUG_INIT(ACPI_COMPILER),
 	ACPI_DEBUG_INIT(ACPI_TOOLS),
-<<<<<<< HEAD
-
-	ACPI_DEBUG_INIT(ACPI_BUS_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_AC_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_BATTERY_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_BUTTON_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_SBS_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_FAN_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_PCI_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_POWER_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_CONTAINER_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_SYSTEM_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_THERMAL_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_MEMORY_DEVICE_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_VIDEO_COMPONENT),
-	ACPI_DEBUG_INIT(ACPI_PROCESSOR_COMPONENT),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct acpi_dlevel acpi_debug_levels[] = {
 	ACPI_DEBUG_INIT(ACPI_LV_INIT),
 	ACPI_DEBUG_INIT(ACPI_LV_DEBUG_OBJECT),
 	ACPI_DEBUG_INIT(ACPI_LV_INFO),
-<<<<<<< HEAD
-=======
 	ACPI_DEBUG_INIT(ACPI_LV_REPAIR),
 	ACPI_DEBUG_INIT(ACPI_LV_TRACE_POINT),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_DEBUG_INIT(ACPI_LV_INIT_NAMES),
 	ACPI_DEBUG_INIT(ACPI_LV_PARSE),
@@ -187,62 +151,6 @@ static const struct kernel_param_ops param_ops_debug_level = {
 module_param_cb(debug_layer, &param_ops_debug_layer, &acpi_dbg_layer, 0644);
 module_param_cb(debug_level, &param_ops_debug_level, &acpi_dbg_level, 0644);
 
-<<<<<<< HEAD
-static char trace_method_name[6];
-module_param_string(trace_method_name, trace_method_name, 6, 0644);
-static unsigned int trace_debug_layer;
-module_param(trace_debug_layer, uint, 0644);
-static unsigned int trace_debug_level;
-module_param(trace_debug_level, uint, 0644);
-
-static int param_set_trace_state(const char *val, struct kernel_param *kp)
-{
-	int result = 0;
-
-	if (!strncmp(val, "enable", strlen("enable"))) {
-		result = acpi_debug_trace(trace_method_name, trace_debug_level,
-					  trace_debug_layer, 0);
-		if (result)
-			result = -EBUSY;
-		goto exit;
-	}
-
-	if (!strncmp(val, "disable", strlen("disable"))) {
-		int name = 0;
-		result = acpi_debug_trace((char *)&name, trace_debug_level,
-					  trace_debug_layer, 0);
-		if (result)
-			result = -EBUSY;
-		goto exit;
-	}
-
-	if (!strncmp(val, "1", 1)) {
-		result = acpi_debug_trace(trace_method_name, trace_debug_level,
-					  trace_debug_layer, 1);
-		if (result)
-			result = -EBUSY;
-		goto exit;
-	}
-
-	result = -EINVAL;
-exit:
-	return result;
-}
-
-static int param_get_trace_state(char *buffer, struct kernel_param *kp)
-{
-	if (!acpi_gbl_trace_method_name)
-		return sprintf(buffer, "disable");
-	else {
-		if (acpi_gbl_trace_flags & 1)
-			return sprintf(buffer, "1");
-		else
-			return sprintf(buffer, "enable");
-	}
-	return 0;
-}
-
-=======
 static char trace_method_name[1024];
 
 static int param_set_trace_method_name(const char *val,
@@ -356,7 +264,6 @@ static int param_get_trace_state(char *buffer, const struct kernel_param *kp)
 		return sprintf(buffer, "method\n");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_call(trace_state, param_set_trace_state, param_get_trace_state,
 		  NULL, 0644);
 #endif /* CONFIG_ACPI_DEBUG */
@@ -365,29 +272,17 @@ module_param_call(trace_state, param_set_trace_state, param_get_trace_state,
 /* /sys/modules/acpi/parameters/aml_debug_output */
 
 module_param_named(aml_debug_output, acpi_gbl_enable_aml_debug_object,
-<<<<<<< HEAD
-		   bool, 0644);
-=======
 		   byte, 0644);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(aml_debug_output,
 		 "To enable/disable the ACPI Debug Object output.");
 
 /* /sys/module/acpi/parameters/acpica_version */
-<<<<<<< HEAD
-static int param_get_acpica_version(char *buffer, struct kernel_param *kp)
-{
-	int result;
-
-	result = sprintf(buffer, "%x", ACPI_CA_VERSION);
-=======
 static int param_get_acpica_version(char *buffer,
 				    const struct kernel_param *kp)
 {
 	int result;
 
 	result = sprintf(buffer, "%x\n", ACPI_CA_VERSION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -397,26 +292,12 @@ module_param_call(acpica_version, NULL, param_get_acpica_version, NULL, 0444);
 /*
  * ACPI table sysfs I/F:
  * /sys/firmware/acpi/tables/
-<<<<<<< HEAD
-=======
  * /sys/firmware/acpi/tables/data/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * /sys/firmware/acpi/tables/dynamic/
  */
 
 static LIST_HEAD(acpi_table_attr_list);
 static struct kobject *tables_kobj;
-<<<<<<< HEAD
-static struct kobject *dynamic_tables_kobj;
-
-struct acpi_table_attr {
-	struct bin_attribute attr;
-	char name[8];
-	int instance;
-	struct list_head node;
-};
-
-=======
 static struct kobject *tables_data_kobj;
 static struct kobject *dynamic_tables_kobj;
 static struct kobject *hotplug_kobj;
@@ -437,7 +318,6 @@ struct acpi_data_attr {
 	u64	addr;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t acpi_table_show(struct file *filp, struct kobject *kobj,
 			       struct bin_attribute *bin_attr, char *buf,
 			       loff_t offset, size_t count)
@@ -446,38 +326,6 @@ static ssize_t acpi_table_show(struct file *filp, struct kobject *kobj,
 	    container_of(bin_attr, struct acpi_table_attr, attr);
 	struct acpi_table_header *table_header = NULL;
 	acpi_status status;
-<<<<<<< HEAD
-	char name[ACPI_NAME_SIZE];
-
-	if (strncmp(table_attr->name, "NULL", 4))
-		memcpy(name, table_attr->name, ACPI_NAME_SIZE);
-	else
-		memcpy(name, "\0\0\0\0", 4);
-
-	status = acpi_get_table(name, table_attr->instance, &table_header);
-	if (ACPI_FAILURE(status))
-		return -ENODEV;
-
-	return memory_read_from_buffer(buf, count, &offset,
-				       table_header, table_header->length);
-}
-
-static void acpi_table_attr_init(struct acpi_table_attr *table_attr,
-				 struct acpi_table_header *table_header)
-{
-	struct acpi_table_header *header = NULL;
-	struct acpi_table_attr *attr = NULL;
-
-	sysfs_attr_init(&table_attr->attr.attr);
-	if (table_header->signature[0] != '\0')
-		memcpy(table_attr->name, table_header->signature,
-		       ACPI_NAME_SIZE);
-	else
-		memcpy(table_attr->name, "NULL", 4);
-
-	list_for_each_entry(attr, &acpi_table_attr_list, node) {
-		if (!memcmp(table_attr->name, attr->name, ACPI_NAME_SIZE))
-=======
 	ssize_t rc;
 
 	status = acpi_get_table(table_attr->name, table_attr->instance,
@@ -504,30 +352,10 @@ static int acpi_table_attr_init(struct kobject *tables_obj,
 
 	list_for_each_entry(attr, &acpi_table_attr_list, node) {
 		if (ACPI_COMPARE_NAMESEG(table_attr->name, attr->name))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (table_attr->instance < attr->instance)
 				table_attr->instance = attr->instance;
 	}
 	table_attr->instance++;
-<<<<<<< HEAD
-
-	if (table_attr->instance > 1 || (table_attr->instance == 1 &&
-					 !acpi_get_table
-					 (table_header->signature, 2, &header)))
-		sprintf(table_attr->name + ACPI_NAME_SIZE, "%d",
-			table_attr->instance);
-
-	table_attr->attr.size = 0;
-	table_attr->attr.read = acpi_table_show;
-	table_attr->attr.attr.name = table_attr->name;
-	table_attr->attr.attr.mode = 0400;
-
-	return;
-}
-
-static acpi_status
-acpi_sysfs_table_handler(u32 event, void *table, void *context)
-=======
 	if (table_attr->instance > ACPI_MAX_TABLE_INSTANCES) {
 		pr_warn("%4.4s: too many table instances\n", table_attr->name);
 		return -ERANGE;
@@ -552,28 +380,10 @@ acpi_sysfs_table_handler(u32 event, void *table, void *context)
 }
 
 acpi_status acpi_sysfs_table_handler(u32 event, void *table, void *context)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_table_attr *table_attr;
 
 	switch (event) {
-<<<<<<< HEAD
-	case ACPI_TABLE_EVENT_LOAD:
-		table_attr =
-		    kzalloc(sizeof(struct acpi_table_attr), GFP_KERNEL);
-		if (!table_attr)
-			return AE_NO_MEMORY;
-
-		acpi_table_attr_init(table_attr, table);
-		if (sysfs_create_bin_file(dynamic_tables_kobj,
-					  &table_attr->attr)) {
-			kfree(table_attr);
-			return AE_ERROR;
-		} else
-			list_add_tail(&table_attr->node, &acpi_table_attr_list);
-		break;
-	case ACPI_TABLE_EVENT_UNLOAD:
-=======
 	case ACPI_TABLE_EVENT_INSTALL:
 		table_attr = kzalloc(sizeof(*table_attr), GFP_KERNEL);
 		if (!table_attr)
@@ -589,7 +399,6 @@ acpi_status acpi_sysfs_table_handler(u32 event, void *table, void *context)
 	case ACPI_TABLE_EVENT_LOAD:
 	case ACPI_TABLE_EVENT_UNLOAD:
 	case ACPI_TABLE_EVENT_UNINSTALL:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * we do not need to do anything right now
 		 * because the table is not deleted from the
@@ -602,8 +411,6 @@ acpi_status acpi_sysfs_table_handler(u32 event, void *table, void *context)
 	return AE_OK;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t acpi_data_show(struct file *filp, struct kobject *kobj,
 			      struct bin_attribute *bin_attr, char *buf,
 			      loff_t offset, size_t count)
@@ -696,65 +503,26 @@ static int acpi_table_data_init(struct acpi_table_header *th)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int acpi_tables_sysfs_init(void)
 {
 	struct acpi_table_attr *table_attr;
 	struct acpi_table_header *table_header = NULL;
-<<<<<<< HEAD
-	int table_index = 0;
-	int result;
-=======
 	int table_index;
 	acpi_status status;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tables_kobj = kobject_create_and_add("tables", acpi_kobj);
 	if (!tables_kobj)
 		goto err;
 
-<<<<<<< HEAD
-=======
 	tables_data_kobj = kobject_create_and_add("data", tables_kobj);
 	if (!tables_data_kobj)
 		goto err_tables_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dynamic_tables_kobj = kobject_create_and_add("dynamic", tables_kobj);
 	if (!dynamic_tables_kobj)
 		goto err_dynamic_tables;
 
-<<<<<<< HEAD
-	do {
-		result = acpi_get_table_by_index(table_index, &table_header);
-		if (!result) {
-			table_index++;
-			table_attr = NULL;
-			table_attr =
-			    kzalloc(sizeof(struct acpi_table_attr), GFP_KERNEL);
-			if (!table_attr)
-				return -ENOMEM;
-
-			acpi_table_attr_init(table_attr, table_header);
-			result =
-			    sysfs_create_bin_file(tables_kobj,
-						  &table_attr->attr);
-			if (result) {
-				kfree(table_attr);
-				return result;
-			} else
-				list_add_tail(&table_attr->node,
-					      &acpi_table_attr_list);
-		}
-	} while (!result);
-	kobject_uevent(tables_kobj, KOBJ_ADD);
-	kobject_uevent(dynamic_tables_kobj, KOBJ_ADD);
-	result = acpi_install_table_handler(acpi_sysfs_table_handler, NULL);
-
-	return result == AE_OK ? 0 : -EINVAL;
-err_dynamic_tables:
-=======
 	for (table_index = 0;; table_index++) {
 		status = acpi_get_table_by_index(table_index, &table_header);
 
@@ -786,7 +554,6 @@ err_dynamic_tables:
 err_dynamic_tables:
 	kobject_put(tables_data_kobj);
 err_tables_data:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kobject_put(tables_kobj);
 err:
 	return -ENOMEM;
@@ -839,11 +606,6 @@ static void delete_gpe_attr_array(void)
 		kfree(counter_attrs);
 	}
 	kfree(all_attrs);
-<<<<<<< HEAD
-
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gpe_count(u32 gpe_number)
@@ -858,11 +620,6 @@ static void gpe_count(u32 gpe_number)
 	else
 		all_counters[num_gpes + ACPI_NUM_FIXED_EVENTS +
 			     COUNT_ERROR].count++;
-<<<<<<< HEAD
-
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fixed_event_count(u32 event_number)
@@ -875,43 +632,6 @@ static void fixed_event_count(u32 event_number)
 	else
 		all_counters[num_gpes + ACPI_NUM_FIXED_EVENTS +
 			     COUNT_ERROR].count++;
-<<<<<<< HEAD
-
-	return;
-}
-
-static void acpi_gbl_event_handler(u32 event_type, acpi_handle device,
-	u32 event_number, void *context)
-{
-	if (event_type == ACPI_EVENT_TYPE_GPE)
-		gpe_count(event_number);
-
-	if (event_type == ACPI_EVENT_TYPE_FIXED)
-		fixed_event_count(event_number);
-}
-
-static int get_status(u32 index, acpi_event_status *status,
-		      acpi_handle *handle)
-{
-	int result = 0;
-
-	if (index >= num_gpes + ACPI_NUM_FIXED_EVENTS)
-		goto end;
-
-	if (index < num_gpes) {
-		result = acpi_get_gpe_device(index, handle);
-		if (result) {
-			ACPI_EXCEPTION((AE_INFO, AE_NOT_FOUND,
-					"Invalid GPE 0x%x\n", index));
-			goto end;
-		}
-		result = acpi_get_gpe_status(*handle, index, status);
-	} else if (index < (num_gpes + ACPI_NUM_FIXED_EVENTS))
-		result = acpi_get_event_status(index - num_gpes, status);
-
-end:
-	return result;
-=======
 }
 
 static void acpi_global_event_handler(u32 event_type, acpi_handle device,
@@ -950,7 +670,6 @@ static int get_status(u32 index, acpi_event_status *ret,
 		return -EIO;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t counter_show(struct kobject *kobj,
@@ -968,11 +687,7 @@ static ssize_t counter_show(struct kobject *kobj,
 	    acpi_irq_not_handled;
 	all_counters[num_gpes + ACPI_NUM_FIXED_EVENTS + COUNT_GPE].count =
 	    acpi_gpe_count;
-<<<<<<< HEAD
-	size = sprintf(buf, "%8d", all_counters[index].count);
-=======
 	size = sprintf(buf, "%8u", all_counters[index].count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* "gpe_all" or "sci" */
 	if (index >= num_gpes + ACPI_NUM_FIXED_EVENTS)
@@ -982,16 +697,6 @@ static ssize_t counter_show(struct kobject *kobj,
 	if (result)
 		goto end;
 
-<<<<<<< HEAD
-	if (!(status & ACPI_EVENT_FLAG_HANDLE))
-		size += sprintf(buf + size, "   invalid");
-	else if (status & ACPI_EVENT_FLAG_ENABLED)
-		size += sprintf(buf + size, "   enabled");
-	else if (status & ACPI_EVENT_FLAG_WAKE_ENABLED)
-		size += sprintf(buf + size, "   wake_enabled");
-	else
-		size += sprintf(buf + size, "   disabled");
-=======
 	if (status & ACPI_EVENT_FLAG_ENABLE_SET)
 		size += sprintf(buf + size, "  EN");
 	else
@@ -1013,7 +718,6 @@ static ssize_t counter_show(struct kobject *kobj,
 		size += sprintf(buf + size, " masked  ");
 	else
 		size += sprintf(buf + size, " unmasked");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 end:
 	size += sprintf(buf + size, "\n");
@@ -1033,10 +737,7 @@ static ssize_t counter_set(struct kobject *kobj,
 	acpi_event_status status;
 	acpi_handle handle;
 	int result = 0;
-<<<<<<< HEAD
-=======
 	unsigned long tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (index == num_gpes + ACPI_NUM_FIXED_EVENTS + COUNT_SCI) {
 		int i;
@@ -1053,14 +754,8 @@ static ssize_t counter_set(struct kobject *kobj,
 	if (result)
 		goto end;
 
-<<<<<<< HEAD
-	if (!(status & ACPI_EVENT_FLAG_HANDLE)) {
-		printk(KERN_WARNING PREFIX
-		       "Can not change Invalid GPE/Fixed Event status\n");
-=======
 	if (!(status & ACPI_EVENT_FLAG_HAS_HANDLER)) {
 		pr_warn("Can not change Invalid GPE/Fixed Event status\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1072,25 +767,6 @@ static ssize_t counter_set(struct kobject *kobj,
 			 !(status & ACPI_EVENT_FLAG_ENABLED))
 			result = acpi_enable_gpe(handle, index);
 		else if (!strcmp(buf, "clear\n") &&
-<<<<<<< HEAD
-			 (status & ACPI_EVENT_FLAG_SET))
-			result = acpi_clear_gpe(handle, index);
-		else
-			all_counters[index].count = strtoul(buf, NULL, 0);
-	} else if (index < num_gpes + ACPI_NUM_FIXED_EVENTS) {
-		int event = index - num_gpes;
-		if (!strcmp(buf, "disable\n") &&
-		    (status & ACPI_EVENT_FLAG_ENABLED))
-			result = acpi_disable_event(event, ACPI_NOT_ISR);
-		else if (!strcmp(buf, "enable\n") &&
-			 !(status & ACPI_EVENT_FLAG_ENABLED))
-			result = acpi_enable_event(event, ACPI_NOT_ISR);
-		else if (!strcmp(buf, "clear\n") &&
-			 (status & ACPI_EVENT_FLAG_SET))
-			result = acpi_clear_event(event);
-		else
-			all_counters[index].count = strtoul(buf, NULL, 0);
-=======
 			 (status & ACPI_EVENT_FLAG_STATUS_SET))
 			result = acpi_clear_gpe(handle, index);
 		else if (!strcmp(buf, "mask\n"))
@@ -1116,7 +792,6 @@ static ssize_t counter_set(struct kobject *kobj,
 			all_counters[index].count = tmp;
 		else
 			result = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		all_counters[index].count = strtoul(buf, NULL, 0);
 
@@ -1126,8 +801,6 @@ end:
 	return result ? result : size;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * A Quirk Mechanism for GPE Flooding Prevention:
  *
@@ -1180,7 +853,6 @@ void __init acpi_gpe_apply_masked_gpes(void)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void acpi_irq_stats_init(void)
 {
 	acpi_status status;
@@ -1192,24 +864,6 @@ void acpi_irq_stats_init(void)
 	num_gpes = acpi_current_gpe_count;
 	num_counters = num_gpes + ACPI_NUM_FIXED_EVENTS + NUM_COUNTERS_EXTRA;
 
-<<<<<<< HEAD
-	all_attrs = kzalloc(sizeof(struct attribute *) * (num_counters + 1),
-			    GFP_KERNEL);
-	if (all_attrs == NULL)
-		return;
-
-	all_counters = kzalloc(sizeof(struct event_counter) * (num_counters),
-			       GFP_KERNEL);
-	if (all_counters == NULL)
-		goto fail;
-
-	status = acpi_install_global_event_handler(acpi_gbl_event_handler, NULL);
-	if (ACPI_FAILURE(status))
-		goto fail;
-
-	counter_attrs = kzalloc(sizeof(struct kobj_attribute) * (num_counters),
-				GFP_KERNEL);
-=======
 	all_attrs = kcalloc(num_counters + 1, sizeof(*all_attrs), GFP_KERNEL);
 	if (all_attrs == NULL)
 		return;
@@ -1223,7 +877,6 @@ void acpi_irq_stats_init(void)
 		goto fail;
 
 	counter_attrs = kcalloc(num_counters, sizeof(*counter_attrs), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (counter_attrs == NULL)
 		goto fail;
 
@@ -1254,16 +907,9 @@ void acpi_irq_stats_init(void)
 		else
 			sprintf(buffer, "bug%02X", i);
 
-<<<<<<< HEAD
-		name = kzalloc(strlen(buffer) + 1, GFP_KERNEL);
-		if (name == NULL)
-			goto fail;
-		strncpy(name, buffer, strlen(buffer) + 1);
-=======
 		name = kstrdup(buffer, GFP_KERNEL);
 		if (name == NULL)
 			goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sysfs_attr_init(&counter_attrs[i].attr);
 		counter_attrs[i].attr.name = name;
@@ -1280,10 +926,6 @@ void acpi_irq_stats_init(void)
 
 fail:
 	delete_gpe_attr_array();
-<<<<<<< HEAD
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit interrupt_stats_exit(void)
@@ -1291,27 +933,13 @@ static void __exit interrupt_stats_exit(void)
 	sysfs_remove_group(acpi_kobj, &interrupt_stats_attr_group);
 
 	delete_gpe_attr_array();
-<<<<<<< HEAD
-
-	return;
-}
-
-static ssize_t
-acpi_show_profile(struct device *dev, struct device_attribute *attr,
-		  char *buf)
-=======
 }
 
 static ssize_t pm_profile_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(buf, "%d\n", acpi_gbl_FADT.preferred_profile);
 }
 
-<<<<<<< HEAD
-static const struct device_attribute pm_profile_attr =
-	__ATTR(pm_profile, S_IRUGO, acpi_show_profile, NULL);
-=======
 static const struct kobj_attribute pm_profile_attr = __ATTR_RO(pm_profile);
 
 static ssize_t enabled_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
@@ -1394,7 +1022,6 @@ static ssize_t force_remove_store(struct kobject *kobj,
 }
 
 static const struct kobj_attribute force_remove_attr = __ATTR_RW(force_remove);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __init acpi_sysfs_init(void)
 {
@@ -1403,8 +1030,6 @@ int __init acpi_sysfs_init(void)
 	result = acpi_tables_sysfs_init();
 	if (result)
 		return result;
-<<<<<<< HEAD
-=======
 
 	hotplug_kobj = kobject_create_and_add("hotplug", acpi_kobj);
 	if (!hotplug_kobj)
@@ -1414,7 +1039,6 @@ int __init acpi_sysfs_init(void)
 	if (result)
 		return result;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = sysfs_create_file(acpi_kobj, &pm_profile_attr.attr);
 	return result;
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  load_store.c                                                             |
  |                                                                           |
@@ -22,11 +19,7 @@
  |    other processes using the emulator while swapping is in progress.      |
  +---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fpu_system.h"
 #include "exception.h"
@@ -41,20 +34,12 @@
 
 #define pop_0()	{ FPU_settag0(TAG_Empty); top++; }
 
-<<<<<<< HEAD
-static u_char const type_table[32] = {
-	_PUSH_, _PUSH_, _PUSH_, _PUSH_,
-	_null_, _null_, _null_, _null_,
-	_REG0_, _REG0_, _REG0_, _REG0_,
-	_REG0_, _REG0_, _REG0_, _REG0_,
-=======
 /* index is a 5-bit value: (3-bit FPU_modrm.reg field | opcode[2,1]) */
 static u_char const type_table[32] = {
 	_PUSH_, _PUSH_, _PUSH_, _PUSH_, /* /0: d9:fld f32,  db:fild m32,  dd:fld f64,  df:fild m16 */
 	_null_, _REG0_, _REG0_, _REG0_, /* /1: d9:undef,    db,dd,df:fisttp m32/64/16 */
 	_REG0_, _REG0_, _REG0_, _REG0_, /* /2: d9:fst f32,  db:fist m32,  dd:fst f64,  df:fist m16 */
 	_REG0_, _REG0_, _REG0_, _REG0_, /* /3: d9:fstp f32, db:fistp m32, dd:fstp f64, df:fistp m16 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_NONE_, _null_, _NONE_, _PUSH_,
 	_NONE_, _PUSH_, _null_, _PUSH_,
 	_NONE_, _null_, _NONE_, _REG0_,
@@ -62,29 +47,19 @@ static u_char const type_table[32] = {
 };
 
 u_char const data_sizes_16[32] = {
-<<<<<<< HEAD
-	4, 4, 8, 2, 0, 0, 0, 0,
-	4, 4, 8, 2, 4, 4, 8, 2,
-=======
 	4, 4, 8, 2,
 	0, 4, 8, 2, /* /1: d9:undef, db,dd,df:fisttp */
 	4, 4, 8, 2,
 	4, 4, 8, 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	14, 0, 94, 10, 2, 10, 0, 8,
 	14, 0, 94, 10, 2, 10, 2, 8
 };
 
 static u_char const data_sizes_32[32] = {
-<<<<<<< HEAD
-	4, 4, 8, 2, 0, 0, 0, 0,
-	4, 4, 8, 2, 4, 4, 8, 2,
-=======
 	4, 4, 8, 2,
 	0, 4, 8, 2, /* /1: d9:undef, db,dd,df:fisttp */
 	4, 4, 8, 2,
 	4, 4, 8, 2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	28, 0, 108, 10, 2, 10, 0, 8,
 	28, 0, 108, 10, 2, 10, 2, 8
 };
@@ -96,10 +71,7 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 	FPU_REG *st0_ptr;
 	u_char st0_tag = TAG_Empty;	/* This is just to stop a gcc warning. */
 	u_char loaded_tag;
-<<<<<<< HEAD
-=======
 	int sv_cw;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	st0_ptr = NULL;		/* Initialized just to stop compiler warnings. */
 
@@ -146,12 +118,8 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 	}
 
 	switch (type) {
-<<<<<<< HEAD
-	case 000:		/* fld m32real */
-=======
 	/* type is a 5-bit value: (3-bit FPU_modrm.reg field | opcode[2,1]) */
 	case 000:		/* fld m32real (d9 /0) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_C1();
 		loaded_tag =
 		    FPU_load_single((float __user *)data_address, &loaded_data);
@@ -163,21 +131,13 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		}
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
-<<<<<<< HEAD
-	case 001:		/* fild m32int */
-=======
 	case 001:		/* fild m32int (db /0) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_C1();
 		loaded_tag =
 		    FPU_load_int32((long __user *)data_address, &loaded_data);
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
-<<<<<<< HEAD
-	case 002:		/* fld m64real */
-=======
 	case 002:		/* fld m64real (dd /0) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_C1();
 		loaded_tag =
 		    FPU_load_double((double __user *)data_address,
@@ -190,18 +150,12 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		}
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
-<<<<<<< HEAD
-	case 003:		/* fild m16int */
-=======
 	case 003:		/* fild m16int (df /0) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_C1();
 		loaded_tag =
 		    FPU_load_int16((short __user *)data_address, &loaded_data);
 		FPU_copy_to_reg0(&loaded_data, loaded_tag);
 		break;
-<<<<<<< HEAD
-=======
 	/* case 004: undefined (d9 /1) */
 	/* fisttp are enabled if CPUID(1).ECX(0) "sse3" is set */
 	case 005:		/* fisttp m32int (db /1) */
@@ -234,7 +188,6 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 					   (see the 80486 manual p16-28) */
 		control_word = sv_cw;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 010:		/* fst m32real */
 		clear_C1();
 		FPU_store_single(st0_ptr, st0_tag,
@@ -287,11 +240,7 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		   fix-up operations. */
 		return 1;
 	case 022:		/* frstor m94/108byte */
-<<<<<<< HEAD
-		frstor(addr_modes, (u_char __user *) data_address);
-=======
 		FPU_frstor(addr_modes, (u_char __user *) data_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Ensure that the values just loaded are not changed by
 		   fix-up operations. */
 		return 1;
@@ -302,11 +251,7 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		break;
 	case 024:		/* fldcw */
 		RE_ENTRANT_CHECK_OFF;
-<<<<<<< HEAD
-		FPU_access_ok(VERIFY_READ, data_address, 2);
-=======
 		FPU_access_ok(data_address, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		FPU_get_user(control_word,
 			     (unsigned short __user *)data_address);
 		RE_ENTRANT_CHECK_ON;
@@ -346,11 +291,7 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		break;
 	case 034:		/* fstcw m16int */
 		RE_ENTRANT_CHECK_OFF;
-<<<<<<< HEAD
-		FPU_access_ok(VERIFY_WRITE, data_address, 2);
-=======
 		FPU_access_ok(data_address, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		FPU_put_user(control_word,
 			     (unsigned short __user *)data_address);
 		RE_ENTRANT_CHECK_ON;
@@ -364,11 +305,7 @@ int FPU_load_store(u_char type, fpu_addr_modes addr_modes,
 		break;
 	case 036:		/* fstsw m2byte */
 		RE_ENTRANT_CHECK_OFF;
-<<<<<<< HEAD
-		FPU_access_ok(VERIFY_WRITE, data_address, 2);
-=======
 		FPU_access_ok(data_address, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		FPU_put_user(status_word(),
 			     (unsigned short __user *)data_address);
 		RE_ENTRANT_CHECK_ON;

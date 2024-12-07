@@ -8,11 +8,6 @@
 #ifndef _ASM_MIPS_JUMP_LABEL_H
 #define _ASM_MIPS_JUMP_LABEL_H
 
-<<<<<<< HEAD
-#include <linux/types.h>
-
-#ifdef __KERNEL__
-=======
 #define arch_jump_label_transform_static arch_jump_label_transform
 
 #ifndef __ASSEMBLY__
@@ -22,7 +17,6 @@
 
 struct module;
 extern void jump_label_apply_nops(struct module *mod);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define JUMP_LABEL_NOP_SIZE 4
 
@@ -32,16 +26,6 @@ extern void jump_label_apply_nops(struct module *mod);
 #define WORD_INSN ".word"
 #endif
 
-<<<<<<< HEAD
-static __always_inline bool arch_static_branch(struct static_key *key)
-{
-	asm_volatile_goto("1:\tnop\n\t"
-		"nop\n\t"
-		".pushsection __jump_table,  \"aw\"\n\t"
-		WORD_INSN " 1b, %l[l_yes], %0\n\t"
-		".popsection\n\t"
-		: :  "i" (key) : : l_yes);
-=======
 #ifdef CONFIG_CPU_MICROMIPS
 # define B_INSN "b32"
 # define J_INSN "j32"
@@ -62,15 +46,11 @@ static __always_inline bool arch_static_branch(struct static_key *key, bool bran
 		".popsection\n\t"
 		: :  "i" (&((char *)key)[branch]) : : l_yes);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return false;
 l_yes:
 	return true;
 }
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
 static __always_inline bool arch_static_branch_jump(struct static_key *key, bool branch)
 {
 	asm goto("1:\t" J_INSN " %l[l_yes]\n\t"
@@ -83,7 +63,6 @@ static __always_inline bool arch_static_branch_jump(struct static_key *key, bool
 l_yes:
 	return true;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 typedef u64 jump_label_t;
@@ -97,8 +76,5 @@ struct jump_entry {
 	jump_label_t key;
 };
 
-<<<<<<< HEAD
-=======
 #endif  /* __ASSEMBLY__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_MIPS_JUMP_LABEL_H */

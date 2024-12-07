@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/nfs/inode.c
  *
@@ -19,11 +16,7 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/sched/signal.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/time.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
@@ -40,24 +33,14 @@
 #include <linux/lockd/bind.h>
 #include <linux/seq_file.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-#include <linux/nfs_idmap.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vfs.h>
 #include <linux/inet.h>
 #include <linux/nfs_xdr.h>
 #include <linux/slab.h>
 #include <linux/compat.h>
 #include <linux/freezer.h>
-<<<<<<< HEAD
-#include <linux/crc32.h>
-
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/iversion.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "nfs4_fs.h"
 #include "callback.h"
@@ -65,18 +48,12 @@
 #include "iostat.h"
 #include "internal.h"
 #include "fscache.h"
-<<<<<<< HEAD
-#include "dns_resolve.h"
-#include "pnfs.h"
-#include "netns.h"
-=======
 #include "pnfs.h"
 #include "nfs.h"
 #include "netns.h"
 #include "sysfs.h"
 
 #include "nfstrace.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSDBG_FACILITY		NFSDBG_VFS
 
@@ -85,10 +62,6 @@
 /* Default is to see 64-bit inode numbers */
 static bool enable_ino64 = NFS_64_BIT_INODE_NUMBERS_ENABLED;
 
-<<<<<<< HEAD
-static void nfs_invalidate_inode(struct inode *);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nfs_update_inode(struct inode *, struct nfs_fattr *);
 
 static struct kmem_cache * nfs_inode_cachep;
@@ -99,19 +72,6 @@ nfs_fattr_to_ino_t(struct nfs_fattr *fattr)
 	return nfs_fileid_to_ino_t(fattr->fileid);
 }
 
-<<<<<<< HEAD
-/**
- * nfs_wait_bit_killable - helper for functions that are sleeping on bit locks
- * @word: long word containing the bit lock
- */
-int nfs_wait_bit_killable(void *word)
-{
-	if (fatal_signal_pending(current))
-		return -ERESTARTSYS;
-	freezable_schedule();
-	return 0;
-}
-=======
 int nfs_wait_bit_killable(struct wait_bit_key *key, int mode)
 {
 	schedule();
@@ -120,7 +80,6 @@ int nfs_wait_bit_killable(struct wait_bit_key *key, int mode)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(nfs_wait_bit_killable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nfs_compat_user_ino64 - returns the user-visible inode number
@@ -145,9 +104,6 @@ u64 nfs_compat_user_ino64(u64 fileid)
 	return ino;
 }
 
-<<<<<<< HEAD
-static void nfs_clear_inode(struct inode *inode)
-=======
 int nfs_drop_inode(struct inode *inode)
 {
 	return NFS_STALE(inode) || generic_drop_inode(inode);
@@ -155,29 +111,10 @@ int nfs_drop_inode(struct inode *inode)
 EXPORT_SYMBOL_GPL(nfs_drop_inode);
 
 void nfs_clear_inode(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * The following should never happen...
 	 */
-<<<<<<< HEAD
-	BUG_ON(nfs_have_writebacks(inode));
-	BUG_ON(!list_empty(&NFS_I(inode)->open_files));
-	nfs_zap_acl_cache(inode);
-	nfs_access_zap_cache(inode);
-	nfs_fscache_release_inode_cookie(inode);
-}
-
-void nfs_evict_inode(struct inode *inode)
-{
-	truncate_inode_pages(&inode->i_data, 0);
-	end_writeback(inode);
-	nfs_clear_inode(inode);
-}
-
-/**
- * nfs_sync_mapping - helper to flush all mmapped dirty data to disk
-=======
 	WARN_ON_ONCE(nfs_have_writebacks(inode));
 	WARN_ON_ONCE(!list_empty(&NFS_I(inode)->open_files));
 	nfs_zap_acl_cache(inode);
@@ -203,7 +140,6 @@ EXPORT_SYMBOL_GPL(nfs_sync_inode);
 /**
  * nfs_sync_mapping - helper to flush all mmapped dirty data to disk
  * @mapping: pointer to struct address_space
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int nfs_sync_mapping(struct address_space *mapping)
 {
@@ -216,8 +152,6 @@ int nfs_sync_mapping(struct address_space *mapping)
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int nfs_attribute_timeout(struct inode *inode)
 {
 	struct nfs_inode *nfsi = NFS_I(inode);
@@ -284,7 +218,6 @@ void nfs_set_cache_invalid(struct inode *inode, unsigned long flags)
 }
 EXPORT_SYMBOL_GPL(nfs_set_cache_invalid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Invalidate the local caches
  */
@@ -298,13 +231,6 @@ static void nfs_zap_caches_locked(struct inode *inode)
 	nfsi->attrtimeo = NFS_MINATTRTIMEO(inode);
 	nfsi->attrtimeo_timestamp = jiffies;
 
-<<<<<<< HEAD
-	memset(NFS_I(inode)->cookieverf, 0, sizeof(NFS_I(inode)->cookieverf));
-	if (S_ISREG(mode) || S_ISDIR(mode) || S_ISLNK(mode))
-		nfsi->cache_validity |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_DATA|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL|NFS_INO_REVAL_PAGECACHE;
-	else
-		nfsi->cache_validity |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL|NFS_INO_REVAL_PAGECACHE;
-=======
 	if (S_ISREG(mode) || S_ISDIR(mode) || S_ISLNK(mode))
 		nfs_set_cache_invalid(inode, NFS_INO_INVALID_ATTR |
 						     NFS_INO_INVALID_DATA |
@@ -317,7 +243,6 @@ static void nfs_zap_caches_locked(struct inode *inode)
 						     NFS_INO_INVALID_ACL |
 						     NFS_INO_INVALID_XATTR);
 	nfs_zap_label_cache_locked(nfsi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nfs_zap_caches(struct inode *inode)
@@ -331,11 +256,7 @@ void nfs_zap_mapping(struct inode *inode, struct address_space *mapping)
 {
 	if (mapping->nrpages != 0) {
 		spin_lock(&inode->i_lock);
-<<<<<<< HEAD
-		NFS_I(inode)->cache_validity |= NFS_INO_INVALID_DATA;
-=======
 		nfs_set_cache_invalid(inode, NFS_INO_INVALID_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&inode->i_lock);
 	}
 }
@@ -351,35 +272,20 @@ void nfs_zap_acl_cache(struct inode *inode)
 	NFS_I(inode)->cache_validity &= ~NFS_INO_INVALID_ACL;
 	spin_unlock(&inode->i_lock);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_zap_acl_cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void nfs_invalidate_atime(struct inode *inode)
 {
 	spin_lock(&inode->i_lock);
-<<<<<<< HEAD
-	NFS_I(inode)->cache_validity |= NFS_INO_INVALID_ATIME;
-	spin_unlock(&inode->i_lock);
-}
-=======
 	nfs_set_cache_invalid(inode, NFS_INO_INVALID_ATIME);
 	spin_unlock(&inode->i_lock);
 }
 EXPORT_SYMBOL_GPL(nfs_invalidate_atime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Invalidate, but do not unhash, the inode.
  * NB: must be called with inode->i_lock held!
  */
-<<<<<<< HEAD
-static void nfs_invalidate_inode(struct inode *inode)
-{
-	set_bit(NFS_INO_STALE, &NFS_I(inode)->flags);
-	nfs_zap_caches_locked(inode);
-=======
 static void nfs_set_inode_stale_locked(struct inode *inode)
 {
 	set_bit(NFS_INO_STALE, &NFS_I(inode)->flags);
@@ -392,7 +298,6 @@ void nfs_set_inode_stale(struct inode *inode)
 	spin_lock(&inode->i_lock);
 	nfs_set_inode_stale_locked(inode);
 	spin_unlock(&inode->i_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct nfs_find_desc {
@@ -409,21 +314,13 @@ struct nfs_find_desc {
 static int
 nfs_find_actor(struct inode *inode, void *opaque)
 {
-<<<<<<< HEAD
-	struct nfs_find_desc	*desc = (struct nfs_find_desc *)opaque;
-=======
 	struct nfs_find_desc	*desc = opaque;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nfs_fh		*fh = desc->fh;
 	struct nfs_fattr	*fattr = desc->fattr;
 
 	if (NFS_FILEID(inode) != fattr->fileid)
 		return 0;
-<<<<<<< HEAD
-	if ((S_IFMT & inode->i_mode) != (S_IFMT & fattr->mode))
-=======
 	if (inode_wrong_type(inode, fattr->mode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	if (nfs_compare_fh(NFS_FH(inode), fh))
 		return 0;
@@ -435,24 +332,15 @@ nfs_find_actor(struct inode *inode, void *opaque)
 static int
 nfs_init_locked(struct inode *inode, void *opaque)
 {
-<<<<<<< HEAD
-	struct nfs_find_desc	*desc = (struct nfs_find_desc *)opaque;
-	struct nfs_fattr	*fattr = desc->fattr;
-
-	set_nfs_fileid(inode, fattr->fileid);
-=======
 	struct nfs_find_desc	*desc = opaque;
 	struct nfs_fattr	*fattr = desc->fattr;
 
 	set_nfs_fileid(inode, fattr->fileid);
 	inode->i_mode = fattr->mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs_copy_fh(NFS_FH(inode), desc->fh);
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_NFS_V4_SECURITY_LABEL
 static void nfs_clear_label_invalid(struct inode *inode)
 {
@@ -548,7 +436,6 @@ static void nfs_inode_init_dir(struct nfs_inode *nfsi)
 	init_rwsem(&nfsi->rmdir_sem);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is our front-end to iget that looks up inodes by file handle
  * instead of inode number.
@@ -561,22 +448,14 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr)
 		.fattr	= fattr
 	};
 	struct inode *inode = ERR_PTR(-ENOENT);
-<<<<<<< HEAD
-=======
 	u64 fattr_supported = NFS_SB(sb)->fattr_valid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long hash;
 
 	nfs_attr_check_mountpoint(sb, fattr);
 
-<<<<<<< HEAD
-	if (((fattr->valid & NFS_ATTR_FATTR_FILEID) == 0) &&
-	    !nfs_attr_use_mounted_on_fileid(fattr))
-=======
 	if (nfs_attr_use_mounted_on_fileid(fattr))
 		fattr->fileid = fattr->mounted_on_fileid;
 	else if ((fattr->valid & NFS_ATTR_FATTR_FILEID) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_no_inode;
 	if ((fattr->valid & NFS_ATTR_FATTR_TYPE) == 0)
 		goto out_no_inode;
@@ -600,18 +479,10 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr)
 		/* We can't support update_atime(), since the server will reset it */
 		inode->i_flags |= S_NOATIME|S_NOCMTIME;
 		inode->i_mode = fattr->mode;
-<<<<<<< HEAD
-		if ((fattr->valid & NFS_ATTR_FATTR_MODE) == 0
-				&& nfs_server_capable(inode, NFS_CAP_MODE))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL;
-=======
 		nfsi->cache_validity = 0;
 		if ((fattr->valid & NFS_ATTR_FATTR_MODE) == 0
 				&& (fattr_supported & NFS_ATTR_FATTR_MODE))
 			nfs_set_cache_invalid(inode, NFS_INO_INVALID_MODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Why so? Because we want revalidate for devices/FIFOs, and
 		 * that's precisely what we have in nfs_file_inode_operations.
 		 */
@@ -619,21 +490,12 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr)
 		if (S_ISREG(inode->i_mode)) {
 			inode->i_fop = NFS_SB(sb)->nfs_client->rpc_ops->file_ops;
 			inode->i_data.a_ops = &nfs_file_aops;
-<<<<<<< HEAD
-			inode->i_data.backing_dev_info = &NFS_SB(sb)->backing_dev_info;
-=======
 			nfs_inode_init_regular(nfsi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (S_ISDIR(inode->i_mode)) {
 			inode->i_op = NFS_SB(sb)->nfs_client->rpc_ops->dir_inode_ops;
 			inode->i_fop = &nfs_dir_operations;
 			inode->i_data.a_ops = &nfs_dir_aops;
-<<<<<<< HEAD
-			if (nfs_server_capable(inode, NFS_CAP_READDIRPLUS))
-				set_bit(NFS_INO_ADVISE_RDPLUS, &NFS_I(inode)->flags);
-=======
 			nfs_inode_init_dir(nfsi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Deal with crossing mountpoints */
 			if (fattr->valid & NFS_ATTR_FATTR_MOUNTPOINT ||
 					fattr->valid & NFS_ATTR_FATTR_V4_REFERRAL) {
@@ -644,23 +506,6 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr)
 				inode->i_fop = NULL;
 				inode->i_flags |= S_AUTOMOUNT;
 			}
-<<<<<<< HEAD
-		} else if (S_ISLNK(inode->i_mode))
-			inode->i_op = &nfs_symlink_inode_operations;
-		else
-			init_special_inode(inode, inode->i_mode, fattr->rdev);
-
-		memset(&inode->i_atime, 0, sizeof(inode->i_atime));
-		memset(&inode->i_mtime, 0, sizeof(inode->i_mtime));
-		memset(&inode->i_ctime, 0, sizeof(inode->i_ctime));
-		inode->i_version = 0;
-		inode->i_size = 0;
-		clear_nlink(inode);
-		inode->i_uid = -2;
-		inode->i_gid = -2;
-		inode->i_blocks = 0;
-		memset(nfsi->cookieverf, 0, sizeof(nfsi->cookieverf));
-=======
 		} else if (S_ISLNK(inode->i_mode)) {
 			inode->i_op = &nfs_symlink_inode_operations;
 			inode_nohighmem(inode);
@@ -678,56 +523,10 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr)
 		inode->i_blocks = 0;
 		nfsi->write_io = 0;
 		nfsi->read_io = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nfsi->read_cache_jiffies = fattr->time_start;
 		nfsi->attr_gencount = fattr->gencount;
 		if (fattr->valid & NFS_ATTR_FATTR_ATIME)
-<<<<<<< HEAD
-			inode->i_atime = fattr->atime;
-		else if (nfs_server_capable(inode, NFS_CAP_ATIME))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR;
-		if (fattr->valid & NFS_ATTR_FATTR_MTIME)
-			inode->i_mtime = fattr->mtime;
-		else if (nfs_server_capable(inode, NFS_CAP_MTIME))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_DATA;
-		if (fattr->valid & NFS_ATTR_FATTR_CTIME)
-			inode->i_ctime = fattr->ctime;
-		else if (nfs_server_capable(inode, NFS_CAP_CTIME))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL;
-		if (fattr->valid & NFS_ATTR_FATTR_CHANGE)
-			inode->i_version = fattr->change_attr;
-		else if (nfs_server_capable(inode, NFS_CAP_CHANGE_ATTR))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_DATA;
-		if (fattr->valid & NFS_ATTR_FATTR_SIZE)
-			inode->i_size = nfs_size_to_loff_t(fattr->size);
-		else
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_DATA
-				| NFS_INO_REVAL_PAGECACHE;
-		if (fattr->valid & NFS_ATTR_FATTR_NLINK)
-			set_nlink(inode, fattr->nlink);
-		else if (nfs_server_capable(inode, NFS_CAP_NLINK))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR;
-		if (fattr->valid & NFS_ATTR_FATTR_OWNER)
-			inode->i_uid = fattr->uid;
-		else if (nfs_server_capable(inode, NFS_CAP_OWNER))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL;
-		if (fattr->valid & NFS_ATTR_FATTR_GROUP)
-			inode->i_gid = fattr->gid;
-		else if (nfs_server_capable(inode, NFS_CAP_OWNER_GROUP))
-			nfsi->cache_validity |= NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL;
-		if (fattr->valid & NFS_ATTR_FATTR_BLOCKS_USED)
-			inode->i_blocks = fattr->du.nfs2.blocks;
-=======
 			inode_set_atime_to_ts(inode, fattr->atime);
 		else if (fattr_supported & NFS_ATTR_FATTR_ATIME)
 			nfs_set_cache_invalid(inode, NFS_INO_INVALID_ATIME);
@@ -764,36 +563,21 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr)
 		else if (fattr_supported & NFS_ATTR_FATTR_BLOCKS_USED &&
 			 fattr->size != 0)
 			nfs_set_cache_invalid(inode, NFS_INO_INVALID_BLOCKS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fattr->valid & NFS_ATTR_FATTR_SPACE_USED) {
 			/*
 			 * report the blocks in 512byte units
 			 */
 			inode->i_blocks = nfs_calc_block_size(fattr->du.nfs3.used);
-<<<<<<< HEAD
-		}
-=======
 		} else if (fattr_supported & NFS_ATTR_FATTR_SPACE_USED &&
 			   fattr->size != 0)
 			nfs_set_cache_invalid(inode, NFS_INO_INVALID_BLOCKS);
 
 		nfs_setsecurity(inode, fattr);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nfsi->attrtimeo = NFS_MINATTRTIMEO(inode);
 		nfsi->attrtimeo_timestamp = now;
 		nfsi->access_cache = RB_ROOT;
 
-<<<<<<< HEAD
-		nfs_fscache_init_inode_cookie(inode);
-
-		unlock_new_inode(inode);
-	} else
-		nfs_refresh_inode(inode, fattr);
-	dprintk("NFS: nfs_fhget(%s/%Ld fh_crc=0x%08x ct=%d)\n",
-		inode->i_sb->s_id,
-		(long long)NFS_FILEID(inode),
-=======
 		nfs_fscache_init_inode(inode);
 
 		unlock_new_inode(inode);
@@ -808,7 +592,6 @@ nfs_fhget(struct super_block *sb, struct nfs_fh *fh, struct nfs_fattr *fattr)
 	dprintk("NFS: nfs_fhget(%s/%Lu fh_crc=0x%08x ct=%d)\n",
 		inode->i_sb->s_id,
 		(unsigned long long)NFS_FILEID(inode),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nfs_display_fhandle_hash(fh),
 		atomic_read(&inode->i_count));
 
@@ -819,28 +602,17 @@ out_no_inode:
 	dprintk("nfs_fhget: iget failed with error %ld\n", PTR_ERR(inode));
 	goto out;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_fhget);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFS_VALID_ATTRS (ATTR_MODE|ATTR_UID|ATTR_GID|ATTR_SIZE|ATTR_ATIME|ATTR_ATIME_SET|ATTR_MTIME|ATTR_MTIME_SET|ATTR_FILE|ATTR_OPEN)
 
 int
-<<<<<<< HEAD
-nfs_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	struct inode *inode = dentry->d_inode;
-	struct nfs_fattr *fattr;
-	int error = -ENOMEM;
-=======
 nfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	    struct iattr *attr)
 {
 	struct inode *inode = d_inode(dentry);
 	struct nfs_fattr *fattr;
 	int error = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfs_inc_stats(inode, NFSIOS_VFSSETATTR);
 
@@ -849,9 +621,6 @@ nfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		attr->ia_valid &= ~ATTR_MODE;
 
 	if (attr->ia_valid & ATTR_SIZE) {
-<<<<<<< HEAD
-		if (!S_ISREG(inode->i_mode) || attr->ia_size == i_size_read(inode))
-=======
 		BUG_ON(!S_ISREG(inode->i_mode));
 
 		error = inode_newsize_ok(inode, attr->ia_size);
@@ -859,36 +628,10 @@ nfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 			return error;
 
 		if (attr->ia_size == i_size_read(inode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			attr->ia_valid &= ~ATTR_SIZE;
 	}
 
 	/* Optimization: if the end result is no change, don't RPC */
-<<<<<<< HEAD
-	attr->ia_valid &= NFS_VALID_ATTRS;
-	if ((attr->ia_valid & ~(ATTR_FILE|ATTR_OPEN)) == 0)
-		return 0;
-
-	/* Write all dirty data */
-	if (S_ISREG(inode->i_mode))
-		nfs_wb_all(inode);
-
-	fattr = nfs_alloc_fattr();
-	if (fattr == NULL)
-		goto out;
-	/*
-	 * Return any delegations if we're going to change ACLs
-	 */
-	if ((attr->ia_valid & (ATTR_MODE|ATTR_UID|ATTR_GID)) != 0)
-		nfs_inode_return_delegation(inode);
-	error = NFS_PROTO(inode)->setattr(dentry, fattr, attr);
-	if (error == 0)
-		nfs_refresh_inode(inode, fattr);
-	nfs_free_fattr(fattr);
-out:
-	return error;
-}
-=======
 	if (((attr->ia_valid & NFS_VALID_ATTRS) & ~(ATTR_FILE|ATTR_OPEN)) == 0)
 		return 0;
 
@@ -913,7 +656,6 @@ out:
 	return error;
 }
 EXPORT_SYMBOL_GPL(nfs_setattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nfs_vmtruncate - unmap mappings "freed" by truncate() syscall
@@ -923,31 +665,16 @@ EXPORT_SYMBOL_GPL(nfs_setattr);
  * This is a copy of the common vmtruncate, but with the locking
  * corrected to take into account the fact that NFS requires
  * inode->i_size to be updated under the inode->i_lock.
-<<<<<<< HEAD
- */
-static int nfs_vmtruncate(struct inode * inode, loff_t offset)
-{
-	loff_t oldsize;
-=======
  * Note: must be called with inode->i_lock held!
  */
 static int nfs_vmtruncate(struct inode * inode, loff_t offset)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = inode_newsize_ok(inode, offset);
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	spin_lock(&inode->i_lock);
-	oldsize = inode->i_size;
-	i_size_write(inode, offset);
-	spin_unlock(&inode->i_lock);
-
-	truncate_pagecache(inode, oldsize, offset);
-=======
 	trace_nfs_size_truncate(inode, offset);
 	i_size_write(inode, offset);
 	/* Optimisation */
@@ -960,7 +687,6 @@ static int nfs_vmtruncate(struct inode * inode, loff_t offset)
 	spin_unlock(&inode->i_lock);
 	truncate_pagecache(inode, offset);
 	spin_lock(&inode->i_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
@@ -969,20 +695,11 @@ out:
  * nfs_setattr_update_inode - Update inode metadata after a setattr call.
  * @inode: pointer to struct inode
  * @attr: pointer to struct iattr
-<<<<<<< HEAD
-=======
  * @fattr: pointer to struct nfs_fattr
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: we do this in the *proc.c in order to ensure that
  *       it works for things like exclusive creates too.
  */
-<<<<<<< HEAD
-void nfs_setattr_update_inode(struct inode *inode, struct iattr *attr)
-{
-	if ((attr->ia_valid & (ATTR_MODE|ATTR_UID|ATTR_GID)) != 0) {
-		spin_lock(&inode->i_lock);
-=======
 void nfs_setattr_update_inode(struct inode *inode, struct iattr *attr,
 		struct nfs_fattr *fattr)
 {
@@ -1004,7 +721,6 @@ void nfs_setattr_update_inode(struct inode *inode, struct iattr *attr,
 			inode->i_mode &= ~S_ISUID;
 		if (setattr_should_drop_sgid(&nop_mnt_idmap, inode))
 			inode->i_mode &= ~S_ISGID;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((attr->ia_valid & ATTR_MODE) != 0) {
 			int mode = attr->ia_mode & S_IALLUGO;
 			mode |= inode->i_mode & ~S_IALLUGO;
@@ -1014,29 +730,6 @@ void nfs_setattr_update_inode(struct inode *inode, struct iattr *attr,
 			inode->i_uid = attr->ia_uid;
 		if ((attr->ia_valid & ATTR_GID) != 0)
 			inode->i_gid = attr->ia_gid;
-<<<<<<< HEAD
-		NFS_I(inode)->cache_validity |= NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
-		spin_unlock(&inode->i_lock);
-	}
-	if ((attr->ia_valid & ATTR_SIZE) != 0) {
-		nfs_inc_stats(inode, NFSIOS_SETATTRTRUNC);
-		nfs_vmtruncate(inode, attr->ia_size);
-	}
-}
-
-int nfs_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
-{
-	struct inode *inode = dentry->d_inode;
-	int need_atime = NFS_I(inode)->cache_validity & NFS_INO_INVALID_ATIME;
-	int err = 0;
-
-	/* Flush out writes to the server in order to update c/mtime.  */
-	if (S_ISREG(inode->i_mode)) {
-		err = filemap_write_and_wait(inode->i_mapping);
-		if (err)
-			goto out;
-	}
-=======
 		if (fattr->valid & NFS_ATTR_FATTR_CTIME)
 			inode_set_ctime_to_ts(inode, fattr->ctime);
 		else
@@ -1165,7 +858,6 @@ int nfs_getattr(struct mnt_idmap *idmap, const struct path *path,
 	if ((request_mask & (STATX_CTIME | STATX_MTIME | STATX_CHANGE_COOKIE)) &&
 	    S_ISREG(inode->i_mode))
 		filemap_write_and_wait(inode->i_mapping);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We may force a getattr if the user cares about atime.
@@ -1173,33 +865,6 @@ int nfs_getattr(struct mnt_idmap *idmap, const struct path *path,
 	 * Note that we only have to check the vfsmount flags here:
 	 *  - NFS always sets S_NOATIME by so checking it would give a
 	 *    bogus result
-<<<<<<< HEAD
-	 *  - NFS never sets MS_NOATIME or MS_NODIRATIME so there is
-	 *    no point in checking those.
-	 */
- 	if ((mnt->mnt_flags & MNT_NOATIME) ||
- 	    ((mnt->mnt_flags & MNT_NODIRATIME) && S_ISDIR(inode->i_mode)))
-		need_atime = 0;
-
-	if (need_atime)
-		err = __nfs_revalidate_inode(NFS_SERVER(inode), inode);
-	else
-		err = nfs_revalidate_inode(NFS_SERVER(inode), inode);
-	if (!err) {
-		generic_fillattr(inode, stat);
-		stat->ino = nfs_compat_user_ino64(NFS_FILEID(inode));
-	}
-out:
-	return err;
-}
-
-static void nfs_init_lock_context(struct nfs_lock_context *l_ctx)
-{
-	atomic_set(&l_ctx->count, 1);
-	l_ctx->lockowner = current->files;
-	l_ctx->pid = current->tgid;
-	INIT_LIST_HEAD(&l_ctx->list);
-=======
 	 *  - NFS never sets SB_NOATIME or SB_NODIRATIME so there is
 	 *    no point in checking those.
 	 */
@@ -1267,28 +932,17 @@ static void nfs_init_lock_context(struct nfs_lock_context *l_ctx)
 	l_ctx->lockowner = current->files;
 	INIT_LIST_HEAD(&l_ctx->list);
 	atomic_set(&l_ctx->io_count, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct nfs_lock_context *__nfs_find_lock_context(struct nfs_open_context *ctx)
 {
 	struct nfs_lock_context *pos;
 
-<<<<<<< HEAD
-	list_for_each_entry(pos, &ctx->lock_context.list, list) {
-		if (pos->lockowner != current->files)
-			continue;
-		if (pos->pid != current->tgid)
-			continue;
-		atomic_inc(&pos->count);
-		return pos;
-=======
 	list_for_each_entry_rcu(pos, &ctx->lock_context.list, list) {
 		if (pos->lockowner != current->files)
 			continue;
 		if (refcount_inc_not_zero(&pos->count))
 			return pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
@@ -1296,17 +950,6 @@ static struct nfs_lock_context *__nfs_find_lock_context(struct nfs_open_context 
 struct nfs_lock_context *nfs_get_lock_context(struct nfs_open_context *ctx)
 {
 	struct nfs_lock_context *res, *new = NULL;
-<<<<<<< HEAD
-	struct inode *inode = ctx->dentry->d_inode;
-
-	spin_lock(&inode->i_lock);
-	res = __nfs_find_lock_context(ctx);
-	if (res == NULL) {
-		spin_unlock(&inode->i_lock);
-		new = kmalloc(sizeof(*new), GFP_KERNEL);
-		if (new == NULL)
-			return NULL;
-=======
 	struct inode *inode = d_inode(ctx->dentry);
 
 	rcu_read_lock();
@@ -1316,23 +959,10 @@ struct nfs_lock_context *nfs_get_lock_context(struct nfs_open_context *ctx)
 		new = kmalloc(sizeof(*new), GFP_KERNEL_ACCOUNT);
 		if (new == NULL)
 			return ERR_PTR(-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nfs_init_lock_context(new);
 		spin_lock(&inode->i_lock);
 		res = __nfs_find_lock_context(ctx);
 		if (res == NULL) {
-<<<<<<< HEAD
-			list_add_tail(&new->list, &ctx->lock_context.list);
-			new->open_context = ctx;
-			res = new;
-			new = NULL;
-		}
-	}
-	spin_unlock(&inode->i_lock);
-	kfree(new);
-	return res;
-}
-=======
 			new->open_context = get_nfs_open_context(ctx);
 			if (new->open_context) {
 				list_add_tail_rcu(&new->list,
@@ -1348,21 +978,10 @@ struct nfs_lock_context *nfs_get_lock_context(struct nfs_open_context *ctx)
 	return res;
 }
 EXPORT_SYMBOL_GPL(nfs_get_lock_context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void nfs_put_lock_context(struct nfs_lock_context *l_ctx)
 {
 	struct nfs_open_context *ctx = l_ctx->open_context;
-<<<<<<< HEAD
-	struct inode *inode = ctx->dentry->d_inode;
-
-	if (!atomic_dec_and_lock(&l_ctx->count, &inode->i_lock))
-		return;
-	list_del(&l_ctx->list);
-	spin_unlock(&inode->i_lock);
-	kfree(l_ctx);
-}
-=======
 	struct inode *inode = d_inode(ctx->dentry);
 
 	if (!refcount_dec_and_lock(&l_ctx->count, &inode->i_lock))
@@ -1373,22 +992,12 @@ void nfs_put_lock_context(struct nfs_lock_context *l_ctx)
 	kfree_rcu(l_ctx, rcu_head);
 }
 EXPORT_SYMBOL_GPL(nfs_put_lock_context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nfs_close_context - Common close_context() routine NFSv2/v3
  * @ctx: pointer to context
  * @is_sync: is this a synchronous close
  *
-<<<<<<< HEAD
- * always ensure that the attributes are up to date if we're mounted
- * with close-to-open semantics
- */
-void nfs_close_context(struct nfs_open_context *ctx, int is_sync)
-{
-	struct inode *inode;
-	struct nfs_server *server;
-=======
  * Ensure that the attributes are up to date if we're mounted
  * with close-to-open semantics and we have cached data that will
  * need to be revalidated on open.
@@ -1397,38 +1006,11 @@ void nfs_close_context(struct nfs_open_context *ctx, int is_sync)
 {
 	struct nfs_inode *nfsi;
 	struct inode *inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(ctx->mode & FMODE_WRITE))
 		return;
 	if (!is_sync)
 		return;
-<<<<<<< HEAD
-	inode = ctx->dentry->d_inode;
-	if (!list_empty(&NFS_I(inode)->open_files))
-		return;
-	server = NFS_SERVER(inode);
-	if (server->flags & NFS_MOUNT_NOCTO)
-		return;
-	nfs_revalidate_inode(server, inode);
-}
-
-struct nfs_open_context *alloc_nfs_open_context(struct dentry *dentry, fmode_t f_mode)
-{
-	struct nfs_open_context *ctx;
-	struct rpc_cred *cred = rpc_lookup_cred();
-	if (IS_ERR(cred))
-		return ERR_CAST(cred);
-
-	ctx = kmalloc(sizeof(*ctx), GFP_KERNEL);
-	if (!ctx) {
-		put_rpccred(cred);
-		return ERR_PTR(-ENOMEM);
-	}
-	nfs_sb_active(dentry->d_sb);
-	ctx->dentry = dget(dentry);
-	ctx->cred = cred;
-=======
 	inode = d_inode(ctx->dentry);
 	if (NFS_PROTO(inode)->have_delegation(inode, FMODE_READ))
 		return;
@@ -1462,45 +1044,10 @@ struct nfs_open_context *alloc_nfs_open_context(struct dentry *dentry,
 	else
 		ctx->cred = get_current_cred();
 	rcu_assign_pointer(ctx->ll_cred, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctx->state = NULL;
 	ctx->mode = f_mode;
 	ctx->flags = 0;
 	ctx->error = 0;
-<<<<<<< HEAD
-	nfs_init_lock_context(&ctx->lock_context);
-	ctx->lock_context.open_context = ctx;
-	INIT_LIST_HEAD(&ctx->list);
-	return ctx;
-}
-
-struct nfs_open_context *get_nfs_open_context(struct nfs_open_context *ctx)
-{
-	if (ctx != NULL)
-		atomic_inc(&ctx->lock_context.count);
-	return ctx;
-}
-
-static void __put_nfs_open_context(struct nfs_open_context *ctx, int is_sync)
-{
-	struct inode *inode = ctx->dentry->d_inode;
-	struct super_block *sb = ctx->dentry->d_sb;
-
-	if (!list_empty(&ctx->list)) {
-		if (!atomic_dec_and_lock(&ctx->lock_context.count, &inode->i_lock))
-			return;
-		list_del(&ctx->list);
-		spin_unlock(&inode->i_lock);
-	} else if (!atomic_dec_and_test(&ctx->lock_context.count))
-		return;
-	if (inode != NULL)
-		NFS_PROTO(inode)->close_context(ctx, is_sync);
-	if (ctx->cred != NULL)
-		put_rpccred(ctx->cred);
-	dput(ctx->dentry);
-	nfs_sb_deactive(sb);
-	kfree(ctx);
-=======
 	ctx->flock_owner = (fl_owner_t)filp;
 	nfs_init_lock_context(&ctx->lock_context);
 	ctx->lock_context.open_context = ctx;
@@ -1538,39 +1085,23 @@ static void __put_nfs_open_context(struct nfs_open_context *ctx, int is_sync)
 	put_rpccred(rcu_dereference_protected(ctx->ll_cred, 1));
 	kfree(ctx->mdsthreshold);
 	kfree_rcu(ctx, rcu_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void put_nfs_open_context(struct nfs_open_context *ctx)
 {
 	__put_nfs_open_context(ctx, 0);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(put_nfs_open_context);
 
 static void put_nfs_open_context_sync(struct nfs_open_context *ctx)
 {
 	__put_nfs_open_context(ctx, 1);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Ensure that mmap has a recent RPC credential for use when writing out
  * shared pages
  */
-<<<<<<< HEAD
-void nfs_file_set_open_context(struct file *filp, struct nfs_open_context *ctx)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-	struct nfs_inode *nfsi = NFS_I(inode);
-
-	filp->private_data = get_nfs_open_context(ctx);
-	spin_lock(&inode->i_lock);
-	list_add(&ctx->list, &nfsi->open_files);
-	spin_unlock(&inode->i_lock);
-}
-=======
 void nfs_inode_attach_open_context(struct nfs_open_context *ctx)
 {
 	struct inode *inode = d_inode(ctx->dentry);
@@ -1594,46 +1125,15 @@ void nfs_file_set_open_context(struct file *filp, struct nfs_open_context *ctx)
 		nfs_inode_attach_open_context(ctx);
 }
 EXPORT_SYMBOL_GPL(nfs_file_set_open_context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Given an inode, search for an open context with the desired characteristics
  */
-<<<<<<< HEAD
-struct nfs_open_context *nfs_find_open_context(struct inode *inode, struct rpc_cred *cred, fmode_t mode)
-=======
 struct nfs_open_context *nfs_find_open_context(struct inode *inode, const struct cred *cred, fmode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_inode *nfsi = NFS_I(inode);
 	struct nfs_open_context *pos, *ctx = NULL;
 
-<<<<<<< HEAD
-	spin_lock(&inode->i_lock);
-	list_for_each_entry(pos, &nfsi->open_files, list) {
-		if (cred != NULL && pos->cred != cred)
-			continue;
-		if ((pos->mode & (FMODE_READ|FMODE_WRITE)) != mode)
-			continue;
-		ctx = get_nfs_open_context(pos);
-		break;
-	}
-	spin_unlock(&inode->i_lock);
-	return ctx;
-}
-
-static void nfs_file_clear_open_context(struct file *filp)
-{
-	struct inode *inode = filp->f_path.dentry->d_inode;
-	struct nfs_open_context *ctx = nfs_file_open_context(filp);
-
-	if (ctx) {
-		filp->private_data = NULL;
-		spin_lock(&inode->i_lock);
-		list_move_tail(&ctx->list, &NFS_I(inode)->open_files);
-		spin_unlock(&inode->i_lock);
-		__put_nfs_open_context(ctx, filp->f_flags & O_DIRECT ? 0 : 1);
-=======
 	rcu_read_lock();
 	list_for_each_entry_rcu(pos, &nfsi->open_files, list) {
 		if (cred != NULL && cred_fscmp(pos->cred, cred) != 0)
@@ -1666,7 +1166,6 @@ void nfs_file_clear_open_context(struct file *filp)
 			invalidate_inode_pages2(inode->i_mapping);
 		filp->private_data = NULL;
 		put_nfs_open_context_sync(ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1677,27 +1176,13 @@ int nfs_open(struct inode *inode, struct file *filp)
 {
 	struct nfs_open_context *ctx;
 
-<<<<<<< HEAD
-	ctx = alloc_nfs_open_context(filp->f_path.dentry, filp->f_mode);
-=======
 	ctx = alloc_nfs_open_context(file_dentry(filp),
 				     flags_to_mode(filp->f_flags), filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(ctx))
 		return PTR_ERR(ctx);
 	nfs_file_set_open_context(filp, ctx);
 	put_nfs_open_context(ctx);
-<<<<<<< HEAD
-	nfs_fscache_set_inode_cookie(inode, filp);
-	return 0;
-}
-
-int nfs_release(struct inode *inode, struct file *filp)
-{
-	nfs_file_clear_open_context(filp);
-=======
 	nfs_fscache_open_file(inode, filp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1712,25 +1197,16 @@ __nfs_revalidate_inode(struct nfs_server *server, struct inode *inode)
 	struct nfs_fattr *fattr = NULL;
 	struct nfs_inode *nfsi = NFS_I(inode);
 
-<<<<<<< HEAD
-	dfprintk(PAGECACHE, "NFS: revalidating (%s/%Ld)\n",
-		inode->i_sb->s_id, (long long)NFS_FILEID(inode));
-=======
 	dfprintk(PAGECACHE, "NFS: revalidating (%s/%Lu)\n",
 		inode->i_sb->s_id, (unsigned long long)NFS_FILEID(inode));
 
 	trace_nfs_revalidate_inode_enter(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_bad_inode(inode))
 		goto out;
 	if (NFS_STALE(inode))
 		goto out;
 
-<<<<<<< HEAD
-	status = -ENOMEM;
-	fattr = nfs_alloc_fattr();
-=======
 	/* pNFS: Attributes aren't updated until we layoutcommit */
 	if (S_ISREG(inode->i_mode)) {
 		status = pnfs_sync_inode(inode, false);
@@ -1740,22 +1216,10 @@ __nfs_revalidate_inode(struct nfs_server *server, struct inode *inode)
 
 	status = -ENOMEM;
 	fattr = nfs_alloc_fattr_with_label(NFS_SERVER(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fattr == NULL)
 		goto out;
 
 	nfs_inc_stats(inode, NFSIOS_INODEREVALIDATE);
-<<<<<<< HEAD
-	status = NFS_PROTO(inode)->getattr(server, NFS_FH(inode), fattr);
-	if (status != 0) {
-		dfprintk(PAGECACHE, "nfs_revalidate_inode: (%s/%Ld) getattr failed, error=%d\n",
-			 inode->i_sb->s_id,
-			 (long long)NFS_FILEID(inode), status);
-		if (status == -ESTALE) {
-			nfs_zap_caches(inode);
-			if (!S_ISDIR(inode->i_mode))
-				set_bit(NFS_INO_STALE, &NFS_I(inode)->flags);
-=======
 
 	status = NFS_PROTO(inode)->getattr(server, NFS_FH(inode), fattr, inode);
 	if (status != 0) {
@@ -1773,47 +1237,21 @@ __nfs_revalidate_inode(struct nfs_server *server, struct inode *inode)
 				nfs_set_inode_stale(inode);
 			else
 				nfs_zap_caches(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto out;
 	}
 
 	status = nfs_refresh_inode(inode, fattr);
 	if (status) {
-<<<<<<< HEAD
-		dfprintk(PAGECACHE, "nfs_revalidate_inode: (%s/%Ld) refresh failed, error=%d\n",
-			 inode->i_sb->s_id,
-			 (long long)NFS_FILEID(inode), status);
-=======
 		dfprintk(PAGECACHE, "nfs_revalidate_inode: (%s/%Lu) refresh failed, error=%d\n",
 			 inode->i_sb->s_id,
 			 (unsigned long long)NFS_FILEID(inode), status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	if (nfsi->cache_validity & NFS_INO_INVALID_ACL)
 		nfs_zap_acl_cache(inode);
 
-<<<<<<< HEAD
-	dfprintk(PAGECACHE, "NFS: (%s/%Ld) revalidation complete\n",
-		inode->i_sb->s_id,
-		(long long)NFS_FILEID(inode));
-
- out:
-	nfs_free_fattr(fattr);
-	return status;
-}
-
-int nfs_attribute_timeout(struct inode *inode)
-{
-	struct nfs_inode *nfsi = NFS_I(inode);
-
-	return !time_in_range_open(jiffies, nfsi->read_cache_jiffies, nfsi->read_cache_jiffies + nfsi->attrtimeo);
-}
-
-static int nfs_attribute_cache_expired(struct inode *inode)
-=======
 	nfs_setsecurity(inode, fattr);
 
 	dfprintk(PAGECACHE, "NFS: (%s/%Lu) revalidation complete\n",
@@ -1827,7 +1265,6 @@ out:
 }
 
 int nfs_attribute_cache_expired(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (nfs_have_delegated_attributes(inode))
 		return 0;
@@ -1836,39 +1273,6 @@ int nfs_attribute_cache_expired(struct inode *inode)
 
 /**
  * nfs_revalidate_inode - Revalidate the inode attributes
-<<<<<<< HEAD
- * @server - pointer to nfs_server struct
- * @inode - pointer to inode struct
- *
- * Updates inode attribute information by retrieving the data from the server.
- */
-int nfs_revalidate_inode(struct nfs_server *server, struct inode *inode)
-{
-	if (!(NFS_I(inode)->cache_validity & NFS_INO_INVALID_ATTR)
-			&& !nfs_attribute_cache_expired(inode))
-		return NFS_STALE(inode) ? -ESTALE : 0;
-	return __nfs_revalidate_inode(server, inode);
-}
-
-static int nfs_invalidate_mapping(struct inode *inode, struct address_space *mapping)
-{
-	struct nfs_inode *nfsi = NFS_I(inode);
-	
-	if (mapping->nrpages != 0) {
-		int ret = invalidate_inode_pages2(mapping);
-		if (ret < 0)
-			return ret;
-	}
-	spin_lock(&inode->i_lock);
-	nfsi->cache_validity &= ~NFS_INO_INVALID_DATA;
-	if (S_ISDIR(inode->i_mode))
-		memset(nfsi->cookieverf, 0, sizeof(nfsi->cookieverf));
-	spin_unlock(&inode->i_lock);
-	nfs_inc_stats(inode, NFSIOS_DATAINVALIDATE);
-	nfs_fscache_reset_inode_cookie(inode);
-	dfprintk(PAGECACHE, "NFS: (%s/%Ld) data cache invalidated\n",
-			inode->i_sb->s_id, (long long)NFS_FILEID(inode));
-=======
  * @inode: pointer to inode struct
  * @flags: cache flags to check
  *
@@ -1902,31 +1306,10 @@ static int nfs_invalidate_mapping(struct inode *inode, struct address_space *map
 	dfprintk(PAGECACHE, "NFS: (%s/%Lu) data cache invalidated\n",
 			inode->i_sb->s_id,
 			(unsigned long long)NFS_FILEID(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * nfs_revalidate_mapping - Revalidate the pagecache
- * @inode - pointer to host inode
- * @mapping - pointer to mapping
- */
-int nfs_revalidate_mapping(struct inode *inode, struct address_space *mapping)
-{
-	struct nfs_inode *nfsi = NFS_I(inode);
-	int ret = 0;
-
-	if ((nfsi->cache_validity & NFS_INO_REVAL_PAGECACHE)
-			|| nfs_attribute_cache_expired(inode)
-			|| NFS_STALE(inode)) {
-		ret = __nfs_revalidate_inode(NFS_SERVER(inode), inode);
-		if (ret < 0)
-			goto out;
-	}
-	if (nfsi->cache_validity & NFS_INO_INVALID_DATA)
-		ret = nfs_invalidate_mapping(inode, mapping);
-=======
  * nfs_clear_invalid_mapping - Conditionally clear a mapping
  * @mapping: pointer to mapping
  *
@@ -1980,49 +1363,10 @@ int nfs_clear_invalid_mapping(struct address_space *mapping)
 	clear_bit_unlock(NFS_INO_INVALIDATING, bitlock);
 	smp_mb__after_atomic();
 	wake_up_bit(bitlock, NFS_INO_INVALIDATING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static unsigned long nfs_wcc_update_inode(struct inode *inode, struct nfs_fattr *fattr)
-{
-	struct nfs_inode *nfsi = NFS_I(inode);
-	unsigned long ret = 0;
-
-	if ((fattr->valid & NFS_ATTR_FATTR_PRECHANGE)
-			&& (fattr->valid & NFS_ATTR_FATTR_CHANGE)
-			&& inode->i_version == fattr->pre_change_attr) {
-		inode->i_version = fattr->change_attr;
-		if (S_ISDIR(inode->i_mode))
-			nfsi->cache_validity |= NFS_INO_INVALID_DATA;
-		ret |= NFS_INO_INVALID_ATTR;
-	}
-	/* If we have atomic WCC data, we may update some attributes */
-	if ((fattr->valid & NFS_ATTR_FATTR_PRECTIME)
-			&& (fattr->valid & NFS_ATTR_FATTR_CTIME)
-			&& timespec_equal(&inode->i_ctime, &fattr->pre_ctime)) {
-		memcpy(&inode->i_ctime, &fattr->ctime, sizeof(inode->i_ctime));
-		ret |= NFS_INO_INVALID_ATTR;
-	}
-
-	if ((fattr->valid & NFS_ATTR_FATTR_PREMTIME)
-			&& (fattr->valid & NFS_ATTR_FATTR_MTIME)
-			&& timespec_equal(&inode->i_mtime, &fattr->pre_mtime)) {
-		memcpy(&inode->i_mtime, &fattr->mtime, sizeof(inode->i_mtime));
-		if (S_ISDIR(inode->i_mode))
-			nfsi->cache_validity |= NFS_INO_INVALID_DATA;
-		ret |= NFS_INO_INVALID_ATTR;
-	}
-	if ((fattr->valid & NFS_ATTR_FATTR_PRESIZE)
-			&& (fattr->valid & NFS_ATTR_FATTR_SIZE)
-			&& i_size_read(inode) == nfs_size_to_loff_t(fattr->pre_size)
-			&& nfsi->npages == 0) {
-		i_size_write(inode, nfs_size_to_loff_t(fattr->size));
-		ret |= NFS_INO_INVALID_ATTR;
-	}
-=======
 bool nfs_mapping_need_revalidate_inode(struct inode *inode)
 {
 	return nfs_check_cache_invalid(inode, NFS_INO_INVALID_CHANGE) ||
@@ -2047,16 +1391,10 @@ int nfs_revalidate_mapping_rcu(struct inode *inode)
 		ret = -ECHILD;
 	spin_unlock(&inode->i_lock);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
- * nfs_check_inode_attributes - verify consistency of the inode attribute cache
- * @inode - pointer to inode
- * @fattr - updated attributes
-=======
  * nfs_revalidate_mapping - Revalidate the pagecache
  * @inode: pointer to host inode
  * @mapping: pointer to mapping
@@ -2132,7 +1470,6 @@ static void nfs_wcc_update_inode(struct inode *inode, struct nfs_fattr *fattr)
  * nfs_check_inode_attributes - verify consistency of the inode attribute cache
  * @inode: pointer to inode
  * @fattr: updated attributes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Verifies the attribute cache. If we have just changed the attributes,
  * so that fattr carries weak cache consistency data, then it may
@@ -2143,29 +1480,6 @@ static int nfs_check_inode_attributes(struct inode *inode, struct nfs_fattr *fat
 	struct nfs_inode *nfsi = NFS_I(inode);
 	loff_t cur_size, new_isize;
 	unsigned long invalid = 0;
-<<<<<<< HEAD
-
-
-	/* Has the inode gone and changed behind our back? */
-	if ((fattr->valid & NFS_ATTR_FATTR_FILEID) && nfsi->fileid != fattr->fileid)
-		return -EIO;
-	if ((fattr->valid & NFS_ATTR_FATTR_TYPE) && (inode->i_mode & S_IFMT) != (fattr->mode & S_IFMT))
-		return -EIO;
-
-	if ((fattr->valid & NFS_ATTR_FATTR_CHANGE) != 0 &&
-			inode->i_version != fattr->change_attr)
-		invalid |= NFS_INO_INVALID_ATTR|NFS_INO_REVAL_PAGECACHE;
-
-	/* Verify a few of the more important attributes */
-	if ((fattr->valid & NFS_ATTR_FATTR_MTIME) && !timespec_equal(&inode->i_mtime, &fattr->mtime))
-		invalid |= NFS_INO_INVALID_ATTR|NFS_INO_REVAL_PAGECACHE;
-
-	if (fattr->valid & NFS_ATTR_FATTR_SIZE) {
-		cur_size = i_size_read(inode);
-		new_isize = nfs_size_to_loff_t(fattr->size);
-		if (cur_size != new_isize && nfsi->npages == 0)
-			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_REVAL_PAGECACHE;
-=======
 	struct timespec64 ts;
 
 	if (NFS_PROTO(inode)->have_delegation(inode, FMODE_READ))
@@ -2206,28 +1520,10 @@ static int nfs_check_inode_attributes(struct inode *inode, struct nfs_fattr *fat
 			if (cur_size != new_isize)
 				invalid |= NFS_INO_INVALID_SIZE;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Have any file permissions changed? */
 	if ((fattr->valid & NFS_ATTR_FATTR_MODE) && (inode->i_mode & S_IALLUGO) != (fattr->mode & S_IALLUGO))
-<<<<<<< HEAD
-		invalid |= NFS_INO_INVALID_ATTR | NFS_INO_INVALID_ACCESS | NFS_INO_INVALID_ACL;
-	if ((fattr->valid & NFS_ATTR_FATTR_OWNER) && inode->i_uid != fattr->uid)
-		invalid |= NFS_INO_INVALID_ATTR | NFS_INO_INVALID_ACCESS | NFS_INO_INVALID_ACL;
-	if ((fattr->valid & NFS_ATTR_FATTR_GROUP) && inode->i_gid != fattr->gid)
-		invalid |= NFS_INO_INVALID_ATTR | NFS_INO_INVALID_ACCESS | NFS_INO_INVALID_ACL;
-
-	/* Has the link count changed? */
-	if ((fattr->valid & NFS_ATTR_FATTR_NLINK) && inode->i_nlink != fattr->nlink)
-		invalid |= NFS_INO_INVALID_ATTR;
-
-	if ((fattr->valid & NFS_ATTR_FATTR_ATIME) && !timespec_equal(&inode->i_atime, &fattr->atime))
-		invalid |= NFS_INO_INVALID_ATIME;
-
-	if (invalid != 0)
-		nfsi->cache_validity |= invalid;
-=======
 		invalid |= NFS_INO_INVALID_MODE;
 	if ((fattr->valid & NFS_ATTR_FATTR_OWNER) && !uid_eq(inode->i_uid, fattr->uid))
 		invalid |= NFS_INO_INVALID_OTHER;
@@ -2244,29 +1540,11 @@ static int nfs_check_inode_attributes(struct inode *inode, struct nfs_fattr *fat
 
 	if (invalid != 0)
 		nfs_set_cache_invalid(inode, invalid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfsi->read_cache_jiffies = fattr->time_start;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int nfs_ctime_need_update(const struct inode *inode, const struct nfs_fattr *fattr)
-{
-	if (!(fattr->valid & NFS_ATTR_FATTR_CTIME))
-		return 0;
-	return timespec_compare(&fattr->ctime, &inode->i_ctime) > 0;
-}
-
-static int nfs_size_need_update(const struct inode *inode, const struct nfs_fattr *fattr)
-{
-	if (!(fattr->valid & NFS_ATTR_FATTR_SIZE))
-		return 0;
-	return nfs_size_to_loff_t(fattr->size) > i_size_read(inode);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static atomic_long_t nfs_attr_generation_counter;
 
 static unsigned long nfs_read_attr_generation_counter(void)
@@ -2278,10 +1556,7 @@ unsigned long nfs_inc_attr_generation_counter(void)
 {
 	return atomic_long_inc_return(&nfs_attr_generation_counter);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_inc_attr_generation_counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void nfs_fattr_init(struct nfs_fattr *fattr)
 {
@@ -2291,8 +1566,6 @@ void nfs_fattr_init(struct nfs_fattr *fattr)
 	fattr->owner_name = NULL;
 	fattr->group_name = NULL;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_fattr_init);
 
 /**
@@ -2310,19 +1583,11 @@ void nfs_fattr_set_barrier(struct nfs_fattr *fattr)
 {
 	fattr->gencount = nfs_inc_attr_generation_counter();
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfs_fattr *nfs_alloc_fattr(void)
 {
 	struct nfs_fattr *fattr;
 
-<<<<<<< HEAD
-	fattr = kmalloc(sizeof(*fattr), GFP_NOFS);
-	if (fattr != NULL)
-		nfs_fattr_init(fattr);
-	return fattr;
-}
-=======
 	fattr = kmalloc(sizeof(*fattr), GFP_KERNEL);
 	if (fattr != NULL) {
 		nfs_fattr_init(fattr);
@@ -2348,25 +1613,17 @@ struct nfs_fattr *nfs_alloc_fattr_with_label(struct nfs_server *server)
 	return fattr;
 }
 EXPORT_SYMBOL_GPL(nfs_alloc_fattr_with_label);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfs_fh *nfs_alloc_fhandle(void)
 {
 	struct nfs_fh *fh;
 
-<<<<<<< HEAD
-	fh = kmalloc(sizeof(struct nfs_fh), GFP_NOFS);
-=======
 	fh = kmalloc(sizeof(struct nfs_fh), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fh != NULL)
 		fh->size = 0;
 	return fh;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfs_alloc_fhandle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef NFS_DEBUG
 /*
@@ -2381,14 +1638,9 @@ u32 _nfs_display_fhandle_hash(const struct nfs_fh *fh)
 {
 	/* wireshark uses 32-bit AUTODIN crc and does a bitwise
 	 * not on the result */
-<<<<<<< HEAD
-	return ~crc32(0xFFFFFFFF, &fh->data[0], fh->size);
-}
-=======
 	return nfs_fhandle_hash(fh);
 }
 EXPORT_SYMBOL_GPL(_nfs_display_fhandle_hash);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * _nfs_display_fhandle - display an NFS file handle on the console
@@ -2433,14 +1685,6 @@ void _nfs_display_fhandle(const struct nfs_fh *fh, const char *caption)
 		}
 	}
 }
-<<<<<<< HEAD
-#endif
-
-/**
- * nfs_inode_attrs_need_update - check if the inode attributes need updating
- * @inode - pointer to inode
- * @fattr - attributes
-=======
 EXPORT_SYMBOL_GPL(_nfs_display_fhandle);
 #endif
 
@@ -2470,39 +1714,10 @@ static int nfs_inode_attrs_cmp_generic(const struct nfs_fattr *fattr,
  * nfs_inode_attrs_cmp_monotonic - compare attributes
  * @fattr: attributes
  * @inode: pointer to inode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Attempt to divine whether or not an RPC call reply carrying stale
  * attributes got scheduled after another call carrying updated ones.
  *
-<<<<<<< HEAD
- * To do so, the function first assumes that a more recent ctime means
- * that the attributes in fattr are newer, however it also attempt to
- * catch the case where ctime either didn't change, or went backwards
- * (if someone reset the clock on the server) by looking at whether
- * or not this RPC call was started after the inode was last updated.
- * Note also the check for wraparound of 'attr_gencount'
- *
- * The function returns 'true' if it thinks the attributes in 'fattr' are
- * more recent than the ones cached in the inode.
- *
- */
-static int nfs_inode_attrs_need_update(const struct inode *inode, const struct nfs_fattr *fattr)
-{
-	const struct nfs_inode *nfsi = NFS_I(inode);
-
-	return ((long)fattr->gencount - (long)nfsi->attr_gencount) > 0 ||
-		nfs_ctime_need_update(inode, fattr) ||
-		nfs_size_need_update(inode, fattr) ||
-		((long)nfsi->attr_gencount - (long)nfs_read_attr_generation_counter() > 0);
-}
-
-static int nfs_refresh_inode_locked(struct inode *inode, struct nfs_fattr *fattr)
-{
-	if (nfs_inode_attrs_need_update(inode, fattr))
-		return nfs_update_inode(inode, fattr);
-	return nfs_check_inode_attributes(inode, fattr);
-=======
  * We assume that the server observes monotonic semantics for
  * the change attribute, so a larger value means that the attributes in
  * @fattr are more recent, in which case the function returns the
@@ -2680,18 +1895,12 @@ static int nfs_refresh_inode_locked(struct inode *inode,
 
 	trace_nfs_refresh_inode_exit(inode, ret);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * nfs_refresh_inode - try to update the inode attribute cache
-<<<<<<< HEAD
- * @inode - pointer to inode
- * @fattr - updated attributes
-=======
  * @inode: pointer to inode
  * @fattr: updated attributes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Check that an RPC call that returned attributes has not overlapped with
  * other recent updates of the inode metadata, then decide whether it is
@@ -2710,16 +1919,6 @@ int nfs_refresh_inode(struct inode *inode, struct nfs_fattr *fattr)
 
 	return status;
 }
-<<<<<<< HEAD
-
-static int nfs_post_op_update_inode_locked(struct inode *inode, struct nfs_fattr *fattr)
-{
-	struct nfs_inode *nfsi = NFS_I(inode);
-
-	nfsi->cache_validity |= NFS_INO_INVALID_ATTR|NFS_INO_REVAL_PAGECACHE;
-	if (S_ISDIR(inode->i_mode))
-		nfsi->cache_validity |= NFS_INO_INVALID_DATA;
-=======
 EXPORT_SYMBOL_GPL(nfs_refresh_inode);
 
 static int nfs_post_op_update_inode_locked(struct inode *inode,
@@ -2728,7 +1927,6 @@ static int nfs_post_op_update_inode_locked(struct inode *inode,
 	if (S_ISDIR(inode->i_mode))
 		invalid |= NFS_INO_INVALID_DATA;
 	nfs_set_cache_invalid(inode, invalid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((fattr->valid & NFS_ATTR_FATTR) == 0)
 		return 0;
 	return nfs_refresh_inode_locked(inode, fattr);
@@ -2736,13 +1934,8 @@ static int nfs_post_op_update_inode_locked(struct inode *inode,
 
 /**
  * nfs_post_op_update_inode - try to update the inode attribute cache
-<<<<<<< HEAD
- * @inode - pointer to inode
- * @fattr - updated attributes
-=======
  * @inode: pointer to inode
  * @fattr: updated attributes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * After an operation that has changed the inode metadata, mark the
  * attribute cache as being invalid, then try to update it.
@@ -2758,10 +1951,6 @@ int nfs_post_op_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	int status;
 
 	spin_lock(&inode->i_lock);
-<<<<<<< HEAD
-	status = nfs_post_op_update_inode_locked(inode, fattr);
-	spin_unlock(&inode->i_lock);
-=======
 	nfs_fattr_set_barrier(fattr);
 	status = nfs_post_op_update_inode_locked(inode, fattr,
 			NFS_INO_INVALID_CHANGE
@@ -2827,19 +2016,13 @@ out_noforce:
 			| NFS_INO_INVALID_CTIME
 			| NFS_INO_INVALID_MTIME
 			| NFS_INO_INVALID_BLOCKS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /**
  * nfs_post_op_update_inode_force_wcc - try to update the inode attribute cache
-<<<<<<< HEAD
- * @inode - pointer to inode
- * @fattr - updated attributes
-=======
  * @inode: pointer to inode
  * @fattr: updated attributes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * After an operation that has changed the inode metadata, mark the
  * attribute cache as being invalid, then try to update it. Fake up
@@ -2852,42 +2035,6 @@ int nfs_post_op_update_inode_force_wcc(struct inode *inode, struct nfs_fattr *fa
 	int status;
 
 	spin_lock(&inode->i_lock);
-<<<<<<< HEAD
-	/* Don't do a WCC update if these attributes are already stale */
-	if ((fattr->valid & NFS_ATTR_FATTR) == 0 ||
-			!nfs_inode_attrs_need_update(inode, fattr)) {
-		fattr->valid &= ~(NFS_ATTR_FATTR_PRECHANGE
-				| NFS_ATTR_FATTR_PRESIZE
-				| NFS_ATTR_FATTR_PREMTIME
-				| NFS_ATTR_FATTR_PRECTIME);
-		goto out_noforce;
-	}
-	if ((fattr->valid & NFS_ATTR_FATTR_CHANGE) != 0 &&
-			(fattr->valid & NFS_ATTR_FATTR_PRECHANGE) == 0) {
-		fattr->pre_change_attr = inode->i_version;
-		fattr->valid |= NFS_ATTR_FATTR_PRECHANGE;
-	}
-	if ((fattr->valid & NFS_ATTR_FATTR_CTIME) != 0 &&
-			(fattr->valid & NFS_ATTR_FATTR_PRECTIME) == 0) {
-		memcpy(&fattr->pre_ctime, &inode->i_ctime, sizeof(fattr->pre_ctime));
-		fattr->valid |= NFS_ATTR_FATTR_PRECTIME;
-	}
-	if ((fattr->valid & NFS_ATTR_FATTR_MTIME) != 0 &&
-			(fattr->valid & NFS_ATTR_FATTR_PREMTIME) == 0) {
-		memcpy(&fattr->pre_mtime, &inode->i_mtime, sizeof(fattr->pre_mtime));
-		fattr->valid |= NFS_ATTR_FATTR_PREMTIME;
-	}
-	if ((fattr->valid & NFS_ATTR_FATTR_SIZE) != 0 &&
-			(fattr->valid & NFS_ATTR_FATTR_PRESIZE) == 0) {
-		fattr->pre_size = i_size_read(inode);
-		fattr->valid |= NFS_ATTR_FATTR_PRESIZE;
-	}
-out_noforce:
-	status = nfs_post_op_update_inode_locked(inode, fattr);
-	spin_unlock(&inode->i_lock);
-	return status;
-}
-=======
 	nfs_fattr_set_barrier(fattr);
 	status = nfs_post_op_update_inode_force_wcc_locked(inode, fattr);
 	spin_unlock(&inode->i_lock);
@@ -2895,7 +2042,6 @@ out_noforce:
 }
 EXPORT_SYMBOL_GPL(nfs_post_op_update_inode_force_wcc);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Many nfs protocol calls return the new file attributes after
@@ -2911,16 +2057,6 @@ EXPORT_SYMBOL_GPL(nfs_post_op_update_inode_force_wcc);
  */
 static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 {
-<<<<<<< HEAD
-	struct nfs_server *server;
-	struct nfs_inode *nfsi = NFS_I(inode);
-	loff_t cur_isize, new_isize;
-	unsigned long invalid = 0;
-	unsigned long now = jiffies;
-	unsigned long save_cache_validity;
-
-	dfprintk(VFS, "NFS: %s(%s/%ld fh_crc=0x%08x ct=%d info=0x%x)\n",
-=======
 	struct nfs_server *server = NFS_SERVER(inode);
 	struct nfs_inode *nfsi = NFS_I(inode);
 	loff_t cur_isize, new_isize;
@@ -2934,15 +2070,10 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	bool have_delegation;
 
 	dfprintk(VFS, "NFS: %s(%s/%lu fh_crc=0x%08x ct=%d info=0x%x)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, inode->i_sb->s_id, inode->i_ino,
 			nfs_display_fhandle_hash(NFS_FH(inode)),
 			atomic_read(&inode->i_count), fattr->valid);
 
-<<<<<<< HEAD
-	if ((fattr->valid & NFS_ATTR_FATTR_FILEID) && nfsi->fileid != fattr->fileid)
-		goto out_fileid;
-=======
 	if (!(fattr->valid & NFS_ATTR_FATTR_FILEID)) {
 		/* Only a mounted-on-fileid? Just exit */
 		if (fattr->valid & NFS_ATTR_FATTR_MOUNTED_ON_FILEID)
@@ -2960,17 +2091,10 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 			(long long)fattr->fileid);
 		goto out_err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Make sure the inode's type hasn't changed.
 	 */
-<<<<<<< HEAD
-	if ((fattr->valid & NFS_ATTR_FATTR_TYPE) && (inode->i_mode & S_IFMT) != (fattr->mode & S_IFMT))
-		goto out_changed;
-
-	server = NFS_SERVER(inode);
-=======
 	if ((fattr->valid & NFS_ATTR_FATTR_TYPE) && inode_wrong_type(inode, fattr->mode)) {
 		/*
 		* Big trouble! The inode has become a different object.
@@ -2980,19 +2104,15 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 		goto out_err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Update the fsid? */
 	if (S_ISDIR(inode->i_mode) && (fattr->valid & NFS_ATTR_FATTR_FSID) &&
 			!nfs_fsid_equal(&server->fsid, &fattr->fsid) &&
 			!IS_AUTOMOUNT(inode))
 		server->fsid = fattr->fsid;
 
-<<<<<<< HEAD
-=======
 	/* Save the delegation state before clearing cache_validity */
 	have_delegation = nfs_have_delegated_attributes(inode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Update the read time so we don't revalidate too often.
 	 */
@@ -3002,60 +2122,6 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	nfsi->cache_validity &= ~(NFS_INO_INVALID_ATTR
 			| NFS_INO_INVALID_ATIME
 			| NFS_INO_REVAL_FORCED
-<<<<<<< HEAD
-			| NFS_INO_REVAL_PAGECACHE);
-
-	/* Do atomic weak cache consistency updates */
-	invalid |= nfs_wcc_update_inode(inode, fattr);
-
-	/* More cache consistency checks */
-	if (fattr->valid & NFS_ATTR_FATTR_CHANGE) {
-		if (inode->i_version != fattr->change_attr) {
-			dprintk("NFS: change_attr change on server for file %s/%ld\n",
-					inode->i_sb->s_id, inode->i_ino);
-			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_DATA|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
-			if (S_ISDIR(inode->i_mode))
-				nfs_force_lookup_revalidate(inode);
-			inode->i_version = fattr->change_attr;
-		}
-	} else if (server->caps & NFS_CAP_CHANGE_ATTR)
-		invalid |= save_cache_validity;
-
-	if (fattr->valid & NFS_ATTR_FATTR_MTIME) {
-		/* NFSv2/v3: Check if the mtime agrees */
-		if (!timespec_equal(&inode->i_mtime, &fattr->mtime)) {
-			dprintk("NFS: mtime change on server for file %s/%ld\n",
-					inode->i_sb->s_id, inode->i_ino);
-			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_DATA;
-			if (S_ISDIR(inode->i_mode))
-				nfs_force_lookup_revalidate(inode);
-			memcpy(&inode->i_mtime, &fattr->mtime, sizeof(inode->i_mtime));
-		}
-	} else if (server->caps & NFS_CAP_MTIME)
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_DATA
-				| NFS_INO_REVAL_PAGECACHE
-				| NFS_INO_REVAL_FORCED);
-
-	if (fattr->valid & NFS_ATTR_FATTR_CTIME) {
-		/* If ctime has changed we should definitely clear access+acl caches */
-		if (!timespec_equal(&inode->i_ctime, &fattr->ctime)) {
-			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
-			/* and probably clear data for a directory too as utimes can cause
-			 * havoc with our cache.
-			 */
-			if (S_ISDIR(inode->i_mode)) {
-				invalid |= NFS_INO_INVALID_DATA;
-				nfs_force_lookup_revalidate(inode);
-			}
-			memcpy(&inode->i_ctime, &fattr->ctime, sizeof(inode->i_ctime));
-		}
-	} else if (server->caps & NFS_CAP_CTIME)
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL
-				| NFS_INO_REVAL_FORCED);
-=======
 			| NFS_INO_INVALID_BLOCKS);
 
 	/* Do atomic weak cache consistency updates */
@@ -3128,40 +2194,11 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	else if (fattr_supported & NFS_ATTR_FATTR_CTIME)
 		nfsi->cache_validity |=
 			save_cache_validity & NFS_INO_INVALID_CTIME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if our cached file size is stale */
 	if (fattr->valid & NFS_ATTR_FATTR_SIZE) {
 		new_isize = nfs_size_to_loff_t(fattr->size);
 		cur_isize = i_size_read(inode);
-<<<<<<< HEAD
-		if (new_isize != cur_isize) {
-			/* Do we perhaps have any outstanding writes, or has
-			 * the file grown beyond our last write? */
-			if ((nfsi->npages == 0 && !test_bit(NFS_INO_LAYOUTCOMMIT, &nfsi->flags)) ||
-			     new_isize > cur_isize) {
-				i_size_write(inode, new_isize);
-				invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_DATA;
-			}
-			dprintk("NFS: isize change on server for file %s/%ld "
-					"(%Ld to %Ld)\n",
-					inode->i_sb->s_id,
-					inode->i_ino,
-					(long long)cur_isize,
-					(long long)new_isize);
-		}
-	} else
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATTR
-				| NFS_INO_REVAL_PAGECACHE
-				| NFS_INO_REVAL_FORCED);
-
-
-	if (fattr->valid & NFS_ATTR_FATTR_ATIME)
-		memcpy(&inode->i_atime, &fattr->atime, sizeof(inode->i_atime));
-	else if (server->caps & NFS_CAP_ATIME)
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATIME
-				| NFS_INO_REVAL_FORCED);
-=======
 		if (new_isize != cur_isize && !have_delegation) {
 			/* Do we perhaps have any outstanding writes, or has
 			 * the file grown beyond our last write? */
@@ -3187,55 +2224,12 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	else if (fattr_supported & NFS_ATTR_FATTR_ATIME)
 		nfsi->cache_validity |=
 			save_cache_validity & NFS_INO_INVALID_ATIME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fattr->valid & NFS_ATTR_FATTR_MODE) {
 		if ((inode->i_mode & S_IALLUGO) != (fattr->mode & S_IALLUGO)) {
 			umode_t newmode = inode->i_mode & S_IFMT;
 			newmode |= fattr->mode & S_IALLUGO;
 			inode->i_mode = newmode;
-<<<<<<< HEAD
-			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
-		}
-	} else if (server->caps & NFS_CAP_MODE)
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL
-				| NFS_INO_REVAL_FORCED);
-
-	if (fattr->valid & NFS_ATTR_FATTR_OWNER) {
-		if (inode->i_uid != fattr->uid) {
-			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
-			inode->i_uid = fattr->uid;
-		}
-	} else if (server->caps & NFS_CAP_OWNER)
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL
-				| NFS_INO_REVAL_FORCED);
-
-	if (fattr->valid & NFS_ATTR_FATTR_GROUP) {
-		if (inode->i_gid != fattr->gid) {
-			invalid |= NFS_INO_INVALID_ATTR|NFS_INO_INVALID_ACCESS|NFS_INO_INVALID_ACL;
-			inode->i_gid = fattr->gid;
-		}
-	} else if (server->caps & NFS_CAP_OWNER_GROUP)
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATTR
-				| NFS_INO_INVALID_ACCESS
-				| NFS_INO_INVALID_ACL
-				| NFS_INO_REVAL_FORCED);
-
-	if (fattr->valid & NFS_ATTR_FATTR_NLINK) {
-		if (inode->i_nlink != fattr->nlink) {
-			invalid |= NFS_INO_INVALID_ATTR;
-			if (S_ISDIR(inode->i_mode))
-				invalid |= NFS_INO_INVALID_DATA;
-			set_nlink(inode, fattr->nlink);
-		}
-	} else if (server->caps & NFS_CAP_NLINK)
-		invalid |= save_cache_validity & (NFS_INO_INVALID_ATTR
-				| NFS_INO_REVAL_FORCED);
-=======
 			invalid |= NFS_INO_INVALID_ACCESS
 				| NFS_INO_INVALID_ACL;
 		}
@@ -3269,37 +2263,12 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 	} else if (fattr_supported & NFS_ATTR_FATTR_NLINK)
 		nfsi->cache_validity |=
 			save_cache_validity & NFS_INO_INVALID_NLINK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fattr->valid & NFS_ATTR_FATTR_SPACE_USED) {
 		/*
 		 * report the blocks in 512byte units
 		 */
 		inode->i_blocks = nfs_calc_block_size(fattr->du.nfs3.used);
-<<<<<<< HEAD
- 	}
-	if (fattr->valid & NFS_ATTR_FATTR_BLOCKS_USED)
-		inode->i_blocks = fattr->du.nfs2.blocks;
-
-	/* Update attrtimeo value if we're out of the unstable period */
-	if (invalid & NFS_INO_INVALID_ATTR) {
-		nfs_inc_stats(inode, NFSIOS_ATTRINVALIDATE);
-		nfsi->attrtimeo = NFS_MINATTRTIMEO(inode);
-		nfsi->attrtimeo_timestamp = now;
-		nfsi->attr_gencount = nfs_inc_attr_generation_counter();
-	} else {
-		if (!time_in_range_open(now, nfsi->attrtimeo_timestamp, nfsi->attrtimeo_timestamp + nfsi->attrtimeo)) {
-			if ((nfsi->attrtimeo <<= 1) > NFS_MAXATTRTIMEO(inode))
-				nfsi->attrtimeo = NFS_MAXATTRTIMEO(inode);
-			nfsi->attrtimeo_timestamp = now;
-		}
-	}
-
-	/* Don't declare attrcache up to date if there were no attrs! */
-	if (fattr->valid != 0)
-		invalid &= ~NFS_INO_INVALID_ATTR;
-
-=======
 	} else if (fattr_supported & NFS_ATTR_FATTR_SPACE_USED)
 		nfsi->cache_validity |=
 			save_cache_validity & NFS_INO_INVALID_BLOCKS;
@@ -3332,72 +2301,19 @@ static int nfs_update_inode(struct inode *inode, struct nfs_fattr *fattr)
 			nfsi->attr_gencount = fattr->gencount;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Don't invalidate the data if we were to blame */
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode)
 				|| S_ISLNK(inode->i_mode)))
 		invalid &= ~NFS_INO_INVALID_DATA;
-<<<<<<< HEAD
-	if (!nfs_have_delegation(inode, FMODE_READ) ||
-			(save_cache_validity & NFS_INO_REVAL_FORCED))
-		nfsi->cache_validity |= invalid;
-
-	return 0;
- out_changed:
-	/*
-	 * Big trouble! The inode has become a different object.
-	 */
-	printk(KERN_DEBUG "NFS: %s: inode %ld mode changed, %07o to %07o\n",
-			__func__, inode->i_ino, inode->i_mode, fattr->mode);
-=======
 	nfs_set_cache_invalid(inode, invalid);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out_err:
 	/*
 	 * No need to worry about unhashing the dentry, as the
 	 * lookup validation will know that the inode is bad.
 	 * (But we fall through to invalidate the caches.)
 	 */
-<<<<<<< HEAD
-	nfs_invalidate_inode(inode);
-	return -ESTALE;
-
- out_fileid:
-	printk(KERN_ERR "NFS: server %s error: fileid changed\n"
-		"fsid %s: expected fileid 0x%Lx, got 0x%Lx\n",
-		NFS_SERVER(inode)->nfs_client->cl_hostname, inode->i_sb->s_id,
-		(long long)nfsi->fileid, (long long)fattr->fileid);
-	goto out_err;
-}
-
-
-#ifdef CONFIG_NFS_V4
-
-/*
- * Clean out any remaining NFSv4 state that might be left over due
- * to open() calls that passed nfs_atomic_lookup, but failed to call
- * nfs_open().
- */
-void nfs4_evict_inode(struct inode *inode)
-{
-	truncate_inode_pages(&inode->i_data, 0);
-	end_writeback(inode);
-	pnfs_return_layout(inode);
-	pnfs_destroy_layout(NFS_I(inode));
-	/* If we are holding a delegation, return it! */
-	nfs_inode_return_delegation_noreclaim(inode);
-	/* First call standard NFS clear_inode() code */
-	nfs_clear_inode(inode);
-}
-#endif
-
-struct inode *nfs_alloc_inode(struct super_block *sb)
-{
-	struct nfs_inode *nfsi;
-	nfsi = (struct nfs_inode *)kmem_cache_alloc(nfs_inode_cachep, GFP_KERNEL);
-=======
 	nfs_set_inode_stale_locked(inode);
 	return -ESTALE;
 }
@@ -3406,43 +2322,10 @@ struct inode *nfs_alloc_inode(struct super_block *sb)
 {
 	struct nfs_inode *nfsi;
 	nfsi = alloc_inode_sb(sb, nfs_inode_cachep, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!nfsi)
 		return NULL;
 	nfsi->flags = 0UL;
 	nfsi->cache_validity = 0UL;
-<<<<<<< HEAD
-#ifdef CONFIG_NFS_V3_ACL
-	nfsi->acl_access = ERR_PTR(-EAGAIN);
-	nfsi->acl_default = ERR_PTR(-EAGAIN);
-#endif
-#ifdef CONFIG_NFS_V4
-	nfsi->nfs4_acl = NULL;
-#endif /* CONFIG_NFS_V4 */
-	return &nfsi->vfs_inode;
-}
-
-static void nfs_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(nfs_inode_cachep, NFS_I(inode));
-}
-
-void nfs_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, nfs_i_callback);
-}
-
-static inline void nfs4_init_once(struct nfs_inode *nfsi)
-{
-#ifdef CONFIG_NFS_V4
-	INIT_LIST_HEAD(&nfsi->open_states);
-	nfsi->delegation = NULL;
-	nfsi->delegation_state = 0;
-	init_rwsem(&nfsi->rwsem);
-	nfsi->layout = NULL;
-	atomic_set(&nfsi->commits_outstanding, 0);
-=======
 	nfsi->ooo = NULL;
 #if IS_ENABLED(CONFIG_NFS_V4)
 	nfsi->nfs4_acl = NULL;
@@ -3470,31 +2353,17 @@ static inline void nfs4_init_once(struct nfs_inode *nfsi)
 	nfsi->delegation = NULL;
 	init_rwsem(&nfsi->rwsem);
 	nfsi->layout = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
 static void init_once(void *foo)
 {
-<<<<<<< HEAD
-	struct nfs_inode *nfsi = (struct nfs_inode *) foo;
-=======
 	struct nfs_inode *nfsi = foo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode_init_once(&nfsi->vfs_inode);
 	INIT_LIST_HEAD(&nfsi->open_files);
 	INIT_LIST_HEAD(&nfsi->access_cache_entry_lru);
 	INIT_LIST_HEAD(&nfsi->access_cache_inode_lru);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&nfsi->commit_list);
-	nfsi->npages = 0;
-	nfsi->ncommit = 0;
-	atomic_set(&nfsi->silly_count, 1);
-	INIT_HLIST_HEAD(&nfsi->silly_list);
-	init_waitqueue_head(&nfsi->waitqueue);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfs4_init_once(nfsi);
 }
 
@@ -3503,11 +2372,7 @@ static int __init nfs_init_inodecache(void)
 	nfs_inode_cachep = kmem_cache_create("nfs_inode_cache",
 					     sizeof(struct nfs_inode),
 					     0, (SLAB_RECLAIM_ACCOUNT|
-<<<<<<< HEAD
-						SLAB_MEM_SPREAD),
-=======
 						SLAB_ACCOUNT),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     init_once);
 	if (nfs_inode_cachep == NULL)
 		return -ENOMEM;
@@ -3526,10 +2391,7 @@ static void nfs_destroy_inodecache(void)
 }
 
 struct workqueue_struct *nfsiod_workqueue;
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(nfsiod_workqueue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * start up the nfsiod workqueue
@@ -3538,11 +2400,7 @@ static int nfsiod_start(void)
 {
 	struct workqueue_struct *wq;
 	dprintk("RPC:       creating workqueue nfsiod\n");
-<<<<<<< HEAD
-	wq = alloc_workqueue("nfsiod", WQ_MEM_RECLAIM, 0);
-=======
 	wq = alloc_workqueue("nfsiod", WQ_MEM_RECLAIM | WQ_UNBOUND, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wq == NULL)
 		return -ENOMEM;
 	nfsiod_workqueue = wq;
@@ -3563,19 +2421,11 @@ static void nfsiod_stop(void)
 	destroy_workqueue(wq);
 }
 
-<<<<<<< HEAD
-int nfs_net_id;
-=======
 unsigned int nfs_net_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(nfs_net_id);
 
 static int nfs_net_init(struct net *net)
 {
-<<<<<<< HEAD
-	nfs_clients_init(net);
-	return nfs_dns_resolver_cache_init(net);
-=======
 	struct nfs_net *nn = net_generic(net, nfs_net_id);
 
 	nfs_clients_init(net);
@@ -3586,19 +2436,13 @@ static int nfs_net_init(struct net *net)
 	}
 
 	return nfs_fs_proc_net_init(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nfs_net_exit(struct net *net)
 {
-<<<<<<< HEAD
-	nfs_dns_resolver_cache_destroy(net);
-	nfs_cleanup_cb_ident_idr(net);
-=======
 	rpc_proc_unregister(net, "nfs");
 	nfs_fs_proc_net_exit(net);
 	nfs_clients_exit(net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations nfs_net_ops = {
@@ -3615,83 +2459,6 @@ static int __init init_nfs_fs(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = nfs_idmap_init();
-	if (err < 0)
-		goto out10;
-
-	err = nfs_dns_resolver_init();
-	if (err < 0)
-		goto out9;
-
-	err = register_pernet_subsys(&nfs_net_ops);
-	if (err < 0)
-		goto out8;
-
-	err = nfs_fscache_register();
-	if (err < 0)
-		goto out7;
-
-	err = nfsiod_start();
-	if (err)
-		goto out6;
-
-	err = nfs_fs_proc_init();
-	if (err)
-		goto out5;
-
-	err = nfs_init_nfspagecache();
-	if (err)
-		goto out4;
-
-	err = nfs_init_inodecache();
-	if (err)
-		goto out3;
-
-	err = nfs_init_readpagecache();
-	if (err)
-		goto out2;
-
-	err = nfs_init_writepagecache();
-	if (err)
-		goto out1;
-
-	err = nfs_init_directcache();
-	if (err)
-		goto out0;
-
-#ifdef CONFIG_PROC_FS
-	rpc_proc_register(&init_net, &nfs_rpcstat);
-#endif
-	if ((err = register_nfs_fs()) != 0)
-		goto out;
-	return 0;
-out:
-#ifdef CONFIG_PROC_FS
-	rpc_proc_unregister(&init_net, "nfs");
-#endif
-	nfs_destroy_directcache();
-out0:
-	nfs_destroy_writepagecache();
-out1:
-	nfs_destroy_readpagecache();
-out2:
-	nfs_destroy_inodecache();
-out3:
-	nfs_destroy_nfspagecache();
-out4:
-	nfs_fs_proc_exit();
-out5:
-	nfsiod_stop();
-out6:
-	nfs_fscache_unregister();
-out7:
-	unregister_pernet_subsys(&nfs_net_ops);
-out8:
-	nfs_dns_resolver_destroy();
-out9:
-	nfs_idmap_quit();
-=======
 	err = nfs_sysfs_init();
 	if (err < 0)
 		goto out10;
@@ -3751,7 +2518,6 @@ out7:
 	unregister_pernet_subsys(&nfs_net_ops);
 out9:
 	nfs_sysfs_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out10:
 	return err;
 }
@@ -3763,24 +2529,11 @@ static void __exit exit_nfs_fs(void)
 	nfs_destroy_readpagecache();
 	nfs_destroy_inodecache();
 	nfs_destroy_nfspagecache();
-<<<<<<< HEAD
-	nfs_fscache_unregister();
-	unregister_pernet_subsys(&nfs_net_ops);
-	nfs_dns_resolver_destroy();
-	nfs_idmap_quit();
-#ifdef CONFIG_PROC_FS
-	rpc_proc_unregister(&init_net, "nfs");
-#endif
-	unregister_nfs_fs();
-	nfs_fs_proc_exit();
-	nfsiod_stop();
-=======
 	unregister_pernet_subsys(&nfs_net_ops);
 	unregister_nfs_fs();
 	nfs_fs_proc_exit();
 	nfsiod_stop();
 	nfs_sysfs_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Not quite true; I just maintain it */

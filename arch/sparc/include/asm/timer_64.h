@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* timer.h: System timer definitions for sun5.
  *
  * Copyright (C) 1997, 2008 David S. Miller (davem@davemloft.net)
@@ -10,12 +7,6 @@
 #ifndef _SPARC64_TIMER_H
 #define _SPARC64_TIMER_H
 
-<<<<<<< HEAD
-#include <linux/types.h>
-#include <linux/init.h>
-
-struct sparc64_tick_ops {
-=======
 #include <uapi/asm/asi.h>
 #include <linux/types.h>
 #include <linux/init.h>
@@ -26,7 +17,6 @@ struct sparc64_tick_ops {
 struct sparc64_tick_ops {
 	unsigned long ticks_per_nsec_quotient;
 	unsigned long offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long (*get_tick)(void);
 	int (*add_compare)(unsigned long);
 	unsigned long softint_mask;
@@ -34,22 +24,14 @@ struct sparc64_tick_ops {
 
 	void (*init_tick)(void);
 	unsigned long (*add_tick)(unsigned long);
-<<<<<<< HEAD
-=======
 	unsigned long (*get_frequency)(void);
 	unsigned long frequency;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	char *name;
 };
 
 extern struct sparc64_tick_ops *tick_ops;
 
-<<<<<<< HEAD
-extern unsigned long sparc64_get_clock_tick(unsigned int cpu);
-extern void __devinit setup_sparc64_timer(void);
-extern void __init time_init(void);
-=======
 unsigned long sparc64_get_clock_tick(unsigned int cpu);
 void setup_sparc64_timer(void);
 
@@ -112,6 +94,5 @@ static inline unsigned long get_tick(void)
 
 	return tick;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _SPARC64_TIMER_H */

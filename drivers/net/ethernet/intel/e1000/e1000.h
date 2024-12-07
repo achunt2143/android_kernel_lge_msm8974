@@ -1,36 +1,5 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel PRO/1000 Linux driver
-  Copyright(c) 1999 - 2006 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  Linux NICS <linux.nics@intel.com>
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Copyright(c) 1999 - 2006 Intel Corporation. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Linux PRO/1000 Ethernet Driver main header file */
 
@@ -41,10 +10,6 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/errno.h>
 #include <linux/ioport.h>
@@ -80,10 +45,6 @@
 
 #define BAR_0		0
 #define BAR_1		1
-<<<<<<< HEAD
-#define BAR_5		5
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INTEL_E1000_ETHERNET_DEVICE(device_id) {\
 	PCI_DEVICE(PCI_VENDOR_ID_INTEL, device_id)}
@@ -92,20 +53,6 @@ struct e1000_adapter;
 
 #include "e1000_hw.h"
 
-<<<<<<< HEAD
-#define E1000_MAX_INTR 10
-
-/* TX/RX descriptor defines */
-#define E1000_DEFAULT_TXD                  256
-#define E1000_MAX_TXD                      256
-#define E1000_MIN_TXD                       48
-#define E1000_MAX_82544_TXD               4096
-
-#define E1000_DEFAULT_RXD                  256
-#define E1000_MAX_RXD                      256
-#define E1000_MIN_RXD                       48
-#define E1000_MAX_82544_RXD               4096
-=======
 #define E1000_MAX_INTR			10
 
 /*
@@ -123,40 +70,11 @@ struct e1000_adapter;
 #define E1000_MAX_RXD			256
 #define E1000_MIN_RXD			48
 #define E1000_MAX_82544_RXD		4096
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_MIN_ITR_USECS		10 /* 100000 irq/sec */
 #define E1000_MAX_ITR_USECS		10000 /* 100    irq/sec */
 
 /* this is the size past which hardware will drop packets when setting LPE=0 */
-<<<<<<< HEAD
-#define MAXIMUM_ETHERNET_VLAN_SIZE 1522
-
-/* Supported Rx Buffer Sizes */
-#define E1000_RXBUFFER_128   128    /* Used for packet split */
-#define E1000_RXBUFFER_256   256    /* Used for packet split */
-#define E1000_RXBUFFER_512   512
-#define E1000_RXBUFFER_1024  1024
-#define E1000_RXBUFFER_2048  2048
-#define E1000_RXBUFFER_4096  4096
-#define E1000_RXBUFFER_8192  8192
-#define E1000_RXBUFFER_16384 16384
-
-/* SmartSpeed delimiters */
-#define E1000_SMARTSPEED_DOWNSHIFT 3
-#define E1000_SMARTSPEED_MAX       15
-
-/* Packet Buffer allocations */
-#define E1000_PBA_BYTES_SHIFT 0xA
-#define E1000_TX_HEAD_ADDR_SHIFT 7
-#define E1000_PBA_TX_MASK 0xFFFF0000
-
-/* Flow Control Watermarks */
-#define E1000_FC_HIGH_DIFF 0x1638  /* High: 5688 bytes below Rx FIFO size */
-#define E1000_FC_LOW_DIFF 0x1640   /* Low:  5696 bytes below Rx FIFO size */
-
-#define E1000_FC_PAUSE_TIME 0xFFFF /* pause for the max or until send xon */
-=======
 #define MAXIMUM_ETHERNET_VLAN_SIZE	1522
 
 /* Supported Rx Buffer Sizes */
@@ -183,46 +101,21 @@ struct e1000_adapter;
 #define E1000_FC_LOW_DIFF	0x1640 /* Low:  5696 bytes below Rx FIFO size */
 
 #define E1000_FC_PAUSE_TIME	0xFFFF /* pause for the max or until send xon */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* How many Tx Descriptors do we need to call netif_wake_queue ? */
 #define E1000_TX_QUEUE_WAKE	16
 /* How many Rx Buffers do we bundle into one write to the hardware ? */
-<<<<<<< HEAD
-#define E1000_RX_BUFFER_WRITE	16	/* Must be power of 2 */
-
-#define AUTO_ALL_MODES            0
-#define E1000_EEPROM_82544_APM    0x0004
-#define E1000_EEPROM_APME         0x0400
-=======
 #define E1000_RX_BUFFER_WRITE	16 /* Must be power of 2 */
 
 #define AUTO_ALL_MODES		0
 #define E1000_EEPROM_82544_APM	0x0004
 #define E1000_EEPROM_APME	0x0400
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef E1000_MASTER_SLAVE
 /* Switch to override PHY master/slave setting */
 #define E1000_MASTER_SLAVE	e1000_ms_hw_default
 #endif
 
-<<<<<<< HEAD
-#define E1000_MNG_VLAN_NONE (-1)
-
-/* wrapper around a pointer to a socket buffer,
- * so a DMA handle can be stored along with the buffer */
-struct e1000_buffer {
-	struct sk_buff *skb;
-	dma_addr_t dma;
-	struct page *page;
-	unsigned long time_stamp;
-	u16 length;
-	u16 next_to_watch;
-	unsigned int segs;
-	unsigned int bytecount;
-	u16 mapped_as_page;
-=======
 #define E1000_MNG_VLAN_NONE	(-1)
 
 /* wrapper around a pointer to a socket buffer,
@@ -245,7 +138,6 @@ struct e1000_rx_buffer {
 		u8 *data; /* else, netdev_alloc_frag */
 	} rxbuf;
 	dma_addr_t dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_tx_ring {
@@ -262,11 +154,7 @@ struct e1000_tx_ring {
 	/* next descriptor to check for DD status bit */
 	unsigned int next_to_clean;
 	/* array of buffer information structs */
-<<<<<<< HEAD
-	struct e1000_buffer *buffer_info;
-=======
 	struct e1000_tx_buffer *buffer_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u16 tdh;
 	u16 tdt;
@@ -287,11 +175,7 @@ struct e1000_rx_ring {
 	/* next descriptor to check for DD status bit */
 	unsigned int next_to_clean;
 	/* array of buffer information structs */
-<<<<<<< HEAD
-	struct e1000_buffer *buffer_info;
-=======
 	struct e1000_rx_buffer *buffer_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *rx_skb_top;
 
 	/* cpu for rx queue */
@@ -302,16 +186,11 @@ struct e1000_rx_ring {
 };
 
 #define E1000_DESC_UNUSED(R)						\
-<<<<<<< HEAD
-	((((R)->next_to_clean > (R)->next_to_use)			\
-	  ? 0 : (R)->count) + (R)->next_to_clean - (R)->next_to_use - 1)
-=======
 ({									\
 	unsigned int clean = smp_load_acquire(&(R)->next_to_clean);	\
 	unsigned int use = READ_ONCE((R)->next_to_use);			\
 	(clean > use ? 0 : (R)->count) + clean - use - 1;		\
 })
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_RX_DESC_EXT(R, i)						\
 	(&(((union e1000_rx_desc_extended *)((R).desc))[i]))
@@ -420,32 +299,19 @@ struct e1000_adapter {
 	struct delayed_work watchdog_task;
 	struct delayed_work fifo_stall_task;
 	struct delayed_work phy_info_task;
-<<<<<<< HEAD
-
-	struct mutex mutex;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum e1000_state_t {
 	__E1000_TESTING,
 	__E1000_RESETTING,
-<<<<<<< HEAD
-	__E1000_DOWN
-=======
 	__E1000_DOWN,
 	__E1000_DISABLED
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-<<<<<<< HEAD
-extern struct net_device *e1000_get_hw_dev(struct e1000_hw *hw);
-=======
 struct net_device *e1000_get_hw_dev(struct e1000_hw *hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define e_dbg(format, arg...) \
 	netdev_dbg(e1000_get_hw_dev(hw), format, ## arg)
 #define e_err(msglvl, format, arg...) \
@@ -464,25 +330,6 @@ struct net_device *e1000_get_hw_dev(struct e1000_hw *hw);
 	dev_err(&adapter->pdev->dev, format, ## arg)
 
 extern char e1000_driver_name[];
-<<<<<<< HEAD
-extern const char e1000_driver_version[];
-
-extern int e1000_up(struct e1000_adapter *adapter);
-extern void e1000_down(struct e1000_adapter *adapter);
-extern void e1000_reinit_locked(struct e1000_adapter *adapter);
-extern void e1000_reset(struct e1000_adapter *adapter);
-extern int e1000_set_spd_dplx(struct e1000_adapter *adapter, u32 spd, u8 dplx);
-extern int e1000_setup_all_rx_resources(struct e1000_adapter *adapter);
-extern int e1000_setup_all_tx_resources(struct e1000_adapter *adapter);
-extern void e1000_free_all_rx_resources(struct e1000_adapter *adapter);
-extern void e1000_free_all_tx_resources(struct e1000_adapter *adapter);
-extern void e1000_update_stats(struct e1000_adapter *adapter);
-extern bool e1000_has_link(struct e1000_adapter *adapter);
-extern void e1000_power_up_phy(struct e1000_adapter *);
-extern void e1000_set_ethtool_ops(struct net_device *netdev);
-extern void e1000_check_options(struct e1000_adapter *adapter);
-extern char *e1000_get_hw_dev_name(struct e1000_hw *hw);
-=======
 
 int e1000_open(struct net_device *netdev);
 int e1000_close(struct net_device *netdev);
@@ -500,6 +347,5 @@ bool e1000_has_link(struct e1000_adapter *adapter);
 void e1000_power_up_phy(struct e1000_adapter *);
 void e1000_set_ethtool_ops(struct net_device *netdev);
 void e1000_check_options(struct e1000_adapter *adapter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _E1000_H_ */

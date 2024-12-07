@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/*
- *	PCI Bus Services, see include/linux/pci.h for further explanation.
- *
- *	Copyright 1993 -- 1997 Drew Eckhardt, Frederic Potter,
- *	David Mosberger-Tang
- *
- *	Copyright 1997 -- 2000 Martin Mares <mj@ucw.cz>
- */
-
-#include <linux/kernel.h>
-#include <linux/delay.h>
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * PCI Bus Services, see include/linux/pci.h for further explanation.
@@ -29,7 +15,6 @@
 #include <linux/init.h>
 #include <linux/msi.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/pm.h>
 #include <linux/slab.h>
@@ -37,16 +22,6 @@
 #include <linux/spinlock.h>
 #include <linux/string.h>
 #include <linux/log2.h>
-<<<<<<< HEAD
-#include <linux/pci-aspm.h>
-#include <linux/pm_wakeup.h>
-#include <linux/interrupt.h>
-#include <linux/device.h>
-#include <linux/pm_runtime.h>
-#include <asm/setup.h>
-#include "pci.h"
-
-=======
 #include <linux/logic_pio.h>
 #include <linux/pm_wakeup.h>
 #include <linux/device.h>
@@ -60,30 +35,20 @@
 
 DEFINE_MUTEX(pci_slot_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const char *pci_power_names[] = {
 	"error", "D0", "D1", "D2", "D3hot", "D3cold", "unknown",
 };
 EXPORT_SYMBOL_GPL(pci_power_names);
 
-<<<<<<< HEAD
-int isa_dma_bridge_buggy;
-EXPORT_SYMBOL(isa_dma_bridge_buggy);
-=======
 #ifdef CONFIG_X86_32
 int isa_dma_bridge_buggy;
 EXPORT_SYMBOL(isa_dma_bridge_buggy);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int pci_pci_problems;
 EXPORT_SYMBOL(pci_pci_problems);
 
-<<<<<<< HEAD
-unsigned int pci_pm_d3_delay;
-=======
 unsigned int pci_pm_d3hot_delay;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pci_pme_list_scan(struct work_struct *work);
 
@@ -98,16 +63,6 @@ struct pci_pme_device {
 
 #define PME_TIMEOUT 1000 /* How long between PME checks */
 
-<<<<<<< HEAD
-static void pci_dev_d3_sleep(struct pci_dev *dev)
-{
-	unsigned int delay = dev->d3_delay;
-
-	if (delay < pci_pm_d3_delay)
-		delay = pci_pm_d3_delay;
-
-	msleep(delay);
-=======
 /*
  * Following exit from Conventional Reset, devices must be ready within 1 sec
  * (PCIe r6.0 sec 6.6.1).  A D3cold to D0 transition implies a Conventional
@@ -139,7 +94,6 @@ static void pci_dev_d3_sleep(struct pci_dev *dev)
 bool pci_reset_supported(struct pci_dev *dev)
 {
 	return dev->reset_methods[0] != 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PCI_DOMAINS
@@ -153,14 +107,6 @@ unsigned long pci_cardbus_io_size = DEFAULT_CARDBUS_IO_SIZE;
 unsigned long pci_cardbus_mem_size = DEFAULT_CARDBUS_MEM_SIZE;
 
 #define DEFAULT_HOTPLUG_IO_SIZE		(256)
-<<<<<<< HEAD
-#define DEFAULT_HOTPLUG_MEM_SIZE	(2*1024*1024)
-/* pci=hpmemsize=nnM,hpiosize=nn can override this */
-unsigned long pci_hotplug_io_size  = DEFAULT_HOTPLUG_IO_SIZE;
-unsigned long pci_hotplug_mem_size = DEFAULT_HOTPLUG_MEM_SIZE;
-
-enum pcie_bus_config_types pcie_bus_config = PCIE_BUS_TUNE_OFF;
-=======
 #define DEFAULT_HOTPLUG_MMIO_SIZE	(2*1024*1024)
 #define DEFAULT_HOTPLUG_MMIO_PREF_SIZE	(2*1024*1024)
 /* hpiosize=nn can override this */
@@ -189,7 +135,6 @@ enum pcie_bus_config_types pcie_bus_config = PCIE_BUS_PEER2PEER;
 #else
 enum pcie_bus_config_types pcie_bus_config = PCIE_BUS_DEFAULT;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The default CLS is used if arch didn't set CLS explicitly and not
@@ -197,11 +142,7 @@ enum pcie_bus_config_types pcie_bus_config = PCIE_BUS_DEFAULT;
  * the dfl or actual value as it sees fit.  Don't forget this is
  * measured in 32-bit words, not bytes.
  */
-<<<<<<< HEAD
-u8 pci_dfl_cache_line_size __devinitdata = L1_CACHE_BYTES >> 2;
-=======
 u8 pci_dfl_cache_line_size = L1_CACHE_BYTES >> 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 pci_cache_line_size;
 
 /*
@@ -213,8 +154,6 @@ unsigned int pcibios_max_latency = 255;
 /* If set, the PCIe ARI capability will not be used. */
 static bool pcie_ari_disabled;
 
-<<<<<<< HEAD
-=======
 /* If set, the PCIe ATS capability will not be used. */
 static bool pcie_ats_disabled;
 
@@ -242,7 +181,6 @@ static int __init pcie_port_pm_setup(char *str)
 }
 __setup("pcie_port_pm=", pcie_port_pm_setup);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pci_bus_max_busnr - returns maximum PCI bus number of given bus' children
  * @bus: pointer to PCI bus structure to search
@@ -250,17 +188,6 @@ __setup("pcie_port_pm=", pcie_port_pm_setup);
  * Given a PCI bus, returns the highest PCI bus number present in the set
  * including the given PCI bus and its list of child PCI buses.
  */
-<<<<<<< HEAD
-unsigned char pci_bus_max_busnr(struct pci_bus* bus)
-{
-	struct list_head *tmp;
-	unsigned char max, n;
-
-	max = bus->subordinate;
-	list_for_each(tmp, &bus->children) {
-		n = pci_bus_max_busnr(pci_bus_b(tmp));
-		if(n > max)
-=======
 unsigned char pci_bus_max_busnr(struct pci_bus *bus)
 {
 	struct pci_bus *tmp;
@@ -270,69 +197,12 @@ unsigned char pci_bus_max_busnr(struct pci_bus *bus)
 	list_for_each_entry(tmp, &bus->children, node) {
 		n = pci_bus_max_busnr(tmp);
 		if (n > max)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			max = n;
 	}
 	return max;
 }
 EXPORT_SYMBOL_GPL(pci_bus_max_busnr);
 
-<<<<<<< HEAD
-#ifdef CONFIG_HAS_IOMEM
-void __iomem *pci_ioremap_bar(struct pci_dev *pdev, int bar)
-{
-	/*
-	 * Make sure the BAR is actually a memory resource, not an IO resource
-	 */
-	if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM)) {
-		WARN_ON(1);
-		return NULL;
-	}
-	return ioremap_nocache(pci_resource_start(pdev, bar),
-				     pci_resource_len(pdev, bar));
-}
-EXPORT_SYMBOL_GPL(pci_ioremap_bar);
-#endif
-
-#if 0
-/**
- * pci_max_busnr - returns maximum PCI bus number
- *
- * Returns the highest PCI bus number present in the system global list of
- * PCI buses.
- */
-unsigned char __devinit
-pci_max_busnr(void)
-{
-	struct pci_bus *bus = NULL;
-	unsigned char max, n;
-
-	max = 0;
-	while ((bus = pci_find_next_bus(bus)) != NULL) {
-		n = pci_bus_max_busnr(bus);
-		if(n > max)
-			max = n;
-	}
-	return max;
-}
-
-#endif  /*  0  */
-
-#define PCI_FIND_CAP_TTL	48
-
-static int __pci_find_next_cap_ttl(struct pci_bus *bus, unsigned int devfn,
-				   u8 pos, int cap, int *ttl)
-{
-	u8 id;
-
-	while ((*ttl)--) {
-		pci_bus_read_config_byte(bus, devfn, pos, &pos);
-		if (pos < 0x40)
-			break;
-		pos &= ~3;
-		pci_bus_read_config_byte(bus, devfn, pos + PCI_CAP_LIST_ID,
-					 &id);
-=======
 /**
  * pci_status_get_and_clear_errors - return and clear error bits in PCI_STATUS
  * @pdev: the PCI device
@@ -569,49 +439,31 @@ static u8 __pci_find_next_cap_ttl(struct pci_bus *bus, unsigned int devfn,
 		pci_bus_read_config_word(bus, devfn, pos, &ent);
 
 		id = ent & 0xff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (id == 0xff)
 			break;
 		if (id == cap)
 			return pos;
-<<<<<<< HEAD
-		pos += PCI_CAP_LIST_NEXT;
-=======
 		pos = (ent >> 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __pci_find_next_cap(struct pci_bus *bus, unsigned int devfn,
-			       u8 pos, int cap)
-=======
 static u8 __pci_find_next_cap(struct pci_bus *bus, unsigned int devfn,
 			      u8 pos, int cap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ttl = PCI_FIND_CAP_TTL;
 
 	return __pci_find_next_cap_ttl(bus, devfn, pos, cap, &ttl);
 }
 
-<<<<<<< HEAD
-int pci_find_next_capability(struct pci_dev *dev, u8 pos, int cap)
-=======
 u8 pci_find_next_capability(struct pci_dev *dev, u8 pos, int cap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __pci_find_next_cap(dev->bus, dev->devfn,
 				   pos + PCI_CAP_LIST_NEXT, cap);
 }
 EXPORT_SYMBOL_GPL(pci_find_next_capability);
 
-<<<<<<< HEAD
-static int __pci_bus_find_cap_start(struct pci_bus *bus,
-=======
 static u8 __pci_bus_find_cap_start(struct pci_bus *bus,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    unsigned int devfn, u8 hdr_type)
 {
 	u16 status;
@@ -626,44 +478,19 @@ static u8 __pci_bus_find_cap_start(struct pci_bus *bus,
 		return PCI_CAPABILITY_LIST;
 	case PCI_HEADER_TYPE_CARDBUS:
 		return PCI_CB_CAPABILITY_LIST;
-<<<<<<< HEAD
-	default:
-		return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * pci_find_capability - query for devices' capabilities 
-=======
  * pci_find_capability - query for devices' capabilities
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: PCI device to query
  * @cap: capability code
  *
  * Tell if a device supports a given PCI capability.
  * Returns the address of the requested capability structure within the
  * device's PCI configuration space or 0 in case the device does not
-<<<<<<< HEAD
- * support it.  Possible values for @cap:
- *
- *  %PCI_CAP_ID_PM           Power Management 
- *  %PCI_CAP_ID_AGP          Accelerated Graphics Port 
- *  %PCI_CAP_ID_VPD          Vital Product Data 
- *  %PCI_CAP_ID_SLOTID       Slot Identification 
- *  %PCI_CAP_ID_MSI          Message Signalled Interrupts
- *  %PCI_CAP_ID_CHSWP        CompactPCI HotSwap 
- *  %PCI_CAP_ID_PCIX         PCI-X
- *  %PCI_CAP_ID_EXP          PCI Express
- */
-int pci_find_capability(struct pci_dev *dev, int cap)
-{
-	int pos;
-=======
  * support it.  Possible values for @cap include:
  *
  *  %PCI_CAP_ID_PM           Power Management
@@ -678,7 +505,6 @@ int pci_find_capability(struct pci_dev *dev, int cap)
 u8 pci_find_capability(struct pci_dev *dev, int cap)
 {
 	u8 pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pos = __pci_bus_find_cap_start(dev->bus, dev->devfn, dev->hdr_type);
 	if (pos)
@@ -686,17 +512,6 @@ u8 pci_find_capability(struct pci_dev *dev, int cap)
 
 	return pos;
 }
-<<<<<<< HEAD
-
-/**
- * pci_bus_find_capability - query for devices' capabilities 
- * @bus:   the PCI bus to query
- * @devfn: PCI device to query
- * @cap:   capability code
- *
- * Like pci_find_capability() but works for pci devices that do not have a
- * pci_dev structure set up yet. 
-=======
 EXPORT_SYMBOL(pci_find_capability);
 
 /**
@@ -707,22 +522,11 @@ EXPORT_SYMBOL(pci_find_capability);
  *
  * Like pci_find_capability() but works for PCI devices that do not have a
  * pci_dev structure set up yet.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the address of the requested capability structure within the
  * device's PCI configuration space or 0 in case the device does not
  * support it.
  */
-<<<<<<< HEAD
-int pci_bus_find_capability(struct pci_bus *bus, unsigned int devfn, int cap)
-{
-	int pos;
-	u8 hdr_type;
-
-	pci_bus_read_config_byte(bus, devfn, PCI_HEADER_TYPE, &hdr_type);
-
-	pos = __pci_bus_find_cap_start(bus, devfn, hdr_type & 0x7f);
-=======
 u8 pci_bus_find_capability(struct pci_bus *bus, unsigned int devfn, int cap)
 {
 	u8 hdr_type, pos;
@@ -730,34 +534,11 @@ u8 pci_bus_find_capability(struct pci_bus *bus, unsigned int devfn, int cap)
 	pci_bus_read_config_byte(bus, devfn, PCI_HEADER_TYPE, &hdr_type);
 
 	pos = __pci_bus_find_cap_start(bus, devfn, hdr_type & PCI_HEADER_TYPE_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pos)
 		pos = __pci_find_next_cap(bus, devfn, pos, cap);
 
 	return pos;
 }
-<<<<<<< HEAD
-
-/**
- * pci_find_ext_capability - Find an extended capability
- * @dev: PCI device to query
- * @cap: capability code
- *
- * Returns the address of the requested extended capability structure
- * within the device's PCI configuration space or 0 if the device does
- * not support it.  Possible values for @cap:
- *
- *  %PCI_EXT_CAP_ID_ERR		Advanced Error Reporting
- *  %PCI_EXT_CAP_ID_VC		Virtual Channel
- *  %PCI_EXT_CAP_ID_DSN		Device Serial Number
- *  %PCI_EXT_CAP_ID_PWR		Power Budgeting
- */
-int pci_find_ext_capability(struct pci_dev *dev, int cap)
-{
-	u32 header;
-	int ttl;
-	int pos = PCI_CFG_SPACE_SIZE;
-=======
 EXPORT_SYMBOL(pci_bus_find_capability);
 
 /**
@@ -776,7 +557,6 @@ u16 pci_find_next_ext_capability(struct pci_dev *dev, u16 start, int cap)
 	u32 header;
 	int ttl;
 	u16 pos = PCI_CFG_SPACE_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* minimum 8 bytes per capability */
 	ttl = (PCI_CFG_SPACE_EXP_SIZE - PCI_CFG_SPACE_SIZE) / 8;
@@ -784,12 +564,9 @@ u16 pci_find_next_ext_capability(struct pci_dev *dev, u16 start, int cap)
 	if (dev->cfg_size <= PCI_CFG_SPACE_SIZE)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (start)
 		pos = start;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_read_config_dword(dev, pos, &header) != PCIBIOS_SUCCESSFUL)
 		return 0;
 
@@ -801,11 +578,7 @@ u16 pci_find_next_ext_capability(struct pci_dev *dev, u16 start, int cap)
 		return 0;
 
 	while (ttl-- > 0) {
-<<<<<<< HEAD
-		if (PCI_EXT_CAP_ID(header) == cap)
-=======
 		if (PCI_EXT_CAP_ID(header) == cap && pos != start)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return pos;
 
 		pos = PCI_EXT_CAP_NEXT(header);
@@ -818,54 +591,6 @@ u16 pci_find_next_ext_capability(struct pci_dev *dev, u16 start, int cap)
 
 	return 0;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(pci_find_ext_capability);
-
-/**
- * pci_bus_find_ext_capability - find an extended capability
- * @bus:   the PCI bus to query
- * @devfn: PCI device to query
- * @cap:   capability code
- *
- * Like pci_find_ext_capability() but works for pci devices that do not have a
- * pci_dev structure set up yet.
- *
- * Returns the address of the requested capability structure within the
- * device's PCI configuration space or 0 in case the device does not
- * support it.
- */
-int pci_bus_find_ext_capability(struct pci_bus *bus, unsigned int devfn,
-				int cap)
-{
-	u32 header;
-	int ttl;
-	int pos = PCI_CFG_SPACE_SIZE;
-
-	/* minimum 8 bytes per capability */
-	ttl = (PCI_CFG_SPACE_EXP_SIZE - PCI_CFG_SPACE_SIZE) / 8;
-
-	if (!pci_bus_read_config_dword(bus, devfn, pos, &header))
-		return 0;
-	if (header == 0xffffffff || header == 0)
-		return 0;
-
-	while (ttl-- > 0) {
-		if (PCI_EXT_CAP_ID(header) == cap)
-			return pos;
-
-		pos = PCI_EXT_CAP_NEXT(header);
-		if (pos < PCI_CFG_SPACE_SIZE)
-			break;
-
-		if (!pci_bus_read_config_dword(bus, devfn, pos, &header))
-			break;
-	}
-
-	return 0;
-}
-
-static int __pci_find_next_ht_cap(struct pci_dev *dev, int pos, int ht_cap)
-=======
 EXPORT_SYMBOL_GPL(pci_find_next_ext_capability);
 
 /**
@@ -923,7 +648,6 @@ u64 pci_get_dsn(struct pci_dev *dev)
 EXPORT_SYMBOL_GPL(pci_get_dsn);
 
 static u8 __pci_find_next_ht_cap(struct pci_dev *dev, u8 pos, int ht_cap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc, ttl = PCI_FIND_CAP_TTL;
 	u8 cap, mask;
@@ -950,20 +674,12 @@ static u8 __pci_find_next_ht_cap(struct pci_dev *dev, u8 pos, int ht_cap)
 
 	return 0;
 }
-<<<<<<< HEAD
-/**
- * pci_find_next_ht_capability - query a device's Hypertransport capabilities
- * @dev: PCI device to query
- * @pos: Position from which to continue searching
- * @ht_cap: Hypertransport capability code
-=======
 
 /**
  * pci_find_next_ht_capability - query a device's HyperTransport capabilities
  * @dev: PCI device to query
  * @pos: Position from which to continue searching
  * @ht_cap: HyperTransport capability code
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * To be used in conjunction with pci_find_ht_capability() to search for
  * all capabilities matching @ht_cap. @pos should always be a value returned
@@ -972,32 +688,13 @@ static u8 __pci_find_next_ht_cap(struct pci_dev *dev, u8 pos, int ht_cap)
  * NB. To be 100% safe against broken PCI devices, the caller should take
  * steps to avoid an infinite loop.
  */
-<<<<<<< HEAD
-int pci_find_next_ht_capability(struct pci_dev *dev, int pos, int ht_cap)
-=======
 u8 pci_find_next_ht_capability(struct pci_dev *dev, u8 pos, int ht_cap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __pci_find_next_ht_cap(dev, pos + PCI_CAP_LIST_NEXT, ht_cap);
 }
 EXPORT_SYMBOL_GPL(pci_find_next_ht_capability);
 
 /**
-<<<<<<< HEAD
- * pci_find_ht_capability - query a device's Hypertransport capabilities
- * @dev: PCI device to query
- * @ht_cap: Hypertransport capability code
- *
- * Tell if a device supports a given Hypertransport capability.
- * Returns an address within the device's PCI configuration space
- * or 0 in case the device does not support the request capability.
- * The address points to the PCI capability, of type PCI_CAP_ID_HT,
- * which has a Hypertransport capability matching @ht_cap.
- */
-int pci_find_ht_capability(struct pci_dev *dev, int ht_cap)
-{
-	int pos;
-=======
  * pci_find_ht_capability - query a device's HyperTransport capabilities
  * @dev: PCI device to query
  * @ht_cap: HyperTransport capability code
@@ -1011,7 +708,6 @@ int pci_find_ht_capability(struct pci_dev *dev, int ht_cap)
 u8 pci_find_ht_capability(struct pci_dev *dev, int ht_cap)
 {
 	u8 pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pos = __pci_bus_find_cap_start(dev->bus, dev->devfn, dev->hdr_type);
 	if (pos)
@@ -1022,44 +718,6 @@ u8 pci_find_ht_capability(struct pci_dev *dev, int ht_cap)
 EXPORT_SYMBOL_GPL(pci_find_ht_capability);
 
 /**
-<<<<<<< HEAD
- * pci_find_parent_resource - return resource region of parent bus of given region
- * @dev: PCI device structure contains resources to be searched
- * @res: child resource record for which parent is sought
- *
- *  For given resource region of given device, return the resource
- *  region of parent bus the given region is contained in or where
- *  it should be allocated from.
- */
-struct resource *
-pci_find_parent_resource(const struct pci_dev *dev, struct resource *res)
-{
-	const struct pci_bus *bus = dev->bus;
-	int i;
-	struct resource *best = NULL, *r;
-
-	pci_bus_for_each_resource(bus, r, i) {
-		if (!r)
-			continue;
-		if (res->start && !(res->start >= r->start && res->end <= r->end))
-			continue;	/* Not contained */
-		if ((res->flags ^ r->flags) & (IORESOURCE_IO | IORESOURCE_MEM))
-			continue;	/* Wrong type */
-		if (!((res->flags ^ r->flags) & IORESOURCE_PREFETCH))
-			return r;	/* Exact match */
-		/* We can't insert a non-prefetch resource inside a prefetchable parent .. */
-		if (r->flags & IORESOURCE_PREFETCH)
-			continue;
-		/* .. but we can put a prefetchable resource inside a non-prefetchable one */
-		if (!best)
-			best = r;
-	}
-	return best;
-}
-
-/**
- * pci_restore_bars - restore a devices BAR values (e.g. after wake-up)
-=======
  * pci_find_vsec_capability - Find a vendor-specific extended capability
  * @dev: PCI device to query
  * @vendor: Vendor ID for which capability is defined
@@ -1438,18 +1096,12 @@ EXPORT_SYMBOL_GPL(pcie_read_tlp_log);
 
 /**
  * pci_restore_bars - restore a device's BAR values (e.g. after wake-up)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: PCI device to have its BARs restored
  *
  * Restore the BAR values for a given device, so as to make it
  * accessible by its driver.
  */
-<<<<<<< HEAD
-static void
-pci_restore_bars(struct pci_dev *dev)
-=======
 static void pci_restore_bars(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -1457,28 +1109,6 @@ static void pci_restore_bars(struct pci_dev *dev)
 		pci_update_resource(dev, i);
 }
 
-<<<<<<< HEAD
-static struct pci_platform_pm_ops *pci_platform_pm;
-
-int pci_set_platform_pm(struct pci_platform_pm_ops *ops)
-{
-	if (!ops->is_manageable || !ops->set_state || !ops->choose_state
-	    || !ops->sleep_wake || !ops->can_wakeup)
-		return -EINVAL;
-	pci_platform_pm = ops;
-	return 0;
-}
-
-static inline bool platform_pci_power_manageable(struct pci_dev *dev)
-{
-	return pci_platform_pm ? pci_platform_pm->is_manageable(dev) : false;
-}
-
-static inline int platform_pci_set_power_state(struct pci_dev *dev,
-                                                pci_power_t t)
-{
-	return pci_platform_pm ? pci_platform_pm->set_state(dev, t) : -ENOSYS;
-=======
 static inline bool platform_pci_power_manageable(struct pci_dev *dev)
 {
 	if (pci_use_mid_pm())
@@ -1508,39 +1138,10 @@ static inline void platform_pci_refresh_power_state(struct pci_dev *dev)
 {
 	if (!pci_use_mid_pm())
 		acpi_pci_refresh_power_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline pci_power_t platform_pci_choose_state(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	return pci_platform_pm ?
-			pci_platform_pm->choose_state(dev) : PCI_POWER_ERROR;
-}
-
-static inline bool platform_pci_can_wakeup(struct pci_dev *dev)
-{
-	return pci_platform_pm ? pci_platform_pm->can_wakeup(dev) : false;
-}
-
-static inline int platform_pci_sleep_wake(struct pci_dev *dev, bool enable)
-{
-	return pci_platform_pm ?
-			pci_platform_pm->sleep_wake(dev, enable) : -ENODEV;
-}
-
-static inline int platform_pci_run_wake(struct pci_dev *dev, bool enable)
-{
-	return pci_platform_pm ?
-			pci_platform_pm->run_wake(dev, enable) : -ENODEV;
-}
-
-/**
- * pci_raw_set_power_state - Use PCI PM registers to set the power state of
- *                           given PCI device
- * @dev: PCI device to handle.
- * @state: PCI power state (D0, D1, D2, D3hot) to put the device into.
-=======
 	if (pci_use_mid_pm())
 		return PCI_POWER_ERROR;
 
@@ -1873,7 +1474,6 @@ static void __pci_bus_set_current_state(struct pci_bus *bus, pci_power_t state, 
  * @locked: whether pci_bus_sem is held
  *
  * Use the device's PCI_PM_CTRL register to put it into a low-power state.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN VALUE:
  * -EINVAL if the requested state is invalid.
@@ -1882,41 +1482,13 @@ static void __pci_bus_set_current_state(struct pci_bus *bus, pci_power_t state, 
  * 0 if device already is in the requested state.
  * 0 if device's power state has been successfully changed.
  */
-<<<<<<< HEAD
-static int pci_raw_set_power_state(struct pci_dev *dev, pci_power_t state)
-{
-	u16 pmcsr;
-	bool need_restore = false;
-
-	/* Check if we're already there */
-	if (dev->current_state == state)
-		return 0;
-=======
 static int pci_set_low_power_state(struct pci_dev *dev, pci_power_t state, bool locked)
 {
 	u16 pmcsr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev->pm_cap)
 		return -EIO;
 
-<<<<<<< HEAD
-	if (state < PCI_D0 || state > PCI_D3hot)
-		return -EINVAL;
-
-	/* Validate current state:
-	 * Can enter D0 from any state, but if we can only go deeper 
-	 * to sleep if we're already in a low power state
-	 */
-	if (state != PCI_D0 && dev->current_state <= PCI_D3cold
-	    && dev->current_state > state) {
-		dev_err(&dev->dev, "invalid power transition "
-			"(from state %d to %d)\n", dev->current_state, state);
-		return -EINVAL;
-	}
-
-	/* check if this device supports the desired state */
-=======
 	/*
 	 * Validate transition: We can enter D0 from any state, but if
 	 * we're already in a low-power state, we can only go deeper.  E.g.,
@@ -1931,71 +1503,11 @@ static int pci_set_low_power_state(struct pci_dev *dev, pci_power_t state, bool 
 	}
 
 	/* Check if this device supports the desired state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((state == PCI_D1 && !dev->d1_support)
 	   || (state == PCI_D2 && !dev->d2_support))
 		return -EIO;
 
 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-<<<<<<< HEAD
-
-	/* If we're (effectively) in D3, force entire word to 0.
-	 * This doesn't affect PME_Status, disables PME_En, and
-	 * sets PowerState to 0.
-	 */
-	switch (dev->current_state) {
-	case PCI_D0:
-	case PCI_D1:
-	case PCI_D2:
-		pmcsr &= ~PCI_PM_CTRL_STATE_MASK;
-		pmcsr |= state;
-		break;
-	case PCI_D3hot:
-	case PCI_D3cold:
-	case PCI_UNKNOWN: /* Boot-up */
-		if ((pmcsr & PCI_PM_CTRL_STATE_MASK) == PCI_D3hot
-		 && !(pmcsr & PCI_PM_CTRL_NO_SOFT_RESET))
-			need_restore = true;
-		/* Fall-through: force to D0 */
-	default:
-		pmcsr = 0;
-		break;
-	}
-
-	/* enter specified state */
-	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
-
-	/* Mandatory power management transition delays */
-	/* see PCI PM 1.1 5.6.1 table 18 */
-	if (state == PCI_D3hot || dev->current_state == PCI_D3hot)
-		pci_dev_d3_sleep(dev);
-	else if (state == PCI_D2 || dev->current_state == PCI_D2)
-		udelay(PCI_PM_D2_DELAY);
-
-	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-	dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
-	if (dev->current_state != state && printk_ratelimit())
-		dev_info(&dev->dev, "Refused to change power state, "
-			"currently in D%d\n", dev->current_state);
-
-	/* According to section 5.4.1 of the "PCI BUS POWER MANAGEMENT
-	 * INTERFACE SPECIFICATION, REV. 1.2", a device transitioning
-	 * from D3hot to D0 _may_ perform an internal reset, thereby
-	 * going to "D0 Uninitialized" rather than "D0 Initialized".
-	 * For example, at least some versions of the 3c905B and the
-	 * 3c556B exhibit this behaviour.
-	 *
-	 * At least some laptop BIOSen (e.g. the Thinkpad T21) leave
-	 * devices in a D3hot state at boot.  Consequently, we need to
-	 * restore at least the BARs so that the device will be
-	 * accessible to its driver.
-	 */
-	if (need_restore)
-		pci_restore_bars(dev);
-
-	if (dev->bus->self)
-		pcie_aspm_pm_state_change(dev->bus->self);
-=======
 	if (PCI_POSSIBLE_ERROR(pmcsr)) {
 		pci_err(dev, "Unable to change power state from %s to %s, device inaccessible\n",
 			pci_power_name(dev->current_state),
@@ -2025,77 +1537,10 @@ static int pci_set_low_power_state(struct pci_dev *dev, pci_power_t state, bool 
 
 	if (dev->bus->self)
 		pcie_aspm_pm_state_change(dev->bus->self, locked);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * pci_update_current_state - Read PCI power state of given device from its
- *                            PCI PM registers and cache it
- * @dev: PCI device to handle.
- * @state: State to cache in case the device doesn't have the PM capability
- */
-void pci_update_current_state(struct pci_dev *dev, pci_power_t state)
-{
-	if (dev->pm_cap) {
-		u16 pmcsr;
-
-		pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-		dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
-	} else {
-		dev->current_state = state;
-	}
-}
-
-/**
- * pci_platform_power_transition - Use platform to change device power state
- * @dev: PCI device to handle.
- * @state: State to put the device into.
- */
-static int pci_platform_power_transition(struct pci_dev *dev, pci_power_t state)
-{
-	int error;
-
-	if (platform_pci_power_manageable(dev)) {
-		error = platform_pci_set_power_state(dev, state);
-		if (!error)
-			pci_update_current_state(dev, state);
-	} else
-		error = -ENODEV;
-
-	if (error && !dev->pm_cap) /* Fall back to PCI_D0 */
-		dev->current_state = PCI_D0;
-
-	return error;
-}
-
-/**
- * __pci_start_power_transition - Start power transition of a PCI device
- * @dev: PCI device to handle.
- * @state: State to put the device into.
- */
-static void __pci_start_power_transition(struct pci_dev *dev, pci_power_t state)
-{
-	if (state == PCI_D0)
-		pci_platform_power_transition(dev, PCI_D0);
-}
-
-/**
- * __pci_complete_power_transition - Complete power transition of a PCI device
- * @dev: PCI device to handle.
- * @state: State to put the device into.
- *
- * This function should not be called directly by device drivers.
- */
-int __pci_complete_power_transition(struct pci_dev *dev, pci_power_t state)
-{
-	return state >= PCI_D0 ?
-			pci_platform_power_transition(dev, state) : -EINVAL;
-}
-EXPORT_SYMBOL_GPL(__pci_complete_power_transition);
-=======
 static int __pci_set_power_state(struct pci_dev *dev, pci_power_t state, bool locked)
 {
 	int error;
@@ -2151,7 +1596,6 @@ static int __pci_set_power_state(struct pci_dev *dev, pci_power_t state, bool lo
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_set_power_state - Set the power state of a PCI device
@@ -2165,127 +1609,13 @@ static int __pci_set_power_state(struct pci_dev *dev, pci_power_t state, bool lo
  * -EINVAL if the requested state is invalid.
  * -EIO if device does not support PCI PM or its PM capabilities register has a
  * wrong version, or device doesn't support the requested state.
-<<<<<<< HEAD
- * 0 if device already is in the requested state.
-=======
  * 0 if the transition is to D1 or D2 but D1 and D2 are not supported.
  * 0 if device already is in the requested state.
  * 0 if the transition is to D3 but D3 is not supported.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 0 if device's power state has been successfully changed.
  */
 int pci_set_power_state(struct pci_dev *dev, pci_power_t state)
 {
-<<<<<<< HEAD
-	int error;
-
-	/* bound the state we're entering */
-	if (state > PCI_D3hot)
-		state = PCI_D3hot;
-	else if (state < PCI_D0)
-		state = PCI_D0;
-	else if ((state == PCI_D1 || state == PCI_D2) && pci_no_d1d2(dev))
-		/*
-		 * If the device or the parent bridge do not support PCI PM,
-		 * ignore the request if we're doing anything other than putting
-		 * it into D0 (which would only happen on boot).
-		 */
-		return 0;
-
-	__pci_start_power_transition(dev, state);
-
-	/* This device is quirked not to be put into D3, so
-	   don't put it in D3 */
-	if (state == PCI_D3hot && (dev->dev_flags & PCI_DEV_FLAGS_NO_D3))
-		return 0;
-
-	error = pci_raw_set_power_state(dev, state);
-
-	if (!__pci_complete_power_transition(dev, state))
-		error = 0;
-	/*
-	 * When aspm_policy is "powersave" this call ensures
-	 * that ASPM is configured.
-	 */
-	if (!error && dev->bus->self)
-		pcie_aspm_powersave_config_link(dev->bus->self);
-
-	return error;
-}
-
-/**
- * pci_choose_state - Choose the power state of a PCI device
- * @dev: PCI device to be suspended
- * @state: target sleep state for the whole system. This is the value
- *	that is passed to suspend() function.
- *
- * Returns PCI power state suitable for given device and given system
- * message.
- */
-
-pci_power_t pci_choose_state(struct pci_dev *dev, pm_message_t state)
-{
-	pci_power_t ret;
-
-	if (!pci_find_capability(dev, PCI_CAP_ID_PM))
-		return PCI_D0;
-
-	ret = platform_pci_choose_state(dev);
-	if (ret != PCI_POWER_ERROR)
-		return ret;
-
-	switch (state.event) {
-	case PM_EVENT_ON:
-		return PCI_D0;
-	case PM_EVENT_FREEZE:
-	case PM_EVENT_PRETHAW:
-		/* REVISIT both freeze and pre-thaw "should" use D0 */
-	case PM_EVENT_SUSPEND:
-	case PM_EVENT_HIBERNATE:
-		return PCI_D3hot;
-	default:
-		dev_info(&dev->dev, "unrecognized suspend event %d\n",
-			 state.event);
-		BUG();
-	}
-	return PCI_D0;
-}
-
-EXPORT_SYMBOL(pci_choose_state);
-
-#define PCI_EXP_SAVE_REGS	7
-
-#define pcie_cap_has_devctl(type, flags)	1
-#define pcie_cap_has_lnkctl(type, flags)		\
-		((flags & PCI_EXP_FLAGS_VERS) > 1 ||	\
-		 (type == PCI_EXP_TYPE_ROOT_PORT ||	\
-		  type == PCI_EXP_TYPE_ENDPOINT ||	\
-		  type == PCI_EXP_TYPE_LEG_END))
-#define pcie_cap_has_sltctl(type, flags)		\
-		((flags & PCI_EXP_FLAGS_VERS) > 1 ||	\
-		 ((type == PCI_EXP_TYPE_ROOT_PORT) ||	\
-		  (type == PCI_EXP_TYPE_DOWNSTREAM &&	\
-		   (flags & PCI_EXP_FLAGS_SLOT))))
-#define pcie_cap_has_rtctl(type, flags)			\
-		((flags & PCI_EXP_FLAGS_VERS) > 1 ||	\
-		 (type == PCI_EXP_TYPE_ROOT_PORT ||	\
-		  type == PCI_EXP_TYPE_RC_EC))
-#define pcie_cap_has_devctl2(type, flags)		\
-		((flags & PCI_EXP_FLAGS_VERS) > 1)
-#define pcie_cap_has_lnkctl2(type, flags)		\
-		((flags & PCI_EXP_FLAGS_VERS) > 1)
-#define pcie_cap_has_sltctl2(type, flags)		\
-		((flags & PCI_EXP_FLAGS_VERS) > 1)
-
-static struct pci_cap_saved_state *pci_find_saved_cap(
-	struct pci_dev *pci_dev, char cap)
-{
-	struct pci_cap_saved_state *tmp;
-	struct hlist_node *pos;
-
-	hlist_for_each_entry(tmp, pos, &pci_dev->saved_cap_space, next) {
-		if (tmp->cap.cap_nr == cap)
-=======
 	return __pci_set_power_state(dev, state, false);
 }
 EXPORT_SYMBOL(pci_set_power_state);
@@ -2307,23 +1637,11 @@ static struct pci_cap_saved_state *_pci_find_saved_cap(struct pci_dev *pci_dev,
 
 	hlist_for_each_entry(tmp, &pci_dev->saved_cap_space, next) {
 		if (tmp->cap.cap_extended == extended && tmp->cap.cap_nr == cap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return tmp;
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int pci_save_pcie_state(struct pci_dev *dev)
-{
-	int pos, i = 0;
-	struct pci_cap_saved_state *save_state;
-	u16 *cap;
-	u16 flags;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-=======
 struct pci_cap_saved_state *pci_find_saved_cap(struct pci_dev *dev, char cap)
 {
 	return _pci_find_saved_cap(dev, cap, false);
@@ -2341,34 +1659,10 @@ static int pci_save_pcie_state(struct pci_dev *dev)
 	u16 *cap;
 
 	if (!pci_is_pcie(dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	save_state = pci_find_saved_cap(dev, PCI_CAP_ID_EXP);
 	if (!save_state) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "buffer not found in %s\n", __func__);
-		return -ENOMEM;
-	}
-	cap = (u16 *)&save_state->cap.data[0];
-
-	pci_read_config_word(dev, pos + PCI_EXP_FLAGS, &flags);
-
-	if (pcie_cap_has_devctl(dev->pcie_type, flags))
-		pci_read_config_word(dev, pos + PCI_EXP_DEVCTL, &cap[i++]);
-	if (pcie_cap_has_lnkctl(dev->pcie_type, flags))
-		pci_read_config_word(dev, pos + PCI_EXP_LNKCTL, &cap[i++]);
-	if (pcie_cap_has_sltctl(dev->pcie_type, flags))
-		pci_read_config_word(dev, pos + PCI_EXP_SLTCTL, &cap[i++]);
-	if (pcie_cap_has_rtctl(dev->pcie_type, flags))
-		pci_read_config_word(dev, pos + PCI_EXP_RTCTL, &cap[i++]);
-	if (pcie_cap_has_devctl2(dev->pcie_type, flags))
-		pci_read_config_word(dev, pos + PCI_EXP_DEVCTL2, &cap[i++]);
-	if (pcie_cap_has_lnkctl2(dev->pcie_type, flags))
-		pci_read_config_word(dev, pos + PCI_EXP_LNKCTL2, &cap[i++]);
-	if (pcie_cap_has_sltctl2(dev->pcie_type, flags))
-		pci_read_config_word(dev, pos + PCI_EXP_SLTCTL2, &cap[i++]);
-=======
 		pci_err(dev, "buffer not found in %s\n", __func__);
 		return -ENOMEM;
 	}
@@ -2384,45 +1678,12 @@ static int pci_save_pcie_state(struct pci_dev *dev)
 
 	pci_save_aspm_l1ss_state(dev);
 	pci_save_ltr_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void pci_restore_pcie_state(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	int i = 0, pos;
-	struct pci_cap_saved_state *save_state;
-	u16 *cap;
-	u16 flags;
-
-	save_state = pci_find_saved_cap(dev, PCI_CAP_ID_EXP);
-	pos = pci_find_capability(dev, PCI_CAP_ID_EXP);
-	if (!save_state || pos <= 0)
-		return;
-	cap = (u16 *)&save_state->cap.data[0];
-
-	pci_read_config_word(dev, pos + PCI_EXP_FLAGS, &flags);
-
-	if (pcie_cap_has_devctl(dev->pcie_type, flags))
-		pci_write_config_word(dev, pos + PCI_EXP_DEVCTL, cap[i++]);
-	if (pcie_cap_has_lnkctl(dev->pcie_type, flags))
-		pci_write_config_word(dev, pos + PCI_EXP_LNKCTL, cap[i++]);
-	if (pcie_cap_has_sltctl(dev->pcie_type, flags))
-		pci_write_config_word(dev, pos + PCI_EXP_SLTCTL, cap[i++]);
-	if (pcie_cap_has_rtctl(dev->pcie_type, flags))
-		pci_write_config_word(dev, pos + PCI_EXP_RTCTL, cap[i++]);
-	if (pcie_cap_has_devctl2(dev->pcie_type, flags))
-		pci_write_config_word(dev, pos + PCI_EXP_DEVCTL2, cap[i++]);
-	if (pcie_cap_has_lnkctl2(dev->pcie_type, flags))
-		pci_write_config_word(dev, pos + PCI_EXP_LNKCTL2, cap[i++]);
-	if (pcie_cap_has_sltctl2(dev->pcie_type, flags))
-		pci_write_config_word(dev, pos + PCI_EXP_SLTCTL2, cap[i++]);
-}
-
-
-=======
 	int i = 0;
 	struct pci_cap_saved_state *save_state;
 	u16 *cap;
@@ -2455,27 +1716,18 @@ static void pci_restore_pcie_state(struct pci_dev *dev)
 	pcie_capability_write_word(dev, PCI_EXP_SLTCTL2, cap[i++]);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pci_save_pcix_state(struct pci_dev *dev)
 {
 	int pos;
 	struct pci_cap_saved_state *save_state;
 
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
-<<<<<<< HEAD
-	if (pos <= 0)
-=======
 	if (!pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	save_state = pci_find_saved_cap(dev, PCI_CAP_ID_PCIX);
 	if (!save_state) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "buffer not found in %s\n", __func__);
-=======
 		pci_err(dev, "buffer not found in %s\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2493,41 +1745,13 @@ static void pci_restore_pcix_state(struct pci_dev *dev)
 
 	save_state = pci_find_saved_cap(dev, PCI_CAP_ID_PCIX);
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
-<<<<<<< HEAD
-	if (!save_state || pos <= 0)
-=======
 	if (!save_state || !pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	cap = (u16 *)&save_state->cap.data[0];
 
 	pci_write_config_word(dev, pos + PCI_X_CMD, cap[i++]);
 }
 
-<<<<<<< HEAD
-
-/**
- * pci_save_state - save the PCI configuration space of a device before suspending
- * @dev: - PCI device that we're dealing with
- */
-int
-pci_save_state(struct pci_dev *dev)
-{
-	int i;
-	/* XXX: 100% dword access ok here? */
-	for (i = 0; i < 16; i++)
-		pci_read_config_dword(dev, i * 4, &dev->saved_config_space[i]);
-	dev->state_saved = true;
-	if ((i = pci_save_pcie_state(dev)) != 0)
-		return i;
-	if ((i = pci_save_pcix_state(dev)) != 0)
-		return i;
-	return 0;
-}
-
-static void pci_restore_config_dword(struct pci_dev *pdev, int offset,
-				     u32 saved_val, int retry)
-=======
 /**
  * pci_save_state - save the PCI configuration space of a device before
  *		    suspending
@@ -2561,26 +1785,16 @@ EXPORT_SYMBOL(pci_save_state);
 
 static void pci_restore_config_dword(struct pci_dev *pdev, int offset,
 				     u32 saved_val, int retry, bool force)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
 	pci_read_config_dword(pdev, offset, &val);
-<<<<<<< HEAD
-	if (val == saved_val)
-		return;
-
-	for (;;) {
-		dev_dbg(&pdev->dev, "restoring config space at offset "
-			"%#x (was %#x, writing %#x)\n", offset, val, saved_val);
-=======
 	if (!force && val == saved_val)
 		return;
 
 	for (;;) {
 		pci_dbg(pdev, "restore config %#04x: %#010x -> %#010x\n",
 			offset, val, saved_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_write_config_dword(pdev, offset, saved_val);
 		if (retry-- <= 0)
 			return;
@@ -2594,42 +1808,20 @@ static void pci_restore_config_dword(struct pci_dev *pdev, int offset,
 }
 
 static void pci_restore_config_space_range(struct pci_dev *pdev,
-<<<<<<< HEAD
-					   int start, int end, int retry)
-=======
 					   int start, int end, int retry,
 					   bool force)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index;
 
 	for (index = end; index >= start; index--)
 		pci_restore_config_dword(pdev, 4 * index,
 					 pdev->saved_config_space[index],
-<<<<<<< HEAD
-					 retry);
-=======
 					 retry, force);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pci_restore_config_space(struct pci_dev *pdev)
 {
 	if (pdev->hdr_type == PCI_HEADER_TYPE_NORMAL) {
-<<<<<<< HEAD
-		pci_restore_config_space_range(pdev, 10, 15, 0);
-		/* Restore BARs before the command register. */
-		pci_restore_config_space_range(pdev, 4, 9, 10);
-		pci_restore_config_space_range(pdev, 0, 3, 0);
-	} else {
-		pci_restore_config_space_range(pdev, 0, 15, 0);
-	}
-}
-
-/** 
- * pci_restore_state - Restore the saved state of a PCI device
- * @dev: - PCI device that we're dealing with
-=======
 		pci_restore_config_space_range(pdev, 10, 15, 0, false);
 		/* Restore BARs before the command register. */
 		pci_restore_config_space_range(pdev, 4, 9, 10, false);
@@ -2678,18 +1870,12 @@ static void pci_restore_rebar_state(struct pci_dev *pdev)
 /**
  * pci_restore_state - Restore the saved state of a PCI device
  * @dev: PCI device that we're dealing with
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void pci_restore_state(struct pci_dev *dev)
 {
 	if (!dev->state_saved)
 		return;
 
-<<<<<<< HEAD
-	/* PCI Express register must be restored first */
-	pci_restore_pcie_state(dev);
-	pci_restore_ats_state(dev);
-=======
 	pci_restore_pcie_state(dev);
 	pci_restore_pasid_state(dev);
 	pci_restore_pri_state(dev);
@@ -2701,34 +1887,23 @@ void pci_restore_state(struct pci_dev *dev)
 
 	pci_aer_clear_status(dev);
 	pci_restore_aer_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_restore_config_space(dev);
 
 	pci_restore_pcix_state(dev);
 	pci_restore_msi_state(dev);
-<<<<<<< HEAD
-=======
 
 	/* Restore ACS and IOV configuration state */
 	pci_enable_acs(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_restore_iov_state(dev);
 
 	dev->state_saved = false;
 }
-<<<<<<< HEAD
-
-struct pci_saved_state {
-	u32 config_space[16];
-	struct pci_cap_saved_data cap[0];
-=======
 EXPORT_SYMBOL(pci_restore_state);
 
 struct pci_saved_state {
 	u32 config_space[16];
 	struct pci_cap_saved_data cap[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -2736,21 +1911,13 @@ struct pci_saved_state {
  *			   the device saved state.
  * @dev: PCI device that we're dealing with
  *
-<<<<<<< HEAD
- * Rerturn NULL if no state or error.
-=======
  * Return NULL if no state or error.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct pci_saved_state *pci_store_saved_state(struct pci_dev *dev)
 {
 	struct pci_saved_state *state;
 	struct pci_cap_saved_state *tmp;
 	struct pci_cap_saved_data *cap;
-<<<<<<< HEAD
-	struct hlist_node *pos;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t size;
 
 	if (!dev->state_saved)
@@ -2758,11 +1925,7 @@ struct pci_saved_state *pci_store_saved_state(struct pci_dev *dev)
 
 	size = sizeof(*state) + sizeof(struct pci_cap_saved_data);
 
-<<<<<<< HEAD
-	hlist_for_each_entry(tmp, pos, &dev->saved_cap_space, next)
-=======
 	hlist_for_each_entry(tmp, &dev->saved_cap_space, next)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size += sizeof(struct pci_cap_saved_data) + tmp->cap.size;
 
 	state = kzalloc(size, GFP_KERNEL);
@@ -2773,11 +1936,7 @@ struct pci_saved_state *pci_store_saved_state(struct pci_dev *dev)
 	       sizeof(state->config_space));
 
 	cap = state->cap;
-<<<<<<< HEAD
-	hlist_for_each_entry(tmp, pos, &dev->saved_cap_space, next) {
-=======
 	hlist_for_each_entry(tmp, &dev->saved_cap_space, next) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size_t len = sizeof(struct pci_cap_saved_data) + tmp->cap.size;
 		memcpy(cap, &tmp->cap, len);
 		cap = (struct pci_cap_saved_data *)((u8 *)cap + len);
@@ -2793,12 +1952,8 @@ EXPORT_SYMBOL_GPL(pci_store_saved_state);
  * @dev: PCI device that we're dealing with
  * @state: Saved state returned from pci_store_saved_state()
  */
-<<<<<<< HEAD
-int pci_load_saved_state(struct pci_dev *dev, struct pci_saved_state *state)
-=======
 int pci_load_saved_state(struct pci_dev *dev,
 			 struct pci_saved_state *state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_cap_saved_data *cap;
 
@@ -2814,11 +1969,7 @@ int pci_load_saved_state(struct pci_dev *dev,
 	while (cap->size) {
 		struct pci_cap_saved_state *tmp;
 
-<<<<<<< HEAD
-		tmp = pci_find_saved_cap(dev, cap->cap_nr);
-=======
 		tmp = _pci_find_saved_cap(dev, cap->cap_nr, cap->cap_extended);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tmp || tmp->cap.size != cap->size)
 			return -EINVAL;
 
@@ -2848,11 +1999,6 @@ int pci_load_and_free_saved_state(struct pci_dev *dev,
 }
 EXPORT_SYMBOL_GPL(pci_load_and_free_saved_state);
 
-<<<<<<< HEAD
-static int do_pci_enable_device(struct pci_dev *dev, int bars)
-{
-	int err;
-=======
 int __weak pcibios_enable_device(struct pci_dev *dev, int bars)
 {
 	return pci_enable_resources(dev, bars);
@@ -2864,26 +2010,20 @@ static int do_pci_enable_device(struct pci_dev *dev, int bars)
 	struct pci_dev *bridge;
 	u16 cmd;
 	u8 pin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_set_power_state(dev, PCI_D0);
 	if (err < 0 && err != -EIO)
 		return err;
-<<<<<<< HEAD
-=======
 
 	bridge = pci_upstream_bridge(dev);
 	if (bridge)
 		pcie_aspm_powersave_config_link(bridge);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pcibios_enable_device(dev, bars);
 	if (err < 0)
 		return err;
 	pci_fixup_device(pci_fixup_enable, dev);
 
-<<<<<<< HEAD
-=======
 	if (dev->msi_enabled || dev->msix_enabled)
 		return 0;
 
@@ -2895,7 +2035,6 @@ static int do_pci_enable_device(struct pci_dev *dev, int bars)
 					      cmd & ~PCI_COMMAND_INTX_DISABLE);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2903,13 +2042,8 @@ static int do_pci_enable_device(struct pci_dev *dev, int bars)
  * pci_reenable_device - Resume abandoned device
  * @dev: PCI device to be resumed
  *
-<<<<<<< HEAD
- *  Note this function is a backend of pci_default_resume and is not supposed
- *  to be called by normal code, write proper resume handler and use it instead.
-=======
  * NOTE: This function is a backend of pci_default_resume() and is not supposed
  * to be called by normal code, write proper resume handler and use it instead.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pci_reenable_device(struct pci_dev *dev)
 {
@@ -2917,12 +2051,6 @@ int pci_reenable_device(struct pci_dev *dev)
 		return do_pci_enable_device(dev, (1 << PCI_NUM_RESOURCES) - 1);
 	return 0;
 }
-<<<<<<< HEAD
-
-static int __pci_enable_device_flags(struct pci_dev *dev,
-				     resource_size_t flags)
-{
-=======
 EXPORT_SYMBOL(pci_reenable_device);
 
 static void pci_enable_bridge(struct pci_dev *dev)
@@ -2950,7 +2078,6 @@ static void pci_enable_bridge(struct pci_dev *dev)
 static int pci_enable_device_flags(struct pci_dev *dev, unsigned long flags)
 {
 	struct pci_dev *bridge;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	int i, bars = 0;
 
@@ -2960,17 +2087,6 @@ static int pci_enable_device_flags(struct pci_dev *dev, unsigned long flags)
 	 * so that things like MSI message writing will behave as expected
 	 * (e.g. if the device really is in D0 at enable time).
 	 */
-<<<<<<< HEAD
-	if (dev->pm_cap) {
-		u16 pmcsr;
-		pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-		dev->current_state = (pmcsr & PCI_PM_CTRL_STATE_MASK);
-	}
-
-	if (atomic_add_return(1, &dev->enable_cnt) > 1)
-		return 0;		/* already enabled */
-
-=======
 	pci_update_current_state(dev, dev->current_state);
 
 	if (atomic_inc_return(&dev->enable_cnt) > 1)
@@ -2980,7 +2096,6 @@ static int pci_enable_device_flags(struct pci_dev *dev, unsigned long flags)
 	if (bridge)
 		pci_enable_bridge(bridge);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* only skip sriov related */
 	for (i = 0; i <= PCI_ROM_RESOURCE; i++)
 		if (dev->resource[i].flags & flags)
@@ -2999,16 +2114,6 @@ static int pci_enable_device_flags(struct pci_dev *dev, unsigned long flags)
  * pci_enable_device_io - Initialize a device for use with IO space
  * @dev: PCI device to be initialized
  *
-<<<<<<< HEAD
- *  Initialize device before it's used by a driver. Ask low-level code
- *  to enable I/O resources. Wake up the device if it was suspended.
- *  Beware, this function can fail.
- */
-int pci_enable_device_io(struct pci_dev *dev)
-{
-	return __pci_enable_device_flags(dev, IORESOURCE_IO);
-}
-=======
  * Initialize device before it's used by a driver. Ask low-level code
  * to enable I/O resources. Wake up the device if it was suspended.
  * Beware, this function can fail.
@@ -3018,22 +2123,11 @@ int pci_enable_device_io(struct pci_dev *dev)
 	return pci_enable_device_flags(dev, IORESOURCE_IO);
 }
 EXPORT_SYMBOL(pci_enable_device_io);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_enable_device_mem - Initialize a device for use with Memory space
  * @dev: PCI device to be initialized
  *
-<<<<<<< HEAD
- *  Initialize device before it's used by a driver. Ask low-level code
- *  to enable Memory resources. Wake up the device if it was suspended.
- *  Beware, this function can fail.
- */
-int pci_enable_device_mem(struct pci_dev *dev)
-{
-	return __pci_enable_device_flags(dev, IORESOURCE_MEM);
-}
-=======
  * Initialize device before it's used by a driver. Ask low-level code
  * to enable Memory resources. Wake up the device if it was suspended.
  * Beware, this function can fail.
@@ -3043,125 +2137,11 @@ int pci_enable_device_mem(struct pci_dev *dev)
 	return pci_enable_device_flags(dev, IORESOURCE_MEM);
 }
 EXPORT_SYMBOL(pci_enable_device_mem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_enable_device - Initialize device before it's used by a driver.
  * @dev: PCI device to be initialized
  *
-<<<<<<< HEAD
- *  Initialize device before it's used by a driver. Ask low-level code
- *  to enable I/O and memory. Wake up the device if it was suspended.
- *  Beware, this function can fail.
- *
- *  Note we don't actually enable the device many times if we call
- *  this function repeatedly (we just increment the count).
- */
-int pci_enable_device(struct pci_dev *dev)
-{
-	return __pci_enable_device_flags(dev, IORESOURCE_MEM | IORESOURCE_IO);
-}
-
-/*
- * Managed PCI resources.  This manages device on/off, intx/msi/msix
- * on/off and BAR regions.  pci_dev itself records msi/msix status, so
- * there's no need to track it separately.  pci_devres is initialized
- * when a device is enabled using managed PCI device enable interface.
- */
-struct pci_devres {
-	unsigned int enabled:1;
-	unsigned int pinned:1;
-	unsigned int orig_intx:1;
-	unsigned int restore_intx:1;
-	u32 region_mask;
-};
-
-static void pcim_release(struct device *gendev, void *res)
-{
-	struct pci_dev *dev = container_of(gendev, struct pci_dev, dev);
-	struct pci_devres *this = res;
-	int i;
-
-	if (dev->msi_enabled)
-		pci_disable_msi(dev);
-	if (dev->msix_enabled)
-		pci_disable_msix(dev);
-
-	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++)
-		if (this->region_mask & (1 << i))
-			pci_release_region(dev, i);
-
-	if (this->restore_intx)
-		pci_intx(dev, this->orig_intx);
-
-	if (this->enabled && !this->pinned)
-		pci_disable_device(dev);
-}
-
-static struct pci_devres * get_pci_dr(struct pci_dev *pdev)
-{
-	struct pci_devres *dr, *new_dr;
-
-	dr = devres_find(&pdev->dev, pcim_release, NULL, NULL);
-	if (dr)
-		return dr;
-
-	new_dr = devres_alloc(pcim_release, sizeof(*new_dr), GFP_KERNEL);
-	if (!new_dr)
-		return NULL;
-	return devres_get(&pdev->dev, new_dr, NULL, NULL);
-}
-
-static struct pci_devres * find_pci_dr(struct pci_dev *pdev)
-{
-	if (pci_is_managed(pdev))
-		return devres_find(&pdev->dev, pcim_release, NULL, NULL);
-	return NULL;
-}
-
-/**
- * pcim_enable_device - Managed pci_enable_device()
- * @pdev: PCI device to be initialized
- *
- * Managed pci_enable_device().
- */
-int pcim_enable_device(struct pci_dev *pdev)
-{
-	struct pci_devres *dr;
-	int rc;
-
-	dr = get_pci_dr(pdev);
-	if (unlikely(!dr))
-		return -ENOMEM;
-	if (dr->enabled)
-		return 0;
-
-	rc = pci_enable_device(pdev);
-	if (!rc) {
-		pdev->is_managed = 1;
-		dr->enabled = 1;
-	}
-	return rc;
-}
-
-/**
- * pcim_pin_device - Pin managed PCI device
- * @pdev: PCI device to pin
- *
- * Pin managed PCI device @pdev.  Pinned device won't be disabled on
- * driver detach.  @pdev must have been enabled with
- * pcim_enable_device().
- */
-void pcim_pin_device(struct pci_dev *pdev)
-{
-	struct pci_devres *dr;
-
-	dr = find_pci_dr(pdev);
-	WARN_ON(!dr || !dr->enabled);
-	if (dr)
-		dr->pinned = 1;
-}
-=======
  * Initialize device before it's used by a driver. Ask low-level code
  * to enable I/O and memory. Wake up the device if it was suspended.
  * Beware, this function can fail.
@@ -3198,7 +2178,6 @@ int __weak pcibios_device_add(struct pci_dev *dev)
  * implementations can override this.
  */
 void __weak pcibios_release_device(struct pci_dev *dev) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pcibios_disable_device - disable arch specific PCI resources for device dev
@@ -3208,11 +2187,7 @@ void __weak pcibios_release_device(struct pci_dev *dev) {}
  * is the default implementation. Architecture implementations can
  * override this.
  */
-<<<<<<< HEAD
-void __attribute__ ((weak)) pcibios_disable_device (struct pci_dev *dev) {}
-=======
 void __weak pcibios_disable_device(struct pci_dev *dev) {}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void do_pci_disable_device(struct pci_dev *dev)
 {
@@ -3250,12 +2225,7 @@ void pci_disable_enabled_device(struct pci_dev *dev)
  * Note we don't actually disable the device until all callers of
  * pci_enable_device() have called pci_disable_device().
  */
-<<<<<<< HEAD
-void
-pci_disable_device(struct pci_dev *dev)
-=======
 void pci_disable_device(struct pci_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_devres *dr;
 
@@ -3263,44 +2233,28 @@ void pci_disable_device(struct pci_dev *dev)
 	if (dr)
 		dr->enabled = 0;
 
-<<<<<<< HEAD
-	if (atomic_sub_return(1, &dev->enable_cnt) != 0)
-=======
 	dev_WARN_ONCE(&dev->dev, atomic_read(&dev->enable_cnt) <= 0,
 		      "disabling already-disabled device");
 
 	if (atomic_dec_return(&dev->enable_cnt) != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	do_pci_disable_device(dev);
 
 	dev->is_busmaster = 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(pci_disable_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pcibios_set_pcie_reset_state - set reset state for device dev
  * @dev: the PCIe device reset
  * @state: Reset state to enter into
  *
-<<<<<<< HEAD
- *
- * Sets the PCIe reset state for the device. This is the default
- * implementation. Architecture implementations can override this.
- */
-int __attribute__ ((weak)) pcibios_set_pcie_reset_state(struct pci_dev *dev,
-							enum pcie_reset_state state)
-=======
  * Set the PCIe reset state for the device. This is the default
  * implementation. Architecture implementations can override this.
  */
 int __weak pcibios_set_pcie_reset_state(struct pci_dev *dev,
 					enum pcie_reset_state state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EINVAL;
 }
@@ -3310,18 +2264,12 @@ int __weak pcibios_set_pcie_reset_state(struct pci_dev *dev,
  * @dev: the PCIe device reset
  * @state: Reset state to enter into
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Sets the PCI reset state for the device.
  */
 int pci_set_pcie_reset_state(struct pci_dev *dev, enum pcie_reset_state state)
 {
 	return pcibios_set_pcie_reset_state(dev, state);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(pci_set_pcie_reset_state);
 
 #ifdef CONFIG_PCIEAER
@@ -3342,7 +2290,6 @@ void pcie_clear_root_pme_status(struct pci_dev *dev)
 {
 	pcie_capability_set_dword(dev, PCI_EXP_RTSTA, PCI_EXP_RTSTA_PME);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_check_pme_status - Check if given device has generated PME.
@@ -3409,10 +2356,7 @@ void pci_pme_wakeup_bus(struct pci_bus *bus)
 		pci_walk_bus(bus, pci_pme_wakeup, (void *)true);
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pci_pme_capable - check the capability of PCI device to generate PME#
  * @dev: PCI device to handle.
@@ -3425,34 +2369,13 @@ bool pci_pme_capable(struct pci_dev *dev, pci_power_t state)
 
 	return !!(dev->pme_support & (1 << state));
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(pci_pme_capable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pci_pme_list_scan(struct work_struct *work)
 {
 	struct pci_pme_device *pme_dev, *n;
 
 	mutex_lock(&pci_pme_list_mutex);
-<<<<<<< HEAD
-	if (!list_empty(&pci_pme_list)) {
-		list_for_each_entry_safe(pme_dev, n, &pci_pme_list, list) {
-			if (pme_dev->dev->pme_poll) {
-				pci_pme_wakeup(pme_dev->dev, NULL);
-			} else {
-				list_del(&pme_dev->list);
-				kfree(pme_dev);
-			}
-		}
-		if (!list_empty(&pci_pme_list))
-			schedule_delayed_work(&pci_pme_work,
-					      msecs_to_jiffies(PME_TIMEOUT));
-	}
-	mutex_unlock(&pci_pme_list_mutex);
-}
-
-=======
 	list_for_each_entry_safe(pme_dev, n, &pci_pme_list, list) {
 		struct pci_dev *pdev = pme_dev->dev;
 
@@ -3538,7 +2461,6 @@ void pci_pme_restore(struct pci_dev *dev)
 	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pci_pme_active - enable or disable PCI device's PME# function
  * @dev: PCI device to handle.
@@ -3549,30 +2471,6 @@ void pci_pme_restore(struct pci_dev *dev)
  */
 void pci_pme_active(struct pci_dev *dev, bool enable)
 {
-<<<<<<< HEAD
-	u16 pmcsr;
-
-	if (!dev->pm_cap)
-		return;
-
-	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &pmcsr);
-	/* Clear PME_Status by writing 1 to it and enable PME# */
-	pmcsr |= PCI_PM_CTRL_PME_STATUS | PCI_PM_CTRL_PME_ENABLE;
-	if (!enable)
-		pmcsr &= ~PCI_PM_CTRL_PME_ENABLE;
-
-	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, pmcsr);
-
-	/* PCI (as opposed to PCIe) PME requires that the device have
-	   its PME# line hooked up correctly. Not all hardware vendors
-	   do this, so the PME never gets delivered and the device
-	   remains asleep. The easiest way around this is to
-	   periodically walk the list of suspended devices and check
-	   whether any have their PME flag set. The assumption is that
-	   we'll wake up often enough anyway that this won't be a huge
-	   hit, and the power savings from the devices will still be a
-	   win. */
-=======
 	__pci_pme_active(dev, enable);
 
 	/*
@@ -3594,34 +2492,23 @@ void pci_pme_active(struct pci_dev *dev, bool enable)
 	 * trigger interrupts when they receive PME messages from the
 	 * devices below.  So PME poll is used for PCIe devices too.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->pme_poll) {
 		struct pci_pme_device *pme_dev;
 		if (enable) {
 			pme_dev = kmalloc(sizeof(struct pci_pme_device),
 					  GFP_KERNEL);
-<<<<<<< HEAD
-			if (!pme_dev)
-				goto out;
-=======
 			if (!pme_dev) {
 				pci_warn(dev, "can't enable PME#\n");
 				return;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pme_dev->dev = dev;
 			mutex_lock(&pci_pme_list_mutex);
 			list_add(&pme_dev->list, &pci_pme_list);
 			if (list_is_singular(&pci_pme_list))
-<<<<<<< HEAD
-				schedule_delayed_work(&pci_pme_work,
-						      msecs_to_jiffies(PME_TIMEOUT));
-=======
 				queue_delayed_work(system_freezable_wq,
 						   &pci_pme_work,
 						   msecs_to_jiffies(PME_TIMEOUT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_unlock(&pci_pme_list_mutex);
 		} else {
 			mutex_lock(&pci_pme_list_mutex);
@@ -3636,24 +2523,14 @@ void pci_pme_active(struct pci_dev *dev, bool enable)
 		}
 	}
 
-<<<<<<< HEAD
-out:
-	dev_dbg(&dev->dev, "PME# %s\n", enable ? "enabled" : "disabled");
-}
-=======
 	pci_dbg(dev, "PME# %s\n", enable ? "enabled" : "disabled");
 }
 EXPORT_SYMBOL(pci_pme_active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __pci_enable_wake - enable PCI device as wakeup event source
  * @dev: PCI device affected
  * @state: PCI state from which device will issue wakeup events
-<<<<<<< HEAD
- * @runtime: True if the events are to be generated at run time
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @enable: True to enable event generation; false to disable
  *
  * This enables the device as a wakeup event source, or disables it.
@@ -3669,15 +2546,6 @@ EXPORT_SYMBOL(pci_pme_active);
  * Error code depending on the platform is returned if both the platform and
  * the native mechanism fail to enable the generation of wake-up events
  */
-<<<<<<< HEAD
-int __pci_enable_wake(struct pci_dev *dev, pci_power_t state,
-		      bool runtime, bool enable)
-{
-	int ret = 0;
-
-	if (enable && !runtime && !device_may_wakeup(&dev->dev))
-		return -EINVAL;
-=======
 static int __pci_enable_wake(struct pci_dev *dev, pci_power_t state, bool enable)
 {
 	int ret = 0;
@@ -3691,7 +2559,6 @@ static int __pci_enable_wake(struct pci_dev *dev, pci_power_t state, bool enable
 	 */
 	if (!pci_power_manageable(dev))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't do the same thing twice in a row for one device. */
 	if (!!enable == !!dev->wakeup_prepared)
@@ -3706,14 +2573,6 @@ static int __pci_enable_wake(struct pci_dev *dev, pci_power_t state, bool enable
 	if (enable) {
 		int error;
 
-<<<<<<< HEAD
-		if (pci_pme_capable(dev, state))
-			pci_pme_active(dev, true);
-		else
-			ret = 1;
-		error = runtime ? platform_pci_run_wake(dev, true) :
-					platform_pci_sleep_wake(dev, true);
-=======
 		/*
 		 * Enable PME signaling if the device can signal PME from
 		 * D3cold regardless of whether or not it can signal PME from
@@ -3726,29 +2585,18 @@ static int __pci_enable_wake(struct pci_dev *dev, pci_power_t state, bool enable
 		else
 			ret = 1;
 		error = platform_pci_set_wakeup(dev, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			ret = error;
 		if (!ret)
 			dev->wakeup_prepared = true;
 	} else {
-<<<<<<< HEAD
-		if (runtime)
-			platform_pci_run_wake(dev, false);
-		else
-			platform_pci_sleep_wake(dev, false);
-=======
 		platform_pci_set_wakeup(dev, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_pme_active(dev, false);
 		dev->wakeup_prepared = false;
 	}
 
 	return ret;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(__pci_enable_wake);
-=======
 
 /**
  * pci_enable_wake - change wakeup settings for a PCI device
@@ -3767,7 +2615,6 @@ int pci_enable_wake(struct pci_dev *pci_dev, pci_power_t state, bool enable)
 	return __pci_enable_wake(pci_dev, state, enable);
 }
 EXPORT_SYMBOL(pci_enable_wake);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_wake_from_d3 - enable/disable device to wake up from D3_hot or D3_cold
@@ -3779,15 +2626,9 @@ EXPORT_SYMBOL(pci_enable_wake);
  * should not be called twice in a row to enable wake-up due to PCI PM vs ACPI
  * ordering constraints.
  *
-<<<<<<< HEAD
- * This function only returns error code if the device is not capable of
- * generating PME# from both D3_hot and D3_cold, and the platform is unable to
- * enable wake-up power for it.
-=======
  * This function only returns error code if the device is not allowed to wake
  * up the system from sleep or it is not capable of generating PME# from both
  * D3_hot and D3_cold and the platform is unable to enable wake-up power for it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pci_wake_from_d3(struct pci_dev *dev, bool enable)
 {
@@ -3795,75 +2636,28 @@ int pci_wake_from_d3(struct pci_dev *dev, bool enable)
 			pci_enable_wake(dev, PCI_D3cold, enable) :
 			pci_enable_wake(dev, PCI_D3hot, enable);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(pci_wake_from_d3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_target_state - find an appropriate low power state for a given PCI dev
  * @dev: PCI device
-<<<<<<< HEAD
-=======
  * @wakeup: Whether or not wakeup functionality will be enabled for the device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Use underlying platform code to find a supported low power state for @dev.
  * If the platform can't manage @dev, return the deepest state from which it
  * can generate wake events, based on any available PME info.
  */
-<<<<<<< HEAD
-pci_power_t pci_target_state(struct pci_dev *dev)
-{
-	pci_power_t target_state = PCI_D3hot;
-
-	if (platform_pci_power_manageable(dev)) {
-		/*
-		 * Call the platform to choose the target state of the device
-		 * and enable wake-up from this state if supported.
-=======
 static pci_power_t pci_target_state(struct pci_dev *dev, bool wakeup)
 {
 	if (platform_pci_power_manageable(dev)) {
 		/*
 		 * Call the platform to find the target state for the device.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		pci_power_t state = platform_pci_choose_state(dev);
 
 		switch (state) {
 		case PCI_POWER_ERROR:
 		case PCI_UNKNOWN:
-<<<<<<< HEAD
-			break;
-		case PCI_D1:
-		case PCI_D2:
-			if (pci_no_d1d2(dev))
-				break;
-		default:
-			target_state = state;
-		}
-	} else if (!dev->pm_cap) {
-		target_state = PCI_D0;
-	} else if (device_may_wakeup(&dev->dev)) {
-		/*
-		 * Find the deepest state from which the device can generate
-		 * wake-up events, make it the target state and enable device
-		 * to generate PME#.
-		 */
-		if (dev->pme_support) {
-			while (target_state
-			      && !(dev->pme_support & (1 << target_state)))
-				target_state--;
-		}
-	}
-
-	return target_state;
-}
-
-/**
- * pci_prepare_to_sleep - prepare PCI device for system-wide transition into a sleep state
-=======
 			return PCI_D3hot;
 
 		case PCI_D1:
@@ -3907,7 +2701,6 @@ static pci_power_t pci_target_state(struct pci_dev *dev, bool wakeup)
 /**
  * pci_prepare_to_sleep - prepare PCI device for system-wide transition
  *			  into a sleep state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: Device to handle.
  *
  * Choose the power state appropriate for the device depending on whether
@@ -3916,22 +2709,14 @@ static pci_power_t pci_target_state(struct pci_dev *dev, bool wakeup)
  */
 int pci_prepare_to_sleep(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	pci_power_t target_state = pci_target_state(dev);
-=======
 	bool wakeup = device_may_wakeup(&dev->dev);
 	pci_power_t target_state = pci_target_state(dev, wakeup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	if (target_state == PCI_POWER_ERROR)
 		return -EIO;
 
-<<<<<<< HEAD
-	pci_enable_wake(dev, target_state, device_may_wakeup(&dev->dev));
-=======
 	pci_enable_wake(dev, target_state, wakeup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = pci_set_power_state(dev, target_state);
 
@@ -3940,28 +2725,17 @@ int pci_prepare_to_sleep(struct pci_dev *dev)
 
 	return error;
 }
-<<<<<<< HEAD
-
-/**
- * pci_back_from_sleep - turn PCI device on during system-wide transition into working state
-=======
 EXPORT_SYMBOL(pci_prepare_to_sleep);
 
 /**
  * pci_back_from_sleep - turn PCI device on during system-wide transition
  *			 into working state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: Device to handle.
  *
  * Disable device's system wake-up capability and put it into D0.
  */
 int pci_back_from_sleep(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	pci_enable_wake(dev, PCI_D0, false);
-	return pci_set_power_state(dev, PCI_D0);
-}
-=======
 	int ret = pci_set_power_state(dev, PCI_D0);
 
 	if (ret)
@@ -3971,7 +2745,6 @@ int pci_back_from_sleep(struct pci_dev *dev)
 	return 0;
 }
 EXPORT_SYMBOL(pci_back_from_sleep);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_finish_runtime_suspend - Carry out PCI-specific part of runtime suspend.
@@ -3982,15 +2755,6 @@ EXPORT_SYMBOL(pci_back_from_sleep);
  */
 int pci_finish_runtime_suspend(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	pci_power_t target_state = pci_target_state(dev);
-	int error;
-
-	if (target_state == PCI_POWER_ERROR)
-		return -EIO;
-
-	__pci_enable_wake(dev, target_state, true, pci_dev_run_wake(dev));
-=======
 	pci_power_t target_state;
 	int error;
 
@@ -3999,16 +2763,11 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
 		return -EIO;
 
 	__pci_enable_wake(dev, target_state, pci_dev_run_wake(dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = pci_set_power_state(dev, target_state);
 
 	if (error)
-<<<<<<< HEAD
-		__pci_enable_wake(dev, target_state, true, false);
-=======
 		pci_enable_wake(dev, target_state, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
@@ -4017,11 +2776,7 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
  * pci_dev_run_wake - Check if device can generate run-time wake-up events.
  * @dev: Device to check.
  *
-<<<<<<< HEAD
- * Return true if the device itself is cabable of generating wake-up events
-=======
  * Return true if the device itself is capable of generating wake-up events
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (through the platform or using the native PCIe PME) or if the device supports
  * PME and one of its upstream bridges can generate wake-up events.
  */
@@ -4029,18 +2784,6 @@ bool pci_dev_run_wake(struct pci_dev *dev)
 {
 	struct pci_bus *bus = dev->bus;
 
-<<<<<<< HEAD
-	if (device_run_wake(&dev->dev))
-		return true;
-
-	if (!dev->pme_support)
-		return false;
-
-	while (bus->parent) {
-		struct pci_dev *bridge = bus->self;
-
-		if (device_run_wake(&bridge->dev))
-=======
 	if (!dev->pme_support)
 		return false;
 
@@ -4055,7 +2798,6 @@ bool pci_dev_run_wake(struct pci_dev *dev)
 		struct pci_dev *bridge = bus->self;
 
 		if (device_can_wakeup(&bridge->dev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return true;
 
 		bus = bus->parent;
@@ -4063,19 +2805,13 @@ bool pci_dev_run_wake(struct pci_dev *dev)
 
 	/* We have reached the root bus. */
 	if (bus->bridge)
-<<<<<<< HEAD
-		return device_run_wake(bus->bridge);
-=======
 		return device_can_wakeup(bus->bridge);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return false;
 }
 EXPORT_SYMBOL_GPL(pci_dev_run_wake);
 
 /**
-<<<<<<< HEAD
-=======
  * pci_dev_need_resume - Check if it is necessary to resume the device.
  * @pci_dev: Device to check.
  *
@@ -4397,33 +3133,23 @@ void pci_d3cold_disable(struct pci_dev *dev)
 EXPORT_SYMBOL_GPL(pci_d3cold_disable);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pci_pm_init - Initialize PM functions of given PCI device
  * @dev: PCI device to handle.
  */
 void pci_pm_init(struct pci_dev *dev)
 {
 	int pm;
-<<<<<<< HEAD
-	u16 pmc;
-
-	pm_runtime_forbid(&dev->dev);
-=======
 	u16 status;
 	u16 pmc;
 
 	pm_runtime_forbid(&dev->dev);
 	pm_runtime_set_active(&dev->dev);
 	pm_runtime_enable(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_enable_async_suspend(&dev->dev);
 	dev->wakeup_prepared = false;
 
 	dev->pm_cap = 0;
-<<<<<<< HEAD
-=======
 	dev->pme_support = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* find PCI PM capability in list */
 	pm = pci_find_capability(dev, PCI_CAP_ID_PM);
@@ -4433,24 +3159,16 @@ void pci_pm_init(struct pci_dev *dev)
 	pci_read_config_word(dev, pm + PCI_PM_PMC, &pmc);
 
 	if ((pmc & PCI_PM_CAP_VER_MASK) > 3) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "unsupported PM cap regs version (%u)\n",
-=======
 		pci_err(dev, "unsupported PM cap regs version (%u)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pmc & PCI_PM_CAP_VER_MASK);
 		return;
 	}
 
 	dev->pm_cap = pm;
-<<<<<<< HEAD
-	dev->d3_delay = PCI_PM_D3_WAIT;
-=======
 	dev->d3hot_delay = PCI_PM_D3HOT_WAIT;
 	dev->d3cold_delay = PCI_PM_D3COLD_WAIT;
 	dev->bridge_d3 = pci_bridge_d3_possible(dev);
 	dev->d3cold_allowed = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->d1_support = false;
 	dev->d2_support = false;
@@ -4461,27 +3179,13 @@ void pci_pm_init(struct pci_dev *dev)
 			dev->d2_support = true;
 
 		if (dev->d1_support || dev->d2_support)
-<<<<<<< HEAD
-			dev_printk(KERN_DEBUG, &dev->dev, "supports%s%s\n",
-=======
 			pci_info(dev, "supports%s%s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   dev->d1_support ? " D1" : "",
 				   dev->d2_support ? " D2" : "");
 	}
 
 	pmc &= PCI_PM_CAP_PME_MASK;
 	if (pmc) {
-<<<<<<< HEAD
-		dev_printk(KERN_DEBUG, &dev->dev,
-			 "PME# supported from%s%s%s%s%s\n",
-			 (pmc & PCI_PM_CAP_PME_D0) ? " D0" : "",
-			 (pmc & PCI_PM_CAP_PME_D1) ? " D1" : "",
-			 (pmc & PCI_PM_CAP_PME_D2) ? " D2" : "",
-			 (pmc & PCI_PM_CAP_PME_D3) ? " D3hot" : "",
-			 (pmc & PCI_PM_CAP_PME_D3cold) ? " D3cold" : "");
-		dev->pme_support = pmc >> PCI_PM_CAP_PME_SHIFT;
-=======
 		pci_info(dev, "PME# supported from%s%s%s%s%s\n",
 			 (pmc & PCI_PM_CAP_PME_D0) ? " D0" : "",
 			 (pmc & PCI_PM_CAP_PME_D1) ? " D1" : "",
@@ -4489,7 +3193,6 @@ void pci_pm_init(struct pci_dev *dev)
 			 (pmc & PCI_PM_CAP_PME_D3hot) ? " D3hot" : "",
 			 (pmc & PCI_PM_CAP_PME_D3cold) ? " D3cold" : "");
 		dev->pme_support = FIELD_GET(PCI_PM_CAP_PME_MASK, pmc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->pme_poll = true;
 		/*
 		 * Make device's PM flags reflect the wake-up capability, but
@@ -4498,30 +3201,6 @@ void pci_pm_init(struct pci_dev *dev)
 		device_set_wakeup_capable(&dev->dev, true);
 		/* Disable the PME# generation functionality */
 		pci_pme_active(dev, false);
-<<<<<<< HEAD
-	} else {
-		dev->pme_support = 0;
-	}
-}
-
-/**
- * platform_pci_wakeup_init - init platform wakeup if present
- * @dev: PCI device
- *
- * Some devices don't have PCI PM caps but can still generate wakeup
- * events through platform methods (like ACPI events).  If @dev supports
- * platform wakeup events, set the device flag to indicate as much.  This
- * may be redundant if the device also supports PCI PM caps, but double
- * initialization should be safe in that case.
- */
-void platform_pci_wakeup_init(struct pci_dev *dev)
-{
-	if (!platform_pci_can_wakeup(dev))
-		return;
-
-	device_set_wakeup_capable(&dev->dev, true);
-	platform_pci_sleep_wake(dev, false);
-=======
 	}
 
 	pci_read_config_word(dev, PCI_STATUS, &status);
@@ -4720,7 +3399,6 @@ void pci_ea_init(struct pci_dev *dev)
 	/* parse each EA entry */
 	for (i = 0; i < num_ent; ++i)
 		offset = pci_ea_read(dev, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pci_add_saved_cap(struct pci_dev *pci_dev,
@@ -4730,15 +3408,6 @@ static void pci_add_saved_cap(struct pci_dev *pci_dev,
 }
 
 /**
-<<<<<<< HEAD
- * pci_add_save_buffer - allocate buffer for saving given capability registers
- * @dev: the PCI device
- * @cap: the capability to allocate the buffer for
- * @size: requested size of the buffer
- */
-static int pci_add_cap_save_buffer(
-	struct pci_dev *dev, char cap, unsigned int size)
-=======
  * _pci_add_cap_save_buffer - allocate buffer for saving given
  *			      capability registers
  * @dev: the PCI device
@@ -4748,22 +3417,16 @@ static int pci_add_cap_save_buffer(
  */
 static int _pci_add_cap_save_buffer(struct pci_dev *dev, u16 cap,
 				    bool extended, unsigned int size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pos;
 	struct pci_cap_saved_state *save_state;
 
-<<<<<<< HEAD
-	pos = pci_find_capability(dev, cap);
-	if (pos <= 0)
-=======
 	if (extended)
 		pos = pci_find_ext_capability(dev, cap);
 	else
 		pos = pci_find_capability(dev, cap);
 
 	if (!pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	save_state = kzalloc(sizeof(*save_state) + size, GFP_KERNEL);
@@ -4771,18 +3434,13 @@ static int _pci_add_cap_save_buffer(struct pci_dev *dev, u16 cap,
 		return -ENOMEM;
 
 	save_state->cap.cap_nr = cap;
-<<<<<<< HEAD
-=======
 	save_state->cap.cap_extended = extended;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	save_state->cap.size = size;
 	pci_add_saved_cap(dev, save_state);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int pci_add_cap_save_buffer(struct pci_dev *dev, char cap, unsigned int size)
 {
 	return _pci_add_cap_save_buffer(dev, cap, false, size);
@@ -4793,7 +3451,6 @@ int pci_add_ext_cap_save_buffer(struct pci_dev *dev, u16 cap, unsigned int size)
 	return _pci_add_cap_save_buffer(dev, cap, true, size);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pci_allocate_cap_save_buffers - allocate buffers for saving capabilities
  * @dev: the PCI device
@@ -4805,15 +3462,6 @@ void pci_allocate_cap_save_buffers(struct pci_dev *dev)
 	error = pci_add_cap_save_buffer(dev, PCI_CAP_ID_EXP,
 					PCI_EXP_SAVE_REGS * sizeof(u16));
 	if (error)
-<<<<<<< HEAD
-		dev_err(&dev->dev,
-			"unable to preallocate PCI Express save buffer\n");
-
-	error = pci_add_cap_save_buffer(dev, PCI_CAP_ID_PCIX, sizeof(u16));
-	if (error)
-		dev_err(&dev->dev,
-			"unable to preallocate PCI-X save buffer\n");
-=======
 		pci_err(dev, "unable to preallocate PCI Express save buffer\n");
 
 	error = pci_add_cap_save_buffer(dev, PCI_CAP_ID_PCIX, sizeof(u16));
@@ -4826,35 +3474,18 @@ void pci_allocate_cap_save_buffers(struct pci_dev *dev)
 		pci_err(dev, "unable to allocate suspend buffer for LTR\n");
 
 	pci_allocate_vc_save_buffers(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pci_free_cap_save_buffers(struct pci_dev *dev)
 {
 	struct pci_cap_saved_state *tmp;
-<<<<<<< HEAD
-	struct hlist_node *pos, *n;
-
-	hlist_for_each_entry_safe(tmp, pos, n, &dev->saved_cap_space, next)
-=======
 	struct hlist_node *n;
 
 	hlist_for_each_entry_safe(tmp, n, &dev->saved_cap_space, next)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(tmp);
 }
 
 /**
-<<<<<<< HEAD
- * pci_enable_ari - enable ARI forwarding if hardware support it
- * @dev: the PCI device
- */
-void pci_enable_ari(struct pci_dev *dev)
-{
-	int pos;
-	u32 cap;
-	u16 flags, ctrl;
-=======
  * pci_configure_ari - enable or disable ARI forwarding
  * @dev: the PCI device
  *
@@ -4864,452 +3495,12 @@ void pci_enable_ari(struct pci_dev *dev)
 void pci_configure_ari(struct pci_dev *dev)
 {
 	u32 cap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *bridge;
 
 	if (pcie_ari_disabled || !pci_is_pcie(dev) || dev->devfn)
 		return;
 
 	bridge = dev->bus->self;
-<<<<<<< HEAD
-	if (!bridge || !pci_is_pcie(bridge))
-		return;
-
-	pos = pci_pcie_cap(bridge);
-	if (!pos)
-		return;
-
-	/* ARI is a PCIe v2 feature */
-	pci_read_config_word(bridge, pos + PCI_EXP_FLAGS, &flags);
-	if ((flags & PCI_EXP_FLAGS_VERS) < 2)
-		return;
-
-	pci_read_config_dword(bridge, pos + PCI_EXP_DEVCAP2, &cap);
-	if (!(cap & PCI_EXP_DEVCAP2_ARI))
-		return;
-
-	pci_read_config_word(bridge, pos + PCI_EXP_DEVCTL2, &ctrl);
-	if (pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ARI)) {
-		ctrl |= PCI_EXP_DEVCTL2_ARI;
-		bridge->ari_enabled = 1;
-	} else {
-		ctrl &= ~PCI_EXP_DEVCTL2_ARI;
-		bridge->ari_enabled = 0;
-	}
-	pci_write_config_word(bridge, pos + PCI_EXP_DEVCTL2, ctrl);
-}
-
-/**
- * pci_enable_ido - enable ID-based ordering on a device
- * @dev: the PCI device
- * @type: which types of IDO to enable
- *
- * Enable ID-based ordering on @dev.  @type can contain the bits
- * %PCI_EXP_IDO_REQUEST and/or %PCI_EXP_IDO_COMPLETION to indicate
- * which types of transactions are allowed to be re-ordered.
- */
-void pci_enable_ido(struct pci_dev *dev, unsigned long type)
-{
-	int pos;
-	u16 ctrl;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return;
-
-	pci_read_config_word(dev, pos + PCI_EXP_DEVCTL2, &ctrl);
-	if (type & PCI_EXP_IDO_REQUEST)
-		ctrl |= PCI_EXP_IDO_REQ_EN;
-	if (type & PCI_EXP_IDO_COMPLETION)
-		ctrl |= PCI_EXP_IDO_CMP_EN;
-	pci_write_config_word(dev, pos + PCI_EXP_DEVCTL2, ctrl);
-}
-EXPORT_SYMBOL(pci_enable_ido);
-
-/**
- * pci_disable_ido - disable ID-based ordering on a device
- * @dev: the PCI device
- * @type: which types of IDO to disable
- */
-void pci_disable_ido(struct pci_dev *dev, unsigned long type)
-{
-	int pos;
-	u16 ctrl;
-
-	if (!pci_is_pcie(dev))
-		return;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return;
-
-	pci_read_config_word(dev, pos + PCI_EXP_DEVCTL2, &ctrl);
-	if (type & PCI_EXP_IDO_REQUEST)
-		ctrl &= ~PCI_EXP_IDO_REQ_EN;
-	if (type & PCI_EXP_IDO_COMPLETION)
-		ctrl &= ~PCI_EXP_IDO_CMP_EN;
-	pci_write_config_word(dev, pos + PCI_EXP_DEVCTL2, ctrl);
-}
-EXPORT_SYMBOL(pci_disable_ido);
-
-/**
- * pci_enable_obff - enable optimized buffer flush/fill
- * @dev: PCI device
- * @type: type of signaling to use
- *
- * Try to enable @type OBFF signaling on @dev.  It will try using WAKE#
- * signaling if possible, falling back to message signaling only if
- * WAKE# isn't supported.  @type should indicate whether the PCIe link
- * be brought out of L0s or L1 to send the message.  It should be either
- * %PCI_EXP_OBFF_SIGNAL_ALWAYS or %PCI_OBFF_SIGNAL_L0.
- *
- * If your device can benefit from receiving all messages, even at the
- * power cost of bringing the link back up from a low power state, use
- * %PCI_EXP_OBFF_SIGNAL_ALWAYS.  Otherwise, use %PCI_OBFF_SIGNAL_L0 (the
- * preferred type).
- *
- * RETURNS:
- * Zero on success, appropriate error number on failure.
- */
-int pci_enable_obff(struct pci_dev *dev, enum pci_obff_signal_type type)
-{
-	int pos;
-	u32 cap;
-	u16 ctrl;
-	int ret;
-
-	if (!pci_is_pcie(dev))
-		return -ENOTSUPP;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return -ENOTSUPP;
-
-	pci_read_config_dword(dev, pos + PCI_EXP_DEVCAP2, &cap);
-	if (!(cap & PCI_EXP_OBFF_MASK))
-		return -ENOTSUPP; /* no OBFF support at all */
-
-	/* Make sure the topology supports OBFF as well */
-	if (dev->bus) {
-		ret = pci_enable_obff(dev->bus->self, type);
-		if (ret)
-			return ret;
-	}
-
-	pci_read_config_word(dev, pos + PCI_EXP_DEVCTL2, &ctrl);
-	if (cap & PCI_EXP_OBFF_WAKE)
-		ctrl |= PCI_EXP_OBFF_WAKE_EN;
-	else {
-		switch (type) {
-		case PCI_EXP_OBFF_SIGNAL_L0:
-			if (!(ctrl & PCI_EXP_OBFF_WAKE_EN))
-				ctrl |= PCI_EXP_OBFF_MSGA_EN;
-			break;
-		case PCI_EXP_OBFF_SIGNAL_ALWAYS:
-			ctrl &= ~PCI_EXP_OBFF_WAKE_EN;
-			ctrl |= PCI_EXP_OBFF_MSGB_EN;
-			break;
-		default:
-			WARN(1, "bad OBFF signal type\n");
-			return -ENOTSUPP;
-		}
-	}
-	pci_write_config_word(dev, pos + PCI_EXP_DEVCTL2, ctrl);
-
-	return 0;
-}
-EXPORT_SYMBOL(pci_enable_obff);
-
-/**
- * pci_disable_obff - disable optimized buffer flush/fill
- * @dev: PCI device
- *
- * Disable OBFF on @dev.
- */
-void pci_disable_obff(struct pci_dev *dev)
-{
-	int pos;
-	u16 ctrl;
-
-	if (!pci_is_pcie(dev))
-		return;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return;
-
-	pci_read_config_word(dev, pos + PCI_EXP_DEVCTL2, &ctrl);
-	ctrl &= ~PCI_EXP_OBFF_WAKE_EN;
-	pci_write_config_word(dev, pos + PCI_EXP_DEVCTL2, ctrl);
-}
-EXPORT_SYMBOL(pci_disable_obff);
-
-/**
- * pci_ltr_supported - check whether a device supports LTR
- * @dev: PCI device
- *
- * RETURNS:
- * True if @dev supports latency tolerance reporting, false otherwise.
- */
-bool pci_ltr_supported(struct pci_dev *dev)
-{
-	int pos;
-	u32 cap;
-
-	if (!pci_is_pcie(dev))
-		return false;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return false;
-
-	pci_read_config_dword(dev, pos + PCI_EXP_DEVCAP2, &cap);
-
-	return cap & PCI_EXP_DEVCAP2_LTR;
-}
-EXPORT_SYMBOL(pci_ltr_supported);
-
-/**
- * pci_enable_ltr - enable latency tolerance reporting
- * @dev: PCI device
- *
- * Enable LTR on @dev if possible, which means enabling it first on
- * upstream ports.
- *
- * RETURNS:
- * Zero on success, errno on failure.
- */
-int pci_enable_ltr(struct pci_dev *dev)
-{
-	int pos;
-	u16 ctrl;
-	int ret;
-
-	if (!pci_ltr_supported(dev))
-		return -ENOTSUPP;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return -ENOTSUPP;
-
-	/* Only primary function can enable/disable LTR */
-	if (PCI_FUNC(dev->devfn) != 0)
-		return -EINVAL;
-
-	/* Enable upstream ports first */
-	if (dev->bus) {
-		ret = pci_enable_ltr(dev->bus->self);
-		if (ret)
-			return ret;
-	}
-
-	pci_read_config_word(dev, pos + PCI_EXP_DEVCTL2, &ctrl);
-	ctrl |= PCI_EXP_LTR_EN;
-	pci_write_config_word(dev, pos + PCI_EXP_DEVCTL2, ctrl);
-
-	return 0;
-}
-EXPORT_SYMBOL(pci_enable_ltr);
-
-/**
- * pci_disable_ltr - disable latency tolerance reporting
- * @dev: PCI device
- */
-void pci_disable_ltr(struct pci_dev *dev)
-{
-	int pos;
-	u16 ctrl;
-
-	if (!pci_ltr_supported(dev))
-		return;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return;
-
-	/* Only primary function can enable/disable LTR */
-	if (PCI_FUNC(dev->devfn) != 0)
-		return;
-
-	pci_read_config_word(dev, pos + PCI_EXP_DEVCTL2, &ctrl);
-	ctrl &= ~PCI_EXP_LTR_EN;
-	pci_write_config_word(dev, pos + PCI_EXP_DEVCTL2, ctrl);
-}
-EXPORT_SYMBOL(pci_disable_ltr);
-
-static int __pci_ltr_scale(int *val)
-{
-	int scale = 0;
-
-	while (*val > 1023) {
-		*val = (*val + 31) / 32;
-		scale++;
-	}
-	return scale;
-}
-
-/**
- * pci_set_ltr - set LTR latency values
- * @dev: PCI device
- * @snoop_lat_ns: snoop latency in nanoseconds
- * @nosnoop_lat_ns: nosnoop latency in nanoseconds
- *
- * Figure out the scale and set the LTR values accordingly.
- */
-int pci_set_ltr(struct pci_dev *dev, int snoop_lat_ns, int nosnoop_lat_ns)
-{
-	int pos, ret, snoop_scale, nosnoop_scale;
-	u16 val;
-
-	if (!pci_ltr_supported(dev))
-		return -ENOTSUPP;
-
-	snoop_scale = __pci_ltr_scale(&snoop_lat_ns);
-	nosnoop_scale = __pci_ltr_scale(&nosnoop_lat_ns);
-
-	if (snoop_lat_ns > PCI_LTR_VALUE_MASK ||
-	    nosnoop_lat_ns > PCI_LTR_VALUE_MASK)
-		return -EINVAL;
-
-	if ((snoop_scale > (PCI_LTR_SCALE_MASK >> PCI_LTR_SCALE_SHIFT)) ||
-	    (nosnoop_scale > (PCI_LTR_SCALE_MASK >> PCI_LTR_SCALE_SHIFT)))
-		return -EINVAL;
-
-	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_LTR);
-	if (!pos)
-		return -ENOTSUPP;
-
-	val = (snoop_scale << PCI_LTR_SCALE_SHIFT) | snoop_lat_ns;
-	ret = pci_write_config_word(dev, pos + PCI_LTR_MAX_SNOOP_LAT, val);
-	if (ret != 4)
-		return -EIO;
-
-	val = (nosnoop_scale << PCI_LTR_SCALE_SHIFT) | nosnoop_lat_ns;
-	ret = pci_write_config_word(dev, pos + PCI_LTR_MAX_NOSNOOP_LAT, val);
-	if (ret != 4)
-		return -EIO;
-
-	return 0;
-}
-EXPORT_SYMBOL(pci_set_ltr);
-
-static int pci_acs_enable;
-
-/**
- * pci_request_acs - ask for ACS to be enabled if supported
- */
-void pci_request_acs(void)
-{
-	pci_acs_enable = 1;
-}
-
-/**
- * pci_enable_acs - enable ACS if hardware support it
- * @dev: the PCI device
- */
-void pci_enable_acs(struct pci_dev *dev)
-{
-	int pos;
-	u16 cap;
-	u16 ctrl;
-
-	if (!pci_acs_enable)
-		return;
-
-	if (!pci_is_pcie(dev))
-		return;
-
-	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
-	if (!pos)
-		return;
-
-	pci_read_config_word(dev, pos + PCI_ACS_CAP, &cap);
-	pci_read_config_word(dev, pos + PCI_ACS_CTRL, &ctrl);
-
-	/* Source Validation */
-	ctrl |= (cap & PCI_ACS_SV);
-
-	/* P2P Request Redirect */
-	ctrl |= (cap & PCI_ACS_RR);
-
-	/* P2P Completion Redirect */
-	ctrl |= (cap & PCI_ACS_CR);
-
-	/* Upstream Forwarding */
-	ctrl |= (cap & PCI_ACS_UF);
-
-	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
-}
-
-/**
- * pci_swizzle_interrupt_pin - swizzle INTx for device behind bridge
- * @dev: the PCI device
- * @pin: the INTx pin (1=INTA, 2=INTB, 3=INTD, 4=INTD)
- *
- * Perform INTx swizzling for a device behind one level of bridge.  This is
- * required by section 9.1 of the PCI-to-PCI bridge specification for devices
- * behind bridges on add-in cards.  For devices with ARI enabled, the slot
- * number is always 0 (see the Implementation Note in section 2.2.8.1 of
- * the PCI Express Base Specification, Revision 2.1)
- */
-u8 pci_swizzle_interrupt_pin(struct pci_dev *dev, u8 pin)
-{
-	int slot;
-
-	if (pci_ari_enabled(dev->bus))
-		slot = 0;
-	else
-		slot = PCI_SLOT(dev->devfn);
-
-	return (((pin - 1) + slot) % 4) + 1;
-}
-
-int
-pci_get_interrupt_pin(struct pci_dev *dev, struct pci_dev **bridge)
-{
-	u8 pin;
-
-	pin = dev->pin;
-	if (!pin)
-		return -1;
-
-	while (!pci_is_root_bus(dev->bus)) {
-		pin = pci_swizzle_interrupt_pin(dev, pin);
-		dev = dev->bus->self;
-	}
-	*bridge = dev;
-	return pin;
-}
-
-/**
- * pci_common_swizzle - swizzle INTx all the way to root bridge
- * @dev: the PCI device
- * @pinp: pointer to the INTx pin value (1=INTA, 2=INTB, 3=INTD, 4=INTD)
- *
- * Perform INTx swizzling for a device.  This traverses through all PCI-to-PCI
- * bridges all the way up to a PCI root bus.
- */
-u8 pci_common_swizzle(struct pci_dev *dev, u8 *pinp)
-{
-	u8 pin = *pinp;
-
-	while (!pci_is_root_bus(dev->bus)) {
-		pin = pci_swizzle_interrupt_pin(dev, pin);
-		dev = dev->bus->self;
-	}
-	*pinp = pin;
-	return PCI_SLOT(dev->devfn);
-}
-
-/**
- *	pci_release_region - Release a PCI bar
- *	@pdev: PCI device whose resources were previously reserved by pci_request_region
- *	@bar: BAR to release
- *
- *	Releases the PCI I/O and memory resources previously reserved by a
- *	successful call to pci_request_region.  Call this function only
- *	after all use of the PCI regions has ceased.
-=======
 	if (!bridge)
 		return;
 
@@ -5675,7 +3866,6 @@ EXPORT_SYMBOL(pci_enable_atomic_ops_to_root);
  * Releases the PCI I/O and memory resources previously reserved by a
  * successful call to pci_request_region().  Call this function only
  * after all use of the PCI regions has ceased.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void pci_release_region(struct pci_dev *pdev, int bar)
 {
@@ -5694,30 +3884,6 @@ void pci_release_region(struct pci_dev *pdev, int bar)
 	if (dr)
 		dr->region_mask &= ~(1 << bar);
 }
-<<<<<<< HEAD
-
-/**
- *	__pci_request_region - Reserved PCI I/O and memory resource
- *	@pdev: PCI device whose resources are to be reserved
- *	@bar: BAR to be reserved
- *	@res_name: Name to be associated with resource.
- *	@exclusive: whether the region access is exclusive or not
- *
- *	Mark the PCI region associated with PCI device @pdev BR @bar as
- *	being reserved by owner @res_name.  Do not access any
- *	address inside the PCI regions unless this call returns
- *	successfully.
- *
- *	If @exclusive is set, then the region is marked so that userspace
- *	is explicitly not allowed to map the resource via /dev/mem or
- * 	sysfs MMIO access.
- *
- *	Returns 0 on success, or %EBUSY on error.  A warning
- *	message is also printed on failure.
- */
-static int __pci_request_region(struct pci_dev *pdev, int bar, const char *res_name,
-									int exclusive)
-=======
 EXPORT_SYMBOL(pci_release_region);
 
 /**
@@ -5741,27 +3907,17 @@ EXPORT_SYMBOL(pci_release_region);
  */
 static int __pci_request_region(struct pci_dev *pdev, int bar,
 				const char *res_name, int exclusive)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_devres *dr;
 
 	if (pci_resource_len(pdev, bar) == 0)
 		return 0;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pci_resource_flags(pdev, bar) & IORESOURCE_IO) {
 		if (!request_region(pci_resource_start(pdev, bar),
 			    pci_resource_len(pdev, bar), res_name))
 			goto err_out;
-<<<<<<< HEAD
-	}
-	else if (pci_resource_flags(pdev, bar) & IORESOURCE_MEM) {
-=======
 	} else if (pci_resource_flags(pdev, bar) & IORESOURCE_MEM) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!__request_mem_region(pci_resource_start(pdev, bar),
 					pci_resource_len(pdev, bar), res_name,
 					exclusive))
@@ -5775,30 +3931,12 @@ static int __pci_request_region(struct pci_dev *pdev, int bar,
 	return 0;
 
 err_out:
-<<<<<<< HEAD
-	dev_warn(&pdev->dev, "BAR %d: can't reserve %pR\n", bar,
-=======
 	pci_warn(pdev, "BAR %d: can't reserve %pR\n", bar,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 &pdev->resource[bar]);
 	return -EBUSY;
 }
 
 /**
-<<<<<<< HEAD
- *	pci_request_region - Reserve PCI I/O and memory resource
- *	@pdev: PCI device whose resources are to be reserved
- *	@bar: BAR to be reserved
- *	@res_name: Name to be associated with resource
- *
- *	Mark the PCI region associated with PCI device @pdev BAR @bar as
- *	being reserved by owner @res_name.  Do not access any
- *	address inside the PCI regions unless this call returns
- *	successfully.
- *
- *	Returns 0 on success, or %EBUSY on error.  A warning
- *	message is also printed on failure.
-=======
  * pci_request_region - Reserve PCI I/O and memory resource
  * @pdev: PCI device whose resources are to be reserved
  * @bar: BAR to be reserved
@@ -5811,42 +3949,14 @@ err_out:
  *
  * Returns 0 on success, or %EBUSY on error.  A warning
  * message is also printed on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pci_request_region(struct pci_dev *pdev, int bar, const char *res_name)
 {
 	return __pci_request_region(pdev, bar, res_name, 0);
 }
-<<<<<<< HEAD
-
-/**
- *	pci_request_region_exclusive - Reserved PCI I/O and memory resource
- *	@pdev: PCI device whose resources are to be reserved
- *	@bar: BAR to be reserved
- *	@res_name: Name to be associated with resource.
- *
- *	Mark the PCI region associated with PCI device @pdev BR @bar as
- *	being reserved by owner @res_name.  Do not access any
- *	address inside the PCI regions unless this call returns
- *	successfully.
- *
- *	Returns 0 on success, or %EBUSY on error.  A warning
- *	message is also printed on failure.
- *
- *	The key difference that _exclusive makes it that userspace is
- *	explicitly not allowed to map the resource via /dev/mem or
- * 	sysfs.
- */
-int pci_request_region_exclusive(struct pci_dev *pdev, int bar, const char *res_name)
-{
-	return __pci_request_region(pdev, bar, res_name, IORESOURCE_EXCLUSIVE);
-}
-/**
-=======
 EXPORT_SYMBOL(pci_request_region);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pci_release_selected_regions - Release selected PCI I/O and memory resources
  * @pdev: PCI device whose resources were previously reserved
  * @bars: Bitmask of BARs to be released
@@ -5858,19 +3968,6 @@ void pci_release_selected_regions(struct pci_dev *pdev, int bars)
 {
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < 6; i++)
-		if (bars & (1 << i))
-			pci_release_region(pdev, i);
-}
-
-int __pci_request_selected_regions(struct pci_dev *pdev, int bars,
-				 const char *res_name, int excl)
-{
-	int i;
-
-	for (i = 0; i < 6; i++)
-=======
 	for (i = 0; i < PCI_STD_NUM_BARS; i++)
 		if (bars & (1 << i))
 			pci_release_region(pdev, i);
@@ -5883,18 +3980,13 @@ static int __pci_request_selected_regions(struct pci_dev *pdev, int bars,
 	int i;
 
 	for (i = 0; i < PCI_STD_NUM_BARS; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bars & (1 << i))
 			if (__pci_request_region(pdev, i, res_name, excl))
 				goto err_out;
 	return 0;
 
 err_out:
-<<<<<<< HEAD
-	while(--i >= 0)
-=======
 	while (--i >= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bars & (1 << i))
 			pci_release_region(pdev, i);
 
@@ -5913,30 +4005,14 @@ int pci_request_selected_regions(struct pci_dev *pdev, int bars,
 {
 	return __pci_request_selected_regions(pdev, bars, res_name, 0);
 }
-<<<<<<< HEAD
-
-int pci_request_selected_regions_exclusive(struct pci_dev *pdev,
-				 int bars, const char *res_name)
-=======
 EXPORT_SYMBOL(pci_request_selected_regions);
 
 int pci_request_selected_regions_exclusive(struct pci_dev *pdev, int bars,
 					   const char *res_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __pci_request_selected_regions(pdev, bars, res_name,
 			IORESOURCE_EXCLUSIVE);
 }
-<<<<<<< HEAD
-
-/**
- *	pci_release_regions - Release reserved PCI I/O and memory resources
- *	@pdev: PCI device whose resources were previously reserved by pci_request_regions
- *
- *	Releases all PCI I/O and memory resources previously reserved by a
- *	successful call to pci_request_regions.  Call this function only
- *	after all use of the PCI regions has ceased.
-=======
 EXPORT_SYMBOL(pci_request_selected_regions_exclusive);
 
 /**
@@ -5947,49 +4023,10 @@ EXPORT_SYMBOL(pci_request_selected_regions_exclusive);
  * Releases all PCI I/O and memory resources previously reserved by a
  * successful call to pci_request_regions().  Call this function only
  * after all use of the PCI regions has ceased.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 void pci_release_regions(struct pci_dev *pdev)
 {
-<<<<<<< HEAD
-	pci_release_selected_regions(pdev, (1 << 6) - 1);
-}
-
-/**
- *	pci_request_regions - Reserved PCI I/O and memory resources
- *	@pdev: PCI device whose resources are to be reserved
- *	@res_name: Name to be associated with resource.
- *
- *	Mark all PCI regions associated with PCI device @pdev as
- *	being reserved by owner @res_name.  Do not access any
- *	address inside the PCI regions unless this call returns
- *	successfully.
- *
- *	Returns 0 on success, or %EBUSY on error.  A warning
- *	message is also printed on failure.
- */
-int pci_request_regions(struct pci_dev *pdev, const char *res_name)
-{
-	return pci_request_selected_regions(pdev, ((1 << 6) - 1), res_name);
-}
-
-/**
- *	pci_request_regions_exclusive - Reserved PCI I/O and memory resources
- *	@pdev: PCI device whose resources are to be reserved
- *	@res_name: Name to be associated with resource.
- *
- *	Mark all PCI regions associated with PCI device @pdev as
- *	being reserved by owner @res_name.  Do not access any
- *	address inside the PCI regions unless this call returns
- *	successfully.
- *
- *	pci_request_regions_exclusive() will mark the region so that
- * 	/dev/mem and the sysfs MMIO access will not be allowed.
- *
- *	Returns 0 on success, or %EBUSY on error.  A warning
- *	message is also printed on failure.
-=======
 	pci_release_selected_regions(pdev, (1 << PCI_STD_NUM_BARS) - 1);
 }
 EXPORT_SYMBOL(pci_release_regions);
@@ -6028,15 +4065,10 @@ EXPORT_SYMBOL(pci_request_regions);
  *
  * Returns 0 on success, or %EBUSY on error.  A warning message is also
  * printed on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pci_request_regions_exclusive(struct pci_dev *pdev, const char *res_name)
 {
 	return pci_request_selected_regions_exclusive(pdev,
-<<<<<<< HEAD
-					((1 << 6) - 1), res_name);
-}
-=======
 				((1 << PCI_STD_NUM_BARS) - 1), res_name);
 }
 EXPORT_SYMBOL(pci_request_regions_exclusive);
@@ -6152,7 +4184,6 @@ void pci_unmap_iospace(struct resource *res)
 #endif
 }
 EXPORT_SYMBOL(pci_unmap_iospace);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __pci_set_master(struct pci_dev *dev, bool enable)
 {
@@ -6164,11 +4195,7 @@ static void __pci_set_master(struct pci_dev *dev, bool enable)
 	else
 		cmd = old_cmd & ~PCI_COMMAND_MASTER;
 	if (cmd != old_cmd) {
-<<<<<<< HEAD
-		dev_dbg(&dev->dev, "%s bus mastering\n",
-=======
 		pci_dbg(dev, "%s bus mastering\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			enable ? "enabling" : "disabling");
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 	}
@@ -6176,8 +4203,6 @@ static void __pci_set_master(struct pci_dev *dev, bool enable)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * pcibios_setup - process "pci=" kernel boot arguments
  * @str: string used to pass in "pci=" kernel boot arguments
  *
@@ -6190,7 +4215,6 @@ char * __weak __init pcibios_setup(char *str)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcibios_set_master - enable PCI bus-mastering for device dev
  * @dev: the PCI device to enable
  *
@@ -6213,11 +4237,7 @@ void __weak pcibios_set_master(struct pci_dev *dev)
 		lat = pcibios_max_latency;
 	else
 		return;
-<<<<<<< HEAD
-	dev_printk(KERN_DEBUG, &dev->dev, "setting latency timer to %d\n", lat);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_write_config_byte(dev, PCI_LATENCY_TIMER, lat);
 }
 
@@ -6233,10 +4253,7 @@ void pci_set_master(struct pci_dev *dev)
 	__pci_set_master(dev, true);
 	pcibios_set_master(dev);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(pci_set_master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_clear_master - disables bus-mastering for device dev
@@ -6246,10 +4263,7 @@ void pci_clear_master(struct pci_dev *dev)
 {
 	__pci_set_master(dev, false);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(pci_clear_master);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_set_cacheline_size - ensure the CACHE_LINE_SIZE register is programmed
@@ -6282,38 +4296,13 @@ int pci_set_cacheline_size(struct pci_dev *dev)
 	if (cacheline_size == pci_cache_line_size)
 		return 0;
 
-<<<<<<< HEAD
-	dev_printk(KERN_DEBUG, &dev->dev, "cache line size of %d is not "
-		   "supported\n", pci_cache_line_size << 2);
-=======
 	pci_dbg(dev, "cache line size of %d is not supported\n",
 		   pci_cache_line_size << 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EINVAL;
 }
 EXPORT_SYMBOL_GPL(pci_set_cacheline_size);
 
-<<<<<<< HEAD
-#ifdef PCI_DISABLE_MWI
-int pci_set_mwi(struct pci_dev *dev)
-{
-	return 0;
-}
-
-int pci_try_set_mwi(struct pci_dev *dev)
-{
-	return 0;
-}
-
-void pci_clear_mwi(struct pci_dev *dev)
-{
-}
-
-#else
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pci_set_mwi - enables memory-write-invalidate PCI transaction
  * @dev: the PCI device for which MWI is enabled
@@ -6322,17 +4311,11 @@ void pci_clear_mwi(struct pci_dev *dev)
  *
  * RETURNS: An appropriate -ERRNO error value on error, or zero for success.
  */
-<<<<<<< HEAD
-int
-pci_set_mwi(struct pci_dev *dev)
-{
-=======
 int pci_set_mwi(struct pci_dev *dev)
 {
 #ifdef PCI_DISABLE_MWI
 	return 0;
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 	u16 cmd;
 
@@ -6341,16 +4324,6 @@ int pci_set_mwi(struct pci_dev *dev)
 		return rc;
 
 	pci_read_config_word(dev, PCI_COMMAND, &cmd);
-<<<<<<< HEAD
-	if (! (cmd & PCI_COMMAND_INVALIDATE)) {
-		dev_dbg(&dev->dev, "enabling Mem-Wr-Inval\n");
-		cmd |= PCI_COMMAND_INVALIDATE;
-		pci_write_config_word(dev, PCI_COMMAND, cmd);
-	}
-	
-	return 0;
-}
-=======
 	if (!(cmd & PCI_COMMAND_INVALIDATE)) {
 		pci_dbg(dev, "enabling Mem-Wr-Inval\n");
 		cmd |= PCI_COMMAND_INVALIDATE;
@@ -6360,7 +4333,6 @@ int pci_set_mwi(struct pci_dev *dev)
 #endif
 }
 EXPORT_SYMBOL(pci_set_mwi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_try_set_mwi - enables memory-write-invalidate PCI transaction
@@ -6373,11 +4345,6 @@ EXPORT_SYMBOL(pci_set_mwi);
  */
 int pci_try_set_mwi(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	int rc = pci_set_mwi(dev);
-	return rc;
-}
-=======
 #ifdef PCI_DISABLE_MWI
 	return 0;
 #else
@@ -6385,7 +4352,6 @@ int pci_try_set_mwi(struct pci_dev *dev)
 #endif
 }
 EXPORT_SYMBOL(pci_try_set_mwi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_clear_mwi - disables Memory-Write-Invalidate for device dev
@@ -6393,15 +4359,9 @@ EXPORT_SYMBOL(pci_try_set_mwi);
  *
  * Disables PCI Memory-Write-Invalidate transaction on the device
  */
-<<<<<<< HEAD
-void
-pci_clear_mwi(struct pci_dev *dev)
-{
-=======
 void pci_clear_mwi(struct pci_dev *dev)
 {
 #ifndef PCI_DISABLE_MWI
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 cmd;
 
 	pci_read_config_word(dev, PCI_COMMAND, &cmd);
@@ -6409,10 +4369,6 @@ void pci_clear_mwi(struct pci_dev *dev)
 		cmd &= ~PCI_COMMAND_INVALIDATE;
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 	}
-<<<<<<< HEAD
-}
-#endif /* ! PCI_DISABLE_MWI */
-=======
 #endif
 }
 EXPORT_SYMBOL(pci_clear_mwi);
@@ -6433,40 +4389,24 @@ void pci_disable_parity(struct pci_dev *dev)
 		pci_write_config_word(dev, PCI_COMMAND, cmd);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_intx - enables/disables PCI INTx for device dev
  * @pdev: the PCI device to operate on
  * @enable: boolean: whether to enable or disable PCI INTx
  *
-<<<<<<< HEAD
- * Enables/disables PCI INTx for device dev
- */
-void
-pci_intx(struct pci_dev *pdev, int enable)
-=======
  * Enables/disables PCI INTx for device @pdev
  */
 void pci_intx(struct pci_dev *pdev, int enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 pci_command, new;
 
 	pci_read_config_word(pdev, PCI_COMMAND, &pci_command);
 
-<<<<<<< HEAD
-	if (enable) {
-		new = pci_command & ~PCI_COMMAND_INTX_DISABLE;
-	} else {
-		new = pci_command | PCI_COMMAND_INTX_DISABLE;
-	}
-=======
 	if (enable)
 		new = pci_command & ~PCI_COMMAND_INTX_DISABLE;
 	else
 		new = pci_command | PCI_COMMAND_INTX_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new != pci_command) {
 		struct pci_devres *dr;
@@ -6480,172 +4420,6 @@ void pci_intx(struct pci_dev *pdev, int enable)
 		}
 	}
 }
-<<<<<<< HEAD
-
-/**
- * pci_intx_mask_supported - probe for INTx masking support
- * @dev: the PCI device to operate on
- *
- * Check if the device dev support INTx masking via the config space
- * command word.
- */
-bool pci_intx_mask_supported(struct pci_dev *dev)
-{
-	bool mask_supported = false;
-	u16 orig, new;
-
-	pci_cfg_access_lock(dev);
-
-	pci_read_config_word(dev, PCI_COMMAND, &orig);
-	pci_write_config_word(dev, PCI_COMMAND,
-			      orig ^ PCI_COMMAND_INTX_DISABLE);
-	pci_read_config_word(dev, PCI_COMMAND, &new);
-
-	/*
-	 * There's no way to protect against hardware bugs or detect them
-	 * reliably, but as long as we know what the value should be, let's
-	 * go ahead and check it.
-	 */
-	if ((new ^ orig) & ~PCI_COMMAND_INTX_DISABLE) {
-		dev_err(&dev->dev, "Command register changed from "
-			"0x%x to 0x%x: driver or hardware bug?\n", orig, new);
-	} else if ((new ^ orig) & PCI_COMMAND_INTX_DISABLE) {
-		mask_supported = true;
-		pci_write_config_word(dev, PCI_COMMAND, orig);
-	}
-
-	pci_cfg_access_unlock(dev);
-	return mask_supported;
-}
-EXPORT_SYMBOL_GPL(pci_intx_mask_supported);
-
-static bool pci_check_and_set_intx_mask(struct pci_dev *dev, bool mask)
-{
-	struct pci_bus *bus = dev->bus;
-	bool mask_updated = true;
-	u32 cmd_status_dword;
-	u16 origcmd, newcmd;
-	unsigned long flags;
-	bool irq_pending;
-
-	/*
-	 * We do a single dword read to retrieve both command and status.
-	 * Document assumptions that make this possible.
-	 */
-	BUILD_BUG_ON(PCI_COMMAND % 4);
-	BUILD_BUG_ON(PCI_COMMAND + 2 != PCI_STATUS);
-
-	raw_spin_lock_irqsave(&pci_lock, flags);
-
-	bus->ops->read(bus, dev->devfn, PCI_COMMAND, 4, &cmd_status_dword);
-
-	irq_pending = (cmd_status_dword >> 16) & PCI_STATUS_INTERRUPT;
-
-	/*
-	 * Check interrupt status register to see whether our device
-	 * triggered the interrupt (when masking) or the next IRQ is
-	 * already pending (when unmasking).
-	 */
-	if (mask != irq_pending) {
-		mask_updated = false;
-		goto done;
-	}
-
-	origcmd = cmd_status_dword;
-	newcmd = origcmd & ~PCI_COMMAND_INTX_DISABLE;
-	if (mask)
-		newcmd |= PCI_COMMAND_INTX_DISABLE;
-	if (newcmd != origcmd)
-		bus->ops->write(bus, dev->devfn, PCI_COMMAND, 2, newcmd);
-
-done:
-	raw_spin_unlock_irqrestore(&pci_lock, flags);
-
-	return mask_updated;
-}
-
-/**
- * pci_check_and_mask_intx - mask INTx on pending interrupt
- * @dev: the PCI device to operate on
- *
- * Check if the device dev has its INTx line asserted, mask it and
- * return true in that case. False is returned if not interrupt was
- * pending.
- */
-bool pci_check_and_mask_intx(struct pci_dev *dev)
-{
-	return pci_check_and_set_intx_mask(dev, true);
-}
-EXPORT_SYMBOL_GPL(pci_check_and_mask_intx);
-
-/**
- * pci_check_and_mask_intx - unmask INTx of no interrupt is pending
- * @dev: the PCI device to operate on
- *
- * Check if the device dev has its INTx line asserted, unmask it if not
- * and return true. False is returned and the mask remains active if
- * there was still an interrupt pending.
- */
-bool pci_check_and_unmask_intx(struct pci_dev *dev)
-{
-	return pci_check_and_set_intx_mask(dev, false);
-}
-EXPORT_SYMBOL_GPL(pci_check_and_unmask_intx);
-
-/**
- * pci_msi_off - disables any msi or msix capabilities
- * @dev: the PCI device to operate on
- *
- * If you want to use msi see pci_enable_msi and friends.
- * This is a lower level primitive that allows us to disable
- * msi operation at the device level.
- */
-void pci_msi_off(struct pci_dev *dev)
-{
-	int pos;
-	u16 control;
-
-	pos = pci_find_capability(dev, PCI_CAP_ID_MSI);
-	if (pos) {
-		pci_read_config_word(dev, pos + PCI_MSI_FLAGS, &control);
-		control &= ~PCI_MSI_FLAGS_ENABLE;
-		pci_write_config_word(dev, pos + PCI_MSI_FLAGS, control);
-	}
-	pos = pci_find_capability(dev, PCI_CAP_ID_MSIX);
-	if (pos) {
-		pci_read_config_word(dev, pos + PCI_MSIX_FLAGS, &control);
-		control &= ~PCI_MSIX_FLAGS_ENABLE;
-		pci_write_config_word(dev, pos + PCI_MSIX_FLAGS, control);
-	}
-}
-EXPORT_SYMBOL_GPL(pci_msi_off);
-
-int pci_set_dma_max_seg_size(struct pci_dev *dev, unsigned int size)
-{
-	return dma_set_max_seg_size(&dev->dev, size);
-}
-EXPORT_SYMBOL(pci_set_dma_max_seg_size);
-
-int pci_set_dma_seg_boundary(struct pci_dev *dev, unsigned long mask)
-{
-	return dma_set_seg_boundary(&dev->dev, mask);
-}
-EXPORT_SYMBOL(pci_set_dma_seg_boundary);
-
-static int pcie_flr(struct pci_dev *dev, int probe)
-{
-	int i;
-	int pos;
-	u32 cap;
-	u16 status, control;
-
-	pos = pci_pcie_cap(dev);
-	if (!pos)
-		return -ENOTTY;
-
-	pci_read_config_dword(dev, pos + PCI_EXP_DEVCAP, &cap);
-	if (!(cap & PCI_EXP_DEVCAP_FLR))
-=======
 EXPORT_SYMBOL_GPL(pci_intx);
 
 /**
@@ -6705,43 +4479,11 @@ int pcie_reset_flr(struct pci_dev *dev, bool probe)
 		return -ENOTTY;
 
 	if (!(dev->devcap & PCI_EXP_DEVCAP_FLR))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTTY;
 
 	if (probe)
 		return 0;
 
-<<<<<<< HEAD
-	/* Wait for Transaction Pending bit clean */
-	for (i = 0; i < 4; i++) {
-		if (i)
-			msleep((1 << (i - 1)) * 100);
-
-		pci_read_config_word(dev, pos + PCI_EXP_DEVSTA, &status);
-		if (!(status & PCI_EXP_DEVSTA_TRPND))
-			goto clear;
-	}
-
-	dev_err(&dev->dev, "transaction is not cleared; "
-			"proceeding with reset anyway\n");
-
-clear:
-	pci_read_config_word(dev, pos + PCI_EXP_DEVCTL, &control);
-	control |= PCI_EXP_DEVCTL_BCR_FLR;
-	pci_write_config_word(dev, pos + PCI_EXP_DEVCTL, control);
-
-	msleep(100);
-
-	return 0;
-}
-
-static int pci_af_flr(struct pci_dev *dev, int probe)
-{
-	int i;
-	int pos;
-	u8 cap;
-	u8 status;
-=======
 	return pcie_flr(dev);
 }
 EXPORT_SYMBOL_GPL(pcie_reset_flr);
@@ -6750,18 +4492,14 @@ static int pci_af_flr(struct pci_dev *dev, bool probe)
 {
 	int pos;
 	u8 cap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pos = pci_find_capability(dev, PCI_CAP_ID_AF);
 	if (!pos)
 		return -ENOTTY;
 
-<<<<<<< HEAD
-=======
 	if (dev->dev_flags & PCI_DEV_FLAGS_NO_FLR_RESET)
 		return -ENOTTY;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_byte(dev, pos + PCI_AF_CAP, &cap);
 	if (!(cap & PCI_AF_CAP_TP) || !(cap & PCI_AF_CAP_FLR))
 		return -ENOTTY;
@@ -6769,26 +4507,6 @@ static int pci_af_flr(struct pci_dev *dev, bool probe)
 	if (probe)
 		return 0;
 
-<<<<<<< HEAD
-	/* Wait for Transaction Pending bit clean */
-	for (i = 0; i < 4; i++) {
-		if (i)
-			msleep((1 << (i - 1)) * 100);
-
-		pci_read_config_byte(dev, pos + PCI_AF_STATUS, &status);
-		if (!(status & PCI_AF_STATUS_TP))
-			goto clear;
-	}
-
-	dev_err(&dev->dev, "transaction is not cleared; "
-			"proceeding with reset anyway\n");
-
-clear:
-	pci_write_config_byte(dev, pos + PCI_AF_CTRL, PCI_AF_CTRL_FLR);
-	msleep(100);
-
-	return 0;
-=======
 	/*
 	 * Wait for Transaction Pending bit to clear.  A word-aligned test
 	 * is used, so we use the control offset rather than status and shift
@@ -6812,17 +4530,12 @@ clear:
 	msleep(100);
 
 	return pci_dev_wait(dev, "AF_FLR", PCIE_RESET_READY_POLL_MS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * pci_pm_reset - Put device into PCI_D3 and back into PCI_D0.
  * @dev: Device to reset.
-<<<<<<< HEAD
- * @probe: If set, only check if the device can be reset this way.
-=======
  * @probe: if true, return 0 if the device can be reset this way.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If @dev supports native PCI PM and its PCI_PM_CTRL_NO_SOFT_RESET flag is
  * unset, it will be reinitialized internally when going from PCI_D3hot to
@@ -6831,16 +4544,6 @@ clear:
  *
  * NOTE: This causes the caller to sleep for twice the device power transition
  * cooldown period, which for the D0->D3hot and D3hot->D0 transitions is 10 ms
-<<<<<<< HEAD
- * by devault (i.e. unless the @dev's d3_delay field has a different value).
- * Moreover, only devices in D0 can be reset by this function.
- */
-static int pci_pm_reset(struct pci_dev *dev, int probe)
-{
-	u16 csr;
-
-	if (!dev->pm_cap)
-=======
  * by default (i.e. unless the @dev's d3hot_delay field has a different value).
  * Moreover, only devices in D0 can be reset by this function.
  */
@@ -6849,7 +4552,6 @@ static int pci_pm_reset(struct pci_dev *dev, bool probe)
 	u16 csr;
 
 	if (!dev->pm_cap || dev->dev_flags & PCI_DEV_FLAGS_NO_PM_RESET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTTY;
 
 	pci_read_config_word(dev, dev->pm_cap + PCI_PM_CTRL, &csr);
@@ -6872,17 +4574,6 @@ static int pci_pm_reset(struct pci_dev *dev, bool probe)
 	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, csr);
 	pci_dev_d3_sleep(dev);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-static int pci_parent_bus_reset(struct pci_dev *dev, int probe)
-{
-	u16 ctrl;
-	struct pci_dev *pdev;
-
-	if (pci_is_root_bus(dev->bus) || dev->subordinate || !dev->bus->self)
-=======
 	return pci_dev_wait(dev, "PM D3hot->D0", PCIE_RESET_READY_POLL_MS);
 }
 
@@ -7200,7 +4891,6 @@ static int pci_parent_bus_reset(struct pci_dev *dev, bool probe)
 
 	if (pci_is_root_bus(dev->bus) || dev->subordinate ||
 	    !dev->bus->self || dev->dev_flags & PCI_DEV_FLAGS_NO_BUS_RESET)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTTY;
 
 	list_for_each_entry(pdev, &dev->bus->devices, bus_list)
@@ -7210,54 +4900,6 @@ static int pci_parent_bus_reset(struct pci_dev *dev, bool probe)
 	if (probe)
 		return 0;
 
-<<<<<<< HEAD
-	pci_read_config_word(dev->bus->self, PCI_BRIDGE_CONTROL, &ctrl);
-	ctrl |= PCI_BRIDGE_CTL_BUS_RESET;
-	pci_write_config_word(dev->bus->self, PCI_BRIDGE_CONTROL, ctrl);
-	msleep(100);
-
-	ctrl &= ~PCI_BRIDGE_CTL_BUS_RESET;
-	pci_write_config_word(dev->bus->self, PCI_BRIDGE_CONTROL, ctrl);
-	msleep(100);
-
-	return 0;
-}
-
-static int pci_dev_reset(struct pci_dev *dev, int probe)
-{
-	int rc;
-
-	might_sleep();
-
-	if (!probe) {
-		pci_cfg_access_lock(dev);
-		/* block PM suspend, driver probe, etc. */
-		device_lock(&dev->dev);
-	}
-
-	rc = pci_dev_specific_reset(dev, probe);
-	if (rc != -ENOTTY)
-		goto done;
-
-	rc = pcie_flr(dev, probe);
-	if (rc != -ENOTTY)
-		goto done;
-
-	rc = pci_af_flr(dev, probe);
-	if (rc != -ENOTTY)
-		goto done;
-
-	rc = pci_pm_reset(dev, probe);
-	if (rc != -ENOTTY)
-		goto done;
-
-	rc = pci_parent_bus_reset(dev, probe);
-done:
-	if (!probe) {
-		device_unlock(&dev->dev);
-		pci_cfg_access_unlock(dev);
-	}
-=======
 	return pci_bridge_secondary_bus_reset(dev->bus->self);
 }
 
@@ -7272,35 +4914,10 @@ static int pci_reset_hotplug_slot(struct hotplug_slot *hotplug, bool probe)
 		rc = hotplug->ops->reset_slot(hotplug, probe);
 
 	module_put(hotplug->owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
 
-<<<<<<< HEAD
-/**
- * __pci_reset_function - reset a PCI device function
- * @dev: PCI device to reset
- *
- * Some devices allow an individual function to be reset without affecting
- * other functions in the same device.  The PCI device must be responsive
- * to PCI config space in order to use this function.
- *
- * The device function is presumed to be unused when this function is called.
- * Resetting the device will make the contents of PCI configuration space
- * random, so any caller of this must be prepared to reinitialise the
- * device including MSI, bus mastering, BARs, decoding IO and memory spaces,
- * etc.
- *
- * Returns 0 if the device function was successfully reset or negative if the
- * device doesn't support resetting a single function.
- */
-int __pci_reset_function(struct pci_dev *dev)
-{
-	return pci_dev_reset(dev, 0);
-}
-EXPORT_SYMBOL_GPL(__pci_reset_function);
-=======
 static int pci_dev_reset_slot_function(struct pci_dev *dev, bool probe)
 {
 	if (dev->multifunction || dev->subordinate || !dev->slot ||
@@ -7527,7 +5144,6 @@ const struct attribute_group pci_dev_reset_method_attr_group = {
 	.attrs = pci_dev_reset_method_attrs,
 	.is_visible = pci_dev_reset_method_attr_is_visible,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __pci_reset_function_locked - reset a PCI device function while holding
@@ -7540,10 +5156,7 @@ const struct attribute_group pci_dev_reset_method_attr_group = {
  *
  * The device function is presumed to be unused and the caller is holding
  * the device mutex lock when this function is called.
-<<<<<<< HEAD
-=======
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Resetting the device will make the contents of PCI configuration space
  * random, so any caller of this must be prepared to reinitialise the
  * device including MSI, bus mastering, BARs, decoding IO and memory spaces,
@@ -7554,9 +5167,6 @@ const struct attribute_group pci_dev_reset_method_attr_group = {
  */
 int __pci_reset_function_locked(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	return pci_dev_reset(dev, 1);
-=======
 	int i, m, rc;
 
 	might_sleep();
@@ -7582,26 +5192,10 @@ int __pci_reset_function_locked(struct pci_dev *dev)
 	}
 
 	return -ENOTTY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(__pci_reset_function_locked);
 
 /**
-<<<<<<< HEAD
- * pci_probe_reset_function - check whether the device can be safely reset
- * @dev: PCI device to reset
- *
- * Some devices allow an individual function to be reset without affecting
- * other functions in the same device.  The PCI device must be responsive
- * to PCI config space in order to use this function.
- *
- * Returns 0 if the device function can be reset or negative if the
- * device doesn't support resetting a single function.
- */
-int pci_probe_reset_function(struct pci_dev *dev)
-{
-	return pci_dev_reset(dev, 1);
-=======
  * pci_init_reset_methods - check whether device can be safely reset
  * and store supported reset mechanisms.
  * @dev: PCI device to check for reset mechanisms
@@ -7631,7 +5225,6 @@ void pci_init_reset_methods(struct pci_dev *dev)
 	}
 
 	dev->reset_methods[i] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -7644,13 +5237,8 @@ void pci_init_reset_methods(struct pci_dev *dev)
  *
  * This function does not just reset the PCI portion of a device, but
  * clears all the state associated with the device.  This function differs
-<<<<<<< HEAD
- * from __pci_reset_function in that it saves and restores device state
- * over the reset.
-=======
  * from __pci_reset_function_locked() in that it saves and restores device state
  * over the reset and takes the PCI device lock.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 if the device function was successfully reset or negative if the
  * device doesn't support resetting a single function.
@@ -7659,23 +5247,6 @@ int pci_reset_function(struct pci_dev *dev)
 {
 	int rc;
 
-<<<<<<< HEAD
-	rc = pci_dev_reset(dev, 1);
-	if (rc)
-		return rc;
-
-	pci_save_state(dev);
-
-	/*
-	 * both INTx and MSI are disabled after the Interrupt Disable bit
-	 * is set and the Bus Master bit is cleared.
-	 */
-	pci_write_config_word(dev, PCI_COMMAND, PCI_COMMAND_INTX_DISABLE);
-
-	rc = pci_dev_reset(dev, 0);
-
-	pci_restore_state(dev);
-=======
 	if (!pci_reset_supported(dev))
 		return -ENOTTY;
 
@@ -7686,20 +5257,12 @@ int pci_reset_function(struct pci_dev *dev)
 
 	pci_dev_restore(dev);
 	pci_dev_unlock(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
 EXPORT_SYMBOL_GPL(pci_reset_function);
 
 /**
-<<<<<<< HEAD
- * pcix_get_max_mmrbc - get PCI-X maximum designed memory read byte count
- * @dev: PCI device to query
- *
- * Returns mmrbc: maximum designed memory read count in bytes
- *    or appropriate error value.
-=======
  * pci_reset_function_locked - quiesce and reset a PCI device function
  * @dev: PCI device to reset
  *
@@ -8151,7 +5714,6 @@ EXPORT_SYMBOL_GPL(pci_reset_bus);
  *
  * Returns mmrbc: maximum designed memory read count in bytes or
  * appropriate error value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pcix_get_max_mmrbc(struct pci_dev *dev)
 {
@@ -8165,11 +5727,7 @@ int pcix_get_max_mmrbc(struct pci_dev *dev)
 	if (pci_read_config_dword(dev, cap + PCI_X_STATUS, &stat))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	return 512 << ((stat & PCI_X_STATUS_MAX_READ) >> 21);
-=======
 	return 512 << FIELD_GET(PCI_X_STATUS_MAX_READ, stat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pcix_get_max_mmrbc);
 
@@ -8177,13 +5735,8 @@ EXPORT_SYMBOL(pcix_get_max_mmrbc);
  * pcix_get_mmrbc - get PCI-X maximum memory read byte count
  * @dev: PCI device to query
  *
-<<<<<<< HEAD
- * Returns mmrbc: maximum memory read count in bytes
- *    or appropriate error value.
-=======
  * Returns mmrbc: maximum memory read count in bytes or appropriate error
  * value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int pcix_get_mmrbc(struct pci_dev *dev)
 {
@@ -8197,11 +5750,7 @@ int pcix_get_mmrbc(struct pci_dev *dev)
 	if (pci_read_config_word(dev, cap + PCI_X_CMD, &cmd))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	return 512 << ((cmd & PCI_X_CMD_MAX_READ) >> 2);
-=======
 	return 512 << FIELD_GET(PCI_X_CMD_MAX_READ, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pcix_get_mmrbc);
 
@@ -8211,11 +5760,7 @@ EXPORT_SYMBOL(pcix_get_mmrbc);
  * @mmrbc: maximum memory read count in bytes
  *    valid values are 512, 1024, 2048, 4096
  *
-<<<<<<< HEAD
- * If possible sets maximum memory read byte count, some bridges have erratas
-=======
  * If possible sets maximum memory read byte count, some bridges have errata
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * that prevent this.
  */
 int pcix_set_mmrbc(struct pci_dev *dev, int mmrbc)
@@ -8236,26 +5781,12 @@ int pcix_set_mmrbc(struct pci_dev *dev, int mmrbc)
 	if (pci_read_config_dword(dev, cap + PCI_X_STATUS, &stat))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	if (v > (stat & PCI_X_STATUS_MAX_READ) >> 21)
-=======
 	if (v > FIELD_GET(PCI_X_STATUS_MAX_READ, stat))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -E2BIG;
 
 	if (pci_read_config_word(dev, cap + PCI_X_CMD, &cmd))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	o = (cmd & PCI_X_CMD_MAX_READ) >> 2;
-	if (o != v) {
-		if (v > o && dev->bus &&
-		   (dev->bus->bus_flags & PCI_BUS_FLAGS_NO_MMRBC))
-			return -EIO;
-
-		cmd &= ~PCI_X_CMD_MAX_READ;
-		cmd |= v << 2;
-=======
 	o = FIELD_GET(PCI_X_CMD_MAX_READ, cmd);
 	if (o != v) {
 		if (v > o && (dev->bus->bus_flags & PCI_BUS_FLAGS_NO_MMRBC))
@@ -8263,7 +5794,6 @@ int pcix_set_mmrbc(struct pci_dev *dev, int mmrbc)
 
 		cmd &= ~PCI_X_CMD_MAX_READ;
 		cmd |= FIELD_PREP(PCI_X_CMD_MAX_READ, v);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pci_write_config_word(dev, cap + PCI_X_CMD, cmd))
 			return -EIO;
 	}
@@ -8275,25 +5805,6 @@ EXPORT_SYMBOL(pcix_set_mmrbc);
  * pcie_get_readrq - get PCI Express read request size
  * @dev: PCI device to query
  *
-<<<<<<< HEAD
- * Returns maximum memory read request in bytes
- *    or appropriate error value.
- */
-int pcie_get_readrq(struct pci_dev *dev)
-{
-	int ret, cap;
-	u16 ctl;
-
-	cap = pci_pcie_cap(dev);
-	if (!cap)
-		return -EINVAL;
-
-	ret = pci_read_config_word(dev, cap + PCI_EXP_DEVCTL, &ctl);
-	if (!ret)
-		ret = 128 << ((ctl & PCI_EXP_DEVCTL_READRQ) >> 12);
-
-	return ret;
-=======
  * Returns maximum memory read request in bytes or appropriate error value.
  */
 int pcie_get_readrq(struct pci_dev *dev)
@@ -8303,7 +5814,6 @@ int pcie_get_readrq(struct pci_dev *dev)
 	pcie_capability_read_word(dev, PCI_EXP_DEVCTL, &ctl);
 
 	return 128 << FIELD_GET(PCI_EXP_DEVCTL_READRQ, ctl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pcie_get_readrq);
 
@@ -8317,26 +5827,6 @@ EXPORT_SYMBOL(pcie_get_readrq);
  */
 int pcie_set_readrq(struct pci_dev *dev, int rq)
 {
-<<<<<<< HEAD
-	int cap, err = -EINVAL;
-	u16 ctl, v;
-
-	if (rq < 128 || rq > 4096 || !is_power_of_2(rq))
-		goto out;
-
-	cap = pci_pcie_cap(dev);
-	if (!cap)
-		goto out;
-
-	err = pci_read_config_word(dev, cap + PCI_EXP_DEVCTL, &ctl);
-	if (err)
-		goto out;
-	/*
-	 * If using the "performance" PCIe config, we clamp the
-	 * read rq size to the max packet size to prevent the
-	 * host bridge generating requests larger than we can
-	 * cope with
-=======
 	u16 v;
 	int ret;
 	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
@@ -8348,32 +5838,14 @@ int pcie_set_readrq(struct pci_dev *dev, int rq)
 	 * If using the "performance" PCIe config, we clamp the read rq
 	 * size to the max packet size to keep the host bridge from
 	 * generating requests larger than we can cope with.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (pcie_bus_config == PCIE_BUS_PERFORMANCE) {
 		int mps = pcie_get_mps(dev);
 
-<<<<<<< HEAD
-		if (mps < 0)
-			return mps;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mps < rq)
 			rq = mps;
 	}
 
-<<<<<<< HEAD
-	v = (ffs(rq) - 8) << 12;
-
-	if ((ctl & PCI_EXP_DEVCTL_READRQ) != v) {
-		ctl &= ~PCI_EXP_DEVCTL_READRQ;
-		ctl |= v;
-		err = pci_write_config_word(dev, cap + PCI_EXP_DEVCTL, ctl);
-	}
-
-out:
-	return err;
-=======
 	v = FIELD_PREP(PCI_EXP_DEVCTL_READRQ, ffs(rq) - 8);
 
 	if (bridge->no_inc_mrrs) {
@@ -8389,7 +5861,6 @@ out:
 						  PCI_EXP_DEVCTL_READRQ, v);
 
 	return pcibios_err_to_errno(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pcie_set_readrq);
 
@@ -8398,25 +5869,6 @@ EXPORT_SYMBOL(pcie_set_readrq);
  * @dev: PCI device to query
  *
  * Returns maximum payload size in bytes
-<<<<<<< HEAD
- *    or appropriate error value.
- */
-int pcie_get_mps(struct pci_dev *dev)
-{
-	int ret, cap;
-	u16 ctl;
-
-	cap = pci_pcie_cap(dev);
-	if (!cap)
-		return -EINVAL;
-
-	ret = pci_read_config_word(dev, cap + PCI_EXP_DEVCTL, &ctl);
-	if (!ret)
-		ret = 128 << ((ctl & PCI_EXP_DEVCTL_PAYLOAD) >> 5);
-
-	return ret;
-}
-=======
  */
 int pcie_get_mps(struct pci_dev *dev)
 {
@@ -8427,7 +5879,6 @@ int pcie_get_mps(struct pci_dev *dev)
 	return 128 << FIELD_GET(PCI_EXP_DEVCTL_PAYLOAD, ctl);
 }
 EXPORT_SYMBOL(pcie_get_mps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pcie_set_mps - set PCI Express maximum payload size
@@ -8439,35 +5890,6 @@ EXPORT_SYMBOL(pcie_get_mps);
  */
 int pcie_set_mps(struct pci_dev *dev, int mps)
 {
-<<<<<<< HEAD
-	int cap, err = -EINVAL;
-	u16 ctl, v;
-
-	if (mps < 128 || mps > 4096 || !is_power_of_2(mps))
-		goto out;
-
-	v = ffs(mps) - 8;
-	if (v > dev->pcie_mpss) 
-		goto out;
-	v <<= 5;
-
-	cap = pci_pcie_cap(dev);
-	if (!cap)
-		goto out;
-
-	err = pci_read_config_word(dev, cap + PCI_EXP_DEVCTL, &ctl);
-	if (err)
-		goto out;
-
-	if ((ctl & PCI_EXP_DEVCTL_PAYLOAD) != v) {
-		ctl &= ~PCI_EXP_DEVCTL_PAYLOAD;
-		ctl |= v;
-		err = pci_write_config_word(dev, cap + PCI_EXP_DEVCTL, ctl);
-	}
-out:
-	return err;
-}
-=======
 	u16 v;
 	int ret;
 
@@ -8699,7 +6121,6 @@ void pcie_print_link_status(struct pci_dev *dev)
 	__pcie_print_link_status(dev, true);
 }
 EXPORT_SYMBOL(pcie_print_link_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pci_select_bars - Make BAR mask from the type of resource
@@ -8716,39 +6137,7 @@ int pci_select_bars(struct pci_dev *dev, unsigned long flags)
 			bars |= (1 << i);
 	return bars;
 }
-<<<<<<< HEAD
-
-/**
- * pci_resource_bar - get position of the BAR associated with a resource
- * @dev: the PCI device
- * @resno: the resource number
- * @type: the BAR type to be filled in
- *
- * Returns BAR position in config space, or 0 if the BAR is invalid.
- */
-int pci_resource_bar(struct pci_dev *dev, int resno, enum pci_bar_type *type)
-{
-	int reg;
-
-	if (resno < PCI_ROM_RESOURCE) {
-		*type = pci_bar_unknown;
-		return PCI_BASE_ADDRESS_0 + 4 * resno;
-	} else if (resno == PCI_ROM_RESOURCE) {
-		*type = pci_bar_mem32;
-		return dev->rom_base_reg;
-	} else if (resno < PCI_BRIDGE_RESOURCES) {
-		/* device specific resource */
-		reg = pci_iov_resource_bar(dev, resno, type);
-		if (reg)
-			return reg;
-	}
-
-	dev_err(&dev->dev, "BAR %d: invalid resource\n", resno);
-	return 0;
-}
-=======
 EXPORT_SYMBOL(pci_select_bars);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Some architectures require additional programming to enable VGA */
 static arch_set_vga_state_t arch_set_vga_state;
@@ -8759,11 +6148,7 @@ void __init pci_register_set_vga_state(arch_set_vga_state_t func)
 }
 
 static int pci_set_vga_state_arch(struct pci_dev *dev, bool decode,
-<<<<<<< HEAD
-		      unsigned int command_bits, u32 flags)
-=======
 				  unsigned int command_bits, u32 flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (arch_set_vga_state)
 		return arch_set_vga_state(dev, decode, command_bits,
@@ -8796,11 +6181,7 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
 
 	if (flags & PCI_VGA_STATE_CHANGE_DECODES) {
 		pci_read_config_word(dev, PCI_COMMAND, &cmd);
-<<<<<<< HEAD
-		if (decode == true)
-=======
 		if (decode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd |= command_bits;
 		else
 			cmd &= ~command_bits;
@@ -8816,11 +6197,7 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
 		if (bridge) {
 			pci_read_config_word(bridge, PCI_BRIDGE_CONTROL,
 					     &cmd);
-<<<<<<< HEAD
-			if (decode == true)
-=======
 			if (decode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cmd |= PCI_BRIDGE_CTL_VGA;
 			else
 				cmd &= ~PCI_BRIDGE_CTL_VGA;
@@ -8832,10 +6209,6 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
 	return 0;
 }
 
-<<<<<<< HEAD
-#define RESOURCE_ALIGNMENT_PARAM_SIZE COMMAND_LINE_SIZE
-static char resource_alignment_param[RESOURCE_ALIGNMENT_PARAM_SIZE] = {0};
-=======
 #ifdef CONFIG_ACPI
 bool pci_pr3_present(struct pci_dev *pdev)
 {
@@ -8966,62 +6339,16 @@ void __weak pci_resource_to_user(const struct pci_dev *dev, int bar,
 }
 
 static char *resource_alignment_param;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(resource_alignment_lock);
 
 /**
  * pci_specified_resource_alignment - get resource alignment specified by user.
  * @dev: the PCI device to get
-<<<<<<< HEAD
-=======
  * @resize: whether or not to change resources' size when reassigning alignment
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURNS: Resource alignment if it is specified.
  *          Zero if it is not specified.
  */
-<<<<<<< HEAD
-resource_size_t pci_specified_resource_alignment(struct pci_dev *dev)
-{
-	int seg, bus, slot, func, align_order, count;
-	resource_size_t align = 0;
-	char *p;
-
-	spin_lock(&resource_alignment_lock);
-	p = resource_alignment_param;
-	while (*p) {
-		count = 0;
-		if (sscanf(p, "%d%n", &align_order, &count) == 1 &&
-							p[count] == '@') {
-			p += count + 1;
-		} else {
-			align_order = -1;
-		}
-		if (sscanf(p, "%x:%x:%x.%x%n",
-			&seg, &bus, &slot, &func, &count) != 4) {
-			seg = 0;
-			if (sscanf(p, "%x:%x.%x%n",
-					&bus, &slot, &func, &count) != 3) {
-				/* Invalid format */
-				printk(KERN_ERR "PCI: Can't parse resource_alignment parameter: %s\n",
-					p);
-				break;
-			}
-		}
-		p += count;
-		if (seg == pci_domain_nr(dev->bus) &&
-			bus == dev->bus->number &&
-			slot == PCI_SLOT(dev->devfn) &&
-			func == PCI_FUNC(dev->devfn)) {
-			if (align_order == -1) {
-				align = PAGE_SIZE;
-			} else {
-				align = 1 << align_order;
-			}
-			/* Found */
-			break;
-		}
-=======
 static resource_size_t pci_specified_resource_alignment(struct pci_dev *dev,
 							bool *resize)
 {
@@ -9065,33 +6392,17 @@ static resource_size_t pci_specified_resource_alignment(struct pci_dev *dev,
 			break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*p != ';' && *p != ',') {
 			/* End of param or invalid format */
 			break;
 		}
 		p++;
 	}
-<<<<<<< HEAD
-=======
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&resource_alignment_lock);
 	return align;
 }
 
-<<<<<<< HEAD
-/**
- * pci_is_reassigndev - check if specified PCI is target device to reassign
- * @dev: the PCI device to check
- *
- * RETURNS: non-zero for PCI device is a target device to reassign,
- *          or zero is not.
- */
-int pci_is_reassigndev(struct pci_dev *dev)
-{
-	return (pci_specified_resource_alignment(dev) != 0);
-=======
 static void pci_request_resource_alignment(struct pci_dev *dev, int bar,
 					   resource_size_t align, bool resize)
 {
@@ -9153,7 +6464,6 @@ static void pci_request_resource_alignment(struct pci_dev *dev, int bar,
 		r->end = r->start + size - 1;
 	}
 	r->flags |= IORESOURCE_UNSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -9167,12 +6477,6 @@ void pci_reassigndev_resource_alignment(struct pci_dev *dev)
 {
 	int i;
 	struct resource *r;
-<<<<<<< HEAD
-	resource_size_t align, size;
-	u16 command;
-
-	if (!pci_is_reassigndev(dev))
-=======
 	resource_size_t align;
 	u16 command;
 	bool resize = false;
@@ -9189,52 +6493,18 @@ void pci_reassigndev_resource_alignment(struct pci_dev *dev)
 	/* check if specified PCI is target device to reassign */
 	align = pci_specified_resource_alignment(dev, &resize);
 	if (!align)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (dev->hdr_type == PCI_HEADER_TYPE_NORMAL &&
 	    (dev->class >> 8) == PCI_CLASS_BRIDGE_HOST) {
-<<<<<<< HEAD
-		dev_warn(&dev->dev,
-			"Can't reassign resources to host bridge.\n");
-		return;
-	}
-
-	dev_info(&dev->dev,
-		"Disabling memory decoding and releasing memory resources.\n");
-=======
 		pci_warn(dev, "Can't reassign resources to host bridge\n");
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_word(dev, PCI_COMMAND, &command);
 	command &= ~PCI_COMMAND_MEMORY;
 	pci_write_config_word(dev, PCI_COMMAND, command);
 
-<<<<<<< HEAD
-	align = pci_specified_resource_alignment(dev);
-	for (i = 0; i < PCI_BRIDGE_RESOURCES; i++) {
-		r = &dev->resource[i];
-		if (!(r->flags & IORESOURCE_MEM))
-			continue;
-		size = resource_size(r);
-		if (size < align) {
-			size = align;
-			dev_info(&dev->dev,
-				"Rounding up size of resource #%d to %#llx.\n",
-				i, (unsigned long long)size);
-		}
-		r->end = size - 1;
-		r->start = 0;
-	}
-	/* Need to disable bridge's resource window,
-	 * to enable the kernel to reassign new resource
-	 * window later on.
-	 */
-	if (dev->hdr_type == PCI_HEADER_TYPE_BRIDGE &&
-	    (dev->class >> 8) == PCI_CLASS_BRIDGE_PCI) {
-=======
 	for (i = 0; i <= PCI_ROM_RESOURCE; i++)
 		pci_request_resource_alignment(dev, i, align, resize);
 
@@ -9244,15 +6514,11 @@ void pci_reassigndev_resource_alignment(struct pci_dev *dev)
 	 * window later on.
 	 */
 	if (dev->hdr_type == PCI_HEADER_TYPE_BRIDGE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = PCI_BRIDGE_RESOURCES; i < PCI_NUM_RESOURCES; i++) {
 			r = &dev->resource[i];
 			if (!(r->flags & IORESOURCE_MEM))
 				continue;
-<<<<<<< HEAD
-=======
 			r->flags |= IORESOURCE_UNSET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r->end = resource_size(r) - 1;
 			r->start = 0;
 		}
@@ -9260,41 +6526,6 @@ void pci_reassigndev_resource_alignment(struct pci_dev *dev)
 	}
 }
 
-<<<<<<< HEAD
-ssize_t pci_set_resource_alignment_param(const char *buf, size_t count)
-{
-	if (count > RESOURCE_ALIGNMENT_PARAM_SIZE - 1)
-		count = RESOURCE_ALIGNMENT_PARAM_SIZE - 1;
-	spin_lock(&resource_alignment_lock);
-	strncpy(resource_alignment_param, buf, count);
-	resource_alignment_param[count] = '\0';
-	spin_unlock(&resource_alignment_lock);
-	return count;
-}
-
-ssize_t pci_get_resource_alignment_param(char *buf, size_t size)
-{
-	size_t count;
-	spin_lock(&resource_alignment_lock);
-	count = snprintf(buf, size, "%s", resource_alignment_param);
-	spin_unlock(&resource_alignment_lock);
-	return count;
-}
-
-static ssize_t pci_resource_alignment_show(struct bus_type *bus, char *buf)
-{
-	return pci_get_resource_alignment_param(buf, PAGE_SIZE);
-}
-
-static ssize_t pci_resource_alignment_store(struct bus_type *bus,
-					const char *buf, size_t count)
-{
-	return pci_set_resource_alignment_param(buf, count);
-}
-
-BUS_ATTR(resource_alignment, 0644, pci_resource_alignment_show,
-					pci_resource_alignment_store);
-=======
 static ssize_t resource_alignment_show(const struct bus_type *bus, char *buf)
 {
 	size_t count = 0;
@@ -9339,34 +6570,21 @@ static ssize_t resource_alignment_store(const struct bus_type *bus,
 }
 
 static BUS_ATTR_RW(resource_alignment);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init pci_resource_alignment_sysfs_init(void)
 {
 	return bus_create_file(&pci_bus_type,
 					&bus_attr_resource_alignment);
 }
-<<<<<<< HEAD
-
-late_initcall(pci_resource_alignment_sysfs_init);
-
-static void __devinit pci_no_domains(void)
-=======
 late_initcall(pci_resource_alignment_sysfs_init);
 
 static void pci_no_domains(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_PCI_DOMAINS
 	pci_domains_supported = 0;
 #endif
 }
 
-<<<<<<< HEAD
-/**
- * pci_ext_cfg_enabled - can we access extended PCI config space?
- * @dev: The PCI device of the root bridge.
-=======
 #ifdef CONFIG_PCI_DOMAINS_GENERIC
 static DEFINE_IDA(pci_domain_nr_static_ida);
 static DEFINE_IDA(pci_domain_nr_dynamic_ida);
@@ -9450,17 +6668,12 @@ void pci_bus_release_domain_nr(struct pci_bus *bus, struct device *parent)
 
 /**
  * pci_ext_cfg_avail - can we access extended PCI config space?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 1 if we can access PCI extended config space (offsets
  * greater than 0xff). This is the default implementation. Architecture
  * implementations can override this.
  */
-<<<<<<< HEAD
-int __attribute__ ((weak)) pci_ext_cfg_avail(struct pci_dev *dev)
-=======
 int __weak pci_ext_cfg_avail(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 1;
 }
@@ -9479,10 +6692,6 @@ static int __init pci_setup(char *str)
 		if (*str && (str = pcibios_setup(str)) && *str) {
 			if (!strcmp(str, "nomsi")) {
 				pci_no_msi();
-<<<<<<< HEAD
-			} else if (!strcmp(str, "noaer")) {
-				pci_no_aer();
-=======
 			} else if (!strncmp(str, "noats", 5)) {
 				pr_info("PCIe: ATS is disabled\n");
 				pcie_ats_disabled = true;
@@ -9490,7 +6699,6 @@ static int __init pci_setup(char *str)
 				pci_no_aer();
 			} else if (!strcmp(str, "earlydump")) {
 				pci_early_dump = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (!strncmp(str, "realloc=", 8)) {
 				pci_realloc_get_opt(str + 8);
 			} else if (!strncmp(str, "realloc", 7)) {
@@ -9504,20 +6712,11 @@ static int __init pci_setup(char *str)
 			} else if (!strncmp(str, "cbmemsize=", 10)) {
 				pci_cardbus_mem_size = memparse(str + 10, &str);
 			} else if (!strncmp(str, "resource_alignment=", 19)) {
-<<<<<<< HEAD
-				pci_set_resource_alignment_param(str + 19,
-							strlen(str + 19));
-=======
 				resource_alignment_param = str + 19;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (!strncmp(str, "ecrc=", 5)) {
 				pcie_ecrc_get_policy(str + 5);
 			} else if (!strncmp(str, "hpiosize=", 9)) {
 				pci_hotplug_io_size = memparse(str + 9, &str);
-<<<<<<< HEAD
-			} else if (!strncmp(str, "hpmemsize=", 10)) {
-				pci_hotplug_mem_size = memparse(str + 10, &str);
-=======
 			} else if (!strncmp(str, "hpmmiosize=", 11)) {
 				pci_hotplug_mmio_size = memparse(str + 11, &str);
 			} else if (!strncmp(str, "hpmmioprefsize=", 15)) {
@@ -9530,7 +6729,6 @@ static int __init pci_setup(char *str)
 					simple_strtoul(str + 10, &str, 0);
 				if (pci_hotplug_bus_size > 0xff)
 					pci_hotplug_bus_size = DEFAULT_HOTPLUG_BUS_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (!strncmp(str, "pcie_bus_tune_off", 17)) {
 				pcie_bus_config = PCIE_BUS_TUNE_OFF;
 			} else if (!strncmp(str, "pcie_bus_safe", 13)) {
@@ -9539,18 +6737,12 @@ static int __init pci_setup(char *str)
 				pcie_bus_config = PCIE_BUS_PERFORMANCE;
 			} else if (!strncmp(str, "pcie_bus_peer2peer", 18)) {
 				pcie_bus_config = PCIE_BUS_PEER2PEER;
-<<<<<<< HEAD
-			} else {
-				printk(KERN_ERR "PCI: Unknown option `%s'\n",
-						str);
-=======
 			} else if (!strncmp(str, "pcie_scan_all", 13)) {
 				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
 			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
 				disable_acs_redir_param = str + 18;
 			} else {
 				pr_err("PCI: Unknown option `%s'\n", str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		str = k;
@@ -9559,46 +6751,6 @@ static int __init pci_setup(char *str)
 }
 early_param("pci", pci_setup);
 
-<<<<<<< HEAD
-EXPORT_SYMBOL(pci_reenable_device);
-EXPORT_SYMBOL(pci_enable_device_io);
-EXPORT_SYMBOL(pci_enable_device_mem);
-EXPORT_SYMBOL(pci_enable_device);
-EXPORT_SYMBOL(pcim_enable_device);
-EXPORT_SYMBOL(pcim_pin_device);
-EXPORT_SYMBOL(pci_disable_device);
-EXPORT_SYMBOL(pci_find_capability);
-EXPORT_SYMBOL(pci_bus_find_capability);
-EXPORT_SYMBOL(pci_release_regions);
-EXPORT_SYMBOL(pci_request_regions);
-EXPORT_SYMBOL(pci_request_regions_exclusive);
-EXPORT_SYMBOL(pci_release_region);
-EXPORT_SYMBOL(pci_request_region);
-EXPORT_SYMBOL(pci_request_region_exclusive);
-EXPORT_SYMBOL(pci_release_selected_regions);
-EXPORT_SYMBOL(pci_request_selected_regions);
-EXPORT_SYMBOL(pci_request_selected_regions_exclusive);
-EXPORT_SYMBOL(pci_set_master);
-EXPORT_SYMBOL(pci_clear_master);
-EXPORT_SYMBOL(pci_set_mwi);
-EXPORT_SYMBOL(pci_try_set_mwi);
-EXPORT_SYMBOL(pci_clear_mwi);
-EXPORT_SYMBOL_GPL(pci_intx);
-EXPORT_SYMBOL(pci_assign_resource);
-EXPORT_SYMBOL(pci_find_parent_resource);
-EXPORT_SYMBOL(pci_select_bars);
-
-EXPORT_SYMBOL(pci_set_power_state);
-EXPORT_SYMBOL(pci_save_state);
-EXPORT_SYMBOL(pci_restore_state);
-EXPORT_SYMBOL(pci_pme_capable);
-EXPORT_SYMBOL(pci_pme_active);
-EXPORT_SYMBOL(pci_wake_from_d3);
-EXPORT_SYMBOL(pci_target_state);
-EXPORT_SYMBOL(pci_prepare_to_sleep);
-EXPORT_SYMBOL(pci_back_from_sleep);
-EXPORT_SYMBOL_GPL(pci_set_pcie_reset_state);
-=======
 /*
  * 'resource_alignment_param' and 'disable_acs_redir_param' are initialized
  * in pci_setup(), above, to point to data in the __initdata section which
@@ -9617,4 +6769,3 @@ static int __init pci_realloc_setup_params(void)
 	return 0;
 }
 pure_initcall(pci_realloc_setup_params);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

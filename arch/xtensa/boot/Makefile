@@ -9,30 +9,6 @@
 
 
 # KBUILD_CFLAGS used when building rest of boot (takes effect recursively)
-<<<<<<< HEAD
-KBUILD_CFLAGS	+= -fno-builtin -Iarch/$(ARCH)/boot/include
-HOSTFLAGS	+= -Iarch/$(ARCH)/boot/include
-
-BIG_ENDIAN	:= $(shell echo -e __XTENSA_EB__ | $(CC) -E - | grep -v "\#")
-
-export ccflags-y
-export BIG_ENDIAN
-
-subdir-y	:= lib
-
-# Subdirs for the boot loader(s)
-
-bootdir-$(CONFIG_XTENSA_PLATFORM_ISS)	 += boot-elf
-bootdir-$(CONFIG_XTENSA_PLATFORM_XT2000) += boot-redboot boot-elf
-
-
-zImage zImage.initrd Image Image.initrd: $(bootdir-y)
-
-$(bootdir-y): $(addprefix $(obj)/,$(subdir-y)) \
-	      $(addprefix $(obj)/,$(host-progs))
-	$(Q)$(MAKE) $(build)=$(obj)/$@ $(MAKECMDGOALS)
-
-=======
 KBUILD_CFLAGS	+= -fno-builtin
 
 subdir-y	:= lib
@@ -75,4 +51,3 @@ $(obj)/uImage: $(obj)/vmlinux.bin.gz FORCE
 $(obj)/xipImage: vmlinux FORCE
 	$(call if_changed,objcopy)
 	$(Q)$(kecho) '  Kernel: $@ is ready'
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

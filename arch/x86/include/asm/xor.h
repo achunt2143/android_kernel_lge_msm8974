@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-#ifdef CONFIG_KMEMCHECK
-/* kmemcheck doesn't handle MMX/SSE/SSE2 instructions */
-# include <asm-generic/xor.h>
-#else
-#ifdef CONFIG_X86_32
-# include "xor_32.h"
-#else
-# include "xor_64.h"
-#endif
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #ifndef _ASM_X86_XOR_H
 #define _ASM_X86_XOR_H
@@ -512,4 +500,3 @@ static struct xor_block_template xor_block_sse_pf64 = {
 	AVX_SELECT(FASTEST)
 
 #endif /* _ASM_X86_XOR_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

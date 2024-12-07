@@ -1,36 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * async.h: Asynchronous function calls for boot performance
  *
  * (C) Copyright 2009 Intel Corporation
  * Author: Arjan van de Ven <arjan@linux.intel.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; version 2
- * of the License.
- */
-
-#include <linux/types.h>
-#include <linux/list.h>
-
-typedef u64 async_cookie_t;
-typedef void (async_func_ptr) (void *data, async_cookie_t cookie);
-
-extern async_cookie_t async_schedule(async_func_ptr *ptr, void *data);
-extern async_cookie_t async_schedule_domain(async_func_ptr *ptr, void *data,
-					    struct list_head *list);
-extern void async_synchronize_full(void);
-extern void async_synchronize_full_domain(struct list_head *list);
-extern void async_synchronize_cookie(async_cookie_t cookie);
-extern void async_synchronize_cookie_domain(async_cookie_t cookie,
-					    struct list_head *list);
-
-=======
  */
 #ifndef __ASYNC_H__
 #define __ASYNC_H__
@@ -149,4 +122,3 @@ extern void async_synchronize_cookie_domain(async_cookie_t cookie,
 extern bool current_is_async(void);
 extern void async_init(void);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

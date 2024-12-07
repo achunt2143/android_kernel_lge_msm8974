@@ -31,10 +31,7 @@
  */
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <rdma/uverbs_ioctl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mlx4_ib.h"
 
@@ -45,14 +42,6 @@ struct mlx4_ib_user_db_page {
 	int			refcnt;
 };
 
-<<<<<<< HEAD
-int mlx4_ib_db_map_user(struct mlx4_ib_ucontext *context, unsigned long virt,
-			struct mlx4_db *db)
-{
-	struct mlx4_ib_user_db_page *page;
-	struct ib_umem_chunk *chunk;
-	int err = 0;
-=======
 int mlx4_ib_db_map_user(struct ib_udata *udata, unsigned long virt,
 			struct mlx4_db *db)
 {
@@ -60,7 +49,6 @@ int mlx4_ib_db_map_user(struct ib_udata *udata, unsigned long virt,
 	int err = 0;
 	struct mlx4_ib_ucontext *context = rdma_udata_to_drv_context(
 		udata, struct mlx4_ib_ucontext, ibucontext);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&context->db_page_mutex);
 
@@ -76,13 +64,8 @@ int mlx4_ib_db_map_user(struct ib_udata *udata, unsigned long virt,
 
 	page->user_virt = (virt & PAGE_MASK);
 	page->refcnt    = 0;
-<<<<<<< HEAD
-	page->umem      = ib_umem_get(&context->ibucontext, virt & PAGE_MASK,
-				      PAGE_SIZE, 0, 0);
-=======
 	page->umem = ib_umem_get(context->ibucontext.device, virt & PAGE_MASK,
 				 PAGE_SIZE, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(page->umem)) {
 		err = PTR_ERR(page->umem);
 		kfree(page);
@@ -92,13 +75,8 @@ int mlx4_ib_db_map_user(struct ib_udata *udata, unsigned long virt,
 	list_add(&page->list, &context->db_page_list);
 
 found:
-<<<<<<< HEAD
-	chunk = list_entry(page->umem->chunk_list.next, struct ib_umem_chunk, list);
-	db->dma		= sg_dma_address(chunk->page_list) + (virt & ~PAGE_MASK);
-=======
 	db->dma = sg_dma_address(page->umem->sgt_append.sgt.sgl) +
 		  (virt & ~PAGE_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	db->u.user_page = page;
 	++page->refcnt;
 

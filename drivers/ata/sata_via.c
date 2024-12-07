@@ -1,60 +1,23 @@
-<<<<<<< HEAD
-/*
- *  sata_via.c - VIA Serial ATA controllers
- *
- *  Maintained by:  Jeff Garzik <jgarzik@pobox.com>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  sata_via.c - VIA Serial ATA controllers
  *
  *  Maintained by:  Tejun Heo <tj@kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 		   Please ALWAYS copy linux-ide@vger.kernel.org
  *		   on emails.
  *
  *  Copyright 2003-2004 Red Hat, Inc.  All rights reserved.
  *  Copyright 2003-2004 Jeff Garzik
  *
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *
- *  libata documentation is available via 'make {ps|pdf}docs',
- *  as Documentation/DocBook/libata.*
- *
- *  Hardware documentation available under NDA.
- *
- *
- *
-=======
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/driver-api/libata.rst
  *
  *  Hardware documentation available under NDA.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -80,10 +43,7 @@ enum {
 	SATA_CHAN_ENAB		= 0x40, /* SATA channel enable */
 	SATA_INT_GATE		= 0x41, /* SATA interrupt gating */
 	SATA_NATIVE_MODE	= 0x42, /* Native mode enable */
-<<<<<<< HEAD
-=======
 	SVIA_MISC_3		= 0x46,	/* Miscellaneous Control III */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PATA_UDMA_TIMING	= 0xB3, /* PATA timing for DMA/ cable detect */
 	PATA_PIO_TIMING		= 0xAB, /* PATA timing register */
 
@@ -94,11 +54,6 @@ enum {
 	NATIVE_MODE_ALL		= (1 << 7) | (1 << 6) | (1 << 5) | (1 << 4),
 
 	SATA_EXT_PHY		= (1 << 6), /* 0==use PATA, 1==ext phy */
-<<<<<<< HEAD
-};
-
-static int svia_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
-=======
 
 	SATA_HOTPLUG		= (1 << 5), /* enable IRQ on hotplug */
 };
@@ -115,7 +70,6 @@ static int svia_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
 #ifdef CONFIG_PM_SLEEP
 static int svia_pci_device_resume(struct pci_dev *pdev);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int svia_scr_read(struct ata_link *link, unsigned int sc_reg, u32 *val);
 static int svia_scr_write(struct ata_link *link, unsigned int sc_reg, u32 val);
 static int vt8251_scr_read(struct ata_link *link, unsigned int scr, u32 *val);
@@ -127,10 +81,7 @@ static void vt6420_bmdma_start(struct ata_queued_cmd *qc);
 static int vt6421_pata_cable_detect(struct ata_port *ap);
 static void vt6421_set_pio_mode(struct ata_port *ap, struct ata_device *adev);
 static void vt6421_set_dma_mode(struct ata_port *ap, struct ata_device *adev);
-<<<<<<< HEAD
-=======
 static void vt6421_error_handler(struct ata_port *ap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct pci_device_id svia_pci_tbl[] = {
 	{ PCI_VDEVICE(VIA, 0x5337), vt6420 },
@@ -149,24 +100,14 @@ static struct pci_driver svia_pci_driver = {
 	.name			= DRV_NAME,
 	.id_table		= svia_pci_tbl,
 	.probe			= svia_init_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	.suspend		= ata_pci_device_suspend,
-	.resume			= ata_pci_device_resume,
-=======
 #ifdef CONFIG_PM_SLEEP
 	.suspend		= ata_pci_device_suspend,
 	.resume			= svia_pci_device_resume,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	.remove			= ata_pci_remove_one,
 };
 
-<<<<<<< HEAD
-static struct scsi_host_template svia_sht = {
-=======
 static const struct scsi_host_template svia_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -193,10 +134,7 @@ static struct ata_port_operations vt6421_sata_ops = {
 	.inherits		= &svia_base_ops,
 	.scr_read		= svia_scr_read,
 	.scr_write		= svia_scr_write,
-<<<<<<< HEAD
-=======
 	.error_handler		= vt6421_error_handler,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations vt8251_ops = {
@@ -214,11 +152,7 @@ static const struct ata_port_info vt6420_port_info = {
 	.port_ops	= &vt6420_sata_ops,
 };
 
-<<<<<<< HEAD
-static struct ata_port_info vt6421_sport_info = {
-=======
 static const struct ata_port_info vt6421_sport_info = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= ATA_FLAG_SATA,
 	.pio_mask	= ATA_PIO4,
 	.mwdma_mask	= ATA_MWDMA2,
@@ -226,11 +160,7 @@ static const struct ata_port_info vt6421_sport_info = {
 	.port_ops	= &vt6421_sata_ops,
 };
 
-<<<<<<< HEAD
-static struct ata_port_info vt6421_pport_info = {
-=======
 static const struct ata_port_info vt6421_pport_info = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= ATA_FLAG_SLAVE_POSS,
 	.pio_mask	= ATA_PIO4,
 	/* No MWDMA */
@@ -238,11 +168,7 @@ static const struct ata_port_info vt6421_pport_info = {
 	.port_ops	= &vt6421_pata_ops,
 };
 
-<<<<<<< HEAD
-static struct ata_port_info vt8251_port_info = {
-=======
 static const struct ata_port_info vt8251_port_info = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= ATA_FLAG_SATA | ATA_FLAG_SLAVE_POSS,
 	.pio_mask	= ATA_PIO4,
 	.mwdma_mask	= ATA_MWDMA2,
@@ -533,14 +459,11 @@ static int vt6420_prepare_host(struct pci_dev *pdev, struct ata_host **r_host)
 	struct ata_host *host;
 	int rc;
 
-<<<<<<< HEAD
-=======
 	if (vt6420_hotplug) {
 		ppi[0]->port_ops->scr_read = svia_scr_read;
 		ppi[0]->port_ops->scr_write = svia_scr_write;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ata_pci_bmdma_prepare_host(pdev, ppi, &host);
 	if (rc)
 		return rc;
@@ -582,18 +505,7 @@ static int vt6421_prepare_host(struct pci_dev *pdev, struct ata_host **r_host)
 	for (i = 0; i < host->n_ports; i++)
 		vt6421_init_addrs(host->ports[i]);
 
-<<<<<<< HEAD
-	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
-	if (rc)
-		return rc;
-	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
-	if (rc)
-		return rc;
-
-	return 0;
-=======
 	return dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vt8251_prepare_host(struct pci_dev *pdev, struct ata_host **r_host)
@@ -620,9 +532,6 @@ static int vt8251_prepare_host(struct pci_dev *pdev, struct ata_host **r_host)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void svia_configure(struct pci_dev *pdev, int board_id)
-=======
 static void svia_wd_fix(struct pci_dev *pdev)
 {
 	u8 tmp8;
@@ -684,7 +593,6 @@ static void vt6421_error_handler(struct ata_port *ap)
 
 static void svia_configure(struct pci_dev *pdev, int board_id,
 			   struct svia_priv *hpriv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 tmp8;
 
@@ -720,8 +628,6 @@ static void svia_configure(struct pci_dev *pdev, int board_id,
 		pci_write_config_byte(pdev, SATA_NATIVE_MODE, tmp8);
 	}
 
-<<<<<<< HEAD
-=======
 	if ((board_id == vt6420 && vt6420_hotplug) || board_id == vt6421) {
 		/* enable IRQ on hotplug */
 		pci_read_config_byte(pdev, SVIA_MISC_3, &tmp8);
@@ -734,7 +640,6 @@ static void svia_configure(struct pci_dev *pdev, int board_id,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * vt6420/1 has problems talking to some drives.  The following
 	 * is the fix from Joseph Chan <JosephChan@via.com.tw>.
@@ -756,13 +661,6 @@ static void svia_configure(struct pci_dev *pdev, int board_id,
 	 * https://bugzilla.kernel.org/show_bug.cgi?id=15173
 	 * http://article.gmane.org/gmane.linux.ide/46352
 	 * http://thread.gmane.org/gmane.linux.kernel/1062139
-<<<<<<< HEAD
-	 */
-	if (board_id == vt6420 || board_id == vt6421) {
-		pci_read_config_byte(pdev, 0x52, &tmp8);
-		tmp8 |= 1 << 2;
-		pci_write_config_byte(pdev, 0x52, tmp8);
-=======
 	 *
 	 * As the fix slows down data transfer, apply it only if the error
 	 * actually appears - see vt6421_error_handler()
@@ -772,7 +670,6 @@ static void svia_configure(struct pci_dev *pdev, int board_id,
 	if (board_id == vt6420) {
 		svia_wd_fix(pdev);
 		hpriv->wd_workaround = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -783,10 +680,7 @@ static int svia_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	struct ata_host *host = NULL;
 	int board_id = (int) ent->driver_data;
 	const unsigned *bar_sizes;
-<<<<<<< HEAD
-=======
 	struct svia_priv *hpriv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_print_version_once(&pdev->dev, DRV_VERSION);
 
@@ -826,27 +720,6 @@ static int svia_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	svia_configure(pdev, board_id);
-
-	pci_set_master(pdev);
-	return ata_host_activate(host, pdev->irq, ata_bmdma_interrupt,
-				 IRQF_SHARED, &svia_sht);
-}
-
-static int __init svia_init(void)
-{
-	return pci_register_driver(&svia_pci_driver);
-}
-
-static void __exit svia_exit(void)
-{
-	pci_unregister_driver(&svia_pci_driver);
-}
-
-module_init(svia_init);
-module_exit(svia_exit);
-=======
 	hpriv = devm_kzalloc(&pdev->dev, sizeof(*hpriv), GFP_KERNEL);
 	if (!hpriv)
 		return -ENOMEM;
@@ -883,4 +756,3 @@ static int svia_pci_device_resume(struct pci_dev *pdev)
 #endif
 
 module_pci_driver(svia_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

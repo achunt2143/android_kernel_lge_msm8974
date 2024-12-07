@@ -5,26 +5,16 @@
  *
  * Copyright (C) 2007 Ralf Baechle (ralf@linux-mips.org)
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/platform_device.h>
-#include <linux/serial_8250.h>
-=======
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/serial_8250.h>
 #include <linux/rtc/ds1685.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ip32/mace.h>
 #include <asm/ip32/ip32_ints.h>
 
-<<<<<<< HEAD
-=======
 extern void ip32_prepare_poweroff(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MACEISA_SERIAL1_OFFS   offsetof(struct sgi_mace, isa.serial1)
 #define MACEISA_SERIAL2_OFFS   offsetof(struct sgi_mace, isa.serial2)
 
@@ -102,27 +92,6 @@ static __init int sgio2btns_devinit(void)
 
 device_initcall(sgio2btns_devinit);
 
-<<<<<<< HEAD
-static struct resource sgio2_cmos_rsrc[] = {
-	{
-		.start = 0x70,
-		.end   = 0x71,
-		.flags = IORESOURCE_IO
-	}
-};
-
-static __init int sgio2_cmos_devinit(void)
-{
-	return IS_ERR(platform_device_register_simple("rtc_cmos", -1,
-						      sgio2_cmos_rsrc, 1));
-}
-
-device_initcall(sgio2_cmos_devinit);
-
-MODULE_AUTHOR("Ralf Baechle <ralf@linux-mips.org>");
-MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("8250 UART probe driver for SGI IP32 aka O2");
-=======
 #define MACE_RTC_RES_START (MACE_BASE + offsetof(struct sgi_mace, isa.rtc))
 #define MACE_RTC_RES_END (MACE_RTC_RES_START + 32767)
 
@@ -167,4 +136,3 @@ static __init int sgio2_rtc_devinit(void)
 }
 
 device_initcall(sgio2_rtc_devinit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

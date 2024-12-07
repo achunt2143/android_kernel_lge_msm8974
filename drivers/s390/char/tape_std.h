@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-/*
- *  drivers/s390/char/tape_std.h
- *    standard tape device functions for ibm tapes.
- *
- *    Copyright (C) IBM Corp. 2001,2006
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    standard tape device functions for ibm tapes.
  *
  *    Copyright IBM Corp. 2001, 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Carsten Otte <cotte@de.ibm.com>
  *		 Tuan Ngo-Anh <ngoanh@de.ibm.com>
  *		 Martin Schwidefsky <schwidefsky@de.ibm.com>
@@ -109,14 +101,6 @@ struct tape_request *tape_std_read_block(struct tape_device *, size_t);
 void tape_std_read_backward(struct tape_device *device,
 			    struct tape_request *request);
 struct tape_request *tape_std_write_block(struct tape_device *, size_t);
-<<<<<<< HEAD
-struct tape_request *tape_std_bread(struct tape_device *, struct request *);
-void tape_std_free_bread(struct tape_request *);
-void tape_std_check_locate(struct tape_device *, struct tape_request *);
-struct tape_request *tape_std_bwrite(struct request *,
-				     struct tape_device *, int);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Some non-mtop commands. */
 int tape_std_assign(struct tape_device *);
@@ -146,24 +130,8 @@ int tape_std_mtunload(struct tape_device *, int);
 int tape_std_mtweof(struct tape_device *, int);
 
 /* Event handlers */
-<<<<<<< HEAD
-void tape_std_default_handler(struct tape_device *);
-void tape_std_unexpect_uchk_handler(struct tape_device *);
-void tape_std_irq(struct tape_device *);
 void tape_std_process_eov(struct tape_device *);
 
-// the error recovery stuff:
-void tape_std_error_recovery(struct tape_device *);
-void tape_std_error_recovery_has_failed(struct tape_device *,int error_id);
-void tape_std_error_recovery_succeded(struct tape_device *);
-void tape_std_error_recovery_do_retry(struct tape_device *);
-void tape_std_error_recovery_read_opposite(struct tape_device *);
-void tape_std_error_recovery_HWBUG(struct tape_device *, int condno);
-
-=======
-void tape_std_process_eov(struct tape_device *);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* S390 tape types */
 enum s390_tape_type {
         tape_3480,

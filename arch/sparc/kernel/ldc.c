@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ldc.c: Logical Domain Channel link-layer protocol driver.
  *
  * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
@@ -19,10 +16,7 @@
 #include <linux/list.h>
 #include <linux/init.h>
 #include <linux/bitmap.h>
-<<<<<<< HEAD
-=======
 #include <asm/iommu-common.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/hypervisor.h>
 #include <asm/iommu.h>
@@ -35,18 +29,12 @@
 #define DRV_MODULE_VERSION	"1.1"
 #define DRV_MODULE_RELDATE	"July 22, 2008"
 
-<<<<<<< HEAD
-static char version[] __devinitdata =
-	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
-#define LDC_PACKET_SIZE		64
-=======
 #define COOKIE_PGSZ_CODE	0xf000000000000000ULL
 #define COOKIE_PGSZ_CODE_SHIFT	60ULL
 
 
 static char version[] =
 	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Packet header layout for unreliable and reliable mode frames.
  * When in RAW mode, packets are simply straight 64-byte payloads
@@ -115,17 +103,10 @@ static const struct ldc_mode_ops stream_ops;
 int ldom_domaining_enabled;
 
 struct ldc_iommu {
-<<<<<<< HEAD
-	/* Protects arena alloc/free.  */
-	spinlock_t			lock;
-	struct iommu_arena		arena;
-	struct ldc_mtable_entry		*page_table;
-=======
 	/* Protects ldc_unmap.  */
 	spinlock_t			lock;
 	struct ldc_mtable_entry		*page_table;
 	struct iommu_map_table		iommu_map_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ldc_channel {
@@ -197,11 +178,8 @@ do {	if (lp->cfg.debug & LDC_DEBUG_##TYPE) \
 		printk(KERN_INFO PFX "ID[%lu] " f, lp->id, ## a); \
 } while (0)
 
-<<<<<<< HEAD
-=======
 #define	LDC_ABORT(lp)	ldc_abort((lp), __func__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *state_to_str(u8 state)
 {
 	switch (state) {
@@ -220,18 +198,6 @@ static const char *state_to_str(u8 state)
 	}
 }
 
-<<<<<<< HEAD
-static void ldc_set_state(struct ldc_channel *lp, u8 state)
-{
-	ldcdbg(STATE, "STATE (%s) --> (%s)\n",
-	       state_to_str(lp->state),
-	       state_to_str(state));
-
-	lp->state = state;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long __advance(unsigned long off, unsigned long num_entries)
 {
 	off += LDC_PACKET_SIZE;
@@ -543,20 +509,12 @@ static int send_data_nack(struct ldc_channel *lp, struct ldc_packet *data_pkt)
 	return err;
 }
 
-<<<<<<< HEAD
-static int ldc_abort(struct ldc_channel *lp)
-{
-	unsigned long hv_err;
-
-	ldcdbg(STATE, "ABORT\n");
-=======
 static int ldc_abort(struct ldc_channel *lp, const char *msg)
 {
 	unsigned long hv_err;
 
 	ldcdbg(STATE, "ABORT[%s]\n", msg);
 	ldc_print(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We report but do not act upon the hypervisor errors because
 	 * there really isn't much we can do if they fail at this point.
@@ -641,11 +599,7 @@ static int process_ver_info(struct ldc_channel *lp, struct ldc_version *vp)
 		}
 	}
 	if (err)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -658,21 +612,13 @@ static int process_ver_ack(struct ldc_channel *lp, struct ldc_version *vp)
 	if (lp->hs_state == LDC_HS_GOTVERS) {
 		if (lp->ver.major != vp->major ||
 		    lp->ver.minor != vp->minor)
-<<<<<<< HEAD
-			return ldc_abort(lp);
-=======
 			return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		lp->ver = *vp;
 		lp->hs_state = LDC_HS_GOTVERS;
 	}
 	if (send_rts(lp))
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -683,29 +629,17 @@ static int process_ver_nack(struct ldc_channel *lp, struct ldc_version *vp)
 	unsigned long new_tail;
 
 	if (vp->major == 0 && vp->minor == 0)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-
-	vap = find_by_major(vp->major);
-	if (!vap)
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
 
 	vap = find_by_major(vp->major);
 	if (!vap)
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = handshake_compose_ctrl(lp, LDC_INFO, LDC_VERS,
 					   vap, sizeof(*vap),
 					   &new_tail);
 	if (!p)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return send_tx_packet(lp, p, new_tail);
 }
@@ -728,11 +662,7 @@ static int process_version(struct ldc_channel *lp,
 		return process_ver_nack(lp, vp);
 
 	default:
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -745,21 +675,13 @@ static int process_rts(struct ldc_channel *lp,
 	if (p->stype     != LDC_INFO	   ||
 	    lp->hs_state != LDC_HS_GOTVERS ||
 	    p->env       != lp->cfg.mode)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->snd_nxt = p->seqid;
 	lp->rcv_nxt = p->seqid;
 	lp->hs_state = LDC_HS_SENTRTR;
 	if (send_rtr(lp))
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -772,11 +694,7 @@ static int process_rtr(struct ldc_channel *lp,
 
 	if (p->stype     != LDC_INFO ||
 	    p->env       != lp->cfg.mode)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->snd_nxt = p->seqid;
 	lp->hs_state = LDC_HS_COMPLETE;
@@ -799,11 +717,7 @@ static int process_rdx(struct ldc_channel *lp,
 
 	if (p->stype != LDC_INFO ||
 	    !(rx_seq_ok(lp, p->seqid)))
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->rcv_nxt = p->seqid;
 
@@ -830,22 +744,14 @@ static int process_control_frame(struct ldc_channel *lp,
 		return process_rdx(lp, p);
 
 	default:
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int process_error_frame(struct ldc_channel *lp,
 			       struct ldc_packet *p)
 {
-<<<<<<< HEAD
-	return ldc_abort(lp);
-=======
 	return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int process_data_ack(struct ldc_channel *lp,
@@ -864,11 +770,7 @@ static int process_data_ack(struct ldc_channel *lp,
 			return 0;
 		}
 		if (head == lp->tx_tail)
-<<<<<<< HEAD
-			return ldc_abort(lp);
-=======
 			return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -912,11 +814,6 @@ static irqreturn_t ldc_rx(int irq, void *dev_id)
 		lp->hs_state = LDC_HS_COMPLETE;
 		ldc_set_state(lp, LDC_STATE_CONNECTED);
 
-<<<<<<< HEAD
-		event_mask |= LDC_EVENT_UP;
-
-		orig_state = lp->chan_state;
-=======
 		/*
 		 * Generate an LDC_EVENT_UP event if the channel
 		 * was not already up.
@@ -925,18 +822,13 @@ static irqreturn_t ldc_rx(int irq, void *dev_id)
 			event_mask |= LDC_EVENT_UP;
 			orig_state = lp->chan_state;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* If we are in reset state, flush the RX queue and ignore
 	 * everything.
 	 */
 	if (lp->flags & LDC_FLAG_RESET) {
-<<<<<<< HEAD
-		(void) __set_rx_head(lp, lp->rx_tail);
-=======
 		(void) ldc_rx_reset(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -987,11 +879,7 @@ handshake_complete:
 			break;
 
 		default:
-<<<<<<< HEAD
-			err = ldc_abort(lp);
-=======
 			err = LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -1006,11 +894,7 @@ handshake_complete:
 
 		err = __set_rx_head(lp, new);
 		if (err < 0) {
-<<<<<<< HEAD
-			(void) ldc_abort(lp);
-=======
 			(void) LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		if (lp->hs_state == LDC_HS_COMPLETE)
@@ -1051,9 +935,6 @@ static irqreturn_t ldc_tx(int irq, void *dev_id)
 		lp->hs_state = LDC_HS_COMPLETE;
 		ldc_set_state(lp, LDC_STATE_CONNECTED);
 
-<<<<<<< HEAD
-		event_mask |= LDC_EVENT_UP;
-=======
 		/*
 		 * Generate an LDC_EVENT_UP event if the channel
 		 * was not already up.
@@ -1062,7 +943,6 @@ static irqreturn_t ldc_tx(int irq, void *dev_id)
 			event_mask |= LDC_EVENT_UP;
 			orig_state = lp->chan_state;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(&lp->lock, flags);
@@ -1084,14 +964,8 @@ static HLIST_HEAD(ldc_channel_list);
 static int __ldc_channel_exists(unsigned long id)
 {
 	struct ldc_channel *lp;
-<<<<<<< HEAD
-	struct hlist_node *n;
-
-	hlist_for_each_entry(lp, n, &ldc_channel_list, list) {
-=======
 
 	hlist_for_each_entry(lp, &ldc_channel_list, list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lp->id == id)
 			return 1;
 	}
@@ -1135,15 +1009,6 @@ static void free_queue(unsigned long num_entries, struct ldc_packet *q)
 	free_pages((unsigned long)q, order);
 }
 
-<<<<<<< HEAD
-/* XXX Make this configurable... XXX */
-#define LDC_IOTABLE_SIZE	(8 * 1024)
-
-static int ldc_iommu_init(struct ldc_channel *lp)
-{
-	unsigned long sz, num_tsb_entries, tsbsize, order;
-	struct ldc_iommu *iommu = &lp->iommu;
-=======
 static unsigned long ldc_cookie_to_index(u64 cookie, void *arg)
 {
 	u64 szcode = cookie >> COOKIE_PGSZ_CODE_SHIFT;
@@ -1178,27 +1043,12 @@ static int ldc_iommu_init(const char *name, struct ldc_channel *lp)
 	unsigned long sz, num_tsb_entries, tsbsize, order;
 	struct ldc_iommu *ldc_iommu = &lp->iommu;
 	struct iommu_map_table *iommu = &ldc_iommu->iommu_map_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ldc_mtable_entry *table;
 	unsigned long hv_err;
 	int err;
 
 	num_tsb_entries = LDC_IOTABLE_SIZE;
 	tsbsize = num_tsb_entries * sizeof(struct ldc_mtable_entry);
-<<<<<<< HEAD
-
-	spin_lock_init(&iommu->lock);
-
-	sz = num_tsb_entries / 8;
-	sz = (sz + 7UL) & ~7UL;
-	iommu->arena.map = kzalloc(sz, GFP_KERNEL);
-	if (!iommu->arena.map) {
-		printk(KERN_ERR PFX "Alloc of arena map failed, sz=%lu\n", sz);
-		return -ENOMEM;
-	}
-
-	iommu->arena.limit = num_tsb_entries;
-=======
 	spin_lock_init(&ldc_iommu->lock);
 
 	sz = num_tsb_entries / 8;
@@ -1212,7 +1062,6 @@ static int ldc_iommu_init(const char *name, struct ldc_channel *lp)
 			    NULL, false /* no large pool */,
 			    1 /* npools */,
 			    true /* skip span boundary check */);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	order = get_order(tsbsize);
 
@@ -1227,11 +1076,7 @@ static int ldc_iommu_init(const char *name, struct ldc_channel *lp)
 
 	memset(table, 0, PAGE_SIZE << order);
 
-<<<<<<< HEAD
-	iommu->page_table = table;
-=======
 	ldc_iommu->page_table = table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hv_err = sun4v_ldc_set_map_table(lp->id, __pa(table),
 					 num_tsb_entries);
@@ -1243,46 +1088,23 @@ static int ldc_iommu_init(const char *name, struct ldc_channel *lp)
 
 out_free_table:
 	free_pages((unsigned long) table, order);
-<<<<<<< HEAD
-	iommu->page_table = NULL;
-
-out_free_map:
-	kfree(iommu->arena.map);
-	iommu->arena.map = NULL;
-=======
 	ldc_iommu->page_table = NULL;
 
 out_free_map:
 	kfree(iommu->map);
 	iommu->map = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
 static void ldc_iommu_release(struct ldc_channel *lp)
 {
-<<<<<<< HEAD
-	struct ldc_iommu *iommu = &lp->iommu;
-=======
 	struct ldc_iommu *ldc_iommu = &lp->iommu;
 	struct iommu_map_table *iommu = &ldc_iommu->iommu_map_table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long num_tsb_entries, tsbsize, order;
 
 	(void) sun4v_ldc_set_map_table(lp->id, 0, 0);
 
-<<<<<<< HEAD
-	num_tsb_entries = iommu->arena.limit;
-	tsbsize = num_tsb_entries * sizeof(struct ldc_mtable_entry);
-	order = get_order(tsbsize);
-
-	free_pages((unsigned long) iommu->page_table, order);
-	iommu->page_table = NULL;
-
-	kfree(iommu->arena.map);
-	iommu->arena.map = NULL;
-=======
 	num_tsb_entries = iommu->poolsize * iommu->nr_pools;
 	tsbsize = num_tsb_entries * sizeof(struct ldc_mtable_entry);
 	order = get_order(tsbsize);
@@ -1292,17 +1114,12 @@ static void ldc_iommu_release(struct ldc_channel *lp)
 
 	kfree(iommu->map);
 	iommu->map = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct ldc_channel *ldc_alloc(unsigned long id,
 			      const struct ldc_channel_config *cfgp,
-<<<<<<< HEAD
-			      void *event_arg)
-=======
 			      void *event_arg,
 			      const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ldc_channel *lp;
 	const struct ldc_mode_ops *mops;
@@ -1317,11 +1134,8 @@ struct ldc_channel *ldc_alloc(unsigned long id,
 	err = -EINVAL;
 	if (!cfgp)
 		goto out_err;
-<<<<<<< HEAD
-=======
 	if (!name)
 		goto out_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cfgp->mode) {
 	case LDC_MODE_RAW:
@@ -1366,11 +1180,7 @@ struct ldc_channel *ldc_alloc(unsigned long id,
 
 	lp->id = id;
 
-<<<<<<< HEAD
-	err = ldc_iommu_init(lp);
-=======
 	err = ldc_iommu_init(name, lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_free_ldc;
 
@@ -1418,8 +1228,6 @@ struct ldc_channel *ldc_alloc(unsigned long id,
 
 	INIT_HLIST_HEAD(&lp->mh_list);
 
-<<<<<<< HEAD
-=======
 	snprintf(lp->rx_irq_name, LDC_IRQ_NAME_MAX, "%s RX", name);
 	snprintf(lp->tx_irq_name, LDC_IRQ_NAME_MAX, "%s TX", name);
 
@@ -1435,7 +1243,6 @@ struct ldc_channel *ldc_alloc(unsigned long id,
 		goto out_free_txq;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lp;
 
 out_free_txq:
@@ -1455,19 +1262,12 @@ out_err:
 }
 EXPORT_SYMBOL(ldc_alloc);
 
-<<<<<<< HEAD
-void ldc_free(struct ldc_channel *lp)
-=======
 void ldc_unbind(struct ldc_channel *lp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (lp->flags & LDC_FLAG_REGISTERED_IRQS) {
 		free_irq(lp->cfg.rx_irq, lp);
 		free_irq(lp->cfg.tx_irq, lp);
-<<<<<<< HEAD
-=======
 		lp->flags &= ~LDC_FLAG_REGISTERED_IRQS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (lp->flags & LDC_FLAG_REGISTERED_QUEUES) {
@@ -1481,12 +1281,6 @@ void ldc_unbind(struct ldc_channel *lp)
 		lp->flags &= ~LDC_FLAG_ALLOCED_QUEUES;
 	}
 
-<<<<<<< HEAD
-	hlist_del(&lp->list);
-
-	kfree(lp->mssbuf);
-
-=======
 	ldc_set_state(lp, LDC_STATE_INIT);
 }
 EXPORT_SYMBOL(ldc_unbind);
@@ -1496,7 +1290,6 @@ void ldc_free(struct ldc_channel *lp)
 	ldc_unbind(lp);
 	hlist_del(&lp->list);
 	kfree(lp->mssbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldc_iommu_release(lp);
 
 	kfree(lp);
@@ -1508,43 +1301,14 @@ EXPORT_SYMBOL(ldc_free);
  * state.  This does not initiate a handshake, ldc_connect() does
  * that.
  */
-<<<<<<< HEAD
-int ldc_bind(struct ldc_channel *lp, const char *name)
-=======
 int ldc_bind(struct ldc_channel *lp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long hv_err, flags;
 	int err = -EINVAL;
 
-<<<<<<< HEAD
-	if (!name ||
-	    (lp->state != LDC_STATE_INIT))
-		return -EINVAL;
-
-	snprintf(lp->rx_irq_name, LDC_IRQ_NAME_MAX, "%s RX", name);
-	snprintf(lp->tx_irq_name, LDC_IRQ_NAME_MAX, "%s TX", name);
-
-	err = request_irq(lp->cfg.rx_irq, ldc_rx,
-			  IRQF_SAMPLE_RANDOM | IRQF_DISABLED,
-			  lp->rx_irq_name, lp);
-	if (err)
-		return err;
-
-	err = request_irq(lp->cfg.tx_irq, ldc_tx,
-			  IRQF_SAMPLE_RANDOM | IRQF_DISABLED,
-			  lp->tx_irq_name, lp);
-	if (err) {
-		free_irq(lp->cfg.rx_irq, lp);
-		return err;
-	}
-
-
-=======
 	if (lp->state != LDC_STATE_INIT)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&lp->lock, flags);
 
 	enable_irq(lp->cfg.rx_irq);
@@ -1584,8 +1348,6 @@ int ldc_bind(struct ldc_channel *lp)
 	lp->hs_state = LDC_HS_OPEN;
 	ldc_set_state(lp, LDC_STATE_BOUND);
 
-<<<<<<< HEAD
-=======
 	if (lp->cfg.mode == LDC_MODE_RAW) {
 		/*
 		 * There is no handshake in RAW mode, so handshake
@@ -1594,7 +1356,6 @@ int ldc_bind(struct ldc_channel *lp)
 		lp->hs_state = LDC_HS_COMPLETE;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&lp->lock, flags);
 
 	return 0;
@@ -1700,14 +1461,6 @@ int ldc_state(struct ldc_channel *lp)
 }
 EXPORT_SYMBOL(ldc_state);
 
-<<<<<<< HEAD
-static int write_raw(struct ldc_channel *lp, const void *buf, unsigned int size)
-{
-	struct ldc_packet *p;
-	unsigned long new_tail;
-	int err;
-
-=======
 void ldc_set_state(struct ldc_channel *lp, u8 state)
 {
 	ldcdbg(STATE, "STATE (%s) --> (%s)\n",
@@ -1758,7 +1511,6 @@ static int write_raw(struct ldc_channel *lp, const void *buf, unsigned int size)
 	if (unlikely(lp->chan_state != LDC_CHANNEL_UP))
 		return LDC_ABORT(lp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (size > LDC_PACKET_SIZE)
 		return -EMSGSIZE;
 
@@ -1789,11 +1541,7 @@ static int read_raw(struct ldc_channel *lp, void *buf, unsigned int size)
 					&lp->rx_tail,
 					&lp->chan_state);
 	if (hv_err)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lp->chan_state == LDC_CHANNEL_DOWN ||
 	    lp->chan_state == LDC_CHANNEL_RESETTING)
@@ -1836,11 +1584,7 @@ static int write_nonraw(struct ldc_channel *lp, const void *buf,
 		return -EBUSY;
 
 	if (unlikely(lp->chan_state != LDC_CHANNEL_UP))
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tx_has_space_for(lp, size))
 		return -EAGAIN;
@@ -1906,15 +1650,9 @@ static int rx_bad_seq(struct ldc_channel *lp, struct ldc_packet *p,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	err = __set_rx_head(lp, lp->rx_tail);
-	if (err < 0)
-		return ldc_abort(lp);
-=======
 	err = ldc_rx_reset(lp);
 	if (err < 0)
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1927,11 +1665,7 @@ static int data_ack_nack(struct ldc_channel *lp, struct ldc_packet *p)
 			return err;
 	}
 	if (p->stype & LDC_NACK)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1951,11 +1685,7 @@ static int rx_data_wait(struct ldc_channel *lp, unsigned long cur_head)
 						&lp->rx_tail,
 						&lp->chan_state);
 		if (hv_err)
-<<<<<<< HEAD
-			return ldc_abort(lp);
-=======
 			return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (lp->chan_state == LDC_CHANNEL_DOWN ||
 		    lp->chan_state == LDC_CHANNEL_RESETTING)
@@ -1978,11 +1708,7 @@ static int rx_set_head(struct ldc_channel *lp, unsigned long head)
 	int err = __set_rx_head(lp, head);
 
 	if (err < 0)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->rx_head = head;
 	return 0;
@@ -2021,11 +1747,7 @@ static int read_nonraw(struct ldc_channel *lp, void *buf, unsigned int size)
 					&lp->rx_tail,
 					&lp->chan_state);
 	if (hv_err)
-<<<<<<< HEAD
-		return ldc_abort(lp);
-=======
 		return LDC_ABORT(lp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lp->chan_state == LDC_CHANNEL_DOWN ||
 	    lp->chan_state == LDC_CHANNEL_RESETTING)
@@ -2069,11 +1791,6 @@ static int read_nonraw(struct ldc_channel *lp, void *buf, unsigned int size)
 
 		lp->rcv_nxt = p->seqid;
 
-<<<<<<< HEAD
-		if (!(p->type & LDC_DATA)) {
-			new = rx_advance(lp, new);
-			goto no_data;
-=======
 		/*
 		 * If this is a control-only packet, there is nothing
 		 * else to do but advance the rx queue since the packet
@@ -2082,7 +1799,6 @@ static int read_nonraw(struct ldc_channel *lp, void *buf, unsigned int size)
 		if (!(p->type & LDC_DATA)) {
 			new = rx_advance(lp, new);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (p->stype & (LDC_ACK | LDC_NACK)) {
 			err = data_ack_nack(lp, p);
@@ -2138,11 +1854,7 @@ static int read_nonraw(struct ldc_channel *lp, void *buf, unsigned int size)
 			 * This seems the best behavior because this allows
 			 * a user of the LDC layer to start with a small
 			 * RX buffer for ldc_read() calls and use -EMSGSIZE
-<<<<<<< HEAD
-			 * as a cue to enlarge it's read buffer.
-=======
 			 * as a cue to enlarge its read buffer.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			err = -EMSGSIZE;
 			break;
@@ -2251,11 +1963,8 @@ int ldc_read(struct ldc_channel *lp, void *buf, unsigned int size)
 	unsigned long flags;
 	int err;
 
-<<<<<<< HEAD
-=======
 	ldcdbg(RX, "%s: entered size=%d\n", __func__, size);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf)
 		return -EINVAL;
 
@@ -2271,53 +1980,13 @@ int ldc_read(struct ldc_channel *lp, void *buf, unsigned int size)
 
 	spin_unlock_irqrestore(&lp->lock, flags);
 
-<<<<<<< HEAD
-=======
 	ldcdbg(RX, "%s: mode=%d, head=%lu, tail=%lu rv=%d\n", __func__,
 	       lp->cfg.mode, lp->rx_head, lp->rx_tail, err);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(ldc_read);
 
-<<<<<<< HEAD
-static long arena_alloc(struct ldc_iommu *iommu, unsigned long npages)
-{
-	struct iommu_arena *arena = &iommu->arena;
-	unsigned long n, start, end, limit;
-	int pass;
-
-	limit = arena->limit;
-	start = arena->hint;
-	pass = 0;
-
-again:
-	n = bitmap_find_next_zero_area(arena->map, limit, start, npages, 0);
-	end = n + npages;
-	if (unlikely(end >= limit)) {
-		if (likely(pass < 1)) {
-			limit = start;
-			start = 0;
-			pass++;
-			goto again;
-		} else {
-			/* Scanned the whole thing, give up. */
-			return -1;
-		}
-	}
-	bitmap_set(arena->map, n, npages);
-
-	arena->hint = end;
-
-	return n;
-}
-
-#define COOKIE_PGSZ_CODE	0xf000000000000000ULL
-#define COOKIE_PGSZ_CODE_SHIFT	60ULL
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u64 pagesize_code(void)
 {
 	switch (PAGE_SIZE) {
@@ -2344,33 +2013,15 @@ static u64 make_cookie(u64 index, u64 pgsz_code, u64 page_offset)
 		page_offset);
 }
 
-<<<<<<< HEAD
-static u64 cookie_to_index(u64 cookie, unsigned long *shift)
-{
-	u64 szcode = cookie >> COOKIE_PGSZ_CODE_SHIFT;
-
-	cookie &= ~COOKIE_PGSZ_CODE;
-
-	*shift = szcode * 3;
-
-	return (cookie >> (13ULL + (szcode * 3ULL)));
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ldc_mtable_entry *alloc_npages(struct ldc_iommu *iommu,
 					     unsigned long npages)
 {
 	long entry;
 
-<<<<<<< HEAD
-	entry = arena_alloc(iommu, npages);
-	if (unlikely(entry < 0))
-=======
 	entry = iommu_tbl_range_alloc(NULL, &iommu->iommu_map_table,
 				      npages, NULL, (unsigned long)-1, 0);
 	if (unlikely(entry == IOMMU_ERROR_CODE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return iommu->page_table + entry;
@@ -2498,19 +2149,12 @@ int ldc_map_sg(struct ldc_channel *lp,
 	       struct ldc_trans_cookie *cookies, int ncookies,
 	       unsigned int map_perm)
 {
-<<<<<<< HEAD
-	unsigned long i, npages, flags;
-=======
 	unsigned long i, npages;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ldc_mtable_entry *base;
 	struct cookie_state state;
 	struct ldc_iommu *iommu;
 	int err;
-<<<<<<< HEAD
-=======
 	struct scatterlist *s;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (map_perm & ~LDC_MAP_ALL)
 		return -EINVAL;
@@ -2525,13 +2169,7 @@ int ldc_map_sg(struct ldc_channel *lp,
 
 	iommu = &lp->iommu;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&iommu->lock, flags);
 	base = alloc_npages(iommu, npages);
-	spin_unlock_irqrestore(&iommu->lock, flags);
-=======
-	base = alloc_npages(iommu, npages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!base)
 		return -ENOMEM;
@@ -2543,16 +2181,10 @@ int ldc_map_sg(struct ldc_channel *lp,
 	state.pte_idx = (base - iommu->page_table);
 	state.nc = 0;
 
-<<<<<<< HEAD
-	for (i = 0; i < num_sg; i++)
-		fill_cookies(&state, page_to_pfn(sg_page(&sg[i])) << PAGE_SHIFT,
-			     sg[i].offset, sg[i].length);
-=======
 	for_each_sg(sg, s, num_sg, i) {
 		fill_cookies(&state, page_to_pfn(sg_page(s)) << PAGE_SHIFT,
 			     s->offset, s->length);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return state.nc;
 }
@@ -2563,11 +2195,7 @@ int ldc_map_single(struct ldc_channel *lp,
 		   struct ldc_trans_cookie *cookies, int ncookies,
 		   unsigned int map_perm)
 {
-<<<<<<< HEAD
-	unsigned long npages, pa, flags;
-=======
 	unsigned long npages, pa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ldc_mtable_entry *base;
 	struct cookie_state state;
 	struct ldc_iommu *iommu;
@@ -2583,13 +2211,7 @@ int ldc_map_single(struct ldc_channel *lp,
 
 	iommu = &lp->iommu;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&iommu->lock, flags);
 	base = alloc_npages(iommu, npages);
-	spin_unlock_irqrestore(&iommu->lock, flags);
-=======
-	base = alloc_npages(iommu, npages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!base)
 		return -ENOMEM;
@@ -2601,39 +2223,12 @@ int ldc_map_single(struct ldc_channel *lp,
 	state.pte_idx = (base - iommu->page_table);
 	state.nc = 0;
 	fill_cookies(&state, (pa & PAGE_MASK), (pa & ~PAGE_MASK), len);
-<<<<<<< HEAD
-	BUG_ON(state.nc != 1);
-=======
 	BUG_ON(state.nc > ncookies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return state.nc;
 }
 EXPORT_SYMBOL(ldc_map_single);
 
-<<<<<<< HEAD
-static void free_npages(unsigned long id, struct ldc_iommu *iommu,
-			u64 cookie, u64 size)
-{
-	struct iommu_arena *arena = &iommu->arena;
-	unsigned long i, shift, index, npages;
-	struct ldc_mtable_entry *base;
-
-	npages = PAGE_ALIGN(((cookie & ~PAGE_MASK) + size)) >> PAGE_SHIFT;
-	index = cookie_to_index(cookie, &shift);
-	base = iommu->page_table + index;
-
-	BUG_ON(index > arena->limit ||
-	       (index + npages) > arena->limit);
-
-	for (i = 0; i < npages; i++) {
-		if (base->cookie)
-			sun4v_ldc_revoke(id, cookie + (i << shift),
-					 base->cookie);
-		base->mte = 0;
-		__clear_bit(index + i, arena->map);
-	}
-=======
 
 static void free_npages(unsigned long id, struct ldc_iommu *iommu,
 			u64 cookie, u64 size)
@@ -2645,20 +2240,14 @@ static void free_npages(unsigned long id, struct ldc_iommu *iommu,
 	entry = ldc_cookie_to_index(cookie, iommu);
 	ldc_demap(iommu, id, cookie, entry, npages);
 	iommu_tbl_range_free(&iommu->iommu_map_table, cookie, npages, entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ldc_unmap(struct ldc_channel *lp, struct ldc_trans_cookie *cookies,
 	       int ncookies)
 {
 	struct ldc_iommu *iommu = &lp->iommu;
-<<<<<<< HEAD
-	unsigned long flags;
-	int i;
-=======
 	int i;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&iommu->lock, flags);
 	for (i = 0; i < ncookies; i++) {
@@ -2771,11 +2360,7 @@ void *ldc_alloc_exp_dring(struct ldc_channel *lp, unsigned int len,
 	if (len & (8UL - 1))
 		return ERR_PTR(-EINVAL);
 
-<<<<<<< HEAD
-	buf = kzalloc(len, GFP_KERNEL);
-=======
 	buf = kzalloc(len, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf)
 		return ERR_PTR(-ENOMEM);
 

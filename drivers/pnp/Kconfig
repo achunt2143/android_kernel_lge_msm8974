@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Plug and Play configuration
 #
@@ -10,11 +7,7 @@ menuconfig PNP
 	bool "Plug and Play support"
 	depends on HAS_IOMEM
 	depends on ISA || ACPI
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Plug and Play (PnP) is a standard for peripherals which allows those
 	  peripherals to be configured by software, e.g. assign IRQ's or other
 	  parameters. No jumpers on the cards are needed, instead the values

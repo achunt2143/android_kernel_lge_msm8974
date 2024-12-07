@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/swp_emulate.c
  *
  *  Copyright (C) 2009 ARM Limited
  *  __user_* functions adapted from include/asm/uaccess.h
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Implements emulation of the SWP/SWPB instructions using load-exclusive and
  *  store-exclusive for processors that have them disabled (or future ones that
  *  might not implement them).
@@ -28,40 +18,22 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/proc_fs.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-=======
 #include <linux/seq_file.h>
 #include <linux/sched.h>
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscalls.h>
 #include <linux/perf_event.h>
 
 #include <asm/opcodes.h>
-<<<<<<< HEAD
-#include <asm/traps.h>
-#include <asm/uaccess.h>
-=======
 #include <asm/system_info.h>
 #include <asm/traps.h>
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Error-checking SWP macros implemented using ldrex{b}/strex{b}
  */
 #define __user_swpX_asm(data, addr, res, temp, B)		\
 	__asm__ __volatile__(					\
-<<<<<<< HEAD
-	"	mov		%2, %1\n"			\
-	"0:	ldrex"B"	%1, [%3]\n"			\
-	"1:	strex"B"	%0, %2, [%3]\n"			\
-	"	cmp		%0, #0\n"			\
-	"	movne		%0, %4\n"			\
-	"2:\n"							\
-	"	.section	 .fixup,\"ax\"\n"		\
-=======
 	".arch armv7-a\n"					\
 	"0:	ldrex"B"	%2, [%3]\n"			\
 	"1:	strex"B"	%0, %1, [%3]\n"			\
@@ -70,7 +42,6 @@
 	"	movne		%0, %4\n"			\
 	"2:\n"							\
 	"	.section	 .text.fixup,\"ax\"\n"		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"	.align		2\n"				\
 	"3:	mov		%0, %5\n"			\
 	"	b		2b\n"				\
@@ -109,28 +80,6 @@ static unsigned long abtcounter;
 static pid_t         previous_pid;
 
 #ifdef CONFIG_PROC_FS
-<<<<<<< HEAD
-static int proc_read_status(char *page, char **start, off_t off, int count,
-			    int *eof, void *data)
-{
-	char *p = page;
-	int len;
-
-	p += sprintf(p, "Emulated SWP:\t\t%lu\n", swpcounter);
-	p += sprintf(p, "Emulated SWPB:\t\t%lu\n", swpbcounter);
-	p += sprintf(p, "Aborted SWP{B}:\t\t%lu\n", abtcounter);
-	if (previous_pid != 0)
-		p += sprintf(p, "Last process:\t\t%d\n", previous_pid);
-
-	len = (p - page) - off;
-	if (len < 0)
-		len = 0;
-
-	*eof = (len <= count) ? 1 : 0;
-	*start = page + off;
-
-	return len;
-=======
 static int proc_status_show(struct seq_file *m, void *v)
 {
 	seq_printf(m, "Emulated SWP:\t\t%lu\n", swpcounter);
@@ -139,7 +88,6 @@ static int proc_status_show(struct seq_file *m, void *v)
 	if (previous_pid != 0)
 		seq_printf(m, "Last process:\t\t%d\n", previous_pid);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -148,23 +96,6 @@ static int proc_status_show(struct seq_file *m, void *v)
  */
 static void set_segfault(struct pt_regs *regs, unsigned long addr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-
-	down_read(&current->mm->mmap_sem);
-	if (find_vma(current->mm, addr) == NULL)
-		info.si_code = SEGV_MAPERR;
-	else
-		info.si_code = SEGV_ACCERR;
-	up_read(&current->mm->mmap_sem);
-
-	info.si_signo = SIGSEGV;
-	info.si_errno = 0;
-	info.si_addr  = (void *) instruction_pointer(regs);
-
-	pr_debug("SWP{B} emulation: access caused memory abort!\n");
-	arm_notify_die("Illegal memory access", regs, &info, 0, 0);
-=======
 	int si_code;
 
 	mmap_read_lock(current->mm);
@@ -179,7 +110,6 @@ static void set_segfault(struct pt_regs *regs, unsigned long addr)
 		       SIGSEGV, si_code,
 		       (void __user *)instruction_pointer(regs),
 		       0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	abtcounter++;
 }
@@ -197,29 +127,14 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 
 	while (1) {
 		unsigned long temp;
-<<<<<<< HEAD
-
-		/*
-		 * Barrier required between accessing protected resource and
-		 * releasing a lock for it. Legacy code might not have done
-		 * this, and we cannot determine that this is not the case
-		 * being emulated, so insert always.
-		 */
-		smp_mb();
-
-=======
 		unsigned int __ua_flags;
 
 		__ua_flags = uaccess_save_and_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (type == TYPE_SWPB)
 			__user_swpb_asm(*data, address, res, temp);
 		else
 			__user_swp_asm(*data, address, res, temp);
-<<<<<<< HEAD
-=======
 		uaccess_restore(__ua_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (likely(res != -EAGAIN) || signal_pending(current))
 			break;
@@ -228,16 +143,6 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 	}
 
 	if (res == 0) {
-<<<<<<< HEAD
-		/*
-		 * Barrier also required between acquiring a lock for a
-		 * protected resource and accessing the resource. Inserted for
-		 * same reason as above.
-		 */
-		smp_mb();
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (type == TYPE_SWPB)
 			swpbcounter++;
 		else
@@ -247,60 +152,6 @@ static int emulate_swpX(unsigned int address, unsigned int *data,
 	return res;
 }
 
-<<<<<<< HEAD
-static int check_condition(struct pt_regs *regs, unsigned int insn)
-{
-	unsigned int base_cond, neg, cond = 0;
-	unsigned int cpsr_z, cpsr_c, cpsr_n, cpsr_v;
-
-	cpsr_n = (regs->ARM_cpsr & PSR_N_BIT) ? 1 : 0;
-	cpsr_z = (regs->ARM_cpsr & PSR_Z_BIT) ? 1 : 0;
-	cpsr_c = (regs->ARM_cpsr & PSR_C_BIT) ? 1 : 0;
-	cpsr_v = (regs->ARM_cpsr & PSR_V_BIT) ? 1 : 0;
-
-	/* Upper 3 bits indicate condition, lower bit incicates negation */
-	base_cond = insn >> 29;
-	neg = insn & BIT(28) ? 1 : 0;
-
-	switch (base_cond) {
-	case 0x0:	/* equal */
-		cond = cpsr_z;
-		break;
-
-	case 0x1:	/* carry set */
-		cond = cpsr_c;
-		break;
-
-	case 0x2:	/* minus / negative */
-		cond = cpsr_n;
-		break;
-
-	case 0x3:	/* overflow */
-		cond = cpsr_v;
-		break;
-
-	case 0x4:	/* unsigned higher */
-		cond = (cpsr_c == 1) && (cpsr_z == 0);
-		break;
-
-	case 0x5:	/* signed greater / equal */
-		cond = (cpsr_n == cpsr_v);
-		break;
-
-	case 0x6:	/* signed greater */
-		cond = (cpsr_z == 0) && (cpsr_n == cpsr_v);
-		break;
-
-	case 0x7:	/* always */
-		cond = 1;
-		break;
-	};
-
-	return cond && !neg;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * swp_handler logs the id of calling process, dissects the instruction, sanity
  * checks the memory location, calls emulate_swpX for the actual operation and
@@ -334,15 +185,6 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
 		previous_pid = current->pid;
 	}
 
-<<<<<<< HEAD
-	/* Ignore the instruction if it fails its condition code check */
-	if (!check_condition(regs, instr)) {
-		regs->ARM_pc += 4;
-		return 0;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	address = regs->uregs[EXTRACT_REG_NUM(instr, RN_OFFSET)];
 	data	= regs->uregs[EXTRACT_REG_NUM(instr, RT2_OFFSET)];
 	destreg = EXTRACT_REG_NUM(instr, RT_OFFSET);
@@ -354,11 +196,7 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
 		 destreg, EXTRACT_REG_NUM(instr, RT2_OFFSET), data);
 
 	/* Check access in reasonable access range for both SWP and SWPB */
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, (address & ~3), 4)) {
-=======
 	if (!access_ok((void __user *)(address & ~3), 4)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("SWP{B} emulation: access to %p not allowed!\n",
 			 (void *)address);
 		res = -EFAULT;
@@ -403,20 +241,6 @@ static struct undef_hook swp_hook = {
  */
 static int __init swp_emulation_init(void)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-	struct proc_dir_entry *res;
-
-	res = create_proc_entry("cpu/swp_emulation", S_IRUGO, NULL);
-
-	if (!res)
-		return -ENOMEM;
-
-	res->read_proc = proc_read_status;
-#endif /* CONFIG_PROC_FS */
-
-	printk(KERN_NOTICE "Registering SWP/SWPB emulation handler\n");
-=======
 	if (cpu_architecture() < CPU_ARCH_ARMv7)
 		return 0;
 
@@ -427,7 +251,6 @@ static int __init swp_emulation_init(void)
 #endif /* CONFIG_PROC_FS */
 
 	pr_notice("Registering SWP/SWPB emulation handler\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register_undef_hook(&swp_hook);
 
 	return 0;

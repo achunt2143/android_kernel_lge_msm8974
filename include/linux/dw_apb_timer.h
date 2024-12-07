@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * (C) Copyright 2009 Intel Corporation
  * Author: Jacob Pan (jacob.jun.pan@intel.com)
  *
  * Shared with ARM platforms, Jamie Iles, Picochip 2011
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Support for the Synopsys DesignWare APB Timers.
  */
 #ifndef __DW_APB_TIMER_H__
@@ -35,10 +25,6 @@ struct dw_apb_timer {
 struct dw_apb_clock_event_device {
 	struct clock_event_device		ced;
 	struct dw_apb_timer			timer;
-<<<<<<< HEAD
-	struct irqaction			irqaction;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void					(*eoi)(struct dw_apb_timer *);
 };
 
@@ -60,11 +46,6 @@ dw_apb_clocksource_init(unsigned rating, const char *name, void __iomem *base,
 			unsigned long freq);
 void dw_apb_clocksource_register(struct dw_apb_clocksource *dw_cs);
 void dw_apb_clocksource_start(struct dw_apb_clocksource *dw_cs);
-<<<<<<< HEAD
-cycle_t dw_apb_clocksource_read(struct dw_apb_clocksource *dw_cs);
-void dw_apb_clocksource_unregister(struct dw_apb_clocksource *dw_cs);
-=======
 u64 dw_apb_clocksource_read(struct dw_apb_clocksource *dw_cs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __DW_APB_TIMER_H__ */

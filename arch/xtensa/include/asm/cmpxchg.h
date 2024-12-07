@@ -13,10 +13,7 @@
 
 #ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-=======
 #include <linux/bits.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stringify.h>
 
 /*
@@ -26,19 +23,6 @@
 static inline unsigned long
 __cmpxchg_u32(volatile int *p, int old, int new)
 {
-<<<<<<< HEAD
-  __asm__ __volatile__("rsil    a15, "__stringify(LOCKLEVEL)"\n\t"
-		       "l32i    %0, %1, 0              \n\t"
-		       "bne	%0, %2, 1f             \n\t"
-		       "s32i    %3, %1, 0              \n\t"
-		       "1:                             \n\t"
-		       "wsr     a15, "__stringify(PS)" \n\t"
-		       "rsync                          \n\t"
-		       : "=&a" (old)
-		       : "a" (p), "a" (old), "r" (new)
-		       : "a15", "memory");
-  return old;
-=======
 #if XCHAL_HAVE_EXCLUSIVE
 	unsigned long tmp, result;
 
@@ -80,7 +64,6 @@ __cmpxchg_u32(volatile int *p, int old, int new)
 			: "a14", "memory");
 	return old;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 /* This function doesn't exist, so you'll get a linker error
  * if something tries to do an invalid cmpxchg(). */
@@ -97,11 +80,7 @@ __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new, int size)
 	}
 }
 
-<<<<<<< HEAD
-#define cmpxchg(ptr,o,n)						      \
-=======
 #define arch_cmpxchg(ptr,o,n)						      \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	({ __typeof__(*(ptr)) _o_ = (o);				      \
 	   __typeof__(*(ptr)) _n_ = (n);				      \
 	   (__typeof__(*(ptr))) __cmpxchg((ptr), (unsigned long)_o_,	      \
@@ -118,11 +97,7 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
 	case 4:
 		return __cmpxchg_u32(ptr, old, new);
 	default:
-<<<<<<< HEAD
-		return __cmpxchg_local_generic(ptr, old, new, size);
-=======
 		return __generic_cmpxchg_local(ptr, old, new, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return old;
@@ -132,53 +107,24 @@ static inline unsigned long __cmpxchg_local(volatile void *ptr,
  * cmpxchg_local and cmpxchg64_local are atomic wrt current CPU. Always make
  * them available.
  */
-<<<<<<< HEAD
-#define cmpxchg_local(ptr, o, n)				  	       \
-	((__typeof__(*(ptr)))__cmpxchg_local_generic((ptr), (unsigned long)(o),\
-			(unsigned long)(n), sizeof(*(ptr))))
-#define cmpxchg64_local(ptr, o, n) __cmpxchg64_local_generic((ptr), (o), (n))
-=======
 #define arch_cmpxchg_local(ptr, o, n)				  	       \
 	((__typeof__(*(ptr)))__generic_cmpxchg_local((ptr), (unsigned long)(o),\
 			(unsigned long)(n), sizeof(*(ptr))))
 #define arch_cmpxchg64_local(ptr, o, n) __generic_cmpxchg64_local((ptr), (o), (n))
 #define arch_cmpxchg64(ptr, o, n)    arch_cmpxchg64_local((ptr), (o), (n))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * xchg_u32
  *
-<<<<<<< HEAD
- * Note that a15 is used here because the register allocation
- * done by the compiler is not guaranteed and a window overflow
- * may not occur between the rsil and wsr instructions. By using
- * a15 in the rsil, the machine is guaranteed to be in a state
-=======
  * Note that a14 is used here because the register allocation
  * done by the compiler is not guaranteed and a window overflow
  * may not occur between the rsil and wsr instructions. By using
  * a14 in the rsil, the machine is guaranteed to be in a state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * where no register reference will cause an overflow.
  */
 
 static inline unsigned long xchg_u32(volatile int * m, unsigned long val)
 {
-<<<<<<< HEAD
-  unsigned long tmp;
-  __asm__ __volatile__("rsil    a15, "__stringify(LOCKLEVEL)"\n\t"
-		       "l32i    %0, %1, 0              \n\t"
-		       "s32i    %2, %1, 0              \n\t"
-		       "wsr     a15, "__stringify(PS)" \n\t"
-		       "rsync                          \n\t"
-		       : "=&a" (tmp)
-		       : "a" (m), "a" (val)
-		       : "a15", "memory");
-  return tmp;
-}
-
-#define xchg(ptr,x) ((__typeof__(*(ptr)))__xchg((unsigned long)(x),(ptr),sizeof(*(ptr))))
-=======
 #if XCHAL_HAVE_EXCLUSIVE
 	unsigned long tmp, result;
 
@@ -247,7 +193,6 @@ static inline u32 xchg_small(volatile void *ptr, u32 x, int size)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This only works if the compiler isn't horribly bad at optimizing.
@@ -258,16 +203,6 @@ static inline u32 xchg_small(volatile void *ptr, u32 x, int size)
 extern void __xchg_called_with_bad_pointer(void);
 
 static __inline__ unsigned long
-<<<<<<< HEAD
-__xchg(unsigned long x, volatile void * ptr, int size)
-{
-	switch (size) {
-		case 4:
-			return xchg_u32(ptr, x);
-	}
-	__xchg_called_with_bad_pointer();
-	return x;
-=======
 __arch_xchg(unsigned long x, volatile void * ptr, int size)
 {
 	switch (size) {
@@ -281,7 +216,6 @@ __arch_xchg(unsigned long x, volatile void * ptr, int size)
 		__xchg_called_with_bad_pointer();
 		return x;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* __ASSEMBLY__ */

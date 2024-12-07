@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-ccflags-y := -Ifs/ocfs2
-
-ccflags-y += -DCATCH_BH_JBD_RACES
-=======
 # SPDX-License-Identifier: GPL-2.0
 ccflags-y := -I$(src)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_OCFS2_FS) += 	\
 	ocfs2.o			\
@@ -43,19 +37,11 @@ ocfs2-objs := \
 	symlink.o 		\
 	sysfile.o 		\
 	uptodate.o		\
-<<<<<<< HEAD
-	ver.o			\
-	quota_local.o		\
-	quota_global.o		\
-	xattr.o			\
-	acl.o
-=======
 	quota_local.o		\
 	quota_global.o		\
 	xattr.o			\
 	acl.o	\
 	filecheck.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ocfs2_stackglue-objs := stackglue.o
 ocfs2_stack_o2cb-objs := stack_o2cb.o

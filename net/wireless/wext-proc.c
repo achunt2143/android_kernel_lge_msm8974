@@ -126,32 +126,11 @@ static const struct seq_operations wireless_seq_ops = {
 	.show  = wireless_dev_seq_show,
 };
 
-<<<<<<< HEAD
-static int seq_open_wireless(struct inode *inode, struct file *file)
-{
-	return seq_open_net(inode, file, &wireless_seq_ops,
-			    sizeof(struct seq_net_private));
-}
-
-static const struct file_operations wireless_seq_fops = {
-	.owner	 = THIS_MODULE,
-	.open    = seq_open_wireless,
-	.read    = seq_read,
-	.llseek  = seq_lseek,
-	.release = seq_release_net,
-};
-
-int __net_init wext_proc_init(struct net *net)
-{
-	/* Create /proc/net/wireless entry */
-	if (!proc_net_fops_create(net, "wireless", S_IRUGO, &wireless_seq_fops))
-=======
 int __net_init wext_proc_init(struct net *net)
 {
 	/* Create /proc/net/wireless entry */
 	if (!proc_create_net("wireless", 0444, net->proc_net,
 			&wireless_seq_ops, sizeof(struct seq_net_private)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	return 0;
@@ -159,9 +138,5 @@ int __net_init wext_proc_init(struct net *net)
 
 void __net_exit wext_proc_exit(struct net *net)
 {
-<<<<<<< HEAD
-	proc_net_remove(net, "wireless");
-=======
 	remove_proc_entry("wireless", net->proc_net);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

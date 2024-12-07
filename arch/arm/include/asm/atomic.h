@@ -1,38 +1,20 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/atomic.h
  *
  *  Copyright (C) 1996 Russell King.
  *  Copyright (C) 2002 Deep Blue Solutions Ltd.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_ARM_ATOMIC_H
 #define __ASM_ARM_ATOMIC_H
 
 #include <linux/compiler.h>
-<<<<<<< HEAD
-=======
 #include <linux/prefetch.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/irqflags.h>
 #include <asm/barrier.h>
 #include <asm/cmpxchg.h>
 
-<<<<<<< HEAD
-#define ATOMIC_INIT(i)	{ (i) }
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __KERNEL__
 
 /*
@@ -40,13 +22,8 @@
  * strex/ldrex monitor on some implementations. The reason we can use it for
  * atomic_set() is the clrex or dummy strex done on every exception return.
  */
-<<<<<<< HEAD
-#define atomic_read(v)	(*(volatile int *)&(v)->counter)
-#define atomic_set(v,i)	(((v)->counter) = (i))
-=======
 #define arch_atomic_read(v)	READ_ONCE((v)->counter)
 #define arch_atomic_set(v,i)	WRITE_ONCE(((v)->counter), (i))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if __LINUX_ARM_ARCH__ >= 6
 
@@ -55,89 +32,6 @@
  * store exclusive to ensure that these are atomic.  We may loop
  * to ensure that the update happens.
  */
-<<<<<<< HEAD
-static inline void atomic_add(int i, atomic_t *v)
-{
-	unsigned long tmp;
-	int result;
-
-	__asm__ __volatile__("@ atomic_add\n"
-"1:	ldrex	%0, [%3]\n"
-"	add	%0, %0, %4\n"
-"	strex	%1, %0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "Ir" (i)
-	: "cc");
-}
-
-static inline int atomic_add_return(int i, atomic_t *v)
-{
-	unsigned long tmp;
-	int result;
-
-	smp_mb();
-
-	__asm__ __volatile__("@ atomic_add_return\n"
-"1:	ldrex	%0, [%3]\n"
-"	add	%0, %0, %4\n"
-"	strex	%1, %0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "Ir" (i)
-	: "cc");
-
-	smp_mb();
-
-	return result;
-}
-
-static inline void atomic_sub(int i, atomic_t *v)
-{
-	unsigned long tmp;
-	int result;
-
-	__asm__ __volatile__("@ atomic_sub\n"
-"1:	ldrex	%0, [%3]\n"
-"	sub	%0, %0, %4\n"
-"	strex	%1, %0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "Ir" (i)
-	: "cc");
-}
-
-static inline int atomic_sub_return(int i, atomic_t *v)
-{
-	unsigned long tmp;
-	int result;
-
-	smp_mb();
-
-	__asm__ __volatile__("@ atomic_sub_return\n"
-"1:	ldrex	%0, [%3]\n"
-"	sub	%0, %0, %4\n"
-"	strex	%1, %0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "Ir" (i)
-	: "cc");
-
-	smp_mb();
-
-	return result;
-}
-
-static inline int atomic_cmpxchg(atomic_t *ptr, int old, int new)
-{
-	unsigned long oldval, res;
-
-	smp_mb();
-=======
 
 #define ATOMIC_OP(op, c_op, asm_op)					\
 static inline void arch_atomic_##op(int i, atomic_t *v)			\
@@ -215,7 +109,6 @@ static inline int arch_atomic_cmpxchg_relaxed(atomic_t *ptr, int old, int new)
 	unsigned long res;
 
 	prefetchw(&ptr->counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		__asm__ __volatile__("@ atomic_cmpxchg\n"
@@ -228,27 +121,6 @@ static inline int arch_atomic_cmpxchg_relaxed(atomic_t *ptr, int old, int new)
 		    : "cc");
 	} while (res);
 
-<<<<<<< HEAD
-	smp_mb();
-
-	return oldval;
-}
-
-static inline void atomic_clear_mask(unsigned long mask, unsigned long *addr)
-{
-	unsigned long tmp, tmp2;
-
-	__asm__ __volatile__("@ atomic_clear_mask\n"
-"1:	ldrex	%0, [%3]\n"
-"	bic	%0, %0, %4\n"
-"	strex	%1, %0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (tmp), "=&r" (tmp2), "+Qo" (*addr)
-	: "r" (addr), "Ir" (mask)
-	: "cc");
-}
-=======
 	return oldval;
 }
 #define arch_atomic_cmpxchg_relaxed		arch_atomic_cmpxchg_relaxed
@@ -280,7 +152,6 @@ static inline int arch_atomic_fetch_add_unless(atomic_t *v, int a, int u)
 	return oldval;
 }
 #define arch_atomic_fetch_add_unless		arch_atomic_fetch_add_unless
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* ARM_ARCH_6 */
 
@@ -288,37 +159,6 @@ static inline int arch_atomic_fetch_add_unless(atomic_t *v, int a, int u)
 #error SMP not supported on pre-ARMv6 CPUs
 #endif
 
-<<<<<<< HEAD
-static inline int atomic_add_return(int i, atomic_t *v)
-{
-	unsigned long flags;
-	int val;
-
-	raw_local_irq_save(flags);
-	val = v->counter;
-	v->counter = val += i;
-	raw_local_irq_restore(flags);
-
-	return val;
-}
-#define atomic_add(i, v)	(void) atomic_add_return(i, v)
-
-static inline int atomic_sub_return(int i, atomic_t *v)
-{
-	unsigned long flags;
-	int val;
-
-	raw_local_irq_save(flags);
-	val = v->counter;
-	v->counter = val -= i;
-	raw_local_irq_restore(flags);
-
-	return val;
-}
-#define atomic_sub(i, v)	(void) atomic_sub_return(i, v)
-
-static inline int atomic_cmpxchg(atomic_t *v, int old, int new)
-=======
 #define ATOMIC_OP(op, c_op, asm_op)					\
 static inline void arch_atomic_##op(int i, atomic_t *v)			\
 {									\
@@ -368,7 +208,6 @@ static inline int arch_atomic_fetch_##op(int i, atomic_t *v)		\
 #define arch_atomic_fetch_xor			arch_atomic_fetch_xor
 
 static inline int arch_atomic_cmpxchg(atomic_t *v, int old, int new)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	unsigned long flags;
@@ -381,51 +220,6 @@ static inline int arch_atomic_cmpxchg(atomic_t *v, int old, int new)
 
 	return ret;
 }
-<<<<<<< HEAD
-
-static inline void atomic_clear_mask(unsigned long mask, unsigned long *addr)
-{
-	unsigned long flags;
-
-	raw_local_irq_save(flags);
-	*addr &= ~mask;
-	raw_local_irq_restore(flags);
-}
-
-#endif /* __LINUX_ARM_ARCH__ */
-
-#define atomic_xchg(v, new) (xchg(&((v)->counter), new))
-
-static inline int __atomic_add_unless(atomic_t *v, int a, int u)
-{
-	int c, old;
-
-	c = atomic_read(v);
-	while (c != u && (old = atomic_cmpxchg((v), c, c + a)) != c)
-		c = old;
-	return c;
-}
-
-#define atomic_inc(v)		atomic_add(1, v)
-#define atomic_dec(v)		atomic_sub(1, v)
-
-#define atomic_inc_and_test(v)	(atomic_add_return(1, v) == 0)
-#define atomic_dec_and_test(v)	(atomic_sub_return(1, v) == 0)
-#define atomic_inc_return(v)    (atomic_add_return(1, v))
-#define atomic_dec_return(v)    (atomic_sub_return(1, v))
-#define atomic_sub_and_test(i, v) (atomic_sub_return(i, v) == 0)
-
-#define atomic_add_negative(i,v) (atomic_add_return(i, v) < 0)
-
-#define smp_mb__before_atomic_dec()	smp_mb()
-#define smp_mb__after_atomic_dec()	smp_mb()
-#define smp_mb__before_atomic_inc()	smp_mb()
-#define smp_mb__after_atomic_inc()	smp_mb()
-
-#ifndef CONFIG_GENERIC_ATOMIC64
-typedef struct {
-	u64 __aligned(8) counter;
-=======
 #define arch_atomic_cmpxchg arch_atomic_cmpxchg
 
 #endif /* __LINUX_ARM_ARCH__ */
@@ -458,18 +252,10 @@ ATOMIC_OPS(xor, ^=, eor)
 #ifndef CONFIG_GENERIC_ATOMIC64
 typedef struct {
 	s64 counter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } atomic64_t;
 
 #define ATOMIC64_INIT(i) { (i) }
 
-<<<<<<< HEAD
-// LGE_DATA_CHANGE_S, [120815_COM_0013], http://dev.lge.com/wiki/datacop/patch_0013
-static inline u64 atomic64_read(const atomic64_t *v)
-// LGE_DATA_CHANGE_E, [120815_COM_0013], http://dev.lge.com/wiki/datacop/patch_0013
-{
-	u64 result;
-=======
 #ifdef CONFIG_ARM_LPAE
 static inline s64 arch_atomic64_read(const atomic64_t *v)
 {
@@ -496,7 +282,6 @@ static inline void arch_atomic64_set(atomic64_t *v, s64 i)
 static inline s64 arch_atomic64_read(const atomic64_t *v)
 {
 	s64 result;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__asm__ __volatile__("@ atomic64_read\n"
 "	ldrexd	%0, %H0, [%1]"
@@ -507,18 +292,11 @@ static inline s64 arch_atomic64_read(const atomic64_t *v)
 	return result;
 }
 
-<<<<<<< HEAD
-static inline void atomic64_set(atomic64_t *v, u64 i)
-{
-	u64 tmp;
-
-=======
 static inline void arch_atomic64_set(atomic64_t *v, s64 i)
 {
 	s64 tmp;
 
 	prefetchw(&v->counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__ __volatile__("@ atomic64_set\n"
 "1:	ldrexd	%0, %H0, [%2]\n"
 "	strexd	%0, %3, %H3, [%2]\n"
@@ -528,95 +306,6 @@ static inline void arch_atomic64_set(atomic64_t *v, s64 i)
 	: "r" (&v->counter), "r" (i)
 	: "cc");
 }
-<<<<<<< HEAD
-
-static inline void atomic64_add(u64 i, atomic64_t *v)
-{
-	u64 result;
-	unsigned long tmp;
-
-	__asm__ __volatile__("@ atomic64_add\n"
-"1:	ldrexd	%0, %H0, [%3]\n"
-"	adds	%0, %0, %4\n"
-"	adc	%H0, %H0, %H4\n"
-"	strexd	%1, %0, %H0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "r" (i)
-	: "cc");
-}
-
-static inline u64 atomic64_add_return(u64 i, atomic64_t *v)
-{
-	u64 result;
-	unsigned long tmp;
-
-	smp_mb();
-
-	__asm__ __volatile__("@ atomic64_add_return\n"
-"1:	ldrexd	%0, %H0, [%3]\n"
-"	adds	%0, %0, %4\n"
-"	adc	%H0, %H0, %H4\n"
-"	strexd	%1, %0, %H0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "r" (i)
-	: "cc");
-
-	smp_mb();
-
-	return result;
-}
-
-static inline void atomic64_sub(u64 i, atomic64_t *v)
-{
-	u64 result;
-	unsigned long tmp;
-
-	__asm__ __volatile__("@ atomic64_sub\n"
-"1:	ldrexd	%0, %H0, [%3]\n"
-"	subs	%0, %0, %4\n"
-"	sbc	%H0, %H0, %H4\n"
-"	strexd	%1, %0, %H0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "r" (i)
-	: "cc");
-}
-
-static inline u64 atomic64_sub_return(u64 i, atomic64_t *v)
-{
-	u64 result;
-	unsigned long tmp;
-
-	smp_mb();
-
-	__asm__ __volatile__("@ atomic64_sub_return\n"
-"1:	ldrexd	%0, %H0, [%3]\n"
-"	subs	%0, %0, %4\n"
-"	sbc	%H0, %H0, %H4\n"
-"	strexd	%1, %0, %H0, [%3]\n"
-"	teq	%1, #0\n"
-"	bne	1b"
-	: "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "r" (i)
-	: "cc");
-
-	smp_mb();
-
-	return result;
-}
-
-static inline u64 atomic64_cmpxchg(atomic64_t *ptr, u64 old, u64 new)
-{
-	u64 oldval;
-	unsigned long res;
-
-	smp_mb();
-=======
 #endif
 
 #define ATOMIC64_OP(op, op1, op2)					\
@@ -725,7 +414,6 @@ static inline s64 arch_atomic64_cmpxchg_relaxed(atomic64_t *ptr, s64 old, s64 ne
 	unsigned long res;
 
 	prefetchw(&ptr->counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		__asm__ __volatile__("@ atomic64_cmpxchg\n"
@@ -739,19 +427,6 @@ static inline s64 arch_atomic64_cmpxchg_relaxed(atomic64_t *ptr, s64 old, s64 ne
 		: "cc");
 	} while (res);
 
-<<<<<<< HEAD
-	smp_mb();
-
-	return oldval;
-}
-
-static inline u64 atomic64_xchg(atomic64_t *ptr, u64 new)
-{
-	u64 result;
-	unsigned long tmp;
-
-	smp_mb();
-=======
 	return oldval;
 }
 #define arch_atomic64_cmpxchg_relaxed	arch_atomic64_cmpxchg_relaxed
@@ -762,7 +437,6 @@ static inline s64 arch_atomic64_xchg_relaxed(atomic64_t *ptr, s64 new)
 	unsigned long tmp;
 
 	prefetchw(&ptr->counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__asm__ __volatile__("@ atomic64_xchg\n"
 "1:	ldrexd	%0, %H0, [%3]\n"
@@ -773,25 +447,6 @@ static inline s64 arch_atomic64_xchg_relaxed(atomic64_t *ptr, s64 new)
 	: "r" (&ptr->counter), "r" (new)
 	: "cc");
 
-<<<<<<< HEAD
-	smp_mb();
-
-	return result;
-}
-
-static inline u64 atomic64_dec_if_positive(atomic64_t *v)
-{
-	u64 result;
-	unsigned long tmp;
-
-	smp_mb();
-
-	__asm__ __volatile__("@ atomic64_dec_if_positive\n"
-"1:	ldrexd	%0, %H0, [%3]\n"
-"	subs	%0, %0, #1\n"
-"	sbc	%H0, %H0, #0\n"
-"	teq	%H0, #0\n"
-=======
 	return result;
 }
 #define arch_atomic64_xchg_relaxed		arch_atomic64_xchg_relaxed
@@ -809,7 +464,6 @@ static inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
 "	subs	%Q0, %Q0, #1\n"
 "	sbc	%R0, %R0, #0\n"
 "	teq	%R0, #0\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "	bmi	2f\n"
 "	strexd	%1, %0, %H0, [%3]\n"
 "	teq	%1, #0\n"
@@ -823,16 +477,6 @@ static inline s64 arch_atomic64_dec_if_positive(atomic64_t *v)
 
 	return result;
 }
-<<<<<<< HEAD
-
-static inline int atomic64_add_unless(atomic64_t *v, u64 a, u64 u)
-{
-	u64 val;
-	unsigned long tmp;
-	int ret = 1;
-
-	smp_mb();
-=======
 #define arch_atomic64_dec_if_positive arch_atomic64_dec_if_positive
 
 static inline s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a, s64 u)
@@ -842,41 +486,11 @@ static inline s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a, s64 u)
 
 	smp_mb();
 	prefetchw(&v->counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__asm__ __volatile__("@ atomic64_add_unless\n"
 "1:	ldrexd	%0, %H0, [%4]\n"
 "	teq	%0, %5\n"
 "	teqeq	%H0, %H5\n"
-<<<<<<< HEAD
-"	moveq	%1, #0\n"
-"	beq	2f\n"
-"	adds	%0, %0, %6\n"
-"	adc	%H0, %H0, %H6\n"
-"	strexd	%2, %0, %H0, [%4]\n"
-"	teq	%2, #0\n"
-"	bne	1b\n"
-"2:"
-	: "=&r" (val), "+r" (ret), "=&r" (tmp), "+Qo" (v->counter)
-	: "r" (&v->counter), "r" (u), "r" (a)
-	: "cc");
-
-	if (ret)
-		smp_mb();
-
-	return ret;
-}
-
-#define atomic64_add_negative(a, v)	(atomic64_add_return((a), (v)) < 0)
-#define atomic64_inc(v)			atomic64_add(1LL, (v))
-#define atomic64_inc_return(v)		atomic64_add_return(1LL, (v))
-#define atomic64_inc_and_test(v)	(atomic64_inc_return(v) == 0)
-#define atomic64_sub_and_test(a, v)	(atomic64_sub_return((a), (v)) == 0)
-#define atomic64_dec(v)			atomic64_sub(1LL, (v))
-#define atomic64_dec_return(v)		atomic64_sub_return(1LL, (v))
-#define atomic64_dec_and_test(v)	(atomic64_dec_return((v)) == 0)
-#define atomic64_inc_not_zero(v)	atomic64_add_unless((v), 1LL, 0LL)
-=======
 "	beq	2f\n"
 "	adds	%Q1, %Q0, %Q6\n"
 "	adc	%R1, %R0, %R6\n"
@@ -894,7 +508,6 @@ static inline s64 arch_atomic64_fetch_add_unless(atomic64_t *v, s64 a, s64 u)
 	return oldval;
 }
 #define arch_atomic64_fetch_add_unless arch_atomic64_fetch_add_unless
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !CONFIG_GENERIC_ATOMIC64 */
 #endif

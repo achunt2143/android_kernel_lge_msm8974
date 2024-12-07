@@ -1,24 +1,14 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bootsect
 bzImage
 cpustr.h
 mkcpustr
-<<<<<<< HEAD
-offsets.h
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 voffset.h
 zoffset.h
 setup
 setup.bin
 setup.elf
-<<<<<<< HEAD
-=======
 fdimage
 mtools.conf
 image.iso
 hdimage
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/condition.c
  *
@@ -31,17 +28,11 @@ static bool tomoyo_argv(const unsigned int index, const char *arg_ptr,
 {
 	int i;
 	struct tomoyo_path_info arg;
-<<<<<<< HEAD
-	arg.name = arg_ptr;
-	for (i = 0; i < argc; argv++, checked++, i++) {
-		bool result;
-=======
 
 	arg.name = arg_ptr;
 	for (i = 0; i < argc; argv++, checked++, i++) {
 		bool result;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (index != argv->index)
 			continue;
 		*checked = 1;
@@ -73,20 +64,14 @@ static bool tomoyo_envp(const char *env_name, const char *env_value,
 	int i;
 	struct tomoyo_path_info name;
 	struct tomoyo_path_info value;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	name.name = env_name;
 	tomoyo_fill_path_info(&name);
 	value.name = env_value;
 	tomoyo_fill_path_info(&value);
 	for (i = 0; i < envc; envp++, checked++, i++) {
 		bool result;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tomoyo_path_matches_pattern(&name, envp->name))
 			continue;
 		*checked = 1;
@@ -113,11 +98,7 @@ static bool tomoyo_envp(const char *env_name, const char *env_value,
  * @argc: Length of @argc.
  * @argv: Pointer to "struct tomoyo_argv".
  * @envc: Length of @envp.
-<<<<<<< HEAD
- * @envp: Poiner to "struct tomoyo_envp".
-=======
  * @envp: Pointer to "struct tomoyo_envp".
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns true on success, false otherwise.
  */
@@ -136,10 +117,7 @@ static bool tomoyo_scan_bprm(struct tomoyo_execve *ee,
 	bool result = true;
 	u8 local_checked[32];
 	u8 *checked;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (argc + envc <= sizeof(local_checked)) {
 		checked = local_checked;
 		memset(local_checked, 0, sizeof(local_checked));
@@ -158,10 +136,7 @@ static bool tomoyo_scan_bprm(struct tomoyo_execve *ee,
 			/* Read. */
 			const char *kaddr = dump->data;
 			const unsigned char c = kaddr[offset++];
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (c && arg_len < TOMOYO_EXEC_TMPSIZE - 10) {
 				if (c == '\\') {
 					arg_ptr[arg_len++] = '\\';
@@ -191,10 +166,7 @@ static bool tomoyo_scan_bprm(struct tomoyo_execve *ee,
 				argv_count--;
 			} else if (envp_count) {
 				char *cp = strchr(arg_ptr, '=');
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (cp) {
 					*cp = '\0';
 					if (!tomoyo_envp(arg_ptr, cp + 1,
@@ -217,10 +189,7 @@ static bool tomoyo_scan_bprm(struct tomoyo_execve *ee,
 out:
 	if (result) {
 		int i;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Check not-yet-checked entries. */
 		for (i = 0; i < argc; i++) {
 			if (checked[i])
@@ -268,10 +237,7 @@ static bool tomoyo_scan_exec_realpath(struct file *file,
 {
 	bool result;
 	struct tomoyo_path_info exe;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!file)
 		return false;
 	exe.name = tomoyo_realpath_from_path(&file->f_path);
@@ -293,10 +259,7 @@ static bool tomoyo_scan_exec_realpath(struct file *file,
 static const struct tomoyo_path_info *tomoyo_get_dqword(char *start)
 {
 	char *cp = start + strlen(start) - 1;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cp == start || *start++ != '"' || *cp != '"')
 		return NULL;
 	*cp = '\0';
@@ -317,10 +280,7 @@ static bool tomoyo_parse_name_union_quoted(struct tomoyo_acl_param *param,
 					   struct tomoyo_name_union *ptr)
 {
 	char *filename = param->data;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*filename == '@')
 		return tomoyo_parse_name_union(param, ptr);
 	ptr->filename = tomoyo_get_dqword(filename);
@@ -361,10 +321,7 @@ static bool tomoyo_parse_envp(char *left, char *right,
 	const struct tomoyo_path_info *name;
 	const struct tomoyo_path_info *value;
 	char *cp = left + strlen(left) - 1;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*cp-- != ']' || *cp != '"')
 		goto out;
 	*cp = '\0';
@@ -419,10 +376,7 @@ static inline bool tomoyo_same_condition(const struct tomoyo_condition *a,
 static u8 tomoyo_condition_type(const char *word)
 {
 	u8 i;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < TOMOYO_MAX_CONDITION_KEYWORD; i++) {
 		if (!strcmp(word, tomoyo_condition_keyword[i]))
 			break;
@@ -454,10 +408,7 @@ static struct tomoyo_condition *tomoyo_commit_condition
 {
 	struct tomoyo_condition *ptr;
 	bool found = false;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mutex_lock_interruptible(&tomoyo_policy_lock)) {
 		dprintk(KERN_WARNING "%u: %s failed\n", __LINE__, __func__);
 		ptr = NULL;
@@ -505,20 +456,14 @@ static char *tomoyo_get_transit_preference(struct tomoyo_acl_param *param,
 {
 	char * const pos = param->data;
 	bool flag;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*pos == '<') {
 		e->transit = tomoyo_get_domainname(param);
 		goto done;
 	}
 	{
 		char *cp = strchr(pos, ' ');
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cp)
 			*cp = '\0';
 		flag = tomoyo_correct_path(pos) || !strcmp(pos, "keep") ||
@@ -560,10 +505,7 @@ struct tomoyo_condition *tomoyo_get_condition(struct tomoyo_acl_param *param)
 		tomoyo_get_transit_preference(param, &e);
 	char * const end_of_string = start_of_string + strlen(start_of_string);
 	char *pos;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 rerun:
 	pos = start_of_string;
 	while (1) {
@@ -573,10 +515,7 @@ rerun:
 		char *cp;
 		char *right_word;
 		bool is_not;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*left_word)
 			break;
 		/*
@@ -701,13 +640,8 @@ rerun:
 		}
 store_value:
 		if (!condp) {
-<<<<<<< HEAD
-			dprintk(KERN_WARNING "%u: dry_run left=%u right=%u "
-				"match=%u\n", __LINE__, left, right, !is_not);
-=======
 			dprintk(KERN_WARNING "%u: dry_run left=%u right=%u match=%u\n",
 				__LINE__, left, right, !is_not);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		condp->left = left;
@@ -744,10 +678,7 @@ store_value:
 	envp = (struct tomoyo_envp *) (argv + e.argc);
 	{
 		bool flag = false;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (pos = start_of_string; pos < end_of_string; pos++) {
 			if (*pos)
 				continue;
@@ -786,10 +717,7 @@ void tomoyo_get_attributes(struct tomoyo_obj_info *obj)
 
 	for (i = 0; i < TOMOYO_MAX_PATH_STAT; i++) {
 		struct inode *inode;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (i) {
 		case TOMOYO_PATH1:
 			dentry = obj->path1.dentry;
@@ -807,16 +735,10 @@ void tomoyo_get_attributes(struct tomoyo_obj_info *obj)
 			dentry = dget_parent(dentry);
 			break;
 		}
-<<<<<<< HEAD
-		inode = dentry->d_inode;
-		if (inode) {
-			struct tomoyo_mini_stat *stat = &obj->stat[i];
-=======
 		inode = d_backing_inode(dentry);
 		if (inode) {
 			struct tomoyo_mini_stat *stat = &obj->stat[i];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			stat->uid  = inode->i_uid;
 			stat->gid  = inode->i_gid;
 			stat->ino  = inode->i_ino;
@@ -825,12 +747,7 @@ void tomoyo_get_attributes(struct tomoyo_obj_info *obj)
 			stat->rdev = inode->i_rdev;
 			obj->stat_valid[i] = true;
 		}
-<<<<<<< HEAD
-		if (i & 1) /* i == TOMOYO_PATH1_PARENT ||
-			      i == TOMOYO_PATH2_PARENT */
-=======
 		if (i & 1) /* TOMOYO_PATH1_PARENT or TOMOYO_PATH2_PARENT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dput(dentry);
 	}
 }
@@ -861,10 +778,7 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 	u16 argc;
 	u16 envc;
 	struct linux_binprm *bprm = NULL;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cond)
 		return true;
 	condc = cond->condc;
@@ -887,10 +801,7 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 		const u8 right = condp->right;
 		bool is_bitop[2] = { false, false };
 		u8 j;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		condp++;
 		/* Check argv[] and envp[] later. */
 		if (left == TOMOYO_ARGV_ENTRY || left == TOMOYO_ENVP_ENTRY)
@@ -898,18 +809,11 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 		/* Check string expressions. */
 		if (right == TOMOYO_NAME_UNION) {
 			const struct tomoyo_name_union *ptr = names_p++;
-<<<<<<< HEAD
-			switch (left) {
-				struct tomoyo_path_info *symlink;
-				struct tomoyo_execve *ee;
-				struct file *file;
-=======
 			struct tomoyo_path_info *symlink;
 			struct tomoyo_execve *ee;
 			struct file *file;
 
 			switch (left) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case TOMOYO_SYMLINK_TARGET:
 				symlink = obj ? obj->symlink_target : NULL;
 				if (!symlink ||
@@ -931,32 +835,6 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 		for (j = 0; j < 2; j++) {
 			const u8 index = j ? right : left;
 			unsigned long value = 0;
-<<<<<<< HEAD
-			switch (index) {
-			case TOMOYO_TASK_UID:
-				value = current_uid();
-				break;
-			case TOMOYO_TASK_EUID:
-				value = current_euid();
-				break;
-			case TOMOYO_TASK_SUID:
-				value = current_suid();
-				break;
-			case TOMOYO_TASK_FSUID:
-				value = current_fsuid();
-				break;
-			case TOMOYO_TASK_GID:
-				value = current_gid();
-				break;
-			case TOMOYO_TASK_EGID:
-				value = current_egid();
-				break;
-			case TOMOYO_TASK_SGID:
-				value = current_sgid();
-				break;
-			case TOMOYO_TASK_FSGID:
-				value = current_fsgid();
-=======
 
 			switch (index) {
 			case TOMOYO_TASK_UID:
@@ -982,7 +860,6 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 				break;
 			case TOMOYO_TASK_FSGID:
 				value = from_kgid(&init_user_ns, current_fsgid());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case TOMOYO_TASK_PID:
 				value = tomoyo_sys_getpid();
@@ -1021,33 +898,6 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 				value = S_ISVTX;
 				break;
 			case TOMOYO_MODE_OWNER_READ:
-<<<<<<< HEAD
-				value = S_IRUSR;
-				break;
-			case TOMOYO_MODE_OWNER_WRITE:
-				value = S_IWUSR;
-				break;
-			case TOMOYO_MODE_OWNER_EXECUTE:
-				value = S_IXUSR;
-				break;
-			case TOMOYO_MODE_GROUP_READ:
-				value = S_IRGRP;
-				break;
-			case TOMOYO_MODE_GROUP_WRITE:
-				value = S_IWGRP;
-				break;
-			case TOMOYO_MODE_GROUP_EXECUTE:
-				value = S_IXGRP;
-				break;
-			case TOMOYO_MODE_OTHERS_READ:
-				value = S_IROTH;
-				break;
-			case TOMOYO_MODE_OTHERS_WRITE:
-				value = S_IWOTH;
-				break;
-			case TOMOYO_MODE_OTHERS_EXECUTE:
-				value = S_IXOTH;
-=======
 				value = 0400;
 				break;
 			case TOMOYO_MODE_OWNER_WRITE:
@@ -1073,7 +923,6 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 				break;
 			case TOMOYO_MODE_OTHERS_EXECUTE:
 				value = 0001;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case TOMOYO_EXEC_ARGC:
 				if (!bprm)
@@ -1098,10 +947,7 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 				{
 					u8 stat_index;
 					struct tomoyo_mini_stat *stat;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					switch (index) {
 					case TOMOYO_PATH1_UID:
 					case TOMOYO_PATH1_GID:
@@ -1150,21 +996,13 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 					case TOMOYO_PATH2_UID:
 					case TOMOYO_PATH1_PARENT_UID:
 					case TOMOYO_PATH2_PARENT_UID:
-<<<<<<< HEAD
-						value = stat->uid;
-=======
 						value = from_kuid(&init_user_ns, stat->uid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						break;
 					case TOMOYO_PATH1_GID:
 					case TOMOYO_PATH2_GID:
 					case TOMOYO_PATH1_PARENT_GID:
 					case TOMOYO_PATH2_PARENT_GID:
-<<<<<<< HEAD
-						value = stat->gid;
-=======
 						value = from_kgid(&init_user_ns, stat->gid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						break;
 					case TOMOYO_PATH1_INO:
 					case TOMOYO_PATH2_INO:
@@ -1223,20 +1061,14 @@ bool tomoyo_condition(struct tomoyo_request_info *r,
 		if (left == TOMOYO_NUMBER_UNION) {
 			/* Fetch values now. */
 			const struct tomoyo_number_union *ptr = numbers_p++;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			min_v[0] = ptr->values[0];
 			max_v[0] = ptr->values[1];
 		}
 		if (right == TOMOYO_NUMBER_UNION) {
 			/* Fetch values now. */
 			const struct tomoyo_number_union *ptr = numbers_p++;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ptr->group) {
 				if (tomoyo_number_matches_group(min_v[0],
 								max_v[0],

@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * saa7706.c Philips SAA7706H Car Radio DSP driver
- * Copyright (c) 2009 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * saa7706.c Philips SAA7706H Car Radio DSP driver
  * Copyright (c) 2009 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -32,11 +13,7 @@
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <media/v4l2-device.h>
-<<<<<<< HEAD
-#include <media/v4l2-chip-ident.h>
-=======
 #include <media/v4l2-ctrls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME "saa7706h"
 
@@ -138,10 +115,7 @@
 
 struct saa7706h_state {
 	struct v4l2_subdev sd;
-<<<<<<< HEAD
-=======
 	struct v4l2_ctrl_handler hdl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned muted;
 };
 
@@ -214,10 +188,6 @@ static int saa7706h_get_reg16(struct v4l2_subdev *sd, u16 reg)
 	u8 buf[2];
 	int err;
 	u8 regaddr[] = {reg >> 8, reg};
-<<<<<<< HEAD
-	struct i2c_msg msg[] = { {client->addr, 0, sizeof(regaddr), regaddr},
-				{client->addr, I2C_M_RD, sizeof(buf), buf} };
-=======
 	struct i2c_msg msg[] = {
 					{
 						.addr = client->addr,
@@ -231,7 +201,6 @@ static int saa7706h_get_reg16(struct v4l2_subdev *sd, u16 reg)
 						.buf = buf
 					}
 				};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = saa7706h_i2c_transfer(client, msg, ARRAY_SIZE(msg));
 	if (err)
@@ -337,25 +306,6 @@ static int saa7706h_mute(struct v4l2_subdev *sd)
 	return err;
 }
 
-<<<<<<< HEAD
-static int saa7706h_queryctrl(struct v4l2_subdev *sd, struct v4l2_queryctrl *qc)
-{
-	switch (qc->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		return v4l2_ctrl_query_fill(qc, 0, 1, 1, 1);
-	}
-	return -EINVAL;
-}
-
-static int saa7706h_g_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
-{
-	struct saa7706h_state *state = to_state(sd);
-
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		ctrl->value = state->muted;
-		return 0;
-=======
 static int saa7706h_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct saa7706h_state *state =
@@ -366,60 +316,22 @@ static int saa7706h_s_ctrl(struct v4l2_ctrl *ctrl)
 		if (ctrl->val)
 			return saa7706h_mute(&state->sd);
 		return saa7706h_unmute(&state->sd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int saa7706h_s_ctrl(struct v4l2_subdev *sd, struct v4l2_control *ctrl)
-{
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		if (ctrl->value)
-			return saa7706h_mute(sd);
-		return saa7706h_unmute(sd);
-	}
-	return -EINVAL;
-}
-
-static int saa7706h_g_chip_ident(struct v4l2_subdev *sd,
-	struct v4l2_dbg_chip_ident *chip)
-{
-	struct i2c_client *client = v4l2_get_subdevdata(sd);
-
-	return v4l2_chip_ident_i2c_client(client, chip, V4L2_IDENT_SAA7706H, 0);
-}
-
-static const struct v4l2_subdev_core_ops saa7706h_core_ops = {
-	.g_chip_ident = saa7706h_g_chip_ident,
-	.queryctrl = saa7706h_queryctrl,
-	.g_ctrl = saa7706h_g_ctrl,
-	.s_ctrl = saa7706h_s_ctrl,
-};
-
-static const struct v4l2_subdev_ops saa7706h_ops = {
-	.core = &saa7706h_core_ops,
-};
-=======
 static const struct v4l2_ctrl_ops saa7706h_ctrl_ops = {
 	.s_ctrl = saa7706h_s_ctrl,
 };
 
 static const struct v4l2_subdev_ops empty_ops = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic i2c probe
  * concerning the addresses: i2c wants 7 bit (without the r/w bit), so '>>1'
  */
 
-<<<<<<< HEAD
-static int __devinit saa7706h_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
-=======
 static int saa7706h_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct saa7706h_state *state;
 	struct v4l2_subdev *sd;
@@ -436,9 +348,6 @@ static int saa7706h_probe(struct i2c_client *client)
 	if (state == NULL)
 		return -ENOMEM;
 	sd = &state->sd;
-<<<<<<< HEAD
-	v4l2_i2c_subdev_init(sd, client, &saa7706h_ops);
-=======
 	v4l2_i2c_subdev_init(sd, client, &empty_ops);
 
 	v4l2_ctrl_handler_init(&state->hdl, 4);
@@ -448,7 +357,6 @@ static int saa7706h_probe(struct i2c_client *client)
 	err = state->hdl.error;
 	if (err)
 		goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check the rom versions */
 	err = saa7706h_get_reg16(sd, SAA7706H_DSP1_ROM_VER);
@@ -456,10 +364,6 @@ static int saa7706h_probe(struct i2c_client *client)
 		goto err;
 	if (err != SUPPORTED_DSP1_ROM_VER)
 		v4l2_warn(sd, "Unknown DSP1 ROM code version: 0x%x\n", err);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state->muted = 1;
 
 	/* startup in a muted state */
@@ -471,10 +375,7 @@ static int saa7706h_probe(struct i2c_client *client)
 
 err:
 	v4l2_device_unregister_subdev(sd);
-<<<<<<< HEAD
-=======
 	v4l2_ctrl_handler_free(&state->hdl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(to_state(sd));
 
 	printk(KERN_ERR DRIVER_NAME ": Failed to probe: %d\n", err);
@@ -482,16 +383,6 @@ err:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit saa7706h_remove(struct i2c_client *client)
-{
-	struct v4l2_subdev *sd = i2c_get_clientdata(client);
-
-	saa7706h_mute(sd);
-	v4l2_device_unregister_subdev(sd);
-	kfree(to_state(sd));
-	return 0;
-=======
 static void saa7706h_remove(struct i2c_client *client)
 {
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
@@ -501,7 +392,6 @@ static void saa7706h_remove(struct i2c_client *client)
 	v4l2_device_unregister_subdev(sd);
 	v4l2_ctrl_handler_free(&state->hdl);
 	kfree(to_state(sd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id saa7706h_id[] = {
@@ -513,10 +403,6 @@ MODULE_DEVICE_TABLE(i2c, saa7706h_id);
 
 static struct i2c_driver saa7706h_driver = {
 	.driver = {
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= DRIVER_NAME,
 	},
 	.probe		= saa7706h_probe,

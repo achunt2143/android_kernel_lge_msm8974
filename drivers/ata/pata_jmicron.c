@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    pata_jmicron.c - JMicron ATA driver for non AHCI mode. This drives the
  *			PATA port of the controller. The SATA ports are
@@ -14,10 +11,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -114,11 +107,7 @@ static int jmicron_pre_reset(struct ata_link *link, unsigned long deadline)
 
 /* No PIO or DMA methods needed for this device */
 
-<<<<<<< HEAD
-static struct scsi_host_template jmicron_sht = {
-=======
 static const struct scsi_host_template jmicron_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -131,11 +120,7 @@ static struct ata_port_operations jmicron_ops = {
 /**
  *	jmicron_init_one - Register Jmicron ATA PCI device with kernel services
  *	@pdev: PCI device to register
-<<<<<<< HEAD
- *	@ent: Entry in jmicron_pci_tbl matching with @pdev
-=======
  *	@id: PCI device ID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Called from kernel PCI layer.
  *
@@ -173,32 +158,13 @@ static struct pci_driver jmicron_pci_driver = {
 	.id_table		= jmicron_pci_tbl,
 	.probe			= jmicron_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init jmicron_init(void)
-{
-	return pci_register_driver(&jmicron_pci_driver);
-}
-
-static void __exit jmicron_exit(void)
-{
-	pci_unregister_driver(&jmicron_pci_driver);
-}
-
-module_init(jmicron_init);
-module_exit(jmicron_exit);
-=======
 module_pci_driver(jmicron_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for Jmicron PATA ports");

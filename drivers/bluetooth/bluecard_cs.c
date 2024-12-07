@@ -61,11 +61,7 @@ MODULE_LICENSE("GPL");
 /* ======================== Local structures ======================== */
 
 
-<<<<<<< HEAD
-typedef struct bluecard_info_t {
-=======
 struct bluecard_info {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcmcia_device *p_dev;
 
 	struct hci_dev *hdev;
@@ -82,11 +78,7 @@ struct bluecard_info {
 
 	unsigned char ctrl_reg;
 	unsigned long hw_state;		/* Status of the hardware and LED control */
-<<<<<<< HEAD
-} bluecard_info_t;
-=======
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static int bluecard_config(struct pcmcia_device *link);
@@ -101,10 +93,7 @@ static void bluecard_detach(struct pcmcia_device *p_dev);
 
 /* Hardware states */
 #define CARD_READY             1
-<<<<<<< HEAD
-=======
 #define CARD_ACTIVITY	       2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CARD_HAS_PCCARD_ID     4
 #define CARD_HAS_POWER_LED     5
 #define CARD_HAS_ACTIVITY_LED  6
@@ -167,19 +156,6 @@ static void bluecard_detach(struct pcmcia_device *p_dev);
 /* ======================== LED handling routines ======================== */
 
 
-<<<<<<< HEAD
-static void bluecard_activity_led_timeout(u_long arg)
-{
-	bluecard_info_t *info = (bluecard_info_t *)arg;
-	unsigned int iobase = info->p_dev->resource[0]->start;
-
-	if (!test_bit(CARD_HAS_PCCARD_ID, &(info->hw_state)))
-		return;
-
-	if (test_bit(CARD_HAS_ACTIVITY_LED, &(info->hw_state))) {
-		/* Disable activity LED */
-		outb(0x08 | 0x20, iobase + 0x30);
-=======
 static void bluecard_activity_led_timeout(struct timer_list *t)
 {
 	struct bluecard_info *info = from_timer(info, t, timer);
@@ -209,40 +185,13 @@ static void bluecard_enable_activity_led(struct bluecard_info *info)
 	if (test_bit(CARD_HAS_ACTIVITY_LED, &(info->hw_state))) {
 		/* Enable activity LED, keep power LED enabled */
 		outb(0x18 | 0x60, iobase + 0x30);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Disable power LED */
 		outb(0x00, iobase + 0x30);
 	}
-<<<<<<< HEAD
-}
-
-
-static void bluecard_enable_activity_led(bluecard_info_t *info)
-{
-	unsigned int iobase = info->p_dev->resource[0]->start;
-
-	if (!test_bit(CARD_HAS_PCCARD_ID, &(info->hw_state)))
-		return;
-
-	if (test_bit(CARD_HAS_ACTIVITY_LED, &(info->hw_state))) {
-		/* Enable activity LED */
-		outb(0x10 | 0x40, iobase + 0x30);
-
-		/* Stop the LED after HZ/4 */
-		mod_timer(&(info->timer), jiffies + HZ / 4);
-	} else {
-		/* Enable power LED */
-		outb(0x08 | 0x20, iobase + 0x30);
-
-		/* Stop the LED after HZ/2 */
-		mod_timer(&(info->timer), jiffies + HZ / 2);
-	}
-=======
 
 	/* Stop the LED after HZ/10 */
 	mod_timer(&(info->timer), jiffies + HZ / 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -265,11 +214,7 @@ static int bluecard_write(unsigned int iobase, unsigned int offset, __u8 *buf, i
 }
 
 
-<<<<<<< HEAD
-static void bluecard_write_wakeup(bluecard_info_t *info)
-=======
 static void bluecard_write_wakeup(struct bluecard_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!info) {
 		BT_ERR("Unknown device");
@@ -285,21 +230,12 @@ static void bluecard_write_wakeup(struct bluecard_info *info)
 	}
 
 	do {
-<<<<<<< HEAD
-		register unsigned int iobase = info->p_dev->resource[0]->start;
-		register unsigned int offset;
-		register unsigned char command;
-		register unsigned long ready_bit;
-		register struct sk_buff *skb;
-		register int len;
-=======
 		unsigned int iobase = info->p_dev->resource[0]->start;
 		unsigned int offset;
 		unsigned char command;
 		unsigned long ready_bit;
 		register struct sk_buff *skb;
 		int len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		clear_bit(XMIT_WAKEUP, &(info->tx_state));
 
@@ -320,18 +256,11 @@ static void bluecard_write_wakeup(struct bluecard_info *info)
 			ready_bit = XMIT_BUF_ONE_READY;
 		}
 
-<<<<<<< HEAD
-		if (!(skb = skb_dequeue(&(info->txq))))
-			break;
-
-		if (bt_cb(skb)->pkt_type & 0x80) {
-=======
 		skb = skb_dequeue(&(info->txq));
 		if (!skb)
 			break;
 
 		if (hci_skb_pkt_type(skb) & 0x80) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Disable RTS */
 			info->ctrl_reg |= REG_CONTROL_RTS;
 			outb(info->ctrl_reg, iobase + REG_CONTROL);
@@ -349,21 +278,13 @@ static void bluecard_write_wakeup(struct bluecard_info *info)
 		/* Mark the buffer as dirty */
 		clear_bit(ready_bit, &(info->tx_state));
 
-<<<<<<< HEAD
-		if (bt_cb(skb)->pkt_type & 0x80) {
-=======
 		if (hci_skb_pkt_type(skb) & 0x80) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
 			DEFINE_WAIT(wait);
 
 			unsigned char baud_reg;
 
-<<<<<<< HEAD
-			switch (bt_cb(skb)->pkt_type) {
-=======
 			switch (hci_skb_pkt_type(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case PKT_BAUD_RATE_460800:
 				baud_reg = REG_CONTROL_BAUD_RATE_460800;
 				break;
@@ -374,23 +295,13 @@ static void bluecard_write_wakeup(struct bluecard_info *info)
 				baud_reg = REG_CONTROL_BAUD_RATE_115200;
 				break;
 			case PKT_BAUD_RATE_57600:
-<<<<<<< HEAD
-				/* Fall through... */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 				baud_reg = REG_CONTROL_BAUD_RATE_57600;
 				break;
 			}
 
 			/* Wait until the command reaches the baseband */
-<<<<<<< HEAD
-			prepare_to_wait(&wq, &wait, TASK_INTERRUPTIBLE);
-			schedule_timeout(HZ/10);
-			finish_wait(&wq, &wait);
-=======
 			mdelay(100);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Set baud on baseband */
 			info->ctrl_reg &= ~0x03;
@@ -402,13 +313,7 @@ static void bluecard_write_wakeup(struct bluecard_info *info)
 			outb(info->ctrl_reg, iobase + REG_CONTROL);
 
 			/* Wait before the next HCI packet can be send */
-<<<<<<< HEAD
-			prepare_to_wait(&wq, &wait, TASK_INTERRUPTIBLE);
-			schedule_timeout(HZ);
-			finish_wait(&wq, &wait);
-=======
 			mdelay(1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (len == skb->len) {
@@ -457,12 +362,8 @@ static int bluecard_read(unsigned int iobase, unsigned int offset, __u8 *buf, in
 }
 
 
-<<<<<<< HEAD
-static void bluecard_receive(bluecard_info_t *info, unsigned int offset)
-=======
 static void bluecard_receive(struct bluecard_info *info,
 			     unsigned int offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int iobase;
 	unsigned char buf[31];
@@ -483,18 +384,11 @@ static void bluecard_receive(struct bluecard_info *info,
 	for (i = 0; i < len; i++) {
 
 		/* Allocate packet */
-<<<<<<< HEAD
-		if (info->rx_skb == NULL) {
-			info->rx_state = RECV_WAIT_PACKET_TYPE;
-			info->rx_count = 0;
-			if (!(info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC))) {
-=======
 		if (!info->rx_skb) {
 			info->rx_state = RECV_WAIT_PACKET_TYPE;
 			info->rx_count = 0;
 			info->rx_skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC);
 			if (!info->rx_skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				BT_ERR("Can't allocate mem for new packet");
 				return;
 			}
@@ -502,16 +396,9 @@ static void bluecard_receive(struct bluecard_info *info,
 
 		if (info->rx_state == RECV_WAIT_PACKET_TYPE) {
 
-<<<<<<< HEAD
-			info->rx_skb->dev = (void *) info->hdev;
-			bt_cb(info->rx_skb)->pkt_type = buf[i];
-
-			switch (bt_cb(info->rx_skb)->pkt_type) {
-=======
 			hci_skb_pkt_type(info->rx_skb) = buf[i];
 
 			switch (hci_skb_pkt_type(info->rx_skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			case 0x00:
 				/* init packet */
@@ -543,12 +430,8 @@ static void bluecard_receive(struct bluecard_info *info,
 
 			default:
 				/* unknown packet */
-<<<<<<< HEAD
-				BT_ERR("Unknown HCI packet with type 0x%02x received", bt_cb(info->rx_skb)->pkt_type);
-=======
 				BT_ERR("Unknown HCI packet with type 0x%02x received",
 				       hci_skb_pkt_type(info->rx_skb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				info->hdev->stat.err_rx++;
 
 				kfree_skb(info->rx_skb);
@@ -559,11 +442,7 @@ static void bluecard_receive(struct bluecard_info *info,
 
 		} else {
 
-<<<<<<< HEAD
-			*skb_put(info->rx_skb, 1) = buf[i];
-=======
 			skb_put_u8(info->rx_skb, buf[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			info->rx_count--;
 
 			if (info->rx_count == 0) {
@@ -595,11 +474,7 @@ static void bluecard_receive(struct bluecard_info *info,
 					break;
 
 				case RECV_WAIT_DATA:
-<<<<<<< HEAD
-					hci_recv_frame(info->rx_skb);
-=======
 					hci_recv_frame(info->hdev, info->rx_skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					info->rx_skb = NULL;
 					break;
 
@@ -618,11 +493,7 @@ static void bluecard_receive(struct bluecard_info *info,
 
 static irqreturn_t bluecard_interrupt(int irq, void *dev_inst)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = dev_inst;
-=======
 	struct bluecard_info *info = dev_inst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int iobase;
 	unsigned char reg;
 
@@ -687,22 +558,14 @@ static irqreturn_t bluecard_interrupt(int irq, void *dev_inst)
 
 static int bluecard_hci_set_baud_rate(struct hci_dev *hdev, int baud)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = (bluecard_info_t *)(hdev->driver_data);
-=======
 	struct bluecard_info *info = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 
 	/* Ericsson baud rate command */
 	unsigned char cmd[] = { HCI_COMMAND_PKT, 0x09, 0xfc, 0x01, 0x03 };
 
-<<<<<<< HEAD
-	if (!(skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_ATOMIC))) {
-=======
 	skb = bt_skb_alloc(HCI_MAX_FRAME_SIZE, GFP_KERNEL);
 	if (!skb) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BT_ERR("Can't allocate mem for new packet");
 		return -1;
 	}
@@ -710,27 +573,6 @@ static int bluecard_hci_set_baud_rate(struct hci_dev *hdev, int baud)
 	switch (baud) {
 	case 460800:
 		cmd[4] = 0x00;
-<<<<<<< HEAD
-		bt_cb(skb)->pkt_type = PKT_BAUD_RATE_460800;
-		break;
-	case 230400:
-		cmd[4] = 0x01;
-		bt_cb(skb)->pkt_type = PKT_BAUD_RATE_230400;
-		break;
-	case 115200:
-		cmd[4] = 0x02;
-		bt_cb(skb)->pkt_type = PKT_BAUD_RATE_115200;
-		break;
-	case 57600:
-		/* Fall through... */
-	default:
-		cmd[4] = 0x03;
-		bt_cb(skb)->pkt_type = PKT_BAUD_RATE_57600;
-		break;
-	}
-
-	memcpy(skb_put(skb, sizeof(cmd)), cmd, sizeof(cmd));
-=======
 		hci_skb_pkt_type(skb) = PKT_BAUD_RATE_460800;
 		break;
 	case 230400:
@@ -749,7 +591,6 @@ static int bluecard_hci_set_baud_rate(struct hci_dev *hdev, int baud)
 	}
 
 	skb_put_data(skb, cmd, sizeof(cmd));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_tail(&(info->txq), skb);
 
@@ -765,11 +606,7 @@ static int bluecard_hci_set_baud_rate(struct hci_dev *hdev, int baud)
 
 static int bluecard_hci_flush(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = (bluecard_info_t *)(hdev->driver_data);
-=======
 	struct bluecard_info *info = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Drop TX queue */
 	skb_queue_purge(&(info->txq));
@@ -780,28 +617,14 @@ static int bluecard_hci_flush(struct hci_dev *hdev)
 
 static int bluecard_hci_open(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = (bluecard_info_t *)(hdev->driver_data);
-=======
 	struct bluecard_info *info = hci_get_drvdata(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int iobase = info->p_dev->resource[0]->start;
 
 	if (test_bit(CARD_HAS_PCCARD_ID, &(info->hw_state)))
 		bluecard_hci_set_baud_rate(hdev, DEFAULT_BAUD_RATE);
 
-<<<<<<< HEAD
-	if (test_and_set_bit(HCI_RUNNING, &(hdev->flags)))
-		return 0;
-
-	if (test_bit(CARD_HAS_PCCARD_ID, &(info->hw_state))) {
-		/* Enable LED */
-		outb(0x08 | 0x20, iobase + 0x30);
-	}
-=======
 	/* Enable power LED */
 	outb(0x08 | 0x20, iobase + 0x30);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -809,20 +632,6 @@ static int bluecard_hci_open(struct hci_dev *hdev)
 
 static int bluecard_hci_close(struct hci_dev *hdev)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = (bluecard_info_t *)(hdev->driver_data);
-	unsigned int iobase = info->p_dev->resource[0]->start;
-
-	if (!test_and_clear_bit(HCI_RUNNING, &(hdev->flags)))
-		return 0;
-
-	bluecard_hci_flush(hdev);
-
-	if (test_bit(CARD_HAS_PCCARD_ID, &(info->hw_state))) {
-		/* Disable LED */
-		outb(0x00, iobase + 0x30);
-	}
-=======
 	struct bluecard_info *info = hci_get_drvdata(hdev);
 	unsigned int iobase = info->p_dev->resource[0]->start;
 
@@ -833,33 +642,16 @@ static int bluecard_hci_close(struct hci_dev *hdev)
 
 	/* Disable power LED */
 	outb(0x00, iobase + 0x30);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
-<<<<<<< HEAD
-static int bluecard_hci_send_frame(struct sk_buff *skb)
-{
-	bluecard_info_t *info;
-	struct hci_dev *hdev = (struct hci_dev *)(skb->dev);
-
-	if (!hdev) {
-		BT_ERR("Frame for unknown HCI device (hdev=NULL)");
-		return -ENODEV;
-	}
-
-	info = (bluecard_info_t *)(hdev->driver_data);
-
-	switch (bt_cb(skb)->pkt_type) {
-=======
 static int bluecard_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct bluecard_info *info = hci_get_drvdata(hdev);
 
 	switch (hci_skb_pkt_type(skb)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HCI_COMMAND_PKT:
 		hdev->stat.cmd_tx++;
 		break;
@@ -869,17 +661,10 @@ static int bluecard_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 	case HCI_SCODATA_PKT:
 		hdev->stat.sco_tx++;
 		break;
-<<<<<<< HEAD
-	};
-
-	/* Prepend skb with frame type */
-	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
-=======
 	}
 
 	/* Prepend skb with frame type */
 	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_tail(&(info->txq), skb);
 
 	bluecard_write_wakeup(info);
@@ -888,29 +673,11 @@ static int bluecard_hci_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
 }
 
 
-<<<<<<< HEAD
-static void bluecard_hci_destruct(struct hci_dev *hdev)
-{
-}
-
-
-static int bluecard_hci_ioctl(struct hci_dev *hdev, unsigned int cmd, unsigned long arg)
-{
-	return -ENOIOCTLCMD;
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ======================== Card services HCI interaction ======================== */
 
 
-<<<<<<< HEAD
-static int bluecard_open(bluecard_info_t *info)
-=======
 static int bluecard_open(struct bluecard_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int iobase = info->p_dev->resource[0]->start;
 	struct hci_dev *hdev;
@@ -918,13 +685,7 @@ static int bluecard_open(struct bluecard_info *info)
 
 	spin_lock_init(&(info->lock));
 
-<<<<<<< HEAD
-	init_timer(&(info->timer));
-	info->timer.function = &bluecard_activity_led_timeout;
-	info->timer.data = (u_long)info;
-=======
 	timer_setup(&info->timer, bluecard_activity_led_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_head_init(&(info->txq));
 
@@ -942,19 +703,6 @@ static int bluecard_open(struct bluecard_info *info)
 	info->hdev = hdev;
 
 	hdev->bus = HCI_PCCARD;
-<<<<<<< HEAD
-	hdev->driver_data = info;
-	SET_HCIDEV_DEV(hdev, &info->p_dev->dev);
-
-	hdev->open     = bluecard_hci_open;
-	hdev->close    = bluecard_hci_close;
-	hdev->flush    = bluecard_hci_flush;
-	hdev->send     = bluecard_hci_send_frame;
-	hdev->destruct = bluecard_hci_destruct;
-	hdev->ioctl    = bluecard_hci_ioctl;
-
-	hdev->owner = THIS_MODULE;
-=======
 	hci_set_drvdata(hdev, info);
 	SET_HCIDEV_DEV(hdev, &info->p_dev->dev);
 
@@ -962,7 +710,6 @@ static int bluecard_open(struct bluecard_info *info)
 	hdev->close = bluecard_hci_close;
 	hdev->flush = bluecard_hci_flush;
 	hdev->send  = bluecard_hci_send_frame;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	id = inb(iobase + 0x30);
 
@@ -1043,11 +790,7 @@ static int bluecard_open(struct bluecard_info *info)
 }
 
 
-<<<<<<< HEAD
-static int bluecard_close(bluecard_info_t *info)
-=======
 static int bluecard_close(struct bluecard_info *info)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int iobase = info->p_dev->resource[0]->start;
 	struct hci_dev *hdev = info->hdev;
@@ -1066,13 +809,7 @@ static int bluecard_close(struct bluecard_info *info)
 	/* Turn FPGA off */
 	outb(0x80, iobase + 0x30);
 
-<<<<<<< HEAD
-	if (hci_unregister_dev(hdev) < 0)
-		BT_ERR("Can't unregister HCI device %s", hdev->name);
-
-=======
 	hci_unregister_dev(hdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hci_free_dev(hdev);
 
 	return 0;
@@ -1080,17 +817,10 @@ static int bluecard_close(struct bluecard_info *info)
 
 static int bluecard_probe(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info;
-
-	/* Create new info device */
-	info = kzalloc(sizeof(*info), GFP_KERNEL);
-=======
 	struct bluecard_info *info;
 
 	/* Create new info device */
 	info = devm_kzalloc(&link->dev, sizeof(*info), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 
@@ -1105,24 +835,13 @@ static int bluecard_probe(struct pcmcia_device *link)
 
 static void bluecard_detach(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = link->priv;
-
 	bluecard_release(link);
-	kfree(info);
-=======
-	bluecard_release(link);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int bluecard_config(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = link->priv;
-=======
 	struct bluecard_info *info = link->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, n;
 
 	link->config_index = 0x20;
@@ -1162,28 +881,16 @@ failed:
 
 static void bluecard_release(struct pcmcia_device *link)
 {
-<<<<<<< HEAD
-	bluecard_info_t *info = link->priv;
-
-	bluecard_close(info);
-
-	del_timer(&(info->timer));
-=======
 	struct bluecard_info *info = link->priv;
 
 	bluecard_close(info);
 
 	del_timer_sync(&(info->timer));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcmcia_disable_device(link);
 }
 
-<<<<<<< HEAD
-static struct pcmcia_device_id bluecard_ids[] = {
-=======
 static const struct pcmcia_device_id bluecard_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_DEVICE_PROD_ID12("BlueCard", "LSE041", 0xbaf16fbf, 0x657cc15e),
 	PCMCIA_DEVICE_PROD_ID12("BTCFCARD", "LSE139", 0xe3987764, 0x2524b59c),
 	PCMCIA_DEVICE_PROD_ID12("WSS", "LSE039", 0x0a0736ec, 0x24e6dfab),
@@ -1198,21 +905,4 @@ static struct pcmcia_driver bluecard_driver = {
 	.remove		= bluecard_detach,
 	.id_table	= bluecard_ids,
 };
-<<<<<<< HEAD
-
-static int __init init_bluecard_cs(void)
-{
-	return pcmcia_register_driver(&bluecard_driver);
-}
-
-
-static void __exit exit_bluecard_cs(void)
-{
-	pcmcia_unregister_driver(&bluecard_driver);
-}
-
-module_init(init_bluecard_cs);
-module_exit(exit_bluecard_cs);
-=======
 module_pcmcia_driver(bluecard_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

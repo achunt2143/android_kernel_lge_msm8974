@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * linux/arch/arm/mach-omap2/sdrc2xxx.c
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SDRAM timing related functions for OMAP2xxx
  *
  * Copyright (C) 2005, 2008 Texas Instruments Inc.
@@ -14,13 +8,6 @@
  * Tony Lindgren <tony@atomide.com>
  * Paul Walmsley
  * Richard Woodruff <r-woodruff2@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -32,18 +19,6 @@
 #include <linux/clk.h>
 #include <linux/io.h>
 
-<<<<<<< HEAD
-#include <plat/hardware.h>
-#include <plat/clock.h>
-#include <plat/sram.h>
-#include <plat/sdrc.h>
-
-#include "iomap.h"
-#include "common.h"
-#include "prm2xxx_3xxx.h"
-#include "clock.h"
-#include "sdrc.h"
-=======
 #include "soc.h"
 #include "iomap.h"
 #include "common.h"
@@ -51,7 +26,6 @@
 #include "clock.h"
 #include "sdrc.h"
 #include "sram.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Memory timing, DLL mode flags */
 #define M_DDR		1
@@ -124,15 +98,9 @@ u32 omap2xxx_sdrc_reprogram(u32 level, u32 force)
 	 * prm2xxx.c function
 	 */
 	if (cpu_is_omap2420())
-<<<<<<< HEAD
-		__raw_writel(0xffff, OMAP2420_PRCM_VOLTSETUP);
-	else
-		__raw_writel(0xffff, OMAP2430_PRCM_VOLTSETUP);
-=======
 		writel_relaxed(0xffff, OMAP2420_PRCM_VOLTSETUP);
 	else
 		writel_relaxed(0xffff, OMAP2430_PRCM_VOLTSETUP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap2_sram_reprogram_sdrc(level, dll_ctrl, m_type);
 	curr_perf_level = level;
 	local_irq_restore(flags);
@@ -191,10 +159,6 @@ void omap2xxx_sdrc_init_params(u32 force_lock_to_unlock_mode)
 	mem_timings.slow_dll_ctrl |=
 		((mem_timings.fast_dll_ctrl & 0xF) | (1 << 2));
 
-<<<<<<< HEAD
-	/* 90 degree phase for anything below 133Mhz + disable DLL filter */
-=======
 	/* 90 degree phase for anything below 133MHz + disable DLL filter */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mem_timings.slow_dll_ctrl |= ((1 << 1) | (3 << 8));
 }

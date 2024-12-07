@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PFXLEN_H
 #define _PFXLEN_H
 
@@ -45,8 +42,6 @@ do {						\
 	to = from | ~ip_set_hostmask(cidr);	\
 } while (0)
 
-<<<<<<< HEAD
-=======
 static inline void
 ip6_netmask(union nf_inet_addr *ip, u8 prefix)
 {
@@ -56,5 +51,4 @@ ip6_netmask(union nf_inet_addr *ip, u8 prefix)
 	ip->ip6[3] &= ip_set_netmask6(prefix)[3];
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*_PFXLEN_H */

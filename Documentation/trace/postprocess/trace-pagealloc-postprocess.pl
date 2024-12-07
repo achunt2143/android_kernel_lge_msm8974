@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-#!/usr/bin/perl
-=======
 #!/usr/bin/env perl
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # This is a POC (proof of concept or piece of crap, take your pick) for reading the
 # text representation of trace output related to page allocation. It makes an attempt
 # to extract some high-level information on what is going on. The accuracy of the parser
 # may vary considerably
 #
-<<<<<<< HEAD
-# Example usage: trace-pagealloc-postprocess.pl < /sys/kernel/debug/tracing/trace_pipe
-=======
 # Example usage: trace-pagealloc-postprocess.pl < /sys/kernel/tracing/trace_pipe
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # other options
 #   --prepend-parent	Report on the parent proc and PID
 #   --read-procstat	If the trace lacks process info, get it from /proc
@@ -102,11 +94,7 @@ sub generate_traceevent_regex {
 	my $regex;
 
 	# Read the event format or use the default
-<<<<<<< HEAD
-	if (!open (FORMAT, "/sys/kernel/debug/tracing/events/$event/format")) {
-=======
 	if (!open (FORMAT, "/sys/kernel/tracing/events/$event/format")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		$regex = $default;
 	} else {
 		my $line;

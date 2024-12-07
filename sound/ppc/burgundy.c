@@ -1,40 +1,15 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PMac Burgundy lowlevel functions
  *
  * Copyright (c) by Takashi Iwai <tiwai@suse.de>
  * code based on dmasound.c.
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- */
-
-#include <asm/io.h>
-#include <linux/init.h>
-#include <linux/delay.h>
-=======
  */
 
 #include <linux/io.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include "pmac.h"
 #include "burgundy.h"
@@ -480,11 +455,7 @@ static int snd_pmac_burgundy_put_switch_b(struct snd_kcontrol *kcontrol,
 /*
  * Burgundy mixers
  */
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_pmac_burgundy_mixers[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_pmac_burgundy_mixers[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BURGUNDY_VOLUME_W("Master Playback Volume", 0,
 			MASK_ADDR_BURGUNDY_MASTER_VOLUME, 8),
 	BURGUNDY_VOLUME_W("CD Capture Volume", 0,
@@ -512,11 +483,7 @@ static const struct snd_kcontrol_new snd_pmac_burgundy_mixers[] = {
  */	BURGUNDY_SWITCH_B("PCM Capture Switch", 0,
 			MASK_ADDR_BURGUNDY_HOSTIFEH, 0x01, 0, 0)
 };
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_pmac_burgundy_mixers_imac[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_pmac_burgundy_mixers_imac[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BURGUNDY_VOLUME_W("Line in Capture Volume", 0,
 			MASK_ADDR_BURGUNDY_VOLLINE, 16),
 	BURGUNDY_VOLUME_W("Mic Capture Volume", 0,
@@ -542,11 +509,7 @@ static const struct snd_kcontrol_new snd_pmac_burgundy_mixers_imac[] = {
 	BURGUNDY_SWITCH_B("Mic Boost Capture Switch", 0,
 			MASK_ADDR_BURGUNDY_INPBOOST, 0x40, 0x80, 1)
 };
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_pmac_burgundy_mixers_pmac[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_pmac_burgundy_mixers_pmac[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BURGUNDY_VOLUME_W("Line in Capture Volume", 0,
 			MASK_ADDR_BURGUNDY_VOLMIC, 16),
 	BURGUNDY_VOLUME_B("Line in Gain Capture Volume", 0,
@@ -562,43 +525,16 @@ static const struct snd_kcontrol_new snd_pmac_burgundy_mixers_pmac[] = {
 /*	BURGUNDY_SWITCH_B("Line in Boost Capture Switch", 0,
  *		MASK_ADDR_BURGUNDY_INPBOOST, 0x40, 0x80, 1) */
 };
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_pmac_burgundy_master_sw_imac __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_pmac_burgundy_master_sw_imac =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BURGUNDY_SWITCH_B("Master Playback Switch", 0,
 	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
 	BURGUNDY_OUTPUT_LEFT | BURGUNDY_LINEOUT_LEFT | BURGUNDY_HP_LEFT,
 	BURGUNDY_OUTPUT_RIGHT | BURGUNDY_LINEOUT_RIGHT | BURGUNDY_HP_RIGHT, 1);
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_pmac_burgundy_master_sw_pmac __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_pmac_burgundy_master_sw_pmac =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BURGUNDY_SWITCH_B("Master Playback Switch", 0,
 	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
 	BURGUNDY_OUTPUT_INTERN
 	| BURGUNDY_OUTPUT_LEFT, BURGUNDY_OUTPUT_RIGHT, 1);
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_pmac_burgundy_speaker_sw_imac __devinitdata =
-BURGUNDY_SWITCH_B("Speaker Playback Switch", 0,
-	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
-	BURGUNDY_OUTPUT_LEFT, BURGUNDY_OUTPUT_RIGHT, 1);
-static struct snd_kcontrol_new snd_pmac_burgundy_speaker_sw_pmac __devinitdata =
-BURGUNDY_SWITCH_B("Speaker Playback Switch", 0,
-	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
-	BURGUNDY_OUTPUT_INTERN, 0, 0);
-static struct snd_kcontrol_new snd_pmac_burgundy_line_sw_imac __devinitdata =
-BURGUNDY_SWITCH_B("Line out Playback Switch", 0,
-	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
-	BURGUNDY_LINEOUT_LEFT, BURGUNDY_LINEOUT_RIGHT, 1);
-static struct snd_kcontrol_new snd_pmac_burgundy_line_sw_pmac __devinitdata =
-BURGUNDY_SWITCH_B("Line out Playback Switch", 0,
-	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
-	BURGUNDY_OUTPUT_LEFT, BURGUNDY_OUTPUT_RIGHT, 1);
-static struct snd_kcontrol_new snd_pmac_burgundy_hp_sw_imac __devinitdata =
-=======
 static const struct snd_kcontrol_new snd_pmac_burgundy_speaker_sw_imac =
 BURGUNDY_SWITCH_B("Speaker Playback Switch", 0,
 	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
@@ -616,7 +552,6 @@ BURGUNDY_SWITCH_B("Line out Playback Switch", 0,
 	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
 	BURGUNDY_OUTPUT_LEFT, BURGUNDY_OUTPUT_RIGHT, 1);
 static const struct snd_kcontrol_new snd_pmac_burgundy_hp_sw_imac =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BURGUNDY_SWITCH_B("Headphone Playback Switch", 0,
 	MASK_ADDR_BURGUNDY_MORE_OUTPUTENABLES,
 	BURGUNDY_HP_LEFT, BURGUNDY_HP_RIGHT, 1);
@@ -670,11 +605,7 @@ static void snd_pmac_burgundy_update_automute(struct snd_pmac *chip, int do_noti
 /*
  * initialize burgundy
  */
-<<<<<<< HEAD
-int __devinit snd_pmac_burgundy_init(struct snd_pmac *chip)
-=======
 int snd_pmac_burgundy_init(struct snd_pmac *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int imac = of_machine_is_compatible("iMac");
 	int i, err;

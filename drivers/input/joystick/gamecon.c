@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NES, SNES, N64, MultiSystem, PSX gamepad driver for Linux
  *
@@ -14,29 +11,6 @@
  *	Raphael Assenat
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
- * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
@@ -60,11 +34,7 @@ struct gc_config {
 	unsigned int nargs;
 };
 
-<<<<<<< HEAD
-static struct gc_config gc_cfg[GC_MAX_PORTS] __initdata;
-=======
 static struct gc_config gc_cfg[GC_MAX_PORTS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array_named(map, gc_cfg[0].args, int, &gc_cfg[0].nargs, 0);
 MODULE_PARM_DESC(map, "Describes first set of devices (<parport#>,<pad1>,<pad2>,..<pad5>)");
@@ -103,10 +73,7 @@ struct gc {
 	struct timer_list timer;
 	int pad_count[GC_MAX];
 	int used;
-<<<<<<< HEAD
-=======
 	int parportno;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex mutex;
 };
 
@@ -319,11 +286,7 @@ static int gc_n64_play_effect(struct input_dev *dev, void *data,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __init gc_n64_init_ff(struct input_dev *dev, int i)
-=======
 static int gc_n64_init_ff(struct input_dev *dev, int i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gc_subdev *sdev;
 	int err;
@@ -519,11 +482,7 @@ static void gc_multi_process_packet(struct gc *gc)
 		switch (pad->type) {
 		case GC_MULTI2:
 			input_report_key(dev, BTN_THUMB, s & data[5]);
-<<<<<<< HEAD
-			/* fall through */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case GC_MULTI:
 			input_report_abs(dev, ABS_X,
@@ -676,10 +635,7 @@ static void gc_psx_report_one(struct gc_pad *pad, unsigned char psx_type,
 
 		input_report_key(dev, BTN_THUMBL, ~data[0] & 0x04);
 		input_report_key(dev, BTN_THUMBR, ~data[0] & 0x02);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case GC_PSX_NEGCON:
 	case GC_PSX_ANALOG:
@@ -768,15 +724,9 @@ static void gc_psx_process_packet(struct gc *gc)
  * gc_timer() initiates reads of console pads data.
  */
 
-<<<<<<< HEAD
-static void gc_timer(unsigned long private)
-{
-	struct gc *gc = (void *) private;
-=======
 static void gc_timer(struct timer_list *t)
 {
 	struct gc *gc = from_timer(gc, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * N64 pads - must be read first, any read confuses them for 200 us
@@ -844,11 +794,7 @@ static void gc_close(struct input_dev *dev)
 	mutex_unlock(&gc->mutex);
 }
 
-<<<<<<< HEAD
-static int __init gc_setup_pad(struct gc *gc, int idx, int pad_type)
-=======
 static int gc_setup_pad(struct gc *gc, int idx, int pad_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gc_pad *pad = &gc->pads[idx];
 	struct input_dev *input_dev;
@@ -897,11 +843,7 @@ static int gc_setup_pad(struct gc *gc, int idx, int pad_type)
 
 	case GC_N64:
 		for (i = 0; i < 10; i++)
-<<<<<<< HEAD
-			__set_bit(gc_n64_btn[i], input_dev->keybit);
-=======
 			input_set_capability(input_dev, EV_KEY, gc_n64_btn[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < 2; i++) {
 			input_set_abs_params(input_dev, ABS_X + i, -127, 126, 0, 2);
@@ -910,45 +852,22 @@ static int gc_setup_pad(struct gc *gc, int idx, int pad_type)
 
 		err = gc_n64_init_ff(input_dev, idx);
 		if (err) {
-<<<<<<< HEAD
-			pr_warning("Failed to initiate rumble for N64 device %d\n", idx);
-=======
 			pr_warn("Failed to initiate rumble for N64 device %d\n",
 				idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_free_dev;
 		}
 
 		break;
 
 	case GC_SNESMOUSE:
-<<<<<<< HEAD
-		__set_bit(BTN_LEFT, input_dev->keybit);
-		__set_bit(BTN_RIGHT, input_dev->keybit);
-		__set_bit(REL_X, input_dev->relbit);
-		__set_bit(REL_Y, input_dev->relbit);
-=======
 		input_set_capability(input_dev, EV_KEY, BTN_LEFT);
 		input_set_capability(input_dev, EV_KEY, BTN_RIGHT);
 		input_set_capability(input_dev, EV_REL, REL_X);
 		input_set_capability(input_dev, EV_REL, REL_Y);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case GC_SNES:
 		for (i = 4; i < 8; i++)
-<<<<<<< HEAD
-			__set_bit(gc_snes_btn[i], input_dev->keybit);
-	case GC_NES:
-		for (i = 0; i < 4; i++)
-			__set_bit(gc_snes_btn[i], input_dev->keybit);
-		break;
-
-	case GC_MULTI2:
-		__set_bit(BTN_THUMB, input_dev->keybit);
-	case GC_MULTI:
-		__set_bit(BTN_TRIGGER, input_dev->keybit);
-=======
 			input_set_capability(input_dev, EV_KEY, gc_snes_btn[i]);
 		fallthrough;
 
@@ -963,7 +882,6 @@ static int gc_setup_pad(struct gc *gc, int idx, int pad_type)
 
 	case GC_MULTI:
 		input_set_capability(input_dev, EV_KEY, BTN_TRIGGER);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case GC_PSX:
@@ -971,27 +889,17 @@ static int gc_setup_pad(struct gc *gc, int idx, int pad_type)
 			input_set_abs_params(input_dev,
 					     gc_psx_abs[i], 4, 252, 0, 2);
 		for (i = 0; i < 12; i++)
-<<<<<<< HEAD
-			__set_bit(gc_psx_btn[i], input_dev->keybit);
-=======
 			input_set_capability(input_dev, EV_KEY, gc_psx_btn[i]);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
 	case GC_DDR:
 		for (i = 0; i < 4; i++)
-<<<<<<< HEAD
-			__set_bit(gc_psx_ddr_btn[i], input_dev->keybit);
-		for (i = 0; i < 12; i++)
-			__set_bit(gc_psx_btn[i], input_dev->keybit);
-=======
 			input_set_capability(input_dev, EV_KEY,
 					     gc_psx_ddr_btn[i]);
 		for (i = 0; i < 12; i++)
 			input_set_capability(input_dev, EV_KEY, gc_psx_btn[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 	}
@@ -1008,29 +916,6 @@ err_free_dev:
 	return err;
 }
 
-<<<<<<< HEAD
-static struct gc __init *gc_probe(int parport, int *pads, int n_pads)
-{
-	struct gc *gc;
-	struct parport *pp;
-	struct pardevice *pd;
-	int i;
-	int count = 0;
-	int err;
-
-	pp = parport_find_number(parport);
-	if (!pp) {
-		pr_err("no such parport %d\n", parport);
-		err = -EINVAL;
-		goto err_out;
-	}
-
-	pd = parport_register_device(pp, "gamecon", NULL, NULL, NULL, PARPORT_DEV_EXCL, NULL);
-	if (!pd) {
-		pr_err("parport busy already - lp.o loaded?\n");
-		err = -EBUSY;
-		goto err_put_pp;
-=======
 static void gc_attach(struct parport *pp)
 {
 	struct gc *gc;
@@ -1063,38 +948,24 @@ static void gc_attach(struct parport *pp)
 	if (!pd) {
 		pr_err("parport busy already - lp.o loaded?\n");
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	gc = kzalloc(sizeof(struct gc), GFP_KERNEL);
 	if (!gc) {
 		pr_err("Not enough memory\n");
-<<<<<<< HEAD
-		err = -ENOMEM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_unreg_pardev;
 	}
 
 	mutex_init(&gc->mutex);
 	gc->pd = pd;
-<<<<<<< HEAD
-	setup_timer(&gc->timer, gc_timer, (long) gc);
-=======
 	gc->parportno = pp->number;
 	timer_setup(&gc->timer, gc_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n_pads && i < GC_MAX_DEVICES; i++) {
 		if (!pads[i])
 			continue;
 
-<<<<<<< HEAD
-		err = gc_setup_pad(gc, i, pads[i]);
-		if (err)
-=======
 		if (gc_setup_pad(gc, i, pads[i]))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_unreg_devs;
 
 		count++;
@@ -1102,20 +973,11 @@ static void gc_attach(struct parport *pp)
 
 	if (count == 0) {
 		pr_err("No valid devices specified\n");
-<<<<<<< HEAD
-		err = -EINVAL;
-		goto err_free_gc;
-	}
-
-	parport_put_port(pp);
-	return gc;
-=======
 		goto err_free_gc;
 	}
 
 	gc_base[port_idx] = gc;
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err_unreg_devs:
 	while (--i >= 0)
@@ -1125,17 +987,6 @@ static void gc_attach(struct parport *pp)
 	kfree(gc);
  err_unreg_pardev:
 	parport_unregister_device(pd);
-<<<<<<< HEAD
- err_put_pp:
-	parport_put_port(pp);
- err_out:
-	return ERR_PTR(err);
-}
-
-static void gc_remove(struct gc *gc)
-{
-	int i;
-=======
 }
 
 static void gc_detach(struct parport *port)
@@ -1153,7 +1004,6 @@ static void gc_detach(struct parport *port)
 
 	gc = gc_base[i];
 	gc_base[i] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < GC_MAX_DEVICES; i++)
 		if (gc->pads[i].dev)
@@ -1162,8 +1012,6 @@ static void gc_detach(struct parport *port)
 	kfree(gc);
 }
 
-<<<<<<< HEAD
-=======
 static struct parport_driver gc_parport_driver = {
 	.name = "gamecon",
 	.match_port = gc_attach,
@@ -1171,15 +1019,10 @@ static struct parport_driver gc_parport_driver = {
 	.devmodel = true,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init gc_init(void)
 {
 	int i;
 	int have_dev = 0;
-<<<<<<< HEAD
-	int err = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < GC_MAX_PORTS; i++) {
 		if (gc_cfg[i].nargs == 0 || gc_cfg[i].args[0] < 0)
@@ -1187,52 +1030,21 @@ static int __init gc_init(void)
 
 		if (gc_cfg[i].nargs < 2) {
 			pr_err("at least one device must be specified\n");
-<<<<<<< HEAD
-			err = -EINVAL;
-			break;
-		}
-
-		gc_base[i] = gc_probe(gc_cfg[i].args[0],
-				      gc_cfg[i].args + 1, gc_cfg[i].nargs - 1);
-		if (IS_ERR(gc_base[i])) {
-			err = PTR_ERR(gc_base[i]);
-			break;
-=======
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		have_dev = 1;
 	}
 
-<<<<<<< HEAD
-	if (err) {
-		while (--i >= 0)
-			if (gc_base[i])
-				gc_remove(gc_base[i]);
-		return err;
-	}
-
-	return have_dev ? 0 : -ENODEV;
-=======
 	if (!have_dev)
 		return -ENODEV;
 
 	return parport_register_driver(&gc_parport_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit gc_exit(void)
 {
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < GC_MAX_PORTS; i++)
-		if (gc_base[i])
-			gc_remove(gc_base[i]);
-=======
 	parport_unregister_driver(&gc_parport_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(gc_init);

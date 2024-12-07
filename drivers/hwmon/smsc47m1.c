@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * smsc47m1.c - Part of lm_sensors, Linux kernel modules
  *		for hardware monitoring
@@ -11,29 +8,9 @@
  * Super-I/O chips.
  *
  * Copyright (C) 2002 Mark D. Studebaker <mdsxyz123@yahoo.com>
-<<<<<<< HEAD
- * Copyright (C) 2004-2007 Jean Delvare <khali@linux-fr.org>
- * Ported to Linux 2.6 by Gabriele Gorla <gorlik@yahoo.com>
- *			and Jean Delvare
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  * Copyright (C) 2004-2007 Jean Delvare <jdelvare@suse.de>
  * Ported to Linux 2.6 by Gabriele Gorla <gorlik@yahoo.com>
  *			and Jean Delvare
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -56,11 +33,7 @@ static unsigned short force_id;
 module_param(force_id, ushort, 0);
 MODULE_PARM_DESC(force_id, "Override the detected device ID");
 
-<<<<<<< HEAD
-static struct platform_device *pdev;
-=======
 static struct platform_device *smsc47m1_pdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRVNAME "smsc47m1"
 enum chips { smsc47m1, smsc47m2 };
@@ -87,12 +60,6 @@ superio_inb(int reg)
 /* logical device for fans is 0x0A */
 #define superio_select() superio_outb(0x07, 0x0A)
 
-<<<<<<< HEAD
-static inline void
-superio_enter(void)
-{
-	outb(0x55, REG);
-=======
 static inline int
 superio_enter(void)
 {
@@ -101,17 +68,13 @@ superio_enter(void)
 
 	outb(0x55, REG);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
 superio_exit(void)
 {
 	outb(0xAA, REG);
-<<<<<<< HEAD
-=======
 	release_region(REG, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define SUPERIO_REG_ACT		0x30
@@ -171,14 +134,6 @@ struct smsc47m1_sio_data {
 	u8 activate;		/* Remember initial device state */
 };
 
-<<<<<<< HEAD
-
-static int __exit smsc47m1_remove(struct platform_device *pdev);
-static struct smsc47m1_data *smsc47m1_update_device(struct device *dev,
-		int init);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int smsc47m1_read_value(struct smsc47m1_data *data, u8 reg)
 {
 	return inb_p(data->addr + reg);
@@ -190,18 +145,6 @@ static inline void smsc47m1_write_value(struct smsc47m1_data *data, u8 reg,
 	outb_p(value, data->addr + reg);
 }
 
-<<<<<<< HEAD
-static struct platform_driver smsc47m1_driver = {
-	.driver = {
-		.owner	= THIS_MODULE,
-		.name	= DRVNAME,
-	},
-	.remove		= __exit_p(smsc47m1_remove),
-};
-
-static ssize_t get_fan(struct device *dev, struct device_attribute
-		       *devattr, char *buf)
-=======
 static struct smsc47m1_data *smsc47m1_update_device(struct device *dev,
 		int init)
 {
@@ -253,7 +196,6 @@ static struct smsc47m1_data *smsc47m1_update_device(struct device *dev,
 
 static ssize_t fan_show(struct device *dev, struct device_attribute *devattr,
 			char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = smsc47m1_update_device(dev, 0);
@@ -271,13 +213,8 @@ static ssize_t fan_show(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%d\n", rpm);
 }
 
-<<<<<<< HEAD
-static ssize_t get_fan_min(struct device *dev, struct device_attribute
-			   *devattr, char *buf)
-=======
 static ssize_t fan_min_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = smsc47m1_update_device(dev, 0);
@@ -287,78 +224,48 @@ static ssize_t fan_min_show(struct device *dev,
 	return sprintf(buf, "%d\n", rpm);
 }
 
-<<<<<<< HEAD
-static ssize_t get_fan_div(struct device *dev, struct device_attribute
-			   *devattr, char *buf)
-=======
 static ssize_t fan_div_show(struct device *dev,
 			    struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = smsc47m1_update_device(dev, 0);
 	return sprintf(buf, "%d\n", DIV_FROM_REG(data->fan_div[attr->index]));
 }
 
-<<<<<<< HEAD
-static ssize_t get_fan_alarm(struct device *dev, struct device_attribute
-			     *devattr, char *buf)
-=======
 static ssize_t fan_alarm_show(struct device *dev,
 			      struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bitnr = to_sensor_dev_attr(devattr)->index;
 	struct smsc47m1_data *data = smsc47m1_update_device(dev, 0);
 	return sprintf(buf, "%u\n", (data->alarms >> bitnr) & 1);
 }
 
-<<<<<<< HEAD
-static ssize_t get_pwm(struct device *dev, struct device_attribute
-		       *devattr, char *buf)
-=======
 static ssize_t pwm_show(struct device *dev, struct device_attribute *devattr,
 			char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = smsc47m1_update_device(dev, 0);
 	return sprintf(buf, "%d\n", PWM_FROM_REG(data->pwm[attr->index]));
 }
 
-<<<<<<< HEAD
-static ssize_t get_pwm_en(struct device *dev, struct device_attribute
-			  *devattr, char *buf)
-=======
 static ssize_t pwm_en_show(struct device *dev,
 			   struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = smsc47m1_update_device(dev, 0);
 	return sprintf(buf, "%d\n", PWM_EN_FROM_REG(data->pwm[attr->index]));
 }
 
-<<<<<<< HEAD
-static ssize_t get_alarms(struct device *dev, struct device_attribute
-			  *devattr, char *buf)
-=======
 static ssize_t alarms_show(struct device *dev,
 			   struct device_attribute *devattr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct smsc47m1_data *data = smsc47m1_update_device(dev, 0);
 	return sprintf(buf, "%d\n", data->alarms);
 }
 
-<<<<<<< HEAD
-static ssize_t set_fan_min(struct device *dev, struct device_attribute
-			   *devattr, const char *buf, size_t count)
-=======
 static ssize_t fan_min_store(struct device *dev,
 			     struct device_attribute *devattr,
 			     const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = dev_get_drvdata(dev);
@@ -393,14 +300,9 @@ static ssize_t fan_min_store(struct device *dev,
  * of least surprise; the user doesn't expect the fan minimum to change just
  * because the divider changed.
  */
-<<<<<<< HEAD
-static ssize_t set_fan_div(struct device *dev, struct device_attribute
-			   *devattr, const char *buf, size_t count)
-=======
 static ssize_t fan_div_store(struct device *dev,
 			     struct device_attribute *devattr,
 			     const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = dev_get_drvdata(dev);
@@ -449,21 +351,14 @@ static ssize_t fan_div_store(struct device *dev,
 		tmp |= data->fan_div[2] << 4;
 		smsc47m1_write_value(data, SMSC47M2_REG_FANDIV3, tmp);
 		break;
-<<<<<<< HEAD
-=======
 	default:
 		BUG();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Preserve fan min */
 	tmp = 192 - (old_div * (192 - data->fan_preload[nr])
 		     + new_div / 2) / new_div;
-<<<<<<< HEAD
-	data->fan_preload[nr] = SENSORS_LIMIT(tmp, 0, 191);
-=======
 	data->fan_preload[nr] = clamp_val(tmp, 0, 191);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smsc47m1_write_value(data, SMSC47M1_REG_FAN_PRELOAD[nr],
 			     data->fan_preload[nr]);
 	mutex_unlock(&data->update_lock);
@@ -471,13 +366,8 @@ static ssize_t fan_div_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm(struct device *dev, struct device_attribute
-		       *devattr, const char *buf, size_t count)
-=======
 static ssize_t pwm_store(struct device *dev, struct device_attribute *devattr,
 			 const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = dev_get_drvdata(dev);
@@ -502,14 +392,9 @@ static ssize_t pwm_store(struct device *dev, struct device_attribute *devattr,
 	return count;
 }
 
-<<<<<<< HEAD
-static ssize_t set_pwm_en(struct device *dev, struct device_attribute
-			  *devattr, const char *buf, size_t count)
-=======
 static ssize_t pwm_en_store(struct device *dev,
 			    struct device_attribute *devattr, const char *buf,
 			    size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct smsc47m1_data *data = dev_get_drvdata(dev);
@@ -534,29 +419,6 @@ static ssize_t pwm_en_store(struct device *dev,
 	return count;
 }
 
-<<<<<<< HEAD
-#define fan_present(offset)						\
-static SENSOR_DEVICE_ATTR(fan##offset##_input, S_IRUGO, get_fan,	\
-		NULL, offset - 1);					\
-static SENSOR_DEVICE_ATTR(fan##offset##_min, S_IRUGO | S_IWUSR,		\
-		get_fan_min, set_fan_min, offset - 1);			\
-static SENSOR_DEVICE_ATTR(fan##offset##_div, S_IRUGO | S_IWUSR,		\
-		get_fan_div, set_fan_div, offset - 1);			\
-static SENSOR_DEVICE_ATTR(fan##offset##_alarm, S_IRUGO, get_fan_alarm,	\
-		NULL, offset - 1);					\
-static SENSOR_DEVICE_ATTR(pwm##offset, S_IRUGO | S_IWUSR,		\
-		get_pwm, set_pwm, offset - 1);				\
-static SENSOR_DEVICE_ATTR(pwm##offset##_enable, S_IRUGO | S_IWUSR,	\
-		get_pwm_en, set_pwm_en, offset - 1)
-
-fan_present(1);
-fan_present(2);
-fan_present(3);
-
-static DEVICE_ATTR(alarms, S_IRUGO, get_alarms, NULL);
-
-static ssize_t show_name(struct device *dev, struct device_attribute
-=======
 static SENSOR_DEVICE_ATTR_RO(fan1_input, fan, 0);
 static SENSOR_DEVICE_ATTR_RW(fan1_min, fan_min, 0);
 static SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
@@ -579,18 +441,13 @@ static SENSOR_DEVICE_ATTR_RW(pwm3_enable, pwm_en, 2);
 static DEVICE_ATTR_RO(alarms);
 
 static ssize_t name_show(struct device *dev, struct device_attribute
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *devattr, char *buf)
 {
 	struct smsc47m1_data *data = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%s\n", data->name);
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
-=======
 static DEVICE_ATTR_RO(name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *smsc47m1_attributes_fan1[] = {
 	&sensor_dev_attr_fan1_input.dev_attr.attr,
@@ -672,17 +529,12 @@ static int __init smsc47m1_find(struct smsc47m1_sio_data *sio_data)
 {
 	u8 val;
 	unsigned short addr;
-<<<<<<< HEAD
-
-	superio_enter();
-=======
 	int err;
 
 	err = superio_enter();
 	if (err)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = force_id ? force_id : superio_inb(SUPERIO_REG_DEVID);
 
 	/*
@@ -758,15 +610,6 @@ static int __init smsc47m1_find(struct smsc47m1_sio_data *sio_data)
 static void smsc47m1_restore(const struct smsc47m1_sio_data *sio_data)
 {
 	if ((sio_data->activate & 0x01) == 0) {
-<<<<<<< HEAD
-		superio_enter();
-		superio_select();
-
-		pr_info("Disabling device\n");
-		superio_outb(SUPERIO_REG_ACT, sio_data->activate);
-
-		superio_exit();
-=======
 		if (!superio_enter()) {
 			superio_select();
 			pr_info("Disabling device\n");
@@ -775,36 +618,22 @@ static void smsc47m1_restore(const struct smsc47m1_sio_data *sio_data)
 		} else {
 			pr_warn("Failed to disable device\n");
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 #define CHECK		1
 #define REQUEST		2
-<<<<<<< HEAD
-#define RELEASE		3
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This function can be used to:
  *  - test for resource conflicts with ACPI
  *  - request the resources
-<<<<<<< HEAD
- *  - release the resources
- * We only allocate the I/O ports we really need, to minimize the risk of
- * conflicts with ACPI or with other drivers.
- */
-static int smsc47m1_handle_resources(unsigned short address, enum chips type,
-				     int action, struct device *dev)
-=======
  * We only allocate the I/O ports we really need, to minimize the risk of
  * conflicts with ACPI or with other drivers.
  */
 static int __init smsc47m1_handle_resources(unsigned short address,
 					    enum chips type, int action,
 					    struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const u8 ports_m1[] = {
 		/* register, region length */
@@ -851,23 +680,6 @@ static int __init smsc47m1_handle_resources(unsigned short address,
 			break;
 		case REQUEST:
 			/* Request the resources */
-<<<<<<< HEAD
-			if (!request_region(start, len, DRVNAME)) {
-				dev_err(dev, "Region 0x%hx-0x%hx already in "
-					"use!\n", start, start + len);
-
-				/* Undo all requests */
-				for (i -= 2; i >= 0; i -= 2)
-					release_region(address + ports[i],
-						       ports[i + 1]);
-				return -EBUSY;
-			}
-			break;
-		case RELEASE:
-			/* Release the resources */
-			release_region(start, len);
-			break;
-=======
 			if (!devm_request_region(dev, start, len, DRVNAME)) {
 				dev_err(dev,
 					"Region 0x%x-0x%x already in use!\n",
@@ -875,7 +687,6 @@ static int __init smsc47m1_handle_resources(unsigned short address,
 				return -EBUSY;
 			}
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -896,11 +707,7 @@ static void smsc47m1_remove_files(struct device *dev)
 static int __init smsc47m1_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-<<<<<<< HEAD
-	struct smsc47m1_sio_data *sio_data = dev->platform_data;
-=======
 	struct smsc47m1_sio_data *sio_data = dev_get_platdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct smsc47m1_data *data;
 	struct resource *res;
 	int err;
@@ -917,17 +724,9 @@ static int __init smsc47m1_probe(struct platform_device *pdev)
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(struct smsc47m1_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto error_release;
-	}
-=======
 	data = devm_kzalloc(dev, sizeof(struct smsc47m1_data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->addr = res->start;
 	data->type = sio_data->type;
@@ -962,12 +761,7 @@ static int __init smsc47m1_probe(struct platform_device *pdev)
 	}
 	if (!(fan1 || fan2 || fan3 || pwm1 || pwm2 || pwm3)) {
 		dev_warn(dev, "Device not configured, will not use\n");
-<<<<<<< HEAD
-		err = -ENODEV;
-		goto error_free;
-=======
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1043,80 +837,6 @@ static int __init smsc47m1_probe(struct platform_device *pdev)
 
 error_remove_files:
 	smsc47m1_remove_files(dev);
-<<<<<<< HEAD
-error_free:
-	platform_set_drvdata(pdev, NULL);
-	kfree(data);
-error_release:
-	smsc47m1_handle_resources(res->start, sio_data->type, RELEASE, dev);
-	return err;
-}
-
-static int __exit smsc47m1_remove(struct platform_device *pdev)
-{
-	struct smsc47m1_data *data = platform_get_drvdata(pdev);
-	struct resource *res;
-
-	hwmon_device_unregister(data->hwmon_dev);
-	smsc47m1_remove_files(&pdev->dev);
-
-	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
-	smsc47m1_handle_resources(res->start, data->type, RELEASE, &pdev->dev);
-	platform_set_drvdata(pdev, NULL);
-	kfree(data);
-
-	return 0;
-}
-
-static struct smsc47m1_data *smsc47m1_update_device(struct device *dev,
-		int init)
-{
-	struct smsc47m1_data *data = dev_get_drvdata(dev);
-
-	mutex_lock(&data->update_lock);
-
-	if (time_after(jiffies, data->last_updated + HZ + HZ / 2) || init) {
-		int i, fan_nr;
-		fan_nr = data->type == smsc47m2 ? 3 : 2;
-
-		for (i = 0; i < fan_nr; i++) {
-			data->fan[i] = smsc47m1_read_value(data,
-				       SMSC47M1_REG_FAN[i]);
-			data->fan_preload[i] = smsc47m1_read_value(data,
-					       SMSC47M1_REG_FAN_PRELOAD[i]);
-			data->pwm[i] = smsc47m1_read_value(data,
-				       SMSC47M1_REG_PWM[i]);
-		}
-
-		i = smsc47m1_read_value(data, SMSC47M1_REG_FANDIV);
-		data->fan_div[0] = (i >> 4) & 0x03;
-		data->fan_div[1] = i >> 6;
-
-		data->alarms = smsc47m1_read_value(data,
-			       SMSC47M1_REG_ALARM) >> 6;
-		/* Clear alarms if needed */
-		if (data->alarms)
-			smsc47m1_write_value(data, SMSC47M1_REG_ALARM, 0xC0);
-
-		if (fan_nr >= 3) {
-			data->fan_div[2] = (smsc47m1_read_value(data,
-					    SMSC47M2_REG_FANDIV3) >> 4) & 0x03;
-			data->alarms |= (smsc47m1_read_value(data,
-					 SMSC47M2_REG_ALARM6) & 0x40) >> 4;
-			/* Clear alarm if needed */
-			if (data->alarms & 0x04)
-				smsc47m1_write_value(data,
-						     SMSC47M2_REG_ALARM6,
-						     0x40);
-		}
-
-		data->last_updated = jiffies;
-	}
-
-	mutex_unlock(&data->update_lock);
-	return data;
-}
-=======
 	return err;
 }
 
@@ -1140,23 +860,16 @@ static struct platform_driver smsc47m1_driver __refdata = {
 	},
 	.remove_new	= __exit_p(smsc47m1_remove),
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init smsc47m1_device_add(unsigned short address,
 				      const struct smsc47m1_sio_data *sio_data)
 {
-<<<<<<< HEAD
-	struct resource res = {
-=======
 	const struct resource res = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.start	= address,
 		.end	= address + SMSC_EXTENT - 1,
 		.name	= DRVNAME,
 		.flags	= IORESOURCE_IO,
 	};
-<<<<<<< HEAD
-=======
 	const struct platform_device_info pdevinfo = {
 		.name = DRVNAME,
 		.id = address,
@@ -1165,47 +878,10 @@ static int __init smsc47m1_device_add(unsigned short address,
 		.data = sio_data,
 		.size_data = sizeof(struct smsc47m1_sio_data),
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = smsc47m1_handle_resources(address, sio_data->type, CHECK, NULL);
 	if (err)
-<<<<<<< HEAD
-		goto exit;
-
-	pdev = platform_device_alloc(DRVNAME, address);
-	if (!pdev) {
-		err = -ENOMEM;
-		pr_err("Device allocation failed\n");
-		goto exit;
-	}
-
-	err = platform_device_add_resources(pdev, &res, 1);
-	if (err) {
-		pr_err("Device resource addition failed (%d)\n", err);
-		goto exit_device_put;
-	}
-
-	err = platform_device_add_data(pdev, sio_data,
-				       sizeof(struct smsc47m1_sio_data));
-	if (err) {
-		pr_err("Platform data allocation failed\n");
-		goto exit_device_put;
-	}
-
-	err = platform_device_add(pdev);
-	if (err) {
-		pr_err("Device addition failed (%d)\n", err);
-		goto exit_device_put;
-	}
-
-	return 0;
-
-exit_device_put:
-	platform_device_put(pdev);
-exit:
-	return err;
-=======
 		return err;
 
 	smsc47m1_pdev = platform_device_register_full(&pdevinfo);
@@ -1215,7 +891,6 @@ exit:
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init sm_smsc47m1_init(void)
@@ -1229,11 +904,7 @@ static int __init sm_smsc47m1_init(void)
 		return err;
 	address = err;
 
-<<<<<<< HEAD
-	/* Sets global pdev as a side effect */
-=======
 	/* Sets global smsc47m1_pdev as a side effect */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = smsc47m1_device_add(address, &sio_data);
 	if (err)
 		return err;
@@ -1245,11 +916,7 @@ static int __init sm_smsc47m1_init(void)
 	return 0;
 
 exit_device:
-<<<<<<< HEAD
-	platform_device_unregister(pdev);
-=======
 	platform_device_unregister(smsc47m1_pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smsc47m1_restore(&sio_data);
 	return err;
 }
@@ -1257,13 +924,8 @@ exit_device:
 static void __exit sm_smsc47m1_exit(void)
 {
 	platform_driver_unregister(&smsc47m1_driver);
-<<<<<<< HEAD
-	smsc47m1_restore(pdev->dev.platform_data);
-	platform_device_unregister(pdev);
-=======
 	smsc47m1_restore(dev_get_platdata(&smsc47m1_pdev->dev));
 	platform_device_unregister(smsc47m1_pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_AUTHOR("Mark D. Studebaker <mdsxyz123@yahoo.com>");

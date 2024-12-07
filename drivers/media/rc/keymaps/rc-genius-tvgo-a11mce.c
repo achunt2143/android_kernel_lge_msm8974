@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/* genius-tvgo-a11mce.h - Keytable for genius_tvgo_a11mce Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // genius-tvgo-a11mce.h - Keytable for genius_tvgo_a11mce Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -29,18 +15,6 @@
 
 static struct rc_map_table genius_tvgo_a11mce[] = {
 	/* Keys 0 to 9 */
-<<<<<<< HEAD
-	{ 0x48, KEY_0 },
-	{ 0x09, KEY_1 },
-	{ 0x1d, KEY_2 },
-	{ 0x1f, KEY_3 },
-	{ 0x19, KEY_4 },
-	{ 0x1b, KEY_5 },
-	{ 0x11, KEY_6 },
-	{ 0x17, KEY_7 },
-	{ 0x12, KEY_8 },
-	{ 0x16, KEY_9 },
-=======
 	{ 0x48, KEY_NUMERIC_0 },
 	{ 0x09, KEY_NUMERIC_1 },
 	{ 0x1d, KEY_NUMERIC_2 },
@@ -51,7 +25,6 @@ static struct rc_map_table genius_tvgo_a11mce[] = {
 	{ 0x17, KEY_NUMERIC_7 },
 	{ 0x12, KEY_NUMERIC_8 },
 	{ 0x16, KEY_NUMERIC_9 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ 0x54, KEY_RECORD },		/* recording */
 	{ 0x06, KEY_MUTE },		/* mute */
@@ -83,17 +56,10 @@ static struct rc_map_table genius_tvgo_a11mce[] = {
 
 static struct rc_map_list genius_tvgo_a11mce_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = genius_tvgo_a11mce,
-		.size    = ARRAY_SIZE(genius_tvgo_a11mce),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_GENIUS_TVGO_A11MCE,
-=======
 		.scan     = genius_tvgo_a11mce,
 		.size     = ARRAY_SIZE(genius_tvgo_a11mce),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_GENIUS_TVGO_A11MCE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -111,9 +77,5 @@ module_init(init_rc_map_genius_tvgo_a11mce)
 module_exit(exit_rc_map_genius_tvgo_a11mce)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("Genius TVGO A11MCE remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

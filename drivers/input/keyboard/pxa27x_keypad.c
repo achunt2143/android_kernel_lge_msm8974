@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/input/keyboard/pxa27x_keypad.c
  *
@@ -13,45 +10,23 @@
  * Based on a previous implementations by Kevin O'Connor
  * <kevin_at_koconnor.net> and Alex Osborne <bobofdoom@gmail.com> and
  * on some suggestions by Nicolas Pitre <nico@fluxnic.net>.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/interrupt.h>
-#include <linux/input.h>
-=======
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/input/matrix_keypad.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-
-#include <asm/mach/arch.h>
-#include <asm/mach/map.h>
-
-#include <mach/hardware.h>
-#include <plat/pxa27x_keypad.h>
-=======
 #include <linux/of.h>
 
 #include <linux/platform_data/keypad-pxa27x.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Keypad Controller registers
  */
@@ -119,11 +94,7 @@
 #define MAX_KEYPAD_KEYS		(MAX_MATRIX_KEY_NUM + MAX_DIRECT_KEY_NUM)
 
 struct pxa27x_keypad {
-<<<<<<< HEAD
-	struct pxa27x_keypad_platform_data *pdata;
-=======
 	const struct pxa27x_keypad_platform_data *pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct clk *clk;
 	struct input_dev *input_dev;
@@ -134,11 +105,8 @@ struct pxa27x_keypad {
 	unsigned short keycodes[MAX_KEYPAD_KEYS];
 	int rotary_rel_code[2];
 
-<<<<<<< HEAD
-=======
 	unsigned int row_shift;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* state row bits of each column scan */
 	uint32_t matrix_key_state[MAX_MATRIX_KEY_COLS];
 	uint32_t direct_key_state;
@@ -146,27 +114,6 @@ struct pxa27x_keypad {
 	unsigned int direct_key_mask;
 };
 
-<<<<<<< HEAD
-static void pxa27x_keypad_build_keycode(struct pxa27x_keypad *keypad)
-{
-	struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
-	struct input_dev *input_dev = keypad->input_dev;
-	unsigned short keycode;
-	int i;
-
-	for (i = 0; i < pdata->matrix_key_map_size; i++) {
-		unsigned int key = pdata->matrix_key_map[i];
-		unsigned int row = KEY_ROW(key);
-		unsigned int col = KEY_COL(key);
-		unsigned int scancode = MATRIX_SCAN_CODE(row, col,
-							 MATRIX_ROW_SHIFT);
-
-		keycode = KEY_VAL(key);
-		keypad->keycodes[scancode] = keycode;
-		__set_bit(keycode, input_dev->keybit);
-	}
-
-=======
 #ifdef CONFIG_OF
 static int pxa27x_keypad_matrix_key_parse_dt(struct pxa27x_keypad *keypad,
 				struct pxa27x_keypad_platform_data *pdata)
@@ -413,7 +360,6 @@ static int pxa27x_keypad_build_keycode(struct pxa27x_keypad *keypad)
 	input_dev->keycodemax = ARRAY_SIZE(keypad->keycodes);
 
 	/* For direct keys. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < pdata->direct_key_num; i++) {
 		keycode = pdata->direct_key_map[i];
 		keypad->keycodes[MAX_MATRIX_KEY_NUM + i] = keycode;
@@ -455,20 +401,13 @@ static int pxa27x_keypad_build_keycode(struct pxa27x_keypad *keypad)
 	}
 
 	__clear_bit(KEY_RESERVED, input_dev->keybit);
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pxa27x_keypad_scan_matrix(struct pxa27x_keypad *keypad)
 {
-<<<<<<< HEAD
-	struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
-=======
 	const struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input_dev = keypad->input_dev;
 	int row, col, num_keys_pressed = 0;
 	uint32_t new_state[MAX_MATRIX_KEY_COLS];
@@ -522,12 +461,8 @@ scan:
 			if ((bits_changed & (1 << row)) == 0)
 				continue;
 
-<<<<<<< HEAD
-			code = MATRIX_SCAN_CODE(row, col, MATRIX_ROW_SHIFT);
-=======
 			code = MATRIX_SCAN_CODE(row, col, keypad->row_shift);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			input_event(input_dev, EV_MSC, MSC_SCAN, code);
 			input_report_key(input_dev, keypad->keycodes[code],
 					 new_state[col] & (1 << row));
@@ -575,11 +510,7 @@ static void report_rotary_event(struct pxa27x_keypad *keypad, int r, int delta)
 
 static void pxa27x_keypad_scan_rotary(struct pxa27x_keypad *keypad)
 {
-<<<<<<< HEAD
-	struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
-=======
 	const struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t kprec;
 
 	/* read and reset to default count value */
@@ -595,11 +526,7 @@ static void pxa27x_keypad_scan_rotary(struct pxa27x_keypad *keypad)
 
 static void pxa27x_keypad_scan_direct(struct pxa27x_keypad *keypad)
 {
-<<<<<<< HEAD
-	struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
-=======
 	const struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input_dev = keypad->input_dev;
 	unsigned int new_state;
 	uint32_t kpdk, bits_changed;
@@ -610,9 +537,6 @@ static void pxa27x_keypad_scan_direct(struct pxa27x_keypad *keypad)
 	if (pdata->enable_rotary0 || pdata->enable_rotary1)
 		pxa27x_keypad_scan_rotary(keypad);
 
-<<<<<<< HEAD
-	new_state = KPDK_DK(kpdk) & keypad->direct_key_mask;
-=======
 	/*
 	 * The KPDR_DK only output the key pin level, so it relates to board,
 	 * and low level may be active.
@@ -622,7 +546,6 @@ static void pxa27x_keypad_scan_direct(struct pxa27x_keypad *keypad)
 	else
 		new_state = KPDK_DK(kpdk) & keypad->direct_key_mask;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bits_changed = keypad->direct_key_state ^ new_state;
 
 	if (bits_changed == 0)
@@ -643,11 +566,7 @@ static void pxa27x_keypad_scan_direct(struct pxa27x_keypad *keypad)
 
 static void clear_wakeup_event(struct pxa27x_keypad *keypad)
 {
-<<<<<<< HEAD
-	struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
-=======
 	const struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->clear_wakeup_event)
 		(pdata->clear_wakeup_event)();
@@ -671,12 +590,6 @@ static irqreturn_t pxa27x_keypad_irq_handler(int irq, void *dev_id)
 
 static void pxa27x_keypad_config(struct pxa27x_keypad *keypad)
 {
-<<<<<<< HEAD
-	struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
-	unsigned int mask = 0, direct_key_num = 0;
-	unsigned long kpc = 0;
-
-=======
 	const struct pxa27x_keypad_platform_data *pdata = keypad->pdata;
 	unsigned int mask = 0, direct_key_num = 0;
 	unsigned long kpc = 0;
@@ -684,7 +597,6 @@ static void pxa27x_keypad_config(struct pxa27x_keypad *keypad)
 	/* clear pending interrupt bit */
 	keypad_readl(KPC);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable matrix keys with automatic scan */
 	if (pdata->matrix_key_rows && pdata->matrix_key_cols) {
 		kpc |= KPC_ASACT | KPC_MIE | KPC_ME | KPC_MS_ALL;
@@ -708,9 +620,6 @@ static void pxa27x_keypad_config(struct pxa27x_keypad *keypad)
 	if (pdata->direct_key_num > direct_key_num)
 		direct_key_num = pdata->direct_key_num;
 
-<<<<<<< HEAD
-	keypad->direct_key_mask = ((2 << direct_key_num) - 1) & ~mask;
-=======
 	/*
 	 * Direct keys usage may not start from KP_DKIN0, check the platfrom
 	 * mask data to config the specific.
@@ -719,7 +628,6 @@ static void pxa27x_keypad_config(struct pxa27x_keypad *keypad)
 		keypad->direct_key_mask = pdata->direct_key_mask;
 	else
 		keypad->direct_key_mask = ((1 << direct_key_num) - 1) & ~mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable direct key */
 	if (direct_key_num)
@@ -733,18 +641,12 @@ static void pxa27x_keypad_config(struct pxa27x_keypad *keypad)
 static int pxa27x_keypad_open(struct input_dev *dev)
 {
 	struct pxa27x_keypad *keypad = input_get_drvdata(dev);
-<<<<<<< HEAD
-
-	/* Enable unit clock */
-	clk_enable(keypad->clk);
-=======
 	int ret;
 	/* Enable unit clock */
 	ret = clk_prepare_enable(keypad->clk);
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pxa27x_keypad_config(keypad);
 
 	return 0;
@@ -755,27 +657,14 @@ static void pxa27x_keypad_close(struct input_dev *dev)
 	struct pxa27x_keypad *keypad = input_get_drvdata(dev);
 
 	/* Disable clock unit */
-<<<<<<< HEAD
-	clk_disable(keypad->clk);
-}
-
-#ifdef CONFIG_PM
-=======
 	clk_disable_unprepare(keypad->clk);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pxa27x_keypad_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pxa27x_keypad *keypad = platform_get_drvdata(pdev);
 
-<<<<<<< HEAD
-	clk_disable(keypad->clk);
-
-	if (device_may_wakeup(&pdev->dev))
-		enable_irq_wake(keypad->irq);
-=======
 	/*
 	 * If the keypad is used a wake up source, clock can not be disabled.
 	 * Or it can not detect the key pressing.
@@ -784,7 +673,6 @@ static int pxa27x_keypad_suspend(struct device *dev)
 		enable_irq_wake(keypad->irq);
 	else
 		clk_disable_unprepare(keypad->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -794,63 +682,6 @@ static int pxa27x_keypad_resume(struct device *dev)
 	struct platform_device *pdev = to_platform_device(dev);
 	struct pxa27x_keypad *keypad = platform_get_drvdata(pdev);
 	struct input_dev *input_dev = keypad->input_dev;
-<<<<<<< HEAD
-
-	if (device_may_wakeup(&pdev->dev))
-		disable_irq_wake(keypad->irq);
-
-	mutex_lock(&input_dev->mutex);
-
-	if (input_dev->users) {
-		/* Enable unit clock */
-		clk_enable(keypad->clk);
-		pxa27x_keypad_config(keypad);
-	}
-
-	mutex_unlock(&input_dev->mutex);
-
-	return 0;
-}
-
-static const struct dev_pm_ops pxa27x_keypad_pm_ops = {
-	.suspend	= pxa27x_keypad_suspend,
-	.resume		= pxa27x_keypad_resume,
-};
-#endif
-
-static int __devinit pxa27x_keypad_probe(struct platform_device *pdev)
-{
-	struct pxa27x_keypad_platform_data *pdata = pdev->dev.platform_data;
-	struct pxa27x_keypad *keypad;
-	struct input_dev *input_dev;
-	struct resource *res;
-	int irq, error;
-
-	if (pdata == NULL) {
-		dev_err(&pdev->dev, "no platform data defined\n");
-		return -EINVAL;
-	}
-
-	irq = platform_get_irq(pdev, 0);
-	if (irq < 0) {
-		dev_err(&pdev->dev, "failed to get keypad irq\n");
-		return -ENXIO;
-	}
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (res == NULL) {
-		dev_err(&pdev->dev, "failed to get I/O memory\n");
-		return -ENXIO;
-	}
-
-	keypad = kzalloc(sizeof(struct pxa27x_keypad), GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!keypad || !input_dev) {
-		dev_err(&pdev->dev, "failed to allocate memory\n");
-		error = -ENOMEM;
-		goto failed_free;
-	}
-=======
 	int ret = 0;
 
 	/*
@@ -904,33 +735,11 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 	input_dev = devm_input_allocate_device(&pdev->dev);
 	if (!input_dev)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keypad->pdata = pdata;
 	keypad->input_dev = input_dev;
 	keypad->irq = irq;
 
-<<<<<<< HEAD
-	res = request_mem_region(res->start, resource_size(res), pdev->name);
-	if (res == NULL) {
-		dev_err(&pdev->dev, "failed to request I/O memory\n");
-		error = -EBUSY;
-		goto failed_free;
-	}
-
-	keypad->mmio_base = ioremap(res->start, resource_size(res));
-	if (keypad->mmio_base == NULL) {
-		dev_err(&pdev->dev, "failed to remap I/O memory\n");
-		error = -ENXIO;
-		goto failed_free_mem;
-	}
-
-	keypad->clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(keypad->clk)) {
-		dev_err(&pdev->dev, "failed to get keypad clock\n");
-		error = PTR_ERR(keypad->clk);
-		goto failed_free_io;
-=======
 	keypad->mmio_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(keypad->mmio_base))
 		return PTR_ERR(keypad->mmio_base);
@@ -939,7 +748,6 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 	if (IS_ERR(keypad->clk)) {
 		dev_err(&pdev->dev, "failed to get keypad clock\n");
 		return PTR_ERR(keypad->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input_dev->name = pdev->name;
@@ -957,9 +765,6 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_REP);
 	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
 
-<<<<<<< HEAD
-	pxa27x_keypad_build_keycode(keypad);
-=======
 	if (pdata) {
 		error = pxa27x_keypad_build_keycode(keypad);
 	} else {
@@ -977,92 +782,30 @@ static int pxa27x_keypad_probe(struct platform_device *pdev)
 	}
 
 	keypad->row_shift = get_count_order(pdata->matrix_key_cols);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((pdata->enable_rotary0 && keypad->rotary_rel_code[0] != -1) ||
 	    (pdata->enable_rotary1 && keypad->rotary_rel_code[1] != -1)) {
 		input_dev->evbit[0] |= BIT_MASK(EV_REL);
 	}
 
-<<<<<<< HEAD
-	error = request_irq(irq, pxa27x_keypad_irq_handler, 0,
-			    pdev->name, keypad);
-	if (error) {
-		dev_err(&pdev->dev, "failed to request IRQ\n");
-		goto failed_put_clk;
-=======
 	error = devm_request_irq(&pdev->dev, irq, pxa27x_keypad_irq_handler,
 				 0, pdev->name, keypad);
 	if (error) {
 		dev_err(&pdev->dev, "failed to request IRQ\n");
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Register the input device */
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register input device\n");
-<<<<<<< HEAD
-		goto failed_free_irq;
-=======
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, keypad);
 	device_init_wakeup(&pdev->dev, 1);
 
 	return 0;
-<<<<<<< HEAD
-
-failed_free_irq:
-	free_irq(irq, pdev);
-failed_put_clk:
-	clk_put(keypad->clk);
-failed_free_io:
-	iounmap(keypad->mmio_base);
-failed_free_mem:
-	release_mem_region(res->start, resource_size(res));
-failed_free:
-	input_free_device(input_dev);
-	kfree(keypad);
-	return error;
-}
-
-static int __devexit pxa27x_keypad_remove(struct platform_device *pdev)
-{
-	struct pxa27x_keypad *keypad = platform_get_drvdata(pdev);
-	struct resource *res;
-
-	free_irq(keypad->irq, pdev);
-	clk_put(keypad->clk);
-
-	input_unregister_device(keypad->input_dev);
-	iounmap(keypad->mmio_base);
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	release_mem_region(res->start, resource_size(res));
-
-	platform_set_drvdata(pdev, NULL);
-	kfree(keypad);
-
-	return 0;
-}
-
-/* work with hotplug and coldplug */
-MODULE_ALIAS("platform:pxa27x-keypad");
-
-static struct platform_driver pxa27x_keypad_driver = {
-	.probe		= pxa27x_keypad_probe,
-	.remove		= __devexit_p(pxa27x_keypad_remove),
-	.driver		= {
-		.name	= "pxa27x-keypad",
-		.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-		.pm	= &pxa27x_keypad_pm_ops,
-#endif
-=======
 }
 
 #ifdef CONFIG_OF
@@ -1079,15 +822,11 @@ static struct platform_driver pxa27x_keypad_driver = {
 		.name	= "pxa27x-keypad",
 		.of_match_table = of_match_ptr(pxa27x_keypad_dt_match),
 		.pm	= pm_sleep_ptr(&pxa27x_keypad_pm_ops),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(pxa27x_keypad_driver);
 
 MODULE_DESCRIPTION("PXA27x Keypad Controller Driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-=======
 /* work with hotplug and coldplug */
 MODULE_ALIAS("platform:pxa27x-keypad");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

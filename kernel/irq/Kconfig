@@ -1,33 +1,15 @@
-<<<<<<< HEAD
-# Select this to activate the generic irq options below
-config HAVE_GENERIC_HARDIRQS
-	bool
-
-if HAVE_GENERIC_HARDIRQS
-menu "IRQ subsystem"
-#
-# Interrupt subsystem related configuration options
-#
-config GENERIC_HARDIRQS
-       def_bool y
-
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 menu "IRQ subsystem"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Options selectable by the architecture code
 
 # Make sparse irq Kconfig switch below available
 config MAY_HAVE_SPARSE_IRQ
        bool
 
-<<<<<<< HEAD
-=======
 # Legacy support, required for itanic
 config GENERIC_IRQ_LEGACY
        bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Enable the generic irq autoprobe mechanism
 config GENERIC_IRQ_PROBE
 	bool
@@ -40,47 +22,31 @@ config GENERIC_IRQ_SHOW
 config GENERIC_IRQ_SHOW_LEVEL
        bool
 
-<<<<<<< HEAD
-=======
 # Supports effective affinity mask
 config GENERIC_IRQ_EFFECTIVE_AFF_MASK
        depends on SMP
        bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Support for delayed migration from interrupt context
 config GENERIC_PENDING_IRQ
 	bool
 
-<<<<<<< HEAD
-=======
 # Support for generic irq migrating off cpu before the cpu is offline.
 config GENERIC_IRQ_MIGRATION
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Alpha specific irq affinity mechanism
 config AUTO_IRQ_AFFINITY
        bool
 
-<<<<<<< HEAD
-=======
 # Interrupt injection mechanism
 config GENERIC_IRQ_INJECTION
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Tasklet based software resend for pending interrupts on enable_irq()
 config HARDIRQS_SW_RESEND
        bool
 
-<<<<<<< HEAD
-# Preflow handler support for fasteoi (sparc64)
-config IRQ_PREFLOW_FASTEOI
-       bool
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Edge style eoi based handler (cell)
 config IRQ_EDGE_EOI_HANDLER
        bool
@@ -88,26 +54,12 @@ config IRQ_EDGE_EOI_HANDLER
 # Generic configurable interrupt chip implementation
 config GENERIC_IRQ_CHIP
        bool
-<<<<<<< HEAD
-=======
        select IRQ_DOMAIN
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Generic irq_domain hw <--> linux irq number translation
 config IRQ_DOMAIN
 	bool
 
-<<<<<<< HEAD
-config IRQ_DOMAIN_DEBUG
-	bool "Expose hardware/virtual IRQ mapping via debugfs"
-	depends on IRQ_DOMAIN && DEBUG_FS
-	help
-	  This option will show the mapping relationship between hardware irq
-	  numbers and Linux irq numbers. The mapping is exposed via debugfs
-	  in the file "irq_domain_mapping".
-
-	  If you don't know what this means you don't need it.
-=======
 # Support for simulated interrupts
 config IRQ_SIM
 	bool
@@ -155,7 +107,6 @@ config GENERIC_IRQ_MATRIX_ALLOCATOR
 
 config GENERIC_IRQ_RESERVATION_MODE
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Support forced irq threading
 config IRQ_FORCED_THREADING
@@ -163,11 +114,7 @@ config IRQ_FORCED_THREADING
 
 config SPARSE_IRQ
 	bool "Support sparse irq numbering" if MAY_HAVE_SPARSE_IRQ
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Sparse irq numbering is useful for distro kernels that want
 	  to define a high CONFIG_NR_CPUS value but still want to have
@@ -178,10 +125,6 @@ config SPARSE_IRQ
 
 	  If you don't know what to do here, say N.
 
-<<<<<<< HEAD
-endmenu
-endif
-=======
 config GENERIC_IRQ_DEBUGFS
 	bool "Expose irq internals in debugfs"
 	depends on DEBUG_FS
@@ -207,4 +150,3 @@ config DEPRECATED_IRQ_CPU_ONOFFLINE
 	bool
 	depends on CAVIUM_OCTEON_SOC
 	default CAVIUM_OCTEON_SOC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

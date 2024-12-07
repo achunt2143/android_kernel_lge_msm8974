@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * OMAP Remote Processor driver
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMAP Remote Processor driver
  *
  * Copyright (C) 2011-2020 Texas Instruments Incorporated - http://www.ti.com/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2011 Google, Inc.
  *
  * Ohad Ben-Cohen <ohad@wizery.com>
@@ -18,31 +11,10 @@
  * Mark Grosen <mgrosen@ti.com>
  * Suman Anna <s-anna@ti.com>
  * Hari Kanigeri <h-kanigeri2@ti.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/err.h>
-#include <linux/platform_device.h>
-#include <linux/dma-mapping.h>
-#include <linux/remoteproc.h>
-
-#include <plat/mailbox.h>
-#include <plat/remoteproc.h>
-=======
 #include <linux/clk.h>
 #include <linux/clk/ti.h>
 #include <linux/err.h>
@@ -64,29 +36,10 @@
 #include <clocksource/timer-ti-dm.h>
 
 #include <linux/platform_data/dmtimer-omap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "omap_remoteproc.h"
 #include "remoteproc_internal.h"
 
-<<<<<<< HEAD
-/**
- * struct omap_rproc - omap remote processor state
- * @mbox: omap mailbox handle
- * @nb: notifier block that will be invoked on inbound mailbox messages
- * @rproc: rproc handle
- */
-struct omap_rproc {
-	struct omap_mbox *mbox;
-	struct notifier_block nb;
-	struct rproc *rproc;
-};
-
-/**
- * omap_rproc_mbox_callback() - inbound mailbox message handler
- * @this: notifier block
- * @index: unused
-=======
 /* default auto-suspend delay (ms) */
 #define DEFAULT_AUTOSUSPEND_DELAY		10000
 
@@ -525,7 +478,6 @@ static int omap_rproc_disable_timers(struct rproc *rproc, bool configure)
 /**
  * omap_rproc_mbox_callback() - inbound mailbox message handler
  * @client: mailbox client pointer used for requesting the mailbox channel
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @data: mailbox payload
  *
  * This handler is invoked by omap's mailbox driver whenever a mailbox
@@ -537,15 +489,6 @@ static int omap_rproc_disable_timers(struct rproc *rproc, bool configure)
  * that indicates different events. Those values are deliberately very
  * big so they don't coincide with virtqueue indices.
  */
-<<<<<<< HEAD
-static int omap_rproc_mbox_callback(struct notifier_block *this,
-					unsigned long index, void *data)
-{
-	mbox_msg_t msg = (mbox_msg_t) data;
-	struct omap_rproc *oproc = container_of(this, struct omap_rproc, nb);
-	struct device *dev = oproc->rproc->dev;
-	const char *name = oproc->rproc->name;
-=======
 static void omap_rproc_mbox_callback(struct mbox_client *client, void *data)
 {
 	struct omap_rproc *oproc = container_of(client, struct omap_rproc,
@@ -553,30 +496,21 @@ static void omap_rproc_mbox_callback(struct mbox_client *client, void *data)
 	struct device *dev = oproc->rproc->dev.parent;
 	const char *name = oproc->rproc->name;
 	u32 msg = (u32)data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(dev, "mbox msg: 0x%x\n", msg);
 
 	switch (msg) {
 	case RP_MBOX_CRASH:
-<<<<<<< HEAD
-		/* just log this for now. later, we'll also do recovery */
-		dev_err(dev, "omap rproc %s crashed\n", name);
-=======
 		/*
 		 * remoteproc detected an exception, notify the rproc core.
 		 * The remoteproc core will handle the recovery.
 		 */
 		dev_err(dev, "omap rproc %s crashed\n", name);
 		rproc_report_crash(oproc->rproc, RPROC_FATAL_ERROR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case RP_MBOX_ECHO_REPLY:
 		dev_info(dev, "received echo reply from %s\n", name);
 		break;
-<<<<<<< HEAD
-	default:
-=======
 	case RP_MBOX_SUSPEND_ACK:
 	case RP_MBOX_SUSPEND_CANCEL:
 		oproc->suspend_acked = msg == RP_MBOX_SUSPEND_ACK;
@@ -589,30 +523,16 @@ static void omap_rproc_mbox_callback(struct mbox_client *client, void *data)
 			dev_dbg(dev, "dropping unknown message 0x%x", msg);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* msg contains the index of the triggered vring */
 		if (rproc_vq_interrupt(oproc->rproc, msg) == IRQ_NONE)
 			dev_dbg(dev, "no message was found in vqid %d\n", msg);
 	}
-<<<<<<< HEAD
-
-	return NOTIFY_DONE;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* kick a virtqueue */
 static void omap_rproc_kick(struct rproc *rproc, int vqid)
 {
 	struct omap_rproc *oproc = rproc->priv;
-<<<<<<< HEAD
-	int ret;
-
-	/* send the index of the triggered virtqueue in the mailbox payload */
-	ret = omap_mbox_msg_send(oproc->mbox, vqid);
-	if (ret)
-		dev_err(rproc->dev, "omap_mbox_msg_send failed: %d\n", ret);
-=======
 	struct device *dev = rproc->dev.parent;
 	int ret;
 
@@ -662,7 +582,6 @@ static int omap_rproc_write_dsp_boot_addr(struct rproc *rproc)
 	mask = ~(SZ_1K - 1) >> bdata->boot_reg_shift;
 
 	return regmap_update_bits(bdata->syscon, offset, mask, value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -675,19 +594,6 @@ static int omap_rproc_write_dsp_boot_addr(struct rproc *rproc)
 static int omap_rproc_start(struct rproc *rproc)
 {
 	struct omap_rproc *oproc = rproc->priv;
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(rproc->dev);
-	struct omap_rproc_pdata *pdata = pdev->dev.platform_data;
-	int ret;
-
-	oproc->nb.notifier_call = omap_rproc_mbox_callback;
-
-	/* every omap rproc is assigned a mailbox instance for messaging */
-	oproc->mbox = omap_mbox_get(pdata->mbox_name, &oproc->nb);
-	if (IS_ERR(oproc->mbox)) {
-		ret = PTR_ERR(oproc->mbox);
-		dev_err(rproc->dev, "omap_mbox_get failed: %d\n", ret);
-=======
 	struct device *dev = rproc->dev.parent;
 	int ret;
 	struct mbox_client *client = &oproc->client;
@@ -709,7 +615,6 @@ static int omap_rproc_start(struct rproc *rproc)
 		ret = -EBUSY;
 		dev_err(dev, "mbox_request_channel failed: %ld\n",
 			PTR_ERR(oproc->mbox));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -720,24 +625,6 @@ static int omap_rproc_start(struct rproc *rproc)
 	 * Note that the reply will _not_ arrive immediately: this message
 	 * will wait in the mailbox fifo until the remote processor is booted.
 	 */
-<<<<<<< HEAD
-	ret = omap_mbox_msg_send(oproc->mbox, RP_MBOX_ECHO_REQUEST);
-	if (ret) {
-		dev_err(rproc->dev, "omap_mbox_get failed: %d\n", ret);
-		goto put_mbox;
-	}
-
-	ret = pdata->device_enable(pdev);
-	if (ret) {
-		dev_err(rproc->dev, "omap_device_enable failed: %d\n", ret);
-		goto put_mbox;
-	}
-
-	return 0;
-
-put_mbox:
-	omap_mbox_put(oproc->mbox, &oproc->nb);
-=======
 	ret = mbox_send_message(oproc->mbox, (void *)RP_MBOX_ECHO_REQUEST);
 	if (ret < 0) {
 		dev_err(dev, "mbox_send_message failed: %d\n", ret);
@@ -774,25 +661,12 @@ disable_timers:
 	omap_rproc_disable_timers(rproc, true);
 put_mbox:
 	mbox_free_channel(oproc->mbox);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* power off the remote processor */
 static int omap_rproc_stop(struct rproc *rproc)
 {
-<<<<<<< HEAD
-	struct platform_device *pdev = to_platform_device(rproc->dev);
-	struct omap_rproc_pdata *pdata = pdev->dev.platform_data;
-	struct omap_rproc *oproc = rproc->priv;
-	int ret;
-
-	ret = pdata->device_shutdown(pdev);
-	if (ret)
-		return ret;
-
-	omap_mbox_put(oproc->mbox, &oproc->nb);
-=======
 	struct device *dev = rproc->dev.parent;
 	struct omap_rproc *oproc = rproc->priv;
 	int ret;
@@ -1288,25 +1162,10 @@ static int omap_rproc_get_boot_data(struct platform_device *pdev,
 
 	of_property_read_u32_index(np, "ti,bootreg", 2,
 				   &oproc->boot_data->boot_reg_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct rproc_ops omap_rproc_ops = {
-	.start		= omap_rproc_start,
-	.stop		= omap_rproc_stop,
-	.kick		= omap_rproc_kick,
-};
-
-static int __devinit omap_rproc_probe(struct platform_device *pdev)
-{
-	struct omap_rproc_pdata *pdata = pdev->dev.platform_data;
-	struct omap_rproc *oproc;
-	struct rproc *rproc;
-	int ret;
-=======
 static int omap_rproc_of_get_internal_memories(struct platform_device *pdev,
 					       struct rproc *rproc)
 {
@@ -1439,7 +1298,6 @@ static int omap_rproc_probe(struct platform_device *pdev)
 	firmware = omap_rproc_get_firmware(pdev);
 	if (IS_ERR(firmware))
 		return PTR_ERR(firmware);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
 	if (ret) {
@@ -1447,29 +1305,13 @@ static int omap_rproc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	rproc = rproc_alloc(&pdev->dev, pdata->name, &omap_rproc_ops,
-				pdata->firmware, sizeof(*oproc));
-=======
 	rproc = rproc_alloc(&pdev->dev, dev_name(&pdev->dev), &omap_rproc_ops,
 			    firmware, sizeof(*oproc));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rproc)
 		return -ENOMEM;
 
 	oproc = rproc->priv;
 	oproc->rproc = rproc;
-<<<<<<< HEAD
-
-	platform_set_drvdata(pdev, rproc);
-
-	ret = rproc_register(rproc);
-	if (ret)
-		goto free_rproc;
-
-	return 0;
-
-=======
 	oproc->reset = reset;
 	/* All existing OMAP IPU and DSP processors have an MMU */
 	rproc->has_iommu = true;
@@ -1517,27 +1359,11 @@ static int omap_rproc_probe(struct platform_device *pdev)
 
 release_mem:
 	of_reserved_mem_device_release(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_rproc:
 	rproc_free(rproc);
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit omap_rproc_remove(struct platform_device *pdev)
-{
-	struct rproc *rproc = platform_get_drvdata(pdev);
-
-	return rproc_unregister(rproc);
-}
-
-static struct platform_driver omap_rproc_driver = {
-	.probe = omap_rproc_probe,
-	.remove = __devexit_p(omap_rproc_remove),
-	.driver = {
-		.name = "omap-rproc",
-		.owner = THIS_MODULE,
-=======
 static void omap_rproc_remove(struct platform_device *pdev)
 {
 	struct rproc *rproc = platform_get_drvdata(pdev);
@@ -1560,7 +1386,6 @@ static struct platform_driver omap_rproc_driver = {
 		.name = "omap-rproc",
 		.pm = &omap_rproc_pm_ops,
 		.of_match_table = omap_rproc_of_match,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

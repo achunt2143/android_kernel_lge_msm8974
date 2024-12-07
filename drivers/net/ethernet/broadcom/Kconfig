@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Broadcom device configuration
 #
@@ -11,24 +8,14 @@ config NET_VENDOR_BROADCOM
 	default y
 	depends on (SSB_POSSIBLE && HAS_DMA) || PCI || BCM63XX || \
 		   SIBYTE_SB1xxx_SOC
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a network (Ethernet) chipset belonging to this class,
 	  say Y.
 
 	  Note that the answer to this question does not directly affect
-<<<<<<< HEAD
-	  the kernel: saying N will just case the configurator to skip all
-	  the questions regarding AMD chipsets. If you say Y, you will be asked
-	  for your specific chipset/driver in the following questions.
-=======
 	  the kernel: saying N will just cause the configurator to skip all
 	  the questions regarding Broadcom chipsets. If you say Y, you will
 	  be asked for your specific chipset/driver in the following questions.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if NET_VENDOR_BROADCOM
 
@@ -36,20 +23,11 @@ config B44
 	tristate "Broadcom 440x/47xx ethernet support"
 	depends on SSB_POSSIBLE && HAS_DMA
 	select SSB
-<<<<<<< HEAD
-	select NET_CORE
-	select MII
-	---help---
-	  If you have a network (Ethernet) controller of this type, say Y
-	  or M and read the Ethernet-HOWTO, available from
-	  <http://www.tldp.org/docs.html#howto>.
-=======
 	select MII
 	select PHYLIB
 	help
 	  If you have a network (Ethernet) controller of this type, say Y
 	  or M here.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here. The module
 	  will be called b44.
@@ -73,12 +51,6 @@ config B44_PCI
 	depends on B44_PCI_AUTOSELECT && B44_PCICORE_AUTOSELECT
 	default y
 
-<<<<<<< HEAD
-config BCM63XX_ENET
-	tristate "Broadcom 63xx internal mac support"
-	depends on BCM63XX
-	select NET_CORE
-=======
 config BCM4908_ENET
 	tristate "Broadcom BCM4908 internal mac support"
 	depends on ARCH_BCMBCA || COMPILE_TEST
@@ -90,22 +62,12 @@ config BCM4908_ENET
 config BCM63XX_ENET
 	tristate "Broadcom 63xx internal mac support"
 	depends on BCM63XX
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select MII
 	select PHYLIB
 	help
 	  This driver supports the ethernet MACs in the Broadcom 63xx
 	  MIPS chipset family (BCM63XX).
 
-<<<<<<< HEAD
-config BNX2
-	tristate "Broadcom NetXtremeII support"
-	depends on PCI
-	select CRC32
-	select FW_LOADER
-	---help---
-	  This driver supports Broadcom NetXtremeII gigabit Ethernet cards.
-=======
 config BCMGENET
 	tristate "Broadcom GENET internal MAC support"
 	depends on HAS_IOMEM
@@ -128,21 +90,11 @@ config BNX2
 	select FW_LOADER
 	help
 	  This driver supports QLogic bnx2 gigabit Ethernet cards.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called bnx2.  This is recommended.
 
 config CNIC
-<<<<<<< HEAD
-	tristate "Broadcom CNIC support"
-	depends on PCI
-	select BNX2
-	select UIO
-	---help---
-	  This driver supports offload features of Broadcom NetXtremeII
-	  gigabit Ethernet cards.
-=======
 	tristate "QLogic CNIC support"
 	depends on PCI && (IPV6 || IPV6=n)
 	depends on MMU
@@ -151,7 +103,6 @@ config CNIC
 	help
 	  This driver supports offload features of QLogic bnx2 gigabit
 	  Ethernet cards.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called cnic.  This is recommended.
@@ -160,11 +111,7 @@ config SB1250_MAC
 	tristate "SB1250 Gigabit Ethernet support"
 	depends on SIBYTE_SB1xxx_SOC
 	select PHYLIB
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports Gigabit Ethernet interfaces based on the
 	  Broadcom SiByte family of System-On-a-Chip parts.  They include
 	  the BCM1120, BCM1125, BCM1125H, BCM1250, BCM1255, BCM1280, BCM1455
@@ -176,24 +123,14 @@ config SB1250_MAC
 config TIGON3
 	tristate "Broadcom Tigon3 support"
 	depends on PCI
-<<<<<<< HEAD
-	select PHYLIB
-	---help---
-=======
 	depends on PTP_1588_CLOCK_OPTIONAL
 	select PHYLIB
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports Broadcom Tigon3 based gigabit Ethernet cards.
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called tg3.  This is recommended.
 
-<<<<<<< HEAD
-config BNX2X
-	tristate "Broadcom NetXtremeII 10Gb support"
-	depends on PCI
-=======
 config TIGON3_HWMON
 	bool "Broadcom Tigon3 HWMON support"
 	default y
@@ -205,22 +142,15 @@ config BNX2X
 	tristate "Broadcom NetXtremeII 10Gb support"
 	depends on PCI
 	depends on PTP_1588_CLOCK_OPTIONAL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select FW_LOADER
 	select ZLIB_INFLATE
 	select LIBCRC32C
 	select MDIO
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This driver supports Broadcom NetXtremeII 10 gigabit Ethernet cards.
 	  To compile this driver as a module, choose M here: the module
 	  will be called bnx2x.  This is recommended.
 
-<<<<<<< HEAD
-=======
 config BNX2X_SRIOV
 	bool "Broadcom 578xx and 57712 SR-IOV support"
 	depends on BNX2X && PCI_IOV
@@ -337,5 +267,4 @@ config BCMASP
 	  This configuration enables the Broadcom ASP 2.0 Ethernet controller
 	  driver which is present in Broadcom STB SoCs such as 72165.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NET_VENDOR_BROADCOM

@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Motion-PRO board Device Tree Source
  *
  * Copyright (C) 2007 Semihalf
  * Marian Balakowicz <m8@semihalf.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /include/ "mpc5200b.dtsi"
 
-<<<<<<< HEAD
-=======
 &gpt0 { fsl,has-wdt; };
 &gpt6 { // Motion-PRO status LED
 	compatible = "promess,motionpro-led";
@@ -32,30 +19,11 @@
 	label = "motionpro-readyled";
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 / {
 	model = "promess,motionpro";
 	compatible = "promess,motionpro";
 
 	soc5200@f0000000 {
-<<<<<<< HEAD
-		timer@600 {	// General Purpose Timer
-			fsl,has-wdt;
-		};
-
-		timer@660 {	// Motion-PRO status LED
-			compatible = "promess,motionpro-led";
-			label = "motionpro-statusled";
-			blink-delay = <100>; // 100 msec
-		};
-
-		timer@670 {	// Motion-PRO ready LED
-			compatible = "promess,motionpro-led";
-			label = "motionpro-readyled";
-		};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		can@900 {
 			status = "disabled";
 		};

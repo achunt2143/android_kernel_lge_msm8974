@@ -26,10 +26,6 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  */
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/pci.h>
 #include <linux/types.h>
@@ -38,11 +34,7 @@
 #include <asm/mach-rc32434/rc32434.h>
 #include <asm/mach-rc32434/pci.h>
 
-<<<<<<< HEAD
-#define PCI_ACCESS_READ  0
-=======
 #define PCI_ACCESS_READ	 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_ACCESS_WRITE 1
 
 

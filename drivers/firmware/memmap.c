@@ -1,24 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/firmware/memmap.c
  *  Copyright (C) 2008 SUSE LINUX Products GmbH
  *  by Bernhard Walle <bernhard.walle@gmx.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License v2.0 as published by
- * the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/string.h>
@@ -26,14 +10,9 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/types.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-#include <linux/slab.h>
-=======
 #include <linux/memblock.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Data types ------------------------------------------------------------------
@@ -65,12 +44,9 @@ static ssize_t start_show(struct firmware_map_entry *entry, char *buf);
 static ssize_t end_show(struct firmware_map_entry *entry, char *buf);
 static ssize_t type_show(struct firmware_map_entry *entry, char *buf);
 
-<<<<<<< HEAD
-=======
 static struct firmware_map_entry * __meminit
 firmware_map_find_entry(u64 start, u64 end, const char *type);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Static data -----------------------------------------------------------------
  */
@@ -93,20 +69,12 @@ static struct attribute *def_attrs[] = {
 	&memmap_type_attr.attr,
 	NULL
 };
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(def);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct sysfs_ops memmap_attr_ops = {
 	.show = memmap_attr_show,
 };
 
-<<<<<<< HEAD
-static struct kobj_type memmap_ktype = {
-	.sysfs_ops	= &memmap_attr_ops,
-	.default_attrs	= def_attrs,
-=======
 /* Firmware memory map entries. */
 static LIST_HEAD(map_entries);
 static DEFINE_SPINLOCK(map_entries_lock);
@@ -152,44 +120,25 @@ static struct kobj_type __refdata memmap_ktype = {
 	.release	= release_firmware_map_entry,
 	.sysfs_ops	= &memmap_attr_ops,
 	.default_groups	= def_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Registration functions ------------------------------------------------------
  */
 
-<<<<<<< HEAD
-/*
- * Firmware memory map entries. No locking is needed because the
- * firmware_map_add() and firmware_map_add_early() functions are called
- * in firmware initialisation code in one single thread of execution.
- */
-static LIST_HEAD(map_entries);
-
-/**
- * firmware_map_add_entry() - Does the real work to add a firmware memmap entry.
- * @start: Start of the memory range.
- * @end:   End of the memory range (inclusive).
-=======
 /**
  * firmware_map_add_entry() - Does the real work to add a firmware memmap entry.
  * @start: Start of the memory range.
  * @end:   End of the memory range (exclusive).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @type:  Type of the memory range.
  * @entry: Pre-allocated (either kmalloc() or bootmem allocator), uninitialised
  *         entry.
  *
  * Common implementation of firmware_map_add() and firmware_map_add_early()
  * which expects a pre-allocated struct firmware_map_entry.
-<<<<<<< HEAD
- **/
-=======
  *
  * Return: 0 always
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int firmware_map_add_entry(u64 start, u64 end,
 				  const char *type,
 				  struct firmware_map_entry *entry)
@@ -197,28 +146,18 @@ static int firmware_map_add_entry(u64 start, u64 end,
 	BUG_ON(start > end);
 
 	entry->start = start;
-<<<<<<< HEAD
-	entry->end = end;
-=======
 	entry->end = end - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->type = type;
 	INIT_LIST_HEAD(&entry->list);
 	kobject_init(&entry->kobj, &memmap_ktype);
 
-<<<<<<< HEAD
-	list_add_tail(&entry->list, &map_entries);
-=======
 	spin_lock(&map_entries_lock);
 	list_add_tail(&entry->list, &map_entries);
 	spin_unlock(&map_entries_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * firmware_map_remove_entry() - Does the real work to remove a firmware
  * memmap entry.
@@ -231,7 +170,6 @@ static inline void firmware_map_remove_entry(struct firmware_map_entry *entry)
 	list_del(&entry->list);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Add memmap entry on sysfs
  */
@@ -240,12 +178,9 @@ static int add_sysfs_fw_map_entry(struct firmware_map_entry *entry)
 	static int map_entries_nr;
 	static struct kset *mmap_kset;
 
-<<<<<<< HEAD
-=======
 	if (entry->kobj.state_in_sysfs)
 		return -EEXIST;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mmap_kset) {
 		mmap_kset = kset_create_and_add("memmap", NULL, firmware_kobj);
 		if (!mmap_kset)
@@ -259,8 +194,6 @@ static int add_sysfs_fw_map_entry(struct firmware_map_entry *entry)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Remove memmap entry on sysfs
  */
@@ -333,38 +266,23 @@ firmware_map_find_entry_bootmem(u64 start, u64 end, const char *type)
 					       &map_entries_bootmem);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * firmware_map_add_hotplug() - Adds a firmware mapping entry when we do
  * memory hotplug.
  * @start: Start of the memory range.
-<<<<<<< HEAD
- * @end:   End of the memory range (inclusive).
-=======
  * @end:   End of the memory range (exclusive)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @type:  Type of the memory range.
  *
  * Adds a firmware mapping entry. This function is for memory hotplug, it is
  * similar to function firmware_map_add_early(). The only difference is that
  * it will create the syfs entry dynamically.
  *
-<<<<<<< HEAD
- * Returns 0 on success, or -ENOMEM if no memory could be allocated.
- **/
-=======
  * Return: 0 on success, or -ENOMEM if no memory could be allocated.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __meminit firmware_map_add_hotplug(u64 start, u64 end, const char *type)
 {
 	struct firmware_map_entry *entry;
 
-<<<<<<< HEAD
-	entry = kzalloc(sizeof(struct firmware_map_entry), GFP_ATOMIC);
-	if (!entry)
-		return -ENOMEM;
-=======
 	entry = firmware_map_find_entry(start, end - 1, type);
 	if (entry)
 		return 0;
@@ -382,7 +300,6 @@ int __meminit firmware_map_add_hotplug(u64 start, u64 end, const char *type)
 
 		memset(entry, 0, sizeof(*entry));
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	firmware_map_add_entry(start, end, type, entry);
 	/* create the memmap entry */
@@ -394,11 +311,7 @@ int __meminit firmware_map_add_hotplug(u64 start, u64 end, const char *type)
 /**
  * firmware_map_add_early() - Adds a firmware mapping entry.
  * @start: Start of the memory range.
-<<<<<<< HEAD
- * @end:   End of the memory range (inclusive).
-=======
  * @end:   End of the memory range.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @type:  Type of the memory range.
  *
  * Adds a firmware mapping entry. This function uses the bootmem allocator
@@ -406,31 +319,20 @@ int __meminit firmware_map_add_hotplug(u64 start, u64 end, const char *type)
  *
  * That function must be called before late_initcall.
  *
-<<<<<<< HEAD
- * Returns 0 on success, or -ENOMEM if no memory could be allocated.
- **/
-=======
  * Return: 0 on success, or -ENOMEM if no memory could be allocated.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init firmware_map_add_early(u64 start, u64 end, const char *type)
 {
 	struct firmware_map_entry *entry;
 
-<<<<<<< HEAD
-	entry = alloc_bootmem(sizeof(struct firmware_map_entry));
-=======
 	entry = memblock_alloc(sizeof(struct firmware_map_entry),
 			       SMP_CACHE_BYTES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (WARN_ON(!entry))
 		return -ENOMEM;
 
 	return firmware_map_add_entry(start, end, type, entry);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * firmware_map_remove() - remove a firmware mapping entry
  * @start: Start of the memory range.
@@ -461,7 +363,6 @@ int __meminit firmware_map_remove(u64 start, u64 end, const char *type)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sysfs functions -------------------------------------------------------------
  */
@@ -483,15 +384,10 @@ static ssize_t type_show(struct firmware_map_entry *entry, char *buf)
 	return snprintf(buf, PAGE_SIZE, "%s\n", entry->type);
 }
 
-<<<<<<< HEAD
-#define to_memmap_attr(_attr) container_of(_attr, struct memmap_attribute, attr)
-#define to_memmap_entry(obj) container_of(obj, struct firmware_map_entry, kobj)
-=======
 static inline struct memmap_attribute *to_memmap_attr(struct attribute *attr)
 {
 	return container_of(attr, struct memmap_attribute, attr);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t memmap_attr_show(struct kobject *kobj,
 				struct attribute *attr, char *buf)
@@ -510,11 +406,7 @@ static ssize_t memmap_attr_show(struct kobject *kobj,
  * firmware_map_add() or firmware_map_add_early() afterwards, the entries
  * are not added to sysfs.
  */
-<<<<<<< HEAD
-static int __init memmap_init(void)
-=======
 static int __init firmware_memmap_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct firmware_map_entry *entry;
 
@@ -523,9 +415,5 @@ static int __init firmware_memmap_init(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-late_initcall(memmap_init);
-=======
 late_initcall(firmware_memmap_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

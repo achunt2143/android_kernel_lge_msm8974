@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux multi-function-device driver (MFD) for the integrated peripherals
  * of the VIA VX855 chipset
@@ -10,25 +7,6 @@
  * Copyright (C) 2010 One Laptop per Child
  * Author: Harald Welte <HaraldWelte@viatech.com>
  * All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -67,11 +45,7 @@ static struct resource vx855_gpio_resources[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct mfd_cell vx855_cells[] = {
-=======
 static const struct mfd_cell vx855_cells[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "vx855_gpio",
 		.num_resources = ARRAY_SIZE(vx855_gpio_resources),
@@ -83,11 +57,7 @@ static const struct mfd_cell vx855_cells[] = {
 	},
 };
 
-<<<<<<< HEAD
-static __devinit int vx855_probe(struct pci_dev *pdev,
-=======
 static int vx855_probe(struct pci_dev *pdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 const struct pci_device_id *id)
 {
 	int ret;
@@ -117,11 +87,7 @@ static int vx855_probe(struct pci_dev *pdev,
 	vx855_gpio_resources[1].end = vx855_gpio_resources[1].start + 3;
 
 	ret = mfd_add_devices(&pdev->dev, -1, vx855_cells, ARRAY_SIZE(vx855_cells),
-<<<<<<< HEAD
-			NULL, 0);
-=======
 			NULL, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we always return -ENODEV here in order to enable other
 	 * drivers like old, not-yet-platform_device ported i2c-viapro */
@@ -131,21 +97,13 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void __devexit vx855_remove(struct pci_dev *pdev)
-=======
 static void vx855_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mfd_remove_devices(&pdev->dev);
 	pci_disable_device(pdev);
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(vx855_pci_tbl) = {
-=======
 static const struct pci_device_id vx855_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855) },
 	{ 0, }
 };
@@ -155,27 +113,10 @@ static struct pci_driver vx855_pci_driver = {
 	.name		= "vx855",
 	.id_table	= vx855_pci_tbl,
 	.probe		= vx855_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(vx855_remove),
-};
-
-static int vx855_init(void)
-{
-	return pci_register_driver(&vx855_pci_driver);
-}
-module_init(vx855_init);
-
-static void vx855_exit(void)
-{
-	pci_unregister_driver(&vx855_pci_driver);
-}
-module_exit(vx855_exit);
-=======
 	.remove		= vx855_remove,
 };
 
 module_pci_driver(vx855_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Harald Welte <HaraldWelte@viatech.com>");

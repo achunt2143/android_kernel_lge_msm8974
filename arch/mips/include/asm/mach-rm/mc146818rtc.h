@@ -16,10 +16,6 @@
 #define mc146818_decode_year(year) ((year) + 1980)
 #endif
 
-<<<<<<< HEAD
-#include_next <mc146818rtc.h>
-=======
 #include <asm/mach-generic/mc146818rtc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_MACH_RM_MC146818RTC_H */

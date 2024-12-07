@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Operations on the network namespace
  */
@@ -9,17 +6,11 @@
 #define __NET_NET_NAMESPACE_H
 
 #include <linux/atomic.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-#include <linux/list.h>
-#include <linux/sysctl.h>
-=======
 #include <linux/refcount.h>
 #include <linux/workqueue.h>
 #include <linux/list.h>
 #include <linux/sysctl.h>
 #include <linux/uidgid.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/flow.h>
 #include <net/netns/core.h>
@@ -28,14 +19,6 @@
 #include <net/netns/packet.h>
 #include <net/netns/ipv4.h>
 #include <net/netns/ipv6.h>
-<<<<<<< HEAD
-#include <net/netns/dccp.h>
-#include <net/netns/x_tables.h>
-#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-#include <net/netns/conntrack.h>
-#endif
-#include <net/netns/xfrm.h>
-=======
 #include <net/netns/nexthop.h>
 #include <net/netns/ieee802154_6lowpan.h>
 #include <net/netns/sctp.h>
@@ -60,7 +43,6 @@
 #include <linux/skbuff.h>
 #include <linux/notifier.h>
 #include <linux/xarray.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct user_namespace;
 struct proc_dir_entry;
@@ -68,43 +50,15 @@ struct net_device;
 struct sock;
 struct ctl_table_header;
 struct net_generic;
-<<<<<<< HEAD
-struct sock;
-struct netns_ipvs;
-=======
 struct uevent_sock;
 struct netns_ipvs;
 struct bpf_prog;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define NETDEV_HASHBITS    8
 #define NETDEV_HASHENTRIES (1 << NETDEV_HASHBITS)
 
 struct net {
-<<<<<<< HEAD
-	atomic_t		passive;	/* To decided when the network
-						 * namespace should be freed.
-						 */
-	atomic_t		count;		/* To decided when the network
-						 *  namespace should be shut down.
-						 */
-#ifdef NETNS_REFCNT_DEBUG
-	atomic_t		use_count;	/* To track references we
-						 * destroy on demand
-						 */
-#endif
-	spinlock_t		rules_mod_lock;
-
-	struct list_head	list;		/* list of network namespaces */
-	struct list_head	cleanup_list;	/* namespaces on death row */
-	struct list_head	exit_list;	/* Use only net_mutex */
-
-	struct user_namespace   *user_ns;	/* Owning user namespace */
-
-	unsigned int		proc_inum;
-
-=======
 	/* First cache line can be often dirtied.
 	 * Do not place here read-mostly fields.
 	 */
@@ -141,7 +95,6 @@ struct net {
 						    * refcounted against netns
 						    */
 	struct list_head 	dev_base_head;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct proc_dir_entry 	*proc_net;
 	struct proc_dir_entry 	*proc_net_stat;
 
@@ -152,12 +105,6 @@ struct net {
 	struct sock 		*rtnl;			/* rtnetlink socket */
 	struct sock		*genl_sock;
 
-<<<<<<< HEAD
-	struct list_head 	dev_base_head;
-	struct hlist_head 	*dev_name_head;
-	struct hlist_head	*dev_index_head;
-	unsigned int		dev_base_seq;	/* protected by rtnl_mutex */
-=======
 	struct uevent_sock	*uevent_sock;		/* uevent socket */
 
 	struct hlist_head 	*dev_name_head;
@@ -171,19 +118,10 @@ struct net {
 	u32			hash_mix;
 
 	struct net_device       *loopback_dev;          /* The loopback */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* core fib_rules */
 	struct list_head	rules_ops;
 
-<<<<<<< HEAD
-
-	struct net_device       *loopback_dev;          /* The loopback */
-	struct netns_core	core;
-	struct netns_mib	mib;
-	struct netns_packet	packet;
-	struct netns_unix	unx;
-=======
 	struct netns_core	core;
 	struct netns_mib	mib;
 	struct netns_packet	packet;
@@ -191,23 +129,10 @@ struct net {
 	struct netns_unix	unx;
 #endif
 	struct netns_nexthop	nexthop;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netns_ipv4	ipv4;
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netns_ipv6	ipv6;
 #endif
-<<<<<<< HEAD
-#if defined(CONFIG_IP_DCCP) || defined(CONFIG_IP_DCCP_MODULE)
-	struct netns_dccp	dccp;
-#endif
-#ifdef CONFIG_NETFILTER
-	struct netns_xt		xt;
-#if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-	struct netns_ct		ct;
-#endif
-	struct sock		*nfnl;
-	struct sock		*nfnl_stash;
-=======
 #if IS_ENABLED(CONFIG_IEEE802154_6LOWPAN)
 	struct netns_ieee802154_lowpan	ieee802154_lowpan;
 #endif
@@ -225,27 +150,19 @@ struct net {
 #if IS_ENABLED(CONFIG_NF_FLOW_TABLE)
 	struct netns_ft ft;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef CONFIG_WEXT_CORE
 	struct sk_buff_head	wext_nlevents;
 #endif
 	struct net_generic __rcu	*gen;
 
-<<<<<<< HEAD
-=======
 	/* Used to store attached BPF programs */
 	struct netns_bpf	bpf;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Note : following structs are cache line aligned */
 #ifdef CONFIG_XFRM
 	struct netns_xfrm	xfrm;
 #endif
-<<<<<<< HEAD
-	struct netns_ipvs	*ipvs;
-};
-=======
 
 	u64			net_cookie; /* written once */
 
@@ -272,27 +189,12 @@ struct net {
 	struct netns_smc	smc;
 #endif
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/seq_file_net.h>
 
 /* Init's network namespace */
 extern struct net init_net;
 
-<<<<<<< HEAD
-#ifdef CONFIG_NET
-extern struct net *copy_net_ns(unsigned long flags,
-		struct user_namespace *user_ns, struct net *net_ns);
-
-#else /* CONFIG_NET */
-static inline struct net *copy_net_ns(unsigned long flags,
-		struct user_namespace *user_ns, struct net *net_ns)
-{
-	/* There is nothing to copy so this is a noop */
-	return net_ns;
-}
-#endif /* CONFIG_NET */
-=======
 #ifdef CONFIG_NET_NS
 struct net *copy_net_ns(unsigned long flags, struct user_namespace *user_ns,
 			struct net *old_net);
@@ -333,22 +235,10 @@ static inline struct net *get_net_ns_by_fd(int fd)
 	return ERR_PTR(-EINVAL);
 }
 #endif /* CONFIG_NET_NS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 extern struct list_head net_namespace_list;
 
-<<<<<<< HEAD
-extern struct net *get_net_ns_by_pid(pid_t pid);
-extern struct net *get_net_ns_by_fd(int pid);
-
-#ifdef CONFIG_NET_NS
-extern void __put_net(struct net *net);
-
-static inline struct net *get_net(struct net *net)
-{
-	atomic_inc(&net->count);
-=======
 struct net *get_net_ns_by_pid(pid_t pid);
 
 #ifdef CONFIG_SYSCTL
@@ -366,7 +256,6 @@ void __put_net(struct net *net);
 static inline struct net *get_net(struct net *net)
 {
 	refcount_inc(&net->ns.count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return net;
 }
 
@@ -377,25 +266,15 @@ static inline struct net *maybe_get_net(struct net *net)
 	 * exists.  If the reference count is zero this
 	 * function fails and returns NULL.
 	 */
-<<<<<<< HEAD
-	if (!atomic_inc_not_zero(&net->count))
-=======
 	if (!refcount_inc_not_zero(&net->ns.count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		net = NULL;
 	return net;
 }
 
-<<<<<<< HEAD
-static inline void put_net(struct net *net)
-{
-	if (atomic_dec_and_test(&net->count))
-=======
 /* Try using put_net_track() instead */
 static inline void put_net(struct net *net)
 {
 	if (refcount_dec_and_test(&net->ns.count))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__put_net(net);
 }
 
@@ -405,16 +284,12 @@ int net_eq(const struct net *net1, const struct net *net2)
 	return net1 == net2;
 }
 
-<<<<<<< HEAD
-extern void net_drop_ns(void *);
-=======
 static inline int check_net(const struct net *net)
 {
 	return refcount_read(&net->ns.count) != 0;
 }
 
 void net_drop_ns(void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -438,66 +313,15 @@ int net_eq(const struct net *net1, const struct net *net2)
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static inline int check_net(const struct net *net)
 {
 	return 1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define net_drop_ns NULL
 #endif
 
 
-<<<<<<< HEAD
-#ifdef NETNS_REFCNT_DEBUG
-static inline struct net *hold_net(struct net *net)
-{
-	if (net)
-		atomic_inc(&net->use_count);
-	return net;
-}
-
-static inline void release_net(struct net *net)
-{
-	if (net)
-		atomic_dec(&net->use_count);
-}
-#else
-static inline struct net *hold_net(struct net *net)
-{
-	return net;
-}
-
-static inline void release_net(struct net *net)
-{
-}
-#endif
-
-#ifdef CONFIG_NET_NS
-
-static inline void write_pnet(struct net **pnet, struct net *net)
-{
-	*pnet = net;
-}
-
-static inline struct net *read_pnet(struct net * const *pnet)
-{
-	return *pnet;
-}
-
-#else
-
-#define write_pnet(pnet, net)	do { (void)(net);} while (0)
-#define read_pnet(pnet)		(&init_net)
-
-#endif
-
-#define for_each_net(VAR)				\
-	list_for_each_entry(VAR, &net_namespace_list, list)
-
-=======
 static inline void __netns_tracker_alloc(struct net *net,
 					 netns_tracker *tracker,
 					 bool refcounted,
@@ -576,7 +400,6 @@ static inline struct net *read_pnet_rcu(possible_net_t *pnet)
 	list_for_each_entry(VAR, &net_namespace_list, list)
 #define for_each_net_continue_reverse(VAR)		\
 	list_for_each_entry_continue_reverse(VAR, &net_namespace_list, list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_each_net_rcu(VAR)				\
 	list_for_each_entry_rcu(VAR, &net_namespace_list, list)
 
@@ -584,20 +407,6 @@ static inline struct net *read_pnet_rcu(possible_net_t *pnet)
 #define __net_init
 #define __net_exit
 #define __net_initdata
-<<<<<<< HEAD
-#else
-#define __net_init	__init
-#define __net_exit	__exit_refok
-#define __net_initdata	__initdata
-#endif
-
-struct pernet_operations {
-	struct list_head list;
-	int (*init)(struct net *net);
-	void (*exit)(struct net *net);
-	void (*exit_batch)(struct list_head *net_exit_list);
-	int *id;
-=======
 #define __net_initconst
 #else
 #define __net_init	__init
@@ -643,7 +452,6 @@ struct pernet_operations {
 	void (*exit_batch_rtnl)(struct list_head *net_exit_list,
 				struct list_head *dev_kill_list);
 	unsigned int *id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t size;
 };
 
@@ -666,22 +474,6 @@ struct pernet_operations {
  * device which caused kernel oops, and panics during network
  * namespace cleanup.   So please don't get this wrong.
  */
-<<<<<<< HEAD
-extern int register_pernet_subsys(struct pernet_operations *);
-extern void unregister_pernet_subsys(struct pernet_operations *);
-extern int register_pernet_device(struct pernet_operations *);
-extern void unregister_pernet_device(struct pernet_operations *);
-
-struct ctl_path;
-struct ctl_table;
-struct ctl_table_header;
-
-extern struct ctl_table_header *register_net_sysctl_table(struct net *net,
-	const struct ctl_path *path, struct ctl_table *table);
-extern struct ctl_table_header *register_net_sysctl_rotable(
-	const struct ctl_path *path, struct ctl_table *table);
-extern void unregister_net_sysctl_table(struct ctl_table_header *header);
-=======
 int register_pernet_subsys(struct pernet_operations *);
 void unregister_pernet_subsys(struct pernet_operations *);
 int register_pernet_device(struct pernet_operations *);
@@ -762,6 +554,5 @@ void net_ns_init(void);
 #else
 static inline void net_ns_init(void) {}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __NET_NET_NAMESPACE_H */

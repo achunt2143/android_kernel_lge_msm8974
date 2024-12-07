@@ -63,11 +63,7 @@ struct mthca_eq_context {
 	__be32 consumer_index;
 	__be32 producer_index;
 	u32    reserved3[4];
-<<<<<<< HEAD
-} __attribute__((packed));
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MTHCA_EQ_STATUS_OK          ( 0 << 28)
 #define MTHCA_EQ_STATUS_OVERFLOW    ( 9 << 28)
@@ -134,11 +130,7 @@ struct mthca_eqe {
 		u32 raw[6];
 		struct {
 			__be32 cqn;
-<<<<<<< HEAD
-		} __attribute__((packed)) comp;
-=======
 		} __packed comp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			u16    reserved1;
 			__be16 token;
@@ -146,15 +138,6 @@ struct mthca_eqe {
 			u8     reserved3[3];
 			u8     status;
 			__be64 out_param;
-<<<<<<< HEAD
-		} __attribute__((packed)) cmd;
-		struct {
-			__be32 qpn;
-		} __attribute__((packed)) qp;
-		struct {
-			__be32 srqn;
-		} __attribute__((packed)) srq;
-=======
 		} __packed cmd;
 		struct {
 			__be32 qpn;
@@ -162,23 +145,11 @@ struct mthca_eqe {
 		struct {
 			__be32 srqn;
 		} __packed srq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			__be32 cqn;
 			u32    reserved1;
 			u8     reserved2[3];
 			u8     syndrome;
-<<<<<<< HEAD
-		} __attribute__((packed)) cq_err;
-		struct {
-			u32    reserved1[2];
-			__be32 port;
-		} __attribute__((packed)) port_change;
-	} event;
-	u8 reserved3[3];
-	u8 owner;
-} __attribute__((packed));
-=======
 		} __packed cq_err;
 		struct {
 			u32    reserved1[2];
@@ -188,7 +159,6 @@ struct mthca_eqe {
 	u8 reserved3[3];
 	u8 owner;
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define  MTHCA_EQ_ENTRY_OWNER_SW      (0 << 7)
 #define  MTHCA_EQ_ENTRY_OWNER_HW      (1 << 7)
@@ -387,11 +357,7 @@ static int mthca_eq_int(struct mthca_dev *dev, struct mthca_eq *eq)
 			mthca_warn(dev, "Unhandled event %02x(%02x) on EQ %d\n",
 				   eqe->type, eqe->subtype, eq->eqn);
 			break;
-<<<<<<< HEAD
-		};
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_eqe_hw(eqe);
 		++eq->cons_index;
@@ -513,24 +479,15 @@ static int mthca_create_eq(struct mthca_dev *dev,
 	eq->nent = roundup_pow_of_two(max(nent, 2));
 	npages = ALIGN(eq->nent * MTHCA_EQ_ENTRY_SIZE, PAGE_SIZE) / PAGE_SIZE;
 
-<<<<<<< HEAD
-	eq->page_list = kmalloc(npages * sizeof *eq->page_list,
-				GFP_KERNEL);
-=======
 	eq->page_list = kmalloc_array(npages, sizeof(*eq->page_list),
 				      GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!eq->page_list)
 		goto err_out;
 
 	for (i = 0; i < npages; ++i)
 		eq->page_list[i].buf = NULL;
 
-<<<<<<< HEAD
-	dma_list = kmalloc(npages * sizeof *dma_list, GFP_KERNEL);
-=======
 	dma_list = kmalloc_array(npages, sizeof(*dma_list), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dma_list)
 		goto err_out_free;
 
@@ -660,15 +617,9 @@ static void mthca_free_eq(struct mthca_dev *dev,
 
 	mthca_free_mr(dev, &eq->mr);
 	for (i = 0; i < npages; ++i)
-<<<<<<< HEAD
-		pci_free_consistent(dev->pdev, PAGE_SIZE,
-				    eq->page_list[i].buf,
-				    dma_unmap_addr(&eq->page_list[i], mapping));
-=======
 		dma_free_coherent(&dev->pdev->dev, PAGE_SIZE,
 				  eq->page_list[i].buf,
 				  dma_unmap_addr(&eq->page_list[i], mapping));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(eq->page_list);
 	mthca_free_mailbox(dev, mailbox);
@@ -788,29 +739,18 @@ int mthca_map_eq_icm(struct mthca_dev *dev, u64 icm_virt)
 	dev->eq_table.icm_page = alloc_page(GFP_HIGHUSER);
 	if (!dev->eq_table.icm_page)
 		return -ENOMEM;
-<<<<<<< HEAD
-	dev->eq_table.icm_dma  = pci_map_page(dev->pdev, dev->eq_table.icm_page, 0,
-					      PAGE_SIZE, PCI_DMA_BIDIRECTIONAL);
-	if (pci_dma_mapping_error(dev->pdev, dev->eq_table.icm_dma)) {
-=======
 	dev->eq_table.icm_dma =
 		dma_map_page(&dev->pdev->dev, dev->eq_table.icm_page, 0,
 			     PAGE_SIZE, DMA_BIDIRECTIONAL);
 	if (dma_mapping_error(&dev->pdev->dev, dev->eq_table.icm_dma)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__free_page(dev->eq_table.icm_page);
 		return -ENOMEM;
 	}
 
 	ret = mthca_MAP_ICM_page(dev, dev->eq_table.icm_dma, icm_virt);
 	if (ret) {
-<<<<<<< HEAD
-		pci_unmap_page(dev->pdev, dev->eq_table.icm_dma, PAGE_SIZE,
-			       PCI_DMA_BIDIRECTIONAL);
-=======
 		dma_unmap_page(&dev->pdev->dev, dev->eq_table.icm_dma,
 			       PAGE_SIZE, DMA_BIDIRECTIONAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__free_page(dev->eq_table.icm_page);
 	}
 
@@ -820,13 +760,8 @@ int mthca_map_eq_icm(struct mthca_dev *dev, u64 icm_virt)
 void mthca_unmap_eq_icm(struct mthca_dev *dev)
 {
 	mthca_UNMAP_ICM(dev, dev->eq_table.icm_virt, 1);
-<<<<<<< HEAD
-	pci_unmap_page(dev->pdev, dev->eq_table.icm_dma, PAGE_SIZE,
-		       PCI_DMA_BIDIRECTIONAL);
-=======
 	dma_unmap_page(&dev->pdev->dev, dev->eq_table.icm_dma, PAGE_SIZE,
 		       DMA_BIDIRECTIONAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__free_page(dev->eq_table.icm_page);
 }
 

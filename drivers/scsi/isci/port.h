@@ -97,10 +97,6 @@ enum isci_status {
 struct isci_port {
 	struct isci_host *isci_host;
 	struct list_head remote_dev_list;
-<<<<<<< HEAD
-	struct list_head domain_dev_list;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	#define IPORT_RESET_PENDING 0
 	unsigned long state;
 	enum sci_status hard_reset_status;
@@ -115,10 +111,7 @@ struct isci_port {
 	u16 reserved_tag;
 	u32 started_request_count;
 	u32 assigned_device_count;
-<<<<<<< HEAD
-=======
 	u32 hang_detect_users;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 not_ready_reason;
 	struct isci_phy *phy_table[SCI_MAX_PHYS];
 	struct isci_host *owning_controller;
@@ -277,16 +270,6 @@ void sci_port_get_attached_sas_address(
 	struct isci_port *iport,
 	struct sci_sas_address *sas_address);
 
-<<<<<<< HEAD
-void isci_port_formed(struct asd_sas_phy *);
-void isci_port_deformed(struct asd_sas_phy *);
-
-void isci_port_init(
-	struct isci_port *port,
-	struct isci_host *host,
-	int index);
-
-=======
 void sci_port_set_hang_detection_timeout(
 	struct isci_port *isci_port,
 	u32 timeout);
@@ -294,7 +277,6 @@ void sci_port_set_hang_detection_timeout(
 void isci_port_formed(struct asd_sas_phy *);
 void isci_port_deformed(struct asd_sas_phy *);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int isci_port_perform_hard_reset(struct isci_host *ihost, struct isci_port *iport,
 				 struct isci_phy *iphy);
 int isci_ata_check_ready(struct domain_device *dev);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NTP state machine interfaces and logic.
  *
@@ -19,22 +16,6 @@
 #include <linux/time.h>
 #include <linux/mm.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-
-#include "tick-internal.h"
-
-/*
- * NTP timekeeping variables:
- */
-
-DEFINE_SPINLOCK(ntp_lock);
-
-
-/* USER_HZ period (usecs): */
-unsigned long			tick_usec = TICK_USEC;
-
-/* ACTHZ period (nsecs): */
-=======
 #include <linux/rtc.h>
 #include <linux/audit.h>
 
@@ -53,7 +34,6 @@ unsigned long			tick_usec = TICK_USEC;
 unsigned long			tick_usec = USER_TICK_USEC;
 
 /* SHIFTED_HZ period (nsecs): */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long			tick_nsec;
 
 static u64			tick_length;
@@ -63,10 +43,7 @@ static u64			tick_length_base;
 #define MAX_TICKADJ		500LL		/* usecs */
 #define MAX_TICKADJ_SCALED \
 	(((MAX_TICKADJ * NSEC_PER_USEC) << NTP_SCALE_SHIFT) / NTP_INTERVAL_FREQ)
-<<<<<<< HEAD
-=======
 #define MAX_TAI_OFFSET		100000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * phase-lock loop variables
@@ -82,12 +59,6 @@ static int			time_state = TIME_OK;
 /* clock status bits:							*/
 static int			time_status = STA_UNSYNC;
 
-<<<<<<< HEAD
-/* TAI offset (secs):							*/
-static long			time_tai;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* time adjustment (nsecs):						*/
 static s64			time_offset;
 
@@ -104,24 +75,15 @@ static long			time_esterror = NTP_PHASE_LIMIT;
 static s64			time_freq;
 
 /* time at last adjustment (secs):					*/
-<<<<<<< HEAD
-static long			time_reftime;
-=======
 static time64_t		time_reftime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static long			time_adjust;
 
 /* constant (boot-param configurable) NTP tick adjustment (upscaled)	*/
 static s64			ntp_tick_adj;
 
-<<<<<<< HEAD
-/* second value of the next pending leapsecond, or KTIME_MAX if no leap */
-static s64			ntp_next_leap_sec = KTIME_MAX;
-=======
 /* second value of the next pending leapsecond, or TIME64_MAX if no leap */
 static time64_t			ntp_next_leap_sec = TIME64_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_NTP_PPS
 
@@ -142,11 +104,7 @@ static time64_t			ntp_next_leap_sec = TIME64_MAX;
 static int pps_valid;		/* signal watchdog counter */
 static long pps_tf[3];		/* phase median filter */
 static long pps_jitter;		/* current jitter (ns) */
-<<<<<<< HEAD
-static struct timespec pps_fbase; /* beginning of the last freq interval */
-=======
 static struct timespec64 pps_fbase; /* beginning of the last freq interval */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pps_shift;		/* current interval duration (s) (shift) */
 static int pps_intcnt;		/* interval counter */
 static s64 pps_freq;		/* frequency offset (scaled ns/s) */
@@ -182,11 +140,6 @@ static inline void pps_reset_freq_interval(void)
 
 /**
  * pps_clear - Clears the PPS state variables
-<<<<<<< HEAD
- *
- * Must be called while holding a write on the ntp_lock
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void pps_clear(void)
 {
@@ -201,11 +154,6 @@ static inline void pps_clear(void)
 /* Decrease pps_valid to indicate that another second has passed since
  * the last PPS signal. When it reaches 0, indicate that PPS signal is
  * missing.
-<<<<<<< HEAD
- *
- * Must be called while holding a write on the ntp_lock
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void pps_dec_valid(void)
 {
@@ -225,17 +173,6 @@ static inline void pps_set_freq(s64 freq)
 
 static inline int is_error_status(int status)
 {
-<<<<<<< HEAD
-	return (time_status & (STA_UNSYNC|STA_CLOCKERR))
-		/* PPS signal lost when either PPS time or
-		 * PPS frequency synchronization requested
-		 */
-		|| ((time_status & (STA_PPSFREQ|STA_PPSTIME))
-			&& !(time_status & STA_PPSSIGNAL))
-		/* PPS jitter exceeded when
-		 * PPS time synchronization requested */
-		|| ((time_status & (STA_PPSTIME|STA_PPSJITTER))
-=======
 	return (status & (STA_UNSYNC|STA_CLOCKERR))
 		/* PPS signal lost when either PPS time or
 		 * PPS frequency synchronization requested
@@ -245,34 +182,21 @@ static inline int is_error_status(int status)
 		/* PPS jitter exceeded when
 		 * PPS time synchronization requested */
 		|| ((status & (STA_PPSTIME|STA_PPSJITTER))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			== (STA_PPSTIME|STA_PPSJITTER))
 		/* PPS wander exceeded or calibration error when
 		 * PPS frequency synchronization requested
 		 */
-<<<<<<< HEAD
-		|| ((time_status & STA_PPSFREQ)
-			&& (time_status & (STA_PPSWANDER|STA_PPSERROR)));
-}
-
-static inline void pps_fill_timex(struct timex *txc)
-=======
 		|| ((status & STA_PPSFREQ)
 			&& (status & (STA_PPSWANDER|STA_PPSERROR)));
 }
 
 static inline void pps_fill_timex(struct __kernel_timex *txc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	txc->ppsfreq	   = shift_right((pps_freq >> PPM_SCALE_INV_SHIFT) *
 					 PPM_SCALE_INV, NTP_SCALE_SHIFT);
 	txc->jitter	   = pps_jitter;
 	if (!(time_status & STA_NANO))
-<<<<<<< HEAD
-		txc->jitter /= NSEC_PER_USEC;
-=======
 		txc->jitter = pps_jitter / NSEC_PER_USEC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txc->shift	   = pps_shift;
 	txc->stabil	   = pps_stabil;
 	txc->jitcnt	   = pps_jitcnt;
@@ -298,11 +222,7 @@ static inline int is_error_status(int status)
 	return status & (STA_UNSYNC|STA_CLOCKERR);
 }
 
-<<<<<<< HEAD
-static inline void pps_fill_timex(struct timex *txc)
-=======
 static inline void pps_fill_timex(struct __kernel_timex *txc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* PPS is not implemented, so these are zero */
 	txc->ppsfreq	   = 0;
@@ -382,45 +302,27 @@ static void ntp_update_offset(long offset)
 	if (!(time_status & STA_PLL))
 		return;
 
-<<<<<<< HEAD
-	if (!(time_status & STA_NANO))
-		offset *= NSEC_PER_USEC;
-=======
 	if (!(time_status & STA_NANO)) {
 		/* Make sure the multiplication below won't overflow */
 		offset = clamp(offset, -USEC_PER_SEC, USEC_PER_SEC);
 		offset *= NSEC_PER_USEC;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Scale the phase adjustment and
 	 * clamp to the operating range.
 	 */
-<<<<<<< HEAD
-	offset = min(offset, MAXPHASE);
-	offset = max(offset, -MAXPHASE);
-=======
 	offset = clamp(offset, -MAXPHASE, MAXPHASE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Select how the frequency is to be controlled
 	 * and in which mode (PLL or FLL).
 	 */
-<<<<<<< HEAD
-	secs = get_seconds() - time_reftime;
-	if (unlikely(time_status & STA_FREQHOLD))
-		secs = 0;
-
-	time_reftime = get_seconds();
-=======
 	secs = (long)(__ktime_get_real_seconds() - time_reftime);
 	if (unlikely(time_status & STA_FREQHOLD))
 		secs = 0;
 
 	time_reftime = __ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset64    = offset;
 	freq_adj    = ntp_update_offset_fll(offset64, secs);
@@ -448,54 +350,25 @@ static void ntp_update_offset(long offset)
  */
 void ntp_clear(void)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-
-	spin_lock_irqsave(&ntp_lock, flags);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	time_adjust	= 0;		/* stop active adjtime() */
 	time_status	|= STA_UNSYNC;
 	time_maxerror	= NTP_PHASE_LIMIT;
 	time_esterror	= NTP_PHASE_LIMIT;
 
-<<<<<<< HEAD
-	ntp_next_leap_sec = KTIME_MAX;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ntp_update_frequency();
 
 	tick_length	= tick_length_base;
 	time_offset	= 0;
 
-<<<<<<< HEAD
-	/* Clear PPS state variables */
-	pps_clear();
-	spin_unlock_irqrestore(&ntp_lock, flags);
-
-=======
 	ntp_next_leap_sec = TIME64_MAX;
 	/* Clear PPS state variables */
 	pps_clear();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 u64 ntp_tick_length(void)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	s64 ret;
-
-	spin_lock_irqsave(&ntp_lock, flags);
-	ret = tick_length;
-	spin_unlock_irqrestore(&ntp_lock, flags);
-	return ret;
-=======
 	return tick_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -510,11 +383,7 @@ ktime_t ntp_get_next_leap(void)
 
 	if ((time_state == TIME_INS) && (time_status & STA_INS))
 		return ktime_set(ntp_next_leap_sec, 0);
-<<<<<<< HEAD
-	ret.tv64 = KTIME_MAX;
-=======
 	ret = KTIME_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -528,21 +397,11 @@ ktime_t ntp_get_next_leap(void)
  *
  * Also handles leap second processing, and returns leap offset
  */
-<<<<<<< HEAD
-int second_overflow(unsigned long secs)
-{
-	s64 delta;
-	int leap = 0;
-	unsigned long flags;
-
-	spin_lock_irqsave(&ntp_lock, flags);
-=======
 int second_overflow(time64_t secs)
 {
 	s64 delta;
 	int leap = 0;
 	s32 rem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Leap second processing. If in leap-insert state at the end of the
@@ -553,75 +412,41 @@ int second_overflow(time64_t secs)
 	case TIME_OK:
 		if (time_status & STA_INS) {
 			time_state = TIME_INS;
-<<<<<<< HEAD
-			ntp_next_leap_sec = secs + SECS_PER_DAY -
-						(secs % SECS_PER_DAY);
-		} else if (time_status & STA_DEL) {
-			time_state = TIME_DEL;
-			ntp_next_leap_sec = secs + SECS_PER_DAY -
-						 ((secs+1) % SECS_PER_DAY);
-=======
 			div_s64_rem(secs, SECS_PER_DAY, &rem);
 			ntp_next_leap_sec = secs + SECS_PER_DAY - rem;
 		} else if (time_status & STA_DEL) {
 			time_state = TIME_DEL;
 			div_s64_rem(secs + 1, SECS_PER_DAY, &rem);
 			ntp_next_leap_sec = secs + SECS_PER_DAY - rem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case TIME_INS:
 		if (!(time_status & STA_INS)) {
-<<<<<<< HEAD
-			ntp_next_leap_sec = KTIME_MAX;
-			time_state = TIME_OK;
-		} else if (secs % SECS_PER_DAY == 0) {
-			leap = -1;
-			time_state = TIME_OOP;
-			time_tai++;
-=======
 			ntp_next_leap_sec = TIME64_MAX;
 			time_state = TIME_OK;
 		} else if (secs == ntp_next_leap_sec) {
 			leap = -1;
 			time_state = TIME_OOP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_NOTICE
 				"Clock: inserting leap second 23:59:60 UTC\n");
 		}
 		break;
 	case TIME_DEL:
 		if (!(time_status & STA_DEL)) {
-<<<<<<< HEAD
-			ntp_next_leap_sec = KTIME_MAX;
-			time_state = TIME_OK;
-		} else if ((secs + 1) % SECS_PER_DAY == 0) {
-			leap = 1;
-			ntp_next_leap_sec = KTIME_MAX;
-			time_tai--;
-=======
 			ntp_next_leap_sec = TIME64_MAX;
 			time_state = TIME_OK;
 		} else if (secs == ntp_next_leap_sec) {
 			leap = 1;
 			ntp_next_leap_sec = TIME64_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			time_state = TIME_WAIT;
 			printk(KERN_NOTICE
 				"Clock: deleting leap second 23:59:59 UTC\n");
 		}
 		break;
 	case TIME_OOP:
-<<<<<<< HEAD
-		ntp_next_leap_sec = KTIME_MAX;
-		time_state = TIME_WAIT;
-		break;
-
-=======
 		ntp_next_leap_sec = TIME64_MAX;
 		time_state = TIME_WAIT;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TIME_WAIT:
 		if (!(time_status & (STA_INS | STA_DEL)))
 			time_state = TIME_OK;
@@ -665,71 +490,6 @@ int second_overflow(time64_t secs)
 							 << NTP_SCALE_SHIFT;
 	time_adjust = 0;
 
-<<<<<<< HEAD
-
-
-out:
-	spin_unlock_irqrestore(&ntp_lock, flags);
-
-	return leap;
-}
-
-#ifdef CONFIG_GENERIC_CMOS_UPDATE
-
-static void sync_cmos_clock(struct work_struct *work);
-
-static DECLARE_DELAYED_WORK(sync_cmos_work, sync_cmos_clock);
-
-static void sync_cmos_clock(struct work_struct *work)
-{
-	struct timespec now, next;
-	int fail = 1;
-
-	/*
-	 * If we have an externally synchronized Linux clock, then update
-	 * CMOS clock accordingly every ~11 minutes. Set_rtc_mmss() has to be
-	 * called as close as possible to 500 ms before the new second starts.
-	 * This code is run on a timer.  If the clock is set, that timer
-	 * may not expire at the correct time.  Thus, we adjust...
-	 */
-	if (!ntp_synced()) {
-		/*
-		 * Not synced, exit, do not restart a timer (if one is
-		 * running, let it run out).
-		 */
-		return;
-	}
-
-	getnstimeofday(&now);
-	if (abs(now.tv_nsec - (NSEC_PER_SEC / 2)) <= tick_nsec / 2)
-		fail = update_persistent_clock(now);
-
-	next.tv_nsec = (NSEC_PER_SEC / 2) - now.tv_nsec - (TICK_NSEC / 2);
-	if (next.tv_nsec <= 0)
-		next.tv_nsec += NSEC_PER_SEC;
-
-	if (!fail)
-		next.tv_sec = 659;
-	else
-		next.tv_sec = 0;
-
-	if (next.tv_nsec >= NSEC_PER_SEC) {
-		next.tv_sec++;
-		next.tv_nsec -= NSEC_PER_SEC;
-	}
-	schedule_delayed_work(&sync_cmos_work, timespec_to_jiffies(&next));
-}
-
-static void notify_cmos_timer(void)
-{
-	schedule_delayed_work(&sync_cmos_work, 0);
-}
-
-#else
-static inline void notify_cmos_timer(void) { }
-#endif
-
-=======
 out:
 	return leap;
 }
@@ -919,25 +679,16 @@ static void __init ntp_init_cmos_sync(void)
 #else /* CONFIG_GENERIC_CMOS_UPDATE) || defined(CONFIG_RTC_SYSTOHC) */
 static inline void __init ntp_init_cmos_sync(void) { }
 #endif /* !CONFIG_GENERIC_CMOS_UPDATE) || defined(CONFIG_RTC_SYSTOHC) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Propagate a new txc->status value into the NTP state:
  */
-<<<<<<< HEAD
-static inline void process_adj_status(struct timex *txc, struct timespec *ts)
-=======
 static inline void process_adj_status(const struct __kernel_timex *txc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((time_status & STA_PLL) && !(txc->status & STA_PLL)) {
 		time_state = TIME_OK;
 		time_status = STA_UNSYNC;
-<<<<<<< HEAD
-		ntp_next_leap_sec = KTIME_MAX;
-=======
 		ntp_next_leap_sec = TIME64_MAX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* restart PPS frequency calibration */
 		pps_reset_freq_interval();
 	}
@@ -947,27 +698,11 @@ static inline void process_adj_status(const struct __kernel_timex *txc)
 	 * reference time to current time.
 	 */
 	if (!(time_status & STA_PLL) && (txc->status & STA_PLL))
-<<<<<<< HEAD
-		time_reftime = get_seconds();
-=======
 		time_reftime = __ktime_get_real_seconds();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* only set allowed bits */
 	time_status &= STA_RONLY;
 	time_status |= txc->status & ~STA_RONLY;
-<<<<<<< HEAD
-
-}
-/*
- * Called with the xtime lock held, so we can access and modify
- * all the global NTP state:
- */
-static inline void process_adjtimex_modes(struct timex *txc, struct timespec *ts)
-{
-	if (txc->modes & ADJ_STATUS)
-		process_adj_status(txc, ts);
-=======
 }
 
 
@@ -976,7 +711,6 @@ static inline void process_adjtimex_modes(const struct __kernel_timex *txc,
 {
 	if (txc->modes & ADJ_STATUS)
 		process_adj_status(txc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (txc->modes & ADJ_NANO)
 		time_status |= STA_NANO;
@@ -1006,14 +740,9 @@ static inline void process_adjtimex_modes(const struct __kernel_timex *txc,
 		time_constant = max(time_constant, 0l);
 	}
 
-<<<<<<< HEAD
-	if (txc->modes & ADJ_TAI && txc->constant > 0)
-		time_tai = txc->constant;
-=======
 	if (txc->modes & ADJ_TAI &&
 			txc->constant >= 0 && txc->constant <= MAX_TAI_OFFSET)
 		*time_tai = txc->constant;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (txc->modes & ADJ_OFFSET)
 		ntp_update_offset(txc->offset);
@@ -1025,78 +754,16 @@ static inline void process_adjtimex_modes(const struct __kernel_timex *txc,
 		ntp_update_frequency();
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * adjtimex mainly allows reading (and writing, if superuser) of
  * kernel time-keeping variables. used by xntpd.
  */
-<<<<<<< HEAD
-int __do_adjtimex(struct timex *txc)
-{
-	struct timespec ts;
-	int result;
-
-	/* Validate the data before disabling interrupts */
-	if (txc->modes & ADJ_ADJTIME) {
-		/* singleshot must not be used with any other mode bits */
-		if (!(txc->modes & ADJ_OFFSET_SINGLESHOT))
-			return -EINVAL;
-		if (!(txc->modes & ADJ_OFFSET_READONLY) &&
-		    !capable(CAP_SYS_TIME))
-			return -EPERM;
-	} else {
-		/* In order to modify anything, you gotta be super-user! */
-		 if (txc->modes && !capable(CAP_SYS_TIME))
-			return -EPERM;
-
-		/*
-		 * if the quartz is off by more than 10% then
-		 * something is VERY wrong!
-		 */
-		if (txc->modes & ADJ_TICK &&
-		    (txc->tick <  900000/USER_HZ ||
-		     txc->tick > 1100000/USER_HZ))
-			return -EINVAL;
-	}
-
-	if (txc->modes & ADJ_SETOFFSET) {
-		struct timespec delta;
-		delta.tv_sec  = txc->time.tv_sec;
-		delta.tv_nsec = txc->time.tv_usec;
-		if (!capable(CAP_SYS_TIME))
-			return -EPERM;
-		if (!(txc->modes & ADJ_NANO))
-			delta.tv_nsec *= 1000;
-		result = timekeeping_inject_offset(&delta);
-		if (result)
-			return result;
-	}
-
-	/*
-	 * Check for potential multiplication overflows that can
-	 * only happen on 64-bit systems:
-	 */
-	if ((txc->modes & ADJ_FREQUENCY) && (BITS_PER_LONG == 64)) {
-		if (LLONG_MIN / PPM_SCALE > txc->freq)
-			return -EINVAL;
-		if (LLONG_MAX / PPM_SCALE < txc->freq)
-			return -EINVAL;
-	}
-
-	getnstimeofday(&ts);
-
-	spin_lock_irq(&ntp_lock);
-
-=======
 int __do_adjtimex(struct __kernel_timex *txc, const struct timespec64 *ts,
 		  s32 *time_tai, struct audit_ntp_data *ad)
 {
 	int result;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (txc->modes & ADJ_ADJTIME) {
 		long save_adjust = time_adjust;
 
@@ -1104,15 +771,6 @@ int __do_adjtimex(struct __kernel_timex *txc, const struct timespec64 *ts,
 			/* adjtime() is independent from ntp_adjtime() */
 			time_adjust = txc->offset;
 			ntp_update_frequency();
-<<<<<<< HEAD
-		}
-		txc->offset = save_adjust;
-	} else {
-
-		/* If there are input parameters, then process them: */
-		if (txc->modes)
-			process_adjtimex_modes(txc, &ts);
-=======
 
 			audit_ntp_set_old(ad, AUDIT_NTP_ADJUST,	save_adjust);
 			audit_ntp_set_new(ad, AUDIT_NTP_ADJUST,	time_adjust);
@@ -1135,16 +793,11 @@ int __do_adjtimex(struct __kernel_timex *txc, const struct timespec64 *ts,
 			audit_ntp_set_new(ad, AUDIT_NTP_TAI,	*time_tai);
 			audit_ntp_set_new(ad, AUDIT_NTP_TICK,	tick_usec);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		txc->offset = shift_right(time_offset * NTP_INTERVAL_FREQ,
 				  NTP_SCALE_SHIFT);
 		if (!(time_status & STA_NANO))
-<<<<<<< HEAD
-			txc->offset /= NSEC_PER_USEC;
-=======
 			txc->offset = (u32)txc->offset / NSEC_PER_USEC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	result = time_state;	/* mostly `TIME_OK' */
@@ -1161,25 +814,11 @@ int __do_adjtimex(struct __kernel_timex *txc, const struct timespec64 *ts,
 	txc->precision	   = 1;
 	txc->tolerance	   = MAXFREQ_SCALED / PPM_SCALE;
 	txc->tick	   = tick_usec;
-<<<<<<< HEAD
-	txc->tai	   = time_tai;
-=======
 	txc->tai	   = *time_tai;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill PPS status fields */
 	pps_fill_timex(txc);
 
-<<<<<<< HEAD
-	spin_unlock_irq(&ntp_lock);
-
-	txc->time.tv_sec = ts.tv_sec;
-	txc->time.tv_usec = ts.tv_nsec;
-	if (!(time_status & STA_NANO))
-		txc->time.tv_usec /= NSEC_PER_USEC;
-
-	notify_cmos_timer();
-=======
 	txc->time.tv_sec = ts->tv_sec;
 	txc->time.tv_usec = ts->tv_nsec;
 	if (!(time_status & STA_NANO))
@@ -1202,7 +841,6 @@ int __do_adjtimex(struct __kernel_timex *txc, const struct timespec64 *ts,
 			result = TIME_WAIT;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -1214,21 +852,13 @@ int __do_adjtimex(struct __kernel_timex *txc, const struct timespec64 *ts,
  * pps_normtime.nsec has a range of ( -NSEC_PER_SEC / 2, NSEC_PER_SEC / 2 ]
  * while timespec.tv_nsec has a range of [0, NSEC_PER_SEC) */
 struct pps_normtime {
-<<<<<<< HEAD
-	__kernel_time_t	sec;	/* seconds */
-=======
 	s64		sec;	/* seconds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long		nsec;	/* nanoseconds */
 };
 
 /* normalize the timestamp so that nsec is in the
    ( -NSEC_PER_SEC / 2, NSEC_PER_SEC / 2 ] interval */
-<<<<<<< HEAD
-static inline struct pps_normtime pps_normalize_ts(struct timespec ts)
-=======
 static inline struct pps_normtime pps_normalize_ts(struct timespec64 ts)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pps_normtime norm = {
 		.sec = ts.tv_sec,
@@ -1309,14 +939,9 @@ static long hardpps_update_freq(struct pps_normtime freq_norm)
 		time_status |= STA_PPSERROR;
 		pps_errcnt++;
 		pps_dec_freq_interval();
-<<<<<<< HEAD
-		pr_err("hardpps: PPSERROR: interval too long - %ld s\n",
-				freq_norm.sec);
-=======
 		printk_deferred(KERN_ERR
 			"hardpps: PPSERROR: interval too long - %lld s\n",
 			freq_norm.sec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1329,12 +954,8 @@ static long hardpps_update_freq(struct pps_normtime freq_norm)
 	delta = shift_right(ftemp - pps_freq, NTP_SCALE_SHIFT);
 	pps_freq = ftemp;
 	if (delta > PPS_MAXWANDER || delta < -PPS_MAXWANDER) {
-<<<<<<< HEAD
-		pr_warning("hardpps: PPSWANDER: change=%ld\n", delta);
-=======
 		printk_deferred(KERN_WARNING
 				"hardpps: PPSWANDER: change=%ld\n", delta);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		time_status |= STA_PPSWANDER;
 		pps_stbcnt++;
 		pps_dec_freq_interval();
@@ -1378,14 +999,9 @@ static void hardpps_update_phase(long error)
 	 * the time offset is updated.
 	 */
 	if (jitter > (pps_jitter << PPS_POPCORN)) {
-<<<<<<< HEAD
-		pr_warning("hardpps: PPSJITTER: jitter=%ld, limit=%ld\n",
-		       jitter, (pps_jitter << PPS_POPCORN));
-=======
 		printk_deferred(KERN_WARNING
 				"hardpps: PPSJITTER: jitter=%ld, limit=%ld\n",
 				jitter, (pps_jitter << PPS_POPCORN));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		time_status |= STA_PPSJITTER;
 		pps_jitcnt++;
 	} else if (time_status & STA_PPSTIME) {
@@ -1400,11 +1016,7 @@ static void hardpps_update_phase(long error)
 }
 
 /*
-<<<<<<< HEAD
- * hardpps() - discipline CPU clock oscillator to external PPS signal
-=======
  * __hardpps() - discipline CPU clock oscillator to external PPS signal
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is called at each PPS signal arrival in order to
  * discipline the CPU clock oscillator to the PPS signal. It takes two
@@ -1415,24 +1027,12 @@ static void hardpps_update_phase(long error)
  * This code is based on David Mills's reference nanokernel
  * implementation. It was mostly rewritten but keeps the same idea.
  */
-<<<<<<< HEAD
-void hardpps(const struct timespec *phase_ts, const struct timespec *raw_ts)
-{
-	struct pps_normtime pts_norm, freq_norm;
-	unsigned long flags;
-
-	pts_norm = pps_normalize_ts(*phase_ts);
-
-	spin_lock_irqsave(&ntp_lock, flags);
-
-=======
 void __hardpps(const struct timespec64 *phase_ts, const struct timespec64 *raw_ts)
 {
 	struct pps_normtime pts_norm, freq_norm;
 
 	pts_norm = pps_normalize_ts(*phase_ts);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear the error bits, they will be set again if needed */
 	time_status &= ~(STA_PPSJITTER | STA_PPSWANDER | STA_PPSERROR);
 
@@ -1444,19 +1044,11 @@ void __hardpps(const struct timespec64 *phase_ts, const struct timespec64 *raw_t
 	 * just start the frequency interval */
 	if (unlikely(pps_fbase.tv_sec == 0)) {
 		pps_fbase = *raw_ts;
-<<<<<<< HEAD
-		spin_unlock_irqrestore(&ntp_lock, flags);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* ok, now we have a base for frequency calculation */
-<<<<<<< HEAD
-	freq_norm = pps_normalize_ts(timespec_sub(*raw_ts, pps_fbase));
-=======
 	freq_norm = pps_normalize_ts(timespec64_sub(*raw_ts, pps_fbase));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check that the signal is in the range
 	 * [1s - MAXFREQ us, 1s + MAXFREQ us], otherwise reject it */
@@ -1466,12 +1058,7 @@ void __hardpps(const struct timespec64 *phase_ts, const struct timespec64 *raw_t
 		time_status |= STA_PPSJITTER;
 		/* restart the frequency calibration interval */
 		pps_fbase = *raw_ts;
-<<<<<<< HEAD
-		spin_unlock_irqrestore(&ntp_lock, flags);
-		pr_err("hardpps: PPSJITTER: bad pulse\n");
-=======
 		printk_deferred(KERN_ERR "hardpps: PPSJITTER: bad pulse\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1487,29 +1074,16 @@ void __hardpps(const struct timespec64 *phase_ts, const struct timespec64 *raw_t
 
 	hardpps_update_phase(pts_norm.nsec);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&ntp_lock, flags);
 }
-EXPORT_SYMBOL(hardpps);
-
-=======
-}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CONFIG_NTP_PPS */
 
 static int __init ntp_tick_adj_setup(char *str)
 {
-<<<<<<< HEAD
-	ntp_tick_adj = simple_strtol(str, NULL, 0);
-	ntp_tick_adj <<= NTP_SCALE_SHIFT;
-
-=======
 	int rc = kstrtos64(str, 0, &ntp_tick_adj);
 	if (rc)
 		return rc;
 
 	ntp_tick_adj <<= NTP_SCALE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1518,8 +1092,5 @@ __setup("ntp_tick_adj=", ntp_tick_adj_setup);
 void __init ntp_init(void)
 {
 	ntp_clear();
-<<<<<<< HEAD
-=======
 	ntp_init_cmos_sync();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

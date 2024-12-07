@@ -1,16 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Onboard Audio driver core
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
-<<<<<<< HEAD
- *
- * GPL v2, can be found in COPYING.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>

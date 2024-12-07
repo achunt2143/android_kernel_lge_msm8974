@@ -33,23 +33,6 @@
 #include <linux/export.h>
 #include <rdma/ib_marshall.h>
 
-<<<<<<< HEAD
-void ib_copy_ah_attr_to_user(struct ib_uverbs_ah_attr *dst,
-			     struct ib_ah_attr *src)
-{
-	memcpy(dst->grh.dgid, src->grh.dgid.raw, sizeof src->grh.dgid);
-	dst->grh.flow_label        = src->grh.flow_label;
-	dst->grh.sgid_index        = src->grh.sgid_index;
-	dst->grh.hop_limit         = src->grh.hop_limit;
-	dst->grh.traffic_class     = src->grh.traffic_class;
-	memset(&dst->grh.reserved, 0, sizeof(dst->grh.reserved));
-	dst->dlid 	    	   = src->dlid;
-	dst->sl   	    	   = src->sl;
-	dst->src_path_bits 	   = src->src_path_bits;
-	dst->static_rate   	   = src->static_rate;
-	dst->is_global             = src->ah_flags & IB_AH_GRH ? 1 : 0;
-	dst->port_num 	    	   = src->port_num;
-=======
 #define OPA_DEFAULT_GID_PREFIX cpu_to_be64(0xfe80000000000000ULL)
 static int rdma_ah_conv_opa_to_ib(struct ib_device *dev,
 				  struct rdma_ah_attr *ib,
@@ -106,17 +89,12 @@ void ib_copy_ah_attr_to_user(struct ib_device *device,
 		dst->grh.traffic_class     = grh->traffic_class;
 	}
 	dst->port_num		   = rdma_ah_get_port_num(src);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->reserved 		   = 0;
 }
 EXPORT_SYMBOL(ib_copy_ah_attr_to_user);
 
-<<<<<<< HEAD
-void ib_copy_qp_attr_to_user(struct ib_uverbs_qp_attr *dst,
-=======
 void ib_copy_qp_attr_to_user(struct ib_device *device,
 			     struct ib_uverbs_qp_attr *dst,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct ib_qp_attr *src)
 {
 	dst->qp_state	        = src->qp_state;
@@ -135,13 +113,8 @@ void ib_copy_qp_attr_to_user(struct ib_device *device,
 	dst->max_recv_sge	= src->cap.max_recv_sge;
 	dst->max_inline_data	= src->cap.max_inline_data;
 
-<<<<<<< HEAD
-	ib_copy_ah_attr_to_user(&dst->ah_attr, &src->ah_attr);
-	ib_copy_ah_attr_to_user(&dst->alt_ah_attr, &src->alt_ah_attr);
-=======
 	ib_copy_ah_attr_to_user(device, &dst->ah_attr, &src->ah_attr);
 	ib_copy_ah_attr_to_user(device, &dst->alt_ah_attr, &src->alt_ah_attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dst->pkey_index		= src->pkey_index;
 	dst->alt_pkey_index	= src->alt_pkey_index;
@@ -160,17 +133,6 @@ void ib_copy_qp_attr_to_user(struct ib_device *device,
 }
 EXPORT_SYMBOL(ib_copy_qp_attr_to_user);
 
-<<<<<<< HEAD
-void ib_copy_path_rec_to_user(struct ib_user_path_rec *dst,
-			      struct ib_sa_path_rec *src)
-{
-	memcpy(dst->dgid, src->dgid.raw, sizeof src->dgid);
-	memcpy(dst->sgid, src->sgid.raw, sizeof src->sgid);
-
-	dst->dlid		= src->dlid;
-	dst->slid		= src->slid;
-	dst->raw_traffic	= src->raw_traffic;
-=======
 static void __ib_copy_path_rec_to_user(struct ib_user_path_rec *dst,
 				       struct sa_path_rec *src)
 {
@@ -180,7 +142,6 @@ static void __ib_copy_path_rec_to_user(struct ib_user_path_rec *dst,
 	dst->dlid		= htons(ntohl(sa_path_get_dlid(src)));
 	dst->slid		= htons(ntohl(sa_path_get_slid(src)));
 	dst->raw_traffic	= sa_path_get_raw_traffic(src);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->flow_label		= src->flow_label;
 	dst->hop_limit		= src->hop_limit;
 	dst->traffic_class	= src->traffic_class;
@@ -196,19 +157,6 @@ static void __ib_copy_path_rec_to_user(struct ib_user_path_rec *dst,
 	dst->preference		= src->preference;
 	dst->packet_life_time_selector = src->packet_life_time_selector;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(ib_copy_path_rec_to_user);
-
-void ib_copy_path_rec_from_user(struct ib_sa_path_rec *dst,
-				struct ib_user_path_rec *src)
-{
-	memcpy(dst->dgid.raw, src->dgid, sizeof dst->dgid);
-	memcpy(dst->sgid.raw, src->sgid, sizeof dst->sgid);
-
-	dst->dlid		= src->dlid;
-	dst->slid		= src->slid;
-	dst->raw_traffic	= src->raw_traffic;
-=======
 
 void ib_copy_path_rec_to_user(struct ib_user_path_rec *dst,
 			      struct sa_path_rec *src)
@@ -246,7 +194,6 @@ void ib_copy_path_rec_from_user(struct sa_path_rec *dst,
 	sa_path_set_dlid(dst, dlid);
 	sa_path_set_slid(dst, slid);
 	sa_path_set_raw_traffic(dst, src->raw_traffic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dst->flow_label		= src->flow_label;
 	dst->hop_limit		= src->hop_limit;
 	dst->traffic_class	= src->traffic_class;
@@ -261,11 +208,8 @@ void ib_copy_path_rec_from_user(struct sa_path_rec *dst,
 	dst->packet_life_time	= src->packet_life_time;
 	dst->preference		= src->preference;
 	dst->packet_life_time_selector = src->packet_life_time_selector;
-<<<<<<< HEAD
-=======
 
 	/* TODO: No need to set this */
 	sa_path_set_dmac_zero(dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ib_copy_path_rec_from_user);

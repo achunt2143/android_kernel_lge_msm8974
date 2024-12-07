@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2010 Cisco Systems, Inc.
  *
@@ -13,32 +10,12 @@
  * Copyright (c) 2009 Rising Tide, Inc.
  * Copyright (c) 2009 Linux-iSCSI.org
  * Copyright (c) 2009 Nicholas A. Bellinger <nab@linux-iscsi.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* XXX TBD some includes may be extraneous */
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-<<<<<<< HEAD
-#include <generated/utsrelease.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/utsname.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -50,24 +27,10 @@
 #include <linux/hash.h>
 #include <linux/ratelimit.h>
 #include <asm/unaligned.h>
-<<<<<<< HEAD
-#include <scsi/scsi.h>
-#include <scsi/scsi_host.h>
-#include <scsi/scsi_device.h>
-#include <scsi/scsi_cmnd.h>
-#include <scsi/libfc.h>
-#include <scsi/fc_encode.h>
-
-#include <target/target_core_base.h>
-#include <target/target_core_fabric.h>
-#include <target/target_core_configfs.h>
-#include <target/configfs_macros.h>
-=======
 #include <scsi/libfc.h>
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "tcm_fc.h"
 
@@ -100,11 +63,6 @@ int ft_queue_data_in(struct se_cmd *se_cmd)
 
 	if (cmd->aborted)
 		return 0;
-<<<<<<< HEAD
-	ep = fc_seq_exch(cmd->seq);
-	lport = ep->lp;
-	cmd->seq = lport->tt.seq_start_next(cmd->seq);
-=======
 
 	if (se_cmd->scsi_status == SAM_STAT_TASK_SET_FULL)
 		goto queue_status;
@@ -112,7 +70,6 @@ int ft_queue_data_in(struct se_cmd *se_cmd)
 	ep = fc_seq_exch(cmd->seq);
 	lport = ep->lp;
 	cmd->seq = fc_seq_start_next(cmd->seq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	remaining = se_cmd->data_length;
 
@@ -131,8 +88,6 @@ int ft_queue_data_in(struct se_cmd *se_cmd)
 	use_sg = !(remaining % 4);
 
 	while (remaining) {
-<<<<<<< HEAD
-=======
 		struct fc_seq *seq = cmd->seq;
 
 		if (!seq) {
@@ -140,7 +95,6 @@ int ft_queue_data_in(struct se_cmd *se_cmd)
 				 __func__, ep->xid);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!mem_len) {
 			sg = sg_next(sg);
 			mem_len = min((size_t)sg->length, remaining);
@@ -181,25 +135,14 @@ int ft_queue_data_in(struct se_cmd *se_cmd)
 					   page, off_in_page, tlen);
 			fr_len(fp) += tlen;
 			fp_skb(fp)->data_len += tlen;
-<<<<<<< HEAD
-			fp_skb(fp)->truesize +=
-					PAGE_SIZE << compound_order(page);
-=======
 			fp_skb(fp)->truesize += page_size(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			BUG_ON(!page);
 			from = kmap_atomic(page + (mem_off >> PAGE_SHIFT));
 			page_addr = from;
-<<<<<<< HEAD
-			from += mem_off & ~PAGE_MASK;
-			tlen = min(tlen, (size_t)(PAGE_SIZE -
-						(mem_off & ~PAGE_MASK)));
-=======
 			from += offset_in_page(mem_off);
 			tlen = min(tlen, (size_t)(PAGE_SIZE -
 						offset_in_page(mem_off)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(to, from, tlen);
 			kunmap_atomic(page_addr);
 			to += tlen;
@@ -217,27 +160,13 @@ int ft_queue_data_in(struct se_cmd *se_cmd)
 			f_ctl |= FC_FC_END_SEQ;
 		fc_fill_fc_hdr(fp, FC_RCTL_DD_SOL_DATA, ep->did, ep->sid,
 			       FC_TYPE_FCP, f_ctl, fh_off);
-<<<<<<< HEAD
-		error = lport->tt.seq_send(lport, cmd->seq, fp);
-		if (error) {
-			/* XXX For now, initiator will retry */
-			pr_err_ratelimited("%s: Failed to send frame %p, "
-=======
 		error = fc_seq_send(lport, seq, fp);
 		if (error) {
 			pr_info_ratelimited("%s: Failed to send frame %p, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"xid <0x%x>, remaining %zu, "
 						"lso_max <0x%x>\n",
 						__func__, fp, ep->xid,
 						remaining, lport->lso_max);
-<<<<<<< HEAD
-		}
-	}
-	return ft_queue_status(se_cmd);
-}
-
-=======
 			/*
 			 * Go ahead and set TASK_SET_FULL status ignoring the
 			 * rest of the DataIN, and immediately attempt to
@@ -260,7 +189,6 @@ static void ft_execute_work(struct work_struct *work)
 	target_execute_cmd(&cmd->se_cmd);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Receive write data frame.
  */
@@ -292,10 +220,6 @@ void ft_recv_write_data(struct ft_cmd *cmd, struct fc_frame *fp)
 	ep = fc_seq_exch(seq);
 	lport = ep->lp;
 	if (cmd->was_ddp_setup) {
-<<<<<<< HEAD
-		BUG_ON(!ep);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!lport);
 		/*
 		 * Since DDP (Large Rx offload) was setup for this request,
@@ -309,11 +233,7 @@ void ft_recv_write_data(struct ft_cmd *cmd, struct fc_frame *fp)
 				"payload, Frame will be dropped if"
 				"'Sequence Initiative' bit in f_ctl is"
 				"not set\n", __func__, ep->xid, f_ctl,
-<<<<<<< HEAD
-				cmd->sg, cmd->sg_cnt);
-=======
 				se_cmd->t_data_sg, se_cmd->t_data_nents);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Invalidate HW DDP context if it was setup for respective
 		 * command. Invalidation of HW DDP context is requited in both
@@ -379,15 +299,9 @@ void ft_recv_write_data(struct ft_cmd *cmd, struct fc_frame *fp)
 
 		to = kmap_atomic(page + (mem_off >> PAGE_SHIFT));
 		page_addr = to;
-<<<<<<< HEAD
-		to += mem_off & ~PAGE_MASK;
-		tlen = min(tlen, (size_t)(PAGE_SIZE -
-					  (mem_off & ~PAGE_MASK)));
-=======
 		to += offset_in_page(mem_off);
 		tlen = min(tlen, (size_t)(PAGE_SIZE -
 					  offset_in_page(mem_off)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(to, from, tlen);
 		kunmap_atomic(page_addr);
 
@@ -398,15 +312,10 @@ void ft_recv_write_data(struct ft_cmd *cmd, struct fc_frame *fp)
 		cmd->write_data_len += tlen;
 	}
 last_frame:
-<<<<<<< HEAD
-	if (cmd->write_data_len == se_cmd->data_length)
-		transport_generic_handle_data(se_cmd);
-=======
 	if (cmd->write_data_len == se_cmd->data_length) {
 		INIT_WORK(&cmd->work, ft_execute_work);
 		queue_work(cmd->sess->tport->tpg->workqueue, &cmd->work);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 drop:
 	fc_frame_free(fp);
 }
@@ -417,19 +326,12 @@ drop:
  */
 void ft_invl_hw_context(struct ft_cmd *cmd)
 {
-<<<<<<< HEAD
-	struct fc_seq *seq = cmd->seq;
-=======
 	struct fc_seq *seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_exch *ep = NULL;
 	struct fc_lport *lport = NULL;
 
 	BUG_ON(!cmd);
-<<<<<<< HEAD
-=======
 	seq = cmd->seq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cleanup the DDP context in HW if DDP was setup */
 	if (cmd->was_ddp_setup && seq) {

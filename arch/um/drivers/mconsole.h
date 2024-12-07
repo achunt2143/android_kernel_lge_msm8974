@@ -1,33 +1,18 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001 Lennert Buytenhek (buytenh@gnu.org)
- * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (C) 2001 Lennert Buytenhek (buytenh@gnu.org)
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MCONSOLE_H__
 #define __MCONSOLE_H__
 
-<<<<<<< HEAD
-#ifndef __KERNEL__
-=======
 #ifdef __UM_HOST__
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdint.h>
 #define u32 uint32_t
 #endif
 
-<<<<<<< HEAD
-#include "sysdep/ptrace.h"
-=======
 #include <sysdep/ptrace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MCONSOLE_MAGIC (0xcafebabe)
 #define MCONSOLE_MAX_DATA (512)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cpcihp_generic.c
  *
@@ -11,29 +8,6 @@
  * Copyright 2001 Intel San Luis Obispo
  * Copyright 2000,2001 MontaVista Software Inc.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
- * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
- * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
- * THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS 
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This generic CompactPCI hotplug driver should allow using the PCI hotplug
  * mechanism on any CompactPCI board that exposes the #ENUM signal as a bit
  * in a system register that can be read through standard port I/O.
@@ -60,15 +34,6 @@
 
 #define dbg(format, arg...)					\
 	do {							\
-<<<<<<< HEAD
-		if(debug)					\
-			printk (KERN_DEBUG "%s: " format "\n",	\
-				MY_NAME , ## arg); 		\
-	} while(0)
-#define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME , ## arg)
-#define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME , ## arg)
-#define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME , ## arg)
-=======
 		if (debug)					\
 			printk(KERN_DEBUG "%s: " format "\n",	\
 				MY_NAME, ## arg);		\
@@ -76,7 +41,6 @@
 #define err(format, arg...) printk(KERN_ERR "%s: " format "\n", MY_NAME, ## arg)
 #define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* local variables */
 static bool debug;
@@ -95,56 +59,32 @@ static struct cpci_hp_controller generic_hpc;
 
 static int __init validate_parameters(void)
 {
-<<<<<<< HEAD
-	char* str;
-	char* p;
-	unsigned long tmp;
-
-	if(!bridge) {
-=======
 	char *str;
 	char *p;
 	unsigned long tmp;
 
 	if (!bridge) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info("not configured, disabling.");
 		return -EINVAL;
 	}
 	str = bridge;
-<<<<<<< HEAD
-	if(!*str)
-		return -EINVAL;
-
-	tmp = simple_strtoul(str, &p, 16);
-	if(p == str || tmp > 0xff) {
-=======
 	if (!*str)
 		return -EINVAL;
 
 	tmp = simple_strtoul(str, &p, 16);
 	if (p == str || tmp > 0xff) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Invalid hotplug bus bridge device bus number");
 		return -EINVAL;
 	}
 	bridge_busnr = (u8) tmp;
 	dbg("bridge_busnr = 0x%02x", bridge_busnr);
-<<<<<<< HEAD
-	if(*p != ':') {
-=======
 	if (*p != ':') {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Invalid hotplug bus bridge device");
 		return -EINVAL;
 	}
 	str = p + 1;
 	tmp = simple_strtoul(str, &p, 16);
-<<<<<<< HEAD
-	if(p == str || tmp > 0x1f) {
-=======
 	if (p == str || tmp > 0x1f) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Invalid hotplug bus bridge device slot number");
 		return -EINVAL;
 	}
@@ -153,30 +93,18 @@ static int __init validate_parameters(void)
 
 	dbg("first_slot = 0x%02x", first_slot);
 	dbg("last_slot = 0x%02x", last_slot);
-<<<<<<< HEAD
-	if(!(first_slot && last_slot)) {
-		err("Need to specify first_slot and last_slot");
-		return -EINVAL;
-	}
-	if(last_slot < first_slot) {
-=======
 	if (!(first_slot && last_slot)) {
 		err("Need to specify first_slot and last_slot");
 		return -EINVAL;
 	}
 	if (last_slot < first_slot) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("first_slot must be less than last_slot");
 		return -EINVAL;
 	}
 
 	dbg("port = 0x%04x", port);
 	dbg("enum_bit = 0x%02x", enum_bit);
-<<<<<<< HEAD
-	if(enum_bit > 7) {
-=======
 	if (enum_bit > 7) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Invalid #ENUM bit");
 		return -EINVAL;
 	}
@@ -195,13 +123,8 @@ static int query_enum(void)
 static int __init cpcihp_generic_init(void)
 {
 	int status;
-<<<<<<< HEAD
-	struct resource* r;
-	struct pci_dev* dev;
-=======
 	struct resource *r;
 	struct pci_dev *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info(DRIVER_DESC " version: " DRIVER_VERSION);
 	status = validate_parameters();
@@ -209,25 +132,12 @@ static int __init cpcihp_generic_init(void)
 		return status;
 
 	r = request_region(port, 1, "#ENUM hotswap signal register");
-<<<<<<< HEAD
-	if(!r)
-		return -EBUSY;
-
-	bus = pci_find_bus(0, bridge_busnr);
-	if (!bus) {
-		err("Invalid bus number %d", bridge_busnr);
-		return -EINVAL;
-	}
-	dev = pci_get_slot(bus, PCI_DEVFN(bridge_slot, 0));
-	if(!dev || dev->hdr_type != PCI_HEADER_TYPE_BRIDGE) {
-=======
 	if (!r)
 		return -EBUSY;
 
 	dev = pci_get_domain_bus_and_slot(0, bridge_busnr,
 					  PCI_DEVFN(bridge_slot, 0));
 	if (!dev || dev->hdr_type != PCI_HEADER_TYPE_BRIDGE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Invalid bridge device %s", bridge);
 		pci_dev_put(dev);
 		return -EINVAL;
@@ -235,42 +145,26 @@ static int __init cpcihp_generic_init(void)
 	bus = dev->subordinate;
 	pci_dev_put(dev);
 
-<<<<<<< HEAD
-	memset(&generic_hpc, 0, sizeof (struct cpci_hp_controller));
-=======
 	memset(&generic_hpc, 0, sizeof(struct cpci_hp_controller));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	generic_hpc_ops.query_enum = query_enum;
 	generic_hpc.ops = &generic_hpc_ops;
 
 	status = cpci_hp_register_controller(&generic_hpc);
-<<<<<<< HEAD
-	if(status != 0) {
-=======
 	if (status != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Could not register cPCI hotplug controller");
 		return -ENODEV;
 	}
 	dbg("registered controller");
 
 	status = cpci_hp_register_bus(bus, first_slot, last_slot);
-<<<<<<< HEAD
-	if(status != 0) {
-=======
 	if (status != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Could not register cPCI hotplug bus");
 		goto init_bus_register_error;
 	}
 	dbg("registered bus");
 
 	status = cpci_hp_start();
-<<<<<<< HEAD
-	if(status != 0) {
-=======
 	if (status != 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err("Could not started cPCI hotplug system");
 		goto init_start_error;
 	}
@@ -307,11 +201,7 @@ module_param(first_slot, byte, 0);
 MODULE_PARM_DESC(first_slot, "Hotswap bus first slot number");
 module_param(last_slot, byte, 0);
 MODULE_PARM_DESC(last_slot, "Hotswap bus last slot number");
-<<<<<<< HEAD
-module_param(port, ushort, 0);
-=======
 module_param_hw(port, ushort, ioport, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(port, "#ENUM signal I/O port");
 module_param(enum_bit, uint, 0);
 MODULE_PARM_DESC(enum_bit, "#ENUM signal bit (0-7)");

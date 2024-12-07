@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic Fibre Channel HBA Driver
- * Copyright (c)  2003-2011 QLogic Corporation
- *
- * See LICENSE.qla2xxx for copyright and licensing details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * QLogic Fibre Channel HBA Driver
  * Copyright (c)  2003-2014 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __QLA_BSG_H
 #define __QLA_BSG_H
@@ -26,8 +18,6 @@
 #define QL_VND_SET_FRU_VERSION	0x0B
 #define QL_VND_READ_FRU_STATUS	0x0C
 #define QL_VND_WRITE_FRU_STATUS	0x0D
-<<<<<<< HEAD
-=======
 #define QL_VND_DIAG_IO_CMD	0x0A
 #define QL_VND_WRITE_I2C	0x10
 #define QL_VND_READ_I2C		0x11
@@ -48,16 +38,10 @@
 #define QL_VND_MANAGE_HOST_PORT		0x26
 #define QL_VND_MBX_PASSTHRU		0x2B
 #define QL_VND_DPORT_DIAGNOSTICS_V2	0x2C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BSG Vendor specific subcode returns */
 #define EXT_STATUS_OK			0
 #define EXT_STATUS_ERR			1
-<<<<<<< HEAD
-#define EXT_STATUS_INVALID_PARAM	6
-#define EXT_STATUS_MAILBOX		11
-#define EXT_STATUS_NO_MEMORY		17
-=======
 #define EXT_STATUS_BUSY			2
 #define EXT_STATUS_INVALID_PARAM	6
 #define EXT_STATUS_DATA_OVERRUN		7
@@ -80,22 +64,16 @@
 #define EXT_STATUS_DPORT_DIAG_ERR	40
 #define EXT_STATUS_DPORT_DIAG_IN_PROCESS	41
 #define EXT_STATUS_DPORT_DIAG_NOT_RUNNING	42
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* BSG definations for interpreting CommandSent field */
 #define INT_DEF_LB_LOOPBACK_CMD         0
 #define INT_DEF_LB_ECHO_CMD             1
 
 /* Loopback related definations */
-<<<<<<< HEAD
-#define EXTERNAL_LOOPBACK		0xF2
-#define ENABLE_INTERNAL_LOOPBACK	0x02
-=======
 #define INTERNAL_LOOPBACK		0xF1
 #define EXTERNAL_LOOPBACK		0xF2
 #define ENABLE_INTERNAL_LOOPBACK	0x02
 #define ENABLE_EXTERNAL_LOOPBACK	0x04
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INTERNAL_LOOPBACK_MASK		0x000E
 #define MAX_ELS_FRAME_PAYLOAD		252
 #define ELS_OPCODE_BYTE			0x10
@@ -183,11 +161,7 @@ struct qla84_msg_mgmt {
 	uint16_t rsrvd;
 	struct qla84_mgmt_param mgmtp;/* parameters for cmd */
 	uint32_t len; /* bytes in payload following this struct */
-<<<<<<< HEAD
-	uint8_t payload[0]; /* payload for cmd */
-=======
 	uint8_t payload[]; /* payload for cmd */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct qla_bsg_a84_mgmt {
@@ -218,15 +192,12 @@ struct qla_port_param {
 	uint16_t speed;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-=======
 struct qla_mbx_passthru {
 	uint16_t reserved1[2];
 	uint16_t mbx_in[32];
 	uint16_t mbx_out[32];
 	uint32_t reserved2[16];
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FRU VPD */
 
@@ -249,11 +220,7 @@ struct qla_image_version {
 
 struct qla_image_version_list {
 	uint32_t count;
-<<<<<<< HEAD
-	struct qla_image_version version[0];
-=======
 	struct qla_image_version version[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct qla_status_reg {
@@ -262,8 +229,6 @@ struct qla_status_reg {
 	uint8_t reserved[7];
 } __packed;
 
-<<<<<<< HEAD
-=======
 struct qla_i2c_access {
 	uint16_t device;
 	uint16_t offset;
@@ -355,5 +320,4 @@ struct qla_active_regions {
 
 #include "qla_edif_bsg.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

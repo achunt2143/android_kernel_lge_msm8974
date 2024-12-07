@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Changes:
  * Arnaldo Carvalho de Melo <acme@conectiva.com.br> 08/23/2000
@@ -16,12 +13,8 @@
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/cdrom.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -71,49 +64,11 @@ static int ioctl_probe(struct Scsi_Host *host, void __user *buffer)
 	return 1;
 }
 
-<<<<<<< HEAD
-/*
-
- * The SCSI_IOCTL_SEND_COMMAND ioctl sends a command out to the SCSI host.
- * The IOCTL_NORMAL_TIMEOUT and NORMAL_RETRIES  variables are used.  
- * 
- * dev is the SCSI device struct ptr, *(int *) arg is the length of the
- * input data, if any, not including the command string & counts, 
- * *((int *)arg + 1) is the output buffer size in bytes.
- * 
- * *(char *) ((int *) arg)[2] the actual command byte.   
- * 
- * Note that if more than MAX_BUF bytes are requested to be transferred,
- * the ioctl will fail with error EINVAL.
- * 
- * This size *does not* include the initial lengths that were passed.
- * 
- * The SCSI command is read from the memory location immediately after the
- * length words, and the input data is right after the command.  The SCSI
- * routines know the command size based on the opcode decode.  
- * 
- * The output area is then filled in starting from the command byte. 
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ioctl_internal_command(struct scsi_device *sdev, char *cmd,
 				  int timeout, int retries)
 {
 	int result;
 	struct scsi_sense_hdr sshdr;
-<<<<<<< HEAD
-
-	SCSI_LOG_IOCTL(1, printk("Trying ioctl with scsi command %d\n", *cmd));
-
-	result = scsi_execute_req(sdev, cmd, DMA_NONE, NULL, 0,
-				  &sshdr, timeout, retries, NULL);
-
-	SCSI_LOG_IOCTL(2, printk("Ioctl returned  0x%x\n", result));
-
-	if ((driver_byte(result) & DRIVER_SENSE) &&
-	    (scsi_sense_valid(&sshdr))) {
-=======
 	const struct scsi_exec_args exec_args = {
 		.sshdr = &sshdr,
 	};
@@ -130,49 +85,27 @@ static int ioctl_internal_command(struct scsi_device *sdev, char *cmd,
 	if (result < 0)
 		goto out;
 	if (scsi_sense_valid(&sshdr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (sshdr.sense_key) {
 		case ILLEGAL_REQUEST:
 			if (cmd[0] == ALLOW_MEDIUM_REMOVAL)
 				sdev->lockable = 0;
 			else
-<<<<<<< HEAD
-				printk(KERN_INFO "ioctl_internal_command: "
-				       "ILLEGAL REQUEST asc=0x%x ascq=0x%x\n",
-				       sshdr.asc, sshdr.ascq);
-=======
 				sdev_printk(KERN_INFO, sdev,
 					    "ioctl_internal_command: "
 					    "ILLEGAL REQUEST "
 					    "asc=0x%x ascq=0x%x\n",
 					    sshdr.asc, sshdr.ascq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case NOT_READY:	/* This happens if there is no disc in drive */
 			if (sdev->removable)
 				break;
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case UNIT_ATTENTION:
 			if (sdev->removable) {
 				sdev->changed = 1;
 				result = 0;	/* This is no longer considered an error */
 				break;
 			}
-<<<<<<< HEAD
-		default:	/* Fall through for non-removable media */
-			sdev_printk(KERN_INFO, sdev,
-				    "ioctl_internal_command return code = %x\n",
-				    result);
-			scsi_print_sense_hdr("   ", &sshdr);
-			break;
-		}
-	}
-
-	SCSI_LOG_IOCTL(2, printk("IOCTL Releasing command\n"));
-=======
 			fallthrough;	/* for non-removable media */
 		default:
 			sdev_printk(KERN_INFO, sdev,
@@ -185,7 +118,6 @@ static int ioctl_internal_command(struct scsi_device *sdev, char *cmd,
 out:
 	SCSI_LOG_IOCTL(2, sdev_printk(KERN_INFO, sdev,
 				      "IOCTL Releasing command\n"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -238,8 +170,6 @@ static int scsi_ioctl_get_pci(struct scsi_device *sdev, void __user *arg)
 		? -EFAULT: 0;
 }
 
-<<<<<<< HEAD
-=======
 static int sg_get_version(int __user *p)
 {
 	static const int sg_version_num = 30527;
@@ -918,15 +848,11 @@ static int scsi_ioctl_sg_io(struct scsi_device *sdev, bool open_for_write,
 		return -EFAULT;
 	return error;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * scsi_ioctl - Dispatch ioctl to scsi device
  * @sdev: scsi device receiving ioctl
-<<<<<<< HEAD
-=======
  * @open_for_write: is the file / block device opened for writing?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd: which ioctl is it
  * @arg: data associated with ioctl
  *
@@ -934,30 +860,11 @@ static int scsi_ioctl_sg_io(struct scsi_device *sdev, bool open_for_write,
  * does not take a major/minor number as the dev field.  Rather, it takes
  * a pointer to a &struct scsi_device.
  */
-<<<<<<< HEAD
-int scsi_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
-{
-	char scsi_cmd[MAX_COMMAND_SIZE];
-
-	/* No idea how this happens.... */
-	if (!sdev)
-		return -ENXIO;
-
-	/*
-	 * If we are in the middle of error recovery, don't let anyone
-	 * else try and use this device.  Also, if error recovery fails, it
-	 * may try and take the device offline, in which case all further
-	 * access to the device is prohibited.
-	 */
-	if (!scsi_block_when_processing_errors(sdev))
-		return -ENODEV;
-=======
 int scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,
 		void __user *arg)
 {
 	struct request_queue *q = sdev->request_queue;
 	struct scsi_sense_hdr sense_hdr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for deprecated ioctls ... all the ioctls which don't
 	 * follow the new unique numbering scheme are deprecated */
@@ -976,20 +883,6 @@ int scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,
 	}
 
 	switch (cmd) {
-<<<<<<< HEAD
-	case SCSI_IOCTL_GET_IDLUN:
-		if (!access_ok(VERIFY_WRITE, arg, sizeof(struct scsi_idlun)))
-			return -EFAULT;
-
-		__put_user((sdev->id & 0xff)
-			 + ((sdev->lun & 0xff) << 8)
-			 + ((sdev->channel & 0xff) << 16)
-			 + ((sdev->host->host_no & 0xff) << 24),
-			 &((struct scsi_idlun __user *)arg)->dev_id);
-		__put_user(sdev->host->unique_id,
-			 &((struct scsi_idlun __user *)arg)->host_unique_id);
-		return 0;
-=======
 	case SG_GET_VERSION_NUM:
 		return sg_get_version(arg);
 	case SG_SET_TIMEOUT:
@@ -1014,103 +907,16 @@ int scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,
 		return scsi_send_start_stop(sdev, 2);
 	case SCSI_IOCTL_GET_IDLUN:
 		return scsi_get_idlun(sdev, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCSI_IOCTL_GET_BUS_NUMBER:
 		return put_user(sdev->host->host_no, (int __user *)arg);
 	case SCSI_IOCTL_PROBE_HOST:
 		return ioctl_probe(sdev->host, arg);
-<<<<<<< HEAD
-	case SCSI_IOCTL_SEND_COMMAND:
-		if (!capable(CAP_SYS_ADMIN) || !capable(CAP_SYS_RAWIO))
-			return -EACCES;
-		return sg_scsi_ioctl(sdev->request_queue, NULL, 0, arg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCSI_IOCTL_DOORLOCK:
 		return scsi_set_medium_removal(sdev, SCSI_REMOVAL_PREVENT);
 	case SCSI_IOCTL_DOORUNLOCK:
 		return scsi_set_medium_removal(sdev, SCSI_REMOVAL_ALLOW);
 	case SCSI_IOCTL_TEST_UNIT_READY:
 		return scsi_test_unit_ready(sdev, IOCTL_NORMAL_TIMEOUT,
-<<<<<<< HEAD
-					    NORMAL_RETRIES, NULL);
-	case SCSI_IOCTL_START_UNIT:
-		scsi_cmd[0] = START_STOP;
-		scsi_cmd[1] = 0;
-		scsi_cmd[2] = scsi_cmd[3] = scsi_cmd[5] = 0;
-		scsi_cmd[4] = 1;
-		return ioctl_internal_command(sdev, scsi_cmd,
-				     START_STOP_TIMEOUT, NORMAL_RETRIES);
-	case SCSI_IOCTL_STOP_UNIT:
-		scsi_cmd[0] = START_STOP;
-		scsi_cmd[1] = 0;
-		scsi_cmd[2] = scsi_cmd[3] = scsi_cmd[5] = 0;
-		scsi_cmd[4] = 0;
-		return ioctl_internal_command(sdev, scsi_cmd,
-				     START_STOP_TIMEOUT, NORMAL_RETRIES);
-        case SCSI_IOCTL_GET_PCI:
-                return scsi_ioctl_get_pci(sdev, arg);
-	default:
-		if (sdev->host->hostt->ioctl)
-			return sdev->host->hostt->ioctl(sdev, cmd, arg);
-	}
-	return -EINVAL;
-}
-EXPORT_SYMBOL(scsi_ioctl);
-
-/**
- * scsi_nonblockable_ioctl() - Handle SG_SCSI_RESET
- * @sdev: scsi device receiving ioctl
- * @cmd: Must be SC_SCSI_RESET
- * @arg: pointer to int containing SG_SCSI_RESET_{DEVICE,BUS,HOST}
- * @ndelay: file mode O_NDELAY flag
- */
-int scsi_nonblockable_ioctl(struct scsi_device *sdev, int cmd,
-			    void __user *arg, int ndelay)
-{
-	int val, result;
-
-	/* The first set of iocts may be executed even if we're doing
-	 * error processing, as long as the device was opened
-	 * non-blocking */
-	if (ndelay) {
-		if (scsi_host_in_recovery(sdev->host))
-			return -ENODEV;
-	} else if (!scsi_block_when_processing_errors(sdev))
-		return -ENODEV;
-
-	switch (cmd) {
-	case SG_SCSI_RESET:
-		result = get_user(val, (int __user *)arg);
-		if (result)
-			return result;
-		if (val == SG_SCSI_RESET_NOTHING)
-			return 0;
-		switch (val) {
-		case SG_SCSI_RESET_DEVICE:
-			val = SCSI_TRY_RESET_DEVICE;
-			break;
-		case SG_SCSI_RESET_TARGET:
-			val = SCSI_TRY_RESET_TARGET;
-			break;
-		case SG_SCSI_RESET_BUS:
-			val = SCSI_TRY_RESET_BUS;
-			break;
-		case SG_SCSI_RESET_HOST:
-			val = SCSI_TRY_RESET_HOST;
-			break;
-		default:
-			return -EINVAL;
-		}
-		if (!capable(CAP_SYS_ADMIN) || !capable(CAP_SYS_RAWIO))
-			return -EACCES;
-		return (scsi_reset_provider(sdev, val) ==
-			SUCCESS) ? 0 : -EIO;
-	}
-	return -ENODEV;
-}
-EXPORT_SYMBOL(scsi_nonblockable_ioctl);
-=======
 					    NORMAL_RETRIES, &sense_hdr);
 	case SCSI_IOCTL_START_UNIT:
 		return scsi_send_start_stop(sdev, 1);
@@ -1152,4 +958,3 @@ int scsi_ioctl_block_when_processing_errors(struct scsi_device *sdev, int cmd,
 	return 0;
 }
 EXPORT_SYMBOL_GPL(scsi_ioctl_block_when_processing_errors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-config RTLLIB
-	tristate "Support for rtllib wireless devices"
-	depends on WLAN && m
-	default n
-	select LIB80211
-	---help---
-=======
 # SPDX-License-Identifier: GPL-2.0
 config RTLLIB
 	tristate "Support for rtllib wireless devices"
@@ -13,30 +5,19 @@ config RTLLIB
 	select LIB80211
 	select CRC32
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you have a wireless card that uses rtllib, say
 	  Y. Currently the only card is the rtl8192e.
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-=======
 	  This driver adds support for rtllib wireless cards.
 	  Only the rtl8192e is supported as of now.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if RTLLIB
 
 config RTLLIB_CRYPTO_CCMP
 	tristate "Support for rtllib CCMP crypto"
 	depends on RTLLIB
-<<<<<<< HEAD
-	default y
-	---help---
-	  CCMP crypto driver for rtllib.
-
-	  If you enabled RTLLIB, you want this.
-=======
 	select CRYPTO
 	select CRYPTO_AES
 	select CRYPTO_CCM
@@ -47,27 +28,10 @@ config RTLLIB_CRYPTO_CCMP
 	  If you enabled RTLLIB, you want this.
 	  Adds support for the CCM mode Protocol crypto driver for
 	  use in wireless cards (including rtllib cards).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config RTLLIB_CRYPTO_TKIP
 	tristate "Support for rtllib TKIP crypto"
 	depends on RTLLIB
-<<<<<<< HEAD
-	default y
-	---help---
-	  TKIP crypto driver for rtllib.
-
-	  If you enabled RTLLIB, you want this.
-
-config RTLLIB_CRYPTO_WEP
-	tristate "Support for rtllib WEP crypto"
-	depends on RTLLIB
-	default y
-	---help---
-	  TKIP crypto driver for rtllib.
-
-	  If you enabled RTLLIB, you want this.
-=======
 	select CRYPTO
 	select CRYPTO_LIB_ARC4
 	select CRYPTO_MICHAEL_MIC
@@ -91,7 +55,6 @@ config RTLLIB_CRYPTO_WEP
 	  Adds support for the (now weak) Wired Equivalent Privacy
 	  (WEP) crypto protocol for wireless cards.
 	  NOTE: This protocol is now considered insecure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 source "drivers/staging/rtl8192e/rtl8192e/Kconfig"
 

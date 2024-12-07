@@ -32,11 +32,8 @@
 #ifndef __CVMX_BOOTINFO_H__
 #define __CVMX_BOOTINFO_H__
 
-<<<<<<< HEAD
-=======
 #include "cvmx-coremask.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Current major and minor versions of the CVMX bootinfo block that is
  * passed from the bootloader to the application.  This is versioned
@@ -44,11 +41,7 @@
  * versions.
  */
 #define CVMX_BOOTINFO_MAJ_VER 1
-<<<<<<< HEAD
-#define CVMX_BOOTINFO_MIN_VER 3
-=======
 #define CVMX_BOOTINFO_MIN_VER 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if (CVMX_BOOTINFO_MAJ_VER == 1)
 #define CVMX_BOOTINFO_OCTEON_SERIAL_LEN 20
@@ -62,10 +55,7 @@
  * to 0.
  */
 struct cvmx_bootinfo {
-<<<<<<< HEAD
-=======
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t major_version;
 	uint32_t minor_version;
 
@@ -104,19 +94,11 @@ struct cvmx_bootinfo {
 #if (CVMX_BOOTINFO_MIN_VER >= 1)
 	/*
 	 * Several boards support compact flash on the Octeon boot
-<<<<<<< HEAD
-	 * bus.  The CF memory spaces may be mapped to different
-	 * addresses on different boards.  These are the physical
-	 * addresses, so care must be taken to use the correct
-	 * XKPHYS/KSEG0 addressing depending on the application's
-	 * ABI.  These values will be 0 if CF is not present.
-=======
 	 * bus.	 The CF memory spaces may be mapped to different
 	 * addresses on different boards.  These are the physical
 	 * addresses, so care must be taken to use the correct
 	 * XKPHYS/KSEG0 addressing depending on the application's
 	 * ABI.	 These values will be 0 if CF is not present.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	uint64_t compact_flash_common_base_addr;
 	uint64_t compact_flash_attribute_base_addr;
@@ -132,11 +114,7 @@ struct cvmx_bootinfo {
 
 	/*
 	 * flags indicating various configuration options.  These
-<<<<<<< HEAD
-	 * flags supercede the 'flags' variable and should be used
-=======
 	 * flags supersede the 'flags' variable and should be used
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * instead if available.
 	 */
 	uint32_t config_flags;
@@ -148,8 +126,6 @@ struct cvmx_bootinfo {
 	 */
 	uint64_t fdt_addr;
 #endif
-<<<<<<< HEAD
-=======
 #if (CVMX_BOOTINFO_MIN_VER >= 4)
 	/*
 	 * Coremask used for processors with more than 32 cores
@@ -214,7 +190,6 @@ struct cvmx_bootinfo {
 	struct cvmx_coremask ext_core_mask;
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define CVMX_BOOTINFO_CFG_FLAG_PCI_HOST			(1ull << 0)
@@ -223,11 +198,7 @@ struct cvmx_bootinfo {
 #define CVMX_BOOTINFO_CFG_FLAG_NO_MAGIC			(1ull << 3)
 /* This flag is set if the TLB mappings are not contained in the
  * 0x10000000 - 0x20000000 boot bus region. */
-<<<<<<< HEAD
-#define CVMX_BOOTINFO_CFG_FLAG_OVERSIZE_TLB_MAPPING     (1ull << 4)
-=======
 #define CVMX_BOOTINFO_CFG_FLAG_OVERSIZE_TLB_MAPPING	(1ull << 4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CVMX_BOOTINFO_CFG_FLAG_BREAK			(1ull << 5)
 
 #endif /*   (CVMX_BOOTINFO_MAJ_VER == 1) */
@@ -260,15 +231,9 @@ enum cvmx_board_types_enum {
 	CVMX_BOARD_TYPE_EBT5600 = 22,
 	CVMX_BOARD_TYPE_EBH5201 = 23,
 	CVMX_BOARD_TYPE_EBT5200 = 24,
-<<<<<<< HEAD
-	CVMX_BOARD_TYPE_CB5600  = 25,
-	CVMX_BOARD_TYPE_CB5601  = 26,
-	CVMX_BOARD_TYPE_CB5200  = 27,
-=======
 	CVMX_BOARD_TYPE_CB5600	= 25,
 	CVMX_BOARD_TYPE_CB5601	= 26,
 	CVMX_BOARD_TYPE_CB5200	= 27,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Special 'generic' board type, supports many boards */
 	CVMX_BOARD_TYPE_GENERIC = 28,
 	CVMX_BOARD_TYPE_EBH5610 = 29,
@@ -288,10 +253,7 @@ enum cvmx_board_types_enum {
 	CVMX_BOARD_TYPE_REDWING = 43,
 	CVMX_BOARD_TYPE_NIC68_4 = 44,
 	CVMX_BOARD_TYPE_NIC10E_66 = 45,
-<<<<<<< HEAD
-=======
 	CVMX_BOARD_TYPE_SNIC10E = 50,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CVMX_BOARD_TYPE_MAX,
 
 	/*
@@ -329,12 +291,6 @@ enum cvmx_board_types_enum {
 	CVMX_BOARD_TYPE_CUST_DEFINED_MAX = 20000,
 
 	/*
-<<<<<<< HEAD
-	 * Set aside a range for customer private use.  The SDK won't
-	 * use any numbers in this range.
-	 */
-	CVMX_BOARD_TYPE_CUST_PRIVATE_MIN = 20001,
-=======
 	 * Set aside a range for customer private use.	The SDK won't
 	 * use any numbers in this range.
 	 */
@@ -345,7 +301,6 @@ enum cvmx_board_types_enum {
 	CVMX_BOARD_TYPE_CUST_DSR1000N = 20006,
 	CVMX_BOARD_TYPE_UBNT_E300 = 20300,
 	CVMX_BOARD_TYPE_KONTRON_S1901 = 21901,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CVMX_BOARD_TYPE_CUST_PRIVATE_MAX = 30000,
 
 	/* The remaining range is reserved for future use. */
@@ -364,11 +319,7 @@ enum cvmx_chip_types_enum {
 
 /* Functions to return string based on type */
 #define ENUM_BRD_TYPE_CASE(x) \
-<<<<<<< HEAD
-	case x: return(#x + 16);	/* Skip CVMX_BOARD_TYPE_ */
-=======
 	case x: return (&#x[16]);	/* Skip CVMX_BOARD_TYPE_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline const char *cvmx_board_type_to_string(enum
 						    cvmx_board_types_enum type)
 {
@@ -419,10 +370,7 @@ static inline const char *cvmx_board_type_to_string(enum
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_REDWING)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_NIC68_4)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_NIC10E_66)
-<<<<<<< HEAD
-=======
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_SNIC10E)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_MAX)
 
 			/* Customer boards listed here */
@@ -452,15 +400,6 @@ static inline const char *cvmx_board_type_to_string(enum
 
 		    /* Customer private range */
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_CUST_PRIVATE_MIN)
-<<<<<<< HEAD
-		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_CUST_PRIVATE_MAX)
-	}
-	return "Unsupported Board";
-}
-
-#define ENUM_CHIP_TYPE_CASE(x) \
-	case x: return(#x + 15);	/* Skip CVMX_CHIP_TYPE */
-=======
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_UBNT_E100)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_UBNT_E200)
 		ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_UBNT_E220)
@@ -474,7 +413,6 @@ static inline const char *cvmx_board_type_to_string(enum
 
 #define ENUM_CHIP_TYPE_CASE(x) \
 	case x: return (&#x[15]);	/* Skip CVMX_CHIP_TYPE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline const char *cvmx_chip_type_to_string(enum
 						   cvmx_chip_types_enum type)
 {

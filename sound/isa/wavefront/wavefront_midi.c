@@ -1,15 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) by Paul Barton-Davis 1998-1999
- *
- * This file is distributed under the GNU GENERAL PUBLIC LICENSE (GPL)
- * Version 2 (June 1991). See the "COPYING" file distributed with this
- * software for more info.  
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) by Paul Barton-Davis 1998-1999
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* The low level driver for the WaveFront ICS2115 MIDI interface(s)
@@ -53,11 +44,7 @@
  *  
  */
 
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/time.h>
 #include <linux/wait.h>
@@ -252,12 +239,8 @@ static int snd_wavefront_midi_input_open(struct snd_rawmidi_substream *substream
 
 	mpu = *((snd_wavefront_mpu_id *) substream->rmidi->private_data);
 
-<<<<<<< HEAD
-	if ((midi = get_wavefront_midi (substream)) == NULL)
-=======
 	midi = get_wavefront_midi(substream);
 	if (!midi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        return -EIO;
 
 	spin_lock_irqsave (&midi->open, flags);
@@ -281,12 +264,8 @@ static int snd_wavefront_midi_output_open(struct snd_rawmidi_substream *substrea
 
 	mpu = *((snd_wavefront_mpu_id *) substream->rmidi->private_data);
 
-<<<<<<< HEAD
-	if ((midi = get_wavefront_midi (substream)) == NULL)
-=======
 	midi = get_wavefront_midi(substream);
 	if (!midi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        return -EIO;
 
 	spin_lock_irqsave (&midi->open, flags);
@@ -310,12 +289,8 @@ static int snd_wavefront_midi_input_close(struct snd_rawmidi_substream *substrea
 
 	mpu = *((snd_wavefront_mpu_id *) substream->rmidi->private_data);
 
-<<<<<<< HEAD
-	if ((midi = get_wavefront_midi (substream)) == NULL)
-=======
 	midi = get_wavefront_midi(substream);
 	if (!midi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        return -EIO;
 
 	spin_lock_irqsave (&midi->open, flags);
@@ -338,12 +313,8 @@ static int snd_wavefront_midi_output_close(struct snd_rawmidi_substream *substre
 
 	mpu = *((snd_wavefront_mpu_id *) substream->rmidi->private_data);
 
-<<<<<<< HEAD
-	if ((midi = get_wavefront_midi (substream)) == NULL)
-=======
 	midi = get_wavefront_midi(substream);
 	if (!midi)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        return -EIO;
 
 	spin_lock_irqsave (&midi->open, flags);
@@ -366,15 +337,9 @@ static void snd_wavefront_midi_input_trigger(struct snd_rawmidi_substream *subst
 
 	mpu = *((snd_wavefront_mpu_id *) substream->rmidi->private_data);
 
-<<<<<<< HEAD
-	if ((midi = get_wavefront_midi (substream)) == NULL) {
-		return;
-	}
-=======
 	midi = get_wavefront_midi(substream);
 	if (!midi)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave (&midi->virtual, flags);
 	if (up) {
@@ -385,17 +350,6 @@ static void snd_wavefront_midi_input_trigger(struct snd_rawmidi_substream *subst
 	spin_unlock_irqrestore (&midi->virtual, flags);
 }
 
-<<<<<<< HEAD
-static void snd_wavefront_midi_output_timer(unsigned long data)
-{
-	snd_wavefront_card_t *card = (snd_wavefront_card_t *)data;
-	snd_wavefront_midi_t *midi = &card->wavefront.midi;
-	unsigned long flags;
-	
-	spin_lock_irqsave (&midi->virtual, flags);
-	midi->timer.expires = 1 + jiffies;
-	add_timer(&midi->timer);
-=======
 static void snd_wavefront_midi_output_timer(struct timer_list *t)
 {
 	snd_wavefront_midi_t *midi = from_timer(midi, t, timer);
@@ -404,7 +358,6 @@ static void snd_wavefront_midi_output_timer(struct timer_list *t)
 	
 	spin_lock_irqsave (&midi->virtual, flags);
 	mod_timer(&midi->timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore (&midi->virtual, flags);
 	snd_wavefront_midi_output_write(card);
 }
@@ -423,32 +376,18 @@ static void snd_wavefront_midi_output_trigger(struct snd_rawmidi_substream *subs
 
 	mpu = *((snd_wavefront_mpu_id *) substream->rmidi->private_data);
 
-<<<<<<< HEAD
-	if ((midi = get_wavefront_midi (substream)) == NULL) {
-		return;
-	}
-=======
 	midi = get_wavefront_midi(substream);
 	if (!midi)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave (&midi->virtual, flags);
 	if (up) {
 		if ((midi->mode[mpu] & MPU401_MODE_OUTPUT_TRIGGER) == 0) {
 			if (!midi->istimer) {
-<<<<<<< HEAD
-				init_timer(&midi->timer);
-				midi->timer.function = snd_wavefront_midi_output_timer;
-				midi->timer.data = (unsigned long) substream->rmidi->card->private_data;
-				midi->timer.expires = 1 + jiffies;
-				add_timer(&midi->timer);
-=======
 				timer_setup(&midi->timer,
 					    snd_wavefront_midi_output_timer,
 					    0);
 				mod_timer(&midi->timer, 1 + jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			midi->istimer++;
 			midi->mode[mpu] |= MPU401_MODE_OUTPUT_TRIGGER;
@@ -541,11 +480,7 @@ snd_wavefront_midi_disable_virtual (snd_wavefront_card_t *card)
 	spin_unlock_irqrestore (&card->wavefront.midi.virtual, flags);
 }
 
-<<<<<<< HEAD
-int __devinit
-=======
 int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_wavefront_midi_start (snd_wavefront_card_t *card)
 
 {
@@ -625,22 +560,14 @@ snd_wavefront_midi_start (snd_wavefront_card_t *card)
 	return 0;
 }
 
-<<<<<<< HEAD
-struct snd_rawmidi_ops snd_wavefront_midi_output =
-=======
 const struct snd_rawmidi_ops snd_wavefront_midi_output =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_wavefront_midi_output_open,
 	.close =	snd_wavefront_midi_output_close,
 	.trigger =	snd_wavefront_midi_output_trigger,
 };
 
-<<<<<<< HEAD
-struct snd_rawmidi_ops snd_wavefront_midi_input =
-=======
 const struct snd_rawmidi_ops snd_wavefront_midi_input =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_wavefront_midi_input_open,
 	.close =	snd_wavefront_midi_input_close,

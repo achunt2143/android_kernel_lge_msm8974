@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/dd.c - The core device/driver interactions.
  *
@@ -17,14 +14,6 @@
  * Copyright (c) 2002-3 Open Source Development Labs
  * Copyright (c) 2007-2009 Greg Kroah-Hartman <gregkh@suse.de>
  * Copyright (c) 2007-2009 Novell Inc.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2
- */
-
-#include <linux/device.h>
-#include <linux/delay.h>
-=======
  */
 
 #include <linux/debugfs.h>
@@ -32,17 +21,13 @@
 #include <linux/delay.h>
 #include <linux/dma-map-ops.h>
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kthread.h>
 #include <linux/wait.h>
 #include <linux/async.h>
 #include <linux/pm_runtime.h>
 #include <linux/pinctrl/devinfo.h>
-<<<<<<< HEAD
-=======
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "base.h"
 #include "power/power.h"
@@ -69,12 +54,6 @@
 static DEFINE_MUTEX(deferred_probe_mutex);
 static LIST_HEAD(deferred_probe_pending_list);
 static LIST_HEAD(deferred_probe_active_list);
-<<<<<<< HEAD
-static struct workqueue_struct *deferred_wq;
-static atomic_t deferred_trigger_count = ATOMIC_INIT(0);
-
-/**
-=======
 static atomic_t deferred_trigger_count = ATOMIC_INIT(0);
 static bool initcalls_done;
 
@@ -97,7 +76,6 @@ static void __device_set_deferred_probe_reason(const struct device *dev, char *r
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * deferred_probe_work_func() - Retry probing devices in the active list.
  */
 static void deferred_probe_work_func(struct work_struct *work)
@@ -125,18 +103,13 @@ static void deferred_probe_work_func(struct work_struct *work)
 
 		get_device(dev);
 
-<<<<<<< HEAD
-=======
 		__device_set_deferred_probe_reason(dev, NULL);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Drop the mutex while probing each device; the probe path may
 		 * manipulate the deferred list
 		 */
 		mutex_unlock(&deferred_probe_mutex);
-<<<<<<< HEAD
-=======
 
 		/*
 		 * Force the device to the end of the dpm_list since
@@ -146,7 +119,6 @@ static void deferred_probe_work_func(struct work_struct *work)
 		 */
 		device_pm_move_to_tail(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(dev, "Retrying from deferred list\n");
 		bus_probe_device(dev);
 		mutex_lock(&deferred_probe_mutex);
@@ -157,14 +129,6 @@ static void deferred_probe_work_func(struct work_struct *work)
 }
 static DECLARE_WORK(deferred_probe_work, deferred_probe_work_func);
 
-<<<<<<< HEAD
-static void driver_deferred_probe_add(struct device *dev)
-{
-	mutex_lock(&deferred_probe_mutex);
-	if (list_empty(&dev->p->deferred_probe)) {
-		dev_dbg(dev, "Added to deferred list\n");
-		list_add(&dev->p->deferred_probe, &deferred_probe_pending_list);
-=======
 void driver_deferred_probe_add(struct device *dev)
 {
 	if (!dev->can_match)
@@ -174,7 +138,6 @@ void driver_deferred_probe_add(struct device *dev)
 	if (list_empty(&dev->p->deferred_probe)) {
 		dev_dbg(dev, "Added to deferred list\n");
 		list_add_tail(&dev->p->deferred_probe, &deferred_probe_pending_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&deferred_probe_mutex);
 }
@@ -185,19 +148,12 @@ void driver_deferred_probe_del(struct device *dev)
 	if (!list_empty(&dev->p->deferred_probe)) {
 		dev_dbg(dev, "Removed from deferred list\n");
 		list_del_init(&dev->p->deferred_probe);
-<<<<<<< HEAD
-=======
 		__device_set_deferred_probe_reason(dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&deferred_probe_mutex);
 }
 
-<<<<<<< HEAD
-static bool driver_deferred_probe_enable = false;
-=======
 static bool driver_deferred_probe_enable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * driver_deferred_probe_trigger() - Kick off re-probing deferred devices
  *
@@ -209,22 +165,14 @@ static bool driver_deferred_probe_enable;
  * more than one device is probing at the same time, it is possible for one
  * probe to complete successfully while another is about to defer. If the second
  * depends on the first, then it will get put on the pending list after the
-<<<<<<< HEAD
- * trigger event has already occured and will be stuck there.
-=======
  * trigger event has already occurred and will be stuck there.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The atomic 'deferred_trigger_count' is used to determine if a successful
  * trigger has occurred in the midst of probing a driver. If the trigger count
  * changes in the midst of a probe, then deferred processing should be triggered
  * again.
  */
-<<<<<<< HEAD
-static void driver_deferred_probe_trigger(void)
-=======
 void driver_deferred_probe_trigger(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!driver_deferred_probe_enable)
 		return;
@@ -244,9 +192,6 @@ void driver_deferred_probe_trigger(void)
 	 * Kick the re-probe thread.  It may already be scheduled, but it is
 	 * safe to kick it again.
 	 */
-<<<<<<< HEAD
-	queue_work(deferred_wq, &deferred_probe_work);
-=======
 	queue_work(system_unbound_wq, &deferred_probe_work);
 }
 
@@ -387,7 +332,6 @@ void deferred_probe_extend_timeout(void)
 		pr_debug("Extended deferred probe timeout by %d secs\n",
 					driver_deferred_probe_timeout);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -399,21 +343,12 @@ void deferred_probe_extend_timeout(void)
  */
 static int deferred_probe_initcall(void)
 {
-<<<<<<< HEAD
-	deferred_wq = create_singlethread_workqueue("deferwq");
-	if (WARN_ON(!deferred_wq))
-		return -ENOMEM;
-=======
 	debugfs_create_file("devices_deferred", 0444, NULL, NULL,
 			    &deferred_devs_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	driver_deferred_probe_enable = true;
 	driver_deferred_probe_trigger();
 	/* Sort as many dependencies as possible before exiting initcalls */
-<<<<<<< HEAD
-	flush_workqueue(deferred_wq);
-=======
 	flush_work(&deferred_probe_work);
 	initcalls_done = true;
 
@@ -435,25 +370,10 @@ static int deferred_probe_initcall(void)
 	if (!IS_ENABLED(CONFIG_MODULES))
 		fw_devlink_probing_done();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 late_initcall(deferred_probe_initcall);
 
-<<<<<<< HEAD
-static void driver_bound(struct device *dev)
-{
-	if (klist_node_attached(&dev->p->knode_driver)) {
-		printk(KERN_WARNING "%s: device %s already bound\n",
-			__func__, kobject_name(&dev->kobj));
-		return;
-	}
-
-	pr_debug("driver: '%s': %s: bound to device '%s'\n", dev_name(dev),
-		 __func__, dev->driver->name);
-
-	klist_add_tail(&dev->p->knode_driver, &dev->driver->p->klist_devices);
-=======
 static void __exit deferred_probe_exit(void)
 {
 	debugfs_lookup_and_remove("devices_deferred", NULL);
@@ -488,7 +408,6 @@ static void driver_bound(struct device *dev)
 	device_links_driver_bound(dev);
 
 	device_pm_check_callbacks(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Make sure the device is no longer in one of the deferred lists and
@@ -497,13 +416,6 @@ static void driver_bound(struct device *dev)
 	driver_deferred_probe_del(dev);
 	driver_deferred_probe_trigger();
 
-<<<<<<< HEAD
-	if (dev->bus)
-		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-					     BUS_NOTIFY_BOUND_DRIVER, dev);
-}
-
-=======
 	bus_notify(dev, BUS_NOTIFY_BOUND_DRIVER);
 	kobject_uevent(&dev->kobj, KOBJ_BIND);
 }
@@ -519,26 +431,10 @@ static ssize_t coredump_store(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_WO(coredump);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int driver_sysfs_add(struct device *dev)
 {
 	int ret;
 
-<<<<<<< HEAD
-	if (dev->bus)
-		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-					     BUS_NOTIFY_BIND_DRIVER, dev);
-
-	ret = sysfs_create_link(&dev->driver->p->kobj, &dev->kobj,
-			  kobject_name(&dev->kobj));
-	if (ret == 0) {
-		ret = sysfs_create_link(&dev->kobj, &dev->driver->p->kobj,
-					"driver");
-		if (ret)
-			sysfs_remove_link(&dev->driver->p->kobj,
-					kobject_name(&dev->kobj));
-	}
-=======
 	bus_notify(dev, BUS_NOTIFY_BIND_DRIVER);
 
 	ret = sysfs_create_link(&dev->driver->p->kobj, &dev->kobj,
@@ -565,7 +461,6 @@ rm_dev:
 			  kobject_name(&dev->kobj));
 
 fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -574,11 +469,8 @@ static void driver_sysfs_remove(struct device *dev)
 	struct device_driver *drv = dev->driver;
 
 	if (drv) {
-<<<<<<< HEAD
-=======
 		if (drv->coredump)
 			device_remove_file(dev, &dev_attr_coredump);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sysfs_remove_link(&drv->p->kobj, kobject_name(&dev->kobj));
 		sysfs_remove_link(&dev->kobj, "driver");
 	}
@@ -591,14 +483,6 @@ static void driver_sysfs_remove(struct device *dev)
  * Allow manual attachment of a driver to a device.
  * Caller must have already set @dev->driver.
  *
-<<<<<<< HEAD
- * Note that this does not modify the bus reference count
- * nor take the bus's rwsem. Please verify those are accounted
- * for before calling this. (It is ok to call with no other effort
- * from a driver's probe() method.)
- *
- * This function must be called with the device lock held.
-=======
  * Note that this does not modify the bus reference count.
  * Please verify that is accounted for before calling this.
  * (It is ok to call with no other effort from a driver's probe() method.)
@@ -606,24 +490,18 @@ static void driver_sysfs_remove(struct device *dev)
  * This function must be called with the device lock held.
  *
  * Callers should prefer to use device_driver_attach() instead.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int device_bind_driver(struct device *dev)
 {
 	int ret;
 
 	ret = driver_sysfs_add(dev);
-<<<<<<< HEAD
-	if (!ret)
-		driver_bound(dev);
-=======
 	if (!ret) {
 		device_links_force_bind(dev);
 		driver_bound(dev);
 	}
 	else
 		bus_notify(dev, BUS_NOTIFY_DRIVER_NOT_BOUND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(device_bind_driver);
@@ -631,18 +509,6 @@ EXPORT_SYMBOL_GPL(device_bind_driver);
 static atomic_t probe_count = ATOMIC_INIT(0);
 static DECLARE_WAIT_QUEUE_HEAD(probe_waitqueue);
 
-<<<<<<< HEAD
-static int really_probe(struct device *dev, struct device_driver *drv)
-{
-	int ret = 0;
-	int local_trigger_count = atomic_read(&deferred_trigger_count);
-
-	atomic_inc(&probe_count);
-	pr_debug("bus: '%s': %s: probing driver %s with device %s\n",
-		 drv->bus->name, __func__, drv->name, dev_name(dev));
-	WARN_ON(!list_empty(&dev->devres_head));
-
-=======
 static ssize_t state_synced_store(struct device *dev,
 				  struct device_attribute *attr,
 				  const char *buf, size_t count)
@@ -762,40 +628,11 @@ static int really_probe(struct device *dev, struct device_driver *drv)
 	}
 
 re_probe:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->driver = drv;
 
 	/* If using pinctrl, bind pins now before probing */
 	ret = pinctrl_bind_pins(dev);
 	if (ret)
-<<<<<<< HEAD
-		goto probe_failed;
-
-	if (driver_sysfs_add(dev)) {
-		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
-			__func__, dev_name(dev));
-		goto probe_failed;
-	}
-
-	if (dev->bus->probe) {
-#if defined(CONFIG_LGE_PROBE_TIME_PROFILING) || defined (CONFIG_PROC_EVENTS)
-		dev_err(dev, "bus probe_log s\n");
-#endif
-		ret = dev->bus->probe(dev);
-#if defined(CONFIG_LGE_PROBE_TIME_PROFILING) || defined (CONFIG_PROC_EVENTS)
-		dev_err(dev, "bus probe_log e\n");
-#endif
-		if (ret)
-			goto probe_failed;
-	} else if (drv->probe) {
-#if defined(CONFIG_LGE_PROBE_TIME_PROFILING) || defined (CONFIG_PROC_EVENTS)
-		dev_err(dev, "drv probe_log s\n");
-#endif
-		ret = drv->probe(dev);
-#if defined(CONFIG_LGE_PROBE_TIME_PROFILING) || defined (CONFIG_PROC_EVENTS)
-		dev_err(dev, "drv probe_log e\n");
-#endif
-=======
 		goto pinctrl_bind_failed;
 
 	if (dev->bus->dma_configure) {
@@ -812,48 +649,10 @@ re_probe:
 
 	if (dev->pm_domain && dev->pm_domain->activate) {
 		ret = dev->pm_domain->activate(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto probe_failed;
 	}
 
-<<<<<<< HEAD
-	driver_bound(dev);
-	ret = 1;
-	pr_debug("bus: '%s': %s: bound device %s to driver %s\n",
-		 drv->bus->name, __func__, dev_name(dev), drv->name);
-	goto done;
-
-probe_failed:
-	devres_release_all(dev);
-	driver_sysfs_remove(dev);
-	dev->driver = NULL;
-
-	if (ret == -EPROBE_DEFER) {
-		/* Driver requested deferred probing */
-		dev_info(dev, "Driver %s requests probe deferral\n", drv->name);
-		driver_deferred_probe_add(dev);
-		/* Did a trigger occur while probing? Need to re-trigger if yes */
-		if (local_trigger_count != atomic_read(&deferred_trigger_count))
-			driver_deferred_probe_trigger();
-	} else if (ret != -ENODEV && ret != -ENXIO) {
-		/* driver matched but the probe failed */
-		printk(KERN_WARNING
-		       "%s: probe of %s failed with error %d\n",
-		       drv->name, dev_name(dev), ret);
-	} else {
-		pr_debug("%s: probe of %s rejects match %d\n",
-		       drv->name, dev_name(dev), ret);
-	}
-	/*
-	 * Ignore errors returned by ->probe so that the next driver can try
-	 * its luck.
-	 */
-	ret = 0;
-done:
-	atomic_dec(&probe_count);
-	wake_up(&probe_waitqueue);
-=======
 	ret = call_driver_probe(dev, drv);
 	if (ret) {
 		/*
@@ -943,7 +742,6 @@ static int really_probe_debug(struct device *dev, struct device_driver *drv)
 	 */
 	printk(KERN_DEBUG "probe of %s returned %d after %lld usecs\n",
 		 dev_name(dev), ret, ktime_us_delta(rettime, calltime));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -953,22 +751,12 @@ static int really_probe_debug(struct device *dev, struct device_driver *drv)
  *
  * Should somehow figure out how to use a semaphore, not an atomic variable...
  */
-<<<<<<< HEAD
-int driver_probe_done(void)
-{
-	pr_debug("%s: probe_count = %d\n", __func__,
-		 atomic_read(&probe_count));
-	if (atomic_read(&probe_count))
-		return -EBUSY;
-	return 0;
-=======
 bool __init driver_probe_done(void)
 {
 	int local_probe_count = atomic_read(&probe_count);
 
 	pr_debug("%s: probe_count = %d\n", __func__, local_probe_count);
 	return !local_probe_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -977,20 +765,15 @@ bool __init driver_probe_done(void)
  */
 void wait_for_device_probe(void)
 {
-<<<<<<< HEAD
-=======
 	/* wait for the deferred probe workqueue to finish */
 	flush_work(&deferred_probe_work);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* wait for the known devices to complete their probing */
 	wait_event(probe_waitqueue, atomic_read(&probe_count) == 0);
 	async_synchronize_full();
 }
 EXPORT_SYMBOL_GPL(wait_for_device_probe);
 
-<<<<<<< HEAD
-=======
 static int __driver_probe_device(struct device_driver *drv, struct device *dev)
 {
 	int ret = 0;
@@ -1022,46 +805,11 @@ static int __driver_probe_device(struct device_driver *drv, struct device *dev)
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * driver_probe_device - attempt to bind device & driver together
  * @drv: driver to bind a device to
  * @dev: device to try to bind to the driver
  *
-<<<<<<< HEAD
- * This function returns -ENODEV if the device is not registered,
- * 1 if the device is bound successfully and 0 otherwise.
- *
- * This function must be called with @dev lock held.  When called for a
- * USB interface, @dev->parent lock must be held as well.
- */
-int driver_probe_device(struct device_driver *drv, struct device *dev)
-{
-	int ret = 0;
-
-	if (!device_is_registered(dev))
-		return -ENODEV;
-
-	pr_debug("bus: '%s': %s: matched device %s with driver %s\n",
-		 drv->bus->name, __func__, dev_name(dev), drv->name);
-
-	pm_runtime_get_noresume(dev);
-	pm_runtime_barrier(dev);
-	ret = really_probe(dev, drv);
-	pm_runtime_put_sync(dev);
-
-	return ret;
-}
-
-static int __device_attach(struct device_driver *drv, void *data)
-{
-	struct device *dev = data;
-
-	if (!driver_match_device(drv, dev))
-		return 0;
-
-	return driver_probe_device(drv, dev);
-=======
  * This function returns -ENODEV if the device is not registered, -EBUSY if it
  * already has a driver, 0 if the device is bound successfully and a positive
  * (inverted) error code for failures from the ->probe method.
@@ -1302,7 +1050,6 @@ out_unlock:
 	if (async)
 		async_schedule_dev(__device_attach_async_helper, dev);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1321,37 +1068,6 @@ out_unlock:
  */
 int device_attach(struct device *dev)
 {
-<<<<<<< HEAD
-	int ret = 0;
-
-	device_lock(dev);
-	if (dev->driver) {
-		if (klist_node_attached(&dev->p->knode_driver)) {
-			ret = 1;
-			goto out_unlock;
-		}
-		ret = device_bind_driver(dev);
-		if (ret == 0)
-			ret = 1;
-		else {
-			dev->driver = NULL;
-			ret = 0;
-		}
-	} else {
-		pm_runtime_get_noresume(dev);
-		ret = bus_for_each_drv(dev->bus, NULL, dev, __device_attach);
-		pm_runtime_put_sync(dev);
-	}
-out_unlock:
-	device_unlock(dev);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(device_attach);
-
-static int __driver_attach(struct device *dev, void *data)
-{
-	struct device_driver *drv = data;
-=======
 	return __device_attach(dev, false);
 }
 EXPORT_SYMBOL_GPL(device_attach);
@@ -1440,7 +1156,6 @@ static int __driver_attach(struct device *dev, void *data)
 	struct device_driver *drv = data;
 	bool async = false;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Lock device and try to bind to it. We drop the error
@@ -1452,19 +1167,6 @@ static int __driver_attach(struct device *dev, void *data)
 	 * is an error.
 	 */
 
-<<<<<<< HEAD
-	if (!driver_match_device(drv, dev))
-		return 0;
-
-	if (dev->parent)	/* Needed for USB */
-		device_lock(dev->parent);
-	device_lock(dev);
-	if (!dev->driver)
-		driver_probe_device(drv, dev);
-	device_unlock(dev);
-	if (dev->parent)
-		device_unlock(dev->parent);
-=======
 	ret = driver_match_device(drv, dev);
 	if (ret == 0) {
 		/* no match */
@@ -1511,7 +1213,6 @@ static int __driver_attach(struct device *dev, void *data)
 	__device_driver_lock(dev, dev->parent);
 	driver_probe_device(drv, dev);
 	__device_driver_unlock(dev, dev->parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1535,11 +1236,7 @@ EXPORT_SYMBOL_GPL(driver_attach);
  * __device_release_driver() must be called with @dev lock held.
  * When called for a USB interface, @dev->parent lock must be held as well.
  */
-<<<<<<< HEAD
-static void __device_release_driver(struct device *dev)
-=======
 static void __device_release_driver(struct device *dev, struct device *parent)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_driver *drv;
 
@@ -1547,32 +1244,6 @@ static void __device_release_driver(struct device *dev, struct device *parent)
 	if (drv) {
 		pm_runtime_get_sync(dev);
 
-<<<<<<< HEAD
-		driver_sysfs_remove(dev);
-
-		if (dev->bus)
-			blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-						     BUS_NOTIFY_UNBIND_DRIVER,
-						     dev);
-
-		pm_runtime_put_sync(dev);
-
-		if (dev->bus && dev->bus->remove)
-			dev->bus->remove(dev);
-		else if (drv->remove)
-			drv->remove(dev);
-		devres_release_all(dev);
-		dev->driver = NULL;
-		klist_remove(&dev->p->knode_driver);
-		if (dev->bus)
-			blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
-						     BUS_NOTIFY_UNBOUND_DRIVER,
-						     dev);
-
-	}
-}
-
-=======
 		while (device_links_busy(dev)) {
 			__device_driver_unlock(dev, parent);
 
@@ -1624,20 +1295,16 @@ void device_release_driver_internal(struct device *dev,
 	__device_driver_unlock(dev, parent);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * device_release_driver - manually detach device from driver.
  * @dev: device.
  *
  * Manually detach device from driver.
  * When called for a USB interface, @dev->parent lock must be held.
-<<<<<<< HEAD
-=======
  *
  * If this function is to be called with @dev->parent lock held, ensure that
  * the device's consumers are unbound in advance or that their locks can be
  * acquired under the @dev->parent lock.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void device_release_driver(struct device *dev)
 {
@@ -1646,19 +1313,11 @@ void device_release_driver(struct device *dev)
 	 * within their ->remove callback for the same device, they
 	 * will deadlock right here.
 	 */
-<<<<<<< HEAD
-	device_lock(dev);
-	__device_release_driver(dev);
-	device_unlock(dev);
-=======
 	device_release_driver_internal(dev, NULL, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(device_release_driver);
 
 /**
-<<<<<<< HEAD
-=======
  * device_driver_detach - detach driver from a specific device
  * @dev: device to detach driver from
  *
@@ -1671,7 +1330,6 @@ void device_driver_detach(struct device *dev)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * driver_detach - detach driver from all devices it controls.
  * @drv: driver.
  */
@@ -1680,70 +1338,22 @@ void driver_detach(struct device_driver *drv)
 	struct device_private *dev_prv;
 	struct device *dev;
 
-<<<<<<< HEAD
-=======
 	if (driver_allows_async_probing(drv))
 		async_synchronize_full();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (;;) {
 		spin_lock(&drv->p->klist_devices.k_lock);
 		if (list_empty(&drv->p->klist_devices.k_list)) {
 			spin_unlock(&drv->p->klist_devices.k_lock);
 			break;
 		}
-<<<<<<< HEAD
-		dev_prv = list_entry(drv->p->klist_devices.k_list.prev,
-=======
 		dev_prv = list_last_entry(&drv->p->klist_devices.k_list,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct device_private,
 				     knode_driver.n_node);
 		dev = dev_prv->device;
 		get_device(dev);
 		spin_unlock(&drv->p->klist_devices.k_lock);
-<<<<<<< HEAD
-
-		if (dev->parent)	/* Needed for USB */
-			device_lock(dev->parent);
-		device_lock(dev);
-		if (dev->driver == drv)
-			__device_release_driver(dev);
-		device_unlock(dev);
-		if (dev->parent)
-			device_unlock(dev->parent);
-		put_device(dev);
-	}
-}
-
-/*
- * These exports can't be _GPL due to .h files using this within them, and it
- * might break something that was previously working...
- */
-void *dev_get_drvdata(const struct device *dev)
-{
-	if (dev && dev->p)
-		return dev->p->driver_data;
-	return NULL;
-}
-EXPORT_SYMBOL(dev_get_drvdata);
-
-int dev_set_drvdata(struct device *dev, void *data)
-{
-	int error;
-
-	if (!dev->p) {
-		error = device_private_init(dev);
-		if (error)
-			return error;
-	}
-	dev->p->driver_data = data;
-	return 0;
-}
-EXPORT_SYMBOL(dev_set_drvdata);
-=======
 		device_release_driver_internal(dev, drv, dev->parent);
 		put_device(dev);
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * coupled.c - helper functions to enter the same idle state on multiple cpus
  *
  * Copyright (c) 2011 Google, Inc.
  *
  * Author: Colin Cross <ccross@android.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -70,11 +54,7 @@
  * variable is not locked.  It is only written from the cpu that
  * it stores (or by the on/offlining cpu if that cpu is offline),
  * and only read after all the cpus are ready for the coupled idle
-<<<<<<< HEAD
- * state are are no longer updating it.
-=======
  * state are no longer updating it.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Three atomic counters are used.  alive_count tracks the number
  * of cpus in the coupled set that are currently or soon will be
@@ -109,10 +89,7 @@
  * @coupled_cpus: mask of cpus that are part of the coupled set
  * @requested_state: array of requested states for cpus in the coupled set
  * @ready_waiting_counts: combined count of cpus  in ready or waiting loops
-<<<<<<< HEAD
-=======
  * @abort_barrier: synchronisation point for abort cases
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @online_count: count of cpus that are online
  * @refcnt: reference count of cpuidle devices that are using this struct
  * @prevent: flag to prevent coupled idle while a cpu is hotplugging
@@ -121,10 +98,7 @@ struct cpuidle_coupled {
 	cpumask_t coupled_cpus;
 	int requested_state[NR_CPUS];
 	atomic_t ready_waiting_counts;
-<<<<<<< HEAD
-=======
 	atomic_t abort_barrier;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int online_count;
 	int refcnt;
 	int prevent;
@@ -137,18 +111,6 @@ struct cpuidle_coupled {
 
 #define CPUIDLE_COUPLED_NOT_IDLE	(-1)
 
-<<<<<<< HEAD
-static DEFINE_MUTEX(cpuidle_coupled_lock);
-static DEFINE_PER_CPU(struct call_single_data, cpuidle_coupled_poke_cb);
-
-/*
- * The cpuidle_coupled_poked_mask mask is used to avoid calling
- * __smp_call_function_single with the per cpu call_single_data struct already
- * in use.  This prevents a deadlock where two cpus are waiting for each others
- * call_single_data struct to be available
- */
-static cpumask_t cpuidle_coupled_poked_mask;
-=======
 static DEFINE_PER_CPU(call_single_data_t, cpuidle_coupled_poke_cb);
 
 /*
@@ -165,7 +127,6 @@ static cpumask_t cpuidle_coupled_poke_pending;
  * require aborting and retrying.
  */
 static cpumask_t cpuidle_coupled_poked;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * cpuidle_coupled_parallel_barrier - synchronize all online coupled cpus
@@ -177,11 +138,7 @@ static cpumask_t cpuidle_coupled_poked;
  * has returned from this function, the barrier is immediately available for
  * reuse.
  *
-<<<<<<< HEAD
- * The atomic variable a must be initialized to 0 before any cpu calls
-=======
  * The atomic variable must be initialized to 0 before any cpu calls
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * this function, will be reset to 0 before any cpu returns from this function.
  *
  * Must only be called from within a coupled idle state handler
@@ -193,11 +150,7 @@ void cpuidle_coupled_parallel_barrier(struct cpuidle_device *dev, atomic_t *a)
 {
 	int n = dev->coupled->online_count;
 
-<<<<<<< HEAD
-	smp_mb__before_atomic_inc();
-=======
 	smp_mb__before_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(a);
 
 	while (atomic_read(a) < n)
@@ -214,28 +167,17 @@ void cpuidle_coupled_parallel_barrier(struct cpuidle_device *dev, atomic_t *a)
 
 /**
  * cpuidle_state_is_coupled - check if a state is part of a coupled set
-<<<<<<< HEAD
- * @dev: struct cpuidle_device for the current cpu
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @drv: struct cpuidle_driver for the platform
  * @state: index of the target state in drv->states
  *
  * Returns true if the target state is coupled with cpus besides this one
  */
-<<<<<<< HEAD
-bool cpuidle_state_is_coupled(struct cpuidle_device *dev,
-	struct cpuidle_driver *drv, int state)
-=======
 bool cpuidle_state_is_coupled(struct cpuidle_driver *drv, int state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return drv->states[state].flags & CPUIDLE_FLAG_COUPLED;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * cpuidle_coupled_state_verify - check if the coupled states are correctly set.
  * @drv: struct cpuidle_driver for the platform
  *
@@ -258,7 +200,6 @@ int cpuidle_coupled_state_verify(struct cpuidle_driver *drv)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * cpuidle_coupled_set_ready - mark a cpu as ready
  * @coupled: the struct coupled that contains the current cpu
  */
@@ -287,11 +228,7 @@ inline int cpuidle_coupled_set_not_ready(struct cpuidle_coupled *coupled)
 	int all;
 	int ret;
 
-<<<<<<< HEAD
-	all = coupled->online_count || (coupled->online_count << WAITING_BITS);
-=======
 	all = coupled->online_count | (coupled->online_count << WAITING_BITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = atomic_add_unless(&coupled->ready_waiting_counts,
 		-MAX_WAITING_CPUS, all);
 
@@ -366,29 +303,18 @@ static inline int cpuidle_coupled_get_state(struct cpuidle_device *dev,
 	 */
 	smp_rmb();
 
-<<<<<<< HEAD
-	for_each_cpu_mask(i, coupled->coupled_cpus)
-=======
 	for_each_cpu(i, &coupled->coupled_cpus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cpu_online(i) && coupled->requested_state[i] < state)
 			state = coupled->requested_state[i];
 
 	return state;
 }
 
-<<<<<<< HEAD
-static void cpuidle_coupled_poked(void *info)
-{
-	int cpu = (unsigned long)info;
-	cpumask_clear_cpu(cpu, &cpuidle_coupled_poked_mask);
-=======
 static void cpuidle_coupled_handle_poke(void *info)
 {
 	int cpu = (unsigned long)info;
 	cpumask_set_cpu(cpu, &cpuidle_coupled_poked);
 	cpumask_clear_cpu(cpu, &cpuidle_coupled_poke_pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -405,26 +331,15 @@ static void cpuidle_coupled_handle_poke(void *info)
  */
 static void cpuidle_coupled_poke(int cpu)
 {
-<<<<<<< HEAD
-	struct call_single_data *csd = &per_cpu(cpuidle_coupled_poke_cb, cpu);
-
-	if (!cpumask_test_and_set_cpu(cpu, &cpuidle_coupled_poked_mask))
-		__smp_call_function_single(cpu, csd, 0);
-=======
 	call_single_data_t *csd = &per_cpu(cpuidle_coupled_poke_cb, cpu);
 
 	if (!cpumask_test_and_set_cpu(cpu, &cpuidle_coupled_poke_pending))
 		smp_call_function_single_async(cpu, csd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpuidle_coupled_poke_others - wake up all other cpus that may be waiting
-<<<<<<< HEAD
- * @dev: struct cpuidle_device for this cpu
-=======
  * @this_cpu: target cpu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @coupled: the struct coupled that contains the current cpu
  *
  * Calls cpuidle_coupled_poke on all other online cpus.
@@ -434,47 +349,13 @@ static void cpuidle_coupled_poke_others(int this_cpu,
 {
 	int cpu;
 
-<<<<<<< HEAD
-	for_each_cpu_mask(cpu, coupled->coupled_cpus)
-=======
 	for_each_cpu(cpu, &coupled->coupled_cpus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cpu != this_cpu && cpu_online(cpu))
 			cpuidle_coupled_poke(cpu);
 }
 
 /**
  * cpuidle_coupled_set_waiting - mark this cpu as in the wait loop
-<<<<<<< HEAD
- * @dev: struct cpuidle_device for this cpu
- * @coupled: the struct coupled that contains the current cpu
- * @next_state: the index in drv->states of the requested state for this cpu
- *
- * Updates the requested idle state for the specified cpuidle device,
- * poking all coupled cpus out of idle if necessary to let them see the new
- * state.
- */
-static void cpuidle_coupled_set_waiting(int cpu,
-		struct cpuidle_coupled *coupled, int next_state)
-{
-	int w;
-
-	coupled->requested_state[cpu] = next_state;
-
-	/*
-	 * If this is the last cpu to enter the waiting state, poke
-	 * all the other cpus out of their waiting state so they can
-	 * enter a deeper state.  This can race with one of the cpus
-	 * exiting the waiting state due to an interrupt and
-	 * decrementing waiting_count, see comment below.
-	 *
-	 * The atomic_inc_return provides a write barrier to order the write
-	 * to requested_state with the later write that increments ready_count.
-	 */
-	w = atomic_inc_return(&coupled->ready_waiting_counts) & WAITING_MASK;
-	if (w == coupled->online_count)
-		cpuidle_coupled_poke_others(cpu, coupled);
-=======
  * @cpu: target cpu
  * @coupled: the struct coupled that contains the current cpu
  * @next_state: the index in drv->states of the requested state for this cpu
@@ -492,16 +373,11 @@ static int cpuidle_coupled_set_waiting(int cpu,
 	 * to requested_state with the later write that increments ready_count.
 	 */
 	return atomic_inc_return(&coupled->ready_waiting_counts) & WAITING_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cpuidle_coupled_set_not_waiting - mark this cpu as leaving the wait loop
-<<<<<<< HEAD
- * @dev: struct cpuidle_device for this cpu
-=======
  * @cpu: target cpu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @coupled: the struct coupled that contains the current cpu
  *
  * Removes the requested idle state for the specified cpuidle device.
@@ -537,31 +413,12 @@ static void cpuidle_coupled_set_done(int cpu, struct cpuidle_coupled *coupled)
 
 /**
  * cpuidle_coupled_clear_pokes - spin until the poke interrupt is processed
-<<<<<<< HEAD
- * @cpu - this cpu
-=======
  * @cpu: this cpu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Turns on interrupts and spins until any outstanding poke interrupts have
  * been processed and the poke bit has been cleared.
  *
  * Other interrupts may also be processed while interrupts are enabled, so
-<<<<<<< HEAD
- * need_resched() must be tested after turning interrupts off again to make sure
- * the interrupt didn't schedule work that should take the cpu out of idle.
- *
- * Returns 0 if need_resched was false, -EINTR if need_resched was true.
- */
-static int cpuidle_coupled_clear_pokes(int cpu)
-{
-	local_irq_enable();
-	while (cpumask_test_cpu(cpu, &cpuidle_coupled_poked_mask))
-		cpu_relax();
-	local_irq_disable();
-
-	return need_resched() ? -EINTR : 0;
-=======
  * need_resched() must be tested after this function returns to make sure
  * the interrupt didn't schedule work that should take the cpu out of idle.
  *
@@ -589,7 +446,6 @@ static bool cpuidle_coupled_any_pokes_pending(struct cpuidle_coupled *coupled)
 	ret = cpumask_and(&cpus, &cpuidle_coupled_poke_pending, &cpus);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -616,39 +472,25 @@ int cpuidle_enter_state_coupled(struct cpuidle_device *dev,
 {
 	int entered_state = -1;
 	struct cpuidle_coupled *coupled = dev->coupled;
-<<<<<<< HEAD
-=======
 	int w;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!coupled)
 		return -EINVAL;
 
 	while (coupled->prevent) {
-<<<<<<< HEAD
-		if (cpuidle_coupled_clear_pokes(dev->cpu)) {
-=======
 		cpuidle_coupled_clear_pokes(dev->cpu);
 		if (need_resched()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			local_irq_enable();
 			return entered_state;
 		}
 		entered_state = cpuidle_enter_state(dev, drv,
-<<<<<<< HEAD
-			dev->safe_state_index);
-=======
 			drv->safe_state_index);
 		local_irq_disable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Read barrier ensures online_count is read after prevent is cleared */
 	smp_rmb();
 
-<<<<<<< HEAD
-	cpuidle_coupled_set_waiting(dev->cpu, coupled, next_state);
-=======
 reset:
 	cpumask_clear_cpu(dev->cpu, &cpuidle_coupled_poked);
 
@@ -664,17 +506,10 @@ reset:
 		cpumask_set_cpu(dev->cpu, &cpuidle_coupled_poked);
 		cpuidle_coupled_poke_others(dev->cpu, coupled);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 retry:
 	/*
 	 * Wait for all coupled cpus to be idle, using the deepest state
-<<<<<<< HEAD
-	 * allowed for a single cpu.
-	 */
-	while (!cpuidle_coupled_cpus_waiting(coupled)) {
-		if (cpuidle_coupled_clear_pokes(dev->cpu)) {
-=======
 	 * allowed for a single cpu.  If this was not the poking cpu, wait
 	 * for at least one poke before leaving to avoid a race where
 	 * two cpus could arrive at the waiting loop at the same time,
@@ -687,7 +522,6 @@ retry:
 			continue;
 
 		if (need_resched()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cpuidle_coupled_set_not_waiting(dev->cpu, coupled);
 			goto out;
 		}
@@ -698,33 +532,23 @@ retry:
 		}
 
 		entered_state = cpuidle_enter_state(dev, drv,
-<<<<<<< HEAD
-			dev->safe_state_index);
-	}
-
-	if (cpuidle_coupled_clear_pokes(dev->cpu)) {
-=======
 			drv->safe_state_index);
 		local_irq_disable();
 	}
 
 	cpuidle_coupled_clear_pokes(dev->cpu);
 	if (need_resched()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpuidle_coupled_set_not_waiting(dev->cpu, coupled);
 		goto out;
 	}
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Make sure final poke status for this cpu is visible before setting
 	 * cpu as ready.
 	 */
 	smp_wmb();
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * All coupled cpus are probably idle.  There is a small chance that
 	 * one of the other cpus just became active.  Increment the ready count,
 	 * and spin until all coupled cpus have incremented the counter. Once a
@@ -743,8 +567,6 @@ retry:
 		cpu_relax();
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Make sure read of all cpus ready is done before reading pending pokes
 	 */
@@ -767,7 +589,6 @@ retry:
 		goto reset;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* all cpus have acked the coupled state */
 	next_state = cpuidle_coupled_get_state(dev, coupled);
 
@@ -822,21 +643,13 @@ int cpuidle_coupled_register_device(struct cpuidle_device *dev)
 {
 	int cpu;
 	struct cpuidle_device *other_dev;
-<<<<<<< HEAD
-	struct call_single_data *csd;
-=======
 	call_single_data_t *csd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cpuidle_coupled *coupled;
 
 	if (cpumask_empty(&dev->coupled_cpus))
 		return 0;
 
-<<<<<<< HEAD
-	for_each_cpu_mask(cpu, dev->coupled_cpus) {
-=======
 	for_each_cpu(cpu, &dev->coupled_cpus) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		other_dev = per_cpu(cpuidle_devices, cpu);
 		if (other_dev && other_dev->coupled) {
 			coupled = other_dev->coupled;
@@ -861,12 +674,7 @@ have_coupled:
 	coupled->refcnt++;
 
 	csd = &per_cpu(cpuidle_coupled_poke_cb, dev->cpu);
-<<<<<<< HEAD
-	csd->func = cpuidle_coupled_poked;
-	csd->info = (void *)(unsigned long)dev->cpu;
-=======
 	INIT_CSD(csd, cpuidle_coupled_handle_poke, (void *)(unsigned long)dev->cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -932,68 +740,6 @@ static void cpuidle_coupled_allow_idle(struct cpuidle_coupled *coupled)
 	put_cpu();
 }
 
-<<<<<<< HEAD
-/**
- * cpuidle_coupled_cpu_notify - notifier called during hotplug transitions
- * @nb: notifier block
- * @action: hotplug transition
- * @hcpu: target cpu number
- *
- * Called when a cpu is brought on or offline using hotplug.  Updates the
- * coupled cpu set appropriately
- */
-static int cpuidle_coupled_cpu_notify(struct notifier_block *nb,
-		unsigned long action, void *hcpu)
-{
-	int cpu = (unsigned long)hcpu;
-	struct cpuidle_device *dev;
-
-	switch (action & ~CPU_TASKS_FROZEN) {
-	case CPU_UP_PREPARE:
-	case CPU_DOWN_PREPARE:
-	case CPU_ONLINE:
-	case CPU_DEAD:
-	case CPU_UP_CANCELED:
-	case CPU_DOWN_FAILED:
-		break;
-	default:
-		return NOTIFY_OK;
-	}
-
-	mutex_lock(&cpuidle_lock);
-
-	dev = per_cpu(cpuidle_devices, cpu);
-	if (!dev->coupled)
-		goto out;
-
-	switch (action & ~CPU_TASKS_FROZEN) {
-	case CPU_UP_PREPARE:
-	case CPU_DOWN_PREPARE:
-		cpuidle_coupled_prevent_idle(dev->coupled);
-		break;
-	case CPU_ONLINE:
-	case CPU_DEAD:
-		cpuidle_coupled_update_online_cpus(dev->coupled);
-		/* Fall through */
-	case CPU_UP_CANCELED:
-	case CPU_DOWN_FAILED:
-		cpuidle_coupled_allow_idle(dev->coupled);
-		break;
-	}
-
-out:
-	mutex_unlock(&cpuidle_lock);
-	return NOTIFY_OK;
-}
-
-static struct notifier_block cpuidle_coupled_cpu_notifier = {
-	.notifier_call = cpuidle_coupled_cpu_notify,
-};
-
-static int __init cpuidle_coupled_init(void)
-{
-	return register_cpu_notifier(&cpuidle_coupled_cpu_notifier);
-=======
 static int coupled_cpu_online(unsigned int cpu)
 {
 	struct cpuidle_device *dev;
@@ -1041,6 +787,5 @@ static int __init cpuidle_coupled_init(void)
 	if (ret < 0)
 		cpuhp_remove_state_nocalls(CPUHP_CPUIDLE_COUPLED_PREPARE);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 core_initcall(cpuidle_coupled_init);

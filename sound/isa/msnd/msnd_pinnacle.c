@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*********************************************************************
  *
  * Linux multisound pinnacle/fiji driver for ALSA.
@@ -14,10 +11,6 @@
  *	support in alsa, i left all the MSND_CLASSIC tokens in this file.
  *	but for now this untested & undone.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ripped from linux kernel 2.4.18 by Karsten Wiese.
  *
  * the following is a copy of the 2.4.18 OSS FREE file-heading comment:
@@ -37,23 +30,6 @@
  *
  * Copyright (C) 1998 Andrew Veliath
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ********************************************************************/
 
 #include <linux/kernel.h>
@@ -90,21 +66,12 @@
 #  define DEV_NAME			"msnd-pinnacle"
 #endif
 
-<<<<<<< HEAD
-static void __devinit set_default_audio_parameters(struct snd_msnd *chip)
-{
-	chip->play_sample_size = DEFSAMPLESIZE;
-	chip->play_sample_rate = DEFSAMPLERATE;
-	chip->play_channels = DEFCHANNELS;
-	chip->capture_sample_size = DEFSAMPLESIZE;
-=======
 static void set_default_audio_parameters(struct snd_msnd *chip)
 {
 	chip->play_sample_size = snd_pcm_format_width(DEFSAMPLESIZE);
 	chip->play_sample_rate = DEFSAMPLERATE;
 	chip->play_channels = DEFCHANNELS;
 	chip->capture_sample_size = snd_pcm_format_width(DEFSAMPLESIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->capture_sample_rate = DEFSAMPLERATE;
 	chip->capture_channels = DEFCHANNELS;
 }
@@ -188,31 +155,13 @@ static void snd_msnd_eval_dsp_msg(struct snd_msnd *chip, u16 wMessage)
 static irqreturn_t snd_msnd_interrupt(int irq, void *dev_id)
 {
 	struct snd_msnd *chip = dev_id;
-<<<<<<< HEAD
-	void *pwDSPQData = chip->mappedbase + DSPQ_DATA_BUFF;
-=======
 	void __iomem *pwDSPQData = chip->mappedbase + DSPQ_DATA_BUFF;
 	u16 head, tail, size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Send ack to DSP */
 	/* inb(chip->io + HP_RXL); */
 
 	/* Evaluate queued DSP messages */
-<<<<<<< HEAD
-	while (readw(chip->DSPQ + JQS_wTail) != readw(chip->DSPQ + JQS_wHead)) {
-		u16 wTmp;
-
-		snd_msnd_eval_dsp_msg(chip,
-			readw(pwDSPQData + 2 * readw(chip->DSPQ + JQS_wHead)));
-
-		wTmp = readw(chip->DSPQ + JQS_wHead) + 1;
-		if (wTmp > readw(chip->DSPQ + JQS_wSize))
-			writew(0, chip->DSPQ + JQS_wHead);
-		else
-			writew(wTmp, chip->DSPQ + JQS_wHead);
-	}
-=======
 	head = readw(chip->DSPQ + JQS_wHead);
 	tail = readw(chip->DSPQ + JQS_wTail);
 	size = readw(chip->DSPQ + JQS_wSize);
@@ -225,7 +174,6 @@ static irqreturn_t snd_msnd_interrupt(int irq, void *dev_id)
 		writew(head, chip->DSPQ + JQS_wHead);
 	}
  out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Send ack to DSP */
 	inb(chip->io + HP_RXL);
 	return IRQ_HANDLED;
@@ -254,11 +202,7 @@ static int snd_msnd_reset_dsp(long io, unsigned char *info)
 	return -EIO;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_probe(struct snd_card *card)
-=======
 static int snd_msnd_probe(struct snd_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_msnd *chip = card->private_data;
 	unsigned char info;
@@ -528,14 +472,6 @@ static int snd_msnd_dsp_full_reset(struct snd_card *card)
 	return rv;
 }
 
-<<<<<<< HEAD
-static int snd_msnd_dev_free(struct snd_device *device)
-{
-	snd_printdd("snd_msnd_chip_free()\n");
-	return 0;
-}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_msnd_send_dsp_cmd_chk(struct snd_msnd *chip, u8 cmd)
 {
@@ -545,11 +481,7 @@ static int snd_msnd_send_dsp_cmd_chk(struct snd_msnd *chip, u8 cmd)
 	return snd_msnd_send_dsp_cmd(chip, cmd);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_calibrate_adc(struct snd_msnd *chip, u16 srate)
-=======
 static int snd_msnd_calibrate_adc(struct snd_msnd *chip, u16 srate)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	snd_printdd("snd_msnd_calibrate_adc(%i)\n", srate);
 	writew(srate, chip->SMA + SMA_wCalFreqAtoD);
@@ -587,18 +519,6 @@ static void snd_msnd_mpu401_close(struct snd_mpu401 *mpu)
 static long mpu_io[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;
 static int mpu_irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_attach(struct snd_card *card)
-{
-	struct snd_msnd *chip = card->private_data;
-	int err;
-	static struct snd_device_ops ops = {
-		.dev_free =      snd_msnd_dev_free,
-		};
-
-	err = request_irq(chip->irq, snd_msnd_interrupt, 0, card->shortname,
-			  chip);
-=======
 static int snd_msnd_attach(struct snd_card *card)
 {
 	struct snd_msnd *chip = card->private_data;
@@ -606,27 +526,10 @@ static int snd_msnd_attach(struct snd_card *card)
 
 	err = devm_request_irq(card->dev, chip->irq, snd_msnd_interrupt, 0,
 			       card->shortname, chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		printk(KERN_ERR LOGNAME ": Couldn't grab IRQ %d\n", chip->irq);
 		return err;
 	}
-<<<<<<< HEAD
-	if (request_region(chip->io, DSP_NUMIO, card->shortname) == NULL) {
-		free_irq(chip->irq, chip);
-		return -EBUSY;
-	}
-
-	if (!request_mem_region(chip->base, BUFFSIZE, card->shortname)) {
-		printk(KERN_ERR LOGNAME
-			": unable to grab memory region 0x%lx-0x%lx\n",
-			chip->base, chip->base + BUFFSIZE - 1);
-		release_region(chip->io, DSP_NUMIO);
-		free_irq(chip->irq, chip);
-		return -EBUSY;
-	}
-	chip->mappedbase = ioremap_nocache(chip->base, 0x8000);
-=======
 	card->sync_irq = chip->irq;
 	if (!devm_request_region(card->dev, chip->io, DSP_NUMIO,
 				 card->shortname))
@@ -640,51 +543,27 @@ static int snd_msnd_attach(struct snd_card *card)
 		return -EBUSY;
 	}
 	chip->mappedbase = devm_ioremap(card->dev, chip->base, 0x8000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!chip->mappedbase) {
 		printk(KERN_ERR LOGNAME
 			": unable to map memory region 0x%lx-0x%lx\n",
 			chip->base, chip->base + BUFFSIZE - 1);
-<<<<<<< HEAD
-		err = -EIO;
-		goto err_release_region;
-=======
 		return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = snd_msnd_dsp_full_reset(card);
 	if (err < 0)
-<<<<<<< HEAD
-		goto err_release_region;
-
-	/* Register device */
-	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
-	if (err < 0)
-		goto err_release_region;
-
-	err = snd_msnd_pcm(card, 0, NULL);
-	if (err < 0) {
-		printk(KERN_ERR LOGNAME ": error creating new PCM device\n");
-		goto err_release_region;
-=======
 		return err;
 
 	err = snd_msnd_pcm(card, 0);
 	if (err < 0) {
 		printk(KERN_ERR LOGNAME ": error creating new PCM device\n");
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = snd_msndmix_new(card);
 	if (err < 0) {
 		printk(KERN_ERR LOGNAME ": error creating new Mixer device\n");
-<<<<<<< HEAD
-		goto err_release_region;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 
@@ -700,11 +579,7 @@ static int snd_msnd_attach(struct snd_card *card)
 		if (err < 0) {
 			printk(KERN_ERR LOGNAME
 				": error creating new Midi device\n");
-<<<<<<< HEAD
-			goto err_release_region;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		mpu = chip->rmidi->private_data;
 
@@ -719,49 +594,17 @@ static int snd_msnd_attach(struct snd_card *card)
 
 	err = snd_card_register(card);
 	if (err < 0)
-<<<<<<< HEAD
-		goto err_release_region;
-
-	return 0;
-
-err_release_region:
-	if (chip->mappedbase)
-		iounmap(chip->mappedbase);
-	release_mem_region(chip->base, BUFFSIZE);
-	release_region(chip->io, DSP_NUMIO);
-	free_irq(chip->irq, chip);
-	return err;
-}
-
-
-static void __devexit snd_msnd_unload(struct snd_card *card)
-{
-	struct snd_msnd *chip = card->private_data;
-
-	iounmap(chip->mappedbase);
-	release_mem_region(chip->base, BUFFSIZE);
-	release_region(chip->io, DSP_NUMIO);
-	free_irq(chip->irq, chip);
-	snd_card_free(card);
-}
-
-=======
 		return err;
 
 	return 0;
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MSND_CLASSIC
 
 /* Pinnacle/Fiji Logical Device Configuration */
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_write_cfg(int cfg, int reg, int value)
-=======
 static int snd_msnd_write_cfg(int cfg, int reg, int value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	outb(reg, cfg);
 	outb(value, cfg + 1);
@@ -772,11 +615,7 @@ static int snd_msnd_write_cfg(int cfg, int reg, int value)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_write_cfg_io0(int cfg, int num, u16 io)
-=======
 static int snd_msnd_write_cfg_io0(int cfg, int num, u16 io)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (snd_msnd_write_cfg(cfg, IREG_LOGDEVICE, num))
 		return -EIO;
@@ -787,11 +626,7 @@ static int snd_msnd_write_cfg_io0(int cfg, int num, u16 io)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_write_cfg_io1(int cfg, int num, u16 io)
-=======
 static int snd_msnd_write_cfg_io1(int cfg, int num, u16 io)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (snd_msnd_write_cfg(cfg, IREG_LOGDEVICE, num))
 		return -EIO;
@@ -802,11 +637,7 @@ static int snd_msnd_write_cfg_io1(int cfg, int num, u16 io)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_write_cfg_irq(int cfg, int num, u16 irq)
-=======
 static int snd_msnd_write_cfg_irq(int cfg, int num, u16 irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (snd_msnd_write_cfg(cfg, IREG_LOGDEVICE, num))
 		return -EIO;
@@ -817,11 +648,7 @@ static int snd_msnd_write_cfg_irq(int cfg, int num, u16 irq)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_write_cfg_mem(int cfg, int num, int mem)
-=======
 static int snd_msnd_write_cfg_mem(int cfg, int num, int mem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 wmem;
 
@@ -839,11 +666,7 @@ static int snd_msnd_write_cfg_mem(int cfg, int num, int mem)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_activate_logical(int cfg, int num)
-=======
 static int snd_msnd_activate_logical(int cfg, int num)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (snd_msnd_write_cfg(cfg, IREG_LOGDEVICE, num))
 		return -EIO;
@@ -852,13 +675,8 @@ static int snd_msnd_activate_logical(int cfg, int num)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_write_cfg_logical(int cfg, int num, u16 io0,
-						u16 io1, u16 irq, int mem)
-=======
 static int snd_msnd_write_cfg_logical(int cfg, int num, u16 io0,
 				      u16 io1, u16 irq, int mem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (snd_msnd_write_cfg(cfg, IREG_LOGDEVICE, num))
 		return -EIO;
@@ -875,11 +693,7 @@ static int snd_msnd_write_cfg_logical(int cfg, int num, u16 io0,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_pinnacle_cfg_reset(int cfg)
-=======
 static int snd_msnd_pinnacle_cfg_reset(int cfg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -896,15 +710,9 @@ static int snd_msnd_pinnacle_cfg_reset(int cfg)
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
 
-<<<<<<< HEAD
-module_param_array(index, int, NULL, S_IRUGO);
-MODULE_PARM_DESC(index, "Index value for msnd_pinnacle soundcard.");
-module_param_array(id, charp, NULL, S_IRUGO);
-=======
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for msnd_pinnacle soundcard.");
 module_param_array(id, charp, NULL, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(id, "ID string for msnd_pinnacle soundcard.");
 
 static long io[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;
@@ -946,28 +754,6 @@ MODULE_LICENSE("GPL");
 MODULE_FIRMWARE(INITCODEFILE);
 MODULE_FIRMWARE(PERMCODEFILE);
 
-<<<<<<< HEAD
-module_param_array(io, long, NULL, S_IRUGO);
-MODULE_PARM_DESC(io, "IO port #");
-module_param_array(irq, int, NULL, S_IRUGO);
-module_param_array(mem, long, NULL, S_IRUGO);
-module_param_array(write_ndelay, int, NULL, S_IRUGO);
-module_param(calibrate_signal, int, S_IRUGO);
-#ifndef MSND_CLASSIC
-module_param_array(digital, int, NULL, S_IRUGO);
-module_param_array(cfg, long, NULL, S_IRUGO);
-module_param_array(reset, int, 0, S_IRUGO);
-module_param_array(mpu_io, long, NULL, S_IRUGO);
-module_param_array(mpu_irq, int, NULL, S_IRUGO);
-module_param_array(ide_io0, long, NULL, S_IRUGO);
-module_param_array(ide_io1, long, NULL, S_IRUGO);
-module_param_array(ide_irq, int, NULL, S_IRUGO);
-module_param_array(joystick_io, long, NULL, S_IRUGO);
-#endif
-
-
-static int __devinit snd_msnd_isa_match(struct device *pdev, unsigned int i)
-=======
 module_param_hw_array(io, long, ioport, NULL, 0444);
 MODULE_PARM_DESC(io, "IO port #");
 module_param_hw_array(irq, int, irq, NULL, 0444);
@@ -988,7 +774,6 @@ module_param_hw_array(joystick_io, long, ioport, NULL, 0444);
 
 
 static int snd_msnd_isa_match(struct device *pdev, unsigned int i)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (io[i] == SNDRV_AUTO_PORT)
 		return 0;
@@ -1058,11 +843,7 @@ static int snd_msnd_isa_match(struct device *pdev, unsigned int i)
 	return 1;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
-=======
 static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct snd_card *card;
@@ -1077,20 +858,11 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	err = snd_card_create(index[idx], id[idx], THIS_MODULE,
-			      sizeof(struct snd_msnd), &card);
-	if (err < 0)
-		return err;
-
-	snd_card_set_dev(card, pdev);
-=======
 	err = snd_devm_card_new(pdev, index[idx], id[idx], THIS_MODULE,
 				sizeof(struct snd_msnd), &card);
 	if (err < 0)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip = card->private_data;
 	chip->card = card;
 
@@ -1128,19 +900,6 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 	printk(KERN_INFO LOGNAME ": Non-PnP mode: configuring at port 0x%lx\n",
 			cfg[idx]);
 
-<<<<<<< HEAD
-	if (!request_region(cfg[idx], 2, "Pinnacle/Fiji Config")) {
-		printk(KERN_ERR LOGNAME ": Config port 0x%lx conflict\n",
-			   cfg[idx]);
-		snd_card_free(card);
-		return -EIO;
-	}
-	if (reset[idx])
-		if (snd_msnd_pinnacle_cfg_reset(cfg[idx])) {
-			err = -EIO;
-			goto cfg_error;
-		}
-=======
 	if (!devm_request_region(card->dev, cfg[idx], 2,
 				 "Pinnacle/Fiji Config")) {
 		printk(KERN_ERR LOGNAME ": Config port 0x%lx conflict\n",
@@ -1150,7 +909,6 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 	if (reset[idx])
 		if (snd_msnd_pinnacle_cfg_reset(cfg[idx]))
 			return -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DSP */
 	err = snd_msnd_write_cfg_logical(cfg[idx], 0,
@@ -1158,11 +916,7 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 					 irq[idx], mem[idx]);
 
 	if (err)
-<<<<<<< HEAD
-		goto cfg_error;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The following are Pinnacle specific */
 
@@ -1177,11 +931,7 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 						 mpu_irq[idx], 0);
 
 		if (err)
-<<<<<<< HEAD
-			goto cfg_error;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* IDE */
@@ -1196,11 +946,7 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 						 ide_irq[idx], 0);
 
 		if (err)
-<<<<<<< HEAD
-			goto cfg_error;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Joystick */
@@ -1213,14 +959,8 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 						 0, 0);
 
 		if (err)
-<<<<<<< HEAD
-			goto cfg_error;
-	}
-	release_region(cfg[idx], 2);
-=======
 			return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* MSND_CLASSIC */
 
@@ -1250,51 +990,22 @@ static int snd_msnd_isa_probe(struct device *pdev, unsigned int idx)
 	err = snd_msnd_probe(card);
 	if (err < 0) {
 		printk(KERN_ERR LOGNAME ": Probe failed\n");
-<<<<<<< HEAD
-		snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	err = snd_msnd_attach(card);
 	if (err < 0) {
 		printk(KERN_ERR LOGNAME ": Attach failed\n");
-<<<<<<< HEAD
-		snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	dev_set_drvdata(pdev, card);
 
 	return 0;
-<<<<<<< HEAD
-
-#ifndef MSND_CLASSIC
-cfg_error:
-	release_region(cfg[idx], 2);
-	snd_card_free(card);
-	return err;
-#endif
-}
-
-static int __devexit snd_msnd_isa_remove(struct device *pdev, unsigned int dev)
-{
-	snd_msnd_unload(dev_get_drvdata(pdev));
-	dev_set_drvdata(pdev, NULL);
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isa_driver snd_msnd_driver = {
 	.match		= snd_msnd_isa_match,
 	.probe		= snd_msnd_isa_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(snd_msnd_isa_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME: suspend, resume */
 	.driver		= {
 		.name	= DEV_NAME
@@ -1302,13 +1013,8 @@ static struct isa_driver snd_msnd_driver = {
 };
 
 #ifdef CONFIG_PNP
-<<<<<<< HEAD
-static int __devinit snd_msnd_pnp_detect(struct pnp_card_link *pcard,
-					 const struct pnp_card_device_id *pid)
-=======
 static int snd_msnd_pnp_detect(struct pnp_card_link *pcard,
 			       const struct pnp_card_device_id *pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int idx;
 	struct pnp_dev *pnp_dev;
@@ -1349,23 +1055,14 @@ static int snd_msnd_pnp_detect(struct pnp_card_link *pcard,
 	 * Create a new ALSA sound card entry, in anticipation
 	 * of detecting our hardware ...
 	 */
-<<<<<<< HEAD
-	ret = snd_card_create(index[idx], id[idx], THIS_MODULE,
-			      sizeof(struct snd_msnd), &card);
-=======
 	ret = snd_devm_card_new(&pcard->card->dev,
 				index[idx], id[idx], THIS_MODULE,
 				sizeof(struct snd_msnd), &card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
 	chip = card->private_data;
 	chip->card = card;
-<<<<<<< HEAD
-	snd_card_set_dev(card, &pcard->card->dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Read the correct parameters off the ISA PnP bus ...
@@ -1402,49 +1099,24 @@ static int snd_msnd_pnp_detect(struct pnp_card_link *pcard,
 	ret = snd_msnd_probe(card);
 	if (ret < 0) {
 		printk(KERN_ERR LOGNAME ": Probe failed\n");
-<<<<<<< HEAD
-		goto _release_card;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = snd_msnd_attach(card);
 	if (ret < 0) {
 		printk(KERN_ERR LOGNAME ": Attach failed\n");
-<<<<<<< HEAD
-		goto _release_card;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pnp_set_card_drvdata(pcard, card);
 	++idx;
 	return 0;
-<<<<<<< HEAD
-
-_release_card:
-	snd_card_free(card);
-	return ret;
-}
-
-static void __devexit snd_msnd_pnp_remove(struct pnp_card_link *pcard)
-{
-	snd_msnd_unload(pnp_get_card_drvdata(pcard));
-	pnp_set_card_drvdata(pcard, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int isa_registered;
 static int pnp_registered;
 
-<<<<<<< HEAD
-static struct pnp_card_device_id msnd_pnpids[] = {
-=======
 static const struct pnp_card_device_id msnd_pnpids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Pinnacle PnP */
 	{ .id = "BVJ0440", .devs = { { "TBS0000" }, { "TBS0001" } } },
 	{ .id = "" }	/* end */
@@ -1457,10 +1129,6 @@ static struct pnp_card_driver msnd_pnpc_driver = {
 	.name = "msnd_pinnacle",
 	.id_table = msnd_pnpids,
 	.probe = snd_msnd_pnp_detect,
-<<<<<<< HEAD
-	.remove = __devexit_p(snd_msnd_pnp_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif /* CONFIG_PNP */
 

@@ -1,20 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Portions
  * Copyright (C) 2022-2023 Intel Corporation
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ieee80211.h>
 #include <linux/export.h>
 #include <net/cfg80211.h>
 #include "nl80211.h"
 #include "core.h"
-<<<<<<< HEAD
-=======
 #include "rdev-ops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Default values, timeouts in ms */
 #define MESH_TTL 		31
@@ -26,13 +20,10 @@
 
 #define MESH_PATH_TIMEOUT	5000
 #define MESH_RANN_INTERVAL      5000
-<<<<<<< HEAD
-=======
 #define MESH_PATH_TO_ROOT_TIMEOUT      6000
 #define MESH_ROOT_INTERVAL     5000
 #define MESH_ROOT_CONFIRMATION_INTERVAL 2000
 #define MESH_DEFAULT_PLINK_TIMEOUT	1800 /* timeout in seconds */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Minimum interval between two consecutive PREQs originated by the same
@@ -57,14 +48,11 @@
 
 #define MESH_MAX_PREQ_RETRIES	4
 
-<<<<<<< HEAD
-=======
 #define MESH_SYNC_NEIGHBOR_OFFSET_MAX 50
 
 #define MESH_DEFAULT_BEACON_INTERVAL	1000	/* in 1024 us units (=TUs) */
 #define MESH_DEFAULT_DTIM_PERIOD	2
 #define MESH_DEFAULT_AWAKE_WINDOW	10	/* in 1024 us units (=TUs) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct mesh_config default_mesh_config = {
 	.dot11MeshRetryTimeout = MESH_RET_T,
@@ -75,10 +63,7 @@ const struct mesh_config default_mesh_config = {
 	.element_ttl = MESH_DEFAULT_ELEMENT_TTL,
 	.auto_open_plinks = true,
 	.dot11MeshMaxPeerLinks = MESH_MAX_ESTAB_PLINKS,
-<<<<<<< HEAD
-=======
 	.dot11MeshNbrOffsetMaxNeighbor = MESH_SYNC_NEIGHBOR_OFFSET_MAX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dot11MeshHWMPactivePathTimeout = MESH_PATH_TIMEOUT,
 	.dot11MeshHWMPpreqMinInterval = MESH_PREQ_MIN_INT,
 	.dot11MeshHWMPperrMinInterval = MESH_PERR_MIN_INT,
@@ -90,16 +75,6 @@ const struct mesh_config default_mesh_config = {
 	.dot11MeshGateAnnouncementProtocol = false,
 	.dot11MeshForwarding = true,
 	.rssi_threshold = MESH_RSSI_THRESHOLD,
-<<<<<<< HEAD
-};
-
-const struct mesh_setup default_mesh_setup = {
-	.path_sel_proto = IEEE80211_PATH_PROTOCOL_HWMP,
-	.path_metric = IEEE80211_PATH_METRIC_AIRTIME,
-	.ie = NULL,
-	.ie_len = 0,
-	.is_secure = false,
-=======
 	.ht_opmode = IEEE80211_HT_OP_MODE_PROTECTION_NONHT_MIXED,
 	.dot11MeshHWMPactivePathToRootTimeout = MESH_PATH_TO_ROOT_TIMEOUT,
 	.dot11MeshHWMProotInterval = MESH_ROOT_INTERVAL,
@@ -122,16 +97,11 @@ const struct mesh_setup default_mesh_setup = {
 	.user_mpm = false,
 	.beacon_interval = MESH_DEFAULT_BEACON_INTERVAL,
 	.dtim_period = MESH_DEFAULT_DTIM_PERIOD,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 			 struct net_device *dev,
-<<<<<<< HEAD
-			 const struct mesh_setup *setup,
-=======
 			 struct mesh_setup *setup,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 const struct mesh_config *conf)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
@@ -139,11 +109,7 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 
 	BUILD_BUG_ON(IEEE80211_MAX_SSID_LEN != IEEE80211_MAX_MESH_ID_LEN);
 
-<<<<<<< HEAD
-	ASSERT_WDEV_LOCK(wdev);
-=======
 	lockdep_assert_wiphy(wdev->wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_MESH_POINT)
 		return -EOPNOTSUPP;
@@ -152,11 +118,7 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 	      setup->is_secure)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	if (wdev->mesh_id_len)
-=======
 	if (wdev->u.mesh.id_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EALREADY;
 
 	if (!setup->mesh_id_len)
@@ -165,72 +127,6 @@ int __cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
 	if (!rdev->ops->join_mesh)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-	err = rdev->ops->join_mesh(&rdev->wiphy, dev, conf, setup);
-	if (!err) {
-		memcpy(wdev->ssid, setup->mesh_id, setup->mesh_id_len);
-		wdev->mesh_id_len = setup->mesh_id_len;
-	}
-
-	return err;
-}
-
-int cfg80211_join_mesh(struct cfg80211_registered_device *rdev,
-		       struct net_device *dev,
-		       const struct mesh_setup *setup,
-		       const struct mesh_config *conf)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	int err;
-
-	wdev_lock(wdev);
-	err = __cfg80211_join_mesh(rdev, dev, setup, conf);
-	wdev_unlock(wdev);
-
-	return err;
-}
-
-void cfg80211_notify_new_peer_candidate(struct net_device *dev,
-		const u8 *macaddr, const u8* ie, u8 ie_len, gfp_t gfp)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-
-	if (WARN_ON(wdev->iftype != NL80211_IFTYPE_MESH_POINT))
-		return;
-
-	nl80211_send_new_peer_candidate(wiphy_to_dev(wdev->wiphy), dev,
-			macaddr, ie, ie_len, gfp);
-}
-EXPORT_SYMBOL(cfg80211_notify_new_peer_candidate);
-
-static int __cfg80211_leave_mesh(struct cfg80211_registered_device *rdev,
-				 struct net_device *dev)
-{
-	struct wireless_dev *wdev = dev->ieee80211_ptr;
-	int err;
-
-	ASSERT_WDEV_LOCK(wdev);
-
-	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_MESH_POINT)
-		return -EOPNOTSUPP;
-
-	if (!rdev->ops->leave_mesh)
-		return -EOPNOTSUPP;
-
-	if (!wdev->mesh_id_len)
-		return -ENOTCONN;
-
-	err = rdev->ops->leave_mesh(&rdev->wiphy, dev);
-	if (!err) {
-		wdev->mesh_id_len = 0;
-		if (rdev->ops->set_qos_map) {
-			rdev->ops->set_qos_map(&rdev->wiphy, dev, NULL);
-		}
-	}
-	return err;
-}
-
-=======
 	if (!setup->chandef.chan) {
 		/* if no channel explicitly given, use preset channel */
 		setup->chandef = wdev->u.mesh.preset_chandef;
@@ -358,18 +254,12 @@ int cfg80211_set_mesh_channel(struct cfg80211_registered_device *rdev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cfg80211_leave_mesh(struct cfg80211_registered_device *rdev,
 			struct net_device *dev)
 {
 	struct wireless_dev *wdev = dev->ieee80211_ptr;
 	int err;
 
-<<<<<<< HEAD
-	wdev_lock(wdev);
-	err = __cfg80211_leave_mesh(rdev, dev);
-	wdev_unlock(wdev);
-=======
 	lockdep_assert_wiphy(wdev->wiphy);
 
 	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_MESH_POINT)
@@ -391,7 +281,6 @@ int cfg80211_leave_mesh(struct cfg80211_registered_device *rdev,
 		rdev_set_qos_map(rdev, dev, NULL);
 		cfg80211_sched_dfs_chan_update(rdev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }

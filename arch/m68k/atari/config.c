@@ -31,20 +31,14 @@
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/ioport.h>
-<<<<<<< HEAD
-=======
 #include <linux/platform_device.h>
 #include <linux/usb/isp116x.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vt_kern.h>
 #include <linux/module.h>
 
 #include <asm/bootinfo.h>
-<<<<<<< HEAD
-=======
 #include <asm/bootinfo-atari.h>
 #include <asm/byteorder.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 #include <asm/atarihw.h>
 #include <asm/atariints.h>
@@ -52,12 +46,9 @@
 #include <asm/machdep.h>
 #include <asm/hwtest.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-=======
 #include <asm/config.h>
 
 #include "atari.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u_long atari_mch_cookie;
 EXPORT_SYMBOL(atari_mch_cookie);
@@ -80,29 +71,10 @@ int atari_rtc_year_offset;
 static void atari_reset(void);
 static void atari_get_model(char *model);
 static void atari_get_hardware_list(struct seq_file *m);
-<<<<<<< HEAD
-
-/* atari specific irq functions */
-extern void atari_init_IRQ (void);
-extern void atari_mksound(unsigned int count, unsigned int ticks);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HEARTBEAT
 static void atari_heartbeat(int on);
 #endif
 
-<<<<<<< HEAD
-/* atari specific timer functions (in time.c) */
-extern void atari_sched_init(irq_handler_t);
-extern unsigned long atari_gettimeoffset (void);
-extern int atari_mste_hwclk (int, struct rtc_time *);
-extern int atari_tt_hwclk (int, struct rtc_time *);
-extern int atari_mste_set_clock_mmss (unsigned long);
-extern int atari_tt_set_clock_mmss (unsigned long);
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ++roman: This is a more elaborate test for an SCC chip, since the plain
  * Medusa board generates DTACK at the SCC's standard addresses, but a SCC
  * board in the Medusa is possible. Also, the addresses where the ST_ESCC
@@ -149,16 +121,6 @@ static int __init scc_test(volatile char *ctla)
 int __init atari_parse_bootinfo(const struct bi_record *record)
 {
 	int unknown = 0;
-<<<<<<< HEAD
-	const u_long *data = record->data;
-
-	switch (record->tag) {
-	case BI_ATARI_MCH_COOKIE:
-		atari_mch_cookie = *data;
-		break;
-	case BI_ATARI_MCH_TYPE:
-		atari_mch_type = *data;
-=======
 	const void *data = record->data;
 
 	switch (be16_to_cpu(record->tag)) {
@@ -167,7 +129,6 @@ int __init atari_parse_bootinfo(const struct bi_record *record)
 		break;
 	case BI_ATARI_MCH_TYPE:
 		atari_mch_type = be32_to_cpup(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		unknown = 1;
@@ -180,11 +141,7 @@ int __init atari_parse_bootinfo(const struct bi_record *record)
 /* Parse the Atari-specific switches= option. */
 static int __init atari_switches_setup(char *str)
 {
-<<<<<<< HEAD
-	char switches[strlen(str) + 1];
-=======
 	char switches[COMMAND_LINE_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *p;
 	int ovsc_shift;
 	char *args = switches;
@@ -241,15 +198,8 @@ void __init config_atari(void)
 	mach_init_IRQ        = atari_init_IRQ;
 	mach_get_model	 = atari_get_model;
 	mach_get_hardware_list = atari_get_hardware_list;
-<<<<<<< HEAD
-	mach_gettimeoffset   = atari_gettimeoffset;
-	mach_reset           = atari_reset;
-	mach_max_dma_address = 0xffffff;
-#if defined(CONFIG_INPUT_M68K_BEEP) || defined(CONFIG_INPUT_M68K_BEEP_MODULE)
-=======
 	mach_reset           = atari_reset;
 #if IS_ENABLED(CONFIG_INPUT_M68K_BEEP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mach_beep          = atari_mksound;
 #endif
 #ifdef CONFIG_HEARTBEAT
@@ -272,41 +222,19 @@ void __init config_atari(void)
 	 * Determine hardware present
 	 */
 
-<<<<<<< HEAD
-	printk("Atari hardware found: ");
-=======
 	pr_info("Atari hardware found:");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (MACH_IS_MEDUSA) {
 		/* There's no Atari video hardware on the Medusa, but all the
 		 * addresses below generate a DTACK so no bus error occurs! */
 	} else if (hwreg_present(f030_xreg)) {
 		ATARIHW_SET(VIDEL_SHIFTER);
-<<<<<<< HEAD
-		printk("VIDEL ");
-=======
 		pr_cont(" VIDEL");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* This is a temporary hack: If there is Falcon video
 		 * hardware, we assume that the ST-DMA serves SCSI instead of
 		 * ACSI. In the future, there should be a better method for
 		 * this...
 		 */
 		ATARIHW_SET(ST_SCSI);
-<<<<<<< HEAD
-		printk("STDMA-SCSI ");
-	} else if (hwreg_present(tt_palette)) {
-		ATARIHW_SET(TT_SHIFTER);
-		printk("TT_SHIFTER ");
-	} else if (hwreg_present(&shifter.bas_hi)) {
-		if (hwreg_present(&shifter.bas_lo) &&
-		    (shifter.bas_lo = 0x0aau, shifter.bas_lo == 0x0aau)) {
-			ATARIHW_SET(EXTD_SHIFTER);
-			printk("EXTD_SHIFTER ");
-		} else {
-			ATARIHW_SET(STND_SHIFTER);
-			printk("STND_SHIFTER ");
-=======
 		pr_cont(" STDMA-SCSI");
 	} else if (hwreg_present(tt_palette)) {
 		ATARIHW_SET(TT_SHIFTER);
@@ -319,22 +247,10 @@ void __init config_atari(void)
 		} else {
 			ATARIHW_SET(STND_SHIFTER);
 			pr_cont(" STND_SHIFTER");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (hwreg_present(&st_mfp.par_dt_reg)) {
 		ATARIHW_SET(ST_MFP);
-<<<<<<< HEAD
-		printk("ST_MFP ");
-	}
-	if (hwreg_present(&tt_mfp.par_dt_reg)) {
-		ATARIHW_SET(TT_MFP);
-		printk("TT_MFP ");
-	}
-	if (hwreg_present(&tt_scsi_dma.dma_addr_hi)) {
-		ATARIHW_SET(SCSI_DMA);
-		printk("TT_SCSI_DMA ");
-=======
 		pr_cont(" ST_MFP");
 	}
 	if (hwreg_present(&tt_mfp.par_dt_reg)) {
@@ -344,7 +260,6 @@ void __init config_atari(void)
 	if (hwreg_present(&tt_scsi_dma.dma_addr_hi)) {
 		ATARIHW_SET(SCSI_DMA);
 		pr_cont(" TT_SCSI_DMA");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * The ST-DMA address registers aren't readable
@@ -357,29 +272,6 @@ void __init config_atari(void)
 	     (st_dma.dma_vhi = 0xaa) && (st_dma.dma_hi = 0x55) &&
 	     st_dma.dma_vhi == 0xaa && st_dma.dma_hi == 0x55)) {
 		ATARIHW_SET(EXTD_DMA);
-<<<<<<< HEAD
-		printk("EXTD_DMA ");
-	}
-	if (hwreg_present(&tt_scsi.scsi_data)) {
-		ATARIHW_SET(TT_SCSI);
-		printk("TT_SCSI ");
-	}
-	if (hwreg_present(&sound_ym.rd_data_reg_sel)) {
-		ATARIHW_SET(YM_2149);
-		printk("YM2149 ");
-	}
-	if (!MACH_IS_MEDUSA && hwreg_present(&tt_dmasnd.ctrl)) {
-		ATARIHW_SET(PCM_8BIT);
-		printk("PCM ");
-	}
-	if (hwreg_present(&falcon_codec.unused5)) {
-		ATARIHW_SET(CODEC);
-		printk("CODEC ");
-	}
-	if (hwreg_present(&dsp56k_host_interface.icr)) {
-		ATARIHW_SET(DSP56K);
-		printk("DSP56K ");
-=======
 		pr_cont(" EXTD_DMA");
 	}
 	if (hwreg_present(&tt_scsi.scsi_data)) {
@@ -401,7 +293,6 @@ void __init config_atari(void)
 	if (hwreg_present(&dsp56k_host_interface.icr)) {
 		ATARIHW_SET(DSP56K);
 		pr_cont(" DSP56K");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (hwreg_present(&tt_scc_dma.dma_ctrl) &&
 #if 0
@@ -413,17 +304,6 @@ void __init config_atari(void)
 #endif
 	    ) {
 		ATARIHW_SET(SCC_DMA);
-<<<<<<< HEAD
-		printk("SCC_DMA ");
-	}
-	if (scc_test(&atari_scc.cha_a_ctrl)) {
-		ATARIHW_SET(SCC);
-		printk("SCC ");
-	}
-	if (scc_test(&st_escc.cha_b_ctrl)) {
-		ATARIHW_SET(ST_ESCC);
-		printk("ST_ESCC ");
-=======
 		pr_cont(" SCC_DMA");
 	}
 	if (scc_test(&atari_scc.cha_a_ctrl)) {
@@ -433,27 +313,11 @@ void __init config_atari(void)
 	if (scc_test(&st_escc.cha_b_ctrl)) {
 		ATARIHW_SET(ST_ESCC);
 		pr_cont(" ST_ESCC");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (hwreg_present(&tt_scu.sys_mask)) {
 		ATARIHW_SET(SCU);
 		/* Assume a VME bus if there's a SCU */
 		ATARIHW_SET(VME);
-<<<<<<< HEAD
-		printk("VME SCU ");
-	}
-	if (hwreg_present((void *)(0xffff9210))) {
-		ATARIHW_SET(ANALOG_JOY);
-		printk("ANALOG_JOY ");
-	}
-	if (hwreg_present(blitter.halftone)) {
-		ATARIHW_SET(BLITTER);
-		printk("BLITTER ");
-	}
-	if (hwreg_present((void *)0xfff00039)) {
-		ATARIHW_SET(IDE);
-		printk("IDE ");
-=======
 		pr_cont(" VME SCU");
 	}
 	if (hwreg_present((void *)(0xffff9210))) {
@@ -467,7 +331,6 @@ void __init config_atari(void)
 	if (hwreg_present((void *)0xfff00039)) {
 		ATARIHW_SET(IDE);
 		pr_cont(" IDE");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #if 1 /* This maybe wrong */
 	if (!MACH_IS_MEDUSA && hwreg_present(&tt_microwire.data) &&
@@ -480,26 +343,11 @@ void __init config_atari(void)
 		ATARIHW_SET(MICROWIRE);
 		while (tt_microwire.mask != 0x7ff)
 			;
-<<<<<<< HEAD
-		printk("MICROWIRE ");
-=======
 		pr_cont(" MICROWIRE");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	if (hwreg_present(&tt_rtc.regsel)) {
 		ATARIHW_SET(TT_CLK);
-<<<<<<< HEAD
-		printk("TT_CLK ");
-		mach_hwclk = atari_tt_hwclk;
-		mach_set_clock_mmss = atari_tt_set_clock_mmss;
-	}
-	if (hwreg_present(&mste_rtc.sec_ones)) {
-		ATARIHW_SET(MSTE_CLK);
-		printk("MSTE_CLK ");
-		mach_hwclk = atari_mste_hwclk;
-		mach_set_clock_mmss = atari_mste_set_clock_mmss;
-=======
 		pr_cont(" TT_CLK");
 		mach_hwclk = atari_tt_hwclk;
 	}
@@ -507,20 +355,10 @@ void __init config_atari(void)
 		ATARIHW_SET(MSTE_CLK);
 		pr_cont(" MSTE_CLK");
 		mach_hwclk = atari_mste_hwclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!MACH_IS_MEDUSA && hwreg_present(&dma_wd.fdc_speed) &&
 	    hwreg_write(&dma_wd.fdc_speed, 0)) {
 		ATARIHW_SET(FDCSPEED);
-<<<<<<< HEAD
-		printk("FDC_SPEED ");
-	}
-	if (!ATARIHW_PRESENT(ST_SCSI)) {
-		ATARIHW_SET(ACSI);
-		printk("ACSI ");
-	}
-	printk("\n");
-=======
 		pr_cont(" FDC_SPEED");
 	}
 	if (!ATARIHW_PRESENT(ST_SCSI)) {
@@ -528,7 +366,6 @@ void __init config_atari(void)
 		pr_cont(" ACSI");
 	}
 	pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (CPU_IS_040_OR_060)
 		/* Now it seems to be safe to turn of the tt0 transparent
@@ -778,11 +615,7 @@ static void atari_get_hardware_list(struct seq_file *m)
 	if (ATARIHW_PRESENT(name))			\
 		seq_printf(m, "\t%s\n", str)
 
-<<<<<<< HEAD
-	seq_printf(m, "Detected hardware:\n");
-=======
 	seq_puts(m, "Detected hardware:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATARIHW_ANNOUNCE(STND_SHIFTER, "ST Shifter");
 	ATARIHW_ANNOUNCE(EXTD_SHIFTER, "STe Shifter");
 	ATARIHW_ANNOUNCE(TT_SHIFTER, "TT Shifter");
@@ -812,8 +645,6 @@ static void atari_get_hardware_list(struct seq_file *m)
 	ATARIHW_ANNOUNCE(VME, "VME Bus");
 	ATARIHW_ANNOUNCE(DSP56K, "DSP56001 processor");
 }
-<<<<<<< HEAD
-=======
 
 /*
  * MSch: initial platform device support for Atari,
@@ -1097,4 +928,3 @@ static int __init atari_platform_init(void)
 }
 
 arch_initcall(atari_platform_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

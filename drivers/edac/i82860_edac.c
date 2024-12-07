@@ -14,14 +14,8 @@
 #include <linux/pci.h>
 #include <linux/pci_ids.h>
 #include <linux/edac.h>
-<<<<<<< HEAD
-#include "edac_core.h"
-
-#define  I82860_REVISION " Ver: 2.0.2"
-=======
 #include "edac_module.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EDAC_MOD_STR	"i82860_edac"
 
 #define i82860_printk(level, fmt, arg...) \
@@ -72,11 +66,7 @@ static void i82860_get_error_info(struct mem_ctl_info *mci,
 {
 	struct pci_dev *pdev;
 
-<<<<<<< HEAD
-	pdev = to_pci_dev(mci->dev);
-=======
 	pdev = to_pci_dev(mci->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is a mess because there is no atomic way to read all the
@@ -108,10 +98,7 @@ static int i82860_process_error_info(struct mem_ctl_info *mci,
 				struct i82860_error_info *info,
 				int handle_errors)
 {
-<<<<<<< HEAD
-=======
 	struct dimm_info *dimm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int row;
 
 	if (!(info->errsts2 & 0x0003))
@@ -121,25 +108,13 @@ static int i82860_process_error_info(struct mem_ctl_info *mci,
 		return 1;
 
 	if ((info->errsts ^ info->errsts2) & 0x0003) {
-<<<<<<< HEAD
-		edac_mc_handle_ce_no_info(mci, "UE overwrote CE");
-=======
 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1, 0, 0, 0,
 				     -1, -1, -1, "UE overwrote CE", "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->errsts = info->errsts2;
 	}
 
 	info->eap >>= PAGE_SHIFT;
 	row = edac_mc_find_csrow_by_page(mci, info->eap);
-<<<<<<< HEAD
-
-	if (info->errsts & 0x0002)
-		edac_mc_handle_ue(mci, info->eap, 0, row, "i82860 UE");
-	else
-		edac_mc_handle_ce(mci, info->eap, 0, info->derrsyn, row, 0,
-				"i82860 UE");
-=======
 	dimm = mci->csrows[row]->channels[0]->dimm;
 
 	if (info->errsts & 0x0002)
@@ -152,7 +127,6 @@ static int i82860_process_error_info(struct mem_ctl_info *mci,
 				     info->eap, 0, info->derrsyn,
 				     dimm->location[0], dimm->location[1], -1,
 				     "i82860 CE", "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -161,10 +135,6 @@ static void i82860_check(struct mem_ctl_info *mci)
 {
 	struct i82860_error_info info;
 
-<<<<<<< HEAD
-	debugf1("MC%d: %s()\n", mci->mc_idx, __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i82860_get_error_info(mci, &info);
 	i82860_process_error_info(mci, &info, 1);
 }
@@ -176,10 +146,7 @@ static void i82860_init_csrows(struct mem_ctl_info *mci, struct pci_dev *pdev)
 	u16 value;
 	u32 cumul_size;
 	struct csrow_info *csrow;
-<<<<<<< HEAD
-=======
 	struct dimm_info *dimm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int index;
 
 	pci_read_config_word(pdev, I82860_MCHCFG, &mchcfg_ddim);
@@ -192,14 +159,6 @@ static void i82860_init_csrows(struct mem_ctl_info *mci, struct pci_dev *pdev)
 	 * in all eight rows.
 	 */
 	for (index = 0; index < mci->nr_csrows; index++) {
-<<<<<<< HEAD
-		csrow = &mci->csrows[index];
-		pci_read_config_word(pdev, I82860_GBA + index * 2, &value);
-		cumul_size = (value & I82860_GBA_MASK) <<
-			(I82860_GBA_SHIFT - PAGE_SHIFT);
-		debugf3("%s(): (%d) cumul_size 0x%x\n", __func__, index,
-			cumul_size);
-=======
 		csrow = mci->csrows[index];
 		dimm = csrow->channels[0]->dimm;
 
@@ -207,53 +166,24 @@ static void i82860_init_csrows(struct mem_ctl_info *mci, struct pci_dev *pdev)
 		cumul_size = (value & I82860_GBA_MASK) <<
 			(I82860_GBA_SHIFT - PAGE_SHIFT);
 		edac_dbg(3, "(%d) cumul_size 0x%x\n", index, cumul_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (cumul_size == last_cumul_size)
 			continue;	/* not populated */
 
 		csrow->first_page = last_cumul_size;
 		csrow->last_page = cumul_size - 1;
-<<<<<<< HEAD
-		csrow->nr_pages = cumul_size - last_cumul_size;
-		last_cumul_size = cumul_size;
-		csrow->grain = 1 << 12;	/* I82860_EAP has 4KiB reolution */
-		csrow->mtype = MEM_RMBS;
-		csrow->dtype = DEV_UNKNOWN;
-		csrow->edac_mode = mchcfg_ddim ? EDAC_SECDED : EDAC_NONE;
-=======
 		dimm->nr_pages = cumul_size - last_cumul_size;
 		last_cumul_size = cumul_size;
 		dimm->grain = 1 << 12;	/* I82860_EAP has 4KiB reolution */
 		dimm->mtype = MEM_RMBS;
 		dimm->dtype = DEV_UNKNOWN;
 		dimm->edac_mode = mchcfg_ddim ? EDAC_SECDED : EDAC_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int i82860_probe1(struct pci_dev *pdev, int dev_idx)
 {
 	struct mem_ctl_info *mci;
-<<<<<<< HEAD
-	struct i82860_error_info discard;
-
-	/* RDRAM has channels but these don't map onto the abstractions that
-	   edac uses.
-	   The device groups from the GRA registers seem to map reasonably
-	   well onto the notion of a chip select row.
-	   There are 16 GRA registers and since the name is associated with
-	   the channel and the GRA registers map to physical devices so we are
-	   going to make 1 channel for group.
-	 */
-	mci = edac_mc_alloc(0, 16, 1, 0);
-
-	if (!mci)
-		return -ENOMEM;
-
-	debugf3("%s(): init mci\n", __func__);
-	mci->dev = &pdev->dev;
-=======
 	struct edac_mc_layer layers[2];
 	struct i82860_error_info discard;
 
@@ -279,16 +209,11 @@ static int i82860_probe1(struct pci_dev *pdev, int dev_idx)
 
 	edac_dbg(3, "init mci\n");
 	mci->pdev = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->mtype_cap = MEM_FLAG_DDR;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED;
 	/* I"m not sure about this but I think that all RDRAM is SECDED */
 	mci->edac_cap = EDAC_FLAG_SECDED;
 	mci->mod_name = EDAC_MOD_STR;
-<<<<<<< HEAD
-	mci->mod_ver = I82860_REVISION;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->ctl_name = i82860_devs[dev_idx].ctl_name;
 	mci->dev_name = pci_name(pdev);
 	mci->edac_check = i82860_check;
@@ -300,11 +225,7 @@ static int i82860_probe1(struct pci_dev *pdev, int dev_idx)
 	 * type of memory controller.  The ID is therefore hardcoded to 0.
 	 */
 	if (edac_mc_add_mc(mci)) {
-<<<<<<< HEAD
-		debugf3("%s(): failed edac_mc_add_mc()\n", __func__);
-=======
 		edac_dbg(3, "failed edac_mc_add_mc()\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
@@ -320,11 +241,7 @@ static int i82860_probe1(struct pci_dev *pdev, int dev_idx)
 	}
 
 	/* get this far and it's successful */
-<<<<<<< HEAD
-	debugf3("%s(): success\n", __func__);
-=======
 	edac_dbg(3, "success\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -334,21 +251,12 @@ fail:
 }
 
 /* returns count (>= 0), or negative on error */
-<<<<<<< HEAD
-static int __devinit i82860_init_one(struct pci_dev *pdev,
-				const struct pci_device_id *ent)
-{
-	int rc;
-
-	debugf0("%s()\n", __func__);
-=======
 static int i82860_init_one(struct pci_dev *pdev,
 			   const struct pci_device_id *ent)
 {
 	int rc;
 
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i82860_printk(KERN_INFO, "i82860 init one\n");
 
 	if (pci_enable_device(pdev) < 0)
@@ -362,19 +270,11 @@ static int i82860_init_one(struct pci_dev *pdev,
 	return rc;
 }
 
-<<<<<<< HEAD
-static void __devexit i82860_remove_one(struct pci_dev *pdev)
-{
-	struct mem_ctl_info *mci;
-
-	debugf0("%s()\n", __func__);
-=======
 static void i82860_remove_one(struct pci_dev *pdev)
 {
 	struct mem_ctl_info *mci;
 
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i82860_pci)
 		edac_pci_release_generic_ctl(i82860_pci);
@@ -385,11 +285,7 @@ static void i82860_remove_one(struct pci_dev *pdev)
 	edac_mc_free(mci);
 }
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(i82860_pci_tbl) = {
-=======
 static const struct pci_device_id i82860_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 PCI_VEND_DEV(INTEL, 82860_0), PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 	 I82860},
@@ -403,11 +299,7 @@ MODULE_DEVICE_TABLE(pci, i82860_pci_tbl);
 static struct pci_driver i82860_driver = {
 	.name = EDAC_MOD_STR,
 	.probe = i82860_init_one,
-<<<<<<< HEAD
-	.remove = __devexit_p(i82860_remove_one),
-=======
 	.remove = i82860_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = i82860_pci_tbl,
 };
 
@@ -415,11 +307,7 @@ static int __init i82860_init(void)
 {
 	int pci_rc;
 
-<<<<<<< HEAD
-	debugf3("%s()\n", __func__);
-=======
 	edac_dbg(3, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
        /* Ensure that the OPSTATE is set correctly for POLL or NMI */
        opstate_init();
@@ -432,11 +320,7 @@ static int __init i82860_init(void)
 					PCI_DEVICE_ID_INTEL_82860_0, NULL);
 
 		if (mci_pdev == NULL) {
-<<<<<<< HEAD
-			debugf0("860 pci_get_device fail\n");
-=======
 			edac_dbg(0, "860 pci_get_device fail\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
@@ -444,11 +328,7 @@ static int __init i82860_init(void)
 		pci_rc = i82860_init_one(mci_pdev, i82860_pci_tbl);
 
 		if (pci_rc < 0) {
-<<<<<<< HEAD
-			debugf0("860 init fail\n");
-=======
 			edac_dbg(0, "860 init fail\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
@@ -460,42 +340,22 @@ fail1:
 	pci_unregister_driver(&i82860_driver);
 
 fail0:
-<<<<<<< HEAD
-	if (mci_pdev != NULL)
-		pci_dev_put(mci_pdev);
-
-=======
 	pci_dev_put(mci_pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pci_rc;
 }
 
 static void __exit i82860_exit(void)
 {
-<<<<<<< HEAD
-	debugf3("%s()\n", __func__);
-
-	pci_unregister_driver(&i82860_driver);
-
-	if (mci_pdev != NULL)
-		pci_dev_put(mci_pdev);
-=======
 	edac_dbg(3, "\n");
 	pci_unregister_driver(&i82860_driver);
 	pci_dev_put(mci_pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(i82860_init);
 module_exit(i82860_exit);
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Red Hat Inc. (http://www.redhat.com) "
-		"Ben Woodard <woodard@redhat.com>");
-=======
 MODULE_AUTHOR("Red Hat Inc. (http://www.redhat.com) Ben Woodard <woodard@redhat.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ECC support for Intel 82860 memory hub controllers");
 
 module_param(edac_op_state, int, 0444);

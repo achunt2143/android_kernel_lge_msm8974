@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/kernel/profile.c
  *  Simple profiling. Manages a direct-mapped profile hit count buffer,
@@ -12,25 +9,15 @@
  *  Scheduler profiling support, Arjan van de Ven and Ingo Molnar,
  *	Red Hat, July 2004
  *  Consolidation of architecture support code for profiling,
-<<<<<<< HEAD
- *	William Irwin, Oracle, July 2004
- *  Amortized hit count accounting via per-cpu open-addressed hashtables
- *	to resolve timer interrupt livelocks, William Irwin, Oracle, 2004
-=======
  *	Nadia Yvette Chambers, Oracle, July 2004
  *  Amortized hit count accounting via per-cpu open-addressed hashtables
  *	to resolve timer interrupt livelocks, Nadia Yvette Chambers,
  *	Oracle, 2004
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
 #include <linux/profile.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/notifier.h>
 #include <linux/mm.h>
 #include <linux/cpumask.h>
@@ -39,11 +26,8 @@
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/stat.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sections.h>
 #include <asm/irq_regs.h>
 #include <asm/ptrace.h>
@@ -56,27 +40,15 @@ struct profile_hit {
 #define NR_PROFILE_HIT		(PAGE_SIZE/sizeof(struct profile_hit))
 #define NR_PROFILE_GRP		(NR_PROFILE_HIT/PROFILE_GRPSZ)
 
-<<<<<<< HEAD
-/* Oprofile timer tick hook */
-static int (*timer_hook)(struct pt_regs *) __read_mostly;
-
-static atomic_t *prof_buffer;
-static unsigned long prof_len, prof_shift;
-=======
 static atomic_t *prof_buffer;
 static unsigned long prof_len;
 static unsigned short int prof_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int prof_on __read_mostly;
 EXPORT_SYMBOL_GPL(prof_on);
 
 static cpumask_var_t prof_cpu_mask;
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-=======
 #if defined(CONFIG_SMP) && defined(CONFIG_PROC_FS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_PER_CPU(struct profile_hit *[2], cpu_profile_hits);
 static DEFINE_PER_CPU(int, cpu_profile_flip);
 static DEFINE_MUTEX(profile_flip_mutex);
@@ -84,58 +56,14 @@ static DEFINE_MUTEX(profile_flip_mutex);
 
 int profile_setup(char *str)
 {
-<<<<<<< HEAD
-	static char schedstr[] = "schedule";
-	static char sleepstr[] = "sleep";
-	static char kvmstr[] = "kvm";
-=======
 	static const char schedstr[] = "schedule";
 	static const char sleepstr[] = "sleep";
 	static const char kvmstr[] = "kvm";
 	const char *select = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int par;
 
 	if (!strncmp(str, sleepstr, strlen(sleepstr))) {
 #ifdef CONFIG_SCHEDSTATS
-<<<<<<< HEAD
-		prof_on = SLEEP_PROFILING;
-		if (str[strlen(sleepstr)] == ',')
-			str += strlen(sleepstr) + 1;
-		if (get_option(&str, &par))
-			prof_shift = par;
-		printk(KERN_INFO
-			"kernel sleep profiling enabled (shift: %ld)\n",
-			prof_shift);
-#else
-		printk(KERN_WARNING
-			"kernel sleep profiling requires CONFIG_SCHEDSTATS\n");
-#endif /* CONFIG_SCHEDSTATS */
-	} else if (!strncmp(str, schedstr, strlen(schedstr))) {
-		prof_on = SCHED_PROFILING;
-		if (str[strlen(schedstr)] == ',')
-			str += strlen(schedstr) + 1;
-		if (get_option(&str, &par))
-			prof_shift = par;
-		printk(KERN_INFO
-			"kernel schedule profiling enabled (shift: %ld)\n",
-			prof_shift);
-	} else if (!strncmp(str, kvmstr, strlen(kvmstr))) {
-		prof_on = KVM_PROFILING;
-		if (str[strlen(kvmstr)] == ',')
-			str += strlen(kvmstr) + 1;
-		if (get_option(&str, &par))
-			prof_shift = par;
-		printk(KERN_INFO
-			"kernel KVM profiling enabled (shift: %ld)\n",
-			prof_shift);
-	} else if (get_option(&str, &par)) {
-		prof_shift = par;
-		prof_on = CPU_PROFILING;
-		printk(KERN_INFO "kernel profiling enabled (shift: %ld)\n",
-			prof_shift);
-	}
-=======
 		force_schedstat_enabled();
 		prof_on = SLEEP_PROFILING;
 		select = sleepstr;
@@ -164,7 +92,6 @@ int profile_setup(char *str)
 			select, prof_shift);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 __setup("profile=", profile_setup);
@@ -178,8 +105,6 @@ int __ref profile_init(void)
 
 	/* only text is profiled */
 	prof_len = (_etext - _stext) >> prof_shift;
-<<<<<<< HEAD
-=======
 
 	if (!prof_len) {
 		pr_warn("profiling shift: %u too large\n", prof_shift);
@@ -187,7 +112,6 @@ int __ref profile_init(void)
 		return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buffer_bytes = prof_len*sizeof(atomic_t);
 
 	if (!alloc_cpumask_var(&prof_cpu_mask, GFP_KERNEL))
@@ -212,103 +136,7 @@ int __ref profile_init(void)
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-/* Profile event notifications */
-
-static BLOCKING_NOTIFIER_HEAD(task_exit_notifier);
-static ATOMIC_NOTIFIER_HEAD(task_free_notifier);
-static BLOCKING_NOTIFIER_HEAD(munmap_notifier);
-
-void profile_task_exit(struct task_struct *task)
-{
-	blocking_notifier_call_chain(&task_exit_notifier, 0, task);
-}
-
-int profile_handoff_task(struct task_struct *task)
-{
-	int ret;
-	ret = atomic_notifier_call_chain(&task_free_notifier, 0, task);
-	return (ret == NOTIFY_OK) ? 1 : 0;
-}
-
-void profile_munmap(unsigned long addr)
-{
-	blocking_notifier_call_chain(&munmap_notifier, 0, (void *)addr);
-}
-
-int task_handoff_register(struct notifier_block *n)
-{
-	return atomic_notifier_chain_register(&task_free_notifier, n);
-}
-EXPORT_SYMBOL_GPL(task_handoff_register);
-
-int task_handoff_unregister(struct notifier_block *n)
-{
-	return atomic_notifier_chain_unregister(&task_free_notifier, n);
-}
-EXPORT_SYMBOL_GPL(task_handoff_unregister);
-
-int profile_event_register(enum profile_type type, struct notifier_block *n)
-{
-	int err = -EINVAL;
-
-	switch (type) {
-	case PROFILE_TASK_EXIT:
-		err = blocking_notifier_chain_register(
-				&task_exit_notifier, n);
-		break;
-	case PROFILE_MUNMAP:
-		err = blocking_notifier_chain_register(
-				&munmap_notifier, n);
-		break;
-	}
-
-	return err;
-}
-EXPORT_SYMBOL_GPL(profile_event_register);
-
-int profile_event_unregister(enum profile_type type, struct notifier_block *n)
-{
-	int err = -EINVAL;
-
-	switch (type) {
-	case PROFILE_TASK_EXIT:
-		err = blocking_notifier_chain_unregister(
-				&task_exit_notifier, n);
-		break;
-	case PROFILE_MUNMAP:
-		err = blocking_notifier_chain_unregister(
-				&munmap_notifier, n);
-		break;
-	}
-
-	return err;
-}
-EXPORT_SYMBOL_GPL(profile_event_unregister);
-
-int register_timer_hook(int (*hook)(struct pt_regs *))
-{
-	if (timer_hook)
-		return -EBUSY;
-	timer_hook = hook;
-	return 0;
-}
-EXPORT_SYMBOL_GPL(register_timer_hook);
-
-void unregister_timer_hook(int (*hook)(struct pt_regs *))
-{
-	WARN_ON(hook != timer_hook);
-	timer_hook = NULL;
-	/* make sure all CPUs see the NULL hook */
-	synchronize_sched();  /* Allow ongoing interrupts to complete. */
-}
-EXPORT_SYMBOL_GPL(unregister_timer_hook);
-
-
-#ifdef CONFIG_SMP
-=======
 #if defined(CONFIG_SMP) && defined(CONFIG_PROC_FS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Each cpu has a pair of open-addressed hashtables for pending
  * profile hits. read_profile() IPI's all cpus to request them
@@ -338,11 +166,7 @@ EXPORT_SYMBOL_GPL(unregister_timer_hook);
  * pagetable hash functions, but uses a full hashtable full of finite
  * collision chains, not just pairs of them.
  *
-<<<<<<< HEAD
- * -- wli
-=======
  * -- nyc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void __profile_flip_buffers(void *unused)
 {
@@ -438,70 +262,6 @@ out:
 	put_cpu();
 }
 
-<<<<<<< HEAD
-static int __cpuinit profile_cpu_callback(struct notifier_block *info,
-					unsigned long action, void *__cpu)
-{
-	int node, cpu = (unsigned long)__cpu;
-	struct page *page;
-
-	switch (action) {
-	case CPU_UP_PREPARE:
-	case CPU_UP_PREPARE_FROZEN:
-		node = cpu_to_mem(cpu);
-		per_cpu(cpu_profile_flip, cpu) = 0;
-		if (!per_cpu(cpu_profile_hits, cpu)[1]) {
-			page = alloc_pages_exact_node(node,
-					GFP_KERNEL | __GFP_ZERO,
-					0);
-			if (!page)
-				return notifier_from_errno(-ENOMEM);
-			per_cpu(cpu_profile_hits, cpu)[1] = page_address(page);
-		}
-		if (!per_cpu(cpu_profile_hits, cpu)[0]) {
-			page = alloc_pages_exact_node(node,
-					GFP_KERNEL | __GFP_ZERO,
-					0);
-			if (!page)
-				goto out_free;
-			per_cpu(cpu_profile_hits, cpu)[0] = page_address(page);
-		}
-		break;
-out_free:
-		page = virt_to_page(per_cpu(cpu_profile_hits, cpu)[1]);
-		per_cpu(cpu_profile_hits, cpu)[1] = NULL;
-		__free_page(page);
-		return notifier_from_errno(-ENOMEM);
-	case CPU_ONLINE:
-	case CPU_ONLINE_FROZEN:
-		if (prof_cpu_mask != NULL)
-			cpumask_set_cpu(cpu, prof_cpu_mask);
-		break;
-	case CPU_UP_CANCELED:
-	case CPU_UP_CANCELED_FROZEN:
-	case CPU_DEAD:
-	case CPU_DEAD_FROZEN:
-		if (prof_cpu_mask != NULL)
-			cpumask_clear_cpu(cpu, prof_cpu_mask);
-		if (per_cpu(cpu_profile_hits, cpu)[0]) {
-			page = virt_to_page(per_cpu(cpu_profile_hits, cpu)[0]);
-			per_cpu(cpu_profile_hits, cpu)[0] = NULL;
-			__free_page(page);
-		}
-		if (per_cpu(cpu_profile_hits, cpu)[1]) {
-			page = virt_to_page(per_cpu(cpu_profile_hits, cpu)[1]);
-			per_cpu(cpu_profile_hits, cpu)[1] = NULL;
-			__free_page(page);
-		}
-		break;
-	}
-	return NOTIFY_OK;
-}
-#else /* !CONFIG_SMP */
-#define profile_flip_buffers()		do { } while (0)
-#define profile_discard_flip_buffers()	do { } while (0)
-#define profile_cpu_callback		NULL
-=======
 static int profile_dead_cpu(unsigned int cpu)
 {
 	struct page *page;
@@ -553,7 +313,6 @@ static int profile_online_cpu(unsigned int cpu)
 #else /* !CONFIG_SMP */
 #define profile_flip_buffers()		do { } while (0)
 #define profile_discard_flip_buffers()	do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void do_profile_hits(int type, void *__pc, unsigned int nr_hits)
 {
@@ -575,13 +334,7 @@ void profile_tick(int type)
 {
 	struct pt_regs *regs = get_irq_regs();
 
-<<<<<<< HEAD
-	if (type == CPU_PROFILING && timer_hook)
-		timer_hook(regs);
-	if (!user_mode(regs) && prof_cpu_mask != NULL &&
-=======
 	if (!user_mode(regs) && cpumask_available(prof_cpu_mask) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    cpumask_test_cpu(smp_processor_id(), prof_cpu_mask))
 		profile_hit(type, (void *)profile_pc(regs));
 }
@@ -589,55 +342,7 @@ void profile_tick(int type)
 #ifdef CONFIG_PROC_FS
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-
-static int prof_cpu_mask_proc_show(struct seq_file *m, void *v)
-{
-	seq_cpumask(m, prof_cpu_mask);
-	seq_putc(m, '\n');
-	return 0;
-}
-
-static int prof_cpu_mask_proc_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, prof_cpu_mask_proc_show, NULL);
-}
-
-static ssize_t prof_cpu_mask_proc_write(struct file *file,
-	const char __user *buffer, size_t count, loff_t *pos)
-{
-	cpumask_var_t new_value;
-	int err;
-
-	if (!alloc_cpumask_var(&new_value, GFP_KERNEL))
-		return -ENOMEM;
-
-	err = cpumask_parse_user(buffer, count, new_value);
-	if (!err) {
-		cpumask_copy(prof_cpu_mask, new_value);
-		err = count;
-	}
-	free_cpumask_var(new_value);
-	return err;
-}
-
-static const struct file_operations prof_cpu_mask_proc_fops = {
-	.open		= prof_cpu_mask_proc_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-	.write		= prof_cpu_mask_proc_write,
-};
-
-void create_prof_cpu_mask(struct proc_dir_entry *root_irq_dir)
-{
-	/* create /proc/irq/prof_cpu_mask */
-	proc_create("prof_cpu_mask", 0600, root_irq_dir, &prof_cpu_mask_proc_fops);
-}
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This function accesses profiling information. The returned data is
@@ -651,11 +356,7 @@ read_profile(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	unsigned long p = *ppos;
 	ssize_t read;
 	char *pnt;
-<<<<<<< HEAD
-	unsigned int sample_step = 1 << prof_shift;
-=======
 	unsigned long sample_step = 1UL << prof_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	profile_flip_buffers();
 	if (p >= (prof_len+1)*sizeof(unsigned int))
@@ -677,15 +378,12 @@ read_profile(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	return read;
 }
 
-<<<<<<< HEAD
-=======
 /* default is to not implement this call */
 int __weak setup_profiling_timer(unsigned mult)
 {
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Writing to /proc/profile resets the counters
  *
@@ -696,11 +394,6 @@ static ssize_t write_profile(struct file *file, const char __user *buf,
 			     size_t count, loff_t *ppos)
 {
 #ifdef CONFIG_SMP
-<<<<<<< HEAD
-	extern int setup_profiling_timer(unsigned int multiplier);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (count == sizeof(int)) {
 		unsigned int multiplier;
 
@@ -716,84 +409,6 @@ static ssize_t write_profile(struct file *file, const char __user *buf,
 	return count;
 }
 
-<<<<<<< HEAD
-static const struct file_operations proc_profile_operations = {
-	.read		= read_profile,
-	.write		= write_profile,
-	.llseek		= default_llseek,
-};
-
-#ifdef CONFIG_SMP
-static void profile_nop(void *unused)
-{
-}
-
-static int create_hash_tables(void)
-{
-	int cpu;
-
-	for_each_online_cpu(cpu) {
-		int node = cpu_to_mem(cpu);
-		struct page *page;
-
-		page = alloc_pages_exact_node(node,
-				GFP_KERNEL | __GFP_ZERO | GFP_THISNODE,
-				0);
-		if (!page)
-			goto out_cleanup;
-		per_cpu(cpu_profile_hits, cpu)[1]
-				= (struct profile_hit *)page_address(page);
-		page = alloc_pages_exact_node(node,
-				GFP_KERNEL | __GFP_ZERO | GFP_THISNODE,
-				0);
-		if (!page)
-			goto out_cleanup;
-		per_cpu(cpu_profile_hits, cpu)[0]
-				= (struct profile_hit *)page_address(page);
-	}
-	return 0;
-out_cleanup:
-	prof_on = 0;
-	smp_mb();
-	on_each_cpu(profile_nop, NULL, 1);
-	for_each_online_cpu(cpu) {
-		struct page *page;
-
-		if (per_cpu(cpu_profile_hits, cpu)[0]) {
-			page = virt_to_page(per_cpu(cpu_profile_hits, cpu)[0]);
-			per_cpu(cpu_profile_hits, cpu)[0] = NULL;
-			__free_page(page);
-		}
-		if (per_cpu(cpu_profile_hits, cpu)[1]) {
-			page = virt_to_page(per_cpu(cpu_profile_hits, cpu)[1]);
-			per_cpu(cpu_profile_hits, cpu)[1] = NULL;
-			__free_page(page);
-		}
-	}
-	return -1;
-}
-#else
-#define create_hash_tables()			({ 0; })
-#endif
-
-int __ref create_proc_profile(void) /* false positive from hotcpu_notifier */
-{
-	struct proc_dir_entry *entry;
-
-	if (!prof_on)
-		return 0;
-	if (create_hash_tables())
-		return -ENOMEM;
-	entry = proc_create("profile", S_IWUSR | S_IRUGO,
-			    NULL, &proc_profile_operations);
-	if (!entry)
-		return 0;
-	entry->size = (1+prof_len) * sizeof(atomic_t);
-	hotcpu_notifier(profile_cpu_callback, 0);
-	return 0;
-}
-module_init(create_proc_profile);
-=======
 static const struct proc_ops profile_proc_ops = {
 	.proc_read	= read_profile,
 	.proc_write	= write_profile,
@@ -840,5 +455,4 @@ err_state_prep:
 	return err;
 }
 subsys_initcall(create_proc_profile);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PROC_FS */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * see notice in hfc_multi.c
  */
@@ -209,13 +206,6 @@ struct hfc_multi {
 
 	u_int		slots;	/* number of PCM slots */
 	u_int		leds;	/* type of leds */
-<<<<<<< HEAD
-	u_int		ledcount; /* used to animate leds */
-	u_long		ledstate; /* save last state of leds */
-	int		opticalsupport; /* has the e1 board */
-					/* an optical Interface */
-	int		dslot;	/* channel # of d-channel (E1) default 16 */
-=======
 	u_long		ledstate; /* save last state of leds */
 	int		opticalsupport; /* has the e1 board */
 					/* an optical Interface */
@@ -228,17 +218,10 @@ struct hfc_multi {
 				     /* (will be cleared after */
 				     /* showing led-states) */
 	u_int		flash[8]; /* counter for flashing 8 leds on activity */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u_long		wdcount;	/* every 500 ms we need to */
 					/* send the watchdog a signal */
 	u_char		wdbyte; /* watchdog toggle byte */
-<<<<<<< HEAD
-	u_int		activity[8];	/* if there is any action on this */
-					/* port (will be cleared after */
-					/* showing led-states) */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		e1_state; /* keep track of last state */
 	int		e1_getclock; /* if sync is retrieved from interface */
 	int		syncronized; /* keep track of existing sync interface */
@@ -255,10 +238,6 @@ struct hfc_multi {
 	 * the bch->channel is equvalent to the hfc-channel
 	 */
 	struct hfc_chan	chan[32];
-<<<<<<< HEAD
-	u_char		created[8]; /* what port is created */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	signed char	slot_owner[256]; /* owner channel of slot */
 };
 

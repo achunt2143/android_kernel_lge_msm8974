@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Packet RX/TX history data structures and routines for TFRC-based protocols.
  *
@@ -9,11 +6,7 @@
  *  Copyright (c) 2005-6 The University of Waikato, Hamilton, New Zealand.
  *
  *  This code has been developed by the University of Waikato WAND
-<<<<<<< HEAD
- *  research group. For further information please see http://www.wand.net.nz/
-=======
  *  research group. For further information please see https://www.wand.net.nz/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  or e-mail Ian McDonald - ian.mcdonald@jandi.co.nz
  *
  *  This code also uses code from Lulea University, rereleased as GPL by its
@@ -25,23 +18,6 @@
  *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>.
  *
  *  Copyright (c) 2005 Arnaldo Carvalho de Melo <acme@conectiva.com.br>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _DCCP_PKT_HIST_
@@ -71,13 +47,8 @@ static inline struct tfrc_tx_hist_entry *
 	return head;
 }
 
-<<<<<<< HEAD
-extern int  tfrc_tx_hist_add(struct tfrc_tx_hist_entry **headp, u64 seqno);
-extern void tfrc_tx_hist_purge(struct tfrc_tx_hist_entry **headp);
-=======
 int tfrc_tx_hist_add(struct tfrc_tx_hist_entry **headp, u64 seqno);
 void tfrc_tx_hist_purge(struct tfrc_tx_hist_entry **headp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Subtraction a-b modulo-16, respects circular wrap-around */
 #define SUB16(a, b) (((a) + 16 - (b)) & 0xF)
@@ -155,23 +126,6 @@ static inline bool tfrc_rx_hist_loss_pending(const struct tfrc_rx_hist *h)
 	return h->loss_count > 0;
 }
 
-<<<<<<< HEAD
-extern void tfrc_rx_hist_add_packet(struct tfrc_rx_hist *h,
-				    const struct sk_buff *skb, const u64 ndp);
-
-extern int tfrc_rx_hist_duplicate(struct tfrc_rx_hist *h, struct sk_buff *skb);
-
-struct tfrc_loss_hist;
-extern int  tfrc_rx_handle_loss(struct tfrc_rx_hist *h,
-				struct tfrc_loss_hist *lh,
-				struct sk_buff *skb, const u64 ndp,
-				u32 (*first_li)(struct sock *sk),
-				struct sock *sk);
-extern u32 tfrc_rx_hist_sample_rtt(struct tfrc_rx_hist *h,
-				   const struct sk_buff *skb);
-extern int tfrc_rx_hist_alloc(struct tfrc_rx_hist *h);
-extern void tfrc_rx_hist_purge(struct tfrc_rx_hist *h);
-=======
 void tfrc_rx_hist_add_packet(struct tfrc_rx_hist *h, const struct sk_buff *skb,
 			     const u64 ndp);
 
@@ -184,6 +138,5 @@ int tfrc_rx_handle_loss(struct tfrc_rx_hist *h, struct tfrc_loss_hist *lh,
 u32 tfrc_rx_hist_sample_rtt(struct tfrc_rx_hist *h, const struct sk_buff *skb);
 int tfrc_rx_hist_alloc(struct tfrc_rx_hist *h);
 void tfrc_rx_hist_purge(struct tfrc_rx_hist *h);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _DCCP_PKT_HIST_ */

@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright IBM Corp. 2002, 2009
  *
  * Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com)
  *	      Cornelia Huck (cornelia.huck@de.ibm.com)
  */
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -105,11 +98,7 @@ void ccw_device_clear_options(struct ccw_device *cdev, unsigned long flags)
 }
 
 /**
-<<<<<<< HEAD
- * ccw_device_is_pathgroup - determine if paths to this device are grouped
-=======
  * ccw_device_is_pathgroup() - determine if paths to this device are grouped
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: ccw device
  *
  * Return non-zero if there is a path group, zero otherwise.
@@ -121,11 +110,7 @@ int ccw_device_is_pathgroup(struct ccw_device *cdev)
 EXPORT_SYMBOL(ccw_device_is_pathgroup);
 
 /**
-<<<<<<< HEAD
- * ccw_device_is_multipath - determine if device is operating in multipath mode
-=======
  * ccw_device_is_multipath() - determine if device is operating in multipath mode
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: ccw device
  *
  * Return non-zero if device is operating in multipath mode, zero otherwise.
@@ -139,13 +124,7 @@ EXPORT_SYMBOL(ccw_device_is_multipath);
 /**
  * ccw_device_clear() - terminate I/O request processing
  * @cdev: target ccw device
-<<<<<<< HEAD
- * @intparm: interruption parameter; value is only used if no I/O is
- *	     outstanding, otherwise the intparm associated with the I/O request
- *	     is returned
-=======
  * @intparm: interruption parameter to be returned upon conclusion of csch
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * ccw_device_clear() calls csch on @cdev's subchannel.
  * Returns:
@@ -178,84 +157,6 @@ int ccw_device_clear(struct ccw_device *cdev, unsigned long intparm)
 }
 
 /**
-<<<<<<< HEAD
- * ccw_device_start_key() - start a s390 channel program with key
- * @cdev: target ccw device
- * @cpa: logical start address of channel program
- * @intparm: user specific interruption parameter; will be presented back to
- *	     @cdev's interrupt handler. Allows a device driver to associate
- *	     the interrupt with a particular I/O request.
- * @lpm: defines the channel path to be used for a specific I/O request. A
- *	 value of 0 will make cio use the opm.
- * @key: storage key to be used for the I/O
- * @flags: additional flags; defines the action to be performed for I/O
- *	   processing.
- *
- * Start a S/390 channel program. When the interrupt arrives, the
- * IRQ handler is called, either immediately, delayed (dev-end missing,
- * or sense required) or never (no IRQ handler registered).
- * Returns:
- *  %0, if the operation was successful;
- *  -%EBUSY, if the device is busy, or status pending;
- *  -%EACCES, if no path specified in @lpm is operational;
- *  -%ENODEV, if the device is not operational.
- * Context:
- *  Interrupts disabled, ccw device lock held
- */
-int ccw_device_start_key(struct ccw_device *cdev, struct ccw1 *cpa,
-			 unsigned long intparm, __u8 lpm, __u8 key,
-			 unsigned long flags)
-{
-	struct subchannel *sch;
-	int ret;
-
-	if (!cdev || !cdev->dev.parent)
-		return -ENODEV;
-	sch = to_subchannel(cdev->dev.parent);
-	if (!sch->schib.pmcw.ena)
-		return -EINVAL;
-	if (cdev->private->state == DEV_STATE_NOT_OPER)
-		return -ENODEV;
-	if (cdev->private->state == DEV_STATE_VERIFY) {
-		/* Remember to fake irb when finished. */
-		if (!cdev->private->flags.fake_irb) {
-			cdev->private->flags.fake_irb = FAKE_CMD_IRB;
-			cdev->private->intparm = intparm;
-			return 0;
-		} else
-			/* There's already a fake I/O around. */
-			return -EBUSY;
-	}
-	if (cdev->private->state != DEV_STATE_ONLINE ||
-	    ((sch->schib.scsw.cmd.stctl & SCSW_STCTL_PRIM_STATUS) &&
-	     !(sch->schib.scsw.cmd.stctl & SCSW_STCTL_SEC_STATUS)) ||
-	    cdev->private->flags.doverify)
-		return -EBUSY;
-	ret = cio_set_options (sch, flags);
-	if (ret)
-		return ret;
-	/* Adjust requested path mask to exclude unusable paths. */
-	if (lpm) {
-		lpm &= sch->lpm;
-		if (lpm == 0)
-			return -EACCES;
-	}
-	ret = cio_start_key (sch, cpa, lpm, key);
-	switch (ret) {
-	case 0:
-		cdev->private->intparm = intparm;
-		break;
-	case -EACCES:
-	case -ENODEV:
-		dev_fsm_event(cdev, DEV_EVENT_VERIFY);
-		break;
-	}
-	return ret;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ccw_device_start_timeout_key() - start a s390 channel program with timeout and key
  * @cdev: target ccw device
  * @cpa: logical start address of channel program
@@ -276,12 +177,9 @@ int ccw_device_start_key(struct ccw_device *cdev, struct ccw1 *cpa,
  * completed during the time specified by @expires. If a timeout occurs, the
  * channel program is terminated via xsch, hsch or csch, and the device's
  * interrupt handler will be called with an irb containing ERR_PTR(-%ETIMEDOUT).
-<<<<<<< HEAD
-=======
  * The interruption handler will echo back the @intparm specified here, unless
  * another interruption parameter is specified by a subsequent invocation of
  * ccw_device_halt() or ccw_device_clear().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns:
  *  %0, if the operation was successful;
  *  -%EBUSY, if the device is busy, or status pending;
@@ -294,16 +192,6 @@ int ccw_device_start_timeout_key(struct ccw_device *cdev, struct ccw1 *cpa,
 				 unsigned long intparm, __u8 lpm, __u8 key,
 				 unsigned long flags, int expires)
 {
-<<<<<<< HEAD
-	int ret;
-
-	if (!cdev)
-		return -ENODEV;
-	ccw_device_set_timeout(cdev, expires);
-	ret = ccw_device_start_key(cdev, cpa, intparm, lpm, key, flags);
-	if (ret != 0)
-		ccw_device_set_timeout(cdev, 0);
-=======
 	struct subchannel *sch;
 	int ret;
 
@@ -354,13 +242,10 @@ int ccw_device_start_timeout_key(struct ccw_device *cdev, struct ccw1 *cpa,
 		dev_fsm_event(cdev, DEV_EVENT_VERIFY);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ccw_device_start_key() - start a s390 channel program with key
  * @cdev: target ccw device
  * @cpa: logical start address of channel program
@@ -396,7 +281,6 @@ int ccw_device_start_key(struct ccw_device *cdev, struct ccw1 *cpa,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ccw_device_start() - start a s390 channel program
  * @cdev: target ccw device
  * @cpa: logical start address of channel program
@@ -411,12 +295,9 @@ int ccw_device_start_key(struct ccw_device *cdev, struct ccw1 *cpa,
  * Start a S/390 channel program. When the interrupt arrives, the
  * IRQ handler is called, either immediately, delayed (dev-end missing,
  * or sense required) or never (no IRQ handler registered).
-<<<<<<< HEAD
-=======
  * The interruption handler will echo back the @intparm specified here, unless
  * another interruption parameter is specified by a subsequent invocation of
  * ccw_device_halt() or ccw_device_clear().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns:
  *  %0, if the operation was successful;
  *  -%EBUSY, if the device is busy, or status pending;
@@ -452,12 +333,9 @@ int ccw_device_start(struct ccw_device *cdev, struct ccw1 *cpa,
  * completed during the time specified by @expires. If a timeout occurs, the
  * channel program is terminated via xsch, hsch or csch, and the device's
  * interrupt handler will be called with an irb containing ERR_PTR(-%ETIMEDOUT).
-<<<<<<< HEAD
-=======
  * The interruption handler will echo back the @intparm specified here, unless
  * another interruption parameter is specified by a subsequent invocation of
  * ccw_device_halt() or ccw_device_clear().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns:
  *  %0, if the operation was successful;
  *  -%EBUSY, if the device is busy, or status pending;
@@ -479,20 +357,12 @@ int ccw_device_start_timeout(struct ccw_device *cdev, struct ccw1 *cpa,
 /**
  * ccw_device_halt() - halt I/O request processing
  * @cdev: target ccw device
-<<<<<<< HEAD
- * @intparm: interruption parameter; value is only used if no I/O is
- *	     outstanding, otherwise the intparm associated with the I/O request
- *	     is returned
- *
- * ccw_device_halt() calls hsch on @cdev's subchannel.
-=======
  * @intparm: interruption parameter to be returned upon conclusion of hsch
  *
  * ccw_device_halt() calls hsch on @cdev's subchannel.
  * The interruption handler will echo back the @intparm specified here, unless
  * another interruption parameter is specified by a subsequent invocation of
  * ccw_device_clear().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns:
  *  %0 on success,
  *  -%ENODEV on device not operational,
@@ -553,55 +423,6 @@ int ccw_device_resume(struct ccw_device *cdev)
 	return cio_resume(sch);
 }
 
-<<<<<<< HEAD
-/*
- * Pass interrupt to device driver.
- */
-int
-ccw_device_call_handler(struct ccw_device *cdev)
-{
-	unsigned int stctl;
-	int ending_status;
-
-	/*
-	 * we allow for the device action handler if .
-	 *  - we received ending status
-	 *  - the action handler requested to see all interrupts
-	 *  - we received an intermediate status
-	 *  - fast notification was requested (primary status)
-	 *  - unsolicited interrupts
-	 */
-	stctl = scsw_stctl(&cdev->private->irb.scsw);
-	ending_status = (stctl & SCSW_STCTL_SEC_STATUS) ||
-		(stctl == (SCSW_STCTL_ALERT_STATUS | SCSW_STCTL_STATUS_PEND)) ||
-		(stctl == SCSW_STCTL_STATUS_PEND);
-	if (!ending_status &&
-	    !cdev->private->options.repall &&
-	    !(stctl & SCSW_STCTL_INTER_STATUS) &&
-	    !(cdev->private->options.fast &&
-	      (stctl & SCSW_STCTL_PRIM_STATUS)))
-		return 0;
-
-	/* Clear pending timers for device driver initiated I/O. */
-	if (ending_status)
-		ccw_device_set_timeout(cdev, 0);
-	/*
-	 * Now we are ready to call the device driver interrupt handler.
-	 */
-	if (cdev->handler)
-		cdev->handler(cdev, cdev->private->intparm,
-			      &cdev->private->irb);
-
-	/*
-	 * Clear the old and now useless interrupt response block.
-	 */
-	memset(&cdev->private->irb, 0, sizeof(struct irb));
-
-	return 1;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ccw_device_get_ciw() - Search for CIW command in extended sense data.
  * @cdev: ccw device to inspect
@@ -623,13 +444,8 @@ struct ciw *ccw_device_get_ciw(struct ccw_device *cdev, __u32 ct)
 	if (cdev->private->flags.esid == 0)
 		return NULL;
 	for (ciw_cnt = 0; ciw_cnt < MAX_CIWS; ciw_cnt++)
-<<<<<<< HEAD
-		if (cdev->private->senseid.ciw[ciw_cnt].ct == ct)
-			return cdev->private->senseid.ciw + ciw_cnt;
-=======
 		if (cdev->private->dma_area->senseid.ciw[ciw_cnt].ct == ct)
 			return cdev->private->dma_area->senseid.ciw + ciw_cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -651,70 +467,6 @@ __u8 ccw_device_get_path_mask(struct ccw_device *cdev)
 	return sch->lpm;
 }
 
-<<<<<<< HEAD
-struct stlck_data {
-	struct completion done;
-	int rc;
-};
-
-void ccw_device_stlck_done(struct ccw_device *cdev, void *data, int rc)
-{
-	struct stlck_data *sdata = data;
-
-	sdata->rc = rc;
-	complete(&sdata->done);
-}
-
-/*
- * Perform unconditional reserve + release.
- */
-int ccw_device_stlck(struct ccw_device *cdev)
-{
-	struct subchannel *sch = to_subchannel(cdev->dev.parent);
-	struct stlck_data data;
-	u8 *buffer;
-	int rc;
-
-	/* Check if steal lock operation is valid for this device. */
-	if (cdev->drv) {
-		if (!cdev->private->options.force)
-			return -EINVAL;
-	}
-	buffer = kzalloc(64, GFP_DMA | GFP_KERNEL);
-	if (!buffer)
-		return -ENOMEM;
-	init_completion(&data.done);
-	data.rc = -EIO;
-	spin_lock_irq(sch->lock);
-	rc = cio_enable_subchannel(sch, (u32) (addr_t) sch);
-	if (rc)
-		goto out_unlock;
-	/* Perform operation. */
-	cdev->private->state = DEV_STATE_STEAL_LOCK,
-	ccw_device_stlck_start(cdev, &data, &buffer[0], &buffer[32]);
-	spin_unlock_irq(sch->lock);
-	/* Wait for operation to finish. */
-	if (wait_for_completion_interruptible(&data.done)) {
-		/* Got a signal. */
-		spin_lock_irq(sch->lock);
-		ccw_request_cancel(cdev);
-		spin_unlock_irq(sch->lock);
-		wait_for_completion(&data.done);
-	}
-	rc = data.rc;
-	/* Check results. */
-	spin_lock_irq(sch->lock);
-	cio_disable_subchannel(sch);
-	cdev->private->state = DEV_STATE_BOXED;
-out_unlock:
-	spin_unlock_irq(sch->lock);
-	kfree(buffer);
-
-	return rc;
-}
-
-void *ccw_device_get_chp_desc(struct ccw_device *cdev, int chp_no)
-=======
 /**
  * ccw_device_get_chp_desc() - return newly allocated channel-path descriptor
  * @cdev: device to obtain the descriptor for
@@ -725,25 +477,17 @@ void *ccw_device_get_chp_desc(struct ccw_device *cdev, int chp_no)
  */
 struct channel_path_desc_fmt0 *ccw_device_get_chp_desc(struct ccw_device *cdev,
 						       int chp_idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct subchannel *sch;
 	struct chp_id chpid;
 
 	sch = to_subchannel(cdev->dev.parent);
 	chp_id_init(&chpid);
-<<<<<<< HEAD
-	chpid.id = sch->schib.pmcw.chpid[chp_no];
-=======
 	chpid.id = sch->schib.pmcw.chpid[chp_idx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return chp_get_chp_desc(chpid);
 }
 
 /**
-<<<<<<< HEAD
- * ccw_device_get_id - obtain a ccw device id
-=======
  * ccw_device_get_util_str() - return newly allocated utility strings
  * @cdev: device to obtain the utility strings for
  * @chp_idx: index of the channel path
@@ -775,7 +519,6 @@ u8 *ccw_device_get_util_str(struct ccw_device *cdev, int chp_idx)
 
 /**
  * ccw_device_get_id() - obtain a ccw device id
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: device to obtain the id for
  * @dev_id: where to fill in the values
  */
@@ -786,56 +529,7 @@ void ccw_device_get_id(struct ccw_device *cdev, struct ccw_dev_id *dev_id)
 EXPORT_SYMBOL(ccw_device_get_id);
 
 /**
-<<<<<<< HEAD
- * ccw_device_tm_start_key - perform start function
- * @cdev: ccw device on which to perform the start function
- * @tcw: transport-command word to be started
- * @intparm: user defined parameter to be passed to the interrupt handler
- * @lpm: mask of paths to use
- * @key: storage key to use for storage access
- *
- * Start the tcw on the given ccw device. Return zero on success, non-zero
- * otherwise.
- */
-int ccw_device_tm_start_key(struct ccw_device *cdev, struct tcw *tcw,
-			    unsigned long intparm, u8 lpm, u8 key)
-{
-	struct subchannel *sch;
-	int rc;
-
-	sch = to_subchannel(cdev->dev.parent);
-	if (!sch->schib.pmcw.ena)
-		return -EINVAL;
-	if (cdev->private->state == DEV_STATE_VERIFY) {
-		/* Remember to fake irb when finished. */
-		if (!cdev->private->flags.fake_irb) {
-			cdev->private->flags.fake_irb = FAKE_TM_IRB;
-			cdev->private->intparm = intparm;
-			return 0;
-		} else
-			/* There's already a fake I/O around. */
-			return -EBUSY;
-	}
-	if (cdev->private->state != DEV_STATE_ONLINE)
-		return -EIO;
-	/* Adjust requested path mask to exclude unusable paths. */
-	if (lpm) {
-		lpm &= sch->lpm;
-		if (lpm == 0)
-			return -EACCES;
-	}
-	rc = cio_tm_start_key(sch, tcw, lpm, key);
-	if (rc == 0)
-		cdev->private->intparm = intparm;
-	return rc;
-}
-EXPORT_SYMBOL(ccw_device_tm_start_key);
-
-/**
- * ccw_device_tm_start_timeout_key - perform start function
-=======
  * ccw_device_tm_start_timeout_key() - perform start function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: ccw device on which to perform the start function
  * @tcw: transport-command word to be started
  * @intparm: user defined parameter to be passed to the interrupt handler
@@ -850,15 +544,6 @@ int ccw_device_tm_start_timeout_key(struct ccw_device *cdev, struct tcw *tcw,
 				    unsigned long intparm, u8 lpm, u8 key,
 				    int expires)
 {
-<<<<<<< HEAD
-	int ret;
-
-	ccw_device_set_timeout(cdev, expires);
-	ret = ccw_device_tm_start_key(cdev, tcw, intparm, lpm, key);
-	if (ret != 0)
-		ccw_device_set_timeout(cdev, 0);
-	return ret;
-=======
 	struct subchannel *sch;
 	int rc;
 
@@ -894,14 +579,10 @@ int ccw_device_tm_start_timeout_key(struct ccw_device *cdev, struct tcw *tcw,
 			ccw_device_set_timeout(cdev, expires);
 	}
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ccw_device_tm_start_timeout_key);
 
 /**
-<<<<<<< HEAD
- * ccw_device_tm_start - perform start function
-=======
  * ccw_device_tm_start_key() - perform start function
  * @cdev: ccw device on which to perform the start function
  * @tcw: transport-command word to be started
@@ -921,7 +602,6 @@ EXPORT_SYMBOL(ccw_device_tm_start_key);
 
 /**
  * ccw_device_tm_start() - perform start function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: ccw device on which to perform the start function
  * @tcw: transport-command word to be started
  * @intparm: user defined parameter to be passed to the interrupt handler
@@ -939,11 +619,7 @@ int ccw_device_tm_start(struct ccw_device *cdev, struct tcw *tcw,
 EXPORT_SYMBOL(ccw_device_tm_start);
 
 /**
-<<<<<<< HEAD
- * ccw_device_tm_start_timeout - perform start function
-=======
  * ccw_device_tm_start_timeout() - perform start function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: ccw device on which to perform the start function
  * @tcw: transport-command word to be started
  * @intparm: user defined parameter to be passed to the interrupt handler
@@ -962,33 +638,19 @@ int ccw_device_tm_start_timeout(struct ccw_device *cdev, struct tcw *tcw,
 EXPORT_SYMBOL(ccw_device_tm_start_timeout);
 
 /**
-<<<<<<< HEAD
- * ccw_device_get_mdc - accumulate max data count
-=======
  * ccw_device_get_mdc() - accumulate max data count
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: ccw device for which the max data count is accumulated
  * @mask: mask of paths to use
  *
  * Return the number of 64K-bytes blocks all paths at least support
-<<<<<<< HEAD
- * for a transport command. Return values <= 0 indicate failures.
-=======
  * for a transport command. Return value 0 indicates failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int ccw_device_get_mdc(struct ccw_device *cdev, u8 mask)
 {
 	struct subchannel *sch = to_subchannel(cdev->dev.parent);
-<<<<<<< HEAD
-	struct channel_path_desc_fmt1 desc;
-	struct chp_id chpid;
-	int mdc = 0, ret, i;
-=======
 	struct channel_path *chp;
 	struct chp_id chpid;
 	int mdc = 0, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Adjust requested path mask to excluded varied off paths. */
 	if (mask)
@@ -1001,16 +663,6 @@ int ccw_device_get_mdc(struct ccw_device *cdev, u8 mask)
 		if (!(mask & (0x80 >> i)))
 			continue;
 		chpid.id = sch->schib.pmcw.chpid[i];
-<<<<<<< HEAD
-		ret = chsc_determine_fmt1_channel_path_desc(chpid, &desc);
-		if (ret)
-			return ret;
-		if (!desc.f)
-			return 0;
-		if (!desc.r)
-			mdc = 1;
-		mdc = mdc ? min(mdc, (int)desc.mdc) : desc.mdc;
-=======
 		chp = chpid_to_chp(chpid);
 		if (!chp)
 			continue;
@@ -1025,7 +677,6 @@ int ccw_device_get_mdc(struct ccw_device *cdev, u8 mask)
 		mdc = mdc ? min_t(int, mdc, chp->desc_fmt1.mdc) :
 			    chp->desc_fmt1.mdc;
 		mutex_unlock(&chp->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return mdc;
@@ -1033,11 +684,7 @@ int ccw_device_get_mdc(struct ccw_device *cdev, u8 mask)
 EXPORT_SYMBOL(ccw_device_get_mdc);
 
 /**
-<<<<<<< HEAD
- * ccw_device_tm_intrg - perform interrogate function
-=======
  * ccw_device_tm_intrg() - perform interrogate function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cdev: ccw device on which to perform the interrogate function
  *
  * Perform an interrogate function on the given ccw device. Return zero on
@@ -1058,18 +705,6 @@ int ccw_device_tm_intrg(struct ccw_device *cdev)
 }
 EXPORT_SYMBOL(ccw_device_tm_intrg);
 
-<<<<<<< HEAD
-// FIXME: these have to go:
-
-int
-_ccw_device_get_subchannel_number(struct ccw_device *cdev)
-{
-	return cdev->private->schid.sch_no;
-}
-
-
-MODULE_LICENSE("GPL");
-=======
 /**
  * ccw_device_get_schid() - obtain a subchannel id
  * @cdev: device to obtain the id for
@@ -1219,7 +854,6 @@ void ccw_device_dma_free(struct ccw_device *cdev, void *cpu_addr, size_t size)
 }
 EXPORT_SYMBOL(ccw_device_dma_free);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(ccw_device_set_options_mask);
 EXPORT_SYMBOL(ccw_device_set_options);
 EXPORT_SYMBOL(ccw_device_clear_options);
@@ -1232,10 +866,5 @@ EXPORT_SYMBOL(ccw_device_start_timeout_key);
 EXPORT_SYMBOL(ccw_device_start_key);
 EXPORT_SYMBOL(ccw_device_get_ciw);
 EXPORT_SYMBOL(ccw_device_get_path_mask);
-<<<<<<< HEAD
-EXPORT_SYMBOL(_ccw_device_get_subchannel_number);
-EXPORT_SYMBOL_GPL(ccw_device_get_chp_desc);
-=======
 EXPORT_SYMBOL_GPL(ccw_device_get_chp_desc);
 EXPORT_SYMBOL_GPL(ccw_device_get_util_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

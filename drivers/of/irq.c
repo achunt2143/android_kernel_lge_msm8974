@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Derived from arch/i386/kernel/irq.c
  *    Copyright (C) 1992 Linus Torvalds
@@ -12,25 +9,14 @@
  *  Adapted for Power Macintosh by Paul Mackerras
  *    Copyright (C) 1996 Paul Mackerras (paulus@cs.anu.edu.au)
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains the code used to make IRQ descriptions in the
  * device tree to actual irq numbers on an interrupt controller
  * driver.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt)	"OF: " fmt
 
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/list.h>
 #include <linux/module.h>
@@ -41,37 +27,20 @@
 
 /**
  * irq_of_parse_and_map - Parse and map an interrupt into linux virq space
-<<<<<<< HEAD
- * @device: Device node of the device whose interrupt is to be mapped
- * @index: Index of the interrupt to map
- *
- * This function is a wrapper that chains of_irq_map_one() and
-=======
  * @dev: Device node of the device whose interrupt is to be mapped
  * @index: Index of the interrupt to map
  *
  * This function is a wrapper that chains of_irq_parse_one() and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * irq_create_of_mapping() to make things easier to callers
  */
 unsigned int irq_of_parse_and_map(struct device_node *dev, int index)
 {
-<<<<<<< HEAD
-	struct of_irq oirq;
-
-	if (of_irq_map_one(dev, index, &oirq))
-		return 0;
-
-	return irq_create_of_mapping(oirq.controller, oirq.specifier,
-				     oirq.size);
-=======
 	struct of_phandle_args oirq;
 
 	if (of_irq_parse_one(dev, index, &oirq))
 		return 0;
 
 	return irq_create_of_mapping(&oirq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(irq_of_parse_and_map);
 
@@ -79,36 +48,18 @@ EXPORT_SYMBOL_GPL(irq_of_parse_and_map);
  * of_irq_find_parent - Given a device node, find its interrupt parent node
  * @child: pointer to device node
  *
-<<<<<<< HEAD
- * Returns a pointer to the interrupt parent node, or NULL if the interrupt
-=======
  * Return: A pointer to the interrupt parent node, or NULL if the interrupt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * parent could not be determined.
  */
 struct device_node *of_irq_find_parent(struct device_node *child)
 {
 	struct device_node *p;
-<<<<<<< HEAD
-	const __be32 *parp;
-=======
 	phandle parent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!of_node_get(child))
 		return NULL;
 
 	do {
-<<<<<<< HEAD
-		parp = of_get_property(child, "interrupt-parent", NULL);
-		if (parp == NULL)
-			p = of_get_parent(child);
-		else {
-			if (of_irq_workarounds & OF_IMAP_NO_PHANDLE)
-				p = of_node_get(of_irq_dflt_pic);
-			else
-				p = of_find_node_by_phandle(be32_to_cpup(parp));
-=======
 		if (of_property_read_u32(child, "interrupt-parent", &parent)) {
 			p = of_get_parent(child);
 		} else	{
@@ -116,7 +67,6 @@ struct device_node *of_irq_find_parent(struct device_node *child)
 				p = of_node_get(of_irq_dflt_pic);
 			else
 				p = of_find_node_by_phandle(parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		of_node_put(child);
 		child = p;
@@ -124,18 +74,6 @@ struct device_node *of_irq_find_parent(struct device_node *child)
 
 	return p;
 }
-<<<<<<< HEAD
-
-/**
- * of_irq_map_raw - Low level interrupt tree parsing
- * @parent:	the device interrupt parent
- * @intspec:	interrupt specifier ("interrupts" property of the device)
- * @ointsize:   size of the passed in interrupt specifier
- * @addr:	address specifier (start of "reg" property of the device)
- * @out_irq:	structure of_irq filled by this function
- *
- * Returns 0 on success and a negative number on error
-=======
 EXPORT_SYMBOL_GPL(of_irq_find_parent);
 
 /*
@@ -162,28 +100,10 @@ static const char * const of_irq_imap_abusers[] = {
  * of_irq_parse_raw - Low level interrupt tree parsing
  * @addr:	address specifier (start of "reg" property of the device) in be32 format
  * @out_irq:	structure of_phandle_args updated by this function
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is a low-level interrupt tree walking function. It
  * can be used to do a partial walk with synthetized reg and interrupts
  * properties, for example when resolving PCI interrupts when no device
-<<<<<<< HEAD
- * node exist for the parent.
- */
-int of_irq_map_raw(struct device_node *parent, const __be32 *intspec,
-		   u32 ointsize, const __be32 *addr, struct of_irq *out_irq)
-{
-	struct device_node *ipar, *tnode, *old = NULL, *newpar = NULL;
-	const __be32 *tmp, *imap, *imask;
-	u32 intsize = 1, addrsize, newintsize = 0, newaddrsize = 0;
-	int imaplen, match, i;
-
-	pr_debug("of_irq_map_raw: par=%s,intspec=[0x%08x 0x%08x...],ointsize=%d\n",
-		 parent->full_name, be32_to_cpup(intspec),
-		 be32_to_cpup(intspec + 1), ointsize);
-
-	ipar = of_node_get(parent);
-=======
  * node exist for the parent. It takes an interrupt specifier structure as
  * input, walks the tree looking for any interrupt-map properties, translates
  * the specifier for each map, and then returns the translated map.
@@ -204,23 +124,14 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 #endif
 
 	ipar = of_node_get(out_irq->np);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First get the #interrupt-cells property of the current cursor
 	 * that tells us how to interpret the passed-in intspec. If there
 	 * is none, we are nice and just walk up the tree
 	 */
 	do {
-<<<<<<< HEAD
-		tmp = of_get_property(ipar, "#interrupt-cells", NULL);
-		if (tmp != NULL) {
-			intsize = be32_to_cpu(*tmp);
-			break;
-		}
-=======
 		if (!of_property_read_u32(ipar, "#interrupt-cells", &intsize))
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tnode = ipar;
 		ipar = of_irq_find_parent(ipar);
 		of_node_put(tnode);
@@ -230,17 +141,10 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 		goto fail;
 	}
 
-<<<<<<< HEAD
-	pr_debug("of_irq_map_raw: ipar=%s, size=%d\n", ipar->full_name, intsize);
-
-	if (ointsize != intsize)
-		return -EINVAL;
-=======
 	pr_debug("of_irq_parse_raw: ipar=%pOF, size=%d\n", ipar, intsize);
 
 	if (out_irq->args_count != intsize)
 		goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Look for this #address-cells. We have to implement the old linux
 	 * trick of looking for the parent here as some device-trees rely on it
@@ -258,27 +162,6 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 
 	pr_debug(" -> addrsize=%d\n", addrsize);
 
-<<<<<<< HEAD
-	/* Now start the actual "proper" walk of the interrupt tree */
-	while (ipar != NULL) {
-		/* Now check if cursor is an interrupt-controller and if it is
-		 * then we are done
-		 */
-		if (of_get_property(ipar, "interrupt-controller", NULL) !=
-				NULL) {
-			pr_debug(" -> got it !\n");
-			for (i = 0; i < intsize; i++)
-				out_irq->specifier[i] =
-						of_read_number(intspec +i, 1);
-			out_irq->size = intsize;
-			out_irq->controller = ipar;
-			of_node_put(old);
-			return 0;
-		}
-
-		/* Now look for an interrupt-map */
-		imap = of_get_property(ipar, "interrupt-map", &imaplen);
-=======
 	/* Range check so that the temporary buffer doesn't overflow */
 	if (WARN_ON(addrsize + intsize > MAX_PHANDLE_ARGS)) {
 		rc = -EFAULT;
@@ -318,7 +201,6 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 			goto fail;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* No interrupt map, check for an interrupt parent */
 		if (imap == NULL) {
 			pr_debug(" -> no map, getting parent\n");
@@ -329,42 +211,16 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 
 		/* Look for a mask */
 		imask = of_get_property(ipar, "interrupt-map-mask", NULL);
-<<<<<<< HEAD
-
-		/* If we were passed no "reg" property and we attempt to parse
-		 * an interrupt-map, then #address-cells must be 0.
-		 * Fail if it's not.
-		 */
-		if (addr == NULL && addrsize != 0) {
-			pr_debug(" -> no reg passed in when needed !\n");
-			goto fail;
-		}
-=======
 		if (!imask)
 			imask = dummy_imask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Parse interrupt-map */
 		match = 0;
 		while (imaplen > (addrsize + intsize + 1) && !match) {
 			/* Compare specifiers */
 			match = 1;
-<<<<<<< HEAD
-			for (i = 0; i < addrsize && match; ++i) {
-				u32 mask = imask ? imask[i] : 0xffffffffu;
-				match = ((addr[i] ^ imap[i]) & mask) == 0;
-			}
-			for (; i < (addrsize + intsize) && match; ++i) {
-				u32 mask = imask ? imask[i] : 0xffffffffu;
-				match =
-				   ((intspec[i-addrsize] ^ imap[i]) & mask) == 0;
-			}
-			imap += addrsize + intsize;
-			imaplen -= addrsize + intsize;
-=======
 			for (i = 0; i < (addrsize + intsize); i++, imaplen--)
 				match &= !((match_array[i] ^ *imap++) & imask[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pr_debug(" -> match=%d (imaplen=%d)\n", match, imaplen);
 
@@ -382,19 +238,6 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 				goto fail;
 			}
 
-<<<<<<< HEAD
-			/* Get #interrupt-cells and #address-cells of new
-			 * parent
-			 */
-			tmp = of_get_property(newpar, "#interrupt-cells", NULL);
-			if (tmp == NULL) {
-				pr_debug(" -> parent lacks #interrupt-cells!\n");
-				goto fail;
-			}
-			newintsize = be32_to_cpu(*tmp);
-			tmp = of_get_property(newpar, "#address-cells", NULL);
-			newaddrsize = (tmp == NULL) ? 0 : be32_to_cpu(*tmp);
-=======
 			if (!of_device_is_available(newpar))
 				match = 0;
 
@@ -409,43 +252,22 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 			if (of_property_read_u32(newpar, "#address-cells",
 						 &newaddrsize))
 				newaddrsize = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pr_debug(" -> newintsize=%d, newaddrsize=%d\n",
 			    newintsize, newaddrsize);
 
 			/* Check for malformed properties */
-<<<<<<< HEAD
-			if (imaplen < (newaddrsize + newintsize))
-				goto fail;
-=======
 			if (WARN_ON(newaddrsize + newintsize > MAX_PHANDLE_ARGS)
 			    || (imaplen < (newaddrsize + newintsize))) {
 				rc = -EFAULT;
 				goto fail;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			imap += newaddrsize + newintsize;
 			imaplen -= newaddrsize + newintsize;
 
 			pr_debug(" -> imaplen=%d\n", imaplen);
 		}
-<<<<<<< HEAD
-		if (!match)
-			goto fail;
-
-		of_node_put(old);
-		old = of_node_get(newpar);
-		addrsize = newaddrsize;
-		intsize = newintsize;
-		intspec = imap - intsize;
-		addr = intspec - addrsize;
-
-	skiplevel:
-		/* Iterate again with new parent */
-		pr_debug(" -> new parent: %s\n", newpar ? newpar->full_name : "<>");
-=======
 		if (!match) {
 			if (intc) {
 				/*
@@ -480,51 +302,10 @@ int of_irq_parse_raw(const __be32 *addr, struct of_phandle_args *out_irq)
 		/* Iterate again with new parent */
 		out_irq->np = newpar;
 		pr_debug(" -> new parent: %pOF\n", newpar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(ipar);
 		ipar = newpar;
 		newpar = NULL;
 	}
-<<<<<<< HEAD
- fail:
-	of_node_put(ipar);
-	of_node_put(old);
-	of_node_put(newpar);
-
-	return -EINVAL;
-}
-EXPORT_SYMBOL_GPL(of_irq_map_raw);
-
-/**
- * of_irq_map_one - Resolve an interrupt for a device
- * @device: the device whose interrupt is to be resolved
- * @index: index of the interrupt to resolve
- * @out_irq: structure of_irq filled by this function
- *
- * This function resolves an interrupt, walking the tree, for a given
- * device-tree node. It's the high level pendant to of_irq_map_raw().
- */
-int of_irq_map_one(struct device_node *device, int index, struct of_irq *out_irq)
-{
-	struct device_node *p;
-	const __be32 *intspec, *tmp, *addr;
-	u32 intsize, intlen;
-	int res = -EINVAL;
-
-	pr_debug("of_irq_map_one: dev=%s, index=%d\n", device->full_name, index);
-
-	/* OldWorld mac stuff is "special", handle out of line */
-	if (of_irq_workarounds & OF_IMAP_OLDWORLD_MAC)
-		return of_irq_map_oldworld(device, index, out_irq);
-
-	/* Get the interrupts property */
-	intspec = of_get_property(device, "interrupts", &intlen);
-	if (intspec == NULL)
-		return -EINVAL;
-	intlen /= sizeof(*intspec);
-
-	pr_debug(" intspec=%d intlen=%d\n", be32_to_cpup(intspec), intlen);
-=======
 	rc = -ENOENT; /* No interrupt-map found */
 
  fail:
@@ -557,42 +338,22 @@ int of_irq_parse_one(struct device_node *device, int index, struct of_phandle_ar
 	/* OldWorld mac stuff is "special", handle out of line */
 	if (of_irq_workarounds & OF_IMAP_OLDWORLD_MAC)
 		return of_irq_parse_oldworld(device, index, out_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the reg property (if any) */
 	addr = of_get_property(device, "reg", NULL);
 
-<<<<<<< HEAD
-=======
 	/* Try the new-style interrupts-extended first */
 	res = of_parse_phandle_with_args(device, "interrupts-extended",
 					"#interrupt-cells", index, out_irq);
 	if (!res)
 		return of_irq_parse_raw(addr, out_irq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Look for the interrupt parent. */
 	p = of_irq_find_parent(device);
 	if (p == NULL)
 		return -EINVAL;
 
 	/* Get size of interrupt specifier */
-<<<<<<< HEAD
-	tmp = of_get_property(p, "#interrupt-cells", NULL);
-	if (tmp == NULL)
-		goto out;
-	intsize = be32_to_cpu(*tmp);
-
-	pr_debug(" intsize=%d intlen=%d\n", intsize, intlen);
-
-	/* Check index */
-	if ((index + 1) * intsize > intlen)
-		goto out;
-
-	/* Get new specifier and map it */
-	res = of_irq_map_raw(p, intspec + index * intsize, intsize,
-			     addr, out_irq);
-=======
 	if (of_property_read_u32(p, "#interrupt-cells", &intsize)) {
 		res = -EINVAL;
 		goto out;
@@ -616,16 +377,11 @@ int of_irq_parse_one(struct device_node *device, int index, struct of_phandle_ar
 
 	/* Check if there are any interrupt-map translations to process */
 	res = of_irq_parse_raw(addr, out_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	of_node_put(p);
 	return res;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(of_irq_map_one);
-=======
 EXPORT_SYMBOL_GPL(of_irq_parse_one);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * of_irq_to_resource - Decode a node's IRQ and return it as a resource
@@ -635,41 +391,27 @@ EXPORT_SYMBOL_GPL(of_irq_parse_one);
  */
 int of_irq_to_resource(struct device_node *dev, int index, struct resource *r)
 {
-<<<<<<< HEAD
-	int irq = irq_of_parse_and_map(dev, index);
-=======
 	int irq = of_irq_get(dev, index);
 
 	if (irq < 0)
 		return irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only dereference the resource if both the
 	 * resource and the irq are valid. */
 	if (r && irq) {
 		const char *name = NULL;
 
-<<<<<<< HEAD
-		/*
-		 * Get optional "interrupts-names" property to add a name
-=======
 		memset(r, 0, sizeof(*r));
 		/*
 		 * Get optional "interrupt-names" property to add a name
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * to the resource.
 		 */
 		of_property_read_string_index(dev, "interrupt-names", index,
 					      &name);
 
 		r->start = r->end = irq;
-<<<<<<< HEAD
-		r->flags = IORESOURCE_IRQ;
-		r->name = name ? name : dev->full_name;
-=======
 		r->flags = IORESOURCE_IRQ | irqd_get_trigger_type(irq_get_irq_data(irq));
 		r->name = name ? name : of_node_full_name(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return irq;
@@ -677,8 +419,6 @@ int of_irq_to_resource(struct device_node *dev, int index, struct resource *r)
 EXPORT_SYMBOL_GPL(of_irq_to_resource);
 
 /**
-<<<<<<< HEAD
-=======
  * of_irq_get - Decode a node's IRQ and return it as a Linux IRQ number
  * @dev: pointer to device tree node
  * @index: zero-based index of the IRQ
@@ -736,22 +476,15 @@ int of_irq_get_byname(struct device_node *dev, const char *name)
 EXPORT_SYMBOL_GPL(of_irq_get_byname);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * of_irq_count - Count the number of IRQs a node uses
  * @dev: pointer to device tree node
  */
 int of_irq_count(struct device_node *dev)
 {
-<<<<<<< HEAD
-	int nr = 0;
-
-	while (of_irq_to_resource(dev, nr, NULL))
-=======
 	struct of_phandle_args irq;
 	int nr = 0;
 
 	while (of_irq_parse_one(dev, nr, &irq) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nr++;
 
 	return nr;
@@ -763,11 +496,7 @@ int of_irq_count(struct device_node *dev)
  * @res: array of resources to fill in
  * @nr_irqs: the number of IRQs (and upper bound for num of @res elements)
  *
-<<<<<<< HEAD
- * Returns the size of the filled in table (up to @nr_irqs).
-=======
  * Return: The size of the filled in table (up to @nr_irqs).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int of_irq_to_resource_table(struct device_node *dev, struct resource *res,
 		int nr_irqs)
@@ -775,26 +504,16 @@ int of_irq_to_resource_table(struct device_node *dev, struct resource *res,
 	int i;
 
 	for (i = 0; i < nr_irqs; i++, res++)
-<<<<<<< HEAD
-		if (!of_irq_to_resource(dev, i, res))
-=======
 		if (of_irq_to_resource(dev, i, res) <= 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 	return i;
 }
-<<<<<<< HEAD
-
-struct intc_desc {
-	struct list_head	list;
-=======
 EXPORT_SYMBOL_GPL(of_irq_to_resource_table);
 
 struct of_intc_desc {
 	struct list_head	list;
 	of_irq_init_cb_t	irq_init_cb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node	*dev;
 	struct device_node	*interrupt_parent;
 };
@@ -808,36 +527,14 @@ struct of_intc_desc {
  */
 void __init of_irq_init(const struct of_device_id *matches)
 {
-<<<<<<< HEAD
-	struct device_node *np, *parent = NULL;
-	struct intc_desc *desc, *temp_desc;
-=======
 	const struct of_device_id *match;
 	struct device_node *np, *parent = NULL;
 	struct of_intc_desc *desc, *temp_desc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head intc_desc_list, intc_parent_list;
 
 	INIT_LIST_HEAD(&intc_desc_list);
 	INIT_LIST_HEAD(&intc_parent_list);
 
-<<<<<<< HEAD
-	for_each_matching_node(np, matches) {
-		if (!of_find_property(np, "interrupt-controller", NULL))
-			continue;
-		/*
-		 * Here, we allocate and populate an intc_desc with the node
-		 * pointer, interrupt-parent device_node etc.
-		 */
-		desc = kzalloc(sizeof(*desc), GFP_KERNEL);
-		if (WARN_ON(!desc))
-			goto err;
-
-		desc->dev = np;
-		desc->interrupt_parent = of_irq_find_parent(np);
-		if (desc->interrupt_parent == np)
-			desc->interrupt_parent = NULL;
-=======
 	for_each_matching_node_and_match(np, matches, &match) {
 		if (!of_property_read_bool(np, "interrupt-controller") ||
 				!of_device_is_available(np))
@@ -871,7 +568,6 @@ void __init of_irq_init(const struct of_device_id *matches)
 			of_node_put(desc->interrupt_parent);
 			desc->interrupt_parent = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&desc->list, &intc_desc_list);
 	}
 
@@ -887,34 +583,12 @@ void __init of_irq_init(const struct of_device_id *matches)
 		 * The assumption is that NULL parent means a root controller.
 		 */
 		list_for_each_entry_safe(desc, temp_desc, &intc_desc_list, list) {
-<<<<<<< HEAD
-			const struct of_device_id *match;
 			int ret;
-			of_irq_init_cb_t irq_init_cb;
-=======
-			int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (desc->interrupt_parent != parent)
 				continue;
 
 			list_del(&desc->list);
-<<<<<<< HEAD
-			match = of_match_node(matches, desc->dev);
-			if (WARN(!match->data,
-			    "of_irq_init: no init function for %s\n",
-			    match->compatible)) {
-				kfree(desc);
-				continue;
-			}
-
-			pr_debug("of_irq_init: init %s @ %p, parent %p\n",
-				 match->compatible,
-				 desc->dev, desc->interrupt_parent);
-			irq_init_cb = match->data;
-			ret = irq_init_cb(desc->dev, desc->interrupt_parent);
-			if (ret) {
-=======
 
 			of_node_set_flag(desc->dev, OF_POPULATED);
 
@@ -928,7 +602,6 @@ void __init of_irq_init(const struct of_device_id *matches)
 				       __func__, desc->dev, desc->dev,
 				       desc->interrupt_parent);
 				of_node_clear_flag(desc->dev, OF_POPULATED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(desc);
 				continue;
 			}
@@ -941,14 +614,9 @@ void __init of_irq_init(const struct of_device_id *matches)
 		}
 
 		/* Get the next pending parent that might have children */
-<<<<<<< HEAD
-		desc = list_first_entry(&intc_parent_list, typeof(*desc), list);
-		if (list_empty(&intc_parent_list) || !desc) {
-=======
 		desc = list_first_entry_or_null(&intc_parent_list,
 						typeof(*desc), list);
 		if (!desc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_err("of_irq_init: children remain, but no parents\n");
 			break;
 		}
@@ -964,11 +632,6 @@ void __init of_irq_init(const struct of_device_id *matches)
 err:
 	list_for_each_entry_safe(desc, temp_desc, &intc_desc_list, list) {
 		list_del(&desc->list);
-<<<<<<< HEAD
-		kfree(desc);
-	}
-}
-=======
 		of_node_put(desc->dev);
 		kfree(desc);
 	}
@@ -1086,4 +749,3 @@ void of_msi_configure(struct device *dev, struct device_node *np)
 			   of_msi_get_domain(dev, np, DOMAIN_BUS_PLATFORM_MSI));
 }
 EXPORT_SYMBOL_GPL(of_msi_configure);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

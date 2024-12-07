@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ring buffer tester and benchmark
  *
@@ -10,14 +7,9 @@
 #include <linux/ring_buffer.h>
 #include <linux/completion.h>
 #include <linux/kthread.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/time.h>
-=======
 #include <uapi/linux/sched/types.h>
 #include <linux/module.h>
 #include <linux/ktime.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/local.h>
 
 struct rb_page {
@@ -27,68 +19,21 @@ struct rb_page {
 };
 
 /* run time and sleep time in seconds */
-<<<<<<< HEAD
-#define RUN_TIME	10
-=======
 #define RUN_TIME	10ULL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SLEEP_TIME	10
 
 /* number of events for writer to wake up the reader */
 static int wakeup_interval = 100;
 
 static int reader_finish;
-<<<<<<< HEAD
-static struct completion read_start;
-static struct completion read_done;
-
-static struct ring_buffer *buffer;
-=======
 static DECLARE_COMPLETION(read_start);
 static DECLARE_COMPLETION(read_done);
 
 static struct trace_buffer *buffer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct task_struct *producer;
 static struct task_struct *consumer;
 static unsigned long read;
 
-<<<<<<< HEAD
-static int disable_reader;
-module_param(disable_reader, uint, 0644);
-MODULE_PARM_DESC(disable_reader, "only run producer");
-
-static int write_iteration = 50;
-module_param(write_iteration, uint, 0644);
-MODULE_PARM_DESC(write_iteration, "# of writes between timestamp readings");
-
-static int producer_nice = 19;
-static int consumer_nice = 19;
-
-static int producer_fifo = -1;
-static int consumer_fifo = -1;
-
-module_param(producer_nice, uint, 0644);
-MODULE_PARM_DESC(producer_nice, "nice prio for producer");
-
-module_param(consumer_nice, uint, 0644);
-MODULE_PARM_DESC(consumer_nice, "nice prio for consumer");
-
-module_param(producer_fifo, uint, 0644);
-MODULE_PARM_DESC(producer_fifo, "fifo prio for producer");
-
-module_param(consumer_fifo, uint, 0644);
-MODULE_PARM_DESC(consumer_fifo, "fifo prio for consumer");
-
-static int read_events;
-
-static int kill_test;
-
-#define KILL_TEST()				\
-	do {					\
-		if (!kill_test) {		\
-			kill_test = 1;		\
-=======
 static unsigned int disable_reader;
 module_param(disable_reader, uint, 0644);
 MODULE_PARM_DESC(disable_reader, "only run producer");
@@ -123,7 +68,6 @@ static int test_error;
 	do {					\
 		if (!test_error) {		\
 			test_error = 1;		\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			WARN_ON(1);		\
 		}				\
 	} while (0)
@@ -133,14 +77,11 @@ enum event_status {
 	EVENT_DROPPED,
 };
 
-<<<<<<< HEAD
-=======
 static bool break_test(void)
 {
 	return test_error || kthread_should_stop();
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum event_status read_event(int cpu)
 {
 	struct ring_buffer_event *event;
@@ -153,11 +94,7 @@ static enum event_status read_event(int cpu)
 
 	entry = ring_buffer_event_data(event);
 	if (*entry != cpu) {
-<<<<<<< HEAD
-		KILL_TEST();
-=======
 		TEST_ERROR();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return EVENT_DROPPED;
 	}
 
@@ -167,38 +104,17 @@ static enum event_status read_event(int cpu)
 
 static enum event_status read_page(int cpu)
 {
-<<<<<<< HEAD
-	struct ring_buffer_event *event;
-	struct rb_page *rpage;
-	unsigned long commit;
-	void *bpage;
-=======
 	struct buffer_data_read_page *bpage;
 	struct ring_buffer_event *event;
 	struct rb_page *rpage;
 	unsigned long commit;
 	int page_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int *entry;
 	int ret;
 	int inc;
 	int i;
 
 	bpage = ring_buffer_alloc_read_page(buffer, cpu);
-<<<<<<< HEAD
-	if (!bpage)
-		return EVENT_DROPPED;
-
-	ret = ring_buffer_read_page(buffer, &bpage, PAGE_SIZE, cpu, 1);
-	if (ret >= 0) {
-		rpage = bpage;
-		/* The commit may have missed event flags set, clear them */
-		commit = local_read(&rpage->commit) & 0xfffff;
-		for (i = 0; i < commit && !kill_test; i += inc) {
-
-			if (i >= (PAGE_SIZE - offsetof(struct rb_page, data))) {
-				KILL_TEST();
-=======
 	if (IS_ERR(bpage))
 		return EVENT_DROPPED;
 
@@ -212,7 +128,6 @@ static enum event_status read_page(int cpu)
 
 			if (i >= (page_size - offsetof(struct rb_page, data))) {
 				TEST_ERROR();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 
@@ -222,11 +137,7 @@ static enum event_status read_page(int cpu)
 			case RINGBUF_TYPE_PADDING:
 				/* failed writes may be discarded events */
 				if (!event->time_delta)
-<<<<<<< HEAD
-					KILL_TEST();
-=======
 					TEST_ERROR();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				inc = event->array[0] + 4;
 				break;
 			case RINGBUF_TYPE_TIME_EXTEND:
@@ -235,20 +146,12 @@ static enum event_status read_page(int cpu)
 			case 0:
 				entry = ring_buffer_event_data(event);
 				if (*entry != cpu) {
-<<<<<<< HEAD
-					KILL_TEST();
-=======
 					TEST_ERROR();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 				read++;
 				if (!event->array[0]) {
-<<<<<<< HEAD
-					KILL_TEST();
-=======
 					TEST_ERROR();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 				inc = event->array[0] + 4;
@@ -256,38 +159,22 @@ static enum event_status read_page(int cpu)
 			default:
 				entry = ring_buffer_event_data(event);
 				if (*entry != cpu) {
-<<<<<<< HEAD
-					KILL_TEST();
-=======
 					TEST_ERROR();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 				read++;
 				inc = ((event->type_len + 1) * 4);
 			}
-<<<<<<< HEAD
-			if (kill_test)
-				break;
-
-			if (inc <= 0) {
-				KILL_TEST();
-=======
 			if (test_error)
 				break;
 
 			if (inc <= 0) {
 				TEST_ERROR();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 	}
-<<<<<<< HEAD
-	ring_buffer_free_read_page(buffer, bpage);
-=======
 	ring_buffer_free_read_page(buffer, cpu, bpage);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret < 0)
 		return EVENT_DROPPED;
@@ -300,12 +187,6 @@ static void ring_buffer_consumer(void)
 	read_events ^= 1;
 
 	read = 0;
-<<<<<<< HEAD
-	while (!reader_finish && !kill_test) {
-		int found;
-
-		do {
-=======
 	/*
 	 * Continue running until the producer specifically asks to stop
 	 * and is ready for the completion.
@@ -314,7 +195,6 @@ static void ring_buffer_consumer(void)
 		int found = 1;
 
 		while (found && !test_error) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int cpu;
 
 			found = 0;
@@ -326,15 +206,6 @@ static void ring_buffer_consumer(void)
 				else
 					stat = read_page(cpu);
 
-<<<<<<< HEAD
-				if (kill_test)
-					break;
-				if (stat == EVENT_FOUND)
-					found = 1;
-			}
-		} while (found && !kill_test);
-
-=======
 				if (test_error)
 					break;
 
@@ -347,31 +218,20 @@ static void ring_buffer_consumer(void)
 		/* Wait till the producer wakes us up when there is more data
 		 * available or when the producer wants us to finish reading.
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (reader_finish)
 			break;
 
 		schedule();
-<<<<<<< HEAD
-		__set_current_state(TASK_RUNNING);
-	}
-=======
 	}
 	__set_current_state(TASK_RUNNING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reader_finish = 0;
 	complete(&read_done);
 }
 
 static void ring_buffer_producer(void)
 {
-<<<<<<< HEAD
-	struct timeval start_tv;
-	struct timeval end_tv;
-=======
 	ktime_t start_time, end_time, timeout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long time;
 	unsigned long long entries;
 	unsigned long long overruns;
@@ -385,12 +245,8 @@ static void ring_buffer_producer(void)
 	 * make the system stall)
 	 */
 	trace_printk("Starting ring buffer hammer\n");
-<<<<<<< HEAD
-	do_gettimeofday(&start_tv);
-=======
 	start_time = ktime_get();
 	timeout = ktime_add_ns(start_time, RUN_TIME * NSEC_PER_SEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		struct ring_buffer_event *event;
 		int *entry;
@@ -404,37 +260,21 @@ static void ring_buffer_producer(void)
 				hit++;
 				entry = ring_buffer_event_data(event);
 				*entry = smp_processor_id();
-<<<<<<< HEAD
-				ring_buffer_unlock_commit(buffer, event);
-			}
-		}
-		do_gettimeofday(&end_tv);
-=======
 				ring_buffer_unlock_commit(buffer);
 			}
 		}
 		end_time = ktime_get();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cnt++;
 		if (consumer && !(cnt % wakeup_interval))
 			wake_up_process(consumer);
 
-<<<<<<< HEAD
-#ifndef CONFIG_PREEMPT
-		/*
-		 * If we are a non preempt kernel, the 10 second run will
-		 * stop everything while it runs. Instead, we will call
-		 * cond_resched and also add any time that was lost by a
-		 * rescedule.
-=======
 #ifndef CONFIG_PREEMPTION
 		/*
 		 * If we are a non preempt kernel, the 10 seconds run will
 		 * stop everything while it runs. Instead, we will call
 		 * cond_resched and also add any time that was lost by a
 		 * reschedule.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *
 		 * Do a cond resched at the same frequency we would wake up
 		 * the reader.
@@ -442,12 +282,7 @@ static void ring_buffer_producer(void)
 		if (cnt % wakeup_interval)
 			cond_resched();
 #endif
-<<<<<<< HEAD
-
-	} while (end_tv.tv_sec < (start_tv.tv_sec + RUN_TIME) && !kill_test);
-=======
 	} while (ktime_before(end_time, timeout) && !break_test());
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_printk("End ring buffer hammer\n");
 
 	if (consumer) {
@@ -457,49 +292,15 @@ static void ring_buffer_producer(void)
 		/* the completions must be visible before the finish var */
 		smp_wmb();
 		reader_finish = 1;
-<<<<<<< HEAD
-		/* finish var visible before waking up the consumer */
-		smp_wmb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_process(consumer);
 		wait_for_completion(&read_done);
 	}
 
-<<<<<<< HEAD
-	time = end_tv.tv_sec - start_tv.tv_sec;
-	time *= USEC_PER_SEC;
-	time += (long long)((long)end_tv.tv_usec - (long)start_tv.tv_usec);
-=======
 	time = ktime_us_delta(end_time, start_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	entries = ring_buffer_entries(buffer);
 	overruns = ring_buffer_overruns(buffer);
 
-<<<<<<< HEAD
-	if (kill_test)
-		trace_printk("ERROR!\n");
-
-	if (!disable_reader) {
-		if (consumer_fifo < 0)
-			trace_printk("Running Consumer at nice: %d\n",
-				     consumer_nice);
-		else
-			trace_printk("Running Consumer at SCHED_FIFO %d\n",
-				     consumer_fifo);
-	}
-	if (producer_fifo < 0)
-		trace_printk("Running Producer at nice: %d\n",
-			     producer_nice);
-	else
-		trace_printk("Running Producer at SCHED_FIFO %d\n",
-			     producer_fifo);
-
-	/* Let the user know that the test is running at low priority */
-	if (producer_fifo < 0 && consumer_fifo < 0 &&
-	    producer_nice == 19 && consumer_nice == 19)
-=======
 	if (test_error)
 		trace_printk("ERROR!\n");
 
@@ -521,7 +322,6 @@ static void ring_buffer_producer(void)
 	/* Let the user know that the test is running at low priority */
 	if (!producer_fifo && !consumer_fifo &&
 	    producer_nice == MAX_NICE && consumer_nice == MAX_NICE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trace_printk("WARNING!!! This test is running at lowest priority.\n");
 
 	trace_printk("Time:     %lld (usecs)\n", time);
@@ -564,11 +364,7 @@ static void ring_buffer_producer(void)
 			hit--; /* make it non zero */
 		}
 
-<<<<<<< HEAD
-		/* Caculate the average time in nanosecs */
-=======
 		/* Calculate the average time in nanosecs */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		avg = NSEC_PER_MSEC / (hit + missed);
 		trace_printk("%ld ns per entry\n", avg);
 	}
@@ -586,27 +382,12 @@ static void wait_to_die(void)
 
 static int ring_buffer_consumer_thread(void *arg)
 {
-<<<<<<< HEAD
-	while (!kthread_should_stop() && !kill_test) {
-=======
 	while (!break_test()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		complete(&read_start);
 
 		ring_buffer_consumer();
 
 		set_current_state(TASK_INTERRUPTIBLE);
-<<<<<<< HEAD
-		if (kthread_should_stop() || kill_test)
-			break;
-
-		schedule();
-		__set_current_state(TASK_RUNNING);
-	}
-	__set_current_state(TASK_RUNNING);
-
-	if (kill_test)
-=======
 		if (break_test())
 			break;
 		schedule();
@@ -614,7 +395,6 @@ static int ring_buffer_consumer_thread(void *arg)
 	__set_current_state(TASK_RUNNING);
 
 	if (!kthread_should_stop())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait_to_die();
 
 	return 0;
@@ -622,35 +402,15 @@ static int ring_buffer_consumer_thread(void *arg)
 
 static int ring_buffer_producer_thread(void *arg)
 {
-<<<<<<< HEAD
-	init_completion(&read_start);
-
-	while (!kthread_should_stop() && !kill_test) {
-		ring_buffer_reset(buffer);
-
-		if (consumer) {
-			smp_wmb();
-=======
 	while (!break_test()) {
 		ring_buffer_reset(buffer);
 
 		if (consumer) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up_process(consumer);
 			wait_for_completion(&read_start);
 		}
 
 		ring_buffer_producer();
-<<<<<<< HEAD
-
-		trace_printk("Sleeping for 10 secs\n");
-		set_current_state(TASK_INTERRUPTIBLE);
-		schedule_timeout(HZ * SLEEP_TIME);
-		__set_current_state(TASK_RUNNING);
-	}
-
-	if (kill_test)
-=======
 		if (break_test())
 			goto out_kill;
 
@@ -664,7 +424,6 @@ static int ring_buffer_producer_thread(void *arg)
 out_kill:
 	__set_current_state(TASK_RUNNING);
 	if (!kthread_should_stop())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait_to_die();
 
 	return 0;
@@ -698,23 +457,6 @@ static int __init ring_buffer_benchmark_init(void)
 	 * Run them as low-prio background tasks by default:
 	 */
 	if (!disable_reader) {
-<<<<<<< HEAD
-		if (consumer_fifo >= 0) {
-			struct sched_param param = {
-				.sched_priority = consumer_fifo
-			};
-			sched_setscheduler(consumer, SCHED_FIFO, &param);
-		} else
-			set_user_nice(consumer, consumer_nice);
-	}
-
-	if (producer_fifo >= 0) {
-		struct sched_param param = {
-			.sched_priority = producer_fifo
-		};
-		sched_setscheduler(producer, SCHED_FIFO, &param);
-	} else
-=======
 		if (consumer_fifo >= 2)
 			sched_set_fifo(consumer);
 		else if (consumer_fifo == 1)
@@ -728,7 +470,6 @@ static int __init ring_buffer_benchmark_init(void)
 	else if (producer_fifo == 1)
 		sched_set_fifo_low(producer);
 	else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_user_nice(producer, producer_nice);
 
 	return 0;

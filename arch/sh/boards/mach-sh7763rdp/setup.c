@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/renesas/sh7763rdp/setup.c
  *
@@ -9,13 +6,6 @@
  *
  * Copyright (C) 2008 Renesas Solutions Corp.
  * Copyright (C) 2008 Nobuhiro Iwamatsu <iwamatsu.nobuhiro@renesas.com>
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -25,10 +15,7 @@
 #include <linux/fb.h>
 #include <linux/io.h>
 #include <linux/sh_eth.h>
-<<<<<<< HEAD
-=======
 #include <linux/sh_intc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/sh7763rdp.h>
 #include <asm/sh7760fb.h>
 
@@ -78,11 +65,7 @@ static struct platform_device sh7763rdp_nor_flash_device = {
  * SH-Ether
  *
  * SH Ether of SH7763 has multi IRQ handling.
-<<<<<<< HEAD
- * (57,58,59 -> 57)
-=======
  * (0x920,0x940,0x960 -> 0x920)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct resource sh_eth_resources[] = {
 	{
@@ -94,31 +77,18 @@ static struct resource sh_eth_resources[] = {
 		.end    = 0xFEE01FFF,
 		.flags  = IORESOURCE_MEM,
 	}, {
-<<<<<<< HEAD
-		.start  = 57,   /* irq number */
-=======
 		.start  = evt2irq(0x920),   /* irq number */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
 static struct sh_eth_plat_data sh7763_eth_pdata = {
 	.phy = 1,
-<<<<<<< HEAD
-	.edmac_endian = EDMAC_LITTLE_ENDIAN,
-	.register_type = SH_ETH_REG_GIGABIT,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.phy_interface = PHY_INTERFACE_MODE_MII,
 };
 
 static struct platform_device sh7763rdp_eth_device = {
-<<<<<<< HEAD
-	.name       = "sh-eth",
-=======
 	.name       = "sh7763-gether",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resource   = sh_eth_resources,
 	.num_resources  = ARRAY_SIZE(sh_eth_resources),
 	.dev        = {
@@ -149,11 +119,7 @@ static struct fb_videomode sh7763fb_videomode = {
 	.vsync_len = 1,
 	.sync = 0,
 	.vmode = FB_VMODE_NONINTERLACED,
-<<<<<<< HEAD
-	.flag = FBINFO_FLAG_DEFAULT,
-=======
 	.flag = FB_MODE_IS_UNKNOWN,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct sh7760fb_platdata sh7763fb_def_pdata = {
@@ -243,9 +209,5 @@ static void __init sh7763rdp_setup(char **cmdline_p)
 static struct sh_machine_vector mv_sh7763rdp __initmv = {
 	.mv_name = "sh7763drp",
 	.mv_setup = sh7763rdp_setup,
-<<<<<<< HEAD
-	.mv_nr_irqs = 112,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mv_init_irq = init_sh7763rdp_IRQ,
 };

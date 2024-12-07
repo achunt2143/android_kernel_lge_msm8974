@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Generic framework for controlling remote processors
 #
 
 obj-$(CONFIG_REMOTEPROC)		+= remoteproc.o
 remoteproc-y				:= remoteproc_core.o
-<<<<<<< HEAD
-remoteproc-y				+= remoteproc_debugfs.o
-remoteproc-y				+= remoteproc_virtio.o
-obj-$(CONFIG_OMAP_REMOTEPROC)		+= omap_remoteproc.o
-=======
 remoteproc-y				+= remoteproc_coredump.o
 remoteproc-y				+= remoteproc_debugfs.o
 remoteproc-y				+= remoteproc_sysfs.o
@@ -47,4 +39,3 @@ obj-$(CONFIG_STM32_RPROC)		+= stm32_rproc.o
 obj-$(CONFIG_TI_K3_DSP_REMOTEPROC)	+= ti_k3_dsp_remoteproc.o
 obj-$(CONFIG_TI_K3_R5_REMOTEPROC)	+= ti_k3_r5_remoteproc.o
 obj-$(CONFIG_XLNX_R5_REMOTEPROC)	+= xlnx_r5_remoteproc.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

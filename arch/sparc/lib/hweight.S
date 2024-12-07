@@ -1,25 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 
 	.text
 	.align	32
 ENTRY(__arch_hweight8)
-<<<<<<< HEAD
-	ba,pt	%xcc, __sw_hweight8
-	 nop
-	nop
-ENDPROC(__arch_hweight8)
-=======
 	sethi	%hi(__sw_hweight8), %g1
 	jmpl	%g1 + %lo(__sw_hweight8), %g0
 	 nop
 ENDPROC(__arch_hweight8)
 EXPORT_SYMBOL(__arch_hweight8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.section	.popc_3insn_patch, "ax"
 	.word		__arch_hweight8
 	sllx		%o0, 64-8, %g1
@@ -28,18 +18,11 @@ EXPORT_SYMBOL(__arch_hweight8)
 	.previous
 
 ENTRY(__arch_hweight16)
-<<<<<<< HEAD
-	ba,pt	%xcc, __sw_hweight16
-	 nop
-	nop
-ENDPROC(__arch_hweight16)
-=======
 	sethi	%hi(__sw_hweight16), %g1
 	jmpl	%g1 + %lo(__sw_hweight16), %g0
 	 nop
 ENDPROC(__arch_hweight16)
 EXPORT_SYMBOL(__arch_hweight16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.section	.popc_3insn_patch, "ax"
 	.word		__arch_hweight16
 	sllx		%o0, 64-16, %g1
@@ -48,18 +31,11 @@ EXPORT_SYMBOL(__arch_hweight16)
 	.previous
 
 ENTRY(__arch_hweight32)
-<<<<<<< HEAD
-	ba,pt	%xcc, __sw_hweight32
-	 nop
-	nop
-ENDPROC(__arch_hweight32)
-=======
 	sethi	%hi(__sw_hweight32), %g1
 	jmpl	%g1 + %lo(__sw_hweight32), %g0
 	 nop
 ENDPROC(__arch_hweight32)
 EXPORT_SYMBOL(__arch_hweight32)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.section	.popc_3insn_patch, "ax"
 	.word		__arch_hweight32
 	sllx		%o0, 64-32, %g1
@@ -68,18 +44,11 @@ EXPORT_SYMBOL(__arch_hweight32)
 	.previous
 
 ENTRY(__arch_hweight64)
-<<<<<<< HEAD
-	ba,pt	%xcc, __sw_hweight64
-	 nop
-	nop
-ENDPROC(__arch_hweight64)
-=======
 	sethi	%hi(__sw_hweight64), %g1
 	jmpl	%g1 + %lo(__sw_hweight64), %g0
 	 nop
 ENDPROC(__arch_hweight64)
 EXPORT_SYMBOL(__arch_hweight64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.section	.popc_3insn_patch, "ax"
 	.word		__arch_hweight64
 	retl

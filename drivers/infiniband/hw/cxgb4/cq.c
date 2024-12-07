@@ -30,12 +30,6 @@
  * SOFTWARE.
  */
 
-<<<<<<< HEAD
-#include "iw_cxgb4.h"
-
-static int destroy_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
-		      struct c4iw_dev_ucontext *uctx)
-=======
 #include <rdma/uverbs_ioctl.h>
 
 #include "iw_cxgb4.h"
@@ -43,31 +37,10 @@ static int destroy_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 static void destroy_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 		       struct c4iw_dev_ucontext *uctx, struct sk_buff *skb,
 		       struct c4iw_wr_wait *wr_waitp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fw_ri_res_wr *res_wr;
 	struct fw_ri_res *res;
 	int wr_len;
-<<<<<<< HEAD
-	struct c4iw_wr_wait wr_wait;
-	struct sk_buff *skb;
-	int ret;
-
-	wr_len = sizeof *res_wr + sizeof *res;
-	skb = alloc_skb(wr_len, GFP_KERNEL);
-	if (!skb)
-		return -ENOMEM;
-	set_wr_txq(skb, CPL_PRIORITY_CONTROL, 0);
-
-	res_wr = (struct fw_ri_res_wr *)__skb_put(skb, wr_len);
-	memset(res_wr, 0, wr_len);
-	res_wr->op_nres = cpu_to_be32(
-			FW_WR_OP(FW_RI_RES_WR) |
-			V_FW_RI_RES_WR_NRES(1) |
-			FW_WR_COMPL(1));
-	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
-	res_wr->cookie = (unsigned long) &wr_wait;
-=======
 
 	wr_len = sizeof(*res_wr) + sizeof(*res);
 	set_wr_txq(skb, CPL_PRIORITY_CONTROL, 0);
@@ -79,58 +52,35 @@ static void destroy_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 			FW_WR_COMPL_F);
 	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
 	res_wr->cookie = (uintptr_t)wr_waitp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = res_wr->res;
 	res->u.cq.restype = FW_RI_RES_TYPE_CQ;
 	res->u.cq.op = FW_RI_RES_OP_RESET;
 	res->u.cq.iqid = cpu_to_be32(cq->cqid);
 
-<<<<<<< HEAD
-	c4iw_init_wr_wait(&wr_wait);
-	ret = c4iw_ofld_send(rdev, skb);
-	if (!ret) {
-		ret = c4iw_wait_for_reply(rdev, &wr_wait, 0, 0, __func__);
-	}
-=======
 	c4iw_init_wr_wait(wr_waitp);
 	c4iw_ref_send_wait(rdev, skb, wr_waitp, 0, 0, __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(cq->sw_queue);
 	dma_free_coherent(&(rdev->lldi.pdev->dev),
 			  cq->memsize, cq->queue,
 			  dma_unmap_addr(cq, mapping));
 	c4iw_put_cqid(rdev, cq->cqid, uctx);
-<<<<<<< HEAD
-	return ret;
-}
-
-static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
-		     struct c4iw_dev_ucontext *uctx)
-=======
 }
 
 static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 		     struct c4iw_dev_ucontext *uctx,
 		     struct c4iw_wr_wait *wr_waitp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fw_ri_res_wr *res_wr;
 	struct fw_ri_res *res;
 	int wr_len;
 	int user = (uctx != &rdev->uctx);
-<<<<<<< HEAD
-	struct c4iw_wr_wait wr_wait;
-	int ret;
-	struct sk_buff *skb;
-=======
 	int ret;
 	struct sk_buff *skb;
 	struct c4iw_ucontext *ucontext = NULL;
 
 	if (user)
 		ucontext = container_of(uctx, struct c4iw_ucontext, uctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cq->cqid = c4iw_get_cqid(rdev, uctx);
 	if (!cq->cqid) {
@@ -152,12 +102,6 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 		goto err3;
 	}
 	dma_unmap_addr_set(cq, mapping, cq->dma_addr);
-<<<<<<< HEAD
-	memset(cq->queue, 0, cq->memsize);
-
-	/* build fw_ri_res_wr */
-	wr_len = sizeof *res_wr + sizeof *res;
-=======
 
 	if (user && ucontext->is_32b_cqe) {
 		cq->qp_errp = &((struct t4_status_page *)
@@ -171,7 +115,6 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 
 	/* build fw_ri_res_wr */
 	wr_len = sizeof(*res_wr) + sizeof(*res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_skb(wr_len, GFP_KERNEL);
 	if (!skb) {
@@ -180,16 +123,6 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 	}
 	set_wr_txq(skb, CPL_PRIORITY_CONTROL, 0);
 
-<<<<<<< HEAD
-	res_wr = (struct fw_ri_res_wr *)__skb_put(skb, wr_len);
-	memset(res_wr, 0, wr_len);
-	res_wr->op_nres = cpu_to_be32(
-			FW_WR_OP(FW_RI_RES_WR) |
-			V_FW_RI_RES_WR_NRES(1) |
-			FW_WR_COMPL(1));
-	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
-	res_wr->cookie = (unsigned long) &wr_wait;
-=======
 	res_wr = __skb_put_zero(skb, wr_len);
 	res_wr->op_nres = cpu_to_be32(
 			FW_WR_OP_V(FW_RI_RES_WR) |
@@ -197,34 +130,11 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 			FW_WR_COMPL_F);
 	res_wr->len16_pkd = cpu_to_be32(DIV_ROUND_UP(wr_len, 16));
 	res_wr->cookie = (uintptr_t)wr_waitp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = res_wr->res;
 	res->u.cq.restype = FW_RI_RES_TYPE_CQ;
 	res->u.cq.op = FW_RI_RES_OP_WRITE;
 	res->u.cq.iqid = cpu_to_be32(cq->cqid);
 	res->u.cq.iqandst_to_iqandstindex = cpu_to_be32(
-<<<<<<< HEAD
-			V_FW_RI_RES_WR_IQANUS(0) |
-			V_FW_RI_RES_WR_IQANUD(1) |
-			F_FW_RI_RES_WR_IQANDST |
-			V_FW_RI_RES_WR_IQANDSTINDEX(*rdev->lldi.rxq_ids));
-	res->u.cq.iqdroprss_to_iqesize = cpu_to_be16(
-			F_FW_RI_RES_WR_IQDROPRSS |
-			V_FW_RI_RES_WR_IQPCIECH(2) |
-			V_FW_RI_RES_WR_IQINTCNTTHRESH(0) |
-			F_FW_RI_RES_WR_IQO |
-			V_FW_RI_RES_WR_IQESIZE(1));
-	res->u.cq.iqsize = cpu_to_be16(cq->size);
-	res->u.cq.iqaddr = cpu_to_be64(cq->dma_addr);
-
-	c4iw_init_wr_wait(&wr_wait);
-
-	ret = c4iw_ofld_send(rdev, skb);
-	if (ret)
-		goto err4;
-	PDBG("%s wait_event wr_wait %p\n", __func__, &wr_wait);
-	ret = c4iw_wait_for_reply(rdev, &wr_wait, 0, 0, __func__);
-=======
 			FW_RI_RES_WR_IQANUS_V(0) |
 			FW_RI_RES_WR_IQANUD_V(1) |
 			FW_RI_RES_WR_IQANDST_F |
@@ -243,19 +153,12 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 
 	c4iw_init_wr_wait(wr_waitp);
 	ret = c4iw_ref_send_wait(rdev, skb, wr_waitp, 0, 0, __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto err4;
 
 	cq->gen = 1;
 	cq->gts = rdev->lldi.gts_reg;
 	cq->rdev = rdev;
-<<<<<<< HEAD
-	if (user) {
-		cq->ugts = (u64)pci_resource_start(rdev->lldi.pdev, 2) +
-					(cq->cqid << rdev->cqshift);
-		cq->ugts &= PAGE_MASK;
-=======
 
 	cq->bar2_va = c4iw_bar2_addrs(rdev, cq->cqid, CXGB4_BAR2_QTYPE_INGRESS,
 				      &cq->bar2_qid,
@@ -265,7 +168,6 @@ static int create_cq(struct c4iw_rdev *rdev, struct t4_cq *cq,
 			pci_name(rdev->lldi.pdev), cq->cqid);
 		ret = -EINVAL;
 		goto err4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 err4:
@@ -279,21 +181,6 @@ err1:
 	return ret;
 }
 
-<<<<<<< HEAD
-static void insert_recv_cqe(struct t4_wq *wq, struct t4_cq *cq)
-{
-	struct t4_cqe cqe;
-
-	PDBG("%s wq %p cq %p sw_cidx %u sw_pidx %u\n", __func__,
-	     wq, cq, cq->sw_cidx, cq->sw_pidx);
-	memset(&cqe, 0, sizeof(cqe));
-	cqe.header = cpu_to_be32(V_CQE_STATUS(T4_ERR_SWFLUSH) |
-				 V_CQE_OPCODE(FW_RI_SEND) |
-				 V_CQE_TYPE(0) |
-				 V_CQE_SWCQE(1) |
-				 V_CQE_QPID(wq->sq.qid));
-	cqe.bits_type_ts = cpu_to_be64(V_CQE_GENBIT((u64)cq->gen));
-=======
 static void insert_recv_cqe(struct t4_wq *wq, struct t4_cq *cq, u32 srqidx)
 {
 	struct t4_cqe cqe;
@@ -309,7 +196,6 @@ static void insert_recv_cqe(struct t4_wq *wq, struct t4_cq *cq, u32 srqidx)
 	cqe.bits_type_ts = cpu_to_be64(CQE_GENBIT_V((u64)cq->gen));
 	if (srqidx)
 		cqe.u.srcqe.abs_rqe_idx = cpu_to_be32(srqidx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cq->sw_queue[cq->sw_pidx] = cqe;
 	t4_swcq_produce(cq);
 }
@@ -319,18 +205,10 @@ int c4iw_flush_rq(struct t4_wq *wq, struct t4_cq *cq, int count)
 	int flushed = 0;
 	int in_use = wq->rq.in_use - count;
 
-<<<<<<< HEAD
-	BUG_ON(in_use < 0);
-	PDBG("%s wq %p cq %p rq.in_use %u skip count %u\n", __func__,
-	     wq, cq, wq->rq.in_use, count);
-	while (in_use--) {
-		insert_recv_cqe(wq, cq);
-=======
 	pr_debug("wq %p cq %p rq.in_use %u skip count %u\n",
 		 wq, cq, wq->rq.in_use, count);
 	while (in_use--) {
 		insert_recv_cqe(wq, cq, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flushed++;
 	}
 	return flushed;
@@ -341,18 +219,6 @@ static void insert_sq_cqe(struct t4_wq *wq, struct t4_cq *cq,
 {
 	struct t4_cqe cqe;
 
-<<<<<<< HEAD
-	PDBG("%s wq %p cq %p sw_cidx %u sw_pidx %u\n", __func__,
-	     wq, cq, cq->sw_cidx, cq->sw_pidx);
-	memset(&cqe, 0, sizeof(cqe));
-	cqe.header = cpu_to_be32(V_CQE_STATUS(T4_ERR_SWFLUSH) |
-				 V_CQE_OPCODE(swcqe->opcode) |
-				 V_CQE_TYPE(1) |
-				 V_CQE_SWCQE(1) |
-				 V_CQE_QPID(wq->sq.qid));
-	CQE_WRID_SQ_IDX(&cqe) = swcqe->idx;
-	cqe.bits_type_ts = cpu_to_be64(V_CQE_GENBIT((u64)cq->gen));
-=======
 	pr_debug("wq %p cq %p sw_cidx %u sw_pidx %u\n",
 		 wq, cq, cq->sw_cidx, cq->sw_pidx);
 	memset(&cqe, 0, sizeof(cqe));
@@ -363,121 +229,10 @@ static void insert_sq_cqe(struct t4_wq *wq, struct t4_cq *cq,
 				 CQE_QPID_V(wq->sq.qid));
 	CQE_WRID_SQ_IDX(&cqe) = swcqe->idx;
 	cqe.bits_type_ts = cpu_to_be64(CQE_GENBIT_V((u64)cq->gen));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cq->sw_queue[cq->sw_pidx] = cqe;
 	t4_swcq_produce(cq);
 }
 
-<<<<<<< HEAD
-int c4iw_flush_sq(struct t4_wq *wq, struct t4_cq *cq, int count)
-{
-	int flushed = 0;
-	struct t4_swsqe *swsqe = &wq->sq.sw_sq[wq->sq.cidx + count];
-	int in_use = wq->sq.in_use - count;
-
-	BUG_ON(in_use < 0);
-	while (in_use--) {
-		swsqe->signaled = 0;
-		insert_sq_cqe(wq, cq, swsqe);
-		swsqe++;
-		if (swsqe == (wq->sq.sw_sq + wq->sq.size))
-			swsqe = wq->sq.sw_sq;
-		flushed++;
-	}
-	return flushed;
-}
-
-/*
- * Move all CQEs from the HWCQ into the SWCQ.
- */
-void c4iw_flush_hw_cq(struct t4_cq *cq)
-{
-	struct t4_cqe *cqe = NULL, *swcqe;
-	int ret;
-
-	PDBG("%s cq %p cqid 0x%x\n", __func__, cq, cq->cqid);
-	ret = t4_next_hw_cqe(cq, &cqe);
-	while (!ret) {
-		PDBG("%s flushing hwcq cidx 0x%x swcq pidx 0x%x\n",
-		     __func__, cq->cidx, cq->sw_pidx);
-		swcqe = &cq->sw_queue[cq->sw_pidx];
-		*swcqe = *cqe;
-		swcqe->header |= cpu_to_be32(V_CQE_SWCQE(1));
-		t4_swcq_produce(cq);
-		t4_hwcq_consume(cq);
-		ret = t4_next_hw_cqe(cq, &cqe);
-	}
-}
-
-static int cqe_completes_wr(struct t4_cqe *cqe, struct t4_wq *wq)
-{
-	if (CQE_OPCODE(cqe) == FW_RI_TERMINATE)
-		return 0;
-
-	if ((CQE_OPCODE(cqe) == FW_RI_RDMA_WRITE) && RQ_TYPE(cqe))
-		return 0;
-
-	if ((CQE_OPCODE(cqe) == FW_RI_READ_RESP) && SQ_TYPE(cqe))
-		return 0;
-
-	if (CQE_SEND_OPCODE(cqe) && RQ_TYPE(cqe) && t4_rq_empty(wq))
-		return 0;
-	return 1;
-}
-
-void c4iw_count_scqes(struct t4_cq *cq, struct t4_wq *wq, int *count)
-{
-	struct t4_cqe *cqe;
-	u32 ptr;
-
-	*count = 0;
-	ptr = cq->sw_cidx;
-	while (ptr != cq->sw_pidx) {
-		cqe = &cq->sw_queue[ptr];
-		if ((SQ_TYPE(cqe) || ((CQE_OPCODE(cqe) == FW_RI_READ_RESP) &&
-				      wq->sq.oldest_read)) &&
-		    (CQE_QPID(cqe) == wq->sq.qid))
-			(*count)++;
-		if (++ptr == cq->size)
-			ptr = 0;
-	}
-	PDBG("%s cq %p count %d\n", __func__, cq, *count);
-}
-
-void c4iw_count_rcqes(struct t4_cq *cq, struct t4_wq *wq, int *count)
-{
-	struct t4_cqe *cqe;
-	u32 ptr;
-
-	*count = 0;
-	PDBG("%s count zero %d\n", __func__, *count);
-	ptr = cq->sw_cidx;
-	while (ptr != cq->sw_pidx) {
-		cqe = &cq->sw_queue[ptr];
-		if (RQ_TYPE(cqe) && (CQE_OPCODE(cqe) != FW_RI_READ_RESP) &&
-		    (CQE_QPID(cqe) == wq->sq.qid) && cqe_completes_wr(cqe, wq))
-			(*count)++;
-		if (++ptr == cq->size)
-			ptr = 0;
-	}
-	PDBG("%s cq %p count %d\n", __func__, cq, *count);
-}
-
-static void flush_completed_wrs(struct t4_wq *wq, struct t4_cq *cq)
-{
-	struct t4_swsqe *swsqe;
-	u16 ptr = wq->sq.cidx;
-	int count = wq->sq.in_use;
-	int unsignaled = 0;
-
-	swsqe = &wq->sq.sw_sq[ptr];
-	while (count--)
-		if (!swsqe->signaled) {
-			if (++ptr == wq->sq.size)
-				ptr = 0;
-			swsqe = &wq->sq.sw_sq[ptr];
-			unsignaled++;
-=======
 static void advance_oldest_read(struct t4_wq *wq);
 
 int c4iw_flush_sq(struct c4iw_qp *qhp)
@@ -523,41 +278,11 @@ static void flush_completed_wrs(struct t4_wq *wq, struct t4_cq *cq)
 		if (!swsqe->signaled) {
 			if (++cidx == wq->sq.size)
 				cidx = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (swsqe->complete) {
 
 			/*
 			 * Insert this completed cqe into the swcq.
 			 */
-<<<<<<< HEAD
-			PDBG("%s moving cqe into swcq sq idx %u cq idx %u\n",
-			     __func__, ptr, cq->sw_pidx);
-			swsqe->cqe.header |= htonl(V_CQE_SWCQE(1));
-			cq->sw_queue[cq->sw_pidx] = swsqe->cqe;
-			t4_swcq_produce(cq);
-			swsqe->signaled = 0;
-			wq->sq.in_use -= unsignaled;
-			break;
-		} else
-			break;
-}
-
-static void create_read_req_cqe(struct t4_wq *wq, struct t4_cqe *hw_cqe,
-				struct t4_cqe *read_cqe)
-{
-	read_cqe->u.scqe.cidx = wq->sq.oldest_read->idx;
-	read_cqe->len = cpu_to_be32(wq->sq.oldest_read->read_len);
-	read_cqe->header = htonl(V_CQE_QPID(CQE_QPID(hw_cqe)) |
-				 V_CQE_SWCQE(SW_CQE(hw_cqe)) |
-				 V_CQE_OPCODE(FW_RI_READ_REQ) |
-				 V_CQE_TYPE(1));
-	read_cqe->bits_type_ts = hw_cqe->bits_type_ts;
-}
-
-/*
- * Return a ptr to the next read wr in the SWSQ or NULL.
- */
-=======
 			pr_debug("moving cqe into swcq sq idx %u cq idx %u\n",
 				 cidx, cq->sw_pidx);
 			swsqe->cqe.header |= htonl(CQE_SWCQE_V(1));
@@ -584,7 +309,6 @@ static void create_read_req_cqe(struct t4_wq *wq, struct t4_cqe *hw_cqe,
 	read_cqe->bits_type_ts = hw_cqe->bits_type_ts;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void advance_oldest_read(struct t4_wq *wq)
 {
 
@@ -604,8 +328,6 @@ static void advance_oldest_read(struct t4_wq *wq)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Move all CQEs from the HWCQ into the SWCQ.
  * Deal with out-of-order and/or completions that complete
  * prior unsignalled WRs.
@@ -804,7 +526,6 @@ static u64 reap_srq_cqe(struct t4_cqe *hw_cqe, struct t4_srq *srq)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * poll_cq
  *
  * Caller must:
@@ -821,12 +542,8 @@ static u64 reap_srq_cqe(struct t4_cqe *hw_cqe, struct t4_srq *srq)
  *    -EOVERFLOW    CQ overflow detected.
  */
 static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
-<<<<<<< HEAD
-		   u8 *cqe_flushed, u64 *cookie, u32 *credit)
-=======
 		   u8 *cqe_flushed, u64 *cookie, u32 *credit,
 		   struct t4_srq *srq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct t4_cqe *hw_cqe, read_cqe;
@@ -837,20 +554,11 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	if (ret)
 		return ret;
 
-<<<<<<< HEAD
-	PDBG("%s CQE OVF %u qpid 0x%0x genbit %u type %u status 0x%0x"
-	     " opcode 0x%0x len 0x%0x wrid_hi_stag 0x%x wrid_low_msn 0x%x\n",
-	     __func__, CQE_OVFBIT(hw_cqe), CQE_QPID(hw_cqe),
-	     CQE_GENBIT(hw_cqe), CQE_TYPE(hw_cqe), CQE_STATUS(hw_cqe),
-	     CQE_OPCODE(hw_cqe), CQE_LEN(hw_cqe), CQE_WRID_HI(hw_cqe),
-	     CQE_WRID_LOW(hw_cqe));
-=======
 	pr_debug("CQE OVF %u qpid 0x%0x genbit %u type %u status 0x%0x opcode 0x%0x len 0x%0x wrid_hi_stag 0x%x wrid_low_msn 0x%x\n",
 		 CQE_OVFBIT(hw_cqe), CQE_QPID(hw_cqe),
 		 CQE_GENBIT(hw_cqe), CQE_TYPE(hw_cqe), CQE_STATUS(hw_cqe),
 		 CQE_OPCODE(hw_cqe), CQE_LEN(hw_cqe), CQE_WRID_HI(hw_cqe),
 		 CQE_WRID_LOW(hw_cqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * skip cqe's not affiliated with a QP.
@@ -861,8 +569,6 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	}
 
 	/*
-<<<<<<< HEAD
-=======
 	* skip hw cqe's if the wq is flushed.
 	*/
 	if (wq->flushed && !SW_CQE(hw_cqe)) {
@@ -888,7 +594,6 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	}
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Gotta tweak READ completions:
 	 *	1) the cqe doesn't contain the sq_wptr from the wr.
 	 *	2) opcode not reflected from the wr.
@@ -897,16 +602,6 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	 */
 	if (RQ_TYPE(hw_cqe) && (CQE_OPCODE(hw_cqe) == FW_RI_READ_RESP)) {
 
-<<<<<<< HEAD
-		/*
-		 * If this is an unsolicited read response, then the read
-		 * was generated by the kernel driver as part of peer-2-peer
-		 * connection setup.  So ignore the completion.
-		 */
-		if (!wq->sq.oldest_read) {
-			if (CQE_STATUS(hw_cqe))
-				t4_set_wq_in_error(wq);
-=======
 		/* If we have reached here because of async
 		 * event or other error, and have egress error
 		 * then drop
@@ -934,7 +629,6 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 		 */
 		if (!wq->sq.oldest_read->signaled) {
 			advance_oldest_read(wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EAGAIN;
 			goto skip_cqe;
 		}
@@ -949,19 +643,8 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	}
 
 	if (CQE_STATUS(hw_cqe) || t4_wq_in_error(wq)) {
-<<<<<<< HEAD
-		*cqe_flushed = t4_wq_in_error(wq);
-		t4_set_wq_in_error(wq);
-		goto proc_cqe;
-	}
-
-	if (CQE_OPCODE(hw_cqe) == FW_RI_TERMINATE) {
-		ret = -EAGAIN;
-		goto skip_cqe;
-=======
 		*cqe_flushed = (CQE_STATUS(hw_cqe) == T4_ERR_SWFLUSH);
 		t4_set_wq_in_error(wq, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -975,23 +658,10 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 		 * then we complete this with T4_ERR_MSN and mark the wq in
 		 * error.
 		 */
-<<<<<<< HEAD
-
-		if (t4_rq_empty(wq)) {
-			t4_set_wq_in_error(wq);
-			ret = -EAGAIN;
-			goto skip_cqe;
-		}
-		if (unlikely((CQE_WRID_MSN(hw_cqe) != (wq->rq.msn)))) {
-			t4_set_wq_in_error(wq);
-			hw_cqe->header |= htonl(V_CQE_STATUS(T4_ERR_MSN));
-			goto proc_cqe;
-=======
 		if (unlikely(!CQE_STATUS(hw_cqe) &&
 			     CQE_WRID_MSN(hw_cqe) != wq->rq.msn)) {
 			t4_set_wq_in_error(wq, 0);
 			hw_cqe->header |= cpu_to_be32(CQE_STATUS_V(T4_ERR_MSN));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto proc_cqe;
 	}
@@ -1010,13 +680,8 @@ static int poll_cq(struct t4_wq *wq, struct t4_cq *cq, struct t4_cqe *cqe,
 	if (!SW_CQE(hw_cqe) && (CQE_WRID_SQ_IDX(hw_cqe) != wq->sq.cidx)) {
 		struct t4_swsqe *swsqe;
 
-<<<<<<< HEAD
-		PDBG("%s out of order completion going in sw_sq at idx %u\n",
-		     __func__, CQE_WRID_SQ_IDX(hw_cqe));
-=======
 		pr_debug("out of order completion going in sw_sq at idx %u\n",
 			 CQE_WRID_SQ_IDX(hw_cqe));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		swsqe = &wq->sq.sw_sq[CQE_WRID_SQ_IDX(hw_cqe)];
 		swsqe->cqe = *hw_cqe;
 		swsqe->complete = 1;
@@ -1032,17 +697,6 @@ proc_cqe:
 	 * completion.
 	 */
 	if (SQ_TYPE(hw_cqe)) {
-<<<<<<< HEAD
-		wq->sq.cidx = CQE_WRID_SQ_IDX(hw_cqe);
-		PDBG("%s completing sq idx %u\n", __func__, wq->sq.cidx);
-		*cookie = wq->sq.sw_sq[wq->sq.cidx].wr_id;
-		t4_sq_consume(wq);
-	} else {
-		PDBG("%s completing rq idx %u\n", __func__, wq->rq.cidx);
-		*cookie = wq->rq.sw_rq[wq->rq.cidx].wr_id;
-		BUG_ON(t4_rq_empty(wq));
-		t4_rq_consume(wq);
-=======
 		int idx = CQE_WRID_SQ_IDX(hw_cqe);
 
 		/*
@@ -1076,7 +730,6 @@ proc_cqe:
 		}
 		wq->rq.msn++;
 		goto skip_cqe;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 flush_wq:
@@ -1087,71 +740,29 @@ flush_wq:
 
 skip_cqe:
 	if (SW_CQE(hw_cqe)) {
-<<<<<<< HEAD
-		PDBG("%s cq %p cqid 0x%x skip sw cqe cidx %u\n",
-		     __func__, cq, cq->cqid, cq->sw_cidx);
-		t4_swcq_consume(cq);
-	} else {
-		PDBG("%s cq %p cqid 0x%x skip hw cqe cidx %u\n",
-		     __func__, cq, cq->cqid, cq->cidx);
-=======
 		pr_debug("cq %p cqid 0x%x skip sw cqe cidx %u\n",
 			 cq, cq->cqid, cq->sw_cidx);
 		t4_swcq_consume(cq);
 	} else {
 		pr_debug("cq %p cqid 0x%x skip hw cqe cidx %u\n",
 			 cq, cq->cqid, cq->cidx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t4_hwcq_consume(cq);
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-/*
- * Get one cq entry from c4iw and map it to openib.
- *
- * Returns:
- *	0			cqe returned
- *	-ENODATA		EMPTY;
- *	-EAGAIN			caller must try again
- *	any other -errno	fatal error
- */
-static int c4iw_poll_cq_one(struct c4iw_cq *chp, struct ib_wc *wc)
-{
-	struct c4iw_qp *qhp = NULL;
-	struct t4_cqe cqe = {0, 0}, *rd_cqe;
-	struct t4_wq *wq;
-=======
 static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 			      struct ib_wc *wc, struct c4iw_srq *srq)
 {
 	struct t4_cqe cqe;
 	struct t4_wq *wq = qhp ? &qhp->wq : NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 credit = 0;
 	u8 cqe_flushed;
 	u64 cookie = 0;
 	int ret;
 
-<<<<<<< HEAD
-	ret = t4_next_cqe(&chp->cq, &rd_cqe);
-
-	if (ret)
-		return ret;
-
-	qhp = get_qhp(chp->rhp, CQE_QPID(rd_cqe));
-	if (!qhp)
-		wq = NULL;
-	else {
-		spin_lock(&qhp->lock);
-		wq = &(qhp->wq);
-	}
-	ret = poll_cq(wq, &(chp->cq), &cqe, &cqe_flushed, &cookie, &credit);
-=======
 	ret = poll_cq(wq, &(chp->cq), &cqe, &cqe_flushed, &cookie, &credit,
 		      srq ? &srq->wq : NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -1160,12 +771,6 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 	wc->vendor_err = CQE_STATUS(&cqe);
 	wc->wc_flags = 0;
 
-<<<<<<< HEAD
-	PDBG("%s qpid 0x%x type %d opcode %d status 0x%x len %u wrid hi 0x%x "
-	     "lo 0x%x cookie 0x%llx\n", __func__, CQE_QPID(&cqe),
-	     CQE_TYPE(&cqe), CQE_OPCODE(&cqe), CQE_STATUS(&cqe), CQE_LEN(&cqe),
-	     CQE_WRID_HI(&cqe), CQE_WRID_LOW(&cqe), (unsigned long long)cookie);
-=======
 	/*
 	 * Simulate a SRQ_LIMIT_REACHED HW notification if required.
 	 */
@@ -1179,23 +784,12 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 		 CQE_STATUS(&cqe), CQE_LEN(&cqe),
 		 CQE_WRID_HI(&cqe), CQE_WRID_LOW(&cqe),
 		 (unsigned long long)cookie);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (CQE_TYPE(&cqe) == 0) {
 		if (!CQE_STATUS(&cqe))
 			wc->byte_len = CQE_LEN(&cqe);
 		else
 			wc->byte_len = 0;
-<<<<<<< HEAD
-		wc->opcode = IB_WC_RECV;
-		if (CQE_OPCODE(&cqe) == FW_RI_SEND_WITH_INV ||
-		    CQE_OPCODE(&cqe) == FW_RI_SEND_WITH_SE_INV) {
-			wc->ex.invalidate_rkey = CQE_WRID_STAG(&cqe);
-			wc->wc_flags |= IB_WC_WITH_INVALIDATE;
-		}
-	} else {
-		switch (CQE_OPCODE(&cqe)) {
-=======
 
 		switch (CQE_OPCODE(&cqe)) {
 		case FW_RI_SEND:
@@ -1222,7 +816,6 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 	} else {
 		switch (CQE_OPCODE(&cqe)) {
 		case FW_RI_WRITE_IMMEDIATE:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case FW_RI_RDMA_WRITE:
 			wc->opcode = IB_WC_RDMA_WRITE;
 			break;
@@ -1239,24 +832,11 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 		case FW_RI_SEND_WITH_SE:
 			wc->opcode = IB_WC_SEND;
 			break;
-<<<<<<< HEAD
-		case FW_RI_BIND_MW:
-			wc->opcode = IB_WC_BIND_MW;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case FW_RI_LOCAL_INV:
 			wc->opcode = IB_WC_LOCAL_INV;
 			break;
 		case FW_RI_FAST_REGISTER:
-<<<<<<< HEAD
-			wc->opcode = IB_WC_FAST_REG_MR;
-			break;
-		default:
-			printk(KERN_ERR MOD "Unexpected opcode %d "
-			       "in the CQE received for QPID=0x%0x\n",
-=======
 			wc->opcode = IB_WC_REG_MR;
 
 			/* Invalidate the MR if the fastreg failed */
@@ -1266,7 +846,6 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 			break;
 		default:
 			pr_err("Unexpected opcode %d in the CQE received for QPID=0x%0x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       CQE_OPCODE(&cqe), CQE_QPID(&cqe));
 			ret = -EINVAL;
 			goto out;
@@ -1321,17 +900,6 @@ static int __c4iw_poll_cq_one(struct c4iw_cq *chp, struct c4iw_qp *qhp,
 			wc->status = IB_WC_WR_FLUSH_ERR;
 			break;
 		default:
-<<<<<<< HEAD
-			printk(KERN_ERR MOD
-			       "Unexpected cqe_status 0x%x for QPID=0x%0x\n",
-			       CQE_STATUS(&cqe), CQE_QPID(&cqe));
-			ret = -EINVAL;
-		}
-	}
-out:
-	if (wq)
-		spin_unlock(&qhp->lock);
-=======
 			pr_err("Unexpected cqe_status 0x%x for QPID=0x%0x\n",
 			       CQE_STATUS(&cqe), CQE_QPID(&cqe));
 			wc->status = IB_WC_FATAL_ERR;
@@ -1375,7 +943,6 @@ static int c4iw_poll_cq_one(struct c4iw_cq *chp, struct ib_wc *wc)
 	} else {
 		ret = __c4iw_poll_cq_one(chp, NULL, wc, NULL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1400,9 +967,6 @@ int c4iw_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 	return !err || err == -ENODATA ? npolled : err;
 }
 
-<<<<<<< HEAD
-int c4iw_destroy_cq(struct ib_cq *ib_cq)
-=======
 void c4iw_cq_rem_ref(struct c4iw_cq *chp)
 {
 	if (refcount_dec_and_test(&chp->refcnt))
@@ -1410,50 +974,10 @@ void c4iw_cq_rem_ref(struct c4iw_cq *chp)
 }
 
 int c4iw_destroy_cq(struct ib_cq *ib_cq, struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct c4iw_cq *chp;
 	struct c4iw_ucontext *ucontext;
 
-<<<<<<< HEAD
-	PDBG("%s ib_cq %p\n", __func__, ib_cq);
-	chp = to_c4iw_cq(ib_cq);
-
-	remove_handle(chp->rhp, &chp->rhp->cqidr, chp->cq.cqid);
-	atomic_dec(&chp->refcnt);
-	wait_event(chp->wait, !atomic_read(&chp->refcnt));
-
-	ucontext = ib_cq->uobject ? to_c4iw_ucontext(ib_cq->uobject->context)
-				  : NULL;
-	destroy_cq(&chp->rhp->rdev, &chp->cq,
-		   ucontext ? &ucontext->uctx : &chp->cq.rdev->uctx);
-	kfree(chp);
-	return 0;
-}
-
-struct ib_cq *c4iw_create_cq(struct ib_device *ibdev, int entries,
-			     int vector, struct ib_ucontext *ib_context,
-			     struct ib_udata *udata)
-{
-	struct c4iw_dev *rhp;
-	struct c4iw_cq *chp;
-	struct c4iw_create_cq_resp uresp;
-	struct c4iw_ucontext *ucontext = NULL;
-	int ret;
-	size_t memsize, hwentries;
-	struct c4iw_mm_entry *mm, *mm2;
-
-	PDBG("%s ib_dev %p entries %d\n", __func__, ibdev, entries);
-
-	rhp = to_c4iw_dev(ibdev);
-
-	chp = kzalloc(sizeof(*chp), GFP_KERNEL);
-	if (!chp)
-		return ERR_PTR(-ENOMEM);
-
-	if (ib_context)
-		ucontext = to_c4iw_ucontext(ib_context);
-=======
 	pr_debug("ib_cq %p\n", ib_cq);
 	chp = to_c4iw_cq(ib_cq);
 
@@ -1514,7 +1038,6 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		ret = -ENOMEM;
 		goto err_free_wr_wait;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* account for the status page. */
 	entries++;
@@ -1530,11 +1053,7 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 	/*
 	 * Make actual HW queue 2x to avoid cdix_inc overflows.
 	 */
-<<<<<<< HEAD
-	hwentries = entries * 2;
-=======
 	hwentries = min(entries * 2, rhp->rdev.hw_queue.t4_max_iq_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Make HW queue at least 64 entries so GTS updates aren't too
@@ -1543,33 +1062,12 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 	if (hwentries < 64)
 		hwentries = 64;
 
-<<<<<<< HEAD
-	memsize = hwentries * sizeof *chp->cq.queue;
-=======
 	memsize = hwentries * ((ucontext && ucontext->is_32b_cqe) ?
 			(sizeof(*chp->cq.queue) / 2) : sizeof(*chp->cq.queue));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * memsize must be a multiple of the page size if its a user cq.
 	 */
-<<<<<<< HEAD
-	if (ucontext) {
-		memsize = roundup(memsize, PAGE_SIZE);
-		hwentries = memsize / sizeof *chp->cq.queue;
-		while (hwentries > T4_MAX_IQ_SIZE) {
-			memsize -= PAGE_SIZE;
-			hwentries = memsize / sizeof *chp->cq.queue;
-		}
-	}
-	chp->cq.size = hwentries;
-	chp->cq.memsize = memsize;
-
-	ret = create_cq(&rhp->rdev, &chp->cq,
-			ucontext ? &ucontext->uctx : &rhp->rdev.uctx);
-	if (ret)
-		goto err1;
-=======
 	if (udata)
 		memsize = roundup(memsize, PAGE_SIZE);
 
@@ -1582,29 +1080,12 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 			chp->wr_waitp);
 	if (ret)
 		goto err_free_skb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chp->rhp = rhp;
 	chp->cq.size--;				/* status page */
 	chp->ibcq.cqe = entries - 2;
 	spin_lock_init(&chp->lock);
 	spin_lock_init(&chp->comp_handler_lock);
-<<<<<<< HEAD
-	atomic_set(&chp->refcnt, 1);
-	init_waitqueue_head(&chp->wait);
-	ret = insert_handle(rhp, &rhp->cqidr, chp, chp->cq.cqid);
-	if (ret)
-		goto err2;
-
-	if (ucontext) {
-		mm = kmalloc(sizeof *mm, GFP_KERNEL);
-		if (!mm)
-			goto err3;
-		mm2 = kmalloc(sizeof *mm2, GFP_KERNEL);
-		if (!mm2)
-			goto err4;
-
-=======
 	refcount_set(&chp->refcnt, 1);
 	init_completion(&chp->cq_rel_comp);
 	ret = xa_insert_irq(&rhp->cqs, chp->cq.cqid, chp, GFP_KERNEL);
@@ -1621,7 +1102,6 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 			goto err_free_mm;
 
 		memset(&uresp, 0, sizeof(uresp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uresp.qid_mask = rhp->rdev.cqmask;
 		uresp.cqid = chp->cq.cqid;
 		uresp.size = chp->cq.size;
@@ -1631,12 +1111,6 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		ucontext->key += PAGE_SIZE;
 		uresp.gts_key = ucontext->key;
 		ucontext->key += PAGE_SIZE;
-<<<<<<< HEAD
-		spin_unlock(&ucontext->mmap_lock);
-		ret = ib_copy_to_udata(udata, &uresp, sizeof uresp);
-		if (ret)
-			goto err5;
-=======
 		/* communicate to the userspace that
 		 * kernel driver supports 64B CQE
 		 */
@@ -1649,7 +1123,6 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 				       sizeof(uresp));
 		if (ret)
 			goto err_free_mm2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mm->key = uresp.key;
 		mm->addr = virt_to_phys(chp->cq.queue);
@@ -1657,34 +1130,6 @@ int c4iw_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		insert_mmap(ucontext, mm);
 
 		mm2->key = uresp.gts_key;
-<<<<<<< HEAD
-		mm2->addr = chp->cq.ugts;
-		mm2->len = PAGE_SIZE;
-		insert_mmap(ucontext, mm2);
-	}
-	PDBG("%s cqid 0x%0x chp %p size %u memsize %zu, dma_addr 0x%0llx\n",
-	     __func__, chp->cq.cqid, chp, chp->cq.size,
-	     chp->cq.memsize,
-	     (unsigned long long) chp->cq.dma_addr);
-	return &chp->ibcq;
-err5:
-	kfree(mm2);
-err4:
-	kfree(mm);
-err3:
-	remove_handle(rhp, &rhp->cqidr, chp->cq.cqid);
-err2:
-	destroy_cq(&chp->rhp->rdev, &chp->cq,
-		   ucontext ? &ucontext->uctx : &rhp->rdev.uctx);
-err1:
-	kfree(chp);
-	return ERR_PTR(ret);
-}
-
-int c4iw_resize_cq(struct ib_cq *cq, int cqe, struct ib_udata *udata)
-{
-	return -ENOSYS;
-=======
 		mm2->addr = chp->cq.bar2_pa;
 		mm2->len = PAGE_SIZE;
 		insert_mmap(ucontext, mm2);
@@ -1710,30 +1155,16 @@ err_free_wr_wait:
 	c4iw_put_wr_wait(chp->wr_waitp);
 err_free_chp:
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int c4iw_arm_cq(struct ib_cq *ibcq, enum ib_cq_notify_flags flags)
 {
 	struct c4iw_cq *chp;
-<<<<<<< HEAD
-	int ret;
-=======
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flag;
 
 	chp = to_c4iw_cq(ibcq);
 	spin_lock_irqsave(&chp->lock, flag);
-<<<<<<< HEAD
-	ret = t4_arm_cq(&chp->cq,
-			(flags & IB_CQ_SOLICITED_MASK) == IB_CQ_SOLICITED);
-	spin_unlock_irqrestore(&chp->lock, flag);
-	if (ret && !(flags & IB_CQ_REPORT_MISSED_EVENTS))
-		ret = 0;
-	return ret;
-}
-=======
 	t4_arm_cq(&chp->cq,
 		  (flags & IB_CQ_SOLICITED_MASK) == IB_CQ_SOLICITED);
 	if (flags & IB_CQ_REPORT_MISSED_EVENTS)
@@ -1757,4 +1188,3 @@ void c4iw_flush_srqidx(struct c4iw_qp *qhp, u32 srqidx)
 	spin_unlock(&qhp->lock);
 	spin_unlock_irqrestore(&rchp->lock, flag);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

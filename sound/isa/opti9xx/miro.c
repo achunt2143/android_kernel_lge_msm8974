@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA soundcard driver for Miro miroSOUND PCM1 pro
  *                                  miroSOUND PCM12
@@ -10,23 +7,6 @@
  *   Copyright (C) 2004-2005 Martin Langer <martin-langer@gmx.de>
  *
  *   Based on OSS ACI and ALSA OPTi9xx drivers
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -36,11 +16,7 @@
 #include <linux/delay.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 #include <sound/core.h>
 #include <sound/wss.h>
@@ -48,10 +24,7 @@
 #include <sound/opl4.h>
 #include <sound/control.h>
 #include <sound/info.h>
-<<<<<<< HEAD
-=======
 #define SNDRV_LEGACY_FIND_FREE_IOPORT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SNDRV_LEGACY_FIND_FREE_IRQ
 #define SNDRV_LEGACY_FIND_FREE_DMA
 #include <sound/initval.h>
@@ -60,12 +33,6 @@
 MODULE_AUTHOR("Martin Langer <martin-langer@gmx.de>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Miro miroSOUND PCM1 pro, PCM12, PCM20 Radio");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Miro,miroSOUND PCM1 pro}, "
-			"{Miro,miroSOUND PCM12}, "
-			"{Miro,miroSOUND PCM20 Radio}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index = SNDRV_DEFAULT_IDX1;		/* Index 0-MAX */
 static char *id = SNDRV_DEFAULT_STR1;		/* ID for this card */
@@ -86,21 +53,6 @@ module_param(index, int, 0444);
 MODULE_PARM_DESC(index, "Index value for miro soundcard.");
 module_param(id, charp, 0444);
 MODULE_PARM_DESC(id, "ID string for miro soundcard.");
-<<<<<<< HEAD
-module_param(port, long, 0444);
-MODULE_PARM_DESC(port, "WSS port # for miro driver.");
-module_param(mpu_port, long, 0444);
-MODULE_PARM_DESC(mpu_port, "MPU-401 port # for miro driver.");
-module_param(fm_port, long, 0444);
-MODULE_PARM_DESC(fm_port, "FM Port # for miro driver.");
-module_param(irq, int, 0444);
-MODULE_PARM_DESC(irq, "WSS irq # for miro driver.");
-module_param(mpu_irq, int, 0444);
-MODULE_PARM_DESC(mpu_irq, "MPU-401 irq # for miro driver.");
-module_param(dma1, int, 0444);
-MODULE_PARM_DESC(dma1, "1st dma # for miro driver.");
-module_param(dma2, int, 0444);
-=======
 module_param_hw(port, long, ioport, 0444);
 MODULE_PARM_DESC(port, "WSS port # for miro driver.");
 module_param_hw(mpu_port, long, ioport, 0444);
@@ -114,7 +66,6 @@ MODULE_PARM_DESC(mpu_irq, "MPU-401 irq # for miro driver.");
 module_param_hw(dma1, int, dma, 0444);
 MODULE_PARM_DESC(dma1, "1st dma # for miro driver.");
 module_param_hw(dma2, int, dma, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma2, "2nd dma # for miro driver.");
 module_param(wss, int, 0444);
 MODULE_PARM_DESC(wss, "wss mode");
@@ -165,11 +116,7 @@ struct snd_miro {
 
 static struct snd_miro_aci aci_device;
 
-<<<<<<< HEAD
-static char * snd_opti9xx_names[] = {
-=======
 static const char * const snd_opti9xx_names[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"unknown",
 	"82C928", "82C929",
 	"82C924", "82C925",
@@ -180,11 +127,7 @@ static int snd_miro_pnp_is_probed;
 
 #ifdef CONFIG_PNP
 
-<<<<<<< HEAD
-static struct pnp_card_device_id snd_miro_pnpids[] = {
-=======
 static const struct pnp_card_device_id snd_miro_pnpids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* PCM20 and PCM12 in PnP mode */
 	{ .id = "MIR0924",
 	  .devs = { { "MIR0000" }, { "MIR0002" }, { "MIR0005" } }, },
@@ -217,12 +160,6 @@ static int aci_busy_wait(struct snd_miro_aci *aci)
 			switch (timeout-ACI_MINTIME) {
 			case 0 ... 9:
 				out /= 10;
-<<<<<<< HEAD
-			case 10 ... 19:
-				out /= 10;
-			case 20 ... 30:
-				out /= 10;
-=======
 				fallthrough;
 			case 10 ... 19:
 				out /= 10;
@@ -230,7 +167,6 @@ static int aci_busy_wait(struct snd_miro_aci *aci)
 			case 20 ... 30:
 				out /= 10;
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 				set_current_state(TASK_UNINTERRUPTIBLE);
 				schedule_timeout(out);
@@ -638,11 +574,7 @@ static int snd_miro_put_double(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_miro_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_miro_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MIRO_DOUBLE("Master Playback Volume", 0, ACI_GET_MASTER, ACI_SET_MASTER),
 MIRO_DOUBLE("Mic Playback Volume", 1, ACI_GET_MIC, ACI_SET_MIC),
 MIRO_DOUBLE("Line Playback Volume", 1, ACI_GET_LINE, ACI_SET_LINE),
@@ -654,11 +586,7 @@ MIRO_DOUBLE("Aux Playback Volume", 2, ACI_GET_LINE2, ACI_SET_LINE2),
 
 /* Equalizer with seven bands (only PCM20) 
    from -12dB up to +12dB on each band */
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_miro_eq_controls[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_miro_eq_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MIRO_DOUBLE("Tone Control - 28 Hz", 0, ACI_GET_EQ1, ACI_SET_EQ1),
 MIRO_DOUBLE("Tone Control - 160 Hz", 0, ACI_GET_EQ2, ACI_SET_EQ2),
 MIRO_DOUBLE("Tone Control - 400 Hz", 0, ACI_GET_EQ3, ACI_SET_EQ3),
@@ -668,17 +596,6 @@ MIRO_DOUBLE("Tone Control - 6.3 kHz", 0, ACI_GET_EQ6, ACI_SET_EQ6),
 MIRO_DOUBLE("Tone Control - 16 kHz", 0, ACI_GET_EQ7, ACI_SET_EQ7),
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_miro_radio_control[] __devinitdata = {
-MIRO_DOUBLE("Radio Playback Volume", 0, ACI_GET_LINE1, ACI_SET_LINE1),
-};
-
-static struct snd_kcontrol_new snd_miro_line_control[] __devinitdata = {
-MIRO_DOUBLE("Line Playback Volume", 2, ACI_GET_LINE1, ACI_SET_LINE1),
-};
-
-static struct snd_kcontrol_new snd_miro_preamp_control[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_miro_radio_control[] = {
 MIRO_DOUBLE("Radio Playback Volume", 0, ACI_GET_LINE1, ACI_SET_LINE1),
 };
@@ -688,7 +605,6 @@ MIRO_DOUBLE("Line Playback Volume", 2, ACI_GET_LINE1, ACI_SET_LINE1),
 };
 
 static const struct snd_kcontrol_new snd_miro_preamp_control[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Mic Boost",
@@ -698,11 +614,7 @@ static const struct snd_kcontrol_new snd_miro_preamp_control[] = {
 	.put = snd_miro_put_preamp,
 }};
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_miro_amp_control[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_miro_amp_control[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Line Boost",
@@ -712,11 +624,7 @@ static const struct snd_kcontrol_new snd_miro_amp_control[] = {
 	.put = snd_miro_put_amp,
 }};
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_miro_capture_control[] __devinitdata = {
-=======
 static const struct snd_kcontrol_new snd_miro_capture_control[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "PCM Capture Switch",
@@ -726,11 +634,7 @@ static const struct snd_kcontrol_new snd_miro_capture_control[] = {
 	.put = snd_miro_put_capture,
 }};
 
-<<<<<<< HEAD
-static unsigned char aci_init_values[][2] __devinitdata = {
-=======
 static const unsigned char aci_init_values[][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ACI_SET_MUTE, 0x00 },
 	{ ACI_SET_POWERAMP, 0x00 },
 	{ ACI_SET_PREAMP, 0x00 },
@@ -753,11 +657,7 @@ static const unsigned char aci_init_values[][2] = {
 	{ ACI_SET_MASTER + 1, 0x20 },
 };
 
-<<<<<<< HEAD
-static int __devinit snd_set_aci_init_values(struct snd_miro *miro)
-=======
 static int snd_set_aci_init_values(struct snd_miro *miro)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx, error;
 	struct snd_miro_aci *aci = miro->aci;
@@ -800,13 +700,8 @@ static int snd_set_aci_init_values(struct snd_miro *miro)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_miro_mixer(struct snd_card *card,
-				    struct snd_miro *miro)
-=======
 static int snd_miro_mixer(struct snd_card *card,
 			  struct snd_miro *miro)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int idx;
 	int err;
@@ -827,42 +722,25 @@ static int snd_miro_mixer(struct snd_card *card,
 	}
 
 	for (idx = 0; idx < ARRAY_SIZE(snd_miro_controls); idx++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_controls[idx], miro))) < 0)
-=======
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_controls[idx], miro));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
 	if ((miro->aci->aci_product == 'A') ||
 	    (miro->aci->aci_product == 'B')) {
 		/* PCM1/PCM12 with power-amp and Line 2 */
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_line_control[0], miro))) < 0)
-			return err;
-		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_amp_control[0], miro))) < 0)
-=======
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_line_control[0], miro));
 		if (err < 0)
 			return err;
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_amp_control[0], miro));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
 	if ((miro->aci->aci_product == 'B') ||
 	    (miro->aci->aci_product == 'C')) {
 		/* PCM12/PCM20 with mic-preamp */
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_preamp_control[0], miro))) < 0)
-			return err;
-		if (miro->aci->aci_version >= 176)
-			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_capture_control[0], miro))) < 0)
-				return err;
-=======
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_preamp_control[0], miro));
 		if (err < 0)
 			return err;
@@ -871,24 +749,16 @@ static int snd_miro_mixer(struct snd_card *card,
 			if (err < 0)
 				return err;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (miro->aci->aci_product == 'C') {
 		/* PCM20 with radio and 7 band equalizer */
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_radio_control[0], miro))) < 0)
-			return err;
-		for (idx = 0; idx < ARRAY_SIZE(snd_miro_eq_controls); idx++) {
-			if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_eq_controls[idx], miro))) < 0)
-=======
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_radio_control[0], miro));
 		if (err < 0)
 			return err;
 		for (idx = 0; idx < ARRAY_SIZE(snd_miro_eq_controls); idx++) {
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_miro_eq_controls[idx], miro));
 			if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return err;
 		}
 	}
@@ -896,31 +766,10 @@ static int snd_miro_mixer(struct snd_card *card,
 	return 0;
 }
 
-<<<<<<< HEAD
-static long snd_legacy_find_free_ioport(long *port_table, long size)
-{
-	while (*port_table != -1) {
-		struct resource *res;
-		if ((res = request_region(*port_table, size, 
-					  "ALSA test")) != NULL) {
-			release_and_free_resource(res);
-			return *port_table;
-		}
-		port_table++;
-	}
-	return -1;
-}
-
-static int __devinit snd_miro_init(struct snd_miro *chip,
-				   unsigned short hardware)
-{
-	static int opti9xx_mc_size[] = {7, 7, 10, 10, 2, 2, 2};
-=======
 static int snd_miro_init(struct snd_miro *chip,
 			 unsigned short hardware)
 {
 	static const int opti9xx_mc_size[] = {7, 7, 10, 10, 2, 2, 2};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->hardware = hardware;
 	strcpy(chip->name, snd_opti9xx_names[hardware]);
@@ -980,10 +829,7 @@ static unsigned char snd_miro_read(struct snd_miro *chip,
 			retval = inb(chip->mc_base + 9);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case OPTi9XX_HW_82C929:
 		retval = inb(chip->mc_base + reg);
@@ -1013,10 +859,7 @@ static void snd_miro_write(struct snd_miro *chip, unsigned char reg,
 			outb(value, chip->mc_base + 9);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case OPTi9XX_HW_82C929:
 		outb(value, chip->mc_base + reg);
@@ -1029,12 +872,6 @@ static void snd_miro_write(struct snd_miro *chip, unsigned char reg,
 	spin_unlock_irqrestore(&chip->lock, flags);
 }
 
-<<<<<<< HEAD
-
-#define snd_miro_write_mask(chip, reg, value, mask)	\
-	snd_miro_write(chip, reg,			\
-		(snd_miro_read(chip, reg) & ~(mask)) | ((value) & (mask)))
-=======
 static inline void snd_miro_write_mask(struct snd_miro *chip,
 		unsigned char reg, unsigned char value, unsigned char mask)
 {
@@ -1042,7 +879,6 @@ static inline void snd_miro_write_mask(struct snd_miro *chip,
 
 	snd_miro_write(chip, reg, (oldval & ~mask) | (value & mask));
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Proc Interface
@@ -1153,31 +989,17 @@ static void snd_miro_proc_read(struct snd_info_entry * entry,
 	snd_iprintf(buffer, "  preamp  : 0x%x\n", aci->aci_preamp);
 }
 
-<<<<<<< HEAD
-static void __devinit snd_miro_proc_init(struct snd_card *card,
-					 struct snd_miro *miro)
-{
-	struct snd_info_entry *entry;
-
-	if (!snd_card_proc_new(card, "miro", &entry))
-		snd_info_set_text_ops(entry, miro, snd_miro_proc_read);
-=======
 static void snd_miro_proc_init(struct snd_card *card,
 			       struct snd_miro *miro)
 {
 	snd_card_ro_proc_new(card, "miro", miro, snd_miro_proc_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *  Init
  */
 
-<<<<<<< HEAD
-static int __devinit snd_miro_configure(struct snd_miro *chip)
-=======
 static int snd_miro_configure(struct snd_miro *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char wss_base_bits;
 	unsigned char irq_bits;
@@ -1337,14 +1159,6 @@ __skip_mpu:
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_miro_opti_check(struct snd_miro *chip)
-{
-	unsigned char value;
-
-	chip->res_mc_base = request_region(chip->mc_base, chip->mc_base_size,
-					   "OPTi9xx MC");
-=======
 static int snd_miro_opti_check(struct snd_card *card, struct snd_miro *chip)
 {
 	unsigned char value;
@@ -1352,7 +1166,6 @@ static int snd_miro_opti_check(struct snd_card *card, struct snd_miro *chip)
 	chip->res_mc_base =
 		devm_request_region(card->dev, chip->mc_base,
 				    chip->mc_base_size, "OPTi9xx MC");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->res_mc_base == NULL)
 		return -ENOMEM;
 
@@ -1361,40 +1174,24 @@ static int snd_miro_opti_check(struct snd_card *card, struct snd_miro *chip)
 		if (value == snd_miro_read(chip, OPTi9XX_MC_REG(1)))
 			return 0;
 
-<<<<<<< HEAD
-	release_and_free_resource(chip->res_mc_base);
-=======
 	devm_release_resource(card->dev, chip->res_mc_base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->res_mc_base = NULL;
 
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_card_miro_detect(struct snd_card *card,
-					  struct snd_miro *chip)
-=======
 static int snd_card_miro_detect(struct snd_card *card,
 				struct snd_miro *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, err;
 
 	for (i = OPTi9XX_HW_82C929; i <= OPTi9XX_HW_82C924; i++) {
 
-<<<<<<< HEAD
-		if ((err = snd_miro_init(chip, i)) < 0)
-			return err;
-
-		err = snd_miro_opti_check(chip);
-=======
 		err = snd_miro_init(chip, i);
 		if (err < 0)
 			return err;
 
 		err = snd_miro_opti_check(card, chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err == 0)
 			return 1;
 	}
@@ -1402,13 +1199,8 @@ static int snd_card_miro_detect(struct snd_card *card,
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_card_miro_aci_detect(struct snd_card *card,
-					      struct snd_miro *miro)
-=======
 static int snd_card_miro_aci_detect(struct snd_card *card,
 				    struct snd_miro *miro)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char regval;
 	int i;
@@ -1423,12 +1215,8 @@ static int snd_card_miro_aci_detect(struct snd_card *card,
 	regval=inb(miro->mc_base + 4);
 	aci->aci_port = (regval & 0x10) ? 0x344 : 0x354;
 
-<<<<<<< HEAD
-	miro->res_aci_port = request_region(aci->aci_port, 3, "miro aci");
-=======
 	miro->res_aci_port =
 		devm_request_region(card->dev, aci->aci_port, 3, "miro aci");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (miro->res_aci_port == NULL) {
 		snd_printk(KERN_ERR "aci i/o area 0x%lx-0x%lx already used.\n", 
 			   aci->aci_port, aci->aci_port+2);
@@ -1467,35 +1255,11 @@ static int snd_card_miro_aci_detect(struct snd_card *card,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void snd_card_miro_free(struct snd_card *card)
-{
-	struct snd_miro *miro = card->private_data;
-
-	release_and_free_resource(miro->res_aci_port);
-	if (miro->aci)
-		miro->aci->aci_port = 0;
-	release_and_free_resource(miro->res_mc_base);
-}
-
-static int __devinit snd_miro_probe(struct snd_card *card)
-=======
 static int snd_miro_probe(struct snd_card *card)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	struct snd_miro *miro = card->private_data;
 	struct snd_wss *codec;
-<<<<<<< HEAD
-	struct snd_timer *timer;
-	struct snd_pcm *pcm;
-	struct snd_rawmidi *rmidi;
-
-	if (!miro->res_mc_base) {
-		miro->res_mc_base = request_region(miro->mc_base,
-						miro->mc_base_size,
-						"miro (OPTi9xx MC)");
-=======
 	struct snd_rawmidi *rmidi;
 
 	if (!miro->res_mc_base) {
@@ -1503,7 +1267,6 @@ static int snd_miro_probe(struct snd_card *card)
 							miro->mc_base,
 							miro->mc_base_size,
 							"miro (OPTi9xx MC)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (miro->res_mc_base == NULL) {
 			snd_printk(KERN_ERR "request for OPTI9xx MC failed\n");
 			return -ENOMEM;
@@ -1512,10 +1275,6 @@ static int snd_miro_probe(struct snd_card *card)
 
 	error = snd_card_miro_aci_detect(card, miro);
 	if (error < 0) {
-<<<<<<< HEAD
-		snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "unable to detect aci chip\n");
 		return -ENODEV;
 	}
@@ -1540,11 +1299,7 @@ static int snd_miro_probe(struct snd_card *card)
 	if (error < 0)
 		return error;
 
-<<<<<<< HEAD
-	error = snd_wss_pcm(codec, 0, &pcm);
-=======
 	error = snd_wss_pcm(codec, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 
@@ -1552,19 +1307,11 @@ static int snd_miro_probe(struct snd_card *card)
 	if (error < 0)
 		return error;
 
-<<<<<<< HEAD
-	error = snd_wss_timer(codec, 0, &timer);
-	if (error < 0)
-		return error;
-
-	miro->pcm = pcm;
-=======
 	error = snd_wss_timer(codec, 0);
 	if (error < 0)
 		return error;
 
 	miro->pcm = codec->pcm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = snd_miro_mixer(card, miro);
 	if (error < 0)
@@ -1597,16 +1344,10 @@ static int snd_miro_probe(struct snd_card *card)
 	}
 
 	strcpy(card->driver, "miro");
-<<<<<<< HEAD
-	sprintf(card->longname, "%s: OPTi%s, %s at 0x%lx, irq %d, dma %d&%d",
-		card->shortname, miro->name, pcm->name, miro->wss_base + 4,
-		miro->irq, miro->dma1, miro->dma2);
-=======
 	scnprintf(card->longname, sizeof(card->longname),
 		  "%s: OPTi%s, %s at 0x%lx, irq %d, dma %d&%d",
 		  card->shortname, miro->name, codec->pcm->name,
 		  miro->wss_base + 4, miro->irq, miro->dma1, miro->dma2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mpu_port <= 0 || mpu_port == SNDRV_AUTO_PORT)
 		rmidi = NULL;
@@ -1635,11 +1376,7 @@ static int snd_miro_probe(struct snd_card *card)
 	return snd_card_register(card);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_miro_isa_match(struct device *devptr, unsigned int n)
-=======
 static int snd_miro_isa_match(struct device *devptr, unsigned int n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_PNP
 	if (snd_miro_pnp_is_probed)
@@ -1650,16 +1387,6 @@ static int snd_miro_isa_match(struct device *devptr, unsigned int n)
 	return 1;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_miro_isa_probe(struct device *devptr, unsigned int n)
-{
-	static long possible_ports[] = {0x530, 0xe80, 0xf40, 0x604, -1};
-	static long possible_mpu_ports[] = {0x330, 0x300, 0x310, 0x320, -1};
-	static int possible_irqs[] = {11, 9, 10, 7, -1};
-	static int possible_mpu_irqs[] = {10, 5, 9, 7, -1};
-	static int possible_dma1s[] = {3, 1, 0, -1};
-	static int possible_dma2s[][2] = { {1, -1}, {0, -1}, {-1, -1},
-=======
 static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 {
 	static const long possible_ports[] = {0x530, 0xe80, 0xf40, 0x604, -1};
@@ -1668,35 +1395,21 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	static const int possible_mpu_irqs[] = {10, 5, 9, 7, -1};
 	static const int possible_dma1s[] = {3, 1, 0, -1};
 	static const int possible_dma2s[][2] = { {1, -1}, {0, -1}, {-1, -1},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   {0, -1} };
 
 	int error;
 	struct snd_miro *miro;
 	struct snd_card *card;
 
-<<<<<<< HEAD
-	error = snd_card_create(index, id, THIS_MODULE,
-				sizeof(struct snd_miro), &card);
-	if (error < 0)
-		return error;
-
-	card->private_free = snd_card_miro_free;
-=======
 	error = snd_devm_card_new(devptr, index, id, THIS_MODULE,
 				  sizeof(struct snd_miro), &card);
 	if (error < 0)
 		return error;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	miro = card->private_data;
 
 	error = snd_card_miro_detect(card, miro);
 	if (error < 0) {
-<<<<<<< HEAD
-		snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "unable to detect OPTi9xx chip\n");
 		return -ENODEV;
 	}
@@ -1704,10 +1417,6 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	if (port == SNDRV_AUTO_PORT) {
 		port = snd_legacy_find_free_ioport(possible_ports, 4);
 		if (port < 0) {
-<<<<<<< HEAD
-			snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free WSS port\n");
 			return -EBUSY;
 		}
@@ -1716,10 +1425,6 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	if (mpu_port == SNDRV_AUTO_PORT) {
 		mpu_port = snd_legacy_find_free_ioport(possible_mpu_ports, 2);
 		if (mpu_port < 0) {
-<<<<<<< HEAD
-			snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR
 				   "unable to find a free MPU401 port\n");
 			return -EBUSY;
@@ -1729,10 +1434,6 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	if (irq == SNDRV_AUTO_IRQ) {
 		irq = snd_legacy_find_free_irq(possible_irqs);
 		if (irq < 0) {
-<<<<<<< HEAD
-			snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free IRQ\n");
 			return -EBUSY;
 		}
@@ -1740,10 +1441,6 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	if (mpu_irq == SNDRV_AUTO_IRQ) {
 		mpu_irq = snd_legacy_find_free_irq(possible_mpu_irqs);
 		if (mpu_irq < 0) {
-<<<<<<< HEAD
-			snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR
 				   "unable to find a free MPU401 IRQ\n");
 			return -EBUSY;
@@ -1752,10 +1449,6 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	if (dma1 == SNDRV_AUTO_DMA) {
 		dma1 = snd_legacy_find_free_dma(possible_dma1s);
 		if (dma1 < 0) {
-<<<<<<< HEAD
-			snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free DMA1\n");
 			return -EBUSY;
 		}
@@ -1763,53 +1456,24 @@ static int snd_miro_isa_probe(struct device *devptr, unsigned int n)
 	if (dma2 == SNDRV_AUTO_DMA) {
 		dma2 = snd_legacy_find_free_dma(possible_dma2s[dma1 % 4]);
 		if (dma2 < 0) {
-<<<<<<< HEAD
-			snd_card_free(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "unable to find a free DMA2\n");
 			return -EBUSY;
 		}
 	}
 
-<<<<<<< HEAD
-	snd_card_set_dev(card, devptr);
-
-	error = snd_miro_probe(card);
-	if (error < 0) {
-		snd_card_free(card);
-		return error;
-	}
-=======
 	error = snd_miro_probe(card);
 	if (error < 0)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_drvdata(devptr, card);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit snd_miro_isa_remove(struct device *devptr,
-					 unsigned int dev)
-{
-	snd_card_free(dev_get_drvdata(devptr));
-	dev_set_drvdata(devptr, NULL);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEV_NAME "miro"
 
 static struct isa_driver snd_miro_driver = {
 	.match		= snd_miro_isa_match,
 	.probe		= snd_miro_isa_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(snd_miro_isa_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME: suspend/resume */
 	.driver		= {
 		.name	= DEV_NAME
@@ -1818,15 +1482,9 @@ static struct isa_driver snd_miro_driver = {
 
 #ifdef CONFIG_PNP
 
-<<<<<<< HEAD
-static int __devinit snd_card_miro_pnp(struct snd_miro *chip,
-					struct pnp_card_link *card,
-					const struct pnp_card_device_id *pid)
-=======
 static int snd_card_miro_pnp(struct snd_miro *chip,
 			     struct pnp_card_link *card,
 			     const struct pnp_card_device_id *pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
@@ -1885,13 +1543,8 @@ static int snd_card_miro_pnp(struct snd_miro *chip,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_miro_pnp_probe(struct pnp_card_link *pcard,
-					const struct pnp_card_device_id *pid)
-=======
 static int snd_miro_pnp_probe(struct pnp_card_link *pcard,
 			      const struct pnp_card_device_id *pid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
@@ -1901,46 +1554,11 @@ static int snd_miro_pnp_probe(struct pnp_card_link *pcard,
 		return -EBUSY;
 	if (!isapnp)
 		return -ENODEV;
-<<<<<<< HEAD
-	err = snd_card_create(index, id, THIS_MODULE,
-=======
 	err = snd_devm_card_new(&pcard->card->dev, index, id, THIS_MODULE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sizeof(struct snd_miro), &card);
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	card->private_free = snd_card_miro_free;
-	miro = card->private_data;
-
-	err = snd_card_miro_pnp(miro, pcard, pid);
-	if (err) {
-		snd_card_free(card);
-		return err;
-	}
-
-	/* only miroSOUND PCM20 and PCM12 == OPTi924 */
-	err = snd_miro_init(miro, OPTi9XX_HW_82C924);
-	if (err) {
-		snd_card_free(card);
-		return err;
-	}
-
-	err = snd_miro_opti_check(miro);
-	if (err) {
-		snd_printk(KERN_ERR "OPTI chip not found\n");
-		snd_card_free(card);
-		return err;
-	}
-
-	snd_card_set_dev(card, &pcard->card->dev);
-	err = snd_miro_probe(card);
-	if (err < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	miro = card->private_data;
 
 	err = snd_card_miro_pnp(miro, pcard, pid);
@@ -1961,21 +1579,13 @@ static int snd_miro_pnp_probe(struct pnp_card_link *pcard,
 	err = snd_miro_probe(card);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	snd_miro_pnp_is_probed = 1;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit snd_miro_pnp_remove(struct pnp_card_link * pcard)
-{
-	snd_card_free(pnp_get_card_drvdata(pcard));
-	pnp_set_card_drvdata(pcard, NULL);
-=======
 static void snd_miro_pnp_remove(struct pnp_card_link *pcard)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_miro_pnp_is_probed = 0;
 }
 
@@ -1984,11 +1594,7 @@ static struct pnp_card_driver miro_pnpc_driver = {
 	.name		= "miro",
 	.id_table	= snd_miro_pnpids,
 	.probe		= snd_miro_pnp_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(snd_miro_pnp_remove),
-=======
 	.remove		= snd_miro_pnp_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 

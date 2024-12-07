@@ -3,14 +3,6 @@
  * Licensed under the GPL
  */
 
-<<<<<<< HEAD
-#include "linux/percpu.h"
-#include "linux/sched.h"
-#include "asm/uaccess.h"
-#include "os.h"
-#include "skas.h"
-#include "sysdep/tls.h"
-=======
 #include <linux/percpu.h>
 #include <linux/sched.h>
 #include <linux/syscalls.h>
@@ -19,7 +11,6 @@
 #include <os.h>
 #include <skas.h>
 #include <sysdep/tls.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * If needed we can detect when it's uninitialized.
@@ -74,12 +65,6 @@ static int get_free_idx(struct task_struct* task)
 	struct thread_struct *t = &task->thread;
 	int idx;
 
-<<<<<<< HEAD
-	if (!t->arch.tls_array)
-		return GDT_ENTRY_TLS_MIN;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (idx = 0; idx < GDT_ENTRY_TLS_ENTRIES; idx++)
 		if (!t->arch.tls_array[idx].present)
 			return idx + GDT_ENTRY_TLS_MIN;
@@ -227,22 +212,12 @@ static int set_tls_entry(struct task_struct* task, struct user_desc *info,
 	return 0;
 }
 
-<<<<<<< HEAD
-int arch_copy_tls(struct task_struct *new)
-=======
 int arch_set_tls(struct task_struct *new, unsigned long tls)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct user_desc info;
 	int idx, ret = -EFAULT;
 
-<<<<<<< HEAD
-	if (copy_from_user(&info,
-			   (void __user *) UPT_ESI(&new->thread.regs.regs),
-			   sizeof(info)))
-=======
 	if (copy_from_user(&info, (void __user *) tls, sizeof(info)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	ret = -EINVAL;
@@ -262,12 +237,6 @@ static int get_tls_entry(struct task_struct *task, struct user_desc *info,
 {
 	struct thread_struct *t = &task->thread;
 
-<<<<<<< HEAD
-	if (!t->arch.tls_array)
-		goto clear;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (idx < GDT_ENTRY_TLS_MIN || idx > GDT_ENTRY_TLS_MAX)
 		return -EINVAL;
 
@@ -299,11 +268,7 @@ clear:
 	goto out;
 }
 
-<<<<<<< HEAD
-int sys_set_thread_area(struct user_desc __user *user_desc)
-=======
 SYSCALL_DEFINE1(set_thread_area, struct user_desc __user *, user_desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct user_desc info;
 	int idx, ret;
@@ -351,11 +316,7 @@ int ptrace_set_thread_area(struct task_struct *child, int idx,
 	return set_tls_entry(child, &info, idx, 0);
 }
 
-<<<<<<< HEAD
-int sys_get_thread_area(struct user_desc __user *user_desc)
-=======
 SYSCALL_DEFINE1(get_thread_area, struct user_desc __user *, user_desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct user_desc info;
 	int idx, ret;

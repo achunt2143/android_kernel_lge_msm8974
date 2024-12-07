@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-#ifndef _LINUX_NUMA_H
-#define _LINUX_NUMA_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _LINUX_NUMA_H
 #define _LINUX_NUMA_H
 #include <linux/init.h>
 #include <linux/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_NODES_SHIFT
 #define NODES_SHIFT     CONFIG_NODES_SHIFT
@@ -19,8 +13,6 @@
 #define MAX_NUMNODES    (1 << NODES_SHIFT)
 
 #define	NUMA_NO_NODE	(-1)
-<<<<<<< HEAD
-=======
 #define	NUMA_NO_MEMBLK	(-1)
 
 /* optionally keep NUMA memory info available post init */
@@ -72,6 +64,5 @@ static inline int phys_to_target_node(u64 start)
 #ifdef CONFIG_HAVE_ARCH_NODE_DEV_GROUP
 extern const struct attribute_group arch_node_dev_group;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_NUMA_H */

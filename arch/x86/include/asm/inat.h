@@ -1,35 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_INAT_H
 #define _ASM_X86_INAT_H
 /*
  * x86 instruction attributes
  *
  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- */
-#include <asm/inat_types.h>
-=======
  */
 #include <asm/inat_types.h> /* __ignore_sync_check__ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Internal bits. Don't use bitmasks directly, because these bits are
@@ -57,10 +34,7 @@
 /* AVX VEX prefixes */
 #define INAT_PFX_VEX2	13	/* 2-bytes VEX prefix */
 #define INAT_PFX_VEX3	14	/* 3-bytes VEX prefix */
-<<<<<<< HEAD
-=======
 #define INAT_PFX_EVEX	15	/* EVEX prefix */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INAT_LSTPFX_MAX	3
 #define INAT_LGCPFX_MAX	11
@@ -102,18 +76,13 @@
 #define INAT_VARIANT	(1 << (INAT_FLAG_OFFS + 4))
 #define INAT_VEXOK	(1 << (INAT_FLAG_OFFS + 5))
 #define INAT_VEXONLY	(1 << (INAT_FLAG_OFFS + 6))
-<<<<<<< HEAD
-=======
 #define INAT_EVEXONLY	(1 << (INAT_FLAG_OFFS + 7))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Attribute making macros for attribute tables */
 #define INAT_MAKE_PREFIX(pfx)	(pfx << INAT_PFX_OFFS)
 #define INAT_MAKE_ESCAPE(esc)	(esc << INAT_ESC_OFFS)
 #define INAT_MAKE_GROUP(grp)	((grp << INAT_GRP_OFFS) | INAT_MODRM)
 #define INAT_MAKE_IMM(imm)	(imm << INAT_IMM_OFFS)
 
-<<<<<<< HEAD
-=======
 /* Identifiers for segment registers */
 #define INAT_SEG_REG_IGNORE	0
 #define INAT_SEG_REG_DEFAULT	1
@@ -124,7 +93,6 @@
 #define INAT_SEG_REG_FS		6
 #define INAT_SEG_REG_GS		7
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Attribute search APIs */
 extern insn_attr_t inat_get_opcode_attribute(insn_byte_t opcode);
 extern int inat_get_last_prefix_id(insn_byte_t last_pfx);
@@ -171,9 +139,6 @@ static inline int inat_last_prefix_id(insn_attr_t attr)
 static inline int inat_is_vex_prefix(insn_attr_t attr)
 {
 	attr &= INAT_PFX_MASK;
-<<<<<<< HEAD
-	return attr == INAT_PFX_VEX2 || attr == INAT_PFX_VEX3;
-=======
 	return attr == INAT_PFX_VEX2 || attr == INAT_PFX_VEX3 ||
 	       attr == INAT_PFX_EVEX;
 }
@@ -181,7 +146,6 @@ static inline int inat_is_vex_prefix(insn_attr_t attr)
 static inline int inat_is_evex_prefix(insn_attr_t attr)
 {
 	return (attr & INAT_PFX_MASK) == INAT_PFX_EVEX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int inat_is_vex3_prefix(insn_attr_t attr)
@@ -256,15 +220,11 @@ static inline int inat_accept_vex(insn_attr_t attr)
 
 static inline int inat_must_vex(insn_attr_t attr)
 {
-<<<<<<< HEAD
-	return attr & INAT_VEXONLY;
-=======
 	return attr & (INAT_VEXONLY | INAT_EVEXONLY);
 }
 
 static inline int inat_must_evex(insn_attr_t attr)
 {
 	return attr & INAT_EVEXONLY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif

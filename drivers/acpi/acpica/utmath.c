@@ -1,71 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utmath - Integer math support routines
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utmath")
 
-<<<<<<< HEAD
-/*
- * Optional support for 64-bit double-precision integer divide. This code
- * is configurable and is implemented in order to support 32-bit kernel
- * environments where a 64-bit double-precision math library is not available.
- *
- * Support for a more normal 64-bit divide/modulo (with check for a divide-
- * by-zero) appears after this optional section of code.
- */
-#ifndef ACPI_USE_NATIVE_DIVIDE
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Structures used only for 64-bit divide */
 typedef struct uint64_struct {
 	u32 lo;
@@ -79,8 +24,6 @@ typedef union uint64_overlay {
 
 } uint64_overlay;
 
-<<<<<<< HEAD
-=======
 /*
  * Optional support for 64-bit double-precision integer multiply and shift.
  * This code is configurable and is implemented in order to support 32-bit
@@ -292,29 +235,19 @@ acpi_status acpi_ut_short_shift_right(u64 operand, u32 count, u64 *out_result)
  */
 #ifndef ACPI_USE_NATIVE_DIVIDE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_short_divide
  *
-<<<<<<< HEAD
- * PARAMETERS:  Dividend            - 64-bit dividend
- *              Divisor             - 32-bit divisor
-=======
  * PARAMETERS:  dividend            - 64-bit dividend
  *              divisor             - 32-bit divisor
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              out_quotient        - Pointer to where the quotient is returned
  *              out_remainder       - Pointer to where the remainder is returned
  *
  * RETURN:      Status (Checks for divide-by-zero)
  *
  * DESCRIPTION: Perform a short (maximum 64 bits divided by 32 bits)
-<<<<<<< HEAD
- *              divide and modulo.  The result is a 64-bit quotient and a
-=======
  *              divide and modulo. The result is a 64-bit quotient and a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              32-bit remainder.
  *
  ******************************************************************************/
@@ -344,10 +277,7 @@ acpi_ut_short_divide(u64 dividend,
 	 */
 	ACPI_DIV_64_BY_32(0, dividend_ovl.part.hi, divisor,
 			  quotient.part.hi, remainder32);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_DIV_64_BY_32(remainder32, dividend_ovl.part.lo, divisor,
 			  quotient.part.lo, remainder32);
 
@@ -416,10 +346,7 @@ acpi_ut_divide(u64 in_dividend,
 		 */
 		ACPI_DIV_64_BY_32(0, dividend.part.hi, divisor.part.lo,
 				  quotient.part.hi, partial1);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_DIV_64_BY_32(partial1, dividend.part.lo, divisor.part.lo,
 				  quotient.part.lo, remainder.part.lo);
 	}
@@ -447,21 +374,12 @@ acpi_ut_divide(u64 in_dividend,
 
 		ACPI_DIV_64_BY_32(normalized_dividend.part.hi,
 				  normalized_dividend.part.lo,
-<<<<<<< HEAD
-				  normalized_divisor.part.lo,
-				  quotient.part.lo, partial1);
-
-		/*
-		 * The quotient is always 32 bits, and simply requires adjustment.
-		 * The 64-bit remainder must be generated.
-=======
 				  normalized_divisor.part.lo, quotient.part.lo,
 				  partial1);
 
 		/*
 		 * The quotient is always 32 bits, and simply requires
 		 * adjustment. The 64-bit remainder must be generated.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		partial1 = quotient.part.lo * divisor.part.hi;
 		partial2.full = (u64) quotient.part.lo * divisor.part.lo;
@@ -484,13 +402,8 @@ acpi_ut_divide(u64 in_dividend,
 			}
 
 			remainder.full = remainder.full - dividend.full;
-<<<<<<< HEAD
-			remainder.part.hi = (u32) - ((s32) remainder.part.hi);
-			remainder.part.lo = (u32) - ((s32) remainder.part.lo);
-=======
 			remainder.part.hi = (u32)-((s32)remainder.part.hi);
 			remainder.part.lo = (u32)-((s32)remainder.part.lo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (remainder.part.lo) {
 				remainder.part.hi--;
@@ -511,10 +424,7 @@ acpi_ut_divide(u64 in_dividend,
 }
 
 #else
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_short_divide, acpi_ut_divide
@@ -529,10 +439,7 @@ acpi_ut_divide(u64 in_dividend,
  *                 perform the divide.
  *
  ******************************************************************************/
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status
 acpi_ut_short_divide(u64 in_dividend,
 		     u32 divisor, u64 *out_quotient, u32 *out_remainder)

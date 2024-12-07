@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB SD Host Controller (USHC) controller driver.
  *
  * Copyright (C) 2010 Cambridge Silicon Radio Ltd.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Notes:
  *   - Only version 2 devices are supported.
  *   - Version 2 devices only support SDIO cards/devices (R2 response is
@@ -307,15 +296,10 @@ static void ushc_request(struct mmc_host *mmc, struct mmc_request *req)
 			pipe = usb_sndbulkpipe(ushc->usb_dev, 2);
 
 		usb_fill_bulk_urb(ushc->data_urb, ushc->usb_dev, pipe,
-<<<<<<< HEAD
-				  sg_virt(data->sg), data->sg->length,
-				  data_callback, ushc);
-=======
 				  NULL, data->sg->length,
 				  data_callback, ushc);
 		ushc->data_urb->num_sgs = 1;
 		ushc->data_urb->sg = data->sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = usb_submit_urb(ushc->data_urb, GFP_ATOMIC);
 		if (ret < 0)
 			goto out;
@@ -323,11 +307,6 @@ static void ushc_request(struct mmc_host *mmc, struct mmc_request *req)
 
 	/* Submit CSW. */
 	ret = usb_submit_urb(ushc->csw_urb, GFP_ATOMIC);
-<<<<<<< HEAD
-	if (ret < 0)
-		goto out;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	spin_unlock_irqrestore(&ushc->lock, flags);
@@ -443,12 +422,9 @@ static int ushc_probe(struct usb_interface *intf, const struct usb_device_id *id
 	struct ushc_data *ushc;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	if (intf->cur_altsetting->desc.bNumEndpoints < 1)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc = mmc_alloc_host(sizeof(struct ushc_data), &intf->dev);
 	if (mmc == NULL)
 		return -ENOMEM;
@@ -527,11 +503,7 @@ static int ushc_probe(struct usb_interface *intf, const struct usb_device_id *id
 		ret = -ENOMEM;
 		goto err;
 	}
-<<<<<<< HEAD
-	ushc->csw = kzalloc(sizeof(struct ushc_cbw), GFP_KERNEL);
-=======
 	ushc->csw = kzalloc(sizeof(struct ushc_csw), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ushc->csw == NULL) {
 		ret = -ENOMEM;
 		goto err;

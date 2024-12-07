@@ -1,52 +1,10 @@
-<<<<<<< HEAD
-/* Copyright (c) 2007 Coraid, Inc.  See COPYING for GPL terms. */
-=======
 /* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * aoedev.c
  * AoE device utility functions; maintains device list.
  */
 
 #include <linux/hdreg.h>
-<<<<<<< HEAD
-#include <linux/blkdev.h>
-#include <linux/netdevice.h>
-#include <linux/delay.h>
-#include <linux/slab.h>
-#include "aoe.h"
-
-static void dummy_timer(ulong);
-static void aoedev_freedev(struct aoedev *);
-static void freetgt(struct aoedev *d, struct aoetgt *t);
-static void skbpoolfree(struct aoedev *d);
-
-static struct aoedev *devlist;
-static DEFINE_SPINLOCK(devlist_lock);
-
-struct aoedev *
-aoedev_by_aoeaddr(int maj, int min)
-{
-	struct aoedev *d;
-	ulong flags;
-
-	spin_lock_irqsave(&devlist_lock, flags);
-
-	for (d=devlist; d; d=d->next)
-		if (d->aoemajor == maj && d->aoeminor == min)
-			break;
-
-	spin_unlock_irqrestore(&devlist_lock, flags);
-	return d;
-}
-
-static void
-dummy_timer(ulong vp)
-{
-	struct aoedev *d;
-
-	d = (struct aoedev *)vp;
-=======
 #include <linux/blk-mq.h>
 #include <linux/netdevice.h>
 #include <linux/delay.h>
@@ -192,57 +150,12 @@ dummy_timer(struct timer_list *t)
 	struct aoedev *d;
 
 	d = from_timer(d, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (d->flags & DEVFL_TKILL)
 		return;
 	d->timer.expires = jiffies + HZ;
 	add_timer(&d->timer);
 }
 
-<<<<<<< HEAD
-void
-aoedev_downdev(struct aoedev *d)
-{
-	struct aoetgt **t, **te;
-	struct frame *f, *e;
-	struct buf *buf;
-	struct bio *bio;
-
-	t = d->targets;
-	te = t + NTARGETS;
-	for (; t < te && *t; t++) {
-		f = (*t)->frames;
-		e = f + (*t)->nframes;
-		for (; f < e; f->tag = FREETAG, f->buf = NULL, f++) {
-			if (f->tag == FREETAG || f->buf == NULL)
-				continue;
-			buf = f->buf;
-			bio = buf->bio;
-			if (--buf->nframesout == 0
-			&& buf != d->inprocess) {
-				mempool_free(buf, d->bufpool);
-				bio_endio(bio, -EIO);
-			}
-		}
-		(*t)->maxout = (*t)->nframes;
-		(*t)->nout = 0;
-	}
-	buf = d->inprocess;
-	if (buf) {
-		bio = buf->bio;
-		mempool_free(buf, d->bufpool);
-		bio_endio(bio, -EIO);
-	}
-	d->inprocess = NULL;
-	d->htgt = NULL;
-
-	while (!list_empty(&d->bufq)) {
-		buf = container_of(d->bufq.next, struct buf, bufs);
-		list_del(d->bufq.next);
-		bio = buf->bio;
-		mempool_free(buf, d->bufpool);
-		bio_endio(bio, -EIO);
-=======
 static void
 aoe_failip(struct aoedev *d)
 {
@@ -317,49 +230,10 @@ aoedev_downdev(struct aoedev *d)
 		blk_mq_quiesce_queue(d->blkq);
 		blk_mq_unquiesce_queue(d->blkq);
 		blk_mq_unfreeze_queue(d->blkq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (d->gd)
 		set_capacity(d->gd, 0);
-<<<<<<< HEAD
-
-	d->flags &= ~DEVFL_UP;
-}
-
-static void
-aoedev_freedev(struct aoedev *d)
-{
-	struct aoetgt **t, **e;
-
-	cancel_work_sync(&d->work);
-	if (d->gd) {
-		aoedisk_rm_sysfs(d);
-		del_gendisk(d->gd);
-		put_disk(d->gd);
-	}
-	t = d->targets;
-	e = t + NTARGETS;
-	for (; t < e && *t; t++)
-		freetgt(d, *t);
-	if (d->bufpool)
-		mempool_destroy(d->bufpool);
-	skbpoolfree(d);
-	blk_cleanup_queue(d->blkq);
-	kfree(d);
-}
-
-int
-aoedev_flush(const char __user *str, size_t cnt)
-{
-	ulong flags;
-	struct aoedev *d, **dd;
-	struct aoedev *rmd = NULL;
-	char buf[16];
-	int all = 0;
-
-	if (cnt >= 3) {
-=======
 }
 
 /* return whether the user asked for this particular
@@ -438,49 +312,11 @@ flush(const char __user *str, size_t cnt, int exiting)
 	skipflags = DEVFL_GDALLOC | DEVFL_NEWSIZE | DEVFL_TKILL;
 
 	if (!exiting && cnt >= 3) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cnt > sizeof buf)
 			cnt = sizeof buf;
 		if (copy_from_user(buf, str, cnt))
 			return -EFAULT;
 		all = !strncmp(buf, "all", 3);
-<<<<<<< HEAD
-	}
-
-	spin_lock_irqsave(&devlist_lock, flags);
-	dd = &devlist;
-	while ((d = *dd)) {
-		spin_lock(&d->lock);
-		if ((!all && (d->flags & DEVFL_UP))
-		|| (d->flags & (DEVFL_GDALLOC|DEVFL_NEWSIZE))
-		|| d->nopen) {
-			spin_unlock(&d->lock);
-			dd = &d->next;
-			continue;
-		}
-		*dd = d->next;
-		aoedev_downdev(d);
-		d->flags |= DEVFL_TKILL;
-		spin_unlock(&d->lock);
-		d->next = rmd;
-		rmd = d;
-	}
-	spin_unlock_irqrestore(&devlist_lock, flags);
-	while ((d = rmd)) {
-		rmd = d->next;
-		del_timer_sync(&d->timer);
-		aoedev_freedev(d);	/* must be able to sleep */
-	}
-	return 0;
-}
-
-/* I'm not really sure that this is a realistic problem, but if the
-network driver goes gonzo let's just leak memory after complaining. */
-static void
-skbfree(struct sk_buff *skb)
-{
-	enum { Sms = 100, Tms = 3*1000};
-=======
 		if (!all)
 			specified = 1;
 	}
@@ -568,7 +404,6 @@ static void
 skbfree(struct sk_buff *skb)
 {
 	enum { Sms = 250, Tms = 30 * 1000};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = Tms / Sms;
 
 	if (skb == NULL)
@@ -582,10 +417,7 @@ skbfree(struct sk_buff *skb)
 			"cannot free skb -- memory leaked.");
 		return;
 	}
-<<<<<<< HEAD
-=======
 	skb->truesize -= skb->data_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_shinfo(skb)->nr_frags = skb->data_len = 0;
 	skb_trim(skb, 0);
 	dev_kfree_skb(skb);
@@ -602,14 +434,6 @@ skbpoolfree(struct aoedev *d)
 	__skb_queue_head_init(&d->skbpool);
 }
 
-<<<<<<< HEAD
-/* find it or malloc it */
-struct aoedev *
-aoedev_by_sysminor_m(ulong sysminor)
-{
-	struct aoedev *d;
-	ulong flags;
-=======
 /* find it or allocate it */
 struct aoedev *
 aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
@@ -618,16 +442,10 @@ aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 	int i;
 	ulong flags;
 	ulong sysminor = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&devlist_lock, flags);
 
 	for (d=devlist; d; d=d->next)
-<<<<<<< HEAD
-		if (d->sysminor == sysminor)
-			break;
-	if (d)
-=======
 		if (d->aoemajor == maj && d->aoeminor == min) {
 			spin_lock(&d->lock);
 			if (d->flags & DEVFL_TKILL) {
@@ -640,20 +458,10 @@ aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 			break;
 		}
 	if (d || !do_alloc || minor_get(&sysminor, maj, min) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	d = kcalloc(1, sizeof *d, GFP_ATOMIC);
 	if (!d)
 		goto out;
-<<<<<<< HEAD
-	INIT_WORK(&d->work, aoecmd_sleepwork);
-	spin_lock_init(&d->lock);
-	skb_queue_head_init(&d->sendq);
-	skb_queue_head_init(&d->skbpool);
-	init_timer(&d->timer);
-	d->timer.data = (ulong) d;
-	d->timer.function = dummy_timer;
-=======
 	d->targets = kcalloc(NTARGETS, sizeof(*d->targets), GFP_ATOMIC);
 	if (!d->targets) {
 		kfree(d);
@@ -666,18 +474,10 @@ aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 	INIT_LIST_HEAD(&d->rq_list);
 	skb_queue_head_init(&d->skbpool);
 	timer_setup(&d->timer, dummy_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d->timer.expires = jiffies + HZ;
 	add_timer(&d->timer);
 	d->bufpool = NULL;	/* defer to aoeblk_gdalloc */
 	d->tgt = d->targets;
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&d->bufq);
-	d->sysminor = sysminor;
-	d->aoemajor = AOEMAJOR(sysminor);
-	d->aoeminor = AOEMINOR(sysminor);
-	d->mintimer = MINTIMER;
-=======
 	d->ref = 1;
 	for (i = 0; i < NFACTIVE; i++)
 		INIT_LIST_HEAD(&d->factive[i]);
@@ -687,7 +487,6 @@ aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 	d->aoeminor = min;
 	d->rttavg = RTTAVG_INIT;
 	d->rttdev = RTTDEV_INIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d->next = devlist;
 	devlist = d;
  out:
@@ -698,15 +497,6 @@ aoedev_by_aoeaddr(ulong maj, int min, int do_alloc)
 static void
 freetgt(struct aoedev *d, struct aoetgt *t)
 {
-<<<<<<< HEAD
-	struct frame *f, *e;
-
-	f = t->frames;
-	e = f + t->nframes;
-	for (; f < e; f++)
-		skbfree(f->skb);
-	kfree(t->frames);
-=======
 	struct frame *f;
 	struct list_head *pos, *nx, *head;
 	struct aoeif *ifp;
@@ -724,32 +514,14 @@ freetgt(struct aoedev *d, struct aoetgt *t)
 		skbfree(f->skb);
 		kfree(f);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(t);
 }
 
 void
 aoedev_exit(void)
 {
-<<<<<<< HEAD
-	struct aoedev *d;
-	ulong flags;
-
-	while ((d = devlist)) {
-		devlist = d->next;
-
-		spin_lock_irqsave(&d->lock, flags);
-		aoedev_downdev(d);
-		d->flags |= DEVFL_TKILL;
-		spin_unlock_irqrestore(&d->lock, flags);
-
-		del_timer_sync(&d->timer);
-		aoedev_freedev(d);
-	}
-=======
 	flush_workqueue(aoe_wq);
 	flush(NULL, 0, EXITING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init

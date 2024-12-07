@@ -23,28 +23,6 @@
  * Authors: Dave Airlie
  *          Alex Deucher
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm_edid.h"
-#include "drm_crtc_helper.h"
-#include "drm_fb_helper.h"
-#include "radeon_drm.h"
-#include "radeon.h"
-#include "atom.h"
-
-extern void
-radeon_combios_connected_scratch_regs(struct drm_connector *connector,
-				      struct drm_encoder *encoder,
-				      bool connected);
-extern void
-radeon_atombios_connected_scratch_regs(struct drm_connector *connector,
-				       struct drm_encoder *encoder,
-				       bool connected);
-
-extern void
-radeon_legacy_backlight_init(struct radeon_encoder *radeon_encoder,
-			     struct drm_connector *drm_connector);
-=======
 
 #include <drm/display/drm_dp_mst_helper.h>
 #include <drm/drm_edid.h>
@@ -58,7 +36,6 @@ radeon_legacy_backlight_init(struct radeon_encoder *radeon_encoder,
 
 #include <linux/pm_runtime.h>
 #include <linux/vga_switcheroo.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void radeon_connector_hotplug(struct drm_connector *connector)
 {
@@ -75,10 +52,7 @@ void radeon_connector_hotplug(struct drm_connector *connector)
 	radeon_hpd_set_polarity(rdev, radeon_connector->hpd.hpd);
 
 	/* if the connector is already off, don't turn it back on */
-<<<<<<< HEAD
-=======
 	/* FIXME: This access isn't protected by any locks. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (connector->dpms != DRM_MODE_DPMS_ON)
 		return;
 
@@ -96,27 +70,6 @@ void radeon_connector_hotplug(struct drm_connector *connector)
 		/* don't do anything if sink is not display port, i.e.,
 		 * passive dp->(dvi|hdmi) adaptor
 		 */
-<<<<<<< HEAD
-		if (dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT) {
-			int saved_dpms = connector->dpms;
-			/* Only turn off the display if it's physically disconnected */
-			if (!radeon_hpd_sense(rdev, radeon_connector->hpd.hpd)) {
-				drm_helper_connector_dpms(connector, DRM_MODE_DPMS_OFF);
-			} else if (radeon_dp_needs_link_train(radeon_connector)) {
-				/* Don't try to start link training before we
-				 * have the dpcd */
-				if (!radeon_dp_getdpcd(radeon_connector))
-					return;
-
-				/* set it to OFF so that drm_helper_connector_dpms()
-				 * won't return immediately since the current state
-				 * is ON at this point.
-				 */
-				connector->dpms = DRM_MODE_DPMS_OFF;
-				drm_helper_connector_dpms(connector, DRM_MODE_DPMS_ON);
-			}
-			connector->dpms = saved_dpms;
-=======
 		if (dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT &&
 		    radeon_hpd_sense(rdev, radeon_connector->hpd.hpd) &&
 		    radeon_dp_needs_link_train(radeon_connector)) {
@@ -129,7 +82,6 @@ void radeon_connector_hotplug(struct drm_connector *connector)
 			 */
 			drm_helper_connector_dpms(connector, DRM_MODE_DPMS_OFF);
 			drm_helper_connector_dpms(connector, DRM_MODE_DPMS_ON);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -140,11 +92,6 @@ static void radeon_property_change_mode(struct drm_encoder *encoder)
 
 	if (crtc && crtc->enabled) {
 		drm_crtc_helper_set_mode(crtc, &crtc->mode,
-<<<<<<< HEAD
-					 crtc->x, crtc->y, crtc->fb);
-	}
-}
-=======
 					 crtc->x, crtc->y, crtc->primary->fb);
 	}
 }
@@ -271,35 +218,11 @@ int radeon_get_monitor_bpc(struct drm_connector *connector)
 	return bpc;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 radeon_connector_update_scratch_regs(struct drm_connector *connector, enum drm_connector_status status)
 {
 	struct drm_device *dev = connector->dev;
 	struct radeon_device *rdev = dev->dev_private;
-<<<<<<< HEAD
-	struct drm_encoder *best_encoder = NULL;
-	struct drm_encoder *encoder = NULL;
-	struct drm_connector_helper_funcs *connector_funcs = connector->helper_private;
-	struct drm_mode_object *obj;
-	bool connected;
-	int i;
-
-	best_encoder = connector_funcs->best_encoder(connector);
-
-	for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
-		if (connector->encoder_ids[i] == 0)
-			break;
-
-		obj = drm_mode_object_find(connector->dev,
-					   connector->encoder_ids[i],
-					   DRM_MODE_OBJECT_ENCODER);
-		if (!obj)
-			continue;
-
-		encoder = obj_to_encoder(obj);
-
-=======
 	struct drm_encoder *best_encoder;
 	struct drm_encoder *encoder;
 	const struct drm_connector_helper_funcs *connector_funcs = connector->helper_private;
@@ -308,7 +231,6 @@ radeon_connector_update_scratch_regs(struct drm_connector *connector, enum drm_c
 	best_encoder = connector_funcs->best_encoder(connector);
 
 	drm_connector_for_each_possible_encoder(connector, encoder) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((encoder == best_encoder) && (status == connector_status_connected))
 			connected = true;
 		else
@@ -318,50 +240,6 @@ radeon_connector_update_scratch_regs(struct drm_connector *connector, enum drm_c
 			radeon_atombios_connected_scratch_regs(connector, encoder, connected);
 		else
 			radeon_combios_connected_scratch_regs(connector, encoder, connected);
-<<<<<<< HEAD
-
-	}
-}
-
-struct drm_encoder *radeon_find_encoder(struct drm_connector *connector, int encoder_type)
-{
-	struct drm_mode_object *obj;
-	struct drm_encoder *encoder;
-	int i;
-
-	for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
-		if (connector->encoder_ids[i] == 0)
-			break;
-
-		obj = drm_mode_object_find(connector->dev, connector->encoder_ids[i], DRM_MODE_OBJECT_ENCODER);
-		if (!obj)
-			continue;
-
-		encoder = obj_to_encoder(obj);
-		if (encoder->encoder_type == encoder_type)
-			return encoder;
-	}
-	return NULL;
-}
-
-struct drm_encoder *radeon_best_single_encoder(struct drm_connector *connector)
-{
-	int enc_id = connector->encoder_ids[0];
-	struct drm_mode_object *obj;
-	struct drm_encoder *encoder;
-
-	/* pick the encoder ids */
-	if (enc_id) {
-		obj = drm_mode_object_find(connector->dev, enc_id, DRM_MODE_OBJECT_ENCODER);
-		if (!obj)
-			return NULL;
-		encoder = obj_to_encoder(obj);
-		return encoder;
-	}
-	return NULL;
-}
-
-=======
 	}
 }
 
@@ -505,7 +383,6 @@ static void radeon_get_native_mode(struct drm_connector *connector)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * radeon_connector_analog_encoder_conflict_solve
  * - search for other connectors sharing this encoder
@@ -521,49 +398,24 @@ radeon_connector_analog_encoder_conflict_solve(struct drm_connector *connector,
 	struct drm_device *dev = connector->dev;
 	struct drm_connector *conflict;
 	struct radeon_connector *radeon_conflict;
-<<<<<<< HEAD
-	int i;
-
-	list_for_each_entry(conflict, &dev->mode_config.connector_list, head) {
-=======
 
 	list_for_each_entry(conflict, &dev->mode_config.connector_list, head) {
 		struct drm_encoder *enc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (conflict == connector)
 			continue;
 
 		radeon_conflict = to_radeon_connector(conflict);
-<<<<<<< HEAD
-		for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
-			if (conflict->encoder_ids[i] == 0)
-				break;
-
-			/* if the IDs match */
-			if (conflict->encoder_ids[i] == encoder->base.id) {
-=======
 
 		drm_connector_for_each_possible_encoder(conflict, enc) {
 			/* if the IDs match */
 			if (enc == encoder) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (conflict->status != connector_status_connected)
 					continue;
 
 				if (radeon_conflict->use_digital)
 					continue;
 
-<<<<<<< HEAD
-				if (priority == true) {
-					DRM_DEBUG_KMS("1: conflicting encoders switching off %s\n", drm_get_connector_name(conflict));
-					DRM_DEBUG_KMS("in favor of %s\n", drm_get_connector_name(connector));
-					conflict->status = connector_status_disconnected;
-					radeon_connector_update_scratch_regs(conflict, connector_status_disconnected);
-				} else {
-					DRM_DEBUG_KMS("2: conflicting encoders switching off %s\n", drm_get_connector_name(connector));
-					DRM_DEBUG_KMS("in favor of %s\n", drm_get_connector_name(conflict));
-=======
 				if (priority) {
 					DRM_DEBUG_KMS("1: conflicting encoders switching off %s\n",
 						      conflict->name);
@@ -576,7 +428,6 @@ radeon_connector_analog_encoder_conflict_solve(struct drm_connector *connector,
 						      connector->name);
 					DRM_DEBUG_KMS("in favor of %s\n",
 						      conflict->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					current_status = connector_status_disconnected;
 				}
 				break;
@@ -598,11 +449,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
 	    native_mode->vdisplay != 0 &&
 	    native_mode->clock != 0) {
 		mode = drm_mode_duplicate(dev, native_mode);
-<<<<<<< HEAD
-=======
 		if (!mode)
 			return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
 		drm_mode_set_name(mode);
 
@@ -617,11 +465,8 @@ static struct drm_display_mode *radeon_fp_native_mode(struct drm_encoder *encode
 		 * simpler.
 		 */
 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-<<<<<<< HEAD
-=======
 		if (!mode)
 			return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
 	}
@@ -679,11 +524,7 @@ static void radeon_add_common_modes(struct drm_encoder *encoder, struct drm_conn
 	}
 }
 
-<<<<<<< HEAD
-int radeon_connector_set_property(struct drm_connector *connector, struct drm_property *property,
-=======
 static int radeon_connector_set_property(struct drm_connector *connector, struct drm_property *property,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  uint64_t val)
 {
 	struct drm_device *dev = connector->dev;
@@ -713,8 +554,6 @@ static int radeon_connector_set_property(struct drm_connector *connector, struct
 		}
 	}
 
-<<<<<<< HEAD
-=======
 	if (property == rdev->mode_info.audio_property) {
 		struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 		/* need to find digital encoder on connector */
@@ -745,7 +584,6 @@ static int radeon_connector_set_property(struct drm_connector *connector, struct
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (property == rdev->mode_info.underscan_property) {
 		/* need to find digital encoder on connector */
 		encoder = radeon_find_encoder(connector, DRM_MODE_ENCODER_TMDS);
@@ -842,14 +680,6 @@ static int radeon_connector_set_property(struct drm_connector *connector, struct
 			else
 				ret = radeon_legacy_get_tmds_info_from_combios(radeon_encoder, tmds);
 		}
-<<<<<<< HEAD
-		if (val == 1 || ret == false) {
-			radeon_legacy_get_tmds_info_from_table(radeon_encoder, tmds);
-		}
-		radeon_property_change_mode(&radeon_encoder->base);
-	}
-
-=======
 		if (val == 1 || !ret)
 			radeon_legacy_get_tmds_info_from_table(radeon_encoder, tmds);
 
@@ -912,7 +742,6 @@ static int radeon_connector_set_property(struct drm_connector *connector, struct
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -928,11 +757,7 @@ static void radeon_fixup_lvds_native_mode(struct drm_encoder *encoder,
 		if (mode->type & DRM_MODE_TYPE_PREFERRED) {
 			if (mode->hdisplay != native_mode->hdisplay ||
 			    mode->vdisplay != native_mode->vdisplay)
-<<<<<<< HEAD
-				memcpy(native_mode, mode, sizeof(*mode));
-=======
 				drm_mode_copy(native_mode, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -941,11 +766,7 @@ static void radeon_fixup_lvds_native_mode(struct drm_encoder *encoder,
 		list_for_each_entry_safe(mode, t, &connector->probed_modes, head) {
 			if (mode->hdisplay == native_mode->hdisplay &&
 			    mode->vdisplay == native_mode->vdisplay) {
-<<<<<<< HEAD
-				*native_mode = *mode;
-=======
 				drm_mode_copy(native_mode, mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				drm_mode_set_crtcinfo(native_mode, CRTC_INTERLACE_HALVE_V);
 				DRM_DEBUG_KMS("Determined LVDS native mode details from EDID\n");
 				break;
@@ -961,27 +782,10 @@ static void radeon_fixup_lvds_native_mode(struct drm_encoder *encoder,
 
 static int radeon_lvds_get_modes(struct drm_connector *connector)
 {
-<<<<<<< HEAD
-	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_encoder *encoder;
 	int ret = 0;
 	struct drm_display_mode *mode;
 
-<<<<<<< HEAD
-	if (radeon_connector->ddc_bus) {
-		ret = radeon_ddc_get_modes(radeon_connector);
-		if (ret > 0) {
-			encoder = radeon_best_single_encoder(connector);
-			if (encoder) {
-				radeon_fixup_lvds_native_mode(encoder, connector);
-				/* add scaled modes */
-				radeon_add_common_modes(encoder, connector);
-			}
-			return ret;
-		}
-=======
 	radeon_connector_get_edid(connector);
 	ret = radeon_ddc_get_modes(connector);
 	if (ret > 0) {
@@ -992,7 +796,6 @@ static int radeon_lvds_get_modes(struct drm_connector *connector)
 			radeon_add_common_modes(encoder, connector);
 		}
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	encoder = radeon_best_single_encoder(connector);
@@ -1014,11 +817,7 @@ static int radeon_lvds_get_modes(struct drm_connector *connector)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int radeon_lvds_mode_valid(struct drm_connector *connector,
-=======
 static enum drm_mode_status radeon_lvds_mode_valid(struct drm_connector *connector,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct drm_display_mode *mode)
 {
 	struct drm_encoder *encoder = radeon_best_single_encoder(connector);
@@ -1051,11 +850,6 @@ static enum drm_mode_status radeon_lvds_mode_valid(struct drm_connector *connect
 static enum drm_connector_status
 radeon_lvds_detect(struct drm_connector *connector, bool force)
 {
-<<<<<<< HEAD
-	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-	struct drm_encoder *encoder = radeon_best_single_encoder(connector);
-	enum drm_connector_status ret = connector_status_disconnected;
-=======
 	struct drm_device *dev = connector->dev;
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
@@ -1070,7 +864,6 @@ radeon_lvds_detect(struct drm_connector *connector, bool force)
 			return connector_status_disconnected;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (encoder) {
 		struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
@@ -1079,28 +872,6 @@ radeon_lvds_detect(struct drm_connector *connector, bool force)
 		/* check if panel is valid */
 		if (native_mode->hdisplay >= 320 && native_mode->vdisplay >= 240)
 			ret = connector_status_connected;
-<<<<<<< HEAD
-
-	}
-
-	/* check for edid as well */
-	if (radeon_connector->edid)
-		ret = connector_status_connected;
-	else {
-		if (radeon_connector->ddc_bus) {
-			radeon_connector->edid = drm_get_edid(&radeon_connector->base,
-							      &radeon_connector->ddc_bus->adapter);
-			if (radeon_connector->edid)
-				ret = connector_status_connected;
-		}
-	}
-	/* check acpi lid status ??? */
-
-	radeon_connector_update_scratch_regs(connector, ret);
-	return ret;
-}
-
-=======
 		/* don't fetch the edid from the vbios if ddc fails and runpm is
 		 * enabled so we report disconnected.
 		 */
@@ -1134,21 +905,13 @@ static void radeon_connector_unregister(struct drm_connector *connector)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void radeon_connector_destroy(struct drm_connector *connector)
 {
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 
-<<<<<<< HEAD
-	if (radeon_connector->edid)
-		kfree(radeon_connector->edid);
-	kfree(radeon_connector->con_priv);
-	drm_sysfs_connector_remove(connector);
-=======
 	radeon_connector_free_edid(connector);
 	kfree(radeon_connector->con_priv);
 	drm_connector_unregister(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drm_connector_cleanup(connector);
 	kfree(connector);
 }
@@ -1168,11 +931,7 @@ static int radeon_lvds_set_property(struct drm_connector *connector,
 	if (connector->encoder)
 		radeon_encoder = to_radeon_encoder(connector->encoder);
 	else {
-<<<<<<< HEAD
-		struct drm_connector_helper_funcs *connector_funcs = connector->helper_private;
-=======
 		const struct drm_connector_helper_funcs *connector_funcs = connector->helper_private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_encoder = to_radeon_encoder(connector_funcs->best_encoder(connector));
 	}
 
@@ -1193,56 +952,34 @@ static int radeon_lvds_set_property(struct drm_connector *connector,
 }
 
 
-<<<<<<< HEAD
-struct drm_connector_helper_funcs radeon_lvds_connector_helper_funcs = {
-=======
 static const struct drm_connector_helper_funcs radeon_lvds_connector_helper_funcs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_modes = radeon_lvds_get_modes,
 	.mode_valid = radeon_lvds_mode_valid,
 	.best_encoder = radeon_best_single_encoder,
 };
 
-<<<<<<< HEAD
-struct drm_connector_funcs radeon_lvds_connector_funcs = {
-	.dpms = drm_helper_connector_dpms,
-	.detect = radeon_lvds_detect,
-	.fill_modes = drm_helper_probe_single_connector_modes,
-=======
 static const struct drm_connector_funcs radeon_lvds_connector_funcs = {
 	.dpms = drm_helper_connector_dpms,
 	.detect = radeon_lvds_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.early_unregister = radeon_connector_unregister,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy = radeon_connector_destroy,
 	.set_property = radeon_lvds_set_property,
 };
 
 static int radeon_vga_get_modes(struct drm_connector *connector)
 {
-<<<<<<< HEAD
-	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-	int ret;
-
-	ret = radeon_ddc_get_modes(radeon_connector);
-=======
 	int ret;
 
 	radeon_connector_get_edid(connector);
 	ret = radeon_ddc_get_modes(connector);
 
 	radeon_get_native_mode(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static int radeon_vga_mode_valid(struct drm_connector *connector,
-=======
 static enum drm_mode_status radeon_vga_mode_valid(struct drm_connector *connector,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct drm_display_mode *mode)
 {
 	struct drm_device *dev = connector->dev;
@@ -1263,11 +1000,6 @@ radeon_vga_detect(struct drm_connector *connector, bool force)
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 	struct drm_encoder *encoder;
-<<<<<<< HEAD
-	struct drm_encoder_helper_funcs *encoder_funcs;
-	bool dret = false;
-	enum drm_connector_status ret = connector_status_disconnected;
-=======
 	const struct drm_encoder_helper_funcs *encoder_funcs;
 	bool dret = false;
 	enum drm_connector_status ret = connector_status_disconnected;
@@ -1280,7 +1012,6 @@ radeon_vga_detect(struct drm_connector *connector, bool force)
 			return connector_status_disconnected;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	encoder = radeon_best_single_encoder(connector);
 	if (!encoder)
@@ -1290,20 +1021,6 @@ radeon_vga_detect(struct drm_connector *connector, bool force)
 		dret = radeon_ddc_probe(radeon_connector, false);
 	if (dret) {
 		radeon_connector->detected_by_load = false;
-<<<<<<< HEAD
-		if (radeon_connector->edid) {
-			kfree(radeon_connector->edid);
-			radeon_connector->edid = NULL;
-		}
-		radeon_connector->edid = drm_get_edid(&radeon_connector->base, &radeon_connector->ddc_bus->adapter);
-
-		if (!radeon_connector->edid) {
-			DRM_ERROR("%s: probed a monitor but no|invalid EDID\n",
-					drm_get_connector_name(connector));
-			ret = connector_status_connected;
-		} else {
-			radeon_connector->use_digital = !!(radeon_connector->edid->input & DRM_EDID_INPUT_DIGITAL);
-=======
 		radeon_connector_free_edid(connector);
 		radeon_connector_get_edid(connector);
 
@@ -1314,25 +1031,16 @@ radeon_vga_detect(struct drm_connector *connector, bool force)
 		} else {
 			radeon_connector->use_digital =
 				!!(radeon_connector->edid->input & DRM_EDID_INPUT_DIGITAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* some oems have boards with separate digital and analog connectors
 			 * with a shared ddc line (often vga + hdmi)
 			 */
 			if (radeon_connector->use_digital && radeon_connector->shared_ddc) {
-<<<<<<< HEAD
-				kfree(radeon_connector->edid);
-				radeon_connector->edid = NULL;
-				ret = connector_status_disconnected;
-			} else
-				ret = connector_status_connected;
-=======
 				radeon_connector_free_edid(connector);
 				ret = connector_status_disconnected;
 			} else {
 				ret = connector_status_connected;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 
@@ -1342,14 +1050,8 @@ radeon_vga_detect(struct drm_connector *connector, bool force)
 			 * detected a monitor via load.
 			 */
 			if (radeon_connector->detected_by_load)
-<<<<<<< HEAD
-				return connector->status;
-			else
-				return ret;
-=======
 				ret = connector->status;
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (radeon_connector->dac_load_detect && encoder) {
@@ -1374,12 +1076,6 @@ radeon_vga_detect(struct drm_connector *connector, bool force)
 	}
 
 	radeon_connector_update_scratch_regs(connector, ret);
-<<<<<<< HEAD
-	return ret;
-}
-
-struct drm_connector_helper_funcs radeon_vga_connector_helper_funcs = {
-=======
 
 out:
 	if (!drm_kms_helper_is_poll_worker()) {
@@ -1391,24 +1087,16 @@ out:
 }
 
 static const struct drm_connector_helper_funcs radeon_vga_connector_helper_funcs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_modes = radeon_vga_get_modes,
 	.mode_valid = radeon_vga_mode_valid,
 	.best_encoder = radeon_best_single_encoder,
 };
 
-<<<<<<< HEAD
-struct drm_connector_funcs radeon_vga_connector_funcs = {
-	.dpms = drm_helper_connector_dpms,
-	.detect = radeon_vga_detect,
-	.fill_modes = drm_helper_probe_single_connector_modes,
-=======
 static const struct drm_connector_funcs radeon_vga_connector_funcs = {
 	.dpms = drm_helper_connector_dpms,
 	.detect = radeon_vga_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.early_unregister = radeon_connector_unregister,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy = radeon_connector_destroy,
 	.set_property = radeon_connector_set_property,
 };
@@ -1431,22 +1119,15 @@ static int radeon_tv_get_modes(struct drm_connector *connector)
 	else {
 		/* only 800x600 is supported right now on pre-avivo chips */
 		tv_mode = drm_cvt_mode(dev, 800, 600, 60, false, false, false);
-<<<<<<< HEAD
-=======
 		if (!tv_mode)
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tv_mode->type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
 		drm_mode_probed_add(connector, tv_mode);
 	}
 	return 1;
 }
 
-<<<<<<< HEAD
-static int radeon_tv_mode_valid(struct drm_connector *connector,
-=======
 static enum drm_mode_status radeon_tv_mode_valid(struct drm_connector *connector,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct drm_display_mode *mode)
 {
 	if ((mode->hdisplay > 1024) || (mode->vdisplay > 768))
@@ -1458,22 +1139,14 @@ static enum drm_connector_status
 radeon_tv_detect(struct drm_connector *connector, bool force)
 {
 	struct drm_encoder *encoder;
-<<<<<<< HEAD
-	struct drm_encoder_helper_funcs *encoder_funcs;
-	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-	enum drm_connector_status ret = connector_status_disconnected;
-=======
 	const struct drm_encoder_helper_funcs *encoder_funcs;
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 	enum drm_connector_status ret = connector_status_disconnected;
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!radeon_connector->dac_load_detect)
 		return ret;
 
-<<<<<<< HEAD
-=======
 	if (!drm_kms_helper_is_poll_worker()) {
 		r = pm_runtime_get_sync(connector->dev->dev);
 		if (r < 0) {
@@ -1482,7 +1155,6 @@ radeon_tv_detect(struct drm_connector *connector, bool force)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	encoder = radeon_best_single_encoder(connector);
 	if (!encoder)
 		ret = connector_status_disconnected;
@@ -1493,12 +1165,6 @@ radeon_tv_detect(struct drm_connector *connector, bool force)
 	if (ret == connector_status_connected)
 		ret = radeon_connector_analog_encoder_conflict_solve(connector, encoder, ret, false);
 	radeon_connector_update_scratch_regs(connector, ret);
-<<<<<<< HEAD
-	return ret;
-}
-
-struct drm_connector_helper_funcs radeon_tv_connector_helper_funcs = {
-=======
 
 	if (!drm_kms_helper_is_poll_worker()) {
 		pm_runtime_mark_last_busy(connector->dev->dev);
@@ -1509,40 +1175,20 @@ struct drm_connector_helper_funcs radeon_tv_connector_helper_funcs = {
 }
 
 static const struct drm_connector_helper_funcs radeon_tv_connector_helper_funcs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_modes = radeon_tv_get_modes,
 	.mode_valid = radeon_tv_mode_valid,
 	.best_encoder = radeon_best_single_encoder,
 };
 
-<<<<<<< HEAD
-struct drm_connector_funcs radeon_tv_connector_funcs = {
-	.dpms = drm_helper_connector_dpms,
-	.detect = radeon_tv_detect,
-	.fill_modes = drm_helper_probe_single_connector_modes,
-=======
 static const struct drm_connector_funcs radeon_tv_connector_funcs = {
 	.dpms = drm_helper_connector_dpms,
 	.detect = radeon_tv_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.early_unregister = radeon_connector_unregister,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy = radeon_connector_destroy,
 	.set_property = radeon_connector_set_property,
 };
 
-<<<<<<< HEAD
-static int radeon_dvi_get_modes(struct drm_connector *connector)
-{
-	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-	int ret;
-
-	ret = radeon_ddc_get_modes(radeon_connector);
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool radeon_check_hpd_status_unchanged(struct drm_connector *connector)
 {
 	struct drm_device *dev = connector->dev;
@@ -1582,39 +1228,6 @@ radeon_dvi_detect(struct drm_connector *connector, bool force)
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 	struct drm_encoder *encoder = NULL;
-<<<<<<< HEAD
-	struct drm_encoder_helper_funcs *encoder_funcs;
-	struct drm_mode_object *obj;
-	int i;
-	enum drm_connector_status ret = connector_status_disconnected;
-	bool dret = false;
-
-	if (!force && radeon_check_hpd_status_unchanged(connector))
-		return connector->status;
-
-	if (radeon_connector->ddc_bus)
-		dret = radeon_ddc_probe(radeon_connector, false);
-	if (dret) {
-		radeon_connector->detected_by_load = false;
-		if (radeon_connector->edid) {
-			kfree(radeon_connector->edid);
-			radeon_connector->edid = NULL;
-		}
-		radeon_connector->edid = drm_get_edid(&radeon_connector->base, &radeon_connector->ddc_bus->adapter);
-
-		if (!radeon_connector->edid) {
-			DRM_ERROR("%s: probed a monitor but no|invalid EDID\n",
-					drm_get_connector_name(connector));
-			/* rs690 seems to have a problem with connectors not existing and always
-			 * return a block of 0's. If we see this just stop polling on this output */
-			if ((rdev->family == CHIP_RS690 || rdev->family == CHIP_RS740) && radeon_connector->base.null_edid_counter) {
-				ret = connector_status_disconnected;
-				DRM_ERROR("%s: detected RS690 floating bus bug, stopping ddc detect\n", drm_get_connector_name(connector));
-				radeon_connector->ddc_bus = NULL;
-			}
-		} else {
-			radeon_connector->use_digital = !!(radeon_connector->edid->input & DRM_EDID_INPUT_DIGITAL);
-=======
 	const struct drm_encoder_helper_funcs *encoder_funcs;
 	int r;
 	enum drm_connector_status ret = connector_status_disconnected;
@@ -1677,26 +1290,16 @@ radeon_dvi_detect(struct drm_connector *connector, bool force)
 		} else {
 			radeon_connector->use_digital =
 				!!(radeon_connector->edid->input & DRM_EDID_INPUT_DIGITAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* some oems have boards with separate digital and analog connectors
 			 * with a shared ddc line (often vga + hdmi)
 			 */
 			if ((!radeon_connector->use_digital) && radeon_connector->shared_ddc) {
-<<<<<<< HEAD
-				kfree(radeon_connector->edid);
-				radeon_connector->edid = NULL;
-				ret = connector_status_disconnected;
-			} else
-				ret = connector_status_connected;
-
-=======
 				radeon_connector_free_edid(connector);
 				ret = connector_status_disconnected;
 			} else {
 				ret = connector_status_connected;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* This gets complicated.  We have boards with VGA + HDMI with a
 			 * shared DDC line and we have boards with DVI-D + HDMI with a shared
 			 * DDC line.  The latter is more complex because with DVI<->HDMI adapters
@@ -1716,12 +1319,7 @@ radeon_dvi_detect(struct drm_connector *connector, bool force)
 						if (list_connector->connector_type != DRM_MODE_CONNECTOR_VGA) {
 							/* hpd is our only option in this case */
 							if (!radeon_hpd_sense(rdev, radeon_connector->hpd.hpd)) {
-<<<<<<< HEAD
-								kfree(radeon_connector->edid);
-								radeon_connector->edid = NULL;
-=======
 								radeon_connector_free_edid(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								ret = connector_status_disconnected;
 							}
 						}
@@ -1751,37 +1349,13 @@ radeon_dvi_detect(struct drm_connector *connector, bool force)
 
 	/* find analog encoder */
 	if (radeon_connector->dac_load_detect) {
-<<<<<<< HEAD
-		for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
-			if (connector->encoder_ids[i] == 0)
-				break;
-
-			obj = drm_mode_object_find(connector->dev,
-						   connector->encoder_ids[i],
-						   DRM_MODE_OBJECT_ENCODER);
-			if (!obj)
-				continue;
-
-			encoder = obj_to_encoder(obj);
-
-=======
 		drm_connector_for_each_possible_encoder(connector, encoder) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (encoder->encoder_type != DRM_MODE_ENCODER_DAC &&
 			    encoder->encoder_type != DRM_MODE_ENCODER_TVDAC)
 				continue;
 
 			encoder_funcs = encoder->helper_private;
 			if (encoder_funcs->detect) {
-<<<<<<< HEAD
-				if (ret != connector_status_connected) {
-					ret = encoder_funcs->detect(encoder, connector);
-					if (ret == connector_status_connected) {
-						radeon_connector->use_digital = false;
-					}
-					if (ret != connector_status_disconnected)
-						radeon_connector->detected_by_load = true;
-=======
 				if (!broken_edid) {
 					if (ret != connector_status_connected) {
 						/* deal with analog monitors without DDC */
@@ -1800,7 +1374,6 @@ radeon_dvi_detect(struct drm_connector *connector, bool force)
 					DRM_DEBUG_KMS("load_detect %x returned: %x\n", encoder->encoder_type, lret);
 					if (lret == connector_status_connected)
 						radeon_connector->use_digital = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				break;
 			}
@@ -1828,8 +1401,6 @@ out:
 
 	/* updated in get modes as well since we need to know if it's analog or digital */
 	radeon_connector_update_scratch_regs(connector, ret);
-<<<<<<< HEAD
-=======
 
 	if ((radeon_audio != 0) && radeon_connector->use_digital) {
 		const struct drm_connector_helper_funcs *connector_funcs =
@@ -1848,37 +1419,16 @@ exit:
 		pm_runtime_put_autosuspend(connector->dev->dev);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* okay need to be smart in here about which encoder to pick */
-<<<<<<< HEAD
-struct drm_encoder *radeon_dvi_encoder(struct drm_connector *connector)
-{
-	int enc_id = connector->encoder_ids[0];
-	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-	struct drm_mode_object *obj;
-	struct drm_encoder *encoder;
-	int i;
-	for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
-		if (connector->encoder_ids[i] == 0)
-			break;
-
-		obj = drm_mode_object_find(connector->dev, connector->encoder_ids[i], DRM_MODE_OBJECT_ENCODER);
-		if (!obj)
-			continue;
-
-		encoder = obj_to_encoder(obj);
-
-=======
 static struct drm_encoder *radeon_dvi_encoder(struct drm_connector *connector)
 {
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 	struct drm_encoder *encoder;
 
 	drm_connector_for_each_possible_encoder(connector, encoder) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (radeon_connector->use_digital == true) {
 			if (encoder->encoder_type == DRM_MODE_ENCODER_TMDS)
 				return encoder;
@@ -1893,19 +1443,9 @@ static struct drm_encoder *radeon_dvi_encoder(struct drm_connector *connector)
 
 	/* then check use digitial */
 	/* pick the first one */
-<<<<<<< HEAD
-	if (enc_id) {
-		obj = drm_mode_object_find(connector->dev, enc_id, DRM_MODE_OBJECT_ENCODER);
-		if (!obj)
-			return NULL;
-		encoder = obj_to_encoder(obj);
-		return encoder;
-	}
-=======
 	drm_connector_for_each_possible_encoder(connector, encoder)
 		return encoder;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -1918,11 +1458,7 @@ static void radeon_dvi_force(struct drm_connector *connector)
 		radeon_connector->use_digital = true;
 }
 
-<<<<<<< HEAD
-static int radeon_dvi_mode_valid(struct drm_connector *connector,
-=======
 static enum drm_mode_status radeon_dvi_mode_valid(struct drm_connector *connector,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct drm_display_mode *mode)
 {
 	struct drm_device *dev = connector->dev;
@@ -1942,19 +1478,6 @@ static enum drm_mode_status radeon_dvi_mode_valid(struct drm_connector *connecto
 		    (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_DUAL_LINK_DVI_D) ||
 		    (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_HDMI_TYPE_B))
 			return MODE_OK;
-<<<<<<< HEAD
-		else if (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_HDMI_TYPE_A) {
-			if (ASIC_IS_DCE6(rdev)) {
-				/* HDMI 1.3+ supports max clock of 340 Mhz */
-				if (mode->clock > 340000)
-					return MODE_CLOCK_HIGH;
-				else
-					return MODE_OK;
-			} else
-				return MODE_CLOCK_HIGH;
-		} else
-			return MODE_CLOCK_HIGH;
-=======
 		else if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
 			/* HDMI 1.3+ supports max clock of 340 Mhz */
 			if (mode->clock > 340000)
@@ -1964,7 +1487,6 @@ static enum drm_mode_status radeon_dvi_mode_valid(struct drm_connector *connecto
 		} else {
 			return MODE_CLOCK_HIGH;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* check against the max pixel clock */
@@ -1974,52 +1496,22 @@ static enum drm_mode_status radeon_dvi_mode_valid(struct drm_connector *connecto
 	return MODE_OK;
 }
 
-<<<<<<< HEAD
-struct drm_connector_helper_funcs radeon_dvi_connector_helper_funcs = {
-	.get_modes = radeon_dvi_get_modes,
-=======
 static const struct drm_connector_helper_funcs radeon_dvi_connector_helper_funcs = {
 	.get_modes = radeon_vga_get_modes,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mode_valid = radeon_dvi_mode_valid,
 	.best_encoder = radeon_dvi_encoder,
 };
 
-<<<<<<< HEAD
-struct drm_connector_funcs radeon_dvi_connector_funcs = {
-=======
 static const struct drm_connector_funcs radeon_dvi_connector_funcs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dpms = drm_helper_connector_dpms,
 	.detect = radeon_dvi_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.set_property = radeon_connector_set_property,
-<<<<<<< HEAD
-=======
 	.early_unregister = radeon_connector_unregister,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy = radeon_connector_destroy,
 	.force = radeon_dvi_force,
 };
 
-<<<<<<< HEAD
-static void radeon_dp_connector_destroy(struct drm_connector *connector)
-{
-	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
-	struct radeon_connector_atom_dig *radeon_dig_connector = radeon_connector->con_priv;
-
-	if (radeon_connector->edid)
-		kfree(radeon_connector->edid);
-	if (radeon_dig_connector->dp_i2c_bus)
-		radeon_i2c_destroy(radeon_dig_connector->dp_i2c_bus);
-	kfree(radeon_connector->con_priv);
-	drm_sysfs_connector_remove(connector);
-	drm_connector_cleanup(connector);
-	kfree(connector);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int radeon_dp_get_modes(struct drm_connector *connector)
 {
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
@@ -2035,12 +1527,8 @@ static int radeon_dp_get_modes(struct drm_connector *connector)
 			if (!radeon_dig_connector->edp_on)
 				atombios_set_edp_panel_power(connector,
 							     ATOM_TRANSMITTER_ACTION_POWER_ON);
-<<<<<<< HEAD
-			ret = radeon_ddc_get_modes(radeon_connector);
-=======
 			radeon_connector_get_edid(connector);
 			ret = radeon_ddc_get_modes(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!radeon_dig_connector->edp_on)
 				atombios_set_edp_panel_power(connector,
 							     ATOM_TRANSMITTER_ACTION_POWER_OFF);
@@ -2051,12 +1539,8 @@ static int radeon_dp_get_modes(struct drm_connector *connector)
 				if (encoder)
 					radeon_atom_ext_encoder_setup_ddc(encoder);
 			}
-<<<<<<< HEAD
-			ret = radeon_ddc_get_modes(radeon_connector);
-=======
 			radeon_connector_get_edid(connector);
 			ret = radeon_ddc_get_modes(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (ret > 0) {
@@ -2089,14 +1573,10 @@ static int radeon_dp_get_modes(struct drm_connector *connector)
 			if (encoder)
 				radeon_atom_ext_encoder_setup_ddc(encoder);
 		}
-<<<<<<< HEAD
-		ret = radeon_ddc_get_modes(radeon_connector);
-=======
 		radeon_connector_get_edid(connector);
 		ret = radeon_ddc_get_modes(connector);
 
 		radeon_get_native_mode(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -2104,27 +1584,10 @@ static int radeon_dp_get_modes(struct drm_connector *connector)
 
 u16 radeon_connector_encoder_get_dp_bridge_encoder_id(struct drm_connector *connector)
 {
-<<<<<<< HEAD
-	struct drm_mode_object *obj;
-	struct drm_encoder *encoder;
-	struct radeon_encoder *radeon_encoder;
-	int i;
-
-	for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
-		if (connector->encoder_ids[i] == 0)
-			break;
-
-		obj = drm_mode_object_find(connector->dev, connector->encoder_ids[i], DRM_MODE_OBJECT_ENCODER);
-		if (!obj)
-			continue;
-
-		encoder = obj_to_encoder(obj);
-=======
 	struct drm_encoder *encoder;
 	struct radeon_encoder *radeon_encoder;
 
 	drm_connector_for_each_possible_encoder(connector, encoder) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_encoder = to_radeon_encoder(encoder);
 
 		switch (radeon_encoder->encoder_id) {
@@ -2139,25 +1602,6 @@ u16 radeon_connector_encoder_get_dp_bridge_encoder_id(struct drm_connector *conn
 	return ENCODER_OBJECT_ID_NONE;
 }
 
-<<<<<<< HEAD
-bool radeon_connector_encoder_is_hbr2(struct drm_connector *connector)
-{
-	struct drm_mode_object *obj;
-	struct drm_encoder *encoder;
-	struct radeon_encoder *radeon_encoder;
-	int i;
-	bool found = false;
-
-	for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
-		if (connector->encoder_ids[i] == 0)
-			break;
-
-		obj = drm_mode_object_find(connector->dev, connector->encoder_ids[i], DRM_MODE_OBJECT_ENCODER);
-		if (!obj)
-			continue;
-
-		encoder = obj_to_encoder(obj);
-=======
 static bool radeon_connector_encoder_is_hbr2(struct drm_connector *connector)
 {
 	struct drm_encoder *encoder;
@@ -2165,7 +1609,6 @@ static bool radeon_connector_encoder_is_hbr2(struct drm_connector *connector)
 	bool found = false;
 
 	drm_connector_for_each_possible_encoder(connector, encoder) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_encoder = to_radeon_encoder(encoder);
 		if (radeon_encoder->caps & ATOM_ENCODER_CAP_RECORD_HBR2)
 			found = true;
@@ -2197,17 +1640,6 @@ radeon_dp_detect(struct drm_connector *connector, bool force)
 	enum drm_connector_status ret = connector_status_disconnected;
 	struct radeon_connector_atom_dig *radeon_dig_connector = radeon_connector->con_priv;
 	struct drm_encoder *encoder = radeon_best_single_encoder(connector);
-<<<<<<< HEAD
-
-	if (!force && radeon_check_hpd_status_unchanged(connector))
-		return connector->status;
-
-	if (radeon_connector->edid) {
-		kfree(radeon_connector->edid);
-		radeon_connector->edid = NULL;
-	}
-
-=======
 	int r;
 
 	if (!drm_kms_helper_is_poll_worker()) {
@@ -2225,7 +1657,6 @@ radeon_dp_detect(struct drm_connector *connector, bool force)
 
 	radeon_connector_free_edid(connector);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((connector->connector_type == DRM_MODE_CONNECTOR_eDP) ||
 	    (connector->connector_type == DRM_MODE_CONNECTOR_LVDS)) {
 		if (encoder) {
@@ -2235,14 +1666,11 @@ radeon_dp_detect(struct drm_connector *connector, bool force)
 			/* check if panel is valid */
 			if (native_mode->hdisplay >= 320 && native_mode->vdisplay >= 240)
 				ret = connector_status_connected;
-<<<<<<< HEAD
-=======
 			/* don't fetch the edid from the vbios if ddc fails and runpm is
 			 * enabled so we report disconnected.
 			 */
 			if ((rdev->flags & RADEON_IS_PX) && (radeon_runtime_pm != 0))
 				ret = connector_status_disconnected;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* eDP is always DP */
 		radeon_dig_connector->dp_sink_type = CONNECTOR_OBJECT_ID_DISPLAYPORT;
@@ -2268,11 +1696,7 @@ radeon_dp_detect(struct drm_connector *connector, bool force)
 			if (radeon_ddc_probe(radeon_connector, true)) /* try DDC */
 				ret = connector_status_connected;
 			else if (radeon_connector->dac_load_detect) { /* try load detection */
-<<<<<<< HEAD
-				struct drm_encoder_helper_funcs *encoder_funcs = encoder->helper_private;
-=======
 				const struct drm_encoder_helper_funcs *encoder_funcs = encoder->helper_private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = encoder_funcs->detect(encoder, connector);
 			}
 		}
@@ -2287,11 +1711,7 @@ radeon_dp_detect(struct drm_connector *connector, bool force)
 				if (radeon_dp_getdpcd(radeon_connector))
 					ret = connector_status_connected;
 			} else {
-<<<<<<< HEAD
-				/* try non-aux ddc (DP to DVI/HMDI/etc. adapter) */
-=======
 				/* try non-aux ddc (DP to DVI/HDMI/etc. adapter) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (radeon_ddc_probe(radeon_connector, false))
 					ret = connector_status_connected;
 			}
@@ -2299,14 +1719,6 @@ radeon_dp_detect(struct drm_connector *connector, bool force)
 	}
 
 	radeon_connector_update_scratch_regs(connector, ret);
-<<<<<<< HEAD
-	return ret;
-}
-
-static int radeon_dp_mode_valid(struct drm_connector *connector,
-				  struct drm_display_mode *mode)
-{
-=======
 
 	if ((radeon_audio != 0) && encoder) {
 		radeon_connector_get_edid(connector);
@@ -2327,7 +1739,6 @@ static enum drm_mode_status radeon_dp_mode_valid(struct drm_connector *connector
 {
 	struct drm_device *dev = connector->dev;
 	struct radeon_device *rdev = dev->dev_private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
 	struct radeon_connector_atom_dig *radeon_dig_connector = radeon_connector->con_priv;
 
@@ -2358,19 +1769,6 @@ static enum drm_mode_status radeon_dp_mode_valid(struct drm_connector *connector
 					return MODE_PANEL;
 			}
 		}
-<<<<<<< HEAD
-		return MODE_OK;
-	} else {
-		if ((radeon_dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT) ||
-		    (radeon_dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP))
-			return radeon_dp_mode_valid_helper(connector, mode);
-		else
-			return MODE_OK;
-	}
-}
-
-struct drm_connector_helper_funcs radeon_dp_connector_helper_funcs = {
-=======
 	} else {
 		if ((radeon_dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT) ||
 		    (radeon_dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP)) {
@@ -2391,27 +1789,18 @@ struct drm_connector_helper_funcs radeon_dp_connector_helper_funcs = {
 }
 
 static const struct drm_connector_helper_funcs radeon_dp_connector_helper_funcs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_modes = radeon_dp_get_modes,
 	.mode_valid = radeon_dp_mode_valid,
 	.best_encoder = radeon_dvi_encoder,
 };
 
-<<<<<<< HEAD
-struct drm_connector_funcs radeon_dp_connector_funcs = {
-=======
 static const struct drm_connector_funcs radeon_dp_connector_funcs = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dpms = drm_helper_connector_dpms,
 	.detect = radeon_dp_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.set_property = radeon_connector_set_property,
-<<<<<<< HEAD
-	.destroy = radeon_dp_connector_destroy,
-=======
 	.early_unregister = radeon_connector_unregister,
 	.destroy = radeon_connector_destroy,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.force = radeon_dvi_force,
 };
 
@@ -2420,12 +1809,8 @@ static const struct drm_connector_funcs radeon_edp_connector_funcs = {
 	.detect = radeon_dp_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.set_property = radeon_lvds_set_property,
-<<<<<<< HEAD
-	.destroy = radeon_dp_connector_destroy,
-=======
 	.early_unregister = radeon_connector_unregister,
 	.destroy = radeon_connector_destroy,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.force = radeon_dvi_force,
 };
 
@@ -2434,12 +1819,8 @@ static const struct drm_connector_funcs radeon_lvds_bridge_connector_funcs = {
 	.detect = radeon_dp_detect,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.set_property = radeon_lvds_set_property,
-<<<<<<< HEAD
-	.destroy = radeon_dp_connector_destroy,
-=======
 	.early_unregister = radeon_connector_unregister,
 	.destroy = radeon_connector_destroy,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.force = radeon_dvi_force,
 };
 
@@ -2460,17 +1841,11 @@ radeon_add_atom_connector(struct drm_device *dev,
 	struct radeon_connector_atom_dig *radeon_dig_connector;
 	struct drm_encoder *encoder;
 	struct radeon_encoder *radeon_encoder;
-<<<<<<< HEAD
-	uint32_t subpixel_order = SubPixelNone;
-	bool shared_ddc = false;
-	bool is_dp_bridge = false;
-=======
 	struct i2c_adapter *ddc = NULL;
 	uint32_t subpixel_order = SubPixelNone;
 	bool shared_ddc = false;
 	bool is_dp_bridge = false;
 	bool has_aux = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (connector_type == DRM_MODE_CONNECTOR_Unknown)
 		return;
@@ -2543,18 +1918,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 		radeon_dig_connector->igp_lane_info = igp_lane_info;
 		radeon_connector->con_priv = radeon_dig_connector;
 		if (i2c_bus->valid) {
-<<<<<<< HEAD
-			/* add DP i2c bus */
-			if (connector_type == DRM_MODE_CONNECTOR_eDP)
-				radeon_dig_connector->dp_i2c_bus = radeon_i2c_create_dp(dev, i2c_bus, "eDP-auxch");
-			else
-				radeon_dig_connector->dp_i2c_bus = radeon_i2c_create_dp(dev, i2c_bus, "DP-auxch");
-			if (!radeon_dig_connector->dp_i2c_bus)
-				DRM_ERROR("DP: Failed to assign dp ddc bus! Check dmesg for i2c errors.\n");
-			radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
-			if (!radeon_connector->ddc_bus)
-				DRM_ERROR("DP: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-=======
 			radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 			if (radeon_connector->ddc_bus) {
 				has_aux = true;
@@ -2562,31 +1925,20 @@ radeon_add_atom_connector(struct drm_device *dev,
 			} else {
 				DRM_ERROR("DP: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		switch (connector_type) {
 		case DRM_MODE_CONNECTOR_VGA:
 		case DRM_MODE_CONNECTOR_DVIA:
 		default:
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base,
-					   &radeon_dp_connector_funcs, connector_type);
-=======
 			drm_connector_init_with_ddc(dev, &radeon_connector->base,
 						    &radeon_dp_connector_funcs,
 						    connector_type,
 						    ddc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			drm_connector_helper_add(&radeon_connector->base,
 						 &radeon_dp_connector_helper_funcs);
 			connector->interlace_allowed = true;
 			connector->doublescan_allowed = true;
 			radeon_connector->dac_load_detect = true;
-<<<<<<< HEAD
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.load_detect_property,
-						      1);
-=======
 			drm_object_attach_property(&radeon_connector->base.base,
 						      rdev->mode_info.load_detect_property,
 						      1);
@@ -2597,28 +1949,12 @@ radeon_add_atom_connector(struct drm_device *dev,
 				drm_object_attach_property(&radeon_connector->base.base,
 							   rdev->mode_info.output_csc_property,
 							   RADEON_OUTPUT_CSC_BYPASS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case DRM_MODE_CONNECTOR_DVII:
 		case DRM_MODE_CONNECTOR_DVID:
 		case DRM_MODE_CONNECTOR_HDMIA:
 		case DRM_MODE_CONNECTOR_HDMIB:
 		case DRM_MODE_CONNECTOR_DisplayPort:
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base,
-					   &radeon_dp_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base,
-						 &radeon_dp_connector_helper_funcs);
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.underscan_property,
-						      UNDERSCAN_OFF);
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.underscan_hborder_property,
-						      0);
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.underscan_vborder_property,
-						      0);
-=======
 			drm_connector_init_with_ddc(dev, &radeon_connector->base,
 						    &radeon_dp_connector_funcs,
 						    connector_type,
@@ -2654,7 +1990,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 							   rdev->mode_info.output_csc_property,
 							   RADEON_OUTPUT_CSC_BYPASS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			subpixel_order = SubPixelHorizontalRGB;
 			connector->interlace_allowed = true;
 			if (connector_type == DRM_MODE_CONNECTOR_HDMIB)
@@ -2663,24 +1998,13 @@ radeon_add_atom_connector(struct drm_device *dev,
 				connector->doublescan_allowed = false;
 			if (connector_type == DRM_MODE_CONNECTOR_DVII) {
 				radeon_connector->dac_load_detect = true;
-<<<<<<< HEAD
-				drm_connector_attach_property(&radeon_connector->base,
-=======
 				drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							      rdev->mode_info.load_detect_property,
 							      1);
 			}
 			break;
 		case DRM_MODE_CONNECTOR_LVDS:
 		case DRM_MODE_CONNECTOR_eDP:
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base,
-					   &radeon_lvds_bridge_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base,
-						 &radeon_dp_connector_helper_funcs);
-			drm_connector_attach_property(&radeon_connector->base,
-=======
 			drm_connector_init_with_ddc(dev, &radeon_connector->base,
 						    &radeon_lvds_bridge_connector_funcs,
 						    connector_type,
@@ -2688,7 +2012,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 			drm_connector_helper_add(&radeon_connector->base,
 						 &radeon_dp_connector_helper_funcs);
 			drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      dev->mode_config.scaling_mode_property,
 						      DRM_MODE_SCALE_FULLSCREEN);
 			subpixel_order = SubPixelHorizontalRGB;
@@ -2699,25 +2022,10 @@ radeon_add_atom_connector(struct drm_device *dev,
 	} else {
 		switch (connector_type) {
 		case DRM_MODE_CONNECTOR_VGA:
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_vga_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_vga_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i2c_bus->valid) {
 				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 				if (!radeon_connector->ddc_bus)
 					DRM_ERROR("VGA: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-			}
-			radeon_connector->dac_load_detect = true;
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.load_detect_property,
-						      1);
-			/* no HPD on analog connectors */
-			radeon_connector->hpd.hpd = RADEON_HPD_NONE;
-			connector->polled = DRM_CONNECTOR_POLL_CONNECT;
-=======
 				else
 					ddc = &radeon_connector->ddc_bus->adapter;
 			}
@@ -2740,27 +2048,14 @@ radeon_add_atom_connector(struct drm_device *dev,
 							   RADEON_OUTPUT_CSC_BYPASS);
 			/* no HPD on analog connectors */
 			radeon_connector->hpd.hpd = RADEON_HPD_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			connector->interlace_allowed = true;
 			connector->doublescan_allowed = true;
 			break;
 		case DRM_MODE_CONNECTOR_DVIA:
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_vga_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_vga_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i2c_bus->valid) {
 				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 				if (!radeon_connector->ddc_bus)
 					DRM_ERROR("DVIA: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-			}
-			radeon_connector->dac_load_detect = true;
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.load_detect_property,
-						      1);
-=======
 				else
 					ddc = &radeon_connector->ddc_bus->adapter;
 			}
@@ -2781,7 +2076,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 				drm_object_attach_property(&radeon_connector->base.base,
 							   rdev->mode_info.output_csc_property,
 							   RADEON_OUTPUT_CSC_BYPASS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* no HPD on analog connectors */
 			radeon_connector->hpd.hpd = RADEON_HPD_NONE;
 			connector->interlace_allowed = true;
@@ -2794,39 +2088,10 @@ radeon_add_atom_connector(struct drm_device *dev,
 				goto failed;
 			radeon_dig_connector->igp_lane_info = igp_lane_info;
 			radeon_connector->con_priv = radeon_dig_connector;
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_dvi_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_dvi_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i2c_bus->valid) {
 				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 				if (!radeon_connector->ddc_bus)
 					DRM_ERROR("DVI: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-			}
-			subpixel_order = SubPixelHorizontalRGB;
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.coherent_mode_property,
-						      1);
-			if (ASIC_IS_AVIVO(rdev)) {
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_property,
-							      UNDERSCAN_OFF);
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_hborder_property,
-							      0);
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_vborder_property,
-							      0);
-			}
-			if (connector_type == DRM_MODE_CONNECTOR_DVII) {
-				radeon_connector->dac_load_detect = true;
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.load_detect_property,
-							      1);
-			}
-=======
 				else
 					ddc = &radeon_connector->ddc_bus->adapter;
 			}
@@ -2872,7 +2137,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 				drm_object_attach_property(&radeon_connector->base.base,
 							   rdev->mode_info.output_csc_property,
 							   RADEON_OUTPUT_CSC_BYPASS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			connector->interlace_allowed = true;
 			if (connector_type == DRM_MODE_CONNECTOR_DVII)
 				connector->doublescan_allowed = true;
@@ -2886,32 +2150,10 @@ radeon_add_atom_connector(struct drm_device *dev,
 				goto failed;
 			radeon_dig_connector->igp_lane_info = igp_lane_info;
 			radeon_connector->con_priv = radeon_dig_connector;
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_dvi_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_dvi_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i2c_bus->valid) {
 				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 				if (!radeon_connector->ddc_bus)
 					DRM_ERROR("HDMI: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-			}
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.coherent_mode_property,
-						      1);
-			if (ASIC_IS_AVIVO(rdev)) {
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_property,
-							      UNDERSCAN_OFF);
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_hborder_property,
-							      0);
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_vborder_property,
-							      0);
-			}
-=======
 				else
 					ddc = &radeon_connector->ddc_bus->adapter;
 			}
@@ -2950,7 +2192,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 				drm_object_attach_property(&radeon_connector->base.base,
 							   rdev->mode_info.output_csc_property,
 							   RADEON_OUTPUT_CSC_BYPASS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			subpixel_order = SubPixelHorizontalRGB;
 			connector->interlace_allowed = true;
 			if (connector_type == DRM_MODE_CONNECTOR_HDMIB)
@@ -2964,34 +2205,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 				goto failed;
 			radeon_dig_connector->igp_lane_info = igp_lane_info;
 			radeon_connector->con_priv = radeon_dig_connector;
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_dp_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_dp_connector_helper_funcs);
-			if (i2c_bus->valid) {
-				/* add DP i2c bus */
-				radeon_dig_connector->dp_i2c_bus = radeon_i2c_create_dp(dev, i2c_bus, "DP-auxch");
-				if (!radeon_dig_connector->dp_i2c_bus)
-					DRM_ERROR("DP: Failed to assign dp ddc bus! Check dmesg for i2c errors.\n");
-				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
-				if (!radeon_connector->ddc_bus)
-					DRM_ERROR("DP: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-			}
-			subpixel_order = SubPixelHorizontalRGB;
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.coherent_mode_property,
-						      1);
-			if (ASIC_IS_AVIVO(rdev)) {
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_property,
-							      UNDERSCAN_OFF);
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_hborder_property,
-							      0);
-				drm_connector_attach_property(&radeon_connector->base,
-							      rdev->mode_info.underscan_vborder_property,
-							      0);
-			}
-=======
 			if (i2c_bus->valid) {
 				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 				if (radeon_connector->ddc_bus) {
@@ -3037,7 +2250,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 				drm_object_attach_property(&radeon_connector->base.base,
 							   rdev->mode_info.output_csc_property,
 							   RADEON_OUTPUT_CSC_BYPASS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			connector->interlace_allowed = true;
 			/* in theory with a DP to VGA converter... */
 			connector->doublescan_allowed = false;
@@ -3048,20 +2260,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 				goto failed;
 			radeon_dig_connector->igp_lane_info = igp_lane_info;
 			radeon_connector->con_priv = radeon_dig_connector;
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_edp_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_dp_connector_helper_funcs);
-			if (i2c_bus->valid) {
-				/* add DP i2c bus */
-				radeon_dig_connector->dp_i2c_bus = radeon_i2c_create_dp(dev, i2c_bus, "eDP-auxch");
-				if (!radeon_dig_connector->dp_i2c_bus)
-					DRM_ERROR("DP: Failed to assign dp ddc bus! Check dmesg for i2c errors.\n");
-				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
-				if (!radeon_connector->ddc_bus)
-					DRM_ERROR("DP: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-			}
-			drm_connector_attach_property(&radeon_connector->base,
-=======
 			if (i2c_bus->valid) {
 				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 				if (radeon_connector->ddc_bus) {
@@ -3077,7 +2275,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 						    ddc);
 			drm_connector_helper_add(&radeon_connector->base, &radeon_dp_connector_helper_funcs);
 			drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      dev->mode_config.scaling_mode_property,
 						      DRM_MODE_SCALE_FULLSCREEN);
 			subpixel_order = SubPixelHorizontalRGB;
@@ -3087,15 +2284,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 		case DRM_MODE_CONNECTOR_SVIDEO:
 		case DRM_MODE_CONNECTOR_Composite:
 		case DRM_MODE_CONNECTOR_9PinDIN:
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_tv_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_tv_connector_helper_funcs);
-			radeon_connector->dac_load_detect = true;
-			drm_connector_attach_property(&radeon_connector->base,
-						      rdev->mode_info.load_detect_property,
-						      1);
-			drm_connector_attach_property(&radeon_connector->base,
-=======
 			drm_connector_init_with_ddc(dev, &radeon_connector->base,
 						    &radeon_tv_connector_funcs,
 						    connector_type,
@@ -3106,7 +2294,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 						      rdev->mode_info.load_detect_property,
 						      1);
 			drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      rdev->mode_info.tv_std_property,
 						      radeon_atombios_get_tv_info(rdev));
 			/* no HPD on analog connectors */
@@ -3120,19 +2307,10 @@ radeon_add_atom_connector(struct drm_device *dev,
 				goto failed;
 			radeon_dig_connector->igp_lane_info = igp_lane_info;
 			radeon_connector->con_priv = radeon_dig_connector;
-<<<<<<< HEAD
-			drm_connector_init(dev, &radeon_connector->base, &radeon_lvds_connector_funcs, connector_type);
-			drm_connector_helper_add(&radeon_connector->base, &radeon_lvds_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i2c_bus->valid) {
 				radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 				if (!radeon_connector->ddc_bus)
 					DRM_ERROR("LVDS: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-			}
-			drm_connector_attach_property(&radeon_connector->base,
-=======
 				else
 					ddc = &radeon_connector->ddc_bus->adapter;
 			}
@@ -3142,7 +2320,6 @@ radeon_add_atom_connector(struct drm_device *dev,
 						    ddc);
 			drm_connector_helper_add(&radeon_connector->base, &radeon_lvds_connector_helper_funcs);
 			drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      dev->mode_config.scaling_mode_property,
 						      DRM_MODE_SCALE_FULLSCREEN);
 			subpixel_order = SubPixelHorizontalRGB;
@@ -3153,28 +2330,19 @@ radeon_add_atom_connector(struct drm_device *dev,
 	}
 
 	if (radeon_connector->hpd.hpd == RADEON_HPD_NONE) {
-<<<<<<< HEAD
-		if (i2c_bus->valid)
-			connector->polled = DRM_CONNECTOR_POLL_CONNECT;
-=======
 		if (i2c_bus->valid) {
 			connector->polled = DRM_CONNECTOR_POLL_CONNECT |
 			                    DRM_CONNECTOR_POLL_DISCONNECT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		connector->polled = DRM_CONNECTOR_POLL_HPD;
 
 	connector->display_info.subpixel_order = subpixel_order;
-<<<<<<< HEAD
-	drm_sysfs_connector_add(connector);
-=======
 	drm_connector_register(connector);
 
 	if (has_aux)
 		radeon_dp_aux_init(radeon_connector);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 failed:
@@ -3194,10 +2362,7 @@ radeon_add_legacy_connector(struct drm_device *dev,
 	struct radeon_device *rdev = dev->dev_private;
 	struct drm_connector *connector;
 	struct radeon_connector *radeon_connector;
-<<<<<<< HEAD
-=======
 	struct i2c_adapter *ddc = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t subpixel_order = SubPixelNone;
 
 	if (connector_type == DRM_MODE_CONNECTOR_Unknown)
@@ -3232,20 +2397,10 @@ radeon_add_legacy_connector(struct drm_device *dev,
 
 	switch (connector_type) {
 	case DRM_MODE_CONNECTOR_VGA:
-<<<<<<< HEAD
-		drm_connector_init(dev, &radeon_connector->base, &radeon_vga_connector_funcs, connector_type);
-		drm_connector_helper_add(&radeon_connector->base, &radeon_vga_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i2c_bus->valid) {
 			radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 			if (!radeon_connector->ddc_bus)
 				DRM_ERROR("VGA: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-		}
-		radeon_connector->dac_load_detect = true;
-		drm_connector_attach_property(&radeon_connector->base,
-=======
 			else
 				ddc = &radeon_connector->ddc_bus->adapter;
 		}
@@ -3256,33 +2411,18 @@ radeon_add_legacy_connector(struct drm_device *dev,
 		drm_connector_helper_add(&radeon_connector->base, &radeon_vga_connector_helper_funcs);
 		radeon_connector->dac_load_detect = true;
 		drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      rdev->mode_info.load_detect_property,
 					      1);
 		/* no HPD on analog connectors */
 		radeon_connector->hpd.hpd = RADEON_HPD_NONE;
-<<<<<<< HEAD
-		connector->polled = DRM_CONNECTOR_POLL_CONNECT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		connector->interlace_allowed = true;
 		connector->doublescan_allowed = true;
 		break;
 	case DRM_MODE_CONNECTOR_DVIA:
-<<<<<<< HEAD
-		drm_connector_init(dev, &radeon_connector->base, &radeon_vga_connector_funcs, connector_type);
-		drm_connector_helper_add(&radeon_connector->base, &radeon_vga_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i2c_bus->valid) {
 			radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 			if (!radeon_connector->ddc_bus)
 				DRM_ERROR("DVIA: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-		}
-		radeon_connector->dac_load_detect = true;
-		drm_connector_attach_property(&radeon_connector->base,
-=======
 			else
 				ddc = &radeon_connector->ddc_bus->adapter;
 		}
@@ -3293,7 +2433,6 @@ radeon_add_legacy_connector(struct drm_device *dev,
 		drm_connector_helper_add(&radeon_connector->base, &radeon_vga_connector_helper_funcs);
 		radeon_connector->dac_load_detect = true;
 		drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      rdev->mode_info.load_detect_property,
 					      1);
 		/* no HPD on analog connectors */
@@ -3303,21 +2442,10 @@ radeon_add_legacy_connector(struct drm_device *dev,
 		break;
 	case DRM_MODE_CONNECTOR_DVII:
 	case DRM_MODE_CONNECTOR_DVID:
-<<<<<<< HEAD
-		drm_connector_init(dev, &radeon_connector->base, &radeon_dvi_connector_funcs, connector_type);
-		drm_connector_helper_add(&radeon_connector->base, &radeon_dvi_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i2c_bus->valid) {
 			radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 			if (!radeon_connector->ddc_bus)
 				DRM_ERROR("DVI: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-		}
-		if (connector_type == DRM_MODE_CONNECTOR_DVII) {
-			radeon_connector->dac_load_detect = true;
-			drm_connector_attach_property(&radeon_connector->base,
-=======
 			else
 				ddc = &radeon_connector->ddc_bus->adapter;
 		}
@@ -3329,7 +2457,6 @@ radeon_add_legacy_connector(struct drm_device *dev,
 		if (connector_type == DRM_MODE_CONNECTOR_DVII) {
 			radeon_connector->dac_load_detect = true;
 			drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      rdev->mode_info.load_detect_property,
 						      1);
 		}
@@ -3343,14 +2470,10 @@ radeon_add_legacy_connector(struct drm_device *dev,
 	case DRM_MODE_CONNECTOR_SVIDEO:
 	case DRM_MODE_CONNECTOR_Composite:
 	case DRM_MODE_CONNECTOR_9PinDIN:
-<<<<<<< HEAD
-		drm_connector_init(dev, &radeon_connector->base, &radeon_tv_connector_funcs, connector_type);
-=======
 		drm_connector_init_with_ddc(dev, &radeon_connector->base,
 					    &radeon_tv_connector_funcs,
 					    connector_type,
 					    ddc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_connector_helper_add(&radeon_connector->base, &radeon_tv_connector_helper_funcs);
 		radeon_connector->dac_load_detect = true;
 		/* RS400,RC410,RS480 chipset seems to report a lot
@@ -3360,17 +2483,10 @@ radeon_add_legacy_connector(struct drm_device *dev,
 		 */
 		if (rdev->family == CHIP_RS400 || rdev->family == CHIP_RS480)
 			radeon_connector->dac_load_detect = false;
-<<<<<<< HEAD
-		drm_connector_attach_property(&radeon_connector->base,
-					      rdev->mode_info.load_detect_property,
-					      radeon_connector->dac_load_detect);
-		drm_connector_attach_property(&radeon_connector->base,
-=======
 		drm_object_attach_property(&radeon_connector->base.base,
 					      rdev->mode_info.load_detect_property,
 					      radeon_connector->dac_load_detect);
 		drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      rdev->mode_info.tv_std_property,
 					      radeon_combios_get_tv_info(rdev));
 		/* no HPD on analog connectors */
@@ -3379,19 +2495,10 @@ radeon_add_legacy_connector(struct drm_device *dev,
 		connector->doublescan_allowed = false;
 		break;
 	case DRM_MODE_CONNECTOR_LVDS:
-<<<<<<< HEAD
-		drm_connector_init(dev, &radeon_connector->base, &radeon_lvds_connector_funcs, connector_type);
-		drm_connector_helper_add(&radeon_connector->base, &radeon_lvds_connector_helper_funcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (i2c_bus->valid) {
 			radeon_connector->ddc_bus = radeon_i2c_lookup(rdev, i2c_bus);
 			if (!radeon_connector->ddc_bus)
 				DRM_ERROR("LVDS: Failed to assign ddc bus! Check dmesg for i2c errors.\n");
-<<<<<<< HEAD
-		}
-		drm_connector_attach_property(&radeon_connector->base,
-=======
 			else
 				ddc = &radeon_connector->ddc_bus->adapter;
 		}
@@ -3401,7 +2508,6 @@ radeon_add_legacy_connector(struct drm_device *dev,
 					    ddc);
 		drm_connector_helper_add(&radeon_connector->base, &radeon_lvds_connector_helper_funcs);
 		drm_object_attach_property(&radeon_connector->base.base,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      dev->mode_config.scaling_mode_property,
 					      DRM_MODE_SCALE_FULLSCREEN);
 		subpixel_order = SubPixelHorizontalRGB;
@@ -3411,25 +2517,6 @@ radeon_add_legacy_connector(struct drm_device *dev,
 	}
 
 	if (radeon_connector->hpd.hpd == RADEON_HPD_NONE) {
-<<<<<<< HEAD
-		if (i2c_bus->valid)
-			connector->polled = DRM_CONNECTOR_POLL_CONNECT;
-	} else
-		connector->polled = DRM_CONNECTOR_POLL_HPD;
-	connector->display_info.subpixel_order = subpixel_order;
-	drm_sysfs_connector_add(connector);
-	if (connector_type == DRM_MODE_CONNECTOR_LVDS) {
-		struct drm_encoder *drm_encoder;
-
-		list_for_each_entry(drm_encoder, &dev->mode_config.encoder_list, head) {
-			struct radeon_encoder *radeon_encoder;
-
-			radeon_encoder = to_radeon_encoder(drm_encoder);
-			if (radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_LVDS)
-				radeon_legacy_backlight_init(radeon_encoder, connector);
-		}
-	}
-=======
 		if (i2c_bus->valid) {
 			connector->polled = DRM_CONNECTOR_POLL_CONNECT |
 			                    DRM_CONNECTOR_POLL_DISCONNECT;
@@ -3439,5 +2526,4 @@ radeon_add_legacy_connector(struct drm_device *dev,
 
 	connector->display_info.subpixel_order = subpixel_order;
 	drm_connector_register(connector);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

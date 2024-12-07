@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/include/asm/pgtable-3level.h
  *
  * Copyright (C) 2011 ARM Ltd.
  * Author: Catalin Marinas <catalin.marinas@arm.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_PGTABLE_3LEVEL_H
 #define _ASM_PGTABLE_3LEVEL_H
@@ -40,19 +21,12 @@
 #define PTRS_PER_PMD		512
 #define PTRS_PER_PGD		4
 
-<<<<<<< HEAD
-#define PTE_HWTABLE_PTRS	(PTRS_PER_PTE)
-#define PTE_HWTABLE_OFF		(0)
-#define PTE_HWTABLE_SIZE	(PTRS_PER_PTE * sizeof(u64))
-
-=======
 #define PTE_HWTABLE_PTRS	(0)
 #define PTE_HWTABLE_OFF		(0)
 #define PTE_HWTABLE_SIZE	(PTRS_PER_PTE * sizeof(u64))
 
 #define MAX_POSSIBLE_PHYSMEM_BITS 40
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PGDIR_SHIFT determines the size a top-level page table entry can map.
  */
@@ -64,32 +38,20 @@
 #define PMD_SHIFT		21
 
 #define PMD_SIZE		(1UL << PMD_SHIFT)
-<<<<<<< HEAD
-#define PMD_MASK		(~(PMD_SIZE-1))
-#define PGDIR_SIZE		(1UL << PGDIR_SHIFT)
-#define PGDIR_MASK		(~(PGDIR_SIZE-1))
-=======
 #define PMD_MASK		(~((1 << PMD_SHIFT) - 1))
 #define PGDIR_SIZE		(1UL << PGDIR_SHIFT)
 #define PGDIR_MASK		(~((1 << PGDIR_SHIFT) - 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * section address mask and size definitions.
  */
 #define SECTION_SHIFT		21
 #define SECTION_SIZE		(1UL << SECTION_SHIFT)
-<<<<<<< HEAD
-#define SECTION_MASK		(~(SECTION_SIZE-1))
-=======
 #define SECTION_MASK		(~((1 << SECTION_SHIFT) - 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define USER_PTRS_PER_PGD	(PAGE_OFFSET / PGDIR_SIZE)
 
 /*
-<<<<<<< HEAD
-=======
  * Hugetlb definitions.
  */
 #define HPAGE_SHIFT		PMD_SHIFT
@@ -98,25 +60,11 @@
 #define HUGETLB_PAGE_ORDER	(HPAGE_SHIFT - PAGE_SHIFT)
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * "Linux" PTE definitions for LPAE.
  *
  * These bits overlap with the hardware bits but the naming is preserved for
  * consistency with the classic page table format.
  */
-<<<<<<< HEAD
-#define L_PTE_PRESENT		(_AT(pteval_t, 3) << 0)		/* Valid */
-#define L_PTE_FILE		(_AT(pteval_t, 1) << 2)		/* only when !PRESENT */
-#define L_PTE_BUFFERABLE	(_AT(pteval_t, 1) << 2)		/* AttrIndx[0] */
-#define L_PTE_CACHEABLE		(_AT(pteval_t, 1) << 3)		/* AttrIndx[1] */
-#define L_PTE_USER		(_AT(pteval_t, 1) << 6)		/* AP[1] */
-#define L_PTE_RDONLY		(_AT(pteval_t, 1) << 7)		/* AP[2] */
-#define L_PTE_SHARED		(_AT(pteval_t, 3) << 8)		/* SH[1:0], inner shareable */
-#define L_PTE_YOUNG		(_AT(pteval_t, 1) << 10)	/* AF */
-#define L_PTE_XN		(_AT(pteval_t, 1) << 54)	/* XN */
-#define L_PTE_DIRTY		(_AT(pteval_t, 1) << 55)	/* unused */
-#define L_PTE_SPECIAL		(_AT(pteval_t, 1) << 56)	/* unused */
-=======
 #define L_PTE_VALID		(_AT(pteval_t, 1) << 0)		/* Valid */
 #define L_PTE_PRESENT		(_AT(pteval_t, 3) << 0)		/* Present */
 #define L_PTE_USER		(_AT(pteval_t, 1) << 6)		/* AP[1] */
@@ -135,7 +83,6 @@
 #define L_PMD_SECT_DIRTY	(_AT(pmdval_t, 1) << 55)
 #define L_PMD_SECT_NONE		(_AT(pmdval_t, 1) << 57)
 #define L_PMD_SECT_RDONLY	(_AT(pteval_t, 1) << 58)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * To be used in assembly code with the upper page attributes.
@@ -167,14 +114,11 @@
 #define pud_none(pud)		(!pud_val(pud))
 #define pud_bad(pud)		(!(pud_val(pud) & 2))
 #define pud_present(pud)	(pud_val(pud))
-<<<<<<< HEAD
-=======
 #define pmd_table(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
 						 PMD_TYPE_TABLE)
 #define pmd_sect(pmd)		((pmd_val(pmd) & PMD_TYPE_MASK) == \
 						 PMD_TYPE_SECT)
 #define pmd_leaf(pmd)		pmd_sect(pmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pud_clear(pudp)			\
 	do {				\
@@ -188,25 +132,11 @@
 		flush_pmd_entry(pudp);	\
 	} while (0)
 
-<<<<<<< HEAD
-static inline pmd_t *pud_page_vaddr(pud_t pud)
-=======
 static inline pmd_t *pud_pgtable(pud_t pud)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __va(pud_val(pud) & PHYS_MASK & (s32)PAGE_MASK);
 }
 
-<<<<<<< HEAD
-/* Find an entry in the second-level page table.. */
-#define pmd_index(addr)		(((addr) >> PMD_SHIFT) & (PTRS_PER_PMD - 1))
-static inline pmd_t *pmd_offset(pud_t *pud, unsigned long addr)
-{
-	return (pmd_t *)pud_page_vaddr(*pud) + pmd_index(addr);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pmd_bad(pmd)		(!(pmd_val(pmd) & 2))
 
 #define copy_pmd(pmdpd,pmdps)		\
@@ -221,10 +151,6 @@ static inline pmd_t *pmd_offset(pud_t *pud, unsigned long addr)
 		clean_pmd_entry(pmdp);	\
 	} while (0)
 
-<<<<<<< HEAD
-#define set_pte_ext(ptep,pte,ext) cpu_set_pte_ext(ptep,__pte(pte_val(pte)|(ext)))
-
-=======
 /*
  * For 3 levels of paging the PTE_EXT_NG bit will be set for user address ptes
  * that are written to a page table but not for ptes created with mk_pte.
@@ -321,7 +247,6 @@ static inline void set_pmd_at(struct mm_struct *mm, unsigned long addr,
 	flush_pmd_entry(pmdp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 
 #endif /* _ASM_PGTABLE_3LEVEL_H */

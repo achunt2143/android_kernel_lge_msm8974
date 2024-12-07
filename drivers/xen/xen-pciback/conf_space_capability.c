@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend - Handles the virtual fields found on the capability lists
  *               in the configuration space.
@@ -119,20 +116,12 @@ static int pm_ctrl_write(struct pci_dev *dev, int offset, u16 new_value,
 {
 	int err;
 	u16 old_value;
-<<<<<<< HEAD
-	pci_power_t new_state, old_state;
-=======
 	pci_power_t new_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_read_config_word(dev, offset, &old_value);
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	old_state = (pci_power_t)(old_value & PCI_PM_CTRL_STATE_MASK);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_state = (pci_power_t)(new_value & PCI_PM_CTRL_STATE_MASK);
 
 	new_value &= PM_OK_BITS;
@@ -171,11 +160,7 @@ static void *pm_ctrl_init(struct pci_dev *dev, int offset)
 	}
 
 out:
-<<<<<<< HEAD
-	return ERR_PTR(err);
-=======
 	return err ? ERR_PTR(err) : NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct config_field caplist_pm[] = {
@@ -204,8 +189,6 @@ static const struct config_field caplist_pm[] = {
 	{}
 };
 
-<<<<<<< HEAD
-=======
 static struct msi_msix_field_config {
 	u16          enable_bit;   /* bit for enabling MSI/MSI-X */
 	u16          allowed_bits; /* bits allowed to be changed */
@@ -294,7 +277,6 @@ static const struct config_field caplist_msi[] = {
 	{}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xen_pcibk_config_capability xen_pcibk_config_capability_pm = {
 	.capability = PCI_CAP_ID_PM,
 	.fields = caplist_pm,
@@ -303,8 +285,6 @@ static struct xen_pcibk_config_capability xen_pcibk_config_capability_vpd = {
 	.capability = PCI_CAP_ID_VPD,
 	.fields = caplist_vpd,
 };
-<<<<<<< HEAD
-=======
 static struct xen_pcibk_config_capability xen_pcibk_config_capability_msi = {
 	.capability = PCI_CAP_ID_MSI,
 	.fields = caplist_msi,
@@ -313,17 +293,13 @@ static struct xen_pcibk_config_capability xen_pcibk_config_capability_msix = {
 	.capability = PCI_CAP_ID_MSIX,
 	.fields = caplist_msix,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int xen_pcibk_config_capability_init(void)
 {
 	register_capability(&xen_pcibk_config_capability_vpd);
 	register_capability(&xen_pcibk_config_capability_pm);
-<<<<<<< HEAD
-=======
 	register_capability(&xen_pcibk_config_capability_msi);
 	register_capability(&xen_pcibk_config_capability_msix);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

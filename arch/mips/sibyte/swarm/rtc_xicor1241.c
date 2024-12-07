@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2000, 2001 Broadcom Corporation
  *
  * Copyright (C) 2002 MontaVista Software Inc.
  * Author: jsun@mvista.com or jsun@junsun.net
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/bcd.h>
 #include <linux/types.h>
@@ -35,24 +24,15 @@
  * Register bits
  */
 
-<<<<<<< HEAD
-#define X1241REG_SR_BAT	0x80		/* currently on battery power */
-=======
 #define X1241REG_SR_BAT 0x80		/* currently on battery power */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define X1241REG_SR_RWEL 0x04		/* r/w latch is enabled, can write RTC */
 #define X1241REG_SR_WEL 0x02		/* r/w latch is unlocked, can enable r/w now */
 #define X1241REG_SR_RTCF 0x01		/* clock failed */
 #define X1241REG_BL_BP2 0x80		/* block protect 2 */
 #define X1241REG_BL_BP1 0x40		/* block protect 1 */
 #define X1241REG_BL_BP0 0x20		/* block protect 0 */
-<<<<<<< HEAD
-#define X1241REG_BL_WD1	0x10
-#define X1241REG_BL_WD0	0x08
-=======
 #define X1241REG_BL_WD1 0x10
 #define X1241REG_BL_WD0 0x08
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define X1241REG_HR_MIL 0x80		/* military time format */
 
 /*
@@ -77,42 +57,20 @@
 
 static int xicor_read(uint8_t addr)
 {
-<<<<<<< HEAD
-        while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
-                ;
-=======
 	while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
 		;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__raw_writeq((addr >> 8) & 0x7, SMB_CSR(R_SMB_CMD));
 	__raw_writeq(addr & 0xff, SMB_CSR(R_SMB_DATA));
 	__raw_writeq(V_SMB_ADDR(X1241_CCR_ADDRESS) | V_SMB_TT_WR2BYTE,
 		     SMB_CSR(R_SMB_START));
 
-<<<<<<< HEAD
-        while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
-                ;
-=======
 	while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
 		;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__raw_writeq(V_SMB_ADDR(X1241_CCR_ADDRESS) | V_SMB_TT_RD1BYTE,
 		     SMB_CSR(R_SMB_START));
 
-<<<<<<< HEAD
-        while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
-                ;
-
-        if (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_ERROR) {
-                /* Clear error bit by writing a 1 */
-                __raw_writeq(M_SMB_ERROR, SMB_CSR(R_SMB_STATUS));
-                return -1;
-        }
-
-	return (__raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff);
-=======
 	while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
 		;
 
@@ -123,34 +81,18 @@ static int xicor_read(uint8_t addr)
 	}
 
 	return __raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xicor_write(uint8_t addr, int b)
 {
-<<<<<<< HEAD
-        while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
-                ;
-=======
 	while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
 		;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__raw_writeq(addr, SMB_CSR(R_SMB_CMD));
 	__raw_writeq((addr & 0xff) | ((b & 0xff) << 8), SMB_CSR(R_SMB_DATA));
 	__raw_writeq(V_SMB_ADDR(X1241_CCR_ADDRESS) | V_SMB_TT_WR3BYTE,
 		     SMB_CSR(R_SMB_START));
 
-<<<<<<< HEAD
-        while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
-                ;
-
-        if (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_ERROR) {
-                /* Clear error bit by writing a 1 */
-                __raw_writeq(M_SMB_ERROR, SMB_CSR(R_SMB_STATUS));
-                return -1;
-        } else {
-=======
 	while (__raw_readq(SMB_CSR(R_SMB_STATUS)) & M_SMB_BUSY)
 		;
 
@@ -159,26 +101,17 @@ static int xicor_write(uint8_t addr, int b)
 		__raw_writeq(M_SMB_ERROR, SMB_CSR(R_SMB_STATUS));
 		return -1;
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 }
 
-<<<<<<< HEAD
-int xicor_set_time(unsigned long t)
-=======
 int xicor_set_time(time64_t t)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_time tm;
 	int tmp;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	rtc_time_to_tm(t, &tm);
-=======
 	rtc_time64_to_tm(t, &tm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tm.tm_year += 1900;
 
 	spin_lock_irqsave(&rtc_lock, flags);
@@ -231,11 +164,7 @@ int xicor_set_time(time64_t t)
 	return 0;
 }
 
-<<<<<<< HEAD
-unsigned long xicor_get_time(void)
-=======
 time64_t xicor_get_time(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int year, mon, day, hour, min, sec, y2k;
 	unsigned long flags;
@@ -268,18 +197,10 @@ time64_t xicor_get_time(void)
 
 	year += (y2k * 100);
 
-<<<<<<< HEAD
-	return mktime(year, mon, day, hour, min, sec);
-=======
 	return mktime64(year, mon, day, hour, min, sec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int xicor_probe(void)
 {
-<<<<<<< HEAD
-	return (xicor_read(X1241REG_SC) != -1);
-=======
 	return xicor_read(X1241REG_SC) != -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

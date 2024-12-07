@@ -1,41 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LPC32xx built-in touchscreen driver
  *
  * Copyright (C) 2010 NXP Semiconductors
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  */
 
 #include <linux/platform_device.h>
-#include <linux/init.h>
-=======
- */
-
-#include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/clk.h>
 #include <linux/io.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Touchscreen controller register offsets
@@ -57,30 +34,18 @@
 #define LPC32XX_TSC_AUX_MIN			0x38
 #define LPC32XX_TSC_AUX_MAX			0x3C
 
-<<<<<<< HEAD
-#define LPC32XX_TSC_STAT_FIFO_OVRRN		(1 << 8)
-#define LPC32XX_TSC_STAT_FIFO_EMPTY		(1 << 7)
-=======
 #define LPC32XX_TSC_STAT_FIFO_OVRRN		BIT(8)
 #define LPC32XX_TSC_STAT_FIFO_EMPTY		BIT(7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LPC32XX_TSC_SEL_DEFVAL			0x0284
 
 #define LPC32XX_TSC_ADCCON_IRQ_TO_FIFO_4	(0x1 << 11)
 #define LPC32XX_TSC_ADCCON_X_SAMPLE_SIZE(s)	((10 - (s)) << 7)
 #define LPC32XX_TSC_ADCCON_Y_SAMPLE_SIZE(s)	((10 - (s)) << 4)
-<<<<<<< HEAD
-#define LPC32XX_TSC_ADCCON_POWER_UP		(1 << 2)
-#define LPC32XX_TSC_ADCCON_AUTO_EN		(1 << 0)
-
-#define LPC32XX_TSC_FIFO_TS_P_LEVEL		(1 << 31)
-=======
 #define LPC32XX_TSC_ADCCON_POWER_UP		BIT(2)
 #define LPC32XX_TSC_ADCCON_AUTO_EN		BIT(0)
 
 #define LPC32XX_TSC_FIFO_TS_P_LEVEL		BIT(31)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPC32XX_TSC_FIFO_NORMALIZE_X_VAL(x)	(((x) & 0x03FF0000) >> 16)
 #define LPC32XX_TSC_FIFO_NORMALIZE_Y_VAL(y)	((y) & 0x000003FF)
 
@@ -165,16 +130,6 @@ static void lpc32xx_stop_tsc(struct lpc32xx_tsc *tsc)
 		   tsc_readl(tsc, LPC32XX_TSC_CON) &
 			     ~LPC32XX_TSC_ADCCON_AUTO_EN);
 
-<<<<<<< HEAD
-	clk_disable(tsc->clk);
-}
-
-static void lpc32xx_setup_tsc(struct lpc32xx_tsc *tsc)
-{
-	u32 tmp;
-
-	clk_enable(tsc->clk);
-=======
 	clk_disable_unprepare(tsc->clk);
 }
 
@@ -186,7 +141,6 @@ static int lpc32xx_setup_tsc(struct lpc32xx_tsc *tsc)
 	err = clk_prepare_enable(tsc->clk);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tmp = tsc_readl(tsc, LPC32XX_TSC_CON) & ~LPC32XX_TSC_ADCCON_POWER_UP;
 
@@ -224,24 +178,15 @@ static int lpc32xx_setup_tsc(struct lpc32xx_tsc *tsc)
 
 	/* Enable automatic ts event capture */
 	tsc_writel(tsc, LPC32XX_TSC_CON, tmp | LPC32XX_TSC_ADCCON_AUTO_EN);
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lpc32xx_ts_open(struct input_dev *dev)
 {
 	struct lpc32xx_tsc *tsc = input_get_drvdata(dev);
 
-<<<<<<< HEAD
-	lpc32xx_setup_tsc(tsc);
-
-	return 0;
-=======
 	return lpc32xx_setup_tsc(tsc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void lpc32xx_ts_close(struct input_dev *dev)
@@ -251,60 +196,6 @@ static void lpc32xx_ts_close(struct input_dev *dev)
 	lpc32xx_stop_tsc(tsc);
 }
 
-<<<<<<< HEAD
-static int __devinit lpc32xx_ts_probe(struct platform_device *pdev)
-{
-	struct lpc32xx_tsc *tsc;
-	struct input_dev *input;
-	struct resource *res;
-	resource_size_t size;
-	int irq;
-	int error;
-
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!res) {
-		dev_err(&pdev->dev, "Can't get memory resource\n");
-		return -ENOENT;
-	}
-
-	irq = platform_get_irq(pdev, 0);
-	if (irq < 0) {
-		dev_err(&pdev->dev, "Can't get interrupt resource\n");
-		return irq;
-	}
-
-	tsc = kzalloc(sizeof(*tsc), GFP_KERNEL);
-	input = input_allocate_device();
-	if (!tsc || !input) {
-		dev_err(&pdev->dev, "failed allocating memory\n");
-		error = -ENOMEM;
-		goto err_free_mem;
-	}
-
-	tsc->dev = input;
-	tsc->irq = irq;
-
-	size = resource_size(res);
-
-	if (!request_mem_region(res->start, size, pdev->name)) {
-		dev_err(&pdev->dev, "TSC registers are not free\n");
-		error = -EBUSY;
-		goto err_free_mem;
-	}
-
-	tsc->tsc_base = ioremap(res->start, size);
-	if (!tsc->tsc_base) {
-		dev_err(&pdev->dev, "Can't map memory\n");
-		error = -ENOMEM;
-		goto err_release_mem;
-	}
-
-	tsc->clk = clk_get(&pdev->dev, NULL);
-	if (IS_ERR(tsc->clk)) {
-		dev_err(&pdev->dev, "failed getting clock\n");
-		error = PTR_ERR(tsc->clk);
-		goto err_unmap;
-=======
 static int lpc32xx_ts_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -337,7 +228,6 @@ static int lpc32xx_ts_probe(struct platform_device *pdev)
 	if (!input) {
 		dev_err(&pdev->dev, "failed allocating input device\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input->name = MOD_NAME;
@@ -346,33 +236,16 @@ static int lpc32xx_ts_probe(struct platform_device *pdev)
 	input->id.vendor = 0x0001;
 	input->id.product = 0x0002;
 	input->id.version = 0x0100;
-<<<<<<< HEAD
-	input->dev.parent = &pdev->dev;
-	input->open = lpc32xx_ts_open;
-	input->close = lpc32xx_ts_close;
-
-	input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
-	input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
-=======
 	input->open = lpc32xx_ts_open;
 	input->close = lpc32xx_ts_close;
 
 	input_set_capability(input, EV_KEY, BTN_TOUCH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_set_abs_params(input, ABS_X, LPC32XX_TSC_MIN_XY_VAL,
 			     LPC32XX_TSC_MAX_XY_VAL, 0, 0);
 	input_set_abs_params(input, ABS_Y, LPC32XX_TSC_MIN_XY_VAL,
 			     LPC32XX_TSC_MAX_XY_VAL, 0, 0);
 
 	input_set_drvdata(input, tsc);
-<<<<<<< HEAD
-
-	error = request_irq(tsc->irq, lpc32xx_ts_interrupt,
-			    0, pdev->name, tsc);
-	if (error) {
-		dev_err(&pdev->dev, "failed requesting interrupt\n");
-		goto err_put_clock;
-=======
 	tsc->dev = input;
 
 	error = devm_request_irq(dev, tsc->irq, lpc32xx_ts_interrupt,
@@ -380,60 +253,16 @@ static int lpc32xx_ts_probe(struct platform_device *pdev)
 	if (error) {
 		dev_err(&pdev->dev, "failed requesting interrupt\n");
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(input);
 	if (error) {
 		dev_err(&pdev->dev, "failed registering input device\n");
-<<<<<<< HEAD
-		goto err_free_irq;
-	}
-
-	platform_set_drvdata(pdev, tsc);
-	device_init_wakeup(&pdev->dev, 1);
-
-	return 0;
-
-err_free_irq:
-	free_irq(tsc->irq, tsc);
-err_put_clock:
-	clk_put(tsc->clk);
-err_unmap:
-	iounmap(tsc->tsc_base);
-err_release_mem:
-	release_mem_region(res->start, size);
-err_free_mem:
-	input_free_device(input);
-	kfree(tsc);
-
-	return error;
-}
-
-static int __devexit lpc32xx_ts_remove(struct platform_device *pdev)
-{
-	struct lpc32xx_tsc *tsc = platform_get_drvdata(pdev);
-	struct resource *res;
-
-	device_init_wakeup(&pdev->dev, 0);
-	free_irq(tsc->irq, tsc);
-
-	input_unregister_device(tsc->dev);
-
-	clk_put(tsc->clk);
-
-	iounmap(tsc->tsc_base);
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	release_mem_region(res->start, resource_size(res));
-
-	kfree(tsc);
-=======
 		return error;
 	}
 
 	platform_set_drvdata(pdev, tsc);
 	device_init_wakeup(&pdev->dev, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -452,11 +281,7 @@ static int lpc32xx_ts_suspend(struct device *dev)
 	 */
 	mutex_lock(&input->mutex);
 
-<<<<<<< HEAD
-	if (input->users) {
-=======
 	if (input_device_enabled(input)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (device_may_wakeup(dev))
 			enable_irq_wake(tsc->irq);
 		else
@@ -475,11 +300,7 @@ static int lpc32xx_ts_resume(struct device *dev)
 
 	mutex_lock(&input->mutex);
 
-<<<<<<< HEAD
-	if (input->users) {
-=======
 	if (input_device_enabled(input)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (device_may_wakeup(dev))
 			disable_irq_wake(tsc->irq);
 		else
@@ -500,15 +321,6 @@ static const struct dev_pm_ops lpc32xx_ts_pm_ops = {
 #define LPC32XX_TS_PM_OPS NULL
 #endif
 
-<<<<<<< HEAD
-static struct platform_driver lpc32xx_ts_driver = {
-	.probe		= lpc32xx_ts_probe,
-	.remove		= __devexit_p(lpc32xx_ts_remove),
-	.driver		= {
-		.name	= MOD_NAME,
-		.owner	= THIS_MODULE,
-		.pm	= LPC32XX_TS_PM_OPS,
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id lpc32xx_tsc_of_match[] = {
 	{ .compatible = "nxp,lpc3220-tsc", },
@@ -523,7 +335,6 @@ static struct platform_driver lpc32xx_ts_driver = {
 		.name	= MOD_NAME,
 		.pm	= LPC32XX_TS_PM_OPS,
 		.of_match_table = of_match_ptr(lpc32xx_tsc_of_match),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(lpc32xx_ts_driver);

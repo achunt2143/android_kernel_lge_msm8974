@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- *
- * This program is free software; you may redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_DEV_H_
@@ -77,9 +57,6 @@ struct vnic_dev_ring {
 	unsigned int desc_avail;
 };
 
-<<<<<<< HEAD
-struct vnic_dev;
-=======
 enum vnic_proxy_type {
 	PROXY_NONE,
 	PROXY_BY_BDF,
@@ -122,7 +99,6 @@ struct vnic_dev {
 			  int wait);
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vnic_stats;
 
 void *vnic_dev_priv(struct vnic_dev *vdev);
@@ -147,13 +123,8 @@ int vnic_dev_stats_dump(struct vnic_dev *vdev, struct vnic_stats **stats);
 int vnic_dev_hang_notify(struct vnic_dev *vdev);
 int vnic_dev_packet_filter(struct vnic_dev *vdev, int directed, int multicast,
 	int broadcast, int promisc, int allmulti);
-<<<<<<< HEAD
-int vnic_dev_add_addr(struct vnic_dev *vdev, u8 *addr);
-int vnic_dev_del_addr(struct vnic_dev *vdev, u8 *addr);
-=======
 int vnic_dev_add_addr(struct vnic_dev *vdev, const u8 *addr);
 int vnic_dev_del_addr(struct vnic_dev *vdev, const u8 *addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int vnic_dev_get_mac_addr(struct vnic_dev *vdev, u8 *mac_addr);
 int vnic_dev_notify_set(struct vnic_dev *vdev, u16 intr);
 int vnic_dev_notify_unset(struct vnic_dev *vdev);
@@ -171,13 +142,9 @@ int vnic_dev_deinit(struct vnic_dev *vdev);
 void vnic_dev_intr_coal_timer_info_default(struct vnic_dev *vdev);
 int vnic_dev_intr_coal_timer_info(struct vnic_dev *vdev);
 int vnic_dev_hang_reset(struct vnic_dev *vdev, int arg);
-<<<<<<< HEAD
-int vnic_dev_hang_reset_done(struct vnic_dev *vdev, int *done);
-=======
 int vnic_dev_soft_reset(struct vnic_dev *vdev, int arg);
 int vnic_dev_hang_reset_done(struct vnic_dev *vdev, int *done);
 int vnic_dev_soft_reset_done(struct vnic_dev *vdev, int *done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void vnic_dev_set_intr_mode(struct vnic_dev *vdev,
 	enum vnic_dev_intr_mode intr_mode);
 enum vnic_dev_intr_mode vnic_dev_get_intr_mode(struct vnic_dev *vdev);
@@ -190,17 +157,12 @@ int vnic_dev_set_ig_vlan_rewrite_mode(struct vnic_dev *vdev,
 struct vnic_dev *vnic_dev_register(struct vnic_dev *vdev,
 	void *priv, struct pci_dev *pdev, struct vnic_dev_bar *bar,
 	unsigned int num_bars);
-<<<<<<< HEAD
-=======
 struct pci_dev *vnic_dev_get_pdev(struct vnic_dev *vdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int vnic_dev_init_prov2(struct vnic_dev *vdev, u8 *buf, u32 len);
 int vnic_dev_enable2(struct vnic_dev *vdev, int active);
 int vnic_dev_enable2_done(struct vnic_dev *vdev, int *status);
 int vnic_dev_deinit_done(struct vnic_dev *vdev, int *status);
 int vnic_dev_set_mac_addr(struct vnic_dev *vdev, u8 *mac_addr);
-<<<<<<< HEAD
-=======
 int vnic_dev_classifier(struct vnic_dev *vdev, u8 cmd, u16 *entry,
 			struct filter *data);
 int vnic_devcmd_init(struct vnic_dev *vdev);
@@ -210,6 +172,5 @@ int vnic_dev_overlay_offload_cfg(struct vnic_dev *vdev, u8 overlay,
 int vnic_dev_get_supported_feature_ver(struct vnic_dev *vdev, u8 feature,
 				       u64 *supported_versions, u64 *a1);
 int vnic_dev_capable_rss_hash_type(struct vnic_dev *vdev, u8 *rss_hash_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _VNIC_DEV_H_ */

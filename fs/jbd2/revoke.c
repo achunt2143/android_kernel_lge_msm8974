@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/jbd2/revoke.c
  *
@@ -9,13 +6,6 @@
  *
  * Copyright 2000 Red Hat corp --- All Rights Reserved
  *
-<<<<<<< HEAD
- * This file is part of the Linux kernel and is made available under
- * the terms of the GNU General Public License, version 2, or at your
- * option, any later version, incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Journal revoke routines for the generic filesystem journaling code;
  * part of the ext2fs journaling system.
  *
@@ -98,14 +88,9 @@
 #include <linux/list.h>
 #include <linux/init.h>
 #include <linux/bio.h>
-<<<<<<< HEAD
-#endif
-#include <linux/log2.h>
-=======
 #include <linux/log2.h>
 #include <linux/hash.h>
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct kmem_cache *jbd2_revoke_record_cache;
 static struct kmem_cache *jbd2_revoke_table_cache;
@@ -134,38 +119,18 @@ struct jbd2_revoke_table_s
 
 
 #ifdef __KERNEL__
-<<<<<<< HEAD
-static void write_one_revoke_record(journal_t *, transaction_t *,
-				    struct journal_head **, int *,
-				    struct jbd2_revoke_record_s *, int);
-static void flush_descriptor(journal_t *, struct journal_head *, int, int);
-=======
 static void write_one_revoke_record(transaction_t *,
 				    struct list_head *,
 				    struct buffer_head **, int *,
 				    struct jbd2_revoke_record_s *);
 static void flush_descriptor(journal_t *, struct buffer_head *, int);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Utility functions to maintain the revoke table */
 
-<<<<<<< HEAD
-/* Borrowed from buffer.c: this is a tried and tested block hash function */
-static inline int hash(journal_t *journal, unsigned long long block)
-{
-	struct jbd2_revoke_table_s *table = journal->j_revoke;
-	int hash_shift = table->hash_shift;
-	int hash = (int)block ^ (int)((block >> 31) >> 1);
-
-	return ((hash << (hash_shift - 6)) ^
-		(hash >> 13) ^
-		(hash << (hash_shift - 12))) & (table->hash_size - 1);
-=======
 static inline int hash(journal_t *journal, unsigned long long block)
 {
 	return hash_64(block, journal->j_revoke->hash_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int insert_revoke_hash(journal_t *journal, unsigned long long blocknr,
@@ -173,13 +138,6 @@ static int insert_revoke_hash(journal_t *journal, unsigned long long blocknr,
 {
 	struct list_head *hash_list;
 	struct jbd2_revoke_record_s *record;
-<<<<<<< HEAD
-
-repeat:
-	record = kmem_cache_alloc(jbd2_revoke_record_cache, GFP_NOFS);
-	if (!record)
-		goto oom;
-=======
 	gfp_t gfp_mask = GFP_NOFS;
 
 	if (journal_oom_retry)
@@ -187,7 +145,6 @@ repeat:
 	record = kmem_cache_alloc(jbd2_revoke_record_cache, gfp_mask);
 	if (!record)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	record->sequence = seq;
 	record->blocknr = blocknr;
@@ -196,16 +153,6 @@ repeat:
 	list_add(&record->hash, hash_list);
 	spin_unlock(&journal->j_revoke_lock);
 	return 0;
-<<<<<<< HEAD
-
-oom:
-	if (!journal_oom_retry)
-		return -ENOMEM;
-	jbd_debug(1, "ENOMEM in %s, retrying\n", __func__);
-	yield();
-	goto repeat;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Find a revoke record in the journal's hash table. */
@@ -231,39 +178,6 @@ static struct jbd2_revoke_record_s *find_revoke_record(journal_t *journal,
 	return NULL;
 }
 
-<<<<<<< HEAD
-void jbd2_journal_destroy_revoke_caches(void)
-{
-	if (jbd2_revoke_record_cache) {
-		kmem_cache_destroy(jbd2_revoke_record_cache);
-		jbd2_revoke_record_cache = NULL;
-	}
-	if (jbd2_revoke_table_cache) {
-		kmem_cache_destroy(jbd2_revoke_table_cache);
-		jbd2_revoke_table_cache = NULL;
-	}
-}
-
-int __init jbd2_journal_init_revoke_caches(void)
-{
-	J_ASSERT(!jbd2_revoke_record_cache);
-	J_ASSERT(!jbd2_revoke_table_cache);
-
-	jbd2_revoke_record_cache = KMEM_CACHE(jbd2_revoke_record_s,
-					SLAB_HWCACHE_ALIGN|SLAB_TEMPORARY);
-	if (!jbd2_revoke_record_cache)
-		goto record_cache_failure;
-
-	jbd2_revoke_table_cache = KMEM_CACHE(jbd2_revoke_table_s,
-					     SLAB_TEMPORARY);
-	if (!jbd2_revoke_table_cache)
-		goto table_cache_failure;
-	return 0;
-table_cache_failure:
-	jbd2_journal_destroy_revoke_caches();
-record_cache_failure:
-		return -ENOMEM;
-=======
 void jbd2_journal_destroy_revoke_record_cache(void)
 {
 	kmem_cache_destroy(jbd2_revoke_record_cache);
@@ -299,7 +213,6 @@ int __init jbd2_journal_init_revoke_table_cache(void)
 		return -ENOMEM;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct jbd2_revoke_table_s *jbd2_journal_init_revoke_table(int hash_size)
@@ -318,11 +231,7 @@ static struct jbd2_revoke_table_s *jbd2_journal_init_revoke_table(int hash_size)
 	table->hash_size = hash_size;
 	table->hash_shift = shift;
 	table->hash_table =
-<<<<<<< HEAD
-		kmalloc(hash_size * sizeof(struct list_head), GFP_KERNEL);
-=======
 		kmalloc_array(hash_size, sizeof(struct list_head), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!table->hash_table) {
 		kmem_cache_free(jbd2_revoke_table_cache, table);
 		table = NULL;
@@ -372,10 +281,7 @@ int jbd2_journal_init_revoke(journal_t *journal, int hash_size)
 
 fail1:
 	jbd2_journal_destroy_revoke_table(journal->j_revoke_table[0]);
-<<<<<<< HEAD
-=======
 	journal->j_revoke_table[0] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail0:
 	return -ENOMEM;
 }
@@ -465,14 +371,11 @@ int jbd2_journal_revoke(handle_t *handle, unsigned long long blocknr,
 	}
 #endif
 
-<<<<<<< HEAD
-=======
 	if (WARN_ON_ONCE(handle->h_revoke_credits <= 0)) {
 		if (!bh_in)
 			brelse(bh);
 		return -EIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We really ought not ever to revoke twice in a row without
            first having the revoke cancelled: it's illegal to free a
            block twice without allocating it in between! */
@@ -493,14 +396,9 @@ int jbd2_journal_revoke(handle_t *handle, unsigned long long blocknr,
 			__brelse(bh);
 		}
 	}
-<<<<<<< HEAD
-
-	jbd_debug(2, "insert revoke for block %llu, bh_in=%p\n",blocknr, bh_in);
-=======
 	handle->h_revoke_credits--;
 
 	jbd2_debug(2, "insert revoke for block %llu, bh_in=%p\n",blocknr, bh_in);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = insert_revoke_hash(journal, blocknr,
 				handle->h_transaction->t_tid);
 	BUFFER_TRACE(bh_in, "exit");
@@ -530,11 +428,7 @@ int jbd2_journal_cancel_revoke(handle_t *handle, struct journal_head *jh)
 	int did_revoke = 0;	/* akpm: debug */
 	struct buffer_head *bh = jh2bh(jh);
 
-<<<<<<< HEAD
-	jbd_debug(4, "journal_head %p, cancelling revoke\n", jh);
-=======
 	jbd2_debug(4, "journal_head %p, cancelling revoke\n", jh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Is the existing Revoke bit valid?  If so, we trust it, and
 	 * only perform the full cancel if the revoke bit is set.  If
@@ -550,11 +444,7 @@ int jbd2_journal_cancel_revoke(handle_t *handle, struct journal_head *jh)
 	if (need_cancel) {
 		record = find_revoke_record(journal, bh->b_blocknr);
 		if (record) {
-<<<<<<< HEAD
-			jbd_debug(4, "cancelled existing revoke on "
-=======
 			jbd2_debug(4, "cancelled existing revoke on "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  "blocknr %llu\n", (unsigned long long)bh->b_blocknr);
 			spin_lock(&journal->j_revoke_lock);
 			list_del(&record->hash);
@@ -637,19 +527,11 @@ void jbd2_journal_switch_revoke_table(journal_t *journal)
  * Write revoke records to the journal for all entries in the current
  * revoke hash, deleting the entries as we go.
  */
-<<<<<<< HEAD
-void jbd2_journal_write_revoke_records(journal_t *journal,
-				       transaction_t *transaction,
-				       int write_op)
-{
-	struct journal_head *descriptor;
-=======
 void jbd2_journal_write_revoke_records(transaction_t *transaction,
 				       struct list_head *log_bufs)
 {
 	journal_t *journal = transaction->t_journal;
 	struct buffer_head *descriptor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jbd2_revoke_record_s *record;
 	struct jbd2_revoke_table_s *revoke;
 	struct list_head *hash_list;
@@ -669,27 +551,16 @@ void jbd2_journal_write_revoke_records(transaction_t *transaction,
 		while (!list_empty(hash_list)) {
 			record = (struct jbd2_revoke_record_s *)
 				hash_list->next;
-<<<<<<< HEAD
-			write_one_revoke_record(journal, transaction,
-						&descriptor, &offset,
-						record, write_op);
-=======
 			write_one_revoke_record(transaction, log_bufs,
 						&descriptor, &offset, record);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			count++;
 			list_del(&record->hash);
 			kmem_cache_free(jbd2_revoke_record_cache, record);
 		}
 	}
 	if (descriptor)
-<<<<<<< HEAD
-		flush_descriptor(journal, descriptor, offset, write_op);
-	jbd_debug(1, "Wrote %d revoke records\n", count);
-=======
 		flush_descriptor(journal, descriptor, offset);
 	jbd2_debug(1, "Wrote %d revoke records\n", count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -697,18 +568,6 @@ void jbd2_journal_write_revoke_records(transaction_t *transaction,
  * block if the old one is full or if we have not already created one.
  */
 
-<<<<<<< HEAD
-static void write_one_revoke_record(journal_t *journal,
-				    transaction_t *transaction,
-				    struct journal_head **descriptorp,
-				    int *offsetp,
-				    struct jbd2_revoke_record_s *record,
-				    int write_op)
-{
-	struct journal_head *descriptor;
-	int offset;
-	journal_header_t *header;
-=======
 static void write_one_revoke_record(transaction_t *transaction,
 				    struct list_head *log_bufs,
 				    struct buffer_head **descriptorp,
@@ -719,7 +578,6 @@ static void write_one_revoke_record(transaction_t *transaction,
 	int csum_size = 0;
 	struct buffer_head *descriptor;
 	int sz, offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If we are already aborting, this all becomes a noop.  We
            still need to go round the loop in
@@ -731,12 +589,6 @@ static void write_one_revoke_record(transaction_t *transaction,
 	descriptor = *descriptorp;
 	offset = *offsetp;
 
-<<<<<<< HEAD
-	/* Make sure we have a descriptor with space left for the record */
-	if (descriptor) {
-		if (offset == journal->j_blocksize) {
-			flush_descriptor(journal, descriptor, offset, write_op);
-=======
 	/* Do we need to leave space at the end for a checksum? */
 	if (jbd2_journal_has_csum_v2or3(journal))
 		csum_size = sizeof(struct jbd2_journal_block_tail);
@@ -750,25 +602,11 @@ static void write_one_revoke_record(transaction_t *transaction,
 	if (descriptor) {
 		if (offset + sz > journal->j_blocksize - csum_size) {
 			flush_descriptor(journal, descriptor, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			descriptor = NULL;
 		}
 	}
 
 	if (!descriptor) {
-<<<<<<< HEAD
-		descriptor = jbd2_journal_get_descriptor_buffer(journal);
-		if (!descriptor)
-			return;
-		header = (journal_header_t *) &jh2bh(descriptor)->b_data[0];
-		header->h_magic     = cpu_to_be32(JBD2_MAGIC_NUMBER);
-		header->h_blocktype = cpu_to_be32(JBD2_REVOKE_BLOCK);
-		header->h_sequence  = cpu_to_be32(transaction->t_tid);
-
-		/* Record it so that we can wait for IO completion later */
-		JBUFFER_TRACE(descriptor, "file as BJ_LogCtl");
-		jbd2_journal_file_buffer(descriptor, transaction, BJ_LogCtl);
-=======
 		descriptor = jbd2_journal_get_descriptor_buffer(transaction,
 							JBD2_REVOKE_BLOCK);
 		if (!descriptor)
@@ -777,24 +615,11 @@ static void write_one_revoke_record(transaction_t *transaction,
 		/* Record it so that we can wait for IO completion later */
 		BUFFER_TRACE(descriptor, "file in log_bufs");
 		jbd2_file_log_bh(log_bufs, descriptor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		offset = sizeof(jbd2_journal_revoke_header_t);
 		*descriptorp = descriptor;
 	}
 
-<<<<<<< HEAD
-	if (JBD2_HAS_INCOMPAT_FEATURE(journal, JBD2_FEATURE_INCOMPAT_64BIT)) {
-		* ((__be64 *)(&jh2bh(descriptor)->b_data[offset])) =
-			cpu_to_be64(record->blocknr);
-		offset += 8;
-
-	} else {
-		* ((__be32 *)(&jh2bh(descriptor)->b_data[offset])) =
-			cpu_to_be32(record->blocknr);
-		offset += 4;
-	}
-=======
 	if (jbd2_has_feature_64bit(journal))
 		* ((__be64 *)(&descriptor->b_data[offset])) =
 			cpu_to_be64(record->blocknr);
@@ -802,7 +627,6 @@ static void write_one_revoke_record(transaction_t *transaction,
 		* ((__be32 *)(&descriptor->b_data[offset])) =
 			cpu_to_be32(record->blocknr);
 	offset += sz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*offsetp = offset;
 }
@@ -815,25 +639,6 @@ static void write_one_revoke_record(transaction_t *transaction,
  */
 
 static void flush_descriptor(journal_t *journal,
-<<<<<<< HEAD
-			     struct journal_head *descriptor,
-			     int offset, int write_op)
-{
-	jbd2_journal_revoke_header_t *header;
-	struct buffer_head *bh = jh2bh(descriptor);
-
-	if (is_journal_aborted(journal)) {
-		put_bh(bh);
-		return;
-	}
-
-	header = (jbd2_journal_revoke_header_t *) jh2bh(descriptor)->b_data;
-	header->r_count = cpu_to_be32(offset);
-	set_buffer_jwrite(bh);
-	BUFFER_TRACE(bh, "write");
-	set_buffer_dirty(bh);
-	write_dirty_buffer(bh, write_op);
-=======
 			     struct buffer_head *descriptor,
 			     int offset)
 {
@@ -850,7 +655,6 @@ static void flush_descriptor(journal_t *journal,
 	BUFFER_TRACE(descriptor, "write");
 	set_buffer_dirty(descriptor);
 	write_dirty_buffer(descriptor, REQ_SYNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 

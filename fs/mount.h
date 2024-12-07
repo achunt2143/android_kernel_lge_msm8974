@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-#include <linux/mount.h>
-#include <linux/seq_file.h>
-#include <linux/poll.h>
-
-struct mnt_namespace {
-	atomic_t		count;
-	unsigned int		proc_inum;
-	struct mount *	root;
-	struct list_head	list;
-	struct user_namespace	*user_ns;
-	u64			seq;	/* Sequence number to prevent loops */
-	wait_queue_head_t poll;
-	int event;
-};
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <linux/mount.h>
 #include <linux/seq_file.h>
@@ -33,20 +17,12 @@ struct mnt_namespace {
 	unsigned int		nr_mounts; /* # of mounts in the namespace */
 	unsigned int		pending_mounts;
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mnt_pcp {
 	int mnt_count;
 	int mnt_writers;
 };
 
-<<<<<<< HEAD
-struct mount {
-	struct list_head mnt_hash;
-	struct mount *mnt_parent;
-	struct dentry *mnt_mountpoint;
-	struct vfsmount mnt;
-=======
 struct mountpoint {
 	struct hlist_node m_hash;
 	struct dentry *m_dentry;
@@ -63,7 +39,6 @@ struct mount {
 		struct rcu_head mnt_rcu;
 		struct llist_node mnt_llist;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 	struct mnt_pcp __percpu *mnt_pcp;
 #else
@@ -74,32 +49,16 @@ struct mount {
 	struct list_head mnt_child;	/* and going through their mnt_child */
 	struct list_head mnt_instance;	/* mount instance on sb->s_mounts */
 	const char *mnt_devname;	/* Name of device e.g. /dev/dsk/hda1 */
-<<<<<<< HEAD
-	struct list_head mnt_list;
-=======
 	union {
 		struct rb_node mnt_node;	/* Under ns->mounts */
 		struct list_head mnt_list;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head mnt_expire;	/* link in fs-specific expiry list */
 	struct list_head mnt_share;	/* circular list of shared mounts */
 	struct list_head mnt_slave_list;/* list of slave mounts */
 	struct list_head mnt_slave;	/* slave list entry */
 	struct mount *mnt_master;	/* slave is on master->mnt_slave_list */
 	struct mnt_namespace *mnt_ns;	/* containing namespace */
-<<<<<<< HEAD
-#ifdef CONFIG_FSNOTIFY
-	struct hlist_head mnt_fsnotify_marks;
-	__u32 mnt_fsnotify_mask;
-#endif
-	int mnt_id;			/* mount identifier */
-	int mnt_group_id;		/* peer group identifier */
-	int mnt_expiry_mark;		/* true if marked for expiry */
-	int mnt_pinned;
-	int mnt_ghosts;
-};
-=======
 	struct mountpoint *mnt_mp;	/* where is it mounted */
 	union {
 		struct hlist_node mnt_mp_list;	/* list mounts with the same mountpoint */
@@ -117,7 +76,6 @@ struct mount {
 	struct hlist_head mnt_pins;
 	struct hlist_head mnt_stuck_children;
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MNT_NS_INTERNAL ERR_PTR(-EINVAL) /* distinct from any mnt_namespace */
 
@@ -134,20 +92,6 @@ static inline int mnt_has_parent(struct mount *mnt)
 static inline int is_mounted(struct vfsmount *mnt)
 {
 	/* neither detached nor internal? */
-<<<<<<< HEAD
-	return !IS_ERR_OR_NULL(real_mount(mnt));
-}
-
-extern struct mount *__lookup_mnt(struct vfsmount *, struct dentry *, int);
-
-static inline void get_mnt_ns(struct mnt_namespace *ns)
-{
-	atomic_inc(&ns->count);
-}
-
-struct proc_mounts {
-	struct seq_file m;
-=======
 	return !IS_ERR_OR_NULL(real_mount(mnt)->mnt_ns);
 }
 
@@ -178,17 +122,11 @@ static inline void get_mnt_ns(struct mnt_namespace *ns)
 extern seqlock_t mount_lock;
 
 struct proc_mounts {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mnt_namespace *ns;
 	struct path root;
 	int (*show)(struct seq_file *, struct vfsmount *);
 };
 
-<<<<<<< HEAD
-#define proc_mounts(p) (container_of((p), struct proc_mounts, m))
-
-extern const struct seq_operations mounts_op;
-=======
 extern const struct seq_operations mounts_op;
 
 extern bool __is_local_mountpoint(struct dentry *dentry);
@@ -214,4 +152,3 @@ static inline void move_from_ns(struct mount *mnt, struct list_head *dt_list)
 }
 
 extern void mnt_cursor_del(struct mnt_namespace *ns, struct mount *cursor);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

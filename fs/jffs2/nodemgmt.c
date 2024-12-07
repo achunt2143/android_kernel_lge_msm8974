@@ -14,12 +14,6 @@
 #include <linux/kernel.h>
 #include <linux/mtd/mtd.h>
 #include <linux/compiler.h>
-<<<<<<< HEAD
-#include <linux/sched.h> /* For cond_resched() */
-#include "nodelist.h"
-#include "debug.h"
-
-=======
 #include <linux/sched/signal.h>
 #include "nodelist.h"
 #include "debug.h"
@@ -55,7 +49,6 @@ static int jffs2_rp_can_write(struct jffs2_sb_info *c)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	jffs2_reserve_space - request physical space to write nodes to flash
  *	@c: superblock info
@@ -93,8 +86,6 @@ int jffs2_reserve_space(struct jffs2_sb_info *c, uint32_t minsize,
 
 	spin_lock(&c->erase_completion_lock);
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Check if the free space is greater then size of the reserved pool.
 	 * If not, only allow root to proceed with writing.
@@ -104,7 +95,6 @@ int jffs2_reserve_space(struct jffs2_sb_info *c, uint32_t minsize,
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* this needs a little more thought (true <tglx> :)) */
 	while(ret == -EAGAIN) {
 		while(c->nr_free_blocks + c->nr_erasing_blocks < blocksneeded) {
@@ -209,11 +199,8 @@ int jffs2_reserve_space(struct jffs2_sb_info *c, uint32_t minsize,
 			jffs2_dbg(1, "%s(): ret is %d\n", __func__, ret);
 		}
 	}
-<<<<<<< HEAD
-=======
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&c->erase_completion_lock);
 	if (!ret)
 		ret = jffs2_prealloc_raw_node_refs(c, c->nextblock, 1);
@@ -859,13 +846,8 @@ int jffs2_thread_should_wake(struct jffs2_sb_info *c)
 		return 1;
 
 	if (c->unchecked_size) {
-<<<<<<< HEAD
-		jffs2_dbg(1, "jffs2_thread_should_wake(): unchecked_size %d, checked_ino #%d\n",
-			  c->unchecked_size, c->checked_ino);
-=======
 		jffs2_dbg(1, "jffs2_thread_should_wake(): unchecked_size %d, check_ino #%d\n",
 			  c->unchecked_size, c->check_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 

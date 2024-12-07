@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * csum_partial_copy - do IP checksumming and copy
  *
@@ -15,12 +12,8 @@
 
 #include <linux/types.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <net/checksum.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define ldq_u(x,y) \
@@ -47,19 +40,6 @@ __asm__ __volatile__("insql %1,%2,%0":"=r" (z):"r" (x),"r" (y))
 #define insqh(x,y,z) \
 __asm__ __volatile__("insqh %1,%2,%0":"=r" (z):"r" (x),"r" (y))
 
-<<<<<<< HEAD
-
-#define __get_user_u(x,ptr)				\
-({							\
-	long __guu_err;					\
-	__asm__ __volatile__(				\
-	"1:	ldq_u %0,%2\n"				\
-	"2:\n"						\
-	".section __ex_table,\"a\"\n"			\
-	"	.long 1b - .\n"				\
-	"	lda %0,2b-1b(%1)\n"			\
-	".previous"					\
-=======
 #define __get_word(insn,x,ptr)				\
 ({							\
 	long __guu_err;					\
@@ -67,31 +47,11 @@ __asm__ __volatile__("insqh %1,%2,%0":"=r" (z):"r" (x),"r" (y))
 	"1:	"#insn" %0,%2\n"			\
 	"2:\n"						\
 	EXC(1b,2b,%0,%1)				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(x), "=r"(__guu_err)		\
 		: "m"(__m(ptr)), "1"(0));		\
 	__guu_err;					\
 })
 
-<<<<<<< HEAD
-#define __put_user_u(x,ptr)				\
-({							\
-	long __puu_err;					\
-	__asm__ __volatile__(				\
-	"1:	stq_u %2,%1\n"				\
-	"2:\n"						\
-	".section __ex_table,\"a\"\n"			\
-	"	.long 1b - ."				\
-	"	lda $31,2b-1b(%0)\n"			\
-	".previous"					\
-		: "=r"(__puu_err)			\
-		: "m"(__m(addr)), "rJ"(x), "0"(0));	\
-	__puu_err;					\
-})
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned short from64to16(unsigned long x)
 {
 	/* Using extract instructions is a bit more efficient
@@ -122,17 +82,6 @@ static inline unsigned short from64to16(unsigned long x)
  */
 static inline unsigned long
 csum_partial_cfu_aligned(const unsigned long __user *src, unsigned long *dst,
-<<<<<<< HEAD
-			 long len, unsigned long checksum,
-			 int *errp)
-{
-	unsigned long carry = 0;
-	int err = 0;
-
-	while (len >= 0) {
-		unsigned long word;
-		err |= __get_user(word, src);
-=======
 			 long len)
 {
 	unsigned long checksum = ~0U;
@@ -142,7 +91,6 @@ csum_partial_cfu_aligned(const unsigned long __user *src, unsigned long *dst,
 		unsigned long word;
 		if (__get_word(ldq, word, src))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		checksum += carry;
 		src++;
 		checksum += word;
@@ -155,12 +103,8 @@ csum_partial_cfu_aligned(const unsigned long __user *src, unsigned long *dst,
 	checksum += carry;
 	if (len) {
 		unsigned long word, tmp;
-<<<<<<< HEAD
-		err |= __get_user(word, src);
-=======
 		if (__get_word(ldq, word, src))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = *dst;
 		mskql(word, len, word);
 		checksum += word;
@@ -169,10 +113,6 @@ csum_partial_cfu_aligned(const unsigned long __user *src, unsigned long *dst,
 		*dst = word | tmp;
 		checksum += carry;
 	}
-<<<<<<< HEAD
-	if (err) *errp = err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return checksum;
 }
 
@@ -184,36 +124,21 @@ static inline unsigned long
 csum_partial_cfu_dest_aligned(const unsigned long __user *src,
 			      unsigned long *dst,
 			      unsigned long soff,
-<<<<<<< HEAD
-			      long len, unsigned long checksum,
-			      int *errp)
-=======
 			      long len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long first;
 	unsigned long word, carry;
 	unsigned long lastsrc = 7+len+(unsigned long)src;
-<<<<<<< HEAD
-	int err = 0;
-
-	err |= __get_user_u(first,src);
-=======
 	unsigned long checksum = ~0U;
 
 	if (__get_word(ldq_u, first,src))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	carry = 0;
 	while (len >= 0) {
 		unsigned long second;
 
-<<<<<<< HEAD
-		err |= __get_user_u(second, src+1);
-=======
 		if (__get_word(ldq_u, second, src+1))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		extql(first, soff, word);
 		len -= 8;
 		src++;
@@ -231,12 +156,8 @@ csum_partial_cfu_dest_aligned(const unsigned long __user *src,
 	if (len) {
 		unsigned long tmp;
 		unsigned long second;
-<<<<<<< HEAD
-		err |= __get_user_u(second, lastsrc);
-=======
 		if (__get_word(ldq_u, second, lastsrc))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = *dst;
 		extql(first, soff, word);
 		extqh(second, soff, first);
@@ -248,10 +169,6 @@ csum_partial_cfu_dest_aligned(const unsigned long __user *src,
 		*dst = word | tmp;
 		checksum += carry;
 	}
-<<<<<<< HEAD
-	if (err) *errp = err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return checksum;
 }
 
@@ -262,32 +179,18 @@ static inline unsigned long
 csum_partial_cfu_src_aligned(const unsigned long __user *src,
 			     unsigned long *dst,
 			     unsigned long doff,
-<<<<<<< HEAD
-			     long len, unsigned long checksum,
-			     unsigned long partial_dest,
-			     int *errp)
-=======
 			     long len,
 			     unsigned long partial_dest)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long carry = 0;
 	unsigned long word;
 	unsigned long second_dest;
-<<<<<<< HEAD
-	int err = 0;
-
-	mskql(partial_dest, doff, partial_dest);
-	while (len >= 0) {
-		err |= __get_user(word, src);
-=======
 	unsigned long checksum = ~0U;
 
 	mskql(partial_dest, doff, partial_dest);
 	while (len >= 0) {
 		if (__get_word(ldq, word, src))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len -= 8;
 		insql(word, doff, second_dest);
 		checksum += carry;
@@ -301,12 +204,8 @@ csum_partial_cfu_src_aligned(const unsigned long __user *src,
 	len += 8;
 	if (len) {
 		checksum += carry;
-<<<<<<< HEAD
-		err |= __get_user(word, src);
-=======
 		if (__get_word(ldq, word, src))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mskql(word, len, word);
 		len -= 8;
 		checksum += word;
@@ -327,10 +226,6 @@ csum_partial_cfu_src_aligned(const unsigned long __user *src,
 	stq_u(partial_dest | second_dest, dst);
 out:
 	checksum += carry;
-<<<<<<< HEAD
-	if (err) *errp = err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return checksum;
 }
 
@@ -342,39 +237,23 @@ static inline unsigned long
 csum_partial_cfu_unaligned(const unsigned long __user * src,
 			   unsigned long * dst,
 			   unsigned long soff, unsigned long doff,
-<<<<<<< HEAD
-			   long len, unsigned long checksum,
-			   unsigned long partial_dest,
-			   int *errp)
-=======
 			   long len, unsigned long partial_dest)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long carry = 0;
 	unsigned long first;
 	unsigned long lastsrc;
-<<<<<<< HEAD
-	int err = 0;
-
-	err |= __get_user_u(first, src);
-=======
 	unsigned long checksum = ~0U;
 
 	if (__get_word(ldq_u, first, src))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lastsrc = 7+len+(unsigned long)src;
 	mskql(partial_dest, doff, partial_dest);
 	while (len >= 0) {
 		unsigned long second, word;
 		unsigned long second_dest;
 
-<<<<<<< HEAD
-		err |= __get_user_u(second, src+1);
-=======
 		if (__get_word(ldq_u, second, src+1))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		extql(first, soff, word);
 		checksum += carry;
 		len -= 8;
@@ -395,12 +274,8 @@ csum_partial_cfu_unaligned(const unsigned long __user * src,
 		unsigned long second, word;
 		unsigned long second_dest;
 
-<<<<<<< HEAD
-		err |= __get_user_u(second, lastsrc);
-=======
 		if (__get_word(ldq_u, second, lastsrc))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		extql(first, soff, word);
 		extqh(second, soff, first);
 		word |= first;
@@ -421,12 +296,8 @@ csum_partial_cfu_unaligned(const unsigned long __user * src,
 		unsigned long second, word;
 		unsigned long second_dest;
 
-<<<<<<< HEAD
-		err |= __get_user_u(second, lastsrc);
-=======
 		if (__get_word(ldq_u, second, lastsrc))
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		extql(first, soff, word);
 		extqh(second, soff, first);
 		word |= first;
@@ -439,59 +310,6 @@ csum_partial_cfu_unaligned(const unsigned long __user * src,
 		stq_u(partial_dest | word | second_dest, dst);
 		checksum += carry;
 	}
-<<<<<<< HEAD
-	if (err) *errp = err;
-	return checksum;
-}
-
-__wsum
-csum_partial_copy_from_user(const void __user *src, void *dst, int len,
-			       __wsum sum, int *errp)
-{
-	unsigned long checksum = (__force u32) sum;
-	unsigned long soff = 7 & (unsigned long) src;
-	unsigned long doff = 7 & (unsigned long) dst;
-
-	if (len) {
-		if (!doff) {
-			if (!soff)
-				checksum = csum_partial_cfu_aligned(
-					(const unsigned long __user *) src,
-					(unsigned long *) dst,
-					len-8, checksum, errp);
-			else
-				checksum = csum_partial_cfu_dest_aligned(
-					(const unsigned long __user *) src,
-					(unsigned long *) dst,
-					soff, len-8, checksum, errp);
-		} else {
-			unsigned long partial_dest;
-			ldq_u(partial_dest, dst);
-			if (!soff)
-				checksum = csum_partial_cfu_src_aligned(
-					(const unsigned long __user *) src,
-					(unsigned long *) dst,
-					doff, len-8, checksum,
-					partial_dest, errp);
-			else
-				checksum = csum_partial_cfu_unaligned(
-					(const unsigned long __user *) src,
-					(unsigned long *) dst,
-					soff, doff, len-8, checksum,
-					partial_dest, errp);
-		}
-		checksum = from64to16 (checksum);
-	}
-	return (__force __wsum)checksum;
-}
-
-__wsum
-csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum)
-{
-	return csum_partial_copy_from_user((__force const void __user *)src,
-			dst, len, sum, NULL);
-}
-=======
 	return checksum;
 }
 
@@ -543,4 +361,3 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len)
 						dst, len);
 }
 EXPORT_SYMBOL(csum_partial_copy_nocheck);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

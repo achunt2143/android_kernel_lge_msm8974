@@ -1,56 +1,3 @@
-<<<<<<< HEAD
-/* src/prism2/driver/prism2mib.c
-*
-* Management request for mibset/mibget
-*
-* Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
-* --------------------------------------------------------------------
-*
-* linux-wlan
-*
-*   The contents of this file are subject to the Mozilla Public
-*   License Version 1.1 (the "License"); you may not use this file
-*   except in compliance with the License. You may obtain a copy of
-*   the License at http://www.mozilla.org/MPL/
-*
-*   Software distributed under the License is distributed on an "AS
-*   IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-*   implied. See the License for the specific language governing
-*   rights and limitations under the License.
-*
-*   Alternatively, the contents of this file may be used under the
-*   terms of the GNU Public License version 2 (the "GPL"), in which
-*   case the provisions of the GPL are applicable instead of the
-*   above.  If you wish to allow the use of your version of this file
-*   only under the terms of the GPL and not to allow others to use
-*   your version of this file under the MPL, indicate your decision
-*   by deleting the provisions above and replace them with the notice
-*   and other provisions required by the GPL.  If you do not delete
-*   the provisions above, a recipient may use your version of this
-*   file under either the MPL or the GPL.
-*
-* --------------------------------------------------------------------
-*
-* Inquiries regarding the linux-wlan Open Source project can be
-* made directly to:
-*
-* AbsoluteValue Systems Inc.
-* info@linux-wlan.com
-* http://www.linux-wlan.com
-*
-* --------------------------------------------------------------------
-*
-* Portions of the development of this software were funded by
-* Intersil Corporation as part of PRISM(R) chipset product development.
-*
-* --------------------------------------------------------------------
-*
-* The functions in this file handle the mibset/mibget management
-* functions.
-*
-* --------------------------------------------------------------------
-*/
-=======
 // SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1)
 /*
  *
@@ -82,7 +29,6 @@
  *
  * --------------------------------------------------------------------
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -119,151 +65,41 @@ struct mibrec {
 	u16 parm1;
 	u16 parm2;
 	u16 parm3;
-<<<<<<< HEAD
-	int (*func) (struct mibrec *mib,
-		     int isget,
-		     wlandevice_t *wlandev,
-		     hfa384x_t *hw,
-		     struct p80211msg_dot11req_mibset *msg, void *data);
-=======
 	int (*func)(struct mibrec *mib,
 		    int isget,
 		    struct wlandevice *wlandev,
 		    struct hfa384x *hw,
 		    struct p80211msg_dot11req_mibset *msg, void *data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int prism2mib_bytearea2pstr(struct mibrec *mib,
 				   int isget,
-<<<<<<< HEAD
-				   wlandevice_t *wlandev,
-				   hfa384x_t *hw,
-=======
 				   struct wlandevice *wlandev,
 				   struct hfa384x *hw,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct p80211msg_dot11req_mibset *msg,
 				   void *data);
 
 static int prism2mib_uint32(struct mibrec *mib,
 			    int isget,
-<<<<<<< HEAD
-			    wlandevice_t *wlandev,
-			    hfa384x_t *hw,
-=======
 			    struct wlandevice *wlandev,
 			    struct hfa384x *hw,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    struct p80211msg_dot11req_mibset *msg, void *data);
 
 static int prism2mib_flag(struct mibrec *mib,
 			  int isget,
-<<<<<<< HEAD
-			  wlandevice_t *wlandev,
-			  hfa384x_t *hw,
-=======
 			  struct wlandevice *wlandev,
 			  struct hfa384x *hw,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct p80211msg_dot11req_mibset *msg, void *data);
 
 static int prism2mib_wepdefaultkey(struct mibrec *mib,
 				   int isget,
-<<<<<<< HEAD
-				   wlandevice_t *wlandev,
-				   hfa384x_t *hw,
-=======
 				   struct wlandevice *wlandev,
 				   struct hfa384x *hw,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct p80211msg_dot11req_mibset *msg,
 				   void *data);
 
 static int prism2mib_privacyinvoked(struct mibrec *mib,
 				    int isget,
-<<<<<<< HEAD
-				    wlandevice_t *wlandev,
-				    hfa384x_t *hw,
-				    struct p80211msg_dot11req_mibset *msg,
-				    void *data);
-
-static int prism2mib_excludeunencrypted(struct mibrec *mib,
-					int isget,
-					wlandevice_t *wlandev,
-					hfa384x_t *hw,
-					struct p80211msg_dot11req_mibset *msg,
-					void *data);
-
-static int prism2mib_fragmentationthreshold(struct mibrec *mib,
-					    int isget,
-					    wlandevice_t *wlandev,
-					    hfa384x_t *hw,
-					    struct p80211msg_dot11req_mibset *msg,
-					    void *data);
-
-static int prism2mib_priv(struct mibrec *mib,
-			  int isget,
-			  wlandevice_t *wlandev,
-			  hfa384x_t *hw,
-			  struct p80211msg_dot11req_mibset *msg, void *data);
-
-static struct mibrec mibtab[] = {
-
-	/* dot11smt MIB's */
-	{DIDmib_dot11smt_dot11WEPDefaultKeysTable_dot11WEPDefaultKey0,
-	 F_STA | F_WRITE,
-	 HFA384x_RID_CNFWEPDEFAULTKEY0, 0, 0,
-	 prism2mib_wepdefaultkey},
-	{DIDmib_dot11smt_dot11WEPDefaultKeysTable_dot11WEPDefaultKey1,
-	 F_STA | F_WRITE,
-	 HFA384x_RID_CNFWEPDEFAULTKEY1, 0, 0,
-	 prism2mib_wepdefaultkey},
-	{DIDmib_dot11smt_dot11WEPDefaultKeysTable_dot11WEPDefaultKey2,
-	 F_STA | F_WRITE,
-	 HFA384x_RID_CNFWEPDEFAULTKEY2, 0, 0,
-	 prism2mib_wepdefaultkey},
-	{DIDmib_dot11smt_dot11WEPDefaultKeysTable_dot11WEPDefaultKey3,
-	 F_STA | F_WRITE,
-	 HFA384x_RID_CNFWEPDEFAULTKEY3, 0, 0,
-	 prism2mib_wepdefaultkey},
-	{DIDmib_dot11smt_dot11PrivacyTable_dot11PrivacyInvoked,
-	 F_STA | F_READ | F_WRITE,
-	 HFA384x_RID_CNFWEPFLAGS, HFA384x_WEPFLAGS_PRIVINVOKED, 0,
-	 prism2mib_privacyinvoked},
-	{DIDmib_dot11smt_dot11PrivacyTable_dot11WEPDefaultKeyID,
-	 F_STA | F_READ | F_WRITE,
-	 HFA384x_RID_CNFWEPDEFAULTKEYID, 0, 0,
-	 prism2mib_uint32},
-	{DIDmib_dot11smt_dot11PrivacyTable_dot11ExcludeUnencrypted,
-	 F_STA | F_READ | F_WRITE,
-	 HFA384x_RID_CNFWEPFLAGS, HFA384x_WEPFLAGS_EXCLUDE, 0,
-	 prism2mib_excludeunencrypted},
-
-	/* dot11mac MIB's */
-
-	{DIDmib_dot11mac_dot11OperationTable_dot11MACAddress,
-	 F_STA | F_READ | F_WRITE,
-	 HFA384x_RID_CNFOWNMACADDR, HFA384x_RID_CNFOWNMACADDR_LEN, 0,
-	 prism2mib_bytearea2pstr},
-	{DIDmib_dot11mac_dot11OperationTable_dot11RTSThreshold,
-	 F_STA | F_READ | F_WRITE,
-	 HFA384x_RID_RTSTHRESH, 0, 0,
-	 prism2mib_uint32},
-	{DIDmib_dot11mac_dot11OperationTable_dot11ShortRetryLimit,
-	 F_STA | F_READ,
-	 HFA384x_RID_SHORTRETRYLIMIT, 0, 0,
-	 prism2mib_uint32},
-	{DIDmib_dot11mac_dot11OperationTable_dot11LongRetryLimit,
-	 F_STA | F_READ,
-	 HFA384x_RID_LONGRETRYLIMIT, 0, 0,
-	 prism2mib_uint32},
-	{DIDmib_dot11mac_dot11OperationTable_dot11FragmentationThreshold,
-	 F_STA | F_READ | F_WRITE,
-	 HFA384x_RID_FRAGTHRESH, 0, 0,
-	 prism2mib_fragmentationthreshold},
-	{DIDmib_dot11mac_dot11OperationTable_dot11MaxTransmitMSDULifetime,
-=======
 				    struct wlandevice *wlandev,
 				    struct hfa384x *hw,
 				    struct p80211msg_dot11req_mibset *msg,
@@ -337,89 +173,43 @@ static struct mibrec mibtab[] = {
 	 HFA384x_RID_FRAGTHRESH, 0, 0,
 	 prism2mib_fragmentationthreshold},
 	{DIDMIB_DOT11MAC_OPERATIONTABLE_MAXTRANSMITMSDULIFETIME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 F_STA | F_READ,
 	 HFA384x_RID_MAXTXLIFETIME, 0, 0,
 	 prism2mib_uint32},
 
 	/* dot11phy MIB's */
 
-<<<<<<< HEAD
-	{DIDmib_dot11phy_dot11PhyDSSSTable_dot11CurrentChannel,
-	 F_STA | F_READ,
-	 HFA384x_RID_CURRENTCHANNEL, 0, 0,
-	 prism2mib_uint32},
-	{DIDmib_dot11phy_dot11PhyTxPowerTable_dot11CurrentTxPowerLevel,
-=======
 	{DIDMIB_DOT11PHY_DSSSTABLE_CURRENTCHANNEL,
 	 F_STA | F_READ,
 	 HFA384x_RID_CURRENTCHANNEL, 0, 0,
 	 prism2mib_uint32},
 	{DIDMIB_DOT11PHY_TXPOWERTABLE_CURRENTTXPOWERLEVEL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 F_STA | F_READ | F_WRITE,
 	 HFA384x_RID_TXPOWERMAX, 0, 0,
 	 prism2mib_uint32},
 
 	/* p2Static MIB's */
 
-<<<<<<< HEAD
-	{DIDmib_p2_p2Static_p2CnfPortType,
-=======
 	{DIDMIB_P2_STATIC_CNFPORTTYPE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 F_STA | F_READ | F_WRITE,
 	 HFA384x_RID_CNFPORTTYPE, 0, 0,
 	 prism2mib_uint32},
 
 	/* p2MAC MIB's */
 
-<<<<<<< HEAD
-	{DIDmib_p2_p2MAC_p2CurrentTxRate,
-=======
 	{DIDMIB_P2_MAC_CURRENTTXRATE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 F_STA | F_READ,
 	 HFA384x_RID_CURRENTTXRATE, 0, 0,
 	 prism2mib_uint32},
 
 	/* And finally, lnx mibs */
-<<<<<<< HEAD
-	{DIDmib_lnx_lnxConfigTable_lnxRSNAIE,
-=======
 	{DIDMIB_LNX_CONFIGTABLE_RSNAIE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 F_STA | F_READ | F_WRITE,
 	 HFA384x_RID_CNFWPADATA, 0, 0,
 	 prism2mib_priv},
 	{0, 0, 0, 0, 0, NULL}
 };
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
-* prism2mgmt_mibset_mibget
-*
-* Set the value of a mib item.
-*
-* Arguments:
-*	wlandev		wlan device structure
-*	msgp		ptr to msg buffer
-*
-* Returns:
-*	0	success and done
-*	<0	success, but we're waiting for something to finish.
-*	>0	an error occurred while handling the message.
-* Side effects:
-*
-* Call context:
-*	process thread  (usually)
-*	interrupt
-----------------------------------------------------------------*/
-
-int prism2mgmt_mibset_mibget(wlandevice_t *wlandev, void *msgp)
-{
-	hfa384x_t *hw = wlandev->priv;
-=======
 /*
  * prism2mgmt_mibset_mibget
  *
@@ -443,18 +233,13 @@ int prism2mgmt_mibset_mibget(wlandevice_t *wlandev, void *msgp)
 int prism2mgmt_mibset_mibget(struct wlandevice *wlandev, void *msgp)
 {
 	struct hfa384x *hw = wlandev->priv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result, isget;
 	struct mibrec *mib;
 
 	u16 which;
 
 	struct p80211msg_dot11req_mibset *msg = msgp;
-<<<<<<< HEAD
-	p80211itemd_t *mibitem;
-=======
 	struct p80211itemd *mibitem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msg->resultcode.status = P80211ENUM_msgitem_status_data_ok;
 	msg->resultcode.data = P80211ENUM_resultcode_success;
@@ -472,11 +257,7 @@ int prism2mgmt_mibset_mibget(struct wlandevice *wlandev, void *msgp)
 	 ** MIB table.
 	 */
 
-<<<<<<< HEAD
-	mibitem = (p80211itemd_t *) msg->mibattribute.data;
-=======
 	mibitem = (struct p80211itemd *)msg->mibattribute.data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (mib = mibtab; mib->did != 0; mib++)
 		if (mib->did == mibitem->did && (mib->flag & which))
@@ -490,17 +271,10 @@ int prism2mgmt_mibset_mibget(struct wlandevice *wlandev, void *msgp)
 	/*
 	 ** Determine if this is a "mibget" or a "mibset".  If this is a
 	 ** "mibget", then make sure that the MIB may be read.  Otherwise,
-<<<<<<< HEAD
-	 ** this is a "mibset" so make make sure that the MIB may be written.
-	 */
-
-	isget = (msg->msgcode == DIDmsg_dot11req_mibget);
-=======
 	 ** this is a "mibset" so make sure that the MIB may be written.
 	 */
 
 	isget = (msg->msgcode == DIDMSG_DOT11REQ_MIBGET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (isget) {
 		if (!(mib->flag & F_READ)) {
@@ -545,37 +319,6 @@ done:
 	return 0;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
-* prism2mib_bytearea2pstr
-*
-* Get/set pstr data to/from a byte area.
-*
-* MIB record parameters:
-*       parm1    Prism2 RID value.
-*       parm2    Number of bytes of RID data.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_bytearea2pstr(struct mibrec *mib,
-				   int isget,
-				   wlandevice_t *wlandev,
-				   hfa384x_t *hw,
-=======
 /*
  * prism2mib_bytearea2pstr
  *
@@ -605,16 +348,11 @@ static int prism2mib_bytearea2pstr(struct mibrec *mib,
 				   int isget,
 				   struct wlandevice *wlandev,
 				   struct hfa384x *hw,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct p80211msg_dot11req_mibset *msg,
 				   void *data)
 {
 	int result;
-<<<<<<< HEAD
-	p80211pstrd_t *pstr = (p80211pstrd_t *) data;
-=======
 	struct p80211pstrd *pstr = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 bytebuf[MIB_TMP_MAXLEN];
 
 	if (isget) {
@@ -623,11 +361,7 @@ static int prism2mib_bytearea2pstr(struct mibrec *mib,
 		prism2mgmt_bytearea2pstr(bytebuf, pstr, mib->parm2);
 	} else {
 		memset(bytebuf, 0, mib->parm2);
-<<<<<<< HEAD
-		prism2mgmt_pstr2bytearea(bytebuf, pstr);
-=======
 		memcpy(bytebuf, pstr->data, pstr->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result =
 		    hfa384x_drvr_setconfig(hw, mib->parm1, bytebuf, mib->parm2);
 	}
@@ -635,43 +369,6 @@ static int prism2mib_bytearea2pstr(struct mibrec *mib,
 	return result;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
-* prism2mib_uint32
-*
-* Get/set uint32 data.
-*
-* MIB record parameters:
-*       parm1    Prism2 RID value.
-*       parm2    Not used.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_uint32(struct mibrec *mib,
-			    int isget,
-			    wlandevice_t *wlandev,
-			    hfa384x_t *hw,
-			    struct p80211msg_dot11req_mibset *msg, void *data)
-{
-	int result;
-	u32 *uint32 = (u32 *) data;
-	u8 bytebuf[MIB_TMP_MAXLEN];
-	u16 *wordbuf = (u16 *) bytebuf;
-=======
 /*
  * prism2mib_uint32
  *
@@ -707,7 +404,6 @@ static int prism2mib_uint32(struct mibrec *mib,
 	u32 *uint32 = data;
 	u8 bytebuf[MIB_TMP_MAXLEN];
 	u16 *wordbuf = (u16 *)bytebuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (isget) {
 		result = hfa384x_drvr_getconfig16(hw, mib->parm1, wordbuf);
@@ -720,43 +416,6 @@ static int prism2mib_uint32(struct mibrec *mib,
 	return result;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
-* prism2mib_flag
-*
-* Get/set a flag.
-*
-* MIB record parameters:
-*       parm1    Prism2 RID value.
-*       parm2    Bit to get/set.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_flag(struct mibrec *mib,
-			  int isget,
-			  wlandevice_t *wlandev,
-			  hfa384x_t *hw,
-			  struct p80211msg_dot11req_mibset *msg, void *data)
-{
-	int result;
-	u32 *uint32 = (u32 *) data;
-	u8 bytebuf[MIB_TMP_MAXLEN];
-	u16 *wordbuf = (u16 *) bytebuf;
-=======
 /*
  * prism2mib_flag
  *
@@ -792,7 +451,6 @@ static int prism2mib_flag(struct mibrec *mib,
 	u32 *uint32 = data;
 	u8 bytebuf[MIB_TMP_MAXLEN];
 	u16 *wordbuf = (u16 *)bytebuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 flags;
 
 	result = hfa384x_drvr_getconfig16(hw, mib->parm1, wordbuf);
@@ -815,37 +473,6 @@ static int prism2mib_flag(struct mibrec *mib,
 	return result;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
-* prism2mib_wepdefaultkey
-*
-* Get/set WEP default keys.
-*
-* MIB record parameters:
-*       parm1    Prism2 RID value.
-*       parm2    Number of bytes of RID data.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_wepdefaultkey(struct mibrec *mib,
-				   int isget,
-				   wlandevice_t *wlandev,
-				   hfa384x_t *hw,
-=======
 /*
  * prism2mib_wepdefaultkey
  *
@@ -875,16 +502,11 @@ static int prism2mib_wepdefaultkey(struct mibrec *mib,
 				   int isget,
 				   struct wlandevice *wlandev,
 				   struct hfa384x *hw,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct p80211msg_dot11req_mibset *msg,
 				   void *data)
 {
 	int result;
-<<<<<<< HEAD
-	p80211pstrd_t *pstr = (p80211pstrd_t *) data;
-=======
 	struct p80211pstrd *pstr = data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 bytebuf[MIB_TMP_MAXLEN];
 	u16 len;
 
@@ -894,53 +516,13 @@ static int prism2mib_wepdefaultkey(struct mibrec *mib,
 		len = (pstr->len > 5) ? HFA384x_RID_CNFWEP128DEFAULTKEY_LEN :
 		    HFA384x_RID_CNFWEPDEFAULTKEY_LEN;
 		memset(bytebuf, 0, len);
-<<<<<<< HEAD
-		prism2mgmt_pstr2bytearea(bytebuf, pstr);
-=======
 		memcpy(bytebuf, pstr->data, pstr->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = hfa384x_drvr_setconfig(hw, mib->parm1, bytebuf, len);
 	}
 
 	return result;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
-* prism2mib_privacyinvoked
-*
-* Get/set the dot11PrivacyInvoked value.
-*
-* MIB record parameters:
-*       parm1    Prism2 RID value.
-*       parm2    Bit value for PrivacyInvoked flag.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_privacyinvoked(struct mibrec *mib,
-				    int isget,
-				    wlandevice_t *wlandev,
-				    hfa384x_t *hw,
-				    struct p80211msg_dot11req_mibset *msg,
-				    void *data)
-{
-	int result;
-
-=======
 /*
  * prism2mib_privacyinvoked
  *
@@ -973,7 +555,6 @@ static int prism2mib_privacyinvoked(struct mibrec *mib,
 				    struct p80211msg_dot11req_mibset *msg,
 				    void *data)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wlandev->hostwep & HOSTWEP_DECRYPT) {
 		if (wlandev->hostwep & HOSTWEP_DECRYPT)
 			mib->parm2 |= HFA384x_WEPFLAGS_DISABLE_RXCRYPT;
@@ -981,91 +562,6 @@ static int prism2mib_privacyinvoked(struct mibrec *mib,
 			mib->parm2 |= HFA384x_WEPFLAGS_DISABLE_TXCRYPT;
 	}
 
-<<<<<<< HEAD
-	result = prism2mib_flag(mib, isget, wlandev, hw, msg, data);
-
-	return result;
-}
-
-/*----------------------------------------------------------------
-* prism2mib_excludeunencrypted
-*
-* Get/set the dot11ExcludeUnencrypted value.
-*
-* MIB record parameters:
-*       parm1    Prism2 RID value.
-*       parm2    Bit value for ExcludeUnencrypted flag.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_excludeunencrypted(struct mibrec *mib,
-					int isget,
-					wlandevice_t *wlandev,
-					hfa384x_t *hw,
-					struct p80211msg_dot11req_mibset *msg,
-					void *data)
-{
-	int result;
-
-	result = prism2mib_flag(mib, isget, wlandev, hw, msg, data);
-
-	return result;
-}
-
-/*----------------------------------------------------------------
-* prism2mib_fragmentationthreshold
-*
-* Get/set the fragmentation threshold.
-*
-* MIB record parameters:
-*       parm1    Prism2 RID value.
-*       parm2    Not used.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_fragmentationthreshold(struct mibrec *mib,
-					    int isget,
-					    wlandevice_t *wlandev,
-					    hfa384x_t *hw,
-					    struct p80211msg_dot11req_mibset *msg,
-					    void *data)
-{
-	int result;
-	u32 *uint32 = (u32 *) data;
-
-	if (!isget)
-		if ((*uint32) % 2) {
-			printk(KERN_WARNING "Attempt to set odd number "
-			       "FragmentationThreshold\n");
-=======
 	return prism2mib_flag(mib, isget, wlandev, hw, msg, data);
 }
 
@@ -1108,78 +604,11 @@ prism2mib_fragmentationthreshold(struct mibrec *mib,
 		if ((*uint32) % 2) {
 			netdev_warn(wlandev->netdev,
 				    "Attempt to set odd number FragmentationThreshold\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg->resultcode.data =
 			    P80211ENUM_resultcode_not_supported;
 			return 0;
 		}
 
-<<<<<<< HEAD
-	result = prism2mib_uint32(mib, isget, wlandev, hw, msg, data);
-
-	return result;
-}
-
-/*----------------------------------------------------------------
-* prism2mib_priv
-*
-* Get/set values in the "priv" data structure.
-*
-* MIB record parameters:
-*       parm1    Not used.
-*       parm2    Not used.
-*       parm3    Not used.
-*
-* Arguments:
-*       mib      MIB record.
-*       isget    MIBGET/MIBSET flag.
-*       wlandev  wlan device structure.
-*       priv     "priv" structure.
-*       hw       "hw" structure.
-*       msg      Message structure.
-*       data     Data buffer.
-*
-* Returns:
-*       0   - Success.
-*       ~0  - Error.
-*
-----------------------------------------------------------------*/
-
-static int prism2mib_priv(struct mibrec *mib,
-			  int isget,
-			  wlandevice_t *wlandev,
-			  hfa384x_t *hw,
-			  struct p80211msg_dot11req_mibset *msg, void *data)
-{
-	p80211pstrd_t *pstr = (p80211pstrd_t *) data;
-
-	int result;
-
-	switch (mib->did) {
-	case DIDmib_lnx_lnxConfigTable_lnxRSNAIE:{
-			hfa384x_WPAData_t wpa;
-			if (isget) {
-				hfa384x_drvr_getconfig(hw,
-						       HFA384x_RID_CNFWPADATA,
-						       (u8 *) &wpa,
-						       sizeof(wpa));
-				pstr->len = le16_to_cpu(wpa.datalen);
-				memcpy(pstr->data, wpa.data, pstr->len);
-			} else {
-				wpa.datalen = cpu_to_le16(pstr->len);
-				memcpy(wpa.data, pstr->data, pstr->len);
-
-				result =
-				    hfa384x_drvr_setconfig(hw,
-						   HFA384x_RID_CNFWPADATA,
-						   (u8 *) &wpa,
-						   sizeof(wpa));
-			}
-			break;
-		}
-	default:
-		printk(KERN_ERR "Unhandled DID 0x%08x\n", mib->did);
-=======
 	return prism2mib_uint32(mib, isget, wlandev, hw, msg, data);
 }
 
@@ -1242,94 +671,11 @@ static int prism2mib_priv(struct mibrec *mib,
 	}
 	default:
 		netdev_err(wlandev->netdev, "Unhandled DID 0x%08x\n", mib->did);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
-* prism2mgmt_pstr2bytestr
-*
-* Convert the pstr data in the WLAN message structure into an hfa384x
-* byte string format.
-*
-* Arguments:
-*	bytestr		hfa384x byte string data type
-*	pstr		wlan message data
-*
-* Returns:
-*	Nothing
-*
-----------------------------------------------------------------*/
-
-void prism2mgmt_pstr2bytestr(hfa384x_bytestr_t *bytestr, p80211pstrd_t *pstr)
-{
-	bytestr->len = cpu_to_le16((u16) (pstr->len));
-	memcpy(bytestr->data, pstr->data, pstr->len);
-}
-
-/*----------------------------------------------------------------
-* prism2mgmt_pstr2bytearea
-*
-* Convert the pstr data in the WLAN message structure into an hfa384x
-* byte area format.
-*
-* Arguments:
-*	bytearea	hfa384x byte area data type
-*	pstr		wlan message data
-*
-* Returns:
-*	Nothing
-*
-----------------------------------------------------------------*/
-
-void prism2mgmt_pstr2bytearea(u8 *bytearea, p80211pstrd_t *pstr)
-{
-	memcpy(bytearea, pstr->data, pstr->len);
-}
-
-/*----------------------------------------------------------------
-* prism2mgmt_bytestr2pstr
-*
-* Convert the data in an hfa384x byte string format into a
-* pstr in the WLAN message.
-*
-* Arguments:
-*	bytestr		hfa384x byte string data type
-*	msg		wlan message
-*
-* Returns:
-*	Nothing
-*
-----------------------------------------------------------------*/
-
-void prism2mgmt_bytestr2pstr(hfa384x_bytestr_t *bytestr, p80211pstrd_t *pstr)
-{
-	pstr->len = (u8) (le16_to_cpu((u16) (bytestr->len)));
-	memcpy(pstr->data, bytestr->data, pstr->len);
-}
-
-/*----------------------------------------------------------------
-* prism2mgmt_bytearea2pstr
-*
-* Convert the data in an hfa384x byte area format into a pstr
-* in the WLAN message.
-*
-* Arguments:
-*	bytearea	hfa384x byte area data type
-*	msg		wlan message
-*
-* Returns:
-*	Nothing
-*
-----------------------------------------------------------------*/
-
-void prism2mgmt_bytearea2pstr(u8 *bytearea, p80211pstrd_t *pstr, int len)
-{
-	pstr->len = (u8) len;
-=======
 /*
  * prism2mgmt_pstr2bytestr
  *
@@ -1392,6 +738,5 @@ void prism2mgmt_bytestr2pstr(struct hfa384x_bytestr *bytestr,
 void prism2mgmt_bytearea2pstr(u8 *bytearea, struct p80211pstrd *pstr, int len)
 {
 	pstr->len = (u8)len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(pstr->data, bytearea, len);
 }

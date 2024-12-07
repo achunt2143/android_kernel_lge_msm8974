@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the IEEE 802.1d ethernet bridging layer.
 #
@@ -9,18 +6,6 @@
 obj-$(CONFIG_BRIDGE) += bridge.o
 
 bridge-y	:= br.o br_device.o br_fdb.o br_forward.o br_if.o br_input.o \
-<<<<<<< HEAD
-			br_ioctl.o br_notify.o br_stp.o br_stp_bpdu.o \
-			br_stp_if.o br_stp_timer.o br_netlink.o
-
-bridge-$(CONFIG_SYSFS) += br_sysfs_if.o br_sysfs_br.o
-
-bridge-$(CONFIG_BRIDGE_NETFILTER) += br_netfilter.o
-
-bridge-$(CONFIG_BRIDGE_IGMP_SNOOPING) += br_multicast.o
-
-obj-$(CONFIG_BRIDGE_NF_EBTABLES) += netfilter/
-=======
 			br_ioctl.o br_stp.o br_stp_bpdu.o \
 			br_stp_if.o br_stp_timer.o br_netlink.o \
 			br_netlink_tunnel.o br_arp_nd_proxy.o
@@ -44,4 +29,3 @@ obj-$(CONFIG_NETFILTER) += netfilter/
 bridge-$(CONFIG_BRIDGE_MRP)	+= br_mrp_switchdev.o br_mrp.o br_mrp_netlink.o
 
 bridge-$(CONFIG_BRIDGE_CFM)	+= br_cfm.o br_cfm_netlink.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

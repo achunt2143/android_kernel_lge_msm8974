@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfsplus/options.c
  *
@@ -79,11 +76,7 @@ int hfsplus_parse_options_remount(char *input, int *force)
 	int token;
 
 	if (!input)
-<<<<<<< HEAD
-		return 0;
-=======
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((p = strsep(&input, ",")) != NULL) {
 		if (!*p)
@@ -121,54 +114,25 @@ int hfsplus_parse_options(char *input, struct hfsplus_sb_info *sbi)
 		switch (token) {
 		case opt_creator:
 			if (match_fourchar(&args[0], &sbi->creator)) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: creator requires a 4 character value\n");
-=======
 				pr_err("creator requires a 4 character value\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
 		case opt_type:
 			if (match_fourchar(&args[0], &sbi->type)) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: type requires a 4 character value\n");
-=======
 				pr_err("type requires a 4 character value\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
 		case opt_umask:
 			if (match_octal(&args[0], &tmp)) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: umask requires a value\n");
-=======
 				pr_err("umask requires a value\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			sbi->umask = (umode_t)tmp;
 			break;
 		case opt_uid:
 			if (match_int(&args[0], &tmp)) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: uid requires an argument\n");
-				return 0;
-			}
-			sbi->uid = (uid_t)tmp;
-			break;
-		case opt_gid:
-			if (match_int(&args[0], &tmp)) {
-				printk(KERN_ERR "hfs: gid requires an argument\n");
-				return 0;
-			}
-			sbi->gid = (gid_t)tmp;
-			break;
-		case opt_part:
-			if (match_int(&args[0], &sbi->part)) {
-				printk(KERN_ERR "hfs: part requires an argument\n");
-=======
 				pr_err("uid requires an argument\n");
 				return 0;
 			}
@@ -196,41 +160,26 @@ int hfsplus_parse_options(char *input, struct hfsplus_sb_info *sbi)
 		case opt_part:
 			if (match_int(&args[0], &sbi->part)) {
 				pr_err("part requires an argument\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
 		case opt_session:
 			if (match_int(&args[0], &sbi->session)) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: session requires an argument\n");
-=======
 				pr_err("session requires an argument\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			break;
 		case opt_nls:
 			if (sbi->nls) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: unable to change nls mapping\n");
-=======
 				pr_err("unable to change nls mapping\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			p = match_strdup(&args[0]);
 			if (p)
 				sbi->nls = load_nls(p);
 			if (!sbi->nls) {
-<<<<<<< HEAD
-				printk(KERN_ERR "hfs: unable to load "
-						"nls mapping \"%s\"\n",
-					p);
-=======
 				pr_err("unable to load nls mapping \"%s\"\n",
 				       p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(p);
 				return 0;
 			}
@@ -278,12 +227,8 @@ int hfsplus_show_options(struct seq_file *seq, struct dentry *root)
 	if (sbi->type != HFSPLUS_DEF_CR_TYPE)
 		seq_show_option_n(seq, "type", (char *)&sbi->type, 4);
 	seq_printf(seq, ",umask=%o,uid=%u,gid=%u", sbi->umask,
-<<<<<<< HEAD
-		sbi->uid, sbi->gid);
-=======
 			from_kuid_munged(&init_user_ns, sbi->uid),
 			from_kgid_munged(&init_user_ns, sbi->gid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->part >= 0)
 		seq_printf(seq, ",part=%u", sbi->part);
 	if (sbi->session >= 0)
@@ -291,14 +236,8 @@ int hfsplus_show_options(struct seq_file *seq, struct dentry *root)
 	if (sbi->nls)
 		seq_printf(seq, ",nls=%s", sbi->nls->charset);
 	if (test_bit(HFSPLUS_SB_NODECOMPOSE, &sbi->flags))
-<<<<<<< HEAD
-		seq_printf(seq, ",nodecompose");
-	if (test_bit(HFSPLUS_SB_NOBARRIER, &sbi->flags))
-		seq_printf(seq, ",nobarrier");
-=======
 		seq_puts(seq, ",nodecompose");
 	if (test_bit(HFSPLUS_SB_NOBARRIER, &sbi->flags))
 		seq_puts(seq, ",nobarrier");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

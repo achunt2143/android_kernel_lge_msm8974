@@ -1,38 +1,14 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IO workarounds for PCI on Celleb/Cell platform
  *
  * (C) Copyright 2006-2007 TOSHIBA CORPORATION
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-=======
 #include <linux/of_address.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/io.h>
 
@@ -49,16 +25,9 @@ struct spiderpci_iowa_private {
 static void spiderpci_io_flush(struct iowa_bus *bus)
 {
 	struct spiderpci_iowa_private *priv;
-<<<<<<< HEAD
-	u32 val;
-
-	priv = bus->private;
-	val = in_be32(priv->regs + SPIDER_PCI_DUMMY_READ);
-=======
 
 	priv = bus->private;
 	in_be32(priv->regs + SPIDER_PCI_DUMMY_READ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iosync();
 }
 
@@ -112,11 +81,7 @@ static int __init spiderpci_pci_setup_chip(struct pci_controller *phb,
 	/*
 	 * On CellBlade, we can't know that which XDR memory is used by
 	 * kmalloc() to allocate dummy_page_va.
-<<<<<<< HEAD
-	 * In order to imporve the performance, the XDR which is used to
-=======
 	 * In order to improve the performance, the XDR which is used to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * allocate dummy_page_va is the nearest the spider-pci.
 	 * We have to select the CBE which is the nearest the spider-pci
 	 * to allocate memory from the best XDR, but I don't know that
@@ -151,17 +116,10 @@ int __init spiderpci_iowa_init(struct iowa_bus *bus, void *data)
 	struct resource r;
 	unsigned long offset = (unsigned long)data;
 
-<<<<<<< HEAD
-	pr_debug("SPIDERPCI-IOWA:Bus initialize for spider(%s)\n",
-		 np->full_name);
-
-	priv = kzalloc(sizeof(struct spiderpci_iowa_private), GFP_KERNEL);
-=======
 	pr_debug("SPIDERPCI-IOWA:Bus initialize for spider(%pOF)\n",
 		 np);
 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv) {
 		pr_err("SPIDERPCI-IOWA:"
 		       "Can't allocate struct spiderpci_iowa_private");

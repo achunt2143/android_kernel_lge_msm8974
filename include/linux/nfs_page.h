@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/nfs_page.h
  *
@@ -26,15 +23,6 @@
  * Valid flags for a dirty buffer
  */
 enum {
-<<<<<<< HEAD
-	PG_BUSY = 0,
-	PG_MAPPED,
-	PG_CLEAN,
-	PG_NEED_COMMIT,
-	PG_NEED_RESCHED,
-	PG_PARTIAL_READ_FAILED,
-	PG_COMMIT_TO_DS,
-=======
 	PG_BUSY = 0,		/* nfs_{un}lock_request */
 	PG_MAPPED,		/* page private set for buffered io */
 	PG_FOLIO,		/* Tracking a folio (unset for O_DIRECT) */
@@ -49,20 +37,11 @@ enum {
 	PG_REMOVE,		/* page group sync bit in write path */
 	PG_CONTENDED1,		/* Is someone waiting for a lock? */
 	PG_CONTENDED2,		/* Is someone waiting for a lock? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfs_inode;
 struct nfs_page {
 	struct list_head	wb_list;	/* Defines state of page: */
-<<<<<<< HEAD
-	struct page		*wb_page;	/* page to read in/write out */
-	struct nfs_open_context	*wb_context;	/* File state context info */
-	struct nfs_lock_context	*wb_lock_context;	/* lock context info */
-	atomic_t		wb_complete;	/* i/os we're waiting for */
-	pgoff_t			wb_index;	/* Offset >> PAGE_CACHE_SHIFT */
-	unsigned int		wb_offset,	/* Offset & ~PAGE_CACHE_MASK */
-=======
 	union {
 		struct page	*wb_page;	/* page to read in/write out */
 		struct folio	*wb_folio;
@@ -70,24 +49,10 @@ struct nfs_page {
 	struct nfs_lock_context	*wb_lock_context;	/* lock context info */
 	pgoff_t			wb_index;	/* Offset >> PAGE_SHIFT */
 	unsigned int		wb_offset,	/* Offset & ~PAGE_MASK */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				wb_pgbase,	/* Start of page data */
 				wb_bytes;	/* Length of request */
 	struct kref		wb_kref;	/* reference count */
 	unsigned long		wb_flags;
-<<<<<<< HEAD
-	struct nfs_writeverf	wb_verf;	/* Commit cookie */
-};
-
-struct nfs_pageio_descriptor;
-struct nfs_pageio_ops {
-	void	(*pg_init)(struct nfs_pageio_descriptor *, struct nfs_page *);
-	bool	(*pg_test)(struct nfs_pageio_descriptor *, struct nfs_page *, struct nfs_page *);
-	int	(*pg_doio)(struct nfs_pageio_descriptor *);
-};
-
-struct nfs_pageio_descriptor {
-=======
 	struct nfs_write_verifier	wb_verf;	/* Commit cookie */
 	struct nfs_page		*wb_this_page;  /* list of reqs for this page */
 	struct nfs_page		*wb_head;       /* head pointer for req list */
@@ -121,33 +86,11 @@ struct nfs_rw_ops {
 };
 
 struct nfs_pgio_mirror {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	pg_list;
 	unsigned long		pg_bytes_written;
 	size_t			pg_count;
 	size_t			pg_bsize;
 	unsigned int		pg_base;
-<<<<<<< HEAD
-	unsigned char		pg_moreio : 1,
-				pg_recoalesce : 1;
-
-	struct inode		*pg_inode;
-	const struct nfs_pageio_ops *pg_ops;
-	int 			pg_ioflags;
-	int			pg_error;
-	const struct rpc_call_ops *pg_rpc_callops;
-	struct pnfs_layout_segment *pg_lseg;
-};
-
-#define NFS_WBACK_BUSY(req)	(test_bit(PG_BUSY,&(req)->wb_flags))
-
-extern	struct nfs_page *nfs_create_request(struct nfs_open_context *ctx,
-					    struct inode *inode,
-					    struct page *page,
-					    unsigned int offset,
-					    unsigned int count);
-extern	void nfs_release_request(struct nfs_page *req);
-=======
 	unsigned char		pg_recoalesce : 1;
 };
 
@@ -191,58 +134,26 @@ extern struct nfs_page *nfs_page_create_from_folio(struct nfs_open_context *ctx,
 						   unsigned int offset,
 						   unsigned int count);
 extern	void nfs_release_request(struct nfs_page *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 extern	void nfs_pageio_init(struct nfs_pageio_descriptor *desc,
 			     struct inode *inode,
 			     const struct nfs_pageio_ops *pg_ops,
-<<<<<<< HEAD
-=======
 			     const struct nfs_pgio_completion_ops *compl_ops,
 			     const struct nfs_rw_ops *rw_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     size_t bsize,
 			     int how);
 extern	int nfs_pageio_add_request(struct nfs_pageio_descriptor *,
 				   struct nfs_page *);
-<<<<<<< HEAD
-extern	void nfs_pageio_complete(struct nfs_pageio_descriptor *desc);
-extern	void nfs_pageio_cond_complete(struct nfs_pageio_descriptor *, pgoff_t);
-extern bool nfs_generic_pg_test(struct nfs_pageio_descriptor *desc,
-=======
 extern  int nfs_pageio_resend(struct nfs_pageio_descriptor *,
 			      struct nfs_pgio_header *);
 extern	void nfs_pageio_complete(struct nfs_pageio_descriptor *desc);
 extern	void nfs_pageio_cond_complete(struct nfs_pageio_descriptor *, pgoff_t);
 extern size_t nfs_generic_pg_test(struct nfs_pageio_descriptor *desc,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct nfs_page *prev,
 				struct nfs_page *req);
 extern  int nfs_wait_on_request(struct nfs_page *);
 extern	void nfs_unlock_request(struct nfs_page *req);
-<<<<<<< HEAD
-
-/*
- * Lock the page of an asynchronous request without getting a new reference
- */
-static inline int
-nfs_lock_request_dontget(struct nfs_page *req)
-{
-	return !test_and_set_bit(PG_BUSY, &req->wb_flags);
-}
-
-static inline int
-nfs_lock_request(struct nfs_page *req)
-{
-	if (test_and_set_bit(PG_BUSY, &req->wb_flags))
-		return 0;
-	kref_get(&req->wb_kref);
-	return 1;
-}
-
-
-=======
 extern	void nfs_unlock_and_release_request(struct nfs_page *);
 extern	struct nfs_page *nfs_page_group_lock_head(struct nfs_page *req);
 extern	int nfs_page_group_lock_subrequests(struct nfs_page *head);
@@ -325,7 +236,6 @@ nfs_lock_request(struct nfs_page *req)
 	return !test_and_set_bit(PG_BUSY, &req->wb_flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nfs_list_add_request - Insert a request into a list
  * @req: request
@@ -337,8 +247,6 @@ nfs_list_add_request(struct nfs_page *req, struct list_head *head)
 	list_add_tail(&req->wb_list, head);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * nfs_list_move_request - Move a request to a new list
  * @req: request
@@ -349,7 +257,6 @@ nfs_list_move_request(struct nfs_page *req, struct list_head *head)
 {
 	list_move_tail(&req->wb_list, head);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nfs_list_remove_request - Remove a request from its wb_list
@@ -369,12 +276,6 @@ nfs_list_entry(struct list_head *head)
 	return list_entry(head, struct nfs_page, wb_list);
 }
 
-<<<<<<< HEAD
-static inline
-loff_t req_offset(struct nfs_page *req)
-{
-	return (((loff_t)req->wb_index) << PAGE_CACHE_SHIFT) + req->wb_offset;
-=======
 static inline loff_t req_offset(const struct nfs_page *req)
 {
 	return (((loff_t)req->wb_index) << PAGE_SHIFT) + req->wb_offset;
@@ -384,7 +285,6 @@ static inline struct nfs_open_context *
 nfs_req_openctx(struct nfs_page *req)
 {
 	return req->wb_lock_context->open_context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* _LINUX_NFS_PAGE_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * HID driver for TwinHan IR remote control
  *
@@ -11,12 +8,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -138,22 +129,6 @@ static struct hid_driver twinhan_driver = {
 	.id_table = twinhan_devices,
 	.input_mapping = twinhan_input_mapping,
 };
-<<<<<<< HEAD
-
-static int __init twinhan_init(void)
-{
-	return hid_register_driver(&twinhan_driver);
-}
-
-static void __exit twinhan_exit(void)
-{
-	hid_unregister_driver(&twinhan_driver);
-}
-
-module_init(twinhan_init);
-module_exit(twinhan_exit);
-=======
 module_hid_driver(twinhan_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

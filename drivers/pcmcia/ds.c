@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * ds.c -- 16-bit PCMCIA core support
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * ds.c -- 16-bit PCMCIA core support
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The initial developer of the original code is David A. Hinds
  * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
  * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
@@ -74,11 +64,7 @@ static void pcmcia_check_driver(struct pcmcia_driver *p_drv)
 			       "be 0x%x\n", p_drv->name, did->prod_id[i],
 			       did->prod_id_hash[i], hash);
 			printk(KERN_DEBUG "pcmcia: see "
-<<<<<<< HEAD
-				"Documentation/pcmcia/devicetable.txt for "
-=======
 				"Documentation/pcmcia/devicetable.rst for "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"details\n");
 		}
 		did++;
@@ -92,21 +78,12 @@ static void pcmcia_check_driver(struct pcmcia_driver *p_drv)
 
 
 struct pcmcia_dynid {
-<<<<<<< HEAD
-	struct list_head 		node;
-	struct pcmcia_device_id 	id;
-};
-
-/**
- * pcmcia_store_new_id - add a new PCMCIA device ID to this driver and re-probe devices
-=======
 	struct list_head		node;
 	struct pcmcia_device_id		id;
 };
 
 /**
  * new_id_store() - add a new PCMCIA device ID to this driver and re-probe devices
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @driver: target device driver
  * @buf: buffer for scanning device ID data
  * @count: input size
@@ -115,11 +92,7 @@ struct pcmcia_dynid {
  * and causes the driver to probe for all devices again.
  */
 static ssize_t
-<<<<<<< HEAD
-pcmcia_store_new_id(struct device_driver *driver, const char *buf, size_t count)
-=======
 new_id_store(struct device_driver *driver, const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_dynid *dynid;
 	struct pcmcia_driver *pdrv = to_pcmcia_drv(driver);
@@ -157,11 +130,7 @@ new_id_store(struct device_driver *driver, const char *buf, size_t count)
 		return retval;
 	return count;
 }
-<<<<<<< HEAD
-static DRIVER_ATTR(new_id, S_IWUSR, NULL, pcmcia_store_new_id);
-=======
 static DRIVER_ATTR_WO(new_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 pcmcia_free_dynids(struct pcmcia_driver *drv)
@@ -312,13 +281,8 @@ static int pcmcia_device_probe(struct device *dev)
 		dev_dbg(dev, "base %x, regs %x", p_dev->config_base,
 			p_dev->config_regs);
 	} else {
-<<<<<<< HEAD
-		dev_printk(KERN_INFO, dev,
-			   "pcmcia: could not parse base and rmask0 of CIS\n");
-=======
 		dev_info(dev,
 			 "pcmcia: could not parse base and rmask0 of CIS\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p_dev->config_base = 0;
 		p_dev->config_regs = 0;
 	}
@@ -386,11 +350,7 @@ static void pcmcia_card_remove(struct pcmcia_socket *s, struct pcmcia_device *le
 	return;
 }
 
-<<<<<<< HEAD
-static int pcmcia_device_remove(struct device *dev)
-=======
 static void pcmcia_device_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_device *p_dev;
 	struct pcmcia_driver *p_drv;
@@ -411,34 +371,11 @@ static void pcmcia_device_remove(struct device *dev)
 		pcmcia_card_remove(p_dev->socket, p_dev);
 
 	/* detach the "instance" */
-<<<<<<< HEAD
-	if (!p_drv)
-		return 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p_drv->remove)
 		p_drv->remove(p_dev);
 
 	/* check for proper unloading */
 	if (p_dev->_irq || p_dev->_io || p_dev->_locked)
-<<<<<<< HEAD
-		dev_printk(KERN_INFO, dev,
-			"pcmcia: driver %s did not release config properly\n",
-			p_drv->name);
-
-	for (i = 0; i < MAX_WIN; i++)
-		if (p_dev->_win & CLIENT_WIN_REQ(i))
-			dev_printk(KERN_INFO, dev,
-			  "pcmcia: driver %s did not release window properly\n",
-			   p_drv->name);
-
-	/* references from pcmcia_probe_device */
-	pcmcia_put_dev(p_dev);
-	module_put(p_drv->owner);
-
-	return 0;
-=======
 		dev_info(dev,
 			 "pcmcia: driver %s did not release config properly\n",
 			 p_drv->name);
@@ -452,7 +389,6 @@ static void pcmcia_device_remove(struct device *dev)
 	/* references from pcmcia_device_probe */
 	pcmcia_put_dev(p_dev);
 	module_put(p_drv->owner);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -524,19 +460,10 @@ static int pcmcia_device_query(struct pcmcia_device *p_dev)
 			if ((length < 2) || (length > 255))
 				continue;
 
-<<<<<<< HEAD
-			new = kmalloc(sizeof(char) * length, GFP_KERNEL);
-			if (!new)
-				continue;
-
-			new = strncpy(new, tmp, length);
-
-=======
 			new = kstrdup(tmp, GFP_KERNEL);
 			if (!new)
 				continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp = p_dev->prod_id[i];
 			p_dev->prod_id[i] = new;
 			kfree(tmp);
@@ -584,16 +511,8 @@ static struct pcmcia_device *pcmcia_device_add(struct pcmcia_socket *s,
 	p_dev->dev.parent = s->dev.parent;
 	p_dev->dev.release = pcmcia_release_dev;
 	/* by default don't allow DMA */
-<<<<<<< HEAD
-	p_dev->dma_mask = DMA_MASK_NONE;
-	p_dev->dev.dma_mask = &p_dev->dma_mask;
-	dev_set_name(&p_dev->dev, "%d.%d", p_dev->socket->sock, p_dev->device_no);
-	if (!dev_name(&p_dev->dev))
-		goto err_free;
-=======
 	p_dev->dma_mask = 0;
 	p_dev->dev.dma_mask = &p_dev->dma_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p_dev->devname = kasprintf(GFP_KERNEL, "pcmcia%s", dev_name(&p_dev->dev));
 	if (!p_dev->devname)
 		goto err_free;
@@ -634,11 +553,7 @@ static struct pcmcia_device *pcmcia_device_add(struct pcmcia_socket *s,
 			c->io[i].name = p_dev->devname;
 			c->io[i].flags = IORESOURCE_IO;
 		}
-<<<<<<< HEAD
-		for (i = 0; i< MAX_WIN; i++) {
-=======
 		for (i = 0; i < MAX_WIN; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			c->mem[i].name = p_dev->devname;
 			c->mem[i].flags = IORESOURCE_MEM;
 		}
@@ -650,20 +565,11 @@ static struct pcmcia_device *pcmcia_device_add(struct pcmcia_socket *s,
 
 	mutex_unlock(&s->ops_mutex);
 
-<<<<<<< HEAD
-	dev_printk(KERN_NOTICE, &p_dev->dev,
-		   "pcmcia: registering new device %s (IRQ: %d)\n",
-=======
 	dev_notice(&p_dev->dev, "pcmcia: registering new device %s (IRQ: %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   p_dev->devname, p_dev->irq);
 
 	pcmcia_device_query(p_dev);
 
-<<<<<<< HEAD
-	if (device_register(&p_dev->dev))
-		goto err_unreg;
-=======
 	dev_set_name(&p_dev->dev, "%d.%d", p_dev->socket->sock, p_dev->device_no);
 	if (device_register(&p_dev->dev)) {
 		mutex_lock(&s->ops_mutex);
@@ -673,7 +579,6 @@ static struct pcmcia_device *pcmcia_device_add(struct pcmcia_socket *s,
 		put_device(&p_dev->dev);
 		return NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return p_dev;
 
@@ -722,10 +627,6 @@ static int pcmcia_card_add(struct pcmcia_socket *s)
 
 	ret = pccard_validate_cis(s, &no_chains);
 	if (ret || !no_chains) {
-<<<<<<< HEAD
-		dev_dbg(&s->dev, "invalid CIS or invalid resources\n");
-		return -ENODEV;
-=======
 #if defined(CONFIG_MTD_PCMCIA_ANONYMOUS)
 		/* Set up as an anonymous card. If we don't have anonymous
 		   memory support then just error the card as there is no
@@ -744,7 +645,6 @@ static int pcmcia_card_add(struct pcmcia_socket *s)
 			dev_dbg(&s->dev, "invalid CIS or invalid resources\n");
 			return -ENODEV;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!pccard_read_tuple(s, BIND_FN_ALL, CISTPL_LONGLINK_MFC, &mfc))
@@ -760,11 +660,7 @@ static int pcmcia_card_add(struct pcmcia_socket *s)
 }
 
 
-<<<<<<< HEAD
-static int pcmcia_requery_callback(struct device *dev, void * _data)
-=======
 static int pcmcia_requery_callback(struct device *dev, void *_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
 	if (!p_dev->dev.driver) {
@@ -780,12 +676,9 @@ static void pcmcia_requery(struct pcmcia_socket *s)
 {
 	int has_pfc;
 
-<<<<<<< HEAD
-=======
 	if (!(s->state & SOCKET_PRESENT))
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (s->functions == 0) {
 		pcmcia_card_add(s);
 		return;
@@ -845,11 +738,7 @@ static void pcmcia_requery(struct pcmcia_socket *s)
  * the one provided by the card is broken. The firmware files reside in
  * /lib/firmware/ in userspace.
  */
-<<<<<<< HEAD
-static int pcmcia_load_firmware(struct pcmcia_device *dev, char * filename)
-=======
 static int pcmcia_load_firmware(struct pcmcia_device *dev, char *filename)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_socket *s = dev->socket;
 	const struct firmware *fw;
@@ -865,24 +754,14 @@ static int pcmcia_load_firmware(struct pcmcia_device *dev, char *filename)
 	if (request_firmware(&fw, filename, &dev->dev) == 0) {
 		if (fw->size >= CISTPL_MAX_CIS_SIZE) {
 			ret = -EINVAL;
-<<<<<<< HEAD
-			dev_printk(KERN_ERR, &dev->dev,
-				   "pcmcia: CIS override is too big\n");
-=======
 			dev_err(&dev->dev, "pcmcia: CIS override is too big\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto release;
 		}
 
 		if (!pcmcia_replace_cis(s, fw->data, fw->size))
 			ret = 0;
 		else {
-<<<<<<< HEAD
-			dev_printk(KERN_ERR, &dev->dev,
-				   "pcmcia: CIS override failed\n");
-=======
 			dev_err(&dev->dev, "pcmcia: CIS override failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto release;
 		}
 
@@ -909,12 +788,8 @@ static int pcmcia_load_firmware(struct pcmcia_device *dev, char *filename)
 
 #else /* !CONFIG_PCMCIA_LOAD_CIS */
 
-<<<<<<< HEAD
-static inline int pcmcia_load_firmware(struct pcmcia_device *dev, char * filename)
-=======
 static inline int pcmcia_load_firmware(struct pcmcia_device *dev,
 				       char *filename)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENODEV;
 }
@@ -1056,17 +931,9 @@ static int pcmcia_bus_match(struct device *dev, struct device_driver *drv)
 	return 0;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_HOTPLUG
-
-static int pcmcia_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	struct pcmcia_device *p_dev;
-=======
 static int pcmcia_bus_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct pcmcia_device *p_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u32 hash[4] = { 0, 0, 0, 0};
 
@@ -1104,24 +971,9 @@ static int pcmcia_bus_uevent(const struct device *dev, struct kobj_uevent_env *e
 	return 0;
 }
 
-<<<<<<< HEAD
-#else
-
-static int pcmcia_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
-{
-	return -ENODEV;
-}
-
-#endif
-
-/************************ runtime PM support ***************************/
-
-static int pcmcia_dev_suspend(struct device *dev, pm_message_t state);
-=======
 /************************ runtime PM support ***************************/
 
 static int pcmcia_dev_suspend(struct device *dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pcmcia_dev_resume(struct device *dev);
 
 static int runtime_suspend(struct device *dev)
@@ -1129,11 +981,7 @@ static int runtime_suspend(struct device *dev)
 	int rc;
 
 	device_lock(dev);
-<<<<<<< HEAD
-	rc = pcmcia_dev_suspend(dev, PMSG_SUSPEND);
-=======
 	rc = pcmcia_dev_suspend(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_unlock(dev);
 	return rc;
 }
@@ -1154,30 +1002,18 @@ static int runtime_resume(struct device *dev)
 static ssize_t field##_show (struct device *dev, struct device_attribute *attr, char *buf)		\
 {									\
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);		\
-<<<<<<< HEAD
-	return p_dev->test ? sprintf(buf, format, p_dev->field) : -ENODEV; \
-}
-=======
 	return p_dev->test ? sysfs_emit(buf, format, p_dev->field) : -ENODEV; \
 }									\
 static DEVICE_ATTR_RO(field);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pcmcia_device_stringattr(name, field)					\
 static ssize_t name##_show (struct device *dev, struct device_attribute *attr, char *buf)		\
 {									\
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);		\
-<<<<<<< HEAD
-	return p_dev->field ? sprintf(buf, "%s\n", p_dev->field) : -ENODEV; \
-}
-
-pcmcia_device_attr(func, socket, "0x%02x\n");
-=======
 	return p_dev->field ? sysfs_emit(buf, "%s\n", p_dev->field) : -ENODEV; \
 }									\
 static DEVICE_ATTR_RO(name);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pcmcia_device_attr(func_id, has_func_id, "0x%02x\n");
 pcmcia_device_attr(manf_id, has_manf_id, "0x%04x\n");
 pcmcia_device_attr(card_id, has_card_id, "0x%04x\n");
@@ -1186,22 +1022,6 @@ pcmcia_device_stringattr(prod_id2, prod_id[1]);
 pcmcia_device_stringattr(prod_id3, prod_id[2]);
 pcmcia_device_stringattr(prod_id4, prod_id[3]);
 
-<<<<<<< HEAD
-static ssize_t pcmcia_show_resources(struct device *dev,
-				     struct device_attribute *attr, char *buf)
-{
-	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
-	char *str = buf;
-	int i;
-
-	for (i = 0; i < PCMCIA_NUM_RESOURCES; i++)
-		str += sprintf(str, "%pr\n", p_dev->resource[i]);
-
-	return str - buf;
-}
-
-static ssize_t pcmcia_show_pm_state(struct device *dev, struct device_attribute *attr, char *buf)
-=======
 static ssize_t function_show(struct device *dev, struct device_attribute *attr,
 			     char *buf)
 {
@@ -1224,20 +1044,10 @@ static ssize_t resources_show(struct device *dev,
 static DEVICE_ATTR_RO(resources);
 
 static ssize_t pm_state_show(struct device *dev, struct device_attribute *attr, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
 
 	if (p_dev->suspended)
-<<<<<<< HEAD
-		return sprintf(buf, "off\n");
-	else
-		return sprintf(buf, "on\n");
-}
-
-static ssize_t pcmcia_store_pm_state(struct device *dev, struct device_attribute *attr,
-				     const char *buf, size_t count)
-=======
 		return sysfs_emit(buf, "off\n");
 	else
 		return sysfs_emit(buf, "on\n");
@@ -1245,7 +1055,6 @@ static ssize_t pcmcia_store_pm_state(struct device *dev, struct device_attribute
 
 static ssize_t pm_state_store(struct device *dev, struct device_attribute *attr,
 			      const char *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
 	int ret = 0;
@@ -1260,11 +1069,7 @@ static ssize_t pm_state_store(struct device *dev, struct device_attribute *attr,
 
 	return ret ? ret : count;
 }
-<<<<<<< HEAD
-
-=======
 static DEVICE_ATTR_RW(pm_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -1279,26 +1084,16 @@ static ssize_t modalias_show(struct device *dev, struct device_attribute *attr, 
 		hash[i] = crc32(0, p_dev->prod_id[i],
 				strlen(p_dev->prod_id[i]));
 	}
-<<<<<<< HEAD
-	return sprintf(buf, "pcmcia:m%04Xc%04Xf%02Xfn%02Xpfn%02X"
-				"pa%08Xpb%08Xpc%08Xpd%08X\n",
-=======
 	return sysfs_emit(buf, "pcmcia:m%04Xc%04Xf%02Xfn%02Xpfn%02Xpa%08Xpb%08Xpc%08Xpd%08X\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				p_dev->has_manf_id ? p_dev->manf_id : 0,
 				p_dev->has_card_id ? p_dev->card_id : 0,
 				p_dev->has_func_id ? p_dev->func_id : 0,
 				p_dev->func, p_dev->device_no,
 				hash[0], hash[1], hash[2], hash[3]);
 }
-<<<<<<< HEAD
-
-static ssize_t pcmcia_store_allow_func_id_match(struct device *dev,
-=======
 static DEVICE_ATTR_RO(modalias);
 
 static ssize_t allow_func_id_match_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device_attribute *attr, const char *buf, size_t count)
 {
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
@@ -1313,28 +1108,6 @@ static ssize_t allow_func_id_match_store(struct device *dev,
 
 	return count;
 }
-<<<<<<< HEAD
-
-static struct device_attribute pcmcia_dev_attrs[] = {
-	__ATTR(function, 0444, func_show, NULL),
-	__ATTR(pm_state, 0644, pcmcia_show_pm_state, pcmcia_store_pm_state),
-	__ATTR(resources, 0444, pcmcia_show_resources, NULL),
-	__ATTR_RO(func_id),
-	__ATTR_RO(manf_id),
-	__ATTR_RO(card_id),
-	__ATTR_RO(prod_id1),
-	__ATTR_RO(prod_id2),
-	__ATTR_RO(prod_id3),
-	__ATTR_RO(prod_id4),
-	__ATTR_RO(modalias),
-	__ATTR(allow_func_id_match, 0200, NULL, pcmcia_store_allow_func_id_match),
-	__ATTR_NULL,
-};
-
-/* PM support, also needed for reset */
-
-static int pcmcia_dev_suspend(struct device *dev, pm_message_t state)
-=======
 static DEVICE_ATTR_WO(allow_func_id_match);
 
 static struct attribute *pcmcia_dev_attrs[] = {
@@ -1357,7 +1130,6 @@ ATTRIBUTE_GROUPS(pcmcia_dev);
 /* PM support, also needed for reset */
 
 static int pcmcia_dev_suspend(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
 	struct pcmcia_driver *p_drv = NULL;
@@ -1382,16 +1154,9 @@ static int pcmcia_dev_suspend(struct device *dev)
 	if (p_drv->suspend) {
 		ret = p_drv->suspend(p_dev);
 		if (ret) {
-<<<<<<< HEAD
-			dev_printk(KERN_ERR, dev,
-				   "pcmcia: device %s (driver %s) did "
-				   "not want to go to sleep (%d)\n",
-				   p_dev->devname, p_drv->name, ret);
-=======
 			dev_err(dev,
 				"pcmcia: device %s (driver %s) did not want to go to sleep (%d)\n",
 				p_dev->devname, p_drv->name, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_lock(&p_dev->socket->ops_mutex);
 			p_dev->suspended = 0;
 			mutex_unlock(&p_dev->socket->ops_mutex);
@@ -1446,11 +1211,7 @@ static int pcmcia_dev_resume(struct device *dev)
 }
 
 
-<<<<<<< HEAD
-static int pcmcia_bus_suspend_callback(struct device *dev, void * _data)
-=======
 static int pcmcia_bus_suspend_callback(struct device *dev, void *_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_socket *skt = _data;
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
@@ -1461,11 +1222,7 @@ static int pcmcia_bus_suspend_callback(struct device *dev, void *_data)
 	return runtime_suspend(dev);
 }
 
-<<<<<<< HEAD
-static int pcmcia_bus_resume_callback(struct device *dev, void * _data)
-=======
 static int pcmcia_bus_resume_callback(struct device *dev, void *_data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_socket *skt = _data;
 	struct pcmcia_device *p_dev = to_pcmcia_dev(dev);
@@ -1582,34 +1339,20 @@ static struct pcmcia_callback pcmcia_bus_callback = {
 	.resume = pcmcia_bus_resume,
 };
 
-<<<<<<< HEAD
-static int __devinit pcmcia_bus_add_socket(struct device *dev,
-					   struct class_interface *class_intf)
-=======
 static int pcmcia_bus_add_socket(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_socket *socket = dev_get_drvdata(dev);
 	int ret;
 
 	socket = pcmcia_get_socket(socket);
 	if (!socket) {
-<<<<<<< HEAD
-		dev_printk(KERN_ERR, dev,
-			   "PCMCIA obtaining reference to socket failed\n");
-=======
 		dev_err(dev, "PCMCIA obtaining reference to socket failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	ret = sysfs_create_bin_file(&dev->kobj, &pccard_cis_attr);
 	if (ret) {
-<<<<<<< HEAD
-		dev_printk(KERN_ERR, dev, "PCMCIA registration failed\n");
-=======
 		dev_err(dev, "PCMCIA registration failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcmcia_put_socket(socket);
 		return ret;
 	}
@@ -1621,11 +1364,7 @@ static int pcmcia_bus_add_socket(struct device *dev)
 
 	ret = pccard_register_pcmcia(socket, &pcmcia_bus_callback);
 	if (ret) {
-<<<<<<< HEAD
-		dev_printk(KERN_ERR, dev, "PCMCIA registration failed\n");
-=======
 		dev_err(dev, "PCMCIA registration failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcmcia_put_socket(socket);
 		return ret;
 	}
@@ -1633,12 +1372,7 @@ static int pcmcia_bus_add_socket(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void pcmcia_bus_remove_socket(struct device *dev,
-				     struct class_interface *class_intf)
-=======
 static void pcmcia_bus_remove_socket(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcmcia_socket *socket = dev_get_drvdata(dev);
 
@@ -1668,18 +1402,6 @@ static struct class_interface pcmcia_bus_interface __refdata = {
 	.remove_dev = &pcmcia_bus_remove_socket,
 };
 
-<<<<<<< HEAD
-
-struct bus_type pcmcia_bus_type = {
-	.name = "pcmcia",
-	.uevent = pcmcia_bus_uevent,
-	.match = pcmcia_bus_match,
-	.dev_attrs = pcmcia_dev_attrs,
-	.probe = pcmcia_device_probe,
-	.remove = pcmcia_device_remove,
-	.suspend = pcmcia_dev_suspend,
-	.resume = pcmcia_dev_resume,
-=======
 static const struct dev_pm_ops pcmcia_bus_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(pcmcia_dev_suspend, pcmcia_dev_resume)
 };
@@ -1692,7 +1414,6 @@ const struct bus_type pcmcia_bus_type = {
 	.probe = pcmcia_device_probe,
 	.remove = pcmcia_device_remove,
 	.pm = &pcmcia_bus_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

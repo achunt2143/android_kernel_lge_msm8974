@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sparc64/lib/xor.S
  *
@@ -12,11 +9,8 @@
  * Copyright (C) 2006 David S. Miller <davem@davemloft.net>
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/export.h>
 #include <linux/linkage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/visasm.h>
 #include <asm/asi.h>
 #include <asm/dcu.h>
@@ -28,18 +22,9 @@
  *	!(len & 127) && len >= 256
  */
 	.text
-<<<<<<< HEAD
-	.align	32
-
-	/* VIS versions. */
-	.globl	xor_vis_2
-	.type	xor_vis_2,#function
-xor_vis_2:
-=======
 
 	/* VIS versions. */
 ENTRY(xor_vis_2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rd	%fprs, %o5
 	andcc	%o5, FPRS_FEF|FPRS_DU, %g0
 	be,pt	%icc, 0f
@@ -106,18 +91,10 @@ ENTRY(xor_vis_2)
 	wr	%g1, %g0, %asi
 	retl
 	  wr	%g0, 0, %fprs
-<<<<<<< HEAD
-	.size	xor_vis_2, .-xor_vis_2
-
-	.globl	xor_vis_3
-	.type	xor_vis_3,#function
-xor_vis_3:
-=======
 ENDPROC(xor_vis_2)
 EXPORT_SYMBOL(xor_vis_2)
 
 ENTRY(xor_vis_3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rd	%fprs, %o5
 	andcc	%o5, FPRS_FEF|FPRS_DU, %g0
 	be,pt	%icc, 0f
@@ -181,18 +158,10 @@ ENTRY(xor_vis_3)
 	wr	%g1, %g0, %asi
 	retl
 	 wr	%g0, 0, %fprs
-<<<<<<< HEAD
-	.size	xor_vis_3, .-xor_vis_3
-
-	.globl	xor_vis_4
-	.type	xor_vis_4,#function
-xor_vis_4:
-=======
 ENDPROC(xor_vis_3)
 EXPORT_SYMBOL(xor_vis_3)
 
 ENTRY(xor_vis_4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rd	%fprs, %o5
 	andcc	%o5, FPRS_FEF|FPRS_DU, %g0
 	be,pt	%icc, 0f
@@ -275,18 +244,10 @@ ENTRY(xor_vis_4)
 	wr	%g1, %g0, %asi
 	retl
 	 wr	%g0, 0, %fprs
-<<<<<<< HEAD
-	.size	xor_vis_4, .-xor_vis_4
-
-	.globl	xor_vis_5
-	.type	xor_vis_5,#function
-xor_vis_5:
-=======
 ENDPROC(xor_vis_4)
 EXPORT_SYMBOL(xor_vis_4)
 
 ENTRY(xor_vis_5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	save	%sp, -192, %sp
 	rd	%fprs, %o5
 	andcc	%o5, FPRS_FEF|FPRS_DU, %g0
@@ -390,20 +351,11 @@ ENTRY(xor_vis_5)
 	wr	%g0, 0, %fprs
 	ret
 	 restore
-<<<<<<< HEAD
-	.size	xor_vis_5, .-xor_vis_5
-
-	/* Niagara versions. */
-	.globl		xor_niagara_2
-	.type		xor_niagara_2,#function
-xor_niagara_2:		/* %o0=bytes, %o1=dest, %o2=src */
-=======
 ENDPROC(xor_vis_5)
 EXPORT_SYMBOL(xor_vis_5)
 
 	/* Niagara versions. */
 ENTRY(xor_niagara_2) /* %o0=bytes, %o1=dest, %o2=src */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	save		%sp, -192, %sp
 	prefetch	[%i1], #n_writes
 	prefetch	[%i2], #one_read
@@ -446,18 +398,10 @@ ENTRY(xor_niagara_2) /* %o0=bytes, %o1=dest, %o2=src */
 	wr		%g7, 0x0, %asi
 	ret
 	 restore
-<<<<<<< HEAD
-	.size		xor_niagara_2, .-xor_niagara_2
-
-	.globl		xor_niagara_3
-	.type		xor_niagara_3,#function
-xor_niagara_3:		/* %o0=bytes, %o1=dest, %o2=src1, %o3=src2 */
-=======
 ENDPROC(xor_niagara_2)
 EXPORT_SYMBOL(xor_niagara_2)
 
 ENTRY(xor_niagara_3) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	save		%sp, -192, %sp
 	prefetch	[%i1], #n_writes
 	prefetch	[%i2], #one_read
@@ -516,18 +460,10 @@ ENTRY(xor_niagara_3) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2 */
 	wr		%g7, 0x0, %asi
 	ret
 	 restore
-<<<<<<< HEAD
-	.size		xor_niagara_3, .-xor_niagara_3
-
-	.globl		xor_niagara_4
-	.type		xor_niagara_4,#function
-xor_niagara_4:		/* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3 */
-=======
 ENDPROC(xor_niagara_3)
 EXPORT_SYMBOL(xor_niagara_3)
 
 ENTRY(xor_niagara_4) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	save		%sp, -192, %sp
 	prefetch	[%i1], #n_writes
 	prefetch	[%i2], #one_read
@@ -607,18 +543,10 @@ ENTRY(xor_niagara_4) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3 */
 	wr		%g7, 0x0, %asi
 	ret
 	 restore
-<<<<<<< HEAD
-	.size		xor_niagara_4, .-xor_niagara_4
-
-	.globl		xor_niagara_5
-	.type		xor_niagara_5,#function
-xor_niagara_5:		/* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3, %o5=src4 */
-=======
 ENDPROC(xor_niagara_4)
 EXPORT_SYMBOL(xor_niagara_4)
 
 ENTRY(xor_niagara_5) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3, %o5=src4 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	save		%sp, -192, %sp
 	prefetch	[%i1], #n_writes
 	prefetch	[%i2], #one_read
@@ -714,9 +642,5 @@ ENTRY(xor_niagara_5) /* %o0=bytes, %o1=dest, %o2=src1, %o3=src2, %o4=src3, %o5=s
 	wr		%g7, 0x0, %asi
 	ret
 	 restore
-<<<<<<< HEAD
-	.size		xor_niagara_5, .-xor_niagara_5
-=======
 ENDPROC(xor_niagara_5)
 EXPORT_SYMBOL(xor_niagara_5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

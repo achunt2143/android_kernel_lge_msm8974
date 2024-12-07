@@ -41,11 +41,8 @@
  *
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/mac80211.h>
 #include <asm/unaligned.h>
 
@@ -58,12 +55,8 @@
 \********************/
 
 static void
-<<<<<<< HEAD
-ath5k_tx(struct ieee80211_hw *hw, struct sk_buff *skb)
-=======
 ath5k_tx(struct ieee80211_hw *hw, struct ieee80211_tx_control *control,
 	 struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath5k_hw *ah = hw->priv;
 	u16 qnum = skb_get_queue_mapping(skb);
@@ -73,11 +66,7 @@ ath5k_tx(struct ieee80211_hw *hw, struct ieee80211_tx_control *control,
 		return;
 	}
 
-<<<<<<< HEAD
-	ath5k_tx_queue(hw, skb, &ah->txqs[qnum]);
-=======
 	ath5k_tx_queue(hw, skb, &ah->txqs[qnum], control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -213,23 +202,14 @@ ath5k_config(struct ieee80211_hw *hw, u32 changed)
 	mutex_lock(&ah->lock);
 
 	if (changed & IEEE80211_CONF_CHANGE_CHANNEL) {
-<<<<<<< HEAD
-		ret = ath5k_chan_set(ah, conf->channel);
-=======
 		ret = ath5k_chan_set(ah, &conf->chandef);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			goto unlock;
 	}
 
 	if ((changed & IEEE80211_CONF_CHANGE_POWER) &&
-<<<<<<< HEAD
-	(ah->power_level != conf->power_level)) {
-		ah->power_level = conf->power_level;
-=======
 	(ah->ah_txpower.txp_requested != conf->power_level)) {
 		ah->ah_txpower.txp_requested = conf->power_level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Half dB steps */
 		ath5k_hw_set_txpower_limit(ah, (conf->power_level * 2));
@@ -270,19 +250,11 @@ unlock:
 
 static void
 ath5k_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-<<<<<<< HEAD
-		       struct ieee80211_bss_conf *bss_conf, u32 changes)
-=======
 		       struct ieee80211_bss_conf *bss_conf, u64 changes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath5k_vif *avf = (void *)vif->drv_priv;
 	struct ath5k_hw *ah = hw->priv;
 	struct ath_common *common = ath5k_hw_common(ah);
-<<<<<<< HEAD
-	unsigned long flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ah->lock);
 
@@ -291,10 +263,6 @@ ath5k_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 		memcpy(common->curbssid, bss_conf->bssid, ETH_ALEN);
 		common->curaid = 0;
 		ath5k_hw_set_bssid(ah);
-<<<<<<< HEAD
-		mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (changes & BSS_CHANGED_BEACON_INT)
@@ -310,15 +278,9 @@ ath5k_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	}
 
 	if (changes & BSS_CHANGED_ASSOC) {
-<<<<<<< HEAD
-		avf->assoc = bss_conf->assoc;
-		if (bss_conf->assoc)
-			ah->assoc = bss_conf->assoc;
-=======
 		avf->assoc = vif->cfg.assoc;
 		if (vif->cfg.assoc)
 			ah->assoc = vif->cfg.assoc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			ah->assoc = ath5k_any_vif_assoc(ah);
 
@@ -326,34 +288,20 @@ ath5k_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 			ath5k_set_beacon_filter(hw, ah->assoc);
 		ath5k_hw_set_ledstate(ah, ah->assoc ?
 			AR5K_LED_ASSOC : AR5K_LED_INIT);
-<<<<<<< HEAD
-		if (bss_conf->assoc) {
-			ATH5K_DBG(ah, ATH5K_DEBUG_ANY,
-				  "Bss Info ASSOC %d, bssid: %pM\n",
-				  bss_conf->aid, common->curbssid);
-			common->curaid = bss_conf->aid;
-=======
 		if (vif->cfg.assoc) {
 			ATH5K_DBG(ah, ATH5K_DEBUG_ANY,
 				  "Bss Info ASSOC %d, bssid: %pM\n",
 				  vif->cfg.aid, common->curbssid);
 			common->curaid = vif->cfg.aid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ath5k_hw_set_bssid(ah);
 			/* Once ANI is available you would start it here */
 		}
 	}
 
 	if (changes & BSS_CHANGED_BEACON) {
-<<<<<<< HEAD
-		spin_lock_irqsave(&ah->block, flags);
-		ath5k_beacon_update(hw, vif);
-		spin_unlock_irqrestore(&ah->block, flags);
-=======
 		spin_lock_bh(&ah->block);
 		ath5k_beacon_update(hw, vif);
 		spin_unlock_bh(&ah->block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (changes & BSS_CHANGED_BEACON_ENABLED)
@@ -376,11 +324,7 @@ ath5k_prepare_multicast(struct ieee80211_hw *hw,
 	struct netdev_hw_addr *ha;
 
 	mfilt[0] = 0;
-<<<<<<< HEAD
-	mfilt[1] = 1;
-=======
 	mfilt[1] = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_hw_addr_list_for_each(ha, mc_list) {
 		/* calculate XOR of eight 6-bit values */
@@ -424,11 +368,7 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
 		       unsigned int *new_flags, u64 multicast)
 {
 #define SUPPORTED_FIF_FLAGS \
-<<<<<<< HEAD
-	(FIF_PROMISC_IN_BSS |  FIF_ALLMULTI | FIF_FCSFAIL | \
-=======
 	(FIF_ALLMULTI | FIF_FCSFAIL | \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FIF_PLCPFAIL | FIF_CONTROL | FIF_OTHER_BSS | \
 	FIF_BCN_PRBRESP_PROMISC)
 
@@ -442,10 +382,6 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
 	mfilt[1] = multicast >> 32;
 
 	/* Only deal with supported flags */
-<<<<<<< HEAD
-	changed_flags &= SUPPORTED_FIF_FLAGS;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*new_flags &= SUPPORTED_FIF_FLAGS;
 
 	/* If HW detects any phy or radar errors, leave those filters on.
@@ -455,19 +391,6 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
 		(AR5K_RX_FILTER_UCAST | AR5K_RX_FILTER_BCAST |
 		AR5K_RX_FILTER_MCAST);
 
-<<<<<<< HEAD
-	if (changed_flags & (FIF_PROMISC_IN_BSS | FIF_OTHER_BSS)) {
-		if (*new_flags & FIF_PROMISC_IN_BSS)
-			__set_bit(ATH_STAT_PROMISC, ah->status);
-		else
-			__clear_bit(ATH_STAT_PROMISC, ah->status);
-	}
-
-	if (test_bit(ATH_STAT_PROMISC, ah->status))
-		rfilt |= AR5K_RX_FILTER_PROM;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Note, AR5K_RX_FILTER_MCAST is already enabled */
 	if (*new_flags & FIF_ALLMULTI) {
 		mfilt[0] =  ~0;
@@ -483,18 +406,10 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
 	if ((*new_flags & FIF_BCN_PRBRESP_PROMISC) || (ah->nvifs > 1))
 		rfilt |= AR5K_RX_FILTER_BEACON;
 
-<<<<<<< HEAD
-	/* FIF_CONTROL doc says that if FIF_PROMISC_IN_BSS is not
-	 * set we should only pass on control frames for this
-	 * station. This needs testing. I believe right now this
-	 * enables *all* control frames, which is OK.. but
-	 * but we should see if we can improve on granularity */
-=======
 	/* FIF_CONTROL doc says we should only pass on control frames for this
 	 * station. This needs testing. I believe right now this
 	 * enables *all* control frames, which is OK.. but
 	 * we should see if we can improve on granularity */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*new_flags & FIF_CONTROL)
 		rfilt |= AR5K_RX_FILTER_CONTROL;
 
@@ -517,10 +432,7 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
 	case NL80211_IFTYPE_STATION:
 		if (ah->assoc)
 			rfilt |= AR5K_RX_FILTER_BEACON;
-<<<<<<< HEAD
-=======
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -528,14 +440,9 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
 	iter_data.hw_macaddr = NULL;
 	iter_data.n_stas = 0;
 	iter_data.need_set_hw_addr = false;
-<<<<<<< HEAD
-	ieee80211_iterate_active_interfaces_atomic(ah->hw, ath5k_vif_iter,
-						   &iter_data);
-=======
 	ieee80211_iterate_active_interfaces_atomic(
 		ah->hw, IEEE80211_IFACE_ITER_RESUME_ALL,
 		ath5k_vif_iter, &iter_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up RX Filter */
 	if (iter_data.n_stas > 1) {
@@ -554,11 +461,8 @@ ath5k_configure_filter(struct ieee80211_hw *hw, unsigned int changed_flags,
 	/* Set the cached hw filter flags, this will later actually
 	 * be set in HW */
 	ah->filter_flags = rfilt;
-<<<<<<< HEAD
-=======
 	/* Store current FIF filter flags */
 	ah->fif_filter_flags = *new_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&ah->lock);
 }
@@ -576,12 +480,9 @@ ath5k_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	if (ath5k_modparam_nohwcrypt)
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-=======
 	if (key->flags & IEEE80211_KEY_FLAG_RX_MGMT)
 		return -EOPNOTSUPP;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vif->type == NL80211_IFTYPE_ADHOC &&
 	    (key->cipher == WLAN_CIPHER_SUITE_TKIP ||
 	     key->cipher == WLAN_CIPHER_SUITE_CCMP) &&
@@ -600,12 +501,7 @@ ath5k_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 			break;
 		return -EOPNOTSUPP;
 	default:
-<<<<<<< HEAD
-		WARN_ON(1);
-		return -EINVAL;
-=======
 		return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_lock(&ah->lock);
@@ -620,42 +516,26 @@ ath5k_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 			if (key->cipher == WLAN_CIPHER_SUITE_TKIP)
 				key->flags |= IEEE80211_KEY_FLAG_GENERATE_MMIC;
 			if (key->cipher == WLAN_CIPHER_SUITE_CCMP)
-<<<<<<< HEAD
-				key->flags |= IEEE80211_KEY_FLAG_SW_MGMT;
-=======
 				key->flags |= IEEE80211_KEY_FLAG_SW_MGMT_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = 0;
 		}
 		break;
 	case DISABLE_KEY:
-<<<<<<< HEAD
-		ath_key_delete(common, key);
-=======
 		ath_key_delete(common, key->hw_key_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -EINVAL;
 	}
 
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ah->lock);
 	return ret;
 }
 
 
 static void
-<<<<<<< HEAD
-ath5k_sw_scan_start(struct ieee80211_hw *hw)
-=======
 ath5k_sw_scan_start(struct ieee80211_hw *hw,
 		    struct ieee80211_vif *vif,
 		    const u8 *mac_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath5k_hw *ah = hw->priv;
 	if (!ah->assoc)
@@ -664,11 +544,7 @@ ath5k_sw_scan_start(struct ieee80211_hw *hw,
 
 
 static void
-<<<<<<< HEAD
-ath5k_sw_scan_complete(struct ieee80211_hw *hw)
-=======
 ath5k_sw_scan_complete(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath5k_hw *ah = hw->priv;
 	ath5k_hw_set_ledstate(ah, ah->assoc ?
@@ -695,12 +571,8 @@ ath5k_get_stats(struct ieee80211_hw *hw,
 
 
 static int
-<<<<<<< HEAD
-ath5k_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif, u16 queue,
-=======
 ath5k_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	      unsigned int link_id, u16 queue,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      const struct ieee80211_tx_queue_params *params)
 {
 	struct ath5k_hw *ah = hw->priv;
@@ -717,11 +589,7 @@ ath5k_conf_tx(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
 	qi.tqi_aifs = params->aifs;
 	qi.tqi_cw_min = params->cw_min;
 	qi.tqi_cw_max = params->cw_max;
-<<<<<<< HEAD
-	qi.tqi_burst_time = params->txop;
-=======
 	qi.tqi_burst_time = params->txop * 32;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ATH5K_DBG(ah, ATH5K_DEBUG_ANY,
 		  "Configure tx [queue %d],  "
@@ -791,32 +659,16 @@ ath5k_get_survey(struct ieee80211_hw *hw, int idx, struct survey_info *survey)
 	spin_lock_bh(&common->cc_lock);
 	ath_hw_cycle_counters_update(common);
 	if (cc->cycles > 0) {
-<<<<<<< HEAD
-		ah->survey.channel_time += cc->cycles / div;
-		ah->survey.channel_time_busy += cc->rx_busy / div;
-		ah->survey.channel_time_rx += cc->rx_frame / div;
-		ah->survey.channel_time_tx += cc->tx_frame / div;
-=======
 		ah->survey.time += cc->cycles / div;
 		ah->survey.time_busy += cc->rx_busy / div;
 		ah->survey.time_rx += cc->rx_frame / div;
 		ah->survey.time_tx += cc->tx_frame / div;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	memset(cc, 0, sizeof(*cc));
 	spin_unlock_bh(&common->cc_lock);
 
 	memcpy(survey, &ah->survey, sizeof(*survey));
 
-<<<<<<< HEAD
-	survey->channel = conf->channel;
-	survey->noise = ah->ah_noise_floor;
-	survey->filled = SURVEY_INFO_NOISE_DBM |
-			SURVEY_INFO_CHANNEL_TIME |
-			SURVEY_INFO_CHANNEL_TIME_BUSY |
-			SURVEY_INFO_CHANNEL_TIME_RX |
-			SURVEY_INFO_CHANNEL_TIME_TX;
-=======
 	survey->channel = conf->chandef.chan;
 	survey->noise = ah->ah_noise_floor;
 	survey->filled = SURVEY_INFO_NOISE_DBM |
@@ -825,7 +677,6 @@ ath5k_get_survey(struct ieee80211_hw *hw, int idx, struct survey_info *survey)
 			SURVEY_INFO_TIME_BUSY |
 			SURVEY_INFO_TIME_RX |
 			SURVEY_INFO_TIME_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -842,11 +693,7 @@ ath5k_get_survey(struct ieee80211_hw *hw, int idx, struct survey_info *survey)
  * reset.
  */
 static void
-<<<<<<< HEAD
-ath5k_set_coverage_class(struct ieee80211_hw *hw, u8 coverage_class)
-=======
 ath5k_set_coverage_class(struct ieee80211_hw *hw, s16 coverage_class)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath5k_hw *ah = hw->priv;
 
@@ -932,16 +779,12 @@ static int ath5k_set_ringparam(struct ieee80211_hw *hw, u32 tx, u32 rx)
 
 
 const struct ieee80211_ops ath5k_hw_ops = {
-<<<<<<< HEAD
-	.tx			= ath5k_tx,
-=======
 	.add_chanctx = ieee80211_emulate_add_chanctx,
 	.remove_chanctx = ieee80211_emulate_remove_chanctx,
 	.change_chanctx = ieee80211_emulate_change_chanctx,
 	.switch_vif_chanctx = ieee80211_emulate_switch_vif_chanctx,
 	.tx			= ath5k_tx,
 	.wake_tx_queue		= ieee80211_handle_wake_tx_queue,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start			= ath5k_start,
 	.stop			= ath5k_stop,
 	.add_interface		= ath5k_add_interface,
@@ -958,10 +801,6 @@ const struct ieee80211_ops ath5k_hw_ops = {
 	.sw_scan_start		= ath5k_sw_scan_start,
 	.sw_scan_complete	= ath5k_sw_scan_complete,
 	.get_stats		= ath5k_get_stats,
-<<<<<<< HEAD
-	/* .get_tkip_seq	= not implemented */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* .set_frag_threshold	= not implemented */
 	/* .set_rts_threshold	= not implemented */
 	/* .sta_add		= not implemented */

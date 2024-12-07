@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-#include <linux/string.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/string.h>
 #include <linux/export.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 char *strstr(const char *cs, const char *ct)
 {
@@ -34,8 +30,4 @@ __asm__ __volatile__(
 	: "dx", "di");
 return __res;
 }
-<<<<<<< HEAD
-
-=======
 EXPORT_SYMBOL(strstr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

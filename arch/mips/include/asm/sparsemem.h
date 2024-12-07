@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _MIPS_SPARSEMEM_H
 #define _MIPS_SPARSEMEM_H
 #ifdef CONFIG_SPARSEMEM
@@ -10,17 +7,12 @@
  * SECTION_SIZE_BITS		2^N: how big each section will be
  * MAX_PHYSMEM_BITS		2^N: how much memory we can have in that space
  */
-<<<<<<< HEAD
-#define SECTION_SIZE_BITS       28
-#define MAX_PHYSMEM_BITS        35
-=======
 #if defined(CONFIG_MIPS_HUGE_TLB_SUPPORT) && defined(CONFIG_PAGE_SIZE_64KB)
 # define SECTION_SIZE_BITS	29
 #else
 # define SECTION_SIZE_BITS	28
 #endif
 #define MAX_PHYSMEM_BITS	48
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_SPARSEMEM */
 #endif /* _MIPS_SPARSEMEM_H */

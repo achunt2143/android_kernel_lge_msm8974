@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file "reg_round.S"
 /*---------------------------------------------------------------------------+
  |  reg_round.S                                                              |
@@ -112,11 +109,7 @@ FPU_denormal:
 .globl fpu_Arith_exit
 
 /* Entry point when called from C */
-<<<<<<< HEAD
-ENTRY(FPU_round)
-=======
 SYM_FUNC_START(FPU_round)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 	pushl	%esi
@@ -444,11 +437,7 @@ fpu_Arith_exit:
 	popl	%edi
 	popl	%esi
 	leave
-<<<<<<< HEAD
-	ret
-=======
 	RET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -586,11 +575,7 @@ Normalise_result:
 #ifdef PECULIAR_486
 	/*
 	 * This implements a special feature of 80486 behaviour.
-<<<<<<< HEAD
-	 * Underflow will be signalled even if the number is
-=======
 	 * Underflow will be signaled even if the number is
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * not a denormal after rounding.
 	 * This difference occurs only for masked underflow, and not
 	 * in the unmasked case.
@@ -722,8 +707,5 @@ L_exception_exit:
 	mov	$-1,%eax
 	jmp	fpu_reg_round_special_exit
 #endif /* PARANOID */ 
-<<<<<<< HEAD
-=======
 
 SYM_FUNC_END(FPU_round)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

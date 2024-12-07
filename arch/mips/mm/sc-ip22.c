@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sc-ip22.c: Indy cache management functions.
  *
@@ -15,10 +12,6 @@
 
 #include <asm/bcache.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bootinfo.h>
 #include <asm/sgi/ip22.h>
 #include <asm/sgi/mc.h>
@@ -38,28 +31,6 @@ static inline void indy_sc_wipe(unsigned long first, unsigned long last)
 	unsigned long tmp;
 
 	__asm__ __volatile__(
-<<<<<<< HEAD
-	".set\tpush\t\t\t# indy_sc_wipe\n\t"
-	".set\tnoreorder\n\t"
-	".set\tmips3\n\t"
-	".set\tnoat\n\t"
-	"mfc0\t%2, $12\n\t"
-	"li\t$1, 0x80\t\t\t# Go 64 bit\n\t"
-	"mtc0\t$1, $12\n\t"
-
-	"dli\t$1, 0x9000000080000000\n\t"
-	"or\t%0, $1\t\t\t# first line to flush\n\t"
-	"or\t%1, $1\t\t\t# last line to flush\n\t"
-	".set\tat\n\t"
-
-	"1:\tsw\t$0, 0(%0)\n\t"
-	"bne\t%0, %1, 1b\n\t"
-	" daddu\t%0, 32\n\t"
-
-	"mtc0\t%2, $12\t\t\t# Back to 32 bit\n\t"
-	"nop; nop; nop; nop;\n\t"
-	".set\tpop"
-=======
 	"	.set	push			# indy_sc_wipe		\n"
 	"	.set	noreorder					\n"
 	"	.set	mips3						\n"
@@ -94,7 +65,6 @@ static inline void indy_sc_wipe(unsigned long first, unsigned long last)
 	"	nop							\n"
 	"	nop							\n"
 	"	.set	pop						\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=r" (first), "=r" (last), "=&r" (tmp)
 	: "0" (first), "1" (last));
 }
@@ -202,13 +172,8 @@ static inline int __init indy_sc_probe(void)
 	return 1;
 }
 
-<<<<<<< HEAD
-/* XXX Check with wje if the Indy caches can differenciate between
-   writeback + invalidate and just invalidate.  */
-=======
 /* XXX Check with wje if the Indy caches can differentiate between
    writeback + invalidate and just invalidate.	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct bcache_ops indy_sc_ops = {
 	.bc_enable = indy_sc_enable,
 	.bc_disable = indy_sc_disable,
@@ -216,11 +181,7 @@ static struct bcache_ops indy_sc_ops = {
 	.bc_inv = indy_sc_wback_invalidate
 };
 
-<<<<<<< HEAD
-void __cpuinit indy_sc_init(void)
-=======
 void indy_sc_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (indy_sc_probe()) {
 		indy_sc_enable();

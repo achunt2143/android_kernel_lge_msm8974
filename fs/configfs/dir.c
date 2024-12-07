@@ -1,30 +1,7 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * dir.c - Operations for configfs directories.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * dir.c - Operations for configfs directories.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on sysfs:
  * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
  *
@@ -34,10 +11,7 @@
 #undef DEBUG
 
 #include <linux/fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/fsnotify.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mount.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -46,10 +20,6 @@
 #include <linux/configfs.h>
 #include "configfs_internal.h"
 
-<<<<<<< HEAD
-DECLARE_RWSEM(configfs_rename_sem);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Protects mutations of configfs_dirent linkage together with proper i_mutex
  * Also protects mutations of symlinks linkage to target configfs_dirent
@@ -64,8 +34,6 @@ DECLARE_RWSEM(configfs_rename_sem);
  */
 DEFINE_SPINLOCK(configfs_dirent_lock);
 
-<<<<<<< HEAD
-=======
 /*
  * All of link_obj/unlink_obj/link_group/unlink_group require that
  * subsys->su_mutex is held.
@@ -74,7 +42,6 @@ DEFINE_SPINLOCK(configfs_dirent_lock);
  */
 static DEFINE_MUTEX(configfs_subsystem_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void configfs_d_iput(struct dentry * dentry,
 			    struct inode * inode)
 {
@@ -83,17 +50,6 @@ static void configfs_d_iput(struct dentry * dentry,
 	if (sd) {
 		/* Coordinate with configfs_readdir */
 		spin_lock(&configfs_dirent_lock);
-<<<<<<< HEAD
-		/* Coordinate with configfs_attach_attr where will increase
-		 * sd->s_count and update sd->s_dentry to new allocated one.
-		 * Only set sd->dentry to null when this dentry is the only
-		 * sd owner.
-		 * If not do so, configfs_d_iput may run just after
-		 * configfs_attach_attr and set sd->s_dentry to null
-		 * even it's still in use.
-		 */
-		if (atomic_read(&sd->s_count) <= 2)
-=======
 		/*
 		 * Set sd->s_dentry to null only when this dentry is the one
 		 * that is going to be killed.  Otherwise configfs_d_iput may
@@ -101,7 +57,6 @@ static void configfs_d_iput(struct dentry * dentry,
 		 * NULL even it's still in use.
 		 */
 		if (sd->s_dentry == dentry)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sd->s_dentry = NULL;
 
 		spin_unlock(&configfs_dirent_lock);
@@ -110,25 +65,9 @@ static void configfs_d_iput(struct dentry * dentry,
 	iput(inode);
 }
 
-<<<<<<< HEAD
-/*
- * We _must_ delete our dentries on last dput, as the chain-to-parent
- * behavior is required to clear the parents of default_groups.
- */
-static int configfs_d_delete(const struct dentry *dentry)
-{
-	return 1;
-}
-
-const struct dentry_operations configfs_dentry_ops = {
-	.d_iput		= configfs_d_iput,
-	/* simple_delete_dentry() isn't exported */
-	.d_delete	= configfs_d_delete,
-=======
 const struct dentry_operations configfs_dentry_ops = {
 	.d_iput		= configfs_d_iput,
 	.d_delete	= always_delete_dentry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_LOCKDEP
@@ -217,8 +156,6 @@ configfs_adjust_dir_dirent_depth_after_populate(struct configfs_dirent *sd)
 
 #endif /* CONFIG_LOCKDEP */
 
-<<<<<<< HEAD
-=======
 static struct configfs_fragment *new_fragment(void)
 {
 	struct configfs_fragment *p;
@@ -245,17 +182,12 @@ struct configfs_fragment *get_fragment(struct configfs_fragment *frag)
 	return frag;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocates a new configfs_dirent and links it to the parent configfs_dirent
  */
 static struct configfs_dirent *configfs_new_dirent(struct configfs_dirent *parent_sd,
-<<<<<<< HEAD
-						   void *element, int type)
-=======
 						   void *element, int type,
 						   struct configfs_fragment *frag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct configfs_dirent * sd;
 
@@ -264,10 +196,6 @@ static struct configfs_dirent *configfs_new_dirent(struct configfs_dirent *paren
 		return ERR_PTR(-ENOMEM);
 
 	atomic_set(&sd->s_count, 1);
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&sd->s_links);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&sd->s_children);
 	sd->s_element = element;
 	sd->s_type = type;
@@ -278,10 +206,7 @@ static struct configfs_dirent *configfs_new_dirent(struct configfs_dirent *paren
 		kmem_cache_free(configfs_dir_cachep, sd);
 		return ERR_PTR(-ENOENT);
 	}
-<<<<<<< HEAD
-=======
 	sd->s_frag = get_fragment(frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&sd->s_sibling, &parent_sd->s_children);
 	spin_unlock(&configfs_dirent_lock);
 
@@ -316,19 +241,11 @@ static int configfs_dirent_exists(struct configfs_dirent *parent_sd,
 
 int configfs_make_dirent(struct configfs_dirent * parent_sd,
 			 struct dentry * dentry, void * element,
-<<<<<<< HEAD
-			 umode_t mode, int type)
-{
-	struct configfs_dirent * sd;
-
-	sd = configfs_new_dirent(parent_sd, element, type);
-=======
 			 umode_t mode, int type, struct configfs_fragment *frag)
 {
 	struct configfs_dirent * sd;
 
 	sd = configfs_new_dirent(parent_sd, element, type, frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(sd))
 		return PTR_ERR(sd);
 
@@ -340,62 +257,6 @@ int configfs_make_dirent(struct configfs_dirent * parent_sd,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int init_dir(struct inode * inode)
-{
-	inode->i_op = &configfs_dir_inode_operations;
-	inode->i_fop = &configfs_dir_operations;
-
-	/* directory inodes start off with i_nlink == 2 (for "." entry) */
-	inc_nlink(inode);
-	return 0;
-}
-
-static int configfs_init_file(struct inode * inode)
-{
-	inode->i_size = PAGE_SIZE;
-	inode->i_fop = &configfs_file_operations;
-	return 0;
-}
-
-static int init_symlink(struct inode * inode)
-{
-	inode->i_op = &configfs_symlink_inode_operations;
-	return 0;
-}
-
-static int create_dir(struct config_item *k, struct dentry *d)
-{
-	int error;
-	umode_t mode = S_IFDIR| S_IRWXU | S_IRUGO | S_IXUGO;
-	struct dentry *p = d->d_parent;
-
-	BUG_ON(!k);
-
-	error = configfs_dirent_exists(p->d_fsdata, d->d_name.name);
-	if (!error)
-		error = configfs_make_dirent(p->d_fsdata, d, k, mode,
-					     CONFIGFS_DIR | CONFIGFS_USET_CREATING);
-	if (!error) {
-		configfs_set_dir_dirent_depth(p->d_fsdata, d->d_fsdata);
-		error = configfs_create(d, mode, init_dir);
-		if (!error) {
-			inc_nlink(p->d_inode);
-		} else {
-			struct configfs_dirent *sd = d->d_fsdata;
-			if (sd) {
-				spin_lock(&configfs_dirent_lock);
-				list_del_init(&sd->s_sibling);
-				spin_unlock(&configfs_dirent_lock);
-				configfs_put(sd);
-			}
-		}
-	}
-	return error;
-}
-
-
-=======
 static void configfs_remove_dirent(struct dentry *dentry)
 {
 	struct configfs_dirent *sd = dentry->d_fsdata;
@@ -408,28 +269,16 @@ static void configfs_remove_dirent(struct dentry *dentry)
 	configfs_put(sd);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	configfs_create_dir - create a directory for an config_item.
  *	@item:		config_itemwe're creating directory for.
  *	@dentry:	config_item's dentry.
-<<<<<<< HEAD
-=======
  *	@frag:		config_item's fragment.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Note: user-created entries won't be allowed under this new directory
  *	until it is validated by configfs_dir_set_ready()
  */
 
-<<<<<<< HEAD
-static int configfs_create_dir(struct config_item * item, struct dentry *dentry)
-{
-	int error = create_dir(item, dentry);
-	if (!error)
-		item->ci_dentry = dentry;
-	return error;
-=======
 static int configfs_create_dir(struct config_item *item, struct dentry *dentry,
 				struct configfs_fragment *frag)
 {
@@ -470,7 +319,6 @@ out_remove:
 	configfs_put(dentry->d_fsdata);
 	configfs_remove_dirent(dentry);
 	return PTR_ERR(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -511,30 +359,6 @@ int configfs_dirent_is_ready(struct configfs_dirent *sd)
 	return ret;
 }
 
-<<<<<<< HEAD
-int configfs_create_link(struct configfs_symlink *sl,
-			 struct dentry *parent,
-			 struct dentry *dentry)
-{
-	int err = 0;
-	umode_t mode = S_IFLNK | S_IRWXUGO;
-
-	err = configfs_make_dirent(parent->d_fsdata, dentry, sl, mode,
-				   CONFIGFS_ITEM_LINK);
-	if (!err) {
-		err = configfs_create(dentry, mode, init_symlink);
-		if (err) {
-			struct configfs_dirent *sd = dentry->d_fsdata;
-			if (sd) {
-				spin_lock(&configfs_dirent_lock);
-				list_del_init(&sd->s_sibling);
-				spin_unlock(&configfs_dirent_lock);
-				configfs_put(sd);
-			}
-		}
-	}
-	return err;
-=======
 int configfs_create_link(struct configfs_dirent *target, struct dentry *parent,
 		struct dentry *dentry, char *body)
 {
@@ -562,25 +386,11 @@ out_remove:
 	configfs_put(dentry->d_fsdata);
 	configfs_remove_dirent(dentry);
 	return PTR_ERR(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remove_dir(struct dentry * d)
 {
 	struct dentry * parent = dget(d->d_parent);
-<<<<<<< HEAD
-	struct configfs_dirent * sd;
-
-	sd = d->d_fsdata;
-	spin_lock(&configfs_dirent_lock);
-	list_del_init(&sd->s_sibling);
-	spin_unlock(&configfs_dirent_lock);
-	configfs_put(sd);
-	if (d->d_inode)
-		simple_rmdir(parent->d_inode,d);
-
-	pr_debug(" o %s removing done (%d)\n",d->d_name.name, d->d_count);
-=======
 
 	configfs_remove_dirent(d);
 
@@ -588,7 +398,6 @@ static void remove_dir(struct dentry * d)
 		simple_rmdir(d_inode(parent),d);
 
 	pr_debug(" o %pd removing done (%d)\n", d, d_count(d));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dput(parent);
 }
@@ -618,50 +427,16 @@ static void configfs_remove_dir(struct config_item * item)
 	dput(dentry);
 }
 
-<<<<<<< HEAD
-
-/* attaches attribute's configfs_dirent to the dentry corresponding to the
- * attribute file
- */
-static int configfs_attach_attr(struct configfs_dirent * sd, struct dentry * dentry)
-{
-	struct configfs_attribute * attr = sd->s_element;
-	int error;
-
-	spin_lock(&configfs_dirent_lock);
-	dentry->d_fsdata = configfs_get(sd);
-	sd->s_dentry = dentry;
-	spin_unlock(&configfs_dirent_lock);
-
-	error = configfs_create(dentry, (attr->ca_mode & S_IALLUGO) | S_IFREG,
-				configfs_init_file);
-	if (error) {
-		configfs_put(sd);
-		return error;
-	}
-
-	d_rehash(dentry);
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dentry * configfs_lookup(struct inode *dir,
 				       struct dentry *dentry,
 				       unsigned int flags)
 {
 	struct configfs_dirent * parent_sd = dentry->d_parent->d_fsdata;
 	struct configfs_dirent * sd;
-<<<<<<< HEAD
-	int found = 0;
-	int err;
-=======
 	struct inode *inode = NULL;
 
 	if (dentry->d_name.len > NAME_MAX)
 		return ERR_PTR(-ENAMETOOLONG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fake invisibility if dir belongs to a group/default groups hierarchy
@@ -671,38 +446,6 @@ static struct dentry * configfs_lookup(struct inode *dir,
 	 * not complete their initialization, since the dentries of the
 	 * attributes won't be instantiated.
 	 */
-<<<<<<< HEAD
-	err = -ENOENT;
-	if (!configfs_dirent_is_ready(parent_sd))
-		goto out;
-
-	list_for_each_entry(sd, &parent_sd->s_children, s_sibling) {
-		if (sd->s_type & CONFIGFS_NOT_PINNED) {
-			const unsigned char * name = configfs_get_name(sd);
-
-			if (strcmp(name, dentry->d_name.name))
-				continue;
-
-			found = 1;
-			err = configfs_attach_attr(sd, dentry);
-			break;
-		}
-	}
-
-	if (!found) {
-		/*
-		 * If it doesn't exist and it isn't a NOT_PINNED item,
-		 * it must be negative.
-		 */
-		if (dentry->d_name.len > NAME_MAX)
-			return ERR_PTR(-ENAMETOOLONG);
-		d_add(dentry, NULL);
-		return NULL;
-	}
-
-out:
-	return ERR_PTR(err);
-=======
 	if (!configfs_dirent_is_ready(parent_sd))
 		return ERR_PTR(-ENOENT);
 
@@ -736,7 +479,6 @@ out:
 done:
 	d_add(dentry, inode);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -747,11 +489,7 @@ done:
  * If there is an error, the caller will reset the flags via
  * configfs_detach_rollback().
  */
-<<<<<<< HEAD
-static int configfs_detach_prep(struct dentry *dentry, struct mutex **wait_mutex)
-=======
 static int configfs_detach_prep(struct dentry *dentry, struct dentry **wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct configfs_dirent *parent_sd = dentry->d_fsdata;
 	struct configfs_dirent *sd;
@@ -761,11 +499,7 @@ static int configfs_detach_prep(struct dentry *dentry, struct dentry **wait)
 	parent_sd->s_type |= CONFIGFS_USET_DROPPING;
 
 	ret = -EBUSY;
-<<<<<<< HEAD
-	if (!list_empty(&parent_sd->s_links))
-=======
 	if (parent_sd->s_links)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	ret = 0;
@@ -776,13 +510,8 @@ static int configfs_detach_prep(struct dentry *dentry, struct dentry **wait)
 		if (sd->s_type & CONFIGFS_USET_DEFAULT) {
 			/* Abort if racing with mkdir() */
 			if (sd->s_type & CONFIGFS_USET_IN_MKDIR) {
-<<<<<<< HEAD
-				if (wait_mutex)
-					*wait_mutex = &sd->s_dentry->d_inode->i_mutex;
-=======
 				if (wait)
 					*wait= dget(sd->s_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EAGAIN;
 			}
 
@@ -790,11 +519,7 @@ static int configfs_detach_prep(struct dentry *dentry, struct dentry **wait)
 			 * Yup, recursive.  If there's a problem, blame
 			 * deep nesting of default_groups
 			 */
-<<<<<<< HEAD
-			ret = configfs_detach_prep(sd->s_dentry, wait_mutex);
-=======
 			ret = configfs_detach_prep(sd->s_dentry, wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!ret)
 				continue;
 		} else
@@ -854,14 +579,9 @@ static void detach_attrs(struct config_item * item)
 
 static int populate_attrs(struct config_item *item)
 {
-<<<<<<< HEAD
-	struct config_item_type *t = item->ci_type;
-	struct configfs_attribute *attr;
-=======
 	const struct config_item_type *t = item->ci_type;
 	struct configfs_attribute *attr;
 	struct configfs_bin_attribute *bin_attr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 	int i;
 
@@ -873,8 +593,6 @@ static int populate_attrs(struct config_item *item)
 				break;
 		}
 	}
-<<<<<<< HEAD
-=======
 	if (t->ct_bin_attrs) {
 		for (i = 0; (bin_attr = t->ct_bin_attrs[i]) != NULL; i++) {
 			error = configfs_create_bin_file(item, bin_attr);
@@ -882,7 +600,6 @@ static int populate_attrs(struct config_item *item)
 				break;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (error)
 		detach_attrs(item);
@@ -892,12 +609,8 @@ static int populate_attrs(struct config_item *item)
 
 static int configfs_attach_group(struct config_item *parent_item,
 				 struct config_item *item,
-<<<<<<< HEAD
-				 struct dentry *dentry);
-=======
 				 struct dentry *dentry,
 				 struct configfs_fragment *frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void configfs_detach_group(struct config_item *item);
 
 static void detach_groups(struct config_group *group)
@@ -918,15 +631,6 @@ static void detach_groups(struct config_group *group)
 
 		child = sd->s_dentry;
 
-<<<<<<< HEAD
-		mutex_lock(&child->d_inode->i_mutex);
-
-		configfs_detach_group(sd->s_element);
-		child->d_inode->i_flags |= S_DEAD;
-		dont_mount(child);
-
-		mutex_unlock(&child->d_inode->i_mutex);
-=======
 		inode_lock(d_inode(child));
 
 		configfs_detach_group(sd->s_element);
@@ -934,7 +638,6 @@ static void detach_groups(struct config_group *group)
 		dont_mount(child);
 
 		inode_unlock(d_inode(child));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		d_delete(child);
 		dput(child);
@@ -955,53 +658,29 @@ static void detach_groups(struct config_group *group)
  * try using vfs_mkdir.  Just a thought.
  */
 static int create_default_group(struct config_group *parent_group,
-<<<<<<< HEAD
-				struct config_group *group)
-{
-	int ret;
-	struct qstr name;
-=======
 				struct config_group *group,
 				struct configfs_fragment *frag)
 {
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct configfs_dirent *sd;
 	/* We trust the caller holds a reference to parent */
 	struct dentry *child, *parent = parent_group->cg_item.ci_dentry;
 
 	if (!group->cg_item.ci_name)
 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
-<<<<<<< HEAD
-	name.name = group->cg_item.ci_name;
-	name.len = strlen(name.name);
-	name.hash = full_name_hash(name.name, name.len);
-
-	ret = -ENOMEM;
-	child = d_alloc(parent, &name);
-=======
 
 	ret = -ENOMEM;
 	child = d_alloc_name(parent, group->cg_item.ci_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (child) {
 		d_add(child, NULL);
 
 		ret = configfs_attach_group(&parent_group->cg_item,
-<<<<<<< HEAD
-					    &group->cg_item, child);
-=======
 					    &group->cg_item, child, frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ret) {
 			sd = child->d_fsdata;
 			sd->s_type |= CONFIGFS_USET_DEFAULT;
 		} else {
-<<<<<<< HEAD
-			BUG_ON(child->d_inode);
-=======
 			BUG_ON(d_inode(child));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			d_drop(child);
 			dput(child);
 		}
@@ -1010,23 +689,6 @@ static int create_default_group(struct config_group *parent_group,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int populate_groups(struct config_group *group)
-{
-	struct config_group *new_group;
-	int ret = 0;
-	int i;
-
-	if (group->default_groups) {
-		for (i = 0; group->default_groups[i]; i++) {
-			new_group = group->default_groups[i];
-
-			ret = create_default_group(group, new_group);
-			if (ret) {
-				detach_groups(group);
-				break;
-			}
-=======
 static int populate_groups(struct config_group *group,
 			   struct configfs_fragment *frag)
 {
@@ -1038,15 +700,12 @@ static int populate_groups(struct config_group *group,
 		if (ret) {
 			detach_groups(group);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 void configfs_remove_default_groups(struct config_group *group)
 {
 	struct config_group *g, *n;
@@ -1058,7 +717,6 @@ void configfs_remove_default_groups(struct config_group *group)
 }
 EXPORT_SYMBOL(configfs_remove_default_groups);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * All of link_obj/unlink_obj/link_group/unlink_group require that
  * subsys->su_mutex is held.
@@ -1107,22 +765,10 @@ static void link_obj(struct config_item *parent_item, struct config_item *item)
 
 static void unlink_group(struct config_group *group)
 {
-<<<<<<< HEAD
-	int i;
-	struct config_group *new_group;
-
-	if (group->default_groups) {
-		for (i = 0; group->default_groups[i]; i++) {
-			new_group = group->default_groups[i];
-			unlink_group(new_group);
-		}
-	}
-=======
 	struct config_group *new_group;
 
 	list_for_each_entry(new_group, &group->default_groups, group_entry)
 		unlink_group(new_group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	group->cg_subsys = NULL;
 	unlink_obj(&group->cg_item);
@@ -1130,10 +776,6 @@ static void unlink_group(struct config_group *group)
 
 static void link_group(struct config_group *parent_group, struct config_group *group)
 {
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct config_group *new_group;
 	struct configfs_subsystem *subsys = NULL; /* gcc is a turd */
 
@@ -1147,17 +789,8 @@ static void link_group(struct config_group *parent_group, struct config_group *g
 		BUG();
 	group->cg_subsys = subsys;
 
-<<<<<<< HEAD
-	if (group->default_groups) {
-		for (i = 0; group->default_groups[i]; i++) {
-			new_group = group->default_groups[i];
-			link_group(group, new_group);
-		}
-	}
-=======
 	list_for_each_entry(new_group, &group->default_groups, group_entry)
 		link_group(group, new_group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1177,20 +810,12 @@ static void link_group(struct config_group *parent_group, struct config_group *g
  */
 static int configfs_attach_item(struct config_item *parent_item,
 				struct config_item *item,
-<<<<<<< HEAD
-				struct dentry *dentry)
-{
-	int ret;
-
-	ret = configfs_create_dir(item, dentry);
-=======
 				struct dentry *dentry,
 				struct configfs_fragment *frag)
 {
 	int ret;
 
 	ret = configfs_create_dir(item, dentry, frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret) {
 		ret = populate_attrs(item);
 		if (ret) {
@@ -1199,19 +824,11 @@ static int configfs_attach_item(struct config_item *parent_item,
 			 * the VFS may already have hit and used them. Thus,
 			 * we must lock them as rmdir() would.
 			 */
-<<<<<<< HEAD
-			mutex_lock(&dentry->d_inode->i_mutex);
-			configfs_remove_dir(item);
-			dentry->d_inode->i_flags |= S_DEAD;
-			dont_mount(dentry);
-			mutex_unlock(&dentry->d_inode->i_mutex);
-=======
 			inode_lock(d_inode(dentry));
 			configfs_remove_dir(item);
 			d_inode(dentry)->i_flags |= S_DEAD;
 			dont_mount(dentry);
 			inode_unlock(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			d_delete(dentry);
 		}
 	}
@@ -1228,21 +845,13 @@ static void configfs_detach_item(struct config_item *item)
 
 static int configfs_attach_group(struct config_item *parent_item,
 				 struct config_item *item,
-<<<<<<< HEAD
-				 struct dentry *dentry)
-=======
 				 struct dentry *dentry,
 				 struct configfs_fragment *frag)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct configfs_dirent *sd;
 
-<<<<<<< HEAD
-	ret = configfs_attach_item(parent_item, item, dentry);
-=======
 	ret = configfs_attach_item(parent_item, item, dentry, frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret) {
 		sd = dentry->d_fsdata;
 		sd->s_type |= CONFIGFS_USET_DIR;
@@ -1256,18 +865,6 @@ static int configfs_attach_group(struct config_item *parent_item,
 		 * We must also lock the inode to remove it safely in case of
 		 * error, as rmdir() would.
 		 */
-<<<<<<< HEAD
-		mutex_lock_nested(&dentry->d_inode->i_mutex, I_MUTEX_CHILD);
-		configfs_adjust_dir_dirent_depth_before_populate(sd);
-		ret = populate_groups(to_config_group(item));
-		if (ret) {
-			configfs_detach_item(item);
-			dentry->d_inode->i_flags |= S_DEAD;
-			dont_mount(dentry);
-		}
-		configfs_adjust_dir_dirent_depth_after_populate(sd);
-		mutex_unlock(&dentry->d_inode->i_mutex);
-=======
 		inode_lock_nested(d_inode(dentry), I_MUTEX_CHILD);
 		configfs_adjust_dir_dirent_depth_before_populate(sd);
 		ret = populate_groups(to_config_group(item), frag);
@@ -1278,7 +875,6 @@ static int configfs_attach_group(struct config_item *parent_item,
 		}
 		configfs_adjust_dir_dirent_depth_after_populate(sd);
 		inode_unlock(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			d_delete(dentry);
 	}
@@ -1305,11 +901,7 @@ static void configfs_detach_group(struct config_item *item)
 static void client_disconnect_notify(struct config_item *parent_item,
 				     struct config_item *item)
 {
-<<<<<<< HEAD
-	struct config_item_type *type;
-=======
 	const struct config_item_type *type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	type = parent_item->ci_type;
 	BUG_ON(!type);
@@ -1328,11 +920,7 @@ static void client_disconnect_notify(struct config_item *parent_item,
 static void client_drop_item(struct config_item *parent_item,
 			     struct config_item *item)
 {
-<<<<<<< HEAD
-	struct config_item_type *type;
-=======
 	const struct config_item_type *type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	type = parent_item->ci_type;
 	BUG_ON(!type);
@@ -1351,15 +939,9 @@ static void client_drop_item(struct config_item *parent_item,
 #ifdef DEBUG
 static void configfs_dump_one(struct configfs_dirent *sd, int level)
 {
-<<<<<<< HEAD
-	printk(KERN_INFO "%*s\"%s\":\n", level, " ", configfs_get_name(sd));
-
-#define type_print(_type) if (sd->s_type & _type) printk(KERN_INFO "%*s %s\n", level, " ", #_type);
-=======
 	pr_info("%*s\"%s\":\n", level, " ", configfs_get_name(sd));
 
 #define type_print(_type) if (sd->s_type & _type) pr_info("%*s %s\n", level, " ", #_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	type_print(CONFIGFS_ROOT);
 	type_print(CONFIGFS_DIR);
 	type_print(CONFIGFS_ITEM_ATTR);
@@ -1452,18 +1034,11 @@ static int configfs_dump(struct configfs_dirent *sd, int level)
 static int configfs_depend_prep(struct dentry *origin,
 				struct config_item *target)
 {
-<<<<<<< HEAD
-	struct configfs_dirent *child_sd, *sd = origin->d_fsdata;
-	int ret = 0;
-
-	BUG_ON(!origin || !sd);
-=======
 	struct configfs_dirent *child_sd, *sd;
 	int ret = 0;
 
 	BUG_ON(!origin || !origin->d_fsdata);
 	sd = origin->d_fsdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sd->s_element == target)  /* Boo-yah */
 		goto out;
@@ -1486,8 +1061,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int configfs_do_depend_item(struct dentry *subsys_dentry,
 				   struct config_item *target)
 {
@@ -1532,16 +1105,11 @@ configfs_find_subsys_dentry(struct configfs_dirent *root_sd,
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int configfs_depend_item(struct configfs_subsystem *subsys,
 			 struct config_item *target)
 {
 	int ret;
-<<<<<<< HEAD
-	struct configfs_dirent *p, *root_sd, *subsys_sd = NULL;
-=======
 	struct configfs_dirent *subsys_sd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct config_item *s_item = &subsys->su_group.cg_item;
 	struct dentry *root;
 
@@ -1558,56 +1126,19 @@ int configfs_depend_item(struct configfs_subsystem *subsys,
 	 * subsystem is really registered, and so we need to lock out
 	 * configfs_[un]register_subsystem().
 	 */
-<<<<<<< HEAD
-	mutex_lock(&root->d_inode->i_mutex);
-
-	root_sd = root->d_fsdata;
-
-	list_for_each_entry(p, &root_sd->s_children, s_sibling) {
-		if (p->s_type & CONFIGFS_DIR) {
-			if (p->s_element == s_item) {
-				subsys_sd = p;
-				break;
-			}
-		}
-	}
-
-=======
 	inode_lock(d_inode(root));
 
 	subsys_sd = configfs_find_subsys_dentry(root->d_fsdata, s_item);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!subsys_sd) {
 		ret = -ENOENT;
 		goto out_unlock_fs;
 	}
 
 	/* Ok, now we can trust subsys/s_item */
-<<<<<<< HEAD
-
-	spin_lock(&configfs_dirent_lock);
-	/* Scan the tree, return 0 if found */
-	ret = configfs_depend_prep(subsys_sd->s_dentry, target);
-	if (ret)
-		goto out_unlock_dirent_lock;
-
-	/*
-	 * We are sure that the item is not about to be removed by rmdir(), and
-	 * not in the middle of attachment by mkdir().
-	 */
-	p = target->ci_dentry->d_fsdata;
-	p->s_dependent_count += 1;
-
-out_unlock_dirent_lock:
-	spin_unlock(&configfs_dirent_lock);
-out_unlock_fs:
-	mutex_unlock(&root->d_inode->i_mutex);
-=======
 	ret = configfs_do_depend_item(subsys_sd->s_dentry, target);
 
 out_unlock_fs:
 	inode_unlock(d_inode(root));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we succeeded, the fs is pinned via other methods.  If not,
@@ -1621,18 +1152,10 @@ EXPORT_SYMBOL(configfs_depend_item);
 
 /*
  * Release the dependent linkage.  This is much simpler than
-<<<<<<< HEAD
- * configfs_depend_item() because we know that that the client driver is
- * pinned, thus the subsystem is pinned, and therefore configfs is pinned.
- */
-void configfs_undepend_item(struct configfs_subsystem *subsys,
-			    struct config_item *target)
-=======
  * configfs_depend_item() because we know that the client driver is
  * pinned, thus the subsystem is pinned, and therefore configfs is pinned.
  */
 void configfs_undepend_item(struct config_item *target)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct configfs_dirent *sd;
 
@@ -1655,9 +1178,6 @@ void configfs_undepend_item(struct config_item *target)
 }
 EXPORT_SYMBOL(configfs_undepend_item);
 
-<<<<<<< HEAD
-static int configfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 /*
  * caller_subsys is a caller's subsystem not target's. This is used to
  * determine if we should lock root and check subsys or not. When we are
@@ -1733,7 +1253,6 @@ EXPORT_SYMBOL(configfs_depend_item_unlocked);
 
 static int configfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 			  struct dentry *dentry, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	int module_got = 0;
@@ -1742,14 +1261,9 @@ static int configfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	struct config_item *parent_item;
 	struct configfs_subsystem *subsys;
 	struct configfs_dirent *sd;
-<<<<<<< HEAD
-	struct config_item_type *type;
-	struct module *subsys_owner = NULL, *new_item_owner = NULL;
-=======
 	const struct config_item_type *type;
 	struct module *subsys_owner = NULL, *new_item_owner = NULL;
 	struct configfs_fragment *frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *name;
 
 	sd = dentry->d_parent->d_fsdata;
@@ -1768,15 +1282,12 @@ static int configfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	frag = new_fragment();
 	if (!frag) {
 		ret = -ENOMEM;
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get a working ref for the duration of this function */
 	parent_item = configfs_get_config_item(dentry->d_parent);
 	type = parent_item->ci_type;
@@ -1879,15 +1390,9 @@ static int configfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	spin_unlock(&configfs_dirent_lock);
 
 	if (group)
-<<<<<<< HEAD
-		ret = configfs_attach_group(parent_item, item, dentry);
-	else
-		ret = configfs_attach_item(parent_item, item, dentry);
-=======
 		ret = configfs_attach_group(parent_item, item, dentry, frag);
 	else
 		ret = configfs_attach_item(parent_item, item, dentry, frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&configfs_dirent_lock);
 	sd->s_type &= ~CONFIGFS_USET_IN_MKDIR;
@@ -1924,10 +1429,7 @@ out_put:
 	 * reference.
 	 */
 	config_item_put(parent_item);
-<<<<<<< HEAD
-=======
 	put_fragment(frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return ret;
@@ -1939,10 +1441,7 @@ static int configfs_rmdir(struct inode *dir, struct dentry *dentry)
 	struct config_item *item;
 	struct configfs_subsystem *subsys;
 	struct configfs_dirent *sd;
-<<<<<<< HEAD
-=======
 	struct configfs_fragment *frag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct module *subsys_owner = NULL, *dead_item_owner = NULL;
 	int ret;
 
@@ -1969,11 +1468,7 @@ static int configfs_rmdir(struct inode *dir, struct dentry *dentry)
 	 * the new link is temporarily attached
 	 */
 	do {
-<<<<<<< HEAD
-		struct mutex *wait_mutex;
-=======
 		struct dentry *wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mutex_lock(&configfs_symlink_mutex);
 		spin_lock(&configfs_dirent_lock);
@@ -1984,11 +1479,7 @@ static int configfs_rmdir(struct inode *dir, struct dentry *dentry)
 		 */
 		ret = sd->s_dependent_count ? -EBUSY : 0;
 		if (!ret) {
-<<<<<<< HEAD
-			ret = configfs_detach_prep(dentry, &wait_mutex);
-=======
 			ret = configfs_detach_prep(dentry, &wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				configfs_detach_rollback(dentry);
 		}
@@ -2002,13 +1493,6 @@ static int configfs_rmdir(struct inode *dir, struct dentry *dentry)
 			}
 
 			/* Wait until the racing operation terminates */
-<<<<<<< HEAD
-			mutex_lock(wait_mutex);
-			mutex_unlock(wait_mutex);
-		}
-	} while (ret == -EAGAIN);
-
-=======
 			inode_lock(d_inode(wait));
 			inode_unlock(d_inode(wait));
 			dput(wait);
@@ -2026,7 +1510,6 @@ static int configfs_rmdir(struct inode *dir, struct dentry *dentry)
 	frag->frag_dead = true;
 	up_write(&frag->frag_sem);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get a working ref for the duration of this function */
 	item = configfs_get_config_item(dentry);
 
@@ -2076,79 +1559,26 @@ const struct inode_operations configfs_root_inode_operations = {
 	.setattr	= configfs_setattr,
 };
 
-<<<<<<< HEAD
-#if 0
-int configfs_rename_dir(struct config_item * item, const char *new_name)
-{
-	int error = 0;
-	struct dentry * new_dentry, * parent;
-
-	if (!strcmp(config_item_name(item), new_name))
-		return -EINVAL;
-
-	if (!item->parent)
-		return -EINVAL;
-
-	down_write(&configfs_rename_sem);
-	parent = item->parent->dentry;
-
-	mutex_lock(&parent->d_inode->i_mutex);
-
-	new_dentry = lookup_one_len(new_name, parent, strlen(new_name));
-	if (!IS_ERR(new_dentry)) {
-		if (!new_dentry->d_inode) {
-			error = config_item_set_name(item, "%s", new_name);
-			if (!error) {
-				d_add(new_dentry, NULL);
-				d_move(item->dentry, new_dentry);
-			}
-			else
-				d_delete(new_dentry);
-		} else
-			error = -EEXIST;
-		dput(new_dentry);
-	}
-	mutex_unlock(&parent->d_inode->i_mutex);
-	up_write(&configfs_rename_sem);
-
-	return error;
-}
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int configfs_dir_open(struct inode *inode, struct file *file)
 {
 	struct dentry * dentry = file->f_path.dentry;
 	struct configfs_dirent * parent_sd = dentry->d_fsdata;
 	int err;
 
-<<<<<<< HEAD
-	mutex_lock(&dentry->d_inode->i_mutex);
-=======
 	inode_lock(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Fake invisibility if dir belongs to a group/default groups hierarchy
 	 * being attached
 	 */
 	err = -ENOENT;
 	if (configfs_dirent_is_ready(parent_sd)) {
-<<<<<<< HEAD
-		file->private_data = configfs_new_dirent(parent_sd, NULL, 0);
-=======
 		file->private_data = configfs_new_dirent(parent_sd, NULL, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(file->private_data))
 			err = PTR_ERR(file->private_data);
 		else
 			err = 0;
 	}
-<<<<<<< HEAD
-	mutex_unlock(&dentry->d_inode->i_mutex);
-=======
 	inode_unlock(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -2158,128 +1588,17 @@ static int configfs_dir_close(struct inode *inode, struct file *file)
 	struct dentry * dentry = file->f_path.dentry;
 	struct configfs_dirent * cursor = file->private_data;
 
-<<<<<<< HEAD
-	mutex_lock(&dentry->d_inode->i_mutex);
-	spin_lock(&configfs_dirent_lock);
-	list_del_init(&cursor->s_sibling);
-	spin_unlock(&configfs_dirent_lock);
-	mutex_unlock(&dentry->d_inode->i_mutex);
-=======
 	inode_lock(d_inode(dentry));
 	spin_lock(&configfs_dirent_lock);
 	list_del_init(&cursor->s_sibling);
 	spin_unlock(&configfs_dirent_lock);
 	inode_unlock(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	release_configfs_dirent(cursor);
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Relationship between s_mode and the DT_xxx types */
-static inline unsigned char dt_type(struct configfs_dirent *sd)
-{
-	return (sd->s_mode >> 12) & 15;
-}
-
-static int configfs_readdir(struct file * filp, void * dirent, filldir_t filldir)
-{
-	struct dentry *dentry = filp->f_path.dentry;
-	struct super_block *sb = dentry->d_sb;
-	struct configfs_dirent * parent_sd = dentry->d_fsdata;
-	struct configfs_dirent *cursor = filp->private_data;
-	struct list_head *p, *q = &cursor->s_sibling;
-	ino_t ino = 0;
-	int i = filp->f_pos;
-
-	switch (i) {
-		case 0:
-			ino = dentry->d_inode->i_ino;
-			if (filldir(dirent, ".", 1, i, ino, DT_DIR) < 0)
-				break;
-			filp->f_pos++;
-			i++;
-			/* fallthrough */
-		case 1:
-			ino = parent_ino(dentry);
-			if (filldir(dirent, "..", 2, i, ino, DT_DIR) < 0)
-				break;
-			filp->f_pos++;
-			i++;
-			/* fallthrough */
-		default:
-			if (filp->f_pos == 2) {
-				spin_lock(&configfs_dirent_lock);
-				list_move(q, &parent_sd->s_children);
-				spin_unlock(&configfs_dirent_lock);
-			}
-			for (p=q->next; p!= &parent_sd->s_children; p=p->next) {
-				struct configfs_dirent *next;
-				const char * name;
-				int len;
-				struct inode *inode = NULL;
-
-				next = list_entry(p, struct configfs_dirent,
-						   s_sibling);
-				if (!next->s_element)
-					continue;
-
-				name = configfs_get_name(next);
-				len = strlen(name);
-
-				/*
-				 * We'll have a dentry and an inode for
-				 * PINNED items and for open attribute
-				 * files.  We lock here to prevent a race
-				 * with configfs_d_iput() clearing
-				 * s_dentry before calling iput().
-				 *
-				 * Why do we go to the trouble?  If
-				 * someone has an attribute file open,
-				 * the inode number should match until
-				 * they close it.  Beyond that, we don't
-				 * care.
-				 */
-				spin_lock(&configfs_dirent_lock);
-				dentry = next->s_dentry;
-				if (dentry)
-					inode = dentry->d_inode;
-				if (inode)
-					ino = inode->i_ino;
-				spin_unlock(&configfs_dirent_lock);
-				if (!inode)
-					ino = iunique(sb, 2);
-
-				if (filldir(dirent, name, len, filp->f_pos, ino,
-						 dt_type(next)) < 0)
-					return 0;
-
-				spin_lock(&configfs_dirent_lock);
-				list_move(q, p);
-				spin_unlock(&configfs_dirent_lock);
-				p = q;
-				filp->f_pos++;
-			}
-	}
-	return 0;
-}
-
-static loff_t configfs_dir_lseek(struct file * file, loff_t offset, int origin)
-{
-	struct dentry * dentry = file->f_path.dentry;
-
-	mutex_lock(&dentry->d_inode->i_mutex);
-	switch (origin) {
-		case 1:
-			offset += file->f_pos;
-		case 0:
-			if (offset >= 0)
-				break;
-		default:
-			mutex_unlock(&file->f_path.dentry->d_inode->i_mutex);
-=======
 static int configfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct dentry *dentry = file->f_path.dentry;
@@ -2355,7 +1674,6 @@ static loff_t configfs_dir_lseek(struct file *file, loff_t offset, int whence)
 				break;
 			fallthrough;
 		default:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	}
 	if (offset != file->f_pos) {
@@ -2381,10 +1699,6 @@ static loff_t configfs_dir_lseek(struct file *file, loff_t offset, int whence)
 			spin_unlock(&configfs_dirent_lock);
 		}
 	}
-<<<<<<< HEAD
-	mutex_unlock(&dentry->d_inode->i_mutex);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return offset;
 }
 
@@ -2393,11 +1707,6 @@ const struct file_operations configfs_dir_operations = {
 	.release	= configfs_dir_close,
 	.llseek		= configfs_dir_lseek,
 	.read		= generic_read_dir,
-<<<<<<< HEAD
-	.readdir	= configfs_readdir,
-};
-
-=======
 	.iterate_shared	= configfs_readdir,
 };
 
@@ -2532,21 +1841,10 @@ void configfs_unregister_default_group(struct config_group *group)
 }
 EXPORT_SYMBOL(configfs_unregister_default_group);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int configfs_register_subsystem(struct configfs_subsystem *subsys)
 {
 	int err;
 	struct config_group *group = &subsys->su_group;
-<<<<<<< HEAD
-	struct qstr name;
-	struct dentry *dentry;
-	struct dentry *root;
-	struct configfs_dirent *sd;
-
-	root = configfs_pin_fs();
-	if (IS_ERR(root))
-		return PTR_ERR(root);
-=======
 	struct dentry *dentry;
 	struct dentry *root;
 	struct configfs_dirent *sd;
@@ -2561,24 +1859,11 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
 		put_fragment(frag);
 		return PTR_ERR(root);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!group->cg_item.ci_name)
 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
 
 	sd = root->d_fsdata;
-<<<<<<< HEAD
-	link_group(to_config_group(sd->s_element), group);
-
-	mutex_lock_nested(&root->d_inode->i_mutex, I_MUTEX_PARENT);
-
-	name.name = group->cg_item.ci_name;
-	name.len = strlen(name.name);
-	name.hash = full_name_hash(name.name, name.len);
-
-	err = -ENOMEM;
-	dentry = d_alloc(root, &name);
-=======
 	mutex_lock(&configfs_subsystem_mutex);
 	link_group(to_config_group(sd->s_element), group);
 	mutex_unlock(&configfs_subsystem_mutex);
@@ -2587,20 +1872,13 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
 
 	err = -ENOMEM;
 	dentry = d_alloc_name(root, group->cg_item.ci_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dentry) {
 		d_add(dentry, NULL);
 
 		err = configfs_attach_group(sd->s_element, &group->cg_item,
-<<<<<<< HEAD
-					    dentry);
-		if (err) {
-			BUG_ON(dentry->d_inode);
-=======
 					    dentry, frag);
 		if (err) {
 			BUG_ON(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			d_drop(dentry);
 			dput(dentry);
 		} else {
@@ -2610,14 +1888,6 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
 		}
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&root->d_inode->i_mutex);
-
-	if (err) {
-		unlink_group(group);
-		configfs_release_fs();
-	}
-=======
 	inode_unlock(d_inode(root));
 
 	if (err) {
@@ -2627,7 +1897,6 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
 		configfs_release_fs();
 	}
 	put_fragment(frag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -2637,21 +1906,6 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
 	struct config_group *group = &subsys->su_group;
 	struct dentry *dentry = group->cg_item.ci_dentry;
 	struct dentry *root = dentry->d_sb->s_root;
-<<<<<<< HEAD
-
-	if (dentry->d_parent != root) {
-		printk(KERN_ERR "configfs: Tried to unregister non-subsystem!\n");
-		return;
-	}
-
-	mutex_lock_nested(&root->d_inode->i_mutex,
-			  I_MUTEX_PARENT);
-	mutex_lock_nested(&dentry->d_inode->i_mutex, I_MUTEX_CHILD);
-	mutex_lock(&configfs_symlink_mutex);
-	spin_lock(&configfs_dirent_lock);
-	if (configfs_detach_prep(dentry, NULL)) {
-		printk(KERN_ERR "configfs: Tried to unregister non-empty subsystem!\n");
-=======
 	struct configfs_dirent *sd = dentry->d_fsdata;
 	struct configfs_fragment *frag = sd->s_frag;
 
@@ -2671,24 +1925,10 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
 	spin_lock(&configfs_dirent_lock);
 	if (configfs_detach_prep(dentry, NULL)) {
 		pr_err("Tried to unregister non-empty subsystem!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&configfs_dirent_lock);
 	mutex_unlock(&configfs_symlink_mutex);
 	configfs_detach_group(&group->cg_item);
-<<<<<<< HEAD
-	dentry->d_inode->i_flags |= S_DEAD;
-	dont_mount(dentry);
-	mutex_unlock(&dentry->d_inode->i_mutex);
-
-	d_delete(dentry);
-
-	mutex_unlock(&root->d_inode->i_mutex);
-
-	dput(dentry);
-
-	unlink_group(group);
-=======
 	d_inode(dentry)->i_flags |= S_DEAD;
 	dont_mount(dentry);
 	inode_unlock(d_inode(dentry));
@@ -2703,7 +1943,6 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
 	mutex_lock(&configfs_subsystem_mutex);
 	unlink_group(group);
 	mutex_unlock(&configfs_subsystem_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	configfs_release_fs();
 }
 

@@ -1,59 +1,29 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * padata.h - header for the padata parallelization interface
  *
  * Copyright (C) 2008, 2009 secunet Security Networks AG
  * Copyright (C) 2008, 2009 Steffen Klassert <steffen.klassert@secunet.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-=======
  * Copyright (c) 2020 Oracle and/or its affiliates.
  * Author: Daniel Jordan <daniel.m.jordan@oracle.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef PADATA_H
 #define PADATA_H
 
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-#include <linux/spinlock.h>
-#include <linux/list.h>
-#include <linux/timer.h>
-#include <linux/notifier.h>
-=======
 #include <linux/refcount.h>
 #include <linux/compiler_types.h>
 #include <linux/workqueue.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kobject.h>
 
 #define PADATA_CPU_SERIAL   0x01
 #define PADATA_CPU_PARALLEL 0x02
 
 /**
-<<<<<<< HEAD
- * struct padata_priv -  Embedded to the users data structure.
-=======
  * struct padata_priv - Represents one job
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @list: List entry, to attach to the padata lists.
  * @pd: Pointer to the internal control structure.
@@ -67,21 +37,14 @@ struct padata_priv {
 	struct list_head	list;
 	struct parallel_data	*pd;
 	int			cb_cpu;
-<<<<<<< HEAD
-=======
 	unsigned int		seq_nr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			info;
 	void                    (*parallel)(struct padata_priv *padata);
 	void                    (*serial)(struct padata_priv *padata);
 };
 
 /**
-<<<<<<< HEAD
- * struct padata_list
-=======
  * struct padata_list - one per work type per CPU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @list: List head.
  * @lock: List lock.
@@ -105,31 +68,6 @@ struct padata_serial_queue {
 };
 
 /**
-<<<<<<< HEAD
- * struct padata_parallel_queue - The percpu padata parallel queue
- *
- * @parallel: List to wait for parallelization.
- * @reorder: List to wait for reordering after parallel processing.
- * @serial: List to wait for serialization after reordering.
- * @pwork: work struct for parallelization.
- * @swork: work struct for serialization.
- * @pd: Backpointer to the internal control structure.
- * @work: work struct for parallelization.
- * @num_obj: Number of objects that are processed by this cpu.
- * @cpu_index: Index of the cpu.
- */
-struct padata_parallel_queue {
-       struct padata_list    parallel;
-       struct padata_list    reorder;
-       struct parallel_data *pd;
-       struct work_struct    work;
-       atomic_t              num_obj;
-       int                   cpu_index;
-};
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct padata_cpumask - The cpumasks for the parallel/serial workers
  *
  * @pcpu: cpumask for the parallel workers.
@@ -144,31 +82,6 @@ struct padata_cpumask {
  * struct parallel_data - Internal control structure, covers everything
  * that depends on the cpumask in use.
  *
-<<<<<<< HEAD
- * @pinst: padata instance.
- * @pqueue: percpu padata queues used for parallelization.
- * @squeue: percpu padata queues used for serialuzation.
- * @reorder_objects: Number of objects waiting in the reorder queues.
- * @refcnt: Number of objects holding a reference on this parallel_data.
- * @max_seq_nr:  Maximal used sequence number.
- * @cpumask: The cpumasks in use for parallel and serial workers.
- * @lock: Reorder lock.
- * @processed: Number of already processed objects.
- * @timer: Reorder timer.
- */
-struct parallel_data {
-	struct padata_instance		*pinst;
-	struct padata_parallel_queue	__percpu *pqueue;
-	struct padata_serial_queue	__percpu *squeue;
-	atomic_t			reorder_objects;
-	atomic_t			refcnt;
-	struct padata_cpumask		cpumask;
-	spinlock_t                      lock ____cacheline_aligned;
-	spinlock_t                      seq_lock;
-	unsigned int			seq_nr;
-	unsigned int			processed;
-	struct timer_list		timer;
-=======
  * @ps: padata_shell object.
  * @reorder_list: percpu reorder lists
  * @squeue: percpu padata queues used for serialuzation.
@@ -235,47 +148,28 @@ struct padata_mt_job {
 	unsigned long		min_chunk;
 	int			max_threads;
 	bool			numa_aware;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct padata_instance - The overall control structure.
  *
-<<<<<<< HEAD
- * @cpu_notifier: cpu hotplug notifier.
- * @wq: The workqueue in use.
- * @pd: The internal control structure.
- * @cpumask: User supplied cpumasks for parallel and serial works.
- * @cpumask_change_notifier: Notifiers chain for user-defined notify
- *            callbacks that will be called when either @pcpu or @cbcpu
- *            or both cpumasks change.
-=======
  * @cpu_online_node: Linkage for CPU online callback.
  * @cpu_dead_node: Linkage for CPU offline callback.
  * @parallel_wq: The workqueue used for parallel work.
  * @serial_wq: The workqueue used for serial work.
  * @pslist: List of padata_shell objects attached to this instance.
  * @cpumask: User supplied cpumasks for parallel and serial works.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @kobj: padata instance kernel object.
  * @lock: padata instance lock.
  * @flags: padata flags.
  */
 struct padata_instance {
-<<<<<<< HEAD
-	struct notifier_block		 cpu_notifier;
-	struct workqueue_struct		*wq;
-	struct parallel_data		*pd;
-	struct padata_cpumask		cpumask;
-	struct blocking_notifier_head	 cpumask_change_notifier;
-=======
 	struct hlist_node		cpu_online_node;
 	struct hlist_node		cpu_dead_node;
 	struct workqueue_struct		*parallel_wq;
 	struct workqueue_struct		*serial_wq;
 	struct list_head		pslist;
 	struct padata_cpumask		cpumask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kobject                   kobj;
 	struct mutex			 lock;
 	u8				 flags;
@@ -284,30 +178,6 @@ struct padata_instance {
 #define	PADATA_INVALID	4
 };
 
-<<<<<<< HEAD
-extern struct padata_instance *padata_alloc_possible(
-					struct workqueue_struct *wq);
-extern struct padata_instance *padata_alloc(struct workqueue_struct *wq,
-					    const struct cpumask *pcpumask,
-					    const struct cpumask *cbcpumask);
-extern void padata_free(struct padata_instance *pinst);
-extern int padata_do_parallel(struct padata_instance *pinst,
-			      struct padata_priv *padata, int cb_cpu);
-extern void padata_do_serial(struct padata_priv *padata);
-extern int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
-			      cpumask_var_t cpumask);
-extern int padata_set_cpumasks(struct padata_instance *pinst,
-			       cpumask_var_t pcpumask,
-			       cpumask_var_t cbcpumask);
-extern int padata_add_cpu(struct padata_instance *pinst, int cpu, int mask);
-extern int padata_remove_cpu(struct padata_instance *pinst, int cpu, int mask);
-extern int padata_start(struct padata_instance *pinst);
-extern void padata_stop(struct padata_instance *pinst);
-extern int padata_register_cpumask_notifier(struct padata_instance *pinst,
-					    struct notifier_block *nblock);
-extern int padata_unregister_cpumask_notifier(struct padata_instance *pinst,
-					      struct notifier_block *nblock);
-=======
 #ifdef CONFIG_PADATA
 extern void __init padata_init(void);
 extern struct padata_instance *padata_alloc(const char *name);
@@ -328,5 +198,4 @@ static inline void __init padata_do_multithreaded(struct padata_mt_job *job)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

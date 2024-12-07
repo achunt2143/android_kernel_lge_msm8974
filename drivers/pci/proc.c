@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- *	Procfs interface for the PCI bus.
- *
- *	Copyright (c) 1997--1999 Martin Mares <mj@ucw.cz>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Procfs interface for the PCI bus
  *
  * Copyright (c) 1997--1999 Martin Mares <mj@ucw.cz>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -19,51 +12,13 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/capability.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/security.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 #include "pci.h"
 
 static int proc_initialized;	/* = 0 */
 
-<<<<<<< HEAD
-static loff_t
-proc_bus_pci_lseek(struct file *file, loff_t off, int whence)
-{
-	loff_t new = -1;
-	struct inode *inode = file->f_path.dentry->d_inode;
-
-	mutex_lock(&inode->i_mutex);
-	switch (whence) {
-	case 0:
-		new = off;
-		break;
-	case 1:
-		new = file->f_pos + off;
-		break;
-	case 2:
-		new = inode->i_size + off;
-		break;
-	}
-	if (new < 0 || new > inode->i_size)
-		new = -EINVAL;
-	else
-		file->f_pos = new;
-	mutex_unlock(&inode->i_mutex);
-	return new;
-}
-
-static ssize_t
-proc_bus_pci_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
-{
-	const struct inode *ino = file->f_path.dentry->d_inode;
-	const struct proc_dir_entry *dp = PDE(ino);
-	struct pci_dev *dev = dp->data;
-=======
 static loff_t proc_bus_pci_lseek(struct file *file, loff_t off, int whence)
 {
 	struct pci_dev *dev = pde_data(file_inode(file));
@@ -74,7 +29,6 @@ static ssize_t proc_bus_pci_read(struct file *file, char __user *buf,
 				 size_t nbytes, loff_t *ppos)
 {
 	struct pci_dev *dev = pde_data(file_inode(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int pos = *ppos;
 	unsigned int cnt, size;
 
@@ -85,11 +39,7 @@ static ssize_t proc_bus_pci_read(struct file *file, char __user *buf,
 	 */
 
 	if (capable(CAP_SYS_ADMIN))
-<<<<<<< HEAD
-		size = dp->size;
-=======
 		size = dev->cfg_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (dev->hdr_type == PCI_HEADER_TYPE_CARDBUS)
 		size = 128;
 	else
@@ -103,17 +53,11 @@ static ssize_t proc_bus_pci_read(struct file *file, char __user *buf,
 		nbytes = size - pos;
 	cnt = nbytes;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_WRITE, buf, cnt))
-		return -EINVAL;
-
-=======
 	if (!access_ok(buf, cnt))
 		return -EINVAL;
 
 	pci_config_pm_runtime_get(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((pos & 1) && cnt) {
 		unsigned char val;
 		pci_user_read_config_byte(dev, pos, &val);
@@ -139,10 +83,7 @@ static ssize_t proc_bus_pci_read(struct file *file, char __user *buf,
 		buf += 4;
 		pos += 4;
 		cnt -= 4;
-<<<<<<< HEAD
-=======
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (cnt >= 2) {
@@ -158,34 +99,15 @@ static ssize_t proc_bus_pci_read(struct file *file, char __user *buf,
 		unsigned char val;
 		pci_user_read_config_byte(dev, pos, &val);
 		__put_user(val, buf);
-<<<<<<< HEAD
-		buf++;
-		pos++;
-		cnt--;
-	}
-
-=======
 		pos++;
 	}
 
 	pci_config_pm_runtime_put(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*ppos = pos;
 	return nbytes;
 }
 
-<<<<<<< HEAD
-static ssize_t
-proc_bus_pci_write(struct file *file, const char __user *buf, size_t nbytes, loff_t *ppos)
-{
-	struct inode *ino = file->f_path.dentry->d_inode;
-	const struct proc_dir_entry *dp = PDE(ino);
-	struct pci_dev *dev = dp->data;
-	int pos = *ppos;
-	int size = dp->size;
-	int cnt;
-=======
 static ssize_t proc_bus_pci_write(struct file *file, const char __user *buf,
 				  size_t nbytes, loff_t *ppos)
 {
@@ -198,7 +120,6 @@ static ssize_t proc_bus_pci_write(struct file *file, const char __user *buf,
 	ret = security_locked_down(LOCKDOWN_PCI_ACCESS);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pos >= size)
 		return 0;
@@ -208,17 +129,11 @@ static ssize_t proc_bus_pci_write(struct file *file, const char __user *buf,
 		nbytes = size - pos;
 	cnt = nbytes;
 
-<<<<<<< HEAD
-	if (!access_ok(VERIFY_READ, buf, cnt))
-		return -EINVAL;
-
-=======
 	if (!access_ok(buf, cnt))
 		return -EINVAL;
 
 	pci_config_pm_runtime_get(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((pos & 1) && cnt) {
 		unsigned char val;
 		__get_user(val, buf);
@@ -259,18 +174,6 @@ static ssize_t proc_bus_pci_write(struct file *file, const char __user *buf,
 		unsigned char val;
 		__get_user(val, buf);
 		pci_user_write_config_byte(dev, pos, val);
-<<<<<<< HEAD
-		buf++;
-		pos++;
-		cnt--;
-	}
-
-	*ppos = pos;
-	i_size_write(ino, dp->size);
-	return nbytes;
-}
-
-=======
 		pos++;
 	}
 
@@ -282,37 +185,25 @@ static ssize_t proc_bus_pci_write(struct file *file, const char __user *buf,
 }
 
 #ifdef HAVE_PCI_MMAP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_filp_private {
 	enum pci_mmap_state mmap_state;
 	int write_combine;
 };
-<<<<<<< HEAD
-=======
 #endif /* HAVE_PCI_MMAP */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 			       unsigned long arg)
 {
-<<<<<<< HEAD
-	const struct proc_dir_entry *dp = PDE(file->f_dentry->d_inode);
-	struct pci_dev *dev = dp->data;
-=======
 	struct pci_dev *dev = pde_data(file_inode(file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef HAVE_PCI_MMAP
 	struct pci_filp_private *fpriv = file->private_data;
 #endif /* HAVE_PCI_MMAP */
 	int ret = 0;
 
-<<<<<<< HEAD
-=======
 	ret = security_locked_down(LOCKDOWN_PCI_ACCESS);
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case PCIIOC_CONTROLLER:
 		ret = pci_domain_nr(dev->bus);
@@ -320,11 +211,8 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 
 #ifdef HAVE_PCI_MMAP
 	case PCIIOC_MMAP_IS_IO:
-<<<<<<< HEAD
-=======
 		if (!arch_can_pci_mmap_io())
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fpriv->mmap_state = pci_mmap_io;
 		break;
 
@@ -333,20 +221,6 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case PCIIOC_WRITE_COMBINE:
-<<<<<<< HEAD
-		if (arg)
-			fpriv->write_combine = 1;
-		else
-			fpriv->write_combine = 0;
-		break;
-
-#endif /* HAVE_PCI_MMAP */
-
-	default:
-		ret = -EINVAL;
-		break;
-	};
-=======
 		if (arch_can_pci_mmap_wc()) {
 			if (arg)
 				fpriv->write_combine = 1;
@@ -361,7 +235,6 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 		ret = -EINVAL;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -369,29 +242,6 @@ static long proc_bus_pci_ioctl(struct file *file, unsigned int cmd,
 #ifdef HAVE_PCI_MMAP
 static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
 {
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-	const struct proc_dir_entry *dp = PDE(inode);
-	struct pci_dev *dev = dp->data;
-	struct pci_filp_private *fpriv = file->private_data;
-	int i, ret;
-
-	if (!capable(CAP_SYS_RAWIO))
-		return -EPERM;
-
-	/* Make sure the caller is mapping a real resource for this device */
-	for (i = 0; i < PCI_ROM_RESOURCE; i++) {
-		if (pci_mmap_fits(dev, i, vma,  PCI_MMAP_PROCFS))
-			break;
-	}
-
-	if (i >= PCI_ROM_RESOURCE)
-		return -ENODEV;
-
-	ret = pci_mmap_page_range(dev, vma,
-				  fpriv->mmap_state,
-				  fpriv->write_combine);
-=======
 	struct pci_dev *dev = pde_data(file_inode(file));
 	struct pci_filp_private *fpriv = file->private_data;
 	resource_size_t start, end;
@@ -435,7 +285,6 @@ static int proc_bus_pci_mmap(struct file *file, struct vm_area_struct *vma)
 	vma->vm_pgoff -= start >> PAGE_SHIFT;
 	ret = pci_mmap_resource_range(dev, i, vma,
 				  fpriv->mmap_state, write_combine);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -453,10 +302,7 @@ static int proc_bus_pci_open(struct inode *inode, struct file *file)
 	fpriv->write_combine = 0;
 
 	file->private_data = fpriv;
-<<<<<<< HEAD
-=======
 	file->f_mapping = iomem_get_mapping();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -470,21 +316,6 @@ static int proc_bus_pci_release(struct inode *inode, struct file *file)
 }
 #endif /* HAVE_PCI_MMAP */
 
-<<<<<<< HEAD
-static const struct file_operations proc_bus_pci_operations = {
-	.owner		= THIS_MODULE,
-	.llseek		= proc_bus_pci_lseek,
-	.read		= proc_bus_pci_read,
-	.write		= proc_bus_pci_write,
-	.unlocked_ioctl	= proc_bus_pci_ioctl,
-	.compat_ioctl	= proc_bus_pci_ioctl,
-#ifdef HAVE_PCI_MMAP
-	.open		= proc_bus_pci_open,
-	.release	= proc_bus_pci_release,
-	.mmap		= proc_bus_pci_mmap,
-#ifdef HAVE_ARCH_PCI_GET_UNMAPPED_AREA
-	.get_unmapped_area = get_pci_unmapped_area,
-=======
 static const struct proc_ops proc_bus_pci_ops = {
 	.proc_lseek	= proc_bus_pci_lseek,
 	.proc_read	= proc_bus_pci_read,
@@ -499,7 +330,6 @@ static const struct proc_ops proc_bus_pci_ops = {
 	.proc_mmap	= proc_bus_pci_mmap,
 #ifdef HAVE_ARCH_PCI_GET_UNMAPPED_AREA
 	.proc_get_unmapped_area = get_pci_unmapped_area,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* HAVE_ARCH_PCI_GET_UNMAPPED_AREA */
 #endif /* HAVE_PCI_MMAP */
 };
@@ -568,11 +398,7 @@ static int show_device(struct seq_file *m, void *v)
 	}
 	seq_putc(m, '\t');
 	if (drv)
-<<<<<<< HEAD
-		seq_printf(m, "%s", drv->name);
-=======
 		seq_puts(m, drv->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_putc(m, '\n');
 	return 0;
 }
@@ -609,17 +435,10 @@ int pci_proc_attach_device(struct pci_dev *dev)
 
 	sprintf(name, "%02x.%x", PCI_SLOT(dev->devfn), PCI_FUNC(dev->devfn));
 	e = proc_create_data(name, S_IFREG | S_IRUGO | S_IWUSR, bus->procdir,
-<<<<<<< HEAD
-			     &proc_bus_pci_operations, dev);
-	if (!e)
-		return -ENOMEM;
-	e->size = dev->cfg_size;
-=======
 			     &proc_bus_pci_ops, dev);
 	if (!e)
 		return -ENOMEM;
 	proc_set_size(e, dev->cfg_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->procent = e;
 
 	return 0;
@@ -627,55 +446,6 @@ int pci_proc_attach_device(struct pci_dev *dev)
 
 int pci_proc_detach_device(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	struct proc_dir_entry *e;
-
-	if ((e = dev->procent)) {
-		remove_proc_entry(e->name, dev->bus->procdir);
-		dev->procent = NULL;
-	}
-	return 0;
-}
-
-#if 0
-int pci_proc_attach_bus(struct pci_bus* bus)
-{
-	struct proc_dir_entry *de = bus->procdir;
-
-	if (!proc_initialized)
-		return -EACCES;
-
-	if (!de) {
-		char name[16];
-		sprintf(name, "%02x", bus->number);
-		de = bus->procdir = proc_mkdir(name, proc_bus_pci_dir);
-		if (!de)
-			return -ENOMEM;
-	}
-	return 0;
-}
-#endif  /*  0  */
-
-int pci_proc_detach_bus(struct pci_bus* bus)
-{
-	struct proc_dir_entry *de = bus->procdir;
-	if (de)
-		remove_proc_entry(de->name, proc_bus_pci_dir);
-	return 0;
-}
-
-static int proc_bus_pci_dev_open(struct inode *inode, struct file *file)
-{
-	return seq_open(file, &proc_bus_pci_devices_op);
-}
-static const struct file_operations proc_bus_pci_dev_operations = {
-	.owner		= THIS_MODULE,
-	.open		= proc_bus_pci_dev_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-=======
 	proc_remove(dev->procent);
 	dev->procent = NULL;
 	return 0;
@@ -686,29 +456,17 @@ int pci_proc_detach_bus(struct pci_bus *bus)
 	proc_remove(bus->procdir);
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init pci_proc_init(void)
 {
 	struct pci_dev *dev = NULL;
 	proc_bus_pci_dir = proc_mkdir("bus/pci", NULL);
-<<<<<<< HEAD
-	proc_create("devices", 0, proc_bus_pci_dir,
-		    &proc_bus_pci_dev_operations);
-=======
 	proc_create_seq("devices", 0, proc_bus_pci_dir,
 		    &proc_bus_pci_devices_op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proc_initialized = 1;
 	for_each_pci_dev(dev)
 		pci_proc_attach_device(dev);
 
 	return 0;
 }
-<<<<<<< HEAD
-
 device_initcall(pci_proc_init);
-
-=======
-device_initcall(pci_proc_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

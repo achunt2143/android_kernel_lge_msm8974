@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SUNRPC_NETNS_H__
 #define __SUNRPC_NETNS_H__
 
@@ -18,10 +15,7 @@ struct sunrpc_net {
 	struct cache_detail *rsi_cache;
 
 	struct super_block *pipefs_sb;
-<<<<<<< HEAD
-=======
 	struct rpc_pipe *gssd_dummy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex pipefs_sb_lock;
 
 	struct list_head all_clients;
@@ -31,11 +25,6 @@ struct sunrpc_net {
 	struct rpc_clnt *rpcb_local_clnt4;
 	spinlock_t rpcb_clnt_lock;
 	unsigned int rpcb_users;
-<<<<<<< HEAD
-};
-
-extern int sunrpc_net_id;
-=======
 	unsigned int rpcb_is_af_local : 1;
 
 	struct mutex gssp_lock;
@@ -48,7 +37,6 @@ extern int sunrpc_net_id;
 };
 
 extern unsigned int sunrpc_net_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ip_map_cache_create(struct net *);
 void ip_map_cache_destroy(struct net *);

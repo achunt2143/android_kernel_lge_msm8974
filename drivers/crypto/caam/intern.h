@@ -1,35 +1,21 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAAM/SEC 4.x driver backend
  * Private/internal definitions between modules
  *
  * Copyright 2008-2011 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
-=======
  * Copyright 2019, 2023 NXP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef INTERN_H
 #define INTERN_H
 
-<<<<<<< HEAD
-#define JOBR_UNASSIGNED 0
-#define JOBR_ASSIGNED 1
-=======
 #include "ctrl.h"
 #include <crypto/engine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Currently comes from Kconfig param as a ^2 (driver-required) */
 #define JOBR_DEPTH (1 << CONFIG_CRYPTO_DEV_FSL_CAAM_RINGSIZE)
 
-<<<<<<< HEAD
-=======
 /*
  * Maximum size for crypto-engine software queue based on Job Ring
  * size (JOBR_DEPTH) and a THRESHOLD (reserved for the non-crypto-API
@@ -38,7 +24,6 @@
 #define THRESHOLD 15
 #define CRYPTO_ENGINE_MAX_QLEN (JOBR_DEPTH - THRESHOLD)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Kconfig params for interrupt coalescing if selected (else zero) */
 #ifdef CONFIG_CRYPTO_DEV_FSL_CAAM_INTC
 #define JOBR_INTC JRCFG_ICEN
@@ -62,28 +47,6 @@ struct caam_jrentry_info {
 	u32 desc_size;	/* Stored size for postprocessing, header derived */
 };
 
-<<<<<<< HEAD
-/* Private sub-storage for a single JobR */
-struct caam_drv_private_jr {
-	struct device *parentdev;	/* points back to controller dev */
-	int ridx;
-	struct caam_job_ring __iomem *rregs;	/* JobR's register space */
-	struct tasklet_struct irqtask[NR_CPUS];
-	int irq;			/* One per queue */
-	int assign;			/* busy/free */
-
-	/* Job ring info */
-	int ringsize;	/* Size of rings (assume input = output) */
-	struct caam_jrentry_info *entinfo;	/* Alloc'ed 1 per ring entry */
-	spinlock_t inplock ____cacheline_aligned; /* Input ring index lock */
-	int inp_ring_write_index;	/* Input index "tail" */
-	int head;			/* entinfo (s/w ring) head index */
-	dma_addr_t *inpring;	/* Base of input ring, alloc DMA-safe */
-	spinlock_t outlock ____cacheline_aligned; /* Output ring index lock */
-	int out_ring_read_index;	/* Output index "tail" */
-	int tail;			/* entinfo (s/w ring) tail index */
-	struct jr_outentry *outring;	/* Base of output ring, DMA-safe */
-=======
 struct caam_jr_state {
 	dma_addr_t inpbusaddr;
 	dma_addr_t outbusaddr;
@@ -128,26 +91,12 @@ struct caam_ctl_state {
 	struct masterid jr_mid[4];
 	u32 mcr;
 	u32 scfgr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Driver-private storage for a single CAAM block instance
  */
 struct caam_drv_private {
-<<<<<<< HEAD
-
-	struct device *dev;
-	struct device **jrdev; /* Alloc'ed array per sub-device */
-	spinlock_t jr_alloc_lock;
-	struct platform_device *pdev;
-
-	/* Physical-presence section */
-	struct caam_ctrl *ctrl; /* controller region */
-	struct caam_deco **deco; /* DECO/CCB views */
-	struct caam_assurance *ac;
-	struct caam_queue_if *qi; /* QI control region */
-=======
 	/* Physical-presence section */
 	struct caam_ctrl __iomem *ctrl; /* controller region */
 	struct caam_deco __iomem *deco; /* DECO/CCB views */
@@ -156,7 +105,6 @@ struct caam_drv_private {
 	struct caam_job_ring __iomem *jr[4];	/* JobR's register space */
 
 	struct iommu_domain *domain;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Detected geometry block. Filled in from device tree if powerpc,
@@ -164,17 +112,6 @@ struct caam_drv_private {
 	 */
 	u8 total_jobrs;		/* Total Job Rings in device */
 	u8 qi_present;		/* Nonzero if QI present in device */
-<<<<<<< HEAD
-	int secvio_irq;		/* Security violation interrupt number */
-
-	/* which jr allocated to scatterlist crypto */
-	atomic_t tfm_count ____cacheline_aligned;
-	int num_jrs_for_algapi;
-	struct device **algapi_jr;
-	/* list of registered crypto algorithms (mk generic context handle?) */
-	struct list_head alg_list;
-
-=======
 	u8 blob_present;	/* Nonzero if BLOB support present in device */
 	u8 mc_en;		/* Nonzero if MC f/w is active */
 	u8 optee_en;		/* Nonzero if OP-TEE f/w is active */
@@ -191,28 +128,11 @@ struct caam_drv_private {
 
 	struct clk_bulk_data *clks;
 	int num_clks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * debugfs entries for developer view into driver/device
 	 * variables at runtime.
 	 */
 #ifdef CONFIG_DEBUG_FS
-<<<<<<< HEAD
-	struct dentry *dfs_root;
-	struct dentry *ctl; /* controller dir */
-	struct dentry *ctl_rq_dequeued, *ctl_ob_enc_req, *ctl_ib_dec_req;
-	struct dentry *ctl_ob_enc_bytes, *ctl_ob_prot_bytes;
-	struct dentry *ctl_ib_dec_bytes, *ctl_ib_valid_bytes;
-	struct dentry *ctl_faultaddr, *ctl_faultdetail, *ctl_faultstatus;
-
-	struct debugfs_blob_wrapper ctl_kek_wrap, ctl_tkek_wrap, ctl_tdsk_wrap;
-	struct dentry *ctl_kek, *ctl_tkek, *ctl_tdsk;
-#endif
-};
-
-void caam_jr_algapi_init(struct device *dev);
-void caam_jr_algapi_remove(struct device *dev);
-=======
 	struct dentry *ctl; /* controller dir */
 	struct debugfs_blob_wrapper ctl_kek_wrap, ctl_tkek_wrap, ctl_tdsk_wrap;
 #endif
@@ -342,5 +262,4 @@ static inline u64 caam_get_dma_mask(struct device *dev)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* INTERN_H */

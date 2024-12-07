@@ -11,10 +11,7 @@
 
 #include "bcma_private.h"
 #include <linux/pci.h>
-<<<<<<< HEAD
-=======
 #include <linux/slab.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/bcma/bcma.h>
 #include <asm/paccess.h>
@@ -28,11 +25,7 @@
 #define BCMA_PCI_SLOT_MAX	16
 #define	PCI_CONFIG_SPACE_SIZE	256
 
-<<<<<<< HEAD
-bool __devinit bcma_core_pci_is_in_hostmode(struct bcma_drv_pci *pc)
-=======
 bool bcma_core_pci_is_in_hostmode(struct bcma_drv_pci *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcma_bus *bus = pc->core->bus;
 	u16 chipid_top;
@@ -43,14 +36,6 @@ bool bcma_core_pci_is_in_hostmode(struct bcma_drv_pci *pc)
 	    chipid_top != 0x5300)
 		return false;
 
-<<<<<<< HEAD
-	if (bus->sprom.boardflags_lo & BCMA_CORE_PCI_BFL_NOPCI) {
-		pr_info("This PCI core is disabled and not working\n");
-		return false;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bcma_core_enable(pc->core, 0);
 
 	return !mips_busprobe32(tmp, pc->core->io_addr);
@@ -76,11 +61,7 @@ static u32 bcma_get_cfgspace_addr(struct bcma_drv_pci *pc, unsigned int dev,
 {
 	u32 addr = 0;
 
-<<<<<<< HEAD
-	/* Issue config commands only when the data link is up (atleast
-=======
 	/* Issue config commands only when the data link is up (at least
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * one external pcie device is present).
 	 */
 	if (dev >= 2 || !(bcma_pcie_read(pc, BCMA_CORE_PCI_DLLP_LSREG)
@@ -114,31 +95,19 @@ static int bcma_extpci_read_config(struct bcma_drv_pci *pc, unsigned int dev,
 	if (dev == 0) {
 		/* we support only two functions on device 0 */
 		if (func > 1)
-<<<<<<< HEAD
-			return -EINVAL;
-=======
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* accesses to config registers with offsets >= 256
 		 * requires indirect access.
 		 */
 		if (off >= PCI_CONFIG_SPACE_SIZE) {
 			addr = (func << 12);
-<<<<<<< HEAD
-			addr |= (off & 0x0FFF);
-=======
 			addr |= (off & 0x0FFC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val = bcma_pcie_read_config(pc, addr);
 		} else {
 			addr = BCMA_CORE_PCI_PCICFG0;
 			addr |= (func << 8);
-<<<<<<< HEAD
-			addr |= (off & 0xfc);
-=======
 			addr |= (off & 0xFC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			val = pcicore_read32(pc, addr);
 		}
 	} else {
@@ -146,26 +115,14 @@ static int bcma_extpci_read_config(struct bcma_drv_pci *pc, unsigned int dev,
 		if (unlikely(!addr))
 			goto out;
 		err = -ENOMEM;
-<<<<<<< HEAD
-		mmio = ioremap_nocache(addr, len);
-=======
 		mmio = ioremap(addr, sizeof(val));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!mmio)
 			goto out;
 
 		if (mips_busprobe32(val, mmio)) {
-<<<<<<< HEAD
-			val = 0xffffffff;
-			goto unmap;
-		}
-
-		val = readl(mmio);
-=======
 			val = 0xFFFFFFFF;
 			goto unmap;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	val >>= (8 * (off & 3));
 
@@ -193,11 +150,7 @@ static int bcma_extpci_write_config(struct bcma_drv_pci *pc, unsigned int dev,
 				   const void *buf, int len)
 {
 	int err = -EINVAL;
-<<<<<<< HEAD
-	u32 addr = 0, val = 0;
-=======
 	u32 addr, val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *mmio = 0;
 	u16 chipid = pc->core->bus->chipinfo.id;
 
@@ -205,18 +158,6 @@ static int bcma_extpci_write_config(struct bcma_drv_pci *pc, unsigned int dev,
 	if (unlikely(len != 1 && len != 2 && len != 4))
 		goto out;
 	if (dev == 0) {
-<<<<<<< HEAD
-		/* accesses to config registers with offsets >= 256
-		 * requires indirect access.
-		 */
-		if (off < PCI_CONFIG_SPACE_SIZE) {
-			addr = pc->core->addr + BCMA_CORE_PCI_PCICFG0;
-			addr |= (func << 8);
-			addr |= (off & 0xfc);
-			mmio = ioremap_nocache(addr, len);
-			if (!mmio)
-				goto out;
-=======
 		/* we support only two functions on device 0 */
 		if (func > 1)
 			goto out;
@@ -233,45 +174,28 @@ static int bcma_extpci_write_config(struct bcma_drv_pci *pc, unsigned int dev,
 			addr |= (func << 8);
 			addr |= (off & 0xFC);
 			val = pcicore_read32(pc, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		addr = bcma_get_cfgspace_addr(pc, dev, func, off);
 		if (unlikely(!addr))
 			goto out;
 		err = -ENOMEM;
-<<<<<<< HEAD
-		mmio = ioremap_nocache(addr, len);
-=======
 		mmio = ioremap(addr, sizeof(val));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!mmio)
 			goto out;
 
 		if (mips_busprobe32(val, mmio)) {
-<<<<<<< HEAD
-			val = 0xffffffff;
-=======
 			val = 0xFFFFFFFF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto unmap;
 		}
 	}
 
 	switch (len) {
 	case 1:
-<<<<<<< HEAD
-		val = readl(mmio);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val &= ~(0xFF << (8 * (off & 3)));
 		val |= *((const u8 *)buf) << (8 * (off & 3));
 		break;
 	case 2:
-<<<<<<< HEAD
-		val = readl(mmio);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val &= ~(0xFFFF << (8 * (off & 3)));
 		val |= *((const u16 *)buf) << (8 * (off & 3));
 		break;
@@ -279,19 +203,6 @@ static int bcma_extpci_write_config(struct bcma_drv_pci *pc, unsigned int dev,
 		val = *((const u32 *)buf);
 		break;
 	}
-<<<<<<< HEAD
-	if (dev == 0 && !addr) {
-		/* accesses to config registers with offsets >= 256
-		 * requires indirect access.
-		 */
-		addr = (func << 12);
-		addr |= (off & 0x0FFF);
-		bcma_pcie_write_config(pc, addr, val);
-	} else {
-		writel(val, mmio);
-
-		if (chipid == 0x4716 || chipid == 0x4748)
-=======
 	if (dev == 0) {
 		/* accesses to config registers with offsets >= 256
 		 * requires indirect access.
@@ -305,7 +216,6 @@ static int bcma_extpci_write_config(struct bcma_drv_pci *pc, unsigned int dev,
 
 		if (chipid == BCMA_CHIP_ID_BCM4716 ||
 		    chipid == BCMA_CHIP_ID_BCM4748)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			readl(mmio);
 	}
 
@@ -358,16 +268,9 @@ static int bcma_core_pci_hostmode_write_config(struct pci_bus *bus,
 }
 
 /* return cap_offset if requested capability exists in the PCI config space */
-<<<<<<< HEAD
-static u8 __devinit bcma_find_pci_capability(struct bcma_drv_pci *pc,
-					     unsigned int dev,
-					     unsigned int func, u8 req_cap_id,
-					     unsigned char *buf, u32 *buflen)
-=======
 static u8 bcma_find_pci_capability(struct bcma_drv_pci *pc, unsigned int dev,
 				   unsigned int func, u8 req_cap_id,
 				   unsigned char *buf, u32 *buflen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 cap_id;
 	u8 cap_ptr = 0;
@@ -377,11 +280,7 @@ static u8 bcma_find_pci_capability(struct bcma_drv_pci *pc, unsigned int dev,
 	/* check for Header type 0 */
 	bcma_extpci_read_config(pc, dev, func, PCI_HEADER_TYPE, &byte_val,
 				sizeof(u8));
-<<<<<<< HEAD
-	if ((byte_val & 0x7f) != PCI_HEADER_TYPE_NORMAL)
-=======
 	if ((byte_val & PCI_HEADER_TYPE_MASK) != PCI_HEADER_TYPE_NORMAL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return cap_ptr;
 
 	/* check if the capability pointer field exists */
@@ -396,11 +295,7 @@ static u8 bcma_find_pci_capability(struct bcma_drv_pci *pc, unsigned int dev,
 	if (cap_ptr == 0x00)
 		return cap_ptr;
 
-<<<<<<< HEAD
-	/* loop thr'u the capability list and see if the requested capabilty
-=======
 	/* loop through the capability list and see if the requested capability
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * exists */
 	bcma_extpci_read_config(pc, dev, func, cap_ptr, &cap_id, sizeof(u8));
 	while (cap_id != req_cap_id) {
@@ -422,11 +317,7 @@ static u8 bcma_find_pci_capability(struct bcma_drv_pci *pc, unsigned int dev,
 
 		*buflen = 0;
 
-<<<<<<< HEAD
-		/* copy the cpability data excluding cap ID and next ptr */
-=======
 		/* copy the capability data excluding cap ID and next ptr */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cap_data = cap_ptr + 2;
 		if ((bufsize + cap_data)  > PCI_CONFIG_SPACE_SIZE)
 			bufsize = PCI_CONFIG_SPACE_SIZE - cap_data;
@@ -446,14 +337,9 @@ static u8 bcma_find_pci_capability(struct bcma_drv_pci *pc, unsigned int dev,
  * Retry Status (CRS) Completion Status to software then
  * enable the feature.
  */
-<<<<<<< HEAD
-static void __devinit bcma_core_pci_enable_crs(struct bcma_drv_pci *pc)
-{
-=======
 static void bcma_core_pci_enable_crs(struct bcma_drv_pci *pc)
 {
 	struct bcma_bus *bus = pc->core->bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 cap_ptr, root_ctrl, root_cap, dev;
 	u16 val16;
 	int i;
@@ -492,21 +378,13 @@ static void bcma_core_pci_enable_crs(struct bcma_drv_pci *pc)
 				udelay(10);
 			}
 			if (val16 == 0x1)
-<<<<<<< HEAD
-				pr_err("PCI: Broken device in slot %d\n", dev);
-=======
 				bcma_err(bus, "PCI: Broken device in slot %d\n",
 					 dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-void __devinit bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
-=======
 void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bcma_bus *bus = pc->core->bus;
 	struct bcma_drv_pci_host *pc_host;
@@ -514,16 +392,6 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 	u32 pci_membase_1G;
 	unsigned long io_map_base;
 
-<<<<<<< HEAD
-	pr_info("PCIEcore in host mode found\n");
-
-	pc_host = kzalloc(sizeof(*pc_host), GFP_KERNEL);
-	if (!pc_host)  {
-		pr_err("can not allocate memory");
-		return;
-	}
-
-=======
 	bcma_info(bus, "PCIEcore in host mode found\n");
 
 	if (bus->sprom.boardflags_lo & BCMA_CORE_PCI_BFL_NOPCI) {
@@ -539,7 +407,6 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 
 	spin_lock_init(&pc_host->cfgspace_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pc->host_controller = pc_host;
 	pc_host->pci_controller.io_resource = &pc_host->io_resource;
 	pc_host->pci_controller.mem_resource = &pc_host->mem_resource;
@@ -552,34 +419,20 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 	pc_host->pci_ops.read = bcma_core_pci_hostmode_read_config;
 	pc_host->pci_ops.write = bcma_core_pci_hostmode_write_config;
 
-<<<<<<< HEAD
-	pc_host->mem_resource.name = "BCMA PCIcore external memory",
-=======
 	pc_host->mem_resource.name = "BCMA PCIcore external memory";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pc_host->mem_resource.start = BCMA_SOC_PCI_DMA;
 	pc_host->mem_resource.end = BCMA_SOC_PCI_DMA + BCMA_SOC_PCI_DMA_SZ - 1;
 	pc_host->mem_resource.flags = IORESOURCE_MEM | IORESOURCE_PCI_FIXED;
 
-<<<<<<< HEAD
-	pc_host->io_resource.name = "BCMA PCIcore external I/O",
-=======
 	pc_host->io_resource.name = "BCMA PCIcore external I/O";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pc_host->io_resource.start = 0x100;
 	pc_host->io_resource.end = 0x7FF;
 	pc_host->io_resource.flags = IORESOURCE_IO | IORESOURCE_PCI_FIXED;
 
 	/* Reset RC */
-<<<<<<< HEAD
-	udelay(3000);
-	pcicore_write32(pc, BCMA_CORE_PCI_CTL, BCMA_CORE_PCI_CTL_RST_OE);
-	udelay(1000);
-=======
 	usleep_range(3000, 5000);
 	pcicore_write32(pc, BCMA_CORE_PCI_CTL, BCMA_CORE_PCI_CTL_RST_OE);
 	msleep(50);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcicore_write32(pc, BCMA_CORE_PCI_CTL, BCMA_CORE_PCI_CTL_RST |
 			BCMA_CORE_PCI_CTL_RST_OE);
 
@@ -589,22 +442,14 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 	 * as mips can't generate 64-bit address on the
 	 * backplane.
 	 */
-<<<<<<< HEAD
-	if (bus->chipinfo.id == 0x4716 || bus->chipinfo.id == 0x4748) {
-=======
 	if (bus->chipinfo.id == BCMA_CHIP_ID_BCM4716 ||
 	    bus->chipinfo.id == BCMA_CHIP_ID_BCM4748) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pc_host->mem_resource.start = BCMA_SOC_PCI_MEM;
 		pc_host->mem_resource.end = BCMA_SOC_PCI_MEM +
 					    BCMA_SOC_PCI_MEM_SZ - 1;
 		pcicore_write32(pc, BCMA_CORE_PCI_SBTOPCI0,
 				BCMA_CORE_PCI_SBTOPCI_MEM | BCMA_SOC_PCI_MEM);
-<<<<<<< HEAD
-	} else if (bus->chipinfo.id == 0x5300) {
-=======
 	} else if (bus->chipinfo.id == BCMA_CHIP_ID_BCM4706) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = BCMA_CORE_PCI_SBTOPCI_MEM;
 		tmp |= BCMA_CORE_PCI_SBTOPCI_PREF;
 		tmp |= BCMA_CORE_PCI_SBTOPCI_BURST;
@@ -612,11 +457,8 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 			pc_host->mem_resource.start = BCMA_SOC_PCI_MEM;
 			pc_host->mem_resource.end = BCMA_SOC_PCI_MEM +
 						    BCMA_SOC_PCI_MEM_SZ - 1;
-<<<<<<< HEAD
-=======
 			pc_host->io_resource.start = 0x100;
 			pc_host->io_resource.end = 0x47F;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_membase_1G = BCMA_SOC_PCIE_DMA_H32;
 			pcicore_write32(pc, BCMA_CORE_PCI_SBTOPCI0,
 					tmp | BCMA_SOC_PCI_MEM);
@@ -624,11 +466,8 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 			pc_host->mem_resource.start = BCMA_SOC_PCI1_MEM;
 			pc_host->mem_resource.end = BCMA_SOC_PCI1_MEM +
 						    BCMA_SOC_PCI_MEM_SZ - 1;
-<<<<<<< HEAD
-=======
 			pc_host->io_resource.start = 0x480;
 			pc_host->io_resource.end = 0x7FF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_membase_1G = BCMA_SOC_PCIE1_DMA_H32;
 			pc_host->host_cfg_addr = BCMA_SOC_PCI1_CFG;
 			pcicore_write32(pc, BCMA_CORE_PCI_SBTOPCI0,
@@ -651,12 +490,6 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 	 * before issuing configuration requests to PCI Express
 	 * devices.
 	 */
-<<<<<<< HEAD
-	udelay(100000);
-
-	bcma_core_pci_enable_crs(pc);
-
-=======
 	msleep(100);
 
 	bcma_core_pci_enable_crs(pc);
@@ -672,7 +505,6 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 					 &val16, sizeof(val16));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable PCI bridge BAR0 memory & master access */
 	tmp = PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	bcma_extpci_write_config(pc, 0, 0, PCI_COMMAND, &tmp, sizeof(tmp));
@@ -683,22 +515,13 @@ void bcma_core_pci_hostmode_init(struct bcma_drv_pci *pc)
 	/* Ok, ready to run, register it to the system.
 	 * The following needs change, if we want to port hostmode
 	 * to non-MIPS platform. */
-<<<<<<< HEAD
-	io_map_base = (unsigned long)ioremap_nocache(BCMA_SOC_PCI_MEM,
-						     0x04000000);
-=======
 	io_map_base = (unsigned long)ioremap(pc_host->mem_resource.start,
 						     resource_size(&pc_host->mem_resource));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pc_host->pci_controller.io_map_base = io_map_base;
 	set_io_port_base(pc_host->pci_controller.io_map_base);
 	/* Give some time to the PCI controller to configure itself with the new
 	 * values. Not waiting at this point causes crashes of the machine. */
-<<<<<<< HEAD
-	mdelay(10);
-=======
 	usleep_range(10000, 15000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register_pci_controller(&pc_host->pci_controller);
 	return;
 }
@@ -731,11 +554,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_ANY_ID, PCI_ANY_ID, bcma_core_pci_fixup_pcibridge);
 static void bcma_core_pci_fixup_addresses(struct pci_dev *dev)
 {
 	struct resource *res;
-<<<<<<< HEAD
-	int pos;
-=======
 	int pos, err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->bus->ops->read != bcma_core_pci_hostmode_read_config) {
 		/* This is not a device on the PCI-core bridge. */
@@ -748,17 +567,12 @@ static void bcma_core_pci_fixup_addresses(struct pci_dev *dev)
 
 	for (pos = 0; pos < 6; pos++) {
 		res = &dev->resource[pos];
-<<<<<<< HEAD
-		if (res->flags & (IORESOURCE_IO | IORESOURCE_MEM))
-			pci_assign_resource(dev, pos);
-=======
 		if (res->flags & (IORESOURCE_IO | IORESOURCE_MEM)) {
 			err = pci_assign_resource(dev, pos);
 			if (err)
 				pr_err("PCI: Problem fixing up the addresses on %s\n",
 				       pci_name(dev));
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, bcma_core_pci_fixup_addresses);
@@ -768,10 +582,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, bcma_core_pci_fixup_addresses);
 int bcma_core_pci_plat_dev_init(struct pci_dev *dev)
 {
 	struct bcma_drv_pci_host *pc_host;
-<<<<<<< HEAD
-=======
 	int readrq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->bus->ops->read != bcma_core_pci_hostmode_read_config) {
 		/* This is not a device on the PCI-core bridge. */
@@ -783,11 +594,6 @@ int bcma_core_pci_plat_dev_init(struct pci_dev *dev)
 	pr_info("PCI: Fixing up device %s\n", pci_name(dev));
 
 	/* Fix up interrupt lines */
-<<<<<<< HEAD
-	dev->irq = bcma_core_mips_irq(pc_host->pdev->core) + 2;
-	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, dev->irq);
-
-=======
 	dev->irq = bcma_core_irq(pc_host->pdev->core, 0);
 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, dev->irq);
 
@@ -796,7 +602,6 @@ int bcma_core_pci_plat_dev_init(struct pci_dev *dev)
 		pr_info("change PCIe max read request size from %i to 128\n", readrq);
 		pcie_set_readrq(dev, 128);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(bcma_core_pci_plat_dev_init);
@@ -813,10 +618,6 @@ int bcma_core_pci_pcibios_map_irq(const struct pci_dev *dev)
 
 	pc_host = container_of(dev->bus->ops, struct bcma_drv_pci_host,
 			       pci_ops);
-<<<<<<< HEAD
-	return bcma_core_mips_irq(pc_host->pdev->core) + 2;
-=======
 	return bcma_core_irq(pc_host->pdev->core, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(bcma_core_pci_pcibios_map_irq);

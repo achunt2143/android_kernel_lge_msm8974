@@ -1,11 +1,7 @@
 /*
  * This file is part of the Chelsio T4 Ethernet driver for Linux.
  *
-<<<<<<< HEAD
- * Copyright (c) 2009-2010 Chelsio Communications, Inc. All rights reserved.
-=======
  * Copyright (c) 2009-2016 Chelsio Communications, Inc. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -39,8 +35,6 @@
 #ifndef _T4FW_INTERFACE_H_
 #define _T4FW_INTERFACE_H_
 
-<<<<<<< HEAD
-=======
 enum fw_retval {
 	FW_SUCCESS		= 0,	/* completed successfully */
 	FW_EPERM		= 1,	/* operation not permitted */
@@ -82,7 +76,6 @@ enum fw_retval {
 	FW_SCSI_TASK_ERR	= 142,	/* No SCSI tasks available */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FW_T4VF_SGE_BASE_ADDR      0x0000
 #define FW_T4VF_MPS_BASE_ADDR      0x0100
 #define FW_T4VF_PL_BASE_ADDR       0x0200
@@ -94,11 +87,8 @@ enum fw_wr_opcodes {
 	FW_ULPTX_WR                    = 0x04,
 	FW_TP_WR                       = 0x05,
 	FW_ETH_TX_PKT_WR               = 0x08,
-<<<<<<< HEAD
-=======
 	FW_ETH_TX_EO_WR                = 0x1c,
 	FW_OFLD_CONNECTION_WR          = 0x2f,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_FLOWC_WR                    = 0x0a,
 	FW_OFLD_TX_DATA_WR             = 0x0b,
 	FW_CMD_WR                      = 0x10,
@@ -111,10 +101,6 @@ enum fw_wr_opcodes {
 	FW_RI_RECV_WR                  = 0x17,
 	FW_RI_BIND_MW_WR               = 0x18,
 	FW_RI_FR_NSMR_WR               = 0x19,
-<<<<<<< HEAD
-	FW_RI_INV_LSTAG_WR             = 0x1a,
-	FW_LASTC2E_WR                  = 0x40
-=======
 	FW_RI_FR_NSMR_TPTE_WR	       = 0x20,
 	FW_RI_RDMA_WRITE_CMPL_WR       = 0x21,
 	FW_RI_INV_LSTAG_WR             = 0x1a,
@@ -124,7 +110,6 @@ enum fw_wr_opcodes {
 	FW_CRYPTO_LOOKASIDE_WR         = 0X6d,
 	FW_LASTC2E_WR                  = 0x70,
 	FW_FILTER2_WR		       = 0x77
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fw_wr_hdr {
@@ -132,19 +117,6 @@ struct fw_wr_hdr {
 	__be32 lo;
 };
 
-<<<<<<< HEAD
-#define FW_WR_OP(x)	 ((x) << 24)
-#define FW_WR_ATOMIC(x)	 ((x) << 23)
-#define FW_WR_FLUSH(x)   ((x) << 22)
-#define FW_WR_COMPL(x)   ((x) << 21)
-#define FW_WR_IMMDLEN_MASK 0xff
-#define FW_WR_IMMDLEN(x) ((x) << 0)
-
-#define FW_WR_EQUIQ	(1U << 31)
-#define FW_WR_EQUEQ	(1U << 30)
-#define FW_WR_FLOWID(x)	((x) << 8)
-#define FW_WR_LEN16(x)	((x) << 0)
-=======
 /* work request opcode (hi) */
 #define FW_WR_OP_S	24
 #define FW_WR_OP_M      0xff
@@ -537,7 +509,6 @@ struct fw_filter2_wr {
 #define FW_FILTER_WR_MATCHTYPEM_V(x)    ((x) << FW_FILTER_WR_MATCHTYPEM_S)
 #define FW_FILTER_WR_MATCHTYPEM_G(x)    \
 	(((x) >> FW_FILTER_WR_MATCHTYPEM_S) & FW_FILTER_WR_MATCHTYPEM_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_ulptx_wr {
 	__be32 op_to_compl;
@@ -545,8 +516,6 @@ struct fw_ulptx_wr {
 	u64 cookie;
 };
 
-<<<<<<< HEAD
-=======
 #define FW_ULPTX_WR_DATA_S      28
 #define FW_ULPTX_WR_DATA_M      0x1
 #define FW_ULPTX_WR_DATA_V(x)   ((x) << FW_ULPTX_WR_DATA_S)
@@ -554,7 +523,6 @@ struct fw_ulptx_wr {
 	(((x) >> FW_ULPTX_WR_DATA_S) & FW_ULPTX_WR_DATA_M)
 #define FW_ULPTX_WR_DATA_F      FW_ULPTX_WR_DATA_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_tp_wr {
 	__be32 op_to_immdlen;
 	__be32 flowid_len16;
@@ -567,8 +535,6 @@ struct fw_eth_tx_pkt_wr {
 	__be64 r3;
 };
 
-<<<<<<< HEAD
-=======
 enum fw_eth_tx_eo_type {
 	FW_ETH_TX_EO_TYPE_UDPSEG = 0,
 	FW_ETH_TX_EO_TYPE_TCPSEG,
@@ -742,7 +708,6 @@ enum fw_flowc_mnem_eostate {
 	FW_FLOWC_MNEM_EOSTATE_CLOSING = 2,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum fw_flowc_mnem {
 	FW_FLOWC_MNEM_PFNVFN,		/* PFN [15:8] VFN [7:0] */
 	FW_FLOWC_MNEM_CH,
@@ -752,8 +717,6 @@ enum fw_flowc_mnem {
 	FW_FLOWC_MNEM_RCVNXT,
 	FW_FLOWC_MNEM_SNDBUF,
 	FW_FLOWC_MNEM_MSS,
-<<<<<<< HEAD
-=======
 	FW_FLOWC_MNEM_TXDATAPLEN_MAX,
 	FW_FLOWC_MNEM_TCPSTATE,
 	FW_FLOWC_MNEM_EOSTATE,
@@ -763,7 +726,6 @@ enum fw_flowc_mnem {
 	FW_FLOWC_MNEM_RCV_SCALE,
 	FW_FLOWC_MNEM_ULD_MODE,
 	FW_FLOWC_MNEM_MAX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fw_flowc_mnemval {
@@ -774,13 +736,6 @@ struct fw_flowc_mnemval {
 
 struct fw_flowc_wr {
 	__be32 op_to_nparams;
-<<<<<<< HEAD
-#define FW_FLOWC_WR_NPARAMS(x)	((x) << 0)
-	__be32 flowid_len16;
-	struct fw_flowc_mnemval mnemval[0];
-};
-
-=======
 	__be32 flowid_len16;
 	struct fw_flowc_mnemval mnemval[];
 };
@@ -788,27 +743,11 @@ struct fw_flowc_wr {
 #define FW_FLOWC_WR_NPARAMS_S           0
 #define FW_FLOWC_WR_NPARAMS_V(x)        ((x) << FW_FLOWC_WR_NPARAMS_S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_ofld_tx_data_wr {
 	__be32 op_to_immdlen;
 	__be32 flowid_len16;
 	__be32 plen;
 	__be32 tunnel_to_proxy;
-<<<<<<< HEAD
-#define FW_OFLD_TX_DATA_WR_TUNNEL(x)	 ((x) << 19)
-#define FW_OFLD_TX_DATA_WR_SAVE(x)	 ((x) << 18)
-#define FW_OFLD_TX_DATA_WR_FLUSH(x)	 ((x) << 17)
-#define FW_OFLD_TX_DATA_WR_URGENT(x)	 ((x) << 16)
-#define FW_OFLD_TX_DATA_WR_MORE(x)	 ((x) << 15)
-#define FW_OFLD_TX_DATA_WR_SHOVE(x)	 ((x) << 14)
-#define FW_OFLD_TX_DATA_WR_ULPMODE(x)	 ((x) << 10)
-#define FW_OFLD_TX_DATA_WR_ULPSUBMODE(x) ((x) << 6)
-};
-
-struct fw_cmd_wr {
-	__be32 op_dma;
-#define FW_CMD_WR_DMA (1U << 17)
-=======
 };
 
 #define FW_OFLD_TX_DATA_WR_ALIGNPLD_S   30
@@ -844,30 +783,17 @@ struct fw_cmd_wr {
 
 struct fw_cmd_wr {
 	__be32 op_dma;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 len16_pkd;
 	__be64 cookie_daddr;
 };
 
-<<<<<<< HEAD
-=======
 #define FW_CMD_WR_DMA_S         17
 #define FW_CMD_WR_DMA_V(x)      ((x) << FW_CMD_WR_DMA_S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_eth_tx_pkt_vm_wr {
 	__be32 op_immdlen;
 	__be32 equiq_to_len16;
 	__be32 r3[2];
-<<<<<<< HEAD
-	u8 ethmacdst[6];
-	u8 ethmacsrc[6];
-	__be16 ethtype;
-	__be16 vlantci;
-};
-
-#define FW_CMD_MAX_TIMEOUT 3000
-=======
 	struct_group(firmware,
 		u8 ethmacdst[ETH_ALEN];
 		u8 ethmacsrc[ETH_ALEN];
@@ -888,7 +814,6 @@ struct fw_eth_tx_pkt_vm_wr {
 #define FW_CMD_HELLO_TIMEOUT	(3 * FW_CMD_MAX_TIMEOUT)
 #define FW_CMD_HELLO_RETRIES	3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum fw_cmd_opcodes {
 	FW_LDST_CMD                    = 0x01,
@@ -919,14 +844,11 @@ enum fw_cmd_opcodes {
 	FW_RSS_IND_TBL_CMD             = 0x20,
 	FW_RSS_GLB_CONFIG_CMD          = 0x22,
 	FW_RSS_VI_CONFIG_CMD           = 0x23,
-<<<<<<< HEAD
-=======
 	FW_SCHED_CMD                   = 0x24,
 	FW_DEVLOG_CMD                  = 0x25,
 	FW_CLIP_CMD                    = 0x28,
 	FW_PTP_CMD                     = 0x3e,
 	FW_HMA_CMD                     = 0x3f,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_LASTC2E_CMD                 = 0x40,
 	FW_ERROR_CMD                   = 0x80,
 	FW_DEBUG_CMD                   = 0x81,
@@ -949,18 +871,6 @@ struct fw_cmd_hdr {
 	__be32 lo;
 };
 
-<<<<<<< HEAD
-#define FW_CMD_OP(x)		((x) << 24)
-#define FW_CMD_OP_GET(x)        (((x) >> 24) & 0xff)
-#define FW_CMD_REQUEST          (1U << 23)
-#define FW_CMD_READ		(1U << 22)
-#define FW_CMD_WRITE		(1U << 21)
-#define FW_CMD_EXEC		(1U << 20)
-#define FW_CMD_RAMASK(x)	((x) << 20)
-#define FW_CMD_RETVAL(x)	((x) << 8)
-#define FW_CMD_RETVAL_GET(x)	(((x) >> 8) & 0xff)
-#define FW_CMD_LEN16(x)         ((x) << 0)
-=======
 #define FW_CMD_OP_S             24
 #define FW_CMD_OP_M             0xff
 #define FW_CMD_OP_V(x)          ((x) << FW_CMD_OP_S)
@@ -994,7 +904,6 @@ struct fw_cmd_hdr {
 #define FW_CMD_LEN16_V(x)       ((x) << FW_CMD_LEN16_S)
 
 #define FW_LEN16(fw_struct)	FW_CMD_LEN16_V(sizeof(fw_struct) / 16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum fw_ldst_addrspc {
 	FW_LDST_ADDRSPC_FIRMWARE  = 0x0001,
@@ -1007,13 +916,9 @@ enum fw_ldst_addrspc {
 	FW_LDST_ADDRSPC_TP_MIB    = 0x0012,
 	FW_LDST_ADDRSPC_MDIO      = 0x0018,
 	FW_LDST_ADDRSPC_MPS       = 0x0020,
-<<<<<<< HEAD
-	FW_LDST_ADDRSPC_FUNC      = 0x0028
-=======
 	FW_LDST_ADDRSPC_FUNC      = 0x0028,
 	FW_LDST_ADDRSPC_FUNC_PCIE = 0x0029,
 	FW_LDST_ADDRSPC_I2C       = 0x0038,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum fw_ldst_mps_fid {
@@ -1032,10 +937,6 @@ enum fw_ldst_func_mod_index {
 
 struct fw_ldst_cmd {
 	__be32 op_to_addrspace;
-<<<<<<< HEAD
-#define FW_LDST_CMD_ADDRSPACE(x) ((x) << 0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 cycles_to_len16;
 	union fw_ldst {
 		struct fw_ldst_addrval {
@@ -1044,11 +945,7 @@ struct fw_ldst_cmd {
 		} addrval;
 		struct fw_ldst_idctxt {
 			__be32 physid;
-<<<<<<< HEAD
-			__be32 msg_pkd;
-=======
 			__be32 msg_ctxtflush;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__be32 ctxt_data7;
 			__be32 ctxt_data6;
 			__be32 ctxt_data5;
@@ -1064,17 +961,6 @@ struct fw_ldst_cmd {
 			__be16 vctl;
 			__be16 rval;
 		} mdio;
-<<<<<<< HEAD
-		struct fw_ldst_mps {
-			__be16 fid_ctl;
-			__be16 rplcpf_pkd;
-			__be32 rplc127_96;
-			__be32 rplc95_64;
-			__be32 rplc63_32;
-			__be32 rplc31_0;
-			__be32 atrb;
-			__be16 vlan[16];
-=======
 		struct fw_ldst_cim_rq {
 			u8 req_first64[8];
 			u8 req_second64[8];
@@ -1103,7 +989,6 @@ struct fw_ldst_cmd {
 				__be32 atrb;
 				__be16 vlan[16];
 			} atrb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} mps;
 		struct fw_ldst_func {
 			u8 access_ctl;
@@ -1113,17 +998,6 @@ struct fw_ldst_cmd {
 			__be64 data0;
 			__be64 data1;
 		} func;
-<<<<<<< HEAD
-	} u;
-};
-
-#define FW_LDST_CMD_MSG(x)	((x) << 31)
-#define FW_LDST_CMD_PADDR(x)	((x) << 8)
-#define FW_LDST_CMD_MMD(x)	((x) << 0)
-#define FW_LDST_CMD_FID(x)	((x) << 15)
-#define FW_LDST_CMD_CTL(x)	((x) << 0)
-#define FW_LDST_CMD_RPLCPF(x)	((x) << 0)
-=======
 		struct fw_ldst_pcie {
 			u8 ctrl_to_fn;
 			u8 bnum;
@@ -1192,15 +1066,11 @@ struct fw_ldst_cmd {
 
 #define FW_LDST_CMD_NACCESS_S           0
 #define FW_LDST_CMD_NACCESS_V(x)	((x) << FW_LDST_CMD_NACCESS_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_reset_cmd {
 	__be32 op_to_write;
 	__be32 retval_len16;
 	__be32 val;
-<<<<<<< HEAD
-	__be32 r3;
-=======
 	__be32 halt_pkd;
 };
 
@@ -1213,24 +1083,11 @@ struct fw_reset_cmd {
 
 enum fw_hellow_cmd {
 	fw_hello_cmd_stage_os		= 0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fw_hello_cmd {
 	__be32 op_to_write;
 	__be32 retval_len16;
-<<<<<<< HEAD
-	__be32 err_to_mbasyncnot;
-#define FW_HELLO_CMD_ERR	    (1U << 31)
-#define FW_HELLO_CMD_INIT	    (1U << 30)
-#define FW_HELLO_CMD_MASTERDIS(x)   ((x) << 29)
-#define FW_HELLO_CMD_MASTERFORCE(x) ((x) << 28)
-#define FW_HELLO_CMD_MBMASTER(x)    ((x) << 24)
-#define FW_HELLO_CMD_MBASYNCNOT(x)  ((x) << 20)
-	__be32 fwrev;
-};
-
-=======
 	__be32 err_to_clearinit;
 	__be32 fwrev;
 };
@@ -1268,7 +1125,6 @@ struct fw_hello_cmd {
 #define FW_HELLO_CMD_CLEARINIT_V(x)     ((x) << FW_HELLO_CMD_CLEARINIT_S)
 #define FW_HELLO_CMD_CLEARINIT_F	FW_HELLO_CMD_CLEARINIT_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_bye_cmd {
 	__be32 op_to_write;
 	__be32 retval_len16;
@@ -1327,11 +1183,8 @@ enum fw_caps_config_switch {
 enum fw_caps_config_nic {
 	FW_CAPS_CONFIG_NIC		= 0x00000001,
 	FW_CAPS_CONFIG_NIC_VM		= 0x00000002,
-<<<<<<< HEAD
-=======
 	FW_CAPS_CONFIG_NIC_HASHFILTER	= 0x00000020,
 	FW_CAPS_CONFIG_NIC_ETHOFLD	= 0x00000040,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum fw_caps_config_ofld {
@@ -1350,11 +1203,6 @@ enum fw_caps_config_iscsi {
 	FW_CAPS_CONFIG_ISCSI_TARGET_CNXOFLD = 0x00000008,
 };
 
-<<<<<<< HEAD
-enum fw_caps_config_fcoe {
-	FW_CAPS_CONFIG_FCOE_INITIATOR	= 0x00000001,
-	FW_CAPS_CONFIG_FCOE_TARGET	= 0x00000002,
-=======
 enum fw_caps_config_crypto {
 	FW_CAPS_CONFIG_CRYPTO_LOOKASIDE = 0x00000001,
 	FW_CAPS_CONFIG_TLS_INLINE = 0x00000002,
@@ -1376,16 +1224,11 @@ enum fw_memtype_cf {
 	FW_MEMTYPE_CF_INTERNAL		= 0x5,
 	FW_MEMTYPE_CF_EXTMEM1           = 0x6,
 	FW_MEMTYPE_CF_HMA		= 0x7,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fw_caps_config_cmd {
 	__be32 op_to_write;
-<<<<<<< HEAD
-	__be32 retval_len16;
-=======
 	__be32 cfvalid_to_len16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 r2;
 	__be32 hwmbitmap;
 	__be16 nbmcaps;
@@ -1395,15 +1238,6 @@ struct fw_caps_config_cmd {
 	__be16 niccaps;
 	__be16 ofldcaps;
 	__be16 rdmacaps;
-<<<<<<< HEAD
-	__be16 r4;
-	__be16 iscsicaps;
-	__be16 fcoecaps;
-	__be32 r5;
-	__be64 r6;
-};
-
-=======
 	__be16 cryptocaps;
 	__be16 iscsicaps;
 	__be16 fcoecaps;
@@ -1424,7 +1258,6 @@ struct fw_caps_config_cmd {
 #define FW_CAPS_CONFIG_CMD_MEMADDR64K_CF_V(x)	\
 	((x) << FW_CAPS_CONFIG_CMD_MEMADDR64K_CF_S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * params command mnemonics
  */
@@ -1433,18 +1266,13 @@ enum fw_params_mnem {
 	FW_PARAMS_MNEM_PFVF		= 2,	/* function params */
 	FW_PARAMS_MNEM_REG		= 3,	/* limited register access */
 	FW_PARAMS_MNEM_DMAQ		= 4,	/* dma queue params */
-<<<<<<< HEAD
-=======
 	FW_PARAMS_MNEM_CHNET            = 5,    /* chnet params */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_PARAMS_MNEM_LAST
 };
 
 /*
  * device parameters
  */
-<<<<<<< HEAD
-=======
 
 #define FW_PARAMS_PARAM_FILTER_MODE_S 16
 #define FW_PARAMS_PARAM_FILTER_MODE_M 0xffff
@@ -1462,7 +1290,6 @@ enum fw_params_mnem {
 	(((x) >> FW_PARAMS_PARAM_FILTER_MASK_S) & \
 	FW_PARAMS_PARAM_FILTER_MASK_M)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum fw_params_param_dev {
 	FW_PARAMS_PARAM_DEV_CCLK	= 0x00, /* chip core clock in khz */
 	FW_PARAMS_PARAM_DEV_PORTVEC	= 0x01, /* the port vector */
@@ -1480,8 +1307,6 @@ enum fw_params_param_dev {
 	FW_PARAMS_PARAM_DEV_INTVER_FCOE = 0x0A,
 	FW_PARAMS_PARAM_DEV_FWREV = 0x0B,
 	FW_PARAMS_PARAM_DEV_TPREV = 0x0C,
-<<<<<<< HEAD
-=======
 	FW_PARAMS_PARAM_DEV_CF = 0x0D,
 	FW_PARAMS_PARAM_DEV_PHYFW = 0x0F,
 	FW_PARAMS_PARAM_DEV_DIAG = 0x11,
@@ -1507,7 +1332,6 @@ enum fw_params_param_dev {
 	FW_PARAMS_PARAM_DEV_NUM_TM_CLASS = 0x2B,
 	FW_PARAMS_PARAM_DEV_FILTER = 0x2E,
 	FW_PARAMS_PARAM_DEV_KTLS_HW = 0x31,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1539,11 +1363,8 @@ enum fw_params_param_pfvf {
 	FW_PARAMS_PARAM_PFVF_SQRQ_END	= 0x16,
 	FW_PARAMS_PARAM_PFVF_CQ_START	= 0x17,
 	FW_PARAMS_PARAM_PFVF_CQ_END	= 0x18,
-<<<<<<< HEAD
-=======
 	FW_PARAMS_PARAM_PFVF_SRQ_START  = 0x19,
 	FW_PARAMS_PARAM_PFVF_SRQ_END    = 0x1A,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_PARAMS_PARAM_PFVF_SCHEDCLASS_ETH = 0x20,
 	FW_PARAMS_PARAM_PFVF_VIID       = 0x24,
 	FW_PARAMS_PARAM_PFVF_CPMASK     = 0x25,
@@ -1554,8 +1375,6 @@ enum fw_params_param_pfvf {
 	FW_PARAMS_PARAM_PFVF_IQFLINT_END = 0x2A,
 	FW_PARAMS_PARAM_PFVF_EQ_START	= 0x2B,
 	FW_PARAMS_PARAM_PFVF_EQ_END	= 0x2C,
-<<<<<<< HEAD
-=======
 	FW_PARAMS_PARAM_PFVF_ACTIVE_FILTER_START = 0x2D,
 	FW_PARAMS_PARAM_PFVF_ACTIVE_FILTER_END = 0x2E,
 	FW_PARAMS_PARAM_PFVF_ETHOFLD_START = 0x2F,
@@ -1579,7 +1398,6 @@ enum vf_link_states {
 	FW_VF_LINK_STATE_AUTO		= 0x00,
 	FW_VF_LINK_STATE_ENABLE		= 0x01,
 	FW_VF_LINK_STATE_DISABLE	= 0x02,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1591,16 +1409,6 @@ enum fw_params_param_dmaq {
 	FW_PARAMS_PARAM_DMAQ_EQ_CMPLIQID_MNGT = 0x10,
 	FW_PARAMS_PARAM_DMAQ_EQ_CMPLIQID_CTRL = 0x11,
 	FW_PARAMS_PARAM_DMAQ_EQ_SCHEDCLASS_ETH = 0x12,
-<<<<<<< HEAD
-};
-
-#define FW_PARAMS_MNEM(x)      ((x) << 24)
-#define FW_PARAMS_PARAM_X(x)   ((x) << 16)
-#define FW_PARAMS_PARAM_Y(x)   ((x) << 8)
-#define FW_PARAMS_PARAM_Z(x)   ((x) << 0)
-#define FW_PARAMS_PARAM_XYZ(x) ((x) << 0)
-#define FW_PARAMS_PARAM_YZ(x)  ((x) << 0)
-=======
 	FW_PARAMS_PARAM_DMAQ_EQ_DCBPRIO_ETH = 0x13,
 	FW_PARAMS_PARAM_DMAQ_EQ_TIMERIX	= 0x15,
 	FW_PARAMS_PARAM_DMAQ_CONM_CTXT = 0x20,
@@ -1656,7 +1464,6 @@ enum fw_params_param_dev_fwcache {
 
 #define FW_PARAMS_PARAM_YZ_S		0
 #define FW_PARAMS_PARAM_YZ_V(x)		((x) << FW_PARAMS_PARAM_YZ_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_params_cmd {
 	__be32 op_to_vfn;
@@ -1667,16 +1474,11 @@ struct fw_params_cmd {
 	} param[7];
 };
 
-<<<<<<< HEAD
-#define FW_PARAMS_CMD_PFN(x) ((x) << 8)
-#define FW_PARAMS_CMD_VFN(x) ((x) << 0)
-=======
 #define FW_PARAMS_CMD_PFN_S     8
 #define FW_PARAMS_CMD_PFN_V(x)	((x) << FW_PARAMS_CMD_PFN_S)
 
 #define FW_PARAMS_CMD_VFN_S     0
 #define FW_PARAMS_CMD_VFN_V(x)	((x) << FW_PARAMS_CMD_VFN_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_pfvf_cmd {
 	__be32 op_to_vfn;
@@ -1690,48 +1492,6 @@ struct fw_pfvf_cmd {
 	__be32 r4;
 };
 
-<<<<<<< HEAD
-#define FW_PFVF_CMD_PFN(x) ((x) << 8)
-#define FW_PFVF_CMD_VFN(x) ((x) << 0)
-
-#define FW_PFVF_CMD_NIQFLINT(x) ((x) << 20)
-#define FW_PFVF_CMD_NIQFLINT_GET(x) (((x) >> 20) & 0xfff)
-
-#define FW_PFVF_CMD_NIQ(x) ((x) << 0)
-#define FW_PFVF_CMD_NIQ_GET(x) (((x) >> 0) & 0xfffff)
-
-#define FW_PFVF_CMD_TYPE (1 << 31)
-#define FW_PFVF_CMD_TYPE_GET(x) (((x) >> 31) & 0x1)
-
-#define FW_PFVF_CMD_CMASK(x) ((x) << 24)
-#define FW_PFVF_CMD_CMASK_MASK 0xf
-#define FW_PFVF_CMD_CMASK_GET(x) (((x) >> 24) & FW_PFVF_CMD_CMASK_MASK)
-
-#define FW_PFVF_CMD_PMASK(x) ((x) << 20)
-#define FW_PFVF_CMD_PMASK_MASK 0xf
-#define FW_PFVF_CMD_PMASK_GET(x) (((x) >> 20) & FW_PFVF_CMD_PMASK_MASK)
-
-#define FW_PFVF_CMD_NEQ(x) ((x) << 0)
-#define FW_PFVF_CMD_NEQ_GET(x) (((x) >> 0) & 0xfffff)
-
-#define FW_PFVF_CMD_TC(x) ((x) << 24)
-#define FW_PFVF_CMD_TC_GET(x) (((x) >> 24) & 0xff)
-
-#define FW_PFVF_CMD_NVI(x) ((x) << 16)
-#define FW_PFVF_CMD_NVI_GET(x) (((x) >> 16) & 0xff)
-
-#define FW_PFVF_CMD_NEXACTF(x) ((x) << 0)
-#define FW_PFVF_CMD_NEXACTF_GET(x) (((x) >> 0) & 0xffff)
-
-#define FW_PFVF_CMD_R_CAPS(x) ((x) << 24)
-#define FW_PFVF_CMD_R_CAPS_GET(x) (((x) >> 24) & 0xff)
-
-#define FW_PFVF_CMD_WX_CAPS(x) ((x) << 16)
-#define FW_PFVF_CMD_WX_CAPS_GET(x) (((x) >> 16) & 0xff)
-
-#define FW_PFVF_CMD_NETHCTRL(x) ((x) << 0)
-#define FW_PFVF_CMD_NETHCTRL_GET(x) (((x) >> 0) & 0xffff)
-=======
 #define FW_PFVF_CMD_PFN_S	8
 #define FW_PFVF_CMD_PFN_V(x)	((x) << FW_PFVF_CMD_PFN_S)
 
@@ -1808,22 +1568,18 @@ struct fw_pfvf_cmd {
 #define FW_PFVF_CMD_NETHCTRL_V(x)	((x) << FW_PFVF_CMD_NETHCTRL_S)
 #define FW_PFVF_CMD_NETHCTRL_G(x)	\
 	(((x) >> FW_PFVF_CMD_NETHCTRL_S) & FW_PFVF_CMD_NETHCTRL_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum fw_iq_type {
 	FW_IQ_TYPE_FL_INT_CAP,
 	FW_IQ_TYPE_NO_FL_INT_CAP
 };
 
-<<<<<<< HEAD
-=======
 enum fw_iq_iqtype {
 	FW_IQ_IQTYPE_OTHER,
 	FW_IQ_IQTYPE_NIC,
 	FW_IQ_IQTYPE_OFLD,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_iq_cmd {
 	__be32 op_to_vfn;
 	__be32 alloc_to_len16;
@@ -1845,87 +1601,6 @@ struct fw_iq_cmd {
 	__be64 fl1addr;
 };
 
-<<<<<<< HEAD
-#define FW_IQ_CMD_PFN(x) ((x) << 8)
-#define FW_IQ_CMD_VFN(x) ((x) << 0)
-
-#define FW_IQ_CMD_ALLOC (1U << 31)
-#define FW_IQ_CMD_FREE (1U << 30)
-#define FW_IQ_CMD_MODIFY (1U << 29)
-#define FW_IQ_CMD_IQSTART(x) ((x) << 28)
-#define FW_IQ_CMD_IQSTOP(x) ((x) << 27)
-
-#define FW_IQ_CMD_TYPE(x) ((x) << 29)
-#define FW_IQ_CMD_IQASYNCH(x) ((x) << 28)
-#define FW_IQ_CMD_VIID(x) ((x) << 16)
-#define FW_IQ_CMD_IQANDST(x) ((x) << 15)
-#define FW_IQ_CMD_IQANUS(x) ((x) << 14)
-#define FW_IQ_CMD_IQANUD(x) ((x) << 12)
-#define FW_IQ_CMD_IQANDSTINDEX(x) ((x) << 0)
-
-#define FW_IQ_CMD_IQDROPRSS (1U << 15)
-#define FW_IQ_CMD_IQGTSMODE (1U << 14)
-#define FW_IQ_CMD_IQPCIECH(x) ((x) << 12)
-#define FW_IQ_CMD_IQDCAEN(x) ((x) << 11)
-#define FW_IQ_CMD_IQDCACPU(x) ((x) << 6)
-#define FW_IQ_CMD_IQINTCNTTHRESH(x) ((x) << 4)
-#define FW_IQ_CMD_IQO (1U << 3)
-#define FW_IQ_CMD_IQCPRIO(x) ((x) << 2)
-#define FW_IQ_CMD_IQESIZE(x) ((x) << 0)
-
-#define FW_IQ_CMD_IQNS(x) ((x) << 31)
-#define FW_IQ_CMD_IQRO(x) ((x) << 30)
-#define FW_IQ_CMD_IQFLINTIQHSEN(x) ((x) << 28)
-#define FW_IQ_CMD_IQFLINTCONGEN(x) ((x) << 27)
-#define FW_IQ_CMD_IQFLINTISCSIC(x) ((x) << 26)
-#define FW_IQ_CMD_FL0CNGCHMAP(x) ((x) << 20)
-#define FW_IQ_CMD_FL0CACHELOCK(x) ((x) << 15)
-#define FW_IQ_CMD_FL0DBP(x) ((x) << 14)
-#define FW_IQ_CMD_FL0DATANS(x) ((x) << 13)
-#define FW_IQ_CMD_FL0DATARO(x) ((x) << 12)
-#define FW_IQ_CMD_FL0CONGCIF(x) ((x) << 11)
-#define FW_IQ_CMD_FL0ONCHIP(x) ((x) << 10)
-#define FW_IQ_CMD_FL0STATUSPGNS(x) ((x) << 9)
-#define FW_IQ_CMD_FL0STATUSPGRO(x) ((x) << 8)
-#define FW_IQ_CMD_FL0FETCHNS(x) ((x) << 7)
-#define FW_IQ_CMD_FL0FETCHRO(x) ((x) << 6)
-#define FW_IQ_CMD_FL0HOSTFCMODE(x) ((x) << 4)
-#define FW_IQ_CMD_FL0CPRIO(x) ((x) << 3)
-#define FW_IQ_CMD_FL0PADEN (1U << 2)
-#define FW_IQ_CMD_FL0PACKEN (1U << 1)
-#define FW_IQ_CMD_FL0CONGEN (1U << 0)
-
-#define FW_IQ_CMD_FL0DCAEN(x) ((x) << 15)
-#define FW_IQ_CMD_FL0DCACPU(x) ((x) << 10)
-#define FW_IQ_CMD_FL0FBMIN(x) ((x) << 7)
-#define FW_IQ_CMD_FL0FBMAX(x) ((x) << 4)
-#define FW_IQ_CMD_FL0CIDXFTHRESHO (1U << 3)
-#define FW_IQ_CMD_FL0CIDXFTHRESH(x) ((x) << 0)
-
-#define FW_IQ_CMD_FL1CNGCHMAP(x) ((x) << 20)
-#define FW_IQ_CMD_FL1CACHELOCK(x) ((x) << 15)
-#define FW_IQ_CMD_FL1DBP(x) ((x) << 14)
-#define FW_IQ_CMD_FL1DATANS(x) ((x) << 13)
-#define FW_IQ_CMD_FL1DATARO(x) ((x) << 12)
-#define FW_IQ_CMD_FL1CONGCIF(x) ((x) << 11)
-#define FW_IQ_CMD_FL1ONCHIP(x) ((x) << 10)
-#define FW_IQ_CMD_FL1STATUSPGNS(x) ((x) << 9)
-#define FW_IQ_CMD_FL1STATUSPGRO(x) ((x) << 8)
-#define FW_IQ_CMD_FL1FETCHNS(x) ((x) << 7)
-#define FW_IQ_CMD_FL1FETCHRO(x) ((x) << 6)
-#define FW_IQ_CMD_FL1HOSTFCMODE(x) ((x) << 4)
-#define FW_IQ_CMD_FL1CPRIO(x) ((x) << 3)
-#define FW_IQ_CMD_FL1PADEN (1U << 2)
-#define FW_IQ_CMD_FL1PACKEN (1U << 1)
-#define FW_IQ_CMD_FL1CONGEN (1U << 0)
-
-#define FW_IQ_CMD_FL1DCAEN(x) ((x) << 15)
-#define FW_IQ_CMD_FL1DCACPU(x) ((x) << 10)
-#define FW_IQ_CMD_FL1FBMIN(x) ((x) << 7)
-#define FW_IQ_CMD_FL1FBMAX(x) ((x) << 4)
-#define FW_IQ_CMD_FL1CIDXFTHRESHO (1U << 3)
-#define FW_IQ_CMD_FL1CIDXFTHRESH(x) ((x) << 0)
-=======
 #define FW_IQ_CMD_PFN_S		8
 #define FW_IQ_CMD_PFN_V(x)	((x) << FW_IQ_CMD_PFN_S)
 
@@ -2167,7 +1842,6 @@ struct fw_iq_cmd {
 
 #define FW_IQ_CMD_FL1CIDXFTHRESH_S	0
 #define FW_IQ_CMD_FL1CIDXFTHRESH_V(x)	((x) << FW_IQ_CMD_FL1CIDXFTHRESH_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_eq_eth_cmd {
 	__be32 op_to_vfn;
@@ -2177,46 +1851,6 @@ struct fw_eq_eth_cmd {
 	__be32 fetchszm_to_iqid;
 	__be32 dcaen_to_eqsize;
 	__be64 eqaddr;
-<<<<<<< HEAD
-	__be32 viid_pkd;
-	__be32 r8_lo;
-	__be64 r9;
-};
-
-#define FW_EQ_ETH_CMD_PFN(x) ((x) << 8)
-#define FW_EQ_ETH_CMD_VFN(x) ((x) << 0)
-#define FW_EQ_ETH_CMD_ALLOC (1U << 31)
-#define FW_EQ_ETH_CMD_FREE (1U << 30)
-#define FW_EQ_ETH_CMD_MODIFY (1U << 29)
-#define FW_EQ_ETH_CMD_EQSTART (1U << 28)
-#define FW_EQ_ETH_CMD_EQSTOP (1U << 27)
-
-#define FW_EQ_ETH_CMD_EQID(x) ((x) << 0)
-#define FW_EQ_ETH_CMD_EQID_GET(x) (((x) >> 0) & 0xfffff)
-#define FW_EQ_ETH_CMD_PHYSEQID(x) ((x) << 0)
-#define FW_EQ_ETH_CMD_PHYSEQID_GET(x) (((x) >> 0) & 0xfffff)
-
-#define FW_EQ_ETH_CMD_FETCHSZM(x) ((x) << 26)
-#define FW_EQ_ETH_CMD_STATUSPGNS(x) ((x) << 25)
-#define FW_EQ_ETH_CMD_STATUSPGRO(x) ((x) << 24)
-#define FW_EQ_ETH_CMD_FETCHNS(x) ((x) << 23)
-#define FW_EQ_ETH_CMD_FETCHRO(x) ((x) << 22)
-#define FW_EQ_ETH_CMD_HOSTFCMODE(x) ((x) << 20)
-#define FW_EQ_ETH_CMD_CPRIO(x) ((x) << 19)
-#define FW_EQ_ETH_CMD_ONCHIP(x) ((x) << 18)
-#define FW_EQ_ETH_CMD_PCIECHN(x) ((x) << 16)
-#define FW_EQ_ETH_CMD_IQID(x) ((x) << 0)
-
-#define FW_EQ_ETH_CMD_DCAEN(x) ((x) << 31)
-#define FW_EQ_ETH_CMD_DCACPU(x) ((x) << 26)
-#define FW_EQ_ETH_CMD_FBMIN(x) ((x) << 23)
-#define FW_EQ_ETH_CMD_FBMAX(x) ((x) << 20)
-#define FW_EQ_ETH_CMD_CIDXFTHRESHO(x) ((x) << 19)
-#define FW_EQ_ETH_CMD_CIDXFTHRESH(x) ((x) << 16)
-#define FW_EQ_ETH_CMD_EQSIZE(x) ((x) << 0)
-
-#define FW_EQ_ETH_CMD_VIID(x) ((x) << 16)
-=======
 	__be32 autoequiqe_to_viid;
 	__be32 timeren_timerix;
 	__be64 r9;
@@ -2336,7 +1970,6 @@ struct fw_eq_eth_cmd {
 #define FW_EQ_ETH_CMD_TIMERIX_V(x)	((x) << FW_EQ_ETH_CMD_TIMERIX_S)
 #define FW_EQ_ETH_CMD_TIMERIX_G(x)	\
     (((x) >> FW_EQ_ETH_CMD_TIMERIX_S) & FW_EQ_ETH_CMD_TIMERIX_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_eq_ctrl_cmd {
 	__be32 op_to_vfn;
@@ -2348,40 +1981,6 @@ struct fw_eq_ctrl_cmd {
 	__be64 eqaddr;
 };
 
-<<<<<<< HEAD
-#define FW_EQ_CTRL_CMD_PFN(x) ((x) << 8)
-#define FW_EQ_CTRL_CMD_VFN(x) ((x) << 0)
-
-#define FW_EQ_CTRL_CMD_ALLOC (1U << 31)
-#define FW_EQ_CTRL_CMD_FREE (1U << 30)
-#define FW_EQ_CTRL_CMD_MODIFY (1U << 29)
-#define FW_EQ_CTRL_CMD_EQSTART (1U << 28)
-#define FW_EQ_CTRL_CMD_EQSTOP (1U << 27)
-
-#define FW_EQ_CTRL_CMD_CMPLIQID(x) ((x) << 20)
-#define FW_EQ_CTRL_CMD_EQID(x) ((x) << 0)
-#define FW_EQ_CTRL_CMD_EQID_GET(x) (((x) >> 0) & 0xfffff)
-#define FW_EQ_CTRL_CMD_PHYSEQID_GET(x) (((x) >> 0) & 0xfffff)
-
-#define FW_EQ_CTRL_CMD_FETCHSZM (1U << 26)
-#define FW_EQ_CTRL_CMD_STATUSPGNS (1U << 25)
-#define FW_EQ_CTRL_CMD_STATUSPGRO (1U << 24)
-#define FW_EQ_CTRL_CMD_FETCHNS (1U << 23)
-#define FW_EQ_CTRL_CMD_FETCHRO (1U << 22)
-#define FW_EQ_CTRL_CMD_HOSTFCMODE(x) ((x) << 20)
-#define FW_EQ_CTRL_CMD_CPRIO(x) ((x) << 19)
-#define FW_EQ_CTRL_CMD_ONCHIP(x) ((x) << 18)
-#define FW_EQ_CTRL_CMD_PCIECHN(x) ((x) << 16)
-#define FW_EQ_CTRL_CMD_IQID(x) ((x) << 0)
-
-#define FW_EQ_CTRL_CMD_DCAEN(x) ((x) << 31)
-#define FW_EQ_CTRL_CMD_DCACPU(x) ((x) << 26)
-#define FW_EQ_CTRL_CMD_FBMIN(x) ((x) << 23)
-#define FW_EQ_CTRL_CMD_FBMAX(x) ((x) << 20)
-#define FW_EQ_CTRL_CMD_CIDXFTHRESHO(x) ((x) << 19)
-#define FW_EQ_CTRL_CMD_CIDXFTHRESH(x) ((x) << 16)
-#define FW_EQ_CTRL_CMD_EQSIZE(x) ((x) << 0)
-=======
 #define FW_EQ_CTRL_CMD_PFN_S	8
 #define FW_EQ_CTRL_CMD_PFN_V(x)	((x) << FW_EQ_CTRL_CMD_PFN_S)
 
@@ -2478,7 +2077,6 @@ struct fw_eq_ctrl_cmd {
 
 #define FW_EQ_CTRL_CMD_EQSIZE_S		0
 #define FW_EQ_CTRL_CMD_EQSIZE_V(x)	((x) << FW_EQ_CTRL_CMD_EQSIZE_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_eq_ofld_cmd {
 	__be32 op_to_vfn;
@@ -2490,39 +2088,6 @@ struct fw_eq_ofld_cmd {
 	__be64 eqaddr;
 };
 
-<<<<<<< HEAD
-#define FW_EQ_OFLD_CMD_PFN(x) ((x) << 8)
-#define FW_EQ_OFLD_CMD_VFN(x) ((x) << 0)
-
-#define FW_EQ_OFLD_CMD_ALLOC (1U << 31)
-#define FW_EQ_OFLD_CMD_FREE (1U << 30)
-#define FW_EQ_OFLD_CMD_MODIFY (1U << 29)
-#define FW_EQ_OFLD_CMD_EQSTART (1U << 28)
-#define FW_EQ_OFLD_CMD_EQSTOP (1U << 27)
-
-#define FW_EQ_OFLD_CMD_EQID(x) ((x) << 0)
-#define FW_EQ_OFLD_CMD_EQID_GET(x) (((x) >> 0) & 0xfffff)
-#define FW_EQ_OFLD_CMD_PHYSEQID_GET(x) (((x) >> 0) & 0xfffff)
-
-#define FW_EQ_OFLD_CMD_FETCHSZM(x) ((x) << 26)
-#define FW_EQ_OFLD_CMD_STATUSPGNS(x) ((x) << 25)
-#define FW_EQ_OFLD_CMD_STATUSPGRO(x) ((x) << 24)
-#define FW_EQ_OFLD_CMD_FETCHNS(x) ((x) << 23)
-#define FW_EQ_OFLD_CMD_FETCHRO(x) ((x) << 22)
-#define FW_EQ_OFLD_CMD_HOSTFCMODE(x) ((x) << 20)
-#define FW_EQ_OFLD_CMD_CPRIO(x) ((x) << 19)
-#define FW_EQ_OFLD_CMD_ONCHIP(x) ((x) << 18)
-#define FW_EQ_OFLD_CMD_PCIECHN(x) ((x) << 16)
-#define FW_EQ_OFLD_CMD_IQID(x) ((x) << 0)
-
-#define FW_EQ_OFLD_CMD_DCAEN(x) ((x) << 31)
-#define FW_EQ_OFLD_CMD_DCACPU(x) ((x) << 26)
-#define FW_EQ_OFLD_CMD_FBMIN(x) ((x) << 23)
-#define FW_EQ_OFLD_CMD_FBMAX(x) ((x) << 20)
-#define FW_EQ_OFLD_CMD_CIDXFTHRESHO(x) ((x) << 19)
-#define FW_EQ_OFLD_CMD_CIDXFTHRESH(x) ((x) << 16)
-#define FW_EQ_OFLD_CMD_EQSIZE(x) ((x) << 0)
-=======
 #define FW_EQ_OFLD_CMD_PFN_S	8
 #define FW_EQ_OFLD_CMD_PFN_V(x)	((x) << FW_EQ_OFLD_CMD_PFN_S)
 
@@ -2612,17 +2177,11 @@ struct fw_eq_ofld_cmd {
 
 #define FW_EQ_OFLD_CMD_EQSIZE_S		0
 #define FW_EQ_OFLD_CMD_EQSIZE_V(x)	((x) << FW_EQ_OFLD_CMD_EQSIZE_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Macros for VIID parsing:
  * VIID - [10:8] PFN, [7] VI Valid, [6:0] VI number
  */
-<<<<<<< HEAD
-#define FW_VIID_PFN_GET(x) (((x) >> 8) & 0x7)
-#define FW_VIID_VIVLD_GET(x) (((x) >> 7) & 0x1)
-#define FW_VIID_VIN_GET(x) (((x) >> 0) & 0x7F)
-=======
 
 #define FW_VIID_PFN_S           8
 #define FW_VIID_PFN_M           0x7
@@ -2635,7 +2194,6 @@ struct fw_eq_ofld_cmd {
 #define FW_VIID_VIN_S		0
 #define FW_VIID_VIN_M		0x7F
 #define FW_VIID_VIN_G(x)	(((x) >> FW_VIID_VIN_S) & FW_VIID_VIN_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_vi_cmd {
 	__be32 op_to_vfn;
@@ -2655,17 +2213,6 @@ struct fw_vi_cmd {
 	__be64 r10;
 };
 
-<<<<<<< HEAD
-#define FW_VI_CMD_PFN(x) ((x) << 8)
-#define FW_VI_CMD_VFN(x) ((x) << 0)
-#define FW_VI_CMD_ALLOC (1U << 31)
-#define FW_VI_CMD_FREE (1U << 30)
-#define FW_VI_CMD_VIID(x) ((x) << 0)
-#define FW_VI_CMD_VIID_GET(x) ((x) & 0xfff)
-#define FW_VI_CMD_PORTID(x) ((x) << 4)
-#define FW_VI_CMD_PORTID_GET(x) (((x) >> 4) & 0xf)
-#define FW_VI_CMD_RSSSIZE_GET(x) (((x) >> 0) & 0x7ff)
-=======
 #define FW_VI_CMD_PFN_S		8
 #define FW_VI_CMD_PFN_V(x)	((x) << FW_VI_CMD_PFN_S)
 
@@ -2708,16 +2255,12 @@ struct fw_vi_cmd {
 #define FW_VI_CMD_RSSSIZE_M	0x7ff
 #define FW_VI_CMD_RSSSIZE_G(x)	\
 	(((x) >> FW_VI_CMD_RSSSIZE_S) & FW_VI_CMD_RSSSIZE_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Special VI_MAC command index ids */
 #define FW_VI_MAC_ADD_MAC		0x3FF
 #define FW_VI_MAC_ADD_PERSIST_MAC	0x3FE
 #define FW_VI_MAC_MAC_BASED_FREE	0x3FD
-<<<<<<< HEAD
-=======
 #define FW_VI_MAC_ID_BASED_FREE		0x3FC
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FW_CLS_TCAM_NUM_ENTRIES		336
 
 enum fw_vi_mac_smac {
@@ -2734,8 +2277,6 @@ enum fw_vi_mac_result {
 	FW_VI_MAC_R_F_ACL_CHECK
 };
 
-<<<<<<< HEAD
-=======
 enum fw_vi_mac_entry_types {
 	FW_VI_MAC_TYPE_EXACTMAC,
 	FW_VI_MAC_TYPE_HASHVEC,
@@ -2743,7 +2284,6 @@ enum fw_vi_mac_entry_types {
 	FW_VI_MAC_TYPE_EXACTMAC_VNI,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_vi_mac_cmd {
 	__be32 op_to_viid;
 	__be32 freemacs_to_len16;
@@ -2755,21 +2295,6 @@ struct fw_vi_mac_cmd {
 		struct fw_vi_mac_hash {
 			__be64 hashvec;
 		} hash;
-<<<<<<< HEAD
-	} u;
-};
-
-#define FW_VI_MAC_CMD_VIID(x) ((x) << 0)
-#define FW_VI_MAC_CMD_FREEMACS(x) ((x) << 31)
-#define FW_VI_MAC_CMD_HASHVECEN (1U << 23)
-#define FW_VI_MAC_CMD_HASHUNIEN(x) ((x) << 22)
-#define FW_VI_MAC_CMD_VALID (1U << 15)
-#define FW_VI_MAC_CMD_PRIO(x) ((x) << 12)
-#define FW_VI_MAC_CMD_SMAC_RESULT(x) ((x) << 10)
-#define FW_VI_MAC_CMD_SMAC_RESULT_GET(x) (((x) >> 10) & 0x3)
-#define FW_VI_MAC_CMD_IDX(x) ((x) << 0)
-#define FW_VI_MAC_CMD_IDX_GET(x) (((x) >> 0) & 0x3ff)
-=======
 		struct fw_vi_mac_raw {
 			__be32 raw_idx_pkd;
 			__be32 data0_pkd;
@@ -2863,7 +2388,6 @@ struct fw_vi_mac_cmd {
 #define FW_VI_MAC_CMD_VNI_MASK_V(x)	((x) << FW_VI_MAC_CMD_VNI_MASK_S)
 #define FW_VI_MAC_CMD_VNI_MASK_G(x)	\
 	(((x) >> FW_VI_MAC_CMD_VNI_MASK_S) & FW_VI_MAC_CMD_VNI_MASK_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FW_RXMODE_MTU_NO_CHG	65535
 
@@ -2874,19 +2398,6 @@ struct fw_vi_rxmode_cmd {
 	__be32 r4_lo;
 };
 
-<<<<<<< HEAD
-#define FW_VI_RXMODE_CMD_VIID(x) ((x) << 0)
-#define FW_VI_RXMODE_CMD_MTU_MASK 0xffff
-#define FW_VI_RXMODE_CMD_MTU(x) ((x) << 16)
-#define FW_VI_RXMODE_CMD_PROMISCEN_MASK 0x3
-#define FW_VI_RXMODE_CMD_PROMISCEN(x) ((x) << 14)
-#define FW_VI_RXMODE_CMD_ALLMULTIEN_MASK 0x3
-#define FW_VI_RXMODE_CMD_ALLMULTIEN(x) ((x) << 12)
-#define FW_VI_RXMODE_CMD_BROADCASTEN_MASK 0x3
-#define FW_VI_RXMODE_CMD_BROADCASTEN(x) ((x) << 10)
-#define FW_VI_RXMODE_CMD_VLANEXEN_MASK 0x3
-#define FW_VI_RXMODE_CMD_VLANEXEN(x) ((x) << 8)
-=======
 #define FW_VI_RXMODE_CMD_VIID_S		0
 #define FW_VI_RXMODE_CMD_VIID_V(x)	((x) << FW_VI_RXMODE_CMD_VIID_S)
 
@@ -2911,7 +2422,6 @@ struct fw_vi_rxmode_cmd {
 #define FW_VI_RXMODE_CMD_VLANEXEN_S	8
 #define FW_VI_RXMODE_CMD_VLANEXEN_M	0x3
 #define FW_VI_RXMODE_CMD_VLANEXEN_V(x)	((x) << FW_VI_RXMODE_CMD_VLANEXEN_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_vi_enable_cmd {
 	__be32 op_to_viid;
@@ -2921,12 +2431,6 @@ struct fw_vi_enable_cmd {
 	__be32 r4;
 };
 
-<<<<<<< HEAD
-#define FW_VI_ENABLE_CMD_VIID(x) ((x) << 0)
-#define FW_VI_ENABLE_CMD_IEN(x) ((x) << 31)
-#define FW_VI_ENABLE_CMD_EEN(x) ((x) << 30)
-#define FW_VI_ENABLE_CMD_LED (1U << 29)
-=======
 #define FW_VI_ENABLE_CMD_VIID_S         0
 #define FW_VI_ENABLE_CMD_VIID_V(x)      ((x) << FW_VI_ENABLE_CMD_VIID_S)
 
@@ -2942,7 +2446,6 @@ struct fw_vi_enable_cmd {
 
 #define FW_VI_ENABLE_CMD_DCB_INFO_S	28
 #define FW_VI_ENABLE_CMD_DCB_INFO_V(x)	((x) << FW_VI_ENABLE_CMD_DCB_INFO_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* VI VF stats offset definitions */
 #define VI_VF_NUM_STATS	16
@@ -3042,11 +2545,6 @@ struct fw_vi_stats_cmd {
 	} u;
 };
 
-<<<<<<< HEAD
-#define FW_VI_STATS_CMD_VIID(x) ((x) << 0)
-#define FW_VI_STATS_CMD_NSTATS(x) ((x) << 12)
-#define FW_VI_STATS_CMD_IX(x) ((x) << 0)
-=======
 #define FW_VI_STATS_CMD_VIID_S		0
 #define FW_VI_STATS_CMD_VIID_V(x)	((x) << FW_VI_STATS_CMD_VIID_S)
 
@@ -3055,7 +2553,6 @@ struct fw_vi_stats_cmd {
 
 #define FW_VI_STATS_CMD_IX_S	0
 #define FW_VI_STATS_CMD_IX_V(x)	((x) << FW_VI_STATS_CMD_IX_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_acl_mac_cmd {
 	__be32 op_to_vfn;
@@ -3072,11 +2569,6 @@ struct fw_acl_mac_cmd {
 	u8 macaddr3[6];
 };
 
-<<<<<<< HEAD
-#define FW_ACL_MAC_CMD_PFN(x) ((x) << 8)
-#define FW_ACL_MAC_CMD_VFN(x) ((x) << 0)
-#define FW_ACL_MAC_CMD_EN(x) ((x) << 31)
-=======
 #define FW_ACL_MAC_CMD_PFN_S	8
 #define FW_ACL_MAC_CMD_PFN_V(x)	((x) << FW_ACL_MAC_CMD_PFN_S)
 
@@ -3085,7 +2577,6 @@ struct fw_acl_mac_cmd {
 
 #define FW_ACL_MAC_CMD_EN_S	31
 #define FW_ACL_MAC_CMD_EN_V(x)	((x) << FW_ACL_MAC_CMD_EN_S)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fw_acl_vlan_cmd {
 	__be32 op_to_vfn;
@@ -3096,18 +2587,6 @@ struct fw_acl_vlan_cmd {
 	__be16 vlanid[16];
 };
 
-<<<<<<< HEAD
-#define FW_ACL_VLAN_CMD_PFN(x) ((x) << 8)
-#define FW_ACL_VLAN_CMD_VFN(x) ((x) << 0)
-#define FW_ACL_VLAN_CMD_EN(x) ((x) << 31)
-#define FW_ACL_VLAN_CMD_DROPNOVLAN(x) ((x) << 7)
-#define FW_ACL_VLAN_CMD_FM(x) ((x) << 6)
-
-enum fw_port_cap {
-	FW_PORT_CAP_SPEED_100M		= 0x0001,
-	FW_PORT_CAP_SPEED_1G		= 0x0002,
-	FW_PORT_CAP_SPEED_2_5G		= 0x0004,
-=======
 #define FW_ACL_VLAN_CMD_PFN_S		8
 #define FW_ACL_VLAN_CMD_PFN_V(x)	((x) << FW_ACL_VLAN_CMD_PFN_S)
 
@@ -3137,32 +2616,12 @@ enum fw_port_cap {
 	FW_PORT_CAP_SPEED_100M		= 0x0001,
 	FW_PORT_CAP_SPEED_1G		= 0x0002,
 	FW_PORT_CAP_SPEED_25G		= 0x0004,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_PORT_CAP_SPEED_10G		= 0x0008,
 	FW_PORT_CAP_SPEED_40G		= 0x0010,
 	FW_PORT_CAP_SPEED_100G		= 0x0020,
 	FW_PORT_CAP_FC_RX		= 0x0040,
 	FW_PORT_CAP_FC_TX		= 0x0080,
 	FW_PORT_CAP_ANEG		= 0x0100,
-<<<<<<< HEAD
-	FW_PORT_CAP_MDI_0		= 0x0200,
-	FW_PORT_CAP_MDI_1		= 0x0400,
-	FW_PORT_CAP_BEAN		= 0x0800,
-	FW_PORT_CAP_PMA_LPBK		= 0x1000,
-	FW_PORT_CAP_PCS_LPBK		= 0x2000,
-	FW_PORT_CAP_PHYXS_LPBK		= 0x4000,
-	FW_PORT_CAP_FAR_END_LPBK	= 0x8000,
-};
-
-enum fw_port_mdi {
-	FW_PORT_MDI_UNCHANGED,
-	FW_PORT_MDI_AUTO,
-	FW_PORT_MDI_F_STRAIGHT,
-	FW_PORT_MDI_F_CROSSOVER
-};
-
-#define FW_PORT_MDI(x) ((x) << 9)
-=======
 	FW_PORT_CAP_MDIAUTO		= 0x0200,
 	FW_PORT_CAP_MDISTRAIGHT		= 0x0400,
 	FW_PORT_CAP_FEC_RS		= 0x0800,
@@ -3266,7 +2725,6 @@ enum fw_port_mdi32 {
 
 #define CAP32_FEC(__cap32) \
 	(FW_PORT_CAP32_FEC_V(FW_PORT_CAP32_FEC_M) & __cap32)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum fw_port_action {
 	FW_PORT_ACTION_L1_CFG		= 0x0001,
@@ -3274,14 +2732,11 @@ enum fw_port_action {
 	FW_PORT_ACTION_GET_PORT_INFO	= 0x0003,
 	FW_PORT_ACTION_L2_PPP_CFG	= 0x0004,
 	FW_PORT_ACTION_L2_DCB_CFG	= 0x0005,
-<<<<<<< HEAD
-=======
 	FW_PORT_ACTION_DCB_READ_TRANS	= 0x0006,
 	FW_PORT_ACTION_DCB_READ_RECV	= 0x0007,
 	FW_PORT_ACTION_DCB_READ_DET	= 0x0008,
 	FW_PORT_ACTION_L1_CFG32		= 0x0009,
 	FW_PORT_ACTION_GET_PORT_INFO32	= 0x000a,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_PORT_ACTION_LOW_PWR_TO_NORMAL = 0x0010,
 	FW_PORT_ACTION_L1_LOW_PWR_EN	= 0x0011,
 	FW_PORT_ACTION_L2_WOL_MODE_EN	= 0x0012,
@@ -3308,8 +2763,6 @@ enum fw_port_l2cfg_ctlbf {
 	FW_PORT_L2_CTLBF_TXIPG	= 0x20
 };
 
-<<<<<<< HEAD
-=======
 enum fw_port_dcb_versions {
 	FW_PORT_DCB_VER_UNKNOWN,
 	FW_PORT_DCB_VER_CEE1D0,
@@ -3318,7 +2771,6 @@ enum fw_port_dcb_versions {
 	FW_PORT_DCB_VER_AUTO = 7
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum fw_port_dcb_cfg {
 	FW_PORT_DCB_CFG_PG	= 0x01,
 	FW_PORT_DCB_CFG_PFC	= 0x02,
@@ -3330,8 +2782,6 @@ enum fw_port_dcb_cfg_rc {
 	FW_PORT_DCB_CFG_ERROR	= 0x1
 };
 
-<<<<<<< HEAD
-=======
 enum fw_port_dcb_type {
 	FW_PORT_DCB_TYPE_PGID		= 0x00,
 	FW_PORT_DCB_TYPE_PGRATE		= 0x01,
@@ -3348,7 +2798,6 @@ enum fw_port_dcb_feature_state {
 	FW_PORT_DCB_FEATURE_STATE_TIMEOUT = 0x3,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_port_cmd {
 	__be32 op_to_portid;
 	__be32 action_to_len16;
@@ -3358,17 +2807,11 @@ struct fw_port_cmd {
 			__be32 r;
 		} l1cfg;
 		struct fw_port_l2cfg {
-<<<<<<< HEAD
-			__be16 ctlbf_to_ivlan0;
-			__be16 ivlantype;
-			__be32 txipg_pkd;
-=======
 			__u8   ctlbf;
 			__u8   ovlan3_to_ivlan0;
 			__be16 ivlantype;
 			__be16 txipg_force_pinfo;
 			__be16 mtu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__be16 ovlan0mask;
 			__be16 ovlan0type;
 			__be16 ovlan1mask;
@@ -3384,70 +2827,6 @@ struct fw_port_cmd {
 			__be16 acap;
 			__be16 mtu;
 			__u8   cbllen;
-<<<<<<< HEAD
-			__u8   r9;
-			__be32 r10;
-			__be64 r11;
-		} info;
-		struct fw_port_ppp {
-			__be32 pppen_to_ncsich;
-			__be32 r11;
-		} ppp;
-		struct fw_port_dcb {
-			__be16 cfg;
-			u8 up_map;
-			u8 sf_cfgrc;
-			__be16 prot_ix;
-			u8 pe7_to_pe0;
-			u8 numTCPFCs;
-			__be32 pgid0_to_pgid7;
-			__be32 numTCs_oui;
-			u8 pgpc[8];
-		} dcb;
-	} u;
-};
-
-#define FW_PORT_CMD_READ (1U << 22)
-
-#define FW_PORT_CMD_PORTID(x) ((x) << 0)
-#define FW_PORT_CMD_PORTID_GET(x) (((x) >> 0) & 0xf)
-
-#define FW_PORT_CMD_ACTION(x) ((x) << 16)
-#define FW_PORT_CMD_ACTION_GET(x) (((x) >> 16) & 0xffff)
-
-#define FW_PORT_CMD_CTLBF(x) ((x) << 10)
-#define FW_PORT_CMD_OVLAN3(x) ((x) << 7)
-#define FW_PORT_CMD_OVLAN2(x) ((x) << 6)
-#define FW_PORT_CMD_OVLAN1(x) ((x) << 5)
-#define FW_PORT_CMD_OVLAN0(x) ((x) << 4)
-#define FW_PORT_CMD_IVLAN0(x) ((x) << 3)
-
-#define FW_PORT_CMD_TXIPG(x) ((x) << 19)
-
-#define FW_PORT_CMD_LSTATUS (1U << 31)
-#define FW_PORT_CMD_LSPEED(x) ((x) << 24)
-#define FW_PORT_CMD_LSPEED_GET(x) (((x) >> 24) & 0x3f)
-#define FW_PORT_CMD_TXPAUSE (1U << 23)
-#define FW_PORT_CMD_RXPAUSE (1U << 22)
-#define FW_PORT_CMD_MDIOCAP (1U << 21)
-#define FW_PORT_CMD_MDIOADDR_GET(x) (((x) >> 16) & 0x1f)
-#define FW_PORT_CMD_LPTXPAUSE (1U << 15)
-#define FW_PORT_CMD_LPRXPAUSE (1U << 14)
-#define FW_PORT_CMD_PTYPE_MASK 0x1f
-#define FW_PORT_CMD_PTYPE_GET(x) (((x) >> 8) & FW_PORT_CMD_PTYPE_MASK)
-#define FW_PORT_CMD_MODTYPE_MASK 0x1f
-#define FW_PORT_CMD_MODTYPE_GET(x) (((x) >> 0) & FW_PORT_CMD_MODTYPE_MASK)
-
-#define FW_PORT_CMD_PPPEN(x) ((x) << 31)
-#define FW_PORT_CMD_TPSRC(x) ((x) << 28)
-#define FW_PORT_CMD_NCSISRC(x) ((x) << 24)
-
-#define FW_PORT_CMD_CH0(x) ((x) << 20)
-#define FW_PORT_CMD_CH1(x) ((x) << 16)
-#define FW_PORT_CMD_CH2(x) ((x) << 12)
-#define FW_PORT_CMD_CH3(x) ((x) << 8)
-#define FW_PORT_CMD_NCSICH(x) ((x) << 4)
-=======
 			__u8   auxlinfo;
 			__u8   dcbxdis_pkd;
 			__u8   r8_lo;
@@ -3703,7 +3082,6 @@ struct fw_port_cmd {
 #define FW_PORT_CMD_MTU32_V(x)	((x) << FW_PORT_CMD_MTU32_S)
 #define FW_PORT_CMD_MTU32_G(x)	\
 	(((x) >> FW_PORT_CMD_MTU32_S) & FW_PORT_CMD_MTU32_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum fw_port_type {
 	FW_PORT_TYPE_FIBER_XFI,
@@ -3718,10 +3096,6 @@ enum fw_port_type {
 	FW_PORT_TYPE_SFP,
 	FW_PORT_TYPE_BP_AP,
 	FW_PORT_TYPE_BP4_AP,
-<<<<<<< HEAD
-
-	FW_PORT_TYPE_NONE = FW_PORT_CMD_PTYPE_MASK
-=======
 	FW_PORT_TYPE_QSFP_10G,
 	FW_PORT_TYPE_QSA,
 	FW_PORT_TYPE_QSFP,
@@ -3735,7 +3109,6 @@ enum fw_port_type {
 	FW_PORT_TYPE_KR_XLAUI,
 
 	FW_PORT_TYPE_NONE = FW_PORT_CMD_PTYPE_M
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum fw_port_module_type {
@@ -3746,19 +3119,6 @@ enum fw_port_module_type {
 	FW_PORT_MOD_TYPE_TWINAX_PASSIVE,
 	FW_PORT_MOD_TYPE_TWINAX_ACTIVE,
 	FW_PORT_MOD_TYPE_LRM,
-<<<<<<< HEAD
-
-	FW_PORT_MOD_TYPE_NONE = FW_PORT_CMD_MODTYPE_MASK
-};
-
-/* port stats */
-#define FW_NUM_PORT_STATS 50
-#define FW_NUM_PORT_TX_STATS 23
-#define FW_NUM_PORT_RX_STATS 27
-
-enum fw_port_stats_tx_index {
-	FW_STAT_TX_PORT_BYTES_IX,
-=======
 	FW_PORT_MOD_TYPE_ERROR		= FW_PORT_CMD_MODTYPE_M - 3,
 	FW_PORT_MOD_TYPE_UNKNOWN	= FW_PORT_CMD_MODTYPE_M - 2,
 	FW_PORT_MOD_TYPE_NOTSUPPORTED	= FW_PORT_CMD_MODTYPE_M - 1,
@@ -3787,7 +3147,6 @@ enum fw_port_mod_sub_type {
 
 enum fw_port_stats_tx_index {
 	FW_STAT_TX_PORT_BYTES_IX = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_STAT_TX_PORT_FRAMES_IX,
 	FW_STAT_TX_PORT_BCAST_IX,
 	FW_STAT_TX_PORT_MCAST_IX,
@@ -3809,20 +3168,12 @@ enum fw_port_stats_tx_index {
 	FW_STAT_TX_PORT_PPP4_IX,
 	FW_STAT_TX_PORT_PPP5_IX,
 	FW_STAT_TX_PORT_PPP6_IX,
-<<<<<<< HEAD
-	FW_STAT_TX_PORT_PPP7_IX
-};
-
-enum fw_port_stat_rx_index {
-	FW_STAT_RX_PORT_BYTES_IX,
-=======
 	FW_STAT_TX_PORT_PPP7_IX,
 	FW_NUM_PORT_TX_STATS
 };
 
 enum fw_port_stat_rx_index {
 	FW_STAT_RX_PORT_BYTES_IX = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FW_STAT_RX_PORT_FRAMES_IX,
 	FW_STAT_RX_PORT_BCAST_IX,
 	FW_STAT_RX_PORT_MCAST_IX,
@@ -3848,11 +3199,6 @@ enum fw_port_stat_rx_index {
 	FW_STAT_RX_PORT_PPP5_IX,
 	FW_STAT_RX_PORT_PPP6_IX,
 	FW_STAT_RX_PORT_PPP7_IX,
-<<<<<<< HEAD
-	FW_STAT_RX_PORT_LESS_64B_IX
-};
-
-=======
 	FW_STAT_RX_PORT_LESS_64B_IX,
 	FW_STAT_RX_PORT_MAC_ERROR_IX,
 	FW_NUM_PORT_RX_STATS
@@ -3861,7 +3207,6 @@ enum fw_port_stat_rx_index {
 /* port stats */
 #define FW_NUM_PORT_STATS (FW_NUM_PORT_TX_STATS + FW_NUM_PORT_RX_STATS)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_port_stats_cmd {
 	__be32 op_to_portid;
 	__be32 retval_len16;
@@ -3935,14 +3280,6 @@ struct fw_port_stats_cmd {
 	} u;
 };
 
-<<<<<<< HEAD
-#define FW_PORT_STATS_CMD_NSTATS(x) ((x) << 4)
-#define FW_PORT_STATS_CMD_BG_BM(x) ((x) << 0)
-#define FW_PORT_STATS_CMD_TX(x) ((x) << 7)
-#define FW_PORT_STATS_CMD_IX(x) ((x) << 0)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* port loopback stats */
 #define FW_NUM_LB_STATS 16
 enum fw_port_lb_stats_index {
@@ -3998,16 +3335,6 @@ struct fw_port_lb_stats_cmd {
 	} u;
 };
 
-<<<<<<< HEAD
-#define FW_PORT_LB_STATS_CMD_LBPORT(x) ((x) << 0)
-#define FW_PORT_LB_STATS_CMD_NSTATS(x) ((x) << 4)
-#define FW_PORT_LB_STATS_CMD_BG_BM(x) ((x) << 0)
-#define FW_PORT_LB_STATS_CMD_IX(x) ((x) << 0)
-
-struct fw_rss_ind_tbl_cmd {
-	__be32 op_to_viid;
-#define FW_RSS_IND_TBL_CMD_VIID(x) ((x) << 0)
-=======
 enum fw_ptp_subop {
 	/* none */
 	FW_PTP_SC_INIT_TIMER            = 0x00,
@@ -4058,18 +3385,11 @@ struct fw_ptp_cmd {
 
 struct fw_rss_ind_tbl_cmd {
 	__be32 op_to_viid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 retval_len16;
 	__be16 niqid;
 	__be16 startidx;
 	__be32 r3;
 	__be32 iq0_to_iq2;
-<<<<<<< HEAD
-#define FW_RSS_IND_TBL_CMD_IQ0(x) ((x) << 20)
-#define FW_RSS_IND_TBL_CMD_IQ1(x) ((x) << 10)
-#define FW_RSS_IND_TBL_CMD_IQ2(x) ((x) << 0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 iq3_to_iq5;
 	__be32 iq6_to_iq8;
 	__be32 iq9_to_iq11;
@@ -4083,8 +3403,6 @@ struct fw_rss_ind_tbl_cmd {
 	__be32 r15_lo;
 };
 
-<<<<<<< HEAD
-=======
 #define FW_RSS_IND_TBL_CMD_VIID_S	0
 #define FW_RSS_IND_TBL_CMD_VIID_V(x)	((x) << FW_RSS_IND_TBL_CMD_VIID_S)
 
@@ -4097,7 +3415,6 @@ struct fw_rss_ind_tbl_cmd {
 #define FW_RSS_IND_TBL_CMD_IQ2_S	0
 #define FW_RSS_IND_TBL_CMD_IQ2_V(x)	((x) << FW_RSS_IND_TBL_CMD_IQ2_S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_rss_glb_config_cmd {
 	__be32 op_to_write;
 	__be32 retval_len16;
@@ -4111,40 +3428,21 @@ struct fw_rss_glb_config_cmd {
 		struct fw_rss_glb_config_basicvirtual {
 			__be32 mode_pkd;
 			__be32 synmapen_to_hashtoeplitz;
-<<<<<<< HEAD
-#define FW_RSS_GLB_CONFIG_CMD_SYNMAPEN      (1U << 8)
-#define FW_RSS_GLB_CONFIG_CMD_SYN4TUPENIPV6 (1U << 7)
-#define FW_RSS_GLB_CONFIG_CMD_SYN2TUPENIPV6 (1U << 6)
-#define FW_RSS_GLB_CONFIG_CMD_SYN4TUPENIPV4 (1U << 5)
-#define FW_RSS_GLB_CONFIG_CMD_SYN2TUPENIPV4 (1U << 4)
-#define FW_RSS_GLB_CONFIG_CMD_OFDMAPEN      (1U << 3)
-#define FW_RSS_GLB_CONFIG_CMD_TNLMAPEN      (1U << 2)
-#define FW_RSS_GLB_CONFIG_CMD_TNLALLLKP     (1U << 1)
-#define FW_RSS_GLB_CONFIG_CMD_HASHTOEPLITZ  (1U << 0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__be64 r8;
 			__be64 r9;
 		} basicvirtual;
 	} u;
 };
 
-<<<<<<< HEAD
-#define FW_RSS_GLB_CONFIG_CMD_MODE(x)	((x) << 28)
-#define FW_RSS_GLB_CONFIG_CMD_MODE_GET(x) (((x) >> 28) & 0xf)
-=======
 #define FW_RSS_GLB_CONFIG_CMD_MODE_S	28
 #define FW_RSS_GLB_CONFIG_CMD_MODE_M	0xf
 #define FW_RSS_GLB_CONFIG_CMD_MODE_V(x)	((x) << FW_RSS_GLB_CONFIG_CMD_MODE_S)
 #define FW_RSS_GLB_CONFIG_CMD_MODE_G(x)	\
 	(((x) >> FW_RSS_GLB_CONFIG_CMD_MODE_S) & FW_RSS_GLB_CONFIG_CMD_MODE_M)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FW_RSS_GLB_CONFIG_CMD_MODE_MANUAL	0
 #define FW_RSS_GLB_CONFIG_CMD_MODE_BASICVIRTUAL	1
 
-<<<<<<< HEAD
-=======
 #define FW_RSS_GLB_CONFIG_CMD_SYNMAPEN_S	8
 #define FW_RSS_GLB_CONFIG_CMD_SYNMAPEN_V(x)	\
 	((x) << FW_RSS_GLB_CONFIG_CMD_SYNMAPEN_S)
@@ -4199,7 +3497,6 @@ struct fw_rss_glb_config_cmd {
 #define FW_RSS_GLB_CONFIG_CMD_HASHTOEPLITZ_F	\
 	FW_RSS_GLB_CONFIG_CMD_HASHTOEPLITZ_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fw_rss_vi_config_cmd {
 	__be32 op_to_viid;
 #define FW_RSS_VI_CONFIG_CMD_VIID(x) ((x) << 0)
@@ -4213,24 +3510,12 @@ struct fw_rss_vi_config_cmd {
 		struct fw_rss_vi_config_basicvirtual {
 			__be32 r6;
 			__be32 defaultq_to_udpen;
-<<<<<<< HEAD
-#define FW_RSS_VI_CONFIG_CMD_DEFAULTQ(x)  ((x) << 16)
-#define FW_RSS_VI_CONFIG_CMD_DEFAULTQ_GET(x) (((x) >> 16) & 0x3ff)
-#define FW_RSS_VI_CONFIG_CMD_IP6FOURTUPEN (1U << 4)
-#define FW_RSS_VI_CONFIG_CMD_IP6TWOTUPEN  (1U << 3)
-#define FW_RSS_VI_CONFIG_CMD_IP4FOURTUPEN (1U << 2)
-#define FW_RSS_VI_CONFIG_CMD_IP4TWOTUPEN  (1U << 1)
-#define FW_RSS_VI_CONFIG_CMD_UDPEN        (1U << 0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__be64 r9;
 			__be64 r10;
 		} basicvirtual;
 	} u;
 };
 
-<<<<<<< HEAD
-=======
 #define FW_RSS_VI_CONFIG_CMD_VIID_S	0
 #define FW_RSS_VI_CONFIG_CMD_VIID_V(x)	((x) << FW_RSS_VI_CONFIG_CMD_VIID_S)
 
@@ -4321,7 +3606,6 @@ struct fw_clip_cmd {
 #define FW_CLIP_CMD_FREE_V(x)   ((x) << FW_CLIP_CMD_FREE_S)
 #define FW_CLIP_CMD_FREE_F      FW_CLIP_CMD_FREE_V(1U)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum fw_error_type {
 	FW_ERROR_TYPE_EXCEPTION		= 0x0,
 	FW_ERROR_TYPE_HWMODULE		= 0x1,
@@ -4359,10 +3643,6 @@ struct fw_error_cmd {
 
 struct fw_debug_cmd {
 	__be32 op_type;
-<<<<<<< HEAD
-#define FW_DEBUG_CMD_TYPE_GET(x) ((x) & 0xff)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 len16_pkd;
 	union fw_debug {
 		struct fw_debug_assert {
@@ -4385,11 +3665,6 @@ struct fw_debug_cmd {
 	} u;
 };
 
-<<<<<<< HEAD
-struct fw_hdr {
-	u8 ver;
-	u8 reserved1;
-=======
 #define FW_DEBUG_CMD_TYPE_S	0
 #define FW_DEBUG_CMD_TYPE_M	0xff
 #define FW_DEBUG_CMD_TYPE_G(x)	\
@@ -4480,7 +3755,6 @@ enum pcie_fw_eval {
 struct fw_hdr {
 	u8 ver;
 	u8 chip;			/* terminator chip type */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be16	len512;			/* bin length in units of 512-bytes */
 	__be32	fw_ver;			/* firmware version */
 	__be32	tp_microcode_ver;
@@ -4490,17 +3764,6 @@ struct fw_hdr {
 	u8 intfver_ri;
 	u8 intfver_iscsipdu;
 	u8 intfver_iscsi;
-<<<<<<< HEAD
-	u8 intfver_fcoe;
-	u8 reserved2;
-	__be32  reserved3[27];
-};
-
-#define FW_HDR_FW_VER_MAJOR_GET(x) (((x) >> 24) & 0xff)
-#define FW_HDR_FW_VER_MINOR_GET(x) (((x) >> 16) & 0xff)
-#define FW_HDR_FW_VER_MICRO_GET(x) (((x) >> 8) & 0xff)
-#define FW_HDR_FW_VER_BUILD_GET(x) (((x) >> 0) & 0xff)
-=======
 	u8 intfver_fcoepdu;
 	u8 intfver_fcoe;
 	__u32   reserved2;
@@ -4921,5 +4184,4 @@ struct fw_tlstx_data_wr {
 #define FW_TLSTX_DATA_WR_PDUSINPLENMAX_V(x) \
 	((x) << FW_TLSTX_DATA_WR_PDUSINPLENMAX_S)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _T4FW_INTERFACE_H_ */

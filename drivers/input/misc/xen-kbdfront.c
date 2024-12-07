@@ -17,10 +17,7 @@
 #include <linux/errno.h>
 #include <linux/module.h>
 #include <linux/input.h>
-<<<<<<< HEAD
-=======
 #include <linux/input/mt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <asm/xen/hypervisor.h>
@@ -33,28 +30,17 @@
 #include <xen/interface/io/fbif.h>
 #include <xen/interface/io/kbdif.h>
 #include <xen/xenbus.h>
-<<<<<<< HEAD
-=======
 #include <xen/platform_pci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xenkbd_info {
 	struct input_dev *kbd;
 	struct input_dev *ptr;
-<<<<<<< HEAD
-=======
 	struct input_dev *mtouch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct xenkbd_page *page;
 	int gref;
 	int irq;
 	struct xenbus_device *xbdev;
 	char phys[32];
-<<<<<<< HEAD
-};
-
-static int xenkbd_remove(struct xenbus_device *);
-=======
 	/* current MT slot/contact ID we are injecting events in */
 	int mtouch_cur_contact_id;
 };
@@ -66,7 +52,6 @@ MODULE_PARM_DESC(ptr_size,
 	"Pointing device width, height in pixels (default 800,600)");
 
 static void xenkbd_remove(struct xenbus_device *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int xenkbd_connect_backend(struct xenbus_device *, struct xenkbd_info *);
 static void xenkbd_disconnect_backend(struct xenkbd_info *);
 
@@ -75,8 +60,6 @@ static void xenkbd_disconnect_backend(struct xenkbd_info *);
  * to do that.
  */
 
-<<<<<<< HEAD
-=======
 static void xenkbd_handle_motion_event(struct xenkbd_info *info,
 				       struct xenkbd_motion *motion)
 {
@@ -195,7 +178,6 @@ static void xenkbd_handle_event(struct xenkbd_info *info,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t input_handler(int rq, void *dev_id)
 {
 	struct xenkbd_info *info = dev_id;
@@ -206,49 +188,8 @@ static irqreturn_t input_handler(int rq, void *dev_id)
 	if (prod == page->in_cons)
 		return IRQ_HANDLED;
 	rmb();			/* ensure we see ring contents up to prod */
-<<<<<<< HEAD
-	for (cons = page->in_cons; cons != prod; cons++) {
-		union xenkbd_in_event *event;
-		struct input_dev *dev;
-		event = &XENKBD_IN_RING_REF(page, cons);
-
-		dev = info->ptr;
-		switch (event->type) {
-		case XENKBD_TYPE_MOTION:
-			input_report_rel(dev, REL_X, event->motion.rel_x);
-			input_report_rel(dev, REL_Y, event->motion.rel_y);
-			if (event->motion.rel_z)
-				input_report_rel(dev, REL_WHEEL,
-						 -event->motion.rel_z);
-			break;
-		case XENKBD_TYPE_KEY:
-			dev = NULL;
-			if (test_bit(event->key.keycode, info->kbd->keybit))
-				dev = info->kbd;
-			if (test_bit(event->key.keycode, info->ptr->keybit))
-				dev = info->ptr;
-			if (dev)
-				input_report_key(dev, event->key.keycode,
-						 event->key.pressed);
-			else
-				pr_warning("unhandled keycode 0x%x\n",
-					   event->key.keycode);
-			break;
-		case XENKBD_TYPE_POS:
-			input_report_abs(dev, ABS_X, event->pos.abs_x);
-			input_report_abs(dev, ABS_Y, event->pos.abs_y);
-			if (event->pos.rel_z)
-				input_report_rel(dev, REL_WHEEL,
-						 -event->pos.rel_z);
-			break;
-		}
-		if (dev)
-			input_sync(dev);
-	}
-=======
 	for (cons = page->in_cons; cons != prod; cons++)
 		xenkbd_handle_event(info, &XENKBD_IN_RING_REF(page, cons));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb();			/* ensure we got ring contents */
 	page->in_cons = cons;
 	notify_remote_via_irq(info->irq);
@@ -256,14 +197,6 @@ static irqreturn_t input_handler(int rq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static int __devinit xenkbd_probe(struct xenbus_device *dev,
-				  const struct xenbus_device_id *id)
-{
-	int ret, i, abs;
-	struct xenkbd_info *info;
-	struct input_dev *kbd, *ptr;
-=======
 static int xenkbd_probe(struct xenbus_device *dev,
 				  const struct xenbus_device_id *id)
 {
@@ -271,7 +204,6 @@ static int xenkbd_probe(struct xenbus_device *dev,
 	bool with_mtouch, with_kbd, with_ptr;
 	struct xenkbd_info *info;
 	struct input_dev *kbd, *ptr, *mtouch;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (!info) {
@@ -288,68 +220,6 @@ static int xenkbd_probe(struct xenbus_device *dev,
 	if (!info->page)
 		goto error_nomem;
 
-<<<<<<< HEAD
-	if (xenbus_scanf(XBT_NIL, dev->otherend, "feature-abs-pointer", "%d", &abs) < 0)
-		abs = 0;
-	if (abs)
-		xenbus_printf(XBT_NIL, dev->nodename, "request-abs-pointer", "1");
-
-	/* keyboard */
-	kbd = input_allocate_device();
-	if (!kbd)
-		goto error_nomem;
-	kbd->name = "Xen Virtual Keyboard";
-	kbd->phys = info->phys;
-	kbd->id.bustype = BUS_PCI;
-	kbd->id.vendor = 0x5853;
-	kbd->id.product = 0xffff;
-
-	__set_bit(EV_KEY, kbd->evbit);
-	for (i = KEY_ESC; i < KEY_UNKNOWN; i++)
-		__set_bit(i, kbd->keybit);
-	for (i = KEY_OK; i < KEY_MAX; i++)
-		__set_bit(i, kbd->keybit);
-
-	ret = input_register_device(kbd);
-	if (ret) {
-		input_free_device(kbd);
-		xenbus_dev_fatal(dev, ret, "input_register_device(kbd)");
-		goto error;
-	}
-	info->kbd = kbd;
-
-	/* pointing device */
-	ptr = input_allocate_device();
-	if (!ptr)
-		goto error_nomem;
-	ptr->name = "Xen Virtual Pointer";
-	ptr->phys = info->phys;
-	ptr->id.bustype = BUS_PCI;
-	ptr->id.vendor = 0x5853;
-	ptr->id.product = 0xfffe;
-
-	if (abs) {
-		__set_bit(EV_ABS, ptr->evbit);
-		input_set_abs_params(ptr, ABS_X, 0, XENFB_WIDTH, 0, 0);
-		input_set_abs_params(ptr, ABS_Y, 0, XENFB_HEIGHT, 0, 0);
-	} else {
-		input_set_capability(ptr, EV_REL, REL_X);
-		input_set_capability(ptr, EV_REL, REL_Y);
-	}
-	input_set_capability(ptr, EV_REL, REL_WHEEL);
-
-	__set_bit(EV_KEY, ptr->evbit);
-	for (i = BTN_LEFT; i <= BTN_TASK; i++)
-		__set_bit(i, ptr->keybit);
-
-	ret = input_register_device(ptr);
-	if (ret) {
-		input_free_device(ptr);
-		xenbus_dev_fatal(dev, ret, "input_register_device(ptr)");
-		goto error;
-	}
-	info->ptr = ptr;
-=======
 	/*
 	 * The below are reverse logic, e.g. if the feature is set, then
 	 * do not expose the corresponding virtual device.
@@ -510,7 +380,6 @@ static int xenkbd_probe(struct xenbus_device *dev,
 		ret = -ENXIO;
 		goto error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = xenkbd_connect_backend(dev, info);
 	if (ret < 0)
@@ -535,11 +404,7 @@ static int xenkbd_resume(struct xenbus_device *dev)
 	return xenkbd_connect_backend(dev, info);
 }
 
-<<<<<<< HEAD
-static int xenkbd_remove(struct xenbus_device *dev)
-=======
 static void xenkbd_remove(struct xenbus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xenkbd_info *info = dev_get_drvdata(&dev->dev);
 
@@ -548,16 +413,10 @@ static void xenkbd_remove(struct xenbus_device *dev)
 		input_unregister_device(info->kbd);
 	if (info->ptr)
 		input_unregister_device(info->ptr);
-<<<<<<< HEAD
-	free_page((unsigned long)info->page);
-	kfree(info);
-	return 0;
-=======
 	if (info->mtouch)
 		input_unregister_device(info->mtouch);
 	free_page((unsigned long)info->page);
 	kfree(info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xenkbd_connect_backend(struct xenbus_device *dev,
@@ -567,11 +426,7 @@ static int xenkbd_connect_backend(struct xenbus_device *dev,
 	struct xenbus_transaction xbt;
 
 	ret = gnttab_grant_foreign_access(dev->otherend_id,
-<<<<<<< HEAD
-	                                  virt_to_mfn(info->page), 0);
-=======
 	                                  virt_to_gfn(info->page), 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 	info->gref = ret;
@@ -593,16 +448,6 @@ static int xenkbd_connect_backend(struct xenbus_device *dev,
 		xenbus_dev_fatal(dev, ret, "starting transaction");
 		goto error_irqh;
 	}
-<<<<<<< HEAD
-	ret = xenbus_printf(xbt, dev->nodename, "page-ref", "%lu",
-			    virt_to_mfn(info->page));
-	if (ret)
-		goto error_xenbus;
-	ret = xenbus_printf(xbt, dev->nodename, "page-gref", "%u", info->gref);
-	if (ret)
-		goto error_xenbus;
-	ret = xenbus_printf(xbt, dev->nodename, "event-channel", "%u",
-=======
 	ret = xenbus_printf(xbt, dev->nodename, XENKBD_FIELD_RING_REF, "%lu",
 			    virt_to_gfn(info->page));
 	if (ret)
@@ -612,7 +457,6 @@ static int xenkbd_connect_backend(struct xenbus_device *dev,
 	if (ret)
 		goto error_xenbus;
 	ret = xenbus_printf(xbt, dev->nodename, XENKBD_FIELD_EVT_CHANNEL, "%u",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    evtchn);
 	if (ret)
 		goto error_xenbus;
@@ -636,11 +480,7 @@ static int xenkbd_connect_backend(struct xenbus_device *dev,
  error_evtchan:
 	xenbus_free_evtchn(dev, evtchn);
  error_grant:
-<<<<<<< HEAD
-	gnttab_end_foreign_access_ref(info->gref, 0);
-=======
 	gnttab_end_foreign_access(info->gref, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->gref = -1;
 	return ret;
 }
@@ -651,51 +491,22 @@ static void xenkbd_disconnect_backend(struct xenkbd_info *info)
 		unbind_from_irqhandler(info->irq, info);
 	info->irq = -1;
 	if (info->gref >= 0)
-<<<<<<< HEAD
-		gnttab_end_foreign_access_ref(info->gref, 0);
-=======
 		gnttab_end_foreign_access(info->gref, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->gref = -1;
 }
 
 static void xenkbd_backend_changed(struct xenbus_device *dev,
 				   enum xenbus_state backend_state)
 {
-<<<<<<< HEAD
-	struct xenkbd_info *info = dev_get_drvdata(&dev->dev);
-	int ret, val;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (backend_state) {
 	case XenbusStateInitialising:
 	case XenbusStateInitialised:
 	case XenbusStateReconfiguring:
 	case XenbusStateReconfigured:
 	case XenbusStateUnknown:
-<<<<<<< HEAD
-	case XenbusStateClosed:
 		break;
 
 	case XenbusStateInitWait:
-InitWait:
-		ret = xenbus_scanf(XBT_NIL, info->xbdev->otherend,
-				   "feature-abs-pointer", "%d", &val);
-		if (ret < 0)
-			val = 0;
-		if (val) {
-			ret = xenbus_printf(XBT_NIL, info->xbdev->nodename,
-					    "request-abs-pointer", "1");
-			if (ret)
-				pr_warning("xenkbd: can't request abs-pointer");
-		}
-
-=======
-		break;
-
-	case XenbusStateInitWait:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xenbus_switch_state(dev, XenbusStateConnected);
 		break;
 
@@ -706,21 +517,6 @@ InitWait:
 		 * get Connected twice here.
 		 */
 		if (dev->state != XenbusStateConnected)
-<<<<<<< HEAD
-			goto InitWait; /* no InitWait seen yet, fudge it */
-
-		/* Set input abs params to match backend screen res */
-		if (xenbus_scanf(XBT_NIL, info->xbdev->otherend,
-				 "width", "%d", &val) > 0)
-			input_set_abs_params(info->ptr, ABS_X, 0, val, 0, 0);
-
-		if (xenbus_scanf(XBT_NIL, info->xbdev->otherend,
-				 "height", "%d", &val) > 0)
-			input_set_abs_params(info->ptr, ABS_Y, 0, val, 0, 0);
-
-		break;
-
-=======
 			xenbus_switch_state(dev, XenbusStateConnected);
 		break;
 
@@ -728,7 +524,6 @@ InitWait:
 		if (dev->state == XenbusStateClosed)
 			break;
 		fallthrough;	/* Missed the backend's CLOSING state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case XenbusStateClosing:
 		xenbus_frontend_closed(dev);
 		break;
@@ -736,30 +531,18 @@ InitWait:
 }
 
 static const struct xenbus_device_id xenkbd_ids[] = {
-<<<<<<< HEAD
-	{ "vkbd" },
-	{ "" }
-};
-
-static DEFINE_XENBUS_DRIVER(xenkbd, ,
-=======
 	{ XENKBD_DRIVER_NAME },
 	{ "" }
 };
 
 static struct xenbus_driver xenkbd_driver = {
 	.ids = xenkbd_ids,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe = xenkbd_probe,
 	.remove = xenkbd_remove,
 	.resume = xenkbd_resume,
 	.otherend_changed = xenkbd_backend_changed,
-<<<<<<< HEAD
-);
-=======
 	.not_essential = true,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init xenkbd_init(void)
 {
@@ -770,12 +553,9 @@ static int __init xenkbd_init(void)
 	if (xen_initial_domain())
 		return -ENODEV;
 
-<<<<<<< HEAD
-=======
 	if (!xen_has_pv_devices())
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xenbus_register_frontend(&xenkbd_driver);
 }
 
@@ -789,8 +569,4 @@ module_exit(xenkbd_cleanup);
 
 MODULE_DESCRIPTION("Xen virtual keyboard/pointer device frontend");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS("xen:vkbd");
-=======
 MODULE_ALIAS("xen:" XENKBD_DRIVER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

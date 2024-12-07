@@ -4,29 +4,18 @@
  *
  * Copyright 2005, Broadcom Corporation
  * Copyright 2006, 2007, Michael Buesch <m@bues.ch>
-<<<<<<< HEAD
-=======
  * Copyright 2012, Hauke Mehrtens <hauke@hauke-m.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Licensed under the GNU/GPL. See COPYING for details.
  */
 
-<<<<<<< HEAD
-=======
 #include "ssb_private.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ssb/ssb.h>
 #include <linux/ssb/ssb_regs.h>
 #include <linux/export.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-
-#include "ssb_private.h"
-=======
 #include <linux/bcm47xx_wdt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Clock sources */
@@ -67,11 +56,7 @@ void ssb_chipco_set_clockmode(struct ssb_chipcommon *cc,
 
 	if (cc->capabilities & SSB_CHIPCO_CAP_PMU)
 		return; /* PMU controls clockmode, separated function needed */
-<<<<<<< HEAD
-	SSB_WARN_ON(ccdev->id.revision >= 20);
-=======
 	WARN_ON(ccdev->id.revision >= 20);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* chipcommon cores prior to rev6 don't support dynamic clock control */
 	if (ccdev->id.revision < 6)
@@ -126,11 +111,7 @@ void ssb_chipco_set_clockmode(struct ssb_chipcommon *cc,
 		}
 		break;
 	default:
-<<<<<<< HEAD
-		SSB_WARN_ON(1);
-=======
 		WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -138,11 +119,7 @@ void ssb_chipco_set_clockmode(struct ssb_chipcommon *cc,
 static enum ssb_clksrc chipco_pctl_get_slowclksrc(struct ssb_chipcommon *cc)
 {
 	struct ssb_bus *bus = cc->dev->bus;
-<<<<<<< HEAD
-	u32 uninitialized_var(tmp);
-=======
 	u32 tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cc->dev->id.revision < 6) {
 		if (bus->bustype == SSB_BUSTYPE_SSB ||
@@ -172,11 +149,7 @@ static enum ssb_clksrc chipco_pctl_get_slowclksrc(struct ssb_chipcommon *cc)
 /* Get maximum or minimum (depending on get_max flag) slowclock frequency. */
 static int chipco_pctl_clockfreqlimit(struct ssb_chipcommon *cc, int get_max)
 {
-<<<<<<< HEAD
-	int uninitialized_var(limit);
-=======
 	int limit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum ssb_clksrc clocksrc;
 	int divisor = 1;
 	u32 tmp;
@@ -191,11 +164,7 @@ static int chipco_pctl_clockfreqlimit(struct ssb_chipcommon *cc, int get_max)
 			divisor = 32;
 			break;
 		default:
-<<<<<<< HEAD
-			SSB_WARN_ON(1);
-=======
 			WARN_ON(1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (cc->dev->id.revision < 10) {
 		switch (clocksrc) {
@@ -269,11 +238,7 @@ static void chipco_powercontrol_init(struct ssb_chipcommon *cc)
 	}
 }
 
-<<<<<<< HEAD
-/* http://bcm-v4.sipsolutions.net/802.11/PmuFastPwrupDelay */
-=======
 /* https://bcm-v4.sipsolutions.net/802.11/PmuFastPwrupDelay */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u16 pmu_fast_powerup_delay(struct ssb_chipcommon *cc)
 {
 	struct ssb_bus *bus = cc->dev->bus;
@@ -290,11 +255,7 @@ static u16 pmu_fast_powerup_delay(struct ssb_chipcommon *cc)
 	}
 }
 
-<<<<<<< HEAD
-/* http://bcm-v4.sipsolutions.net/802.11/ClkctlFastPwrupDelay */
-=======
 /* https://bcm-v4.sipsolutions.net/802.11/ClkctlFastPwrupDelay */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void calc_fast_powerup_delay(struct ssb_chipcommon *cc)
 {
 	struct ssb_bus *bus = cc->dev->bus;
@@ -316,17 +277,11 @@ static void calc_fast_powerup_delay(struct ssb_chipcommon *cc)
 	minfreq = chipco_pctl_clockfreqlimit(cc, 0);
 	pll_on_delay = chipco_read32(cc, SSB_CHIPCO_PLLONDELAY);
 	tmp = (((pll_on_delay + 2) * 1000000) + (minfreq - 1)) / minfreq;
-<<<<<<< HEAD
-	SSB_WARN_ON(tmp & ~0xFFFF);
-=======
 	WARN_ON(tmp & ~0xFFFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cc->fast_pwrup_delay = tmp;
 }
 
-<<<<<<< HEAD
-=======
 static u32 ssb_chipco_alp_clock(struct ssb_chipcommon *cc)
 {
 	if (cc->capabilities & SSB_CHIPCO_CAP_PMU)
@@ -390,23 +345,16 @@ static int ssb_chipco_watchdog_ticks_per_ms(struct ssb_chipcommon *cc)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ssb_chipcommon_init(struct ssb_chipcommon *cc)
 {
 	if (!cc->dev)
 		return; /* We don't have a ChipCommon */
-<<<<<<< HEAD
-	if (cc->dev->id.revision >= 11)
-		cc->status = chipco_read32(cc, SSB_CHIPCO_CHIPSTAT);
-	ssb_dprintk(KERN_INFO PFX "chipcommon status is 0x%x\n", cc->status);
-=======
 
 	spin_lock_init(&cc->gpio_lock);
 
 	if (cc->dev->id.revision >= 11)
 		cc->status = chipco_read32(cc, SSB_CHIPCO_CHIPSTAT);
 	dev_dbg(cc->dev->dev, "chipcommon status is 0x%x\n", cc->status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cc->dev->id.revision >= 20) {
 		chipco_write32(cc, SSB_CHIPCO_GPIOPULLUP, 0);
@@ -417,14 +365,11 @@ void ssb_chipcommon_init(struct ssb_chipcommon *cc)
 	chipco_powercontrol_init(cc);
 	ssb_chipco_set_clockmode(cc, SSB_CLKMODE_FAST);
 	calc_fast_powerup_delay(cc);
-<<<<<<< HEAD
-=======
 
 	if (cc->dev->bus->bustype == SSB_BUSTYPE_SSB) {
 		cc->ticks_per_ms = ssb_chipco_watchdog_ticks_per_ms(cc);
 		cc->max_timer_ms = ssb_chipco_watchdog_get_max_timer(cc) / cc->ticks_per_ms;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ssb_chipco_suspend(struct ssb_chipcommon *cc)
@@ -480,11 +425,7 @@ void ssb_chipco_get_clockcontrol(struct ssb_chipcommon *cc,
 			*m = chipco_read32(cc, SSB_CHIPCO_CLOCK_M2);
 			break;
 		}
-<<<<<<< HEAD
-		/* Fallthough */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		*m = chipco_read32(cc, SSB_CHIPCO_CLOCK_SB);
 	}
@@ -527,12 +468,6 @@ void ssb_chipco_timing_init(struct ssb_chipcommon *cc,
 }
 
 /* Set chip watchdog reset timer to fire in 'ticks' backplane cycles */
-<<<<<<< HEAD
-void ssb_chipco_watchdog_timer_set(struct ssb_chipcommon *cc, u32 ticks)
-{
-	/* instant NMI */
-	chipco_write32(cc, SSB_CHIPCO_WATCHDOG, ticks);
-=======
 u32 ssb_chipco_watchdog_timer_set(struct ssb_chipcommon *cc, u32 ticks)
 {
 	u32 maxt;
@@ -554,7 +489,6 @@ u32 ssb_chipco_watchdog_timer_set(struct ssb_chipcommon *cc, u32 ticks)
 		chipco_write32(cc, SSB_CHIPCO_WATCHDOG, ticks);
 	}
 	return ticks;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ssb_chipco_irq_mask(struct ssb_chipcommon *cc, u32 mask, u32 value)
@@ -574,9 +508,6 @@ u32 ssb_chipco_gpio_in(struct ssb_chipcommon *cc, u32 mask)
 
 u32 ssb_chipco_gpio_out(struct ssb_chipcommon *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return chipco_write32_masked(cc, SSB_CHIPCO_GPIOOUT, mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -585,14 +516,10 @@ u32 ssb_chipco_gpio_out(struct ssb_chipcommon *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_chipco_gpio_outen(struct ssb_chipcommon *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return chipco_write32_masked(cc, SSB_CHIPCO_GPIOOUTEN, mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -601,14 +528,10 @@ u32 ssb_chipco_gpio_outen(struct ssb_chipcommon *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_chipco_gpio_control(struct ssb_chipcommon *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return chipco_write32_masked(cc, SSB_CHIPCO_GPIOCTL, mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -617,15 +540,11 @@ u32 ssb_chipco_gpio_control(struct ssb_chipcommon *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ssb_chipco_gpio_control);
 
 u32 ssb_chipco_gpio_intmask(struct ssb_chipcommon *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return chipco_write32_masked(cc, SSB_CHIPCO_GPIOIRQ, mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -634,14 +553,10 @@ u32 ssb_chipco_gpio_intmask(struct ssb_chipcommon *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 ssb_chipco_gpio_polarity(struct ssb_chipcommon *cc, u32 mask, u32 value)
 {
-<<<<<<< HEAD
-	return chipco_write32_masked(cc, SSB_CHIPCO_GPIOPOL, mask, value);
-=======
 	unsigned long flags;
 	u32 res = 0;
 
@@ -680,7 +595,6 @@ u32 ssb_chipco_gpio_pulldown(struct ssb_chipcommon *cc, u32 mask, u32 value)
 	spin_unlock_irqrestore(&cc->gpio_lock, flags);
 
 	return res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SSB_SERIAL
@@ -714,16 +628,7 @@ int ssb_chipco_serial_init(struct ssb_chipcommon *cc,
 				       chipco_read32(cc, SSB_CHIPCO_CORECTL)
 				       | SSB_CHIPCO_CORECTL_UARTCLK0);
 		} else if ((ccrev >= 11) && (ccrev != 15)) {
-<<<<<<< HEAD
-			/* Fixed ALP clock */
-			baud_base = 20000000;
-			if (cc->capabilities & SSB_CHIPCO_CAP_PMU) {
-				/* FIXME: baud_base is different for devices with a PMU */
-				SSB_WARN_ON(1);
-			}
-=======
 			baud_base = ssb_chipco_alp_clock(cc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			div = 1;
 			if (ccrev >= 21) {
 				/* Turn off UART clock before switching clocksource. */

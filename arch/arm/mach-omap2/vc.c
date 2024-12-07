@@ -1,42 +1,24 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP Voltage Controller (VC) interface
  *
  * Copyright (C) 2011 Texas Instruments, Inc.
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/bug.h>
-<<<<<<< HEAD
-
-#include <plat/cpu.h>
-
-=======
 #include <linux/io.h>
 
 #include <asm/div64.h>
 
 #include "iomap.h"
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "voltage.h"
 #include "vc.h"
 #include "prm-regbits-34xx.h"
 #include "prm-regbits-44xx.h"
 #include "prm44xx.h"
-<<<<<<< HEAD
-=======
 #include "pm.h"
 #include "scrm44xx.h"
 #include "control.h"
@@ -65,7 +47,6 @@
 
 #define OMAP4_VDD_RET_VAL	\
 	(OMAP4_VDD_DEFAULT_VAL & ~OMAP4430_VDD_I2C_DISABLE_MASK)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct omap_vc_channel_cfg - describe the cfg_channel bitfield
@@ -111,12 +92,9 @@ static struct omap_vc_channel_cfg vc_mutant_channel_cfg = {
 };
 
 static struct omap_vc_channel_cfg *vc_cfg_bits;
-<<<<<<< HEAD
-=======
 
 /* Default I2C trace length on pcb, 6.3cm. Used for capacitance calculations. */
 static u32 sr_i2c_pcb_length = 63;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CFG_CHANNEL_MASK 0x1f
 
 /**
@@ -169,14 +147,8 @@ int omap_vc_pre_scale(struct voltagedomain *voltdm,
 	}
 
 	if (!voltdm->pmic->uv_to_vsel) {
-<<<<<<< HEAD
-		pr_err("%s: PMIC function to convert voltage in uV to"
-			"vsel not registered. Hence unable to scale voltage"
-			"for vdd_%s\n", __func__, voltdm->name);
-=======
 		pr_err("%s: PMIC function to convert voltage in uV to vsel not registered. Hence unable to scale voltage for vdd_%s\n",
 		       __func__, voltdm->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODATA;
 	}
 
@@ -195,11 +167,8 @@ int omap_vc_pre_scale(struct voltagedomain *voltdm,
 	vc_cmdval |= (*target_vsel << vc->common->cmd_on_shift);
 	voltdm->write(vc_cmdval, vc->cmdval_reg);
 
-<<<<<<< HEAD
-=======
 	voltdm->vc_param->on = target_volt;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap_vp_update_errorgain(voltdm, target_volt);
 
 	return 0;
@@ -251,11 +220,7 @@ int omap_vc_bypass_scale(struct voltagedomain *voltdm,
 		loop_cnt++;
 
 		if (retries_cnt > 10) {
-<<<<<<< HEAD
-			pr_warning("%s: Retry count exceeded\n", __func__);
-=======
 			pr_warn("%s: Retry count exceeded\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ETIMEDOUT;
 		}
 
@@ -271,17 +236,6 @@ int omap_vc_bypass_scale(struct voltagedomain *voltdm,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __init omap3_vfsm_init(struct voltagedomain *voltdm)
-{
-	/*
-	 * Voltage Manager FSM parameters init
-	 * XXX This data should be passed in from the board file
-	 */
-	voltdm->write(OMAP3_CLKSETUP, OMAP3_PRM_CLKSETUP_OFFSET);
-	voltdm->write(OMAP3_VOLTOFFSET, OMAP3_PRM_VOLTOFFSET_OFFSET);
-	voltdm->write(OMAP3_VOLTSETUP2, OMAP3_PRM_VOLTSETUP2_OFFSET);
-=======
 /* Convert microsecond value to number of 32kHz clock cycles */
 static inline u32 omap_usec_to_32k(u32 usec)
 {
@@ -496,23 +450,10 @@ static void omap3_set_off_timings(struct voltagedomain *voltdm)
 	c->voltsetup2 = clksetup - voltoffset;
 	voltdm->write(clksetup, OMAP3_PRM_CLKSETUP_OFFSET);
 	voltdm->write(voltoffset, OMAP3_PRM_VOLTOFFSET_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init omap3_vc_init_channel(struct voltagedomain *voltdm)
 {
-<<<<<<< HEAD
-	static bool is_initialized;
-
-	if (is_initialized)
-		return;
-
-	omap3_vfsm_init(voltdm);
-
-	is_initialized = true;
-}
-
-=======
 	omap3_vc_init_pmic_signaling(voltdm);
 	omap3_set_off_timings(voltdm);
 	omap3_set_i2c_timings(voltdm);
@@ -651,26 +592,10 @@ static void __init omap4_vc_init_pmic_signaling(struct voltagedomain *voltdm)
 	vc.vd = voltdm;
 	voltdm->write(OMAP4_VDD_DEFAULT_VAL, OMAP4_PRM_VOLTCTRL_OFFSET);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* OMAP4 specific voltage init functions */
 static void __init omap4_vc_init_channel(struct voltagedomain *voltdm)
 {
-<<<<<<< HEAD
-	static bool is_initialized;
-	u32 vc_val;
-
-	if (is_initialized)
-		return;
-
-	/* XXX These are magic numbers and do not belong! */
-	vc_val = (0x60 << OMAP4430_SCLL_SHIFT | 0x26 << OMAP4430_SCLH_SHIFT);
-	voltdm->write(vc_val, OMAP4_PRM_VC_CFG_I2C_CLK_OFFSET);
-
-	is_initialized = true;
-}
-
-=======
 	omap4_vc_init_pmic_signaling(voltdm);
 	omap4_set_timings(voltdm, true);
 	omap4_set_timings(voltdm, false);
@@ -801,7 +726,6 @@ static void __init omap4_vc_i2c_timing_init(struct voltagedomain *voltdm)
 
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * omap_vc_i2c_init - initialize I2C interface to PMIC
  * @voltdm: voltage domain containing VC data
@@ -824,20 +748,11 @@ static void __init omap_vc_i2c_init(struct voltagedomain *voltdm)
 
 	if (initialized) {
 		if (voltdm->pmic->i2c_high_speed != i2c_high_speed)
-<<<<<<< HEAD
-			pr_warn("%s: I2C config for vdd_%s does not match other channels (%u).",
-=======
 			pr_warn("%s: I2C config for vdd_%s does not match other channels (%u).\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, voltdm->name, i2c_high_speed);
 		return;
 	}
 
-<<<<<<< HEAD
-	i2c_high_speed = voltdm->pmic->i2c_high_speed;
-	if (i2c_high_speed)
-		voltdm->rmw(vc->common->i2c_cfg_hsen_mask,
-=======
 	/*
 	 * Note that for omap3 OMAP3430_SREN_MASK clears SREN to work around
 	 * erratum i531 "Extra Power Consumed When Repeated Start Operation
@@ -848,7 +763,6 @@ static void __init omap_vc_i2c_init(struct voltagedomain *voltdm)
 	i2c_high_speed = voltdm->pmic->i2c_high_speed;
 	if (i2c_high_speed)
 		voltdm->rmw(vc->common->i2c_cfg_clear_mask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    vc->common->i2c_cfg_hsen_mask,
 			    vc->common->i2c_cfg_reg);
 
@@ -858,11 +772,6 @@ static void __init omap_vc_i2c_init(struct voltagedomain *voltdm)
 			    mcode << __ffs(vc->common->i2c_mcode_mask),
 			    vc->common->i2c_cfg_reg);
 
-<<<<<<< HEAD
-	initialized = true;
-}
-
-=======
 	if (cpu_is_omap44xx())
 		omap4_vc_i2c_timing_init(voltdm);
 
@@ -893,7 +802,6 @@ static u8 omap_vc_calc_vsel(struct voltagedomain *voltdm, u32 uvolt)
 	return voltdm->pmic->uv_to_vsel(uvolt);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init omap_vc_init_channel(struct voltagedomain *voltdm)
 {
 	struct omap_vc_channel *vc = voltdm->vc;
@@ -921,10 +829,6 @@ void __init omap_vc_init_channel(struct voltagedomain *voltdm)
 	vc->i2c_slave_addr = voltdm->pmic->i2c_slave_addr;
 	vc->volt_reg_addr = voltdm->pmic->volt_reg_addr;
 	vc->cmd_reg_addr = voltdm->pmic->cmd_reg_addr;
-<<<<<<< HEAD
-	vc->setup_time = voltdm->pmic->volt_setup_time;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Configure the i2c slave address for this VC */
 	voltdm->rmw(vc->smps_sa_mask,
@@ -944,16 +848,6 @@ void __init omap_vc_init_channel(struct voltagedomain *voltdm)
 		voltdm->rmw(vc->smps_cmdra_mask,
 			    vc->cmd_reg_addr << __ffs(vc->smps_cmdra_mask),
 			    vc->smps_cmdra_reg);
-<<<<<<< HEAD
-		vc->cfg_channel |= vc_cfg_bits->rac | vc_cfg_bits->racen;
-	}
-
-	/* Set up the on, inactive, retention and off voltage */
-	on_vsel = voltdm->pmic->uv_to_vsel(voltdm->pmic->on_volt);
-	onlp_vsel = voltdm->pmic->uv_to_vsel(voltdm->pmic->onlp_volt);
-	ret_vsel = voltdm->pmic->uv_to_vsel(voltdm->pmic->ret_volt);
-	off_vsel = voltdm->pmic->uv_to_vsel(voltdm->pmic->off_volt);
-=======
 		vc->cfg_channel |= vc_cfg_bits->rac;
 	}
 
@@ -966,7 +860,6 @@ void __init omap_vc_init_channel(struct voltagedomain *voltdm)
 	ret_vsel = omap_vc_calc_vsel(voltdm, voltdm->vc_param->ret);
 	off_vsel = omap_vc_calc_vsel(voltdm, voltdm->vc_param->off);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = ((on_vsel << vc->common->cmd_on_shift) |
 	       (onlp_vsel << vc->common->cmd_onlp_shift) |
 	       (ret_vsel << vc->common->cmd_ret_shift) |
@@ -977,14 +870,6 @@ void __init omap_vc_init_channel(struct voltagedomain *voltdm)
 	/* Channel configuration */
 	omap_vc_config_channel(voltdm);
 
-<<<<<<< HEAD
-	/* Configure the setup times */
-	voltdm->rmw(voltdm->vfsm->voltsetup_mask,
-		    vc->setup_time << __ffs(voltdm->vfsm->voltsetup_mask),
-		    voltdm->vfsm->voltsetup_reg);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap_vc_i2c_init(voltdm);
 
 	if (cpu_is_omap34xx())
@@ -992,7 +877,3 @@ void __init omap_vc_init_channel(struct voltagedomain *voltdm)
 	else if (cpu_is_omap44xx())
 		omap4_vc_init_channel(voltdm);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

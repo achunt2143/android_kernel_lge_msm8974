@@ -7,83 +7,6 @@
  * Copyright (C) 2005, 2006 by Ralf Baechle (ralf@linux-mips.org)
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
  * Copyright (C) 2004 Thiemo Seufer
-<<<<<<< HEAD
- */
-#include <linux/errno.h>
-#include <linux/sched.h>
-#include <linux/tick.h>
-#include <linux/kernel.h>
-#include <linux/mm.h>
-#include <linux/stddef.h>
-#include <linux/unistd.h>
-#include <linux/export.h>
-#include <linux/ptrace.h>
-#include <linux/mman.h>
-#include <linux/personality.h>
-#include <linux/sys.h>
-#include <linux/user.h>
-#include <linux/init.h>
-#include <linux/completion.h>
-#include <linux/kallsyms.h>
-#include <linux/random.h>
-
-#include <asm/asm.h>
-#include <asm/bootinfo.h>
-#include <asm/cpu.h>
-#include <asm/dsp.h>
-#include <asm/fpu.h>
-#include <asm/pgtable.h>
-#include <asm/mipsregs.h>
-#include <asm/processor.h>
-#include <asm/uaccess.h>
-#include <asm/io.h>
-#include <asm/elf.h>
-#include <asm/isadep.h>
-#include <asm/inst.h>
-#include <asm/stacktrace.h>
-
-/*
- * The idle thread. There's no useful work to be done, so just try to conserve
- * power and have a low exit latency (ie sit in a loop waiting for somebody to
- * say that they'd like to reschedule)
- */
-void __noreturn cpu_idle(void)
-{
-	int cpu;
-
-	/* CPU is going idle. */
-	cpu = smp_processor_id();
-
-	/* endless idle loop with no priority at all */
-	while (1) {
-		tick_nohz_idle_enter();
-		rcu_idle_enter();
-		while (!need_resched() && cpu_online(cpu)) {
-#ifdef CONFIG_MIPS_MT_SMTC
-			extern void smtc_idle_loop_hook(void);
-
-			smtc_idle_loop_hook();
-#endif
-
-			if (cpu_wait) {
-				/* Don't trace irqs off for idle */
-				stop_critical_timings();
-				(*cpu_wait)();
-				start_critical_timings();
-			}
-		}
-#ifdef CONFIG_HOTPLUG_CPU
-		if (!cpu_online(cpu) && !cpu_isset(cpu, cpu_callin_map))
-			play_dead();
-#endif
-		rcu_idle_exit();
-		tick_nohz_idle_exit();
-		schedule_preempt_disabled();
-	}
-}
-
-asmlinkage void ret_from_fork(void);
-=======
  * Copyright (C) 2013  Imagination Technologies Ltd.
  */
 #include <linux/cpu.h>
@@ -125,25 +48,12 @@ void __noreturn arch_cpu_idle_dead(void)
 
 asmlinkage void ret_from_fork(void);
 asmlinkage void ret_from_kernel_thread(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void start_thread(struct pt_regs * regs, unsigned long pc, unsigned long sp)
 {
 	unsigned long status;
 
 	/* New thread loses kernel privileges. */
-<<<<<<< HEAD
-	status = regs->cp0_status & ~(ST0_CU0|ST0_CU1|ST0_FR|KU_MASK);
-#ifdef CONFIG_64BIT
-	status |= test_thread_flag(TIF_32BIT_REGS) ? 0 : ST0_FR;
-#endif
-	status |= KU_USER;
-	regs->cp0_status = status;
-	clear_used_math();
-	clear_fpu_owner();
-	if (cpu_has_dsp)
-		__init_dsp();
-=======
 	status = regs->cp0_status & ~(ST0_CU0|ST0_CU1|ST0_CU2|ST0_FR|KU_MASK);
 	status |= KU_USER;
 	regs->cp0_status = status;
@@ -154,41 +64,10 @@ void start_thread(struct pt_regs * regs, unsigned long pc, unsigned long sp)
 	atomic_set(&current->thread.bd_emu_frame, BD_EMUFRAME_NONE);
 #endif
 	init_dsp();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->cp0_epc = pc;
 	regs->regs[29] = sp;
 }
 
-<<<<<<< HEAD
-void exit_thread(void)
-{
-}
-
-void flush_thread(void)
-{
-}
-
-int copy_thread(unsigned long clone_flags, unsigned long usp,
-	unsigned long unused, struct task_struct *p, struct pt_regs *regs)
-{
-	struct thread_info *ti = task_thread_info(p);
-	struct pt_regs *childregs;
-	unsigned long childksp;
-	p->set_child_tid = p->clear_child_tid = NULL;
-
-	childksp = (unsigned long)task_stack_page(p) + THREAD_SIZE - 32;
-
-	preempt_disable();
-
-	if (is_fpu_owner())
-		save_fp(p);
-
-	if (cpu_has_dsp)
-		save_dsp(p);
-
-	preempt_enable();
-
-=======
 void exit_thread(struct task_struct *tsk)
 {
 	/*
@@ -237,61 +116,24 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 
 	childksp = (unsigned long)task_stack_page(p) + THREAD_SIZE - 32;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set up new TSS. */
 	childregs = (struct pt_regs *) childksp - 1;
 	/*  Put the stack after the struct pt_regs.  */
 	childksp = (unsigned long) childregs;
-<<<<<<< HEAD
-	*childregs = *regs;
-	childregs->regs[7] = 0;	/* Clear error flag */
-
-	childregs->regs[2] = 0;	/* Child gets zero as return value */
-
-	if (childregs->cp0_status & ST0_CU0) {
-		childregs->regs[28] = (unsigned long) ti;
-		childregs->regs[29] = childksp;
-		ti->addr_limit = KERNEL_DS;
-	} else {
-		childregs->regs[29] = usp;
-		ti->addr_limit = USER_DS;
-	}
-	p->thread.reg29 = (unsigned long) childregs;
-	p->thread.reg31 = (unsigned long) ret_from_fork;
-=======
 	p->thread.cp0_status = (read_c0_status() & ~(ST0_CU2|ST0_CU1)) | ST0_KERNEL_CUMASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * New tasks lose permission to use the fpu. This accelerates context
 	 * switching for most programs since they don't use the fpu.
 	 */
-<<<<<<< HEAD
-	p->thread.cp0_status = read_c0_status() & ~(ST0_CU2|ST0_CU1);
-	childregs->cp0_status &= ~(ST0_CU2|ST0_CU1);
-
-#ifdef CONFIG_MIPS_MT_SMTC
-	/*
-	 * SMTC restores TCStatus after Status, and the CU bits
-	 * are aliased there.
-	 */
-	childregs->cp0_tcstatus &= ~(ST0_CU2|ST0_CU1);
-#endif
-	clear_tsk_thread_flag(p, TIF_USEDFPU);
-=======
 	clear_tsk_thread_flag(p, TIF_USEDFPU);
 	clear_tsk_thread_flag(p, TIF_USEDMSA);
 	clear_tsk_thread_flag(p, TIF_MSA_CTX_LIVE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MIPS_MT_FPAFF
 	clear_tsk_thread_flag(p, TIF_FPUBOUND);
 #endif /* CONFIG_MIPS_MT_FPAFF */
 
-<<<<<<< HEAD
-	if (clone_flags & CLONE_SETTLS)
-		ti->tp_value = regs->regs[7];
-=======
 	if (unlikely(args->fn)) {
 		/* kernel thread */
 		unsigned long status = p->thread.cp0_status;
@@ -328,95 +170,16 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
 
 	if (clone_flags & CLONE_SETTLS)
 		ti->tp_value = tls;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Fill in the fpu structure for a core dump.. */
-int dump_fpu(struct pt_regs *regs, elf_fpregset_t *r)
-{
-	memcpy(r, &current->thread.fpu, sizeof(current->thread.fpu));
-
-	return 1;
-}
-
-void elf_dump_regs(elf_greg_t *gp, struct pt_regs *regs)
-{
-	int i;
-
-	for (i = 0; i < EF_R0; i++)
-		gp[i] = 0;
-	gp[EF_R0] = 0;
-	for (i = 1; i <= 31; i++)
-		gp[EF_R0 + i] = regs->regs[i];
-	gp[EF_R26] = 0;
-	gp[EF_R27] = 0;
-	gp[EF_LO] = regs->lo;
-	gp[EF_HI] = regs->hi;
-	gp[EF_CP0_EPC] = regs->cp0_epc;
-	gp[EF_CP0_BADVADDR] = regs->cp0_badvaddr;
-	gp[EF_CP0_STATUS] = regs->cp0_status;
-	gp[EF_CP0_CAUSE] = regs->cp0_cause;
-#ifdef EF_UNUSED0
-	gp[EF_UNUSED0] = 0;
-#endif
-}
-
-int dump_task_regs(struct task_struct *tsk, elf_gregset_t *regs)
-{
-	elf_dump_regs(*regs, task_pt_regs(tsk));
-	return 1;
-}
-
-int dump_task_fpu(struct task_struct *t, elf_fpregset_t *fpr)
-{
-	memcpy(fpr, &t->thread.fpu, sizeof(current->thread.fpu));
-
-	return 1;
-}
-
-/*
- * Create a kernel thread
- */
-static void __noreturn kernel_thread_helper(void *arg, int (*fn)(void *))
-{
-	do_exit(fn(arg));
-}
-
-long kernel_thread(int (*fn)(void *), void *arg, unsigned long flags)
-{
-	struct pt_regs regs;
-
-	memset(&regs, 0, sizeof(regs));
-
-	regs.regs[4] = (unsigned long) arg;
-	regs.regs[5] = (unsigned long) fn;
-	regs.cp0_epc = (unsigned long) kernel_thread_helper;
-	regs.cp0_status = read_c0_status();
-#if defined(CONFIG_CPU_R3000) || defined(CONFIG_CPU_TX39XX)
-	regs.cp0_status = (regs.cp0_status & ~(ST0_KUP | ST0_IEP | ST0_IEC)) |
-			  ((regs.cp0_status & (ST0_KUC | ST0_IEC)) << 2);
-#else
-	regs.cp0_status |= ST0_EXL;
-#endif
-
-	/* Ok, create the new process.. */
-	return do_fork(flags | CLONE_VM | CLONE_UNTRACED, 0, &regs, 0, NULL, NULL);
-}
-
-/*
- *
- */
-=======
 #ifdef CONFIG_STACKPROTECTOR
 #include <linux/stackprotector.h>
 unsigned long __stack_chk_guard __read_mostly;
 EXPORT_SYMBOL(__stack_chk_guard);
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mips_frame_info {
 	void		*func;
 	unsigned long	func_size;
@@ -424,18 +187,6 @@ struct mips_frame_info {
 	int		pc_offset;
 };
 
-<<<<<<< HEAD
-static inline int is_ra_save_ins(union mips_instruction *ip)
-{
-	/* sw / sd $ra, offset($sp) */
-	return (ip->i_format.opcode == sw_op || ip->i_format.opcode == sd_op) &&
-		ip->i_format.rs == 29 &&
-		ip->i_format.rt == 31;
-}
-
-static inline int is_jal_jalr_jr_ins(union mips_instruction *ip)
-{
-=======
 #define J_TARGET(pc,target)	\
 		(((unsigned long)(pc) & 0xf0000000) | ((target) << 2))
 
@@ -592,23 +343,11 @@ static inline int is_jump_ins(union mips_instruction *ip)
 #else
 	if (ip->j_format.opcode == j_op)
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ip->j_format.opcode == jal_op)
 		return 1;
 	if (ip->r_format.opcode != spec_op)
 		return 0;
 	return ip->r_format.func == jalr_op || ip->r_format.func == jr_op;
-<<<<<<< HEAD
-}
-
-static inline int is_sp_move_ins(union mips_instruction *ip)
-{
-	/* addiu/daddiu sp,sp,-imm */
-	if (ip->i_format.rs != 29 || ip->i_format.rt != 29)
-		return 0;
-	if (ip->i_format.opcode == addiu_op || ip->i_format.opcode == daddiu_op)
-		return 1;
-=======
 #endif
 }
 
@@ -660,49 +399,19 @@ static inline int is_sp_move_ins(union mips_instruction *ip, int *frame_size)
 		return 1;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int get_frame_info(struct mips_frame_info *info)
 {
-<<<<<<< HEAD
-	union mips_instruction *ip = info->func;
-	unsigned max_insns = info->func_size / sizeof(union mips_instruction);
-	unsigned i;
-=======
 	bool is_mmips = IS_ENABLED(CONFIG_CPU_MICROMIPS);
 	union mips_instruction insn, *ip, *ip_end;
 	unsigned int last_insn_size = 0;
 	bool saw_jump = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->pc_offset = -1;
 	info->frame_size = 0;
 
-<<<<<<< HEAD
-	if (!ip)
-		goto err;
-
-	if (max_insns == 0)
-		max_insns = 128U;	/* unknown function size */
-	max_insns = min(128U, max_insns);
-
-	for (i = 0; i < max_insns; i++, ip++) {
-
-		if (is_jal_jalr_jr_ins(ip))
-			break;
-		if (!info->frame_size) {
-			if (is_sp_move_ins(ip))
-				info->frame_size = - ip->i_format.simmediate;
-			continue;
-		}
-		if (info->pc_offset == -1 && is_ra_save_ins(ip)) {
-			info->pc_offset =
-				ip->i_format.simmediate / sizeof(long);
-			break;
-		}
-=======
 	ip = (void *)msk_isa16_mode((ulong)info->func);
 	if (!ip)
 		goto err;
@@ -750,25 +459,18 @@ static int get_frame_info(struct mips_frame_info *info)
 			break;
 		if (saw_jump)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (info->frame_size && info->pc_offset >= 0) /* nested */
 		return 0;
 	if (info->pc_offset < 0) /* leaf */
 		return 1;
-<<<<<<< HEAD
-	/* prologue seems boggus... */
-=======
 	/* prologue seems bogus... */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	return -1;
 }
 
 static struct mips_frame_info schedule_mfi __read_mostly;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_KALLSYMS
 static unsigned long get___schedule_addr(void)
 {
@@ -789,18 +491,11 @@ static unsigned long get___schedule_addr(void)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init frame_info_init(void)
 {
 	unsigned long size = 0;
 #ifdef CONFIG_KALLSYMS
 	unsigned long ofs;
-<<<<<<< HEAD
-
-	kallsyms_lookup_size_offset((unsigned long)schedule, &size, &ofs);
-#endif
-	schedule_mfi.func = schedule;
-=======
 #endif
 	unsigned long addr;
 
@@ -812,18 +507,13 @@ static int __init frame_info_init(void)
 	kallsyms_lookup_size_offset(addr, &size, &ofs);
 #endif
 	schedule_mfi.func = (void *)addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	schedule_mfi.func_size = size;
 
 	get_frame_info(&schedule_mfi);
 
 	/*
 	 * Without schedule() frame info, result given by
-<<<<<<< HEAD
-	 * thread_saved_pc() and get_wchan() are not reliable.
-=======
 	 * thread_saved_pc() and __get_wchan() are not reliable.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (schedule_mfi.pc_offset < 0)
 		printk("Can't analyze schedule() prologue at %p\n", schedule);
@@ -836,11 +526,7 @@ arch_initcall(frame_info_init);
 /*
  * Return saved PC of a blocked thread.
  */
-<<<<<<< HEAD
-unsigned long thread_saved_pc(struct task_struct *tsk)
-=======
 static unsigned long thread_saved_pc(struct task_struct *tsk)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct thread_struct *t = &tsk->thread;
 
@@ -860,41 +546,16 @@ unsigned long notrace unwind_stack_by_address(unsigned long stack_page,
 					      unsigned long pc,
 					      unsigned long *ra)
 {
-<<<<<<< HEAD
-	struct mips_frame_info info;
-	unsigned long size, ofs;
-	int leaf;
-	extern void ret_from_irq(void);
-	extern void ret_from_exception(void);
-=======
 	unsigned long low, high, irq_stack_high;
 	struct mips_frame_info info;
 	unsigned long size, ofs;
 	struct pt_regs *regs;
 	int leaf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!stack_page)
 		return 0;
 
 	/*
-<<<<<<< HEAD
-	 * If we reached the bottom of interrupt context,
-	 * return saved pc in pt_regs.
-	 */
-	if (pc == (unsigned long)ret_from_irq ||
-	    pc == (unsigned long)ret_from_exception) {
-		struct pt_regs *regs;
-		if (*sp >= stack_page &&
-		    *sp + sizeof(*regs) <= stack_page + THREAD_SIZE - 32) {
-			regs = (struct pt_regs *)*sp;
-			pc = regs->cp0_epc;
-			if (__kernel_text_address(pc)) {
-				*sp = regs->regs[29];
-				*ra = regs->regs[31];
-				return pc;
-			}
-=======
 	 * IRQ stacks start at IRQ_STACK_START
 	 * task stacks at THREAD_SIZE - 32
 	 */
@@ -931,7 +592,6 @@ unsigned long notrace unwind_stack_by_address(unsigned long stack_page,
 			*sp = regs->regs[29];
 			*ra = regs->regs[31];
 			return pc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return 0;
 	}
@@ -952,12 +612,7 @@ unsigned long notrace unwind_stack_by_address(unsigned long stack_page,
 	if (leaf < 0)
 		return 0;
 
-<<<<<<< HEAD
-	if (*sp < stack_page ||
-	    *sp + info.frame_size > stack_page + THREAD_SIZE - 32)
-=======
 	if (*sp < low || *sp + info.frame_size > high)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (leaf)
@@ -981,9 +636,6 @@ EXPORT_SYMBOL(unwind_stack_by_address);
 unsigned long unwind_stack(struct task_struct *task, unsigned long *sp,
 			   unsigned long pc, unsigned long *ra)
 {
-<<<<<<< HEAD
-	unsigned long stack_page = (unsigned long)task_stack_page(task);
-=======
 	unsigned long stack_page = 0;
 	int cpu;
 
@@ -997,21 +649,14 @@ unsigned long unwind_stack(struct task_struct *task, unsigned long *sp,
 	if (!stack_page)
 		stack_page = (unsigned long)task_stack_page(task);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return unwind_stack_by_address(stack_page, sp, pc, ra);
 }
 #endif
 
 /*
-<<<<<<< HEAD
- * get_wchan - a maintenance nightmare^W^Wpain in the ass ...
- */
-unsigned long get_wchan(struct task_struct *task)
-=======
  * __get_wchan - a maintenance nightmare^W^Wpain in the ass ...
  */
 unsigned long __get_wchan(struct task_struct *task)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long pc = 0;
 #ifdef CONFIG_KALLSYMS
@@ -1019,11 +664,6 @@ unsigned long __get_wchan(struct task_struct *task)
 	unsigned long ra = 0;
 #endif
 
-<<<<<<< HEAD
-	if (!task || task == current || task->state == TASK_RUNNING)
-		goto out;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!task_stack_page(task))
 		goto out;
 
@@ -1040,8 +680,6 @@ out:
 	return pc;
 }
 
-<<<<<<< HEAD
-=======
 unsigned long mips_stack_top(void)
 {
 	unsigned long top = TASK_SIZE & PAGE_MASK;
@@ -1067,7 +705,6 @@ unsigned long mips_stack_top(void)
 	return top;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Don't forget that the stack pointer must be aligned on a 8 bytes
  * boundary for 32-bits ABI and 16 bytes for 64-bits ABI.
@@ -1075,12 +712,6 @@ unsigned long mips_stack_top(void)
 unsigned long arch_align_stack(unsigned long sp)
 {
 	if (!(current->personality & ADDR_NO_RANDOMIZE) && randomize_va_space)
-<<<<<<< HEAD
-		sp -= get_random_int() & ~PAGE_MASK;
-
-	return sp & ALMASK;
-}
-=======
 		sp -= get_random_u32_below(PAGE_SIZE);
 
 	return sp & ALMASK;
@@ -1279,4 +910,3 @@ void mips_dump_regs64(u64 *uregs, const struct pt_regs *regs)
 	uregs[MIPS64_EF_CP0_CAUSE] = regs->cp0_cause;
 }
 #endif /* CONFIG_64BIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

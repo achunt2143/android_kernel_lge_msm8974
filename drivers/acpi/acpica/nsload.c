@@ -1,66 +1,18 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
 #include "acdispat.h"
 #include "actables.h"
-<<<<<<< HEAD
-=======
 #include "acinterp.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsload")
@@ -72,20 +24,12 @@ acpi_status acpi_ns_unload_namespace(acpi_handle handle);
 static acpi_status acpi_ns_delete_subtree(acpi_handle start_handle);
 #endif
 
-<<<<<<< HEAD
-#ifndef ACPI_NO_METHOD_EXECUTION
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ns_load_table
  *
  * PARAMETERS:  table_index     - Index for table to be loaded
-<<<<<<< HEAD
- *              Node            - Owning NS node
-=======
  *              node            - Owning NS node
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -100,23 +44,6 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 
 	ACPI_FUNCTION_TRACE(ns_load_table);
 
-<<<<<<< HEAD
-	/*
-	 * Parse the table and load the namespace with all named
-	 * objects found within.  Control methods are NOT parsed
-	 * at this time.  In fact, the control methods cannot be
-	 * parsed until the entire namespace is loaded, because
-	 * if a control method makes a forward reference (call)
-	 * to another control method, we can't continue parsing
-	 * because we don't know how many arguments to parse next!
-	 */
-	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
-	if (ACPI_FAILURE(status)) {
-		return_ACPI_STATUS(status);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If table already loaded into namespace, just return */
 
 	if (acpi_tb_is_table_loaded(table_index)) {
@@ -132,8 +59,6 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 		goto unlock;
 	}
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Parse the table and load the namespace with all named
 	 * objects found within. Control methods are NOT parsed
@@ -143,19 +68,10 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 	 * to another control method, we can't continue parsing
 	 * because we don't know how many arguments to parse next!
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_ns_parse_table(table_index, node);
 	if (ACPI_SUCCESS(status)) {
 		acpi_tb_set_table_loaded_flag(table_index, TRUE);
 	} else {
-<<<<<<< HEAD
-		(void)acpi_tb_release_owner_id(table_index);
-	}
-
-      unlock:
-	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
-
-=======
 		/*
 		 * On error, delete any namespace objects created by this table.
 		 * We cannot initialize these objects, so delete them. There are
@@ -173,30 +89,17 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 	}
 
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Now we can parse the control methods.  We always parse
-=======
 	 * Now we can parse the control methods. We always parse
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * them here for a sanity check, and if configured for
 	 * just-in-time parsing, we delete the control method
 	 * parse trees.
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-<<<<<<< HEAD
-			  "**** Begin Table Method Parsing and Object Initialization\n"));
-
-	status = acpi_ds_initialize_objects(table_index, node);
-
-	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-			  "**** Completed Table Method Parsing and Object Initialization\n"));
-=======
 			  "**** Begin Table Object Initialization\n"));
 
 	acpi_ex_enter_interpreter();
@@ -205,7 +108,6 @@ unlock:
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			  "**** Completed Table Object Initialization\n"));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(status);
 }
@@ -238,11 +140,7 @@ acpi_status acpi_ns_load_namespace(void)
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Load the namespace.  The DSDT is required,
-=======
 	 * Load the namespace. The DSDT is required,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * but the SSDT and PSDT tables are optional.
 	 */
 	status = acpi_ns_load_table_by_type(ACPI_TABLE_ID_DSDT);
@@ -354,20 +252,12 @@ static acpi_status acpi_ns_delete_subtree(acpi_handle start_handle)
  *
  *  FUNCTION:       acpi_ns_unload_name_space
  *
-<<<<<<< HEAD
- *  PARAMETERS:     Handle          - Root of namespace subtree to be deleted
-=======
  *  PARAMETERS:     handle          - Root of namespace subtree to be deleted
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  RETURN:         Status
  *
  *  DESCRIPTION:    Shrinks the namespace, typically in response to an undocking
-<<<<<<< HEAD
- *                  event.  Deletes an entire subtree starting from (and
-=======
  *                  event. Deletes an entire subtree starting from (and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                  including) the given handle.
  *
  ******************************************************************************/
@@ -391,14 +281,6 @@ acpi_status acpi_ns_unload_namespace(acpi_handle handle)
 	/* This function does the real work */
 
 	status = acpi_ns_delete_subtree(handle);
-<<<<<<< HEAD
-
 	return_ACPI_STATUS(status);
 }
 #endif
-#endif
-=======
-	return_ACPI_STATUS(status);
-}
-#endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

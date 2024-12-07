@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Digital Audio (PCM) abstract layer
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; only version 2 of the License.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Digital Audio (PCM) abstract layer
@@ -27,20 +5,10 @@
  */
 
 #include <linux/compat.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/module.h>
 #include <linux/file.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/time.h>
-#include <linux/pm_qos.h>
-#include <linux/uio.h>
-#include <linux/dma-mapping.h>
-#include <sound/core.h>
-#include <sound/control.h>
-#include <sound/compress_offload.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/time.h>
 #include <linux/pm_qos.h>
@@ -49,17 +17,11 @@
 #include <linux/vmalloc.h>
 #include <sound/core.h>
 #include <sound/control.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/info.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
 #include <sound/timer.h>
 #include <sound/minors.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#if defined(CONFIG_MIPS) && defined(CONFIG_DMA_NONCOHERENT)
-#include <dma-coherence.h>
-=======
 #include <linux/uio.h>
 #include <linux/delay.h>
 
@@ -73,7 +35,6 @@
 #define trace_hw_interval_param_enabled()	0
 #define trace_hw_mask_param(substream, type, index, prev, curr)
 #define trace_hw_interval_param(substream, type, index, prev, curr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -111,30 +72,6 @@ static int snd_pcm_open(struct file *file, struct snd_pcm *pcm, int stream);
  *
  */
 
-<<<<<<< HEAD
-DEFINE_RWLOCK(snd_pcm_link_rwlock);
-EXPORT_SYMBOL(snd_pcm_link_rwlock);
-
-static DECLARE_RWSEM(snd_pcm_link_rwsem);
-
-static inline mm_segment_t snd_enter_user(void)
-{
-	mm_segment_t fs = get_fs();
-	set_fs(get_ds());
-	return fs;
-}
-
-static inline void snd_leave_user(mm_segment_t fs)
-{
-	set_fs(fs);
-}
-
-
-
-int snd_pcm_info(struct snd_pcm_substream *substream, struct snd_pcm_info *info)
-{
-	struct snd_pcm_runtime *runtime;
-=======
 static DECLARE_RWSEM(snd_pcm_link_rwsem);
 
 void snd_pcm_group_init(struct snd_pcm_group *group)
@@ -277,7 +214,6 @@ static int snd_pcm_ops_ioctl(struct snd_pcm_substream *substream,
 
 int snd_pcm_info(struct snd_pcm_substream *substream, struct snd_pcm_info *info)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm *pcm = substream->pcm;
 	struct snd_pcm_str *pstr = substream->pstr;
 
@@ -286,40 +222,21 @@ int snd_pcm_info(struct snd_pcm_substream *substream, struct snd_pcm_info *info)
 	info->device = pcm->device;
 	info->stream = substream->stream;
 	info->subdevice = substream->number;
-<<<<<<< HEAD
-	strlcpy(info->id, pcm->id, sizeof(info->id));
-	strlcpy(info->name, pcm->name, sizeof(info->name));
-=======
 	strscpy(info->id, pcm->id, sizeof(info->id));
 	strscpy(info->name, pcm->name, sizeof(info->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->dev_class = pcm->dev_class;
 	info->dev_subclass = pcm->dev_subclass;
 	info->subdevices_count = pstr->substream_count;
 	info->subdevices_avail = pstr->substream_count - pstr->substream_opened;
-<<<<<<< HEAD
-	strlcpy(info->subname, substream->name, sizeof(info->subname));
-	runtime = substream->runtime;
-	/* AB: FIXME!!! This is definitely nonsense */
-	if (runtime) {
-		info->sync = runtime->sync;
-		substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_INFO, info);
-	}
-=======
 	strscpy(info->subname, substream->name, sizeof(info->subname));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int snd_pcm_info_user(struct snd_pcm_substream *substream,
 		      struct snd_pcm_info __user * _info)
 {
-<<<<<<< HEAD
-	struct snd_pcm_info *info;
-=======
 	struct snd_pcm_info *info __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	info = kmalloc(sizeof(*info), GFP_KERNEL);
@@ -330,56 +247,6 @@ int snd_pcm_info_user(struct snd_pcm_substream *substream,
 		if (copy_to_user(_info, info, sizeof(*info)))
 			err = -EFAULT;
 	}
-<<<<<<< HEAD
-	kfree(info);
-	return err;
-}
-
-#undef RULES_DEBUG
-
-#ifdef RULES_DEBUG
-#define HW_PARAM(v) [SNDRV_PCM_HW_PARAM_##v] = #v
-static const char * const snd_pcm_hw_param_names[] = {
-	HW_PARAM(ACCESS),
-	HW_PARAM(FORMAT),
-	HW_PARAM(SUBFORMAT),
-	HW_PARAM(SAMPLE_BITS),
-	HW_PARAM(FRAME_BITS),
-	HW_PARAM(CHANNELS),
-	HW_PARAM(RATE),
-	HW_PARAM(PERIOD_TIME),
-	HW_PARAM(PERIOD_SIZE),
-	HW_PARAM(PERIOD_BYTES),
-	HW_PARAM(PERIODS),
-	HW_PARAM(BUFFER_TIME),
-	HW_PARAM(BUFFER_SIZE),
-	HW_PARAM(BUFFER_BYTES),
-	HW_PARAM(TICK_TIME),
-};
-#endif
-
-int snd_pcm_hw_refine(struct snd_pcm_substream *substream, 
-		      struct snd_pcm_hw_params *params)
-{
-	unsigned int k;
-	struct snd_pcm_hardware *hw;
-	struct snd_interval *i = NULL;
-	struct snd_mask *m = NULL;
-	struct snd_pcm_hw_constraints *constrs = &substream->runtime->hw_constraints;
-	unsigned int rstamps[constrs->rules_num];
-	unsigned int vstamps[SNDRV_PCM_HW_PARAM_LAST_INTERVAL + 1];
-	unsigned int stamp = 2;
-	int changed, again;
-
-	params->info = 0;
-	params->fifo_size = 0;
-	if (params->rmask & (1 << SNDRV_PCM_HW_PARAM_SAMPLE_BITS))
-		params->msbits = 0;
-	if (params->rmask & (1 << SNDRV_PCM_HW_PARAM_RATE)) {
-		params->rate_num = 0;
-		params->rate_den = 0;
-	}
-=======
 	return err;
 }
 
@@ -422,30 +289,11 @@ static int constrain_mask_params(struct snd_pcm_substream *substream,
 	unsigned int k;
 	struct snd_mask old_mask __maybe_unused;
 	int changed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (k = SNDRV_PCM_HW_PARAM_FIRST_MASK; k <= SNDRV_PCM_HW_PARAM_LAST_MASK; k++) {
 		m = hw_param_mask(params, k);
 		if (snd_mask_empty(m))
 			return -EINVAL;
-<<<<<<< HEAD
-		if (!(params->rmask & (1 << k)))
-			continue;
-#ifdef RULES_DEBUG
-		printk(KERN_DEBUG "%s = ", snd_pcm_hw_param_names[k]);
-		printk("%04x%04x%04x%04x -> ", m->bits[3], m->bits[2], m->bits[1], m->bits[0]);
-#endif
-		changed = snd_mask_refine(m, constrs_mask(constrs, k));
-#ifdef RULES_DEBUG
-		printk("%04x%04x%04x%04x\n", m->bits[3], m->bits[2], m->bits[1], m->bits[0]);
-#endif
-		if (changed)
-			params->cmask |= 1 << k;
-		if (changed < 0)
-			return changed;
-	}
-
-=======
 
 		/* This parameter is not requested to change by a caller. */
 		if (!(params->rmask & PARAM_MASK_BIT(k)))
@@ -478,114 +326,10 @@ static int constrain_interval_params(struct snd_pcm_substream *substream,
 	struct snd_interval old_interval __maybe_unused;
 	int changed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (k = SNDRV_PCM_HW_PARAM_FIRST_INTERVAL; k <= SNDRV_PCM_HW_PARAM_LAST_INTERVAL; k++) {
 		i = hw_param_interval(params, k);
 		if (snd_interval_empty(i))
 			return -EINVAL;
-<<<<<<< HEAD
-		if (!(params->rmask & (1 << k)))
-			continue;
-#ifdef RULES_DEBUG
-		printk(KERN_DEBUG "%s = ", snd_pcm_hw_param_names[k]);
-		if (i->empty)
-			printk("empty");
-		else
-			printk("%c%u %u%c", 
-			       i->openmin ? '(' : '[', i->min,
-			       i->max, i->openmax ? ')' : ']');
-		printk(" -> ");
-#endif
-		changed = snd_interval_refine(i, constrs_interval(constrs, k));
-#ifdef RULES_DEBUG
-		if (i->empty)
-			printk("empty\n");
-		else 
-			printk("%c%u %u%c\n", 
-			       i->openmin ? '(' : '[', i->min,
-			       i->max, i->openmax ? ')' : ']');
-#endif
-		if (changed)
-			params->cmask |= 1 << k;
-		if (changed < 0)
-			return changed;
-	}
-
-	for (k = 0; k < constrs->rules_num; k++)
-		rstamps[k] = 0;
-	for (k = 0; k <= SNDRV_PCM_HW_PARAM_LAST_INTERVAL; k++) 
-		vstamps[k] = (params->rmask & (1 << k)) ? 1 : 0;
-	do {
-		again = 0;
-		for (k = 0; k < constrs->rules_num; k++) {
-			struct snd_pcm_hw_rule *r = &constrs->rules[k];
-			unsigned int d;
-			int doit = 0;
-			if (r->cond && !(r->cond & params->flags))
-				continue;
-			for (d = 0; r->deps[d] >= 0; d++) {
-				if (vstamps[r->deps[d]] > rstamps[k]) {
-					doit = 1;
-					break;
-				}
-			}
-			if (!doit)
-				continue;
-#ifdef RULES_DEBUG
-			printk(KERN_DEBUG "Rule %d [%p]: ", k, r->func);
-			if (r->var >= 0) {
-				printk("%s = ", snd_pcm_hw_param_names[r->var]);
-				if (hw_is_mask(r->var)) {
-					m = hw_param_mask(params, r->var);
-					printk("%x", *m->bits);
-				} else {
-					i = hw_param_interval(params, r->var);
-					if (i->empty)
-						printk("empty");
-					else
-						printk("%c%u %u%c", 
-						       i->openmin ? '(' : '[', i->min,
-						       i->max, i->openmax ? ')' : ']');
-				}
-			}
-#endif
-			changed = r->func(params, r);
-#ifdef RULES_DEBUG
-			if (r->var >= 0) {
-				printk(" -> ");
-				if (hw_is_mask(r->var))
-					printk("%x", *m->bits);
-				else {
-					if (i->empty)
-						printk("empty");
-					else
-						printk("%c%u %u%c", 
-						       i->openmin ? '(' : '[', i->min,
-						       i->max, i->openmax ? ')' : ']');
-				}
-			}
-			printk("\n");
-#endif
-			rstamps[k] = stamp;
-			if (changed && r->var >= 0) {
-				params->cmask |= (1 << r->var);
-				vstamps[r->var] = stamp;
-				again = 1;
-			}
-			if (changed < 0)
-				return changed;
-			stamp++;
-		}
-	} while (again);
-	if (!params->msbits) {
-		i = hw_param_interval(params, SNDRV_PCM_HW_PARAM_SAMPLE_BITS);
-		if (snd_interval_single(i))
-			params->msbits = snd_interval_value(i);
-	}
-
-	if (!params->rate_den) {
-		i = hw_param_interval(params, SNDRV_PCM_HW_PARAM_RATE);
-=======
 
 		/* This parameter is not requested to change by a caller. */
 		if (!(params->rmask & PARAM_MASK_BIT(k)))
@@ -762,33 +506,12 @@ static int fixup_unreferenced_params(struct snd_pcm_substream *substream,
 
 	if (!params->rate_den) {
 		i = hw_param_interval_c(params, SNDRV_PCM_HW_PARAM_RATE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (snd_interval_single(i)) {
 			params->rate_num = snd_interval_value(i);
 			params->rate_den = 1;
 		}
 	}
 
-<<<<<<< HEAD
-	hw = &substream->runtime->hw;
-	if (!params->info)
-		params->info = hw->info & ~SNDRV_PCM_INFO_FIFO_IN_FRAMES;
-	if (!params->fifo_size) {
-		m = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
-		i = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
-		if (snd_mask_min(m) == snd_mask_max(m) &&
-                    snd_interval_min(i) == snd_interval_max(i)) {
-			changed = substream->ops->ioctl(substream,
-					SNDRV_PCM_IOCTL1_FIFO_SIZE, params);
-			if (changed < 0)
-				return changed;
-		}
-	}
-	params->rmask = 0;
-	return 0;
-}
-
-=======
 	if (!params->fifo_size) {
 		m = hw_param_mask_c(params, SNDRV_PCM_HW_PARAM_FORMAT);
 		i = hw_param_interval_c(params, SNDRV_PCM_HW_PARAM_CHANNELS);
@@ -843,33 +566,16 @@ int snd_pcm_hw_refine(struct snd_pcm_substream *substream,
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_hw_refine);
 
 static int snd_pcm_hw_refine_user(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params __user * _params)
 {
-<<<<<<< HEAD
-	struct snd_pcm_hw_params *params;
-=======
 	struct snd_pcm_hw_params *params __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	params = memdup_user(_params, sizeof(*params));
 	if (IS_ERR(params))
-<<<<<<< HEAD
-		return PTR_ERR(params);
-
-	err = snd_pcm_hw_refine(substream, params);
-	if (copy_to_user(_params, params, sizeof(*params))) {
-		if (!err)
-			err = -EFAULT;
-	}
-
-	kfree(params);
-	return err;
-=======
 		return PTR_ERR(no_free_ptr(params));
 
 	err = snd_pcm_hw_refine(substream, params);
@@ -883,7 +589,6 @@ static int snd_pcm_hw_refine_user(struct snd_pcm_substream *substream,
 	if (copy_to_user(_params, params, sizeof(*params)))
 		return -EFAULT;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int period_to_usecs(struct snd_pcm_runtime *runtime)
@@ -901,16 +606,6 @@ static int period_to_usecs(struct snd_pcm_runtime *runtime)
 	return usecs;
 }
 
-<<<<<<< HEAD
-static void snd_pcm_set_state(struct snd_pcm_substream *substream, int state)
-{
-	snd_pcm_stream_lock_irq(substream);
-	if (substream->runtime->status->state != SNDRV_PCM_STATE_DISCONNECTED)
-		substream->runtime->status->state = state;
-	snd_pcm_stream_unlock_irq(substream);
-}
-
-=======
 static void snd_pcm_set_state(struct snd_pcm_substream *substream,
 			      snd_pcm_state_t state)
 {
@@ -1028,7 +723,6 @@ static void snd_pcm_buffer_access_unlock(struct snd_pcm_runtime *runtime)
 #define is_oss_stream(substream)	false
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_pcm_hw_params *params)
 {
@@ -1040,24 +734,6 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_OPEN:
-	case SNDRV_PCM_STATE_SETUP:
-	case SNDRV_PCM_STATE_PREPARED:
-		break;
-	default:
-		snd_pcm_stream_unlock_irq(substream);
-		return -EBADFD;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-#if defined(CONFIG_SND_PCM_OSS) || defined(CONFIG_SND_PCM_OSS_MODULE)
-	if (!substream->oss.oss)
-#endif
-		if (atomic_read(&substream->mmap_count))
-			return -EBADFD;
-=======
 	err = snd_pcm_buffer_access_lock(runtime);
 	if (err < 0)
 		return err;
@@ -1079,7 +755,6 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 		goto unlock;
 
 	snd_pcm_sync_stop(substream, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	params->rmask = ~0U;
 	err = snd_pcm_hw_refine(substream, params);
@@ -1090,8 +765,6 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (err < 0)
 		goto _error;
 
-<<<<<<< HEAD
-=======
 	err = fixup_unreferenced_params(substream, params);
 	if (err < 0)
 		goto _error;
@@ -1104,7 +777,6 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 		runtime->buffer_changed = err > 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (substream->ops->hw_params != NULL) {
 		err = substream->ops->hw_params(substream, params);
 		if (err < 0)
@@ -1147,28 +819,6 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 	runtime->silence_threshold = 0;
 	runtime->silence_size = 0;
 	runtime->boundary = runtime->buffer_size;
-<<<<<<< HEAD
-	while (runtime->boundary * 2 * runtime->channels <=
-					LONG_MAX - runtime->buffer_size)
-		runtime->boundary *= 2;
-
-	snd_pcm_timer_resolution_change(substream);
-	snd_pcm_set_state(substream, SNDRV_PCM_STATE_SETUP);
-
-	if (pm_qos_request_active(&substream->latency_pm_qos_req))
-		pm_qos_remove_request(&substream->latency_pm_qos_req);
-	if ((usecs = period_to_usecs(runtime)) >= 0)
-		pm_qos_add_request(&substream->latency_pm_qos_req,
-				   PM_QOS_CPU_DMA_LATENCY, usecs);
-	return 0;
- _error:
-	/* hardware might be unusable from this time,
-	   so we force application to retry to set
-	   the correct hardware parameter settings */
-	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
-	if (substream->ops->hw_free != NULL)
-		substream->ops->hw_free(substream);
-=======
 	while (runtime->boundary * 2 <= LONG_MAX - runtime->buffer_size)
 		runtime->boundary *= 2;
 
@@ -1205,36 +855,17 @@ static int snd_pcm_hw_params(struct snd_pcm_substream *substream,
 	}
  unlock:
 	snd_pcm_buffer_access_unlock(runtime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int snd_pcm_hw_params_user(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params __user * _params)
 {
-<<<<<<< HEAD
-	struct snd_pcm_hw_params *params;
-=======
 	struct snd_pcm_hw_params *params __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	params = memdup_user(_params, sizeof(*params));
 	if (IS_ERR(params))
-<<<<<<< HEAD
-		return PTR_ERR(params);
-
-	err = snd_pcm_hw_params(substream, params);
-	if (copy_to_user(_params, params, sizeof(*params))) {
-		if (!err)
-			err = -EFAULT;
-	}
-
-	kfree(params);
-	return err;
-}
-
-=======
 		return PTR_ERR(no_free_ptr(params));
 
 	err = snd_pcm_hw_params(substream, params);
@@ -1258,7 +889,6 @@ static int do_hw_free(struct snd_pcm_substream *substream)
 	return result;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime;
@@ -1267,24 +897,6 @@ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_SETUP:
-	case SNDRV_PCM_STATE_PREPARED:
-		break;
-	default:
-		snd_pcm_stream_unlock_irq(substream);
-		return -EBADFD;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-	if (atomic_read(&substream->mmap_count))
-		return -EBADFD;
-	if (substream->ops->hw_free)
-		result = substream->ops->hw_free(substream);
-	snd_pcm_set_state(substream, SNDRV_PCM_STATE_OPEN);
-	pm_qos_remove_request(&substream->latency_pm_qos_req);
-=======
 	result = snd_pcm_buffer_access_lock(runtime);
 	if (result < 0)
 		return result;
@@ -1307,7 +919,6 @@ static int snd_pcm_hw_free(struct snd_pcm_substream *substream)
 	cpu_latency_qos_remove_request(&substream->latency_pm_qos_req);
  unlock:
 	snd_pcm_buffer_access_unlock(runtime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -1320,16 +931,6 @@ static int snd_pcm_sw_params(struct snd_pcm_substream *substream,
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	snd_pcm_stream_lock_irq(substream);
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN) {
-		snd_pcm_stream_unlock_irq(substream);
-		return -EBADFD;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-
-	if (params->tstamp_mode > SNDRV_PCM_TSTAMP_LAST)
-=======
 	scoped_guard(pcm_stream_lock_irq, substream) {
 		if (runtime->state == SNDRV_PCM_STATE_OPEN)
 			return -EBADFD;
@@ -1340,7 +941,6 @@ static int snd_pcm_sw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	if (params->proto >= SNDRV_PROTOCOL_VERSION(2, 0, 12) &&
 	    params->tstamp_type > SNDRV_PCM_TSTAMP_TYPE_LAST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (params->avail_min == 0)
 		return -EINVAL;
@@ -1354,24 +954,6 @@ static int snd_pcm_sw_params(struct snd_pcm_substream *substream,
 			return -EINVAL;
 	}
 	err = 0;
-<<<<<<< HEAD
-	snd_pcm_stream_lock_irq(substream);
-	runtime->tstamp_mode = params->tstamp_mode;
-	runtime->period_step = params->period_step;
-	runtime->control->avail_min = params->avail_min;
-	runtime->start_threshold = params->start_threshold;
-	runtime->stop_threshold = params->stop_threshold;
-	runtime->silence_threshold = params->silence_threshold;
-	runtime->silence_size = params->silence_size;
-        params->boundary = runtime->boundary;
-	if (snd_pcm_running(substream)) {
-		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-		    runtime->silence_size > 0)
-			snd_pcm_playback_silence(substream, ULONG_MAX);
-		err = snd_pcm_update_state(substream, runtime);
-	}
-	snd_pcm_stream_unlock_irq(substream);
-=======
 	scoped_guard(pcm_stream_lock_irq, substream) {
 		runtime->tstamp_mode = params->tstamp_mode;
 		if (params->proto >= SNDRV_PROTOCOL_VERSION(2, 0, 12))
@@ -1390,7 +972,6 @@ static int snd_pcm_sw_params(struct snd_pcm_substream *substream,
 			err = snd_pcm_update_state(substream, runtime);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1407,45 +988,6 @@ static int snd_pcm_sw_params_user(struct snd_pcm_substream *substream,
 	return err;
 }
 
-<<<<<<< HEAD
-int snd_pcm_status(struct snd_pcm_substream *substream,
-		   struct snd_pcm_status *status)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-
-	snd_pcm_stream_lock_irq(substream);
-	status->state = runtime->status->state;
-	status->suspended_state = runtime->status->suspended_state;
-	if (status->state == SNDRV_PCM_STATE_OPEN)
-		goto _end;
-	status->trigger_tstamp = runtime->trigger_tstamp;
-	if (snd_pcm_running(substream)) {
-		snd_pcm_update_hw_ptr(substream);
-		if (runtime->tstamp_mode == SNDRV_PCM_TSTAMP_ENABLE) {
-			status->tstamp = runtime->status->tstamp;
-			goto _tstamp_end;
-		}
-	}
-	snd_pcm_gettime(runtime, &status->tstamp);
- _tstamp_end:
-	status->appl_ptr = runtime->control->appl_ptr;
-	status->hw_ptr = runtime->status->hw_ptr;
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		status->avail = snd_pcm_playback_avail(runtime);
-		if (runtime->status->state == SNDRV_PCM_STATE_RUNNING ||
-		    runtime->status->state == SNDRV_PCM_STATE_DRAINING) {
-			status->delay = runtime->buffer_size - status->avail;
-			status->delay += runtime->delay;
-		} else
-			status->delay = 0;
-	} else {
-		status->avail = snd_pcm_capture_avail(runtime);
-		if (runtime->status->state == SNDRV_PCM_STATE_RUNNING)
-			status->delay = status->avail + runtime->delay;
-		else
-			status->delay = 0;
-	}
-=======
 static inline snd_pcm_uframes_t
 snd_pcm_calc_delay(struct snd_pcm_substream *substream)
 {
@@ -1525,26 +1067,10 @@ int snd_pcm_status64(struct snd_pcm_substream *substream,
 	status->avail = snd_pcm_avail(substream);
 	status->delay = snd_pcm_running(substream) ?
 		snd_pcm_calc_delay(substream) : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status->avail_max = runtime->avail_max;
 	status->overrange = runtime->overrange;
 	runtime->avail_max = 0;
 	runtime->overrange = 0;
-<<<<<<< HEAD
- _end:
- 	snd_pcm_stream_unlock_irq(substream);
-	return 0;
-}
-
-static int snd_pcm_status_user(struct snd_pcm_substream *substream,
-			       struct snd_pcm_status __user * _status)
-{
-	struct snd_pcm_status status;
-	int res;
-	
-	memset(&status, 0, sizeof(status));
-	res = snd_pcm_status(substream, &status);
-=======
 	return 0;
 }
 
@@ -1565,7 +1091,6 @@ static int snd_pcm_status_user64(struct snd_pcm_substream *substream,
 				(u32 __user *)(&_status->audio_tstamp_data)))
 		return -EFAULT;
 	res = snd_pcm_status64(substream, &status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res < 0)
 		return res;
 	if (copy_to_user(_status, &status, sizeof(status)))
@@ -1573,8 +1098,6 @@ static int snd_pcm_status_user64(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int snd_pcm_status_user32(struct snd_pcm_substream *substream,
 				 struct snd_pcm_status32 __user * _status,
 				 bool ext)
@@ -1624,7 +1147,6 @@ static int snd_pcm_status_user32(struct snd_pcm_substream *substream,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_channel_info(struct snd_pcm_substream *substream,
 				struct snd_pcm_channel_info * info)
 {
@@ -1633,28 +1155,15 @@ static int snd_pcm_channel_info(struct snd_pcm_substream *substream,
 	
 	channel = info->channel;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	snd_pcm_stream_lock_irq(substream);
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN) {
-		snd_pcm_stream_unlock_irq(substream);
-		return -EBADFD;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-=======
 	scoped_guard(pcm_stream_lock_irq, substream) {
 		if (runtime->state == SNDRV_PCM_STATE_OPEN)
 			return -EBADFD;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (channel >= runtime->channels)
 		return -EINVAL;
 	memset(info, 0, sizeof(*info));
 	info->channel = channel;
-<<<<<<< HEAD
-	return substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_CHANNEL_INFO, info);
-=======
 	return snd_pcm_ops_ioctl(substream, SNDRV_PCM_IOCTL1_CHANNEL_INFO, info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_pcm_channel_info_user(struct snd_pcm_substream *substream,
@@ -1679,12 +1188,8 @@ static void snd_pcm_trigger_tstamp(struct snd_pcm_substream *substream)
 	if (runtime->trigger_master == NULL)
 		return;
 	if (runtime->trigger_master == substream) {
-<<<<<<< HEAD
-		snd_pcm_gettime(runtime, &runtime->trigger_tstamp);
-=======
 		if (!runtime->trigger_tstamp_latched)
 			snd_pcm_gettime(runtime, &runtime->trigger_tstamp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		snd_pcm_trigger_tstamp(runtime->trigger_master);
 		runtime->trigger_tstamp = runtime->trigger_master->runtime->trigger_tstamp;
@@ -1692,13 +1197,6 @@ static void snd_pcm_trigger_tstamp(struct snd_pcm_substream *substream)
 	runtime->trigger_master = NULL;
 }
 
-<<<<<<< HEAD
-struct action_ops {
-	int (*pre_action)(struct snd_pcm_substream *substream, int state);
-	int (*do_action)(struct snd_pcm_substream *substream, int state);
-	void (*undo_action)(struct snd_pcm_substream *substream, int state);
-	void (*post_action)(struct snd_pcm_substream *substream, int state);
-=======
 #define ACTION_ARG_IGNORE	(__force snd_pcm_state_t)0
 
 struct action_ops {
@@ -1710,7 +1208,6 @@ struct action_ops {
 			    snd_pcm_state_t state);
 	void (*post_action)(struct snd_pcm_substream *substream,
 			    snd_pcm_state_t state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1718,20 +1215,6 @@ struct action_ops {
  *  Note: the stream state might be changed also on failure
  *  Note2: call with calling stream lock + link lock
  */
-<<<<<<< HEAD
-static int snd_pcm_action_group(struct action_ops *ops,
-				struct snd_pcm_substream *substream,
-				int state, int do_lock)
-{
-	struct snd_pcm_substream *s = NULL;
-	struct snd_pcm_substream *s1;
-	int res = 0;
-
-	snd_pcm_group_for_each_entry(s, substream) {
-		if (do_lock && s != substream)
-			spin_lock_nested(&s->self_group.lock,
-					 SINGLE_DEPTH_NESTING);
-=======
 static int snd_pcm_action_group(const struct action_ops *ops,
 				struct snd_pcm_substream *substream,
 				snd_pcm_state_t state,
@@ -1751,7 +1234,6 @@ static int snd_pcm_action_group(const struct action_ops *ops,
 				spin_lock_nested(&s->self_group.lock, depth);
 			depth++;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = ops->pre_action(s, state);
 		if (res < 0)
 			goto _unlock;
@@ -1774,16 +1256,6 @@ static int snd_pcm_action_group(const struct action_ops *ops,
 		ops->post_action(s, state);
 	}
  _unlock:
-<<<<<<< HEAD
-	if (do_lock) {
-		/* unlock streams */
-		snd_pcm_group_for_each_entry(s1, substream) {
-			if (s1 != substream)
-				spin_unlock(&s1->self_group.lock);
-			if (s1 == s)	/* end */
-				break;
-		}
-=======
 	/* unlock streams */
 	snd_pcm_group_for_each_entry(s1, substream) {
 		if (s1 != substream) {
@@ -1796,7 +1268,6 @@ static int snd_pcm_action_group(const struct action_ops *ops,
 		}
 		if (s1 == s)	/* end */
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 }
@@ -1804,15 +1275,9 @@ static int snd_pcm_action_group(const struct action_ops *ops,
 /*
  *  Note: call with stream lock
  */
-<<<<<<< HEAD
-static int snd_pcm_action_single(struct action_ops *ops,
-				 struct snd_pcm_substream *substream,
-				 int state)
-=======
 static int snd_pcm_action_single(const struct action_ops *ops,
 				 struct snd_pcm_substream *substream,
 				 snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 	
@@ -1827,28 +1292,6 @@ static int snd_pcm_action_single(const struct action_ops *ops,
 	return res;
 }
 
-<<<<<<< HEAD
-/*
- *  Note: call with stream lock
- */
-static int snd_pcm_action(struct action_ops *ops,
-			  struct snd_pcm_substream *substream,
-			  int state)
-{
-	int res;
-
-	if (snd_pcm_stream_linked(substream)) {
-		if (!spin_trylock(&substream->group->lock)) {
-			spin_unlock(&substream->self_group.lock);
-			spin_lock(&substream->group->lock);
-			spin_lock(&substream->self_group.lock);
-		}
-		res = snd_pcm_action_group(ops, substream, state, 1);
-		spin_unlock(&substream->group->lock);
-	} else {
-		res = snd_pcm_action_single(ops, substream, state);
-	}
-=======
 static void snd_pcm_group_assign(struct snd_pcm_substream *substream,
 				 struct snd_pcm_group *new_group)
 {
@@ -1926,60 +1369,22 @@ static int snd_pcm_action(const struct action_ops *ops,
 	else
 		res = snd_pcm_action_single(ops, substream, state);
 	snd_pcm_group_unref(group, substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 /*
  *  Note: don't use any locks before
  */
-<<<<<<< HEAD
-static int snd_pcm_action_lock_irq(struct action_ops *ops,
-				   struct snd_pcm_substream *substream,
-				   int state)
-{
-	int res;
-
-	read_lock_irq(&snd_pcm_link_rwlock);
-	if (snd_pcm_stream_linked(substream)) {
-		spin_lock(&substream->group->lock);
-		spin_lock(&substream->self_group.lock);
-		res = snd_pcm_action_group(ops, substream, state, 1);
-		spin_unlock(&substream->self_group.lock);
-		spin_unlock(&substream->group->lock);
-	} else {
-		spin_lock(&substream->self_group.lock);
-		res = snd_pcm_action_single(ops, substream, state);
-		spin_unlock(&substream->self_group.lock);
-	}
-	read_unlock_irq(&snd_pcm_link_rwlock);
-	return res;
-=======
 static int snd_pcm_action_lock_irq(const struct action_ops *ops,
 				   struct snd_pcm_substream *substream,
 				   snd_pcm_state_t state)
 {
 	guard(pcm_stream_lock_irq)(substream);
 	return snd_pcm_action(ops, substream, state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  */
-<<<<<<< HEAD
-static int snd_pcm_action_nonatomic(struct action_ops *ops,
-				    struct snd_pcm_substream *substream,
-				    int state)
-{
-	int res;
-
-	down_read(&snd_pcm_link_rwsem);
-	if (snd_pcm_stream_linked(substream))
-		res = snd_pcm_action_group(ops, substream, state, 0);
-	else
-		res = snd_pcm_action_single(ops, substream, state);
-	up_read(&snd_pcm_link_rwsem);
-=======
 static int snd_pcm_action_nonatomic(const struct action_ops *ops,
 				    struct snd_pcm_substream *substream,
 				    snd_pcm_state_t state)
@@ -1996,24 +1401,12 @@ static int snd_pcm_action_nonatomic(const struct action_ops *ops,
 	else
 		res = snd_pcm_action_single(ops, substream, state);
 	snd_pcm_buffer_access_unlock(substream->runtime);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
 /*
  * start callbacks
  */
-<<<<<<< HEAD
-static int snd_pcm_pre_start(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	if (runtime->status->state != SNDRV_PCM_STATE_PREPARED)
-		return -EBADFD;
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-	    !substream->hw_no_buffer &&
-	    !snd_pcm_playback_data(substream))
-		return -EPIPE;
-=======
 static int snd_pcm_pre_start(struct snd_pcm_substream *substream,
 			     snd_pcm_state_t state)
 {
@@ -2024,27 +1417,10 @@ static int snd_pcm_pre_start(struct snd_pcm_substream *substream,
 	    !snd_pcm_playback_data(substream))
 		return -EPIPE;
 	runtime->trigger_tstamp_latched = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->trigger_master = substream;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_pcm_do_start(struct snd_pcm_substream *substream, int state)
-{
-	if (substream->runtime->trigger_master != substream)
-		return 0;
-	return substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_START);
-}
-
-static void snd_pcm_undo_start(struct snd_pcm_substream *substream, int state)
-{
-	if (substream->runtime->trigger_master == substream)
-		substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_STOP);
-}
-
-static void snd_pcm_post_start(struct snd_pcm_substream *substream, int state)
-=======
 static int snd_pcm_do_start(struct snd_pcm_substream *substream,
 			    snd_pcm_state_t state)
 {
@@ -2070,25 +1446,12 @@ static void snd_pcm_undo_start(struct snd_pcm_substream *substream,
 
 static void snd_pcm_post_start(struct snd_pcm_substream *substream,
 			       snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	snd_pcm_trigger_tstamp(substream);
 	runtime->hw_ptr_jiffies = jiffies;
 	runtime->hw_ptr_buffer_jiffies = (runtime->buffer_size * HZ) / 
 							    runtime->rate;
-<<<<<<< HEAD
-	runtime->status->state = state;
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
-	    runtime->silence_size > 0)
-		snd_pcm_playback_silence(substream, ULONG_MAX);
-	if (substream->timer)
-		snd_timer_notify(substream->timer, SNDRV_TIMER_EVENT_MSTART,
-				 &runtime->trigger_tstamp);
-}
-
-static struct action_ops snd_pcm_action_start = {
-=======
 	__snd_pcm_set_state(runtime, state);
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
 	    runtime->silence_size > 0)
@@ -2097,7 +1460,6 @@ static struct action_ops snd_pcm_action_start = {
 }
 
 static const struct action_ops snd_pcm_action_start = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_start,
 	.do_action = snd_pcm_do_start,
 	.undo_action = snd_pcm_undo_start,
@@ -2107,12 +1469,9 @@ static const struct action_ops snd_pcm_action_start = {
 /**
  * snd_pcm_start - start all linked streams
  * @substream: the PCM substream instance
-<<<<<<< HEAD
-=======
  *
  * Return: Zero if successful, or a negative error code.
  * The stream lock must be acquired before calling this function.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_start(struct snd_pcm_substream *substream)
 {
@@ -2120,15 +1479,6 @@ int snd_pcm_start(struct snd_pcm_substream *substream)
 			      SNDRV_PCM_STATE_RUNNING);
 }
 
-<<<<<<< HEAD
-/*
- * stop callbacks
- */
-static int snd_pcm_pre_stop(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-=======
 /* take the stream lock and start the streams */
 static int snd_pcm_start_lock_irq(struct snd_pcm_substream *substream)
 {
@@ -2144,31 +1494,11 @@ static int snd_pcm_pre_stop(struct snd_pcm_substream *substream,
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	if (runtime->state == SNDRV_PCM_STATE_OPEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	runtime->trigger_master = substream;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_pcm_do_stop(struct snd_pcm_substream *substream, int state)
-{
-	if (substream->runtime->trigger_master == substream &&
-	    snd_pcm_running(substream))
-		substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_STOP);
-	return 0; /* unconditonally stop all substreams */
-}
-
-static void snd_pcm_post_stop(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	if (runtime->status->state != state) {
-		snd_pcm_trigger_tstamp(substream);
-		if (substream->timer)
-			snd_timer_notify(substream->timer, SNDRV_TIMER_EVENT_MSTOP,
-					 &runtime->trigger_tstamp);
-		runtime->status->state = state;
-=======
 static int snd_pcm_do_stop(struct snd_pcm_substream *substream,
 			   snd_pcm_state_t state)
 {
@@ -2188,17 +1518,12 @@ static void snd_pcm_post_stop(struct snd_pcm_substream *substream,
 		snd_pcm_trigger_tstamp(substream);
 		__snd_pcm_set_state(runtime, state);
 		snd_pcm_timer_notify(substream, SNDRV_TIMER_EVENT_MSTOP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	wake_up(&runtime->sleep);
 	wake_up(&runtime->tsleep);
 }
 
-<<<<<<< HEAD
-static struct action_ops snd_pcm_action_stop = {
-=======
 static const struct action_ops snd_pcm_action_stop = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_stop,
 	.do_action = snd_pcm_do_stop,
 	.post_action = snd_pcm_post_stop
@@ -2210,20 +1535,13 @@ static const struct action_ops snd_pcm_action_stop = {
  * @state: PCM state after stopping the stream
  *
  * The state of each stream is then changed to the given state unconditionally.
-<<<<<<< HEAD
-=======
  *
  * Return: Zero if successful, or a negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_stop(struct snd_pcm_substream *substream, snd_pcm_state_t state)
 {
 	return snd_pcm_action(&snd_pcm_action_stop, substream, state);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_stop);
 
 /**
@@ -2232,11 +1550,8 @@ EXPORT_SYMBOL(snd_pcm_stop);
  *
  * After stopping, the state is changed to SETUP.
  * Unlike snd_pcm_stop(), this affects only the given stream.
-<<<<<<< HEAD
-=======
  *
  * Return: Zero if successful, or a negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_drain_done(struct snd_pcm_substream *substream)
 {
@@ -2244,12 +1559,6 @@ int snd_pcm_drain_done(struct snd_pcm_substream *substream)
 				     SNDRV_PCM_STATE_SETUP);
 }
 
-<<<<<<< HEAD
-/*
- * pause callbacks
- */
-static int snd_pcm_pre_pause(struct snd_pcm_substream *substream, int push)
-=======
 /**
  * snd_pcm_stop_xrun - stop the running streams as XRUN
  * @substream: the PCM substream instance
@@ -2275,85 +1584,30 @@ EXPORT_SYMBOL_GPL(snd_pcm_stop_xrun);
 
 static int snd_pcm_pre_pause(struct snd_pcm_substream *substream,
 			     snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	if (!(runtime->info & SNDRV_PCM_INFO_PAUSE))
 		return -ENOSYS;
-<<<<<<< HEAD
-	if (push) {
-		if (runtime->status->state != SNDRV_PCM_STATE_RUNNING)
-			return -EBADFD;
-	} else if (runtime->status->state != SNDRV_PCM_STATE_PAUSED)
-=======
 	if (pause_pushed(state)) {
 		if (runtime->state != SNDRV_PCM_STATE_RUNNING)
 			return -EBADFD;
 	} else if (runtime->state != SNDRV_PCM_STATE_PAUSED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	runtime->trigger_master = substream;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_pcm_do_pause(struct snd_pcm_substream *substream, int push)
-{
-	if (substream->runtime->trigger_master != substream)
-		return 0;
-	/* some drivers might use hw_ptr to recover from the pause -
-	   update the hw_ptr now */
-	if (push)
-		snd_pcm_update_hw_ptr(substream);
-=======
 static int snd_pcm_do_pause(struct snd_pcm_substream *substream,
 			    snd_pcm_state_t state)
 {
 	if (substream->runtime->trigger_master != substream)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The jiffies check in snd_pcm_update_hw_ptr*() is done by
 	 * a delta between the current jiffies, this gives a large enough
 	 * delta, effectively to skip the check once.
 	 */
 	substream->runtime->hw_ptr_jiffies = jiffies - HZ * 1000;
 	return substream->ops->trigger(substream,
-<<<<<<< HEAD
-				       push ? SNDRV_PCM_TRIGGER_PAUSE_PUSH :
-					      SNDRV_PCM_TRIGGER_PAUSE_RELEASE);
-}
-
-static void snd_pcm_undo_pause(struct snd_pcm_substream *substream, int push)
-{
-	if (substream->runtime->trigger_master == substream)
-		substream->ops->trigger(substream,
-					push ? SNDRV_PCM_TRIGGER_PAUSE_RELEASE :
-					SNDRV_PCM_TRIGGER_PAUSE_PUSH);
-}
-
-static void snd_pcm_post_pause(struct snd_pcm_substream *substream, int push)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	snd_pcm_trigger_tstamp(substream);
-	if (push) {
-		runtime->status->state = SNDRV_PCM_STATE_PAUSED;
-		if (substream->timer)
-			snd_timer_notify(substream->timer,
-					 SNDRV_TIMER_EVENT_MPAUSE,
-					 &runtime->trigger_tstamp);
-		wake_up(&runtime->sleep);
-		wake_up(&runtime->tsleep);
-	} else {
-		runtime->status->state = SNDRV_PCM_STATE_RUNNING;
-		if (substream->timer)
-			snd_timer_notify(substream->timer,
-					 SNDRV_TIMER_EVENT_MCONTINUE,
-					 &runtime->trigger_tstamp);
-	}
-}
-
-static struct action_ops snd_pcm_action_pause = {
-=======
 				       pause_pushed(state) ?
 				       SNDRV_PCM_TRIGGER_PAUSE_PUSH :
 				       SNDRV_PCM_TRIGGER_PAUSE_RELEASE);
@@ -2386,7 +1640,6 @@ static void snd_pcm_post_pause(struct snd_pcm_substream *substream,
 }
 
 static const struct action_ops snd_pcm_action_pause = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_pause,
 	.do_action = snd_pcm_do_pause,
 	.undo_action = snd_pcm_undo_pause,
@@ -2396,21 +1649,6 @@ static const struct action_ops snd_pcm_action_pause = {
 /*
  * Push/release the pause for all linked streams.
  */
-<<<<<<< HEAD
-static int snd_pcm_pause(struct snd_pcm_substream *substream, int push)
-{
-	return snd_pcm_action(&snd_pcm_action_pause, substream, push);
-}
-
-#ifdef CONFIG_PM
-/* suspend */
-
-static int snd_pcm_pre_suspend(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	if (runtime->status->state == SNDRV_PCM_STATE_SUSPENDED)
-		return -EBUSY;
-=======
 static int snd_pcm_pause(struct snd_pcm_substream *substream, bool push)
 {
 	return snd_pcm_action(&snd_pcm_action_pause, substream,
@@ -2440,17 +1678,12 @@ static int snd_pcm_pre_suspend(struct snd_pcm_substream *substream,
 	case SNDRV_PCM_STATE_DISCONNECTED:
 		return -EBUSY;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->trigger_master = substream;
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_pcm_do_suspend(struct snd_pcm_substream *substream, int state)
-=======
 static int snd_pcm_do_suspend(struct snd_pcm_substream *substream,
 			      snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	if (runtime->trigger_master != substream)
@@ -2458,20 +1691,6 @@ static int snd_pcm_do_suspend(struct snd_pcm_substream *substream,
 	if (! snd_pcm_running(substream))
 		return 0;
 	substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_SUSPEND);
-<<<<<<< HEAD
-	return 0; /* suspend unconditionally */
-}
-
-static void snd_pcm_post_suspend(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	snd_pcm_trigger_tstamp(substream);
-	if (substream->timer)
-		snd_timer_notify(substream->timer, SNDRV_TIMER_EVENT_MSUSPEND,
-				 &runtime->trigger_tstamp);
-	runtime->status->suspended_state = runtime->status->state;
-	runtime->status->state = SNDRV_PCM_STATE_SUSPENDED;
-=======
 	runtime->stop_operating = true;
 	return 0; /* suspend unconditionally */
 }
@@ -2485,49 +1704,21 @@ static void snd_pcm_post_suspend(struct snd_pcm_substream *substream,
 	runtime->status->suspended_state = runtime->suspended_state;
 	__snd_pcm_set_state(runtime, SNDRV_PCM_STATE_SUSPENDED);
 	snd_pcm_timer_notify(substream, SNDRV_TIMER_EVENT_MSUSPEND);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&runtime->sleep);
 	wake_up(&runtime->tsleep);
 }
 
-<<<<<<< HEAD
-static struct action_ops snd_pcm_action_suspend = {
-=======
 static const struct action_ops snd_pcm_action_suspend = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_suspend,
 	.do_action = snd_pcm_do_suspend,
 	.post_action = snd_pcm_post_suspend
 };
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * snd_pcm_suspend - trigger SUSPEND to all linked streams
  * @substream: the PCM substream
  *
  * After this call, all streams are changed to SUSPENDED state.
-<<<<<<< HEAD
- */
-int snd_pcm_suspend(struct snd_pcm_substream *substream)
-{
-	int err;
-	unsigned long flags;
-
-	if (! substream)
-		return 0;
-
-	snd_pcm_stream_lock_irqsave(substream, flags);
-	err = snd_pcm_action(&snd_pcm_action_suspend, substream, 0);
-	snd_pcm_stream_unlock_irqrestore(substream, flags);
-	return err;
-}
-
-EXPORT_SYMBOL(snd_pcm_suspend);
-
-=======
  *
  * Return: Zero if successful, or a negative error code.
  */
@@ -2538,17 +1729,13 @@ static int snd_pcm_suspend(struct snd_pcm_substream *substream)
 			      ACTION_ARG_IGNORE);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_pcm_suspend_all - trigger SUSPEND to all substreams in the given pcm
  * @pcm: the PCM instance
  *
  * After this call, all streams are changed to SUSPENDED state.
-<<<<<<< HEAD
-=======
  *
  * Return: Zero if successful (or @pcm is %NULL), or a negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_suspend_all(struct snd_pcm *pcm)
 {
@@ -2558,27 +1745,6 @@ int snd_pcm_suspend_all(struct snd_pcm *pcm)
 	if (! pcm)
 		return 0;
 
-<<<<<<< HEAD
-	for (stream = 0; stream < 2; stream++) {
-		for (substream = pcm->streams[stream].substream;
-		     substream; substream = substream->next) {
-			/* FIXME: the open/close code should lock this as well */
-			if (substream->runtime == NULL)
-				continue;
-			err = snd_pcm_suspend(substream);
-			if (err < 0 && err != -EBUSY)
-				return err;
-		}
-	}
-	return 0;
-}
-
-EXPORT_SYMBOL(snd_pcm_suspend_all);
-
-/* resume */
-
-static int snd_pcm_pre_resume(struct snd_pcm_substream *substream, int state)
-=======
 	for_each_pcm_substream(pcm, stream, substream) {
 		/* FIXME: the open/close code should lock this as well */
 		if (!substream->runtime)
@@ -2607,7 +1773,6 @@ EXPORT_SYMBOL(snd_pcm_suspend_all);
 
 static int snd_pcm_pre_resume(struct snd_pcm_substream *substream,
 			      snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	if (!(runtime->info & SNDRV_PCM_INFO_RESUME))
@@ -2616,54 +1781,28 @@ static int snd_pcm_pre_resume(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_pcm_do_resume(struct snd_pcm_substream *substream, int state)
-=======
 static int snd_pcm_do_resume(struct snd_pcm_substream *substream,
 			     snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	if (runtime->trigger_master != substream)
 		return 0;
 	/* DMA not running previously? */
-<<<<<<< HEAD
-	if (runtime->status->suspended_state != SNDRV_PCM_STATE_RUNNING &&
-	    (runtime->status->suspended_state != SNDRV_PCM_STATE_DRAINING ||
-=======
 	if (runtime->suspended_state != SNDRV_PCM_STATE_RUNNING &&
 	    (runtime->suspended_state != SNDRV_PCM_STATE_DRAINING ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     substream->stream != SNDRV_PCM_STREAM_PLAYBACK))
 		return 0;
 	return substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_RESUME);
 }
 
-<<<<<<< HEAD
-static void snd_pcm_undo_resume(struct snd_pcm_substream *substream, int state)
-=======
 static void snd_pcm_undo_resume(struct snd_pcm_substream *substream,
 				snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (substream->runtime->trigger_master == substream &&
 	    snd_pcm_running(substream))
 		substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_SUSPEND);
 }
 
-<<<<<<< HEAD
-static void snd_pcm_post_resume(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	snd_pcm_trigger_tstamp(substream);
-	if (substream->timer)
-		snd_timer_notify(substream->timer, SNDRV_TIMER_EVENT_MRESUME,
-				 &runtime->trigger_tstamp);
-	runtime->status->state = runtime->status->suspended_state;
-}
-
-static struct action_ops snd_pcm_action_resume = {
-=======
 static void snd_pcm_post_resume(struct snd_pcm_substream *substream,
 				snd_pcm_state_t state)
 {
@@ -2674,7 +1813,6 @@ static void snd_pcm_post_resume(struct snd_pcm_substream *substream,
 }
 
 static const struct action_ops snd_pcm_action_resume = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_resume,
 	.do_action = snd_pcm_do_resume,
 	.undo_action = snd_pcm_undo_resume,
@@ -2683,19 +1821,8 @@ static const struct action_ops snd_pcm_action_resume = {
 
 static int snd_pcm_resume(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_card *card = substream->pcm->card;
-	int res;
-
-	snd_power_lock(card);
-	if ((res = snd_power_wait(card, SNDRV_CTL_POWER_D0)) >= 0)
-		res = snd_pcm_action_lock_irq(&snd_pcm_action_resume, substream, 0);
-	snd_power_unlock(card);
-	return res;
-=======
 	return snd_pcm_action_lock_irq(&snd_pcm_action_resume, substream,
 				       ACTION_ARG_IGNORE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -2714,34 +1841,6 @@ static int snd_pcm_resume(struct snd_pcm_substream *substream)
  */
 static int snd_pcm_xrun(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_card *card = substream->pcm->card;
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	int result;
-
-	snd_power_lock(card);
-	if (runtime->status->state == SNDRV_PCM_STATE_SUSPENDED) {
-		result = snd_power_wait(card, SNDRV_CTL_POWER_D0);
-		if (result < 0)
-			goto _unlock;
-	}
-
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_XRUN:
-		result = 0;	/* already there */
-		break;
-	case SNDRV_PCM_STATE_RUNNING:
-		result = snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
-		break;
-	default:
-		result = -EBADFD;
-	}
-	snd_pcm_stream_unlock_irq(substream);
- _unlock:
-	snd_power_unlock(card);
-	return result;
-=======
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
 	guard(pcm_stream_lock_irq)(substream);
@@ -2754,25 +1853,17 @@ static int snd_pcm_xrun(struct snd_pcm_substream *substream)
 	default:
 		return -EBADFD;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * reset ioctl
  */
-<<<<<<< HEAD
-static int snd_pcm_pre_reset(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	switch (runtime->status->state) {
-=======
 /* reset callbacks:  state argument ignored */
 static int snd_pcm_pre_reset(struct snd_pcm_substream *substream,
 			     snd_pcm_state_t state)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	switch (runtime->state) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_STATE_RUNNING:
 	case SNDRV_PCM_STATE_PREPARED:
 	case SNDRV_PCM_STATE_PAUSED:
@@ -2783,14 +1874,6 @@ static int snd_pcm_pre_reset(struct snd_pcm_substream *substream,
 	}
 }
 
-<<<<<<< HEAD
-static int snd_pcm_do_reset(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	int err = substream->ops->ioctl(substream, SNDRV_PCM_IOCTL1_RESET, NULL);
-	if (err < 0)
-		return err;
-=======
 static int snd_pcm_do_reset(struct snd_pcm_substream *substream,
 			    snd_pcm_state_t state)
 {
@@ -2799,7 +1882,6 @@ static int snd_pcm_do_reset(struct snd_pcm_substream *substream,
 	if (err < 0)
 		return err;
 	guard(pcm_stream_lock_irq)(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->hw_ptr_base = 0;
 	runtime->hw_ptr_interrupt = runtime->status->hw_ptr -
 		runtime->status->hw_ptr % runtime->period_size;
@@ -2808,28 +1890,18 @@ static int snd_pcm_do_reset(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void snd_pcm_post_reset(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-=======
 static void snd_pcm_post_reset(struct snd_pcm_substream *substream,
 			       snd_pcm_state_t state)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	guard(pcm_stream_lock_irq)(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	runtime->control->appl_ptr = runtime->status->hw_ptr;
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK &&
 	    runtime->silence_size > 0)
 		snd_pcm_playback_silence(substream, ULONG_MAX);
 }
 
-<<<<<<< HEAD
-static struct action_ops snd_pcm_action_reset = {
-=======
 static const struct action_ops snd_pcm_action_reset = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_reset,
 	.do_action = snd_pcm_do_reset,
 	.post_action = snd_pcm_post_reset
@@ -2837,26 +1909,13 @@ static const struct action_ops snd_pcm_action_reset = {
 
 static int snd_pcm_reset(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	return snd_pcm_action_nonatomic(&snd_pcm_action_reset, substream, 0);
-=======
 	return snd_pcm_action_nonatomic(&snd_pcm_action_reset, substream,
 					ACTION_ARG_IGNORE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * prepare ioctl
  */
-<<<<<<< HEAD
-/* we use the second argument for updating f_flags */
-static int snd_pcm_pre_prepare(struct snd_pcm_substream *substream,
-			       int f_flags)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN ||
-	    runtime->status->state == SNDRV_PCM_STATE_DISCONNECTED)
-=======
 /* pass f_flags as state argument */
 static int snd_pcm_pre_prepare(struct snd_pcm_substream *substream,
 			       snd_pcm_state_t state)
@@ -2866,7 +1925,6 @@ static int snd_pcm_pre_prepare(struct snd_pcm_substream *substream,
 
 	if (runtime->state == SNDRV_PCM_STATE_OPEN ||
 	    runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	if (snd_pcm_running(substream))
 		return -EBUSY;
@@ -2874,18 +1932,6 @@ static int snd_pcm_pre_prepare(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_pcm_do_prepare(struct snd_pcm_substream *substream, int state)
-{
-	int err;
-	err = substream->ops->prepare(substream);
-	if (err < 0)
-		return err;
-	return snd_pcm_do_reset(substream, 0);
-}
-
-static void snd_pcm_post_prepare(struct snd_pcm_substream *substream, int state)
-=======
 static int snd_pcm_do_prepare(struct snd_pcm_substream *substream,
 			      snd_pcm_state_t state)
 {
@@ -2899,18 +1945,13 @@ static int snd_pcm_do_prepare(struct snd_pcm_substream *substream,
 
 static void snd_pcm_post_prepare(struct snd_pcm_substream *substream,
 				 snd_pcm_state_t state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	runtime->control->appl_ptr = runtime->status->hw_ptr;
 	snd_pcm_set_state(substream, SNDRV_PCM_STATE_PREPARED);
 }
 
-<<<<<<< HEAD
-static struct action_ops snd_pcm_action_prepare = {
-=======
 static const struct action_ops snd_pcm_action_prepare = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_prepare,
 	.do_action = snd_pcm_do_prepare,
 	.post_action = snd_pcm_post_prepare
@@ -2920,20 +1961,12 @@ static const struct action_ops snd_pcm_action_prepare = {
  * snd_pcm_prepare - prepare the PCM substream to be triggerable
  * @substream: the PCM substream instance
  * @file: file to refer f_flags
-<<<<<<< HEAD
-=======
  *
  * Return: Zero if successful, or a negative error code.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int snd_pcm_prepare(struct snd_pcm_substream *substream,
 			   struct file *file)
 {
-<<<<<<< HEAD
-	int res;
-	struct snd_card *card = substream->pcm->card;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int f_flags;
 
 	if (file)
@@ -2941,14 +1974,6 @@ static int snd_pcm_prepare(struct snd_pcm_substream *substream,
 	else
 		f_flags = substream->f_flags;
 
-<<<<<<< HEAD
-	snd_power_lock(card);
-	if ((res = snd_power_wait(card, SNDRV_CTL_POWER_D0)) >= 0)
-		res = snd_pcm_action_nonatomic(&snd_pcm_action_prepare,
-					       substream, f_flags);
-	snd_power_unlock(card);
-	return res;
-=======
 	scoped_guard(pcm_stream_lock_irq, substream) {
 		switch (substream->runtime->state) {
 		case SNDRV_PCM_STATE_PAUSED:
@@ -2963,26 +1988,12 @@ static int snd_pcm_prepare(struct snd_pcm_substream *substream,
 	return snd_pcm_action_nonatomic(&snd_pcm_action_prepare,
 					substream,
 					(__force snd_pcm_state_t)f_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * drain ioctl
  */
 
-<<<<<<< HEAD
-static int snd_pcm_pre_drain_init(struct snd_pcm_substream *substream, int state)
-{
-	substream->runtime->trigger_master = substream;
-	return 0;
-}
-
-static int snd_pcm_do_drain_init(struct snd_pcm_substream *substream, int state)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		switch (runtime->status->state) {
-=======
 /* drain init callbacks: state argument ignored */
 static int snd_pcm_pre_drain_init(struct snd_pcm_substream *substream,
 				  snd_pcm_state_t state)
@@ -3004,20 +2015,12 @@ static int snd_pcm_do_drain_init(struct snd_pcm_substream *substream,
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		switch (runtime->state) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SNDRV_PCM_STATE_PREPARED:
 			/* start playback stream if possible */
 			if (! snd_pcm_playback_empty(substream)) {
 				snd_pcm_do_start(substream, SNDRV_PCM_STATE_DRAINING);
 				snd_pcm_post_start(substream, SNDRV_PCM_STATE_DRAINING);
 			} else {
-<<<<<<< HEAD
-				runtime->status->state = SNDRV_PCM_STATE_SETUP;
-			}
-			break;
-		case SNDRV_PCM_STATE_RUNNING:
-			runtime->status->state = SNDRV_PCM_STATE_DRAINING;
-=======
 				__snd_pcm_set_state(runtime, SNDRV_PCM_STATE_SETUP);
 			}
 			break;
@@ -3026,37 +2029,21 @@ static int snd_pcm_do_drain_init(struct snd_pcm_substream *substream,
 			break;
 		case SNDRV_PCM_STATE_XRUN:
 			__snd_pcm_set_state(runtime, SNDRV_PCM_STATE_SETUP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
 		}
 	} else {
 		/* stop running stream */
-<<<<<<< HEAD
-		if (runtime->status->state == SNDRV_PCM_STATE_RUNNING) {
-			int new_state = snd_pcm_capture_avail(runtime) > 0 ?
-=======
 		if (runtime->state == SNDRV_PCM_STATE_RUNNING) {
 			snd_pcm_state_t new_state;
 
 			new_state = snd_pcm_capture_avail(runtime) > 0 ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				SNDRV_PCM_STATE_DRAINING : SNDRV_PCM_STATE_SETUP;
 			snd_pcm_do_stop(substream, new_state);
 			snd_pcm_post_stop(substream, new_state);
 		}
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-static void snd_pcm_post_drain_init(struct snd_pcm_substream *substream, int state)
-{
-}
-
-static struct action_ops snd_pcm_action_drain_init = {
-=======
 
 	if (runtime->state == SNDRV_PCM_STATE_DRAINING &&
 	    runtime->trigger_master == substream &&
@@ -3073,17 +2060,11 @@ static void snd_pcm_post_drain_init(struct snd_pcm_substream *substream,
 }
 
 static const struct action_ops snd_pcm_action_drain_init = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pre_action = snd_pcm_pre_drain_init,
 	.do_action = snd_pcm_do_drain_init,
 	.post_action = snd_pcm_post_drain_init
 };
 
-<<<<<<< HEAD
-static int snd_pcm_drop(struct snd_pcm_substream *substream);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Drain the stream(s).
  * When the substream is linked, sync until the draining of all playback streams
@@ -3097,52 +2078,23 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 	struct snd_card *card;
 	struct snd_pcm_runtime *runtime;
 	struct snd_pcm_substream *s;
-<<<<<<< HEAD
-	wait_queue_t wait;
-=======
 	struct snd_pcm_group *group;
 	wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = 0;
 	int nonblock = 0;
 
 	card = substream->pcm->card;
 	runtime = substream->runtime;
 
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-		return -EBADFD;
-
-	snd_power_lock(card);
-	if (runtime->status->state == SNDRV_PCM_STATE_SUSPENDED) {
-		result = snd_power_wait(card, SNDRV_CTL_POWER_D0);
-		if (result < 0) {
-			snd_power_unlock(card);
-			return result;
-		}
-	}
-
-=======
 	if (runtime->state == SNDRV_PCM_STATE_OPEN)
 		return -EBADFD;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (file) {
 		if (file->f_flags & O_NONBLOCK)
 			nonblock = 1;
 	} else if (substream->f_flags & O_NONBLOCK)
 		nonblock = 1;
 
-<<<<<<< HEAD
-	down_read(&snd_pcm_link_rwsem);
-	snd_pcm_stream_lock_irq(substream);
-	/* resume pause */
-	if (runtime->status->state == SNDRV_PCM_STATE_PAUSED)
-		snd_pcm_pause(substream, 0);
-
-	/* pre-start/stop - all running streams are changed to DRAINING state */
-	result = snd_pcm_action(&snd_pcm_action_drain_init, substream, 0);
-=======
 	snd_pcm_stream_lock_irq(substream);
 	/* resume pause */
 	if (runtime->state == SNDRV_PCM_STATE_PAUSED)
@@ -3151,7 +2103,6 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 	/* pre-start/stop - all running streams are changed to DRAINING state */
 	result = snd_pcm_action(&snd_pcm_action_drain_init, substream,
 				ACTION_ARG_IGNORE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result < 0)
 		goto unlock;
 	/* in non-blocking, we don't wait in ioctl but let caller poll */
@@ -3169,47 +2120,16 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 		}
 		/* find a substream to drain */
 		to_check = NULL;
-<<<<<<< HEAD
-=======
 		group = snd_pcm_stream_group_ref(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_pcm_group_for_each_entry(s, substream) {
 			if (s->stream != SNDRV_PCM_STREAM_PLAYBACK)
 				continue;
 			runtime = s->runtime;
-<<<<<<< HEAD
-			if (runtime->status->state == SNDRV_PCM_STATE_DRAINING) {
-=======
 			if (runtime->state == SNDRV_PCM_STATE_DRAINING) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				to_check = runtime;
 				break;
 			}
 		}
-<<<<<<< HEAD
-		if (!to_check)
-			break; /* all drained */
-		init_waitqueue_entry(&wait, current);
-		add_wait_queue(&to_check->sleep, &wait);
-		snd_pcm_stream_unlock_irq(substream);
-		up_read(&snd_pcm_link_rwsem);
-		snd_power_unlock(card);
-		if (runtime->no_period_wakeup)
-			tout = MAX_SCHEDULE_TIMEOUT;
-		else {
-			tout = 10;
-			if (runtime->rate) {
-				long t = runtime->period_size * 2 / runtime->rate;
-				tout = max(t, tout);
-			}
-			tout = msecs_to_jiffies(tout * 1000);
-		}
-		tout = schedule_timeout_interruptible(tout);
-		snd_power_lock(card);
-		down_read(&snd_pcm_link_rwsem);
-		snd_pcm_stream_lock_irq(substream);
-		remove_wait_queue(&to_check->sleep, &wait);
-=======
 		snd_pcm_group_unref(group, substream);
 		if (!to_check)
 			break; /* all drained */
@@ -3239,24 +2159,16 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 		}
 		snd_pcm_group_unref(group, substream);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (card->shutdown) {
 			result = -ENODEV;
 			break;
 		}
 		if (tout == 0) {
-<<<<<<< HEAD
-			if (substream->runtime->status->state == SNDRV_PCM_STATE_SUSPENDED)
-				result = -ESTRPIPE;
-			else {
-				snd_printd("playback drain error (DMA or IRQ trouble?)\n");
-=======
 			if (substream->runtime->state == SNDRV_PCM_STATE_SUSPENDED)
 				result = -ESTRPIPE;
 			else {
 				dev_dbg(substream->pcm->card->dev,
 					"playback drain timeout (DMA or IRQ trouble?)\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_pcm_stop(substream, SNDRV_PCM_STATE_SETUP);
 				result = -EIO;
 			}
@@ -3266,45 +2178,10 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
 
  unlock:
 	snd_pcm_stream_unlock_irq(substream);
-<<<<<<< HEAD
-	up_read(&snd_pcm_link_rwsem);
-	snd_power_unlock(card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
 
-<<<<<<< HEAD
-static int snd_compressed_ioctl(struct snd_pcm_substream *substream,
-				 unsigned int cmd, void __user *arg)
-{
-	struct snd_pcm_runtime *runtime;
-	int err = 0;
-
-	if (PCM_RUNTIME_CHECK(substream))
-		return -ENXIO;
-	runtime = substream->runtime;
-	pr_debug("%s called with cmd = %d\n", __func__, cmd);
-	err = substream->ops->ioctl(substream, cmd, arg);
-	return err;
-}
-
-static int snd_user_ioctl(struct snd_pcm_substream *substream,
-			  unsigned int cmd, void __user *arg)
-{
-	struct snd_pcm_runtime *runtime;
-	int err = 0;
-
-	if (PCM_RUNTIME_CHECK(substream))
-		return -ENXIO;
-	runtime = substream->runtime;
-	err = substream->ops->ioctl(substream, cmd, arg);
-	return err;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drop ioctl
  *
@@ -3319,21 +2196,6 @@ static int snd_pcm_drop(struct snd_pcm_substream *substream)
 		return -ENXIO;
 	runtime = substream->runtime;
 
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN ||
-	    runtime->status->state == SNDRV_PCM_STATE_DISCONNECTED ||
-	    runtime->status->state == SNDRV_PCM_STATE_SUSPENDED)
-		return -EBADFD;
-
-	snd_pcm_stream_lock_irq(substream);
-	/* resume pause */
-	if (runtime->status->state == SNDRV_PCM_STATE_PAUSED)
-		snd_pcm_pause(substream, 0);
-
-	snd_pcm_stop(substream, SNDRV_PCM_STATE_SETUP);
-	/* runtime->control->appl_ptr = runtime->status->hw_ptr; */
-	snd_pcm_stream_unlock_irq(substream);
-=======
 	if (runtime->state == SNDRV_PCM_STATE_OPEN ||
 	    runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
 		return -EBADFD;
@@ -3345,37 +2207,11 @@ static int snd_pcm_drop(struct snd_pcm_substream *substream)
 
 	snd_pcm_stop(substream, SNDRV_PCM_STATE_SETUP);
 	/* runtime->control->appl_ptr = runtime->status->hw_ptr; */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
 
 
-<<<<<<< HEAD
-/* WARNING: Don't forget to fput back the file */
-static struct file *snd_pcm_file_fd(int fd)
-{
-	struct file *file;
-	struct inode *inode;
-	unsigned int minor;
-
-	file = fget(fd);
-	if (!file)
-		return NULL;
-	inode = file->f_path.dentry->d_inode;
-	if (!S_ISCHR(inode->i_mode) ||
-	    imajor(inode) != snd_major) {
-		fput(file);
-		return NULL;
-	}
-	minor = iminor(inode);
-	if (!snd_lookup_minor_data(minor, SNDRV_DEVICE_TYPE_PCM_PLAYBACK) &&
-	    !snd_lookup_minor_data(minor, SNDRV_DEVICE_TYPE_PCM_CAPTURE)) {
-		fput(file);
-		return NULL;
-	}
-	return file;
-=======
 static bool is_pcm_file(struct file *file)
 {
 	struct inode *inode = file_inode(file);
@@ -3392,7 +2228,6 @@ static bool is_pcm_file(struct file *file)
 		return false;
 	snd_card_unref(pcm->card);
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3400,54 +2235,6 @@ static bool is_pcm_file(struct file *file)
  */
 static int snd_pcm_link(struct snd_pcm_substream *substream, int fd)
 {
-<<<<<<< HEAD
-	int res = 0;
-	struct file *file;
-	struct snd_pcm_file *pcm_file;
-	struct snd_pcm_substream *substream1;
-	struct snd_pcm_group *group;
-
-	file = snd_pcm_file_fd(fd);
-	if (!file)
-		return -EBADFD;
-	pcm_file = file->private_data;
-	substream1 = pcm_file->substream;
-	group = kmalloc(sizeof(*group), GFP_KERNEL);
-	if (!group) {
-		res = -ENOMEM;
-		goto _nolock;
-	}
-	down_write(&snd_pcm_link_rwsem);
-	write_lock_irq(&snd_pcm_link_rwlock);
-	if (substream->runtime->status->state == SNDRV_PCM_STATE_OPEN ||
-	    substream->runtime->status->state != substream1->runtime->status->state) {
-		res = -EBADFD;
-		goto _end;
-	}
-	if (snd_pcm_stream_linked(substream1)) {
-		res = -EALREADY;
-		goto _end;
-	}
-	if (!snd_pcm_stream_linked(substream)) {
-		substream->group = group;
-		spin_lock_init(&substream->group->lock);
-		INIT_LIST_HEAD(&substream->group->substreams);
-		list_add_tail(&substream->link_list, &substream->group->substreams);
-		substream->group->count = 1;
-	}
-	list_add_tail(&substream1->link_list, &substream->group->substreams);
-	substream->group->count++;
-	substream1->group = substream->group;
- _end:
-	write_unlock_irq(&snd_pcm_link_rwlock);
-	up_write(&snd_pcm_link_rwsem);
- _nolock:
-	snd_card_unref(substream1->pcm->card);
-	fput(file);
-	if (res < 0)
-		kfree(group);
-	return res;
-=======
 	struct snd_pcm_file *pcm_file;
 	struct snd_pcm_substream *substream1;
 	struct snd_pcm_group *group __free(kfree) = NULL;
@@ -3494,49 +2281,17 @@ static int snd_pcm_link(struct snd_pcm_substream *substream, int fd)
 	snd_pcm_stream_unlock(substream1);
 	snd_pcm_group_unlock_irq(target_group, nonatomic);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void relink_to_local(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	substream->group = &substream->self_group;
-	INIT_LIST_HEAD(&substream->self_group.substreams);
-	list_add_tail(&substream->link_list, &substream->self_group.substreams);
-=======
 	snd_pcm_stream_lock_nested(substream);
 	snd_pcm_group_assign(substream, &substream->self_group);
 	snd_pcm_stream_unlock(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_pcm_unlink(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_pcm_substream *s;
-	int res = 0;
-
-	down_write(&snd_pcm_link_rwsem);
-	write_lock_irq(&snd_pcm_link_rwlock);
-	if (!snd_pcm_stream_linked(substream)) {
-		res = -EALREADY;
-		goto _end;
-	}
-	list_del(&substream->link_list);
-	substream->group->count--;
-	if (substream->group->count == 1) {	/* detach the last stream, too */
-		snd_pcm_group_for_each_entry(s, substream) {
-			relink_to_local(s);
-			break;
-		}
-		kfree(substream->group);
-	}
-	relink_to_local(substream);
-       _end:
-	write_unlock_irq(&snd_pcm_link_rwlock);
-	up_write(&snd_pcm_link_rwsem);
-	return res;
-=======
 	struct snd_pcm_group *group;
 	bool nonatomic = substream->pcm->nonatomic;
 	bool do_free = false;
@@ -3564,7 +2319,6 @@ static int snd_pcm_unlink(struct snd_pcm_substream *substream)
 	if (do_free)
 		kfree(group);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3611,16 +2365,6 @@ static int snd_pcm_hw_rule_mulkdiv(struct snd_pcm_hw_params *params,
 static int snd_pcm_hw_rule_format(struct snd_pcm_hw_params *params,
 				  struct snd_pcm_hw_rule *rule)
 {
-<<<<<<< HEAD
-	unsigned int k;
-	struct snd_interval *i = hw_param_interval(params, rule->deps[0]);
-	struct snd_mask m;
-	struct snd_mask *mask = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
-	snd_mask_any(&m);
-	for (k = 0; k <= SNDRV_PCM_FORMAT_LAST; ++k) {
-		int bits;
-		if (! snd_mask_test(mask, k))
-=======
 	snd_pcm_format_t k;
 	const struct snd_interval *i =
 				hw_param_interval_c(params, rule->deps[0]);
@@ -3630,17 +2374,12 @@ static int snd_pcm_hw_rule_format(struct snd_pcm_hw_params *params,
 	pcm_for_each_format(k) {
 		int bits;
 		if (!snd_mask_test_format(mask, k))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		bits = snd_pcm_format_physical_width(k);
 		if (bits <= 0)
 			continue; /* ignore invalid formats */
 		if ((unsigned)bits < i->min || (unsigned)bits > i->max)
-<<<<<<< HEAD
-			snd_mask_reset(&m, k);
-=======
 			snd_mask_reset(&m, (__force unsigned)k);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return snd_mask_refine(mask, &m);
 }
@@ -3649,25 +2388,15 @@ static int snd_pcm_hw_rule_sample_bits(struct snd_pcm_hw_params *params,
 				       struct snd_pcm_hw_rule *rule)
 {
 	struct snd_interval t;
-<<<<<<< HEAD
-	unsigned int k;
-=======
 	snd_pcm_format_t k;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t.min = UINT_MAX;
 	t.max = 0;
 	t.openmin = 0;
 	t.openmax = 0;
-<<<<<<< HEAD
-	for (k = 0; k <= SNDRV_PCM_FORMAT_LAST; ++k) {
-		int bits;
-		if (! snd_mask_test(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT), k))
-=======
 	pcm_for_each_format(k) {
 		int bits;
 		if (!snd_mask_test_format(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT), k))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		bits = snd_pcm_format_physical_width(k);
 		if (bits <= 0)
@@ -3681,14 +2410,6 @@ static int snd_pcm_hw_rule_sample_bits(struct snd_pcm_hw_params *params,
 	return snd_interval_refine(hw_param_interval(params, rule->var), &t);
 }
 
-<<<<<<< HEAD
-#if SNDRV_PCM_RATE_5512 != 1 << 0 || SNDRV_PCM_RATE_192000 != 1 << 14
-#error "Change this table"
-#endif
-
-static unsigned int rates[] = { 5512, 8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100,
-                                 48000, 64000, 88200, 96000, 176400, 192000 };
-=======
 #if SNDRV_PCM_RATE_5512 != 1 << 0 || SNDRV_PCM_RATE_192000 != 1 << 12
 #error "Change this table"
 #endif
@@ -3697,7 +2418,6 @@ static const unsigned int rates[] = {
 	5512, 8000, 11025, 16000, 22050, 32000, 44100,
 	48000, 64000, 88200, 96000, 176400, 192000, 352800, 384000
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct snd_pcm_hw_constraint_list snd_pcm_known_rates = {
 	.count = ARRAY_SIZE(rates),
@@ -3726,9 +2446,6 @@ static int snd_pcm_hw_rule_buffer_bytes_max(struct snd_pcm_hw_params *params,
 	return snd_interval_refine(hw_param_interval(params, rule->var), &t);
 }		
 
-<<<<<<< HEAD
-int snd_pcm_hw_constraints_init(struct snd_pcm_substream *substream)
-=======
 static int snd_pcm_hw_rule_subformats(struct snd_pcm_hw_params *params,
 				      struct snd_pcm_hw_rule *rule)
 {
@@ -3765,7 +2482,6 @@ static int snd_pcm_hw_constraint_subformats(struct snd_pcm_runtime *runtime,
 }
 
 static int snd_pcm_hw_constraints_init(struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_pcm_hw_constraints *constrs = &runtime->hw_constraints;
@@ -3889,11 +2605,7 @@ static int snd_pcm_hw_constraints_init(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
-=======
 static int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_pcm_hardware *hw = &runtime->hw;
@@ -3901,18 +2613,6 @@ static int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
 	unsigned int mask = 0;
 
         if (hw->info & SNDRV_PCM_INFO_INTERLEAVED)
-<<<<<<< HEAD
-		mask |= 1 << SNDRV_PCM_ACCESS_RW_INTERLEAVED;
-        if (hw->info & SNDRV_PCM_INFO_NONINTERLEAVED)
-		mask |= 1 << SNDRV_PCM_ACCESS_RW_NONINTERLEAVED;
-	if (hw->info & SNDRV_PCM_INFO_MMAP) {
-		if (hw->info & SNDRV_PCM_INFO_INTERLEAVED)
-			mask |= 1 << SNDRV_PCM_ACCESS_MMAP_INTERLEAVED;
-		if (hw->info & SNDRV_PCM_INFO_NONINTERLEAVED)
-			mask |= 1 << SNDRV_PCM_ACCESS_MMAP_NONINTERLEAVED;
-		if (hw->info & SNDRV_PCM_INFO_COMPLEX)
-			mask |= 1 << SNDRV_PCM_ACCESS_MMAP_COMPLEX;
-=======
 		mask |= PARAM_MASK_BIT(SNDRV_PCM_ACCESS_RW_INTERLEAVED);
         if (hw->info & SNDRV_PCM_INFO_NONINTERLEAVED)
 		mask |= PARAM_MASK_BIT(SNDRV_PCM_ACCESS_RW_NONINTERLEAVED);
@@ -3923,7 +2623,6 @@ static int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
 			mask |= PARAM_MASK_BIT(SNDRV_PCM_ACCESS_MMAP_NONINTERLEAVED);
 		if (hw->info & SNDRV_PCM_INFO_COMPLEX)
 			mask |= PARAM_MASK_BIT(SNDRV_PCM_ACCESS_MMAP_COMPLEX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	err = snd_pcm_hw_constraint_mask(runtime, SNDRV_PCM_HW_PARAM_ACCESS, mask);
 	if (err < 0)
@@ -3933,11 +2632,7 @@ static int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	err = snd_pcm_hw_constraint_mask(runtime, SNDRV_PCM_HW_PARAM_SUBFORMAT, 1 << SNDRV_PCM_SUBFORMAT_STD);
-=======
 	err = snd_pcm_hw_constraint_subformats(runtime, 0, &hw->subformats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -3976,11 +2671,7 @@ static int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
 	if (runtime->dma_bytes) {
 		err = snd_pcm_hw_constraint_minmax(runtime, SNDRV_PCM_HW_PARAM_BUFFER_BYTES, 0, runtime->dma_bytes);
 		if (err < 0)
-<<<<<<< HEAD
-			return -EINVAL;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!(hw->rates & (SNDRV_PCM_RATE_KNOT | SNDRV_PCM_RATE_CONTINUOUS))) {
@@ -3999,12 +2690,8 @@ static int snd_pcm_hw_constraints_complete(struct snd_pcm_substream *substream)
 
 static void pcm_release_private(struct snd_pcm_substream *substream)
 {
-<<<<<<< HEAD
-	snd_pcm_unlink(substream);
-=======
 	if (snd_pcm_stream_linked(substream))
 		snd_pcm_unlink(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void snd_pcm_release_substream(struct snd_pcm_substream *substream)
@@ -4015,15 +2702,6 @@ void snd_pcm_release_substream(struct snd_pcm_substream *substream)
 
 	snd_pcm_drop(substream);
 	if (substream->hw_opened) {
-<<<<<<< HEAD
-		if (substream->ops->hw_free != NULL)
-			substream->ops->hw_free(substream);
-		substream->ops->close(substream);
-		substream->hw_opened = 0;
-	}
-	if (pm_qos_request_active(&substream->latency_pm_qos_req))
-		pm_qos_remove_request(&substream->latency_pm_qos_req);
-=======
 		if (substream->runtime->state != SNDRV_PCM_STATE_OPEN)
 			do_hw_free(substream);
 		substream->ops->close(substream);
@@ -4031,17 +2709,12 @@ void snd_pcm_release_substream(struct snd_pcm_substream *substream)
 	}
 	if (cpu_latency_qos_request_active(&substream->latency_pm_qos_req))
 		cpu_latency_qos_remove_request(&substream->latency_pm_qos_req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (substream->pcm_release) {
 		substream->pcm_release(substream);
 		substream->pcm_release = NULL;
 	}
 	snd_pcm_detach_substream(substream);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_release_substream);
 
 int snd_pcm_open_substream(struct snd_pcm *pcm, int stream,
@@ -4061,38 +2734,18 @@ int snd_pcm_open_substream(struct snd_pcm *pcm, int stream,
 
 	err = snd_pcm_hw_constraints_init(substream);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printd("snd_pcm_hw_constraints_init failed\n");
-		goto error;
-	}
-
-	if (substream->ops == NULL) {
-		snd_printd("cannot open back end PCMs directly\n");
-		err = -ENODEV;
-		goto error;
-	}
-
-	if ((err = substream->ops->open(substream)) < 0)
-=======
 		pcm_dbg(pcm, "snd_pcm_hw_constraints_init failed\n");
 		goto error;
 	}
 
 	err = substream->ops->open(substream);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 
 	substream->hw_opened = 1;
 
 	err = snd_pcm_hw_constraints_complete(substream);
 	if (err < 0) {
-<<<<<<< HEAD
-		snd_printd("snd_pcm_hw_constraints_complete failed\n");
-		goto error;
-	}
-
-=======
 		pcm_dbg(pcm, "snd_pcm_hw_constraints_complete failed\n");
 		goto error;
 	}
@@ -4104,7 +2757,6 @@ int snd_pcm_open_substream(struct snd_pcm *pcm, int stream,
 	    substream->dma_buffer.dev.need_sync)
 		substream->runtime->hw.info |= SNDRV_PCM_INFO_EXPLICIT_SYNC;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*rsubstream = substream;
 	return 0;
 
@@ -4112,10 +2764,6 @@ int snd_pcm_open_substream(struct snd_pcm *pcm, int stream,
 	snd_pcm_release_substream(substream);
 	return err;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_open_substream);
 
 static int snd_pcm_open_file(struct file *file,
@@ -4136,15 +2784,8 @@ static int snd_pcm_open_file(struct file *file,
 		return -ENOMEM;
 	}
 	pcm_file->substream = substream;
-<<<<<<< HEAD
-	if (substream->ref_count == 1) {
-		substream->file = pcm_file;
-		substream->pcm_release = pcm_release_private;
-	}
-=======
 	if (substream->ref_count == 1)
 		substream->pcm_release = pcm_release_private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	file->private_data = pcm_file;
 
 	return 0;
@@ -4181,11 +2822,7 @@ static int snd_pcm_capture_open(struct inode *inode, struct file *file)
 static int snd_pcm_open(struct file *file, struct snd_pcm *pcm, int stream)
 {
 	int err;
-<<<<<<< HEAD
-	wait_queue_t wait;
-=======
 	wait_queue_entry_t wait;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pcm == NULL) {
 		err = -ENODEV;
@@ -4250,12 +2887,6 @@ static int snd_pcm_release(struct inode *inode, struct file *file)
 	if (snd_BUG_ON(!substream))
 		return -ENXIO;
 	pcm = substream->pcm;
-<<<<<<< HEAD
-	mutex_lock(&pcm->open_mutex);
-	snd_pcm_release_substream(substream);
-	kfree(pcm_file);
-	mutex_unlock(&pcm->open_mutex);
-=======
 
 	/* block until the device gets woken up as it may touch the hardware */
 	snd_power_wait(pcm->card);
@@ -4264,279 +2895,12 @@ static int snd_pcm_release(struct inode *inode, struct file *file)
 		snd_pcm_release_substream(substream);
 		kfree(pcm_file);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&pcm->open_wait);
 	module_put(pcm->card->module);
 	snd_card_file_remove(pcm->card, file);
 	return 0;
 }
 
-<<<<<<< HEAD
-static snd_pcm_sframes_t snd_pcm_playback_rewind(struct snd_pcm_substream *substream,
-						 snd_pcm_uframes_t frames)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	snd_pcm_sframes_t appl_ptr;
-	snd_pcm_sframes_t ret;
-	snd_pcm_sframes_t hw_avail;
-
-	if (frames == 0)
-		return 0;
-
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_PREPARED:
-		break;
-	case SNDRV_PCM_STATE_DRAINING:
-	case SNDRV_PCM_STATE_RUNNING:
-		if (snd_pcm_update_hw_ptr(substream) >= 0)
-			break;
-		/* Fall through */
-	case SNDRV_PCM_STATE_XRUN:
-		ret = -EPIPE;
-		goto __end;
-	case SNDRV_PCM_STATE_SUSPENDED:
-		ret = -ESTRPIPE;
-		goto __end;
-	default:
-		ret = -EBADFD;
-		goto __end;
-	}
-
-	hw_avail = snd_pcm_playback_hw_avail(runtime);
-	if (hw_avail <= 0) {
-		ret = 0;
-		goto __end;
-	}
-	if (frames > (snd_pcm_uframes_t)hw_avail)
-		frames = hw_avail;
-	appl_ptr = runtime->control->appl_ptr - frames;
-	if (appl_ptr < 0)
-		appl_ptr += runtime->boundary;
-	runtime->control->appl_ptr = appl_ptr;
-	ret = frames;
- __end:
-	snd_pcm_stream_unlock_irq(substream);
-	return ret;
-}
-
-static snd_pcm_sframes_t snd_pcm_capture_rewind(struct snd_pcm_substream *substream,
-						snd_pcm_uframes_t frames)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	snd_pcm_sframes_t appl_ptr;
-	snd_pcm_sframes_t ret;
-	snd_pcm_sframes_t hw_avail;
-
-	if (frames == 0)
-		return 0;
-
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_PREPARED:
-	case SNDRV_PCM_STATE_DRAINING:
-		break;
-	case SNDRV_PCM_STATE_RUNNING:
-		if (snd_pcm_update_hw_ptr(substream) >= 0)
-			break;
-		/* Fall through */
-	case SNDRV_PCM_STATE_XRUN:
-		ret = -EPIPE;
-		goto __end;
-	case SNDRV_PCM_STATE_SUSPENDED:
-		ret = -ESTRPIPE;
-		goto __end;
-	default:
-		ret = -EBADFD;
-		goto __end;
-	}
-
-	hw_avail = snd_pcm_capture_hw_avail(runtime);
-	if (hw_avail <= 0) {
-		ret = 0;
-		goto __end;
-	}
-	if (frames > (snd_pcm_uframes_t)hw_avail)
-		frames = hw_avail;
-	appl_ptr = runtime->control->appl_ptr - frames;
-	if (appl_ptr < 0)
-		appl_ptr += runtime->boundary;
-	runtime->control->appl_ptr = appl_ptr;
-	ret = frames;
- __end:
-	snd_pcm_stream_unlock_irq(substream);
-	return ret;
-}
-
-static snd_pcm_sframes_t snd_pcm_playback_forward(struct snd_pcm_substream *substream,
-						  snd_pcm_uframes_t frames)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	snd_pcm_sframes_t appl_ptr;
-	snd_pcm_sframes_t ret;
-	snd_pcm_sframes_t avail;
-
-	if (frames == 0)
-		return 0;
-
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_PREPARED:
-	case SNDRV_PCM_STATE_PAUSED:
-		break;
-	case SNDRV_PCM_STATE_DRAINING:
-	case SNDRV_PCM_STATE_RUNNING:
-		if (snd_pcm_update_hw_ptr(substream) >= 0)
-			break;
-		/* Fall through */
-	case SNDRV_PCM_STATE_XRUN:
-		ret = -EPIPE;
-		goto __end;
-	case SNDRV_PCM_STATE_SUSPENDED:
-		ret = -ESTRPIPE;
-		goto __end;
-	default:
-		ret = -EBADFD;
-		goto __end;
-	}
-
-	avail = snd_pcm_playback_avail(runtime);
-	if (avail <= 0) {
-		ret = 0;
-		goto __end;
-	}
-	if (frames > (snd_pcm_uframes_t)avail)
-		frames = avail;
-	appl_ptr = runtime->control->appl_ptr + frames;
-	if (appl_ptr >= (snd_pcm_sframes_t)runtime->boundary)
-		appl_ptr -= runtime->boundary;
-	runtime->control->appl_ptr = appl_ptr;
-	ret = frames;
- __end:
-	snd_pcm_stream_unlock_irq(substream);
-	return ret;
-}
-
-static snd_pcm_sframes_t snd_pcm_capture_forward(struct snd_pcm_substream *substream,
-						 snd_pcm_uframes_t frames)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	snd_pcm_sframes_t appl_ptr;
-	snd_pcm_sframes_t ret;
-	snd_pcm_sframes_t avail;
-
-	if (frames == 0)
-		return 0;
-
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_PREPARED:
-	case SNDRV_PCM_STATE_DRAINING:
-	case SNDRV_PCM_STATE_PAUSED:
-		break;
-	case SNDRV_PCM_STATE_RUNNING:
-		if (snd_pcm_update_hw_ptr(substream) >= 0)
-			break;
-		/* Fall through */
-	case SNDRV_PCM_STATE_XRUN:
-		ret = -EPIPE;
-		goto __end;
-	case SNDRV_PCM_STATE_SUSPENDED:
-		ret = -ESTRPIPE;
-		goto __end;
-	default:
-		ret = -EBADFD;
-		goto __end;
-	}
-
-	avail = snd_pcm_capture_avail(runtime);
-	if (avail <= 0) {
-		ret = 0;
-		goto __end;
-	}
-	if (frames > (snd_pcm_uframes_t)avail)
-		frames = avail;
-	appl_ptr = runtime->control->appl_ptr + frames;
-	if (appl_ptr >= (snd_pcm_sframes_t)runtime->boundary)
-		appl_ptr -= runtime->boundary;
-	runtime->control->appl_ptr = appl_ptr;
-	ret = frames;
- __end:
-	snd_pcm_stream_unlock_irq(substream);
-	return ret;
-}
-
-static int snd_pcm_hwsync(struct snd_pcm_substream *substream)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	int err;
-
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_DRAINING:
-		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
-			goto __badfd;
-	case SNDRV_PCM_STATE_RUNNING:
-		if ((err = snd_pcm_update_hw_ptr(substream)) < 0)
-			break;
-		/* Fall through */
-	case SNDRV_PCM_STATE_PREPARED:
-	case SNDRV_PCM_STATE_SUSPENDED:
-		err = 0;
-		break;
-	case SNDRV_PCM_STATE_XRUN:
-		err = -EPIPE;
-		break;
-	default:
-	      __badfd:
-		err = -EBADFD;
-		break;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-	return err;
-}
-		
-static int snd_pcm_delay(struct snd_pcm_substream *substream,
-			 snd_pcm_sframes_t __user *res)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;
-	int err;
-	snd_pcm_sframes_t n = 0;
-
-	snd_pcm_stream_lock_irq(substream);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_DRAINING:
-		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
-			goto __badfd;
-	case SNDRV_PCM_STATE_RUNNING:
-		if ((err = snd_pcm_update_hw_ptr(substream)) < 0)
-			break;
-		/* Fall through */
-	case SNDRV_PCM_STATE_PREPARED:
-	case SNDRV_PCM_STATE_SUSPENDED:
-		err = 0;
-		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
-			n = snd_pcm_playback_hw_avail(runtime);
-		else
-			n = snd_pcm_capture_avail(runtime);
-		n += runtime->delay;
-		break;
-	case SNDRV_PCM_STATE_XRUN:
-		err = -EPIPE;
-		break;
-	default:
-	      __badfd:
-		err = -EBADFD;
-		break;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-	if (!err)
-		if (put_user(n, res))
-			err = -EFAULT;
-	return err;
-}
-		
-=======
 /* check and update PCM state; return 0 or a negative error
  * call this inside PCM lock
  */
@@ -4664,7 +3028,6 @@ static inline int snd_pcm_hwsync(struct snd_pcm_substream *substream)
 	return snd_pcm_delay(substream, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_sync_ptr(struct snd_pcm_substream *substream,
 			    struct snd_pcm_sync_ptr __user *_sync_ptr)
 {
@@ -4673,10 +3036,6 @@ static int snd_pcm_sync_ptr(struct snd_pcm_substream *substream,
 	volatile struct snd_pcm_mmap_status *status;
 	volatile struct snd_pcm_mmap_control *control;
 	int err;
-<<<<<<< HEAD
-	snd_pcm_uframes_t hw_avail;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&sync_ptr, 0, sizeof(sync_ptr));
 	if (get_user(sync_ptr.flags, (unsigned __user *)&(_sync_ptr->flags)))
@@ -4690,32 +3049,6 @@ static int snd_pcm_sync_ptr(struct snd_pcm_substream *substream,
 		if (err < 0)
 			return err;
 	}
-<<<<<<< HEAD
-	snd_pcm_stream_lock_irq(substream);
-	if (!(sync_ptr.flags & SNDRV_PCM_SYNC_PTR_APPL))
-		control->appl_ptr = sync_ptr.c.control.appl_ptr;
-	else
-		sync_ptr.c.control.appl_ptr = control->appl_ptr;
-	if (!(sync_ptr.flags & SNDRV_PCM_SYNC_PTR_AVAIL_MIN))
-		control->avail_min = sync_ptr.c.control.avail_min;
-	else
-		sync_ptr.c.control.avail_min = control->avail_min;
-
-	if (runtime->render_flag & SNDRV_NON_DMA_MODE) {
-		hw_avail = snd_pcm_playback_hw_avail(runtime);
-		if ((hw_avail >= runtime->start_threshold)
-			&& (runtime->render_flag &
-				SNDRV_RENDER_STOPPED)) {
-			if (substream->ops->restart)
-				substream->ops->restart(substream);
-		}
-	}
-	sync_ptr.s.status.state = status->state;
-	sync_ptr.s.status.hw_ptr = status->hw_ptr;
-	sync_ptr.s.status.tstamp = status->tstamp;
-	sync_ptr.s.status.suspended_state = status->suspended_state;
-	snd_pcm_stream_unlock_irq(substream);
-=======
 	scoped_guard(pcm_stream_lock_irq, substream) {
 		if (!(sync_ptr.flags & SNDRV_PCM_SYNC_PTR_APPL)) {
 			err = pcm_lib_apply_appl_ptr(substream,
@@ -4737,14 +3070,11 @@ static int snd_pcm_sync_ptr(struct snd_pcm_substream *substream,
 	}
 	if (!(sync_ptr.flags & SNDRV_PCM_SYNC_PTR_APPL))
 		snd_pcm_dma_buffer_sync(substream, SNDRV_DMA_SYNC_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user(_sync_ptr, &sync_ptr, sizeof(sync_ptr)))
 		return -EFAULT;
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 struct snd_pcm_mmap_status32 {
 	snd_pcm_state_t state;
 	s32 pad1;
@@ -4851,7 +3181,6 @@ static int snd_pcm_ioctl_sync_ptr_compat(struct snd_pcm_substream *substream,
 }
 #define __SNDRV_PCM_IOCTL_SYNC_PTR32 _IOWR('A', 0x23, struct snd_pcm_sync_ptr32)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_tstamp(struct snd_pcm_substream *substream, int __user *_arg)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -4861,18 +3190,6 @@ static int snd_pcm_tstamp(struct snd_pcm_substream *substream, int __user *_arg)
 		return -EFAULT;
 	if (arg < 0 || arg > SNDRV_PCM_TSTAMP_TYPE_LAST)
 		return -EINVAL;
-<<<<<<< HEAD
-	runtime->tstamp_type = SNDRV_PCM_TSTAMP_TYPE_GETTIMEOFDAY;
-	if (arg == SNDRV_PCM_TSTAMP_TYPE_MONOTONIC)
-		runtime->tstamp_type = SNDRV_PCM_TSTAMP_TYPE_MONOTONIC;
-	return 0;
-}
-
-static int snd_pcm_common_ioctl1(struct file *file,
-				 struct snd_pcm_substream *substream,
-				 unsigned int cmd, void __user *arg)
-{
-=======
 	runtime->tstamp_type = arg;
 	return 0;
 }
@@ -4977,7 +3294,6 @@ static int snd_pcm_common_ioctl(struct file *file,
 	if (res < 0)
 		return res;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case SNDRV_PCM_IOCTL_PVERSION:
 		return put_user(SNDRV_PCM_VERSION, (int __user *)arg) ? -EFAULT : 0;
@@ -4987,14 +3303,11 @@ static int snd_pcm_common_ioctl(struct file *file,
 		return 0;
 	case SNDRV_PCM_IOCTL_TTSTAMP:
 		return snd_pcm_tstamp(substream, arg);
-<<<<<<< HEAD
-=======
 	case SNDRV_PCM_IOCTL_USER_PVERSION:
 		if (get_user(pcm_file->user_pversion,
 			     (unsigned int __user *)arg))
 			return -EFAULT;
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_IOCTL_HW_REFINE:
 		return snd_pcm_hw_refine_user(substream, arg);
 	case SNDRV_PCM_IOCTL_HW_PARAMS:
@@ -5003,10 +3316,6 @@ static int snd_pcm_common_ioctl(struct file *file,
 		return snd_pcm_hw_free(substream);
 	case SNDRV_PCM_IOCTL_SW_PARAMS:
 		return snd_pcm_sw_params_user(substream, arg);
-<<<<<<< HEAD
-	case SNDRV_PCM_IOCTL_STATUS:
-		return snd_pcm_status_user(substream, arg);
-=======
 	case SNDRV_PCM_IOCTL_STATUS32:
 		return snd_pcm_status_user32(substream, arg, false);
 	case SNDRV_PCM_IOCTL_STATUS_EXT32:
@@ -5015,7 +3324,6 @@ static int snd_pcm_common_ioctl(struct file *file,
 		return snd_pcm_status_user64(substream, arg, false);
 	case SNDRV_PCM_IOCTL_STATUS_EXT64:
 		return snd_pcm_status_user64(substream, arg, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_IOCTL_CHANNEL_INFO:
 		return snd_pcm_channel_info_user(substream, arg);
 	case SNDRV_PCM_IOCTL_PREPARE:
@@ -5023,11 +3331,7 @@ static int snd_pcm_common_ioctl(struct file *file,
 	case SNDRV_PCM_IOCTL_RESET:
 		return snd_pcm_reset(substream);
 	case SNDRV_PCM_IOCTL_START:
-<<<<<<< HEAD
-		return snd_pcm_action_lock_irq(&snd_pcm_action_start, substream, SNDRV_PCM_STATE_RUNNING);
-=======
 		return snd_pcm_start_lock_irq(substream);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_IOCTL_LINK:
 		return snd_pcm_link(substream, (int)(unsigned long) arg);
 	case SNDRV_PCM_IOCTL_UNLINK:
@@ -5039,10 +3343,6 @@ static int snd_pcm_common_ioctl(struct file *file,
 	case SNDRV_PCM_IOCTL_HWSYNC:
 		return snd_pcm_hwsync(substream);
 	case SNDRV_PCM_IOCTL_DELAY:
-<<<<<<< HEAD
-		return snd_pcm_delay(substream, arg);
-	case SNDRV_PCM_IOCTL_SYNC_PTR:
-=======
 	{
 		snd_pcm_sframes_t delay = 0;
 		snd_pcm_sframes_t __user *res = arg;
@@ -5058,7 +3358,6 @@ static int snd_pcm_common_ioctl(struct file *file,
 	case __SNDRV_PCM_IOCTL_SYNC_PTR32:
 		return snd_pcm_ioctl_sync_ptr_compat(substream, arg);
 	case __SNDRV_PCM_IOCTL_SYNC_PTR64:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return snd_pcm_sync_ptr(substream, arg);
 #ifdef CONFIG_SND_SUPPORT_OLD_API
 	case SNDRV_PCM_IOCTL_HW_REFINE_OLD:
@@ -5071,193 +3370,6 @@ static int snd_pcm_common_ioctl(struct file *file,
 	case SNDRV_PCM_IOCTL_DROP:
 		return snd_pcm_drop(substream);
 	case SNDRV_PCM_IOCTL_PAUSE:
-<<<<<<< HEAD
-	{
-		int res;
-		snd_pcm_stream_lock_irq(substream);
-		res = snd_pcm_pause(substream, (int)(unsigned long)arg);
-		snd_pcm_stream_unlock_irq(substream);
-		return res;
-	}
-	case SNDRV_COMPRESS_GET_CAPS:
-	case SNDRV_COMPRESS_GET_CODEC_CAPS:
-	case SNDRV_COMPRESS_SET_PARAMS:
-	case SNDRV_COMPRESS_GET_PARAMS:
-	case SNDRV_COMPRESS_TSTAMP:
-	case SNDRV_COMPRESS_DRAIN:
-	case SNDRV_COMPRESS_METADATA_MODE:
-		return snd_compressed_ioctl(substream, cmd, arg);
-	default:
-		if (((cmd >> 8) & 0xff) == 'U')
-			return snd_user_ioctl(substream, cmd, arg);
-	}
-	snd_printd("unknown ioctl = 0x%x\n", cmd);
-	return -ENOTTY;
-}
-
-static int snd_pcm_playback_ioctl1(struct file *file,
-				   struct snd_pcm_substream *substream,
-				   unsigned int cmd, void __user *arg)
-{
-	if (snd_BUG_ON(!substream))
-		return -ENXIO;
-	if (snd_BUG_ON(substream->stream != SNDRV_PCM_STREAM_PLAYBACK))
-		return -EINVAL;
-	switch (cmd) {
-	case SNDRV_PCM_IOCTL_WRITEI_FRAMES:
-	{
-		struct snd_xferi xferi;
-		struct snd_xferi __user *_xferi = arg;
-		struct snd_pcm_runtime *runtime = substream->runtime;
-		snd_pcm_sframes_t result;
-		if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-			return -EBADFD;
-		if (put_user(0, &_xferi->result))
-			return -EFAULT;
-		if (copy_from_user(&xferi, _xferi, sizeof(xferi)))
-			return -EFAULT;
-		result = snd_pcm_lib_write(substream, xferi.buf, xferi.frames);
-		__put_user(result, &_xferi->result);
-		return result < 0 ? result : 0;
-	}
-	case SNDRV_PCM_IOCTL_WRITEN_FRAMES:
-	{
-		struct snd_xfern xfern;
-		struct snd_xfern __user *_xfern = arg;
-		struct snd_pcm_runtime *runtime = substream->runtime;
-		void __user **bufs;
-		snd_pcm_sframes_t result;
-		if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-			return -EBADFD;
-		if (runtime->channels > 128)
-			return -EINVAL;
-		if (put_user(0, &_xfern->result))
-			return -EFAULT;
-		if (copy_from_user(&xfern, _xfern, sizeof(xfern)))
-			return -EFAULT;
-
-		bufs = memdup_user(xfern.bufs,
-				   sizeof(void *) * runtime->channels);
-		if (IS_ERR(bufs))
-			return PTR_ERR(bufs);
-		result = snd_pcm_lib_writev(substream, bufs, xfern.frames);
-		kfree(bufs);
-		__put_user(result, &_xfern->result);
-		return result < 0 ? result : 0;
-	}
-	case SNDRV_PCM_IOCTL_REWIND:
-	{
-		snd_pcm_uframes_t frames;
-		snd_pcm_uframes_t __user *_frames = arg;
-		snd_pcm_sframes_t result;
-		if (get_user(frames, _frames))
-			return -EFAULT;
-		if (put_user(0, _frames))
-			return -EFAULT;
-		result = snd_pcm_playback_rewind(substream, frames);
-		__put_user(result, _frames);
-		return result < 0 ? result : 0;
-	}
-	case SNDRV_PCM_IOCTL_FORWARD:
-	{
-		snd_pcm_uframes_t frames;
-		snd_pcm_uframes_t __user *_frames = arg;
-		snd_pcm_sframes_t result;
-		if (get_user(frames, _frames))
-			return -EFAULT;
-		if (put_user(0, _frames))
-			return -EFAULT;
-		result = snd_pcm_playback_forward(substream, frames);
-		__put_user(result, _frames);
-		return result < 0 ? result : 0;
-	}
-	}
-	return snd_pcm_common_ioctl1(file, substream, cmd, arg);
-}
-
-static int snd_pcm_capture_ioctl1(struct file *file,
-				  struct snd_pcm_substream *substream,
-				  unsigned int cmd, void __user *arg)
-{
-	if (snd_BUG_ON(!substream))
-		return -ENXIO;
-	if (snd_BUG_ON(substream->stream != SNDRV_PCM_STREAM_CAPTURE))
-		return -EINVAL;
-	switch (cmd) {
-	case SNDRV_PCM_IOCTL_READI_FRAMES:
-	{
-		struct snd_xferi xferi;
-		struct snd_xferi __user *_xferi = arg;
-		struct snd_pcm_runtime *runtime = substream->runtime;
-		snd_pcm_sframes_t result;
-		if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-			return -EBADFD;
-		if (put_user(0, &_xferi->result))
-			return -EFAULT;
-		if (copy_from_user(&xferi, _xferi, sizeof(xferi)))
-			return -EFAULT;
-		result = snd_pcm_lib_read(substream, xferi.buf, xferi.frames);
-		__put_user(result, &_xferi->result);
-		return result < 0 ? result : 0;
-	}
-	case SNDRV_PCM_IOCTL_READN_FRAMES:
-	{
-		struct snd_xfern xfern;
-		struct snd_xfern __user *_xfern = arg;
-		struct snd_pcm_runtime *runtime = substream->runtime;
-		void *bufs;
-		snd_pcm_sframes_t result;
-		if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-			return -EBADFD;
-		if (runtime->channels > 128)
-			return -EINVAL;
-		if (put_user(0, &_xfern->result))
-			return -EFAULT;
-		if (copy_from_user(&xfern, _xfern, sizeof(xfern)))
-			return -EFAULT;
-
-		bufs = memdup_user(xfern.bufs,
-				   sizeof(void *) * runtime->channels);
-		if (IS_ERR(bufs))
-			return PTR_ERR(bufs);
-		result = snd_pcm_lib_readv(substream, bufs, xfern.frames);
-		kfree(bufs);
-		__put_user(result, &_xfern->result);
-		return result < 0 ? result : 0;
-	}
-	case SNDRV_PCM_IOCTL_REWIND:
-	{
-		snd_pcm_uframes_t frames;
-		snd_pcm_uframes_t __user *_frames = arg;
-		snd_pcm_sframes_t result;
-		if (get_user(frames, _frames))
-			return -EFAULT;
-		if (put_user(0, _frames))
-			return -EFAULT;
-		result = snd_pcm_capture_rewind(substream, frames);
-		__put_user(result, _frames);
-		return result < 0 ? result : 0;
-	}
-	case SNDRV_PCM_IOCTL_FORWARD:
-	{
-		snd_pcm_uframes_t frames;
-		snd_pcm_uframes_t __user *_frames = arg;
-		snd_pcm_sframes_t result;
-		if (get_user(frames, _frames))
-			return -EFAULT;
-		if (put_user(0, _frames))
-			return -EFAULT;
-		result = snd_pcm_capture_forward(substream, frames);
-		__put_user(result, _frames);
-		return result < 0 ? result : 0;
-	}
-	}
-	return snd_pcm_common_ioctl1(file, substream, cmd, arg);
-}
-
-static long snd_pcm_playback_ioctl(struct file *file, unsigned int cmd,
-				   unsigned long arg)
-=======
 		return snd_pcm_pause_lock_irq(substream, (unsigned long)arg);
 	case SNDRV_PCM_IOCTL_WRITEI_FRAMES:
 	case SNDRV_PCM_IOCTL_READI_FRAMES:
@@ -5276,61 +3388,11 @@ static long snd_pcm_playback_ioctl(struct file *file, unsigned int cmd,
 
 static long snd_pcm_ioctl(struct file *file, unsigned int cmd,
 			  unsigned long arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_file *pcm_file;
 
 	pcm_file = file->private_data;
 
-<<<<<<< HEAD
-	if ((((cmd >> 8) & 0xff) != 'A') && (((cmd >> 8) & 0xff) != 'C'))
-		return -ENOTTY;
-
-	return snd_pcm_playback_ioctl1(file, pcm_file->substream, cmd,
-				       (void __user *)arg);
-}
-
-static long snd_pcm_capture_ioctl(struct file *file, unsigned int cmd,
-				  unsigned long arg)
-{
-	struct snd_pcm_file *pcm_file;
-	unsigned char ioctl_magic;
-
-	pcm_file = file->private_data;
-	ioctl_magic = ((cmd >> 8) & 0xff);
-
-	if (ioctl_magic != 'A' && ioctl_magic != 'C' && ioctl_magic != 'U')
-		return -ENOTTY;
-
-	return snd_pcm_capture_ioctl1(file, pcm_file->substream, cmd,
-				      (void __user *)arg);
-}
-
-int snd_pcm_kernel_ioctl(struct snd_pcm_substream *substream,
-			 unsigned int cmd, void *arg)
-{
-	mm_segment_t fs;
-	int result;
-	
-	fs = snd_enter_user();
-	switch (substream->stream) {
-	case SNDRV_PCM_STREAM_PLAYBACK:
-		result = snd_pcm_playback_ioctl1(NULL, substream, cmd,
-						 (void __user *)arg);
-		break;
-	case SNDRV_PCM_STREAM_CAPTURE:
-		result = snd_pcm_capture_ioctl1(NULL, substream, cmd,
-						(void __user *)arg);
-		break;
-	default:
-		result = -EINVAL;
-		break;
-	}
-	snd_leave_user(fs);
-	return result;
-}
-
-=======
 	if (((cmd >> 8) & 0xff) != 'A')
 		return -ENOTTY;
 
@@ -5386,7 +3448,6 @@ int snd_pcm_kernel_ioctl(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_kernel_ioctl);
 
 static ssize_t snd_pcm_read(struct file *file, char __user *buf, size_t count,
@@ -5402,12 +3463,8 @@ static ssize_t snd_pcm_read(struct file *file, char __user *buf, size_t count,
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-=======
 	if (runtime->state == SNDRV_PCM_STATE_OPEN ||
 	    runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	if (!frame_aligned(runtime, count))
 		return -EINVAL;
@@ -5431,12 +3488,8 @@ static ssize_t snd_pcm_write(struct file *file, const char __user *buf,
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-=======
 	if (runtime->state == SNDRV_PCM_STATE_OPEN ||
 	    runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	if (!frame_aligned(runtime, count))
 		return -EINVAL;
@@ -5447,65 +3500,32 @@ static ssize_t snd_pcm_write(struct file *file, const char __user *buf,
 	return result;
 }
 
-<<<<<<< HEAD
-static ssize_t snd_pcm_aio_read(struct kiocb *iocb, const struct iovec *iov,
-			     unsigned long nr_segs, loff_t pos)
-
-=======
 static ssize_t snd_pcm_readv(struct kiocb *iocb, struct iov_iter *to)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_file *pcm_file;
 	struct snd_pcm_substream *substream;
 	struct snd_pcm_runtime *runtime;
 	snd_pcm_sframes_t result;
 	unsigned long i;
-<<<<<<< HEAD
-	void __user **bufs;
-	snd_pcm_uframes_t frames;
-=======
 	void __user **bufs __free(kfree) = NULL;
 	snd_pcm_uframes_t frames;
 	const struct iovec *iov = iter_iov(to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcm_file = iocb->ki_filp->private_data;
 	substream = pcm_file->substream;
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-		return -EBADFD;
-	if (nr_segs > 1024 || nr_segs != runtime->channels)
-=======
 	if (runtime->state == SNDRV_PCM_STATE_OPEN ||
 	    runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
 		return -EBADFD;
 	if (!user_backed_iter(to))
 		return -EINVAL;
 	if (to->nr_segs > 1024 || to->nr_segs != runtime->channels)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (!frame_aligned(runtime, iov->iov_len))
 		return -EINVAL;
 	frames = bytes_to_samples(runtime, iov->iov_len);
-<<<<<<< HEAD
-	bufs = kmalloc(sizeof(void *) * nr_segs, GFP_KERNEL);
-	if (bufs == NULL)
-		return -ENOMEM;
-	for (i = 0; i < nr_segs; ++i)
-		bufs[i] = iov[i].iov_base;
-	result = snd_pcm_lib_readv(substream, bufs, frames);
-	if (result > 0)
-		result = frames_to_bytes(runtime, result);
-	kfree(bufs);
-	return result;
-}
-
-static ssize_t snd_pcm_aio_write(struct kiocb *iocb, const struct iovec *iov,
-			      unsigned long nr_segs, loff_t pos)
-=======
 	bufs = kmalloc_array(to->nr_segs, sizeof(void *), GFP_KERNEL);
 	if (bufs == NULL)
 		return -ENOMEM;
@@ -5520,48 +3540,21 @@ static ssize_t snd_pcm_aio_write(struct kiocb *iocb, const struct iovec *iov,
 }
 
 static ssize_t snd_pcm_writev(struct kiocb *iocb, struct iov_iter *from)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_file *pcm_file;
 	struct snd_pcm_substream *substream;
 	struct snd_pcm_runtime *runtime;
 	snd_pcm_sframes_t result;
 	unsigned long i;
-<<<<<<< HEAD
-	void __user **bufs;
-	snd_pcm_uframes_t frames;
-=======
 	void __user **bufs __free(kfree) = NULL;
 	snd_pcm_uframes_t frames;
 	const struct iovec *iov = iter_iov(from);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcm_file = iocb->ki_filp->private_data;
 	substream = pcm_file->substream;
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-		return -EBADFD;
-	if (nr_segs > 128 || nr_segs != runtime->channels ||
-	    !frame_aligned(runtime, iov->iov_len))
-		return -EINVAL;
-	frames = bytes_to_samples(runtime, iov->iov_len);
-	bufs = kmalloc(sizeof(void *) * nr_segs, GFP_KERNEL);
-	if (bufs == NULL)
-		return -ENOMEM;
-	for (i = 0; i < nr_segs; ++i)
-		bufs[i] = iov[i].iov_base;
-	result = snd_pcm_lib_writev(substream, bufs, frames);
-	if (result > 0)
-		result = frames_to_bytes(runtime, result);
-	kfree(bufs);
-	return result;
-}
-
-static unsigned int snd_pcm_playback_poll(struct file *file, poll_table * wait)
-=======
 	if (runtime->state == SNDRV_PCM_STATE_OPEN ||
 	    runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
 		return -EBADFD;
@@ -5585,91 +3578,16 @@ static unsigned int snd_pcm_playback_poll(struct file *file, poll_table * wait)
 }
 
 static __poll_t snd_pcm_poll(struct file *file, poll_table *wait)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_file *pcm_file;
 	struct snd_pcm_substream *substream;
 	struct snd_pcm_runtime *runtime;
-<<<<<<< HEAD
-        unsigned int mask;
-=======
 	__poll_t mask, ok;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_pcm_uframes_t avail;
 
 	pcm_file = file->private_data;
 
 	substream = pcm_file->substream;
-<<<<<<< HEAD
-	if (PCM_RUNTIME_CHECK(substream))
-		return -ENXIO;
-	runtime = substream->runtime;
-
-	poll_wait(file, &runtime->sleep, wait);
-
-	snd_pcm_stream_lock_irq(substream);
-	avail = snd_pcm_playback_avail(runtime);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_RUNNING:
-	case SNDRV_PCM_STATE_PREPARED:
-	case SNDRV_PCM_STATE_PAUSED:
-		if (avail >= runtime->control->avail_min) {
-			mask = POLLOUT | POLLWRNORM;
-			break;
-		}
-		/* Fall through */
-	case SNDRV_PCM_STATE_DRAINING:
-		mask = 0;
-		break;
-	default:
-		mask = POLLOUT | POLLWRNORM | POLLERR;
-		break;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-	return mask;
-}
-
-static unsigned int snd_pcm_capture_poll(struct file *file, poll_table * wait)
-{
-	struct snd_pcm_file *pcm_file;
-	struct snd_pcm_substream *substream;
-	struct snd_pcm_runtime *runtime;
-        unsigned int mask;
-	snd_pcm_uframes_t avail;
-
-	pcm_file = file->private_data;
-
-	substream = pcm_file->substream;
-	if (PCM_RUNTIME_CHECK(substream))
-		return -ENXIO;
-	runtime = substream->runtime;
-
-	poll_wait(file, &runtime->sleep, wait);
-
-	snd_pcm_stream_lock_irq(substream);
-	avail = snd_pcm_capture_avail(runtime);
-	switch (runtime->status->state) {
-	case SNDRV_PCM_STATE_RUNNING:
-	case SNDRV_PCM_STATE_PREPARED:
-	case SNDRV_PCM_STATE_PAUSED:
-		if (avail >= runtime->control->avail_min) {
-			mask = POLLIN | POLLRDNORM;
-			break;
-		}
-		mask = 0;
-		break;
-	case SNDRV_PCM_STATE_DRAINING:
-		if (avail > 0) {
-			mask = POLLIN | POLLRDNORM;
-			break;
-		}
-		/* Fall through */
-	default:
-		mask = POLLIN | POLLRDNORM | POLLERR;
-		break;
-	}
-	snd_pcm_stream_unlock_irq(substream);
-=======
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		ok = EPOLLOUT | EPOLLWRNORM;
 	else
@@ -5704,7 +3622,6 @@ static unsigned int snd_pcm_capture_poll(struct file *file, poll_table * wait)
 		mask = ok | EPOLLERR;
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mask;
 }
 
@@ -5720,16 +3637,9 @@ static unsigned int snd_pcm_capture_poll(struct file *file, poll_table * wait)
 /*
  * mmap status record
  */
-<<<<<<< HEAD
-static int snd_pcm_mmap_status_fault(struct vm_area_struct *area,
-						struct vm_fault *vmf)
-{
-	struct snd_pcm_substream *substream = area->vm_private_data;
-=======
 static vm_fault_t snd_pcm_mmap_status_fault(struct vm_fault *vmf)
 {
 	struct snd_pcm_substream *substream = vmf->vma->vm_private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_runtime *runtime;
 	
 	if (substream == NULL)
@@ -5756,29 +3666,18 @@ static int snd_pcm_mmap_status(struct snd_pcm_substream *substream, struct file 
 		return -EINVAL;
 	area->vm_ops = &snd_pcm_vm_ops_status;
 	area->vm_private_data = substream;
-<<<<<<< HEAD
-	area->vm_flags |= VM_RESERVED;
-=======
 	vm_flags_mod(area, VM_DONTEXPAND | VM_DONTDUMP,
 		     VM_WRITE | VM_MAYWRITE);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
  * mmap control record
  */
-<<<<<<< HEAD
-static int snd_pcm_mmap_control_fault(struct vm_area_struct *area,
-						struct vm_fault *vmf)
-{
-	struct snd_pcm_substream *substream = area->vm_private_data;
-=======
 static vm_fault_t snd_pcm_mmap_control_fault(struct vm_fault *vmf)
 {
 	struct snd_pcm_substream *substream = vmf->vma->vm_private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_runtime *runtime;
 	
 	if (substream == NULL)
@@ -5805,11 +3704,6 @@ static int snd_pcm_mmap_control(struct snd_pcm_substream *substream, struct file
 		return -EINVAL;
 	area->vm_ops = &snd_pcm_vm_ops_control;
 	area->vm_private_data = substream;
-<<<<<<< HEAD
-	area->vm_flags |= VM_RESERVED;
-	return 0;
-}
-=======
 	vm_flags_set(area, VM_DONTEXPAND | VM_DONTDUMP);
 	return 0;
 }
@@ -5848,17 +3742,13 @@ static bool pcm_control_mmap_allowed(struct snd_pcm_file *pcm_file)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* ! coherent mmap */
 /*
  * don't support mmap for status and control records.
  */
-<<<<<<< HEAD
-=======
 #define pcm_status_mmap_allowed(pcm_file)	false
 #define pcm_control_mmap_allowed(pcm_file)	false
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_pcm_mmap_status(struct snd_pcm_substream *substream, struct file *file,
 			       struct vm_area_struct *area)
 {
@@ -5871,43 +3761,12 @@ static int snd_pcm_mmap_control(struct snd_pcm_substream *substream, struct file
 }
 #endif /* coherent mmap */
 
-<<<<<<< HEAD
-static inline struct page *
-snd_pcm_default_page_ops(struct snd_pcm_substream *substream, unsigned long ofs)
-{
-	void *vaddr = substream->runtime->dma_area + ofs;
-#if defined(CONFIG_MIPS) && defined(CONFIG_DMA_NONCOHERENT)
-	if (substream->dma_buffer.dev.type == SNDRV_DMA_TYPE_DEV)
-		return virt_to_page(CAC_ADDR(vaddr));
-#endif
-#if defined(CONFIG_PPC32) && defined(CONFIG_NOT_COHERENT_CACHE)
-	if (substream->dma_buffer.dev.type == SNDRV_DMA_TYPE_DEV) {
-		dma_addr_t addr = substream->runtime->dma_addr + ofs;
-		addr -= get_dma_offset(substream->dma_buffer.dev.dev);
-		/* assume dma_handle set via pfn_to_phys() in
-		 * mm/dma-noncoherent.c
-		 */
-		return pfn_to_page(addr >> PAGE_SHIFT);
-	}
-#endif
-	return virt_to_page(vaddr);
-}
-
-/*
- * fault callback for mmapping a RAM page
- */
-static int snd_pcm_mmap_data_fault(struct vm_area_struct *area,
-						struct vm_fault *vmf)
-{
-	struct snd_pcm_substream *substream = area->vm_private_data;
-=======
 /*
  * fault callback for mmapping a RAM page
  */
 static vm_fault_t snd_pcm_mmap_data_fault(struct vm_fault *vmf)
 {
 	struct snd_pcm_substream *substream = vmf->vma->vm_private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_runtime *runtime;
 	unsigned long offset;
 	struct page * page;
@@ -5922,15 +3781,10 @@ static vm_fault_t snd_pcm_mmap_data_fault(struct vm_fault *vmf)
 		return VM_FAULT_SIGBUS;
 	if (substream->ops->page)
 		page = substream->ops->page(substream, offset);
-<<<<<<< HEAD
-	else
-		page = snd_pcm_default_page_ops(substream, offset);
-=======
 	else if (!snd_pcm_get_dma_buf(substream))
 		page = virt_to_page(runtime->dma_area + offset);
 	else
 		page = snd_sgbuf_get_page(snd_pcm_get_dma_buf(substream), offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!page)
 		return VM_FAULT_SIGBUS;
 	get_page(page);
@@ -5949,35 +3803,6 @@ static const struct vm_operations_struct snd_pcm_vm_ops_data_fault = {
 	.fault =	snd_pcm_mmap_data_fault,
 };
 
-<<<<<<< HEAD
-#ifndef ARCH_HAS_DMA_MMAP_COHERENT
-/* This should be defined / handled globally! */
-#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-#define ARCH_HAS_DMA_MMAP_COHERENT
-#endif
-#endif
-
-/*
- * mmap the DMA buffer on RAM
- */
-int snd_pcm_lib_default_mmap(struct snd_pcm_substream *substream,
-			     struct vm_area_struct *area)
-{
-	area->vm_flags |= VM_RESERVED;
-#ifdef ARCH_HAS_DMA_MMAP_COHERENT
-	if (!substream->ops->page &&
-	    substream->dma_buffer.dev.type == SNDRV_DMA_TYPE_DEV)
-		return dma_mmap_coherent(substream->dma_buffer.dev.dev,
-					 area,
-					 substream->runtime->dma_area,
-					 substream->runtime->dma_addr,
-					 area->vm_end - area->vm_start);
-#elif defined(CONFIG_MIPS) && defined(CONFIG_DMA_NONCOHERENT)
-	if (substream->dma_buffer.dev.type == SNDRV_DMA_TYPE_DEV &&
-	    !plat_device_is_coherent(substream->dma_buffer.dev.dev))
-		area->vm_page_prot = pgprot_noncached(area->vm_page_prot);
-#endif /* ARCH_HAS_DMA_MMAP_COHERENT */
-=======
 /*
  * mmap the DMA buffer on RAM
  */
@@ -5999,7 +3824,6 @@ int snd_pcm_lib_default_mmap(struct snd_pcm_substream *substream,
 	if (!substream->ops->page &&
 	    !snd_dma_buffer_mmap(snd_pcm_get_dma_buf(substream), area))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* mmap with fault handler */
 	area->vm_ops = &snd_pcm_vm_ops_data_fault;
 	return 0;
@@ -6010,12 +3834,6 @@ EXPORT_SYMBOL_GPL(snd_pcm_lib_default_mmap);
  * mmap the DMA buffer on I/O memory area
  */
 #if SNDRV_PCM_INFO_MMAP_IOMEM
-<<<<<<< HEAD
-int snd_pcm_lib_mmap_iomem(struct snd_pcm_substream *substream,
-			   struct vm_area_struct *area)
-{
-	struct snd_pcm_runtime *runtime = substream->runtime;;
-=======
 /**
  * snd_pcm_lib_mmap_iomem - Default PCM data mmap function for I/O mem
  * @substream: PCM substream
@@ -6031,15 +3849,10 @@ int snd_pcm_lib_mmap_iomem(struct snd_pcm_substream *substream,
 			   struct vm_area_struct *area)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	area->vm_page_prot = pgprot_noncached(area->vm_page_prot);
 	return vm_iomap_memory(area, runtime->dma_addr, runtime->dma_bytes);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_lib_mmap_iomem);
 #endif /* SNDRV_PCM_INFO_MMAP */
 
@@ -6063,11 +3876,7 @@ int snd_pcm_mmap_data(struct snd_pcm_substream *substream, struct file *file,
 			return -EINVAL;
 	}
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	if (runtime->status->state == SNDRV_PCM_STATE_OPEN)
-=======
 	if (runtime->state == SNDRV_PCM_STATE_OPEN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBADFD;
 	if (!(runtime->info & SNDRV_PCM_INFO_MMAP))
 		return -ENXIO;
@@ -6092,10 +3901,6 @@ int snd_pcm_mmap_data(struct snd_pcm_substream *substream, struct file *file,
 		atomic_inc(&substream->mmap_count);
 	return err;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_mmap_data);
 
 static int snd_pcm_mmap(struct file *file, struct vm_area_struct *area)
@@ -6108,17 +3913,6 @@ static int snd_pcm_mmap(struct file *file, struct vm_area_struct *area)
 	substream = pcm_file->substream;
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
-<<<<<<< HEAD
-
-	offset = area->vm_pgoff << PAGE_SHIFT;
-	switch (offset) {
-	case SNDRV_PCM_MMAP_OFFSET_STATUS:
-		if (pcm_file->no_compat_mmap)
-			return -ENXIO;
-		return snd_pcm_mmap_status(substream, file, area);
-	case SNDRV_PCM_MMAP_OFFSET_CONTROL:
-		if (pcm_file->no_compat_mmap)
-=======
 	if (substream->runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
 		return -EBADFD;
 
@@ -6138,7 +3932,6 @@ static int snd_pcm_mmap(struct file *file, struct vm_area_struct *area)
 		fallthrough;
 	case SNDRV_PCM_MMAP_OFFSET_CONTROL_NEW:
 		if (!pcm_control_mmap_allowed(pcm_file))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENXIO;
 		return snd_pcm_mmap_control(substream, file, area);
 	default:
@@ -6158,13 +3951,9 @@ static int snd_pcm_fasync(int fd, struct file * file, int on)
 	if (PCM_RUNTIME_CHECK(substream))
 		return -ENXIO;
 	runtime = substream->runtime;
-<<<<<<< HEAD
-	return fasync_helper(fd, file, on, &runtime->fasync);
-=======
 	if (runtime->state == SNDRV_PCM_STATE_DISCONNECTED)
 		return -EBADFD;
 	return snd_fasync_helper(fd, file, on, &runtime->fasync);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -6225,13 +4014,8 @@ static void snd_pcm_hw_convert_to_old_params(struct snd_pcm_hw_params_old *opara
 static int snd_pcm_hw_refine_old_user(struct snd_pcm_substream *substream,
 				      struct snd_pcm_hw_params_old __user * _oparams)
 {
-<<<<<<< HEAD
-	struct snd_pcm_hw_params *params;
-	struct snd_pcm_hw_params_old *oparams = NULL;
-=======
 	struct snd_pcm_hw_params *params __free(kfree) = NULL;
 	struct snd_pcm_hw_params_old *oparams __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	params = kmalloc(sizeof(*params), GFP_KERNEL);
@@ -6239,24 +4023,6 @@ static int snd_pcm_hw_refine_old_user(struct snd_pcm_substream *substream,
 		return -ENOMEM;
 
 	oparams = memdup_user(_oparams, sizeof(*oparams));
-<<<<<<< HEAD
-	if (IS_ERR(oparams)) {
-		err = PTR_ERR(oparams);
-		goto out;
-	}
-	snd_pcm_hw_convert_from_old_params(params, oparams);
-	err = snd_pcm_hw_refine(substream, params);
-	snd_pcm_hw_convert_to_old_params(oparams, params);
-	if (copy_to_user(_oparams, oparams, sizeof(*oparams))) {
-		if (!err)
-			err = -EFAULT;
-	}
-
-	kfree(oparams);
-out:
-	kfree(params);
-	return err;
-=======
 	if (IS_ERR(oparams))
 		return PTR_ERR(no_free_ptr(oparams));
 	snd_pcm_hw_convert_from_old_params(params, oparams);
@@ -6272,19 +4038,13 @@ out:
 	if (copy_to_user(_oparams, oparams, sizeof(*oparams)))
 		return -EFAULT;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_pcm_hw_params_old_user(struct snd_pcm_substream *substream,
 				      struct snd_pcm_hw_params_old __user * _oparams)
 {
-<<<<<<< HEAD
-	struct snd_pcm_hw_params *params;
-	struct snd_pcm_hw_params_old *oparams = NULL;
-=======
 	struct snd_pcm_hw_params *params __free(kfree) = NULL;
 	struct snd_pcm_hw_params_old *oparams __free(kfree) = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	params = kmalloc(sizeof(*params), GFP_KERNEL);
@@ -6292,24 +4052,6 @@ static int snd_pcm_hw_params_old_user(struct snd_pcm_substream *substream,
 		return -ENOMEM;
 
 	oparams = memdup_user(_oparams, sizeof(*oparams));
-<<<<<<< HEAD
-	if (IS_ERR(oparams)) {
-		err = PTR_ERR(oparams);
-		goto out;
-	}
-	snd_pcm_hw_convert_from_old_params(params, oparams);
-	err = snd_pcm_hw_params(substream, params);
-	snd_pcm_hw_convert_to_old_params(oparams, params);
-	if (copy_to_user(_oparams, oparams, sizeof(*oparams))) {
-		if (!err)
-			err = -EFAULT;
-	}
-
-	kfree(oparams);
-out:
-	kfree(params);
-	return err;
-=======
 	if (IS_ERR(oparams))
 		return PTR_ERR(no_free_ptr(oparams));
 
@@ -6322,7 +4064,6 @@ out:
 	if (copy_to_user(_oparams, oparams, sizeof(*oparams)))
 		return -EFAULT;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_SND_SUPPORT_OLD_API */
 
@@ -6339,15 +4080,9 @@ static unsigned long snd_pcm_get_unmapped_area(struct file *file,
 	unsigned long offset = pgoff << PAGE_SHIFT;
 
 	switch (offset) {
-<<<<<<< HEAD
-	case SNDRV_PCM_MMAP_OFFSET_STATUS:
-		return (unsigned long)runtime->status;
-	case SNDRV_PCM_MMAP_OFFSET_CONTROL:
-=======
 	case SNDRV_PCM_MMAP_OFFSET_STATUS_NEW:
 		return (unsigned long)runtime->status;
 	case SNDRV_PCM_MMAP_OFFSET_CONTROL_NEW:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (unsigned long)runtime->control;
 	default:
 		return (unsigned long)runtime->dma_area + offset;
@@ -6365,21 +4100,12 @@ const struct file_operations snd_pcm_f_ops[2] = {
 	{
 		.owner =		THIS_MODULE,
 		.write =		snd_pcm_write,
-<<<<<<< HEAD
-		.aio_write =		snd_pcm_aio_write,
-		.open =			snd_pcm_playback_open,
-		.release =		snd_pcm_release,
-		.llseek =		no_llseek,
-		.poll =			snd_pcm_playback_poll,
-		.unlocked_ioctl =	snd_pcm_playback_ioctl,
-=======
 		.write_iter =		snd_pcm_writev,
 		.open =			snd_pcm_playback_open,
 		.release =		snd_pcm_release,
 		.llseek =		no_llseek,
 		.poll =			snd_pcm_poll,
 		.unlocked_ioctl =	snd_pcm_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.compat_ioctl = 	snd_pcm_ioctl_compat,
 		.mmap =			snd_pcm_mmap,
 		.fasync =		snd_pcm_fasync,
@@ -6388,21 +4114,12 @@ const struct file_operations snd_pcm_f_ops[2] = {
 	{
 		.owner =		THIS_MODULE,
 		.read =			snd_pcm_read,
-<<<<<<< HEAD
-		.aio_read =		snd_pcm_aio_read,
-		.open =			snd_pcm_capture_open,
-		.release =		snd_pcm_release,
-		.llseek =		no_llseek,
-		.poll =			snd_pcm_capture_poll,
-		.unlocked_ioctl =	snd_pcm_capture_ioctl,
-=======
 		.read_iter =		snd_pcm_readv,
 		.open =			snd_pcm_capture_open,
 		.release =		snd_pcm_release,
 		.llseek =		no_llseek,
 		.poll =			snd_pcm_poll,
 		.unlocked_ioctl =	snd_pcm_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.compat_ioctl = 	snd_pcm_ioctl_compat,
 		.mmap =			snd_pcm_mmap,
 		.fasync =		snd_pcm_fasync,

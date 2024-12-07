@@ -1,73 +1,29 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arizona-spi.c  --  Arizona SPI bus interface
  *
  * Copyright 2012 Wolfson Microelectronics plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-#include <linux/err.h>
-=======
  */
 
 #include <linux/acpi.h>
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/pm_runtime.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/spi/spi.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <uapi/linux/input-event-codes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/arizona/core.h>
 
 #include "arizona.h"
 
-<<<<<<< HEAD
-static int __devinit arizona_spi_probe(struct spi_device *spi)
-{
-	const struct spi_device_id *id = spi_get_device_id(spi);
-	struct arizona *arizona;
-	const struct regmap_config *regmap_config;
-	int ret, type;
-
-	if (spi->dev.of_node)
-		type = arizona_of_get_type(&spi->dev);
-	else
-		type = id->driver_data;
-
-	switch (type) {
-#ifdef CONFIG_MFD_WM5102
-	case WM5102:
-		regmap_config = &wm5102_spi_regmap;
-		break;
-#endif
-#ifdef CONFIG_MFD_WM5110
-	case WM5110:
-		regmap_config = &wm5110_spi_regmap;
-		break;
-#endif
-	default:
-		dev_err(&spi->dev, "Unknown device type %ld\n",
-			id->driver_data);
-=======
 #ifdef CONFIG_ACPI
 static const struct acpi_gpio_params reset_gpios = { 1, 0, false };
 static const struct acpi_gpio_params ldoena_gpios = { 2, 0, false };
@@ -270,7 +226,6 @@ static int arizona_spi_probe(struct spi_device *spi)
 	if (!regmap_config) {
 		dev_err(&spi->dev,
 			"No kernel support for device type %ld\n", type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -286,20 +241,6 @@ static int arizona_spi_probe(struct spi_device *spi)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	arizona->type = id->driver_data;
-	arizona->dev = &spi->dev;
-	arizona->irq = spi->irq;
-
-	return arizona_dev_init(arizona);
-}
-
-static int __devexit arizona_spi_remove(struct spi_device *spi)
-{
-	struct arizona *arizona = dev_get_drvdata(&spi->dev);
-	arizona_dev_exit(arizona);
-	return 0;
-=======
 	arizona->type = type;
 	arizona->dev = &spi->dev;
 	arizona->irq = spi->irq;
@@ -318,33 +259,18 @@ static void arizona_spi_remove(struct spi_device *spi)
 	struct arizona *arizona = spi_get_drvdata(spi);
 
 	arizona_dev_exit(arizona);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct spi_device_id arizona_spi_ids[] = {
 	{ "wm5102", WM5102 },
 	{ "wm5110", WM5110 },
-<<<<<<< HEAD
-=======
 	{ "wm8280", WM8280 },
 	{ "wm1831", WM1831 },
 	{ "cs47l24", CS47L24 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 MODULE_DEVICE_TABLE(spi, arizona_spi_ids);
 
-<<<<<<< HEAD
-static struct spi_driver arizona_spi_driver = {
-	.driver = {
-		.name	= "arizona",
-		.owner	= THIS_MODULE,
-		.pm	= &arizona_pm_ops,
-		.of_match_table	= of_match_ptr(arizona_of_match),
-	},
-	.probe		= arizona_spi_probe,
-	.remove		= __devexit_p(arizona_spi_remove),
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id arizona_spi_of_match[] = {
 	{ .compatible = "wlf,wm5102", .data = (void *)WM5102 },
@@ -366,16 +292,12 @@ static struct spi_driver arizona_spi_driver = {
 	},
 	.probe		= arizona_spi_probe,
 	.remove		= arizona_spi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= arizona_spi_ids,
 };
 
 module_spi_driver(arizona_spi_driver);
 
-<<<<<<< HEAD
-=======
 MODULE_SOFTDEP("pre: arizona_ldo1");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Arizona SPI bus interface");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_LICENSE("GPL");

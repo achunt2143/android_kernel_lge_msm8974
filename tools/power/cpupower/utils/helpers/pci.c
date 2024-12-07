@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__i386__) || defined(__x86_64__)
 
 #include <helpers/helpers.h>
@@ -29,20 +26,13 @@
 struct pci_dev *pci_acc_init(struct pci_access **pacc, int domain, int bus,
 			     int slot, int func, int vendor, int dev)
 {
-<<<<<<< HEAD
-	struct pci_filter filter_nb_link = { domain, bus, slot, func,
-					     vendor, dev };
-=======
 	struct pci_filter filter_nb_link;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *device;
 
 	*pacc = pci_alloc();
 	if (*pacc == NULL)
 		return NULL;
 
-<<<<<<< HEAD
-=======
 	pci_filter_init(*pacc, &filter_nb_link);
 	filter_nb_link.domain	= domain;
 	filter_nb_link.bus	= bus;
@@ -51,7 +41,6 @@ struct pci_dev *pci_acc_init(struct pci_access **pacc, int domain, int bus,
 	filter_nb_link.vendor	= vendor;
 	filter_nb_link.device	= dev;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_init(*pacc);
 	pci_scan_bus(*pacc);
 

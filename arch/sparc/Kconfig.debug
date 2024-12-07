@@ -1,14 +1,4 @@
-<<<<<<< HEAD
-menu "Kernel hacking"
-
-config TRACE_IRQFLAGS_SUPPORT
-	bool
-	default y
-
-source "lib/Kconfig.debug"
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DEBUG_DCFLUSH
 	bool "D-cache flush debugging"
@@ -18,16 +8,6 @@ config MCOUNT
 	bool
 	depends on SPARC64
 	depends on FUNCTION_TRACER
-<<<<<<< HEAD
-	default y
-
-config FRAME_POINTER
-	bool
-	depends on MCOUNT
-	default y
-
-endmenu
-=======
 	select ARCH_WANT_FRAME_POINTERS
 	select FRAME_POINTER
 	default y
@@ -45,4 +25,3 @@ config HAVE_HARDLOCKUP_DETECTOR_SPARC64
 config HARDLOCKUP_DETECTOR_SPARC64
 	bool
 	depends on HAVE_HARDLOCKUP_DETECTOR_SPARC64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

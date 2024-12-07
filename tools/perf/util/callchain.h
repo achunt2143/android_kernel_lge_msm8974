@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef __PERF_CALLCHAIN_H
-#define __PERF_CALLCHAIN_H
-
-#include "../perf.h"
-#include <linux/list.h>
-#include <linux/rbtree.h>
-#include "event.h"
-#include "symbol.h"
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PERF_CALLCHAIN_H
 #define __PERF_CALLCHAIN_H
@@ -53,18 +43,13 @@ enum perf_call_graph_mode {
 	CALLCHAIN_LBR,
 	CALLCHAIN_MAX
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum chain_mode {
 	CHAIN_NONE,
 	CHAIN_FLAT,
 	CHAIN_GRAPH_ABS,
-<<<<<<< HEAD
-	CHAIN_GRAPH_REL
-=======
 	CHAIN_GRAPH_REL,
 	CHAIN_FOLDED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum chain_order {
@@ -74,14 +59,6 @@ enum chain_order {
 
 struct callchain_node {
 	struct callchain_node	*parent;
-<<<<<<< HEAD
-	struct list_head	siblings;
-	struct list_head	children;
-	struct list_head	val;
-	struct rb_node		rb_node; /* to sort nodes in an rbtree */
-	struct rb_root		rb_root; /* sorted tree of children */
-	unsigned int		val_nr;
-=======
 	struct list_head	val;
 	struct list_head	parent_val;
 	struct rb_node		rb_node_in; /* to insert nodes in an rbtree */
@@ -91,7 +68,6 @@ struct callchain_node {
 	unsigned int		val_nr;
 	unsigned int		count;
 	unsigned int		children_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64			hit;
 	u64			children_hit;
 };
@@ -106,10 +82,6 @@ struct callchain_param;
 typedef void (*sort_chain_func_t)(struct rb_root *, struct callchain_root *,
 				 u64, struct callchain_param *);
 
-<<<<<<< HEAD
-struct callchain_param {
-	enum chain_mode 	mode;
-=======
 enum chain_key {
 	CCKEY_FUNCTION,
 	CCKEY_ADDRESS,
@@ -130,19 +102,10 @@ struct callchain_param {
 	u32			dump_size;
 	enum chain_mode 	mode;
 	u16			max_stack;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			print_limit;
 	double			min_percent;
 	sort_chain_func_t	sort;
 	enum chain_order	order;
-<<<<<<< HEAD
-};
-
-struct callchain_list {
-	u64			ip;
-	struct map_symbol	ms;
-	struct list_head	list;
-=======
 	bool			order_set;
 	enum chain_key		key;
 	bool			branch_callstack;
@@ -169,28 +132,16 @@ struct callchain_list {
 		bool		unfolded;
 		bool		has_children;
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * A callchain cursor is a single linked list that
  * let one feed a callchain progressively.
-<<<<<<< HEAD
- * It keeps persitent allocated entries to minimize
-=======
  * It keeps persistent allocated entries to minimize
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * allocations.
  */
 struct callchain_cursor_node {
 	u64				ip;
-<<<<<<< HEAD
-	struct map			*map;
-	struct symbol			*sym;
-	struct callchain_cursor_node	*next;
-};
-
-=======
 	struct map_symbol		ms;
 	const char			*srcline;
 	/* Indicate valid cursor node for LBR stitch */
@@ -209,7 +160,6 @@ struct stitch_list {
 	struct callchain_cursor_node	cursor;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct callchain_cursor {
 	u64				nr;
 	struct callchain_cursor_node	*first;
@@ -220,22 +170,13 @@ struct callchain_cursor {
 
 static inline void callchain_init(struct callchain_root *root)
 {
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&root->node.siblings);
-	INIT_LIST_HEAD(&root->node.children);
-	INIT_LIST_HEAD(&root->node.val);
-=======
 	INIT_LIST_HEAD(&root->node.val);
 	INIT_LIST_HEAD(&root->node.parent_val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	root->node.parent = NULL;
 	root->node.hit = 0;
 	root->node.children_hit = 0;
-<<<<<<< HEAD
-=======
 	root->node.rb_root_in = RB_ROOT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	root->max_depth = 0;
 }
 
@@ -244,14 +185,11 @@ static inline u64 callchain_cumul_hits(struct callchain_node *node)
 	return node->hit + node->children_hit;
 }
 
-<<<<<<< HEAD
-=======
 static inline unsigned callchain_cumul_counts(struct callchain_node *node)
 {
 	return node->count + node->children_count;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int callchain_register_param(struct callchain_param *param);
 int callchain_append(struct callchain_root *root,
 		     struct callchain_cursor *cursor,
@@ -260,25 +198,6 @@ int callchain_append(struct callchain_root *root,
 int callchain_merge(struct callchain_cursor *cursor,
 		    struct callchain_root *dst, struct callchain_root *src);
 
-<<<<<<< HEAD
-struct ip_callchain;
-union perf_event;
-
-bool ip_callchain__valid(struct ip_callchain *chain,
-			 const union perf_event *event);
-/*
- * Initialize a cursor before adding entries inside, but keep
- * the previously allocated entries as a cache.
- */
-static inline void callchain_cursor_reset(struct callchain_cursor *cursor)
-{
-	cursor->nr = 0;
-	cursor->last = &cursor->first;
-}
-
-int callchain_cursor_append(struct callchain_cursor *cursor, u64 ip,
-			    struct map *map, struct symbol *sym);
-=======
 void callchain_cursor_reset(struct callchain_cursor *cursor);
 
 int callchain_cursor_append(struct callchain_cursor *cursor, u64 ip,
@@ -286,16 +205,12 @@ int callchain_cursor_append(struct callchain_cursor *cursor, u64 ip,
 			    bool branch, struct branch_flags *flags,
 			    int nr_loop_iter, u64 iter_cycles, u64 branch_from,
 			    const char *srcline);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Close a cursor writing session. Initialize for the reader */
 static inline void callchain_cursor_commit(struct callchain_cursor *cursor)
 {
-<<<<<<< HEAD
-=======
 	if (cursor == NULL)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cursor->curr = cursor->first;
 	cursor->pos = 0;
 }
@@ -304,11 +219,7 @@ static inline void callchain_cursor_commit(struct callchain_cursor *cursor)
 static inline struct callchain_cursor_node *
 callchain_cursor_current(struct callchain_cursor *cursor)
 {
-<<<<<<< HEAD
-	if (cursor->pos == cursor->nr)
-=======
 	if (cursor == NULL || cursor->pos == cursor->nr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return cursor->curr;
@@ -319,8 +230,6 @@ static inline void callchain_cursor_advance(struct callchain_cursor *cursor)
 	cursor->curr = cursor->curr->next;
 	cursor->pos++;
 }
-<<<<<<< HEAD
-=======
 
 struct callchain_cursor *get_tls_callchain_cursor(void);
 
@@ -402,5 +311,4 @@ u64 callchain_total_hits(struct hists *hists);
 
 s64 callchain_avg_cycles(struct callchain_node *cnode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __PERF_CALLCHAIN_H */

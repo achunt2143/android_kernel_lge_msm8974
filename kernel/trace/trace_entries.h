@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file defines the trace event structures that go into the ring
  * buffer directly. They are created via macros so that changes for them
@@ -35,11 +32,7 @@
  *	to be deciphered for the format file. Although these macros
  *	may become out of sync with the internal structure, they
  *	will create a compile error if it happens. Since the
-<<<<<<< HEAD
- *	internel structures are just tracing helpers, this is not
-=======
  *	internal structures are just tracing helpers, this is not
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	an issue.
  *
  *	When an internal structure is used, it should use:
@@ -68,50 +61,23 @@ FTRACE_ENTRY_REG(function, ftrace_entry,
 	TRACE_FN,
 
 	F_STRUCT(
-<<<<<<< HEAD
-		__field(	unsigned long,	ip		)
-		__field(	unsigned long,	parent_ip	)
-	),
-
-	F_printk(" %lx <-- %lx", __entry->ip, __entry->parent_ip),
-
-	FILTER_TRACE_FN,
-=======
 		__field_fn(	unsigned long,	ip		)
 		__field_fn(	unsigned long,	parent_ip	)
 	),
 
 	F_printk(" %ps <-- %ps",
 		 (void *)__entry->ip, (void *)__entry->parent_ip),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	perf_ftrace_event_register
 );
 
 /* Function call entry */
-<<<<<<< HEAD
-FTRACE_ENTRY(funcgraph_entry, ftrace_graph_ent_entry,
-=======
 FTRACE_ENTRY_PACKED(funcgraph_entry, ftrace_graph_ent_entry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TRACE_GRAPH_ENT,
 
 	F_STRUCT(
 		__field_struct(	struct ftrace_graph_ent,	graph_ent	)
-<<<<<<< HEAD
-		__field_desc(	unsigned long,	graph_ent,	func		)
-		__field_desc(	int,		graph_ent,	depth		)
-	),
-
-	F_printk("--> %lx (%d)", __entry->func, __entry->depth),
-
-	FILTER_OTHER
-);
-
-/* Function return entry */
-FTRACE_ENTRY(funcgraph_exit, ftrace_graph_ret_entry,
-=======
 		__field_packed(	unsigned long,	graph_ent,	func		)
 		__field_packed(	int,		graph_ent,	depth		)
 	),
@@ -123,29 +89,11 @@ FTRACE_ENTRY(funcgraph_exit, ftrace_graph_ret_entry,
 #ifdef CONFIG_FUNCTION_GRAPH_RETVAL
 
 FTRACE_ENTRY_PACKED(funcgraph_exit, ftrace_graph_ret_entry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TRACE_GRAPH_RET,
 
 	F_STRUCT(
 		__field_struct(	struct ftrace_graph_ret,	ret	)
-<<<<<<< HEAD
-		__field_desc(	unsigned long,	ret,		func	)
-		__field_desc(	unsigned long long, ret,	calltime)
-		__field_desc(	unsigned long long, ret,	rettime	)
-		__field_desc(	unsigned long,	ret,		overrun	)
-		__field_desc(	int,		ret,		depth	)
-	),
-
-	F_printk("<-- %lx (%d) (start: %llx  end: %llx) over: %d",
-		 __entry->func, __entry->depth,
-		 __entry->calltime, __entry->rettime,
-		 __entry->depth),
-
-	FILTER_OTHER
-);
-
-=======
 		__field_packed(	unsigned long,	ret,		func	)
 		__field_packed(	unsigned long,	ret,		retval	)
 		__field_packed(	int,		ret,		depth	)
@@ -183,7 +131,6 @@ FTRACE_ENTRY_PACKED(funcgraph_exit, ftrace_graph_ret_entry,
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Context switch trace entry - which task (and prio) we switched from/to:
  *
@@ -210,13 +157,7 @@ FTRACE_ENTRY(context_switch, ctx_switch_entry,
 	F_printk("%u:%u:%u  ==> %u:%u:%u [%03u]",
 		 __entry->prev_pid, __entry->prev_prio, __entry->prev_state,
 		 __entry->next_pid, __entry->next_prio, __entry->next_state,
-<<<<<<< HEAD
-		 __entry->next_cpu),
-
-	FILTER_OTHER
-=======
 		 __entry->next_cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -234,13 +175,7 @@ FTRACE_ENTRY_DUP(wakeup, ctx_switch_entry,
 	F_printk("%u:%u:%u  ==+ %u:%u:%u [%03u]",
 		 __entry->prev_pid, __entry->prev_prio, __entry->prev_state,
 		 __entry->next_pid, __entry->next_prio, __entry->next_state,
-<<<<<<< HEAD
-		 __entry->next_cpu),
-
-	FILTER_OTHER
-=======
 		 __entry->next_cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -249,34 +184,12 @@ FTRACE_ENTRY_DUP(wakeup, ctx_switch_entry,
 
 #define FTRACE_STACK_ENTRIES	8
 
-<<<<<<< HEAD
-#ifndef CONFIG_64BIT
-# define IP_FMT "%08lx"
-#else
-# define IP_FMT "%016lx"
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 FTRACE_ENTRY(kernel_stack, stack_entry,
 
 	TRACE_STACK,
 
 	F_STRUCT(
 		__field(	int,		size	)
-<<<<<<< HEAD
-		__dynamic_array(unsigned long,	caller	)
-	),
-
-	F_printk("\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n"
-		 "\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n"
-		 "\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n",
-		 __entry->caller[0], __entry->caller[1], __entry->caller[2],
-		 __entry->caller[3], __entry->caller[4], __entry->caller[5],
-		 __entry->caller[6], __entry->caller[7]),
-
-	FILTER_OTHER
-=======
 		__stack_array(	unsigned long,	caller,	FTRACE_STACK_ENTRIES, size)
 	),
 
@@ -287,7 +200,6 @@ FTRACE_ENTRY(kernel_stack, stack_entry,
 		 (void *)__entry->caller[2], (void *)__entry->caller[3],
 		 (void *)__entry->caller[4], (void *)__entry->caller[5],
 		 (void *)__entry->caller[6], (void *)__entry->caller[7])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 FTRACE_ENTRY(user_stack, userstack_entry,
@@ -299,16 +211,6 @@ FTRACE_ENTRY(user_stack, userstack_entry,
 		__array(	unsigned long,	caller, FTRACE_STACK_ENTRIES	)
 	),
 
-<<<<<<< HEAD
-	F_printk("\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n"
-		 "\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n"
-		 "\t=> (" IP_FMT ")\n\t=> (" IP_FMT ")\n",
-		 __entry->caller[0], __entry->caller[1], __entry->caller[2],
-		 __entry->caller[3], __entry->caller[4], __entry->caller[5],
-		 __entry->caller[6], __entry->caller[7]),
-
-	FILTER_OTHER
-=======
 	F_printk("\t=> %ps\n\t=> %ps\n\t=> %ps\n"
 		 "\t=> %ps\n\t=> %ps\n\t=> %ps\n"
 		 "\t=> %ps\n\t=> %ps\n",
@@ -316,7 +218,6 @@ FTRACE_ENTRY(user_stack, userstack_entry,
 		 (void *)__entry->caller[2], (void *)__entry->caller[3],
 		 (void *)__entry->caller[4], (void *)__entry->caller[5],
 		 (void *)__entry->caller[6], (void *)__entry->caller[7])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 /*
@@ -332,21 +233,11 @@ FTRACE_ENTRY(bprint, bprint_entry,
 		__dynamic_array(	u32,	buf	)
 	),
 
-<<<<<<< HEAD
-	F_printk("%08lx fmt:%p",
-		 __entry->ip, __entry->fmt),
-
-	FILTER_OTHER
-);
-
-FTRACE_ENTRY(print, print_entry,
-=======
 	F_printk("%ps: %s",
 		 (void *)__entry->ip, __entry->fmt)
 );
 
 FTRACE_ENTRY_REG(print, print_entry,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TRACE_PRINT,
 
@@ -355,12 +246,6 @@ FTRACE_ENTRY_REG(print, print_entry,
 		__dynamic_array(	char,	buf	)
 	),
 
-<<<<<<< HEAD
-	F_printk("%08lx %s",
-		 __entry->ip, __entry->buf),
-
-	FILTER_OTHER
-=======
 	F_printk("%ps: %s",
 		 (void *)__entry->ip, __entry->buf),
 
@@ -391,7 +276,6 @@ FTRACE_ENTRY(bputs, bputs_entry,
 
 	F_printk("%ps: %s",
 		 (void *)__entry->ip, __entry->str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 FTRACE_ENTRY(mmiotrace_rw, trace_mmiotrace_rw,
@@ -403,24 +287,14 @@ FTRACE_ENTRY(mmiotrace_rw, trace_mmiotrace_rw,
 		__field_desc(	resource_size_t, rw,	phys	)
 		__field_desc(	unsigned long,	rw,	value	)
 		__field_desc(	unsigned long,	rw,	pc	)
-<<<<<<< HEAD
-		__field_desc(	int, 		rw,	map_id	)
-=======
 		__field_desc(	int,		rw,	map_id	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field_desc(	unsigned char,	rw,	opcode	)
 		__field_desc(	unsigned char,	rw,	width	)
 	),
 
 	F_printk("%lx %lx %lx %d %x %x",
 		 (unsigned long)__entry->phys, __entry->value, __entry->pc,
-<<<<<<< HEAD
-		 __entry->map_id, __entry->opcode, __entry->width),
-
-	FILTER_OTHER
-=======
 		 __entry->map_id, __entry->opcode, __entry->width)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 FTRACE_ENTRY(mmiotrace_map, trace_mmiotrace_map,
@@ -432,23 +306,13 @@ FTRACE_ENTRY(mmiotrace_map, trace_mmiotrace_map,
 		__field_desc(	resource_size_t, map,	phys	)
 		__field_desc(	unsigned long,	map,	virt	)
 		__field_desc(	unsigned long,	map,	len	)
-<<<<<<< HEAD
-		__field_desc(	int, 		map,	map_id	)
-=======
 		__field_desc(	int,		map,	map_id	)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field_desc(	unsigned char,	map,	opcode	)
 	),
 
 	F_printk("%lx %lx %lx %d %x",
 		 (unsigned long)__entry->phys, __entry->virt, __entry->len,
-<<<<<<< HEAD
-		 __entry->map_id, __entry->opcode),
-
-	FILTER_OTHER
-=======
 		 __entry->map_id, __entry->opcode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 
@@ -464,17 +328,6 @@ FTRACE_ENTRY(branch, trace_branch,
 		__array(	char,		func,	TRACE_FUNC_SIZE+1	)
 		__array(	char,		file,	TRACE_FILE_SIZE+1	)
 		__field(	char,		correct				)
-<<<<<<< HEAD
-	),
-
-	F_printk("%u:%s:%s (%u)",
-		 __entry->line,
-		 __entry->func, __entry->file, __entry->correct),
-
-	FILTER_OTHER
-);
-
-=======
 		__field(	char,		constant			)
 	),
 
@@ -574,4 +427,3 @@ FTRACE_ENTRY(timerlat, timerlat_entry,
 		 __entry->context,
 		 __entry->timer_latency)
 );
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

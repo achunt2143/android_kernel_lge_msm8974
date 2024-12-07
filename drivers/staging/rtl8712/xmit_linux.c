@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * xmit_linux.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -36,23 +17,13 @@
 #define _XMIT_OSDEP_C_
 
 #include <linux/usb.h>
-<<<<<<< HEAD
-=======
 #include <linux/ip.h>
 #include <linux/if_ether.h>
 #include <linux/kmemleak.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "osdep_service.h"
 #include "drv_types.h"
 
-<<<<<<< HEAD
-
-#include "if_ether.h"
-#include "ip.h"
-#include "rtl871x_byteorder.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "wifi.h"
 #include "mlme_osdep.h"
 #include "xmit_osdep.h"
@@ -69,11 +40,7 @@ void _r8712_open_pktfile(_pkt *pktptr, struct pkt_file *pfile)
 	pfile->pkt = pktptr;
 	pfile->cur_addr = pfile->buf_start = pktptr->data;
 	pfile->pkt_len = pfile->buf_len = pktptr->len;
-<<<<<<< HEAD
-	pfile->cur_buffer = pfile->buf_start ;
-=======
 	pfile->cur_buffer = pfile->buf_start;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint _r8712_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
@@ -92,21 +59,6 @@ uint _r8712_pktfile_read(struct pkt_file *pfile, u8 *rmem, uint rlen)
 
 sint r8712_endofpktfile(struct pkt_file *pfile)
 {
-<<<<<<< HEAD
-	if (pfile->pkt_len == 0)
-		return true;
-	else
-		return false;
-}
-
-
-void r8712_set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
-{
-	int i;
-	struct ethhdr etherhdr;
-	struct iphdr ip_hdr;
-	u16 UserPriority = 0;
-=======
 	return (pfile->pkt_len == 0);
 }
 
@@ -115,28 +67,10 @@ void r8712_set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
 	struct ethhdr etherhdr;
 	struct iphdr ip_hdr;
 	u16 user_priority = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_r8712_open_pktfile(ppktfile->pkt, ppktfile);
 	_r8712_pktfile_read(ppktfile, (unsigned char *)&etherhdr, ETH_HLEN);
 
-<<<<<<< HEAD
-	/* get UserPriority from IP hdr*/
-	if (pattrib->ether_type == 0x0800) {
-		i = _r8712_pktfile_read(ppktfile, (u8 *)&ip_hdr,
-					sizeof(ip_hdr));
-		/*UserPriority = (ntohs(ip_hdr.tos) >> 5) & 0x3 ;*/
-		UserPriority = ip_hdr.tos >> 5;
-	} else {
-		/* "When priority processing of data frames is supported,
-		 * a STA's SME should send EAPOL-Key frames at the highest
-		 * priority." */
-
-		if (pattrib->ether_type == 0x888e)
-			UserPriority = 7;
-	}
-	pattrib->priority = UserPriority;
-=======
 	/* get user_priority from IP hdr*/
 	if (pattrib->ether_type == 0x0800) {
 		_r8712_pktfile_read(ppktfile, (u8 *)&ip_hdr, sizeof(ip_hdr));
@@ -152,31 +86,12 @@ void r8712_set_qos(struct pkt_file *ppktfile, struct pkt_attrib *pattrib)
 			user_priority = 7;
 	}
 	pattrib->priority = user_priority;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pattrib->hdrlen = WLAN_HDR_A3_QOS_LEN;
 	pattrib->subtype = WIFI_QOS_DATA_TYPE;
 }
 
 void r8712_SetFilter(struct work_struct *work)
 {
-<<<<<<< HEAD
-	struct _adapter *padapter = container_of(work, struct _adapter,
-						wkFilterRxFF0);
-	u8  oldvalue = 0x00, newvalue = 0x00;
-	unsigned long irqL;
-
-	oldvalue = r8712_read8(padapter, 0x117);
-	newvalue = oldvalue & 0xfe;
-	r8712_write8(padapter, 0x117, newvalue);
-
-	spin_lock_irqsave(&padapter->lockRxFF0Filter, irqL);
-	padapter->blnEnableRxFF0Filter = 1;
-	spin_unlock_irqrestore(&padapter->lockRxFF0Filter, irqL);
-	do {
-		msleep(100);
-	} while (padapter->blnEnableRxFF0Filter == 1);
-	r8712_write8(padapter, 0x117, oldvalue);
-=======
 	struct _adapter *adapter = container_of(work, struct _adapter,
 						wk_filter_rx_ff0);
 	u8  oldvalue = 0x00, newvalue = 0x00;
@@ -187,7 +102,6 @@ void r8712_SetFilter(struct work_struct *work)
 
 	wait_for_completion(&adapter->rx_filter_ready);
 	r8712_write8(adapter, 0x117, oldvalue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int r8712_xmit_resource_alloc(struct _adapter *padapter,
@@ -197,15 +111,6 @@ int r8712_xmit_resource_alloc(struct _adapter *padapter,
 
 	for (i = 0; i < 8; i++) {
 		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
-<<<<<<< HEAD
-		if (pxmitbuf->pxmit_urb[i] == NULL) {
-			printk(KERN_ERR "r8712u: pxmitbuf->pxmit_urb[i]"
-			    " == NULL");
-			return _FAIL;
-		}
-	}
-	return _SUCCESS;
-=======
 		if (!pxmitbuf->pxmit_urb[i]) {
 			int k;
 
@@ -219,7 +124,6 @@ int r8712_xmit_resource_alloc(struct _adapter *padapter,
 		kmemleak_not_leak(pxmitbuf->pxmit_urb[i]);
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_xmit_resource_free(struct _adapter *padapter,
@@ -242,44 +146,6 @@ void r8712_xmit_complete(struct _adapter *padapter, struct xmit_frame *pxframe)
 	pxframe->pkt = NULL;
 }
 
-<<<<<<< HEAD
-int r8712_xmit_entry(_pkt *pkt, struct  net_device *pnetdev)
-{
-	struct xmit_frame *pxmitframe = NULL;
-	struct _adapter *padapter = (struct _adapter *)netdev_priv(pnetdev);
-	struct xmit_priv *pxmitpriv = &(padapter->xmitpriv);
-	int ret = 0;
-
-	if (r8712_if_up(padapter) == false) {
-		ret = 0;
-		goto _xmit_entry_drop;
-	}
-	pxmitframe = r8712_alloc_xmitframe(pxmitpriv);
-	if (pxmitframe == NULL) {
-		ret = 0;
-		goto _xmit_entry_drop;
-	}
-	if ((!r8712_update_attrib(padapter, pkt, &pxmitframe->attrib))) {
-		ret = 0;
-		goto _xmit_entry_drop;
-	}
-	padapter->ledpriv.LedControlHandler(padapter, LED_CTL_TX);
-	pxmitframe->pkt = pkt;
-	if (r8712_pre_xmit(padapter, pxmitframe) == true) {
-		/*dump xmitframe directly or drop xframe*/
-		dev_kfree_skb_any(pkt);
-		pxmitframe->pkt = NULL;
-	}
-	pxmitpriv->tx_pkts++;
-	pxmitpriv->tx_bytes += pxmitframe->attrib.last_txcmdsz;
-	return ret;
-_xmit_entry_drop:
-	if (pxmitframe)
-		r8712_free_xmitframe(pxmitpriv, pxmitframe);
-	pxmitpriv->tx_drop++;
-	dev_kfree_skb_any(pkt);
-	return ret;
-=======
 netdev_tx_t r8712_xmit_entry(_pkt *pkt, struct  net_device *netdev)
 {
 	struct xmit_frame *xmitframe = NULL;
@@ -312,5 +178,4 @@ _xmit_entry_drop:
 	xmitpriv->tx_drop++;
 	dev_kfree_skb_any(pkt);
 	return NETDEV_TX_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  drivers/net/veth.c
  *
@@ -18,12 +15,6 @@
 #include <linux/etherdevice.h>
 #include <linux/u64_stats_sync.h>
 
-<<<<<<< HEAD
-#include <net/dst.h>
-#include <net/xfrm.h>
-#include <linux/veth.h>
-#include <linux/module.h>
-=======
 #include <net/rtnetlink.h>
 #include <net/dst.h>
 #include <net/xfrm.h>
@@ -36,28 +27,10 @@
 #include <linux/bpf_trace.h>
 #include <linux/net_tstamp.h>
 #include <net/page_pool/helpers.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME	"veth"
 #define DRV_VERSION	"1.0"
 
-<<<<<<< HEAD
-#define MIN_MTU 68		/* Min L3 MTU */
-#define MAX_MTU 65535		/* Max L3 MTU (arbitrary) */
-
-struct veth_net_stats {
-	u64			rx_packets;
-	u64			rx_bytes;
-	u64			tx_packets;
-	u64			tx_bytes;
-	u64			rx_dropped;
-	struct u64_stats_sync	syncp;
-};
-
-struct veth_priv {
-	struct net_device *peer;
-	struct veth_net_stats __percpu *stats;
-=======
 #define VETH_XDP_FLAG		BIT(0)
 #define VETH_RING_SIZE		256
 #define VETH_XDP_HEADROOM	(XDP_PACKET_HEADROOM + NET_IP_ALIGN)
@@ -107,15 +80,12 @@ struct veth_priv {
 struct veth_xdp_tx_bq {
 	struct xdp_frame *q[VETH_XDP_TX_BULK_SIZE];
 	unsigned int count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * ethtool interface
  */
 
-<<<<<<< HEAD
-=======
 struct veth_q_stat_desc {
 	char	desc[ETH_GSTRING_LEN];
 	size_t	offset;
@@ -142,27 +112,12 @@ static const struct veth_q_stat_desc veth_tq_stats_desc[] = {
 
 #define VETH_TQ_STATS_LEN	ARRAY_SIZE(veth_tq_stats_desc)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct {
 	const char string[ETH_GSTRING_LEN];
 } ethtool_stats_keys[] = {
 	{ "peer_ifindex" },
 };
 
-<<<<<<< HEAD
-static int veth_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
-{
-	cmd->supported		= 0;
-	cmd->advertising	= 0;
-	ethtool_cmd_speed_set(cmd, SPEED_10000);
-	cmd->duplex		= DUPLEX_FULL;
-	cmd->port		= PORT_TP;
-	cmd->phy_address	= 0;
-	cmd->transceiver	= XCVR_INTERNAL;
-	cmd->autoneg		= AUTONEG_DISABLE;
-	cmd->maxtxpkt		= 0;
-	cmd->maxrxpkt		= 0;
-=======
 struct veth_xdp_buff {
 	struct xdp_buff xdp;
 	struct sk_buff *skb;
@@ -175,28 +130,17 @@ static int veth_get_link_ksettings(struct net_device *dev,
 	cmd->base.duplex	= DUPLEX_FULL;
 	cmd->base.port		= PORT_TP;
 	cmd->base.autoneg	= AUTONEG_DISABLE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void veth_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
-<<<<<<< HEAD
-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-=======
 	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strscpy(info->version, DRV_VERSION, sizeof(info->version));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void veth_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 {
-<<<<<<< HEAD
-	switch(stringset) {
-	case ETH_SS_STATS:
-		memcpy(buf, &ethtool_stats_keys, sizeof(ethtool_stats_keys));
-=======
 	u8 *p = buf;
 	int i, j;
 
@@ -215,7 +159,6 @@ static void veth_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
 						i, veth_tq_stats_desc[j].desc);
 
 		page_pool_ethtool_stats_get_strings(p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -224,32 +167,15 @@ static int veth_get_sset_count(struct net_device *dev, int sset)
 {
 	switch (sset) {
 	case ETH_SS_STATS:
-<<<<<<< HEAD
-		return ARRAY_SIZE(ethtool_stats_keys);
-=======
 		return ARRAY_SIZE(ethtool_stats_keys) +
 		       VETH_RQ_STATS_LEN * dev->real_num_rx_queues +
 		       VETH_TQ_STATS_LEN * dev->real_num_tx_queues +
 		       page_pool_ethtool_stats_get_count();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EOPNOTSUPP;
 	}
 }
 
-<<<<<<< HEAD
-static void veth_get_ethtool_stats(struct net_device *dev,
-		struct ethtool_stats *stats, u64 *data)
-{
-	struct veth_priv *priv;
-
-	priv = netdev_priv(dev);
-	data[0] = priv->peer->ifindex;
-}
-
-static const struct ethtool_ops veth_ethtool_ops = {
-	.get_settings		= veth_get_settings,
-=======
 static void veth_get_page_pool_stats(struct net_device *dev, u64 *data)
 {
 #ifdef CONFIG_PAGE_POOL_STATS
@@ -330,95 +256,11 @@ static int veth_set_channels(struct net_device *dev,
 			     struct ethtool_channels *ch);
 
 static const struct ethtool_ops veth_ethtool_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= veth_get_drvinfo,
 	.get_link		= ethtool_op_get_link,
 	.get_strings		= veth_get_strings,
 	.get_sset_count		= veth_get_sset_count,
 	.get_ethtool_stats	= veth_get_ethtool_stats,
-<<<<<<< HEAD
-};
-
-/*
- * xmit
- */
-
-static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
-{
-	struct net_device *rcv = NULL;
-	struct veth_priv *priv, *rcv_priv;
-	struct veth_net_stats *stats, *rcv_stats;
-	int length;
-
-	priv = netdev_priv(dev);
-	rcv = priv->peer;
-	rcv_priv = netdev_priv(rcv);
-
-	stats = this_cpu_ptr(priv->stats);
-	rcv_stats = this_cpu_ptr(rcv_priv->stats);
-
-	/* don't change ip_summed == CHECKSUM_PARTIAL, as that
-	   will cause bad checksum on forwarded packets */
-	if (skb->ip_summed == CHECKSUM_NONE &&
-	    rcv->features & NETIF_F_RXCSUM)
-		skb->ip_summed = CHECKSUM_UNNECESSARY;
-
-	length = skb->len;
-	if (dev_forward_skb(rcv, skb) != NET_RX_SUCCESS)
-		goto rx_drop;
-
-	u64_stats_update_begin(&stats->syncp);
-	stats->tx_bytes += length;
-	stats->tx_packets++;
-	u64_stats_update_end(&stats->syncp);
-
-	u64_stats_update_begin(&rcv_stats->syncp);
-	rcv_stats->rx_bytes += length;
-	rcv_stats->rx_packets++;
-	u64_stats_update_end(&rcv_stats->syncp);
-
-	return NETDEV_TX_OK;
-
-rx_drop:
-	u64_stats_update_begin(&rcv_stats->syncp);
-	rcv_stats->rx_dropped++;
-	u64_stats_update_end(&rcv_stats->syncp);
-	return NETDEV_TX_OK;
-}
-
-/*
- * general routines
- */
-
-static struct rtnl_link_stats64 *veth_get_stats64(struct net_device *dev,
-						  struct rtnl_link_stats64 *tot)
-{
-	struct veth_priv *priv = netdev_priv(dev);
-	int cpu;
-
-	for_each_possible_cpu(cpu) {
-		struct veth_net_stats *stats = per_cpu_ptr(priv->stats, cpu);
-		u64 rx_packets, rx_bytes, rx_dropped;
-		u64 tx_packets, tx_bytes;
-		unsigned int start;
-
-		do {
-			start = u64_stats_fetch_begin_irq(&stats->syncp);
-			rx_packets = stats->rx_packets;
-			tx_packets = stats->tx_packets;
-			rx_bytes = stats->rx_bytes;
-			tx_bytes = stats->tx_bytes;
-			rx_dropped = stats->rx_dropped;
-		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
-		tot->rx_packets += rx_packets;
-		tot->tx_packets += tx_packets;
-		tot->rx_bytes   += rx_bytes;
-		tot->tx_bytes   += tx_bytes;
-		tot->rx_dropped += rx_dropped;
-	}
-
-	return tot;
-=======
 	.get_link_ksettings	= veth_get_link_ksettings,
 	.get_ts_info		= ethtool_op_get_ts_info,
 	.get_channels		= veth_get_channels,
@@ -1491,23 +1333,10 @@ revert:
 	new_rx_count = old_rx_count;
 	old_rx_count = ch->rx_count;
 	goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int veth_open(struct net_device *dev)
 {
-<<<<<<< HEAD
-	struct veth_priv *priv;
-
-	priv = netdev_priv(dev);
-	if (priv->peer == NULL)
-		return -ENOTCONN;
-
-	if (priv->peer->flags & IFF_UP) {
-		netif_carrier_on(dev);
-		netif_carrier_on(priv->peer);
-	}
-=======
 	struct veth_priv *priv = netdev_priv(dev);
 	struct net_device *peer = rtnl_dereference(priv->peer);
 	int err;
@@ -1532,18 +1361,12 @@ static int veth_open(struct net_device *dev)
 
 	veth_set_xdp_features(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int veth_close(struct net_device *dev)
 {
 	struct veth_priv *priv = netdev_priv(dev);
-<<<<<<< HEAD
-
-	netif_carrier_off(dev);
-	netif_carrier_off(priv->peer);
-=======
 	struct net_device *peer = rtnl_dereference(priv->peer);
 
 	netif_carrier_off(dev);
@@ -1554,43 +1377,10 @@ static int veth_close(struct net_device *dev)
 		veth_disable_xdp(dev);
 	else if (veth_gro_requested(dev))
 		veth_napi_del(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int is_valid_veth_mtu(int new_mtu)
-{
-	return new_mtu >= MIN_MTU && new_mtu <= MAX_MTU;
-}
-
-static int veth_change_mtu(struct net_device *dev, int new_mtu)
-{
-	if (!is_valid_veth_mtu(new_mtu))
-		return -EINVAL;
-	dev->mtu = new_mtu;
-	return 0;
-}
-
-static int veth_dev_init(struct net_device *dev)
-{
-	struct veth_net_stats __percpu *stats;
-	struct veth_priv *priv;
-	int i;
-
-	stats = alloc_percpu(struct veth_net_stats);
-	if (stats == NULL)
-		return -ENOMEM;
-
-	priv = netdev_priv(dev);
-	priv->stats = stats;
-
-	for_each_possible_cpu(i) {
-		struct pcpu_vstats *veth_stats;
-		veth_stats = per_cpu_ptr(dev->vstats, i);
-		u64_stats_init(&veth_stats->syncp);
-=======
 static int is_valid_veth_mtu(int mtu)
 {
 	return mtu >= ETH_MIN_MTU && mtu <= ETH_MAX_MTU;
@@ -1609,21 +1399,11 @@ static int veth_alloc_queues(struct net_device *dev)
 	for (i = 0; i < dev->num_rx_queues; i++) {
 		priv->rq[i].dev = dev;
 		u64_stats_init(&priv->rq[i].stats.syncp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void veth_dev_free(struct net_device *dev)
-{
-	struct veth_priv *priv;
-
-	priv = netdev_priv(dev);
-	free_percpu(priv->stats);
-	free_netdev(dev);
-=======
 static void veth_free_queues(struct net_device *dev)
 {
 	struct veth_priv *priv = netdev_priv(dev);
@@ -1872,7 +1652,6 @@ static int veth_xdp_rx_vlan_tag(const struct xdp_md *ctx, __be16 *vlan_proto,
 
 	*vlan_proto = skb->vlan_proto;
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_device_ops veth_netdev_ops = {
@@ -1880,13 +1659,6 @@ static const struct net_device_ops veth_netdev_ops = {
 	.ndo_open            = veth_open,
 	.ndo_stop            = veth_close,
 	.ndo_start_xmit      = veth_xmit,
-<<<<<<< HEAD
-	.ndo_change_mtu      = veth_change_mtu,
-	.ndo_get_stats64     = veth_get_stats64,
-	.ndo_set_mac_address = eth_mac_addr,
-};
-
-=======
 	.ndo_get_stats64     = veth_get_stats64,
 	.ndo_set_rx_mode     = veth_set_multicast_list,
 	.ndo_set_mac_address = eth_mac_addr,
@@ -1915,21 +1687,11 @@ static const struct xdp_metadata_ops veth_xdp_metadata_ops = {
 		       NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX | \
 		       NETIF_F_HW_VLAN_STAG_TX | NETIF_F_HW_VLAN_STAG_RX )
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void veth_setup(struct net_device *dev)
 {
 	ether_setup(dev);
 
 	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
-<<<<<<< HEAD
-
-	dev->netdev_ops = &veth_netdev_ops;
-	dev->ethtool_ops = &veth_ethtool_ops;
-	dev->features |= NETIF_F_LLTX;
-	dev->destructor = veth_dev_free;
-
-	dev->hw_features = NETIF_F_HW_CSUM | NETIF_F_SG | NETIF_F_RXCSUM;
-=======
 	dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
 	dev->priv_flags |= IFF_NO_QUEUE;
 	dev->priv_flags |= IFF_PHONY_HEADROOM;
@@ -1953,19 +1715,14 @@ static void veth_setup(struct net_device *dev)
 	dev->hw_enc_features = VETH_FEATURES;
 	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
 	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * netlink interface
  */
 
-<<<<<<< HEAD
-static int veth_validate(struct nlattr *tb[], struct nlattr *data[])
-=======
 static int veth_validate(struct nlattr *tb[], struct nlattr *data[],
 			 struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (tb[IFLA_ADDRESS]) {
 		if (nla_len(tb[IFLA_ADDRESS]) != ETH_ALEN)
@@ -1982,10 +1739,6 @@ static int veth_validate(struct nlattr *tb[], struct nlattr *data[],
 
 static struct rtnl_link_ops veth_link_ops;
 
-<<<<<<< HEAD
-static int veth_newlink(struct net *src_net, struct net_device *dev,
-			 struct nlattr *tb[], struct nlattr *data[])
-=======
 static void veth_disable_gro(struct net_device *dev)
 {
 	dev->features &= ~NETIF_F_GRO;
@@ -2013,17 +1766,13 @@ static int veth_init_queues(struct net_device *dev, struct nlattr *tb[])
 static int veth_newlink(struct net *src_net, struct net_device *dev,
 			struct nlattr *tb[], struct nlattr *data[],
 			struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct net_device *peer;
 	struct veth_priv *priv;
 	char ifname[IFNAMSIZ];
 	struct nlattr *peer_tb[IFLA_MAX + 1], **tbp;
-<<<<<<< HEAD
-=======
 	unsigned char name_assign_type;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ifinfomsg *ifmp;
 	struct net *net;
 
@@ -2035,22 +1784,11 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 
 		nla_peer = data[VETH_INFO_PEER];
 		ifmp = nla_data(nla_peer);
-<<<<<<< HEAD
-		err = nla_parse(peer_tb, IFLA_MAX,
-				nla_data(nla_peer) + sizeof(struct ifinfomsg),
-				nla_len(nla_peer) - sizeof(struct ifinfomsg),
-				ifla_policy);
-		if (err < 0)
-			return err;
-
-		err = veth_validate(peer_tb, NULL);
-=======
 		err = rtnl_nla_parse_ifinfomsg(peer_tb, nla_peer, extack);
 		if (err < 0)
 			return err;
 
 		err = veth_validate(peer_tb, NULL, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 
@@ -2060,12 +1798,6 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 		tbp = tb;
 	}
 
-<<<<<<< HEAD
-	if (tbp[IFLA_IFNAME])
-		nla_strlcpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
-	else
-		snprintf(ifname, IFNAMSIZ, DRV_NAME "%%d");
-=======
 	if (ifmp && tbp[IFLA_IFNAME]) {
 		nla_strscpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
 		name_assign_type = NET_NAME_USER;
@@ -2073,28 +1805,18 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 		snprintf(ifname, IFNAMSIZ, DRV_NAME "%%d");
 		name_assign_type = NET_NAME_ENUM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	net = rtnl_link_get_net(src_net, tbp);
 	if (IS_ERR(net))
 		return PTR_ERR(net);
 
-<<<<<<< HEAD
-	peer = rtnl_create_link(src_net, net, ifname, &veth_link_ops, tbp);
-=======
 	peer = rtnl_create_link(net, ifname, name_assign_type,
 				&veth_link_ops, tbp, extack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(peer)) {
 		put_net(net);
 		return PTR_ERR(peer);
 	}
 
-<<<<<<< HEAD
-	if (tbp[IFLA_ADDRESS] == NULL)
-		eth_hw_addr_random(peer);
-
-=======
 	if (!ifmp || !tbp[IFLA_ADDRESS])
 		eth_hw_addr_random(peer);
 
@@ -2103,18 +1825,12 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 
 	netif_inherit_tso_max(peer, dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = register_netdevice(peer);
 	put_net(net);
 	net = NULL;
 	if (err < 0)
 		goto err_register_peer;
 
-<<<<<<< HEAD
-	netif_carrier_off(peer);
-
-	err = rtnl_configure_link(peer, ifmp);
-=======
 	/* keep GRO disabled by default to be consistent with the established
 	 * veth behavior
 	 */
@@ -2122,7 +1838,6 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 	netif_carrier_off(peer);
 
 	err = rtnl_configure_link(peer, ifmp, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		goto err_configure_peer;
 
@@ -2137,23 +1852,10 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 		eth_hw_addr_random(dev);
 
 	if (tb[IFLA_IFNAME])
-<<<<<<< HEAD
-		nla_strlcpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
-	else
-		snprintf(dev->name, IFNAMSIZ, DRV_NAME "%%d");
-
-	if (strchr(dev->name, '%')) {
-		err = dev_alloc_name(dev, dev->name);
-		if (err < 0)
-			goto err_alloc_name;
-	}
-
-=======
 		nla_strscpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
 	else
 		snprintf(dev->name, IFNAMSIZ, DRV_NAME "%%d");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = register_netdevice(dev);
 	if (err < 0)
 		goto err_register_dev;
@@ -2165,17 +1867,6 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 	 */
 
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-	priv->peer = peer;
-
-	priv = netdev_priv(peer);
-	priv->peer = dev;
-	return 0;
-
-err_register_dev:
-	/* nothing to do */
-err_alloc_name:
-=======
 	rcu_assign_pointer(priv->peer, peer);
 	err = veth_init_queues(dev, tb);
 	if (err)
@@ -2198,7 +1889,6 @@ err_queues:
 	unregister_netdevice(dev);
 err_register_dev:
 	/* nothing to do */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_configure_peer:
 	unregister_netdevice(peer);
 	return err;
@@ -2214,12 +1904,6 @@ static void veth_dellink(struct net_device *dev, struct list_head *head)
 	struct net_device *peer;
 
 	priv = netdev_priv(dev);
-<<<<<<< HEAD
-	peer = priv->peer;
-
-	unregister_netdevice_queue(dev, head);
-	unregister_netdevice_queue(peer, head);
-=======
 	peer = rtnl_dereference(priv->peer);
 
 	/* Note : dellink() is called from default_device_exit_batch(),
@@ -2234,15 +1918,12 @@ static void veth_dellink(struct net_device *dev, struct list_head *head)
 		RCU_INIT_POINTER(priv->peer, NULL);
 		unregister_netdevice_queue(peer, head);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct nla_policy veth_policy[VETH_INFO_MAX + 1] = {
 	[VETH_INFO_PEER]	= { .len = sizeof(struct ifinfomsg) },
 };
 
-<<<<<<< HEAD
-=======
 static struct net *veth_get_link_net(const struct net_device *dev)
 {
 	struct veth_priv *priv = netdev_priv(dev);
@@ -2261,7 +1942,6 @@ static unsigned int veth_get_num_queues(void)
 	return queues;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct rtnl_link_ops veth_link_ops = {
 	.kind		= DRV_NAME,
 	.priv_size	= sizeof(struct veth_priv),
@@ -2271,12 +1951,9 @@ static struct rtnl_link_ops veth_link_ops = {
 	.dellink	= veth_dellink,
 	.policy		= veth_policy,
 	.maxtype	= VETH_INFO_MAX,
-<<<<<<< HEAD
-=======
 	.get_link_net	= veth_get_link_net,
 	.get_num_tx_queues	= veth_get_num_queues,
 	.get_num_rx_queues	= veth_get_num_queues,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

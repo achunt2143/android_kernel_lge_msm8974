@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NG2patch.S: Patch Ultra-I routines with Niagara-2 variant.
  *
  * Copyright (C) 2007 David S. Miller <davem@davemloft.net>
@@ -30,13 +27,8 @@
 	.type	niagara2_patch_copyops,#function
 niagara2_patch_copyops:
 	NG_DO_PATCH(memcpy, NG2memcpy)
-<<<<<<< HEAD
-	NG_DO_PATCH(___copy_from_user, NG2copy_from_user)
-	NG_DO_PATCH(___copy_to_user, NG2copy_to_user)
-=======
 	NG_DO_PATCH(raw_copy_from_user, NG2copy_from_user)
 	NG_DO_PATCH(raw_copy_to_user, NG2copy_to_user)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retl
 	 nop
 	.size	niagara2_patch_copyops,.-niagara2_patch_copyops

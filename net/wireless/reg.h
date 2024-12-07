@@ -1,16 +1,11 @@
 #ifndef __NET_WIRELESS_REG_H
 #define __NET_WIRELESS_REG_H
-<<<<<<< HEAD
-/*
- * Copyright 2008-2011	Luis R. Rodriguez <mcgrof@qca.qualcomm.com>
-=======
 
 #include <net/cfg80211.h>
 
 /*
  * Copyright 2008-2011	Luis R. Rodriguez <mcgrof@qca.qualcomm.com>
  * Copyright (C) 2019, 2023 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,16 +20,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-<<<<<<< HEAD
-extern const struct ieee80211_regdomain *cfg80211_regdomain;
-
-bool is_world_regdom(const char *alpha2);
-bool reg_is_valid_request(const char *alpha2);
-bool reg_supported_dfs_region(u8 dfs_region);
-
-int reg_device_uevent(struct device *dev, struct kobj_uevent_env *env);
-void reg_device_remove(struct wiphy *wiphy);
-=======
 enum ieee80211_regd_source {
 	REGD_SOURCE_INTERNAL_DB,
 	REGD_SOURCE_CRDA,
@@ -67,16 +52,10 @@ void regulatory_netlink_notify(u32 portid);
 
 void wiphy_regulatory_register(struct wiphy *wiphy);
 void wiphy_regulatory_deregister(struct wiphy *wiphy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __init regulatory_init(void);
 void regulatory_exit(void);
 
-<<<<<<< HEAD
-int set_regdom(const struct ieee80211_regdomain *rd);
-
-void regulatory_update(struct wiphy *wiphy, enum nl80211_reg_initiator setby);
-=======
 int set_regdom(const struct ieee80211_regdomain *rd,
 	       enum ieee80211_regd_source regd_src);
 
@@ -84,7 +63,6 @@ unsigned int reg_get_max_bandwidth(const struct ieee80211_regdomain *rd,
 				   const struct ieee80211_reg_rule *rule);
 
 bool reg_last_request_cell_base(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * regulatory_hint_found_beacon - hints a beacon was found on a channel
@@ -105,19 +83,11 @@ bool reg_last_request_cell_base(void);
  * set the wiphy->disable_beacon_hints to true.
  */
 int regulatory_hint_found_beacon(struct wiphy *wiphy,
-<<<<<<< HEAD
-					struct ieee80211_channel *beacon_chan,
-					gfp_t gfp);
-
-/**
- * regulatory_hint_11d - hints a country IE as a regulatory domain
-=======
 				 struct ieee80211_channel *beacon_chan,
 				 gfp_t gfp);
 
 /**
  * regulatory_hint_country_ie - hints a country IE as a regulatory domain
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @wiphy: the wireless device giving the hint (used only for reporting
  *	conflicts)
  * @band: the band on which the country IE was received on. This determines
@@ -137,15 +107,6 @@ int regulatory_hint_found_beacon(struct wiphy *wiphy,
  * not observed. For this reason if a triplet is seen with channel
  * information for a band the BSS is not present in it will be ignored.
  */
-<<<<<<< HEAD
-void regulatory_hint_11d(struct wiphy *wiphy,
-			 enum ieee80211_band band,
-			 u8 *country_ie,
-			 u8 country_ie_len);
-
-/**
- * regulatory_hint_disconnect - informs all devices have been disconneted
-=======
 void regulatory_hint_country_ie(struct wiphy *wiphy,
 			 enum nl80211_band band,
 			 const u8 *country_ie,
@@ -153,7 +114,6 @@ void regulatory_hint_country_ie(struct wiphy *wiphy,
 
 /**
  * regulatory_hint_disconnect - informs all devices have been disconnected
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Regulotory rules can be enhanced further upon scanning and upon
  * connection to an AP. These rules become stale if we disconnect
@@ -170,8 +130,6 @@ void regulatory_hint_country_ie(struct wiphy *wiphy,
  */
 void regulatory_hint_disconnect(void);
 
-<<<<<<< HEAD
-=======
 /**
  * cfg80211_get_unii - get the U-NII band for the frequency
  * @freq: the frequency for which we want to get the UNII band.
@@ -233,5 +191,4 @@ extern unsigned int shipped_regdb_certs_len;
 extern const u8 extra_regdb_certs[];
 extern unsigned int extra_regdb_certs_len;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* __NET_WIRELESS_REG_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenFirmware regulator support routines
  *
@@ -10,19 +7,6 @@
 #ifndef __LINUX_OF_REG_H
 #define __LINUX_OF_REG_H
 
-<<<<<<< HEAD
-#if defined(CONFIG_OF)
-extern struct regulator_init_data
-	*of_get_regulator_init_data(struct device *dev,
-				    struct device_node *node);
-#else
-static inline struct regulator_init_data
-	*of_get_regulator_init_data(struct device *dev,
-				    struct device_node *node)
-{
-	return NULL;
-}
-=======
 struct regulator_desc;
 
 struct of_regulator_match {
@@ -57,7 +41,6 @@ static inline int of_regulator_match(struct device *dev,
 {
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_OF */
 
 #endif /* __LINUX_OF_REG_H */

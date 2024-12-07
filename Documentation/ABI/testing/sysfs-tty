@@ -9,11 +9,7 @@ Description:
 		 The file supports poll() to detect virtual
 		 console switches.
 
-<<<<<<< HEAD
-What:		/sys/class/tty/tty0/active
-=======
 What:		/sys/class/tty/tty<x>/active
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		Nov 2010
 Contact:	Kay Sievers <kay.sievers@vrfy.org>
 Description:
@@ -21,8 +17,6 @@ Description:
 		 device, like 'tty1'.
 		 The file supports poll() to detect virtual
 		 console switches.
-<<<<<<< HEAD
-=======
 
 What:		/sys/class/tty/ttyS<x>/uartclk
 Date:		Sep 2012
@@ -170,4 +164,3 @@ Contact:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Description:
 		 Allows user to detach or attach back the given device as
 		 kernel console. It shows and accepts a boolean variable.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

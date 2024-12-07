@@ -20,12 +20,6 @@
 
 #include "ath9k.h"
 #include "dfs_debug.h"
-<<<<<<< HEAD
-
-#define ATH9K_DFS_STAT(s, p) \
-	len += snprintf(buf + len, size - len, "%28s : %10u\n", s, \
-			sc->debug.stats.dfs_stats.p);
-=======
 #include "../dfs_pattern_detector.h"
 
 static struct ath_dfs_pool_stats dfs_pool_stats = { 0 };
@@ -36,7 +30,6 @@ static struct ath_dfs_pool_stats dfs_pool_stats = { 0 };
 #define ATH9K_DFS_POOL_STAT(s, p) \
 	len += scnprintf(buf + len, size - len, "%28s : %10u\n", s, \
 			 dfs_pool_stats.p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t read_file_dfs(struct file *file, char __user *user_buf,
 			     size_t count, loff_t *ppos)
@@ -51,13 +44,6 @@ static ssize_t read_file_dfs(struct file *file, char __user *user_buf,
 	if (buf == NULL)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	len += snprintf(buf + len, size - len, "DFS support for "
-			"macVersion = 0x%x, macRev = 0x%x: %s\n",
-			hw_ver->macVersion, hw_ver->macRev,
-			(sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_DFS) ?
-					"enabled" : "disabled");
-=======
 	len += scnprintf(buf + len, size - len, "DFS support for "
 			 "macVersion = 0x%x, macRev = 0x%x: %s\n",
 			 hw_ver->macVersion, hw_ver->macRev,
@@ -75,7 +61,6 @@ static ssize_t read_file_dfs(struct file *file, char __user *user_buf,
 	len += scnprintf(buf + len, size - len, "Pulse detector statistics:\n");
 	ATH9K_DFS_STAT("pulse events reported   ", pulses_total);
 	ATH9K_DFS_STAT("invalid pulse events    ", pulses_no_dfs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATH9K_DFS_STAT("DFS pulses detected     ", pulses_detected);
 	ATH9K_DFS_STAT("Datalen discards        ", datalen_discards);
 	ATH9K_DFS_STAT("RSSI discards           ", rssi_discards);
@@ -83,9 +68,6 @@ static ssize_t read_file_dfs(struct file *file, char __user *user_buf,
 	ATH9K_DFS_STAT("Primary channel pulses  ", pri_phy_errors);
 	ATH9K_DFS_STAT("Secondary channel pulses", ext_phy_errors);
 	ATH9K_DFS_STAT("Dual channel pulses     ", dc_phy_errors);
-<<<<<<< HEAD
-
-=======
 	len += scnprintf(buf + len, size - len, "Radar detector statistics "
 			 "(current DFS region: %d)\n",
 			 sc->dfs_detector->region);
@@ -101,7 +83,6 @@ static ssize_t read_file_dfs(struct file *file, char __user *user_buf,
 	ATH9K_DFS_POOL_STAT("Seqs. in use            ", pseq_used);
 
 exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len > size)
 		len = size;
 
@@ -111,10 +92,6 @@ exit:
 	return retval;
 }
 
-<<<<<<< HEAD
-static const struct file_operations fops_dfs_stats = {
-	.read = read_file_dfs,
-=======
 /* magic number to prevent accidental reset of DFS statistics */
 #define DFS_STATS_RESET_MAGIC	0x80000000
 static ssize_t write_file_dfs(struct file *file, const char __user *user_buf,
@@ -154,7 +131,6 @@ static const struct file_operations fops_simulate_radar = {
 static const struct file_operations fops_dfs_stats = {
 	.read = read_file_dfs,
 	.write = write_file_dfs,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = simple_open,
 	.owner = THIS_MODULE,
 	.llseek = default_llseek,
@@ -162,13 +138,8 @@ static const struct file_operations fops_dfs_stats = {
 
 void ath9k_dfs_init_debug(struct ath_softc *sc)
 {
-<<<<<<< HEAD
-	debugfs_create_file("dfs_stats", S_IRUSR,
-			    sc->debug.debugfs_phy, sc, &fops_dfs_stats);
-=======
 	debugfs_create_file("dfs_stats", 0400,
 			    sc->debug.debugfs_phy, sc, &fops_dfs_stats);
 	debugfs_create_file("dfs_simulate_radar", 0200,
 			    sc->debug.debugfs_phy, sc, &fops_simulate_radar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

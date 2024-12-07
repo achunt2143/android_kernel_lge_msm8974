@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	National Semiconductor PC87307/PC97307 (ala SC1200) WDT driver
  *	(c) Copyright 2002 Zwane Mwaikambo <zwane@commfireservices.com>,
  *			All Rights Reserved.
  *	Based on wdt.c and wdt977.c by Alan Cox and Woody Suwalski respectively.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License
- *	as published by the Free Software Foundation; either version
- *	2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The author(s) of this software shall not be held liable for damages
  *	of any nature resulting due to the use of this software. This
  *	software is provided AS-IS with no warranties.
@@ -35,10 +24,6 @@
  *	20020530 Joel Becker		Add Matt Domsch's nowayout module
  *					option
  *	20030116 Adam Belay		Updated to the latest pnp code
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -98,11 +83,7 @@ MODULE_PARM_DESC(isapnp,
 	"When set to 0 driver ISA PnP support will be disabled");
 #endif
 
-<<<<<<< HEAD
-module_param(io, int, 0);
-=======
 module_param_hw(io, int, ioport, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(io, "io port");
 module_param(timeout, int, 0);
 MODULE_PARM_DESC(timeout, "range is 0-255 minutes, default is 1");
@@ -192,11 +173,7 @@ static int sc1200wdt_open(struct inode *inode, struct file *file)
 	sc1200wdt_start();
 	pr_info("Watchdog enabled, timeout = %d min(s)", timeout);
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -257,11 +234,7 @@ static long sc1200wdt_ioctl(struct file *file, unsigned int cmd,
 			return -EINVAL;
 		timeout = new_timeout;
 		sc1200wdt_write_data(WDTO, timeout);
-<<<<<<< HEAD
-		/* fall through and return the new timeout */
-=======
 		fallthrough;	/* and return the new timeout */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case WDIOC_GETTIMEOUT:
 		return put_user(timeout * 60, p);
@@ -334,10 +307,7 @@ static const struct file_operations sc1200wdt_fops = {
 	.llseek		= no_llseek,
 	.write		= sc1200wdt_write,
 	.unlocked_ioctl = sc1200wdt_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= sc1200wdt_open,
 	.release	= sc1200wdt_release,
 };
@@ -368,11 +338,7 @@ static int __init sc1200wdt_probe(void)
 
 #if defined CONFIG_PNP
 
-<<<<<<< HEAD
-static struct pnp_device_id scl200wdt_pnp_devices[] = {
-=======
 static const struct pnp_device_id scl200wdt_pnp_devices[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* National Semiconductor PC87307/PC97307 watchdog component */
 	{.id = "NSC0800", .driver_data = 0},
 	{.id = ""},
@@ -507,7 +473,3 @@ MODULE_AUTHOR("Zwane Mwaikambo <zwane@commfireservices.com>");
 MODULE_DESCRIPTION(
 	"Driver for National Semiconductor PC87307/PC97307 watchdog component");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

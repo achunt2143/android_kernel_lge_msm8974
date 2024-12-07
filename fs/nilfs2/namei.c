@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-/*
- * namei.c - NILFS pathname lookup operations.
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Modified for NILFS by Amagai Yoshiji <amagai@osrg.net>,
- *                       Ryusuke Konishi <ryusuke@osrg.net>
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * NILFS pathname lookup operations.
@@ -28,7 +5,6 @@
  * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
  *
  * Modified for NILFS by Amagai Yoshiji and Ryusuke Konishi.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  *  linux/fs/ext2/namei.c
@@ -59,13 +35,6 @@
 static inline int nilfs_add_nondir(struct dentry *dentry, struct inode *inode)
 {
 	int err = nilfs_add_link(dentry, inode);
-<<<<<<< HEAD
-	if (!err) {
-		d_instantiate(dentry, inode);
-		return 0;
-	}
-	inode_dec_link_count(inode);
-=======
 
 	if (!err) {
 		d_instantiate_new(dentry, inode);
@@ -73,7 +42,6 @@ static inline int nilfs_add_nondir(struct dentry *dentry, struct inode *inode)
 	}
 	inode_dec_link_count(inode);
 	unlock_new_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(inode);
 	return err;
 }
@@ -104,13 +72,8 @@ nilfs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
  * If the create succeeds, we fill in the inode information
  * with d_instantiate().
  */
-<<<<<<< HEAD
-static int nilfs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
-			bool excl)
-=======
 static int nilfs_create(struct mnt_idmap *idmap, struct inode *dir,
 			struct dentry *dentry, umode_t mode, bool excl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	struct nilfs_transaction_info ti;
@@ -137,23 +100,13 @@ static int nilfs_create(struct mnt_idmap *idmap, struct inode *dir,
 }
 
 static int
-<<<<<<< HEAD
-nilfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t rdev)
-=======
 nilfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 	    struct dentry *dentry, umode_t mode, dev_t rdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	struct nilfs_transaction_info ti;
 	int err;
 
-<<<<<<< HEAD
-	if (!new_valid_dev(rdev))
-		return -EINVAL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = nilfs_transaction_begin(dir->i_sb, &ti, 1);
 	if (err)
 		return err;
@@ -172,21 +125,12 @@ nilfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 	return err;
 }
 
-<<<<<<< HEAD
-static int nilfs_symlink(struct inode *dir, struct dentry *dentry,
-			 const char *symname)
-{
-	struct nilfs_transaction_info ti;
-	struct super_block *sb = dir->i_sb;
-	unsigned l = strlen(symname)+1;
-=======
 static int nilfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 			 struct dentry *dentry, const char *symname)
 {
 	struct nilfs_transaction_info ti;
 	struct super_block *sb = dir->i_sb;
 	unsigned int l = strlen(symname) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode;
 	int err;
 
@@ -197,21 +141,14 @@ static int nilfs_symlink(struct mnt_idmap *idmap, struct inode *dir,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	inode = nilfs_new_inode(dir, S_IFLNK | S_IRWXUGO);
-=======
 	inode = nilfs_new_inode(dir, S_IFLNK | 0777);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = PTR_ERR(inode);
 	if (IS_ERR(inode))
 		goto out;
 
 	/* slow symlink */
 	inode->i_op = &nilfs_symlink_inode_operations;
-<<<<<<< HEAD
-=======
 	inode_nohighmem(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_mapping->a_ops = &nilfs_aops;
 	err = page_symlink(inode, symname, l);
 	if (err)
@@ -232,10 +169,7 @@ out:
 out_fail:
 	drop_nlink(inode);
 	nilfs_mark_inode_dirty(inode);
-<<<<<<< HEAD
-=======
 	unlock_new_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(inode);
 	goto out;
 }
@@ -243,11 +177,7 @@ out_fail:
 static int nilfs_link(struct dentry *old_dentry, struct inode *dir,
 		      struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = old_dentry->d_inode;
-=======
 	struct inode *inode = d_inode(old_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nilfs_transaction_info ti;
 	int err;
 
@@ -255,17 +185,6 @@ static int nilfs_link(struct dentry *old_dentry, struct inode *dir,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	inode->i_ctime = CURRENT_TIME;
-	inode_inc_link_count(inode);
-	ihold(inode);
-
-	err = nilfs_add_nondir(dentry, inode);
-	if (!err)
-		err = nilfs_transaction_commit(dir->i_sb);
-	else
-		nilfs_transaction_abort(dir->i_sb);
-=======
 	inode_set_ctime_current(inode);
 	inode_inc_link_count(inode);
 	ihold(inode);
@@ -279,17 +198,12 @@ static int nilfs_link(struct dentry *old_dentry, struct inode *dir,
 		iput(inode);
 		nilfs_transaction_abort(dir->i_sb);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
-<<<<<<< HEAD
-static int nilfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 static int nilfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		       struct dentry *dentry, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	struct nilfs_transaction_info ti;
@@ -321,11 +235,7 @@ static int nilfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		goto out_fail;
 
 	nilfs_mark_inode_dirty(inode);
-<<<<<<< HEAD
-	d_instantiate(dentry, inode);
-=======
 	d_instantiate_new(dentry, inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (!err)
 		err = nilfs_transaction_commit(dir->i_sb);
@@ -338,10 +248,7 @@ out_fail:
 	drop_nlink(inode);
 	drop_nlink(inode);
 	nilfs_mark_inode_dirty(inode);
-<<<<<<< HEAD
-=======
 	unlock_new_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(inode);
 out_dir:
 	drop_nlink(dir);
@@ -353,17 +260,6 @@ static int nilfs_do_unlink(struct inode *dir, struct dentry *dentry)
 {
 	struct inode *inode;
 	struct nilfs_dir_entry *de;
-<<<<<<< HEAD
-	struct page *page;
-	int err;
-
-	err = -ENOENT;
-	de = nilfs_find_entry(dir, &dentry->d_name, &page);
-	if (!de)
-		goto out;
-
-	inode = dentry->d_inode;
-=======
 	struct folio *folio;
 	int err;
 
@@ -373,24 +269,11 @@ static int nilfs_do_unlink(struct inode *dir, struct dentry *dentry)
 		goto out;
 
 	inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -EIO;
 	if (le64_to_cpu(de->inode) != inode->i_ino)
 		goto out;
 
 	if (!inode->i_nlink) {
-<<<<<<< HEAD
-		nilfs_warning(inode->i_sb, __func__,
-			      "deleting nonexistent file (%lu), %d\n",
-			      inode->i_ino, inode->i_nlink);
-		set_nlink(inode, 1);
-	}
-	err = nilfs_delete_entry(de, page);
-	if (err)
-		goto out;
-
-	inode->i_ctime = dir->i_ctime;
-=======
 		nilfs_warn(inode->i_sb,
 			   "deleting nonexistent file (ino=%lu), %d",
 			   inode->i_ino, inode->i_nlink);
@@ -402,7 +285,6 @@ static int nilfs_do_unlink(struct inode *dir, struct dentry *dentry)
 		goto out;
 
 	inode_set_ctime_to_ts(inode, inode_get_ctime(dir));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drop_nlink(inode);
 	err = 0;
 out:
@@ -422,11 +304,7 @@ static int nilfs_unlink(struct inode *dir, struct dentry *dentry)
 
 	if (!err) {
 		nilfs_mark_inode_dirty(dir);
-<<<<<<< HEAD
-		nilfs_mark_inode_dirty(dentry->d_inode);
-=======
 		nilfs_mark_inode_dirty(d_inode(dentry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = nilfs_transaction_commit(dir->i_sb);
 	} else
 		nilfs_transaction_abort(dir->i_sb);
@@ -436,11 +314,7 @@ static int nilfs_unlink(struct inode *dir, struct dentry *dentry)
 
 static int nilfs_rmdir(struct inode *dir, struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nilfs_transaction_info ti;
 	int err;
 
@@ -467,16 +341,6 @@ static int nilfs_rmdir(struct inode *dir, struct dentry *dentry)
 	return err;
 }
 
-<<<<<<< HEAD
-static int nilfs_rename(struct inode *old_dir, struct dentry *old_dentry,
-			struct inode *new_dir,	struct dentry *new_dentry)
-{
-	struct inode *old_inode = old_dentry->d_inode;
-	struct inode *new_inode = new_dentry->d_inode;
-	struct page *dir_page = NULL;
-	struct nilfs_dir_entry *dir_de = NULL;
-	struct page *old_page;
-=======
 static int nilfs_rename(struct mnt_idmap *idmap,
 			struct inode *old_dir, struct dentry *old_dentry,
 			struct inode *new_dir, struct dentry *new_dentry,
@@ -487,47 +351,31 @@ static int nilfs_rename(struct mnt_idmap *idmap,
 	struct folio *dir_folio = NULL;
 	struct nilfs_dir_entry *dir_de = NULL;
 	struct folio *old_folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nilfs_dir_entry *old_de;
 	struct nilfs_transaction_info ti;
 	int err;
 
-<<<<<<< HEAD
-=======
 	if (flags & ~RENAME_NOREPLACE)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = nilfs_transaction_begin(old_dir->i_sb, &ti, 1);
 	if (unlikely(err))
 		return err;
 
 	err = -ENOENT;
-<<<<<<< HEAD
-	old_de = nilfs_find_entry(old_dir, &old_dentry->d_name, &old_page);
-=======
 	old_de = nilfs_find_entry(old_dir, &old_dentry->d_name, &old_folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!old_de)
 		goto out;
 
 	if (S_ISDIR(old_inode->i_mode)) {
 		err = -EIO;
-<<<<<<< HEAD
-		dir_de = nilfs_dotdot(old_inode, &dir_page);
-=======
 		dir_de = nilfs_dotdot(old_inode, &dir_folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dir_de)
 			goto out_old;
 	}
 
 	if (new_inode) {
-<<<<<<< HEAD
-		struct page *new_page;
-=======
 		struct folio *new_folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct nilfs_dir_entry *new_de;
 
 		err = -ENOTEMPTY;
@@ -535,14 +383,6 @@ static int nilfs_rename(struct mnt_idmap *idmap,
 			goto out_dir;
 
 		err = -ENOENT;
-<<<<<<< HEAD
-		new_de = nilfs_find_entry(new_dir, &new_dentry->d_name, &new_page);
-		if (!new_de)
-			goto out_dir;
-		nilfs_set_link(new_dir, new_de, new_page, old_inode);
-		nilfs_mark_inode_dirty(new_dir);
-		new_inode->i_ctime = CURRENT_TIME;
-=======
 		new_de = nilfs_find_entry(new_dir, &new_dentry->d_name, &new_folio);
 		if (!new_de)
 			goto out_dir;
@@ -550,7 +390,6 @@ static int nilfs_rename(struct mnt_idmap *idmap,
 		folio_release_kmap(new_folio, new_de);
 		nilfs_mark_inode_dirty(new_dir);
 		inode_set_ctime_current(new_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dir_de)
 			drop_nlink(new_inode);
 		drop_nlink(new_inode);
@@ -569,16 +408,6 @@ static int nilfs_rename(struct mnt_idmap *idmap,
 	 * Like most other Unix systems, set the ctime for inodes on a
 	 * rename.
 	 */
-<<<<<<< HEAD
-	old_inode->i_ctime = CURRENT_TIME;
-
-	nilfs_delete_entry(old_de, old_page);
-
-	if (dir_de) {
-		nilfs_set_link(old_inode, dir_de, dir_page, new_dir);
-		drop_nlink(old_dir);
-	}
-=======
 	inode_set_ctime_current(old_inode);
 
 	nilfs_delete_entry(old_de, old_folio);
@@ -590,7 +419,6 @@ static int nilfs_rename(struct mnt_idmap *idmap,
 	}
 	folio_release_kmap(old_folio, old_de);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nilfs_mark_inode_dirty(old_dir);
 	nilfs_mark_inode_dirty(old_inode);
 
@@ -598,20 +426,10 @@ static int nilfs_rename(struct mnt_idmap *idmap,
 	return err;
 
 out_dir:
-<<<<<<< HEAD
-	if (dir_de) {
-		kunmap(dir_page);
-		page_cache_release(dir_page);
-	}
-out_old:
-	kunmap(old_page);
-	page_cache_release(old_page);
-=======
 	if (dir_de)
 		folio_release_kmap(dir_folio, dir_de);
 out_old:
 	folio_release_kmap(old_folio, old_de);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	nilfs_transaction_abort(old_dir->i_sb);
 	return err;
@@ -623,23 +441,6 @@ out:
 static struct dentry *nilfs_get_parent(struct dentry *child)
 {
 	unsigned long ino;
-<<<<<<< HEAD
-	struct inode *inode;
-	struct qstr dotdot = QSTR_INIT("..", 2);
-	struct nilfs_root *root;
-
-	ino = nilfs_inode_by_name(child->d_inode, &dotdot);
-	if (!ino)
-		return ERR_PTR(-ENOENT);
-
-	root = NILFS_I(child->d_inode)->i_root;
-
-	inode = nilfs_iget(child->d_inode->i_sb, root, ino);
-	if (IS_ERR(inode))
-		return ERR_CAST(inode);
-
-	return d_obtain_alias(inode);
-=======
 	struct nilfs_root *root;
 
 	ino = nilfs_inode_by_name(d_inode(child), &dotdot_name);
@@ -649,7 +450,6 @@ static struct dentry *nilfs_get_parent(struct dentry *child)
 	root = NILFS_I(d_inode(child))->i_root;
 
 	return d_obtain_alias(nilfs_iget(child->d_sb, root, ino));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dentry *nilfs_get_dentry(struct super_block *sb, u64 cno,
@@ -682,12 +482,7 @@ static struct dentry *nilfs_fh_to_dentry(struct super_block *sb, struct fid *fh,
 {
 	struct nilfs_fid *fid = (struct nilfs_fid *)fh;
 
-<<<<<<< HEAD
-	if ((fh_len != NILFS_FID_SIZE_NON_CONNECTABLE &&
-	     fh_len != NILFS_FID_SIZE_CONNECTABLE) ||
-=======
 	if (fh_len < NILFS_FID_SIZE_NON_CONNECTABLE ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (fh_type != FILEID_NILFS_WITH_PARENT &&
 	     fh_type != FILEID_NILFS_WITHOUT_PARENT))
 		return NULL;
@@ -700,30 +495,13 @@ static struct dentry *nilfs_fh_to_parent(struct super_block *sb, struct fid *fh,
 {
 	struct nilfs_fid *fid = (struct nilfs_fid *)fh;
 
-<<<<<<< HEAD
-	if (fh_len != NILFS_FID_SIZE_CONNECTABLE ||
-=======
 	if (fh_len < NILFS_FID_SIZE_CONNECTABLE ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    fh_type != FILEID_NILFS_WITH_PARENT)
 		return NULL;
 
 	return nilfs_get_dentry(sb, fid->cno, fid->parent_ino, fid->parent_gen);
 }
 
-<<<<<<< HEAD
-static int nilfs_encode_fh(struct dentry *dentry, __u32 *fh, int *lenp,
-			   int connectable)
-{
-	struct nilfs_fid *fid = (struct nilfs_fid *)fh;
-	struct inode *inode = dentry->d_inode;
-	struct nilfs_root *root = NILFS_I(inode)->i_root;
-	int type;
-
-	if (*lenp < NILFS_FID_SIZE_NON_CONNECTABLE ||
-	    (connectable && *lenp < NILFS_FID_SIZE_CONNECTABLE))
-		return 255;
-=======
 static int nilfs_encode_fh(struct inode *inode, __u32 *fh, int *lenp,
 			   struct inode *parent)
 {
@@ -739,27 +517,14 @@ static int nilfs_encode_fh(struct inode *inode, __u32 *fh, int *lenp,
 		*lenp = NILFS_FID_SIZE_NON_CONNECTABLE;
 		return FILEID_INVALID;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fid->cno = root->cno;
 	fid->ino = inode->i_ino;
 	fid->gen = inode->i_generation;
 
-<<<<<<< HEAD
-	if (connectable && !S_ISDIR(inode->i_mode)) {
-		struct inode *parent;
-
-		spin_lock(&dentry->d_lock);
-		parent = dentry->d_parent->d_inode;
-		fid->parent_ino = parent->i_ino;
-		fid->parent_gen = parent->i_generation;
-		spin_unlock(&dentry->d_lock);
-
-=======
 	if (parent) {
 		fid->parent_ino = parent->i_ino;
 		fid->parent_gen = parent->i_generation;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = FILEID_NILFS_WITH_PARENT;
 		*lenp = NILFS_FID_SIZE_CONNECTABLE;
 	} else {
@@ -783,11 +548,8 @@ const struct inode_operations nilfs_dir_inode_operations = {
 	.setattr	= nilfs_setattr,
 	.permission	= nilfs_permission,
 	.fiemap		= nilfs_fiemap,
-<<<<<<< HEAD
-=======
 	.fileattr_get	= nilfs_fileattr_get,
 	.fileattr_set	= nilfs_fileattr_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct inode_operations nilfs_special_inode_operations = {
@@ -796,13 +558,7 @@ const struct inode_operations nilfs_special_inode_operations = {
 };
 
 const struct inode_operations nilfs_symlink_inode_operations = {
-<<<<<<< HEAD
-	.readlink	= generic_readlink,
-	.follow_link	= page_follow_link_light,
-	.put_link	= page_put_link,
-=======
 	.get_link	= page_get_link,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.permission     = nilfs_permission,
 };
 

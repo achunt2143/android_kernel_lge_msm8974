@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -9,25 +6,10 @@
  *
  *	See the file "skfddi.c" for further information.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-#ifndef	lint
-static char const ID_sccs[] = "@(#)hwmtm.c	1.40 99/05/31 (C) SK" ;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	HWMTM
 
 #ifndef FDDI
@@ -56,17 +38,10 @@ static char const ID_sccs[] = "@(#)hwmtm.c	1.40 99/05/31 (C) SK" ;
 	-------------------------------------------------------------
 */
 #ifdef COMMON_MB_POOL
-<<<<<<< HEAD
-static	SMbuf *mb_start = 0 ;
-static	SMbuf *mb_free = 0 ;
-static	int mb_init = FALSE ;
-static	int call_count = 0 ;
-=======
 static	SMbuf *mb_start;
 static	SMbuf *mb_free;
 static	int mb_init = FALSE ;
 static	int call_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -175,11 +150,7 @@ u_int mac_drv_check_space(void);
 SMbuf* smt_get_mbuf(struct s_smc *smc);
 
 #ifdef DEBUG
-<<<<<<< HEAD
-	void mac_drv_debug_lev(void);
-=======
 	void mac_drv_debug_lev(struct s_smc *smc, int flag, int lev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -351,11 +322,7 @@ static u_long init_descr_ring(struct s_smc *smc,
 	union s_fp_descr volatile *d2 ;
 	u_long	phys ;
 
-<<<<<<< HEAD
-	DB_GEN("descr ring starts at = %x ",(void *)start,0,3) ;
-=======
 	DB_GEN(3, "descr ring starts at = %p", start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i=count-1, d1=start; i ; i--) {
 		d2 = d1 ;
 		d1++ ;		/* descr is owned by the host */
@@ -364,11 +331,7 @@ static u_long init_descr_ring(struct s_smc *smc,
 		phys = mac_drv_virt2phys(smc,(void *)d1) ;
 		d2->r.rxd_nrdadr = cpu_to_le32(phys) ;
 	}
-<<<<<<< HEAD
-	DB_GEN("descr ring ends at = %x ",(void *)d1,0,3) ;
-=======
 	DB_GEN(3, "descr ring ends at = %p", d1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d1->r.rxd_rbctrl = cpu_to_le32(BMU_CHECK) ;
 	d1->r.rxd_next = &start->r ;
 	phys = mac_drv_virt2phys(smc,(void *)start) ;
@@ -393,11 +356,7 @@ static void init_txd_ring(struct s_smc *smc)
 	ds = (struct s_smt_fp_txd volatile *) ((char *)smc->os.hwm.descr_p +
 		SMT_R1_RXD_COUNT*sizeof(struct s_smt_fp_rxd)) ;
 	queue = smc->hw.fp.tx[QUEUE_A0] ;
-<<<<<<< HEAD
-	DB_GEN("Init async TxD ring, %d TxDs ",HWM_ASYNC_TXD_COUNT,0,3) ;
-=======
 	DB_GEN(3, "Init async TxD ring, %d TxDs", HWM_ASYNC_TXD_COUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)init_descr_ring(smc,(union s_fp_descr volatile *)ds,
 		HWM_ASYNC_TXD_COUNT) ;
 	phys = le32_to_cpu(ds->txd_ntdadr) ;
@@ -411,11 +370,7 @@ static void init_txd_ring(struct s_smc *smc)
 	ds = (struct s_smt_fp_txd volatile *) ((char *)ds +
 		HWM_ASYNC_TXD_COUNT*sizeof(struct s_smt_fp_txd)) ;
 	queue = smc->hw.fp.tx[QUEUE_S] ;
-<<<<<<< HEAD
-	DB_GEN("Init sync TxD ring, %d TxDs ",HWM_SYNC_TXD_COUNT,0,3) ;
-=======
 	DB_GEN(3, "Init sync TxD ring, %d TxDs", HWM_SYNC_TXD_COUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)init_descr_ring(smc,(union s_fp_descr volatile *)ds,
 		HWM_SYNC_TXD_COUNT) ;
 	phys = le32_to_cpu(ds->txd_ntdadr) ;
@@ -437,11 +392,7 @@ static void init_rxd_ring(struct s_smc *smc)
 	 */
 	ds = (struct s_smt_fp_rxd volatile *) smc->os.hwm.descr_p ;
 	queue = smc->hw.fp.rx[QUEUE_R1] ;
-<<<<<<< HEAD
-	DB_GEN("Init RxD ring, %d RxDs ",SMT_R1_RXD_COUNT,0,3) ;
-=======
 	DB_GEN(3, "Init RxD ring, %d RxDs", SMT_R1_RXD_COUNT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)init_descr_ring(smc,(union s_fp_descr volatile *)ds,
 		SMT_R1_RXD_COUNT) ;
 	phys = le32_to_cpu(ds->rxd_nrdadr) ;
@@ -510,19 +461,11 @@ void init_fddi_driver(struct s_smc *smc, u_char *mac_addr)
 	 */
 	i = 16 - ((long)smc->os.hwm.descr_p & 0xf) ;
 	if (i != 16) {
-<<<<<<< HEAD
-		DB_GEN("i = %d",i,0,3) ;
-		smc->os.hwm.descr_p = (union s_fp_descr volatile *)
-			((char *)smc->os.hwm.descr_p+i) ;
-	}
-	DB_GEN("pt to descr area = %x",(void *)smc->os.hwm.descr_p,0,3) ;
-=======
 		DB_GEN(3, "i = %d", i);
 		smc->os.hwm.descr_p = (union s_fp_descr volatile *)
 			((char *)smc->os.hwm.descr_p+i) ;
 	}
 	DB_GEN(3, "pt to descr area = %p", smc->os.hwm.descr_p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_txd_ring(smc) ;
 	init_rxd_ring(smc) ;
@@ -550,11 +493,7 @@ SMbuf *smt_get_mbuf(struct s_smc *smc)
 		mb->sm_off = 8 ;
 		mb->sm_use_count = 1 ;
 	}
-<<<<<<< HEAD
-	DB_GEN("get SMbuf: mb = %x",(void *)mb,0,3) ;
-=======
 	DB_GEN(3, "get SMbuf: mb = %p", mb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mb;	/* May be NULL */
 }
 
@@ -563,22 +502,14 @@ void smt_free_mbuf(struct s_smc *smc, SMbuf *mb)
 
 	if (mb) {
 		mb->sm_use_count-- ;
-<<<<<<< HEAD
-		DB_GEN("free_mbuf: sm_use_count = %d",mb->sm_use_count,0,3) ;
-=======
 		DB_GEN(3, "free_mbuf: sm_use_count = %d", mb->sm_use_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If the use_count is != zero the MBuf is queued
 		 * more than once and must not queued into the
 		 * free MBuf queue
 		 */
 		if (!mb->sm_use_count) {
-<<<<<<< HEAD
-			DB_GEN("free SMbuf: mb = %x",(void *)mb,0,3) ;
-=======
 			DB_GEN(3, "free SMbuf: mb = %p", mb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef	COMMON_MB_POOL
 			mb->sm_next = smc->os.hwm.mbuf_pool.mb_free ;
 			smc->os.hwm.mbuf_pool.mb_free = mb ;
@@ -802,11 +733,7 @@ void fddi_isr(struct s_smc *smc)
 
 	while ((is = GET_ISR() & ISR_MASK)) {
 		NDD_TRACE("CH0B",is,0,0) ;
-<<<<<<< HEAD
-		DB_GEN("ISA = 0x%x",is,0,7) ;
-=======
 		DB_GEN(7, "ISA = 0x%lx", is);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (is & IMASK_SLOW) {
 			NDD_TRACE("CH1b",is,0,0) ;
@@ -819,33 +746,20 @@ void fddi_isr(struct s_smc *smc)
 			if (is & IS_MINTR1) {	/* FORMAC+ STU1(U/L) */
 				stu = inpw(FM_A(FM_ST1U)) ;
 				stl = inpw(FM_A(FM_ST1L)) ;
-<<<<<<< HEAD
-				DB_GEN("Slow transmit complete",0,0,6) ;
-=======
 				DB_GEN(6, "Slow transmit complete");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mac1_irq(smc,stu,stl) ;
 			}
 			if (is & IS_MINTR2) {	/* FORMAC+ STU2(U/L) */
 				stu= inpw(FM_A(FM_ST2U)) ;
 				stl= inpw(FM_A(FM_ST2L)) ;
-<<<<<<< HEAD
-				DB_GEN("Slow receive complete",0,0,6) ;
-				DB_GEN("stl = %x : stu = %x",stl,stu,7) ;
-=======
 				DB_GEN(6, "Slow receive complete");
 				DB_GEN(7, "stl = %x : stu = %x", stl, stu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mac2_irq(smc,stu,stl) ;
 			}
 			if (is & IS_MINTR3) {	/* FORMAC+ STU3(U/L) */
 				stu= inpw(FM_A(FM_ST3U)) ;
 				stl= inpw(FM_A(FM_ST3L)) ;
-<<<<<<< HEAD
-				DB_GEN("FORMAC Mode Register 3",0,0,6) ;
-=======
 				DB_GEN(6, "FORMAC Mode Register 3");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mac3_irq(smc,stu,stl) ;
 			}
 			if (is & IS_TIMINT) {	/* Timer 82C54-2 */
@@ -892,11 +806,7 @@ void fddi_isr(struct s_smc *smc)
 		 *	Fast Tx complete Async/Sync Queue (BMU service)
 		 */
 		if (is & (IS_XS_F|IS_XA_F)) {
-<<<<<<< HEAD
-			DB_GEN("Fast tx complete queue",0,0,6) ;
-=======
 			DB_GEN(6, "Fast tx complete queue");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * clear IRQ, Note: no IRQ is lost, because
 			 * 	we always service both queues
@@ -911,11 +821,7 @@ void fddi_isr(struct s_smc *smc)
 		 *	Fast Rx Complete (BMU service)
 		 */
 		if (is & IS_R1_F) {
-<<<<<<< HEAD
-			DB_GEN("Fast receive complete",0,0,6) ;
-=======
 			DB_GEN(6, "Fast receive complete");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* clear IRQ */
 #ifndef USE_BREAK_ISR
 			outpd(ADDR(B4_R1_CSR),CSR_IRQ_CL_F) ;
@@ -1169,21 +1075,13 @@ void process_receive(struct s_smc *smc)
 #endif
 		n = 0 ;
 		do {
-<<<<<<< HEAD
-			DB_RX("Check RxD %x for OWN and EOF",(void *)r,0,5) ;
-=======
 			DB_RX(5, "Check RxD %p for OWN and EOF", r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORCPU) ;
 			rbctrl = le32_to_cpu(CR_READ(r->rxd_rbctrl));
 
 			if (rbctrl & BMU_OWN) {
 				NDD_TRACE("RHxE",r,rfsw,rbctrl) ;
-<<<<<<< HEAD
-				DB_RX("End of RxDs",0,0,4) ;
-=======
 				DB_RX(4, "End of RxDs");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto rx_end ;
 			}
 			/*
@@ -1230,31 +1128,19 @@ void process_receive(struct s_smc *smc)
 			rx_used-- ;
 		} while (!(rbctrl & BMU_EOF)) ;
 		used_frags = frag_count ;
-<<<<<<< HEAD
-		DB_RX("EOF set in RxD, used_frags = %d ",used_frags,0,5) ;
-=======
 		DB_RX(5, "EOF set in RxD, used_frags = %d", used_frags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* may be next 2 DRV_BUF_FLUSH() can be skipped, because */
 		/* BMU_ST_BUF will not be changed by the ASIC */
 		DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORCPU) ;
 		while (rx_used && !(r->rxd_rbctrl & cpu_to_le32(BMU_ST_BUF))) {
-<<<<<<< HEAD
-			DB_RX("Check STF bit in %x",(void *)r,0,5) ;
-=======
 			DB_RX(5, "Check STF bit in %p", r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = r->rxd_next ;
 			DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORCPU) ;
 			frag_count++ ;
 			rx_used-- ;
 		}
-<<<<<<< HEAD
-		DB_RX("STF bit found",0,0,5) ;
-=======
 		DB_RX(5, "STF bit found");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * The received frame is finished for the process receive
@@ -1270,11 +1156,7 @@ void process_receive(struct s_smc *smc)
 		rxd->rxd_rbctrl &= cpu_to_le32(~BMU_STF) ;
 
 		for (r=rxd, i=frag_count ; i ; r=r->rxd_next, i--){
-<<<<<<< HEAD
-			DB_RX("dma_complete for RxD %x",(void *)r,0,5) ;
-=======
 			DB_RX(5, "dma_complete for RxD %p", r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dma_complete(smc,(union s_fp_descr volatile *)r,DMA_WR);
 		}
 		smc->hw.fp.err_stats.err_valid++ ;
@@ -1283,38 +1165,19 @@ void process_receive(struct s_smc *smc)
 		/* the length of the data including the FC */
 		len = (rfsw & RD_LENGTH) - 4 ;
 
-<<<<<<< HEAD
-		DB_RX("frame length = %d",len,0,4) ;
-=======
 		DB_RX(4, "frame length = %d", len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * check the frame_length and all error flags
 		 */
 		if (rfsw & (RX_MSRABT|RX_FS_E|RX_FS_CRC|RX_FS_IMPL)){
 			if (rfsw & RD_S_MSRABT) {
-<<<<<<< HEAD
-				DB_RX("Frame aborted by the FORMAC",0,0,2) ;
-=======
 				DB_RX(2, "Frame aborted by the FORMAC");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				smc->hw.fp.err_stats.err_abort++ ;
 			}
 			/*
 			 * check frame status
 			 */
 			if (rfsw & RD_S_SEAC2) {
-<<<<<<< HEAD
-				DB_RX("E-Indicator set",0,0,2) ;
-				smc->hw.fp.err_stats.err_e_indicator++ ;
-			}
-			if (rfsw & RD_S_SFRMERR) {
-				DB_RX("CRC error",0,0,2) ;
-				smc->hw.fp.err_stats.err_crc++ ;
-			}
-			if (rfsw & RX_FS_IMPL) {
-				DB_RX("Implementer frame",0,0,2) ;
-=======
 				DB_RX(2, "E-Indicator set");
 				smc->hw.fp.err_stats.err_e_indicator++ ;
 			}
@@ -1324,42 +1187,26 @@ void process_receive(struct s_smc *smc)
 			}
 			if (rfsw & RX_FS_IMPL) {
 				DB_RX(2, "Implementer frame");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				smc->hw.fp.err_stats.err_imp_frame++ ;
 			}
 			goto abort_frame ;
 		}
 		if (len > FDDI_RAW_MTU-4) {
-<<<<<<< HEAD
-			DB_RX("Frame too long error",0,0,2) ;
-=======
 			DB_RX(2, "Frame too long error");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smc->hw.fp.err_stats.err_too_long++ ;
 			goto abort_frame ;
 		}
 		/*
 		 * SUPERNET 3 Bug: FORMAC delivers status words
-<<<<<<< HEAD
-		 * of aborded frames to the BMU
-		 */
-		if (len <= 4) {
-			DB_RX("Frame length = 0",0,0,2) ;
-=======
 		 * of aborted frames to the BMU
 		 */
 		if (len <= 4) {
 			DB_RX(2, "Frame length = 0");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto abort_frame ;
 		}
 
 		if (len != (n-4)) {
-<<<<<<< HEAD
-			DB_RX("BMU: rx len differs: [%d:%d]",len,n,4);
-=======
 			DB_RX(4, "BMU: rx len differs: [%d:%d]", len, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smc->os.hwm.rx_len_error++ ;
 			goto abort_frame ;
 		}
@@ -1368,11 +1215,7 @@ void process_receive(struct s_smc *smc)
 		 * Check SA == MA
 		 */
 		virt = (u_char far *) rxd->rxd_virt ;
-<<<<<<< HEAD
-		DB_RX("FC = %x",*virt,0,2) ;
-=======
 		DB_RX(2, "FC = %x", *virt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (virt[12] == MA[5] &&
 		    virt[11] == MA[4] &&
 		    virt[10] == MA[3] &&
@@ -1399,11 +1242,7 @@ void process_receive(struct s_smc *smc)
 					    virt[3] != MA[2] ||
 					    virt[2] != MA[1] ||
 					    virt[1] != MA[0]) {
-<<<<<<< HEAD
-						DB_RX("DA != MA and not multi- or broadcast",0,0,2) ;
-=======
 						DB_RX(2, "DA != MA and not multi- or broadcast");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						goto abort_frame ;
 					}
 				}
@@ -1412,21 +1251,13 @@ void process_receive(struct s_smc *smc)
 			/*
 			 * LLC frame received
 			 */
-<<<<<<< HEAD
-			DB_RX("LLC - receive",0,0,4) ;
-=======
 			DB_RX(4, "LLC - receive");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mac_drv_rx_complete(smc,rxd,frag_count,len) ;
 		}
 		else {
 			if (!(mb = smt_get_mbuf(smc))) {
 				smc->hw.fp.err_stats.err_no_buf++ ;
-<<<<<<< HEAD
-				DB_RX("No SMbuf; receive terminated",0,0,4) ;
-=======
 				DB_RX(4, "No SMbuf; receive terminated");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto abort_frame ;
 			}
 			data = smtod(mb,char *) - 1 ;
@@ -1439,11 +1270,7 @@ void process_receive(struct s_smc *smc)
 #else
 			for (r=rxd, i=used_frags ; i ; r=r->rxd_next, i--){
 				n = le32_to_cpu(r->rxd_rbctrl) & RD_LENGTH ;
-<<<<<<< HEAD
-				DB_RX("cp SMT frame to mb: len = %d",n,0,6) ;
-=======
 				DB_RX(6, "cp SMT frame to mb: len = %d", n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				memcpy(data,r->rxd_virt,n) ;
 				data += n ;
 			}
@@ -1459,26 +1286,15 @@ void process_receive(struct s_smc *smc)
 			switch(fc) {
 			case FC_SMT_INFO :
 				smc->hw.fp.err_stats.err_smt_frame++ ;
-<<<<<<< HEAD
-				DB_RX("SMT frame received ",0,0,5) ;
-
-				if (smc->os.hwm.pass_SMT) {
-					DB_RX("pass SMT frame ",0,0,5) ;
-=======
 				DB_RX(5, "SMT frame received");
 
 				if (smc->os.hwm.pass_SMT) {
 					DB_RX(5, "pass SMT frame");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mac_drv_rx_complete(smc, rxd,
 						frag_count,len) ;
 				}
 				else {
-<<<<<<< HEAD
-					DB_RX("requeue RxD",0,0,5) ;
-=======
 					DB_RX(5, "requeue RxD");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mac_drv_requeue_rxd(smc,rxd,frag_count);
 				}
 
@@ -1486,11 +1302,7 @@ void process_receive(struct s_smc *smc)
 				break ;
 			case FC_SMT_NSA :
 				smc->hw.fp.err_stats.err_smt_frame++ ;
-<<<<<<< HEAD
-				DB_RX("SMT frame received ",0,0,5) ;
-=======
 				DB_RX(5, "SMT frame received");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* if pass_NSA set pass the NSA frame or */
 				/* pass_SMT set and the A-Indicator */
@@ -1498,20 +1310,12 @@ void process_receive(struct s_smc *smc)
 				if (smc->os.hwm.pass_NSA ||
 					(smc->os.hwm.pass_SMT &&
 					!(rfsw & A_INDIC))) {
-<<<<<<< HEAD
-					DB_RX("pass SMT frame ",0,0,5) ;
-=======
 					DB_RX(5, "pass SMT frame");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mac_drv_rx_complete(smc, rxd,
 						frag_count,len) ;
 				}
 				else {
-<<<<<<< HEAD
-					DB_RX("requeue RxD",0,0,5) ;
-=======
 					DB_RX(5, "requeue RxD");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mac_drv_requeue_rxd(smc,rxd,frag_count);
 				}
 
@@ -1519,39 +1323,23 @@ void process_receive(struct s_smc *smc)
 				break ;
 			case FC_BEACON :
 				if (smc->os.hwm.pass_DB) {
-<<<<<<< HEAD
-					DB_RX("pass DB frame ",0,0,5) ;
-=======
 					DB_RX(5, "pass DB frame");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mac_drv_rx_complete(smc, rxd,
 						frag_count,len) ;
 				}
 				else {
-<<<<<<< HEAD
-					DB_RX("requeue RxD",0,0,5) ;
-=======
 					DB_RX(5, "requeue RxD");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mac_drv_requeue_rxd(smc,rxd,frag_count);
 				}
 				smt_free_mbuf(smc,mb) ;
 				break ;
 			default :
 				/*
-<<<<<<< HEAD
-				 * unknown FC abord the frame
-				 */
-				DB_RX("unknown FC error",0,0,2) ;
-				smt_free_mbuf(smc,mb) ;
-				DB_RX("requeue RxD",0,0,5) ;
-=======
 				 * unknown FC abort the frame
 				 */
 				DB_RX(2, "unknown FC error");
 				smt_free_mbuf(smc,mb) ;
 				DB_RX(5, "requeue RxD");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mac_drv_requeue_rxd(smc,rxd,frag_count) ;
 				if ((fc & 0xf0) == FC_MAC)
 					smc->hw.fp.err_stats.err_mac_frame++ ;
@@ -1562,27 +1350,16 @@ void process_receive(struct s_smc *smc)
 			}
 		}
 
-<<<<<<< HEAD
-		DB_RX("next RxD is %x ",queue->rx_curr_get,0,3) ;
-=======
 		DB_RX(3, "next RxD is %p", queue->rx_curr_get);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		NDD_TRACE("RHx1",queue->rx_curr_get,0,0) ;
 
 		continue ;
 	/*--------------------------------------------------------------------*/
 abort_frame:
-<<<<<<< HEAD
-		DB_RX("requeue RxD",0,0,5) ;
-		mac_drv_requeue_rxd(smc,rxd,frag_count) ;
-
-		DB_RX("next RxD is %x ",queue->rx_curr_get,0,3) ;
-=======
 		DB_RX(5, "requeue RxD");
 		mac_drv_requeue_rxd(smc,rxd,frag_count) ;
 
 		DB_RX(3, "next RxD is %p", queue->rx_curr_get);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		NDD_TRACE("RHx2",queue->rx_curr_get,0,0) ;
 	}
 rx_end:
@@ -1596,11 +1373,7 @@ static void smt_to_llc(struct s_smc *smc, SMbuf *mb)
 {
 	u_char	fc ;
 
-<<<<<<< HEAD
-	DB_RX("send a queued frame to the llc layer",0,0,4) ;
-=======
 	DB_RX(4, "send a queued frame to the llc layer");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smc->os.hwm.r.len = mb->sm_len ;
 	smc->os.hwm.r.mb_pos = smtod(mb,char *) ;
 	fc = *smc->os.hwm.r.mb_pos ;
@@ -1638,11 +1411,7 @@ void hwm_rx_frag(struct s_smc *smc, char far *virt, u_long phys, int len,
 	__le32	rbctrl;
 
 	NDD_TRACE("RHfB",virt,len,frame_status) ;
-<<<<<<< HEAD
-	DB_RX("hwm_rx_frag: len = %d, frame_status = %x\n",len,frame_status,2) ;
-=======
 	DB_RX(2, "hwm_rx_frag: len = %d, frame_status = %x", len, frame_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = smc->hw.fp.rx_q[QUEUE_R1].rx_curr_put ;
 	r->rxd_virt = virt ;
 	r->rxd_rbadr = cpu_to_le32(phys) ;
@@ -1698,11 +1467,7 @@ void mac_drv_clear_rx_queue(struct s_smc *smc)
 	}
 
 	queue = smc->hw.fp.rx[QUEUE_R1] ;
-<<<<<<< HEAD
-	DB_RX("clear_rx_queue",0,0,5) ;
-=======
 	DB_RX(5, "clear_rx_queue");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * dma_complete and mac_drv_clear_rxd for all RxDs / receive buffers
@@ -1710,11 +1475,7 @@ void mac_drv_clear_rx_queue(struct s_smc *smc)
 	r = queue->rx_curr_get ;
 	while (queue->rx_used) {
 		DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORCPU) ;
-<<<<<<< HEAD
-		DB_RX("switch OWN bit of RxD 0x%x ",r,0,5) ;
-=======
 		DB_RX(5, "switch OWN bit of RxD 0x%p", r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r->rxd_rbctrl &= ~cpu_to_le32(BMU_OWN) ;
 		frag_count = 1 ;
 		DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORDEV) ;
@@ -1722,29 +1483,13 @@ void mac_drv_clear_rx_queue(struct s_smc *smc)
 		DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORCPU) ;
 		while (r != queue->rx_curr_put &&
 			!(r->rxd_rbctrl & cpu_to_le32(BMU_ST_BUF))) {
-<<<<<<< HEAD
-			DB_RX("Check STF bit in %x",(void *)r,0,5) ;
-=======
 			DB_RX(5, "Check STF bit in %p", r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r->rxd_rbctrl &= ~cpu_to_le32(BMU_OWN) ;
 			DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORDEV) ;
 			r = r->rxd_next ;
 			DRV_BUF_FLUSH(r,DDI_DMA_SYNC_FORCPU) ;
 			frag_count++ ;
 		}
-<<<<<<< HEAD
-		DB_RX("STF bit found",0,0,5) ;
-		next_rxd = r ;
-
-		for (r=queue->rx_curr_get,i=frag_count; i ; r=r->rxd_next,i--){
-			DB_RX("dma_complete for RxD %x",(void *)r,0,5) ;
-			dma_complete(smc,(union s_fp_descr volatile *)r,DMA_WR);
-		}
-
-		DB_RX("mac_drv_clear_rxd: RxD %x frag_count %d ",
-			(void *)queue->rx_curr_get,frag_count,5) ;
-=======
 		DB_RX(5, "STF bit found");
 		next_rxd = r ;
 
@@ -1755,7 +1500,6 @@ void mac_drv_clear_rx_queue(struct s_smc *smc)
 
 		DB_RX(5, "mac_drv_clear_rxd: RxD %p frag_count %d",
 		      queue->rx_curr_get, frag_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mac_drv_clear_rxd(smc,queue->rx_curr_get,frag_count) ;
 
 		queue->rx_curr_get = next_rxd ;
@@ -1802,11 +1546,7 @@ int hwm_tx_init(struct s_smc *smc, u_char fc, int frag_count, int frame_len,
 	smc->os.hwm.tx_p = smc->hw.fp.tx[frame_status & QUEUE_A0] ;
 	smc->os.hwm.tx_descr = TX_DESCRIPTOR | (((u_long)(frame_len-1)&3)<<27) ;
 	smc->os.hwm.tx_len = frame_len ;
-<<<<<<< HEAD
-	DB_TX("hwm_tx_init: fc = %x, len = %d",fc,frame_len,3) ;
-=======
 	DB_TX(3, "hwm_tx_init: fc = %x, len = %d", fc, frame_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((fc & ~(FC_SYNC_BIT|FC_LLC_PRIOR)) == FC_ASYNC_LLC) {
 		frame_status |= LAN_TX ;
 	}
@@ -1829,39 +1569,23 @@ int hwm_tx_init(struct s_smc *smc, u_char fc, int frag_count, int frame_len,
 	if (!smc->hw.mac_ring_is_up) {
 		frame_status &= ~LAN_TX ;
 		frame_status |= RING_DOWN ;
-<<<<<<< HEAD
-		DB_TX("Ring is down: terminate LAN_TX",0,0,2) ;
-=======
 		DB_TX(2, "Ring is down: terminate LAN_TX");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (frag_count > smc->os.hwm.tx_p->tx_free) {
 #ifndef	NDIS_OS2
 		mac_drv_clear_txd(smc) ;
 		if (frag_count > smc->os.hwm.tx_p->tx_free) {
-<<<<<<< HEAD
-			DB_TX("Out of TxDs, terminate LAN_TX",0,0,2) ;
-=======
 			DB_TX(2, "Out of TxDs, terminate LAN_TX");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			frame_status &= ~LAN_TX ;
 			frame_status |= OUT_OF_TXD ;
 		}
 #else
-<<<<<<< HEAD
-		DB_TX("Out of TxDs, terminate LAN_TX",0,0,2) ;
-=======
 		DB_TX(2, "Out of TxDs, terminate LAN_TX");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		frame_status &= ~LAN_TX ;
 		frame_status |= OUT_OF_TXD ;
 #endif
 	}
-<<<<<<< HEAD
-	DB_TX("frame_status = %x",frame_status,0,3) ;
-=======
 	DB_TX(3, "frame_status = %x", frame_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NDD_TRACE("THiE",frame_status,smc->os.hwm.tx_p->tx_free,0) ;
 	return frame_status;
 }
@@ -1910,17 +1634,10 @@ void hwm_tx_frag(struct s_smc *smc, char far *virt, u_long phys, int len,
 	 */
 	t = queue->tx_curr_put ;
 
-<<<<<<< HEAD
-	DB_TX("hwm_tx_frag: len = %d, frame_status = %x ",len,frame_status,2) ;
-	if (frame_status & LAN_TX) {
-		/* '*t' is already defined */
-		DB_TX("LAN_TX: TxD = %x, virt = %x ",t,virt,3) ;
-=======
 	DB_TX(2, "hwm_tx_frag: len = %d, frame_status = %x", len, frame_status);
 	if (frame_status & LAN_TX) {
 		/* '*t' is already defined */
 		DB_TX(3, "LAN_TX: TxD = %p, virt = %p", t, virt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t->txd_virt = virt ;
 		t->txd_txdscr = cpu_to_le32(smc->os.hwm.tx_descr) ;
 		t->txd_tbadr = cpu_to_le32(phys) ;
@@ -1949,19 +1666,11 @@ void hwm_tx_frag(struct s_smc *smc, char far *virt, u_long phys, int len,
 		}
 	}
 	if (frame_status & LOC_TX) {
-<<<<<<< HEAD
-		DB_TX("LOC_TX: ",0,0,3) ;
-		if (frame_status & FIRST_FRAG) {
-			if(!(smc->os.hwm.tx_mb = smt_get_mbuf(smc))) {
-				smc->hw.fp.err_stats.err_no_buf++ ;
-				DB_TX("No SMbuf; transmit terminated",0,0,4) ;
-=======
 		DB_TX(3, "LOC_TX:");
 		if (frame_status & FIRST_FRAG) {
 			if(!(smc->os.hwm.tx_mb = smt_get_mbuf(smc))) {
 				smc->hw.fp.err_stats.err_no_buf++ ;
 				DB_TX(4, "No SMbuf; transmit terminated");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			else {
 				smc->os.hwm.tx_data =
@@ -1976,11 +1685,7 @@ void hwm_tx_frag(struct s_smc *smc, char far *virt, u_long phys, int len,
 		}
 		if (smc->os.hwm.tx_mb) {
 #ifndef	USE_OS_CPY
-<<<<<<< HEAD
-			DB_TX("copy fragment into MBuf ",0,0,3) ;
-=======
 			DB_TX(3, "copy fragment into MBuf");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(smc->os.hwm.tx_data,virt,len) ;
 			smc->os.hwm.tx_data += len ;
 #endif
@@ -2005,11 +1710,7 @@ void hwm_tx_frag(struct s_smc *smc, char far *virt, u_long phys, int len,
 				smc->os.hwm.tx_data++ ;
 				smc->os.hwm.tx_mb->sm_len =
 					smc->os.hwm.tx_len - 1 ;
-<<<<<<< HEAD
-				DB_TX("pass LLC frame to SMT ",0,0,3) ;
-=======
 				DB_TX(3, "pass LLC frame to SMT");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				smt_received_pack(smc,smc->os.hwm.tx_mb,
 						RD_FS_LOCAL) ;
 			}
@@ -2024,11 +1725,7 @@ void hwm_tx_frag(struct s_smc *smc, char far *virt, u_long phys, int len,
  */
 static void queue_llc_rx(struct s_smc *smc, SMbuf *mb)
 {
-<<<<<<< HEAD
-	DB_GEN("queue_llc_rx: mb = %x",(void *)mb,0,4) ;
-=======
 	DB_GEN(4, "queue_llc_rx: mb = %p", mb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smc->os.hwm.queued_rx_frames++ ;
 	mb->sm_next = (SMbuf *)NULL ;
 	if (smc->os.hwm.llc_rx_pipe == NULL) {
@@ -2058,11 +1755,7 @@ static SMbuf *get_llc_rx(struct s_smc *smc)
 		smc->os.hwm.queued_rx_frames-- ;
 		smc->os.hwm.llc_rx_pipe = mb->sm_next ;
 	}
-<<<<<<< HEAD
-	DB_GEN("get_llc_rx: mb = 0x%x",(void *)mb,0,4) ;
-=======
 	DB_GEN(4, "get_llc_rx: mb = 0x%p", mb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mb;
 }
 
@@ -2072,11 +1765,7 @@ static SMbuf *get_llc_rx(struct s_smc *smc)
  */
 static void queue_txd_mb(struct s_smc *smc, SMbuf *mb)
 {
-<<<<<<< HEAD
-	DB_GEN("_rx: queue_txd_mb = %x",(void *)mb,0,4) ;
-=======
 	DB_GEN(4, "_rx: queue_txd_mb = %p", mb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smc->os.hwm.queued_txd_mb++ ;
 	mb->sm_next = (SMbuf *)NULL ;
 	if (smc->os.hwm.txd_tx_pipe == NULL) {
@@ -2099,11 +1788,7 @@ static SMbuf *get_txd_mb(struct s_smc *smc)
 		smc->os.hwm.queued_txd_mb-- ;
 		smc->os.hwm.txd_tx_pipe = mb->sm_next ;
 	}
-<<<<<<< HEAD
-	DB_GEN("get_txd_mb: mb = 0x%x",(void *)mb,0,4) ;
-=======
 	DB_GEN(4, "get_txd_mb: mb = 0x%p", mb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mb;
 }
 
@@ -2126,11 +1811,7 @@ void smt_send_mbuf(struct s_smc *smc, SMbuf *mb, int fc)
 	__le32	tbctrl;
 
 	NDD_TRACE("THSB",mb,fc,0) ;
-<<<<<<< HEAD
-	DB_TX("smt_send_mbuf: mb = 0x%x, fc = 0x%x",mb,fc,4) ;
-=======
 	DB_TX(4, "smt_send_mbuf: mb = 0x%p, fc = 0x%x", mb, fc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mb->sm_off-- ;	/* set to fc */
 	mb->sm_len++ ;	/* + fc */
@@ -2149,11 +1830,7 @@ void smt_send_mbuf(struct s_smc *smc, SMbuf *mb, int fc)
 		if (n >= len) {
 			n = len ;
 		}
-<<<<<<< HEAD
-		DB_TX("frag: virt/len = 0x%x/%d ",(void *)data,n,5) ;
-=======
 		DB_TX(5, "frag: virt/len = 0x%p/%d", data, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		virt[frag_count] = data ;
 		frag_len[frag_count] = n ;
 		frag_count++ ;
@@ -2178,26 +1855,15 @@ void smt_send_mbuf(struct s_smc *smc, SMbuf *mb, int fc)
 	if (!smc->hw.mac_ring_is_up || frag_count > queue->tx_free) {
 		frame_status &= ~LAN_TX;
 		if (frame_status) {
-<<<<<<< HEAD
-			DB_TX("Ring is down: terminate LAN_TX",0,0,2) ;
-		}
-		else {
-			DB_TX("Ring is down: terminate transmission",0,0,2) ;
-=======
 			DB_TX(2, "Ring is down: terminate LAN_TX");
 		}
 		else {
 			DB_TX(2, "Ring is down: terminate transmission");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smt_free_mbuf(smc,mb) ;
 			return ;
 		}
 	}
-<<<<<<< HEAD
-	DB_TX("frame_status = 0x%x ",frame_status,0,5) ;
-=======
 	DB_TX(5, "frame_status = 0x%x", frame_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((frame_status & LAN_TX) && (frame_status & LOC_TX)) {
 		mb->sm_use_count = 2 ;
@@ -2207,11 +1873,7 @@ void smt_send_mbuf(struct s_smc *smc, SMbuf *mb, int fc)
 		t = queue->tx_curr_put ;
 		frame_status |= FIRST_FRAG ;
 		for (i = 0; i < frag_count; i++) {
-<<<<<<< HEAD
-			DB_TX("init TxD = 0x%x",(void *)t,0,5) ;
-=======
 			DB_TX(5, "init TxD = 0x%p", t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i == frag_count-1) {
 				frame_status |= LAST_FRAG ;
 				t->txd_txdscr = cpu_to_le32(TX_DESCRIPTOR |
@@ -2242,11 +1904,7 @@ void smt_send_mbuf(struct s_smc *smc, SMbuf *mb, int fc)
 	}
 
 	if (frame_status & LOC_TX) {
-<<<<<<< HEAD
-		DB_TX("pass Mbuf to LLC queue",0,0,5) ;
-=======
 		DB_TX(5, "pass Mbuf to LLC queue");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_llc_rx(smc,mb) ;
 	}
 
@@ -2287,30 +1945,18 @@ static void mac_drv_clear_txd(struct s_smc *smc)
 	for (i = QUEUE_S; i <= QUEUE_A0; i++) {
 		queue = smc->hw.fp.tx[i] ;
 		t1 = queue->tx_curr_get ;
-<<<<<<< HEAD
-		DB_TX("clear_txd: QUEUE = %d (0=sync/1=async)",i,0,5) ;
-=======
 		DB_TX(5, "clear_txd: QUEUE = %d (0=sync/1=async)", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for ( ; ; ) {
 			frag_count = 0 ;
 
 			do {
 				DRV_BUF_FLUSH(t1,DDI_DMA_SYNC_FORCPU) ;
-<<<<<<< HEAD
-				DB_TX("check OWN/EOF bit of TxD 0x%x",t1,0,5) ;
-				tbctrl = le32_to_cpu(CR_READ(t1->txd_tbctrl));
-
-				if (tbctrl & BMU_OWN || !queue->tx_used){
-					DB_TX("End of TxDs queue %d",i,0,4) ;
-=======
 				DB_TX(5, "check OWN/EOF bit of TxD 0x%p", t1);
 				tbctrl = le32_to_cpu(CR_READ(t1->txd_tbctrl));
 
 				if (tbctrl & BMU_OWN || !queue->tx_used){
 					DB_TX(4, "End of TxDs queue %d", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto free_next_queue ;	/* next queue */
 				}
 				t1 = t1->txd_next ;
@@ -2334,19 +1980,11 @@ static void mac_drv_clear_txd(struct s_smc *smc)
 			}
 			else {
 #ifndef PASS_1ST_TXD_2_TX_COMP
-<<<<<<< HEAD
-				DB_TX("mac_drv_tx_comp for TxD 0x%x",t2,0,4) ;
-				mac_drv_tx_complete(smc,t2) ;
-#else
-				DB_TX("mac_drv_tx_comp for TxD 0x%x",
-					queue->tx_curr_get,0,4) ;
-=======
 				DB_TX(4, "mac_drv_tx_comp for TxD 0x%p", t2);
 				mac_drv_tx_complete(smc,t2) ;
 #else
 				DB_TX(4, "mac_drv_tx_comp for TxD 0x%x",
 				      queue->tx_curr_get);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mac_drv_tx_complete(smc,queue->tx_curr_get) ;
 #endif
 			}
@@ -2397,11 +2035,7 @@ void mac_drv_clear_tx_queue(struct s_smc *smc)
 
 	for (i = QUEUE_S; i <= QUEUE_A0; i++) {
 		queue = smc->hw.fp.tx[i] ;
-<<<<<<< HEAD
-		DB_TX("clear_tx_queue: QUEUE = %d (0=sync/1=async)",i,0,5) ;
-=======
 		DB_TX(5, "clear_tx_queue: QUEUE = %d (0=sync/1=async)", i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * switch the OWN bit of all pending frames to the host
@@ -2410,11 +2044,7 @@ void mac_drv_clear_tx_queue(struct s_smc *smc)
 		tx_used = queue->tx_used ;
 		while (tx_used) {
 			DRV_BUF_FLUSH(t,DDI_DMA_SYNC_FORCPU) ;
-<<<<<<< HEAD
-			DB_TX("switch OWN bit of TxD 0x%x ",t,0,5) ;
-=======
 			DB_TX(5, "switch OWN bit of TxD 0x%p", t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			t->txd_tbctrl &= ~cpu_to_le32(BMU_OWN) ;
 			DRV_BUF_FLUSH(t,DDI_DMA_SYNC_FORDEV) ;
 			t = t->txd_next ;

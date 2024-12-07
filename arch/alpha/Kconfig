@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-config ALPHA
-	bool
-	default y
-	select HAVE_AOUT
-	select HAVE_IDE
-	select HAVE_OPROFILE
-	select HAVE_SYSCALL_WRAPPERS
-	select HAVE_IRQ_WORK
-	select HAVE_PCSPKR_PLATFORM
-	select HAVE_PERF_EVENTS
-	select HAVE_DMA_ATTRS
-	select HAVE_GENERIC_HARDIRQS
-	select GENERIC_IRQ_PROBE
-	select AUTO_IRQ_AFFINITY if SMP
-	select GENERIC_IRQ_SHOW
-	select ARCH_WANT_OPTIONAL_GPIOLIB
-	select ARCH_HAVE_NMI_SAFE_CMPXCHG
-=======
 # SPDX-License-Identifier: GPL-2.0
 config ALPHA
 	bool
@@ -58,7 +39,6 @@ config ALPHA
 	select MMU_GATHER_NO_RANGE
 	select SPARSEMEM_EXTREME if SPARSEMEM
 	select ZONE_DMA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The Alpha is a 64-bit general-purpose processor designed and
 	  marketed by the Digital Equipment Corporation of blessed memory,
@@ -72,16 +52,6 @@ config MMU
 	bool
 	default y
 
-<<<<<<< HEAD
-config RWSEM_GENERIC_SPINLOCK
-	bool
-
-config RWSEM_XCHGADD_ALGORITHM
-	bool
-	default y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ARCH_HAS_ILOG2_U32
 	bool
 	default n
@@ -94,55 +64,23 @@ config GENERIC_CALIBRATE_DELAY
 	bool
 	default y
 
-<<<<<<< HEAD
-config GENERIC_CMOS_UPDATE
-        def_bool y
-
-config GENERIC_GPIO
-	bool
-
-config ZONE_DMA
-	bool
-	default y
-
-config ARCH_DMA_ADDR_T_64BIT
-	def_bool y
-
-config NEED_DMA_MAP_STATE
-       def_bool y
-
-config NEED_SG_DMA_LENGTH
-	def_bool y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config GENERIC_ISA_DMA
 	bool
 	default y
 
-<<<<<<< HEAD
-source "init/Kconfig"
-source "kernel/Kconfig.freezer"
-
-=======
 config PGTABLE_LEVELS
 	int
 	default 3
 
 config AUDIT_ARCH
 	bool
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 menu "System setup"
 
 choice
 	prompt "Alpha system type"
 	default ALPHA_GENERIC
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is the system type of your hardware.  A "generic" kernel will
 	  run on any supported Alpha system. However, if you configure a
 	  kernel for your specific system, it will be faster and smaller.
@@ -183,20 +121,14 @@ choice
 
 config ALPHA_GENERIC
 	bool "Generic"
-<<<<<<< HEAD
-=======
 	depends on TTY
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  A generic kernel will run on all supported Alpha hardware.
 
 config ALPHA_ALCOR
 	bool "Alcor/Alpha-XLT"
-<<<<<<< HEAD
-=======
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  For systems using the Digital ALCOR chipset: 5 chips (4, 64-bit data
 	  slices (Data Switch, DSW) - 208-pin PQFP and 1 control (Control, I/O
@@ -268,10 +200,7 @@ config ALPHA_EIGER
 
 config ALPHA_JENSEN
 	bool "Jensen"
-<<<<<<< HEAD
-=======
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  DEC PC 150 AXP (aka Jensen): This is a very old Digital system - one
 	  of the first-generation Alpha systems. A number of these systems
@@ -288,10 +217,7 @@ config ALPHA_LX164
 
 config ALPHA_LYNX
 	bool "Lynx"
-<<<<<<< HEAD
-=======
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  AlphaServer 2100A-based systems.
 
@@ -302,10 +228,7 @@ config ALPHA_MARVEL
 
 config ALPHA_MIATA
 	bool "Miata"
-<<<<<<< HEAD
-=======
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The Digital PersonalWorkStation (PWS 433a, 433au, 500a, 500au, 600a,
 	  or 600au).
@@ -325,10 +248,7 @@ config ALPHA_NONAME_CH
 
 config ALPHA_NORITAKE
 	bool "Noritake"
-<<<<<<< HEAD
-=======
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  AlphaServer 1000A, AlphaServer 600A, and AlphaServer 800-based
 	  systems.
@@ -341,10 +261,7 @@ config ALPHA_P2K
 
 config ALPHA_RAWHIDE
 	bool "Rawhide"
-<<<<<<< HEAD
-=======
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  AlphaServer 1200, AlphaServer 4000 and AlphaServer 4100 machines.
 	  See HOWTO at
@@ -364,10 +281,7 @@ config ALPHA_SX164
 
 config ALPHA_SABLE
 	bool "Sable"
-<<<<<<< HEAD
-=======
 	select HAVE_EISA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Digital AlphaServer 2000 and 2100-based systems.
 
@@ -408,30 +322,6 @@ config ISA_DMA_API
 	bool
 	default y
 
-<<<<<<< HEAD
-config PCI
-	bool
-	depends on !ALPHA_JENSEN
-	select GENERIC_PCI_IOMAP
-	default y
-	help
-	  Find out whether you have a PCI motherboard. PCI is the name of a
-	  bus system, i.e. the way the CPU talks to the other stuff inside
-	  your box. Other bus systems are ISA, EISA, MicroChannel (MCA) or
-	  VESA. If you have PCI, say Y, otherwise N.
-
-config PCI_DOMAINS
-	bool
-	default y
-
-config PCI_SYSCALL
-	def_bool PCI
-
-config IOMMU_HELPER
-	def_bool PCI
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ALPHA_NONAME
 	bool
 	depends on ALPHA_BOOK1 || ALPHA_NONAME_CH
@@ -449,10 +339,7 @@ config ALPHA_EV4
 	bool
 	depends on ALPHA_JENSEN || (ALPHA_SABLE && !ALPHA_GAMMA) || ALPHA_LYNX || ALPHA_NORITAKE && !ALPHA_PRIMO || ALPHA_MIKASA && !ALPHA_PRIMO || ALPHA_CABRIOLET || ALPHA_AVANTI_CH || ALPHA_EB64P_CH || ALPHA_XL || ALPHA_NONAME || ALPHA_EB66 || ALPHA_EB66P || ALPHA_P2K
 	default y if !ALPHA_LYNX
-<<<<<<< HEAD
-=======
 	default y if !ALPHA_EV5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ALPHA_LCA
 	bool
@@ -480,13 +367,6 @@ config ALPHA_EV5
 	bool "EV5 CPU(s) (model 5/xxx)?" if ALPHA_LYNX
 	default y if ALPHA_RX164 || ALPHA_RAWHIDE || ALPHA_MIATA || ALPHA_LX164 || ALPHA_SX164 || ALPHA_RUFFIAN || ALPHA_SABLE && ALPHA_GAMMA || ALPHA_NORITAKE && ALPHA_PRIMO || ALPHA_MIKASA && ALPHA_PRIMO || ALPHA_PC164 || ALPHA_TAKARA || ALPHA_EB164 || ALPHA_ALCOR
 
-<<<<<<< HEAD
-config ALPHA_EV4
-	bool
-	default y if ALPHA_LYNX && !ALPHA_EV5
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ALPHA_CIA
 	bool
 	depends on ALPHA_MIATA || ALPHA_LX164 || ALPHA_SX164 || ALPHA_RUFFIAN || ALPHA_NORITAKE && ALPHA_PRIMO || ALPHA_MIKASA && ALPHA_PRIMO || ALPHA_PC164 || ALPHA_TAKARA || ALPHA_EB164 || ALPHA_ALCOR
@@ -511,25 +391,12 @@ config ALPHA_PRIMO
 	  Say Y if you have an AS 1000 5/xxx or an AS 1000A 5/xxx.
 
 config ALPHA_GAMMA
-<<<<<<< HEAD
-	bool "EV5 CPU(s) (model 5/xxx)?"
-	depends on ALPHA_SABLE
-	help
-	  Say Y if you have an AS 2000 5/xxx or an AS 2100 5/xxx.
-
-config ALPHA_GAMMA
-	bool
-	depends on ALPHA_LYNX
-	default y
-
-=======
 	bool "EV5 CPU(s) (model 5/xxx)?" if ALPHA_SABLE
 	depends on ALPHA_SABLE || ALPHA_LYNX
 	default ALPHA_LYNX
 	help
 	  Say Y if you have an AS 2000 5/xxx or an AS 2100 5/xxx.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ALPHA_T2
 	bool
 	depends on ALPHA_SABLE || ALPHA_LYNX
@@ -599,12 +466,6 @@ config VGA_HOSE
 	  which always have multiple hoses, and whose consoles support it.
 
 
-<<<<<<< HEAD
-config ALPHA_SRM
-	bool "Use SRM as bootloader" if ALPHA_CABRIOLET || ALPHA_AVANTI_CH || ALPHA_EB64P || ALPHA_PC164 || ALPHA_TAKARA || ALPHA_EB164 || ALPHA_ALCOR || ALPHA_MIATA || ALPHA_LX164 || ALPHA_SX164 || ALPHA_NAUTILUS || ALPHA_NONAME
-	default y if ALPHA_JENSEN || ALPHA_MIKASA || ALPHA_SABLE || ALPHA_LYNX || ALPHA_NORITAKE || ALPHA_DP264 || ALPHA_RAWHIDE || ALPHA_EIGER || ALPHA_WILDFIRE || ALPHA_TITAN || ALPHA_SHARK || ALPHA_MARVEL
-	---help---
-=======
 config ALPHA_QEMU
 	bool "Run under QEMU emulation"
 	depends on !ALPHA_GENERIC
@@ -624,7 +485,6 @@ config ALPHA_SRM
 	depends on TTY
 	default y if ALPHA_JENSEN || ALPHA_MIKASA || ALPHA_SABLE || ALPHA_LYNX || ALPHA_NORITAKE || ALPHA_DP264 || ALPHA_RAWHIDE || ALPHA_EIGER || ALPHA_WILDFIRE || ALPHA_TITAN || ALPHA_SHARK || ALPHA_MARVEL
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  There are two different types of booting firmware on Alphas: SRM,
 	  which is command line driven, and ARC, which uses menus and arrow
 	  keys. Details about the Linux/Alpha booting process are contained in
@@ -644,44 +504,12 @@ config ALPHA_SRM
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config EISA
-	bool
-	depends on ALPHA_GENERIC || ALPHA_JENSEN || ALPHA_ALCOR || ALPHA_MIKASA || ALPHA_SABLE || ALPHA_LYNX || ALPHA_NORITAKE || ALPHA_RAWHIDE
-	default y
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config ARCH_MAY_HAVE_PC_FDC
 	def_bool y
 
 config SMP
 	bool "Symmetric multi-processing support"
 	depends on ALPHA_SABLE || ALPHA_LYNX || ALPHA_RAWHIDE || ALPHA_DP264 || ALPHA_WILDFIRE || ALPHA_TITAN || ALPHA_GENERIC || ALPHA_SHARK || ALPHA_MARVEL
-<<<<<<< HEAD
-	select USE_GENERIC_SMP_HELPERS
-	---help---
-	  This enables support for systems with more than one CPU. If you have
-	  a system with only one CPU, like most personal computers, say N. If
-	  you have a system with more than one CPU, say Y.
-
-	  If you say N here, the kernel will run on single and multiprocessor
-	  machines, but will use only one CPU of a multiprocessor machine. If
-	  you say Y here, the kernel will run on many, but not all,
-	  singleprocessor machines. On a singleprocessor machine, the kernel
-	  will run faster if you say N here.
-
-	  See also the SMP-HOWTO available at
-	  <http://www.tldp.org/docs.html#howto>.
-
-	  If you don't know what to do here, say N.
-
-config HAVE_DEC_LOCK
-	bool
-	depends on SMP
-	default y
-
-=======
 	help
 	  This enables support for systems with more than one CPU. If you have
 	  a system with only one CPU, say N. If you have a system with more
@@ -698,7 +526,6 @@ config HAVE_DEC_LOCK
 
 	  If you don't know what to do here, say N.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config NR_CPUS
 	int "Maximum number of CPUs (2-32)"
 	range 2 32
@@ -707,33 +534,6 @@ config NR_CPUS
 	default "4" if !ALPHA_GENERIC && !ALPHA_MARVEL
 	help
 	  MARVEL support can handle a maximum of 32 CPUs, all the others
-<<<<<<< HEAD
-          with working support have a maximum of 4 CPUs.
-
-config ARCH_DISCONTIGMEM_ENABLE
-	bool "Discontiguous Memory Support (EXPERIMENTAL)"
-	depends on EXPERIMENTAL
-	help
-	  Say Y to support efficient handling of discontiguous physical memory,
-	  for architectures which are either NUMA (Non-Uniform Memory Access)
-	  or have huge holes in the physical address space for other reasons.
-	  See <file:Documentation/vm/numa> for more.
-
-source "mm/Kconfig"
-
-config NUMA
-	bool "NUMA Support (EXPERIMENTAL)"
-	depends on DISCONTIGMEM && BROKEN
-	help
-	  Say Y to compile the kernel to support NUMA (Non-Uniform Memory
-	  Access).  This option is for configuring high-end multiprocessor
-	  server machines.  If in doubt, say N.
-
-config NODES_SHIFT
-	int
-	default "7"
-	depends on NEED_MULTIPLE_NODES
-=======
 	  with working support have a maximum of 4 CPUs.
 
 config ARCH_SPARSEMEM_ENABLE
@@ -765,16 +565,11 @@ config ALPHA_WTINT
 	  so you might as well say Y here.
 
 	  If unsure, say N.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # LARGE_VMALLOC is racy, if you *really* need it then fix it first
 config ALPHA_LARGE_VMALLOC
 	bool
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Process creation and other aspects of virtual memory management can
 	  be streamlined if we restrict the kernel to one PGD for all vmalloc
 	  allocations.  This equates to about 8GB.
@@ -793,11 +588,7 @@ config VERBOSE_MCHECK_ON
 	int "Verbose Printing Mode (0=off, 1=on, 2=all)"
 	depends on VERBOSE_MCHECK
 	default 1
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This option allows the default printing mode to be set, and then
 	  possibly overridden by a boot command argument.
 
@@ -811,22 +602,6 @@ config VERBOSE_MCHECK_ON
 
 	  Take the default (1) unless you want more control or more info.
 
-<<<<<<< HEAD
-config HZ
-	int
-	default 1200 if ALPHA_RAWHIDE
-	default 1024
-
-source "drivers/pci/Kconfig"
-source "drivers/eisa/Kconfig"
-
-source "drivers/pcmcia/Kconfig"
-
-config SRM_ENV
-	tristate "SRM environment through procfs"
-	depends on PROC_FS
-	---help---
-=======
 choice
 	prompt "Timer interrupt frequency (HZ)?"
 	default HZ_128 if ALPHA_QEMU
@@ -868,7 +643,6 @@ config SRM_ENV
 	tristate "SRM environment through procfs"
 	depends on PROC_FS
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you enable this option, a subdirectory inside /proc called
 	  /proc/srm_environment will give you access to the all important
 	  SRM environment variables (those which have a name) and also
@@ -888,36 +662,11 @@ config SRM_ENV
 	  This driver is also available as a module and will be called
 	  srm_env then.
 
-<<<<<<< HEAD
-source "fs/Kconfig.binfmt"
-
 endmenu
 
-source "net/Kconfig"
-
-source "drivers/Kconfig"
-
-source "fs/Kconfig"
-
-source "arch/alpha/Kconfig.debug"
-
-=======
-endmenu
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # DUMMY_CONSOLE may be defined in drivers/video/console/Kconfig
 # but we also need it if VGA_HOSE is set
 config DUMMY_CONSOLE
 	bool
 	depends on VGA_HOSE
 	default y
-<<<<<<< HEAD
-
-source "security/Kconfig"
-
-source "crypto/Kconfig"
-
-source "lib/Kconfig"
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

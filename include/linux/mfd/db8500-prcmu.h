@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) STMicroelectronics 2009
  * Copyright (C) ST-Ericsson SA 2010
  *
-<<<<<<< HEAD
- * License Terms: GNU General Public License v2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Kumar Sanghvi <kumar.sanghvi@stericsson.com>
  *
  * PRCMU f/w APIs
@@ -23,15 +16,6 @@
 /*
  * Registers
  */
-<<<<<<< HEAD
-#define DB8500_PRCM_GPIOCR 0x138
-#define DB8500_PRCM_GPIOCR_DBG_UARTMOD_CMD0	BIT(0)
-#define DB8500_PRCM_GPIOCR_DBG_STM_APE_CMD	BIT(9)
-#define DB8500_PRCM_GPIOCR_DBG_STM_MOD_CMD1	BIT(11)
-#define DB8500_PRCM_GPIOCR_SPI2_SELECT		BIT(23)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DB8500_PRCM_LINE_VALUE 0x170
 #define DB8500_PRCM_LINE_VALUE_HSI_CAWAKE0	BIT(3)
 
@@ -503,23 +487,6 @@ struct prcmu_auto_pm_config {
 	u8 sva_policy;
 };
 
-<<<<<<< HEAD
-#define PRCMU_FW_PROJECT_U8500		2
-#define PRCMU_FW_PROJECT_U9500		4
-#define PRCMU_FW_PROJECT_U8500_C2	7
-#define PRCMU_FW_PROJECT_U9500_C2	11
-#define PRCMU_FW_PROJECT_U8520		13
-#define PRCMU_FW_PROJECT_U8420		14
-
-struct prcmu_fw_version {
-	u8 project;
-	u8 api_version;
-	u8 func_version;
-	u8 errata;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MFD_DB8500_PRCMU
 
 void db8500_prcmu_early_init(void);
@@ -528,10 +495,6 @@ enum romcode_read prcmu_get_rc_p2a(void);
 enum ap_pwrst prcmu_get_xp70_current_state(void);
 bool prcmu_has_arm_maxopp(void);
 struct prcmu_fw_version *prcmu_get_fw_version(void);
-<<<<<<< HEAD
-int prcmu_request_ape_opp_100_voltage(bool enable);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int prcmu_release_usb_wakeup_state(void);
 void prcmu_configure_auto_pm(struct prcmu_auto_pm_config *sleep,
 	struct prcmu_auto_pm_config *idle);
@@ -546,11 +509,7 @@ int db8500_prcmu_stop_temp_sense(void);
 int prcmu_abb_read(u8 slave, u8 reg, u8 *value, u8 size);
 int prcmu_abb_write(u8 slave, u8 reg, u8 *value, u8 size);
 
-<<<<<<< HEAD
-void prcmu_ac_wake_req(void);
-=======
 int prcmu_ac_wake_req(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void prcmu_ac_sleep_req(void);
 void db8500_prcmu_modem_reset(void);
 
@@ -563,24 +522,9 @@ int db8500_prcmu_load_a9wdog(u8 id, u32 val);
 void db8500_prcmu_system_reset(u16 reset_code);
 int db8500_prcmu_set_power_state(u8 state, bool keep_ulp_clk, bool keep_ap_pll);
 u8 db8500_prcmu_get_power_state_result(void);
-<<<<<<< HEAD
-int db8500_prcmu_gic_decouple(void);
-int db8500_prcmu_gic_recouple(void);
-int db8500_prcmu_copy_gic_settings(void);
-bool db8500_prcmu_gic_pending_irq(void);
-bool db8500_prcmu_pending_irq(void);
-bool db8500_prcmu_is_cpu_in_wfi(int cpu);
 void db8500_prcmu_enable_wakeups(u32 wakeups);
 int db8500_prcmu_set_epod(u16 epod_id, u8 epod_state);
 int db8500_prcmu_request_clock(u8 clock, bool enable);
-int db8500_prcmu_set_display_clocks(void);
-int db8500_prcmu_disable_dsipll(void);
-int db8500_prcmu_enable_dsipll(void);
-=======
-void db8500_prcmu_enable_wakeups(u32 wakeups);
-int db8500_prcmu_set_epod(u16 epod_id, u8 epod_state);
-int db8500_prcmu_request_clock(u8 clock, bool enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void db8500_prcmu_config_abb_event_readout(u32 abb_events);
 void db8500_prcmu_get_abb_event_buffer(void __iomem **buf);
 int db8500_prcmu_config_esram0_deep_sleep(u8 state);
@@ -590,11 +534,7 @@ int db8500_prcmu_set_arm_opp(u8 opp);
 int db8500_prcmu_get_arm_opp(void);
 int db8500_prcmu_set_ape_opp(u8 opp);
 int db8500_prcmu_get_ape_opp(void);
-<<<<<<< HEAD
-int db8500_prcmu_set_ddr_opp(u8 opp);
-=======
 int db8500_prcmu_request_ape_opp_100_voltage(bool enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int db8500_prcmu_get_ddr_opp(void);
 
 u32 db8500_prcmu_read(unsigned int reg);
@@ -640,11 +580,7 @@ static inline int db8500_prcmu_get_ape_opp(void)
 	return APE_100_OPP;
 }
 
-<<<<<<< HEAD
-static inline int prcmu_request_ape_opp_100_voltage(bool enable)
-=======
 static inline int db8500_prcmu_request_ape_opp_100_voltage(bool enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -654,14 +590,6 @@ static inline int prcmu_release_usb_wakeup_state(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int db8500_prcmu_set_ddr_opp(u8 opp)
-{
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int db8500_prcmu_get_ddr_opp(void)
 {
 	return DDR_100_OPP;
@@ -717,14 +645,10 @@ static inline int prcmu_abb_write(u8 slave, u8 reg, u8 *value, u8 size)
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-static inline void prcmu_ac_wake_req(void) {}
-=======
 static inline int prcmu_ac_wake_req(void)
 {
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void prcmu_ac_sleep_req(void) {}
 
@@ -755,24 +679,6 @@ static inline int db8500_prcmu_request_clock(u8 clock, bool enable)
 	return 0;
 }
 
-<<<<<<< HEAD
-static inline int db8500_prcmu_set_display_clocks(void)
-{
-	return 0;
-}
-
-static inline int db8500_prcmu_disable_dsipll(void)
-{
-	return 0;
-}
-
-static inline int db8500_prcmu_enable_dsipll(void)
-{
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int db8500_prcmu_config_esram0_deep_sleep(u8 state)
 {
 	return 0;
@@ -814,11 +720,7 @@ static inline int db8500_prcmu_load_a9wdog(u8 id, u32 val)
 
 static inline bool db8500_prcmu_is_ac_wake_requested(void)
 {
-<<<<<<< HEAD
-	return 0;
-=======
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int db8500_prcmu_set_arm_opp(u8 opp)

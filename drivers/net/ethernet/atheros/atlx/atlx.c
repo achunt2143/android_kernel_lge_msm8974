@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* atlx.c -- common functions for Attansic network drivers
  *
  * Copyright(c) 2005 - 2006 Attansic Corporation. All rights reserved.
@@ -11,23 +8,6 @@
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Including this file like a header is a temporary hack, I promise. -- CHS */
@@ -71,11 +51,7 @@ static int atlx_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	}
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atlx_set_mac - Change the Ethernet Address of the NIC
  * @netdev: network interface device structure
  * @p: pointer to an address structure
@@ -93,14 +69,8 @@ static int atlx_set_mac(struct net_device *netdev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
-<<<<<<< HEAD
-	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
-	memcpy(adapter->hw.mac_addr, addr->sa_data, netdev->addr_len);
-	netdev->addr_assign_type &= ~NET_ADDR_RANDOM;
-=======
 	eth_hw_addr_set(netdev, addr->sa_data);
 	memcpy(adapter->hw.mac_addr, addr->sa_data, netdev->addr_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atlx_set_mac_addr(&adapter->hw);
 	return 0;
@@ -131,11 +101,7 @@ static void atlx_check_for_link(struct atlx_adapter *adapter)
 	schedule_work(&adapter->link_chg_task);
 }
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atlx_set_multi - Multicast and Promiscuous mode set
  * @netdev: network interface device structure
  *
@@ -175,9 +141,6 @@ static void atlx_set_multi(struct net_device *netdev)
 	}
 }
 
-<<<<<<< HEAD
-/*
-=======
 static inline void atlx_imr_set(struct atlx_adapter *adapter,
 				unsigned int imr)
 {
@@ -186,37 +149,23 @@ static inline void atlx_imr_set(struct atlx_adapter *adapter,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atlx_irq_enable - Enable default interrupt generation settings
  * @adapter: board private structure
  */
 static void atlx_irq_enable(struct atlx_adapter *adapter)
 {
-<<<<<<< HEAD
-	iowrite32(IMR_NORMAL_MASK, adapter->hw.hw_addr + REG_IMR);
-	ioread32(adapter->hw.hw_addr + REG_IMR);
-}
-
-/*
-=======
 	atlx_imr_set(adapter, IMR_NORMAL_MASK);
 	adapter->int_enabled = true;
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atlx_irq_disable - Mask off interrupt generation on the NIC
  * @adapter: board private structure
  */
 static void atlx_irq_disable(struct atlx_adapter *adapter)
 {
-<<<<<<< HEAD
-	iowrite32(0, adapter->hw.hw_addr + REG_IMR);
-	ioread32(adapter->hw.hw_addr + REG_IMR);
-=======
 	adapter->int_enabled = false;
 	atlx_imr_set(adapter, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	synchronize_irq(adapter->pdev->irq);
 }
 
@@ -230,19 +179,11 @@ static void atlx_clear_phy_int(struct atlx_adapter *adapter)
 	spin_unlock_irqrestore(&adapter->lock, flags);
 }
 
-<<<<<<< HEAD
-/*
- * atlx_tx_timeout - Respond to a Tx Hang
- * @netdev: network interface device structure
- */
-static void atlx_tx_timeout(struct net_device *netdev)
-=======
 /**
  * atlx_tx_timeout - Respond to a Tx Hang
  * @netdev: network interface device structure
  */
 static void atlx_tx_timeout(struct net_device *netdev, unsigned int txqueue)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atlx_adapter *adapter = netdev_priv(netdev);
 	/* Do the reset outside of interrupt context */
@@ -266,11 +207,7 @@ static void atlx_link_chg_task(struct work_struct *work)
 
 static void __atlx_vlan_mode(netdev_features_t features, u32 *ctrl)
 {
-<<<<<<< HEAD
-	if (features & NETIF_F_HW_VLAN_RX) {
-=======
 	if (features & NETIF_F_HW_VLAN_CTAG_RX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable VLAN tag insert/strip */
 		*ctrl |= MAC_CTRL_RMV_VLAN;
 	} else {
@@ -307,17 +244,10 @@ static netdev_features_t atlx_fix_features(struct net_device *netdev,
 	 * Since there is no support for separate rx/tx vlan accel
 	 * enable/disable make sure tx flag is always in same state as rx.
 	 */
-<<<<<<< HEAD
-	if (features & NETIF_F_HW_VLAN_RX)
-		features |= NETIF_F_HW_VLAN_TX;
-	else
-		features &= ~NETIF_F_HW_VLAN_TX;
-=======
 	if (features & NETIF_F_HW_VLAN_CTAG_RX)
 		features |= NETIF_F_HW_VLAN_CTAG_TX;
 	else
 		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -327,11 +257,7 @@ static int atlx_set_features(struct net_device *netdev,
 {
 	netdev_features_t changed = netdev->features ^ features;
 
-<<<<<<< HEAD
-	if (changed & NETIF_F_HW_VLAN_RX)
-=======
 	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atlx_vlan_mode(netdev, features);
 
 	return 0;

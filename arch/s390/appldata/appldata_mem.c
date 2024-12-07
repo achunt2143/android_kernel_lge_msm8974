@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-/*
- * arch/s390/appldata/appldata_mem.c
- *
- * Data gathering module for Linux-VM Monitor Stream, Stage 1.
- * Collects data related to memory management.
- *
- * Copyright (C) 2003,2006 IBM Corporation, IBM Deutschland Entwicklung GmbH.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Data gathering module for Linux-VM Monitor Stream, Stage 1.
  * Collects data related to memory management.
  *
  * Copyright IBM Corp. 2003, 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author: Gerald Schaefer <gerald.schaefer@de.ibm.com>
  */
@@ -24,12 +14,8 @@
 #include <linux/kernel_stat.h>
 #include <linux/pagemap.h>
 #include <linux/swap.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/slab.h>
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "appldata.h"
 
@@ -43,17 +29,8 @@
  * the structure version (product ID, see appldata_base.c) needs to be changed
  * as well and all documentation and z/VM applications using it must be
  * updated.
-<<<<<<< HEAD
- *
- * The record layout is documented in the Linux for zSeries Device Drivers
- * book:
- * http://oss.software.ibm.com/developerworks/opensource/linux390/index.shtml
- */
-static struct appldata_mem_data {
-=======
  */
 struct appldata_mem_data {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 timestamp;
 	u32 sync_count_1;       /* after VM collected the record data, */
 	u32 sync_count_2;	/* sync_count_1 and sync_count_2 should be the
@@ -84,11 +61,7 @@ struct appldata_mem_data {
 	u64 pgmajfault;		/* page faults (major only) */
 // <-- New in 2.6
 
-<<<<<<< HEAD
-} __attribute__((packed)) appldata_mem_data;
-=======
 } __packed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -126,22 +99,14 @@ static void appldata_get_mem_data(void *data)
 	mem_data->totalhigh = P2K(val.totalhigh);
 	mem_data->freehigh  = P2K(val.freehigh);
 	mem_data->bufferram = P2K(val.bufferram);
-<<<<<<< HEAD
-	mem_data->cached    = P2K(global_page_state(NR_FILE_PAGES)
-=======
 	mem_data->cached    = P2K(global_node_page_state(NR_FILE_PAGES)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				- val.bufferram);
 
 	si_swapinfo(&val);
 	mem_data->totalswap = P2K(val.totalswap);
 	mem_data->freeswap  = P2K(val.freeswap);
 
-<<<<<<< HEAD
-	mem_data->timestamp = get_clock();
-=======
 	mem_data->timestamp = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mem_data->sync_count_2++;
 }
 
@@ -151,10 +116,6 @@ static struct appldata_ops ops = {
 	.record_nr = APPLDATA_RECORD_MEM_ID,
 	.size	   = sizeof(struct appldata_mem_data),
 	.callback  = &appldata_get_mem_data,
-<<<<<<< HEAD
-	.data      = &appldata_mem_data,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner     = THIS_MODULE,
 	.mod_lvl   = {0xF0, 0xF0},		/* EBCDIC "00" */
 };
@@ -167,9 +128,6 @@ static struct appldata_ops ops = {
  */
 static int __init appldata_mem_init(void)
 {
-<<<<<<< HEAD
-	return appldata_register_ops(&ops);
-=======
 	int ret;
 
 	ops.data = kzalloc(sizeof(struct appldata_mem_data), GFP_KERNEL);
@@ -181,7 +139,6 @@ static int __init appldata_mem_init(void)
 		kfree(ops.data);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -192,10 +149,7 @@ static int __init appldata_mem_init(void)
 static void __exit appldata_mem_exit(void)
 {
 	appldata_unregister_ops(&ops);
-<<<<<<< HEAD
-=======
 	kfree(ops.data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 

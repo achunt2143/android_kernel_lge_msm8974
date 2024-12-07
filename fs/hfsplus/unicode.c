@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfsplus/unicode.c
  *
@@ -275,13 +272,8 @@ static inline int asc2unichar(struct super_block *sb, const char *astr, int len,
 	return size;
 }
 
-<<<<<<< HEAD
-/* Decomposes a single unicode character. */
-static inline u16 *decompose_unichar(wchar_t uc, int *size)
-=======
 /* Decomposes a non-Hangul unicode character. */
 static u16 *hfsplus_decompose_nonhangul(wchar_t uc, int *size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int off;
 
@@ -304,9 +296,6 @@ static u16 *hfsplus_decompose_nonhangul(wchar_t uc, int *size)
 	return hfsplus_decompose_table + (off / 4);
 }
 
-<<<<<<< HEAD
-int hfsplus_asc2uni(struct super_block *sb, struct hfsplus_unistr *ustr,
-=======
 /*
  * Try to decompose a unicode character as Hangul. Return 0 if @uc is not
  * precomposed Hangul, otherwise return the length of the decomposition.
@@ -354,25 +343,11 @@ static u16 *decompose_unichar(wchar_t uc, int *size, u16 *hangul_buffer)
 
 int hfsplus_asc2uni(struct super_block *sb,
 		    struct hfsplus_unistr *ustr, int max_unistr_len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    const char *astr, int len)
 {
 	int size, dsize, decompose;
 	u16 *dstr, outlen = 0;
 	wchar_t c;
-<<<<<<< HEAD
-
-	decompose = !test_bit(HFSPLUS_SB_NODECOMPOSE, &HFSPLUS_SB(sb)->flags);
-	while (outlen < HFSPLUS_MAX_STRLEN && len > 0) {
-		size = asc2unichar(sb, astr, len, &c);
-
-		if (decompose)
-			dstr = decompose_unichar(c, &dsize);
-		else
-			dstr = NULL;
-		if (dstr) {
-			if (outlen + dsize > HFSPLUS_MAX_STRLEN)
-=======
 	u16 dhangul[3];
 
 	decompose = !test_bit(HFSPLUS_SB_NODECOMPOSE, &HFSPLUS_SB(sb)->flags);
@@ -385,7 +360,6 @@ int hfsplus_asc2uni(struct super_block *sb,
 			dstr = NULL;
 		if (dstr) {
 			if (outlen + dsize > max_unistr_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			do {
 				ustr->unicode[outlen++] = cpu_to_be16(*dstr++);
@@ -407,12 +381,7 @@ int hfsplus_asc2uni(struct super_block *sb,
  * Composed unicode characters are decomposed and case-folding is performed
  * if the appropriate bits are (un)set on the superblock.
  */
-<<<<<<< HEAD
-int hfsplus_hash_dentry(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *str)
-=======
 int hfsplus_hash_dentry(const struct dentry *dentry, struct qstr *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = dentry->d_sb;
 	const char *astr;
@@ -421,16 +390,6 @@ int hfsplus_hash_dentry(const struct dentry *dentry, struct qstr *str)
 	unsigned long hash;
 	wchar_t c;
 	u16 c2;
-<<<<<<< HEAD
-
-	casefold = test_bit(HFSPLUS_SB_CASEFOLD, &HFSPLUS_SB(sb)->flags);
-	decompose = !test_bit(HFSPLUS_SB_NODECOMPOSE, &HFSPLUS_SB(sb)->flags);
-	hash = init_name_hash();
-	astr = str->name;
-	len = str->len;
-	while (len > 0) {
-		int uninitialized_var(dsize);
-=======
 	u16 dhangul[3];
 
 	casefold = test_bit(HFSPLUS_SB_CASEFOLD, &HFSPLUS_SB(sb)->flags);
@@ -440,17 +399,12 @@ int hfsplus_hash_dentry(const struct dentry *dentry, struct qstr *str)
 	len = str->len;
 	while (len > 0) {
 		int dsize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size = asc2unichar(sb, astr, len, &c);
 		astr += size;
 		len -= size;
 
 		if (decompose)
-<<<<<<< HEAD
-			dstr = decompose_unichar(c, &dsize);
-=======
 			dstr = decompose_unichar(c, &dsize, dhangul);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			dstr = NULL;
 		if (dstr) {
@@ -479,29 +433,17 @@ int hfsplus_hash_dentry(const struct dentry *dentry, struct qstr *str)
  * Composed unicode characters are decomposed and case-folding is performed
  * if the appropriate bits are (un)set on the superblock.
  */
-<<<<<<< HEAD
-int hfsplus_compare_dentry(const struct dentry *parent,
-		const struct inode *pinode,
-		const struct dentry *dentry, const struct inode *inode,
-		unsigned int len, const char *str, const struct qstr *name)
-{
-	struct super_block *sb = parent->d_sb;
-=======
 int hfsplus_compare_dentry(const struct dentry *dentry,
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	struct super_block *sb = dentry->d_sb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int casefold, decompose, size;
 	int dsize1, dsize2, len1, len2;
 	const u16 *dstr1, *dstr2;
 	const char *astr1, *astr2;
 	u16 c1, c2;
 	wchar_t c;
-<<<<<<< HEAD
-=======
 	u16 dhangul_1[3], dhangul_2[3];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	casefold = test_bit(HFSPLUS_SB_CASEFOLD, &HFSPLUS_SB(sb)->flags);
 	decompose = !test_bit(HFSPLUS_SB_NODECOMPOSE, &HFSPLUS_SB(sb)->flags);
@@ -519,12 +461,8 @@ int hfsplus_compare_dentry(const struct dentry *dentry,
 			len1 -= size;
 
 			if (decompose)
-<<<<<<< HEAD
-				dstr1 = decompose_unichar(c, &dsize1);
-=======
 				dstr1 = decompose_unichar(c, &dsize1,
 							  dhangul_1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!decompose || !dstr1) {
 				c1 = c;
 				dstr1 = &c1;
@@ -538,12 +476,8 @@ int hfsplus_compare_dentry(const struct dentry *dentry,
 			len2 -= size;
 
 			if (decompose)
-<<<<<<< HEAD
-				dstr2 = decompose_unichar(c, &dsize2);
-=======
 				dstr2 = decompose_unichar(c, &dsize2,
 							  dhangul_2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!decompose || !dstr2) {
 				c2 = c;
 				dstr2 = &c2;

@@ -1,144 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_GENERIC_UACCESS_H
 #define __ASM_GENERIC_UACCESS_H
 
 /*
  * User space memory access functions, these should work
-<<<<<<< HEAD
- * on a ny machine that has kernel and user data in the same
- * address space, e.g. all NOMMU machines.
- */
-#include <linux/sched.h>
-#include <linux/mm.h>
-#include <linux/string.h>
-
-#include <asm/segment.h>
-
-#define MAKE_MM_SEG(s)	((mm_segment_t) { (s) })
-
-#ifndef KERNEL_DS
-#define KERNEL_DS	MAKE_MM_SEG(~0UL)
-#endif
-
-#ifndef USER_DS
-#define USER_DS		MAKE_MM_SEG(TASK_SIZE - 1)
-#endif
-
-#ifndef get_fs
-#define get_ds()	(KERNEL_DS)
-#define get_fs()	(current_thread_info()->addr_limit)
-
-static inline void set_fs(mm_segment_t fs)
-{
-	current_thread_info()->addr_limit = fs;
-}
-#endif
-
-#define segment_eq(a, b) ((a).seg == (b).seg)
-
-#define VERIFY_READ	0
-#define VERIFY_WRITE	1
-
-#define access_ok(type, addr, size) __access_ok((unsigned long)(addr),(size))
-
-/*
- * The architecture should really override this if possible, at least
- * doing a check on the get_fs()
- */
-#ifndef __access_ok
-static inline int __access_ok(unsigned long addr, unsigned long size)
-{
-	return 1;
-}
-#endif
-
-/*
- * The exception table consists of pairs of addresses: the first is the
- * address of an instruction that is allowed to fault, and the second is
- * the address at which the program should continue.  No registers are
- * modified, so it is entirely up to the continuation code to figure out
- * what to do.
- *
- * All the routines below use bits of fixup code that are out of line
- * with the main instruction path.  This means when everything is well,
- * we don't even have to jump over them.  Further, they do not intrude
- * on our cache or tlb entries.
- */
-
-struct exception_table_entry
-{
-	unsigned long insn, fixup;
-};
-
-/* Returns 0 if exception not found and fixup otherwise.  */
-extern unsigned long search_exception_table(unsigned long);
-
-/*
- * architectures with an MMU should override these two
- */
-#ifndef __copy_from_user
-static inline __must_check long __copy_from_user(void *to,
-		const void __user * from, unsigned long n)
-{
-	if (__builtin_constant_p(n)) {
-		switch(n) {
-		case 1:
-			*(u8 *)to = *(u8 __force *)from;
-			return 0;
-		case 2:
-			*(u16 *)to = *(u16 __force *)from;
-			return 0;
-		case 4:
-			*(u32 *)to = *(u32 __force *)from;
-			return 0;
-#ifdef CONFIG_64BIT
-		case 8:
-			*(u64 *)to = *(u64 __force *)from;
-			return 0;
-#endif
-		default:
-			break;
-		}
-	}
-
-	memcpy(to, (const void __force *)from, n);
-	return 0;
-}
-#endif
-
-#ifndef __copy_to_user
-static inline __must_check long __copy_to_user(void __user *to,
-		const void *from, unsigned long n)
-{
-	if (__builtin_constant_p(n)) {
-		switch(n) {
-		case 1:
-			*(u8 __force *)to = *(u8 *)from;
-			return 0;
-		case 2:
-			*(u16 __force *)to = *(u16 *)from;
-			return 0;
-		case 4:
-			*(u32 __force *)to = *(u32 *)from;
-			return 0;
-#ifdef CONFIG_64BIT
-		case 8:
-			*(u64 __force *)to = *(u64 *)from;
-			return 0;
-#endif
-		default:
-			break;
-		}
-	}
-
-	memcpy((void __force *)to, from, n);
-	return 0;
-}
-#endif
-=======
  * on any machine that has kernel and user data in the same
  * address space, e.g. all NOMMU machines.
  */
@@ -229,7 +94,6 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 #define INLINE_COPY_FROM_USER
 #define INLINE_COPY_TO_USER
 #endif /* CONFIG_UACCESS_MEMCPY */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the main single-value transfer routines.  They automatically
@@ -259,20 +123,6 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
 
 #define put_user(x, ptr)					\
 ({								\
-<<<<<<< HEAD
-	might_sleep();						\
-	access_ok(VERIFY_WRITE, ptr, sizeof(*ptr)) ?		\
-		__put_user(x, ptr) :				\
-		-EFAULT;					\
-})
-
-static inline int __put_user_fn(size_t size, void __user *ptr, void *x)
-{
-	size = __copy_to_user(ptr, x, size);
-	return size ? -EFAULT : size;
-}
-
-=======
 	void __user *__p = (ptr);				\
 	might_fault();						\
 	access_ok(__p, sizeof(*ptr)) ?		\
@@ -291,7 +141,6 @@ static inline int __put_user_fn(size_t size, void __user *ptr, void *x)
 
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int __put_user_bad(void) __attribute__((noreturn));
 
 #define __get_user(x, ptr)					\
@@ -300,44 +149,28 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 	__chk_user_ptr(ptr);					\
 	switch (sizeof(*(ptr))) {				\
 	case 1: {						\
-<<<<<<< HEAD
-		unsigned char __x;				\
-=======
 		unsigned char __x = 0;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 2: {						\
-<<<<<<< HEAD
-		unsigned short __x;				\
-=======
 		unsigned short __x = 0;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 4: {						\
-<<<<<<< HEAD
-		unsigned int __x;				\
-=======
 		unsigned int __x = 0;				\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 8: {						\
-<<<<<<< HEAD
-		unsigned long long __x;				\
-=======
 		unsigned long long __x = 0;			\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
@@ -352,99 +185,6 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 
 #define get_user(x, ptr)					\
 ({								\
-<<<<<<< HEAD
-	might_sleep();						\
-	access_ok(VERIFY_READ, ptr, sizeof(*ptr)) ?		\
-		__get_user(x, ptr) :				\
-		-EFAULT;					\
-})
-
-static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
-{
-	size = __copy_from_user(x, ptr, size);
-	return size ? -EFAULT : size;
-}
-
-extern int __get_user_bad(void) __attribute__((noreturn));
-
-#ifndef __copy_from_user_inatomic
-#define __copy_from_user_inatomic __copy_from_user
-#endif
-
-#ifndef __copy_to_user_inatomic
-#define __copy_to_user_inatomic __copy_to_user
-#endif
-
-static inline long copy_from_user(void *to,
-		const void __user * from, unsigned long n)
-{
-	might_sleep();
-	if (access_ok(VERIFY_READ, from, n))
-		return __copy_from_user(to, from, n);
-	else
-		return n;
-}
-
-static inline long copy_to_user(void __user *to,
-		const void *from, unsigned long n)
-{
-	might_sleep();
-	if (access_ok(VERIFY_WRITE, to, n))
-		return __copy_to_user(to, from, n);
-	else
-		return n;
-}
-
-/*
- * Copy a null terminated string from userspace.
- */
-#ifndef __strncpy_from_user
-static inline long
-__strncpy_from_user(char *dst, const char __user *src, long count)
-{
-	char *tmp;
-	strncpy(dst, (const char __force *)src, count);
-	for (tmp = dst; *tmp && count > 0; tmp++, count--)
-		;
-	return (tmp - dst);
-}
-#endif
-
-static inline long
-strncpy_from_user(char *dst, const char __user *src, long count)
-{
-	if (!access_ok(VERIFY_READ, src, 1))
-		return -EFAULT;
-	return __strncpy_from_user(dst, src, count);
-}
-
-/*
- * Return the size of a string (including the ending 0)
- *
- * Return 0 on exception, a value greater than N if too long
- */
-#ifndef __strnlen_user
-#define __strnlen_user(s, n) (strnlen((s), (n)) + 1)
-#endif
-
-/*
- * Unlike strnlen, strnlen_user includes the nul terminator in
- * its returned count. Callers should check for a returned value
- * greater than N as an indication the string is too long.
- */
-static inline long strnlen_user(const char __user *src, long n)
-{
-	if (!access_ok(VERIFY_READ, src, 1))
-		return 0;
-	return __strnlen_user(src, n);
-}
-
-static inline long strlen_user(const char __user *src)
-{
-	return strnlen_user(src, 32767);
-}
-
-=======
 	const void __user *__p = (ptr);				\
 	might_fault();						\
 	access_ok(__p, sizeof(*ptr)) ?		\
@@ -464,7 +204,6 @@ static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
 
 extern int __get_user_bad(void) __attribute__((noreturn));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Zero Userspace
  */
@@ -480,25 +219,17 @@ __clear_user(void __user *to, unsigned long n)
 static inline __must_check unsigned long
 clear_user(void __user *to, unsigned long n)
 {
-<<<<<<< HEAD
-	might_sleep();
-	if (!access_ok(VERIFY_WRITE, to, n))
-=======
 	might_fault();
 	if (!access_ok(to, n))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return n;
 
 	return __clear_user(to, n);
 }
 
-<<<<<<< HEAD
-=======
 #include <asm/extable.h>
 
 __must_check long strncpy_from_user(char *dst, const char __user *src,
 				    long count);
 __must_check long strnlen_user(const char __user *src, long n);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_GENERIC_UACCESS_H */

@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-config DRM_VMWGFX
-	tristate "DRM driver for VMware Virtual GPU"
-	depends on DRM && PCI && FB
-	select FB_DEFERRED_IO
-	select FB_CFB_FILLRECT
-	select FB_CFB_COPYAREA
-	select FB_CFB_IMAGEBLIT
-	select DRM_TTM
-=======
 # SPDX-License-Identifier: GPL-2.0
 config DRM_VMWGFX
 	tristate "DRM driver for VMware Virtual GPU"
@@ -19,15 +9,12 @@ config DRM_VMWGFX
 	# Only needed for the transitional use of drm_crtc_init - can be removed
 	# again once vmwgfx sets up the primary plane itself.
 	select DRM_KMS_HELPER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Choose this option if you would like to run 3D acceleration
 	  in a VMware virtual machine.
 	  This is a KMS enabled DRM driver for the VMware SVGA2
 	  virtual hardware.
 	  The compiled module will be called "vmwgfx.ko".
-<<<<<<< HEAD
-=======
 
 config DRM_VMWGFX_MKSSTATS
 	bool "Enable mksGuestStats instrumentation of vmwgfx by default"
@@ -37,4 +24,3 @@ config DRM_VMWGFX_MKSSTATS
 	help
 	   Choose this option to instrument the kernel driver for mksGuestStats.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

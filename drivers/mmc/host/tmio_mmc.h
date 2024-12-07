@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-/*
- * linux/drivers/mmc/host/tmio_mmc.h
- *
- * Copyright (C) 2007 Ian Molton
- * Copyright (C) 2004 Ian Molton
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * Driver for the MMC / SD / SDIO cell found in:
- *
- * TC6393XB TC6391XB TC6387XB T7L66XB ASIC3
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Driver for the MMC / SD / SDIO cell found in:
@@ -24,27 +9,17 @@
  * Copyright (C) 2016-17 Horms Solutions, Simon Horman
  * Copyright (C) 2007 Ian Molton
  * Copyright (C) 2004 Ian Molton
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef TMIO_MMC_H
 #define TMIO_MMC_H
 
-<<<<<<< HEAD
-#include <linux/highmem.h>
-#include <linux/mmc/tmio.h>
-=======
 #include <linux/dmaengine.h>
 #include <linux/highmem.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/pagemap.h>
 #include <linux/scatterlist.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-
-/* Definitions for values the CTRL_SDIO_STATUS register can take. */
-=======
 #include <linux/interrupt.h>
 
 #define CTL_SD_CMD 0x00
@@ -114,17 +89,11 @@
 #define CARD_OPT_WIDTH		BIT(15)
 
 /* Definitions for values the CTL_SDIO_STATUS register can take */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TMIO_SDIO_STAT_IOIRQ	0x0001
 #define TMIO_SDIO_STAT_EXPUB52	0x4000
 #define TMIO_SDIO_STAT_EXWT	0x8000
 #define TMIO_SDIO_MASK_ALL	0xc007
 
-<<<<<<< HEAD
-/* Define some IRQ masks */
-/* This is the mask used at reset by the chip */
-#define TMIO_MASK_ALL           0x837f031d
-=======
 #define TMIO_SDIO_SETBITS_MASK	0x0006
 
 /* Definitions for values the CTL_DMA_ENABLE register can take */
@@ -137,20 +106,12 @@
 /* This is the mask used at reset by the chip */
 #define TMIO_MASK_ALL           0x837f031d
 #define TMIO_MASK_ALL_RCAR2	0x8b7f031d
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TMIO_MASK_READOP  (TMIO_STAT_RXRDY | TMIO_STAT_DATAEND)
 #define TMIO_MASK_WRITEOP (TMIO_STAT_TXRQ | TMIO_STAT_DATAEND)
 #define TMIO_MASK_CMD     (TMIO_STAT_CMDRESPEND | TMIO_STAT_CMDTIMEOUT | \
 		TMIO_STAT_CARD_REMOVE | TMIO_STAT_CARD_INSERT)
 #define TMIO_MASK_IRQ     (TMIO_MASK_READOP | TMIO_MASK_WRITEOP | TMIO_MASK_CMD)
 
-<<<<<<< HEAD
-struct tmio_mmc_data;
-
-struct tmio_mmc_host {
-	void __iomem *ctl;
-	unsigned long bus_shift;
-=======
 #define TMIO_MAX_BLK_SIZE 512
 
 struct tmio_mmc_data;
@@ -172,50 +133,29 @@ struct tmio_mmc_dma_ops {
 
 struct tmio_mmc_host {
 	void __iomem *ctl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_command      *cmd;
 	struct mmc_request      *mrq;
 	struct mmc_data         *data;
 	struct mmc_host         *mmc;
-<<<<<<< HEAD
-
-	/* Controller power state */
-	bool			power;
-
-	/* Callbacks for clock / power control */
-	void (*set_pwr)(struct platform_device *host, int state);
-	void (*set_clk_div)(struct platform_device *host, int state);
-=======
 	struct mmc_host_ops     ops;
 
 	/* Callbacks for clock / power control */
 	void (*set_pwr)(struct platform_device *host, int state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pio related stuff */
 	struct scatterlist      *sg_ptr;
 	struct scatterlist      *sg_orig;
 	unsigned int            sg_len;
 	unsigned int            sg_off;
-<<<<<<< HEAD
-=======
 	unsigned int		bus_shift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct platform_device *pdev;
 	struct tmio_mmc_data *pdata;
 
 	/* DMA support */
-<<<<<<< HEAD
-	bool			force_pio;
-	struct dma_chan		*chan_rx;
-	struct dma_chan		*chan_tx;
-	struct tasklet_struct	dma_complete;
-=======
 	bool			dma_on;
 	struct dma_chan		*chan_rx;
 	struct dma_chan		*chan_tx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tasklet_struct	dma_issue;
 	struct scatterlist	bounce_sg;
 	u8			*bounce_buf;
@@ -224,30 +164,17 @@ struct tmio_mmc_host {
 	struct delayed_work	delayed_reset_work;
 	struct work_struct	done;
 
-<<<<<<< HEAD
-	/* Cache IRQ mask */
-	u32			sdcard_irq_mask;
-	u32			sdio_irq_mask;
-=======
 	/* Cache */
 	u32			sdcard_irq_mask;
 	u32			sdio_irq_mask;
 	unsigned int		clk_cache;
 	u32			sdcard_irq_setbit_mask;
 	u32			sdcard_irq_mask_all;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t		lock;		/* protect host private data */
 	unsigned long		last_req_ts;
 	struct mutex		ios_lock;	/* protect set_ios() context */
 	bool			native_hotplug;
-<<<<<<< HEAD
-};
-
-int tmio_mmc_host_probe(struct tmio_mmc_host **host,
-			struct platform_device *pdev,
-			struct tmio_mmc_data *pdata);
-=======
 	bool			sdio_irq_enabled;
 
 	/* Mandatory callback */
@@ -271,94 +198,12 @@ struct tmio_mmc_host *tmio_mmc_host_alloc(struct platform_device *pdev,
 					  struct tmio_mmc_data *pdata);
 void tmio_mmc_host_free(struct tmio_mmc_host *host);
 int tmio_mmc_host_probe(struct tmio_mmc_host *host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void tmio_mmc_host_remove(struct tmio_mmc_host *host);
 void tmio_mmc_do_data_irq(struct tmio_mmc_host *host);
 
 void tmio_mmc_enable_mmc_irqs(struct tmio_mmc_host *host, u32 i);
 void tmio_mmc_disable_mmc_irqs(struct tmio_mmc_host *host, u32 i);
 irqreturn_t tmio_mmc_irq(int irq, void *devid);
-<<<<<<< HEAD
-irqreturn_t tmio_mmc_sdcard_irq(int irq, void *devid);
-irqreturn_t tmio_mmc_card_detect_irq(int irq, void *devid);
-irqreturn_t tmio_mmc_sdio_irq(int irq, void *devid);
-
-static inline char *tmio_mmc_kmap_atomic(struct scatterlist *sg,
-					 unsigned long *flags)
-{
-	local_irq_save(*flags);
-	return kmap_atomic(sg_page(sg)) + sg->offset;
-}
-
-static inline void tmio_mmc_kunmap_atomic(struct scatterlist *sg,
-					  unsigned long *flags, void *virt)
-{
-	kunmap_atomic(virt - sg->offset);
-	local_irq_restore(*flags);
-}
-
-#if defined(CONFIG_MMC_SDHI) || defined(CONFIG_MMC_SDHI_MODULE)
-void tmio_mmc_start_dma(struct tmio_mmc_host *host, struct mmc_data *data);
-void tmio_mmc_enable_dma(struct tmio_mmc_host *host, bool enable);
-void tmio_mmc_request_dma(struct tmio_mmc_host *host, struct tmio_mmc_data *pdata);
-void tmio_mmc_release_dma(struct tmio_mmc_host *host);
-void tmio_mmc_abort_dma(struct tmio_mmc_host *host);
-#else
-static inline void tmio_mmc_start_dma(struct tmio_mmc_host *host,
-			       struct mmc_data *data)
-{
-}
-
-static inline void tmio_mmc_enable_dma(struct tmio_mmc_host *host, bool enable)
-{
-}
-
-static inline void tmio_mmc_request_dma(struct tmio_mmc_host *host,
-				 struct tmio_mmc_data *pdata)
-{
-	host->chan_tx = NULL;
-	host->chan_rx = NULL;
-}
-
-static inline void tmio_mmc_release_dma(struct tmio_mmc_host *host)
-{
-}
-
-static inline void tmio_mmc_abort_dma(struct tmio_mmc_host *host)
-{
-}
-#endif
-
-#ifdef CONFIG_PM
-int tmio_mmc_host_suspend(struct device *dev);
-int tmio_mmc_host_resume(struct device *dev);
-#else
-#define tmio_mmc_host_suspend NULL
-#define tmio_mmc_host_resume NULL
-#endif
-
-int tmio_mmc_host_runtime_suspend(struct device *dev);
-int tmio_mmc_host_runtime_resume(struct device *dev);
-
-static inline u16 sd_ctrl_read16(struct tmio_mmc_host *host, int addr)
-{
-	return readw(host->ctl + (addr << host->bus_shift));
-}
-
-static inline void sd_ctrl_read16_rep(struct tmio_mmc_host *host, int addr,
-		u16 *buf, int count)
-{
-	readsw(host->ctl + (addr << host->bus_shift), buf, count);
-}
-
-static inline u32 sd_ctrl_read32(struct tmio_mmc_host *host, int addr)
-{
-	return readw(host->ctl + (addr << host->bus_shift)) |
-	       readw(host->ctl + ((addr + 2) << host->bus_shift)) << 16;
-}
-
-static inline void sd_ctrl_write16(struct tmio_mmc_host *host, int addr, u16 val)
-=======
 
 #ifdef CONFIG_PM
 int tmio_mmc_host_runtime_suspend(struct device *dev);
@@ -391,22 +236,10 @@ static inline void sd_ctrl_read32_rep(struct tmio_mmc_host *host, int addr,
 
 static inline void sd_ctrl_write16(struct tmio_mmc_host *host, int addr,
 				   u16 val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* If there is a hook and it returns non-zero then there
 	 * is an error and the write should be skipped
 	 */
-<<<<<<< HEAD
-	if (host->pdata->write16_hook && host->pdata->write16_hook(host, addr))
-		return;
-	writew(val, host->ctl + (addr << host->bus_shift));
-}
-
-static inline void sd_ctrl_write16_rep(struct tmio_mmc_host *host, int addr,
-		u16 *buf, int count)
-{
-	writesw(host->ctl + (addr << host->bus_shift), buf, count);
-=======
 	if (host->write16_hook && host->write16_hook(host, addr))
 		return;
 	iowrite16(val, host->ctl + (addr << host->bus_shift));
@@ -426,17 +259,10 @@ static inline void sd_ctrl_write32_as_16_and_16(struct tmio_mmc_host *host,
 
 	iowrite16(val & 0xffff, host->ctl + (addr << host->bus_shift));
 	iowrite16(val >> 16, host->ctl + ((addr + 2) << host->bus_shift));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void sd_ctrl_write32(struct tmio_mmc_host *host, int addr, u32 val)
 {
-<<<<<<< HEAD
-	writew(val, host->ctl + (addr << host->bus_shift));
-	writew(val >> 16, host->ctl + ((addr + 2) << host->bus_shift));
-}
-
-=======
 	iowrite32(val, host->ctl + (addr << host->bus_shift));
 }
 
@@ -445,6 +271,5 @@ static inline void sd_ctrl_write32_rep(struct tmio_mmc_host *host, int addr,
 {
 	iowrite32_rep(host->ctl + (addr << host->bus_shift), buf, count);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

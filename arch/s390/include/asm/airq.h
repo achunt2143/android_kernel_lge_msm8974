@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-/*
- *  include/asm-s390/airq.h
- *
- *    Copyright IBM Corp. 2002,2007
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *    Copyright IBM Corp. 2002, 2007
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Ingo Adlung <adlung@de.ibm.com>
  *		 Cornelia Huck <cornelia.huck@de.ibm.com>
  *		 Arnd Bergmann <arndb@de.ibm.com>
@@ -17,12 +10,6 @@
 #ifndef _ASM_S390_AIRQ_H
 #define _ASM_S390_AIRQ_H
 
-<<<<<<< HEAD
-typedef void (*adapter_int_handler_t)(void *, void *);
-
-void *s390_register_adapter_interrupt(adapter_int_handler_t, void *, u8);
-void s390_unregister_adapter_interrupt(void *, u8);
-=======
 #include <linux/bit_spinlock.h>
 #include <linux/dma-mapping.h>
 #include <asm/tpi.h>
@@ -119,6 +106,5 @@ static inline unsigned long airq_iv_get_ptr(struct airq_iv *iv,
 {
 	return iv->ptr[bit];
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_S390_AIRQ_H */

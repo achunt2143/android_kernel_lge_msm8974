@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver for TerraTec DMX 6Fire USB
  *
  * Author:	Torsten Schenk <torsten.schenk@zoho.com>
  * Created:	Jan 01, 2011
  * Copyright:	(C) Torsten Schenk
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef USB6FIRE_PCM_H
@@ -76,11 +65,7 @@ struct pcm_runtime {
 	bool stream_wait_cond;
 };
 
-<<<<<<< HEAD
-int __devinit usb6fire_pcm_init(struct sfire_chip *chip);
-=======
 int usb6fire_pcm_init(struct sfire_chip *chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void usb6fire_pcm_abort(struct sfire_chip *chip);
 void usb6fire_pcm_destroy(struct sfire_chip *chip);
 #endif /* USB6FIRE_PCM_H */

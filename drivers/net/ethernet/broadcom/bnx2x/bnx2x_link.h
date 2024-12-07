@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/* Copyright 2008-2012 Broadcom Corporation
- *
- * Unless you and Broadcom execute a separate written software license
- * agreement governing use of this software, this software is licensed to you
- * under the terms of the GNU General Public License version 2, available
- * at http://www.gnu.org/licenses/old-licenses/gpl-2.0.html (the "GPL").
- *
- * Notwithstanding the above, under no circumstances may you combine this
- * software in any way with any other Broadcom software provided under a
- * license other than the GPL, without Broadcom's express prior written
-=======
 /* Copyright 2008-2013 Broadcom Corporation
  * Copyright (c) 2014 QLogic Corporation
  * All rights reserved
@@ -22,7 +10,6 @@
  * Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Qlogic software provided under a
  * license other than the GPL, without Qlogic's express prior written
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * consent.
  *
  * Written by Yaniv Rosner
@@ -56,13 +43,10 @@
 #define SPEED_AUTO_NEG		0
 #define SPEED_20000		20000
 
-<<<<<<< HEAD
-=======
 #define I2C_DEV_ADDR_A0			0xa0
 #define I2C_DEV_ADDR_A2			0xa2
 
 #define SFP_EEPROM_PAGE_SIZE			16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SFP_EEPROM_VENDOR_NAME_ADDR		0x14
 #define SFP_EEPROM_VENDOR_NAME_SIZE		16
 #define SFP_EEPROM_VENDOR_OUI_ADDR		0x25
@@ -75,8 +59,6 @@
 #define SFP_EEPROM_SERIAL_SIZE			16
 #define SFP_EEPROM_DATE_ADDR			0x54 /* ASCII YYMMDD */
 #define SFP_EEPROM_DATE_SIZE			6
-<<<<<<< HEAD
-=======
 #define SFP_EEPROM_DIAG_TYPE_ADDR		0x5c
 #define SFP_EEPROM_DIAG_TYPE_SIZE		1
 #define SFP_EEPROM_DIAG_ADDR_CHANGE_REQ		(1<<2)
@@ -87,7 +69,6 @@
 #define SFP_EEPROM_A2_CHECKSUM_RANGE		0x5e
 #define SFP_EEPROM_A2_CC_DMI_ADDR		0x5f
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PWR_FLT_ERR_MSG_LEN			250
 
 #define XGXS_EXT_PHY_TYPE(ext_phy_config) \
@@ -146,37 +127,25 @@ struct link_vars;
 struct link_params;
 struct bnx2x_phy;
 
-<<<<<<< HEAD
-typedef u8 (*config_init_t)(struct bnx2x_phy *phy, struct link_params *params,
-			    struct link_vars *vars);
-=======
 typedef void (*config_init_t)(struct bnx2x_phy *phy, struct link_params *params,
 			      struct link_vars *vars);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef u8 (*read_status_t)(struct bnx2x_phy *phy, struct link_params *params,
 			    struct link_vars *vars);
 typedef void (*link_reset_t)(struct bnx2x_phy *phy,
 			     struct link_params *params);
 typedef void (*config_loopback_t)(struct bnx2x_phy *phy,
 				  struct link_params *params);
-<<<<<<< HEAD
-typedef u8 (*format_fw_ver_t)(u32 raw, u8 *str, u16 *len);
-=======
 typedef int (*format_fw_ver_t)(u32 raw, u8 *str, u16 *len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef void (*hw_reset_t)(struct bnx2x_phy *phy, struct link_params *params);
 typedef void (*set_link_led_t)(struct bnx2x_phy *phy,
 			       struct link_params *params, u8 mode);
 typedef void (*phy_specific_func_t)(struct bnx2x_phy *phy,
 				    struct link_params *params, u32 action);
-<<<<<<< HEAD
-=======
 struct bnx2x_reg_set {
 	u8  devad;
 	u16 reg;
 	u16 val;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bnx2x_phy {
 	u32 type;
@@ -185,11 +154,6 @@ struct bnx2x_phy {
 	u8 addr;
 	u8 def_md_devad;
 	u16 flags;
-<<<<<<< HEAD
-	/* Require HW lock */
-#define FLAGS_HW_LOCK_REQUIRED		(1<<0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* No Over-Current detection */
 #define FLAGS_NOC			(1<<1)
 	/* Fan failure detection required */
@@ -204,11 +168,8 @@ struct bnx2x_phy {
 #define FLAGS_DUMMY_READ		(1<<9)
 #define FLAGS_MDC_MDIO_WA_B0		(1<<10)
 #define FLAGS_TX_ERROR_CHECK		(1<<12)
-<<<<<<< HEAD
-=======
 #define FLAGS_EEE			(1<<13)
 #define FLAGS_MDC_MDIO_WA_G		(1<<15)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* preemphasis values for the rx side */
 	u16 rx_preemphasis[4];
@@ -222,16 +183,6 @@ struct bnx2x_phy {
 	u32 supported;
 
 	u32 media_type;
-<<<<<<< HEAD
-#define	ETH_PHY_UNSPECIFIED 0x0
-#define	ETH_PHY_SFP_FIBER   0x1
-#define	ETH_PHY_XFP_FIBER   0x2
-#define	ETH_PHY_DA_TWINAX   0x3
-#define	ETH_PHY_BASE_T      0x4
-#define	ETH_PHY_KR          0xf0
-#define	ETH_PHY_CX4         0xf1
-#define	ETH_PHY_NOT_PRESENT 0xff
-=======
 #define	ETH_PHY_UNSPECIFIED	0x0
 #define	ETH_PHY_SFPP_10G_FIBER	0x1
 #define	ETH_PHY_XFP_FIBER		0x2
@@ -241,7 +192,6 @@ struct bnx2x_phy {
 #define	ETH_PHY_KR		0xf0
 #define	ETH_PHY_CX4		0xf1
 #define	ETH_PHY_NOT_PRESENT	0xff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The address in which version is located*/
 	u32 ver_addr;
@@ -280,10 +230,7 @@ struct bnx2x_phy {
 	phy_specific_func_t phy_specific_func;
 #define DISABLE_TX	1
 #define ENABLE_TX	2
-<<<<<<< HEAD
-=======
 #define PHY_INIT	3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Inputs parameters to the CLC */
@@ -330,10 +277,6 @@ struct link_params {
 #define FEATURE_CONFIG_PFC_ENABLED			(1<<1)
 #define FEATURE_CONFIG_BC_SUPPORTS_OPT_MDL_VRFY		(1<<2)
 #define FEATURE_CONFIG_BC_SUPPORTS_DUAL_PHY_OPT_MDL_VRFY	(1<<3)
-<<<<<<< HEAD
-#define FEATURE_CONFIG_AUTOGREEEN_ENABLED			(1<<9)
-#define FEATURE_CONFIG_BC_SUPPORTS_SFP_TX_DISABLED		(1<<10)
-=======
 #define FEATURE_CONFIG_BC_SUPPORTS_AFEX			(1<<8)
 #define FEATURE_CONFIG_AUTOGREEEN_ENABLED			(1<<9)
 #define FEATURE_CONFIG_BC_SUPPORTS_SFP_TX_DISABLED		(1<<10)
@@ -341,7 +284,6 @@ struct link_params {
 #define FEATURE_CONFIG_MT_SUPPORT			(1<<13)
 #define FEATURE_CONFIG_BOOT_FROM_SAN			(1<<14)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Will be populated during common init */
 	struct bnx2x_phy phy[MAX_PHYS];
 
@@ -349,8 +291,6 @@ struct link_params {
 	u8 num_phys;
 
 	u8 rsrv;
-<<<<<<< HEAD
-=======
 
 	/* Used to configure the EEE Tx LPI timer, has several modes of
 	 * operation, according to bits 29:28 -
@@ -375,7 +315,6 @@ struct link_params {
 #define EEE_MODE_ENABLE_LPI		(1<<30)
 #define EEE_MODE_ADV_LPI			(1<<31)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 hw_led_mode; /* part of the hw_config read from the shmem */
 	u32 multi_phy_config;
 
@@ -383,8 +322,6 @@ struct link_params {
 	struct bnx2x *bp;
 	u16 req_fc_auto_adv; /* Should be set to TX / BOTH when
 				req_flow_ctrl is set to AUTO */
-<<<<<<< HEAD
-=======
 	u16 link_flags;
 #define LINK_FLAGS_INT_DISABLED		(1<<0)
 #define PHY_INITIALIZED		(1<<1)
@@ -392,7 +329,6 @@ struct link_params {
 
 	/* The same definitions as the shmem2 parameter */
 	u32 link_attr_sync;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Output parameters */
@@ -403,10 +339,7 @@ struct link_vars {
 #define PHY_PHYSICAL_LINK_FLAG		(1<<2)
 #define PHY_HALF_OPEN_CONN_FLAG		(1<<3)
 #define PHY_OVER_CURRENT_FLAG		(1<<4)
-<<<<<<< HEAD
-=======
 #define PHY_SFP_TX_FAULT_FLAG		(1<<5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 mac_type;
 #define MAC_TYPE_NONE		0
@@ -426,15 +359,10 @@ struct link_vars {
 
 	/* The same definitions as the shmem parameter */
 	u32 link_status;
-<<<<<<< HEAD
-	u8 fault_detected;
-	u8 rsrv1;
-=======
 	u32 eee_status;
 	u8 fault_detected;
 	u8 check_kr2_recovery_cnt;
 #define CHECK_KR2_RECOVERY_CNT	5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 periodic_flags;
 #define PERIODIC_FLAGS_LINK_EVENT	0x0001
 
@@ -454,11 +382,7 @@ int bnx2x_phy_init(struct link_params *params, struct link_vars *vars);
    to 0 */
 int bnx2x_link_reset(struct link_params *params, struct link_vars *vars,
 		     u8 reset_ext_phy);
-<<<<<<< HEAD
-
-=======
 int bnx2x_lfa_reset(struct link_params *params, struct link_vars *vars);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* bnx2x_link_update should be called upon link interrupt */
 int bnx2x_link_update(struct link_params *params, struct link_vars *vars);
 
@@ -512,23 +436,11 @@ void bnx2x_sfx7101_sp_sw_reset(struct bnx2x *bp, struct bnx2x_phy *phy);
 
 /* Read "byte_cnt" bytes from address "addr" from the SFP+ EEPROM */
 int bnx2x_read_sfp_module_eeprom(struct bnx2x_phy *phy,
-<<<<<<< HEAD
-				 struct link_params *params, u16 addr,
-				 u8 byte_cnt, u8 *o_buf);
-
-void bnx2x_hw_reset_phy(struct link_params *params);
-
-/* Checks if HW lock is required for this phy/board type */
-u8 bnx2x_hw_lock_required(struct bnx2x *bp, u32 shmem_base,
-			  u32 shmem2_base);
-
-=======
 				 struct link_params *params, u8 dev_addr,
 				 u16 addr, u16 byte_cnt, u8 *o_buf);
 
 void bnx2x_hw_reset_phy(struct link_params *params);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Check swap bit and adjust PHY order */
 u32 bnx2x_phy_selection(struct link_params *params);
 
@@ -539,12 +451,8 @@ int bnx2x_phy_probe(struct link_params *params);
 u8 bnx2x_fan_failure_det_req(struct bnx2x *bp, u32 shmem_base,
 			     u32 shmem2_base, u8 port);
 
-<<<<<<< HEAD
-
-=======
 /* Open / close the gate between the NIG and the BRB */
 void bnx2x_set_rx_filter(struct link_params *params, u8 en);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* DCBX structs */
 
@@ -571,12 +479,6 @@ struct bnx2x_nig_brb_pfc_port_params {
 	u32 rx_cos_priority_mask[DCBX_MAX_NUM_COS];
 	u32 llfc_high_priority_classes;
 	u32 llfc_low_priority_classes;
-<<<<<<< HEAD
-	/* BRB */
-	u32 cos0_pauseable;
-	u32 cos1_pauseable;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -611,12 +513,7 @@ struct bnx2x_ets_params {
 	struct bnx2x_ets_cos_params cos[DCBX_MAX_NUM_COS];
 };
 
-<<<<<<< HEAD
-/**
- * Used to update the PFC attributes in EMAC, BMAC, NIG and BRB
-=======
 /* Used to update the PFC attributes in EMAC, BMAC, NIG and BRB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * when link is already up
  */
 int bnx2x_update_pfc(struct link_params *params,
@@ -640,24 +537,11 @@ int bnx2x_ets_strict(const struct link_params *params, const u8 strict_cos);
 int bnx2x_ets_e3b0_config(const struct link_params *params,
 			 const struct link_vars *vars,
 			 struct bnx2x_ets_params *ets_params);
-<<<<<<< HEAD
-/* Read pfc statistic*/
-void bnx2x_pfc_statistic(struct link_params *params, struct link_vars *vars,
-						 u32 pfc_frames_sent[2],
-						 u32 pfc_frames_received[2]);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bnx2x_init_mod_abs_int(struct bnx2x *bp, struct link_vars *vars,
 			    u32 chip_id, u32 shmem_base, u32 shmem2_base,
 			    u8 port);
 
-<<<<<<< HEAD
-int bnx2x_sfp_module_detection(struct bnx2x_phy *phy,
-			       struct link_params *params);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bnx2x_period_func(struct link_params *params, struct link_vars *vars);
 
 #endif /* BNX2X_LINK_H */

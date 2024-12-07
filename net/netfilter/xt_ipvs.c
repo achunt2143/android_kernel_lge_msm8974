@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	xt_ipvs - kernel module to match IPVS connection properties
  *
@@ -52,14 +49,9 @@ static bool
 ipvs_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_ipvs_mtinfo *data = par->matchinfo;
-<<<<<<< HEAD
-	/* ipvs_mt_check ensures that family is only NFPROTO_IPV[46]. */
-	const u_int8_t family = par->family;
-=======
 	struct netns_ipvs *ipvs = net_ipvs(xt_net(par));
 	/* ipvs_mt_check ensures that family is only NFPROTO_IPV[46]. */
 	const u_int8_t family = xt_family(par);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_vs_iphdr iph;
 	struct ip_vs_protocol *pp;
 	struct ip_vs_conn *cp;
@@ -77,11 +69,7 @@ ipvs_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ip_vs_fill_iphdr(family, skb_network_header(skb), &iph);
-=======
 	ip_vs_fill_iph_skb(family, skb, true, &iph);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data->bitmask & XT_IPVS_PROTO)
 		if ((iph.protocol == data->l4proto) ^
@@ -99,11 +87,7 @@ ipvs_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	/*
 	 * Check if the packet belongs to an existing entry
 	 */
-<<<<<<< HEAD
-	cp = pp->conn_out_get(family, skb, &iph, iph.len, 1 /* inverse */);
-=======
 	cp = pp->conn_out_get(ipvs, family, skb, &iph);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(cp == NULL)) {
 		match = false;
 		goto out;
@@ -133,11 +117,7 @@ ipvs_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		enum ip_conntrack_info ctinfo;
 		struct nf_conn *ct = nf_ct_get(skb, &ctinfo);
 
-<<<<<<< HEAD
-		if (ct == NULL || nf_ct_is_untracked(ct)) {
-=======
 		if (ct == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			match = false;
 			goto out_put_cp;
 		}
@@ -179,12 +159,8 @@ static int ipvs_mt_check(const struct xt_mtchk_param *par)
 	    && par->family != NFPROTO_IPV6
 #endif
 		) {
-<<<<<<< HEAD
-		pr_info("protocol family %u not supported\n", par->family);
-=======
 		pr_info_ratelimited("protocol family %u not supported\n",
 				    par->family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 

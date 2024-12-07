@@ -1,48 +1,24 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP Secure API infrastructure.
  *
  * Copyright (C) 2011 Texas Instruments, Inc.
  *	Santosh Shilimkar <santosh.shilimkar@ti.com>
-<<<<<<< HEAD
- *
- *
- * This program is free software,you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
  * Copyright (C) 2012 Ivaylo Dimitrov <freemangordon@abv.bg>
  * Copyright (C) 2013 Pali Rohár <pali@kernel.org>
  */
 
 #include <linux/arm-smccc.h>
 #include <linux/cpu_pm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/memblock.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cacheflush.h>
 #include <asm/memblock.h>
 
-<<<<<<< HEAD
-#include <mach/omap-secure.h>
-
-static phys_addr_t omap_secure_memblock_base;
-
-/**
- * omap_sec_dispatcher: Routine to dispatch low power secure
-=======
 #include "common.h"
 #include "omap-secure.h"
 #include "soc.h"
@@ -72,7 +48,6 @@ static void __init omap_optee_init_check(void)
 
 /**
  * omap_secure_dispatcher - Routine to dispatch low power secure
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * service routines
  * @idx: The HAL API index
  * @flag: The flag indicating criticality of operation
@@ -84,10 +59,6 @@ static void __init omap_optee_init_check(void)
 u32 omap_secure_dispatcher(u32 idx, u32 flag, u32 nargs, u32 arg1, u32 arg2,
 							 u32 arg3, u32 arg4)
 {
-<<<<<<< HEAD
-	u32 ret;
-	u32 param[5];
-=======
 	static u32 buf[NR_CPUS][5];
 	u32 *param;
 	int cpu;
@@ -95,7 +66,6 @@ u32 omap_secure_dispatcher(u32 idx, u32 flag, u32 nargs, u32 arg1, u32 arg2,
 
 	cpu = get_cpu();
 	param = buf[cpu];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	param[0] = nargs;
 	param[1] = arg1;
@@ -111,11 +81,6 @@ u32 omap_secure_dispatcher(u32 idx, u32 flag, u32 nargs, u32 arg1, u32 arg2,
 	outer_clean_range(__pa(param), __pa(param + 5));
 	ret = omap_smc2(idx, flag, __pa(param));
 
-<<<<<<< HEAD
-	return ret;
-}
-
-=======
 	put_cpu();
 
 	return ret;
@@ -142,29 +107,17 @@ void omap_smc1(u32 fn, u32 arg)
 		_omap_smc1(fn, arg);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Allocate the memory to save secure ram */
 int __init omap_secure_ram_reserve_memblock(void)
 {
 	u32 size = OMAP_SECURE_RAM_STORAGE;
 
-<<<<<<< HEAD
-	size = ALIGN(size, SZ_1M);
-	omap_secure_memblock_base = arm_memblock_steal(size, SZ_1M);
-=======
 	size = ALIGN(size, SECTION_SIZE);
 	omap_secure_memblock_base = arm_memblock_steal(size, SECTION_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-phys_addr_t omap_secure_ram_mempool_base(void)
-{
-	return omap_secure_memblock_base;
-}
-=======
 #if defined(CONFIG_ARCH_OMAP3) && defined(CONFIG_PM)
 u32 omap3_save_secure_ram(void *addr, int size)
 {
@@ -301,4 +254,3 @@ static int __init secure_pm_init(void)
 	return 0;
 }
 omap_arch_initcall(secure_pm_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

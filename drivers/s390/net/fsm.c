@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-/**
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A generic FSM based on fsm used in isdn4linux
  *
  */
@@ -13,11 +9,7 @@
 #include <linux/slab.h>
 #include <linux/timer.h>
 
-<<<<<<< HEAD
-MODULE_AUTHOR("(C) 2000 IBM Corp. by Fritz Elfert (felfert@millenux.com)");
-=======
 MODULE_AUTHOR("(C) 2000 IBM Corp. by Fritz Elfert <felfert@millenux.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Finite state machine helper functions");
 MODULE_LICENSE("GPL");
 
@@ -36,11 +28,7 @@ init_fsm(char *name, const char **state_names, const char **event_names, int nr_
 			"fsm(%s): init_fsm: Couldn't alloc instance\n", name);
 		return NULL;
 	}
-<<<<<<< HEAD
-	strlcpy(this->name, name, sizeof(this->name));
-=======
 	strscpy(this->name, name, sizeof(this->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&this->wait_q);
 
 	f = kzalloc(sizeof(fsm), order);
@@ -142,14 +130,9 @@ fsm_getstate_str(fsm_instance *fi)
 }
 
 static void
-<<<<<<< HEAD
-fsm_expire_timer(fsm_timer *this)
-{
-=======
 fsm_expire_timer(struct timer_list *t)
 {
 	fsm_timer *this = from_timer(this, t, tl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if FSM_TIMER_DEBUG
 	printk(KERN_DEBUG "fsm(%s): Timer %p expired\n",
 	       this->fi->name, this);
@@ -161,20 +144,11 @@ void
 fsm_settimer(fsm_instance *fi, fsm_timer *this)
 {
 	this->fi = fi;
-<<<<<<< HEAD
-	this->tl.function = (void *)fsm_expire_timer;
-	this->tl.data = (long)this;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if FSM_TIMER_DEBUG
 	printk(KERN_DEBUG "fsm(%s): Create timer %p\n", fi->name,
 	       this);
 #endif
-<<<<<<< HEAD
-	init_timer(&this->tl);
-=======
 	timer_setup(&this->tl, fsm_expire_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -196,13 +170,7 @@ fsm_addtimer(fsm_timer *this, int millisec, int event, void *arg)
 	       this->fi->name, this, millisec);
 #endif
 
-<<<<<<< HEAD
-	init_timer(&this->tl);
-	this->tl.function = (void *)fsm_expire_timer;
-	this->tl.data = (long)this;
-=======
 	timer_setup(&this->tl, fsm_expire_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	this->expire_event = event;
 	this->event_arg = arg;
 	this->tl.expires = jiffies + (millisec * HZ) / 1000;
@@ -221,13 +189,7 @@ fsm_modtimer(fsm_timer *this, int millisec, int event, void *arg)
 #endif
 
 	del_timer(&this->tl);
-<<<<<<< HEAD
-	init_timer(&this->tl);
-	this->tl.function = (void *)fsm_expire_timer;
-	this->tl.data = (long)this;
-=======
 	timer_setup(&this->tl, fsm_expire_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	this->expire_event = event;
 	this->event_arg = arg;
 	this->tl.expires = jiffies + (millisec * HZ) / 1000;

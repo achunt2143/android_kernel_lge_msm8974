@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*-
  * sysctl_net_core.c: sysctl interface to net core subsystem.
  *
@@ -9,10 +6,7 @@
  * Added /proc/sys/net/core directory entry (empty =) ). [MS]
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/filter.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/sysctl.h>
 #include <linux/module.h>
@@ -22,30 +16,11 @@
 #include <linux/vmalloc.h>
 #include <linux/init.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/kmemleak.h>
-=======
 #include <linux/sched/isolation.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ip.h>
 #include <net/sock.h>
 #include <net/net_ratelimit.h>
-<<<<<<< HEAD
-
-static int zero = 0;
-static int ushort_max = USHRT_MAX;
-
-static int one = 1;
-
-#ifdef CONFIG_RPS
-static int rps_sock_flow_sysctl(ctl_table *table, int write,
-				void __user *buffer, size_t *lenp, loff_t *ppos)
-{
-	unsigned int orig_size, size;
-	int ret, i;
-	ctl_table tmp = {
-=======
 #include <net/busy_poll.h>
 #include <net/pkt_sched.h>
 #include <net/hotdata.h>
@@ -156,7 +131,6 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 	unsigned int orig_size, size;
 	int ret, i;
 	struct ctl_table tmp = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.data = &size,
 		.maxlen = sizeof(size),
 		.mode = table->mode
@@ -166,12 +140,8 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 
 	mutex_lock(&sock_flow_mutex);
 
-<<<<<<< HEAD
-	orig_sock_table = rcu_dereference_protected(rps_sock_flow_table,
-=======
 	orig_sock_table = rcu_dereference_protected(
 					net_hotdata.rps_sock_flow_table,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					lockdep_is_held(&sock_flow_mutex));
 	size = orig_size = orig_sock_table ? orig_sock_table->mask + 1 : 0;
 
@@ -179,11 +149,7 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 
 	if (write) {
 		if (size) {
-<<<<<<< HEAD
-			if (size > 1<<30) {
-=======
 			if (size > 1<<29) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* Enforce limit to prevent overflow */
 				mutex_unlock(&sock_flow_mutex);
 				return -EINVAL;
@@ -196,12 +162,8 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 					mutex_unlock(&sock_flow_mutex);
 					return -ENOMEM;
 				}
-<<<<<<< HEAD
-
-=======
 				net_hotdata.rps_cpu_mask =
 					roundup_pow_of_two(nr_cpu_ids) - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sock_table->mask = size - 1;
 			} else
 				sock_table = orig_sock_table;
@@ -212,15 +174,6 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 			sock_table = NULL;
 
 		if (sock_table != orig_sock_table) {
-<<<<<<< HEAD
-			rcu_assign_pointer(rps_sock_flow_table, sock_table);
-			if (sock_table)
-				static_key_slow_inc(&rps_needed);
-			if (orig_sock_table) {
-				static_key_slow_dec(&rps_needed);
-				synchronize_rcu();
-				vfree(orig_sock_table);
-=======
 			rcu_assign_pointer(net_hotdata.rps_sock_flow_table,
 					   sock_table);
 			if (sock_table) {
@@ -231,7 +184,6 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 				static_branch_dec(&rps_needed);
 				static_branch_dec(&rfs_needed);
 				kvfree_rcu_mightsleep(orig_sock_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -242,10 +194,6 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 }
 #endif /* CONFIG_RPS */
 
-<<<<<<< HEAD
-static struct ctl_table net_core_table[] = {
-#ifdef CONFIG_NET
-=======
 #ifdef CONFIG_NET_FLOW_LIMIT
 static DEFINE_MUTEX(flow_limit_update_mutex);
 
@@ -433,18 +381,13 @@ proc_dolongvec_minmax_bpf_restricted(struct ctl_table *table, int write,
 #endif
 
 static struct ctl_table net_core_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "wmem_max",
 		.data		= &sysctl_wmem_max,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
-<<<<<<< HEAD
-		.extra1		= &one,
-=======
 		.extra1		= &min_sndbuf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "rmem_max",
@@ -452,11 +395,7 @@ static struct ctl_table net_core_table[] = {
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
-<<<<<<< HEAD
-		.extra1		= &one,
-=======
 		.extra1		= &min_rcvbuf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "wmem_default",
@@ -464,11 +403,7 @@ static struct ctl_table net_core_table[] = {
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
-<<<<<<< HEAD
-		.extra1		= &one,
-=======
 		.extra1		= &min_sndbuf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "rmem_default",
@@ -476,9 +411,6 @@ static struct ctl_table net_core_table[] = {
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
-<<<<<<< HEAD
-		.extra1		= &one,
-=======
 		.extra1		= &min_rcvbuf,
 	},
 	{
@@ -488,20 +420,12 @@ static struct ctl_table net_core_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= &min_mem_pcpu_rsv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.procname	= "dev_weight",
 		.data		= &weight_p,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
-<<<<<<< HEAD
-		.proc_handler	= proc_dointvec
-	},
-	{
-		.procname	= "netdev_max_backlog",
-		.data		= &netdev_max_backlog,
-=======
 		.proc_handler	= proc_do_dev_weight,
 	},
 	{
@@ -521,13 +445,10 @@ static struct ctl_table net_core_table[] = {
 	{
 		.procname	= "netdev_max_backlog",
 		.data		= &net_hotdata.max_backlog,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
 	},
-<<<<<<< HEAD
-=======
 	{
 		.procname	= "netdev_rss_key",
 		.data		= &netdev_rss_key,
@@ -535,16 +456,12 @@ static struct ctl_table net_core_table[] = {
 		.mode		= 0444,
 		.proc_handler	= proc_do_rss_key,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_BPF_JIT
 	{
 		.procname	= "bpf_jit_enable",
 		.data		= &bpf_jit_enable,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
-<<<<<<< HEAD
-		.proc_handler	= proc_dointvec
-=======
 		.proc_handler	= proc_dointvec_minmax_bpf_enable,
 # ifdef CONFIG_BPF_JIT_ALWAYS_ON
 		.extra1		= SYSCTL_ONE,
@@ -582,16 +499,11 @@ static struct ctl_table net_core_table[] = {
 		.proc_handler	= proc_dolongvec_minmax_bpf_restricted,
 		.extra1		= SYSCTL_LONG_ONE,
 		.extra2		= &bpf_jit_limit_max,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #endif
 	{
 		.procname	= "netdev_tstamp_prequeue",
-<<<<<<< HEAD
-		.data		= &netdev_tstamp_prequeue,
-=======
 		.data		= &net_hotdata.tstamp_prequeue,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
@@ -611,13 +523,6 @@ static struct ctl_table net_core_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 	{
-<<<<<<< HEAD
-		.procname	= "optmem_max",
-		.data		= &sysctl_optmem_max,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec
-=======
 		.procname	= "tstamp_allow_data",
 		.data		= &sysctl_tstamp_allow_data,
 		.maxlen		= sizeof(int),
@@ -625,7 +530,6 @@ static struct ctl_table net_core_table[] = {
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= SYSCTL_ZERO,
 		.extra2		= SYSCTL_ONE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 #ifdef CONFIG_RPS
 	{
@@ -635,12 +539,6 @@ static struct ctl_table net_core_table[] = {
 		.proc_handler	= rps_sock_flow_sysctl
 	},
 #endif
-<<<<<<< HEAD
-#endif /* CONFIG_NET */
-	{
-		.procname	= "netdev_budget",
-		.data		= &netdev_budget,
-=======
 #ifdef CONFIG_NET_FLOW_LIMIT
 	{
 		.procname	= "flow_limit_cpu_bitmap",
@@ -684,7 +582,6 @@ static struct ctl_table net_core_table[] = {
 	{
 		.procname	= "netdev_budget",
 		.data		= &net_hotdata.netdev_budget,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
@@ -696,8 +593,6 @@ static struct ctl_table net_core_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec
 	},
-<<<<<<< HEAD
-=======
 	{
 		.procname	= "max_skb_frags",
 		.data		= &sysctl_max_skb_frags,
@@ -765,13 +660,10 @@ static struct ctl_table net_core_table[] = {
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= SYSCTL_ZERO,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 
 static struct ctl_table netns_core_table[] = {
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_RPS)
 	{
 		.procname	= "rps_default_mask",
@@ -780,32 +672,11 @@ static struct ctl_table netns_core_table[] = {
 		.proc_handler	= rps_default_mask_sysctl
 	},
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "somaxconn",
 		.data		= &init_net.core.sysctl_somaxconn,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
-<<<<<<< HEAD
-		.extra1		= &zero,
-		.extra2		= &ushort_max,
-		.proc_handler	= proc_dointvec_minmax
-	},
-	{ }
-};
-
-__net_initdata struct ctl_path net_core_path[] = {
-	{ .procname = "net", },
-	{ .procname = "core", },
-	{ },
-};
-
-static __net_init int sysctl_core_net_init(struct net *net)
-{
-	struct ctl_table *tbl;
-
-	net->core.sysctl_somaxconn = SOMAXCONN;
-=======
 		.extra1		= SYSCTL_ZERO,
 		.proc_handler	= proc_dointvec_minmax
 	},
@@ -845,7 +716,6 @@ __setup("fb_tunnels=", fb_tunnels_only_for_init_net_sysctl_setup);
 static __net_init int sysctl_core_net_init(struct net *net)
 {
 	struct ctl_table *tbl, *tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tbl = netns_core_table;
 	if (!net_eq(net, &init_net)) {
@@ -853,20 +723,12 @@ static __net_init int sysctl_core_net_init(struct net *net)
 		if (tbl == NULL)
 			goto err_dup;
 
-<<<<<<< HEAD
-		tbl[0].data = &net->core.sysctl_somaxconn;
-	}
-
-	net->core.sysctl_hdr = register_net_sysctl_table(net,
-			net_core_path, tbl);
-=======
 		for (tmp = tbl; tmp->procname; tmp++)
 			tmp->data += (char *)net - (char *)&init_net;
 	}
 
 	net->core.sysctl_hdr = register_net_sysctl_sz(net, "net/core", tbl,
 						      ARRAY_SIZE(netns_core_table));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (net->core.sysctl_hdr == NULL)
 		goto err_reg;
 
@@ -886,12 +748,9 @@ static __net_exit void sysctl_core_net_exit(struct net *net)
 	tbl = net->core.sysctl_hdr->ctl_table_arg;
 	unregister_net_sysctl_table(net->core.sysctl_hdr);
 	BUG_ON(tbl == netns_core_table);
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_RPS)
 	kfree(net->core.rps_default_mask);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(tbl);
 }
 
@@ -902,14 +761,7 @@ static __net_initdata struct pernet_operations sysctl_core_ops = {
 
 static __init int sysctl_core_init(void)
 {
-<<<<<<< HEAD
-	static struct ctl_table empty[1];
-
-	kmemleak_not_leak(register_sysctl_paths(net_core_path, empty));
-	register_net_sysctl_rotable(net_core_path, net_core_table);
-=======
 	register_net_sysctl(&init_net, "net/core", net_core_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return register_pernet_subsys(&sysctl_core_ops);
 }
 

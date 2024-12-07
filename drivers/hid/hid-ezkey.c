@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for some ezkey "special" devices
  *
@@ -9,21 +6,10 @@
  *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
  *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
  *  Copyright (c) 2006-2007 Jiri Kosina
-<<<<<<< HEAD
- *  Copyright (c) 2007 Paul Walmsley
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (c) 2008 Jiri Slaby
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -87,22 +73,6 @@ static struct hid_driver ez_driver = {
 	.input_mapping = ez_input_mapping,
 	.event = ez_event,
 };
-<<<<<<< HEAD
-
-static int __init ez_init(void)
-{
-	return hid_register_driver(&ez_driver);
-}
-
-static void __exit ez_exit(void)
-{
-	hid_unregister_driver(&ez_driver);
-}
-
-module_init(ez_init);
-module_exit(ez_exit);
-=======
 module_hid_driver(ez_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

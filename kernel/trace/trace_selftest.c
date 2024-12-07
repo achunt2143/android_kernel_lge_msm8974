@@ -1,12 +1,7 @@
-<<<<<<< HEAD
-/* Include in trace.c */
-
-=======
 // SPDX-License-Identifier: GPL-2.0
 /* Include in trace.c */
 
 #include <uapi/linux/sched/types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stringify.h>
 #include <linux/kthread.h>
 #include <linux/delay.h>
@@ -28,21 +23,13 @@ static inline int trace_valid_entry(struct trace_entry *entry)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int trace_test_buffer_cpu(struct trace_array *tr, int cpu)
-=======
 static int trace_test_buffer_cpu(struct array_buffer *buf, int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ring_buffer_event *event;
 	struct trace_entry *entry;
 	unsigned int loops = 0;
 
-<<<<<<< HEAD
-	while ((event = ring_buffer_consume(tr->buffer, cpu, NULL, NULL))) {
-=======
 	while ((event = ring_buffer_consume(buf->buffer, cpu, NULL, NULL))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry = ring_buffer_event_data(event);
 
 		/*
@@ -73,26 +60,16 @@ static int trace_test_buffer_cpu(struct array_buffer *buf, int cpu)
  * Test the trace buffer to see if all the elements
  * are still sane.
  */
-<<<<<<< HEAD
-static int trace_test_buffer(struct trace_array *tr, unsigned long *count)
-=======
 static int __maybe_unused trace_test_buffer(struct array_buffer *buf, unsigned long *count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags, cnt = 0;
 	int cpu, ret = 0;
 
 	/* Don't allow flipping of max traces now */
 	local_irq_save(flags);
-<<<<<<< HEAD
-	arch_spin_lock(&ftrace_max_lock);
-
-	cnt = ring_buffer_entries(tr->buffer);
-=======
 	arch_spin_lock(&buf->tr->max_lock);
 
 	cnt = ring_buffer_entries(buf->buffer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The trace_test_buffer_cpu runs a while loop to consume all data.
@@ -103,20 +80,12 @@ static int __maybe_unused trace_test_buffer(struct array_buffer *buf, unsigned l
 	 */
 	tracing_off();
 	for_each_possible_cpu(cpu) {
-<<<<<<< HEAD
-		ret = trace_test_buffer_cpu(tr, cpu);
-=======
 		ret = trace_test_buffer_cpu(buf, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			break;
 	}
 	tracing_on();
-<<<<<<< HEAD
-	arch_spin_unlock(&ftrace_max_lock);
-=======
 	arch_spin_unlock(&buf->tr->max_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	if (count)
@@ -136,65 +105,45 @@ static inline void warn_failed_init_tracer(struct tracer *trace, int init_ret)
 
 static int trace_selftest_test_probe1_cnt;
 static void trace_selftest_test_probe1_func(unsigned long ip,
-<<<<<<< HEAD
-					    unsigned long pip)
-=======
 					    unsigned long pip,
 					    struct ftrace_ops *op,
 					    struct ftrace_regs *fregs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	trace_selftest_test_probe1_cnt++;
 }
 
 static int trace_selftest_test_probe2_cnt;
 static void trace_selftest_test_probe2_func(unsigned long ip,
-<<<<<<< HEAD
-					    unsigned long pip)
-=======
 					    unsigned long pip,
 					    struct ftrace_ops *op,
 					    struct ftrace_regs *fregs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	trace_selftest_test_probe2_cnt++;
 }
 
 static int trace_selftest_test_probe3_cnt;
 static void trace_selftest_test_probe3_func(unsigned long ip,
-<<<<<<< HEAD
-					    unsigned long pip)
-=======
 					    unsigned long pip,
 					    struct ftrace_ops *op,
 					    struct ftrace_regs *fregs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	trace_selftest_test_probe3_cnt++;
 }
 
 static int trace_selftest_test_global_cnt;
 static void trace_selftest_test_global_func(unsigned long ip,
-<<<<<<< HEAD
-					    unsigned long pip)
-=======
 					    unsigned long pip,
 					    struct ftrace_ops *op,
 					    struct ftrace_regs *fregs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	trace_selftest_test_global_cnt++;
 }
 
 static int trace_selftest_test_dyn_cnt;
 static void trace_selftest_test_dyn_func(unsigned long ip,
-<<<<<<< HEAD
-					 unsigned long pip)
-=======
 					 unsigned long pip,
 					 struct ftrace_ops *op,
 					 struct ftrace_regs *fregs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	trace_selftest_test_dyn_cnt++;
 }
@@ -211,14 +160,6 @@ static struct ftrace_ops test_probe3 = {
 	.func			= trace_selftest_test_probe3_func,
 };
 
-<<<<<<< HEAD
-static struct ftrace_ops test_global = {
-	.func			= trace_selftest_test_global_func,
-	.flags			= FTRACE_OPS_FL_GLOBAL,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void print_counts(void)
 {
 	printk("(%d %d %d %d %d) ",
@@ -238,11 +179,7 @@ static void reset_counts(void)
 	trace_selftest_test_dyn_cnt = 0;
 }
 
-<<<<<<< HEAD
-static int trace_selftest_ops(int cnt)
-=======
 static int trace_selftest_ops(struct trace_array *tr, int cnt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int save_ftrace_enabled = ftrace_enabled;
 	struct ftrace_ops *dyn_ops;
@@ -277,15 +214,11 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
 	register_ftrace_function(&test_probe1);
 	register_ftrace_function(&test_probe2);
 	register_ftrace_function(&test_probe3);
-<<<<<<< HEAD
-	register_ftrace_function(&test_global);
-=======
 	/* First time we are running with main function */
 	if (cnt > 1) {
 		ftrace_init_array_ops(tr, trace_selftest_test_global_func);
 		register_ftrace_function(tr->ops);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DYN_FTRACE_TEST_NAME();
 
@@ -297,15 +230,10 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
 		goto out;
 	if (trace_selftest_test_probe3_cnt != 1)
 		goto out;
-<<<<<<< HEAD
-	if (trace_selftest_test_global_cnt == 0)
-		goto out;
-=======
 	if (cnt > 1) {
 		if (trace_selftest_test_global_cnt == 0)
 			goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DYN_FTRACE_TEST_NAME2();
 
@@ -341,15 +269,10 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
 		goto out_free;
 	if (trace_selftest_test_probe3_cnt != 3)
 		goto out_free;
-<<<<<<< HEAD
-	if (trace_selftest_test_global_cnt == 0)
-		goto out;
-=======
 	if (cnt > 1) {
 		if (trace_selftest_test_global_cnt == 0)
 			goto out_free;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (trace_selftest_test_dyn_cnt == 0)
 		goto out_free;
 
@@ -364,8 +287,6 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
 	if (trace_selftest_test_probe3_cnt != 4)
 		goto out_free;
 
-<<<<<<< HEAD
-=======
 	/* Remove trace function from probe 3 */
 	func1_name = "!" __stringify(DYN_FTRACE_TEST_NAME);
 	len1 = strlen(func1_name);
@@ -400,7 +321,6 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
 	if (trace_selftest_test_probe3_cnt != 5)
 		goto out_free;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = 0;
  out_free:
 	unregister_ftrace_function(dyn_ops);
@@ -411,13 +331,9 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
 	unregister_ftrace_function(&test_probe1);
 	unregister_ftrace_function(&test_probe2);
 	unregister_ftrace_function(&test_probe3);
-<<<<<<< HEAD
-	unregister_ftrace_function(&test_global);
-=======
 	if (cnt > 1)
 		unregister_ftrace_function(tr->ops);
 	ftrace_reset_array_ops(tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure everything is off */
 	reset_counts();
@@ -437,20 +353,11 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
 }
 
 /* Test dynamic code modification and ftrace filters */
-<<<<<<< HEAD
-int trace_selftest_startup_dynamic_tracing(struct tracer *trace,
-					   struct trace_array *tr,
-					   int (*func)(void))
-{
-	int save_ftrace_enabled = ftrace_enabled;
-	int save_tracer_enabled = tracer_enabled;
-=======
 static int trace_selftest_startup_dynamic_tracing(struct tracer *trace,
 						  struct trace_array *tr,
 						  int (*func)(void))
 {
 	int save_ftrace_enabled = ftrace_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long count;
 	char *func_name;
 	int ret;
@@ -461,10 +368,6 @@ static int trace_selftest_startup_dynamic_tracing(struct tracer *trace,
 
 	/* enable tracing, and record the filter function */
 	ftrace_enabled = 1;
-<<<<<<< HEAD
-	tracer_enabled = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* passed in by parameter to fool gcc from optimizing */
 	func();
@@ -490,11 +393,7 @@ static int trace_selftest_startup_dynamic_tracing(struct tracer *trace,
 	msleep(100);
 
 	/* we should have nothing in the buffer */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, &count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -515,13 +414,9 @@ static int trace_selftest_startup_dynamic_tracing(struct tracer *trace,
 	ftrace_enabled = 0;
 
 	/* check the trace buffer */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, &count);
 
 	ftrace_enabled = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tracing_start();
 
 	/* we should only have one item */
@@ -533,28 +428,17 @@ static int trace_selftest_startup_dynamic_tracing(struct tracer *trace,
 	}
 
 	/* Test the ops with global tracing running */
-<<<<<<< HEAD
-	ret = trace_selftest_ops(1);
-=======
 	ret = trace_selftest_ops(tr, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace->reset(tr);
 
  out:
 	ftrace_enabled = save_ftrace_enabled;
-<<<<<<< HEAD
-	tracer_enabled = save_tracer_enabled;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable tracing on all functions again */
 	ftrace_set_global_filter(NULL, 0, 1);
 
 	/* Test the ops with global tracing off */
 	if (!ret)
-<<<<<<< HEAD
-		ret = trace_selftest_ops(2);
-=======
 		ret = trace_selftest_ops(tr, 2);
 
 	return ret;
@@ -681,16 +565,11 @@ trace_selftest_function_recursion(void)
 	ret = 0;
 out:
 	ftrace_enabled = save_ftrace_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 #else
 # define trace_selftest_startup_dynamic_tracing(trace, tr, func) ({ 0; })
-<<<<<<< HEAD
-#endif /* CONFIG_DYNAMIC_FTRACE */
-
-=======
 # define trace_selftest_function_recursion() ({ 0; })
 #endif /* CONFIG_DYNAMIC_FTRACE */
 
@@ -803,22 +682,11 @@ out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Simple verification test of ftrace function tracer.
  * Enable ftrace, sleep 1/10 second, and then read the trace
  * buffer to see if all is in order.
  */
-<<<<<<< HEAD
-int
-trace_selftest_startup_function(struct tracer *trace, struct trace_array *tr)
-{
-	int save_ftrace_enabled = ftrace_enabled;
-	int save_tracer_enabled = tracer_enabled;
-	unsigned long count;
-	int ret;
-
-=======
 __init int
 trace_selftest_startup_function(struct tracer *trace, struct trace_array *tr)
 {
@@ -833,16 +701,11 @@ trace_selftest_startup_function(struct tracer *trace, struct trace_array *tr)
 	}
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* make sure msleep has been recorded */
 	msleep(1);
 
 	/* start the tracing */
 	ftrace_enabled = 1;
-<<<<<<< HEAD
-	tracer_enabled = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = tracer_init(trace, tr);
 	if (ret) {
@@ -857,13 +720,9 @@ trace_selftest_startup_function(struct tracer *trace, struct trace_array *tr)
 	ftrace_enabled = 0;
 
 	/* check the trace buffer */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, &count);
 
 	ftrace_enabled = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace->reset(tr);
 	tracing_start();
 
@@ -875,12 +734,6 @@ trace_selftest_startup_function(struct tracer *trace, struct trace_array *tr)
 
 	ret = trace_selftest_startup_dynamic_tracing(trace, tr,
 						     DYN_FTRACE_TEST_NAME);
-<<<<<<< HEAD
-
- out:
-	ftrace_enabled = save_ftrace_enabled;
-	tracer_enabled = save_tracer_enabled;
-=======
 	if (ret)
 		goto out;
 
@@ -891,7 +744,6 @@ trace_selftest_startup_function(struct tracer *trace, struct trace_array *tr)
 	ret = trace_selftest_function_regs();
  out:
 	ftrace_enabled = save_ftrace_enabled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* kill ftrace totally if we failed */
 	if (ret)
@@ -916,11 +768,7 @@ static int trace_graph_entry_watchdog(struct ftrace_graph_ent *trace)
 	if (unlikely(++graph_hang_thresh > GRAPH_MAX_FUNC_TEST)) {
 		ftrace_graph_stop();
 		printk(KERN_WARNING "BUG: Function graph tracer hang!\n");
-<<<<<<< HEAD
-		if (ftrace_dump_on_oops) {
-=======
 		if (ftrace_dump_on_oops_enabled()) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ftrace_dump(DUMP_ALL);
 			/* ftrace_dump() disables tracing */
 			tracing_on();
@@ -931,8 +779,6 @@ static int trace_graph_entry_watchdog(struct ftrace_graph_ent *trace)
 	return trace_graph_entry(trace);
 }
 
-<<<<<<< HEAD
-=======
 static struct fgraph_ops fgraph_ops __initdata  = {
 	.entryfunc		= &trace_graph_entry_watchdog,
 	.retfunc		= &trace_graph_return,
@@ -942,23 +788,16 @@ static struct fgraph_ops fgraph_ops __initdata  = {
 static struct ftrace_ops direct;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pretty much the same than for the function tracer from which the selftest
  * has been borrowed.
  */
-<<<<<<< HEAD
-int
-=======
 __init int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 trace_selftest_startup_function_graph(struct tracer *trace,
 					struct trace_array *tr)
 {
 	int ret;
 	unsigned long count;
-<<<<<<< HEAD
-=======
 	char *func_name __maybe_unused;
 
 #ifdef CONFIG_DYNAMIC_FTRACE
@@ -967,22 +806,14 @@ trace_selftest_startup_function_graph(struct tracer *trace,
 		return 0;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Simulate the init() callback but we attach a watchdog callback
 	 * to detect and recover from possible hangs
 	 */
-<<<<<<< HEAD
-	tracing_reset_online_cpus(tr);
-	set_graph_array(tr);
-	ret = register_ftrace_graph(&trace_graph_return,
-				    &trace_graph_entry_watchdog);
-=======
 	tracing_reset_online_cpus(&tr->array_buffer);
 	set_graph_array(tr);
 	ret = register_ftrace_graph(&fgraph_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		warn_failed_init_tracer(trace, ret);
 		goto out;
@@ -994,11 +825,7 @@ trace_selftest_startup_function_graph(struct tracer *trace,
 
 	/* Have we just recovered from a hang? */
 	if (graph_hang_thresh > GRAPH_MAX_FUNC_TEST) {
-<<<<<<< HEAD
-		tracing_selftest_disabled = true;
-=======
 		disable_tracing_selftest("recovering from a hang");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -1;
 		goto out;
 	}
@@ -1006,18 +833,12 @@ trace_selftest_startup_function_graph(struct tracer *trace,
 	tracing_stop();
 
 	/* check the trace buffer */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, &count);
-
-	trace->reset(tr);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, &count);
 
 	/* Need to also simulate the tr->reset to remove this fgraph_ops */
 	tracing_stop_cmdline_record();
 	unregister_ftrace_graph(&fgraph_ops);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tracing_start();
 
 	if (!ret && !count) {
@@ -1026,10 +847,6 @@ trace_selftest_startup_function_graph(struct tracer *trace,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/* Don't test dynamic tracing, the function tracer already did */
-
-=======
 #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
 	/*
 	 * These tests can take some time to run. Make sure on non PREEMPT
@@ -1096,7 +913,6 @@ trace_selftest_startup_function_graph(struct tracer *trace,
 #endif
 
 	/* Don't test dynamic tracing, the function tracer already did */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	/* Stop it if we failed */
 	if (ret)
@@ -1111,11 +927,7 @@ out:
 int
 trace_selftest_startup_irqsoff(struct tracer *trace, struct trace_array *tr)
 {
-<<<<<<< HEAD
-	unsigned long save_max = tracing_max_latency;
-=======
 	unsigned long save_max = tr->max_latency;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long count;
 	int ret;
 
@@ -1127,11 +939,7 @@ trace_selftest_startup_irqsoff(struct tracer *trace, struct trace_array *tr)
 	}
 
 	/* reset the max latency */
-<<<<<<< HEAD
-	tracing_max_latency = 0;
-=======
 	tr->max_latency = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable interrupts for a bit */
 	local_irq_disable();
 	udelay(100);
@@ -1147,15 +955,9 @@ trace_selftest_startup_irqsoff(struct tracer *trace, struct trace_array *tr)
 	/* stop the tracing. */
 	tracing_stop();
 	/* check both trace buffers */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, NULL);
-	if (!ret)
-		ret = trace_test_buffer(&max_tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, NULL);
 	if (!ret)
 		ret = trace_test_buffer(&tr->max_buffer, &count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace->reset(tr);
 	tracing_start();
 
@@ -1164,11 +966,7 @@ trace_selftest_startup_irqsoff(struct tracer *trace, struct trace_array *tr)
 		ret = -1;
 	}
 
-<<<<<<< HEAD
-	tracing_max_latency = save_max;
-=======
 	tr->max_latency = save_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1178,20 +976,12 @@ trace_selftest_startup_irqsoff(struct tracer *trace, struct trace_array *tr)
 int
 trace_selftest_startup_preemptoff(struct tracer *trace, struct trace_array *tr)
 {
-<<<<<<< HEAD
-	unsigned long save_max = tracing_max_latency;
-=======
 	unsigned long save_max = tr->max_latency;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long count;
 	int ret;
 
 	/*
-<<<<<<< HEAD
-	 * Now that the big kernel lock is no longer preemptable,
-=======
 	 * Now that the big kernel lock is no longer preemptible,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and this is called with the BKL held, it will always
 	 * fail. If preemption is already disabled, simply
 	 * pass the test. When the BKL is removed, or becomes
@@ -1211,11 +1001,7 @@ trace_selftest_startup_preemptoff(struct tracer *trace, struct trace_array *tr)
 	}
 
 	/* reset the max latency */
-<<<<<<< HEAD
-	tracing_max_latency = 0;
-=======
 	tr->max_latency = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable preemption for a bit */
 	preempt_disable();
 	udelay(100);
@@ -1231,15 +1017,9 @@ trace_selftest_startup_preemptoff(struct tracer *trace, struct trace_array *tr)
 	/* stop the tracing. */
 	tracing_stop();
 	/* check both trace buffers */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, NULL);
-	if (!ret)
-		ret = trace_test_buffer(&max_tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, NULL);
 	if (!ret)
 		ret = trace_test_buffer(&tr->max_buffer, &count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace->reset(tr);
 	tracing_start();
 
@@ -1248,11 +1028,7 @@ trace_selftest_startup_preemptoff(struct tracer *trace, struct trace_array *tr)
 		ret = -1;
 	}
 
-<<<<<<< HEAD
-	tracing_max_latency = save_max;
-=======
 	tr->max_latency = save_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1262,20 +1038,12 @@ trace_selftest_startup_preemptoff(struct tracer *trace, struct trace_array *tr)
 int
 trace_selftest_startup_preemptirqsoff(struct tracer *trace, struct trace_array *tr)
 {
-<<<<<<< HEAD
-	unsigned long save_max = tracing_max_latency;
-=======
 	unsigned long save_max = tr->max_latency;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long count;
 	int ret;
 
 	/*
-<<<<<<< HEAD
-	 * Now that the big kernel lock is no longer preemptable,
-=======
 	 * Now that the big kernel lock is no longer preemptible,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and this is called with the BKL held, it will always
 	 * fail. If preemption is already disabled, simply
 	 * pass the test. When the BKL is removed, or becomes
@@ -1295,11 +1063,7 @@ trace_selftest_startup_preemptirqsoff(struct tracer *trace, struct trace_array *
 	}
 
 	/* reset the max latency */
-<<<<<<< HEAD
-	tracing_max_latency = 0;
-=======
 	tr->max_latency = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable preemption and interrupts for a bit */
 	preempt_disable();
@@ -1319,19 +1083,11 @@ trace_selftest_startup_preemptirqsoff(struct tracer *trace, struct trace_array *
 	/* stop the tracing. */
 	tracing_stop();
 	/* check both trace buffers */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, NULL);
-	if (ret)
-		goto out;
-
-	ret = trace_test_buffer(&max_tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, NULL);
 	if (ret)
 		goto out;
 
 	ret = trace_test_buffer(&tr->max_buffer, &count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -1342,11 +1098,7 @@ trace_selftest_startup_preemptirqsoff(struct tracer *trace, struct trace_array *
 	}
 
 	/* do the test by disabling interrupts first this time */
-<<<<<<< HEAD
-	tracing_max_latency = 0;
-=======
 	tr->max_latency = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tracing_start();
 	trace->start(tr);
 
@@ -1361,19 +1113,11 @@ trace_selftest_startup_preemptirqsoff(struct tracer *trace, struct trace_array *
 	/* stop the tracing. */
 	tracing_stop();
 	/* check both trace buffers */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, NULL);
-	if (ret)
-		goto out;
-
-	ret = trace_test_buffer(&max_tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, NULL);
 	if (ret)
 		goto out;
 
 	ret = trace_test_buffer(&tr->max_buffer, &count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ret && !count) {
 		printk(KERN_CONT ".. no entries found ..");
@@ -1385,11 +1129,7 @@ out:
 	tracing_start();
 out_no_start:
 	trace->reset(tr);
-<<<<<<< HEAD
-	tracing_max_latency = save_max;
-=======
 	tr->max_latency = save_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1405,48 +1145,6 @@ trace_selftest_startup_nop(struct tracer *trace, struct trace_array *tr)
 #endif
 
 #ifdef CONFIG_SCHED_TRACER
-<<<<<<< HEAD
-static int trace_wakeup_test_thread(void *data)
-{
-	/* Make this a RT thread, doesn't need to be too high */
-	static const struct sched_param param = { .sched_priority = 5 };
-	struct completion *x = data;
-
-	sched_setscheduler(current, SCHED_FIFO, &param);
-
-	/* Make it know we have a new prio */
-	complete(x);
-
-	/* now go to sleep and let the test wake us up */
-	set_current_state(TASK_INTERRUPTIBLE);
-	schedule();
-
-	/* we are awake, now wait to disappear */
-	while (!kthread_should_stop()) {
-		/*
-		 * This is an RT task, do short sleeps to let
-		 * others run.
-		 */
-		msleep(100);
-	}
-
-	return 0;
-}
-
-int
-trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
-{
-	unsigned long save_max = tracing_max_latency;
-	struct task_struct *p;
-	struct completion isrt;
-	unsigned long count;
-	int ret;
-
-	init_completion(&isrt);
-
-	/* create a high prio thread */
-	p = kthread_run(trace_wakeup_test_thread, &isrt, "ftrace-test");
-=======
 
 struct wakeup_test_data {
 	struct completion	is_ready;
@@ -1505,19 +1203,13 @@ trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
 
 	/* create a -deadline thread */
 	p = kthread_run(trace_wakeup_test_thread, &data, "ftrace-test");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(p)) {
 		printk(KERN_CONT "Failed to create ftrace wakeup test thread ");
 		return -1;
 	}
 
-<<<<<<< HEAD
-	/* make sure the thread is running at an RT prio */
-	wait_for_completion(&isrt);
-=======
 	/* make sure the thread is running at -deadline policy */
 	wait_for_completion(&data.is_ready);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* start the tracing */
 	ret = tracer_init(trace, tr);
@@ -1527,28 +1219,6 @@ trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
 	}
 
 	/* reset the max latency */
-<<<<<<< HEAD
-	tracing_max_latency = 0;
-
-	/* sleep to let the RT thread sleep too */
-	msleep(100);
-
-	/*
-	 * Yes this is slightly racy. It is possible that for some
-	 * strange reason that the RT thread we created, did not
-	 * call schedule for 100ms after doing the completion,
-	 * and we do a wakeup on a task that already is awake.
-	 * But that is extremely unlikely, and the worst thing that
-	 * happens in such a case, is that we disable tracing.
-	 * Honestly, if this race does happen something is horrible
-	 * wrong with the system.
-	 */
-
-	wake_up_process(p);
-
-	/* give a little time to let the thread wake up */
-	msleep(100);
-=======
 	tr->max_latency = 0;
 
 	while (p->on_rq) {
@@ -1569,30 +1239,19 @@ trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
 
 	/* Wait for the task to wake up */
 	wait_for_completion(&data.is_ready);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stop the tracing. */
 	tracing_stop();
 	/* check both trace buffers */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, NULL);
-	if (!ret)
-		ret = trace_test_buffer(&max_tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, NULL);
 	if (!ret)
 		ret = trace_test_buffer(&tr->max_buffer, &count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	trace->reset(tr);
 	tracing_start();
 
-<<<<<<< HEAD
-	tracing_max_latency = save_max;
-=======
 	tr->max_latency = save_max;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* kill the thread */
 	kthread_stop(p);
@@ -1606,41 +1265,6 @@ trace_selftest_startup_wakeup(struct tracer *trace, struct trace_array *tr)
 }
 #endif /* CONFIG_SCHED_TRACER */
 
-<<<<<<< HEAD
-#ifdef CONFIG_CONTEXT_SWITCH_TRACER
-int
-trace_selftest_startup_sched_switch(struct tracer *trace, struct trace_array *tr)
-{
-	unsigned long count;
-	int ret;
-
-	/* start the tracing */
-	ret = tracer_init(trace, tr);
-	if (ret) {
-		warn_failed_init_tracer(trace, ret);
-		return ret;
-	}
-
-	/* Sleep for a 1/10 of a second */
-	msleep(100);
-	/* stop the tracing. */
-	tracing_stop();
-	/* check the trace buffer */
-	ret = trace_test_buffer(tr, &count);
-	trace->reset(tr);
-	tracing_start();
-
-	if (!ret && !count) {
-		printk(KERN_CONT ".. no entries found ..");
-		ret = -1;
-	}
-
-	return ret;
-}
-#endif /* CONFIG_CONTEXT_SWITCH_TRACER */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_BRANCH_TRACER
 int
 trace_selftest_startup_branch(struct tracer *trace, struct trace_array *tr)
@@ -1660,11 +1284,7 @@ trace_selftest_startup_branch(struct tracer *trace, struct trace_array *tr)
 	/* stop the tracing. */
 	tracing_stop();
 	/* check the trace buffer */
-<<<<<<< HEAD
-	ret = trace_test_buffer(tr, &count);
-=======
 	ret = trace_test_buffer(&tr->array_buffer, &count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace->reset(tr);
 	tracing_start();
 

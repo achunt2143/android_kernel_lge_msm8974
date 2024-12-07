@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Open vSwitch
 #
 
 config OPENVSWITCH
 	tristate "Open vSwitch"
-<<<<<<< HEAD
-	---help---
-=======
 	depends on INET
 	depends on !NF_CONNTRACK || \
 		   (NF_CONNTRACK && ((!NF_DEFRAG_IPV6 || NF_DEFRAG_IPV6) && \
@@ -24,7 +18,6 @@ config OPENVSWITCH
 	select NF_CONNTRACK_OVS if NF_CONNTRACK
 	select NF_NAT_OVS if NF_NAT
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Open vSwitch is a multilayer Ethernet switch targeted at virtualized
 	  environments.  In addition to supporting a variety of features
 	  expected in a traditional hardware switch, it enables fine-grained
@@ -46,8 +39,6 @@ config OPENVSWITCH
 	  called openvswitch.
 
 	  If unsure, say N.
-<<<<<<< HEAD
-=======
 
 config OPENVSWITCH_GRE
 	tristate "Open vSwitch GRE tunneling support"
@@ -83,4 +74,3 @@ config OPENVSWITCH_GENEVE
 	  If you say Y here, then the Open vSwitch will be able create geneve vport.
 
 	  Say N to exclude this support and reduce the binary size.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

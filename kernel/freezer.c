@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kernel/freezer.c - Function to freeze a process
  *
@@ -16,12 +13,6 @@
 #include <linux/kthread.h>
 
 /* total number of freezing conditions in effect */
-<<<<<<< HEAD
-atomic_t system_freezing_cnt = ATOMIC_INIT(0);
-EXPORT_SYMBOL(system_freezing_cnt);
-
-/* indicate whether PM freezing is in effect, protected by pm_mutex */
-=======
 DEFINE_STATIC_KEY_FALSE(freezer_active);
 EXPORT_SYMBOL(freezer_active);
 
@@ -29,7 +20,6 @@ EXPORT_SYMBOL(freezer_active);
  * indicate whether PM freezing is in effect, protected by
  * system_transition_mutex
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool pm_freezing;
 bool pm_nosig_freezing;
 
@@ -40,28 +30,17 @@ static DEFINE_SPINLOCK(freezer_lock);
  * freezing_slow_path - slow path for testing whether a task needs to be frozen
  * @p: task to be tested
  *
-<<<<<<< HEAD
- * This function is called by freezing() if system_freezing_cnt isn't zero
-=======
  * This function is called by freezing() if freezer_active isn't zero
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and tests whether @p needs to enter and stay in frozen state.  Can be
  * called under any context.  The freezers are responsible for ensuring the
  * target tasks see the updated state.
  */
 bool freezing_slow_path(struct task_struct *p)
 {
-<<<<<<< HEAD
-	if (p->flags & PF_NOFREEZE)
-		return false;
-
-	if (test_thread_flag(TIF_MEMDIE))
-=======
 	if (p->flags & (PF_NOFREEZE | PF_SUSPEND_TASK))
 		return false;
 
 	if (test_tsk_thread_flag(p, TIF_MEMDIE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	if (pm_nosig_freezing || cgroup_freezing(p))
@@ -74,43 +53,6 @@ bool freezing_slow_path(struct task_struct *p)
 }
 EXPORT_SYMBOL(freezing_slow_path);
 
-<<<<<<< HEAD
-/* Refrigerator is place where frozen processes are stored :-). */
-bool __refrigerator(bool check_kthr_stop)
-{
-	/* Hmm, should we be allowed to suspend when there are realtime
-	   processes around? */
-	bool was_frozen = false;
-	long save = current->state;
-
-	pr_debug("%s entered refrigerator\n", current->comm);
-
-	for (;;) {
-		set_current_state(TASK_UNINTERRUPTIBLE);
-
-		spin_lock_irq(&freezer_lock);
-		current->flags |= PF_FROZEN;
-		if (!freezing(current) ||
-		    (check_kthr_stop && kthread_should_stop()))
-			current->flags &= ~PF_FROZEN;
-		spin_unlock_irq(&freezer_lock);
-
-		if (!(current->flags & PF_FROZEN))
-			break;
-		was_frozen = true;
-		schedule();
-	}
-
-	pr_debug("%s left refrigerator\n", current->comm);
-
-	/*
-	 * Restore saved task state before returning.  The mb'd version
-	 * needs to be used; otherwise, it might silently break
-	 * synchronization which depends on ordered task state change.
-	 */
-	set_current_state(save);
-
-=======
 bool frozen(struct task_struct *p)
 {
 	return READ_ONCE(p->__state) & TASK_FROZEN;
@@ -149,7 +91,6 @@ bool __refrigerator(bool check_kthr_stop)
 
 	pr_debug("%s left refrigerator\n", current->comm);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return was_frozen;
 }
 EXPORT_SYMBOL(__refrigerator);
@@ -164,8 +105,6 @@ static void fake_signal_wake_up(struct task_struct *p)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static int __set_task_frozen(struct task_struct *p, void *arg)
 {
 	unsigned int state = READ_ONCE(p->__state);
@@ -205,7 +144,6 @@ static bool __freeze_task(struct task_struct *p)
 	return task_call_func(p, __set_task_frozen, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * freeze_task - send a freeze request to given task
  * @p: task to send the request to
@@ -222,40 +160,20 @@ bool freeze_task(struct task_struct *p)
 	unsigned long flags;
 
 	spin_lock_irqsave(&freezer_lock, flags);
-<<<<<<< HEAD
-	if (!freezing(p) || frozen(p)) {
-=======
 	if (!freezing(p) || frozen(p) || __freeze_task(p)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&freezer_lock, flags);
 		return false;
 	}
 
-<<<<<<< HEAD
-	if (!(p->flags & PF_KTHREAD)) {
-		fake_signal_wake_up(p);
-		/*
-		 * fake_signal_wake_up() goes through p's scheduler
-		 * lock and guarantees that TASK_STOPPED/TRACED ->
-		 * TASK_RUNNING transition can't race with task state
-		 * testing in try_to_freeze_tasks().
-		 */
-	} else {
-		wake_up_state(p, TASK_INTERRUPTIBLE);
-	}
-=======
 	if (!(p->flags & PF_KTHREAD))
 		fake_signal_wake_up(p);
 	else
 		wake_up_state(p, TASK_NORMAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&freezer_lock, flags);
 	return true;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Restore the saved_state before the task entered freezer. For typical task
  * in the __refrigerator(), saved_state == TASK_RUNNING so nothing happens
@@ -276,22 +194,10 @@ static int __restore_freezer_state(struct task_struct *p, void *arg)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __thaw_task(struct task_struct *p)
 {
 	unsigned long flags;
 
-<<<<<<< HEAD
-	/*
-	 * Clear freezing and kick @p if FROZEN.  Clearing is guaranteed to
-	 * be visible to @p as waking up implies wmb.  Waking up inside
-	 * freezer_lock also prevents wakeups from leaking outside
-	 * refrigerator.
-	 */
-	spin_lock_irqsave(&freezer_lock, flags);
-	if (frozen(p))
-		wake_up_process(p);
-=======
 	spin_lock_irqsave(&freezer_lock, flags);
 	if (WARN_ON_ONCE(freezing(p)))
 		goto unlock;
@@ -301,7 +207,6 @@ void __thaw_task(struct task_struct *p)
 
 	wake_up_state(p, TASK_FROZEN);
 unlock:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&freezer_lock, flags);
 }
 

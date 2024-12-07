@@ -560,10 +560,7 @@ typedef struct immap {
 	cpm8xx_t	im_cpm;		/* Communication processor */
 } immap_t;
 
-<<<<<<< HEAD
-=======
 extern immap_t __iomem *mpc8xx_immr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __IMMAP_8XX__ */
 #endif /* __KERNEL__ */

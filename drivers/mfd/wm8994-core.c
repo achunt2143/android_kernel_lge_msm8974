@@ -1,22 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8994-core.c  --  Device access for Wolfson WM8994
  *
  * Copyright 2009 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -26,10 +14,7 @@
 #include <linux/err.h>
 #include <linux/delay.h>
 #include <linux/mfd/core.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm_runtime.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
@@ -41,113 +26,20 @@
 
 #include "wm8994.h"
 
-<<<<<<< HEAD
-/**
- * wm8994_reg_read: Read a single WM8994 register.
- *
- * @wm8994: Device to read from.
- * @reg: Register to read.
- */
-int wm8994_reg_read(struct wm8994 *wm8994, unsigned short reg)
-{
-	unsigned int val;
-	int ret;
-
-	ret = regmap_read(wm8994->regmap, reg, &val);
-
-	if (ret < 0)
-		return ret;
-	else
-		return val;
-}
-EXPORT_SYMBOL_GPL(wm8994_reg_read);
-
-/**
- * wm8994_bulk_read: Read multiple WM8994 registers
- *
- * @wm8994: Device to read from
- * @reg: First register
- * @count: Number of registers
- * @buf: Buffer to fill.  The data will be returned big endian.
- */
-int wm8994_bulk_read(struct wm8994 *wm8994, unsigned short reg,
-		     int count, u16 *buf)
-{
-	return regmap_bulk_read(wm8994->regmap, reg, buf, count);
-}
-
-/**
- * wm8994_reg_write: Write a single WM8994 register.
- *
- * @wm8994: Device to write to.
- * @reg: Register to write to.
- * @val: Value to write.
- */
-int wm8994_reg_write(struct wm8994 *wm8994, unsigned short reg,
-		     unsigned short val)
-{
-	return regmap_write(wm8994->regmap, reg, val);
-}
-EXPORT_SYMBOL_GPL(wm8994_reg_write);
-
-/**
- * wm8994_bulk_write: Write multiple WM8994 registers
- *
- * @wm8994: Device to write to
- * @reg: First register
- * @count: Number of registers
- * @buf: Buffer to write from.  Data must be big-endian formatted.
- */
-int wm8994_bulk_write(struct wm8994 *wm8994, unsigned short reg,
-		      int count, const u16 *buf)
-{
-	return regmap_raw_write(wm8994->regmap, reg, buf, count * sizeof(u16));
-}
-EXPORT_SYMBOL_GPL(wm8994_bulk_write);
-
-/**
- * wm8994_set_bits: Set the value of a bitfield in a WM8994 register
- *
- * @wm8994: Device to write to.
- * @reg: Register to write to.
- * @mask: Mask of bits to set.
- * @val: Value to set (unshifted)
- */
-int wm8994_set_bits(struct wm8994 *wm8994, unsigned short reg,
-		    unsigned short mask, unsigned short val)
-{
-	return regmap_update_bits(wm8994->regmap, reg, mask, val);
-}
-EXPORT_SYMBOL_GPL(wm8994_set_bits);
-
-static struct mfd_cell wm8994_regulator_devs[] = {
-=======
 static const struct mfd_cell wm8994_regulator_devs[] = {
 	{
 		.name = "wm8994-ldo",
 		.id = 0,
 		.pm_runtime_no_callbacks = true,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm8994-ldo",
 		.id = 1,
 		.pm_runtime_no_callbacks = true,
 	},
-<<<<<<< HEAD
-	{
-		.name = "wm8994-ldo",
-		.id = 2,
-		.pm_runtime_no_callbacks = true,
-	},
-};
-
-static struct resource wm8994_codec_resources[] = {
-=======
 };
 
 static const struct resource wm8994_codec_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start = WM8994_IRQ_TEMP_SHUT,
 		.end   = WM8994_IRQ_TEMP_WARN,
@@ -155,11 +47,7 @@ static const struct resource wm8994_codec_resources[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct resource wm8994_gpio_resources[] = {
-=======
 static const struct resource wm8994_gpio_resources[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start = WM8994_IRQ_GPIO(1),
 		.end   = WM8994_IRQ_GPIO(11),
@@ -167,11 +55,7 @@ static const struct resource wm8994_gpio_resources[] = {
 	},
 };
 
-<<<<<<< HEAD
-static struct mfd_cell wm8994_devs[] = {
-=======
 static const struct mfd_cell wm8994_devs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "wm8994-codec",
 		.num_resources = ARRAY_SIZE(wm8994_codec_resources),
@@ -225,49 +109,13 @@ static const char *wm8958_main_supplies[] = {
 	"SPKVDD2",
 };
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wm8994_suspend(struct device *dev)
 {
 	struct wm8994 *wm8994 = dev_get_drvdata(dev);
 	int ret;
 
 	/* Don't actually go through with the suspend if the CODEC is
-<<<<<<< HEAD
-	 * still active (eg, for audio passthrough from CP. */
-	ret = wm8994_reg_read(wm8994, WM8994_POWER_MANAGEMENT_1);
-	if (ret < 0) {
-		dev_err(dev, "Failed to read power status: %d\n", ret);
-	} else if (ret & WM8994_VMID_SEL_MASK) {
-		dev_dbg(dev, "CODEC still active, ignoring suspend\n");
-		return 0;
-	}
-
-	ret = wm8994_reg_read(wm8994, WM8994_POWER_MANAGEMENT_4);
-	if (ret < 0) {
-		dev_err(dev, "Failed to read power status: %d\n", ret);
-	} else if (ret & (WM8994_AIF2ADCL_ENA | WM8994_AIF2ADCR_ENA |
-			  WM8994_AIF1ADC2L_ENA | WM8994_AIF1ADC2R_ENA |
-			  WM8994_AIF1ADC1L_ENA | WM8994_AIF1ADC1R_ENA)) {
-		dev_dbg(dev, "CODEC still active, ignoring suspend\n");
-		return 0;
-	}
-
-	ret = wm8994_reg_read(wm8994, WM8994_POWER_MANAGEMENT_5);
-	if (ret < 0) {
-		dev_err(dev, "Failed to read power status: %d\n", ret);
-	} else if (ret & (WM8994_AIF2DACL_ENA | WM8994_AIF2DACR_ENA |
-			  WM8994_AIF1DAC2L_ENA | WM8994_AIF1DAC2R_ENA |
-			  WM8994_AIF1DAC1L_ENA | WM8994_AIF1DAC1R_ENA)) {
-		dev_dbg(dev, "CODEC still active, ignoring suspend\n");
-		return 0;
-	}
-
-=======
 	 * still active for accessory detect. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (wm8994->type) {
 	case WM8958:
 	case WM1811:
@@ -283,37 +131,6 @@ static int wm8994_suspend(struct device *dev)
 		break;
 	}
 
-<<<<<<< HEAD
-	switch (wm8994->type) {
-	case WM1811:
-		ret = wm8994_reg_read(wm8994, WM8994_ANTIPOP_2);
-		if (ret < 0) {
-			dev_err(dev, "Failed to read jackdet: %d\n", ret);
-		} else if (ret & WM1811_JACKDET_MODE_MASK) {
-			dev_dbg(dev, "CODEC still active, ignoring suspend\n");
-			return 0;
-		}
-		break;
-	default:
-		break;
-	}
-
-	switch (wm8994->type) {
-	case WM1811:
-		ret = wm8994_reg_read(wm8994, WM8994_ANTIPOP_2);
-		if (ret < 0) {
-			dev_err(dev, "Failed to read jackdet: %d\n", ret);
-		} else if (ret & WM1811_JACKDET_MODE_MASK) {
-			dev_dbg(dev, "CODEC still active, ignoring suspend\n");
-			return 0;
-		}
-		break;
-	default:
-		break;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable LDO pulldowns while the device is suspended if we
 	 * don't know that something will be driving them. */
 	if (!wm8994->ldo_ena_always_driven)
@@ -327,11 +144,6 @@ static int wm8994_suspend(struct device *dev)
 	wm8994_reg_write(wm8994, WM8994_SOFTWARE_RESET,
 			 wm8994_reg_read(wm8994, WM8994_SOFTWARE_RESET));
 
-<<<<<<< HEAD
-	regcache_cache_only(wm8994->regmap, true);
-	regcache_mark_dirty(wm8994->regmap);
-
-=======
 	regcache_mark_dirty(wm8994->regmap);
 
 	/* Restore GPIO registers to prevent problems with mismatched
@@ -350,7 +162,6 @@ static int wm8994_suspend(struct device *dev)
 		dev_err(dev, "Failed to restore interrupt mask: %d\n", ret);
 
 	regcache_cache_only(wm8994->regmap, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wm8994->suspended = true;
 
 	ret = regulator_bulk_disable(wm8994->num_supplies,
@@ -400,10 +211,6 @@ err_enable:
 
 	return ret;
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_REGULATOR
 static int wm8994_ldo_in_use(struct wm8994_pdata *pdata, int ldo)
@@ -427,63 +234,28 @@ static int wm8994_ldo_in_use(struct wm8994_pdata *pdata, int ldo)
 }
 #endif
 
-<<<<<<< HEAD
-static const __devinitdata struct reg_default wm8994_revc_patch[] = {
-=======
 static const struct reg_sequence wm8994_revc_patch[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x102, 0x3 },
 	{ 0x56, 0x3 },
 	{ 0x817, 0x0 },
 	{ 0x102, 0x0 },
 };
 
-<<<<<<< HEAD
-static const __devinitdata struct reg_default wm8958_reva_patch[] = {
-=======
 static const struct reg_sequence wm8958_reva_patch[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x102, 0x3 },
 	{ 0xcb, 0x81 },
 	{ 0x817, 0x0 },
 	{ 0x102, 0x0 },
 };
 
-<<<<<<< HEAD
-static const __devinitdata struct reg_default wm1811_reva_patch[] = {
-	{ 0x102, 0x3 },
-	{ 0x56, 0x7 },
-=======
 static const struct reg_sequence wm1811_reva_patch[] = {
 	{ 0x102, 0x3 },
 	{ 0x56, 0xc07 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x5d, 0x7e },
 	{ 0x5e, 0x0 },
 	{ 0x102, 0x0 },
 };
 
-<<<<<<< HEAD
-/*
- * Instantiate the generic non-control parts of the device.
- */
-static __devinit int wm8994_device_init(struct wm8994 *wm8994, int irq)
-{
-	struct wm8994_pdata *pdata = wm8994->dev->platform_data;
-	struct regmap_config *regmap_config;
-	const struct reg_default *regmap_patch = NULL;
-	const char *devname;
-	int ret, i, patch_regs;
-	int pulls = 0;
-
-	dev_set_drvdata(wm8994->dev, wm8994);
-
-	/* Add the on-chip regulators first for bootstrapping */
-	ret = mfd_add_devices(wm8994->dev, -1,
-			      wm8994_regulator_devs,
-			      ARRAY_SIZE(wm8994_regulator_devs),
-			      NULL, 0);
-=======
 #ifdef CONFIG_OF
 static int wm8994_set_pdata_from_of(struct wm8994 *wm8994)
 {
@@ -552,7 +324,6 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 			      wm8994_regulator_devs,
 			      ARRAY_SIZE(wm8994_regulator_devs),
 			      NULL, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		dev_err(wm8994->dev, "Failed to add children: %d\n", ret);
 		goto err;
@@ -573,16 +344,10 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		goto err;
 	}
 
-<<<<<<< HEAD
-	wm8994->supplies = devm_kzalloc(wm8994->dev,
-					sizeof(struct regulator_bulk_data) *
-					wm8994->num_supplies, GFP_KERNEL);
-=======
 	wm8994->supplies = devm_kcalloc(wm8994->dev,
 					wm8994->num_supplies,
 					sizeof(struct regulator_bulk_data),
 					GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!wm8994->supplies) {
 		ret = -ENOMEM;
 		goto err;
@@ -605,21 +370,6 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		BUG();
 		goto err;
 	}
-<<<<<<< HEAD
-		
-	ret = regulator_bulk_get(wm8994->dev, wm8994->num_supplies,
-				 wm8994->supplies);
-	if (ret != 0) {
-		dev_err(wm8994->dev, "Failed to get supplies: %d\n", ret);
-		goto err;
-	}
-
-	ret = regulator_bulk_enable(wm8994->num_supplies,
-				    wm8994->supplies);
-	if (ret != 0) {
-		dev_err(wm8994->dev, "Failed to enable supplies: %d\n", ret);
-		goto err_get;
-=======
 
 	/*
 	 * Can't use devres helper here as some of the supplies are provided by
@@ -639,7 +389,6 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 	if (ret != 0) {
 		dev_err(wm8994->dev, "Failed to enable supplies: %d\n", ret);
 		goto err_regulator_free;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = wm8994_reg_read(wm8994, WM8994_SOFTWARE_RESET);
@@ -682,12 +431,8 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 			ret);
 		goto err_enable;
 	}
-<<<<<<< HEAD
-	wm8994->revision = ret;
-=======
 	wm8994->revision = ret & WM8994_CHIP_REV_MASK;
 	wm8994->cust_id = (ret & WM8994_CUST_ID_MASK) >> WM8994_CUST_ID_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (wm8994->type) {
 	case WM8994:
@@ -700,18 +445,10 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 			break;
 		case 2:
 		case 3:
-<<<<<<< HEAD
-			regmap_patch = wm8994_revc_patch;
-			patch_regs = ARRAY_SIZE(wm8994_revc_patch);
-			break;
-		default:
-			break;
-=======
 		default:
 			regmap_patch = wm8994_revc_patch;
 			patch_regs = ARRAY_SIZE(wm8994_revc_patch);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -730,37 +467,17 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		/* Revision C did not change the relevant layer */
 		if (wm8994->revision > 1)
 			wm8994->revision++;
-<<<<<<< HEAD
-		switch (wm8994->revision) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-			regmap_patch = wm1811_reva_patch;
-			patch_regs = ARRAY_SIZE(wm1811_reva_patch);
-			break;
-		default:
-			break;
-		}
-=======
 
 		regmap_patch = wm1811_reva_patch;
 		patch_regs = ARRAY_SIZE(wm1811_reva_patch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	dev_info(wm8994->dev, "%s revision %c\n", devname,
-		 'A' + wm8994->revision);
-=======
 	dev_info(wm8994->dev, "%s revision %c CUST_ID %02x\n", devname,
 		 'A' + wm8994->revision, wm8994->cust_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (wm8994->type) {
 	case WM1811:
@@ -774,21 +491,14 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		break;
 	default:
 		dev_err(wm8994->dev, "Unknown device type %d\n", wm8994->type);
-<<<<<<< HEAD
-		return -EINVAL;
-=======
 		ret = -EINVAL;
 		goto err_enable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regmap_reinit_cache(wm8994->regmap, regmap_config);
 	if (ret != 0) {
 		dev_err(wm8994->dev, "Failed to reinit register cache: %d\n",
 			ret);
-<<<<<<< HEAD
-		return ret;
-=======
 		goto err_enable;
 	}
 
@@ -801,7 +511,6 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 	if (ret != 0) {
 		dev_err(wm8994->dev, "Failed to reset device: %d\n", ret);
 		goto err_enable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (regmap_patch) {
@@ -810,31 +519,6 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 		if (ret != 0) {
 			dev_err(wm8994->dev, "Failed to register patch: %d\n",
 				ret);
-<<<<<<< HEAD
-			goto err;
-		}
-	}
-
-	if (pdata) {
-		wm8994->irq_base = pdata->irq_base;
-		wm8994->gpio_base = pdata->gpio_base;
-
-		/* GPIO configuration is only applied if it's non-zero */
-		for (i = 0; i < ARRAY_SIZE(pdata->gpio_defaults); i++) {
-			if (pdata->gpio_defaults[i]) {
-				wm8994_set_bits(wm8994, WM8994_GPIO_1 + i,
-						0xffff,
-						pdata->gpio_defaults[i]);
-			}
-		}
-
-		wm8994->ldo_ena_always_driven = pdata->ldo_ena_always_driven;
-
-		if (pdata->spkmode_pu)
-			pulls |= WM8994_SPKMODE_PU;
-	}
-
-=======
 			goto err_enable;
 		}
 	}
@@ -857,7 +541,6 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 	if (pdata->csnaddr_pd)
 		pulls |= WM8994_CSNADDR_PD;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable unneeded pulls */
 	wm8994_set_bits(wm8994, WM8994_PULL_CONTROL_2,
 			WM8994_LDO1ENA_PD | WM8994_LDO2ENA_PD |
@@ -883,20 +566,13 @@ static int wm8994_device_init(struct wm8994 *wm8994, int irq)
 
 	ret = mfd_add_devices(wm8994->dev, -1,
 			      wm8994_devs, ARRAY_SIZE(wm8994_devs),
-<<<<<<< HEAD
-			      NULL, 0);
-=======
 			      NULL, 0, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		dev_err(wm8994->dev, "Failed to add children: %d\n", ret);
 		goto err_irq;
 	}
 
-<<<<<<< HEAD
-=======
 	pm_runtime_set_active(wm8994->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_runtime_enable(wm8994->dev);
 	pm_runtime_idle(wm8994->dev);
 
@@ -907,33 +583,13 @@ err_irq:
 err_enable:
 	regulator_bulk_disable(wm8994->num_supplies,
 			       wm8994->supplies);
-<<<<<<< HEAD
-err_get:
-=======
 err_regulator_free:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regulator_bulk_free(wm8994->num_supplies, wm8994->supplies);
 err:
 	mfd_remove_devices(wm8994->dev);
 	return ret;
 }
 
-<<<<<<< HEAD
-static __devexit void wm8994_device_exit(struct wm8994 *wm8994)
-{
-	pm_runtime_disable(wm8994->dev);
-	mfd_remove_devices(wm8994->dev);
-	wm8994_irq_exit(wm8994);
-	regulator_bulk_disable(wm8994->num_supplies,
-			       wm8994->supplies);
-	regulator_bulk_free(wm8994->num_supplies, wm8994->supplies);
-}
-
-static const struct of_device_id wm8994_of_match[] = {
-	{ .compatible = "wlf,wm1811", },
-	{ .compatible = "wlf,wm8994", },
-	{ .compatible = "wlf,wm8958", },
-=======
 static void wm8994_device_exit(struct wm8994 *wm8994)
 {
 	pm_runtime_get_sync(wm8994->dev);
@@ -949,17 +605,11 @@ static const struct of_device_id wm8994_of_match[] = {
 	{ .compatible = "wlf,wm1811", .data = (void *)WM1811 },
 	{ .compatible = "wlf,wm8994", .data = (void *)WM8994 },
 	{ .compatible = "wlf,wm8958", .data = (void *)WM8958 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(of, wm8994_of_match);
 
-<<<<<<< HEAD
-static __devinit int wm8994_i2c_probe(struct i2c_client *i2c,
-				      const struct i2c_device_id *id)
-=======
 static int wm8994_i2c_probe(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8994 *wm8994;
 	int ret;
@@ -971,12 +621,8 @@ static int wm8994_i2c_probe(struct i2c_client *i2c)
 	i2c_set_clientdata(i2c, wm8994);
 	wm8994->dev = &i2c->dev;
 	wm8994->irq = i2c->irq;
-<<<<<<< HEAD
-	wm8994->type = id->driver_data;
-=======
 
 	wm8994->type = (enum wm8994_type)i2c_get_match_data(i2c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8994->regmap = devm_regmap_init_i2c(i2c, &wm8994_base_regmap_config);
 	if (IS_ERR(wm8994->regmap)) {
@@ -989,20 +635,11 @@ static int wm8994_i2c_probe(struct i2c_client *i2c)
 	return wm8994_device_init(wm8994, i2c->irq);
 }
 
-<<<<<<< HEAD
-static __devexit int wm8994_i2c_remove(struct i2c_client *i2c)
-=======
 static void wm8994_i2c_remove(struct i2c_client *i2c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8994 *wm8994 = i2c_get_clientdata(i2c);
 
 	wm8994_device_exit(wm8994);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id wm8994_i2c_id[] = {
@@ -1014,46 +651,13 @@ static const struct i2c_device_id wm8994_i2c_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, wm8994_i2c_id);
 
-<<<<<<< HEAD
-static UNIVERSAL_DEV_PM_OPS(wm8994_pm_ops, wm8994_suspend, wm8994_resume,
-			    NULL);
-=======
 static const struct dev_pm_ops wm8994_pm_ops = {
 	RUNTIME_PM_OPS(wm8994_suspend, wm8994_resume, NULL)
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver wm8994_i2c_driver = {
 	.driver = {
 		.name = "wm8994",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.pm = &wm8994_pm_ops,
-		.of_match_table = wm8994_of_match,
-	},
-	.probe = wm8994_i2c_probe,
-	.remove = __devexit_p(wm8994_i2c_remove),
-	.id_table = wm8994_i2c_id,
-};
-
-static int __init wm8994_i2c_init(void)
-{
-	int ret;
-
-	ret = i2c_add_driver(&wm8994_i2c_driver);
-	if (ret != 0)
-		pr_err("Failed to register wm8994 I2C driver: %d\n", ret);
-
-	return ret;
-}
-module_init(wm8994_i2c_init);
-
-static void __exit wm8994_i2c_exit(void)
-{
-	i2c_del_driver(&wm8994_i2c_driver);
-}
-module_exit(wm8994_i2c_exit);
-=======
 		.pm = pm_ptr(&wm8994_pm_ops),
 		.of_match_table = wm8994_of_match,
 	},
@@ -1063,12 +667,8 @@ module_exit(wm8994_i2c_exit);
 };
 
 module_i2c_driver(wm8994_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Core support for the WM8994 audio CODEC");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
-<<<<<<< HEAD
-=======
 MODULE_SOFTDEP("pre: wm8994_regulator");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

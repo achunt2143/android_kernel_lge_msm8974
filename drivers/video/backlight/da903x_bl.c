@@ -1,26 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight driver for Dialog Semiconductor DA9030/DA9034
  *
  * Copyright (C) 2008 Compulab, Ltd.
-<<<<<<< HEAD
- * 	Mike Rapoport <mike@compulab.co.il>
- *
- * Copyright (C) 2006-2008 Marvell International Ltd.
- * 	Eric Miao <eric.miao@marvell.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
  *	Mike Rapoport <mike@compulab.co.il>
  *
  * Copyright (C) 2006-2008 Marvell International Ltd.
  *	Eric Miao <eric.miao@marvell.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -91,47 +77,25 @@ static int da903x_backlight_set(struct backlight_device *bl, int brightness)
 
 static int da903x_backlight_update_status(struct backlight_device *bl)
 {
-<<<<<<< HEAD
-	int brightness = bl->props.brightness;
-
-	if (bl->props.power != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	if (bl->props.fb_blank != FB_BLANK_UNBLANK)
-		brightness = 0;
-
-	return da903x_backlight_set(bl, brightness);
-=======
 	return da903x_backlight_set(bl, backlight_get_brightness(bl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int da903x_backlight_get_brightness(struct backlight_device *bl)
 {
 	struct da903x_backlight_data *data = bl_get_data(bl);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return data->current_brightness;
 }
 
 static const struct backlight_ops da903x_backlight_ops = {
-<<<<<<< HEAD
-=======
 	.options	= BL_CORE_SUSPENDRESUME,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.update_status	= da903x_backlight_update_status,
 	.get_brightness	= da903x_backlight_get_brightness,
 };
 
 static int da903x_backlight_probe(struct platform_device *pdev)
 {
-<<<<<<< HEAD
-	struct da9034_backlight_pdata *pdata = pdev->dev.platform_data;
-=======
 	struct da9034_backlight_pdata *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct da903x_backlight_data *data;
 	struct backlight_device *bl;
 	struct backlight_properties props;
@@ -163,19 +127,12 @@ static int da903x_backlight_probe(struct platform_device *pdev)
 		da903x_write(data->da903x_dev, DA9034_WLED_CONTROL2,
 				DA9034_WLED_ISET(pdata->output_current));
 
-<<<<<<< HEAD
-	props.type = BACKLIGHT_RAW;
-	props.max_brightness = max_brightness;
-	bl = backlight_device_register(pdev->name, data->da903x_dev, data,
-				       &da903x_backlight_ops, &props);
-=======
 	memset(&props, 0, sizeof(props));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = max_brightness;
 	bl = devm_backlight_device_register(&pdev->dev, pdev->name,
 					data->da903x_dev, data,
 					&da903x_backlight_ops, &props);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
 		return PTR_ERR(bl);
@@ -188,66 +145,17 @@ static int da903x_backlight_probe(struct platform_device *pdev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int da903x_backlight_remove(struct platform_device *pdev)
-{
-	struct backlight_device *bl = platform_get_drvdata(pdev);
-
-	backlight_device_unregister(bl);
-	return 0;
-}
-
-#ifdef CONFIG_PM
-static int da903x_backlight_suspend(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct backlight_device *bl = platform_get_drvdata(pdev);
-	return da903x_backlight_set(bl, 0);
-}
-
-static int da903x_backlight_resume(struct device *dev)
-{
-	struct platform_device *pdev = to_platform_device(dev);
-	struct backlight_device *bl = platform_get_drvdata(pdev);
-
-	backlight_update_status(bl);
-	return 0;
-}
-
-static const struct dev_pm_ops da903x_backlight_pm_ops = {
-	.suspend	= da903x_backlight_suspend,
-	.resume		= da903x_backlight_resume,
-};
-#endif
-
-static struct platform_driver da903x_backlight_driver = {
-	.driver		= {
-		.name	= "da903x-backlight",
-		.owner	= THIS_MODULE,
-#ifdef CONFIG_PM
-		.pm	= &da903x_backlight_pm_ops,
-#endif
-	},
-	.probe		= da903x_backlight_probe,
-	.remove		= da903x_backlight_remove,
-=======
 static struct platform_driver da903x_backlight_driver = {
 	.driver		= {
 		.name	= "da903x-backlight",
 	},
 	.probe		= da903x_backlight_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(da903x_backlight_driver);
 
 MODULE_DESCRIPTION("Backlight Driver for Dialog Semiconductor DA9030/DA9034");
-<<<<<<< HEAD
-MODULE_AUTHOR("Eric Miao <eric.miao@marvell.com>"
-	      "Mike Rapoport <mike@compulab.co.il>");
-=======
 MODULE_AUTHOR("Eric Miao <eric.miao@marvell.com>");
 MODULE_AUTHOR("Mike Rapoport <mike@compulab.co.il>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:da903x-backlight");

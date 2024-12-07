@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -13,14 +10,6 @@
  *
  * Author:	Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
  *
-<<<<<<< HEAD
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Changes:
  *		Alan Cox	:	Added a name field and a frag handler
  *					field for later.
@@ -32,14 +21,6 @@
 #define _PROTOCOL_H
 
 #include <linux/in6.h>
-<<<<<<< HEAD
-#if IS_ENABLED(CONFIG_IPV6)
-#include <linux/ipv6.h>
-#endif
-
-#define MAX_INET_PROTOS	256		/* Must be a power of 2		*/
-
-=======
 #include <linux/skbuff.h>
 #if IS_ENABLED(CONFIG_IPV6)
 #include <linux/ipv6.h>
@@ -51,22 +32,10 @@
  * value is presented in a __u8, this is defined to be 256.
  */
 #define MAX_INET_PROTOS		256
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This is used to register protocols. */
 struct net_protocol {
 	int			(*handler)(struct sk_buff *skb);
-<<<<<<< HEAD
-	void			(*err_handler)(struct sk_buff *skb, u32 info);
-	int			(*gso_send_check)(struct sk_buff *skb);
-	struct sk_buff	       *(*gso_segment)(struct sk_buff *skb,
-					       netdev_features_t features);
-	struct sk_buff	      **(*gro_receive)(struct sk_buff **head,
-					       struct sk_buff *skb);
-	int			(*gro_complete)(struct sk_buff *skb);
-	unsigned int		no_policy:1,
-				netns_ok:1;
-=======
 
 	/* This returns an error if we weren't able to handle the error. */
 	int			(*err_handler)(struct sk_buff *skb, u32 info);
@@ -78,46 +47,24 @@ struct net_protocol {
 				 */
 				icmp_strict_tag_validation:1;
 	u32			secret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #if IS_ENABLED(CONFIG_IPV6)
 struct inet6_protocol {
 	int	(*handler)(struct sk_buff *skb);
 
-<<<<<<< HEAD
-	void	(*err_handler)(struct sk_buff *skb,
-=======
 	/* This returns an error if we weren't able to handle the error. */
 	int	(*err_handler)(struct sk_buff *skb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct inet6_skb_parm *opt,
 			       u8 type, u8 code, int offset,
 			       __be32 info);
 
-<<<<<<< HEAD
-	int	(*gso_send_check)(struct sk_buff *skb);
-	struct sk_buff *(*gso_segment)(struct sk_buff *skb,
-				       netdev_features_t features);
-	struct sk_buff **(*gro_receive)(struct sk_buff **head,
-					struct sk_buff *skb);
-	int	(*gro_complete)(struct sk_buff *skb);
-
-	unsigned int	flags;	/* INET6_PROTO_xxx */
-=======
 	unsigned int	flags;	/* INET6_PROTO_xxx */
 	u32		secret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define INET6_PROTO_NOPOLICY	0x1
 #define INET6_PROTO_FINAL	0x2
-<<<<<<< HEAD
-/* This should be set for any extension header which is compatible with GSO. */
-#define INET6_PROTO_GSO_EXTHDR	0x4
-#endif
-
-=======
 #endif
 
 struct net_offload {
@@ -128,7 +75,6 @@ struct net_offload {
 /* This should be set for any extension header which is compatible with GSO. */
 #define INET6_PROTO_GSO_EXTHDR	0x1
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is used to register socket interfaces for IP protocols.  */
 struct inet_protosw {
 	struct list_head list;
@@ -140,35 +86,12 @@ struct inet_protosw {
 	struct proto	 *prot;
 	const struct proto_ops *ops;
   
-<<<<<<< HEAD
-	char             no_check;   /* checksum on rcv/xmit/none? */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char	 flags;      /* See INET_PROTOSW_* below.  */
 };
 #define INET_PROTOSW_REUSE 0x01	     /* Are ports automatically reusable? */
 #define INET_PROTOSW_PERMANENT 0x02  /* Permanent protocols are unremovable. */
 #define INET_PROTOSW_ICSK      0x04  /* Is this an inet_connection_sock? */
 
-<<<<<<< HEAD
-extern const struct net_protocol __rcu *inet_protos[MAX_INET_PROTOS];
-
-#if IS_ENABLED(CONFIG_IPV6)
-extern const struct inet6_protocol __rcu *inet6_protos[MAX_INET_PROTOS];
-#endif
-
-extern int	inet_add_protocol(const struct net_protocol *prot, unsigned char num);
-extern int	inet_del_protocol(const struct net_protocol *prot, unsigned char num);
-extern void	inet_register_protosw(struct inet_protosw *p);
-extern void	inet_unregister_protosw(struct inet_protosw *p);
-
-#if IS_ENABLED(CONFIG_IPV6)
-extern int	inet6_add_protocol(const struct inet6_protocol *prot, unsigned char num);
-extern int	inet6_del_protocol(const struct inet6_protocol *prot, unsigned char num);
-extern int	inet6_register_protosw(struct inet_protosw *p);
-extern void	inet6_unregister_protosw(struct inet_protosw *p);
-#endif
-=======
 extern struct net_protocol __rcu *inet_protos[MAX_INET_PROTOS];
 extern const struct net_offload __rcu *inet_offloads[MAX_INET_PROTOS];
 extern const struct net_offload __rcu *inet6_offloads[MAX_INET_PROTOS];
@@ -192,6 +115,5 @@ void inet6_unregister_protosw(struct inet_protosw *p);
 #endif
 int inet6_add_offload(const struct net_offload *prot, unsigned char num);
 int inet6_del_offload(const struct net_offload *prot, unsigned char num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _PROTOCOL_H */

@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#ifndef __ASM_MMU_H
-#define __ASM_MMU_H
-
-typedef struct {
-	unsigned long asid[NR_CPUS];
-	void *vdso;
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_MMU_H
 #define __ASM_MMU_H
@@ -28,7 +20,6 @@ typedef struct {
 	unsigned long *bd_emupage_allocmap;
 	/* wait queue for threads requiring an emuframe */
 	wait_queue_head_t bd_emupage_queue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } mm_context_t;
 
 #endif /* __ASM_MMU_H */

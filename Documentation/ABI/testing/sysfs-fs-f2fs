@@ -1,46 +1,24 @@
 What:		/sys/fs/f2fs/<disk>/gc_max_sleep_time
 Date:		July 2013
 Contact:	"Namjae Jeon" <namjae.jeon@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the maximun sleep time for gc_thread. Time
-		 is in milliseconds.
-=======
 Description:	Controls the maximum sleep time for gc_thread. Time
 		is in milliseconds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/gc_min_sleep_time
 Date:		July 2013
 Contact:	"Namjae Jeon" <namjae.jeon@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the minimum sleep time for gc_thread. Time
-		 is in milliseconds.
-=======
 Description:	Controls the minimum sleep time for gc_thread. Time
 		is in milliseconds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/gc_no_gc_sleep_time
 Date:		July 2013
 Contact:	"Namjae Jeon" <namjae.jeon@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the default sleep time for gc_thread. Time
-		 is in milliseconds.
-=======
 Description:	Controls the default sleep time for gc_thread. Time
 		is in milliseconds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/gc_idle
 Date:		July 2013
 Contact:	"Namjae Jeon" <namjae.jeon@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the victim selection policy for garbage collection.
-=======
 Description:	Controls the victim selection policy for garbage collection.
 		Setting gc_idle = 0(default) will disable this option. Setting:
 
@@ -49,15 +27,10 @@ Description:	Controls the victim selection policy for garbage collection.
 		gc_idle = 2  will select the greedy approach & setting
 		gc_idle = 3  will select the age-threshold based approach.
 		===========  ===============================================
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/reclaim_segments
 Date:		October 2013
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the issue rate of segment discard commands.
-=======
 Description:	This parameter controls the number of prefree segments to be
 		reclaimed. If the number of prefree segments is larger than
 		the number of segments in the proportion to the percentage
@@ -69,15 +42,10 @@ What:		/sys/fs/f2fs/<disk>/main_blkaddr
 Date:		November 2019
 Contact:	"Ramon Pantin" <pantin@google.com>
 Description:	Shows first block address of MAIN area.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/ipu_policy
 Date:		November 2013
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the in-place-update policy.
-=======
 Description:	Controls the in-place-update policy.
 		updates in f2fs. User can set:
 
@@ -100,28 +68,16 @@ Description:	Controls the in-place-update policy.
 		===== =============== ===================================================
 
 		Refer segment.h for details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/min_ipu_util
 Date:		November 2013
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the FS utilization condition for the in-place-update
-		 policies.
-=======
 Description:	Controls the FS utilization condition for the in-place-update
 		policies. It is used by F2FS_IPU_UTIL and F2FS_IPU_SSR_UTIL policies.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/min_fsync_blocks
 Date:		September 2014
 Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
-<<<<<<< HEAD
-Description:
-		 Controls the dirty page count condition for the in-place-update
-		 policies.
-=======
 Description:	Controls the dirty page count condition for the in-place-update
 		policies.
 
@@ -141,15 +97,10 @@ Date:		October 2017
 Contact:	"Chao Yu" <yuchao0@huawei.com>
 Description:	Controls the free section threshold to trigger SSR allocation.
 		If this is large, SSR mode will be enabled early.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/max_small_discards
 Date:		November 2013
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the issue rate of small discard commands.
-=======
 Description:	Controls the issue rate of discard commands that consist of small
 		blocks less than 2MB. The candidates to be discarded are cached during
 		checkpoint, and issued by issue_discard thread after checkpoint.
@@ -207,15 +158,10 @@ What:		/sys/fs/f2fs/<disk>/pending_discard
 Date:		November 2021
 Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
 Description:	Shows the number of pending discard commands in the queue.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/max_victim_search
 Date:		January 2014
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the number of trials to find a victim segment.
-=======
 Description:	Controls the number of trials to find a victim segment
 		when conducting SSR and cleaning operations. The default value
 		is 4096 which covers 8GB block address range.
@@ -227,57 +173,31 @@ Description:	Controls migration granularity of garbage collection on large
 		section, it can let GC move partial segment{s} of one section
 		in one GC cycle, so that dispersing heavy overhead GC to
 		multiple lightweight one.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/dir_level
 Date:		March 2014
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the directory level for large directory.
-=======
 Description:	Controls the directory level for large directory. If a
 		directory has a number of files, it can reduce the file lookup
 		latency by increasing this dir_level value. Otherwise, it
 		needs to decrease this value to reduce the space overhead.
 		The default value is 0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/ram_thresh
 Date:		March 2014
 Contact:	"Jaegeuk Kim" <jaegeuk.kim@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the memory footprint used by f2fs.
-
-What:		/sys/fs/f2fs/<disk>/trim_sections
-Date:		February 2015
-Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
-Description:
-		 Controls the trimming rate in batch mode.
-=======
 Description:	Controls the memory footprint used by free nids and cached
 		nat entries. By default, 1 is set, which indicates
 		10 MB / 1 GB RAM.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/cp_interval
 Date:		October 2015
 Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
-<<<<<<< HEAD
-Description:
-		 Controls the checkpoint timing.
-=======
 Description:	Controls the checkpoint timing, set to 60 seconds by default.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/idle_interval
 Date:		January 2016
 Contact:	"Jaegeuk Kim" <jaegeuk@kernel.org>
-<<<<<<< HEAD
-Description:
-		 Controls the idle timing.
-=======
 Description:	Controls the idle timing of system, if there is no FS operation
 		during given interval.
 		Set to 5 seconds by default.
@@ -300,41 +220,24 @@ What:		/sys/fs/f2fs/<disk>/iostat_enable
 Date:		August 2017
 Contact:	"Chao Yu" <yuchao0@huawei.com>
 Description:	Controls to enable/disable IO stat.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/ra_nid_pages
 Date:		October 2015
 Contact:	"Chao Yu" <chao2.yu@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls the count of nid pages to be readaheaded.
-=======
 Description:	Controls the count of nid pages to be readaheaded.
 		When building free nids, F2FS reads NAT blocks ahead for
 		speed up. Default is 0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/dirty_nats_ratio
 Date:		January 2016
 Contact:	"Chao Yu" <chao2.yu@samsung.com>
-<<<<<<< HEAD
-Description:
-		 Controls dirty nat entries ratio threshold, if current
-		 ratio exceeds configured threshold, checkpoint will
-		 be triggered for flushing dirty nat entries.
-=======
 Description:	Controls dirty nat entries ratio threshold, if current
 		ratio exceeds configured threshold, checkpoint will
 		be triggered for flushing dirty nat entries.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/f2fs/<disk>/lifetime_write_kbytes
 Date:		January 2016
 Contact:	"Shuoran Liu" <liushuoran@huawei.com>
-<<<<<<< HEAD
-Description:
-		 Shows total written kbytes issued to disk.
-=======
 Description:	Shows total written kbytes issued to disk.
 
 What:		/sys/fs/f2fs/<disk>/features
@@ -860,4 +763,3 @@ Date:		November 2023
 Contact:	"Chao Yu" <chao@kernel.org>
 Description:	It controls to enable/disable IO aware feature for background discard.
 		By default, the value is 1 which indicates IO aware is on.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

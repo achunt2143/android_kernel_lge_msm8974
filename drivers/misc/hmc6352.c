@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hmc6352.c - Honeywell Compass Driver
  *
@@ -9,40 +6,16 @@
  *
  *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- */
-
-#include <linux/module.h>
-#include <linux/init.h>
-=======
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/err.h>
 #include <linux/delay.h>
 #include <linux/sysfs.h>
-<<<<<<< HEAD
-=======
 #include <linux/nospec.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_MUTEX(compass_mutex);
 
@@ -61,19 +34,12 @@ static int compass_store(struct device *dev, const char *buf, size_t count,
 	int ret;
 	unsigned long val;
 
-<<<<<<< HEAD
-	if (strict_strtoul(buf, 10, &val))
-		return -EINVAL;
-	if (val >= strlen(map))
-		return -EINVAL;
-=======
 	ret = kstrtoul(buf, 10, &val);
 	if (ret)
 		return ret;
 	if (val >= strlen(map))
 		return -EINVAL;
 	val = array_index_nospec(val, strlen(map));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&compass_mutex);
 	ret = compass_command(c, map[val]);
 	mutex_unlock(&compass_mutex);
@@ -135,12 +101,7 @@ static const struct attribute_group m_compass_gr = {
 	.attrs = mid_att_compass
 };
 
-<<<<<<< HEAD
-static int hmc6352_probe(struct i2c_client *client,
-					const struct i2c_device_id *id)
-=======
 static int hmc6352_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 
@@ -154,22 +115,12 @@ static int hmc6352_probe(struct i2c_client *client)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int hmc6352_remove(struct i2c_client *client)
-{
-	sysfs_remove_group(&client->dev.kobj, &m_compass_gr);
-	return 0;
-}
-
-static struct i2c_device_id hmc6352_id[] = {
-=======
 static void hmc6352_remove(struct i2c_client *client)
 {
 	sysfs_remove_group(&client->dev.kobj, &m_compass_gr);
 }
 
 static const struct i2c_device_id hmc6352_id[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "hmc6352", 0 },
 	{ }
 };

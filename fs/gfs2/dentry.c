@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spinlock.h>
@@ -48,31 +38,13 @@ static int gfs2_drevalidate(struct dentry *dentry, unsigned int flags)
 	struct inode *inode;
 	struct gfs2_holder d_gh;
 	struct gfs2_inode *ip = NULL;
-<<<<<<< HEAD
-	int error;
-=======
 	int error, valid = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int had_lock = 0;
 
 	if (flags & LOOKUP_RCU)
 		return -ECHILD;
 
 	parent = dget_parent(dentry);
-<<<<<<< HEAD
-	sdp = GFS2_SB(parent->d_inode);
-	dip = GFS2_I(parent->d_inode);
-	inode = dentry->d_inode;
-
-	if (inode) {
-		if (is_bad_inode(inode))
-			goto invalid;
-		ip = GFS2_I(inode);
-	}
-
-	if (sdp->sd_lockstruct.ls_ops->lm_mount == NULL)
-		goto valid;
-=======
 	sdp = GFS2_SB(d_inode(parent));
 	dip = GFS2_I(d_inode(parent));
 	inode = d_inode(dentry);
@@ -87,60 +59,11 @@ static int gfs2_drevalidate(struct dentry *dentry, unsigned int flags)
 		valid = 1;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	had_lock = (gfs2_glock_is_locked_by_me(dip->i_gl) != NULL);
 	if (!had_lock) {
 		error = gfs2_glock_nq_init(dip->i_gl, LM_ST_SHARED, 0, &d_gh);
 		if (error)
-<<<<<<< HEAD
-			goto fail;
-	} 
-
-	error = gfs2_dir_check(parent->d_inode, &dentry->d_name, ip);
-	switch (error) {
-	case 0:
-		if (!inode)
-			goto invalid_gunlock;
-		break;
-	case -ENOENT:
-		if (!inode)
-			goto valid_gunlock;
-		goto invalid_gunlock;
-	default:
-		goto fail_gunlock;
-	}
-
-valid_gunlock:
-	if (!had_lock)
-		gfs2_glock_dq_uninit(&d_gh);
-valid:
-	dput(parent);
-	return 1;
-
-invalid_gunlock:
-	if (!had_lock)
-		gfs2_glock_dq_uninit(&d_gh);
-invalid:
-	if (inode && S_ISDIR(inode->i_mode)) {
-		if (have_submounts(dentry))
-			goto valid;
-		shrink_dcache_parent(dentry);
-	}
-	d_drop(dentry);
-	dput(parent);
-	return 0;
-
-fail_gunlock:
-	gfs2_glock_dq_uninit(&d_gh);
-fail:
-	dput(parent);
-	return 0;
-}
-
-static int gfs2_dhash(const struct dentry *dentry, const struct inode *inode,
-		struct qstr *str)
-=======
 			goto out;
 	}
 
@@ -155,7 +78,6 @@ out:
 }
 
 static int gfs2_dhash(const struct dentry *dentry, struct qstr *str)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	str->hash = gfs2_disk_hash(str->name, str->len);
 	return 0;
@@ -165,19 +87,11 @@ static int gfs2_dentry_delete(const struct dentry *dentry)
 {
 	struct gfs2_inode *ginode;
 
-<<<<<<< HEAD
-	if (!dentry->d_inode)
-		return 0;
-
-	ginode = GFS2_I(dentry->d_inode);
-	if (!ginode->i_iopen_gh.gh_gl)
-=======
 	if (d_really_is_negative(dentry))
 		return 0;
 
 	ginode = GFS2_I(d_inode(dentry));
 	if (!gfs2_holder_initialized(&ginode->i_iopen_gh))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (test_bit(GLF_DEMOTE, &ginode->i_iopen_gh.gh_gl->gl_flags))

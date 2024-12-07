@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-/*
- * A driver for the ARM PL022 PrimeCell SSP/SPI bus master.
- *
- * Copyright (C) 2008-2009 ST-Ericsson AB
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * A driver for the ARM PL022 PrimeCell SSP/SPI bus master.
  *
  * Copyright (C) 2008-2012 ST-Ericsson AB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2006 STMicroelectronics Pvt. Ltd.
  *
  * Author: Linus Walleij <linus.walleij@stericsson.com>
@@ -18,19 +11,6 @@
  *	linux-2.6.17-rc3-mm1/drivers/spi/pxa2xx_spi.c
  * Initial adoption to PL022 by:
  *      Sachin Verma <sachin.verma@st.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -51,11 +31,8 @@
 #include <linux/dma-mapping.h>
 #include <linux/scatterlist.h>
 #include <linux/pm_runtime.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
 #include <linux/pinctrl/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This macro is used to define some register default values.
@@ -95,10 +72,7 @@
 #define SSP_MIS(r)	(r + 0x01C)
 #define SSP_ICR(r)	(r + 0x020)
 #define SSP_DMACR(r)	(r + 0x024)
-<<<<<<< HEAD
-=======
 #define SSP_CSR(r)	(r + 0x030) /* vendor extension */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SSP_ITCR(r)	(r + 0x080)
 #define SSP_ITIP(r)	(r + 0x084)
 #define SSP_ITOP(r)	(r + 0x088)
@@ -215,15 +189,12 @@
 #define SSP_DMACR_MASK_TXDMAE		(0x1UL << 1)
 
 /*
-<<<<<<< HEAD
-=======
  * SSP Chip Select Control Register - SSP_CSR
  * (vendor extension)
  */
 #define SSP_CSR_CSVALUE_MASK		(0x1FUL << 0)
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SSP Integration Test control Register - SSP_ITCR
  */
 #define SSP_ITCR_MASK_ITEN		(0x1UL << 0)
@@ -272,10 +243,7 @@
 #define STATE_RUNNING			((void *) 1)
 #define STATE_DONE			((void *) 2)
 #define STATE_ERROR			((void *) -1)
-<<<<<<< HEAD
-=======
 #define STATE_TIMEOUT			((void *) -2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SSP State - Whether Enabled or Disabled
@@ -308,27 +276,19 @@
  */
 #define DEFAULT_SSP_REG_IMSC  0x0UL
 #define DISABLE_ALL_INTERRUPTS DEFAULT_SSP_REG_IMSC
-<<<<<<< HEAD
-#define ENABLE_ALL_INTERRUPTS (~DEFAULT_SSP_REG_IMSC)
-=======
 #define ENABLE_ALL_INTERRUPTS ( \
 	SSP_IMSC_MASK_RORIM | \
 	SSP_IMSC_MASK_RTIM | \
 	SSP_IMSC_MASK_RXIM | \
 	SSP_IMSC_MASK_TXIM \
 )
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CLEAR_ALL_INTERRUPTS  0x3
 
 #define SPI_POLLING_TIMEOUT 1000
 
 /*
-<<<<<<< HEAD
- * The type of reading going on on this chip
-=======
  * The type of reading going on this chip
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum ssp_reading {
 	READING_NULL,
@@ -337,13 +297,8 @@ enum ssp_reading {
 	READING_U32
 };
 
-<<<<<<< HEAD
-/**
- * The type of writing going on on this chip
-=======
 /*
  * The type of writing going on this chip
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum ssp_writing {
 	WRITING_NULL,
@@ -361,11 +316,8 @@ enum ssp_writing {
  * @extended_cr: 32 bit wide control register 0 with extra
  * features and extra features in CR1 as found in the ST variants
  * @pl023: supports a subset of the ST extensions called "PL023"
-<<<<<<< HEAD
-=======
  * @loopback: supports loopback mode
  * @internal_cs_ctrl: supports chip select control register
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct vendor_data {
 	int fifodepth;
@@ -374,10 +326,7 @@ struct vendor_data {
 	bool extended_cr;
 	bool pl023;
 	bool loopback;
-<<<<<<< HEAD
-=======
 	bool internal_cs_ctrl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -387,30 +336,10 @@ struct vendor_data {
  * @phybase: the physical memory where the SSP device resides
  * @virtbase: the virtual memory where the SSP is mapped
  * @clk: outgoing clock "SPICLK" for the SPI bus
-<<<<<<< HEAD
- * @master: SPI framework hookup
- * @master_info: controller-specific data from machine setup
- * @kworker: thread struct for message pump
- * @kworker_task: pointer to task for message pump kworker thread
- * @pump_messages: work struct for scheduling work to the message pump
- * @queue_lock: spinlock to syncronise access to message queue
- * @queue: message queue
- * @busy: message pump is busy
- * @running: message pump is running
- * @pump_transfers: Tasklet used in Interrupt Transfer mode
- * @cur_msg: Pointer to current spi_message being processed
- * @cur_transfer: Pointer to current spi_transfer
- * @cur_chip: pointer to current clients chip(assigned from controller_state)
- * @next_msg_cs_active: the next message in the queue has been examined
- *  and it was found that it uses the same chip select as the previous
- *  message, so we left it active after the previous transfer, and it's
- *  active already.
-=======
  * @host: SPI framework hookup
  * @host_info: controller-specific data from machine setup
  * @cur_transfer: Pointer to current spi_transfer
  * @cur_chip: pointer to current clients chip(assigned from controller_state)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tx: current position in TX buffer to be read
  * @tx_end: end position in TX buffer to be read
  * @rx: current position in RX buffer to be written
@@ -418,21 +347,15 @@ struct vendor_data {
  * @read: the type of read currently going on
  * @write: the type of write currently going on
  * @exp_fifo_level: expected FIFO level
-<<<<<<< HEAD
-=======
  * @rx_lev_trig: receive FIFO watermark level which triggers IRQ
  * @tx_lev_trig: transmit FIFO watermark level which triggers IRQ
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dma_rx_channel: optional channel for RX DMA
  * @dma_tx_channel: optional channel for TX DMA
  * @sgt_rx: scattertable for the RX transfer
  * @sgt_tx: scattertable for the TX transfer
  * @dummypage: a dummy page used for driving data on the bus with DMA
-<<<<<<< HEAD
-=======
  * @dma_running: indicates whether DMA is in operation
  * @cur_cs: current chip select index
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct pl022 {
 	struct amba_device		*adev;
@@ -440,21 +363,10 @@ struct pl022 {
 	resource_size_t			phybase;
 	void __iomem			*virtbase;
 	struct clk			*clk;
-<<<<<<< HEAD
-	struct spi_master		*master;
-	struct pl022_ssp_controller	*master_info;
-	/* Message per-transfer pump */
-	struct tasklet_struct		pump_transfers;
-	struct spi_message		*cur_msg;
-	struct spi_transfer		*cur_transfer;
-	struct chip_data		*cur_chip;
-	bool				next_msg_cs_active;
-=======
 	struct spi_controller		*host;
 	struct pl022_ssp_controller	*host_info;
 	struct spi_transfer		*cur_transfer;
 	struct chip_data		*cur_chip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void				*tx;
 	void				*tx_end;
 	void				*rx;
@@ -473,10 +385,7 @@ struct pl022 {
 	char				*dummypage;
 	bool				dma_running;
 #endif
-<<<<<<< HEAD
-=======
 	int cur_cs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -490,10 +399,6 @@ struct pl022 {
  * @enable_dma: Whether to enable DMA or not
  * @read: function ptr to be used to read when doing xfer for this chip
  * @write: function ptr to be used to write when doing xfer for this chip
-<<<<<<< HEAD
- * @cs_control: chip select callback provided by chip
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @xfer_type: polling/interrupt/DMA
  *
  * Runtime state of the SSP controller, maintained per chip,
@@ -508,88 +413,10 @@ struct chip_data {
 	bool enable_dma;
 	enum ssp_reading read;
 	enum ssp_writing write;
-<<<<<<< HEAD
-	void (*cs_control) (u32 command);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int xfer_type;
 };
 
 /**
-<<<<<<< HEAD
- * null_cs_control - Dummy chip select function
- * @command: select/delect the chip
- *
- * If no chip select function is provided by client this is used as dummy
- * chip select
- */
-static void null_cs_control(u32 command)
-{
-	pr_debug("pl022: dummy chip select control, CS=0x%x\n", command);
-}
-
-/**
- * giveback - current spi_message is over, schedule next message and call
- * callback of this message. Assumes that caller already
- * set message->status; dma and pio irqs are blocked
- * @pl022: SSP driver private data structure
- */
-static void giveback(struct pl022 *pl022)
-{
-	struct spi_transfer *last_transfer;
-	pl022->next_msg_cs_active = false;
-
-	last_transfer = list_entry(pl022->cur_msg->transfers.prev,
-					struct spi_transfer,
-					transfer_list);
-
-	/* Delay if requested before any change in chip select */
-	if (last_transfer->delay_usecs)
-		/*
-		 * FIXME: This runs in interrupt context.
-		 * Is this really smart?
-		 */
-		udelay(last_transfer->delay_usecs);
-
-	if (!last_transfer->cs_change) {
-		struct spi_message *next_msg;
-
-		/*
-		 * cs_change was not set. We can keep the chip select
-		 * enabled if there is message in the queue and it is
-		 * for the same spi device.
-		 *
-		 * We cannot postpone this until pump_messages, because
-		 * after calling msg->complete (below) the driver that
-		 * sent the current message could be unloaded, which
-		 * could invalidate the cs_control() callback...
-		 */
-		/* get a pointer to the next message, if any */
-		next_msg = spi_get_next_queued_message(pl022->master);
-
-		/*
-		 * see if the next and current messages point
-		 * to the same spi device.
-		 */
-		if (next_msg && next_msg->spi != pl022->cur_msg->spi)
-			next_msg = NULL;
-		if (!next_msg || pl022->cur_msg->state == STATE_ERROR)
-			pl022->cur_chip->cs_control(SSP_CHIP_DESELECT);
-		else
-			pl022->next_msg_cs_active = true;
-
-	}
-
-	pl022->cur_msg = NULL;
-	pl022->cur_transfer = NULL;
-	pl022->cur_chip = NULL;
-	spi_finalize_current_message(pl022->master);
-
-	/* disable the SPI/SSP operation */
-	writew((readw(SSP_CR1(pl022->virtbase)) &
-		(~SSP_CR1_MASK_SSE)), SSP_CR1(pl022->virtbase));
-
-=======
  * internal_cs_control - Control chip select signals via SSP_CSR.
  * @pl022: SSP driver private data structure
  * @enable: select/delect the chip
@@ -615,7 +442,6 @@ static void pl022_cs_control(struct spi_device *spi, bool enable)
 	struct pl022 *pl022 = spi_controller_get_devdata(spi->controller);
 	if (pl022->vendor->internal_cs_ctrl)
 		internal_cs_control(pl022, enable);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -749,11 +575,7 @@ static void load_ssp_default_config(struct pl022 *pl022)
 	writew(CLEAR_ALL_INTERRUPTS, SSP_ICR(pl022->virtbase));
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This will write to TX and read from RX according to the parameters
  * set in pl022.
  */
@@ -853,33 +675,6 @@ static void readwriter(struct pl022 *pl022)
 	 */
 }
 
-<<<<<<< HEAD
-/**
- * next_transfer - Move to the Next transfer in the current spi message
- * @pl022: SSP driver private data structure
- *
- * This function moves though the linked list of spi transfers in the
- * current spi message and returns with the state of current spi
- * message i.e whether its last transfer is done(STATE_DONE) or
- * Next transfer is ready(STATE_RUNNING)
- */
-static void *next_transfer(struct pl022 *pl022)
-{
-	struct spi_message *msg = pl022->cur_msg;
-	struct spi_transfer *trans = pl022->cur_transfer;
-
-	/* Move to next transfer */
-	if (trans->transfer_list.next != &msg->transfers) {
-		pl022->cur_transfer =
-		    list_entry(trans->transfer_list.next,
-			       struct spi_transfer, transfer_list);
-		return STATE_RUNNING;
-	}
-	return STATE_DONE;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This DMA functionality is only compiled in if we have
  * access to the generic DMA devices/DMA engine.
@@ -899,10 +694,6 @@ static void unmap_free_dma_scatter(struct pl022 *pl022)
 static void dma_callback(void *data)
 {
 	struct pl022 *pl022 = data;
-<<<<<<< HEAD
-	struct spi_message *msg = pl022->cur_msg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!pl022->sgt_rx.sgl);
 
@@ -947,19 +738,7 @@ static void dma_callback(void *data)
 
 	unmap_free_dma_scatter(pl022);
 
-<<<<<<< HEAD
-	/* Update total bytes transferred */
-	msg->actual_length += pl022->cur_transfer->len;
-	if (pl022->cur_transfer->cs_change)
-		pl022->cur_chip->
-			cs_control(SSP_CHIP_DESELECT);
-
-	/* Move to next transfer */
-	msg->state = next_transfer(pl022);
-	tasklet_schedule(&pl022->pump_transfers);
-=======
 	spi_finalize_current_transfer(pl022->host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void setup_dma_scatter(struct pl022 *pl022,
@@ -1206,11 +985,7 @@ err_alloc_rx_sg:
 	return -ENOMEM;
 }
 
-<<<<<<< HEAD
-static int __devinit pl022_dma_probe(struct pl022 *pl022)
-=======
 static int pl022_dma_probe(struct pl022 *pl022)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dma_cap_mask_t mask;
 
@@ -1222,41 +997,24 @@ static int pl022_dma_probe(struct pl022 *pl022)
 	 * of them.
 	 */
 	pl022->dma_rx_channel = dma_request_channel(mask,
-<<<<<<< HEAD
-					    pl022->master_info->dma_filter,
-					    pl022->master_info->dma_rx_param);
-=======
 					    pl022->host_info->dma_filter,
 					    pl022->host_info->dma_rx_param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pl022->dma_rx_channel) {
 		dev_dbg(&pl022->adev->dev, "no RX DMA channel!\n");
 		goto err_no_rxchan;
 	}
 
 	pl022->dma_tx_channel = dma_request_channel(mask,
-<<<<<<< HEAD
-					    pl022->master_info->dma_filter,
-					    pl022->master_info->dma_tx_param);
-=======
 					    pl022->host_info->dma_filter,
 					    pl022->host_info->dma_tx_param);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pl022->dma_tx_channel) {
 		dev_dbg(&pl022->adev->dev, "no TX DMA channel!\n");
 		goto err_no_txchan;
 	}
 
 	pl022->dummypage = kmalloc(PAGE_SIZE, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!pl022->dummypage) {
-		dev_dbg(&pl022->adev->dev, "no DMA dummypage!\n");
-		goto err_no_dummypage;
-	}
-=======
 	if (!pl022->dummypage)
 		goto err_no_dummypage;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&pl022->adev->dev, "setup for DMA on RX %s, TX %s\n",
 		 dma_chan_name(pl022->dma_rx_channel),
@@ -1275,10 +1033,6 @@ err_no_rxchan:
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-static void terminate_dma(struct pl022 *pl022)
-{
-=======
 static int pl022_dma_autoprobe(struct pl022 *pl022)
 {
 	struct device *dev = &pl022->adev->dev;
@@ -1325,7 +1079,6 @@ static void terminate_dma(struct pl022 *pl022)
 	if (!pl022->dma_running)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_chan *rxchan = pl022->dma_rx_channel;
 	struct dma_chan *txchan = pl022->dma_tx_channel;
 
@@ -1337,12 +1090,7 @@ static void terminate_dma(struct pl022 *pl022)
 
 static void pl022_dma_remove(struct pl022 *pl022)
 {
-<<<<<<< HEAD
-	if (pl022->dma_running)
-		terminate_dma(pl022);
-=======
 	terminate_dma(pl022);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pl022->dma_tx_channel)
 		dma_release_channel(pl022->dma_tx_channel);
 	if (pl022->dma_rx_channel)
@@ -1356,26 +1104,20 @@ static inline int configure_dma(struct pl022 *pl022)
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-=======
 static inline int pl022_dma_autoprobe(struct pl022 *pl022)
 {
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int pl022_dma_probe(struct pl022 *pl022)
 {
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static inline void terminate_dma(struct pl022 *pl022)
 {
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void pl022_dma_remove(struct pl022 *pl022)
 {
 }
@@ -1383,11 +1125,8 @@ static inline void pl022_dma_remove(struct pl022 *pl022)
 
 /**
  * pl022_interrupt_handler - Interrupt handler for SSP controller
-<<<<<<< HEAD
-=======
  * @irq: IRQ number
  * @dev_id: Local device data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function handles interrupts generated for an interrupt based transfer.
  * If a receive overrun (ROR) interrupt is there then we disable SSP, flag the
@@ -1400,21 +1139,7 @@ static inline void pl022_dma_remove(struct pl022 *pl022)
 static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 {
 	struct pl022 *pl022 = dev_id;
-<<<<<<< HEAD
-	struct spi_message *msg = pl022->cur_msg;
 	u16 irq_status = 0;
-	u16 flag = 0;
-
-	if (unlikely(!msg)) {
-		dev_err(&pl022->adev->dev,
-			"bad message state in interrupt handler");
-		/* Never fail */
-		return IRQ_HANDLED;
-	}
-
-=======
-	u16 irq_status = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read the Interrupt Status Register */
 	irq_status = readw(SSP_MIS(pl022->virtbase));
 
@@ -1435,12 +1160,6 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 		if (readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_RFF)
 			dev_err(&pl022->adev->dev,
 				"RXFIFO is full\n");
-<<<<<<< HEAD
-		if (readw(SSP_SR(pl022->virtbase)) & SSP_SR_MASK_TNF)
-			dev_err(&pl022->adev->dev,
-				"TXFIFO is full\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Disable and clear interrupts, disable SSP,
@@ -1452,26 +1171,14 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 		writew(CLEAR_ALL_INTERRUPTS, SSP_ICR(pl022->virtbase));
 		writew((readw(SSP_CR1(pl022->virtbase)) &
 			(~SSP_CR1_MASK_SSE)), SSP_CR1(pl022->virtbase));
-<<<<<<< HEAD
-		msg->state = STATE_ERROR;
-
-		/* Schedule message queue handler */
-		tasklet_schedule(&pl022->pump_transfers);
-=======
 		pl022->cur_transfer->error |= SPI_TRANS_FAIL_IO;
 		spi_finalize_current_transfer(pl022->host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IRQ_HANDLED;
 	}
 
 	readwriter(pl022);
 
-<<<<<<< HEAD
-	if ((pl022->tx == pl022->tx_end) && (flag == 0)) {
-		flag = 1;
-=======
 	if (pl022->tx == pl022->tx_end) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Disable Transmit interrupt, enable receive interrupt */
 		writew((readw(SSP_IMSC(pl022->virtbase)) &
 		       ~SSP_IMSC_MASK_TXIM) | SSP_IMSC_MASK_RXIM,
@@ -1493,29 +1200,14 @@ static irqreturn_t pl022_interrupt_handler(int irq, void *dev_id)
 				 "number of bytes on a 16bit bus?)\n",
 				 (u32) (pl022->rx - pl022->rx_end));
 		}
-<<<<<<< HEAD
-		/* Update total bytes transferred */
-		msg->actual_length += pl022->cur_transfer->len;
-		if (pl022->cur_transfer->cs_change)
-			pl022->cur_chip->
-				cs_control(SSP_CHIP_DESELECT);
-		/* Move to next transfer */
-		msg->state = next_transfer(pl022);
-		tasklet_schedule(&pl022->pump_transfers);
-=======
 		spi_finalize_current_transfer(pl022->host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IRQ_HANDLED;
 	}
 
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This sets up the pointers to memory for the next message to
  * send out on the SPI bus.
  */
@@ -1545,115 +1237,20 @@ static int set_up_next_transfer(struct pl022 *pl022,
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * pump_transfers - Tasklet function which schedules next transfer
- * when running in interrupt or DMA transfer mode.
- * @data: SSP driver private data structure
- *
- */
-static void pump_transfers(unsigned long data)
-{
-	struct pl022 *pl022 = (struct pl022 *) data;
-	struct spi_message *message = NULL;
-	struct spi_transfer *transfer = NULL;
-	struct spi_transfer *previous = NULL;
-
-	/* Get current state information */
-	message = pl022->cur_msg;
-	transfer = pl022->cur_transfer;
-
-	/* Handle for abort */
-	if (message->state == STATE_ERROR) {
-		message->status = -EIO;
-		giveback(pl022);
-		return;
-	}
-
-	/* Handle end of message */
-	if (message->state == STATE_DONE) {
-		message->status = 0;
-		giveback(pl022);
-		return;
-	}
-
-	/* Delay if requested at end of transfer before CS change */
-	if (message->state == STATE_RUNNING) {
-		previous = list_entry(transfer->transfer_list.prev,
-					struct spi_transfer,
-					transfer_list);
-		if (previous->delay_usecs)
-			/*
-			 * FIXME: This runs in interrupt context.
-			 * Is this really smart?
-			 */
-			udelay(previous->delay_usecs);
-
-		/* Reselect chip select only if cs_change was requested */
-		if (previous->cs_change)
-			pl022->cur_chip->cs_control(SSP_CHIP_SELECT);
-	} else {
-		/* STATE_START */
-		message->state = STATE_RUNNING;
-	}
-
-	if (set_up_next_transfer(pl022, transfer)) {
-		message->state = STATE_ERROR;
-		message->status = -EIO;
-		giveback(pl022);
-		return;
-	}
-	/* Flush the FIFOs and let's go! */
-	flush(pl022);
-
-	if (pl022->cur_chip->enable_dma) {
-		if (configure_dma(pl022)) {
-			dev_dbg(&pl022->adev->dev,
-				"configuration of DMA failed, fall back to interrupt mode\n");
-			goto err_config_dma;
-		}
-		return;
-	}
-
-err_config_dma:
-	/* enable all interrupts except RX */
-	writew(ENABLE_ALL_INTERRUPTS & ~SSP_IMSC_MASK_RXIM, SSP_IMSC(pl022->virtbase));
-}
-
-static void do_interrupt_dma_transfer(struct pl022 *pl022)
-{
-=======
 static int do_interrupt_dma_transfer(struct pl022 *pl022)
 {
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Default is to enable all interrupts except RX -
 	 * this will be enabled once TX is complete
 	 */
-<<<<<<< HEAD
-	u32 irqflags = ENABLE_ALL_INTERRUPTS & ~SSP_IMSC_MASK_RXIM;
-
-	/* Enable target chip, if not already active */
-	if (!pl022->next_msg_cs_active)
-		pl022->cur_chip->cs_control(SSP_CHIP_SELECT);
-
-	if (set_up_next_transfer(pl022, pl022->cur_transfer)) {
-		/* Error path */
-		pl022->cur_msg->state = STATE_ERROR;
-		pl022->cur_msg->status = -EIO;
-		giveback(pl022);
-		return;
-	}
-=======
 	u32 irqflags = (u32)(ENABLE_ALL_INTERRUPTS & ~SSP_IMSC_MASK_RXIM);
 
 	ret = set_up_next_transfer(pl022, pl022->cur_transfer);
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If we're using DMA, set up DMA here */
 	if (pl022->cur_chip->enable_dma) {
 		/* Configure DMA transfer */
@@ -1670,101 +1267,6 @@ err_config_dma:
 	writew((readw(SSP_CR1(pl022->virtbase)) | SSP_CR1_MASK_SSE),
 	       SSP_CR1(pl022->virtbase));
 	writew(irqflags, SSP_IMSC(pl022->virtbase));
-<<<<<<< HEAD
-}
-
-static void do_polling_transfer(struct pl022 *pl022)
-{
-	struct spi_message *message = NULL;
-	struct spi_transfer *transfer = NULL;
-	struct spi_transfer *previous = NULL;
-	struct chip_data *chip;
-	unsigned long time, timeout;
-
-	chip = pl022->cur_chip;
-	message = pl022->cur_msg;
-
-	while (message->state != STATE_DONE) {
-		/* Handle for abort */
-		if (message->state == STATE_ERROR)
-			break;
-		transfer = pl022->cur_transfer;
-
-		/* Delay if requested at end of transfer */
-		if (message->state == STATE_RUNNING) {
-			previous =
-			    list_entry(transfer->transfer_list.prev,
-				       struct spi_transfer, transfer_list);
-			if (previous->delay_usecs)
-				udelay(previous->delay_usecs);
-			if (previous->cs_change)
-				pl022->cur_chip->cs_control(SSP_CHIP_SELECT);
-		} else {
-			/* STATE_START */
-			message->state = STATE_RUNNING;
-			if (!pl022->next_msg_cs_active)
-				pl022->cur_chip->cs_control(SSP_CHIP_SELECT);
-		}
-
-		/* Configuration Changing Per Transfer */
-		if (set_up_next_transfer(pl022, transfer)) {
-			/* Error path */
-			message->state = STATE_ERROR;
-			break;
-		}
-		/* Flush FIFOs and enable SSP */
-		flush(pl022);
-		writew((readw(SSP_CR1(pl022->virtbase)) | SSP_CR1_MASK_SSE),
-		       SSP_CR1(pl022->virtbase));
-
-		dev_dbg(&pl022->adev->dev, "polling transfer ongoing ...\n");
-
-		timeout = jiffies + msecs_to_jiffies(SPI_POLLING_TIMEOUT);
-		while (pl022->tx < pl022->tx_end || pl022->rx < pl022->rx_end) {
-			time = jiffies;
-			readwriter(pl022);
-			if (time_after(time, timeout)) {
-				dev_warn(&pl022->adev->dev,
-				"%s: timeout!\n", __func__);
-				message->state = STATE_ERROR;
-				goto out;
-			}
-			cpu_relax();
-		}
-
-		/* Update total byte transferred */
-		message->actual_length += pl022->cur_transfer->len;
-		if (pl022->cur_transfer->cs_change)
-			pl022->cur_chip->cs_control(SSP_CHIP_DESELECT);
-		/* Move to next transfer */
-		message->state = next_transfer(pl022);
-	}
-out:
-	/* Handle end of message */
-	if (message->state == STATE_DONE)
-		message->status = 0;
-	else
-		message->status = -EIO;
-
-	giveback(pl022);
-	return;
-}
-
-static int pl022_transfer_one_message(struct spi_master *master,
-				      struct spi_message *msg)
-{
-	struct pl022 *pl022 = spi_master_get_devdata(master);
-
-	/* Initial message state */
-	pl022->cur_msg = msg;
-	msg->state = STATE_START;
-
-	pl022->cur_transfer = list_entry(msg->transfers.next,
-					 struct spi_transfer, transfer_list);
-
-	/* Setup the SPI using the per chip configuration */
-	pl022->cur_chip = spi_get_ctldata(msg->spi);
-=======
 	return 1;
 }
 
@@ -1834,36 +1336,11 @@ static int pl022_transfer_one(struct spi_controller *host, struct spi_device *sp
 	/* Setup the SPI using the per chip configuration */
 	pl022->cur_chip = spi_get_ctldata(spi);
 	pl022->cur_cs = spi_get_chipselect(spi, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	restore_state(pl022);
 	flush(pl022);
 
 	if (pl022->cur_chip->xfer_type == POLLING_TRANSFER)
-<<<<<<< HEAD
-		do_polling_transfer(pl022);
-	else
-		do_interrupt_dma_transfer(pl022);
-
-	return 0;
-}
-
-static int pl022_prepare_transfer_hardware(struct spi_master *master)
-{
-	struct pl022 *pl022 = spi_master_get_devdata(master);
-
-	/*
-	 * Just make sure we have all we need to run the transfer by syncing
-	 * with the runtime PM framework.
-	 */
-	pm_runtime_get_sync(&pl022->adev->dev);
-	return 0;
-}
-
-static int pl022_unprepare_transfer_hardware(struct spi_master *master)
-{
-	struct pl022 *pl022 = spi_master_get_devdata(master);
-=======
 		return do_polling_transfer(pl022);
 	else
 		return do_interrupt_dma_transfer(pl022);
@@ -1881,22 +1358,11 @@ static void pl022_handle_err(struct spi_controller *ctlr, struct spi_message *me
 static int pl022_unprepare_transfer_hardware(struct spi_controller *host)
 {
 	struct pl022 *pl022 = spi_controller_get_devdata(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* nothing more to do - disable spi/ssp and power off */
 	writew((readw(SSP_CR1(pl022->virtbase)) &
 		(~SSP_CR1_MASK_SSE)), SSP_CR1(pl022->virtbase));
 
-<<<<<<< HEAD
-	if (pl022->master_info->autosuspend_delay > 0) {
-		pm_runtime_mark_last_busy(&pl022->adev->dev);
-		pm_runtime_put_autosuspend(&pl022->adev->dev);
-	} else {
-		pm_runtime_put(&pl022->adev->dev);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1953,10 +1419,6 @@ static int verify_controller_parameters(struct pl022 *pl022,
 		dev_err(&pl022->adev->dev,
 			"RX FIFO Trigger Level is configured incorrectly\n");
 		return -EINVAL;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	switch (chip_info->tx_lev_trig) {
 	case SSP_TX_1_OR_MORE_EMPTY_LOC:
@@ -1982,10 +1444,6 @@ static int verify_controller_parameters(struct pl022 *pl022,
 		dev_err(&pl022->adev->dev,
 			"TX FIFO Trigger Level is configured incorrectly\n");
 		return -EINVAL;
-<<<<<<< HEAD
-		break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (chip_info->iface == SSP_INTERFACE_NATIONAL_MICROWIRE) {
 		if ((chip_info->ctrl_len < SSP_BITS_4)
@@ -2011,21 +1469,13 @@ static int verify_controller_parameters(struct pl022 *pl022,
 				return -EINVAL;
 			}
 		} else {
-<<<<<<< HEAD
-			if (chip_info->duplex != SSP_MICROWIRE_CHANNEL_FULL_DUPLEX)
-=======
 			if (chip_info->duplex != SSP_MICROWIRE_CHANNEL_FULL_DUPLEX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_err(&pl022->adev->dev,
 					"Microwire half duplex mode requested,"
 					" but this is only available in the"
 					" ST version of PL022\n");
-<<<<<<< HEAD
-			return -EINVAL;
-=======
 				return -EINVAL;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -2117,31 +1567,15 @@ static int calculate_effective_freq(struct pl022 *pl022, int freq, struct
  * supplies it.
  */
 static const struct pl022_config_chip pl022_default_chip_info = {
-<<<<<<< HEAD
-	.com_mode = POLLING_TRANSFER,
-	.iface = SSP_INTERFACE_MOTOROLA_SPI,
-	.hierarchy = SSP_SLAVE,
-=======
 	.com_mode = INTERRUPT_TRANSFER,
 	.iface = SSP_INTERFACE_MOTOROLA_SPI,
 	.hierarchy = SSP_MASTER,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.slave_tx_disable = DO_NOT_DRIVE_TX,
 	.rx_lev_trig = SSP_RX_1_OR_MORE_ELEM,
 	.tx_lev_trig = SSP_TX_1_OR_MORE_EMPTY_LOC,
 	.ctrl_len = SSP_BITS_8,
 	.wait_state = SSP_MWIRE_WAIT_ZERO,
 	.duplex = SSP_MICROWIRE_CHANNEL_FULL_DUPLEX,
-<<<<<<< HEAD
-	.cs_control = null_cs_control,
-};
-
-/**
- * pl022_setup - setup function registered to SPI master framework
- * @spi: spi device which is requesting setup
- *
- * This function is registered to the SPI framework for this SPI master
-=======
 };
 
 /**
@@ -2149,7 +1583,6 @@ static const struct pl022_config_chip pl022_default_chip_info = {
  * @spi: spi device which is requesting setup
  *
  * This function is registered to the SPI framework for this SPI host
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * controller. If it is the first time when setup is called by this device,
  * this function will initialize the runtime state for this chip and save
  * the same in the device structure. Else it will update the runtime info
@@ -2160,14 +1593,6 @@ static const struct pl022_config_chip pl022_default_chip_info = {
 static int pl022_setup(struct spi_device *spi)
 {
 	struct pl022_config_chip const *chip_info;
-<<<<<<< HEAD
-	struct chip_data *chip;
-	struct ssp_clock_params clk_freq = { .cpsdvsr = 0, .scr = 0};
-	int status = 0;
-	struct pl022 *pl022 = spi_master_get_devdata(spi->master);
-	unsigned int bits = spi->bits_per_word;
-	u32 tmp;
-=======
 	struct pl022_config_chip chip_info_dt;
 	struct chip_data *chip;
 	struct ssp_clock_params clk_freq = { .cpsdvsr = 0, .scr = 0};
@@ -2176,7 +1601,6 @@ static int pl022_setup(struct spi_device *spi)
 	unsigned int bits = spi->bits_per_word;
 	u32 tmp;
 	struct device_node *np = spi->dev.of_node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!spi->max_speed_hz)
 		return -EINVAL;
@@ -2186,16 +1610,8 @@ static int pl022_setup(struct spi_device *spi)
 
 	if (chip == NULL) {
 		chip = kzalloc(sizeof(struct chip_data), GFP_KERNEL);
-<<<<<<< HEAD
-		if (!chip) {
-			dev_err(&spi->dev,
-				"cannot allocate controller state\n");
-			return -ENOMEM;
-		}
-=======
 		if (!chip)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&spi->dev,
 			"allocated memory for controller's runtime state\n");
 	}
@@ -2204,12 +1620,6 @@ static int pl022_setup(struct spi_device *spi)
 	chip_info = spi->controller_data;
 
 	if (chip_info == NULL) {
-<<<<<<< HEAD
-		chip_info = &pl022_default_chip_info;
-		/* spi_board_info.controller_data not is supplied */
-		dev_dbg(&spi->dev,
-			"using default controller_data settings\n");
-=======
 		if (np) {
 			chip_info_dt = pl022_default_chip_info;
 
@@ -2236,7 +1646,6 @@ static int pl022_setup(struct spi_device *spi)
 			dev_dbg(&spi->dev,
 				"using default controller_data settings\n");
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		dev_dbg(&spi->dev,
 			"using user supplied controller_data settings\n");
@@ -2277,15 +1686,6 @@ static int pl022_setup(struct spi_device *spi)
 
 	/* Now set controller state based on controller data */
 	chip->xfer_type = chip_info->com_mode;
-<<<<<<< HEAD
-	if (!chip_info->cs_control) {
-		chip->cs_control = null_cs_control;
-		dev_warn(&spi->dev,
-			 "chip select function is NULL for this chip\n");
-	} else
-		chip->cs_control = chip_info->cs_control;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check bits per word with vendor specific range */
 	if ((bits <= 3) || (bits > pl022->vendor->max_bpw)) {
@@ -2317,11 +1717,7 @@ static int pl022_setup(struct spi_device *spi)
 	chip->dmacr = 0;
 	chip->cpsr = 0;
 	if ((chip_info->com_mode == DMA_TRANSFER)
-<<<<<<< HEAD
-	    && ((pl022->master_info)->enable_dma)) {
-=======
 	    && ((pl022->host_info)->enable_dma)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->enable_dma = true;
 		dev_dbg(&spi->dev, "DMA mode set in controller state\n");
 		SSP_WRITE_BITS(chip->dmacr, SSP_DMA_ENABLED,
@@ -2418,17 +1814,10 @@ static int pl022_setup(struct spi_device *spi)
 }
 
 /**
-<<<<<<< HEAD
- * pl022_cleanup - cleanup function registered to SPI master framework
- * @spi: spi device which is requesting cleanup
- *
- * This function is registered to the SPI framework for this SPI master
-=======
  * pl022_cleanup - cleanup function registered to SPI host framework
  * @spi: spi device which is requesting cleanup
  *
  * This function is registered to the SPI framework for this SPI host
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * controller. It will free the runtime state of chip.
  */
 static void pl022_cleanup(struct spi_device *spi)
@@ -2439,14 +1828,6 @@ static void pl022_cleanup(struct spi_device *spi)
 	kfree(chip);
 }
 
-<<<<<<< HEAD
-static int __devinit
-pl022_probe(struct amba_device *adev, const struct amba_id *id)
-{
-	struct device *dev = &adev->dev;
-	struct pl022_ssp_controller *platform_info = adev->dev.platform_data;
-	struct spi_master *master;
-=======
 static struct pl022_ssp_controller *
 pl022_platform_data_dt_get(struct device *dev)
 {
@@ -2476,31 +1857,11 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	struct pl022_ssp_controller *platform_info =
 			dev_get_platdata(&adev->dev);
 	struct spi_controller *host;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pl022 *pl022 = NULL;	/*Data for this driver */
 	int status = 0;
 
 	dev_info(&adev->dev,
 		 "ARM PL022 driver, device ID: 0x%08x\n", adev->periphid);
-<<<<<<< HEAD
-	if (platform_info == NULL) {
-		dev_err(&adev->dev, "probe - no platform data supplied\n");
-		status = -ENODEV;
-		goto err_no_pdata;
-	}
-
-	/* Allocate master with space for data */
-	master = spi_alloc_master(dev, sizeof(struct pl022));
-	if (master == NULL) {
-		dev_err(&adev->dev, "probe - cannot alloc SPI master\n");
-		status = -ENOMEM;
-		goto err_no_master;
-	}
-
-	pl022 = spi_master_get_devdata(master);
-	pl022->master = master;
-	pl022->master_info = platform_info;
-=======
 	if (!platform_info && IS_ENABLED(CONFIG_OF))
 		platform_info = pl022_platform_data_dt_get(dev);
 
@@ -2519,7 +1880,6 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	pl022 = spi_controller_get_devdata(host);
 	pl022->host = host;
 	pl022->host_info = platform_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pl022->adev = adev;
 	pl022->vendor = id->data;
 
@@ -2527,16 +1887,6 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	 * Bus Number Which has been Assigned to this SSP controller
 	 * on this board
 	 */
-<<<<<<< HEAD
-	master->bus_num = platform_info->bus_id;
-	master->num_chipselect = platform_info->num_chipselect;
-	master->cleanup = pl022_cleanup;
-	master->setup = pl022_setup;
-	master->prepare_transfer_hardware = pl022_prepare_transfer_hardware;
-	master->transfer_one_message = pl022_transfer_one_message;
-	master->unprepare_transfer_hardware = pl022_unprepare_transfer_hardware;
-	master->rt = platform_info->rt;
-=======
 	host->bus_num = platform_info->bus_id;
 	host->cleanup = pl022_cleanup;
 	host->setup = pl022_setup;
@@ -2548,98 +1898,50 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	host->rt = platform_info->rt;
 	host->dev.of_node = dev->of_node;
 	host->use_gpio_descriptors = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Supports mode 0-3, loopback, and active low CS. Transfers are
 	 * always MS bit first on the original pl022.
 	 */
-<<<<<<< HEAD
-	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LOOP;
-	if (pl022->vendor->extended_cr)
-		master->mode_bits |= SPI_LSB_FIRST;
-
-	dev_dbg(&adev->dev, "BUSNO: %d\n", master->bus_num);
-=======
 	host->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LOOP;
 	if (pl022->vendor->extended_cr)
 		host->mode_bits |= SPI_LSB_FIRST;
 
 	dev_dbg(&adev->dev, "BUSNO: %d\n", host->bus_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = amba_request_regions(adev, NULL);
 	if (status)
 		goto err_no_ioregion;
 
 	pl022->phybase = adev->res.start;
-<<<<<<< HEAD
-	pl022->virtbase = ioremap(adev->res.start, resource_size(&adev->res));
-=======
 	pl022->virtbase = devm_ioremap(dev, adev->res.start,
 				       resource_size(&adev->res));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pl022->virtbase == NULL) {
 		status = -ENOMEM;
 		goto err_no_ioremap;
 	}
-<<<<<<< HEAD
-	printk(KERN_INFO "pl022: mapped registers from 0x%08x to %p\n",
-	       adev->res.start, pl022->virtbase);
-
-	pl022->clk = clk_get(&adev->dev, NULL);
-=======
 	dev_info(&adev->dev, "mapped registers from %pa to %p\n",
 		&adev->res.start, pl022->virtbase);
 
 	pl022->clk = devm_clk_get_enabled(&adev->dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pl022->clk)) {
 		status = PTR_ERR(pl022->clk);
 		dev_err(&adev->dev, "could not retrieve SSP/SPI bus clock\n");
 		goto err_no_clk;
 	}
 
-<<<<<<< HEAD
-	status = clk_prepare(pl022->clk);
-	if (status) {
-		dev_err(&adev->dev, "could not prepare SSP/SPI bus clock\n");
-		goto  err_clk_prep;
-	}
-
-	status = clk_enable(pl022->clk);
-	if (status) {
-		dev_err(&adev->dev, "could not enable SSP/SPI bus clock\n");
-		goto err_no_clk_en;
-	}
-
-	/* Initialize transfer pump */
-	tasklet_init(&pl022->pump_transfers, pump_transfers,
-		     (unsigned long)pl022);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable SSP */
 	writew((readw(SSP_CR1(pl022->virtbase)) & (~SSP_CR1_MASK_SSE)),
 	       SSP_CR1(pl022->virtbase));
 	load_ssp_default_config(pl022);
 
-<<<<<<< HEAD
-	status = request_irq(adev->irq[0], pl022_interrupt_handler, 0, "pl022",
-			     pl022);
-=======
 	status = devm_request_irq(dev, adev->irq[0], pl022_interrupt_handler,
 				  0, "pl022", pl022);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		dev_err(&adev->dev, "probe - cannot get IRQ (%d)\n", status);
 		goto err_no_irq;
 	}
 
-<<<<<<< HEAD
-	/* Get DMA channels */
-	if (platform_info->enable_dma) {
-=======
 	/* Get DMA channels, try autoconfiguration first */
 	status = pl022_dma_autoprobe(pl022);
 	if (status == -EPROBE_DEFER) {
@@ -2651,7 +1953,6 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 	if (status == 0)
 		platform_info->enable_dma = 1;
 	else if (platform_info->enable_dma) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = pl022_dma_probe(pl022);
 		if (status != 0)
 			platform_info->enable_dma = 0;
@@ -2659,17 +1960,10 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 
 	/* Register with the SPI framework */
 	amba_set_drvdata(adev, pl022);
-<<<<<<< HEAD
-	status = spi_register_master(master);
-	if (status != 0) {
-		dev_err(&adev->dev,
-			"probe - problem registering spi master\n");
-=======
 	status = devm_spi_register_controller(&adev->dev, host);
 	if (status != 0) {
 		dev_err_probe(&adev->dev, status,
 			      "problem registering spi host\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_spi_register;
 	}
 	dev_dbg(dev, "probe succeeded\n");
@@ -2682,43 +1976,14 @@ static int pl022_probe(struct amba_device *adev, const struct amba_id *id)
 		pm_runtime_set_autosuspend_delay(dev,
 			platform_info->autosuspend_delay);
 		pm_runtime_use_autosuspend(dev);
-<<<<<<< HEAD
-		pm_runtime_put_autosuspend(dev);
-	} else {
-		pm_runtime_put(dev);
-	}
-=======
 	}
 	pm_runtime_put(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  err_spi_register:
 	if (platform_info->enable_dma)
 		pl022_dma_remove(pl022);
-<<<<<<< HEAD
-
-	free_irq(adev->irq[0], pl022);
- err_no_irq:
-	clk_disable(pl022->clk);
- err_no_clk_en:
-	clk_unprepare(pl022->clk);
- err_clk_prep:
-	clk_put(pl022->clk);
- err_no_clk:
-	iounmap(pl022->virtbase);
- err_no_ioremap:
-	amba_release_regions(adev);
- err_no_ioregion:
-	spi_master_put(master);
- err_no_master:
- err_no_pdata:
-	return status;
-}
-
-static int __devexit
-=======
  err_no_irq:
  err_no_clk:
  err_no_ioremap:
@@ -2729,17 +1994,12 @@ static int __devexit
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pl022_remove(struct amba_device *adev)
 {
 	struct pl022 *pl022 = amba_get_drvdata(adev);
 
 	if (!pl022)
-<<<<<<< HEAD
-		return 0;
-=======
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * undo pm_runtime_put() in probe.  I assume that we're not
@@ -2748,25 +2008,6 @@ pl022_remove(struct amba_device *adev)
 	pm_runtime_get_noresume(&adev->dev);
 
 	load_ssp_default_config(pl022);
-<<<<<<< HEAD
-	if (pl022->master_info->enable_dma)
-		pl022_dma_remove(pl022);
-
-	free_irq(adev->irq[0], pl022);
-	clk_disable(pl022->clk);
-	clk_unprepare(pl022->clk);
-	clk_put(pl022->clk);
-	iounmap(pl022->virtbase);
-	amba_release_regions(adev);
-	tasklet_disable(&pl022->pump_transfers);
-	spi_unregister_master(pl022->master);
-	spi_master_put(pl022->master);
-	amba_set_drvdata(adev, NULL);
-	return 0;
-}
-
-#ifdef CONFIG_SUSPEND
-=======
 	if (pl022->host_info->enable_dma)
 		pl022_dma_remove(pl022);
 
@@ -2774,20 +2015,11 @@ pl022_remove(struct amba_device *adev)
 }
 
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pl022_suspend(struct device *dev)
 {
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 	int ret;
 
-<<<<<<< HEAD
-	ret = spi_master_suspend(pl022->master);
-	if (ret) {
-		dev_warn(dev, "cannot suspend master\n");
-		return ret;
-	}
-
-=======
 	ret = spi_controller_suspend(pl022->host);
 	if (ret)
 		return ret;
@@ -2800,7 +2032,6 @@ static int pl022_suspend(struct device *dev)
 
 	pinctrl_pm_select_sleep_state(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(dev, "suspended\n");
 	return 0;
 }
@@ -2810,13 +2041,6 @@ static int pl022_resume(struct device *dev)
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 	int ret;
 
-<<<<<<< HEAD
-	/* Start the queue running */
-	ret = spi_master_resume(pl022->master);
-	if (ret)
-		dev_err(dev, "problem starting queue (%d)\n", ret);
-	else
-=======
 	ret = pm_runtime_force_resume(dev);
 	if (ret)
 		dev_err(dev, "problem resuming\n");
@@ -2824,30 +2048,19 @@ static int pl022_resume(struct device *dev)
 	/* Start the queue running */
 	ret = spi_controller_resume(pl022->host);
 	if (!ret)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(dev, "resumed\n");
 
 	return ret;
 }
-<<<<<<< HEAD
-#endif	/* CONFIG_PM */
-
-#ifdef CONFIG_PM_RUNTIME
-=======
 #endif
 
 #ifdef CONFIG_PM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pl022_runtime_suspend(struct device *dev)
 {
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	clk_disable(pl022->clk);
-=======
 	clk_disable_unprepare(pl022->clk);
 	pinctrl_pm_select_idle_state(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2856,12 +2069,8 @@ static int pl022_runtime_resume(struct device *dev)
 {
 	struct pl022 *pl022 = dev_get_drvdata(dev);
 
-<<<<<<< HEAD
-	clk_enable(pl022->clk);
-=======
 	pinctrl_pm_select_default_state(dev);
 	clk_prepare_enable(pl022->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2879,10 +2088,7 @@ static struct vendor_data vendor_arm = {
 	.extended_cr = false,
 	.pl023 = false,
 	.loopback = true,
-<<<<<<< HEAD
-=======
 	.internal_cs_ctrl = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct vendor_data vendor_st = {
@@ -2892,10 +2098,7 @@ static struct vendor_data vendor_st = {
 	.extended_cr = true,
 	.pl023 = false,
 	.loopback = true,
-<<<<<<< HEAD
-=======
 	.internal_cs_ctrl = false,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct vendor_data vendor_st_pl023 = {
@@ -2905,20 +2108,6 @@ static struct vendor_data vendor_st_pl023 = {
 	.extended_cr = true,
 	.pl023 = true,
 	.loopback = false,
-<<<<<<< HEAD
-};
-
-static struct vendor_data vendor_db5500_pl023 = {
-	.fifodepth = 32,
-	.max_bpw = 32,
-	.unidir = false,
-	.extended_cr = true,
-	.pl023 = true,
-	.loopback = true,
-};
-
-static struct amba_id pl022_ids[] = {
-=======
 	.internal_cs_ctrl = false,
 };
 
@@ -2933,7 +2122,6 @@ static struct vendor_data vendor_lsi = {
 };
 
 static const struct amba_id pl022_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		/*
 		 * ARM PL022 variant, this has a 16bit wide
@@ -2965,11 +2153,6 @@ static const struct amba_id pl022_ids[] = {
 		.data	= &vendor_st_pl023,
 	},
 	{
-<<<<<<< HEAD
-		.id	= 0x10080023,
-		.mask	= 0xffffffff,
-		.data	= &vendor_db5500_pl023,
-=======
 		/*
 		 * PL022 variant that has a chip select control register whih
 		 * allows control of 5 output signals nCS[0:4].
@@ -2977,7 +2160,6 @@ static const struct amba_id pl022_ids[] = {
 		.id	= 0x000b6022,
 		.mask	= 0x000fffff,
 		.data	= &vendor_lsi,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{ 0, 0 },
 };
@@ -2991,11 +2173,7 @@ static struct amba_driver pl022_driver = {
 	},
 	.id_table	= pl022_ids,
 	.probe		= pl022_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pl022_remove),
-=======
 	.remove		= pl022_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pl022_init(void)

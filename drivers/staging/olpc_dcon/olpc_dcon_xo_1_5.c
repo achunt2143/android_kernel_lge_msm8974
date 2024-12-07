@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2009,2010       One Laptop per Child
- *
- * This program is free software.  You can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
-
-#include <linux/acpi.h>
-#include <linux/delay.h>
-#include <linux/pci.h>
-#include <linux/gpio.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2009,2010       One Laptop per Child
@@ -24,7 +10,6 @@
 #include <linux/i2c.h>
 #include <linux/gpio/consumer.h>
 #include <linux/gpio/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/olpc.h>
 
 /* TODO: this eventually belongs in linux/vx855.h */
@@ -55,8 +40,6 @@
 
 #define PREFIX "OLPC DCON:"
 
-<<<<<<< HEAD
-=======
 enum dcon_gpios {
 	OLPC_DCON_STAT0,
 	OLPC_DCON_STAT1,
@@ -84,7 +67,6 @@ static const struct dcon_gpio gpios_asis[] = {
 
 static struct gpio_desc *gpios[3];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dcon_clear_irq(void)
 {
 	/* irq status will appear in PMIO_Rx50[6] (RW1C) on gpio12 */
@@ -93,61 +75,17 @@ static void dcon_clear_irq(void)
 
 static int dcon_was_irq(void)
 {
-<<<<<<< HEAD
-	u_int8_t tmp;
-
-	/* irq status will appear in PMIO_Rx50[6] on gpio12 */
-	tmp = inb(VX855_GPI_STATUS_CHG);
-	return !!(tmp & BIT_GPIO12);
-
-	return 0;
-=======
 	u8 tmp;
 
 	/* irq status will appear in PMIO_Rx50[6] on gpio12 */
 	tmp = inb(VX855_GPI_STATUS_CHG);
 
 	return !!(tmp & BIT_GPIO12);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dcon_init_xo_1_5(struct dcon_priv *dcon)
 {
 	unsigned int irq;
-<<<<<<< HEAD
-	u_int8_t tmp;
-	struct pci_dev *pdev;
-
-	pdev = pci_get_device(PCI_VENDOR_ID_VIA,
-			      PCI_DEVICE_ID_VIA_VX855, NULL);
-	if (!pdev) {
-		printk(KERN_ERR "cannot find VX855 PCI ID\n");
-		return 1;
-	}
-
-	pci_read_config_byte(pdev, 0x95, &tmp);
-	pci_write_config_byte(pdev, 0x95, tmp|0x0c);
-
-	/* Set GPIO8 to GPIO mode, not SSPICLK */
-	pci_read_config_byte(pdev, 0xe3, &tmp);
-	pci_write_config_byte(pdev, 0xe3, tmp | 0x04);
-
-	/* Set GPI10/GPI11 to GPI mode, not SSPISDI/SSPISS */
-	pci_read_config_byte(pdev, 0xe4, &tmp);
-	pci_write_config_byte(pdev, 0xe4, tmp|0x08);
-
-	/* clear PMU_RxE1[6] to select SCI on GPIO12 */
-	/* clear PMU_RxE0[6] to choose falling edge */
-	pci_read_config_byte(pdev, 0xe1, &tmp);
-	pci_write_config_byte(pdev, 0xe1, tmp & ~BIT_GPIO12);
-	pci_read_config_byte(pdev, 0xe0, &tmp);
-	pci_write_config_byte(pdev, 0xe0, tmp & ~BIT_GPIO12);
-
-	dcon_clear_irq();
-
-	/* set   PMIO_Rx52[6] to enable SCI/SMI on gpio12 */
-	outb(inb(VX855_GPI_SCI_SMI)|BIT_GPIO12, VX855_GPI_SCI_SMI);
-=======
 	const struct dcon_gpio *pin = &gpios_asis[0];
 	int i;
 	int ret;
@@ -172,7 +110,6 @@ static int dcon_init_xo_1_5(struct dcon_priv *dcon)
 
 	/* set   PMIO_Rx52[6] to enable SCI/SMI on gpio12 */
 	outb(inb(VX855_GPI_SCI_SMI) | BIT_GPIO12, VX855_GPI_SCI_SMI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine the current state of DCONLOAD, likely set by firmware */
 	/* GPIO1 */
@@ -180,19 +117,10 @@ static int dcon_init_xo_1_5(struct dcon_priv *dcon)
 			DCON_SOURCE_CPU : DCON_SOURCE_DCON;
 	dcon->pending_src = dcon->curr_src;
 
-<<<<<<< HEAD
-	pci_dev_put(pdev);
-
-	/* we're sharing the IRQ with ACPI */
-	irq = acpi_gbl_FADT.sci_interrupt;
-	if (request_irq(irq, &dcon_interrupt, IRQF_SHARED, "DCON", dcon)) {
-		printk(KERN_ERR PREFIX "DCON (IRQ%d) allocation failed\n", irq);
-=======
 	/* we're sharing the IRQ with ACPI */
 	irq = acpi_gbl_FADT.sci_interrupt;
 	if (request_irq(irq, &dcon_interrupt, IRQF_SHARED, "DCON", dcon)) {
 		pr_err("DCON (IRQ%d) allocation failed\n", irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -224,10 +152,6 @@ static void set_i2c_line(int sda, int scl)
 	outb(tmp, 0x3c5);
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dcon_wiggle_xo_1_5(void)
 {
 	int x;
@@ -250,20 +174,12 @@ static void dcon_wiggle_xo_1_5(void)
 	udelay(5);
 
 	/* set   PMIO_Rx52[6] to enable SCI/SMI on gpio12 */
-<<<<<<< HEAD
-	outb(inb(VX855_GPI_SCI_SMI)|BIT_GPIO12, VX855_GPI_SCI_SMI);
-=======
 	outb(inb(VX855_GPI_SCI_SMI) | BIT_GPIO12, VX855_GPI_SCI_SMI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dcon_set_dconload_xo_1_5(int val)
 {
-<<<<<<< HEAD
-	gpio_set_value(VX855_GPIO(1), val);
-=======
 	gpiod_set_value(gpios[OLPC_DCON_LOAD], val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dcon_read_status_xo_1_5(u8 *status)
@@ -272,13 +188,8 @@ static int dcon_read_status_xo_1_5(u8 *status)
 		return -1;
 
 	/* i believe this is the same as "inb(0x44b) & 3" */
-<<<<<<< HEAD
-	*status = gpio_get_value(VX855_GPI(10));
-	*status |= gpio_get_value(VX855_GPI(11)) << 1;
-=======
 	*status = gpiod_get_value(gpios[OLPC_DCON_STAT0]);
 	*status |= gpiod_get_value(gpios[OLPC_DCON_STAT1]) << 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dcon_clear_irq();
 

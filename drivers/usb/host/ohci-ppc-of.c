@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -18,21 +15,12 @@
  */
 
 #include <linux/signal.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-
-#include <asm/prom.h>
-
-
-static int __devinit
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
 #include <linux/platform_device.h>
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ohci_ppc_of_start(struct usb_hcd *hcd)
 {
 	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
@@ -42,12 +30,8 @@ ohci_ppc_of_start(struct usb_hcd *hcd)
 		return ret;
 
 	if ((ret = ohci_run(ohci)) < 0) {
-<<<<<<< HEAD
-		err("can't start %s", ohci_to_hcd(ohci)->self.bus_name);
-=======
 		dev_err(hcd->self.controller, "can't start %s\n",
 			hcd->self.bus_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci_stop(hcd);
 		return ret;
 	}
@@ -64,11 +48,7 @@ static const struct hc_driver ohci_ppc_of_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq =			ohci_irq,
-<<<<<<< HEAD
-	.flags =		HCD_USB11 | HCD_MEMORY,
-=======
 	.flags =		HCD_USB11 | HCD_DMA | HCD_MEMORY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * basic lifecycle operations
@@ -102,11 +82,7 @@ static const struct hc_driver ohci_ppc_of_hc_driver = {
 };
 
 
-<<<<<<< HEAD
-static int __devinit ohci_hcd_ppc_of_probe(struct platform_device *op)
-=======
 static int ohci_hcd_ppc_of_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dn = op->dev.of_node;
 	struct usb_hcd *hcd;
@@ -138,38 +114,18 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
 	hcd->rsrc_start = res.start;
 	hcd->rsrc_len = resource_size(&res);
 
-<<<<<<< HEAD
-	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
-		printk(KERN_ERR "%s: request_mem_region failed\n", __FILE__);
-		rv = -EBUSY;
-=======
 	hcd->regs = devm_ioremap_resource(&op->dev, &res);
 	if (IS_ERR(hcd->regs)) {
 		rv = PTR_ERR(hcd->regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_rmr;
 	}
 
 	irq = irq_of_parse_and_map(dn, 0);
-<<<<<<< HEAD
-	if (irq == NO_IRQ) {
-		printk(KERN_ERR "%s: irq_of_parse_and_map failed\n", __FILE__);
-		rv = -EBUSY;
-		goto err_irq;
-	}
-
-	hcd->regs = ioremap(hcd->rsrc_start, hcd->rsrc_len);
-	if (!hcd->regs) {
-		printk(KERN_ERR "%s: ioremap failed\n", __FILE__);
-		rv = -ENOMEM;
-		goto err_ioremap;
-=======
 	if (!irq) {
 		dev_err(&op->dev, "%s: irq_of_parse_and_map failed\n",
 			__FILE__);
 		rv = -EBUSY;
 		goto err_rmr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ohci = hcd_to_ohci(hcd);
@@ -184,15 +140,10 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
 	ohci_hcd_init(ohci);
 
 	rv = usb_add_hcd(hcd, irq, 0);
-<<<<<<< HEAD
-	if (rv == 0)
-		return 0;
-=======
 	if (rv == 0) {
 		device_wakeup_enable(hcd->self.controller);
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* by now, 440epx is known to show usb_23 erratum */
 	np = of_find_compatible_node(NULL, NULL, "ibm,usb-ehci-440epx");
@@ -216,67 +167,29 @@ static int ohci_hcd_ppc_of_probe(struct platform_device *op)
 				release_mem_region(res.start, 0x4);
 		} else
 			pr_debug("%s: cannot get ehci offset from fdt\n", __FILE__);
-<<<<<<< HEAD
-	}
-
-	iounmap(hcd->regs);
-err_ioremap:
-	irq_dispose_mapping(irq);
-err_irq:
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-=======
 		of_node_put(np);
 	}
 
 	irq_dispose_mapping(irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_rmr:
  	usb_put_hcd(hcd);
 
 	return rv;
 }
 
-<<<<<<< HEAD
-static int ohci_hcd_ppc_of_remove(struct platform_device *op)
-{
-	struct usb_hcd *hcd = dev_get_drvdata(&op->dev);
-	dev_set_drvdata(&op->dev, NULL);
-=======
 static void ohci_hcd_ppc_of_remove(struct platform_device *op)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&op->dev, "stopping PPC-OF USB Controller\n");
 
 	usb_remove_hcd(hcd);
 
-<<<<<<< HEAD
-	iounmap(hcd->regs);
-	irq_dispose_mapping(hcd->irq);
-	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
-
-	usb_put_hcd(hcd);
-
-	return 0;
-}
-
-static void ohci_hcd_ppc_of_shutdown(struct platform_device *op)
-{
-	struct usb_hcd *hcd = dev_get_drvdata(&op->dev);
-
-        if (hcd->driver->shutdown)
-                hcd->driver->shutdown(hcd);
-}
-
-
-=======
 	irq_dispose_mapping(hcd->irq);
 
 	usb_put_hcd(hcd);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id ohci_hcd_ppc_of_match[] = {
 #ifdef CONFIG_USB_OHCI_HCD_PPC_OF_BE
 	{
@@ -304,28 +217,16 @@ MODULE_DEVICE_TABLE(of, ohci_hcd_ppc_of_match);
 
 #if	!defined(CONFIG_USB_OHCI_HCD_PPC_OF_BE) && \
 	!defined(CONFIG_USB_OHCI_HCD_PPC_OF_LE)
-<<<<<<< HEAD
-#error "No endianess selected for ppc-of-ohci"
-=======
 #error "No endianness selected for ppc-of-ohci"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
 static struct platform_driver ohci_hcd_ppc_of_driver = {
 	.probe		= ohci_hcd_ppc_of_probe,
-<<<<<<< HEAD
-	.remove		= ohci_hcd_ppc_of_remove,
-	.shutdown 	= ohci_hcd_ppc_of_shutdown,
-	.driver = {
-		.name = "ppc-of-ohci",
-		.owner = THIS_MODULE,
-=======
 	.remove_new	= ohci_hcd_ppc_of_remove,
 	.shutdown	= usb_hcd_platform_shutdown,
 	.driver = {
 		.name = "ppc-of-ohci",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = ohci_hcd_ppc_of_match,
 	},
 };

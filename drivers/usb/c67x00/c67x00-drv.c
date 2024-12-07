@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * c67x00-drv.c: Cypress C67X00 USB Common infrastructure
  *
  * Copyright (C) 2006-2008 Barco N.V.
  *    Derived from the Cypress cy7c67200/300 ezusb linux driver and
  *    based on multiple host controller drivers inside the linux kernel.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- * MA  02110-1301  USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -123,11 +102,7 @@ static irqreturn_t c67x00_irq(int irq, void *__dev)
 
 /* ------------------------------------------------------------------------- */
 
-<<<<<<< HEAD
-static int __devinit c67x00_drv_probe(struct platform_device *pdev)
-=======
 static int c67x00_drv_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct c67x00_device *c67x00;
 	struct c67x00_platform_data *pdata;
@@ -142,11 +117,7 @@ static int c67x00_drv_probe(struct platform_device *pdev)
 	if (!res2)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	pdata = pdev->dev.platform_data;
-=======
 	pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdata)
 		return -ENODEV;
 
@@ -169,11 +140,7 @@ static int c67x00_drv_probe(struct platform_device *pdev)
 
 	spin_lock_init(&c67x00->hpi.lock);
 	c67x00->hpi.regstep = pdata->hpi_regstep;
-<<<<<<< HEAD
-	c67x00->pdata = pdev->dev.platform_data;
-=======
 	c67x00->pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c67x00->pdev = pdev;
 
 	c67x00_ll_init(c67x00);
@@ -210,11 +177,7 @@ static int c67x00_drv_probe(struct platform_device *pdev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit c67x00_drv_remove(struct platform_device *pdev)
-=======
 static void c67x00_drv_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct c67x00_device *c67x00 = platform_get_drvdata(pdev);
 	struct resource *res;
@@ -226,40 +189,20 @@ static void c67x00_drv_remove(struct platform_device *pdev)
 	c67x00_ll_release(c67x00);
 
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-<<<<<<< HEAD
-	if (res)
-		free_irq(res->start, c67x00);
-=======
 	free_irq(res->start, c67x00);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iounmap(c67x00->hpi.base);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-<<<<<<< HEAD
-	if (res)
-		release_mem_region(res->start, resource_size(res));
-
-	kfree(c67x00);
-
-	return 0;
-=======
 	release_mem_region(res->start, resource_size(res));
 
 	kfree(c67x00);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver c67x00_driver = {
 	.probe	= c67x00_drv_probe,
-<<<<<<< HEAD
-	.remove	= __devexit_p(c67x00_drv_remove),
-	.driver	= {
-		.owner = THIS_MODULE,
-=======
 	.remove_new = c67x00_drv_remove,
 	.driver	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "c67x00",
 	},
 };

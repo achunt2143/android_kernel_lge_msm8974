@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-#ifndef _FALLOC_H_
-#define _FALLOC_H_
-
-#define FALLOC_FL_KEEP_SIZE	0x01 /* default is extend size */
-#define FALLOC_FL_PUNCH_HOLE	0x02 /* de-allocates range */
-
-#ifdef __KERNEL__
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _FALLOC_H_
 #define _FALLOC_H_
 
 #include <uapi/linux/falloc.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Space reservation ioctls and argument structure
@@ -30,11 +20,6 @@ struct space_resv {
 };
 
 #define FS_IOC_RESVSP		_IOW('X', 40, struct space_resv)
-<<<<<<< HEAD
-#define FS_IOC_RESVSP64		_IOW('X', 42, struct space_resv)
-
-#endif /* __KERNEL__ */
-=======
 #define FS_IOC_UNRESVSP		_IOW('X', 41, struct space_resv)
 #define FS_IOC_RESVSP64		_IOW('X', 42, struct space_resv)
 #define FS_IOC_UNRESVSP64	_IOW('X', 43, struct space_resv)
@@ -67,6 +52,5 @@ struct space_resv_32 {
 #define FS_IOC_ZERO_RANGE_32	_IOW ('X', 57, struct space_resv_32)
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _FALLOC_H_ */

@@ -3,11 +3,7 @@
  *
  * (C) 2001 by Jay Schulist <jschlst@samba.org>,
  * (C) 2002-2005 by Harald Welte <laforge@gnumonks.org>
-<<<<<<< HEAD
- * (C) 2005,2007 by Pablo Neira Ayuso <pablo@netfilter.org>
-=======
  * (C) 2005-2017 by Pablo Neira Ayuso <pablo@netfilter.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Initial netfilter messages via netlink development funded and
  * generally made possible by Network Robots, Inc. (www.networkrobots.com)
@@ -26,14 +22,6 @@
 #include <linux/sockios.h>
 #include <linux/net.h>
 #include <linux/skbuff.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <net/sock.h>
-#include <net/netlink.h>
-#include <linux/init.h>
-
-#include <linux/netlink.h>
-=======
 #include <linux/uaccess.h>
 #include <net/sock.h>
 #include <linux/init.h>
@@ -42,41 +30,11 @@
 #include <net/netlink.h>
 #include <net/netns/generic.h>
 #include <linux/netfilter.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netfilter/nfnetlink.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Harald Welte <laforge@netfilter.org>");
 MODULE_ALIAS_NET_PF_PROTO(PF_NETLINK, NETLINK_NETFILTER);
-<<<<<<< HEAD
-
-static char __initdata nfversion[] = "0.30";
-
-static const struct nfnetlink_subsystem __rcu *subsys_table[NFNL_SUBSYS_COUNT];
-static DEFINE_MUTEX(nfnl_mutex);
-
-void nfnl_lock(void)
-{
-	mutex_lock(&nfnl_mutex);
-}
-EXPORT_SYMBOL_GPL(nfnl_lock);
-
-void nfnl_unlock(void)
-{
-	mutex_unlock(&nfnl_mutex);
-}
-EXPORT_SYMBOL_GPL(nfnl_unlock);
-
-int nfnetlink_subsys_register(const struct nfnetlink_subsystem *n)
-{
-	nfnl_lock();
-	if (subsys_table[n->subsys_id]) {
-		nfnl_unlock();
-		return -EBUSY;
-	}
-	rcu_assign_pointer(subsys_table[n->subsys_id], n);
-	nfnl_unlock();
-=======
 MODULE_DESCRIPTION("Netfilter messages via netlink socket");
 
 #define nfnl_dereference_protected(id) \
@@ -171,7 +129,6 @@ int nfnetlink_subsys_register(const struct nfnetlink_subsystem *n)
 	}
 	rcu_assign_pointer(table[n->subsys_id].subsys, n);
 	nfnl_unlock(n->subsys_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -179,42 +136,21 @@ EXPORT_SYMBOL_GPL(nfnetlink_subsys_register);
 
 int nfnetlink_subsys_unregister(const struct nfnetlink_subsystem *n)
 {
-<<<<<<< HEAD
-	nfnl_lock();
-	subsys_table[n->subsys_id] = NULL;
-	nfnl_unlock();
-=======
 	nfnl_lock(n->subsys_id);
 	table[n->subsys_id].subsys = NULL;
 	nfnl_unlock(n->subsys_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	synchronize_rcu();
 	return 0;
 }
 EXPORT_SYMBOL_GPL(nfnetlink_subsys_unregister);
 
-<<<<<<< HEAD
-static inline const struct nfnetlink_subsystem *nfnetlink_get_subsys(u_int16_t type)
-{
-	u_int8_t subsys_id = NFNL_SUBSYS_ID(type);
-=======
 static inline const struct nfnetlink_subsystem *nfnetlink_get_subsys(u16 type)
 {
 	u8 subsys_id = NFNL_SUBSYS_ID(type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (subsys_id >= NFNL_SUBSYS_COUNT)
 		return NULL;
 
-<<<<<<< HEAD
-	return rcu_dereference(subsys_table[subsys_id]);
-}
-
-static inline const struct nfnl_callback *
-nfnetlink_find_client(u_int16_t type, const struct nfnetlink_subsystem *ss)
-{
-	u_int8_t cb_id = NFNL_MSG_TYPE(type);
-=======
 	return rcu_dereference(table[subsys_id].subsys);
 }
 
@@ -222,7 +158,6 @@ static inline const struct nfnl_callback *
 nfnetlink_find_client(u16 type, const struct nfnetlink_subsystem *ss)
 {
 	u8 cb_id = NFNL_MSG_TYPE(type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cb_id >= ss->cb_count)
 		return NULL;
@@ -232,33 +167,6 @@ nfnetlink_find_client(u16 type, const struct nfnetlink_subsystem *ss)
 
 int nfnetlink_has_listeners(struct net *net, unsigned int group)
 {
-<<<<<<< HEAD
-	return netlink_has_listeners(net->nfnl, group);
-}
-EXPORT_SYMBOL_GPL(nfnetlink_has_listeners);
-
-int nfnetlink_send(struct sk_buff *skb, struct net *net, u32 pid,
-		   unsigned group, int echo, gfp_t flags)
-{
-	return nlmsg_notify(net->nfnl, skb, pid, group, echo, flags);
-}
-EXPORT_SYMBOL_GPL(nfnetlink_send);
-
-int nfnetlink_set_err(struct net *net, u32 pid, u32 group, int error)
-{
-	return netlink_set_err(net->nfnl, pid, group, error);
-}
-EXPORT_SYMBOL_GPL(nfnetlink_set_err);
-
-int nfnetlink_unicast(struct sk_buff *skb, struct net *net, u_int32_t pid, int flags)
-{
-	return netlink_unicast(net->nfnl, skb, pid, flags);
-}
-EXPORT_SYMBOL_GPL(nfnetlink_unicast);
-
-/* Process one complete nfnetlink message. */
-static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
-=======
 	struct nfnl_net *nfnlnet = nfnl_pernet(net);
 
 	return netlink_has_listeners(nfnlnet->nfnl, group);
@@ -307,32 +215,20 @@ EXPORT_SYMBOL_GPL(nfnetlink_broadcast);
 /* Process one complete nfnetlink message. */
 static int nfnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh,
 			     struct netlink_ext_ack *extack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net *net = sock_net(skb->sk);
 	const struct nfnl_callback *nc;
 	const struct nfnetlink_subsystem *ss;
 	int type, err;
 
-<<<<<<< HEAD
-	if (!capable(CAP_NET_ADMIN))
-		return -EPERM;
-
-	/* All the messages must at least contain nfgenmsg */
-	if (nlh->nlmsg_len < NLMSG_LENGTH(sizeof(struct nfgenmsg)))
-=======
 	/* All the messages must at least contain nfgenmsg */
 	if (nlmsg_len(nlh) < sizeof(struct nfgenmsg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	type = nlh->nlmsg_type;
 replay:
 	rcu_read_lock();
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ss = nfnetlink_get_subsys(type);
 	if (!ss) {
 #ifdef CONFIG_MODULES
@@ -355,35 +251,6 @@ replay:
 	}
 
 	{
-<<<<<<< HEAD
-		int min_len = NLMSG_SPACE(sizeof(struct nfgenmsg));
-		u_int8_t cb_id = NFNL_MSG_TYPE(nlh->nlmsg_type);
-		struct nlattr *cda[ss->cb[cb_id].attr_count + 1];
-		struct nlattr *attr = (void *)nlh + min_len;
-		int attrlen = nlh->nlmsg_len - min_len;
-
-		err = nla_parse(cda, ss->cb[cb_id].attr_count,
-				attr, attrlen, ss->cb[cb_id].policy);
-		if (err < 0)
-			return err;
-
-		if (nc->call_rcu) {
-			err = nc->call_rcu(net->nfnl, skb, nlh,
-					   (const struct nlattr **)cda);
-			rcu_read_unlock();
-		} else {
-			rcu_read_unlock();
-			nfnl_lock();
-			if (rcu_dereference_protected(
-					subsys_table[NFNL_SUBSYS_ID(type)],
-					lockdep_is_held(&nfnl_mutex)) != ss ||
-			    nfnetlink_find_client(type, ss) != nc)
-				err = -EAGAIN;
-			else
-				err = nc->call(net->nfnl, skb, nlh,
-						   (const struct nlattr **)cda);
-			nfnl_unlock();
-=======
 		int min_len = nlmsg_total_size(sizeof(struct nfgenmsg));
 		struct nfnl_net *nfnlnet = nfnl_pernet(net);
 		u8 cb_id = NFNL_MSG_TYPE(nlh->nlmsg_type);
@@ -439,7 +306,6 @@ replay:
 			rcu_read_unlock();
 			err = -EINVAL;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (err == -EAGAIN)
 			goto replay;
@@ -447,11 +313,6 @@ replay:
 	}
 }
 
-<<<<<<< HEAD
-static void nfnetlink_rcv(struct sk_buff *skb)
-{
-	netlink_rcv_skb(skb, &nfnetlink_rcv_msg);
-=======
 struct nfnl_err {
 	struct list_head	head;
 	struct nlmsghdr		*nlh;
@@ -892,21 +753,10 @@ static void nfnetlink_unbind(struct net *net, int group)
 	}
 	spin_unlock(&nfnl_grp_active_lock);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __net_init nfnetlink_net_init(struct net *net)
 {
-<<<<<<< HEAD
-	struct sock *nfnl;
-
-	nfnl = netlink_kernel_create(net, NETLINK_NETFILTER, NFNLGRP_MAX,
-				     nfnetlink_rcv, NULL, THIS_MODULE);
-	if (!nfnl)
-		return -ENOMEM;
-	net->nfnl_stash = nfnl;
-	rcu_assign_pointer(net->nfnl, nfnl);
-=======
 	struct nfnl_net *nfnlnet = nfnl_pernet(net);
 	struct netlink_kernel_cfg cfg = {
 		.groups	= NFNLGRP_MAX,
@@ -918,21 +768,11 @@ static int __net_init nfnetlink_net_init(struct net *net)
 	nfnlnet->nfnl = netlink_kernel_create(net, NETLINK_NETFILTER, &cfg);
 	if (!nfnlnet->nfnl)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __net_exit nfnetlink_net_exit_batch(struct list_head *net_exit_list)
 {
-<<<<<<< HEAD
-	struct net *net;
-
-	list_for_each_entry(net, net_exit_list, exit_list)
-		RCU_INIT_POINTER(net->nfnl, NULL);
-	synchronize_net();
-	list_for_each_entry(net, net_exit_list, exit_list)
-		netlink_kernel_release(net->nfnl_stash);
-=======
 	struct nfnl_net *nfnlnet;
 	struct net *net;
 
@@ -941,24 +781,17 @@ static void __net_exit nfnetlink_net_exit_batch(struct list_head *net_exit_list)
 
 		netlink_kernel_release(nfnlnet->nfnl);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations nfnetlink_net_ops = {
 	.init		= nfnetlink_net_init,
 	.exit_batch	= nfnetlink_net_exit_batch,
-<<<<<<< HEAD
-=======
 	.id		= &nfnetlink_pernet_id,
 	.size		= sizeof(struct nfnl_net),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init nfnetlink_init(void)
 {
-<<<<<<< HEAD
-	pr_info("Netfilter messages via NETLINK v%s.\n", nfversion);
-=======
 	int i;
 
 	for (i = NFNLGRP_NONE + 1; i <= NFNLGRP_MAX; i++)
@@ -967,16 +800,11 @@ static int __init nfnetlink_init(void)
 	for (i=0; i<NFNL_SUBSYS_COUNT; i++)
 		__mutex_init(&table[i].mutex, nfnl_lockdep_names[i], &nfnl_lockdep_keys[i]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return register_pernet_subsys(&nfnetlink_net_ops);
 }
 
 static void __exit nfnetlink_exit(void)
 {
-<<<<<<< HEAD
-	pr_info("Removing netfilter NETLINK layer.\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_pernet_subsys(&nfnetlink_net_ops);
 }
 module_init(nfnetlink_init);

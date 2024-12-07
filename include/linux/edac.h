@@ -13,11 +13,6 @@
 #define _LINUX_EDAC_H_
 
 #include <linux/atomic.h>
-<<<<<<< HEAD
-#include <linux/kobject.h>
-#include <linux/completion.h>
-#include <linux/workqueue.h>
-=======
 #include <linux/device.h>
 #include <linux/completion.h>
 #include <linux/workqueue.h>
@@ -25,7 +20,6 @@
 #include <linux/numa.h>
 
 #define EDAC_DEVICE_NAME_LEN	31
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct device;
 
@@ -35,19 +29,8 @@ struct device;
 #define EDAC_OPSTATE_INT	2
 
 extern int edac_op_state;
-<<<<<<< HEAD
-extern int edac_err_assert;
-extern atomic_t edac_handlers;
-extern struct bus_type edac_subsys;
-
-extern int edac_handler_set(void);
-extern void edac_atomic_assert_error(void);
-extern struct bus_type *edac_get_sysfs_subsys(void);
-extern void edac_put_sysfs_subsys(void);
-=======
 
 const struct bus_type *edac_get_sysfs_subsys(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void opstate_init(void)
 {
@@ -61,12 +44,6 @@ static inline void opstate_init(void)
 	return;
 }
 
-<<<<<<< HEAD
-#define EDAC_MC_LABEL_LEN	31
-#define MC_PROC_NAME_MAX_LEN	7
-
-/* memory devices */
-=======
 /* Max length of a DIMM label*/
 #define EDAC_MC_LABEL_LEN	31
 
@@ -92,7 +69,6 @@ static inline void opstate_init(void)
  *
  * Typical values are x4 and x8.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum dev_type {
 	DEV_UNKNOWN = 0,
 	DEV_X1,
@@ -114,12 +90,6 @@ enum dev_type {
 #define DEV_FLAG_X64		BIT(DEV_X64)
 
 /**
-<<<<<<< HEAD
- * enum mem_type - memory types. For a more detailed reference, please see
- *			http://en.wikipedia.org/wiki/DRAM
- *
- * @MEM_EMPTY		Empty csrow
-=======
  * enum hw_event_mc_err_type - type of the detected error
  *
  * @HW_EVENT_ERR_CORRECTED:	Corrected Error - Indicates that an ECC
@@ -170,7 +140,6 @@ static inline char *mc_event_error_type(const unsigned int err_type)
  *			http://en.wikipedia.org/wiki/DRAM
  *
  * @MEM_EMPTY:		Empty csrow
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @MEM_RESERVED:	Reserved csrow type
  * @MEM_UNKNOWN:	Unknown csrow type
  * @MEM_FPM:		FPM - Fast Page Mode, used on systems up to 1995.
@@ -190,13 +159,8 @@ static inline char *mc_event_error_type(const unsigned int err_type)
  *			part of the memory details to the memory controller.
  * @MEM_RMBS:		Rambus DRAM, used on a few Pentium III/IV controllers.
  * @MEM_DDR2:		DDR2 RAM, as described at JEDEC JESD79-2F.
-<<<<<<< HEAD
- *			Those memories are labed as "PC2-" instead of "PC" to
- *			differenciate from DDR.
-=======
  *			Those memories are labeled as "PC2-" instead of "PC" to
  *			differentiate from DDR.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @MEM_FB_DDR2:	Fully-Buffered DDR2, as described at JEDEC Std No. 205
  *			and JESD206.
  *			Those memories are accessed per DIMM slot, and not by
@@ -210,8 +174,6 @@ static inline char *mc_event_error_type(const unsigned int err_type)
  * @MEM_DDR3:		DDR3 RAM
  * @MEM_RDDR3:		Registered DDR3 RAM
  *			This is a variant of the DDR3 memories.
-<<<<<<< HEAD
-=======
  * @MEM_LRDDR3:		Load-Reduced DDR3 memory.
  * @MEM_LPDDR3:		Low-Power DDR3 memory.
  * @MEM_DDR4:		Unbuffered DDR4 RAM
@@ -226,7 +188,6 @@ static inline char *mc_event_error_type(const unsigned int err_type)
  * @MEM_WIO2:		Wide I/O 2.
  * @MEM_HBM2:		High bandwidth Memory Gen 2.
  * @MEM_HBM3:		High bandwidth Memory Gen 3.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum mem_type {
 	MEM_EMPTY = 0,
@@ -246,8 +207,6 @@ enum mem_type {
 	MEM_XDR,
 	MEM_DDR3,
 	MEM_RDDR3,
-<<<<<<< HEAD
-=======
 	MEM_LRDDR3,
 	MEM_LPDDR3,
 	MEM_DDR4,
@@ -261,7 +220,6 @@ enum mem_type {
 	MEM_WIO2,
 	MEM_HBM2,
 	MEM_HBM3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MEM_FLAG_EMPTY		BIT(MEM_EMPTY)
@@ -275,27 +233,6 @@ enum mem_type {
 #define MEM_FLAG_DDR		BIT(MEM_DDR)
 #define MEM_FLAG_RDDR		BIT(MEM_RDDR)
 #define MEM_FLAG_RMBS		BIT(MEM_RMBS)
-<<<<<<< HEAD
-#define MEM_FLAG_DDR2           BIT(MEM_DDR2)
-#define MEM_FLAG_FB_DDR2        BIT(MEM_FB_DDR2)
-#define MEM_FLAG_RDDR2          BIT(MEM_RDDR2)
-#define MEM_FLAG_XDR            BIT(MEM_XDR)
-#define MEM_FLAG_DDR3		 BIT(MEM_DDR3)
-#define MEM_FLAG_RDDR3		 BIT(MEM_RDDR3)
-
-/* chipset Error Detection and Correction capabilities and mode */
-enum edac_type {
-	EDAC_UNKNOWN = 0,	/* Unknown if ECC is available */
-	EDAC_NONE,		/* Doesn't support ECC */
-	EDAC_RESERVED,		/* Reserved ECC type */
-	EDAC_PARITY,		/* Detects parity errors */
-	EDAC_EC,		/* Error Checking - no correction */
-	EDAC_SECDED,		/* Single bit error correction, Double detection */
-	EDAC_S2ECD2ED,		/* Chipkill x2 devices - do these exist? */
-	EDAC_S4ECD4ED,		/* Chipkill x4 devices */
-	EDAC_S8ECD8ED,		/* Chipkill x8 devices */
-	EDAC_S16ECD16ED,	/* Chipkill x16 devices */
-=======
 #define MEM_FLAG_DDR2		BIT(MEM_DDR2)
 #define MEM_FLAG_FB_DDR2	BIT(MEM_FB_DDR2)
 #define MEM_FLAG_RDDR2		BIT(MEM_RDDR2)
@@ -339,7 +276,6 @@ enum edac_type {
 	EDAC_S4ECD4ED,
 	EDAC_S8ECD8ED,
 	EDAC_S16ECD16ED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define EDAC_FLAG_UNKNOWN	BIT(EDAC_UNKNOWN)
@@ -352,20 +288,6 @@ enum edac_type {
 #define EDAC_FLAG_S8ECD8ED	BIT(EDAC_S8ECD8ED)
 #define EDAC_FLAG_S16ECD16ED	BIT(EDAC_S16ECD16ED)
 
-<<<<<<< HEAD
-/* scrubbing capabilities */
-enum scrub_type {
-	SCRUB_UNKNOWN = 0,	/* Unknown if scrubber is available */
-	SCRUB_NONE,		/* No scrubber */
-	SCRUB_SW_PROG,		/* SW progressive (sequential) scrubbing */
-	SCRUB_SW_SRC,		/* Software scrub only errors */
-	SCRUB_SW_PROG_SRC,	/* Progressive software scrub from an error */
-	SCRUB_SW_TUNABLE,	/* Software scrub frequency is tunable */
-	SCRUB_HW_PROG,		/* HW progressive (sequential) scrubbing */
-	SCRUB_HW_SRC,		/* Hardware scrub only errors */
-	SCRUB_HW_PROG_SRC,	/* Progressive hardware scrub from an error */
-	SCRUB_HW_TUNABLE	/* Hardware scrub frequency is tunable */
-=======
 /**
  * enum scrub_type - scrubbing capabilities
  * @SCRUB_UNKNOWN:		Unknown if scrubber is available
@@ -390,7 +312,6 @@ enum scrub_type {
 	SCRUB_HW_SRC,
 	SCRUB_HW_PROG_SRC,
 	SCRUB_HW_TUNABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define SCRUB_FLAG_SW_PROG	BIT(SCRUB_SW_PROG)
@@ -411,115 +332,6 @@ enum scrub_type {
 #define OP_RUNNING_POLL_INTR	0x203
 #define OP_OFFLINE		0x300
 
-<<<<<<< HEAD
-/*
- * Concepts used at the EDAC subsystem
- *
- * There are several things to be aware of that aren't at all obvious:
- *
- * SOCKETS, SOCKET SETS, BANKS, ROWS, CHIP-SELECT ROWS, CHANNELS, etc..
- *
- * These are some of the many terms that are thrown about that don't always
- * mean what people think they mean (Inconceivable!).  In the interest of
- * creating a common ground for discussion, terms and their definitions
- * will be established.
- *
- * Memory devices:	The individual DRAM chips on a memory stick.  These
- *			devices commonly output 4 and 8 bits each (x4, x8).
- *			Grouping several of these in parallel provides the
- *			number of bits that the memory controller expects:
- *			typically 72 bits, in order to provide 64 bits +
- *			8 bits of ECC data.
- *
- * Memory Stick:	A printed circuit board that aggregates multiple
- *			memory devices in parallel.  In general, this is the
- *			Field Replaceable Unit (FRU) which gets replaced, in
- *			the case of excessive errors. Most often it is also
- *			called DIMM (Dual Inline Memory Module).
- *
- * Memory Socket:	A physical connector on the motherboard that accepts
- *			a single memory stick. Also called as "slot" on several
- *			datasheets.
- *
- * Channel:		A memory controller channel, responsible to communicate
- *			with a group of DIMMs. Each channel has its own
- *			independent control (command) and data bus, and can
- *			be used independently or grouped with other channels.
- *
- * Branch:		It is typically the highest hierarchy on a
- *			Fully-Buffered DIMM memory controller.
- *			Typically, it contains two channels.
- *			Two channels at the same branch can be used in single
- *			mode or in lockstep mode.
- *			When lockstep is enabled, the cacheline is doubled,
- *			but it generally brings some performance penalty.
- *			Also, it is generally not possible to point to just one
- *			memory stick when an error occurs, as the error
- *			correction code is calculated using two DIMMs instead
- *			of one. Due to that, it is capable of correcting more
- *			errors than on single mode.
- *
- * Single-channel:	The data accessed by the memory controller is contained
- *			into one dimm only. E. g. if the data is 64 bits-wide,
- *			the data flows to the CPU using one 64 bits parallel
- *			access.
- *			Typically used with SDR, DDR, DDR2 and DDR3 memories.
- *			FB-DIMM and RAMBUS use a different concept for channel,
- *			so this concept doesn't apply there.
- *
- * Double-channel:	The data size accessed by the memory controller is
- *			interlaced into two dimms, accessed at the same time.
- *			E. g. if the DIMM is 64 bits-wide (72 bits with ECC),
- *			the data flows to the CPU using a 128 bits parallel
- *			access.
- *
- * Chip-select row:	This is the name of the DRAM signal used to select the
- *			DRAM ranks to be accessed. Common chip-select rows for
- *			single channel are 64 bits, for dual channel 128 bits.
- *			It may not be visible by the memory controller, as some
- *			DIMM types have a memory buffer that can hide direct
- *			access to it from the Memory Controller.
- *
- * Single-Ranked stick:	A Single-ranked stick has 1 chip-select row of memory.
- *			Motherboards commonly drive two chip-select pins to
- *			a memory stick. A single-ranked stick, will occupy
- *			only one of those rows. The other will be unused.
- *
- * Double-Ranked stick:	A double-ranked stick has two chip-select rows which
- *			access different sets of memory devices.  The two
- *			rows cannot be accessed concurrently.
- *
- * Double-sided stick:	DEPRECATED TERM, see Double-Ranked stick.
- *			A double-sided stick has two chip-select rows which
- *			access different sets of memory devices. The two
- *			rows cannot be accessed concurrently. "Double-sided"
- *			is irrespective of the memory devices being mounted
- *			on both sides of the memory stick.
- *
- * Socket set:		All of the memory sticks that are required for
- *			a single memory access or all of the memory sticks
- *			spanned by a chip-select row.  A single socket set
- *			has two chip-select rows and if double-sided sticks
- *			are used these will occupy those chip-select rows.
- *
- * Bank:		This term is avoided because it is unclear when
- *			needing to distinguish between chip-select rows and
- *			socket sets.
- *
- * Controller pages:
- *
- * Physical pages:
- *
- * Virtual pages:
- *
- *
- * STRUCTURE ORGANIZATION AND CHOICES
- *
- *
- *
- * PS - I enjoyed writing all that about as much as you enjoyed reading it.
- */
-=======
 /**
  * enum edac_mc_layer_type - memory controller hierarchy layer
  *
@@ -591,78 +403,12 @@ struct dimm_info {
 	u32 ce_count;
 	u32 ue_count;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct rank_info - contains the information for one DIMM rank
  *
  * @chan_idx:	channel number where the rank is (typically, 0 or 1)
  * @ce_count:	number of correctable errors for this rank
-<<<<<<< HEAD
- * @label:	DIMM label. Different ranks for the same DIMM should be
- *		filled, on userspace, with the same label.
- *		FIXME: The core currently won't enforce it.
- * @csrow:	A pointer to the chip select row structure (the parent
- *		structure). The location of the rank is given by
- *		the (csrow->csrow_idx, chan_idx) vector.
- */
-struct rank_info {
-	int chan_idx;
-	u32 ce_count;
-	char label[EDAC_MC_LABEL_LEN + 1];
-	struct csrow_info *csrow;	/* the parent */
-};
-
-struct csrow_info {
-	unsigned long first_page;	/* first page number in dimm */
-	unsigned long last_page;	/* last page number in dimm */
-	unsigned long page_mask;	/* used for interleaving -
-					 * 0UL for non intlv
-					 */
-	u32 nr_pages;		/* number of pages in csrow */
-	u32 grain;		/* granularity of reported error in bytes */
-	int csrow_idx;		/* the chip-select row */
-	enum dev_type dtype;	/* memory device type */
-	u32 ue_count;		/* Uncorrectable Errors for this csrow */
-	u32 ce_count;		/* Correctable Errors for this csrow */
-	enum mem_type mtype;	/* memory csrow type */
-	enum edac_type edac_mode;	/* EDAC mode for this csrow */
-	struct mem_ctl_info *mci;	/* the parent */
-
-	struct kobject kobj;	/* sysfs kobject for this csrow */
-
-	/* channel information for this csrow */
-	u32 nr_channels;
-	struct rank_info *channels;
-};
-
-struct mcidev_sysfs_group {
-	const char *name;				/* group name */
-	const struct mcidev_sysfs_attribute *mcidev_attr; /* group attributes */
-};
-
-struct mcidev_sysfs_group_kobj {
-	struct list_head list;		/* list for all instances within a mc */
-
-	struct kobject kobj;		/* kobj for the group */
-
-	const struct mcidev_sysfs_group *grp;	/* group description table */
-	struct mem_ctl_info *mci;	/* the parent */
-};
-
-/* mcidev_sysfs_attribute structure
- *	used for driver sysfs attributes and in mem_ctl_info
- * 	sysfs top level entries
- */
-struct mcidev_sysfs_attribute {
-	/* It should use either attr or grp */
-	struct attribute attr;
-	const struct mcidev_sysfs_group *grp;	/* Points to a group of attributes */
-
-	/* Ops for show/store values at the attribute - not used on group */
-        ssize_t (*show)(struct mem_ctl_info *,char *);
-        ssize_t (*store)(struct mem_ctl_info *, const char *,size_t);
-=======
  * @csrow:	A pointer to the chip select row structure (the parent
  *		structure). The location of the rank is given by
  *		the (csrow->csrow_idx, chan_idx) vector.
@@ -743,18 +489,14 @@ struct edac_raw_error_desc {
 	unsigned long syndrome;
 	const char *msg;
 	const char *other_detail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* MEMORY controller information structure
  */
 struct mem_ctl_info {
-<<<<<<< HEAD
-=======
 	struct device			dev;
 	const struct bus_type		*bus;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head link;	/* for global list of mem_ctl_info structs */
 
 	struct module *owner;	/* Module owner of this control struct */
@@ -796,10 +538,6 @@ struct mem_ctl_info {
 	unsigned long (*ctl_page_to_phys) (struct mem_ctl_info * mci,
 					   unsigned long page);
 	int mc_idx;
-<<<<<<< HEAD
-	int nr_csrows;
-	struct csrow_info *csrows;
-=======
 	struct csrow_info **csrows;
 	unsigned int nr_csrows, num_cschannel;
 
@@ -822,35 +560,11 @@ struct mem_ctl_info {
 	unsigned int tot_dimms;
 	struct dimm_info **dimms;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * FIXME - what about controllers on other busses? - IDs must be
 	 * unique.  dev pointer should be sufficiently unique, but
 	 * BUS:SLOT.FUNC numbers may not be unique.
 	 */
-<<<<<<< HEAD
-	struct device *dev;
-	const char *mod_name;
-	const char *mod_ver;
-	const char *ctl_name;
-	const char *dev_name;
-	char proc_name[MC_PROC_NAME_MAX_LEN + 1];
-	void *pvt_info;
-	u32 ue_noinfo_count;	/* Uncorrectable Errors w/o info */
-	u32 ce_noinfo_count;	/* Correctable Errors w/o info */
-	u32 ue_count;		/* Total Uncorrectable Errors for this MC */
-	u32 ce_count;		/* Total Correctable Errors for this MC */
-	unsigned long start_time;	/* mci load start time (in jiffies) */
-
-	struct completion complete;
-
-	/* edac sysfs device control */
-	struct kobject edac_mci_kobj;
-
-	/* list for all grp instances within a mc */
-	struct list_head grp_kobj_list;
-
-=======
 	struct device *pdev;
 	const char *mod_name;
 	const char *ctl_name;
@@ -867,16 +581,11 @@ struct mem_ctl_info {
 
 	struct completion complete;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Additional top controller level attributes, but specified
 	 * by the low level driver.
 	 *
 	 * Set by the low level driver to provide attributes at the
-<<<<<<< HEAD
-	 * controller level, same level as 'ue_count' and 'ce_count' above.
-=======
 	 * controller level.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * An array of structures, NULL terminated
 	 *
 	 * If attributes are desired, then set to array of attributes
@@ -887,13 +596,6 @@ struct mem_ctl_info {
 	/* work struct for this MC */
 	struct delayed_work work;
 
-<<<<<<< HEAD
-	/* the internal state of this controller instance */
-	int op_state;
-};
-
-#endif
-=======
 	/*
 	 * Used to report an error - by being at the global struct
 	 * makes the memory allocated by the EDAC core
@@ -960,4 +662,3 @@ static inline struct dimm_info *edac_get_dimm(struct mem_ctl_info *mci,
 	return mci->dimms[index];
 }
 #endif /* _LINUX_EDAC_H_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

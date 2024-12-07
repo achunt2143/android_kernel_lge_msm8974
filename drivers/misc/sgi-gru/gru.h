@@ -30,13 +30,7 @@
 /*
  * Size used to map GRU GSeg
  */
-<<<<<<< HEAD
-#if defined(CONFIG_IA64)
-#define GRU_GSEG_PAGESIZE	(256 * 1024UL)
-#elif defined(CONFIG_X86_64)
-=======
 #if defined(CONFIG_X86_64)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GRU_GSEG_PAGESIZE	(256 * 1024UL)		/* ZZZ 2MB ??? */
 #else
 #error "Unsupported architecture"

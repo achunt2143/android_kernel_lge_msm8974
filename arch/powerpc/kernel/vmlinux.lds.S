@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC64
 #define PROVIDE32(x)	PROVIDE(__unused__##x)
 #else
 #define PROVIDE32(x)	PROVIDE(x)
 #endif
-<<<<<<< HEAD
-=======
 
 #define BSS_FIRST_SECTIONS *(.bss.prominit)
 #define EMITS_PT_NOTE
@@ -31,33 +26,11 @@
 		__stop___restart_table = .;				\
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm-generic/vmlinux.lds.h>
 #include <asm/cache.h>
 #include <asm/thread_info.h>
 
-<<<<<<< HEAD
-ENTRY(_stext)
-
-PHDRS {
-	kernel PT_LOAD FLAGS(7); /* RWX */
-	notes PT_NOTE FLAGS(0);
-	dummy PT_NOTE FLAGS(0);
-
-	/* binutils < 2.18 has a bug that makes it misbehave when taking an
-	   ELF file with all segments at load address 0 as input.  This
-	   happens when running "strip" on vmlinux, because of the AT() magic
-	   in this linker script.  People using GCC >= 4.2 won't run into
-	   this problem, because the "build-id" support will put some data
-	   into the "notes" segment (at a non-zero load address).
-
-	   To work around this, we force some data into both the "dummy"
-	   segment and the kernel segment, so the dummy segment will get a
-	   non-zero load address.  It's not enough to always create the
-	   "notes" segment, since if nothing gets assigned to it, its load
-	   address will be zero.  */
-=======
 #define STRICT_ALIGN_SIZE	(1 << CONFIG_DATA_SHIFT)
 
 #if STRICT_ALIGN_SIZE < PAGE_SIZE
@@ -69,7 +42,6 @@ ENTRY(_stext)
 PHDRS {
 	text PT_LOAD FLAGS(7); /* RWX */
 	note PT_NOTE FLAGS(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PPC64
@@ -87,15 +59,6 @@ SECTIONS
  * Text, read only data and other permanent read-only sections
  */
 
-<<<<<<< HEAD
-	/* Text and gots */
-	.text : AT(ADDR(.text) - LOAD_OFFSET) {
-		ALIGN_FUNCTION();
-		HEAD_TEXT
-		_text = .;
-		/* careful! __ftr_alt_* sections need to be close to .text */
-		*(.text .fixup __ftr_alt_* .ref.text)
-=======
 	_text = .;
 	_stext = .;
 
@@ -146,22 +109,10 @@ SECTIONS
 		*(.text.hot .text.hot.* TEXT_MAIN .text.fixup .text.unlikely .text.unlikely.* .fixup __ftr_alt_* .ref.text);
 		*(.tramp.ftrace.text);
 		NOINSTR_TEXT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SCHED_TEXT
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
-<<<<<<< HEAD
-
-#ifdef CONFIG_PPC32
-		*(.got1)
-		__got2_start = .;
-		*(.got2)
-		__got2_end = .;
-#endif /* CONFIG_PPC32 */
-
-	} :kernel
-=======
 		SOFTIRQENTRY_TEXT
 		/*
 		 * -Os builds call FP save/restore functions. The powerpc64
@@ -175,28 +126,12 @@ SECTIONS
 		MEM_KEEP(init.text)
 		MEM_KEEP(exit.text)
 	} :text
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	. = ALIGN(PAGE_SIZE);
 	_etext = .;
 	PROVIDE32 (etext = .);
 
 	/* Read-only data */
-<<<<<<< HEAD
-	RODATA
-
-	EXCEPTION_TABLE(0)
-
-	NOTES :kernel :notes
-
-	/* The dummy segment contents for the bug workaround mentioned above
-	   near PHDRS.  */
-	.dummy : AT(ADDR(.dummy) - LOAD_OFFSET) {
-		LONG(0)
-		LONG(0)
-		LONG(0)
-	} :kernel :dummy
-=======
 	RO_DATA(PAGE_SIZE)
 
 #ifdef CONFIG_PPC32
@@ -325,16 +260,10 @@ SECTIONS
 	__srwx_boundary = .;
 	__end_rodata = .;
 	__init_begin = .;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Init sections discarded at runtime
  */
-<<<<<<< HEAD
-	. = ALIGN(PAGE_SIZE);
-	__init_begin = .;
-	INIT_TEXT_SECTION(PAGE_SIZE) :kernel
-=======
 	.init.text : AT(ADDR(.init.text) - LOAD_OFFSET) {
 		_sinittext = .;
 		INIT_TEXT
@@ -347,40 +276,11 @@ SECTIONS
 		_einittext = .;
 		*(.tramp.ftrace.init);
 	} :text
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* .exit.text is discarded at runtime, not link time,
 	 * to deal with references from __bug_table
 	 */
 	.exit.text : AT(ADDR(.exit.text) - LOAD_OFFSET) {
-<<<<<<< HEAD
-		EXIT_TEXT
-	}
-
-	.init.data : AT(ADDR(.init.data) - LOAD_OFFSET) {
-		INIT_DATA
-		__vtop_table_begin = .;
-		*(.vtop_fixup);
-		__vtop_table_end = .;
-		__ptov_table_begin = .;
-		*(.ptov_fixup);
-		__ptov_table_end = .;
-	}
-
-	.init.setup : AT(ADDR(.init.setup) - LOAD_OFFSET) {
-		INIT_SETUP(16)
-	}
-
-	.initcall.init : AT(ADDR(.initcall.init) - LOAD_OFFSET) {
-		INIT_CALLS
-	}
-
-	.con_initcall.init : AT(ADDR(.con_initcall.init) - LOAD_OFFSET) {
-		CON_INITCALL
-	}
-
-	SECURITY_INIT
-=======
 		__exittext_begin = .;
 		EXIT_TEXT
 		__exittext_end = .;
@@ -389,80 +289,47 @@ SECTIONS
 	. = ALIGN(PAGE_SIZE);
 
 	INIT_DATA_SECTION(16)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	. = ALIGN(8);
 	__ftr_fixup : AT(ADDR(__ftr_fixup) - LOAD_OFFSET) {
 		__start___ftr_fixup = .;
-<<<<<<< HEAD
-		*(__ftr_fixup)
-=======
 		KEEP(*(__ftr_fixup))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__stop___ftr_fixup = .;
 	}
 	. = ALIGN(8);
 	__mmu_ftr_fixup : AT(ADDR(__mmu_ftr_fixup) - LOAD_OFFSET) {
 		__start___mmu_ftr_fixup = .;
-<<<<<<< HEAD
-		*(__mmu_ftr_fixup)
-=======
 		KEEP(*(__mmu_ftr_fixup))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__stop___mmu_ftr_fixup = .;
 	}
 	. = ALIGN(8);
 	__lwsync_fixup : AT(ADDR(__lwsync_fixup) - LOAD_OFFSET) {
 		__start___lwsync_fixup = .;
-<<<<<<< HEAD
-		*(__lwsync_fixup)
-=======
 		KEEP(*(__lwsync_fixup))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__stop___lwsync_fixup = .;
 	}
 #ifdef CONFIG_PPC64
 	. = ALIGN(8);
 	__fw_ftr_fixup : AT(ADDR(__fw_ftr_fixup) - LOAD_OFFSET) {
 		__start___fw_ftr_fixup = .;
-<<<<<<< HEAD
-		*(__fw_ftr_fixup)
-		__stop___fw_ftr_fixup = .;
-	}
-#endif
-	.init.ramfs : AT(ADDR(.init.ramfs) - LOAD_OFFSET) {
-		INIT_RAM_FS
-	}
-=======
 		KEEP(*(__fw_ftr_fixup))
 		__stop___fw_ftr_fixup = .;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PERCPU_SECTION(L1_CACHE_BYTES)
 
 	. = ALIGN(8);
 	.machine.desc : AT(ADDR(.machine.desc) - LOAD_OFFSET) {
 		__machine_desc_start = . ;
-<<<<<<< HEAD
-		*(.machine.desc)
-=======
 		KEEP(*(.machine.desc))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__machine_desc_end = . ;
 	}
 #ifdef CONFIG_RELOCATABLE
 	. = ALIGN(8);
 	.dynsym : AT(ADDR(.dynsym) - LOAD_OFFSET)
 	{
-<<<<<<< HEAD
-#ifdef CONFIG_RELOCATABLE_PPC32
 		__dynamic_symtab = .;
-#endif
-=======
-		__dynamic_symtab = .;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(.dynsym)
 	}
 	.dynstr : AT(ADDR(.dynstr) - LOAD_OFFSET) { *(.dynstr) }
@@ -472,10 +339,7 @@ SECTIONS
 		*(.dynamic)
 	}
 	.hash : AT(ADDR(.hash) - LOAD_OFFSET) { *(.hash) }
-<<<<<<< HEAD
-=======
 	.gnu.hash : AT(ADDR(.gnu.hash) - LOAD_OFFSET) { *(.gnu.hash) }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.interp : AT(ADDR(.interp) - LOAD_OFFSET) { *(.interp) }
 	.rela.dyn : AT(ADDR(.rela.dyn) - LOAD_OFFSET)
 	{
@@ -483,15 +347,12 @@ SECTIONS
 		*(.rela*)
 	}
 #endif
-<<<<<<< HEAD
-=======
 	/* .exit.data is discarded at runtime, not link time,
 	 * to deal with references from .exit.text
 	 */
 	.exit.data : AT(ADDR(.exit.data) - LOAD_OFFSET) {
 		EXIT_DATA
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* freed after init ends here */
 	. = ALIGN(PAGE_SIZE);
@@ -504,36 +365,6 @@ SECTIONS
 	. = ALIGN(PAGE_SIZE);
 	_sdata = .;
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC32
-	.data : AT(ADDR(.data) - LOAD_OFFSET) {
-		DATA_DATA
-		*(.sdata)
-		*(.got.plt) *(.got)
-	}
-#else
-	.data : AT(ADDR(.data) - LOAD_OFFSET) {
-		DATA_DATA
-		*(.data.rel*)
-		*(.toc1)
-		*(.branch_lt)
-	}
-
-	.opd : AT(ADDR(.opd) - LOAD_OFFSET) {
-		*(.opd)
-	}
-
-	. = ALIGN(256);
-	.got : AT(ADDR(.got) - LOAD_OFFSET) {
-		__toc_start = .;
-		*(.got)
-		*(.toc)
-	}
-#endif
-
-	/* The initial task and kernel stack */
-	INIT_TASK_DATA_SECTION(THREAD_SIZE)
-=======
 	.data : AT(ADDR(.data) - LOAD_OFFSET) {
 		DATA_DATA
 		*(.data.rel*)
@@ -544,7 +375,6 @@ SECTIONS
 
 	/* The initial task and kernel stack */
 	INIT_TASK_DATA_SECTION(THREAD_ALIGN)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.data..page_aligned : AT(ADDR(.data..page_aligned) - LOAD_OFFSET) {
 		PAGE_ALIGNED_DATA(PAGE_SIZE)
@@ -563,11 +393,8 @@ SECTIONS
 		NOSAVE_DATA
 	}
 
-<<<<<<< HEAD
-=======
 	BUG_TABLE
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	. = ALIGN(PAGE_SIZE);
 	_edata  =  .;
 	PROVIDE32 (edata = .);
@@ -582,10 +409,6 @@ SECTIONS
 	_end = . ;
 	PROVIDE32 (end = .);
 
-<<<<<<< HEAD
-	/* Sections to be discarded. */
-	DISCARDS
-=======
 	DWARF_DEBUG
 	ELF_DETAILS
 
@@ -600,5 +423,4 @@ SECTIONS
 		*(.rela*)
 #endif
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

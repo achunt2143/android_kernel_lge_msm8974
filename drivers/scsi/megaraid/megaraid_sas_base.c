@@ -1,37 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Linux MegaRAID driver for SAS based RAID controllers
- *
- *  Copyright (c) 2009-2011  LSI Corporation.
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- *  FILE: megaraid_sas_base.c
- *  Version : v00.00.06.14-rc1
- *
- *  Authors: LSI Corporation
- *           Sreenivas Bagalkote
- *           Sumant Patro
- *           Bo Yang
- *           Adam Radford <linuxraid@lsi.com>
- *
- *  Send feedback to: <megaraidlinux@lsi.com>
- *
- *  Mail to: LSI Corporation, 1621 Barber Lane, Milpitas, CA 95035
- *     ATTN: Linuxraid
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Linux MegaRAID driver for SAS based RAID controllers
@@ -49,7 +15,6 @@
  *           Sumit Saxena <sumit.saxena@broadcom.com>
  *
  *  Send feedback to: megaraidlinux.pdl@broadcom.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -63,33 +28,23 @@
 #include <linux/delay.h>
 #include <linux/uio.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
 #include <asm/unaligned.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/compat.h>
 #include <linux/blkdev.h>
 #include <linux/mutex.h>
 #include <linux/poll.h>
-<<<<<<< HEAD
-=======
 #include <linux/vmalloc.h>
 #include <linux/irq_poll.h>
 #include <linux/blk-mq-pci.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
-<<<<<<< HEAD
-=======
 #include <scsi/scsi_dbg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "megaraid_sas_fusion.h"
 #include "megaraid_sas.h"
 
@@ -98,30 +53,11 @@
  * Will be set in megasas_init_mfi if user does not provide
  */
 static unsigned int max_sectors;
-<<<<<<< HEAD
-module_param_named(max_sectors, max_sectors, int, 0);
-=======
 module_param_named(max_sectors, max_sectors, int, 0444);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(max_sectors,
 	"Maximum number of sectors per IO command");
 
 static int msix_disable;
-<<<<<<< HEAD
-module_param(msix_disable, int, S_IRUGO);
-MODULE_PARM_DESC(msix_disable, "Disable MSI-X interrupt handling. Default: 0");
-
-MODULE_LICENSE("GPL");
-MODULE_VERSION(MEGASAS_VERSION);
-MODULE_AUTHOR("megaraidlinux@lsi.com");
-MODULE_DESCRIPTION("LSI MegaRAID SAS Driver");
-
-int megasas_transition_to_ready(struct megasas_instance *instance, int ocr);
-static int megasas_get_pd_list(struct megasas_instance *instance);
-static int megasas_issue_init_mfi(struct megasas_instance *instance);
-static int megasas_register_aen(struct megasas_instance *instance,
-				u32 seq_num, u32 class_locale_word);
-=======
 module_param(msix_disable, int, 0444);
 MODULE_PARM_DESC(msix_disable, "Disable MSI-X interrupt handling. Default: 0");
 
@@ -208,7 +144,6 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
 static void
 megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI ID table for all supported controllers
  */
@@ -234,10 +169,6 @@ static struct pci_device_id megasas_pci_table[] = {
 	/* xscale IOP */
 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_FUSION)},
 	/* Fusion */
-<<<<<<< HEAD
-	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_INVADER)},
-	/* Invader */
-=======
 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 	/* Plasma */
 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_INVADER)},
@@ -265,18 +196,13 @@ static struct pci_device_id megasas_pci_table[] = {
 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_AERO_10E3)},
 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_AERO_10E4)},
 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_AERO_10E7)},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 
 MODULE_DEVICE_TABLE(pci, megasas_pci_table);
 
 static int megasas_mgmt_majorno;
-<<<<<<< HEAD
-static struct megasas_mgmt_info megasas_mgmt_info;
-=======
 struct megasas_mgmt_info megasas_mgmt_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct fasync_struct *megasas_async_queue;
 static DEFINE_MUTEX(megasas_async_queue_mutex);
 
@@ -285,11 +211,6 @@ static DECLARE_WAIT_QUEUE_HEAD(megasas_poll_wait);
 static u32 support_poll_for_event;
 u32 megasas_dbg_lvl;
 static u32 support_device_change;
-<<<<<<< HEAD
-
-/* define lock for aen poll */
-spinlock_t poll_aen_lock;
-=======
 static bool support_nvme_encapsulation;
 static bool support_pci_lane_margining;
 
@@ -298,17 +219,12 @@ static DEFINE_SPINLOCK(poll_aen_lock);
 
 extern struct dentry *megasas_debugfs_root;
 extern int megasas_blk_mq_poll(struct Scsi_Host *shost, unsigned int queue_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void
 megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 		     u8 alt_status);
 static u32
-<<<<<<< HEAD
-megasas_read_fw_status_reg_gen2(struct megasas_register_set __iomem *regs);
-=======
 megasas_read_fw_status_reg_gen2(struct megasas_instance *instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 megasas_adp_reset_gen2(struct megasas_instance *instance,
 		       struct megasas_register_set __iomem *reg_set);
@@ -319,27 +235,6 @@ u32
 megasas_build_and_issue_cmd(struct megasas_instance *instance,
 			    struct scsi_cmnd *scmd);
 static void megasas_complete_cmd_dpc(unsigned long instance_addr);
-<<<<<<< HEAD
-void
-megasas_release_fusion(struct megasas_instance *instance);
-int
-megasas_ioc_init_fusion(struct megasas_instance *instance);
-void
-megasas_free_cmds_fusion(struct megasas_instance *instance);
-u8
-megasas_get_map_info(struct megasas_instance *instance);
-int
-megasas_sync_map_info(struct megasas_instance *instance);
-int
-wait_and_poll(struct megasas_instance *instance, struct megasas_cmd *cmd);
-void megasas_reset_reply_desc(struct megasas_instance *instance);
-u8 MR_ValidateMapInfo(struct MR_FW_RAID_MAP_ALL *map,
-		      struct LD_LOAD_BALANCE_INFO *lbInfo);
-int megasas_reset_fusion(struct Scsi_Host *shost);
-void megasas_fusion_ocr_wq(struct work_struct *work);
-
-void
-=======
 int
 wait_and_poll(struct megasas_instance *instance, struct megasas_cmd *cmd,
 	int seconds);
@@ -407,15 +302,11 @@ void megasas_set_dma_settings(struct megasas_instance *instance,
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 megasas_issue_dcmd(struct megasas_instance *instance, struct megasas_cmd *cmd)
 {
 	instance->instancet->fire_cmd(instance,
 		cmd->frame_phys_addr, 0, instance->reg_set);
-<<<<<<< HEAD
-=======
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -430,28 +321,17 @@ struct megasas_cmd *megasas_get_cmd(struct megasas_instance
 	unsigned long flags;
 	struct megasas_cmd *cmd = NULL;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&instance->cmd_pool_lock, flags);
-=======
 	spin_lock_irqsave(&instance->mfi_pool_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!list_empty(&instance->cmd_pool)) {
 		cmd = list_entry((&instance->cmd_pool)->next,
 				 struct megasas_cmd, list);
 		list_del_init(&cmd->list);
 	} else {
-<<<<<<< HEAD
-		printk(KERN_ERR "megasas: Command pool empty!\n");
-	}
-
-	spin_unlock_irqrestore(&instance->cmd_pool_lock, flags);
-=======
 		dev_err(&instance->pdev->dev, "Command pool empty!\n");
 	}
 
 	spin_unlock_irqrestore(&instance->mfi_pool_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cmd;
 }
 
@@ -460,39 +340,6 @@ struct megasas_cmd *megasas_get_cmd(struct megasas_instance
  * @instance:		Adapter soft state
  * @cmd:		Command packet to be returned to free command pool
  */
-<<<<<<< HEAD
-inline void
-megasas_return_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&instance->cmd_pool_lock, flags);
-
-	cmd->scmd = NULL;
-	cmd->frame_count = 0;
-	if ((instance->pdev->device != PCI_DEVICE_ID_LSI_FUSION) &&
-	    (instance->pdev->device != PCI_DEVICE_ID_LSI_INVADER) &&
-	    (reset_devices))
-		cmd->frame->hdr.cmd = MFI_CMD_INVALID;
-	list_add_tail(&cmd->list, &instance->cmd_pool);
-
-	spin_unlock_irqrestore(&instance->cmd_pool_lock, flags);
-}
-
-
-/**
-*	The following functions are defined for xscale
-*	(deviceid : 1064R, PERC5) controllers
-*/
-
-/**
- * megasas_enable_intr_xscale -	Enables interrupts
- * @regs:			MFI register set
- */
-static inline void
-megasas_enable_intr_xscale(struct megasas_register_set __iomem * regs)
-{
-=======
 void
 megasas_return_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd)
 {
@@ -614,7 +461,6 @@ megasas_enable_intr_xscale(struct megasas_instance *instance)
 	struct megasas_register_set __iomem *regs;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0, &(regs)->outbound_intr_mask);
 
 	/* Dummy readl to force pci flush */
@@ -623,14 +469,6 @@ megasas_enable_intr_xscale(struct megasas_instance *instance)
 
 /**
  * megasas_disable_intr_xscale -Disables interrupt
-<<<<<<< HEAD
- * @regs:			MFI register set
- */
-static inline void
-megasas_disable_intr_xscale(struct megasas_register_set __iomem * regs)
-{
-	u32 mask = 0x1f;
-=======
  * @instance:	Adapter soft state
  */
 static inline void
@@ -640,7 +478,6 @@ megasas_disable_intr_xscale(struct megasas_instance *instance)
 	u32 mask = 0x1f;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(mask, &regs->outbound_intr_mask);
 	/* Dummy readl to force pci flush */
 	readl(&regs->outbound_intr_mask);
@@ -648,24 +485,6 @@ megasas_disable_intr_xscale(struct megasas_instance *instance)
 
 /**
  * megasas_read_fw_status_reg_xscale - returns the current FW status value
-<<<<<<< HEAD
- * @regs:			MFI register set
- */
-static u32
-megasas_read_fw_status_reg_xscale(struct megasas_register_set __iomem * regs)
-{
-	return readl(&(regs)->outbound_msg_0);
-}
-/**
- * megasas_clear_interrupt_xscale -	Check & clear interrupt
- * @regs:				MFI register set
- */
-static int
-megasas_clear_intr_xscale(struct megasas_register_set __iomem * regs)
-{
-	u32 status;
-	u32 mfiStatus = 0;
-=======
  * @instance:	Adapter soft state
  */
 static u32
@@ -685,7 +504,6 @@ megasas_clear_intr_xscale(struct megasas_instance *instance)
 	struct megasas_register_set __iomem *regs;
 	regs = instance->reg_set;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check if it is our interrupt
 	 */
@@ -710,16 +528,10 @@ megasas_clear_intr_xscale(struct megasas_instance *instance)
 
 /**
  * megasas_fire_cmd_xscale -	Sends command to the FW
-<<<<<<< HEAD
- * @frame_phys_addr :		Physical address of cmd
- * @frame_count :		Number of frames for the command
- * @regs :			MFI register set
-=======
  * @instance:		Adapter soft state
  * @frame_phys_addr :	Physical address of cmd
  * @frame_count :	Number of frames for the command
  * @regs :		MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void
 megasas_fire_cmd_xscale(struct megasas_instance *instance,
@@ -728,10 +540,7 @@ megasas_fire_cmd_xscale(struct megasas_instance *instance,
 		struct megasas_register_set __iomem *regs)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&instance->hba_lock, flags);
 	writel((frame_phys_addr >> 3)|(frame_count),
 	       &(regs)->inbound_queue_port);
@@ -740,12 +549,8 @@ megasas_fire_cmd_xscale(struct megasas_instance *instance,
 
 /**
  * megasas_adp_reset_xscale -  For controller reset
-<<<<<<< HEAD
- * @regs:                              MFI register set
-=======
  * @instance:	Adapter soft state
  * @regs:	MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 megasas_adp_reset_xscale(struct megasas_instance *instance,
@@ -753,25 +558,16 @@ megasas_adp_reset_xscale(struct megasas_instance *instance,
 {
 	u32 i;
 	u32 pcidata;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(MFI_ADP_RESET, &regs->inbound_doorbell);
 
 	for (i = 0; i < 3; i++)
 		msleep(1000); /* sleep for 3 secs */
 	pcidata  = 0;
 	pci_read_config_dword(instance->pdev, MFI_1068_PCSR_OFFSET, &pcidata);
-<<<<<<< HEAD
-	printk(KERN_NOTICE "pcidata = %x\n", pcidata);
-	if (pcidata & 0x2) {
-		printk(KERN_NOTICE "mfi 1068 offset read=%x\n", pcidata);
-=======
 	dev_notice(&instance->pdev->dev, "pcidata = %x\n", pcidata);
 	if (pcidata & 0x2) {
 		dev_notice(&instance->pdev->dev, "mfi 1068 offset read=%x\n", pcidata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcidata &= ~0x2;
 		pci_write_config_dword(instance->pdev,
 				MFI_1068_PCSR_OFFSET, pcidata);
@@ -782,15 +578,9 @@ megasas_adp_reset_xscale(struct megasas_instance *instance,
 		pcidata  = 0;
 		pci_read_config_dword(instance->pdev,
 				MFI_1068_FW_HANDSHAKE_OFFSET, &pcidata);
-<<<<<<< HEAD
-		printk(KERN_NOTICE "1068 offset handshake read=%x\n", pcidata);
-		if ((pcidata & 0xffff0000) == MFI_1068_FW_READY) {
-			printk(KERN_NOTICE "1068 offset pcidt=%x\n", pcidata);
-=======
 		dev_notice(&instance->pdev->dev, "1068 offset handshake read=%x\n", pcidata);
 		if ((pcidata & 0xffff0000) == MFI_1068_FW_READY) {
 			dev_notice(&instance->pdev->dev, "1068 offset pcidt=%x\n", pcidata);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pcidata = 0;
 			pci_write_config_dword(instance->pdev,
 				MFI_1068_FW_HANDSHAKE_OFFSET, pcidata);
@@ -801,31 +591,17 @@ megasas_adp_reset_xscale(struct megasas_instance *instance,
 
 /**
  * megasas_check_reset_xscale -	For controller reset check
-<<<<<<< HEAD
- * @regs:				MFI register set
-=======
  * @instance:	Adapter soft state
  * @regs:	MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 megasas_check_reset_xscale(struct megasas_instance *instance,
 		struct megasas_register_set __iomem *regs)
 {
-<<<<<<< HEAD
-	u32 consumer;
-	consumer = *instance->consumer;
-
-	if ((instance->adprecovery != MEGASAS_HBA_OPERATIONAL) &&
-		(*instance->consumer == MEGASAS_ADPRESET_INPROG_SIGN)) {
-		return 1;
-	}
-=======
 	if ((atomic_read(&instance->adprecovery) != MEGASAS_HBA_OPERATIONAL) &&
 	    (le32_to_cpu(*instance->consumer) ==
 		MEGASAS_ADPRESET_INPROG_SIGN))
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -845,25 +621,6 @@ static struct megasas_instance_template megasas_instance_template_xscale = {
 	.issue_dcmd = megasas_issue_dcmd,
 };
 
-<<<<<<< HEAD
-/**
-*	This is the end of set of functions & definitions specific
-*	to xscale (deviceid : 1064R, PERC5) controllers
-*/
-
-/**
-*	The following functions are defined for ppc (deviceid : 0x60)
-* 	controllers
-*/
-
-/**
- * megasas_enable_intr_ppc -	Enables interrupts
- * @regs:			MFI register set
- */
-static inline void
-megasas_enable_intr_ppc(struct megasas_register_set __iomem * regs)
-{
-=======
 /*
  * This is the end of set of functions & definitions specific
  * to xscale (deviceid : 1064R, PERC5) controllers
@@ -884,7 +641,6 @@ megasas_enable_intr_ppc(struct megasas_instance *instance)
 	struct megasas_register_set __iomem *regs;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0xFFFFFFFF, &(regs)->outbound_doorbell_clear);
 
 	writel(~0x80000000, &(regs)->outbound_intr_mask);
@@ -895,14 +651,6 @@ megasas_enable_intr_ppc(struct megasas_instance *instance)
 
 /**
  * megasas_disable_intr_ppc -	Disable interrupt
-<<<<<<< HEAD
- * @regs:			MFI register set
- */
-static inline void
-megasas_disable_intr_ppc(struct megasas_register_set __iomem * regs)
-{
-	u32 mask = 0xFFFFFFFF;
-=======
  * @instance:	Adapter soft state
  */
 static inline void
@@ -912,7 +660,6 @@ megasas_disable_intr_ppc(struct megasas_instance *instance)
 	u32 mask = 0xFFFFFFFF;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(mask, &regs->outbound_intr_mask);
 	/* Dummy readl to force pci flush */
 	readl(&regs->outbound_intr_mask);
@@ -920,24 +667,6 @@ megasas_disable_intr_ppc(struct megasas_instance *instance)
 
 /**
  * megasas_read_fw_status_reg_ppc - returns the current FW status value
-<<<<<<< HEAD
- * @regs:			MFI register set
- */
-static u32
-megasas_read_fw_status_reg_ppc(struct megasas_register_set __iomem * regs)
-{
-	return readl(&(regs)->outbound_scratch_pad);
-}
-
-/**
- * megasas_clear_interrupt_ppc -	Check & clear interrupt
- * @regs:				MFI register set
- */
-static int
-megasas_clear_intr_ppc(struct megasas_register_set __iomem * regs)
-{
-	u32 status, mfiStatus = 0;
-=======
  * @instance:	Adapter soft state
  */
 static u32
@@ -956,7 +685,6 @@ megasas_clear_intr_ppc(struct megasas_instance *instance)
 	u32 status, mfiStatus = 0;
 	struct megasas_register_set __iomem *regs;
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check if it is our interrupt
@@ -982,16 +710,10 @@ megasas_clear_intr_ppc(struct megasas_instance *instance)
 
 /**
  * megasas_fire_cmd_ppc -	Sends command to the FW
-<<<<<<< HEAD
- * @frame_phys_addr :		Physical address of cmd
- * @frame_count :		Number of frames for the command
- * @regs :			MFI register set
-=======
  * @instance:		Adapter soft state
  * @frame_phys_addr:	Physical address of cmd
  * @frame_count:	Number of frames for the command
  * @regs:		MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void
 megasas_fire_cmd_ppc(struct megasas_instance *instance,
@@ -1000,10 +722,7 @@ megasas_fire_cmd_ppc(struct megasas_instance *instance,
 		struct megasas_register_set __iomem *regs)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&instance->hba_lock, flags);
 	writel((frame_phys_addr | (frame_count<<1))|1,
 			&(regs)->inbound_queue_port);
@@ -1012,22 +731,14 @@ megasas_fire_cmd_ppc(struct megasas_instance *instance,
 
 /**
  * megasas_check_reset_ppc -	For controller reset check
-<<<<<<< HEAD
- * @regs:				MFI register set
-=======
  * @instance:	Adapter soft state
  * @regs:	MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 megasas_check_reset_ppc(struct megasas_instance *instance,
 			struct megasas_register_set __iomem *regs)
 {
-<<<<<<< HEAD
-	if (instance->adprecovery != MEGASAS_HBA_OPERATIONAL)
-=======
 	if (atomic_read(&instance->adprecovery) != MEGASAS_HBA_OPERATIONAL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
@@ -1051,13 +762,6 @@ static struct megasas_instance_template megasas_instance_template_ppc = {
 
 /**
  * megasas_enable_intr_skinny -	Enables interrupts
-<<<<<<< HEAD
- * @regs:			MFI register set
- */
-static inline void
-megasas_enable_intr_skinny(struct megasas_register_set __iomem *regs)
-{
-=======
  * @instance:	Adapter soft state
  */
 static inline void
@@ -1066,7 +770,6 @@ megasas_enable_intr_skinny(struct megasas_instance *instance)
 	struct megasas_register_set __iomem *regs;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0xFFFFFFFF, &(regs)->outbound_intr_mask);
 
 	writel(~MFI_SKINNY_ENABLE_INTERRUPT_MASK, &(regs)->outbound_intr_mask);
@@ -1077,14 +780,6 @@ megasas_enable_intr_skinny(struct megasas_instance *instance)
 
 /**
  * megasas_disable_intr_skinny -	Disables interrupt
-<<<<<<< HEAD
- * @regs:			MFI register set
- */
-static inline void
-megasas_disable_intr_skinny(struct megasas_register_set __iomem *regs)
-{
-	u32 mask = 0xFFFFFFFF;
-=======
  * @instance:	Adapter soft state
  */
 static inline void
@@ -1094,7 +789,6 @@ megasas_disable_intr_skinny(struct megasas_instance *instance)
 	u32 mask = 0xFFFFFFFF;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(mask, &regs->outbound_intr_mask);
 	/* Dummy readl to force pci flush */
 	readl(&regs->outbound_intr_mask);
@@ -1102,25 +796,6 @@ megasas_disable_intr_skinny(struct megasas_instance *instance)
 
 /**
  * megasas_read_fw_status_reg_skinny - returns the current FW status value
-<<<<<<< HEAD
- * @regs:			MFI register set
- */
-static u32
-megasas_read_fw_status_reg_skinny(struct megasas_register_set __iomem *regs)
-{
-	return readl(&(regs)->outbound_scratch_pad);
-}
-
-/**
- * megasas_clear_interrupt_skinny -	Check & clear interrupt
- * @regs:				MFI register set
- */
-static int
-megasas_clear_intr_skinny(struct megasas_register_set __iomem *regs)
-{
-	u32 status;
-	u32 mfiStatus = 0;
-=======
  * @instance:	Adapter soft state
  */
 static u32
@@ -1140,7 +815,6 @@ megasas_clear_intr_skinny(struct megasas_instance *instance)
 	u32 mfiStatus = 0;
 	struct megasas_register_set __iomem *regs;
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check if it is our interrupt
@@ -1154,11 +828,7 @@ megasas_clear_intr_skinny(struct megasas_instance *instance)
 	/*
 	 * Check if it is our interrupt
 	 */
-<<<<<<< HEAD
-	if ((megasas_read_fw_status_reg_gen2(regs) & MFI_STATE_MASK) ==
-=======
 	if ((megasas_read_fw_status_reg_skinny(instance) & MFI_STATE_MASK) ==
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    MFI_STATE_FAULT) {
 		mfiStatus = MFI_INTR_FLAG_FIRMWARE_STATE_CHANGE;
 	} else
@@ -1170,13 +840,8 @@ megasas_clear_intr_skinny(struct megasas_instance *instance)
 	writel(status, &regs->outbound_intr_status);
 
 	/*
-<<<<<<< HEAD
-	* dummy read to flush PCI
-	*/
-=======
 	 * dummy read to flush PCI
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	readl(&regs->outbound_intr_status);
 
 	return mfiStatus;
@@ -1184,16 +849,10 @@ megasas_clear_intr_skinny(struct megasas_instance *instance)
 
 /**
  * megasas_fire_cmd_skinny -	Sends command to the FW
-<<<<<<< HEAD
- * @frame_phys_addr :		Physical address of cmd
- * @frame_count :		Number of frames for the command
- * @regs :			MFI register set
-=======
  * @instance:		Adapter soft state
  * @frame_phys_addr:	Physical address of cmd
  * @frame_count:	Number of frames for the command
  * @regs:		MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void
 megasas_fire_cmd_skinny(struct megasas_instance *instance,
@@ -1202,40 +861,25 @@ megasas_fire_cmd_skinny(struct megasas_instance *instance,
 			struct megasas_register_set __iomem *regs)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	spin_lock_irqsave(&instance->hba_lock, flags);
-	writel(0, &(regs)->inbound_high_queue_port);
-	writel((frame_phys_addr | (frame_count<<1))|1,
-		&(regs)->inbound_low_queue_port);
-=======
 
 	spin_lock_irqsave(&instance->hba_lock, flags);
 	writel(upper_32_bits(frame_phys_addr),
 	       &(regs)->inbound_high_queue_port);
 	writel((lower_32_bits(frame_phys_addr) | (frame_count<<1))|1,
 	       &(regs)->inbound_low_queue_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&instance->hba_lock, flags);
 }
 
 /**
  * megasas_check_reset_skinny -	For controller reset check
-<<<<<<< HEAD
- * @regs:				MFI register set
-=======
  * @instance:	Adapter soft state
  * @regs:	MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 megasas_check_reset_skinny(struct megasas_instance *instance,
 				struct megasas_register_set __iomem *regs)
 {
-<<<<<<< HEAD
-	if (instance->adprecovery != MEGASAS_HBA_OPERATIONAL)
-=======
 	if (atomic_read(&instance->adprecovery) != MEGASAS_HBA_OPERATIONAL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
@@ -1258,20 +902,6 @@ static struct megasas_instance_template megasas_instance_template_skinny = {
 };
 
 
-<<<<<<< HEAD
-/**
-*	The following functions are defined for gen2 (deviceid : 0x78 0x79)
-*	controllers
-*/
-
-/**
- * megasas_enable_intr_gen2 -  Enables interrupts
- * @regs:                      MFI register set
- */
-static inline void
-megasas_enable_intr_gen2(struct megasas_register_set __iomem *regs)
-{
-=======
 /*
  * The following functions are defined for gen2 (deviceid : 0x78 0x79)
  * controllers
@@ -1287,7 +917,6 @@ megasas_enable_intr_gen2(struct megasas_instance *instance)
 	struct megasas_register_set __iomem *regs;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0xFFFFFFFF, &(regs)->outbound_doorbell_clear);
 
 	/* write ~0x00000005 (4 & 1) to the intr mask*/
@@ -1299,14 +928,6 @@ megasas_enable_intr_gen2(struct megasas_instance *instance)
 
 /**
  * megasas_disable_intr_gen2 - Disables interrupt
-<<<<<<< HEAD
- * @regs:                      MFI register set
- */
-static inline void
-megasas_disable_intr_gen2(struct megasas_register_set __iomem *regs)
-{
-	u32 mask = 0xFFFFFFFF;
-=======
  * @instance:	Adapter soft state
  */
 static inline void
@@ -1316,7 +937,6 @@ megasas_disable_intr_gen2(struct megasas_instance *instance)
 	u32 mask = 0xFFFFFFFF;
 
 	regs = instance->reg_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(mask, &regs->outbound_intr_mask);
 	/* Dummy readl to force pci flush */
 	readl(&regs->outbound_intr_mask);
@@ -1324,25 +944,6 @@ megasas_disable_intr_gen2(struct megasas_instance *instance)
 
 /**
  * megasas_read_fw_status_reg_gen2 - returns the current FW status value
-<<<<<<< HEAD
- * @regs:                      MFI register set
- */
-static u32
-megasas_read_fw_status_reg_gen2(struct megasas_register_set __iomem *regs)
-{
-	return readl(&(regs)->outbound_scratch_pad);
-}
-
-/**
- * megasas_clear_interrupt_gen2 -      Check & clear interrupt
- * @regs:                              MFI register set
- */
-static int
-megasas_clear_intr_gen2(struct megasas_register_set __iomem *regs)
-{
-	u32 status;
-	u32 mfiStatus = 0;
-=======
  * @instance:	Adapter soft state
  */
 static u32
@@ -1363,17 +964,12 @@ megasas_clear_intr_gen2(struct megasas_instance *instance)
 	struct megasas_register_set __iomem *regs;
 	regs = instance->reg_set;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check if it is our interrupt
 	 */
 	status = readl(&regs->outbound_intr_status);
 
-<<<<<<< HEAD
-	if (status & MFI_GEN2_ENABLE_INTERRUPT_MASK) {
-=======
 	if (status & MFI_INTR_FLAG_REPLY_MESSAGE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mfiStatus = MFI_INTR_FLAG_REPLY_MESSAGE;
 	}
 	if (status & MFI_G2_OUTBOUND_DOORBELL_CHANGE_INTERRUPT) {
@@ -1391,13 +987,6 @@ megasas_clear_intr_gen2(struct megasas_instance *instance)
 
 	return mfiStatus;
 }
-<<<<<<< HEAD
-/**
- * megasas_fire_cmd_gen2 -     Sends command to the FW
- * @frame_phys_addr :          Physical address of cmd
- * @frame_count :              Number of frames for the command
- * @regs :                     MFI register set
-=======
 
 /**
  * megasas_fire_cmd_gen2 -     Sends command to the FW
@@ -1405,7 +994,6 @@ megasas_clear_intr_gen2(struct megasas_instance *instance)
  * @frame_phys_addr:	Physical address of cmd
  * @frame_count:	Number of frames for the command
  * @regs:		MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void
 megasas_fire_cmd_gen2(struct megasas_instance *instance,
@@ -1414,10 +1002,7 @@ megasas_fire_cmd_gen2(struct megasas_instance *instance,
 			struct megasas_register_set __iomem *regs)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&instance->hba_lock, flags);
 	writel((frame_phys_addr | (frame_count<<1))|1,
 			&(regs)->inbound_queue_port);
@@ -1426,28 +1011,17 @@ megasas_fire_cmd_gen2(struct megasas_instance *instance,
 
 /**
  * megasas_adp_reset_gen2 -	For controller reset
-<<<<<<< HEAD
- * @regs:				MFI register set
-=======
  * @instance:	Adapter soft state
  * @reg_set:	MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 megasas_adp_reset_gen2(struct megasas_instance *instance,
 			struct megasas_register_set __iomem *reg_set)
 {
-<<<<<<< HEAD
-	u32			retry = 0 ;
-	u32			HostDiag;
-	u32			*seq_offset = &reg_set->seq_offset;
-	u32			*hostdiag_offset = &reg_set->host_diag;
-=======
 	u32 retry = 0 ;
 	u32 HostDiag;
 	u32 __iomem *seq_offset = &reg_set->seq_offset;
 	u32 __iomem *hostdiag_offset = &reg_set->host_diag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (instance->instancet == &megasas_instance_template_skinny) {
 		seq_offset = &reg_set->fusion_seq_offset;
@@ -1465,17 +1039,10 @@ megasas_adp_reset_gen2(struct megasas_instance *instance,
 
 	HostDiag = (u32)readl(hostdiag_offset);
 
-<<<<<<< HEAD
-	while ( !( HostDiag & DIAG_WRITE_ENABLE) ) {
-		msleep(100);
-		HostDiag = (u32)readl(hostdiag_offset);
-		printk(KERN_NOTICE "RESETGEN2: retry=%x, hostdiag=%x\n",
-=======
 	while (!(HostDiag & DIAG_WRITE_ENABLE)) {
 		msleep(100);
 		HostDiag = (u32)readl(hostdiag_offset);
 		dev_notice(&instance->pdev->dev, "RESETGEN2: retry=%x, hostdiag=%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					retry, HostDiag);
 
 		if (retry++ >= 100)
@@ -1483,28 +1050,17 @@ megasas_adp_reset_gen2(struct megasas_instance *instance,
 
 	}
 
-<<<<<<< HEAD
-	printk(KERN_NOTICE "ADP_RESET_GEN2: HostDiag=%x\n", HostDiag);
-=======
 	dev_notice(&instance->pdev->dev, "ADP_RESET_GEN2: HostDiag=%x\n", HostDiag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel((HostDiag | DIAG_RESET_ADAPTER), hostdiag_offset);
 
 	ssleep(10);
 
 	HostDiag = (u32)readl(hostdiag_offset);
-<<<<<<< HEAD
-	while ( ( HostDiag & DIAG_RESET_ADAPTER) ) {
-		msleep(100);
-		HostDiag = (u32)readl(hostdiag_offset);
-		printk(KERN_NOTICE "RESET_GEN2: retry=%x, hostdiag=%x\n",
-=======
 	while (HostDiag & DIAG_RESET_ADAPTER) {
 		msleep(100);
 		HostDiag = (u32)readl(hostdiag_offset);
 		dev_notice(&instance->pdev->dev, "RESET_GEN2: retry=%x, hostdiag=%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				retry, HostDiag);
 
 		if (retry++ >= 1000)
@@ -1516,25 +1072,15 @@ megasas_adp_reset_gen2(struct megasas_instance *instance,
 
 /**
  * megasas_check_reset_gen2 -	For controller reset check
-<<<<<<< HEAD
- * @regs:				MFI register set
-=======
  * @instance:	Adapter soft state
  * @regs:	MFI register set
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 megasas_check_reset_gen2(struct megasas_instance *instance,
 		struct megasas_register_set __iomem *regs)
 {
-<<<<<<< HEAD
-	if (instance->adprecovery != MEGASAS_HBA_OPERATIONAL) {
-		return 1;
-	}
-=======
 	if (atomic_read(&instance->adprecovery) != MEGASAS_HBA_OPERATIONAL)
 		return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1555,17 +1101,10 @@ static struct megasas_instance_template megasas_instance_template_gen2 = {
 	.issue_dcmd = megasas_issue_dcmd,
 };
 
-<<<<<<< HEAD
-/**
-*	This is the end of set of functions & definitions
-*       specific to gen2 (deviceid : 0x78, 0x79) controllers
-*/
-=======
 /*
  * This is the end of set of functions & definitions
  * specific to gen2 (deviceid : 0x78, 0x79) controllers
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Template added for TB (Fusion)
@@ -1577,32 +1116,11 @@ extern struct megasas_instance_template megasas_instance_template_fusion;
  * @instance:			Adapter soft state
  * @cmd:			Command packet to be issued
  *
-<<<<<<< HEAD
- * For polling, MFI requires the cmd_status to be set to 0xFF before posting.
-=======
  * For polling, MFI requires the cmd_status to be set to MFI_STAT_INVALID_STATUS before posting.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int
 megasas_issue_polled(struct megasas_instance *instance, struct megasas_cmd *cmd)
 {
-<<<<<<< HEAD
-
-	struct megasas_header *frame_hdr = &cmd->frame->hdr;
-
-	frame_hdr->cmd_status = 0xFF;
-	frame_hdr->flags |= MFI_FRAME_DONT_POST_IN_REPLY_QUEUE;
-
-	/*
-	 * Issue the frame using inbound queue port
-	 */
-	instance->instancet->issue_dcmd(instance, cmd);
-
-	/*
-	 * Wait for cmd_status to change
-	 */
-	return wait_and_poll(instance, cmd);
-=======
 	struct megasas_header *frame_hdr = &cmd->frame->hdr;
 
 	frame_hdr->cmd_status = MFI_STAT_INVALID_STATUS;
@@ -1618,35 +1136,18 @@ megasas_issue_polled(struct megasas_instance *instance, struct megasas_cmd *cmd)
 
 	return wait_and_poll(instance, cmd, instance->requestorId ?
 			MEGASAS_ROUTINE_WAIT_TIME_VF : MFI_IO_TIMEOUT_SECS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * megasas_issue_blocked_cmd -	Synchronous wrapper around regular FW cmds
  * @instance:			Adapter soft state
  * @cmd:			Command to be issued
-<<<<<<< HEAD
-=======
  * @timeout:			Timeout in seconds
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function waits on an event for the command to be returned from ISR.
  * Max wait time is MEGASAS_INTERNAL_CMD_WAIT_TIME secs
  * Used to issue ioctl commands.
  */
-<<<<<<< HEAD
-static int
-megasas_issue_blocked_cmd(struct megasas_instance *instance,
-			  struct megasas_cmd *cmd)
-{
-	cmd->cmd_status = ENODATA;
-
-	instance->instancet->issue_dcmd(instance, cmd);
-
-	wait_event(instance->int_cmd_wait_q, cmd->cmd_status != ENODATA);
-
-	return 0;
-=======
 int
 megasas_issue_blocked_cmd(struct megasas_instance *instance,
 			  struct megasas_cmd *cmd, int timeout)
@@ -1676,40 +1177,27 @@ megasas_issue_blocked_cmd(struct megasas_instance *instance,
 				cmd->cmd_status_drv != DCMD_INIT);
 
 	return cmd->cmd_status_drv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * megasas_issue_blocked_abort_cmd -	Aborts previously issued cmd
  * @instance:				Adapter soft state
  * @cmd_to_abort:			Previously issued cmd to be aborted
-<<<<<<< HEAD
- *
- * MFI firmware can abort previously issued AEN command (automatic event
-=======
  * @timeout:				Timeout in seconds
  *
  * MFI firmware can abort previously issued AEN comamnd (automatic event
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * notification). The megasas_issue_blocked_abort_cmd() issues such abort
  * cmd and waits for return status.
  * Max wait time is MEGASAS_INTERNAL_CMD_WAIT_TIME secs
  */
 static int
 megasas_issue_blocked_abort_cmd(struct megasas_instance *instance,
-<<<<<<< HEAD
-				struct megasas_cmd *cmd_to_abort)
-{
-	struct megasas_cmd *cmd;
-	struct megasas_abort_frame *abort_fr;
-=======
 				struct megasas_cmd *cmd_to_abort, int timeout)
 {
 	struct megasas_cmd *cmd;
 	struct megasas_abort_frame *abort_fr;
 	int ret = 0;
 	u32 opcode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = megasas_get_cmd(instance);
 
@@ -1722,27 +1210,6 @@ megasas_issue_blocked_abort_cmd(struct megasas_instance *instance,
 	 * Prepare and issue the abort frame
 	 */
 	abort_fr->cmd = MFI_CMD_ABORT;
-<<<<<<< HEAD
-	abort_fr->cmd_status = 0xFF;
-	abort_fr->flags = 0;
-	abort_fr->abort_context = cmd_to_abort->index;
-	abort_fr->abort_mfi_phys_addr_lo = cmd_to_abort->frame_phys_addr;
-	abort_fr->abort_mfi_phys_addr_hi = 0;
-
-	cmd->sync_cmd = 1;
-	cmd->cmd_status = ENODATA;
-
-	instance->instancet->issue_dcmd(instance, cmd);
-
-	/*
-	 * Wait for this cmd to complete
-	 */
-	wait_event(instance->abort_cmd_wait_q, cmd->cmd_status != 0xFF);
-	cmd->sync_cmd = 0;
-
-	megasas_return_cmd(instance, cmd);
-	return 0;
-=======
 	abort_fr->cmd_status = MFI_STAT_INVALID_STATUS;
 	abort_fr->flags = cpu_to_le16(0);
 	abort_fr->abort_context = cpu_to_le32(cmd_to_abort->index);
@@ -1780,7 +1247,6 @@ megasas_issue_blocked_abort_cmd(struct megasas_instance *instance,
 
 	megasas_return_cmd(instance, cmd);
 	return cmd->cmd_status_drv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1805,13 +1271,8 @@ megasas_make_sgl32(struct megasas_instance *instance, struct scsi_cmnd *scp,
 
 	if (sge_count) {
 		scsi_for_each_sg(scp, os_sgl, sge_count, i) {
-<<<<<<< HEAD
-			mfi_sgl->sge32[i].length = sg_dma_len(os_sgl);
-			mfi_sgl->sge32[i].phys_addr = sg_dma_address(os_sgl);
-=======
 			mfi_sgl->sge32[i].length = cpu_to_le32(sg_dma_len(os_sgl));
 			mfi_sgl->sge32[i].phys_addr = cpu_to_le32(sg_dma_address(os_sgl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return sge_count;
@@ -1839,13 +1300,8 @@ megasas_make_sgl64(struct megasas_instance *instance, struct scsi_cmnd *scp,
 
 	if (sge_count) {
 		scsi_for_each_sg(scp, os_sgl, sge_count, i) {
-<<<<<<< HEAD
-			mfi_sgl->sge64[i].length = sg_dma_len(os_sgl);
-			mfi_sgl->sge64[i].phys_addr = sg_dma_address(os_sgl);
-=======
 			mfi_sgl->sge64[i].length = cpu_to_le32(sg_dma_len(os_sgl));
 			mfi_sgl->sge64[i].phys_addr = cpu_to_le64(sg_dma_address(os_sgl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return sge_count;
@@ -1872,18 +1328,11 @@ megasas_make_sgl_skinny(struct megasas_instance *instance,
 
 	if (sge_count) {
 		scsi_for_each_sg(scp, os_sgl, sge_count, i) {
-<<<<<<< HEAD
-			mfi_sgl->sge_skinny[i].length = sg_dma_len(os_sgl);
-			mfi_sgl->sge_skinny[i].phys_addr =
-						sg_dma_address(os_sgl);
-			mfi_sgl->sge_skinny[i].flag = 0;
-=======
 			mfi_sgl->sge_skinny[i].length =
 				cpu_to_le32(sg_dma_len(os_sgl));
 			mfi_sgl->sge_skinny[i].phys_addr =
 				cpu_to_le64(sg_dma_address(os_sgl));
 			mfi_sgl->sge_skinny[i].flag = cpu_to_le32(0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return sge_count;
@@ -1903,11 +1352,7 @@ static u32 megasas_get_frame_count(struct megasas_instance *instance,
 	int num_cnt;
 	int sge_bytes;
 	u32 sge_sz;
-<<<<<<< HEAD
-	u32 frame_count=0;
-=======
 	u32 frame_count = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sge_sz = (IS_DMA64) ? sizeof(struct megasas_sge64) :
 	    sizeof(struct megasas_sge32);
@@ -1938,22 +1383,14 @@ static u32 megasas_get_frame_count(struct megasas_instance *instance,
 			num_cnt = sge_count - 3;
 	}
 
-<<<<<<< HEAD
-	if(num_cnt>0){
-=======
 	if (num_cnt > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sge_bytes = sge_sz * num_cnt;
 
 		frame_count = (sge_bytes / MEGAMFI_FRAME_SIZE) +
 		    ((sge_bytes % MEGAMFI_FRAME_SIZE) ? 1 : 0) ;
 	}
 	/* Main frame */
-<<<<<<< HEAD
-	frame_count +=1;
-=======
 	frame_count += 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (frame_count > 7)
 		frame_count = 8;
@@ -1978,17 +1415,6 @@ megasas_build_dcdb(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	u16 flags = 0;
 	struct megasas_pthru_frame *pthru;
 
-<<<<<<< HEAD
-	is_logical = MEGASAS_IS_LOGICAL(scp);
-	device_id = MEGASAS_DEV_INDEX(instance, scp);
-	pthru = (struct megasas_pthru_frame *)cmd->frame;
-
-	if (scp->sc_data_direction == PCI_DMA_TODEVICE)
-		flags = MFI_FRAME_DIR_WRITE;
-	else if (scp->sc_data_direction == PCI_DMA_FROMDEVICE)
-		flags = MFI_FRAME_DIR_READ;
-	else if (scp->sc_data_direction == PCI_DMA_NONE)
-=======
 	is_logical = MEGASAS_IS_LOGICAL(scp->device);
 	device_id = MEGASAS_DEV_INDEX(scp);
 	pthru = (struct megasas_pthru_frame *)cmd->frame;
@@ -1998,7 +1424,6 @@ megasas_build_dcdb(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	else if (scp->sc_data_direction == DMA_FROM_DEVICE)
 		flags = MFI_FRAME_DIR_READ;
 	else if (scp->sc_data_direction == DMA_NONE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags = MFI_FRAME_DIR_NONE;
 
 	if (instance->flag_ieee == 1) {
@@ -2016,27 +1441,12 @@ megasas_build_dcdb(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	pthru->cdb_len = scp->cmd_len;
 	pthru->timeout = 0;
 	pthru->pad_0 = 0;
-<<<<<<< HEAD
-	pthru->flags = flags;
-	pthru->data_xfer_len = scsi_bufflen(scp);
-=======
 	pthru->flags = cpu_to_le16(flags);
 	pthru->data_xfer_len = cpu_to_le32(scsi_bufflen(scp));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(pthru->cdb, scp->cmnd, scp->cmd_len);
 
 	/*
-<<<<<<< HEAD
-	* If the command is for the tape device, set the
-	* pthru timeout to the os layer timeout value.
-	*/
-	if (scp->device->type == TYPE_TAPE) {
-		if ((scp->request->timeout / HZ) > 0xFFFF)
-			pthru->timeout = 0xFFFF;
-		else
-			pthru->timeout = scp->request->timeout / HZ;
-=======
 	 * If the command is for the tape device, set the
 	 * pthru timeout to the os layer timeout value.
 	 */
@@ -2045,26 +1455,17 @@ megasas_build_dcdb(struct megasas_instance *instance, struct scsi_cmnd *scp,
 			pthru->timeout = cpu_to_le16(0xFFFF);
 		else
 			pthru->timeout = cpu_to_le16(scsi_cmd_to_rq(scp)->timeout / HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Construct SGL
 	 */
 	if (instance->flag_ieee == 1) {
-<<<<<<< HEAD
-		pthru->flags |= MFI_FRAME_SGL64;
-		pthru->sge_count = megasas_make_sgl_skinny(instance, scp,
-						      &pthru->sgl);
-	} else if (IS_DMA64) {
-		pthru->flags |= MFI_FRAME_SGL64;
-=======
 		pthru->flags |= cpu_to_le16(MFI_FRAME_SGL64);
 		pthru->sge_count = megasas_make_sgl_skinny(instance, scp,
 						      &pthru->sgl);
 	} else if (IS_DMA64) {
 		pthru->flags |= cpu_to_le16(MFI_FRAME_SGL64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pthru->sge_count = megasas_make_sgl64(instance, scp,
 						      &pthru->sgl);
 	} else
@@ -2072,11 +1473,7 @@ megasas_build_dcdb(struct megasas_instance *instance, struct scsi_cmnd *scp,
 						      &pthru->sgl);
 
 	if (pthru->sge_count > instance->max_num_sge) {
-<<<<<<< HEAD
-		printk(KERN_ERR "megasas: DCDB two many SGE NUM=%x\n",
-=======
 		dev_err(&instance->pdev->dev, "DCDB too many SGE NUM=%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pthru->sge_count);
 		return 0;
 	}
@@ -2085,15 +1482,10 @@ megasas_build_dcdb(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	 * Sense info specific
 	 */
 	pthru->sense_len = SCSI_SENSE_BUFFERSIZE;
-<<<<<<< HEAD
-	pthru->sense_buf_phys_addr_hi = 0;
-	pthru->sense_buf_phys_addr_lo = cmd->sense_phys_addr;
-=======
 	pthru->sense_buf_phys_addr_hi =
 		cpu_to_le32(upper_32_bits(cmd->sense_phys_addr));
 	pthru->sense_buf_phys_addr_lo =
 		cpu_to_le32(lower_32_bits(cmd->sense_phys_addr));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Compute the total number of frames this command consumes. FW uses
@@ -2122,21 +1514,12 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	u16 flags = 0;
 	struct megasas_io_frame *ldio;
 
-<<<<<<< HEAD
-	device_id = MEGASAS_DEV_INDEX(instance, scp);
-	ldio = (struct megasas_io_frame *)cmd->frame;
-
-	if (scp->sc_data_direction == PCI_DMA_TODEVICE)
-		flags = MFI_FRAME_DIR_WRITE;
-	else if (scp->sc_data_direction == PCI_DMA_FROMDEVICE)
-=======
 	device_id = MEGASAS_DEV_INDEX(scp);
 	ldio = (struct megasas_io_frame *)cmd->frame;
 
 	if (scp->sc_data_direction == DMA_TO_DEVICE)
 		flags = MFI_FRAME_DIR_WRITE;
 	else if (scp->sc_data_direction == DMA_FROM_DEVICE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags = MFI_FRAME_DIR_READ;
 
 	if (instance->flag_ieee == 1) {
@@ -2153,11 +1536,7 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	ldio->timeout = 0;
 	ldio->reserved_0 = 0;
 	ldio->pad_0 = 0;
-<<<<<<< HEAD
-	ldio->flags = flags;
-=======
 	ldio->flags = cpu_to_le16(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldio->start_lba_hi = 0;
 	ldio->access_byte = (scp->cmd_len != 6) ? scp->cmnd[1] : 0;
 
@@ -2165,55 +1544,30 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	 * 6-byte READ(0x08) or WRITE(0x0A) cdb
 	 */
 	if (scp->cmd_len == 6) {
-<<<<<<< HEAD
-		ldio->lba_count = (u32) scp->cmnd[4];
-		ldio->start_lba_lo = ((u32) scp->cmnd[1] << 16) |
-		    ((u32) scp->cmnd[2] << 8) | (u32) scp->cmnd[3];
-
-		ldio->start_lba_lo &= 0x1FFFFF;
-=======
 		ldio->lba_count = cpu_to_le32((u32) scp->cmnd[4]);
 		ldio->start_lba_lo = cpu_to_le32(((u32) scp->cmnd[1] << 16) |
 						 ((u32) scp->cmnd[2] << 8) |
 						 (u32) scp->cmnd[3]);
 
 		ldio->start_lba_lo &= cpu_to_le32(0x1FFFFF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * 10-byte READ(0x28) or WRITE(0x2A) cdb
 	 */
 	else if (scp->cmd_len == 10) {
-<<<<<<< HEAD
-		ldio->lba_count = (u32) scp->cmnd[8] |
-		    ((u32) scp->cmnd[7] << 8);
-		ldio->start_lba_lo = ((u32) scp->cmnd[2] << 24) |
-		    ((u32) scp->cmnd[3] << 16) |
-		    ((u32) scp->cmnd[4] << 8) | (u32) scp->cmnd[5];
-=======
 		ldio->lba_count = cpu_to_le32((u32) scp->cmnd[8] |
 					      ((u32) scp->cmnd[7] << 8));
 		ldio->start_lba_lo = cpu_to_le32(((u32) scp->cmnd[2] << 24) |
 						 ((u32) scp->cmnd[3] << 16) |
 						 ((u32) scp->cmnd[4] << 8) |
 						 (u32) scp->cmnd[5]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * 12-byte READ(0xA8) or WRITE(0xAA) cdb
 	 */
 	else if (scp->cmd_len == 12) {
-<<<<<<< HEAD
-		ldio->lba_count = ((u32) scp->cmnd[6] << 24) |
-		    ((u32) scp->cmnd[7] << 16) |
-		    ((u32) scp->cmnd[8] << 8) | (u32) scp->cmnd[9];
-
-		ldio->start_lba_lo = ((u32) scp->cmnd[2] << 24) |
-		    ((u32) scp->cmnd[3] << 16) |
-		    ((u32) scp->cmnd[4] << 8) | (u32) scp->cmnd[5];
-=======
 		ldio->lba_count = cpu_to_le32(((u32) scp->cmnd[6] << 24) |
 					      ((u32) scp->cmnd[7] << 16) |
 					      ((u32) scp->cmnd[8] << 8) |
@@ -2223,26 +1577,12 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 						 ((u32) scp->cmnd[3] << 16) |
 						 ((u32) scp->cmnd[4] << 8) |
 						 (u32) scp->cmnd[5]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * 16-byte READ(0x88) or WRITE(0x8A) cdb
 	 */
 	else if (scp->cmd_len == 16) {
-<<<<<<< HEAD
-		ldio->lba_count = ((u32) scp->cmnd[10] << 24) |
-		    ((u32) scp->cmnd[11] << 16) |
-		    ((u32) scp->cmnd[12] << 8) | (u32) scp->cmnd[13];
-
-		ldio->start_lba_lo = ((u32) scp->cmnd[6] << 24) |
-		    ((u32) scp->cmnd[7] << 16) |
-		    ((u32) scp->cmnd[8] << 8) | (u32) scp->cmnd[9];
-
-		ldio->start_lba_hi = ((u32) scp->cmnd[2] << 24) |
-		    ((u32) scp->cmnd[3] << 16) |
-		    ((u32) scp->cmnd[4] << 8) | (u32) scp->cmnd[5];
-=======
 		ldio->lba_count = cpu_to_le32(((u32) scp->cmnd[10] << 24) |
 					      ((u32) scp->cmnd[11] << 16) |
 					      ((u32) scp->cmnd[12] << 8) |
@@ -2257,7 +1597,6 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 						 ((u32) scp->cmnd[3] << 16) |
 						 ((u32) scp->cmnd[4] << 8) |
 						 (u32) scp->cmnd[5]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	}
 
@@ -2265,29 +1604,17 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	 * Construct SGL
 	 */
 	if (instance->flag_ieee) {
-<<<<<<< HEAD
-		ldio->flags |= MFI_FRAME_SGL64;
-		ldio->sge_count = megasas_make_sgl_skinny(instance, scp,
-					      &ldio->sgl);
-	} else if (IS_DMA64) {
-		ldio->flags |= MFI_FRAME_SGL64;
-=======
 		ldio->flags |= cpu_to_le16(MFI_FRAME_SGL64);
 		ldio->sge_count = megasas_make_sgl_skinny(instance, scp,
 					      &ldio->sgl);
 	} else if (IS_DMA64) {
 		ldio->flags |= cpu_to_le16(MFI_FRAME_SGL64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ldio->sge_count = megasas_make_sgl64(instance, scp, &ldio->sgl);
 	} else
 		ldio->sge_count = megasas_make_sgl32(instance, scp, &ldio->sgl);
 
 	if (ldio->sge_count > instance->max_num_sge) {
-<<<<<<< HEAD
-		printk(KERN_ERR "megasas: build_ld_io: sge_count = %x\n",
-=======
 		dev_err(&instance->pdev->dev, "build_ld_io: sge_count = %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ldio->sge_count);
 		return 0;
 	}
@@ -2297,11 +1624,7 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 	 */
 	ldio->sense_len = SCSI_SENSE_BUFFERSIZE;
 	ldio->sense_buf_phys_addr_hi = 0;
-<<<<<<< HEAD
-	ldio->sense_buf_phys_addr_lo = cmd->sense_phys_addr;
-=======
 	ldio->sense_buf_phys_addr_lo = cpu_to_le32(cmd->sense_phys_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Compute the total number of frames this command consumes. FW uses
@@ -2314,18 +1637,6 @@ megasas_build_ldio(struct megasas_instance *instance, struct scsi_cmnd *scp,
 }
 
 /**
-<<<<<<< HEAD
- * megasas_is_ldio -		Checks if the cmd is for logical drive
- * @scmd:			SCSI command
- *
- * Called by megasas_queue_command to find out if the command to be queued
- * is a logical drive command
- */
-inline int megasas_is_ldio(struct scsi_cmnd *cmd)
-{
-	if (!MEGASAS_IS_LOGICAL(cmd))
-		return 0;
-=======
  * megasas_cmd_type -		Checks if the cmd is for logical drive/sysPD
  *				and whether it's RW or non RW
  * @cmd:			SCSI command
@@ -2335,7 +1646,6 @@ inline int megasas_cmd_type(struct scsi_cmnd *cmd)
 {
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd->cmnd[0]) {
 	case READ_10:
 	case WRITE_10:
@@ -2345,12 +1655,6 @@ inline int megasas_cmd_type(struct scsi_cmnd *cmd)
 	case WRITE_6:
 	case READ_16:
 	case WRITE_16:
-<<<<<<< HEAD
-		return 1;
-	default:
-		return 0;
-	}
-=======
 		ret = (MEGASAS_IS_LOGICAL(cmd->device)) ?
 			READ_WRITE_LDIO : READ_WRITE_SYSPDIO;
 		break;
@@ -2359,16 +1663,11 @@ inline int megasas_cmd_type(struct scsi_cmnd *cmd)
 			NON_READ_WRITE_LDIO : NON_READ_WRITE_SYSPDIO;
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
  /**
  * megasas_dump_pending_frames -	Dumps the frame address of all pending cmds
-<<<<<<< HEAD
- *                              	in FW
-=======
  *					in FW
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @instance:				Adapter soft state
  */
 static inline void
@@ -2380,46 +1679,6 @@ megasas_dump_pending_frames(struct megasas_instance *instance)
 	struct megasas_io_frame *ldio;
 	struct megasas_pthru_frame *pthru;
 	u32 sgcount;
-<<<<<<< HEAD
-	u32 max_cmd = instance->max_fw_cmds;
-
-	printk(KERN_ERR "\nmegasas[%d]: Dumping Frame Phys Address of all pending cmds in FW\n",instance->host->host_no);
-	printk(KERN_ERR "megasas[%d]: Total OS Pending cmds : %d\n",instance->host->host_no,atomic_read(&instance->fw_outstanding));
-	if (IS_DMA64)
-		printk(KERN_ERR "\nmegasas[%d]: 64 bit SGLs were sent to FW\n",instance->host->host_no);
-	else
-		printk(KERN_ERR "\nmegasas[%d]: 32 bit SGLs were sent to FW\n",instance->host->host_no);
-
-	printk(KERN_ERR "megasas[%d]: Pending OS cmds in FW : \n",instance->host->host_no);
-	for (i = 0; i < max_cmd; i++) {
-		cmd = instance->cmd_list[i];
-		if(!cmd->scmd)
-			continue;
-		printk(KERN_ERR "megasas[%d]: Frame addr :0x%08lx : ",instance->host->host_no,(unsigned long)cmd->frame_phys_addr);
-		if (megasas_is_ldio(cmd->scmd)){
-			ldio = (struct megasas_io_frame *)cmd->frame;
-			mfi_sgl = &ldio->sgl;
-			sgcount = ldio->sge_count;
-			printk(KERN_ERR "megasas[%d]: frame count : 0x%x, Cmd : 0x%x, Tgt id : 0x%x, lba lo : 0x%x, lba_hi : 0x%x, sense_buf addr : 0x%x,sge count : 0x%x\n",instance->host->host_no, cmd->frame_count,ldio->cmd,ldio->target_id, ldio->start_lba_lo,ldio->start_lba_hi,ldio->sense_buf_phys_addr_lo,sgcount);
-		}
-		else {
-			pthru = (struct megasas_pthru_frame *) cmd->frame;
-			mfi_sgl = &pthru->sgl;
-			sgcount = pthru->sge_count;
-			printk(KERN_ERR "megasas[%d]: frame count : 0x%x, Cmd : 0x%x, Tgt id : 0x%x, lun : 0x%x, cdb_len : 0x%x, data xfer len : 0x%x, sense_buf addr : 0x%x,sge count : 0x%x\n",instance->host->host_no,cmd->frame_count,pthru->cmd,pthru->target_id,pthru->lun,pthru->cdb_len , pthru->data_xfer_len,pthru->sense_buf_phys_addr_lo,sgcount);
-		}
-	if(megasas_dbg_lvl & MEGASAS_DBG_LVL){
-		for (n = 0; n < sgcount; n++){
-			if (IS_DMA64)
-				printk(KERN_ERR "megasas: sgl len : 0x%x, sgl addr : 0x%08lx ",mfi_sgl->sge64[n].length , (unsigned long)mfi_sgl->sge64[n].phys_addr) ;
-			else
-				printk(KERN_ERR "megasas: sgl len : 0x%x, sgl addr : 0x%x ",mfi_sgl->sge32[n].length , mfi_sgl->sge32[n].phys_addr) ;
-			}
-		}
-		printk(KERN_ERR "\n");
-	} /*for max_cmd*/
-	printk(KERN_ERR "\nmegasas[%d]: Pending Internal cmds in FW : \n",instance->host->host_no);
-=======
 	u16 max_cmd = instance->max_fw_cmds;
 
 	dev_err(&instance->pdev->dev, "[%d]: Dumping Frame Phys Address of all pending cmds in FW\n",instance->host->host_no);
@@ -2468,23 +1727,14 @@ megasas_dump_pending_frames(struct megasas_instance *instance)
 		}
 	} /*for max_cmd*/
 	dev_err(&instance->pdev->dev, "[%d]: Pending Internal cmds in FW : \n",instance->host->host_no);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < max_cmd; i++) {
 
 		cmd = instance->cmd_list[i];
 
-<<<<<<< HEAD
-		if(cmd->sync_cmd == 1){
-			printk(KERN_ERR "0x%08lx : ", (unsigned long)cmd->frame_phys_addr);
-		}
-	}
-	printk(KERN_ERR "megasas[%d]: Dumping Done.\n\n",instance->host->host_no);
-=======
 		if (cmd->sync_cmd == 1)
 			dev_err(&instance->pdev->dev, "0x%08lx : ", (unsigned long)cmd->frame_phys_addr);
 	}
 	dev_err(&instance->pdev->dev, "[%d]: Dumping Done\n\n",instance->host->host_no);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32
@@ -2501,11 +1751,7 @@ megasas_build_and_issue_cmd(struct megasas_instance *instance,
 	/*
 	 * Logical drive command
 	 */
-<<<<<<< HEAD
-	if (megasas_is_ldio(scmd))
-=======
 	if (megasas_cmd_type(scmd) == READ_WRITE_LDIO)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		frame_count = megasas_build_ldio(instance, scmd, cmd);
 	else
 		frame_count = megasas_build_dcdb(instance, scmd, cmd);
@@ -2514,11 +1760,7 @@ megasas_build_and_issue_cmd(struct megasas_instance *instance,
 		goto out_return_cmd;
 
 	cmd->scmd = scmd;
-<<<<<<< HEAD
-	scmd->SCp.ptr = (char *)cmd;
-=======
 	megasas_priv(scmd)->cmd_priv = cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Issue the command to the FW
@@ -2531,26 +1773,12 @@ megasas_build_and_issue_cmd(struct megasas_instance *instance,
 	return 0;
 out_return_cmd:
 	megasas_return_cmd(instance, cmd);
-<<<<<<< HEAD
-	return 1;
-=======
 	return SCSI_MLQUEUE_HOST_BUSY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
  * megasas_queue_command -	Queue entry point
-<<<<<<< HEAD
- * @scmd:			SCSI command to be queued
- * @done:			Callback entry point
- */
-static int
-megasas_queue_command_lck(struct scsi_cmnd *scmd, void (*done) (struct scsi_cmnd *))
-{
-	struct megasas_instance *instance;
-	unsigned long flags;
-=======
  * @shost:			adapter SCSI host
  * @scmd:			SCSI command to be queued
  */
@@ -2560,29 +1788,10 @@ megasas_queue_command(struct Scsi_Host *shost, struct scsi_cmnd *scmd)
 	struct megasas_instance *instance;
 	struct MR_PRIV_DEVICE *mr_device_priv_data;
 	u32 ld_tgt_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	instance = (struct megasas_instance *)
 	    scmd->device->host->hostdata;
 
-<<<<<<< HEAD
-	if (instance->issuepend_done == 0)
-		return SCSI_MLQUEUE_HOST_BUSY;
-
-	spin_lock_irqsave(&instance->hba_lock, flags);
-	if (instance->adprecovery != MEGASAS_HBA_OPERATIONAL) {
-		spin_unlock_irqrestore(&instance->hba_lock, flags);
-		return SCSI_MLQUEUE_HOST_BUSY;
-	}
-
-	spin_unlock_irqrestore(&instance->hba_lock, flags);
-
-	scmd->scsi_done = done;
-	scmd->result = 0;
-
-	if (MEGASAS_IS_LOGICAL(scmd) &&
-	    (scmd->device->id >= MEGASAS_MAX_LD || scmd->device->lun)) {
-=======
 	if (instance->unload == 1) {
 		scmd->result = DID_NO_CONNECT << 16;
 		scsi_done(scmd);
@@ -2634,39 +1843,10 @@ megasas_queue_command(struct Scsi_Host *shost, struct scsi_cmnd *scmd)
 	if (MEGASAS_IS_LOGICAL(scmd->device) &&
 	    (scmd->device->id >= instance->fw_supported_vd_count ||
 		scmd->device->lun)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scmd->result = DID_BAD_TARGET << 16;
 		goto out_done;
 	}
 
-<<<<<<< HEAD
-	switch (scmd->cmnd[0]) {
-	case SYNCHRONIZE_CACHE:
-		/*
-		 * FW takes care of flush cache on its own
-		 * No need to send it down
-		 */
-		scmd->result = DID_OK << 16;
-		goto out_done;
-	default:
-		break;
-	}
-
-	if (instance->instancet->build_and_issue_cmd(instance, scmd)) {
-		printk(KERN_ERR "megasas: Err returned from build_and_issue_cmd\n");
-		return SCSI_MLQUEUE_HOST_BUSY;
-	}
-
-	return 0;
-
- out_done:
-	done(scmd);
-	return 0;
-}
-
-static DEF_SCSI_QCMD(megasas_queue_command)
-
-=======
 	if ((scmd->cmnd[0] == SYNCHRONIZE_CACHE) &&
 	    MEGASAS_IS_LOGICAL(scmd->device) &&
 	    (!instance->fw_sync_cache_support)) {
@@ -2681,7 +1861,6 @@ static DEF_SCSI_QCMD(megasas_queue_command)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct megasas_instance *megasas_lookup_instance(u16 host_no)
 {
 	int i;
@@ -2696,12 +1875,6 @@ static struct megasas_instance *megasas_lookup_instance(u16 host_no)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static int megasas_slave_configure(struct scsi_device *sdev)
-{
-	u16             pd_index = 0;
-	struct  megasas_instance *instance ;
-=======
 /*
 * megasas_set_dynamic_target_properties -
 * Device property set by driver may not be static and it is required to be
@@ -2872,37 +2045,10 @@ static void megasas_set_static_target_properties(struct scsi_device *sdev,
 {
 	u32 max_io_size_kb = MR_DEFAULT_NVME_MDTS_KB;
 	struct megasas_instance *instance;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	instance = megasas_lookup_instance(sdev->host->host_no);
 
 	/*
-<<<<<<< HEAD
-	* Don't export physical disk devices to the disk driver.
-	*
-	* FIXME: Currently we don't export them to the midlayer at all.
-	*        That will be fixed once LSI engineers have audited the
-	*        firmware for possible issues.
-	*/
-	if (sdev->channel < MEGASAS_MAX_PD_CHANNELS &&
-				sdev->type == TYPE_DISK) {
-		pd_index = (sdev->channel * MEGASAS_MAX_DEV_PER_CHANNEL) +
-								sdev->id;
-		if (instance->pd_list[pd_index].driveState ==
-						MR_PD_STATE_SYSTEM) {
-			blk_queue_rq_timeout(sdev->request_queue,
-				MEGASAS_DEFAULT_CMD_TIMEOUT * HZ);
-			return 0;
-		}
-		return -ENXIO;
-	}
-
-	/*
-	* The RAID firmware may require extended timeouts.
-	*/
-	blk_queue_rq_timeout(sdev->request_queue,
-		MEGASAS_DEFAULT_CMD_TIMEOUT * HZ);
-=======
 	 * The RAID firmware may require extended timeouts.
 	 */
 	blk_queue_rq_timeout(sdev->request_queue, scmd_timeout * HZ);
@@ -2957,55 +2103,23 @@ static int megasas_slave_configure(struct scsi_device *sdev)
 
 	mutex_unlock(&instance->reset_mutex);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int megasas_slave_alloc(struct scsi_device *sdev)
 {
-<<<<<<< HEAD
-	u16             pd_index = 0;
-	struct megasas_instance *instance ;
-	instance = megasas_lookup_instance(sdev->host->host_no);
-	if ((sdev->channel < MEGASAS_MAX_PD_CHANNELS) &&
-				(sdev->type == TYPE_DISK)) {
-=======
 	u16 pd_index = 0, ld_tgt_id;
 	struct megasas_instance *instance ;
 	struct MR_PRIV_DEVICE *mr_device_priv_data;
 
 	instance = megasas_lookup_instance(sdev->host->host_no);
 	if (!MEGASAS_IS_LOGICAL(sdev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Open the OS scan to the SYSTEM PD
 		 */
 		pd_index =
 			(sdev->channel * MEGASAS_MAX_DEV_PER_CHANNEL) +
 			sdev->id;
-<<<<<<< HEAD
-		if ((instance->pd_list[pd_index].driveState ==
-					MR_PD_STATE_SYSTEM) &&
-			(instance->pd_list[pd_index].driveType ==
-						TYPE_DISK)) {
-			return 0;
-		}
-		return -ENXIO;
-	}
-	return 0;
-}
-
-void megaraid_sas_kill_hba(struct megasas_instance *instance)
-{
-	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
-	    (instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0071SKINNY) ||
-	    (instance->pdev->device == PCI_DEVICE_ID_LSI_FUSION) ||
-	    (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER)) {
-		writel(MFI_STOP_ADP, &instance->reg_set->doorbell);
-	} else {
-		writel(MFI_STOP_ADP, &instance->reg_set->inbound_doorbell);
-	}
-=======
 		if ((instance->pd_list_not_supported ||
 			instance->pd_list[pd_index].driveState ==
 			MR_PD_STATE_SYSTEM)) {
@@ -3127,7 +2241,6 @@ void megaraid_sas_kill_hba(struct megasas_instance *instance)
 	}
 	/* Complete outstanding ioctls when adapter is killed */
 	megasas_complete_outstanding_ioctls(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
  /**
@@ -3140,24 +2253,6 @@ void
 megasas_check_and_restore_queue_depth(struct megasas_instance *instance)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	if (instance->flag & MEGASAS_FW_BUSY
-		&& time_after(jiffies, instance->last_time + 5 * HZ)
-		&& atomic_read(&instance->fw_outstanding) < 17) {
-
-		spin_lock_irqsave(instance->host->host_lock, flags);
-		instance->flag &= ~MEGASAS_FW_BUSY;
-		if ((instance->pdev->device ==
-			PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
-			(instance->pdev->device ==
-			PCI_DEVICE_ID_LSI_SAS0071SKINNY)) {
-			instance->host->can_queue =
-				instance->max_fw_cmds - MEGASAS_SKINNY_INT_CMDS;
-		} else
-			instance->host->can_queue =
-				instance->max_fw_cmds - MEGASAS_INT_CMDS;
-
-=======
 
 	if (instance->flag & MEGASAS_FW_BUSY
 	    && time_after(jiffies, instance->last_time + 5 * HZ)
@@ -3168,7 +2263,6 @@ megasas_check_and_restore_queue_depth(struct megasas_instance *instance)
 		instance->flag &= ~MEGASAS_FW_BUSY;
 
 		instance->host->can_queue = instance->cur_can_queue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(instance->host->host_lock, flags);
 	}
 }
@@ -3190,24 +2284,11 @@ static void megasas_complete_cmd_dpc(unsigned long instance_addr)
 	unsigned long flags;
 
 	/* If we have already declared adapter dead, donot complete cmds */
-<<<<<<< HEAD
-	if (instance->adprecovery == MEGASAS_HW_CRITICAL_ERROR )
-=======
 	if (atomic_read(&instance->adprecovery) == MEGASAS_HW_CRITICAL_ERROR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	spin_lock_irqsave(&instance->completion_lock, flags);
 
-<<<<<<< HEAD
-	producer = *instance->producer;
-	consumer = *instance->consumer;
-
-	while (consumer != producer) {
-		context = instance->reply_queue[consumer];
-		if (context >= instance->max_fw_cmds) {
-			printk(KERN_ERR "Unexpected context value %x\n",
-=======
 	producer = le32_to_cpu(*instance->producer);
 	consumer = le32_to_cpu(*instance->consumer);
 
@@ -3215,7 +2296,6 @@ static void megasas_complete_cmd_dpc(unsigned long instance_addr)
 		context = le32_to_cpu(instance->reply_queue[consumer]);
 		if (context >= instance->max_fw_cmds) {
 			dev_err(&instance->pdev->dev, "Unexpected context value %x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				context);
 			BUG();
 		}
@@ -3230,11 +2310,7 @@ static void megasas_complete_cmd_dpc(unsigned long instance_addr)
 		}
 	}
 
-<<<<<<< HEAD
-	*instance->consumer = producer;
-=======
 	*instance->consumer = cpu_to_le32(producer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&instance->completion_lock, flags);
 
@@ -3244,8 +2320,6 @@ static void megasas_complete_cmd_dpc(unsigned long instance_addr)
 	megasas_check_and_restore_queue_depth(instance);
 }
 
-<<<<<<< HEAD
-=======
 static void megasas_sriov_heartbeat_handler(struct timer_list *t);
 
 /**
@@ -3262,33 +2336,21 @@ void megasas_start_timer(struct megasas_instance *instance)
 	add_timer(timer);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 megasas_internal_reset_defer_cmds(struct megasas_instance *instance);
 
 static void
 process_fw_state_change_wq(struct work_struct *work);
 
-<<<<<<< HEAD
-void megasas_do_ocr(struct megasas_instance *instance)
-=======
 static void megasas_do_ocr(struct megasas_instance *instance)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_SAS1064R) ||
 	(instance->pdev->device == PCI_DEVICE_ID_DELL_PERC5) ||
 	(instance->pdev->device == PCI_DEVICE_ID_LSI_VERDE_ZCR)) {
-<<<<<<< HEAD
-		*instance->consumer     = MEGASAS_ADPRESET_INPROG_SIGN;
-	}
-	instance->instancet->disable_intr(instance->reg_set);
-	instance->adprecovery   = MEGASAS_ADPRESET_SM_INFAULT;
-=======
 		*instance->consumer = cpu_to_le32(MEGASAS_ADPRESET_INPROG_SIGN);
 	}
 	instance->instancet->disable_intr(instance);
 	atomic_set(&instance->adprecovery, MEGASAS_ADPRESET_SM_INFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	instance->issuepend_done = 0;
 
 	atomic_set(&instance->fw_outstanding, 0);
@@ -3296,8 +2358,6 @@ static void megasas_do_ocr(struct megasas_instance *instance)
 	process_fw_state_change_wq(&instance->work_init);
 }
 
-<<<<<<< HEAD
-=======
 static int megasas_get_ld_vf_affiliation_111(struct megasas_instance *instance,
 					    int initial)
 {
@@ -3674,7 +2734,6 @@ static void megasas_sriov_heartbeat_handler(struct timer_list *t)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * megasas_wait_for_outstanding -	Wait for all outstanding cmds
  * @instance:				Adapter soft state
@@ -3685,29 +2744,13 @@ static void megasas_sriov_heartbeat_handler(struct timer_list *t)
  */
 static int megasas_wait_for_outstanding(struct megasas_instance *instance)
 {
-<<<<<<< HEAD
-	int i;
-	u32 reset_index;
-	u32 wait_time = MEGASAS_RESET_WAIT_TIME;
-	u8 adprecovery;
-=======
 	int i, sl, outstanding;
 	u32 reset_index;
 	u32 wait_time = MEGASAS_RESET_WAIT_TIME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct list_head clist_local;
 	struct megasas_cmd *reset_cmd;
 	u32 fw_state;
-<<<<<<< HEAD
-	u8 kill_adapter_flag;
-
-	spin_lock_irqsave(&instance->hba_lock, flags);
-	adprecovery = instance->adprecovery;
-	spin_unlock_irqrestore(&instance->hba_lock, flags);
-
-	if (adprecovery != MEGASAS_HBA_OPERATIONAL) {
-=======
 
 	if (atomic_read(&instance->adprecovery) == MEGASAS_HW_CRITICAL_ERROR) {
 		dev_info(&instance->pdev->dev, "%s:%d HBA is killed.\n",
@@ -3716,7 +2759,6 @@ static int megasas_wait_for_outstanding(struct megasas_instance *instance)
 	}
 
 	if (atomic_read(&instance->adprecovery) != MEGASAS_HBA_OPERATIONAL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		INIT_LIST_HEAD(&clist_local);
 		spin_lock_irqsave(&instance->hba_lock, flags);
@@ -3724,45 +2766,6 @@ static int megasas_wait_for_outstanding(struct megasas_instance *instance)
 				&clist_local);
 		spin_unlock_irqrestore(&instance->hba_lock, flags);
 
-<<<<<<< HEAD
-		printk(KERN_NOTICE "megasas: HBA reset wait ...\n");
-		for (i = 0; i < wait_time; i++) {
-			msleep(1000);
-			spin_lock_irqsave(&instance->hba_lock, flags);
-			adprecovery = instance->adprecovery;
-			spin_unlock_irqrestore(&instance->hba_lock, flags);
-			if (adprecovery == MEGASAS_HBA_OPERATIONAL)
-				break;
-		}
-
-		if (adprecovery != MEGASAS_HBA_OPERATIONAL) {
-			printk(KERN_NOTICE "megasas: reset: Stopping HBA.\n");
-			spin_lock_irqsave(&instance->hba_lock, flags);
-			instance->adprecovery	= MEGASAS_HW_CRITICAL_ERROR;
-			spin_unlock_irqrestore(&instance->hba_lock, flags);
-			return FAILED;
-		}
-
-		reset_index	= 0;
-		while (!list_empty(&clist_local)) {
-			reset_cmd	= list_entry((&clist_local)->next,
-						struct megasas_cmd, list);
-			list_del_init(&reset_cmd->list);
-			if (reset_cmd->scmd) {
-				reset_cmd->scmd->result = DID_RESET << 16;
-				printk(KERN_NOTICE "%d:%p reset [%02x]\n",
-					reset_index, reset_cmd,
-					reset_cmd->scmd->cmnd[0]);
-
-				reset_cmd->scmd->scsi_done(reset_cmd->scmd);
-				megasas_return_cmd(instance, reset_cmd);
-			} else if (reset_cmd->sync_cmd) {
-				printk(KERN_NOTICE "megasas:%p synch cmds"
-						"reset queue\n",
-						reset_cmd);
-
-				reset_cmd->cmd_status = ENODATA;
-=======
 		dev_notice(&instance->pdev->dev, "HBA reset wait ...\n");
 		for (i = 0; i < wait_time; i++) {
 			msleep(1000);
@@ -3795,16 +2798,11 @@ static int megasas_wait_for_outstanding(struct megasas_instance *instance)
 						reset_cmd);
 
 				reset_cmd->cmd_status_drv = DCMD_INIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				instance->instancet->fire_cmd(instance,
 						reset_cmd->frame_phys_addr,
 						0, instance->reg_set);
 			} else {
-<<<<<<< HEAD
-				printk(KERN_NOTICE "megasas: %p unexpected"
-=======
 				dev_notice(&instance->pdev->dev, "%p unexpected"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"cmds lst\n",
 					reset_cmd);
 			}
@@ -3814,24 +2812,14 @@ static int megasas_wait_for_outstanding(struct megasas_instance *instance)
 		return SUCCESS;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < wait_time; i++) {
-
-		int outstanding = atomic_read(&instance->fw_outstanding);
-=======
 	for (i = 0; i < resetwaittime; i++) {
 		outstanding = atomic_read(&instance->fw_outstanding);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!outstanding)
 			break;
 
 		if (!(i % MEGASAS_RESET_NOTICE_INTERVAL)) {
-<<<<<<< HEAD
-			printk(KERN_NOTICE "megasas: [%2d]waiting for %d "
-=======
 			dev_notice(&instance->pdev->dev, "[%2d]waiting for %d "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "commands to complete\n",i,outstanding);
 			/*
 			 * Call cmd completion routine. Cmd to be
@@ -3844,23 +2832,6 @@ static int megasas_wait_for_outstanding(struct megasas_instance *instance)
 	}
 
 	i = 0;
-<<<<<<< HEAD
-	kill_adapter_flag = 0;
-	do {
-		fw_state = instance->instancet->read_fw_status_reg(
-					instance->reg_set) & MFI_STATE_MASK;
-		if ((fw_state == MFI_STATE_FAULT) &&
-			(instance->disableOnlineCtrlReset == 0)) {
-			if (i == 3) {
-				kill_adapter_flag = 2;
-				break;
-			}
-			megasas_do_ocr(instance);
-			kill_adapter_flag = 1;
-
-			/* wait for 1 secs to let FW finish the pending cmds */
-			msleep(1000);
-=======
 	outstanding = atomic_read(&instance->fw_outstanding);
 	fw_state = instance->instancet->read_fw_status_reg(instance) & MFI_STATE_MASK;
 
@@ -3894,57 +2865,10 @@ static int megasas_wait_for_outstanding(struct megasas_instance *instance)
 			fw_state = instance->instancet->read_fw_status_reg(instance) & MFI_STATE_MASK;
 			if ((!outstanding && (fw_state == MFI_STATE_OPERATIONAL)))
 				goto no_outstanding;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		i++;
 	} while (i <= 3);
 
-<<<<<<< HEAD
-	if (atomic_read(&instance->fw_outstanding) &&
-					!kill_adapter_flag) {
-		if (instance->disableOnlineCtrlReset == 0) {
-
-			megasas_do_ocr(instance);
-
-			/* wait for 5 secs to let FW finish the pending cmds */
-			for (i = 0; i < wait_time; i++) {
-				int outstanding =
-					atomic_read(&instance->fw_outstanding);
-				if (!outstanding)
-					return SUCCESS;
-				msleep(1000);
-			}
-		}
-	}
-
-	if (atomic_read(&instance->fw_outstanding) ||
-					(kill_adapter_flag == 2)) {
-		printk(KERN_NOTICE "megaraid_sas: pending cmds after reset\n");
-		/*
-		* Send signal to FW to stop processing any pending cmds.
-		* The controller will be taken offline by the OS now.
-		*/
-		if ((instance->pdev->device ==
-			PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
-			(instance->pdev->device ==
-			PCI_DEVICE_ID_LSI_SAS0071SKINNY)) {
-			writel(MFI_STOP_ADP,
-				&instance->reg_set->doorbell);
-		} else {
-			writel(MFI_STOP_ADP,
-				&instance->reg_set->inbound_doorbell);
-		}
-		megasas_dump_pending_frames(instance);
-		spin_lock_irqsave(&instance->hba_lock, flags);
-		instance->adprecovery	= MEGASAS_HW_CRITICAL_ERROR;
-		spin_unlock_irqrestore(&instance->hba_lock, flags);
-		return FAILED;
-	}
-
-	printk(KERN_NOTICE "megaraid_sas: no pending cmds after reset\n");
-
-	return SUCCESS;
-=======
 no_outstanding:
 
 	dev_info(&instance->pdev->dev, "%s:%d no more pending commands remain after reset handling.\n",
@@ -3962,7 +2886,6 @@ kill_hba_and_failed:
 	megaraid_sas_kill_hba(instance);
 
 	return FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3983,28 +2906,16 @@ static int megasas_generic_reset(struct scsi_cmnd *scmd)
 	scmd_printk(KERN_NOTICE, scmd, "megasas: RESET cmd=%x retries=%x\n",
 		 scmd->cmnd[0], scmd->retries);
 
-<<<<<<< HEAD
-	if (instance->adprecovery == MEGASAS_HW_CRITICAL_ERROR) {
-		printk(KERN_ERR "megasas: cannot recover from previous reset "
-		       "failures\n");
-=======
 	if (atomic_read(&instance->adprecovery) == MEGASAS_HW_CRITICAL_ERROR) {
 		dev_err(&instance->pdev->dev, "cannot recover from previous reset failures\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return FAILED;
 	}
 
 	ret_val = megasas_wait_for_outstanding(instance);
 	if (ret_val == SUCCESS)
-<<<<<<< HEAD
-		printk(KERN_NOTICE "megasas: reset successful \n");
-	else
-		printk(KERN_ERR "megasas: failed to do reset\n");
-=======
 		dev_notice(&instance->pdev->dev, "reset successful\n");
 	else
 		dev_err(&instance->pdev->dev, "failed to do reset\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
@@ -4016,24 +2927,14 @@ static int megasas_generic_reset(struct scsi_cmnd *scmd)
  * Sets the FW busy flag and reduces the host->can_queue if the
  * cmd has not been completed within the timeout period.
  */
-<<<<<<< HEAD
-static enum
-blk_eh_timer_return megasas_reset_timer(struct scsi_cmnd *scmd)
-=======
 static enum scsi_timeout_action megasas_reset_timer(struct scsi_cmnd *scmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct megasas_instance *instance;
 	unsigned long flags;
 
 	if (time_after(jiffies, scmd->jiffies_at_alloc +
-<<<<<<< HEAD
-				(MEGASAS_DEFAULT_CMD_TIMEOUT * 2) * HZ)) {
-		return BLK_EH_NOT_HANDLED;
-=======
 				(scmd_timeout * 2) * HZ)) {
 		return SCSI_EH_NOT_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	instance = (struct megasas_instance *)scmd->device->host->hostdata;
@@ -4041,34 +2942,12 @@ static enum scsi_timeout_action megasas_reset_timer(struct scsi_cmnd *scmd)
 		/* FW is busy, throttle IO */
 		spin_lock_irqsave(instance->host->host_lock, flags);
 
-<<<<<<< HEAD
-		instance->host->can_queue = 16;
-=======
 		instance->host->can_queue = instance->throttlequeuedepth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		instance->last_time = jiffies;
 		instance->flag |= MEGASAS_FW_BUSY;
 
 		spin_unlock_irqrestore(instance->host->host_lock, flags);
 	}
-<<<<<<< HEAD
-	return BLK_EH_RESET_TIMER;
-}
-
-/**
- * megasas_reset_device -	Device reset handler entry point
- */
-static int megasas_reset_device(struct scsi_cmnd *scmd)
-{
-	int ret;
-
-	/*
-	 * First wait for all commands to complete
-	 */
-	ret = megasas_generic_reset(scmd);
-
-	return ret;
-=======
 	return SCSI_EH_RESET_TIMER;
 }
 
@@ -4171,32 +3050,16 @@ megasas_dump_sys_regs(void __iomem *reg_set, char *buf)
 					 readl(&reg[i]));
 	}
 	return bytes_wrote;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * megasas_reset_bus_host -	Bus & host reset handler entry point
-<<<<<<< HEAD
-=======
  * @scmd:			Mid-layer SCSI command
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int megasas_reset_bus_host(struct scsi_cmnd *scmd)
 {
 	int ret;
 	struct megasas_instance *instance;
-<<<<<<< HEAD
-	instance = (struct megasas_instance *)scmd->device->host->hostdata;
-
-	/*
-	 * First wait for all commands to complete
-	 */
-	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_FUSION) ||
-	    (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER))
-		ret = megasas_reset_fusion(scmd->device->host);
-	else
-		ret = megasas_generic_reset(scmd);
-=======
 
 	instance = (struct megasas_instance *)scmd->device->host->hostdata;
 
@@ -4262,18 +3125,13 @@ static int megasas_reset_target(struct scsi_cmnd *scmd)
 		sdev_printk(KERN_NOTICE, scmd->device, "TARGET RESET not supported\n");
 		ret = FAILED;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 /**
  * megasas_bios_param - Returns disk geometry for a disk
-<<<<<<< HEAD
- * @sdev: 		device handle
-=======
  * @sdev:		device handle
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bdev:		block device
  * @capacity:		drive capacity
  * @geom:		geometry parameters
@@ -4286,10 +3144,7 @@ megasas_bios_param(struct scsi_device *sdev, struct block_device *bdev,
 	int sectors;
 	sector_t cylinders;
 	unsigned long tmp;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Default heads (64) & sectors (32) */
 	heads = 64;
 	sectors = 32;
@@ -4318,8 +3173,6 @@ megasas_bios_param(struct scsi_device *sdev, struct block_device *bdev,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void megasas_map_queues(struct Scsi_Host *shost)
 {
 	struct megasas_instance *instance;
@@ -4357,7 +3210,6 @@ static void megasas_map_queues(struct Scsi_Host *shost)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void megasas_aen_polling(struct work_struct *work);
 
 /**
@@ -4376,10 +3228,7 @@ static void
 megasas_service_aen(struct megasas_instance *instance, struct megasas_cmd *cmd)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Don't signal app if it is just an aborted previously registered aen
 	 */
@@ -4394,26 +3243,12 @@ megasas_service_aen(struct megasas_instance *instance, struct megasas_cmd *cmd)
 		cmd->abort_aen = 0;
 
 	instance->aen_cmd = NULL;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	megasas_return_cmd(instance, cmd);
 
 	if ((instance->unload == 0) &&
 		((instance->issuepend_done == 1))) {
 		struct megasas_aen_event *ev;
-<<<<<<< HEAD
-		ev = kzalloc(sizeof(*ev), GFP_ATOMIC);
-		if (!ev) {
-			printk(KERN_ERR "megasas_service_aen: out of memory\n");
-		} else {
-			ev->instance = instance;
-			instance->ev = ev;
-			INIT_WORK(&ev->hotplug_work, megasas_aen_polling);
-			schedule_delayed_work(
-				(struct delayed_work *)&ev->hotplug_work, 0);
-=======
 
 		ev = kzalloc(sizeof(*ev), GFP_ATOMIC);
 		if (!ev) {
@@ -4424,45 +3259,10 @@ megasas_service_aen(struct megasas_instance *instance, struct megasas_cmd *cmd)
 			INIT_DELAYED_WORK(&ev->hotplug_work,
 					  megasas_aen_polling);
 			schedule_delayed_work(&ev->hotplug_work, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-static int megasas_change_queue_depth(struct scsi_device *sdev,
-				      int queue_depth, int reason)
-{
-	if (reason != SCSI_QDEPTH_DEFAULT)
-		return -EOPNOTSUPP;
-
-	if (queue_depth > sdev->host->can_queue)
-		queue_depth = sdev->host->can_queue;
-	scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev),
-				queue_depth);
-
-	return queue_depth;
-}
-
-/*
- * Scsi host template for megaraid_sas driver
- */
-static struct scsi_host_template megasas_template = {
-
-	.module = THIS_MODULE,
-	.name = "LSI SAS based MegaRAID driver",
-	.proc_name = "megaraid_sas",
-	.slave_configure = megasas_slave_configure,
-	.slave_alloc = megasas_slave_alloc,
-	.queuecommand = megasas_queue_command,
-	.eh_device_reset_handler = megasas_reset_device,
-	.eh_bus_reset_handler = megasas_reset_bus_host,
-	.eh_host_reset_handler = megasas_reset_bus_host,
-	.eh_timed_out = megasas_reset_timer,
-	.bios_param = megasas_bios_param,
-	.use_clustering = ENABLE_CLUSTERING,
-	.change_queue_depth = megasas_change_queue_depth,
-=======
 static ssize_t
 fw_crash_buffer_store(struct device *cdev,
 	struct device_attribute *attr, const char *buf, size_t count)
@@ -4722,7 +3522,6 @@ static const struct scsi_host_template megasas_template = {
 	.change_queue_depth = scsi_change_queue_depth,
 	.max_segment_size = 0xffffffff,
 	.cmd_size = sizeof(struct megasas_cmd_priv),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -4738,19 +3537,11 @@ static void
 megasas_complete_int_cmd(struct megasas_instance *instance,
 			 struct megasas_cmd *cmd)
 {
-<<<<<<< HEAD
-	cmd->cmd_status = cmd->frame->io.cmd_status;
-
-	if (cmd->cmd_status == ENODATA) {
-		cmd->cmd_status = 0;
-	}
-=======
 	if (cmd->cmd_status_drv == DCMD_INIT)
 		cmd->cmd_status_drv =
 		(cmd->frame->io.cmd_status == MFI_STAT_OK) ?
 		DCMD_SUCCESS : DCMD_FAILED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&instance->int_cmd_wait_q);
 }
 
@@ -4769,13 +3560,6 @@ megasas_complete_abort(struct megasas_instance *instance,
 {
 	if (cmd->sync_cmd) {
 		cmd->sync_cmd = 0;
-<<<<<<< HEAD
-		cmd->cmd_status = 0;
-		wake_up(&instance->abort_cmd_wait_q);
-	}
-
-	return;
-=======
 		cmd->cmd_status_drv = DCMD_SUCCESS;
 		wake_up(&instance->abort_cmd_wait_q);
 	}
@@ -4795,7 +3579,6 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance)
 			instance->ld_tgtid_status[i] = LD_TARGET_ID_DELETED;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4803,17 +3586,10 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance)
  * @instance:			Adapter soft state
  * @cmd:			Command to be completed
  * @alt_status:			If non-zero, use this value as status to
-<<<<<<< HEAD
- * 				SCSI mid-layer instead of the value returned
- * 				by the FW. This should be used if caller wants
- * 				an alternate status (as in the case of aborted
- * 				commands)
-=======
  *				SCSI mid-layer instead of the value returned
  *				by the FW. This should be used if caller wants
  *				an alternate status (as in the case of aborted
  *				commands)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void
 megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
@@ -4823,20 +3599,13 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 	struct megasas_header *hdr = &cmd->frame->hdr;
 	unsigned long flags;
 	struct fusion_context *fusion = instance->ctrl_context;
-<<<<<<< HEAD
-=======
 	u32 opcode, status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* flag for the retry reset */
 	cmd->retry_for_fw_reset = 0;
 
 	if (cmd->scmd)
-<<<<<<< HEAD
-		cmd->scmd->SCp.ptr = NULL;
-=======
 		megasas_priv(cmd->scmd)->cmd_priv = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hdr->cmd) {
 	case MFI_CMD_INVALID:
@@ -4844,17 +3613,10 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 		   MR_DCMD_CTRL_EVENT_GET_INFO left over from the main kernel
 		   when booting the kdump kernel.  Ignore this command to
 		   prevent a kernel panic on shutdown of the kdump kernel. */
-<<<<<<< HEAD
-		printk(KERN_WARNING "megaraid_sas: MFI_CMD_INVALID command "
-		       "completed.\n");
-		printk(KERN_WARNING "megaraid_sas: If you have a controller "
-		       "other than PERC5, please upgrade your firmware.\n");
-=======
 		dev_warn(&instance->pdev->dev, "MFI_CMD_INVALID command "
 		       "completed\n");
 		dev_warn(&instance->pdev->dev, "If you have a controller "
 		       "other than PERC5, please upgrade your firmware\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MFI_CMD_PD_SCSI_IO:
 	case MFI_CMD_LD_SCSI_IO:
@@ -4869,10 +3631,7 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 			megasas_complete_int_cmd(instance, cmd);
 			break;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case MFI_CMD_LD_READ:
 	case MFI_CMD_LD_WRITE:
@@ -4887,11 +3646,7 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 			atomic_dec(&instance->fw_outstanding);
 
 			scsi_dma_unmap(cmd->scmd);
-<<<<<<< HEAD
-			cmd->scmd->scsi_done(cmd->scmd);
-=======
 			scsi_done(cmd->scmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			megasas_return_cmd(instance, cmd);
 
 			break;
@@ -4918,11 +3673,6 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 				       SCSI_SENSE_BUFFERSIZE);
 				memcpy(cmd->scmd->sense_buffer, cmd->sense,
 				       hdr->sense_len);
-<<<<<<< HEAD
-
-				cmd->scmd->result |= DRIVER_SENSE << 24;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			break;
@@ -4933,11 +3683,7 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 			break;
 
 		default:
-<<<<<<< HEAD
-			printk(KERN_DEBUG "megasas: MFI FW status %#x\n",
-=======
 			dev_printk(KERN_DEBUG, &instance->pdev->dev, "MFI FW status %#x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       hdr->cmd_status);
 			cmd->scmd->result = DID_ERROR << 16;
 			break;
@@ -4946,29 +3692,13 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 		atomic_dec(&instance->fw_outstanding);
 
 		scsi_dma_unmap(cmd->scmd);
-<<<<<<< HEAD
-		cmd->scmd->scsi_done(cmd->scmd);
-=======
 		scsi_done(cmd->scmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		megasas_return_cmd(instance, cmd);
 
 		break;
 
 	case MFI_CMD_SMP:
 	case MFI_CMD_STP:
-<<<<<<< HEAD
-	case MFI_CMD_DCMD:
-		/* Check for LD map update */
-		if ((cmd->frame->dcmd.opcode == MR_DCMD_LD_MAP_GET_INFO) &&
-		    (cmd->frame->dcmd.mbox.b[1] == 1)) {
-			spin_lock_irqsave(instance->host->host_lock, flags);
-			if (cmd->frame->hdr.cmd_status != 0) {
-				if (cmd->frame->hdr.cmd_status !=
-				    MFI_STAT_NOT_FOUND)
-					printk(KERN_WARNING "megasas: map sync"
-					       "failed, status = 0x%x.\n",
-=======
 	case MFI_CMD_NVME:
 	case MFI_CMD_TOOLBOX:
 		megasas_complete_int_cmd(instance, cmd);
@@ -4986,7 +3716,6 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 			if (status != MFI_STAT_OK) {
 				if (status != MFI_STAT_NOT_FOUND)
 					dev_warn(&instance->pdev->dev, "map syncfailed, status = 0x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       cmd->frame->hdr.cmd_status);
 				else {
 					megasas_return_cmd(instance, cmd);
@@ -4995,24 +3724,6 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 						flags);
 					break;
 				}
-<<<<<<< HEAD
-			} else
-				instance->map_id++;
-			megasas_return_cmd(instance, cmd);
-			if (MR_ValidateMapInfo(
-				    fusion->ld_map[(instance->map_id & 1)],
-				    fusion->load_balance_info))
-				fusion->fast_path_io = 1;
-			else
-				fusion->fast_path_io = 0;
-			megasas_sync_map_info(instance);
-			spin_unlock_irqrestore(instance->host->host_lock,
-					       flags);
-			break;
-		}
-		if (cmd->frame->dcmd.opcode == MR_DCMD_CTRL_EVENT_GET_INFO ||
-			cmd->frame->dcmd.opcode == MR_DCMD_CTRL_EVENT_GET) {
-=======
 			}
 
 			megasas_return_cmd(instance, cmd);
@@ -5041,18 +3752,11 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 		}
 		if (opcode == MR_DCMD_CTRL_EVENT_GET_INFO ||
 		    opcode == MR_DCMD_CTRL_EVENT_GET) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irqsave(&poll_aen_lock, flags);
 			megasas_poll_wait_aen = 0;
 			spin_unlock_irqrestore(&poll_aen_lock, flags);
 		}
 
-<<<<<<< HEAD
-		/*
-		 * See if got an event notification
-		 */
-		if (cmd->frame->dcmd.opcode == MR_DCMD_CTRL_EVENT_WAIT)
-=======
 		/* FW has an updated PD sequence */
 		if ((opcode == MR_DCMD_SYSTEM_PD_MAP_GET_INFO) &&
 			(cmd->frame->dcmd.mbox.b[0] == 1)) {
@@ -5078,7 +3782,6 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 		 * See if got an event notification
 		 */
 		if (opcode == MR_DCMD_CTRL_EVENT_WAIT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			megasas_service_aen(instance, cmd);
 		else
 			megasas_complete_int_cmd(instance, cmd);
@@ -5093,25 +3796,16 @@ megasas_complete_cmd(struct megasas_instance *instance, struct megasas_cmd *cmd,
 		break;
 
 	default:
-<<<<<<< HEAD
-		printk("megasas: Unknown command completed! [0x%X]\n",
-		       hdr->cmd);
-=======
 		dev_info(&instance->pdev->dev, "Unknown command completed! [0x%X]\n",
 		       hdr->cmd);
 		megasas_complete_int_cmd(instance, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
 /**
  * megasas_issue_pending_cmds_again -	issue all pending cmds
-<<<<<<< HEAD
- *                              	in FW again because of the fw reset
-=======
  *					in FW again because of the fw reset
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @instance:				Adapter soft state
  */
 static inline void
@@ -5129,37 +3823,18 @@ megasas_issue_pending_cmds_again(struct megasas_instance *instance)
 	spin_unlock_irqrestore(&instance->hba_lock, flags);
 
 	while (!list_empty(&clist_local)) {
-<<<<<<< HEAD
-		cmd	= list_entry((&clist_local)->next,
-=======
 		cmd = list_entry((&clist_local)->next,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct megasas_cmd, list);
 		list_del_init(&cmd->list);
 
 		if (cmd->sync_cmd || cmd->scmd) {
-<<<<<<< HEAD
-			printk(KERN_NOTICE "megaraid_sas: command %p, %p:%d"
-				"detected to be pending while HBA reset.\n",
-=======
 			dev_notice(&instance->pdev->dev, "command %p, %p:%d"
 				"detected to be pending while HBA reset\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					cmd, cmd->scmd, cmd->sync_cmd);
 
 			cmd->retry_for_fw_reset++;
 
 			if (cmd->retry_for_fw_reset == 3) {
-<<<<<<< HEAD
-				printk(KERN_NOTICE "megaraid_sas: cmd %p, %p:%d"
-					"was tried multiple times during reset."
-					"Shutting down the HBA\n",
-					cmd, cmd->scmd, cmd->sync_cmd);
-				megaraid_sas_kill_hba(instance);
-
-				instance->adprecovery =
-						MEGASAS_HW_CRITICAL_ERROR;
-=======
 				dev_notice(&instance->pdev->dev, "cmd %p, %p:%d"
 					"was tried multiple times during reset."
 					"Shutting down the HBA\n",
@@ -5167,27 +3842,12 @@ megasas_issue_pending_cmds_again(struct megasas_instance *instance)
 				instance->instancet->disable_intr(instance);
 				atomic_set(&instance->fw_reset_no_pci_access, 1);
 				megaraid_sas_kill_hba(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return;
 			}
 		}
 
 		if (cmd->sync_cmd == 1) {
 			if (cmd->scmd) {
-<<<<<<< HEAD
-				printk(KERN_NOTICE "megaraid_sas: unexpected"
-					"cmd attached to internal command!\n");
-			}
-			printk(KERN_NOTICE "megasas: %p synchronous cmd"
-						"on the internal reset queue,"
-						"issue it again.\n", cmd);
-			cmd->cmd_status = ENODATA;
-			instance->instancet->fire_cmd(instance,
-							cmd->frame_phys_addr ,
-							0, instance->reg_set);
-		} else if (cmd->scmd) {
-			printk(KERN_NOTICE "megasas: %p scsi cmd [%02x]"
-=======
 				dev_notice(&instance->pdev->dev, "unexpected"
 					"cmd attached to internal command!\n");
 			}
@@ -5200,7 +3860,6 @@ megasas_issue_pending_cmds_again(struct megasas_instance *instance)
 							0, instance->reg_set);
 		} else if (cmd->scmd) {
 			dev_notice(&instance->pdev->dev, "%p scsi cmd [%02x]"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"detected on the internal queue, issue again.\n",
 			cmd, cmd->scmd->cmnd[0]);
 
@@ -5209,28 +3868,13 @@ megasas_issue_pending_cmds_again(struct megasas_instance *instance)
 					cmd->frame_phys_addr,
 					cmd->frame_count-1, instance->reg_set);
 		} else {
-<<<<<<< HEAD
-			printk(KERN_NOTICE "megasas: %p unexpected cmd on the"
-=======
 			dev_notice(&instance->pdev->dev, "%p unexpected cmd on the"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"internal reset defer list while re-issue!!\n",
 				cmd);
 		}
 	}
 
 	if (instance->aen_cmd) {
-<<<<<<< HEAD
-		printk(KERN_NOTICE "megaraid_sas: aen_cmd in def process\n");
-		megasas_return_cmd(instance, instance->aen_cmd);
-
-		instance->aen_cmd	= NULL;
-	}
-
-	/*
-	* Initiate AEN (Asynchronous Event Notification)
-	*/
-=======
 		dev_notice(&instance->pdev->dev, "aen_cmd in def process\n");
 		megasas_return_cmd(instance, instance->aen_cmd);
 
@@ -5240,7 +3884,6 @@ megasas_issue_pending_cmds_again(struct megasas_instance *instance)
 	/*
 	 * Initiate AEN (Asynchronous Event Notification)
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_num = instance->last_seq_num;
 	class_locale.members.reserved = 0;
 	class_locale.members.locale = MR_EVT_LOCALE_ALL;
@@ -5249,11 +3892,7 @@ megasas_issue_pending_cmds_again(struct megasas_instance *instance)
 	megasas_register_aen(instance, seq_num, class_locale.word);
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Move the internal reset pending commands to a deferred queue.
  *
  * We move the commands pending at internal reset time to a
@@ -5261,28 +3900,12 @@ megasas_issue_pending_cmds_again(struct megasas_instance *instance)
  * completion of the internal reset sequence. if the internal reset
  * did not complete in time, the kernel reset handler would flush
  * these commands.
-<<<<<<< HEAD
- **/
-=======
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 megasas_internal_reset_defer_cmds(struct megasas_instance *instance)
 {
 	struct megasas_cmd *cmd;
 	int i;
-<<<<<<< HEAD
-	u32 max_cmd = instance->max_fw_cmds;
-	u32 defer_index;
-	unsigned long flags;
-
-	defer_index     = 0;
-	spin_lock_irqsave(&instance->cmd_pool_lock, flags);
-	for (i = 0; i < max_cmd; i++) {
-		cmd = instance->cmd_list[i];
-		if (cmd->sync_cmd == 1 || cmd->scmd) {
-			printk(KERN_NOTICE "megasas: moving cmd[%d]:%p:%d:%p"
-=======
 	u16 max_cmd = instance->max_fw_cmds;
 	u32 defer_index;
 	unsigned long flags;
@@ -5293,16 +3916,11 @@ megasas_internal_reset_defer_cmds(struct megasas_instance *instance)
 		cmd = instance->cmd_list[i];
 		if (cmd->sync_cmd == 1 || cmd->scmd) {
 			dev_notice(&instance->pdev->dev, "moving cmd[%d]:%p:%d:%p"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"on the defer queue as internal\n",
 				defer_index, cmd, cmd->sync_cmd, cmd->scmd);
 
 			if (!list_empty(&cmd->list)) {
-<<<<<<< HEAD
-				printk(KERN_NOTICE "megaraid_sas: ERROR while"
-=======
 				dev_notice(&instance->pdev->dev, "ERROR while"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					" moving this cmd:%p, %d %p, it was"
 					"discovered on some list?\n",
 					cmd, cmd->sync_cmd, cmd->scmd);
@@ -5314,11 +3932,7 @@ megasas_internal_reset_defer_cmds(struct megasas_instance *instance)
 				&instance->internal_reset_pending_q);
 		}
 	}
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&instance->cmd_pool_lock, flags);
-=======
 	spin_unlock_irqrestore(&instance->mfi_pool_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -5330,19 +3944,6 @@ process_fw_state_change_wq(struct work_struct *work)
 	u32 wait;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	if (instance->adprecovery != MEGASAS_ADPRESET_SM_INFAULT) {
-		printk(KERN_NOTICE "megaraid_sas: error, recovery st %x \n",
-				instance->adprecovery);
-		return ;
-	}
-
-	if (instance->adprecovery == MEGASAS_ADPRESET_SM_INFAULT) {
-		printk(KERN_NOTICE "megaraid_sas: FW detected to be in fault"
-					"state, restarting it...\n");
-
-		instance->instancet->disable_intr(instance->reg_set);
-=======
 	if (atomic_read(&instance->adprecovery) != MEGASAS_ADPRESET_SM_INFAULT) {
 		dev_notice(&instance->pdev->dev, "error, recovery st %x\n",
 			   atomic_read(&instance->adprecovery));
@@ -5354,22 +3955,10 @@ process_fw_state_change_wq(struct work_struct *work)
 					"state, restarting it...\n");
 
 		instance->instancet->disable_intr(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_set(&instance->fw_outstanding, 0);
 
 		atomic_set(&instance->fw_reset_no_pci_access, 1);
 		instance->instancet->adp_reset(instance, instance->reg_set);
-<<<<<<< HEAD
-		atomic_set(&instance->fw_reset_no_pci_access, 0 );
-
-		printk(KERN_NOTICE "megaraid_sas: FW restarted successfully,"
-					"initiating next stage...\n");
-
-		printk(KERN_NOTICE "megaraid_sas: HBA recovery state machine,"
-					"state 2 starting...\n");
-
-		/*waitting for about 20 second before start the second init*/
-=======
 		atomic_set(&instance->fw_reset_no_pci_access, 0);
 
 		dev_notice(&instance->pdev->dev, "FW restarted successfully,"
@@ -5379,23 +3968,15 @@ process_fw_state_change_wq(struct work_struct *work)
 					"state 2 starting...\n");
 
 		/* waiting for about 20 second before start the second init */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (wait = 0; wait < 30; wait++) {
 			msleep(1000);
 		}
 
 		if (megasas_transition_to_ready(instance, 1)) {
-<<<<<<< HEAD
-			printk(KERN_NOTICE "megaraid_sas:adapter not ready\n");
-
-			megaraid_sas_kill_hba(instance);
-			instance->adprecovery	= MEGASAS_HW_CRITICAL_ERROR;
-=======
 			dev_notice(&instance->pdev->dev, "adapter not ready\n");
 
 			atomic_set(&instance->fw_reset_no_pci_access, 1);
 			megaraid_sas_kill_hba(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ;
 		}
 
@@ -5412,36 +3993,21 @@ process_fw_state_change_wq(struct work_struct *work)
 		megasas_issue_init_mfi(instance);
 
 		spin_lock_irqsave(&instance->hba_lock, flags);
-<<<<<<< HEAD
-		instance->adprecovery	= MEGASAS_HBA_OPERATIONAL;
-		spin_unlock_irqrestore(&instance->hba_lock, flags);
-		instance->instancet->enable_intr(instance->reg_set);
-=======
 		atomic_set(&instance->adprecovery, MEGASAS_HBA_OPERATIONAL);
 		spin_unlock_irqrestore(&instance->hba_lock, flags);
 		instance->instancet->enable_intr(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		megasas_issue_pending_cmds_again(instance);
 		instance->issuepend_done = 1;
 	}
-<<<<<<< HEAD
-	return ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * megasas_deplete_reply_queue -	Processes all completed commands
  * @instance:				Adapter soft state
  * @alt_status:				Alternate status to be returned to
-<<<<<<< HEAD
- * 					SCSI mid-layer instead of the status
- * 					returned by the FW
-=======
  *					SCSI mid-layer instead of the status
  *					returned by the FW
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Note: this must be called with hba lock held
  */
 static int
@@ -5451,22 +4017,11 @@ megasas_deplete_reply_queue(struct megasas_instance *instance,
 	u32 mfiStatus;
 	u32 fw_state;
 
-<<<<<<< HEAD
-	if ((mfiStatus = instance->instancet->check_reset(instance,
-					instance->reg_set)) == 1) {
-		return IRQ_HANDLED;
-	}
-
-	if ((mfiStatus = instance->instancet->clear_intr(
-						instance->reg_set)
-						) == 0) {
-=======
 	if (instance->instancet->check_reset(instance, instance->reg_set) == 1)
 		return IRQ_HANDLED;
 
 	mfiStatus = instance->instancet->clear_intr(instance);
 	if (mfiStatus == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Hardware may not set outbound_intr_status in MSI-X mode */
 		if (!instance->msix_vectors)
 			return IRQ_NONE;
@@ -5476,27 +4031,16 @@ megasas_deplete_reply_queue(struct megasas_instance *instance,
 
 	if ((mfiStatus & MFI_INTR_FLAG_FIRMWARE_STATE_CHANGE)) {
 		fw_state = instance->instancet->read_fw_status_reg(
-<<<<<<< HEAD
-				instance->reg_set) & MFI_STATE_MASK;
-
-		if (fw_state != MFI_STATE_FAULT) {
-			printk(KERN_NOTICE "megaraid_sas: fw state:%x\n",
-=======
 				instance) & MFI_STATE_MASK;
 
 		if (fw_state != MFI_STATE_FAULT) {
 			dev_notice(&instance->pdev->dev, "fw state:%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						fw_state);
 		}
 
 		if ((fw_state == MFI_STATE_FAULT) &&
 				(instance->disableOnlineCtrlReset == 0)) {
-<<<<<<< HEAD
-			printk(KERN_NOTICE "megaraid_sas: wait adp restart\n");
-=======
 			dev_notice(&instance->pdev->dev, "wait adp restart\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if ((instance->pdev->device ==
 					PCI_DEVICE_ID_LSI_SAS1064R) ||
@@ -5506,43 +4050,25 @@ megasas_deplete_reply_queue(struct megasas_instance *instance,
 					PCI_DEVICE_ID_LSI_VERDE_ZCR)) {
 
 				*instance->consumer =
-<<<<<<< HEAD
-					MEGASAS_ADPRESET_INPROG_SIGN;
-			}
-
-
-			instance->instancet->disable_intr(instance->reg_set);
-			instance->adprecovery	= MEGASAS_ADPRESET_SM_INFAULT;
-=======
 					cpu_to_le32(MEGASAS_ADPRESET_INPROG_SIGN);
 			}
 
 
 			instance->instancet->disable_intr(instance);
 			atomic_set(&instance->adprecovery, MEGASAS_ADPRESET_SM_INFAULT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			instance->issuepend_done = 0;
 
 			atomic_set(&instance->fw_outstanding, 0);
 			megasas_internal_reset_defer_cmds(instance);
 
-<<<<<<< HEAD
-			printk(KERN_NOTICE "megasas: fwState=%x, stage:%d\n",
-					fw_state, instance->adprecovery);
-=======
 			dev_notice(&instance->pdev->dev, "fwState=%x, stage:%d\n",
 					fw_state, atomic_read(&instance->adprecovery));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			schedule_work(&instance->work_init);
 			return IRQ_HANDLED;
 
 		} else {
-<<<<<<< HEAD
-			printk(KERN_NOTICE "megasas: fwstate:%x, dis_OCR=%x\n",
-=======
 			dev_notice(&instance->pdev->dev, "fwstate:%x, dis_OCR=%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fw_state, instance->disableOnlineCtrlReset);
 		}
 	}
@@ -5550,37 +4076,24 @@ megasas_deplete_reply_queue(struct megasas_instance *instance,
 	tasklet_schedule(&instance->isr_tasklet);
 	return IRQ_HANDLED;
 }
-<<<<<<< HEAD
-/**
- * megasas_isr - isr entry point
-=======
 
 /**
  * megasas_isr - isr entry point
  * @irq:	IRQ number
  * @devp:	IRQ context address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static irqreturn_t megasas_isr(int irq, void *devp)
 {
 	struct megasas_irq_context *irq_context = devp;
 	struct megasas_instance *instance = irq_context->instance;
 	unsigned long flags;
-<<<<<<< HEAD
-	irqreturn_t	rc;
-=======
 	irqreturn_t rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&instance->fw_reset_no_pci_access))
 		return IRQ_HANDLED;
 
 	spin_lock_irqsave(&instance->hba_lock, flags);
-<<<<<<< HEAD
-	rc =  megasas_deplete_reply_queue(instance, DID_OK);
-=======
 	rc = megasas_deplete_reply_queue(instance, DID_OK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&instance->hba_lock, flags);
 
 	return rc;
@@ -5589,10 +4102,7 @@ static irqreturn_t megasas_isr(int irq, void *devp)
 /**
  * megasas_transition_to_ready -	Move the FW to READY state
  * @instance:				Adapter soft state
-<<<<<<< HEAD
-=======
  * @ocr:				Adapter reset state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * During the initialization, FW passes can potentially be in any one of
  * several possible states. If the FW in operational, waiting-for-handshake
@@ -5605,15 +4115,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 	int i;
 	u8 max_wait;
 	u32 fw_state;
-<<<<<<< HEAD
-	u32 cur_state;
-	u32 abs_state, curr_abs_state;
-
-	fw_state = instance->instancet->read_fw_status_reg(instance->reg_set) & MFI_STATE_MASK;
-
-	if (fw_state != MFI_STATE_READY)
-		printk(KERN_INFO "megasas: Waiting for FW to come to ready"
-=======
 	u32 abs_state, curr_abs_state;
 
 	abs_state = instance->instancet->read_fw_status_reg(instance);
@@ -5621,26 +4122,10 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 
 	if (fw_state != MFI_STATE_READY)
 		dev_info(&instance->pdev->dev, "Waiting for FW to come to ready"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       " state\n");
 
 	while (fw_state != MFI_STATE_READY) {
 
-<<<<<<< HEAD
-		abs_state =
-		instance->instancet->read_fw_status_reg(instance->reg_set);
-
-		switch (fw_state) {
-
-		case MFI_STATE_FAULT:
-			printk(KERN_DEBUG "megasas: FW in FAULT state!!\n");
-			if (ocr) {
-				max_wait = MEGASAS_RESET_WAIT_TIME;
-				cur_state = MFI_STATE_FAULT;
-				break;
-			} else
-				return -ENODEV;
-=======
 		switch (fw_state) {
 
 		case MFI_STATE_FAULT:
@@ -5656,7 +4141,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 				megasas_dump_reg_set(instance->reg_set);
 				return -ENODEV;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case MFI_STATE_WAIT_HANDSHAKE:
 			/*
@@ -5666,23 +4150,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 				PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
 				(instance->pdev->device ==
 				 PCI_DEVICE_ID_LSI_SAS0071SKINNY) ||
-<<<<<<< HEAD
-				(instance->pdev->device ==
-				 PCI_DEVICE_ID_LSI_FUSION) ||
-				(instance->pdev->device ==
-				PCI_DEVICE_ID_LSI_INVADER)) {
-				writel(
-				  MFI_INIT_CLEAR_HANDSHAKE|MFI_INIT_HOTPLUG,
-				  &instance->reg_set->doorbell);
-			} else {
-				writel(
-				    MFI_INIT_CLEAR_HANDSHAKE|MFI_INIT_HOTPLUG,
-					&instance->reg_set->inbound_doorbell);
-			}
-
-			max_wait = MEGASAS_RESET_WAIT_TIME;
-			cur_state = MFI_STATE_WAIT_HANDSHAKE;
-=======
 				(instance->adapter_type != MFI_SERIES))
 				writel(
 				  MFI_INIT_CLEAR_HANDSHAKE|MFI_INIT_HOTPLUG,
@@ -5693,7 +4160,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 					&instance->reg_set->inbound_doorbell);
 
 			max_wait = MEGASAS_RESET_WAIT_TIME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_BOOT_MESSAGE_PENDING:
@@ -5701,57 +4167,25 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 			     PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
 				(instance->pdev->device ==
 				 PCI_DEVICE_ID_LSI_SAS0071SKINNY) ||
-<<<<<<< HEAD
-			    (instance->pdev->device ==
-			     PCI_DEVICE_ID_LSI_FUSION) ||
-			    (instance->pdev->device ==
-			     PCI_DEVICE_ID_LSI_INVADER)) {
-				writel(MFI_INIT_HOTPLUG,
-				       &instance->reg_set->doorbell);
-			} else
-=======
 				(instance->adapter_type != MFI_SERIES))
 				writel(MFI_INIT_HOTPLUG,
 				       &instance->reg_set->doorbell);
 			else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				writel(MFI_INIT_HOTPLUG,
 					&instance->reg_set->inbound_doorbell);
 
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_BOOT_MESSAGE_PENDING;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_OPERATIONAL:
 			/*
 			 * Bring it to READY state; assuming max wait 10 secs
 			 */
-<<<<<<< HEAD
-			instance->instancet->disable_intr(instance->reg_set);
-=======
 			instance->instancet->disable_intr(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((instance->pdev->device ==
 				PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
 				(instance->pdev->device ==
 				PCI_DEVICE_ID_LSI_SAS0071SKINNY)  ||
-<<<<<<< HEAD
-				(instance->pdev->device
-					== PCI_DEVICE_ID_LSI_FUSION) ||
-				(instance->pdev->device
-					== PCI_DEVICE_ID_LSI_INVADER)) {
-				writel(MFI_RESET_FLAGS,
-					&instance->reg_set->doorbell);
-				if ((instance->pdev->device ==
-				    PCI_DEVICE_ID_LSI_FUSION) ||
-				    (instance->pdev->device ==
-				     PCI_DEVICE_ID_LSI_INVADER)) {
-					for (i = 0; i < (10 * 1000); i += 20) {
-						if (readl(
-=======
 				(instance->adapter_type != MFI_SERIES)) {
 				writel(MFI_RESET_FLAGS,
 					&instance->reg_set->doorbell);
@@ -5760,7 +4194,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 					for (i = 0; i < (10 * 1000); i += 20) {
 						if (megasas_readl(
 							    instance,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    &instance->
 							    reg_set->
 							    doorbell) & 1)
@@ -5774,10 +4207,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 					&instance->reg_set->inbound_doorbell);
 
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_OPERATIONAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_UNDEFINED:
@@ -5785,54 +4214,26 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 			 * This state should not last for more than 2 seconds
 			 */
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_UNDEFINED;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_BB_INIT:
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_BB_INIT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_FW_INIT:
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_FW_INIT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_FW_INIT_2:
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_FW_INIT_2;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_DEVICE_SCAN:
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_DEVICE_SCAN;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case MFI_STATE_FLUSH_CACHE:
 			max_wait = MEGASAS_RESET_WAIT_TIME;
-<<<<<<< HEAD
-			cur_state = MFI_STATE_FLUSH_CACHE;
-			break;
-
-		default:
-			printk(KERN_DEBUG "megasas: Unknown state 0x%x\n",
-			       fw_state);
-=======
 			break;
 
 		default:
@@ -5840,30 +4241,18 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 			       fw_state);
 			dev_printk(KERN_DEBUG, &instance->pdev->dev, "System Register set:\n");
 			megasas_dump_reg_set(instance->reg_set);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 
 		/*
 		 * The cur_state should not last for more than max_wait secs
 		 */
-<<<<<<< HEAD
-		for (i = 0; i < (max_wait * 1000); i++) {
-			fw_state = instance->instancet->read_fw_status_reg(instance->reg_set) &
-					MFI_STATE_MASK ;
-		curr_abs_state =
-		instance->instancet->read_fw_status_reg(instance->reg_set);
-
-			if (abs_state == curr_abs_state) {
-				msleep(1);
-=======
 		for (i = 0; i < max_wait * 50; i++) {
 			curr_abs_state = instance->instancet->
 				read_fw_status_reg(instance);
 
 			if (abs_state == curr_abs_state) {
 				msleep(20);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else
 				break;
 		}
@@ -5872,14 +4261,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 		 * Return error if fw_state hasn't changed after max_wait
 		 */
 		if (curr_abs_state == abs_state) {
-<<<<<<< HEAD
-			printk(KERN_DEBUG "FW state [%d] hasn't changed "
-			       "in %d secs\n", fw_state, max_wait);
-			return -ENODEV;
-		}
-	}
-	printk(KERN_INFO "megasas: FW now in Ready state\n");
-=======
 			dev_printk(KERN_DEBUG, &instance->pdev->dev, "FW state [%d] hasn't changed "
 			       "in %d secs\n", fw_state, max_wait);
 			dev_printk(KERN_DEBUG, &instance->pdev->dev, "System Register set:\n");
@@ -5891,7 +4272,6 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 		fw_state = curr_abs_state & MFI_STATE_MASK;
 	}
 	dev_info(&instance->pdev->dev, "FW now in Ready state\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -5903,11 +4283,7 @@ megasas_transition_to_ready(struct megasas_instance *instance, int ocr)
 static void megasas_teardown_frame_pool(struct megasas_instance *instance)
 {
 	int i;
-<<<<<<< HEAD
-	u32 max_cmd = instance->max_mfi_cmds;
-=======
 	u16 max_cmd = instance->max_mfi_cmds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct megasas_cmd *cmd;
 
 	if (!instance->frame_dma_pool)
@@ -5921,32 +4297,19 @@ static void megasas_teardown_frame_pool(struct megasas_instance *instance)
 		cmd = instance->cmd_list[i];
 
 		if (cmd->frame)
-<<<<<<< HEAD
-			pci_pool_free(instance->frame_dma_pool, cmd->frame,
-				      cmd->frame_phys_addr);
-
-		if (cmd->sense)
-			pci_pool_free(instance->sense_dma_pool, cmd->sense,
-=======
 			dma_pool_free(instance->frame_dma_pool, cmd->frame,
 				      cmd->frame_phys_addr);
 
 		if (cmd->sense)
 			dma_pool_free(instance->sense_dma_pool, cmd->sense,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      cmd->sense_phys_addr);
 	}
 
 	/*
 	 * Now destroy the pool itself
 	 */
-<<<<<<< HEAD
-	pci_pool_destroy(instance->frame_dma_pool);
-	pci_pool_destroy(instance->sense_dma_pool);
-=======
 	dma_pool_destroy(instance->frame_dma_pool);
 	dma_pool_destroy(instance->sense_dma_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	instance->frame_dma_pool = NULL;
 	instance->sense_dma_pool = NULL;
@@ -5964,64 +4327,13 @@ static void megasas_teardown_frame_pool(struct megasas_instance *instance)
 static int megasas_create_frame_pool(struct megasas_instance *instance)
 {
 	int i;
-<<<<<<< HEAD
-	u32 max_cmd;
-	u32 sge_sz;
-	u32 sgl_sz;
-	u32 total_sz;
-=======
 	u16 max_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 frame_count;
 	struct megasas_cmd *cmd;
 
 	max_cmd = instance->max_mfi_cmds;
 
 	/*
-<<<<<<< HEAD
-	 * Size of our frame is 64 bytes for MFI frame, followed by max SG
-	 * elements and finally SCSI_SENSE_BUFFERSIZE bytes for sense buffer
-	 */
-	sge_sz = (IS_DMA64) ? sizeof(struct megasas_sge64) :
-	    sizeof(struct megasas_sge32);
-
-	if (instance->flag_ieee) {
-		sge_sz = sizeof(struct megasas_sge_skinny);
-	}
-
-	/*
-	 * Calculated the number of 64byte frames required for SGL
-	 */
-	sgl_sz = sge_sz * instance->max_num_sge;
-	frame_count = (sgl_sz + MEGAMFI_FRAME_SIZE - 1) / MEGAMFI_FRAME_SIZE;
-	frame_count = 15;
-
-	/*
-	 * We need one extra frame for the MFI command
-	 */
-	frame_count++;
-
-	total_sz = MEGAMFI_FRAME_SIZE * frame_count;
-	/*
-	 * Use DMA pool facility provided by PCI layer
-	 */
-	instance->frame_dma_pool = pci_pool_create("megasas frame pool",
-						   instance->pdev, total_sz, 64,
-						   0);
-
-	if (!instance->frame_dma_pool) {
-		printk(KERN_DEBUG "megasas: failed to setup frame pool\n");
-		return -ENOMEM;
-	}
-
-	instance->sense_dma_pool = pci_pool_create("megasas sense pool",
-						   instance->pdev, 128, 4, 0);
-
-	if (!instance->sense_dma_pool) {
-		printk(KERN_DEBUG "megasas: failed to setup sense pool\n");
-
-		pci_pool_destroy(instance->frame_dma_pool);
-=======
 	 * For MFI controllers.
 	 * max_num_sge = 60
 	 * max_sge_sz  = 16 byte (sizeof megasas_sge_skinny)
@@ -6055,7 +4367,6 @@ static int megasas_create_frame_pool(struct megasas_instance *instance)
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "failed to setup sense pool\n");
 
 		dma_pool_destroy(instance->frame_dma_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		instance->frame_dma_pool = NULL;
 
 		return -ENOMEM;
@@ -6070,17 +4381,10 @@ static int megasas_create_frame_pool(struct megasas_instance *instance)
 
 		cmd = instance->cmd_list[i];
 
-<<<<<<< HEAD
-		cmd->frame = pci_pool_alloc(instance->frame_dma_pool,
-					    GFP_KERNEL, &cmd->frame_phys_addr);
-
-		cmd->sense = pci_pool_alloc(instance->sense_dma_pool,
-=======
 		cmd->frame = dma_pool_zalloc(instance->frame_dma_pool,
 					    GFP_KERNEL, &cmd->frame_phys_addr);
 
 		cmd->sense = dma_pool_alloc(instance->sense_dma_pool,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    GFP_KERNEL, &cmd->sense_phys_addr);
 
 		/*
@@ -6088,27 +4392,14 @@ static int megasas_create_frame_pool(struct megasas_instance *instance)
 		 * whatever has been allocated
 		 */
 		if (!cmd->frame || !cmd->sense) {
-<<<<<<< HEAD
-			printk(KERN_DEBUG "megasas: pci_pool_alloc failed \n");
-=======
 			dev_printk(KERN_DEBUG, &instance->pdev->dev, "dma_pool_alloc failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			megasas_teardown_frame_pool(instance);
 			return -ENOMEM;
 		}
 
-<<<<<<< HEAD
-		memset(cmd->frame, 0, total_sz);
-		cmd->frame->io.context = cmd->index;
-		cmd->frame->io.pad_0 = 0;
-		if ((instance->pdev->device != PCI_DEVICE_ID_LSI_FUSION) &&
-		    (instance->pdev->device != PCI_DEVICE_ID_LSI_INVADER) &&
-		    (reset_devices))
-=======
 		cmd->frame->io.context = cpu_to_le32(cmd->index);
 		cmd->frame->io.pad_0 = 0;
 		if ((instance->adapter_type == MFI_SERIES) && reset_devices)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd->frame->hdr.cmd = MFI_CMD_INVALID;
 	}
 
@@ -6122,10 +4413,7 @@ static int megasas_create_frame_pool(struct megasas_instance *instance)
 void megasas_free_cmds(struct megasas_instance *instance)
 {
 	int i;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* First free the MFI frame pool */
 	megasas_teardown_frame_pool(instance);
 
@@ -6163,11 +4451,7 @@ int megasas_alloc_cmds(struct megasas_instance *instance)
 {
 	int i;
 	int j;
-<<<<<<< HEAD
-	u32 max_cmd;
-=======
 	u16 max_cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct megasas_cmd *cmd;
 
 	max_cmd = instance->max_mfi_cmds;
@@ -6180,19 +4464,10 @@ int megasas_alloc_cmds(struct megasas_instance *instance)
 	instance->cmd_list = kcalloc(max_cmd, sizeof(struct megasas_cmd*), GFP_KERNEL);
 
 	if (!instance->cmd_list) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: out of memory\n");
-		return -ENOMEM;
-	}
-
-	memset(instance->cmd_list, 0, sizeof(struct megasas_cmd *) *max_cmd);
-
-=======
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "out of memory\n");
 		return -ENOMEM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < max_cmd; i++) {
 		instance->cmd_list[i] = kmalloc(sizeof(struct megasas_cmd),
 						GFP_KERNEL);
@@ -6209,12 +4484,6 @@ int megasas_alloc_cmds(struct megasas_instance *instance)
 		}
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Add all the commands to command pool (instance->cmd_pool)
-	 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < max_cmd; i++) {
 		cmd = instance->cmd_list[i];
 		memset(cmd, 0, sizeof(struct megasas_cmd));
@@ -6229,22 +4498,15 @@ int megasas_alloc_cmds(struct megasas_instance *instance)
 	 * Create a frame pool and assign one frame to each cmd
 	 */
 	if (megasas_create_frame_pool(instance)) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: Error creating frame DMA pool\n");
-		megasas_free_cmds(instance);
-=======
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "Error creating frame DMA pool\n");
 		megasas_free_cmds(instance);
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * dcmd_timeout_ocr_possible -	Check if OCR is possible based on Driver/FW state.
  * @instance:				Adapter soft state
  *
@@ -6342,7 +4604,6 @@ megasas_get_pd_info(struct megasas_instance *instance, struct scsi_device *sdev)
 	return;
 }
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * megasas_get_pd_list_info -	Returns FW's pd_list structure
  * @instance:				Adapter soft state
  * @pd_list:				pd_list structure
@@ -6359,9 +4620,6 @@ megasas_get_pd_list(struct megasas_instance *instance)
 	struct megasas_dcmd_frame *dcmd;
 	struct MR_PD_LIST *ci;
 	struct MR_PD_ADDRESS *pd_addr;
-<<<<<<< HEAD
-	dma_addr_t ci_h = 0;
-=======
 
 	if (instance->pd_list_not_supported) {
 		dev_info(&instance->pdev->dev, "MR_DCMD_PD_LIST_QUERY "
@@ -6370,90 +4628,27 @@ megasas_get_pd_list(struct megasas_instance *instance)
 	}
 
 	ci = instance->pd_list_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = megasas_get_cmd(instance);
 
 	if (!cmd) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas (get_pd_list): Failed to get cmd\n");
-=======
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "(get_pd_list): Failed to get cmd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	dcmd = &cmd->frame->dcmd;
 
-<<<<<<< HEAD
-	ci = pci_alloc_consistent(instance->pdev,
-		  MEGASAS_MAX_PD * sizeof(struct MR_PD_LIST), &ci_h);
-
-	if (!ci) {
-		printk(KERN_DEBUG "Failed to alloc mem for pd_list\n");
-		megasas_return_cmd(instance, cmd);
-		return -ENOMEM;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ci, 0, sizeof(*ci));
 	memset(dcmd->mbox.b, 0, MFI_MBOX_SIZE);
 
 	dcmd->mbox.b[0] = MR_PD_QUERY_TYPE_EXPOSED_TO_HOST;
 	dcmd->mbox.b[1] = 0;
 	dcmd->cmd = MFI_CMD_DCMD;
-<<<<<<< HEAD
-	dcmd->cmd_status = 0xFF;
-=======
 	dcmd->cmd_status = MFI_STAT_INVALID_STATUS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcmd->sge_count = 1;
 	dcmd->flags = MFI_FRAME_DIR_READ;
 	dcmd->timeout = 0;
 	dcmd->pad_0 = 0;
-<<<<<<< HEAD
-	dcmd->data_xfer_len = MEGASAS_MAX_PD * sizeof(struct MR_PD_LIST);
-	dcmd->opcode = MR_DCMD_PD_LIST_QUERY;
-	dcmd->sgl.sge32[0].phys_addr = ci_h;
-	dcmd->sgl.sge32[0].length = MEGASAS_MAX_PD * sizeof(struct MR_PD_LIST);
-
-	if (!megasas_issue_polled(instance, cmd)) {
-		ret = 0;
-	} else {
-		ret = -1;
-	}
-
-	/*
-	* the following function will get the instance PD LIST.
-	*/
-
-	pd_addr = ci->addr;
-
-	if ( ret == 0 &&
-		(ci->count <
-		  (MEGASAS_MAX_PD_CHANNELS * MEGASAS_MAX_DEV_PER_CHANNEL))) {
-
-		memset(instance->pd_list, 0,
-			MEGASAS_MAX_PD * sizeof(struct megasas_pd_list));
-
-		for (pd_index = 0; pd_index < ci->count; pd_index++) {
-
-			instance->pd_list[pd_addr->deviceId].tid	=
-							pd_addr->deviceId;
-			instance->pd_list[pd_addr->deviceId].driveType	=
-							pd_addr->scsiDevType;
-			instance->pd_list[pd_addr->deviceId].driveState	=
-							MR_PD_STATE_SYSTEM;
-			pd_addr++;
-		}
-	}
-
-	pci_free_consistent(instance->pdev,
-				MEGASAS_MAX_PD * sizeof(struct MR_PD_LIST),
-				ci, ci_h);
-	megasas_return_cmd(instance, cmd);
-=======
 	dcmd->data_xfer_len = cpu_to_le32(MEGASAS_MAX_PD * sizeof(struct MR_PD_LIST));
 	dcmd->opcode = cpu_to_le32(MR_DCMD_PD_LIST_QUERY);
 
@@ -6539,7 +4734,6 @@ megasas_get_pd_list(struct megasas_instance *instance)
 
 	if (ret != DCMD_TIMEOUT)
 		megasas_return_cmd(instance, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -6561,39 +4755,20 @@ megasas_get_ld_list(struct megasas_instance *instance)
 	struct megasas_dcmd_frame *dcmd;
 	struct MR_LD_LIST *ci;
 	dma_addr_t ci_h = 0;
-<<<<<<< HEAD
-=======
 	u32 ld_count;
 
 	ci = instance->ld_list_buf;
 	ci_h = instance->ld_list_buf_h;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = megasas_get_cmd(instance);
 
 	if (!cmd) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas_get_ld_list: Failed to get cmd\n");
-=======
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "megasas_get_ld_list: Failed to get cmd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	dcmd = &cmd->frame->dcmd;
 
-<<<<<<< HEAD
-	ci = pci_alloc_consistent(instance->pdev,
-				sizeof(struct MR_LD_LIST),
-				&ci_h);
-
-	if (!ci) {
-		printk(KERN_DEBUG "Failed to alloc mem in get_ld_list\n");
-		megasas_return_cmd(instance, cmd);
-		return -ENOMEM;
-	}
-
-=======
 	memset(ci, 0, sizeof(*ci));
 	memset(dcmd->mbox.b, 0, MFI_MBOX_SIZE);
 
@@ -7021,56 +5196,10 @@ void megasas_get_snapdump_properties(struct megasas_instance *instance)
 
 	dcmd = &cmd->frame->dcmd;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ci, 0, sizeof(*ci));
 	memset(dcmd->mbox.b, 0, MFI_MBOX_SIZE);
 
 	dcmd->cmd = MFI_CMD_DCMD;
-<<<<<<< HEAD
-	dcmd->cmd_status = 0xFF;
-	dcmd->sge_count = 1;
-	dcmd->flags = MFI_FRAME_DIR_READ;
-	dcmd->timeout = 0;
-	dcmd->data_xfer_len = sizeof(struct MR_LD_LIST);
-	dcmd->opcode = MR_DCMD_LD_GET_LIST;
-	dcmd->sgl.sge32[0].phys_addr = ci_h;
-	dcmd->sgl.sge32[0].length = sizeof(struct MR_LD_LIST);
-	dcmd->pad_0  = 0;
-
-	if (!megasas_issue_polled(instance, cmd)) {
-		ret = 0;
-	} else {
-		ret = -1;
-	}
-
-	/* the following function will get the instance PD LIST */
-
-	if ((ret == 0) && (ci->ldCount <= MAX_LOGICAL_DRIVES)) {
-		memset(instance->ld_ids, 0xff, MEGASAS_MAX_LD_IDS);
-
-		for (ld_index = 0; ld_index < ci->ldCount; ld_index++) {
-			if (ci->ldList[ld_index].state != 0) {
-				ids = ci->ldList[ld_index].ref.targetId;
-				instance->ld_ids[ids] =
-					ci->ldList[ld_index].ref.targetId;
-			}
-		}
-	}
-
-	pci_free_consistent(instance->pdev,
-				sizeof(struct MR_LD_LIST),
-				ci,
-				ci_h);
-
-	megasas_return_cmd(instance, cmd);
-	return ret;
-}
-
-/**
- * megasas_get_controller_info -	Returns FW's controller structure
- * @instance:				Adapter soft state
- * @ctrl_info:				Controller information structure
-=======
 	dcmd->cmd_status = MFI_STAT_INVALID_STATUS;
 	dcmd->sge_count = 1;
 	dcmd->flags = MFI_FRAME_DIR_READ;
@@ -7123,20 +5252,13 @@ void megasas_get_snapdump_properties(struct megasas_instance *instance)
 /**
  * megasas_get_ctrl_info -	Returns FW's controller structure
  * @instance:				Adapter soft state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Issues an internal command (DCMD) to get the FW's controller structure.
  * This information is mainly used to find out the maximum IO transfer per
  * command supported by the FW.
  */
-<<<<<<< HEAD
-static int
-megasas_get_ctrl_info(struct megasas_instance *instance,
-		      struct megasas_ctrl_info *ctrl_info)
-=======
 int
 megasas_get_ctrl_info(struct megasas_instance *instance)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct megasas_cmd *cmd;
@@ -7144,12 +5266,6 @@ megasas_get_ctrl_info(struct megasas_instance *instance)
 	struct megasas_ctrl_info *ci;
 	dma_addr_t ci_h = 0;
 
-<<<<<<< HEAD
-	cmd = megasas_get_cmd(instance);
-
-	if (!cmd) {
-		printk(KERN_DEBUG "megasas: Failed to get a free cmd\n");
-=======
 	ci = instance->ctrl_info_buf;
 	ci_h = instance->ctrl_info_buf_h;
 
@@ -7157,55 +5273,20 @@ megasas_get_ctrl_info(struct megasas_instance *instance)
 
 	if (!cmd) {
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "Failed to get a free cmd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	dcmd = &cmd->frame->dcmd;
 
-<<<<<<< HEAD
-	ci = pci_alloc_consistent(instance->pdev,
-				  sizeof(struct megasas_ctrl_info), &ci_h);
-
-	if (!ci) {
-		printk(KERN_DEBUG "Failed to alloc mem for ctrl info\n");
-		megasas_return_cmd(instance, cmd);
-		return -ENOMEM;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ci, 0, sizeof(*ci));
 	memset(dcmd->mbox.b, 0, MFI_MBOX_SIZE);
 
 	dcmd->cmd = MFI_CMD_DCMD;
-<<<<<<< HEAD
-	dcmd->cmd_status = 0xFF;
-=======
 	dcmd->cmd_status = MFI_STAT_INVALID_STATUS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcmd->sge_count = 1;
 	dcmd->flags = MFI_FRAME_DIR_READ;
 	dcmd->timeout = 0;
 	dcmd->pad_0 = 0;
-<<<<<<< HEAD
-	dcmd->data_xfer_len = sizeof(struct megasas_ctrl_info);
-	dcmd->opcode = MR_DCMD_CTRL_GET_INFO;
-	dcmd->sgl.sge32[0].phys_addr = ci_h;
-	dcmd->sgl.sge32[0].length = sizeof(struct megasas_ctrl_info);
-
-	if (!megasas_issue_polled(instance, cmd)) {
-		ret = 0;
-		memcpy(ctrl_info, ci, sizeof(struct megasas_ctrl_info));
-	} else {
-		ret = -1;
-	}
-
-	pci_free_consistent(instance->pdev, sizeof(struct megasas_ctrl_info),
-			    ci, ci_h);
-
-	megasas_return_cmd(instance, cmd);
-=======
 	dcmd->data_xfer_len = cpu_to_le32(sizeof(struct megasas_ctrl_info));
 	dcmd->opcode = cpu_to_le32(MR_DCMD_CTRL_GET_INFO);
 	dcmd->mbox.b[0] = 1;
@@ -7385,7 +5466,6 @@ int megasas_set_crash_dump_params(struct megasas_instance *instance,
 	} else
 		megasas_return_cmd(instance, cmd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -7398,15 +5478,8 @@ int megasas_set_crash_dump_params(struct megasas_instance *instance,
 static int
 megasas_issue_init_mfi(struct megasas_instance *instance)
 {
-<<<<<<< HEAD
-	u32 context;
-
-	struct megasas_cmd *cmd;
-
-=======
 	__le32 context;
 	struct megasas_cmd *cmd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct megasas_init_frame *init_frame;
 	struct megasas_init_queue_info *initq_info;
 	dma_addr_t init_frame_h;
@@ -7434,19 +5507,6 @@ megasas_issue_init_mfi(struct megasas_instance *instance)
 	memset(initq_info, 0, sizeof(struct megasas_init_queue_info));
 	init_frame->context = context;
 
-<<<<<<< HEAD
-	initq_info->reply_queue_entries = instance->max_fw_cmds + 1;
-	initq_info->reply_queue_start_phys_addr_lo = instance->reply_queue_h;
-
-	initq_info->producer_index_phys_addr_lo = instance->producer_h;
-	initq_info->consumer_index_phys_addr_lo = instance->consumer_h;
-
-	init_frame->cmd = MFI_CMD_INIT;
-	init_frame->cmd_status = 0xFF;
-	init_frame->queue_info_new_phys_addr_lo = initq_info_h;
-
-	init_frame->data_xfer_len = sizeof(struct megasas_init_queue_info);
-=======
 	initq_info->reply_queue_entries = cpu_to_le32(instance->max_fw_cmds + 1);
 	initq_info->reply_queue_start_phys_addr_lo = cpu_to_le32(instance->reply_queue_h);
 
@@ -7461,27 +5521,18 @@ megasas_issue_init_mfi(struct megasas_instance *instance)
 		cpu_to_le32(upper_32_bits(initq_info_h));
 
 	init_frame->data_xfer_len = cpu_to_le32(sizeof(struct megasas_init_queue_info));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * disable the intr before firing the init frame to FW
 	 */
-<<<<<<< HEAD
-	instance->instancet->disable_intr(instance->reg_set);
-=======
 	instance->instancet->disable_intr(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Issue the init frame in polled mode
 	 */
 
 	if (megasas_issue_polled(instance, cmd)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "megasas: Failed to init firmware\n");
-=======
 		dev_err(&instance->pdev->dev, "Failed to init firmware\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		megasas_return_cmd(instance, cmd);
 		goto fail_fw_init;
 	}
@@ -7497,18 +5548,6 @@ fail_fw_init:
 static u32
 megasas_init_adapter_mfi(struct megasas_instance *instance)
 {
-<<<<<<< HEAD
-	struct megasas_register_set __iomem *reg_set;
-	u32 context_sz;
-	u32 reply_q_sz;
-
-	reg_set = instance->reg_set;
-
-	/*
-	 * Get various operational parameters from status register
-	 */
-	instance->max_fw_cmds = instance->instancet->read_fw_status_reg(reg_set) & 0x00FFFF;
-=======
 	u32 context_sz;
 	u32 reply_q_sz;
 
@@ -7516,7 +5555,6 @@ megasas_init_adapter_mfi(struct megasas_instance *instance)
 	 * Get various operational parameters from status register
 	 */
 	instance->max_fw_cmds = instance->instancet->read_fw_status_reg(instance) & 0x00FFFF;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Reduce the max supported cmds by 1. This is to ensure that the
 	 * reply_q_sz (1 more than the max cmd that driver may send)
@@ -7524,11 +5562,6 @@ megasas_init_adapter_mfi(struct megasas_instance *instance)
 	 */
 	instance->max_fw_cmds = instance->max_fw_cmds-1;
 	instance->max_mfi_cmds = instance->max_fw_cmds;
-<<<<<<< HEAD
-	instance->max_num_sge = (instance->instancet->read_fw_status_reg(reg_set) & 0xFF0000) >>
-					0x10;
-	/*
-=======
 	instance->max_num_sge = (instance->instancet->read_fw_status_reg(instance) & 0xFF0000) >>
 					0x10;
 	/*
@@ -7548,7 +5581,6 @@ megasas_init_adapter_mfi(struct megasas_instance *instance)
 
 	instance->cur_can_queue = instance->max_scsi_cmds;
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Create a pool of commands
 	 */
 	if (megasas_alloc_cmds(instance))
@@ -7566,34 +5598,17 @@ megasas_init_adapter_mfi(struct megasas_instance *instance)
 	context_sz = sizeof(u32);
 	reply_q_sz = context_sz * (instance->max_fw_cmds + 1);
 
-<<<<<<< HEAD
-	instance->reply_queue = pci_alloc_consistent(instance->pdev,
-						     reply_q_sz,
-						     &instance->reply_queue_h);
-
-	if (!instance->reply_queue) {
-		printk(KERN_DEBUG "megasas: Out of DMA mem for reply queue\n");
-=======
 	instance->reply_queue = dma_alloc_coherent(&instance->pdev->dev,
 			reply_q_sz, &instance->reply_queue_h, GFP_KERNEL);
 
 	if (!instance->reply_queue) {
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "Out of DMA mem for reply queue\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_reply_queue;
 	}
 
 	if (megasas_issue_init_mfi(instance))
 		goto fail_fw_init;
 
-<<<<<<< HEAD
-	instance->fw_support_ieee = 0;
-	instance->fw_support_ieee =
-		(instance->instancet->read_fw_status_reg(reg_set) &
-		0x04000000);
-
-	printk(KERN_NOTICE "megasas_init_mfi: fw_support_ieee=%d",
-=======
 	if (megasas_get_ctrl_info(instance)) {
 		dev_err(&instance->pdev->dev, "(%d): Could get controller info "
 			"Fail from %s %d\n", instance->unique_id,
@@ -7607,7 +5622,6 @@ megasas_init_adapter_mfi(struct megasas_instance *instance)
 		0x04000000);
 
 	dev_notice(&instance->pdev->dev, "megasas_init_mfi: fw_support_ieee=%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			instance->fw_support_ieee);
 
 	if (instance->fw_support_ieee)
@@ -7617,11 +5631,7 @@ megasas_init_adapter_mfi(struct megasas_instance *instance)
 
 fail_fw_init:
 
-<<<<<<< HEAD
-	pci_free_consistent(instance->pdev, reply_q_sz,
-=======
 	dma_free_coherent(&instance->pdev->dev, reply_q_sz,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    instance->reply_queue, instance->reply_queue_h);
 fail_reply_queue:
 	megasas_free_cmds(instance);
@@ -7630,8 +5640,6 @@ fail_alloc_cmds:
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static
 void megasas_setup_irq_poll(struct megasas_instance *instance)
 {
@@ -7992,7 +6000,6 @@ megasas_alloc_irq_vectors(struct megasas_instance *instance)
 		megasas_set_high_iops_queue_affinity_and_hint(instance);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * megasas_init_fw -	Initializes the FW
  * @instance:		Adapter soft state
@@ -8003,22 +6010,6 @@ megasas_alloc_irq_vectors(struct megasas_instance *instance)
 static int megasas_init_fw(struct megasas_instance *instance)
 {
 	u32 max_sectors_1;
-<<<<<<< HEAD
-	u32 max_sectors_2;
-	u32 tmp_sectors, msix_enable;
-	resource_size_t base_addr;
-	struct megasas_register_set __iomem *reg_set;
-	struct megasas_ctrl_info *ctrl_info;
-	unsigned long bar_list;
-	int i;
-
-	/* Find first memory bar */
-	bar_list = pci_select_bars(instance->pdev, IORESOURCE_MEM);
-	instance->bar = find_first_bit(&bar_list, sizeof(unsigned long));
-	if (pci_request_selected_regions(instance->pdev, instance->bar,
-					 "megasas: LSI")) {
-		printk(KERN_DEBUG "megasas: IO memory region busy!\n");
-=======
 	u32 max_sectors_2, tmp_sectors, msix_enable;
 	u32 scratch_pad_1, scratch_pad_2, scratch_pad_3, status_reg;
 	resource_size_t base_addr;
@@ -8040,93 +6031,10 @@ static int megasas_init_fw(struct megasas_instance *instance)
 	if (pci_request_selected_regions(instance->pdev, 1<<instance->bar,
 					 "megasas: LSI")) {
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "IO memory region busy!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
 	base_addr = pci_resource_start(instance->pdev, instance->bar);
-<<<<<<< HEAD
-	instance->reg_set = ioremap_nocache(base_addr, 8192);
-
-	if (!instance->reg_set) {
-		printk(KERN_DEBUG "megasas: Failed to map IO mem\n");
-		goto fail_ioremap;
-	}
-
-	reg_set = instance->reg_set;
-
-	switch (instance->pdev->device) {
-	case PCI_DEVICE_ID_LSI_FUSION:
-	case PCI_DEVICE_ID_LSI_INVADER:
-		instance->instancet = &megasas_instance_template_fusion;
-		break;
-	case PCI_DEVICE_ID_LSI_SAS1078R:
-	case PCI_DEVICE_ID_LSI_SAS1078DE:
-		instance->instancet = &megasas_instance_template_ppc;
-		break;
-	case PCI_DEVICE_ID_LSI_SAS1078GEN2:
-	case PCI_DEVICE_ID_LSI_SAS0079GEN2:
-		instance->instancet = &megasas_instance_template_gen2;
-		break;
-	case PCI_DEVICE_ID_LSI_SAS0073SKINNY:
-	case PCI_DEVICE_ID_LSI_SAS0071SKINNY:
-		instance->instancet = &megasas_instance_template_skinny;
-		break;
-	case PCI_DEVICE_ID_LSI_SAS1064R:
-	case PCI_DEVICE_ID_DELL_PERC5:
-	default:
-		instance->instancet = &megasas_instance_template_xscale;
-		break;
-	}
-
-	if (megasas_transition_to_ready(instance, 0)) {
-		atomic_set(&instance->fw_reset_no_pci_access, 1);
-		instance->instancet->adp_reset
-			(instance, instance->reg_set);
-		atomic_set(&instance->fw_reset_no_pci_access, 0);
-		dev_info(&instance->pdev->dev,
-			"megasas: FW restarted successfully from %s!\n",
-			__func__);
-
-		/*waitting for about 30 second before retry*/
-		ssleep(30);
-
-		if (megasas_transition_to_ready(instance, 0))
-			goto fail_ready_state;
-	}
-
-	/* Check if MSI-X is supported while in ready state */
-	msix_enable = (instance->instancet->read_fw_status_reg(reg_set) &
-		       0x4000000) >> 0x1a;
-	if (msix_enable && !msix_disable) {
-		/* Check max MSI-X vectors */
-		if ((instance->pdev->device == PCI_DEVICE_ID_LSI_FUSION) ||
-		    (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER)) {
-			instance->msix_vectors = (readl(&instance->reg_set->
-							outbound_scratch_pad_2
-							  ) & 0x1F) + 1;
-		} else
-			instance->msix_vectors = 1;
-		/* Don't bother allocating more MSI-X vectors than cpus */
-		instance->msix_vectors = min(instance->msix_vectors,
-					     (unsigned int)num_online_cpus());
-		for (i = 0; i < instance->msix_vectors; i++)
-			instance->msixentry[i].entry = i;
-		i = pci_enable_msix(instance->pdev, instance->msixentry,
-				    instance->msix_vectors);
-		if (i >= 0) {
-			if (i) {
-				if (!pci_enable_msix(instance->pdev,
-						     instance->msixentry, i))
-					instance->msix_vectors = i;
-				else
-					instance->msix_vectors = 0;
-			}
-		} else
-			instance->msix_vectors = 0;
-	}
-
-=======
 	instance->reg_set = ioremap(base_addr, 8192);
 
 	if (!instance->reg_set) {
@@ -8414,27 +6322,10 @@ static int megasas_init_fw(struct megasas_instance *instance)
 	 */
 	instance->fw_supported_vd_count = MAX_LOGICAL_DRIVES;
 	instance->fw_supported_pd_count = MAX_PHYSICAL_DEVICES;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get operational params, sge flags, send init cmd to controller */
 	if (instance->instancet->init_adapter(instance))
 		goto fail_init_adapter;
 
-<<<<<<< HEAD
-	printk(KERN_ERR "megasas: INIT adapter done\n");
-
-	/** for passthrough
-	* the following function will get the PD LIST.
-	*/
-
-	memset(instance->pd_list, 0 ,
-		(MEGASAS_MAX_PD * sizeof(struct megasas_pd_list)));
-	megasas_get_pd_list(instance);
-
-	memset(instance->ld_ids, 0xff, MEGASAS_MAX_LD_IDS);
-	megasas_get_ld_list(instance);
-
-	ctrl_info = kmalloc(sizeof(struct megasas_ctrl_info), GFP_KERNEL);
-=======
 	if (instance->adapter_type >= VENTURA_SERIES) {
 		scratch_pad_3 =
 			megasas_readl(instance,
@@ -8497,7 +6388,6 @@ static int megasas_init_fw(struct megasas_instance *instance)
 				= MR_STREAM_BITMAP;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Compute the max allowed sectors per IO: The controller info has two
@@ -8509,18 +6399,6 @@ static int megasas_init_fw(struct megasas_instance *instance)
 	 * to calculate max_sectors_1. So the number ended up as zero always.
 	 */
 	tmp_sectors = 0;
-<<<<<<< HEAD
-	if (ctrl_info && !megasas_get_ctrl_info(instance, ctrl_info)) {
-
-		max_sectors_1 = (1 << ctrl_info->stripe_sz_ops.min) *
-		    ctrl_info->max_strips_per_io;
-		max_sectors_2 = ctrl_info->max_request_size;
-
-		tmp_sectors = min_t(u32, max_sectors_1 , max_sectors_2);
-		instance->disableOnlineCtrlReset =
-		ctrl_info->properties.OnOffProperties.disableOnlineCtrlReset;
-	}
-=======
 	ctrl_info = instance->ctrl_info_buf;
 
 	max_sectors_1 = (1 << ctrl_info->stripe_sz_ops.min) *
@@ -8597,33 +6475,12 @@ static int megasas_init_fw(struct megasas_instance *instance)
 		instance->crash_dump_drv_support ? "yes" : "no");
 	dev_info(&instance->pdev->dev, "JBOD sequence map	: %s\n",
 		instance->use_seqnum_jbod_fp ? "enabled" : "disabled");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	instance->max_sectors_per_req = instance->max_num_sge *
 						SGE_BUFFER_SIZE / 512;
 	if (tmp_sectors && (instance->max_sectors_per_req > tmp_sectors))
 		instance->max_sectors_per_req = tmp_sectors;
 
-<<<<<<< HEAD
-	kfree(ctrl_info);
-
-        /*
-	* Setup tasklet for cmd completion
-	*/
-
-	tasklet_init(&instance->isr_tasklet, instance->instancet->tasklet,
-		(unsigned long)instance);
-
-	return 0;
-
-fail_init_adapter:
-fail_ready_state:
-	iounmap(instance->reg_set);
-
-      fail_ioremap:
-	pci_release_selected_regions(instance->pdev, instance->bar);
-
-=======
 	/* Check for valid throttlequeuedepth module parameter */
 	if (throttlequeuedepth &&
 			throttlequeuedepth <= instance->max_scsi_cmds)
@@ -8681,39 +6538,26 @@ fail_ioremap:
 
 	dev_err(&instance->pdev->dev, "Failed from %s %d\n",
 		__func__, __LINE__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 /**
  * megasas_release_mfi -	Reverses the FW initialization
-<<<<<<< HEAD
- * @intance:			Adapter soft state
-=======
  * @instance:			Adapter soft state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void megasas_release_mfi(struct megasas_instance *instance)
 {
 	u32 reply_q_sz = sizeof(u32) *(instance->max_mfi_cmds + 1);
 
 	if (instance->reply_queue)
-<<<<<<< HEAD
-		pci_free_consistent(instance->pdev, reply_q_sz,
-=======
 		dma_free_coherent(&instance->pdev->dev, reply_q_sz,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    instance->reply_queue, instance->reply_queue_h);
 
 	megasas_free_cmds(instance);
 
 	iounmap(instance->reg_set);
 
-<<<<<<< HEAD
-	pci_release_selected_regions(instance->pdev, instance->bar);
-=======
 	pci_release_selected_regions(instance->pdev, 1<<instance->bar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -8736,10 +6580,7 @@ megasas_get_seq_num(struct megasas_instance *instance,
 	struct megasas_dcmd_frame *dcmd;
 	struct megasas_evt_log_info *el_info;
 	dma_addr_t el_info_h = 0;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd = megasas_get_cmd(instance);
 
@@ -8748,25 +6589,14 @@ megasas_get_seq_num(struct megasas_instance *instance,
 	}
 
 	dcmd = &cmd->frame->dcmd;
-<<<<<<< HEAD
-	el_info = pci_alloc_consistent(instance->pdev,
-				       sizeof(struct megasas_evt_log_info),
-				       &el_info_h);
-
-=======
 	el_info = dma_alloc_coherent(&instance->pdev->dev,
 				     sizeof(struct megasas_evt_log_info),
 				     &el_info_h, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!el_info) {
 		megasas_return_cmd(instance, cmd);
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	memset(el_info, 0, sizeof(*el_info));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(dcmd->mbox.b, 0, MFI_MBOX_SIZE);
 
 	dcmd->cmd = MFI_CMD_DCMD;
@@ -8775,14 +6605,6 @@ megasas_get_seq_num(struct megasas_instance *instance,
 	dcmd->flags = MFI_FRAME_DIR_READ;
 	dcmd->timeout = 0;
 	dcmd->pad_0 = 0;
-<<<<<<< HEAD
-	dcmd->data_xfer_len = sizeof(struct megasas_evt_log_info);
-	dcmd->opcode = MR_DCMD_CTRL_EVENT_GET_INFO;
-	dcmd->sgl.sge32[0].phys_addr = el_info_h;
-	dcmd->sgl.sge32[0].length = sizeof(struct megasas_evt_log_info);
-
-	megasas_issue_blocked_cmd(instance, cmd);
-=======
 	dcmd->data_xfer_len = cpu_to_le32(sizeof(struct megasas_evt_log_info));
 	dcmd->opcode = cpu_to_le32(MR_DCMD_CTRL_EVENT_GET_INFO);
 
@@ -8795,21 +6617,10 @@ megasas_get_seq_num(struct megasas_instance *instance,
 			__func__, __LINE__);
 		goto dcmd_failed;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Copy the data back into callers buffer
 	 */
-<<<<<<< HEAD
-	memcpy(eli, el_info, sizeof(struct megasas_evt_log_info));
-
-	pci_free_consistent(instance->pdev, sizeof(struct megasas_evt_log_info),
-			    el_info, el_info_h);
-
-	megasas_return_cmd(instance, cmd);
-
-	return 0;
-=======
 	eli->newest_seq_num = el_info->newest_seq_num;
 	eli->oldest_seq_num = el_info->oldest_seq_num;
 	eli->clear_seq_num = el_info->clear_seq_num;
@@ -8824,18 +6635,13 @@ dcmd_failed:
 	megasas_return_cmd(instance, cmd);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * megasas_register_aen -	Registers for asynchronous event notification
  * @instance:			Adapter soft state
  * @seq_num:			The starting sequence number
-<<<<<<< HEAD
- * @class_locale:		Class of the event
-=======
  * @class_locale_word:		Class of the event
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function subscribes for AEN for events beyond the @seq_num. It requests
  * to be notified if and only if the event is of type @class_locale
@@ -8867,9 +6673,6 @@ megasas_register_aen(struct megasas_instance *instance, u32 seq_num,
 
 	if (instance->aen_cmd) {
 
-<<<<<<< HEAD
-		prev_aen.word = instance->aen_cmd->frame->dcmd.mbox.w[1];
-=======
 		prev_aen.word =
 			le32_to_cpu(instance->aen_cmd->frame->dcmd.mbox.w[1]);
 
@@ -8880,7 +6683,6 @@ megasas_register_aen(struct megasas_instance *instance, u32 seq_num,
 				 __func__, __LINE__, curr_aen.members.class);
 			return 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * A class whose enum value is smaller is inclusive of all
@@ -8909,17 +6711,10 @@ megasas_register_aen(struct megasas_instance *instance, u32 seq_num,
 			instance->aen_cmd->abort_aen = 1;
 			ret_val = megasas_issue_blocked_abort_cmd(instance,
 								  instance->
-<<<<<<< HEAD
-								  aen_cmd);
-
-			if (ret_val) {
-				printk(KERN_DEBUG "megasas: Failed to abort "
-=======
 								  aen_cmd, 30);
 
 			if (ret_val) {
 				dev_printk(KERN_DEBUG, &instance->pdev->dev, "Failed to abort "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "previous AEN command\n");
 				return ret_val;
 			}
@@ -8946,15 +6741,6 @@ megasas_register_aen(struct megasas_instance *instance, u32 seq_num,
 	dcmd->flags = MFI_FRAME_DIR_READ;
 	dcmd->timeout = 0;
 	dcmd->pad_0 = 0;
-<<<<<<< HEAD
-	instance->last_seq_num = seq_num;
-	dcmd->data_xfer_len = sizeof(struct megasas_evt_detail);
-	dcmd->opcode = MR_DCMD_CTRL_EVENT_WAIT;
-	dcmd->mbox.w[0] = seq_num;
-	dcmd->mbox.w[1] = curr_aen.word;
-	dcmd->sgl.sge32[0].phys_addr = (u32) instance->evt_detail_h;
-	dcmd->sgl.sge32[0].length = sizeof(struct megasas_evt_detail);
-=======
 	dcmd->data_xfer_len = cpu_to_le32(sizeof(struct megasas_evt_detail));
 	dcmd->opcode = cpu_to_le32(MR_DCMD_CTRL_EVENT_WAIT);
 	dcmd->mbox.w[0] = cpu_to_le32(seq_num);
@@ -8963,7 +6749,6 @@ megasas_register_aen(struct megasas_instance *instance, u32 seq_num,
 
 	megasas_set_dma_settings(instance, dcmd, instance->evt_detail_h,
 				 sizeof(struct megasas_evt_detail));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (instance->aen_cmd != NULL) {
 		megasas_return_cmd(instance, cmd);
@@ -8985,8 +6770,6 @@ megasas_register_aen(struct megasas_instance *instance, u32 seq_num,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* megasas_get_target_prop - Send DCMD with below details to firmware.
  *
  * This DCMD will fetch few properties of LD/system PD defined
@@ -9082,7 +6865,6 @@ megasas_get_target_prop(struct megasas_instance *instance,
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * megasas_start_aen -	Subscribes to AEN during driver load time
  * @instance:		Adapter soft state
@@ -9107,14 +6889,9 @@ static int megasas_start_aen(struct megasas_instance *instance)
 	class_locale.members.locale = MR_EVT_LOCALE_ALL;
 	class_locale.members.class = MR_EVT_CLASS_DEBUG;
 
-<<<<<<< HEAD
-	return megasas_register_aen(instance, eli.newest_seq_num + 1,
-				    class_locale.word);
-=======
 	return megasas_register_aen(instance,
 			le32_to_cpu(eli.newest_seq_num) + 1,
 			class_locale.word);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -9128,20 +6905,8 @@ static int megasas_io_attach(struct megasas_instance *instance)
 	/*
 	 * Export parameters required by SCSI mid-layer
 	 */
-<<<<<<< HEAD
-	host->irq = instance->pdev->irq;
-	host->unique_id = instance->unique_id;
-	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
-		(instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0071SKINNY)) {
-		host->can_queue =
-			instance->max_fw_cmds - MEGASAS_SKINNY_INT_CMDS;
-	} else
-		host->can_queue =
-			instance->max_fw_cmds - MEGASAS_INT_CMDS;
-=======
 	host->unique_id = instance->unique_id;
 	host->can_queue = instance->max_scsi_cmds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->this_id = instance->init_id;
 	host->sg_tablesize = instance->max_num_sge;
 
@@ -9162,11 +6927,7 @@ static int megasas_io_attach(struct megasas_instance *instance)
 				(max_sectors <= MEGASAS_MAX_SECTORS)) {
 				instance->max_sectors_per_req = max_sectors;
 			} else {
-<<<<<<< HEAD
-			printk(KERN_INFO "megasas: max_sectors should be > 0"
-=======
 			dev_info(&instance->pdev->dev, "max_sectors should be > 0"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"and <= %d (or < 1MB for GEN2 controller)\n",
 				instance->max_sectors_per_req);
 			}
@@ -9180,15 +6941,6 @@ static int megasas_io_attach(struct megasas_instance *instance)
 	host->max_lun = MEGASAS_MAX_LUN;
 	host->max_cmd_len = 16;
 
-<<<<<<< HEAD
-	/* Fusion only supports host reset */
-	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_FUSION) ||
-	    (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER)) {
-		host->hostt->eh_device_reset_handler = NULL;
-		host->hostt->eh_bus_reset_handler = NULL;
-	}
-
-=======
 	/* Use shared host tagset only for fusion adaptors
 	 * if there are managed interrupts (smp affinity enabled case).
 	 * Single msix_vectors in kdump, so shared host tag is also disabled.
@@ -9215,44 +6967,10 @@ static int megasas_io_attach(struct megasas_instance *instance)
 		"hw_queues = %d poll_queues %d\n", instance->max_fw_cmds,
 		host->nr_hw_queues - instance->iopoll_q_count,
 		instance->iopoll_q_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Notify the mid-layer about the new controller
 	 */
 	if (scsi_add_host(host, &instance->pdev->dev)) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: scsi_add_host failed\n");
-		return -ENODEV;
-	}
-
-	/*
-	 * Trigger SCSI to scan our drives
-	 */
-	scsi_scan_host(host);
-	return 0;
-}
-
-static int
-megasas_set_dma_mask(struct pci_dev *pdev)
-{
-	/*
-	 * All our contollers are capable of performing 64-bit DMA
-	 */
-	if (IS_DMA64) {
-		if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64)) != 0) {
-
-			if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) != 0)
-				goto fail_set_dma_mask;
-		}
-	} else {
-		if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) != 0)
-			goto fail_set_dma_mask;
-	}
-	return 0;
-
-fail_set_dma_mask:
-	return 1;
-=======
 		dev_err(&instance->pdev->dev,
 			"Failed to add host from %s %d\n",
 			__func__, __LINE__);
@@ -9725,7 +7443,6 @@ static inline void megasas_init_ctrl_params(struct megasas_instance *instance)
 		INIT_WORK(&instance->work_init, megasas_fusion_ocr_wq);
 	else
 		INIT_WORK(&instance->work_init, process_fw_state_change_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -9733,23 +7450,14 @@ static inline void megasas_init_ctrl_params(struct megasas_instance *instance)
  * @pdev:		PCI device structure
  * @id:			PCI ids of supported hotplugged adapter
  */
-<<<<<<< HEAD
-static int __devinit
-megasas_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
-{
-	int rval, pos, i, j;
-=======
 static int megasas_probe_one(struct pci_dev *pdev,
 			     const struct pci_device_id *id)
 {
 	int rval, pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host;
 	struct megasas_instance *instance;
 	u16 control = 0;
 
-<<<<<<< HEAD
-=======
 	switch (pdev->device) {
 	case PCI_DEVICE_ID_LSI_AERO_10E0:
 	case PCI_DEVICE_ID_LSI_AERO_10E3:
@@ -9763,25 +7471,16 @@ static int megasas_probe_one(struct pci_dev *pdev,
 		break;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset MSI-X in the kdump kernel */
 	if (reset_devices) {
 		pos = pci_find_capability(pdev, PCI_CAP_ID_MSIX);
 		if (pos) {
-<<<<<<< HEAD
-			pci_read_config_word(pdev, msi_control_reg(pos),
-=======
 			pci_read_config_word(pdev, pos + PCI_MSIX_FLAGS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     &control);
 			if (control & PCI_MSIX_FLAGS_ENABLE) {
 				dev_info(&pdev->dev, "resetting MSI-X\n");
 				pci_write_config_word(pdev,
-<<<<<<< HEAD
-						      msi_control_reg(pos),
-=======
 						      pos + PCI_MSIX_FLAGS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      control &
 						      ~PCI_MSIX_FLAGS_ENABLE);
 			}
@@ -9789,19 +7488,6 @@ static int megasas_probe_one(struct pci_dev *pdev,
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Announce PCI information
-	 */
-	printk(KERN_INFO "megasas: %#4.04x:%#4.04x:%#4.04x:%#4.04x: ",
-	       pdev->vendor, pdev->device, pdev->subsystem_vendor,
-	       pdev->subsystem_device);
-
-	printk("bus %d:slot %d:func %d\n",
-	       pdev->bus->number, PCI_SLOT(pdev->devfn), PCI_FUNC(pdev->devfn));
-
-	/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * PCI prepping: enable device set bus mastering and dma mask
 	 */
 	rval = pci_enable_device_mem(pdev);
@@ -9812,141 +7498,27 @@ static int megasas_probe_one(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
-<<<<<<< HEAD
-	if (megasas_set_dma_mask(pdev))
-		goto fail_set_dma_mask;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host = scsi_host_alloc(&megasas_template,
 			       sizeof(struct megasas_instance));
 
 	if (!host) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: scsi_host_alloc failed\n");
-=======
 		dev_printk(KERN_DEBUG, &pdev->dev, "scsi_host_alloc failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_alloc_instance;
 	}
 
 	instance = (struct megasas_instance *)host->hostdata;
 	memset(instance, 0, sizeof(*instance));
-<<<<<<< HEAD
-	atomic_set( &instance->fw_reset_no_pci_access, 0 );
-	instance->pdev = pdev;
-
-	switch (instance->pdev->device) {
-	case PCI_DEVICE_ID_LSI_FUSION:
-	case PCI_DEVICE_ID_LSI_INVADER:
-	{
-		struct fusion_context *fusion;
-
-		instance->ctrl_context =
-			kzalloc(sizeof(struct fusion_context), GFP_KERNEL);
-		if (!instance->ctrl_context) {
-			printk(KERN_DEBUG "megasas: Failed to allocate "
-			       "memory for Fusion context info\n");
-			goto fail_alloc_dma_buf;
-		}
-		fusion = instance->ctrl_context;
-		INIT_LIST_HEAD(&fusion->cmd_pool);
-		spin_lock_init(&fusion->cmd_pool_lock);
-	}
-	break;
-	default: /* For all other supported controllers */
-
-		instance->producer =
-			pci_alloc_consistent(pdev, sizeof(u32),
-					     &instance->producer_h);
-		instance->consumer =
-			pci_alloc_consistent(pdev, sizeof(u32),
-					     &instance->consumer_h);
-
-		if (!instance->producer || !instance->consumer) {
-			printk(KERN_DEBUG "megasas: Failed to allocate"
-			       "memory for producer, consumer\n");
-			goto fail_alloc_dma_buf;
-		}
-
-		*instance->producer = 0;
-		*instance->consumer = 0;
-		break;
-	}
-
-	megasas_poll_wait_aen = 0;
-	instance->flag_ieee = 0;
-	instance->ev = NULL;
-	instance->issuepend_done = 1;
-	instance->adprecovery = MEGASAS_HBA_OPERATIONAL;
-	megasas_poll_wait_aen = 0;
-
-	instance->evt_detail = pci_alloc_consistent(pdev,
-						    sizeof(struct
-							   megasas_evt_detail),
-						    &instance->evt_detail_h);
-
-	if (!instance->evt_detail) {
-		printk(KERN_DEBUG "megasas: Failed to allocate memory for "
-		       "event detail structure\n");
-		goto fail_alloc_dma_buf;
-	}
-
-	/*
-	 * Initialize locks and queues
-	 */
-	INIT_LIST_HEAD(&instance->cmd_pool);
-	INIT_LIST_HEAD(&instance->internal_reset_pending_q);
-
-	atomic_set(&instance->fw_outstanding,0);
-
-	init_waitqueue_head(&instance->int_cmd_wait_q);
-	init_waitqueue_head(&instance->abort_cmd_wait_q);
-
-	spin_lock_init(&instance->cmd_pool_lock);
-	spin_lock_init(&instance->hba_lock);
-	spin_lock_init(&instance->completion_lock);
-
-	mutex_init(&instance->aen_mutex);
-	mutex_init(&instance->reset_mutex);
-=======
 	atomic_set(&instance->fw_reset_no_pci_access, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initialize PCI related and misc parameters
 	 */
-<<<<<<< HEAD
-	instance->host = host;
-	instance->unique_id = pdev->bus->number << 8 | pdev->devfn;
-	instance->init_id = MEGASAS_DEFAULT_INIT_ID;
-
-	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0073SKINNY) ||
-		(instance->pdev->device == PCI_DEVICE_ID_LSI_SAS0071SKINNY)) {
-		instance->flag_ieee = 1;
-		sema_init(&instance->ioctl_sem, MEGASAS_SKINNY_INT_CMDS);
-	} else
-		sema_init(&instance->ioctl_sem, MEGASAS_INT_CMDS);
-
-	megasas_dbg_lvl = 0;
-	instance->flag = 0;
-	instance->unload = 1;
-	instance->last_time = 0;
-	instance->disableOnlineCtrlReset = 1;
-
-	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_FUSION) ||
-	    (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER))
-		INIT_WORK(&instance->work_init, megasas_fusion_ocr_wq);
-	else
-		INIT_WORK(&instance->work_init, process_fw_state_change_wq);
-=======
 	instance->pdev = pdev;
 	instance->host = host;
 	instance->unique_id = pci_dev_id(pdev);
 	instance->init_id = MEGASAS_DEFAULT_INIT_ID;
 
 	megasas_set_adapter_type(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initialize MFI Firmware
@@ -9954,41 +7526,6 @@ static int megasas_probe_one(struct pci_dev *pdev,
 	if (megasas_init_fw(instance))
 		goto fail_init_mfi;
 
-<<<<<<< HEAD
-	/*
-	 * Register IRQ
-	 */
-	if (instance->msix_vectors) {
-		for (i = 0 ; i < instance->msix_vectors; i++) {
-			instance->irq_context[i].instance = instance;
-			instance->irq_context[i].MSIxIndex = i;
-			if (request_irq(instance->msixentry[i].vector,
-					instance->instancet->service_isr, 0,
-					"megasas",
-					&instance->irq_context[i])) {
-				printk(KERN_DEBUG "megasas: Failed to "
-				       "register IRQ for vector %d.\n", i);
-				for (j = 0 ; j < i ; j++)
-					free_irq(
-						instance->msixentry[j].vector,
-						&instance->irq_context[j]);
-				goto fail_irq;
-			}
-		}
-	} else {
-		instance->irq_context[0].instance = instance;
-		instance->irq_context[0].MSIxIndex = 0;
-		if (request_irq(pdev->irq, instance->instancet->service_isr,
-				IRQF_SHARED, "megasas",
-				&instance->irq_context[0])) {
-			printk(KERN_DEBUG "megasas: Failed to register IRQ\n");
-			goto fail_irq;
-		}
-	}
-
-	instance->instancet->enable_intr(instance->reg_set);
-
-=======
 	if (instance->requestorId) {
 		if (instance->PlasmaFW111) {
 			instance->vf_affiliation_111 =
@@ -10012,7 +7549,6 @@ static int megasas_probe_one(struct pci_dev *pdev,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Store instance in PCI softstate
 	 */
@@ -10033,67 +7569,17 @@ static int megasas_probe_one(struct pci_dev *pdev,
 		goto fail_io_attach;
 
 	instance->unload = 0;
-<<<<<<< HEAD
-=======
 	/*
 	 * Trigger SCSI to scan our drives
 	 */
 	if (!instance->enable_fw_dev_list ||
 	    (instance->host_device_list_buf->count > 0))
 		scsi_scan_host(host);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initiate AEN (Asynchronous Event Notification)
 	 */
 	if (megasas_start_aen(instance)) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: start aen failed\n");
-		goto fail_start_aen;
-	}
-
-	return 0;
-
-      fail_start_aen:
-      fail_io_attach:
-	megasas_mgmt_info.count--;
-	megasas_mgmt_info.instance[megasas_mgmt_info.max_index] = NULL;
-	megasas_mgmt_info.max_index--;
-
-	pci_set_drvdata(pdev, NULL);
-	instance->instancet->disable_intr(instance->reg_set);
-	if (instance->msix_vectors)
-		for (i = 0 ; i < instance->msix_vectors; i++)
-			free_irq(instance->msixentry[i].vector,
-				 &instance->irq_context[i]);
-	else
-		free_irq(instance->pdev->irq, &instance->irq_context[0]);
-fail_irq:
-	if ((instance->pdev->device == PCI_DEVICE_ID_LSI_FUSION) ||
-	    (instance->pdev->device == PCI_DEVICE_ID_LSI_INVADER))
-		megasas_release_fusion(instance);
-	else
-		megasas_release_mfi(instance);
-      fail_init_mfi:
-	if (instance->msix_vectors)
-		pci_disable_msix(instance->pdev);
-      fail_alloc_dma_buf:
-	if (instance->evt_detail)
-		pci_free_consistent(pdev, sizeof(struct megasas_evt_detail),
-				    instance->evt_detail,
-				    instance->evt_detail_h);
-
-	if (instance->producer)
-		pci_free_consistent(pdev, sizeof(u32), instance->producer,
-				    instance->producer_h);
-	if (instance->consumer)
-		pci_free_consistent(pdev, sizeof(u32), instance->consumer,
-				    instance->consumer_h);
-	scsi_host_put(host);
-
-      fail_alloc_instance:
-      fail_set_dma_mask:
-=======
 		dev_printk(KERN_DEBUG, &pdev->dev, "start aen failed\n");
 		goto fail_start_aen;
 	}
@@ -10137,7 +7623,6 @@ fail_io_attach:
 fail_init_mfi:
 	scsi_host_put(host);
 fail_alloc_instance:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(pdev);
 
 	return -ENODEV;
@@ -10152,11 +7637,7 @@ static void megasas_flush_cache(struct megasas_instance *instance)
 	struct megasas_cmd *cmd;
 	struct megasas_dcmd_frame *dcmd;
 
-<<<<<<< HEAD
-	if (instance->adprecovery == MEGASAS_HW_CRITICAL_ERROR)
-=======
 	if (atomic_read(&instance->adprecovery) == MEGASAS_HW_CRITICAL_ERROR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	cmd = megasas_get_cmd(instance);
@@ -10171,20 +7652,6 @@ static void megasas_flush_cache(struct megasas_instance *instance)
 	dcmd->cmd = MFI_CMD_DCMD;
 	dcmd->cmd_status = 0x0;
 	dcmd->sge_count = 0;
-<<<<<<< HEAD
-	dcmd->flags = MFI_FRAME_DIR_NONE;
-	dcmd->timeout = 0;
-	dcmd->pad_0 = 0;
-	dcmd->data_xfer_len = 0;
-	dcmd->opcode = MR_DCMD_CTRL_CACHE_FLUSH;
-	dcmd->mbox.b[0] = MR_FLUSH_CTRL_CACHE | MR_FLUSH_DISK_CACHE;
-
-	megasas_issue_blocked_cmd(instance, cmd);
-
-	megasas_return_cmd(instance, cmd);
-
-	return;
-=======
 	dcmd->flags = cpu_to_le16(MFI_FRAME_DIR_NONE);
 	dcmd->timeout = 0;
 	dcmd->pad_0 = 0;
@@ -10200,7 +7667,6 @@ static void megasas_flush_cache(struct megasas_instance *instance)
 	}
 
 	megasas_return_cmd(instance, cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -10214,11 +7680,7 @@ static void megasas_shutdown_controller(struct megasas_instance *instance,
 	struct megasas_cmd *cmd;
 	struct megasas_dcmd_frame *dcmd;
 
-<<<<<<< HEAD
-	if (instance->adprecovery == MEGASAS_HW_CRITICAL_ERROR)
-=======
 	if (atomic_read(&instance->adprecovery) == MEGASAS_HW_CRITICAL_ERROR)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	cmd = megasas_get_cmd(instance);
@@ -10227,12 +7689,6 @@ static void megasas_shutdown_controller(struct megasas_instance *instance,
 		return;
 
 	if (instance->aen_cmd)
-<<<<<<< HEAD
-		megasas_issue_blocked_abort_cmd(instance, instance->aen_cmd);
-	if (instance->map_update_cmd)
-		megasas_issue_blocked_abort_cmd(instance,
-						instance->map_update_cmd);
-=======
 		megasas_issue_blocked_abort_cmd(instance,
 			instance->aen_cmd, MFI_IO_TIMEOUT_SECS);
 	if (instance->map_update_cmd)
@@ -10242,7 +7698,6 @@ static void megasas_shutdown_controller(struct megasas_instance *instance,
 		megasas_issue_blocked_abort_cmd(instance,
 			instance->jbod_seq_cmd, MFI_IO_TIMEOUT_SECS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcmd = &cmd->frame->dcmd;
 
 	memset(dcmd->mbox.b, 0, MFI_MBOX_SIZE);
@@ -10250,38 +7705,6 @@ static void megasas_shutdown_controller(struct megasas_instance *instance,
 	dcmd->cmd = MFI_CMD_DCMD;
 	dcmd->cmd_status = 0x0;
 	dcmd->sge_count = 0;
-<<<<<<< HEAD
-	dcmd->flags = MFI_FRAME_DIR_NONE;
-	dcmd->timeout = 0;
-	dcmd->pad_0 = 0;
-	dcmd->data_xfer_len = 0;
-	dcmd->opcode = opcode;
-
-	megasas_issue_blocked_cmd(instance, cmd);
-
-	megasas_return_cmd(instance, cmd);
-
-	return;
-}
-
-#ifdef CONFIG_PM
-/**
- * megasas_suspend -	driver suspend entry point
- * @pdev:		PCI device structure
- * @state:		PCI power state to suspend routine
- */
-static int
-megasas_suspend(struct pci_dev *pdev, pm_message_t state)
-{
-	struct Scsi_Host *host;
-	struct megasas_instance *instance;
-	int i;
-
-	instance = pci_get_drvdata(pdev);
-	host = instance->host;
-	instance->unload = 1;
-
-=======
 	dcmd->flags = cpu_to_le16(MFI_FRAME_DIR_NONE);
 	dcmd->timeout = 0;
 	dcmd->pad_0 = 0;
@@ -10324,85 +7747,31 @@ megasas_suspend(struct device *dev)
 	if (instance->adapter_type != MFI_SERIES)
 		megasas_fusion_stop_watchdog(instance);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	megasas_flush_cache(instance);
 	megasas_shutdown_controller(instance, MR_DCMD_HIBERNATE_SHUTDOWN);
 
 	/* cancel the delayed work if this work still in queue */
 	if (instance->ev != NULL) {
 		struct megasas_aen_event *ev = instance->ev;
-<<<<<<< HEAD
-		cancel_delayed_work_sync(
-			(struct delayed_work *)&ev->hotplug_work);
-=======
 		cancel_delayed_work_sync(&ev->hotplug_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		instance->ev = NULL;
 	}
 
 	tasklet_kill(&instance->isr_tasklet);
 
 	pci_set_drvdata(instance->pdev, instance);
-<<<<<<< HEAD
-	instance->instancet->disable_intr(instance->reg_set);
-
-	if (instance->msix_vectors)
-		for (i = 0 ; i < instance->msix_vectors; i++)
-			free_irq(instance->msixentry[i].vector,
-				 &instance->irq_context[i]);
-	else
-		free_irq(instance->pdev->irq, &instance->irq_context[0]);
-	if (instance->msix_vectors)
-		pci_disable_msix(instance->pdev);
-
-	pci_save_state(pdev);
-	pci_disable_device(pdev);
-
-	pci_set_power_state(pdev, pci_choose_state(pdev, state));
-=======
 	instance->instancet->disable_intr(instance);
 
 	megasas_destroy_irqs(instance);
 
 	if (instance->msix_vectors)
 		pci_free_irq_vectors(instance->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /**
  * megasas_resume-      driver resume entry point
-<<<<<<< HEAD
- * @pdev:               PCI device structure
- */
-static int
-megasas_resume(struct pci_dev *pdev)
-{
-	int rval, i, j;
-	struct Scsi_Host *host;
-	struct megasas_instance *instance;
-
-	instance = pci_get_drvdata(pdev);
-	host = instance->host;
-	pci_set_power_state(pdev, PCI_D0);
-	pci_enable_wake(pdev, PCI_D0, 0);
-	pci_restore_state(pdev);
-
-	/*
-	 * PCI prepping: enable device set bus mastering and dma mask
-	 */
-	rval = pci_enable_device_mem(pdev);
-
-	if (rval) {
-		printk(KERN_ERR "megasas: Enable device failed\n");
-		return rval;
-	}
-
-	pci_set_master(pdev);
-
-	if (megasas_set_dma_mask(pdev))
-=======
  * @dev:		Device structure
  */
 static int __maybe_unused
@@ -10455,7 +7824,6 @@ megasas_resume(struct device *dev)
 			 __func__);
 	}
 	if (megasas_set_dma_mask(instance))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_set_dma_mask;
 
 	/*
@@ -10463,24 +7831,6 @@ megasas_resume(struct device *dev)
 	 */
 
 	atomic_set(&instance->fw_outstanding, 0);
-<<<<<<< HEAD
-
-	/*
-	 * We expect the FW state to be READY
-	 */
-	if (megasas_transition_to_ready(instance, 0))
-		goto fail_ready_state;
-
-	/* Now re-enable MSI-X */
-	if (instance->msix_vectors)
-		pci_enable_msix(instance->pdev, instance->msixentry,
-				instance->msix_vectors);
-
-	switch (instance->pdev->device) {
-	case PCI_DEVICE_ID_LSI_FUSION:
-	case PCI_DEVICE_ID_LSI_INVADER:
-	{
-=======
 	atomic_set(&instance->ldio_outstanding, 0);
 
 	/* Now re-enable MSI-X */
@@ -10497,7 +7847,6 @@ megasas_resume(struct device *dev)
 	megasas_setup_reply_map(instance);
 
 	if (instance->adapter_type != MFI_SERIES) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		megasas_reset_reply_desc(instance);
 		if (megasas_ioc_init_fusion(instance)) {
 			megasas_free_cmds(instance);
@@ -10506,57 +7855,11 @@ megasas_resume(struct device *dev)
 		}
 		if (!megasas_get_map_info(instance))
 			megasas_sync_map_info(instance);
-<<<<<<< HEAD
-	}
-	break;
-	default:
-=======
 	} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*instance->producer = 0;
 		*instance->consumer = 0;
 		if (megasas_issue_init_mfi(instance))
 			goto fail_init_mfi;
-<<<<<<< HEAD
-		break;
-	}
-
-	tasklet_init(&instance->isr_tasklet, instance->instancet->tasklet,
-		     (unsigned long)instance);
-
-	/*
-	 * Register IRQ
-	 */
-	if (instance->msix_vectors) {
-		for (i = 0 ; i < instance->msix_vectors; i++) {
-			instance->irq_context[i].instance = instance;
-			instance->irq_context[i].MSIxIndex = i;
-			if (request_irq(instance->msixentry[i].vector,
-					instance->instancet->service_isr, 0,
-					"megasas",
-					&instance->irq_context[i])) {
-				printk(KERN_DEBUG "megasas: Failed to "
-				       "register IRQ for vector %d.\n", i);
-				for (j = 0 ; j < i ; j++)
-					free_irq(
-						instance->msixentry[j].vector,
-						&instance->irq_context[j]);
-				goto fail_irq;
-			}
-		}
-	} else {
-		instance->irq_context[0].instance = instance;
-		instance->irq_context[0].MSIxIndex = 0;
-		if (request_irq(pdev->irq, instance->instancet->service_isr,
-				IRQF_SHARED, "megasas",
-				&instance->irq_context[0])) {
-			printk(KERN_DEBUG "megasas: Failed to register IRQ\n");
-			goto fail_irq;
-		}
-	}
-
-	instance->instancet->enable_intr(instance->reg_set);
-=======
 	}
 
 	if (megasas_get_ctrl_info(instance) != DCMD_SUCCESS)
@@ -10585,45 +7888,12 @@ megasas_resume(struct device *dev)
 
 	instance->instancet->enable_intr(instance);
 	megasas_setup_jbod_map(instance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	instance->unload = 0;
 
 	/*
 	 * Initiate AEN (Asynchronous Event Notification)
 	 */
 	if (megasas_start_aen(instance))
-<<<<<<< HEAD
-		printk(KERN_ERR "megasas: Start AEN failed\n");
-
-	return 0;
-
-fail_irq:
-fail_init_mfi:
-	if (instance->evt_detail)
-		pci_free_consistent(pdev, sizeof(struct megasas_evt_detail),
-				instance->evt_detail,
-				instance->evt_detail_h);
-
-	if (instance->producer)
-		pci_free_consistent(pdev, sizeof(u32), instance->producer,
-				instance->producer_h);
-	if (instance->consumer)
-		pci_free_consistent(pdev, sizeof(u32), instance->consumer,
-				instance->consumer_h);
-	scsi_host_put(host);
-
-fail_set_dma_mask:
-fail_ready_state:
-
-	pci_disable_device(pdev);
-
-	return -ENODEV;
-}
-#else
-#define megasas_suspend	NULL
-#define megasas_resume	NULL
-#endif
-=======
 		dev_err(&instance->pdev->dev, "Start AEN failed\n");
 
 	/* Re-launch FW fault watchdog */
@@ -10676,42 +7946,17 @@ megasas_wait_for_adapter_operational(struct megasas_instance *instance)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * megasas_detach_one -	PCI hot"un"plug entry point
  * @pdev:		PCI device structure
  */
-<<<<<<< HEAD
-static void __devexit megasas_detach_one(struct pci_dev *pdev)
-=======
 static void megasas_detach_one(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct Scsi_Host *host;
 	struct megasas_instance *instance;
 	struct fusion_context *fusion;
-<<<<<<< HEAD
-
-	instance = pci_get_drvdata(pdev);
-	instance->unload = 1;
-	host = instance->host;
-	fusion = instance->ctrl_context;
-
-	scsi_remove_host(instance->host);
-	megasas_flush_cache(instance);
-	megasas_shutdown_controller(instance, MR_DCMD_CTRL_SHUTDOWN);
-
-	/* cancel the delayed work if this work still in queue*/
-	if (instance->ev != NULL) {
-		struct megasas_aen_event *ev = instance->ev;
-		cancel_delayed_work_sync(
-			(struct delayed_work *)&ev->hotplug_work);
-		instance->ev = NULL;
-	}
-
-=======
 	size_t pd_seq_map_sz;
 
 	instance = pci_get_drvdata(pdev);
@@ -10752,7 +7997,6 @@ skip_firing_dcmds:
 	/* cancel all wait events */
 	wake_up_all(&instance->int_cmd_wait_q);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tasklet_kill(&instance->isr_tasklet);
 
 	/*
@@ -10768,56 +8012,6 @@ skip_firing_dcmds:
 		}
 	}
 
-<<<<<<< HEAD
-	pci_set_drvdata(instance->pdev, NULL);
-
-	instance->instancet->disable_intr(instance->reg_set);
-
-	if (instance->msix_vectors)
-		for (i = 0 ; i < instance->msix_vectors; i++)
-			free_irq(instance->msixentry[i].vector,
-				 &instance->irq_context[i]);
-	else
-		free_irq(instance->pdev->irq, &instance->irq_context[0]);
-	if (instance->msix_vectors)
-		pci_disable_msix(instance->pdev);
-
-	switch (instance->pdev->device) {
-	case PCI_DEVICE_ID_LSI_FUSION:
-	case PCI_DEVICE_ID_LSI_INVADER:
-		megasas_release_fusion(instance);
-		for (i = 0; i < 2 ; i++)
-			if (fusion->ld_map[i])
-				dma_free_coherent(&instance->pdev->dev,
-						  fusion->map_sz,
-						  fusion->ld_map[i],
-						  fusion->
-						  ld_map_phys[i]);
-		kfree(instance->ctrl_context);
-		break;
-	default:
-		megasas_release_mfi(instance);
-		pci_free_consistent(pdev,
-				    sizeof(struct megasas_evt_detail),
-				    instance->evt_detail,
-				    instance->evt_detail_h);
-		pci_free_consistent(pdev, sizeof(u32),
-				    instance->producer,
-				    instance->producer_h);
-		pci_free_consistent(pdev, sizeof(u32),
-				    instance->consumer,
-				    instance->consumer_h);
-		break;
-	}
-
-	scsi_host_put(host);
-
-	pci_set_drvdata(pdev, NULL);
-
-	pci_disable_device(pdev);
-
-	return;
-=======
 	instance->instancet->disable_intr(instance);
 
 	megasas_destroy_irqs(instance);
@@ -10888,36 +8082,10 @@ skip_firing_dcmds:
 	scsi_host_put(host);
 
 	pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * megasas_shutdown -	Shutdown entry point
-<<<<<<< HEAD
- * @device:		Generic device structure
- */
-static void megasas_shutdown(struct pci_dev *pdev)
-{
-	int i;
-	struct megasas_instance *instance = pci_get_drvdata(pdev);
-
-	instance->unload = 1;
-	megasas_flush_cache(instance);
-	megasas_shutdown_controller(instance, MR_DCMD_CTRL_SHUTDOWN);
-	instance->instancet->disable_intr(instance->reg_set);
-	if (instance->msix_vectors)
-		for (i = 0 ; i < instance->msix_vectors; i++)
-			free_irq(instance->msixentry[i].vector,
-				 &instance->irq_context[i]);
-	else
-		free_irq(instance->pdev->irq, &instance->irq_context[0]);
-	if (instance->msix_vectors)
-		pci_disable_msix(instance->pdev);
-}
-
-/**
- * megasas_mgmt_open -	char node "open" entry point
-=======
  * @pdev:		PCI device structure
  */
 static void megasas_shutdown(struct pci_dev *pdev)
@@ -10947,7 +8115,6 @@ skip_firing_dcmds:
  * megasas_mgmt_open -	char node "open" entry point
  * @inode:	char node inode
  * @filep:	char node file
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int megasas_mgmt_open(struct inode *inode, struct file *filep)
 {
@@ -10960,16 +8127,11 @@ static int megasas_mgmt_open(struct inode *inode, struct file *filep)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * megasas_mgmt_fasync -	Async notifier registration from applications
-=======
 /*
  * megasas_mgmt_fasync -	Async notifier registration from applications
  * @fd:		char node file descriptor number
  * @filep:	char node file
  * @mode:	notifier on/off
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function adds the calling process to a driver global queue. When an
  * event occurs, SIGIO will be sent to all processes in this queue.
@@ -10995,21 +8157,6 @@ static int megasas_mgmt_fasync(int fd, struct file *filep, int mode)
 	return rc;
 }
 
-<<<<<<< HEAD
-/**
- * megasas_mgmt_poll -  char node "poll" entry point
- * */
-static unsigned int megasas_mgmt_poll(struct file *file, poll_table *wait)
-{
-	unsigned int mask;
-	unsigned long flags;
-	poll_wait(file, &megasas_poll_wait, wait);
-	spin_lock_irqsave(&poll_aen_lock, flags);
-	if (megasas_poll_wait_aen)
-		mask =   (POLLIN | POLLRDNORM);
-	else
-		mask = 0;
-=======
 /*
  * megasas_mgmt_poll -  char node "poll" entry point
  * @filep:	char node file
@@ -11027,17 +8174,10 @@ static __poll_t megasas_mgmt_poll(struct file *file, poll_table *wait)
 	else
 		mask = 0;
 	megasas_poll_wait_aen = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&poll_aen_lock, flags);
 	return mask;
 }
 
-<<<<<<< HEAD
-/**
- * megasas_mgmt_fw_ioctl -	Issues management ioctls to FW
- * @instance:			Adapter soft state
- * @argp:			User's ioctl packet
-=======
 /*
  * megasas_set_crash_dump_params_ioctl:
  *		Send CRASH_DUMP_MODE DCMD to all controllers
@@ -11081,50 +8221,32 @@ static int megasas_set_crash_dump_params_ioctl(struct megasas_cmd *cmd)
  * @instance:			Adapter soft state
  * @user_ioc:			User's ioctl packet
  * @ioc:			ioctl packet
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 		      struct megasas_iocpacket __user * user_ioc,
 		      struct megasas_iocpacket *ioc)
 {
-<<<<<<< HEAD
-	struct megasas_sge32 *kern_sge32;
-=======
 	struct megasas_sge64 *kern_sge64 = NULL;
 	struct megasas_sge32 *kern_sge32 = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct megasas_cmd *cmd;
 	void *kbuff_arr[MAX_IOCTL_SGE];
 	dma_addr_t buf_handle = 0;
 	int error = 0, i;
 	void *sense = NULL;
 	dma_addr_t sense_handle;
-<<<<<<< HEAD
-	unsigned long *sense_ptr;
-=======
 	void *sense_ptr;
 	u32 opcode = 0;
 	int ret = DCMD_SUCCESS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(kbuff_arr, 0, sizeof(kbuff_arr));
 
 	if (ioc->sge_count > MAX_IOCTL_SGE) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: SGE count [%d] >  max limit [%d]\n",
-=======
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "SGE count [%d] >  max limit [%d]\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       ioc->sge_count, MAX_IOCTL_SGE);
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	cmd = megasas_get_cmd(instance);
-	if (!cmd) {
-		printk(KERN_DEBUG "megasas: Failed to get a cmd packet\n");
-=======
 	if ((ioc->frame.hdr.cmd >= MFI_CMD_OP_COUNT) ||
 	    ((ioc->frame.hdr.cmd == MFI_CMD_NVME) &&
 	    !instance->support_nvme_passthru) ||
@@ -11139,7 +8261,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	cmd = megasas_get_cmd(instance);
 	if (!cmd) {
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "Failed to get a cmd packet\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -11150,12 +8271,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	 * alone separately
 	 */
 	memcpy(cmd->frame, ioc->frame.raw, 2 * MEGAMFI_FRAME_SIZE);
-<<<<<<< HEAD
-	cmd->frame->hdr.context = cmd->index;
-	cmd->frame->hdr.pad_0 = 0;
-	cmd->frame->hdr.flags &= ~(MFI_FRAME_IEEE | MFI_FRAME_SGL64 |
-				   MFI_FRAME_SENSE64);
-=======
 	cmd->frame->hdr.context = cpu_to_le32(cmd->index);
 	cmd->frame->hdr.pad_0 = 0;
 
@@ -11186,7 +8301,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 		megasas_return_cmd(instance, cmd);
 		return error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The management interface between applications and the fw uses
@@ -11196,17 +8310,12 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	 * kernel buffers in SGLs. The location of SGL is embedded in the
 	 * struct iocpacket itself.
 	 */
-<<<<<<< HEAD
-	kern_sge32 = (struct megasas_sge32 *)
-	    ((unsigned long)cmd->frame + ioc->sgl_off);
-=======
 	if (instance->consistent_mask_64bit)
 		kern_sge64 = (struct megasas_sge64 *)
 			((unsigned long)cmd->frame + ioc->sgl_off);
 	else
 		kern_sge32 = (struct megasas_sge32 *)
 			((unsigned long)cmd->frame + ioc->sgl_off);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For each user buffer, create a mirror buffer and copy in
@@ -11219,25 +8328,14 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 						    ioc->sgl[i].iov_len,
 						    &buf_handle, GFP_KERNEL);
 		if (!kbuff_arr[i]) {
-<<<<<<< HEAD
-			printk(KERN_DEBUG "megasas: Failed to alloc "
-			       "kernel SGL buffer for IOCTL \n");
-=======
 			dev_printk(KERN_DEBUG, &instance->pdev->dev, "Failed to alloc "
 			       "kernel SGL buffer for IOCTL\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -ENOMEM;
 			goto out;
 		}
 
 		/*
 		 * We don't change the dma_coherent_mask, so
-<<<<<<< HEAD
-		 * pci_alloc_consistent only returns 32bit addresses
-		 */
-		kern_sge32[i].phys_addr = (u32) buf_handle;
-		kern_sge32[i].length = ioc->sgl[i].iov_len;
-=======
 		 * dma_alloc_coherent only returns 32bit addresses
 		 */
 		if (instance->consistent_mask_64bit) {
@@ -11247,7 +8345,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 			kern_sge32[i].phys_addr = cpu_to_le32(buf_handle);
 			kern_sge32[i].length = cpu_to_le32(ioc->sgl[i].iov_len);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We created a kernel buffer corresponding to the
@@ -11261,8 +8358,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	}
 
 	if (ioc->sense_len) {
-<<<<<<< HEAD
-=======
 		/* make sure the pointer is part of the frame */
 		if (ioc->sense_off >
 		    (sizeof(union megasas_frame) - sizeof(__le64))) {
@@ -11270,7 +8365,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 			goto out;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sense = dma_alloc_coherent(&instance->pdev->dev, ioc->sense_len,
 					     &sense_handle, GFP_KERNEL);
 		if (!sense) {
@@ -11278,15 +8372,9 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 			goto out;
 		}
 
-<<<<<<< HEAD
-		sense_ptr =
-		(unsigned long *) ((unsigned long)cmd->frame + ioc->sense_off);
-		*sense_ptr = sense_handle;
-=======
 		/* always store 64 bits regardless of addressing */
 		sense_ptr = (void *)cmd->frame + ioc->sense_off;
 		put_unaligned_le64(sense_handle, sense_ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -11294,11 +8382,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	 * cmd to the SCSI mid-layer
 	 */
 	cmd->sync_cmd = 1;
-<<<<<<< HEAD
-	megasas_issue_blocked_cmd(instance, cmd);
-	cmd->sync_cmd = 0;
-
-=======
 
 	ret = megasas_issue_blocked_cmd(instance, cmd, 0);
 	switch (ret) {
@@ -11320,7 +8403,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 			"don't submit data to application\n");
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * copy out the kernel buffers to user buffers
 	 */
@@ -11336,22 +8418,11 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	 * copy out the sense
 	 */
 	if (ioc->sense_len) {
-<<<<<<< HEAD
-=======
 		void __user *uptr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * sense_ptr points to the location that has the user
 		 * sense buffer address
 		 */
-<<<<<<< HEAD
-		sense_ptr = (unsigned long *) ((unsigned long)ioc->frame.raw +
-				ioc->sense_off);
-
-		if (copy_to_user((void __user *)((unsigned long)(*sense_ptr)),
-				 sense, ioc->sense_len)) {
-			printk(KERN_ERR "megasas: Failed to copy out to user "
-=======
 		sense_ptr = (void *)ioc->frame.raw + ioc->sense_off;
 		if (in_compat_syscall())
 			uptr = compat_ptr(get_unaligned((compat_uptr_t *)
@@ -11361,7 +8432,6 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 
 		if (copy_to_user(uptr, sense, ioc->sense_len)) {
 			dev_err(&instance->pdev->dev, "Failed to copy out to user "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"sense data\n");
 			error = -EFAULT;
 			goto out;
@@ -11373,32 +8443,17 @@ megasas_mgmt_fw_ioctl(struct megasas_instance *instance,
 	 */
 	if (copy_to_user(&user_ioc->frame.hdr.cmd_status,
 			 &cmd->frame->hdr.cmd_status, sizeof(u8))) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: Error copying out cmd_status\n");
-		error = -EFAULT;
-	}
-
-      out:
-=======
 		dev_printk(KERN_DEBUG, &instance->pdev->dev, "Error copying out cmd_status\n");
 		error = -EFAULT;
 	}
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sense) {
 		dma_free_coherent(&instance->pdev->dev, ioc->sense_len,
 				    sense, sense_handle);
 	}
 
 	for (i = 0; i < ioc->sge_count; i++) {
-<<<<<<< HEAD
-		if (kbuff_arr[i])
-			dma_free_coherent(&instance->pdev->dev,
-					  kern_sge32[i].length,
-					  kbuff_arr[i],
-					  kern_sge32[i].phys_addr);
-=======
 		if (kbuff_arr[i]) {
 			if (instance->consistent_mask_64bit)
 				dma_free_coherent(&instance->pdev->dev,
@@ -11412,15 +8467,12 @@ out:
 					le32_to_cpu(kern_sge32[i].phys_addr));
 			kbuff_arr[i] = NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	megasas_return_cmd(instance, cmd);
 	return error;
 }
 
-<<<<<<< HEAD
-=======
 static struct megasas_iocpacket *
 megasas_compat_iocpacket_get_user(void __user *arg)
 {
@@ -11453,7 +8505,6 @@ out:
 	return ERR_PTR(err);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 {
 	struct megasas_iocpacket __user *user_ioc =
@@ -11461,20 +8512,6 @@ static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 	struct megasas_iocpacket *ioc;
 	struct megasas_instance *instance;
 	int error;
-<<<<<<< HEAD
-	int i;
-	unsigned long flags;
-	u32 wait_time = MEGASAS_RESET_WAIT_TIME;
-
-	ioc = kmalloc(sizeof(*ioc), GFP_KERNEL);
-	if (!ioc)
-		return -ENOMEM;
-
-	if (copy_from_user(ioc, user_ioc, sizeof(*ioc))) {
-		error = -EFAULT;
-		goto out_kfree_ioc;
-	}
-=======
 
 	if (in_compat_syscall())
 		ioc = megasas_compat_iocpacket_get_user(user_ioc);
@@ -11483,7 +8520,6 @@ static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 
 	if (IS_ERR(ioc))
 		return PTR_ERR(ioc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	instance = megasas_lookup_instance(ioc->host_no);
 	if (!instance) {
@@ -11491,10 +8527,6 @@ static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 		goto out_kfree_ioc;
 	}
 
-<<<<<<< HEAD
-	if (instance->adprecovery == MEGASAS_HW_CRITICAL_ERROR) {
-		printk(KERN_ERR "Controller in crit error\n");
-=======
 	/* Block ioctls in VF mode */
 	if (instance->requestorId && !allow_vf_ioctls) {
 		error = -ENODEV;
@@ -11503,7 +8535,6 @@ static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 
 	if (atomic_read(&instance->adprecovery) == MEGASAS_HW_CRITICAL_ERROR) {
 		dev_err(&instance->pdev->dev, "Controller in crit error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -ENODEV;
 		goto out_kfree_ioc;
 	}
@@ -11513,51 +8544,11 @@ static int megasas_mgmt_ioctl_fw(struct file *file, unsigned long arg)
 		goto out_kfree_ioc;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * We will allow only MEGASAS_INT_CMDS number of parallel ioctl cmds
-	 */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (down_interruptible(&instance->ioctl_sem)) {
 		error = -ERESTARTSYS;
 		goto out_kfree_ioc;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < wait_time; i++) {
-
-		spin_lock_irqsave(&instance->hba_lock, flags);
-		if (instance->adprecovery == MEGASAS_HBA_OPERATIONAL) {
-			spin_unlock_irqrestore(&instance->hba_lock, flags);
-			break;
-		}
-		spin_unlock_irqrestore(&instance->hba_lock, flags);
-
-		if (!(i % MEGASAS_RESET_NOTICE_INTERVAL)) {
-			printk(KERN_NOTICE "megasas: waiting"
-				"for controller reset to finish\n");
-		}
-
-		msleep(1000);
-	}
-
-	spin_lock_irqsave(&instance->hba_lock, flags);
-	if (instance->adprecovery != MEGASAS_HBA_OPERATIONAL) {
-		spin_unlock_irqrestore(&instance->hba_lock, flags);
-
-		printk(KERN_ERR "megaraid_sas: timed out while"
-			"waiting for HBA to recover\n");
-		error = -ENODEV;
-		goto out_kfree_ioc;
-	}
-	spin_unlock_irqrestore(&instance->hba_lock, flags);
-
-	error = megasas_mgmt_fw_ioctl(instance, user_ioc, ioc);
-	up(&instance->ioctl_sem);
-
-      out_kfree_ioc:
-=======
 	if  (megasas_wait_for_adapter_operational(instance)) {
 		error = -ENODEV;
 		goto out_up;
@@ -11568,7 +8559,6 @@ out_up:
 	up(&instance->ioctl_sem);
 
 out_kfree_ioc:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ioc);
 	return error;
 }
@@ -11578,12 +8568,6 @@ static int megasas_mgmt_ioctl_aen(struct file *file, unsigned long arg)
 	struct megasas_instance *instance;
 	struct megasas_aen aen;
 	int error;
-<<<<<<< HEAD
-	int i;
-	unsigned long flags;
-	u32 wait_time = MEGASAS_RESET_WAIT_TIME;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (file->private_data != file) {
 		printk(KERN_DEBUG "megasas: fasync_helper was not "
@@ -11599,11 +8583,7 @@ static int megasas_mgmt_ioctl_aen(struct file *file, unsigned long arg)
 	if (!instance)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	if (instance->adprecovery == MEGASAS_HW_CRITICAL_ERROR) {
-=======
 	if (atomic_read(&instance->adprecovery) == MEGASAS_HW_CRITICAL_ERROR) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -11611,40 +8591,6 @@ static int megasas_mgmt_ioctl_aen(struct file *file, unsigned long arg)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < wait_time; i++) {
-
-		spin_lock_irqsave(&instance->hba_lock, flags);
-		if (instance->adprecovery == MEGASAS_HBA_OPERATIONAL) {
-			spin_unlock_irqrestore(&instance->hba_lock,
-						flags);
-			break;
-		}
-
-		spin_unlock_irqrestore(&instance->hba_lock, flags);
-
-		if (!(i % MEGASAS_RESET_NOTICE_INTERVAL)) {
-			printk(KERN_NOTICE "megasas: waiting for"
-				"controller reset to finish\n");
-		}
-
-		msleep(1000);
-	}
-
-	spin_lock_irqsave(&instance->hba_lock, flags);
-	if (instance->adprecovery != MEGASAS_HBA_OPERATIONAL) {
-		spin_unlock_irqrestore(&instance->hba_lock, flags);
-		printk(KERN_ERR "megaraid_sas: timed out while waiting"
-				"for HBA to recover.\n");
-		return -ENODEV;
-	}
-	spin_unlock_irqrestore(&instance->hba_lock, flags);
-
-	mutex_lock(&instance->aen_mutex);
-	error = megasas_register_aen(instance, aen.seq_num,
-				     aen.class_locale_word);
-	mutex_unlock(&instance->aen_mutex);
-=======
 	if  (megasas_wait_for_adapter_operational(instance))
 		return -ENODEV;
 
@@ -11652,18 +8598,14 @@ static int megasas_mgmt_ioctl_aen(struct file *file, unsigned long arg)
 	error = megasas_register_aen(instance, aen.seq_num,
 				     aen.class_locale_word);
 	mutex_unlock(&instance->reset_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 /**
  * megasas_mgmt_ioctl -	char node ioctl entry point
-<<<<<<< HEAD
-=======
  * @file:	char device file pointer
  * @cmd:	ioctl command
  * @arg:	ioctl command arguments address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static long
 megasas_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
@@ -11680,83 +8622,13 @@ megasas_mgmt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 }
 
 #ifdef CONFIG_COMPAT
-<<<<<<< HEAD
-static int megasas_mgmt_compat_ioctl_fw(struct file *file, unsigned long arg)
-{
-	struct compat_megasas_iocpacket __user *cioc =
-	    (struct compat_megasas_iocpacket __user *)arg;
-	struct megasas_iocpacket __user *ioc =
-	    compat_alloc_user_space(sizeof(struct megasas_iocpacket));
-	int i;
-	int error = 0;
-	compat_uptr_t ptr;
-	unsigned long local_raw_ptr;
-	u32 local_sense_off;
-	u32 local_sense_len;
-
-	if (clear_user(ioc, sizeof(*ioc)))
-		return -EFAULT;
-
-	if (copy_in_user(&ioc->host_no, &cioc->host_no, sizeof(u16)) ||
-	    copy_in_user(&ioc->sgl_off, &cioc->sgl_off, sizeof(u32)) ||
-	    copy_in_user(&ioc->sense_off, &cioc->sense_off, sizeof(u32)) ||
-	    copy_in_user(&ioc->sense_len, &cioc->sense_len, sizeof(u32)) ||
-	    copy_in_user(ioc->frame.raw, cioc->frame.raw, 128) ||
-	    copy_in_user(&ioc->sge_count, &cioc->sge_count, sizeof(u32)))
-		return -EFAULT;
-
-	/*
-	 * The sense_ptr is used in megasas_mgmt_fw_ioctl only when
-	 * sense_len is not null, so prepare the 64bit value under
-	 * the same condition.
-	 */
-	if (get_user(local_raw_ptr, ioc->frame.raw) ||
-		get_user(local_sense_off, &ioc->sense_off) ||
-		get_user(local_sense_len, &ioc->sense_len))
-		return -EFAULT;
-
-
-	if (local_sense_len) {
-		void __user **sense_ioc_ptr =
-			(void __user **)((u8*)local_raw_ptr + local_sense_off);
-		compat_uptr_t *sense_cioc_ptr =
-			(compat_uptr_t *)(cioc->frame.raw + cioc->sense_off);
-		if (get_user(ptr, sense_cioc_ptr) ||
-		    put_user(compat_ptr(ptr), sense_ioc_ptr))
-			return -EFAULT;
-	}
-
-	for (i = 0; i < MAX_IOCTL_SGE; i++) {
-		if (get_user(ptr, &cioc->sgl[i].iov_base) ||
-		    put_user(compat_ptr(ptr), &ioc->sgl[i].iov_base) ||
-		    copy_in_user(&ioc->sgl[i].iov_len,
-				 &cioc->sgl[i].iov_len, sizeof(compat_size_t)))
-			return -EFAULT;
-	}
-
-	error = megasas_mgmt_ioctl_fw(file, (unsigned long)ioc);
-
-	if (copy_in_user(&cioc->frame.hdr.cmd_status,
-			 &ioc->frame.hdr.cmd_status, sizeof(u8))) {
-		printk(KERN_DEBUG "megasas: error copy_in_user cmd_status\n");
-		return -EFAULT;
-	}
-	return error;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long
 megasas_mgmt_compat_ioctl(struct file *file, unsigned int cmd,
 			  unsigned long arg)
 {
 	switch (cmd) {
 	case MEGASAS_IOC_FIRMWARE32:
-<<<<<<< HEAD
-		return megasas_mgmt_compat_ioctl_fw(file, arg);
-=======
 		return megasas_mgmt_ioctl_fw(file, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MEGASAS_IOC_GET_AEN:
 		return megasas_mgmt_ioctl_aen(file, arg);
 	}
@@ -11780,11 +8652,8 @@ static const struct file_operations megasas_mgmt_fops = {
 	.llseek = noop_llseek,
 };
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(megasas_pm_ops, megasas_suspend, megasas_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI hotplug support registration structure
  */
@@ -11793,64 +8662,19 @@ static struct pci_driver megasas_pci_driver = {
 	.name = "megaraid_sas",
 	.id_table = megasas_pci_table,
 	.probe = megasas_probe_one,
-<<<<<<< HEAD
-	.remove = __devexit_p(megasas_detach_one),
-	.suspend = megasas_suspend,
-	.resume = megasas_resume,
-=======
 	.remove = megasas_detach_one,
 	.driver.pm = &megasas_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = megasas_shutdown,
 };
 
 /*
  * Sysfs driver attributes
  */
-<<<<<<< HEAD
-static ssize_t megasas_sysfs_show_version(struct device_driver *dd, char *buf)
-=======
 static ssize_t version_show(struct device_driver *dd, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return snprintf(buf, strlen(MEGASAS_VERSION) + 2, "%s\n",
 			MEGASAS_VERSION);
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(version, S_IRUGO, megasas_sysfs_show_version, NULL);
-
-static ssize_t
-megasas_sysfs_show_release_date(struct device_driver *dd, char *buf)
-{
-	return snprintf(buf, strlen(MEGASAS_RELDATE) + 2, "%s\n",
-			MEGASAS_RELDATE);
-}
-
-static DRIVER_ATTR(release_date, S_IRUGO, megasas_sysfs_show_release_date,
-		   NULL);
-
-static ssize_t
-megasas_sysfs_show_support_poll_for_event(struct device_driver *dd, char *buf)
-{
-	return sprintf(buf, "%u\n", support_poll_for_event);
-}
-
-static DRIVER_ATTR(support_poll_for_event, S_IRUGO,
-			megasas_sysfs_show_support_poll_for_event, NULL);
-
- static ssize_t
-megasas_sysfs_show_support_device_change(struct device_driver *dd, char *buf)
-{
-	return sprintf(buf, "%u\n", support_device_change);
-}
-
-static DRIVER_ATTR(support_device_change, S_IRUGO,
-			megasas_sysfs_show_support_device_change, NULL);
-
-static ssize_t
-megasas_sysfs_show_dbg_lvl(struct device_driver *dd, char *buf)
-=======
 static DRIVER_ATTR_RO(version);
 
 static ssize_t release_date_show(struct device_driver *dd, char *buf)
@@ -11873,35 +8697,21 @@ static ssize_t support_device_change_show(struct device_driver *dd, char *buf)
 static DRIVER_ATTR_RO(support_device_change);
 
 static ssize_t dbg_lvl_show(struct device_driver *dd, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(buf, "%u\n", megasas_dbg_lvl);
 }
 
-<<<<<<< HEAD
-static ssize_t
-megasas_sysfs_set_dbg_lvl(struct device_driver *dd, const char *buf, size_t count)
-{
-	int retval = count;
-	if(sscanf(buf,"%u",&megasas_dbg_lvl)<1){
-=======
 static ssize_t dbg_lvl_store(struct device_driver *dd, const char *buf,
 			     size_t count)
 {
 	int retval = count;
 
 	if (sscanf(buf, "%u", &megasas_dbg_lvl) < 1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "megasas: could not set dbg_lvl\n");
 		retval = -EINVAL;
 	}
 	return retval;
 }
-<<<<<<< HEAD
-
-static DRIVER_ATTR(dbg_lvl, S_IRUGO|S_IWUSR, megasas_sysfs_show_dbg_lvl,
-		megasas_sysfs_set_dbg_lvl);
-=======
 static DRIVER_ATTR_RW(dbg_lvl);
 
 static ssize_t
@@ -12051,24 +8861,11 @@ void megasas_add_remove_devices(struct megasas_instance *instance,
 	}
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 megasas_aen_polling(struct work_struct *work)
 {
 	struct megasas_aen_event *ev =
-<<<<<<< HEAD
-		container_of(work, struct megasas_aen_event, hotplug_work);
-	struct megasas_instance *instance = ev->instance;
-	union megasas_evt_class_locale class_locale;
-	struct  Scsi_Host *host;
-	struct  scsi_device *sdev1;
-	u16     pd_index = 0;
-	u16	ld_index = 0;
-	int     i, j, doscan = 0;
-	u32 seq_num;
-	int error;
-=======
 		container_of(work, struct megasas_aen_event, hotplug_work.work);
 	struct megasas_instance *instance = ev->instance;
 	union megasas_evt_class_locale class_locale;
@@ -12078,149 +8875,12 @@ megasas_aen_polling(struct work_struct *work)
 	int error;
 	u8  dcmd_ret = DCMD_SUCCESS;
 	struct scsi_device *sdev1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!instance) {
 		printk(KERN_ERR "invalid instance!\n");
 		kfree(ev);
 		return;
 	}
-<<<<<<< HEAD
-	instance->ev = NULL;
-	host = instance->host;
-	if (instance->evt_detail) {
-
-		switch (instance->evt_detail->code) {
-		case MR_EVT_PD_INSERTED:
-			if (megasas_get_pd_list(instance) == 0) {
-			for (i = 0; i < MEGASAS_MAX_PD_CHANNELS; i++) {
-				for (j = 0;
-				j < MEGASAS_MAX_DEV_PER_CHANNEL;
-				j++) {
-
-				pd_index =
-				(i * MEGASAS_MAX_DEV_PER_CHANNEL) + j;
-
-				sdev1 =
-				scsi_device_lookup(host, i, j, 0);
-
-				if (instance->pd_list[pd_index].driveState
-						== MR_PD_STATE_SYSTEM) {
-						if (!sdev1) {
-						scsi_add_device(host, i, j, 0);
-						}
-
-					if (sdev1)
-						scsi_device_put(sdev1);
-					}
-				}
-			}
-			}
-			doscan = 0;
-			break;
-
-		case MR_EVT_PD_REMOVED:
-			if (megasas_get_pd_list(instance) == 0) {
-			megasas_get_pd_list(instance);
-			for (i = 0; i < MEGASAS_MAX_PD_CHANNELS; i++) {
-				for (j = 0;
-				j < MEGASAS_MAX_DEV_PER_CHANNEL;
-				j++) {
-
-				pd_index =
-				(i * MEGASAS_MAX_DEV_PER_CHANNEL) + j;
-
-				sdev1 =
-				scsi_device_lookup(host, i, j, 0);
-
-				if (instance->pd_list[pd_index].driveState
-					== MR_PD_STATE_SYSTEM) {
-					if (sdev1) {
-						scsi_device_put(sdev1);
-					}
-				} else {
-					if (sdev1) {
-						scsi_remove_device(sdev1);
-						scsi_device_put(sdev1);
-					}
-				}
-				}
-			}
-			}
-			doscan = 0;
-			break;
-
-		case MR_EVT_LD_OFFLINE:
-		case MR_EVT_CFG_CLEARED:
-		case MR_EVT_LD_DELETED:
-			megasas_get_ld_list(instance);
-			for (i = 0; i < MEGASAS_MAX_LD_CHANNELS; i++) {
-				for (j = 0;
-				j < MEGASAS_MAX_DEV_PER_CHANNEL;
-				j++) {
-
-				ld_index =
-				(i * MEGASAS_MAX_DEV_PER_CHANNEL) + j;
-
-				sdev1 = scsi_device_lookup(host,
-					i + MEGASAS_MAX_LD_CHANNELS,
-					j,
-					0);
-
-				if (instance->ld_ids[ld_index] != 0xff) {
-					if (sdev1) {
-						scsi_device_put(sdev1);
-					}
-				} else {
-					if (sdev1) {
-						scsi_remove_device(sdev1);
-						scsi_device_put(sdev1);
-					}
-				}
-				}
-			}
-			doscan = 0;
-			break;
-		case MR_EVT_LD_CREATED:
-			megasas_get_ld_list(instance);
-			for (i = 0; i < MEGASAS_MAX_LD_CHANNELS; i++) {
-				for (j = 0;
-					j < MEGASAS_MAX_DEV_PER_CHANNEL;
-					j++) {
-					ld_index =
-					(i * MEGASAS_MAX_DEV_PER_CHANNEL) + j;
-
-					sdev1 = scsi_device_lookup(host,
-						i+MEGASAS_MAX_LD_CHANNELS,
-						j, 0);
-
-					if (instance->ld_ids[ld_index] !=
-								0xff) {
-						if (!sdev1) {
-							scsi_add_device(host,
-								i + 2,
-								j, 0);
-						}
-					}
-					if (sdev1) {
-						scsi_device_put(sdev1);
-					}
-				}
-			}
-			doscan = 0;
-			break;
-		case MR_EVT_CTRL_HOST_BUS_SCAN_REQUESTED:
-		case MR_EVT_FOREIGN_CFG_IMPORTED:
-		case MR_EVT_LD_STATE_CHANGE:
-			doscan = 1;
-			break;
-		default:
-			doscan = 0;
-			break;
-		}
-	} else {
-		printk(KERN_ERR "invalid evt_detail!\n");
-=======
 
 	/* Don't run the event workqueue thread if OCR is running */
 	mutex_lock(&instance->reset_mutex);
@@ -12279,68 +8939,10 @@ megasas_aen_polling(struct work_struct *work)
 	} else {
 		dev_err(&instance->pdev->dev, "invalid evt_detail!\n");
 		mutex_unlock(&instance->reset_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(ev);
 		return;
 	}
 
-<<<<<<< HEAD
-	if (doscan) {
-		printk(KERN_INFO "scanning ...\n");
-		megasas_get_pd_list(instance);
-		for (i = 0; i < MEGASAS_MAX_PD_CHANNELS; i++) {
-			for (j = 0; j < MEGASAS_MAX_DEV_PER_CHANNEL; j++) {
-				pd_index = i*MEGASAS_MAX_DEV_PER_CHANNEL + j;
-				sdev1 = scsi_device_lookup(host, i, j, 0);
-				if (instance->pd_list[pd_index].driveState ==
-							MR_PD_STATE_SYSTEM) {
-					if (!sdev1) {
-						scsi_add_device(host, i, j, 0);
-					}
-					if (sdev1)
-						scsi_device_put(sdev1);
-				} else {
-					if (sdev1) {
-						scsi_remove_device(sdev1);
-						scsi_device_put(sdev1);
-					}
-				}
-			}
-		}
-
-		megasas_get_ld_list(instance);
-		for (i = 0; i < MEGASAS_MAX_LD_CHANNELS; i++) {
-			for (j = 0; j < MEGASAS_MAX_DEV_PER_CHANNEL; j++) {
-				ld_index =
-				(i * MEGASAS_MAX_DEV_PER_CHANNEL) + j;
-
-				sdev1 = scsi_device_lookup(host,
-					i+MEGASAS_MAX_LD_CHANNELS, j, 0);
-				if (instance->ld_ids[ld_index] != 0xff) {
-					if (!sdev1) {
-						scsi_add_device(host,
-								i+2,
-								j, 0);
-					} else {
-						scsi_device_put(sdev1);
-					}
-				} else {
-					if (sdev1) {
-						scsi_remove_device(sdev1);
-						scsi_device_put(sdev1);
-					}
-				}
-			}
-		}
-	}
-
-	if ( instance->aen_cmd != NULL ) {
-		kfree(ev);
-		return ;
-	}
-
-	seq_num = instance->evt_detail->seq_num + 1;
-=======
 	if (event_type)
 		dcmd_ret = megasas_update_device_list(instance, event_type);
 
@@ -12353,22 +8955,11 @@ megasas_aen_polling(struct work_struct *work)
 		seq_num = le32_to_cpu(instance->evt_detail->seq_num) + 1;
 	else
 		seq_num = instance->last_seq_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register AEN with FW for latest sequence number plus 1 */
 	class_locale.members.reserved = 0;
 	class_locale.members.locale = MR_EVT_LOCALE_ALL;
 	class_locale.members.class = MR_EVT_CLASS_DEBUG;
-<<<<<<< HEAD
-	mutex_lock(&instance->aen_mutex);
-	error = megasas_register_aen(instance, seq_num,
-					class_locale.word);
-	mutex_unlock(&instance->aen_mutex);
-
-	if (error)
-		printk(KERN_ERR "register aen failed error %x\n", error);
-
-=======
 
 	if (instance->aen_cmd != NULL) {
 		kfree(ev);
@@ -12383,7 +8974,6 @@ megasas_aen_polling(struct work_struct *work)
 			"register aen failed error %x\n", error);
 
 	mutex_unlock(&instance->reset_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ev);
 }
 
@@ -12395,17 +8985,6 @@ static int __init megasas_init(void)
 	int rval;
 
 	/*
-<<<<<<< HEAD
-	 * Announce driver version and other information
-	 */
-	printk(KERN_INFO "megasas: %s %s\n", MEGASAS_VERSION,
-	       MEGASAS_EXT_VERSION);
-
-	spin_lock_init(&poll_aen_lock);
-
-	support_poll_for_event = 2;
-	support_device_change = 1;
-=======
 	 * Booted in kdump kernel, minimize memory footprints by
 	 * disabling few features
 	 */
@@ -12426,7 +9005,6 @@ static int __init megasas_init(void)
 	support_device_change = 1;
 	support_nvme_encapsulation = true;
 	support_pci_lane_margining = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&megasas_mgmt_info, 0, sizeof(megasas_mgmt_info));
 
@@ -12442,23 +9020,14 @@ static int __init megasas_init(void)
 
 	megasas_mgmt_majorno = rval;
 
-<<<<<<< HEAD
-=======
 	megasas_init_debugfs();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Register ourselves as PCI hotplug module
 	 */
 	rval = pci_register_driver(&megasas_pci_driver);
 
 	if (rval) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "megasas: PCI hotplug regisration failed \n");
-		goto err_pcidrv;
-	}
-
-=======
 		printk(KERN_DEBUG "megasas: PCI hotplug registration failed \n");
 		goto err_pcidrv;
 	}
@@ -12469,15 +9038,11 @@ static int __init megasas_init(void)
 		event_log_level = MFI_EVT_CLASS_CRITICAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rval = driver_create_file(&megasas_pci_driver.driver,
 				  &driver_attr_version);
 	if (rval)
 		goto err_dcf_attr_ver;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rval = driver_create_file(&megasas_pci_driver.driver,
 				  &driver_attr_release_date);
 	if (rval)
@@ -12497,10 +9062,6 @@ static int __init megasas_init(void)
 	if (rval)
 		goto err_dcf_support_device_change;
 
-<<<<<<< HEAD
-	return rval;
-
-=======
 	rval = driver_create_file(&megasas_pci_driver.driver,
 				  &driver_attr_support_nvme_encapsulation);
 	if (rval)
@@ -12521,33 +9082,21 @@ err_dcf_support_nvme_encapsulation:
 	driver_remove_file(&megasas_pci_driver.driver,
 			   &driver_attr_support_device_change);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_dcf_support_device_change:
 	driver_remove_file(&megasas_pci_driver.driver,
 			   &driver_attr_dbg_lvl);
 err_dcf_dbg_lvl:
 	driver_remove_file(&megasas_pci_driver.driver,
 			&driver_attr_support_poll_for_event);
-<<<<<<< HEAD
-
 err_dcf_support_poll_for_event:
 	driver_remove_file(&megasas_pci_driver.driver,
 			   &driver_attr_release_date);
-
-=======
-err_dcf_support_poll_for_event:
-	driver_remove_file(&megasas_pci_driver.driver,
-			   &driver_attr_release_date);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_dcf_rel_date:
 	driver_remove_file(&megasas_pci_driver.driver, &driver_attr_version);
 err_dcf_attr_ver:
 	pci_unregister_driver(&megasas_pci_driver);
 err_pcidrv:
-<<<<<<< HEAD
-=======
 	megasas_exit_debugfs();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_chrdev(megasas_mgmt_majorno, "megaraid_sas_ioctl");
 	return rval;
 }
@@ -12566,10 +9115,6 @@ static void __exit megasas_exit(void)
 	driver_remove_file(&megasas_pci_driver.driver,
 			   &driver_attr_release_date);
 	driver_remove_file(&megasas_pci_driver.driver, &driver_attr_version);
-<<<<<<< HEAD
-
-	pci_unregister_driver(&megasas_pci_driver);
-=======
 	driver_remove_file(&megasas_pci_driver.driver,
 			   &driver_attr_support_nvme_encapsulation);
 	driver_remove_file(&megasas_pci_driver.driver,
@@ -12577,7 +9122,6 @@ static void __exit megasas_exit(void)
 
 	pci_unregister_driver(&megasas_pci_driver);
 	megasas_exit_debugfs();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_chrdev(megasas_mgmt_majorno, "megaraid_sas_ioctl");
 }
 

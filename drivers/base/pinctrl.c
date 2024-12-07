@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver core interface to the pinctrl subsystem.
  *
@@ -10,11 +7,6 @@
  * Based on bits of regulator core, gpio core and clk core
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
-<<<<<<< HEAD
- *
- * License terms: GNU General Public License (GPL) version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -30,12 +22,9 @@ int pinctrl_bind_pins(struct device *dev)
 {
 	int ret;
 
-<<<<<<< HEAD
-=======
 	if (dev->of_node_reused)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->pins = devm_kzalloc(dev, sizeof(*(dev->pins)), GFP_KERNEL);
 	if (!dev->pins)
 		return -ENOMEM;
@@ -55,14 +44,6 @@ int pinctrl_bind_pins(struct device *dev)
 		goto cleanup_get;
 	}
 
-<<<<<<< HEAD
-	ret = pinctrl_select_state(dev->pins->p, dev->pins->default_state);
-	if (ret) {
-		dev_dbg(dev, "failed to activate default pinctrl state\n");
-		goto cleanup_get;
-	}
-
-=======
 	dev->pins->init_state = pinctrl_lookup_state(dev->pins->p,
 					PINCTRL_STATE_INIT);
 	if (IS_ERR(dev->pins->init_state)) {
@@ -99,7 +80,6 @@ int pinctrl_bind_pins(struct device *dev)
 		dev_dbg(dev, "no idle pinctrl state\n");
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 	/*
@@ -113,13 +93,6 @@ cleanup_alloc:
 	devm_kfree(dev, dev->pins);
 	dev->pins = NULL;
 
-<<<<<<< HEAD
-	/* Only return deferrals */
-	if (ret != -EPROBE_DEFER)
-		ret = 0;
-
-	return ret;
-=======
 	/* Return deferrals */
 	if (ret == -EPROBE_DEFER)
 		return ret;
@@ -129,5 +102,4 @@ cleanup_alloc:
 	/* We ignore errors like -ENOENT meaning no pinctrl state */
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

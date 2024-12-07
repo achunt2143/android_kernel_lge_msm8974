@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BCM63XX_GPIO_H
 #define BCM63XX_GPIO_H
 
@@ -13,28 +10,19 @@ int __init bcm63xx_gpio_init(void);
 static inline unsigned long bcm63xx_gpio_count(void)
 {
 	switch (bcm63xx_get_cpu_id()) {
-<<<<<<< HEAD
-	case BCM6358_CPU_ID:
-=======
 	case BCM6328_CPU_ID:
 		return 32;
 	case BCM3368_CPU_ID:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 40;
 	case BCM6338_CPU_ID:
 		return 8;
 	case BCM6345_CPU_ID:
 		return 16;
-<<<<<<< HEAD
-	case BCM6368_CPU_ID:
-		return 38;
-=======
 	case BCM6358_CPU_ID:
 	case BCM6368_CPU_ID:
 		return 38;
 	case BCM6362_CPU_ID:
 		return 48;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BCM6348_CPU_ID:
 	default:
 		return 37;

@@ -8,12 +8,8 @@
 #ifndef __ASM_OCTEON_OCTEON_H
 #define __ASM_OCTEON_OCTEON_H
 
-<<<<<<< HEAD
-#include "cvmx.h"
-=======
 #include <asm/octeon/cvmx.h>
 #include <asm/bitfield.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern uint64_t octeon_bootmem_alloc_range_phys(uint64_t size,
 						uint64_t alignment,
@@ -47,23 +43,6 @@ extern int octeon_get_southbridge_interrupt(void);
 extern int octeon_get_boot_coremask(void);
 extern int octeon_get_boot_num_arguments(void);
 extern const char *octeon_get_boot_argument(int arg);
-<<<<<<< HEAD
-extern void octeon_hal_setup_reserved32(void);
-extern void octeon_user_io_init(void);
-struct octeon_cop2_state;
-extern unsigned long octeon_crypto_enable(struct octeon_cop2_state *state);
-extern void octeon_crypto_disable(struct octeon_cop2_state *state,
-				  unsigned long flags);
-extern asmlinkage void octeon_cop2_restore(struct octeon_cop2_state *task);
-
-extern void octeon_init_cvmcount(void);
-extern void octeon_setup_delays(void);
-
-#define OCTEON_ARGV_MAX_ARGS	64
-#define OCTOEN_SERIAL_LEN	20
-
-struct octeon_boot_descriptor {
-=======
 extern void octeon_user_io_init(void);
 
 extern void octeon_init_cvmcount(void);
@@ -75,7 +54,6 @@ extern void octeon_io_clk_delay(unsigned long);
 
 struct octeon_boot_descriptor {
 #ifdef __BIG_ENDIAN_BITFIELD
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Start of block referenced by assembly code - do not change! */
 	uint32_t desc_version;
 	uint32_t desc_size;
@@ -93,17 +71,6 @@ struct octeon_boot_descriptor {
 	uint32_t argc;
 	uint32_t argv[OCTEON_ARGV_MAX_ARGS];
 
-<<<<<<< HEAD
-#define  BOOT_FLAG_INIT_CORE		(1 << 0)
-#define  OCTEON_BL_FLAG_DEBUG		(1 << 1)
-#define  OCTEON_BL_FLAG_NO_MAGIC	(1 << 2)
-	/* If set, use uart1 for console */
-#define  OCTEON_BL_FLAG_CONSOLE_UART1	(1 << 3)
-	/* If set, use PCI console */
-#define  OCTEON_BL_FLAG_CONSOLE_PCI	(1 << 4)
-	/* Call exit on break on serial port */
-#define  OCTEON_BL_FLAG_BREAK		(1 << 5)
-=======
 #define	 BOOT_FLAG_INIT_CORE		(1 << 0)
 #define	 OCTEON_BL_FLAG_DEBUG		(1 << 1)
 #define	 OCTEON_BL_FLAG_NO_MAGIC	(1 << 2)
@@ -113,7 +80,6 @@ struct octeon_boot_descriptor {
 #define	 OCTEON_BL_FLAG_CONSOLE_PCI	(1 << 4)
 	/* Call exit on break on serial port */
 #define	 OCTEON_BL_FLAG_BREAK		(1 << 5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t flags;
 	uint32_t core_mask;
@@ -135,12 +101,6 @@ struct octeon_boot_descriptor {
 	uint16_t chip_type;
 	uint8_t chip_rev_major;
 	uint8_t chip_rev_minor;
-<<<<<<< HEAD
-	char board_serial_number[OCTOEN_SERIAL_LEN];
-	uint8_t mac_addr_base[6];
-	uint8_t mac_addr_count;
-	uint64_t cvmx_desc_vaddr;
-=======
 	char board_serial_number[OCTEON_SERIAL_LEN];
 	uint8_t mac_addr_base[6];
 	uint8_t mac_addr_count;
@@ -200,39 +160,12 @@ struct octeon_boot_descriptor {
 
 	uint64_t cvmx_desc_vaddr;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union octeon_cvmemctl {
 	uint64_t u64;
 	struct {
 		/* RO 1 = BIST fail, 0 = BIST pass */
-<<<<<<< HEAD
-		uint64_t tlbbist:1;
-		/* RO 1 = BIST fail, 0 = BIST pass */
-		uint64_t l1cbist:1;
-		/* RO 1 = BIST fail, 0 = BIST pass */
-		uint64_t l1dbist:1;
-		/* RO 1 = BIST fail, 0 = BIST pass */
-		uint64_t dcmbist:1;
-		/* RO 1 = BIST fail, 0 = BIST pass */
-		uint64_t ptgbist:1;
-		/* RO 1 = BIST fail, 0 = BIST pass */
-		uint64_t wbfbist:1;
-		/* Reserved */
-		uint64_t reserved:22;
-		/* R/W If set, marked write-buffer entries time out
-		 * the same as as other entries; if clear, marked
-		 * write-buffer entries use the maximum timeout. */
-		uint64_t dismarkwblongto:1;
-		/* R/W If set, a merged store does not clear the
-		 * write-buffer entry timeout state. */
-		uint64_t dismrgclrwbto:1;
-		/* R/W Two bits that are the MSBs of the resultant
-		 * CVMSEG LM word location for an IOBDMA. The other 8
-		 * bits come from the SCRADDR field of the IOBDMA. */
-		uint64_t iobdmascrmsb:2;
-=======
 		__BITFIELD_FIELD(uint64_t tlbbist:1,
 		/* RO 1 = BIST fail, 0 = BIST pass */
 		__BITFIELD_FIELD(uint64_t l1cbist:1,
@@ -274,40 +207,10 @@ union octeon_cvmemctl {
 		 * CVMSEG LM word location for an IOBDMA. The other 8
 		 * bits come from the SCRADDR field of the IOBDMA. */
 		__BITFIELD_FIELD(uint64_t iobdmascrmsb:2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* R/W If set, SYNCWS and SYNCS only order marked
 		 * stores; if clear, SYNCWS and SYNCS only order
 		 * unmarked stores. SYNCWSMARKED has no effect when
 		 * DISSYNCWS is set. */
-<<<<<<< HEAD
-		uint64_t syncwsmarked:1;
-		/* R/W If set, SYNCWS acts as SYNCW and SYNCS acts as
-		 * SYNC. */
-		uint64_t dissyncws:1;
-		/* R/W If set, no stall happens on write buffer
-		 * full. */
-		uint64_t diswbfst:1;
-		/* R/W If set (and SX set), supervisor-level
-		 * loads/stores can use XKPHYS addresses with
-		 * VA<48>==0 */
-		uint64_t xkmemenas:1;
-		/* R/W If set (and UX set), user-level loads/stores
-		 * can use XKPHYS addresses with VA<48>==0 */
-		uint64_t xkmemenau:1;
-		/* R/W If set (and SX set), supervisor-level
-		 * loads/stores can use XKPHYS addresses with
-		 * VA<48>==1 */
-		uint64_t xkioenas:1;
-		/* R/W If set (and UX set), user-level loads/stores
-		 * can use XKPHYS addresses with VA<48>==1 */
-		uint64_t xkioenau:1;
-		/* R/W If set, all stores act as SYNCW (NOMERGE must
-		 * be set when this is set) RW, reset to 0. */
-		uint64_t allsyncw:1;
-		/* R/W If set, no stores merge, and all stores reach
-		 * the coherent bus in order. */
-		uint64_t nomerge:1;
-=======
 		__BITFIELD_FIELD(uint64_t syncwsmarked:1,
 		/* R/W If set, SYNCWS acts as SYNCW and SYNCS acts as
 		 * SYNC. */
@@ -335,25 +238,16 @@ union octeon_cvmemctl {
 		/* R/W If set, no stores merge, and all stores reach
 		 * the coherent bus in order. */
 		__BITFIELD_FIELD(uint64_t nomerge:1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* R/W Selects the bit in the counter used for DID
 		 * time-outs 0 = 231, 1 = 230, 2 = 229, 3 =
 		 * 214. Actual time-out is between 1x and 2x this
 		 * interval. For example, with DIDTTO=3, expiration
 		 * interval is between 16K and 32K. */
-<<<<<<< HEAD
-		uint64_t didtto:2;
-		/* R/W If set, the (mem) CSR clock never turns off. */
-		uint64_t csrckalwys:1;
-		/* R/W If set, mclk never turns off. */
-		uint64_t mclkalwys:1;
-=======
 		__BITFIELD_FIELD(uint64_t didtto:2,
 		/* R/W If set, the (mem) CSR clock never turns off. */
 		__BITFIELD_FIELD(uint64_t csrckalwys:1,
 		/* R/W If set, mclk never turns off. */
 		__BITFIELD_FIELD(uint64_t mclkalwys:1,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* R/W Selects the bit in the counter used for write
 		 * buffer flush time-outs (WBFLT+11) is the bit
 		 * position in an internal counter used to determine
@@ -361,50 +255,6 @@ union octeon_cvmemctl {
 		 * 2x this interval. For example, with WBFLT = 0, a
 		 * write buffer expires between 2K and 4K cycles after
 		 * the write buffer entry is allocated. */
-<<<<<<< HEAD
-		uint64_t wbfltime:3;
-		/* R/W If set, do not put Istream in the L2 cache. */
-		uint64_t istrnol2:1;
-		/* R/W The write buffer threshold. */
-		uint64_t wbthresh:4;
-		/* Reserved */
-		uint64_t reserved2:2;
-		/* R/W If set, CVMSEG is available for loads/stores in
-		 * kernel/debug mode. */
-		uint64_t cvmsegenak:1;
-		/* R/W If set, CVMSEG is available for loads/stores in
-		 * supervisor mode. */
-		uint64_t cvmsegenas:1;
-		/* R/W If set, CVMSEG is available for loads/stores in
-		 * user mode. */
-		uint64_t cvmsegenau:1;
-		/* R/W Size of local memory in cache blocks, 54 (6912
-		 * bytes) is max legal value. */
-		uint64_t lmemsz:6;
-	} s;
-};
-
-struct octeon_cf_data {
-	unsigned long	base_region_bias;
-	unsigned int	base_region;	/* The chip select region used by CF */
-	int		is16bit;	/* 0 - 8bit, !0 - 16bit */
-	int		dma_engine;	/* -1 for no DMA */
-};
-
-struct octeon_i2c_data {
-	unsigned int	sys_freq;
-	unsigned int	i2c_freq;
-};
-
-extern void octeon_write_lcd(const char *s);
-extern void octeon_check_cpu_bist(void);
-extern int octeon_get_boot_debug_flag(void);
-extern int octeon_get_boot_uart(void);
-
-struct uart_port;
-extern unsigned int octeon_serial_in(struct uart_port *, int);
-extern void octeon_serial_out(struct uart_port *, int, int);
-=======
 		__BITFIELD_FIELD(uint64_t wbfltime:3,
 		/* R/W If set, do not put Istream in the L2 cache. */
 		__BITFIELD_FIELD(uint64_t istrnol2:1,
@@ -433,7 +283,6 @@ extern void octeon_check_cpu_bist(void);
 int octeon_prune_device_tree(void);
 extern const char __dtb_octeon_3xxx_begin;
 extern const char __dtb_octeon_68xx_begin;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Write a 32bit value to the Octeon NPI register space
@@ -447,8 +296,6 @@ static inline void octeon_npi_write32(uint64_t address, uint32_t val)
 	cvmx_read64_uint32(address ^ 4);
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_SMP
 void octeon_setup_smp(void);
 #else
@@ -487,7 +334,6 @@ void octeon_mult_restore3(void);
 void octeon_mult_restore3_end(void);
 void octeon_mult_restore2(void);
 void octeon_mult_restore2_end(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Read a 32bit value from the Octeon NPI register space
@@ -506,8 +352,6 @@ extern uint64_t octeon_bootloader_entry_addr;
 
 extern void (*octeon_irq_setup_secondary)(void);
 
-<<<<<<< HEAD
-=======
 typedef void (*octeon_irq_ip4_handler_t)(void);
 void octeon_irq_set_ip4_handler(octeon_irq_ip4_handler_t);
 
@@ -517,5 +361,4 @@ extern struct semaphore octeon_bootbus_sem;
 
 struct irq_domain *octeon_irq_get_block_domain(int node, uint8_t block);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_OCTEON_OCTEON_H */

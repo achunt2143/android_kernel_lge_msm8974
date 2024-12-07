@@ -49,15 +49,8 @@ static u32 mii_get_an(struct mii_if_info *mii, u16 addr)
  *
  * The @ecmd parameter is expected to have been cleared before calling
  * mii_ethtool_gset().
-<<<<<<< HEAD
- *
- * Returns 0 for success, negative on error.
- */
-int mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
-=======
  */
 void mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = mii->dev;
 	u16 bmcr, bmsr, ctrl1000 = 0, stat1000 = 0;
@@ -86,11 +79,6 @@ void mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
 	bmcr = mii->mdio_read(dev, mii->phy_id, MII_BMCR);
 	bmsr = mii->mdio_read(dev, mii->phy_id, MII_BMSR);
 	if (mii->supports_gmii) {
-<<<<<<< HEAD
- 		ctrl1000 = mii->mdio_read(dev, mii->phy_id, MII_CTRL1000);
-		stat1000 = mii->mdio_read(dev, mii->phy_id, MII_STAT1000);
-	}
-=======
 		ctrl1000 = mii->mdio_read(dev, mii->phy_id, MII_CTRL1000);
 		stat1000 = mii->mdio_read(dev, mii->phy_id, MII_STAT1000);
 	}
@@ -100,19 +88,10 @@ void mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
 		ecmd->advertising |=
 			mii_ctrl1000_to_ethtool_adv_t(ctrl1000);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bmcr & BMCR_ANENABLE) {
 		ecmd->advertising |= ADVERTISED_Autoneg;
 		ecmd->autoneg = AUTONEG_ENABLE;
 
-<<<<<<< HEAD
-		ecmd->advertising |= mii_get_an(mii, MII_ADVERTISE);
-		if (mii->supports_gmii)
-			ecmd->advertising |=
-					mii_ctrl1000_to_ethtool_adv_t(ctrl1000);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bmsr & BMSR_ANEGCOMPLETE) {
 			ecmd->lp_advertising = mii_get_an(mii, MII_LPA);
 			ecmd->lp_advertising |=
@@ -150,10 +129,6 @@ void mii_ethtool_gset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
 	mii->full_duplex = ecmd->duplex;
 
 	/* ignore maxtxpkt, maxrxpkt for now */
-<<<<<<< HEAD
-
-	return 0;
-=======
 }
 
 /**
@@ -248,7 +223,6 @@ void mii_ethtool_get_link_ksettings(struct mii_if_info *mii,
 						lp_advertising);
 
 	/* ignore maxtxpkt, maxrxpkt for now */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -344,8 +318,6 @@ int mii_ethtool_sset(struct mii_if_info *mii, struct ethtool_cmd *ecmd)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * mii_ethtool_set_link_ksettings - set settings that are specified in @cmd
  * @mii: MII interfaces
  * @cmd: requested ethtool_link_ksettings
@@ -444,7 +416,6 @@ int mii_ethtool_set_link_ksettings(struct mii_if_info *mii,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mii_check_gmii_support - check if the MII supports Gb interfaces
  * @mii: the MII interface
  */
@@ -520,11 +491,7 @@ void mii_check_link (struct mii_if_info *mii)
 }
 
 /**
-<<<<<<< HEAD
- * mii_check_media - check the MII interface for a duplex change
-=======
  * mii_check_media - check the MII interface for a carrier/speed/duplex change
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mii: the MII interface
  * @ok_to_print: OK to print link up/down messages
  * @init_media: OK to save duplex mode in @mii
@@ -540,13 +507,6 @@ unsigned int mii_check_media (struct mii_if_info *mii,
 	int advertise, lpa, media, duplex;
 	int lpa2 = 0;
 
-<<<<<<< HEAD
-	/* if forced media, go no further */
-	if (mii->force_media)
-		return 0; /* duplex did not change */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check current and old link status */
 	old_carrier = netif_carrier_ok(mii->dev) ? 1 : 0;
 	new_carrier = (unsigned int) mii_link_ok(mii);
@@ -570,15 +530,12 @@ unsigned int mii_check_media (struct mii_if_info *mii,
 	 */
 	netif_carrier_on(mii->dev);
 
-<<<<<<< HEAD
-=======
 	if (mii->force_media) {
 		if (ok_to_print)
 			netdev_info(mii->dev, "link up\n");
 		return 0; /* duplex did not change */
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* get MII advertise and LPA values */
 	if ((!init_media) && (mii->advertising))
 		advertise = mii->advertising;
@@ -638,11 +595,7 @@ int generic_mii_ioctl(struct mii_if_info *mii_if,
 	switch(cmd) {
 	case SIOCGMIIPHY:
 		mii_data->phy_id = mii_if->phy_id;
-<<<<<<< HEAD
-		/* fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SIOCGMIIREG:
 		mii_data->val_out =
@@ -702,13 +655,9 @@ MODULE_LICENSE("GPL");
 EXPORT_SYMBOL(mii_link_ok);
 EXPORT_SYMBOL(mii_nway_restart);
 EXPORT_SYMBOL(mii_ethtool_gset);
-<<<<<<< HEAD
-EXPORT_SYMBOL(mii_ethtool_sset);
-=======
 EXPORT_SYMBOL(mii_ethtool_get_link_ksettings);
 EXPORT_SYMBOL(mii_ethtool_sset);
 EXPORT_SYMBOL(mii_ethtool_set_link_ksettings);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(mii_check_link);
 EXPORT_SYMBOL(mii_check_media);
 EXPORT_SYMBOL(mii_check_gmii_support);

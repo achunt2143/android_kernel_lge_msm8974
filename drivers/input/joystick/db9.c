@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  *
@@ -13,29 +10,6 @@
  * Atari, Amstrad, Commodore, Amiga, Sega, etc. joystick driver for Linux
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
- * Should you need to contact me, the author, you can do so either by
- * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
- * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -55,11 +29,7 @@ struct db9_config {
 };
 
 #define DB9_MAX_PORTS		3
-<<<<<<< HEAD
-static struct db9_config db9_cfg[DB9_MAX_PORTS] __initdata;
-=======
 static struct db9_config db9_cfg[DB9_MAX_PORTS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array_named(dev, db9_cfg[0].args, int, &db9_cfg[0].nargs, 0);
 MODULE_PARM_DESC(dev, "Describes first attached device (<parport#>,<type>)");
@@ -117,10 +87,7 @@ struct db9 {
 	struct pardevice *pd;
 	int mode;
 	int used;
-<<<<<<< HEAD
-=======
 	int parportno;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex mutex;
 	char phys[DB9_MAX_DEVICES][32];
 };
@@ -277,10 +244,7 @@ static unsigned char db9_saturn_read_packet(struct parport *port, unsigned char 
 			db9_saturn_write_sub(port, type, 3, powered, 0);
 			return data[0] = 0xe3;
 		}
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return data[0];
 	}
@@ -300,13 +264,6 @@ static int db9_saturn_report(unsigned char id, unsigned char data[60], struct in
 		switch (data[j]) {
 		case 0x16: /* multi controller (analog 4 axis) */
 			input_report_abs(dev, db9_abs[5], data[j + 6]);
-<<<<<<< HEAD
-		case 0x15: /* mission stick (analog 3 axis) */
-			input_report_abs(dev, db9_abs[3], data[j + 4]);
-			input_report_abs(dev, db9_abs[4], data[j + 5]);
-		case 0x13: /* racing controller (analog 1 axis) */
-			input_report_abs(dev, db9_abs[2], data[j + 3]);
-=======
 			fallthrough;
 		case 0x15: /* mission stick (analog 3 axis) */
 			input_report_abs(dev, db9_abs[3], data[j + 4]);
@@ -315,7 +272,6 @@ static int db9_saturn_report(unsigned char id, unsigned char data[60], struct in
 		case 0x13: /* racing controller (analog 1 axis) */
 			input_report_abs(dev, db9_abs[2], data[j + 3]);
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x34: /* saturn keyboard (udlr ZXC ASD QE Esc) */
 		case 0x02: /* digital pad (digital 2 axis + buttons) */
 			input_report_abs(dev, db9_abs[0], !(data[j + 1] & 128) - !(data[j + 1] & 64));
@@ -393,15 +349,9 @@ static int db9_saturn(int mode, struct parport *port, struct input_dev *devs[])
 	return 0;
 }
 
-<<<<<<< HEAD
-static void db9_timer(unsigned long private)
-{
-	struct db9 *db9 = (void *) private;
-=======
 static void db9_timer(struct timer_list *t)
 {
 	struct db9 *db9 = from_timer(db9, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parport *port = db9->pd->port;
 	struct input_dev *dev = db9->dev[0];
 	struct input_dev *dev2 = db9->dev[1];
@@ -415,10 +365,7 @@ static void db9_timer(struct timer_list *t)
 			input_report_abs(dev2, ABS_X, (data & DB9_RIGHT ? 0 : 1) - (data & DB9_LEFT ? 0 : 1));
 			input_report_abs(dev2, ABS_Y, (data & DB9_DOWN  ? 0 : 1) - (data & DB9_UP   ? 0 : 1));
 			input_report_key(dev2, BTN_TRIGGER, ~data & DB9_FIRE1);
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case DB9_MULTI_0802:
 
@@ -593,22 +540,6 @@ static void db9_close(struct input_dev *dev)
 	mutex_unlock(&db9->mutex);
 }
 
-<<<<<<< HEAD
-static struct db9 __init *db9_probe(int parport, int mode)
-{
-	struct db9 *db9;
-	const struct db9_mode_data *db9_mode;
-	struct parport *pp;
-	struct pardevice *pd;
-	struct input_dev *input_dev;
-	int i, j;
-	int err;
-
-	if (mode < 1 || mode >= DB9_MAX_PAD || !db9_modes[mode].n_buttons) {
-		printk(KERN_ERR "db9.c: Bad device type %d\n", mode);
-		err = -EINVAL;
-		goto err_out;
-=======
 static void db9_attach(struct parport *pp)
 {
 	struct db9 *db9;
@@ -638,39 +569,10 @@ static void db9_attach(struct parport *pp)
 	if (mode < 1 || mode >= DB9_MAX_PAD || !db9_modes[mode].n_buttons) {
 		printk(KERN_ERR "db9.c: Bad device type %d\n", mode);
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	db9_mode = &db9_modes[mode];
 
-<<<<<<< HEAD
-	pp = parport_find_number(parport);
-	if (!pp) {
-		printk(KERN_ERR "db9.c: no such parport\n");
-		err = -ENODEV;
-		goto err_out;
-	}
-
-	if (db9_mode->bidirectional && !(pp->modes & PARPORT_MODE_TRISTATE)) {
-		printk(KERN_ERR "db9.c: specified parport is not bidirectional\n");
-		err = -EINVAL;
-		goto err_put_pp;
-	}
-
-	pd = parport_register_device(pp, "db9", NULL, NULL, NULL, PARPORT_DEV_EXCL, NULL);
-	if (!pd) {
-		printk(KERN_ERR "db9.c: parport busy already - lp.o loaded?\n");
-		err = -EBUSY;
-		goto err_put_pp;
-	}
-
-	db9 = kzalloc(sizeof(struct db9), GFP_KERNEL);
-	if (!db9) {
-		printk(KERN_ERR "db9.c: Not enough memory\n");
-		err = -ENOMEM;
-		goto err_unreg_pardev;
-	}
-=======
 	if (db9_mode->bidirectional && !(pp->modes & PARPORT_MODE_TRISTATE)) {
 		printk(KERN_ERR "db9.c: specified parport is not bidirectional\n");
 		return;
@@ -688,29 +590,18 @@ static void db9_attach(struct parport *pp)
 	db9 = kzalloc(sizeof(struct db9), GFP_KERNEL);
 	if (!db9)
 		goto err_unreg_pardev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&db9->mutex);
 	db9->pd = pd;
 	db9->mode = mode;
-<<<<<<< HEAD
-	init_timer(&db9->timer);
-	db9->timer.data = (long) db9;
-	db9->timer.function = db9_timer;
-=======
 	db9->parportno = pp->number;
 	timer_setup(&db9->timer, db9_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < (min(db9_mode->n_pads, DB9_MAX_DEVICES)); i++) {
 
 		db9->dev[i] = input_dev = input_allocate_device();
 		if (!input_dev) {
 			printk(KERN_ERR "db9.c: Not enough memory for input device\n");
-<<<<<<< HEAD
-			err = -ENOMEM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_unreg_devs;
 		}
 
@@ -739,22 +630,12 @@ static void db9_attach(struct parport *pp)
 				input_set_abs_params(input_dev, db9_abs[j], 1, 255, 0, 0);
 		}
 
-<<<<<<< HEAD
-		err = input_register_device(input_dev);
-		if (err)
-			goto err_free_dev;
-	}
-
-	parport_put_port(pp);
-	return db9;
-=======
 		if (input_register_device(input_dev))
 			goto err_free_dev;
 	}
 
 	db9_base[port_idx] = db9;
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err_free_dev:
 	input_free_device(db9->dev[i]);
@@ -764,17 +645,6 @@ static void db9_attach(struct parport *pp)
 	kfree(db9);
  err_unreg_pardev:
 	parport_unregister_device(pd);
-<<<<<<< HEAD
- err_put_pp:
-	parport_put_port(pp);
- err_out:
-	return ERR_PTR(err);
-}
-
-static void db9_remove(struct db9 *db9)
-{
-	int i;
-=======
 }
 
 static void db9_detach(struct parport *port)
@@ -792,7 +662,6 @@ static void db9_detach(struct parport *port)
 
 	db9 = db9_base[i];
 	db9_base[i] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < min(db9_modes[db9->mode].n_pads, DB9_MAX_DEVICES); i++)
 		input_unregister_device(db9->dev[i]);
@@ -800,8 +669,6 @@ static void db9_detach(struct parport *port)
 	kfree(db9);
 }
 
-<<<<<<< HEAD
-=======
 static struct parport_driver db9_parport_driver = {
 	.name = "db9",
 	.match_port = db9_attach,
@@ -809,15 +676,10 @@ static struct parport_driver db9_parport_driver = {
 	.devmodel = true,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init db9_init(void)
 {
 	int i;
 	int have_dev = 0;
-<<<<<<< HEAD
-	int err = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < DB9_MAX_PORTS; i++) {
 		if (db9_cfg[i].nargs == 0 || db9_cfg[i].args[DB9_ARG_PARPORT] < 0)
@@ -825,52 +687,21 @@ static int __init db9_init(void)
 
 		if (db9_cfg[i].nargs < 2) {
 			printk(KERN_ERR "db9.c: Device type must be specified.\n");
-<<<<<<< HEAD
-			err = -EINVAL;
-			break;
-		}
-
-		db9_base[i] = db9_probe(db9_cfg[i].args[DB9_ARG_PARPORT],
-					db9_cfg[i].args[DB9_ARG_MODE]);
-		if (IS_ERR(db9_base[i])) {
-			err = PTR_ERR(db9_base[i]);
-			break;
-=======
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		have_dev = 1;
 	}
 
-<<<<<<< HEAD
-	if (err) {
-		while (--i >= 0)
-			if (db9_base[i])
-				db9_remove(db9_base[i]);
-		return err;
-	}
-
-	return have_dev ? 0 : -ENODEV;
-=======
 	if (!have_dev)
 		return -ENODEV;
 
 	return parport_register_driver(&db9_parport_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit db9_exit(void)
 {
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < DB9_MAX_PORTS; i++)
-		if (db9_base[i])
-			db9_remove(db9_base[i]);
-=======
 	parport_unregister_driver(&db9_parport_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(db9_init);

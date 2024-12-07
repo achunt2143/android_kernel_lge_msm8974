@@ -1,32 +1,13 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, version 2, as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2007
  * Copyright 2010-2011 Freescale Semiconductor, Inc.
  *
  * Authors: Hollis Blanchard <hollisb@us.ibm.com>
  *          Christian Ehrhardt <ehrhardt@linux.vnet.ibm.com>
-<<<<<<< HEAD
-=======
  *          Scott Wood <scottwood@freescale.com>
  *          Varun Sethi <varun.sethi@freescale.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -38,36 +19,6 @@
 #include <linux/fs.h>
 
 #include <asm/cputable.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/kvm_ppc.h>
-#include "timing.h"
-#include <asm/cacheflush.h>
-
-#include "booke.h"
-
-unsigned long kvmppc_booke_handlers;
-
-#define VM_STAT(x) offsetof(struct kvm, stat.x), KVM_STAT_VM
-#define VCPU_STAT(x) offsetof(struct kvm_vcpu, stat.x), KVM_STAT_VCPU
-
-struct kvm_stats_debugfs_item debugfs_entries[] = {
-	{ "mmio",       VCPU_STAT(mmio_exits) },
-	{ "dcr",        VCPU_STAT(dcr_exits) },
-	{ "sig",        VCPU_STAT(signal_exits) },
-	{ "itlb_r",     VCPU_STAT(itlb_real_miss_exits) },
-	{ "itlb_v",     VCPU_STAT(itlb_virt_miss_exits) },
-	{ "dtlb_r",     VCPU_STAT(dtlb_real_miss_exits) },
-	{ "dtlb_v",     VCPU_STAT(dtlb_virt_miss_exits) },
-	{ "sysc",       VCPU_STAT(syscall_exits) },
-	{ "isi",        VCPU_STAT(isi_exits) },
-	{ "dsi",        VCPU_STAT(dsi_exits) },
-	{ "inst_emu",   VCPU_STAT(emulated_inst_exits) },
-	{ "dec",        VCPU_STAT(dec_exits) },
-	{ "ext_intr",   VCPU_STAT(ext_intr_exits) },
-	{ "halt_wakeup", VCPU_STAT(halt_wakeup) },
-	{ NULL }
-=======
 #include <linux/uaccess.h>
 #include <asm/interrupt.h>
 #include <asm/kvm_ppc.h>
@@ -133,7 +84,6 @@ const struct kvm_stats_header kvm_vcpu_stats_header = {
 	.desc_offset = sizeof(struct kvm_stats_header) + KVM_STATS_NAME_SIZE,
 	.data_offset = sizeof(struct kvm_stats_header) + KVM_STATS_NAME_SIZE +
 		       sizeof(kvm_vcpu_stats_desc),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* TODO: use vcpu_printf() */
@@ -141,15 +91,10 @@ void kvmppc_dump_vcpu(struct kvm_vcpu *vcpu)
 {
 	int i;
 
-<<<<<<< HEAD
-	printk("pc:   %08lx msr:  %08llx\n", vcpu->arch.pc, vcpu->arch.shared->msr);
-	printk("lr:   %08lx ctr:  %08lx\n", vcpu->arch.lr, vcpu->arch.ctr);
-=======
 	printk("pc:   %08lx msr:  %08llx\n", vcpu->arch.regs.nip,
 			vcpu->arch.shared->msr);
 	printk("lr:   %08lx ctr:  %08lx\n", vcpu->arch.regs.link,
 			vcpu->arch.regs.ctr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("srr0: %08llx srr1: %08llx\n", vcpu->arch.shared->srr0,
 					    vcpu->arch.shared->srr1);
 
@@ -170,10 +115,7 @@ void kvmppc_vcpu_disable_spe(struct kvm_vcpu *vcpu)
 	preempt_disable();
 	enable_kernel_spe();
 	kvmppc_save_guest_spe(vcpu);
-<<<<<<< HEAD
-=======
 	disable_kernel_spe();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vcpu->arch.shadow_msr &= ~MSR_SPE;
 	preempt_enable();
 }
@@ -183,10 +125,7 @@ static void kvmppc_vcpu_enable_spe(struct kvm_vcpu *vcpu)
 	preempt_disable();
 	enable_kernel_spe();
 	kvmppc_load_guest_spe(vcpu);
-<<<<<<< HEAD
-=======
 	disable_kernel_spe();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vcpu->arch.shadow_msr |= MSR_SPE;
 	preempt_enable();
 }
@@ -207,8 +146,6 @@ static void kvmppc_vcpu_sync_spe(struct kvm_vcpu *vcpu)
 #endif
 
 /*
-<<<<<<< HEAD
-=======
  * Load up guest vcpu FP state if it's needed.
  * It also set the MSR_FP in thread so that host know
  * we're holding FPU, and then host can help to save
@@ -312,7 +249,6 @@ static void kvmppc_vcpu_sync_debug(struct kvm_vcpu *vcpu)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Helper function for "full" MSR writes.  No need to call this if only
  * EE/CE/ME/DE/RI are changing.
  */
@@ -320,80 +256,53 @@ void kvmppc_set_msr(struct kvm_vcpu *vcpu, u32 new_msr)
 {
 	u32 old_msr = vcpu->arch.shared->msr;
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_KVM_BOOKE_HV
 	new_msr |= MSR_GS;
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vcpu->arch.shared->msr = new_msr;
 
 	kvmppc_mmu_msr_notify(vcpu, old_msr);
 	kvmppc_vcpu_sync_spe(vcpu);
-<<<<<<< HEAD
-=======
 	kvmppc_vcpu_sync_fpu(vcpu);
 	kvmppc_vcpu_sync_debug(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kvmppc_booke_queue_irqprio(struct kvm_vcpu *vcpu,
                                        unsigned int priority)
 {
-<<<<<<< HEAD
-	set_bit(priority, &vcpu->arch.pending_exceptions);
-}
-
-static void kvmppc_core_queue_dtlb_miss(struct kvm_vcpu *vcpu,
-                                        ulong dear_flags, ulong esr_flags)
-=======
 	trace_kvm_booke_queue_irqprio(vcpu, priority);
 	set_bit(priority, &vcpu->arch.pending_exceptions);
 }
 
 void kvmppc_core_queue_dtlb_miss(struct kvm_vcpu *vcpu,
 				 ulong dear_flags, ulong esr_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	vcpu->arch.queued_dear = dear_flags;
 	vcpu->arch.queued_esr = esr_flags;
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_DTLB_MISS);
 }
 
-<<<<<<< HEAD
-static void kvmppc_core_queue_data_storage(struct kvm_vcpu *vcpu,
-                                           ulong dear_flags, ulong esr_flags)
-{
-=======
 void kvmppc_core_queue_data_storage(struct kvm_vcpu *vcpu, ulong srr1_flags,
 				    ulong dear_flags, ulong esr_flags)
 {
 	WARN_ON_ONCE(srr1_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vcpu->arch.queued_dear = dear_flags;
 	vcpu->arch.queued_esr = esr_flags;
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_DATA_STORAGE);
 }
 
-<<<<<<< HEAD
-static void kvmppc_core_queue_inst_storage(struct kvm_vcpu *vcpu,
-                                           ulong esr_flags)
-=======
 void kvmppc_core_queue_itlb_miss(struct kvm_vcpu *vcpu)
 {
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_ITLB_MISS);
 }
 
 void kvmppc_core_queue_inst_storage(struct kvm_vcpu *vcpu, ulong esr_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	vcpu->arch.queued_esr = esr_flags;
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_INST_STORAGE);
 }
 
-<<<<<<< HEAD
-=======
 static void kvmppc_core_queue_alignment(struct kvm_vcpu *vcpu, ulong dear_flags,
 					ulong esr_flags)
 {
@@ -402,15 +311,12 @@ static void kvmppc_core_queue_alignment(struct kvm_vcpu *vcpu, ulong dear_flags,
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_ALIGNMENT);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kvmppc_core_queue_program(struct kvm_vcpu *vcpu, ulong esr_flags)
 {
 	vcpu->arch.queued_esr = esr_flags;
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_PROGRAM);
 }
 
-<<<<<<< HEAD
-=======
 void kvmppc_core_queue_fpunavail(struct kvm_vcpu *vcpu, ulong srr1_flags)
 {
 	WARN_ON_ONCE(srr1_flags);
@@ -425,7 +331,6 @@ void kvmppc_core_queue_vec_unavail(struct kvm_vcpu *vcpu, ulong srr1_flags)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kvmppc_core_queue_dec(struct kvm_vcpu *vcpu)
 {
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_DECREMENTER);
@@ -452,19 +357,12 @@ void kvmppc_core_queue_external(struct kvm_vcpu *vcpu,
 	kvmppc_booke_queue_irqprio(vcpu, prio);
 }
 
-<<<<<<< HEAD
-void kvmppc_core_dequeue_external(struct kvm_vcpu *vcpu,
-                                  struct kvm_interrupt *irq)
-=======
 void kvmppc_core_dequeue_external(struct kvm_vcpu *vcpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	clear_bit(BOOKE_IRQPRIO_EXTERNAL, &vcpu->arch.pending_exceptions);
 	clear_bit(BOOKE_IRQPRIO_EXTERNAL_LEVEL, &vcpu->arch.pending_exceptions);
 }
 
-<<<<<<< HEAD
-=======
 static void kvmppc_core_queue_watchdog(struct kvm_vcpu *vcpu)
 {
 	kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_WATCHDOG);
@@ -513,28 +411,19 @@ static void set_guest_mcsrr(struct kvm_vcpu *vcpu, unsigned long srr0, u32 srr1)
 	vcpu->arch.mcsrr1 = srr1;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Deliver the interrupt of the corresponding priority, if possible. */
 static int kvmppc_booke_irqprio_deliver(struct kvm_vcpu *vcpu,
                                         unsigned int priority)
 {
 	int allowed = 0;
-<<<<<<< HEAD
-	ulong uninitialized_var(msr_mask);
-	bool update_esr = false, update_dear = false;
-=======
 	ulong msr_mask = 0;
 	bool update_esr = false, update_dear = false, update_epr = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ulong crit_raw = vcpu->arch.shared->critical;
 	ulong crit_r1 = kvmppc_get_gpr(vcpu, 1);
 	bool crit;
 	bool keep_irq = false;
-<<<<<<< HEAD
-=======
 	enum int_class int_class;
 	ulong new_msr = vcpu->arch.shared->msr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Truncate crit indicators in 32 bit mode */
 	if (!(vcpu->arch.shared->msr & MSR_SF)) {
@@ -552,36 +441,6 @@ static int kvmppc_booke_irqprio_deliver(struct kvm_vcpu *vcpu,
 		keep_irq = true;
 	}
 
-<<<<<<< HEAD
-	switch (priority) {
-	case BOOKE_IRQPRIO_DTLB_MISS:
-	case BOOKE_IRQPRIO_DATA_STORAGE:
-		update_dear = true;
-		/* fall through */
-	case BOOKE_IRQPRIO_INST_STORAGE:
-	case BOOKE_IRQPRIO_PROGRAM:
-		update_esr = true;
-		/* fall through */
-	case BOOKE_IRQPRIO_ITLB_MISS:
-	case BOOKE_IRQPRIO_SYSCALL:
-	case BOOKE_IRQPRIO_FP_UNAVAIL:
-	case BOOKE_IRQPRIO_SPE_UNAVAIL:
-	case BOOKE_IRQPRIO_SPE_FP_DATA:
-	case BOOKE_IRQPRIO_SPE_FP_ROUND:
-	case BOOKE_IRQPRIO_AP_UNAVAIL:
-	case BOOKE_IRQPRIO_ALIGNMENT:
-		allowed = 1;
-		msr_mask = MSR_CE|MSR_ME|MSR_DE;
-		break;
-	case BOOKE_IRQPRIO_CRITICAL:
-	case BOOKE_IRQPRIO_WATCHDOG:
-		allowed = vcpu->arch.shared->msr & MSR_CE;
-		msr_mask = MSR_ME;
-		break;
-	case BOOKE_IRQPRIO_MACHINE_CHECK:
-		allowed = vcpu->arch.shared->msr & MSR_ME;
-		msr_mask = 0;
-=======
 	if ((priority == BOOKE_IRQPRIO_EXTERNAL) && vcpu->arch.epr_flags)
 		update_epr = true;
 
@@ -624,22 +483,10 @@ static int kvmppc_booke_irqprio_deliver(struct kvm_vcpu *vcpu,
 		allowed = vcpu->arch.shared->msr & MSR_ME;
 		allowed = allowed && !crit;
 		int_class = INT_CLASS_MC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case BOOKE_IRQPRIO_DECREMENTER:
 	case BOOKE_IRQPRIO_FIT:
 		keep_irq = true;
-<<<<<<< HEAD
-		/* fall through */
-	case BOOKE_IRQPRIO_EXTERNAL:
-		allowed = vcpu->arch.shared->msr & MSR_EE;
-		allowed = allowed && !crit;
-		msr_mask = MSR_CE|MSR_ME|MSR_DE;
-		break;
-	case BOOKE_IRQPRIO_DEBUG:
-		allowed = vcpu->arch.shared->msr & MSR_DE;
-		msr_mask = MSR_ME;
-=======
 		fallthrough;
 	case BOOKE_IRQPRIO_EXTERNAL:
 	case BOOKE_IRQPRIO_DBELL:
@@ -657,21 +504,10 @@ static int kvmppc_booke_irqprio_deliver(struct kvm_vcpu *vcpu,
 		else
 			int_class = INT_CLASS_CRIT;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	if (allowed) {
-<<<<<<< HEAD
-		vcpu->arch.shared->srr0 = vcpu->arch.pc;
-		vcpu->arch.shared->srr1 = vcpu->arch.shared->msr;
-		vcpu->arch.pc = vcpu->arch.ivpr | vcpu->arch.ivor[priority];
-		if (update_esr == true)
-			vcpu->arch.shared->esr = vcpu->arch.queued_esr;
-		if (update_dear == true)
-			vcpu->arch.shared->dar = vcpu->arch.queued_dear;
-		kvmppc_set_msr(vcpu, vcpu->arch.shared->msr & msr_mask);
-=======
 		switch (int_class) {
 		case INT_CLASS_NONCRIT:
 			set_guest_srr(vcpu, vcpu->arch.regs.nip,
@@ -712,17 +548,11 @@ static int kvmppc_booke_irqprio_deliver(struct kvm_vcpu *vcpu,
 			new_msr |= MSR_CM;
 #endif
 		kvmppc_set_msr(vcpu, new_msr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!keep_irq)
 			clear_bit(priority, &vcpu->arch.pending_exceptions);
 	}
 
-<<<<<<< HEAD
-	return allowed;
-}
-
-=======
 #ifdef CONFIG_KVM_BOOKE_HV
 	/*
 	 * If an interrupt is pending but masked, raise a guest doorbell
@@ -844,21 +674,17 @@ static void kvmppc_watchdog_func(struct timer_list *t)
 		arm_next_watchdog(vcpu);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void update_timer_ints(struct kvm_vcpu *vcpu)
 {
 	if ((vcpu->arch.tcr & TCR_DIE) && (vcpu->arch.tsr & TSR_DIS))
 		kvmppc_core_queue_dec(vcpu);
 	else
 		kvmppc_core_dequeue_dec(vcpu);
-<<<<<<< HEAD
-=======
 
 	if ((vcpu->arch.tcr & TCR_WIE) && (vcpu->arch.tsr & TSR_WIS))
 		kvmppc_core_queue_watchdog(vcpu);
 	else
 		kvmppc_core_dequeue_watchdog(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void kvmppc_core_check_exceptions(struct kvm_vcpu *vcpu)
@@ -866,20 +692,8 @@ static void kvmppc_core_check_exceptions(struct kvm_vcpu *vcpu)
 	unsigned long *pending = &vcpu->arch.pending_exceptions;
 	unsigned int priority;
 
-<<<<<<< HEAD
-	if (vcpu->requests) {
-		if (kvm_check_request(KVM_REQ_PENDING_TIMER, vcpu)) {
-			smp_mb();
-			update_timer_ints(vcpu);
-		}
-	}
-
-	priority = __ffs(*pending);
-	while (priority <= BOOKE_IRQPRIO_MAX) {
-=======
 	priority = __ffs(*pending);
 	while (priority < BOOKE_IRQPRIO_MAX) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (kvmppc_booke_irqprio_deliver(vcpu, priority))
 			break;
 
@@ -893,59 +707,13 @@ static void kvmppc_core_check_exceptions(struct kvm_vcpu *vcpu)
 }
 
 /* Check pending exceptions and deliver one, if possible. */
-<<<<<<< HEAD
-void kvmppc_core_prepare_to_enter(struct kvm_vcpu *vcpu)
-{
-=======
 int kvmppc_core_prepare_to_enter(struct kvm_vcpu *vcpu)
 {
 	int r = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON_ONCE(!irqs_disabled());
 
 	kvmppc_core_check_exceptions(vcpu);
 
-<<<<<<< HEAD
-	if (vcpu->arch.shared->msr & MSR_WE) {
-		local_irq_enable();
-		kvm_vcpu_block(vcpu);
-		local_irq_disable();
-
-		kvmppc_set_exit_type(vcpu, EMULATED_MTMSRWE_EXITS);
-		kvmppc_core_check_exceptions(vcpu);
-	};
-}
-
-int kvmppc_vcpu_run(struct kvm_run *kvm_run, struct kvm_vcpu *vcpu)
-{
-	int ret;
-
-	if (!vcpu->arch.sane) {
-		kvm_run->exit_reason = KVM_EXIT_INTERNAL_ERROR;
-		return -EINVAL;
-	}
-
-	local_irq_disable();
-
-	kvmppc_core_prepare_to_enter(vcpu);
-
-	if (signal_pending(current)) {
-		kvm_run->exit_reason = KVM_EXIT_INTR;
-		ret = -EINTR;
-		goto out;
-	}
-
-	kvm_guest_enter();
-	ret = __kvmppc_vcpu_run(kvm_run, vcpu);
-	kvm_guest_exit();
-
-out:
-	local_irq_enable();
-	return ret;
-}
-
-/**
-=======
 	if (kvm_request_pending(vcpu)) {
 		/* Exception delivery raised request; start over */
 		return 1;
@@ -1236,18 +1004,10 @@ static int kvmppc_resume_inst_load(struct kvm_vcpu *vcpu,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * kvmppc_handle_exit
  *
  * Return value is in the form (errcode<<2 | RESUME_FLAG_HOST | RESUME_FLAG_NV)
  */
-<<<<<<< HEAD
-int kvmppc_handle_exit(struct kvm_run *run, struct kvm_vcpu *vcpu,
-                       unsigned int exit_nr)
-{
-	enum emulation_result er;
-	int r = RESUME_HOST;
-=======
 int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 {
 	struct kvm_run *run = vcpu->run;
@@ -1260,13 +1020,10 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 
 	/* Fix irq state (pairs with kvmppc_fix_ee_before_entry()) */
 	kvmppc_fix_ee_after_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update before a new last_exit_type is rewritten */
 	kvmppc_update_timing_stats(vcpu);
 
-<<<<<<< HEAD
-=======
 	/* restart interrupts if they were meant for the host */
 	kvmppc_restart_interrupt(vcpu, exit_nr);
 
@@ -1309,59 +1066,32 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 	}
 	vtime_account_guest_exit();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_enable();
 
 	run->exit_reason = KVM_EXIT_UNKNOWN;
 	run->ready_for_interrupt_injection = 1;
 
-<<<<<<< HEAD
-=======
 	if (emulated != EMULATE_DONE) {
 		r = kvmppc_resume_inst_load(vcpu, emulated, last_inst);
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (exit_nr) {
 	case BOOKE_INTERRUPT_MACHINE_CHECK:
 		printk("MACHINE CHECK: %lx\n", mfspr(SPRN_MCSR));
 		kvmppc_dump_vcpu(vcpu);
-<<<<<<< HEAD
-=======
 		/* For debugging, send invalid exit reason to user space */
 		run->hw.hardware_exit_reason = ~1ULL << 32;
 		run->hw.hardware_exit_reason |= mfspr(SPRN_MCSR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = RESUME_HOST;
 		break;
 
 	case BOOKE_INTERRUPT_EXTERNAL:
 		kvmppc_account_exit(vcpu, EXT_INTR_EXITS);
-<<<<<<< HEAD
-		if (need_resched())
-			cond_resched();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = RESUME_GUEST;
 		break;
 
 	case BOOKE_INTERRUPT_DECREMENTER:
-<<<<<<< HEAD
-		/* Since we switched IVPR back to the host's value, the host
-		 * handled this interrupt the moment we enabled interrupts.
-		 * Now we just offer it a chance to reschedule the guest. */
-		kvmppc_account_exit(vcpu, DEC_EXITS);
-		if (need_resched())
-			cond_resched();
-		r = RESUME_GUEST;
-		break;
-
-	case BOOKE_INTERRUPT_PROGRAM:
-		if (vcpu->arch.shared->msr & MSR_PR) {
-			/* Program traps generated by user-level software must be handled
-			 * by the guest kernel. */
-=======
 		kvmppc_account_exit(vcpu, DEC_EXITS);
 		r = RESUME_GUEST;
 		break;
@@ -1427,43 +1157,13 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 			 * on BOOKE_INTERRUPT_HV_PRIV, not here, so these are
 			 * actual program interrupts, handled by the guest.
 			 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kvmppc_core_queue_program(vcpu, vcpu->arch.fault_esr);
 			r = RESUME_GUEST;
 			kvmppc_account_exit(vcpu, USR_PR_INST);
 			break;
 		}
 
-<<<<<<< HEAD
-		er = kvmppc_emulate_instruction(run, vcpu);
-		switch (er) {
-		case EMULATE_DONE:
-			/* don't overwrite subtypes, just account kvm_stats */
-			kvmppc_account_exit_stat(vcpu, EMULATED_INST_EXITS);
-			/* Future optimization: only reload non-volatiles if
-			 * they were actually modified by emulation. */
-			r = RESUME_GUEST_NV;
-			break;
-		case EMULATE_DO_DCR:
-			run->exit_reason = KVM_EXIT_DCR;
-			r = RESUME_HOST;
-			break;
-		case EMULATE_FAIL:
-			/* XXX Deliver Program interrupt to guest. */
-			printk(KERN_CRIT "%s: emulation at %lx failed (%08x)\n",
-			       __func__, vcpu->arch.pc, vcpu->arch.last_inst);
-			/* For debugging, encode the failing instruction and
-			 * report it to userspace. */
-			run->hw.hardware_exit_reason = ~0ULL << 32;
-			run->hw.hardware_exit_reason |= vcpu->arch.last_inst;
-			r = RESUME_HOST;
-			break;
-		default:
-			BUG();
-		}
-=======
 		r = emulation_exit(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BOOKE_INTERRUPT_FP_UNAVAIL:
@@ -1492,11 +1192,7 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 		kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_SPE_FP_ROUND);
 		r = RESUME_GUEST;
 		break;
-<<<<<<< HEAD
-#else
-=======
 #elif defined(CONFIG_SPE_POSSIBLE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BOOKE_INTERRUPT_SPE_UNAVAIL:
 		/*
 		 * Guest wants SPE, but host kernel doesn't support it.  Send
@@ -1513,16 +1209,6 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 	case BOOKE_INTERRUPT_SPE_FP_DATA:
 	case BOOKE_INTERRUPT_SPE_FP_ROUND:
 		printk(KERN_CRIT "%s: unexpected SPE interrupt %u at %08lx\n",
-<<<<<<< HEAD
-		       __func__, exit_nr, vcpu->arch.pc);
-		run->hw.hardware_exit_reason = exit_nr;
-		r = RESUME_HOST;
-		break;
-#endif
-
-	case BOOKE_INTERRUPT_DATA_STORAGE:
-		kvmppc_core_queue_data_storage(vcpu, vcpu->arch.fault_dear,
-=======
 		       __func__, exit_nr, vcpu->arch.regs.nip);
 		run->hw.hardware_exit_reason = exit_nr;
 		r = RESUME_HOST;
@@ -1547,7 +1233,6 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 
 	case BOOKE_INTERRUPT_DATA_STORAGE:
 		kvmppc_core_queue_data_storage(vcpu, 0, vcpu->arch.fault_dear,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		                               vcpu->arch.fault_esr);
 		kvmppc_account_exit(vcpu, DSI_EXITS);
 		r = RESUME_GUEST;
@@ -1559,8 +1244,6 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 		r = RESUME_GUEST;
 		break;
 
-<<<<<<< HEAD
-=======
 	case BOOKE_INTERRUPT_ALIGNMENT:
 		kvmppc_core_queue_alignment(vcpu, vcpu->arch.fault_dear,
 		                            vcpu->arch.fault_esr);
@@ -1582,7 +1265,6 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 		r = RESUME_GUEST;
 		break;
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case BOOKE_INTERRUPT_SYSCALL:
 		if (!(vcpu->arch.shared->msr & MSR_PR) &&
 		    (((u32)kvmppc_get_gpr(vcpu, 0)) == KVM_SC_MAGIC_R0)) {
@@ -1596,10 +1278,7 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 		kvmppc_account_exit(vcpu, SYSCALL_EXITS);
 		r = RESUME_GUEST;
 		break;
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case BOOKE_INTERRUPT_DTLB_MISS: {
 		unsigned long eaddr = vcpu->arch.fault_dear;
@@ -1607,11 +1286,7 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 		gpa_t gpaddr;
 		gfn_t gfn;
 
-<<<<<<< HEAD
-#ifdef CONFIG_KVM_E500
-=======
 #ifdef CONFIG_KVM_E500V2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(vcpu->arch.shared->msr & MSR_PR) &&
 		    (eaddr & PAGE_MASK) == vcpu->arch.magic_page_ea) {
 			kvmppc_map_magic(vcpu);
@@ -1635,11 +1310,8 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 			break;
 		}
 
-<<<<<<< HEAD
-=======
 		idx = srcu_read_lock(&vcpu->kvm->srcu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gpaddr = kvmppc_mmu_xlate(vcpu, gtlb_index, eaddr);
 		gfn = gpaddr >> PAGE_SHIFT;
 
@@ -1657,28 +1329,17 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 			/* Guest has mapped and accessed a page which is not
 			 * actually RAM. */
 			vcpu->arch.paddr_accessed = gpaddr;
-<<<<<<< HEAD
-			r = kvmppc_emulate_mmio(run, vcpu);
-			kvmppc_account_exit(vcpu, MMIO_EXITS);
-		}
-
-=======
 			vcpu->arch.vaddr_accessed = eaddr;
 			r = kvmppc_emulate_mmio(vcpu);
 			kvmppc_account_exit(vcpu, MMIO_EXITS);
 		}
 
 		srcu_read_unlock(&vcpu->kvm->srcu, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case BOOKE_INTERRUPT_ITLB_MISS: {
-<<<<<<< HEAD
-		unsigned long eaddr = vcpu->arch.pc;
-=======
 		unsigned long eaddr = vcpu->arch.regs.nip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gpa_t gpaddr;
 		gfn_t gfn;
 		int gtlb_index;
@@ -1697,11 +1358,8 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 
 		kvmppc_account_exit(vcpu, ITLB_VIRT_MISS_EXITS);
 
-<<<<<<< HEAD
-=======
 		idx = srcu_read_lock(&vcpu->kvm->srcu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gpaddr = kvmppc_mmu_xlate(vcpu, gtlb_index, eaddr);
 		gfn = gpaddr >> PAGE_SHIFT;
 
@@ -1718,33 +1376,15 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 			kvmppc_booke_queue_irqprio(vcpu, BOOKE_IRQPRIO_MACHINE_CHECK);
 		}
 
-<<<<<<< HEAD
-=======
 		srcu_read_unlock(&vcpu->kvm->srcu, idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	case BOOKE_INTERRUPT_DEBUG: {
-<<<<<<< HEAD
-		u32 dbsr;
-
-		vcpu->arch.pc = mfspr(SPRN_CSRR0);
-
-		/* clear IAC events in DBSR register */
-		dbsr = mfspr(SPRN_DBSR);
-		dbsr &= DBSR_IAC1 | DBSR_IAC2 | DBSR_IAC3 | DBSR_IAC4;
-		mtspr(SPRN_DBSR, dbsr);
-
-		run->exit_reason = KVM_EXIT_DEBUG;
-		kvmppc_account_exit(vcpu, DEBUG_EXITS);
-		r = RESUME_HOST;
-=======
 		r = kvmppc_handle_debug(vcpu);
 		if (r == RESUME_HOST)
 			run->exit_reason = KVM_EXIT_DEBUG;
 		kvmppc_account_exit(vcpu, DEBUG_EXITS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1753,20 +1393,6 @@ int kvmppc_handle_exit(struct kvm_vcpu *vcpu, unsigned int exit_nr)
 		BUG();
 	}
 
-<<<<<<< HEAD
-	local_irq_disable();
-
-	kvmppc_core_prepare_to_enter(vcpu);
-
-	if (!(r & RESUME_HOST)) {
-		/* To avoid clobbering exit_reason, only check for signals if
-		 * we aren't already exiting to userspace for some other
-		 * reason. */
-		if (signal_pending(current)) {
-			run->exit_reason = KVM_EXIT_INTR;
-			r = (-EINTR << 2) | RESUME_HOST | (r & RESUME_FLAG_NV);
-			kvmppc_account_exit(vcpu, SIGNAL_EXITS);
-=======
 out:
 	/*
 	 * To avoid clobbering exit_reason, only check for signals if we
@@ -1781,40 +1407,12 @@ out:
 			kvmppc_fix_ee_before_entry();
 			kvmppc_load_guest_fp(vcpu);
 			kvmppc_load_guest_altivec(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return r;
 }
 
-<<<<<<< HEAD
-/* Initial guest state: 16MB mapping 0 -> 0, PC = 0, MSR = 0, R1 = 16MB */
-int kvm_arch_vcpu_setup(struct kvm_vcpu *vcpu)
-{
-	int i;
-	int r;
-
-	vcpu->arch.pc = 0;
-	vcpu->arch.shared->msr = 0;
-	vcpu->arch.shadow_msr = MSR_USER | MSR_DE | MSR_IS | MSR_DS;
-	vcpu->arch.shared->pir = vcpu->vcpu_id;
-	kvmppc_set_gpr(vcpu, 1, (16<<20) - 8); /* -8 for the callee-save LR slot */
-
-	vcpu->arch.shadow_pid = 1;
-
-	/* Eye-catching numbers so we know if the guest takes an interrupt
-	 * before it's programmed its own IVPR/IVORs. */
-	vcpu->arch.ivpr = 0x55550000;
-	for (i = 0; i < BOOKE_IRQPRIO_MAX; i++)
-		vcpu->arch.ivor[i] = 0x7700 | i * 4;
-
-	kvmppc_init_timing_stats(vcpu);
-
-	r = kvmppc_core_vcpu_setup(vcpu);
-	kvmppc_sanity_check(vcpu);
-	return r;
-=======
 static void kvmppc_set_tsr(struct kvm_vcpu *vcpu, u32 new_tsr)
 {
 	u32 old_tsr = vcpu->arch.tsr;
@@ -1844,32 +1442,12 @@ int kvmppc_subarch_vcpu_init(struct kvm_vcpu *vcpu)
 void kvmppc_subarch_vcpu_uninit(struct kvm_vcpu *vcpu)
 {
 	del_timer_sync(&vcpu->arch.wdt_timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
 {
 	int i;
 
-<<<<<<< HEAD
-	regs->pc = vcpu->arch.pc;
-	regs->cr = kvmppc_get_cr(vcpu);
-	regs->ctr = vcpu->arch.ctr;
-	regs->lr = vcpu->arch.lr;
-	regs->xer = kvmppc_get_xer(vcpu);
-	regs->msr = vcpu->arch.shared->msr;
-	regs->srr0 = vcpu->arch.shared->srr0;
-	regs->srr1 = vcpu->arch.shared->srr1;
-	regs->pid = vcpu->arch.pid;
-	regs->sprg0 = vcpu->arch.shared->sprg0;
-	regs->sprg1 = vcpu->arch.shared->sprg1;
-	regs->sprg2 = vcpu->arch.shared->sprg2;
-	regs->sprg3 = vcpu->arch.shared->sprg3;
-	regs->sprg4 = vcpu->arch.shared->sprg4;
-	regs->sprg5 = vcpu->arch.shared->sprg5;
-	regs->sprg6 = vcpu->arch.shared->sprg6;
-	regs->sprg7 = vcpu->arch.shared->sprg7;
-=======
 	vcpu_load(vcpu);
 
 	regs->pc = vcpu->arch.regs.nip;
@@ -1889,15 +1467,11 @@ int kvm_arch_vcpu_ioctl_get_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
 	regs->sprg5 = kvmppc_get_sprg5(vcpu);
 	regs->sprg6 = kvmppc_get_sprg6(vcpu);
 	regs->sprg7 = kvmppc_get_sprg7(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(regs->gpr); i++)
 		regs->gpr[i] = kvmppc_get_gpr(vcpu, i);
 
-<<<<<<< HEAD
-=======
 	vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1905,25 +1479,6 @@ int kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
 {
 	int i;
 
-<<<<<<< HEAD
-	vcpu->arch.pc = regs->pc;
-	kvmppc_set_cr(vcpu, regs->cr);
-	vcpu->arch.ctr = regs->ctr;
-	vcpu->arch.lr = regs->lr;
-	kvmppc_set_xer(vcpu, regs->xer);
-	kvmppc_set_msr(vcpu, regs->msr);
-	vcpu->arch.shared->srr0 = regs->srr0;
-	vcpu->arch.shared->srr1 = regs->srr1;
-	kvmppc_set_pid(vcpu, regs->pid);
-	vcpu->arch.shared->sprg0 = regs->sprg0;
-	vcpu->arch.shared->sprg1 = regs->sprg1;
-	vcpu->arch.shared->sprg2 = regs->sprg2;
-	vcpu->arch.shared->sprg3 = regs->sprg3;
-	vcpu->arch.shared->sprg4 = regs->sprg4;
-	vcpu->arch.shared->sprg5 = regs->sprg5;
-	vcpu->arch.shared->sprg6 = regs->sprg6;
-	vcpu->arch.shared->sprg7 = regs->sprg7;
-=======
 	vcpu_load(vcpu);
 
 	vcpu->arch.regs.nip = regs->pc;
@@ -1943,15 +1498,11 @@ int kvm_arch_vcpu_ioctl_set_regs(struct kvm_vcpu *vcpu, struct kvm_regs *regs)
 	kvmppc_set_sprg5(vcpu, regs->sprg5);
 	kvmppc_set_sprg6(vcpu, regs->sprg6);
 	kvmppc_set_sprg7(vcpu, regs->sprg7);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(regs->gpr); i++)
 		kvmppc_set_gpr(vcpu, i, regs->gpr[i]);
 
-<<<<<<< HEAD
-=======
 	vcpu_put(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1965,13 +1516,8 @@ static void get_sregs_base(struct kvm_vcpu *vcpu,
 	sregs->u.e.csrr0 = vcpu->arch.csrr0;
 	sregs->u.e.csrr1 = vcpu->arch.csrr1;
 	sregs->u.e.mcsr = vcpu->arch.mcsr;
-<<<<<<< HEAD
-	sregs->u.e.esr = vcpu->arch.shared->esr;
-	sregs->u.e.dear = vcpu->arch.shared->dar;
-=======
 	sregs->u.e.esr = kvmppc_get_esr(vcpu);
 	sregs->u.e.dear = kvmppc_get_dar(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sregs->u.e.tsr = vcpu->arch.tsr;
 	sregs->u.e.tcr = vcpu->arch.tcr;
 	sregs->u.e.dec = kvmppc_get_dec(vcpu, tb);
@@ -1988,13 +1534,8 @@ static int set_sregs_base(struct kvm_vcpu *vcpu,
 	vcpu->arch.csrr0 = sregs->u.e.csrr0;
 	vcpu->arch.csrr1 = sregs->u.e.csrr1;
 	vcpu->arch.mcsr = sregs->u.e.mcsr;
-<<<<<<< HEAD
-	vcpu->arch.shared->esr = sregs->u.e.esr;
-	vcpu->arch.shared->dar = sregs->u.e.dear;
-=======
 	kvmppc_set_esr(vcpu, sregs->u.e.esr);
 	kvmppc_set_dar(vcpu, sregs->u.e.dear);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vcpu->arch.vrsave = sregs->u.e.vrsave;
 	kvmppc_set_tcr(vcpu, sregs->u.e.tcr);
 
@@ -2003,15 +1544,8 @@ static int set_sregs_base(struct kvm_vcpu *vcpu,
 		kvmppc_emulate_dec(vcpu);
 	}
 
-<<<<<<< HEAD
-	if (sregs->u.e.update_special & KVM_SREGS_E_UPDATE_TSR) {
-		vcpu->arch.tsr = sregs->u.e.tsr;
-		update_timer_ints(vcpu);
-	}
-=======
 	if (sregs->u.e.update_special & KVM_SREGS_E_UPDATE_TSR)
 		kvmppc_set_tsr(vcpu, sregs->u.e.tsr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2045,11 +1579,7 @@ static int set_sregs_arch206(struct kvm_vcpu *vcpu,
 	return 0;
 }
 
-<<<<<<< HEAD
-void kvmppc_get_sregs_ivor(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs)
-=======
 int kvmppc_get_sregs_ivor(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sregs->u.e.features |= KVM_SREGS_E_IVOR;
 
@@ -2069,10 +1599,7 @@ int kvmppc_get_sregs_ivor(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs)
 	sregs->u.e.ivor_low[13] = vcpu->arch.ivor[BOOKE_IRQPRIO_DTLB_MISS];
 	sregs->u.e.ivor_low[14] = vcpu->arch.ivor[BOOKE_IRQPRIO_ITLB_MISS];
 	sregs->u.e.ivor_low[15] = vcpu->arch.ivor[BOOKE_IRQPRIO_DEBUG];
-<<<<<<< HEAD
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvmppc_set_sregs_ivor(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs)
@@ -2103,57 +1630,23 @@ int kvmppc_set_sregs_ivor(struct kvm_vcpu *vcpu, struct kvm_sregs *sregs)
 int kvm_arch_vcpu_ioctl_get_sregs(struct kvm_vcpu *vcpu,
                                   struct kvm_sregs *sregs)
 {
-<<<<<<< HEAD
-=======
 	int ret;
 
 	vcpu_load(vcpu);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sregs->pvr = vcpu->arch.pvr;
 
 	get_sregs_base(vcpu, sregs);
 	get_sregs_arch206(vcpu, sregs);
-<<<<<<< HEAD
-	kvmppc_core_get_sregs(vcpu, sregs);
-	return 0;
-=======
 	ret = vcpu->kvm->arch.kvm_ops->get_sregs(vcpu, sregs);
 
 	vcpu_put(vcpu);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_set_sregs(struct kvm_vcpu *vcpu,
                                   struct kvm_sregs *sregs)
 {
-<<<<<<< HEAD
-	int ret;
-
-	if (vcpu->arch.pvr != sregs->pvr)
-		return -EINVAL;
-
-	ret = set_sregs_base(vcpu, sregs);
-	if (ret < 0)
-		return ret;
-
-	ret = set_sregs_arch206(vcpu, sregs);
-	if (ret < 0)
-		return ret;
-
-	return kvmppc_core_set_sregs(vcpu, sregs);
-}
-
-int kvm_vcpu_ioctl_get_one_reg(struct kvm_vcpu *vcpu, struct kvm_one_reg *reg)
-{
-	return -EINVAL;
-}
-
-int kvm_vcpu_ioctl_set_one_reg(struct kvm_vcpu *vcpu, struct kvm_one_reg *reg)
-{
-	return -EINVAL;
-=======
 	int ret = -EINVAL;
 
 	vcpu_load(vcpu);
@@ -2298,25 +1791,16 @@ int kvmppc_set_one_reg(struct kvm_vcpu *vcpu, u64 id,
 	}
 
 	return r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_get_fpu(struct kvm_vcpu *vcpu, struct kvm_fpu *fpu)
 {
-<<<<<<< HEAD
-	return -ENOTSUPP;
-=======
 	return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_set_fpu(struct kvm_vcpu *vcpu, struct kvm_fpu *fpu)
 {
-<<<<<<< HEAD
-	return -ENOTSUPP;
-=======
 	return -EOPNOTSUPP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int kvm_arch_vcpu_ioctl_translate(struct kvm_vcpu *vcpu,
@@ -2324,19 +1808,6 @@ int kvm_arch_vcpu_ioctl_translate(struct kvm_vcpu *vcpu,
 {
 	int r;
 
-<<<<<<< HEAD
-	r = kvmppc_core_vcpu_translate(vcpu, tr);
-	return r;
-}
-
-int kvm_vm_ioctl_get_dirty_log(struct kvm *kvm, struct kvm_dirty_log *log)
-{
-	return -ENOTSUPP;
-}
-
-int kvmppc_core_prepare_memory_region(struct kvm *kvm,
-				      struct kvm_userspace_memory_region *mem)
-=======
 	vcpu_load(vcpu);
 	r = kvmppc_core_vcpu_translate(vcpu, tr);
 	vcpu_put(vcpu);
@@ -2361,25 +1832,11 @@ int kvmppc_core_prepare_memory_region(struct kvm *kvm,
 				      const struct kvm_memory_slot *old,
 				      struct kvm_memory_slot *new,
 				      enum kvm_mr_change change)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
 void kvmppc_core_commit_memory_region(struct kvm *kvm,
-<<<<<<< HEAD
-				struct kvm_userspace_memory_region *mem)
-{
-}
-
-int kvmppc_core_init_vm(struct kvm *kvm)
-{
-	return 0;
-}
-
-void kvmppc_core_destroy_vm(struct kvm *kvm)
-{
-=======
 				struct kvm_memory_slot *old,
 				const struct kvm_memory_slot *new,
 				enum kvm_mr_change change)
@@ -2400,16 +1857,12 @@ void kvmppc_set_epcr(struct kvm_vcpu *vcpu, u32 new_epcr)
 		vcpu->arch.shadow_epcr |= SPRN_EPCR_GICM;
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kvmppc_set_tcr(struct kvm_vcpu *vcpu, u32 new_tcr)
 {
 	vcpu->arch.tcr = new_tcr;
-<<<<<<< HEAD
-=======
 	arm_next_watchdog(vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	update_timer_ints(vcpu);
 }
 
@@ -2424,14 +1877,6 @@ void kvmppc_set_tsr_bits(struct kvm_vcpu *vcpu, u32 tsr_bits)
 void kvmppc_clr_tsr_bits(struct kvm_vcpu *vcpu, u32 tsr_bits)
 {
 	clear_bits(tsr_bits, &vcpu->arch.tsr);
-<<<<<<< HEAD
-	update_timer_ints(vcpu);
-}
-
-void kvmppc_decrementer_func(unsigned long data)
-{
-	struct kvm_vcpu *vcpu = (struct kvm_vcpu *)data;
-=======
 
 	/*
 	 * We may have stopped the watchdog due to
@@ -2449,17 +1894,10 @@ void kvmppc_decrementer_func(struct kvm_vcpu *vcpu)
 		vcpu->arch.dec = vcpu->arch.decar;
 		kvmppc_emulate_dec(vcpu);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kvmppc_set_tsr_bits(vcpu, TSR_DIS);
 }
 
-<<<<<<< HEAD
-int __init kvmppc_booke_init(void)
-{
-	unsigned long ivor[16];
-	unsigned long max_ivor = 0;
-=======
 static int kvmppc_booke_add_breakpoint(struct debug_reg *dbg_reg,
 				       uint64_t addr, int index)
 {
@@ -2751,7 +2189,6 @@ int __init kvmppc_booke_init(void)
 	unsigned long *handler = kvmppc_booke_handler_addr;
 	unsigned long max_ivor = 0;
 	unsigned long handler_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* We install our own exception handlers by hijacking IVPR. IVPR must
@@ -2784,17 +2221,6 @@ int __init kvmppc_booke_init(void)
 
 	for (i = 0; i < 16; i++) {
 		if (ivor[i] > max_ivor)
-<<<<<<< HEAD
-			max_ivor = ivor[i];
-
-		memcpy((void *)kvmppc_booke_handlers + ivor[i],
-		       kvmppc_handlers_start + i * kvmppc_handler_len,
-		       kvmppc_handler_len);
-	}
-	flush_icache_range(kvmppc_booke_handlers,
-	                   kvmppc_booke_handlers + max_ivor + kvmppc_handler_len);
-
-=======
 			max_ivor = i;
 
 		handler_len = handler[i + 1] - handler[i];
@@ -2806,7 +2232,6 @@ int __init kvmppc_booke_init(void)
 	flush_icache_range(kvmppc_booke_handlers, kvmppc_booke_handlers +
 			   ivor[max_ivor] + handler_len);
 #endif /* !BOOKE_HV */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

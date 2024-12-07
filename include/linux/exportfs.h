@@ -1,20 +1,13 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_EXPORTFS_H
 #define LINUX_EXPORTFS_H 1
 
 #include <linux/types.h>
 
 struct dentry;
-<<<<<<< HEAD
-struct inode;
-=======
 struct iattr;
 struct inode;
 struct iomap;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct super_block;
 struct vfsmount;
 
@@ -93,8 +86,6 @@ enum fid_type {
 	 * 64 bit parent inode number.
 	 */
 	FILEID_NILFS_WITH_PARENT = 0x62,
-<<<<<<< HEAD
-=======
 
 	/*
 	 * 32 bit generation number, 40 bit i_pos.
@@ -139,7 +130,6 @@ enum fid_type {
 	 * Filesystems must not use 0xff file ID.
 	 */
 	FILEID_INVALID = 0xff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fid {
@@ -150,15 +140,11 @@ struct fid {
 			u32 parent_ino;
 			u32 parent_gen;
 		} i32;
-<<<<<<< HEAD
- 		struct {
-=======
 		struct {
 			u64 ino;
 			u32 gen;
 		} __packed i64;
 		struct {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  			u32 block;
  			u16 partref;
  			u16 parent_partref;
@@ -166,12 +152,6 @@ struct fid {
  			u32 parent_block;
  			u32 parent_generation;
  		} udf;
-<<<<<<< HEAD
-		__u32 raw[0];
-	};
-};
-
-=======
 		DECLARE_FLEX_ARRAY(__u32, raw);
 	};
 };
@@ -179,7 +159,6 @@ struct fid {
 #define EXPORT_FH_CONNECTABLE	0x1 /* Encode file handle with parent */
 #define EXPORT_FH_FID		0x2 /* File handle may be non-decodeable */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct export_operations - for nfsd to communicate with file systems
  * @encode_fh:      encode a file handle fragment from a dentry
@@ -189,21 +168,13 @@ struct fid {
  * @get_parent:     find the parent of a given directory
  * @commit_metadata: commit metadata changes to stable storage
  *
-<<<<<<< HEAD
- * See Documentation/filesystems/nfs/Exporting for details on how to use
-=======
  * See Documentation/filesystems/nfs/exporting.rst for details on how to use
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * this interface correctly.
  *
  * encode_fh:
  *    @encode_fh should store in the file handle fragment @fh (using at most
  *    @max_len bytes) information that can be used by @decode_fh to recover the
-<<<<<<< HEAD
- *    file referred to by the &struct dentry @de.  If the @connectable flag is
-=======
  *    file referred to by the &struct dentry @de.  If @flag has CONNECTABLE bit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    set, the encode_fh() should store sufficient information so that a good
  *    attempt can be made to find not only the file but also it's place in the
  *    filesystem.   This typically means storing a reference to de->d_parent in
@@ -216,14 +187,6 @@ struct fid {
  *    @fh_to_dentry is given a &struct super_block (@sb) and a file handle
  *    fragment (@fh, @fh_len). It should return a &struct dentry which refers
  *    to the same file that the file handle fragment refers to.  If it cannot,
-<<<<<<< HEAD
- *    it should return a %NULL pointer if the file was found but no acceptable
- *    &dentries were available, or an %ERR_PTR error code indicating why it
- *    couldn't be found (e.g. %ENOENT or %ENOMEM).  Any suitable dentry can be
- *    returned including, if necessary, a new dentry created with d_alloc_root.
- *    The caller can then find any other extant dentries by following the
- *    d_alias links.
-=======
  *    it should return a %NULL pointer if the file cannot be found, or an
  *    %ERR_PTR error code of %ENOMEM if a memory allocation failure occurred.
  *    Any other error code is treated like %NULL, and will cause an %ESTALE error
@@ -231,7 +194,6 @@ struct fid {
  *    Any suitable dentry can be returned including, if necessary, a new dentry
  *    created with d_alloc_root.  The caller can then find any other extant
  *    dentries by following the d_alias links.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * fh_to_parent:
  *    Same as @fh_to_dentry, except that it returns a pointer to the parent
@@ -240,11 +202,7 @@ struct fid {
  * get_name:
  *    @get_name should find a name for the given @child in the given @parent
  *    directory.  The name should be stored in the @name (with the
-<<<<<<< HEAD
- *    understanding that it is already pointing to a a %NAME_MAX+1 sized
-=======
  *    understanding that it is already pointing to a %NAME_MAX+1 sized
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    buffer.   get_name() should return %0 on success, a negative error code
  *    or error.  @get_name will be called without @parent->i_mutex held.
  *
@@ -262,13 +220,8 @@ struct fid {
  */
 
 struct export_operations {
-<<<<<<< HEAD
-	int (*encode_fh)(struct dentry *de, __u32 *fh, int *max_len,
-			int connectable);
-=======
 	int (*encode_fh)(struct inode *inode, __u32 *fh, int *max_len,
 			struct inode *parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dentry * (*fh_to_dentry)(struct super_block *sb, struct fid *fid,
 			int fh_len, int fh_type);
 	struct dentry * (*fh_to_parent)(struct super_block *sb, struct fid *fid,
@@ -277,12 +230,6 @@ struct export_operations {
 			struct dentry *child);
 	struct dentry * (*get_parent)(struct dentry *child);
 	int (*commit_metadata)(struct inode *inode);
-<<<<<<< HEAD
-};
-
-extern int exportfs_encode_fh(struct dentry *dentry, struct fid *fid,
-	int *max_len, int connectable);
-=======
 
 	int (*get_uuid)(struct super_block *sb, u8 *buf, u32 *len, u64 *offset);
 	int (*map_blocks)(struct inode *inode, loff_t offset,
@@ -360,7 +307,6 @@ extern struct dentry *exportfs_decode_fh_raw(struct vfsmount *mnt,
 					     int fileid_type,
 					     int (*acceptable)(void *, struct dentry *),
 					     void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct dentry *exportfs_decode_fh(struct vfsmount *mnt, struct fid *fid,
 	int fh_len, int fileid_type, int (*acceptable)(void *, struct dentry *),
 	void *context);
@@ -368,19 +314,12 @@ extern struct dentry *exportfs_decode_fh(struct vfsmount *mnt, struct fid *fid,
 /*
  * Generic helpers for filesystems.
  */
-<<<<<<< HEAD
-extern struct dentry *generic_fh_to_dentry(struct super_block *sb,
-	struct fid *fid, int fh_len, int fh_type,
-	struct inode *(*get_inode) (struct super_block *sb, u64 ino, u32 gen));
-extern struct dentry *generic_fh_to_parent(struct super_block *sb,
-=======
 int generic_encode_ino32_fh(struct inode *inode, __u32 *fh, int *max_len,
 			    struct inode *parent);
 struct dentry *generic_fh_to_dentry(struct super_block *sb,
 	struct fid *fid, int fh_len, int fh_type,
 	struct inode *(*get_inode) (struct super_block *sb, u64 ino, u32 gen));
 struct dentry *generic_fh_to_parent(struct super_block *sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fid *fid, int fh_len, int fh_type,
 	struct inode *(*get_inode) (struct super_block *sb, u64 ino, u32 gen));
 

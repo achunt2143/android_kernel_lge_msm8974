@@ -15,17 +15,6 @@
 
 #include <linux/types.h>
 
-<<<<<<< HEAD
-/*
- * rbd image 'foo' consists of objects
- *   foo.rbd      - image metadata
- *   foo.00000000
- *   foo.00000001
- *   ...          - data
- */
-
-#define RBD_SUFFIX		".rbd"
-=======
 /* For format version 2, rbd image 'foo' consists of objects
  *   rbd_id.foo		- id of image
  *   rbd_header.<id>	- image metadata
@@ -72,7 +61,6 @@ enum rbd_notify_op {
 #define RBD_SUFFIX		".rbd"
 #define RBD_V1_DATA_FORMAT	"%s.%012llx"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RBD_DIRECTORY           "rbd_directory"
 #define RBD_INFO                "rbd_info"
 
@@ -80,15 +68,6 @@ enum rbd_notify_op {
 #define RBD_MIN_OBJ_ORDER       16
 #define RBD_MAX_OBJ_ORDER       30
 
-<<<<<<< HEAD
-#define RBD_MAX_OBJ_NAME_LEN	96
-#define RBD_MAX_SEG_NAME_LEN	128
-
-#define RBD_COMP_NONE		0
-#define RBD_CRYPT_NONE		0
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RBD_HEADER_TEXT		"<<< Rados Block Device Image >>>\n"
 #define RBD_HEADER_SIGNATURE	"RBD"
 #define RBD_HEADER_VERSION	"001.005"
@@ -100,11 +79,7 @@ struct rbd_image_snap_ondisk {
 
 struct rbd_image_header_ondisk {
 	char text[40];
-<<<<<<< HEAD
-	char block_name[24];
-=======
 	char object_prefix[24];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char signature[4];
 	char version[8];
 	struct {
@@ -118,11 +93,7 @@ struct rbd_image_header_ondisk {
 	__le32 snap_count;
 	__le32 reserved;
 	__le64 snap_names_len;
-<<<<<<< HEAD
-	struct rbd_image_snap_ondisk snaps[0];
-=======
 	struct rbd_image_snap_ondisk snaps[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 

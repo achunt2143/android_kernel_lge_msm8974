@@ -23,39 +23,6 @@
  * Authors: Dave Airlie
  *          Alex Deucher
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm_crtc_helper.h"
-#include "radeon_drm.h"
-#include "radeon.h"
-#include "atom.h"
-
-extern int atom_debug;
-
-/* evil but including atombios.h is much worse */
-bool radeon_atom_get_tv_timings(struct radeon_device *rdev, int index,
-				struct drm_display_mode *mode);
-
-
-static inline bool radeon_encoder_is_digital(struct drm_encoder *encoder)
-{
-	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
-	switch (radeon_encoder->encoder_id) {
-	case ENCODER_OBJECT_ID_INTERNAL_LVDS:
-	case ENCODER_OBJECT_ID_INTERNAL_TMDS1:
-	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_TMDS1:
-	case ENCODER_OBJECT_ID_INTERNAL_LVTM1:
-	case ENCODER_OBJECT_ID_INTERNAL_DVO1:
-	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DVO1:
-	case ENCODER_OBJECT_ID_INTERNAL_DDI:
-	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
-	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
-	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
-	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-		return true;
-	default:
-		return false;
-=======
 
 #include <linux/backlight.h>
 #include <linux/dmi.h>
@@ -323,16 +290,11 @@ static void radeon_atom_backlight_exit(struct radeon_encoder *radeon_encoder)
 		kfree(pdata);
 
 		DRM_INFO("radeon atom LVDS backlight unloaded\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static bool radeon_atom_mode_fixup(struct drm_encoder *encoder,
-<<<<<<< HEAD
-				   struct drm_display_mode *mode,
-=======
 				   const struct drm_display_mode *mode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct drm_display_mode *adjusted_mode)
 {
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
@@ -348,14 +310,6 @@ static bool radeon_atom_mode_fixup(struct drm_encoder *encoder,
 	    && (mode->crtc_vsync_start < (mode->crtc_vdisplay + 2)))
 		adjusted_mode->crtc_vsync_start = adjusted_mode->crtc_vdisplay + 2;
 
-<<<<<<< HEAD
-	/* get the native mode for LVDS */
-	if (radeon_encoder->active_device & (ATOM_DEVICE_LCD_SUPPORT))
-		radeon_panel_mode_fixup(encoder, adjusted_mode);
-
-	/* get the native mode for TV */
-	if (radeon_encoder->active_device & (ATOM_DEVICE_TV_SUPPORT)) {
-=======
 	/* vertical FP must be at least 1 */
 	if (mode->crtc_vsync_start == mode->crtc_vdisplay)
 		adjusted_mode->crtc_vsync_start++;
@@ -364,7 +318,6 @@ static bool radeon_atom_mode_fixup(struct drm_encoder *encoder,
 	if (radeon_encoder->active_device & (ATOM_DEVICE_LCD_SUPPORT)) {
 		radeon_panel_mode_fixup(encoder, adjusted_mode);
 	} else if (radeon_encoder->active_device & (ATOM_DEVICE_TV_SUPPORT)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct radeon_encoder_atom_dac *tv_dac = radeon_encoder->enc_priv;
 		if (tv_dac) {
 			if (tv_dac->tv_std == TV_STD_NTSC ||
@@ -374,11 +327,8 @@ static bool radeon_atom_mode_fixup(struct drm_encoder *encoder,
 			else
 				radeon_atom_get_tv_timings(rdev, 1, adjusted_mode);
 		}
-<<<<<<< HEAD
-=======
 	} else if (radeon_encoder->rmx_type != RMX_OFF) {
 		radeon_panel_mode_fixup(encoder, adjusted_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ASIC_IS_DCE3(rdev) &&
@@ -439,11 +389,7 @@ atombios_dac_setup(struct drm_encoder *encoder, int action)
 	}
 	args.usPixelClock = cpu_to_le16(radeon_encoder->pixel_clock / 10);
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -499,12 +445,6 @@ atombios_tv_setup(struct drm_encoder *encoder, int action)
 
 	args.sTVEncoder.usPixelClock = cpu_to_le16(radeon_encoder->pixel_clock / 10);
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-
-}
-
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 
 }
@@ -535,15 +475,11 @@ static u8 radeon_atom_get_bpc(struct drm_encoder *encoder)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 union dvo_encoder_control {
 	ENABLE_EXTERNAL_TMDS_ENCODER_PS_ALLOCATION ext_tmds;
 	DVO_ENCODER_CONTROL_PS_ALLOCATION dvo;
 	DVO_ENCODER_CONTROL_PS_ALLOCATION_V3 dvo_v3;
-<<<<<<< HEAD
-=======
 	DVO_ENCODER_CONTROL_PS_ALLOCATION_V1_4 dvo_v4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void
@@ -593,8 +529,6 @@ atombios_dvo_setup(struct drm_encoder *encoder, int action)
 			args.dvo_v3.usPixelClock = cpu_to_le16(radeon_encoder->pixel_clock / 10);
 			args.dvo_v3.ucDVOConfig = 0; /* XXX */
 			break;
-<<<<<<< HEAD
-=======
 		case 4:
 			/* DCE8 */
 			args.dvo_v4.ucAction = action;
@@ -602,7 +536,6 @@ atombios_dvo_setup(struct drm_encoder *encoder, int action)
 			args.dvo_v4.ucDVOConfig = 0; /* XXX */
 			args.dvo_v4.ucBitPerColor = radeon_atom_get_bpc(encoder);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			DRM_ERROR("Unknown table version %d, %d\n", frev, crev);
 			break;
@@ -613,11 +546,7 @@ atombios_dvo_setup(struct drm_encoder *encoder, int action)
 		break;
 	}
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 union lvds_encoder_control {
@@ -735,11 +664,7 @@ atombios_digital_setup(struct drm_encoder *encoder, int action)
 		break;
 	}
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
@@ -757,12 +682,8 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
 		return ATOM_ENCODER_MODE_DP;
 
 	/* DVO is always DVO */
-<<<<<<< HEAD
-	if (radeon_encoder->encoder_id == ATOM_ENCODER_MODE_DVO)
-=======
 	if ((radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_DVO1) ||
 	    (radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DVO1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ATOM_ENCODER_MODE_DVO;
 
 	connector = radeon_get_connector_for_encoder(encoder);
@@ -776,16 +697,6 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
 	switch (connector->connector_type) {
 	case DRM_MODE_CONNECTOR_DVII:
 	case DRM_MODE_CONNECTOR_HDMIB: /* HDMI-B is basically DL-DVI; analog works fine */
-<<<<<<< HEAD
-		if (drm_detect_hdmi_monitor(radeon_connector->edid) &&
-		    radeon_audio &&
-		    !ASIC_IS_DCE6(rdev)) /* remove once we support DCE6 */
-			return ATOM_ENCODER_MODE_HDMI;
-		else if (radeon_connector->use_digital)
-			return ATOM_ENCODER_MODE_DVI;
-		else
-			return ATOM_ENCODER_MODE_CRT;
-=======
 		if (radeon_audio != 0) {
 			if (radeon_connector->use_digital &&
 			    (radeon_connector->audio == RADEON_AUDIO_ENABLE))
@@ -802,19 +713,10 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
 		} else {
 			return ATOM_ENCODER_MODE_CRT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DRM_MODE_CONNECTOR_DVID:
 	case DRM_MODE_CONNECTOR_HDMIA:
 	default:
-<<<<<<< HEAD
-		if (drm_detect_hdmi_monitor(radeon_connector->edid) &&
-		    radeon_audio &&
-		    !ASIC_IS_DCE6(rdev)) /* remove once we support DCE6 */
-			return ATOM_ENCODER_MODE_HDMI;
-		else
-			return ATOM_ENCODER_MODE_DVI;
-=======
 		if (radeon_audio != 0) {
 			if (radeon_connector->audio == RADEON_AUDIO_ENABLE)
 				return ATOM_ENCODER_MODE_HDMI;
@@ -826,7 +728,6 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
 		} else {
 			return ATOM_ENCODER_MODE_DVI;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DRM_MODE_CONNECTOR_LVDS:
 		return ATOM_ENCODER_MODE_LVDS;
@@ -834,18 +735,6 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
 	case DRM_MODE_CONNECTOR_DisplayPort:
 		dig_connector = radeon_connector->con_priv;
 		if ((dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_DISPLAYPORT) ||
-<<<<<<< HEAD
-		    (dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP))
-			return ATOM_ENCODER_MODE_DP;
-		else if (drm_detect_hdmi_monitor(radeon_connector->edid) &&
-			 radeon_audio &&
-			 !ASIC_IS_DCE6(rdev)) /* remove once we support DCE6 */
-			return ATOM_ENCODER_MODE_HDMI;
-		else
-			return ATOM_ENCODER_MODE_DVI;
-		break;
-	case DRM_MODE_CONNECTOR_eDP:
-=======
 		    (dig_connector->dp_sink_type == CONNECTOR_OBJECT_ID_eDP)) {
 			if (radeon_audio != 0 &&
 			    drm_detect_monitor_audio(radeon_connector_edid(connector)) &&
@@ -869,7 +758,6 @@ atombios_get_encoder_mode(struct drm_encoder *encoder)
 		    drm_detect_monitor_audio(radeon_connector_edid(connector)) &&
 		    ASIC_IS_DCE4(rdev) && !ASIC_IS_DCE5(rdev))
 			return ATOM_ENCODER_MODE_DP_AUDIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ATOM_ENCODER_MODE_DP;
 	case DRM_MODE_CONNECTOR_DVIA:
 	case DRM_MODE_CONNECTOR_VGA:
@@ -940,11 +828,7 @@ union dig_encoder_control {
 };
 
 void
-<<<<<<< HEAD
-atombios_dig_encoder_setup(struct drm_encoder *encoder, int action, int panel_mode)
-=======
 atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_mode, int enc_override)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
@@ -957,10 +841,6 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 	int dp_clock = 0;
 	int dp_lane_count = 0;
 	int hpd_id = RADEON_HPD_NONE;
-<<<<<<< HEAD
-	int bpc = 8;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (connector) {
 		struct radeon_connector *radeon_connector = to_radeon_connector(connector);
@@ -970,10 +850,6 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 		dp_clock = dig_connector->dp_clock;
 		dp_lane_count = dig_connector->dp_lane_count;
 		hpd_id = radeon_connector->hpd.hpd;
-<<<<<<< HEAD
-		/* bpc = connector->display_info.bpc; */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* no dig encoder assigned */
@@ -1012,11 +888,6 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 			else
 				args.v1.ucLaneNum = 4;
 
-<<<<<<< HEAD
-			if (ENCODER_MODE_IS_DP(args.v1.ucEncoderMode) && (dp_clock == 270000))
-				args.v1.ucConfig |= ATOM_ENCODER_CONFIG_DPLINKRATE_2_70GHZ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (radeon_encoder->encoder_id) {
 			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 				args.v1.ucConfig = ATOM_ENCODER_CONFIG_V2_TRANSMITTER1;
@@ -1033,13 +904,10 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 				args.v1.ucConfig |= ATOM_ENCODER_CONFIG_LINKB;
 			else
 				args.v1.ucConfig |= ATOM_ENCODER_CONFIG_LINKA;
-<<<<<<< HEAD
-=======
 
 			if (ENCODER_MODE_IS_DP(args.v1.ucEncoderMode) && (dp_clock == 270000))
 				args.v1.ucConfig |= ATOM_ENCODER_CONFIG_DPLINKRATE_2_70GHZ;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 2:
 		case 3:
@@ -1050,43 +918,13 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 			else
 				args.v3.ucEncoderMode = atombios_get_encoder_mode(encoder);
 
-<<<<<<< HEAD
-			if (ENCODER_MODE_IS_DP(args.v1.ucEncoderMode))
-=======
 			if (ENCODER_MODE_IS_DP(args.v3.ucEncoderMode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				args.v3.ucLaneNum = dp_lane_count;
 			else if (radeon_dig_monitor_is_duallink(encoder, radeon_encoder->pixel_clock))
 				args.v3.ucLaneNum = 8;
 			else
 				args.v3.ucLaneNum = 4;
 
-<<<<<<< HEAD
-			if (ENCODER_MODE_IS_DP(args.v1.ucEncoderMode) && (dp_clock == 270000))
-				args.v1.ucConfig |= ATOM_ENCODER_CONFIG_V3_DPLINKRATE_2_70GHZ;
-			args.v3.acConfig.ucDigSel = dig->dig_encoder;
-			switch (bpc) {
-			case 0:
-				args.v3.ucBitPerColor = PANEL_BPC_UNDEFINE;
-				break;
-			case 6:
-				args.v3.ucBitPerColor = PANEL_6BIT_PER_COLOR;
-				break;
-			case 8:
-			default:
-				args.v3.ucBitPerColor = PANEL_8BIT_PER_COLOR;
-				break;
-			case 10:
-				args.v3.ucBitPerColor = PANEL_10BIT_PER_COLOR;
-				break;
-			case 12:
-				args.v3.ucBitPerColor = PANEL_12BIT_PER_COLOR;
-				break;
-			case 16:
-				args.v3.ucBitPerColor = PANEL_16BIT_PER_COLOR;
-				break;
-			}
-=======
 			if (ENCODER_MODE_IS_DP(args.v3.ucEncoderMode) && (dp_clock == 270000))
 				args.v1.ucConfig |= ATOM_ENCODER_CONFIG_V3_DPLINKRATE_2_70GHZ;
 			if (enc_override != -1)
@@ -1094,7 +932,6 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 			else
 				args.v3.acConfig.ucDigSel = dig->dig_encoder;
 			args.v3.ucBitPerColor = radeon_atom_get_bpc(encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 4:
 			args.v4.ucAction = action;
@@ -1104,47 +941,13 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 			else
 				args.v4.ucEncoderMode = atombios_get_encoder_mode(encoder);
 
-<<<<<<< HEAD
-			if (ENCODER_MODE_IS_DP(args.v1.ucEncoderMode))
-=======
 			if (ENCODER_MODE_IS_DP(args.v4.ucEncoderMode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				args.v4.ucLaneNum = dp_lane_count;
 			else if (radeon_dig_monitor_is_duallink(encoder, radeon_encoder->pixel_clock))
 				args.v4.ucLaneNum = 8;
 			else
 				args.v4.ucLaneNum = 4;
 
-<<<<<<< HEAD
-			if (ENCODER_MODE_IS_DP(args.v1.ucEncoderMode)) {
-				if (dp_clock == 270000)
-					args.v1.ucConfig |= ATOM_ENCODER_CONFIG_V4_DPLINKRATE_2_70GHZ;
-				else if (dp_clock == 540000)
-					args.v1.ucConfig |= ATOM_ENCODER_CONFIG_V4_DPLINKRATE_5_40GHZ;
-			}
-			args.v4.acConfig.ucDigSel = dig->dig_encoder;
-			switch (bpc) {
-			case 0:
-				args.v4.ucBitPerColor = PANEL_BPC_UNDEFINE;
-				break;
-			case 6:
-				args.v4.ucBitPerColor = PANEL_6BIT_PER_COLOR;
-				break;
-			case 8:
-			default:
-				args.v4.ucBitPerColor = PANEL_8BIT_PER_COLOR;
-				break;
-			case 10:
-				args.v4.ucBitPerColor = PANEL_10BIT_PER_COLOR;
-				break;
-			case 12:
-				args.v4.ucBitPerColor = PANEL_12BIT_PER_COLOR;
-				break;
-			case 16:
-				args.v4.ucBitPerColor = PANEL_16BIT_PER_COLOR;
-				break;
-			}
-=======
 			if (ENCODER_MODE_IS_DP(args.v4.ucEncoderMode)) {
 				if (dp_clock == 540000)
 					args.v1.ucConfig |= ATOM_ENCODER_CONFIG_V4_DPLINKRATE_5_40GHZ;
@@ -1161,7 +964,6 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 			else
 				args.v4.acConfig.ucDigSel = dig->dig_encoder;
 			args.v4.ucBitPerColor = radeon_atom_get_bpc(encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hpd_id == RADEON_HPD_NONE)
 				args.v4.ucHPD_ID = 0;
 			else
@@ -1177,12 +979,6 @@ atombios_dig_encoder_setup2(struct drm_encoder *encoder, int action, int panel_m
 		break;
 	}
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-
-}
-
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 
 }
@@ -1193,7 +989,6 @@ atombios_dig_encoder_setup(struct drm_encoder *encoder, int action, int panel_mo
 	atombios_dig_encoder_setup2(encoder, action, panel_mode, -1);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 union dig_transmitter_control {
 	DIG_TRANSMITTER_CONTROL_PS_ALLOCATION v1;
 	DIG_TRANSMITTER_CONTROL_PARAMETERS_V2 v2;
@@ -1203,11 +998,7 @@ union dig_transmitter_control {
 };
 
 void
-<<<<<<< HEAD
-atombios_dig_transmitter_setup(struct drm_encoder *encoder, int action, uint8_t lane_num, uint8_t lane_set)
-=======
 atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t lane_num, uint8_t lane_set, int fe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
@@ -1269,10 +1060,7 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-<<<<<<< HEAD
-=======
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		index = GetIndexIntoMasterTable(COMMAND, UNIPHYTransmitterControl);
 		break;
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
@@ -1295,12 +1083,7 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 				args.v1.asMode.ucLaneSet = lane_set;
 			} else {
 				if (is_dp)
-<<<<<<< HEAD
-					args.v1.usPixelClock =
-						cpu_to_le16(dp_clock / 10);
-=======
 					args.v1.usPixelClock = cpu_to_le16(dp_clock / 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				else if (radeon_dig_monitor_is_duallink(encoder, radeon_encoder->pixel_clock))
 					args.v1.usPixelClock = cpu_to_le16((radeon_encoder->pixel_clock / 2) / 10);
 				else
@@ -1357,12 +1140,7 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 				args.v2.asMode.ucLaneSet = lane_set;
 			} else {
 				if (is_dp)
-<<<<<<< HEAD
-					args.v2.usPixelClock =
-						cpu_to_le16(dp_clock / 10);
-=======
 					args.v2.usPixelClock = cpu_to_le16(dp_clock / 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				else if (radeon_dig_monitor_is_duallink(encoder, radeon_encoder->pixel_clock))
 					args.v2.usPixelClock = cpu_to_le16((radeon_encoder->pixel_clock / 2) / 10);
 				else
@@ -1404,12 +1182,7 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 				args.v3.asMode.ucLaneSet = lane_set;
 			} else {
 				if (is_dp)
-<<<<<<< HEAD
-					args.v3.usPixelClock =
-						cpu_to_le16(dp_clock / 10);
-=======
 					args.v3.usPixelClock = cpu_to_le16(dp_clock / 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				else if (radeon_dig_monitor_is_duallink(encoder, radeon_encoder->pixel_clock))
 					args.v3.usPixelClock = cpu_to_le16((radeon_encoder->pixel_clock / 2) / 10);
 				else
@@ -1468,12 +1241,7 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 				args.v4.asMode.ucLaneSet = lane_set;
 			} else {
 				if (is_dp)
-<<<<<<< HEAD
-					args.v4.usPixelClock =
-						cpu_to_le16(dp_clock / 10);
-=======
 					args.v4.usPixelClock = cpu_to_le16(dp_clock / 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				else if (radeon_dig_monitor_is_duallink(encoder, radeon_encoder->pixel_clock))
 					args.v4.usPixelClock = cpu_to_le16((radeon_encoder->pixel_clock / 2) / 10);
 				else
@@ -1552,12 +1320,9 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 				else
 					args.v5.ucPhyId = ATOM_PHY_ID_UNIPHYE;
 				break;
-<<<<<<< HEAD
-=======
 			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
 				args.v5.ucPhyId = ATOM_PHY_ID_UNIPHYG;
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (is_dp)
 				args.v5.ucLaneNum = dp_lane_count;
@@ -1583,11 +1348,7 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 				args.v5.asConfig.ucHPDSel = 0;
 			else
 				args.v5.asConfig.ucHPDSel = hpd_id + 1;
-<<<<<<< HEAD
-			args.v5.ucDigEncoderSel = 1 << dig_encoder;
-=======
 			args.v5.ucDigEncoderSel = (fe != -1) ? (1 << fe) : (1 << dig_encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			args.v5.ucDPLaneSet = lane_set;
 			break;
 		default:
@@ -1600,9 +1361,6 @@ atombios_dig_transmitter_setup2(struct drm_encoder *encoder, int action, uint8_t
 		break;
 	}
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 }
 
@@ -1610,7 +1368,6 @@ void
 atombios_dig_transmitter_setup(struct drm_encoder *encoder, int action, uint8_t lane_num, uint8_t lane_set)
 {
 	atombios_dig_transmitter_setup2(encoder, action, lane_num, lane_set, -1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 bool
@@ -1640,11 +1397,7 @@ atombios_set_edp_panel_power(struct drm_connector *connector, int action)
 
 	args.v1.ucAction = action;
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wait for the panel to power up */
 	if (action == ATOM_TRANSMITTER_ACTION_POWER_ON) {
@@ -1683,10 +1436,6 @@ atombios_external_encoder_setup(struct drm_encoder *encoder,
 	int dp_lane_count = 0;
 	int connector_object_id = 0;
 	u32 ext_enum = (ext_radeon_encoder->encoder_enum & ENUM_ID_MASK) >> ENUM_ID_SHIFT;
-<<<<<<< HEAD
-	int bpc = 8;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (action == EXTERNAL_ENCODER_ACTION_V3_ENCODER_INIT)
 		connector = radeon_get_connector_for_encoder_init(encoder);
@@ -1702,10 +1451,6 @@ atombios_external_encoder_setup(struct drm_encoder *encoder,
 		dp_lane_count = dig_connector->dp_lane_count;
 		connector_object_id =
 			(radeon_connector->connector_object_id & OBJECT_ID_MASK) >> OBJECT_ID_SHIFT;
-<<<<<<< HEAD
-		/* bpc = connector->display_info.bpc; */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memset(&args, 0, sizeof(args));
@@ -1763,31 +1508,7 @@ atombios_external_encoder_setup(struct drm_encoder *encoder,
 				args.v3.sExtEncoder.ucConfig |= EXTERNAL_ENCODER_CONFIG_V3_ENCODER3;
 				break;
 			}
-<<<<<<< HEAD
-			switch (bpc) {
-			case 0:
-				args.v3.sExtEncoder.ucBitPerColor = PANEL_BPC_UNDEFINE;
-				break;
-			case 6:
-				args.v3.sExtEncoder.ucBitPerColor = PANEL_6BIT_PER_COLOR;
-				break;
-			case 8:
-			default:
-				args.v3.sExtEncoder.ucBitPerColor = PANEL_8BIT_PER_COLOR;
-				break;
-			case 10:
-				args.v3.sExtEncoder.ucBitPerColor = PANEL_10BIT_PER_COLOR;
-				break;
-			case 12:
-				args.v3.sExtEncoder.ucBitPerColor = PANEL_12BIT_PER_COLOR;
-				break;
-			case 16:
-				args.v3.sExtEncoder.ucBitPerColor = PANEL_16BIT_PER_COLOR;
-				break;
-			}
-=======
 			args.v3.sExtEncoder.ucBitPerColor = radeon_atom_get_bpc(encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			DRM_ERROR("Unknown table version: %d, %d\n", frev, crev);
@@ -1798,11 +1519,7 @@ atombios_external_encoder_setup(struct drm_encoder *encoder,
 		DRM_ERROR("Unknown table version: %d, %d\n", frev, crev);
 		return;
 	}
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1837,11 +1554,7 @@ atombios_yuv_setup(struct drm_encoder *encoder, bool enable)
 		args.ucEnable = ATOM_ENABLE;
 	args.ucCRTC = radeon_crtc->crtc_id;
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WREG32(reg, temp);
 }
@@ -1905,15 +1618,6 @@ radeon_atom_encoder_dpms_avivo(struct drm_encoder *encoder, int mode)
 		if (radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_DDI) {
 			u32 reg = RREG32(RADEON_BIOS_3_SCRATCH);
 			WREG32(RADEON_BIOS_3_SCRATCH, reg & ~ATOM_S3_DFP2I_ACTIVE);
-<<<<<<< HEAD
-			atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-			WREG32(RADEON_BIOS_3_SCRATCH, reg);
-		} else
-			atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
-			args.ucAction = ATOM_LCD_BLON;
-			atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 			atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 			WREG32(RADEON_BIOS_3_SCRATCH, reg);
 		} else
@@ -1927,24 +1631,16 @@ radeon_atom_encoder_dpms_avivo(struct drm_encoder *encoder, int mode)
 				args.ucAction = ATOM_LCD_BLON;
 				atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case DRM_MODE_DPMS_STANDBY:
 	case DRM_MODE_DPMS_SUSPEND:
 	case DRM_MODE_DPMS_OFF:
 		args.ucAction = ATOM_DISABLE;
-<<<<<<< HEAD
-		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
-			args.ucAction = ATOM_LCD_BLOFF;
-			atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
 			args.ucAction = ATOM_LCD_BLOFF;
 			atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
@@ -1961,22 +1657,16 @@ radeon_atom_encoder_dpms_dig(struct drm_encoder *encoder, int mode)
 	struct drm_connector *connector = radeon_get_connector_for_encoder(encoder);
 	struct radeon_connector *radeon_connector = NULL;
 	struct radeon_connector_atom_dig *radeon_dig_connector = NULL;
-<<<<<<< HEAD
-=======
 	bool travis_quirk = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (connector) {
 		radeon_connector = to_radeon_connector(connector);
 		radeon_dig_connector = radeon_connector->con_priv;
-<<<<<<< HEAD
-=======
 		if ((radeon_connector_encoder_get_dp_bridge_encoder_id(connector) ==
 		     ENCODER_OBJECT_ID_TRAVIS) &&
 		    (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) &&
 		    !ASIC_IS_DCE5(rdev))
 			travis_quirk = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (mode) {
@@ -1997,34 +1687,13 @@ radeon_atom_encoder_dpms_dig(struct drm_encoder *encoder, int mode)
 					atombios_external_encoder_setup(encoder, ext_encoder,
 									EXTERNAL_ENCODER_ACTION_V3_ENCODER_SETUP);
 			}
-<<<<<<< HEAD
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE, 0, 0);
 		} else if (ASIC_IS_DCE4(rdev)) {
 			/* setup and enable the encoder */
 			atombios_dig_encoder_setup(encoder, ATOM_ENCODER_CMD_SETUP, 0);
-			/* enable the transmitter */
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE, 0, 0);
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE_OUTPUT, 0, 0);
-=======
-		} else if (ASIC_IS_DCE4(rdev)) {
-			/* setup and enable the encoder */
-			atombios_dig_encoder_setup(encoder, ATOM_ENCODER_CMD_SETUP, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* setup and enable the encoder and transmitter */
 			atombios_dig_encoder_setup(encoder, ATOM_ENABLE, 0);
 			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_SETUP, 0, 0);
-<<<<<<< HEAD
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE, 0, 0);
-			/* some dce3.x boards have a bug in their transmitter control table.
-			 * ACTION_ENABLE_OUTPUT can probably be dropped since ACTION_ENABLE
-			 * does the same thing and more.
-			 */
-			if ((rdev->family != CHIP_RV710) && (rdev->family != CHIP_RV730) &&
-			    (rdev->family != CHIP_RS780) && (rdev->family != CHIP_RS880))
-				atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE_OUTPUT, 0, 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(encoder)) && connector) {
 			if (connector->connector_type == DRM_MODE_CONNECTOR_eDP) {
@@ -2032,22 +1701,15 @@ radeon_atom_encoder_dpms_dig(struct drm_encoder *encoder, int mode)
 							     ATOM_TRANSMITTER_ACTION_POWER_ON);
 				radeon_dig_connector->edp_on = true;
 			}
-<<<<<<< HEAD
-=======
 		}
 		/* enable the transmitter */
 		atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE, 0, 0);
 		if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(encoder)) && connector) {
 			/* DP_SET_POWER_D0 is set in radeon_dp_link_train */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radeon_dp_link_train(encoder, connector);
 			if (ASIC_IS_DCE4(rdev))
 				atombios_dig_encoder_setup(encoder, ATOM_ENCODER_CMD_DP_VIDEO_ON, 0);
 		}
-<<<<<<< HEAD
-		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT))
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_LCD_BLON, 0, 0);
-=======
 		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
 			if (rdev->mode_info.bl_encoder)
 				atombios_set_backlight_level(radeon_encoder, dig->backlight_level);
@@ -2057,29 +1719,10 @@ radeon_atom_encoder_dpms_dig(struct drm_encoder *encoder, int mode)
 		}
 		if (ext_encoder)
 			atombios_external_encoder_setup(encoder, ext_encoder, ATOM_ENABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case DRM_MODE_DPMS_STANDBY:
 	case DRM_MODE_DPMS_SUSPEND:
 	case DRM_MODE_DPMS_OFF:
-<<<<<<< HEAD
-		if (ASIC_IS_DCE41(rdev) || ASIC_IS_DCE5(rdev)) {
-			/* disable the transmitter */
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_DISABLE, 0, 0);
-		} else if (ASIC_IS_DCE4(rdev)) {
-			/* disable the transmitter */
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_DISABLE_OUTPUT, 0, 0);
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_DISABLE, 0, 0);
-		} else {
-			/* disable the encoder and transmitter */
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_DISABLE_OUTPUT, 0, 0);
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_DISABLE, 0, 0);
-			atombios_dig_encoder_setup(encoder, ATOM_DISABLE, 0);
-		}
-		if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(encoder)) && connector) {
-			if (ASIC_IS_DCE4(rdev))
-				atombios_dig_encoder_setup(encoder, ATOM_ENCODER_CMD_DP_VIDEO_OFF, 0);
-=======
 
 		if (ASIC_IS_DCE4(rdev)) {
 			if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(encoder)) && connector)
@@ -2107,51 +1750,12 @@ radeon_atom_encoder_dpms_dig(struct drm_encoder *encoder, int mode)
 		if (ENCODER_MODE_IS_DP(atombios_get_encoder_mode(encoder)) && connector) {
 			if (travis_quirk)
 				radeon_dp_set_rx_power_state(connector, DP_SET_POWER_D3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (connector->connector_type == DRM_MODE_CONNECTOR_eDP) {
 				atombios_set_edp_panel_power(connector,
 							     ATOM_TRANSMITTER_ACTION_POWER_OFF);
 				radeon_dig_connector->edp_on = false;
 			}
 		}
-<<<<<<< HEAD
-		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT))
-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_LCD_BLOFF, 0, 0);
-		break;
-	}
-}
-
-static void
-radeon_atom_encoder_dpms_ext(struct drm_encoder *encoder,
-			     struct drm_encoder *ext_encoder,
-			     int mode)
-{
-	struct drm_device *dev = encoder->dev;
-	struct radeon_device *rdev = dev->dev_private;
-
-	switch (mode) {
-	case DRM_MODE_DPMS_ON:
-	default:
-		if (ASIC_IS_DCE41(rdev) || ASIC_IS_DCE61(rdev)) {
-			atombios_external_encoder_setup(encoder, ext_encoder,
-							EXTERNAL_ENCODER_ACTION_V3_ENABLE_OUTPUT);
-			atombios_external_encoder_setup(encoder, ext_encoder,
-							EXTERNAL_ENCODER_ACTION_V3_ENCODER_BLANKING_OFF);
-		} else
-			atombios_external_encoder_setup(encoder, ext_encoder, ATOM_ENABLE);
-		break;
-	case DRM_MODE_DPMS_STANDBY:
-	case DRM_MODE_DPMS_SUSPEND:
-	case DRM_MODE_DPMS_OFF:
-		if (ASIC_IS_DCE41(rdev) || ASIC_IS_DCE61(rdev)) {
-			atombios_external_encoder_setup(encoder, ext_encoder,
-							EXTERNAL_ENCODER_ACTION_V3_ENCODER_BLANKING);
-			atombios_external_encoder_setup(encoder, ext_encoder,
-							EXTERNAL_ENCODER_ACTION_V3_DISABLE_OUTPUT);
-		} else
-			atombios_external_encoder_setup(encoder, ext_encoder, ATOM_DISABLE);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -2162,24 +1766,17 @@ radeon_atom_encoder_dpms(struct drm_encoder *encoder, int mode)
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
-<<<<<<< HEAD
-	struct drm_encoder *ext_encoder = radeon_get_external_encoder(encoder);
-=======
 	int encoder_mode = atombios_get_encoder_mode(encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DRM_DEBUG_KMS("encoder dpms %d to mode %d, devices %08x, active_devices %08x\n",
 		  radeon_encoder->encoder_id, mode, radeon_encoder->devices,
 		  radeon_encoder->active_device);
-<<<<<<< HEAD
-=======
 
 	if ((radeon_audio != 0) &&
 	    ((encoder_mode == ATOM_ENCODER_MODE_HDMI) ||
 	     ENCODER_MODE_IS_DP(encoder_mode)))
 		radeon_audio_dpms(encoder, mode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (radeon_encoder->encoder_id) {
 	case ENCODER_OBJECT_ID_INTERNAL_TMDS1:
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_TMDS1:
@@ -2194,10 +1791,7 @@ radeon_atom_encoder_dpms(struct drm_encoder *encoder, int mode)
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-<<<<<<< HEAD
-=======
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
 		radeon_atom_encoder_dpms_dig(encoder, mode);
 		break;
@@ -2238,12 +1832,6 @@ radeon_atom_encoder_dpms(struct drm_encoder *encoder, int mode)
 		return;
 	}
 
-<<<<<<< HEAD
-	if (ext_encoder)
-		radeon_atom_encoder_dpms_ext(encoder, ext_encoder, mode);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_atombios_encoder_dpms_scratch_regs(encoder, (mode == DRM_MODE_DPMS_ON) ? true : false);
 
 }
@@ -2278,18 +1866,10 @@ atombios_set_encoder_crtc_source(struct drm_encoder *encoder)
 			if (ASIC_IS_AVIVO(rdev))
 				args.v1.ucCRTC = radeon_crtc->crtc_id;
 			else {
-<<<<<<< HEAD
-				if (radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_DAC1) {
-					args.v1.ucCRTC = radeon_crtc->crtc_id;
-				} else {
-					args.v1.ucCRTC = radeon_crtc->crtc_id << 2;
-				}
-=======
 				if (radeon_encoder->encoder_id == ENCODER_OBJECT_ID_INTERNAL_DAC1)
 					args.v1.ucCRTC = radeon_crtc->crtc_id;
 				else
 					args.v1.ucCRTC = radeon_crtc->crtc_id << 2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			switch (radeon_encoder->encoder_id) {
 			case ENCODER_OBJECT_ID_INTERNAL_TMDS1:
@@ -2348,10 +1928,7 @@ atombios_set_encoder_crtc_source(struct drm_encoder *encoder)
 			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
 			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-<<<<<<< HEAD
-=======
 			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
 				dig = radeon_encoder->enc_priv;
 				switch (dig->dig_encoder) {
@@ -2373,12 +1950,9 @@ atombios_set_encoder_crtc_source(struct drm_encoder *encoder)
 				case 5:
 					args.v2.ucEncoderID = ASIC_INT_DIG6_ENCODER_ID;
 					break;
-<<<<<<< HEAD
-=======
 				case 6:
 					args.v2.ucEncoderID = ASIC_INT_DIG7_ENCODER_ID;
 					break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				break;
 			case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DVO1:
@@ -2409,11 +1983,7 @@ atombios_set_encoder_crtc_source(struct drm_encoder *encoder)
 		return;
 	}
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* update scratch regs with new routing */
 	radeon_atombios_encoder_crtc_scratch_regs(encoder, radeon_crtc->crtc_id);
@@ -2429,15 +1999,9 @@ atombios_apply_encoder_quirks(struct drm_encoder *encoder,
 	struct radeon_crtc *radeon_crtc = to_radeon_crtc(encoder->crtc);
 
 	/* Funky macbooks */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x71C5) &&
-	    (dev->pdev->subsystem_vendor == 0x106b) &&
-	    (dev->pdev->subsystem_device == 0x0080)) {
-=======
 	if ((rdev->pdev->device == 0x71C5) &&
 	    (rdev->pdev->subsystem_vendor == 0x106b) &&
 	    (rdev->pdev->subsystem_device == 0x0080)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (radeon_encoder->devices & ATOM_DEVICE_LCD1_SUPPORT) {
 			uint32_t lvtma_bit_depth_control = RREG32(AVIVO_LVTMA_BIT_DEPTH_CONTROL);
 
@@ -2451,9 +2015,6 @@ atombios_apply_encoder_quirks(struct drm_encoder *encoder,
 	/* set scaler clears this on some chips */
 	if (ASIC_IS_AVIVO(rdev) &&
 	    (!(radeon_encoder->active_device & (ATOM_DEVICE_TV_SUPPORT)))) {
-<<<<<<< HEAD
-		if (ASIC_IS_DCE4(rdev)) {
-=======
 		if (ASIC_IS_DCE8(rdev)) {
 			if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 				WREG32(CIK_LB_DATA_FORMAT + radeon_crtc->crtc_offset,
@@ -2461,7 +2022,6 @@ atombios_apply_encoder_quirks(struct drm_encoder *encoder,
 			else
 				WREG32(CIK_LB_DATA_FORMAT + radeon_crtc->crtc_offset, 0);
 		} else if (ASIC_IS_DCE4(rdev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (mode->flags & DRM_MODE_FLAG_INTERLACE)
 				WREG32(EVERGREEN_DATA_FORMAT + radeon_crtc->crtc_offset,
 				       EVERGREEN_INTERLEAVE_EN);
@@ -2477,9 +2037,6 @@ atombios_apply_encoder_quirks(struct drm_encoder *encoder,
 	}
 }
 
-<<<<<<< HEAD
-static int radeon_atom_pick_dig_encoder(struct drm_encoder *encoder)
-=======
 void radeon_atom_release_dig_encoder(struct radeon_device *rdev, int enc_idx)
 {
 	if (enc_idx < 0)
@@ -2488,7 +2045,6 @@ void radeon_atom_release_dig_encoder(struct radeon_device *rdev, int enc_idx)
 }
 
 int radeon_atom_pick_dig_encoder(struct drm_encoder *encoder, int fe_idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
@@ -2497,40 +2053,17 @@ int radeon_atom_pick_dig_encoder(struct drm_encoder *encoder, int fe_idx)
 	struct drm_encoder *test_encoder;
 	struct radeon_encoder_atom_dig *dig = radeon_encoder->enc_priv;
 	uint32_t dig_enc_in_use = 0;
-<<<<<<< HEAD
-
-=======
 	int enc_idx = -1;
 
 	if (fe_idx >= 0) {
 		enc_idx = fe_idx;
 		goto assigned;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ASIC_IS_DCE6(rdev)) {
 		/* DCE6 */
 		switch (radeon_encoder->encoder_id) {
 		case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 			if (dig->linkb)
-<<<<<<< HEAD
-				return 1;
-			else
-				return 0;
-			break;
-		case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
-			if (dig->linkb)
-				return 3;
-			else
-				return 2;
-			break;
-		case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-			if (dig->linkb)
-				return 5;
-			else
-				return 4;
-			break;
-		}
-=======
 				enc_idx = 1;
 			else
 				enc_idx = 0;
@@ -2552,57 +2085,22 @@ int radeon_atom_pick_dig_encoder(struct drm_encoder *encoder, int fe_idx)
 			break;
 		}
 		goto assigned;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (ASIC_IS_DCE4(rdev)) {
 		/* DCE4/5 */
 		if (ASIC_IS_DCE41(rdev) && !ASIC_IS_DCE61(rdev)) {
 			/* ontario follows DCE4 */
 			if (rdev->family == CHIP_PALM) {
 				if (dig->linkb)
-<<<<<<< HEAD
-					return 1;
-				else
-					return 0;
-			} else
-				/* llano follows DCE3.2 */
-				return radeon_crtc->crtc_id;
-=======
 					enc_idx = 1;
 				else
 					enc_idx = 0;
 			} else
 				/* llano follows DCE3.2 */
 				enc_idx = radeon_crtc->crtc_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			switch (radeon_encoder->encoder_id) {
 			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 				if (dig->linkb)
-<<<<<<< HEAD
-					return 1;
-				else
-					return 0;
-				break;
-			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
-				if (dig->linkb)
-					return 3;
-				else
-					return 2;
-				break;
-			case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-				if (dig->linkb)
-					return 5;
-				else
-					return 4;
-				break;
-			}
-		}
-	}
-
-	/* on DCE32 and encoder can driver any block so just crtc id */
-	if (ASIC_IS_DCE32(rdev)) {
-		return radeon_crtc->crtc_id;
-=======
 					enc_idx = 1;
 				else
 					enc_idx = 0;
@@ -2637,7 +2135,6 @@ int radeon_atom_pick_dig_encoder(struct drm_encoder *encoder, int fe_idx)
 			enc_idx = radeon_crtc->crtc_id;
 
 		goto assigned;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* on DCE3 - LVTMA can only be driven by DIGB */
@@ -2665,8 +2162,6 @@ int radeon_atom_pick_dig_encoder(struct drm_encoder *encoder, int fe_idx)
 	if (!(dig_enc_in_use & 1))
 		return 0;
 	return 1;
-<<<<<<< HEAD
-=======
 
 assigned:
 	if (enc_idx == -1) {
@@ -2678,7 +2173,6 @@ assigned:
 
 	rdev->mode_info.active_encoders |= (1 << enc_idx);
 	return enc_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This only needs to be called once at startup */
@@ -2696,10 +2190,7 @@ radeon_atom_encoder_init(struct radeon_device *rdev)
 		case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 		case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
 		case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-<<<<<<< HEAD
-=======
 		case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
 			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_INIT, 0, 0);
 			break;
@@ -2721,11 +2212,8 @@ radeon_atom_encoder_mode_set(struct drm_encoder *encoder,
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
-<<<<<<< HEAD
-=======
 	struct drm_connector *connector = radeon_get_connector_for_encoder(encoder);
 	int encoder_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	radeon_encoder->pixel_clock = adjusted_mode->clock;
 
@@ -2749,10 +2237,7 @@ radeon_atom_encoder_mode_set(struct drm_encoder *encoder,
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-<<<<<<< HEAD
-=======
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
 		/* handled in dpms */
 		break;
@@ -2777,18 +2262,11 @@ radeon_atom_encoder_mode_set(struct drm_encoder *encoder,
 
 	atombios_apply_encoder_quirks(encoder, adjusted_mode);
 
-<<<<<<< HEAD
-	if (atombios_get_encoder_mode(encoder) == ATOM_ENCODER_MODE_HDMI) {
-		r600_hdmi_enable(encoder);
-		r600_hdmi_setmode(encoder, adjusted_mode);
-	}
-=======
 	encoder_mode = atombios_get_encoder_mode(encoder);
 	if (connector && (radeon_audio != 0) &&
 	    ((encoder_mode == ATOM_ENCODER_MODE_HDMI) ||
 	     ENCODER_MODE_IS_DP(encoder_mode)))
 		radeon_audio_mode_set(encoder, adjusted_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool
@@ -2833,11 +2311,7 @@ atombios_dac_load_detect(struct drm_encoder *encoder, struct drm_connector *conn
 				args.sDacload.ucMisc = DAC_LOAD_MISC_YPrPb;
 		}
 
-<<<<<<< HEAD
-		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return true;
 	} else
@@ -2946,10 +2420,7 @@ radeon_atom_ext_encoder_setup_ddc(struct drm_encoder *encoder)
 
 static void radeon_atom_encoder_prepare(struct drm_encoder *encoder)
 {
-<<<<<<< HEAD
-=======
 	struct radeon_device *rdev = encoder->dev->dev_private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
 	struct drm_connector *connector = radeon_get_connector_for_encoder(encoder);
 
@@ -2958,10 +2429,6 @@ static void radeon_atom_encoder_prepare(struct drm_encoder *encoder)
 	    (radeon_encoder_get_dp_bridge_encoder_id(encoder) !=
 	     ENCODER_OBJECT_ID_NONE)) {
 		struct radeon_encoder_atom_dig *dig = radeon_encoder->enc_priv;
-<<<<<<< HEAD
-		if (dig)
-			dig->dig_encoder = radeon_atom_pick_dig_encoder(encoder);
-=======
 		if (dig) {
 			if (dig->dig_encoder >= 0)
 				radeon_atom_release_dig_encoder(rdev, dig->dig_encoder);
@@ -2974,7 +2441,6 @@ static void radeon_atom_encoder_prepare(struct drm_encoder *encoder)
 					dig->afmt = rdev->mode_info.afmt[0];
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	radeon_atom_output_lock(encoder, true);
@@ -2994,8 +2460,6 @@ static void radeon_atom_encoder_prepare(struct drm_encoder *encoder)
 
 	/* this is needed for the pll/ss setup to work correctly in some cases */
 	atombios_set_encoder_crtc_source(encoder);
-<<<<<<< HEAD
-=======
 	/* set up the FMT blocks */
 	if (ASIC_IS_DCE8(rdev))
 		dce8_program_fmt(encoder);
@@ -3005,7 +2469,6 @@ static void radeon_atom_encoder_prepare(struct drm_encoder *encoder)
 		dce3_program_fmt(encoder);
 	else if (ASIC_IS_AVIVO(rdev))
 		avivo_program_fmt(encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void radeon_atom_encoder_commit(struct drm_encoder *encoder)
@@ -3050,10 +2513,7 @@ static void radeon_atom_encoder_disable(struct drm_encoder *encoder)
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-<<<<<<< HEAD
-=======
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
 		/* handled in dpms */
 		break;
@@ -3074,14 +2534,6 @@ static void radeon_atom_encoder_disable(struct drm_encoder *encoder)
 
 disable_done:
 	if (radeon_encoder_is_digital(encoder)) {
-<<<<<<< HEAD
-		if (atombios_get_encoder_mode(encoder) == ATOM_ENCODER_MODE_HDMI)
-			r600_hdmi_disable(encoder);
-		dig = radeon_encoder->enc_priv;
-		dig->dig_encoder = -1;
-	}
-	radeon_encoder->active_device = 0;
-=======
 		if (atombios_get_encoder_mode(encoder) == ATOM_ENCODER_MODE_HDMI) {
 			if (rdev->asic->display.hdmi_enable)
 				radeon_hdmi_enable(rdev, encoder, false);
@@ -3094,7 +2546,6 @@ disable_done:
 		}
 	} else
 		radeon_encoder->active_device = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* these are handled by the primary encoders */
@@ -3127,21 +2578,8 @@ radeon_atom_ext_dpms(struct drm_encoder *encoder, int mode)
 
 }
 
-<<<<<<< HEAD
-static bool radeon_atom_ext_mode_fixup(struct drm_encoder *encoder,
-				       struct drm_display_mode *mode,
-				       struct drm_display_mode *adjusted_mode)
-{
-	return true;
-}
-
 static const struct drm_encoder_helper_funcs radeon_atom_ext_helper_funcs = {
 	.dpms = radeon_atom_ext_dpms,
-	.mode_fixup = radeon_atom_ext_mode_fixup,
-=======
-static const struct drm_encoder_helper_funcs radeon_atom_ext_helper_funcs = {
-	.dpms = radeon_atom_ext_dpms,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare = radeon_atom_ext_prepare,
 	.mode_set = radeon_atom_ext_mode_set,
 	.commit = radeon_atom_ext_commit,
@@ -3171,11 +2609,8 @@ static const struct drm_encoder_helper_funcs radeon_atom_dac_helper_funcs = {
 void radeon_enc_destroy(struct drm_encoder *encoder)
 {
 	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
-<<<<<<< HEAD
-=======
 	if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT))
 		radeon_atom_backlight_exit(radeon_encoder);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(radeon_encoder->enc_priv);
 	drm_encoder_cleanup(encoder);
 	kfree(radeon_encoder);
@@ -3185,11 +2620,7 @@ static const struct drm_encoder_funcs radeon_atom_enc_funcs = {
 	.destroy = radeon_enc_destroy,
 };
 
-<<<<<<< HEAD
-struct radeon_encoder_atom_dac *
-=======
 static struct radeon_encoder_atom_dac *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 radeon_atombios_set_dac_info(struct radeon_encoder *radeon_encoder)
 {
 	struct drm_device *dev = radeon_encoder->base.dev;
@@ -3203,11 +2634,7 @@ radeon_atombios_set_dac_info(struct radeon_encoder *radeon_encoder)
 	return dac;
 }
 
-<<<<<<< HEAD
-struct radeon_encoder_atom_dig *
-=======
 static struct radeon_encoder_atom_dig *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 radeon_atombios_set_dig_info(struct radeon_encoder *radeon_encoder)
 {
 	int encoder_enum = (radeon_encoder->encoder_enum & ENUM_ID_MASK) >> ENUM_ID_SHIFT;
@@ -3287,42 +2714,27 @@ radeon_add_atom_encoder(struct drm_device *dev,
 	case ENCODER_OBJECT_ID_INTERNAL_LVTM1:
 		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
 			radeon_encoder->rmx_type = RMX_FULL;
-<<<<<<< HEAD
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_LVDS);
-			radeon_encoder->enc_priv = radeon_atombios_get_lvds_info(radeon_encoder);
-		} else {
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_TMDS);
-=======
 			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs,
 					 DRM_MODE_ENCODER_LVDS, NULL);
 			radeon_encoder->enc_priv = radeon_atombios_get_lvds_info(radeon_encoder);
 		} else {
 			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs,
 					 DRM_MODE_ENCODER_TMDS, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radeon_encoder->enc_priv = radeon_atombios_set_dig_info(radeon_encoder);
 		}
 		drm_encoder_helper_add(encoder, &radeon_atom_dig_helper_funcs);
 		break;
 	case ENCODER_OBJECT_ID_INTERNAL_DAC1:
-<<<<<<< HEAD
-		drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_DAC);
-=======
 		drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs,
 				 DRM_MODE_ENCODER_DAC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_encoder->enc_priv = radeon_atombios_set_dac_info(radeon_encoder);
 		drm_encoder_helper_add(encoder, &radeon_atom_dac_helper_funcs);
 		break;
 	case ENCODER_OBJECT_ID_INTERNAL_DAC2:
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DAC1:
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DAC2:
-<<<<<<< HEAD
-		drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_TVDAC);
-=======
 		drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs,
 				 DRM_MODE_ENCODER_TVDAC, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_encoder->enc_priv = radeon_atombios_set_dac_info(radeon_encoder);
 		drm_encoder_helper_add(encoder, &radeon_atom_dac_helper_funcs);
 		break;
@@ -3333,17 +2745,6 @@ radeon_add_atom_encoder(struct drm_device *dev,
 	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
-<<<<<<< HEAD
-		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
-			radeon_encoder->rmx_type = RMX_FULL;
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_LVDS);
-			radeon_encoder->enc_priv = radeon_atombios_get_lvds_info(radeon_encoder);
-		} else if (radeon_encoder->devices & (ATOM_DEVICE_CRT_SUPPORT)) {
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_DAC);
-			radeon_encoder->enc_priv = radeon_atombios_set_dig_info(radeon_encoder);
-		} else {
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_TMDS);
-=======
 	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
 		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)) {
 			radeon_encoder->rmx_type = RMX_FULL;
@@ -3357,7 +2758,6 @@ radeon_add_atom_encoder(struct drm_device *dev,
 		} else {
 			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs,
 					 DRM_MODE_ENCODER_TMDS, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radeon_encoder->enc_priv = radeon_atombios_set_dig_info(radeon_encoder);
 		}
 		drm_encoder_helper_add(encoder, &radeon_atom_dig_helper_funcs);
@@ -3374,13 +2774,6 @@ radeon_add_atom_encoder(struct drm_device *dev,
 		/* these are handled by the primary encoders */
 		radeon_encoder->is_ext_encoder = true;
 		if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT))
-<<<<<<< HEAD
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_LVDS);
-		else if (radeon_encoder->devices & (ATOM_DEVICE_CRT_SUPPORT))
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_DAC);
-		else
-			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs, DRM_MODE_ENCODER_TMDS);
-=======
 			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs,
 					 DRM_MODE_ENCODER_LVDS, NULL);
 		else if (radeon_encoder->devices & (ATOM_DEVICE_CRT_SUPPORT))
@@ -3389,7 +2782,6 @@ radeon_add_atom_encoder(struct drm_device *dev,
 		else
 			drm_encoder_init(dev, encoder, &radeon_atom_enc_funcs,
 					 DRM_MODE_ENCODER_TMDS, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drm_encoder_helper_add(encoder, &radeon_atom_ext_helper_funcs);
 		break;
 	}

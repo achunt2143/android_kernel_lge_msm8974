@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for Waltop devices not fully compliant with HID standard
  *
@@ -9,13 +6,6 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -49,14 +39,6 @@
  * 02 16 02     ink
  */
 
-<<<<<<< HEAD
-/*
- * See Slim Tablet 5.8 inch description, device and HID report descriptors at
- * http://sf.net/apps/mediawiki/digimend/?title=Waltop_Slim_Tablet_5.8%22
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Size of the original report descriptor of Slim Tablet 5.8 inch */
 #define SLIM_TABLET_5_8_INCH_RDESC_ORIG_SIZE	222
 
@@ -108,14 +90,6 @@ static __u8 slim_tablet_5_8_inch_rdesc_fixed[] = {
 	0xC0                /*  End Collection                      */
 };
 
-<<<<<<< HEAD
-/*
- * See Slim Tablet 12.1 inch description, device and HID report descriptors at
- * http://sf.net/apps/mediawiki/digimend/?title=Waltop_Slim_Tablet_12.1%22
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Size of the original report descriptor of Slim Tablet 12.1 inch */
 #define SLIM_TABLET_12_1_INCH_RDESC_ORIG_SIZE	269
 
@@ -167,14 +141,6 @@ static __u8 slim_tablet_12_1_inch_rdesc_fixed[] = {
 	0xC0                /*  End Collection                      */
 };
 
-<<<<<<< HEAD
-/*
- * See Q Pad description, device and HID report descriptors at
- * http://sf.net/apps/mediawiki/digimend/?title=Waltop_Q_Pad
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Size of the original report descriptor of Q Pad */
 #define Q_PAD_RDESC_ORIG_SIZE	241
 
@@ -226,14 +192,6 @@ static __u8 q_pad_rdesc_fixed[] = {
 	0xC0                /*  End Collection                      */
 };
 
-<<<<<<< HEAD
-/*
- * See description, device and HID report descriptors of tablet with PID 0038 at
- * http://sf.net/apps/mediawiki/digimend/?title=Waltop_PID_0038
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Size of the original report descriptor of tablet with PID 0038 */
 #define PID_0038_RDESC_ORIG_SIZE	241
 
@@ -287,14 +245,6 @@ static __u8 pid_0038_rdesc_fixed[] = {
 	0xC0                /*  End Collection                      */
 };
 
-<<<<<<< HEAD
-/*
- * See Media Tablet 10.6 inch description, device and HID report descriptors at
- * http://sf.net/apps/mediawiki/digimend/?title=Waltop_Media_Tablet_10.6%22
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Size of the original report descriptor of Media Tablet 10.6 inch */
 #define MEDIA_TABLET_10_6_INCH_RDESC_ORIG_SIZE	300
 
@@ -408,14 +358,6 @@ static __u8 media_tablet_10_6_inch_rdesc_fixed[] = {
 	0xC0                /*  End Collection                      */
 };
 
-<<<<<<< HEAD
-/*
- * See Media Tablet 14.1 inch description, device and HID report descriptors at
- * http://sf.net/apps/mediawiki/digimend/?title=Waltop_Media_Tablet_14.1%22
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Size of the original report descriptor of Media Tablet 14.1 inch */
 #define MEDIA_TABLET_14_1_INCH_RDESC_ORIG_SIZE	309
 
@@ -527,49 +469,6 @@ static __u8 media_tablet_14_1_inch_rdesc_fixed[] = {
 	0xC0                /*  End Collection                      */
 };
 
-<<<<<<< HEAD
-struct waltop_state {
-	u8 pressure0;
-	u8 pressure1;
-};
-
-static int waltop_probe(struct hid_device *hdev,
-			const struct hid_device_id *id)
-{
-	int ret;
-	struct waltop_state *s;
-
-	s = kzalloc(sizeof(*s), GFP_KERNEL);
-	if (s == NULL) {
-		hid_err(hdev, "can't allocate device state\n");
-		ret = -ENOMEM;
-		goto err;
-	}
-
-	s->pressure0 = 0;
-	s->pressure1 = 0;
-
-	hid_set_drvdata(hdev, s);
-
-	ret = hid_parse(hdev);
-	if (ret) {
-		hid_err(hdev, "parse failed\n");
-		goto err;
-	}
-
-	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT);
-	if (ret) {
-		hid_err(hdev, "hw start failed\n");
-		goto err;
-	}
-
-	return 0;
-err:
-	kfree(s);
-	return ret;
-}
-
-=======
 /* Size of the original report descriptor of Sirius Battery Free Tablet */
 #define SIRIUS_BATTERY_FREE_TABLET_RDESC_ORIG_SIZE	335
 
@@ -700,7 +599,6 @@ static __u8 sirius_battery_free_tablet_rdesc_fixed[] = {
 	0xC0                /*  End Collection                      */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __u8 *waltop_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
@@ -741,15 +639,12 @@ static __u8 *waltop_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 			*rsize = sizeof(media_tablet_14_1_inch_rdesc_fixed);
 		}
 		break;
-<<<<<<< HEAD
-=======
 	case USB_DEVICE_ID_WALTOP_SIRIUS_BATTERY_FREE_TABLET:
 		if (*rsize == SIRIUS_BATTERY_FREE_TABLET_RDESC_ORIG_SIZE) {
 			rdesc = sirius_battery_free_tablet_rdesc_fixed;
 			*rsize = sizeof(sirius_battery_free_tablet_rdesc_fixed);
 		}
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rdesc;
 }
@@ -757,51 +652,15 @@ static __u8 *waltop_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 static int waltop_raw_event(struct hid_device *hdev, struct hid_report *report,
 		     u8 *data, int size)
 {
-<<<<<<< HEAD
-	/* If this is a pen input report of a tablet with PID 0038 */
-	if (hdev->product == USB_DEVICE_ID_WALTOP_PID_0038 &&
-	    report->type == HID_INPUT_REPORT &&
-	    report->id == 16 &&
-	    size == 8) {
-		struct waltop_state *s = hid_get_drvdata(hdev);
-
-		/*
-		 * Ignore maximum pressure reported when a barrel button is
-		 * pressed.
-=======
 	/* If this is a pen input report */
 	if (report->type == HID_INPUT_REPORT && report->id == 16 && size >= 8) {
 		/*
 		 * Ignore reported pressure when a barrel button is pressed,
 		 * because it is rarely correct.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 
 		/* If a barrel button is pressed */
 		if ((data[1] & 0xF) > 1) {
-<<<<<<< HEAD
-			/* Use the last known pressure */
-			data[6] = s->pressure0;
-			data[7] = s->pressure1;
-		} else {
-			/* Remember reported pressure */
-			s->pressure0 = data[6];
-			s->pressure1 = data[7];
-		}
-	}
-
-	return 0;
-}
-
-static void waltop_remove(struct hid_device *hdev)
-{
-	struct waltop_state *s = hid_get_drvdata(hdev);
-
-	hid_hw_stop(hdev);
-	kfree(s);
-}
-
-=======
 			/* Report zero pressure */
 			data[6] = 0;
 			data[7] = 0;
@@ -856,7 +715,6 @@ static void waltop_remove(struct hid_device *hdev)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct hid_device_id waltop_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP,
 				USB_DEVICE_ID_WALTOP_SLIM_TABLET_5_8_INCH) },
@@ -870,11 +728,8 @@ static const struct hid_device_id waltop_devices[] = {
 				USB_DEVICE_ID_WALTOP_MEDIA_TABLET_10_6_INCH) },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP,
 				USB_DEVICE_ID_WALTOP_MEDIA_TABLET_14_1_INCH) },
-<<<<<<< HEAD
-=======
 	{ HID_USB_DEVICE(USB_VENDOR_ID_WALTOP,
 			 USB_DEVICE_ID_WALTOP_SIRIUS_BATTERY_FREE_TABLET) },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, waltop_devices);
@@ -882,30 +737,9 @@ MODULE_DEVICE_TABLE(hid, waltop_devices);
 static struct hid_driver waltop_driver = {
 	.name = "waltop",
 	.id_table = waltop_devices,
-<<<<<<< HEAD
-	.probe = waltop_probe,
-	.report_fixup = waltop_report_fixup,
-	.raw_event = waltop_raw_event,
-	.remove = waltop_remove,
-};
-
-static int __init waltop_init(void)
-{
-	return hid_register_driver(&waltop_driver);
-}
-
-static void __exit waltop_exit(void)
-{
-	hid_unregister_driver(&waltop_driver);
-}
-
-module_init(waltop_init);
-module_exit(waltop_exit);
-=======
 	.report_fixup = waltop_report_fixup,
 	.raw_event = waltop_raw_event,
 };
 module_hid_driver(waltop_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

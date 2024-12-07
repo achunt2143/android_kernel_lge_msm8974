@@ -1,30 +1,12 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2010 Freescale Semiconductor, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2010 Freescale Semiconductor, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/suspend.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include "pm.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mxs_suspend_enter(suspend_state_t state)
 {
@@ -39,25 +21,12 @@ static int mxs_suspend_enter(suspend_state_t state)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct platform_suspend_ops mxs_suspend_ops = {
-=======
 static const struct platform_suspend_ops mxs_suspend_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enter = mxs_suspend_enter,
 	.valid = suspend_valid_only_mem,
 };
 
-<<<<<<< HEAD
-static int __init mxs_pm_init(void)
-{
-	suspend_set_ops(&mxs_suspend_ops);
-	return 0;
-}
-device_initcall(mxs_pm_init);
-=======
 void __init mxs_pm_init(void)
 {
 	suspend_set_ops(&mxs_suspend_ops);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

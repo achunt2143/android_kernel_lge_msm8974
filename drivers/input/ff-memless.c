@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for memoryless devices
  *
@@ -9,25 +6,6 @@
  *  Copyright (c) 2006 Dmitry Torokhov <dtor@mail.ru>
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* #define DEBUG */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -38,12 +16,7 @@
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/jiffies.h>
-<<<<<<< HEAD
-
-#include "fixp-arith.h"
-=======
 #include <linux/fixp-arith.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Anssi Hannula <anssi.hannula@gmail.com>");
@@ -84,14 +57,6 @@ static const struct ff_envelope *get_envelope(const struct ff_effect *effect)
 	static const struct ff_envelope empty_envelope;
 
 	switch (effect->type) {
-<<<<<<< HEAD
-		case FF_PERIODIC:
-			return &effect->u.periodic.envelope;
-		case FF_CONSTANT:
-			return &effect->u.constant.envelope;
-		default:
-			return &empty_envelope;
-=======
 	case FF_PERIODIC:
 		return &effect->u.periodic.envelope;
 
@@ -100,7 +65,6 @@ static const struct ff_envelope *get_envelope(const struct ff_effect *effect)
 
 	default:
 		return &empty_envelope;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -199,11 +163,7 @@ static int apply_envelope(struct ml_effect_state *state, int value,
 			 value, envelope->attack_level);
 		time_from_level = jiffies_to_msecs(now - state->play_at);
 		time_of_envelope = envelope->attack_length;
-<<<<<<< HEAD
-		envelope_level = min_t(__s16, envelope->attack_level, 0x7fff);
-=======
 		envelope_level = min_t(u16, envelope->attack_level, 0x7fff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if (envelope->fade_length && effect->replay.length &&
 		   time_after(now,
@@ -211,11 +171,7 @@ static int apply_envelope(struct ml_effect_state *state, int value,
 		   time_before(now, state->stop_at)) {
 		time_from_level = jiffies_to_msecs(state->stop_at - now);
 		time_of_envelope = envelope->fade_length;
-<<<<<<< HEAD
-		envelope_level = min_t(__s16, envelope->fade_level, 0x7fff);
-=======
 		envelope_level = min_t(u16, envelope->fade_level, 0x7fff);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		return value;
 
@@ -266,8 +222,6 @@ static u16 ml_calculate_direction(u16 direction, u16 force,
 		(force + new_force)) << 1;
 }
 
-<<<<<<< HEAD
-=======
 #define FRAC_N 8
 static inline s16 fixp_new16(s16 a)
 {
@@ -280,7 +234,6 @@ static inline s16 fixp_mult(s16 a, s16 b)
 	return ((s32)(a * b)) >> FRAC_N;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Combine two effects and apply gain.
  */
@@ -291,11 +244,7 @@ static void ml_combine_effects(struct ff_effect *effect,
 	struct ff_effect *new = state->effect;
 	unsigned int strong, weak, i;
 	int x, y;
-<<<<<<< HEAD
-	fixp_t level;
-=======
 	s16 level;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (new->type) {
 	case FF_CONSTANT:
@@ -303,13 +252,8 @@ static void ml_combine_effects(struct ff_effect *effect,
 		level = fixp_new16(apply_envelope(state,
 					new->u.constant.level,
 					&new->u.constant.envelope));
-<<<<<<< HEAD
-		x = fixp_mult(fixp_sin(i), level) * gain / 0xffff;
-		y = fixp_mult(-fixp_cos(i), level) * gain / 0xffff;
-=======
 		x = fixp_mult(fixp_sin16(i), level) * gain / 0xffff;
 		y = fixp_mult(-fixp_cos16(i), level) * gain / 0xffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * here we abuse ff_ramp to hold x and y of constant force
 		 * If in future any driver wants something else than x and y
@@ -453,17 +397,10 @@ static void ml_play_effects(struct ml_device *ml)
 	ml_schedule_timer(ml);
 }
 
-<<<<<<< HEAD
-static void ml_effect_timer(unsigned long timer_data)
-{
-	struct input_dev *dev = (struct input_dev *)timer_data;
-	struct ml_device *ml = dev->ff->private;
-=======
 static void ml_effect_timer(struct timer_list *t)
 {
 	struct ml_device *ml = from_timer(ml, t, timer);
 	struct input_dev *dev = ml->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	pr_debug("timer: updating effects\n");
@@ -549,8 +486,6 @@ static void ml_ff_destroy(struct ff_device *ff)
 {
 	struct ml_device *ml = ff->private;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Even though we stop all playing effects when tearing down
 	 * an input device (via input_device_flush() that calls into
@@ -560,7 +495,6 @@ static void ml_ff_destroy(struct ff_device *ff)
 	 */
 	del_timer_sync(&ml->timer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ml->private);
 }
 
@@ -586,11 +520,7 @@ int input_ff_create_memless(struct input_dev *dev, void *data,
 	ml->private = data;
 	ml->play_effect = play_effect;
 	ml->gain = 0xffff;
-<<<<<<< HEAD
-	setup_timer(&ml->timer, ml_effect_timer, (unsigned long)dev);
-=======
 	timer_setup(&ml->timer, ml_effect_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(FF_GAIN, dev->ffbit);
 

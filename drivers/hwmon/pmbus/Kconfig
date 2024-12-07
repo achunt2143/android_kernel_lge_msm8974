@@ -1,19 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # PMBus chip drivers configuration
 #
 
 menuconfig PMBUS
 	tristate "PMBus support"
-<<<<<<< HEAD
-	depends on I2C && EXPERIMENTAL
-	default n
-=======
 	depends on I2C
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say yes here if you want to enable PMBus support.
 
@@ -27,29 +19,14 @@ config SENSORS_PMBUS
 	default y
 	help
 	  If you say yes here you get hardware monitoring support for generic
-<<<<<<< HEAD
-	  PMBus devices, including but not limited to ADP4000, BMR453, BMR454,
-	  MDT040, NCP4200, NCP4208, PDT003, PDT006, PDT012, UDT020, TPS40400,
-	  and TPS40422.
-=======
 	  PMBus devices, including but not limited to ADP4000, BMR310, BMR453,
 	  BMR454, BMR456, BMR457, BMR458, BMR480, BMR490, BMR491, BMR492,
 	  MAX20796, MDT040, NCP4200, NCP4208, PDT003, PDT006, PDT012,
 	  TPS40400, TPS544B20, TPS544B25, TPS544C20, TPS544C25, and UDT020.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This driver can also be built as a module. If so, the module will
 	  be called pmbus.
 
-<<<<<<< HEAD
-config SENSORS_ADM1275
-	tristate "Analog Devices ADM1275 and compatibles"
-	default n
-	help
-	  If you say yes here you get hardware monitoring support for Analog
-	  Devices ADM1075, ADM1275, and ADM1276 Hot-Swap Controller and Digital
-	  Power Monitors.
-=======
 config SENSORS_ACBEL_FSG032
 	tristate "ACBEL FSG032 Power Supply"
 	help
@@ -76,19 +53,10 @@ config SENSORS_ADM1275
 	  If you say yes here you get hardware monitoring support for Analog
 	  Devices ADM1075, ADM1272, ADM1275, ADM1276, ADM1278, ADM1293,
 	  and ADM1294 Hot-Swap Controller and Digital Power Monitors.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This driver can also be built as a module. If so, the module will
 	  be called adm1275.
 
-<<<<<<< HEAD
-config SENSORS_LM25066
-	tristate "National Semiconductor LM25066 and compatibles"
-	default n
-	help
-	  If you say yes here you get hardware monitoring support for National
-	  Semiconductor LM25066, LM5064, and LM5066.
-=======
 config SENSORS_BEL_PFE
 	tristate "Bel PFE Compatible Power Supplies"
 	help
@@ -211,19 +179,10 @@ config SENSORS_LM25066
 	help
 	  If you say yes here you get hardware monitoring support for National
 	  Semiconductor LM25056, LM25066, LM5064, and LM5066.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This driver can also be built as a module. If so, the module will
 	  be called lm25066.
 
-<<<<<<< HEAD
-config SENSORS_LTC2978
-	tristate "Linear Technologies LTC2978 and LTC3880"
-	default n
-	help
-	  If you say yes here you get hardware monitoring support for Linear
-	  Technology LTC2978 and LTC3880.
-=======
 config SENSORS_LM25066_REGULATOR
 	bool "Regulator support for LM25066 and compatibles"
 	depends on SENSORS_LM25066 && REGULATOR
@@ -246,16 +205,10 @@ config SENSORS_LTC2978
 	  If you say yes here you get hardware monitoring support for Linear
 	  Technology LTC2972, LTC2974, LTC2975, LTC2977, LTC2978, LTC2979,
 	  LTC2980, and LTM2987.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This driver can also be built as a module. If so, the module will
 	  be called ltc2978.
 
-<<<<<<< HEAD
-config SENSORS_MAX16064
-	tristate "Maxim MAX16064"
-	default n
-=======
 config SENSORS_LTC2978_REGULATOR
 	bool "Regulator support for LTC2978 and compatibles"
 	depends on SENSORS_LTC2978 && REGULATOR
@@ -295,7 +248,6 @@ config SENSORS_MAX15301
 
 config SENSORS_MAX16064
 	tristate "Maxim MAX16064"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say yes here you get hardware monitoring support for Maxim
 	  MAX16064.
@@ -303,14 +255,6 @@ config SENSORS_MAX16064
 	  This driver can also be built as a module. If so, the module will
 	  be called max16064.
 
-<<<<<<< HEAD
-config SENSORS_MAX34440
-	tristate "Maxim MAX34440 and compatibles"
-	default n
-	help
-	  If you say yes here you get hardware monitoring support for Maxim
-	  MAX34440, MAX34441, and MAX34446.
-=======
 config SENSORS_MAX16601
 	tristate "Maxim MAX16508, MAX16600, MAX16601, and MAX16602"
 	help
@@ -352,17 +296,12 @@ config SENSORS_MAX34440
 	help
 	  If you say yes here you get hardware monitoring support for Maxim
 	  MAX34440, MAX34441, MAX34446, MAX34451, MAX34460, and MAX34461.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This driver can also be built as a module. If so, the module will
 	  be called max34440.
 
 config SENSORS_MAX8688
 	tristate "Maxim MAX8688"
-<<<<<<< HEAD
-	default n
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say yes here you get hardware monitoring support for Maxim
 	  MAX8688.
@@ -370,15 +309,6 @@ config SENSORS_MAX8688
 	  This driver can also be built as a module. If so, the module will
 	  be called max8688.
 
-<<<<<<< HEAD
-config SENSORS_UCD9000
-	tristate "TI UCD90120, UCD90124, UCD9090, UCD90910"
-	default n
-	help
-	  If you say yes here you get hardware monitoring support for TI
-	  UCD90120, UCD90124, UCD9090, UCD90910 Sequencer and System Health
-	  Controllers.
-=======
 config SENSORS_MP2856
 	tristate "MPS MP2856"
 	help
@@ -567,17 +497,12 @@ config SENSORS_UCD9000
 	  If you say yes here you get hardware monitoring support for TI
 	  UCD90120, UCD90124, UCD90160, UCD90320, UCD9090, UCD90910, Sequencer
 	  and System Health Controllers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  This driver can also be built as a module. If so, the module will
 	  be called ucd9000.
 
 config SENSORS_UCD9200
 	tristate "TI UCD9220, UCD9222, UCD9224, UCD9240, UCD9244, UCD9246, UCD9248"
-<<<<<<< HEAD
-	default n
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say yes here you get hardware monitoring support for TI
 	  UCD9220, UCD9222, UCD9224, UCD9240, UCD9244, UCD9246, and UCD9248
@@ -586,11 +511,6 @@ config SENSORS_UCD9200
 	  This driver can also be built as a module. If so, the module will
 	  be called ucd9200.
 
-<<<<<<< HEAD
-config SENSORS_ZL6100
-	tristate "Intersil ZL6100 and compatibles"
-	default n
-=======
 config SENSORS_XDPE152
 	tristate "Infineon XDPE152 family"
 	help
@@ -617,7 +537,6 @@ config SENSORS_XDPE122_REGULATOR
 
 config SENSORS_ZL6100
 	tristate "Intersil ZL6100 and compatibles"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say yes here you get hardware monitoring support for Intersil
 	  ZL2004, ZL2005, ZL2006, ZL2008, ZL2105, ZL2106, ZL6100, ZL6105,

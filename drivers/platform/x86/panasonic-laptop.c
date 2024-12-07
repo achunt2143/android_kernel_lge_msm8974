@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Panasonic HotKey and LCD brightness control driver
  *  (C) 2004 Hiroshi Miura <miura@da-cha.org>
@@ -12,24 +9,6 @@
  *
  *  derived from toshiba_acpi.c, Copyright (C) 2002-2004 John Belmonte
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2 as
- *  publicshed by the Free Software Foundation.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- *
- *---------------------------------------------------------------------------
- *
- * ChangeLog:
-=======
  *---------------------------------------------------------------------------
  *
  * ChangeLog:
@@ -49,7 +28,6 @@
  *				- add support for optical driver power in
  *				  Y and W series
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Sep.23, 2008	Harald Welte <laforge@gnumonks.org>
  *		-v0.95	rename driver from drivers/acpi/pcc_acpi.c to
  *			drivers/misc/panasonic-laptop.c
@@ -139,33 +117,6 @@
  *
  *      Jul.17, 2004	Hiroshi Miura <miura@da-cha.org>
  *		- v0.1  start from toshiba_acpi driver written by John Belmonte
-<<<<<<< HEAD
- *
- */
-
-#include <linux/kernel.h>
-#include <linux/module.h>
-#include <linux/init.h>
-#include <linux/types.h>
-#include <linux/backlight.h>
-#include <linux/ctype.h>
-#include <linux/seq_file.h>
-#include <linux/uaccess.h>
-#include <linux/slab.h>
-#include <acpi/acpi_bus.h>
-#include <acpi/acpi_drivers.h>
-#include <linux/input.h>
-#include <linux/input/sparse-keymap.h>
-
-
-#ifndef ACPI_HOTKEY_COMPONENT
-#define ACPI_HOTKEY_COMPONENT	0x10000000
-#endif
-
-#define _COMPONENT		ACPI_HOTKEY_COMPONENT
-
-MODULE_AUTHOR("Hiroshi Miura, David Bronaugh and Harald Welte");
-=======
  */
 
 #include <linux/acpi.h>
@@ -190,7 +141,6 @@ MODULE_AUTHOR("David Bronaugh <dbronaugh@linuxboxen.org>");
 MODULE_AUTHOR("Harald Welte <laforge@gnumonks.org>");
 MODULE_AUTHOR("Martin Lucina <mato@kotelna.sk>");
 MODULE_AUTHOR("Kenneth Chan <kenneth.t.chan@gmail.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("ACPI HotKey driver for Panasonic Let's Note laptops");
 MODULE_LICENSE("GPL");
 
@@ -202,14 +152,10 @@ MODULE_LICENSE("GPL");
 #define METHOD_HKEY_SQTY	"SQTY"
 #define METHOD_HKEY_SINF	"SINF"
 #define METHOD_HKEY_SSET	"SSET"
-<<<<<<< HEAD
-#define HKEY_NOTIFY		 0x80
-=======
 #define METHOD_ECWR		"\\_SB.ECWR"
 #define HKEY_NOTIFY		0x80
 #define ECO_MODE_OFF		0x00
 #define ECO_MODE_ON		0x80
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_PCC_DRIVER_NAME	"Panasonic Laptop Support"
 #define ACPI_PCC_DEVICE_NAME	"Hotkey"
@@ -218,11 +164,7 @@ MODULE_LICENSE("GPL");
 #define ACPI_PCC_INPUT_PHYS	"panasonic/hkey0"
 
 /* LCD_TYPEs: 0 = Normal, 1 = Semi-transparent
-<<<<<<< HEAD
-   ENV_STATEs: Normal temp=0x01, High temp=0x81, N/A=0x00
-=======
    ECO_MODEs: 0x03 = off, 0x83 = on
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 enum SINF_BITS { SINF_NUM_BATTERIES = 0,
 		 SINF_LCD_TYPE,
@@ -234,23 +176,14 @@ enum SINF_BITS { SINF_NUM_BATTERIES = 0,
 		 SINF_DC_CUR_BRIGHT,
 		 SINF_MUTE,
 		 SINF_RESERVED,
-<<<<<<< HEAD
-		 SINF_ENV_STATE,
-=======
 		 SINF_ECO_MODE = 0x0A,
 		 SINF_CUR_BRIGHT = 0x0D,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 SINF_STICKY_KEY = 0x80,
 	};
 /* R1 handles SINF_AC_CUR_BRIGHT as SINF_CUR_BRIGHT, doesn't know AC state */
 
 static int acpi_pcc_hotkey_add(struct acpi_device *device);
-<<<<<<< HEAD
-static int acpi_pcc_hotkey_remove(struct acpi_device *device, int type);
-static int acpi_pcc_hotkey_resume(struct acpi_device *device);
-=======
 static void acpi_pcc_hotkey_remove(struct acpi_device *device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void acpi_pcc_hotkey_notify(struct acpi_device *device, u32 event);
 
 static const struct acpi_device_id pcc_device_ids[] = {
@@ -262,14 +195,11 @@ static const struct acpi_device_id pcc_device_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, pcc_device_ids);
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PM_SLEEP
 static int acpi_pcc_hotkey_resume(struct device *dev);
 #endif
 static SIMPLE_DEV_PM_OPS(acpi_pcc_hotkey_pm, NULL, acpi_pcc_hotkey_resume);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct acpi_driver acpi_pcc_driver = {
 	.name =		ACPI_PCC_DRIVER_NAME,
 	.class =	ACPI_PCC_CLASS,
@@ -277,15 +207,9 @@ static struct acpi_driver acpi_pcc_driver = {
 	.ops =		{
 				.add =		acpi_pcc_hotkey_add,
 				.remove =	acpi_pcc_hotkey_remove,
-<<<<<<< HEAD
-				.resume =       acpi_pcc_hotkey_resume,
-				.notify =	acpi_pcc_hotkey_notify,
-			},
-=======
 				.notify =	acpi_pcc_hotkey_notify,
 			},
 	.drv.pm =	&acpi_pcc_hotkey_pm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct key_entry panasonic_keymap[] = {
@@ -306,27 +230,16 @@ static const struct key_entry panasonic_keymap[] = {
 struct pcc_acpi {
 	acpi_handle		handle;
 	unsigned long		num_sifr;
-<<<<<<< HEAD
-	int			sticky_mode;
-=======
 	int			sticky_key;
 	int			eco_mode;
 	int			mute;
 	int			ac_brightness;
 	int			dc_brightness;
 	int			current_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32			*sinf;
 	struct acpi_device	*device;
 	struct input_dev	*input_dev;
 	struct backlight_device	*backlight;
-<<<<<<< HEAD
-};
-
-struct pcc_keyinput {
-	struct acpi_hotkey      *hotkey;
-};
-=======
 	struct platform_device	*platform;
 };
 
@@ -365,7 +278,6 @@ static bool panasonic_i8042_filter(unsigned char data, unsigned char str,
 
 	return false;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* method access functions */
 static int acpi_pcc_write_sset(struct pcc_acpi *pcc, int func, int val)
@@ -398,12 +310,7 @@ static inline int acpi_pcc_get_sqty(struct acpi_device *device)
 	if (ACPI_SUCCESS(status))
 		return s;
 	else {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "evaluation error HKEY.SQTY\n"));
-=======
 		pr_err("evaluation error HKEY.SQTY\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 }
@@ -418,33 +325,19 @@ static int acpi_pcc_retrieve_biosdata(struct pcc_acpi *pcc)
 	status = acpi_evaluate_object(pcc->handle, METHOD_HKEY_SINF, NULL,
 				      &buffer);
 	if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "evaluation error HKEY.SINF\n"));
-=======
 		pr_err("evaluation error HKEY.SINF\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	hkey = buffer.pointer;
 	if (!hkey || (hkey->type != ACPI_TYPE_PACKAGE)) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR, "Invalid HKEY.SINF\n"));
-=======
 		pr_err("Invalid HKEY.SINF\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_ERROR;
 		goto end;
 	}
 
 	if (pcc->num_sifr < hkey->package.count) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				 "SQTY reports bad SINF length\n"));
-=======
 		pr_err("SQTY reports bad SINF length\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_ERROR;
 		goto end;
 	}
@@ -454,12 +347,7 @@ static int acpi_pcc_retrieve_biosdata(struct pcc_acpi *pcc)
 		if (likely(element->type == ACPI_TYPE_INTEGER)) {
 			pcc->sinf[i] = element->integer.value;
 		} else
-<<<<<<< HEAD
-			ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-					 "Invalid HKEY.SINF data\n"));
-=======
 			pr_err("Invalid HKEY.SINF data\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pcc->sinf[hkey->package.count] = -1;
 
@@ -517,11 +405,6 @@ static const struct backlight_ops pcc_backlight_ops = {
 };
 
 
-<<<<<<< HEAD
-/* sysfs user interface functions */
-
-static ssize_t show_numbatt(struct device *dev, struct device_attribute *attr,
-=======
 /* returns ACPI_SUCCESS if methods to control optical drive are present */
 
 static acpi_status check_optd_present(void)
@@ -617,7 +500,6 @@ out:
 /* sysfs user interface functions */
 
 static ssize_t numbatt_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -626,17 +508,10 @@ static ssize_t numbatt_show(struct device *dev, struct device_attribute *attr,
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_NUM_BATTERIES]);
-}
-
-static ssize_t show_lcdtype(struct device *dev, struct device_attribute *attr,
-=======
 	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_NUM_BATTERIES]);
 }
 
 static ssize_t lcdtype_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -645,17 +520,10 @@ static ssize_t lcdtype_show(struct device *dev, struct device_attribute *attr,
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_LCD_TYPE]);
-}
-
-static ssize_t show_mute(struct device *dev, struct device_attribute *attr,
-=======
 	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_LCD_TYPE]);
 }
 
 static ssize_t mute_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -664,12 +532,6 @@ static ssize_t mute_show(struct device *dev, struct device_attribute *attr,
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_MUTE]);
-}
-
-static ssize_t show_sticky(struct device *dev, struct device_attribute *attr,
-=======
 	return sysfs_emit(buf, "%u\n", pcc->sinf[SINF_MUTE]);
 }
 
@@ -692,7 +554,6 @@ static ssize_t mute_store(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t sticky_key_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
@@ -701,29 +562,14 @@ static ssize_t sticky_key_show(struct device *dev, struct device_attribute *attr
 	if (!acpi_pcc_retrieve_biosdata(pcc))
 		return -EIO;
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", pcc->sinf[SINF_STICKY_KEY]);
-}
-
-static ssize_t set_sticky(struct device *dev, struct device_attribute *attr,
-=======
 	return sysfs_emit(buf, "%u\n", pcc->sticky_key);
 }
 
 static ssize_t sticky_key_store(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  const char *buf, size_t count)
 {
 	struct acpi_device *acpi = to_acpi_device(dev);
 	struct pcc_acpi *pcc = acpi_driver_data(acpi);
-<<<<<<< HEAD
-	int val;
-
-	if (count && sscanf(buf, "%i", &val) == 1 &&
-	    (val == 0 || val == 1)) {
-		acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, val);
-		pcc->sticky_mode = val;
-=======
 	int err, val;
 
 	err = kstrtoint(buf, 0, &val);
@@ -732,18 +578,11 @@ static ssize_t sticky_key_store(struct device *dev, struct device_attribute *att
 	if (val == 0 || val == 1) {
 		acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, val);
 		pcc->sticky_key = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
 }
 
-<<<<<<< HEAD
-static DEVICE_ATTR(numbatt, S_IRUGO, show_numbatt, NULL);
-static DEVICE_ATTR(lcdtype, S_IRUGO, show_lcdtype, NULL);
-static DEVICE_ATTR(mute, S_IRUGO, show_mute, NULL);
-static DEVICE_ATTR(sticky_key, S_IRUGO | S_IWUSR, show_sticky, set_sticky);
-=======
 static ssize_t eco_mode_show(struct device *dev, struct device_attribute *attr,
 				char *buf)
 {
@@ -933,19 +772,12 @@ static DEVICE_ATTR_RW(ac_brightness);
 static DEVICE_ATTR_RW(dc_brightness);
 static DEVICE_ATTR_RW(current_brightness);
 static DEVICE_ATTR_RW(cdpower);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *pcc_sysfs_entries[] = {
 	&dev_attr_numbatt.attr,
 	&dev_attr_lcdtype.attr,
 	&dev_attr_mute.attr,
 	&dev_attr_sticky_key.attr,
-<<<<<<< HEAD
-	NULL,
-};
-
-static struct attribute_group pcc_attr_group = {
-=======
 	&dev_attr_eco_mode.attr,
 	&dev_attr_ac_brightness.attr,
 	&dev_attr_dc_brightness.attr,
@@ -955,7 +787,6 @@ static struct attribute_group pcc_attr_group = {
 };
 
 static const struct attribute_group pcc_attr_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= NULL,		/* put in device directory */
 	.attrs	= pcc_sysfs_entries,
 };
@@ -963,32 +794,12 @@ static const struct attribute_group pcc_attr_group = {
 
 /* hotkey input device driver */
 
-<<<<<<< HEAD
-=======
 static int sleep_keydown_seen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 {
 	struct input_dev *hotk_input_dev = pcc->input_dev;
 	int rc;
 	unsigned long long result;
-<<<<<<< HEAD
-
-	rc = acpi_evaluate_integer(pcc->handle, METHOD_HKEY_QUERY,
-				   NULL, &result);
-	if (!ACPI_SUCCESS(rc)) {
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				 "error getting hotkey status\n"));
-		return;
-	}
-
-	acpi_bus_generate_proc_event(pcc->device, HKEY_NOTIFY, result);
-
-	if (!sparse_keymap_report_event(hotk_input_dev,
-					result & 0xf, result & 0x80, false))
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "Unknown hotkey event: %d\n", result));
-=======
 	unsigned int key;
 	unsigned int updown;
 
@@ -1020,7 +831,6 @@ static void acpi_pcc_generate_keyinput(struct pcc_acpi *pcc)
 
 	if (!sparse_keymap_report_event(hotk_input_dev, key, updown, false))
 		pr_err("Unknown hotkey event: 0x%04llx\n", result);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void acpi_pcc_hotkey_notify(struct acpi_device *device, u32 event)
@@ -1037,8 +847,6 @@ static void acpi_pcc_hotkey_notify(struct acpi_device *device, u32 event)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void pcc_optd_notify(acpi_handle handle, u32 event, void *data)
 {
 	if (event != ACPI_NOTIFY_EJECT_REQUEST)
@@ -1083,23 +891,14 @@ static void pcc_unregister_optd_notifier(struct pcc_acpi *pcc, char *node)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int acpi_pcc_init_input(struct pcc_acpi *pcc)
 {
 	struct input_dev *input_dev;
 	int error;
 
 	input_dev = input_allocate_device();
-<<<<<<< HEAD
-	if (!input_dev) {
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "Couldn't allocate input device for hotkey"));
-		return -ENOMEM;
-	}
-=======
 	if (!input_dev)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_dev->name = ACPI_PCC_DRIVER_NAME;
 	input_dev->phys = ACPI_PCC_INPUT_PHYS;
@@ -1110,66 +909,24 @@ static int acpi_pcc_init_input(struct pcc_acpi *pcc)
 
 	error = sparse_keymap_setup(input_dev, panasonic_keymap, NULL);
 	if (error) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "Unable to setup input device keymap\n"));
-=======
 		pr_err("Unable to setup input device keymap\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_dev;
 	}
 
 	error = input_register_device(input_dev);
 	if (error) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "Unable to register input device\n"));
-		goto err_free_keymap;
-=======
 		pr_err("Unable to register input device\n");
 		goto err_free_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pcc->input_dev = input_dev;
 	return 0;
 
-<<<<<<< HEAD
- err_free_keymap:
-	sparse_keymap_free(input_dev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_free_dev:
 	input_free_device(input_dev);
 	return error;
 }
 
-<<<<<<< HEAD
-static void acpi_pcc_destroy_input(struct pcc_acpi *pcc)
-{
-	sparse_keymap_free(pcc->input_dev);
-	input_unregister_device(pcc->input_dev);
-	/*
-	 * No need to input_free_device() since core input API refcounts
-	 * and free()s the device.
-	 */
-}
-
-/* kernel module interface */
-
-static int acpi_pcc_hotkey_resume(struct acpi_device *device)
-{
-	struct pcc_acpi *pcc = acpi_driver_data(device);
-
-	if (device == NULL || pcc == NULL)
-		return -EINVAL;
-
-	ACPI_DEBUG_PRINT((ACPI_DB_ERROR, "Sticky mode restore: %d\n",
-			  pcc->sticky_mode));
-
-	return acpi_pcc_write_sset(pcc, SINF_STICKY_KEY, pcc->sticky_mode);
-}
-=======
 /* kernel module interface */
 
 #ifdef CONFIG_PM_SLEEP
@@ -1194,7 +951,6 @@ static int acpi_pcc_hotkey_resume(struct device *dev)
 	return 0;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int acpi_pcc_hotkey_add(struct acpi_device *device)
 {
@@ -1208,30 +964,17 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 	num_sifr = acpi_pcc_get_sqty(device);
 
 	if (num_sifr < 0 || num_sifr > 255) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR, "num_sifr out of range"));
-=======
 		pr_err("num_sifr out of range");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	pcc = kzalloc(sizeof(struct pcc_acpi), GFP_KERNEL);
 	if (!pcc) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "Couldn't allocate mem for pcc"));
-		return -ENOMEM;
-	}
-
-	pcc->sinf = kzalloc(sizeof(u32) * (num_sifr + 1), GFP_KERNEL);
-=======
 		pr_err("Couldn't allocate mem for pcc");
 		return -ENOMEM;
 	}
 
 	pcc->sinf = kcalloc(num_sifr + 1, sizeof(u32), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pcc->sinf) {
 		result = -ENOMEM;
 		goto out_hotkey;
@@ -1246,39 +989,11 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 
 	result = acpi_pcc_init_input(pcc);
 	if (result) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "Error installing keyinput handler\n"));
-=======
 		pr_err("Error installing keyinput handler\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_sinf;
 	}
 
 	if (!acpi_pcc_retrieve_biosdata(pcc)) {
-<<<<<<< HEAD
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				 "Couldn't retrieve BIOS data\n"));
-		result = -EIO;
-		goto out_input;
-	}
-	/* initialize backlight */
-	memset(&props, 0, sizeof(struct backlight_properties));
-	props.type = BACKLIGHT_PLATFORM;
-	props.max_brightness = pcc->sinf[SINF_AC_MAX_BRIGHT];
-	pcc->backlight = backlight_device_register("panasonic", NULL, pcc,
-						   &pcc_backlight_ops, &props);
-	if (IS_ERR(pcc->backlight)) {
-		result = PTR_ERR(pcc->backlight);
-		goto out_input;
-	}
-
-	/* read the initial brightness setting from the hardware */
-	pcc->backlight->props.brightness = pcc->sinf[SINF_AC_CUR_BRIGHT];
-
-	/* read the initial sticky key mode from the hardware */
-	pcc->sticky_mode = pcc->sinf[SINF_STICKY_KEY];
-=======
 		result = -EIO;
 		pr_err("Couldn't retrieve BIOS data\n");
 		goto out_input;
@@ -1310,21 +1025,12 @@ static int acpi_pcc_hotkey_add(struct acpi_device *device)
 	pcc->ac_brightness = pcc->sinf[SINF_AC_CUR_BRIGHT];
 	pcc->dc_brightness = pcc->sinf[SINF_DC_CUR_BRIGHT];
 	pcc->current_brightness = pcc->sinf[SINF_CUR_BRIGHT];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* add sysfs attributes */
 	result = sysfs_create_group(&device->dev.kobj, &pcc_attr_group);
 	if (result)
 		goto out_backlight;
 
-<<<<<<< HEAD
-	return 0;
-
-out_backlight:
-	backlight_device_unregister(pcc->backlight);
-out_input:
-	acpi_pcc_destroy_input(pcc);
-=======
 	/* optical drive initialization */
 	if (ACPI_SUCCESS(check_optd_present())) {
 		pcc->platform = platform_device_register_simple("panasonic",
@@ -1351,7 +1057,6 @@ out_backlight:
 	backlight_device_unregister(pcc->backlight);
 out_input:
 	input_unregister_device(pcc->input_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_sinf:
 	kfree(pcc->sinf);
 out_hotkey:
@@ -1360,35 +1065,11 @@ out_hotkey:
 	return result;
 }
 
-<<<<<<< HEAD
-static int __init acpi_pcc_init(void)
-{
-	int result = 0;
-
-	if (acpi_disabled)
-		return -ENODEV;
-
-	result = acpi_bus_register_driver(&acpi_pcc_driver);
-	if (result < 0) {
-		ACPI_DEBUG_PRINT((ACPI_DB_ERROR,
-				  "Error registering hotkey driver\n"));
-		return -ENODEV;
-	}
-
-	return 0;
-}
-
-static int acpi_pcc_hotkey_remove(struct acpi_device *device, int type)
-=======
 static void acpi_pcc_hotkey_remove(struct acpi_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcc_acpi *pcc = acpi_driver_data(device);
 
 	if (!device || !pcc)
-<<<<<<< HEAD
-		return -EINVAL;
-=======
 		return;
 
 	i8042_remove_filter(panasonic_i8042_filter);
@@ -1398,29 +1079,11 @@ static void acpi_pcc_hotkey_remove(struct acpi_device *device)
 		platform_device_unregister(pcc->platform);
 	}
 	pcc_unregister_optd_notifier(pcc, "\\_SB.PCI0.EHCI.ERHB.OPTD");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sysfs_remove_group(&device->dev.kobj, &pcc_attr_group);
 
 	backlight_device_unregister(pcc->backlight);
 
-<<<<<<< HEAD
-	acpi_pcc_destroy_input(pcc);
-
-	kfree(pcc->sinf);
-	kfree(pcc);
-
-	return 0;
-}
-
-static void __exit acpi_pcc_exit(void)
-{
-	acpi_bus_unregister_driver(&acpi_pcc_driver);
-}
-
-module_init(acpi_pcc_init);
-module_exit(acpi_pcc_exit);
-=======
 	input_unregister_device(pcc->input_dev);
 
 	kfree(pcc->sinf);
@@ -1428,4 +1091,3 @@ module_exit(acpi_pcc_exit);
 }
 
 module_acpi_driver(acpi_pcc_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

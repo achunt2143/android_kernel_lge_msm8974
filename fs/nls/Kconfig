@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Native language support configuration
 #
 
 menuconfig NLS
 	tristate "Native language support"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The base Native Language Support. A number of filesystems
 	  depend on it (e.g. FAT, JOLIET, NT, BEOS filesystems), as well
 	  as the ability of some filesystems to use native languages
@@ -28,11 +21,7 @@ if NLS
 config NLS_DEFAULT
 	string "Default NLS Option"
 	default "iso8859-1"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The default NLS used when mounting file system. Note, that this is
 	  the NLS used by your console, not the NLS used by a specific file
 	  system (if different) to store data (filenames) on a disk.
@@ -42,11 +31,7 @@ config NLS_DEFAULT
 	  cp949, cp950, cp1251, cp1255, euc-jp, euc-kr, gb2312, iso8859-1,
 	  iso8859-2, iso8859-3, iso8859-4, iso8859-5, iso8859-6, iso8859-7,
 	  iso8859-8, iso8859-9, iso8859-13, iso8859-14, iso8859-15,
-<<<<<<< HEAD
-	  koi8-r, koi8-ru, koi8-u, sjis, tis-620, utf8.
-=======
 	  koi8-r, koi8-ru, koi8-u, sjis, tis-620, macroman, utf8.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you specify a wrong value, it will use the built-in NLS;
 	  compatible with iso8859-1.
 
@@ -91,11 +76,7 @@ config NLS_CODEPAGE_775
 
 config NLS_CODEPAGE_850
 	tristate "Codepage 850 (Europe)"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The Microsoft FAT file system family can deal with filenames in
 	  native language character sets. These character sets are stored in
 	  so-called DOS codepages. You need to include the appropriate
@@ -111,11 +92,7 @@ config NLS_CODEPAGE_850
 
 config NLS_CODEPAGE_852
 	tristate "Codepage 852 (Central/Eastern Europe)"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The Microsoft FAT file system family can deal with filenames in
 	  native language character sets. These character sets are stored in
 	  so-called DOS codepages. You need to include the appropriate
@@ -444,11 +421,7 @@ config NLS_ISO8859_14
 
 config NLS_ISO8859_15
 	tristate "NLS ISO 8859-15 (Latin 9; Western European Languages with Euro)"
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you want to display filenames with native language characters
 	  from the Microsoft FAT file system family or from JOLIET CD-ROMs
 	  correctly on the screen, you need to include the appropriate
@@ -480,8 +453,6 @@ config NLS_KOI8_U
 	  input/output character sets. Say Y here for the preferred Ukrainian
 	  (koi8-u) and Belarusian (koi8-ru) character sets.
 
-<<<<<<< HEAD
-=======
 config NLS_MAC_ROMAN
 	tristate "Codepage macroman"
 	help
@@ -637,7 +608,6 @@ config NLS_MAC_TURKISH
 
 	  If unsure, say Y.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config NLS_UTF8
 	tristate "NLS UTF-8"
 	help
@@ -647,10 +617,7 @@ config NLS_UTF8
 	  input/output character sets. Say Y here for the UTF-8 encoding of
 	  the Unicode/ISO9646 universal character set.
 
-<<<<<<< HEAD
-=======
 config NLS_UCS2_UTILS
 	tristate
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NLS

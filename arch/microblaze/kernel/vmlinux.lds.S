@@ -11,12 +11,9 @@
 OUTPUT_ARCH(microblaze)
 ENTRY(microblaze_start)
 
-<<<<<<< HEAD
-=======
 #define RO_EXCEPTION_TABLE_ALIGN	16
 
 #include <asm/cache.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm-generic/vmlinux.lds.h>
 #include <asm/thread_info.h>
@@ -42,37 +39,21 @@ SECTIONS {
 		LOCK_TEXT
 		KPROBES_TEXT
 		IRQENTRY_TEXT
-<<<<<<< HEAD
-=======
 		SOFTIRQENTRY_TEXT
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		. = ALIGN (4) ;
 		_etext = . ;
 	}
 
-<<<<<<< HEAD
-	. = ALIGN (4) ;
-	__fdt_blob : AT(ADDR(__fdt_blob) - LOAD_OFFSET) {
-		_fdt_start = . ;		/* place for fdt blob */
-		*(__fdt_blob) ;			/* Any link-placed DTB */
-	        . = _fdt_start + 0x8000;	/* Pad up to 32kbyte */
-=======
 	. = ALIGN (8) ;
 	__fdt_blob : AT(ADDR(__fdt_blob) - LOAD_OFFSET) {
 		_fdt_start = . ;		/* place for fdt blob */
 		*(__fdt_blob) ;			/* Any link-placed DTB */
 	        . = _fdt_start + 0x10000;	/* Pad up to 64kbyte */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_fdt_end = . ;
 	}
 
 	. = ALIGN(16);
-<<<<<<< HEAD
-	RODATA
-	EXCEPTION_TABLE(16)
-=======
 	RO_DATA(4096)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * sdata2 section can go anywhere, but must be word aligned
@@ -89,11 +70,7 @@ SECTIONS {
 	}
 
 	_sdata = . ;
-<<<<<<< HEAD
-	RW_DATA_SECTION(32, PAGE_SIZE, THREAD_SIZE)
-=======
 	RW_DATA(32, PAGE_SIZE, THREAD_SIZE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_edata = . ;
 
 	/* Under the microblaze ABI, .sdata and .sbss must be contiguous */
@@ -112,11 +89,8 @@ SECTIONS {
 		_KERNEL_SDA_BASE_ = _ssro + (_ssro_size / 2) ;
 	}
 
-<<<<<<< HEAD
-=======
 	PERCPU_SECTION(L1_CACHE_BYTES)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	. = ALIGN(PAGE_SIZE);
 	__init_begin = .;
 
@@ -145,11 +119,6 @@ SECTIONS {
 		CON_INITCALL
 	}
 
-<<<<<<< HEAD
-	SECURITY_INIT
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__init_end_before_initramfs = .;
 
 	.init.ramfs : AT(ADDR(.init.ramfs) - LOAD_OFFSET) {
@@ -165,10 +134,6 @@ SECTIONS {
 			*(COMMON)
 		. = ALIGN (4) ;
 		__bss_stop = . ;
-<<<<<<< HEAD
-		_ebss = . ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	. = ALIGN(PAGE_SIZE);
 	_end = .;

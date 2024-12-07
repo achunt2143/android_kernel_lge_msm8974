@@ -1,34 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm-generic/xor.h
  *
  * Generic optimized RAID-5 checksumming functions.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * You should have received a copy of the GNU General Public License
- * (for example /usr/src/linux/COPYING); if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/prefetch.h>
 
 static void
-<<<<<<< HEAD
-xor_8regs_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
-=======
 xor_8regs_2(unsigned long bytes, unsigned long * __restrict p1,
 	    const unsigned long * __restrict p2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -47,14 +28,9 @@ xor_8regs_2(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_8regs_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3)
-=======
 xor_8regs_3(unsigned long bytes, unsigned long * __restrict p1,
 	    const unsigned long * __restrict p2,
 	    const unsigned long * __restrict p3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -74,15 +50,10 @@ xor_8regs_3(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_8regs_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4)
-=======
 xor_8regs_4(unsigned long bytes, unsigned long * __restrict p1,
 	    const unsigned long * __restrict p2,
 	    const unsigned long * __restrict p3,
 	    const unsigned long * __restrict p4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -103,16 +74,11 @@ xor_8regs_4(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_8regs_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4, unsigned long *p5)
-=======
 xor_8regs_5(unsigned long bytes, unsigned long * __restrict p1,
 	    const unsigned long * __restrict p2,
 	    const unsigned long * __restrict p3,
 	    const unsigned long * __restrict p4,
 	    const unsigned long * __restrict p5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -134,12 +100,8 @@ xor_8regs_5(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
-=======
 xor_32regs_2(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -175,14 +137,9 @@ xor_32regs_2(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3)
-=======
 xor_32regs_3(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2,
 	     const unsigned long * __restrict p3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -227,15 +184,10 @@ xor_32regs_3(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4)
-=======
 xor_32regs_4(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2,
 	     const unsigned long * __restrict p3,
 	     const unsigned long * __restrict p4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -289,16 +241,11 @@ xor_32regs_4(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4, unsigned long *p5)
-=======
 xor_32regs_5(unsigned long bytes, unsigned long * __restrict p1,
 	     const unsigned long * __restrict p2,
 	     const unsigned long * __restrict p3,
 	     const unsigned long * __restrict p4,
 	     const unsigned long * __restrict p5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8;
 
@@ -361,12 +308,8 @@ xor_32regs_5(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_8regs_p_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
-=======
 xor_8regs_p_2(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 	prefetchw(p1);
@@ -392,14 +335,9 @@ xor_8regs_p_2(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_8regs_p_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3)
-=======
 xor_8regs_p_3(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2,
 	      const unsigned long * __restrict p3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 	prefetchw(p1);
@@ -428,15 +366,10 @@ xor_8regs_p_3(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_8regs_p_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4)
-=======
 xor_8regs_p_4(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2,
 	      const unsigned long * __restrict p3,
 	      const unsigned long * __restrict p4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 
@@ -469,16 +402,11 @@ xor_8regs_p_4(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_8regs_p_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4, unsigned long *p5)
-=======
 xor_8regs_p_5(unsigned long bytes, unsigned long * __restrict p1,
 	      const unsigned long * __restrict p2,
 	      const unsigned long * __restrict p3,
 	      const unsigned long * __restrict p4,
 	      const unsigned long * __restrict p5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 
@@ -514,12 +442,8 @@ xor_8regs_p_5(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_p_2(unsigned long bytes, unsigned long *p1, unsigned long *p2)
-=======
 xor_32regs_p_2(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 
@@ -564,14 +488,9 @@ xor_32regs_p_2(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_p_3(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3)
-=======
 xor_32regs_p_3(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2,
 	       const unsigned long * __restrict p3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 
@@ -627,15 +546,10 @@ xor_32regs_p_3(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_p_4(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4)
-=======
 xor_32regs_p_4(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2,
 	       const unsigned long * __restrict p3,
 	       const unsigned long * __restrict p4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 
@@ -702,16 +616,11 @@ xor_32regs_p_4(unsigned long bytes, unsigned long * __restrict p1,
 }
 
 static void
-<<<<<<< HEAD
-xor_32regs_p_5(unsigned long bytes, unsigned long *p1, unsigned long *p2,
-	    unsigned long *p3, unsigned long *p4, unsigned long *p5)
-=======
 xor_32regs_p_5(unsigned long bytes, unsigned long * __restrict p1,
 	       const unsigned long * __restrict p2,
 	       const unsigned long * __restrict p3,
 	       const unsigned long * __restrict p4,
 	       const unsigned long * __restrict p5)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long lines = bytes / (sizeof (long)) / 8 - 1;
 
@@ -804,11 +713,7 @@ static struct xor_block_template xor_block_32regs = {
 	.do_5 = xor_32regs_5,
 };
 
-<<<<<<< HEAD
-static struct xor_block_template xor_block_8regs_p = {
-=======
 static struct xor_block_template xor_block_8regs_p __maybe_unused = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "8regs_prefetch",
 	.do_2 = xor_8regs_p_2,
 	.do_3 = xor_8regs_p_3,
@@ -816,11 +721,7 @@ static struct xor_block_template xor_block_8regs_p __maybe_unused = {
 	.do_5 = xor_8regs_p_5,
 };
 
-<<<<<<< HEAD
-static struct xor_block_template xor_block_32regs_p = {
-=======
 static struct xor_block_template xor_block_32regs_p __maybe_unused = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "32regs_prefetch",
 	.do_2 = xor_32regs_p_2,
 	.do_3 = xor_32regs_p_3,

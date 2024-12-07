@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-/*
- *  Driver for Cirrus Logic CS4281 based PCI soundcard
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-#include <asm/io.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Driver for Cirrus Logic CS4281 based PCI soundcard
@@ -29,7 +5,6 @@
  */
 
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -50,10 +25,6 @@
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Cirrus Logic CS4281");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Cirrus Logic,CS4281}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -499,23 +470,12 @@ struct cs4281 {
 
 	struct gameport *gameport;
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
 	u32 suspend_regs[SUSPEND_REGISTERS];
-#endif
-
-=======
-	u32 suspend_regs[SUSPEND_REGISTERS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t snd_cs4281_interrupt(int irq, void *dev_id);
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_cs4281_ids) = {
-=======
 static const struct pci_device_id snd_cs4281_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(CIRRUS, 0x6005), 0, },	/* CS4281 */
 	{ 0, }
 };
@@ -585,12 +545,8 @@ static void snd_cs4281_ac97_write(struct snd_ac97 *ac97,
 			return;
 		}
 	}
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "AC'97 write problem, reg = 0x%x, val = 0x%x\n", reg, val);
-=======
 	dev_err(chip->card->dev,
 		"AC'97 write problem, reg = 0x%x, val = 0x%x\n", reg, val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned short snd_cs4281_ac97_read(struct snd_ac97 *ac97,
@@ -650,12 +606,8 @@ static unsigned short snd_cs4281_ac97_read(struct snd_ac97 *ac97,
 			goto __ok1;
 	}
 
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "AC'97 read problem (ACCTL_DCV), reg = 0x%x\n", reg);
-=======
 	dev_err(chip->card->dev,
 		"AC'97 read problem (ACCTL_DCV), reg = 0x%x\n", reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = 0xffff;
 	goto __end;
 	
@@ -674,12 +626,8 @@ static unsigned short snd_cs4281_ac97_read(struct snd_ac97 *ac97,
 		udelay(10);
 	}
 	
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "AC'97 read problem (ACSTS_VSTS), reg = 0x%x\n", reg);
-=======
 	dev_err(chip->card->dev,
 		"AC'97 read problem (ACSTS_VSTS), reg = 0x%x\n", reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = 0xffff;
 	goto __end;
 
@@ -742,11 +690,7 @@ static int snd_cs4281_trigger(struct snd_pcm_substream *substream, int cmd)
 
 static unsigned int snd_cs4281_rate(unsigned int rate, unsigned int *real_rate)
 {
-<<<<<<< HEAD
-	unsigned int val = ~0;
-=======
 	unsigned int val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	if (real_rate)
 		*real_rate = rate;
@@ -759,14 +703,8 @@ static unsigned int snd_cs4281_rate(unsigned int rate, unsigned int *real_rate)
 	case 44100:	return 1;
 	case 48000:	return 0;
 	default:
-<<<<<<< HEAD
-		goto __variable;
-	}
-      __variable:
-=======
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = 1536000 / rate;
 	if (real_rate)
 		*real_rate = 1536000 / val;
@@ -838,20 +776,6 @@ static void snd_cs4281_mode(struct cs4281 *chip, struct cs4281_dma *dma,
 	snd_cs4281_pokeBA0(chip, dma->regFSIC, 0);
 }
 
-<<<<<<< HEAD
-static int snd_cs4281_hw_params(struct snd_pcm_substream *substream,
-				struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
-}
-
-static int snd_cs4281_hw_free(struct snd_pcm_substream *substream)
-{
-	return snd_pcm_lib_free_pages(substream);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_cs4281_playback_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -883,25 +807,16 @@ static snd_pcm_uframes_t snd_cs4281_pointer(struct snd_pcm_substream *substream)
 	struct cs4281 *chip = snd_pcm_substream_chip(substream);
 
 	/*
-<<<<<<< HEAD
-	printk(KERN_DEBUG "DCC = 0x%x, buffer_size = 0x%x, jiffies = %li\n",
-	       snd_cs4281_peekBA0(chip, dma->regDCC), runtime->buffer_size,
-=======
 	dev_dbg(chip->card->dev,
 		"DCC = 0x%x, buffer_size = 0x%x, jiffies = %li\n",
 		snd_cs4281_peekBA0(chip, dma->regDCC), runtime->buffer_size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       jiffies);
 	*/
 	return runtime->buffer_size -
 	       snd_cs4281_peekBA0(chip, dma->regDCC) - 1;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_cs4281_playback =
-=======
 static const struct snd_pcm_hardware snd_cs4281_playback =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			SNDRV_PCM_INFO_MMAP |
 				SNDRV_PCM_INFO_INTERLEAVED |
@@ -926,11 +841,7 @@ static const struct snd_pcm_hardware snd_cs4281_playback =
 	.fifo_size =		CS4281_FIFO_SIZE,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_cs4281_capture =
-=======
 static const struct snd_pcm_hardware snd_cs4281_capture =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			SNDRV_PCM_INFO_MMAP |
 				SNDRV_PCM_INFO_INTERLEAVED |
@@ -1009,55 +920,27 @@ static int snd_cs4281_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_cs4281_playback_ops = {
-	.open =		snd_cs4281_playback_open,
-	.close =	snd_cs4281_playback_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_cs4281_hw_params,
-	.hw_free =	snd_cs4281_hw_free,
-=======
 static const struct snd_pcm_ops snd_cs4281_playback_ops = {
 	.open =		snd_cs4281_playback_open,
 	.close =	snd_cs4281_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_cs4281_playback_prepare,
 	.trigger =	snd_cs4281_trigger,
 	.pointer =	snd_cs4281_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_cs4281_capture_ops = {
-	.open =		snd_cs4281_capture_open,
-	.close =	snd_cs4281_capture_close,
-	.ioctl =	snd_pcm_lib_ioctl,
-	.hw_params =	snd_cs4281_hw_params,
-	.hw_free =	snd_cs4281_hw_free,
-=======
 static const struct snd_pcm_ops snd_cs4281_capture_ops = {
 	.open =		snd_cs4281_capture_open,
 	.close =	snd_cs4281_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_cs4281_capture_prepare,
 	.trigger =	snd_cs4281_trigger,
 	.pointer =	snd_cs4281_pointer,
 };
 
-<<<<<<< HEAD
-static int __devinit snd_cs4281_pcm(struct cs4281 * chip, int device,
-				    struct snd_pcm ** rpcm)
-=======
 static int snd_cs4281_pcm(struct cs4281 *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
-<<<<<<< HEAD
-	if (rpcm)
-		*rpcm = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_pcm_new(chip->card, "CS4281", device, 1, 1, &pcm);
 	if (err < 0)
 		return err;
@@ -1070,17 +953,9 @@ static int snd_cs4281_pcm(struct cs4281 *chip, int device)
 	strcpy(pcm->name, "CS4281");
 	chip->pcm = pcm;
 
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_pci_data(chip->pci), 64*1024, 512*1024);
-
-	if (rpcm)
-		*rpcm = pcm;
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
 				       64*1024, 512*1024);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1143,11 +1018,7 @@ static int snd_cs4281_put_volume(struct snd_kcontrol *kcontrol,
 
 static const DECLARE_TLV_DB_SCALE(db_scale_dsp, -4650, 150, 0);
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_cs4281_fm_vol = 
-=======
 static const struct snd_kcontrol_new snd_cs4281_fm_vol =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Synth Playback Volume",
@@ -1158,11 +1029,7 @@ static const struct snd_kcontrol_new snd_cs4281_fm_vol =
 	.tlv = { .p = db_scale_dsp },
 };
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_cs4281_pcm_vol = 
-=======
 static const struct snd_kcontrol_new snd_cs4281_pcm_vol =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "PCM Stream Playback Volume",
@@ -1188,48 +1055,24 @@ static void snd_cs4281_mixer_free_ac97(struct snd_ac97 *ac97)
 		chip->ac97 = NULL;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_cs4281_mixer(struct cs4281 * chip)
-=======
 static int snd_cs4281_mixer(struct cs4281 *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = chip->card;
 	struct snd_ac97_template ac97;
 	int err;
-<<<<<<< HEAD
-	static struct snd_ac97_bus_ops ops = {
-=======
 	static const struct snd_ac97_bus_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_cs4281_ac97_write,
 		.read = snd_cs4281_ac97_read,
 	};
 
-<<<<<<< HEAD
-	if ((err = snd_ac97_bus(card, 0, &ops, chip, &chip->ac97_bus)) < 0)
-=======
 	err = snd_ac97_bus(card, 0, &ops, chip, &chip->ac97_bus);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	chip->ac97_bus->private_free = snd_cs4281_mixer_free_ac97_bus;
 
 	memset(&ac97, 0, sizeof(ac97));
 	ac97.private_data = chip;
 	ac97.private_free = snd_cs4281_mixer_free_ac97;
-<<<<<<< HEAD
-	if ((err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97)) < 0)
-		return err;
-	if (chip->dual_codec) {
-		ac97.num = 1;
-		if ((err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97_secondary)) < 0)
-			return err;
-	}
-	if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4281_fm_vol, chip))) < 0)
-		return err;
-	if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4281_pcm_vol, chip))) < 0)
-=======
 	err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97);
 	if (err < 0)
 		return err;
@@ -1244,7 +1087,6 @@ static int snd_cs4281_mixer(struct cs4281 *chip)
 		return err;
 	err = snd_ctl_add(card, snd_ctl_new1(&snd_cs4281_pcm_vol, chip));
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return 0;
 }
@@ -1288,22 +1130,6 @@ static ssize_t snd_cs4281_BA1_read(struct snd_info_entry *entry,
 	return count;
 }
 
-<<<<<<< HEAD
-static struct snd_info_entry_ops snd_cs4281_proc_ops_BA0 = {
-	.read = snd_cs4281_BA0_read,
-};
-
-static struct snd_info_entry_ops snd_cs4281_proc_ops_BA1 = {
-	.read = snd_cs4281_BA1_read,
-};
-
-static void __devinit snd_cs4281_proc_init(struct cs4281 * chip)
-{
-	struct snd_info_entry *entry;
-
-	if (! snd_card_proc_new(chip->card, "cs4281", &entry))
-		snd_info_set_text_ops(entry, chip, snd_cs4281_proc_read);
-=======
 static const struct snd_info_entry_ops snd_cs4281_proc_ops_BA0 = {
 	.read = snd_cs4281_BA0_read,
 };
@@ -1317,7 +1143,6 @@ static void snd_cs4281_proc_init(struct cs4281 *chip)
 	struct snd_info_entry *entry;
 
 	snd_card_ro_proc_new(chip->card, "cs4281", chip, snd_cs4281_proc_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! snd_card_proc_new(chip->card, "cs4281_BA0", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = chip;
@@ -1336,11 +1161,7 @@ static void snd_cs4281_proc_init(struct cs4281 *chip)
  * joystick support
  */
 
-<<<<<<< HEAD
-#if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
-=======
 #if IS_REACHABLE(CONFIG_GAMEPORT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void snd_cs4281_gameport_trigger(struct gameport *gameport)
 {
@@ -1404,22 +1225,14 @@ static int snd_cs4281_gameport_open(struct gameport *gameport, int mode)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_cs4281_create_gameport(struct cs4281 *chip)
-=======
 static int snd_cs4281_create_gameport(struct cs4281 *chip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 
 	chip->gameport = gp = gameport_allocate_port();
 	if (!gp) {
-<<<<<<< HEAD
-		printk(KERN_ERR "cs4281: cannot allocate memory for gameport\n");
-=======
 		dev_err(chip->card->dev,
 			"cannot allocate memory for gameport\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -1450,16 +1263,6 @@ static void snd_cs4281_free_gameport(struct cs4281 *chip)
 #else
 static inline int snd_cs4281_create_gameport(struct cs4281 *chip) { return -ENOSYS; }
 static inline void snd_cs4281_free_gameport(struct cs4281 *chip) { }
-<<<<<<< HEAD
-#endif /* CONFIG_GAMEPORT || (MODULE && CONFIG_GAMEPORT_MODULE) */
-
-static int snd_cs4281_free(struct cs4281 *chip)
-{
-	snd_cs4281_free_gameport(chip);
-
-	if (chip->irq >= 0)
-		synchronize_irq(chip->irq);
-=======
 #endif /* IS_REACHABLE(CONFIG_GAMEPORT) */
 
 static void snd_cs4281_free(struct snd_card *card)
@@ -1467,7 +1270,6 @@ static void snd_cs4281_free(struct snd_card *card)
 	struct cs4281 *chip = card->private_data;
 
 	snd_cs4281_free_gameport(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mask interrupts */
 	snd_cs4281_pokeBA0(chip, BA0_HIMR, 0x7fffffff);
@@ -1475,55 +1277,10 @@ static void snd_cs4281_free(struct snd_card *card)
 	snd_cs4281_pokeBA0(chip, BA0_CLKCR1, 0);
 	/* Sound System Power Management - Turn Everything OFF */
 	snd_cs4281_pokeBA0(chip, BA0_SSPM, 0);
-<<<<<<< HEAD
-	/* PCI interface - D3 state */
-	pci_set_power_state(chip->pci, 3);
-
-	if (chip->irq >= 0)
-		free_irq(chip->irq, chip);
-	if (chip->ba0)
-		iounmap(chip->ba0);
-	if (chip->ba1)
-		iounmap(chip->ba1);
-	pci_release_regions(chip->pci);
-	pci_disable_device(chip->pci);
-
-	kfree(chip);
-	return 0;
-}
-
-static int snd_cs4281_dev_free(struct snd_device *device)
-{
-	struct cs4281 *chip = device->device_data;
-	return snd_cs4281_free(chip);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_cs4281_chip_init(struct cs4281 *chip); /* defined below */
 
-<<<<<<< HEAD
-static int __devinit snd_cs4281_create(struct snd_card *card,
-				       struct pci_dev *pci,
-				       struct cs4281 ** rchip,
-				       int dual_codec)
-{
-	struct cs4281 *chip;
-	unsigned int tmp;
-	int err;
-	static struct snd_device_ops ops = {
-		.dev_free =	snd_cs4281_dev_free,
-	};
-
-	*rchip = NULL;
-	if ((err = pci_enable_device(pci)) < 0)
-		return err;
-	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
-	if (chip == NULL) {
-		pci_disable_device(pci);
-		return -ENOMEM;
-	}
-=======
 static int snd_cs4281_create(struct snd_card *card,
 			     struct pci_dev *pci,
 			     int dual_codec)
@@ -1534,63 +1291,17 @@ static int snd_cs4281_create(struct snd_card *card,
 	err = pcim_enable_device(pci);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
 	pci_set_master(pci);
 	if (dual_codec < 0 || dual_codec > 3) {
-<<<<<<< HEAD
-		snd_printk(KERN_ERR "invalid dual_codec option %d\n", dual_codec);
-=======
 		dev_err(card->dev, "invalid dual_codec option %d\n", dual_codec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dual_codec = 0;
 	}
 	chip->dual_codec = dual_codec;
 
-<<<<<<< HEAD
-	if ((err = pci_request_regions(pci, "CS4281")) < 0) {
-		kfree(chip);
-		pci_disable_device(pci);
-		return err;
-	}
-	chip->ba0_addr = pci_resource_start(pci, 0);
-	chip->ba1_addr = pci_resource_start(pci, 1);
-
-	chip->ba0 = pci_ioremap_bar(pci, 0);
-	chip->ba1 = pci_ioremap_bar(pci, 1);
-	if (!chip->ba0 || !chip->ba1) {
-		snd_cs4281_free(chip);
-		return -ENOMEM;
-	}
-	
-	if (request_irq(pci->irq, snd_cs4281_interrupt, IRQF_SHARED,
-			KBUILD_MODNAME, chip)) {
-		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
-		snd_cs4281_free(chip);
-		return -ENOMEM;
-	}
-	chip->irq = pci->irq;
-
-	tmp = snd_cs4281_chip_init(chip);
-	if (tmp) {
-		snd_cs4281_free(chip);
-		return tmp;
-	}
-
-	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0) {
-		snd_cs4281_free(chip);
-		return err;
-	}
-
-	snd_cs4281_proc_init(chip);
-
-	snd_card_set_dev(card, &pci->dev);
-
-	*rchip = chip;
-=======
 	err = pcim_iomap_regions(pci, 0x03, "CS4281"); /* 2 BARs */
 	if (err < 0)
 		return err;
@@ -1614,7 +1325,6 @@ static int snd_cs4281_create(struct snd_card *card,
 		return err;
 
 	snd_cs4281_proc_init(chip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1635,12 +1345,8 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 		snd_cs4281_pokeBA0(chip, BA0_CFLR, BA0_CFLR_DEFAULT);
 		tmp = snd_cs4281_peekBA0(chip, BA0_CFLR);
 		if (tmp != BA0_CFLR_DEFAULT) {
-<<<<<<< HEAD
-			snd_printk(KERN_ERR "CFLR setup failed (0x%x)\n", tmp);
-=======
 			dev_err(chip->card->dev,
 				"CFLR setup failed (0x%x)\n", tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 	}
@@ -1650,14 +1356,6 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
          * space between 0e4h and 0ffh to be written. */	
 	snd_cs4281_pokeBA0(chip, BA0_CWPR, 0x4281);
 	
-<<<<<<< HEAD
-	if ((tmp = snd_cs4281_peekBA0(chip, BA0_SERC1)) != (BA0_SERC1_SO1EN | BA0_SERC1_AC97)) {
-		snd_printk(KERN_ERR "SERC1 AC'97 check failed (0x%x)\n", tmp);
-		return -EIO;
-	}
-	if ((tmp = snd_cs4281_peekBA0(chip, BA0_SERC2)) != (BA0_SERC2_SI1EN | BA0_SERC2_AC97)) {
-		snd_printk(KERN_ERR "SERC2 AC'97 check failed (0x%x)\n", tmp);
-=======
 	tmp = snd_cs4281_peekBA0(chip, BA0_SERC1);
 	if (tmp != (BA0_SERC1_SO1EN | BA0_SERC1_AC97)) {
 		dev_err(chip->card->dev,
@@ -1668,7 +1366,6 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 	if (tmp != (BA0_SERC2_SI1EN | BA0_SERC2_AC97)) {
 		dev_err(chip->card->dev,
 			"SERC2 AC'97 check failed (0x%x)\n", tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1730,11 +1427,7 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 		schedule_timeout_uninterruptible(1);
 	} while (time_after_eq(end_time, jiffies));
 
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "DLLRDY not seen\n");
-=======
 	dev_err(chip->card->dev, "DLLRDY not seen\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 
       __ok0:
@@ -1760,13 +1453,9 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 		schedule_timeout_uninterruptible(1);
 	} while (time_after_eq(end_time, jiffies));
 
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "never read codec ready from AC'97 (0x%x)\n", snd_cs4281_peekBA0(chip, BA0_ACSTS));
-=======
 	dev_err(chip->card->dev,
 		"never read codec ready from AC'97 (0x%x)\n",
 		snd_cs4281_peekBA0(chip, BA0_ACSTS));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 
       __ok1:
@@ -1777,12 +1466,8 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 				goto __codec2_ok;
 			schedule_timeout_uninterruptible(1);
 		} while (time_after_eq(end_time, jiffies));
-<<<<<<< HEAD
-		snd_printk(KERN_INFO "secondary codec doesn't respond. disable it...\n");
-=======
 		dev_info(chip->card->dev,
 			 "secondary codec doesn't respond. disable it...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->dual_codec = 0;
 	__codec2_ok: ;
 	}
@@ -1812,11 +1497,7 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 
 	if (--retry_count > 0)
 		goto __retry;
-<<<<<<< HEAD
-	snd_printk(KERN_ERR "never read ISV3 and ISV4 from AC'97\n");
-=======
 	dev_err(chip->card->dev, "never read ISV3 and ISV4 from AC'97\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 
       __ok2:
@@ -1879,10 +1560,6 @@ static int snd_cs4281_chip_init(struct cs4281 *chip)
 					BA0_HISR_DMA(1) |
 					BA0_HISR_DMA(2) |
 					BA0_HISR_DMA(3)));
-<<<<<<< HEAD
-	synchronize_irq(chip->irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2015,46 +1692,27 @@ static void snd_cs4281_midi_output_trigger(struct snd_rawmidi_substream *substre
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 }
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_cs4281_midi_output =
-=======
 static const struct snd_rawmidi_ops snd_cs4281_midi_output =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_cs4281_midi_output_open,
 	.close =	snd_cs4281_midi_output_close,
 	.trigger =	snd_cs4281_midi_output_trigger,
 };
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_cs4281_midi_input =
-=======
 static const struct snd_rawmidi_ops snd_cs4281_midi_input =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open = 	snd_cs4281_midi_input_open,
 	.close =	snd_cs4281_midi_input_close,
 	.trigger =	snd_cs4281_midi_input_trigger,
 };
 
-<<<<<<< HEAD
-static int __devinit snd_cs4281_midi(struct cs4281 * chip, int device,
-				     struct snd_rawmidi **rrawmidi)
-=======
 static int snd_cs4281_midi(struct cs4281 *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
-<<<<<<< HEAD
-	if (rrawmidi)
-		*rrawmidi = NULL;
-	if ((err = snd_rawmidi_new(chip->card, "CS4281", device, 1, 1, &rmidi)) < 0)
-=======
 	err = snd_rawmidi_new(chip->card, "CS4281", device, 1, 1, &rmidi);
 	if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(rmidi->name, "CS4281");
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_OUTPUT, &snd_cs4281_midi_output);
@@ -2062,11 +1720,6 @@ static int snd_cs4281_midi(struct cs4281 *chip, int device)
 	rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = chip;
 	chip->rmidi = rmidi;
-<<<<<<< HEAD
-	if (rrawmidi)
-		*rrawmidi = rmidi;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2171,13 +1824,8 @@ static void snd_cs4281_opl3_command(struct snd_opl3 *opl3, unsigned short cmd,
 	spin_unlock_irqrestore(&opl3->reg_lock, flags);
 }
 
-<<<<<<< HEAD
-static int __devinit snd_cs4281_probe(struct pci_dev *pci,
-				      const struct pci_device_id *pci_id)
-=======
 static int __snd_cs4281_probe(struct pci_dev *pci,
 			      const struct pci_device_id *pci_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -2192,41 +1840,6 @@ static int __snd_cs4281_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
-	if (err < 0)
-		return err;
-
-	if ((err = snd_cs4281_create(card, pci, &chip, dual_codec[dev])) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	card->private_data = chip;
-
-	if ((err = snd_cs4281_mixer(chip)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	if ((err = snd_cs4281_pcm(chip, 0, NULL)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	if ((err = snd_cs4281_midi(chip, 0, NULL)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	if ((err = snd_opl3_new(card, OPL3_HW_OPL3_CS4281, &opl3)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-	opl3->private_data = chip;
-	opl3->command = snd_cs4281_opl3_command;
-	snd_opl3_init(opl3);
-	if ((err = snd_opl3_hwdep_new(opl3, 0, 1, NULL)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
 				sizeof(*chip), &card);
 	if (err < 0)
@@ -2255,7 +1868,6 @@ static int __snd_cs4281_probe(struct pci_dev *pci,
 	err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_cs4281_create_gameport(chip);
 	strcpy(card->driver, "CS4281");
 	strcpy(card->shortname, "Cirrus Logic CS4281");
@@ -2264,45 +1876,25 @@ static int __snd_cs4281_probe(struct pci_dev *pci,
 		chip->ba0_addr,
 		chip->irq);
 
-<<<<<<< HEAD
-	if ((err = snd_card_register(card)) < 0) {
-		snd_card_free(card);
-		return err;
-	}
-=======
 	err = snd_card_register(card);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit snd_cs4281_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-=======
 static int snd_cs4281_probe(struct pci_dev *pci,
 			    const struct pci_device_id *pci_id)
 {
 	return snd_card_free_on_error(&pci->dev, __snd_cs4281_probe(pci, pci_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Power Management
  */
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-static int saved_regs[SUSPEND_REGISTERS] = {
-=======
 static const int saved_regs[SUSPEND_REGISTERS] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BA0_JSCTL,
 	BA0_GPIOR,
 	BA0_SSCR,
@@ -2320,25 +1912,14 @@ static const int saved_regs[SUSPEND_REGISTERS] = {
 
 #define CLKCR1_CKRA                             0x00010000L
 
-<<<<<<< HEAD
-static int cs4281_suspend(struct pci_dev *pci, pm_message_t state)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-=======
 static int cs4281_suspend(struct device *dev)
 {
 	struct snd_card *card = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cs4281 *chip = card->private_data;
 	u32 ulCLK;
 	unsigned int i;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
-<<<<<<< HEAD
-	snd_pcm_suspend_all(chip->pcm);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ac97_suspend(chip->ac97);
 	snd_ac97_suspend(chip->ac97_secondary);
 
@@ -2369,42 +1950,16 @@ static int cs4281_suspend(struct device *dev)
 	ulCLK = snd_cs4281_peekBA0(chip, BA0_CLKCR1);
 	ulCLK &= ~CLKCR1_CKRA;
 	snd_cs4281_pokeBA0(chip, BA0_CLKCR1, ulCLK);
-<<<<<<< HEAD
-
-	pci_disable_device(pci);
-	pci_save_state(pci);
-	pci_set_power_state(pci, pci_choose_state(pci, state));
-	return 0;
-}
-
-static int cs4281_resume(struct pci_dev *pci)
-{
-	struct snd_card *card = pci_get_drvdata(pci);
-=======
 	return 0;
 }
 
 static int cs4281_resume(struct device *dev)
 {
 	struct snd_card *card = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cs4281 *chip = card->private_data;
 	unsigned int i;
 	u32 ulCLK;
 
-<<<<<<< HEAD
-	pci_set_power_state(pci, PCI_D0);
-	pci_restore_state(pci);
-	if (pci_enable_device(pci) < 0) {
-		printk(KERN_ERR "cs4281: pci_enable_device failed, "
-		       "disabling device\n");
-		snd_card_disconnect(card);
-		return -EIO;
-	}
-	pci_set_master(pci);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ulCLK = snd_cs4281_peekBA0(chip, BA0_CLKCR1);
 	ulCLK |= CLKCR1_CKRA;
 	snd_cs4281_pokeBA0(chip, BA0_CLKCR1, ulCLK);
@@ -2426,33 +1981,6 @@ static int cs4281_resume(struct device *dev)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_PM */
-
-static struct pci_driver driver = {
-	.name = KBUILD_MODNAME,
-	.id_table = snd_cs4281_ids,
-	.probe = snd_cs4281_probe,
-	.remove = __devexit_p(snd_cs4281_remove),
-#ifdef CONFIG_PM
-	.suspend = cs4281_suspend,
-	.resume = cs4281_resume,
-#endif
-};
-	
-static int __init alsa_card_cs4281_init(void)
-{
-	return pci_register_driver(&driver);
-}
-
-static void __exit alsa_card_cs4281_exit(void)
-{
-	pci_unregister_driver(&driver);
-}
-
-module_init(alsa_card_cs4281_init)
-module_exit(alsa_card_cs4281_exit)
-=======
 
 static DEFINE_SIMPLE_DEV_PM_OPS(cs4281_pm, cs4281_suspend, cs4281_resume);
 
@@ -2466,4 +1994,3 @@ static struct pci_driver cs4281_driver = {
 };
 	
 module_pci_driver(cs4281_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -13,11 +13,7 @@ BEGIN {
 	for (i = 0; i < rep; ++i) {
 		tmp = $0
 		gsub(/\$\$/, i, tmp)
-<<<<<<< HEAD
-		gsub(/\$\#/, n, tmp)
-=======
 		gsub(/\$#/, n, tmp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gsub(/\$\*/, "$", tmp)
 		print tmp
 	}

@@ -1,25 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2009, Christoph Hellwig
  * All Rights Reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software Foundation,
- * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======
  * NOTE: none of these tracepoints shall be considered a stable kernel ABI
  * as they can change at any time.
  *
@@ -57,7 +40,6 @@
  *
  * Numbers describing space allocations (blocks, extents, inodes) should be
  * formatted in hexadecimal.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM xfs
@@ -75,14 +57,6 @@ struct xfs_da_args;
 struct xfs_da_node_entry;
 struct xfs_dquot;
 struct xfs_log_item;
-<<<<<<< HEAD
-struct xlog_ticket;
-struct log;
-struct xlog_recover;
-struct xlog_recover_item;
-struct xfs_buf_log_format;
-struct xfs_inode_log_format;
-=======
 struct xlog;
 struct xlog_ticket;
 struct xlog_recover;
@@ -113,7 +87,6 @@ struct xfs_bmap_intent;
 	{ XFS_ATTR_ROOT,	"ROOT" }, \
 	{ XFS_ATTR_SECURE,	"SECURE" }, \
 	{ XFS_ATTR_INCOMPLETE,	"INCOMPLETE" }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(xfs_attr_list_class,
 	TP_PROTO(struct xfs_attr_list_context *ctx),
@@ -124,37 +97,16 @@ DECLARE_EVENT_CLASS(xfs_attr_list_class,
 		__field(u32, hashval)
 		__field(u32, blkno)
 		__field(u32, offset)
-<<<<<<< HEAD
-		__field(void *, alist)
-=======
 		__field(void *, buffer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, bufsize)
 		__field(int, count)
 		__field(int, firstu)
 		__field(int, dupcnt)
-<<<<<<< HEAD
-		__field(int, flags)
-=======
 		__field(unsigned int, attr_filter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 	TP_fast_assign(
 		__entry->dev = VFS_I(ctx->dp)->i_sb->s_dev;
 		__entry->ino = ctx->dp->i_ino;
-<<<<<<< HEAD
-		__entry->hashval = ctx->cursor->hashval;
-		__entry->blkno = ctx->cursor->blkno;
-		__entry->offset = ctx->cursor->offset;
-		__entry->alist = ctx->alist;
-		__entry->bufsize = ctx->bufsize;
-		__entry->count = ctx->count;
-		__entry->firstu = ctx->firstu;
-		__entry->flags = ctx->flags;
-	),
-	TP_printk("dev %d:%d ino 0x%llx cursor h/b/o 0x%x/0x%x/%u dupcnt %u "
-		  "alist 0x%p size %u count %u firstu %u flags %d %s",
-=======
 		__entry->hashval = ctx->cursor.hashval;
 		__entry->blkno = ctx->cursor.blkno;
 		__entry->offset = ctx->cursor.offset;
@@ -166,28 +118,18 @@ DECLARE_EVENT_CLASS(xfs_attr_list_class,
 	),
 	TP_printk("dev %d:%d ino 0x%llx cursor h/b/o 0x%x/0x%x/%u dupcnt %u "
 		  "buffer %p size %u count %u firstu %u filter %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		   __entry->ino,
 		   __entry->hashval,
 		   __entry->blkno,
 		   __entry->offset,
 		   __entry->dupcnt,
-<<<<<<< HEAD
-		   __entry->alist,
-		   __entry->bufsize,
-		   __entry->count,
-		   __entry->firstu,
-		   __entry->flags,
-		   __print_flags(__entry->flags, "|", XFS_ATTR_FLAGS)
-=======
 		   __entry->buffer,
 		   __entry->bufsize,
 		   __entry->count,
 		   __entry->firstu,
 		   __print_flags(__entry->attr_filter, "|",
 				 XFS_ATTR_FILTER_FLAGS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	)
 )
 
@@ -203,13 +145,6 @@ DEFINE_ATTR_LIST_EVENT(xfs_attr_list_full);
 DEFINE_ATTR_LIST_EVENT(xfs_attr_list_add);
 DEFINE_ATTR_LIST_EVENT(xfs_attr_list_wrong_blk);
 DEFINE_ATTR_LIST_EVENT(xfs_attr_list_notfound);
-<<<<<<< HEAD
-
-DECLARE_EVENT_CLASS(xfs_perag_class,
-	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, int refcount,
-		 unsigned long caller_ip),
-	TP_ARGS(mp, agno, refcount, caller_ip),
-=======
 DEFINE_ATTR_LIST_EVENT(xfs_attr_leaf_list);
 DEFINE_ATTR_LIST_EVENT(xfs_attr_node_list);
 
@@ -236,25 +171,10 @@ TRACE_EVENT(xlog_intent_recovery_failed,
 DECLARE_EVENT_CLASS(xfs_perag_class,
 	TP_PROTO(struct xfs_perag *pag, unsigned long caller_ip),
 	TP_ARGS(pag, caller_ip),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_agnumber_t, agno)
 		__field(int, refcount)
-<<<<<<< HEAD
-		__field(unsigned long, caller_ip)
-	),
-	TP_fast_assign(
-		__entry->dev = mp->m_super->s_dev;
-		__entry->agno = agno;
-		__entry->refcount = refcount;
-		__entry->caller_ip = caller_ip;
-	),
-	TP_printk("dev %d:%d agno %u refcount %d caller %pf",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->agno,
-		  __entry->refcount,
-=======
 		__field(int, active_refcount)
 		__field(unsigned long, caller_ip)
 	),
@@ -270,22 +190,11 @@ DECLARE_EVENT_CLASS(xfs_perag_class,
 		  __entry->agno,
 		  __entry->refcount,
 		  __entry->active_refcount,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  (char *)__entry->caller_ip)
 );
 
 #define DEFINE_PERAG_REF_EVENT(name)	\
 DEFINE_EVENT(xfs_perag_class, name,	\
-<<<<<<< HEAD
-	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, int refcount,	\
-		 unsigned long caller_ip),					\
-	TP_ARGS(mp, agno, refcount, caller_ip))
-DEFINE_PERAG_REF_EVENT(xfs_perag_get);
-DEFINE_PERAG_REF_EVENT(xfs_perag_get_tag);
-DEFINE_PERAG_REF_EVENT(xfs_perag_put);
-DEFINE_PERAG_REF_EVENT(xfs_perag_set_reclaim);
-DEFINE_PERAG_REF_EVENT(xfs_perag_clear_reclaim);
-=======
 	TP_PROTO(struct xfs_perag *pag, unsigned long caller_ip), \
 	TP_ARGS(pag, caller_ip))
 DEFINE_PERAG_REF_EVENT(xfs_perag_get);
@@ -401,7 +310,6 @@ DEFINE_AG_EVENT(xfs_read_agf);
 DEFINE_AG_EVENT(xfs_alloc_read_agf);
 DEFINE_AG_EVENT(xfs_read_agi);
 DEFINE_AG_EVENT(xfs_ialloc_read_agi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(xfs_attr_list_node_descend,
 	TP_PROTO(struct xfs_attr_list_context *ctx,
@@ -413,36 +321,18 @@ TRACE_EVENT(xfs_attr_list_node_descend,
 		__field(u32, hashval)
 		__field(u32, blkno)
 		__field(u32, offset)
-<<<<<<< HEAD
-		__field(void *, alist)
-=======
 		__field(void *, buffer)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, bufsize)
 		__field(int, count)
 		__field(int, firstu)
 		__field(int, dupcnt)
-<<<<<<< HEAD
-		__field(int, flags)
-=======
 		__field(unsigned int, attr_filter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(u32, bt_hashval)
 		__field(u32, bt_before)
 	),
 	TP_fast_assign(
 		__entry->dev = VFS_I(ctx->dp)->i_sb->s_dev;
 		__entry->ino = ctx->dp->i_ino;
-<<<<<<< HEAD
-		__entry->hashval = ctx->cursor->hashval;
-		__entry->blkno = ctx->cursor->blkno;
-		__entry->offset = ctx->cursor->offset;
-		__entry->alist = ctx->alist;
-		__entry->bufsize = ctx->bufsize;
-		__entry->count = ctx->count;
-		__entry->firstu = ctx->firstu;
-		__entry->flags = ctx->flags;
-=======
 		__entry->hashval = ctx->cursor.hashval;
 		__entry->blkno = ctx->cursor.blkno;
 		__entry->offset = ctx->cursor.offset;
@@ -451,16 +341,11 @@ TRACE_EVENT(xfs_attr_list_node_descend,
 		__entry->count = ctx->count;
 		__entry->firstu = ctx->firstu;
 		__entry->attr_filter = ctx->attr_filter;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->bt_hashval = be32_to_cpu(btree->hashval);
 		__entry->bt_before = be32_to_cpu(btree->before);
 	),
 	TP_printk("dev %d:%d ino 0x%llx cursor h/b/o 0x%x/0x%x/%u dupcnt %u "
-<<<<<<< HEAD
-		  "alist 0x%p size %u count %u firstu %u flags %d %s "
-=======
 		  "buffer %p size %u count %u firstu %u filter %s "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "node hashval %u, node before %u",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		   __entry->ino,
@@ -468,74 +353,16 @@ TRACE_EVENT(xfs_attr_list_node_descend,
 		   __entry->blkno,
 		   __entry->offset,
 		   __entry->dupcnt,
-<<<<<<< HEAD
-		   __entry->alist,
-		   __entry->bufsize,
-		   __entry->count,
-		   __entry->firstu,
-		   __entry->flags,
-		   __print_flags(__entry->flags, "|", XFS_ATTR_FLAGS),
-=======
 		   __entry->buffer,
 		   __entry->bufsize,
 		   __entry->count,
 		   __entry->firstu,
 		   __print_flags(__entry->attr_filter, "|",
 				 XFS_ATTR_FILTER_FLAGS),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   __entry->bt_hashval,
 		   __entry->bt_before)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(xfs_iext_insert,
-	TP_PROTO(struct xfs_inode *ip, xfs_extnum_t idx,
-		 struct xfs_bmbt_irec *r, int state, unsigned long caller_ip),
-	TP_ARGS(ip, idx, r, state, caller_ip),
-	TP_STRUCT__entry(
-		__field(dev_t, dev)
-		__field(xfs_ino_t, ino)
-		__field(xfs_extnum_t, idx)
-		__field(xfs_fileoff_t, startoff)
-		__field(xfs_fsblock_t, startblock)
-		__field(xfs_filblks_t, blockcount)
-		__field(xfs_exntst_t, state)
-		__field(int, bmap_state)
-		__field(unsigned long, caller_ip)
-	),
-	TP_fast_assign(
-		__entry->dev = VFS_I(ip)->i_sb->s_dev;
-		__entry->ino = ip->i_ino;
-		__entry->idx = idx;
-		__entry->startoff = r->br_startoff;
-		__entry->startblock = r->br_startblock;
-		__entry->blockcount = r->br_blockcount;
-		__entry->state = r->br_state;
-		__entry->bmap_state = state;
-		__entry->caller_ip = caller_ip;
-	),
-	TP_printk("dev %d:%d ino 0x%llx state %s idx %ld "
-		  "offset %lld block %lld count %lld flag %d caller %pf",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->ino,
-		  __print_flags(__entry->bmap_state, "|", XFS_BMAP_EXT_FLAGS),
-		  (long)__entry->idx,
-		  __entry->startoff,
-		  (__int64_t)__entry->startblock,
-		  __entry->blockcount,
-		  __entry->state,
-		  (char *)__entry->caller_ip)
-);
-
-DECLARE_EVENT_CLASS(xfs_bmap_class,
-	TP_PROTO(struct xfs_inode *ip, xfs_extnum_t idx, int state,
-		 unsigned long caller_ip),
-	TP_ARGS(ip, idx, state, caller_ip),
-	TP_STRUCT__entry(
-		__field(dev_t, dev)
-		__field(xfs_ino_t, ino)
-		__field(xfs_extnum_t, idx)
-=======
 DECLARE_EVENT_CLASS(xfs_bmap_class,
 	TP_PROTO(struct xfs_inode *ip, struct xfs_iext_cursor *cur, int state,
 		 unsigned long caller_ip),
@@ -545,7 +372,6 @@ DECLARE_EVENT_CLASS(xfs_bmap_class,
 		__field(xfs_ino_t, ino)
 		__field(void *, leaf)
 		__field(int, pos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(xfs_fileoff_t, startoff)
 		__field(xfs_fsblock_t, startblock)
 		__field(xfs_filblks_t, blockcount)
@@ -554,16 +380,6 @@ DECLARE_EVENT_CLASS(xfs_bmap_class,
 		__field(unsigned long, caller_ip)
 	),
 	TP_fast_assign(
-<<<<<<< HEAD
-		struct xfs_ifork	*ifp = (state & BMAP_ATTRFORK) ?
-						ip->i_afp : &ip->i_df;
-		struct xfs_bmbt_irec	r;
-
-		xfs_bmbt_get_all(xfs_iext_get_ext(ifp, idx), &r);
-		__entry->dev = VFS_I(ip)->i_sb->s_dev;
-		__entry->ino = ip->i_ino;
-		__entry->idx = idx;
-=======
 		struct xfs_ifork	*ifp;
 		struct xfs_bmbt_irec	r;
 
@@ -573,7 +389,6 @@ DECLARE_EVENT_CLASS(xfs_bmap_class,
 		__entry->ino = ip->i_ino;
 		__entry->leaf = cur->leaf;
 		__entry->pos = cur->pos;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->startoff = r.br_startoff;
 		__entry->startblock = r.br_startblock;
 		__entry->blockcount = r.br_blockcount;
@@ -581,16 +396,6 @@ DECLARE_EVENT_CLASS(xfs_bmap_class,
 		__entry->bmap_state = state;
 		__entry->caller_ip = caller_ip;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d ino 0x%llx state %s idx %ld "
-		  "offset %lld block %lld count %lld flag %d caller %pf",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->ino,
-		  __print_flags(__entry->bmap_state, "|", XFS_BMAP_EXT_FLAGS),
-		  (long)__entry->idx,
-		  __entry->startoff,
-		  (__int64_t)__entry->startblock,
-=======
 	TP_printk("dev %d:%d ino 0x%llx state %s cur %p/%d "
 		  "fileoff 0x%llx startblock 0x%llx fsbcount 0x%llx flag %d caller %pS",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
@@ -600,7 +405,6 @@ DECLARE_EVENT_CLASS(xfs_bmap_class,
 		  __entry->pos,
 		  __entry->startoff,
 		  (int64_t)__entry->startblock,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->blockcount,
 		  __entry->state,
 		  (char *)__entry->caller_ip)
@@ -608,15 +412,6 @@ DECLARE_EVENT_CLASS(xfs_bmap_class,
 
 #define DEFINE_BMAP_EVENT(name) \
 DEFINE_EVENT(xfs_bmap_class, name, \
-<<<<<<< HEAD
-	TP_PROTO(struct xfs_inode *ip, xfs_extnum_t idx, int state, \
-		 unsigned long caller_ip), \
-	TP_ARGS(ip, idx, state, caller_ip))
-DEFINE_BMAP_EVENT(xfs_iext_remove);
-DEFINE_BMAP_EVENT(xfs_bmap_pre_update);
-DEFINE_BMAP_EVENT(xfs_bmap_post_update);
-DEFINE_BMAP_EVENT(xfs_extlist);
-=======
 	TP_PROTO(struct xfs_inode *ip, struct xfs_iext_cursor *cur, int state, \
 		 unsigned long caller_ip), \
 	TP_ARGS(ip, cur, state, caller_ip))
@@ -626,7 +421,6 @@ DEFINE_BMAP_EVENT(xfs_bmap_pre_update);
 DEFINE_BMAP_EVENT(xfs_bmap_post_update);
 DEFINE_BMAP_EVENT(xfs_read_extent);
 DEFINE_BMAP_EVENT(xfs_write_extent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(xfs_buf_class,
 	TP_PROTO(struct xfs_buf *bp, unsigned long caller_ip),
@@ -634,43 +428,23 @@ DECLARE_EVENT_CLASS(xfs_buf_class,
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_daddr_t, bno)
-<<<<<<< HEAD
-		__field(size_t, buffer_length)
-=======
 		__field(int, nblks)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, hold)
 		__field(int, pincount)
 		__field(unsigned, lockval)
 		__field(unsigned, flags)
 		__field(unsigned long, caller_ip)
-<<<<<<< HEAD
-	),
-	TP_fast_assign(
-		__entry->dev = bp->b_target->bt_dev;
-		__entry->bno = bp->b_bn;
-		__entry->buffer_length = bp->b_buffer_length;
-=======
 		__field(const void *, buf_ops)
 	),
 	TP_fast_assign(
 		__entry->dev = bp->b_target->bt_dev;
 		__entry->bno = xfs_buf_daddr(bp);
 		__entry->nblks = bp->b_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->hold = atomic_read(&bp->b_hold);
 		__entry->pincount = atomic_read(&bp->b_pin_count);
 		__entry->lockval = bp->b_sema.count;
 		__entry->flags = bp->b_flags;
 		__entry->caller_ip = caller_ip;
-<<<<<<< HEAD
-	),
-	TP_printk("dev %d:%d bno 0x%llx len 0x%zx hold %d pincount %d "
-		  "lock %d flags %s caller %pf",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  (unsigned long long)__entry->bno,
-		  __entry->buffer_length,
-=======
 		__entry->buf_ops = bp->b_ops;
 	),
 	TP_printk("dev %d:%d daddr 0x%llx bbcount 0x%x hold %d pincount %d "
@@ -678,15 +452,11 @@ DECLARE_EVENT_CLASS(xfs_buf_class,
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long long)__entry->bno,
 		  __entry->nblks,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->hold,
 		  __entry->pincount,
 		  __entry->lockval,
 		  __print_flags(__entry->flags, "|", XFS_BUF_FLAGS),
-<<<<<<< HEAD
-=======
 		  __entry->buf_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  (void *)__entry->caller_ip)
 )
 
@@ -699,33 +469,15 @@ DEFINE_BUF_EVENT(xfs_buf_free);
 DEFINE_BUF_EVENT(xfs_buf_hold);
 DEFINE_BUF_EVENT(xfs_buf_rele);
 DEFINE_BUF_EVENT(xfs_buf_iodone);
-<<<<<<< HEAD
-DEFINE_BUF_EVENT(xfs_buf_iorequest);
-DEFINE_BUF_EVENT(xfs_buf_bawrite);
-DEFINE_BUF_EVENT(xfs_buf_lock);
-DEFINE_BUF_EVENT(xfs_buf_lock_done);
-=======
 DEFINE_BUF_EVENT(xfs_buf_submit);
 DEFINE_BUF_EVENT(xfs_buf_lock);
 DEFINE_BUF_EVENT(xfs_buf_lock_done);
 DEFINE_BUF_EVENT(xfs_buf_trylock_fail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_BUF_EVENT(xfs_buf_trylock);
 DEFINE_BUF_EVENT(xfs_buf_unlock);
 DEFINE_BUF_EVENT(xfs_buf_iowait);
 DEFINE_BUF_EVENT(xfs_buf_iowait_done);
 DEFINE_BUF_EVENT(xfs_buf_delwri_queue);
-<<<<<<< HEAD
-DEFINE_BUF_EVENT(xfs_buf_delwri_dequeue);
-DEFINE_BUF_EVENT(xfs_buf_delwri_split);
-DEFINE_BUF_EVENT(xfs_buf_get_uncached);
-DEFINE_BUF_EVENT(xfs_bdstrat_shut);
-DEFINE_BUF_EVENT(xfs_buf_item_relse);
-DEFINE_BUF_EVENT(xfs_buf_item_iodone);
-DEFINE_BUF_EVENT(xfs_buf_item_iodone_async);
-DEFINE_BUF_EVENT(xfs_buf_error_relse);
-DEFINE_BUF_EVENT(xfs_trans_read_buf_io);
-=======
 DEFINE_BUF_EVENT(xfs_buf_delwri_queued);
 DEFINE_BUF_EVENT(xfs_buf_delwri_split);
 DEFINE_BUF_EVENT(xfs_buf_delwri_pushbuf);
@@ -734,18 +486,11 @@ DEFINE_BUF_EVENT(xfs_buf_item_relse);
 DEFINE_BUF_EVENT(xfs_buf_iodone_async);
 DEFINE_BUF_EVENT(xfs_buf_error_relse);
 DEFINE_BUF_EVENT(xfs_buf_drain_buftarg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_BUF_EVENT(xfs_trans_read_buf_shut);
 
 /* not really buffer traces, but the buf provides useful information */
 DEFINE_BUF_EVENT(xfs_btree_corrupt);
-<<<<<<< HEAD
-DEFINE_BUF_EVENT(xfs_da_btree_corrupt);
 DEFINE_BUF_EVENT(xfs_reset_dqcounts);
-DEFINE_BUF_EVENT(xfs_inode_item_push);
-=======
-DEFINE_BUF_EVENT(xfs_reset_dqcounts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* pass flags explicitly */
 DECLARE_EVENT_CLASS(xfs_buf_flags_class,
@@ -754,11 +499,7 @@ DECLARE_EVENT_CLASS(xfs_buf_flags_class,
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_daddr_t, bno)
-<<<<<<< HEAD
-		__field(size_t, buffer_length)
-=======
 		__field(unsigned int, length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, hold)
 		__field(int, pincount)
 		__field(unsigned, lockval)
@@ -767,32 +508,19 @@ DECLARE_EVENT_CLASS(xfs_buf_flags_class,
 	),
 	TP_fast_assign(
 		__entry->dev = bp->b_target->bt_dev;
-<<<<<<< HEAD
-		__entry->bno = bp->b_bn;
-		__entry->buffer_length = bp->b_buffer_length;
-=======
 		__entry->bno = xfs_buf_daddr(bp);
 		__entry->length = bp->b_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->flags = flags;
 		__entry->hold = atomic_read(&bp->b_hold);
 		__entry->pincount = atomic_read(&bp->b_pin_count);
 		__entry->lockval = bp->b_sema.count;
 		__entry->caller_ip = caller_ip;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d bno 0x%llx len 0x%zx hold %d pincount %d "
-		  "lock %d flags %s caller %pf",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  (unsigned long long)__entry->bno,
-		  __entry->buffer_length,
-=======
 	TP_printk("dev %d:%d daddr 0x%llx bbcount 0x%x hold %d pincount %d "
 		  "lock %d flags %s caller %pS",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long long)__entry->bno,
 		  __entry->length,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->hold,
 		  __entry->pincount,
 		  __entry->lockval,
@@ -809,40 +537,23 @@ DEFINE_BUF_FLAGS_EVENT(xfs_buf_get);
 DEFINE_BUF_FLAGS_EVENT(xfs_buf_read);
 
 TRACE_EVENT(xfs_buf_ioerror,
-<<<<<<< HEAD
-	TP_PROTO(struct xfs_buf *bp, int error, unsigned long caller_ip),
-=======
 	TP_PROTO(struct xfs_buf *bp, int error, xfs_failaddr_t caller_ip),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ARGS(bp, error, caller_ip),
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_daddr_t, bno)
-<<<<<<< HEAD
-		__field(size_t, buffer_length)
-=======
 		__field(unsigned int, length)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned, flags)
 		__field(int, hold)
 		__field(int, pincount)
 		__field(unsigned, lockval)
 		__field(int, error)
-<<<<<<< HEAD
-		__field(unsigned long, caller_ip)
-	),
-	TP_fast_assign(
-		__entry->dev = bp->b_target->bt_dev;
-		__entry->bno = bp->b_bn;
-		__entry->buffer_length = bp->b_buffer_length;
-=======
 		__field(xfs_failaddr_t, caller_ip)
 	),
 	TP_fast_assign(
 		__entry->dev = bp->b_target->bt_dev;
 		__entry->bno = xfs_buf_daddr(bp);
 		__entry->length = bp->b_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->hold = atomic_read(&bp->b_hold);
 		__entry->pincount = atomic_read(&bp->b_pin_count);
 		__entry->lockval = bp->b_sema.count;
@@ -850,19 +561,11 @@ TRACE_EVENT(xfs_buf_ioerror,
 		__entry->flags = bp->b_flags;
 		__entry->caller_ip = caller_ip;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d bno 0x%llx len 0x%zx hold %d pincount %d "
-		  "lock %d error %d flags %s caller %pf",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  (unsigned long long)__entry->bno,
-		  __entry->buffer_length,
-=======
 	TP_printk("dev %d:%d daddr 0x%llx bbcount 0x%x hold %d pincount %d "
 		  "lock %d error %d flags %s caller %pS",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long long)__entry->bno,
 		  __entry->length,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->hold,
 		  __entry->pincount,
 		  __entry->lockval,
@@ -877,11 +580,7 @@ DECLARE_EVENT_CLASS(xfs_buf_item_class,
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_daddr_t, buf_bno)
-<<<<<<< HEAD
-		__field(size_t, buf_len)
-=======
 		__field(unsigned int, buf_len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, buf_hold)
 		__field(int, buf_pincount)
 		__field(int, buf_lockval)
@@ -889,43 +588,24 @@ DECLARE_EVENT_CLASS(xfs_buf_item_class,
 		__field(unsigned, bli_recur)
 		__field(int, bli_refcount)
 		__field(unsigned, bli_flags)
-<<<<<<< HEAD
-		__field(void *, li_desc)
-		__field(unsigned, li_flags)
-=======
 		__field(unsigned long, li_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 	TP_fast_assign(
 		__entry->dev = bip->bli_buf->b_target->bt_dev;
 		__entry->bli_flags = bip->bli_flags;
 		__entry->bli_recur = bip->bli_recur;
 		__entry->bli_refcount = atomic_read(&bip->bli_refcount);
-<<<<<<< HEAD
-		__entry->buf_bno = bip->bli_buf->b_bn;
-		__entry->buf_len = bip->bli_buf->b_buffer_length;
-=======
 		__entry->buf_bno = xfs_buf_daddr(bip->bli_buf);
 		__entry->buf_len = bip->bli_buf->b_length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->buf_flags = bip->bli_buf->b_flags;
 		__entry->buf_hold = atomic_read(&bip->bli_buf->b_hold);
 		__entry->buf_pincount = atomic_read(&bip->bli_buf->b_pin_count);
 		__entry->buf_lockval = bip->bli_buf->b_sema.count;
-<<<<<<< HEAD
-		__entry->li_desc = bip->bli_item.li_desc;
-		__entry->li_flags = bip->bli_item.li_flags;
-	),
-	TP_printk("dev %d:%d bno 0x%llx len 0x%zx hold %d pincount %d "
-		  "lock %d flags %s recur %d refcount %d bliflags %s "
-		  "lidesc 0x%p liflags %s",
-=======
 		__entry->li_flags = bip->bli_item.li_flags;
 	),
 	TP_printk("dev %d:%d daddr 0x%llx bbcount 0x%x hold %d pincount %d "
 		  "lock %d flags %s recur %d refcount %d bliflags %s "
 		  "liflags %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  (unsigned long long)__entry->buf_bno,
 		  __entry->buf_len,
@@ -936,10 +616,6 @@ DECLARE_EVENT_CLASS(xfs_buf_item_class,
 		  __entry->bli_recur,
 		  __entry->bli_refcount,
 		  __print_flags(__entry->bli_flags, "|", XFS_BLI_FLAGS),
-<<<<<<< HEAD
-		  __entry->li_desc,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __print_flags(__entry->li_flags, "|", XFS_LI_FLAGS))
 )
 
@@ -948,20 +624,6 @@ DEFINE_EVENT(xfs_buf_item_class, name, \
 	TP_PROTO(struct xfs_buf_log_item *bip), \
 	TP_ARGS(bip))
 DEFINE_BUF_ITEM_EVENT(xfs_buf_item_size);
-<<<<<<< HEAD
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_size_stale);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_format);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_format_stale);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_pin);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_unpin);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_unpin_stale);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_trylock);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_unlock);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_unlock_stale);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_committed);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_push);
-DEFINE_BUF_ITEM_EVENT(xfs_buf_item_pushbuf);
-=======
 DEFINE_BUF_ITEM_EVENT(xfs_buf_item_size_ordered);
 DEFINE_BUF_ITEM_EVENT(xfs_buf_item_size_stale);
 DEFINE_BUF_ITEM_EVENT(xfs_buf_item_format);
@@ -973,7 +635,6 @@ DEFINE_BUF_ITEM_EVENT(xfs_buf_item_unpin_stale);
 DEFINE_BUF_ITEM_EVENT(xfs_buf_item_release);
 DEFINE_BUF_ITEM_EVENT(xfs_buf_item_committed);
 DEFINE_BUF_ITEM_EVENT(xfs_buf_item_push);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_BUF_ITEM_EVENT(xfs_trans_get_buf);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_get_buf_recur);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_getsb);
@@ -982,17 +643,12 @@ DEFINE_BUF_ITEM_EVENT(xfs_trans_read_buf);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_read_buf_recur);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_log_buf);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_brelse);
-<<<<<<< HEAD
-=======
 DEFINE_BUF_ITEM_EVENT(xfs_trans_bdetach);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_BUF_ITEM_EVENT(xfs_trans_bjoin);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_bhold);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_bhold_release);
 DEFINE_BUF_ITEM_EVENT(xfs_trans_binval);
 
-<<<<<<< HEAD
-=======
 DECLARE_EVENT_CLASS(xfs_filestream_class,
 	TP_PROTO(struct xfs_perag *pag, xfs_ino_t ino),
 	TP_ARGS(pag, ino),
@@ -1052,7 +708,6 @@ TRACE_EVENT(xfs_filestream_pick,
 		  __entry->free)
 );
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DECLARE_EVENT_CLASS(xfs_lock_class,
 	TP_PROTO(struct xfs_inode *ip, unsigned lock_flags,
 		 unsigned long caller_ip),
@@ -1069,11 +724,7 @@ DECLARE_EVENT_CLASS(xfs_lock_class,
 		__entry->lock_flags = lock_flags;
 		__entry->caller_ip = caller_ip;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d ino 0x%llx flags %s caller %pf",
-=======
 	TP_printk("dev %d:%d ino 0x%llx flags %s caller %pS",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __print_flags(__entry->lock_flags, "|", XFS_LOCK_FLAGS),
@@ -1096,27 +747,17 @@ DECLARE_EVENT_CLASS(xfs_inode_class,
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_ino_t, ino)
-<<<<<<< HEAD
-=======
 		__field(unsigned long, iflags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 	TP_fast_assign(
 		__entry->dev = VFS_I(ip)->i_sb->s_dev;
 		__entry->ino = ip->i_ino;
-<<<<<<< HEAD
-	),
-	TP_printk("dev %d:%d ino 0x%llx",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->ino)
-=======
 		__entry->iflags = ip->i_flags;
 	),
 	TP_printk("dev %d:%d ino 0x%llx iflags 0x%lx",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->iflags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 )
 
 #define DEFINE_INODE_EVENT(name) \
@@ -1124,30 +765,20 @@ DEFINE_EVENT(xfs_inode_class, name, \
 	TP_PROTO(struct xfs_inode *ip), \
 	TP_ARGS(ip))
 DEFINE_INODE_EVENT(xfs_iget_skip);
-<<<<<<< HEAD
-DEFINE_INODE_EVENT(xfs_iget_reclaim);
-DEFINE_INODE_EVENT(xfs_iget_reclaim_fail);
-=======
 DEFINE_INODE_EVENT(xfs_iget_recycle);
 DEFINE_INODE_EVENT(xfs_iget_recycle_fail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_INODE_EVENT(xfs_iget_hit);
 DEFINE_INODE_EVENT(xfs_iget_miss);
 
 DEFINE_INODE_EVENT(xfs_getattr);
 DEFINE_INODE_EVENT(xfs_setattr);
 DEFINE_INODE_EVENT(xfs_readlink);
-<<<<<<< HEAD
-DEFINE_INODE_EVENT(xfs_alloc_file_space);
-DEFINE_INODE_EVENT(xfs_free_file_space);
-=======
 DEFINE_INODE_EVENT(xfs_inactive_symlink);
 DEFINE_INODE_EVENT(xfs_alloc_file_space);
 DEFINE_INODE_EVENT(xfs_free_file_space);
 DEFINE_INODE_EVENT(xfs_zero_file_space);
 DEFINE_INODE_EVENT(xfs_collapse_file_space);
 DEFINE_INODE_EVENT(xfs_insert_file_space);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_INODE_EVENT(xfs_readdir);
 #ifdef CONFIG_XFS_POSIX_ACL
 DEFINE_INODE_EVENT(xfs_get_acl);
@@ -1159,18 +790,11 @@ DEFINE_INODE_EVENT(xfs_ioctl_setattr);
 DEFINE_INODE_EVENT(xfs_dir_fsync);
 DEFINE_INODE_EVENT(xfs_file_fsync);
 DEFINE_INODE_EVENT(xfs_destroy_inode);
-<<<<<<< HEAD
-DEFINE_INODE_EVENT(xfs_dirty_inode);
-DEFINE_INODE_EVENT(xfs_evict_inode);
-=======
 DEFINE_INODE_EVENT(xfs_update_time);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_INODE_EVENT(xfs_dquot_dqalloc);
 DEFINE_INODE_EVENT(xfs_dquot_dqdetach);
 
-<<<<<<< HEAD
-=======
 DEFINE_INODE_EVENT(xfs_inode_set_eofblocks_tag);
 DEFINE_INODE_EVENT(xfs_inode_clear_eofblocks_tag);
 DEFINE_INODE_EVENT(xfs_inode_free_eofblocks_invalid);
@@ -1213,7 +837,6 @@ TRACE_EVENT(xfs_filemap_fault,
 		  __entry->write_fault)
 )
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DECLARE_EVENT_CLASS(xfs_iref_class,
 	TP_PROTO(struct xfs_inode *ip, unsigned long caller_ip),
 	TP_ARGS(ip, caller_ip),
@@ -1231,11 +854,7 @@ DECLARE_EVENT_CLASS(xfs_iref_class,
 		__entry->pincount = atomic_read(&ip->i_pincount);
 		__entry->caller_ip = caller_ip;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d ino 0x%llx count %d pincount %d caller %pf",
-=======
 	TP_printk("dev %d:%d ino 0x%llx count %d pincount %d caller %pS",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->count,
@@ -1243,8 +862,6 @@ DECLARE_EVENT_CLASS(xfs_iref_class,
 		  (char *)__entry->caller_ip)
 )
 
-<<<<<<< HEAD
-=======
 TRACE_EVENT(xfs_iomap_prealloc_size,
 	TP_PROTO(struct xfs_inode *ip, xfs_fsblock_t blocks, int shift,
 		 unsigned int writeio_blocks),
@@ -1322,26 +939,17 @@ TRACE_EVENT(xfs_irec_merge_post,
 		  __entry->holemask)
 )
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFINE_IREF_EVENT(name) \
 DEFINE_EVENT(xfs_iref_class, name, \
 	TP_PROTO(struct xfs_inode *ip, unsigned long caller_ip), \
 	TP_ARGS(ip, caller_ip))
-<<<<<<< HEAD
-DEFINE_IREF_EVENT(xfs_ihold);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_IREF_EVENT(xfs_irele);
 DEFINE_IREF_EVENT(xfs_inode_pin);
 DEFINE_IREF_EVENT(xfs_inode_unpin);
 DEFINE_IREF_EVENT(xfs_inode_unpin_nowait);
 
 DECLARE_EVENT_CLASS(xfs_namespace_class,
-<<<<<<< HEAD
-	TP_PROTO(struct xfs_inode *dp, struct xfs_name *name),
-=======
 	TP_PROTO(struct xfs_inode *dp, const struct xfs_name *name),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ARGS(dp, name),
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
@@ -1364,11 +972,7 @@ DECLARE_EVENT_CLASS(xfs_namespace_class,
 
 #define DEFINE_NAMESPACE_EVENT(name) \
 DEFINE_EVENT(xfs_namespace_class, name, \
-<<<<<<< HEAD
-	TP_PROTO(struct xfs_inode *dp, struct xfs_name *name), \
-=======
 	TP_PROTO(struct xfs_inode *dp, const struct xfs_name *name), \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ARGS(dp, name))
 DEFINE_NAMESPACE_EVENT(xfs_remove);
 DEFINE_NAMESPACE_EVENT(xfs_link);
@@ -1416,46 +1020,6 @@ DECLARE_EVENT_CLASS(xfs_dquot_class,
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(u32, id)
-<<<<<<< HEAD
-		__field(unsigned, flags)
-		__field(unsigned, nrefs)
-		__field(unsigned long long, res_bcount)
-		__field(unsigned long long, bcount)
-		__field(unsigned long long, icount)
-		__field(unsigned long long, blk_hardlimit)
-		__field(unsigned long long, blk_softlimit)
-		__field(unsigned long long, ino_hardlimit)
-		__field(unsigned long long, ino_softlimit)
-	), \
-	TP_fast_assign(
-		__entry->dev = dqp->q_mount->m_super->s_dev;
-		__entry->id = be32_to_cpu(dqp->q_core.d_id);
-		__entry->flags = dqp->dq_flags;
-		__entry->nrefs = dqp->q_nrefs;
-		__entry->res_bcount = dqp->q_res_bcount;
-		__entry->bcount = be64_to_cpu(dqp->q_core.d_bcount);
-		__entry->icount = be64_to_cpu(dqp->q_core.d_icount);
-		__entry->blk_hardlimit =
-			be64_to_cpu(dqp->q_core.d_blk_hardlimit);
-		__entry->blk_softlimit =
-			be64_to_cpu(dqp->q_core.d_blk_softlimit);
-		__entry->ino_hardlimit =
-			be64_to_cpu(dqp->q_core.d_ino_hardlimit);
-		__entry->ino_softlimit =
-			be64_to_cpu(dqp->q_core.d_ino_softlimit);
-	),
-	TP_printk("dev %d:%d id 0x%x flags %s nrefs %u res_bc 0x%llx "
-		  "bcnt 0x%llx bhardlimit 0x%llx bsoftlimit 0x%llx "
-		  "icnt 0x%llx ihardlimit 0x%llx isoftlimit 0x%llx]",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->id,
-		  __print_flags(__entry->flags, "|", XFS_DQ_FLAGS),
-		  __entry->nrefs,
-		  __entry->res_bcount,
-		  __entry->bcount,
-		  __entry->blk_hardlimit,
-		  __entry->blk_softlimit,
-=======
 		__field(xfs_dqtype_t, type)
 		__field(unsigned, flags)
 		__field(unsigned, nrefs)
@@ -1515,7 +1079,6 @@ DECLARE_EVENT_CLASS(xfs_dquot_class,
 		  __entry->rtbcount,
 		  __entry->rtb_hardlimit,
 		  __entry->rtb_softlimit,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->icount,
 		  __entry->ino_hardlimit,
 		  __entry->ino_softlimit)
@@ -1541,24 +1104,11 @@ DEFINE_DQUOT_EVENT(xfs_dqget_miss);
 DEFINE_DQUOT_EVENT(xfs_dqget_freeing);
 DEFINE_DQUOT_EVENT(xfs_dqget_dup);
 DEFINE_DQUOT_EVENT(xfs_dqput);
-<<<<<<< HEAD
-DEFINE_DQUOT_EVENT(xfs_dqput_wait);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_DQUOT_EVENT(xfs_dqput_free);
 DEFINE_DQUOT_EVENT(xfs_dqrele);
 DEFINE_DQUOT_EVENT(xfs_dqflush);
 DEFINE_DQUOT_EVENT(xfs_dqflush_force);
 DEFINE_DQUOT_EVENT(xfs_dqflush_done);
-<<<<<<< HEAD
-
-DECLARE_EVENT_CLASS(xfs_loggrant_class,
-	TP_PROTO(struct log *log, struct xlog_ticket *tic),
-	TP_ARGS(log, tic),
-	TP_STRUCT__entry(
-		__field(dev_t, dev)
-		__field(unsigned, trans_type)
-=======
 DEFINE_DQUOT_EVENT(xfs_trans_apply_dquot_deltas_before);
 DEFINE_DQUOT_EVENT(xfs_trans_apply_dquot_deltas_after);
 
@@ -1668,7 +1218,6 @@ DECLARE_EVENT_CLASS(xfs_loggrant_class,
 	TP_ARGS(log, tic),
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(char, ocnt)
 		__field(char, cnt)
 		__field(int, curr_res)
@@ -1686,10 +1235,6 @@ DECLARE_EVENT_CLASS(xfs_loggrant_class,
 	),
 	TP_fast_assign(
 		__entry->dev = log->l_mp->m_super->s_dev;
-<<<<<<< HEAD
-		__entry->trans_type = tic->t_trans_type;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->ocnt = tic->t_ocnt;
 		__entry->cnt = tic->t_cnt;
 		__entry->curr_res = tic->t_curr_res;
@@ -1707,21 +1252,13 @@ DECLARE_EVENT_CLASS(xfs_loggrant_class,
 		__entry->curr_block = log->l_curr_block;
 		__entry->tail_lsn = atomic64_read(&log->l_tail_lsn);
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d type %s t_ocnt %u t_cnt %u t_curr_res %u "
-=======
 	TP_printk("dev %d:%d t_ocnt %u t_cnt %u t_curr_res %u "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "t_unit_res %u t_flags %s reserveq %s "
 		  "writeq %s grant_reserve_cycle %d "
 		  "grant_reserve_bytes %d grant_write_cycle %d "
 		  "grant_write_bytes %d curr_cycle %d curr_block %d "
 		  "tail_cycle %d tail_block %d",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
-<<<<<<< HEAD
-		  __print_symbolic(__entry->trans_type, XFS_TRANS_TYPES),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->ocnt,
 		  __entry->cnt,
 		  __entry->curr_res,
@@ -1742,15 +1279,8 @@ DECLARE_EVENT_CLASS(xfs_loggrant_class,
 
 #define DEFINE_LOGGRANT_EVENT(name) \
 DEFINE_EVENT(xfs_loggrant_class, name, \
-<<<<<<< HEAD
-	TP_PROTO(struct log *log, struct xlog_ticket *tic), \
-	TP_ARGS(log, tic))
-DEFINE_LOGGRANT_EVENT(xfs_log_done_nonperm);
-DEFINE_LOGGRANT_EVENT(xfs_log_done_perm);
-=======
 	TP_PROTO(struct xlog *log, struct xlog_ticket *tic), \
 	TP_ARGS(log, tic))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_LOGGRANT_EVENT(xfs_log_umount_write);
 DEFINE_LOGGRANT_EVENT(xfs_log_grant_sleep);
 DEFINE_LOGGRANT_EVENT(xfs_log_grant_wake);
@@ -1759,14 +1289,6 @@ DEFINE_LOGGRANT_EVENT(xfs_log_reserve);
 DEFINE_LOGGRANT_EVENT(xfs_log_reserve_exit);
 DEFINE_LOGGRANT_EVENT(xfs_log_regrant);
 DEFINE_LOGGRANT_EVENT(xfs_log_regrant_exit);
-<<<<<<< HEAD
-DEFINE_LOGGRANT_EVENT(xfs_log_regrant_reserve_enter);
-DEFINE_LOGGRANT_EVENT(xfs_log_regrant_reserve_exit);
-DEFINE_LOGGRANT_EVENT(xfs_log_regrant_reserve_sub);
-DEFINE_LOGGRANT_EVENT(xfs_log_ungrant_enter);
-DEFINE_LOGGRANT_EVENT(xfs_log_ungrant_exit);
-DEFINE_LOGGRANT_EVENT(xfs_log_ungrant_sub);
-=======
 DEFINE_LOGGRANT_EVENT(xfs_log_ticket_regrant);
 DEFINE_LOGGRANT_EVENT(xfs_log_ticket_regrant_exit);
 DEFINE_LOGGRANT_EVENT(xfs_log_ticket_regrant_sub);
@@ -1774,7 +1296,6 @@ DEFINE_LOGGRANT_EVENT(xfs_log_ticket_ungrant);
 DEFINE_LOGGRANT_EVENT(xfs_log_ticket_ungrant_sub);
 DEFINE_LOGGRANT_EVENT(xfs_log_ticket_ungrant_exit);
 DEFINE_LOGGRANT_EVENT(xfs_log_cil_wait);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(xfs_log_item_class,
 	TP_PROTO(struct xfs_log_item *lip),
@@ -1783,29 +1304,17 @@ DECLARE_EVENT_CLASS(xfs_log_item_class,
 		__field(dev_t, dev)
 		__field(void *, lip)
 		__field(uint, type)
-<<<<<<< HEAD
-		__field(uint, flags)
-		__field(xfs_lsn_t, lsn)
-	),
-	TP_fast_assign(
-		__entry->dev = lip->li_mountp->m_super->s_dev;
-=======
 		__field(unsigned long, flags)
 		__field(xfs_lsn_t, lsn)
 	),
 	TP_fast_assign(
 		__entry->dev = lip->li_log->l_mp->m_super->s_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->lip = lip;
 		__entry->type = lip->li_type;
 		__entry->flags = lip->li_flags;
 		__entry->lsn = lip->li_lsn;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d lip 0x%p lsn %d/%d type %s flags %s",
-=======
 	TP_printk("dev %d:%d lip %p lsn %d/%d type %s flags %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->lip,
 		  CYCLE_LSN(__entry->lsn), BLOCK_LSN(__entry->lsn),
@@ -1813,8 +1322,6 @@ DECLARE_EVENT_CLASS(xfs_log_item_class,
 		  __print_flags(__entry->flags, "|", XFS_LI_FLAGS))
 )
 
-<<<<<<< HEAD
-=======
 TRACE_EVENT(xfs_log_force,
 	TP_PROTO(struct xfs_mount *mp, xfs_lsn_t lsn, unsigned long caller_ip),
 	TP_ARGS(mp, lsn, caller_ip),
@@ -1833,23 +1340,11 @@ TRACE_EVENT(xfs_log_force,
 		  __entry->lsn, (void *)__entry->caller_ip)
 )
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFINE_LOG_ITEM_EVENT(name) \
 DEFINE_EVENT(xfs_log_item_class, name, \
 	TP_PROTO(struct xfs_log_item *lip), \
 	TP_ARGS(lip))
 DEFINE_LOG_ITEM_EVENT(xfs_ail_push);
-<<<<<<< HEAD
-DEFINE_LOG_ITEM_EVENT(xfs_ail_pushbuf);
-DEFINE_LOG_ITEM_EVENT(xfs_ail_pushbuf_pinned);
-DEFINE_LOG_ITEM_EVENT(xfs_ail_pinned);
-DEFINE_LOG_ITEM_EVENT(xfs_ail_locked);
-
-
-DECLARE_EVENT_CLASS(xfs_file_class,
-	TP_PROTO(struct xfs_inode *ip, size_t count, loff_t offset, int flags),
-	TP_ARGS(ip, count, offset, flags),
-=======
 DEFINE_LOG_ITEM_EVENT(xfs_ail_pinned);
 DEFINE_LOG_ITEM_EVENT(xfs_ail_locked);
 DEFINE_LOG_ITEM_EVENT(xfs_ail_flushing);
@@ -1918,27 +1413,12 @@ TRACE_EVENT(xfs_log_assign_tail_lsn,
 DECLARE_EVENT_CLASS(xfs_file_class,
 	TP_PROTO(struct kiocb *iocb, struct iov_iter *iter),
 	TP_ARGS(iocb, iter),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_ino_t, ino)
 		__field(xfs_fsize_t, size)
 		__field(loff_t, offset)
 		__field(size_t, count)
-<<<<<<< HEAD
-		__field(int, flags)
-	),
-	TP_fast_assign(
-		__entry->dev = VFS_I(ip)->i_sb->s_dev;
-		__entry->ino = ip->i_ino;
-		__entry->size = ip->i_d.di_size;
-		__entry->offset = offset;
-		__entry->count = count;
-		__entry->flags = flags;
-	),
-	TP_printk("dev %d:%d ino 0x%llx size 0x%llx "
-		  "offset 0x%llx count 0x%zx ioflags %s",
-=======
 	),
 	TP_fast_assign(
 		__entry->dev = file_inode(iocb->ki_filp)->i_sb->s_dev;
@@ -1948,79 +1428,15 @@ DECLARE_EVENT_CLASS(xfs_file_class,
 		__entry->count = iov_iter_count(iter);
 	),
 	TP_printk("dev %d:%d ino 0x%llx disize 0x%llx pos 0x%llx bytecount 0x%zx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->size,
 		  __entry->offset,
-<<<<<<< HEAD
-		  __entry->count,
-		  __print_flags(__entry->flags, "|", XFS_IO_FLAGS))
-=======
 		  __entry->count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 )
 
 #define DEFINE_RW_EVENT(name)		\
 DEFINE_EVENT(xfs_file_class, name,	\
-<<<<<<< HEAD
-	TP_PROTO(struct xfs_inode *ip, size_t count, loff_t offset, int flags),	\
-	TP_ARGS(ip, count, offset, flags))
-DEFINE_RW_EVENT(xfs_file_read);
-DEFINE_RW_EVENT(xfs_file_buffered_write);
-DEFINE_RW_EVENT(xfs_file_direct_write);
-DEFINE_RW_EVENT(xfs_file_splice_read);
-DEFINE_RW_EVENT(xfs_file_splice_write);
-
-DECLARE_EVENT_CLASS(xfs_page_class,
-	TP_PROTO(struct inode *inode, struct page *page, unsigned long off),
-	TP_ARGS(inode, page, off),
-	TP_STRUCT__entry(
-		__field(dev_t, dev)
-		__field(xfs_ino_t, ino)
-		__field(pgoff_t, pgoff)
-		__field(loff_t, size)
-		__field(unsigned long, offset)
-		__field(int, delalloc)
-		__field(int, unwritten)
-	),
-	TP_fast_assign(
-		int delalloc = -1, unwritten = -1;
-
-		if (page_has_buffers(page))
-			xfs_count_page_state(page, &delalloc, &unwritten);
-		__entry->dev = inode->i_sb->s_dev;
-		__entry->ino = XFS_I(inode)->i_ino;
-		__entry->pgoff = page_offset(page);
-		__entry->size = i_size_read(inode);
-		__entry->offset = off;
-		__entry->delalloc = delalloc;
-		__entry->unwritten = unwritten;
-	),
-	TP_printk("dev %d:%d ino 0x%llx pgoff 0x%lx size 0x%llx offset %lx "
-		  "delalloc %d unwritten %d",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->ino,
-		  __entry->pgoff,
-		  __entry->size,
-		  __entry->offset,
-		  __entry->delalloc,
-		  __entry->unwritten)
-)
-
-#define DEFINE_PAGE_EVENT(name)		\
-DEFINE_EVENT(xfs_page_class, name,	\
-	TP_PROTO(struct inode *inode, struct page *page, unsigned long off),	\
-	TP_ARGS(inode, page, off))
-DEFINE_PAGE_EVENT(xfs_writepage);
-DEFINE_PAGE_EVENT(xfs_releasepage);
-DEFINE_PAGE_EVENT(xfs_invalidatepage);
-
-DECLARE_EVENT_CLASS(xfs_imap_class,
-	TP_PROTO(struct xfs_inode *ip, xfs_off_t offset, ssize_t count,
-		 int type, struct xfs_bmbt_irec *irec),
-	TP_ARGS(ip, offset, count, type, irec),
-=======
 	TP_PROTO(struct kiocb *iocb, struct iov_iter *iter),		\
 	TP_ARGS(iocb, iter))
 DEFINE_RW_EVENT(xfs_file_buffered_read);
@@ -2035,18 +1451,13 @@ DECLARE_EVENT_CLASS(xfs_imap_class,
 	TP_PROTO(struct xfs_inode *ip, xfs_off_t offset, ssize_t count,
 		 int whichfork, struct xfs_bmbt_irec *irec),
 	TP_ARGS(ip, offset, count, whichfork, irec),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_ino_t, ino)
 		__field(loff_t, size)
 		__field(loff_t, offset)
 		__field(size_t, count)
-<<<<<<< HEAD
-		__field(int, type)
-=======
 		__field(int, whichfork)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(xfs_fileoff_t, startoff)
 		__field(xfs_fsblock_t, startblock)
 		__field(xfs_filblks_t, blockcount)
@@ -2054,50 +1465,21 @@ DECLARE_EVENT_CLASS(xfs_imap_class,
 	TP_fast_assign(
 		__entry->dev = VFS_I(ip)->i_sb->s_dev;
 		__entry->ino = ip->i_ino;
-<<<<<<< HEAD
-		__entry->size = ip->i_d.di_size;
-		__entry->offset = offset;
-		__entry->count = count;
-		__entry->type = type;
-=======
 		__entry->size = ip->i_disk_size;
 		__entry->offset = offset;
 		__entry->count = count;
 		__entry->whichfork = whichfork;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->startoff = irec ? irec->br_startoff : 0;
 		__entry->startblock = irec ? irec->br_startblock : 0;
 		__entry->blockcount = irec ? irec->br_blockcount : 0;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d ino 0x%llx size 0x%llx offset 0x%llx count %zd "
-		  "type %s startoff 0x%llx startblock %lld blockcount 0x%llx",
-=======
 	TP_printk("dev %d:%d ino 0x%llx disize 0x%llx pos 0x%llx bytecount 0x%zx "
 		  "fork %s startoff 0x%llx startblock 0x%llx fsbcount 0x%llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->size,
 		  __entry->offset,
 		  __entry->count,
-<<<<<<< HEAD
-		  __print_symbolic(__entry->type, XFS_IO_TYPES),
-		  __entry->startoff,
-		  (__int64_t)__entry->startblock,
-		  __entry->blockcount)
-)
-
-#define DEFINE_IOMAP_EVENT(name)	\
-DEFINE_EVENT(xfs_imap_class, name,	\
-	TP_PROTO(struct xfs_inode *ip, xfs_off_t offset, ssize_t count,	\
-		 int type, struct xfs_bmbt_irec *irec),		\
-	TP_ARGS(ip, offset, count, type, irec))
-DEFINE_IOMAP_EVENT(xfs_map_blocks_found);
-DEFINE_IOMAP_EVENT(xfs_map_blocks_alloc);
-DEFINE_IOMAP_EVENT(xfs_get_blocks_found);
-DEFINE_IOMAP_EVENT(xfs_get_blocks_alloc);
-=======
 		  __print_symbolic(__entry->whichfork, XFS_WHICHFORK_STRINGS),
 		  __entry->startoff,
 		  (int64_t)__entry->startblock,
@@ -2113,7 +1495,6 @@ DEFINE_IMAP_EVENT(xfs_map_blocks_found);
 DEFINE_IMAP_EVENT(xfs_map_blocks_alloc);
 DEFINE_IMAP_EVENT(xfs_iomap_alloc);
 DEFINE_IMAP_EVENT(xfs_iomap_found);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(xfs_simple_io_class,
 	TP_PROTO(struct xfs_inode *ip, xfs_off_t offset, ssize_t count),
@@ -2130,20 +1511,12 @@ DECLARE_EVENT_CLASS(xfs_simple_io_class,
 		__entry->dev = VFS_I(ip)->i_sb->s_dev;
 		__entry->ino = ip->i_ino;
 		__entry->isize = VFS_I(ip)->i_size;
-<<<<<<< HEAD
-		__entry->disize = ip->i_d.di_size;
-=======
 		__entry->disize = ip->i_disk_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->offset = offset;
 		__entry->count = count;
 	),
 	TP_printk("dev %d:%d ino 0x%llx isize 0x%llx disize 0x%llx "
-<<<<<<< HEAD
-		  "offset 0x%llx count %zd",
-=======
 		  "pos 0x%llx bytecount 0x%zx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->isize,
@@ -2158,17 +1531,12 @@ DEFINE_EVENT(xfs_simple_io_class, name,	\
 	TP_ARGS(ip, offset, count))
 DEFINE_SIMPLE_IO_EVENT(xfs_delalloc_enospc);
 DEFINE_SIMPLE_IO_EVENT(xfs_unwritten_convert);
-<<<<<<< HEAD
-DEFINE_SIMPLE_IO_EVENT(xfs_get_blocks_notfound);
-DEFINE_SIMPLE_IO_EVENT(xfs_setfilesize);
-=======
 DEFINE_SIMPLE_IO_EVENT(xfs_setfilesize);
 DEFINE_SIMPLE_IO_EVENT(xfs_zero_eof);
 DEFINE_SIMPLE_IO_EVENT(xfs_end_io_direct_write);
 DEFINE_SIMPLE_IO_EVENT(xfs_end_io_direct_write_unwritten);
 DEFINE_SIMPLE_IO_EVENT(xfs_end_io_direct_write_append);
 DEFINE_SIMPLE_IO_EVENT(xfs_file_splice_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(xfs_itrunc_class,
 	TP_PROTO(struct xfs_inode *ip, xfs_fsize_t new_size),
@@ -2182,17 +1550,10 @@ DECLARE_EVENT_CLASS(xfs_itrunc_class,
 	TP_fast_assign(
 		__entry->dev = VFS_I(ip)->i_sb->s_dev;
 		__entry->ino = ip->i_ino;
-<<<<<<< HEAD
-		__entry->size = ip->i_d.di_size;
-		__entry->new_size = new_size;
-	),
-	TP_printk("dev %d:%d ino 0x%llx size 0x%llx new_size 0x%llx",
-=======
 		__entry->size = ip->i_disk_size;
 		__entry->new_size = new_size;
 	),
 	TP_printk("dev %d:%d ino 0x%llx disize 0x%llx new_size 0x%llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->size,
@@ -2219,19 +1580,11 @@ TRACE_EVENT(xfs_pagecache_inval,
 	TP_fast_assign(
 		__entry->dev = VFS_I(ip)->i_sb->s_dev;
 		__entry->ino = ip->i_ino;
-<<<<<<< HEAD
-		__entry->size = ip->i_d.di_size;
-		__entry->start = start;
-		__entry->finish = finish;
-	),
-	TP_printk("dev %d:%d ino 0x%llx size 0x%llx start 0x%llx finish 0x%llx",
-=======
 		__entry->size = ip->i_disk_size;
 		__entry->start = start;
 		__entry->finish = finish;
 	),
 	TP_printk("dev %d:%d ino 0x%llx disize 0x%llx start 0x%llx finish 0x%llx",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->size,
@@ -2240,24 +1593,14 @@ TRACE_EVENT(xfs_pagecache_inval,
 );
 
 TRACE_EVENT(xfs_bunmap,
-<<<<<<< HEAD
-	TP_PROTO(struct xfs_inode *ip, xfs_fileoff_t bno, xfs_filblks_t len,
-		 int flags, unsigned long caller_ip),
-	TP_ARGS(ip, bno, len, flags, caller_ip),
-=======
 	TP_PROTO(struct xfs_inode *ip, xfs_fileoff_t fileoff, xfs_filblks_t len,
 		 int flags, unsigned long caller_ip),
 	TP_ARGS(ip, fileoff, len, flags, caller_ip),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_ino_t, ino)
 		__field(xfs_fsize_t, size)
-<<<<<<< HEAD
-		__field(xfs_fileoff_t, bno)
-=======
 		__field(xfs_fileoff_t, fileoff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(xfs_filblks_t, len)
 		__field(unsigned long, caller_ip)
 		__field(int, flags)
@@ -2265,43 +1608,25 @@ TRACE_EVENT(xfs_bunmap,
 	TP_fast_assign(
 		__entry->dev = VFS_I(ip)->i_sb->s_dev;
 		__entry->ino = ip->i_ino;
-<<<<<<< HEAD
-		__entry->size = ip->i_d.di_size;
-		__entry->bno = bno;
-=======
 		__entry->size = ip->i_disk_size;
 		__entry->fileoff = fileoff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->len = len;
 		__entry->caller_ip = caller_ip;
 		__entry->flags = flags;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d ino 0x%llx size 0x%llx bno 0x%llx len 0x%llx"
-		  "flags %s caller %pf",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->ino,
-		  __entry->size,
-		  __entry->bno,
-=======
 	TP_printk("dev %d:%d ino 0x%llx disize 0x%llx fileoff 0x%llx fsbcount 0x%llx "
 		  "flags %s caller %pS",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->size,
 		  __entry->fileoff,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->len,
 		  __print_flags(__entry->flags, "|", XFS_BMAPI_FLAGS),
 		  (void *)__entry->caller_ip)
 
 );
 
-<<<<<<< HEAD
-DECLARE_EVENT_CLASS(xfs_busy_class,
-=======
 DECLARE_EVENT_CLASS(xfs_extent_busy_class,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 xfs_agblock_t agbno, xfs_extlen_t len),
 	TP_ARGS(mp, agno, agbno, len),
@@ -2317,30 +1642,13 @@ DECLARE_EVENT_CLASS(xfs_extent_busy_class,
 		__entry->agbno = agbno;
 		__entry->len = len;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d agno %u agbno %u len %u",
-=======
 	TP_printk("dev %d:%d agno 0x%x agbno 0x%x fsbcount 0x%x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->agno,
 		  __entry->agbno,
 		  __entry->len)
 );
 #define DEFINE_BUSY_EVENT(name) \
-<<<<<<< HEAD
-DEFINE_EVENT(xfs_busy_class, name, \
-	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, \
-		 xfs_agblock_t agbno, xfs_extlen_t len), \
-	TP_ARGS(mp, agno, agbno, len))
-DEFINE_BUSY_EVENT(xfs_alloc_busy);
-DEFINE_BUSY_EVENT(xfs_alloc_busy_enomem);
-DEFINE_BUSY_EVENT(xfs_alloc_busy_force);
-DEFINE_BUSY_EVENT(xfs_alloc_busy_reuse);
-DEFINE_BUSY_EVENT(xfs_alloc_busy_clear);
-
-TRACE_EVENT(xfs_alloc_busy_trim,
-=======
 DEFINE_EVENT(xfs_extent_busy_class, name, \
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, \
 		 xfs_agblock_t agbno, xfs_extlen_t len), \
@@ -2352,7 +1660,6 @@ DEFINE_BUSY_EVENT(xfs_extent_busy_reuse);
 DEFINE_BUSY_EVENT(xfs_extent_busy_clear);
 
 TRACE_EVENT(xfs_extent_busy_trim,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 xfs_agblock_t agbno, xfs_extlen_t len,
 		 xfs_agblock_t tbno, xfs_extlen_t tlen),
@@ -2373,11 +1680,7 @@ TRACE_EVENT(xfs_extent_busy_trim,
 		__entry->tbno = tbno;
 		__entry->tlen = tlen;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d agno %u agbno %u len %u tbno %u tlen %u",
-=======
 	TP_printk("dev %d:%d agno 0x%x agbno 0x%x fsbcount 0x%x found_agbno 0x%x found_fsbcount 0x%x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->agno,
 		  __entry->agbno,
@@ -2386,30 +1689,7 @@ TRACE_EVENT(xfs_extent_busy_trim,
 		  __entry->tlen)
 );
 
-<<<<<<< HEAD
-TRACE_EVENT(xfs_trans_commit_lsn,
-	TP_PROTO(struct xfs_trans *trans),
-	TP_ARGS(trans),
-	TP_STRUCT__entry(
-		__field(dev_t, dev)
-		__field(struct xfs_trans *, tp)
-		__field(xfs_lsn_t, lsn)
-	),
-	TP_fast_assign(
-		__entry->dev = trans->t_mountp->m_super->s_dev;
-		__entry->tp = trans;
-		__entry->lsn = trans->t_commit_lsn;
-	),
-	TP_printk("dev %d:%d trans 0x%p commit_lsn 0x%llx",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->tp,
-		  __entry->lsn)
-);
-
-TRACE_EVENT(xfs_agf,
-=======
 DECLARE_EVENT_CLASS(xfs_agf_class,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct xfs_mount *mp, struct xfs_agf *agf, int flags,
 		 unsigned long caller_ip),
 	TP_ARGS(mp, agf, flags, caller_ip),
@@ -2434,19 +1714,10 @@ DECLARE_EVENT_CLASS(xfs_agf_class,
 		__entry->agno = be32_to_cpu(agf->agf_seqno),
 		__entry->flags = flags;
 		__entry->length = be32_to_cpu(agf->agf_length),
-<<<<<<< HEAD
-		__entry->bno_root = be32_to_cpu(agf->agf_roots[XFS_BTNUM_BNO]),
-		__entry->cnt_root = be32_to_cpu(agf->agf_roots[XFS_BTNUM_CNT]),
-		__entry->bno_level =
-				be32_to_cpu(agf->agf_levels[XFS_BTNUM_BNO]),
-		__entry->cnt_level =
-				be32_to_cpu(agf->agf_levels[XFS_BTNUM_CNT]),
-=======
 		__entry->bno_root = be32_to_cpu(agf->agf_bno_root),
 		__entry->cnt_root = be32_to_cpu(agf->agf_cnt_root),
 		__entry->bno_level = be32_to_cpu(agf->agf_bno_level),
 		__entry->cnt_level = be32_to_cpu(agf->agf_cnt_level),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->flfirst = be32_to_cpu(agf->agf_flfirst),
 		__entry->fllast = be32_to_cpu(agf->agf_fllast),
 		__entry->flcount = be32_to_cpu(agf->agf_flcount),
@@ -2454,15 +1725,9 @@ DECLARE_EVENT_CLASS(xfs_agf_class,
 		__entry->longest = be32_to_cpu(agf->agf_longest);
 		__entry->caller_ip = caller_ip;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d agno %u flags %s length %u roots b %u c %u "
-		  "levels b %u c %u flfirst %u fllast %u flcount %u "
-		  "freeblks %u longest %u caller %pf",
-=======
 	TP_printk("dev %d:%d agno 0x%x flags %s length %u roots b %u c %u "
 		  "levels b %u c %u flfirst %u fllast %u flcount %u "
 		  "freeblks %u longest %u caller %pS",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->agno,
 		  __print_flags(__entry->flags, "|", XFS_AGF_FLAGS),
@@ -2478,13 +1743,6 @@ DECLARE_EVENT_CLASS(xfs_agf_class,
 		  __entry->longest,
 		  (void *)__entry->caller_ip)
 );
-<<<<<<< HEAD
-
-TRACE_EVENT(xfs_free_extent,
-	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, xfs_agblock_t agbno,
-		 xfs_extlen_t len, bool isfl, int haveleft, int haveright),
-	TP_ARGS(mp, agno, agbno, len, isfl, haveleft, haveright),
-=======
 #define DEFINE_AGF_EVENT(name) \
 DEFINE_EVENT(xfs_agf_class, name, \
 	TP_PROTO(struct xfs_mount *mp, struct xfs_agf *agf, int flags, \
@@ -2498,17 +1756,12 @@ TRACE_EVENT(xfs_free_extent,
 		 xfs_extlen_t len, enum xfs_ag_resv_type resv, int haveleft,
 		 int haveright),
 	TP_ARGS(mp, agno, agbno, len, resv, haveleft, haveright),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_agnumber_t, agno)
 		__field(xfs_agblock_t, agbno)
 		__field(xfs_extlen_t, len)
-<<<<<<< HEAD
-		__field(int, isfl)
-=======
 		__field(int, resv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, haveleft)
 		__field(int, haveright)
 	),
@@ -2517,28 +1770,16 @@ TRACE_EVENT(xfs_free_extent,
 		__entry->agno = agno;
 		__entry->agbno = agbno;
 		__entry->len = len;
-<<<<<<< HEAD
-		__entry->isfl = isfl;
-		__entry->haveleft = haveleft;
-		__entry->haveright = haveright;
-	),
-	TP_printk("dev %d:%d agno %u agbno %u len %u isfl %d %s",
-=======
 		__entry->resv = resv;
 		__entry->haveleft = haveleft;
 		__entry->haveright = haveright;
 	),
 	TP_printk("dev %d:%d agno 0x%x agbno 0x%x fsbcount 0x%x resv %d %s",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->agno,
 		  __entry->agbno,
 		  __entry->len,
-<<<<<<< HEAD
-		  __entry->isfl,
-=======
 		  __entry->resv,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->haveleft ?
 			(__entry->haveright ? "both" : "left") :
 			(__entry->haveright ? "right" : "none"))
@@ -2561,21 +1802,11 @@ DECLARE_EVENT_CLASS(xfs_alloc_class,
 		__field(xfs_extlen_t, alignment)
 		__field(xfs_extlen_t, minalignslop)
 		__field(xfs_extlen_t, len)
-<<<<<<< HEAD
-		__field(short, type)
-		__field(short, otype)
-		__field(char, wasdel)
-		__field(char, wasfromfl)
-		__field(char, isfl)
-		__field(char, userdata)
-		__field(xfs_fsblock_t, firstblock)
-=======
 		__field(char, wasdel)
 		__field(char, wasfromfl)
 		__field(int, resv)
 		__field(int, datatype)
 		__field(xfs_agnumber_t, highest_agno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 	TP_fast_assign(
 		__entry->dev = args->mp->m_super->s_dev;
@@ -2590,20 +1821,6 @@ DECLARE_EVENT_CLASS(xfs_alloc_class,
 		__entry->alignment = args->alignment;
 		__entry->minalignslop = args->minalignslop;
 		__entry->len = args->len;
-<<<<<<< HEAD
-		__entry->type = args->type;
-		__entry->otype = args->otype;
-		__entry->wasdel = args->wasdel;
-		__entry->wasfromfl = args->wasfromfl;
-		__entry->isfl = args->isfl;
-		__entry->userdata = args->userdata;
-		__entry->firstblock = args->firstblock;
-	),
-	TP_printk("dev %d:%d agno %u agbno %u minlen %u maxlen %u mod %u "
-		  "prod %u minleft %u total %u alignment %u minalignslop %u "
-		  "len %u type %s otype %s wasdel %d wasfromfl %d isfl %d "
-		  "userdata %d firstblock 0x%llx",
-=======
 		__entry->wasdel = args->wasdel;
 		__entry->wasfromfl = args->wasfromfl;
 		__entry->resv = args->resv;
@@ -2614,7 +1831,6 @@ DECLARE_EVENT_CLASS(xfs_alloc_class,
 		  "prod %u minleft %u total %u alignment %u minalignslop %u "
 		  "len %u wasdel %d wasfromfl %d resv %d "
 		  "datatype 0x%x highest_agno 0x%x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->agno,
 		  __entry->agbno,
@@ -2627,21 +1843,11 @@ DECLARE_EVENT_CLASS(xfs_alloc_class,
 		  __entry->alignment,
 		  __entry->minalignslop,
 		  __entry->len,
-<<<<<<< HEAD
-		  __print_symbolic(__entry->type, XFS_ALLOC_TYPES),
-		  __print_symbolic(__entry->otype, XFS_ALLOC_TYPES),
-		  __entry->wasdel,
-		  __entry->wasfromfl,
-		  __entry->isfl,
-		  __entry->userdata,
-		  (unsigned long long)__entry->firstblock)
-=======
 		  __entry->wasdel,
 		  __entry->wasfromfl,
 		  __entry->resv,
 		  __entry->datatype,
 		  __entry->highest_agno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 )
 
 #define DEFINE_ALLOC_EVENT(name) \
@@ -2653,16 +1859,11 @@ DEFINE_ALLOC_EVENT(xfs_alloc_exact_notfound);
 DEFINE_ALLOC_EVENT(xfs_alloc_exact_error);
 DEFINE_ALLOC_EVENT(xfs_alloc_near_nominleft);
 DEFINE_ALLOC_EVENT(xfs_alloc_near_first);
-<<<<<<< HEAD
-DEFINE_ALLOC_EVENT(xfs_alloc_near_greater);
-DEFINE_ALLOC_EVENT(xfs_alloc_near_lesser);
-=======
 DEFINE_ALLOC_EVENT(xfs_alloc_cur);
 DEFINE_ALLOC_EVENT(xfs_alloc_cur_right);
 DEFINE_ALLOC_EVENT(xfs_alloc_cur_left);
 DEFINE_ALLOC_EVENT(xfs_alloc_cur_lookup);
 DEFINE_ALLOC_EVENT(xfs_alloc_cur_lookup_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_ALLOC_EVENT(xfs_alloc_near_error);
 DEFINE_ALLOC_EVENT(xfs_alloc_near_noentry);
 DEFINE_ALLOC_EVENT(xfs_alloc_near_busy);
@@ -2677,17 +1878,12 @@ DEFINE_ALLOC_EVENT(xfs_alloc_small_notenough);
 DEFINE_ALLOC_EVENT(xfs_alloc_small_done);
 DEFINE_ALLOC_EVENT(xfs_alloc_small_error);
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_badargs);
-<<<<<<< HEAD
-=======
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_skip_deadlock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_nofix);
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_noagbp);
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_loopfailed);
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_allfailed);
 
-<<<<<<< HEAD
-=======
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_this_ag);
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_start_ag);
 DEFINE_ALLOC_EVENT(xfs_alloc_vextent_first_ag);
@@ -2721,7 +1917,6 @@ TRACE_EVENT(xfs_alloc_cur_check,
 		  __entry->bno, __entry->len, __entry->diff, __entry->new)
 )
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DECLARE_EVENT_CLASS(xfs_da_class,
 	TP_PROTO(struct xfs_da_args *args),
 	TP_ARGS(args),
@@ -2732,11 +1927,7 @@ DECLARE_EVENT_CLASS(xfs_da_class,
 		__field(int, namelen)
 		__field(xfs_dahash_t, hashval)
 		__field(xfs_ino_t, inumber)
-<<<<<<< HEAD
-		__field(int, op_flags)
-=======
 		__field(uint32_t, op_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 	TP_fast_assign(
 		__entry->dev = VFS_I(args->dp)->i_sb->s_dev;
@@ -2790,10 +1981,6 @@ DEFINE_DIR2_EVENT(xfs_dir2_node_replace);
 DEFINE_DIR2_EVENT(xfs_dir2_node_removename);
 DEFINE_DIR2_EVENT(xfs_dir2_node_to_leaf);
 
-<<<<<<< HEAD
-#define DEFINE_ATTR_EVENT(name) \
-DEFINE_EVENT(xfs_da_class, name, \
-=======
 DECLARE_EVENT_CLASS(xfs_attr_class,
 	TP_PROTO(struct xfs_da_args *args),
 	TP_ARGS(args),
@@ -2839,7 +2026,6 @@ DECLARE_EVENT_CLASS(xfs_attr_class,
 
 #define DEFINE_ATTR_EVENT(name) \
 DEFINE_EVENT(xfs_attr_class, name, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_PROTO(struct xfs_da_args *args), \
 	TP_ARGS(args))
 DEFINE_ATTR_EVENT(xfs_attr_sf_add);
@@ -2847,21 +2033,11 @@ DEFINE_ATTR_EVENT(xfs_attr_sf_addname);
 DEFINE_ATTR_EVENT(xfs_attr_sf_create);
 DEFINE_ATTR_EVENT(xfs_attr_sf_lookup);
 DEFINE_ATTR_EVENT(xfs_attr_sf_remove);
-<<<<<<< HEAD
-DEFINE_ATTR_EVENT(xfs_attr_sf_removename);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_ATTR_EVENT(xfs_attr_sf_to_leaf);
 
 DEFINE_ATTR_EVENT(xfs_attr_leaf_add);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_add_old);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_add_new);
-<<<<<<< HEAD
-DEFINE_ATTR_EVENT(xfs_attr_leaf_addname);
-DEFINE_ATTR_EVENT(xfs_attr_leaf_create);
-DEFINE_ATTR_EVENT(xfs_attr_leaf_lookup);
-DEFINE_ATTR_EVENT(xfs_attr_leaf_replace);
-=======
 DEFINE_ATTR_EVENT(xfs_attr_leaf_add_work);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_create);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_compact);
@@ -2869,7 +2045,6 @@ DEFINE_ATTR_EVENT(xfs_attr_leaf_get);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_lookup);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_replace);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_remove);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_ATTR_EVENT(xfs_attr_leaf_removename);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_split);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_split_before);
@@ -2881,14 +2056,6 @@ DEFINE_ATTR_EVENT(xfs_attr_leaf_to_sf);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_to_node);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_rebalance);
 DEFINE_ATTR_EVENT(xfs_attr_leaf_unbalance);
-<<<<<<< HEAD
-
-DEFINE_ATTR_EVENT(xfs_attr_node_addname);
-DEFINE_ATTR_EVENT(xfs_attr_node_lookup);
-DEFINE_ATTR_EVENT(xfs_attr_node_replace);
-DEFINE_ATTR_EVENT(xfs_attr_node_removename);
-
-=======
 DEFINE_ATTR_EVENT(xfs_attr_leaf_toosmall);
 
 DEFINE_ATTR_EVENT(xfs_attr_node_addname);
@@ -2902,7 +2069,6 @@ DEFINE_ATTR_EVENT(xfs_attr_refillstate);
 DEFINE_ATTR_EVENT(xfs_attr_rmtval_get);
 DEFINE_ATTR_EVENT(xfs_attr_rmtval_set);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFINE_DA_EVENT(name) \
 DEFINE_EVENT(xfs_da_class, name, \
 	TP_PROTO(struct xfs_da_args *args), \
@@ -2921,18 +2087,12 @@ DEFINE_DA_EVENT(xfs_da_node_split);
 DEFINE_DA_EVENT(xfs_da_node_remove);
 DEFINE_DA_EVENT(xfs_da_node_rebalance);
 DEFINE_DA_EVENT(xfs_da_node_unbalance);
-<<<<<<< HEAD
-DEFINE_DA_EVENT(xfs_da_swap_lastblock);
-DEFINE_DA_EVENT(xfs_da_grow_inode);
-DEFINE_DA_EVENT(xfs_da_shrink_inode);
-=======
 DEFINE_DA_EVENT(xfs_da_node_toosmall);
 DEFINE_DA_EVENT(xfs_da_swap_lastblock);
 DEFINE_DA_EVENT(xfs_da_grow_inode);
 DEFINE_DA_EVENT(xfs_da_shrink_inode);
 DEFINE_DA_EVENT(xfs_da_fixhashpath);
 DEFINE_DA_EVENT(xfs_da_path_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(xfs_dir2_space_class,
 	TP_PROTO(struct xfs_da_args *args, int idx),
@@ -2940,11 +2100,7 @@ DECLARE_EVENT_CLASS(xfs_dir2_space_class,
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_ino_t, ino)
-<<<<<<< HEAD
-		__field(int, op_flags)
-=======
 		__field(uint32_t, op_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, idx)
 	),
 	TP_fast_assign(
@@ -2975,11 +2131,7 @@ TRACE_EVENT(xfs_dir2_leafn_moveents,
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(xfs_ino_t, ino)
-<<<<<<< HEAD
-		__field(int, op_flags)
-=======
 		__field(uint32_t, op_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, src_idx)
 		__field(int, dst_idx)
 		__field(int, count)
@@ -3006,19 +2158,11 @@ TRACE_EVENT(xfs_dir2_leafn_moveents,
 	{ 0,	"target" }, \
 	{ 1,	"temp" }
 
-<<<<<<< HEAD
-#define XFS_INODE_FORMAT_STR \
-	{ 0,	"invalid" }, \
-	{ 1,	"local" }, \
-	{ 2,	"extent" }, \
-	{ 3,	"btree" }
-=======
 TRACE_DEFINE_ENUM(XFS_DINODE_FMT_DEV);
 TRACE_DEFINE_ENUM(XFS_DINODE_FMT_LOCAL);
 TRACE_DEFINE_ENUM(XFS_DINODE_FMT_EXTENTS);
 TRACE_DEFINE_ENUM(XFS_DINODE_FMT_BTREE);
 TRACE_DEFINE_ENUM(XFS_DINODE_FMT_UUID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DECLARE_EVENT_CLASS(xfs_swap_extent_class,
 	TP_PROTO(struct xfs_inode *ip, int which),
@@ -3028,11 +2172,7 @@ DECLARE_EVENT_CLASS(xfs_swap_extent_class,
 		__field(int, which)
 		__field(xfs_ino_t, ino)
 		__field(int, format)
-<<<<<<< HEAD
-		__field(int, nex)
-=======
 		__field(xfs_extnum_t, nex)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, broot_size)
 		__field(int, fork_off)
 	),
@@ -3040,15 +2180,6 @@ DECLARE_EVENT_CLASS(xfs_swap_extent_class,
 		__entry->dev = VFS_I(ip)->i_sb->s_dev;
 		__entry->which = which;
 		__entry->ino = ip->i_ino;
-<<<<<<< HEAD
-		__entry->format = ip->i_d.di_format;
-		__entry->nex = ip->i_d.di_nextents;
-		__entry->broot_size = ip->i_df.if_broot_bytes;
-		__entry->fork_off = XFS_IFORK_BOFF(ip);
-	),
-	TP_printk("dev %d:%d ino 0x%llx (%s), %s format, num_extents %d, "
-		  "broot size %d, fork offset %d",
-=======
 		__entry->format = ip->i_df.if_format;
 		__entry->nex = ip->i_df.if_nextents;
 		__entry->broot_size = ip->i_df.if_broot_bytes;
@@ -3056,7 +2187,6 @@ DECLARE_EVENT_CLASS(xfs_swap_extent_class,
 	),
 	TP_printk("dev %d:%d ino 0x%llx (%s), %s format, num_extents %llu, "
 		  "broot size %d, forkoff 0x%x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __print_symbolic(__entry->which, XFS_SWAPEXT_INODES),
@@ -3074,10 +2204,6 @@ DEFINE_EVENT(xfs_swap_extent_class, name, \
 DEFINE_SWAPEXT_EVENT(xfs_swap_extent_before);
 DEFINE_SWAPEXT_EVENT(xfs_swap_extent_after);
 
-<<<<<<< HEAD
-DECLARE_EVENT_CLASS(xfs_log_recover_item_class,
-	TP_PROTO(struct log *log, struct xlog_recover *trans,
-=======
 TRACE_EVENT(xfs_log_recover,
 	TP_PROTO(struct xlog *log, xfs_daddr_t headblk, xfs_daddr_t tailblk),
 	TP_ARGS(log, headblk, tailblk),
@@ -3121,17 +2247,13 @@ TRACE_EVENT(xfs_log_recover_record,
 
 DECLARE_EVENT_CLASS(xfs_log_recover_item_class,
 	TP_PROTO(struct xlog *log, struct xlog_recover *trans,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xlog_recover_item *item, int pass),
 	TP_ARGS(log, trans, item, pass),
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(unsigned long, item)
 		__field(xlog_tid_t, tid)
-<<<<<<< HEAD
-=======
 		__field(xfs_lsn_t, lsn)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, type)
 		__field(int, pass)
 		__field(int, count)
@@ -3141,27 +2263,17 @@ DECLARE_EVENT_CLASS(xfs_log_recover_item_class,
 		__entry->dev = log->l_mp->m_super->s_dev;
 		__entry->item = (unsigned long)item;
 		__entry->tid = trans->r_log_tid;
-<<<<<<< HEAD
-=======
 		__entry->lsn = trans->r_lsn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__entry->type = ITEM_TYPE(item);
 		__entry->pass = pass;
 		__entry->count = item->ri_cnt;
 		__entry->total = item->ri_total;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d trans 0x%x, pass %d, item 0x%p, item type %s "
-		  "item region count/total %d/%d",
-		  MAJOR(__entry->dev), MINOR(__entry->dev),
-		  __entry->tid,
-=======
 	TP_printk("dev %d:%d tid 0x%x lsn 0x%llx, pass %d, item %p, "
 		  "item type %s item region count/total %d/%d",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->tid,
 		  __entry->lsn,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->pass,
 		  (void *)__entry->item,
 		  __print_symbolic(__entry->type, XFS_LI_TYPE_DESC),
@@ -3171,11 +2283,7 @@ DECLARE_EVENT_CLASS(xfs_log_recover_item_class,
 
 #define DEFINE_LOG_RECOVER_ITEM(name) \
 DEFINE_EVENT(xfs_log_recover_item_class, name, \
-<<<<<<< HEAD
-	TP_PROTO(struct log *log, struct xlog_recover *trans, \
-=======
 	TP_PROTO(struct xlog *log, struct xlog_recover *trans, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xlog_recover_item *item, int pass), \
 	TP_ARGS(log, trans, item, pass))
 
@@ -3186,19 +2294,11 @@ DEFINE_LOG_RECOVER_ITEM(xfs_log_recover_item_reorder_tail);
 DEFINE_LOG_RECOVER_ITEM(xfs_log_recover_item_recover);
 
 DECLARE_EVENT_CLASS(xfs_log_recover_buf_item_class,
-<<<<<<< HEAD
-	TP_PROTO(struct log *log, struct xfs_buf_log_format *buf_f),
-	TP_ARGS(log, buf_f),
-	TP_STRUCT__entry(
-		__field(dev_t, dev)
-		__field(__int64_t, blkno)
-=======
 	TP_PROTO(struct xlog *log, struct xfs_buf_log_format *buf_f),
 	TP_ARGS(log, buf_f),
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
 		__field(int64_t, blkno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(unsigned short, len)
 		__field(unsigned short, flags)
 		__field(unsigned short, size)
@@ -3212,11 +2312,7 @@ DECLARE_EVENT_CLASS(xfs_log_recover_buf_item_class,
 		__entry->size = buf_f->blf_size;
 		__entry->map_size = buf_f->blf_map_size;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d blkno 0x%llx, len %u, flags 0x%x, size %d, "
-=======
 	TP_printk("dev %d:%d daddr 0x%llx, bbcount 0x%x, flags 0x%x, size %d, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"map_size %d",
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->blkno,
@@ -3228,11 +2324,7 @@ DECLARE_EVENT_CLASS(xfs_log_recover_buf_item_class,
 
 #define DEFINE_LOG_RECOVER_BUF_ITEM(name) \
 DEFINE_EVENT(xfs_log_recover_buf_item_class, name, \
-<<<<<<< HEAD
-	TP_PROTO(struct log *log, struct xfs_buf_log_format *buf_f), \
-=======
 	TP_PROTO(struct xlog *log, struct xfs_buf_log_format *buf_f), \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ARGS(log, buf_f))
 
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_not_cancel);
@@ -3240,20 +2332,13 @@ DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_cancel);
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_cancel_add);
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_cancel_ref_inc);
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_recover);
-<<<<<<< HEAD
-=======
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_skip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_inode_buf);
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_reg_buf);
 DEFINE_LOG_RECOVER_BUF_ITEM(xfs_log_recover_buf_dquot_buf);
 
 DECLARE_EVENT_CLASS(xfs_log_recover_ino_item_class,
-<<<<<<< HEAD
-	TP_PROTO(struct log *log, struct xfs_inode_log_format *in_f),
-=======
 	TP_PROTO(struct xlog *log, struct xfs_inode_log_format *in_f),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ARGS(log, in_f),
 	TP_STRUCT__entry(
 		__field(dev_t, dev)
@@ -3262,11 +2347,7 @@ DECLARE_EVENT_CLASS(xfs_log_recover_ino_item_class,
 		__field(int, fields)
 		__field(unsigned short, asize)
 		__field(unsigned short, dsize)
-<<<<<<< HEAD
-		__field(__int64_t, blkno)
-=======
 		__field(int64_t, blkno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(int, len)
 		__field(int, boffset)
 	),
@@ -3282,11 +2363,7 @@ DECLARE_EVENT_CLASS(xfs_log_recover_ino_item_class,
 		__entry->boffset = in_f->ilf_boffset;
 	),
 	TP_printk("dev %d:%d ino 0x%llx, size %u, fields 0x%x, asize %d, "
-<<<<<<< HEAD
-			"dsize %d, blkno 0x%llx, len %d, boffset %d",
-=======
 			"dsize %d, daddr 0x%llx, bbcount 0x%x, boffset %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->ino,
 		  __entry->size,
@@ -3299,19 +2376,13 @@ DECLARE_EVENT_CLASS(xfs_log_recover_ino_item_class,
 )
 #define DEFINE_LOG_RECOVER_INO_ITEM(name) \
 DEFINE_EVENT(xfs_log_recover_ino_item_class, name, \
-<<<<<<< HEAD
-	TP_PROTO(struct log *log, struct xfs_inode_log_format *in_f), \
-=======
 	TP_PROTO(struct xlog *log, struct xfs_inode_log_format *in_f), \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ARGS(log, in_f))
 
 DEFINE_LOG_RECOVER_INO_ITEM(xfs_log_recover_inode_recover);
 DEFINE_LOG_RECOVER_INO_ITEM(xfs_log_recover_inode_cancel);
 DEFINE_LOG_RECOVER_INO_ITEM(xfs_log_recover_inode_skip);
 
-<<<<<<< HEAD
-=======
 DECLARE_EVENT_CLASS(xfs_log_recover_icreate_item_class,
 	TP_PROTO(struct xlog *log, struct xfs_icreate_log *in_f),
 	TP_ARGS(log, in_f),
@@ -3350,7 +2421,6 @@ DEFINE_EVENT(xfs_log_recover_icreate_item_class, name, \
 DEFINE_LOG_RECOVER_ICREATE_ITEM(xfs_log_recover_icreate_cancel);
 DEFINE_LOG_RECOVER_ICREATE_ITEM(xfs_log_recover_icreate_recover);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DECLARE_EVENT_CLASS(xfs_discard_class,
 	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno,
 		 xfs_agblock_t agbno, xfs_extlen_t len),
@@ -3367,11 +2437,7 @@ DECLARE_EVENT_CLASS(xfs_discard_class,
 		__entry->agbno = agbno;
 		__entry->len = len;
 	),
-<<<<<<< HEAD
-	TP_printk("dev %d:%d agno %u agbno %u len %u\n",
-=======
 	TP_printk("dev %d:%d agno 0x%x agbno 0x%x fsbcount 0x%x",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  MAJOR(__entry->dev), MINOR(__entry->dev),
 		  __entry->agno,
 		  __entry->agbno,
@@ -3388,8 +2454,6 @@ DEFINE_DISCARD_EVENT(xfs_discard_toosmall);
 DEFINE_DISCARD_EVENT(xfs_discard_exclude);
 DEFINE_DISCARD_EVENT(xfs_discard_busy);
 
-<<<<<<< HEAD
-=======
 DECLARE_EVENT_CLASS(xfs_btree_cur_class,
 	TP_PROTO(struct xfs_btree_cur *cur, int level, struct xfs_buf *bp),
 	TP_ARGS(cur, level, bp),
@@ -5706,7 +4770,6 @@ DEFINE_XFBTREE_FREESP_EVENT(xfbtree_alloc_block);
 DEFINE_XFBTREE_FREESP_EVENT(xfbtree_free_block);
 #endif /* CONFIG_XFS_BTREE_IN_MEM */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_XFS_H */
 
 #undef TRACE_INCLUDE_PATH

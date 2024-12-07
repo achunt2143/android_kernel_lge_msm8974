@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the CS5535/CS5536 Multi-Function General Purpose Timers (MFGPT)
  *
@@ -9,13 +6,6 @@
  * Copyright (C) 2007  Andres Salomon <dilinger@debian.org>
  * Copyright (C) 2009  Andres Salomon <dilinger@collabora.co.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public License
- * as published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The MFGPTs are documented in AMD Geode CS5536 Companion Device Data Book.
  */
 
@@ -31,16 +21,11 @@
 
 static int mfgpt_reset_timers;
 module_param_named(mfgptfix, mfgpt_reset_timers, int, 0644);
-<<<<<<< HEAD
-MODULE_PARM_DESC(mfgptfix, "Reset the MFGPT timers during init; "
-		"required by some broken BIOSes (ie, TinyBIOS < 0.99).");
-=======
 MODULE_PARM_DESC(mfgptfix, "Try to reset the MFGPT timers during init; "
 		"required by some broken BIOSes (ie, TinyBIOS < 0.99) or kexec "
 		"(1 = reset the MFGPT using an undocumented bit, "
 		"2 = perform a soft reset by unconfiguring all timers); "
 		"use what works best for you.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cs5535_mfgpt_timer {
 	struct cs5535_mfgpt_chip *chip;
@@ -261,11 +246,7 @@ EXPORT_SYMBOL_GPL(cs5535_mfgpt_write);
  * Jordan tells me that he and Mitch once played w/ it, but it's unclear
  * what the results of that were (and they experienced some instability).
  */
-<<<<<<< HEAD
-static void __devinit reset_all_timers(void)
-=======
 static void reset_all_timers(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t val, dummy;
 
@@ -275,8 +256,6 @@ static void reset_all_timers(void)
 }
 
 /*
-<<<<<<< HEAD
-=======
  * This is another sledgehammer to reset all MFGPT timers.
  * Instead of using the undocumented bit method it clears
  * IRQ, NMI and RESET settings.
@@ -299,18 +278,13 @@ static void soft_reset(void)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Check whether any MFGPTs are available for the kernel to use.  In most
  * cases, firmware that uses AMD's VSA code will claim all timers during
  * bootup; we certainly don't want to take them if they're already in use.
  * In other cases (such as with VSAless OpenFirmware), the system firmware
  * leaves timers available for us to use.
  */
-<<<<<<< HEAD
-static int __devinit scan_timers(struct cs5535_mfgpt_chip *mfgpt)
-=======
 static int scan_timers(struct cs5535_mfgpt_chip *mfgpt)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cs5535_mfgpt_timer timer = { .chip = mfgpt };
 	unsigned long flags;
@@ -319,26 +293,17 @@ static int scan_timers(struct cs5535_mfgpt_chip *mfgpt)
 	int i;
 
 	/* bios workaround */
-<<<<<<< HEAD
-	if (mfgpt_reset_timers)
-		reset_all_timers();
-=======
 	if (mfgpt_reset_timers == 1)
 		reset_all_timers();
 	else if (mfgpt_reset_timers == 2)
 		soft_reset();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* just to be safe, protect this section w/ lock */
 	spin_lock_irqsave(&mfgpt->lock, flags);
 	for (i = 0; i < MFGPT_MAX_TIMERS; i++) {
 		timer.nr = i;
 		val = cs5535_mfgpt_read(&timer, MFGPT_REG_SETUP);
-<<<<<<< HEAD
-		if (!(val & MFGPT_SETUP_SETUP)) {
-=======
 		if (!(val & MFGPT_SETUP_SETUP) || mfgpt_reset_timers == 2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__set_bit(i, mfgpt->avail);
 			timers++;
 		}
@@ -348,24 +313,17 @@ static int scan_timers(struct cs5535_mfgpt_chip *mfgpt)
 	return timers;
 }
 
-<<<<<<< HEAD
-static int __devinit cs5535_mfgpt_probe(struct platform_device *pdev)
-=======
 static int cs5535_mfgpt_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	int err = -EIO, t;
 
-<<<<<<< HEAD
-=======
 	if (mfgpt_reset_timers < 0 || mfgpt_reset_timers > 2) {
 		dev_err(&pdev->dev, "Bad mfgpt_reset_timers value: %i\n",
 			mfgpt_reset_timers);
 		goto done;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* There are two ways to get the MFGPT base address; one is by
 	 * fetching it from MSR_LBAR_MFGPT, the other is by reading the
 	 * PCI BAR info.  The latter method is easier (especially across
@@ -404,10 +362,6 @@ done:
 static struct platform_driver cs5535_mfgpt_driver = {
 	.driver = {
 		.name = DRV_NAME,
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe = cs5535_mfgpt_probe,
 };

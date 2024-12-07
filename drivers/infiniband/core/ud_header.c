@@ -35,20 +35,13 @@
 #include <linux/string.h>
 #include <linux/export.h>
 #include <linux/if_ether.h>
-<<<<<<< HEAD
-=======
 #include <linux/ip.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <rdma/ib_pack.h>
 
 #define STRUCT_FIELD(header, field) \
 	.struct_offset_bytes = offsetof(struct ib_unpacked_ ## header, field),      \
-<<<<<<< HEAD
-	.struct_size_bytes   = sizeof ((struct ib_unpacked_ ## header *) 0)->field, \
-=======
 	.struct_size_bytes   = sizeof_field(struct ib_unpacked_ ## header, field), \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.field_name          = #header ":" #field
 
 static const struct ib_field lrh_table[]  = {
@@ -124,8 +117,6 @@ static const struct ib_field vlan_table[]  = {
 	  .size_bits    = 16 }
 };
 
-<<<<<<< HEAD
-=======
 static const struct ib_field ip4_table[]  = {
 	{ STRUCT_FIELD(ip4, ver),
 	  .offset_words = 0,
@@ -192,7 +183,6 @@ static const struct ib_field udp_table[]  = {
 	  .size_bits    = 16 }
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ib_field grh_table[]  = {
 	{ STRUCT_FIELD(grh, ip_version),
 	  .offset_words = 0,
@@ -290,8 +280,6 @@ static const struct ib_field deth_table[] = {
 	  .size_bits    = 24 }
 };
 
-<<<<<<< HEAD
-=======
 __sum16 ib_ud_ip4_csum(struct ib_ud_header *header)
 {
 	struct iphdr iph;
@@ -312,29 +300,12 @@ __sum16 ib_ud_ip4_csum(struct ib_ud_header *header)
 }
 EXPORT_SYMBOL(ib_ud_ip4_csum);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ib_ud_header_init - Initialize UD header structure
  * @payload_bytes:Length of packet payload
  * @lrh_present: specify if LRH is present
  * @eth_present: specify if Eth header is present
  * @vlan_present: packet is tagged vlan
-<<<<<<< HEAD
- * @grh_present:GRH flag (if non-zero, GRH will be included)
- * @immediate_present: specify if immediate data is present
- * @header:Structure to initialize
- */
-void ib_ud_header_init(int     		    payload_bytes,
-		       int		    lrh_present,
-		       int		    eth_present,
-		       int		    vlan_present,
-		       int    		    grh_present,
-		       int		    immediate_present,
-		       struct ib_ud_header *header)
-{
-	memset(header, 0, sizeof *header);
-
-=======
  * @grh_present: GRH flag (if non-zero, GRH will be included)
  * @ip_version: if non-zero, IP header, V4 or V6, will be included
  * @udp_present :if non-zero, UDP header will be included
@@ -362,7 +333,6 @@ int ib_ud_header_init(int     payload_bytes,
 	if (udp_present && ip_version != 4 && ip_version != 6)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lrh_present) {
 		u16 packet_length;
 
@@ -382,27 +352,15 @@ int ib_ud_header_init(int     payload_bytes,
 	if (vlan_present)
 		header->eth.type = cpu_to_be16(ETH_P_8021Q);
 
-<<<<<<< HEAD
-	if (grh_present) {
-		header->grh.ip_version      = 6;
-		header->grh.payload_length  =
-			cpu_to_be16((IB_BTH_BYTES     +
-=======
 	if (ip_version == 6 || grh_present) {
 		header->grh.ip_version      = 6;
 		header->grh.payload_length  =
 			cpu_to_be16((udp_bytes        +
 				     IB_BTH_BYTES     +
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     IB_DETH_BYTES    +
 				     payload_bytes    +
 				     4                + /* ICRC     */
 				     3) & ~3);          /* round up */
-<<<<<<< HEAD
-		header->grh.next_header     = 0x1b;
-	}
-
-=======
 		header->grh.next_header     = udp_present ? IPPROTO_UDP : 0x1b;
 	}
 
@@ -426,7 +384,6 @@ int ib_ud_header_init(int     payload_bytes,
 				     payload_bytes +
 				     4);     /* ICRC     */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (immediate_present)
 		header->bth.opcode           = IB_OPCODE_UD_SEND_ONLY_WITH_IMMEDIATE;
 	else
@@ -437,16 +394,11 @@ int ib_ud_header_init(int     payload_bytes,
 	header->lrh_present = lrh_present;
 	header->eth_present = eth_present;
 	header->vlan_present = vlan_present;
-<<<<<<< HEAD
-	header->grh_present = grh_present;
-	header->immediate_present = immediate_present;
-=======
 	header->grh_present = grh_present || (ip_version == 6);
 	header->ipv4_present = ip_version == 4;
 	header->udp_present = udp_present;
 	header->immediate_present = immediate_present;
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ib_ud_header_init);
 
@@ -483,8 +435,6 @@ int ib_ud_header_pack(struct ib_ud_header *header,
 			&header->grh, buf + len);
 		len += IB_GRH_BYTES;
 	}
-<<<<<<< HEAD
-=======
 	if (header->ipv4_present) {
 		ib_pack(ip4_table, ARRAY_SIZE(ip4_table),
 			&header->ip4, buf + len);
@@ -495,7 +445,6 @@ int ib_ud_header_pack(struct ib_ud_header *header,
 			&header->udp, buf + len);
 		len += IB_UDP_BYTES;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ib_pack(bth_table, ARRAY_SIZE(bth_table),
 		&header->bth, buf + len);
@@ -530,13 +479,8 @@ int ib_ud_header_unpack(void                *buf,
 	buf += IB_LRH_BYTES;
 
 	if (header->lrh.link_version != 0) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Invalid LRH.link_version %d\n",
-		       header->lrh.link_version);
-=======
 		pr_warn("Invalid LRH.link_version %u\n",
 			header->lrh.link_version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -552,15 +496,6 @@ int ib_ud_header_unpack(void                *buf,
 		buf += IB_GRH_BYTES;
 
 		if (header->grh.ip_version != 6) {
-<<<<<<< HEAD
-			printk(KERN_WARNING "Invalid GRH.ip_version %d\n",
-			       header->grh.ip_version);
-			return -EINVAL;
-		}
-		if (header->grh.next_header != 0x1b) {
-			printk(KERN_WARNING "Invalid GRH.next_header 0x%02x\n",
-			       header->grh.next_header);
-=======
 			pr_warn("Invalid GRH.ip_version %u\n",
 				header->grh.ip_version);
 			return -EINVAL;
@@ -568,19 +503,13 @@ int ib_ud_header_unpack(void                *buf,
 		if (header->grh.next_header != 0x1b) {
 			pr_warn("Invalid GRH.next_header 0x%02x\n",
 				header->grh.next_header);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		break;
 
 	default:
-<<<<<<< HEAD
-		printk(KERN_WARNING "Invalid LRH.link_next_header %d\n",
-		       header->lrh.link_next_header);
-=======
 		pr_warn("Invalid LRH.link_next_header %u\n",
 			header->lrh.link_next_header);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -596,23 +525,13 @@ int ib_ud_header_unpack(void                *buf,
 		header->immediate_present = 1;
 		break;
 	default:
-<<<<<<< HEAD
-		printk(KERN_WARNING "Invalid BTH.opcode 0x%02x\n",
-		       header->bth.opcode);
-=======
 		pr_warn("Invalid BTH.opcode 0x%02x\n", header->bth.opcode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (header->bth.transport_header_version != 0) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Invalid BTH.transport_header_version %d\n",
-		       header->bth.transport_header_version);
-=======
 		pr_warn("Invalid BTH.transport_header_version %u\n",
 			header->bth.transport_header_version);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 

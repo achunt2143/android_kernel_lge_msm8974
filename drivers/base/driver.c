@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * driver.c - centralized device driver management
  *
@@ -9,26 +6,15 @@
  * Copyright (c) 2002-3 Open Source Development Labs
  * Copyright (c) 2007 Greg Kroah-Hartman <gregkh@suse.de>
  * Copyright (c) 2007 Novell Inc.
-<<<<<<< HEAD
- *
- * This file is released under the GPLv2
- *
- */
-
-=======
  */
 
 #include <linux/device/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/sysfs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "base.h"
 
 static struct device *next_device(struct klist_iter *i)
@@ -45,8 +31,6 @@ static struct device *next_device(struct klist_iter *i)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * driver_set_override() - Helper to set or clear driver override.
  * @dev: Device to change
  * @override: Address of string to change (e.g. &device->driver_override);
@@ -122,7 +106,6 @@ int driver_set_override(struct device *dev, const char **override,
 EXPORT_SYMBOL_GPL(driver_set_override);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * driver_for_each_device - Iterator for devices bound to a driver.
  * @drv: Driver we're iterating.
  * @start: Device to begin with
@@ -143,11 +126,7 @@ int driver_for_each_device(struct device_driver *drv, struct device *start,
 
 	klist_iter_init_node(&drv->p->klist_devices, &i,
 			     start ? &start->p->knode_driver : NULL);
-<<<<<<< HEAD
-	while ((dev = next_device(&i)) && !error)
-=======
 	while (!error && (dev = next_device(&i)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = fn(dev, data);
 	klist_iter_exit(&i);
 	return error;
@@ -170,22 +149,13 @@ EXPORT_SYMBOL_GPL(driver_for_each_device);
  * return to the caller and not iterate over any more devices.
  */
 struct device *driver_find_device(struct device_driver *drv,
-<<<<<<< HEAD
-				  struct device *start, void *data,
-				  int (*match)(struct device *dev, void *data))
-=======
 				  struct device *start, const void *data,
 				  int (*match)(struct device *dev, const void *data))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct klist_iter i;
 	struct device *dev;
 
-<<<<<<< HEAD
-	if (!drv)
-=======
 	if (!drv || !drv->p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	klist_iter_init_node(&drv->p->klist_devices, &i,
@@ -207,10 +177,7 @@ int driver_create_file(struct device_driver *drv,
 		       const struct driver_attribute *attr)
 {
 	int error;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (drv)
 		error = sysfs_create_file(&drv->p->kobj, &attr->attr);
 	else
@@ -232,36 +199,6 @@ void driver_remove_file(struct device_driver *drv,
 }
 EXPORT_SYMBOL_GPL(driver_remove_file);
 
-<<<<<<< HEAD
-static int driver_add_groups(struct device_driver *drv,
-			     const struct attribute_group **groups)
-{
-	int error = 0;
-	int i;
-
-	if (groups) {
-		for (i = 0; groups[i]; i++) {
-			error = sysfs_create_group(&drv->p->kobj, groups[i]);
-			if (error) {
-				while (--i >= 0)
-					sysfs_remove_group(&drv->p->kobj,
-							   groups[i]);
-				break;
-			}
-		}
-	}
-	return error;
-}
-
-static void driver_remove_groups(struct device_driver *drv,
-				 const struct attribute_group **groups)
-{
-	int i;
-
-	if (groups)
-		for (i = 0; groups[i]; i++)
-			sysfs_remove_group(&drv->p->kobj, groups[i]);
-=======
 int driver_add_groups(struct device_driver *drv,
 		      const struct attribute_group **groups)
 {
@@ -272,7 +209,6 @@ void driver_remove_groups(struct device_driver *drv,
 			  const struct attribute_group **groups)
 {
 	sysfs_remove_groups(&drv->p->kobj, groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -288,33 +224,21 @@ int driver_register(struct device_driver *drv)
 	int ret;
 	struct device_driver *other;
 
-<<<<<<< HEAD
-	BUG_ON(!drv->bus->p);
-=======
 	if (!bus_is_registered(drv->bus)) {
 		pr_err("Driver '%s' was unable to register with bus_type '%s' because the bus was not initialized.\n",
 			   drv->name, drv->bus->name);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((drv->bus->probe && drv->probe) ||
 	    (drv->bus->remove && drv->remove) ||
 	    (drv->bus->shutdown && drv->shutdown))
-<<<<<<< HEAD
-		printk(KERN_WARNING "Driver '%s' needs updating - please use "
-=======
 		pr_warn("Driver '%s' needs updating - please use "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"bus_type methods\n", drv->name);
 
 	other = driver_find(drv->name, drv->bus);
 	if (other) {
-<<<<<<< HEAD
-		printk(KERN_ERR "Error: Driver '%s' is already registered, "
-=======
 		pr_err("Error: Driver '%s' is already registered, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"aborting...\n", drv->name);
 		return -EBUSY;
 	}
@@ -323,10 +247,6 @@ int driver_register(struct device_driver *drv)
 	if (ret)
 		return ret;
 	ret = driver_add_groups(drv, drv->groups);
-<<<<<<< HEAD
-	if (ret)
-		bus_remove_driver(drv);
-=======
 	if (ret) {
 		bus_remove_driver(drv);
 		return ret;
@@ -334,7 +254,6 @@ int driver_register(struct device_driver *drv)
 	kobject_uevent(&drv->p->kobj, KOBJ_ADD);
 	deferred_probe_extend_timeout();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(driver_register);
@@ -355,33 +274,3 @@ void driver_unregister(struct device_driver *drv)
 	bus_remove_driver(drv);
 }
 EXPORT_SYMBOL_GPL(driver_unregister);
-<<<<<<< HEAD
-
-/**
- * driver_find - locate driver on a bus by its name.
- * @name: name of the driver.
- * @bus: bus to scan for the driver.
- *
- * Call kset_find_obj() to iterate over list of drivers on
- * a bus to find driver by name. Return driver if found.
- *
- * This routine provides no locking to prevent the driver it returns
- * from being unregistered or unloaded while the caller is using it.
- * The caller is responsible for preventing this.
- */
-struct device_driver *driver_find(const char *name, struct bus_type *bus)
-{
-	struct kobject *k = kset_find_obj(bus->p->drivers_kset, name);
-	struct driver_private *priv;
-
-	if (k) {
-		/* Drop reference added by kset_find_obj() */
-		kobject_put(k);
-		priv = to_driver(k);
-		return priv->driver;
-	}
-	return NULL;
-}
-EXPORT_SYMBOL_GPL(driver_find);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

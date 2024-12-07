@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/*
- * cs.c -- Kernel Card Services - core services
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * cs.c -- Kernel Card Services - core services
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The initial developer of the original code is David A. Hinds
  * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
  * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
@@ -184,13 +174,8 @@ int pcmcia_register_socket(struct pcmcia_socket *socket)
 
 	wait_for_completion(&socket->thread_done);
 	if (!socket->thread) {
-<<<<<<< HEAD
-		dev_printk(KERN_WARNING, &socket->dev,
-			   "PCMCIA: warning: socket thread did not start\n");
-=======
 		dev_warn(&socket->dev,
 			 "PCMCIA: warning: socket thread did not start\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -287,11 +272,7 @@ static int socket_reset(struct pcmcia_socket *skt)
 		msleep(unreset_check * 10);
 	}
 
-<<<<<<< HEAD
-	dev_printk(KERN_ERR, &skt->dev, "time out after reset.\n");
-=======
 	dev_err(&skt->dev, "time out after reset\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ETIMEDOUT;
 }
 
@@ -341,13 +322,8 @@ static void socket_shutdown(struct pcmcia_socket *s)
 
 	s->ops->get_status(s, &status);
 	if (status & SS_POWERON) {
-<<<<<<< HEAD
-		dev_printk(KERN_ERR, &s->dev,
-			   "*** DANGER *** unable to remove socket power\n");
-=======
 		dev_err(&s->dev,
 			"*** DANGER *** unable to remove socket power\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	s->state &= ~SOCKET_INUSE;
@@ -377,23 +353,13 @@ static int socket_setup(struct pcmcia_socket *skt, int initial_delay)
 	}
 
 	if (status & SS_PENDING) {
-<<<<<<< HEAD
-		dev_printk(KERN_ERR, &skt->dev,
-			   "voltage interrogation timed out.\n");
-=======
 		dev_err(&skt->dev, "voltage interrogation timed out\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ETIMEDOUT;
 	}
 
 	if (status & SS_CARDBUS) {
 		if (!(skt->features & SS_CAP_CARDBUS)) {
-<<<<<<< HEAD
-			dev_printk(KERN_ERR, &skt->dev,
-				"cardbus cards are not supported.\n");
-=======
 			dev_err(&skt->dev, "cardbus cards are not supported\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		skt->state |= SOCKET_CARDBUS;
@@ -408,11 +374,7 @@ static int socket_setup(struct pcmcia_socket *skt, int initial_delay)
 	else if (!(status & SS_XVCARD))
 		skt->socket.Vcc = skt->socket.Vpp = 50;
 	else {
-<<<<<<< HEAD
-		dev_printk(KERN_ERR, &skt->dev, "unsupported voltage key.\n");
-=======
 		dev_err(&skt->dev, "unsupported voltage key\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -429,11 +391,7 @@ static int socket_setup(struct pcmcia_socket *skt, int initial_delay)
 
 	skt->ops->get_status(skt, &status);
 	if (!(status & SS_POWERON)) {
-<<<<<<< HEAD
-		dev_printk(KERN_ERR, &skt->dev, "unable to apply power.\n");
-=======
 		dev_err(&skt->dev, "unable to apply power\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -466,12 +424,7 @@ static int socket_insert(struct pcmcia_socket *skt)
 	if (ret == 0) {
 		skt->state |= SOCKET_PRESENT;
 
-<<<<<<< HEAD
-		dev_printk(KERN_NOTICE, &skt->dev,
-			   "pccard: %s card inserted into slot %d\n",
-=======
 		dev_notice(&skt->dev, "pccard: %s card inserted into slot %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   (skt->state & SOCKET_CARDBUS) ? "CardBus" : "PCMCIA",
 			   skt->sock);
 
@@ -496,13 +449,6 @@ static int socket_insert(struct pcmcia_socket *skt)
 
 static int socket_suspend(struct pcmcia_socket *skt)
 {
-<<<<<<< HEAD
-	if (skt->state & SOCKET_SUSPEND)
-		return -EBUSY;
-
-	mutex_lock(&skt->ops_mutex);
-	skt->suspended_state = skt->state;
-=======
 	if ((skt->state & SOCKET_SUSPEND) && !(skt->state & SOCKET_IN_RESUME))
 		return -EBUSY;
 
@@ -510,17 +456,13 @@ static int socket_suspend(struct pcmcia_socket *skt)
 	/* store state on first suspend, but not after spurious wakeups */
 	if (!(skt->state & SOCKET_IN_RESUME))
 		skt->suspended_state = skt->state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skt->socket = dead_socket;
 	skt->ops->set_socket(skt, &skt->socket);
 	if (skt->ops->suspend)
 		skt->ops->suspend(skt);
 	skt->state |= SOCKET_SUSPEND;
-<<<<<<< HEAD
-=======
 	skt->state &= ~SOCKET_IN_RESUME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&skt->ops_mutex);
 	return 0;
 }
@@ -533,27 +475,17 @@ static int socket_early_resume(struct pcmcia_socket *skt)
 	skt->ops->set_socket(skt, &skt->socket);
 	if (skt->state & SOCKET_PRESENT)
 		skt->resume_status = socket_setup(skt, resume_delay);
-<<<<<<< HEAD
-=======
 	skt->state |= SOCKET_IN_RESUME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&skt->ops_mutex);
 	return 0;
 }
 
 static int socket_late_resume(struct pcmcia_socket *skt)
 {
-<<<<<<< HEAD
-	int ret;
-
-	mutex_lock(&skt->ops_mutex);
-	skt->state &= ~SOCKET_SUSPEND;
-=======
 	int ret = 0;
 
 	mutex_lock(&skt->ops_mutex);
 	skt->state &= ~(SOCKET_SUSPEND | SOCKET_IN_RESUME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&skt->ops_mutex);
 
 	if (!(skt->state & SOCKET_PRESENT)) {
@@ -577,8 +509,6 @@ static int socket_late_resume(struct pcmcia_socket *skt)
 		return socket_insert(skt);
 	}
 
-<<<<<<< HEAD
-=======
 	if (!(skt->state & SOCKET_CARDBUS) && (skt->callback))
 		ret = skt->callback->early_resume(skt);
 	return ret;
@@ -592,29 +522,18 @@ static int socket_late_resume(struct pcmcia_socket *skt)
 static int socket_complete_resume(struct pcmcia_socket *skt)
 {
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CARDBUS
 	if (skt->state & SOCKET_CARDBUS) {
 		/* We can't be sure the CardBus card is the same
 		 * as the one previously inserted. Therefore, remove
 		 * and re-add... */
 		cb_free(skt);
-<<<<<<< HEAD
-		cb_alloc(skt);
-		return 0;
-	}
-#endif
-	if (!(skt->state & SOCKET_CARDBUS) && (skt->callback))
-		skt->callback->early_resume(skt);
-	return 0;
-=======
 		ret = cb_alloc(skt);
 		if (ret)
 			cb_free(skt);
 	}
 #endif
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -624,32 +543,20 @@ static int socket_complete_resume(struct pcmcia_socket *skt)
  */
 static int socket_resume(struct pcmcia_socket *skt)
 {
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(skt->state & SOCKET_SUSPEND))
 		return -EBUSY;
 
 	socket_early_resume(skt);
-<<<<<<< HEAD
-	return socket_late_resume(skt);
-=======
 	err = socket_late_resume(skt);
 	if (!err)
 		err = socket_complete_resume(skt);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void socket_remove(struct pcmcia_socket *skt)
 {
-<<<<<<< HEAD
-	dev_printk(KERN_NOTICE, &skt->dev,
-		   "pccard: card ejected from slot %d\n", skt->sock);
-=======
 	dev_notice(&skt->dev, "pccard: card ejected from slot %d\n", skt->sock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	socket_shutdown(skt);
 }
 
@@ -695,17 +602,10 @@ static int pccardd(void *__skt)
 	/* register with the device core */
 	ret = device_register(&skt->dev);
 	if (ret) {
-<<<<<<< HEAD
-		dev_printk(KERN_WARNING, &skt->dev,
-			   "PCMCIA: unable to register socket\n");
-		skt->thread = NULL;
-		complete(&skt->thread_done);
-=======
 		dev_warn(&skt->dev, "PCMCIA: unable to register socket\n");
 		skt->thread = NULL;
 		complete(&skt->thread_done);
 		put_device(&skt->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	ret = pccard_sysfs_add_socket(&skt->dev);
@@ -723,11 +623,6 @@ static int pccardd(void *__skt)
 		unsigned int events;
 		unsigned int sysfs_events;
 
-<<<<<<< HEAD
-		set_current_state(TASK_INTERRUPTIBLE);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&skt->thread_lock, flags);
 		events = skt->thread_events;
 		skt->thread_events = 0;
@@ -772,26 +667,16 @@ static int pccardd(void *__skt)
 		if (events || sysfs_events)
 			continue;
 
-<<<<<<< HEAD
-=======
 		set_current_state(TASK_INTERRUPTIBLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (kthread_should_stop())
 			break;
 
 		schedule();
-<<<<<<< HEAD
-		try_to_freeze();
-	}
-	/* make sure we are running before we exit */
-	set_current_state(TASK_RUNNING);
-=======
 
 		try_to_freeze();
 	}
 	/* make sure we are running before we exit */
 	__set_current_state(TASK_RUNNING);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* shut down socket, if a device is still present */
 	if (skt->state & SOCKET_PRESENT) {
@@ -926,17 +811,10 @@ int pcmcia_reset_card(struct pcmcia_socket *skt)
 EXPORT_SYMBOL(pcmcia_reset_card);
 
 
-<<<<<<< HEAD
-static int pcmcia_socket_uevent(struct device *dev,
-				struct kobj_uevent_env *env)
-{
-	struct pcmcia_socket *s = container_of(dev, struct pcmcia_socket, dev);
-=======
 static int pcmcia_socket_uevent(const struct device *dev,
 				struct kobj_uevent_env *env)
 {
 	const struct pcmcia_socket *s = container_of(dev, struct pcmcia_socket, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (add_uevent_var(env, "SOCKET_NO=%u", s->sock))
 		return -ENOMEM;
@@ -947,11 +825,7 @@ static int pcmcia_socket_uevent(const struct device *dev,
 
 static struct completion pcmcia_unload;
 
-<<<<<<< HEAD
-static void pcmcia_release_socket_class(struct class *data)
-=======
 static void pcmcia_release_socket_class(const struct class *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	complete(&pcmcia_unload);
 }
@@ -987,15 +861,12 @@ static int __used pcmcia_socket_dev_resume(struct device *dev)
 	return __pcmcia_pm_op(dev, socket_late_resume);
 }
 
-<<<<<<< HEAD
-=======
 static void __used pcmcia_socket_dev_complete(struct device *dev)
 {
 	WARN(__pcmcia_pm_op(dev, socket_complete_resume),
 		"failed to complete resume");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct dev_pm_ops pcmcia_socket_pm_ops = {
 	/* dev_resume may be called with IRQs enabled */
 	SET_SYSTEM_SLEEP_PM_OPS(NULL,
@@ -1010,10 +881,7 @@ static const struct dev_pm_ops pcmcia_socket_pm_ops = {
 	.resume_noirq = pcmcia_socket_dev_resume_noirq,
 	.thaw_noirq = pcmcia_socket_dev_resume_noirq,
 	.restore_noirq = pcmcia_socket_dev_resume_noirq,
-<<<<<<< HEAD
-=======
 	.complete = pcmcia_socket_dev_complete,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define PCMCIA_SOCKET_CLASS_PM_OPS (&pcmcia_socket_pm_ops)
@@ -1024,11 +892,7 @@ static const struct dev_pm_ops pcmcia_socket_pm_ops = {
 
 #endif /* CONFIG_PM */
 
-<<<<<<< HEAD
-struct class pcmcia_socket_class = {
-=======
 const struct class pcmcia_socket_class = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "pcmcia_socket",
 	.dev_uevent = pcmcia_socket_uevent,
 	.dev_release = pcmcia_release_socket,

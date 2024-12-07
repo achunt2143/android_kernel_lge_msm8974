@@ -1,19 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/netdevice.h>
 
-<<<<<<< HEAD
-#include "bonding.h"
-#include "bond_alb.h"
-=======
 #include <net/bonding.h>
 #include <net/bond_alb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_DEBUG_FS) && !defined(CONFIG_NET_NS)
 
@@ -22,13 +14,7 @@
 
 static struct dentry *bonding_debug_root;
 
-<<<<<<< HEAD
-/*
- *  Show RLB hash table
- */
-=======
 /* Show RLB hash table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bond_debug_rlb_hash_show(struct seq_file *m, void *v)
 {
 	struct bonding *bond = m->private;
@@ -36,28 +22,17 @@ static int bond_debug_rlb_hash_show(struct seq_file *m, void *v)
 	struct rlb_client_info *client_info;
 	u32 hash_index;
 
-<<<<<<< HEAD
-	if (bond->params.mode != BOND_MODE_ALB)
-=======
 	if (BOND_MODE(bond) != BOND_MODE_ALB)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	seq_printf(m, "SourceIP        DestinationIP   "
 			"Destination MAC   DEV\n");
 
-<<<<<<< HEAD
-	spin_lock_bh(&(BOND_ALB_INFO(bond).rx_hashtbl_lock));
-
-	hash_index = bond_info->rx_hashtbl_head;
-	for (; hash_index != RLB_NULL_INDEX; hash_index = client_info->next) {
-=======
 	spin_lock_bh(&bond->mode_lock);
 
 	hash_index = bond_info->rx_hashtbl_used_head;
 	for (; hash_index != RLB_NULL_INDEX;
 	     hash_index = client_info->used_next) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		client_info = &(bond_info->rx_hashtbl[hash_index]);
 		seq_printf(m, "%-15pI4 %-15pI4 %-17pM %s\n",
 			&client_info->ip_src,
@@ -66,40 +41,6 @@ static int bond_debug_rlb_hash_show(struct seq_file *m, void *v)
 			client_info->slave->dev->name);
 	}
 
-<<<<<<< HEAD
-	spin_unlock_bh(&(BOND_ALB_INFO(bond).rx_hashtbl_lock));
-
-	return 0;
-}
-
-static int bond_debug_rlb_hash_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, bond_debug_rlb_hash_show, inode->i_private);
-}
-
-static const struct file_operations bond_debug_rlb_hash_fops = {
-	.owner		= THIS_MODULE,
-	.open		= bond_debug_rlb_hash_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= single_release,
-};
-
-void bond_debug_register(struct bonding *bond)
-{
-	if (!bonding_debug_root)
-		return;
-
-	bond->debug_dir =
-		debugfs_create_dir(bond->dev->name, bonding_debug_root);
-
-	if (!bond->debug_dir) {
-		pr_warning("%s: Warning: failed to register to debugfs\n",
-			bond->dev->name);
-		return;
-	}
-
-=======
 	spin_unlock_bh(&bond->mode_lock);
 
 	return 0;
@@ -111,19 +52,12 @@ void bond_debug_register(struct bonding *bond)
 	bond->debug_dir =
 		debugfs_create_dir(bond->dev->name, bonding_debug_root);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debugfs_create_file("rlb_hash_table", 0400, bond->debug_dir,
 				bond, &bond_debug_rlb_hash_fops);
 }
 
 void bond_debug_unregister(struct bonding *bond)
 {
-<<<<<<< HEAD
-	if (!bonding_debug_root)
-		return;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debugfs_remove_recursive(bond->debug_dir);
 }
 
@@ -131,47 +65,22 @@ void bond_debug_reregister(struct bonding *bond)
 {
 	struct dentry *d;
 
-<<<<<<< HEAD
-	if (!bonding_debug_root)
-		return;
-
-	d = debugfs_rename(bonding_debug_root, bond->debug_dir,
-			   bonding_debug_root, bond->dev->name);
-	if (d) {
-		bond->debug_dir = d;
-	} else {
-		pr_warning("%s: Warning: failed to reregister, "
-				"so just unregister old one\n",
-				bond->dev->name);
-=======
 	d = debugfs_rename(bonding_debug_root, bond->debug_dir,
 			   bonding_debug_root, bond->dev->name);
 	if (!IS_ERR(d)) {
 		bond->debug_dir = d;
 	} else {
 		netdev_warn(bond->dev, "failed to reregister, so just unregister old one\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bond_debug_unregister(bond);
 	}
 }
 
-<<<<<<< HEAD
-void bond_create_debugfs(void)
-{
-	bonding_debug_root = debugfs_create_dir("bonding", NULL);
-
-	if (!bonding_debug_root) {
-		pr_warning("Warning: Cannot create bonding directory"
-				" in debugfs\n");
-	}
-=======
 void __init bond_create_debugfs(void)
 {
 	bonding_debug_root = debugfs_create_dir("bonding", NULL);
 
 	if (IS_ERR(bonding_debug_root))
 		pr_warn("Warning: Cannot create bonding directory in debugfs\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bond_destroy_debugfs(void)
@@ -195,11 +104,7 @@ void bond_debug_reregister(struct bonding *bond)
 {
 }
 
-<<<<<<< HEAD
-void bond_create_debugfs(void)
-=======
 void __init bond_create_debugfs(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 

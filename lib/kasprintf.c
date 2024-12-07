@@ -1,18 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/lib/kasprintf.c
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
  */
 
-<<<<<<< HEAD
-#include <stdarg.h>
-=======
 #include <linux/stdarg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -21,25 +14,11 @@
 /* Simplified asprintf. */
 char *kvasprintf(gfp_t gfp, const char *fmt, va_list ap)
 {
-<<<<<<< HEAD
-	unsigned int len;
-=======
 	unsigned int first, second;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *p;
 	va_list aq;
 
 	va_copy(aq, ap);
-<<<<<<< HEAD
-	len = vsnprintf(NULL, 0, fmt, aq);
-	va_end(aq);
-
-	p = kmalloc(len+1, gfp);
-	if (!p)
-		return NULL;
-
-	vsnprintf(p, len+1, fmt, ap);
-=======
 	first = vsnprintf(NULL, 0, fmt, aq);
 	va_end(aq);
 
@@ -50,14 +29,11 @@ char *kvasprintf(gfp_t gfp, const char *fmt, va_list ap)
 	second = vsnprintf(p, first+1, fmt, ap);
 	WARN(first != second, "different return values (%u and %u) from vsnprintf(\"%s\", ...)",
 	     first, second, fmt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return p;
 }
 EXPORT_SYMBOL(kvasprintf);
 
-<<<<<<< HEAD
-=======
 /*
  * If fmt contains no % (or is exactly %s), use kstrdup_const. If fmt
  * (or the sole vararg) points to rodata, we will then save a memory
@@ -74,7 +50,6 @@ const char *kvasprintf_const(gfp_t gfp, const char *fmt, va_list ap)
 }
 EXPORT_SYMBOL(kvasprintf_const);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *kasprintf(gfp_t gfp, const char *fmt, ...)
 {
 	va_list ap;

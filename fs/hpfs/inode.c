@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/inode.c
  *
@@ -11,10 +8,7 @@
  */
 
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/user_namespace.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hpfs_fn.h"
 
 void hpfs_init_inode(struct inode *i)
@@ -42,15 +36,9 @@ void hpfs_init_inode(struct inode *i)
 	hpfs_inode->i_rddir_off = NULL;
 	hpfs_inode->i_dirty = 0;
 
-<<<<<<< HEAD
-	i->i_ctime.tv_sec = i->i_ctime.tv_nsec = 0;
-	i->i_mtime.tv_sec = i->i_mtime.tv_nsec = 0;
-	i->i_atime.tv_sec = i->i_atime.tv_nsec = 0;
-=======
 	inode_set_ctime(i, 0, 0);
 	inode_set_mtime(i, 0, 0);
 	inode_set_atime(i, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hpfs_read_inode(struct inode *i)
@@ -74,22 +62,14 @@ void hpfs_read_inode(struct inode *i)
 	if (hpfs_sb(i->i_sb)->sb_eas) {
 		if ((ea = hpfs_get_ea(i->i_sb, fnode, "UID", &ea_size))) {
 			if (ea_size == 2) {
-<<<<<<< HEAD
-				i->i_uid = le16_to_cpu(*(__le16*)ea);
-=======
 				i_uid_write(i, le16_to_cpu(*(__le16*)ea));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hpfs_inode->i_ea_uid = 1;
 			}
 			kfree(ea);
 		}
 		if ((ea = hpfs_get_ea(i->i_sb, fnode, "GID", &ea_size))) {
 			if (ea_size == 2) {
-<<<<<<< HEAD
-				i->i_gid = le16_to_cpu(*(__le16*)ea);
-=======
 				i_gid_write(i, le16_to_cpu(*(__le16*)ea));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hpfs_inode->i_ea_gid = 1;
 			}
 			kfree(ea);
@@ -98,10 +78,7 @@ void hpfs_read_inode(struct inode *i)
 			kfree(ea);
 			i->i_mode = S_IFLNK | 0777;
 			i->i_op = &page_symlink_inode_operations;
-<<<<<<< HEAD
-=======
 			inode_nohighmem(i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i->i_data.a_ops = &hpfs_symlink_aops;
 			set_nlink(i, 1);
 			i->i_size = ea_size;
@@ -136,11 +113,7 @@ void hpfs_read_inode(struct inode *i)
 			}
 		}
 	}
-<<<<<<< HEAD
-	if (fnode->dirflag) {
-=======
 	if (fnode_is_dir(fnode)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int n_dnodes, n_subdirs;
 		i->i_mode |= S_IFDIR;
 		i->i_op = &hpfs_dir_iops;
@@ -176,18 +149,6 @@ static void hpfs_write_inode_ea(struct inode *i, struct fnode *fnode)
 	/*if (le32_to_cpu(fnode->acl_size_l) || le16_to_cpu(fnode->acl_size_s)) {
 		   Some unknown structures like ACL may be in fnode,
 		   we'd better not overwrite them
-<<<<<<< HEAD
-		hpfs_error(i->i_sb, "fnode %08x has some unknown HPFS386 stuctures", i->i_ino);
-	} else*/ if (hpfs_sb(i->i_sb)->sb_eas >= 2) {
-		__le32 ea;
-		if ((i->i_uid != hpfs_sb(i->i_sb)->sb_uid) || hpfs_inode->i_ea_uid) {
-			ea = cpu_to_le32(i->i_uid);
-			hpfs_set_ea(i, fnode, "UID", (char*)&ea, 2);
-			hpfs_inode->i_ea_uid = 1;
-		}
-		if ((i->i_gid != hpfs_sb(i->i_sb)->sb_gid) || hpfs_inode->i_ea_gid) {
-			ea = cpu_to_le32(i->i_gid);
-=======
 		hpfs_error(i->i_sb, "fnode %08x has some unknown HPFS386 structures", i->i_ino);
 	} else*/ if (hpfs_sb(i->i_sb)->sb_eas >= 2) {
 		__le32 ea;
@@ -198,7 +159,6 @@ static void hpfs_write_inode_ea(struct inode *i, struct fnode *fnode)
 		}
 		if (!gid_eq(i->i_gid, hpfs_sb(i->i_sb)->sb_gid) || hpfs_inode->i_ea_gid) {
 			ea = cpu_to_le32(i_gid_read(i));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hpfs_set_ea(i, fnode, "GID", (char *)&ea, 2);
 			hpfs_inode->i_ea_gid = 1;
 		}
@@ -225,12 +185,8 @@ void hpfs_write_inode(struct inode *i)
 	struct inode *parent;
 	if (i->i_ino == hpfs_sb(i->i_sb)->sb_root) return;
 	if (hpfs_inode->i_rddir_off && !atomic_read(&i->i_count)) {
-<<<<<<< HEAD
-		if (*hpfs_inode->i_rddir_off) printk("HPFS: write_inode: some position still there\n");
-=======
 		if (*hpfs_inode->i_rddir_off)
 			pr_err("write_inode: some position still there\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(hpfs_inode->i_rddir_off);
 		hpfs_inode->i_rddir_off = NULL;
 	}
@@ -274,15 +230,9 @@ void hpfs_write_inode_nolock(struct inode *i)
 	}
 	hpfs_write_inode_ea(i, fnode);
 	if (de) {
-<<<<<<< HEAD
-		de->write_date = cpu_to_le32(gmt_to_local(i->i_sb, i->i_mtime.tv_sec));
-		de->read_date = cpu_to_le32(gmt_to_local(i->i_sb, i->i_atime.tv_sec));
-		de->creation_date = cpu_to_le32(gmt_to_local(i->i_sb, i->i_ctime.tv_sec));
-=======
 		de->write_date = cpu_to_le32(gmt_to_local(i->i_sb, inode_get_mtime_sec(i)));
 		de->read_date = cpu_to_le32(gmt_to_local(i->i_sb, inode_get_atime_sec(i)));
 		de->creation_date = cpu_to_le32(gmt_to_local(i->i_sb, inode_get_ctime_sec(i)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		de->read_only = !(i->i_mode & 0222);
 		de->ea_size = cpu_to_le32(hpfs_inode->i_ea_size);
 		hpfs_mark_4buffers_dirty(&qbh);
@@ -290,15 +240,9 @@ void hpfs_write_inode_nolock(struct inode *i)
 	}
 	if (S_ISDIR(i->i_mode)) {
 		if ((de = map_dirent(i, hpfs_inode->i_dno, "\001\001", 2, NULL, &qbh))) {
-<<<<<<< HEAD
-			de->write_date = cpu_to_le32(gmt_to_local(i->i_sb, i->i_mtime.tv_sec));
-			de->read_date = cpu_to_le32(gmt_to_local(i->i_sb, i->i_atime.tv_sec));
-			de->creation_date = cpu_to_le32(gmt_to_local(i->i_sb, i->i_ctime.tv_sec));
-=======
 			de->write_date = cpu_to_le32(gmt_to_local(i->i_sb, inode_get_mtime_sec(i)));
 			de->read_date = cpu_to_le32(gmt_to_local(i->i_sb, inode_get_atime_sec(i)));
 			de->creation_date = cpu_to_le32(gmt_to_local(i->i_sb, inode_get_ctime_sec(i)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			de->read_only = !(i->i_mode & 0222);
 			de->ea_size = cpu_to_le32(/*hpfs_inode->i_ea_size*/0);
 			de->file_size = cpu_to_le32(0);
@@ -313,54 +257,30 @@ void hpfs_write_inode_nolock(struct inode *i)
 	brelse(bh);
 }
 
-<<<<<<< HEAD
-int hpfs_setattr(struct dentry *dentry, struct iattr *attr)
-{
-	struct inode *inode = dentry->d_inode;
-=======
 int hpfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 		 struct iattr *attr)
 {
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = -EINVAL;
 
 	hpfs_lock(inode->i_sb);
 	if (inode->i_ino == hpfs_sb(inode->i_sb)->sb_root)
 		goto out_unlock;
-<<<<<<< HEAD
-	if ((attr->ia_valid & ATTR_UID) && attr->ia_uid >= 0x10000)
-		goto out_unlock;
-	if ((attr->ia_valid & ATTR_GID) && attr->ia_gid >= 0x10000)
-=======
 	if ((attr->ia_valid & ATTR_UID) &&
 	    from_kuid(&init_user_ns, attr->ia_uid) >= 0x10000)
 		goto out_unlock;
 	if ((attr->ia_valid & ATTR_GID) &&
 	    from_kgid(&init_user_ns, attr->ia_gid) >= 0x10000)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 	if ((attr->ia_valid & ATTR_SIZE) && attr->ia_size > inode->i_size)
 		goto out_unlock;
 
-<<<<<<< HEAD
-	error = inode_change_ok(inode, attr);
-=======
 	error = setattr_prepare(&nop_mnt_idmap, dentry, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out_unlock;
 
 	if ((attr->ia_valid & ATTR_SIZE) &&
 	    attr->ia_size != i_size_read(inode)) {
-<<<<<<< HEAD
-		error = vmtruncate(inode, attr->ia_size);
-		if (error)
-			goto out_unlock;
-	}
-
-	setattr_copy(inode, attr);
-=======
 		error = inode_newsize_ok(inode, attr->ia_size);
 		if (error)
 			goto out_unlock;
@@ -370,7 +290,6 @@ int hpfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
 	}
 
 	setattr_copy(&nop_mnt_idmap, inode, attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hpfs_write_inode(inode);
 
@@ -389,13 +308,8 @@ void hpfs_write_if_changed(struct inode *inode)
 
 void hpfs_evict_inode(struct inode *inode)
 {
-<<<<<<< HEAD
-	truncate_inode_pages(&inode->i_data, 0);
-	end_writeback(inode);
-=======
 	truncate_inode_pages_final(&inode->i_data);
 	clear_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode->i_nlink) {
 		hpfs_lock(inode->i_sb);
 		hpfs_remove_fnode(inode->i_sb, inode->i_ino);

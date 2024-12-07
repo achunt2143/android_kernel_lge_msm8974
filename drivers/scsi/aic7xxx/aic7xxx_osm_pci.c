@@ -121,43 +121,6 @@ static const struct pci_device_id ahc_linux_pci_id_table[] = {
 
 MODULE_DEVICE_TABLE(pci, ahc_linux_pci_id_table);
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int
-ahc_linux_pci_dev_suspend(struct pci_dev *pdev, pm_message_t mesg)
-{
-	struct ahc_softc *ahc = pci_get_drvdata(pdev);
-	int rc;
-
-	if ((rc = ahc_suspend(ahc)))
-		return rc;
-
-	pci_save_state(pdev);
-	pci_disable_device(pdev);
-
-	if (mesg.event & PM_EVENT_SLEEP)
-		pci_set_power_state(pdev, PCI_D3hot);
-
-	return rc;
-}
-
-static int
-ahc_linux_pci_dev_resume(struct pci_dev *pdev)
-{
-	struct ahc_softc *ahc = pci_get_drvdata(pdev);
-	int rc;
-
-	pci_set_power_state(pdev, PCI_D0);
-	pci_restore_state(pdev);
-
-	if ((rc = pci_enable_device(pdev))) {
-		dev_printk(KERN_ERR, &pdev->dev,
-			   "failed to enable device after resume (%d)\n", rc);
-		return rc;
-	}
-
-	pci_set_master(pdev);
-=======
 static int __maybe_unused
 ahc_linux_pci_dev_suspend(struct device *dev)
 {
@@ -170,16 +133,11 @@ static int __maybe_unused
 ahc_linux_pci_dev_resume(struct device *dev)
 {
 	struct ahc_softc *ahc = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ahc_pci_resume(ahc);
 
 	return (ahc_resume(ahc));
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 ahc_linux_pci_dev_remove(struct pci_dev *pdev)
@@ -243,16 +201,9 @@ ahc_linux_pci_dev_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		ahc_get_pci_bus(pci),
 		ahc_get_pci_slot(pci),
 		ahc_get_pci_function(pci));
-<<<<<<< HEAD
-	name = kmalloc(strlen(buf) + 1, GFP_ATOMIC);
-	if (name == NULL)
-		return (-ENOMEM);
-	strcpy(name, buf);
-=======
 	name = kstrdup(buf, GFP_ATOMIC);
 	if (name == NULL)
 		return (-ENOMEM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahc = ahc_alloc(NULL, name);
 	if (ahc == NULL)
 		return (-ENOMEM);
@@ -275,10 +226,7 @@ ahc_linux_pci_dev_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		}
 	}
 	ahc->dev_softc = pci;
-<<<<<<< HEAD
-=======
 	ahc->dev = &pci->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = ahc_pci_config(ahc, entry);
 	if (error != 0) {
 		ahc_free(ahc);
@@ -293,12 +241,7 @@ ahc_linux_pci_dev_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		ahc_linux_pci_inherit_flags(ahc);
 
 	pci_set_drvdata(pdev, ahc);
-<<<<<<< HEAD
-	ahc_linux_register_host(ahc, &aic7xxx_driver_template);
-	return (0);
-=======
 	return ahc_linux_register_host(ahc, &aic7xxx_driver_template);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /******************************* PCI Routines *********************************/
@@ -351,24 +294,14 @@ ahc_pci_write_config(ahc_dev_softc_t pci, int reg, uint32_t value, int width)
 	}
 }
 
-<<<<<<< HEAD
-=======
 static SIMPLE_DEV_PM_OPS(ahc_linux_pci_dev_pm_ops,
 			 ahc_linux_pci_dev_suspend,
 			 ahc_linux_pci_dev_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver aic7xxx_pci_driver = {
 	.name		= "aic7xxx",
 	.probe		= ahc_linux_pci_dev_probe,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-	.suspend	= ahc_linux_pci_dev_suspend,
-	.resume		= ahc_linux_pci_dev_resume,
-#endif
-=======
 	.driver.pm	= &ahc_linux_pci_dev_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.remove		= ahc_linux_pci_dev_remove,
 	.id_table	= ahc_linux_pci_id_table
 };
@@ -414,11 +347,7 @@ ahc_linux_pci_reserve_mem_region(struct ahc_softc *ahc,
 		if (!request_mem_region(start, 0x1000, "aic7xxx"))
 			error = ENOMEM;
 		if (error == 0) {
-<<<<<<< HEAD
-			*maddr = ioremap_nocache(start, 256);
-=======
 			*maddr = ioremap(start, 256);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (*maddr == NULL) {
 				error = ENOMEM;
 				release_mem_region(start, 0x1000);

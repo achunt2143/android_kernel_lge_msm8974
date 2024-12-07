@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef BCM63XX_REGS_H_
 #define BCM63XX_REGS_H_
 
@@ -14,17 +11,11 @@
 #define REV_CHIPID_SHIFT		16
 #define REV_CHIPID_MASK			(0xffff << REV_CHIPID_SHIFT)
 #define REV_REVID_SHIFT			0
-<<<<<<< HEAD
-#define REV_REVID_MASK			(0xffff << REV_REVID_SHIFT)
-=======
 #define REV_REVID_MASK			(0xff << REV_REVID_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Clock Control register */
 #define PERF_CKCTL_REG			0x4
 
-<<<<<<< HEAD
-=======
 #define CKCTL_3368_MAC_EN		(1 << 3)
 #define CKCTL_3368_TC_EN		(1 << 5)
 #define CKCTL_3368_US_TOP_EN		(1 << 6)
@@ -82,7 +73,6 @@
 					CKCTL_6328_ROBOSW_EN |		\
 					CKCTL_6328_PCIE_EN)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CKCTL_6338_ADSLPHY_EN		(1 << 0)
 #define CKCTL_6338_MPI_EN		(1 << 1)
 #define CKCTL_6338_DRAM_EN		(1 << 2)
@@ -97,15 +87,6 @@
 					CKCTL_6338_SAR_EN |		\
 					CKCTL_6338_SPI_EN)
 
-<<<<<<< HEAD
-#define CKCTL_6345_CPU_EN		(1 << 0)
-#define CKCTL_6345_BUS_EN		(1 << 1)
-#define CKCTL_6345_EBI_EN		(1 << 2)
-#define CKCTL_6345_UART_EN		(1 << 3)
-#define CKCTL_6345_ADSLPHY_EN		(1 << 4)
-#define CKCTL_6345_ENET_EN		(1 << 7)
-#define CKCTL_6345_USBH_EN		(1 << 8)
-=======
 /* BCM6345 clock bits are shifted by 16 on the left, because of the test
  * control register which is 16-bits wide. That way we do not have any
  * specific BCM6345 code for handling clocks, and writing 0 to the test
@@ -118,7 +99,6 @@
 #define CKCTL_6345_ADSLPHY_EN		(1 << 20)
 #define CKCTL_6345_ENET_EN		(1 << 23)
 #define CKCTL_6345_USBH_EN		(1 << 24)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CKCTL_6345_ALL_SAFE_EN		(CKCTL_6345_ENET_EN |	\
 					CKCTL_6345_USBH_EN |	\
@@ -166,8 +146,6 @@
 					CKCTL_6358_USBSU_EN |		\
 					CKCTL_6358_EPHY_EN)
 
-<<<<<<< HEAD
-=======
 #define CKCTL_6362_ADSL_QPROC_EN	(1 << 1)
 #define CKCTL_6362_ADSL_AFE_EN		(1 << 2)
 #define CKCTL_6362_ADSL_EN		(1 << 3)
@@ -201,7 +179,6 @@
 					CKCTL_6362_PCIE_EN)
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CKCTL_6368_VDSL_QPROC_EN	(1 << 2)
 #define CKCTL_6368_VDSL_AFE_EN		(1 << 3)
 #define CKCTL_6368_VDSL_BONDING_EN	(1 << 4)
@@ -209,33 +186,6 @@
 #define CKCTL_6368_PHYMIPS_EN		(1 << 6)
 #define CKCTL_6368_SWPKT_USB_EN		(1 << 7)
 #define CKCTL_6368_SWPKT_SAR_EN		(1 << 8)
-<<<<<<< HEAD
-#define CKCTL_6368_SPI_CLK_EN		(1 << 9)
-#define CKCTL_6368_USBD_CLK_EN		(1 << 10)
-#define CKCTL_6368_SAR_CLK_EN		(1 << 11)
-#define CKCTL_6368_ROBOSW_CLK_EN	(1 << 12)
-#define CKCTL_6368_UTOPIA_CLK_EN	(1 << 13)
-#define CKCTL_6368_PCM_CLK_EN		(1 << 14)
-#define CKCTL_6368_USBH_CLK_EN		(1 << 15)
-#define CKCTL_6368_DISABLE_GLESS_EN	(1 << 16)
-#define CKCTL_6368_NAND_CLK_EN		(1 << 17)
-#define CKCTL_6368_IPSEC_CLK_EN		(1 << 17)
-
-#define CKCTL_6368_ALL_SAFE_EN		(CKCTL_6368_SWPKT_USB_EN |	\
-					CKCTL_6368_SWPKT_SAR_EN |	\
-					CKCTL_6368_SPI_CLK_EN |		\
-					CKCTL_6368_USBD_CLK_EN |	\
-					CKCTL_6368_SAR_CLK_EN |		\
-					CKCTL_6368_ROBOSW_CLK_EN |	\
-					CKCTL_6368_UTOPIA_CLK_EN |	\
-					CKCTL_6368_PCM_CLK_EN |		\
-					CKCTL_6368_USBH_CLK_EN |	\
-					CKCTL_6368_DISABLE_GLESS_EN |	\
-					CKCTL_6368_NAND_CLK_EN |	\
-					CKCTL_6368_IPSEC_CLK_EN)
-
-/* System PLL Control register  */
-=======
 #define CKCTL_6368_SPI_EN		(1 << 9)
 #define CKCTL_6368_USBD_EN		(1 << 10)
 #define CKCTL_6368_SAR_EN		(1 << 11)
@@ -261,30 +211,10 @@
 					CKCTL_6368_IPSEC_EN)
 
 /* System PLL Control register	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PERF_SYS_PLL_CTL_REG		0x8
 #define SYS_PLL_SOFT_RESET		0x1
 
 /* Interrupt Mask register */
-<<<<<<< HEAD
-#define PERF_IRQMASK_6338_REG		0xc
-#define PERF_IRQMASK_6345_REG		0xc
-#define PERF_IRQMASK_6348_REG		0xc
-#define PERF_IRQMASK_6358_REG		0xc
-#define PERF_IRQMASK_6368_REG		0x20
-
-/* Interrupt Status register */
-#define PERF_IRQSTAT_6338_REG		0x10
-#define PERF_IRQSTAT_6345_REG		0x10
-#define PERF_IRQSTAT_6348_REG		0x10
-#define PERF_IRQSTAT_6358_REG		0x10
-#define PERF_IRQSTAT_6368_REG		0x28
-
-/* External Interrupt Configuration register */
-#define PERF_EXTIRQ_CFG_REG_6338	0x14
-#define PERF_EXTIRQ_CFG_REG_6348	0x14
-#define PERF_EXTIRQ_CFG_REG_6358	0x14
-=======
 #define PERF_IRQMASK_3368_REG		0xc
 #define PERF_IRQMASK_6328_REG(x)	(0x20 + (x) * 0x10)
 #define PERF_IRQMASK_6338_REG		0xc
@@ -312,7 +242,6 @@
 #define PERF_EXTIRQ_CFG_REG_6348	0x14
 #define PERF_EXTIRQ_CFG_REG_6358	0x14
 #define PERF_EXTIRQ_CFG_REG_6362	0x18
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PERF_EXTIRQ_CFG_REG_6368	0x18
 
 #define PERF_EXTIRQ_CFG_REG2_6368	0x1c
@@ -339,10 +268,6 @@
 
 /* Soft Reset register */
 #define PERF_SOFTRESET_REG		0x28
-<<<<<<< HEAD
-#define PERF_SOFTRESET_6368_REG		0x10
-
-=======
 #define PERF_SOFTRESET_6328_REG		0x10
 #define PERF_SOFTRESET_6358_REG		0x34
 #define PERF_SOFTRESET_6362_REG		0x10
@@ -367,7 +292,6 @@
 #define SOFTRESET_6328_PCIE_EXT_MASK	(1 << 9)
 #define SOFTRESET_6328_PCIE_HARD_MASK	(1 << 10)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SOFTRESET_6338_SPI_MASK		(1 << 0)
 #define SOFTRESET_6338_ENET_MASK	(1 << 2)
 #define SOFTRESET_6338_USBH_MASK	(1 << 3)
@@ -376,11 +300,7 @@
 #define SOFTRESET_6338_DMAMEM_MASK	(1 << 6)
 #define SOFTRESET_6338_SAR_MASK		(1 << 7)
 #define SOFTRESET_6338_ACLC_MASK	(1 << 8)
-<<<<<<< HEAD
-#define SOFTRESET_6338_ADSLMIPSPLL_MASK	(1 << 10)
-=======
 #define SOFTRESET_6338_ADSLMIPSPLL_MASK (1 << 10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SOFTRESET_6338_ALL	 (SOFTRESET_6338_SPI_MASK |		\
 				  SOFTRESET_6338_ENET_MASK |		\
 				  SOFTRESET_6338_USBH_MASK |		\
@@ -399,11 +319,7 @@
 #define SOFTRESET_6348_DMAMEM_MASK	(1 << 6)
 #define SOFTRESET_6348_SAR_MASK		(1 << 7)
 #define SOFTRESET_6348_ACLC_MASK	(1 << 8)
-<<<<<<< HEAD
-#define SOFTRESET_6348_ADSLMIPSPLL_MASK	(1 << 10)
-=======
 #define SOFTRESET_6348_ADSLMIPSPLL_MASK (1 << 10)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SOFTRESET_6348_ALL	 (SOFTRESET_6348_SPI_MASK |		\
 				  SOFTRESET_6348_ENET_MASK |		\
@@ -415,8 +331,6 @@
 				  SOFTRESET_6348_ACLC_MASK |		\
 				  SOFTRESET_6348_ADSLMIPSPLL_MASK)
 
-<<<<<<< HEAD
-=======
 #define SOFTRESET_6358_SPI_MASK		(1 << 0)
 #define SOFTRESET_6358_ENET_MASK	(1 << 2)
 #define SOFTRESET_6358_MPI_MASK		(1 << 3)
@@ -442,7 +356,6 @@
 #define SOFTRESET_6362_FAP_MASK		(1 << 13)
 #define SOFTRESET_6362_WLAN_UBUS_MASK	(1 << 14)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SOFTRESET_6368_SPI_MASK		(1 << 0)
 #define SOFTRESET_6368_MPI_MASK		(1 << 3)
 #define SOFTRESET_6368_EPHY_MASK	(1 << 6)
@@ -547,131 +460,8 @@
 /* Watchdog reset length register */
 #define WDT_RSTLEN_REG			0x8
 
-<<<<<<< HEAD
-
-/*************************************************************************
- * _REG relative to RSET_UARTx
- *************************************************************************/
-
-/* UART Control Register */
-#define UART_CTL_REG			0x0
-#define UART_CTL_RXTMOUTCNT_SHIFT	0
-#define UART_CTL_RXTMOUTCNT_MASK	(0x1f << UART_CTL_RXTMOUTCNT_SHIFT)
-#define UART_CTL_RSTTXDN_SHIFT		5
-#define UART_CTL_RSTTXDN_MASK		(1 << UART_CTL_RSTTXDN_SHIFT)
-#define UART_CTL_RSTRXFIFO_SHIFT		6
-#define UART_CTL_RSTRXFIFO_MASK		(1 << UART_CTL_RSTRXFIFO_SHIFT)
-#define UART_CTL_RSTTXFIFO_SHIFT		7
-#define UART_CTL_RSTTXFIFO_MASK		(1 << UART_CTL_RSTTXFIFO_SHIFT)
-#define UART_CTL_STOPBITS_SHIFT		8
-#define UART_CTL_STOPBITS_MASK		(0xf << UART_CTL_STOPBITS_SHIFT)
-#define UART_CTL_STOPBITS_1		(0x7 << UART_CTL_STOPBITS_SHIFT)
-#define UART_CTL_STOPBITS_2		(0xf << UART_CTL_STOPBITS_SHIFT)
-#define UART_CTL_BITSPERSYM_SHIFT	12
-#define UART_CTL_BITSPERSYM_MASK	(0x3 << UART_CTL_BITSPERSYM_SHIFT)
-#define UART_CTL_XMITBRK_SHIFT		14
-#define UART_CTL_XMITBRK_MASK		(1 << UART_CTL_XMITBRK_SHIFT)
-#define UART_CTL_RSVD_SHIFT		15
-#define UART_CTL_RSVD_MASK		(1 << UART_CTL_RSVD_SHIFT)
-#define UART_CTL_RXPAREVEN_SHIFT		16
-#define UART_CTL_RXPAREVEN_MASK		(1 << UART_CTL_RXPAREVEN_SHIFT)
-#define UART_CTL_RXPAREN_SHIFT		17
-#define UART_CTL_RXPAREN_MASK		(1 << UART_CTL_RXPAREN_SHIFT)
-#define UART_CTL_TXPAREVEN_SHIFT		18
-#define UART_CTL_TXPAREVEN_MASK		(1 << UART_CTL_TXPAREVEN_SHIFT)
-#define UART_CTL_TXPAREN_SHIFT		18
-#define UART_CTL_TXPAREN_MASK		(1 << UART_CTL_TXPAREN_SHIFT)
-#define UART_CTL_LOOPBACK_SHIFT		20
-#define UART_CTL_LOOPBACK_MASK		(1 << UART_CTL_LOOPBACK_SHIFT)
-#define UART_CTL_RXEN_SHIFT		21
-#define UART_CTL_RXEN_MASK		(1 << UART_CTL_RXEN_SHIFT)
-#define UART_CTL_TXEN_SHIFT		22
-#define UART_CTL_TXEN_MASK		(1 << UART_CTL_TXEN_SHIFT)
-#define UART_CTL_BRGEN_SHIFT		23
-#define UART_CTL_BRGEN_MASK		(1 << UART_CTL_BRGEN_SHIFT)
-
-/* UART Baudword register */
-#define UART_BAUD_REG			0x4
-
-/* UART Misc Control register */
-#define UART_MCTL_REG			0x8
-#define UART_MCTL_DTR_SHIFT		0
-#define UART_MCTL_DTR_MASK		(1 << UART_MCTL_DTR_SHIFT)
-#define UART_MCTL_RTS_SHIFT		1
-#define UART_MCTL_RTS_MASK		(1 << UART_MCTL_RTS_SHIFT)
-#define UART_MCTL_RXFIFOTHRESH_SHIFT	8
-#define UART_MCTL_RXFIFOTHRESH_MASK	(0xf << UART_MCTL_RXFIFOTHRESH_SHIFT)
-#define UART_MCTL_TXFIFOTHRESH_SHIFT	12
-#define UART_MCTL_TXFIFOTHRESH_MASK	(0xf << UART_MCTL_TXFIFOTHRESH_SHIFT)
-#define UART_MCTL_RXFIFOFILL_SHIFT	16
-#define UART_MCTL_RXFIFOFILL_MASK	(0x1f << UART_MCTL_RXFIFOFILL_SHIFT)
-#define UART_MCTL_TXFIFOFILL_SHIFT	24
-#define UART_MCTL_TXFIFOFILL_MASK	(0x1f << UART_MCTL_TXFIFOFILL_SHIFT)
-
-/* UART External Input Configuration register */
-#define UART_EXTINP_REG			0xc
-#define UART_EXTINP_RI_SHIFT		0
-#define UART_EXTINP_RI_MASK		(1 << UART_EXTINP_RI_SHIFT)
-#define UART_EXTINP_CTS_SHIFT		1
-#define UART_EXTINP_CTS_MASK		(1 << UART_EXTINP_CTS_SHIFT)
-#define UART_EXTINP_DCD_SHIFT		2
-#define UART_EXTINP_DCD_MASK		(1 << UART_EXTINP_DCD_SHIFT)
-#define UART_EXTINP_DSR_SHIFT		3
-#define UART_EXTINP_DSR_MASK		(1 << UART_EXTINP_DSR_SHIFT)
-#define UART_EXTINP_IRSTAT(x)		(1 << (x + 4))
-#define UART_EXTINP_IRMASK(x)		(1 << (x + 8))
-#define UART_EXTINP_IR_RI		0
-#define UART_EXTINP_IR_CTS		1
-#define UART_EXTINP_IR_DCD		2
-#define UART_EXTINP_IR_DSR		3
-#define UART_EXTINP_RI_NOSENSE_SHIFT	16
-#define UART_EXTINP_RI_NOSENSE_MASK	(1 << UART_EXTINP_RI_NOSENSE_SHIFT)
-#define UART_EXTINP_CTS_NOSENSE_SHIFT	17
-#define UART_EXTINP_CTS_NOSENSE_MASK	(1 << UART_EXTINP_CTS_NOSENSE_SHIFT)
-#define UART_EXTINP_DCD_NOSENSE_SHIFT	18
-#define UART_EXTINP_DCD_NOSENSE_MASK	(1 << UART_EXTINP_DCD_NOSENSE_SHIFT)
-#define UART_EXTINP_DSR_NOSENSE_SHIFT	19
-#define UART_EXTINP_DSR_NOSENSE_MASK	(1 << UART_EXTINP_DSR_NOSENSE_SHIFT)
-
-/* UART Interrupt register */
-#define UART_IR_REG			0x10
-#define UART_IR_MASK(x)			(1 << (x + 16))
-#define UART_IR_STAT(x)			(1 << (x))
-#define UART_IR_EXTIP			0
-#define UART_IR_TXUNDER			1
-#define UART_IR_TXOVER			2
-#define UART_IR_TXTRESH			3
-#define UART_IR_TXRDLATCH		4
-#define UART_IR_TXEMPTY			5
-#define UART_IR_RXUNDER			6
-#define UART_IR_RXOVER			7
-#define UART_IR_RXTIMEOUT		8
-#define UART_IR_RXFULL			9
-#define UART_IR_RXTHRESH		10
-#define UART_IR_RXNOTEMPTY		11
-#define UART_IR_RXFRAMEERR		12
-#define UART_IR_RXPARERR		13
-#define UART_IR_RXBRK			14
-#define UART_IR_TXDONE			15
-
-/* UART Fifo register */
-#define UART_FIFO_REG			0x14
-#define UART_FIFO_VALID_SHIFT		0
-#define UART_FIFO_VALID_MASK		0xff
-#define UART_FIFO_FRAMEERR_SHIFT	8
-#define UART_FIFO_FRAMEERR_MASK		(1 << UART_FIFO_FRAMEERR_SHIFT)
-#define UART_FIFO_PARERR_SHIFT		9
-#define UART_FIFO_PARERR_MASK		(1 << UART_FIFO_PARERR_SHIFT)
-#define UART_FIFO_BRKDET_SHIFT		10
-#define UART_FIFO_BRKDET_MASK		(1 << UART_FIFO_BRKDET_SHIFT)
-#define UART_FIFO_ANYERR_MASK		(UART_FIFO_FRAMEERR_MASK |	\
-					UART_FIFO_PARERR_MASK |		\
-					UART_FIFO_BRKDET_MASK)
-
-=======
 /* Watchdog soft reset register (BCM6328 only) */
 #define WDT_SOFTRESET_REG		0xc
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*************************************************************************
  * _REG relative to RSET_GPIO
@@ -746,23 +536,18 @@
 #define GPIO_MODE_6368_SPI_SSN5		(1 << 31)
 
 
-<<<<<<< HEAD
-=======
 #define GPIO_PINMUX_OTHR_REG		0x24
 #define GPIO_PINMUX_OTHR_6328_USB_SHIFT 12
 #define GPIO_PINMUX_OTHR_6328_USB_MASK	(3 << GPIO_PINMUX_OTHR_6328_USB_SHIFT)
 #define GPIO_PINMUX_OTHR_6328_USB_HOST	(1 << GPIO_PINMUX_OTHR_6328_USB_SHIFT)
 #define GPIO_PINMUX_OTHR_6328_USB_DEV	(2 << GPIO_PINMUX_OTHR_6328_USB_SHIFT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GPIO_BASEMODE_6368_REG		0x38
 #define GPIO_BASEMODE_6368_UART2	0x1
 #define GPIO_BASEMODE_6368_GPIO		0x0
 #define GPIO_BASEMODE_6368_MASK		0x7
 /* those bits must be kept as read in gpio basemode register*/
 
-<<<<<<< HEAD
-=======
 #define GPIO_STRAPBUS_REG		0x40
 #define STRAPBUS_6358_BOOT_SEL_PARALLEL (1 << 1)
 #define STRAPBUS_6358_BOOT_SEL_SERIAL	(0 << 1)
@@ -772,7 +557,6 @@
 #define STRAPBUS_6368_BOOT_SEL_PARALLEL 3
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*************************************************************************
  * _REG relative to RSET_ENET
  *************************************************************************/
@@ -867,11 +651,8 @@
 /*************************************************************************
  * _REG relative to RSET_ENETDMA
  *************************************************************************/
-<<<<<<< HEAD
-=======
 #define ENETDMA_CHAN_WIDTH		0x10
 #define ENETDMA_6345_CHAN_WIDTH		0x40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Controller Configuration Register */
 #define ENETDMA_CFG_REG			(0x0)
@@ -890,15 +671,12 @@
 #define ENETDMA_BUFALLOC_FORCE_SHIFT	31
 #define ENETDMA_BUFALLOC_FORCE_MASK	(1 << ENETDMA_BUFALLOC_FORCE_SHIFT)
 
-<<<<<<< HEAD
-=======
 /* Global interrupt status */
 #define ENETDMA_GLB_IRQSTAT_REG		(0x40)
 
 /* Global interrupt mask */
 #define ENETDMA_GLB_IRQMASK_REG		(0x44)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Channel Configuration register */
 #define ENETDMA_CHANCFG_REG(x)		(0x100 + (x) * 0x10)
 #define ENETDMA_CHANCFG_EN_SHIFT	0
@@ -930,8 +708,6 @@
 /* State Ram Word 4 */
 #define ENETDMA_SRAM4_REG(x)		(0x20c + (x) * 0x10)
 
-<<<<<<< HEAD
-=======
 /* Broadcom 6345 ENET DMA definitions */
 #define ENETDMA_6345_CHANCFG_REG	(0x00)
 
@@ -951,23 +727,12 @@
 
 /* Shift down for EOP, SOP and WRAP bits */
 #define ENETDMA_6345_DESC_SHIFT		(3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*************************************************************************
  * _REG relative to RSET_ENETDMAC
  *************************************************************************/
 
 /* Channel Configuration register */
-<<<<<<< HEAD
-#define ENETDMAC_CHANCFG_REG(x)		((x) * 0x10)
-#define ENETDMAC_CHANCFG_EN_SHIFT	0
-#define ENETDMAC_CHANCFG_EN_MASK	(1 << ENETDMA_CHANCFG_EN_SHIFT)
-#define ENETDMAC_CHANCFG_PKTHALT_SHIFT	1
-#define ENETDMAC_CHANCFG_PKTHALT_MASK	(1 << ENETDMA_CHANCFG_PKTHALT_SHIFT)
-
-/* Interrupt Control/Status register */
-#define ENETDMAC_IR_REG(x)		(0x4 + (x) * 0x10)
-=======
 #define ENETDMAC_CHANCFG_REG		(0x0)
 #define ENETDMAC_CHANCFG_EN_SHIFT	0
 #define ENETDMAC_CHANCFG_EN_MASK	(1 << ENETDMAC_CHANCFG_EN_SHIFT)
@@ -984,23 +749,15 @@
 
 /* Interrupt Control/Status register */
 #define ENETDMAC_IR_REG			(0x4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ENETDMAC_IR_BUFDONE_MASK	(1 << 0)
 #define ENETDMAC_IR_PKTDONE_MASK	(1 << 1)
 #define ENETDMAC_IR_NOTOWNER_MASK	(1 << 2)
 
 /* Interrupt Mask register */
-<<<<<<< HEAD
-#define ENETDMAC_IRMASK_REG(x)		(0x8 + (x) * 0x10)
-
-/* Maximum Burst Length */
-#define ENETDMAC_MAXBURST_REG(x)	(0xc + (x) * 0x10)
-=======
 #define ENETDMAC_IRMASK_REG		(0x8)
 
 /* Maximum Burst Length */
 #define ENETDMAC_MAXBURST_REG		(0xc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*************************************************************************
@@ -1008,18 +765,6 @@
  *************************************************************************/
 
 /* Ring Start Address register */
-<<<<<<< HEAD
-#define ENETDMAS_RSTART_REG(x)		((x) * 0x10)
-
-/* State Ram Word 2 */
-#define ENETDMAS_SRAM2_REG(x)		(0x4 + (x) * 0x10)
-
-/* State Ram Word 3 */
-#define ENETDMAS_SRAM3_REG(x)		(0x8 + (x) * 0x10)
-
-/* State Ram Word 4 */
-#define ENETDMAS_SRAM4_REG(x)		(0xc + (x) * 0x10)
-=======
 #define ENETDMAS_RSTART_REG		(0x0)
 
 /* State Ram Word 2 */
@@ -1030,15 +775,12 @@
 
 /* State Ram Word 4 */
 #define ENETDMAS_SRAM4_REG		(0xc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*************************************************************************
  * _REG relative to RSET_ENETSW
  *************************************************************************/
 
-<<<<<<< HEAD
-=======
 /* Port traffic control */
 #define ENETSW_PTCTRL_REG(x)		(0x0 + (x))
 #define ENETSW_PTCTRL_RXDIS_MASK	(1 << 0)
@@ -1083,20 +825,16 @@
 #define ENETSW_GMCR_REG			(0x200)
 #define ENETSW_GMCR_RST_MIB_MASK	(1 << 0)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* MIB register */
 #define ENETSW_MIB_REG(x)		(0x2800 + (x) * 4)
 #define ENETSW_MIB_REG_COUNT		47
 
-<<<<<<< HEAD
-=======
 /* Jumbo control register port mask register */
 #define ENETSW_JMBCTL_PORT_REG		(0x4004)
 
 /* Jumbo control mib good frame register */
 #define ENETSW_JMBCTL_MAXSIZE_REG	(0x4008)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*************************************************************************
  * _REG relative to RSET_OHCI_PRIV
@@ -1116,11 +854,8 @@
 #define USBH_PRIV_SWAP_6358_REG		0x0
 #define USBH_PRIV_SWAP_6368_REG		0x1c
 
-<<<<<<< HEAD
-=======
 #define USBH_PRIV_SWAP_USBD_SHIFT	6
 #define USBH_PRIV_SWAP_USBD_MASK	(1 << USBH_PRIV_SWAP_USBD_SHIFT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define USBH_PRIV_SWAP_EHCI_ENDN_SHIFT	4
 #define USBH_PRIV_SWAP_EHCI_ENDN_MASK	(1 << USBH_PRIV_SWAP_EHCI_ENDN_SHIFT)
 #define USBH_PRIV_SWAP_EHCI_DATA_SHIFT	3
@@ -1130,15 +865,12 @@
 #define USBH_PRIV_SWAP_OHCI_DATA_SHIFT	0
 #define USBH_PRIV_SWAP_OHCI_DATA_MASK	(1 << USBH_PRIV_SWAP_OHCI_DATA_SHIFT)
 
-<<<<<<< HEAD
-=======
 #define USBH_PRIV_UTMI_CTL_6368_REG	0x10
 #define USBH_PRIV_UTMI_CTL_NODRIV_SHIFT 12
 #define USBH_PRIV_UTMI_CTL_NODRIV_MASK	(0xf << USBH_PRIV_UTMI_CTL_NODRIV_SHIFT)
 #define USBH_PRIV_UTMI_CTL_HOSTB_SHIFT	0
 #define USBH_PRIV_UTMI_CTL_HOSTB_MASK	(0xf << USBH_PRIV_UTMI_CTL_HOSTB_SHIFT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define USBH_PRIV_TEST_6358_REG		0x24
 #define USBH_PRIV_TEST_6368_REG		0x14
 
@@ -1147,8 +879,6 @@
 #define USBH_PRIV_SETUP_IOC_MASK	(1 << USBH_PRIV_SETUP_IOC_SHIFT)
 
 
-<<<<<<< HEAD
-=======
 /*************************************************************************
  * _REG relative to RSET_USBD
  *************************************************************************/
@@ -1290,7 +1020,6 @@
 #define USBD_CSR_EP_LOG_SHIFT		0
 #define USBD_CSR_EP_LOG_MASK		(0xf << USBD_CSR_EP_LOG_SHIFT)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*************************************************************************
  * _REG relative to RSET_MPI
@@ -1373,13 +1102,8 @@
 #define MPI_L2PREMAP_IS_CARDBUS_MASK	(1 << 2)
 
 #define MPI_PCIMODESEL_REG		0x144
-<<<<<<< HEAD
-#define MPI_PCIMODESEL_BAR1_NOSWAP_MASK	(1 << 0)
-#define MPI_PCIMODESEL_BAR2_NOSWAP_MASK	(1 << 1)
-=======
 #define MPI_PCIMODESEL_BAR1_NOSWAP_MASK (1 << 0)
 #define MPI_PCIMODESEL_BAR2_NOSWAP_MASK (1 << 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPI_PCIMODESEL_EXT_ARB_MASK	(1 << 2)
 #define MPI_PCIMODESEL_PREFETCH_SHIFT	4
 #define MPI_PCIMODESEL_PREFETCH_MASK	(0xf << MPI_PCIMODESEL_PREFETCH_SHIFT)
@@ -1484,11 +1208,8 @@
  * _REG relative to RSET_DDR
  *************************************************************************/
 
-<<<<<<< HEAD
-=======
 #define DDR_CSEND_REG			0x8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DDR_DMIPSPLLCFG_REG		0x18
 #define DMIPSPLLCFG_M1_SHIFT		0
 #define DMIPSPLLCFG_M1_MASK		(0xff << DMIPSPLLCFG_M1_SHIFT)
@@ -1538,8 +1259,6 @@
 #define M2M_SRCID_REG(x)		((x) * 0x40 + 0x14)
 #define M2M_DSTID_REG(x)		((x) * 0x40 + 0x18)
 
-<<<<<<< HEAD
-=======
 /*************************************************************************
  * _REG relative to RSET_SPI
  *************************************************************************/
@@ -1707,5 +1426,4 @@
 #define OTP_USER_BITS_6328_REG(i)	(0x20 + (i) * 4)
 #define   OTP_6328_REG3_TP1_DISABLED	BIT(9)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* BCM63XX_REGS_H_ */

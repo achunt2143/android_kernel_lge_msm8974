@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
- * All rights reserved
- * www.brocade.com
- *
- * Linux driver for Brocade Fibre Channel Host Bus Adapter.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License (GPL) Version 2 as
- * published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
@@ -23,7 +6,6 @@
  * www.qlogic.com
  *
  * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -37,11 +19,7 @@
 #include <linux/fs.h>
 #include <linux/pci.h>
 #include <linux/firmware.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fcntl.h>
 
 #include "bfad_drv.h"
@@ -72,24 +50,15 @@ int		pcie_max_read_reqsz;
 int		bfa_debugfs_enable = 1;
 int		msix_disable_cb = 0, msix_disable_ct = 0;
 int		max_xfer_size = BFAD_MAX_SECTORS >> 1;
-<<<<<<< HEAD
-=======
 static int	max_rport_logins = BFA_FCS_MAX_RPORT_LOGINS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Firmware releated */
 u32	bfi_image_cb_size, bfi_image_ct_size, bfi_image_ct2_size;
 u32	*bfi_image_cb, *bfi_image_ct, *bfi_image_ct2;
 
-<<<<<<< HEAD
-#define BFAD_FW_FILE_CB		"cbfw.bin"
-#define BFAD_FW_FILE_CT		"ctfw.bin"
-#define BFAD_FW_FILE_CT2	"ct2fw.bin"
-=======
 #define BFAD_FW_FILE_CB		"cbfw-3.2.5.1.bin"
 #define BFAD_FW_FILE_CT		"ctfw-3.2.5.1.bin"
 #define BFAD_FW_FILE_CT2	"ct2fw-3.2.5.1.bin"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static u32 *bfad_load_fwimg(struct pci_dev *pdev);
 static void bfad_free_fwimg(void);
@@ -154,19 +123,9 @@ MODULE_PARM_DESC(bfa_linkup_delay, "Link up delay, default=30 secs for "
 			"boot port. Otherwise 10 secs in RHEL4 & 0 for "
 			"[RHEL5, SLES10, ESX40] Range[>0]");
 module_param(msix_disable_cb, int, S_IRUGO | S_IWUSR);
-<<<<<<< HEAD
-MODULE_PARM_DESC(msix_disable_cb, "Disable Message Signaled Interrupts "
-			"for Brocade-415/425/815/825 cards, default=0, "
-			" Range[false:0|true:1]");
-module_param(msix_disable_ct, int, S_IRUGO | S_IWUSR);
-MODULE_PARM_DESC(msix_disable_ct, "Disable Message Signaled Interrupts "
-			"if possible for Brocade-1010/1020/804/1007/902/1741 "
-			"cards, default=0, Range[false:0|true:1]");
-=======
 MODULE_PARM_DESC(msix_disable_cb, "Disable Message Signaled Interrupts for QLogic-415/425/815/825 cards, default=0 Range[false:0|true:1]");
 module_param(msix_disable_ct, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(msix_disable_ct, "Disable Message Signaled Interrupts if possible for QLogic-1010/1020/804/1007/902/1741 cards, default=0, Range[false:0|true:1]");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(fdmi_enable, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(fdmi_enable, "Enables fdmi registration, default=1, "
 				"Range[false:0|true:1]");
@@ -179,11 +138,8 @@ MODULE_PARM_DESC(bfa_debugfs_enable, "Enables debugfs feature, default=1,"
 module_param(max_xfer_size, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(max_xfer_size, "default=32MB,"
 		" Range[64k|128k|256k|512k|1024k|2048k]");
-<<<<<<< HEAD
-=======
 module_param(max_rport_logins, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(max_rport_logins, "Max number of logins to initiator and target rports on a port (physical/logical), default=1024");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 bfad_sm_uninit(struct bfad_s *bfad, enum bfad_sm_event event);
@@ -237,10 +193,7 @@ static void
 bfad_sm_created(struct bfad_s *bfad, enum bfad_sm_event event)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-=======
 	bfa_status_t ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfa_trc(bfad, event);
 
@@ -254,11 +207,7 @@ bfad_sm_created(struct bfad_s *bfad, enum bfad_sm_event event)
 		if (bfad_setup_intr(bfad)) {
 			printk(KERN_WARNING "bfad%d: bfad_setup_intr failed\n",
 					bfad->inst_no);
-<<<<<<< HEAD
-			bfa_sm_send_event(bfad, BFAD_E_INTR_INIT_FAILED);
-=======
 			bfa_sm_send_event(bfad, BFAD_E_INIT_FAILED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -283,10 +232,6 @@ bfad_sm_created(struct bfad_s *bfad, enum bfad_sm_event event)
 			printk(KERN_WARNING
 				"bfa %s: bfa init failed\n",
 				bfad->pci_name);
-<<<<<<< HEAD
-			bfad->bfad_flags |= BFAD_HAL_INIT_FAIL;
-			bfa_sm_send_event(bfad, BFAD_E_INIT_FAILED);
-=======
 			spin_lock_irqsave(&bfad->bfad_lock, flags);
 			bfa_fcs_init(&bfad->bfa_fcs);
 			spin_unlock_irqrestore(&bfad->bfad_lock, flags);
@@ -307,7 +252,6 @@ bfad_sm_created(struct bfad_s *bfad, enum bfad_sm_event event)
 			}
 			bfad->bfad_flags |= BFAD_HAL_INIT_FAIL;
 			bfa_sm_send_event(bfad, BFAD_E_HAL_INIT_FAILED);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		break;
@@ -337,14 +281,6 @@ bfad_sm_initializing(struct bfad_s *bfad, enum bfad_sm_event event)
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
 		retval = bfad_start_ops(bfad);
-<<<<<<< HEAD
-		if (retval != BFA_STATUS_OK)
-			break;
-		bfa_sm_set_state(bfad, bfad_sm_operational);
-		break;
-
-	case BFAD_E_INTR_INIT_FAILED:
-=======
 		if (retval != BFA_STATUS_OK) {
 			bfa_sm_set_state(bfad, bfad_sm_failed);
 			break;
@@ -353,7 +289,6 @@ bfad_sm_initializing(struct bfad_s *bfad, enum bfad_sm_event event)
 		break;
 
 	case BFAD_E_INIT_FAILED:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_sm_set_state(bfad, bfad_sm_uninit);
 		kthread_stop(bfad->bfad_tsk);
 		spin_lock_irqsave(&bfad->bfad_lock, flags);
@@ -361,11 +296,7 @@ bfad_sm_initializing(struct bfad_s *bfad, enum bfad_sm_event event)
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 		break;
 
-<<<<<<< HEAD
-	case BFAD_E_INIT_FAILED:
-=======
 	case BFAD_E_HAL_INIT_FAILED:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfa_sm_set_state(bfad, bfad_sm_failed);
 		break;
 	default:
@@ -389,18 +320,8 @@ bfad_sm_failed(struct bfad_s *bfad, enum bfad_sm_event event)
 		break;
 
 	case BFAD_E_STOP:
-<<<<<<< HEAD
-		if (bfad->bfad_flags & BFAD_CFG_PPORT_DONE)
-			bfad_uncfg_pport(bfad);
-		if (bfad->bfad_flags & BFAD_FC4_PROBE_DONE) {
-			bfad_im_probe_undo(bfad);
-			bfad->bfad_flags &= ~BFAD_FC4_PROBE_DONE;
-		}
-		bfad_stop(bfad);
-=======
 		bfa_sm_set_state(bfad, bfad_sm_fcs_exit);
 		bfa_sm_send_event(bfad, BFAD_E_FCS_EXIT_COMP);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BFAD_E_EXIT_COMP:
@@ -543,26 +464,6 @@ bfa_fcb_lport_new(struct bfad_s *bfad, struct bfa_fcs_lport_s *port,
 	return port_drv;
 }
 
-<<<<<<< HEAD
-void
-bfa_fcb_lport_delete(struct bfad_s *bfad, enum bfa_lport_role roles,
-		    struct bfad_vf_s *vf_drv, struct bfad_vport_s *vp_drv)
-{
-	struct bfad_port_s    *port_drv;
-
-	/* this will be only called from rmmod context */
-	if (vp_drv && !vp_drv->comp_del) {
-		port_drv = (vp_drv) ? (&(vp_drv)->drv_port) :
-				((vf_drv) ? (&(vf_drv)->base_port) :
-				(&(bfad)->pport));
-		bfa_trc(bfad, roles);
-		if (roles & BFA_LPORT_ROLE_FCP_IM)
-			bfad_im_port_delete(bfad, port_drv);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FCS RPORT alloc callback, after successful PLOGI by FCS
  */
@@ -595,11 +496,7 @@ bfa_fcb_pbc_vport_create(struct bfad_s *bfad, struct bfi_pbc_vport_s pbc_vport)
 	struct bfad_vport_s   *vport;
 	int rc;
 
-<<<<<<< HEAD
-	vport = kzalloc(sizeof(struct bfad_vport_s), GFP_KERNEL);
-=======
 	vport = kzalloc(sizeof(struct bfad_vport_s), GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vport) {
 		bfa_trc(bfad, 0);
 		return;
@@ -705,20 +602,12 @@ bfad_hal_mem_alloc(struct bfad_s *bfad)
 	/* Iterate through the KVA meminfo queue */
 	list_for_each(km_qe, &kva_info->qe) {
 		kva_elem = (struct bfa_mem_kva_s *) km_qe;
-<<<<<<< HEAD
-		kva_elem->kva = vmalloc(kva_elem->mem_len);
-=======
 		kva_elem->kva = vzalloc(kva_elem->mem_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (kva_elem->kva == NULL) {
 			bfad_hal_mem_release(bfad);
 			rc = BFA_STATUS_ENOMEM;
 			goto ext;
 		}
-<<<<<<< HEAD
-		memset(kva_elem->kva, 0, kva_elem->mem_len);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Iterate through the DMA meminfo queue */
@@ -794,15 +683,9 @@ ext:
 }
 
 void
-<<<<<<< HEAD
-bfad_bfa_tmo(unsigned long data)
-{
-	struct bfad_s	      *bfad = (struct bfad_s *) data;
-=======
 bfad_bfa_tmo(struct timer_list *t)
 {
 	struct bfad_s	      *bfad = from_timer(bfad, t, hal_tmo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	flags;
 	struct list_head	       doneq;
 
@@ -827,13 +710,7 @@ bfad_bfa_tmo(struct timer_list *t)
 void
 bfad_init_timer(struct bfad_s *bfad)
 {
-<<<<<<< HEAD
-	init_timer(&bfad->hal_tmo);
-	bfad->hal_tmo.function = bfad_bfa_tmo;
-	bfad->hal_tmo.data = (unsigned long)bfad;
-=======
 	timer_setup(&bfad->hal_tmo, bfad_bfa_tmo, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mod_timer(&bfad->hal_tmo,
 		  jiffies + msecs_to_jiffies(BFA_TIMER_FREQ));
@@ -842,11 +719,7 @@ bfad_init_timer(struct bfad_s *bfad)
 int
 bfad_pci_init(struct pci_dev *pdev, struct bfad_s *bfad)
 {
-<<<<<<< HEAD
-	int		rc = -ENODEV;
-=======
 	int rc = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_enable_device(pdev)) {
 		printk(KERN_ERR "pci_enable_device fail %p\n", pdev);
@@ -858,22 +731,11 @@ bfad_pci_init(struct pci_dev *pdev, struct bfad_s *bfad)
 
 	pci_set_master(pdev);
 
-<<<<<<< HEAD
-
-	if ((pci_set_dma_mask(pdev, DMA_BIT_MASK(64)) != 0) ||
-	    (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)) != 0)) {
-		if ((pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) != 0) ||
-		   (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)) != 0)) {
-			printk(KERN_ERR "pci_set_dma_mask fail %p\n", pdev);
-			goto out_release_region;
-		}
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (rc) {
 		rc = -ENODEV;
 		printk(KERN_ERR "dma_set_mask_and_coherent fail %p\n", pdev);
 		goto out_release_region;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bfad->pci_bar0_kva = pci_iomap(pdev, 0, pci_resource_len(pdev, 0));
@@ -881,10 +743,7 @@ bfad_pci_init(struct pci_dev *pdev, struct bfad_s *bfad)
 
 	if (bfad->pci_bar0_kva == NULL) {
 		printk(KERN_ERR "Fail to map bar0\n");
-<<<<<<< HEAD
-=======
 		rc = -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_release_region;
 	}
 
@@ -904,54 +763,6 @@ bfad_pci_init(struct pci_dev *pdev, struct bfad_s *bfad)
 	bfad->pcidev = pdev;
 
 	/* Adjust PCIe Maximum Read Request Size */
-<<<<<<< HEAD
-	if (pcie_max_read_reqsz > 0) {
-		int pcie_cap_reg;
-		u16 pcie_dev_ctl;
-		u16 mask = 0xffff;
-
-		switch (pcie_max_read_reqsz) {
-		case 128:
-			mask = 0x0;
-			break;
-		case 256:
-			mask = 0x1000;
-			break;
-		case 512:
-			mask = 0x2000;
-			break;
-		case 1024:
-			mask = 0x3000;
-			break;
-		case 2048:
-			mask = 0x4000;
-			break;
-		case 4096:
-			mask = 0x5000;
-			break;
-		default:
-			break;
-		}
-
-		pcie_cap_reg = pci_find_capability(pdev, PCI_CAP_ID_EXP);
-		if (mask != 0xffff && pcie_cap_reg) {
-			pcie_cap_reg += 0x08;
-			pci_read_config_word(pdev, pcie_cap_reg, &pcie_dev_ctl);
-			if ((pcie_dev_ctl & 0x7000) != mask) {
-				printk(KERN_WARNING "BFA[%s]: "
-				"pcie_max_read_request_size is %d, "
-				"reset to %d\n", bfad->pci_name,
-				(1 << ((pcie_dev_ctl & 0x7000) >> 12)) << 7,
-				pcie_max_read_reqsz);
-
-				pcie_dev_ctl &= ~0x7000;
-				pci_write_config_word(pdev, pcie_cap_reg,
-						pcie_dev_ctl | mask);
-			}
-		}
-	}
-
-=======
 	if (pci_is_pcie(pdev) && pcie_max_read_reqsz) {
 		if (pcie_max_read_reqsz >= 128 &&
 		    pcie_max_read_reqsz <= 4096 &&
@@ -971,7 +782,6 @@ bfad_pci_init(struct pci_dev *pdev, struct bfad_s *bfad)
 
 	pci_save_state(pdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out_release_region:
@@ -989,10 +799,6 @@ bfad_pci_uninit(struct pci_dev *pdev, struct bfad_s *bfad)
 	pci_iounmap(pdev, bfad->pci_bar2_kva);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
-<<<<<<< HEAD
-	pci_set_drvdata(pdev, NULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 bfa_status_t
@@ -1011,14 +817,8 @@ bfad_drv_init(struct bfad_s *bfad)
 		printk(KERN_WARNING "bfad%d bfad_hal_mem_alloc failure\n",
 		       bfad->inst_no);
 		printk(KERN_WARNING
-<<<<<<< HEAD
-			"Not enough memory to attach all Brocade HBA ports, %s",
-			"System may need more memory.\n");
-		goto out_hal_mem_alloc_failure;
-=======
 			"Not enough memory to attach all QLogic BR-series HBA ports. System may need more memory.\n");
 		return BFA_STATUS_FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bfad->bfa.trcmod = bfad->trcmod;
@@ -1035,38 +835,11 @@ bfad_drv_init(struct bfad_s *bfad)
 	bfad->bfa_fcs.trcmod = bfad->trcmod;
 	bfa_fcs_attach(&bfad->bfa_fcs, &bfad->bfa, bfad, BFA_FALSE);
 	bfad->bfa_fcs.fdmi_enabled = fdmi_enable;
-<<<<<<< HEAD
-	bfa_fcs_init(&bfad->bfa_fcs);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
 	bfad->bfad_flags |= BFAD_DRV_INIT_DONE;
 
-<<<<<<< HEAD
-	/* configure base port */
-	rc = bfad_cfg_pport(bfad, BFA_LPORT_ROLE_FCP_IM);
-	if (rc != BFA_STATUS_OK)
-		goto out_cfg_pport_fail;
-
 	return BFA_STATUS_OK;
-
-out_cfg_pport_fail:
-	/* fcs exit - on cfg pport failure */
-	spin_lock_irqsave(&bfad->bfad_lock, flags);
-	init_completion(&bfad->comp);
-	bfad->pport.flags |= BFAD_PORT_DELETE;
-	bfa_fcs_exit(&bfad->bfa_fcs);
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-	wait_for_completion(&bfad->comp);
-	/* bfa detach - free hal memory */
-	bfa_detach(&bfad->bfa);
-	bfad_hal_mem_release(bfad);
-out_hal_mem_alloc_failure:
-	return BFA_STATUS_FAILED;
-=======
-	return BFA_STATUS_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -1192,22 +965,6 @@ bfad_start_ops(struct bfad_s *bfad) {
 
 	/* Fill the driver_info info to fcs*/
 	memset(&driver_info, 0, sizeof(driver_info));
-<<<<<<< HEAD
-	strncpy(driver_info.version, BFAD_DRIVER_VERSION,
-		sizeof(driver_info.version) - 1);
-	if (host_name)
-		strncpy(driver_info.host_machine_name, host_name,
-			sizeof(driver_info.host_machine_name) - 1);
-	if (os_name)
-		strncpy(driver_info.host_os_name, os_name,
-			sizeof(driver_info.host_os_name) - 1);
-	if (os_patch)
-		strncpy(driver_info.host_os_patch, os_patch,
-			sizeof(driver_info.host_os_patch) - 1);
-
-	strncpy(driver_info.os_device_name, bfad->pci_name,
-		sizeof(driver_info.os_device_name - 1));
-=======
 	strscpy(driver_info.version, BFAD_DRIVER_VERSION,
 		sizeof(driver_info.version));
 	if (host_name)
@@ -1222,20 +979,10 @@ bfad_start_ops(struct bfad_s *bfad) {
 
 	strscpy(driver_info.os_device_name, bfad->pci_name,
 		sizeof(driver_info.os_device_name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FCS driver info init */
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	bfa_fcs_driver_info_init(&bfad->bfa_fcs, &driver_info);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-
-	/*
-	 * FCS update cfg - reset the pwwn/nwwn of fabric base logical port
-	 * with values learned during bfa_init firmware GETATTR REQ.
-	 */
-	bfa_fcs_update_cfg(&bfad->bfa_fcs);
-=======
 
 	if (bfad->bfad_flags & BFAD_CFG_PPORT_DONE)
 		bfa_fcs_update_cfg(&bfad->bfa_fcs);
@@ -1249,7 +996,6 @@ bfad_start_ops(struct bfad_s *bfad) {
 		if (retval != BFA_STATUS_OK)
 			return BFA_STATUS_FAILED;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup fc host fixed attribute if the lk supports */
 	bfad_fc_host_init(bfad->pport.im_port);
@@ -1260,13 +1006,6 @@ bfad_start_ops(struct bfad_s *bfad) {
 		printk(KERN_WARNING "bfad_im_probe failed\n");
 		if (bfa_sm_cmp_state(bfad, bfad_sm_initializing))
 			bfa_sm_set_state(bfad, bfad_sm_failed);
-<<<<<<< HEAD
-		bfad_im_probe_undo(bfad);
-		bfad->bfad_flags &= ~BFAD_FC4_PROBE_DONE;
-		bfad_uncfg_pport(bfad);
-		bfad_stop(bfad);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return BFA_STATUS_FAILED;
 	} else
 		bfad->bfad_flags |= BFAD_FC4_PROBE_DONE;
@@ -1318,24 +1057,6 @@ bfad_start_ops(struct bfad_s *bfad) {
 int
 bfad_worker(void *ptr)
 {
-<<<<<<< HEAD
-	struct bfad_s *bfad;
-	unsigned long   flags;
-
-	bfad = (struct bfad_s *)ptr;
-
-	while (!kthread_should_stop()) {
-
-		/* Send event BFAD_E_INIT_SUCCESS */
-		bfa_sm_send_event(bfad, BFAD_E_INIT_SUCCESS);
-
-		spin_lock_irqsave(&bfad->bfad_lock, flags);
-		bfad->bfad_tsk = NULL;
-		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
-
-		break;
-	}
-=======
 	struct bfad_s *bfad = ptr;
 	unsigned long flags;
 
@@ -1348,7 +1069,6 @@ bfad_worker(void *ptr)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	bfad->bfad_tsk = NULL;
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1473,11 +1193,7 @@ bfad_install_msix_handler(struct bfad_s *bfad)
 int
 bfad_setup_intr(struct bfad_s *bfad)
 {
-<<<<<<< HEAD
-	int error = 0;
-=======
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mask = 0, i, num_bit = 0, max_bit = 0;
 	struct msix_entry msix_entries[MAX_MSIX_ENTRY];
 	struct pci_dev *pdev = bfad->pcidev;
@@ -1492,24 +1208,6 @@ bfad_setup_intr(struct bfad_s *bfad)
 	if ((bfa_asic_id_ctc(pdev->device) && !msix_disable_ct) ||
 	   (bfa_asic_id_cb(pdev->device) && !msix_disable_cb)) {
 
-<<<<<<< HEAD
-		error = pci_enable_msix(bfad->pcidev, msix_entries, bfad->nvec);
-		if (error) {
-			/*
-			 * Only error number of vector is available.
-			 * We don't have a mechanism to map multiple
-			 * interrupts into one vector, so even if we
-			 * can try to request less vectors, we don't
-			 * know how to associate interrupt events to
-			 *  vectors. Linux doesn't duplicate vectors
-			 * in the MSIX table for this case.
-			 */
-
-			printk(KERN_WARNING "bfad%d: "
-				"pci_enable_msix failed (%d),"
-				" use line based.\n", bfad->inst_no, error);
-
-=======
 		error = pci_enable_msix_exact(bfad->pcidev,
 					      msix_entries, bfad->nvec);
 		/* In CT1 & CT2, try to allocate just one vector */
@@ -1527,7 +1225,6 @@ bfad_setup_intr(struct bfad_s *bfad)
 			       "pci_enable_msix_exact failed (%d), "
 			       "use line based.\n",
 				bfad->inst_no, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto line_based;
 		}
 
@@ -1548,22 +1245,6 @@ bfad_setup_intr(struct bfad_s *bfad)
 
 		bfad->bfad_flags |= BFAD_MSIX_ON;
 
-<<<<<<< HEAD
-		return error;
-	}
-
-line_based:
-	error = 0;
-	if (request_irq
-	    (bfad->pcidev->irq, (irq_handler_t) bfad_intx, BFAD_IRQ_FLAGS,
-	     BFAD_DRIVER_NAME, bfad) != 0) {
-		/* Enable interrupt handler failed */
-		return 1;
-	}
-	bfad->bfad_flags |= BFAD_INTX_ON;
-
-	return error;
-=======
 		return 0;
 	}
 
@@ -1576,7 +1257,6 @@ line_based:
 	bfad->bfad_flags |= BFAD_INTX_ON;
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -1654,11 +1334,8 @@ bfad_pci_probe(struct pci_dev *pdev, const struct pci_device_id *pid)
 	bfa_sm_set_state(bfad, bfad_sm_uninit);
 
 	spin_lock_init(&bfad->bfad_lock);
-<<<<<<< HEAD
-=======
 	spin_lock_init(&bfad->bfad_aen_spinlock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pdev, bfad);
 
 	bfad->ref_count = 0;
@@ -1682,10 +1359,6 @@ bfad_pci_probe(struct pci_dev *pdev, const struct pci_device_id *pid)
 	return 0;
 
 out_bfad_sm_failure:
-<<<<<<< HEAD
-	bfa_detach(&bfad->bfa);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfad_hal_mem_release(bfad);
 out_drv_init_failure:
 	/* Remove the debugfs node for this bfad */
@@ -1747,8 +1420,6 @@ bfad_pci_remove(struct pci_dev *pdev)
 	kfree(bfad);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * PCI Error Recovery entry, error detected.
  */
@@ -1937,7 +1608,6 @@ bfad_pci_resume(struct pci_dev *pdev)
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_device_id bfad_id_table[] = {
 	{
 		.vendor = BFA_PCI_VENDOR_ID_BROCADE,
@@ -1976,8 +1646,6 @@ struct pci_device_id bfad_id_table[] = {
 		.class_mask = ~0,
 	},
 
-<<<<<<< HEAD
-=======
 	{
 		.vendor = BFA_PCI_VENDOR_ID_BROCADE,
 		.device = BFA_PCI_DEVICE_ID_CT2_QUAD,
@@ -1986,14 +1654,11 @@ struct pci_device_id bfad_id_table[] = {
 		.class = (PCI_CLASS_SERIAL_FIBER << 8),
 		.class_mask = ~0,
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0, 0},
 };
 
 MODULE_DEVICE_TABLE(pci, bfad_id_table);
 
-<<<<<<< HEAD
-=======
 /*
  * PCI error recovery handlers.
  */
@@ -2004,17 +1669,12 @@ static struct pci_error_handlers bfad_err_handler = {
 	.resume = bfad_pci_resume,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver bfad_pci_driver = {
 	.name = BFAD_DRIVER_NAME,
 	.id_table = bfad_id_table,
 	.probe = bfad_pci_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(bfad_pci_remove),
-=======
 	.remove = bfad_pci_remove,
 	.err_handler = &bfad_err_handler,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -2025,11 +1685,7 @@ bfad_init(void)
 {
 	int		error = 0;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "Brocade BFA FC/FCOE SCSI driver - version: %s\n",
-=======
 	pr_info("QLogic BR-series BFA FC/FCOE SCSI driver - version: %s\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BFAD_DRIVER_VERSION);
 
 	if (num_sgpgs > 0)
@@ -2047,10 +1703,7 @@ bfad_init(void)
 
 	bfa_auto_recover = ioc_auto_recover;
 	bfa_fcs_rport_set_del_timeout(rport_del_timeout);
-<<<<<<< HEAD
-=======
 	bfa_fcs_rport_set_max_logins(max_rport_logins);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = pci_register_driver(&bfad_pci_driver);
 	if (error) {
@@ -2139,11 +1792,6 @@ bfad_free_fwimg(void)
 module_init(bfad_init);
 module_exit(bfad_exit);
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_DESCRIPTION("Brocade Fibre Channel HBA Driver" BFAD_PROTO_NAME);
-MODULE_AUTHOR("Brocade Communications Systems, Inc.");
-=======
 MODULE_DESCRIPTION("QLogic BR-series Fibre Channel HBA Driver" BFAD_PROTO_NAME);
 MODULE_AUTHOR("QLogic Corporation");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_VERSION(BFAD_DRIVER_VERSION);

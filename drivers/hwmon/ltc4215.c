@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Linear Technology LTC4215 I2C Hot Swap Controller
  *
  * Copyright (C) 2009 Ira W. Snyder <iws@ovro.caltech.edu>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Datasheet:
  * http://www.linear.com/pc/downloadDocument.do?navId=H0,C1,C1003,C1006,C1163,P17572,D12697
  */
@@ -26,10 +16,7 @@
 #include <linux/i2c.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
-<<<<<<< HEAD
-=======
 #include <linux/jiffies.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Here are names of the chip's registers (a.k.a. commands) */
 enum ltc4215_cmd {
@@ -43,11 +30,7 @@ enum ltc4215_cmd {
 };
 
 struct ltc4215_data {
-<<<<<<< HEAD
-	struct device *hwmon_dev;
-=======
 	struct i2c_client *client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex update_lock;
 	bool valid;
@@ -59,13 +42,8 @@ struct ltc4215_data {
 
 static struct ltc4215_data *ltc4215_update_device(struct device *dev)
 {
-<<<<<<< HEAD
-	struct i2c_client *client = to_i2c_client(dev);
-	struct ltc4215_data *data = i2c_get_clientdata(client);
-=======
 	struct ltc4215_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 val;
 	int i;
 
@@ -86,11 +64,7 @@ static struct ltc4215_data *ltc4215_update_device(struct device *dev)
 		}
 
 		data->last_updated = jiffies;
-<<<<<<< HEAD
-		data->valid = 1;
-=======
 		data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -159,35 +133,12 @@ static unsigned int ltc4215_get_current(struct device *dev)
 	return curr;
 }
 
-<<<<<<< HEAD
-static ssize_t ltc4215_show_voltage(struct device *dev,
-				    struct device_attribute *da,
-				    char *buf)
-=======
 static ssize_t ltc4215_voltage_show(struct device *dev,
 				    struct device_attribute *da, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	const int voltage = ltc4215_get_voltage(dev, attr->index);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%d\n", voltage);
-}
-
-static ssize_t ltc4215_show_current(struct device *dev,
-				    struct device_attribute *da,
-				    char *buf)
-{
-	const unsigned int curr = ltc4215_get_current(dev);
-
-	return snprintf(buf, PAGE_SIZE, "%u\n", curr);
-}
-
-static ssize_t ltc4215_show_power(struct device *dev,
-				  struct device_attribute *da,
-				  char *buf)
-=======
 	return sysfs_emit(buf, "%d\n", voltage);
 }
 
@@ -201,7 +152,6 @@ static ssize_t ltc4215_current_show(struct device *dev,
 
 static ssize_t ltc4215_power_show(struct device *dev,
 				  struct device_attribute *da, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const unsigned int curr = ltc4215_get_current(dev);
 	const int output_voltage = ltc4215_get_voltage(dev, LTC4215_ADIN);
@@ -209,21 +159,6 @@ static ssize_t ltc4215_power_show(struct device *dev,
 	/* current in mA * voltage in mV == power in uW */
 	const unsigned int power = abs(output_voltage * curr);
 
-<<<<<<< HEAD
-	return snprintf(buf, PAGE_SIZE, "%u\n", power);
-}
-
-static ssize_t ltc4215_show_alarm(struct device *dev,
-					  struct device_attribute *da,
-					  char *buf)
-{
-	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(da);
-	struct ltc4215_data *data = ltc4215_update_device(dev);
-	const u8 reg = data->regs[attr->index];
-	const u32 mask = attr->nr;
-
-	return snprintf(buf, PAGE_SIZE, "%u\n", (reg & mask) ? 1 : 0);
-=======
 	return sysfs_emit(buf, "%u\n", power);
 }
 
@@ -236,7 +171,6 @@ static ssize_t ltc4215_alarm_show(struct device *dev,
 	const u32 mask = attr->index;
 
 	return sysfs_emit(buf, "%u\n", !!(reg & mask));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -245,41 +179,6 @@ static ssize_t ltc4215_alarm_show(struct device *dev,
  * for each register.
  */
 
-<<<<<<< HEAD
-#define LTC4215_VOLTAGE(name, ltc4215_cmd_idx) \
-	static SENSOR_DEVICE_ATTR(name, S_IRUGO, \
-	ltc4215_show_voltage, NULL, ltc4215_cmd_idx)
-
-#define LTC4215_CURRENT(name) \
-	static SENSOR_DEVICE_ATTR(name, S_IRUGO, \
-	ltc4215_show_current, NULL, 0);
-
-#define LTC4215_POWER(name) \
-	static SENSOR_DEVICE_ATTR(name, S_IRUGO, \
-	ltc4215_show_power, NULL, 0);
-
-#define LTC4215_ALARM(name, mask, reg) \
-	static SENSOR_DEVICE_ATTR_2(name, S_IRUGO, \
-	ltc4215_show_alarm, NULL, (mask), reg)
-
-/* Construct a sensor_device_attribute structure for each register */
-
-/* Current */
-LTC4215_CURRENT(curr1_input);
-LTC4215_ALARM(curr1_max_alarm,	(1 << 2),	LTC4215_STATUS);
-
-/* Power (virtual) */
-LTC4215_POWER(power1_input);
-
-/* Input Voltage */
-LTC4215_VOLTAGE(in1_input,			LTC4215_ADIN);
-LTC4215_ALARM(in1_max_alarm,	(1 << 0),	LTC4215_STATUS);
-LTC4215_ALARM(in1_min_alarm,	(1 << 1),	LTC4215_STATUS);
-
-/* Output Voltage */
-LTC4215_VOLTAGE(in2_input,			LTC4215_SOURCE);
-LTC4215_ALARM(in2_min_alarm,	(1 << 3),	LTC4215_STATUS);
-=======
 /* Construct a sensor_device_attribute structure for each register */
 
 /* Current */
@@ -297,17 +196,12 @@ static SENSOR_DEVICE_ATTR_RO(in1_min_alarm, ltc4215_alarm, 1 << 1);
 /* Output Voltage */
 static SENSOR_DEVICE_ATTR_RO(in2_input, ltc4215_voltage, LTC4215_SOURCE);
 static SENSOR_DEVICE_ATTR_RO(in2_min_alarm, ltc4215_alarm, 1 << 3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Finally, construct an array of pointers to members of the above objects,
  * as required for sysfs_create_group()
  */
-<<<<<<< HEAD
-static struct attribute *ltc4215_attributes[] = {
-=======
 static struct attribute *ltc4215_attrs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_curr1_input.dev_attr.attr,
 	&sensor_dev_attr_curr1_max_alarm.dev_attr.attr,
 
@@ -322,19 +216,6 @@ static struct attribute *ltc4215_attrs[] = {
 
 	NULL,
 };
-<<<<<<< HEAD
-
-static const struct attribute_group ltc4215_group = {
-	.attrs = ltc4215_attributes,
-};
-
-static int ltc4215_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-{
-	struct i2c_adapter *adapter = client->adapter;
-	struct ltc4215_data *data;
-	int ret;
-=======
 ATTRIBUTE_GROUPS(ltc4215);
 
 static int ltc4215_probe(struct i2c_client *client)
@@ -343,69 +224,24 @@ static int ltc4215_probe(struct i2c_client *client)
 	struct device *dev = &client->dev;
 	struct ltc4215_data *data;
 	struct device *hwmon_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	data = kzalloc(sizeof(*data), GFP_KERNEL);
-	if (!data) {
-		ret = -ENOMEM;
-		goto out_kzalloc;
-	}
-
-	i2c_set_clientdata(client, data);
-=======
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	data->client = client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 
 	/* Initialize the LTC4215 chip */
 	i2c_smbus_write_byte_data(client, LTC4215_FAULT, 0x00);
 
-<<<<<<< HEAD
-	/* Register sysfs hooks */
-	ret = sysfs_create_group(&client->dev.kobj, &ltc4215_group);
-	if (ret)
-		goto out_sysfs_create_group;
-
-	data->hwmon_dev = hwmon_device_register(&client->dev);
-	if (IS_ERR(data->hwmon_dev)) {
-		ret = PTR_ERR(data->hwmon_dev);
-		goto out_hwmon_device_register;
-	}
-
-	return 0;
-
-out_hwmon_device_register:
-	sysfs_remove_group(&client->dev.kobj, &ltc4215_group);
-out_sysfs_create_group:
-	kfree(data);
-out_kzalloc:
-	return ret;
-}
-
-static int ltc4215_remove(struct i2c_client *client)
-{
-	struct ltc4215_data *data = i2c_get_clientdata(client);
-
-	hwmon_device_unregister(data->hwmon_dev);
-	sysfs_remove_group(&client->dev.kobj, &ltc4215_group);
-
-	kfree(data);
-
-	return 0;
-=======
 	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
 							   data,
 							   ltc4215_groups);
 	return PTR_ERR_OR_ZERO(hwmon_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id ltc4215_id[] = {
@@ -420,10 +256,6 @@ static struct i2c_driver ltc4215_driver = {
 		.name	= "ltc4215",
 	},
 	.probe		= ltc4215_probe,
-<<<<<<< HEAD
-	.remove		= ltc4215_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= ltc4215_id,
 };
 

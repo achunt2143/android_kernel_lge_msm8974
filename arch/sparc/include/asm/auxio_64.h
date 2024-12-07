@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * auxio.h:  Definitions and code for the Auxiliary I/O registers.
  *
@@ -79,11 +76,6 @@
 
 #ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-extern void __iomem *auxio_register;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AUXIO_LTE_ON	1
 #define AUXIO_LTE_OFF	0
 
@@ -91,11 +83,7 @@ extern void __iomem *auxio_register;
  *
  * on - AUXIO_LTE_ON or AUXIO_LTE_OFF
  */
-<<<<<<< HEAD
-extern void auxio_set_lte(int on);
-=======
 void auxio_set_lte(int on);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AUXIO_LED_ON	1
 #define AUXIO_LED_OFF	0
@@ -104,11 +92,7 @@ void auxio_set_lte(int on);
  *
  * on - AUXIO_LED_ON or AUXIO_LED_OFF
  */
-<<<<<<< HEAD
-extern void auxio_set_led(int on);
-=======
 void auxio_set_led(int on);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* ifndef __ASSEMBLY__ */
 

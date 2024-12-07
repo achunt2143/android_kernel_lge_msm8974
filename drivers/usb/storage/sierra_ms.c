@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
@@ -51,11 +48,7 @@ static bool containsFullLinuxPackage(struct swoc_info *swocInfo)
 static int sierra_set_ms_mode(struct usb_device *udev, __u16 eSWocMode)
 {
 	int result;
-<<<<<<< HEAD
-	US_DEBUGP("SWIMS: %s", "DEVICE MODE SWITCH\n");
-=======
 	dev_dbg(&udev->dev, "SWIMS: %s", "DEVICE MODE SWITCH\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = usb_control_msg(udev, usb_sndctrlpipe(udev, 0),
 			SWIMS_USB_REQUEST_SetSwocMode,	/* __u8 request      */
 			USB_TYPE_VENDOR | USB_DIR_OUT,	/* __u8 request type */
@@ -73,11 +66,7 @@ static int sierra_get_swoc_info(struct usb_device *udev,
 {
 	int result;
 
-<<<<<<< HEAD
-	US_DEBUGP("SWIMS: Attempting to get TRU-Install info.\n");
-=======
 	dev_dbg(&udev->dev, "SWIMS: Attempting to get TRU-Install info\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0),
 			SWIMS_USB_REQUEST_GetSwocInfo,	/* __u8 request      */
@@ -93,17 +82,6 @@ static int sierra_get_swoc_info(struct usb_device *udev,
 	return result;
 }
 
-<<<<<<< HEAD
-static void debug_swoc(struct swoc_info *swocInfo)
-{
-	US_DEBUGP("SWIMS: SWoC Rev: %02d \n", swocInfo->rev);
-	US_DEBUGP("SWIMS: Linux SKU: %04X \n", swocInfo->LinuxSKU);
-	US_DEBUGP("SWIMS: Linux Version: %04X \n", swocInfo->LinuxVer);
-}
-
-
-static ssize_t show_truinst(struct device *dev, struct device_attribute *attr,
-=======
 static void debug_swoc(const struct device *dev, struct swoc_info *swocInfo)
 {
 	dev_dbg(dev, "SWIMS: SWoC Rev: %02d\n", swocInfo->rev);
@@ -113,7 +91,6 @@ static void debug_swoc(const struct device *dev, struct swoc_info *swocInfo)
 
 
 static ssize_t truinst_show(struct device *dev, struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char *buf)
 {
 	struct swoc_info *swocInfo;
@@ -121,37 +98,15 @@ static ssize_t truinst_show(struct device *dev, struct device_attribute *attr,
 	struct usb_device *udev = interface_to_usbdev(intf);
 	int result;
 	if (swi_tru_install == TRU_FORCE_MS) {
-<<<<<<< HEAD
-		result = snprintf(buf, PAGE_SIZE, "Forced Mass Storage\n");
-	} else {
-		swocInfo = kmalloc(sizeof(struct swoc_info), GFP_KERNEL);
-		if (!swocInfo) {
-			US_DEBUGP("SWIMS: Allocation failure\n");
-			snprintf(buf, PAGE_SIZE, "Error\n");
-=======
 		result = sysfs_emit(buf, "Forced Mass Storage\n");
 	} else {
 		swocInfo = kmalloc(sizeof(struct swoc_info), GFP_KERNEL);
 		if (!swocInfo) {
 			sysfs_emit(buf, "Error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 		result = sierra_get_swoc_info(udev, swocInfo);
 		if (result < 0) {
-<<<<<<< HEAD
-			US_DEBUGP("SWIMS: failed SWoC query\n");
-			kfree(swocInfo);
-			snprintf(buf, PAGE_SIZE, "Error\n");
-			return -EIO;
-		}
-		debug_swoc(swocInfo);
-		result = snprintf(buf, PAGE_SIZE,
-			"REV=%02d SKU=%04X VER=%04X\n",
-			swocInfo->rev,
-			swocInfo->LinuxSKU,
-			swocInfo->LinuxVer);
-=======
 			dev_dbg(dev, "SWIMS: failed SWoC query\n");
 			kfree(swocInfo);
 			sysfs_emit(buf, "Error\n");
@@ -163,42 +118,17 @@ static ssize_t truinst_show(struct device *dev, struct device_attribute *attr,
 				    swocInfo->rev,
 				    swocInfo->LinuxSKU,
 				    swocInfo->LinuxVer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(swocInfo);
 	}
 	return result;
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(truinst, S_IRUGO, show_truinst, NULL);
-=======
 static DEVICE_ATTR_RO(truinst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sierra_ms_init(struct us_data *us)
 {
 	int result, retries;
 	struct swoc_info *swocInfo;
 	struct usb_device *udev;
-<<<<<<< HEAD
-	struct Scsi_Host *sh;
-	struct scsi_device *sd;
-
-	retries = 3;
-	result = 0;
-	udev = us->pusb_dev;
-
-	sh = us_to_host(us);
-	sd = scsi_get_host_dev(sh);
-
-	US_DEBUGP("SWIMS: sierra_ms_init called\n");
-
-	/* Force Modem mode */
-	if (swi_tru_install == TRU_FORCE_MODEM) {
-		US_DEBUGP("SWIMS: %s", "Forcing Modem Mode\n");
-		result = sierra_set_ms_mode(udev, SWIMS_SET_MODE_Modem);
-		if (result < 0)
-			US_DEBUGP("SWIMS: Failed to switch to modem mode.\n");
-=======
 
 	udev = us->pusb_dev;
 
@@ -208,77 +138,38 @@ int sierra_ms_init(struct us_data *us)
 		result = sierra_set_ms_mode(udev, SWIMS_SET_MODE_Modem);
 		if (result < 0)
 			usb_stor_dbg(us, "SWIMS: Failed to switch to modem mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	/* Force Mass Storage mode (keep CD-Rom) */
 	else if (swi_tru_install == TRU_FORCE_MS) {
-<<<<<<< HEAD
-		US_DEBUGP("SWIMS: %s", "Forcing Mass Storage Mode\n");
-=======
 		usb_stor_dbg(us, "SWIMS: Forcing Mass Storage Mode\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto complete;
 	}
 	/* Normal TRU-Install Logic */
 	else {
-<<<<<<< HEAD
-		US_DEBUGP("SWIMS: %s", "Normal SWoC Logic\n");
-
-		swocInfo = kmalloc(sizeof(struct swoc_info),
-				GFP_KERNEL);
-		if (!swocInfo) {
-			US_DEBUGP("SWIMS: %s", "Allocation failure\n");
-			return -ENOMEM;
-		}
-=======
 		usb_stor_dbg(us, "SWIMS: Normal SWoC Logic\n");
 
 		swocInfo = kmalloc(sizeof(struct swoc_info),
 				GFP_KERNEL);
 		if (!swocInfo)
 			return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		retries = 3;
 		do {
 			retries--;
 			result = sierra_get_swoc_info(udev, swocInfo);
 			if (result < 0) {
-<<<<<<< HEAD
-				US_DEBUGP("SWIMS: %s", "Failed SWoC query\n");
-=======
 				usb_stor_dbg(us, "SWIMS: Failed SWoC query\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				schedule_timeout_uninterruptible(2*HZ);
 			}
 		} while (retries && result < 0);
 
 		if (result < 0) {
-<<<<<<< HEAD
-			US_DEBUGP("SWIMS: %s",
-				  "Completely failed SWoC query\n");
-=======
 			usb_stor_dbg(us, "SWIMS: Completely failed SWoC query\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(swocInfo);
 			return -EIO;
 		}
 
-<<<<<<< HEAD
-		debug_swoc(swocInfo);
-
-		/* If there is not Linux software on the TRU-Install device
-		 * then switch to modem mode
-		 */
-		if (!containsFullLinuxPackage(swocInfo)) {
-			US_DEBUGP("SWIMS: %s",
-				"Switching to Modem Mode\n");
-			result = sierra_set_ms_mode(udev,
-				SWIMS_SET_MODE_Modem);
-			if (result < 0)
-				US_DEBUGP("SWIMS: Failed to switch modem\n");
-=======
 		debug_swoc(&us->pusb_dev->dev, swocInfo);
 
 		/*
@@ -291,19 +182,12 @@ int sierra_ms_init(struct us_data *us)
 				SWIMS_SET_MODE_Modem);
 			if (result < 0)
 				usb_stor_dbg(us, "SWIMS: Failed to switch modem\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(swocInfo);
 			return -EIO;
 		}
 		kfree(swocInfo);
 	}
 complete:
-<<<<<<< HEAD
-	result = device_create_file(&us->pusb_intf->dev, &dev_attr_truinst);
-
-	return 0;
-=======
 	return device_create_file(&us->pusb_intf->dev, &dev_attr_truinst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

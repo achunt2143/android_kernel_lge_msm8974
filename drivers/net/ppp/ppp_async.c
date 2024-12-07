@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PPP async serial channel driver for Linux.
  *
  * Copyright 1999 Paul Mackerras.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This driver provides the encapsulation and framing for sending
  * and receiving PPP frames over async serial lines.  It relies on
  * the generic PPP layer to give it frames to send and to process
@@ -41,11 +30,7 @@
 #include <linux/jiffies.h>
 #include <linux/slab.h>
 #include <asm/unaligned.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/string.h>
 
 #define PPP_VERSION	"2.4.2"
@@ -80,13 +65,8 @@ struct asyncppp {
 
 	struct tasklet_struct tsk;
 
-<<<<<<< HEAD
-	atomic_t	refcnt;
-	struct semaphore dead_sem;
-=======
 	refcount_t	refcnt;
 	struct completion dead;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ppp_channel chan;	/* interface to generic ppp layer */
 	unsigned char	obuf[OBUFSIZE];
 };
@@ -107,10 +87,7 @@ struct asyncppp {
 static int flag_time = HZ;
 module_param(flag_time, int, 0);
 MODULE_PARM_DESC(flag_time, "ppp_async: interval between flagged packets (in clock ticks)");
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("PPP async serial channel module");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_LDISC(N_PPP);
 
@@ -122,17 +99,10 @@ static int ppp_async_send(struct ppp_channel *chan, struct sk_buff *skb);
 static int ppp_async_push(struct asyncppp *ap);
 static void ppp_async_flush_output(struct asyncppp *ap);
 static void ppp_async_input(struct asyncppp *ap, const unsigned char *buf,
-<<<<<<< HEAD
-			    char *flags, int count);
-static int ppp_async_ioctl(struct ppp_channel *chan, unsigned int cmd,
-			   unsigned long arg);
-static void ppp_async_process(unsigned long arg);
-=======
 			    const u8 *flags, int count);
 static int ppp_async_ioctl(struct ppp_channel *chan, unsigned int cmd,
 			   unsigned long arg);
 static void ppp_async_process(struct tasklet_struct *t);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void async_lcp_peek(struct asyncppp *ap, unsigned char *data,
 			   int len, int inbound);
@@ -167,24 +137,15 @@ static struct asyncppp *ap_get(struct tty_struct *tty)
 	read_lock(&disc_data_lock);
 	ap = tty->disc_data;
 	if (ap != NULL)
-<<<<<<< HEAD
-		atomic_inc(&ap->refcnt);
-=======
 		refcount_inc(&ap->refcnt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock(&disc_data_lock);
 	return ap;
 }
 
 static void ap_put(struct asyncppp *ap)
 {
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&ap->refcnt))
-		up(&ap->dead_sem);
-=======
 	if (refcount_dec_and_test(&ap->refcnt))
 		complete(&ap->dead);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -219,17 +180,10 @@ ppp_asynctty_open(struct tty_struct *tty)
 	ap->lcp_fcs = -1;
 
 	skb_queue_head_init(&ap->rqueue);
-<<<<<<< HEAD
-	tasklet_init(&ap->tsk, ppp_async_process, (unsigned long) ap);
-
-	atomic_set(&ap->refcnt, 1);
-	sema_init(&ap->dead_sem, 0);
-=======
 	tasklet_setup(&ap->tsk, ppp_async_process);
 
 	refcount_set(&ap->refcnt, 1);
 	init_completion(&ap->dead);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ap->chan.private = ap;
 	ap->chan.ops = &async_ops;
@@ -277,13 +231,8 @@ ppp_asynctty_close(struct tty_struct *tty)
 	 * our channel ops (i.e. ppp_async_send/ioctl) are in progress
 	 * by the time it returns.
 	 */
-<<<<<<< HEAD
-	if (!atomic_dec_and_test(&ap->refcnt))
-		down(&ap->dead_sem);
-=======
 	if (!refcount_dec_and_test(&ap->refcnt))
 		wait_for_completion(&ap->dead);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tasklet_kill(&ap->tsk);
 
 	ppp_unregister_channel(&ap->chan);
@@ -299,16 +248,9 @@ ppp_asynctty_close(struct tty_struct *tty)
  * Wait for I/O to driver to complete and unregister PPP channel.
  * This is already done by the close routine, so just call that.
  */
-<<<<<<< HEAD
-static int ppp_asynctty_hangup(struct tty_struct *tty)
-{
-	ppp_asynctty_close(tty);
-	return 0;
-=======
 static void ppp_asynctty_hangup(struct tty_struct *tty)
 {
 	ppp_asynctty_close(tty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -316,13 +258,8 @@ static void ppp_asynctty_hangup(struct tty_struct *tty)
  * Pppd reads and writes packets via /dev/ppp instead.
  */
 static ssize_t
-<<<<<<< HEAD
-ppp_asynctty_read(struct tty_struct *tty, struct file *file,
-		  unsigned char __user *buf, size_t count)
-=======
 ppp_asynctty_read(struct tty_struct *tty, struct file *file, u8 *buf,
 		  size_t count, void **cookie, unsigned long offset)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EAGAIN;
 }
@@ -332,13 +269,8 @@ ppp_asynctty_read(struct tty_struct *tty, struct file *file, u8 *buf,
  * from the ppp generic stuff.
  */
 static ssize_t
-<<<<<<< HEAD
-ppp_asynctty_write(struct tty_struct *tty, struct file *file,
-		   const unsigned char *buf, size_t count)
-=======
 ppp_asynctty_write(struct tty_struct *tty, struct file *file, const u8 *buf,
 		   size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EAGAIN;
 }
@@ -349,12 +281,7 @@ ppp_asynctty_write(struct tty_struct *tty, struct file *file, const u8 *buf,
  */
 
 static int
-<<<<<<< HEAD
-ppp_asynctty_ioctl(struct tty_struct *tty, struct file *file,
-		   unsigned int cmd, unsigned long arg)
-=======
 ppp_asynctty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asyncppp *ap = ap_get(tty);
 	int err, val;
@@ -382,11 +309,7 @@ ppp_asynctty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
 		/* flush our buffers and the serial port's buffer */
 		if (arg == TCIOFLUSH || arg == TCOFLUSH)
 			ppp_async_flush_output(ap);
-<<<<<<< HEAD
-		err = tty_perform_flush(tty, arg);
-=======
 		err = n_tty_ioctl_helper(tty, cmd, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case FIONREAD:
@@ -398,35 +321,17 @@ ppp_asynctty_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg)
 
 	default:
 		/* Try the various mode ioctls */
-<<<<<<< HEAD
-		err = tty_mode_ioctl(tty, file, cmd, arg);
-=======
 		err = tty_mode_ioctl(tty, cmd, arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ap_put(ap);
 	return err;
 }
 
-<<<<<<< HEAD
-/* No kernel lock - fine */
-static unsigned int
-ppp_asynctty_poll(struct tty_struct *tty, struct file *file, poll_table *wait)
-{
-	return 0;
-}
-
-/* May sleep, don't call from interrupt level or with interrupts disabled */
-static void
-ppp_asynctty_receive(struct tty_struct *tty, const unsigned char *buf,
-		  char *cflags, int count)
-=======
 /* May sleep, don't call from interrupt level or with interrupts disabled */
 static void
 ppp_asynctty_receive(struct tty_struct *tty, const u8 *buf, const u8 *cflags,
 		     size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asyncppp *ap = ap_get(tty);
 	unsigned long flags;
@@ -458,11 +363,7 @@ ppp_asynctty_wakeup(struct tty_struct *tty)
 
 static struct tty_ldisc_ops ppp_ldisc = {
 	.owner  = THIS_MODULE,
-<<<<<<< HEAD
-	.magic	= TTY_LDISC_MAGIC,
-=======
 	.num	= N_PPP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= "ppp",
 	.open	= ppp_asynctty_open,
 	.close	= ppp_asynctty_close,
@@ -470,10 +371,6 @@ static struct tty_ldisc_ops ppp_ldisc = {
 	.read	= ppp_asynctty_read,
 	.write	= ppp_asynctty_write,
 	.ioctl	= ppp_asynctty_ioctl,
-<<<<<<< HEAD
-	.poll	= ppp_asynctty_poll,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.receive_buf = ppp_asynctty_receive,
 	.write_wakeup = ppp_asynctty_wakeup,
 };
@@ -483,11 +380,7 @@ ppp_async_init(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = tty_register_ldisc(N_PPP, &ppp_ldisc);
-=======
 	err = tty_register_ldisc(&ppp_ldisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err != 0)
 		printk(KERN_ERR "PPP_async: error %d registering line disc.\n",
 		       err);
@@ -568,13 +461,10 @@ ppp_async_ioctl(struct ppp_channel *chan, unsigned int cmd, unsigned long arg)
 	case PPPIOCSMRU:
 		if (get_user(val, p))
 			break;
-<<<<<<< HEAD
-=======
 		if (val > U16_MAX) {
 			err = -EINVAL;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (val < PPP_MRU)
 			val = PPP_MRU;
 		ap->mru = val;
@@ -593,15 +483,9 @@ ppp_async_ioctl(struct ppp_channel *chan, unsigned int cmd, unsigned long arg)
  * to the ppp_generic code, and to tell the ppp_generic code
  * if we can accept more output now.
  */
-<<<<<<< HEAD
-static void ppp_async_process(unsigned long arg)
-{
-	struct asyncppp *ap = (struct asyncppp *) arg;
-=======
 static void ppp_async_process(struct tasklet_struct *t)
 {
 	struct asyncppp *ap = from_tasklet(ap, t, tsk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 
 	/* process received packets */
@@ -654,11 +538,7 @@ ppp_async_encode(struct asyncppp *ap)
 	proto = get_unaligned_be16(data);
 
 	/*
-<<<<<<< HEAD
-	 * LCP packets with code values between 1 (configure-reqest)
-=======
 	 * LCP packets with code values between 1 (configure-request)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and 7 (code-reject) must be sent as though no options
 	 * had been negotiated.
 	 */
@@ -724,11 +604,7 @@ ppp_async_encode(struct asyncppp *ap)
 	*buf++ = PPP_FLAG;
 	ap->olim = buf;
 
-<<<<<<< HEAD
-	kfree_skb(ap->tpkt);
-=======
 	consume_skb(ap->tpkt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap->tpkt = NULL;
 	return 1;
 }
@@ -885,11 +761,7 @@ process_input_packet(struct asyncppp *ap)
 {
 	struct sk_buff *skb;
 	unsigned char *p;
-<<<<<<< HEAD
-	unsigned int len, fcs, proto;
-=======
 	unsigned int len, fcs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = ap->rpkt;
 	if (ap->state & (SC_TOSS | SC_ESCAPE))
@@ -918,16 +790,6 @@ process_input_packet(struct asyncppp *ap)
 			goto err;
 		p = skb_pull(skb, 2);
 	}
-<<<<<<< HEAD
-	proto = p[0];
-	if (proto & 1) {
-		/* protocol is compressed */
-		skb_push(skb, 1)[0] = 0;
-	} else {
-		if (skb->len < 2)
-			goto err;
-		proto = (proto << 8) + p[1];
-=======
 
 	/* If protocol field is not compressed, it can be LCP packet */
 	if (!(p[0] & 0x01)) {
@@ -936,7 +798,6 @@ process_input_packet(struct asyncppp *ap)
 		if (skb->len < 2)
 			goto err;
 		proto = (p[0] << 8) + p[1];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (proto == PPP_LCP)
 			async_lcp_peek(ap, p, skb->len, 1);
 	}
@@ -962,12 +823,7 @@ process_input_packet(struct asyncppp *ap)
    other ldisc functions but will not be re-entered */
 
 static void
-<<<<<<< HEAD
-ppp_async_input(struct asyncppp *ap, const unsigned char *buf,
-		char *flags, int count)
-=======
 ppp_async_input(struct asyncppp *ap, const u8 *buf, const u8 *flags, int count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	int c, i, j, n, s, f;
@@ -1012,17 +868,6 @@ ppp_async_input(struct asyncppp *ap, const u8 *buf, const u8 *flags, int count)
 				skb = dev_alloc_skb(ap->mru + PPP_HDRLEN + 2);
 				if (!skb)
 					goto nomem;
-<<<<<<< HEAD
- 				ap->rpkt = skb;
- 			}
- 			if (skb->len == 0) {
- 				/* Try to get the payload 4-byte aligned.
- 				 * This should match the
- 				 * PPP_ALLSTATIONS/PPP_UI/compressed tests in
- 				 * process_input_packet, but we do not have
- 				 * enough chars here to test buf[1] and buf[2].
- 				 */
-=======
 				ap->rpkt = skb;
 			}
 			if (skb->len == 0) {
@@ -1032,7 +877,6 @@ ppp_async_input(struct asyncppp *ap, const u8 *buf, const u8 *flags, int count)
 				 * process_input_packet, but we do not have
 				 * enough chars here to test buf[1] and buf[2].
 				 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (buf[0] != PPP_ALLSTATIONS)
 					skb_reserve(skb, 2 + (buf[0] & 1));
 			}
@@ -1040,12 +884,7 @@ ppp_async_input(struct asyncppp *ap, const u8 *buf, const u8 *flags, int count)
 				/* packet overflowed MRU */
 				ap->state |= SC_TOSS;
 			} else {
-<<<<<<< HEAD
-				sp = skb_put(skb, n);
-				memcpy(sp, buf, n);
-=======
 				sp = skb_put_data(skb, buf, n);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ap->state & SC_ESCAPE) {
 					sp[0] ^= PPP_TRANS;
 					ap->state &= ~SC_ESCAPE;
@@ -1170,12 +1009,7 @@ static void async_lcp_peek(struct asyncppp *ap, unsigned char *data,
 
 static void __exit ppp_async_cleanup(void)
 {
-<<<<<<< HEAD
-	if (tty_unregister_ldisc(N_PPP) != 0)
-		printk(KERN_ERR "failed to unregister PPP line discipline\n");
-=======
 	tty_unregister_ldisc(&ppp_ldisc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ppp_async_init);

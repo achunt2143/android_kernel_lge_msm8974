@@ -1,14 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ARCH_X86_KVM_X86_H
 #define ARCH_X86_KVM_X86_H
 
 #include <linux/kvm_host.h>
-<<<<<<< HEAD
-#include "kvm_cache_regs.h"
-=======
 #include <asm/fpu/xstate.h>
 #include <asm/mce.h>
 #include <asm/pvclock.h>
@@ -109,46 +103,30 @@ static inline bool kvm_is_exception_pending(struct kvm_vcpu *vcpu)
 	       vcpu->arch.exception_vmexit.pending ||
 	       kvm_test_request(KVM_REQ_TRIPLE_FAULT, vcpu);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void kvm_clear_exception_queue(struct kvm_vcpu *vcpu)
 {
 	vcpu->arch.exception.pending = false;
-<<<<<<< HEAD
-=======
 	vcpu->arch.exception.injected = false;
 	vcpu->arch.exception_vmexit.pending = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void kvm_queue_interrupt(struct kvm_vcpu *vcpu, u8 vector,
 	bool soft)
 {
-<<<<<<< HEAD
-	vcpu->arch.interrupt.pending = true;
-=======
 	vcpu->arch.interrupt.injected = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vcpu->arch.interrupt.soft = soft;
 	vcpu->arch.interrupt.nr = vector;
 }
 
 static inline void kvm_clear_interrupt_queue(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	vcpu->arch.interrupt.pending = false;
-=======
 	vcpu->arch.interrupt.injected = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool kvm_event_needs_reinjection(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	return vcpu->arch.exception.pending || vcpu->arch.interrupt.pending ||
-=======
 	return vcpu->arch.exception.injected || vcpu->arch.interrupt.injected ||
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vcpu->arch.nmi_injected;
 }
 
@@ -159,20 +137,6 @@ static inline bool kvm_exception_is_soft(unsigned int nr)
 
 static inline bool is_protmode(struct kvm_vcpu *vcpu)
 {
-<<<<<<< HEAD
-	return kvm_read_cr0_bits(vcpu, X86_CR0_PE);
-}
-
-static inline int is_long_mode(struct kvm_vcpu *vcpu)
-{
-#ifdef CONFIG_X86_64
-	return vcpu->arch.efer & EFER_LMA;
-#else
-	return 0;
-#endif
-}
-
-=======
 	return kvm_is_cr0_bit_set(vcpu, X86_CR0_PE);
 }
 
@@ -216,32 +180,11 @@ static inline bool x86_exception_has_error_code(unsigned int vector)
 	return (1U << vector) & exception_has_error_code;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool mmu_is_nested(struct kvm_vcpu *vcpu)
 {
 	return vcpu->arch.walk_mmu == &vcpu->arch.nested_mmu;
 }
 
-<<<<<<< HEAD
-static inline int is_pae(struct kvm_vcpu *vcpu)
-{
-	return kvm_read_cr4_bits(vcpu, X86_CR4_PAE);
-}
-
-static inline int is_pse(struct kvm_vcpu *vcpu)
-{
-	return kvm_read_cr4_bits(vcpu, X86_CR4_PSE);
-}
-
-static inline int is_paging(struct kvm_vcpu *vcpu)
-{
-	return kvm_read_cr0_bits(vcpu, X86_CR0_PG);
-}
-
-static inline u32 bit(int bitno)
-{
-	return 1 << (bitno & 31);
-=======
 static inline bool is_pae(struct kvm_vcpu *vcpu)
 {
 	return kvm_is_cr4_bit_set(vcpu, X86_CR4_PAE);
@@ -270,18 +213,11 @@ static inline u8 vcpu_virt_addr_bits(struct kvm_vcpu *vcpu)
 static inline bool is_noncanonical_address(u64 la, struct kvm_vcpu *vcpu)
 {
 	return !__is_canonical_address(la, vcpu_virt_addr_bits(vcpu));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void vcpu_cache_mmio_info(struct kvm_vcpu *vcpu,
 					gva_t gva, gfn_t gfn, unsigned access)
 {
-<<<<<<< HEAD
-	vcpu->arch.mmio_gva = gva & PAGE_MASK;
-	vcpu->arch.access = access;
-	vcpu->arch.mmio_gfn = gfn;
-	vcpu->arch.mmio_gen = kvm_memslots(vcpu->kvm)->generation;
-=======
 	u64 gen = kvm_memslots(vcpu->kvm)->generation;
 
 	if (unlikely(gen & KVM_MEMSLOT_GEN_UPDATE_IN_PROGRESS))
@@ -295,7 +231,6 @@ static inline void vcpu_cache_mmio_info(struct kvm_vcpu *vcpu,
 	vcpu->arch.mmio_access = access;
 	vcpu->arch.mmio_gfn = gfn;
 	vcpu->arch.mmio_gen = gen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool vcpu_match_mmio_gen(struct kvm_vcpu *vcpu)
@@ -335,23 +270,6 @@ static inline bool vcpu_match_mmio_gpa(struct kvm_vcpu *vcpu, gpa_t gpa)
 	return false;
 }
 
-<<<<<<< HEAD
-void kvm_before_handle_nmi(struct kvm_vcpu *vcpu);
-void kvm_after_handle_nmi(struct kvm_vcpu *vcpu);
-int kvm_inject_realmode_interrupt(struct kvm_vcpu *vcpu, int irq, int inc_eip);
-
-void kvm_write_tsc(struct kvm_vcpu *vcpu, u64 data);
-
-int kvm_read_guest_virt(struct x86_emulate_ctxt *ctxt,
-	gva_t addr, void *val, unsigned int bytes,
-	struct x86_exception *exception);
-
-int kvm_write_guest_virt_system(struct x86_emulate_ctxt *ctxt,
-	gva_t addr, void *val, unsigned int bytes,
-	struct x86_exception *exception);
-
-extern u64 host_xcr0;
-=======
 static inline unsigned long kvm_register_read(struct kvm_vcpu *vcpu, int reg)
 {
 	unsigned long val = kvm_register_read_raw(vcpu, reg);
@@ -619,6 +537,5 @@ int kvm_sev_es_mmio_read(struct kvm_vcpu *vcpu, gpa_t src, unsigned int bytes,
 int kvm_sev_es_string_io(struct kvm_vcpu *vcpu, unsigned int size,
 			 unsigned int port, void *data,  unsigned int count,
 			 int in);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

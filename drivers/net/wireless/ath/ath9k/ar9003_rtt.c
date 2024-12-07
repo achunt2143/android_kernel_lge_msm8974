@@ -15,10 +15,7 @@
  */
 
 #include "hw.h"
-<<<<<<< HEAD
-=======
 #include "hw-ops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ar9003_phy.h"
 #include "ar9003_rtt.h"
 
@@ -73,11 +70,7 @@ bool ar9003_hw_rtt_force_restore(struct ath_hw *ah)
 }
 
 static void ar9003_hw_rtt_load_hist_entry(struct ath_hw *ah, u8 chain,
-<<<<<<< HEAD
-		u32 index, u32 data28)
-=======
 					  u32 index, u32 data28)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
@@ -108,14 +101,6 @@ static void ar9003_hw_rtt_load_hist_entry(struct ath_hw *ah, u8 chain,
 		      RTT_ACCESS_TIMEOUT);
 }
 
-<<<<<<< HEAD
-void ar9003_hw_rtt_load_hist(struct ath_hw *ah, u8 chain, u32 *table)
-{
-	int i;
-
-	for (i = 0; i < MAX_RTT_TABLE_ENTRY; i++)
-		ar9003_hw_rtt_load_hist_entry(ah, chain, i, table[i]);
-=======
 void ar9003_hw_rtt_load_hist(struct ath_hw *ah)
 {
 	int chain, i;
@@ -152,7 +137,6 @@ static void ar9003_hw_patch_rtt(struct ath_hw *ah, int index, int chain)
 	ah->caldata->rtt_table[chain][index] &= 0xFFFF05FF;
 	caldac = (caldac & 0x20) | ((caldac & 0x1F) << 7);
 	ah->caldata->rtt_table[chain][index] |= (caldac << 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ar9003_hw_rtt_fill_hist_entry(struct ath_hw *ah, u8 chain, u32 index)
@@ -175,25 +159,13 @@ static int ar9003_hw_rtt_fill_hist_entry(struct ath_hw *ah, u8 chain, u32 index)
 			   RTT_ACCESS_TIMEOUT))
 		return RTT_BAD_VALUE;
 
-<<<<<<< HEAD
-	val = REG_READ(ah, AR_PHY_RTT_TABLE_SW_INTF_1_B(chain));
-=======
 	val = MS(REG_READ(ah, AR_PHY_RTT_TABLE_SW_INTF_1_B(chain)),
 		 AR_PHY_RTT_SW_RTT_TABLE_DATA);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return val;
 }
 
-<<<<<<< HEAD
-void ar9003_hw_rtt_fill_hist(struct ath_hw *ah, u8 chain, u32 *table)
-{
-	int i;
-
-	for (i = 0; i < MAX_RTT_TABLE_ENTRY; i++)
-		table[i] = ar9003_hw_rtt_fill_hist_entry(ah, chain, i);
-=======
 void ar9003_hw_rtt_fill_hist(struct ath_hw *ah)
 {
 	int chain, i;
@@ -214,21 +186,10 @@ void ar9003_hw_rtt_fill_hist(struct ath_hw *ah)
 	}
 
 	set_bit(RTT_DONE, &ah->caldata->cal_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ar9003_hw_rtt_clear_hist(struct ath_hw *ah)
 {
-<<<<<<< HEAD
-	int i, j;
-
-	for (i = 0; i < AR9300_MAX_CHAINS; i++) {
-		if (!(ah->rxchainmask & (1 << i)))
-			continue;
-		for (j = 0; j < MAX_RTT_TABLE_ENTRY; j++)
-			ar9003_hw_rtt_load_hist_entry(ah, i, j, 0);
-	}
-=======
 	int chain, i;
 
 	for (chain = 0; chain < AR9300_MAX_CHAINS; chain++) {
@@ -294,5 +255,4 @@ fail:
 	ath9k_hw_rfbus_done(ah);
 	ar9003_hw_rtt_disable(ah);
 	return restore;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-rpc/riscpc.c
  *
  *  Copyright (C) 1998-2001 Russell King
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Architecture specific fixups.
  */
 #include <linux/kernel.h>
@@ -27,10 +17,7 @@
 #include <linux/ata_platform.h>
 #include <linux/io.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-=======
 #include <linux/reboot.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/elf.h>
 #include <asm/mach-types.h>
@@ -59,15 +46,10 @@ static int __init parse_tag_acorn(const struct tag *tag)
 	switch (tag->u.acorn.vram_pages) {
 	case 512:
 		vram_size += PAGE_SIZE * 256;
-<<<<<<< HEAD
-	case 256:
-		vram_size += PAGE_SIZE * 256;
-=======
 		fallthrough;	/* ??? */
 	case 256:
 		vram_size += PAGE_SIZE * 256;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -219,11 +201,7 @@ static int __init rpc_init(void)
 
 arch_initcall(rpc_init);
 
-<<<<<<< HEAD
-static void rpc_restart(char mode, const char *cmd)
-=======
 static void rpc_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iomd_writeb(0, IOMD_ROMCR0);
 
@@ -233,11 +211,7 @@ static void rpc_restart(enum reboot_mode mode, const char *cmd)
 	soft_restart(0);
 }
 
-<<<<<<< HEAD
-extern struct sys_timer ioc_timer;
-=======
 void ioc_timer_init(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MACHINE_START(RISCPC, "Acorn-RiscPC")
 	/* Maintainer: Russell King */
@@ -246,10 +220,6 @@ MACHINE_START(RISCPC, "Acorn-RiscPC")
 	.reserve_lp1	= 1,
 	.map_io		= rpc_map_io,
 	.init_irq	= rpc_init_irq,
-<<<<<<< HEAD
-	.timer		= &ioc_timer,
-=======
 	.init_time	= ioc_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= rpc_restart,
 MACHINE_END

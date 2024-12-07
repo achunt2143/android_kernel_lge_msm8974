@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * Procedures for creating, accessing and interpreting the device tree.
- *
- * Paul Mackerras	August 1996.
- * Copyright (C) 1996-2005 Paul Mackerras.
- *
- *  Adapted for 64bit PowerPC by Dave Engebretsen and Peter Bergner.
- *    {engebret|bergner}@us.ibm.com
- *
- *  Adapted for sparc and sparc64 by David S. Miller davem@davemloft.net
- *
- *  Reconsolidated from arch/x/kernel/prom.c by Stephen Rothwell and
- *  Grant Likely.
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
- */
-
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
 #ifndef _LINUX_OF_PRIVATE_H
 #define _LINUX_OF_PRIVATE_H
@@ -32,7 +10,6 @@
 
 #define FDT_ALIGN_SIZE 8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct alias_prop - Alias property in 'aliases' node
  * @link:	List node to link the structure in aliases_lookup list
@@ -49,13 +26,6 @@ struct alias_prop {
 	const char *alias;
 	struct device_node *np;
 	int id;
-<<<<<<< HEAD
-	char stem[0];
-};
-
-extern struct mutex of_aliases_mutex;
-extern struct list_head aliases_lookup;
-=======
 	char stem[];
 };
 
@@ -211,4 +181,3 @@ void fdt_init_reserved_mem(void);
 bool of_fdt_device_is_available(const void *blob, unsigned long node);
 
 #endif /* _LINUX_OF_PRIVATE_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

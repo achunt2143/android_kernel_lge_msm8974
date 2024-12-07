@@ -1,29 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_USER_NAMESPACE_H
 #define _LINUX_USER_NAMESPACE_H
 
 #include <linux/kref.h>
 #include <linux/nsproxy.h>
-<<<<<<< HEAD
-#include <linux/sched.h>
-#include <linux/err.h>
-
-#define UIDHASH_BITS	(CONFIG_BASE_SMALL ? 3 : 7)
-#define UIDHASH_SZ	(1 << UIDHASH_BITS)
-
-struct user_namespace {
-	struct kref		kref;
-	struct hlist_head	uidhash_table[UIDHASH_SZ];
-	struct user_struct	*creator;
-	struct work_struct	destroyer;
-	unsigned int		proc_inum;
-};
-
-extern struct user_namespace init_user_ns;
-=======
 #include <linux/ns_common.h>
 #include <linux/sched.h>
 #include <linux/workqueue.h>
@@ -173,35 +153,17 @@ static inline void set_userns_rlimit_max(struct user_namespace *ns,
 {
 	ns->rlimit_max[type] = max <= LONG_MAX ? max : LONG_MAX;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_USER_NS
 
 static inline struct user_namespace *get_user_ns(struct user_namespace *ns)
 {
 	if (ns)
-<<<<<<< HEAD
-		kref_get(&ns->kref);
-=======
 		refcount_inc(&ns->ns.count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ns;
 }
 
 extern int create_user_ns(struct cred *new);
-<<<<<<< HEAD
-extern void free_user_ns(struct kref *kref);
-
-static inline void put_user_ns(struct user_namespace *ns)
-{
-	if (ns)
-		kref_put(&ns->kref, free_user_ns);
-}
-
-uid_t user_ns_map_uid(struct user_namespace *to, const struct cred *cred, uid_t uid);
-gid_t user_ns_map_gid(struct user_namespace *to, const struct cred *cred, gid_t gid);
-
-=======
 extern int unshare_userns(unsigned long unshare_flags, struct cred **new_cred);
 extern void __put_user_ns(struct user_namespace *ns);
 
@@ -225,7 +187,6 @@ extern bool in_userns(const struct user_namespace *ancestor,
 		       const struct user_namespace *child);
 extern bool current_in_userns(const struct user_namespace *target_ns);
 struct ns_common *ns_get_owner(struct ns_common *ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 static inline struct user_namespace *get_user_ns(struct user_namespace *ns)
@@ -238,8 +199,6 @@ static inline int create_user_ns(struct cred *new)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 static inline int unshare_userns(unsigned long unshare_flags,
 				 struct cred **new_cred)
 {
@@ -248,24 +207,10 @@ static inline int unshare_userns(unsigned long unshare_flags,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void put_user_ns(struct user_namespace *ns)
 {
 }
 
-<<<<<<< HEAD
-static inline uid_t user_ns_map_uid(struct user_namespace *to,
-	const struct cred *cred, uid_t uid)
-{
-	return uid;
-}
-static inline gid_t user_ns_map_gid(struct user_namespace *to,
-	const struct cred *cred, gid_t gid)
-{
-	return gid;
-}
-
-=======
 static inline bool userns_may_setgroups(const struct user_namespace *ns)
 {
 	return true;
@@ -286,7 +231,6 @@ static inline struct ns_common *ns_get_owner(struct ns_common *ns)
 {
 	return ERR_PTR(-EPERM);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* _LINUX_USER_H */

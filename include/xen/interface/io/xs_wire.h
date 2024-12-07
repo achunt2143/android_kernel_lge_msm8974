@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: MIT */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Details of the "wire" protocol between Xen Store Daemon and client
  * library or guest kernel.
@@ -13,12 +10,8 @@
 
 enum xsd_sockmsg_type
 {
-<<<<<<< HEAD
-    XS_DEBUG,
-=======
     XS_CONTROL,
 #define XS_DEBUG XS_CONTROL
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     XS_DIRECTORY,
     XS_READ,
     XS_GET_PERMS,
@@ -38,9 +31,6 @@ enum xsd_sockmsg_type
     XS_IS_DOMAIN_INTRODUCED,
     XS_RESUME,
     XS_SET_TARGET,
-<<<<<<< HEAD
-    XS_RESTRICT
-=======
     /* XS_RESTRICT has been removed */
     XS_RESET_WATCHES = XS_SET_TARGET + 2,
     XS_DIRECTORY_PART,
@@ -48,7 +38,6 @@ enum xsd_sockmsg_type
     XS_TYPE_COUNT,      /* Number of valid types. */
 
     XS_INVALID = 0xffff /* Guaranteed to remain an invalid type */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define XS_WRITE_NONE "NONE"
@@ -76,12 +65,8 @@ static struct xsd_errors xsd_errors[] __attribute__((unused)) = {
     XSD_ERROR(EROFS),
     XSD_ERROR(EBUSY),
     XSD_ERROR(EAGAIN),
-<<<<<<< HEAD
-    XSD_ERROR(EISCONN)
-=======
     XSD_ERROR(EISCONN),
     XSD_ERROR(E2BIG)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct xsd_sockmsg
@@ -109,19 +94,14 @@ struct xenstore_domain_interface {
     char rsp[XENSTORE_RING_SIZE]; /* Replies and async watch events. */
     XENSTORE_RING_IDX req_cons, req_prod;
     XENSTORE_RING_IDX rsp_cons, rsp_prod;
-<<<<<<< HEAD
-=======
     uint32_t server_features; /* Bitmap of features supported by the server */
     uint32_t connection;
     uint32_t error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Violating this is very bad.  See docs/misc/xenstore.txt. */
 #define XENSTORE_PAYLOAD_MAX 4096
 
-<<<<<<< HEAD
-=======
 /* Violating these just gets you an error back */
 #define XENSTORE_ABS_PATH_MAX 3072
 #define XENSTORE_REL_PATH_MAX 2048
@@ -141,5 +121,4 @@ struct xenstore_domain_interface {
 #define XENSTORE_ERROR_RINGIDX 2 /* Invalid ring index */
 #define XENSTORE_ERROR_PROTO   3 /* Protocol violation (payload too long) */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _XS_WIRE_H */

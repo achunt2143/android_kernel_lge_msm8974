@@ -1,48 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2011 Freescale Semiconductor, Inc.
- * Copyright 2011 Linaro Ltd.
- *
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 or later at the following locations:
- *
- * http://www.opensource.org/licenses/gpl-license.html
- * http://www.gnu.org/copyleft/gpl.html
- */
-
-#include <linux/errno.h>
-#include <asm/cacheflush.h>
-#include <asm/cp15.h>
-#include <mach/common.h>
-
-int platform_cpu_kill(unsigned int cpu)
-{
-	return 1;
-}
-
-static inline void cpu_enter_lowpower(void)
-{
-	unsigned int v;
-
-	flush_cache_all();
-	asm volatile(
-		"mcr	p15, 0, %1, c7, c5, 0\n"
-	"	mcr	p15, 0, %1, c7, c10, 4\n"
-	/*
-	 * Turn off coherency
-	 */
-	"	mrc	p15, 0, %0, c1, c0, 1\n"
-	"	bic	%0, %0, %3\n"
-	"	mcr	p15, 0, %0, c1, c0, 1\n"
-	"	mrc	p15, 0, %0, c1, c0, 0\n"
-	"	bic	%0, %0, %2\n"
-	"	mcr	p15, 0, %0, c1, c0, 0\n"
-	  : "=&r" (v)
-	  : "r" (0), "Ir" (CR_C), "Ir" (0x40)
-	  : "cc");
-}
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2011 Freescale Semiconductor, Inc.
@@ -57,32 +12,12 @@ static inline void cpu_enter_lowpower(void)
 
 #include "common.h"
 #include "hardware.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * platform-specific code to shutdown a CPU
  *
  * Called with IRQs disabled
  */
-<<<<<<< HEAD
-void platform_cpu_die(unsigned int cpu)
-{
-	cpu_enter_lowpower();
-	imx_enable_cpu(cpu, false);
-
-	/* spin here until hardware takes it down */
-	while (1)
-		;
-}
-
-int platform_cpu_disable(unsigned int cpu)
-{
-	/*
-	 * we don't allow CPU 0 to be shutdown (it is still too special
-	 * e.g. clock tick interrupts)
-	 */
-	return cpu == 0 ? -EPERM : 0;
-=======
 void imx_cpu_die(unsigned int cpu)
 {
 	v7_exit_coherency_flush(louis);
@@ -109,5 +44,4 @@ int imx_cpu_kill(unsigned int cpu)
 	if (cpu_is_imx7d())
 		imx_gpcv2_set_core1_pdn_pup_by_software(true);
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

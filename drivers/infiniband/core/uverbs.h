@@ -46,8 +46,6 @@
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_umem.h>
 #include <rdma/ib_user_verbs.h>
-<<<<<<< HEAD
-=======
 #include <rdma/uverbs_std_types.h>
 
 #define UVERBS_MODULE_NAME ib_uverbs
@@ -75,7 +73,6 @@ ib_uverbs_init_udata_buf_or_null(struct ib_udata *udata,
 			     ilen ? ibuf : NULL, olen ? obuf : NULL,
 			     ilen, olen);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Our lifetime rules for these structs are the following:
@@ -90,22 +87,6 @@ ib_uverbs_init_udata_buf_or_null(struct ib_udata *udata,
  * an asynchronous event queue file is created and released when the
  * event file is closed.
  *
-<<<<<<< HEAD
- * struct ib_uverbs_event_file: One reference is held by the VFS and
- * released when the file is closed.  For asynchronous event files,
- * another reference is held by the corresponding main context file
- * and released when that file is closed.  For completion event files,
- * a reference is taken when a CQ is created that uses the file, and
- * released when the CQ is destroyed.
- */
-
-struct ib_uverbs_device {
-	atomic_t				refcount;
-	int					num_comp_vectors;
-	struct completion			comp;
-	struct device			       *dev;
-	struct ib_device		       *ib_dev;
-=======
  * struct ib_uverbs_event_queue: Base structure for
  * struct ib_uverbs_async_event_file and struct ib_uverbs_completion_event_file.
  * One reference is held by the VFS and released when the file is closed.
@@ -123,20 +104,10 @@ struct ib_uverbs_device {
 	/* First group for device attributes, NULL terminated array */
 	const struct attribute_group		*groups[2];
 	struct ib_device	__rcu	       *ib_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int					devnum;
 	struct cdev			        cdev;
 	struct rb_root				xrcd_tree;
 	struct mutex				xrcd_tree_mutex;
-<<<<<<< HEAD
-	struct kobject				kobj;
-};
-
-struct ib_uverbs_event_file {
-	struct kref				ref;
-	int					is_async;
-	struct ib_uverbs_file		       *uverbs_file;
-=======
 	struct srcu_struct			disassociate_srcu;
 	struct mutex				lists_mutex; /* protect lists */
 	struct list_head			uverbs_file_list;
@@ -144,7 +115,6 @@ struct ib_uverbs_event_file {
 };
 
 struct ib_uverbs_event_queue {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t				lock;
 	int					is_closed;
 	wait_queue_head_t			poll_wait;
@@ -152,15 +122,6 @@ struct ib_uverbs_event_queue {
 	struct list_head			event_list;
 };
 
-<<<<<<< HEAD
-struct ib_uverbs_file {
-	struct kref				ref;
-	struct mutex				mutex;
-	struct ib_uverbs_device		       *device;
-	struct ib_ucontext		       *ucontext;
-	struct ib_event_handler			event_handler;
-	struct ib_uverbs_event_file	       *async_file;
-=======
 struct ib_uverbs_async_event_file {
 	struct ib_uobject			uobj;
 	struct ib_uverbs_event_queue		ev_queue;
@@ -199,7 +160,6 @@ struct ib_uverbs_file {
 	struct page *disassociate_page;
 
 	struct xarray		idr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ib_uverbs_event {
@@ -220,11 +180,8 @@ struct ib_uverbs_mcast_entry {
 
 struct ib_uevent_object {
 	struct ib_uobject	uobject;
-<<<<<<< HEAD
-=======
 	struct ib_uverbs_async_event_file *event_file;
 	/* List member for ib_uverbs_async_event_file list */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	event_list;
 	u32			events_reported;
 };
@@ -241,41 +198,6 @@ struct ib_usrq_object {
 
 struct ib_uqp_object {
 	struct ib_uevent_object	uevent;
-<<<<<<< HEAD
-	struct list_head 	mcast_list;
-};
-
-struct ib_ucq_object {
-	struct ib_uobject	uobject;
-	struct ib_uverbs_file  *uverbs_file;
-	struct list_head	comp_list;
-	struct list_head	async_list;
-	u32			comp_events_reported;
-	u32			async_events_reported;
-};
-
-extern spinlock_t ib_uverbs_idr_lock;
-extern struct idr ib_uverbs_pd_idr;
-extern struct idr ib_uverbs_mr_idr;
-extern struct idr ib_uverbs_mw_idr;
-extern struct idr ib_uverbs_ah_idr;
-extern struct idr ib_uverbs_cq_idr;
-extern struct idr ib_uverbs_qp_idr;
-extern struct idr ib_uverbs_srq_idr;
-extern struct idr ib_uverbs_xrcd_idr;
-
-void idr_remove_uobj(struct idr *idp, struct ib_uobject *uobj);
-
-struct file *ib_uverbs_alloc_event_file(struct ib_uverbs_file *uverbs_file,
-					int is_async);
-struct ib_uverbs_event_file *ib_uverbs_lookup_comp_file(int fd);
-
-void ib_uverbs_release_ucq(struct ib_uverbs_file *file,
-			   struct ib_uverbs_event_file *ev_file,
-			   struct ib_ucq_object *uobj);
-void ib_uverbs_release_uevent(struct ib_uverbs_file *file,
-			      struct ib_uevent_object *uobj);
-=======
 	/* lock for mcast list */
 	struct mutex		mcast_lock;
 	struct list_head 	mcast_list;
@@ -310,56 +232,10 @@ void ib_uverbs_release_file(struct kref *ref);
 void ib_uverbs_async_handler(struct ib_uverbs_async_event_file *async_file,
 			     __u64 element, __u64 event,
 			     struct list_head *obj_list, u32 *counter);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ib_uverbs_comp_handler(struct ib_cq *cq, void *cq_context);
 void ib_uverbs_cq_event_handler(struct ib_event *event, void *context_ptr);
 void ib_uverbs_qp_event_handler(struct ib_event *event, void *context_ptr);
-<<<<<<< HEAD
-void ib_uverbs_srq_event_handler(struct ib_event *event, void *context_ptr);
-void ib_uverbs_event_handler(struct ib_event_handler *handler,
-			     struct ib_event *event);
-void ib_uverbs_dealloc_xrcd(struct ib_uverbs_device *dev, struct ib_xrcd *xrcd);
-
-#define IB_UVERBS_DECLARE_CMD(name)					\
-	ssize_t ib_uverbs_##name(struct ib_uverbs_file *file,		\
-				 const char __user *buf, int in_len,	\
-				 int out_len)
-
-IB_UVERBS_DECLARE_CMD(get_context);
-IB_UVERBS_DECLARE_CMD(query_device);
-IB_UVERBS_DECLARE_CMD(query_port);
-IB_UVERBS_DECLARE_CMD(alloc_pd);
-IB_UVERBS_DECLARE_CMD(dealloc_pd);
-IB_UVERBS_DECLARE_CMD(reg_mr);
-IB_UVERBS_DECLARE_CMD(dereg_mr);
-IB_UVERBS_DECLARE_CMD(create_comp_channel);
-IB_UVERBS_DECLARE_CMD(create_cq);
-IB_UVERBS_DECLARE_CMD(resize_cq);
-IB_UVERBS_DECLARE_CMD(poll_cq);
-IB_UVERBS_DECLARE_CMD(req_notify_cq);
-IB_UVERBS_DECLARE_CMD(destroy_cq);
-IB_UVERBS_DECLARE_CMD(create_qp);
-IB_UVERBS_DECLARE_CMD(open_qp);
-IB_UVERBS_DECLARE_CMD(query_qp);
-IB_UVERBS_DECLARE_CMD(modify_qp);
-IB_UVERBS_DECLARE_CMD(destroy_qp);
-IB_UVERBS_DECLARE_CMD(post_send);
-IB_UVERBS_DECLARE_CMD(post_recv);
-IB_UVERBS_DECLARE_CMD(post_srq_recv);
-IB_UVERBS_DECLARE_CMD(create_ah);
-IB_UVERBS_DECLARE_CMD(destroy_ah);
-IB_UVERBS_DECLARE_CMD(attach_mcast);
-IB_UVERBS_DECLARE_CMD(detach_mcast);
-IB_UVERBS_DECLARE_CMD(create_srq);
-IB_UVERBS_DECLARE_CMD(modify_srq);
-IB_UVERBS_DECLARE_CMD(query_srq);
-IB_UVERBS_DECLARE_CMD(destroy_srq);
-IB_UVERBS_DECLARE_CMD(create_xsrq);
-IB_UVERBS_DECLARE_CMD(open_xrcd);
-IB_UVERBS_DECLARE_CMD(close_xrcd);
-
-=======
 void ib_uverbs_wq_event_handler(struct ib_event *event, void *context_ptr);
 void ib_uverbs_srq_event_handler(struct ib_event *event, void *context_ptr);
 int ib_uverbs_dealloc_xrcd(struct ib_uobject *uobject, struct ib_xrcd *xrcd,
@@ -443,5 +319,4 @@ ib_uverbs_get_async_event(struct uverbs_attr_bundle *attrs,
 void copy_port_attr_to_resp(struct ib_port_attr *attr,
 			    struct ib_uverbs_query_port_resp *resp,
 			    struct ib_device *ib_dev, u8 port_num);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* UVERBS_H */

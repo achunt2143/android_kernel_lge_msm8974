@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Linux logo to be displayed on boot
@@ -21,13 +18,6 @@
 #include <asm/setup.h>
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_MIPS
-#include <asm/bootinfo.h>
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool nologo;
 module_param(nologo, bool, 0);
 MODULE_PARM_DESC(nologo, "Disables startup logo");
@@ -45,15 +35,6 @@ static int __init fb_logo_late_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-late_initcall(fb_logo_late_init);
-
-/* logo's are marked __initdata. Use __init_refok to tell
- * modpost that it is intended that this function uses data
- * marked __initdata.
- */
-const struct linux_logo * __init_refok fb_find_logo(int depth)
-=======
 late_initcall_sync(fb_logo_late_init);
 
 /* logo's are marked __initdata. Use __ref to tell
@@ -61,7 +42,6 @@ late_initcall_sync(fb_logo_late_init);
  * marked __initdata.
  */
 const struct linux_logo * __ref fb_find_logo(int depth)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct linux_logo *logo = NULL;
 
@@ -84,13 +64,6 @@ const struct linux_logo * __ref fb_find_logo(int depth)
 		/* Generic Linux logo */
 		logo = &logo_linux_vga16;
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_LOGO_BLACKFIN_VGA16
-		/* Blackfin processor logo */
-		logo = &logo_blackfin_vga16;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_LOGO_SUPERH_VGA16
 		/* SuperH Linux logo */
 		logo = &logo_superh_vga16;
@@ -102,13 +75,6 @@ const struct linux_logo * __ref fb_find_logo(int depth)
 		/* Generic Linux logo */
 		logo = &logo_linux_clut224;
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_LOGO_BLACKFIN_CLUT224
-		/* Blackfin Linux logo */
-		logo = &logo_blackfin_clut224;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_LOGO_DEC_CLUT224
 		/* DEC Linux logo on MIPS/MIPS64 or ALPHA */
 		logo = &logo_dec_clut224;
@@ -123,11 +89,7 @@ const struct linux_logo * __ref fb_find_logo(int depth)
 		logo = &logo_parisc_clut224;
 #endif
 #ifdef CONFIG_LOGO_SGI_CLUT224
-<<<<<<< HEAD
-		/* SGI Linux logo on MIPS/MIPS64 and VISWS */
-=======
 		/* SGI Linux logo on MIPS/MIPS64 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		logo = &logo_sgi_clut224;
 #endif
 #ifdef CONFIG_LOGO_SUN_CLUT224
@@ -138,13 +100,6 @@ const struct linux_logo * __ref fb_find_logo(int depth)
 		/* SuperH Linux logo */
 		logo = &logo_superh_clut224;
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_LOGO_M32R_CLUT224
-		/* M32R Linux logo */
-		logo = &logo_m32r_clut224;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return logo;
 }

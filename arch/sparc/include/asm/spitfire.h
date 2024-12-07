@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* spitfire.h: SpitFire/BlackBird/Cheetah inline MMU operations.
  *
  * Copyright (C) 1996 David S. Miller (davem@davemloft.net)
@@ -49,10 +46,6 @@
 #define SUN4V_CHIP_NIAGARA3	0x03
 #define SUN4V_CHIP_NIAGARA4	0x04
 #define SUN4V_CHIP_NIAGARA5	0x05
-<<<<<<< HEAD
-#define SUN4V_CHIP_UNKNOWN	0xff
-
-=======
 #define SUN4V_CHIP_SPARC_M6	0x06
 #define SUN4V_CHIP_SPARC_M7	0x07
 #define SUN4V_CHIP_SPARC_M8	0x08
@@ -75,7 +68,6 @@
 #define CPU_ID_M8		('8')
 #define CPU_ID_SONOMA1		('N')
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 
 enum ultra_tlb_layout {
@@ -90,11 +82,7 @@ extern enum ultra_tlb_layout tlb_type;
 extern int sun4v_chip_type;
 
 extern int cheetah_pcache_forced_on;
-<<<<<<< HEAD
-extern void cheetah_enable_pcache(void);
-=======
 void cheetah_enable_pcache(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define sparc64_highest_locked_tlbent()	\
 	(tlb_type == spitfire ? \

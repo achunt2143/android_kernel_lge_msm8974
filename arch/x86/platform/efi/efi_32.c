@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Extensible Firmware Interface
  *
@@ -27,55 +24,11 @@
 #include <linux/types.h>
 #include <linux/ioport.h>
 #include <linux/efi.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/desc.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/tlbflush.h>
-#include <asm/efi.h>
-
-/*
- * To make EFI call EFI runtime service in physical addressing mode we need
- * prelog/epilog before/after the invocation to disable interrupt, to
- * claim EFI runtime service handler exclusively and to duplicate a memory in
- * low memory space say 0 - 3G.
- */
-
-static unsigned long efi_rt_eflags;
-
-void efi_call_phys_prelog(void)
-{
-	struct desc_ptr gdt_descr;
-
-	local_irq_save(efi_rt_eflags);
-
-	load_cr3(initial_page_table);
-	__flush_tlb_all();
-
-	gdt_descr.address = __pa(get_cpu_gdt_table(0));
-	gdt_descr.size = GDT_SIZE - 1;
-	load_gdt(&gdt_descr);
-}
-
-void efi_call_phys_epilog(void)
-{
-	struct desc_ptr gdt_descr;
-
-	gdt_descr.address = (unsigned long)get_cpu_gdt_table(0);
-	gdt_descr.size = GDT_SIZE - 1;
-	load_gdt(&gdt_descr);
-
-	load_cr3(swapper_pg_dir);
-	__flush_tlb_all();
-
-	local_irq_restore(efi_rt_eflags);
-=======
 #include <asm/set_memory.h>
 #include <asm/tlbflush.h>
 #include <asm/efi.h>
@@ -198,5 +151,4 @@ void arch_efi_call_virt_teardown(void)
 {
 	firmware_restrict_branch_speculation_end();
 	efi_fpu_end();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipr.c -- driver for IBM Power Linux RAID adapters
  *
  * Written By: Brian King <brking@us.ibm.com>, IBM Corporation
  *
  * Copyright (C) 2003, 2004 IBM Corporation
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -79,10 +58,6 @@
 #include <linux/firmware.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-<<<<<<< HEAD
-#include <linux/libata.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hdreg.h>
 #include <linux/reboot.h>
 #include <linux/stringify.h>
@@ -102,20 +77,13 @@
 static LIST_HEAD(ipr_ioa_head);
 static unsigned int ipr_log_level = IPR_DEFAULT_LOG_LEVEL;
 static unsigned int ipr_max_speed = 1;
-<<<<<<< HEAD
-static int ipr_testmode = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int ipr_fastfail = 0;
 static unsigned int ipr_transop_timeout = 0;
 static unsigned int ipr_debug = 0;
 static unsigned int ipr_max_devs = IPR_DEFAULT_SIS64_DEVS;
 static unsigned int ipr_dual_ioa_raid = 1;
-<<<<<<< HEAD
-=======
 static unsigned int ipr_number_of_msix = 16;
 static unsigned int ipr_fast_reboot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(ipr_driver_lock);
 
 /* This table describes the differences between DMA controller chips */
@@ -125,10 +93,7 @@ static const struct ipr_chip_cfg_t ipr_chip_cfg[] = {
 		.max_cmds = 100,
 		.cache_line_size = 0x20,
 		.clear_isr = 1,
-<<<<<<< HEAD
-=======
 		.iopoll_weight = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			.set_interrupt_mask_reg = 0x0022C,
 			.clr_interrupt_mask_reg = 0x00230,
@@ -153,10 +118,7 @@ static const struct ipr_chip_cfg_t ipr_chip_cfg[] = {
 		.max_cmds = 100,
 		.cache_line_size = 0x20,
 		.clear_isr = 1,
-<<<<<<< HEAD
-=======
 		.iopoll_weight = 0,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			.set_interrupt_mask_reg = 0x00288,
 			.clr_interrupt_mask_reg = 0x0028C,
@@ -181,10 +143,7 @@ static const struct ipr_chip_cfg_t ipr_chip_cfg[] = {
 		.max_cmds = 1000,
 		.cache_line_size = 0x20,
 		.clear_isr = 0,
-<<<<<<< HEAD
-=======
 		.iopoll_weight = 64,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			.set_interrupt_mask_reg = 0x00010,
 			.clr_interrupt_mask_reg = 0x00018,
@@ -211,20 +170,6 @@ static const struct ipr_chip_cfg_t ipr_chip_cfg[] = {
 };
 
 static const struct ipr_chip_t ipr_chip[] = {
-<<<<<<< HEAD
-	{ PCI_VENDOR_ID_MYLEX, PCI_DEVICE_ID_IBM_GEMSTONE, IPR_USE_LSI, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
-	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CITRINE, IPR_USE_LSI, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
-	{ PCI_VENDOR_ID_ADAPTEC2, PCI_DEVICE_ID_ADAPTEC2_OBSIDIAN, IPR_USE_LSI, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
-	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_OBSIDIAN, IPR_USE_LSI, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
-	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_OBSIDIAN_E, IPR_USE_MSI, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
-	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_SNIPE, IPR_USE_LSI, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[1] },
-	{ PCI_VENDOR_ID_ADAPTEC2, PCI_DEVICE_ID_ADAPTEC2_SCAMP, IPR_USE_LSI, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[1] },
-	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROC_FPGA_E2, IPR_USE_MSI, IPR_SIS64, IPR_MMIO, &ipr_chip_cfg[2] },
-	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROCODILE, IPR_USE_MSI, IPR_SIS64, IPR_MMIO, &ipr_chip_cfg[2] }
-};
-
-static int ipr_max_bus_speeds [] = {
-=======
 	{ PCI_VENDOR_ID_MYLEX, PCI_DEVICE_ID_IBM_GEMSTONE, false, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CITRINE, false, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
 	{ PCI_VENDOR_ID_ADAPTEC2, PCI_DEVICE_ID_ADAPTEC2_OBSIDIAN, false, IPR_SIS32, IPR_PCI_CFG, &ipr_chip_cfg[0] },
@@ -238,7 +183,6 @@ static int ipr_max_bus_speeds [] = {
 };
 
 static int ipr_max_bus_speeds[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IPR_80MBs_SCSI_RATE, IPR_U160_SCSI_RATE, IPR_U320_SCSI_RATE
 };
 
@@ -248,11 +192,6 @@ module_param_named(max_speed, ipr_max_speed, uint, 0);
 MODULE_PARM_DESC(max_speed, "Maximum bus speed (0-2). Default: 1=U160. Speeds: 0=80 MB/s, 1=U160, 2=U320");
 module_param_named(log_level, ipr_log_level, uint, 0);
 MODULE_PARM_DESC(log_level, "Set to 0 - 4 for increasing verbosity of device driver");
-<<<<<<< HEAD
-module_param_named(testmode, ipr_testmode, int, 0);
-MODULE_PARM_DESC(testmode, "DANGEROUS!!! Allows unsupported configurations");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(fastfail, ipr_fastfail, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(fastfail, "Reduce timeouts and retries");
 module_param_named(transop_timeout, ipr_transop_timeout, int, 0);
@@ -264,13 +203,10 @@ MODULE_PARM_DESC(dual_ioa_raid, "Enable dual adapter RAID support. Set to 1 to e
 module_param_named(max_devs, ipr_max_devs, int, 0);
 MODULE_PARM_DESC(max_devs, "Specify the maximum number of physical devices. "
 		 "[Default=" __stringify(IPR_DEFAULT_SIS64_DEVS) "]");
-<<<<<<< HEAD
-=======
 module_param_named(number_of_msix, ipr_number_of_msix, int, 0);
 MODULE_PARM_DESC(number_of_msix, "Specify the number of MSIX interrupts to use on capable adapters (1 - 16).  (default:16)");
 module_param_named(fast_reboot, ipr_fast_reboot, int, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(fast_reboot, "Skip adapter shutdown during reboot. Set to 1 to enable. (default: 0)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_VERSION(IPR_DRIVER_VERSION);
 
@@ -331,10 +267,6 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"FFF6: Failure prediction threshold exceeded"},
 	{0x015D9200, 0, IPR_DEFAULT_LOG_LEVEL,
 	"8009: Impending cache battery pack failure"},
-<<<<<<< HEAD
-	{0x02040400, 0, 0,
-	"34FF: Disk device format in progress"},
-=======
 	{0x02040100, 0, 0,
 	"Logical Unit in process of becoming ready"},
 	{0x02040200, 0, 0,
@@ -343,18 +275,14 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"34FF: Disk device format in progress"},
 	{0x02040C00, 0, 0,
 	"Logical unit not accessible, target port in unavailable state"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x02048000, 0, IPR_DEFAULT_LOG_LEVEL,
 	"9070: IOA requested reset"},
 	{0x023F0000, 0, 0,
 	"Synchronization required"},
-<<<<<<< HEAD
-=======
 	{0x02408500, 0, 0,
 	"IOA microcode download required"},
 	{0x02408600, 0, 0,
 	"Device bus connection is prohibited by host"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x024E0000, 0, 0,
 	"No ready, IOA shutdown"},
 	{0x025A0000, 0, 0,
@@ -453,11 +381,8 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"4030: Incorrect multipath connection"},
 	{0x04679000, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4110: Unsupported enclosure function"},
-<<<<<<< HEAD
-=======
 	{0x04679800, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4120: SAS cable VPD cannot be read"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x046E0000, 0, IPR_DEFAULT_LOG_LEVEL,
 	"FFF4: Command to logical unit failed"},
 	{0x05240000, 1, 0,
@@ -480,26 +405,20 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"Illegal request, command sequence error"},
 	{0x052C8000, 1, 0,
 	"Illegal request, dual adapter support not enabled"},
-<<<<<<< HEAD
-=======
 	{0x052C8100, 1, 0,
 	"Illegal request, another cable connector was physically disabled"},
 	{0x054E8000, 1, 0,
 	"Illegal request, inconsistent group id/group count"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x06040500, 0, IPR_DEFAULT_LOG_LEVEL,
 	"9031: Array protection temporarily suspended, protection resuming"},
 	{0x06040600, 0, IPR_DEFAULT_LOG_LEVEL,
 	"9040: Array protection temporarily suspended, protection resuming"},
-<<<<<<< HEAD
-=======
 	{0x060B0100, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4080: IOA exceeded maximum operating temperature"},
 	{0x060B8000, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4085: Service required"},
 	{0x060B8100, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4086: SAS Adapter Hardware Configuration Error"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x06288000, 0, IPR_DEFAULT_LOG_LEVEL,
 	"3140: Device bus not ready to ready transition"},
 	{0x06290000, 0, IPR_DEFAULT_LOG_LEVEL,
@@ -512,11 +431,8 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"FFFB: SCSI bus was reset by another initiator"},
 	{0x063F0300, 0, IPR_DEFAULT_LOG_LEVEL,
 	"3029: A device replacement has occurred"},
-<<<<<<< HEAD
-=======
 	{0x063F8300, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4102: Device bus fabric performance degradation"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x064C8000, 0, IPR_DEFAULT_LOG_LEVEL,
 	"9051: IOA cache data exists for a missing or failed device"},
 	{0x064C8100, 0, IPR_DEFAULT_LOG_LEVEL,
@@ -539,8 +455,6 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"9076: Configuration error, missing remote IOA"},
 	{0x06679100, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4050: Enclosure does not support a required multipath function"},
-<<<<<<< HEAD
-=======
 	{0x06679800, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4121: Configuration error, required cable is missing"},
 	{0x06679900, 0, IPR_DEFAULT_LOG_LEVEL,
@@ -549,7 +463,6 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"4123: Configuration error, invalid cable vital product data"},
 	{0x06679B00, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4124: Configuration error, both cable ends are plugged into the same IOA"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x06690000, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4070: Logically bad block written on device"},
 	{0x06690200, 0, IPR_DEFAULT_LOG_LEVEL,
@@ -564,23 +477,16 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"9072: Link not operational transition"},
 	{0x066B8200, 0, IPR_DEFAULT_LOG_LEVEL,
 	"9032: Array exposed but still protected"},
-<<<<<<< HEAD
-	{0x066B8300, 0, IPR_DEFAULT_LOG_LEVEL + 1,
-=======
 	{0x066B8300, 0, IPR_DEBUG_LOG_LEVEL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"70DD: Device forced failed by disrupt device command"},
 	{0x066B9100, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4061: Multipath redundancy level got better"},
 	{0x066B9200, 0, IPR_DEFAULT_LOG_LEVEL,
 	"4060: Multipath redundancy level got worse"},
-<<<<<<< HEAD
-=======
 	{0x06808100, 0, IPR_DEBUG_LOG_LEVEL,
 	"9083: Device raw mode enabled"},
 	{0x06808200, 0, IPR_DEBUG_LOG_LEVEL,
 	"9084: Device raw mode disabled"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x07270000, 0, 0,
 	"Failure due to other device"},
 	{0x07278000, 0, IPR_DEFAULT_LOG_LEVEL,
@@ -623,12 +529,6 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"9062: One or more disks are missing from an array"},
 	{0x07279900, 0, IPR_DEFAULT_LOG_LEVEL,
 	"9063: Maximum number of functional arrays has been exceeded"},
-<<<<<<< HEAD
-	{0x0B260000, 0, 0,
-	"Aborted command, invalid descriptor"},
-	{0x0B5A0000, 0, 0,
-	"Command terminated by host"}
-=======
 	{0x07279A00, 0, 0,
 	"Data protect, other volume set problem"},
 	{0x0B260000, 0, 0,
@@ -641,7 +541,6 @@ struct ipr_error_table_t ipr_error_table[] = {
 	"Command terminated by host"},
 	{0x0B5B8000, 0, 0,
 	"Aborted command, command terminated by host"}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct ipr_ses_table_entry ipr_ses_table[] = {
@@ -685,26 +584,6 @@ static void ipr_trc_hook(struct ipr_cmnd *ipr_cmd,
 {
 	struct ipr_trace_entry *trace_entry;
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-<<<<<<< HEAD
-
-	trace_entry = &ioa_cfg->trace[ioa_cfg->trace_index++];
-	trace_entry->time = jiffies;
-	trace_entry->op_code = ipr_cmd->ioarcb.cmd_pkt.cdb[0];
-	trace_entry->type = type;
-	if (ipr_cmd->ioa_cfg->sis64)
-		trace_entry->ata_op_code = ipr_cmd->i.ata_ioadl.regs.command;
-	else
-		trace_entry->ata_op_code = ipr_cmd->ioarcb.u.add_data.u.regs.command;
-	trace_entry->cmd_index = ipr_cmd->cmd_index & 0xff;
-	trace_entry->res_handle = ipr_cmd->ioarcb.res_handle;
-	trace_entry->u.add_data = add_data;
-}
-#else
-#define ipr_trc_hook(ipr_cmd, type, add_data) do { } while(0)
-#endif
-
-/**
-=======
 	unsigned int trace_index;
 
 	trace_index = atomic_add_return(1, &ioa_cfg->trace_index) & IPR_TRACE_INDEX_MASK;
@@ -739,7 +618,6 @@ static void ipr_lock_and_done(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_reinit_ipr_cmnd - Re-initialize an IPR Cmnd block for reuse
  * @ipr_cmd:	ipr command struct
  *
@@ -750,19 +628,12 @@ static void ipr_reinit_ipr_cmnd(struct ipr_cmnd *ipr_cmd)
 {
 	struct ipr_ioarcb *ioarcb = &ipr_cmd->ioarcb;
 	struct ipr_ioasa *ioasa = &ipr_cmd->s.ioasa;
-<<<<<<< HEAD
-	struct ipr_ioasa64 *ioasa64 = &ipr_cmd->s.ioasa64;
-	dma_addr_t dma_addr = ipr_cmd->dma_addr;
-
-	memset(&ioarcb->cmd_pkt, 0, sizeof(struct ipr_cmd_pkt));
-=======
 	dma_addr_t dma_addr = ipr_cmd->dma_addr;
 	int hrrq_id;
 
 	hrrq_id = ioarcb->cmd_pkt.hrrq_id;
 	memset(&ioarcb->cmd_pkt, 0, sizeof(struct ipr_cmd_pkt));
 	ioarcb->cmd_pkt.hrrq_id = hrrq_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ioarcb->data_transfer_length = 0;
 	ioarcb->read_data_transfer_length = 0;
 	ioarcb->ioadl_len = 0;
@@ -771,27 +642,15 @@ static void ipr_reinit_ipr_cmnd(struct ipr_cmnd *ipr_cmd)
 	if (ipr_cmd->ioa_cfg->sis64) {
 		ioarcb->u.sis64_addr_data.data_ioadl_addr =
 			cpu_to_be64(dma_addr + offsetof(struct ipr_cmnd, i.ioadl64));
-<<<<<<< HEAD
-		ioasa64->u.gata.status = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ioarcb->write_ioadl_addr =
 			cpu_to_be32(dma_addr + offsetof(struct ipr_cmnd, i.ioadl));
 		ioarcb->read_ioadl_addr = ioarcb->write_ioadl_addr;
-<<<<<<< HEAD
-		ioasa->u.gata.status = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ioasa->hdr.ioasc = 0;
 	ioasa->hdr.residual_data_len = 0;
 	ipr_cmd->scsi_cmd = NULL;
-<<<<<<< HEAD
-	ipr_cmd->qc = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_cmd->sense_buffer[0] = 0;
 	ipr_cmd->dma_use_sg = 0;
 }
@@ -799,32 +658,17 @@ static void ipr_reinit_ipr_cmnd(struct ipr_cmnd *ipr_cmd)
 /**
  * ipr_init_ipr_cmnd - Initialize an IPR Cmnd block
  * @ipr_cmd:	ipr command struct
-<<<<<<< HEAD
-=======
  * @fast_done:	fast done function call-back
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void ipr_init_ipr_cmnd(struct ipr_cmnd *ipr_cmd)
-=======
 static void ipr_init_ipr_cmnd(struct ipr_cmnd *ipr_cmd,
 			      void (*fast_done) (struct ipr_cmnd *))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ipr_reinit_ipr_cmnd(ipr_cmd);
 	ipr_cmd->u.scratch = 0;
 	ipr_cmd->sibling = NULL;
-<<<<<<< HEAD
-	init_timer(&ipr_cmd->timer);
-}
-
-/**
- * ipr_get_free_ipr_cmnd - Get a free IPR Cmnd block
- * @ioa_cfg:	ioa config struct
-=======
 	ipr_cmd->eh_comp = NULL;
 	ipr_cmd->fast_done = fast_done;
 	timer_setup(&ipr_cmd->timer, NULL, 0);
@@ -833,22 +677,11 @@ static void ipr_init_ipr_cmnd(struct ipr_cmnd *ipr_cmd,
 /**
  * __ipr_get_free_ipr_cmnd - Get a free IPR Cmnd block
  * @hrrq:	hrr queue
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	pointer to ipr command struct
  **/
 static
-<<<<<<< HEAD
-struct ipr_cmnd *ipr_get_free_ipr_cmnd(struct ipr_ioa_cfg *ioa_cfg)
-{
-	struct ipr_cmnd *ipr_cmd;
-
-	ipr_cmd = list_entry(ioa_cfg->free_q.next, struct ipr_cmnd, queue);
-	list_del(&ipr_cmd->queue);
-	ipr_init_ipr_cmnd(ipr_cmd);
-
-=======
 struct ipr_cmnd *__ipr_get_free_ipr_cmnd(struct ipr_hrr_queue *hrrq)
 {
 	struct ipr_cmnd *ipr_cmd = NULL;
@@ -876,7 +709,6 @@ struct ipr_cmnd *ipr_get_free_ipr_cmnd(struct ipr_ioa_cfg *ioa_cfg)
 	struct ipr_cmnd *ipr_cmd =
 		__ipr_get_free_ipr_cmnd(&ioa_cfg->hrrq[IPR_INIT_HRRQ]);
 	ipr_init_ipr_cmnd(ipr_cmd, ipr_lock_and_done);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ipr_cmd;
 }
 
@@ -894,12 +726,6 @@ struct ipr_cmnd *ipr_get_free_ipr_cmnd(struct ipr_ioa_cfg *ioa_cfg)
 static void ipr_mask_and_clear_interrupts(struct ipr_ioa_cfg *ioa_cfg,
 					  u32 clr_ints)
 {
-<<<<<<< HEAD
-	volatile u32 int_reg;
-
-	/* Stop new interrupts */
-	ioa_cfg->allow_interrupts = 0;
-=======
 	int i;
 
 	/* Stop new interrupts */
@@ -908,7 +734,6 @@ static void ipr_mask_and_clear_interrupts(struct ipr_ioa_cfg *ioa_cfg,
 		ioa_cfg->hrrq[i].allow_interrupts = 0;
 		spin_unlock(&ioa_cfg->hrrq[i]._lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set interrupt mask to stop all new interrupts */
 	if (ioa_cfg->sis64)
@@ -920,11 +745,7 @@ static void ipr_mask_and_clear_interrupts(struct ipr_ioa_cfg *ioa_cfg,
 	if (ioa_cfg->sis64)
 		writel(~0, ioa_cfg->regs.clr_interrupt_reg);
 	writel(clr_ints, ioa_cfg->regs.clr_interrupt_reg32);
-<<<<<<< HEAD
-	int_reg = readl(ioa_cfg->regs.sense_interrupt_reg);
-=======
 	readl(ioa_cfg->regs.sense_interrupt_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -937,22 +758,14 @@ static void ipr_mask_and_clear_interrupts(struct ipr_ioa_cfg *ioa_cfg,
 static int ipr_save_pcix_cmd_reg(struct ipr_ioa_cfg *ioa_cfg)
 {
 	int pcix_cmd_reg = pci_find_capability(ioa_cfg->pdev, PCI_CAP_ID_PCIX);
-<<<<<<< HEAD
-=======
 	int rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pcix_cmd_reg == 0)
 		return 0;
 
-<<<<<<< HEAD
-	if (pci_read_config_word(ioa_cfg->pdev, pcix_cmd_reg + PCI_X_CMD,
-				 &ioa_cfg->saved_pcix_cmd_reg) != PCIBIOS_SUCCESSFUL) {
-=======
 	rc = pci_read_config_word(ioa_cfg->pdev, pcix_cmd_reg + PCI_X_CMD,
 				  &ioa_cfg->saved_pcix_cmd_reg);
 	if (rc != PCIBIOS_SUCCESSFUL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&ioa_cfg->pdev->dev, "Failed to save PCI-X command register\n");
 		return -EIO;
 	}
@@ -971,19 +784,12 @@ static int ipr_save_pcix_cmd_reg(struct ipr_ioa_cfg *ioa_cfg)
 static int ipr_set_pcix_cmd_reg(struct ipr_ioa_cfg *ioa_cfg)
 {
 	int pcix_cmd_reg = pci_find_capability(ioa_cfg->pdev, PCI_CAP_ID_PCIX);
-<<<<<<< HEAD
-
-	if (pcix_cmd_reg) {
-		if (pci_write_config_word(ioa_cfg->pdev, pcix_cmd_reg + PCI_X_CMD,
-					  ioa_cfg->saved_pcix_cmd_reg) != PCIBIOS_SUCCESSFUL) {
-=======
 	int rc;
 
 	if (pcix_cmd_reg) {
 		rc = pci_write_config_word(ioa_cfg->pdev, pcix_cmd_reg + PCI_X_CMD,
 					   ioa_cfg->saved_pcix_cmd_reg);
 		if (rc != PCIBIOS_SUCCESSFUL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&ioa_cfg->pdev->dev, "Failed to setup PCI-X command register\n");
 			return -EIO;
 		}
@@ -992,14 +798,6 @@ static int ipr_set_pcix_cmd_reg(struct ipr_ioa_cfg *ioa_cfg)
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * ipr_sata_eh_done - done function for aborted SATA commands
- * @ipr_cmd:	ipr command struct
- *
- * This function is invoked for ops generated to SATA
- * devices which are being aborted.
-=======
 
 /**
  * __ipr_scsi_eh_done - mid-layer done function for aborted ops
@@ -1007,23 +805,10 @@ static int ipr_set_pcix_cmd_reg(struct ipr_ioa_cfg *ioa_cfg)
  *
  * This function is invoked by the interrupt handler for
  * ops generated by the SCSI mid-layer which are being aborted.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void ipr_sata_eh_done(struct ipr_cmnd *ipr_cmd)
-{
-	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-	struct ata_queued_cmd *qc = ipr_cmd->qc;
-	struct ipr_sata_port *sata_port = qc->ap->private_data;
-
-	qc->err_mask |= AC_ERR_OTHER;
-	sata_port->ioasa.status |= ATA_BUSY;
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-	ata_qc_complete(qc);
-=======
 static void __ipr_scsi_eh_done(struct ipr_cmnd *ipr_cmd)
 {
 	struct scsi_cmnd *scsi_cmd = ipr_cmd->scsi_cmd;
@@ -1035,7 +820,6 @@ static void __ipr_scsi_eh_done(struct ipr_cmnd *ipr_cmd)
 	if (ipr_cmd->eh_comp)
 		complete(ipr_cmd->eh_comp);
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1050,23 +834,12 @@ static void __ipr_scsi_eh_done(struct ipr_cmnd *ipr_cmd)
  **/
 static void ipr_scsi_eh_done(struct ipr_cmnd *ipr_cmd)
 {
-<<<<<<< HEAD
-	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-	struct scsi_cmnd *scsi_cmd = ipr_cmd->scsi_cmd;
-
-	scsi_cmd->result |= (DID_ERROR << 16);
-
-	scsi_dma_unmap(ipr_cmd->scsi_cmd);
-	scsi_cmd->scsi_done(scsi_cmd);
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 	unsigned long hrrq_flags;
 	struct ipr_hrr_queue *hrrq = ipr_cmd->hrrq;
 
 	spin_lock_irqsave(&hrrq->_lock, hrrq_flags);
 	__ipr_scsi_eh_done(ipr_cmd);
 	spin_unlock_irqrestore(&hrrq->_lock, hrrq_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1081,26 +854,6 @@ static void ipr_scsi_eh_done(struct ipr_cmnd *ipr_cmd)
 static void ipr_fail_all_ops(struct ipr_ioa_cfg *ioa_cfg)
 {
 	struct ipr_cmnd *ipr_cmd, *temp;
-<<<<<<< HEAD
-
-	ENTER;
-	list_for_each_entry_safe(ipr_cmd, temp, &ioa_cfg->pending_q, queue) {
-		list_del(&ipr_cmd->queue);
-
-		ipr_cmd->s.ioasa.hdr.ioasc = cpu_to_be32(IPR_IOASC_IOA_WAS_RESET);
-		ipr_cmd->s.ioasa.hdr.ilid = cpu_to_be32(IPR_DRIVER_ILID);
-
-		if (ipr_cmd->scsi_cmd)
-			ipr_cmd->done = ipr_scsi_eh_done;
-		else if (ipr_cmd->qc)
-			ipr_cmd->done = ipr_sata_eh_done;
-
-		ipr_trc_hook(ipr_cmd, IPR_TRACE_FINISH, IPR_IOASC_IOA_WAS_RESET);
-		del_timer(&ipr_cmd->timer);
-		ipr_cmd->done(ipr_cmd);
-	}
-
-=======
 	struct ipr_hrr_queue *hrrq;
 
 	ENTER;
@@ -1125,7 +878,6 @@ static void ipr_fail_all_ops(struct ipr_ioa_cfg *ioa_cfg)
 		}
 		spin_unlock(&hrrq->_lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 }
 
@@ -1173,19 +925,6 @@ static void ipr_send_command(struct ipr_cmnd *ipr_cmd)
  **/
 static void ipr_do_req(struct ipr_cmnd *ipr_cmd,
 		       void (*done) (struct ipr_cmnd *),
-<<<<<<< HEAD
-		       void (*timeout_func) (struct ipr_cmnd *), u32 timeout)
-{
-	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->pending_q);
-
-	ipr_cmd->done = done;
-
-	ipr_cmd->timer.data = (unsigned long) ipr_cmd;
-	ipr_cmd->timer.expires = jiffies + timeout;
-	ipr_cmd->timer.function = (void (*)(unsigned long))timeout_func;
-=======
 		       void (*timeout_func) (struct timer_list *), u32 timeout)
 {
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_pending_q);
@@ -1194,7 +933,6 @@ static void ipr_do_req(struct ipr_cmnd *ipr_cmd,
 
 	ipr_cmd->timer.expires = jiffies + timeout;
 	ipr_cmd->timer.function = timeout_func;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	add_timer(&ipr_cmd->timer);
 
@@ -1276,11 +1014,7 @@ static void ipr_init_ioadl(struct ipr_cmnd *ipr_cmd, dma_addr_t dma_addr,
  * 	none
  **/
 static void ipr_send_blocking_cmd(struct ipr_cmnd *ipr_cmd,
-<<<<<<< HEAD
-				  void (*timeout_func) (struct ipr_cmnd *ipr_cmd),
-=======
 				  void (*timeout_func) (struct timer_list *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  u32 timeout)
 {
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
@@ -1293,8 +1027,6 @@ static void ipr_send_blocking_cmd(struct ipr_cmnd *ipr_cmd,
 	spin_lock_irq(ioa_cfg->host->host_lock);
 }
 
-<<<<<<< HEAD
-=======
 static int ipr_get_hrrq_index(struct ipr_ioa_cfg *ioa_cfg)
 {
 	unsigned int hrrq;
@@ -1308,7 +1040,6 @@ static int ipr_get_hrrq_index(struct ipr_ioa_cfg *ioa_cfg)
 	return hrrq;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_send_hcam - Send an HCAM to the adapter.
  * @ioa_cfg:	ioa config struct
@@ -1328,15 +1059,9 @@ static void ipr_send_hcam(struct ipr_ioa_cfg *ioa_cfg, u8 type,
 	struct ipr_cmnd *ipr_cmd;
 	struct ipr_ioarcb *ioarcb;
 
-<<<<<<< HEAD
-	if (ioa_cfg->allow_cmds) {
-		ipr_cmd = ipr_get_free_ipr_cmnd(ioa_cfg);
-		list_add_tail(&ipr_cmd->queue, &ioa_cfg->pending_q);
-=======
 	if (ioa_cfg->hrrq[IPR_INIT_HRRQ].allow_cmds) {
 		ipr_cmd = ipr_get_free_ipr_cmnd(ioa_cfg);
 		list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_pending_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&hostrcb->queue, &ioa_cfg->hostrcb_pending_q);
 
 		ipr_cmd->u.hostrcb = hostrcb;
@@ -1366,34 +1091,6 @@ static void ipr_send_hcam(struct ipr_ioa_cfg *ioa_cfg, u8 type,
 }
 
 /**
-<<<<<<< HEAD
- * ipr_update_ata_class - Update the ata class in the resource entry
- * @res:	resource entry struct
- * @proto:	cfgte device bus protocol value
- *
- * Return value:
- * 	none
- **/
-static void ipr_update_ata_class(struct ipr_resource_entry *res, unsigned int proto)
-{
-	switch(proto) {
-	case IPR_PROTO_SATA:
-	case IPR_PROTO_SAS_STP:
-		res->ata_class = ATA_DEV_ATA;
-		break;
-	case IPR_PROTO_SATA_ATAPI:
-	case IPR_PROTO_SAS_STP_ATAPI:
-		res->ata_class = ATA_DEV_ATAPI;
-		break;
-	default:
-		res->ata_class = ATA_DEV_UNKNOWN;
-		break;
-	};
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_init_res_entry - Initialize a resource entry struct.
  * @res:	resource entry struct
  * @cfgtew:	config table entry wrapper struct
@@ -1405,10 +1102,6 @@ static void ipr_init_res_entry(struct ipr_resource_entry *res,
 			       struct ipr_config_table_entry_wrapper *cfgtew)
 {
 	int found = 0;
-<<<<<<< HEAD
-	unsigned int proto;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipr_ioa_cfg *ioa_cfg = res->ioa_cfg;
 	struct ipr_resource_entry *gscsi_res = NULL;
 
@@ -1417,21 +1110,12 @@ static void ipr_init_res_entry(struct ipr_resource_entry *res,
 	res->add_to_ml = 0;
 	res->del_from_ml = 0;
 	res->resetting_device = 0;
-<<<<<<< HEAD
-	res->sdev = NULL;
-	res->sata_port = NULL;
-
-	if (ioa_cfg->sis64) {
-		proto = cfgtew->u.cfgte64->proto;
-		res->res_flags = cfgtew->u.cfgte64->res_flags;
-=======
 	res->reset_occurred = 0;
 	res->sdev = NULL;
 
 	if (ioa_cfg->sis64) {
 		res->flags = be16_to_cpu(cfgtew->u.cfgte64->flags);
 		res->res_flags = be16_to_cpu(cfgtew->u.cfgte64->res_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res->qmodel = IPR_QUEUEING_MODEL64(res);
 		res->type = cfgtew->u.cfgte64->res_type;
 
@@ -1475,10 +1159,6 @@ static void ipr_init_res_entry(struct ipr_resource_entry *res,
 			set_bit(res->target, ioa_cfg->target_ids);
 		}
 	} else {
-<<<<<<< HEAD
-		proto = cfgtew->u.cfgte->proto;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res->qmodel = IPR_QUEUEING_MODEL(res);
 		res->flags = cfgtew->u.cfgte->flags;
 		if (res->flags & IPR_IS_IOA_RESOURCE)
@@ -1491,11 +1171,6 @@ static void ipr_init_res_entry(struct ipr_resource_entry *res,
 		res->lun = cfgtew->u.cfgte->res_addr.lun;
 		res->lun_wwn = get_unaligned_be64(cfgtew->u.cfgte->lun_wwn);
 	}
-<<<<<<< HEAD
-
-	ipr_update_ata_class(res, proto);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1527,46 +1202,28 @@ static int ipr_is_same_device(struct ipr_resource_entry *res,
 }
 
 /**
-<<<<<<< HEAD
- * ipr_format_res_path - Format the resource path for printing.
- * @res_path:	resource path
- * @buf:	buffer
-=======
  * __ipr_format_res_path - Format the resource path for printing.
  * @res_path:	resource path
  * @buffer:	buffer
  * @len:	length of buffer provided
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	pointer to buffer
  **/
-<<<<<<< HEAD
-static char *ipr_format_res_path(u8 *res_path, char *buffer, int len)
-=======
 static char *__ipr_format_res_path(u8 *res_path, char *buffer, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	char *p = buffer;
 
 	*p = '\0';
-<<<<<<< HEAD
-	p += snprintf(p, buffer + len - p, "%02X", res_path[0]);
-	for (i = 1; res_path[i] != 0xff && ((i * 3) < len); i++)
-		p += snprintf(p, buffer + len - p, "-%02X", res_path[i]);
-=======
 	p += scnprintf(p, buffer + len - p, "%02X", res_path[0]);
 	for (i = 1; res_path[i] != 0xff && i < IPR_RES_PATH_BYTES; i++)
 		p += scnprintf(p, buffer + len - p, "-%02X", res_path[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return buffer;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_format_res_path - Format the resource path for printing.
  * @ioa_cfg:	ioa config struct
  * @res_path:	resource path
@@ -1588,7 +1245,6 @@ static char *ipr_format_res_path(struct ipr_ioa_cfg *ioa_cfg,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_update_res_entry - Update the resource entry.
  * @res:	resource entry struct
  * @cfgtew:	config table entry wrapper struct
@@ -1600,30 +1256,17 @@ static void ipr_update_res_entry(struct ipr_resource_entry *res,
 				 struct ipr_config_table_entry_wrapper *cfgtew)
 {
 	char buffer[IPR_MAX_RES_PATH_LENGTH];
-<<<<<<< HEAD
-	unsigned int proto;
-	int new_path = 0;
-
-	if (res->ioa_cfg->sis64) {
-		res->flags = cfgtew->u.cfgte64->flags;
-		res->res_flags = cfgtew->u.cfgte64->res_flags;
-=======
 	int new_path = 0;
 
 	if (res->ioa_cfg->sis64) {
 		res->flags = be16_to_cpu(cfgtew->u.cfgte64->flags);
 		res->res_flags = be16_to_cpu(cfgtew->u.cfgte64->res_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res->type = cfgtew->u.cfgte64->res_type;
 
 		memcpy(&res->std_inq_data, &cfgtew->u.cfgte64->std_inq_data,
 			sizeof(struct ipr_std_inq_data));
 
 		res->qmodel = IPR_QUEUEING_MODEL64(res);
-<<<<<<< HEAD
-		proto = cfgtew->u.cfgte64->proto;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res->res_handle = cfgtew->u.cfgte64->res_handle;
 		res->dev_id = cfgtew->u.cfgte64->dev_id;
 
@@ -1639,13 +1282,8 @@ static void ipr_update_res_entry(struct ipr_resource_entry *res,
 
 		if (res->sdev && new_path)
 			sdev_printk(KERN_INFO, res->sdev, "Resource path: %s\n",
-<<<<<<< HEAD
-				    ipr_format_res_path(res->res_path, buffer,
-							sizeof(buffer)));
-=======
 				    ipr_format_res_path(res->ioa_cfg,
 					res->res_path, buffer, sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		res->flags = cfgtew->u.cfgte->flags;
 		if (res->flags & IPR_IS_IOA_RESOURCE)
@@ -1657,26 +1295,14 @@ static void ipr_update_res_entry(struct ipr_resource_entry *res,
 			sizeof(struct ipr_std_inq_data));
 
 		res->qmodel = IPR_QUEUEING_MODEL(res);
-<<<<<<< HEAD
-		proto = cfgtew->u.cfgte->proto;
 		res->res_handle = cfgtew->u.cfgte->res_handle;
 	}
-
-	ipr_update_ata_class(res, proto);
-=======
-		res->res_handle = cfgtew->u.cfgte->res_handle;
-	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ipr_clear_res_target - Clear the bit in the bit map representing the target
  * 			  for the resource.
  * @res:	resource entry struct
-<<<<<<< HEAD
- * @cfgtew:	config table entry wrapper struct
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  *      none
@@ -1757,24 +1383,14 @@ static void ipr_handle_config_change(struct ipr_ioa_cfg *ioa_cfg,
 		if (res->sdev) {
 			res->del_from_ml = 1;
 			res->res_handle = IPR_INVALID_RES_HANDLE;
-<<<<<<< HEAD
-			if (ioa_cfg->allow_ml_add_del)
-				schedule_work(&ioa_cfg->work_q);
-=======
 			schedule_work(&ioa_cfg->work_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			ipr_clear_res_target(res);
 			list_move_tail(&res->queue, &ioa_cfg->free_res_q);
 		}
 	} else if (!res->sdev || res->del_from_ml) {
 		res->add_to_ml = 1;
-<<<<<<< HEAD
-		if (ioa_cfg->allow_ml_add_del)
-			schedule_work(&ioa_cfg->work_q);
-=======
 		schedule_work(&ioa_cfg->work_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ipr_send_hcam(ioa_cfg, IPR_HCAM_CDB_OP_CODE_CONFIG_CHANGE, hostrcb);
@@ -1796,20 +1412,12 @@ static void ipr_process_ccn(struct ipr_cmnd *ipr_cmd)
 	struct ipr_hostrcb *hostrcb = ipr_cmd->u.hostrcb;
 	u32 ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
 
-<<<<<<< HEAD
-	list_del(&hostrcb->queue);
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-
-	if (ioasc) {
-		if (ioasc != IPR_IOASC_IOA_WAS_RESET)
-=======
 	list_del_init(&hostrcb->queue);
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 
 	if (ioasc) {
 		if (ioasc != IPR_IOASC_IOA_WAS_RESET &&
 		    ioasc != IPR_IOASC_ABORTED_CMD_TERM_BY_HOST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&ioa_cfg->pdev->dev,
 				"Host RCB failed with IOASC: 0x%08X\n", ioasc);
 
@@ -1820,25 +1428,6 @@ static void ipr_process_ccn(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
-<<<<<<< HEAD
- * strip_and_pad_whitespace - Strip and pad trailing whitespace.
- * @i:		index into buffer
- * @buf:		string to modify
- *
- * This function will strip all trailing whitespace, pad the end
- * of the string with a single space, and NULL terminate the string.
- *
- * Return value:
- * 	new length of string
- **/
-static int strip_and_pad_whitespace(int i, char *buf)
-{
-	while (i && buf[i] == ' ')
-		i--;
-	buf[i+1] = ' ';
-	buf[i+2] = '\0';
-	return i + 2;
-=======
  * strip_whitespace - Strip and pad trailing whitespace.
  * @i:		size of buffer
  * @buf:	string to modify
@@ -1855,7 +1444,6 @@ static void strip_whitespace(int i, char *buf)
 	while (i && buf[i] == ' ')
 		i--;
 	buf[i+1] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1870,21 +1458,6 @@ static void strip_whitespace(int i, char *buf)
 static void ipr_log_vpd_compact(char *prefix, struct ipr_hostrcb *hostrcb,
 				struct ipr_vpd *vpd)
 {
-<<<<<<< HEAD
-	char buffer[IPR_VENDOR_ID_LEN + IPR_PROD_ID_LEN + IPR_SERIAL_NUM_LEN + 3];
-	int i = 0;
-
-	memcpy(buffer, vpd->vpids.vendor_id, IPR_VENDOR_ID_LEN);
-	i = strip_and_pad_whitespace(IPR_VENDOR_ID_LEN - 1, buffer);
-
-	memcpy(&buffer[i], vpd->vpids.product_id, IPR_PROD_ID_LEN);
-	i = strip_and_pad_whitespace(i + IPR_PROD_ID_LEN - 1, buffer);
-
-	memcpy(&buffer[i], vpd->sn, IPR_SERIAL_NUM_LEN);
-	buffer[IPR_SERIAL_NUM_LEN + i] = '\0';
-
-	ipr_hcam_err(hostrcb, "%s VPID/SN: %s\n", prefix, buffer);
-=======
 	char vendor_id[IPR_VENDOR_ID_LEN + 1];
 	char product_id[IPR_PROD_ID_LEN + 1];
 	char sn[IPR_SERIAL_NUM_LEN + 1];
@@ -1900,7 +1473,6 @@ static void ipr_log_vpd_compact(char *prefix, struct ipr_hostrcb *hostrcb,
 
 	ipr_hcam_err(hostrcb, "%s VPID/SN: %s %s %s\n", prefix,
 		     vendor_id, product_id, sn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2093,13 +1665,8 @@ static void ipr_log_sis64_config_error(struct ipr_ioa_cfg *ioa_cfg,
 		ipr_err_separator;
 
 		ipr_err("Device %d : %s", i + 1,
-<<<<<<< HEAD
-			 ipr_format_res_path(dev_entry->res_path, buffer,
-					     sizeof(buffer)));
-=======
 			__ipr_format_res_path(dev_entry->res_path,
 					      buffer, sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipr_log_ext_vpd(&dev_entry->vpd);
 
 		ipr_err("-----New Device Information-----\n");
@@ -2275,11 +1842,7 @@ static void ipr_log_array_error(struct ipr_ioa_cfg *ioa_cfg,
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void ipr_log_hex_data(struct ipr_ioa_cfg *ioa_cfg, u32 *data, int len)
-=======
 static void ipr_log_hex_data(struct ipr_ioa_cfg *ioa_cfg, __be32 *data, int len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -2449,25 +2012,16 @@ static void ipr_log64_fabric_path(struct ipr_hostrcb *hostrcb,
 
 			ipr_hcam_err(hostrcb, "%s %s: Resource Path=%s\n",
 				     path_active_desc[i].desc, path_state_desc[j].desc,
-<<<<<<< HEAD
-				     ipr_format_res_path(fabric->res_path, buffer,
-							 sizeof(buffer)));
-=======
 				     ipr_format_res_path(hostrcb->ioa_cfg,
 						fabric->res_path,
 						buffer, sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 
 	ipr_err("Path state=%02X Resource Path=%s\n", path_state,
-<<<<<<< HEAD
-		ipr_format_res_path(fabric->res_path, buffer, sizeof(buffer)));
-=======
 		ipr_format_res_path(hostrcb->ioa_cfg, fabric->res_path,
 				    buffer, sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct {
@@ -2608,33 +2162,20 @@ static void ipr_log64_path_elem(struct ipr_hostrcb *hostrcb,
 
 			ipr_hcam_err(hostrcb, "%s %s: Resource Path=%s, Link rate=%s, WWN=%08X%08X\n",
 				     path_status_desc[j].desc, path_type_desc[i].desc,
-<<<<<<< HEAD
-				     ipr_format_res_path(cfg->res_path, buffer,
-							 sizeof(buffer)),
-				     link_rate[cfg->link_rate & IPR_PHY_LINK_RATE_MASK],
-				     be32_to_cpu(cfg->wwid[0]), be32_to_cpu(cfg->wwid[1]));
-=======
 				     ipr_format_res_path(hostrcb->ioa_cfg,
 					cfg->res_path, buffer, sizeof(buffer)),
 					link_rate[cfg->link_rate & IPR_PHY_LINK_RATE_MASK],
 					be32_to_cpu(cfg->wwid[0]),
 					be32_to_cpu(cfg->wwid[1]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 	ipr_hcam_err(hostrcb, "Path element=%02X: Resource Path=%s, Link rate=%s "
 		     "WWN=%08X%08X\n", cfg->type_status,
-<<<<<<< HEAD
-		     ipr_format_res_path(cfg->res_path, buffer, sizeof(buffer)),
-		     link_rate[cfg->link_rate & IPR_PHY_LINK_RATE_MASK],
-		     be32_to_cpu(cfg->wwid[0]), be32_to_cpu(cfg->wwid[1]));
-=======
 		     ipr_format_res_path(hostrcb->ioa_cfg,
 			cfg->res_path, buffer, sizeof(buffer)),
 			link_rate[cfg->link_rate & IPR_PHY_LINK_RATE_MASK],
 			be32_to_cpu(cfg->wwid[0]), be32_to_cpu(cfg->wwid[1]));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2671,11 +2212,7 @@ static void ipr_log_fabric_error(struct ipr_ioa_cfg *ioa_cfg,
 			((unsigned long)fabric + be16_to_cpu(fabric->length));
 	}
 
-<<<<<<< HEAD
-	ipr_log_hex_data(ioa_cfg, (u32 *)fabric, add_len);
-=======
 	ipr_log_hex_data(ioa_cfg, (__be32 *)fabric, add_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2701,12 +2238,8 @@ static void ipr_log_sis64_array_error(struct ipr_ioa_cfg *ioa_cfg,
 
 	ipr_err("RAID %s Array Configuration: %s\n",
 		error->protection_level,
-<<<<<<< HEAD
-		ipr_format_res_path(error->last_res_path, buffer, sizeof(buffer)));
-=======
 		ipr_format_res_path(ioa_cfg, error->last_res_path,
 			buffer, sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipr_err_separator;
 
@@ -2727,20 +2260,12 @@ static void ipr_log_sis64_array_error(struct ipr_ioa_cfg *ioa_cfg,
 		ipr_err("Array Member %d:\n", i);
 		ipr_log_ext_vpd(&array_entry->vpd);
 		ipr_err("Current Location: %s\n",
-<<<<<<< HEAD
-			 ipr_format_res_path(array_entry->res_path, buffer,
-					     sizeof(buffer)));
-		ipr_err("Expected Location: %s\n",
-			 ipr_format_res_path(array_entry->expected_res_path,
-					     buffer, sizeof(buffer)));
-=======
 			 ipr_format_res_path(ioa_cfg, array_entry->res_path,
 				buffer, sizeof(buffer)));
 		ipr_err("Expected Location: %s\n",
 			 ipr_format_res_path(ioa_cfg,
 				array_entry->expected_res_path,
 				buffer, sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ipr_err_separator;
 	}
@@ -2781,12 +2306,6 @@ static void ipr_log_sis64_fabric_error(struct ipr_ioa_cfg *ioa_cfg,
 			((unsigned long)fabric + be16_to_cpu(fabric->length));
 	}
 
-<<<<<<< HEAD
-	ipr_log_hex_data(ioa_cfg, (u32 *)fabric, add_len);
-}
-
-/**
-=======
 	ipr_log_hex_data(ioa_cfg, (__be32 *)fabric, add_len);
 }
 
@@ -2813,7 +2332,6 @@ static void ipr_log_sis64_service_required_error(struct ipr_ioa_cfg *ioa_cfg,
 			  offsetof(struct ipr_hostrcb_type_41_error, data)));
 }
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_log_generic_error - Log an adapter error.
  * @ioa_cfg:	ioa config struct
  * @hostrcb:	hostrcb struct
@@ -2829,8 +2347,6 @@ static void ipr_log_generic_error(struct ipr_ioa_cfg *ioa_cfg,
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_log_sis64_device_error - Log a cache error.
  * @ioa_cfg:	ioa config struct
  * @hostrcb:	hostrcb struct
@@ -2867,7 +2383,6 @@ static void ipr_log_sis64_device_error(struct ipr_ioa_cfg *ioa_cfg,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_get_error - Find the specfied IOASC in the ipr_error_table.
  * @ioasc:	IOASC
  *
@@ -2904,10 +2419,7 @@ static void ipr_handle_log_data(struct ipr_ioa_cfg *ioa_cfg,
 {
 	u32 ioasc;
 	int error_index;
-<<<<<<< HEAD
-=======
 	struct ipr_hostrcb_type_21_error *error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hostrcb->hcam.notify_type != IPR_HOST_RCB_NOTIF_TYPE_ERROR_LOG_ENTRY)
 		return;
@@ -2932,8 +2444,6 @@ static void ipr_handle_log_data(struct ipr_ioa_cfg *ioa_cfg,
 	if (!ipr_error_table[error_index].log_hcam)
 		return;
 
-<<<<<<< HEAD
-=======
 	if (ioasc == IPR_IOASC_HW_CMD_FAILED &&
 	    hostrcb->hcam.overlay_id == IPR_HOST_RCB_OVERLAY_ID_21) {
 		error = &hostrcb->hcam.u.error64.u.type_21_error;
@@ -2943,7 +2453,6 @@ static void ipr_handle_log_data(struct ipr_ioa_cfg *ioa_cfg,
 				return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_hcam_err(hostrcb, "%s\n", ipr_error_table[error_index].error);
 
 	/* Set indication we have logged an error */
@@ -2984,12 +2493,9 @@ static void ipr_handle_log_data(struct ipr_ioa_cfg *ioa_cfg,
 	case IPR_HOST_RCB_OVERLAY_ID_20:
 		ipr_log_fabric_error(ioa_cfg, hostrcb);
 		break;
-<<<<<<< HEAD
-=======
 	case IPR_HOST_RCB_OVERLAY_ID_21:
 		ipr_log_sis64_device_error(ioa_cfg, hostrcb);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IPR_HOST_RCB_OVERLAY_ID_23:
 		ipr_log_sis64_config_error(ioa_cfg, hostrcb);
 		break;
@@ -3000,12 +2506,9 @@ static void ipr_handle_log_data(struct ipr_ioa_cfg *ioa_cfg,
 	case IPR_HOST_RCB_OVERLAY_ID_30:
 		ipr_log_sis64_fabric_error(ioa_cfg, hostrcb);
 		break;
-<<<<<<< HEAD
-=======
 	case IPR_HOST_RCB_OVERLAY_ID_41:
 		ipr_log_sis64_service_required_error(ioa_cfg, hostrcb);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IPR_HOST_RCB_OVERLAY_ID_1:
 	case IPR_HOST_RCB_OVERLAY_ID_DEFAULT:
 	default:
@@ -3014,8 +2517,6 @@ static void ipr_handle_log_data(struct ipr_ioa_cfg *ioa_cfg,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static struct ipr_hostrcb *ipr_get_free_hostrcb(struct ipr_ioa_cfg *ioa)
 {
 	struct ipr_hostrcb *hostrcb;
@@ -3033,7 +2534,6 @@ static struct ipr_hostrcb *ipr_get_free_hostrcb(struct ipr_ioa_cfg *ioa)
 	return hostrcb;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_process_error - Op done function for an adapter error log.
  * @ipr_cmd:	ipr command struct
@@ -3057,45 +2557,29 @@ static void ipr_process_error(struct ipr_cmnd *ipr_cmd)
 	else
 		fd_ioasc = be32_to_cpu(hostrcb->hcam.u.error.fd_ioasc);
 
-<<<<<<< HEAD
-	list_del(&hostrcb->queue);
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 	list_del_init(&hostrcb->queue);
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ioasc) {
 		ipr_handle_log_data(ioa_cfg, hostrcb);
 		if (fd_ioasc == IPR_IOASC_NR_IOA_RESET_REQUIRED)
 			ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_ABBREV);
-<<<<<<< HEAD
-	} else if (ioasc != IPR_IOASC_IOA_WAS_RESET) {
-=======
 	} else if (ioasc != IPR_IOASC_IOA_WAS_RESET &&
 		   ioasc != IPR_IOASC_ABORTED_CMD_TERM_BY_HOST) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&ioa_cfg->pdev->dev,
 			"Host RCB failed with IOASC: 0x%08X\n", ioasc);
 	}
 
-<<<<<<< HEAD
-=======
 	list_add_tail(&hostrcb->queue, &ioa_cfg->hostrcb_report_q);
 	schedule_work(&ioa_cfg->work_q);
 	hostrcb = ipr_get_free_hostrcb(ioa_cfg);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_send_hcam(ioa_cfg, IPR_HCAM_CDB_OP_CODE_LOG_DATA, hostrcb);
 }
 
 /**
  * ipr_timeout -  An internally generated op has timed out.
-<<<<<<< HEAD
- * @ipr_cmd:	ipr command struct
-=======
  * @t: Timer context used to fetch ipr command struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function blocks host requests and initiates an
  * adapter reset.
@@ -3103,14 +2587,9 @@ static void ipr_process_error(struct ipr_cmnd *ipr_cmd)
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void ipr_timeout(struct ipr_cmnd *ipr_cmd)
-{
-=======
 static void ipr_timeout(struct timer_list *t)
 {
 	struct ipr_cmnd *ipr_cmd = from_timer(ipr_cmd, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long lock_flags = 0;
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 
@@ -3133,11 +2612,7 @@ static void ipr_timeout(struct timer_list *t)
 
 /**
  * ipr_oper_timeout -  Adapter timed out transitioning to operational
-<<<<<<< HEAD
- * @ipr_cmd:	ipr command struct
-=======
  * @t: Timer context used to fetch ipr command struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function blocks host requests and initiates an
  * adapter reset.
@@ -3145,14 +2620,9 @@ static void ipr_timeout(struct timer_list *t)
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void ipr_oper_timeout(struct ipr_cmnd *ipr_cmd)
-{
-=======
 static void ipr_oper_timeout(struct timer_list *t)
 {
 	struct ipr_cmnd *ipr_cmd = from_timer(ipr_cmd, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long lock_flags = 0;
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 
@@ -3177,39 +2647,6 @@ static void ipr_oper_timeout(struct timer_list *t)
 }
 
 /**
-<<<<<<< HEAD
- * ipr_reset_reload - Reset/Reload the IOA
- * @ioa_cfg:		ioa config struct
- * @shutdown_type:	shutdown type
- *
- * This function resets the adapter and re-initializes it.
- * This function assumes that all new host commands have been stopped.
- * Return value:
- * 	SUCCESS / FAILED
- **/
-static int ipr_reset_reload(struct ipr_ioa_cfg *ioa_cfg,
-			    enum ipr_shutdown_type shutdown_type)
-{
-	if (!ioa_cfg->in_reset_reload)
-		ipr_initiate_ioa_reset(ioa_cfg, shutdown_type);
-
-	spin_unlock_irq(ioa_cfg->host->host_lock);
-	wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
-	spin_lock_irq(ioa_cfg->host->host_lock);
-
-	/* If we got hit with a host reset while we were already resetting
-	 the adapter for some reason, and the reset failed. */
-	if (ioa_cfg->ioa_is_dead) {
-		ipr_trace;
-		return FAILED;
-	}
-
-	return SUCCESS;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_find_ses_entry - Find matching SES in SES table
  * @res:	resource entry struct of SES
  *
@@ -3765,11 +3202,7 @@ static void ipr_get_ioa_dump(struct ipr_ioa_cfg *ioa_cfg, struct ipr_dump *dump)
 }
 
 #else
-<<<<<<< HEAD
-#define ipr_get_ioa_dump(ioa_cfg, dump) do { } while(0)
-=======
 #define ipr_get_ioa_dump(ioa_cfg, dump) do { } while (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /**
@@ -3781,11 +3214,7 @@ static void ipr_get_ioa_dump(struct ipr_ioa_cfg *ioa_cfg, struct ipr_dump *dump)
  **/
 static void ipr_release_dump(struct kref *kref)
 {
-<<<<<<< HEAD
-	struct ipr_dump *dump = container_of(kref,struct ipr_dump,kref);
-=======
 	struct ipr_dump *dump = container_of(kref, struct ipr_dump, kref);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipr_ioa_cfg *ioa_cfg = dump->ioa_cfg;
 	unsigned long lock_flags = 0;
 	int i;
@@ -3804,8 +3233,6 @@ static void ipr_release_dump(struct kref *kref)
 	LEAVE;
 }
 
-<<<<<<< HEAD
-=======
 static void ipr_add_remove_thread(struct work_struct *work)
 {
 	unsigned long lock_flags;
@@ -3865,7 +3292,6 @@ restart:
 	LEAVE;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_worker_thread - Worker thread
  * @work:		ioa config struct
@@ -3880,19 +3306,9 @@ restart:
 static void ipr_worker_thread(struct work_struct *work)
 {
 	unsigned long lock_flags;
-<<<<<<< HEAD
-	struct ipr_resource_entry *res;
-	struct scsi_device *sdev;
 	struct ipr_dump *dump;
 	struct ipr_ioa_cfg *ioa_cfg =
 		container_of(work, struct ipr_ioa_cfg, work_q);
-	u8 bus, target, lun;
-	int did_work;
-=======
-	struct ipr_dump *dump;
-	struct ipr_ioa_cfg *ioa_cfg =
-		container_of(work, struct ipr_ioa_cfg, work_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER;
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
@@ -3915,50 +3331,6 @@ static void ipr_worker_thread(struct work_struct *work)
 		return;
 	}
 
-<<<<<<< HEAD
-restart:
-	do {
-		did_work = 0;
-		if (!ioa_cfg->allow_cmds || !ioa_cfg->allow_ml_add_del) {
-			spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-			return;
-		}
-
-		list_for_each_entry(res, &ioa_cfg->used_res_q, queue) {
-			if (res->del_from_ml && res->sdev) {
-				did_work = 1;
-				sdev = res->sdev;
-				if (!scsi_device_get(sdev)) {
-					if (!res->add_to_ml)
-						list_move_tail(&res->queue, &ioa_cfg->free_res_q);
-					else
-						res->del_from_ml = 0;
-					spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-					scsi_remove_device(sdev);
-					scsi_device_put(sdev);
-					spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-				}
-				break;
-			}
-		}
-	} while(did_work);
-
-	list_for_each_entry(res, &ioa_cfg->used_res_q, queue) {
-		if (res->add_to_ml) {
-			bus = res->bus;
-			target = res->target;
-			lun = res->lun;
-			res->add_to_ml = 0;
-			spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-			scsi_add_device(ioa_cfg->host, bus, target, lun);
-			spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-			goto restart;
-		}
-	}
-
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-	kobject_uevent(&ioa_cfg->host->shost_dev.kobj, KOBJ_CHANGE);
-=======
 	if (ioa_cfg->scsi_unblock) {
 		ioa_cfg->scsi_unblock = 0;
 		ioa_cfg->scsi_blocked = 0;
@@ -3977,7 +3349,6 @@ restart:
 	schedule_work(&ioa_cfg->scsi_add_work_q);
 
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 }
 
@@ -3998,11 +3369,7 @@ static ssize_t ipr_read_trace(struct file *filp, struct kobject *kobj,
 			      struct bin_attribute *bin_attr,
 			      char *buf, loff_t off, size_t count)
 {
-<<<<<<< HEAD
-	struct device *dev = container_of(kobj, struct device, kobj);
-=======
 	struct device *dev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)shost->hostdata;
 	unsigned long lock_flags = 0;
@@ -4029,10 +3396,7 @@ static struct bin_attribute ipr_trace_attr = {
 /**
  * ipr_show_fw_version - Show the firmware version
  * @dev:	class device struct
-<<<<<<< HEAD
-=======
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  *
  * Return value:
@@ -4067,10 +3431,7 @@ static struct device_attribute ipr_fw_version_attr = {
 /**
  * ipr_show_log_level - Show the adapter's error logging level
  * @dev:	class device struct
-<<<<<<< HEAD
-=======
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  *
  * Return value:
@@ -4093,23 +3454,15 @@ static ssize_t ipr_show_log_level(struct device *dev,
 /**
  * ipr_store_log_level - Change the adapter's error logging level
  * @dev:	class device struct
-<<<<<<< HEAD
- * @buf:	buffer
-=======
  * @attr:	device attribute (unused)
  * @buf:	buffer
  * @count:	buffer size
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	number of bytes printed to buffer
  **/
 static ssize_t ipr_store_log_level(struct device *dev,
-<<<<<<< HEAD
-			           struct device_attribute *attr,
-=======
 				   struct device_attribute *attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const char *buf, size_t count)
 {
 	struct Scsi_Host *shost = class_to_shost(dev);
@@ -4134,10 +3487,7 @@ static struct device_attribute ipr_log_level_attr = {
 /**
  * ipr_store_diagnostics - IOA Diagnostics interface
  * @dev:	device struct
-<<<<<<< HEAD
-=======
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  * @count:	buffer size
  *
@@ -4160,11 +3510,7 @@ static ssize_t ipr_store_diagnostics(struct device *dev,
 		return -EACCES;
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-<<<<<<< HEAD
-	while(ioa_cfg->in_reset_reload) {
-=======
 	while (ioa_cfg->in_reset_reload) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 		wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
 		spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
@@ -4202,12 +3548,8 @@ static struct device_attribute ipr_diagnostics_attr = {
 
 /**
  * ipr_show_adapter_state - Show the adapter's state
-<<<<<<< HEAD
- * @class_dev:	device struct
-=======
  * @dev:	device struct
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  *
  * Return value:
@@ -4222,11 +3564,7 @@ static ssize_t ipr_show_adapter_state(struct device *dev,
 	int len;
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-<<<<<<< HEAD
-	if (ioa_cfg->ioa_is_dead)
-=======
 	if (ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = snprintf(buf, PAGE_SIZE, "offline\n");
 	else
 		len = snprintf(buf, PAGE_SIZE, "online\n");
@@ -4237,10 +3575,7 @@ static ssize_t ipr_show_adapter_state(struct device *dev,
 /**
  * ipr_store_adapter_state - Change adapter state
  * @dev:	device struct
-<<<<<<< HEAD
-=======
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  * @count:	buffer size
  *
@@ -4256,20 +3591,12 @@ static ssize_t ipr_store_adapter_state(struct device *dev,
 	struct Scsi_Host *shost = class_to_shost(dev);
 	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)shost->hostdata;
 	unsigned long lock_flags;
-<<<<<<< HEAD
-	int result = count;
-=======
 	int result = count, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-<<<<<<< HEAD
-	if (ioa_cfg->ioa_is_dead && !strncmp(buf, "online", 6)) {
-		ioa_cfg->ioa_is_dead = 0;
-=======
 	if (ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead &&
 	    !strncmp(buf, "online", 6)) {
 		for (i = 0; i < ioa_cfg->hrrq_num; i++) {
@@ -4278,7 +3605,6 @@ static ssize_t ipr_store_adapter_state(struct device *dev,
 			spin_unlock(&ioa_cfg->hrrq[i]._lock);
 		}
 		wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioa_cfg->reset_retries = 0;
 		ioa_cfg->in_ioa_bringdown = 0;
 		ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
@@ -4301,10 +3627,7 @@ static struct device_attribute ipr_ioa_state_attr = {
 /**
  * ipr_store_reset_adapter - Reset the adapter
  * @dev:	device struct
-<<<<<<< HEAD
-=======
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  * @count:	buffer size
  *
@@ -4342,8 +3665,6 @@ static struct device_attribute ipr_ioa_reset_attr = {
 	.store = ipr_store_reset_adapter
 };
 
-<<<<<<< HEAD
-=======
 static int ipr_iopoll(struct irq_poll *iop, int budget);
  /**
  * ipr_show_iopoll_weight - Show ipr polling mode
@@ -4433,7 +3754,6 @@ static struct device_attribute ipr_iopoll_weight_attr = {
 	.store = ipr_store_iopoll_weight
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_alloc_ucode_buffer - Allocates a microcode download buffer
  * @buf_len:		buffer length
@@ -4446,15 +3766,8 @@ static struct device_attribute ipr_iopoll_weight_attr = {
  **/
 static struct ipr_sglist *ipr_alloc_ucode_buffer(int buf_len)
 {
-<<<<<<< HEAD
-	int sg_size, order, bsize_elem, num_elem, i, j;
-	struct ipr_sglist *sglist;
-	struct scatterlist *scatterlist;
-	struct page *page;
-=======
 	int sg_size, order;
 	struct ipr_sglist *sglist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the minimum size per scatter/gather element */
 	sg_size = buf_len / (IPR_MAX_SGLIST - 1);
@@ -4462,59 +3775,18 @@ static struct ipr_sglist *ipr_alloc_ucode_buffer(int buf_len)
 	/* Get the actual size per element */
 	order = get_order(sg_size);
 
-<<<<<<< HEAD
-	/* Determine the actual number of bytes per element */
-	bsize_elem = PAGE_SIZE * (1 << order);
-
-	/* Determine the actual number of sg entries needed */
-	if (buf_len % bsize_elem)
-		num_elem = (buf_len / bsize_elem) + 1;
-	else
-		num_elem = buf_len / bsize_elem;
-
-	/* Allocate a scatter/gather list for the DMA */
-	sglist = kzalloc(sizeof(struct ipr_sglist) +
-			 (sizeof(struct scatterlist) * (num_elem - 1)),
-			 GFP_KERNEL);
-
-=======
 	/* Allocate a scatter/gather list for the DMA */
 	sglist = kzalloc(sizeof(struct ipr_sglist), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sglist == NULL) {
 		ipr_trace;
 		return NULL;
 	}
-<<<<<<< HEAD
-
-	scatterlist = sglist->scatterlist;
-	sg_init_table(scatterlist, num_elem);
-
-	sglist->order = order;
-	sglist->num_sg = num_elem;
-
-	/* Allocate a bunch of sg elements */
-	for (i = 0; i < num_elem; i++) {
-		page = alloc_pages(GFP_KERNEL, order);
-		if (!page) {
-			ipr_trace;
-
-			/* Free up what we already allocated */
-			for (j = i - 1; j >= 0; j--)
-				__free_pages(sg_page(&scatterlist[j]), order);
-			kfree(sglist);
-			return NULL;
-		}
-
-		sg_set_page(&scatterlist[i], page, 0, 0);
-=======
 	sglist->order = order;
 	sglist->scatterlist = sgl_alloc_order(buf_len, order, false, GFP_KERNEL,
 					      &sglist->num_sg);
 	if (!sglist->scatterlist) {
 		kfree(sglist);
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return sglist;
@@ -4522,11 +3794,7 @@ static struct ipr_sglist *ipr_alloc_ucode_buffer(int buf_len)
 
 /**
  * ipr_free_ucode_buffer - Frees a microcode download buffer
-<<<<<<< HEAD
- * @p_dnld:		scatter/gather list pointer
-=======
  * @sglist:		scatter/gather list pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Free a DMA'able ucode download buffer previously allocated with
  * ipr_alloc_ucode_buffer
@@ -4536,15 +3804,7 @@ static struct ipr_sglist *ipr_alloc_ucode_buffer(int buf_len)
  **/
 static void ipr_free_ucode_buffer(struct ipr_sglist *sglist)
 {
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < sglist->num_sg; i++)
-		__free_pages(sg_page(&sglist->scatterlist[i]), sglist->order);
-
-=======
 	sgl_free_order(sglist->scatterlist, sglist->order);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sglist);
 }
 
@@ -4564,28 +3824,11 @@ static int ipr_copy_ucode_buffer(struct ipr_sglist *sglist,
 				 u8 *buffer, u32 len)
 {
 	int bsize_elem, i, result = 0;
-<<<<<<< HEAD
-	struct scatterlist *scatterlist;
-	void *kaddr;
-=======
 	struct scatterlist *sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Determine the actual number of bytes per element */
 	bsize_elem = PAGE_SIZE * (1 << sglist->order);
 
-<<<<<<< HEAD
-	scatterlist = sglist->scatterlist;
-
-	for (i = 0; i < (len / bsize_elem); i++, buffer += bsize_elem) {
-		struct page *page = sg_page(&scatterlist[i]);
-
-		kaddr = kmap(page);
-		memcpy(kaddr, buffer, bsize_elem);
-		kunmap(page);
-
-		scatterlist[i].length = bsize_elem;
-=======
 	sg = sglist->scatterlist;
 
 	for (i = 0; i < (len / bsize_elem); i++, sg = sg_next(sg),
@@ -4595,7 +3838,6 @@ static int ipr_copy_ucode_buffer(struct ipr_sglist *sglist,
 		memcpy_to_page(page, 0, buffer, bsize_elem);
 
 		sg->length = bsize_elem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (result != 0) {
 			ipr_trace;
@@ -4604,21 +3846,11 @@ static int ipr_copy_ucode_buffer(struct ipr_sglist *sglist,
 	}
 
 	if (len % bsize_elem) {
-<<<<<<< HEAD
-		struct page *page = sg_page(&scatterlist[i]);
-
-		kaddr = kmap(page);
-		memcpy(kaddr, buffer, len % bsize_elem);
-		kunmap(page);
-
-		scatterlist[i].length = len % bsize_elem;
-=======
 		struct page *page = sg_page(sg);
 
 		memcpy_to_page(page, 0, buffer, len % bsize_elem);
 
 		sg->length = len % bsize_elem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sglist->buffer_len = len;
@@ -4639,10 +3871,7 @@ static void ipr_build_ucode_ioadl64(struct ipr_cmnd *ipr_cmd,
 	struct ipr_ioarcb *ioarcb = &ipr_cmd->ioarcb;
 	struct ipr_ioadl64_desc *ioadl64 = ipr_cmd->i.ioadl64;
 	struct scatterlist *scatterlist = sglist->scatterlist;
-<<<<<<< HEAD
-=======
 	struct scatterlist *sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	ipr_cmd->dma_use_sg = sglist->num_dma_sg;
@@ -4651,17 +3880,10 @@ static void ipr_build_ucode_ioadl64(struct ipr_cmnd *ipr_cmd,
 
 	ioarcb->ioadl_len =
 		cpu_to_be32(sizeof(struct ipr_ioadl64_desc) * ipr_cmd->dma_use_sg);
-<<<<<<< HEAD
-	for (i = 0; i < ipr_cmd->dma_use_sg; i++) {
-		ioadl64[i].flags = cpu_to_be32(IPR_IOADL_FLAGS_WRITE);
-		ioadl64[i].data_len = cpu_to_be32(sg_dma_len(&scatterlist[i]));
-		ioadl64[i].address = cpu_to_be64(sg_dma_address(&scatterlist[i]));
-=======
 	for_each_sg(scatterlist, sg, ipr_cmd->dma_use_sg, i) {
 		ioadl64[i].flags = cpu_to_be32(IPR_IOADL_FLAGS_WRITE);
 		ioadl64[i].data_len = cpu_to_be32(sg_dma_len(sg));
 		ioadl64[i].address = cpu_to_be64(sg_dma_address(sg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ioadl64[i-1].flags |= cpu_to_be32(IPR_IOADL_FLAGS_LAST);
@@ -4681,10 +3903,7 @@ static void ipr_build_ucode_ioadl(struct ipr_cmnd *ipr_cmd,
 	struct ipr_ioarcb *ioarcb = &ipr_cmd->ioarcb;
 	struct ipr_ioadl_desc *ioadl = ipr_cmd->i.ioadl;
 	struct scatterlist *scatterlist = sglist->scatterlist;
-<<<<<<< HEAD
-=======
 	struct scatterlist *sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	ipr_cmd->dma_use_sg = sglist->num_dma_sg;
@@ -4694,19 +3913,11 @@ static void ipr_build_ucode_ioadl(struct ipr_cmnd *ipr_cmd,
 	ioarcb->ioadl_len =
 		cpu_to_be32(sizeof(struct ipr_ioadl_desc) * ipr_cmd->dma_use_sg);
 
-<<<<<<< HEAD
-	for (i = 0; i < ipr_cmd->dma_use_sg; i++) {
-		ioadl[i].flags_and_data_len =
-			cpu_to_be32(IPR_IOADL_FLAGS_WRITE | sg_dma_len(&scatterlist[i]));
-		ioadl[i].address =
-			cpu_to_be32(sg_dma_address(&scatterlist[i]));
-=======
 	for_each_sg(scatterlist, sg, ipr_cmd->dma_use_sg, i) {
 		ioadl[i].flags_and_data_len =
 			cpu_to_be32(IPR_IOADL_FLAGS_WRITE | sg_dma_len(sg));
 		ioadl[i].address =
 			cpu_to_be32(sg_dma_address(sg));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ioadl[i-1].flags_and_data_len |=
@@ -4729,11 +3940,7 @@ static int ipr_update_ioa_ucode(struct ipr_ioa_cfg *ioa_cfg,
 	unsigned long lock_flags;
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-<<<<<<< HEAD
-	while(ioa_cfg->in_reset_reload) {
-=======
 	while (ioa_cfg->in_reset_reload) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 		wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
 		spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
@@ -4746,14 +3953,9 @@ static int ipr_update_ioa_ucode(struct ipr_ioa_cfg *ioa_cfg,
 		return -EIO;
 	}
 
-<<<<<<< HEAD
-	sglist->num_dma_sg = pci_map_sg(ioa_cfg->pdev, sglist->scatterlist,
-					sglist->num_sg, DMA_TO_DEVICE);
-=======
 	sglist->num_dma_sg = dma_map_sg(&ioa_cfg->pdev->dev,
 					sglist->scatterlist, sglist->num_sg,
 					DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sglist->num_dma_sg) {
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
@@ -4775,12 +3977,8 @@ static int ipr_update_ioa_ucode(struct ipr_ioa_cfg *ioa_cfg,
 
 /**
  * ipr_store_update_fw - Update the firmware on the adapter
-<<<<<<< HEAD
- * @class_dev:	device struct
-=======
  * @dev:	device struct
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  * @count:	buffer size
  *
@@ -4800,22 +3998,12 @@ static ssize_t ipr_store_update_fw(struct device *dev,
 	struct ipr_sglist *sglist;
 	char fname[100];
 	char *src;
-<<<<<<< HEAD
-	int len, result, dnld_size;
-=======
 	char *endline;
 	int result, dnld_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!capable(CAP_SYS_ADMIN))
 		return -EACCES;
 
-<<<<<<< HEAD
-	len = snprintf(fname, 99, "%s", buf);
-	fname[len-1] = '\0';
-
-	if(request_firmware(&fw_entry, fname, &ioa_cfg->pdev->dev)) {
-=======
 	snprintf(fname, sizeof(fname), "%s", buf);
 
 	endline = strchr(fname, '\n');
@@ -4823,7 +4011,6 @@ static ssize_t ipr_store_update_fw(struct device *dev,
 		*endline = '\0';
 
 	if (request_firmware(&fw_entry, fname, &ioa_cfg->pdev->dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&ioa_cfg->pdev->dev, "Firmware file %s not found\n", fname);
 		return -EIO;
 	}
@@ -4871,10 +4058,7 @@ static struct device_attribute ipr_update_fw_attr = {
 /**
  * ipr_show_fw_type - Show the adapter's firmware type.
  * @dev:	class device struct
-<<<<<<< HEAD
-=======
  * @attr:	device attribute (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer
  *
  * Return value:
@@ -4902,19 +4086,6 @@ static struct device_attribute ipr_ioa_fw_type_attr = {
 	.show = ipr_show_fw_type
 };
 
-<<<<<<< HEAD
-static struct device_attribute *ipr_ioa_attrs[] = {
-	&ipr_fw_version_attr,
-	&ipr_log_level_attr,
-	&ipr_diagnostics_attr,
-	&ipr_ioa_state_attr,
-	&ipr_ioa_reset_attr,
-	&ipr_update_fw_attr,
-	&ipr_ioa_fw_type_attr,
-	NULL,
-};
-
-=======
 static ssize_t ipr_read_async_err_log(struct file *filep, struct kobject *kobj,
 				struct bin_attribute *bin_attr, char *buf,
 				loff_t off, size_t count)
@@ -4987,7 +4158,6 @@ static struct attribute *ipr_ioa_attrs[] = {
 
 ATTRIBUTE_GROUPS(ipr_ioa);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SCSI_IPR_DUMP
 /**
  * ipr_read_dump - Dump the adapter
@@ -5005,11 +4175,7 @@ static ssize_t ipr_read_dump(struct file *filp, struct kobject *kobj,
 			     struct bin_attribute *bin_attr,
 			     char *buf, loff_t off, size_t count)
 {
-<<<<<<< HEAD
-	struct device *cdev = container_of(kobj, struct device, kobj);
-=======
 	struct device *cdev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *shost = class_to_shost(cdev);
 	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)shost->hostdata;
 	struct ipr_dump *dump;
@@ -5115,17 +4281,11 @@ static int ipr_alloc_dump(struct ipr_ioa_cfg *ioa_cfg)
 	}
 
 	if (ioa_cfg->sis64)
-<<<<<<< HEAD
-		ioa_data = vmalloc(IPR_FMT3_MAX_NUM_DUMP_PAGES * sizeof(__be32 *));
-	else
-		ioa_data = vmalloc(IPR_FMT2_MAX_NUM_DUMP_PAGES * sizeof(__be32 *));
-=======
 		ioa_data = vmalloc(array_size(IPR_FMT3_MAX_NUM_DUMP_PAGES,
 					      sizeof(__be32 *)));
 	else
 		ioa_data = vmalloc(array_size(IPR_FMT2_MAX_NUM_DUMP_PAGES,
 					      sizeof(__be32 *)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ioa_data) {
 		ipr_err("Dump memory allocation failed\n");
@@ -5149,11 +4309,7 @@ static int ipr_alloc_dump(struct ipr_ioa_cfg *ioa_cfg)
 
 	ioa_cfg->dump = dump;
 	ioa_cfg->sdt_state = WAIT_FOR_DUMP;
-<<<<<<< HEAD
-	if (ioa_cfg->ioa_is_dead && !ioa_cfg->dump_taken) {
-=======
 	if (ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead && !ioa_cfg->dump_taken) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioa_cfg->dump_taken = 1;
 		schedule_work(&ioa_cfg->work_q);
 	}
@@ -5208,11 +4364,7 @@ static ssize_t ipr_write_dump(struct file *filp, struct kobject *kobj,
 			      struct bin_attribute *bin_attr,
 			      char *buf, loff_t off, size_t count)
 {
-<<<<<<< HEAD
-	struct device *cdev = container_of(kobj, struct device, kobj);
-=======
 	struct device *cdev = kobj_to_dev(kobj);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *shost = class_to_shost(cdev);
 	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)shost->hostdata;
 	int rc;
@@ -5250,83 +4402,17 @@ static int ipr_free_dump(struct ipr_ioa_cfg *ioa_cfg) { return 0; };
  * ipr_change_queue_depth - Change the device's queue depth
  * @sdev:	scsi device struct
  * @qdepth:	depth to set
-<<<<<<< HEAD
- * @reason:	calling context
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	actual depth set
  **/
-<<<<<<< HEAD
-static int ipr_change_queue_depth(struct scsi_device *sdev, int qdepth,
-				  int reason)
-{
-	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)sdev->host->hostdata;
-	struct ipr_resource_entry *res;
-	unsigned long lock_flags = 0;
-
-	if (reason != SCSI_QDEPTH_DEFAULT)
-		return -EOPNOTSUPP;
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-	res = (struct ipr_resource_entry *)sdev->hostdata;
-
-	if (res && ipr_is_gata(res) && qdepth > IPR_MAX_CMD_PER_ATA_LUN)
-		qdepth = IPR_MAX_CMD_PER_ATA_LUN;
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-
-	scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev), qdepth);
-=======
 static int ipr_change_queue_depth(struct scsi_device *sdev, int qdepth)
 {
 	scsi_change_queue_depth(sdev, qdepth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sdev->queue_depth;
 }
 
 /**
-<<<<<<< HEAD
- * ipr_change_queue_type - Change the device's queue type
- * @dsev:		scsi device struct
- * @tag_type:	type of tags to use
- *
- * Return value:
- * 	actual queue type set
- **/
-static int ipr_change_queue_type(struct scsi_device *sdev, int tag_type)
-{
-	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)sdev->host->hostdata;
-	struct ipr_resource_entry *res;
-	unsigned long lock_flags = 0;
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-	res = (struct ipr_resource_entry *)sdev->hostdata;
-
-	if (res) {
-		if (ipr_is_gscsi(res) && sdev->tagged_supported) {
-			/*
-			 * We don't bother quiescing the device here since the
-			 * adapter firmware does it for us.
-			 */
-			scsi_set_tag_type(sdev, tag_type);
-
-			if (tag_type)
-				scsi_activate_tcq(sdev, sdev->queue_depth);
-			else
-				scsi_deactivate_tcq(sdev, sdev->queue_depth);
-		} else
-			tag_type = 0;
-	} else
-		tag_type = 0;
-
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-	return tag_type;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_show_adapter_handle - Show the adapter's resource handle for this device
  * @dev:	device struct
  * @attr:	device attribute structure
@@ -5382,13 +4468,8 @@ static ssize_t ipr_show_resource_path(struct device *dev, struct device_attribut
 	res = (struct ipr_resource_entry *)sdev->hostdata;
 	if (res && ioa_cfg->sis64)
 		len = snprintf(buf, PAGE_SIZE, "%s\n",
-<<<<<<< HEAD
-			       ipr_format_res_path(res->res_path, buffer,
-						   sizeof(buffer)));
-=======
 			       __ipr_format_res_path(res->res_path, buffer,
 						     sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (res)
 		len = snprintf(buf, PAGE_SIZE, "%d:%d:%d:%d\n", ioa_cfg->host->host_no,
 			       res->bus, res->target, res->lun);
@@ -5425,11 +4506,7 @@ static ssize_t ipr_show_device_id(struct device *dev, struct device_attribute *a
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
 	res = (struct ipr_resource_entry *)sdev->hostdata;
 	if (res && ioa_cfg->sis64)
-<<<<<<< HEAD
-		len = snprintf(buf, PAGE_SIZE, "0x%llx\n", res->dev_id);
-=======
 		len = snprintf(buf, PAGE_SIZE, "0x%llx\n", be64_to_cpu(res->dev_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (res)
 		len = snprintf(buf, PAGE_SIZE, "0x%llx\n", res->lun_wwn);
 
@@ -5480,16 +4557,6 @@ static struct device_attribute ipr_resource_type_attr = {
 	.show = ipr_show_resource_type
 };
 
-<<<<<<< HEAD
-static struct device_attribute *ipr_dev_attrs[] = {
-	&ipr_adapter_handle_attr,
-	&ipr_resource_path_attr,
-	&ipr_device_id_attr,
-	&ipr_resource_type_attr,
-	NULL,
-};
-
-=======
 /**
  * ipr_show_raw_mode - Show the adapter's raw mode
  * @dev:	class device struct
@@ -5575,7 +4642,6 @@ static struct attribute *ipr_dev_attrs[] = {
 
 ATTRIBUTE_GROUPS(ipr_dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_biosparam - Return the HSC mapping
  * @sdev:			scsi device struct
@@ -5634,77 +4700,13 @@ static struct ipr_resource_entry *ipr_find_starget(struct scsi_target *starget)
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct ata_port_info sata_port_info;
-
-/**
- * ipr_target_alloc - Prepare for commands to a SCSI target
- * @starget:	scsi target struct
- *
- * If the device is a SATA device, this function allocates an
- * ATA port with libata, else it does nothing.
- *
- * Return value:
- * 	0 on success / non-0 on failure
- **/
-static int ipr_target_alloc(struct scsi_target *starget)
-{
-	struct Scsi_Host *shost = dev_to_shost(&starget->dev);
-	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *) shost->hostdata;
-	struct ipr_sata_port *sata_port;
-	struct ata_port *ap;
-	struct ipr_resource_entry *res;
-	unsigned long lock_flags;
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-	res = ipr_find_starget(starget);
-	starget->hostdata = NULL;
-
-	if (res && ipr_is_gata(res)) {
-		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-		sata_port = kzalloc(sizeof(*sata_port), GFP_KERNEL);
-		if (!sata_port)
-			return -ENOMEM;
-
-		ap = ata_sas_port_alloc(&ioa_cfg->ata_host, &sata_port_info, shost);
-		if (ap) {
-			spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-			sata_port->ioa_cfg = ioa_cfg;
-			sata_port->ap = ap;
-			sata_port->res = res;
-
-			res->sata_port = sata_port;
-			ap->private_data = sata_port;
-			starget->hostdata = sata_port;
-		} else {
-			kfree(sata_port);
-			return -ENOMEM;
-		}
-	}
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_target_destroy - Destroy a SCSI target
  * @starget:	scsi target struct
  *
-<<<<<<< HEAD
- * If the device was a SATA device, this function frees the libata
- * ATA port, else it does nothing.
- *
  **/
 static void ipr_target_destroy(struct scsi_target *starget)
 {
-	struct ipr_sata_port *sata_port = starget->hostdata;
-=======
- **/
-static void ipr_target_destroy(struct scsi_target *starget)
-{
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *shost = dev_to_shost(&starget->dev);
 	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *) shost->hostdata;
 
@@ -5718,15 +4720,6 @@ static void ipr_target_destroy(struct scsi_target *starget)
 				clear_bit(starget->id, ioa_cfg->target_ids);
 		}
 	}
-<<<<<<< HEAD
-
-	if (sata_port) {
-		starget->hostdata = NULL;
-		ata_sas_port_destroy(sata_port->ap);
-		kfree(sata_port);
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -5769,16 +4762,8 @@ static void ipr_slave_destroy(struct scsi_device *sdev)
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
 	res = (struct ipr_resource_entry *) sdev->hostdata;
 	if (res) {
-<<<<<<< HEAD
-		if (res->sata_port)
-			res->sata_port->ap->link.device[0].class = ATA_DEV_NONE;
 		sdev->hostdata = NULL;
 		res->sdev = NULL;
-		res->sata_port = NULL;
-=======
-		sdev->hostdata = NULL;
-		res->sdev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 }
@@ -5796,10 +4781,6 @@ static int ipr_slave_configure(struct scsi_device *sdev)
 {
 	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *) sdev->host->hostdata;
 	struct ipr_resource_entry *res;
-<<<<<<< HEAD
-	struct ata_port *ap = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long lock_flags = 0;
 	char buffer[IPR_MAX_RES_PATH_LENGTH];
 
@@ -5813,37 +4794,18 @@ static int ipr_slave_configure(struct scsi_device *sdev)
 			sdev->no_uld_attach = 1;
 		}
 		if (ipr_is_vset_device(res)) {
-<<<<<<< HEAD
-=======
 			sdev->scsi_level = SCSI_SPC_3;
 			sdev->no_report_opcodes = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			blk_queue_rq_timeout(sdev->request_queue,
 					     IPR_VSET_RW_TIMEOUT);
 			blk_queue_max_hw_sectors(sdev->request_queue, IPR_VSET_MAX_SECTORS);
 		}
-<<<<<<< HEAD
-		if (ipr_is_gata(res) && res->sata_port)
-			ap = res->sata_port->ap;
-		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-
-		if (ap) {
-			scsi_adjust_queue_depth(sdev, 0, IPR_MAX_CMD_PER_ATA_LUN);
-			ata_sas_slave_configure(sdev, ap);
-		} else
-			scsi_adjust_queue_depth(sdev, 0, sdev->host->cmd_per_lun);
-		if (ioa_cfg->sis64)
-			sdev_printk(KERN_INFO, sdev, "Resource path: %s\n",
-				    ipr_format_res_path(res->res_path, buffer,
-							sizeof(buffer)));
-=======
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 
 		if (ioa_cfg->sis64)
 			sdev_printk(KERN_INFO, sdev, "Resource path: %s\n",
 				    ipr_format_res_path(ioa_cfg,
 				res->res_path, buffer, sizeof(buffer)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
@@ -5851,40 +4813,6 @@ static int ipr_slave_configure(struct scsi_device *sdev)
 }
 
 /**
-<<<<<<< HEAD
- * ipr_ata_slave_alloc - Prepare for commands to a SATA device
- * @sdev:	scsi device struct
- *
- * This function initializes an ATA port so that future commands
- * sent through queuecommand will work.
- *
- * Return value:
- * 	0 on success
- **/
-static int ipr_ata_slave_alloc(struct scsi_device *sdev)
-{
-	struct ipr_sata_port *sata_port = NULL;
-	int rc = -ENXIO;
-
-	ENTER;
-	if (sdev->sdev_target)
-		sata_port = sdev->sdev_target->hostdata;
-	if (sata_port) {
-		rc = ata_sas_port_init(sata_port->ap);
-		if (rc == 0)
-			rc = ata_sas_sync_probe(sata_port->ap);
-	}
-
-	if (rc)
-		ipr_slave_destroy(sdev);
-
-	LEAVE;
-	return rc;
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_slave_alloc - Prepare for commands to a device.
  * @sdev:	scsi device struct
  *
@@ -5917,15 +4845,10 @@ static int ipr_slave_alloc(struct scsi_device *sdev)
 			res->needs_sync_complete = 1;
 		rc = 0;
 		if (ipr_is_gata(res)) {
-<<<<<<< HEAD
-			spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-			return ipr_ata_slave_alloc(sdev);
-=======
 			sdev_printk(KERN_ERR, sdev, "SATA devices are no longer "
 				"supported by this driver. Skipping device.\n");
 			spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 			return -ENXIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -5935,23 +4858,6 @@ static int ipr_slave_alloc(struct scsi_device *sdev)
 }
 
 /**
-<<<<<<< HEAD
- * ipr_eh_host_reset - Reset the host adapter
- * @scsi_cmd:	scsi command struct
- *
- * Return value:
- * 	SUCCESS / FAILED
- **/
-static int __ipr_eh_host_reset(struct scsi_cmnd * scsi_cmd)
-{
-	struct ipr_ioa_cfg *ioa_cfg;
-	int rc;
-
-	ENTER;
-	ioa_cfg = (struct ipr_ioa_cfg *) scsi_cmd->device->host->hostdata;
-
-	if (!ioa_cfg->in_reset_reload) {
-=======
  * ipr_match_lun - Match function for specified LUN
  * @ipr_cmd:	ipr command struct
  * @device:		device to match (sdev)
@@ -6066,7 +4972,6 @@ static int ipr_eh_host_reset(struct scsi_cmnd *cmd)
 
 	if (!ioa_cfg->in_reset_reload && !ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead) {
 		ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_ABBREV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&ioa_cfg->pdev->dev,
 			"Adapter being reset as a result of error recovery.\n");
 
@@ -6074,10 +4979,6 @@ static int ipr_eh_host_reset(struct scsi_cmnd *cmd)
 			ioa_cfg->sdt_state = GET_DUMP;
 	}
 
-<<<<<<< HEAD
-	rc = ipr_reset_reload(ioa_cfg, IPR_SHUTDOWN_ABBREV);
-
-=======
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 	wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
@@ -6090,25 +4991,10 @@ static int ipr_eh_host_reset(struct scsi_cmnd *cmd)
 	}
 
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 	return rc;
 }
 
-<<<<<<< HEAD
-static int ipr_eh_host_reset(struct scsi_cmnd * cmd)
-{
-	int rc;
-
-	spin_lock_irq(cmd->device->host->host_lock);
-	rc = __ipr_eh_host_reset(cmd);
-	spin_unlock_irq(cmd->device->host->host_lock);
-
-	return rc;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_device_reset - Reset the device
  * @ioa_cfg:	ioa config struct
@@ -6117,12 +5003,7 @@ static int ipr_eh_host_reset(struct scsi_cmnd * cmd)
  * This function issues a device reset to the affected device.
  * If the device is a SCSI device, a LUN reset will be sent
  * to the device first. If that does not work, a target reset
-<<<<<<< HEAD
- * will be sent. If the device is a SATA device, a PHY reset will
- * be sent.
-=======
  * will be sent.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  *	0 on success / non-zero on failure
@@ -6133,10 +5014,6 @@ static int ipr_device_reset(struct ipr_ioa_cfg *ioa_cfg,
 	struct ipr_cmnd *ipr_cmd;
 	struct ipr_ioarcb *ioarcb;
 	struct ipr_cmd_pkt *cmd_pkt;
-<<<<<<< HEAD
-	struct ipr_ioarcb_ata_regs *regs;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ioasc;
 
 	ENTER;
@@ -6144,84 +5021,12 @@ static int ipr_device_reset(struct ipr_ioa_cfg *ioa_cfg,
 	ioarcb = &ipr_cmd->ioarcb;
 	cmd_pkt = &ioarcb->cmd_pkt;
 
-<<<<<<< HEAD
-	if (ipr_cmd->ioa_cfg->sis64) {
-		regs = &ipr_cmd->i.ata_ioadl.regs;
-		ioarcb->add_cmd_parms_offset = cpu_to_be16(sizeof(*ioarcb));
-	} else
-		regs = &ioarcb->u.add_data.u.regs;
-=======
 	if (ipr_cmd->ioa_cfg->sis64)
 		ioarcb->add_cmd_parms_offset = cpu_to_be16(sizeof(*ioarcb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioarcb->res_handle = res->res_handle;
 	cmd_pkt->request_type = IPR_RQTYPE_IOACMD;
 	cmd_pkt->cdb[0] = IPR_RESET_DEVICE;
-<<<<<<< HEAD
-	if (ipr_is_gata(res)) {
-		cmd_pkt->cdb[2] = IPR_ATA_PHY_RESET;
-		ioarcb->add_cmd_parms_len = cpu_to_be16(sizeof(regs->flags));
-		regs->flags |= IPR_ATA_FLAG_STATUS_ON_GOOD_COMPLETION;
-	}
-
-	ipr_send_blocking_cmd(ipr_cmd, ipr_timeout, IPR_DEVICE_RESET_TIMEOUT);
-	ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-	if (ipr_is_gata(res) && res->sata_port && ioasc != IPR_IOASC_IOA_WAS_RESET) {
-		if (ipr_cmd->ioa_cfg->sis64)
-			memcpy(&res->sata_port->ioasa, &ipr_cmd->s.ioasa64.u.gata,
-			       sizeof(struct ipr_ioasa_gata));
-		else
-			memcpy(&res->sata_port->ioasa, &ipr_cmd->s.ioasa.u.gata,
-			       sizeof(struct ipr_ioasa_gata));
-	}
-
-	LEAVE;
-	return (IPR_IOASC_SENSE_KEY(ioasc) ? -EIO : 0);
-}
-
-/**
- * ipr_sata_reset - Reset the SATA port
- * @link:	SATA link to reset
- * @classes:	class of the attached device
- *
- * This function issues a SATA phy reset to the affected ATA link.
- *
- * Return value:
- *	0 on success / non-zero on failure
- **/
-static int ipr_sata_reset(struct ata_link *link, unsigned int *classes,
-				unsigned long deadline)
-{
-	struct ipr_sata_port *sata_port = link->ap->private_data;
-	struct ipr_ioa_cfg *ioa_cfg = sata_port->ioa_cfg;
-	struct ipr_resource_entry *res;
-	unsigned long lock_flags = 0;
-	int rc = -ENXIO;
-
-	ENTER;
-	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-	while(ioa_cfg->in_reset_reload) {
-		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-		wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
-		spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-	}
-
-	res = sata_port->res;
-	if (res) {
-		rc = ipr_device_reset(ioa_cfg, res);
-		*classes = res->ata_class;
-	}
-
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-	LEAVE;
-	return rc;
-}
-
-/**
- * ipr_eh_dev_reset - Reset the device
-=======
 
 	ipr_send_blocking_cmd(ipr_cmd, ipr_timeout, IPR_DEVICE_RESET_TIMEOUT);
 	ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
@@ -6233,7 +5038,6 @@ static int ipr_sata_reset(struct ata_link *link, unsigned int *classes,
 
 /**
  * __ipr_eh_dev_reset - Reset the device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @scsi_cmd:	scsi command struct
  *
  * This function issues a device reset to the affected device.
@@ -6243,31 +5047,16 @@ static int ipr_sata_reset(struct ata_link *link, unsigned int *classes,
  * Return value:
  *	SUCCESS / FAILED
  **/
-<<<<<<< HEAD
-static int __ipr_eh_dev_reset(struct scsi_cmnd * scsi_cmd)
-{
-	struct ipr_cmnd *ipr_cmd;
-	struct ipr_ioa_cfg *ioa_cfg;
-	struct ipr_resource_entry *res;
-	struct ata_port *ap;
-=======
 static int __ipr_eh_dev_reset(struct scsi_cmnd *scsi_cmd)
 {
 	struct ipr_ioa_cfg *ioa_cfg;
 	struct ipr_resource_entry *res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	ENTER;
 	ioa_cfg = (struct ipr_ioa_cfg *) scsi_cmd->device->host->hostdata;
 	res = scsi_cmd->device->hostdata;
 
-<<<<<<< HEAD
-	if (!res)
-		return FAILED;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If we are currently going through reset/reload, return failed. This will force the
 	 * mid-layer to call ipr_eh_host_reset, which will then go to sleep and wait for the
@@ -6275,50 +5064,6 @@ static int __ipr_eh_dev_reset(struct scsi_cmnd *scsi_cmd)
 	 */
 	if (ioa_cfg->in_reset_reload)
 		return FAILED;
-<<<<<<< HEAD
-	if (ioa_cfg->ioa_is_dead)
-		return FAILED;
-
-	list_for_each_entry(ipr_cmd, &ioa_cfg->pending_q, queue) {
-		if (ipr_cmd->ioarcb.res_handle == res->res_handle) {
-			if (ipr_cmd->scsi_cmd)
-				ipr_cmd->done = ipr_scsi_eh_done;
-			if (ipr_cmd->qc)
-				ipr_cmd->done = ipr_sata_eh_done;
-			if (ipr_cmd->qc && !(ipr_cmd->qc->flags & ATA_QCFLAG_FAILED)) {
-				ipr_cmd->qc->err_mask |= AC_ERR_TIMEOUT;
-				ipr_cmd->qc->flags |= ATA_QCFLAG_FAILED;
-			}
-		}
-	}
-
-	res->resetting_device = 1;
-	scmd_printk(KERN_ERR, scsi_cmd, "Resetting device\n");
-
-	if (ipr_is_gata(res) && res->sata_port) {
-		ap = res->sata_port->ap;
-		spin_unlock_irq(scsi_cmd->device->host->host_lock);
-		ata_std_error_handler(ap);
-		spin_lock_irq(scsi_cmd->device->host->host_lock);
-
-		list_for_each_entry(ipr_cmd, &ioa_cfg->pending_q, queue) {
-			if (ipr_cmd->ioarcb.res_handle == res->res_handle) {
-				rc = -EIO;
-				break;
-			}
-		}
-	} else
-		rc = ipr_device_reset(ioa_cfg, res);
-	res->resetting_device = 0;
-
-	LEAVE;
-	return (rc ? FAILED : SUCCESS);
-}
-
-static int ipr_eh_dev_reset(struct scsi_cmnd * cmd)
-{
-	int rc;
-=======
 	if (ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead)
 		return FAILED;
 
@@ -6344,18 +5089,14 @@ static int ipr_eh_dev_reset(struct scsi_cmnd *cmd)
 
 	if (!res)
 		return FAILED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(cmd->device->host->host_lock);
 	rc = __ipr_eh_dev_reset(cmd);
 	spin_unlock_irq(cmd->device->host->host_lock);
 
-<<<<<<< HEAD
-=======
 	if (rc == SUCCESS)
 		rc = ipr_wait_for_ops(ioa_cfg, cmd->device, ipr_match_lun);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -6391,21 +5132,13 @@ static void ipr_bus_reset_done(struct ipr_cmnd *ipr_cmd)
 	else
 		ipr_cmd->sibling->done(ipr_cmd->sibling);
 
-<<<<<<< HEAD
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 }
 
 /**
  * ipr_abort_timeout - An abort task has timed out
-<<<<<<< HEAD
- * @ipr_cmd:	ipr command struct
-=======
  * @t: Timer context used to fetch ipr command struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function handles when an abort task times out. If this
  * happens we issue a bus reset since we have resources tied
@@ -6414,14 +5147,9 @@ static void ipr_bus_reset_done(struct ipr_cmnd *ipr_cmd)
  * Return value:
  *	none
  **/
-<<<<<<< HEAD
-static void ipr_abort_timeout(struct ipr_cmnd *ipr_cmd)
-{
-=======
 static void ipr_abort_timeout(struct timer_list *t)
 {
 	struct ipr_cmnd *ipr_cmd = from_timer(ipr_cmd, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipr_cmnd *reset_cmd;
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	struct ipr_cmd_pkt *cmd_pkt;
@@ -6458,24 +5186,15 @@ static void ipr_abort_timeout(struct timer_list *t)
  * Return value:
  *	SUCCESS / FAILED
  **/
-<<<<<<< HEAD
-static int ipr_cancel_op(struct scsi_cmnd * scsi_cmd)
-=======
 static int ipr_cancel_op(struct scsi_cmnd *scsi_cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipr_cmnd *ipr_cmd;
 	struct ipr_ioa_cfg *ioa_cfg;
 	struct ipr_resource_entry *res;
 	struct ipr_cmd_pkt *cmd_pkt;
-<<<<<<< HEAD
-	u32 ioasc, int_reg;
-	int op_found = 0;
-=======
 	u32 ioasc;
 	int i, op_found = 0;
 	struct ipr_hrr_queue *hrrq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER;
 	ioa_cfg = (struct ipr_ioa_cfg *)scsi_cmd->device->host->hostdata;
@@ -6485,12 +5204,8 @@ static int ipr_cancel_op(struct scsi_cmnd *scsi_cmd)
 	 * This will force the mid-layer to call ipr_eh_host_reset,
 	 * which will then go to sleep and wait for the reset to complete
 	 */
-<<<<<<< HEAD
-	if (ioa_cfg->in_reset_reload || ioa_cfg->ioa_is_dead)
-=======
 	if (ioa_cfg->in_reset_reload ||
 	    ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return FAILED;
 	if (!res)
 		return FAILED;
@@ -6500,23 +5215,11 @@ static int ipr_cancel_op(struct scsi_cmnd *scsi_cmd)
 	 * by a still not detected EEH error. In such cases, reading a register will
 	 * trigger the EEH recovery infrastructure.
 	 */
-<<<<<<< HEAD
-	int_reg = readl(ioa_cfg->regs.sense_interrupt_reg);
-=======
 	readl(ioa_cfg->regs.sense_interrupt_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ipr_is_gscsi(res))
 		return FAILED;
 
-<<<<<<< HEAD
-	list_for_each_entry(ipr_cmd, &ioa_cfg->pending_q, queue) {
-		if (ipr_cmd->scsi_cmd == scsi_cmd) {
-			ipr_cmd->done = ipr_scsi_eh_done;
-			op_found = 1;
-			break;
-		}
-=======
 	for_each_hrrq(hrrq, ioa_cfg) {
 		spin_lock(&hrrq->_lock);
 		for (i = hrrq->min_cmd_id; i <= hrrq->max_cmd_id; i++) {
@@ -6528,7 +5231,6 @@ static int ipr_cancel_op(struct scsi_cmnd *scsi_cmd)
 			}
 		}
 		spin_unlock(&hrrq->_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!op_found)
@@ -6555,22 +5257,11 @@ static int ipr_cancel_op(struct scsi_cmnd *scsi_cmd)
 		ipr_trace;
 	}
 
-<<<<<<< HEAD
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ipr_is_naca_model(res))
 		res->needs_sync_complete = 1;
 
 	LEAVE;
-<<<<<<< HEAD
-	return (IPR_IOASC_SENSE_KEY(ioasc) ? FAILED : SUCCESS);
-}
-
-/**
- * ipr_eh_abort - Abort a single op
-=======
 	return IPR_IOASC_SENSE_KEY(ioasc) ? FAILED : SUCCESS;
 }
 
@@ -6599,21 +5290,11 @@ static int ipr_scan_finished(struct Scsi_Host *shost, unsigned long elapsed_time
 
 /**
  * ipr_eh_abort - Reset the host adapter
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @scsi_cmd:	scsi command struct
  *
  * Return value:
  * 	SUCCESS / FAILED
  **/
-<<<<<<< HEAD
-static int ipr_eh_abort(struct scsi_cmnd * scsi_cmd)
-{
-	unsigned long flags;
-	int rc;
-
-	ENTER;
-
-=======
 static int ipr_eh_abort(struct scsi_cmnd *scsi_cmd)
 {
 	unsigned long flags;
@@ -6624,16 +5305,12 @@ static int ipr_eh_abort(struct scsi_cmnd *scsi_cmd)
 
 	ioa_cfg = (struct ipr_ioa_cfg *) scsi_cmd->device->host->hostdata;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(scsi_cmd->device->host->host_lock, flags);
 	rc = ipr_cancel_op(scsi_cmd);
 	spin_unlock_irqrestore(scsi_cmd->device->host->host_lock, flags);
 
-<<<<<<< HEAD
-=======
 	if (rc == SUCCESS)
 		rc = ipr_wait_for_ops(ioa_cfg, scsi_cmd->device, ipr_match_lun);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 	return rc;
 }
@@ -6680,12 +5357,6 @@ static irqreturn_t ipr_handle_other_interrupt(struct ipr_ioa_cfg *ioa_cfg,
 	if (int_reg & IPR_PCII_IOA_TRANS_TO_OPER) {
 		/* Mask the interrupt */
 		writel(IPR_PCII_IOA_TRANS_TO_OPER, ioa_cfg->regs.set_interrupt_mask_reg);
-<<<<<<< HEAD
-
-		/* Clear the interrupt */
-		writel(IPR_PCII_IOA_TRANS_TO_OPER, ioa_cfg->regs.clr_interrupt_reg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int_reg = readl(ioa_cfg->regs.sense_interrupt_reg);
 
 		list_del(&ioa_cfg->reset_cmd->queue);
@@ -6703,12 +5374,9 @@ static irqreturn_t ipr_handle_other_interrupt(struct ipr_ioa_cfg *ioa_cfg,
 	} else {
 		if (int_reg & IPR_PCII_IOA_UNIT_CHECKED)
 			ioa_cfg->ioa_unit_checked = 1;
-<<<<<<< HEAD
-=======
 		else if (int_reg & IPR_PCII_NO_HOST_RRQ)
 			dev_err(&ioa_cfg->pdev->dev,
 				"No Host RRQ. 0x%08X\n", int_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			dev_err(&ioa_cfg->pdev->dev,
 				"Permanent IOA failure. 0x%08X\n", int_reg);
@@ -6727,25 +5395,15 @@ static irqreturn_t ipr_handle_other_interrupt(struct ipr_ioa_cfg *ioa_cfg,
  * ipr_isr_eh - Interrupt service routine error handler
  * @ioa_cfg:	ioa config struct
  * @msg:	message to log
-<<<<<<< HEAD
-=======
  * @number:	various meanings depending on the caller/message
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void ipr_isr_eh(struct ipr_ioa_cfg *ioa_cfg, char *msg)
-{
-	ioa_cfg->errors_logged++;
-	dev_err(&ioa_cfg->pdev->dev, "%s\n", msg);
-=======
 static void ipr_isr_eh(struct ipr_ioa_cfg *ioa_cfg, char *msg, u16 number)
 {
 	ioa_cfg->errors_logged++;
 	dev_err(&ioa_cfg->pdev->dev, "%s %d\n", msg, number);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (WAIT_FOR_DUMP == ioa_cfg->sdt_state)
 		ioa_cfg->sdt_state = GET_DUMP;
@@ -6753,8 +5411,6 @@ static void ipr_isr_eh(struct ipr_ioa_cfg *ioa_cfg, char *msg, u16 number)
 	ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
 }
 
-<<<<<<< HEAD
-=======
 static int ipr_process_hrrq(struct ipr_hrr_queue *hrr_queue, int budget,
 						struct list_head *doneq)
 {
@@ -6830,7 +5486,6 @@ static int ipr_iopoll(struct irq_poll *iop, int budget)
 	return completed_ops;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_isr - Interrupt service routine
  * @irq:	irq number
@@ -6841,23 +5496,6 @@ static int ipr_iopoll(struct irq_poll *iop, int budget)
  **/
 static irqreturn_t ipr_isr(int irq, void *devp)
 {
-<<<<<<< HEAD
-	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)devp;
-	unsigned long lock_flags = 0;
-	u32 int_reg = 0;
-	u32 ioasc;
-	u16 cmd_index;
-	int num_hrrq = 0;
-	int irq_none = 0;
-	struct ipr_cmnd *ipr_cmd;
-	irqreturn_t rc = IRQ_NONE;
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-
-	/* If interrupts are disabled, ignore the interrupt */
-	if (!ioa_cfg->allow_interrupts) {
-		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-=======
 	struct ipr_hrr_queue *hrrq = (struct ipr_hrr_queue *)devp;
 	struct ipr_ioa_cfg *ioa_cfg = hrrq->ioa_cfg;
 	unsigned long hrrq_flags = 0;
@@ -6872,58 +5510,10 @@ static irqreturn_t ipr_isr(int irq, void *devp)
 	/* If interrupts are disabled, ignore the interrupt */
 	if (!hrrq->allow_interrupts) {
 		spin_unlock_irqrestore(hrrq->lock, hrrq_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IRQ_NONE;
 	}
 
 	while (1) {
-<<<<<<< HEAD
-		ipr_cmd = NULL;
-
-		while ((be32_to_cpu(*ioa_cfg->hrrq_curr) & IPR_HRRQ_TOGGLE_BIT) ==
-		       ioa_cfg->toggle_bit) {
-
-			cmd_index = (be32_to_cpu(*ioa_cfg->hrrq_curr) &
-				     IPR_HRRQ_REQ_RESP_HANDLE_MASK) >> IPR_HRRQ_REQ_RESP_HANDLE_SHIFT;
-
-			if (unlikely(cmd_index >= IPR_NUM_CMD_BLKS)) {
-				ipr_isr_eh(ioa_cfg, "Invalid response handle from IOA");
-				spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-				return IRQ_HANDLED;
-			}
-
-			ipr_cmd = ioa_cfg->ipr_cmnd_list[cmd_index];
-
-			ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
-
-			ipr_trc_hook(ipr_cmd, IPR_TRACE_FINISH, ioasc);
-
-			list_del(&ipr_cmd->queue);
-			del_timer(&ipr_cmd->timer);
-			ipr_cmd->done(ipr_cmd);
-
-			rc = IRQ_HANDLED;
-
-			if (ioa_cfg->hrrq_curr < ioa_cfg->hrrq_end) {
-				ioa_cfg->hrrq_curr++;
-			} else {
-				ioa_cfg->hrrq_curr = ioa_cfg->hrrq_start;
-				ioa_cfg->toggle_bit ^= 1u;
-			}
-		}
-
-		if (ipr_cmd && !ioa_cfg->clear_isr)
-			break;
-
-		if (ipr_cmd != NULL) {
-			/* Clear the PCI interrupt */
-			num_hrrq = 0;
-			do {
-				writel(IPR_PCII_HRRQ_UPDATED, ioa_cfg->regs.clr_interrupt_reg32);
-				int_reg = readl(ioa_cfg->regs.sense_interrupt_reg32);
-			} while (int_reg & IPR_PCII_HRRQ_UPDATED &&
-					num_hrrq++ < IPR_MAX_HRRQ_RETRIES);
-=======
 		if (ipr_process_hrrq(hrrq, -1, &doneq)) {
 			rc =  IRQ_HANDLED;
 
@@ -6938,23 +5528,16 @@ static irqreturn_t ipr_isr(int irq, void *devp)
 				int_reg = readl(ioa_cfg->regs.sense_interrupt_reg32);
 			} while (int_reg & IPR_PCII_HRRQ_UPDATED &&
 				num_hrrq++ < IPR_MAX_HRRQ_RETRIES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		} else if (rc == IRQ_NONE && irq_none == 0) {
 			int_reg = readl(ioa_cfg->regs.sense_interrupt_reg32);
 			irq_none++;
 		} else if (num_hrrq == IPR_MAX_HRRQ_RETRIES &&
 			   int_reg & IPR_PCII_HRRQ_UPDATED) {
-<<<<<<< HEAD
-			ipr_isr_eh(ioa_cfg, "Error clearing HRRQ");
-			spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-			return IRQ_HANDLED;
-=======
 			ipr_isr_eh(ioa_cfg,
 				"Error clearing HRRQ: ", num_hrrq);
 			rc = IRQ_HANDLED;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			break;
 	}
@@ -6962,9 +5545,6 @@ static irqreturn_t ipr_isr(int irq, void *devp)
 	if (unlikely(rc == IRQ_NONE))
 		rc = ipr_handle_other_interrupt(ioa_cfg, int_reg);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-=======
 	spin_unlock_irqrestore(hrrq->lock, hrrq_flags);
 	list_for_each_entry_safe(ipr_cmd, temp, &doneq, queue) {
 		list_del(&ipr_cmd->queue);
@@ -7021,7 +5601,6 @@ static irqreturn_t ipr_isr_mhrrq(int irq, void *devp)
 		del_timer(&ipr_cmd->timer);
 		ipr_cmd->fast_done(ipr_cmd);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -7051,11 +5630,7 @@ static int ipr_build_ioadl64(struct ipr_ioa_cfg *ioa_cfg,
 	nseg = scsi_dma_map(scsi_cmd);
 	if (nseg < 0) {
 		if (printk_ratelimit())
-<<<<<<< HEAD
-			dev_err(&ioa_cfg->pdev->dev, "pci_map_sg failed!\n");
-=======
 			dev_err(&ioa_cfg->pdev->dev, "scsi_dma_map failed!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -7106,11 +5681,7 @@ static int ipr_build_ioadl(struct ipr_ioa_cfg *ioa_cfg,
 
 	nseg = scsi_dma_map(scsi_cmd);
 	if (nseg < 0) {
-<<<<<<< HEAD
-		dev_err(&ioa_cfg->pdev->dev, "pci_map_sg failed!\n");
-=======
 		dev_err(&ioa_cfg->pdev->dev, "scsi_dma_map failed!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -7147,40 +5718,7 @@ static int ipr_build_ioadl(struct ipr_ioa_cfg *ioa_cfg,
 }
 
 /**
-<<<<<<< HEAD
- * ipr_get_task_attributes - Translate SPI Q-Tag to task attributes
- * @scsi_cmd:	scsi command struct
- *
- * Return value:
- * 	task attributes
- **/
-static u8 ipr_get_task_attributes(struct scsi_cmnd *scsi_cmd)
-{
-	u8 tag[2];
-	u8 rc = IPR_FLAGS_LO_UNTAGGED_TASK;
-
-	if (scsi_populate_tag_msg(scsi_cmd, tag)) {
-		switch (tag[0]) {
-		case MSG_SIMPLE_TAG:
-			rc = IPR_FLAGS_LO_SIMPLE_TASK;
-			break;
-		case MSG_HEAD_TAG:
-			rc = IPR_FLAGS_LO_HEAD_OF_Q_TASK;
-			break;
-		case MSG_ORDERED_TAG:
-			rc = IPR_FLAGS_LO_ORDERED_TASK;
-			break;
-		};
-	}
-
-	return rc;
-}
-
-/**
- * ipr_erp_done - Process completion of ERP for a device
-=======
  * __ipr_erp_done - Process completion of ERP for a device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ipr_cmd:		ipr command struct
  *
  * This function copies the sense buffer into the scsi_cmd
@@ -7189,18 +5727,10 @@ static u8 ipr_get_task_attributes(struct scsi_cmnd *scsi_cmd)
  * Return value:
  * 	nothing
  **/
-<<<<<<< HEAD
-static void ipr_erp_done(struct ipr_cmnd *ipr_cmd)
-{
-	struct scsi_cmnd *scsi_cmd = ipr_cmd->scsi_cmd;
-	struct ipr_resource_entry *res = scsi_cmd->device->hostdata;
-	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-=======
 static void __ipr_erp_done(struct ipr_cmnd *ipr_cmd)
 {
 	struct scsi_cmnd *scsi_cmd = ipr_cmd->scsi_cmd;
 	struct ipr_resource_entry *res = scsi_cmd->device->hostdata;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
 
 	if (IPR_IOASC_SENSE_KEY(ioasc) > 0) {
@@ -7218,10 +5748,6 @@ static void __ipr_erp_done(struct ipr_cmnd *ipr_cmd)
 		res->in_erp = 0;
 	}
 	scsi_dma_unmap(ipr_cmd->scsi_cmd);
-<<<<<<< HEAD
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-	scsi_cmd->scsi_done(scsi_cmd);
-=======
 	scsi_done(scsi_cmd);
 	if (ipr_cmd->eh_comp)
 		complete(ipr_cmd->eh_comp);
@@ -7246,7 +5772,6 @@ static void ipr_erp_done(struct ipr_cmnd *ipr_cmd)
 	spin_lock_irqsave(&hrrq->_lock, hrrq_flags);
 	__ipr_erp_done(ipr_cmd);
 	spin_unlock_irqrestore(&hrrq->_lock, hrrq_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -7281,11 +5806,7 @@ static void ipr_reinit_ipr_cmnd_for_erp(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
-<<<<<<< HEAD
- * ipr_erp_request_sense - Send request sense to a device
-=======
  * __ipr_erp_request_sense - Send request sense to a device
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ipr_cmd:	ipr command struct
  *
  * This function sends a request sense to a device as a result
@@ -7294,21 +5815,13 @@ static void ipr_reinit_ipr_cmnd_for_erp(struct ipr_cmnd *ipr_cmd)
  * Return value:
  * 	nothing
  **/
-<<<<<<< HEAD
-static void ipr_erp_request_sense(struct ipr_cmnd *ipr_cmd)
-=======
 static void __ipr_erp_request_sense(struct ipr_cmnd *ipr_cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipr_cmd_pkt *cmd_pkt = &ipr_cmd->ioarcb.cmd_pkt;
 	u32 ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
 
 	if (IPR_IOASC_SENSE_KEY(ioasc) > 0) {
-<<<<<<< HEAD
-		ipr_erp_done(ipr_cmd);
-=======
 		__ipr_erp_done(ipr_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -7329,8 +5842,6 @@ static void __ipr_erp_request_sense(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_erp_request_sense - Send request sense to a device
  * @ipr_cmd:	ipr command struct
  *
@@ -7351,7 +5862,6 @@ static void ipr_erp_request_sense(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_erp_cancel_all - Send cancel all to a device
  * @ipr_cmd:	ipr command struct
  *
@@ -7373,13 +5883,8 @@ static void ipr_erp_cancel_all(struct ipr_cmnd *ipr_cmd)
 
 	ipr_reinit_ipr_cmnd_for_erp(ipr_cmd);
 
-<<<<<<< HEAD
-	if (!scsi_get_tag_type(scsi_cmd->device)) {
-		ipr_erp_request_sense(ipr_cmd);
-=======
 	if (!scsi_cmd->device->simple_tags) {
 		__ipr_erp_request_sense(ipr_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -7461,12 +5966,7 @@ static void ipr_dump_ioasa(struct ipr_ioa_cfg *ioa_cfg,
 
 /**
  * ipr_gen_sense - Generate SCSI sense data from an IOASA
-<<<<<<< HEAD
- * @ioasa:		IOASA
- * @sense_buf:	sense data buffer
-=======
  * @ipr_cmd:	ipr command struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	none
@@ -7603,11 +6103,7 @@ static void ipr_erp_start(struct ipr_ioa_cfg *ioa_cfg,
 	u32 masked_ioasc = ioasc & IPR_IOASC_IOASC_MASK;
 
 	if (!res) {
-<<<<<<< HEAD
-		ipr_scsi_eh_done(ipr_cmd);
-=======
 		__ipr_scsi_eh_done(ipr_cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -7639,16 +6135,12 @@ static void ipr_erp_start(struct ipr_ioa_cfg *ioa_cfg,
 		break;
 	case IPR_IOASC_MED_DO_NOT_REALLOC: /* prevent retries */
 	case IPR_IOASA_IR_DUAL_IOA_DISABLED:
-<<<<<<< HEAD
-		scsi_cmd->result |= (DID_PASSTHROUGH << 16);
-=======
 		/*
 		 * exception: do not set DID_PASSTHROUGH on CHECK CONDITION
 		 * so SCSI mid-layer and upper layers handle it accordingly.
 		 */
 		if (scsi_cmd->result != SAM_STAT_CHECK_CONDITION)
 			scsi_cmd->result |= (DID_PASSTHROUGH << 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IPR_IOASC_BUS_WAS_RESET:
 	case IPR_IOASC_BUS_WAS_RESET_BY_OTHER:
@@ -7677,8 +6169,6 @@ static void ipr_erp_start(struct ipr_ioa_cfg *ioa_cfg,
 		break;
 	case IPR_IOASC_NR_INIT_CMD_REQUIRED:
 		break;
-<<<<<<< HEAD
-=======
 	case IPR_IOASC_IR_NON_OPTIMIZED:
 		if (res->raw_mode) {
 			res->raw_mode = 0;
@@ -7686,7 +6176,6 @@ static void ipr_erp_start(struct ipr_ioa_cfg *ioa_cfg,
 		} else
 			scsi_cmd->result |= (DID_ERROR << 16);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		if (IPR_IOASC_SENSE_KEY(ioasc) > RECOVERED_ERROR)
 			scsi_cmd->result |= (DID_ERROR << 16);
@@ -7696,15 +6185,10 @@ static void ipr_erp_start(struct ipr_ioa_cfg *ioa_cfg,
 	}
 
 	scsi_dma_unmap(ipr_cmd->scsi_cmd);
-<<<<<<< HEAD
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-	scsi_cmd->scsi_done(scsi_cmd);
-=======
 	scsi_done(scsi_cmd);
 	if (ipr_cmd->eh_comp)
 		complete(ipr_cmd->eh_comp);
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -7722,21 +6206,11 @@ static void ipr_scsi_done(struct ipr_cmnd *ipr_cmd)
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	struct scsi_cmnd *scsi_cmd = ipr_cmd->scsi_cmd;
 	u32 ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
-<<<<<<< HEAD
-=======
 	unsigned long lock_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scsi_set_resid(scsi_cmd, be32_to_cpu(ipr_cmd->s.ioasa.hdr.residual_data_len));
 
 	if (likely(IPR_IOASC_SENSE_KEY(ioasc) == 0)) {
-<<<<<<< HEAD
-		scsi_dma_unmap(ipr_cmd->scsi_cmd);
-		list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-		scsi_cmd->scsi_done(scsi_cmd);
-	} else
-		ipr_erp_start(ioa_cfg, ipr_cmd);
-=======
 		scsi_dma_unmap(scsi_cmd);
 
 		spin_lock_irqsave(ipr_cmd->hrrq->lock, lock_flags);
@@ -7752,18 +6226,12 @@ static void ipr_scsi_done(struct ipr_cmnd *ipr_cmd)
 		spin_unlock(&ipr_cmd->hrrq->_lock);
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ipr_queuecommand - Queue a mid-layer request
-<<<<<<< HEAD
- * @scsi_cmd:	scsi command struct
- * @done:		done function
-=======
  * @shost:		scsi host struct
  * @scsi_cmd:	scsi command struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function queues a request generated by the mid-layer.
  *
@@ -7772,27 +6240,13 @@ static void ipr_scsi_done(struct ipr_cmnd *ipr_cmd)
  *	SCSI_MLQUEUE_DEVICE_BUSY if device is busy
  *	SCSI_MLQUEUE_HOST_BUSY if host is busy
  **/
-<<<<<<< HEAD
-static int ipr_queuecommand_lck(struct scsi_cmnd *scsi_cmd,
-			    void (*done) (struct scsi_cmnd *))
-=======
 static int ipr_queuecommand(struct Scsi_Host *shost,
 			    struct scsi_cmnd *scsi_cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipr_ioa_cfg *ioa_cfg;
 	struct ipr_resource_entry *res;
 	struct ipr_ioarcb *ioarcb;
 	struct ipr_cmnd *ipr_cmd;
-<<<<<<< HEAD
-	int rc = 0;
-
-	scsi_cmd->scsi_done = done;
-	ioa_cfg = (struct ipr_ioa_cfg *)scsi_cmd->device->host->hostdata;
-	res = scsi_cmd->device->hostdata;
-	scsi_cmd->result = (DID_OK << 16);
-
-=======
 	unsigned long hrrq_flags;
 	int rc;
 	struct ipr_hrr_queue *hrrq;
@@ -7807,112 +6261,20 @@ static int ipr_queuecommand(struct Scsi_Host *shost,
 	hrrq = &ioa_cfg->hrrq[hrrq_id];
 
 	spin_lock_irqsave(hrrq->lock, hrrq_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We are currently blocking all devices due to a host reset
 	 * We have told the host to stop giving us new requests, but
 	 * ERP ops don't count. FIXME
 	 */
-<<<<<<< HEAD
-	if (unlikely(!ioa_cfg->allow_cmds && !ioa_cfg->ioa_is_dead))
-		return SCSI_MLQUEUE_HOST_BUSY;
-=======
 	if (unlikely(!hrrq->allow_cmds && !hrrq->ioa_is_dead && !hrrq->removing_ioa)) {
 		spin_unlock_irqrestore(hrrq->lock, hrrq_flags);
 		return SCSI_MLQUEUE_HOST_BUSY;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FIXME - Create scsi_set_host_offline interface
 	 *  and the ioa_is_dead check can be removed
 	 */
-<<<<<<< HEAD
-	if (unlikely(ioa_cfg->ioa_is_dead || !res)) {
-		memset(scsi_cmd->sense_buffer, 0, SCSI_SENSE_BUFFERSIZE);
-		scsi_cmd->result = (DID_NO_CONNECT << 16);
-		scsi_cmd->scsi_done(scsi_cmd);
-		return 0;
-	}
-
-	if (ipr_is_gata(res) && res->sata_port)
-		return ata_sas_queuecmd(scsi_cmd, res->sata_port->ap);
-
-	ipr_cmd = ipr_get_free_ipr_cmnd(ioa_cfg);
-	ioarcb = &ipr_cmd->ioarcb;
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->pending_q);
-
-	memcpy(ioarcb->cmd_pkt.cdb, scsi_cmd->cmnd, scsi_cmd->cmd_len);
-	ipr_cmd->scsi_cmd = scsi_cmd;
-	ioarcb->res_handle = res->res_handle;
-	ipr_cmd->done = ipr_scsi_done;
-	ipr_trc_hook(ipr_cmd, IPR_TRACE_START, IPR_GET_RES_PHYS_LOC(res));
-
-	if (ipr_is_gscsi(res) || ipr_is_vset_device(res)) {
-		if (scsi_cmd->underflow == 0)
-			ioarcb->cmd_pkt.flags_hi |= IPR_FLAGS_HI_NO_ULEN_CHK;
-
-		if (res->needs_sync_complete) {
-			ioarcb->cmd_pkt.flags_hi |= IPR_FLAGS_HI_SYNC_COMPLETE;
-			res->needs_sync_complete = 0;
-		}
-
-		ioarcb->cmd_pkt.flags_hi |= IPR_FLAGS_HI_NO_LINK_DESC;
-		if (ipr_is_gscsi(res))
-			ioarcb->cmd_pkt.flags_lo |= IPR_FLAGS_LO_DELAY_AFTER_RST;
-		ioarcb->cmd_pkt.flags_lo |= IPR_FLAGS_LO_ALIGNED_BFR;
-		ioarcb->cmd_pkt.flags_lo |= ipr_get_task_attributes(scsi_cmd);
-	}
-
-	if (scsi_cmd->cmnd[0] >= 0xC0 &&
-	    (!ipr_is_gscsi(res) || scsi_cmd->cmnd[0] == IPR_QUERY_RSRC_STATE))
-		ioarcb->cmd_pkt.request_type = IPR_RQTYPE_IOACMD;
-
-	if (likely(rc == 0)) {
-		if (ioa_cfg->sis64)
-			rc = ipr_build_ioadl64(ioa_cfg, ipr_cmd);
-		else
-			rc = ipr_build_ioadl(ioa_cfg, ipr_cmd);
-	}
-
-	if (unlikely(rc != 0)) {
-		list_move_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-		return SCSI_MLQUEUE_HOST_BUSY;
-	}
-
-	ipr_send_command(ipr_cmd);
-	return 0;
-}
-
-static DEF_SCSI_QCMD(ipr_queuecommand)
-
-/**
- * ipr_ioctl - IOCTL handler
- * @sdev:	scsi device struct
- * @cmd:	IOCTL cmd
- * @arg:	IOCTL arg
- *
- * Return value:
- * 	0 on success / other on failure
- **/
-static int ipr_ioctl(struct scsi_device *sdev, int cmd, void __user *arg)
-{
-	struct ipr_resource_entry *res;
-
-	res = (struct ipr_resource_entry *)sdev->hostdata;
-	if (res && ipr_is_gata(res)) {
-		if (cmd == HDIO_GET_IDENTITY)
-			return -ENOTTY;
-		return ata_sas_scsi_ioctl(res->sata_port->ap, sdev, cmd, arg);
-	}
-
-	return -EINVAL;
-}
-
-/**
- * ipr_info - Get information about the card/driver
- * @scsi_host:	scsi host struct
-=======
 	if (unlikely(hrrq->ioa_is_dead || hrrq->removing_ioa || !res)) {
 		spin_unlock_irqrestore(hrrq->lock, hrrq_flags);
 		goto err_nodev;
@@ -8007,16 +6369,11 @@ err_nodev:
 /**
  * ipr_ioa_info - Get information about the card/driver
  * @host:	scsi host struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	pointer to buffer with description string
  **/
-<<<<<<< HEAD
-static const char * ipr_ioa_info(struct Scsi_Host *host)
-=======
 static const char *ipr_ioa_info(struct Scsi_Host *host)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static char buffer[512];
 	struct ipr_ioa_cfg *ioa_cfg;
@@ -8031,18 +6388,10 @@ static const char *ipr_ioa_info(struct Scsi_Host *host)
 	return buffer;
 }
 
-<<<<<<< HEAD
-static struct scsi_host_template driver_template = {
-	.module = THIS_MODULE,
-	.name = "IPR",
-	.info = ipr_ioa_info,
-	.ioctl = ipr_ioctl,
-=======
 static const struct scsi_host_template driver_template = {
 	.module = THIS_MODULE,
 	.name = "IPR",
 	.info = ipr_ioa_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.queuecommand = ipr_queuecommand,
 	.eh_abort_handler = ipr_eh_abort,
 	.eh_device_reset_handler = ipr_eh_dev_reset,
@@ -8050,429 +6399,21 @@ static const struct scsi_host_template driver_template = {
 	.slave_alloc = ipr_slave_alloc,
 	.slave_configure = ipr_slave_configure,
 	.slave_destroy = ipr_slave_destroy,
-<<<<<<< HEAD
-	.target_alloc = ipr_target_alloc,
-	.target_destroy = ipr_target_destroy,
-	.change_queue_depth = ipr_change_queue_depth,
-	.change_queue_type = ipr_change_queue_type,
-=======
 	.scan_finished = ipr_scan_finished,
 	.target_destroy = ipr_target_destroy,
 	.change_queue_depth = ipr_change_queue_depth,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bios_param = ipr_biosparam,
 	.can_queue = IPR_MAX_COMMANDS,
 	.this_id = -1,
 	.sg_tablesize = IPR_MAX_SGLIST,
 	.max_sectors = IPR_IOA_MAX_SECTORS,
 	.cmd_per_lun = IPR_MAX_CMD_PER_LUN,
-<<<<<<< HEAD
-	.use_clustering = ENABLE_CLUSTERING,
-	.shost_attrs = ipr_ioa_attrs,
-	.sdev_attrs = ipr_dev_attrs,
-	.proc_name = IPR_NAME
-};
-
-/**
- * ipr_ata_phy_reset - libata phy_reset handler
- * @ap:		ata port to reset
- *
- **/
-static void ipr_ata_phy_reset(struct ata_port *ap)
-{
-	unsigned long flags;
-	struct ipr_sata_port *sata_port = ap->private_data;
-	struct ipr_resource_entry *res = sata_port->res;
-	struct ipr_ioa_cfg *ioa_cfg = sata_port->ioa_cfg;
-	int rc;
-
-	ENTER;
-	spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-	while(ioa_cfg->in_reset_reload) {
-		spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
-		wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
-		spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-	}
-
-	if (!ioa_cfg->allow_cmds)
-		goto out_unlock;
-
-	rc = ipr_device_reset(ioa_cfg, res);
-
-	if (rc) {
-		ap->link.device[0].class = ATA_DEV_NONE;
-		goto out_unlock;
-	}
-
-	ap->link.device[0].class = res->ata_class;
-	if (ap->link.device[0].class == ATA_DEV_UNKNOWN)
-		ap->link.device[0].class = ATA_DEV_NONE;
-
-out_unlock:
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
-	LEAVE;
-}
-
-/**
- * ipr_ata_post_internal - Cleanup after an internal command
- * @qc:	ATA queued command
- *
- * Return value:
- * 	none
- **/
-static void ipr_ata_post_internal(struct ata_queued_cmd *qc)
-{
-	struct ipr_sata_port *sata_port = qc->ap->private_data;
-	struct ipr_ioa_cfg *ioa_cfg = sata_port->ioa_cfg;
-	struct ipr_cmnd *ipr_cmd;
-	unsigned long flags;
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-	while(ioa_cfg->in_reset_reload) {
-		spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
-		wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
-		spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-	}
-
-	list_for_each_entry(ipr_cmd, &ioa_cfg->pending_q, queue) {
-		if (ipr_cmd->qc == qc) {
-			ipr_device_reset(ioa_cfg, sata_port->res);
-			break;
-		}
-	}
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
-}
-
-/**
- * ipr_copy_sata_tf - Copy a SATA taskfile to an IOA data structure
- * @regs:	destination
- * @tf:	source ATA taskfile
- *
- * Return value:
- * 	none
- **/
-static void ipr_copy_sata_tf(struct ipr_ioarcb_ata_regs *regs,
-			     struct ata_taskfile *tf)
-{
-	regs->feature = tf->feature;
-	regs->nsect = tf->nsect;
-	regs->lbal = tf->lbal;
-	regs->lbam = tf->lbam;
-	regs->lbah = tf->lbah;
-	regs->device = tf->device;
-	regs->command = tf->command;
-	regs->hob_feature = tf->hob_feature;
-	regs->hob_nsect = tf->hob_nsect;
-	regs->hob_lbal = tf->hob_lbal;
-	regs->hob_lbam = tf->hob_lbam;
-	regs->hob_lbah = tf->hob_lbah;
-	regs->ctl = tf->ctl;
-}
-
-/**
- * ipr_sata_done - done function for SATA commands
- * @ipr_cmd:	ipr command struct
- *
- * This function is invoked by the interrupt handler for
- * ops generated by the SCSI mid-layer to SATA devices
- *
- * Return value:
- * 	none
- **/
-static void ipr_sata_done(struct ipr_cmnd *ipr_cmd)
-{
-	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-	struct ata_queued_cmd *qc = ipr_cmd->qc;
-	struct ipr_sata_port *sata_port = qc->ap->private_data;
-	struct ipr_resource_entry *res = sata_port->res;
-	u32 ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
-
-	if (ipr_cmd->ioa_cfg->sis64)
-		memcpy(&sata_port->ioasa, &ipr_cmd->s.ioasa64.u.gata,
-		       sizeof(struct ipr_ioasa_gata));
-	else
-		memcpy(&sata_port->ioasa, &ipr_cmd->s.ioasa.u.gata,
-		       sizeof(struct ipr_ioasa_gata));
-	ipr_dump_ioasa(ioa_cfg, ipr_cmd, res);
-
-	if (be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc_specific) & IPR_ATA_DEVICE_WAS_RESET)
-		scsi_report_device_reset(ioa_cfg->host, res->bus, res->target);
-
-	if (IPR_IOASC_SENSE_KEY(ioasc) > RECOVERED_ERROR)
-		qc->err_mask |= __ac_err_mask(sata_port->ioasa.status);
-	else
-		qc->err_mask |= ac_err_mask(sata_port->ioasa.status);
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-	ata_qc_complete(qc);
-}
-
-/**
- * ipr_build_ata_ioadl64 - Build an ATA scatter/gather list
- * @ipr_cmd:	ipr command struct
- * @qc:		ATA queued command
- *
- **/
-static void ipr_build_ata_ioadl64(struct ipr_cmnd *ipr_cmd,
-				  struct ata_queued_cmd *qc)
-{
-	u32 ioadl_flags = 0;
-	struct ipr_ioarcb *ioarcb = &ipr_cmd->ioarcb;
-	struct ipr_ioadl64_desc *ioadl64 = ipr_cmd->i.ioadl64;
-	struct ipr_ioadl64_desc *last_ioadl64 = NULL;
-	int len = qc->nbytes;
-	struct scatterlist *sg;
-	unsigned int si;
-	dma_addr_t dma_addr = ipr_cmd->dma_addr;
-
-	if (len == 0)
-		return;
-
-	if (qc->dma_dir == DMA_TO_DEVICE) {
-		ioadl_flags = IPR_IOADL_FLAGS_WRITE;
-		ioarcb->cmd_pkt.flags_hi |= IPR_FLAGS_HI_WRITE_NOT_READ;
-	} else if (qc->dma_dir == DMA_FROM_DEVICE)
-		ioadl_flags = IPR_IOADL_FLAGS_READ;
-
-	ioarcb->data_transfer_length = cpu_to_be32(len);
-	ioarcb->ioadl_len =
-		cpu_to_be32(sizeof(struct ipr_ioadl64_desc) * ipr_cmd->dma_use_sg);
-	ioarcb->u.sis64_addr_data.data_ioadl_addr =
-		cpu_to_be64(dma_addr + offsetof(struct ipr_cmnd, i.ata_ioadl));
-
-	for_each_sg(qc->sg, sg, qc->n_elem, si) {
-		ioadl64->flags = cpu_to_be32(ioadl_flags);
-		ioadl64->data_len = cpu_to_be32(sg_dma_len(sg));
-		ioadl64->address = cpu_to_be64(sg_dma_address(sg));
-
-		last_ioadl64 = ioadl64;
-		ioadl64++;
-	}
-
-	if (likely(last_ioadl64))
-		last_ioadl64->flags |= cpu_to_be32(IPR_IOADL_FLAGS_LAST);
-}
-
-/**
- * ipr_build_ata_ioadl - Build an ATA scatter/gather list
- * @ipr_cmd:	ipr command struct
- * @qc:		ATA queued command
- *
- **/
-static void ipr_build_ata_ioadl(struct ipr_cmnd *ipr_cmd,
-				struct ata_queued_cmd *qc)
-{
-	u32 ioadl_flags = 0;
-	struct ipr_ioarcb *ioarcb = &ipr_cmd->ioarcb;
-	struct ipr_ioadl_desc *ioadl = ipr_cmd->i.ioadl;
-	struct ipr_ioadl_desc *last_ioadl = NULL;
-	int len = qc->nbytes;
-	struct scatterlist *sg;
-	unsigned int si;
-
-	if (len == 0)
-		return;
-
-	if (qc->dma_dir == DMA_TO_DEVICE) {
-		ioadl_flags = IPR_IOADL_FLAGS_WRITE;
-		ioarcb->cmd_pkt.flags_hi |= IPR_FLAGS_HI_WRITE_NOT_READ;
-		ioarcb->data_transfer_length = cpu_to_be32(len);
-		ioarcb->ioadl_len =
-			cpu_to_be32(sizeof(struct ipr_ioadl_desc) * ipr_cmd->dma_use_sg);
-	} else if (qc->dma_dir == DMA_FROM_DEVICE) {
-		ioadl_flags = IPR_IOADL_FLAGS_READ;
-		ioarcb->read_data_transfer_length = cpu_to_be32(len);
-		ioarcb->read_ioadl_len =
-			cpu_to_be32(sizeof(struct ipr_ioadl_desc) * ipr_cmd->dma_use_sg);
-	}
-
-	for_each_sg(qc->sg, sg, qc->n_elem, si) {
-		ioadl->flags_and_data_len = cpu_to_be32(ioadl_flags | sg_dma_len(sg));
-		ioadl->address = cpu_to_be32(sg_dma_address(sg));
-
-		last_ioadl = ioadl;
-		ioadl++;
-	}
-
-	if (likely(last_ioadl))
-		last_ioadl->flags_and_data_len |= cpu_to_be32(IPR_IOADL_FLAGS_LAST);
-}
-
-/**
- * ipr_qc_issue - Issue a SATA qc to a device
- * @qc:	queued command
- *
- * Return value:
- * 	0 if success
- **/
-static unsigned int ipr_qc_issue(struct ata_queued_cmd *qc)
-{
-	struct ata_port *ap = qc->ap;
-	struct ipr_sata_port *sata_port = ap->private_data;
-	struct ipr_resource_entry *res = sata_port->res;
-	struct ipr_ioa_cfg *ioa_cfg = sata_port->ioa_cfg;
-	struct ipr_cmnd *ipr_cmd;
-	struct ipr_ioarcb *ioarcb;
-	struct ipr_ioarcb_ata_regs *regs;
-
-	if (unlikely(!ioa_cfg->allow_cmds || ioa_cfg->ioa_is_dead))
-		return AC_ERR_SYSTEM;
-
-	ipr_cmd = ipr_get_free_ipr_cmnd(ioa_cfg);
-	ioarcb = &ipr_cmd->ioarcb;
-
-	if (ioa_cfg->sis64) {
-		regs = &ipr_cmd->i.ata_ioadl.regs;
-		ioarcb->add_cmd_parms_offset = cpu_to_be16(sizeof(*ioarcb));
-	} else
-		regs = &ioarcb->u.add_data.u.regs;
-
-	memset(regs, 0, sizeof(*regs));
-	ioarcb->add_cmd_parms_len = cpu_to_be16(sizeof(*regs));
-
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->pending_q);
-	ipr_cmd->qc = qc;
-	ipr_cmd->done = ipr_sata_done;
-	ipr_cmd->ioarcb.res_handle = res->res_handle;
-	ioarcb->cmd_pkt.request_type = IPR_RQTYPE_ATA_PASSTHRU;
-	ioarcb->cmd_pkt.flags_hi |= IPR_FLAGS_HI_NO_LINK_DESC;
-	ioarcb->cmd_pkt.flags_hi |= IPR_FLAGS_HI_NO_ULEN_CHK;
-	ipr_cmd->dma_use_sg = qc->n_elem;
-
-	if (ioa_cfg->sis64)
-		ipr_build_ata_ioadl64(ipr_cmd, qc);
-	else
-		ipr_build_ata_ioadl(ipr_cmd, qc);
-
-	regs->flags |= IPR_ATA_FLAG_STATUS_ON_GOOD_COMPLETION;
-	ipr_copy_sata_tf(regs, &qc->tf);
-	memcpy(ioarcb->cmd_pkt.cdb, qc->cdb, IPR_MAX_CDB_LEN);
-	ipr_trc_hook(ipr_cmd, IPR_TRACE_START, IPR_GET_RES_PHYS_LOC(res));
-
-	switch (qc->tf.protocol) {
-	case ATA_PROT_NODATA:
-	case ATA_PROT_PIO:
-		break;
-
-	case ATA_PROT_DMA:
-		regs->flags |= IPR_ATA_FLAG_XFER_TYPE_DMA;
-		break;
-
-	case ATAPI_PROT_PIO:
-	case ATAPI_PROT_NODATA:
-		regs->flags |= IPR_ATA_FLAG_PACKET_CMD;
-		break;
-
-	case ATAPI_PROT_DMA:
-		regs->flags |= IPR_ATA_FLAG_PACKET_CMD;
-		regs->flags |= IPR_ATA_FLAG_XFER_TYPE_DMA;
-		break;
-
-	default:
-		WARN_ON(1);
-		return AC_ERR_INVALID;
-	}
-
-	ipr_send_command(ipr_cmd);
-
-	return 0;
-}
-
-/**
- * ipr_qc_fill_rtf - Read result TF
- * @qc: ATA queued command
- *
- * Return value:
- * 	true
- **/
-static bool ipr_qc_fill_rtf(struct ata_queued_cmd *qc)
-{
-	struct ipr_sata_port *sata_port = qc->ap->private_data;
-	struct ipr_ioasa_gata *g = &sata_port->ioasa;
-	struct ata_taskfile *tf = &qc->result_tf;
-
-	tf->feature = g->error;
-	tf->nsect = g->nsect;
-	tf->lbal = g->lbal;
-	tf->lbam = g->lbam;
-	tf->lbah = g->lbah;
-	tf->device = g->device;
-	tf->command = g->status;
-	tf->hob_nsect = g->hob_nsect;
-	tf->hob_lbal = g->hob_lbal;
-	tf->hob_lbam = g->hob_lbam;
-	tf->hob_lbah = g->hob_lbah;
-	tf->ctl = g->alt_status;
-
-	return true;
-}
-
-static struct ata_port_operations ipr_sata_ops = {
-	.phy_reset = ipr_ata_phy_reset,
-	.hardreset = ipr_sata_reset,
-	.post_internal_cmd = ipr_ata_post_internal,
-	.qc_prep = ata_noop_qc_prep,
-	.qc_issue = ipr_qc_issue,
-	.qc_fill_rtf = ipr_qc_fill_rtf,
-	.port_start = ata_sas_port_start,
-	.port_stop = ata_sas_port_stop
-};
-
-static struct ata_port_info sata_port_info = {
-	.flags		= ATA_FLAG_SATA | ATA_FLAG_PIO_DMA,
-	.pio_mask	= ATA_PIO4_ONLY,
-	.mwdma_mask	= ATA_MWDMA2,
-	.udma_mask	= ATA_UDMA6,
-	.port_ops	= &ipr_sata_ops
-};
-
-#ifdef CONFIG_PPC_PSERIES
-static const u16 ipr_blocked_processors[] = {
-	PV_NORTHSTAR,
-	PV_PULSAR,
-	PV_POWER4,
-	PV_ICESTAR,
-	PV_SSTAR,
-	PV_POWER4p,
-	PV_630,
-	PV_630p
-};
-
-/**
- * ipr_invalid_adapter - Determine if this adapter is supported on this hardware
- * @ioa_cfg:	ioa cfg struct
- *
- * Adapters that use Gemstone revision < 3.1 do not work reliably on
- * certain pSeries hardware. This function determines if the given
- * adapter is in one of these confgurations or not.
- *
- * Return value:
- * 	1 if adapter is not supported / 0 if adapter is supported
- **/
-static int ipr_invalid_adapter(struct ipr_ioa_cfg *ioa_cfg)
-{
-	int i;
-
-	if ((ioa_cfg->type == 0x5702) && (ioa_cfg->pdev->revision < 4)) {
-		for (i = 0; i < ARRAY_SIZE(ipr_blocked_processors); i++){
-			if (__is_processor(ipr_blocked_processors[i]))
-				return 1;
-		}
-	}
-	return 0;
-}
-#else
-#define ipr_invalid_adapter(ioa_cfg) 0
-#endif
-
-/**
-=======
 	.shost_groups = ipr_ioa_groups,
 	.sdev_groups = ipr_dev_groups,
 	.proc_name = IPR_NAME,
 };
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_ioa_bringdown_done - IOA bring down completion.
  * @ipr_cmd:	ipr command struct
  *
@@ -8485,18 +6426,6 @@ static int ipr_invalid_adapter(struct ipr_ioa_cfg *ioa_cfg)
 static int ipr_ioa_bringdown_done(struct ipr_cmnd *ipr_cmd)
 {
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-<<<<<<< HEAD
-
-	ENTER;
-	ioa_cfg->in_reset_reload = 0;
-	ioa_cfg->reset_retries = 0;
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-	wake_up_all(&ioa_cfg->reset_wait_q);
-
-	spin_unlock_irq(ioa_cfg->host->host_lock);
-	scsi_unblock_requests(ioa_cfg->host);
-	spin_lock_irq(ioa_cfg->host->host_lock);
-=======
 	int i;
 
 	ENTER;
@@ -8517,7 +6446,6 @@ static int ipr_ioa_bringdown_done(struct ipr_cmnd *ipr_cmd)
 
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 	wake_up_all(&ioa_cfg->reset_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 
 	return IPR_RC_JOB_RETURN;
@@ -8538,14 +6466,6 @@ static int ipr_ioa_reset_done(struct ipr_cmnd *ipr_cmd)
 {
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	struct ipr_resource_entry *res;
-<<<<<<< HEAD
-	struct ipr_hostrcb *hostrcb, *temp;
-	int i = 0;
-
-	ENTER;
-	ioa_cfg->in_reset_reload = 0;
-	ioa_cfg->allow_cmds = 1;
-=======
 	int j;
 
 	ENTER;
@@ -8556,30 +6476,17 @@ static int ipr_ioa_reset_done(struct ipr_cmnd *ipr_cmd)
 		spin_unlock(&ioa_cfg->hrrq[j]._lock);
 	}
 	wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ioa_cfg->reset_cmd = NULL;
 	ioa_cfg->doorbell |= IPR_RUNTIME_RESET;
 
 	list_for_each_entry(res, &ioa_cfg->used_res_q, queue) {
-<<<<<<< HEAD
-		if (ioa_cfg->allow_ml_add_del && (res->add_to_ml || res->del_from_ml)) {
-=======
 		if (res->add_to_ml || res->del_from_ml) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ipr_trace;
 			break;
 		}
 	}
 	schedule_work(&ioa_cfg->work_q);
 
-<<<<<<< HEAD
-	list_for_each_entry_safe(hostrcb, temp, &ioa_cfg->hostrcb_free_q, queue) {
-		list_del(&hostrcb->queue);
-		if (i++ < IPR_NUM_LOG_HCAMS)
-			ipr_send_hcam(ioa_cfg, IPR_HCAM_CDB_OP_CODE_LOG_DATA, hostrcb);
-		else
-			ipr_send_hcam(ioa_cfg, IPR_HCAM_CDB_OP_CODE_CONFIG_CHANGE, hostrcb);
-=======
 	for (j = 0; j < IPR_NUM_HCAMS; j++) {
 		list_del_init(&ioa_cfg->hostrcb[j]->queue);
 		if (j < IPR_NUM_LOG_HCAMS)
@@ -8590,31 +6497,17 @@ static int ipr_ioa_reset_done(struct ipr_cmnd *ipr_cmd)
 			ipr_send_hcam(ioa_cfg,
 				IPR_HCAM_CDB_OP_CODE_CONFIG_CHANGE,
 				ioa_cfg->hostrcb[j]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	scsi_report_bus_reset(ioa_cfg->host, IPR_VSET_BUS);
 	dev_info(&ioa_cfg->pdev->dev, "IOA initialized.\n");
 
 	ioa_cfg->reset_retries = 0;
-<<<<<<< HEAD
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-	wake_up_all(&ioa_cfg->reset_wait_q);
-
-	spin_unlock(ioa_cfg->host->host_lock);
-	scsi_unblock_requests(ioa_cfg->host);
-	spin_lock(ioa_cfg->host->host_lock);
-
-	if (!ioa_cfg->allow_cmds)
-		scsi_block_requests(ioa_cfg->host);
-
-=======
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 	wake_up_all(&ioa_cfg->reset_wait_q);
 
 	ioa_cfg->scsi_unblock = 1;
 	schedule_work(&ioa_cfg->work_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 	return IPR_RC_JOB_RETURN;
 }
@@ -8683,17 +6576,11 @@ static int ipr_set_supported_devs(struct ipr_cmnd *ipr_cmd)
 
 		if (!ioa_cfg->sis64)
 			ipr_cmd->job_step = ipr_set_supported_devs;
-<<<<<<< HEAD
-		return IPR_RC_JOB_RETURN;
-	}
-
-=======
 		LEAVE;
 		return IPR_RC_JOB_RETURN;
 	}
 
 	LEAVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IPR_RC_JOB_CONTINUE;
 }
 
@@ -8808,11 +6695,7 @@ static void ipr_scsi_bus_speed_limit(struct ipr_ioa_cfg *ioa_cfg)
  * 	none
  **/
 static void ipr_modify_ioafp_mode_page_28(struct ipr_ioa_cfg *ioa_cfg,
-<<<<<<< HEAD
-					  	struct ipr_mode_pages *mode_pages)
-=======
 					  struct ipr_mode_pages *mode_pages)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, entry_length;
 	struct ipr_dev_bus_entry *bus;
@@ -8913,11 +6796,7 @@ static int ipr_ioafp_mode_select_page28(struct ipr_cmnd *ipr_cmd)
 /**
  * ipr_build_mode_sense - Builds a mode sense command
  * @ipr_cmd:	ipr command struct
-<<<<<<< HEAD
- * @res:		resource entry struct
-=======
  * @res_handle:		resource entry struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @parm:		Byte 2 of mode sense command
  * @dma_addr:	DMA address of mode sense buffer
  * @xfer_len:	Size of DMA buffer
@@ -8959,11 +6838,7 @@ static int ipr_reset_cmd_failed(struct ipr_cmnd *ipr_cmd)
 		ipr_cmd->ioarcb.cmd_pkt.cdb[0], ioasc);
 
 	ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
-<<<<<<< HEAD
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IPR_RC_JOB_RETURN;
 }
 
@@ -9244,11 +7119,6 @@ static int ipr_ioafp_query_ioa_cfg(struct ipr_cmnd *ipr_cmd)
 	return IPR_RC_JOB_RETURN;
 }
 
-<<<<<<< HEAD
-/**
- * ipr_ioafp_inquiry - Send an Inquiry to the adapter.
- * @ipr_cmd:	ipr command struct
-=======
 static int ipr_ioa_service_action_failed(struct ipr_cmnd *ipr_cmd)
 {
 	u32 ioasc = be32_to_cpu(ipr_cmd->s.ioasa.hdr.ioasc);
@@ -9314,7 +7184,6 @@ static int ipr_ioafp_set_caching_parameters(struct ipr_cmnd *ipr_cmd)
  * @page:	page to inquire
  * @dma_addr:	DMA address
  * @xfer_len:	transfer data length
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This utility function sends an inquiry to the adapter.
  *
@@ -9363,8 +7232,6 @@ static int ipr_inquiry_page_supported(struct ipr_inquiry_page0 *page0, u8 page)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_ioafp_pageC4_inquiry - Send a Page 0xC4 Inquiry to the adapter.
  * @ipr_cmd:	ipr command struct
  *
@@ -9398,7 +7265,6 @@ static int ipr_ioafp_pageC4_inquiry(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_ioafp_cap_inquiry - Send a Page 0xD0 Inquiry to the adapter.
  * @ipr_cmd:	ipr command struct
  *
@@ -9415,11 +7281,7 @@ static int ipr_ioafp_cap_inquiry(struct ipr_cmnd *ipr_cmd)
 	struct ipr_inquiry_cap *cap = &ioa_cfg->vpd_cbs->cap;
 
 	ENTER;
-<<<<<<< HEAD
-	ipr_cmd->job_step = ipr_ioafp_query_ioa_cfg;
-=======
 	ipr_cmd->job_step = ipr_ioafp_pageC4_inquiry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(cap, 0, sizeof(*cap));
 
 	if (ipr_inquiry_page_supported(page0, 0xD0)) {
@@ -9529,48 +7391,6 @@ static int ipr_ioafp_identify_hrrq(struct ipr_cmnd *ipr_cmd)
 {
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	struct ipr_ioarcb *ioarcb = &ipr_cmd->ioarcb;
-<<<<<<< HEAD
-
-	ENTER;
-	dev_info(&ioa_cfg->pdev->dev, "Starting IOA initialization sequence.\n");
-
-	ioarcb->cmd_pkt.cdb[0] = IPR_ID_HOST_RR_Q;
-	ioarcb->res_handle = cpu_to_be32(IPR_IOA_RES_HANDLE);
-
-	ioarcb->cmd_pkt.request_type = IPR_RQTYPE_IOACMD;
-	if (ioa_cfg->sis64)
-		ioarcb->cmd_pkt.cdb[1] = 0x1;
-	ioarcb->cmd_pkt.cdb[2] =
-		((u64) ioa_cfg->host_rrq_dma >> 24) & 0xff;
-	ioarcb->cmd_pkt.cdb[3] =
-		((u64) ioa_cfg->host_rrq_dma >> 16) & 0xff;
-	ioarcb->cmd_pkt.cdb[4] =
-		((u64) ioa_cfg->host_rrq_dma >> 8) & 0xff;
-	ioarcb->cmd_pkt.cdb[5] =
-		((u64) ioa_cfg->host_rrq_dma) & 0xff;
-	ioarcb->cmd_pkt.cdb[7] =
-		((sizeof(u32) * IPR_NUM_CMD_BLKS) >> 8) & 0xff;
-	ioarcb->cmd_pkt.cdb[8] =
-		(sizeof(u32) * IPR_NUM_CMD_BLKS) & 0xff;
-
-	if (ioa_cfg->sis64) {
-		ioarcb->cmd_pkt.cdb[10] =
-			((u64) ioa_cfg->host_rrq_dma >> 56) & 0xff;
-		ioarcb->cmd_pkt.cdb[11] =
-			((u64) ioa_cfg->host_rrq_dma >> 48) & 0xff;
-		ioarcb->cmd_pkt.cdb[12] =
-			((u64) ioa_cfg->host_rrq_dma >> 40) & 0xff;
-		ioarcb->cmd_pkt.cdb[13] =
-			((u64) ioa_cfg->host_rrq_dma >> 32) & 0xff;
-	}
-
-	ipr_cmd->job_step = ipr_ioafp_std_inquiry;
-
-	ipr_do_req(ipr_cmd, ipr_reset_ioa_job, ipr_timeout, IPR_INTERNAL_TIMEOUT);
-
-	LEAVE;
-	return IPR_RC_JOB_RETURN;
-=======
 	struct ipr_hrr_queue *hrrq;
 
 	ENTER;
@@ -9637,16 +7457,11 @@ static int ipr_ioafp_identify_hrrq(struct ipr_cmnd *ipr_cmd)
 
 	LEAVE;
 	return IPR_RC_JOB_CONTINUE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ipr_reset_timer_done - Adapter reset timer function
-<<<<<<< HEAD
- * @ipr_cmd:	ipr command struct
-=======
  * @t: Timer context used to fetch ipr command struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description: This function is used in adapter reset processing
  * for timing events. If the reset_cmd pointer in the IOA
@@ -9657,14 +7472,9 @@ static int ipr_ioafp_identify_hrrq(struct ipr_cmnd *ipr_cmd)
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void ipr_reset_timer_done(struct ipr_cmnd *ipr_cmd)
-{
-=======
 static void ipr_reset_timer_done(struct timer_list *t)
 {
 	struct ipr_cmnd *ipr_cmd = from_timer(ipr_cmd, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	unsigned long lock_flags = 0;
 
@@ -9695,14 +7505,6 @@ static void ipr_reset_timer_done(struct timer_list *t)
 static void ipr_reset_start_timer(struct ipr_cmnd *ipr_cmd,
 				  unsigned long timeout)
 {
-<<<<<<< HEAD
-	list_add_tail(&ipr_cmd->queue, &ipr_cmd->ioa_cfg->pending_q);
-	ipr_cmd->done = ipr_reset_ioa_job;
-
-	ipr_cmd->timer.data = (unsigned long) ipr_cmd;
-	ipr_cmd->timer.expires = jiffies + timeout;
-	ipr_cmd->timer.function = (void (*)(unsigned long))ipr_reset_timer_done;
-=======
 
 	ENTER;
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_pending_q);
@@ -9710,7 +7512,6 @@ static void ipr_reset_start_timer(struct ipr_cmnd *ipr_cmd,
 
 	ipr_cmd->timer.expires = jiffies + timeout;
 	ipr_cmd->timer.function = ipr_reset_timer_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&ipr_cmd->timer);
 }
 
@@ -9723,15 +7524,6 @@ static void ipr_reset_start_timer(struct ipr_cmnd *ipr_cmd,
  **/
 static void ipr_init_ioa_mem(struct ipr_ioa_cfg *ioa_cfg)
 {
-<<<<<<< HEAD
-	memset(ioa_cfg->host_rrq, 0, sizeof(u32) * IPR_NUM_CMD_BLKS);
-
-	/* Initialize Host RRQ pointers */
-	ioa_cfg->hrrq_start = ioa_cfg->host_rrq;
-	ioa_cfg->hrrq_end = &ioa_cfg->host_rrq[IPR_NUM_CMD_BLKS - 1];
-	ioa_cfg->hrrq_curr = ioa_cfg->hrrq_start;
-	ioa_cfg->toggle_bit = 1;
-=======
 	struct ipr_hrr_queue *hrrq;
 
 	for_each_hrrq(hrrq, ioa_cfg) {
@@ -9752,7 +7544,6 @@ static void ipr_init_ioa_mem(struct ipr_ioa_cfg *ioa_cfg)
 		atomic_set(&ioa_cfg->hrrq_index, 0);
 	else
 		atomic_set(&ioa_cfg->hrrq_index, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Zero out config table */
 	memset(ioa_cfg->u.cfg_table, 0, ioa_cfg->cfg_table_size);
@@ -9804,21 +7595,12 @@ static int ipr_reset_next_stage(struct ipr_cmnd *ipr_cmd)
 		}
 	}
 
-<<<<<<< HEAD
-	ipr_cmd->timer.data = (unsigned long) ipr_cmd;
-	ipr_cmd->timer.expires = jiffies + stage_time * HZ;
-	ipr_cmd->timer.function = (void (*)(unsigned long))ipr_oper_timeout;
-	ipr_cmd->done = ipr_reset_ioa_job;
-	add_timer(&ipr_cmd->timer);
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->pending_q);
-=======
 	ipr_cmd->timer.expires = jiffies + stage_time * HZ;
 	ipr_cmd->timer.function = ipr_oper_timeout;
 	ipr_cmd->done = ipr_reset_ioa_job;
 	add_timer(&ipr_cmd->timer);
 
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_pending_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IPR_RC_JOB_RETURN;
 }
@@ -9838,24 +7620,17 @@ static int ipr_reset_enable_ioa(struct ipr_cmnd *ipr_cmd)
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	volatile u32 int_reg;
 	volatile u64 maskval;
-<<<<<<< HEAD
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER;
 	ipr_cmd->job_step = ipr_ioafp_identify_hrrq;
 	ipr_init_ioa_mem(ioa_cfg);
 
-<<<<<<< HEAD
-	ioa_cfg->allow_interrupts = 1;
-=======
 	for (i = 0; i < ioa_cfg->hrrq_num; i++) {
 		spin_lock(&ioa_cfg->hrrq[i]._lock);
 		ioa_cfg->hrrq[i].allow_interrupts = 1;
 		spin_unlock(&ioa_cfg->hrrq[i]._lock);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ioa_cfg->sis64) {
 		/* Set the adapter to the correct endian mode. */
 		writel(IPR_ENDIAN_SWAP_KEY, ioa_cfg->regs.endian_swap_reg);
@@ -9890,20 +7665,11 @@ static int ipr_reset_enable_ioa(struct ipr_cmnd *ipr_cmd)
 		return IPR_RC_JOB_CONTINUE;
 	}
 
-<<<<<<< HEAD
-	ipr_cmd->timer.data = (unsigned long) ipr_cmd;
-	ipr_cmd->timer.expires = jiffies + (ioa_cfg->transop_timeout * HZ);
-	ipr_cmd->timer.function = (void (*)(unsigned long))ipr_oper_timeout;
-	ipr_cmd->done = ipr_reset_ioa_job;
-	add_timer(&ipr_cmd->timer);
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->pending_q);
-=======
 	ipr_cmd->timer.expires = jiffies + (ioa_cfg->transop_timeout * HZ);
 	ipr_cmd->timer.function = ipr_oper_timeout;
 	ipr_cmd->done = ipr_reset_ioa_job;
 	add_timer(&ipr_cmd->timer);
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_pending_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	LEAVE;
 	return IPR_RC_JOB_RETURN;
@@ -9996,11 +7762,7 @@ static void ipr_get_unit_check_buffer(struct ipr_ioa_cfg *ioa_cfg)
 
 	hostrcb = list_entry(ioa_cfg->hostrcb_free_q.next,
 			     struct ipr_hostrcb, queue);
-<<<<<<< HEAD
-	list_del(&hostrcb->queue);
-=======
 	list_del_init(&hostrcb->queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&hostrcb->hcam, 0, sizeof(hostrcb->hcam));
 
 	rc = ipr_get_ldump_data_section(ioa_cfg,
@@ -10043,8 +7805,6 @@ static int ipr_reset_get_unit_check_job(struct ipr_cmnd *ipr_cmd)
 	return IPR_RC_JOB_RETURN;
 }
 
-<<<<<<< HEAD
-=======
 static int ipr_dump_mailbox_wait(struct ipr_cmnd *ipr_cmd)
 {
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
@@ -10081,7 +7841,6 @@ static int ipr_dump_mailbox_wait(struct ipr_cmnd *ipr_cmd)
 	return IPR_RC_JOB_RETURN;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ipr_reset_restore_cfg_space - Restore PCI config space.
  * @ipr_cmd:	ipr command struct
@@ -10096,10 +7855,6 @@ static int ipr_dump_mailbox_wait(struct ipr_cmnd *ipr_cmd)
 static int ipr_reset_restore_cfg_space(struct ipr_cmnd *ipr_cmd)
 {
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-<<<<<<< HEAD
-	u32 int_reg;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER;
 	ioa_cfg->pdev->state_saved = true;
@@ -10115,11 +7870,7 @@ static int ipr_reset_restore_cfg_space(struct ipr_cmnd *ipr_cmd)
 	if (ioa_cfg->sis64) {
 		/* Set the adapter to the correct endian mode. */
 		writel(IPR_ENDIAN_SWAP_KEY, ioa_cfg->regs.endian_swap_reg);
-<<<<<<< HEAD
-		int_reg = readl(ioa_cfg->regs.endian_swap_reg);
-=======
 		readl(ioa_cfg->regs.endian_swap_reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ioa_cfg->ioa_unit_checked) {
@@ -10138,28 +7889,11 @@ static int ipr_reset_restore_cfg_space(struct ipr_cmnd *ipr_cmd)
 
 	if (ioa_cfg->in_ioa_bringdown) {
 		ipr_cmd->job_step = ipr_ioa_bringdown_done;
-<<<<<<< HEAD
-	} else {
-		ipr_cmd->job_step = ipr_reset_enable_ioa;
-
-		if (GET_DUMP == ioa_cfg->sdt_state) {
-			ioa_cfg->sdt_state = READ_DUMP;
-			ioa_cfg->dump_timeout = 0;
-			if (ioa_cfg->sis64)
-				ipr_reset_start_timer(ipr_cmd, IPR_SIS64_DUMP_TIMEOUT);
-			else
-				ipr_reset_start_timer(ipr_cmd, IPR_SIS32_DUMP_TIMEOUT);
-			ipr_cmd->job_step = ipr_reset_wait_for_dump;
-			schedule_work(&ioa_cfg->work_q);
-			return IPR_RC_JOB_RETURN;
-		}
-=======
 	} else if (ioa_cfg->sdt_state == GET_DUMP) {
 		ipr_cmd->job_step = ipr_dump_mailbox_wait;
 		ipr_cmd->u.time_left = IPR_WAIT_FOR_MAILBOX;
 	} else {
 		ipr_cmd->job_step = ipr_reset_enable_ioa;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	LEAVE;
@@ -10237,10 +7971,6 @@ static int ipr_reset_start_bist(struct ipr_cmnd *ipr_cmd)
 static int ipr_reset_slot_reset_done(struct ipr_cmnd *ipr_cmd)
 {
 	ENTER;
-<<<<<<< HEAD
-	pci_set_pcie_reset_state(ipr_cmd->ioa_cfg->pdev, pcie_deassert_reset);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_cmd->job_step = ipr_reset_bist_done;
 	ipr_reset_start_timer(ipr_cmd, IPR_WAIT_FOR_BIST_TIMEOUT);
 	LEAVE;
@@ -10248,8 +7978,6 @@ static int ipr_reset_slot_reset_done(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_reset_reset_work - Pulse a PCIe fundamental reset
  * @work:	work struct
  *
@@ -10276,7 +8004,6 @@ static void ipr_reset_reset_work(struct work_struct *work)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_reset_slot_reset - Reset the PCI slot of the adapter.
  * @ipr_cmd:	ipr command struct
  *
@@ -10288,20 +8015,11 @@ static void ipr_reset_reset_work(struct work_struct *work)
 static int ipr_reset_slot_reset(struct ipr_cmnd *ipr_cmd)
 {
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-<<<<<<< HEAD
-	struct pci_dev *pdev = ioa_cfg->pdev;
-
-	ENTER;
-	pci_set_pcie_reset_state(pdev, pcie_warm_reset);
-	ipr_cmd->job_step = ipr_reset_slot_reset_done;
-	ipr_reset_start_timer(ipr_cmd, IPR_PCI_RESET_TIMEOUT);
-=======
 
 	ENTER;
 	INIT_WORK(&ipr_cmd->work, ipr_reset_reset_work);
 	queue_work(ioa_cfg->reset_work_q, &ipr_cmd->work);
 	ipr_cmd->job_step = ipr_reset_slot_reset_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAVE;
 	return IPR_RC_JOB_RETURN;
 }
@@ -10439,8 +8157,6 @@ static int ipr_reset_alert(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_reset_quiesce_done - Complete IOA disconnect
  * @ipr_cmd:	ipr command struct
  *
@@ -10557,7 +8273,6 @@ static int ipr_reset_cancel_hcam(struct ipr_cmnd *ipr_cmd)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_reset_ucode_download_done - Microcode download completion
  * @ipr_cmd:	ipr command struct
  *
@@ -10571,11 +8286,7 @@ static int ipr_reset_ucode_download_done(struct ipr_cmnd *ipr_cmd)
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	struct ipr_sglist *sglist = ioa_cfg->ucode_sglist;
 
-<<<<<<< HEAD
-	pci_unmap_sg(ioa_cfg->pdev, sglist->scatterlist,
-=======
 	dma_unmap_sg(&ioa_cfg->pdev->dev, sglist->scatterlist,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     sglist->num_sg, DMA_TO_DEVICE);
 
 	ipr_cmd->job_step = ipr_reset_alert;
@@ -10643,14 +8354,10 @@ static int ipr_reset_shutdown_ioa(struct ipr_cmnd *ipr_cmd)
 	int rc = IPR_RC_JOB_CONTINUE;
 
 	ENTER;
-<<<<<<< HEAD
-	if (shutdown_type != IPR_SHUTDOWN_NONE && !ioa_cfg->ioa_is_dead) {
-=======
 	if (shutdown_type == IPR_SHUTDOWN_QUIESCE)
 		ipr_cmd->job_step = ipr_reset_cancel_hcam;
 	else if (shutdown_type != IPR_SHUTDOWN_NONE &&
 			!ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipr_cmd->ioarcb.res_handle = cpu_to_be32(IPR_IOA_RES_HANDLE);
 		ipr_cmd->ioarcb.cmd_pkt.request_type = IPR_RQTYPE_IOACMD;
 		ipr_cmd->ioarcb.cmd_pkt.cdb[0] = IPR_IOA_SHUTDOWN;
@@ -10698,12 +8405,8 @@ static void ipr_reset_ioa_job(struct ipr_cmnd *ipr_cmd)
 			 * We are doing nested adapter resets and this is
 			 * not the current reset job.
 			 */
-<<<<<<< HEAD
-			list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 			list_add_tail(&ipr_cmd->queue,
 					&ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 
@@ -10716,11 +8419,7 @@ static void ipr_reset_ioa_job(struct ipr_cmnd *ipr_cmd)
 		ipr_reinit_ipr_cmnd(ipr_cmd);
 		ipr_cmd->job_step_failed = ipr_reset_cmd_failed;
 		rc = ipr_cmd->job_step(ipr_cmd);
-<<<<<<< HEAD
-	} while(rc == IPR_RC_JOB_CONTINUE);
-=======
 	} while (rc == IPR_RC_JOB_CONTINUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -10742,12 +8441,6 @@ static void _ipr_initiate_ioa_reset(struct ipr_ioa_cfg *ioa_cfg,
 				    enum ipr_shutdown_type shutdown_type)
 {
 	struct ipr_cmnd *ipr_cmd;
-<<<<<<< HEAD
-
-	ioa_cfg->in_reset_reload = 1;
-	ioa_cfg->allow_cmds = 0;
-	scsi_block_requests(ioa_cfg->host);
-=======
 	int i;
 
 	ioa_cfg->in_reset_reload = 1;
@@ -10762,7 +8455,6 @@ static void _ipr_initiate_ioa_reset(struct ipr_ioa_cfg *ioa_cfg,
 		ioa_cfg->scsi_blocked = 1;
 		scsi_block_requests(ioa_cfg->host);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ipr_cmd = ipr_get_free_ipr_cmnd(ioa_cfg);
 	ioa_cfg->reset_cmd = ipr_cmd;
@@ -10787,13 +8479,9 @@ static void _ipr_initiate_ioa_reset(struct ipr_ioa_cfg *ioa_cfg,
 static void ipr_initiate_ioa_reset(struct ipr_ioa_cfg *ioa_cfg,
 				   enum ipr_shutdown_type shutdown_type)
 {
-<<<<<<< HEAD
-	if (ioa_cfg->ioa_is_dead)
-=======
 	int i;
 
 	if (ioa_cfg->hrrq[IPR_INIT_HRRQ].ioa_is_dead)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (ioa_cfg->in_reset_reload) {
@@ -10808,16 +8496,12 @@ static void ipr_initiate_ioa_reset(struct ipr_ioa_cfg *ioa_cfg,
 			"IOA taken offline - error recovery failed\n");
 
 		ioa_cfg->reset_retries = 0;
-<<<<<<< HEAD
-		ioa_cfg->ioa_is_dead = 1;
-=======
 		for (i = 0; i < ioa_cfg->hrrq_num; i++) {
 			spin_lock(&ioa_cfg->hrrq[i]._lock);
 			ioa_cfg->hrrq[i].ioa_is_dead = 1;
 			spin_unlock(&ioa_cfg->hrrq[i]._lock);
 		}
 		wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ioa_cfg->in_ioa_bringdown) {
 			ioa_cfg->reset_cmd = NULL;
@@ -10825,16 +8509,10 @@ static void ipr_initiate_ioa_reset(struct ipr_ioa_cfg *ioa_cfg,
 			ipr_fail_all_ops(ioa_cfg);
 			wake_up_all(&ioa_cfg->reset_wait_q);
 
-<<<<<<< HEAD
-			spin_unlock_irq(ioa_cfg->host->host_lock);
-			scsi_unblock_requests(ioa_cfg->host);
-			spin_lock_irq(ioa_cfg->host->host_lock);
-=======
 			if (!ioa_cfg->hrrq[IPR_INIT_HRRQ].removing_ioa) {
 				ioa_cfg->scsi_unblock = 1;
 				schedule_work(&ioa_cfg->work_q);
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		} else {
 			ioa_cfg->in_ioa_bringdown = 1;
@@ -10856,11 +8534,6 @@ static void ipr_initiate_ioa_reset(struct ipr_ioa_cfg *ioa_cfg,
  */
 static int ipr_reset_freeze(struct ipr_cmnd *ipr_cmd)
 {
-<<<<<<< HEAD
-	/* Disallow new interrupts, avoid loop */
-	ipr_cmd->ioa_cfg->allow_interrupts = 0;
-	list_add_tail(&ipr_cmd->queue, &ipr_cmd->ioa_cfg->pending_q);
-=======
 	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
 	int i;
 
@@ -10872,14 +8545,11 @@ static int ipr_reset_freeze(struct ipr_cmnd *ipr_cmd)
 	}
 	wmb();
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_pending_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_cmd->done = ipr_reset_ioa_job;
 	return IPR_RC_JOB_RETURN;
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_pci_mmio_enabled - Called when MMIO has been re-enabled
  * @pdev:	PCI device struct
  *
@@ -10899,7 +8569,6 @@ static pci_ers_result_t ipr_pci_mmio_enabled(struct pci_dev *pdev)
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_pci_frozen - Called when slot has experienced a PCI bus error.
  * @pdev:	PCI device struct
  *
@@ -10913,12 +8582,8 @@ static void ipr_pci_frozen(struct pci_dev *pdev)
 	struct ipr_ioa_cfg *ioa_cfg = pci_get_drvdata(pdev);
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-<<<<<<< HEAD
-	_ipr_initiate_ioa_reset(ioa_cfg, ipr_reset_freeze, IPR_SHUTDOWN_NONE);
-=======
 	if (ioa_cfg->probe_done)
 		_ipr_initiate_ioa_reset(ioa_cfg, ipr_reset_freeze, IPR_SHUTDOWN_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
 }
 
@@ -10936,13 +8601,6 @@ static pci_ers_result_t ipr_pci_slot_reset(struct pci_dev *pdev)
 	struct ipr_ioa_cfg *ioa_cfg = pci_get_drvdata(pdev);
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-<<<<<<< HEAD
-	if (ioa_cfg->needs_warm_reset)
-		ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
-	else
-		_ipr_initiate_ioa_reset(ioa_cfg, ipr_reset_restore_cfg_space,
-					IPR_SHUTDOWN_NONE);
-=======
 	if (ioa_cfg->probe_done) {
 		if (ioa_cfg->needs_warm_reset)
 			ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
@@ -10951,7 +8609,6 @@ static pci_ers_result_t ipr_pci_slot_reset(struct pci_dev *pdev)
 						IPR_SHUTDOWN_NONE);
 	} else
 		wake_up_all(&ioa_cfg->eeh_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
 	return PCI_ERS_RESULT_RECOVERED;
 }
@@ -10967,16 +8624,6 @@ static void ipr_pci_perm_failure(struct pci_dev *pdev)
 {
 	unsigned long flags = 0;
 	struct ipr_ioa_cfg *ioa_cfg = pci_get_drvdata(pdev);
-<<<<<<< HEAD
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-	if (ioa_cfg->sdt_state == WAIT_FOR_DUMP)
-		ioa_cfg->sdt_state = ABORT_DUMP;
-	ioa_cfg->reset_retries = IPR_NUM_RESET_RELOAD_RETRIES;
-	ioa_cfg->in_ioa_bringdown = 1;
-	ioa_cfg->allow_cmds = 0;
-	ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
-=======
 	int i;
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
@@ -10994,7 +8641,6 @@ static void ipr_pci_perm_failure(struct pci_dev *pdev)
 		ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
 	} else
 		wake_up_all(&ioa_cfg->eeh_wait_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
 }
 
@@ -11014,18 +8660,10 @@ static pci_ers_result_t ipr_pci_error_detected(struct pci_dev *pdev,
 	switch (state) {
 	case pci_channel_io_frozen:
 		ipr_pci_frozen(pdev);
-<<<<<<< HEAD
-		return PCI_ERS_RESULT_NEED_RESET;
-	case pci_channel_io_perm_failure:
-		ipr_pci_perm_failure(pdev);
-		return PCI_ERS_RESULT_DISCONNECT;
-		break;
-=======
 		return PCI_ERS_RESULT_CAN_RECOVER;
 	case pci_channel_io_perm_failure:
 		ipr_pci_perm_failure(pdev);
 		return PCI_ERS_RESULT_DISCONNECT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
@@ -11036,18 +8674,6 @@ static pci_ers_result_t ipr_pci_error_detected(struct pci_dev *pdev,
  * ipr_probe_ioa_part2 - Initializes IOAs found in ipr_probe_ioa(..)
  * @ioa_cfg:	ioa cfg struct
  *
-<<<<<<< HEAD
- * Description: This is the second phase of adapter intialization
- * This function takes care of initilizing the adapter to the point
- * where it can accept new commands.
-
- * Return value:
- * 	0 on success / -EIO on failure
- **/
-static int __devinit ipr_probe_ioa_part2(struct ipr_ioa_cfg *ioa_cfg)
-{
-	int rc = 0;
-=======
  * Description: This is the second phase of adapter initialization
  * This function takes care of initilizing the adapter to the point
  * where it can accept new commands.
@@ -11056,47 +8682,21 @@ static int __devinit ipr_probe_ioa_part2(struct ipr_ioa_cfg *ioa_cfg)
  **/
 static void ipr_probe_ioa_part2(struct ipr_ioa_cfg *ioa_cfg)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long host_lock_flags = 0;
 
 	ENTER;
 	spin_lock_irqsave(ioa_cfg->host->host_lock, host_lock_flags);
 	dev_dbg(&ioa_cfg->pdev->dev, "ioa_cfg adx: 0x%p\n", ioa_cfg);
-<<<<<<< HEAD
-=======
 	ioa_cfg->probe_done = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ioa_cfg->needs_hard_reset) {
 		ioa_cfg->needs_hard_reset = 0;
 		ipr_initiate_ioa_reset(ioa_cfg, IPR_SHUTDOWN_NONE);
 	} else
 		_ipr_initiate_ioa_reset(ioa_cfg, ipr_reset_enable_ioa,
 					IPR_SHUTDOWN_NONE);
-<<<<<<< HEAD
-
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, host_lock_flags);
-	wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
-	spin_lock_irqsave(ioa_cfg->host->host_lock, host_lock_flags);
-
-	if (ioa_cfg->ioa_is_dead) {
-		rc = -EIO;
-	} else if (ipr_invalid_adapter(ioa_cfg)) {
-		if (!ipr_testmode)
-			rc = -EIO;
-
-		dev_err(&ioa_cfg->pdev->dev,
-			"Adapter not supported in this hardware configuration.\n");
-	}
-
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, host_lock_flags);
 
 	LEAVE;
-	return rc;
-=======
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, host_lock_flags);
-
-	LEAVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -11110,19 +8710,6 @@ static void ipr_free_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
 {
 	int i;
 
-<<<<<<< HEAD
-	for (i = 0; i < IPR_NUM_CMD_BLKS; i++) {
-		if (ioa_cfg->ipr_cmnd_list[i])
-			pci_pool_free(ioa_cfg->ipr_cmd_pool,
-				      ioa_cfg->ipr_cmnd_list[i],
-				      ioa_cfg->ipr_cmnd_list_dma[i]);
-
-		ioa_cfg->ipr_cmnd_list[i] = NULL;
-	}
-
-	if (ioa_cfg->ipr_cmd_pool)
-		pci_pool_destroy (ioa_cfg->ipr_cmd_pool);
-=======
 	if (ioa_cfg->ipr_cmnd_list) {
 		for (i = 0; i < IPR_NUM_CMD_BLKS; i++) {
 			if (ioa_cfg->ipr_cmnd_list[i])
@@ -11135,7 +8722,6 @@ static void ipr_free_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
 	}
 
 	dma_pool_destroy(ioa_cfg->ipr_cmd_pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(ioa_cfg->ipr_cmnd_list);
 	kfree(ioa_cfg->ipr_cmnd_list_dma);
@@ -11156,22 +8742,6 @@ static void ipr_free_mem(struct ipr_ioa_cfg *ioa_cfg)
 	int i;
 
 	kfree(ioa_cfg->res_entries);
-<<<<<<< HEAD
-	pci_free_consistent(ioa_cfg->pdev, sizeof(struct ipr_misc_cbs),
-			    ioa_cfg->vpd_cbs, ioa_cfg->vpd_cbs_dma);
-	ipr_free_cmd_blks(ioa_cfg);
-	pci_free_consistent(ioa_cfg->pdev, sizeof(u32) * IPR_NUM_CMD_BLKS,
-			    ioa_cfg->host_rrq, ioa_cfg->host_rrq_dma);
-	pci_free_consistent(ioa_cfg->pdev, ioa_cfg->cfg_table_size,
-			    ioa_cfg->u.cfg_table,
-			    ioa_cfg->cfg_table_dma);
-
-	for (i = 0; i < IPR_NUM_HCAMS; i++) {
-		pci_free_consistent(ioa_cfg->pdev,
-				    sizeof(struct ipr_hostrcb),
-				    ioa_cfg->hostrcb[i],
-				    ioa_cfg->hostrcb_dma[i]);
-=======
 	dma_free_coherent(&ioa_cfg->pdev->dev, sizeof(struct ipr_misc_cbs),
 			  ioa_cfg->vpd_cbs, ioa_cfg->vpd_cbs_dma);
 	ipr_free_cmd_blks(ioa_cfg);
@@ -11190,7 +8760,6 @@ static void ipr_free_mem(struct ipr_ioa_cfg *ioa_cfg)
 				  sizeof(struct ipr_hostrcb),
 				  ioa_cfg->hostrcb[i],
 				  ioa_cfg->hostrcb_dma[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ipr_free_dump(ioa_cfg);
@@ -11198,10 +8767,6 @@ static void ipr_free_mem(struct ipr_ioa_cfg *ioa_cfg)
 }
 
 /**
-<<<<<<< HEAD
- * ipr_free_all_resources - Free all allocated resources for an adapter.
- * @ipr_cmd:	ipr command struct
-=======
  * ipr_free_irqs - Free all allocated IRQs for the adapter.
  * @ioa_cfg:	ipr cfg struct
  *
@@ -11224,7 +8789,6 @@ static void ipr_free_irqs(struct ipr_ioa_cfg *ioa_cfg)
 /**
  * ipr_free_all_resources - Free all allocated resources for an adapter.
  * @ioa_cfg:	ioa config struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function frees all allocated resources for the
  * specified adapter.
@@ -11237,14 +8801,9 @@ static void ipr_free_all_resources(struct ipr_ioa_cfg *ioa_cfg)
 	struct pci_dev *pdev = ioa_cfg->pdev;
 
 	ENTER;
-<<<<<<< HEAD
-	free_irq(pdev->irq, ioa_cfg);
-	pci_disable_msi(pdev);
-=======
 	ipr_free_irqs(ioa_cfg);
 	if (ioa_cfg->reset_work_q)
 		destroy_workqueue(ioa_cfg->reset_work_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(ioa_cfg->hdw_dma_regs);
 	pci_release_regions(pdev);
 	ipr_free_mem(ioa_cfg);
@@ -11260,26 +8819,15 @@ static void ipr_free_all_resources(struct ipr_ioa_cfg *ioa_cfg)
  * Return value:
  * 	0 on success / -ENOMEM on allocation failure
  **/
-<<<<<<< HEAD
-static int __devinit ipr_alloc_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
-=======
 static int ipr_alloc_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipr_cmnd *ipr_cmd;
 	struct ipr_ioarcb *ioarcb;
 	dma_addr_t dma_addr;
-<<<<<<< HEAD
-	int i;
-
-	ioa_cfg->ipr_cmd_pool = pci_pool_create (IPR_NAME, ioa_cfg->pdev,
-						 sizeof(struct ipr_cmnd), 512, 0);
-=======
 	int i, entries_each_hrrq, hrrq_id = 0;
 
 	ioa_cfg->ipr_cmd_pool = dma_pool_create(IPR_NAME, &ioa_cfg->pdev->dev,
 						sizeof(struct ipr_cmnd), 512, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ioa_cfg->ipr_cmd_pool)
 		return -ENOMEM;
@@ -11292,10 +8840,6 @@ static int ipr_alloc_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	for (i = 0; i < IPR_NUM_CMD_BLKS; i++) {
-		ipr_cmd = pci_pool_alloc (ioa_cfg->ipr_cmd_pool, GFP_KERNEL, &dma_addr);
-=======
 	for (i = 0; i < ioa_cfg->hrrq_num; i++) {
 		if (ioa_cfg->hrrq_num > 1) {
 			if (i == 0) {
@@ -11334,17 +8878,12 @@ static int ipr_alloc_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
 	for (i = 0; i < IPR_NUM_CMD_BLKS; i++) {
 		ipr_cmd = dma_pool_zalloc(ioa_cfg->ipr_cmd_pool,
 				GFP_KERNEL, &dma_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!ipr_cmd) {
 			ipr_free_cmd_blks(ioa_cfg);
 			return -ENOMEM;
 		}
 
-<<<<<<< HEAD
-		memset(ipr_cmd, 0, sizeof(*ipr_cmd));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioa_cfg->ipr_cmnd_list[i] = ipr_cmd;
 		ioa_cfg->ipr_cmnd_list_dma[i] = dma_addr;
 
@@ -11374,15 +8913,11 @@ static int ipr_alloc_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
 		ipr_cmd->sense_buffer_dma = dma_addr +
 			offsetof(struct ipr_cmnd, sense_buffer);
 
-<<<<<<< HEAD
-		list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 		ipr_cmd->ioarcb.cmd_pkt.hrrq_id = hrrq_id;
 		ipr_cmd->hrrq = &ioa_cfg->hrrq[hrrq_id];
 		list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
 		if (i >= ioa_cfg->hrrq[hrrq_id].max_cmd_id)
 			hrrq_id++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -11395,55 +8930,28 @@ static int ipr_alloc_cmd_blks(struct ipr_ioa_cfg *ioa_cfg)
  * Return value:
  * 	0 on success / non-zero for error
  **/
-<<<<<<< HEAD
-static int __devinit ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
-=======
 static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = ioa_cfg->pdev;
 	int i, rc = -ENOMEM;
 
 	ENTER;
-<<<<<<< HEAD
-	ioa_cfg->res_entries = kzalloc(sizeof(struct ipr_resource_entry) *
-				       ioa_cfg->max_devs_supported, GFP_KERNEL);
-=======
 	ioa_cfg->res_entries = kcalloc(ioa_cfg->max_devs_supported,
 				       sizeof(struct ipr_resource_entry),
 				       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ioa_cfg->res_entries)
 		goto out;
 
-<<<<<<< HEAD
-	if (ioa_cfg->sis64) {
-		ioa_cfg->target_ids = kzalloc(sizeof(unsigned long) *
-					      BITS_TO_LONGS(ioa_cfg->max_devs_supported), GFP_KERNEL);
-		ioa_cfg->array_ids = kzalloc(sizeof(unsigned long) *
-					     BITS_TO_LONGS(ioa_cfg->max_devs_supported), GFP_KERNEL);
-		ioa_cfg->vset_ids = kzalloc(sizeof(unsigned long) *
-					    BITS_TO_LONGS(ioa_cfg->max_devs_supported), GFP_KERNEL);
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ioa_cfg->max_devs_supported; i++) {
 		list_add_tail(&ioa_cfg->res_entries[i].queue, &ioa_cfg->free_res_q);
 		ioa_cfg->res_entries[i].ioa_cfg = ioa_cfg;
 	}
 
-<<<<<<< HEAD
-	ioa_cfg->vpd_cbs = pci_alloc_consistent(ioa_cfg->pdev,
-						sizeof(struct ipr_misc_cbs),
-						&ioa_cfg->vpd_cbs_dma);
-=======
 	ioa_cfg->vpd_cbs = dma_alloc_coherent(&pdev->dev,
 					      sizeof(struct ipr_misc_cbs),
 					      &ioa_cfg->vpd_cbs_dma,
 					      GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ioa_cfg->vpd_cbs)
 		goto out_free_res_entries;
@@ -11451,18 +8959,6 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
 	if (ipr_alloc_cmd_blks(ioa_cfg))
 		goto out_free_vpd_cbs;
 
-<<<<<<< HEAD
-	ioa_cfg->host_rrq = pci_alloc_consistent(ioa_cfg->pdev,
-						 sizeof(u32) * IPR_NUM_CMD_BLKS,
-						 &ioa_cfg->host_rrq_dma);
-
-	if (!ioa_cfg->host_rrq)
-		goto out_ipr_free_cmd_blocks;
-
-	ioa_cfg->u.cfg_table = pci_alloc_consistent(ioa_cfg->pdev,
-						    ioa_cfg->cfg_table_size,
-						    &ioa_cfg->cfg_table_dma);
-=======
 	for (i = 0; i < ioa_cfg->hrrq_num; i++) {
 		ioa_cfg->hrrq[i].host_rrq = dma_alloc_coherent(&pdev->dev,
 					sizeof(u32) * ioa_cfg->hrrq[i].size,
@@ -11484,23 +8980,15 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
 						  ioa_cfg->cfg_table_size,
 						  &ioa_cfg->cfg_table_dma,
 						  GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ioa_cfg->u.cfg_table)
 		goto out_free_host_rrq;
 
-<<<<<<< HEAD
-	for (i = 0; i < IPR_NUM_HCAMS; i++) {
-		ioa_cfg->hostrcb[i] = pci_alloc_consistent(ioa_cfg->pdev,
-							   sizeof(struct ipr_hostrcb),
-							   &ioa_cfg->hostrcb_dma[i]);
-=======
 	for (i = 0; i < IPR_MAX_HCAMS; i++) {
 		ioa_cfg->hostrcb[i] = dma_alloc_coherent(&pdev->dev,
 							 sizeof(struct ipr_hostrcb),
 							 &ioa_cfg->hostrcb_dma[i],
 							 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!ioa_cfg->hostrcb[i])
 			goto out_free_hostrcb_dma;
@@ -11511,14 +8999,9 @@ static int ipr_alloc_mem(struct ipr_ioa_cfg *ioa_cfg)
 		list_add_tail(&ioa_cfg->hostrcb[i]->queue, &ioa_cfg->hostrcb_free_q);
 	}
 
-<<<<<<< HEAD
-	ioa_cfg->trace = kzalloc(sizeof(struct ipr_trace_entry) *
-				 IPR_NUM_TRACE_ENTRIES, GFP_KERNEL);
-=======
 	ioa_cfg->trace = kcalloc(IPR_NUM_TRACE_ENTRIES,
 				 sizeof(struct ipr_trace_entry),
 				 GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ioa_cfg->trace)
 		goto out_free_hostrcb_dma;
@@ -11530,23 +9013,6 @@ out:
 
 out_free_hostrcb_dma:
 	while (i-- > 0) {
-<<<<<<< HEAD
-		pci_free_consistent(pdev, sizeof(struct ipr_hostrcb),
-				    ioa_cfg->hostrcb[i],
-				    ioa_cfg->hostrcb_dma[i]);
-	}
-	pci_free_consistent(pdev, ioa_cfg->cfg_table_size,
-			    ioa_cfg->u.cfg_table,
-			    ioa_cfg->cfg_table_dma);
-out_free_host_rrq:
-	pci_free_consistent(pdev, sizeof(u32) * IPR_NUM_CMD_BLKS,
-			    ioa_cfg->host_rrq, ioa_cfg->host_rrq_dma);
-out_ipr_free_cmd_blocks:
-	ipr_free_cmd_blks(ioa_cfg);
-out_free_vpd_cbs:
-	pci_free_consistent(pdev, sizeof(struct ipr_misc_cbs),
-			    ioa_cfg->vpd_cbs, ioa_cfg->vpd_cbs_dma);
-=======
 		dma_free_coherent(&pdev->dev, sizeof(struct ipr_hostrcb),
 				  ioa_cfg->hostrcb[i],
 				  ioa_cfg->hostrcb_dma[i]);
@@ -11565,7 +9031,6 @@ out_ipr_free_cmd_blocks:
 out_free_vpd_cbs:
 	dma_free_coherent(&pdev->dev, sizeof(struct ipr_misc_cbs),
 			  ioa_cfg->vpd_cbs, ioa_cfg->vpd_cbs_dma);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free_res_entries:
 	kfree(ioa_cfg->res_entries);
 	goto out;
@@ -11578,11 +9043,7 @@ out_free_res_entries:
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void __devinit ipr_initialize_bus_attr(struct ipr_ioa_cfg *ioa_cfg)
-=======
 static void ipr_initialize_bus_attr(struct ipr_ioa_cfg *ioa_cfg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -11598,18 +9059,6 @@ static void ipr_initialize_bus_attr(struct ipr_ioa_cfg *ioa_cfg)
 }
 
 /**
-<<<<<<< HEAD
- * ipr_init_ioa_cfg - Initialize IOA config struct
- * @ioa_cfg:	ioa config struct
- * @host:		scsi host struct
- * @pdev:		PCI dev struct
- *
- * Return value:
- * 	none
- **/
-static void __devinit ipr_init_ioa_cfg(struct ipr_ioa_cfg *ioa_cfg,
-				       struct Scsi_Host *host, struct pci_dev *pdev)
-=======
  * ipr_init_regs - Initialize IOA registers
  * @ioa_cfg:	ioa config struct
  *
@@ -11617,59 +9066,11 @@ static void __devinit ipr_init_ioa_cfg(struct ipr_ioa_cfg *ioa_cfg,
  *	none
  **/
 static void ipr_init_regs(struct ipr_ioa_cfg *ioa_cfg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ipr_interrupt_offsets *p;
 	struct ipr_interrupts *t;
 	void __iomem *base;
 
-<<<<<<< HEAD
-	ioa_cfg->host = host;
-	ioa_cfg->pdev = pdev;
-	ioa_cfg->log_level = ipr_log_level;
-	ioa_cfg->doorbell = IPR_DOORBELL;
-	sprintf(ioa_cfg->eye_catcher, IPR_EYECATCHER);
-	sprintf(ioa_cfg->trace_start, IPR_TRACE_START_LABEL);
-	sprintf(ioa_cfg->ipr_free_label, IPR_FREEQ_LABEL);
-	sprintf(ioa_cfg->ipr_pending_label, IPR_PENDQ_LABEL);
-	sprintf(ioa_cfg->cfg_table_start, IPR_CFG_TBL_START);
-	sprintf(ioa_cfg->resource_table_label, IPR_RES_TABLE_LABEL);
-	sprintf(ioa_cfg->ipr_hcam_label, IPR_HCAM_LABEL);
-	sprintf(ioa_cfg->ipr_cmd_label, IPR_CMD_LABEL);
-
-	INIT_LIST_HEAD(&ioa_cfg->free_q);
-	INIT_LIST_HEAD(&ioa_cfg->pending_q);
-	INIT_LIST_HEAD(&ioa_cfg->hostrcb_free_q);
-	INIT_LIST_HEAD(&ioa_cfg->hostrcb_pending_q);
-	INIT_LIST_HEAD(&ioa_cfg->free_res_q);
-	INIT_LIST_HEAD(&ioa_cfg->used_res_q);
-	INIT_WORK(&ioa_cfg->work_q, ipr_worker_thread);
-	init_waitqueue_head(&ioa_cfg->reset_wait_q);
-	init_waitqueue_head(&ioa_cfg->msi_wait_q);
-	ioa_cfg->sdt_state = INACTIVE;
-
-	ipr_initialize_bus_attr(ioa_cfg);
-	ioa_cfg->max_devs_supported = ipr_max_devs;
-
-	if (ioa_cfg->sis64) {
-		host->max_id = IPR_MAX_SIS64_TARGETS_PER_BUS;
-		host->max_lun = IPR_MAX_SIS64_LUNS_PER_TARGET;
-		if (ipr_max_devs > IPR_MAX_SIS64_DEVS)
-			ioa_cfg->max_devs_supported = IPR_MAX_SIS64_DEVS;
-	} else {
-		host->max_id = IPR_MAX_NUM_TARGETS_PER_BUS;
-		host->max_lun = IPR_MAX_NUM_LUNS_PER_TARGET;
-		if (ipr_max_devs > IPR_MAX_PHYSICAL_DEVS)
-			ioa_cfg->max_devs_supported = IPR_MAX_PHYSICAL_DEVS;
-	}
-	host->max_channel = IPR_MAX_BUS_TO_SCAN;
-	host->unique_id = host->host_no;
-	host->max_cmd_len = IPR_MAX_CDB_LEN;
-	host->can_queue = ioa_cfg->max_cmds;
-	pci_set_drvdata(pdev, ioa_cfg);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = &ioa_cfg->chip_cfg->regs;
 	t = &ioa_cfg->regs;
 	base = ioa_cfg->hdw_dma_regs;
@@ -11700,8 +9101,6 @@ static void ipr_init_regs(struct ipr_ioa_cfg *ioa_cfg)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * ipr_init_ioa_cfg - Initialize IOA config struct
  * @ioa_cfg:	ioa config struct
  * @host:		scsi host struct
@@ -11778,18 +9177,13 @@ static void ipr_init_ioa_cfg(struct ipr_ioa_cfg *ioa_cfg,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_get_chip_info - Find adapter chip information
  * @dev_id:		PCI device id struct
  *
  * Return value:
  * 	ptr to chip information on success / NULL on failure
  **/
-<<<<<<< HEAD
-static const struct ipr_chip_t * __devinit
-=======
 static const struct ipr_chip_t *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ipr_get_chip_info(const struct pci_device_id *dev_id)
 {
 	int i;
@@ -11802,10 +9196,6 @@ ipr_get_chip_info(const struct pci_device_id *dev_id)
 }
 
 /**
-<<<<<<< HEAD
- * ipr_test_intr - Handle the interrupt generated in ipr_test_msi().
- * @pdev:		PCI device struct
-=======
  * ipr_wait_for_pci_err_recovery - Wait for any PCI error recovery to complete
  *						during probe time
  * @ioa_cfg:	ioa config struct
@@ -11862,7 +9252,6 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
  * ipr_test_intr - Handle the interrupt generated in ipr_test_msi().
  * @devp:		PCI device struct
  * @irq:		IRQ number
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description: Simply set the msi_received flag to 1 indicating that
  * Message Signaled Interrupts are supported.
@@ -11870,67 +9259,38 @@ static int ipr_request_other_msi_irqs(struct ipr_ioa_cfg *ioa_cfg,
  * Return value:
  * 	0 on success / non-zero on failure
  **/
-<<<<<<< HEAD
-static irqreturn_t __devinit ipr_test_intr(int irq, void *devp)
-{
-	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)devp;
-	unsigned long lock_flags = 0;
-	irqreturn_t rc = IRQ_HANDLED;
-
-=======
 static irqreturn_t ipr_test_intr(int irq, void *devp)
 {
 	struct ipr_ioa_cfg *ioa_cfg = (struct ipr_ioa_cfg *)devp;
 	unsigned long lock_flags = 0;
 
 	dev_info(&ioa_cfg->pdev->dev, "Received IRQ : %d\n", irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
 
 	ioa_cfg->msi_received = 1;
 	wake_up(&ioa_cfg->msi_wait_q);
 
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-<<<<<<< HEAD
-	return rc;
-=======
 	return IRQ_HANDLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ipr_test_msi - Test for Message Signaled Interrupt (MSI) support.
-<<<<<<< HEAD
- * @pdev:		PCI device struct
- *
- * Description: The return value from pci_enable_msi() can not always be
- * trusted.  This routine sets up and initiates a test interrupt to determine
-=======
  * @ioa_cfg:		ioa config struct
  * @pdev:		PCI device struct
  *
  * Description: This routine sets up and initiates a test interrupt to determine
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * if the interrupt is received via the ipr_test_intr() service routine.
  * If the tests fails, the driver will fall back to LSI.
  *
  * Return value:
  * 	0 on success / non-zero on failure
  **/
-<<<<<<< HEAD
-static int __devinit ipr_test_msi(struct ipr_ioa_cfg *ioa_cfg,
-				  struct pci_dev *pdev)
-{
-	int rc;
-	volatile u32 int_reg;
-	unsigned long lock_flags = 0;
-=======
 static int ipr_test_msi(struct ipr_ioa_cfg *ioa_cfg, struct pci_dev *pdev)
 {
 	int rc;
 	unsigned long lock_flags = 0;
 	int irq = pci_irq_vector(pdev, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER;
 
@@ -11939,24 +9299,6 @@ static int ipr_test_msi(struct ipr_ioa_cfg *ioa_cfg, struct pci_dev *pdev)
 	ioa_cfg->msi_received = 0;
 	ipr_mask_and_clear_interrupts(ioa_cfg, ~IPR_PCII_IOA_TRANS_TO_OPER);
 	writel(IPR_PCII_IO_DEBUG_ACKNOWLEDGE, ioa_cfg->regs.clr_interrupt_mask_reg32);
-<<<<<<< HEAD
-	int_reg = readl(ioa_cfg->regs.sense_interrupt_mask_reg);
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-
-	rc = request_irq(pdev->irq, ipr_test_intr, 0, IPR_NAME, ioa_cfg);
-	if (rc) {
-		dev_err(&pdev->dev, "Can not assign irq %d\n", pdev->irq);
-		return rc;
-	} else if (ipr_debug)
-		dev_info(&pdev->dev, "IRQ assigned: %d\n", pdev->irq);
-
-	writel(IPR_PCII_IO_DEBUG_ACKNOWLEDGE, ioa_cfg->regs.sense_interrupt_reg32);
-	int_reg = readl(ioa_cfg->regs.sense_interrupt_reg);
-	wait_event_timeout(ioa_cfg->msi_wait_q, ioa_cfg->msi_received, HZ);
-	ipr_mask_and_clear_interrupts(ioa_cfg, ~IPR_PCII_IOA_TRANS_TO_OPER);
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-=======
 	readl(ioa_cfg->regs.sense_interrupt_mask_reg);
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 
@@ -11973,7 +9315,6 @@ static int ipr_test_msi(struct ipr_ioa_cfg *ioa_cfg, struct pci_dev *pdev)
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
 	ipr_mask_and_clear_interrupts(ioa_cfg, ~IPR_PCII_IOA_TRANS_TO_OPER);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ioa_cfg->msi_received) {
 		/* MSI test failed */
 		dev_info(&pdev->dev, "MSI test failed.  Falling back to LSI.\n");
@@ -11983,36 +9324,22 @@ static int ipr_test_msi(struct ipr_ioa_cfg *ioa_cfg, struct pci_dev *pdev)
 
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 
-<<<<<<< HEAD
-	free_irq(pdev->irq, ioa_cfg);
-=======
 	free_irq(irq, ioa_cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	LEAVE;
 
 	return rc;
 }
 
-<<<<<<< HEAD
-/**
- * ipr_probe_ioa - Allocates memory and does first stage of initialization
-=======
  /* ipr_probe_ioa - Allocates memory and does first stage of initialization
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pdev:		PCI device struct
  * @dev_id:		PCI device id struct
  *
  * Return value:
  * 	0 on success / non-zero on failure
  **/
-<<<<<<< HEAD
-static int __devinit ipr_probe_ioa(struct pci_dev *pdev,
-				   const struct pci_device_id *dev_id)
-=======
 static int ipr_probe_ioa(struct pci_dev *pdev,
 			 const struct pci_device_id *dev_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipr_ioa_cfg *ioa_cfg;
 	struct Scsi_Host *host;
@@ -12020,44 +9347,22 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 	void __iomem *ipr_regs;
 	int rc = PCIBIOS_SUCCESSFUL;
 	volatile u32 mask, uproc, interrupts;
-<<<<<<< HEAD
-
-	ENTER;
-
-	if ((rc = pci_enable_device(pdev))) {
-		dev_err(&pdev->dev, "Cannot enable adapter\n");
-		goto out;
-	}
-
-	dev_info(&pdev->dev, "Found IOA with IRQ: %d\n", pdev->irq);
-
-=======
 	unsigned long lock_flags, driver_lock_flags;
 	unsigned int irq_flag;
 
 	ENTER;
 
 	dev_info(&pdev->dev, "Found IOA with IRQ: %d\n", pdev->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host = scsi_host_alloc(&driver_template, sizeof(*ioa_cfg));
 
 	if (!host) {
 		dev_err(&pdev->dev, "call to scsi_host_alloc failed!\n");
 		rc = -ENOMEM;
-<<<<<<< HEAD
-		goto out_disable;
-=======
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ioa_cfg = (struct ipr_ioa_cfg *)host->hostdata;
 	memset(ioa_cfg, 0, sizeof(struct ipr_ioa_cfg));
-<<<<<<< HEAD
-	ata_host_init(&ioa_cfg->ata_host, &pdev->dev,
-		      sata_port_info.flags, &ipr_sata_ops);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioa_cfg->ipr_chip = ipr_get_chip_info(dev_id);
 
@@ -12082,11 +9387,8 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 
 	ioa_cfg->revid = pdev->revision;
 
-<<<<<<< HEAD
-=======
 	ipr_init_ioa_cfg(ioa_cfg, host, pdev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_regs_pci = pci_resource_start(pdev, 0);
 
 	rc = pci_request_regions(pdev, IPR_NAME);
@@ -12096,8 +9398,6 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 		goto out_scsi_host_put;
 	}
 
-<<<<<<< HEAD
-=======
 	rc = pci_enable_device(pdev);
 
 	if (rc || pci_channel_offline(pdev)) {
@@ -12113,42 +9413,19 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_regs = pci_ioremap_bar(pdev, 0);
 
 	if (!ipr_regs) {
 		dev_err(&pdev->dev,
 			"Couldn't map memory range of registers\n");
 		rc = -ENOMEM;
-<<<<<<< HEAD
-		goto out_release_regions;
-=======
 		goto out_disable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ioa_cfg->hdw_dma_regs = ipr_regs;
 	ioa_cfg->hdw_dma_regs_pci = ipr_regs_pci;
 	ioa_cfg->ioa_mailbox = ioa_cfg->chip_cfg->mailbox + ipr_regs;
 
-<<<<<<< HEAD
-	ipr_init_ioa_cfg(ioa_cfg, host, pdev);
-
-	pci_set_master(pdev);
-
-	if (ioa_cfg->sis64) {
-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
-		if (rc < 0) {
-			dev_dbg(&pdev->dev, "Failed to set 64 bit PCI DMA mask\n");
-			rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-		}
-
-	} else
-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-
-	if (rc < 0) {
-		dev_err(&pdev->dev, "Failed to set PCI DMA mask\n");
-=======
 	ipr_init_regs(ioa_cfg);
 
 	if (ioa_cfg->sis64) {
@@ -12163,7 +9440,6 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 
 	if (rc < 0) {
 		dev_err(&pdev->dev, "Failed to set DMA mask\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto cleanup_nomem;
 	}
 
@@ -12172,37 +9448,11 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 
 	if (rc != PCIBIOS_SUCCESSFUL) {
 		dev_err(&pdev->dev, "Write of cache line size failed\n");
-<<<<<<< HEAD
-=======
 		ipr_wait_for_pci_err_recovery(ioa_cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EIO;
 		goto cleanup_nomem;
 	}
 
-<<<<<<< HEAD
-	/* Enable MSI style interrupts if they are supported. */
-	if (ioa_cfg->ipr_chip->intr_type == IPR_USE_MSI && !pci_enable_msi(pdev)) {
-		rc = ipr_test_msi(ioa_cfg, pdev);
-		if (rc == -EOPNOTSUPP)
-			pci_disable_msi(pdev);
-		else if (rc)
-			goto out_msi_disable;
-		else
-			dev_info(&pdev->dev, "MSI enabled with IRQ: %d\n", pdev->irq);
-	} else if (ipr_debug)
-		dev_info(&pdev->dev, "Cannot enable MSI.\n");
-
-	/* Save away PCI config space for use following IOA reset */
-	rc = pci_save_state(pdev);
-
-	if (rc != PCIBIOS_SUCCESSFUL) {
-		dev_err(&pdev->dev, "Failed to save PCI config space\n");
-		rc = -EIO;
-		goto out_msi_disable;
-	}
-
-=======
 	/* Issue MMIO read to ensure card is not in EEH */
 	interrupts = readl(ioa_cfg->regs.sense_interrupt_reg);
 	ipr_wait_for_pci_err_recovery(ioa_cfg);
@@ -12261,25 +9511,12 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 				(unsigned int)num_online_cpus(),
 				(unsigned int)IPR_MAX_HRRQ_NUM);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((rc = ipr_save_pcix_cmd_reg(ioa_cfg)))
 		goto out_msi_disable;
 
 	if ((rc = ipr_set_pcix_cmd_reg(ioa_cfg)))
 		goto out_msi_disable;
 
-<<<<<<< HEAD
-	if (ioa_cfg->sis64)
-		ioa_cfg->cfg_table_size = (sizeof(struct ipr_config_table_hdr64)
-				+ ((sizeof(struct ipr_config_table_entry64)
-				* ioa_cfg->max_devs_supported)));
-	else
-		ioa_cfg->cfg_table_size = (sizeof(struct ipr_config_table_hdr)
-				+ ((sizeof(struct ipr_config_table_entry)
-				* ioa_cfg->max_devs_supported)));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ipr_alloc_mem(ioa_cfg);
 	if (rc < 0) {
 		dev_err(&pdev->dev,
@@ -12287,8 +9524,6 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 		goto out_msi_disable;
 	}
 
-<<<<<<< HEAD
-=======
 	/* Save away PCI config space for use following IOA reset */
 	rc = pci_save_state(pdev);
 
@@ -12298,7 +9533,6 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 		goto cleanup_nolog;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If HRRQ updated interrupt is not masked, or reset alert is set,
 	 * the card is in an unknown state and needs a hard reset
@@ -12313,13 +9547,6 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 	if (interrupts & IPR_PCII_IOA_UNIT_CHECKED)
 		ioa_cfg->ioa_unit_checked = 1;
 
-<<<<<<< HEAD
-	ipr_mask_and_clear_interrupts(ioa_cfg, ~IPR_PCII_IOA_TRANS_TO_OPER);
-	rc = request_irq(pdev->irq, ipr_isr,
-			 ioa_cfg->msi_received ? 0 : IRQF_SHARED,
-			 IPR_NAME, ioa_cfg);
-
-=======
 	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
 	ipr_mask_and_clear_interrupts(ioa_cfg, ~IPR_PCII_IOA_TRANS_TO_OPER);
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
@@ -12336,7 +9563,6 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 			 IRQF_SHARED,
 			 IPR_NAME, &ioa_cfg->hrrq[0]);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		dev_err(&pdev->dev, "Couldn't register IRQ %d! rc=%d\n",
 			pdev->irq, rc);
@@ -12347,14 +9573,6 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 	    (dev_id->device == PCI_DEVICE_ID_IBM_OBSIDIAN_E && !ioa_cfg->revid)) {
 		ioa_cfg->needs_warm_reset = 1;
 		ioa_cfg->reset = ipr_reset_slot_reset;
-<<<<<<< HEAD
-	} else
-		ioa_cfg->reset = ipr_reset_start_bist;
-
-	spin_lock(&ipr_driver_lock);
-	list_add_tail(&ioa_cfg->queue, &ipr_ioa_head);
-	spin_unlock(&ipr_driver_lock);
-=======
 
 		ioa_cfg->reset_work_q = alloc_ordered_workqueue("ipr_reset_%d",
 								WQ_MEM_RECLAIM, host->host_no);
@@ -12370,20 +9588,11 @@ static int ipr_probe_ioa(struct pci_dev *pdev,
 	spin_lock_irqsave(&ipr_driver_lock, driver_lock_flags);
 	list_add_tail(&ioa_cfg->queue, &ipr_ioa_head);
 	spin_unlock_irqrestore(&ipr_driver_lock, driver_lock_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	LEAVE;
 out:
 	return rc;
 
-<<<<<<< HEAD
-cleanup_nolog:
-	ipr_free_mem(ioa_cfg);
-out_msi_disable:
-	pci_disable_msi(pdev);
-cleanup_nomem:
-	iounmap(ipr_regs);
-=======
 out_free_irq:
 	ipr_free_irqs(ioa_cfg);
 cleanup_nolog:
@@ -12395,42 +9604,14 @@ cleanup_nomem:
 	iounmap(ipr_regs);
 out_disable:
 	pci_disable_device(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_release_regions:
 	pci_release_regions(pdev);
 out_scsi_host_put:
 	scsi_host_put(host);
-<<<<<<< HEAD
-out_disable:
-	pci_disable_device(pdev);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
 /**
-<<<<<<< HEAD
- * ipr_scan_vsets - Scans for VSET devices
- * @ioa_cfg:	ioa config struct
- *
- * Description: Since the VSET resources do not follow SAM in that we can have
- * sparse LUNs with no LUN 0, we have to scan for these ourselves.
- *
- * Return value:
- * 	none
- **/
-static void ipr_scan_vsets(struct ipr_ioa_cfg *ioa_cfg)
-{
-	int target, lun;
-
-	for (target = 0; target < IPR_MAX_NUM_TARGETS_PER_BUS; target++)
-		for (lun = 0; lun < IPR_MAX_NUM_VSET_LUNS_PER_TARGET; lun++ )
-			scsi_add_device(ioa_cfg->host, IPR_VSET_BUS, target, lun);
-}
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ipr_initiate_ioa_bringdown - Bring down an adapter
  * @ioa_cfg:		ioa config struct
  * @shutdown_type:	shutdown type
@@ -12469,45 +9650,27 @@ static void __ipr_remove(struct pci_dev *pdev)
 {
 	unsigned long host_lock_flags = 0;
 	struct ipr_ioa_cfg *ioa_cfg = pci_get_drvdata(pdev);
-<<<<<<< HEAD
-	ENTER;
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, host_lock_flags);
-	while(ioa_cfg->in_reset_reload) {
-=======
 	int i;
 	unsigned long driver_lock_flags;
 	ENTER;
 
 	spin_lock_irqsave(ioa_cfg->host->host_lock, host_lock_flags);
 	while (ioa_cfg->in_reset_reload) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, host_lock_flags);
 		wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
 		spin_lock_irqsave(ioa_cfg->host->host_lock, host_lock_flags);
 	}
 
-<<<<<<< HEAD
-=======
 	for (i = 0; i < ioa_cfg->hrrq_num; i++) {
 		spin_lock(&ioa_cfg->hrrq[i]._lock);
 		ioa_cfg->hrrq[i].removing_ioa = 1;
 		spin_unlock(&ioa_cfg->hrrq[i]._lock);
 	}
 	wmb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_initiate_ioa_bringdown(ioa_cfg, IPR_SHUTDOWN_NORMAL);
 
 	spin_unlock_irqrestore(ioa_cfg->host->host_lock, host_lock_flags);
 	wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
-<<<<<<< HEAD
-	flush_work_sync(&ioa_cfg->work_q);
-	spin_lock_irqsave(ioa_cfg->host->host_lock, host_lock_flags);
-
-	spin_lock(&ipr_driver_lock);
-	list_del(&ioa_cfg->queue);
-	spin_unlock(&ipr_driver_lock);
-=======
 	flush_work(&ioa_cfg->work_q);
 	if (ioa_cfg->reset_work_q)
 		flush_workqueue(ioa_cfg->reset_work_q);
@@ -12517,7 +9680,6 @@ static void __ipr_remove(struct pci_dev *pdev)
 	spin_lock_irqsave(&ipr_driver_lock, driver_lock_flags);
 	list_del(&ioa_cfg->queue);
 	spin_unlock_irqrestore(&ipr_driver_lock, driver_lock_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ioa_cfg->sdt_state == ABORT_DUMP)
 		ioa_cfg->sdt_state = WAIT_FOR_DUMP;
@@ -12537,11 +9699,7 @@ static void __ipr_remove(struct pci_dev *pdev)
  * Return value:
  * 	none
  **/
-<<<<<<< HEAD
-static void __devexit ipr_remove(struct pci_dev *pdev)
-=======
 static void ipr_remove(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ipr_ioa_cfg *ioa_cfg = pci_get_drvdata(pdev);
 
@@ -12551,11 +9709,8 @@ static void ipr_remove(struct pci_dev *pdev)
 			      &ipr_trace_attr);
 	ipr_remove_dump_file(&ioa_cfg->host->shost_dev.kobj,
 			     &ipr_dump_attr);
-<<<<<<< HEAD
-=======
 	sysfs_remove_bin_file(&ioa_cfg->host->shost_dev.kobj,
 			&ipr_ioa_async_err_log);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scsi_remove_host(ioa_cfg->host);
 
 	__ipr_remove(pdev);
@@ -12565,28 +9720,17 @@ static void ipr_remove(struct pci_dev *pdev)
 
 /**
  * ipr_probe - Adapter hot plug add entry point
-<<<<<<< HEAD
-=======
  * @pdev:	pci device struct
  * @dev_id:	pci device ID
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	0 on success / non-zero on failure
  **/
-<<<<<<< HEAD
-static int __devinit ipr_probe(struct pci_dev *pdev,
-			       const struct pci_device_id *dev_id)
-{
-	struct ipr_ioa_cfg *ioa_cfg;
-	int rc;
-=======
 static int ipr_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 {
 	struct ipr_ioa_cfg *ioa_cfg;
 	unsigned long flags;
 	int rc, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = ipr_probe_ioa(pdev, dev_id);
 
@@ -12594,16 +9738,7 @@ static int ipr_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 		return rc;
 
 	ioa_cfg = pci_get_drvdata(pdev);
-<<<<<<< HEAD
-	rc = ipr_probe_ioa_part2(ioa_cfg);
-
-	if (rc) {
-		__ipr_remove(pdev);
-		return rc;
-	}
-=======
 	ipr_probe_ioa_part2(ioa_cfg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = scsi_add_host(ioa_cfg->host, &pdev->dev);
 
@@ -12621,8 +9756,6 @@ static int ipr_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 		return rc;
 	}
 
-<<<<<<< HEAD
-=======
 	rc = sysfs_create_bin_file(&ioa_cfg->host->shost_dev.kobj,
 			&ipr_ioa_async_err_log);
 
@@ -12636,31 +9769,18 @@ static int ipr_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 		return rc;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ipr_create_dump_file(&ioa_cfg->host->shost_dev.kobj,
 				   &ipr_dump_attr);
 
 	if (rc) {
-<<<<<<< HEAD
-=======
 		sysfs_remove_bin_file(&ioa_cfg->host->shost_dev.kobj,
 				      &ipr_ioa_async_err_log);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipr_remove_trace_file(&ioa_cfg->host->shost_dev.kobj,
 				      &ipr_trace_attr);
 		scsi_remove_host(ioa_cfg->host);
 		__ipr_remove(pdev);
 		return rc;
 	}
-<<<<<<< HEAD
-
-	scsi_scan_host(ioa_cfg->host);
-	ipr_scan_vsets(ioa_cfg);
-	scsi_add_device(ioa_cfg->host, IPR_IOA_BUS, IPR_IOA_TARGET, IPR_IOA_LUN);
-	ioa_cfg->allow_ml_add_del = 1;
-	ioa_cfg->host->max_channel = IPR_VSET_BUS;
-	schedule_work(&ioa_cfg->work_q);
-=======
 	spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
 	ioa_cfg->scan_enabled = 1;
 	schedule_work(&ioa_cfg->work_q);
@@ -12677,7 +9797,6 @@ static int ipr_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
 
 	scsi_scan_host(ioa_cfg->host);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -12695,11 +9814,6 @@ static void ipr_shutdown(struct pci_dev *pdev)
 {
 	struct ipr_ioa_cfg *ioa_cfg = pci_get_drvdata(pdev);
 	unsigned long lock_flags = 0;
-<<<<<<< HEAD
-
-	spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
-	while(ioa_cfg->in_reset_reload) {
-=======
 	enum ipr_shutdown_type shutdown_type = IPR_SHUTDOWN_NORMAL;
 	int i;
 
@@ -12711,20 +9825,11 @@ static void ipr_shutdown(struct pci_dev *pdev)
 	}
 
 	while (ioa_cfg->in_reset_reload) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
 		wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
 		spin_lock_irqsave(ioa_cfg->host->host_lock, lock_flags);
 	}
 
-<<<<<<< HEAD
-	ipr_initiate_ioa_bringdown(ioa_cfg, IPR_SHUTDOWN_NORMAL);
-	spin_unlock_irqrestore(ioa_cfg->host->host_lock, lock_flags);
-	wait_event(ioa_cfg->reset_wait_q, !ioa_cfg->in_reset_reload);
-}
-
-static struct pci_device_id ipr_pci_table[] __devinitdata = {
-=======
 	if (ipr_fast_reboot && system_state == SYSTEM_RESTART && ioa_cfg->sis64)
 		shutdown_type = IPR_SHUTDOWN_QUIESCE;
 
@@ -12738,7 +9843,6 @@ static struct pci_device_id ipr_pci_table[] __devinitdata = {
 }
 
 static struct pci_device_id ipr_pci_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_MYLEX, PCI_DEVICE_ID_IBM_GEMSTONE,
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_5702, 0, 0, 0 },
 	{ PCI_VENDOR_ID_MYLEX, PCI_DEVICE_ID_IBM_GEMSTONE,
@@ -12799,11 +9903,8 @@ static struct pci_device_id ipr_pci_table[] = {
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROC_FPGA_E2,
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_57B2, 0, 0, 0 },
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROC_FPGA_E2,
-<<<<<<< HEAD
-=======
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_57C0, 0, 0, 0 },
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROC_FPGA_E2,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_57C3, 0, 0, 0 },
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROC_FPGA_E2,
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_57C4, 0, 0, 0 },
@@ -12817,8 +9918,6 @@ static struct pci_device_id ipr_pci_table[] = {
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_57C8, 0, 0, 0 },
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROCODILE,
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_57CE, 0, 0, 0 },
-<<<<<<< HEAD
-=======
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROCODILE,
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_57D5, 0, 0, 0 },
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_CROCODILE,
@@ -12853,19 +9952,13 @@ static struct pci_device_id ipr_pci_table[] = {
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_580A, 0, 0, 0 },
 	{ PCI_VENDOR_ID_IBM, PCI_DEVICE_ID_IBM_RATTLESNAKE,
 		PCI_VENDOR_ID_IBM, IPR_SUBS_DEV_ID_580B, 0, 0, 0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(pci, ipr_pci_table);
 
-<<<<<<< HEAD
-static struct pci_error_handlers ipr_err_handler = {
-	.error_detected = ipr_pci_error_detected,
-=======
 static const struct pci_error_handlers ipr_err_handler = {
 	.error_detected = ipr_pci_error_detected,
 	.mmio_enabled = ipr_pci_mmio_enabled,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.slot_reset = ipr_pci_slot_reset,
 };
 
@@ -12873,44 +9966,28 @@ static struct pci_driver ipr_driver = {
 	.name = IPR_NAME,
 	.id_table = ipr_pci_table,
 	.probe = ipr_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(ipr_remove),
-=======
 	.remove = ipr_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = ipr_shutdown,
 	.err_handler = &ipr_err_handler,
 };
 
 /**
  * ipr_halt_done - Shutdown prepare completion
-<<<<<<< HEAD
-=======
  * @ipr_cmd:   ipr command struct
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	none
  **/
 static void ipr_halt_done(struct ipr_cmnd *ipr_cmd)
 {
-<<<<<<< HEAD
-	struct ipr_ioa_cfg *ioa_cfg = ipr_cmd->ioa_cfg;
-
-	list_add_tail(&ipr_cmd->queue, &ioa_cfg->free_q);
-=======
 	list_add_tail(&ipr_cmd->queue, &ipr_cmd->hrrq->hrrq_free_q);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ipr_halt - Issue shutdown prepare to all adapters
-<<<<<<< HEAD
-=======
  * @nb: Notifier block
  * @event: Notifier event
  * @buf: Notifier data (unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  * 	NOTIFY_OK on success / NOTIFY_DONE on failure
@@ -12919,29 +9996,17 @@ static int ipr_halt(struct notifier_block *nb, ulong event, void *buf)
 {
 	struct ipr_cmnd *ipr_cmd;
 	struct ipr_ioa_cfg *ioa_cfg;
-<<<<<<< HEAD
-	unsigned long flags = 0;
-=======
 	unsigned long flags = 0, driver_lock_flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event != SYS_RESTART && event != SYS_HALT && event != SYS_POWER_OFF)
 		return NOTIFY_DONE;
 
-<<<<<<< HEAD
-	spin_lock(&ipr_driver_lock);
-
-	list_for_each_entry(ioa_cfg, &ipr_ioa_head, queue) {
-		spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
-		if (!ioa_cfg->allow_cmds) {
-=======
 	spin_lock_irqsave(&ipr_driver_lock, driver_lock_flags);
 
 	list_for_each_entry(ioa_cfg, &ipr_ioa_head, queue) {
 		spin_lock_irqsave(ioa_cfg->host->host_lock, flags);
 		if (!ioa_cfg->hrrq[IPR_INIT_HRRQ].allow_cmds ||
 		    (ipr_fast_reboot && event == SYS_RESTART && ioa_cfg->sis64)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
 			continue;
 		}
@@ -12955,11 +10020,7 @@ static int ipr_halt(struct notifier_block *nb, ulong event, void *buf)
 		ipr_do_req(ipr_cmd, ipr_halt_done, ipr_timeout, IPR_DEVICE_RESET_TIMEOUT);
 		spin_unlock_irqrestore(ioa_cfg->host->host_lock, flags);
 	}
-<<<<<<< HEAD
-	spin_unlock(&ipr_driver_lock);
-=======
 	spin_unlock_irqrestore(&ipr_driver_lock, driver_lock_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_OK;
 }
@@ -12976,18 +10037,12 @@ static struct notifier_block ipr_notifier = {
  **/
 static int __init ipr_init(void)
 {
-<<<<<<< HEAD
-=======
 	int rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipr_info("IBM Power RAID SCSI Device Driver version: %s %s\n",
 		 IPR_DRIVER_VERSION, IPR_DRIVER_DATE);
 
 	register_reboot_notifier(&ipr_notifier);
-<<<<<<< HEAD
-	return pci_register_driver(&ipr_driver);
-=======
 	rc = pci_register_driver(&ipr_driver);
 	if (rc) {
 		unregister_reboot_notifier(&ipr_notifier);
@@ -12995,7 +10050,6 @@ static int __init ipr_init(void)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**

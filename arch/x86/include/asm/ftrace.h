@@ -1,41 +1,3 @@
-<<<<<<< HEAD
-#ifndef _ASM_X86_FTRACE_H
-#define _ASM_X86_FTRACE_H
-
-#ifdef __ASSEMBLY__
-
-	.macro MCOUNT_SAVE_FRAME
-	/* taken from glibc */
-	subq $0x38, %rsp
-	movq %rax, (%rsp)
-	movq %rcx, 8(%rsp)
-	movq %rdx, 16(%rsp)
-	movq %rsi, 24(%rsp)
-	movq %rdi, 32(%rsp)
-	movq %r8, 40(%rsp)
-	movq %r9, 48(%rsp)
-	.endm
-
-	.macro MCOUNT_RESTORE_FRAME
-	movq 48(%rsp), %r9
-	movq 40(%rsp), %r8
-	movq 32(%rsp), %rdi
-	movq 24(%rsp), %rsi
-	movq 16(%rsp), %rdx
-	movq 8(%rsp), %rcx
-	movq (%rsp), %rax
-	addq $0x38, %rsp
-	.endm
-
-#endif
-
-#ifdef CONFIG_FUNCTION_TRACER
-#define MCOUNT_ADDR		((long)(mcount))
-#define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
-
-#ifndef __ASSEMBLY__
-extern void mcount(void);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_FTRACE_H
 #define _ASM_X86_FTRACE_H
@@ -62,7 +24,6 @@ extern void mcount(void);
 
 #ifndef __ASSEMBLY__
 extern void __fentry__(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long ftrace_call_adjust(unsigned long addr)
 {
@@ -73,8 +34,6 @@ static inline unsigned long ftrace_call_adjust(unsigned long addr)
 	return addr;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
 struct ftrace_regs {
 	struct pt_regs		regs;
@@ -134,7 +93,6 @@ __arch_ftrace_set_direct_caller(struct pt_regs *regs, unsigned long addr)
 	__arch_ftrace_set_direct_caller(&(fregs)->regs, addr)
 #endif /* CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DYNAMIC_FTRACE
 
 struct dyn_arch_ftrace {
@@ -145,8 +103,6 @@ struct dyn_arch_ftrace {
 #endif /* __ASSEMBLY__ */
 #endif /* CONFIG_FUNCTION_TRACER */
 
-<<<<<<< HEAD
-=======
 
 #ifndef __ASSEMBLY__
 
@@ -214,5 +170,4 @@ static inline unsigned long fgraph_ret_regs_frame_pointer(struct fgraph_ret_regs
 #endif /* ifdef CONFIG_FUNCTION_GRAPH_TRACER */
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_FTRACE_H */

@@ -1,25 +1,10 @@
-<<<<<<< HEAD
-/*
- * include/asm-xtensa/sections.h
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2001 - 2005 Tensilica Inc.
- */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _XTENSA_SECTIONS_H
 #define _XTENSA_SECTIONS_H
 
 #include <asm-generic/sections.h>
 
-<<<<<<< HEAD
-#endif	/* _XTENSA_SECTIONS_H */
-=======
 #ifdef CONFIG_VECTORS_ADDR
 extern char _WindowVectors_text_start[];
 extern char _WindowVectors_text_end[];
@@ -58,4 +43,3 @@ extern char _xip_end[];
 #endif
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/*
- * OMFS (as used by RIO Karma) directory operations.
- * Copyright (C) 2005 Bob Copeland <me@bobcopeland.com>
- * Released under GPL v2.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMFS (as used by RIO Karma) directory operations.
  * Copyright (C) 2005 Bob Copeland <me@bobcopeland.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -117,11 +110,7 @@ int omfs_make_empty(struct inode *inode, struct super_block *sb)
 
 static int omfs_add_link(struct dentry *dentry, struct inode *inode)
 {
-<<<<<<< HEAD
-	struct inode *dir = dentry->d_parent->d_inode;
-=======
 	struct inode *dir = d_inode(dentry->d_parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
 	struct omfs_inode *oi;
@@ -154,11 +143,7 @@ static int omfs_add_link(struct dentry *dentry, struct inode *inode)
 	mark_buffer_dirty(bh);
 	brelse(bh);
 
-<<<<<<< HEAD
-	dir->i_ctime = CURRENT_TIME_SEC;
-=======
 	inode_set_ctime_current(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mark affected inodes dirty to rebuild checksums */
 	mark_inode_dirty(dir);
@@ -170,11 +155,7 @@ out:
 
 static int omfs_delete_entry(struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *dir = dentry->d_parent->d_inode;
-=======
 	struct inode *dir = d_inode(dentry->d_parent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *dirty;
 	const char *name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
@@ -256,11 +237,7 @@ static int omfs_dir_is_empty(struct inode *inode)
 
 static int omfs_remove(struct inode *dir, struct dentry *dentry)
 {
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
 	struct inode *inode = d_inode(dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 
@@ -302,23 +279,14 @@ out_free_inode:
 	return err;
 }
 
-<<<<<<< HEAD
-static int omfs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 static int omfs_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 		      struct dentry *dentry, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return omfs_add_node(dir, dentry, mode | S_IFDIR);
 }
 
-<<<<<<< HEAD
-static int omfs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
-		bool excl)
-=======
 static int omfs_create(struct mnt_idmap *idmap, struct inode *dir,
 		       struct dentry *dentry, umode_t mode, bool excl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return omfs_add_node(dir, dentry, mode | S_IFREG);
 }
@@ -338,18 +306,10 @@ static struct dentry *omfs_lookup(struct inode *dir, struct dentry *dentry,
 		ino_t ino = be64_to_cpu(oi->i_head.h_self);
 		brelse(bh);
 		inode = omfs_iget(dir->i_sb, ino);
-<<<<<<< HEAD
-		if (IS_ERR(inode))
-			return ERR_CAST(inode);
-	}
-	d_add(dentry, inode);
-	return NULL;
-=======
 	} else if (bh != ERR_PTR(-ENOENT)) {
 		inode = ERR_CAST(bh);
 	}
 	return d_splice_alias(inode, dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* sanity check block's self pointer */
@@ -367,23 +327,6 @@ int omfs_is_bad(struct omfs_sb_info *sbi, struct omfs_header *header,
 	return is_bad;
 }
 
-<<<<<<< HEAD
-static int omfs_fill_chain(struct file *filp, void *dirent, filldir_t filldir,
-		u64 fsblock, int hindex)
-{
-	struct inode *dir = filp->f_dentry->d_inode;
-	struct buffer_head *bh;
-	struct omfs_inode *oi;
-	u64 self;
-	int res = 0;
-	unsigned char d_type;
-
-	/* follow chain in this bucket */
-	while (fsblock != ~0) {
-		bh = omfs_bread(dir->i_sb, fsblock);
-		if (!bh)
-			goto out;
-=======
 static bool omfs_fill_chain(struct inode *dir, struct dir_context *ctx,
 		u64 fsblock, int hindex)
 {
@@ -396,16 +339,11 @@ static bool omfs_fill_chain(struct inode *dir, struct dir_context *ctx,
 
 		if (!bh)
 			return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		oi = (struct omfs_inode *) bh->b_data;
 		if (omfs_is_bad(OMFS_SB(dir->i_sb), &oi->i_head, fsblock)) {
 			brelse(bh);
-<<<<<<< HEAD
-			goto out;
-=======
 			return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		self = fsblock;
@@ -420,26 +358,6 @@ static bool omfs_fill_chain(struct inode *dir, struct dir_context *ctx,
 
 		d_type = (oi->i_type == OMFS_DIR) ? DT_DIR : DT_REG;
 
-<<<<<<< HEAD
-		res = filldir(dirent, oi->i_name, strnlen(oi->i_name,
-			OMFS_NAMELEN), filp->f_pos, self, d_type);
-		brelse(bh);
-		if (res < 0)
-			break;
-		filp->f_pos++;
-	}
-out:
-	return res;
-}
-
-static int omfs_rename(struct inode *old_dir, struct dentry *old_dentry,
-		struct inode *new_dir, struct dentry *new_dentry)
-{
-	struct inode *new_inode = new_dentry->d_inode;
-	struct inode *old_inode = old_dentry->d_inode;
-	int err;
-
-=======
 		if (!dir_emit(ctx, oi->i_name,
 			      strnlen(oi->i_name, OMFS_NAMELEN),
 			      self, d_type)) {
@@ -463,7 +381,6 @@ static int omfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	if (flags & ~RENAME_NOREPLACE)
 		return -EINVAL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_inode) {
 		/* overwriting existing file/dir */
 		err = omfs_remove(new_dir, new_dentry);
@@ -482,43 +399,12 @@ static int omfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-	old_inode->i_ctime = CURRENT_TIME_SEC;
-=======
 	inode_set_ctime_current(old_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(old_inode);
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int omfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
-{
-	struct inode *dir = filp->f_dentry->d_inode;
-	struct buffer_head *bh;
-	loff_t offset, res;
-	unsigned int hchain, hindex;
-	int nbuckets;
-	u64 fsblock;
-	int ret = -EINVAL;
-
-	if (filp->f_pos >> 32)
-		goto success;
-
-	switch ((unsigned long) filp->f_pos) {
-	case 0:
-		if (filldir(dirent, ".", 1, 0, dir->i_ino, DT_DIR) < 0)
-			goto success;
-		filp->f_pos++;
-		/* fall through */
-	case 1:
-		if (filldir(dirent, "..", 2, 1,
-		    parent_ino(filp->f_dentry), DT_DIR) < 0)
-			goto success;
-		filp->f_pos = 1 << 20;
-		/* fall through */
-=======
 static int omfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	struct inode *dir = file_inode(file);
@@ -534,38 +420,11 @@ static int omfs_readdir(struct file *file, struct dir_context *ctx)
 		if (!dir_emit_dots(file, ctx))
 			return 0;
 		ctx->pos = 1 << 20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nbuckets = (dir->i_size - OMFS_DIR_START) / 8;
 
 	/* high 12 bits store bucket + 1 and low 20 bits store hash index */
-<<<<<<< HEAD
-	hchain = (filp->f_pos >> 20) - 1;
-	hindex = filp->f_pos & 0xfffff;
-
-	bh = omfs_bread(dir->i_sb, dir->i_ino);
-	if (!bh)
-		goto out;
-
-	offset = OMFS_DIR_START + hchain * 8;
-
-	for (; hchain < nbuckets; hchain++, offset += 8) {
-		fsblock = be64_to_cpu(*((__be64 *) &bh->b_data[offset]));
-
-		res = omfs_fill_chain(filp, dirent, filldir, fsblock, hindex);
-		hindex = 0;
-		if (res < 0)
-			break;
-
-		filp->f_pos = (hchain+2) << 20;
-	}
-	brelse(bh);
-success:
-	ret = 0;
-out:
-	return ret;
-=======
 	hchain = (ctx->pos >> 20) - 1;
 	hindex = ctx->pos & 0xfffff;
 
@@ -584,7 +443,6 @@ out:
 	}
 	brelse(bh);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct inode_operations omfs_dir_inops = {
@@ -598,10 +456,6 @@ const struct inode_operations omfs_dir_inops = {
 
 const struct file_operations omfs_dir_operations = {
 	.read = generic_read_dir,
-<<<<<<< HEAD
-	.readdir = omfs_readdir,
-=======
 	.iterate_shared = omfs_readdir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.llseek = generic_file_llseek,
 };

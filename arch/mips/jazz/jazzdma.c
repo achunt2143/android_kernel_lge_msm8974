@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mips Jazz DMA controller support
  * Copyright (C) 1995, 1996 by Andreas Busse
@@ -13,21 +10,6 @@
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/errno.h>
-#include <linux/mm.h>
-#include <linux/bootmem.h>
-#include <linux/spinlock.h>
-#include <linux/gfp.h>
-#include <asm/mipsregs.h>
-#include <asm/jazz.h>
-#include <asm/io.h>
-#include <asm/uaccess.h>
-#include <asm/dma.h>
-#include <asm/jazzdma.h>
-#include <asm/pgtable.h>
-=======
 #include <linux/export.h>
 #include <linux/errno.h>
 #include <linux/mm.h>
@@ -41,7 +23,6 @@
 #include <linux/uaccess.h>
 #include <asm/dma.h>
 #include <asm/jazzdma.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set this to one to enable additional vdma debug code.
@@ -83,11 +64,7 @@ static inline void vdma_pgtbl_init(void)
 static int __init vdma_init(void)
 {
 	/*
-<<<<<<< HEAD
-	 * Allocate 32k of memory for DMA page tables.  This needs to be page
-=======
 	 * Allocate 32k of memory for DMA page tables.	This needs to be page
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * aligned and should be uncached to avoid cache flushing after every
 	 * update.
 	 */
@@ -95,33 +72,22 @@ static int __init vdma_init(void)
 						    get_order(VDMA_PGTBL_SIZE));
 	BUG_ON(!pgtbl);
 	dma_cache_wback_inv((unsigned long)pgtbl, VDMA_PGTBL_SIZE);
-<<<<<<< HEAD
-	pgtbl = (VDMA_PGTBL_ENTRY *)KSEG1ADDR(pgtbl);
-=======
 	pgtbl = (VDMA_PGTBL_ENTRY *)CKSEG1ADDR((unsigned long)pgtbl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Clear the R4030 translation table
 	 */
 	vdma_pgtbl_init();
 
-<<<<<<< HEAD
-	r4030_write_reg32(JAZZ_R4030_TRSTBL_BASE, CPHYSADDR(pgtbl));
-=======
 	r4030_write_reg32(JAZZ_R4030_TRSTBL_BASE,
 			  CPHYSADDR((unsigned long)pgtbl));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r4030_write_reg32(JAZZ_R4030_TRSTBL_LIM, VDMA_PGTBL_SIZE);
 	r4030_write_reg32(JAZZ_R4030_TRSTBL_INV, 0);
 
 	printk(KERN_INFO "VDMA: R4030 DMA pagetables initialized.\n");
 	return 0;
 }
-<<<<<<< HEAD
-=======
 arch_initcall(vdma_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Allocate DMA pagetables using a simple first-fit algorithm
@@ -137,20 +103,12 @@ unsigned long vdma_alloc(unsigned long paddr, unsigned long size)
 		if (vdma_debug)
 			printk("vdma_alloc: Invalid physical address: %08lx\n",
 			       paddr);
-<<<<<<< HEAD
-		return VDMA_ERROR;	/* invalid physical address */
-=======
 		return DMA_MAPPING_ERROR;	/* invalid physical address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (size > 0x400000 || size == 0) {
 		if (vdma_debug)
 			printk("vdma_alloc: Invalid size: %08lx\n", size);
-<<<<<<< HEAD
-		return VDMA_ERROR;	/* invalid physical address */
-=======
 		return DMA_MAPPING_ERROR;	/* invalid physical address */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock_irqsave(&vdma_lock, flags);
@@ -164,11 +122,7 @@ unsigned long vdma_alloc(unsigned long paddr, unsigned long size)
 		       first < VDMA_PGTBL_ENTRIES) first++;
 		if (first + pages > VDMA_PGTBL_ENTRIES) {	/* nothing free */
 			spin_unlock_irqrestore(&vdma_lock, flags);
-<<<<<<< HEAD
-			return VDMA_ERROR;
-=======
 			return DMA_MAPPING_ERROR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		last = first + 1;
@@ -255,79 +209,6 @@ int vdma_free(unsigned long laddr)
 EXPORT_SYMBOL(vdma_free);
 
 /*
-<<<<<<< HEAD
- * Map certain page(s) to another physical address.
- * Caller must have allocated the page(s) before.
- */
-int vdma_remap(unsigned long laddr, unsigned long paddr, unsigned long size)
-{
-	int first, pages;
-
-	if (laddr > 0xffffff) {
-		if (vdma_debug)
-			printk
-			    ("vdma_map: Invalid logical address: %08lx\n",
-			     laddr);
-		return -EINVAL;	/* invalid logical address */
-	}
-	if (paddr > 0x1fffffff) {
-		if (vdma_debug)
-			printk
-			    ("vdma_map: Invalid physical address: %08lx\n",
-			     paddr);
-		return -EINVAL;	/* invalid physical address */
-	}
-
-	pages = (((paddr & (VDMA_PAGESIZE - 1)) + size) >> 12) + 1;
-	first = laddr >> 12;
-	if (vdma_debug)
-		printk("vdma_remap: first=%x, pages=%x\n", first, pages);
-	if (first + pages > VDMA_PGTBL_ENTRIES) {
-		if (vdma_debug)
-			printk("vdma_alloc: Invalid size: %08lx\n", size);
-		return -EINVAL;
-	}
-
-	paddr &= ~(VDMA_PAGESIZE - 1);
-	while (pages > 0 && first < VDMA_PGTBL_ENTRIES) {
-		if (pgtbl[first].owner != laddr) {
-			if (vdma_debug)
-				printk("Trying to remap other's pages.\n");
-			return -EPERM;	/* not owner */
-		}
-		pgtbl[first].frame = paddr;
-		paddr += VDMA_PAGESIZE;
-		first++;
-		pages--;
-	}
-
-	/*
-	 * Update translation table
-	 */
-	r4030_write_reg32(JAZZ_R4030_TRSTBL_INV, 0);
-
-	if (vdma_debug > 2) {
-		int i;
-		pages = (((paddr & (VDMA_PAGESIZE - 1)) + size) >> 12) + 1;
-		first = laddr >> 12;
-		printk("LADDR: ");
-		for (i = first; i < first + pages; i++)
-			printk("%08x ", i << 12);
-		printk("\nPADDR: ");
-		for (i = first; i < first + pages; i++)
-			printk("%08x ", pgtbl[i].frame);
-		printk("\nOWNER: ");
-		for (i = first; i < first + pages; i++)
-			printk("%08x ", pgtbl[i].owner);
-		printk("\n");
-	}
-
-	return 0;
-}
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Translate a physical address to a logical address.
  * This will return the logical address of the first
  * match.
@@ -607,9 +488,6 @@ int vdma_get_enable(int channel)
 	return enable;
 }
 
-<<<<<<< HEAD
-arch_initcall(vdma_init);
-=======
 static void *jazz_dma_alloc(struct device *dev, size_t size,
 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
 {
@@ -743,4 +621,3 @@ const struct dma_map_ops jazz_dma_ops = {
 	.free_pages		= dma_common_free_pages,
 };
 EXPORT_SYMBOL(jazz_dma_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

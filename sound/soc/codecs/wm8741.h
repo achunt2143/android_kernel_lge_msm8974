@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8741.h  --  WM8423 ASoC driver
  *
@@ -10,13 +7,6 @@
  * Author: Ian Lartey <ian@opensource.wolfsonmicro.com>
  *
  * Based on wm8753.h
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8741_H
@@ -201,15 +191,12 @@
 #define WM8741_DITHER_SHIFT                          0  /* DITHER - [1:0] */
 #define WM8741_DITHER_WIDTH                          2  /* DITHER - [1:0] */
 
-<<<<<<< HEAD
-=======
 /* DIFF field values */
 #define WM8741_DIFF_MODE_STEREO                      0  /* stereo normal */
 #define WM8741_DIFF_MODE_STEREO_REVERSED             2  /* stereo reversed */
 #define WM8741_DIFF_MODE_MONO_LEFT                   1  /* mono left */
 #define WM8741_DIFF_MODE_MONO_RIGHT                  3  /* mono right */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * R32 (0x20) - ADDITONAL_CONTROL_1
  */
@@ -224,11 +211,8 @@
 
 #define  WM8741_SYSCLK 0
 
-<<<<<<< HEAD
-=======
 struct wm8741_platform_data {
 	u32 diff_mode;   /* Differential Output Mode */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

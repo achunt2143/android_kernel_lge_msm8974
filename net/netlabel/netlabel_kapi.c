@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel Kernel API
  *
@@ -10,32 +7,10 @@
  * as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006, 2008
-<<<<<<< HEAD
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -48,20 +23,14 @@
 #include <net/ipv6.h>
 #include <net/netlabel.h>
 #include <net/cipso_ipv4.h>
-<<<<<<< HEAD
-=======
 #include <net/calipso.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bug.h>
 #include <linux/atomic.h>
 
 #include "netlabel_domainhash.h"
 #include "netlabel_unlabeled.h"
 #include "netlabel_cipso_v4.h"
-<<<<<<< HEAD
-=======
 #include "netlabel_calipso.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "netlabel_user.h"
 #include "netlabel_mgmt.h"
 #include "netlabel_addrlist.h"
@@ -91,24 +60,17 @@ int netlbl_cfg_map_del(const char *domain,
 		       struct netlbl_audit *audit_info)
 {
 	if (addr == NULL && mask == NULL) {
-<<<<<<< HEAD
-		return netlbl_domhsh_remove(domain, audit_info);
-=======
 		return netlbl_domhsh_remove(domain, family, audit_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (addr != NULL && mask != NULL) {
 		switch (family) {
 		case AF_INET:
 			return netlbl_domhsh_remove_af4(domain, addr, mask,
 							audit_info);
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 		case AF_INET6:
 			return netlbl_domhsh_remove_af6(domain, addr, mask,
 							audit_info);
 #endif /* IPv6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return -EPFNOSUPPORT;
 		}
@@ -150,16 +112,10 @@ int netlbl_cfg_unlbl_map_add(const char *domain,
 		if (entry->domain == NULL)
 			goto cfg_unlbl_map_add_failure;
 	}
-<<<<<<< HEAD
-
-	if (addr == NULL && mask == NULL)
-		entry->type = NETLBL_NLTYPE_UNLABELED;
-=======
 	entry->family = family;
 
 	if (addr == NULL && mask == NULL)
 		entry->def.type = NETLBL_NLTYPE_UNLABELED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (addr != NULL && mask != NULL) {
 		addrmap = kzalloc(sizeof(*addrmap), GFP_ATOMIC);
 		if (addrmap == NULL)
@@ -174,11 +130,7 @@ int netlbl_cfg_unlbl_map_add(const char *domain,
 			map4 = kzalloc(sizeof(*map4), GFP_ATOMIC);
 			if (map4 == NULL)
 				goto cfg_unlbl_map_add_failure;
-<<<<<<< HEAD
-			map4->type = NETLBL_NLTYPE_UNLABELED;
-=======
 			map4->def.type = NETLBL_NLTYPE_UNLABELED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			map4->list.addr = addr4->s_addr & mask4->s_addr;
 			map4->list.mask = mask4->s_addr;
 			map4->list.valid = 1;
@@ -195,11 +147,7 @@ int netlbl_cfg_unlbl_map_add(const char *domain,
 			map6 = kzalloc(sizeof(*map6), GFP_ATOMIC);
 			if (map6 == NULL)
 				goto cfg_unlbl_map_add_failure;
-<<<<<<< HEAD
-			map6->type = NETLBL_NLTYPE_UNLABELED;
-=======
 			map6->def.type = NETLBL_NLTYPE_UNLABELED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			map6->list.addr = *addr6;
 			map6->list.addr.s6_addr32[0] &= mask6->s6_addr32[0];
 			map6->list.addr.s6_addr32[1] &= mask6->s6_addr32[1];
@@ -216,18 +164,10 @@ int netlbl_cfg_unlbl_map_add(const char *domain,
 #endif /* IPv6 */
 		default:
 			goto cfg_unlbl_map_add_failure;
-<<<<<<< HEAD
-			break;
-		}
-
-		entry->type_def.addrsel = addrmap;
-		entry->type = NETLBL_NLTYPE_ADDRSELECT;
-=======
 		}
 
 		entry->def.addrsel = addrmap;
 		entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ret_val = -EINVAL;
 		goto cfg_unlbl_map_add_failure;
@@ -300,10 +240,6 @@ int netlbl_cfg_unlbl_static_add(struct net *net,
  * @addr: IP address in network byte order (struct in[6]_addr)
  * @mask: address mask in network byte order (struct in[6]_addr)
  * @family: address family
-<<<<<<< HEAD
- * @secid: LSM secid value for the entry
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @audit_info: NetLabel audit information
  *
  * Description:
@@ -403,10 +339,7 @@ int netlbl_cfg_cipsov4_map_add(u32 doi,
 	entry = kzalloc(sizeof(*entry), GFP_ATOMIC);
 	if (entry == NULL)
 		goto out_entry;
-<<<<<<< HEAD
-=======
 	entry->family = AF_INET;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (domain != NULL) {
 		entry->domain = kstrdup(domain, GFP_ATOMIC);
 		if (entry->domain == NULL)
@@ -414,13 +347,8 @@ int netlbl_cfg_cipsov4_map_add(u32 doi,
 	}
 
 	if (addr == NULL && mask == NULL) {
-<<<<<<< HEAD
-		entry->type_def.cipsov4 = doi_def;
-		entry->type = NETLBL_NLTYPE_CIPSOV4;
-=======
 		entry->def.cipso = doi_def;
 		entry->def.type = NETLBL_NLTYPE_CIPSOV4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (addr != NULL && mask != NULL) {
 		addrmap = kzalloc(sizeof(*addrmap), GFP_ATOMIC);
 		if (addrmap == NULL)
@@ -431,13 +359,8 @@ int netlbl_cfg_cipsov4_map_add(u32 doi,
 		addrinfo = kzalloc(sizeof(*addrinfo), GFP_ATOMIC);
 		if (addrinfo == NULL)
 			goto out_addrinfo;
-<<<<<<< HEAD
-		addrinfo->type_def.cipsov4 = doi_def;
-		addrinfo->type = NETLBL_NLTYPE_CIPSOV4;
-=======
 		addrinfo->def.cipso = doi_def;
 		addrinfo->def.type = NETLBL_NLTYPE_CIPSOV4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addrinfo->list.addr = addr->s_addr & mask->s_addr;
 		addrinfo->list.mask = mask->s_addr;
 		addrinfo->list.valid = 1;
@@ -445,13 +368,8 @@ int netlbl_cfg_cipsov4_map_add(u32 doi,
 		if (ret_val != 0)
 			goto cfg_cipsov4_map_add_failure;
 
-<<<<<<< HEAD
-		entry->type_def.addrsel = addrmap;
-		entry->type = NETLBL_NLTYPE_ADDRSELECT;
-=======
 		entry->def.addrsel = addrmap;
 		entry->def.type = NETLBL_NLTYPE_ADDRSELECT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ret_val = -EINVAL;
 		goto out_addrmap;
@@ -476,8 +394,6 @@ out_entry:
 	return ret_val;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * netlbl_cfg_calipso_add - Add a new CALIPSO DOI definition
  * @doi_def: CALIPSO DOI definition
@@ -611,15 +527,10 @@ out_entry:
 #endif /* IPv6 */
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Security Attribute Functions
  */
 
-<<<<<<< HEAD
-/**
- * netlbl_secattr_catmap_walk - Walk a LSM secattr catmap looking for a bit
-=======
 #define _CM_F_NONE	0x00000000
 #define _CM_F_ALLOC	0x00000001
 #define _CM_F_WALK	0x00000002
@@ -686,7 +597,6 @@ catmap_getnode_alloc:
 
 /**
  * netlbl_catmap_walk - Walk a LSM secattr catmap looking for a bit
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @catmap: the category bitmap
  * @offset: the offset to start searching at, in bits
  *
@@ -695,30 +605,6 @@ catmap_getnode_alloc:
  * returns the spot of the first set bit or -ENOENT if no bits are set.
  *
  */
-<<<<<<< HEAD
-int netlbl_secattr_catmap_walk(struct netlbl_lsm_secattr_catmap *catmap,
-			       u32 offset)
-{
-	struct netlbl_lsm_secattr_catmap *iter = catmap;
-	u32 node_idx;
-	u32 node_bit;
-	NETLBL_CATMAP_MAPTYPE bitmap;
-
-	if (offset > iter->startbit) {
-		while (offset >= (iter->startbit + NETLBL_CATMAP_SIZE)) {
-			iter = iter->next;
-			if (iter == NULL)
-				return -ENOENT;
-		}
-		node_idx = (offset - iter->startbit) / NETLBL_CATMAP_MAPSIZE;
-		node_bit = offset - iter->startbit -
-			   (NETLBL_CATMAP_MAPSIZE * node_idx);
-	} else {
-		node_idx = 0;
-		node_bit = 0;
-	}
-	bitmap = iter->bitmap[node_idx] >> node_bit;
-=======
 int netlbl_catmap_walk(struct netlbl_lsm_catmap *catmap, u32 offset)
 {
 	struct netlbl_lsm_catmap *iter;
@@ -738,28 +624,11 @@ int netlbl_catmap_walk(struct netlbl_lsm_catmap *catmap, u32 offset)
 		bit = 0;
 	}
 	bitmap = iter->bitmap[idx] >> bit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (;;) {
 		if (bitmap != 0) {
 			while ((bitmap & NETLBL_CATMAP_BIT) == 0) {
 				bitmap >>= 1;
-<<<<<<< HEAD
-				node_bit++;
-			}
-			return iter->startbit +
-				(NETLBL_CATMAP_MAPSIZE * node_idx) + node_bit;
-		}
-		if (++node_idx >= NETLBL_CATMAP_MAPCNT) {
-			if (iter->next != NULL) {
-				iter = iter->next;
-				node_idx = 0;
-			} else
-				return -ENOENT;
-		}
-		bitmap = iter->bitmap[node_idx];
-		node_bit = 0;
-=======
 				bit++;
 			}
 			return iter->startbit +
@@ -774,21 +643,14 @@ int netlbl_catmap_walk(struct netlbl_lsm_catmap *catmap, u32 offset)
 		}
 		bitmap = iter->bitmap[idx];
 		bit = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENOENT;
 }
-<<<<<<< HEAD
-
-/**
- * netlbl_secattr_catmap_walk_rng - Find the end of a string of set bits
-=======
 EXPORT_SYMBOL(netlbl_catmap_walk);
 
 /**
  * netlbl_catmap_walkrng - Find the end of a string of set bits
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @catmap: the category bitmap
  * @offset: the offset to start searching at, in bits
  *
@@ -798,51 +660,6 @@ EXPORT_SYMBOL(netlbl_catmap_walk);
  * the end of the bitmap.
  *
  */
-<<<<<<< HEAD
-int netlbl_secattr_catmap_walk_rng(struct netlbl_lsm_secattr_catmap *catmap,
-				   u32 offset)
-{
-	struct netlbl_lsm_secattr_catmap *iter = catmap;
-	u32 node_idx;
-	u32 node_bit;
-	NETLBL_CATMAP_MAPTYPE bitmask;
-	NETLBL_CATMAP_MAPTYPE bitmap;
-
-	if (offset > iter->startbit) {
-		while (offset >= (iter->startbit + NETLBL_CATMAP_SIZE)) {
-			iter = iter->next;
-			if (iter == NULL)
-				return -ENOENT;
-		}
-		node_idx = (offset - iter->startbit) / NETLBL_CATMAP_MAPSIZE;
-		node_bit = offset - iter->startbit -
-			   (NETLBL_CATMAP_MAPSIZE * node_idx);
-	} else {
-		node_idx = 0;
-		node_bit = 0;
-	}
-	bitmask = NETLBL_CATMAP_BIT << node_bit;
-
-	for (;;) {
-		bitmap = iter->bitmap[node_idx];
-		while (bitmask != 0 && (bitmap & bitmask) != 0) {
-			bitmask <<= 1;
-			node_bit++;
-		}
-
-		if (bitmask != 0)
-			return iter->startbit +
-				(NETLBL_CATMAP_MAPSIZE * node_idx) +
-				node_bit - 1;
-		else if (++node_idx >= NETLBL_CATMAP_MAPCNT) {
-			if (iter->next == NULL)
-				return iter->startbit +	NETLBL_CATMAP_SIZE - 1;
-			iter = iter->next;
-			node_idx = 0;
-		}
-		bitmask = NETLBL_CATMAP_BIT;
-		node_bit = 0;
-=======
 int netlbl_catmap_walkrng(struct netlbl_lsm_catmap *catmap, u32 offset)
 {
 	struct netlbl_lsm_catmap *iter;
@@ -886,17 +703,12 @@ int netlbl_catmap_walkrng(struct netlbl_lsm_catmap *catmap, u32 offset)
 		}
 		bitmask = NETLBL_CATMAP_BIT;
 		bit = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENOENT;
 }
 
 /**
-<<<<<<< HEAD
- * netlbl_secattr_catmap_setbit - Set a bit in a LSM secattr catmap
- * @catmap: the category bitmap
-=======
  * netlbl_catmap_getlong - Export an unsigned long bitmap
  * @catmap: pointer to the category bitmap
  * @offset: pointer to the requested offset
@@ -952,7 +764,6 @@ int netlbl_catmap_getlong(struct netlbl_lsm_catmap *catmap,
 /**
  * netlbl_catmap_setbit - Set a bit in a LSM secattr catmap
  * @catmap: pointer to the category bitmap
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bit: the bit to set
  * @flags: memory allocation flags
  *
@@ -961,38 +772,6 @@ int netlbl_catmap_getlong(struct netlbl_lsm_catmap *catmap,
  * negative values on failure.
  *
  */
-<<<<<<< HEAD
-int netlbl_secattr_catmap_setbit(struct netlbl_lsm_secattr_catmap *catmap,
-				 u32 bit,
-				 gfp_t flags)
-{
-	struct netlbl_lsm_secattr_catmap *iter = catmap;
-	u32 node_bit;
-	u32 node_idx;
-
-	while (iter->next != NULL &&
-	       bit >= (iter->startbit + NETLBL_CATMAP_SIZE))
-		iter = iter->next;
-	if (bit >= (iter->startbit + NETLBL_CATMAP_SIZE)) {
-		iter->next = netlbl_secattr_catmap_alloc(flags);
-		if (iter->next == NULL)
-			return -ENOMEM;
-		iter = iter->next;
-		iter->startbit = bit & ~(NETLBL_CATMAP_SIZE - 1);
-	}
-
-	/* gcc always rounds to zero when doing integer division */
-	node_idx = (bit - iter->startbit) / NETLBL_CATMAP_MAPSIZE;
-	node_bit = bit - iter->startbit - (NETLBL_CATMAP_MAPSIZE * node_idx);
-	iter->bitmap[node_idx] |= NETLBL_CATMAP_BIT << node_bit;
-
-	return 0;
-}
-
-/**
- * netlbl_secattr_catmap_setrng - Set a range of bits in a LSM secattr catmap
- * @catmap: the category bitmap
-=======
 int netlbl_catmap_setbit(struct netlbl_lsm_catmap **catmap,
 			 u32 bit,
 			 gfp_t flags)
@@ -1015,7 +794,6 @@ EXPORT_SYMBOL(netlbl_catmap_setbit);
 /**
  * netlbl_catmap_setrng - Set a range of bits in a LSM secattr catmap
  * @catmap: pointer to the category bitmap
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @start: the starting bit
  * @end: the last bit in the string
  * @flags: memory allocation flags
@@ -1025,40 +803,6 @@ EXPORT_SYMBOL(netlbl_catmap_setbit);
  * on success, negative values on failure.
  *
  */
-<<<<<<< HEAD
-int netlbl_secattr_catmap_setrng(struct netlbl_lsm_secattr_catmap *catmap,
-				 u32 start,
-				 u32 end,
-				 gfp_t flags)
-{
-	int ret_val = 0;
-	struct netlbl_lsm_secattr_catmap *iter = catmap;
-	u32 iter_max_spot;
-	u32 spot;
-
-	/* XXX - This could probably be made a bit faster by combining writes
-	 * to the catmap instead of setting a single bit each time, but for
-	 * right now skipping to the start of the range in the catmap should
-	 * be a nice improvement over calling the individual setbit function
-	 * repeatedly from a loop. */
-
-	while (iter->next != NULL &&
-	       start >= (iter->startbit + NETLBL_CATMAP_SIZE))
-		iter = iter->next;
-	iter_max_spot = iter->startbit + NETLBL_CATMAP_SIZE;
-
-	for (spot = start; spot <= end && ret_val == 0; spot++) {
-		if (spot >= iter_max_spot && iter->next != NULL) {
-			iter = iter->next;
-			iter_max_spot = iter->startbit + NETLBL_CATMAP_SIZE;
-		}
-		ret_val = netlbl_secattr_catmap_setbit(iter, spot, flags);
-	}
-
-	return ret_val;
-}
-
-=======
 int netlbl_catmap_setrng(struct netlbl_lsm_catmap **catmap,
 			 u32 start,
 			 u32 end,
@@ -1192,7 +936,6 @@ void netlbl_bitmap_setbit(unsigned char *bitmap, u32 bit, u8 state)
 }
 EXPORT_SYMBOL(netlbl_bitmap_setbit);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LSM Functions
  */
@@ -1240,34 +983,21 @@ int netlbl_sock_setattr(struct sock *sk,
 	struct netlbl_dom_map *dom_entry;
 
 	rcu_read_lock();
-<<<<<<< HEAD
-	dom_entry = netlbl_domhsh_getentry(secattr->domain);
-=======
 	dom_entry = netlbl_domhsh_getentry(secattr->domain, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dom_entry == NULL) {
 		ret_val = -ENOENT;
 		goto socket_setattr_return;
 	}
 	switch (family) {
 	case AF_INET:
-<<<<<<< HEAD
-		switch (dom_entry->type) {
-=======
 		switch (dom_entry->def.type) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case NETLBL_NLTYPE_ADDRSELECT:
 			ret_val = -EDESTADDRREQ;
 			break;
 		case NETLBL_NLTYPE_CIPSOV4:
 			ret_val = cipso_v4_sock_setattr(sk,
-<<<<<<< HEAD
-						    dom_entry->type_def.cipsov4,
-						    secattr);
-=======
 							dom_entry->def.cipso,
 							secattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case NETLBL_NLTYPE_UNLABELED:
 			ret_val = 0;
@@ -1278,11 +1008,6 @@ int netlbl_sock_setattr(struct sock *sk,
 		break;
 #if IS_ENABLED(CONFIG_IPV6)
 	case AF_INET6:
-<<<<<<< HEAD
-		/* since we don't support any IPv6 labeling protocols right
-		 * now we can optimize everything away until we do */
-		ret_val = 0;
-=======
 		switch (dom_entry->def.type) {
 		case NETLBL_NLTYPE_ADDRSELECT:
 			ret_val = -EDESTADDRREQ;
@@ -1298,7 +1023,6 @@ int netlbl_sock_setattr(struct sock *sk,
 		default:
 			ret_val = -ENOENT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif /* IPv6 */
 	default:
@@ -1321,9 +1045,6 @@ socket_setattr_return:
  */
 void netlbl_sock_delattr(struct sock *sk)
 {
-<<<<<<< HEAD
-	cipso_v4_sock_delattr(sk);
-=======
 	switch (sk->sk_family) {
 	case AF_INET:
 		cipso_v4_sock_delattr(sk);
@@ -1334,7 +1055,6 @@ void netlbl_sock_delattr(struct sock *sk)
 		break;
 #endif /* IPv6 */
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1360,11 +1080,7 @@ int netlbl_sock_getattr(struct sock *sk,
 		break;
 #if IS_ENABLED(CONFIG_IPV6)
 	case AF_INET6:
-<<<<<<< HEAD
-		ret_val = -ENOMSG;
-=======
 		ret_val = calipso_sock_getattr(sk, secattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif /* IPv6 */
 	default:
@@ -1392,32 +1108,15 @@ int netlbl_conn_setattr(struct sock *sk,
 {
 	int ret_val;
 	struct sockaddr_in *addr4;
-<<<<<<< HEAD
-	struct netlbl_domaddr4_map *af4_entry;
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	struct sockaddr_in6 *addr6;
 #endif
 	struct netlbl_dommap_def *entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	switch (addr->sa_family) {
 	case AF_INET:
 		addr4 = (struct sockaddr_in *)addr;
-<<<<<<< HEAD
-		af4_entry = netlbl_domhsh_getentry_af4(secattr->domain,
-						       addr4->sin_addr.s_addr);
-		if (af4_entry == NULL) {
-			ret_val = -ENOENT;
-			goto conn_setattr_return;
-		}
-		switch (af4_entry->type) {
-		case NETLBL_NLTYPE_CIPSOV4:
-			ret_val = cipso_v4_sock_setattr(sk,
-						   af4_entry->type_def.cipsov4,
-						   secattr);
-=======
 		entry = netlbl_domhsh_getentry_af4(secattr->domain,
 						   addr4->sin_addr.s_addr);
 		if (entry == NULL) {
@@ -1428,16 +1127,11 @@ int netlbl_conn_setattr(struct sock *sk,
 		case NETLBL_NLTYPE_CIPSOV4:
 			ret_val = cipso_v4_sock_setattr(sk,
 							entry->cipso, secattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case NETLBL_NLTYPE_UNLABELED:
 			/* just delete the protocols we support for right now
 			 * but we could remove other protocols if needed */
-<<<<<<< HEAD
-			cipso_v4_sock_delattr(sk);
-=======
 			netlbl_sock_delattr(sk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret_val = 0;
 			break;
 		default:
@@ -1446,11 +1140,6 @@ int netlbl_conn_setattr(struct sock *sk,
 		break;
 #if IS_ENABLED(CONFIG_IPV6)
 	case AF_INET6:
-<<<<<<< HEAD
-		/* since we don't support any IPv6 labeling protocols right
-		 * now we can optimize everything away until we do */
-		ret_val = 0;
-=======
 		addr6 = (struct sockaddr_in6 *)addr;
 		entry = netlbl_domhsh_getentry_af6(secattr->domain,
 						   &addr6->sin6_addr);
@@ -1472,7 +1161,6 @@ int netlbl_conn_setattr(struct sock *sk,
 		default:
 			ret_val = -ENOENT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif /* IPv6 */
 	default:
@@ -1498,43 +1186,6 @@ int netlbl_req_setattr(struct request_sock *req,
 		       const struct netlbl_lsm_secattr *secattr)
 {
 	int ret_val;
-<<<<<<< HEAD
-	struct netlbl_dom_map *dom_entry;
-	struct netlbl_domaddr4_map *af4_entry;
-	u32 proto_type;
-	struct cipso_v4_doi *proto_cv4;
-
-	rcu_read_lock();
-	dom_entry = netlbl_domhsh_getentry(secattr->domain);
-	if (dom_entry == NULL) {
-		ret_val = -ENOENT;
-		goto req_setattr_return;
-	}
-	switch (req->rsk_ops->family) {
-	case AF_INET:
-		if (dom_entry->type == NETLBL_NLTYPE_ADDRSELECT) {
-			struct inet_request_sock *req_inet = inet_rsk(req);
-			af4_entry = netlbl_domhsh_getentry_af4(secattr->domain,
-							    req_inet->rmt_addr);
-			if (af4_entry == NULL) {
-				ret_val = -ENOENT;
-				goto req_setattr_return;
-			}
-			proto_type = af4_entry->type;
-			proto_cv4 = af4_entry->type_def.cipsov4;
-		} else {
-			proto_type = dom_entry->type;
-			proto_cv4 = dom_entry->type_def.cipsov4;
-		}
-		switch (proto_type) {
-		case NETLBL_NLTYPE_CIPSOV4:
-			ret_val = cipso_v4_req_setattr(req, proto_cv4, secattr);
-			break;
-		case NETLBL_NLTYPE_UNLABELED:
-			/* just delete the protocols we support for right now
-			 * but we could remove other protocols if needed */
-			cipso_v4_req_delattr(req);
-=======
 	struct netlbl_dommap_def *entry;
 	struct inet_request_sock *ireq = inet_rsk(req);
 
@@ -1554,7 +1205,6 @@ int netlbl_req_setattr(struct request_sock *req,
 			break;
 		case NETLBL_NLTYPE_UNLABELED:
 			netlbl_req_delattr(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret_val = 0;
 			break;
 		default:
@@ -1563,11 +1213,6 @@ int netlbl_req_setattr(struct request_sock *req,
 		break;
 #if IS_ENABLED(CONFIG_IPV6)
 	case AF_INET6:
-<<<<<<< HEAD
-		/* since we don't support any IPv6 labeling protocols right
-		 * now we can optimize everything away until we do */
-		ret_val = 0;
-=======
 		entry = netlbl_domhsh_getentry_af6(secattr->domain,
 						   &ireq->ir_v6_rmt_addr);
 		if (entry == NULL) {
@@ -1586,7 +1231,6 @@ int netlbl_req_setattr(struct request_sock *req,
 		default:
 			ret_val = -ENOENT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif /* IPv6 */
 	default:
@@ -1608,9 +1252,6 @@ req_setattr_return:
 */
 void netlbl_req_delattr(struct request_sock *req)
 {
-<<<<<<< HEAD
-	cipso_v4_req_delattr(req);
-=======
 	switch (req->rsk_ops->family) {
 	case AF_INET:
 		cipso_v4_req_delattr(req);
@@ -1621,7 +1262,6 @@ void netlbl_req_delattr(struct request_sock *req)
 		break;
 #endif /* IPv6 */
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1641,32 +1281,15 @@ int netlbl_skbuff_setattr(struct sk_buff *skb,
 {
 	int ret_val;
 	struct iphdr *hdr4;
-<<<<<<< HEAD
-	struct netlbl_domaddr4_map *af4_entry;
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	struct ipv6hdr *hdr6;
 #endif
 	struct netlbl_dommap_def *entry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	switch (family) {
 	case AF_INET:
 		hdr4 = ip_hdr(skb);
-<<<<<<< HEAD
-		af4_entry = netlbl_domhsh_getentry_af4(secattr->domain,
-						       hdr4->daddr);
-		if (af4_entry == NULL) {
-			ret_val = -ENOENT;
-			goto skbuff_setattr_return;
-		}
-		switch (af4_entry->type) {
-		case NETLBL_NLTYPE_CIPSOV4:
-			ret_val = cipso_v4_skbuff_setattr(skb,
-						   af4_entry->type_def.cipsov4,
-						   secattr);
-=======
 		entry = netlbl_domhsh_getentry_af4(secattr->domain,
 						   hdr4->daddr);
 		if (entry == NULL) {
@@ -1677,7 +1300,6 @@ int netlbl_skbuff_setattr(struct sk_buff *skb,
 		case NETLBL_NLTYPE_CIPSOV4:
 			ret_val = cipso_v4_skbuff_setattr(skb, entry->cipso,
 							  secattr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case NETLBL_NLTYPE_UNLABELED:
 			/* just delete the protocols we support for right now
@@ -1690,11 +1312,6 @@ int netlbl_skbuff_setattr(struct sk_buff *skb,
 		break;
 #if IS_ENABLED(CONFIG_IPV6)
 	case AF_INET6:
-<<<<<<< HEAD
-		/* since we don't support any IPv6 labeling protocols right
-		 * now we can optimize everything away until we do */
-		ret_val = 0;
-=======
 		hdr6 = ipv6_hdr(skb);
 		entry = netlbl_domhsh_getentry_af6(secattr->domain,
 						   &hdr6->daddr);
@@ -1715,7 +1332,6 @@ int netlbl_skbuff_setattr(struct sk_buff *skb,
 		default:
 			ret_val = -ENOENT;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif /* IPv6 */
 	default:
@@ -1744,29 +1360,19 @@ int netlbl_skbuff_getattr(const struct sk_buff *skb,
 			  u16 family,
 			  struct netlbl_lsm_secattr *secattr)
 {
-<<<<<<< HEAD
-	switch (family) {
-	case AF_INET:
-		if (CIPSO_V4_OPTEXIST(skb) &&
-		    cipso_v4_skbuff_getattr(skb, secattr) == 0)
-=======
 	unsigned char *ptr;
 
 	switch (family) {
 	case AF_INET:
 		ptr = cipso_v4_optptr(skb);
 		if (ptr && cipso_v4_getattr(ptr, secattr) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		break;
 #if IS_ENABLED(CONFIG_IPV6)
 	case AF_INET6:
-<<<<<<< HEAD
-=======
 		ptr = calipso_optptr(skb);
 		if (ptr && calipso_getattr(ptr, secattr) == 0)
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif /* IPv6 */
 	}
@@ -1777,10 +1383,7 @@ int netlbl_skbuff_getattr(const struct sk_buff *skb,
 /**
  * netlbl_skbuff_err - Handle a LSM error on a sk_buff
  * @skb: the packet
-<<<<<<< HEAD
-=======
  * @family: the family
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @error: the error code
  * @gateway: true if host is acting as a gateway, false otherwise
  *
@@ -1790,12 +1393,6 @@ int netlbl_skbuff_getattr(const struct sk_buff *skb,
  * according to the packet's labeling protocol.
  *
  */
-<<<<<<< HEAD
-void netlbl_skbuff_err(struct sk_buff *skb, int error, int gateway)
-{
-	if (CIPSO_V4_OPTEXIST(skb))
-		cipso_v4_error(skb, error, gateway);
-=======
 void netlbl_skbuff_err(struct sk_buff *skb, u16 family, int error, int gateway)
 {
 	switch (family) {
@@ -1804,7 +1401,6 @@ void netlbl_skbuff_err(struct sk_buff *skb, u16 family, int error, int gateway)
 			cipso_v4_error(skb, error, gateway);
 		break;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1819,21 +1415,15 @@ void netlbl_skbuff_err(struct sk_buff *skb, u16 family, int error, int gateway)
 void netlbl_cache_invalidate(void)
 {
 	cipso_v4_cache_invalidate();
-<<<<<<< HEAD
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 	calipso_cache_invalidate();
 #endif /* IPv6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * netlbl_cache_add - Add an entry to a NetLabel protocol cache
  * @skb: the packet
-<<<<<<< HEAD
-=======
  * @family: the family
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @secattr: the packet's security attributes
  *
  * Description:
@@ -1842,17 +1432,6 @@ void netlbl_cache_invalidate(void)
  * values on error.
  *
  */
-<<<<<<< HEAD
-int netlbl_cache_add(const struct sk_buff *skb,
-		     const struct netlbl_lsm_secattr *secattr)
-{
-	if ((secattr->flags & NETLBL_SECATTR_CACHE) == 0)
-		return -ENOMSG;
-
-	if (CIPSO_V4_OPTEXIST(skb))
-		return cipso_v4_cache_add(skb, secattr);
-
-=======
 int netlbl_cache_add(const struct sk_buff *skb, u16 family,
 		     const struct netlbl_lsm_secattr *secattr)
 {
@@ -1875,7 +1454,6 @@ int netlbl_cache_add(const struct sk_buff *skb, u16 family,
 		break;
 #endif /* IPv6 */
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMSG;
 }
 
@@ -1900,10 +1478,7 @@ struct audit_buffer *netlbl_audit_start(int type,
 {
 	return netlbl_audit_start_common(type, audit_info);
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(netlbl_audit_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Setup Functions
@@ -1923,14 +1498,7 @@ static int __init netlbl_init(void)
 	printk(KERN_INFO "NetLabel: Initializing\n");
 	printk(KERN_INFO "NetLabel:  domain hash size = %u\n",
 	       (1 << NETLBL_DOMHSH_BITSIZE));
-<<<<<<< HEAD
-	printk(KERN_INFO "NetLabel:  protocols ="
-	       " UNLABELED"
-	       " CIPSOv4"
-	       "\n");
-=======
 	printk(KERN_INFO "NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret_val = netlbl_domhsh_init(NETLBL_DOMHSH_BITSIZE);
 	if (ret_val != 0)

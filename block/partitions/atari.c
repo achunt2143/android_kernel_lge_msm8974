@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/atari.c
  *
@@ -46,8 +43,6 @@ int atari_partition(struct parsed_partitions *state)
 	int part_fmt = 0; /* 0:unknown, 1:AHDI, 2:ICD/Supra */
 #endif
 
-<<<<<<< HEAD
-=======
 	/*
 	 * ATARI partition scheme supports 512 lba only.  If this is not
 	 * the case, bail early to avoid miscalculating hd_size.
@@ -55,17 +50,12 @@ int atari_partition(struct parsed_partitions *state)
 	if (queue_logical_block_size(state->disk->queue) != 512)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rs = read_part_sector(state, 0, &sect);
 	if (!rs)
 		return -1;
 
 	/* Verify this is an Atari rootsector: */
-<<<<<<< HEAD
-	hd_size = state->bdev->bd_inode->i_size >> 9;
-=======
 	hd_size = get_capacity(state->disk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!VALID_PARTITION(&rs->part[0], hd_size) &&
 	    !VALID_PARTITION(&rs->part[1], hd_size) &&
 	    !VALID_PARTITION(&rs->part[2], hd_size) &&
@@ -150,10 +140,6 @@ int atari_partition(struct parsed_partitions *state)
 				/* accept only GEM,BGM,RAW,LNX,SWP partitions */
 				if (!((pi->flg & 1) && OK_id(pi->id)))
 					continue;
-<<<<<<< HEAD
-				part_fmt = 2;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				put_partition (state, slot,
 						be32_to_cpu(pi->st),
 						be32_to_cpu(pi->siz));

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*======================================================================
 
   This driver provides a method to access memory not used by the kernel
@@ -34,11 +31,7 @@
 
 
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/ptrace.h>
@@ -49,11 +42,7 @@
 #include <linux/fs.h>
 #include <linux/ioctl.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mtd/mtd.h>
 
@@ -96,16 +85,7 @@ static int slram_erase(struct mtd_info *mtd, struct erase_info *instr)
 	slram_priv_t *priv = mtd->priv;
 
 	memset(priv->start + instr->addr, 0xff, instr->len);
-<<<<<<< HEAD
-	/* This'll catch a few races. Free the thing before returning :)
-	 * I don't feel at all ashamed. This kind of thing is possible anyway
-	 * with flash, but unlikely.
-	 */
-	instr->state = MTD_ERASE_DONE;
-	mtd_erase_callback(instr);
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return(0);
 }
 
@@ -179,14 +159,9 @@ static int register_device(char *name, unsigned long start, unsigned long length
 	}
 
 	if (!(((slram_priv_t *)(*curmtd)->mtdinfo->priv)->start =
-<<<<<<< HEAD
-				ioremap(start, length))) {
-		E("slram: ioremap failed\n");
-=======
 		memremap(start, length,
 			 MEMREMAP_WB | MEMREMAP_WT | MEMREMAP_WC))) {
 		E("slram: memremap failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	((slram_priv_t *)(*curmtd)->mtdinfo->priv)->end =
@@ -208,11 +183,7 @@ static int register_device(char *name, unsigned long start, unsigned long length
 
 	if (mtd_device_register((*curmtd)->mtdinfo, NULL, 0))	{
 		E("slram: Failed to register new device\n");
-<<<<<<< HEAD
-		iounmap(((slram_priv_t *)(*curmtd)->mtdinfo->priv)->start);
-=======
 		memunmap(((slram_priv_t *)(*curmtd)->mtdinfo->priv)->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree((*curmtd)->mtdinfo->priv);
 		kfree((*curmtd)->mtdinfo);
 		return(-EAGAIN);
@@ -232,11 +203,7 @@ static void unregister_devices(void)
 	while (slram_mtdlist) {
 		nextitem = slram_mtdlist->next;
 		mtd_device_unregister(slram_mtdlist->mtdinfo);
-<<<<<<< HEAD
-		iounmap(((slram_priv_t *)slram_mtdlist->mtdinfo->priv)->start);
-=======
 		memunmap(((slram_priv_t *)slram_mtdlist->mtdinfo->priv)->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(slram_mtdlist->mtdinfo->priv);
 		kfree(slram_mtdlist->mtdinfo);
 		kfree(slram_mtdlist);
@@ -310,20 +277,11 @@ __setup("slram=", mtd_slram_setup);
 static int __init init_slram(void)
 {
 	char *devname;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef MODULE
 	char *devstart;
 	char *devlength;
 
-<<<<<<< HEAD
-	i = 0;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!map) {
 		E("slram: not enough parameters.\n");
 		return(-EINVAL);
@@ -350,10 +308,7 @@ static int __init init_slram(void)
 	}
 #else
 	int count;
-<<<<<<< HEAD
-=======
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (count = 0; count < SLRAM_MAX_DEVICES_PARAMS && map[count];
 			count++) {

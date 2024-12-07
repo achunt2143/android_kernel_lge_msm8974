@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
@@ -9,14 +6,6 @@
  *
  *	See the file "skfddi.c" for further information.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -47,13 +36,6 @@
 #define KERNEL
 #include "h/smtstate.h"
 
-<<<<<<< HEAD
-#ifndef	lint
-static const char ID_sccs[] = "@(#)cfm.c	2.18 98/10/06 (C) SK " ;
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * FSM Macros
  */
@@ -62,10 +44,6 @@ static const char ID_sccs[] = "@(#)cfm.c	2.18 98/10/06 (C) SK " ;
 #define ACTIONS_DONE()	(smc->mib.fddiSMTCF_State &= ~AFLAG)
 #define ACTIONS(x)	(x|AFLAG)
 
-<<<<<<< HEAD
-#ifdef	DEBUG
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * symbolic state names
  */
@@ -81,10 +59,6 @@ static const char * const cfm_states[] = {
 static const char * const cfm_events[] = {
 	"NONE","CF_LOOP_A","CF_LOOP_B","CF_JOIN_A","CF_JOIN_B"
 } ;
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * map from state to downstream port type
@@ -230,10 +204,6 @@ void cfm(struct s_smc *smc, int event)
 {
 	int	state ;		/* remember last state */
 	int	cond ;
-<<<<<<< HEAD
-	int	oldstate ;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We will do the following: */
 	/*  - compute the variable WC_Flag for every port (This is where */
@@ -247,20 +217,11 @@ void cfm(struct s_smc *smc, int event)
 	/*  - change the portstates */
 	cem_priv_state (smc, event);
 
-<<<<<<< HEAD
-	oldstate = smc->mib.fddiSMTCF_State ;
-	do {
-		DB_CFM("CFM : state %s%s",
-			(smc->mib.fddiSMTCF_State & AFLAG) ? "ACTIONS " : "",
-			cfm_states[smc->mib.fddiSMTCF_State & ~AFLAG]) ;
-		DB_CFM(" event %s\n",cfm_events[event],0) ;
-=======
 	do {
 		DB_CFM("CFM : state %s%s event %s",
 		       smc->mib.fddiSMTCF_State & AFLAG ? "ACTIONS " : "",
 		       cfm_states[smc->mib.fddiSMTCF_State & ~AFLAG],
 		       cfm_events[event]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state = smc->mib.fddiSMTCF_State ;
 		cfm_fsm(smc,event) ;
 		event = 0 ;
@@ -283,26 +244,11 @@ void cfm(struct s_smc *smc, int event)
 	if (cond != smc->mib.fddiSMTPeerWrapFlag)
 		smt_srf_event(smc,SMT_COND_SMT_PEER_WRAP,0,cond) ;
 
-<<<<<<< HEAD
-#if	0
-	/*
-	 * Don't send ever MAC_PATH_CHANGE events. Our MAC is hard-wired
-	 * to the primary path.
-	 */
-	/*
-	 * path change
-	 */
-	if (smc->mib.fddiSMTCF_State != oldstate) {
-		smt_srf_event(smc,SMT_EVENT_MAC_PATH_CHANGE,INDEX_MAC,0) ;
-	}
-#endif
-=======
 	/*
 	 * Don't ever send MAC_PATH_CHANGE events. Our MAC is hard-wired
 	 * to the primary path.
 	 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* no SLIM_SMT */
 
 	/*
@@ -332,11 +278,7 @@ static void cfm_fsm(struct s_smc *smc, int cmd)
 		queue_event(smc,EVENT_RMT,RM_JOIN) ;/* signal RMT */
 		/* Don't do the WC-Flag changing here */
 		ACTIONS_DONE() ;
-<<<<<<< HEAD
-		DB_CFMN(1,"CFM : %s\n",cfm_states[smc->mib.fddiSMTCF_State],0) ;
-=======
 		DB_CFMN(1, "CFM : %s", cfm_states[smc->mib.fddiSMTCF_State]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SC0_ISOLATED :
 		/*SC07*/
@@ -377,11 +319,7 @@ static void cfm_fsm(struct s_smc *smc, int cmd)
 			queue_event(smc,EVENT_RMT,RM_JOIN) ;/* signal RMT */
 		}
 		ACTIONS_DONE() ;
-<<<<<<< HEAD
-		DB_CFMN(1,"CFM : %s\n",cfm_states[smc->mib.fddiSMTCF_State],0) ;
-=======
 		DB_CFMN(1, "CFM : %s", cfm_states[smc->mib.fddiSMTCF_State]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break ;
 	case SC9_C_WRAP_A :
 		/*SC10*/
@@ -446,11 +384,7 @@ static void cfm_fsm(struct s_smc *smc, int cmd)
 			queue_event(smc,EVENT_RMT,RM_JOIN) ;/* signal RMT */
 		}
 		ACTIONS_DONE() ;
-<<<<<<< HEAD
-		DB_CFMN(1,"CFM : %s\n",cfm_states[smc->mib.fddiSMTCF_State],0) ;
-=======
 		DB_CFMN(1, "CFM : %s", cfm_states[smc->mib.fddiSMTCF_State]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break ;
 	case SC10_C_WRAP_B :
 		/*SC20*/
@@ -495,11 +429,7 @@ static void cfm_fsm(struct s_smc *smc, int cmd)
 		smc->r.rm_join = TRUE ;
 		queue_event(smc,EVENT_RMT,RM_JOIN) ;/* signal RMT */
 		ACTIONS_DONE() ;
-<<<<<<< HEAD
-		DB_CFMN(1,"CFM : %s\n",cfm_states[smc->mib.fddiSMTCF_State],0) ;
-=======
 		DB_CFMN(1, "CFM : %s", cfm_states[smc->mib.fddiSMTCF_State]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break ;
 	case SC4_THRU_A :
 		/*SC41*/
@@ -532,11 +462,7 @@ static void cfm_fsm(struct s_smc *smc, int cmd)
 		smc->r.rm_join = TRUE ;
 		queue_event(smc,EVENT_RMT,RM_JOIN) ;/* signal RMT */
 		ACTIONS_DONE() ;
-<<<<<<< HEAD
-		DB_CFMN(1,"CFM : %s\n",cfm_states[smc->mib.fddiSMTCF_State],0) ;
-=======
 		DB_CFMN(1, "CFM : %s", cfm_states[smc->mib.fddiSMTCF_State]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break ;
 	case SC5_THRU_B :
 		/*SC51*/
@@ -574,11 +500,7 @@ static void cfm_fsm(struct s_smc *smc, int cmd)
 			queue_event(smc,EVENT_RMT,RM_JOIN) ;/* signal RMT */
 		}
 		ACTIONS_DONE() ;
-<<<<<<< HEAD
-		DB_CFMN(1,"CFM : %s\n",cfm_states[smc->mib.fddiSMTCF_State],0) ;
-=======
 		DB_CFMN(1, "CFM : %s", cfm_states[smc->mib.fddiSMTCF_State]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break ;
 	case SC11_C_WRAP_S :
 		/*SC70*/

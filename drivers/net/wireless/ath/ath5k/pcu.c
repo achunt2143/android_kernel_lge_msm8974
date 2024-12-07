@@ -101,10 +101,7 @@ static const unsigned int ack_rates_high[] =
 /**
  * ath5k_hw_get_frame_duration() - Get tx time of a frame
  * @ah: The &struct ath5k_hw
-<<<<<<< HEAD
-=======
  * @band: One of enum nl80211_band
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @len: Frame's length in bytes
  * @rate: The @struct ieee80211_rate
  * @shortpre: Indicate short preample
@@ -114,11 +111,7 @@ static const unsigned int ack_rates_high[] =
  * bwmodes.
  */
 int
-<<<<<<< HEAD
-ath5k_hw_get_frame_duration(struct ath5k_hw *ah,
-=======
 ath5k_hw_get_frame_duration(struct ath5k_hw *ah, enum nl80211_band band,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int len, struct ieee80211_rate *rate, bool shortpre)
 {
 	int sifs, preamble, plcp_bits, sym_time;
@@ -128,11 +121,7 @@ ath5k_hw_get_frame_duration(struct ath5k_hw *ah, enum nl80211_band band,
 	/* Fallback */
 	if (!ah->ah_bwmode) {
 		__le16 raw_dur = ieee80211_generic_frame_duration(ah->hw,
-<<<<<<< HEAD
-					NULL, len, rate);
-=======
 					NULL, band, len, rate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* subtract difference between long and short preamble */
 		dur = le16_to_cpu(raw_dur);
@@ -156,19 +145,13 @@ ath5k_hw_get_frame_duration(struct ath5k_hw *ah, enum nl80211_band band,
 		sifs = AR5K_INIT_SIFS_HALF_RATE;
 		preamble *= 2;
 		sym_time *= 2;
-<<<<<<< HEAD
-=======
 		bitrate = DIV_ROUND_UP(bitrate, 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case AR5K_BWMODE_5MHZ:
 		sifs = AR5K_INIT_SIFS_QUARTER_RATE;
 		preamble *= 4;
 		sym_time *= 4;
-<<<<<<< HEAD
-=======
 		bitrate = DIV_ROUND_UP(bitrate, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		sifs = AR5K_INIT_SIFS_DEFAULT_BG;
@@ -237,15 +220,9 @@ ath5k_hw_get_default_sifs(struct ath5k_hw *ah)
 		sifs = AR5K_INIT_SIFS_QUARTER_RATE;
 		break;
 	case AR5K_BWMODE_DEFAULT:
-<<<<<<< HEAD
-		sifs = AR5K_INIT_SIFS_DEFAULT_BG;
-	default:
-		if (channel->band == IEEE80211_BAND_5GHZ)
-=======
 	default:
 		sifs = AR5K_INIT_SIFS_DEFAULT_BG;
 		if (channel->band == NL80211_BAND_5GHZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sifs = AR5K_INIT_SIFS_DEFAULT_A;
 		break;
 	}
@@ -303,11 +280,7 @@ ath5k_hw_write_rate_duration(struct ath5k_hw *ah)
 	struct ieee80211_rate *rate;
 	unsigned int i;
 	/* 802.11g covers both OFDM and CCK */
-<<<<<<< HEAD
-	u8 band = IEEE80211_BAND_2GHZ;
-=======
 	u8 band = NL80211_BAND_2GHZ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Write rate duration table */
 	for (i = 0; i < ah->sbands[band].n_bitrates; i++) {
@@ -332,23 +305,15 @@ ath5k_hw_write_rate_duration(struct ath5k_hw *ah)
 		 * actual rate for this rate. See mac80211 tx.c
 		 * ieee80211_duration() for a brief description of
 		 * what rate we should choose to TX ACKs. */
-<<<<<<< HEAD
-		tx_time = ath5k_hw_get_frame_duration(ah, 10, rate, false);
-=======
 		tx_time = ath5k_hw_get_frame_duration(ah, band, 10,
 					rate, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ath5k_hw_reg_write(ah, tx_time, reg);
 
 		if (!(rate->flags & IEEE80211_RATE_SHORT_PREAMBLE))
 			continue;
 
-<<<<<<< HEAD
-		tx_time = ath5k_hw_get_frame_duration(ah, 10, rate, true);
-=======
 		tx_time = ath5k_hw_get_frame_duration(ah, band, 10, rate, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath5k_hw_reg_write(ah, tx_time,
 			reg + (AR5K_SET_SHORT_PREAMBLE << 2));
 	}
@@ -706,10 +671,7 @@ ath5k_hw_init_beacon_timers(struct ath5k_hw *ah, u32 next_beacon, u32 interval)
 		break;
 	case NL80211_IFTYPE_ADHOC:
 		AR5K_REG_ENABLE_BITS(ah, AR5K_TXCFG, AR5K_TXCFG_ADHOC_BCN_ATIM);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* On non-STA modes timer1 is used as next DMA
 		 * beacon alert (DBA) timer and timer2 as next
@@ -893,11 +855,7 @@ ath5k_hw_start_rx_pcu(struct ath5k_hw *ah)
 }
 
 /**
-<<<<<<< HEAD
- * at5k_hw_stop_rx_pcu() - Stop RX engine
-=======
  * ath5k_hw_stop_rx_pcu() - Stop RX engine
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ah: The &struct ath5k_hw
  *
  * Stops RX engine on PCU
@@ -956,10 +914,7 @@ ath5k_hw_set_opmode(struct ath5k_hw *ah, enum nl80211_iftype op_mode)
 		pcu_reg |= AR5K_STA_ID1_KEYSRCH_MODE
 			| (ah->ah_version == AR5K_AR5210 ?
 				AR5K_STA_ID1_PWR_SV : 0);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NL80211_IFTYPE_MONITOR:
 		pcu_reg |= AR5K_STA_ID1_KEYSRCH_MODE
 			| (ah->ah_version == AR5K_AR5210 ?
@@ -991,10 +946,6 @@ ath5k_hw_set_opmode(struct ath5k_hw *ah, enum nl80211_iftype op_mode)
  * ath5k_hw_pcu_init() - Initialize PCU
  * @ah: The &struct ath5k_hw
  * @op_mode: One of enum nl80211_iftype
-<<<<<<< HEAD
- * @mode: One of enum ath5k_driver_mode
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is used to initialize PCU by setting current
  * operation mode and various other settings.

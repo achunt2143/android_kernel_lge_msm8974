@@ -24,14 +24,6 @@
  *    Dave Airlie
  *    Jerome Glisse <glisse@freedesktop.org>
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "drm.h"
-#include "radeon.h"
-#include "radeon_drm.h"
-
-#if __OS_HAS_AGP
-=======
 
 #include <linux/pci.h>
 
@@ -41,7 +33,6 @@
 #include "radeon.h"
 
 #if IS_ENABLED(CONFIG_AGP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct radeon_agpmode_quirk {
 	u32 hostbridge_vendor;
@@ -67,12 +58,9 @@ static struct radeon_agpmode_quirk radeon_agpmode_quirk_list[] = {
 	/* Intel 82855PM host bridge / Mobility 9600 M10 RV350 Needs AGPMode 1 (lp #195051) */
 	{ PCI_VENDOR_ID_INTEL, 0x3340, PCI_VENDOR_ID_ATI, 0x4e50,
 		PCI_VENDOR_ID_IBM, 0x0550, 1},
-<<<<<<< HEAD
-=======
 	/* Intel 82855PM host bridge / RV250/M9 GL [Mobility FireGL 9000/Radeon 9000] needs AGPMode 1 (Thinkpad T40p) */
 	{ PCI_VENDOR_ID_INTEL, 0x3340, PCI_VENDOR_ID_ATI, 0x4c66,
 		PCI_VENDOR_ID_IBM, 0x054d, 1},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Intel 82855PM host bridge / Mobility M7 needs AGPMode 1 */
 	{ PCI_VENDOR_ID_INTEL, 0x3340, PCI_VENDOR_ID_ATI, 0x4c57,
 		PCI_VENDOR_ID_IBM, 0x0530, 1},
@@ -136,13 +124,6 @@ static struct radeon_agpmode_quirk radeon_agpmode_quirk_list[] = {
 	/* ATI Host Bridge / RV280 [M9+] Needs AGPMode 1 (phoronix forum) */
 	{ PCI_VENDOR_ID_ATI, 0xcbb2, PCI_VENDOR_ID_ATI, 0x5c61,
 		PCI_VENDOR_ID_SONY, 0x8175, 1},
-<<<<<<< HEAD
-	/* HP Host Bridge / R300 [FireGL X1] Needs AGPMode 2 (fdo #7770) */
-	{ PCI_VENDOR_ID_HP, 0x122e, PCI_VENDOR_ID_ATI, 0x4e47,
-		PCI_VENDOR_ID_ATI, 0x0152, 2},
-	{ 0, 0, 0, 0, 0, 0, 0 },
-};
-=======
 	{ 0, 0, 0, 0, 0, 0, 0 },
 };
 
@@ -234,64 +215,38 @@ static int radeon_agp_head_info(struct radeon_device *rdev, struct radeon_agp_in
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 int radeon_agp_init(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-#if __OS_HAS_AGP
-	struct radeon_agpmode_quirk *p = radeon_agpmode_quirk_list;
-	struct drm_agp_mode mode;
-	struct drm_agp_info info;
-=======
 #if IS_ENABLED(CONFIG_AGP)
 	struct radeon_agpmode_quirk *p = radeon_agpmode_quirk_list;
 	struct radeon_agp_mode mode;
 	struct radeon_agp_info info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t agp_status;
 	int default_mode;
 	bool is_v3;
 	int ret;
 
 	/* Acquire AGP. */
-<<<<<<< HEAD
-	ret = drm_agp_acquire(rdev->ddev);
-=======
 	ret = radeon_agp_head_acquire(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		DRM_ERROR("Unable to acquire AGP: %d\n", ret);
 		return ret;
 	}
 
-<<<<<<< HEAD
-	ret = drm_agp_info(rdev->ddev, &info);
-	if (ret) {
-		drm_agp_release(rdev->ddev);
-=======
 	ret = radeon_agp_head_info(rdev, &info);
 	if (ret) {
 		radeon_agp_head_release(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DRM_ERROR("Unable to get AGP info: %d\n", ret);
 		return ret;
 	}
 
-<<<<<<< HEAD
-	if (rdev->ddev->agp->agp_info.aper_size < 32) {
-		drm_agp_release(rdev->ddev);
-		dev_warn(rdev->dev, "AGP aperture too small (%zuM) "
-			"need at least 32M, disabling AGP\n",
-			rdev->ddev->agp->agp_info.aper_size);
-=======
 	if (rdev->agp->agp_info.aper_size < 32) {
 		radeon_agp_head_release(rdev);
 		dev_warn(rdev->dev, "AGP aperture too small (%zuM) "
 			"need at least 32M, disabling AGP\n",
 			rdev->agp->agp_info.aper_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -372,17 +327,6 @@ int radeon_agp_init(struct radeon_device *rdev)
 	}
 
 	mode.mode &= ~RADEON_AGP_FW_MODE; /* disable fw */
-<<<<<<< HEAD
-	ret = drm_agp_enable(rdev->ddev, mode);
-	if (ret) {
-		DRM_ERROR("Unable to enable AGP (mode = 0x%lx)\n", mode.mode);
-		drm_agp_release(rdev->ddev);
-		return ret;
-	}
-
-	rdev->mc.agp_base = rdev->ddev->agp->agp_info.aper_base;
-	rdev->mc.gtt_size = rdev->ddev->agp->agp_info.aper_size << 20;
-=======
 	ret = radeon_agp_head_enable(rdev, mode);
 	if (ret) {
 		DRM_ERROR("Unable to enable AGP (mode = 0x%lx)\n", mode.mode);
@@ -392,7 +336,6 @@ int radeon_agp_init(struct radeon_device *rdev)
 
 	rdev->mc.agp_base = rdev->agp->agp_info.aper_base;
 	rdev->mc.gtt_size = rdev->agp->agp_info.aper_size << 20;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->mc.gtt_start = rdev->mc.agp_base;
 	rdev->mc.gtt_end = rdev->mc.gtt_start + rdev->mc.gtt_size - 1;
 	dev_info(rdev->dev, "GTT: %lluM 0x%08llX - 0x%08llX\n",
@@ -410,11 +353,7 @@ int radeon_agp_init(struct radeon_device *rdev)
 
 void radeon_agp_resume(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-#if __OS_HAS_AGP
-=======
 #if IS_ENABLED(CONFIG_AGP)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 	if (rdev->flags & RADEON_IS_AGP) {
 		r = radeon_agp_init(rdev);
@@ -426,15 +365,9 @@ void radeon_agp_resume(struct radeon_device *rdev)
 
 void radeon_agp_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-#if __OS_HAS_AGP
-	if (rdev->ddev->agp && rdev->ddev->agp->acquired) {
-		drm_agp_release(rdev->ddev);
-=======
 #if IS_ENABLED(CONFIG_AGP)
 	if (rdev->agp && rdev->agp->acquired) {
 		radeon_agp_head_release(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 }

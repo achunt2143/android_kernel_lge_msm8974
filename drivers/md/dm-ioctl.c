@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001, 2002 Sistina Software (UK) Limited.
  * Copyright (C) 2004 - 2006 Red Hat, Inc. All rights reserved.
@@ -9,32 +6,6 @@
  * This file is released under the GPL.
  */
 
-<<<<<<< HEAD
-#include "dm.h"
-
-#include <linux/module.h>
-#include <linux/vmalloc.h>
-#include <linux/miscdevice.h>
-#include <linux/init.h>
-#include <linux/wait.h>
-#include <linux/slab.h>
-#include <linux/dm-ioctl.h>
-#include <linux/hdreg.h>
-#include <linux/compat.h>
-
-#include <asm/uaccess.h>
-
-#define DM_MSG_PREFIX "ioctl"
-#define DM_DRIVER_EMAIL "dm-devel@redhat.com"
-
-/*-----------------------------------------------------------------
- * The ioctl interface needs to be able to look up devices by
- * name or uuid.
- *---------------------------------------------------------------*/
-struct hash_cell {
-	struct list_head name_list;
-	struct list_head uuid_list;
-=======
 #include "dm-core.h"
 #include "dm-ima.h"
 #include <linux/module.h>
@@ -75,7 +46,6 @@ struct hash_cell {
 	struct rb_node uuid_node;
 	bool name_set;
 	bool uuid_set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	char *name;
 	char *uuid;
@@ -84,21 +54,6 @@ struct hash_cell {
 };
 
 struct vers_iter {
-<<<<<<< HEAD
-    size_t param_size;
-    struct dm_target_versions *vers, *old_vers;
-    char *end;
-    uint32_t flags;
-};
-
-
-#define NUM_BUCKETS 64
-#define MASK_BUCKETS (NUM_BUCKETS - 1)
-static struct list_head _name_buckets[NUM_BUCKETS];
-static struct list_head _uuid_buckets[NUM_BUCKETS];
-
-static void dm_hash_remove_all(int keep_open_devices);
-=======
 	size_t param_size;
 	struct dm_target_versions *vers, *old_vers;
 	char *end;
@@ -110,7 +65,6 @@ static struct rb_root name_rb_tree = RB_ROOT;
 static struct rb_root uuid_rb_tree = RB_ROOT;
 
 static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred, bool only_deferred);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Guards access to both hash tables.
@@ -122,57 +76,6 @@ static DECLARE_RWSEM(_hash_lock);
  */
 static DEFINE_MUTEX(dm_hash_cells_mutex);
 
-<<<<<<< HEAD
-static void init_buckets(struct list_head *buckets)
-{
-	unsigned int i;
-
-	for (i = 0; i < NUM_BUCKETS; i++)
-		INIT_LIST_HEAD(buckets + i);
-}
-
-static int dm_hash_init(void)
-{
-	init_buckets(_name_buckets);
-	init_buckets(_uuid_buckets);
-	return 0;
-}
-
-static void dm_hash_exit(void)
-{
-	dm_hash_remove_all(0);
-}
-
-/*-----------------------------------------------------------------
- * Hash function:
- * We're not really concerned with the str hash function being
- * fast since it's only used by the ioctl interface.
- *---------------------------------------------------------------*/
-static unsigned int hash_str(const char *str)
-{
-	const unsigned int hash_mult = 2654435387U;
-	unsigned int h = 0;
-
-	while (*str)
-		h = (h + (unsigned int) *str++) * hash_mult;
-
-	return h & MASK_BUCKETS;
-}
-
-/*-----------------------------------------------------------------
- * Code for looking up a device by name
- *---------------------------------------------------------------*/
-static struct hash_cell *__get_name_cell(const char *str)
-{
-	struct hash_cell *hc;
-	unsigned int h = hash_str(str);
-
-	list_for_each_entry (hc, _name_buckets + h, name_list)
-		if (!strcmp(hc->name, str)) {
-			dm_get(hc->md);
-			return hc;
-		}
-=======
 static void dm_hash_exit(void)
 {
 	dm_hash_remove_all(false, false, false);
@@ -198,23 +101,12 @@ static struct hash_cell *__get_name_cell(const char *str)
 		}
 		n = c >= 0 ? n->rb_left : n->rb_right;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
 
 static struct hash_cell *__get_uuid_cell(const char *str)
 {
-<<<<<<< HEAD
-	struct hash_cell *hc;
-	unsigned int h = hash_str(str);
-
-	list_for_each_entry (hc, _uuid_buckets + h, uuid_list)
-		if (!strcmp(hc->uuid, str)) {
-			dm_get(hc->md);
-			return hc;
-		}
-=======
 	struct rb_node *n = uuid_rb_tree.rb_node;
 
 	while (n) {
@@ -228,13 +120,10 @@ static struct hash_cell *__get_uuid_cell(const char *str)
 		}
 		n = c >= 0 ? n->rb_left : n->rb_right;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static void __unlink_name(struct hash_cell *hc)
 {
 	if (hc->name_set) {
@@ -301,7 +190,6 @@ static void __link_uuid(struct hash_cell *new_hc)
 	rb_insert_color(&new_hc->uuid_node, &uuid_rb_tree);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct hash_cell *__get_dev_cell(uint64_t dev)
 {
 	struct mapped_device *md;
@@ -320,17 +208,11 @@ static struct hash_cell *__get_dev_cell(uint64_t dev)
 	return hc;
 }
 
-<<<<<<< HEAD
-/*-----------------------------------------------------------------
- * Inserting, removing and renaming a device.
- *---------------------------------------------------------------*/
-=======
 /*
  *---------------------------------------------------------------
  * Inserting, removing and renaming a device.
  *---------------------------------------------------------------
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct hash_cell *alloc_cell(const char *name, const char *uuid,
 				    struct mapped_device *md)
 {
@@ -358,12 +240,7 @@ static struct hash_cell *alloc_cell(const char *name, const char *uuid,
 		}
 	}
 
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&hc->name_list);
-	INIT_LIST_HEAD(&hc->uuid_list);
-=======
 	hc->name_set = hc->uuid_set = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hc->md = md;
 	hc->new_map = NULL;
 	return hc;
@@ -403,28 +280,16 @@ static int dm_hash_insert(const char *name, const char *uuid, struct mapped_devi
 		goto bad;
 	}
 
-<<<<<<< HEAD
-	list_add(&cell->name_list, _name_buckets + hash_str(name));
-=======
 	__link_name(cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uuid) {
 		hc = __get_uuid_cell(uuid);
 		if (hc) {
-<<<<<<< HEAD
-			list_del(&cell->name_list);
-			dm_put(hc->md);
-			goto bad;
-		}
-		list_add(&cell->uuid_list, _uuid_buckets + hash_str(uuid));
-=======
 			__unlink_name(cell);
 			dm_put(hc->md);
 			goto bad;
 		}
 		__link_uuid(cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dm_get(md);
 	mutex_lock(&dm_hash_cells_mutex);
@@ -440,15 +305,6 @@ static int dm_hash_insert(const char *name, const char *uuid, struct mapped_devi
 	return -EBUSY;
 }
 
-<<<<<<< HEAD
-static void __hash_remove(struct hash_cell *hc)
-{
-	struct dm_table *table;
-
-	/* remove from the dev hash */
-	list_del(&hc->uuid_list);
-	list_del(&hc->name_list);
-=======
 static struct dm_table *__hash_remove(struct hash_cell *hc)
 {
 	struct dm_table *table;
@@ -459,30 +315,10 @@ static struct dm_table *__hash_remove(struct hash_cell *hc)
 	/* remove from the dev trees */
 	__unlink_name(hc);
 	__unlink_uuid(hc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&dm_hash_cells_mutex);
 	dm_set_mdptr(hc->md, NULL);
 	mutex_unlock(&dm_hash_cells_mutex);
 
-<<<<<<< HEAD
-	table = dm_get_live_table(hc->md);
-	if (table) {
-		dm_table_event(table);
-		dm_table_put(table);
-	}
-
-	if (hc->new_map)
-		dm_table_destroy(hc->new_map);
-	dm_put(hc->md);
-	free_cell(hc);
-}
-
-static void dm_hash_remove_all(int keep_open_devices)
-{
-	int i, dev_skipped;
-	struct hash_cell *hc;
-	struct mapped_device *md;
-=======
 	table = dm_get_live_table(hc->md, &srcu_idx);
 	if (table)
 		dm_table_event(table);
@@ -504,44 +340,12 @@ static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred, bool 
 	struct hash_cell *hc;
 	struct mapped_device *md;
 	struct dm_table *t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 retry:
 	dev_skipped = 0;
 
 	down_write(&_hash_lock);
 
-<<<<<<< HEAD
-	for (i = 0; i < NUM_BUCKETS; i++) {
-		list_for_each_entry(hc, _name_buckets + i, name_list) {
-			md = hc->md;
-			dm_get(md);
-
-			if (keep_open_devices && dm_lock_for_deletion(md)) {
-				dm_put(md);
-				dev_skipped++;
-				continue;
-			}
-
-			__hash_remove(hc);
-
-			up_write(&_hash_lock);
-
-			dm_put(md);
-			if (likely(keep_open_devices))
-				dm_destroy(md);
-			else
-				dm_destroy_immediate(md);
-
-			/*
-			 * Some mapped devices may be using other mapped
-			 * devices, so repeat until we make no further
-			 * progress.  If a new mapped device is created
-			 * here it will also get removed.
-			 */
-			goto retry;
-		}
-=======
 	for (n = rb_first(&name_rb_tree); n; n = rb_next(n)) {
 		hc = container_of(n, struct hash_cell, name_node);
 		md = hc->md;
@@ -576,7 +380,6 @@ retry:
 		 * here it will also get removed.
 		 */
 		goto retry;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	up_write(&_hash_lock);
@@ -594,11 +397,7 @@ static void __set_cell_uuid(struct hash_cell *hc, char *new_uuid)
 	hc->uuid = new_uuid;
 	mutex_unlock(&dm_hash_cells_mutex);
 
-<<<<<<< HEAD
-	list_add(&hc->uuid_list, _uuid_buckets + hash_str(new_uuid));
-=======
 	__link_uuid(hc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -612,22 +411,14 @@ static char *__change_cell_name(struct hash_cell *hc, char *new_name)
 	/*
 	 * Rename and move the name cell.
 	 */
-<<<<<<< HEAD
-	list_del(&hc->name_list);
-=======
 	__unlink_name(hc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	old_name = hc->name;
 
 	mutex_lock(&dm_hash_cells_mutex);
 	hc->name = new_name;
 	mutex_unlock(&dm_hash_cells_mutex);
 
-<<<<<<< HEAD
-	list_add(&hc->name_list, _name_buckets + hash_str(new_name));
-=======
 	__link_name(hc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return old_name;
 }
@@ -639,12 +430,8 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 	struct hash_cell *hc;
 	struct dm_table *table;
 	struct mapped_device *md;
-<<<<<<< HEAD
-	unsigned change_uuid = (param->flags & DM_UUID_FLAG) ? 1 : 0;
-=======
 	unsigned int change_uuid = (param->flags & DM_UUID_FLAG) ? 1 : 0;
 	int srcu_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * duplicate new.
@@ -664,16 +451,9 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 		hc = __get_name_cell(new);
 
 	if (hc) {
-<<<<<<< HEAD
-		DMWARN("Unable to change %s on mapped device %s to one that "
-		       "already exists: %s",
-		       change_uuid ? "uuid" : "name",
-		       param->name, new);
-=======
 		DMERR("Unable to change %s on mapped device %s to one that already exists: %s",
 		      change_uuid ? "uuid" : "name",
 		      param->name, new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dm_put(hc->md);
 		up_write(&_hash_lock);
 		kfree(new_data);
@@ -685,13 +465,8 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 	 */
 	hc = __get_name_cell(param->name);
 	if (!hc) {
-<<<<<<< HEAD
-		DMWARN("Unable to rename non-existent device, %s to %s%s",
-		       param->name, change_uuid ? "uuid " : "", new);
-=======
 		DMERR("Unable to rename non-existent device, %s to %s%s",
 		      param->name, change_uuid ? "uuid " : "", new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up_write(&_hash_lock);
 		kfree(new_data);
 		return ERR_PTR(-ENXIO);
@@ -701,15 +476,9 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 	 * Does this device already have a uuid?
 	 */
 	if (change_uuid && hc->uuid) {
-<<<<<<< HEAD
-		DMWARN("Unable to change uuid of mapped device %s to %s "
-		       "because uuid is already set to %s",
-		       param->name, new, hc->uuid);
-=======
 		DMERR("Unable to change uuid of mapped device %s to %s "
 		      "because uuid is already set to %s",
 		      param->name, new, hc->uuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dm_put(hc->md);
 		up_write(&_hash_lock);
 		kfree(new_data);
@@ -724,18 +493,6 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 	/*
 	 * Wake up any dm event waiters.
 	 */
-<<<<<<< HEAD
-	table = dm_get_live_table(hc->md);
-	if (table) {
-		dm_table_event(table);
-		dm_table_put(table);
-	}
-
-	if (!dm_kobject_uevent(hc->md, KOBJ_CHANGE, param->event_nr))
-		param->flags |= DM_UEVENT_GENERATED_FLAG;
-
-	md = hc->md;
-=======
 	table = dm_get_live_table(hc->md, &srcu_idx);
 	if (table)
 		dm_table_event(table);
@@ -748,18 +505,12 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
 
 	dm_ima_measure_on_device_rename(md);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&_hash_lock);
 	kfree(old_name);
 
 	return md;
 }
 
-<<<<<<< HEAD
-/*-----------------------------------------------------------------
- * Implementation of the ioctl commands
- *---------------------------------------------------------------*/
-=======
 void dm_deferred_remove(void)
 {
 	dm_hash_remove_all(true, false, true);
@@ -770,24 +521,15 @@ void dm_deferred_remove(void)
  * Implementation of the ioctl commands
  *---------------------------------------------------------------
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * All the ioctl commands get dispatched to functions with this
  * prototype.
  */
-<<<<<<< HEAD
-typedef int (*ioctl_fn)(struct dm_ioctl *param, size_t param_size);
-
-static int remove_all(struct dm_ioctl *param, size_t param_size)
-{
-	dm_hash_remove_all(1);
-=======
 typedef int (*ioctl_fn)(struct file *filp, struct dm_ioctl *param, size_t param_size);
 
 static int remove_all(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	dm_hash_remove_all(true, !!(param->flags & DM_DEFERRED_REMOVE), false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	param->data_size = 0;
 	return 0;
 }
@@ -796,11 +538,6 @@ static int remove_all(struct file *filp, struct dm_ioctl *param, size_t param_si
  * Round up the ptr to an 8-byte boundary.
  */
 #define ALIGN_MASK 7
-<<<<<<< HEAD
-static inline void *align_ptr(void *ptr)
-{
-	return (void *) (((size_t) (ptr + ALIGN_MASK)) & ~ALIGN_MASK);
-=======
 static inline size_t align_val(size_t val)
 {
 	return (val + ALIGN_MASK) & ~ALIGN_MASK;
@@ -808,7 +545,6 @@ static inline size_t align_val(size_t val)
 static inline void *align_ptr(void *ptr)
 {
 	return (void *)align_val((size_t)ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -828,15 +564,6 @@ static void *get_result_buffer(struct dm_ioctl *param, size_t param_size,
 	return ((void *) param) + param->data_start;
 }
 
-<<<<<<< HEAD
-static int list_devices(struct dm_ioctl *param, size_t param_size)
-{
-	unsigned int i;
-	struct hash_cell *hc;
-	size_t len, needed = 0;
-	struct gendisk *disk;
-	struct dm_name_list *nl, *old_nl = NULL;
-=======
 static bool filter_device(struct hash_cell *hc, const char *pfx_name, const char *pfx_uuid)
 {
 	const char *val;
@@ -869,7 +596,6 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 	struct gendisk *disk;
 	struct dm_name_list *orig_nl, *nl, *old_nl = NULL;
 	uint32_t *event_nr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&_hash_lock);
 
@@ -877,14 +603,6 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 	 * Loop through all the devices working out how much
 	 * space we need.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < NUM_BUCKETS; i++) {
-		list_for_each_entry (hc, _name_buckets + i, name_list) {
-			needed += sizeof(struct dm_name_list);
-			needed += strlen(hc->name) + 1;
-			needed += ALIGN_MASK;
-		}
-=======
 	for (n = rb_first(&name_rb_tree); n; n = rb_next(n)) {
 		hc = container_of(n, struct hash_cell, name_node);
 		if (!filter_device(hc, param->name, param->uuid))
@@ -893,19 +611,13 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 		needed += align_val(sizeof(uint32_t) * 2);
 		if (param->flags & DM_UUID_FLAG && hc->uuid)
 			needed += align_val(strlen(hc->uuid) + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Grab our output buffer.
 	 */
-<<<<<<< HEAD
-	nl = get_result_buffer(param, param_size, &len);
-	if (len < needed) {
-=======
 	nl = orig_nl = get_result_buffer(param, param_size, &len);
 	if (len < needed || len < sizeof(nl->dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		param->flags |= DM_BUFFER_FULL_FLAG;
 		goto out;
 	}
@@ -916,22 +628,6 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 	/*
 	 * Now loop through filling out the names.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < NUM_BUCKETS; i++) {
-		list_for_each_entry (hc, _name_buckets + i, name_list) {
-			if (old_nl)
-				old_nl->next = (uint32_t) ((void *) nl -
-							   (void *) old_nl);
-			disk = dm_disk(hc->md);
-			nl->dev = huge_encode_dev(disk_devt(disk));
-			nl->next = 0;
-			strcpy(nl->name, hc->name);
-
-			old_nl = nl;
-			nl = align_ptr(((void *) ++nl) + strlen(hc->name) + 1);
-		}
-	}
-=======
 	for (n = rb_first(&name_rb_tree); n; n = rb_next(n)) {
 		void *uuid_ptr;
 
@@ -967,7 +663,6 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 	 * overflow, so it's better to crash.
 	 */
 	BUG_ON((char *)nl - (char *)orig_nl != needed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out:
 	up_write(&_hash_lock);
@@ -976,49 +671,15 @@ static int list_devices(struct file *filp, struct dm_ioctl *param, size_t param_
 
 static void list_version_get_needed(struct target_type *tt, void *needed_param)
 {
-<<<<<<< HEAD
-    size_t *needed = needed_param;
-
-    *needed += sizeof(struct dm_target_versions);
-    *needed += strlen(tt->name);
-    *needed += ALIGN_MASK;
-=======
 	size_t *needed = needed_param;
 
 	*needed += sizeof(struct dm_target_versions);
 	*needed += strlen(tt->name) + 1;
 	*needed += ALIGN_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void list_version_get_info(struct target_type *tt, void *param)
 {
-<<<<<<< HEAD
-    struct vers_iter *info = param;
-
-    /* Check space - it might have changed since the first iteration */
-    if ((char *)info->vers + sizeof(tt->version) + strlen(tt->name) + 1 >
-	info->end) {
-
-	info->flags = DM_BUFFER_FULL_FLAG;
-	return;
-    }
-
-    if (info->old_vers)
-	info->old_vers->next = (uint32_t) ((void *)info->vers -
-					   (void *)info->old_vers);
-    info->vers->version[0] = tt->version[0];
-    info->vers->version[1] = tt->version[1];
-    info->vers->version[2] = tt->version[2];
-    info->vers->next = 0;
-    strcpy(info->vers->name, tt->name);
-
-    info->old_vers = info->vers;
-    info->vers = align_ptr(((void *) ++info->vers) + strlen(tt->name) + 1);
-}
-
-static int list_versions(struct dm_ioctl *param, size_t param_size)
-=======
 	struct vers_iter *info = param;
 
 	/* Check space - it might have changed since the first iteration */
@@ -1041,13 +702,10 @@ static int list_versions(struct dm_ioctl *param, size_t param_size)
 }
 
 static int __list_versions(struct dm_ioctl *param, size_t param_size, const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	size_t len, needed = 0;
 	struct dm_target_versions *vers;
 	struct vers_iter iter_info;
-<<<<<<< HEAD
-=======
 	struct target_type *tt = NULL;
 
 	if (name) {
@@ -1055,20 +713,15 @@ static int __list_versions(struct dm_ioctl *param, size_t param_size, const char
 		if (!tt)
 			return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Loop through all the devices working out how much
 	 * space we need.
 	 */
-<<<<<<< HEAD
-	dm_target_iterate(list_version_get_needed, &needed);
-=======
 	if (!tt)
 		dm_target_iterate(list_version_get_needed, &needed);
 	else
 		list_version_get_needed(tt, &needed);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Grab our output buffer.
@@ -1084,28 +737,11 @@ static int __list_versions(struct dm_ioctl *param, size_t param_size, const char
 	iter_info.old_vers = NULL;
 	iter_info.vers = vers;
 	iter_info.flags = 0;
-<<<<<<< HEAD
-	iter_info.end = (char *)vers+len;
-=======
 	iter_info.end = (char *)vers + needed;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now loop through filling out the names & versions.
 	 */
-<<<<<<< HEAD
-	dm_target_iterate(list_version_get_info, &iter_info);
-	param->flags |= iter_info.flags;
-
- out:
-	return 0;
-}
-
-static int check_name(const char *name)
-{
-	if (strchr(name, '/')) {
-		DMWARN("invalid device name");
-=======
 	if (!tt)
 		dm_target_iterate(list_version_get_info, &iter_info);
 	else
@@ -1139,7 +775,6 @@ static int check_name(const char *name)
 	    strcmp(name, ".") == 0 ||
 	    strcmp(name, "..") == 0) {
 		DMERR("device name cannot be \"%s\", \".\", or \"..\"", DM_CONTROL_NODE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1148,27 +783,14 @@ static int check_name(const char *name)
 
 /*
  * On successful return, the caller must not attempt to acquire
-<<<<<<< HEAD
- * _hash_lock without first calling dm_table_put, because dm_table_destroy
- * waits for this dm_table_put and could be called under this lock.
- */
-static struct dm_table *dm_get_inactive_table(struct mapped_device *md)
-=======
  * _hash_lock without first calling dm_put_live_table, because dm_table_destroy
  * waits for this dm_put_live_table and could be called under this lock.
  */
 static struct dm_table *dm_get_inactive_table(struct mapped_device *md, int *srcu_idx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hash_cell *hc;
 	struct dm_table *table = NULL;
 
-<<<<<<< HEAD
-	down_read(&_hash_lock);
-	hc = dm_get_mdptr(md);
-	if (!hc || hc->md != md) {
-		DMWARN("device has been removed from the dev hash table.");
-=======
 	/* increment rcu count, we don't care about the table pointer */
 	dm_get_live_table(md, srcu_idx);
 
@@ -1176,16 +798,10 @@ static struct dm_table *dm_get_inactive_table(struct mapped_device *md, int *src
 	hc = dm_get_mdptr(md);
 	if (!hc) {
 		DMERR("device has been removed from the dev hash table.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	table = hc->new_map;
-<<<<<<< HEAD
-	if (table)
-		dm_table_get(table);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	up_read(&_hash_lock);
@@ -1194,18 +810,11 @@ out:
 }
 
 static struct dm_table *dm_get_live_or_inactive_table(struct mapped_device *md,
-<<<<<<< HEAD
-						      struct dm_ioctl *param)
-{
-	return (param->flags & DM_QUERY_INACTIVE_TABLE_FLAG) ?
-		dm_get_inactive_table(md) : dm_get_live_table(md);
-=======
 						      struct dm_ioctl *param,
 						      int *srcu_idx)
 {
 	return (param->flags & DM_QUERY_INACTIVE_TABLE_FLAG) ?
 		dm_get_inactive_table(md, srcu_idx) : dm_get_live_table(md, srcu_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1216,29 +825,20 @@ static void __dev_status(struct mapped_device *md, struct dm_ioctl *param)
 {
 	struct gendisk *disk = dm_disk(md);
 	struct dm_table *table;
-<<<<<<< HEAD
-
-	param->flags &= ~(DM_SUSPEND_FLAG | DM_READONLY_FLAG |
-			  DM_ACTIVE_PRESENT_FLAG);
-=======
 	int srcu_idx;
 
 	param->flags &= ~(DM_SUSPEND_FLAG | DM_READONLY_FLAG |
 			  DM_ACTIVE_PRESENT_FLAG | DM_INTERNAL_SUSPEND_FLAG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dm_suspended_md(md))
 		param->flags |= DM_SUSPEND_FLAG;
 
-<<<<<<< HEAD
-=======
 	if (dm_suspended_internally_md(md))
 		param->flags |= DM_INTERNAL_SUSPEND_FLAG;
 
 	if (dm_test_deferred_remove_flag(md))
 		param->flags |= DM_DEFERRED_REMOVE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	param->dev = huge_encode_dev(disk_devt(disk));
 
 	/*
@@ -1251,36 +851,11 @@ static void __dev_status(struct mapped_device *md, struct dm_ioctl *param)
 	param->event_nr = dm_get_event_nr(md);
 	param->target_count = 0;
 
-<<<<<<< HEAD
-	table = dm_get_live_table(md);
-=======
 	table = dm_get_live_table(md, &srcu_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (table) {
 		if (!(param->flags & DM_QUERY_INACTIVE_TABLE_FLAG)) {
 			if (get_disk_ro(disk))
 				param->flags |= DM_READONLY_FLAG;
-<<<<<<< HEAD
-			param->target_count = dm_table_get_num_targets(table);
-		}
-		dm_table_put(table);
-
-		param->flags |= DM_ACTIVE_PRESENT_FLAG;
-	}
-
-	if (param->flags & DM_QUERY_INACTIVE_TABLE_FLAG) {
-		table = dm_get_inactive_table(md);
-		if (table) {
-			if (!(dm_table_get_mode(table) & FMODE_WRITE))
-				param->flags |= DM_READONLY_FLAG;
-			param->target_count = dm_table_get_num_targets(table);
-			dm_table_put(table);
-		}
-	}
-}
-
-static int dev_create(struct dm_ioctl *param, size_t param_size)
-=======
 			param->target_count = table->num_targets;
 		}
 
@@ -1302,7 +877,6 @@ static int dev_create(struct dm_ioctl *param, size_t param_size)
 }
 
 static int dev_create(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r, m = DM_ANY_MINOR;
 	struct mapped_device *md;
@@ -1342,31 +916,21 @@ static struct hash_cell *__find_device_hash_cell(struct dm_ioctl *param)
 	struct hash_cell *hc = NULL;
 
 	if (*param->uuid) {
-<<<<<<< HEAD
-		if (*param->name || param->dev)
-			return NULL;
-=======
 		if (*param->name || param->dev) {
 			DMERR("Invalid ioctl structure: uuid %s, name %s, dev %llx",
 			      param->uuid, param->name, (unsigned long long)param->dev);
 			return NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hc = __get_uuid_cell(param->uuid);
 		if (!hc)
 			return NULL;
 	} else if (*param->name) {
-<<<<<<< HEAD
-		if (param->dev)
-			return NULL;
-=======
 		if (param->dev) {
 			DMERR("Invalid ioctl structure: name %s, dev %llx",
 			      param->name, (unsigned long long)param->dev);
 			return NULL;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hc = __get_name_cell(param->name);
 		if (!hc)
@@ -1382,15 +946,9 @@ static struct hash_cell *__find_device_hash_cell(struct dm_ioctl *param)
 	 * Sneakily write in both the name and the uuid
 	 * while we have the cell.
 	 */
-<<<<<<< HEAD
-	strlcpy(param->name, hc->name, sizeof(param->name));
-	if (hc->uuid)
-		strlcpy(param->uuid, hc->uuid, sizeof(param->uuid));
-=======
 	strscpy(param->name, hc->name, sizeof(param->name));
 	if (hc->uuid)
 		strscpy(param->uuid, hc->uuid, sizeof(param->uuid));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		param->uuid[0] = '\0';
 
@@ -1416,19 +974,12 @@ static struct mapped_device *find_device(struct dm_ioctl *param)
 	return md;
 }
 
-<<<<<<< HEAD
-static int dev_remove(struct dm_ioctl *param, size_t param_size)
-=======
 static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hash_cell *hc;
 	struct mapped_device *md;
 	int r;
-<<<<<<< HEAD
-=======
 	struct dm_table *t;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&_hash_lock);
 	hc = __find_device_hash_cell(param);
@@ -1444,10 +995,6 @@ static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_si
 	/*
 	 * Ensure the device is not open and nothing further can open it.
 	 */
-<<<<<<< HEAD
-	r = dm_lock_for_deletion(md);
-	if (r) {
-=======
 	r = dm_lock_for_deletion(md, !!(param->flags & DM_DEFERRED_REMOVE), false);
 	if (r) {
 		if (r == -EBUSY && param->flags & DM_DEFERRED_REMOVE) {
@@ -1455,19 +1002,12 @@ static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_si
 			dm_put(md);
 			return 0;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DMDEBUG_LIMIT("unable to remove open device %s", hc->name);
 		up_write(&_hash_lock);
 		dm_put(md);
 		return r;
 	}
 
-<<<<<<< HEAD
-	__hash_remove(hc);
-	up_write(&_hash_lock);
-
-	if (!dm_kobject_uevent(md, KOBJ_REMOVE, param->event_nr))
-=======
 	t = __hash_remove(hc);
 	up_write(&_hash_lock);
 
@@ -1481,7 +1021,6 @@ static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_si
 	dm_ima_measure_on_device_remove(md, false);
 
 	if (!dm_kobject_uevent(md, KOBJ_REMOVE, param->event_nr, false))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		param->flags |= DM_UEVENT_GENERATED_FLAG;
 
 	dm_put(md);
@@ -1502,30 +1041,17 @@ static int invalid_str(char *str, void *end)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int dev_rename(struct dm_ioctl *param, size_t param_size)
-=======
 static int dev_rename(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	char *new_data = (char *) param + param->data_start;
 	struct mapped_device *md;
-<<<<<<< HEAD
-	unsigned change_uuid = (param->flags & DM_UUID_FLAG) ? 1 : 0;
-
-	if (new_data < param->data ||
-	    invalid_str(new_data, (void *) param + param_size) ||
-	    strlen(new_data) > (change_uuid ? DM_UUID_LEN - 1 : DM_NAME_LEN - 1)) {
-		DMWARN("Invalid new mapped device name or uuid string supplied.");
-=======
 	unsigned int change_uuid = (param->flags & DM_UUID_FLAG) ? 1 : 0;
 
 	if (new_data < param->data ||
 	    invalid_str(new_data, (void *) param + param_size) || !*new_data ||
 	    strlen(new_data) > (change_uuid ? DM_UUID_LEN - 1 : DM_NAME_LEN - 1)) {
 		DMERR("Invalid new mapped device name or uuid string supplied.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1545,11 +1071,7 @@ static int dev_rename(struct file *filp, struct dm_ioctl *param, size_t param_si
 	return 0;
 }
 
-<<<<<<< HEAD
-static int dev_set_geometry(struct dm_ioctl *param, size_t param_size)
-=======
 static int dev_set_geometry(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = -EINVAL, x;
 	struct mapped_device *md;
@@ -1564,11 +1086,7 @@ static int dev_set_geometry(struct file *filp, struct dm_ioctl *param, size_t pa
 
 	if (geostr < param->data ||
 	    invalid_str(geostr, (void *) param + param_size)) {
-<<<<<<< HEAD
-		DMWARN("Invalid geometry supplied.");
-=======
 		DMERR("Invalid geometry supplied.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1576,22 +1094,12 @@ static int dev_set_geometry(struct file *filp, struct dm_ioctl *param, size_t pa
 		   indata + 1, indata + 2, indata + 3, &dummy);
 
 	if (x != 4) {
-<<<<<<< HEAD
-		DMWARN("Unable to interpret geometry settings.");
-		goto out;
-	}
-
-	if (indata[0] > 65535 || indata[1] > 255 ||
-	    indata[2] > 255 || indata[3] > ULONG_MAX) {
-		DMWARN("Geometry exceeds range limits.");
-=======
 		DMERR("Unable to interpret geometry settings.");
 		goto out;
 	}
 
 	if (indata[0] > 65535 || indata[1] > 255 || indata[2] > 255) {
 		DMERR("Geometry exceeds range limits.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1612,11 +1120,7 @@ out:
 static int do_suspend(struct dm_ioctl *param)
 {
 	int r = 0;
-<<<<<<< HEAD
-	unsigned suspend_flags = DM_SUSPEND_LOCKFS_FLAG;
-=======
 	unsigned int suspend_flags = DM_SUSPEND_LOCKFS_FLAG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mapped_device *md;
 
 	md = find_device(param);
@@ -1645,18 +1149,11 @@ out:
 static int do_resume(struct dm_ioctl *param)
 {
 	int r = 0;
-<<<<<<< HEAD
-	unsigned suspend_flags = DM_SUSPEND_LOCKFS_FLAG;
-	struct hash_cell *hc;
-	struct mapped_device *md;
-	struct dm_table *new_map, *old_map = NULL;
-=======
 	unsigned int suspend_flags = DM_SUSPEND_LOCKFS_FLAG;
 	struct hash_cell *hc;
 	struct mapped_device *md;
 	struct dm_table *new_map, *old_map = NULL;
 	bool need_resize_uevent = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&_hash_lock);
 
@@ -1677,11 +1174,8 @@ static int do_resume(struct dm_ioctl *param)
 
 	/* Do we need to load a new map ? */
 	if (new_map) {
-<<<<<<< HEAD
-=======
 		sector_t old_size, new_size;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Suspend if it isn't already suspended */
 		if (param->flags & DM_SKIP_LOCKFS_FLAG)
 			suspend_flags &= ~DM_SUSPEND_LOCKFS_FLAG;
@@ -1690,29 +1184,19 @@ static int do_resume(struct dm_ioctl *param)
 		if (!dm_suspended_md(md))
 			dm_suspend(md, suspend_flags);
 
-<<<<<<< HEAD
-		old_map = dm_swap_table(md, new_map);
-		if (IS_ERR(old_map)) {
-=======
 		old_size = dm_get_size(md);
 		old_map = dm_swap_table(md, new_map);
 		if (IS_ERR(old_map)) {
 			dm_sync_table(md);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dm_table_destroy(new_map);
 			dm_put(md);
 			return PTR_ERR(old_map);
 		}
-<<<<<<< HEAD
-
-		if (dm_table_get_mode(new_map) & FMODE_WRITE)
-=======
 		new_size = dm_get_size(md);
 		if (old_size && new_size && old_size != new_size)
 			need_resize_uevent = true;
 
 		if (dm_table_get_mode(new_map) & BLK_OPEN_WRITE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_disk_ro(dm_disk(md), 0);
 		else
 			set_disk_ro(dm_disk(md), 1);
@@ -1720,12 +1204,6 @@ static int do_resume(struct dm_ioctl *param)
 
 	if (dm_suspended_md(md)) {
 		r = dm_resume(md);
-<<<<<<< HEAD
-		if (!r && !dm_kobject_uevent(md, KOBJ_CHANGE, param->event_nr))
-			param->flags |= DM_UEVENT_GENERATED_FLAG;
-	}
-
-=======
 		if (!r) {
 			dm_ima_measure_on_device_resume(md, new_map ? true : false);
 
@@ -1738,7 +1216,6 @@ static int do_resume(struct dm_ioctl *param)
 	 * Since dm_swap_table synchronizes RCU, nobody should be in
 	 * read-side critical section already.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (old_map)
 		dm_table_destroy(old_map);
 
@@ -1753,11 +1230,7 @@ static int do_resume(struct dm_ioctl *param)
  * Set or unset the suspension state of a device.
  * If the device already is in the requested state we just return its status.
  */
-<<<<<<< HEAD
-static int dev_suspend(struct dm_ioctl *param, size_t param_size)
-=======
 static int dev_suspend(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (param->flags & DM_SUSPEND_FLAG)
 		return do_suspend(param);
@@ -1769,11 +1242,7 @@ static int dev_suspend(struct file *filp, struct dm_ioctl *param, size_t param_s
  * Copies device info back to user space, used by
  * the create and info ioctls.
  */
-<<<<<<< HEAD
-static int dev_status(struct dm_ioctl *param, size_t param_size)
-=======
 static int dev_status(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mapped_device *md;
 
@@ -1798,29 +1267,19 @@ static void retrieve_status(struct dm_table *table,
 	char *outbuf, *outptr;
 	status_type_t type;
 	size_t remaining, len, used = 0;
-<<<<<<< HEAD
-=======
 	unsigned int status_flags = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	outptr = outbuf = get_result_buffer(param, param_size, &len);
 
 	if (param->flags & DM_STATUS_TABLE_FLAG)
 		type = STATUSTYPE_TABLE;
-<<<<<<< HEAD
-=======
 	else if (param->flags & DM_IMA_MEASUREMENT_FLAG)
 		type = STATUSTYPE_IMA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		type = STATUSTYPE_INFO;
 
 	/* Get all the target info */
-<<<<<<< HEAD
-	num_targets = dm_table_get_num_targets(table);
-=======
 	num_targets = table->num_targets;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < num_targets; i++) {
 		struct dm_target *ti = dm_table_get_target(table, i);
 		size_t l;
@@ -1836,11 +1295,7 @@ static void retrieve_status(struct dm_table *table,
 		spec->status = 0;
 		spec->sector_start = ti->begin;
 		spec->length = ti->len;
-<<<<<<< HEAD
-		strncpy(spec->target_type, ti->type->name,
-=======
 		strscpy_pad(spec->target_type, ti->type->name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(spec->target_type));
 
 		outptr += sizeof(struct dm_target_spec);
@@ -1851,17 +1306,11 @@ static void retrieve_status(struct dm_table *table,
 		}
 
 		/* Get the status/table string from the target driver */
-<<<<<<< HEAD
-		if (ti->type->status)
-			ti->type->status(ti, type, outptr, remaining);
-		else
-=======
 		if (ti->type->status) {
 			if (param->flags & DM_NOFLUSH_FLAG)
 				status_flags |= DM_STATUS_NOFLUSH_FLAG;
 			ti->type->status(ti, type, status_flags, outptr, remaining);
 		} else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outptr[0] = '\0';
 
 		l = strlen(outptr) + 1;
@@ -1886,19 +1335,12 @@ static void retrieve_status(struct dm_table *table,
 /*
  * Wait for a device to report an event
  */
-<<<<<<< HEAD
-static int dev_wait(struct dm_ioctl *param, size_t param_size)
-=======
 static int dev_wait(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = 0;
 	struct mapped_device *md;
 	struct dm_table *table;
-<<<<<<< HEAD
-=======
 	int srcu_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	md = find_device(param);
 	if (!md)
@@ -1919,18 +1361,10 @@ static int dev_wait(struct file *filp, struct dm_ioctl *param, size_t param_size
 	 */
 	__dev_status(md, param);
 
-<<<<<<< HEAD
-	table = dm_get_live_or_inactive_table(md, param);
-	if (table) {
-		retrieve_status(table, param, param_size);
-		dm_table_put(table);
-	}
-=======
 	table = dm_get_live_or_inactive_table(md, param, &srcu_idx);
 	if (table)
 		retrieve_status(table, param, param_size);
 	dm_put_live_table(md, srcu_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	dm_put(md);
@@ -1938,14 +1372,6 @@ out:
 	return r;
 }
 
-<<<<<<< HEAD
-static inline fmode_t get_mode(struct dm_ioctl *param)
-{
-	fmode_t mode = FMODE_READ | FMODE_WRITE;
-
-	if (param->flags & DM_READONLY_FLAG)
-		mode = FMODE_READ;
-=======
 /*
  * Remember the global event number and make it possible to poll
  * for further events.
@@ -1965,23 +1391,10 @@ static inline blk_mode_t get_mode(struct dm_ioctl *param)
 
 	if (param->flags & DM_READONLY_FLAG)
 		mode = BLK_OPEN_READ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mode;
 }
 
-<<<<<<< HEAD
-static int next_target(struct dm_target_spec *last, uint32_t next, void *end,
-		       struct dm_target_spec **spec, char **target_params)
-{
-	*spec = (struct dm_target_spec *) ((unsigned char *) last + next);
-	*target_params = (char *) (*spec + 1);
-
-	if (*spec < (last + 1))
-		return -EINVAL;
-
-	return invalid_str(*target_params, end);
-=======
 static int next_target(struct dm_target_spec *last, uint32_t next, const char *end,
 		       struct dm_target_spec **spec, char **target_params)
 {
@@ -2014,7 +1427,6 @@ static int next_target(struct dm_target_spec *last, uint32_t next, const char *e
 	*target_params = (char *) (*spec + 1);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int populate_table(struct dm_table *table,
@@ -2024,33 +1436,16 @@ static int populate_table(struct dm_table *table,
 	unsigned int i = 0;
 	struct dm_target_spec *spec = (struct dm_target_spec *) param;
 	uint32_t next = param->data_start;
-<<<<<<< HEAD
-	void *end = (void *) param + param_size;
-	char *target_params;
-
-	if (!param->target_count) {
-		DMWARN("populate_table: no targets specified");
-=======
 	const char *const end = (const char *) param + param_size;
 	char *target_params;
 	size_t min_size = sizeof(struct dm_ioctl);
 
 	if (!param->target_count) {
 		DMERR("%s: no targets specified", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	for (i = 0; i < param->target_count; i++) {
-<<<<<<< HEAD
-
-		r = next_target(spec, next, end, &spec, &target_params);
-		if (r) {
-			DMWARN("unable to find target");
-			return r;
-		}
-
-=======
 		const char *nul_terminator;
 
 		if (next < min_size) {
@@ -2074,17 +1469,12 @@ static int populate_table(struct dm_table *table,
 		/* Add 1 for NUL terminator */
 		min_size = (size_t)(nul_terminator - (const char *)spec) + 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = dm_table_add_target(table, spec->target_type,
 					(sector_t) spec->sector_start,
 					(sector_t) spec->length,
 					target_params);
 		if (r) {
-<<<<<<< HEAD
-			DMWARN("error adding target to table");
-=======
 			DMERR("error adding target to table");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 
@@ -2094,13 +1484,6 @@ static int populate_table(struct dm_table *table,
 	return dm_table_complete(table);
 }
 
-<<<<<<< HEAD
-static int table_load(struct dm_ioctl *param, size_t param_size)
-{
-	int r;
-	struct hash_cell *hc;
-	struct dm_table *t;
-=======
 static bool is_valid_type(enum dm_queue_mode cur, enum dm_queue_mode new)
 {
 	if (cur == new ||
@@ -2115,7 +1498,6 @@ static int table_load(struct file *filp, struct dm_ioctl *param, size_t param_si
 	int r;
 	struct hash_cell *hc;
 	struct dm_table *t, *old_map = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mapped_device *md;
 	struct target_type *immutable_target_type;
 
@@ -2125,47 +1507,6 @@ static int table_load(struct file *filp, struct dm_ioctl *param, size_t param_si
 
 	r = dm_table_create(&t, get_mode(param), param->target_count, md);
 	if (r)
-<<<<<<< HEAD
-		goto out;
-
-	r = populate_table(t, param, param_size);
-	if (r) {
-		dm_table_destroy(t);
-		goto out;
-	}
-
-	immutable_target_type = dm_get_immutable_target_type(md);
-	if (immutable_target_type &&
-	    (immutable_target_type != dm_table_get_immutable_target_type(t))) {
-		DMWARN("can't replace immutable target type %s",
-		       immutable_target_type->name);
-		dm_table_destroy(t);
-		r = -EINVAL;
-		goto out;
-	}
-
-	/* Protect md->type and md->queue against concurrent table loads. */
-	dm_lock_md_type(md);
-	if (dm_get_md_type(md) == DM_TYPE_NONE)
-		/* Initial table load: acquire type of table. */
-		dm_set_md_type(md, dm_table_get_type(t));
-	else if (dm_get_md_type(md) != dm_table_get_type(t)) {
-		DMWARN("can't change device type after initial table load.");
-		dm_table_destroy(t);
-		dm_unlock_md_type(md);
-		r = -EINVAL;
-		goto out;
-	}
-
-	/* setup md->queue to reflect md's type (may block) */
-	r = dm_setup_md_queue(md);
-	if (r) {
-		DMWARN("unable to set up device queue for new table.");
-		dm_table_destroy(t);
-		dm_unlock_md_type(md);
-		goto out;
-	}
-=======
 		goto err;
 
 	/* Protect md->type and md->queue against concurrent table loads. */
@@ -2200,24 +1541,11 @@ static int table_load(struct file *filp, struct dm_ioctl *param, size_t param_si
 		goto err_unlock_md_type;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_unlock_md_type(md);
 
 	/* stage inactive table */
 	down_write(&_hash_lock);
 	hc = dm_get_mdptr(md);
-<<<<<<< HEAD
-	if (!hc || hc->md != md) {
-		DMWARN("device has been removed from the dev hash table.");
-		dm_table_destroy(t);
-		up_write(&_hash_lock);
-		r = -ENXIO;
-		goto out;
-	}
-
-	if (hc->new_map)
-		dm_table_destroy(hc->new_map);
-=======
 	if (!hc) {
 		DMERR("device has been removed from the dev hash table.");
 		up_write(&_hash_lock);
@@ -2227,16 +1555,12 @@ static int table_load(struct file *filp, struct dm_ioctl *param, size_t param_si
 
 	if (hc->new_map)
 		old_map = hc->new_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hc->new_map = t;
 	up_write(&_hash_lock);
 
 	param->flags |= DM_INACTIVE_PRESENT_FLAG;
 	__dev_status(md, param);
 
-<<<<<<< HEAD
-out:
-=======
 	if (old_map) {
 		dm_sync_table(md);
 		dm_table_destroy(old_map);
@@ -2251,25 +1575,17 @@ err_unlock_md_type:
 err_destroy_table:
 	dm_table_destroy(t);
 err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_put(md);
 
 	return r;
 }
 
-<<<<<<< HEAD
-static int table_clear(struct dm_ioctl *param, size_t param_size)
-{
-	struct hash_cell *hc;
-	struct mapped_device *md;
-=======
 static int table_clear(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	struct hash_cell *hc;
 	struct mapped_device *md;
 	struct dm_table *old_map = NULL;
 	bool has_new_map = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&_hash_lock);
 
@@ -2281,17 +1597,6 @@ static int table_clear(struct file *filp, struct dm_ioctl *param, size_t param_s
 	}
 
 	if (hc->new_map) {
-<<<<<<< HEAD
-		dm_table_destroy(hc->new_map);
-		hc->new_map = NULL;
-	}
-
-	param->flags &= ~DM_INACTIVE_PRESENT_FLAG;
-
-	__dev_status(hc->md, param);
-	md = hc->md;
-	up_write(&_hash_lock);
-=======
 		old_map = hc->new_map;
 		hc->new_map = NULL;
 		has_new_map = true;
@@ -2308,7 +1613,6 @@ static int table_clear(struct file *filp, struct dm_ioctl *param, size_t param_s
 		dm_table_destroy(old_map);
 	}
 	dm_ima_measure_on_table_clear(md, has_new_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_put(md);
 
 	return 0;
@@ -2326,37 +1630,23 @@ static void retrieve_deps(struct dm_table *table,
 	struct dm_dev_internal *dd;
 	struct dm_target_deps *deps;
 
-<<<<<<< HEAD
-=======
 	down_read(&table->devices_lock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	deps = get_result_buffer(param, param_size, &len);
 
 	/*
 	 * Count the devices.
 	 */
-<<<<<<< HEAD
-	list_for_each (tmp, dm_table_get_devices(table))
-=======
 	list_for_each(tmp, dm_table_get_devices(table))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count++;
 
 	/*
 	 * Check we have enough space.
 	 */
-<<<<<<< HEAD
-	needed = sizeof(*deps) + (sizeof(*deps->dev) * count);
-	if (len < needed) {
-		param->flags |= DM_BUFFER_FULL_FLAG;
-		return;
-=======
 	needed = struct_size(deps, dev, count);
 	if (len < needed) {
 		param->flags |= DM_BUFFER_FULL_FLAG;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2364,18 +1654,6 @@ static void retrieve_deps(struct dm_table *table,
 	 */
 	deps->count = count;
 	count = 0;
-<<<<<<< HEAD
-	list_for_each_entry (dd, dm_table_get_devices(table), list)
-		deps->dev[count++] = huge_encode_dev(dd->dm_dev.bdev->bd_dev);
-
-	param->data_size = param->data_start + needed;
-}
-
-static int table_deps(struct dm_ioctl *param, size_t param_size)
-{
-	struct mapped_device *md;
-	struct dm_table *table;
-=======
 	list_for_each_entry(dd, dm_table_get_devices(table), list)
 		deps->dev[count++] = huge_encode_dev(dd->dm_dev->bdev->bd_dev);
 
@@ -2390,7 +1668,6 @@ static int table_deps(struct file *filp, struct dm_ioctl *param, size_t param_si
 	struct mapped_device *md;
 	struct dm_table *table;
 	int srcu_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	md = find_device(param);
 	if (!md)
@@ -2398,18 +1675,10 @@ static int table_deps(struct file *filp, struct dm_ioctl *param, size_t param_si
 
 	__dev_status(md, param);
 
-<<<<<<< HEAD
-	table = dm_get_live_or_inactive_table(md, param);
-	if (table) {
-		retrieve_deps(table, param, param_size);
-		dm_table_put(table);
-	}
-=======
 	table = dm_get_live_or_inactive_table(md, param, &srcu_idx);
 	if (table)
 		retrieve_deps(table, param, param_size);
 	dm_put_live_table(md, srcu_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dm_put(md);
 
@@ -2420,18 +1689,11 @@ static int table_deps(struct file *filp, struct dm_ioctl *param, size_t param_si
  * Return the status of a device as a text string for each
  * target.
  */
-<<<<<<< HEAD
-static int table_status(struct dm_ioctl *param, size_t param_size)
-{
-	struct mapped_device *md;
-	struct dm_table *table;
-=======
 static int table_status(struct file *filp, struct dm_ioctl *param, size_t param_size)
 {
 	struct mapped_device *md;
 	struct dm_table *table;
 	int srcu_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	md = find_device(param);
 	if (!md)
@@ -2439,18 +1701,10 @@ static int table_status(struct file *filp, struct dm_ioctl *param, size_t param_
 
 	__dev_status(md, param);
 
-<<<<<<< HEAD
-	table = dm_get_live_or_inactive_table(md, param);
-	if (table) {
-		retrieve_status(table, param, param_size);
-		dm_table_put(table);
-	}
-=======
 	table = dm_get_live_or_inactive_table(md, param, &srcu_idx);
 	if (table)
 		retrieve_status(table, param, param_size);
 	dm_put_live_table(md, srcu_idx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dm_put(md);
 
@@ -2458,11 +1712,6 @@ static int table_status(struct file *filp, struct dm_ioctl *param, size_t param_
 }
 
 /*
-<<<<<<< HEAD
- * Pass a message to the target that's at the supplied device offset.
- */
-static int target_message(struct dm_ioctl *param, size_t param_size)
-=======
  * Process device-mapper dependent messages.  Messages prefixed with '@'
  * are processed by the DM core.  All others are delivered to the target.
  * Returns a number <= 1 if message was processed by device mapper.
@@ -2496,7 +1745,6 @@ static int message_for_md(struct mapped_device *md, unsigned int argc, char **ar
  * Pass a message to the target that's at the supplied device offset.
  */
 static int target_message(struct file *filp, struct dm_ioctl *param, size_t param_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r, argc;
 	char **argv;
@@ -2504,12 +1752,9 @@ static int target_message(struct file *filp, struct dm_ioctl *param, size_t para
 	struct dm_table *table;
 	struct dm_target *ti;
 	struct dm_target_msg *tmsg = (void *) param + param->data_start;
-<<<<<<< HEAD
-=======
 	size_t maxlen;
 	char *result = get_result_buffer(param, param_size, &maxlen);
 	int srcu_idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	md = find_device(param);
 	if (!md)
@@ -2517,36 +1762,18 @@ static int target_message(struct file *filp, struct dm_ioctl *param, size_t para
 
 	if (tmsg < (struct dm_target_msg *) param->data ||
 	    invalid_str(tmsg->message, (void *) param + param_size)) {
-<<<<<<< HEAD
-		DMWARN("Invalid target message parameters.");
-=======
 		DMERR("Invalid target message parameters.");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -EINVAL;
 		goto out;
 	}
 
 	r = dm_split_args(&argc, &argv, tmsg->message);
 	if (r) {
-<<<<<<< HEAD
-		DMWARN("Failed to split target message parameters");
-=======
 		DMERR("Failed to split target message parameters");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	if (!argc) {
-<<<<<<< HEAD
-		DMWARN("Empty message received.");
-		goto out_argv;
-	}
-
-	table = dm_get_live_table(md);
-	if (!table)
-		goto out_argv;
-
-=======
 		DMERR("Empty message received.");
 		r = -EINVAL;
 		goto out_argv;
@@ -2560,22 +1787,12 @@ static int target_message(struct file *filp, struct dm_ioctl *param, size_t para
 	if (!table)
 		goto out_table;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dm_deleting_md(md)) {
 		r = -ENXIO;
 		goto out_table;
 	}
 
 	ti = dm_table_find_target(table, tmsg->sector);
-<<<<<<< HEAD
-	if (!dm_target_is_valid(ti)) {
-		DMWARN("Target message sector outside device.");
-		r = -EINVAL;
-	} else if (ti->type->message)
-		r = ti->type->message(ti, argc, argv);
-	else {
-		DMWARN("Target type does not support messages");
-=======
 	if (!ti) {
 		DMERR("Target message sector outside device.");
 		r = -EINVAL;
@@ -2583,18 +1800,10 @@ static int target_message(struct file *filp, struct dm_ioctl *param, size_t para
 		r = ti->type->message(ti, argc, argv, result, maxlen);
 	else {
 		DMERR("Target type does not support messages");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -EINVAL;
 	}
 
  out_table:
-<<<<<<< HEAD
-	dm_table_put(table);
- out_argv:
-	kfree(argv);
- out:
-	param->data_size = 0;
-=======
 	dm_put_live_table(md, srcu_idx);
  out_argv:
 	kfree(argv);
@@ -2611,46 +1820,10 @@ static int target_message(struct file *filp, struct dm_ioctl *param, size_t para
 		r = 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_put(md);
 	return r;
 }
 
-<<<<<<< HEAD
-/*-----------------------------------------------------------------
- * Implementation of open/close/ioctl on the special char
- * device.
- *---------------------------------------------------------------*/
-static ioctl_fn lookup_ioctl(unsigned int cmd)
-{
-	static struct {
-		int cmd;
-		ioctl_fn fn;
-	} _ioctls[] = {
-		{DM_VERSION_CMD, NULL},	/* version is dealt with elsewhere */
-		{DM_REMOVE_ALL_CMD, remove_all},
-		{DM_LIST_DEVICES_CMD, list_devices},
-
-		{DM_DEV_CREATE_CMD, dev_create},
-		{DM_DEV_REMOVE_CMD, dev_remove},
-		{DM_DEV_RENAME_CMD, dev_rename},
-		{DM_DEV_SUSPEND_CMD, dev_suspend},
-		{DM_DEV_STATUS_CMD, dev_status},
-		{DM_DEV_WAIT_CMD, dev_wait},
-
-		{DM_TABLE_LOAD_CMD, table_load},
-		{DM_TABLE_CLEAR_CMD, table_clear},
-		{DM_TABLE_DEPS_CMD, table_deps},
-		{DM_TABLE_STATUS_CMD, table_status},
-
-		{DM_LIST_VERSIONS_CMD, list_versions},
-
-		{DM_TARGET_MSG_CMD, target_message},
-		{DM_DEV_SET_GEOMETRY_CMD, dev_set_geometry}
-	};
-
-	return (cmd >= ARRAY_SIZE(_ioctls)) ? NULL : _ioctls[cmd].fn;
-=======
 /*
  * The ioctl parameter block consists of two parts, a dm_ioctl struct
  * followed by a data buffer.  This flag is set if the second part,
@@ -2702,30 +1875,12 @@ static ioctl_fn lookup_ioctl(unsigned int cmd, int *ioctl_flags)
 	cmd = array_index_nospec(cmd, ARRAY_SIZE(_ioctls));
 	*ioctl_flags = _ioctls[cmd].flags;
 	return _ioctls[cmd].fn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * As well as checking the version compatibility this always
  * copies the kernel interface version out.
  */
-<<<<<<< HEAD
-static int check_version(unsigned int cmd, struct dm_ioctl __user *user)
-{
-	uint32_t version[3];
-	int r = 0;
-
-	if (copy_from_user(version, user->version, sizeof(version)))
-		return -EFAULT;
-
-	if ((DM_VERSION_MAJOR != version[0]) ||
-	    (DM_VERSION_MINOR < version[1])) {
-		DMWARN("ioctl interface mismatch: "
-		       "kernel(%u.%u.%u), user(%u.%u.%u), cmd(%d)",
-		       DM_VERSION_MAJOR, DM_VERSION_MINOR,
-		       DM_VERSION_PATCHLEVEL,
-		       version[0], version[1], version[2], cmd);
-=======
 static int check_version(unsigned int cmd, struct dm_ioctl __user *user,
 			 struct dm_ioctl *kernel_params)
 {
@@ -2746,47 +1901,21 @@ static int check_version(unsigned int cmd, struct dm_ioctl __user *user,
 		      kernel_params->version[1],
 		      kernel_params->version[2],
 		      cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -EINVAL;
 	}
 
 	/*
 	 * Fill in the kernel version.
 	 */
-<<<<<<< HEAD
-	version[0] = DM_VERSION_MAJOR;
-	version[1] = DM_VERSION_MINOR;
-	version[2] = DM_VERSION_PATCHLEVEL;
-	if (copy_to_user(user->version, version, sizeof(version)))
-=======
 	kernel_params->version[0] = DM_VERSION_MAJOR;
 	kernel_params->version[1] = DM_VERSION_MINOR;
 	kernel_params->version[2] = DM_VERSION_PATCHLEVEL;
 	if (copy_to_user(user->version, kernel_params->version, sizeof(kernel_params->version)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	return r;
 }
 
-<<<<<<< HEAD
-static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl **param)
-{
-	struct dm_ioctl tmp, *dmi;
-	int secure_data;
-
-	if (copy_from_user(&tmp, user, sizeof(tmp) - sizeof(tmp.data)))
-		return -EFAULT;
-
-	if (tmp.data_size < (sizeof(tmp) - sizeof(tmp.data)))
-		return -EINVAL;
-
-	secure_data = tmp.flags & DM_SECURE_DATA_FLAG;
-
-	dmi = vmalloc(tmp.data_size);
-	if (!dmi) {
-		if (secure_data && clear_user(user, tmp.data_size))
-=======
 #define DM_PARAMS_MALLOC	0x0001	/* Params allocated with kvmalloc() */
 #define DM_WIPE_BUFFER		0x0010	/* Wipe input buffer before returning from ioctl */
 
@@ -2839,26 +1968,10 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 
 	if (!dmi) {
 		if (secure_data && clear_user(user, param_kernel->data_size))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-	if (copy_from_user(dmi, user, tmp.data_size))
-		goto bad;
-
-	/*
-	 * Abort if something changed the ioctl data while it was being copied.
-	 */
-	if (dmi->data_size != tmp.data_size) {
-		DMERR("rejecting ioctl: data size modified while processing parameters");
-		goto bad;
-	}
-
-	/* Wipe the user buffer so we do not return it to userspace */
-	if (secure_data && clear_user(user, tmp.data_size))
-=======
 	*param_flags |= DM_PARAMS_MALLOC;
 
 	/* Copy from param_kernel (which was already copied from user) */
@@ -2870,21 +1983,14 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
 data_copied:
 	/* Wipe the user buffer so we do not return it to userspace */
 	if (secure_data && clear_user(user, param_kernel->data_size))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad;
 
 	*param = dmi;
 	return 0;
 
 bad:
-<<<<<<< HEAD
-	if (secure_data)
-		memset(dmi, 0, tmp.data_size);
-	vfree(dmi);
-=======
 	free_params(dmi, param_kernel->data_size, *param_flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EFAULT;
 }
 
@@ -2894,10 +2000,7 @@ static int validate_params(uint cmd, struct dm_ioctl *param)
 	param->flags &= ~DM_BUFFER_FULL_FLAG;
 	param->flags &= ~DM_UEVENT_GENERATED_FLAG;
 	param->flags &= ~DM_SECURE_DATA_FLAG;
-<<<<<<< HEAD
-=======
 	param->flags &= ~DM_DATA_OUT_FLAG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ignores parameters */
 	if (cmd == DM_REMOVE_ALL_CMD ||
@@ -2905,15 +2008,6 @@ static int validate_params(uint cmd, struct dm_ioctl *param)
 	    cmd == DM_LIST_VERSIONS_CMD)
 		return 0;
 
-<<<<<<< HEAD
-	if ((cmd == DM_DEV_CREATE_CMD)) {
-		if (!*param->name) {
-			DMWARN("name not supplied when creating device");
-			return -EINVAL;
-		}
-	} else if ((*param->uuid && *param->name)) {
-		DMWARN("only supply one of name or uuid, cmd(%u)", cmd);
-=======
 	if (cmd == DM_DEV_CREATE_CMD) {
 		if (!*param->name) {
 			DMERR("name not supplied when creating device");
@@ -2921,7 +2015,6 @@ static int validate_params(uint cmd, struct dm_ioctl *param)
 		}
 	} else if (*param->uuid && *param->name) {
 		DMERR("only supply one of name or uuid, cmd(%u)", cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -2932,16 +2025,6 @@ static int validate_params(uint cmd, struct dm_ioctl *param)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ctl_ioctl(uint command, struct dm_ioctl __user *user)
-{
-	int r = 0;
-	int wipe_buffer;
-	unsigned int cmd;
-	struct dm_ioctl *uninitialized_var(param);
-	ioctl_fn fn = NULL;
-	size_t input_param_size;
-=======
 static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *user)
 {
 	int r = 0;
@@ -2952,7 +2035,6 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 	ioctl_fn fn = NULL;
 	size_t input_param_size;
 	struct dm_ioctl param_kernel;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* only root can play with this */
 	if (!capable(CAP_SYS_ADMIN))
@@ -2967,11 +2049,7 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 	 * Check the interface version passed in.  This also
 	 * writes out the kernel's interface version.
 	 */
-<<<<<<< HEAD
-	r = check_version(cmd, user);
-=======
 	r = check_version(cmd, user, &param_kernel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		return r;
 
@@ -2981,54 +2059,25 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 	if (cmd == DM_VERSION_CMD)
 		return 0;
 
-<<<<<<< HEAD
-	fn = lookup_ioctl(cmd);
-	if (!fn) {
-		DMWARN("dm_ctl_ioctl: unknown command 0x%x", command);
-=======
 	fn = lookup_ioctl(cmd, &ioctl_flags);
 	if (!fn) {
 		DMERR("dm_ctl_ioctl: unknown command 0x%x", command);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOTTY;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * Trying to avoid low memory issues when a device is
-	 * suspended.
-	 */
-	current->flags |= PF_MEMALLOC;
-
-	/*
-	 * Copy the parameters into kernel space.
-	 */
-	r = copy_params(user, &param);
-
-	current->flags &= ~PF_MEMALLOC;
-=======
 	 * Copy the parameters into kernel space.
 	 */
 	r = copy_params(user, &param_kernel, ioctl_flags, &param, &param_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (r)
 		return r;
 
 	input_param_size = param->data_size;
-<<<<<<< HEAD
-	wipe_buffer = param->flags & DM_SECURE_DATA_FLAG;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = validate_params(cmd, param);
 	if (r)
 		goto out;
 
-<<<<<<< HEAD
-	param->data_size = sizeof(*param);
-	r = fn(param, input_param_size);
-=======
 	param->data_size = offsetof(struct dm_ioctl, data);
 	r = fn(file, param, input_param_size);
 
@@ -3038,7 +2087,6 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 
 	if (!r && ioctl_flags & IOCTL_FLAGS_ISSUE_GLOBAL_EVENT)
 		dm_issue_global_event();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Copy the results back to userland.
@@ -3047,24 +2095,13 @@ static int ctl_ioctl(struct file *file, uint command, struct dm_ioctl __user *us
 		r = -EFAULT;
 
 out:
-<<<<<<< HEAD
-	if (wipe_buffer)
-		memset(param, 0, input_param_size);
-
-	vfree(param);
-=======
 	free_params(param, input_param_size, param_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 static long dm_ctl_ioctl(struct file *file, uint command, ulong u)
 {
-<<<<<<< HEAD
-	return (long)ctl_ioctl(command, (struct dm_ioctl __user *)u);
-=======
 	return (long)ctl_ioctl(file, command, (struct dm_ioctl __user *)u);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_COMPAT
@@ -3076,10 +2113,6 @@ static long dm_compat_ctl_ioctl(struct file *file, uint command, ulong u)
 #define dm_compat_ctl_ioctl NULL
 #endif
 
-<<<<<<< HEAD
-static const struct file_operations _ctl_fops = {
-	.open = nonseekable_open,
-=======
 static int dm_open(struct inode *inode, struct file *filp)
 {
 	int r;
@@ -3121,7 +2154,6 @@ static const struct file_operations _ctl_fops = {
 	.open    = dm_open,
 	.release = dm_release,
 	.poll    = dm_poll,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	 = dm_ctl_ioctl,
 	.compat_ioctl = dm_compat_ctl_ioctl,
 	.owner	 = THIS_MODULE,
@@ -3130,15 +2162,9 @@ static const struct file_operations _ctl_fops = {
 
 static struct miscdevice _dm_misc = {
 	.minor		= MAPPER_CTRL_MINOR,
-<<<<<<< HEAD
-	.name  		= DM_NAME,
-	.nodename	= DM_DIR "/" DM_CONTROL_NODE,
-	.fops  		= &_ctl_fops
-=======
 	.name		= DM_NAME,
 	.nodename	= DM_DIR "/" DM_CONTROL_NODE,
 	.fops		= &_ctl_fops
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_ALIAS_MISCDEV(MAPPER_CTRL_MINOR);
@@ -3151,20 +2177,9 @@ int __init dm_interface_init(void)
 {
 	int r;
 
-<<<<<<< HEAD
-	r = dm_hash_init();
-	if (r)
-		return r;
-
 	r = misc_register(&_dm_misc);
 	if (r) {
 		DMERR("misc_register failed for control device");
-		dm_hash_exit();
-=======
-	r = misc_register(&_dm_misc);
-	if (r) {
-		DMERR("misc_register failed for control device");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -3176,13 +2191,7 @@ int __init dm_interface_init(void)
 
 void dm_interface_exit(void)
 {
-<<<<<<< HEAD
-	if (misc_deregister(&_dm_misc) < 0)
-		DMERR("misc_deregister failed for control device");
-
-=======
 	misc_deregister(&_dm_misc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_hash_exit();
 }
 
@@ -3202,11 +2211,7 @@ int dm_copy_name_and_uuid(struct mapped_device *md, char *name, char *uuid)
 
 	mutex_lock(&dm_hash_cells_mutex);
 	hc = dm_get_mdptr(md);
-<<<<<<< HEAD
-	if (!hc || hc->md != md) {
-=======
 	if (!hc) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -ENXIO;
 		goto out;
 	}
@@ -3221,8 +2226,6 @@ out:
 
 	return r;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(dm_copy_name_and_uuid);
 
 /**
@@ -3331,4 +2334,3 @@ err_destroy_dm:
 	dm_destroy(md);
 	return r;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

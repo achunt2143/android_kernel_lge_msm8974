@@ -1,40 +1,19 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) ST-Ericsson SA 2011
  *
  * Author: Lee Jones <lee.jones@linaro.org> for ST-Ericsson.
-<<<<<<< HEAD
- * License terms:  GNU General Public License (GPL), version 2
- */
-
-#include <linux/sysfs.h>
-#include <linux/module.h>
-#include <linux/init.h>
-=======
  */
 
 #include <linux/sysfs.h>
 #include <linux/init.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stat.h>
 #include <linux/slab.h>
 #include <linux/idr.h>
 #include <linux/spinlock.h>
 #include <linux/sys_soc.h>
 #include <linux/err.h>
-<<<<<<< HEAD
-
-static DEFINE_IDA(soc_ida);
-static DEFINE_SPINLOCK(soc_lock);
-
-static ssize_t soc_info_get(struct device *dev,
-			    struct device_attribute *attr,
-			    char *buf);
-=======
 #include <linux/glob.h>
 
 static DEFINE_IDA(soc_ida);
@@ -42,7 +21,6 @@ static DEFINE_IDA(soc_ida);
 /* Prototype to allow declarations of DEVICE_ATTR(<foo>) before soc_info_show */
 static ssize_t soc_info_show(struct device *dev, struct device_attribute *attr,
 			     char *buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct soc_device {
 	struct device dev;
@@ -50,16 +28,6 @@ struct soc_device {
 	int soc_dev_num;
 };
 
-<<<<<<< HEAD
-static struct bus_type soc_bus_type = {
-	.name  = "soc",
-};
-
-static DEVICE_ATTR(machine,  S_IRUGO, soc_info_get,  NULL);
-static DEVICE_ATTR(family,   S_IRUGO, soc_info_get,  NULL);
-static DEVICE_ATTR(soc_id,   S_IRUGO, soc_info_get,  NULL);
-static DEVICE_ATTR(revision, S_IRUGO, soc_info_get,  NULL);
-=======
 static const struct bus_type soc_bus_type = {
 	.name  = "soc",
 };
@@ -70,56 +38,12 @@ static DEVICE_ATTR(family,		0444, soc_info_show,  NULL);
 static DEVICE_ATTR(serial_number,	0444, soc_info_show,  NULL);
 static DEVICE_ATTR(soc_id,		0444, soc_info_show,  NULL);
 static DEVICE_ATTR(revision,		0444, soc_info_show,  NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct device *soc_device_to_device(struct soc_device *soc_dev)
 {
 	return &soc_dev->dev;
 }
 
-<<<<<<< HEAD
-static mode_t soc_attribute_mode(struct kobject *kobj,
-                                 struct attribute *attr,
-                                 int index)
-{
-	struct device *dev = container_of(kobj, struct device, kobj);
-	struct soc_device *soc_dev = container_of(dev, struct soc_device, dev);
-
-	if ((attr == &dev_attr_machine.attr)
-	    && (soc_dev->attr->machine != NULL))
-		return attr->mode;
-	if ((attr == &dev_attr_family.attr)
-	    && (soc_dev->attr->family != NULL))
-		return attr->mode;
-	if ((attr == &dev_attr_revision.attr)
-	    && (soc_dev->attr->revision != NULL))
-		return attr->mode;
-	if ((attr == &dev_attr_soc_id.attr)
-	    && (soc_dev->attr->soc_id != NULL))
-	        return attr->mode;
-
-	/* Unknown or unfilled attribute. */
-	return 0;
-}
-
-static ssize_t soc_info_get(struct device *dev,
-			    struct device_attribute *attr,
-			    char *buf)
-{
-	struct soc_device *soc_dev = container_of(dev, struct soc_device, dev);
-
-	if (attr == &dev_attr_machine)
-		return sprintf(buf, "%s\n", soc_dev->attr->machine);
-	if (attr == &dev_attr_family)
-		return sprintf(buf, "%s\n", soc_dev->attr->family);
-	if (attr == &dev_attr_revision)
-		return sprintf(buf, "%s\n", soc_dev->attr->revision);
-	if (attr == &dev_attr_soc_id)
-		return sprintf(buf, "%s\n", soc_dev->attr->soc_id);
-
-	return -EINVAL;
-
-=======
 static umode_t soc_attribute_mode(struct kobject *kobj,
 				struct attribute *attr,
 				int index)
@@ -162,16 +86,12 @@ static ssize_t soc_info_show(struct device *dev, struct device_attribute *attr,
 		return -EINVAL;
 
 	return sysfs_emit(buf, "%s\n", output);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct attribute *soc_attr[] = {
 	&dev_attr_machine.attr,
 	&dev_attr_family.attr,
-<<<<<<< HEAD
-=======
 	&dev_attr_serial_number.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_soc_id.attr,
 	&dev_attr_revision.attr,
 	NULL,
@@ -182,49 +102,10 @@ static const struct attribute_group soc_attr_group = {
 	.is_visible = soc_attribute_mode,
 };
 
-<<<<<<< HEAD
-static const struct attribute_group *soc_attr_groups[] = {
-	&soc_attr_group,
-	NULL,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void soc_release(struct device *dev)
 {
 	struct soc_device *soc_dev = container_of(dev, struct soc_device, dev);
 
-<<<<<<< HEAD
-	kfree(soc_dev);
-}
-
-struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr)
-{
-	struct soc_device *soc_dev;
-	int ret;
-
-	soc_dev = kzalloc(sizeof(*soc_dev), GFP_KERNEL);
-	if (!soc_dev) {
-	        ret = -ENOMEM;
-		goto out1;
-	}
-
-	/* Fetch a unique (reclaimable) SOC ID. */
-	do {
-		if (!ida_pre_get(&soc_ida, GFP_KERNEL)) {
-			ret = -ENOMEM;
-			goto out2;
-		}
-
-		spin_lock(&soc_lock);
-		ret = ida_get_new(&soc_ida, &soc_dev->soc_dev_num);
-		spin_unlock(&soc_lock);
-
-	} while (ret == -EAGAIN);
-
-	if (ret)
-	         goto out2;
-=======
 	ida_free(&soc_ida, soc_dev->soc_dev_num);
 	kfree(soc_dev->dev.groups);
 	kfree(soc_dev);
@@ -278,7 +159,6 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 	if (ret < 0)
 		goto out3;
 	soc_dev->soc_dev_num = ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	soc_dev->attr = soc_dev_attr;
 	soc_dev->dev.bus = &soc_bus_type;
@@ -288,53 +168,20 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
 	dev_set_name(&soc_dev->dev, "soc%d", soc_dev->soc_dev_num);
 
 	ret = device_register(&soc_dev->dev);
-<<<<<<< HEAD
-	if (ret)
-		goto out3;
-=======
 	if (ret) {
 		put_device(&soc_dev->dev);
 		return ERR_PTR(ret);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return soc_dev;
 
 out3:
-<<<<<<< HEAD
-	ida_remove(&soc_ida, soc_dev->soc_dev_num);
-=======
 	kfree(soc_attr_groups);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out2:
 	kfree(soc_dev);
 out1:
 	return ERR_PTR(ret);
 }
-<<<<<<< HEAD
-
-/* Ensure soc_dev->attr is freed prior to calling soc_device_unregister. */
-void soc_device_unregister(struct soc_device *soc_dev)
-{
-	ida_remove(&soc_ida, soc_dev->soc_dev_num);
-
-	device_unregister(&soc_dev->dev);
-}
-
-static int __init soc_bus_register(void)
-{
-	return bus_register(&soc_bus_type);
-}
-core_initcall(soc_bus_register);
-
-static void __exit soc_bus_unregister(void)
-{
-	ida_destroy(&soc_ida);
-
-	bus_unregister(&soc_bus_type);
-}
-module_exit(soc_bus_unregister);
-=======
 EXPORT_SYMBOL_GPL(soc_device_register);
 
 /* Ensure soc_dev->attr is freed after calling soc_device_unregister. */
@@ -433,4 +280,3 @@ const struct soc_device_attribute *soc_device_match(
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(soc_device_match);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

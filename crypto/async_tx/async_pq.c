@@ -1,30 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright(c) 2007 Yuri Tikhonov <yur@emcraft.com>
- * Copyright(c) 2009 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * The full GNU General Public License is included in this distribution in the
- * file called COPYING.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright(c) 2007 Yuri Tikhonov <yur@emcraft.com>
  * Copyright(c) 2009 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
@@ -34,13 +11,8 @@
 #include <linux/async_tx.h>
 #include <linux/gfp.h>
 
-<<<<<<< HEAD
-/**
- * pq_scribble_page - space to hold throwaway P or Q buffer for
-=======
 /*
  * struct pq_scribble_page - space to hold throwaway P or Q buffer for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * synchronous gen_syndrome
  */
 static struct page *pq_scribble_page;
@@ -54,15 +26,6 @@ static struct page *pq_scribble_page;
 #define P(b, d) (b[d-2])
 #define Q(b, d) (b[d-1])
 
-<<<<<<< HEAD
-/**
- * do_async_gen_syndrome - asynchronously calculate P and/or Q
- */
-static __async_inline struct dma_async_tx_descriptor *
-do_async_gen_syndrome(struct dma_chan *chan, struct page **blocks,
-		      const unsigned char *scfs, unsigned int offset, int disks,
-		      size_t len, dma_addr_t *dma_src,
-=======
 #define MAX_DISKS 255
 
 /*
@@ -73,56 +36,17 @@ do_async_gen_syndrome(struct dma_chan *chan,
 		      const unsigned char *scfs, int disks,
 		      struct dmaengine_unmap_data *unmap,
 		      enum dma_ctrl_flags dma_flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      struct async_submit_ctl *submit)
 {
 	struct dma_async_tx_descriptor *tx = NULL;
 	struct dma_device *dma = chan->device;
-<<<<<<< HEAD
-	enum dma_ctrl_flags dma_flags = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum async_tx_flags flags_orig = submit->flags;
 	dma_async_tx_callback cb_fn_orig = submit->cb_fn;
 	dma_async_tx_callback cb_param_orig = submit->cb_param;
 	int src_cnt = disks - 2;
-<<<<<<< HEAD
-	unsigned char coefs[src_cnt];
 	unsigned short pq_src_cnt;
 	dma_addr_t dma_dest[2];
 	int src_off = 0;
-	int idx;
-	int i;
-
-	/* DMAs use destinations as sources, so use BIDIRECTIONAL mapping */
-	if (P(blocks, disks))
-		dma_dest[0] = dma_map_page(dma->dev, P(blocks, disks), offset,
-					   len, DMA_BIDIRECTIONAL);
-	else
-		dma_flags |= DMA_PREP_PQ_DISABLE_P;
-	if (Q(blocks, disks))
-		dma_dest[1] = dma_map_page(dma->dev, Q(blocks, disks), offset,
-					   len, DMA_BIDIRECTIONAL);
-	else
-		dma_flags |= DMA_PREP_PQ_DISABLE_Q;
-
-	/* convert source addresses being careful to collapse 'empty'
-	 * sources and update the coefficients accordingly
-	 */
-	for (i = 0, idx = 0; i < src_cnt; i++) {
-		if (blocks[i] == NULL)
-			continue;
-		dma_src[idx] = dma_map_page(dma->dev, blocks[i], offset, len,
-					    DMA_TO_DEVICE);
-		coefs[idx] = scfs[i];
-		idx++;
-	}
-	src_cnt = idx;
-=======
-	unsigned short pq_src_cnt;
-	dma_addr_t dma_dest[2];
-	int src_off = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (src_cnt > 0) {
 		submit->flags = flags_orig;
@@ -134,17 +58,9 @@ do_async_gen_syndrome(struct dma_chan *chan,
 		if (src_cnt > pq_src_cnt) {
 			submit->flags &= ~ASYNC_TX_ACK;
 			submit->flags |= ASYNC_TX_FENCE;
-<<<<<<< HEAD
-			dma_flags |= DMA_COMPL_SKIP_DEST_UNMAP;
 			submit->cb_fn = NULL;
 			submit->cb_param = NULL;
 		} else {
-			dma_flags &= ~DMA_COMPL_SKIP_DEST_UNMAP;
-=======
-			submit->cb_fn = NULL;
-			submit->cb_param = NULL;
-		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			submit->cb_fn = cb_fn_orig;
 			submit->cb_param = cb_param_orig;
 			if (cb_fn_orig)
@@ -153,17 +69,6 @@ do_async_gen_syndrome(struct dma_chan *chan,
 		if (submit->flags & ASYNC_TX_FENCE)
 			dma_flags |= DMA_PREP_FENCE;
 
-<<<<<<< HEAD
-		/* Since we have clobbered the src_list we are committed
-		 * to doing this asynchronously.  Drivers force forward
-		 * progress in case they can not provide a descriptor
-		 */
-		for (;;) {
-			tx = dma->device_prep_dma_pq(chan, dma_dest,
-						     &dma_src[src_off],
-						     pq_src_cnt,
-						     &coefs[src_off], len,
-=======
 		/* Drivers force forward progress in case they can not provide
 		 * a descriptor
 		 */
@@ -174,7 +79,6 @@ do_async_gen_syndrome(struct dma_chan *chan,
 						     &unmap->addr[src_off],
 						     pq_src_cnt,
 						     &scfs[src_off], unmap->len,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     dma_flags);
 			if (likely(tx))
 				break;
@@ -182,10 +86,7 @@ do_async_gen_syndrome(struct dma_chan *chan,
 			dma_async_issue_pending(chan);
 		}
 
-<<<<<<< HEAD
-=======
 		dma_set_unmap(tx, unmap);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		async_tx_submit(chan, tx, submit);
 		submit->depend_tx = tx;
 
@@ -199,27 +100,16 @@ do_async_gen_syndrome(struct dma_chan *chan,
 	return tx;
 }
 
-<<<<<<< HEAD
-/**
- * do_sync_gen_syndrome - synchronously calculate a raid6 syndrome
- */
-static void
-do_sync_gen_syndrome(struct page **blocks, unsigned int offset, int disks,
-=======
 /*
  * do_sync_gen_syndrome - synchronously calculate a raid6 syndrome
  */
 static void
 do_sync_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     size_t len, struct async_submit_ctl *submit)
 {
 	void **srcs;
 	int i;
-<<<<<<< HEAD
-=======
 	int start = -1, stop = disks - 3;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (submit->scribble)
 		srcs = submit->scribble;
@@ -230,19 +120,6 @@ do_sync_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 		if (blocks[i] == NULL) {
 			BUG_ON(i > disks - 3); /* P or Q can't be zero */
 			srcs[i] = (void*)raid6_empty_zero_page;
-<<<<<<< HEAD
-		} else
-			srcs[i] = page_address(blocks[i]) + offset;
-	}
-	raid6_call.gen_syndrome(disks, len, srcs);
-	async_tx_sync_epilog(submit);
-}
-
-/**
- * async_gen_syndrome - asynchronously calculate a raid6 syndrome
- * @blocks: source blocks from idx 0..disks-3, P @ disks-2 and Q @ disks-1
- * @offset: common offset into each block (src and dest) to start transaction
-=======
 		} else {
 			srcs[i] = page_address(blocks[i]) + offsets[i];
 
@@ -279,7 +156,6 @@ is_dma_pq_aligned_offs(struct dma_device *dev, unsigned int *offs,
  * async_gen_syndrome - asynchronously calculate a raid6 syndrome
  * @blocks: source blocks from idx 0..disks-3, P @ disks-2 and Q @ disks-1
  * @offsets: offset array into each block (src and dest) to start transaction
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @disks: number of blocks (including missing P or Q, see below)
  * @len: length of operation in bytes
  * @submit: submission/completion modifiers
@@ -296,19 +172,9 @@ is_dma_pq_aligned_offs(struct dma_device *dev, unsigned int *offs,
  * set to NULL those buffers will be replaced with the raid6_zero_page
  * in the synchronous path and omitted in the hardware-asynchronous
  * path.
-<<<<<<< HEAD
- *
- * 'blocks' note: if submit->scribble is NULL then the contents of
- * 'blocks' may be overwritten to perform address conversions
- * (dma_map_page() or page_address()).
- */
-struct dma_async_tx_descriptor *
-async_gen_syndrome(struct page **blocks, unsigned int offset, int disks,
-=======
  */
 struct dma_async_tx_descriptor *
 async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   size_t len, struct async_submit_ctl *submit)
 {
 	int src_cnt = disks - 2;
@@ -316,28 +182,6 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 						      &P(blocks, disks), 2,
 						      blocks, src_cnt, len);
 	struct dma_device *device = chan ? chan->device : NULL;
-<<<<<<< HEAD
-	dma_addr_t *dma_src = NULL;
-
-	BUG_ON(disks > 255 || !(P(blocks, disks) || Q(blocks, disks)));
-
-	if (submit->scribble)
-		dma_src = submit->scribble;
-	else if (sizeof(dma_addr_t) <= sizeof(struct page *))
-		dma_src = (dma_addr_t *) blocks;
-
-	if (dma_src && device &&
-	    (src_cnt <= dma_maxpq(device, 0) ||
-	     dma_maxpq(device, DMA_PREP_CONTINUE) > 0) &&
-	    is_dma_pq_aligned(device, offset, 0, len)) {
-		/* run the p+q asynchronously */
-		pr_debug("%s: (async) disks: %d len: %zu\n",
-			 __func__, disks, len);
-		return do_async_gen_syndrome(chan, blocks, raid6_gfexp, offset,
-					     disks, len, dma_src, submit);
-	}
-
-=======
 	struct dmaengine_unmap_data *unmap = NULL;
 
 	BUG_ON(disks > MAX_DISKS || !(P(blocks, disks) || Q(blocks, disks)));
@@ -404,7 +248,6 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 
 	dmaengine_unmap_put(unmap);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* run the pq synchronously */
 	pr_debug("%s: (sync) disks: %d len: %zu\n", __func__, disks, len);
 
@@ -413,15 +256,6 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 
 	if (!P(blocks, disks)) {
 		P(blocks, disks) = pq_scribble_page;
-<<<<<<< HEAD
-		BUG_ON(len + offset > PAGE_SIZE);
-	}
-	if (!Q(blocks, disks)) {
-		Q(blocks, disks) = pq_scribble_page;
-		BUG_ON(len + offset > PAGE_SIZE);
-	}
-	do_sync_gen_syndrome(blocks, offset, disks, len, submit);
-=======
 		P(offsets, disks) = 0;
 	}
 	if (!Q(blocks, disks)) {
@@ -429,7 +263,6 @@ async_gen_syndrome(struct page **blocks, unsigned int *offsets, int disks,
 		Q(offsets, disks) = 0;
 	}
 	do_sync_gen_syndrome(blocks, offsets, disks, len, submit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NULL;
 }
@@ -448,19 +281,12 @@ pq_val_chan(struct async_submit_ctl *submit, struct page **blocks, int disks, si
 /**
  * async_syndrome_val - asynchronously validate a raid6 syndrome
  * @blocks: source blocks from idx 0..disks-3, P @ disks-2 and Q @ disks-1
-<<<<<<< HEAD
- * @offset: common offset into each block (src and dest) to start transaction
-=======
  * @offsets: common offset into each block (src and dest) to start transaction
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @disks: number of blocks (including missing P or Q, see below)
  * @len: length of operation in bytes
  * @pqres: on val failure SUM_CHECK_P_RESULT and/or SUM_CHECK_Q_RESULT are set
  * @spare: temporary result buffer for the synchronous case
-<<<<<<< HEAD
-=======
  * @s_off: spare buffer page offset
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @submit: submission / completion modifiers
  *
  * The same notes from async_gen_syndrome apply to the 'blocks',
@@ -469,67 +295,13 @@ pq_val_chan(struct async_submit_ctl *submit, struct page **blocks, int disks, si
  * specified.
  */
 struct dma_async_tx_descriptor *
-<<<<<<< HEAD
-async_syndrome_val(struct page **blocks, unsigned int offset, int disks,
-		   size_t len, enum sum_check_flags *pqres, struct page *spare,
-		   struct async_submit_ctl *submit)
-=======
 async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 		   size_t len, enum sum_check_flags *pqres, struct page *spare,
 		   unsigned int s_off, struct async_submit_ctl *submit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dma_chan *chan = pq_val_chan(submit, blocks, disks, len);
 	struct dma_device *device = chan ? chan->device : NULL;
 	struct dma_async_tx_descriptor *tx;
-<<<<<<< HEAD
-	unsigned char coefs[disks-2];
-	enum dma_ctrl_flags dma_flags = submit->cb_fn ? DMA_PREP_INTERRUPT : 0;
-	dma_addr_t *dma_src = NULL;
-	int src_cnt = 0;
-
-	BUG_ON(disks < 4);
-
-	if (submit->scribble)
-		dma_src = submit->scribble;
-	else if (sizeof(dma_addr_t) <= sizeof(struct page *))
-		dma_src = (dma_addr_t *) blocks;
-
-	if (dma_src && device && disks <= dma_maxpq(device, 0) &&
-	    is_dma_pq_aligned(device, offset, 0, len)) {
-		struct device *dev = device->dev;
-		dma_addr_t *pq = &dma_src[disks-2];
-		int i;
-
-		pr_debug("%s: (async) disks: %d len: %zu\n",
-			 __func__, disks, len);
-		if (!P(blocks, disks))
-			dma_flags |= DMA_PREP_PQ_DISABLE_P;
-		else
-			pq[0] = dma_map_page(dev, P(blocks, disks),
-					     offset, len,
-					     DMA_TO_DEVICE);
-		if (!Q(blocks, disks))
-			dma_flags |= DMA_PREP_PQ_DISABLE_Q;
-		else
-			pq[1] = dma_map_page(dev, Q(blocks, disks),
-					     offset, len,
-					     DMA_TO_DEVICE);
-
-		if (submit->flags & ASYNC_TX_FENCE)
-			dma_flags |= DMA_PREP_FENCE;
-		for (i = 0; i < disks-2; i++)
-			if (likely(blocks[i])) {
-				dma_src[src_cnt] = dma_map_page(dev, blocks[i],
-								offset, len,
-								DMA_TO_DEVICE);
-				coefs[src_cnt] = raid6_gfexp[i];
-				src_cnt++;
-			}
-
-		for (;;) {
-			tx = device->device_prep_dma_pq_val(chan, pq, dma_src,
-=======
 	unsigned char coefs[MAX_DISKS];
 	enum dma_ctrl_flags dma_flags = submit->cb_fn ? DMA_PREP_INTERRUPT : 0;
 	struct dmaengine_unmap_data *unmap = NULL;
@@ -586,7 +358,6 @@ async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 		for (;;) {
 			tx = device->device_prep_dma_pq_val(chan, pq,
 							    unmap->addr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    src_cnt,
 							    coefs,
 							    len, pqres,
@@ -596,14 +367,6 @@ async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 			async_tx_quiesce(&submit->depend_tx);
 			dma_async_issue_pending(chan);
 		}
-<<<<<<< HEAD
-		async_tx_submit(chan, tx, submit);
-
-		return tx;
-	} else {
-		struct page *p_src = P(blocks, disks);
-		struct page *q_src = Q(blocks, disks);
-=======
 
 		dma_set_unmap(tx, unmap);
 		async_tx_submit(chan, tx, submit);
@@ -612,7 +375,6 @@ async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 		unsigned int p_off = P(offsets, disks);
 		struct page *q_src = Q(blocks, disks);
 		unsigned int q_off = Q(offsets, disks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enum async_tx_flags flags_orig = submit->flags;
 		dma_async_tx_callback cb_fn_orig = submit->cb_fn;
 		void *scribble = submit->scribble;
@@ -638,31 +400,17 @@ async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 		if (p_src) {
 			init_async_submit(submit, ASYNC_TX_XOR_ZERO_DST, NULL,
 					  NULL, NULL, scribble);
-<<<<<<< HEAD
-			tx = async_xor(spare, blocks, offset, disks-2, len, submit);
-			async_tx_quiesce(&tx);
-			p = page_address(p_src) + offset;
-			s = page_address(spare) + offset;
-=======
 			tx = async_xor_offs(spare, s_off,
 					blocks, offsets, disks-2, len, submit);
 			async_tx_quiesce(&tx);
 			p = page_address(p_src) + p_off;
 			s = page_address(spare) + s_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*pqres |= !!memcmp(p, s, len) << SUM_CHECK_P;
 		}
 
 		if (q_src) {
 			P(blocks, disks) = NULL;
 			Q(blocks, disks) = spare;
-<<<<<<< HEAD
-			init_async_submit(submit, 0, NULL, NULL, NULL, scribble);
-			tx = async_gen_syndrome(blocks, offset, disks, len, submit);
-			async_tx_quiesce(&tx);
-			q = page_address(q_src) + offset;
-			s = page_address(spare) + offset;
-=======
 			Q(offsets, disks) = s_off;
 			init_async_submit(submit, 0, NULL, NULL, NULL, scribble);
 			tx = async_gen_syndrome(blocks, offsets, disks,
@@ -670,35 +418,24 @@ async_syndrome_val(struct page **blocks, unsigned int *offsets, int disks,
 			async_tx_quiesce(&tx);
 			q = page_address(q_src) + q_off;
 			s = page_address(spare) + s_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*pqres |= !!memcmp(q, s, len) << SUM_CHECK_Q;
 		}
 
 		/* restore P, Q and submit */
 		P(blocks, disks) = p_src;
-<<<<<<< HEAD
-		Q(blocks, disks) = q_src;
-=======
 		P(offsets, disks) = p_off;
 		Q(blocks, disks) = q_src;
 		Q(offsets, disks) = q_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		submit->cb_fn = cb_fn_orig;
 		submit->cb_param = cb_param_orig;
 		submit->flags = flags_orig;
 		async_tx_sync_epilog(submit);
-<<<<<<< HEAD
-
-		return NULL;
-	}
-=======
 		tx = NULL;
 	}
 	dmaengine_unmap_put(unmap);
 
 	return tx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(async_syndrome_val);
 
@@ -716,11 +453,7 @@ static int __init async_pq_init(void)
 
 static void __exit async_pq_exit(void)
 {
-<<<<<<< HEAD
-	put_page(pq_scribble_page);
-=======
 	__free_page(pq_scribble_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(async_pq_init);

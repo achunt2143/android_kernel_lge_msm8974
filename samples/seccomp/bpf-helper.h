@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Example wrapper around BPF macros.
  *
@@ -63,8 +60,6 @@ void seccomp_bpf_print(struct sock_filter *filter, size_t count);
 #define FIND_LABEL(labels, label) seccomp_bpf_label((labels), #label)
 
 #define EXPAND(...) __VA_ARGS__
-<<<<<<< HEAD
-=======
 
 /* Ensure that we load the logically correct offset. */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -75,7 +70,6 @@ void seccomp_bpf_print(struct sock_filter *filter, size_t count);
 #error "Unknown endianness"
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Map all width-sensitive operations */
 #if __BITS_PER_LONG == 32
 
@@ -87,33 +81,16 @@ void seccomp_bpf_print(struct sock_filter *filter, size_t count);
 #define JLE(x, jt) JLE32(x, EXPAND(jt))
 #define JA(x, jt) JA32(x, EXPAND(jt))
 #define ARG(i) ARG_32(i)
-<<<<<<< HEAD
-#define LO_ARG(idx) offsetof(struct seccomp_data, args[(idx)])
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #elif __BITS_PER_LONG == 64
 
 /* Ensure that we load the logically correct offset. */
-<<<<<<< HEAD
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-#define ENDIAN(_lo, _hi) _lo, _hi
-#define LO_ARG(idx) offsetof(struct seccomp_data, args[(idx)])
-#define HI_ARG(idx) offsetof(struct seccomp_data, args[(idx)]) + sizeof(__u32)
-#elif __BYTE_ORDER == __BIG_ENDIAN
-#define ENDIAN(_lo, _hi) _hi, _lo
-#define LO_ARG(idx) offsetof(struct seccomp_data, args[(idx)]) + sizeof(__u32)
-#define HI_ARG(idx) offsetof(struct seccomp_data, args[(idx)])
-#else
-#error "Unknown endianness"
-=======
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #define ENDIAN(_lo, _hi) _lo, _hi
 #define HI_ARG(idx) offsetof(struct seccomp_data, args[(idx)]) + sizeof(__u32)
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #define ENDIAN(_lo, _hi) _hi, _lo
 #define HI_ARG(idx) offsetof(struct seccomp_data, args[(idx)])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 union arg64 {
@@ -162,11 +139,7 @@ union arg64 {
 #define ARG_32(idx) \
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, LO_ARG(idx))
 
-<<<<<<< HEAD
-/* Loads hi into A and lo in X */
-=======
 /* Loads lo into M[0] and hi into M[1] and A */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ARG_64(idx) \
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, LO_ARG(idx)), \
 	BPF_STMT(BPF_ST, 0), /* lo -> M[0] */ \
@@ -181,71 +154,14 @@ union arg64 {
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (value), 1, 0), \
 	jt
 
-<<<<<<< HEAD
-/* Checks the lo, then swaps to check the hi. A=lo,X=hi */
-#define JEQ64(lo, hi, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (lo), 0, 2), \
-	BPF_STMT(BPF_LD+BPF_MEM, 1), /* passed: swap hi back in */ \
-	jt, \
-	BPF_STMT(BPF_LD+BPF_MEM, 1) /* failed: swap hi back in */
-
-#define JNE64(lo, hi, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 5, 0), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (lo), 2, 0), \
-	BPF_STMT(BPF_LD+BPF_MEM, 1), /* passed: swap hi back in */ \
-	jt, \
-	BPF_STMT(BPF_LD+BPF_MEM, 1) /* failed: swap hi back in */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JA32(value, jt) \
 	BPF_JUMP(BPF_JMP+BPF_JSET+BPF_K, (value), 0, 1), \
 	jt
 
-<<<<<<< HEAD
-#define JA64(lo, hi, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JSET+BPF_K, (hi), 3, 0), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	BPF_JUMP(BPF_JMP+BPF_JSET+BPF_K, (lo), 0, 2), \
-	BPF_STMT(BPF_LD+BPF_MEM, 1), /* passed: swap hi back in */ \
-	jt, \
-	BPF_STMT(BPF_LD+BPF_MEM, 1) /* failed: swap hi back in */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JGE32(value, jt) \
 	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (value), 0, 1), \
 	jt
 
-<<<<<<< HEAD
-#define JLT32(value, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (value), 1, 0), \
-	jt
-
-/* Shortcut checking if hi > arg.hi. */
-#define JGE64(lo, hi, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (hi), 4, 0), \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (lo), 0, 2), \
-	BPF_STMT(BPF_LD+BPF_MEM, 1), /* passed: swap hi back in */ \
-	jt, \
-	BPF_STMT(BPF_LD+BPF_MEM, 1) /* failed: swap hi back in */
-
-#define JLT64(lo, hi, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (hi), 0, 4), \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (lo), 2, 0), \
-	BPF_STMT(BPF_LD+BPF_MEM, 1), /* passed: swap hi back in */ \
-	jt, \
-	BPF_STMT(BPF_LD+BPF_MEM, 1) /* failed: swap hi back in */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define JGT32(value, jt) \
 	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (value), 0, 1), \
 	jt
@@ -254,26 +170,6 @@ union arg64 {
 	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (value), 1, 0), \
 	jt
 
-<<<<<<< HEAD
-/* Check hi > args.hi first, then do the GE checking */
-#define JGT64(lo, hi, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (hi), 4, 0), \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 5), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (lo), 0, 2), \
-	BPF_STMT(BPF_LD+BPF_MEM, 1), /* passed: swap hi back in */ \
-	jt, \
-	BPF_STMT(BPF_LD+BPF_MEM, 1) /* failed: swap hi back in */
-
-#define JLE64(lo, hi, jt) \
-	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (hi), 6, 0), \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (hi), 0, 3), \
-	BPF_STMT(BPF_LD+BPF_MEM, 0), /* swap in lo */ \
-	BPF_JUMP(BPF_JMP+BPF_JGT+BPF_K, (lo), 2, 0), \
-	BPF_STMT(BPF_LD+BPF_MEM, 1), /* passed: swap hi back in */ \
-	jt, \
-	BPF_STMT(BPF_LD+BPF_MEM, 1) /* failed: swap hi back in */
-=======
 #define JLT32(value, jt) \
 	BPF_JUMP(BPF_JMP+BPF_JGE+BPF_K, (value), 1, 0), \
 	jt
@@ -359,7 +255,6 @@ union arg64 {
 	BPF_STMT(BPF_LD+BPF_MEM, 1), \
 	jt, \
 	BPF_STMT(BPF_LD+BPF_MEM, 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LOAD_SYSCALL_NR \
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \

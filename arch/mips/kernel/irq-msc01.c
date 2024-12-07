@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (c) 2004 MIPS Inc
  * Author: chris@mips.com
@@ -58,19 +50,9 @@ static inline void unmask_msc_irq(struct irq_data *d)
  */
 static void level_mask_and_ack_msc_irq(struct irq_data *d)
 {
-<<<<<<< HEAD
-	unsigned int irq = d->irq;
-
 	mask_msc_irq(d);
 	if (!cpu_has_veic)
 		MSCIC_WRITE(MSC01_IC_EOI, 0);
-	/* This actually needs to be a call into platform code */
-	smtc_im_ack_irq(irq);
-=======
-	mask_msc_irq(d);
-	if (!cpu_has_veic)
-		MSCIC_WRITE(MSC01_IC_EOI, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -89,10 +71,6 @@ static void edge_mask_and_ack_msc_irq(struct irq_data *d)
 		MSCIC_WRITE(MSC01_IC_SUP+irq*8, r | ~MSC01_IC_SUP_EDGE_BIT);
 		MSCIC_WRITE(MSC01_IC_SUP+irq*8, r);
 	}
-<<<<<<< HEAD
-	smtc_im_ack_irq(irq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -100,11 +78,7 @@ static void edge_mask_and_ack_msc_irq(struct irq_data *d)
  */
 void ll_msc_irq(void)
 {
-<<<<<<< HEAD
- 	unsigned int irq;
-=======
 	unsigned int irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read the interrupt vector register */
 	MSCIC_READ(MSC01_IC_VEC, irq);

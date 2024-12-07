@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2010 QLogic Corporation
- *
- * See LICENSE.qla4xxx for copyright and licensing details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * QLogic iSCSI HBA Driver
  * Copyright (c)  2003-2012 QLogic Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -19,10 +11,7 @@
 /* #define QL_DEBUG_LEVEL_3  */		/* Output function tracing */
 /* #define QL_DEBUG_LEVEL_4  */
 /* #define QL_DEBUG_LEVEL_5  */
-<<<<<<< HEAD
-=======
 /* #define QL_DEBUG_LEVEL_7  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* #define QL_DEBUG_LEVEL_9  */
 
 #define QL_DEBUG_LEVEL_2	/* ALways enable error messagess */
@@ -59,15 +48,12 @@
 #define DEBUG5(x)	do {} while (0);
 #endif				/*  */
 
-<<<<<<< HEAD
-=======
 #if defined(QL_DEBUG_LEVEL_7)
 #define DEBUG7(x)	do {x; } while (0)
 #else				/*  */
 #define DEBUG7(x)	do {} while (0)
 #endif				/*  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(QL_DEBUG_LEVEL_9)
 #define DEBUG9(x)	do {x;} while (0);
 #else				/*  */

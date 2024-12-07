@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     NetWinder Floating Point Emulator
     (c) Rebel.COM, 1998
@@ -9,27 +6,9 @@
 
     Direct questions, comments to Scott Bambrough <scottb@netwinder.org>
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-=======
 */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/opcodes.h>
 
 /* This is the kernel's entry point into the floating point emulator.
@@ -102,14 +81,6 @@ emulate:
 	mov	r0, r6			@ prepare for EmulateAll()
 	bl	EmulateAll		@ emulate the instruction
 	cmp	r0, #0			@ was emulation successful
-<<<<<<< HEAD
-	moveq	pc, r4			@ no, return failure
-
-next:
-.Lx1:	ldrt	r6, [r5], #4		@ get the next instruction and
-					@ increment PC
-
-=======
 	reteq	r4			@ no, return failure
 
 next:
@@ -117,16 +88,11 @@ next:
 .Lx1:	ldrt	r6, [r5], #4		@ get the next instruction and
 					@ increment PC
 	uaccess_disable r3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	and	r2, r6, #0x0F000000	@ test for FP insns
 	teq	r2, #0x0C000000
 	teqne	r2, #0x0D000000
 	teqne	r2, #0x0E000000
-<<<<<<< HEAD
-	movne	pc, r9			@ return ok if not a fp insn
-=======
 	retne	r9			@ return ok if not a fp insn
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	str	r5, [sp, #S_PC]		@ update PC copy in regs
 
@@ -137,24 +103,16 @@ next:
 	@ to fault.  Emit the appropriate exception gunk to fix things up.
 	@ ??? For some reason, faults can happen at .Lx2 even with a
 	@ plain LDR instruction.  Weird, but it seems harmless.
-<<<<<<< HEAD
-	.pushsection .fixup,"ax"
-	.align	2
-.Lfix:	mov	pc, r9			@ let the user eat segfaults
-=======
 	.pushsection .text.fixup,"ax"
 	.align	2
 .Lrep:	str     r4, [sp, #S_PC]		@ retry current instruction
 .Lfix:	ret	r9			@ let the user eat segfaults
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.popsection
 
 	.pushsection __ex_table,"a"
 	.align	3
 	.long	.Lx1, .Lfix
 	.popsection
-<<<<<<< HEAD
-=======
 
 	@
 	@ Check whether the instruction is a co-processor instruction.
@@ -230,4 +188,3 @@ ENTRY(fp_enter)
 no_fp:
 	ret	lr
 ENDPROC(no_fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

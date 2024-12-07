@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef __KVM_X86_LAPIC_H
-#define __KVM_X86_LAPIC_H
-
-#include "iodev.h"
-#include "kvm_timer.h"
-
-#include <linux/kvm_host.h>
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __KVM_X86_LAPIC_H
 #define __KVM_X86_LAPIC_H
@@ -66,21 +56,12 @@ struct kvm_timer {
 	bool hv_timer_in_use;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct kvm_lapic {
 	unsigned long base_address;
 	struct kvm_io_device dev;
 	struct kvm_timer lapic_timer;
 	u32 divide_count;
 	struct kvm_vcpu *vcpu;
-<<<<<<< HEAD
-	bool irr_pending;
-	void *regs;
-	gpa_t vapic_addr;
-	struct gfn_to_hva_cache vapic_cache;
-};
-int kvm_create_lapic(struct kvm_vcpu *vcpu);
-=======
 	bool apicv_active;
 	bool sw_enabled;
 	bool irr_pending;
@@ -105,37 +86,18 @@ int kvm_create_lapic(struct kvm_vcpu *vcpu);
 struct dest_map;
 
 int kvm_create_lapic(struct kvm_vcpu *vcpu, int timer_advance_ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kvm_free_lapic(struct kvm_vcpu *vcpu);
 
 int kvm_apic_has_interrupt(struct kvm_vcpu *vcpu);
 int kvm_apic_accept_pic_intr(struct kvm_vcpu *vcpu);
 int kvm_get_apic_interrupt(struct kvm_vcpu *vcpu);
-<<<<<<< HEAD
-void kvm_lapic_reset(struct kvm_vcpu *vcpu);
-=======
 int kvm_apic_accept_events(struct kvm_vcpu *vcpu);
 void kvm_lapic_reset(struct kvm_vcpu *vcpu, bool init_event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu);
 void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8);
 void kvm_lapic_set_eoi(struct kvm_vcpu *vcpu);
 void kvm_lapic_set_base(struct kvm_vcpu *vcpu, u64 value);
 u64 kvm_lapic_get_base(struct kvm_vcpu *vcpu);
-<<<<<<< HEAD
-void kvm_apic_set_version(struct kvm_vcpu *vcpu);
-
-int kvm_apic_match_physical_addr(struct kvm_lapic *apic, u16 dest);
-int kvm_apic_match_logical_addr(struct kvm_lapic *apic, u8 mda);
-int kvm_apic_set_irq(struct kvm_vcpu *vcpu, struct kvm_lapic_irq *irq);
-int kvm_apic_local_deliver(struct kvm_lapic *apic, int lvt_type);
-
-u64 kvm_get_apic_base(struct kvm_vcpu *vcpu);
-void kvm_set_apic_base(struct kvm_vcpu *vcpu, u64 data);
-void kvm_apic_post_state_restore(struct kvm_vcpu *vcpu);
-int kvm_lapic_enabled(struct kvm_vcpu *vcpu);
-bool kvm_apic_present(struct kvm_vcpu *vcpu);
-=======
 void kvm_recalculate_apic_map(struct kvm *kvm);
 void kvm_apic_set_version(struct kvm_vcpu *vcpu);
 void kvm_apic_after_set_mcg_cap(struct kvm_vcpu *vcpu);
@@ -162,38 +124,25 @@ int kvm_set_apic_base(struct kvm_vcpu *vcpu, struct msr_data *msr_info);
 int kvm_apic_get_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);
 int kvm_apic_set_state(struct kvm_vcpu *vcpu, struct kvm_lapic_state *s);
 enum lapic_mode kvm_get_apic_mode(struct kvm_vcpu *vcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_lapic_find_highest_irr(struct kvm_vcpu *vcpu);
 
 u64 kvm_get_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu);
 void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data);
 
-<<<<<<< HEAD
-=======
 void kvm_apic_write_nodecode(struct kvm_vcpu *vcpu, u32 offset);
 void kvm_apic_set_eoi_accelerated(struct kvm_vcpu *vcpu, int vector);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_lapic_set_vapic_addr(struct kvm_vcpu *vcpu, gpa_t vapic_addr);
 void kvm_lapic_sync_from_vapic(struct kvm_vcpu *vcpu);
 void kvm_lapic_sync_to_vapic(struct kvm_vcpu *vcpu);
 
-<<<<<<< HEAD
-=======
 int kvm_x2apic_icr_write(struct kvm_lapic *apic, u64 data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kvm_x2apic_msr_write(struct kvm_vcpu *vcpu, u32 msr, u64 data);
 int kvm_x2apic_msr_read(struct kvm_vcpu *vcpu, u32 msr, u64 *data);
 
 int kvm_hv_vapic_msr_write(struct kvm_vcpu *vcpu, u32 msr, u64 data);
 int kvm_hv_vapic_msr_read(struct kvm_vcpu *vcpu, u32 msr, u64 *data);
 
-<<<<<<< HEAD
-static inline bool kvm_hv_vapic_assist_page_enabled(struct kvm_vcpu *vcpu)
-{
-	return vcpu->arch.hv_vapic & HV_X64_MSR_APIC_ASSIST_PAGE_ENABLE;
-}
-=======
 int kvm_lapic_set_pv_eoi(struct kvm_vcpu *vcpu, u64 data, unsigned long len);
 void kvm_lapic_exit(void);
 
@@ -329,5 +278,4 @@ static inline u8 kvm_xapic_id(struct kvm_lapic *apic)
 	return kvm_lapic_get_reg(apic, APIC_ID) >> 24;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

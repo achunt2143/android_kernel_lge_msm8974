@@ -1,27 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sata_sil24.c - Driver for Silicon Image 3124/3132 SATA-2 controllers
  *
  * Copyright 2005  Tejun Heo
  *
  * Based on preview driver from Silicon Image.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2, or (at your option) any
- * later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -253,11 +236,7 @@ enum {
 	/* host flags */
 	SIL24_COMMON_FLAGS	= ATA_FLAG_SATA | ATA_FLAG_PIO_DMA |
 				  ATA_FLAG_NCQ | ATA_FLAG_ACPI_SATA |
-<<<<<<< HEAD
-				  ATA_FLAG_AN | ATA_FLAG_PMP | ATA_FLAG_LOWTAG,
-=======
 				  ATA_FLAG_AN | ATA_FLAG_PMP,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SIL24_FLAG_PCIX_IRQ_WOC	= (1 << 24), /* IRQ loss errata on PCI-X */
 
 	IRQ_STAT_4PORTS		= 0xf,
@@ -296,21 +275,13 @@ static const struct sil24_cerr_info {
 	[PORT_CERR_INCONSISTENT] = { AC_ERR_HSM, ATA_EH_RESET,
 				     "protocol mismatch" },
 	[PORT_CERR_DIRECTION]	= { AC_ERR_HSM, ATA_EH_RESET,
-<<<<<<< HEAD
-				    "data directon mismatch" },
-=======
 				    "data direction mismatch" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[PORT_CERR_UNDERRUN]	= { AC_ERR_HSM, ATA_EH_RESET,
 				    "ran out of SGEs while writing" },
 	[PORT_CERR_OVERRUN]	= { AC_ERR_HSM, ATA_EH_RESET,
 				    "ran out of SGEs while reading" },
 	[PORT_CERR_PKT_PROT]	= { AC_ERR_HSM, ATA_EH_RESET,
-<<<<<<< HEAD
-				    "invalid data directon for ATAPI CDB" },
-=======
 				    "invalid data direction for ATAPI CDB" },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[PORT_CERR_SGT_BOUNDARY] = { AC_ERR_SYSTEM, ATA_EH_RESET,
 				     "SGT not on qword boundary" },
 	[PORT_CERR_SGT_TGTABRT]	= { AC_ERR_HOST_BUS, ATA_EH_RESET,
@@ -355,15 +326,9 @@ static void sil24_dev_config(struct ata_device *dev);
 static int sil24_scr_read(struct ata_link *link, unsigned sc_reg, u32 *val);
 static int sil24_scr_write(struct ata_link *link, unsigned sc_reg, u32 val);
 static int sil24_qc_defer(struct ata_queued_cmd *qc);
-<<<<<<< HEAD
-static void sil24_qc_prep(struct ata_queued_cmd *qc);
-static unsigned int sil24_qc_issue(struct ata_queued_cmd *qc);
-static bool sil24_qc_fill_rtf(struct ata_queued_cmd *qc);
-=======
 static enum ata_completion_errors sil24_qc_prep(struct ata_queued_cmd *qc);
 static unsigned int sil24_qc_issue(struct ata_queued_cmd *qc);
 static void sil24_qc_fill_rtf(struct ata_queued_cmd *qc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sil24_pmp_attach(struct ata_port *ap);
 static void sil24_pmp_detach(struct ata_port *ap);
 static void sil24_freeze(struct ata_port *ap);
@@ -378,15 +343,10 @@ static void sil24_error_handler(struct ata_port *ap);
 static void sil24_post_internal_cmd(struct ata_queued_cmd *qc);
 static int sil24_port_start(struct ata_port *ap);
 static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int sil24_pci_device_resume(struct pci_dev *pdev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int sil24_pci_device_resume(struct pci_dev *pdev);
 #endif
 #ifdef CONFIG_PM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sil24_port_resume(struct ata_port *ap);
 #endif
 
@@ -407,23 +367,12 @@ static struct pci_driver sil24_pci_driver = {
 	.id_table		= sil24_pci_tbl,
 	.probe			= sil24_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= sil24_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static struct scsi_host_template sil24_sht = {
-	ATA_NCQ_SHT(DRV_NAME),
-	.can_queue		= SIL24_MAX_CMDS,
-	.sg_tablesize		= SIL24_MAX_SGE,
-	.dma_boundary		= ATA_DMA_BOUNDARY,
-=======
 static const struct scsi_host_template sil24_sht = {
 	__ATA_BASE_SHT(DRV_NAME),
 	.can_queue		= SIL24_MAX_CMDS,
@@ -433,7 +382,6 @@ static const struct scsi_host_template sil24_sht = {
 	.sdev_groups		= ata_ncq_sdev_groups,
 	.change_queue_depth	= ata_scsi_change_queue_depth,
 	.slave_configure	= ata_scsi_slave_config
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations sil24_ops = {
@@ -554,11 +502,6 @@ static int sil24_scr_read(struct ata_link *link, unsigned sc_reg, u32 *val)
 	void __iomem *scr_addr = sil24_port_base(link->ap) + PORT_SCONTROL;
 
 	if (sc_reg < ARRAY_SIZE(sil24_scr_map)) {
-<<<<<<< HEAD
-		void __iomem *addr;
-		addr = scr_addr + sil24_scr_map[sc_reg] * 4;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*val = readl(scr_addr + sil24_scr_map[sc_reg] * 4);
 		return 0;
 	}
@@ -570,11 +513,6 @@ static int sil24_scr_write(struct ata_link *link, unsigned sc_reg, u32 val)
 	void __iomem *scr_addr = sil24_port_base(link->ap) + PORT_SCONTROL;
 
 	if (sc_reg < ARRAY_SIZE(sil24_scr_map)) {
-<<<<<<< HEAD
-		void __iomem *addr;
-		addr = scr_addr + sil24_scr_map[sc_reg] * 4;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(val, scr_addr + sil24_scr_map[sc_reg] * 4);
 		return 0;
 	}
@@ -659,11 +597,7 @@ static int sil24_init_port(struct ata_port *ap)
 static int sil24_exec_polled_cmd(struct ata_port *ap, int pmp,
 				 const struct ata_taskfile *tf,
 				 int is_cmd, u32 ctrl,
-<<<<<<< HEAD
-				 unsigned long timeout_msec)
-=======
 				 unsigned int timeout_msec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *port = sil24_port_base(ap);
 	struct sil24_port_priv *pp = ap->private_data;
@@ -717,20 +651,11 @@ static int sil24_softreset(struct ata_link *link, unsigned int *class,
 {
 	struct ata_port *ap = link->ap;
 	int pmp = sata_srst_pmp(link);
-<<<<<<< HEAD
-	unsigned long timeout_msec = 0;
-=======
 	unsigned int timeout_msec = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_taskfile tf;
 	const char *reason;
 	int rc;
 
-<<<<<<< HEAD
-	DPRINTK("ENTER\n");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* put the port into known state */
 	if (sil24_init_port(ap)) {
 		reason = "port not ready";
@@ -753,14 +678,8 @@ static int sil24_softreset(struct ata_link *link, unsigned int *class,
 	}
 
 	sil24_read_tf(ap, 0, &tf);
-<<<<<<< HEAD
-	*class = ata_dev_classify(&tf);
-
-	DPRINTK("EXIT, class=%u\n", *class);
-=======
 	*class = ata_port_classify(ap, &tf);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  err:
@@ -911,11 +830,7 @@ static int sil24_qc_defer(struct ata_queued_cmd *qc)
 	return ata_std_qc_defer(qc);
 }
 
-<<<<<<< HEAD
-static void sil24_qc_prep(struct ata_queued_cmd *qc)
-=======
 static enum ata_completion_errors sil24_qc_prep(struct ata_queued_cmd *qc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = qc->ap;
 	struct sil24_port_priv *pp = ap->private_data;
@@ -924,11 +839,7 @@ static enum ata_completion_errors sil24_qc_prep(struct ata_queued_cmd *qc)
 	struct sil24_sge *sge;
 	u16 ctrl = 0;
 
-<<<<<<< HEAD
-	cb = &pp->cmd_block[sil24_tag(qc->tag)];
-=======
 	cb = &pp->cmd_block[sil24_tag(qc->hw_tag)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ata_is_atapi(qc->tf.protocol)) {
 		prb = &cb->ata.prb;
@@ -963,11 +874,8 @@ static enum ata_completion_errors sil24_qc_prep(struct ata_queued_cmd *qc)
 
 	if (qc->flags & ATA_QCFLAG_DMAMAP)
 		sil24_fill_sg(qc, sge);
-<<<<<<< HEAD
-=======
 
 	return AC_ERR_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int sil24_qc_issue(struct ata_queued_cmd *qc)
@@ -975,11 +883,7 @@ static unsigned int sil24_qc_issue(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 	struct sil24_port_priv *pp = ap->private_data;
 	void __iomem *port = sil24_port_base(ap);
-<<<<<<< HEAD
-	unsigned int tag = sil24_tag(qc->tag);
-=======
 	unsigned int tag = sil24_tag(qc->hw_tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t paddr;
 	void __iomem *activate;
 
@@ -997,16 +901,9 @@ static unsigned int sil24_qc_issue(struct ata_queued_cmd *qc)
 	return 0;
 }
 
-<<<<<<< HEAD
-static bool sil24_qc_fill_rtf(struct ata_queued_cmd *qc)
-{
-	sil24_read_tf(qc->ap, qc->tag, &qc->result_tf);
-	return true;
-=======
 static void sil24_qc_fill_rtf(struct ata_queued_cmd *qc)
 {
 	sil24_read_tf(qc->ap, qc->hw_tag, &qc->result_tf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sil24_pmp_attach(struct ata_port *ap)
@@ -1249,13 +1146,8 @@ static irqreturn_t sil24_interrupt(int irq, void *dev_instance)
 	status = readl(host_base + HOST_IRQ_STAT);
 
 	if (status == 0xffffffff) {
-<<<<<<< HEAD
-		printk(KERN_ERR DRV_NAME ": IRQ status == 0xffffffff, "
-		       "PCI fault or device removal?\n");
-=======
 		dev_err(host->dev, "IRQ status == 0xffffffff, "
 			"PCI fault or device removal?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1292,11 +1184,7 @@ static void sil24_post_internal_cmd(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 
 	/* make DMA engine forget about the failed command */
-<<<<<<< HEAD
-	if ((qc->flags & ATA_QCFLAG_FAILED) && sil24_init_port(ap))
-=======
 	if ((qc->flags & ATA_QCFLAG_EH) && sil24_init_port(ap))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ata_eh_freeze_port(ap);
 }
 
@@ -1315,10 +1203,6 @@ static int sil24_port_start(struct ata_port *ap)
 	cb = dmam_alloc_coherent(dev, cb_size, &cb_dma, GFP_KERNEL);
 	if (!cb)
 		return -ENOMEM;
-<<<<<<< HEAD
-	memset(cb, 0, cb_size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pp->cmd_block = cb;
 	pp->cmd_block_dma = cb_dma;
@@ -1418,35 +1302,10 @@ static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	host->iomap = iomap;
 
 	/* configure and activate the device */
-<<<<<<< HEAD
-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
-		if (rc) {
-			rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-			if (rc) {
-				dev_err(&pdev->dev,
-					"64-bit DMA enable failed\n");
-				return rc;
-			}
-		}
-	} else {
-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc) {
-			dev_err(&pdev->dev, "32-bit DMA enable failed\n");
-			return rc;
-		}
-		rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-		if (rc) {
-			dev_err(&pdev->dev,
-				"32-bit consistent DMA enable failed\n");
-			return rc;
-		}
-=======
 	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (rc) {
 		dev_err(&pdev->dev, "DMA enable failed\n");
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set max read request size to 4096.  This slightly increases
@@ -1466,17 +1325,10 @@ static int sil24_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 				 &sil24_sht);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-static int sil24_pci_device_resume(struct pci_dev *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 #ifdef CONFIG_PM_SLEEP
 static int sil24_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *host_base = host->iomap[SIL24_HOST_BAR];
 	int rc;
 
@@ -1493,13 +1345,9 @@ static int sil24_pci_device_resume(struct pci_dev *pdev)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-=======
 #endif
 
 #ifdef CONFIG_PM
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sil24_port_resume(struct ata_port *ap)
 {
 	sil24_config_pmp(ap, ap->nr_pmp_links);
@@ -1507,27 +1355,9 @@ static int sil24_port_resume(struct ata_port *ap)
 }
 #endif
 
-<<<<<<< HEAD
-static int __init sil24_init(void)
-{
-	return pci_register_driver(&sil24_pci_driver);
-}
-
-static void __exit sil24_exit(void)
-{
-	pci_unregister_driver(&sil24_pci_driver);
-}
-=======
 module_pci_driver(sil24_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Tejun Heo");
 MODULE_DESCRIPTION("Silicon Image 3124/3132 SATA low-level driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, sil24_pci_tbl);
-<<<<<<< HEAD
-
-module_init(sil24_init);
-module_exit(sil24_exit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

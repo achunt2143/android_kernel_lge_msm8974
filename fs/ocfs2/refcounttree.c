@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * refcounttree.c
- *
- * Copyright (C) 2009 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * refcounttree.c
  *
  * Copyright (C) 2009 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sort.h>
@@ -42,10 +24,7 @@
 #include "xattr.h"
 #include "namei.h"
 #include "ocfs2_trace.h"
-<<<<<<< HEAD
-=======
 #include "file.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/bio.h>
 #include <linux/blkdev.h>
@@ -58,17 +37,10 @@
 #include <linux/quotaops.h>
 #include <linux/namei.h>
 #include <linux/mount.h>
-<<<<<<< HEAD
-
-struct ocfs2_cow_context {
-	struct inode *inode;
-	struct file *file;
-=======
 #include <linux/posix_acl.h>
 
 struct ocfs2_cow_context {
 	struct inode *inode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cow_start;
 	u32 cow_len;
 	struct ocfs2_extent_tree data_et;
@@ -85,11 +57,7 @@ struct ocfs2_cow_context {
 			    u32 *num_clusters,
 			    unsigned int *extent_flags);
 	int (*cow_duplicate_clusters)(handle_t *handle,
-<<<<<<< HEAD
-				      struct file *file,
-=======
 				      struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      u32 cpos, u32 old_cluster,
 				      u32 new_cluster, u32 new_len);
 };
@@ -125,34 +93,6 @@ static int ocfs2_validate_refcount_block(struct super_block *sb,
 
 
 	if (!OCFS2_IS_VALID_REFCOUNT_BLOCK(rb)) {
-<<<<<<< HEAD
-		ocfs2_error(sb,
-			    "Refcount block #%llu has bad signature %.*s",
-			    (unsigned long long)bh->b_blocknr, 7,
-			    rb->rf_signature);
-		return -EINVAL;
-	}
-
-	if (le64_to_cpu(rb->rf_blkno) != bh->b_blocknr) {
-		ocfs2_error(sb,
-			    "Refcount block #%llu has an invalid rf_blkno "
-			    "of %llu",
-			    (unsigned long long)bh->b_blocknr,
-			    (unsigned long long)le64_to_cpu(rb->rf_blkno));
-		return -EINVAL;
-	}
-
-	if (le32_to_cpu(rb->rf_fs_generation) != OCFS2_SB(sb)->fs_generation) {
-		ocfs2_error(sb,
-			    "Refcount block #%llu has an invalid "
-			    "rf_fs_generation of #%u",
-			    (unsigned long long)bh->b_blocknr,
-			    le32_to_cpu(rb->rf_fs_generation));
-		return -EINVAL;
-	}
-
-	return 0;
-=======
 		rc = ocfs2_error(sb,
 				 "Refcount block #%llu has bad signature %.*s\n",
 				 (unsigned long long)bh->b_blocknr, 7,
@@ -177,7 +117,6 @@ static int ocfs2_validate_refcount_block(struct super_block *sb,
 	}
 out:
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ocfs2_read_refcount_block(struct ocfs2_caching_info *ci,
@@ -213,10 +152,7 @@ ocfs2_refcount_cache_get_super(struct ocfs2_caching_info *ci)
 }
 
 static void ocfs2_refcount_cache_lock(struct ocfs2_caching_info *ci)
-<<<<<<< HEAD
-=======
 __acquires(&rf->rf_lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_refcount_tree *rf = cache_info_to_refcount(ci);
 
@@ -224,10 +160,7 @@ __acquires(&rf->rf_lock)
 }
 
 static void ocfs2_refcount_cache_unlock(struct ocfs2_caching_info *ci)
-<<<<<<< HEAD
-=======
 __releases(&rf->rf_lock)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ocfs2_refcount_tree *rf = cache_info_to_refcount(ci);
 
@@ -470,11 +403,7 @@ static int ocfs2_get_refcount_block(struct inode *inode, u64 *ref_blkno)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	BUG_ON(!(OCFS2_I(inode)->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL));
-=======
 	BUG_ON(!ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	di = (struct ocfs2_dinode *)di_bh->b_data;
 	*ref_blkno = le64_to_cpu(di->i_refcount_loc);
@@ -542,10 +471,6 @@ again:
 	if (ret) {
 		mlog_errno(ret);
 		ocfs2_unlock_refcount_tree(osb, tree, rw);
-<<<<<<< HEAD
-		ocfs2_refcount_tree_put(tree);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -637,17 +562,10 @@ static int ocfs2_create_refcount_tree(struct inode *inode,
 	u32 num_got;
 	u64 suballoc_loc, first_blkno;
 
-<<<<<<< HEAD
-	BUG_ON(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL);
-
-	trace_ocfs2_create_refcount_tree(
-		(unsigned long long)OCFS2_I(inode)->ip_blkno);
-=======
 	BUG_ON(ocfs2_is_refcount_inode(inode));
 
 	trace_ocfs2_create_refcount_tree(
 		(unsigned long long)oi->ip_blkno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_reserve_new_metadata_blocks(osb, 1, &meta_ac);
 	if (ret) {
@@ -685,14 +603,11 @@ static int ocfs2_create_refcount_tree(struct inode *inode,
 	}
 
 	new_bh = sb_getblk(inode->i_sb, first_blkno);
-<<<<<<< HEAD
-=======
 	if (!new_bh) {
 		ret = -ENOMEM;
 		mlog_errno(ret);
 		goto out_commit;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_set_new_buffer_uptodate(&new_tree->rf_ci, new_bh);
 
 	ret = ocfs2_journal_access_rb(handle, &new_tree->rf_ci, new_bh,
@@ -785,11 +700,7 @@ static int ocfs2_set_refcount_tree(struct inode *inode,
 	struct ocfs2_refcount_block *rb;
 	struct ocfs2_refcount_tree *ref_tree;
 
-<<<<<<< HEAD
-	BUG_ON(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL);
-=======
 	BUG_ON(ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_lock_refcount_tree(osb, refcount_loc, 1,
 				       &ref_tree, &ref_root_bh);
@@ -856,11 +767,7 @@ int ocfs2_remove_refcount_tree(struct inode *inode, struct buffer_head *di_bh)
 	u64 blk = 0, bg_blkno = 0, ref_blkno = le64_to_cpu(di->i_refcount_loc);
 	u16 bit = 0;
 
-<<<<<<< HEAD
-	if (!(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL))
-=======
 	if (!ocfs2_is_refcount_inode(inode))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	BUG_ON(!ref_blkno);
@@ -892,11 +799,7 @@ int ocfs2_remove_refcount_tree(struct inode *inode, struct buffer_head *di_bh)
 			mlog_errno(ret);
 			goto out;
 		}
-<<<<<<< HEAD
-		mutex_lock(&alloc_inode->i_mutex);
-=======
 		inode_lock(alloc_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = ocfs2_inode_lock(alloc_inode, &alloc_bh, 1);
 		if (ret) {
@@ -956,11 +859,7 @@ out_unlock:
 	}
 out_mutex:
 	if (alloc_inode) {
-<<<<<<< HEAD
-		mutex_unlock(&alloc_inode->i_mutex);
-=======
 		inode_unlock(alloc_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(alloc_inode);
 	}
 out:
@@ -1077,11 +976,7 @@ static int ocfs2_get_refcount_cpos_end(struct ocfs2_caching_info *ci,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	if (!eb || (eb && !eb->h_next_leaf_blk)) {
-=======
 	if (!eb || !eb->h_next_leaf_blk) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We are the last extent rec, so any high cpos should
 		 * be stored in this leaf refcount block.
@@ -1166,11 +1061,7 @@ static int ocfs2_get_refcount_rec(struct ocfs2_caching_info *ci,
 				  struct buffer_head **ret_bh)
 {
 	int ret = 0, i, found;
-<<<<<<< HEAD
-	u32 low_cpos, uninitialized_var(cpos_end);
-=======
 	u32 low_cpos, cpos_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_extent_list *el;
 	struct ocfs2_extent_rec *rec = NULL;
 	struct ocfs2_extent_block *eb = NULL;
@@ -1201,19 +1092,10 @@ static int ocfs2_get_refcount_rec(struct ocfs2_caching_info *ci,
 		el = &eb->h_list;
 
 		if (el->l_tree_depth) {
-<<<<<<< HEAD
-			ocfs2_error(sb,
-			"refcount tree %llu has non zero tree "
-			"depth in leaf btree tree block %llu\n",
-			(unsigned long long)ocfs2_metadata_cache_owner(ci),
-			(unsigned long long)eb_bh->b_blocknr);
-			ret = -EROFS;
-=======
 			ret = ocfs2_error(sb,
 					  "refcount tree %llu has non zero tree depth in leaf btree tree block %llu\n",
 					  (unsigned long long)ocfs2_metadata_cache_owner(ci),
 					  (unsigned long long)eb_bh->b_blocknr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -1422,11 +1304,7 @@ static int ocfs2_expand_inline_ref_root(handle_t *handle,
 
 	new_bh = sb_getblk(sb, blkno);
 	if (new_bh == NULL) {
-<<<<<<< HEAD
-		ret = -EIO;
-=======
 		ret = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(ret);
 		goto out;
 	}
@@ -1516,18 +1394,9 @@ static int cmp_refcount_rec_by_cpos(const void *a, const void *b)
 
 static void swap_refcount_rec(void *a, void *b, int size)
 {
-<<<<<<< HEAD
-	struct ocfs2_refcount_rec *l = a, *r = b, tmp;
-
-	tmp = *(struct ocfs2_refcount_rec *)l;
-	*(struct ocfs2_refcount_rec *)l =
-			*(struct ocfs2_refcount_rec *)r;
-	*(struct ocfs2_refcount_rec *)r = tmp;
-=======
 	struct ocfs2_refcount_rec *l = a, *r = b;
 
 	swap(*l, *r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1683,11 +1552,7 @@ static int ocfs2_new_leaf_refcount_block(handle_t *handle,
 
 	new_bh = sb_getblk(sb, blkno);
 	if (new_bh == NULL) {
-<<<<<<< HEAD
-		ret = -EIO;
-=======
 		ret = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(ret);
 		goto out;
 	}
@@ -2426,18 +2291,10 @@ int ocfs2_decrease_refcount(struct inode *inode,
 {
 	int ret;
 	u64 ref_blkno;
-<<<<<<< HEAD
-	struct ocfs2_inode_info *oi = OCFS2_I(inode);
-	struct buffer_head *ref_root_bh = NULL;
-	struct ocfs2_refcount_tree *tree;
-
-	BUG_ON(!(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL));
-=======
 	struct buffer_head *ref_root_bh = NULL;
 	struct ocfs2_refcount_tree *tree;
 
 	BUG_ON(!ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_get_refcount_block(inode, &ref_blkno);
 	if (ret) {
@@ -2489,15 +2346,8 @@ static int ocfs2_mark_extent_refcounted(struct inode *inode,
 					   cpos, len, phys);
 
 	if (!ocfs2_refcount_tree(OCFS2_SB(inode->i_sb))) {
-<<<<<<< HEAD
-		ocfs2_error(inode->i_sb, "Inode %lu want to use refcount "
-			    "tree, but the feature bit is not set in the "
-			    "super block.", inode->i_ino);
-		ret = -EROFS;
-=======
 		ret = ocfs2_error(inode->i_sb, "Inode %lu want to use refcount tree, but the feature bit is not set in the super block\n",
 				  inode->i_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2561,11 +2411,6 @@ static int ocfs2_calc_refcount_meta_credits(struct super_block *sb,
 			get_bh(prev_bh);
 		}
 
-<<<<<<< HEAD
-		rb = (struct ocfs2_refcount_block *)ref_leaf_bh->b_data;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		trace_ocfs2_calc_refcount_meta_credits_iterate(
 				recs_add, (unsigned long long)cpos, clusters,
 				(unsigned long long)le64_to_cpu(rec.r_cpos),
@@ -2643,12 +2488,7 @@ static int ocfs2_calc_refcount_meta_credits(struct super_block *sb,
 		ocfs2_init_refcount_extent_tree(&et, ci, ref_root_bh);
 		*meta_add += ocfs2_extend_meta_needed(et.et_root_el);
 		*credits += ocfs2_calc_extend_credits(sb,
-<<<<<<< HEAD
-						      et.et_root_el,
-						      ref_blocks);
-=======
 						      et.et_root_el);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		*credits += OCFS2_EXPAND_REFCOUNT_TREE_CREDITS;
 		*meta_add += 1;
@@ -2684,32 +2524,17 @@ int ocfs2_prepare_refcount_change_for_del(struct inode *inode,
 					  int *ref_blocks)
 {
 	int ret;
-<<<<<<< HEAD
-	struct ocfs2_inode_info *oi = OCFS2_I(inode);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *ref_root_bh = NULL;
 	struct ocfs2_refcount_tree *tree;
 	u64 start_cpos = ocfs2_blocks_to_clusters(inode->i_sb, phys_blkno);
 
 	if (!ocfs2_refcount_tree(OCFS2_SB(inode->i_sb))) {
-<<<<<<< HEAD
-		ocfs2_error(inode->i_sb, "Inode %lu want to use refcount "
-			    "tree, but the feature bit is not set in the "
-			    "super block.", inode->i_ino);
-		ret = -EROFS;
-		goto out;
-	}
-
-	BUG_ON(!(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL));
-=======
 		ret = ocfs2_error(inode->i_sb, "Inode %lu want to use refcount tree, but the feature bit is not set in the super block\n",
 				  inode->i_ino);
 		goto out;
 	}
 
 	BUG_ON(!ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_get_refcount_tree(OCFS2_SB(inode->i_sb),
 				      refcount_loc, &tree);
@@ -2789,11 +2614,7 @@ static inline unsigned int ocfs2_cow_align_length(struct super_block *sb,
 }
 
 /*
-<<<<<<< HEAD
- * Calculate out the start and number of virtual clusters we need to to CoW.
-=======
  * Calculate out the start and number of virtual clusters we need to CoW.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * cpos is vitual start cluster position we want to do CoW in a
  * file and write_len is the cluster length.
@@ -2833,18 +2654,10 @@ static int ocfs2_refcount_cal_cow_clusters(struct inode *inode,
 		el = &eb->h_list;
 
 		if (el->l_tree_depth) {
-<<<<<<< HEAD
-			ocfs2_error(inode->i_sb,
-				    "Inode %lu has non zero tree depth in "
-				    "leaf block %llu\n", inode->i_ino,
-				    (unsigned long long)eb_bh->b_blocknr);
-			ret = -EROFS;
-=======
 			ret = ocfs2_error(inode->i_sb,
 					  "Inode %lu has non zero tree depth in leaf block %llu\n",
 					  inode->i_ino,
 					  (unsigned long long)eb_bh->b_blocknr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -3030,11 +2843,7 @@ static int ocfs2_lock_refcount_allocators(struct super_block *sb,
 					int *credits)
 {
 	int ret = 0, meta_add = 0;
-<<<<<<< HEAD
-	int num_free_extents = ocfs2_num_free_extents(OCFS2_SB(sb), et);
-=======
 	int num_free_extents = ocfs2_num_free_extents(et);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (num_free_extents < 0) {
 		ret = num_free_extents;
@@ -3046,12 +2855,7 @@ static int ocfs2_lock_refcount_allocators(struct super_block *sb,
 		meta_add =
 			ocfs2_extend_meta_needed(et->et_root_el);
 
-<<<<<<< HEAD
-	*credits += ocfs2_calc_extend_credits(sb, et->et_root_el,
-					      num_clusters + 2);
-=======
 	*credits += ocfs2_calc_extend_credits(sb, et->et_root_el);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_calc_refcount_meta_credits(sb, ref_ci, ref_root_bh,
 					       p_cluster, num_clusters,
@@ -3097,42 +2901,22 @@ static int ocfs2_clear_cow_buffer(handle_t *handle, struct buffer_head *bh)
 }
 
 int ocfs2_duplicate_clusters_by_page(handle_t *handle,
-<<<<<<< HEAD
-				     struct file *file,
-=======
 				     struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     u32 cpos, u32 old_cluster,
 				     u32 new_cluster, u32 new_len)
 {
 	int ret = 0, partial;
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-	struct ocfs2_caching_info *ci = INODE_CACHE(inode);
-	struct super_block *sb = ocfs2_metadata_cache_get_super(ci);
-	u64 new_block = ocfs2_clusters_to_blocks(sb, new_cluster);
-	struct page *page;
-	pgoff_t page_index;
-	unsigned int from, to, readahead_pages;
-=======
 	struct super_block *sb = inode->i_sb;
 	u64 new_block = ocfs2_clusters_to_blocks(sb, new_cluster);
 	struct page *page;
 	pgoff_t page_index;
 	unsigned int from, to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	loff_t offset, end, map_end;
 	struct address_space *mapping = inode->i_mapping;
 
 	trace_ocfs2_duplicate_clusters_by_page(cpos, old_cluster,
 					       new_cluster, new_len);
 
-<<<<<<< HEAD
-	readahead_pages =
-		(ocfs2_cow_contig_clusters(sb) <<
-		 OCFS2_SB(sb)->s_clustersize_bits) >> PAGE_CACHE_SHIFT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	offset = ((loff_t)cpos) << OCFS2_SB(sb)->s_clustersize_bits;
 	end = offset + (new_len << OCFS2_SB(sb)->s_clustersize_bits);
 	/*
@@ -3143,42 +2927,12 @@ int ocfs2_duplicate_clusters_by_page(handle_t *handle,
 		end = i_size_read(inode);
 
 	while (offset < end) {
-<<<<<<< HEAD
-		page_index = offset >> PAGE_CACHE_SHIFT;
-		map_end = ((loff_t)page_index + 1) << PAGE_CACHE_SHIFT;
-=======
 		page_index = offset >> PAGE_SHIFT;
 		map_end = ((loff_t)page_index + 1) << PAGE_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (map_end > end)
 			map_end = end;
 
 		/* from, to is the offset within the page. */
-<<<<<<< HEAD
-		from = offset & (PAGE_CACHE_SIZE - 1);
-		to = PAGE_CACHE_SIZE;
-		if (map_end & (PAGE_CACHE_SIZE - 1))
-			to = map_end & (PAGE_CACHE_SIZE - 1);
-
-		page = find_or_create_page(mapping, page_index, GFP_NOFS);
-
-		/*
-		 * In case PAGE_CACHE_SIZE <= CLUSTER_SIZE, This page
-		 * can't be dirtied before we CoW it out.
-		 */
-		if (PAGE_CACHE_SIZE <= OCFS2_SB(sb)->s_clustersize)
-			BUG_ON(PageDirty(page));
-
-		if (PageReadahead(page)) {
-			page_cache_async_readahead(mapping,
-						   &file->f_ra, file,
-						   page, page_index,
-						   readahead_pages);
-		}
-
-		if (!PageUptodate(page)) {
-			ret = block_read_full_page(page, ocfs2_get_block);
-=======
 		from = offset & (PAGE_SIZE - 1);
 		to = PAGE_SIZE;
 		if (map_end & (PAGE_SIZE - 1))
@@ -3211,16 +2965,11 @@ retry:
 			struct folio *folio = page_folio(page);
 
 			ret = block_read_full_folio(folio, ocfs2_get_block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret) {
 				mlog_errno(ret);
 				goto unlock;
 			}
-<<<<<<< HEAD
-			lock_page(page);
-=======
 			folio_lock(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (page_has_buffers(page)) {
@@ -3233,21 +2982,13 @@ retry:
 			}
 		}
 
-<<<<<<< HEAD
-		ocfs2_map_and_dirty_page(inode, handle, from, to,
-=======
 		ocfs2_map_and_dirty_page(inode,
 					 handle, from, to,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 page, 0, &new_block);
 		mark_page_accessed(page);
 unlock:
 		unlock_page(page);
-<<<<<<< HEAD
-		page_cache_release(page);
-=======
 		put_page(page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		page = NULL;
 		offset = map_end;
 		if (ret)
@@ -3258,19 +2999,11 @@ unlock:
 }
 
 int ocfs2_duplicate_clusters_by_jbd(handle_t *handle,
-<<<<<<< HEAD
-				    struct file *file,
-=======
 				    struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    u32 cpos, u32 old_cluster,
 				    u32 new_cluster, u32 new_len)
 {
 	int ret = 0;
-<<<<<<< HEAD
-	struct inode *inode = file->f_path.dentry->d_inode;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block *sb = inode->i_sb;
 	struct ocfs2_caching_info *ci = INODE_CACHE(inode);
 	int i, blocks = ocfs2_clusters_to_blocks(sb, new_len);
@@ -3286,11 +3019,7 @@ int ocfs2_duplicate_clusters_by_jbd(handle_t *handle,
 	for (i = 0; i < blocks; i++, old_block++, new_block++) {
 		new_bh = sb_getblk(osb->sb, new_block);
 		if (new_bh == NULL) {
-<<<<<<< HEAD
-			ret = -EIO;
-=======
 			ret = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mlog_errno(ret);
 			break;
 		}
@@ -3365,19 +3094,10 @@ static int ocfs2_clear_ext_refcount(handle_t *handle,
 	el = path_leaf_el(path);
 
 	index = ocfs2_search_extent_list(el, cpos);
-<<<<<<< HEAD
-	if (index == -1 || index >= le16_to_cpu(el->l_next_free_rec)) {
-		ocfs2_error(sb,
-			    "Inode %llu has an extent at cpos %u which can no "
-			    "longer be found.\n",
-			    (unsigned long long)ino, cpos);
-		ret = -EROFS;
-=======
 	if (index == -1) {
 		ret = ocfs2_error(sb,
 				  "Inode %llu has an extent at cpos %u which can no longer be found\n",
 				  (unsigned long long)ino, cpos);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -3406,11 +3126,7 @@ static int ocfs2_replace_clusters(handle_t *handle,
 
 	/*If the old clusters is unwritten, no need to duplicate. */
 	if (!(ext_flags & OCFS2_EXT_UNWRITTEN)) {
-<<<<<<< HEAD
-		ret = context->cow_duplicate_clusters(handle, context->file,
-=======
 		ret = context->cow_duplicate_clusters(handle, context->inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      cpos, old, new, len);
 		if (ret) {
 			mlog_errno(ret);
@@ -3431,62 +3147,18 @@ int ocfs2_cow_sync_writeback(struct super_block *sb,
 			     struct inode *inode,
 			     u32 cpos, u32 num_clusters)
 {
-<<<<<<< HEAD
-	int ret = 0;
-	loff_t offset, end, map_end;
-	pgoff_t page_index;
-	struct page *page;
-=======
 	int ret;
 	loff_t start, end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ocfs2_should_order_data(inode))
 		return 0;
 
-<<<<<<< HEAD
-	offset = ((loff_t)cpos) << OCFS2_SB(sb)->s_clustersize_bits;
-	end = offset + (num_clusters << OCFS2_SB(sb)->s_clustersize_bits);
-
-	ret = filemap_fdatawrite_range(inode->i_mapping,
-				       offset, end - 1);
-	if (ret < 0) {
-		mlog_errno(ret);
-		return ret;
-	}
-
-	while (offset < end) {
-		page_index = offset >> PAGE_CACHE_SHIFT;
-		map_end = ((loff_t)page_index + 1) << PAGE_CACHE_SHIFT;
-		if (map_end > end)
-			map_end = end;
-
-		page = find_or_create_page(inode->i_mapping,
-					   page_index, GFP_NOFS);
-		BUG_ON(!page);
-
-		wait_on_page_writeback(page);
-		if (PageError(page)) {
-			ret = -EIO;
-			mlog_errno(ret);
-		} else
-			mark_page_accessed(page);
-
-		unlock_page(page);
-		page_cache_release(page);
-		page = NULL;
-		offset = map_end;
-		if (ret)
-			break;
-	}
-=======
 	start = ((loff_t)cpos) << OCFS2_SB(sb)->s_clustersize_bits;
 	end = start + (num_clusters << OCFS2_SB(sb)->s_clustersize_bits) - 1;
 
 	ret = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (ret < 0)
 		mlog_errno(ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -3660,17 +3332,9 @@ static int ocfs2_replace_cow(struct ocfs2_cow_context *context)
 	unsigned int ext_flags;
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 
-<<<<<<< HEAD
-	if (!ocfs2_refcount_tree(OCFS2_SB(inode->i_sb))) {
-		ocfs2_error(inode->i_sb, "Inode %lu want to use refcount "
-			    "tree, but the feature bit is not set in the "
-			    "super block.", inode->i_ino);
-		return -EROFS;
-=======
 	if (!ocfs2_refcount_tree(osb)) {
 		return ocfs2_error(inode->i_sb, "Inode %lu want to use refcount tree, but the feature bit is not set in the super block\n",
 				   inode->i_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ocfs2_init_dealloc_ctxt(&context->dealloc);
@@ -3708,61 +3372,24 @@ static int ocfs2_replace_cow(struct ocfs2_cow_context *context)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void ocfs2_readahead_for_cow(struct inode *inode,
-				    struct file *file,
-				    u32 start, u32 len)
-{
-	struct address_space *mapping;
-	pgoff_t index;
-	unsigned long num_pages;
-	int cs_bits = OCFS2_SB(inode->i_sb)->s_clustersize_bits;
-
-	if (!file)
-		return;
-
-	mapping = file->f_mapping;
-	num_pages = (len << cs_bits) >> PAGE_CACHE_SHIFT;
-	if (!num_pages)
-		num_pages = 1;
-
-	index = ((loff_t)start << cs_bits) >> PAGE_CACHE_SHIFT;
-	page_cache_sync_readahead(mapping, &file->f_ra, file,
-				  index, num_pages);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Starting at cpos, try to CoW write_len clusters.  Don't CoW
  * past max_cpos.  This will stop when it runs into a hole or an
  * unrefcounted extent.
  */
 static int ocfs2_refcount_cow_hunk(struct inode *inode,
-<<<<<<< HEAD
-				   struct file *file,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct buffer_head *di_bh,
 				   u32 cpos, u32 write_len, u32 max_cpos)
 {
 	int ret;
 	u32 cow_start = 0, cow_len = 0;
-<<<<<<< HEAD
-	struct ocfs2_inode_info *oi = OCFS2_I(inode);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct ocfs2_dinode *di = (struct ocfs2_dinode *)di_bh->b_data;
 	struct buffer_head *ref_root_bh = NULL;
 	struct ocfs2_refcount_tree *ref_tree;
 	struct ocfs2_cow_context *context = NULL;
 
-<<<<<<< HEAD
-	BUG_ON(!(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL));
-=======
 	BUG_ON(!ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_refcount_cal_cow_clusters(inode, &di->id2.i_list,
 					      cpos, write_len, max_cpos,
@@ -3778,11 +3405,6 @@ static int ocfs2_refcount_cow_hunk(struct inode *inode,
 
 	BUG_ON(cow_len == 0);
 
-<<<<<<< HEAD
-	ocfs2_readahead_for_cow(inode, file, cow_start, cow_len);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	context = kzalloc(sizeof(struct ocfs2_cow_context), GFP_NOFS);
 	if (!context) {
 		ret = -ENOMEM;
@@ -3804,10 +3426,6 @@ static int ocfs2_refcount_cow_hunk(struct inode *inode,
 	context->ref_root_bh = ref_root_bh;
 	context->cow_duplicate_clusters = ocfs2_duplicate_clusters_by_page;
 	context->get_clusters = ocfs2_di_get_clusters;
-<<<<<<< HEAD
-	context->file = file;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_init_dinode_extent_tree(&context->data_et,
 				      INODE_CACHE(inode), di_bh);
@@ -3836,10 +3454,6 @@ out:
  * clusters between cpos and cpos+write_len are safe to modify.
  */
 int ocfs2_refcount_cow(struct inode *inode,
-<<<<<<< HEAD
-		       struct file *file,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct buffer_head *di_bh,
 		       u32 cpos, u32 write_len, u32 max_cpos)
 {
@@ -3859,11 +3473,7 @@ int ocfs2_refcount_cow(struct inode *inode,
 			num_clusters = write_len;
 
 		if (ext_flags & OCFS2_EXT_REFCOUNTED) {
-<<<<<<< HEAD
-			ret = ocfs2_refcount_cow_hunk(inode, file, di_bh, cpos,
-=======
 			ret = ocfs2_refcount_cow_hunk(inode, di_bh, cpos,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      num_clusters, max_cpos);
 			if (ret) {
 				mlog_errno(ret);
@@ -3968,12 +3578,7 @@ int ocfs2_refcounted_xattr_delete_need(struct inode *inode,
 
 		ocfs2_init_refcount_extent_tree(&et, ref_ci, ref_root_bh);
 		*credits += ocfs2_calc_extend_credits(inode->i_sb,
-<<<<<<< HEAD
-						      et.et_root_el,
-						      ref_blocks);
-=======
 						      et.et_root_el);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -3994,18 +3599,10 @@ int ocfs2_refcount_cow_xattr(struct inode *inode,
 {
 	int ret;
 	struct ocfs2_xattr_value_root *xv = vb->vb_xv;
-<<<<<<< HEAD
-	struct ocfs2_inode_info *oi = OCFS2_I(inode);
-	struct ocfs2_cow_context *context = NULL;
-	u32 cow_start, cow_len;
-
-	BUG_ON(!(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL));
-=======
 	struct ocfs2_cow_context *context = NULL;
 	u32 cow_start, cow_len;
 
 	BUG_ON(!ocfs2_is_refcount_inode(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_refcount_cal_cow_clusters(inode, &xv->xr_list,
 					      cpos, write_len, UINT_MAX,
@@ -4068,12 +3665,9 @@ int ocfs2_add_refcount_flag(struct inode *inode,
 	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
 	struct ocfs2_alloc_context *meta_ac = NULL;
 
-<<<<<<< HEAD
-=======
 	/* We need to be able to handle at least an extent tree split. */
 	ref_blocks = ocfs2_extend_meta_needed(data_et->et_root_el);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ocfs2_calc_refcount_meta_credits(inode->i_sb,
 					       ref_ci, ref_root_bh,
 					       p_cluster, num_clusters,
@@ -4086,11 +3680,7 @@ int ocfs2_add_refcount_flag(struct inode *inode,
 	trace_ocfs2_add_refcount_flag(ref_blocks, credits);
 
 	if (ref_blocks) {
-<<<<<<< HEAD
-		ret = ocfs2_reserve_new_metadata_blocks(OCFS2_SB(inode->i_sb),
-=======
 		ret = ocfs2_reserve_new_metadata_blocks(osb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							ref_blocks, &meta_ac);
 		if (ret) {
 			mlog_errno(ret);
@@ -4160,15 +3750,9 @@ static int ocfs2_change_ctime(struct inode *inode,
 		goto out_commit;
 	}
 
-<<<<<<< HEAD
-	inode->i_ctime = CURRENT_TIME;
-	di->i_ctime = cpu_to_le64(inode->i_ctime.tv_sec);
-	di->i_ctime_nsec = cpu_to_le32(inode->i_ctime.tv_nsec);
-=======
 	inode_set_ctime_current(inode);
 	di->i_ctime = cpu_to_le64(inode_get_ctime_sec(inode));
 	di->i_ctime_nsec = cpu_to_le32(inode_get_ctime_nsec(inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, di_bh);
 
@@ -4195,11 +3779,7 @@ static int ocfs2_attach_refcount_tree(struct inode *inode,
 
 	ocfs2_init_dealloc_ctxt(&dealloc);
 
-<<<<<<< HEAD
-	if (!(oi->ip_dyn_features & OCFS2_HAS_REFCOUNT_FL)) {
-=======
 	if (!ocfs2_is_refcount_inode(inode)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ocfs2_create_refcount_tree(inode, di_bh);
 		if (ret) {
 			mlog_errno(ret);
@@ -4228,14 +3808,10 @@ static int ocfs2_attach_refcount_tree(struct inode *inode,
 	while (cpos < clusters) {
 		ret = ocfs2_get_clusters(inode, cpos, &p_cluster,
 					 &num_clusters, &ext_flags);
-<<<<<<< HEAD
-
-=======
 		if (ret) {
 			mlog_errno(ret);
 			goto unlock;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (p_cluster && !(ext_flags & OCFS2_EXT_REFCOUNTED)) {
 			ret = ocfs2_add_refcount_flag(inode, &di_et,
 						      &ref_tree->rf_ci,
@@ -4330,8 +3906,6 @@ static int ocfs2_add_refcounted_extent(struct inode *inode,
 	ret = ocfs2_increase_refcount(handle, ref_ci, ref_root_bh,
 				      p_cluster, num_clusters,
 				      meta_ac, dealloc);
-<<<<<<< HEAD
-=======
 	if (ret) {
 		mlog_errno(ret);
 		goto out_commit;
@@ -4339,7 +3913,6 @@ static int ocfs2_add_refcounted_extent(struct inode *inode,
 
 	ret = dquot_alloc_space_nodirty(inode,
 		ocfs2_clusters_to_bytes(osb->sb, num_clusters));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		mlog_errno(ret);
 
@@ -4416,14 +3989,10 @@ static int ocfs2_duplicate_extent_list(struct inode *s_inode,
 	while (cpos < clusters) {
 		ret = ocfs2_get_clusters(s_inode, cpos, &p_cluster,
 					 &num_clusters, &ext_flags);
-<<<<<<< HEAD
-
-=======
 		if (ret) {
 			mlog_errno(ret);
 			goto out;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (p_cluster) {
 			ret = ocfs2_add_refcounted_extent(t_inode, &et,
 							  ref_ci, ref_root_bh,
@@ -4504,21 +4073,12 @@ static int ocfs2_complete_reflink(struct inode *s_inode,
 		 * we want mtime to appear identical to the source and
 		 * update ctime.
 		 */
-<<<<<<< HEAD
-		t_inode->i_ctime = CURRENT_TIME;
-
-		di->i_ctime = cpu_to_le64(t_inode->i_ctime.tv_sec);
-		di->i_ctime_nsec = cpu_to_le32(t_inode->i_ctime.tv_nsec);
-
-		t_inode->i_mtime = s_inode->i_mtime;
-=======
 		inode_set_ctime_current(t_inode);
 
 		di->i_ctime = cpu_to_le64(inode_get_ctime_sec(t_inode));
 		di->i_ctime_nsec = cpu_to_le32(inode_get_ctime_nsec(t_inode));
 
 		inode_set_mtime_to_ts(t_inode, inode_get_mtime(s_inode));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		di->i_mtime = s_di->i_mtime;
 		di->i_mtime_nsec = s_di->i_mtime_nsec;
 	}
@@ -4540,10 +4100,6 @@ static int ocfs2_create_reflink_node(struct inode *s_inode,
 	struct buffer_head *ref_root_bh = NULL;
 	struct ocfs2_cached_dealloc_ctxt dealloc;
 	struct ocfs2_super *osb = OCFS2_SB(s_inode->i_sb);
-<<<<<<< HEAD
-	struct ocfs2_refcount_block *rb;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_dinode *di = (struct ocfs2_dinode *)s_bh->b_data;
 	struct ocfs2_refcount_tree *ref_tree;
 
@@ -4570,10 +4126,6 @@ static int ocfs2_create_reflink_node(struct inode *s_inode,
 		mlog_errno(ret);
 		goto out;
 	}
-<<<<<<< HEAD
-	rb = (struct ocfs2_refcount_block *)ref_root_bh->b_data;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_duplicate_extent_list(s_inode, t_inode, t_bh,
 					  &ref_tree->rf_ci, ref_root_bh,
@@ -4601,11 +4153,7 @@ static int __ocfs2_reflink(struct dentry *old_dentry,
 			   bool preserve)
 {
 	int ret;
-<<<<<<< HEAD
-	struct inode *inode = old_dentry->d_inode;
-=======
 	struct inode *inode = d_inode(old_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *new_bh = NULL;
 
 	if (OCFS2_I(inode)->ip_flags & OCFS2_INODE_SYSTEM_FILE) {
@@ -4626,11 +4174,7 @@ static int __ocfs2_reflink(struct dentry *old_dentry,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	mutex_lock_nested(&new_inode->i_mutex, I_MUTEX_CHILD);
-=======
 	inode_lock_nested(new_inode, I_MUTEX_CHILD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ocfs2_inode_lock_nested(new_inode, &new_bh, 1,
 				      OI_LS_REFLINK_TARGET);
 	if (ret) {
@@ -4664,11 +4208,7 @@ inode_unlock:
 	ocfs2_inode_unlock(new_inode, 1);
 	brelse(new_bh);
 out_unlock:
-<<<<<<< HEAD
-	mutex_unlock(&new_inode->i_mutex);
-=======
 	inode_unlock(new_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (!ret) {
 		ret = filemap_fdatawait(inode->i_mapping);
@@ -4681,26 +4221,16 @@ out:
 static int ocfs2_reflink(struct dentry *old_dentry, struct inode *dir,
 			 struct dentry *new_dentry, bool preserve)
 {
-<<<<<<< HEAD
-	int error;
-	struct inode *inode = old_dentry->d_inode;
-	struct buffer_head *old_bh = NULL;
-	struct inode *new_orphan_inode = NULL;
-=======
 	int error, had_lock;
 	struct inode *inode = d_inode(old_dentry);
 	struct buffer_head *old_bh = NULL;
 	struct inode *new_orphan_inode = NULL;
 	struct ocfs2_lock_holder oh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ocfs2_refcount_tree(OCFS2_SB(inode->i_sb)))
 		return -EOPNOTSUPP;
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = ocfs2_create_inode_in_orphan(dir, inode->i_mode,
 					     &new_orphan_inode);
 	if (error) {
@@ -4708,11 +4238,6 @@ static int ocfs2_reflink(struct dentry *old_dentry, struct inode *dir,
 		goto out;
 	}
 
-<<<<<<< HEAD
-	error = ocfs2_inode_lock(inode, &old_bh, 1);
-	if (error) {
-		mlog_errno(error);
-=======
 	error = ocfs2_rw_lock(inode, 1);
 	if (error) {
 		mlog_errno(error);
@@ -4723,7 +4248,6 @@ static int ocfs2_reflink(struct dentry *old_dentry, struct inode *dir,
 	if (error) {
 		mlog_errno(error);
 		ocfs2_rw_unlock(inode, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -4735,10 +4259,7 @@ static int ocfs2_reflink(struct dentry *old_dentry, struct inode *dir,
 	up_write(&OCFS2_I(inode)->ip_xattr_sem);
 
 	ocfs2_inode_unlock(inode, 1);
-<<<<<<< HEAD
-=======
 	ocfs2_rw_unlock(inode, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(old_bh);
 
 	if (error) {
@@ -4746,8 +4267,6 @@ static int ocfs2_reflink(struct dentry *old_dentry, struct inode *dir,
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	had_lock = ocfs2_inode_lock_tracker(new_orphan_inode, NULL, 1,
 					    &oh);
 	if (had_lock < 0) {
@@ -4756,7 +4275,6 @@ static int ocfs2_reflink(struct dentry *old_dentry, struct inode *dir,
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If the security isn't preserved, we need to re-initialize them. */
 	if (!preserve) {
 		error = ocfs2_init_security_and_acl(dir, new_orphan_inode,
@@ -4764,23 +4282,15 @@ static int ocfs2_reflink(struct dentry *old_dentry, struct inode *dir,
 		if (error)
 			mlog_errno(error);
 	}
-<<<<<<< HEAD
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!error) {
 		error = ocfs2_mv_orphaned_inode_to_new(dir, new_orphan_inode,
 						       new_dentry);
 		if (error)
 			mlog_errno(error);
 	}
-<<<<<<< HEAD
-
-=======
 	ocfs2_inode_unlock_tracker(new_orphan_inode, 1, &oh, had_lock);
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_orphan_inode) {
 		/*
 		 * We need to open_unlock the inode no matter whether we
@@ -4803,19 +4313,11 @@ out:
 /* copied from may_create in VFS. */
 static inline int ocfs2_may_create(struct inode *dir, struct dentry *child)
 {
-<<<<<<< HEAD
-	if (child->d_inode)
-		return -EEXIST;
-	if (IS_DEADDIR(dir))
-		return -ENOENT;
-	return inode_permission(dir, MAY_WRITE | MAY_EXEC);
-=======
 	if (d_really_is_positive(child))
 		return -EEXIST;
 	if (IS_DEADDIR(dir))
 		return -ENOENT;
 	return inode_permission(&nop_mnt_idmap, dir, MAY_WRITE | MAY_EXEC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -4829,11 +4331,7 @@ static inline int ocfs2_may_create(struct inode *dir, struct dentry *child)
 static int ocfs2_vfs_reflink(struct dentry *old_dentry, struct inode *dir,
 			     struct dentry *new_dentry, bool preserve)
 {
-<<<<<<< HEAD
-	struct inode *inode = old_dentry->d_inode;
-=======
 	struct inode *inode = d_inode(old_dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	if (!inode)
@@ -4861,11 +4359,7 @@ static int ocfs2_vfs_reflink(struct dentry *old_dentry, struct inode *dir,
 	 * rights to do so.
 	 */
 	if (preserve) {
-<<<<<<< HEAD
-		if ((current_fsuid() != inode->i_uid) && !capable(CAP_CHOWN))
-=======
 		if (!uid_eq(current_fsuid(), inode->i_uid) && !capable(CAP_CHOWN))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EPERM;
 		if (!in_group_p(inode->i_gid) && !capable(CAP_CHOWN))
 			return -EPERM;
@@ -4877,27 +4371,16 @@ static int ocfs2_vfs_reflink(struct dentry *old_dentry, struct inode *dir,
 	 * file.
 	 */
 	if (!preserve) {
-<<<<<<< HEAD
-		error = inode_permission(inode, MAY_READ);
-=======
 		error = inode_permission(&nop_mnt_idmap, inode, MAY_READ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			return error;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&inode->i_mutex);
-	dquot_initialize(dir);
-	error = ocfs2_reflink(old_dentry, dir, new_dentry, preserve);
-	mutex_unlock(&inode->i_mutex);
-=======
 	inode_lock(inode);
 	error = dquot_initialize(dir);
 	if (!error)
 		error = ocfs2_reflink(old_dentry, dir, new_dentry, preserve);
 	inode_unlock(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!error)
 		fsnotify_create(dir, new_dentry);
 	return error;
@@ -4937,11 +4420,7 @@ int ocfs2_reflink_ioctl(struct inode *inode,
 	}
 
 	error = ocfs2_vfs_reflink(old_path.dentry,
-<<<<<<< HEAD
-				  new_path.dentry->d_inode,
-=======
 				  d_inode(new_path.dentry),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  new_dentry, preserve);
 out_dput:
 	done_path_create(&new_path, new_dentry);
@@ -4950,8 +4429,6 @@ out:
 
 	return error;
 }
-<<<<<<< HEAD
-=======
 
 /* Update destination inode size, if necessary. */
 int ocfs2_reflink_update_dest(struct inode *dest,
@@ -5315,4 +4792,3 @@ void ocfs2_reflink_inodes_unlock(struct inode *s_inode,
 	}
 	unlock_two_nondirectories(s_inode, t_inode);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

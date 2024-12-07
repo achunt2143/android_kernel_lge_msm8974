@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * unlikely profiler
  *
@@ -11,10 +8,6 @@
 #include <linux/seq_file.h>
 #include <linux/spinlock.h>
 #include <linux/irqflags.h>
-<<<<<<< HEAD
-#include <linux/debugfs.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uaccess.h>
 #include <linux/module.h>
 #include <linux/ftrace.h>
@@ -35,19 +28,6 @@ static DEFINE_MUTEX(branch_tracing_mutex);
 static struct trace_array *branch_tracer;
 
 static void
-<<<<<<< HEAD
-probe_likely_condition(struct ftrace_branch_data *f, int val, int expect)
-{
-	struct ftrace_event_call *call = &event_branch;
-	struct trace_array *tr = branch_tracer;
-	struct ring_buffer_event *event;
-	struct trace_branch *entry;
-	struct ring_buffer *buffer;
-	unsigned long flags;
-	int cpu, pc;
-	const char *p;
-
-=======
 probe_likely_condition(struct ftrace_likely_data *f, int val, int expect)
 {
 	struct trace_event_call *call = &event_branch;
@@ -63,7 +43,6 @@ probe_likely_condition(struct ftrace_likely_data *f, int val, int expect)
 	if (current->trace_recursion & TRACE_BRANCH_BIT)
 		return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * I would love to save just the ftrace_likely_data pointer, but
 	 * this code can also be used by modules. Ugly things can happen
@@ -74,17 +53,6 @@ probe_likely_condition(struct ftrace_likely_data *f, int val, int expect)
 	if (unlikely(!tr))
 		return;
 
-<<<<<<< HEAD
-	local_irq_save(flags);
-	cpu = raw_smp_processor_id();
-	if (atomic_inc_return(&tr->data[cpu]->disabled) != 1)
-		goto out;
-
-	pc = preempt_count();
-	buffer = tr->buffer;
-	event = trace_buffer_lock_reserve(buffer, TRACE_BRANCH,
-					  sizeof(*entry), flags, pc);
-=======
 	raw_local_irq_save(flags);
 	current->trace_recursion |= TRACE_BRANCH_BIT;
 	data = this_cpu_ptr(tr->array_buffer.data);
@@ -95,37 +63,12 @@ probe_likely_condition(struct ftrace_likely_data *f, int val, int expect)
 	buffer = tr->array_buffer.buffer;
 	event = trace_buffer_lock_reserve(buffer, TRACE_BRANCH,
 					  sizeof(*entry), trace_ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!event)
 		goto out;
 
 	entry	= ring_buffer_event_data(event);
 
 	/* Strip off the path, only save the file */
-<<<<<<< HEAD
-	p = f->file + strlen(f->file);
-	while (p >= f->file && *p != '/')
-		p--;
-	p++;
-
-	strncpy(entry->func, f->func, TRACE_FUNC_SIZE);
-	strncpy(entry->file, p, TRACE_FILE_SIZE);
-	entry->func[TRACE_FUNC_SIZE] = 0;
-	entry->file[TRACE_FILE_SIZE] = 0;
-	entry->line = f->line;
-	entry->correct = val == expect;
-
-	if (!filter_check_discard(call, entry, buffer, event))
-		ring_buffer_unlock_commit(buffer, event);
-
- out:
-	atomic_dec(&tr->data[cpu]->disabled);
-	local_irq_restore(flags);
-}
-
-static inline
-void trace_likely_condition(struct ftrace_branch_data *f, int val, int expect)
-=======
 	p = f->data.file + strlen(f->data.file);
 	while (p >= f->data.file && *p != '/')
 		p--;
@@ -149,7 +92,6 @@ void trace_likely_condition(struct ftrace_branch_data *f, int val, int expect)
 
 static inline
 void trace_likely_condition(struct ftrace_likely_data *f, int val, int expect)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!branch_tracing_enabled)
 		return;
@@ -185,35 +127,14 @@ void disable_branch_tracing(void)
 	mutex_unlock(&branch_tracing_mutex);
 }
 
-<<<<<<< HEAD
-static void start_branch_trace(struct trace_array *tr)
-{
-	enable_branch_tracing(tr);
-}
-
-static void stop_branch_trace(struct trace_array *tr)
-{
-	disable_branch_tracing();
-}
-
-static int branch_trace_init(struct trace_array *tr)
-{
-	start_branch_trace(tr);
-	return 0;
-=======
 static int branch_trace_init(struct trace_array *tr)
 {
 	return enable_branch_tracing(tr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void branch_trace_reset(struct trace_array *tr)
 {
-<<<<<<< HEAD
-	stop_branch_trace(tr);
-=======
 	disable_branch_tracing();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t trace_branch_print(struct trace_iterator *iter,
@@ -223,16 +144,6 @@ static enum print_line_t trace_branch_print(struct trace_iterator *iter,
 
 	trace_assign_type(field, iter->ent);
 
-<<<<<<< HEAD
-	if (trace_seq_printf(&iter->seq, "[%s] %s:%s:%d\n",
-			     field->correct ? "  ok  " : " MISS ",
-			     field->func,
-			     field->file,
-			     field->line))
-		return TRACE_TYPE_PARTIAL_LINE;
-
-	return TRACE_TYPE_HANDLED;
-=======
 	trace_seq_printf(&iter->seq, "[%s] %s:%s:%d\n",
 			 field->correct ? "  ok  " : " MISS ",
 			 field->func,
@@ -240,21 +151,14 @@ static enum print_line_t trace_branch_print(struct trace_iterator *iter,
 			 field->line);
 
 	return trace_handle_return(&iter->seq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void branch_print_header(struct seq_file *s)
 {
 	seq_puts(s, "#           TASK-PID    CPU#    TIMESTAMP  CORRECT"
-<<<<<<< HEAD
-		"  FUNC:FILE:LINE\n");
-	seq_puts(s, "#              | |       |          |         |   "
-		"    |\n");
-=======
 		    "  FUNC:FILE:LINE\n"
 		    "#              | |       |          |         |   "
 		    "    |\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct trace_event_functions trace_branch_funcs = {
@@ -281,11 +185,7 @@ __init static int init_branch_tracer(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = register_ftrace_event(&trace_branch_event);
-=======
 	ret = register_trace_event(&trace_branch_event);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret) {
 		printk(KERN_WARNING "Warning: could not register "
 				    "branch events\n");
@@ -293,27 +193,15 @@ __init static int init_branch_tracer(void)
 	}
 	return register_tracer(&branch_trace);
 }
-<<<<<<< HEAD
-device_initcall(init_branch_tracer);
-
-#else
-static inline
-void trace_likely_condition(struct ftrace_branch_data *f, int val, int expect)
-=======
 core_initcall(init_branch_tracer);
 
 #else
 static inline
 void trace_likely_condition(struct ftrace_likely_data *f, int val, int expect)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif /* CONFIG_BRANCH_TRACER */
 
-<<<<<<< HEAD
-void ftrace_likely_update(struct ftrace_branch_data *f, int val, int expect)
-{
-=======
 void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 			  int expect, int is_constant)
 {
@@ -324,7 +212,6 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 		f->constant++;
 		val = expect;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * I would love to have a trace point here instead, but the
 	 * trace point code is so inundated with unlikely and likely
@@ -335,17 +222,11 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
 
 	/* FIXME: Make this atomic! */
 	if (val == expect)
-<<<<<<< HEAD
-		f->correct++;
-	else
-		f->incorrect++;
-=======
 		f->data.correct++;
 	else
 		f->data.incorrect++;
 
 	user_access_restore(flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ftrace_likely_update);
 
@@ -354,18 +235,6 @@ extern unsigned long __stop_annotated_branch_profile[];
 
 static int annotated_branch_stat_headers(struct seq_file *m)
 {
-<<<<<<< HEAD
-	seq_printf(m, " correct incorrect  %% ");
-	seq_printf(m, "       Function                "
-			      "  File              Line\n"
-			      " ------- ---------  - "
-			      "       --------                "
-			      "  ----              ----\n");
-	return 0;
-}
-
-static inline long get_incorrect_percent(struct ftrace_branch_data *p)
-=======
 	seq_puts(m, " correct incorrect  % "
 		    "       Function                "
 		    "  File              Line\n"
@@ -376,7 +245,6 @@ static inline long get_incorrect_percent(struct ftrace_branch_data *p)
 }
 
 static inline long get_incorrect_percent(const struct ftrace_branch_data *p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long percent;
 
@@ -389,25 +257,14 @@ static inline long get_incorrect_percent(const struct ftrace_branch_data *p)
 	return percent;
 }
 
-<<<<<<< HEAD
-static int branch_stat_show(struct seq_file *m, void *v)
-{
-	struct ftrace_branch_data *p = v;
-	const char *f;
-	long percent;
-=======
 static const char *branch_stat_process_file(struct ftrace_branch_data *p)
 {
 	const char *f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only print the file, not the path */
 	f = p->file + strlen(p->file);
 	while (f >= p->file && *f != '/')
 		f--;
-<<<<<<< HEAD
-	f++;
-=======
 	return ++f;
 }
 
@@ -415,21 +272,12 @@ static void branch_stat_show(struct seq_file *m,
 			     struct ftrace_branch_data *p, const char *f)
 {
 	long percent;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The miss is overlayed on correct, and hit on incorrect.
 	 */
 	percent = get_incorrect_percent(p);
 
-<<<<<<< HEAD
-	seq_printf(m, "%8lu %8lu ",  p->correct, p->incorrect);
-	if (percent < 0)
-		seq_printf(m, "  X ");
-	else
-		seq_printf(m, "%3ld ", percent);
-	seq_printf(m, "%-30.30s %-20.20s %d\n", p->func, f, p->line);
-=======
 	if (percent < 0)
 		seq_puts(m, "  X ");
 	else
@@ -463,7 +311,6 @@ static int annotate_branch_stat_show(struct seq_file *m, void *v)
 	seq_printf(m, "%8lu/%lu %*lu ",
 		   p->data.correct, p->constant, l, p->data.incorrect);
 	branch_stat_show(m, &p->data, f);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -475,11 +322,7 @@ static void *annotated_branch_stat_start(struct tracer_stat *trace)
 static void *
 annotated_branch_stat_next(void *v, int idx)
 {
-<<<<<<< HEAD
-	struct ftrace_branch_data *p = v;
-=======
 	struct ftrace_likely_data *p = v;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	++p;
 
@@ -489,17 +332,10 @@ annotated_branch_stat_next(void *v, int idx)
 	return p;
 }
 
-<<<<<<< HEAD
-static int annotated_branch_stat_cmp(void *p1, void *p2)
-{
-	struct ftrace_branch_data *a = p1;
-	struct ftrace_branch_data *b = p2;
-=======
 static int annotated_branch_stat_cmp(const void *p1, const void *p2)
 {
 	const struct ftrace_branch_data *a = p1;
 	const struct ftrace_branch_data *b = p2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	long percent_a, percent_b;
 
@@ -535,11 +371,7 @@ static struct tracer_stat annotated_branch_stats = {
 	.stat_next = annotated_branch_stat_next,
 	.stat_cmp = annotated_branch_stat_cmp,
 	.stat_headers = annotated_branch_stat_headers,
-<<<<<<< HEAD
-	.stat_show = branch_stat_show
-=======
 	.stat_show = annotate_branch_stat_show
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 __init static int init_annotated_branch_stats(void)
@@ -563,21 +395,12 @@ extern unsigned long __stop_branch_profile[];
 
 static int all_branch_stat_headers(struct seq_file *m)
 {
-<<<<<<< HEAD
-	seq_printf(m, "   miss      hit    %% ");
-	seq_printf(m, "       Function                "
-			      "  File              Line\n"
-			      " ------- ---------  - "
-			      "       --------                "
-			      "  ----              ----\n");
-=======
 	seq_puts(m, "   miss      hit    % "
 		    "       Function                "
 		    "  File              Line\n"
 		    " ------- ---------  - "
 		    "       --------                "
 		    "  ----              ----\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -599,8 +422,6 @@ all_branch_stat_next(void *v, int idx)
 	return p;
 }
 
-<<<<<<< HEAD
-=======
 static int all_branch_stat_show(struct seq_file *m, void *v)
 {
 	struct ftrace_branch_data *p = v;
@@ -610,17 +431,12 @@ static int all_branch_stat_show(struct seq_file *m, void *v)
 	return branch_stat_show_normal(m, p, f);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct tracer_stat all_branch_stats = {
 	.name = "branch_all",
 	.stat_start = all_branch_stat_start,
 	.stat_next = all_branch_stat_next,
 	.stat_headers = all_branch_stat_headers,
-<<<<<<< HEAD
-	.stat_show = branch_stat_show
-=======
 	.stat_show = all_branch_stat_show
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 __init static int all_annotated_branch_stats(void)

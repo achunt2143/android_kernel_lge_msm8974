@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
  *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -61,45 +50,6 @@
 #endif
 
 #ifdef	DEBUG
-<<<<<<< HEAD
-#define	DB_PR(flag,a,b,c)	{ if (flag) printf(a,b,c) ; }
-#else
-#define	DB_PR(flag,a,b,c)
-#endif
-
-#ifdef DEBUG_BRD
-#define DB_ECM(a,b,c)		DB_PR((smc->debug.d_smt&1),a,b,c)
-#define DB_ECMN(n,a,b,c)	DB_PR((smc->debug.d_ecm >=(n)),a,b,c)
-#define DB_RMT(a,b,c)		DB_PR((smc->debug.d_smt&2),a,b,c)
-#define DB_RMTN(n,a,b,c)	DB_PR((smc->debug.d_rmt >=(n)),a,b,c)
-#define DB_CFM(a,b,c)		DB_PR((smc->debug.d_smt&4),a,b,c)
-#define DB_CFMN(n,a,b,c)	DB_PR((smc->debug.d_cfm >=(n)),a,b,c)
-#define DB_PCM(a,b,c)		DB_PR((smc->debug.d_smt&8),a,b,c)
-#define DB_PCMN(n,a,b,c)	DB_PR((smc->debug.d_pcm >=(n)),a,b,c)
-#define DB_SMT(a,b,c)		DB_PR((smc->debug.d_smtf),a,b,c)
-#define DB_SMTN(n,a,b,c)	DB_PR((smc->debug.d_smtf >=(n)),a,b,c)
-#define DB_SBA(a,b,c)		DB_PR((smc->debug.d_sba),a,b,c)
-#define DB_SBAN(n,a,b,c)	DB_PR((smc->debug.d_sba >=(n)),a,b,c)
-#define DB_ESS(a,b,c)		DB_PR((smc->debug.d_ess),a,b,c)
-#define DB_ESSN(n,a,b,c)	DB_PR((smc->debug.d_ess >=(n)),a,b,c)
-#else
-#define DB_ECM(a,b,c)		DB_PR((debug.d_smt&1),a,b,c)
-#define DB_ECMN(n,a,b,c)	DB_PR((debug.d_ecm >=(n)),a,b,c)
-#define DB_RMT(a,b,c)		DB_PR((debug.d_smt&2),a,b,c)
-#define DB_RMTN(n,a,b,c)	DB_PR((debug.d_rmt >=(n)),a,b,c)
-#define DB_CFM(a,b,c)		DB_PR((debug.d_smt&4),a,b,c)
-#define DB_CFMN(n,a,b,c)	DB_PR((debug.d_cfm >=(n)),a,b,c)
-#define DB_PCM(a,b,c)		DB_PR((debug.d_smt&8),a,b,c)
-#define DB_PCMN(n,a,b,c)	DB_PR((debug.d_pcm >=(n)),a,b,c)
-#define DB_SMT(a,b,c)		DB_PR((debug.d_smtf),a,b,c)
-#define DB_SMTN(n,a,b,c)	DB_PR((debug.d_smtf >=(n)),a,b,c)
-#define DB_SBA(a,b,c)		DB_PR((debug.d_sba),a,b,c)
-#define DB_SBAN(n,a,b,c)	DB_PR((debug.d_sba >=(n)),a,b,c)
-#define DB_ESS(a,b,c)		DB_PR((debug.d_ess),a,b,c)
-#define DB_ESSN(n,a,b,c)	DB_PR((debug.d_ess >=(n)),a,b,c)
-#endif
-
-=======
 #define	DB_PR(flag, fmt, ...)						\
 	do { if (flag) printf(fmt "\n", ##__VA_ARGS__); } while (0)
 #else
@@ -142,7 +92,6 @@
 #define DB_ESSN(n, fmt, ...)						\
 	DB_PR((DB_TEST).d_ess >= (n), fmt, ##__VA_ARGS__)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef	SS_NOT_DS
 #define	SK_LOC_DECL(type,var)	type var
 #else
@@ -560,10 +509,6 @@ void pcm_status_state(struct s_smc *smc, int np, int *type, int *state,
 void plc_config_mux(struct s_smc *smc, int mux);
 void sm_lem_evaluate(struct s_smc *smc);
 void mac_update_counter(struct s_smc *smc);
-<<<<<<< HEAD
-void sm_pm_ls_latch(struct s_smc *smc, int phy, int on_off);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sm_ma_control(struct s_smc *smc, int mode);
 void sm_mac_check_beacon_claim(struct s_smc *smc);
 void config_mux(struct s_smc *smc, int mux);
@@ -696,10 +641,6 @@ void dump_smt(struct s_smc *smc, struct smt_header *sm, char *text);
 #endif
 
 #ifdef	DEBUG
-<<<<<<< HEAD
-char* addr_to_string(struct fddi_addr *addr);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dump_hex(char *p, int len);
 #endif
 
@@ -709,17 +650,6 @@ void dump_hex(char *p, int len);
 #ifndef PNMI_INIT
 #define	PNMI_INIT(smc)	/* Nothing */
 #endif
-<<<<<<< HEAD
-#ifndef PNMI_GET_ID
-#define PNMI_GET_ID( smc, ndis_oid, buf, len, BytesWritten, BytesNeeded ) \
-		( 1 ? (-1) : (-1) )
-#endif
-#ifndef PNMI_SET_ID
-#define PNMI_SET_ID( smc, ndis_oid, buf, len, BytesRead, BytesNeeded, \
-		set_type) ( 1 ? (-1) : (-1) )
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * SMT_PANIC defines

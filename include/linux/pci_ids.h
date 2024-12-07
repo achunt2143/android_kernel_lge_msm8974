@@ -1,24 +1,14 @@
-<<<<<<< HEAD
-/*
- *	PCI Class, Vendor and Device IDs
- *
- *	Please keep sorted.
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  *	PCI Class, Vendor and Device IDs
  *
  *	Please keep sorted by numeric Vendor ID and Device ID.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Do not add new entries to this file unless the definitions
  *	are shared between multiple drivers.
  */
-<<<<<<< HEAD
-=======
 #ifndef _LINUX_PCI_IDS_H
 #define _LINUX_PCI_IDS_H
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device classes and subclasses */
 
@@ -34,15 +24,10 @@
 #define PCI_CLASS_STORAGE_SATA		0x0106
 #define PCI_CLASS_STORAGE_SATA_AHCI	0x010601
 #define PCI_CLASS_STORAGE_SAS		0x0107
-<<<<<<< HEAD
-#define PCI_CLASS_STORAGE_OTHER		0x0180
-
-=======
 #define PCI_CLASS_STORAGE_EXPRESS	0x010802
 #define PCI_CLASS_STORAGE_OTHER		0x0180
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_BASE_CLASS_NETWORK		0x02
 #define PCI_CLASS_NETWORK_ETHERNET	0x0200
 #define PCI_CLASS_NETWORK_TOKEN_RING	0x0201
@@ -60,19 +45,13 @@
 #define PCI_CLASS_MULTIMEDIA_VIDEO	0x0400
 #define PCI_CLASS_MULTIMEDIA_AUDIO	0x0401
 #define PCI_CLASS_MULTIMEDIA_PHONE	0x0402
-<<<<<<< HEAD
-=======
 #define PCI_CLASS_MULTIMEDIA_HD_AUDIO	0x0403
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_CLASS_MULTIMEDIA_OTHER	0x0480
 
 #define PCI_BASE_CLASS_MEMORY		0x05
 #define PCI_CLASS_MEMORY_RAM		0x0500
 #define PCI_CLASS_MEMORY_FLASH		0x0501
-<<<<<<< HEAD
-=======
 #define PCI_CLASS_MEMORY_CXL		0x0502
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_CLASS_MEMORY_OTHER		0x0580
 
 #define PCI_BASE_CLASS_BRIDGE		0x06
@@ -81,11 +60,8 @@
 #define PCI_CLASS_BRIDGE_EISA		0x0602
 #define PCI_CLASS_BRIDGE_MC		0x0603
 #define PCI_CLASS_BRIDGE_PCI		0x0604
-<<<<<<< HEAD
-=======
 #define PCI_CLASS_BRIDGE_PCI_NORMAL		0x060400
 #define PCI_CLASS_BRIDGE_PCI_SUBTRACTIVE	0x060401
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_CLASS_BRIDGE_PCMCIA		0x0605
 #define PCI_CLASS_BRIDGE_NUBUS		0x0606
 #define PCI_CLASS_BRIDGE_CARDBUS	0x0607
@@ -99,12 +75,9 @@
 #define PCI_CLASS_COMMUNICATION_MODEM	0x0703
 #define PCI_CLASS_COMMUNICATION_OTHER	0x0780
 
-<<<<<<< HEAD
-=======
 /* Interface for SERIAL/MODEM */
 #define PCI_SERIAL_16550_COMPATIBLE	0x02
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_BASE_CLASS_SYSTEM		0x08
 #define PCI_CLASS_SYSTEM_PIC		0x0800
 #define PCI_CLASS_SYSTEM_PIC_IOAPIC	0x080010
@@ -114,10 +87,7 @@
 #define PCI_CLASS_SYSTEM_RTC		0x0803
 #define PCI_CLASS_SYSTEM_PCI_HOTPLUG	0x0804
 #define PCI_CLASS_SYSTEM_SDHCI		0x0805
-<<<<<<< HEAD
-=======
 #define PCI_CLASS_SYSTEM_RCEC		0x0807
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_CLASS_SYSTEM_OTHER		0x0880
 
 #define PCI_BASE_CLASS_INPUT		0x09
@@ -151,10 +121,6 @@
 #define PCI_CLASS_SERIAL_USB_OHCI	0x0c0310
 #define PCI_CLASS_SERIAL_USB_EHCI	0x0c0320
 #define PCI_CLASS_SERIAL_USB_XHCI	0x0c0330
-<<<<<<< HEAD
-#define PCI_CLASS_SERIAL_FIBER		0x0c04
-#define PCI_CLASS_SERIAL_SMBUS		0x0c05
-=======
 #define PCI_CLASS_SERIAL_USB_DEVICE	0x0c03fe
 #define PCI_CLASS_SERIAL_FIBER		0x0c04
 #define PCI_CLASS_SERIAL_SMBUS		0x0c05
@@ -162,7 +128,6 @@
 #define PCI_CLASS_SERIAL_IPMI_SMIC	0x0c0700
 #define PCI_CLASS_SERIAL_IPMI_KCS	0x0c0701
 #define PCI_CLASS_SERIAL_IPMI_BT	0x0c0702
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_BASE_CLASS_WIRELESS			0x0d
 #define PCI_CLASS_WIRELESS_RF_CONTROLLER	0x0d10
@@ -186,11 +151,6 @@
 #define PCI_CLASS_SP_DPIO		0x1100
 #define PCI_CLASS_SP_OTHER		0x1180
 
-<<<<<<< HEAD
-#define PCI_CLASS_OTHERS		0xff
-
-/* Vendors and devices.  Sort key: vendor first, device next. */
-=======
 #define PCI_BASE_CLASS_ACCELERATOR	0x12
 #define PCI_CLASS_ACCELERATOR_PROCESSING	0x1200
 
@@ -205,7 +165,6 @@
 #define PCI_DEVICE_ID_LOONGSON_HDMI     0x7a37
 
 #define PCI_VENDOR_ID_SOLIDIGM		0x025e
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_TTTECH		0x0357
 #define PCI_DEVICE_ID_TTTECH_MC322	0x000a
@@ -213,22 +172,16 @@
 #define PCI_VENDOR_ID_DYNALINK		0x0675
 #define PCI_DEVICE_ID_DYNALINK_IS64PH	0x1702
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_UBIQUITI		0x0777
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_BERKOM			0x0871
 #define PCI_DEVICE_ID_BERKOM_A1T		0xffa1
 #define PCI_DEVICE_ID_BERKOM_T_CONCEPT		0xffa2
 #define PCI_DEVICE_ID_BERKOM_A4T		0xffa4
 #define PCI_DEVICE_ID_BERKOM_SCITEL_QUADRO	0xffa8
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_ITTIM		0x0b48
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_COMPAQ		0x0e11
 #define PCI_DEVICE_ID_COMPAQ_TOKENRING	0x0508
 #define PCI_DEVICE_ID_COMPAQ_TACHYON	0xa0fc
@@ -597,22 +550,17 @@
 #define PCI_DEVICE_ID_AMD_11H_NB_DRAM	0x1302
 #define PCI_DEVICE_ID_AMD_11H_NB_MISC	0x1303
 #define PCI_DEVICE_ID_AMD_11H_NB_LINK	0x1304
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_AMD_15H_M10H_F3	0x1403
 #define PCI_DEVICE_ID_AMD_15H_M30H_NB_F3 0x141d
 #define PCI_DEVICE_ID_AMD_15H_M30H_NB_F4 0x141e
 #define PCI_DEVICE_ID_AMD_15H_M60H_NB_F3 0x1573
 #define PCI_DEVICE_ID_AMD_15H_M60H_NB_F4 0x1574
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_AMD_15H_NB_F0	0x1600
 #define PCI_DEVICE_ID_AMD_15H_NB_F1	0x1601
 #define PCI_DEVICE_ID_AMD_15H_NB_F2	0x1602
 #define PCI_DEVICE_ID_AMD_15H_NB_F3	0x1603
 #define PCI_DEVICE_ID_AMD_15H_NB_F4	0x1604
 #define PCI_DEVICE_ID_AMD_15H_NB_F5	0x1605
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_AMD_16H_NB_F3	0x1533
 #define PCI_DEVICE_ID_AMD_16H_NB_F4	0x1534
 #define PCI_DEVICE_ID_AMD_16H_M30H_NB_F3 0x1583
@@ -636,7 +584,6 @@
 #define PCI_DEVICE_ID_AMD_MI200_DF_F3	0x14d3
 #define PCI_DEVICE_ID_AMD_MI300_DF_F3	0x152b
 #define PCI_DEVICE_ID_AMD_VANGOGH_USB	0x163a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_AMD_CNB17H_F3	0x1703
 #define PCI_DEVICE_ID_AMD_LANCE		0x2000
 #define PCI_DEVICE_ID_AMD_LANCE_HOME	0x2001
@@ -657,10 +604,7 @@
 #define PCI_DEVICE_ID_AMD_OPUS_7443	0x7443
 #define PCI_DEVICE_ID_AMD_VIPER_7443	0x7443
 #define PCI_DEVICE_ID_AMD_OPUS_7445	0x7445
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_AMD_GOLAM_7450	0x7450
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_AMD_8111_PCI	0x7460
 #define PCI_DEVICE_ID_AMD_8111_LPC	0x7468
 #define PCI_DEVICE_ID_AMD_8111_IDE	0x7469
@@ -671,11 +615,7 @@
 #define PCI_DEVICE_ID_AMD_8131_BRIDGE	0x7450
 #define PCI_DEVICE_ID_AMD_8131_APIC	0x7451
 #define PCI_DEVICE_ID_AMD_8132_BRIDGE	0x7458
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_AMD_HUDSON2_SMBUS	0x780b
-=======
 #define PCI_DEVICE_ID_AMD_NL_USB	0x7912
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_AMD_CS5535_IDE    0x208F
 #define PCI_DEVICE_ID_AMD_CS5536_ISA    0x2090
 #define PCI_DEVICE_ID_AMD_CS5536_FLASH  0x2091
@@ -684,13 +624,6 @@
 #define PCI_DEVICE_ID_AMD_CS5536_EHC    0x2095
 #define PCI_DEVICE_ID_AMD_CS5536_UDC    0x2096
 #define PCI_DEVICE_ID_AMD_CS5536_UOC    0x2097
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_AMD_CS5536_IDE    0x209A
-#define PCI_DEVICE_ID_AMD_LX_VIDEO  0x2081
-#define PCI_DEVICE_ID_AMD_LX_AES    0x2082
-#define PCI_DEVICE_ID_AMD_HUDSON2_IDE		0x780c
-#define PCI_DEVICE_ID_AMD_HUDSON2_SATA_IDE	0x7800
-=======
 #define PCI_DEVICE_ID_AMD_CS5536_DEV_IDE    0x2092
 #define PCI_DEVICE_ID_AMD_CS5536_IDE    0x209A
 #define PCI_DEVICE_ID_AMD_LX_VIDEO  0x2081
@@ -699,7 +632,6 @@
 #define PCI_DEVICE_ID_AMD_HUDSON2_SMBUS		0x780b
 #define PCI_DEVICE_ID_AMD_HUDSON2_IDE		0x780c
 #define PCI_DEVICE_ID_AMD_KERNCZ_SMBUS  0x790b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_TRIDENT		0x1023
 #define PCI_DEVICE_ID_TRIDENT_4DWAVE_DX	0x2000
@@ -728,11 +660,8 @@
 #define PCI_DEVICE_ID_DELL_RAC4		0x0012
 #define PCI_DEVICE_ID_DELL_PERC5	0x0015
 
-<<<<<<< HEAD
-=======
 #define PCI_SUBVENDOR_ID_DELL		0x1028
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_MATROX		0x102B
 #define PCI_DEVICE_ID_MATROX_MGA_2	0x0518
 #define PCI_DEVICE_ID_MATROX_MIL	0x0519
@@ -859,10 +788,7 @@
 #define PCI_DEVICE_ID_SI_7018		0x7018
 
 #define PCI_VENDOR_ID_HP		0x103c
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_HP_3PAR		0x1590
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_HP_VISUALIZE_EG	0x1005
 #define PCI_DEVICE_ID_HP_VISUALIZE_FX6	0x1006
 #define PCI_DEVICE_ID_HP_VISUALIZE_FX4	0x1008
@@ -895,10 +821,7 @@
 #define PCI_DEVICE_ID_HP_CISSE		0x323a
 #define PCI_DEVICE_ID_HP_CISSF		0x323b
 #define PCI_DEVICE_ID_HP_CISSH		0x323c
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_HP_CISSI		0x3239
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_HP_ZX2_IOC	0x4031
 
 #define PCI_VENDOR_ID_PCTECH		0x1042
@@ -990,12 +913,9 @@
 #define PCI_DEVICE_ID_TI_X620		0xac8d
 #define PCI_DEVICE_ID_TI_X420		0xac8e
 #define PCI_DEVICE_ID_TI_XX20_FM	0xac8f
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_TI_J721E		0xb00d
 #define PCI_DEVICE_ID_TI_DRA74x		0xb500
 #define PCI_DEVICE_ID_TI_DRA72x		0xb501
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_SONY		0x104d
 
@@ -1189,10 +1109,6 @@
 #define PCI_VENDOR_ID_SGI		0x10a9
 #define PCI_DEVICE_ID_SGI_IOC3		0x0003
 #define PCI_DEVICE_ID_SGI_LITHIUM	0x1002
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_SGI_IOC4		0x100a
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_WINBOND		0x10ad
 #define PCI_DEVICE_ID_WINBOND_82C105	0x0105
@@ -1233,14 +1149,9 @@
 #define PCI_DEVICE_ID_3COM_3CR990SVR	0x990a
 
 #define PCI_VENDOR_ID_AL		0x10b9
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_AL_M1533		0x1533
-#define PCI_DEVICE_ID_AL_M1535 		0x1535
-=======
 #define PCI_DEVICE_ID_AL_M1489		0x1489
 #define PCI_DEVICE_ID_AL_M1533		0x1533
 #define PCI_DEVICE_ID_AL_M1535		0x1535
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_AL_M1541		0x1541
 #define PCI_DEVICE_ID_AL_M1563		0x1563
 #define PCI_DEVICE_ID_AL_M1621		0x1621
@@ -1268,11 +1179,8 @@
 #define PCI_VENDOR_ID_TCONRAD		0x10da
 #define PCI_DEVICE_ID_TCONRAD_TOKENRING	0x0508
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_ROHM		0x10db
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_NVIDIA			0x10de
 #define PCI_DEVICE_ID_NVIDIA_TNT		0x0020
 #define PCI_DEVICE_ID_NVIDIA_TNT2		0x0028
@@ -1467,10 +1375,7 @@
 #define PCI_DEVICE_ID_NVIDIA_NFORCE_MCP78S_SMBUS    0x0752
 #define PCI_DEVICE_ID_NVIDIA_NFORCE_MCP77_IDE       0x0759
 #define PCI_DEVICE_ID_NVIDIA_NFORCE_MCP73_SMBUS     0x07D8
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_NVIDIA_GEFORCE_320M           0x08A0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_NVIDIA_NFORCE_MCP79_SMBUS     0x0AA2
 #define PCI_DEVICE_ID_NVIDIA_NFORCE_MCP89_SATA	    0x0D85
 
@@ -1478,12 +1383,9 @@
 #define PCI_DEVICE_ID_IMS_TT128		0x9128
 #define PCI_DEVICE_ID_IMS_TT3D		0x9135
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_AMCC		0x10e8
 #define PCI_VENDOR_ID_AMPERE		0x1def
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_INTERG		0x10ea
 #define PCI_DEVICE_ID_INTERG_1682	0x1682
 #define PCI_DEVICE_ID_INTERG_2000	0x2000
@@ -1527,11 +1429,8 @@
 #define PCI_DEVICE_ID_TTI_HPT374	0x0008
 #define PCI_DEVICE_ID_TTI_HPT372N	0x0009	/* apparently a 372N variant? */
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_SIGMA		0x1105
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_VIA		0x1106
 #define PCI_DEVICE_ID_VIA_8763_0	0x0198
 #define PCI_DEVICE_ID_VIA_8380_0	0x0204
@@ -1607,10 +1506,7 @@
 #define PCI_DEVICE_ID_VIA_CX700_IDE	0x0581
 #define PCI_DEVICE_ID_VIA_VX800		0x8353
 #define PCI_DEVICE_ID_VIA_VX855		0x8409
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_VIA_VX900		0x8410
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_VIA_8371_1	0x8391
 #define PCI_DEVICE_ID_VIA_82C598_1	0x8598
 #define PCI_DEVICE_ID_VIA_838X_1	0xB188
@@ -1717,11 +1613,8 @@
 #define PCI_DEVICE_ID_SERVERWORKS_CSB6LPC 0x0227
 #define PCI_DEVICE_ID_SERVERWORKS_HT1100LD 0x0408
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_ALTERA		0x1172
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_SBE		0x1176
 #define PCI_DEVICE_ID_SBE_WANXL100	0x0301
 #define PCI_DEVICE_ID_SBE_WANXL200	0x0302
@@ -1792,10 +1685,7 @@
 #define PCI_SUBDEVICE_ID_KEYSPAN_SX2	0x5334
 
 #define PCI_VENDOR_ID_MARVELL		0x11ab
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_MARVELL_EXT	0x1b4b
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_MARVELL_GT64111	0x4146
 #define PCI_DEVICE_ID_MARVELL_GT64260	0x6430
 #define PCI_DEVICE_ID_MARVELL_MV64360	0x6460
@@ -1812,11 +1702,6 @@
 #define PCI_DEVICE_ID_ATT_VENUS_MODEM	0x480
 
 #define PCI_VENDOR_ID_SPECIALIX		0x11cb
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_SPECIALIX_IO8	0x2000
-#define PCI_DEVICE_ID_SPECIALIX_RIO	0x8000
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_SUBDEVICE_ID_SPECIALIX_SPEED4 0xa004
 
 #define PCI_VENDOR_ID_ANALOG_DEVICES	0x11d4
@@ -1832,47 +1717,11 @@
 #define PCI_DEVICE_ID_COMPEX_ENET100VG4	0x0112
 
 #define PCI_VENDOR_ID_PMC_Sierra	0x11f8
-<<<<<<< HEAD
-
-#define PCI_VENDOR_ID_RP		0x11fe
-#define PCI_DEVICE_ID_RP32INTF		0x0001
-#define PCI_DEVICE_ID_RP8INTF		0x0002
-#define PCI_DEVICE_ID_RP16INTF		0x0003
-#define PCI_DEVICE_ID_RP4QUAD		0x0004
-#define PCI_DEVICE_ID_RP8OCTA		0x0005
-#define PCI_DEVICE_ID_RP8J		0x0006
-#define PCI_DEVICE_ID_RP4J		0x0007
-#define PCI_DEVICE_ID_RP8SNI		0x0008
-#define PCI_DEVICE_ID_RP16SNI		0x0009
-#define PCI_DEVICE_ID_RPP4		0x000A
-#define PCI_DEVICE_ID_RPP8		0x000B
-#define PCI_DEVICE_ID_RP4M		0x000D
-#define PCI_DEVICE_ID_RP2_232		0x000E
-#define PCI_DEVICE_ID_RP2_422		0x000F
-#define PCI_DEVICE_ID_URP32INTF		0x0801
-#define PCI_DEVICE_ID_URP8INTF		0x0802
-#define PCI_DEVICE_ID_URP16INTF		0x0803
-#define PCI_DEVICE_ID_URP8OCTA		0x0805
-#define PCI_DEVICE_ID_UPCI_RM3_8PORT	0x080C
-#define PCI_DEVICE_ID_UPCI_RM3_4PORT	0x080D
-#define PCI_DEVICE_ID_CRP16INTF		0x0903
-
-#define PCI_VENDOR_ID_CYCLADES		0x120e
-#define PCI_DEVICE_ID_CYCLOM_Y_Lo	0x0100
-#define PCI_DEVICE_ID_CYCLOM_Y_Hi	0x0101
-#define PCI_DEVICE_ID_CYCLOM_4Y_Lo	0x0102
-#define PCI_DEVICE_ID_CYCLOM_4Y_Hi	0x0103
-#define PCI_DEVICE_ID_CYCLOM_8Y_Lo	0x0104
-#define PCI_DEVICE_ID_CYCLOM_8Y_Hi	0x0105
-#define PCI_DEVICE_ID_CYCLOM_Z_Lo	0x0200
-#define PCI_DEVICE_ID_CYCLOM_Z_Hi	0x0201
-=======
 #define PCI_VENDOR_ID_MICROSEMI		0x11f8
 
 #define PCI_VENDOR_ID_RP		0x11fe
 
 #define PCI_VENDOR_ID_CYCLADES		0x120e
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_PC300_RX_2	0x0300
 #define PCI_DEVICE_ID_PC300_RX_1	0x0301
 #define PCI_DEVICE_ID_PC300_TE_2	0x0310
@@ -1914,12 +1763,6 @@
 #define PCI_VENDOR_ID_STALLION		0x124d
 
 /* Allied Telesyn */
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_AT    		0x1259
-#define PCI_SUBDEVICE_ID_AT_2700FX	0x2701
-#define PCI_SUBDEVICE_ID_AT_2701FX	0x2703
-
-=======
 #define PCI_VENDOR_ID_AT		0x1259
 #define PCI_SUBDEVICE_ID_AT_2700FX	0x2701
 #define PCI_SUBDEVICE_ID_AT_2701FX	0x2703
@@ -1928,7 +1771,6 @@
 #define PCI_DEVICE_ID_ASIX_AX99100	0x9100
 #define PCI_DEVICE_ID_ASIX_AX99100_LB	0x9110
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_ESS		0x125d
 #define PCI_DEVICE_ID_ESS_ESS1968	0x1968
 #define PCI_DEVICE_ID_ESS_ESS1978	0x1978
@@ -2001,15 +1843,12 @@
 #define PCI_VENDOR_ID_NVIDIA_SGS	0x12d2
 #define PCI_DEVICE_ID_NVIDIA_SGS_RIVA128 0x0018
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_PERICOM			0x12D8
 #define PCI_DEVICE_ID_PERICOM_PI7C9X7951	0x7951
 #define PCI_DEVICE_ID_PERICOM_PI7C9X7952	0x7952
 #define PCI_DEVICE_ID_PERICOM_PI7C9X7954	0x7954
 #define PCI_DEVICE_ID_PERICOM_PI7C9X7958	0x7958
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_SUBVENDOR_ID_CHASE_PCIFAST		0x12E0
 #define PCI_SUBDEVICE_ID_CHASE_PCIFAST4		0x0031
 #define PCI_SUBDEVICE_ID_CHASE_PCIFAST8		0x0021
@@ -2030,11 +1869,8 @@
 #define PCI_VENDOR_ID_ESDGMBH		0x12fe
 #define PCI_DEVICE_ID_ESDGMBH_CPCIASIO4 0x0111
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_CB		0x1307	/* Measurement Computing */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_SIIG		0x131f
 #define PCI_SUBVENDOR_ID_SIIG		0x131f
 #define PCI_DEVICE_ID_SIIG_1S_10x_550	0x1000
@@ -2096,10 +1932,6 @@
 #define PCI_VENDOR_ID_QUATECH		0x135C
 #define PCI_DEVICE_ID_QUATECH_QSC100	0x0010
 #define PCI_DEVICE_ID_QUATECH_DSC100	0x0020
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_QUATECH_ESC100D	0x0050
-#define PCI_DEVICE_ID_QUATECH_ESC100M	0x0060
-=======
 #define PCI_DEVICE_ID_QUATECH_DSC200	0x0030
 #define PCI_DEVICE_ID_QUATECH_QSC200	0x0040
 #define PCI_DEVICE_ID_QUATECH_ESC100D	0x0050
@@ -2117,7 +1949,6 @@
 #define PCI_DEVICE_ID_QUATECH_DSC200E	0x01B1
 #define PCI_DEVICE_ID_QUATECH_SSCLP200	0x01C0
 #define PCI_DEVICE_ID_QUATECH_ESCLP100	0x01E0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_QUATECH_SPPXP_100 0x0278
 
 #define PCI_VENDOR_ID_SEALEVEL		0x135e
@@ -2140,11 +1971,8 @@
 #define PCI_VENDOR_ID_DIGIGRAM		0x1369
 #define PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_SERIAL_SUBSYSTEM	0xc001
 #define PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ES_CAE_SERIAL_SUBSYSTEM	0xc002
-<<<<<<< HEAD
-=======
 #define PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ESE_SERIAL_SUBSYSTEM		0xc021
 #define PCI_SUBDEVICE_ID_DIGIGRAM_LX6464ESE_CAE_SERIAL_SUBSYSTEM	0xc022
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_KAWASAKI		0x136b
 #define PCI_DEVICE_ID_MCHIP_KL5A72002	0xff01
@@ -2167,27 +1995,6 @@
 #define PCI_DEVICE_ID_APPLICOM_PCI2000PFB 0x0003
 
 #define PCI_VENDOR_ID_MOXA		0x1393
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_MOXA_RC7000	0x0001
-#define PCI_DEVICE_ID_MOXA_CP102	0x1020
-#define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
-#define PCI_DEVICE_ID_MOXA_CP102U	0x1022
-#define PCI_DEVICE_ID_MOXA_C104		0x1040
-#define PCI_DEVICE_ID_MOXA_CP104U	0x1041
-#define PCI_DEVICE_ID_MOXA_CP104JU	0x1042
-#define PCI_DEVICE_ID_MOXA_CP104EL	0x1043
-#define PCI_DEVICE_ID_MOXA_CT114	0x1140
-#define PCI_DEVICE_ID_MOXA_CP114	0x1141
-#define PCI_DEVICE_ID_MOXA_CP118U	0x1180
-#define PCI_DEVICE_ID_MOXA_CP118EL	0x1181
-#define PCI_DEVICE_ID_MOXA_CP132	0x1320
-#define PCI_DEVICE_ID_MOXA_CP132U	0x1321
-#define PCI_DEVICE_ID_MOXA_CP134U	0x1340
-#define PCI_DEVICE_ID_MOXA_C168		0x1680
-#define PCI_DEVICE_ID_MOXA_CP168U	0x1681
-#define PCI_DEVICE_ID_MOXA_CP168EL	0x1682
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_MOXA_CP204J	0x2040
 #define PCI_DEVICE_ID_MOXA_C218		0x2180
 #define PCI_DEVICE_ID_MOXA_C320		0x3200
@@ -2242,18 +2049,11 @@
 #define PCI_DEVICE_ID_EXAR_XR17C152	0x0152
 #define PCI_DEVICE_ID_EXAR_XR17C154	0x0154
 #define PCI_DEVICE_ID_EXAR_XR17C158	0x0158
-<<<<<<< HEAD
-
-#define PCI_VENDOR_ID_MICROGATE		0x13c0
-#define PCI_DEVICE_ID_MICROGATE_USC	0x0010
-#define PCI_DEVICE_ID_MICROGATE_SCA	0x0030
-=======
 #define PCI_DEVICE_ID_EXAR_XR17V352	0x0352
 #define PCI_DEVICE_ID_EXAR_XR17V354	0x0354
 #define PCI_DEVICE_ID_EXAR_XR17V358	0x0358
 
 #define PCI_VENDOR_ID_MICROGATE		0x13c0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_3WARE		0x13C1
 #define PCI_DEVICE_ID_3WARE_1000	0x1000
@@ -2274,13 +2074,10 @@
 #define PCI_DEVICE_ID_CMEDIA_CM8738	0x0111
 #define PCI_DEVICE_ID_CMEDIA_CM8738B	0x0112
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_ADVANTECH		0x13fe
 
 #define PCI_VENDOR_ID_MEILHAUS		0x1402
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_LAVA		0x1407
 #define PCI_DEVICE_ID_LAVA_DSERIAL	0x0100 /* 2x 16550 */
 #define PCI_DEVICE_ID_LAVA_QUATRO_A	0x0101 /* 2x 16550, half of 4 port */
@@ -2306,12 +2103,9 @@
 #define PCI_DEVICE_ID_ICE_1712		0x1712
 #define PCI_DEVICE_ID_VT1724		0x1724
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_MICROSOFT		0x1414
 #define PCI_DEVICE_ID_HYPERV_VIDEO	0x5353
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_OXSEMI		0x1415
 #define PCI_DEVICE_ID_OXSEMI_12PCI840	0x8403
 #define PCI_DEVICE_ID_OXSEMI_PCIe840		0xC000
@@ -2332,11 +2126,8 @@
 
 #define PCI_VENDOR_ID_CHELSIO		0x1425
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_ADLINK		0x144a
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_SAMSUNG		0x144d
 
 #define PCI_VENDOR_ID_GIGABYTE		0x1458
@@ -2345,12 +2136,9 @@
 
 #define PCI_VENDOR_ID_MYRICOM		0x14c1
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_MEDIATEK		0x14c3
 #define PCI_DEVICE_ID_MEDIATEK_7629	0x7629
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_TITAN		0x14D2
 #define PCI_DEVICE_ID_TITAN_010L	0x8001
 #define PCI_DEVICE_ID_TITAN_100L	0x8010
@@ -2376,11 +2164,8 @@
 #define PCI_DEVICE_ID_AFAVLAB_P030	0x2182
 #define PCI_SUBDEVICE_ID_AFAVLAB_P061		0x2150
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_AMPLICON		0x14dc
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_BCM_GVC          0x14a4
 #define PCI_VENDOR_ID_BROADCOM		0x14e4
 #define PCI_DEVICE_ID_TIGON3_5752	0x1600
@@ -2409,26 +2194,17 @@
 #define PCI_DEVICE_ID_TIGON3_5705M_2	0x165e
 #define PCI_DEVICE_ID_NX2_57712		0x1662
 #define PCI_DEVICE_ID_NX2_57712E	0x1663
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_NX2_57712_MF	0x1663
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_TIGON3_5714	0x1668
 #define PCI_DEVICE_ID_TIGON3_5714S	0x1669
 #define PCI_DEVICE_ID_TIGON3_5780	0x166a
 #define PCI_DEVICE_ID_TIGON3_5780S	0x166b
 #define PCI_DEVICE_ID_TIGON3_5705F	0x166e
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_TIGON3_5754M	0x1672
-#define PCI_DEVICE_ID_TIGON3_5755M	0x1673
-#define PCI_DEVICE_ID_TIGON3_5756	0x1674
-=======
 #define PCI_DEVICE_ID_NX2_57712_VF	0x166f
 #define PCI_DEVICE_ID_TIGON3_5754M	0x1672
 #define PCI_DEVICE_ID_TIGON3_5755M	0x1673
 #define PCI_DEVICE_ID_TIGON3_5756	0x1674
 #define PCI_DEVICE_ID_TIGON3_5750	0x1676
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_TIGON3_5751	0x1677
 #define PCI_DEVICE_ID_TIGON3_5715	0x1678
 #define PCI_DEVICE_ID_TIGON3_5715S	0x1679
@@ -2450,22 +2226,15 @@
 #define PCI_DEVICE_ID_TIGON3_5787	0x169b
 #define PCI_DEVICE_ID_TIGON3_5788	0x169c
 #define PCI_DEVICE_ID_TIGON3_5789	0x169d
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_NX2_57840_4_10	0x16a1
 #define PCI_DEVICE_ID_NX2_57840_2_20	0x16a2
 #define PCI_DEVICE_ID_NX2_57840_MF	0x16a4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_NX2_57800_MF	0x16a5
 #define PCI_DEVICE_ID_TIGON3_5702X	0x16a6
 #define PCI_DEVICE_ID_TIGON3_5703X	0x16a7
 #define PCI_DEVICE_ID_TIGON3_5704S	0x16a8
 #define PCI_DEVICE_ID_NX2_57800_VF	0x16a9
 #define PCI_DEVICE_ID_NX2_5706S		0x16aa
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_NX2_57840_MF	0x16a4
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_NX2_5708S		0x16ac
 #define PCI_DEVICE_ID_NX2_57840_VF	0x16ad
 #define PCI_DEVICE_ID_NX2_57810_MF	0x16ae
@@ -2515,24 +2284,13 @@
 #define PCI_VENDOR_ID_MORETON		0x15aa
 #define PCI_DEVICE_ID_RASTEL_2PORT	0x2000
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_VMWARE		0x15ad
 #define PCI_DEVICE_ID_VMWARE_VMXNET3	0x07b0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_ZOLTRIX		0x15b0
 #define PCI_DEVICE_ID_ZOLTRIX_2BD0	0x2bd0
 
 #define PCI_VENDOR_ID_MELLANOX		0x15b3
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_MELLANOX_TAVOR	0x5a44
-#define PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE	0x5a46
-#define PCI_DEVICE_ID_MELLANOX_ARBEL_COMPAT 0x6278
-#define PCI_DEVICE_ID_MELLANOX_ARBEL	0x6282
-#define PCI_DEVICE_ID_MELLANOX_SINAI_OLD 0x5e8c
-#define PCI_DEVICE_ID_MELLANOX_SINAI	0x6274
-=======
 #define PCI_DEVICE_ID_MELLANOX_CONNECTX3	0x1003
 #define PCI_DEVICE_ID_MELLANOX_CONNECTX3_PRO	0x1007
 #define PCI_DEVICE_ID_MELLANOX_CONNECTIB	0x1011
@@ -2556,7 +2314,6 @@
 #define PCI_DEVICE_ID_MELLANOX_CONNECTX_EN_T_GEN2 0x675a
 #define PCI_DEVICE_ID_MELLANOX_CONNECTX_EN_GEN2	0x6764
 #define PCI_DEVICE_ID_MELLANOX_CONNECTX2	0x676e
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_DFI		0x15bd
 
@@ -2566,18 +2323,10 @@
 /*
  * ADDI-DATA GmbH communication cards <info@addi-data.com>
  */
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_ADDIDATA_OLD             0x10E8
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_ADDIDATA                 0x15B8
 #define PCI_DEVICE_ID_ADDIDATA_APCI7500        0x7000
 #define PCI_DEVICE_ID_ADDIDATA_APCI7420        0x7001
 #define PCI_DEVICE_ID_ADDIDATA_APCI7300        0x7002
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_ADDIDATA_APCI7800        0x818E
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_ADDIDATA_APCI7500_2      0x7009
 #define PCI_DEVICE_ID_ADDIDATA_APCI7420_2      0x700A
 #define PCI_DEVICE_ID_ADDIDATA_APCI7300_2      0x700B
@@ -2620,8 +2369,6 @@
 #define PCI_VENDOR_ID_CENATEK		0x16CA
 #define PCI_DEVICE_ID_CENATEK_IDE	0x0001
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_SYNOPSYS		0x16c3
 #define PCI_DEVICE_ID_SYNOPSYS_HAPSUSB3		0xabcd
 #define PCI_DEVICE_ID_SYNOPSYS_HAPSUSB3_AXI	0xabce
@@ -2630,7 +2377,6 @@
 
 #define PCI_VENDOR_ID_USR		0x16ec
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_VITESSE		0x1725
 #define PCI_DEVICE_ID_VITESSE_VSC7174	0x7174
 
@@ -2643,8 +2389,6 @@
 #define PCI_DEVICE_ID_ALTIMA_AC9100	0x03ea
 #define PCI_DEVICE_ID_ALTIMA_AC1003	0x03eb
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_CAVIUM		0x177d
 
 #define PCI_VENDOR_ID_TECHWELL		0x1797
@@ -2656,7 +2400,6 @@
 #define PCI_DEVICE_ID_TECHWELL_6816_3	0x6812
 #define PCI_DEVICE_ID_TECHWELL_6816_4	0x6813
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_BELKIN		0x1799
 #define PCI_DEVICE_ID_BELKIN_F5D7010V7	0x701f
 
@@ -2668,10 +2411,6 @@
 #define PCI_DEVICE_ID_RDC_R6061		0x6061
 #define PCI_DEVICE_ID_RDC_D1010		0x1010
 
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_LENOVO		0x17aa
-
-=======
 #define PCI_VENDOR_ID_GLI		0x17a0
 
 #define PCI_VENDOR_ID_LENOVO		0x17aa
@@ -2680,7 +2419,6 @@
 
 #define PCI_VENDOR_ID_CDNS		0x17cd
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_ARECA		0x17d3
 #define PCI_DEVICE_ID_ARECA_1110	0x1110
 #define PCI_DEVICE_ID_ARECA_1120	0x1120
@@ -2712,11 +2450,8 @@
 
 #define PCI_VENDOR_ID_TOPSPIN		0x1867
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_COMMTECH		0x18f7
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_SILAN		0x1904
 
 #define PCI_VENDOR_ID_RENESAS		0x1912
@@ -2734,12 +2469,8 @@
 #define PCI_VENDOR_ID_TDI               0x192E
 #define PCI_DEVICE_ID_TDI_EHCI          0x0101
 
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_FREESCALE		0x1957
-=======
 #define PCI_VENDOR_ID_FREESCALE		0x1957	/* duplicate: NXP */
 #define PCI_VENDOR_ID_NXP		0x1957	/* duplicate: FREESCALE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_MPC8308		0xc006
 #define PCI_DEVICE_ID_MPC8315E		0x00b4
 #define PCI_DEVICE_ID_MPC8315		0x00b5
@@ -2830,8 +2561,6 @@
 #define PCI_DEVICE_ID_KORENIX_JETCARDF2	0x1700
 #define PCI_DEVICE_ID_KORENIX_JETCARDF3	0x17ff
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_HUAWEI		0x19e5
 #define PCI_DEVICE_ID_HUAWEI_ZIP_VF	0xa251
 #define PCI_DEVICE_ID_HUAWEI_SEC_VF	0xa256
@@ -2845,18 +2574,10 @@
 #define PCI_DEVICE_ID_NETRONOME_NFP3800_VF	0x3803
 #define PCI_DEVICE_ID_NETRONOME_NFP6000_VF	0x6003
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_QMI		0x1a32
 
 #define PCI_VENDOR_ID_AZWAVE		0x1a3b
 
-<<<<<<< HEAD
-#define PCI_VENDOR_ID_ASMEDIA		0x1b21
-
-#define PCI_VENDOR_ID_TEKRAM		0x1de1
-#define PCI_DEVICE_ID_TEKRAM_DC290	0xdc29
-
-=======
 #define PCI_VENDOR_ID_REDHAT_QUMRANET    0x1af4
 #define PCI_SUBVENDOR_ID_REDHAT_QUMRANET 0x1af4
 #define PCI_SUBDEVICE_ID_QEMU            0x1100
@@ -2887,18 +2608,14 @@
 
 #define PCI_VENDOR_ID_ALIBABA		0x1ded
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_TEHUTI		0x1fc9
 #define PCI_DEVICE_ID_TEHUTI_3009	0x3009
 #define PCI_DEVICE_ID_TEHUTI_3010	0x3010
 #define PCI_DEVICE_ID_TEHUTI_3014	0x3014
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_SUNIX		0x1fd4
 #define PCI_DEVICE_ID_SUNIX_1999	0x1999
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_HINT             0x3388
 #define PCI_DEVICE_ID_HINT_VXPROII_IDE 0x8013
 
@@ -2940,31 +2657,16 @@
 
 #define PCI_VENDOR_ID_INTEL		0x8086
 #define PCI_DEVICE_ID_INTEL_EESSC	0x0008
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_PXHD_0	0x0320
-#define PCI_DEVICE_ID_INTEL_PXHD_1	0x0321
-#define PCI_DEVICE_ID_INTEL_PXH_0	0x0329
-#define PCI_DEVICE_ID_INTEL_PXH_1	0x032A
-#define PCI_DEVICE_ID_INTEL_PXHV	0x032C
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_CML_LP	0x02c8
 #define PCI_DEVICE_ID_INTEL_PXHD_0	0x0320
 #define PCI_DEVICE_ID_INTEL_PXHD_1	0x0321
 #define PCI_DEVICE_ID_INTEL_PXH_0	0x0329
 #define PCI_DEVICE_ID_INTEL_PXH_1	0x032a
 #define PCI_DEVICE_ID_INTEL_PXHV	0x032c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_80332_0	0x0330
 #define PCI_DEVICE_ID_INTEL_80332_1	0x0332
 #define PCI_DEVICE_ID_INTEL_80333_0	0x0370
 #define PCI_DEVICE_ID_INTEL_80333_1	0x0372
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_82375	0x0482
-#define PCI_DEVICE_ID_INTEL_82424	0x0483
-#define PCI_DEVICE_ID_INTEL_82378	0x0484
-#define PCI_DEVICE_ID_INTEL_MRST_SD0	0x0807
-#define PCI_DEVICE_ID_INTEL_MRST_SD1	0x0808
-=======
 #define PCI_DEVICE_ID_INTEL_QAT_DH895XCC	0x0435
 #define PCI_DEVICE_ID_INTEL_QAT_DH895XCC_VF	0x0443
 #define PCI_DEVICE_ID_INTEL_82375	0x0482
@@ -2975,25 +2677,11 @@
 #define PCI_DEVICE_ID_INTEL_MRST_SD0	0x0807
 #define PCI_DEVICE_ID_INTEL_MRST_SD1	0x0808
 #define PCI_DEVICE_ID_INTEL_HDA_OAKTRAIL	0x080a
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_MFD_SD	0x0820
 #define PCI_DEVICE_ID_INTEL_MFD_SDIO1	0x0821
 #define PCI_DEVICE_ID_INTEL_MFD_SDIO2	0x0822
 #define PCI_DEVICE_ID_INTEL_MFD_EMMC0	0x0823
 #define PCI_DEVICE_ID_INTEL_MFD_EMMC1	0x0824
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_MRST_SD2	0x084F
-#define PCI_DEVICE_ID_INTEL_I960	0x0960
-#define PCI_DEVICE_ID_INTEL_I960RM	0x0962
-#define PCI_DEVICE_ID_INTEL_8257X_SOL	0x1062
-#define PCI_DEVICE_ID_INTEL_82573E_SOL	0x1085
-#define PCI_DEVICE_ID_INTEL_82573L_SOL	0x108F
-#define PCI_DEVICE_ID_INTEL_82815_MC	0x1130
-#define PCI_DEVICE_ID_INTEL_82815_CGC	0x1132
-#define PCI_DEVICE_ID_INTEL_82092AA_0	0x1221
-#define PCI_DEVICE_ID_INTEL_7505_0	0x2550
-#define PCI_DEVICE_ID_INTEL_7205_0	0x255d
-=======
 #define PCI_DEVICE_ID_INTEL_MRST_SD2	0x084f
 #define PCI_DEVICE_ID_INTEL_QUARK_X1000_ILB	0x095e
 #define PCI_DEVICE_ID_INTEL_I960	0x0960
@@ -3013,7 +2701,6 @@
 #define PCI_DEVICE_ID_INTEL_82815_CGC	0x1132
 #define PCI_DEVICE_ID_INTEL_SST_TNG	0x119a
 #define PCI_DEVICE_ID_INTEL_82092AA_0	0x1221
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_82437	0x122d
 #define PCI_DEVICE_ID_INTEL_82371FB_0	0x122e
 #define PCI_DEVICE_ID_INTEL_82371FB_1	0x1230
@@ -3021,19 +2708,6 @@
 #define PCI_DEVICE_ID_INTEL_82441	0x1237
 #define PCI_DEVICE_ID_INTEL_82380FB	0x124b
 #define PCI_DEVICE_ID_INTEL_82439	0x1250
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_80960_RP	0x1960
-#define PCI_DEVICE_ID_INTEL_82840_HB	0x1a21
-#define PCI_DEVICE_ID_INTEL_82845_HB	0x1a30
-#define PCI_DEVICE_ID_INTEL_IOAT	0x1a38
-#define PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MIN	0x1c41
-#define PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MAX	0x1c5f
-#define PCI_DEVICE_ID_INTEL_PATSBURG_LPC_0	0x1d40
-#define PCI_DEVICE_ID_INTEL_PATSBURG_LPC_1	0x1d41
-#define PCI_DEVICE_ID_INTEL_PANTHERPOINT_XHCI	0x1e31
-#define PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MIN	0x1e40
-#define PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MAX	0x1e5f
-=======
 #define PCI_DEVICE_ID_INTEL_LIGHT_RIDGE             0x1513 /* Tbt 1 Gen 1 */
 #define PCI_DEVICE_ID_INTEL_EAGLE_RIDGE             0x151a
 #define PCI_DEVICE_ID_INTEL_LIGHT_PEAK              0x151b
@@ -3072,7 +2746,6 @@
 #define PCI_DEVICE_ID_INTEL_VMD_201D	0x201d
 #define PCI_DEVICE_ID_INTEL_HDA_BSW	0x2284
 #define PCI_DEVICE_ID_INTEL_SST_BSW	0x22a8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_DH89XXCC_LPC_MIN	0x2310
 #define PCI_DEVICE_ID_INTEL_DH89XXCC_LPC_MAX	0x231f
 #define PCI_DEVICE_ID_INTEL_82801AA_0	0x2410
@@ -3122,25 +2795,13 @@
 #define PCI_DEVICE_ID_INTEL_82801EB_11	0x24db
 #define PCI_DEVICE_ID_INTEL_82801EB_12	0x24dc
 #define PCI_DEVICE_ID_INTEL_82801EB_13	0x24dd
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_ESB_1	0x25a1
-#define PCI_DEVICE_ID_INTEL_ESB_2	0x25a2
-#define PCI_DEVICE_ID_INTEL_ESB_4	0x25a4
-#define PCI_DEVICE_ID_INTEL_ESB_5	0x25a6
-#define PCI_DEVICE_ID_INTEL_ESB_9	0x25ab
-#define PCI_DEVICE_ID_INTEL_ESB_10	0x25ac
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_82820_HB	0x2500
 #define PCI_DEVICE_ID_INTEL_82820_UP_HB	0x2501
 #define PCI_DEVICE_ID_INTEL_82850_HB	0x2530
 #define PCI_DEVICE_ID_INTEL_82860_HB	0x2531
 #define PCI_DEVICE_ID_INTEL_E7501_MCH	0x254c
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_INTEL_7505_0	0x2550
 #define PCI_DEVICE_ID_INTEL_7205_0	0x255d
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_82845G_HB	0x2560
 #define PCI_DEVICE_ID_INTEL_82845G_IG	0x2562
 #define PCI_DEVICE_ID_INTEL_82865_HB	0x2570
@@ -3150,19 +2811,6 @@
 #define PCI_DEVICE_ID_INTEL_82915G_IG	0x2582
 #define PCI_DEVICE_ID_INTEL_82915GM_HB	0x2590
 #define PCI_DEVICE_ID_INTEL_82915GM_IG	0x2592
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_5000_ERR	0x25F0
-#define PCI_DEVICE_ID_INTEL_5000_FBD0	0x25F5
-#define PCI_DEVICE_ID_INTEL_5000_FBD1	0x25F6
-#define PCI_DEVICE_ID_INTEL_82945G_HB	0x2770
-#define PCI_DEVICE_ID_INTEL_82945G_IG	0x2772
-#define PCI_DEVICE_ID_INTEL_3000_HB	0x2778
-#define PCI_DEVICE_ID_INTEL_82945GM_HB	0x27A0
-#define PCI_DEVICE_ID_INTEL_82945GM_IG	0x27A2
-#define PCI_DEVICE_ID_INTEL_ICH6_0	0x2640
-#define PCI_DEVICE_ID_INTEL_ICH6_1	0x2641
-#define PCI_DEVICE_ID_INTEL_ICH6_2	0x2642
-=======
 #define PCI_DEVICE_ID_INTEL_ESB_1	0x25a1
 #define PCI_DEVICE_ID_INTEL_ESB_2	0x25a2
 #define PCI_DEVICE_ID_INTEL_ESB_4	0x25a4
@@ -3176,22 +2824,12 @@
 #define PCI_DEVICE_ID_INTEL_ICH6_1	0x2641
 #define PCI_DEVICE_ID_INTEL_ICH6_2	0x2642
 #define PCI_DEVICE_ID_INTEL_HDA_ICH6	0x2668
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_ICH6_16	0x266a
 #define PCI_DEVICE_ID_INTEL_ICH6_17	0x266d
 #define PCI_DEVICE_ID_INTEL_ICH6_18	0x266e
 #define PCI_DEVICE_ID_INTEL_ICH6_19	0x266f
 #define PCI_DEVICE_ID_INTEL_ESB2_0	0x2670
 #define PCI_DEVICE_ID_INTEL_ESB2_14	0x2698
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_ESB2_17	0x269b
-#define PCI_DEVICE_ID_INTEL_ESB2_18	0x269e
-#define PCI_DEVICE_ID_INTEL_ICH7_0	0x27b8
-#define PCI_DEVICE_ID_INTEL_ICH7_1	0x27b9
-#define PCI_DEVICE_ID_INTEL_ICH7_30	0x27b0
-#define PCI_DEVICE_ID_INTEL_TGP_LPC	0x27bc
-#define PCI_DEVICE_ID_INTEL_ICH7_31	0x27bd
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_ESB2	0x269a
 #define PCI_DEVICE_ID_INTEL_ESB2_17	0x269b
 #define PCI_DEVICE_ID_INTEL_ESB2_18	0x269e
@@ -3206,7 +2844,6 @@
 #define PCI_DEVICE_ID_INTEL_TGP_LPC	0x27bc
 #define PCI_DEVICE_ID_INTEL_ICH7_31	0x27bd
 #define PCI_DEVICE_ID_INTEL_HDA_ICH7	0x27d8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_ICH7_17	0x27da
 #define PCI_DEVICE_ID_INTEL_ICH7_19	0x27dd
 #define PCI_DEVICE_ID_INTEL_ICH7_20	0x27de
@@ -3217,18 +2854,6 @@
 #define PCI_DEVICE_ID_INTEL_ICH8_3	0x2814
 #define PCI_DEVICE_ID_INTEL_ICH8_4	0x2815
 #define PCI_DEVICE_ID_INTEL_ICH8_5	0x283e
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_ICH8_6	0x2850
-#define PCI_DEVICE_ID_INTEL_ICH9_0	0x2910
-#define PCI_DEVICE_ID_INTEL_ICH9_1	0x2917
-#define PCI_DEVICE_ID_INTEL_ICH9_2	0x2912
-#define PCI_DEVICE_ID_INTEL_ICH9_3	0x2913
-#define PCI_DEVICE_ID_INTEL_ICH9_4	0x2914
-#define PCI_DEVICE_ID_INTEL_ICH9_5	0x2919
-#define PCI_DEVICE_ID_INTEL_ICH9_6	0x2930
-#define PCI_DEVICE_ID_INTEL_ICH9_7	0x2916
-#define PCI_DEVICE_ID_INTEL_ICH9_8	0x2918
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_ICH8	0x284b
 #define PCI_DEVICE_ID_INTEL_ICH8_6	0x2850
 #define PCI_DEVICE_ID_INTEL_VMD_28C0	0x28c0
@@ -3243,7 +2868,6 @@
 #define PCI_DEVICE_ID_INTEL_ICH9_6	0x2930
 #define PCI_DEVICE_ID_INTEL_HDA_ICH9_0	0x293e
 #define PCI_DEVICE_ID_INTEL_HDA_ICH9_1	0x293f
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_I7_MCR	0x2c18
 #define PCI_DEVICE_ID_INTEL_I7_MC_TAD	0x2c19
 #define PCI_DEVICE_ID_INTEL_I7_MC_RAS	0x2c1a
@@ -3260,13 +2884,8 @@
 #define PCI_DEVICE_ID_INTEL_I7_MC_CH2_ADDR  0x2c31
 #define PCI_DEVICE_ID_INTEL_I7_MC_CH2_RANK  0x2c32
 #define PCI_DEVICE_ID_INTEL_I7_MC_CH2_TC    0x2c33
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_I7_NONCORE	0x2c41
-#define PCI_DEVICE_ID_INTEL_I7_NONCORE_ALT 0x2c40
-=======
 #define PCI_DEVICE_ID_INTEL_I7_NONCORE_ALT 0x2c40
 #define PCI_DEVICE_ID_INTEL_I7_NONCORE	0x2c41
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_NONCORE     0x2c50
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_NONCORE_ALT 0x2c51
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_NONCORE_REV2 0x2c70
@@ -3275,11 +2894,7 @@
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_QPI_PHY0    0x2c91
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MCR         0x2c98
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_TAD      0x2c99
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_TEST     0x2c9C
-=======
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_TEST     0x2c9c
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH0_CTRL 0x2ca0
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH0_ADDR 0x2ca1
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH0_RANK 0x2ca2
@@ -3304,10 +2919,7 @@
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_ADDR_REV2  0x2db1
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_RANK_REV2  0x2db2
 #define PCI_DEVICE_ID_INTEL_LYNNFIELD_MC_CH2_TC_REV2    0x2db3
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_GML	0x3198
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_82855PM_HB	0x3340
 #define PCI_DEVICE_ID_INTEL_IOAT_TBG4	0x3429
 #define PCI_DEVICE_ID_INTEL_IOAT_TBG5	0x342a
@@ -3318,14 +2930,6 @@
 #define PCI_DEVICE_ID_INTEL_IOAT_TBG1	0x3431
 #define PCI_DEVICE_ID_INTEL_IOAT_TBG2	0x3432
 #define PCI_DEVICE_ID_INTEL_IOAT_TBG3	0x3433
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_82830_HB	0x3575
-#define PCI_DEVICE_ID_INTEL_82830_CGC	0x3577
-#define PCI_DEVICE_ID_INTEL_82854_HB	0x358c
-#define PCI_DEVICE_ID_INTEL_82854_IG	0x358e
-#define PCI_DEVICE_ID_INTEL_82855GM_HB	0x3580
-#define PCI_DEVICE_ID_INTEL_82855GM_IG	0x3582
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_ICL_LP	0x34c8
 #define PCI_DEVICE_ID_INTEL_82830_HB	0x3575
 #define PCI_DEVICE_ID_INTEL_82830_CGC	0x3577
@@ -3333,7 +2937,6 @@
 #define PCI_DEVICE_ID_INTEL_82855GM_IG	0x3582
 #define PCI_DEVICE_ID_INTEL_82854_HB	0x358c
 #define PCI_DEVICE_ID_INTEL_82854_IG	0x358e
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_E7520_MCH	0x3590
 #define PCI_DEVICE_ID_INTEL_E7320_MCH	0x3592
 #define PCI_DEVICE_ID_INTEL_MCH_PA	0x3595
@@ -3343,19 +2946,11 @@
 #define PCI_DEVICE_ID_INTEL_MCH_PC	0x3599
 #define PCI_DEVICE_ID_INTEL_MCH_PC1	0x359a
 #define PCI_DEVICE_ID_INTEL_E7525_MCH	0x359e
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_I7300_MCH_ERR 0x360c
-#define PCI_DEVICE_ID_INTEL_I7300_MCH_FB0 0x360f
-#define PCI_DEVICE_ID_INTEL_I7300_MCH_FB1 0x3610
-#define PCI_DEVICE_ID_INTEL_IOAT_CNB	0x360b
-#define PCI_DEVICE_ID_INTEL_FBD_CNB	0x360c
-=======
 #define PCI_DEVICE_ID_INTEL_IOAT_CNB	0x360b
 #define PCI_DEVICE_ID_INTEL_FBD_CNB	0x360c
 #define PCI_DEVICE_ID_INTEL_I7300_MCH_ERR 0x360c
 #define PCI_DEVICE_ID_INTEL_I7300_MCH_FB0 0x360f
 #define PCI_DEVICE_ID_INTEL_I7300_MCH_FB1 0x3610
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_IOAT_JSF0	0x3710
 #define PCI_DEVICE_ID_INTEL_IOAT_JSF1	0x3711
 #define PCI_DEVICE_ID_INTEL_IOAT_JSF2	0x3712
@@ -3366,22 +2961,14 @@
 #define PCI_DEVICE_ID_INTEL_IOAT_JSF7	0x3717
 #define PCI_DEVICE_ID_INTEL_IOAT_JSF8	0x3718
 #define PCI_DEVICE_ID_INTEL_IOAT_JSF9	0x3719
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_INTEL_QAT_C62X	0x37c8
 #define PCI_DEVICE_ID_INTEL_QAT_C62X_VF	0x37c9
 #define PCI_DEVICE_ID_INTEL_HDA_ICL_N	0x38c8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_ICH10_0	0x3a14
 #define PCI_DEVICE_ID_INTEL_ICH10_1	0x3a16
 #define PCI_DEVICE_ID_INTEL_ICH10_2	0x3a18
 #define PCI_DEVICE_ID_INTEL_ICH10_3	0x3a1a
 #define PCI_DEVICE_ID_INTEL_ICH10_4	0x3a30
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_ICH10_5	0x3a60
-#define PCI_DEVICE_ID_INTEL_5_3400_SERIES_LPC_MIN	0x3b00
-#define PCI_DEVICE_ID_INTEL_5_3400_SERIES_LPC_MAX	0x3b1f
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_ICH10_0	0x3a3e
 #define PCI_DEVICE_ID_INTEL_ICH10_5	0x3a60
 #define PCI_DEVICE_ID_INTEL_HDA_ICH10_1 0x3a6e
@@ -3389,7 +2976,6 @@
 #define PCI_DEVICE_ID_INTEL_5_3400_SERIES_LPC_MAX	0x3b1f
 #define PCI_DEVICE_ID_INTEL_HDA_5_3400_SERIES_0	0x3b56
 #define PCI_DEVICE_ID_INTEL_HDA_5_3400_SERIES_1	0x3b57
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_IOAT_SNB0	0x3c20
 #define PCI_DEVICE_ID_INTEL_IOAT_SNB1	0x3c21
 #define PCI_DEVICE_ID_INTEL_IOAT_SNB2	0x3c22
@@ -3400,18 +2986,6 @@
 #define PCI_DEVICE_ID_INTEL_IOAT_SNB7	0x3c27
 #define PCI_DEVICE_ID_INTEL_IOAT_SNB8	0x3c2e
 #define PCI_DEVICE_ID_INTEL_IOAT_SNB9	0x3c2f
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_IOAT_SNB	0x402f
-#define PCI_DEVICE_ID_INTEL_5100_16	0x65f0
-#define PCI_DEVICE_ID_INTEL_5100_21	0x65f5
-#define PCI_DEVICE_ID_INTEL_5100_22	0x65f6
-#define PCI_DEVICE_ID_INTEL_5400_ERR	0x4030
-#define PCI_DEVICE_ID_INTEL_5400_FBD0	0x4035
-#define PCI_DEVICE_ID_INTEL_5400_FBD1	0x4036
-#define PCI_DEVICE_ID_INTEL_IOAT_SCNB	0x65ff
-#define PCI_DEVICE_ID_INTEL_EP80579_0	0x5031
-#define PCI_DEVICE_ID_INTEL_EP80579_1	0x5032
-=======
 #define PCI_DEVICE_ID_INTEL_UNC_QPI0	0x3c41
 #define PCI_DEVICE_ID_INTEL_UNC_QPI1	0x3c42
 #define PCI_DEVICE_ID_INTEL_UNC_R2PCIE	0x3c43
@@ -3468,7 +3042,6 @@
 #define PCI_DEVICE_ID_INTEL_5100_21	0x65f5
 #define PCI_DEVICE_ID_INTEL_5100_22	0x65f6
 #define PCI_DEVICE_ID_INTEL_IOAT_SCNB	0x65ff
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_82371SB_0	0x7000
 #define PCI_DEVICE_ID_INTEL_82371SB_1	0x7010
 #define PCI_DEVICE_ID_INTEL_82371SB_2	0x7020
@@ -3497,10 +3070,6 @@
 #define PCI_DEVICE_ID_INTEL_82443GX_0	0x71a0
 #define PCI_DEVICE_ID_INTEL_82443GX_2	0x71a2
 #define PCI_DEVICE_ID_INTEL_82372FB_1	0x7601
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_SCH_LPC	0x8119
-#define PCI_DEVICE_ID_INTEL_SCH_IDE	0x811a
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_ARL	0x7728
 #define PCI_DEVICE_ID_INTEL_HDA_RPL_S	0x7a50
 #define PCI_DEVICE_ID_INTEL_HDA_ADL_S	0x7ad0
@@ -3510,7 +3079,6 @@
 #define PCI_DEVICE_ID_INTEL_SCH_IDE	0x811a
 #define PCI_DEVICE_ID_INTEL_HDA_POULSBO	0x811b
 #define PCI_DEVICE_ID_INTEL_E6XX_CU	0x8183
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_INTEL_ITC_LPC	0x8186
 #define PCI_DEVICE_ID_INTEL_82454GX	0x84c4
 #define PCI_DEVICE_ID_INTEL_82450GX	0x84c5
@@ -3518,10 +3086,6 @@
 #define PCI_DEVICE_ID_INTEL_82454NX     0x84cb
 #define PCI_DEVICE_ID_INTEL_84460GX	0x84ea
 #define PCI_DEVICE_ID_INTEL_IXP4XX	0x8500
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_INTEL_IXP2800	0x9004
-#define PCI_DEVICE_ID_INTEL_S21152BB	0xb152
-=======
 #define PCI_DEVICE_ID_INTEL_HDA_LPT	0x8c20
 #define PCI_DEVICE_ID_INTEL_HDA_9_SERIES	0x8ca0
 #define PCI_DEVICE_ID_INTEL_HDA_WBG_0	0x8d20
@@ -3549,16 +3113,11 @@
 #define PCI_DEVICE_ID_INTEL_HDA_RKL_S	0xf1c8
 
 #define PCI_VENDOR_ID_WANGXUN		0x8088
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_VENDOR_ID_SCALEMP		0x8686
 #define PCI_DEVICE_ID_SCALEMP_VSMP_CTL	0x1010
 
 #define PCI_VENDOR_ID_COMPUTONE		0x8e0e
-<<<<<<< HEAD
-#define PCI_DEVICE_ID_COMPUTONE_IP2EX	0x0291
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_COMPUTONE_PG	0x0302
 #define PCI_SUBVENDOR_ID_COMPUTONE	0x8e0e
 #define PCI_SUBDEVICE_ID_COMPUTONE_PG4	0x0001
@@ -3635,11 +3194,8 @@
 
 #define PCI_VENDOR_ID_3COM_2		0xa727
 
-<<<<<<< HEAD
-=======
 #define PCI_VENDOR_ID_SOLIDRUN		0xd063
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_VENDOR_ID_DIGIUM		0xd161
 #define PCI_DEVICE_ID_DIGIUM_HFC4S	0xb410
 
@@ -3660,10 +3216,7 @@
 #define PCI_DEVICE_ID_XEN_PLATFORM	0x0001
 
 #define PCI_VENDOR_ID_OCZ		0x1b85
-<<<<<<< HEAD
-=======
 
 #define PCI_VENDOR_ID_NCUBE		0x10ff
 
 #endif /* _LINUX_PCI_IDS_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -33,11 +33,7 @@ What:		/sys/fs/ext4/<disk>/mb_order2_req
 Date:		March 2008
 Contact:	"Theodore Ts'o" <tytso@mit.edu>
 Description:
-<<<<<<< HEAD
-		Tuning parameter which controls the minimum size for 
-=======
 		Tuning parameter which controls the minimum size for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		requests (as a power of 2) where the buddy cache is
 		used
 
@@ -49,13 +45,8 @@ Description:
 		parameter will have their blocks allocated out of a
 		block group specific preallocation pool, so that small
 		files are packed closely together.  Each large file
-<<<<<<< HEAD
-		 will have its blocks allocated out of its own unique
-		 preallocation pool.
-=======
 		will have its blocks allocated out of its own unique
 		preallocation pool.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 What:		/sys/fs/ext4/<disk>/inode_readahead_blks
 Date:		March 2008
@@ -105,8 +96,6 @@ Contact:	"Theodore Ts'o" <tytso@mit.edu>
 Description:
 		The maximum number of megabytes the writeback code will
 		try to write out before move on to another inode.
-<<<<<<< HEAD
-=======
 
 What:		/sys/fs/ext4/<disk>/extent_max_zeroout_kb
 Date:		August 2012
@@ -127,4 +116,3 @@ Contact:	"Theodore Ts'o" <tytso@mit.edu>
 Description:
 		This file is read-only and shows the pid of journal thread in
 		current pid-namespace or 0 if task is unreachable.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

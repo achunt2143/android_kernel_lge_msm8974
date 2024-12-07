@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-orion5x/kurobox_pro-setup.c
  *
  * Maintainer: Ronen Shitrit <rshitrit@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/gpio.h>
 #include <linux/kernel.h>
@@ -22,11 +12,7 @@
 #include <linux/irq.h>
 #include <linux/delay.h>
 #include <linux/mtd/physmap.h>
-<<<<<<< HEAD
-#include <linux/mtd/nand.h>
-=======
 #include <linux/mtd/rawnand.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mv643xx_eth.h>
 #include <linux/i2c.h>
 #include <linux/serial_reg.h>
@@ -34,17 +20,10 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
-<<<<<<< HEAD
-#include <mach/orion5x.h>
-#include <plat/orion_nand.h>
-#include "common.h"
-#include "mpp.h"
-=======
 #include <linux/platform_data/mtd-orion_nand.h>
 #include "common.h"
 #include "mpp.h"
 #include "orion5x.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * KUROBOX-PRO Info
@@ -156,10 +135,6 @@ static int __init kurobox_pro_pci_map_irq(const struct pci_dev *dev, u8 slot,
 
 static struct hw_pci kurobox_pro_pci __initdata = {
 	.nr_controllers	= 2,
-<<<<<<< HEAD
-	.swizzle	= pci_std_swizzle,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
 	.map_irq	= kurobox_pro_pci_map_irq,
@@ -381,15 +356,6 @@ static void __init kurobox_pro_init(void)
 	orion5x_uart1_init();
 	orion5x_xor_init();
 
-<<<<<<< HEAD
-	orion5x_setup_dev_boot_win(KUROBOX_PRO_NOR_BOOT_BASE,
-				   KUROBOX_PRO_NOR_BOOT_SIZE);
-	platform_device_register(&kurobox_pro_nor_flash);
-
-	if (machine_is_kurobox_pro()) {
-		orion5x_setup_dev0_win(KUROBOX_PRO_NAND_BASE,
-				       KUROBOX_PRO_NAND_SIZE);
-=======
 	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
 				    ORION_MBUS_DEVBUS_BOOT_ATTR,
 				    KUROBOX_PRO_NOR_BOOT_BASE,
@@ -401,7 +367,6 @@ static void __init kurobox_pro_init(void)
 					    ORION_MBUS_DEVBUS_ATTR(0),
 					    KUROBOX_PRO_NAND_BASE,
 					    KUROBOX_PRO_NAND_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		platform_device_register(&kurobox_pro_nand_flash);
 	}
 
@@ -415,19 +380,12 @@ static void __init kurobox_pro_init(void)
 MACHINE_START(KUROBOX_PRO, "Buffalo/Revogear Kurobox Pro")
 	/* Maintainer: Ronen Shitrit <rshitrit@marvell.com> */
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-=======
 	.nr_irqs	= ORION5X_NR_IRQS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= kurobox_pro_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,
 	.init_irq	= orion5x_init_irq,
-<<<<<<< HEAD
-	.timer		= &orion5x_timer,
-=======
 	.init_time	= orion5x_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= tag_fixup_mem32,
 	.restart	= orion5x_restart,
 MACHINE_END
@@ -437,19 +395,12 @@ MACHINE_END
 MACHINE_START(LINKSTATION_PRO, "Buffalo Linkstation Pro/Live")
 	/* Maintainer: Byron Bradley <byron.bbradley@gmail.com> */
 	.atag_offset	= 0x100,
-<<<<<<< HEAD
-=======
 	.nr_irqs	= ORION5X_NR_IRQS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= kurobox_pro_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,
 	.init_irq	= orion5x_init_irq,
-<<<<<<< HEAD
-	.timer		= &orion5x_timer,
-=======
 	.init_time	= orion5x_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= tag_fixup_mem32,
 	.restart	= orion5x_restart,
 MACHINE_END

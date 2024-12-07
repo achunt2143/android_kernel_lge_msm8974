@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /dts-v1/;
 / {
 	compatible = "opencores,or1ksim";
@@ -9,10 +6,6 @@
 	#size-cells = <1>;
 	interrupt-parent = <&pic>;
 
-<<<<<<< HEAD
-	chosen {
-		bootargs = "console=uart,mmio,0x90000000,115200";
-=======
 	aliases {
 		uart0 = &serial0;
 	};
@@ -20,7 +13,6 @@
 	chosen {
 		bootargs = "earlycon";
 		stdout-path = "uart0:115200";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	memory@0 {
@@ -57,15 +49,9 @@
 	};
 
 	enet0: ethoc@92000000 {
-<<<<<<< HEAD
-		compatible = "opencores,ethmac-rtlsvn338";
-		reg = <0x92000000 0x100>;
-		interrupts = <4>;
-=======
 		compatible = "opencores,ethoc";
 		reg = <0x92000000 0x800>;
 		interrupts = <4>;
 		big-endian;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

@@ -33,19 +33,12 @@
 
 #include <linux/mlx4/cq.h>
 #include <linux/mlx4/qp.h>
-<<<<<<< HEAD
-#include <linux/slab.h>
-
-#include "mlx4_ib.h"
-#include "user.h"
-=======
 #include <linux/mlx4/srq.h>
 #include <linux/slab.h>
 
 #include "mlx4_ib.h"
 #include <rdma/mlx4-abi.h>
 #include <rdma/uverbs_ioctl.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void mlx4_ib_cq_comp(struct mlx4_cq *cq)
 {
@@ -59,11 +52,7 @@ static void mlx4_ib_cq_event(struct mlx4_cq *cq, enum mlx4_event type)
 	struct ib_cq *ibcq;
 
 	if (type != MLX4_EVENT_TYPE_CQ_ERROR) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "mlx4_ib: Unexpected event type %d "
-=======
 		pr_warn("Unexpected event type %d "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "on CQ %06x\n", type, cq->cqn);
 		return;
 	}
@@ -79,11 +68,7 @@ static void mlx4_ib_cq_event(struct mlx4_cq *cq, enum mlx4_event type)
 
 static void *get_cqe_from_buf(struct mlx4_ib_cq_buf *buf, int n)
 {
-<<<<<<< HEAD
-	return mlx4_buf_offset(&buf->buf, n * sizeof (struct mlx4_cqe));
-=======
 	return mlx4_buf_offset(&buf->buf, n * buf->entry_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *get_cqe(struct mlx4_ib_cq *cq, int n)
@@ -94,14 +79,9 @@ static void *get_cqe(struct mlx4_ib_cq *cq, int n)
 static void *get_sw_cqe(struct mlx4_ib_cq *cq, int n)
 {
 	struct mlx4_cqe *cqe = get_cqe(cq, n & cq->ibcq.cqe);
-<<<<<<< HEAD
-
-	return (!!(cqe->owner_sr_opcode & MLX4_CQE_OWNER_MASK) ^
-=======
 	struct mlx4_cqe *tcqe = ((cq->buf.entry_size == 64) ? (cqe + 1) : cqe);
 
 	return (!!(tcqe->owner_sr_opcode & MLX4_CQE_OWNER_MASK) ^
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		!!(n & (cq->ibcq.cqe + 1))) ? NULL : cqe;
 }
 
@@ -122,20 +102,13 @@ static int mlx4_ib_alloc_cq_buf(struct mlx4_ib_dev *dev, struct mlx4_ib_cq_buf *
 {
 	int err;
 
-<<<<<<< HEAD
-	err = mlx4_buf_alloc(dev->dev, nent * sizeof(struct mlx4_cqe),
-=======
 	err = mlx4_buf_alloc(dev->dev, nent * dev->dev->caps.cqe_size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     PAGE_SIZE * 2, &buf->buf);
 
 	if (err)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	buf->entry_size = dev->dev->caps.cqe_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mlx4_mtt_init(dev->dev, buf->buf.npages, buf->buf.page_shift,
 				    &buf->mtt);
 	if (err)
@@ -151,12 +124,7 @@ err_mtt:
 	mlx4_mtt_cleanup(dev->dev, &buf->mtt);
 
 err_buf:
-<<<<<<< HEAD
-	mlx4_buf_free(dev->dev, nent * sizeof(struct mlx4_cqe),
-			      &buf->buf);
-=======
 	mlx4_buf_free(dev->dev, nent * buf->entry_size, &buf->buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return err;
@@ -164,24 +132,6 @@ out:
 
 static void mlx4_ib_free_cq_buf(struct mlx4_ib_dev *dev, struct mlx4_ib_cq_buf *buf, int cqe)
 {
-<<<<<<< HEAD
-	mlx4_buf_free(dev->dev, (cqe + 1) * sizeof(struct mlx4_cqe), &buf->buf);
-}
-
-static int mlx4_ib_get_cq_umem(struct mlx4_ib_dev *dev, struct ib_ucontext *context,
-			       struct mlx4_ib_cq_buf *buf, struct ib_umem **umem,
-			       u64 buf_addr, int cqe)
-{
-	int err;
-
-	*umem = ib_umem_get(context, buf_addr, cqe * sizeof (struct mlx4_cqe),
-			    IB_ACCESS_LOCAL_WRITE, 1);
-	if (IS_ERR(*umem))
-		return PTR_ERR(*umem);
-
-	err = mlx4_mtt_init(dev->dev, ib_umem_page_count(*umem),
-			    ilog2((*umem)->page_size), &buf->mtt);
-=======
 	mlx4_buf_free(dev->dev, (cqe + 1) * buf->entry_size, &buf->buf);
 }
 
@@ -202,7 +152,6 @@ static int mlx4_ib_get_cq_umem(struct mlx4_ib_dev *dev,
 	shift = mlx4_ib_umem_calc_optimal_mtt_size(*umem, 0, &n);
 	err = mlx4_mtt_init(dev->dev, n, shift, &buf->mtt);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto err_buf;
 
@@ -221,23 +170,6 @@ err_buf:
 	return err;
 }
 
-<<<<<<< HEAD
-struct ib_cq *mlx4_ib_create_cq(struct ib_device *ibdev, int entries, int vector,
-				struct ib_ucontext *context,
-				struct ib_udata *udata)
-{
-	struct mlx4_ib_dev *dev = to_mdev(ibdev);
-	struct mlx4_ib_cq *cq;
-	struct mlx4_uar *uar;
-	int err;
-
-	if (entries < 1 || entries > dev->dev->caps.max_cqes)
-		return ERR_PTR(-EINVAL);
-
-	cq = kmalloc(sizeof *cq, GFP_KERNEL);
-	if (!cq)
-		return ERR_PTR(-ENOMEM);
-=======
 #define CQ_CREATE_FLAGS_SUPPORTED IB_UVERBS_CQ_FLAGS_TIMESTAMP_COMPLETION
 int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		      struct ib_udata *udata)
@@ -258,7 +190,6 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 
 	if (attr->flags & ~CQ_CREATE_FLAGS_SUPPORTED)
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	entries      = roundup_pow_of_two(entries + 1);
 	cq->ibcq.cqe = entries - 1;
@@ -266,16 +197,11 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 	spin_lock_init(&cq->lock);
 	cq->resize_buf = NULL;
 	cq->resize_umem = NULL;
-<<<<<<< HEAD
-
-	if (context) {
-=======
 	cq->create_flags = attr->flags;
 	INIT_LIST_HEAD(&cq->send_qp_list);
 	INIT_LIST_HEAD(&cq->recv_qp_list);
 
 	if (udata) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct mlx4_ib_create_cq ucmd;
 
 		if (ib_copy_from_udata(&ucmd, udata, sizeof ucmd)) {
@@ -283,31 +209,18 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 			goto err_cq;
 		}
 
-<<<<<<< HEAD
-		err = mlx4_ib_get_cq_umem(dev, context, &cq->buf, &cq->umem,
-=======
 		buf_addr = (void *)(unsigned long)ucmd.buf_addr;
 		err = mlx4_ib_get_cq_umem(dev, &cq->buf, &cq->umem,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  ucmd.buf_addr, entries);
 		if (err)
 			goto err_cq;
 
-<<<<<<< HEAD
-		err = mlx4_ib_db_map_user(to_mucontext(context), ucmd.db_addr,
-					  &cq->db);
-		if (err)
-			goto err_mtt;
-
-		uar = &to_mucontext(context)->uar;
-=======
 		err = mlx4_ib_db_map_user(udata, ucmd.db_addr, &cq->db);
 		if (err)
 			goto err_mtt;
 
 		uar = &context->uar;
 		cq->mcq.usage = MLX4_RES_USAGE_USER_VERBS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		err = mlx4_db_alloc(dev->dev, &cq->db, 1);
 		if (err)
@@ -322,30 +235,6 @@ int mlx4_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		if (err)
 			goto err_db;
 
-<<<<<<< HEAD
-		uar = &dev->priv_uar;
-	}
-
-	err = mlx4_cq_alloc(dev->dev, entries, &cq->buf.mtt, uar,
-			    cq->db.dma, &cq->mcq, vector, 0);
-	if (err)
-		goto err_dbmap;
-
-	cq->mcq.comp  = mlx4_ib_cq_comp;
-	cq->mcq.event = mlx4_ib_cq_event;
-
-	if (context)
-		if (ib_copy_to_udata(udata, &cq->mcq.cqn, sizeof (__u32))) {
-			err = -EFAULT;
-			goto err_dbmap;
-		}
-
-	return &cq->ibcq;
-
-err_dbmap:
-	if (context)
-		mlx4_ib_db_unmap_user(to_mucontext(context), &cq->db);
-=======
 		buf_addr = &cq->buf.buf;
 
 		uar = &dev->priv_uar;
@@ -383,26 +272,10 @@ err_cq_free:
 err_dbmap:
 	if (udata)
 		mlx4_ib_db_unmap_user(context, &cq->db);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_mtt:
 	mlx4_mtt_cleanup(dev->dev, &cq->buf.mtt);
 
-<<<<<<< HEAD
-	if (context)
-		ib_umem_release(cq->umem);
-	else
-		mlx4_ib_free_cq_buf(dev, &cq->buf, cq->ibcq.cqe);
-
-err_db:
-	if (!context)
-		mlx4_db_free(dev->dev, &cq->db);
-
-err_cq:
-	kfree(cq);
-
-	return ERR_PTR(err);
-=======
 	ib_umem_release(cq->umem);
 	if (!udata)
 		mlx4_ib_free_cq_buf(dev, &cq->buf, cq->ibcq.cqe);
@@ -412,7 +285,6 @@ err_db:
 		mlx4_db_free(dev->dev, &cq->db);
 err_cq:
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mlx4_alloc_resize_buf(struct mlx4_ib_dev *dev, struct mlx4_ib_cq *cq,
@@ -423,11 +295,7 @@ static int mlx4_alloc_resize_buf(struct mlx4_ib_dev *dev, struct mlx4_ib_cq *cq,
 	if (cq->resize_buf)
 		return -EBUSY;
 
-<<<<<<< HEAD
-	cq->resize_buf = kmalloc(sizeof *cq->resize_buf, GFP_ATOMIC);
-=======
 	cq->resize_buf = kmalloc(sizeof *cq->resize_buf, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cq->resize_buf)
 		return -ENOMEM;
 
@@ -455,21 +323,12 @@ static int mlx4_alloc_resize_umem(struct mlx4_ib_dev *dev, struct mlx4_ib_cq *cq
 	if (ib_copy_from_udata(&ucmd, udata, sizeof ucmd))
 		return -EFAULT;
 
-<<<<<<< HEAD
-	cq->resize_buf = kmalloc(sizeof *cq->resize_buf, GFP_ATOMIC);
-	if (!cq->resize_buf)
-		return -ENOMEM;
-
-	err = mlx4_ib_get_cq_umem(dev, cq->umem->context, &cq->resize_buf->buf,
-				  &cq->resize_umem, ucmd.buf_addr, entries);
-=======
 	cq->resize_buf = kmalloc(sizeof *cq->resize_buf, GFP_KERNEL);
 	if (!cq->resize_buf)
 		return -ENOMEM;
 
 	err = mlx4_ib_get_cq_umem(dev, &cq->resize_buf->buf, &cq->resize_umem,
 				  ucmd.buf_addr, entries);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		kfree(cq->resize_buf);
 		cq->resize_buf = NULL;
@@ -486,11 +345,7 @@ static int mlx4_ib_get_outstanding_cqes(struct mlx4_ib_cq *cq)
 	u32 i;
 
 	i = cq->mcq.cons_index;
-<<<<<<< HEAD
-	while (get_sw_cqe(cq, i & cq->ibcq.cqe))
-=======
 	while (get_sw_cqe(cq, i))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++i;
 
 	return i - cq->mcq.cons_index;
@@ -500,18 +355,6 @@ static void mlx4_ib_cq_resize_copy_cqes(struct mlx4_ib_cq *cq)
 {
 	struct mlx4_cqe *cqe, *new_cqe;
 	int i;
-<<<<<<< HEAD
-
-	i = cq->mcq.cons_index;
-	cqe = get_cqe(cq, i & cq->ibcq.cqe);
-	while ((cqe->owner_sr_opcode & MLX4_CQE_OPCODE_MASK) != MLX4_CQE_OPCODE_RESIZE) {
-		new_cqe = get_cqe_from_buf(&cq->resize_buf->buf,
-					   (i + 1) & cq->resize_buf->cqe);
-		memcpy(new_cqe, get_cqe(cq, i & cq->ibcq.cqe), sizeof(struct mlx4_cqe));
-		new_cqe->owner_sr_opcode = (cqe->owner_sr_opcode & ~MLX4_CQE_OWNER_MASK) |
-			(((i + 1) & (cq->resize_buf->cqe + 1)) ? MLX4_CQE_OWNER_MASK : 0);
-		cqe = get_cqe(cq, ++i & cq->ibcq.cqe);
-=======
 	int cqe_size = cq->buf.entry_size;
 	int cqe_inc = cqe_size == 64 ? 1 : 0;
 
@@ -529,7 +372,6 @@ static void mlx4_ib_cq_resize_copy_cqes(struct mlx4_ib_cq *cq)
 			(((i + 1) & (cq->resize_buf->cqe + 1)) ? MLX4_CQE_OWNER_MASK : 0);
 		cqe = get_cqe(cq, ++i & cq->ibcq.cqe);
 		cqe += cqe_inc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	++cq->mcq.cons_index;
 }
@@ -543,10 +385,6 @@ int mlx4_ib_resize_cq(struct ib_cq *ibcq, int entries, struct ib_udata *udata)
 	int err;
 
 	mutex_lock(&cq->resize_mutex);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (entries < 1 || entries > dev->dev->caps.max_cqes) {
 		err = -EINVAL;
 		goto out;
@@ -558,14 +396,11 @@ int mlx4_ib_resize_cq(struct ib_cq *ibcq, int entries, struct ib_udata *udata)
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	if (entries > dev->dev->caps.max_cqes + 1) {
 		err = -EINVAL;
 		goto out;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ibcq->uobject) {
 		err = mlx4_alloc_resize_umem(dev, cq, entries, udata);
 		if (err)
@@ -574,11 +409,7 @@ int mlx4_ib_resize_cq(struct ib_cq *ibcq, int entries, struct ib_udata *udata)
 		/* Can't be smaller than the number of outstanding CQEs */
 		outst_cqe = mlx4_ib_get_outstanding_cqes(cq);
 		if (entries < outst_cqe + 1) {
-<<<<<<< HEAD
-			err = 0;
-=======
 			err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -635,19 +466,6 @@ err_buf:
 	kfree(cq->resize_buf);
 	cq->resize_buf = NULL;
 
-<<<<<<< HEAD
-	if (cq->resize_umem) {
-		ib_umem_release(cq->resize_umem);
-		cq->resize_umem = NULL;
-	}
-
-out:
-	mutex_unlock(&cq->resize_mutex);
-	return err;
-}
-
-int mlx4_ib_destroy_cq(struct ib_cq *cq)
-=======
 	ib_umem_release(cq->resize_umem);
 	cq->resize_umem = NULL;
 out:
@@ -657,7 +475,6 @@ out:
 }
 
 int mlx4_ib_destroy_cq(struct ib_cq *cq, struct ib_udata *udata)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mlx4_ib_dev *dev = to_mdev(cq->device);
 	struct mlx4_ib_cq *mcq = to_mcq(cq);
@@ -665,11 +482,6 @@ int mlx4_ib_destroy_cq(struct ib_cq *cq, struct ib_udata *udata)
 	mlx4_cq_free(dev->dev, &mcq->mcq);
 	mlx4_mtt_cleanup(dev->dev, &mcq->buf.mtt);
 
-<<<<<<< HEAD
-	if (cq->uobject) {
-		mlx4_ib_db_unmap_user(to_mucontext(cq->uobject->context), &mcq->db);
-		ib_umem_release(mcq->umem);
-=======
 	if (udata) {
 		mlx4_ib_db_unmap_user(
 			rdma_udata_to_drv_context(
@@ -677,18 +489,11 @@ int mlx4_ib_destroy_cq(struct ib_cq *cq, struct ib_udata *udata)
 				struct mlx4_ib_ucontext,
 				ibucontext),
 			&mcq->db);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mlx4_ib_free_cq_buf(dev, &mcq->buf, cq->cqe);
 		mlx4_db_free(dev->dev, &mcq->db);
 	}
-<<<<<<< HEAD
-
-	kfree(mcq);
-
-=======
 	ib_umem_release(mcq->umem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -696,11 +501,7 @@ static void dump_cqe(void *cqe)
 {
 	__be32 *buf = cqe;
 
-<<<<<<< HEAD
-	printk(KERN_DEBUG "CQE contents %08x %08x %08x %08x %08x %08x %08x %08x\n",
-=======
 	pr_debug("CQE contents %08x %08x %08x %08x %08x %08x %08x %08x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       be32_to_cpu(buf[0]), be32_to_cpu(buf[1]), be32_to_cpu(buf[2]),
 	       be32_to_cpu(buf[3]), be32_to_cpu(buf[4]), be32_to_cpu(buf[5]),
 	       be32_to_cpu(buf[6]), be32_to_cpu(buf[7]));
@@ -710,11 +511,7 @@ static void mlx4_ib_handle_error_cqe(struct mlx4_err_cqe *cqe,
 				     struct ib_wc *wc)
 {
 	if (cqe->syndrome == MLX4_CQE_SYNDROME_LOCAL_QP_OP_ERR) {
-<<<<<<< HEAD
-		printk(KERN_DEBUG "local QP operation err "
-=======
 		pr_debug("local QP operation err "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "(QPN %06x, WQE index %x, vendor syndrome %02x, "
 		       "opcode = %02x)\n",
 		       be32_to_cpu(cqe->my_qpn), be16_to_cpu(cqe->wqe_index),
@@ -771,20 +568,6 @@ static void mlx4_ib_handle_error_cqe(struct mlx4_err_cqe *cqe,
 	wc->vendor_err = cqe->vendor_err_syndrome;
 }
 
-<<<<<<< HEAD
-static int mlx4_ib_ipoib_csum_ok(__be16 status, __be16 checksum)
-{
-	return ((status & cpu_to_be16(MLX4_CQE_STATUS_IPV4      |
-				      MLX4_CQE_STATUS_IPV4F     |
-				      MLX4_CQE_STATUS_IPV4OPT   |
-				      MLX4_CQE_STATUS_IPV6      |
-				      MLX4_CQE_STATUS_IPOK)) ==
-		cpu_to_be16(MLX4_CQE_STATUS_IPV4        |
-			    MLX4_CQE_STATUS_IPOK))              &&
-		(status & cpu_to_be16(MLX4_CQE_STATUS_UDP       |
-				      MLX4_CQE_STATUS_TCP))     &&
-		checksum == cpu_to_be16(0xffff);
-=======
 static int mlx4_ib_ipoib_csum_ok(__be16 status, u8 badfcs_enc, __be16 checksum)
 {
 	return ((badfcs_enc & MLX4_CQE_STATUS_L4_CSUM) ||
@@ -868,7 +651,6 @@ static void mlx4_ib_poll_sw_comp(struct mlx4_ib_cq *cq, int num_entries,
 
 out:
 	return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mlx4_ib_poll_one(struct mlx4_ib_cq *cq,
@@ -879,12 +661,6 @@ static int mlx4_ib_poll_one(struct mlx4_ib_cq *cq,
 	struct mlx4_qp *mqp;
 	struct mlx4_ib_wq *wq;
 	struct mlx4_ib_srq *srq;
-<<<<<<< HEAD
-	int is_send;
-	int is_error;
-	u32 g_mlpath_rqpn;
-	u16 wqe_ctr;
-=======
 	struct mlx4_srq *msrq = NULL;
 	int is_send;
 	int is_error;
@@ -892,19 +668,15 @@ static int mlx4_ib_poll_one(struct mlx4_ib_cq *cq,
 	u32 g_mlpath_rqpn;
 	u16 wqe_ctr;
 	unsigned tail = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 repoll:
 	cqe = next_cqe_sw(cq);
 	if (!cqe)
 		return -EAGAIN;
 
-<<<<<<< HEAD
-=======
 	if (cq->buf.entry_size == 64)
 		cqe++;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	++cq->mcq.cons_index;
 
 	/*
@@ -917,15 +689,6 @@ repoll:
 	is_error = (cqe->owner_sr_opcode & MLX4_CQE_OPCODE_MASK) ==
 		MLX4_CQE_OPCODE_ERROR;
 
-<<<<<<< HEAD
-	if (unlikely((cqe->owner_sr_opcode & MLX4_CQE_OPCODE_MASK) == MLX4_OPCODE_NOP &&
-		     is_send)) {
-		printk(KERN_WARNING "Completion for NOP opcode detected!\n");
-		return -EINVAL;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Resize CQ in progress */
 	if (unlikely((cqe->owner_sr_opcode & MLX4_CQE_OPCODE_MASK) == MLX4_CQE_OPCODE_RESIZE)) {
 		if (cq->resize_buf) {
@@ -951,22 +714,11 @@ repoll:
 		 */
 		mqp = __mlx4_qp_lookup(to_mdev(cq->ibcq.device)->dev,
 				       be32_to_cpu(cqe->vlan_my_qpn));
-<<<<<<< HEAD
-		if (unlikely(!mqp)) {
-			printk(KERN_WARNING "CQ %06x with entry for unknown QPN %06x\n",
-			       cq->mcq.cqn, be32_to_cpu(cqe->vlan_my_qpn) & MLX4_CQE_QPN_MASK);
-			return -EINVAL;
-		}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*cur_qp = to_mibqp(mqp);
 	}
 
 	wc->qp = &(*cur_qp)->ibqp;
 
-<<<<<<< HEAD
-=======
 	if (wc->qp->qp_type == IB_QPT_XRC_TGT) {
 		u32 srq_num;
 		g_mlpath_rqpn = be32_to_cpu(cqe->g_mlpath_rqpn);
@@ -976,7 +728,6 @@ repoll:
 				       srq_num);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_send) {
 		wq = &(*cur_qp)->sq;
 		if (!(*cur_qp)->sq_signal_bits) {
@@ -990,11 +741,6 @@ repoll:
 		wqe_ctr = be16_to_cpu(cqe->wqe_index);
 		wc->wr_id = srq->wrid[wqe_ctr];
 		mlx4_ib_free_srq_wqe(srq, wqe_ctr);
-<<<<<<< HEAD
-	} else {
-		wq	  = &(*cur_qp)->rq;
-		wc->wr_id = wq->wrid[wq->tail & (wq->wqe_cnt - 1)];
-=======
 	} else if (msrq) {
 		srq = to_mibsrq(msrq);
 		wqe_ctr = be16_to_cpu(cqe->wqe_index);
@@ -1004,7 +750,6 @@ repoll:
 		wq	  = &(*cur_qp)->rq;
 		tail	  = wq->tail & (wq->wqe_cnt - 1);
 		wc->wr_id = wq->wrid[tail];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++wq->tail;
 	}
 
@@ -1020,19 +765,13 @@ repoll:
 		switch (cqe->owner_sr_opcode & MLX4_CQE_OPCODE_MASK) {
 		case MLX4_OPCODE_RDMA_WRITE_IMM:
 			wc->wc_flags |= IB_WC_WITH_IMM;
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MLX4_OPCODE_RDMA_WRITE:
 			wc->opcode    = IB_WC_RDMA_WRITE;
 			break;
 		case MLX4_OPCODE_SEND_IMM:
 			wc->wc_flags |= IB_WC_WITH_IMM;
-<<<<<<< HEAD
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MLX4_OPCODE_SEND:
 		case MLX4_OPCODE_SEND_INVAL:
 			wc->opcode    = IB_WC_SEND;
@@ -1057,21 +796,11 @@ repoll:
 			wc->opcode    = IB_WC_MASKED_FETCH_ADD;
 			wc->byte_len  = 8;
 			break;
-<<<<<<< HEAD
-		case MLX4_OPCODE_BIND_MW:
-			wc->opcode    = IB_WC_BIND_MW;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MLX4_OPCODE_LSO:
 			wc->opcode    = IB_WC_LSO;
 			break;
 		case MLX4_OPCODE_FMR:
-<<<<<<< HEAD
-			wc->opcode    = IB_WC_FAST_REG_MR;
-=======
 			wc->opcode    = IB_WC_REG_MR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case MLX4_OPCODE_LOCAL_INVAL:
 			wc->opcode    = IB_WC_LOCAL_INV;
@@ -1102,9 +831,6 @@ repoll:
 			break;
 		}
 
-<<<<<<< HEAD
-		wc->slid	   = be16_to_cpu(cqe->rlid);
-=======
 		is_eth = (rdma_port_get_link_layer(wc->qp->device,
 						  (*cur_qp)->port) ==
 			  IB_LINK_LAYER_ETHERNET);
@@ -1118,21 +844,12 @@ repoll:
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		g_mlpath_rqpn	   = be32_to_cpu(cqe->g_mlpath_rqpn);
 		wc->src_qp	   = g_mlpath_rqpn & 0xffffff;
 		wc->dlid_path_bits = (g_mlpath_rqpn >> 24) & 0x7f;
 		wc->wc_flags	  |= g_mlpath_rqpn & 0x80000000 ? IB_WC_GRH : 0;
 		wc->pkey_index     = be32_to_cpu(cqe->immed_rss_invalid) & 0x7f;
 		wc->wc_flags	  |= mlx4_ib_ipoib_csum_ok(cqe->status,
-<<<<<<< HEAD
-					cqe->checksum) ? IB_WC_IP_CSUM_OK : 0;
-		if (rdma_port_get_link_layer(wc->qp->device,
-				(*cur_qp)->port) == IB_LINK_LAYER_ETHERNET)
-			wc->sl  = be16_to_cpu(cqe->sl_vid) >> 13;
-		else
-			wc->sl  = be16_to_cpu(cqe->sl_vid) >> 12;
-=======
 					cqe->badfcs_enc,
 					cqe->checksum) ? IB_WC_IP_CSUM_OK : 0;
 		if (is_eth) {
@@ -1152,7 +869,6 @@ repoll:
 			wc->sl  = be16_to_cpu(cqe->sl_vid) >> 12;
 			wc->vlan_id = 0xffff;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1164,15 +880,6 @@ int mlx4_ib_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 	struct mlx4_ib_qp *cur_qp = NULL;
 	unsigned long flags;
 	int npolled;
-<<<<<<< HEAD
-	int err = 0;
-
-	spin_lock_irqsave(&cq->lock, flags);
-
-	for (npolled = 0; npolled < num_entries; ++npolled) {
-		err = mlx4_ib_poll_one(cq, &cur_qp, wc + npolled);
-		if (err)
-=======
 	struct mlx4_ib_dev *mdev = to_mdev(cq->ibcq.device);
 
 	spin_lock_irqsave(&cq->lock, flags);
@@ -1183,25 +890,15 @@ int mlx4_ib_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 
 	for (npolled = 0; npolled < num_entries; ++npolled) {
 		if (mlx4_ib_poll_one(cq, &cur_qp, wc + npolled))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
 	mlx4_cq_set_ci(&cq->mcq);
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&cq->lock, flags);
-
-	if (err == 0 || err == -EAGAIN)
-		return npolled;
-	else
-		return err;
-=======
 out:
 	spin_unlock_irqrestore(&cq->lock, flags);
 
 	return npolled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mlx4_ib_arm_cq(struct ib_cq *ibcq, enum ib_cq_notify_flags flags)
@@ -1221,10 +918,7 @@ void __mlx4_ib_cq_clean(struct mlx4_ib_cq *cq, u32 qpn, struct mlx4_ib_srq *srq)
 	int nfreed = 0;
 	struct mlx4_cqe *cqe, *dest;
 	u8 owner_bit;
-<<<<<<< HEAD
-=======
 	int cqe_inc = cq->buf.entry_size == 64 ? 1 : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First we need to find the current producer index, so we
@@ -1243,22 +937,16 @@ void __mlx4_ib_cq_clean(struct mlx4_ib_cq *cq, u32 qpn, struct mlx4_ib_srq *srq)
 	 */
 	while ((int) --prod_index - (int) cq->mcq.cons_index >= 0) {
 		cqe = get_cqe(cq, prod_index & cq->ibcq.cqe);
-<<<<<<< HEAD
-=======
 		cqe += cqe_inc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((be32_to_cpu(cqe->vlan_my_qpn) & MLX4_CQE_QPN_MASK) == qpn) {
 			if (srq && !(cqe->owner_sr_opcode & MLX4_CQE_IS_SEND_MASK))
 				mlx4_ib_free_srq_wqe(srq, be16_to_cpu(cqe->wqe_index));
 			++nfreed;
 		} else if (nfreed) {
 			dest = get_cqe(cq, (prod_index + nfreed) & cq->ibcq.cqe);
-<<<<<<< HEAD
-=======
 			dest += cqe_inc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			owner_bit = dest->owner_sr_opcode & MLX4_CQE_OWNER_MASK;
 			memcpy(dest, cqe, sizeof *cqe);
 			dest->owner_sr_opcode = owner_bit |

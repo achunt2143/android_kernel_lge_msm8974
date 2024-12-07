@@ -1,34 +1,10 @@
-<<<<<<< HEAD
-#! /usr/bin/python
-=======
 #! /usr/bin/env python
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # -*- python -*-
 # -*- coding: utf-8 -*-
 #   twatch - Experimental use of the perf python interface
 #   Copyright (C) 2011 Arnaldo Carvalho de Melo <acme@redhat.com>
 #
-<<<<<<< HEAD
-#   This application is free software; you can redistribute it and/or
-#   modify it under the terms of the GNU General Public License
-#   as published by the Free Software Foundation; version 2.
-#
-#   This application is distributed in the hope that it will be useful,
-#   but WITHOUT ANY WARRANTY; without even the implied warranty of
-#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#   General Public License for more details.
-
-import perf
-
-def main():
-	cpus = perf.cpu_map()
-	threads = perf.thread_map()
-	evsel = perf.evsel(task = 1, comm = 1, mmap = 0,
-			   wakeup_events = 1, watermark = 1,
-			   sample_id_all = 1,
-			   sample_type = perf.SAMPLE_PERIOD | perf.SAMPLE_TID | perf.SAMPLE_CPU | perf.SAMPLE_TID)
-=======
 
 import perf
 
@@ -49,7 +25,6 @@ def main(context_switch = 0, thread = -1):
 	 threads comes and goes... So use (perf.TYPE_SOFTWARE, perf_COUNT_SW_DUMMY,
 	 freq=0) instead."""
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	evsel.open(cpus = cpus, threads = threads);
 	evlist = perf.evlist(cpus, threads)
 	evlist.add(evsel)
@@ -60,14 +35,6 @@ def main(context_switch = 0, thread = -1):
 			event = evlist.read_on_cpu(cpu)
 			if not event:
 				continue
-<<<<<<< HEAD
-			print "cpu: %2d, pid: %4d, tid: %4d" % (event.sample_cpu,
-								event.sample_pid,
-								event.sample_tid),
-			print event
-
-if __name__ == '__main__':
-=======
 			print("cpu: {0}, pid: {1}, tid: {2} {3}".format(event.sample_cpu,
                                                                         event.sample_pid,
                                                                         event.sample_tid,
@@ -91,5 +58,4 @@ cpu: 3, pid: 31463, tid: 31491 { type: context_switch, next_prev_pid: 31463, nex
 	If bored, please add command line option parsing support for these options :-)
     """
     # main(context_switch = 1, thread = 31463)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     main()

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* n2_core.c: Niagara2 Stream Processing Unit (SPU) crypto support.
  *
  * Copyright (C) 2010, 2011 David S. Miller <davem@davemloft.net>
@@ -12,36 +9,23 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-=======
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpumask.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
 #include <linux/crypto.h>
 #include <crypto/md5.h>
-<<<<<<< HEAD
-#include <crypto/sha.h>
-#include <crypto/aes.h>
-#include <crypto/des.h>
-=======
 #include <crypto/sha1.h>
 #include <crypto/sha2.h>
 #include <crypto/aes.h>
 #include <crypto/internal/des.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/delay.h>
 #include <linux/sched.h>
 
 #include <crypto/internal/hash.h>
-<<<<<<< HEAD
-=======
 #include <crypto/internal/skcipher.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <crypto/scatterwalk.h>
 #include <crypto/algapi.h>
 
@@ -54,26 +38,15 @@
 #define DRV_MODULE_VERSION	"0.2"
 #define DRV_MODULE_RELDATE	"July 28, 2011"
 
-<<<<<<< HEAD
-static char version[] __devinitdata =
-	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
-
-MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
-=======
 static const char version[] =
 	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 
 MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Niagara2 Crypto driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
 
-<<<<<<< HEAD
-#define N2_CRA_PRIORITY		300
-=======
 #define N2_CRA_PRIORITY		200
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_MUTEX(spu_lock);
 
@@ -96,14 +69,11 @@ struct spu_queue {
 	struct list_head	list;
 };
 
-<<<<<<< HEAD
-=======
 struct spu_qreg {
 	struct spu_queue	*queue;
 	unsigned long		type;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct spu_queue **cpu_to_cwq;
 static struct spu_queue **cpu_to_mau;
 
@@ -280,13 +250,8 @@ static inline bool n2_should_run_async(struct spu_queue *qp, int this_len)
 
 struct n2_ahash_alg {
 	struct list_head	entry;
-<<<<<<< HEAD
-	const char		*hash_zero;
-	const u32		*hash_init;
-=======
 	const u8		*hash_zero;
 	const u8		*hash_init;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8			hw_op_hashsz;
 	u8			digest_size;
 	u8			auth_type;
@@ -398,11 +363,6 @@ static int n2_hash_async_finup(struct ahash_request *req)
 	return crypto_ahash_finup(&rctx->fallback_req);
 }
 
-<<<<<<< HEAD
-static int n2_hash_cra_init(struct crypto_tfm *tfm)
-{
-	const char *fallback_driver_name = tfm->__crt_alg->cra_name;
-=======
 static int n2_hash_async_noimport(struct ahash_request *req, const void *in)
 {
 	return -ENOSYS;
@@ -416,7 +376,6 @@ static int n2_hash_async_noexport(struct ahash_request *req, void *out)
 static int n2_hash_cra_init(struct crypto_tfm *tfm)
 {
 	const char *fallback_driver_name = crypto_tfm_alg_name(tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct crypto_ahash *ahash = __crypto_ahash_cast(tfm);
 	struct n2_hash_ctx *ctx = crypto_ahash_ctx(ahash);
 	struct crypto_ahash *fallback_tfm;
@@ -425,13 +384,8 @@ static int n2_hash_cra_init(struct crypto_tfm *tfm)
 	fallback_tfm = crypto_alloc_ahash(fallback_driver_name, 0,
 					  CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(fallback_tfm)) {
-<<<<<<< HEAD
-		pr_warning("Fallback driver '%s' could not be loaded!\n",
-			   fallback_driver_name);
-=======
 		pr_warn("Fallback driver '%s' could not be loaded!\n",
 			fallback_driver_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = PTR_ERR(fallback_tfm);
 		goto out;
 	}
@@ -456,11 +410,7 @@ static void n2_hash_cra_exit(struct crypto_tfm *tfm)
 
 static int n2_hmac_cra_init(struct crypto_tfm *tfm)
 {
-<<<<<<< HEAD
-	const char *fallback_driver_name = tfm->__crt_alg->cra_name;
-=======
 	const char *fallback_driver_name = crypto_tfm_alg_name(tfm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct crypto_ahash *ahash = __crypto_ahash_cast(tfm);
 	struct n2_hmac_ctx *ctx = crypto_ahash_ctx(ahash);
 	struct n2_hmac_alg *n2alg = n2_hmac_alg(tfm);
@@ -471,26 +421,16 @@ static int n2_hmac_cra_init(struct crypto_tfm *tfm)
 	fallback_tfm = crypto_alloc_ahash(fallback_driver_name, 0,
 					  CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(fallback_tfm)) {
-<<<<<<< HEAD
-		pr_warning("Fallback driver '%s' could not be loaded!\n",
-			   fallback_driver_name);
-=======
 		pr_warn("Fallback driver '%s' could not be loaded!\n",
 			fallback_driver_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = PTR_ERR(fallback_tfm);
 		goto out;
 	}
 
 	child_shash = crypto_alloc_shash(n2alg->child_alg, 0, 0);
 	if (IS_ERR(child_shash)) {
-<<<<<<< HEAD
-		pr_warning("Child shash '%s' could not be loaded!\n",
-			   n2alg->child_alg);
-=======
 		pr_warn("Child shash '%s' could not be loaded!\n",
 			n2alg->child_alg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = PTR_ERR(child_shash);
 		goto out_free_fallback;
 	}
@@ -524,13 +464,6 @@ static int n2_hmac_async_setkey(struct crypto_ahash *tfm, const u8 *key,
 	struct n2_hmac_ctx *ctx = crypto_ahash_ctx(tfm);
 	struct crypto_shash *child_shash = ctx->child_shash;
 	struct crypto_ahash *fallback_tfm;
-<<<<<<< HEAD
-	struct {
-		struct shash_desc shash;
-		char ctx[crypto_shash_descsize(child_shash)];
-	} desc;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err, bs, ds;
 
 	fallback_tfm = ctx->base.fallback_tfm;
@@ -538,24 +471,12 @@ static int n2_hmac_async_setkey(struct crypto_ahash *tfm, const u8 *key,
 	if (err)
 		return err;
 
-<<<<<<< HEAD
-	desc.shash.tfm = child_shash;
-	desc.shash.flags = crypto_ahash_get_flags(tfm) &
-		CRYPTO_TFM_REQ_MAY_SLEEP;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bs = crypto_shash_blocksize(child_shash);
 	ds = crypto_shash_digestsize(child_shash);
 	BUG_ON(ds > N2_HASH_KEY_MAX);
 	if (keylen > bs) {
-<<<<<<< HEAD
-		err = crypto_shash_digest(&desc.shash, key, keylen,
-					  ctx->hash_key);
-=======
 		err = crypto_shash_tfm_digest(child_shash, key, keylen,
 					      ctx->hash_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 		keylen = ds;
@@ -736,21 +657,13 @@ static int n2_hmac_async_digest(struct ahash_request *req)
 				  ctx->hash_key_len);
 }
 
-<<<<<<< HEAD
-struct n2_cipher_context {
-=======
 struct n2_skcipher_context {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			key_len;
 	int			enc_type;
 	union {
 		u8		aes[AES_MAX_KEY_SIZE];
 		u8		des[DES_KEY_SIZE];
 		u8		des3[3 * DES_KEY_SIZE];
-<<<<<<< HEAD
-		u8		arc4[258]; /* S-box, X, Y */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} key;
 };
 
@@ -769,11 +682,7 @@ struct n2_crypto_chunk {
 };
 
 struct n2_request_context {
-<<<<<<< HEAD
-	struct ablkcipher_walk	walk;
-=======
 	struct skcipher_walk	walk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	chunk_list;
 	struct n2_crypto_chunk	chunk;
 	u8			temp_iv[16];
@@ -798,31 +707,6 @@ struct n2_request_context {
  * is not a valid sequence.
  */
 
-<<<<<<< HEAD
-struct n2_cipher_alg {
-	struct list_head	entry;
-	u8			enc_type;
-	struct crypto_alg	alg;
-};
-
-static inline struct n2_cipher_alg *n2_cipher_alg(struct crypto_tfm *tfm)
-{
-	struct crypto_alg *alg = tfm->__crt_alg;
-
-	return container_of(alg, struct n2_cipher_alg, alg);
-}
-
-struct n2_cipher_request_context {
-	struct ablkcipher_walk	walk;
-};
-
-static int n2_aes_setkey(struct crypto_ablkcipher *cipher, const u8 *key,
-			 unsigned int keylen)
-{
-	struct crypto_tfm *tfm = crypto_ablkcipher_tfm(cipher);
-	struct n2_cipher_context *ctx = crypto_tfm_ctx(tfm);
-	struct n2_cipher_alg *n2alg = n2_cipher_alg(tfm);
-=======
 struct n2_skcipher_alg {
 	struct list_head	entry;
 	u8			enc_type;
@@ -846,7 +730,6 @@ static int n2_aes_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 	struct crypto_tfm *tfm = crypto_skcipher_tfm(skcipher);
 	struct n2_skcipher_context *ctx = crypto_tfm_ctx(tfm);
 	struct n2_skcipher_alg *n2alg = n2_skcipher_alg(skcipher);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctx->enc_type = (n2alg->enc_type & ENC_TYPE_CHAINING_MASK);
 
@@ -861,10 +744,6 @@ static int n2_aes_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 		ctx->enc_type |= ENC_TYPE_ALG_AES256;
 		break;
 	default:
-<<<<<<< HEAD
-		crypto_ablkcipher_set_flags(cipher, CRYPTO_TFM_RES_BAD_KEY_LEN);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -873,30 +752,6 @@ static int n2_aes_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int n2_des_setkey(struct crypto_ablkcipher *cipher, const u8 *key,
-			 unsigned int keylen)
-{
-	struct crypto_tfm *tfm = crypto_ablkcipher_tfm(cipher);
-	struct n2_cipher_context *ctx = crypto_tfm_ctx(tfm);
-	struct n2_cipher_alg *n2alg = n2_cipher_alg(tfm);
-	u32 tmp[DES_EXPKEY_WORDS];
-	int err;
-
-	ctx->enc_type = n2alg->enc_type;
-
-	if (keylen != DES_KEY_SIZE) {
-		crypto_ablkcipher_set_flags(cipher, CRYPTO_TFM_RES_BAD_KEY_LEN);
-		return -EINVAL;
-	}
-
-	err = des_ekey(tmp, key);
-	if (err == 0 && (tfm->crt_flags & CRYPTO_TFM_REQ_WEAK_KEY)) {
-		tfm->crt_flags |= CRYPTO_TFM_RES_WEAK_KEY;
-		return -EINVAL;
-	}
-
-=======
 static int n2_des_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 			 unsigned int keylen)
 {
@@ -911,27 +766,11 @@ static int n2_des_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 
 	ctx->enc_type = n2alg->enc_type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctx->key_len = keylen;
 	memcpy(ctx->key.des, key, keylen);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int n2_3des_setkey(struct crypto_ablkcipher *cipher, const u8 *key,
-			  unsigned int keylen)
-{
-	struct crypto_tfm *tfm = crypto_ablkcipher_tfm(cipher);
-	struct n2_cipher_context *ctx = crypto_tfm_ctx(tfm);
-	struct n2_cipher_alg *n2alg = n2_cipher_alg(tfm);
-
-	ctx->enc_type = n2alg->enc_type;
-
-	if (keylen != (3 * DES_KEY_SIZE)) {
-		crypto_ablkcipher_set_flags(cipher, CRYPTO_TFM_RES_BAD_KEY_LEN);
-		return -EINVAL;
-	}
-=======
 static int n2_3des_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 			  unsigned int keylen)
 {
@@ -946,47 +785,12 @@ static int n2_3des_setkey(struct crypto_skcipher *skcipher, const u8 *key,
 
 	ctx->enc_type = n2alg->enc_type;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctx->key_len = keylen;
 	memcpy(ctx->key.des3, key, keylen);
 	return 0;
 }
 
-<<<<<<< HEAD
-static int n2_arc4_setkey(struct crypto_ablkcipher *cipher, const u8 *key,
-			  unsigned int keylen)
-{
-	struct crypto_tfm *tfm = crypto_ablkcipher_tfm(cipher);
-	struct n2_cipher_context *ctx = crypto_tfm_ctx(tfm);
-	struct n2_cipher_alg *n2alg = n2_cipher_alg(tfm);
-	u8 *s = ctx->key.arc4;
-	u8 *x = s + 256;
-	u8 *y = x + 1;
-	int i, j, k;
-
-	ctx->enc_type = n2alg->enc_type;
-
-	j = k = 0;
-	*x = 0;
-	*y = 0;
-	for (i = 0; i < 256; i++)
-		s[i] = i;
-	for (i = 0; i < 256; i++) {
-		u8 a = s[i];
-		j = (j + key[k] + a) & 0xff;
-		s[i] = s[j];
-		s[j] = a;
-		if (++k >= keylen)
-			k = 0;
-	}
-
-	return 0;
-}
-
-static inline int cipher_descriptor_len(int nbytes, unsigned int block_size)
-=======
 static inline int skcipher_descriptor_len(int nbytes, unsigned int block_size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int this_len = nbytes;
 
@@ -994,18 +798,11 @@ static inline int skcipher_descriptor_len(int nbytes, unsigned int block_size)
 	return this_len > (1 << 16) ? (1 << 16) : this_len;
 }
 
-<<<<<<< HEAD
-static int __n2_crypt_chunk(struct crypto_tfm *tfm, struct n2_crypto_chunk *cp,
-			    struct spu_queue *qp, bool encrypt)
-{
-	struct n2_cipher_context *ctx = crypto_tfm_ctx(tfm);
-=======
 static int __n2_crypt_chunk(struct crypto_skcipher *skcipher,
 			    struct n2_crypto_chunk *cp,
 			    struct spu_queue *qp, bool encrypt)
 {
 	struct n2_skcipher_context *ctx = crypto_skcipher_ctx(skcipher);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cwq_initial_entry *ent;
 	bool in_place;
 	int i;
@@ -1049,29 +846,17 @@ static int __n2_crypt_chunk(struct crypto_skcipher *skcipher,
 	return (spu_queue_submit(qp, ent) != HV_EOK) ? -EINVAL : 0;
 }
 
-<<<<<<< HEAD
-static int n2_compute_chunks(struct ablkcipher_request *req)
-{
-	struct n2_request_context *rctx = ablkcipher_request_ctx(req);
-	struct ablkcipher_walk *walk = &rctx->walk;
-=======
 static int n2_compute_chunks(struct skcipher_request *req)
 {
 	struct n2_request_context *rctx = skcipher_request_ctx(req);
 	struct skcipher_walk *walk = &rctx->walk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct n2_crypto_chunk *chunk;
 	unsigned long dest_prev;
 	unsigned int tot_len;
 	bool prev_in_place;
 	int err, nbytes;
 
-<<<<<<< HEAD
-	ablkcipher_walk_init(walk, req->dst, req->src, req->nbytes);
-	err = ablkcipher_walk_phys(req, walk);
-=======
 	err = skcipher_walk_async(walk, req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -1093,21 +878,12 @@ static int n2_compute_chunks(struct skcipher_request *req)
 		bool in_place;
 		int this_len;
 
-<<<<<<< HEAD
-		src_paddr = (page_to_phys(walk->src.page) +
-			     walk->src.offset);
-		dest_paddr = (page_to_phys(walk->dst.page) +
-			      walk->dst.offset);
-		in_place = (src_paddr == dest_paddr);
-		this_len = cipher_descriptor_len(nbytes, walk->blocksize);
-=======
 		src_paddr = (page_to_phys(walk->src.phys.page) +
 			     walk->src.phys.offset);
 		dest_paddr = (page_to_phys(walk->dst.phys.page) +
 			      walk->dst.phys.offset);
 		in_place = (src_paddr == dest_paddr);
 		this_len = skcipher_descriptor_len(nbytes, walk->blocksize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (chunk->arr_len != 0) {
 			if (in_place != prev_in_place ||
@@ -1138,11 +914,7 @@ static int n2_compute_chunks(struct skcipher_request *req)
 		prev_in_place = in_place;
 		tot_len += this_len;
 
-<<<<<<< HEAD
-		err = ablkcipher_walk_done(req, walk, nbytes - this_len);
-=======
 		err = skcipher_walk_done(walk, nbytes - this_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			break;
 	}
@@ -1154,24 +926,14 @@ static int n2_compute_chunks(struct skcipher_request *req)
 	return err;
 }
 
-<<<<<<< HEAD
-static void n2_chunk_complete(struct ablkcipher_request *req, void *final_iv)
-{
-	struct n2_request_context *rctx = ablkcipher_request_ctx(req);
-=======
 static void n2_chunk_complete(struct skcipher_request *req, void *final_iv)
 {
 	struct n2_request_context *rctx = skcipher_request_ctx(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct n2_crypto_chunk *c, *tmp;
 
 	if (final_iv)
 		memcpy(rctx->walk.iv, final_iv, rctx->walk.blocksize);
 
-<<<<<<< HEAD
-	ablkcipher_walk_complete(&rctx->walk);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(c, tmp, &rctx->chunk_list, entry) {
 		list_del(&c->entry);
 		if (unlikely(c != &rctx->chunk))
@@ -1180,17 +942,10 @@ static void n2_chunk_complete(struct skcipher_request *req, void *final_iv)
 
 }
 
-<<<<<<< HEAD
-static int n2_do_ecb(struct ablkcipher_request *req, bool encrypt)
-{
-	struct n2_request_context *rctx = ablkcipher_request_ctx(req);
-	struct crypto_tfm *tfm = req->base.tfm;
-=======
 static int n2_do_ecb(struct skcipher_request *req, bool encrypt)
 {
 	struct n2_request_context *rctx = skcipher_request_ctx(req);
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = n2_compute_chunks(req);
 	struct n2_crypto_chunk *c, *tmp;
 	unsigned long flags, hv_ret;
@@ -1229,35 +984,20 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int n2_encrypt_ecb(struct ablkcipher_request *req)
-=======
 static int n2_encrypt_ecb(struct skcipher_request *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return n2_do_ecb(req, true);
 }
 
-<<<<<<< HEAD
-static int n2_decrypt_ecb(struct ablkcipher_request *req)
-=======
 static int n2_decrypt_ecb(struct skcipher_request *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return n2_do_ecb(req, false);
 }
 
-<<<<<<< HEAD
-static int n2_do_chaining(struct ablkcipher_request *req, bool encrypt)
-{
-	struct n2_request_context *rctx = ablkcipher_request_ctx(req);
-	struct crypto_tfm *tfm = req->base.tfm;
-=======
 static int n2_do_chaining(struct skcipher_request *req, bool encrypt)
 {
 	struct n2_request_context *rctx = skcipher_request_ctx(req);
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags, hv_ret, iv_paddr;
 	int err = n2_compute_chunks(req);
 	struct n2_crypto_chunk *c, *tmp;
@@ -1334,70 +1074,32 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int n2_encrypt_chaining(struct ablkcipher_request *req)
-=======
 static int n2_encrypt_chaining(struct skcipher_request *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return n2_do_chaining(req, true);
 }
 
-<<<<<<< HEAD
-static int n2_decrypt_chaining(struct ablkcipher_request *req)
-=======
 static int n2_decrypt_chaining(struct skcipher_request *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return n2_do_chaining(req, false);
 }
 
-<<<<<<< HEAD
-struct n2_cipher_tmpl {
-=======
 struct n2_skcipher_tmpl {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char		*name;
 	const char		*drv_name;
 	u8			block_size;
 	u8			enc_type;
-<<<<<<< HEAD
-	struct ablkcipher_alg	ablkcipher;
-};
-
-static const struct n2_cipher_tmpl cipher_tmpls[] = {
-	/* ARC4: only ECB is supported (chaining bits ignored) */
-	{	.name		= "ecb(arc4)",
-		.drv_name	= "ecb-arc4",
-		.block_size	= 1,
-		.enc_type	= (ENC_TYPE_ALG_RC4_STREAM |
-				   ENC_TYPE_CHAINING_ECB),
-		.ablkcipher	= {
-			.min_keysize	= 1,
-			.max_keysize	= 256,
-			.setkey		= n2_arc4_setkey,
-			.encrypt	= n2_encrypt_ecb,
-			.decrypt	= n2_decrypt_ecb,
-		},
-	},
-
-=======
 	struct skcipher_alg	skcipher;
 };
 
 static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* DES: ECB CBC and CFB are supported */
 	{	.name		= "ecb(des)",
 		.drv_name	= "ecb-des",
 		.block_size	= DES_BLOCK_SIZE,
 		.enc_type	= (ENC_TYPE_ALG_DES |
 				   ENC_TYPE_CHAINING_ECB),
-<<<<<<< HEAD
-		.ablkcipher	= {
-=======
 		.skcipher	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.min_keysize	= DES_KEY_SIZE,
 			.max_keysize	= DES_KEY_SIZE,
 			.setkey		= n2_des_setkey,
@@ -1410,11 +1112,7 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 		.block_size	= DES_BLOCK_SIZE,
 		.enc_type	= (ENC_TYPE_ALG_DES |
 				   ENC_TYPE_CHAINING_CBC),
-<<<<<<< HEAD
-		.ablkcipher	= {
-=======
 		.skcipher	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.ivsize		= DES_BLOCK_SIZE,
 			.min_keysize	= DES_KEY_SIZE,
 			.max_keysize	= DES_KEY_SIZE,
@@ -1423,22 +1121,6 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 			.decrypt	= n2_decrypt_chaining,
 		},
 	},
-<<<<<<< HEAD
-	{	.name		= "cfb(des)",
-		.drv_name	= "cfb-des",
-		.block_size	= DES_BLOCK_SIZE,
-		.enc_type	= (ENC_TYPE_ALG_DES |
-				   ENC_TYPE_CHAINING_CFB),
-		.ablkcipher	= {
-			.min_keysize	= DES_KEY_SIZE,
-			.max_keysize	= DES_KEY_SIZE,
-			.setkey		= n2_des_setkey,
-			.encrypt	= n2_encrypt_chaining,
-			.decrypt	= n2_decrypt_chaining,
-		},
-	},
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 3DES: ECB CBC and CFB are supported */
 	{	.name		= "ecb(des3_ede)",
@@ -1446,11 +1128,7 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 		.block_size	= DES_BLOCK_SIZE,
 		.enc_type	= (ENC_TYPE_ALG_3DES |
 				   ENC_TYPE_CHAINING_ECB),
-<<<<<<< HEAD
-		.ablkcipher	= {
-=======
 		.skcipher	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.min_keysize	= 3 * DES_KEY_SIZE,
 			.max_keysize	= 3 * DES_KEY_SIZE,
 			.setkey		= n2_3des_setkey,
@@ -1463,11 +1141,7 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 		.block_size	= DES_BLOCK_SIZE,
 		.enc_type	= (ENC_TYPE_ALG_3DES |
 				   ENC_TYPE_CHAINING_CBC),
-<<<<<<< HEAD
-		.ablkcipher	= {
-=======
 		.skcipher	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.ivsize		= DES_BLOCK_SIZE,
 			.min_keysize	= 3 * DES_KEY_SIZE,
 			.max_keysize	= 3 * DES_KEY_SIZE,
@@ -1476,34 +1150,14 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 			.decrypt	= n2_decrypt_chaining,
 		},
 	},
-<<<<<<< HEAD
-	{	.name		= "cfb(des3_ede)",
-		.drv_name	= "cfb-3des",
-		.block_size	= DES_BLOCK_SIZE,
-		.enc_type	= (ENC_TYPE_ALG_3DES |
-				   ENC_TYPE_CHAINING_CFB),
-		.ablkcipher	= {
-			.min_keysize	= 3 * DES_KEY_SIZE,
-			.max_keysize	= 3 * DES_KEY_SIZE,
-			.setkey		= n2_3des_setkey,
-			.encrypt	= n2_encrypt_chaining,
-			.decrypt	= n2_decrypt_chaining,
-		},
-	},
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* AES: ECB CBC and CTR are supported */
 	{	.name		= "ecb(aes)",
 		.drv_name	= "ecb-aes",
 		.block_size	= AES_BLOCK_SIZE,
 		.enc_type	= (ENC_TYPE_ALG_AES128 |
 				   ENC_TYPE_CHAINING_ECB),
-<<<<<<< HEAD
-		.ablkcipher	= {
-=======
 		.skcipher	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.min_keysize	= AES_MIN_KEY_SIZE,
 			.max_keysize	= AES_MAX_KEY_SIZE,
 			.setkey		= n2_aes_setkey,
@@ -1516,11 +1170,7 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 		.block_size	= AES_BLOCK_SIZE,
 		.enc_type	= (ENC_TYPE_ALG_AES128 |
 				   ENC_TYPE_CHAINING_CBC),
-<<<<<<< HEAD
-		.ablkcipher	= {
-=======
 		.skcipher	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.ivsize		= AES_BLOCK_SIZE,
 			.min_keysize	= AES_MIN_KEY_SIZE,
 			.max_keysize	= AES_MAX_KEY_SIZE,
@@ -1534,11 +1184,7 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 		.block_size	= AES_BLOCK_SIZE,
 		.enc_type	= (ENC_TYPE_ALG_AES128 |
 				   ENC_TYPE_CHAINING_COUNTER),
-<<<<<<< HEAD
-		.ablkcipher	= {
-=======
 		.skcipher	= {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.ivsize		= AES_BLOCK_SIZE,
 			.min_keysize	= AES_MIN_KEY_SIZE,
 			.max_keysize	= AES_MAX_KEY_SIZE,
@@ -1549,18 +1195,6 @@ static const struct n2_skcipher_tmpl skcipher_tmpls[] = {
 	},
 
 };
-<<<<<<< HEAD
-#define NUM_CIPHER_TMPLS ARRAY_SIZE(cipher_tmpls)
-
-static LIST_HEAD(cipher_algs);
-
-struct n2_hash_tmpl {
-	const char	*name;
-	const char	*hash_zero;
-	const u32	*hash_init;
-	u8		hw_op_hashsz;
-	u8		digest_size;
-=======
 #define NUM_CIPHER_TMPLS ARRAY_SIZE(skcipher_tmpls)
 
 static LIST_HEAD(skcipher_algs);
@@ -1572,49 +1206,11 @@ struct n2_hash_tmpl {
 	u8		hw_op_hashsz;
 	u8		digest_size;
 	u8		statesize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		block_size;
 	u8		auth_type;
 	u8		hmac_type;
 };
 
-<<<<<<< HEAD
-static const char md5_zero[MD5_DIGEST_SIZE] = {
-	0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
-	0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e,
-};
-static const u32 md5_init[MD5_HASH_WORDS] = {
-	cpu_to_le32(0x67452301),
-	cpu_to_le32(0xefcdab89),
-	cpu_to_le32(0x98badcfe),
-	cpu_to_le32(0x10325476),
-};
-static const char sha1_zero[SHA1_DIGEST_SIZE] = {
-	0xda, 0x39, 0xa3, 0xee, 0x5e, 0x6b, 0x4b, 0x0d, 0x32,
-	0x55, 0xbf, 0xef, 0x95, 0x60, 0x18, 0x90, 0xaf, 0xd8,
-	0x07, 0x09
-};
-static const u32 sha1_init[SHA1_DIGEST_SIZE / 4] = {
-	SHA1_H0, SHA1_H1, SHA1_H2, SHA1_H3, SHA1_H4,
-};
-static const char sha256_zero[SHA256_DIGEST_SIZE] = {
-	0xe3, 0xb0, 0xc4, 0x42, 0x98, 0xfc, 0x1c, 0x14, 0x9a,
-	0xfb, 0xf4, 0xc8, 0x99, 0x6f, 0xb9, 0x24, 0x27, 0xae,
-	0x41, 0xe4, 0x64, 0x9b, 0x93, 0x4c, 0xa4, 0x95, 0x99,
-	0x1b, 0x78, 0x52, 0xb8, 0x55
-};
-static const u32 sha256_init[SHA256_DIGEST_SIZE / 4] = {
-	SHA256_H0, SHA256_H1, SHA256_H2, SHA256_H3,
-	SHA256_H4, SHA256_H5, SHA256_H6, SHA256_H7,
-};
-static const char sha224_zero[SHA224_DIGEST_SIZE] = {
-	0xd1, 0x4a, 0x02, 0x8c, 0x2a, 0x3a, 0x2b, 0xc9, 0x47,
-	0x61, 0x02, 0xbb, 0x28, 0x82, 0x34, 0xc4, 0x15, 0xa2,
-	0xb0, 0x1f, 0x82, 0x8e, 0xa6, 0x2a, 0xc5, 0xb3, 0xe4,
-	0x2f
-};
-static const u32 sha224_init[SHA256_DIGEST_SIZE / 4] = {
-=======
 static const __le32 n2_md5_init[MD5_HASH_WORDS] = {
 	cpu_to_le32(MD5_H0),
 	cpu_to_le32(MD5_H1),
@@ -1629,76 +1225,46 @@ static const u32 n2_sha256_init[SHA256_DIGEST_SIZE / 4] = {
 	SHA256_H4, SHA256_H5, SHA256_H6, SHA256_H7,
 };
 static const u32 n2_sha224_init[SHA256_DIGEST_SIZE / 4] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SHA224_H0, SHA224_H1, SHA224_H2, SHA224_H3,
 	SHA224_H4, SHA224_H5, SHA224_H6, SHA224_H7,
 };
 
 static const struct n2_hash_tmpl hash_tmpls[] = {
 	{ .name		= "md5",
-<<<<<<< HEAD
-	  .hash_zero	= md5_zero,
-	  .hash_init	= md5_init,
-=======
 	  .hash_zero	= md5_zero_message_hash,
 	  .hash_init	= (u8 *)n2_md5_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  .auth_type	= AUTH_TYPE_MD5,
 	  .hmac_type	= AUTH_TYPE_HMAC_MD5,
 	  .hw_op_hashsz	= MD5_DIGEST_SIZE,
 	  .digest_size	= MD5_DIGEST_SIZE,
-<<<<<<< HEAD
-	  .block_size	= MD5_HMAC_BLOCK_SIZE },
-	{ .name		= "sha1",
-	  .hash_zero	= sha1_zero,
-	  .hash_init	= sha1_init,
-=======
 	  .statesize	= sizeof(struct md5_state),
 	  .block_size	= MD5_HMAC_BLOCK_SIZE },
 	{ .name		= "sha1",
 	  .hash_zero	= sha1_zero_message_hash,
 	  .hash_init	= (u8 *)n2_sha1_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  .auth_type	= AUTH_TYPE_SHA1,
 	  .hmac_type	= AUTH_TYPE_HMAC_SHA1,
 	  .hw_op_hashsz	= SHA1_DIGEST_SIZE,
 	  .digest_size	= SHA1_DIGEST_SIZE,
-<<<<<<< HEAD
-	  .block_size	= SHA1_BLOCK_SIZE },
-	{ .name		= "sha256",
-	  .hash_zero	= sha256_zero,
-	  .hash_init	= sha256_init,
-=======
 	  .statesize	= sizeof(struct sha1_state),
 	  .block_size	= SHA1_BLOCK_SIZE },
 	{ .name		= "sha256",
 	  .hash_zero	= sha256_zero_message_hash,
 	  .hash_init	= (u8 *)n2_sha256_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  .auth_type	= AUTH_TYPE_SHA256,
 	  .hmac_type	= AUTH_TYPE_HMAC_SHA256,
 	  .hw_op_hashsz	= SHA256_DIGEST_SIZE,
 	  .digest_size	= SHA256_DIGEST_SIZE,
-<<<<<<< HEAD
-	  .block_size	= SHA256_BLOCK_SIZE },
-	{ .name		= "sha224",
-	  .hash_zero	= sha224_zero,
-	  .hash_init	= sha224_init,
-=======
 	  .statesize	= sizeof(struct sha256_state),
 	  .block_size	= SHA256_BLOCK_SIZE },
 	{ .name		= "sha224",
 	  .hash_zero	= sha224_zero_message_hash,
 	  .hash_init	= (u8 *)n2_sha224_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  .auth_type	= AUTH_TYPE_SHA256,
 	  .hmac_type	= AUTH_TYPE_RESERVED,
 	  .hw_op_hashsz	= SHA256_DIGEST_SIZE,
 	  .digest_size	= SHA224_DIGEST_SIZE,
-<<<<<<< HEAD
-=======
 	  .statesize	= sizeof(struct sha256_state),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  .block_size	= SHA224_BLOCK_SIZE },
 };
 #define NUM_HASH_TMPLS ARRAY_SIZE(hash_tmpls)
@@ -1710,16 +1276,6 @@ static int algs_registered;
 
 static void __n2_unregister_algs(void)
 {
-<<<<<<< HEAD
-	struct n2_cipher_alg *cipher, *cipher_tmp;
-	struct n2_ahash_alg *alg, *alg_tmp;
-	struct n2_hmac_alg *hmac, *hmac_tmp;
-
-	list_for_each_entry_safe(cipher, cipher_tmp, &cipher_algs, entry) {
-		crypto_unregister_alg(&cipher->alg);
-		list_del(&cipher->entry);
-		kfree(cipher);
-=======
 	struct n2_skcipher_alg *skcipher, *skcipher_tmp;
 	struct n2_ahash_alg *alg, *alg_tmp;
 	struct n2_hmac_alg *hmac, *hmac_tmp;
@@ -1728,7 +1284,6 @@ static void __n2_unregister_algs(void)
 		crypto_unregister_skcipher(&skcipher->skcipher);
 		list_del(&skcipher->entry);
 		kfree(skcipher);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	list_for_each_entry_safe(hmac, hmac_tmp, &hmac_algs, derived.entry) {
 		crypto_unregister_ahash(&hmac->derived.alg);
@@ -1742,18 +1297,6 @@ static void __n2_unregister_algs(void)
 	}
 }
 
-<<<<<<< HEAD
-static int n2_cipher_cra_init(struct crypto_tfm *tfm)
-{
-	tfm->crt_ablkcipher.reqsize = sizeof(struct n2_request_context);
-	return 0;
-}
-
-static int __devinit __n2_register_one_cipher(const struct n2_cipher_tmpl *tmpl)
-{
-	struct n2_cipher_alg *p = kzalloc(sizeof(*p), GFP_KERNEL);
-	struct crypto_alg *alg;
-=======
 static int n2_skcipher_init_tfm(struct crypto_skcipher *tfm)
 {
 	crypto_skcipher_set_reqsize(tfm, sizeof(struct n2_request_context));
@@ -1764,37 +1307,11 @@ static int __n2_register_one_skcipher(const struct n2_skcipher_tmpl *tmpl)
 {
 	struct n2_skcipher_alg *p = kzalloc(sizeof(*p), GFP_KERNEL);
 	struct skcipher_alg *alg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!p)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	alg = &p->alg;
-
-	snprintf(alg->cra_name, CRYPTO_MAX_ALG_NAME, "%s", tmpl->name);
-	snprintf(alg->cra_driver_name, CRYPTO_MAX_ALG_NAME, "%s-n2", tmpl->drv_name);
-	alg->cra_priority = N2_CRA_PRIORITY;
-	alg->cra_flags = CRYPTO_ALG_TYPE_ABLKCIPHER |
-			 CRYPTO_ALG_KERN_DRIVER_ONLY | CRYPTO_ALG_ASYNC;
-	alg->cra_blocksize = tmpl->block_size;
-	p->enc_type = tmpl->enc_type;
-	alg->cra_ctxsize = sizeof(struct n2_cipher_context);
-	alg->cra_type = &crypto_ablkcipher_type;
-	alg->cra_u.ablkcipher = tmpl->ablkcipher;
-	alg->cra_init = n2_cipher_cra_init;
-	alg->cra_module = THIS_MODULE;
-
-	list_add(&p->entry, &cipher_algs);
-	err = crypto_register_alg(alg);
-	if (err) {
-		pr_err("%s alg registration failed\n", alg->cra_name);
-		list_del(&p->entry);
-		kfree(p);
-	} else {
-		pr_info("%s alg registered\n", alg->cra_name);
-=======
 	alg = &p->skcipher;
 	*alg = tmpl->skcipher;
 
@@ -1817,16 +1334,11 @@ static int __n2_register_one_skcipher(const struct n2_skcipher_tmpl *tmpl)
 		kfree(p);
 	} else {
 		pr_info("%s alg registered\n", alg->base.cra_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit __n2_register_one_hmac(struct n2_ahash_alg *n2ahash)
-=======
 static int __n2_register_one_hmac(struct n2_ahash_alg *n2ahash)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct n2_hmac_alg *p = kzalloc(sizeof(*p), GFP_KERNEL);
 	struct ahash_alg *ahash;
@@ -1845,17 +1357,12 @@ static int __n2_register_one_hmac(struct n2_ahash_alg *n2ahash)
 	ahash->setkey = n2_hmac_async_setkey;
 
 	base = &ahash->halg.base;
-<<<<<<< HEAD
-	snprintf(base->cra_name, CRYPTO_MAX_ALG_NAME, "hmac(%s)", p->child_alg);
-	snprintf(base->cra_driver_name, CRYPTO_MAX_ALG_NAME, "hmac-%s-n2", p->child_alg);
-=======
 	if (snprintf(base->cra_name, CRYPTO_MAX_ALG_NAME, "hmac(%s)",
 		     p->child_alg) >= CRYPTO_MAX_ALG_NAME)
 		goto out_free_p;
 	if (snprintf(base->cra_driver_name, CRYPTO_MAX_ALG_NAME, "hmac-%s-n2",
 		     p->child_alg) >= CRYPTO_MAX_ALG_NAME)
 		goto out_free_p;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base->cra_ctxsize = sizeof(struct n2_hmac_ctx);
 	base->cra_init = n2_hmac_cra_init;
@@ -1866,10 +1373,7 @@ static int __n2_register_one_hmac(struct n2_ahash_alg *n2ahash)
 	if (err) {
 		pr_err("%s alg registration failed\n", base->cra_name);
 		list_del(&p->derived.entry);
-<<<<<<< HEAD
-=======
 out_free_p:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(p);
 	} else {
 		pr_info("%s alg registered\n", base->cra_name);
@@ -1877,11 +1381,7 @@ out_free_p:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit __n2_register_one_ahash(const struct n2_hash_tmpl *tmpl)
-=======
 static int __n2_register_one_ahash(const struct n2_hash_tmpl *tmpl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct n2_ahash_alg *p = kzalloc(sizeof(*p), GFP_KERNEL);
 	struct hash_alg_common *halg;
@@ -1905,29 +1405,18 @@ static int __n2_register_one_ahash(const struct n2_hash_tmpl *tmpl)
 	ahash->final = n2_hash_async_final;
 	ahash->finup = n2_hash_async_finup;
 	ahash->digest = n2_hash_async_digest;
-<<<<<<< HEAD
-
-	halg = &ahash->halg;
-	halg->digestsize = tmpl->digest_size;
-=======
 	ahash->export = n2_hash_async_noexport;
 	ahash->import = n2_hash_async_noimport;
 
 	halg = &ahash->halg;
 	halg->digestsize = tmpl->digest_size;
 	halg->statesize = tmpl->statesize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base = &halg->base;
 	snprintf(base->cra_name, CRYPTO_MAX_ALG_NAME, "%s", tmpl->name);
 	snprintf(base->cra_driver_name, CRYPTO_MAX_ALG_NAME, "%s-n2", tmpl->name);
 	base->cra_priority = N2_CRA_PRIORITY;
-<<<<<<< HEAD
-	base->cra_flags = CRYPTO_ALG_TYPE_AHASH |
-			  CRYPTO_ALG_KERN_DRIVER_ONLY |
-=======
 	base->cra_flags = CRYPTO_ALG_KERN_DRIVER_ONLY |
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  CRYPTO_ALG_NEED_FALLBACK;
 	base->cra_blocksize = tmpl->block_size;
 	base->cra_ctxsize = sizeof(struct n2_hash_ctx);
@@ -1949,11 +1438,7 @@ static int __n2_register_one_ahash(const struct n2_hash_tmpl *tmpl)
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit n2_register_algs(void)
-=======
 static int n2_register_algs(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, err = 0;
 
@@ -1969,11 +1454,7 @@ static int n2_register_algs(void)
 		}
 	}
 	for (i = 0; i < NUM_CIPHER_TMPLS; i++) {
-<<<<<<< HEAD
-		err = __n2_register_one_cipher(&cipher_tmpls[i]);
-=======
 		err = __n2_register_one_skcipher(&skcipher_tmpls[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			__n2_unregister_algs();
 			goto out;
@@ -1985,11 +1466,7 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit n2_unregister_algs(void)
-=======
 static void n2_unregister_algs(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&spu_lock);
 	if (!--algs_registered)
@@ -2004,11 +1481,7 @@ static void n2_unregister_algs(void)
  *
  * So we have to back-translate, going through the 'intr' and 'ino'
  * property tables of the n2cp MDESC node, matching it with the OF
-<<<<<<< HEAD
- * 'interrupts' property entries, in order to to figure out which
-=======
  * 'interrupts' property entries, in order to figure out which
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * devino goes to which already-translated IRQ.
  */
 static int find_devino_index(struct platform_device *dev, struct spu_mdesc_info *ip,
@@ -2058,12 +1531,7 @@ static int spu_map_ino(struct platform_device *dev, struct spu_mdesc_info *ip,
 
 	sprintf(p->irq_name, "%s-%d", irq_name, index);
 
-<<<<<<< HEAD
-	return request_irq(p->irq, handler, IRQF_SAMPLE_RANDOM,
-			   p->irq_name, p);
-=======
 	return request_irq(p->irq, handler, 0, p->irq_name, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct kmem_cache *queue_cache[2];
@@ -2075,11 +1543,7 @@ static void *new_queue(unsigned long q_type)
 
 static void free_queue(void *p, unsigned long q_type)
 {
-<<<<<<< HEAD
-	return kmem_cache_free(queue_cache[q_type - 1], p);
-=======
 	kmem_cache_free(queue_cache[q_type - 1], p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int queue_cache_init(void)
@@ -2101,10 +1565,7 @@ static int queue_cache_init(void)
 					  CWQ_ENTRY_SIZE, 0, NULL);
 	if (!queue_cache[HV_NCS_QTYPE_CWQ - 1]) {
 		kmem_cache_destroy(queue_cache[HV_NCS_QTYPE_MAU - 1]);
-<<<<<<< HEAD
-=======
 		queue_cache[HV_NCS_QTYPE_MAU - 1] = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	return 0;
@@ -2114,25 +1575,6 @@ static void queue_cache_destroy(void)
 {
 	kmem_cache_destroy(queue_cache[HV_NCS_QTYPE_MAU - 1]);
 	kmem_cache_destroy(queue_cache[HV_NCS_QTYPE_CWQ - 1]);
-<<<<<<< HEAD
-}
-
-static int spu_queue_register(struct spu_queue *p, unsigned long q_type)
-{
-	cpumask_var_t old_allowed;
-	unsigned long hv_ret;
-
-	if (cpumask_empty(&p->sharing))
-		return -EINVAL;
-
-	if (!alloc_cpumask_var(&old_allowed, GFP_KERNEL))
-		return -ENOMEM;
-
-	cpumask_copy(old_allowed, &current->cpus_allowed);
-
-	set_cpus_allowed_ptr(current, &p->sharing);
-
-=======
 	queue_cache[HV_NCS_QTYPE_MAU - 1] = NULL;
 	queue_cache[HV_NCS_QTYPE_CWQ - 1] = NULL;
 }
@@ -2144,19 +1586,11 @@ static long spu_queue_register_workfn(void *arg)
 	unsigned long q_type = qr->type;
 	unsigned long hv_ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hv_ret = sun4v_ncs_qconf(q_type, __pa(p->q),
 				 CWQ_NUM_ENTRIES, &p->qhandle);
 	if (!hv_ret)
 		sun4v_ncs_sethead_marker(p->qhandle, 0);
 
-<<<<<<< HEAD
-	set_cpus_allowed_ptr(current, old_allowed);
-
-	free_cpumask_var(old_allowed);
-
-	return (hv_ret ? -EINVAL : 0);
-=======
 	return hv_ret ? -EINVAL : 0;
 }
 
@@ -2166,7 +1600,6 @@ static int spu_queue_register(struct spu_queue *p, unsigned long q_type)
 	struct spu_qreg qr = { .queue = p, .type = q_type };
 
 	return work_on_cpu_safe(cpu, spu_queue_register_workfn, &qr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spu_queue_setup(struct spu_queue *p)
@@ -2240,19 +1673,11 @@ static int spu_mdesc_walk_arcs(struct mdesc_handle *mdesc,
 			continue;
 		id = mdesc_get_property(mdesc, tgt, "id", NULL);
 		if (table[*id] != NULL) {
-<<<<<<< HEAD
-			dev_err(&dev->dev, "%s: SPU cpu slot already set.\n",
-				dev->dev.of_node->full_name);
-			return -EINVAL;
-		}
-		cpu_set(*id, p->sharing);
-=======
 			dev_err(&dev->dev, "%pOF: SPU cpu slot already set.\n",
 				dev->dev.of_node);
 			return -EINVAL;
 		}
 		cpumask_set_cpu(*id, &p->sharing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		table[*id] = p;
 	}
 	return 0;
@@ -2269,21 +1694,12 @@ static int handle_exec_unit(struct spu_mdesc_info *ip, struct list_head *list,
 
 	p = kzalloc(sizeof(struct spu_queue), GFP_KERNEL);
 	if (!p) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Could not allocate SPU queue.\n",
-			dev->dev.of_node->full_name);
-		return -ENOMEM;
-	}
-
-	cpus_clear(p->sharing);
-=======
 		dev_err(&dev->dev, "%pOF: Could not allocate SPU queue.\n",
 			dev->dev.of_node);
 		return -ENOMEM;
 	}
 
 	cpumask_clear(&p->sharing);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&p->lock);
 	p->q_type = q_type;
 	INIT_LIST_HEAD(&p->jobs);
@@ -2326,13 +1742,8 @@ static int spu_mdesc_scan(struct mdesc_handle *mdesc, struct platform_device *de
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit get_irq_props(struct mdesc_handle *mdesc, u64 node,
-				   struct spu_mdesc_info *ip)
-=======
 static int get_irq_props(struct mdesc_handle *mdesc, u64 node,
 			 struct spu_mdesc_info *ip)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u64 *ino;
 	int ino_len;
@@ -2360,18 +1771,6 @@ static int get_irq_props(struct mdesc_handle *mdesc, u64 node,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit grab_mdesc_irq_props(struct mdesc_handle *mdesc,
-					  struct platform_device *dev,
-					  struct spu_mdesc_info *ip,
-					  const char *node_name)
-{
-	const unsigned int *reg;
-	u64 node;
-
-	reg = of_get_property(dev->dev.of_node, "reg", NULL);
-	if (!reg)
-=======
 static int grab_mdesc_irq_props(struct mdesc_handle *mdesc,
 				struct platform_device *dev,
 				struct spu_mdesc_info *ip,
@@ -2380,7 +1779,6 @@ static int grab_mdesc_irq_props(struct mdesc_handle *mdesc,
 	u64 node, reg;
 
 	if (of_property_read_reg(dev->dev.of_node, 0, &reg, NULL) < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	mdesc_for_each_node_by_name(mdesc, node, "virtual-device") {
@@ -2391,11 +1789,7 @@ static int grab_mdesc_irq_props(struct mdesc_handle *mdesc,
 		if (!name || strcmp(name, node_name))
 			continue;
 		chdl = mdesc_get_property(mdesc, node, "cfg-handle", NULL);
-<<<<<<< HEAD
-		if (!chdl || (*chdl != *reg))
-=======
 		if (!chdl || (*chdl != reg))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		ip->cfg_handle = *chdl;
 		return get_irq_props(mdesc, node, ip);
@@ -2407,11 +1801,7 @@ static int grab_mdesc_irq_props(struct mdesc_handle *mdesc,
 static unsigned long n2_spu_hvapi_major;
 static unsigned long n2_spu_hvapi_minor;
 
-<<<<<<< HEAD
-static int __devinit n2_spu_hvapi_register(void)
-=======
 static int n2_spu_hvapi_register(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -2437,11 +1827,7 @@ static void n2_spu_hvapi_unregister(void)
 
 static int global_ref;
 
-<<<<<<< HEAD
-static int __devinit grab_global_resources(void)
-=======
 static int grab_global_resources(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -2459,20 +1845,12 @@ static int grab_global_resources(void)
 		goto out_hvapi_release;
 
 	err = -ENOMEM;
-<<<<<<< HEAD
-	cpu_to_cwq = kzalloc(sizeof(struct spu_queue *) * NR_CPUS,
-=======
 	cpu_to_cwq = kcalloc(NR_CPUS, sizeof(struct spu_queue *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     GFP_KERNEL);
 	if (!cpu_to_cwq)
 		goto out_queue_cache_destroy;
 
-<<<<<<< HEAD
-	cpu_to_mau = kzalloc(sizeof(struct spu_queue *) * NR_CPUS,
-=======
 	cpu_to_mau = kcalloc(NR_CPUS, sizeof(struct spu_queue *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     GFP_KERNEL);
 	if (!cpu_to_mau)
 		goto out_free_cwq_table;
@@ -2513,11 +1891,7 @@ static void release_global_resources(void)
 	mutex_unlock(&spu_lock);
 }
 
-<<<<<<< HEAD
-static struct n2_crypto * __devinit alloc_n2cp(void)
-=======
 static struct n2_crypto *alloc_n2cp(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct n2_crypto *np = kzalloc(sizeof(struct n2_crypto), GFP_KERNEL);
 
@@ -2529,24 +1903,13 @@ static struct n2_crypto *alloc_n2cp(void)
 
 static void free_n2cp(struct n2_crypto *np)
 {
-<<<<<<< HEAD
-	if (np->cwq_info.ino_table) {
-		kfree(np->cwq_info.ino_table);
-		np->cwq_info.ino_table = NULL;
-	}
-=======
 	kfree(np->cwq_info.ino_table);
 	np->cwq_info.ino_table = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(np);
 }
 
-<<<<<<< HEAD
-static void __devinit n2_spu_driver_version(void)
-=======
 static void n2_spu_driver_version(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int n2_spu_version_printed;
 
@@ -2554,74 +1917,42 @@ static void n2_spu_driver_version(void)
 		pr_info("%s", version);
 }
 
-<<<<<<< HEAD
-static int __devinit n2_crypto_probe(struct platform_device *dev)
-{
-	struct mdesc_handle *mdesc;
-	const char *full_name;
-=======
 static int n2_crypto_probe(struct platform_device *dev)
 {
 	struct mdesc_handle *mdesc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct n2_crypto *np;
 	int err;
 
 	n2_spu_driver_version();
 
-<<<<<<< HEAD
-	full_name = dev->dev.of_node->full_name;
-	pr_info("Found N2CP at %s\n", full_name);
-
-	np = alloc_n2cp();
-	if (!np) {
-		dev_err(&dev->dev, "%s: Unable to allocate n2cp.\n",
-			full_name);
-=======
 	pr_info("Found N2CP at %pOF\n", dev->dev.of_node);
 
 	np = alloc_n2cp();
 	if (!np) {
 		dev_err(&dev->dev, "%pOF: Unable to allocate n2cp.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	err = grab_global_resources();
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Unable to grab "
-			"global resources.\n", full_name);
-=======
 		dev_err(&dev->dev, "%pOF: Unable to grab global resources.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_n2cp;
 	}
 
 	mdesc = mdesc_grab();
 
 	if (!mdesc) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Unable to grab MDESC.\n",
-			full_name);
-=======
 		dev_err(&dev->dev, "%pOF: Unable to grab MDESC.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto out_free_global;
 	}
 	err = grab_mdesc_irq_props(mdesc, dev, &np->cwq_info, "n2cp");
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Unable to grab IRQ props.\n",
-			full_name);
-=======
 		dev_err(&dev->dev, "%pOF: Unable to grab IRQ props.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdesc_release(mdesc);
 		goto out_free_global;
 	}
@@ -2632,25 +1963,15 @@ static int n2_crypto_probe(struct platform_device *dev)
 	mdesc_release(mdesc);
 
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: CWQ MDESC scan failed.\n",
-			full_name);
-=======
 		dev_err(&dev->dev, "%pOF: CWQ MDESC scan failed.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_global;
 	}
 
 	err = n2_register_algs();
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Unable to register algorithms.\n",
-			full_name);
-=======
 		dev_err(&dev->dev, "%pOF: Unable to register algorithms.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_spu_list;
 	}
 
@@ -2670,11 +1991,7 @@ out_free_n2cp:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit n2_crypto_remove(struct platform_device *dev)
-=======
 static void n2_crypto_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct n2_crypto *np = dev_get_drvdata(&dev->dev);
 
@@ -2685,17 +2002,9 @@ static void n2_crypto_remove(struct platform_device *dev)
 	release_global_resources();
 
 	free_n2cp(np);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static struct n2_mau * __devinit alloc_ncp(void)
-=======
 }
 
 static struct n2_mau *alloc_ncp(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct n2_mau *mp = kzalloc(sizeof(struct n2_mau), GFP_KERNEL);
 
@@ -2707,88 +2016,49 @@ static struct n2_mau *alloc_ncp(void)
 
 static void free_ncp(struct n2_mau *mp)
 {
-<<<<<<< HEAD
-	if (mp->mau_info.ino_table) {
-		kfree(mp->mau_info.ino_table);
-		mp->mau_info.ino_table = NULL;
-	}
-=======
 	kfree(mp->mau_info.ino_table);
 	mp->mau_info.ino_table = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(mp);
 }
 
-<<<<<<< HEAD
-static int __devinit n2_mau_probe(struct platform_device *dev)
-{
-	struct mdesc_handle *mdesc;
-	const char *full_name;
-=======
 static int n2_mau_probe(struct platform_device *dev)
 {
 	struct mdesc_handle *mdesc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct n2_mau *mp;
 	int err;
 
 	n2_spu_driver_version();
 
-<<<<<<< HEAD
-	full_name = dev->dev.of_node->full_name;
-	pr_info("Found NCP at %s\n", full_name);
-
-	mp = alloc_ncp();
-	if (!mp) {
-		dev_err(&dev->dev, "%s: Unable to allocate ncp.\n",
-			full_name);
-=======
 	pr_info("Found NCP at %pOF\n", dev->dev.of_node);
 
 	mp = alloc_ncp();
 	if (!mp) {
 		dev_err(&dev->dev, "%pOF: Unable to allocate ncp.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	err = grab_global_resources();
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Unable to grab "
-			"global resources.\n", full_name);
-=======
 		dev_err(&dev->dev, "%pOF: Unable to grab global resources.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_ncp;
 	}
 
 	mdesc = mdesc_grab();
 
 	if (!mdesc) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Unable to grab MDESC.\n",
-			full_name);
-=======
 		dev_err(&dev->dev, "%pOF: Unable to grab MDESC.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto out_free_global;
 	}
 
 	err = grab_mdesc_irq_props(mdesc, dev, &mp->mau_info, "ncp");
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: Unable to grab IRQ props.\n",
-			full_name);
-=======
 		dev_err(&dev->dev, "%pOF: Unable to grab IRQ props.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdesc_release(mdesc);
 		goto out_free_global;
 	}
@@ -2799,13 +2069,8 @@ static int n2_mau_probe(struct platform_device *dev)
 	mdesc_release(mdesc);
 
 	if (err) {
-<<<<<<< HEAD
-		dev_err(&dev->dev, "%s: MAU MDESC scan failed.\n",
-			full_name);
-=======
 		dev_err(&dev->dev, "%pOF: MAU MDESC scan failed.\n",
 			dev->dev.of_node);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_global;
 	}
 
@@ -2822,11 +2087,7 @@ out_free_ncp:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit n2_mau_remove(struct platform_device *dev)
-=======
 static void n2_mau_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct n2_mau *mp = dev_get_drvdata(&dev->dev);
 
@@ -2835,17 +2096,9 @@ static void n2_mau_remove(struct platform_device *dev)
 	release_global_resources();
 
 	free_ncp(mp);
-<<<<<<< HEAD
-
-	return 0;
-}
-
-static struct of_device_id n2_crypto_match[] = {
-=======
 }
 
 static const struct of_device_id n2_crypto_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "n2cp",
 		.compatible = "SUNW,n2-cwq",
@@ -2866,16 +2119,6 @@ MODULE_DEVICE_TABLE(of, n2_crypto_match);
 static struct platform_driver n2_crypto_driver = {
 	.driver = {
 		.name		=	"n2cp",
-<<<<<<< HEAD
-		.owner		=	THIS_MODULE,
-		.of_match_table	=	n2_crypto_match,
-	},
-	.probe		=	n2_crypto_probe,
-	.remove		=	__devexit_p(n2_crypto_remove),
-};
-
-static struct of_device_id n2_mau_match[] = {
-=======
 		.of_match_table	=	n2_crypto_match,
 	},
 	.probe		=	n2_crypto_probe,
@@ -2883,7 +2126,6 @@ static struct of_device_id n2_mau_match[] = {
 };
 
 static const struct of_device_id n2_mau_match[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "ncp",
 		.compatible = "SUNW,n2-mau",
@@ -2904,13 +2146,6 @@ MODULE_DEVICE_TABLE(of, n2_mau_match);
 static struct platform_driver n2_mau_driver = {
 	.driver = {
 		.name		=	"ncp",
-<<<<<<< HEAD
-		.owner		=	THIS_MODULE,
-		.of_match_table	=	n2_mau_match,
-	},
-	.probe		=	n2_mau_probe,
-	.remove		=	__devexit_p(n2_mau_remove),
-=======
 		.of_match_table	=	n2_mau_match,
 	},
 	.probe		=	n2_mau_probe,
@@ -2920,33 +2155,16 @@ static struct platform_driver n2_mau_driver = {
 static struct platform_driver * const drivers[] = {
 	&n2_crypto_driver,
 	&n2_mau_driver,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init n2_init(void)
 {
-<<<<<<< HEAD
-	int err = platform_driver_register(&n2_crypto_driver);
-
-	if (!err) {
-		err = platform_driver_register(&n2_mau_driver);
-		if (err)
-			platform_driver_unregister(&n2_crypto_driver);
-	}
-	return err;
-=======
 	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit n2_exit(void)
 {
-<<<<<<< HEAD
-	platform_driver_unregister(&n2_mau_driver);
-	platform_driver_unregister(&n2_crypto_driver);
-=======
 	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(n2_init);

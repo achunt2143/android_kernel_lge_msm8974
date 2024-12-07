@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/super.c
  *
@@ -19,20 +16,13 @@
 #include <linux/sched.h>
 #include <linux/bitmap.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-=======
 #include <linux/seq_file.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Mark the filesystem dirty, so that chkdsk checks it when os/2 booted */
 
 static void mark_dirty(struct super_block *s, int remount)
 {
-<<<<<<< HEAD
-	if (hpfs_sb(s)->sb_chkdsk && (remount || !(s->s_flags & MS_RDONLY))) {
-=======
 	if (hpfs_sb(s)->sb_chkdsk && (remount || !sb_rdonly(s))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct buffer_head *bh;
 		struct hpfs_spare_block *sb;
 		if ((sb = hpfs_map_sector(s, 17, &bh, 0))) {
@@ -52,11 +42,7 @@ static void unmark_dirty(struct super_block *s)
 {
 	struct buffer_head *bh;
 	struct hpfs_spare_block *sb;
-<<<<<<< HEAD
-	if (s->s_flags & MS_RDONLY) return;
-=======
 	if (sb_rdonly(s)) return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sync_blockdev(s->s_bdev);
 	if ((sb = hpfs_map_sector(s, 17, &bh, 0))) {
 		sb->dirty = hpfs_sb(s)->sb_chkdsk > 1 - hpfs_sb(s)->sb_was_error;
@@ -84,21 +70,6 @@ void hpfs_error(struct super_block *s, const char *fmt, ...)
 
 	if (!hpfs_sb(s)->sb_was_error) {
 		if (hpfs_sb(s)->sb_err == 2) {
-<<<<<<< HEAD
-			printk("; crashing the system because you wanted it\n");
-			mark_dirty(s, 0);
-			panic("HPFS panic");
-		} else if (hpfs_sb(s)->sb_err == 1) {
-			if (s->s_flags & MS_RDONLY) printk("; already mounted read-only\n");
-			else {
-				printk("; remounting read-only\n");
-				mark_dirty(s, 0);
-				s->s_flags |= MS_RDONLY;
-			}
-		} else if (s->s_flags & MS_RDONLY) printk("; going on - but anything won't be destroyed because it's read-only\n");
-		else printk("; corrupted filesystem mounted read/write - your computer will explode within 20 seconds ... but you wanted it so!\n");
-	} else printk("\n");
-=======
 			pr_cont("; crashing the system because you wanted it\n");
 			mark_dirty(s, 0);
 			panic("HPFS panic");
@@ -116,7 +87,6 @@ void hpfs_error(struct super_block *s, const char *fmt, ...)
 			pr_cont("; corrupted filesystem mounted read/write - your computer will explode within 20 seconds ... but you wanted it so!\n");
 	} else
 		pr_cont("\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_sb(s)->sb_was_error = 1;
 }
 
@@ -140,23 +110,6 @@ int hpfs_stop_cycles(struct super_block *s, int key, int *c1, int *c2,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void hpfs_put_super(struct super_block *s)
-{
-	struct hpfs_sb_info *sbi = hpfs_sb(s);
-
-	hpfs_lock(s);
-	unmark_dirty(s);
-	hpfs_unlock(s);
-
-	kfree(sbi->sb_cp_table);
-	kfree(sbi->sb_bmp_dir);
-	s->s_fs_info = NULL;
-	kfree(sbi);
-}
-
-unsigned hpfs_count_one_bitmap(struct super_block *s, secno secno)
-=======
 static void free_sbi(struct hpfs_sb_info *sbi)
 {
 	kfree(sbi->sb_cp_table);
@@ -178,21 +131,14 @@ static void hpfs_put_super(struct super_block *s)
 }
 
 static unsigned hpfs_count_one_bitmap(struct super_block *s, secno secno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct quad_buffer_head qbh;
 	unsigned long *bits;
 	unsigned count;
 
-<<<<<<< HEAD
-	bits = hpfs_map_4sectors(s, secno, &qbh, 4);
-	if (!bits)
-		return 0;
-=======
 	bits = hpfs_map_4sectors(s, secno, &qbh, 0);
 	if (!bits)
 		return (unsigned)-1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	count = bitmap_weight(bits, 2048 * BITS_PER_BYTE);
 	hpfs_brelse4(&qbh);
 	return count;
@@ -203,13 +149,6 @@ static unsigned count_bitmaps(struct super_block *s)
 	unsigned n, count, n_bands;
 	n_bands = (hpfs_sb(s)->sb_fs_size + 0x3fff) >> 14;
 	count = 0;
-<<<<<<< HEAD
-	for (n = 0; n < n_bands; n++)
-		count += hpfs_count_one_bitmap(s, le32_to_cpu(hpfs_sb(s)->sb_bmp_dir[n]));
-	return count;
-}
-
-=======
 	for (n = 0; n < COUNT_RD_AHEAD; n++) {
 		hpfs_prefetch_bitmap(s, n);
 	}
@@ -235,41 +174,25 @@ unsigned hpfs_get_free_dnodes(struct super_block *s)
 	return sbi->sb_n_free_dnodes;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hpfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct super_block *s = dentry->d_sb;
 	struct hpfs_sb_info *sbi = hpfs_sb(s);
 	u64 id = huge_encode_dev(s->s_bdev->bd_dev);
-<<<<<<< HEAD
-	hpfs_lock(s);
-
-	/*if (sbi->sb_n_free == -1) {*/
-		sbi->sb_n_free = count_bitmaps(s);
-		sbi->sb_n_free_dnodes = hpfs_count_one_bitmap(s, sbi->sb_dmap);
-	/*}*/
-=======
 
 	hpfs_lock(s);
 
 	if (sbi->sb_n_free == (unsigned)-1)
 		sbi->sb_n_free = count_bitmaps(s);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->f_type = s->s_magic;
 	buf->f_bsize = 512;
 	buf->f_blocks = sbi->sb_fs_size;
 	buf->f_bfree = sbi->sb_n_free;
 	buf->f_bavail = sbi->sb_n_free;
 	buf->f_files = sbi->sb_dirband_size / 4;
-<<<<<<< HEAD
-	buf->f_ffree = sbi->sb_n_free_dnodes;
-	buf->f_fsid.val[0] = (u32)id;
-	buf->f_fsid.val[1] = (u32)(id >> 32);
-=======
 	buf->f_ffree = hpfs_get_free_dnodes(s);
 	buf->f_fsid = u64_to_fsid(id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->f_namelen = 254;
 
 	hpfs_unlock(s);
@@ -277,8 +200,6 @@ static int hpfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 
 long hpfs_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 {
@@ -306,32 +227,11 @@ long hpfs_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct kmem_cache * hpfs_inode_cachep;
 
 static struct inode *hpfs_alloc_inode(struct super_block *sb)
 {
 	struct hpfs_inode_info *ei;
-<<<<<<< HEAD
-	ei = (struct hpfs_inode_info *)kmem_cache_alloc(hpfs_inode_cachep, GFP_NOFS);
-	if (!ei)
-		return NULL;
-	ei->vfs_inode.i_version = 1;
-	return &ei->vfs_inode;
-}
-
-static void hpfs_i_callback(struct rcu_head *head)
-{
-	struct inode *inode = container_of(head, struct inode, i_rcu);
-	kmem_cache_free(hpfs_inode_cachep, hpfs_i(inode));
-}
-
-static void hpfs_destroy_inode(struct inode *inode)
-{
-	call_rcu(&inode->i_rcu, hpfs_i_callback);
-}
-
-=======
 	ei = alloc_inode_sb(sb, hpfs_inode_cachep, GFP_NOFS);
 	if (!ei)
 		return NULL;
@@ -343,7 +243,6 @@ static void hpfs_free_inode(struct inode *inode)
 	kmem_cache_free(hpfs_inode_cachep, hpfs_i(inode));
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_once(void *foo)
 {
 	struct hpfs_inode_info *ei = (struct hpfs_inode_info *) foo;
@@ -356,11 +255,7 @@ static int init_inodecache(void)
 	hpfs_inode_cachep = kmem_cache_create("hpfs_inode_cache",
 					     sizeof(struct hpfs_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
-<<<<<<< HEAD
-						SLAB_MEM_SPREAD),
-=======
 						SLAB_ACCOUNT),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     init_once);
 	if (hpfs_inode_cachep == NULL)
 		return -ENOMEM;
@@ -415,11 +310,7 @@ static const match_table_t tokens = {
 	{Opt_err, NULL},
 };
 
-<<<<<<< HEAD
-static int parse_opts(char *opts, uid_t *uid, gid_t *gid, umode_t *umask,
-=======
 static int parse_opts(char *opts, kuid_t *uid, kgid_t *gid, umode_t *umask,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      int *lowercase, int *eas, int *chk, int *errs,
 		      int *chkdsk, int *timeshift)
 {
@@ -429,11 +320,7 @@ static int parse_opts(char *opts, kuid_t *uid, kgid_t *gid, umode_t *umask,
 	if (!opts)
 		return 1;
 
-<<<<<<< HEAD
-	/*printk("Parsing opts: '%s'\n",opts);*/
-=======
 	/*pr_info("Parsing opts: '%s'\n",opts);*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((p = strsep(&opts, ",")) != NULL) {
 		substring_t args[MAX_OPT_ARGS];
@@ -448,24 +335,16 @@ static int parse_opts(char *opts, kuid_t *uid, kgid_t *gid, umode_t *umask,
 		case Opt_uid:
 			if (match_int(args, &option))
 				return 0;
-<<<<<<< HEAD
-			*uid = option;
-=======
 			*uid = make_kuid(current_user_ns(), option);
 			if (!uid_valid(*uid))
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case Opt_gid:
 			if (match_int(args, &option))
 				return 0;
-<<<<<<< HEAD
-			*gid = option;
-=======
 			*gid = make_kgid(current_user_ns(), option);
 			if (!gid_valid(*gid))
 				return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case Opt_umask:
 			if (match_octal(args, &option))
@@ -536,11 +415,7 @@ static int parse_opts(char *opts, kuid_t *uid, kgid_t *gid, umode_t *umask,
 
 static inline void hpfs_help(void)
 {
-<<<<<<< HEAD
-	printk("\n\
-=======
 	pr_info("\n\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 HPFS filesystem options:\n\
       help              do not mount and display this text\n\
       uid=xxx           set uid of files that don't have uid specified in eas\n\
@@ -566,36 +441,18 @@ HPFS filesystem options:\n\
 
 static int hpfs_remount_fs(struct super_block *s, int *flags, char *data)
 {
-<<<<<<< HEAD
-	uid_t uid;
-	gid_t gid;
-=======
 	kuid_t uid;
 	kgid_t gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	umode_t umask;
 	int lowercase, eas, chk, errs, chkdsk, timeshift;
 	int o;
 	struct hpfs_sb_info *sbi = hpfs_sb(s);
-<<<<<<< HEAD
-	char *new_opts = kstrdup(data, GFP_KERNEL);
-
-
-	if (!new_opts)
-		return -ENOMEM;
-
-	*flags |= MS_NOATIME;
-
-	hpfs_lock(s);
-	lock_super(s);
-=======
 
 	sync_filesystem(s);
 
 	*flags |= SB_NOATIME;
 
 	hpfs_lock(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uid = sbi->sb_uid; gid = sbi->sb_gid;
 	umask = 0777 & ~sbi->sb_mode;
 	lowercase = sbi->sb_lowercase;
@@ -604,11 +461,7 @@ static int hpfs_remount_fs(struct super_block *s, int *flags, char *data)
 
 	if (!(o = parse_opts(data, &uid, &gid, &umask, &lowercase,
 	    &eas, &chk, &errs, &chkdsk, &timeshift))) {
-<<<<<<< HEAD
-		printk("HPFS: bad mount options.\n");
-=======
 		pr_err("bad mount options.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 	if (o == 2) {
@@ -616,11 +469,7 @@ static int hpfs_remount_fs(struct super_block *s, int *flags, char *data)
 		goto out_err;
 	}
 	if (timeshift != sbi->sb_timeshift) {
-<<<<<<< HEAD
-		printk("HPFS: timeshift can't be changed using remount.\n");
-=======
 		pr_err("timeshift can't be changed using remount.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 
@@ -632,28 +481,12 @@ static int hpfs_remount_fs(struct super_block *s, int *flags, char *data)
 	sbi->sb_eas = eas; sbi->sb_chk = chk; sbi->sb_chkdsk = chkdsk;
 	sbi->sb_err = errs; sbi->sb_timeshift = timeshift;
 
-<<<<<<< HEAD
-	if (!(*flags & MS_RDONLY)) mark_dirty(s, 1);
-
-	replace_mount_options(s, new_opts);
-
-	unlock_super(s);
-=======
 	if (!(*flags & SB_RDONLY)) mark_dirty(s, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_unlock(s);
 	return 0;
 
 out_err:
-<<<<<<< HEAD
-	unlock_super(s);
-	hpfs_unlock(s);
-	kfree(new_opts);
-	return -EINVAL;
-}
-
-=======
 	hpfs_unlock(s);
 	return -EINVAL;
 }
@@ -688,26 +521,17 @@ static int hpfs_show_options(struct seq_file *seq, struct dentry *root)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Super operations */
 
 static const struct super_operations hpfs_sops =
 {
 	.alloc_inode	= hpfs_alloc_inode,
-<<<<<<< HEAD
-	.destroy_inode	= hpfs_destroy_inode,
-=======
 	.free_inode	= hpfs_free_inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.evict_inode	= hpfs_evict_inode,
 	.put_super	= hpfs_put_super,
 	.statfs		= hpfs_statfs,
 	.remount_fs	= hpfs_remount_fs,
-<<<<<<< HEAD
-	.show_options	= generic_show_options,
-=======
 	.show_options	= hpfs_show_options,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int hpfs_fill_super(struct super_block *s, void *options, int silent)
@@ -719,13 +543,8 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 	struct hpfs_sb_info *sbi;
 	struct inode *root;
 
-<<<<<<< HEAD
-	uid_t uid;
-	gid_t gid;
-=======
 	kuid_t uid;
 	kgid_t gid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	umode_t umask;
 	int lowercase, eas, chk, errs, chkdsk, timeshift;
 
@@ -735,23 +554,12 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 
 	int o;
 
-<<<<<<< HEAD
-	save_mount_options(s, options);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi = kzalloc(sizeof(*sbi), GFP_KERNEL);
 	if (!sbi) {
 		return -ENOMEM;
 	}
 	s->s_fs_info = sbi;
 
-<<<<<<< HEAD
-	sbi->sb_bmp_dir = NULL;
-	sbi->sb_cp_table = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&sbi->hpfs_mutex);
 	hpfs_lock(s);
 
@@ -767,11 +575,7 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 
 	if (!(o = parse_opts(options, &uid, &gid, &umask, &lowercase,
 	    &eas, &chk, &errs, &chkdsk, &timeshift))) {
-<<<<<<< HEAD
-		printk("HPFS: bad mount options.\n");
-=======
 		pr_err("bad mount options.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail0;
 	}
 	if (o==2) {
@@ -790,27 +594,12 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 	if (/*le16_to_cpu(bootblock->magic) != BB_MAGIC
 	    ||*/ le32_to_cpu(superblock->magic) != SB_MAGIC
 	    || le32_to_cpu(spareblock->magic) != SP_MAGIC) {
-<<<<<<< HEAD
-		if (!silent) printk("HPFS: Bad magic ... probably not HPFS\n");
-=======
 		if (!silent)
 			pr_err("Bad magic ... probably not HPFS\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail4;
 	}
 
 	/* Check version */
-<<<<<<< HEAD
-	if (!(s->s_flags & MS_RDONLY) &&
-	      superblock->funcversion != 2 && superblock->funcversion != 3) {
-		printk("HPFS: Bad version %d,%d. Mount readonly to go around\n",
-			(int)superblock->version, (int)superblock->funcversion);
-		printk("HPFS: please try recent version of HPFS driver at http://artax.karlin.mff.cuni.cz/~mikulas/vyplody/hpfs/index-e.cgi and if it still can't understand this format, contact author - mikulas@artax.karlin.mff.cuni.cz\n");
-		goto bail4;
-	}
-
-	s->s_flags |= MS_NOATIME;
-=======
 	if (!sb_rdonly(s) && superblock->funcversion != 2 && superblock->funcversion != 3) {
 		pr_err("Bad version %d,%d. Mount readonly to go around\n",
 			(int)superblock->version, (int)superblock->funcversion);
@@ -819,17 +608,13 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 	}
 
 	s->s_flags |= SB_NOATIME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill superblock stuff */
 	s->s_magic = HPFS_SUPER_MAGIC;
 	s->s_op = &hpfs_sops;
 	s->s_d_op = &hpfs_dentry_operations;
-<<<<<<< HEAD
-=======
 	s->s_time_min =  local_to_gmt(s, 0);
 	s->s_time_max =  local_to_gmt(s, U32_MAX);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sbi->sb_root = le32_to_cpu(superblock->root);
 	sbi->sb_fs_size = le32_to_cpu(superblock->n_sectors);
@@ -859,12 +644,9 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 		goto bail4;
 	}
 
-<<<<<<< HEAD
-=======
 	if (spareblock->n_spares_used)
 		hpfs_load_hotfix_map(s, spareblock);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Load bitmap directory */
 	if (!(sbi->sb_bmp_dir = hpfs_load_bitmap_directory(s, le32_to_cpu(superblock->bitmaps))))
 		goto bail4;
@@ -872,55 +654,27 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 	/* Check for general fs errors*/
 	if (spareblock->dirty && !spareblock->old_wrote) {
 		if (errs == 2) {
-<<<<<<< HEAD
-			printk("HPFS: Improperly stopped, not mounted\n");
-=======
 			pr_err("Improperly stopped, not mounted\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bail4;
 		}
 		hpfs_error(s, "improperly stopped");
 	}
 
-<<<<<<< HEAD
-	if (!(s->s_flags & MS_RDONLY)) {
-=======
 	if (!sb_rdonly(s)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spareblock->dirty = 1;
 		spareblock->old_wrote = 0;
 		mark_buffer_dirty(bh2);
 	}
 
-<<<<<<< HEAD
-	if (le32_to_cpu(spareblock->hotfixes_used) || le32_to_cpu(spareblock->n_spares_used)) {
-		if (errs >= 2) {
-			printk("HPFS: Hotfixes not supported here, try chkdsk\n");
-			mark_dirty(s, 0);
-			goto bail4;
-		}
-		hpfs_error(s, "hotfixes not supported here, try chkdsk");
-		if (errs == 0) printk("HPFS: Proceeding, but your filesystem will be probably corrupted by this driver...\n");
-		else printk("HPFS: This driver may read bad files or crash when operating on disk with hotfixes.\n");
-	}
-	if (le32_to_cpu(spareblock->n_dnode_spares) != le32_to_cpu(spareblock->n_dnode_spares_free)) {
-		if (errs >= 2) {
-			printk("HPFS: Spare dnodes used, try chkdsk\n");
-=======
 	if (le32_to_cpu(spareblock->n_dnode_spares) != le32_to_cpu(spareblock->n_dnode_spares_free)) {
 		if (errs >= 2) {
 			pr_err("Spare dnodes used, try chkdsk\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mark_dirty(s, 0);
 			goto bail4;
 		}
 		hpfs_error(s, "warning: spare dnodes used, try chkdsk");
-<<<<<<< HEAD
-		if (errs == 0) printk("HPFS: Proceeding, but your filesystem could be corrupted if you delete files or directories\n");
-=======
 		if (errs == 0)
 			pr_err("Proceeding, but your filesystem could be corrupted if you delete files or directories\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (chk) {
 		unsigned a;
@@ -939,21 +693,13 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 			goto bail4;
 		}
 		sbi->sb_dirband_size = a;
-<<<<<<< HEAD
-	} else printk("HPFS: You really don't want any checks? You are crazy...\n");
-=======
 	} else
 		pr_err("You really don't want any checks? You are crazy...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Load code page table */
 	if (le32_to_cpu(spareblock->n_code_pages))
 		if (!(sbi->sb_cp_table = hpfs_load_code_page(s, le32_to_cpu(spareblock->code_page_dir))))
-<<<<<<< HEAD
-			printk("HPFS: Warning: code page support is disabled\n");
-=======
 			pr_err("code page support is disabled\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brelse(bh2);
 	brelse(bh1);
@@ -979,15 +725,6 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 	if (!de)
 		hpfs_error(s, "unable to find root dir");
 	else {
-<<<<<<< HEAD
-		root->i_atime.tv_sec = local_to_gmt(s, le32_to_cpu(de->read_date));
-		root->i_atime.tv_nsec = 0;
-		root->i_mtime.tv_sec = local_to_gmt(s, le32_to_cpu(de->write_date));
-		root->i_mtime.tv_nsec = 0;
-		root->i_ctime.tv_sec = local_to_gmt(s, le32_to_cpu(de->creation_date));
-		root->i_ctime.tv_nsec = 0;
-		hpfs_i(root)->i_ea_size = le16_to_cpu(de->ea_size);
-=======
 		inode_set_atime(root,
 				local_to_gmt(s, le32_to_cpu(de->read_date)),
 				0);
@@ -998,7 +735,6 @@ static int hpfs_fill_super(struct super_block *s, void *options, int silent)
 				local_to_gmt(s, le32_to_cpu(de->creation_date)),
 				0);
 		hpfs_i(root)->i_ea_size = le32_to_cpu(de->ea_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hpfs_i(root)->i_parent_dir = root->i_ino;
 		if (root->i_size == -1)
 			root->i_size = 2048;
@@ -1015,14 +751,7 @@ bail2:	brelse(bh0);
 bail1:
 bail0:
 	hpfs_unlock(s);
-<<<<<<< HEAD
-	kfree(sbi->sb_bmp_dir);
-	kfree(sbi->sb_cp_table);
-	s->s_fs_info = NULL;
-	kfree(sbi);
-=======
 	free_sbi(sbi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -1039,10 +768,7 @@ static struct file_system_type hpfs_fs_type = {
 	.kill_sb	= kill_block_super,
 	.fs_flags	= FS_REQUIRES_DEV,
 };
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_FS("hpfs");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init init_hpfs_fs(void)
 {

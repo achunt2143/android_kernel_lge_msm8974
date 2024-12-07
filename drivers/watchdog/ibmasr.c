@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-1.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IBM Automatic Server Restart driver.
  *
@@ -10,11 +7,6 @@
  * Based on driver written by Pete Reynolds.
  * Copyright (c) IBM Corporation, 1998-2004.
  *
-<<<<<<< HEAD
- * This software may be used and distributed according to the terms
- * of the GNU Public License, incorporated herein by reference.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -330,11 +322,7 @@ static int asr_open(struct inode *inode, struct file *file)
 	asr_toggle();
 	asr_enable();
 
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int asr_release(struct inode *inode, struct file *file)
@@ -355,10 +343,7 @@ static const struct file_operations asr_fops = {
 	.llseek =		no_llseek,
 	.write =		asr_write,
 	.unlocked_ioctl =	asr_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl =		compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =			asr_open,
 	.release =		asr_release,
 };
@@ -375,11 +360,7 @@ struct ibmasr_id {
 	int type;
 };
 
-<<<<<<< HEAD
-static struct ibmasr_id __initdata ibmasr_id_table[] = {
-=======
 static struct ibmasr_id ibmasr_id_table[] __initdata = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "IBM Automatic Server Restart - eserver xSeries 220", ASMTYPE_TOPAZ },
 	{ "IBM Automatic Server Restart - Machine Type 8673", ASMTYPE_PEARL },
 	{ "IBM Automatic Server Restart - Machine Type 8480", ASMTYPE_JASPER },
@@ -438,7 +419,3 @@ MODULE_PARM_DESC(nowayout,
 MODULE_DESCRIPTION("IBM Automatic Server Restart driver");
 MODULE_AUTHOR("Andrey Panin");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

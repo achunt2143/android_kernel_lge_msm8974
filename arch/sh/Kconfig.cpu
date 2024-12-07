@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-menu "Processor features"
-
-choice
-	prompt "Endianess selection" 
-=======
 # SPDX-License-Identifier: GPL-2.0
 menu "Processor features"
 
 choice
 	prompt "Endianness selection" 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default CPU_LITTLE_ENDIAN
 	help
 	  Some SuperH machines can be configured for either little or big
@@ -20,10 +13,6 @@ config CPU_LITTLE_ENDIAN
 
 config CPU_BIG_ENDIAN
 	bool "Big Endian"
-<<<<<<< HEAD
-	depends on !CPU_SH5
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endchoice
 
@@ -37,21 +26,10 @@ config SH_FPU
 
 	  This option must be set in order to enable the FPU.
 
-<<<<<<< HEAD
-config SH64_FPU_DENORM_FLUSH
-	bool "Flush floating point denorms to zero"
-	depends on SH_FPU && SUPERH64
-
-config SH_FPU_EMU
-	def_bool n
-	prompt "FPU emulation support"
-	depends on !SH_FPU && EXPERIMENTAL
-=======
 config SH_FPU_EMU
 	def_bool n
 	prompt "FPU emulation support"
 	depends on !SH_FPU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Selecting this option will enable support for software FPU emulation.
 	  Most SH-3 users will want to say Y here, whereas most SH-4 users will
@@ -86,10 +64,6 @@ config SH_STORE_QUEUES
 
 config SPECULATIVE_EXECUTION
 	bool "Speculative subroutine return"
-<<<<<<< HEAD
-	depends on EXPERIMENTAL
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on CPU_SUBTYPE_SH7780 || CPU_SUBTYPE_SH7785 || CPU_SUBTYPE_SH7786
 	help
 	  This enables support for a speculative instruction fetch for
@@ -98,13 +72,6 @@ config SPECULATIVE_EXECUTION
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config SH64_ID2815_WORKAROUND
-	bool "Include workaround for SH5-101 cut2 silicon defect ID2815"
-	depends on CPU_SUBTYPE_SH5_101
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CPU_HAS_INTEVT
 	bool
 
@@ -118,11 +85,7 @@ config CPU_HAS_SR_RB
 	  that are lacking this bit must have another method in place for
 	  accomplishing what is taken care of by the banked registers.
 
-<<<<<<< HEAD
-	  See <file:Documentation/sh/register-banks.txt> for further
-=======
 	  See <file:Documentation/arch/sh/register-banks.rst> for further
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  information on SR.RB and register banking in the kernel in general.
 
 config CPU_HAS_PTEAEX

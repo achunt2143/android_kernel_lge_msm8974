@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#
-# Generated files
-#
-gen_crc32table
-crc32table.h
-
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 /crc32table.h
 /crc64table.h
@@ -15,4 +7,3 @@ crc32table.h
 /oid_registry_data.c
 /test_fortify.log
 /test_fortify/*.log
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

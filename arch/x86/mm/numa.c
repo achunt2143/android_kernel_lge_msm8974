@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-/* Common code for 32 and 64-bit NUMA */
-#include <linux/kernel.h>
-#include <linux/mm.h>
-#include <linux/string.h>
-#include <linux/init.h>
-#include <linux/bootmem.h>
-#include <linux/memblock.h>
-#include <linux/mmzone.h>
-#include <linux/ctype.h>
-#include <linux/module.h>
-#include <linux/nodemask.h>
-#include <linux/sched.h>
-#include <linux/topology.h>
-
-#include <asm/e820.h>
-#include <asm/proto.h>
-#include <asm/dma.h>
-#include <asm/acpi.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* Common code for 32 and 64-bit NUMA */
 #include <linux/acpi.h>
@@ -37,31 +17,18 @@
 #include <asm/e820/api.h>
 #include <asm/proto.h>
 #include <asm/dma.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/amd_nb.h>
 
 #include "numa_internal.h"
 
-<<<<<<< HEAD
-int __initdata numa_off;
-=======
 int numa_off;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nodemask_t numa_nodes_parsed __initdata;
 
 struct pglist_data *node_data[MAX_NUMNODES] __read_mostly;
 EXPORT_SYMBOL(node_data);
 
-<<<<<<< HEAD
-static struct numa_meminfo numa_meminfo
-#ifndef CONFIG_MEMORY_HOTPLUG
-__initdata
-#endif
-;
-=======
 static struct numa_meminfo numa_meminfo __initdata_or_meminfo;
 static struct numa_meminfo numa_reserved_meminfo __initdata_or_meminfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int numa_distance_cnt;
 static u8 *numa_distance;
@@ -72,23 +39,12 @@ static __init int numa_setup(char *opt)
 		return -EINVAL;
 	if (!strncmp(opt, "off", 3))
 		numa_off = 1;
-<<<<<<< HEAD
-#ifdef CONFIG_NUMA_EMU
-	if (!strncmp(opt, "fake=", 5))
-		numa_emu_cmdline(opt + 5);
-#endif
-#ifdef CONFIG_ACPI_NUMA
-	if (!strncmp(opt, "noacpi", 6))
-		acpi_numa = -1;
-#endif
-=======
 	if (!strncmp(opt, "fake=", 5))
 		return numa_emu_cmdline(opt + 5);
 	if (!strncmp(opt, "noacpi", 6))
 		disable_srat();
 	if (!strncmp(opt, "nohmat", 6))
 		disable_hmat();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 early_param("numa", numa_setup);
@@ -96,15 +52,6 @@ early_param("numa", numa_setup);
 /*
  * apicid, cpu, node mappings
  */
-<<<<<<< HEAD
-s16 __apicid_to_node[MAX_LOCAL_APIC] __cpuinitdata = {
-	[0 ... MAX_LOCAL_APIC-1] = NUMA_NO_NODE
-};
-
-int __cpuinit numa_cpu_node(int cpu)
-{
-	int apicid = early_per_cpu(x86_cpu_to_apicid, cpu);
-=======
 s16 __apicid_to_node[MAX_LOCAL_APIC] = {
 	[0 ... MAX_LOCAL_APIC-1] = NUMA_NO_NODE
 };
@@ -112,7 +59,6 @@ s16 __apicid_to_node[MAX_LOCAL_APIC] = {
 int numa_cpu_node(int cpu)
 {
 	u32 apicid = early_per_cpu(x86_cpu_to_apicid, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (apicid != BAD_APICID)
 		return __apicid_to_node[apicid];
@@ -128,11 +74,7 @@ EXPORT_SYMBOL(node_to_cpumask_map);
 DEFINE_EARLY_PER_CPU(int, x86_cpu_to_node_map, NUMA_NO_NODE);
 EXPORT_EARLY_PER_CPU_SYMBOL(x86_cpu_to_node_map);
 
-<<<<<<< HEAD
-void __cpuinit numa_set_node(int cpu, int node)
-=======
 void numa_set_node(int cpu, int node)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int *cpu_to_node_map = early_per_cpu_ptr(x86_cpu_to_node_map);
 
@@ -151,18 +93,10 @@ void numa_set_node(int cpu, int node)
 #endif
 	per_cpu(x86_cpu_to_node_map, cpu) = node;
 
-<<<<<<< HEAD
-	if (node != NUMA_NO_NODE)
-		set_cpu_numa_node(cpu, node);
-}
-
-void __cpuinit numa_clear_node(int cpu)
-=======
 	set_cpu_numa_node(cpu, node);
 }
 
 void numa_clear_node(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	numa_set_node(cpu, NUMA_NO_NODE);
 }
@@ -176,33 +110,18 @@ void numa_clear_node(int cpu)
  */
 void __init setup_node_to_cpumask_map(void)
 {
-<<<<<<< HEAD
-	unsigned int node, num = 0;
-
-	/* setup nr_node_ids if not done yet */
-	if (nr_node_ids == MAX_NUMNODES) {
-		for_each_node_mask(node, node_possible_map)
-			num = node;
-		nr_node_ids = num + 1;
-	}
-=======
 	unsigned int node;
 
 	/* setup nr_node_ids if not done yet */
 	if (nr_node_ids == MAX_NUMNODES)
 		setup_nr_node_ids();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate the map */
 	for (node = 0; node < nr_node_ids; node++)
 		alloc_bootmem_cpumask_var(&node_to_cpumask_map[node]);
 
 	/* cpumask_of_node() will now work */
-<<<<<<< HEAD
-	pr_debug("Node to cpumask map for %d nodes\n", nr_node_ids);
-=======
 	pr_debug("Node to cpumask map for %u nodes\n", nr_node_ids);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init numa_add_memblk_to(int nid, u64 start, u64 end,
@@ -214,22 +133,13 @@ static int __init numa_add_memblk_to(int nid, u64 start, u64 end,
 
 	/* whine about and ignore invalid blks */
 	if (start > end || nid < 0 || nid >= MAX_NUMNODES) {
-<<<<<<< HEAD
-		pr_warning("NUMA: Warning: invalid memblk node %d (%Lx-%Lx)\n",
-			   nid, start, end);
-=======
 		pr_warn("Warning: invalid memblk node %d [mem %#010Lx-%#010Lx]\n",
 			nid, start, end - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	if (mi->nr_blks >= NR_NODE_MEMBLKS) {
-<<<<<<< HEAD
-		pr_err("NUMA: too many memblk ranges\n");
-=======
 		pr_err("too many memblk ranges\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -256,8 +166,6 @@ void __init numa_remove_memblk_from(int idx, struct numa_meminfo *mi)
 }
 
 /**
-<<<<<<< HEAD
-=======
  * numa_move_tail_memblk - Move a numa_memblk from one numa_meminfo to another
  * @dst: numa_meminfo to append block to
  * @idx: Index of memblk to remove
@@ -271,7 +179,6 @@ static void __init numa_move_tail_memblk(struct numa_meminfo *dst, int idx,
 }
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * numa_add_memblk - Add one numa_memblk to numa_meminfo
  * @nid: NUMA node ID of the new memblk
  * @start: Start address of the new memblk
@@ -287,13 +194,8 @@ int __init numa_add_memblk(int nid, u64 start, u64 end)
 	return numa_add_memblk_to(nid, start, end, &numa_meminfo);
 }
 
-<<<<<<< HEAD
-/* Initialize NODE_DATA for a node on the local memory */
-static void __init setup_node_data(int nid, u64 start, u64 end)
-=======
 /* Allocate NODE_DATA for a node on the local memory */
 static void __init alloc_node_data(int nid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const size_t nd_size = roundup(sizeof(pg_data_t), PAGE_SIZE);
 	u64 nd_pa;
@@ -301,44 +203,19 @@ static void __init alloc_node_data(int nid)
 	int tnid;
 
 	/*
-<<<<<<< HEAD
-	 * Don't confuse VM with a node that doesn't have the
-	 * minimum amount of memory:
-	 */
-	if (end && (end - start) < NODE_MIN_SIZE)
-		return;
-
-	start = roundup(start, ZONE_ALIGN);
-
-	printk(KERN_INFO "Initmem setup node %d %016Lx-%016Lx\n",
-	       nid, start, end);
-
-	/*
-	 * Allocate node data.  Try node-local memory and then any node.
-	 * Never allocate in DMA zone.
-	 */
-	nd_pa = memblock_alloc_nid(nd_size, SMP_CACHE_BYTES, nid);
-	if (!nd_pa) {
-		pr_err("Cannot find %zu bytes in node %d\n",
-=======
 	 * Allocate node data.  Try node-local memory and then any node.
 	 * Never allocate in DMA zone.
 	 */
 	nd_pa = memblock_phys_alloc_try_nid(nd_size, SMP_CACHE_BYTES, nid);
 	if (!nd_pa) {
 		pr_err("Cannot find %zu bytes in any node (initial node: %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       nd_size, nid);
 		return;
 	}
 	nd = __va(nd_pa);
 
 	/* report and initialize */
-<<<<<<< HEAD
-	printk(KERN_INFO "  NODE_DATA [mem %#010Lx-%#010Lx]\n",
-=======
 	printk(KERN_INFO "NODE_DATA(%d) allocated [mem %#010Lx-%#010Lx]\n", nid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       nd_pa, nd_pa + nd_size - 1);
 	tnid = early_pfn_to_nid(nd_pa >> PAGE_SHIFT);
 	if (tnid != nid)
@@ -346,12 +223,6 @@ static void __init alloc_node_data(int nid)
 
 	node_data[nid] = nd;
 	memset(NODE_DATA(nid), 0, sizeof(pg_data_t));
-<<<<<<< HEAD
-	NODE_DATA(nid)->node_id = nid;
-	NODE_DATA(nid)->node_start_pfn = start >> PAGE_SHIFT;
-	NODE_DATA(nid)->node_spanned_pages = (end - start) >> PAGE_SHIFT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	node_set_online(nid);
 }
@@ -360,11 +231,7 @@ static void __init alloc_node_data(int nid)
  * numa_cleanup_meminfo - Cleanup a numa_meminfo
  * @mi: numa_meminfo to clean up
  *
-<<<<<<< HEAD
- * Sanitize @mi by merging and removing unncessary memblks.  Also check for
-=======
  * Sanitize @mi by merging and removing unnecessary memblks.  Also check for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * conflicts and clear unused memblks.
  *
  * RETURNS:
@@ -380,11 +247,6 @@ int __init numa_cleanup_meminfo(struct numa_meminfo *mi)
 	for (i = 0; i < mi->nr_blks; i++) {
 		struct numa_memblk *bi = &mi->blk[i];
 
-<<<<<<< HEAD
-		/* make sure all blocks are inside the limits */
-		bi->start = max(bi->start, low);
-		bi->end = min(bi->end, high);
-=======
 		/* move / save reserved memory ranges */
 		if (!memblock_overlaps_region(&memblock.memory,
 					bi->start, bi->end - bi->start)) {
@@ -401,7 +263,6 @@ int __init numa_cleanup_meminfo(struct numa_meminfo *mi)
 					   &numa_reserved_meminfo);
 			bi->end = high;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* and there's no empty block */
 		if (bi->start >= bi->end)
@@ -423,16 +284,6 @@ int __init numa_cleanup_meminfo(struct numa_meminfo *mi)
 			 */
 			if (bi->end > bj->start && bi->start < bj->end) {
 				if (bi->nid != bj->nid) {
-<<<<<<< HEAD
-					pr_err("NUMA: node %d (%Lx-%Lx) overlaps with node %d (%Lx-%Lx)\n",
-					       bi->nid, bi->start, bi->end,
-					       bj->nid, bj->start, bj->end);
-					return -EINVAL;
-				}
-				pr_warning("NUMA: Warning: node %d (%Lx-%Lx) overlaps with itself (%Lx-%Lx)\n",
-					   bi->nid, bi->start, bi->end,
-					   bj->start, bj->end);
-=======
 					pr_err("node %d [mem %#010Lx-%#010Lx] overlaps with node %d [mem %#010Lx-%#010Lx]\n",
 					       bi->nid, bi->start, bi->end - 1,
 					       bj->nid, bj->start, bj->end - 1);
@@ -441,7 +292,6 @@ int __init numa_cleanup_meminfo(struct numa_meminfo *mi)
 				pr_warn("Warning: node %d [mem %#010Lx-%#010Lx] overlaps with itself [mem %#010Lx-%#010Lx]\n",
 					bi->nid, bi->start, bi->end - 1,
 					bj->start, bj->end - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/*
@@ -463,15 +313,9 @@ int __init numa_cleanup_meminfo(struct numa_meminfo *mi)
 			}
 			if (k < mi->nr_blks)
 				continue;
-<<<<<<< HEAD
-			printk(KERN_INFO "NUMA: Node %d [%Lx,%Lx) + [%Lx,%Lx) -> [%Lx,%Lx)\n",
-			       bi->nid, bi->start, bi->end, bj->start, bj->end,
-			       start, end);
-=======
 			printk(KERN_INFO "NUMA: Node %d [mem %#010Lx-%#010Lx] + [mem %#010Lx-%#010Lx] -> [mem %#010Lx-%#010Lx]\n",
 			       bi->nid, bi->start, bi->end - 1, bj->start,
 			       bj->end - 1, start, end - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bi->start = start;
 			bi->end = end;
 			numa_remove_memblk_from(j--, mi);
@@ -513,11 +357,7 @@ void __init numa_reset_distance(void)
 
 	/* numa_distance could be 1LU marking allocation failure, test cnt */
 	if (numa_distance_cnt)
-<<<<<<< HEAD
-		memblock_free(__pa(numa_distance), size);
-=======
 		memblock_free(numa_distance, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	numa_distance_cnt = 0;
 	numa_distance = NULL;	/* enable table creation */
 }
@@ -538,25 +378,14 @@ static int __init numa_alloc_distance(void)
 	cnt++;
 	size = cnt * cnt * sizeof(numa_distance[0]);
 
-<<<<<<< HEAD
-	phys = memblock_find_in_range(0, PFN_PHYS(max_pfn_mapped),
-				      size, PAGE_SIZE);
-	if (!phys) {
-		pr_warning("NUMA: Warning: can't allocate distance table!\n");
-=======
 	phys = memblock_phys_alloc_range(size, PAGE_SIZE, 0,
 					 PFN_PHYS(max_pfn_mapped));
 	if (!phys) {
 		pr_warn("Warning: can't allocate distance table!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* don't retry until explicitly reset */
 		numa_distance = (void *)1LU;
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-	memblock_reserve(phys, size);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	numa_distance = __va(phys);
 	numa_distance_cnt = cnt;
@@ -597,23 +426,14 @@ void __init numa_set_distance(int from, int to, int distance)
 
 	if (from >= numa_distance_cnt || to >= numa_distance_cnt ||
 			from < 0 || to < 0) {
-<<<<<<< HEAD
-		pr_warn_once("NUMA: Warning: node ids are out of bound, from=%d to=%d distance=%d\n",
-			    from, to, distance);
-=======
 		pr_warn_once("Warning: node ids are out of bound, from=%d to=%d distance=%d\n",
 			     from, to, distance);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if ((u8)distance != distance ||
 	    (from == to && distance != LOCAL_DISTANCE)) {
-<<<<<<< HEAD
-		pr_warn_once("NUMA: Warning: invalid distance parameter, from=%d to=%d distance=%d\n",
-=======
 		pr_warn_once("Warning: invalid distance parameter, from=%d to=%d distance=%d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     from, to, distance);
 		return;
 	}
@@ -630,36 +450,6 @@ int __node_distance(int from, int to)
 EXPORT_SYMBOL(__node_distance);
 
 /*
-<<<<<<< HEAD
- * Sanity check to catch more bad NUMA configurations (they are amazingly
- * common).  Make sure the nodes cover all memory.
- */
-static bool __init numa_meminfo_cover_memory(const struct numa_meminfo *mi)
-{
-	u64 numaram, e820ram;
-	int i;
-
-	numaram = 0;
-	for (i = 0; i < mi->nr_blks; i++) {
-		u64 s = mi->blk[i].start >> PAGE_SHIFT;
-		u64 e = mi->blk[i].end >> PAGE_SHIFT;
-		numaram += e - s;
-		numaram -= __absent_pages_in_range(mi->blk[i].nid, s, e);
-		if ((s64)numaram < 0)
-			numaram = 0;
-	}
-
-	e820ram = max_pfn - absent_pages_in_range(0, max_pfn);
-
-	/* We seem to lose 3 pages somewhere. Allow 1M of slack. */
-	if ((s64)(e820ram - numaram) >= (1 << (20 - PAGE_SHIFT))) {
-		printk(KERN_ERR "NUMA: nodes only cover %LuMB of your %LuMB e820 RAM. Not used.\n",
-		       (numaram << PAGE_SHIFT) >> 20,
-		       (e820ram << PAGE_SHIFT) >> 20);
-		return false;
-	}
-	return true;
-=======
  * Mark all currently memblock-reserved physical memory (which covers the
  * kernel's own memory ranges) as hot-unswappable.
  */
@@ -723,15 +513,10 @@ static void __init numa_clear_kernel_node_hotplug(void)
 
 		memblock_clear_hotplug(mb->start, mb->end - mb->start);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init numa_register_memblks(struct numa_meminfo *mi)
 {
-<<<<<<< HEAD
-	unsigned long uninitialized_var(pfn_align);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, nid;
 
 	/* Account for nodes with cpus and no memory */
@@ -742,25 +527,6 @@ static int __init numa_register_memblks(struct numa_meminfo *mi)
 
 	for (i = 0; i < mi->nr_blks; i++) {
 		struct numa_memblk *mb = &mi->blk[i];
-<<<<<<< HEAD
-		memblock_set_node(mb->start, mb->end - mb->start, mb->nid);
-	}
-
-	/*
-	 * If sections array is gonna be used for pfn -> nid mapping, check
-	 * whether its granularity is fine enough.
-	 */
-#ifdef NODE_NOT_IN_PAGE_FLAGS
-	pfn_align = node_map_pfn_alignment();
-	if (pfn_align && pfn_align < PAGES_PER_SECTION) {
-		printk(KERN_WARNING "Node alignment %LuMB < min %LuMB, rejecting NUMA config\n",
-		       PFN_PHYS(pfn_align) >> 20,
-		       PFN_PHYS(PAGES_PER_SECTION) >> 20);
-		return -EINVAL;
-	}
-#endif
-	if (!numa_meminfo_cover_memory(mi))
-=======
 		memblock_set_node(mb->start, mb->end - mb->start,
 				  &memblock.memory, mb->nid);
 	}
@@ -790,7 +556,6 @@ static int __init numa_register_memblks(struct numa_meminfo *mi)
 	}
 
 	if (!memblock_validate_numa_coverage(SZ_1M))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Finally register nodes. */
@@ -805,15 +570,10 @@ static int __init numa_register_memblks(struct numa_meminfo *mi)
 			end = max(mi->blk[i].end, end);
 		}
 
-<<<<<<< HEAD
-		if (start < end)
-			setup_node_data(nid, start, end);
-=======
 		if (start >= end)
 			continue;
 
 		alloc_node_data(nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Dump memblock with node info and return. */
@@ -837,13 +597,7 @@ static void __init numa_init_array(void)
 		if (early_cpu_to_node(i) != NUMA_NO_NODE)
 			continue;
 		numa_set_node(i, rr);
-<<<<<<< HEAD
-		rr = next_node(rr, node_online_map);
-		if (rr == MAX_NUMNODES)
-			rr = first_node(node_online_map);
-=======
 		rr = next_node_in(rr, node_online_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -859,23 +613,17 @@ static int __init numa_init(int (*init_func)(void))
 	nodes_clear(node_possible_map);
 	nodes_clear(node_online_map);
 	memset(&numa_meminfo, 0, sizeof(numa_meminfo));
-<<<<<<< HEAD
-	WARN_ON(memblock_set_node(0, ULLONG_MAX, MAX_NUMNODES));
-=======
 	WARN_ON(memblock_set_node(0, ULLONG_MAX, &memblock.memory,
 				  MAX_NUMNODES));
 	WARN_ON(memblock_set_node(0, ULLONG_MAX, &memblock.reserved,
 				  MAX_NUMNODES));
 	/* In case that parsing SRAT failed. */
 	WARN_ON(memblock_clear_hotplug(0, ULLONG_MAX));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	numa_reset_distance();
 
 	ret = init_func();
 	if (ret < 0)
 		return ret;
-<<<<<<< HEAD
-=======
 
 	/*
 	 * We reset memblock back to the top-down direction
@@ -887,7 +635,6 @@ static int __init numa_init(int (*init_func)(void))
 	 */
 	memblock_set_bottom_up(false);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = numa_cleanup_meminfo(&numa_meminfo);
 	if (ret < 0)
 		return ret;
@@ -907,10 +654,7 @@ static int __init numa_init(int (*init_func)(void))
 			numa_clear_node(i);
 	}
 	numa_init_array();
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -927,13 +671,8 @@ static int __init dummy_numa_init(void)
 {
 	printk(KERN_INFO "%s\n",
 	       numa_off ? "NUMA turned off" : "No NUMA configuration found");
-<<<<<<< HEAD
-	printk(KERN_INFO "Faking a node at %016Lx-%016Lx\n",
-	       0LLU, PFN_PHYS(max_pfn));
-=======
 	printk(KERN_INFO "Faking a node at [mem %#018Lx-%#018Lx]\n",
 	       0LLU, PFN_PHYS(max_pfn) - 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	node_set(0, numa_nodes_parsed);
 	numa_add_memblk(0, 0, PFN_PHYS(max_pfn));
@@ -945,23 +684,12 @@ static int __init dummy_numa_init(void)
  * x86_numa_init - Initialize NUMA
  *
  * Try each configured NUMA initialization method until one succeeds.  The
-<<<<<<< HEAD
- * last fallback is dummy single node config encomapssing whole memory and
-=======
  * last fallback is dummy single node config encompassing whole memory and
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * never fails.
  */
 void __init x86_numa_init(void)
 {
 	if (!numa_off) {
-<<<<<<< HEAD
-#ifdef CONFIG_X86_NUMAQ
-		if (!numa_init(numaq_numa_init))
-			return;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ACPI_NUMA
 		if (!numa_init(x86_acpi_numa_init))
 			return;
@@ -970,34 +698,13 @@ void __init x86_numa_init(void)
 		if (!numa_init(amd_numa_init))
 			return;
 #endif
-<<<<<<< HEAD
-=======
 		if (acpi_disabled && !numa_init(of_numa_init))
 			return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	numa_init(dummy_numa_init);
 }
 
-<<<<<<< HEAD
-static __init int find_near_online_node(int node)
-{
-	int n, val;
-	int min_val = INT_MAX;
-	int best_node = -1;
-
-	for_each_online_node(n) {
-		val = node_distance(node, n);
-
-		if (val < min_val) {
-			min_val = val;
-			best_node = n;
-		}
-	}
-
-	return best_node;
-=======
 
 /*
  * A node may exist which has one or more Generic Initiators but no CPUs and no
@@ -1027,7 +734,6 @@ void __init init_gi_nodes(void)
 	for_each_node_state(nid, N_GENERIC_INITIATOR)
 		if (!node_online(nid))
 			node_set_online(nid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1047,11 +753,7 @@ void __init init_gi_nodes(void)
 void __init init_cpu_to_node(void)
 {
 	int cpu;
-<<<<<<< HEAD
-	u16 *cpu_to_apicid = early_per_cpu_ptr(x86_cpu_to_apicid);
-=======
 	u32 *cpu_to_apicid = early_per_cpu_ptr(x86_cpu_to_apicid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(cpu_to_apicid == NULL);
 
@@ -1060,10 +762,6 @@ void __init init_cpu_to_node(void)
 
 		if (node == NUMA_NO_NODE)
 			continue;
-<<<<<<< HEAD
-		if (!node_online(node))
-			node = find_near_online_node(node);
-=======
 
 		/*
 		 * Exclude this node from
@@ -1077,7 +775,6 @@ void __init init_cpu_to_node(void)
 		if (!node_online(node))
 			node_set_online(node);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		numa_set_node(cpu, node);
 	}
 }
@@ -1085,20 +782,12 @@ void __init init_cpu_to_node(void)
 #ifndef CONFIG_DEBUG_PER_CPU_MAPS
 
 # ifndef CONFIG_NUMA_EMU
-<<<<<<< HEAD
-void __cpuinit numa_add_cpu(int cpu)
-=======
 void numa_add_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cpumask_set_cpu(cpu, node_to_cpumask_map[early_cpu_to_node(cpu)]);
 }
 
-<<<<<<< HEAD
-void __cpuinit numa_remove_cpu(int cpu)
-=======
 void numa_remove_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cpumask_clear_cpu(cpu, node_to_cpumask_map[early_cpu_to_node(cpu)]);
 }
@@ -1139,21 +828,13 @@ int early_cpu_to_node(int cpu)
 void debug_cpumask_set_cpu(int cpu, int node, bool enable)
 {
 	struct cpumask *mask;
-<<<<<<< HEAD
-	char buf[64];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (node == NUMA_NO_NODE) {
 		/* early_cpu_to_node() already emits a warning and trace */
 		return;
 	}
 	mask = node_to_cpumask_map[node];
-<<<<<<< HEAD
-	if (!mask) {
-=======
 	if (!cpumask_available(mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("node_to_cpumask_map[%i] NULL\n", node);
 		dump_stack();
 		return;
@@ -1164,43 +845,24 @@ void debug_cpumask_set_cpu(int cpu, int node, bool enable)
 	else
 		cpumask_clear_cpu(cpu, mask);
 
-<<<<<<< HEAD
-	cpulist_scnprintf(buf, sizeof(buf), mask);
-	printk(KERN_DEBUG "%s cpu %d node %d: mask now %s\n",
-		enable ? "numa_add_cpu" : "numa_remove_cpu",
-		cpu, node, buf);
-=======
 	printk(KERN_DEBUG "%s cpu %d node %d: mask now %*pbl\n",
 		enable ? "numa_add_cpu" : "numa_remove_cpu",
 		cpu, node, cpumask_pr_args(mask));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
 # ifndef CONFIG_NUMA_EMU
-<<<<<<< HEAD
-static void __cpuinit numa_set_cpumask(int cpu, bool enable)
-=======
 static void numa_set_cpumask(int cpu, bool enable)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	debug_cpumask_set_cpu(cpu, early_cpu_to_node(cpu), enable);
 }
 
-<<<<<<< HEAD
-void __cpuinit numa_add_cpu(int cpu)
-=======
 void numa_add_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	numa_set_cpumask(cpu, true);
 }
 
-<<<<<<< HEAD
-void __cpuinit numa_remove_cpu(int cpu)
-=======
 void numa_remove_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	numa_set_cpumask(cpu, false);
 }
@@ -1211,24 +873,14 @@ void numa_remove_cpu(int cpu)
  */
 const struct cpumask *cpumask_of_node(int node)
 {
-<<<<<<< HEAD
-	if (node >= nr_node_ids) {
-		printk(KERN_WARNING
-			"cpumask_of_node(%d): node > nr_node_ids(%d)\n",
-=======
 	if ((unsigned)node >= nr_node_ids) {
 		printk(KERN_WARNING
 			"cpumask_of_node(%d): (unsigned)node >= nr_node_ids(%u)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			node, nr_node_ids);
 		dump_stack();
 		return cpu_none_mask;
 	}
-<<<<<<< HEAD
-	if (node_to_cpumask_map[node] == NULL) {
-=======
 	if (!cpumask_available(node_to_cpumask_map[node])) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING
 			"cpumask_of_node(%d): no node_to_cpumask_map!\n",
 			node);
@@ -1241,27 +893,13 @@ EXPORT_SYMBOL(cpumask_of_node);
 
 #endif	/* !CONFIG_DEBUG_PER_CPU_MAPS */
 
-<<<<<<< HEAD
-#ifdef CONFIG_MEMORY_HOTPLUG
-int memory_add_physaddr_to_nid(u64 start)
-{
-	struct numa_meminfo *mi = &numa_meminfo;
-	int nid = mi->blk[0].nid;
-=======
 #ifdef CONFIG_NUMA_KEEP_MEMINFO
 static int meminfo_to_nid(struct numa_meminfo *mi, u64 start)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < mi->nr_blks; i++)
 		if (mi->blk[i].start <= start && mi->blk[i].end > start)
-<<<<<<< HEAD
-			nid = mi->blk[i].nid;
-	return nid;
-}
-EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
-=======
 			return mi->blk[i].nid;
 	return NUMA_NO_NODE;
 }
@@ -1364,5 +1002,4 @@ int __init numa_fill_memblks(u64 start, u64 end)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

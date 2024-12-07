@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * su.c: Small serial driver for keyboard/mouse interface on sparc32/PCI
  *
@@ -40,19 +37,6 @@
 #include <linux/serial_reg.h>
 #include <linux/init.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-
-#include <asm/io.h>
-#include <asm/irq.h>
-#include <asm/prom.h>
-#include <asm/setup.h>
-
-#if defined(CONFIG_SERIAL_SUNSU_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-=======
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
@@ -60,7 +44,6 @@
 #include <asm/irq.h>
 #include <asm/setup.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 #include <linux/sunserialcore.h>
 
@@ -72,12 +55,6 @@
 enum su_type { SU_PORT_NONE, SU_PORT_MS, SU_PORT_KBD, SU_PORT_PORT };
 static char *su_typev[] = { "su(???)", "su(mouse)", "su(kbd)", "su(serial)" };
 
-<<<<<<< HEAD
-/*
- * Here we define the default xmit fifo size used for each type of UART.
- */
-static const struct serial_uart_config uart_config[PORT_MAX_8250+1] = {
-=======
 struct serial_uart_config {
 	char	*name;
 	int	dfl_xmit_fifo_size;
@@ -88,7 +65,6 @@ struct serial_uart_config {
  * Here we define the default xmit fifo size used for each type of UART.
  */
 static const struct serial_uart_config uart_config[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "unknown",	1,	0 },
 	{ "8250",	1,	0 },
 	{ "16450",	1,	0 },
@@ -151,12 +127,8 @@ static void serial_out(struct uart_sunsu_port *up, int offset, int value)
 	 * gate outputs a logical one. Since we use level triggered interrupts
 	 * we have lockup and watchdog reset. We cannot mask IRQ because
 	 * keyboard shares IRQ with us (Word has it as Bob Smelik's design).
-<<<<<<< HEAD
-	 * This problem is similar to what Alpha people suffer, see serial.c.
-=======
 	 * This problem is similar to what Alpha people suffer, see
 	 * 8250_alpha.c.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (offset == UART_MCR)
 		value |= UART_MCR_OUT2;
@@ -240,15 +212,9 @@ static void enable_rsa(struct uart_sunsu_port *up)
 {
 	if (up->port.type == PORT_RSA) {
 		if (up->port.uartclk != SERIAL_RSA_BAUD_BASE * 16) {
-<<<<<<< HEAD
-			spin_lock_irq(&up->port.lock);
-			__enable_rsa(up);
-			spin_unlock_irq(&up->port.lock);
-=======
 			uart_port_lock_irq(&up->port);
 			__enable_rsa(up);
 			uart_port_unlock_irq(&up->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
 			serial_outp(up, UART_RSA_FRR, 0);
@@ -268,11 +234,7 @@ static void disable_rsa(struct uart_sunsu_port *up)
 
 	if (up->port.type == PORT_RSA &&
 	    up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16) {
-<<<<<<< HEAD
-		spin_lock_irq(&up->port.lock);
-=======
 		uart_port_lock_irq(&up->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mode = serial_inp(up, UART_RSA_MSR);
 		result = !(mode & UART_RSA_MSR_FIFO);
@@ -285,11 +247,7 @@ static void disable_rsa(struct uart_sunsu_port *up)
 
 		if (result)
 			up->port.uartclk = SERIAL_RSA_BAUD_BASE_LO * 16;
-<<<<<<< HEAD
-		spin_unlock_irq(&up->port.lock);
-=======
 		uart_port_unlock_irq(&up->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #endif /* CONFIG_SERIAL_8250_RSA */
@@ -304,12 +262,8 @@ static inline void __stop_tx(struct uart_sunsu_port *p)
 
 static void sunsu_stop_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__stop_tx(up);
 
@@ -324,12 +278,8 @@ static void sunsu_stop_tx(struct uart_port *port)
 
 static void sunsu_start_tx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(up->ier & UART_IER_THRI)) {
 		up->ier |= UART_IER_THRI;
@@ -347,12 +297,8 @@ static void sunsu_start_tx(struct uart_port *port)
 
 static void sunsu_stop_rx(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->ier &= ~UART_IER_RLSI;
 	up->port.read_status_mask &= ~UART_LSR_DR;
@@ -361,21 +307,6 @@ static void sunsu_stop_rx(struct uart_port *port)
 
 static void sunsu_enable_ms(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-	unsigned long flags;
-
-	spin_lock_irqsave(&up->port.lock, flags);
-	up->ier |= UART_IER_MSI;
-	serial_out(up, UART_IER, up->ier);
-	spin_unlock_irqrestore(&up->port.lock, flags);
-}
-
-static struct tty_struct *
-receive_chars(struct uart_sunsu_port *up, unsigned char *status)
-{
-	struct tty_struct *tty = up->port.state->port.tty;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
 	unsigned long flags;
@@ -390,7 +321,6 @@ static void
 receive_chars(struct uart_sunsu_port *up, unsigned char *status)
 {
 	struct tty_port *port = &up->port.state->port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char ch, flag;
 	int max_count = 256;
 	int saw_console_brk = 0;
@@ -448,33 +378,20 @@ receive_chars(struct uart_sunsu_port *up, unsigned char *status)
 		if (uart_handle_sysrq_char(&up->port, ch))
 			goto ignore_char;
 		if ((*status & up->port.ignore_status_mask) == 0)
-<<<<<<< HEAD
-			tty_insert_flip_char(tty, ch, flag);
-=======
 			tty_insert_flip_char(port, ch, flag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*status & UART_LSR_OE)
 			/*
 			 * Overrun is special, since it's reported
 			 * immediately, and doesn't affect the current
 			 * character.
 			 */
-<<<<<<< HEAD
-			 tty_insert_flip_char(tty, 0, TTY_OVERRUN);
-=======
 			 tty_insert_flip_char(port, 0, TTY_OVERRUN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ignore_char:
 		*status = serial_inp(up, UART_LSR);
 	} while ((*status & UART_LSR_DR) && (max_count-- > 0));
 
 	if (saw_console_brk)
 		sun_do_break();
-<<<<<<< HEAD
-
-	return tty;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void transmit_chars(struct uart_sunsu_port *up)
@@ -500,12 +417,7 @@ static void transmit_chars(struct uart_sunsu_port *up)
 	count = up->port.fifosize;
 	do {
 		serial_out(up, UART_TX, xmit->buf[xmit->tail]);
-<<<<<<< HEAD
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		up->port.icount.tx++;
-=======
 		uart_xmit_advance(&up->port, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (uart_circ_empty(xmit))
 			break;
 	} while (--count > 0);
@@ -544,46 +456,21 @@ static irqreturn_t sunsu_serial_interrupt(int irq, void *dev_id)
 	unsigned long flags;
 	unsigned char status;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-
-	do {
-		struct tty_struct *tty;
-
-		status = serial_inp(up, UART_LSR);
-		tty = NULL;
-		if (status & UART_LSR_DR)
-			tty = receive_chars(up, &status);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
 
 	do {
 		status = serial_inp(up, UART_LSR);
 		if (status & UART_LSR_DR)
 			receive_chars(up, &status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		check_modem_status(up);
 		if (status & UART_LSR_THRE)
 			transmit_chars(up);
 
-<<<<<<< HEAD
-		spin_unlock_irqrestore(&up->port.lock, flags);
-
-		if (tty)
-			tty_flip_buffer_push(tty);
-
-		spin_lock_irqsave(&up->port.lock, flags);
-
-	} while (!(serial_in(up, UART_IIR) & UART_IIR_NO_INT));
-
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 		tty_flip_buffer_push(&up->port.state->port);
 
 	} while (!(serial_in(up, UART_IIR) & UART_IIR_NO_INT));
 
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -623,11 +510,7 @@ static void receive_kbd_ms_chars(struct uart_sunsu_port *up, int is_break)
 			switch (ret) {
 			case 2:
 				sunsu_change_mouse_baud(up);
-<<<<<<< HEAD
-				/* fallthru */
-=======
 				fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 1:
 				break;
 
@@ -636,11 +519,7 @@ static void receive_kbd_ms_chars(struct uart_sunsu_port *up, int is_break)
 				serio_interrupt(&up->serio, ch, 0);
 #endif
 				break;
-<<<<<<< HEAD
-			};
-=======
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} while (serial_in(up, UART_LSR) & UART_LSR_DR);
 }
@@ -661,15 +540,6 @@ static irqreturn_t sunsu_kbd_ms_interrupt(int irq, void *dev_id)
 
 static unsigned int sunsu_tx_empty(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-	unsigned long flags;
-	unsigned int ret;
-
-	spin_lock_irqsave(&up->port.lock, flags);
-	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
 	unsigned long flags;
@@ -678,19 +548,14 @@ static unsigned int sunsu_tx_empty(struct uart_port *port)
 	uart_port_lock_irqsave(&up->port, &flags);
 	ret = serial_in(up, UART_LSR) & UART_LSR_TEMT ? TIOCSER_TEMT : 0;
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 static unsigned int sunsu_get_mctrl(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char status;
 	unsigned int ret;
 
@@ -710,12 +575,8 @@ static unsigned int sunsu_get_mctrl(struct uart_port *port)
 
 static void sunsu_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char mcr = 0;
 
 	if (mctrl & TIOCM_RTS)
@@ -734,38 +595,23 @@ static void sunsu_set_mctrl(struct uart_port *port, unsigned int mctrl)
 
 static void sunsu_break_ctl(struct uart_port *port, int break_state)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-	unsigned long flags;
-
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
 	unsigned long flags;
 
 	uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (break_state == -1)
 		up->lcr |= UART_LCR_SBC;
 	else
 		up->lcr &= ~UART_LCR_SBC;
 	serial_out(up, UART_LCR, up->lcr);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sunsu_startup(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int retval;
 
@@ -837,20 +683,12 @@ static int sunsu_startup(struct uart_port *port)
 	 */
 	serial_outp(up, UART_LCR, UART_LCR_WLEN8);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->port.mctrl |= TIOCM_OUT2;
 
 	sunsu_set_mctrl(&up->port, up->port.mctrl);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Finally, enable interrupts.  Note: Modem status interrupts
@@ -883,12 +721,8 @@ static int sunsu_startup(struct uart_port *port)
 
 static void sunsu_shutdown(struct uart_port *port)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	/*
@@ -897,11 +731,7 @@ static void sunsu_shutdown(struct uart_port *port)
 	up->ier = 0;
 	serial_outp(up, UART_IER, 0);
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (up->port.flags & UPF_FOURPORT) {
 		/* reset interrupts on the AST Fourport board */
 		inb((up->port.iobase & 0xfe0) | 0x1f);
@@ -910,11 +740,7 @@ static void sunsu_shutdown(struct uart_port *port)
 		up->port.mctrl &= ~TIOCM_OUT2;
 
 	sunsu_set_mctrl(&up->port, up->port.mctrl);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Disable break condition and FIFOs
@@ -944,12 +770,8 @@ static void
 sunsu_change_speed(struct uart_port *port, unsigned int cflag,
 		   unsigned int iflag, unsigned int quot)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char cval, fcr = 0;
 	unsigned long flags;
 
@@ -975,15 +797,8 @@ sunsu_change_speed(struct uart_port *port, unsigned int cflag,
 		cval |= UART_LCR_PARITY;
 	if (!(cflag & PARODD))
 		cval |= UART_LCR_EPAR;
-<<<<<<< HEAD
-#ifdef CMSPAR
 	if (cflag & CMSPAR)
 		cval |= UART_LCR_SPAR;
-#endif
-=======
-	if (cflag & CMSPAR)
-		cval |= UART_LCR_SPAR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Work around a bug in the Oxford Semiconductor 952 rev B
@@ -1011,11 +826,7 @@ sunsu_change_speed(struct uart_port *port, unsigned int cflag,
 	 * Ok, we're now changing the port state.  Do it with
 	 * interrupts disabled.
 	 */
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the per-port timeout.
@@ -1025,11 +836,7 @@ sunsu_change_speed(struct uart_port *port, unsigned int cflag,
 	up->port.read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
 	if (iflag & INPCK)
 		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
-<<<<<<< HEAD
-	if (iflag & (BRKINT | PARMRK))
-=======
 	if (iflag & (IGNBRK | BRKINT | PARMRK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up->port.read_status_mask |= UART_LSR_BI;
 
 	/*
@@ -1084,20 +891,12 @@ sunsu_change_speed(struct uart_port *port, unsigned int cflag,
 
 	up->cflag = cflag;
 
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 sunsu_set_termios(struct uart_port *port, struct ktermios *termios,
-<<<<<<< HEAD
-		  struct ktermios *old)
-=======
 		  const struct ktermios *old)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int baud, quot;
 
@@ -1121,12 +920,8 @@ static int sunsu_request_port(struct uart_port *port)
 
 static void sunsu_config_port(struct uart_port *port, int flags)
 {
-<<<<<<< HEAD
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *) port;
-=======
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flags & UART_CONFIG_TYPE) {
 		/*
@@ -1154,11 +949,7 @@ sunsu_type(struct uart_port *port)
 	return uart_config[type].name;
 }
 
-<<<<<<< HEAD
-static struct uart_ops sunsu_pops = {
-=======
 static const struct uart_ops sunsu_pops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= sunsu_tx_empty,
 	.set_mctrl	= sunsu_set_mctrl,
 	.get_mctrl	= sunsu_get_mctrl,
@@ -1247,11 +1038,7 @@ static void sunsu_autoconfig(struct uart_sunsu_port *up)
 	up->type_probed = PORT_UNKNOWN;
 	up->port.iotype = UPIO_MEM;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(up->port.flags & UPF_BUGGY_UART)) {
 		/*
@@ -1386,11 +1173,7 @@ static void sunsu_autoconfig(struct uart_sunsu_port *up)
 	serial_outp(up, UART_IER, 0);
 
 out:
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct uart_driver sunsu_reg = {
@@ -1400,11 +1183,7 @@ static struct uart_driver sunsu_reg = {
 	.major			= TTY_MAJOR,
 };
 
-<<<<<<< HEAD
-static int __devinit sunsu_kbd_ms_init(struct uart_sunsu_port *up)
-=======
 static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int quot, baud;
 #ifdef CONFIG_SERIO
@@ -1424,13 +1203,8 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
 	if (up->port.type == PORT_UNKNOWN)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	printk("%s: %s port at %llx, irq %u\n",
-	       up->port.dev->of_node->full_name,
-=======
 	printk("%pOF: %s port at %llx, irq %u\n",
 	       up->port.dev->of_node,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (up->su_type == SU_PORT_KBD) ? "Keyboard" : "Mouse",
 	       (unsigned long long) up->port.mapbase,
 	       up->port.irq);
@@ -1442,15 +1216,6 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
 	serio->id.type = SERIO_RS232;
 	if (up->su_type == SU_PORT_KBD) {
 		serio->id.proto = SERIO_SUNKBD;
-<<<<<<< HEAD
-		strlcpy(serio->name, "sukbd", sizeof(serio->name));
-	} else {
-		serio->id.proto = SERIO_SUN;
-		serio->id.extra = 1;
-		strlcpy(serio->name, "sums", sizeof(serio->name));
-	}
-	strlcpy(serio->phys,
-=======
 		strscpy(serio->name, "sukbd", sizeof(serio->name));
 	} else {
 		serio->id.proto = SERIO_SUN;
@@ -1458,7 +1223,6 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
 		strscpy(serio->name, "sums", sizeof(serio->name));
 	}
 	strscpy(serio->phys,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(!(up->port.line & 1) ? "su/serio0" : "su/serio1"),
 		sizeof(serio->phys));
 
@@ -1484,19 +1248,10 @@ static int sunsu_kbd_ms_init(struct uart_sunsu_port *up)
 
 #ifdef CONFIG_SERIAL_SUNSU_CONSOLE
 
-<<<<<<< HEAD
-#define BOTH_EMPTY (UART_LSR_TEMT | UART_LSR_THRE)
-
-/*
- *	Wait for transmitter & holding register to empty
- */
-static __inline__ void wait_for_xmitr(struct uart_sunsu_port *up)
-=======
 /*
  *	Wait for transmitter & holding register to empty
  */
 static void wait_for_xmitr(struct uart_sunsu_port *up)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int status, tmout = 10000;
 
@@ -1510,11 +1265,7 @@ static void wait_for_xmitr(struct uart_sunsu_port *up)
 		if (--tmout == 0)
 			break;
 		udelay(1);
-<<<<<<< HEAD
-	} while ((status & BOTH_EMPTY) != BOTH_EMPTY);
-=======
 	} while (!uart_lsr_tx_empty(status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait up to 1s for flow control if necessary */
 	if (up->port.flags & UPF_CONS_FLOW) {
@@ -1525,16 +1276,10 @@ static void wait_for_xmitr(struct uart_sunsu_port *up)
 	}
 }
 
-<<<<<<< HEAD
-static void sunsu_console_putchar(struct uart_port *port, int ch)
-{
-	struct uart_sunsu_port *up = (struct uart_sunsu_port *)port;
-=======
 static void sunsu_console_putchar(struct uart_port *port, unsigned char ch)
 {
 	struct uart_sunsu_port *up =
 		container_of(port, struct uart_sunsu_port, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_for_xmitr(up);
 	serial_out(up, UART_TX, ch);
@@ -1552,20 +1297,10 @@ static void sunsu_console_write(struct console *co, const char *s,
 	unsigned int ier;
 	int locked = 1;
 
-<<<<<<< HEAD
-	local_irq_save(flags);
-	if (up->port.sysrq) {
-		locked = 0;
-	} else if (oops_in_progress) {
-		locked = spin_trylock(&up->port.lock);
-	} else
-		spin_lock(&up->port.lock);
-=======
 	if (up->port.sysrq || oops_in_progress)
 		locked = uart_port_trylock_irqsave(&up->port, &flags);
 	else
 		uart_port_lock_irqsave(&up->port, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	First save the UER then disable the interrupts
@@ -1583,12 +1318,7 @@ static void sunsu_console_write(struct console *co, const char *s,
 	serial_out(up, UART_IER, ier);
 
 	if (locked)
-<<<<<<< HEAD
-		spin_unlock(&up->port.lock);
-	local_irq_restore(flags);
-=======
 		uart_port_unlock_irqrestore(&up->port, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1649,37 +1379,14 @@ static inline struct console *SUNSU_CONSOLE(void)
 #define sunsu_serial_console_init()	do { } while (0)
 #endif
 
-<<<<<<< HEAD
-static enum su_type __devinit su_get_type(struct device_node *dp)
-{
-	struct device_node *ap = of_find_node_by_path("/aliases");
-=======
 static enum su_type su_get_type(struct device_node *dp)
 {
 	struct device_node *ap = of_find_node_by_path("/aliases");
 	enum su_type rc = SU_PORT_PORT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ap) {
 		const char *keyb = of_get_property(ap, "keyboard", NULL);
 		const char *ms = of_get_property(ap, "mouse", NULL);
-<<<<<<< HEAD
-
-		if (keyb) {
-			if (dp == of_find_node_by_path(keyb))
-				return SU_PORT_KBD;
-		}
-		if (ms) {
-			if (dp == of_find_node_by_path(ms))
-				return SU_PORT_MS;
-		}
-	}
-
-	return SU_PORT_PORT;
-}
-
-static int __devinit su_probe(struct platform_device *op)
-=======
 		struct device_node *match;
 
 		if (keyb) {
@@ -1715,7 +1422,6 @@ out:
 }
 
 static int su_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	struct uart_sunsu_port *up;
@@ -1757,10 +1463,7 @@ static int su_probe(struct platform_device *op)
 
 	up->port.type = PORT_UNKNOWN;
 	up->port.uartclk = (SU_BASE_BAUD * 16);
-<<<<<<< HEAD
-=======
 	up->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SUNSU_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = 0;
 	if (up->su_type == SU_PORT_KBD || up->su_type == SU_PORT_MS) {
@@ -1771,11 +1474,7 @@ static int su_probe(struct platform_device *op)
 			kfree(up);
 			return err;
 		}
-<<<<<<< HEAD
-		dev_set_drvdata(&op->dev, up);
-=======
 		platform_set_drvdata(op, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		nr_inst++;
 
@@ -1793,13 +1492,8 @@ static int su_probe(struct platform_device *op)
 	up->port.ops = &sunsu_pops;
 
 	ignore_line = false;
-<<<<<<< HEAD
-	if (!strcmp(dp->name, "rsc-console") ||
-	    !strcmp(dp->name, "lom-console"))
-=======
 	if (of_node_name_eq(dp, "rsc-console") ||
 	    of_node_name_eq(dp, "lom-console"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ignore_line = true;
 
 	sunserial_console_match(SUNSU_CONSOLE(), dp,
@@ -1809,11 +1503,7 @@ static int su_probe(struct platform_device *op)
 	if (err)
 		goto out_unmap;
 
-<<<<<<< HEAD
-	dev_set_drvdata(&op->dev, up);
-=======
 	platform_set_drvdata(op, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nr_inst++;
 
@@ -1821,14 +1511,6 @@ static int su_probe(struct platform_device *op)
 
 out_unmap:
 	of_iounmap(&op->resource[0], up->port.membase, up->reg_size);
-<<<<<<< HEAD
-	return err;
-}
-
-static int __devexit su_remove(struct platform_device *op)
-{
-	struct uart_sunsu_port *up = dev_get_drvdata(&op->dev);
-=======
 	kfree(up);
 	return err;
 }
@@ -1836,7 +1518,6 @@ static int __devexit su_remove(struct platform_device *op)
 static void su_remove(struct platform_device *op)
 {
 	struct uart_sunsu_port *up = platform_get_drvdata(op);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool kbdms = false;
 
 	if (up->su_type == SU_PORT_MS ||
@@ -1855,13 +1536,6 @@ static void su_remove(struct platform_device *op)
 
 	if (kbdms)
 		kfree(up);
-<<<<<<< HEAD
-
-	dev_set_drvdata(&op->dev, NULL);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id su_match[] = {
@@ -1886,18 +1560,10 @@ MODULE_DEVICE_TABLE(of, su_match);
 static struct platform_driver su_driver = {
 	.driver = {
 		.name = "su",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = su_match,
-	},
-	.probe		= su_probe,
-	.remove		= __devexit_p(su_remove),
-=======
 		.of_match_table = su_match,
 	},
 	.probe		= su_probe,
 	.remove_new	= su_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sunsu_init(void)
@@ -1942,10 +1608,7 @@ static int __init sunsu_init(void)
 
 static void __exit sunsu_exit(void)
 {
-<<<<<<< HEAD
-=======
 	platform_driver_unregister(&su_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sunsu_reg.nr)
 		sunserial_unregister_minors(&sunsu_reg, sunsu_reg.nr);
 }

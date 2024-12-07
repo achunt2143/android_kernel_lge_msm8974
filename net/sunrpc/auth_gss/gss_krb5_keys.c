@@ -54,27 +54,6 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-<<<<<<< HEAD
-#include <linux/err.h>
-#include <linux/types.h>
-#include <linux/crypto.h>
-#include <linux/sunrpc/gss_krb5.h>
-#include <linux/sunrpc/xdr.h>
-
-#ifdef RPC_DEBUG
-# define RPCDBG_FACILITY        RPCDBG_AUTH
-#endif
-
-/*
- * This is the n-fold function as described in rfc3961, sec 5.1
- * Taken from MIT Kerberos and modified.
- */
-
-static void krb5_nfold(u32 inbits, const u8 *in,
-		       u32 outbits, u8 *out)
-{
-	int a, b, c, lcm;
-=======
 #include <crypto/skcipher.h>
 #include <linux/err.h>
 #include <linux/types.h>
@@ -104,7 +83,6 @@ VISIBLE_IF_KUNIT
 void krb5_nfold(u32 inbits, const u8 *in, u32 outbits, u8 *out)
 {
 	unsigned long ulcm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int byte, i, msbit;
 
 	/* the code below is more readable if I make these bytes
@@ -114,21 +92,7 @@ void krb5_nfold(u32 inbits, const u8 *in, u32 outbits, u8 *out)
 	outbits >>= 3;
 
 	/* first compute lcm(n,k) */
-<<<<<<< HEAD
-
-	a = outbits;
-	b = inbits;
-
-	while (b != 0) {
-		c = b;
-		b = a%b;
-		a = c;
-	}
-
-	lcm = outbits*inbits/a;
-=======
 	ulcm = lcm(inbits, outbits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* now do the real work */
 
@@ -137,11 +101,7 @@ void krb5_nfold(u32 inbits, const u8 *in, u32 outbits, u8 *out)
 
 	/* this will end up cycling through k lcm(k,n)/k times, which
 	   is correct */
-<<<<<<< HEAD
-	for (i = lcm-1; i >= 0; i--) {
-=======
 	for (i = ulcm-1; i >= 0; i--) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* compute the msbit in k which gets added into this byte */
 		msbit = (
 			/* first, start with the msbit in the first,
@@ -181,47 +141,12 @@ void krb5_nfold(u32 inbits, const u8 *in, u32 outbits, u8 *out)
 		}
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_IF_KUNIT(krb5_nfold);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the DK (derive_key) function as described in rfc3961, sec 5.1
  * Taken from MIT Kerberos and modified.
  */
-<<<<<<< HEAD
-
-u32 krb5_derive_key(const struct gss_krb5_enctype *gk5e,
-		    const struct xdr_netobj *inkey,
-		    struct xdr_netobj *outkey,
-		    const struct xdr_netobj *in_constant,
-		    gfp_t gfp_mask)
-{
-	size_t blocksize, keybytes, keylength, n;
-	unsigned char *inblockdata, *outblockdata, *rawkey;
-	struct xdr_netobj inblock, outblock;
-	struct crypto_blkcipher *cipher;
-	u32 ret = EINVAL;
-
-	blocksize = gk5e->blocksize;
-	keybytes = gk5e->keybytes;
-	keylength = gk5e->keylength;
-
-	if ((inkey->len != keylength) || (outkey->len != keylength))
-		goto err_return;
-
-	cipher = crypto_alloc_blkcipher(gk5e->encrypt_name, 0,
-					CRYPTO_ALG_ASYNC);
-	if (IS_ERR(cipher))
-		goto err_return;
-	if (crypto_blkcipher_setkey(cipher, inkey->data, inkey->len))
-		goto err_return;
-
-	/* allocate and set up buffers */
-
-	ret = ENOMEM;
-=======
 static int krb5_DK(const struct gss_krb5_enctype *gk5e,
 		   const struct xdr_netobj *inkey, u8 *rawkey,
 		   const struct xdr_netobj *in_constant, gfp_t gfp_mask)
@@ -246,7 +171,6 @@ static int krb5_DK(const struct gss_krb5_enctype *gk5e,
 		goto err_return;
 
 	ret = -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inblockdata = kmalloc(blocksize, gfp_mask);
 	if (inblockdata == NULL)
 		goto err_free_cipher;
@@ -255,13 +179,6 @@ static int krb5_DK(const struct gss_krb5_enctype *gk5e,
 	if (outblockdata == NULL)
 		goto err_free_in;
 
-<<<<<<< HEAD
-	rawkey = kmalloc(keybytes, gfp_mask);
-	if (rawkey == NULL)
-		goto err_free_out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inblock.data = (char *) inblockdata;
 	inblock.len = blocksize;
 
@@ -281,13 +198,8 @@ static int krb5_DK(const struct gss_krb5_enctype *gk5e,
 
 	n = 0;
 	while (n < keybytes) {
-<<<<<<< HEAD
-		(*(gk5e->encrypt))(cipher, NULL, inblock.data,
-				   outblock.data, inblock.len);
-=======
 		krb5_encrypt(cipher, NULL, inblock.data, outblock.data,
 			     inblock.len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((keybytes - n) <= outblock.len) {
 			memcpy(rawkey + n, outblock.data, (keybytes - n));
@@ -299,36 +211,6 @@ static int krb5_DK(const struct gss_krb5_enctype *gk5e,
 		n += outblock.len;
 	}
 
-<<<<<<< HEAD
-	/* postprocess the key */
-
-	inblock.data = (char *) rawkey;
-	inblock.len = keybytes;
-
-	BUG_ON(gk5e->mk_key == NULL);
-	ret = (*(gk5e->mk_key))(gk5e, &inblock, outkey);
-	if (ret) {
-		dprintk("%s: got %d from mk_key function for '%s'\n",
-			__func__, ret, gk5e->encrypt_name);
-		goto err_free_raw;
-	}
-
-	/* clean memory, free resources and exit */
-
-	ret = 0;
-
-err_free_raw:
-	memset(rawkey, 0, keybytes);
-	kfree(rawkey);
-err_free_out:
-	memset(outblockdata, 0, blocksize);
-	kfree(outblockdata);
-err_free_in:
-	memset(inblockdata, 0, blocksize);
-	kfree(inblockdata);
-err_free_cipher:
-	crypto_free_blkcipher(cipher);
-=======
 	ret = 0;
 
 	kfree_sensitive(outblockdata);
@@ -336,74 +218,10 @@ err_free_in:
 	kfree_sensitive(inblockdata);
 err_free_cipher:
 	crypto_free_sync_skcipher(cipher);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_return:
 	return ret;
 }
 
-<<<<<<< HEAD
-#define smask(step) ((1<<step)-1)
-#define pstep(x, step) (((x)&smask(step))^(((x)>>step)&smask(step)))
-#define parity_char(x) pstep(pstep(pstep((x), 4), 2), 1)
-
-static void mit_des_fixup_key_parity(u8 key[8])
-{
-	int i;
-	for (i = 0; i < 8; i++) {
-		key[i] &= 0xfe;
-		key[i] |= 1^parity_char(key[i]);
-	}
-}
-
-/*
- * This is the des3 key derivation postprocess function
- */
-u32 gss_krb5_des3_make_key(const struct gss_krb5_enctype *gk5e,
-			   struct xdr_netobj *randombits,
-			   struct xdr_netobj *key)
-{
-	int i;
-	u32 ret = EINVAL;
-
-	if (key->len != 24) {
-		dprintk("%s: key->len is %d\n", __func__, key->len);
-		goto err_out;
-	}
-	if (randombits->len != 21) {
-		dprintk("%s: randombits->len is %d\n",
-			__func__, randombits->len);
-		goto err_out;
-	}
-
-	/* take the seven bytes, move them around into the top 7 bits of the
-	   8 key bytes, then compute the parity bits.  Do this three times. */
-
-	for (i = 0; i < 3; i++) {
-		memcpy(key->data + i*8, randombits->data + i*7, 7);
-		key->data[i*8+7] = (((key->data[i*8]&1)<<1) |
-				    ((key->data[i*8+1]&1)<<2) |
-				    ((key->data[i*8+2]&1)<<3) |
-				    ((key->data[i*8+3]&1)<<4) |
-				    ((key->data[i*8+4]&1)<<5) |
-				    ((key->data[i*8+5]&1)<<6) |
-				    ((key->data[i*8+6]&1)<<7));
-
-		mit_des_fixup_key_parity(key->data + i*8);
-	}
-	ret = 0;
-err_out:
-	return ret;
-}
-
-/*
- * This is the aes key derivation postprocess function
- */
-u32 gss_krb5_aes_make_key(const struct gss_krb5_enctype *gk5e,
-			  struct xdr_netobj *randombits,
-			  struct xdr_netobj *key)
-{
-	u32 ret = EINVAL;
-=======
 /*
  * This is the identity function, with some sanity checking.
  */
@@ -412,7 +230,6 @@ static int krb5_random_to_key_v2(const struct gss_krb5_enctype *gk5e,
 				 struct xdr_netobj *key)
 {
 	int ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (key->len != 16 && key->len != 32) {
 		dprintk("%s: key->len is %d\n", __func__, key->len);
@@ -434,8 +251,6 @@ err_out:
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * krb5_derive_key_v2 - Derive a subkey for an RFC 3962 enctype
  * @gk5e: Kerberos 5 enctype profile
@@ -729,4 +544,3 @@ out_free_tfm:
 out:
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

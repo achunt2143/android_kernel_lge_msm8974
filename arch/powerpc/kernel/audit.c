@@ -1,17 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/audit.h>
 #include <asm/unistd.h>
 
-<<<<<<< HEAD
-=======
 #include "audit_32.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned dir_class[] = {
 #include <asm-generic/audit_dir_write.h>
 ~0U
@@ -49,26 +43,11 @@ int audit_classify_arch(int arch)
 int audit_classify_syscall(int abi, unsigned syscall)
 {
 #ifdef CONFIG_PPC64
-<<<<<<< HEAD
-	extern int ppc32_classify_syscall(unsigned);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (abi == AUDIT_ARCH_PPC)
 		return ppc32_classify_syscall(syscall);
 #endif
 	switch(syscall) {
 	case __NR_open:
-<<<<<<< HEAD
-		return 2;
-	case __NR_openat:
-		return 3;
-	case __NR_socketcall:
-		return 4;
-	case __NR_execve:
-		return 5;
-	default:
-		return 0;
-=======
 		return AUDITSC_OPEN;
 	case __NR_openat:
 		return AUDITSC_OPENAT;
@@ -80,7 +59,6 @@ int audit_classify_syscall(int abi, unsigned syscall)
 		return AUDITSC_OPENAT2;
 	default:
 		return AUDITSC_NATIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

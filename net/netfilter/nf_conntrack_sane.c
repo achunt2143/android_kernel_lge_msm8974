@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SANE connection tracking helper
  * (SANE = Scanner Access Now Easy)
  * For documentation about the SANE network protocol see
@@ -15,19 +12,10 @@
  *  (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
  *  (C) 2003,2004 USAGI/WIDE Project <http://www.linux-ipv6.org>
  *  (C) 2003 Yasuyuki Kozakai @USAGI <yasuyuki.kozakai@toshiba.co.jp>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-
-=======
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/netfilter.h>
@@ -39,23 +27,12 @@
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <linux/netfilter/nf_conntrack_sane.h>
 
-<<<<<<< HEAD
-MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Michal Schmidt <mschmidt@redhat.com>");
-MODULE_DESCRIPTION("SANE connection tracking helper");
-MODULE_ALIAS_NFCT_HELPER("sane");
-
-static char *sane_buffer;
-
-static DEFINE_SPINLOCK(nf_sane_lock);
-=======
 #define HELPER_NAME "sane"
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Michal Schmidt <mschmidt@redhat.com>");
 MODULE_DESCRIPTION("SANE connection tracking helper");
 MODULE_ALIAS_NFCT_HELPER(HELPER_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_PORTS 8
 static u_int16_t ports[MAX_PORTS];
@@ -86,25 +63,16 @@ static int help(struct sk_buff *skb,
 	unsigned int dataoff, datalen;
 	const struct tcphdr *th;
 	struct tcphdr _tcph;
-<<<<<<< HEAD
-	void *sb_ptr;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = NF_ACCEPT;
 	int dir = CTINFO2DIR(ctinfo);
 	struct nf_ct_sane_master *ct_sane_info = nfct_help_data(ct);
 	struct nf_conntrack_expect *exp;
 	struct nf_conntrack_tuple *tuple;
-<<<<<<< HEAD
-	struct sane_request *req;
-	struct sane_reply_net_start *reply;
-=======
 	struct sane_reply_net_start *reply;
 	union {
 		struct sane_request req;
 		struct sane_reply_net_start repl;
 	} buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Until there's been traffic both ways, don't look in packets. */
 	if (ctinfo != IP_CT_ESTABLISHED &&
@@ -122,47 +90,6 @@ static int help(struct sk_buff *skb,
 		return NF_ACCEPT;
 
 	datalen = skb->len - dataoff;
-<<<<<<< HEAD
-
-	spin_lock_bh(&nf_sane_lock);
-	sb_ptr = skb_header_pointer(skb, dataoff, datalen, sane_buffer);
-	BUG_ON(sb_ptr == NULL);
-
-	if (dir == IP_CT_DIR_ORIGINAL) {
-		if (datalen != sizeof(struct sane_request))
-			goto out;
-
-		req = sb_ptr;
-		if (req->RPC_code != htonl(SANE_NET_START)) {
-			/* Not an interesting command */
-			ct_sane_info->state = SANE_STATE_NORMAL;
-			goto out;
-		}
-
-		/* We're interested in the next reply */
-		ct_sane_info->state = SANE_STATE_START_REQUESTED;
-		goto out;
-	}
-
-	/* Is it a reply to an uninteresting command? */
-	if (ct_sane_info->state != SANE_STATE_START_REQUESTED)
-		goto out;
-
-	/* It's a reply to SANE_NET_START. */
-	ct_sane_info->state = SANE_STATE_NORMAL;
-
-	if (datalen < sizeof(struct sane_reply_net_start)) {
-		pr_debug("nf_ct_sane: NET_START reply too short\n");
-		goto out;
-	}
-
-	reply = sb_ptr;
-	if (reply->status != htonl(SANE_STATUS_SUCCESS)) {
-		/* saned refused the command */
-		pr_debug("nf_ct_sane: unsuccessful SANE_STATUS = %u\n",
-			 ntohl(reply->status));
-		goto out;
-=======
 	if (dir == IP_CT_DIR_ORIGINAL) {
 		const struct sane_request *req;
 
@@ -209,26 +136,16 @@ static int help(struct sk_buff *skb,
 		pr_debug("unsuccessful SANE_STATUS = %u\n",
 			 ntohl(reply->status));
 		return NF_ACCEPT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Invalid saned reply? Ignore it. */
 	if (reply->zero != 0)
-<<<<<<< HEAD
-		goto out;
-
-	exp = nf_ct_expect_alloc(ct);
-	if (exp == NULL) {
-		ret = NF_DROP;
-		goto out;
-=======
 		return NF_ACCEPT;
 
 	exp = nf_ct_expect_alloc(ct);
 	if (exp == NULL) {
 		nf_ct_helper_log(skb, ct, "cannot alloc expectation");
 		return NF_DROP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tuple = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
@@ -236,23 +153,6 @@ static int help(struct sk_buff *skb,
 			  &tuple->src.u3, &tuple->dst.u3,
 			  IPPROTO_TCP, NULL, &reply->port);
 
-<<<<<<< HEAD
-	pr_debug("nf_ct_sane: expect: ");
-	nf_ct_dump_tuple(&exp->tuple);
-
-	/* Can't expect this?  Best to drop packet now. */
-	if (nf_ct_expect_related(exp) != 0)
-		ret = NF_DROP;
-
-	nf_ct_expect_put(exp);
-
-out:
-	spin_unlock_bh(&nf_sane_lock);
-	return ret;
-}
-
-static struct nf_conntrack_helper sane[MAX_PORTS][2] __read_mostly;
-=======
 	pr_debug("expect: ");
 	nf_ct_dump_tuple(&exp->tuple);
 
@@ -267,49 +167,22 @@ static struct nf_conntrack_helper sane[MAX_PORTS][2] __read_mostly;
 }
 
 static struct nf_conntrack_helper sane[MAX_PORTS * 2] __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct nf_conntrack_expect_policy sane_exp_policy = {
 	.max_expected	= 1,
 	.timeout	= 5 * 60,
 };
 
-<<<<<<< HEAD
-/* don't make this __exit, since it's called from __init ! */
-static void nf_conntrack_sane_fini(void)
-{
-	int i, j;
-
-	for (i = 0; i < ports_c; i++) {
-		for (j = 0; j < 2; j++) {
-			pr_debug("nf_ct_sane: unregistering helper for pf: %d "
-				 "port: %d\n",
-				 sane[i][j].tuple.src.l3num, ports[i]);
-			nf_conntrack_helper_unregister(&sane[i][j]);
-		}
-	}
-
-	kfree(sane_buffer);
-=======
 static void __exit nf_conntrack_sane_fini(void)
 {
 	nf_conntrack_helpers_unregister(sane, ports_c * 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init nf_conntrack_sane_init(void)
 {
-<<<<<<< HEAD
-	int i, j = -1, ret = 0;
-
-	sane_buffer = kmalloc(65536, GFP_KERNEL);
-	if (!sane_buffer)
-		return -ENOMEM;
-=======
 	int i, ret = 0;
 
 	NF_CT_HELPER_BUILD_BUG_ON(sizeof(struct nf_ct_sane_master));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ports_c == 0)
 		ports[ports_c++] = SANE_PORT;
@@ -317,34 +190,6 @@ static int __init nf_conntrack_sane_init(void)
 	/* FIXME should be configurable whether IPv4 and IPv6 connections
 		 are tracked or not - YK */
 	for (i = 0; i < ports_c; i++) {
-<<<<<<< HEAD
-		sane[i][0].tuple.src.l3num = PF_INET;
-		sane[i][1].tuple.src.l3num = PF_INET6;
-		for (j = 0; j < 2; j++) {
-			sane[i][j].data_len = sizeof(struct nf_ct_sane_master);
-			sane[i][j].tuple.src.u.tcp.port = htons(ports[i]);
-			sane[i][j].tuple.dst.protonum = IPPROTO_TCP;
-			sane[i][j].expect_policy = &sane_exp_policy;
-			sane[i][j].me = THIS_MODULE;
-			sane[i][j].help = help;
-			if (ports[i] == SANE_PORT)
-				sprintf(sane[i][j].name, "sane");
-			else
-				sprintf(sane[i][j].name, "sane-%d", ports[i]);
-
-			pr_debug("nf_ct_sane: registering helper for pf: %d "
-				 "port: %d\n",
-				 sane[i][j].tuple.src.l3num, ports[i]);
-			ret = nf_conntrack_helper_register(&sane[i][j]);
-			if (ret) {
-				printk(KERN_ERR "nf_ct_sane: failed to "
-				       "register helper for pf: %d port: %d\n",
-					sane[i][j].tuple.src.l3num, ports[i]);
-				nf_conntrack_sane_fini();
-				return ret;
-			}
-		}
-=======
 		nf_ct_helper_init(&sane[2 * i], AF_INET, IPPROTO_TCP,
 				  HELPER_NAME, SANE_PORT, ports[i], ports[i],
 				  &sane_exp_policy, 0, help, NULL,
@@ -359,7 +204,6 @@ static int __init nf_conntrack_sane_init(void)
 	if (ret < 0) {
 		pr_err("failed to register helpers\n");
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/jbd2/journal.c
  *
@@ -9,13 +6,6 @@
  *
  * Copyright 1998 Red Hat corp --- All Rights Reserved
  *
-<<<<<<< HEAD
- * This file is part of the Linux kernel and is made available under
- * the terms of the GNU General Public License, version 2, or at your
- * option, any later version, incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Generic filesystem journal-writing code; part of the ext2fs
  * journaling system.
  *
@@ -42,10 +32,6 @@
 #include <linux/kthread.h>
 #include <linux/poison.h>
 #include <linux/proc_fs.h>
-<<<<<<< HEAD
-#include <linux/debugfs.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/math64.h>
 #include <linux/hash.h>
@@ -54,19 +40,11 @@
 #include <linux/backing-dev.h>
 #include <linux/bitops.h>
 #include <linux/ratelimit.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/jbd2.h>
 
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <asm/page.h>
-
-=======
 #include <linux/uaccess.h>
 #include <asm/page.h>
 
@@ -77,7 +55,6 @@ module_param_named(jbd2_debug, jbd2_journal_enable_debug, ushort, 0644);
 MODULE_PARM_DESC(jbd2_debug, "Debugging level for jbd2");
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(jbd2_journal_extend);
 EXPORT_SYMBOL(jbd2_journal_stop);
 EXPORT_SYMBOL(jbd2_journal_lock_updates);
@@ -87,15 +64,7 @@ EXPORT_SYMBOL(jbd2_journal_get_create_access);
 EXPORT_SYMBOL(jbd2_journal_get_undo_access);
 EXPORT_SYMBOL(jbd2_journal_set_triggers);
 EXPORT_SYMBOL(jbd2_journal_dirty_metadata);
-<<<<<<< HEAD
-EXPORT_SYMBOL(jbd2_journal_release_buffer);
 EXPORT_SYMBOL(jbd2_journal_forget);
-#if 0
-EXPORT_SYMBOL(journal_sync_buffer);
-#endif
-=======
-EXPORT_SYMBOL(jbd2_journal_forget);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(jbd2_journal_flush);
 EXPORT_SYMBOL(jbd2_journal_revoke);
 
@@ -111,37 +80,21 @@ EXPORT_SYMBOL(jbd2_journal_errno);
 EXPORT_SYMBOL(jbd2_journal_ack_err);
 EXPORT_SYMBOL(jbd2_journal_clear_err);
 EXPORT_SYMBOL(jbd2_log_wait_commit);
-<<<<<<< HEAD
-EXPORT_SYMBOL(jbd2_log_start_commit);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(jbd2_journal_start_commit);
 EXPORT_SYMBOL(jbd2_journal_force_commit_nested);
 EXPORT_SYMBOL(jbd2_journal_wipe);
 EXPORT_SYMBOL(jbd2_journal_blocks_per_page);
-<<<<<<< HEAD
-EXPORT_SYMBOL(jbd2_journal_invalidatepage);
-EXPORT_SYMBOL(jbd2_journal_try_to_free_buffers);
-EXPORT_SYMBOL(jbd2_journal_force_commit);
-EXPORT_SYMBOL(jbd2_journal_file_inode);
-=======
 EXPORT_SYMBOL(jbd2_journal_invalidate_folio);
 EXPORT_SYMBOL(jbd2_journal_try_to_free_buffers);
 EXPORT_SYMBOL(jbd2_journal_force_commit);
 EXPORT_SYMBOL(jbd2_journal_inode_ranged_write);
 EXPORT_SYMBOL(jbd2_journal_inode_ranged_wait);
 EXPORT_SYMBOL(jbd2_journal_finish_inode_data_buffers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(jbd2_journal_init_jbd_inode);
 EXPORT_SYMBOL(jbd2_journal_release_jbd_inode);
 EXPORT_SYMBOL(jbd2_journal_begin_ordered_truncate);
 EXPORT_SYMBOL(jbd2_inode_cache);
 
-<<<<<<< HEAD
-static void __journal_abort_soft (journal_t *journal, int errno);
-static int jbd2_journal_create_slab(size_t slab_size);
-
-=======
 static int jbd2_journal_create_slab(size_t slab_size);
 
 #ifdef CONFIG_JBD2_DEBUG
@@ -175,24 +128,15 @@ static __be32 jbd2_superblock_csum(journal_t *j, journal_superblock_t *sb)
 	return cpu_to_be32(csum);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper function used to manage commit timeouts
  */
 
-<<<<<<< HEAD
-static void commit_timeout(unsigned long __data)
-{
-	struct task_struct * p = (struct task_struct *) __data;
-
-	wake_up_process(p);
-=======
 static void commit_timeout(struct timer_list *t)
 {
 	journal_t *journal = from_timer(journal, t, j_commit_timer);
 
 	wake_up_process(journal->j_task);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -203,13 +147,9 @@ static void commit_timeout(struct timer_list *t)
  *
  * 1) COMMIT:  Every so often we need to commit the current state of the
  *    filesystem to disk.  The journal thread is responsible for writing
-<<<<<<< HEAD
- *    all of the metadata buffers to disk.
-=======
  *    all of the metadata buffers to disk. If a fast commit is ongoing
  *    journal thread waits until it's done and then continues from
  *    there on.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 2) CHECKPOINT: We cannot reuse a used section of the log file until all
  *    of the data in that part of the log has been rewritten elsewhere on
@@ -226,12 +166,7 @@ static int kjournald2(void *arg)
 	 * Set up an interval timer which can be used to trigger a commit wakeup
 	 * after the commit interval expires
 	 */
-<<<<<<< HEAD
-	setup_timer(&journal->j_commit_timer, commit_timeout,
-			(unsigned long)current);
-=======
 	timer_setup(&journal->j_commit_timer, commit_timeout, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_freezable();
 
@@ -240,8 +175,6 @@ static int kjournald2(void *arg)
 	wake_up(&journal->j_wait_done_commit);
 
 	/*
-<<<<<<< HEAD
-=======
 	 * Make sure that no allocations from this kernel thread will ever
 	 * recurse to the fs layer because we are responsible for the
 	 * transaction commit and any fs involvement might get stuck waiting for
@@ -250,7 +183,6 @@ static int kjournald2(void *arg)
 	memalloc_nofs_save();
 
 	/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * And now, wait forever for commit wakeup events.
 	 */
 	write_lock(&journal->j_state_lock);
@@ -259,19 +191,11 @@ loop:
 	if (journal->j_flags & JBD2_UNMOUNT)
 		goto end_loop;
 
-<<<<<<< HEAD
-	jbd_debug(1, "commit_sequence=%d, commit_request=%d\n",
-		journal->j_commit_sequence, journal->j_commit_request);
-
-	if (journal->j_commit_sequence != journal->j_commit_request) {
-		jbd_debug(1, "OK, requests differ\n");
-=======
 	jbd2_debug(1, "commit_sequence=%u, commit_request=%u\n",
 		journal->j_commit_sequence, journal->j_commit_request);
 
 	if (journal->j_commit_sequence != journal->j_commit_request) {
 		jbd2_debug(1, "OK, requests differ\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_unlock(&journal->j_state_lock);
 		del_timer_sync(&journal->j_commit_timer);
 		jbd2_journal_commit_transaction(journal);
@@ -286,11 +210,7 @@ loop:
 		 * good idea, because that depends on threads that may
 		 * be already stopped.
 		 */
-<<<<<<< HEAD
-		jbd_debug(1, "Now suspending kjournald2\n");
-=======
 		jbd2_debug(1, "Now suspending kjournald2\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_unlock(&journal->j_state_lock);
 		try_to_freeze();
 		write_lock(&journal->j_state_lock);
@@ -320,11 +240,7 @@ loop:
 		finish_wait(&journal->j_wait_commit, &wait);
 	}
 
-<<<<<<< HEAD
-	jbd_debug(1, "kjournald2 wakes\n");
-=======
 	jbd2_debug(1, "kjournald2 wakes\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Were we woken up by a commit wakeup event?
@@ -332,28 +248,16 @@ loop:
 	transaction = journal->j_running_transaction;
 	if (transaction && time_after_eq(jiffies, transaction->t_expires)) {
 		journal->j_commit_request = transaction->t_tid;
-<<<<<<< HEAD
-		jbd_debug(1, "woke because of timeout\n");
-=======
 		jbd2_debug(1, "woke because of timeout\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	goto loop;
 
 end_loop:
-<<<<<<< HEAD
-	write_unlock(&journal->j_state_lock);
-	del_timer_sync(&journal->j_commit_timer);
-	journal->j_task = NULL;
-	wake_up(&journal->j_wait_done_commit);
-	jbd_debug(1, "Journal thread exiting.\n");
-=======
 	del_timer_sync(&journal->j_commit_timer);
 	journal->j_task = NULL;
 	wake_up(&journal->j_wait_done_commit);
 	jbd2_debug(1, "Journal thread exiting.\n");
 	write_unlock(&journal->j_state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -376,13 +280,8 @@ static void journal_kill_thread(journal_t *journal)
 	journal->j_flags |= JBD2_UNMOUNT;
 
 	while (journal->j_task) {
-<<<<<<< HEAD
-		wake_up(&journal->j_wait_commit);
-		write_unlock(&journal->j_state_lock);
-=======
 		write_unlock(&journal->j_state_lock);
 		wake_up(&journal->j_wait_commit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait_event(journal->j_wait_done_commit, journal->j_task == NULL);
 		write_lock(&journal->j_state_lock);
 	}
@@ -408,23 +307,12 @@ static void journal_kill_thread(journal_t *journal)
  *
  * If the source buffer has already been modified by a new transaction
  * since we took the last commit snapshot, we use the frozen copy of
-<<<<<<< HEAD
- * that data for IO.  If we end up using the existing buffer_head's data
- * for the write, then we *have* to lock the buffer to prevent anyone
- * else from using and possibly modifying it while the IO is in
- * progress.
- *
- * The function returns a pointer to the buffer_heads to be used for IO.
- *
- * We assume that the journal has already been locked in this function.
-=======
  * that data for IO. If we end up using the existing buffer_head's data
  * for the write, then we have to make sure nobody modifies it while the
  * IO is in progress. do_get_write_access() handles this.
  *
  * The function returns a pointer to the buffer_head to be used for IO.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return value:
  *  <0: Error
@@ -437,25 +325,15 @@ static void journal_kill_thread(journal_t *journal)
 
 int jbd2_journal_write_metadata_buffer(transaction_t *transaction,
 				  struct journal_head  *jh_in,
-<<<<<<< HEAD
-				  struct journal_head **jh_out,
-				  unsigned long long blocknr)
-=======
 				  struct buffer_head **bh_out,
 				  sector_t blocknr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int need_copy_out = 0;
 	int done_copy_out = 0;
 	int do_escape = 0;
 	char *mapped_data;
 	struct buffer_head *new_bh;
-<<<<<<< HEAD
-	struct journal_head *new_jh;
-	struct page *new_page;
-=======
 	struct folio *new_folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int new_offset;
 	struct buffer_head *bh_in = jh2bh(jh_in);
 	journal_t *journal = transaction->t_journal;
@@ -471,25 +349,6 @@ int jbd2_journal_write_metadata_buffer(transaction_t *transaction,
 	 */
 	J_ASSERT_BH(bh_in, buffer_jbddirty(bh_in));
 
-<<<<<<< HEAD
-retry_alloc:
-	new_bh = alloc_buffer_head(GFP_NOFS);
-	if (!new_bh) {
-		/*
-		 * Failure is not an option, but __GFP_NOFAIL is going
-		 * away; so we retry ourselves here.
-		 */
-		congestion_wait(BLK_RW_ASYNC, HZ/50);
-		goto retry_alloc;
-	}
-
-	/* keep subsequent assertions sane */
-	new_bh->b_state = 0;
-	init_buffer(new_bh, NULL, NULL);
-	atomic_set(&new_bh->b_count, 1);
-	new_jh = jbd2_journal_add_journal_head(new_bh);	/* This sleeps */
-
-=======
 	new_bh = alloc_buffer_head(GFP_NOFS|__GFP_NOFAIL);
 
 	/* keep subsequent assertions sane */
@@ -497,25 +356,10 @@ retry_alloc:
 
 	spin_lock(&jh_in->b_state_lock);
 repeat:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If a new transaction has already done a buffer copy-out, then
 	 * we use that version of the data for the commit.
 	 */
-<<<<<<< HEAD
-	jbd_lock_bh_state(bh_in);
-repeat:
-	if (jh_in->b_frozen_data) {
-		done_copy_out = 1;
-		new_page = virt_to_page(jh_in->b_frozen_data);
-		new_offset = offset_in_page(jh_in->b_frozen_data);
-	} else {
-		new_page = jh2bh(jh_in)->b_page;
-		new_offset = offset_in_page(jh2bh(jh_in)->b_data);
-	}
-
-	mapped_data = kmap_atomic(new_page);
-=======
 	if (jh_in->b_frozen_data) {
 		done_copy_out = 1;
 		new_folio = virt_to_folio(jh_in->b_frozen_data);
@@ -526,7 +370,6 @@ repeat:
 	}
 
 	mapped_data = kmap_local_folio(new_folio, new_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Fire data frozen trigger if data already wasn't frozen.  Do this
 	 * before checking for escaping, as the trigger may modify the magic
@@ -534,30 +377,17 @@ repeat:
 	 * data in the buffer.
 	 */
 	if (!done_copy_out)
-<<<<<<< HEAD
-		jbd2_buffer_frozen_trigger(jh_in, mapped_data + new_offset,
-=======
 		jbd2_buffer_frozen_trigger(jh_in, mapped_data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   jh_in->b_triggers);
 
 	/*
 	 * Check for escaping
 	 */
-<<<<<<< HEAD
-	if (*((__be32 *)(mapped_data + new_offset)) ==
-				cpu_to_be32(JBD2_MAGIC_NUMBER)) {
-		need_copy_out = 1;
-		do_escape = 1;
-	}
-	kunmap_atomic(mapped_data);
-=======
 	if (*((__be32 *)mapped_data) == cpu_to_be32(JBD2_MAGIC_NUMBER)) {
 		need_copy_out = 1;
 		do_escape = 1;
 	}
 	kunmap_local(mapped_data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Do we need to do a data copy?
@@ -565,15 +395,6 @@ repeat:
 	if (need_copy_out && !done_copy_out) {
 		char *tmp;
 
-<<<<<<< HEAD
-		jbd_unlock_bh_state(bh_in);
-		tmp = jbd2_alloc(bh_in->b_size, GFP_NOFS);
-		if (!tmp) {
-			jbd2_journal_put_journal_head(new_jh);
-			return -ENOMEM;
-		}
-		jbd_lock_bh_state(bh_in);
-=======
 		spin_unlock(&jh_in->b_state_lock);
 		tmp = jbd2_alloc(bh_in->b_size, GFP_NOFS);
 		if (!tmp) {
@@ -581,26 +402,16 @@ repeat:
 			return -ENOMEM;
 		}
 		spin_lock(&jh_in->b_state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (jh_in->b_frozen_data) {
 			jbd2_free(tmp, bh_in->b_size);
 			goto repeat;
 		}
 
 		jh_in->b_frozen_data = tmp;
-<<<<<<< HEAD
-		mapped_data = kmap_atomic(new_page);
-		memcpy(tmp, mapped_data + new_offset, jh2bh(jh_in)->b_size);
-		kunmap_atomic(mapped_data);
-
-		new_page = virt_to_page(tmp);
-		new_offset = offset_in_page(tmp);
-=======
 		memcpy_from_folio(tmp, new_folio, new_offset, bh_in->b_size);
 
 		new_folio = virt_to_folio(tmp);
 		new_offset = offset_in_folio(new_folio, tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		done_copy_out = 1;
 
 		/*
@@ -616,22 +427,6 @@ repeat:
 	 * copying, we can finally do so.
 	 */
 	if (do_escape) {
-<<<<<<< HEAD
-		mapped_data = kmap_atomic(new_page);
-		*((unsigned int *)(mapped_data + new_offset)) = 0;
-		kunmap_atomic(mapped_data);
-	}
-
-	set_bh_page(new_bh, new_page, new_offset);
-	new_jh->b_transaction = NULL;
-	new_bh->b_size = jh2bh(jh_in)->b_size;
-	new_bh->b_bdev = transaction->t_journal->j_dev;
-	new_bh->b_blocknr = blocknr;
-	set_buffer_mapped(new_bh);
-	set_buffer_dirty(new_bh);
-
-	*jh_out = new_jh;
-=======
 		mapped_data = kmap_local_folio(new_folio, new_offset);
 		*((unsigned int *)mapped_data) = 0;
 		kunmap_local(mapped_data);
@@ -646,7 +441,6 @@ repeat:
 	set_buffer_dirty(new_bh);
 
 	*bh_out = new_bh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The to-be-written buffer needs to get moved to the io queue,
@@ -657,15 +451,8 @@ repeat:
 	spin_lock(&journal->j_list_lock);
 	__jbd2_journal_file_buffer(jh_in, transaction, BJ_Shadow);
 	spin_unlock(&journal->j_list_lock);
-<<<<<<< HEAD
-	jbd_unlock_bh_state(bh_in);
-
-	JBUFFER_TRACE(new_jh, "file as BJ_IO");
-	jbd2_journal_file_buffer(new_jh, transaction, BJ_IO);
-=======
 	set_buffer_shadow(bh_in);
 	spin_unlock(&jh_in->b_state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return do_escape | (done_copy_out << 1);
 }
@@ -676,42 +463,6 @@ repeat:
  */
 
 /*
-<<<<<<< HEAD
- * __jbd2_log_space_left: Return the number of free blocks left in the journal.
- *
- * Called with the journal already locked.
- *
- * Called under j_state_lock
- */
-
-int __jbd2_log_space_left(journal_t *journal)
-{
-	int left = journal->j_free;
-
-	/* assert_spin_locked(&journal->j_state_lock); */
-
-	/*
-	 * Be pessimistic here about the number of those free blocks which
-	 * might be required for log descriptor control blocks.
-	 */
-
-#define MIN_LOG_RESERVED_BLOCKS 32 /* Allow for rounding errors */
-
-	left -= MIN_LOG_RESERVED_BLOCKS;
-
-	if (left <= 0)
-		return 0;
-	left -= (left >> 3);
-	return left;
-}
-
-/*
- * Called with j_state_lock locked for writing.
- * Returns true if a transaction commit was started.
- */
-int __jbd2_log_start_commit(journal_t *journal, tid_t target)
-{
-=======
  * Called with j_state_lock locked for writing.
  * Returns true if a transaction commit was started.
  */
@@ -721,7 +472,6 @@ static int __jbd2_log_start_commit(journal_t *journal, tid_t target)
 	if (journal->j_commit_request == target)
 		return 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The only transaction we can possibly wait upon is the
 	 * currently running transaction (if it exists).  Otherwise,
@@ -735,16 +485,10 @@ static int __jbd2_log_start_commit(journal_t *journal, tid_t target)
 		 */
 
 		journal->j_commit_request = target;
-<<<<<<< HEAD
-		jbd_debug(1, "JBD2: requesting commit %d/%d\n",
-			  journal->j_commit_request,
-			  journal->j_commit_sequence);
-=======
 		jbd2_debug(1, "JBD2: requesting commit %u/%u\n",
 			  journal->j_commit_request,
 			  journal->j_commit_sequence);
 		journal->j_running_transaction->t_requested = jiffies;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up(&journal->j_wait_commit);
 		return 1;
 	} else if (!tid_geq(journal->j_commit_request, target))
@@ -754,11 +498,7 @@ static int __jbd2_log_start_commit(journal_t *journal, tid_t target)
 		WARN_ONCE(1, "JBD2: bad log_start_commit: %u %u %u %u\n",
 			  journal->j_commit_request,
 			  journal->j_commit_sequence,
-<<<<<<< HEAD
-			  target, journal->j_running_transaction ? 
-=======
 			  target, journal->j_running_transaction ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  journal->j_running_transaction->t_tid : 0);
 	return 0;
 }
@@ -774,22 +514,6 @@ int jbd2_log_start_commit(journal_t *journal, tid_t tid)
 }
 
 /*
-<<<<<<< HEAD
- * Force and wait upon a commit if the calling process is not within
- * transaction.  This is used for forcing out undo-protected data which contains
- * bitmaps, when the fs is running out of space.
- *
- * We can only force the running transaction if we don't have an active handle;
- * otherwise, we will deadlock.
- *
- * Returns true if a transaction was started.
- */
-int jbd2_journal_force_commit_nested(journal_t *journal)
-{
-	transaction_t *transaction = NULL;
-	tid_t tid;
-	int need_to_start = 0;
-=======
  * Force and wait any uncommitted transactions.  We can only force the running
  * transaction if we don't have an active handle, otherwise, we will deadlock.
  * Returns: <0 in case of error,
@@ -801,7 +525,6 @@ static int __jbd2_journal_force_commit(journal_t *journal)
 	transaction_t *transaction = NULL;
 	tid_t tid;
 	int need_to_start = 0, ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	read_lock(&journal->j_state_lock);
 	if (journal->j_running_transaction && !current->journal_info) {
@@ -812,25 +535,14 @@ static int __jbd2_journal_force_commit(journal_t *journal)
 		transaction = journal->j_committing_transaction;
 
 	if (!transaction) {
-<<<<<<< HEAD
-		read_unlock(&journal->j_state_lock);
-		return 0;	/* Nothing to retry */
-	}
-
-=======
 		/* Nothing to commit */
 		read_unlock(&journal->j_state_lock);
 		return 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tid = transaction->t_tid;
 	read_unlock(&journal->j_state_lock);
 	if (need_to_start)
 		jbd2_log_start_commit(journal, tid);
-<<<<<<< HEAD
-	jbd2_log_wait_commit(journal, tid);
-	return 1;
-=======
 	ret = jbd2_log_wait_commit(journal, tid);
 	if (!ret)
 		ret = 1;
@@ -872,7 +584,6 @@ int jbd2_journal_force_commit(journal_t *journal)
 	if (ret > 0)
 		ret = 0;
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -896,13 +607,8 @@ int jbd2_journal_start_commit(journal_t *journal, tid_t *ptid)
 		ret = 1;
 	} else if (journal->j_committing_transaction) {
 		/*
-<<<<<<< HEAD
-		 * If ext3_write_super() recently started a commit, then we
-		 * have to wait for completion of that transaction
-=======
 		 * If commit has been started, then we have to wait for
 		 * completion of that transaction.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (ptid)
 			*ptid = journal->j_committing_transaction->t_tid;
@@ -962,12 +668,6 @@ int jbd2_log_wait_commit(journal_t *journal, tid_t tid)
 	int err = 0;
 
 	read_lock(&journal->j_state_lock);
-<<<<<<< HEAD
-#ifdef CONFIG_JBD2_DEBUG
-	if (!tid_geq(journal->j_commit_request, tid)) {
-		printk(KERN_EMERG
-		       "%s: error: j_commit_request=%d, tid=%d\n",
-=======
 #ifdef CONFIG_PROVE_LOCKING
 	/*
 	 * Some callers make sure transaction is already committing and in that
@@ -986,43 +686,26 @@ int jbd2_log_wait_commit(journal_t *journal, tid_t tid)
 	if (!tid_geq(journal->j_commit_request, tid)) {
 		printk(KERN_ERR
 		       "%s: error: j_commit_request=%u, tid=%u\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       __func__, journal->j_commit_request, tid);
 	}
 #endif
 	while (tid_gt(tid, journal->j_commit_sequence)) {
-<<<<<<< HEAD
-		jbd_debug(1, "JBD2: want %d, j_commit_sequence=%d\n",
-				  tid, journal->j_commit_sequence);
-		wake_up(&journal->j_wait_commit);
-		read_unlock(&journal->j_state_lock);
-=======
 		jbd2_debug(1, "JBD2: want %u, j_commit_sequence=%u\n",
 				  tid, journal->j_commit_sequence);
 		read_unlock(&journal->j_state_lock);
 		wake_up(&journal->j_wait_commit);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait_event(journal->j_wait_done_commit,
 				!tid_gt(tid, journal->j_commit_sequence));
 		read_lock(&journal->j_state_lock);
 	}
 	read_unlock(&journal->j_state_lock);
 
-<<<<<<< HEAD
-	if (unlikely(is_journal_aborted(journal))) {
-		printk(KERN_EMERG "journal commit I/O error\n");
-		err = -EIO;
-	}
-=======
 	if (unlikely(is_journal_aborted(journal)))
 		err = -EIO;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Start a fast commit. If there's an ongoing fast or full commit wait for
  * it to complete. Returns 0 if a new fast commit was started. Returns -EALREADY
  * if a fast commit is not needed, either because there's an already a commit
@@ -1121,7 +804,6 @@ int jbd2_transaction_committed(journal_t *journal, tid_t tid)
 EXPORT_SYMBOL(jbd2_transaction_committed);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * When this function returns the transaction corresponding to tid
  * will be completed.  If the transaction has currently running, start
  * committing that transaction before waiting for it to complete.  If
@@ -1172,8 +854,6 @@ int jbd2_journal_next_log_block(journal_t *journal, unsigned long long *retp)
 	return jbd2_journal_bmap(journal, blocknr, retp);
 }
 
-<<<<<<< HEAD
-=======
 /* Map one fast commit buffer for use by the file system */
 int jbd2_fc_get_buf(journal_t *journal, struct buffer_head **bh_out)
 {
@@ -1266,7 +946,6 @@ int jbd2_fc_release_bufs(journal_t *journal)
 }
 EXPORT_SYMBOL(jbd2_fc_release_bufs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Conversion of logical to physical block numbers for the journal
  *
@@ -1279,14 +958,6 @@ int jbd2_journal_bmap(journal_t *journal, unsigned long blocknr,
 {
 	int err = 0;
 	unsigned long long ret;
-<<<<<<< HEAD
-
-	if (journal->j_inode) {
-		ret = bmap(journal->j_inode, blocknr);
-		if (ret)
-			*retp = ret;
-		else {
-=======
 	sector_t block = blocknr;
 
 	if (journal->j_bmap) {
@@ -1297,21 +968,15 @@ int jbd2_journal_bmap(journal_t *journal, unsigned long blocknr,
 		ret = bmap(journal->j_inode, &block);
 
 		if (ret || !block) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ALERT "%s: journal block not found "
 					"at offset %lu on %s\n",
 			       __func__, blocknr, journal->j_devname);
 			err = -EIO;
-<<<<<<< HEAD
-			__journal_abort_soft(journal, err);
-		}
-=======
 			jbd2_journal_abort(journal, err);
 		} else {
 			*retp = block;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		*retp = blocknr; /* +journal->j_blk_offset */
 	}
@@ -1328,12 +993,6 @@ int jbd2_journal_bmap(journal_t *journal, unsigned long blocknr,
  * But we don't bother doing that, so there will be coherency problems with
  * mmaps of blockdevs which hold live JBD-controlled filesystems.
  */
-<<<<<<< HEAD
-struct journal_head *jbd2_journal_get_descriptor_buffer(journal_t *journal)
-{
-	struct buffer_head *bh;
-	unsigned long long blocknr;
-=======
 struct buffer_head *
 jbd2_journal_get_descriptor_buffer(transaction_t *transaction, int type)
 {
@@ -1341,7 +1000,6 @@ jbd2_journal_get_descriptor_buffer(transaction_t *transaction, int type)
 	struct buffer_head *bh;
 	unsigned long long blocknr;
 	journal_header_t *header;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = jbd2_journal_next_log_block(journal, &blocknr);
@@ -1352,14 +1010,6 @@ jbd2_journal_get_descriptor_buffer(transaction_t *transaction, int type)
 	bh = __getblk(journal->j_dev, blocknr, journal->j_blocksize);
 	if (!bh)
 		return NULL;
-<<<<<<< HEAD
-	lock_buffer(bh);
-	memset(bh->b_data, 0, journal->j_blocksize);
-	set_buffer_uptodate(bh);
-	unlock_buffer(bh);
-	BUFFER_TRACE(bh, "return this buffer");
-	return jbd2_journal_add_journal_head(bh);
-=======
 	atomic_dec(&transaction->t_outstanding_credits);
 	lock_buffer(bh);
 	memset(bh->b_data, 0, journal->j_blocksize);
@@ -1386,7 +1036,6 @@ void jbd2_descriptor_block_csum_set(journal_t *j, struct buffer_head *bh)
 	tail->t_checksum = 0;
 	csum = jbd2_chksum(j, j->j_csum_seed, bh->b_data, j->j_blocksize);
 	tail->t_checksum = cpu_to_be32(csum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1451,11 +1100,7 @@ int __jbd2_update_log_tail(journal_t *journal, tid_t tid, unsigned long block)
 	 * space and if we lose sb update during power failure we'd replay
 	 * old transaction with possibly newly overwritten data.
 	 */
-<<<<<<< HEAD
-	ret = jbd2_journal_update_sb_log_tail(journal, tid, block, WRITE_FUA);
-=======
 	ret = jbd2_journal_update_sb_log_tail(journal, tid, block, REQ_FUA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -1465,13 +1110,8 @@ int __jbd2_update_log_tail(journal_t *journal, tid_t tid, unsigned long block)
 		freed += journal->j_last - journal->j_first;
 
 	trace_jbd2_update_log_tail(journal, tid, block, freed);
-<<<<<<< HEAD
-	jbd_debug(1,
-		  "Cleaning journal tail from %d to %d (offset %lu), "
-=======
 	jbd2_debug(1,
 		  "Cleaning journal tail from %u to %u (offset %lu), "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "freeing %lu\n",
 		  journal->j_tail_sequence, tid, block, freed);
 
@@ -1485,21 +1125,13 @@ out:
 }
 
 /*
-<<<<<<< HEAD
- * This is a variaon of __jbd2_update_log_tail which checks for validity of
-=======
  * This is a variation of __jbd2_update_log_tail which checks for validity of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * provided log tail and locks j_checkpoint_mutex. So it is safe against races
  * with other threads updating log tail.
  */
 void jbd2_update_log_tail(journal_t *journal, tid_t tid, unsigned long block)
 {
-<<<<<<< HEAD
-	mutex_lock(&journal->j_checkpoint_mutex);
-=======
 	mutex_lock_io(&journal->j_checkpoint_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tid_gt(tid, journal->j_tail_sequence))
 		__jbd2_update_log_tail(journal, tid, block);
 	mutex_unlock(&journal->j_checkpoint_mutex);
@@ -1519,10 +1151,7 @@ static void *jbd2_seq_info_start(struct seq_file *seq, loff_t *pos)
 
 static void *jbd2_seq_info_next(struct seq_file *seq, void *v, loff_t *pos)
 {
-<<<<<<< HEAD
-=======
 	(*pos)++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -1532,27 +1161,18 @@ static int jbd2_seq_info_show(struct seq_file *seq, void *v)
 
 	if (v != SEQ_START_TOKEN)
 		return 0;
-<<<<<<< HEAD
-	seq_printf(seq, "%lu transaction, each up to %u blocks\n",
-			s->stats->ts_tid,
-			s->journal->j_max_transaction_buffers);
-=======
 	seq_printf(seq, "%lu transactions (%lu requested), "
 		   "each up to %u blocks\n",
 		   s->stats->ts_tid, s->stats->ts_requested,
 		   s->journal->j_max_transaction_buffers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (s->stats->ts_tid == 0)
 		return 0;
 	seq_printf(seq, "average: \n  %ums waiting for transaction\n",
 	    jiffies_to_msecs(s->stats->run.rs_wait / s->stats->ts_tid));
-<<<<<<< HEAD
-=======
 	seq_printf(seq, "  %ums request delay\n",
 	    (s->stats->ts_requested == 0) ? 0 :
 	    jiffies_to_msecs(s->stats->run.rs_request_delay /
 			     s->stats->ts_requested));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(seq, "  %ums running transaction\n",
 	    jiffies_to_msecs(s->stats->run.rs_running / s->stats->ts_tid));
 	seq_printf(seq, "  %ums transaction was being locked\n",
@@ -1585,11 +1205,7 @@ static const struct seq_operations jbd2_seq_info_ops = {
 
 static int jbd2_seq_info_open(struct inode *inode, struct file *file)
 {
-<<<<<<< HEAD
-	journal_t *journal = PDE(inode)->data;
-=======
 	journal_t *journal = pde_data(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jbd2_stats_proc_session *s;
 	int rc, size;
 
@@ -1628,20 +1244,11 @@ static int jbd2_seq_info_release(struct inode *inode, struct file *file)
 	return seq_release(inode, file);
 }
 
-<<<<<<< HEAD
-static const struct file_operations jbd2_seq_info_fops = {
-	.owner		= THIS_MODULE,
-	.open           = jbd2_seq_info_open,
-	.read           = seq_read,
-	.llseek         = seq_lseek,
-	.release        = jbd2_seq_info_release,
-=======
 static const struct proc_ops jbd2_info_proc_ops = {
 	.proc_open	= jbd2_seq_info_open,
 	.proc_read	= seq_read,
 	.proc_lseek	= seq_lseek,
 	.proc_release	= jbd2_seq_info_release,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct proc_dir_entry *proc_jbd2_stats;
@@ -1651,11 +1258,7 @@ static void jbd2_stats_proc_init(journal_t *journal)
 	journal->j_proc_entry = proc_mkdir(journal->j_devname, proc_jbd2_stats);
 	if (journal->j_proc_entry) {
 		proc_create_data("info", S_IRUGO, journal->j_proc_entry,
-<<<<<<< HEAD
-				 &jbd2_seq_info_fops, journal);
-=======
 				 &jbd2_info_proc_ops, journal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1665,8 +1268,6 @@ static void jbd2_stats_proc_exit(journal_t *journal)
 	remove_proc_entry(journal->j_devname, proc_jbd2_stats);
 }
 
-<<<<<<< HEAD
-=======
 /* Minimum size of descriptor tag */
 static int jbd2_min_tag_size(void)
 {
@@ -1906,7 +1507,6 @@ static int journal_load_superblock(journal_t *journal)
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Management for journal control blocks: functions to create and
  * destroy journal_t structures, and to initialise and read existing
@@ -1916,23 +1516,6 @@ static int journal_load_superblock(journal_t *journal)
  * very few fields yet: that has to wait until we have created the
  * journal structures from from scratch, or loaded them from disk. */
 
-<<<<<<< HEAD
-static journal_t * journal_init_common (void)
-{
-	journal_t *journal;
-	int err;
-
-	journal = kzalloc(sizeof(*journal), GFP_KERNEL);
-	if (!journal)
-		return NULL;
-
-	init_waitqueue_head(&journal->j_wait_transaction_locked);
-	init_waitqueue_head(&journal->j_wait_logspace);
-	init_waitqueue_head(&journal->j_wait_done_commit);
-	init_waitqueue_head(&journal->j_wait_checkpoint);
-	init_waitqueue_head(&journal->j_wait_commit);
-	init_waitqueue_head(&journal->j_wait_updates);
-=======
 static journal_t *journal_init_common(struct block_device *bdev,
 			struct block_device *fs_dev,
 			unsigned long long start, int len, int blocksize)
@@ -1964,42 +1547,25 @@ static journal_t *journal_init_common(struct block_device *bdev,
 	init_waitqueue_head(&journal->j_wait_reserved);
 	init_waitqueue_head(&journal->j_fc_wait);
 	mutex_init(&journal->j_abort_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&journal->j_barrier);
 	mutex_init(&journal->j_checkpoint_mutex);
 	spin_lock_init(&journal->j_revoke_lock);
 	spin_lock_init(&journal->j_list_lock);
-<<<<<<< HEAD
-=======
 	spin_lock_init(&journal->j_history_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rwlock_init(&journal->j_state_lock);
 
 	journal->j_commit_interval = (HZ * JBD2_DEFAULT_MAX_COMMIT_AGE);
 	journal->j_min_batch_time = 0;
 	journal->j_max_batch_time = 15000; /* 15ms */
-<<<<<<< HEAD
-=======
 	atomic_set(&journal->j_reserved_credits, 0);
 	lockdep_init_map(&journal->j_trans_commit_map, "jbd2_handle",
 			 &jbd2_trans_commit_key, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The journal is marked for error until we succeed with recovery! */
 	journal->j_flags = JBD2_ABORT;
 
 	/* Set up a default-sized revoke table for the new mount. */
 	err = jbd2_journal_init_revoke(journal, JOURNAL_REVOKE_DEFAULT_HASH);
-<<<<<<< HEAD
-	if (err) {
-		kfree(journal);
-		return NULL;
-	}
-
-	spin_lock_init(&journal->j_history_lock);
-
-	return journal;
-=======
 	if (err)
 		goto err_cleanup;
 
@@ -2049,7 +1615,6 @@ err_cleanup:
 	journal_fail_superblock(journal);
 	kfree(journal);
 	return ERR_PTR(err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* jbd2_journal_init_dev and jbd2_journal_init_inode:
@@ -2075,56 +1640,6 @@ err_cleanup:
  *  range of blocks on an arbitrary block device.
  *
  */
-<<<<<<< HEAD
-journal_t * jbd2_journal_init_dev(struct block_device *bdev,
-			struct block_device *fs_dev,
-			unsigned long long start, int len, int blocksize)
-{
-	journal_t *journal = journal_init_common();
-	struct buffer_head *bh;
-	char *p;
-	int n;
-
-	if (!journal)
-		return NULL;
-
-	/* journal descriptor can store up to n blocks -bzzz */
-	journal->j_blocksize = blocksize;
-	journal->j_dev = bdev;
-	journal->j_fs_dev = fs_dev;
-	journal->j_blk_offset = start;
-	journal->j_maxlen = len;
-	bdevname(journal->j_dev, journal->j_devname);
-	p = journal->j_devname;
-	while ((p = strchr(p, '/')))
-		*p = '!';
-	jbd2_stats_proc_init(journal);
-	n = journal->j_blocksize / sizeof(journal_block_tag_t);
-	journal->j_wbufsize = n;
-	journal->j_wbuf = kmalloc(n * sizeof(struct buffer_head*), GFP_KERNEL);
-	if (!journal->j_wbuf) {
-		printk(KERN_ERR "%s: Can't allocate bhs for commit thread\n",
-			__func__);
-		goto out_err;
-	}
-
-	bh = __getblk(journal->j_dev, start, journal->j_blocksize);
-	if (!bh) {
-		printk(KERN_ERR
-		       "%s: Cannot get buffer for journal superblock\n",
-		       __func__);
-		goto out_err;
-	}
-	journal->j_sb_buffer = bh;
-	journal->j_superblock = (journal_superblock_t *)bh->b_data;
-
-	return journal;
-out_err:
-	kfree(journal->j_wbuf);
-	jbd2_stats_proc_exit(journal);
-	kfree(journal);
-	return NULL;
-=======
 journal_t *jbd2_journal_init_dev(struct block_device *bdev,
 			struct block_device *fs_dev,
 			unsigned long long start, int len, int blocksize)
@@ -2141,7 +1656,6 @@ journal_t *jbd2_journal_init_dev(struct block_device *bdev,
 	jbd2_stats_proc_init(journal);
 
 	return journal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2152,84 +1666,6 @@ journal_t *jbd2_journal_init_dev(struct block_device *bdev,
  * the journal.  The inode must exist already, must support bmap() and
  * must have all data blocks preallocated.
  */
-<<<<<<< HEAD
-journal_t * jbd2_journal_init_inode (struct inode *inode)
-{
-	struct buffer_head *bh;
-	journal_t *journal = journal_init_common();
-	char *p;
-	int err;
-	int n;
-	unsigned long long blocknr;
-
-	if (!journal)
-		return NULL;
-
-	journal->j_dev = journal->j_fs_dev = inode->i_sb->s_bdev;
-	journal->j_inode = inode;
-	bdevname(journal->j_dev, journal->j_devname);
-	p = journal->j_devname;
-	while ((p = strchr(p, '/')))
-		*p = '!';
-	p = journal->j_devname + strlen(journal->j_devname);
-	sprintf(p, "-%lu", journal->j_inode->i_ino);
-	jbd_debug(1,
-		  "journal %p: inode %s/%ld, size %Ld, bits %d, blksize %ld\n",
-		  journal, inode->i_sb->s_id, inode->i_ino,
-		  (long long) inode->i_size,
-		  inode->i_sb->s_blocksize_bits, inode->i_sb->s_blocksize);
-
-	journal->j_maxlen = inode->i_size >> inode->i_sb->s_blocksize_bits;
-	journal->j_blocksize = inode->i_sb->s_blocksize;
-	jbd2_stats_proc_init(journal);
-
-	/* journal descriptor can store up to n blocks -bzzz */
-	n = journal->j_blocksize / sizeof(journal_block_tag_t);
-	journal->j_wbufsize = n;
-	journal->j_wbuf = kmalloc(n * sizeof(struct buffer_head*), GFP_KERNEL);
-	if (!journal->j_wbuf) {
-		printk(KERN_ERR "%s: Can't allocate bhs for commit thread\n",
-			__func__);
-		goto out_err;
-	}
-
-	err = jbd2_journal_bmap(journal, 0, &blocknr);
-	/* If that failed, give up */
-	if (err) {
-		printk(KERN_ERR "%s: Cannot locate journal superblock\n",
-		       __func__);
-		goto out_err;
-	}
-
-	bh = __getblk(journal->j_dev, blocknr, journal->j_blocksize);
-	if (!bh) {
-		printk(KERN_ERR
-		       "%s: Cannot get buffer for journal superblock\n",
-		       __func__);
-		goto out_err;
-	}
-	journal->j_sb_buffer = bh;
-	journal->j_superblock = (journal_superblock_t *)bh->b_data;
-
-	return journal;
-out_err:
-	kfree(journal->j_wbuf);
-	jbd2_stats_proc_exit(journal);
-	kfree(journal);
-	return NULL;
-}
-
-/*
- * If the journal init or create aborts, we need to mark the journal
- * superblock as being NULL to prevent the journal destroy from writing
- * back a bogus superblock.
- */
-static void journal_fail_superblock (journal_t *journal)
-{
-	struct buffer_head *bh = journal->j_sb_buffer;
-	brelse(bh);
-	journal->j_sb_buffer = NULL;
-=======
 journal_t *jbd2_journal_init_inode(struct inode *inode)
 {
 	journal_t *journal;
@@ -2260,7 +1696,6 @@ journal_t *jbd2_journal_init_inode(struct inode *inode)
 	jbd2_stats_proc_init(journal);
 
 	return journal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2287,11 +1722,6 @@ static int journal_reset(journal_t *journal)
 	journal->j_first = first;
 	journal->j_last = last;
 
-<<<<<<< HEAD
-	journal->j_head = first;
-	journal->j_tail = first;
-	journal->j_free = last - first;
-=======
 	if (journal->j_head != 0 && journal->j_flags & JBD2_CYCLE_RECORD) {
 		/*
 		 * Disable the cycled recording mode if the journal head block
@@ -2308,15 +1738,11 @@ static int journal_reset(journal_t *journal)
 	}
 	journal->j_tail = journal->j_head;
 	journal->j_free = journal->j_last - journal->j_first;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	journal->j_tail_sequence = journal->j_transaction_sequence;
 	journal->j_commit_sequence = journal->j_transaction_sequence - 1;
 	journal->j_commit_request = journal->j_commit_sequence;
 
-<<<<<<< HEAD
-	journal->j_max_transaction_buffers = journal->j_maxlen / 4;
-=======
 	journal->j_max_transaction_buffers = jbd2_journal_get_max_txn_bufs(journal);
 
 	/*
@@ -2325,7 +1751,6 @@ static int journal_reset(journal_t *journal)
 	 * disabled it, we don't enable fast commits.
 	 */
 	jbd2_clear_feature_fast_commit(journal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * As a special case, if the on-disk copy is already marked as needing
@@ -2334,55 +1759,28 @@ static int journal_reset(journal_t *journal)
 	 * attempting a write to a potential-readonly device.
 	 */
 	if (sb->s_start == 0) {
-<<<<<<< HEAD
-		jbd_debug(1, "JBD2: Skipping superblock update on recovered sb "
-			"(start %ld, seq %d, errno %d)\n",
-=======
 		jbd2_debug(1, "JBD2: Skipping superblock update on recovered sb "
 			"(start %ld, seq %u, errno %d)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			journal->j_tail, journal->j_tail_sequence,
 			journal->j_errno);
 		journal->j_flags |= JBD2_FLUSHED;
 	} else {
 		/* Lock here to make assertions happy... */
-<<<<<<< HEAD
-		mutex_lock(&journal->j_checkpoint_mutex);
-		/*
-		 * Update log tail information. We use WRITE_FUA since new
-=======
 		mutex_lock_io(&journal->j_checkpoint_mutex);
 		/*
 		 * Update log tail information. We use REQ_FUA since new
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * transaction will start reusing journal space and so we
 		 * must make sure information about current log tail is on
 		 * disk before that.
 		 */
 		jbd2_journal_update_sb_log_tail(journal,
 						journal->j_tail_sequence,
-<<<<<<< HEAD
-						journal->j_tail,
-						WRITE_FUA);
-=======
 						journal->j_tail, REQ_FUA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&journal->j_checkpoint_mutex);
 	}
 	return jbd2_journal_start_thread(journal);
 }
 
-<<<<<<< HEAD
-static int jbd2_write_superblock(journal_t *journal, int write_op)
-{
-	struct buffer_head *bh = journal->j_sb_buffer;
-	int ret;
-
-	trace_jbd2_write_superblock(journal, write_op);
-	if (!(journal->j_flags & JBD2_BARRIER))
-		write_op &= ~(REQ_FUA | REQ_FLUSH);
-	lock_buffer(bh);
-=======
 /*
  * This function expects that the caller will have locked the journal
  * buffer head, and will return with it unlocked
@@ -2409,7 +1807,6 @@ static int jbd2_write_superblock(journal_t *journal, blk_opf_t write_flags)
 
 	trace_jbd2_write_superblock(journal, write_flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buffer_write_io_error(bh)) {
 		/*
 		 * Oh, dear.  A previous attempt to write the journal
@@ -2425,17 +1822,11 @@ static int jbd2_write_superblock(journal_t *journal, blk_opf_t write_flags)
 		clear_buffer_write_io_error(bh);
 		set_buffer_uptodate(bh);
 	}
-<<<<<<< HEAD
-	get_bh(bh);
-	bh->b_end_io = end_buffer_write_sync;
-	ret = submit_bh(write_op, bh);
-=======
 	if (jbd2_journal_has_csum_v2or3(journal))
 		sb->s_checksum = jbd2_superblock_csum(journal, sb);
 	get_bh(bh);
 	bh->b_end_io = end_buffer_write_sync;
 	submit_bh(REQ_OP_WRITE | write_flags, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_on_buffer(bh);
 	if (buffer_write_io_error(bh)) {
 		clear_buffer_write_io_error(bh);
@@ -2443,17 +1834,10 @@ static int jbd2_write_superblock(journal_t *journal, blk_opf_t write_flags)
 		ret = -EIO;
 	}
 	if (ret) {
-<<<<<<< HEAD
-		printk(KERN_ERR "JBD2: Error %d detected when updating "
-		       "journal superblock for %s.\n", ret,
-		       journal->j_devname);
-		jbd2_journal_abort(journal, ret);
-=======
 		printk(KERN_ERR "JBD2: I/O error when updating journal superblock for %s.\n",
 				journal->j_devname);
 		if (!is_journal_aborted(journal))
 			jbd2_journal_abort(journal, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -2464,36 +1848,18 @@ static int jbd2_write_superblock(journal_t *journal, blk_opf_t write_flags)
  * @journal: The journal to update.
  * @tail_tid: TID of the new transaction at the tail of the log
  * @tail_block: The first block of the transaction at the tail of the log
-<<<<<<< HEAD
- * @write_op: With which operation should we write the journal sb
-=======
  * @write_flags: Flags for the journal sb write operation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Update a journal's superblock information about log tail and write it to
  * disk, waiting for the IO to complete.
  */
 int jbd2_journal_update_sb_log_tail(journal_t *journal, tid_t tail_tid,
-<<<<<<< HEAD
-				     unsigned long tail_block, int write_op)
-=======
 				    unsigned long tail_block,
 				    blk_opf_t write_flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	journal_superblock_t *sb = journal->j_superblock;
 	int ret;
 
-<<<<<<< HEAD
-	BUG_ON(!mutex_is_locked(&journal->j_checkpoint_mutex));
-	jbd_debug(1, "JBD2: updating superblock (start %lu, seq %u)\n",
-		  tail_block, tail_tid);
-
-	sb->s_sequence = cpu_to_be32(tail_tid);
-	sb->s_start    = cpu_to_be32(tail_block);
-
-	ret = jbd2_write_superblock(journal, write_op);
-=======
 	if (is_journal_aborted(journal))
 		return -EIO;
 	if (jbd2_check_fs_dev_write_error(journal)) {
@@ -2510,7 +1876,6 @@ int jbd2_journal_update_sb_log_tail(journal_t *journal, tid_t tail_tid,
 	sb->s_start    = cpu_to_be32(tail_block);
 
 	ret = jbd2_write_superblock(journal, write_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -2527,28 +1892,11 @@ out:
 /**
  * jbd2_mark_journal_empty() - Mark on disk journal as empty.
  * @journal: The journal to update.
-<<<<<<< HEAD
-=======
  * @write_flags: Flags for the journal sb write operation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Update a journal's dynamic superblock fields to show that journal is empty.
  * Write updated superblock to disk waiting for IO to complete.
  */
-<<<<<<< HEAD
-static void jbd2_mark_journal_empty(journal_t *journal)
-{
-	journal_superblock_t *sb = journal->j_superblock;
-
-	BUG_ON(!mutex_is_locked(&journal->j_checkpoint_mutex));
-	read_lock(&journal->j_state_lock);
-	/* Is it already empty? */
-	if (sb->s_start == 0) {
-		read_unlock(&journal->j_state_lock);
-		return;
-	}
-	jbd_debug(1, "JBD2: Marking journal as empty (seq %d)\n",
-=======
 static void jbd2_mark_journal_empty(journal_t *journal, blk_opf_t write_flags)
 {
 	journal_superblock_t *sb = journal->j_superblock;
@@ -2562,16 +1910,10 @@ static void jbd2_mark_journal_empty(journal_t *journal, blk_opf_t write_flags)
 	}
 
 	jbd2_debug(1, "JBD2: Marking journal as empty (seq %u)\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  journal->j_tail_sequence);
 
 	sb->s_sequence = cpu_to_be32(journal->j_tail_sequence);
 	sb->s_start    = cpu_to_be32(0);
-<<<<<<< HEAD
-	read_unlock(&journal->j_state_lock);
-
-	jbd2_write_superblock(journal, WRITE_FUA);
-=======
 	sb->s_head     = cpu_to_be32(journal->j_head);
 	if (jbd2_has_feature_fast_commit(journal)) {
 		/*
@@ -2586,7 +1928,6 @@ static void jbd2_mark_journal_empty(journal_t *journal, blk_opf_t write_flags)
 
 	if (had_fast_commit)
 		jbd2_set_feature_fast_commit(journal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Log is no longer empty */
 	write_lock(&journal->j_state_lock);
@@ -2594,8 +1935,6 @@ static void jbd2_mark_journal_empty(journal_t *journal, blk_opf_t write_flags)
 	write_unlock(&journal->j_state_lock);
 }
 
-<<<<<<< HEAD
-=======
 /**
  * __jbd2_journal_erase() - Discard or zeroout journal blocks (excluding superblock)
  * @journal: The journal to erase.
@@ -2697,7 +2036,6 @@ static int __jbd2_journal_erase(journal_t *journal, unsigned int flags)
 
 	return blkdev_issue_flush(journal->j_dev);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * jbd2_journal_update_sb_errno() - Update error in the journal.
@@ -2709,114 +2047,6 @@ static int __jbd2_journal_erase(journal_t *journal, unsigned int flags)
 void jbd2_journal_update_sb_errno(journal_t *journal)
 {
 	journal_superblock_t *sb = journal->j_superblock;
-<<<<<<< HEAD
-
-	read_lock(&journal->j_state_lock);
-	jbd_debug(1, "JBD2: updating superblock error (errno %d)\n",
-		  journal->j_errno);
-	sb->s_errno    = cpu_to_be32(journal->j_errno);
-	read_unlock(&journal->j_state_lock);
-
-	jbd2_write_superblock(journal, WRITE_SYNC);
-}
-EXPORT_SYMBOL(jbd2_journal_update_sb_errno);
-
-/*
- * Read the superblock for a given journal, performing initial
- * validation of the format.
- */
-static int journal_get_superblock(journal_t *journal)
-{
-	struct buffer_head *bh;
-	journal_superblock_t *sb;
-	int err = -EIO;
-
-	bh = journal->j_sb_buffer;
-
-	J_ASSERT(bh != NULL);
-	if (!buffer_uptodate(bh)) {
-		ll_rw_block(READ, 1, &bh);
-		wait_on_buffer(bh);
-		if (!buffer_uptodate(bh)) {
-			printk(KERN_ERR
-				"JBD2: IO error reading journal superblock\n");
-			goto out;
-		}
-	}
-
-	sb = journal->j_superblock;
-
-	err = -EINVAL;
-
-	if (sb->s_header.h_magic != cpu_to_be32(JBD2_MAGIC_NUMBER) ||
-	    sb->s_blocksize != cpu_to_be32(journal->j_blocksize)) {
-		printk(KERN_WARNING "JBD2: no valid journal superblock found\n");
-		goto out;
-	}
-
-	switch(be32_to_cpu(sb->s_header.h_blocktype)) {
-	case JBD2_SUPERBLOCK_V1:
-		journal->j_format_version = 1;
-		break;
-	case JBD2_SUPERBLOCK_V2:
-		journal->j_format_version = 2;
-		break;
-	default:
-		printk(KERN_WARNING "JBD2: unrecognised superblock format ID\n");
-		goto out;
-	}
-
-	if (be32_to_cpu(sb->s_maxlen) < journal->j_maxlen)
-		journal->j_maxlen = be32_to_cpu(sb->s_maxlen);
-	else if (be32_to_cpu(sb->s_maxlen) > journal->j_maxlen) {
-		printk(KERN_WARNING "JBD2: journal file too short\n");
-		goto out;
-	}
-
-	if (be32_to_cpu(sb->s_first) == 0 ||
-	    be32_to_cpu(sb->s_first) >= journal->j_maxlen) {
-		printk(KERN_WARNING
-			"JBD2: Invalid start block of journal: %u\n",
-			be32_to_cpu(sb->s_first));
-		goto out;
-	}
-
-	return 0;
-
-out:
-	journal_fail_superblock(journal);
-	return err;
-}
-
-/*
- * Load the on-disk journal superblock and read the key fields into the
- * journal_t.
- */
-
-static int load_superblock(journal_t *journal)
-{
-	int err;
-	journal_superblock_t *sb;
-
-	err = journal_get_superblock(journal);
-	if (err)
-		return err;
-
-	sb = journal->j_superblock;
-
-	journal->j_tail_sequence = be32_to_cpu(sb->s_sequence);
-	journal->j_tail = be32_to_cpu(sb->s_start);
-	journal->j_first = be32_to_cpu(sb->s_first);
-	journal->j_last = be32_to_cpu(sb->s_maxlen);
-	journal->j_errno = be32_to_cpu(sb->s_errno);
-
-	return 0;
-}
-
-
-/**
- * int jbd2_journal_load() - Read journal from disk.
-=======
 	int errcode;
 
 	lock_buffer(journal->j_sb_buffer);
@@ -2832,7 +2062,6 @@ EXPORT_SYMBOL(jbd2_journal_update_sb_errno);
 
 /**
  * jbd2_journal_load() - Read journal from disk.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: Journal to act on.
  *
  * Given a journal_t structure which tells us which disk blocks contain
@@ -2842,30 +2071,7 @@ EXPORT_SYMBOL(jbd2_journal_update_sb_errno);
 int jbd2_journal_load(journal_t *journal)
 {
 	int err;
-<<<<<<< HEAD
-	journal_superblock_t *sb;
-
-	err = load_superblock(journal);
-	if (err)
-		return err;
-
-	sb = journal->j_superblock;
-	/* If this is a V2 superblock, then we have to check the
-	 * features flags on it. */
-
-	if (journal->j_format_version >= 2) {
-		if ((sb->s_feature_ro_compat &
-		     ~cpu_to_be32(JBD2_KNOWN_ROCOMPAT_FEATURES)) ||
-		    (sb->s_feature_incompat &
-		     ~cpu_to_be32(JBD2_KNOWN_INCOMPAT_FEATURES))) {
-			printk(KERN_WARNING
-				"JBD2: Unrecognised features on journal\n");
-			return -EINVAL;
-		}
-	}
-=======
 	journal_superblock_t *sb = journal->j_superblock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Create a slab for this blocksize
@@ -2876,25 +2082,16 @@ int jbd2_journal_load(journal_t *journal)
 
 	/* Let the recovery code check whether it needs to recover any
 	 * data from the journal. */
-<<<<<<< HEAD
-	if (jbd2_journal_recover(journal))
-		goto recovery_error;
-=======
 	err = jbd2_journal_recover(journal);
 	if (err) {
 		pr_warn("JBD2: journal recovery failed\n");
 		return err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (journal->j_failed_commit) {
 		printk(KERN_ERR "JBD2: journal transaction %u on %s "
 		       "is corrupt.\n", journal->j_failed_commit,
 		       journal->j_devname);
-<<<<<<< HEAD
-		return -EIO;
-	}
-=======
 		return -EFSCORRUPTED;
 	}
 	/*
@@ -2902,27 +2099,10 @@ int jbd2_journal_load(journal_t *journal)
 	 * here to update log tail information with the newest seq.
 	 */
 	journal->j_flags &= ~JBD2_ABORT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OK, we've finished with the dynamic journal bits:
 	 * reinitialise the dynamic contents of the superblock in memory
 	 * and reset them on disk. */
-<<<<<<< HEAD
-	if (journal_reset(journal))
-		goto recovery_error;
-
-	journal->j_flags &= ~JBD2_ABORT;
-	journal->j_flags |= JBD2_LOADED;
-	return 0;
-
-recovery_error:
-	printk(KERN_WARNING "JBD2: recovery failed\n");
-	return -EIO;
-}
-
-/**
- * void jbd2_journal_destroy() - Release a journal_t structure.
-=======
 	err = journal_reset(journal);
 	if (err) {
 		pr_warn("JBD2: journal reset failed\n");
@@ -2935,7 +2115,6 @@ recovery_error:
 
 /**
  * jbd2_journal_destroy() - Release a journal_t structure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: Journal to act on.
  *
  * Release a journal_t structure once it is no longer in use by the
@@ -2959,11 +2138,7 @@ int jbd2_journal_destroy(journal_t *journal)
 	spin_lock(&journal->j_list_lock);
 	while (journal->j_checkpoint_transactions != NULL) {
 		spin_unlock(&journal->j_list_lock);
-<<<<<<< HEAD
-		mutex_lock(&journal->j_checkpoint_mutex);
-=======
 		mutex_lock_io(&journal->j_checkpoint_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = jbd2_log_do_checkpoint(journal);
 		mutex_unlock(&journal->j_checkpoint_mutex);
 		/*
@@ -2983,12 +2158,6 @@ int jbd2_journal_destroy(journal_t *journal)
 	J_ASSERT(journal->j_checkpoint_transactions == NULL);
 	spin_unlock(&journal->j_list_lock);
 
-<<<<<<< HEAD
-	if (journal->j_sb_buffer) {
-		if (!is_journal_aborted(journal)) {
-			mutex_lock(&journal->j_checkpoint_mutex);
-			jbd2_mark_journal_empty(journal);
-=======
 	/*
 	 * OK, all checkpoint transactions have been checked, now check the
 	 * writeback errseq of fs dev and abort the journal if some buffer
@@ -3009,21 +2178,12 @@ int jbd2_journal_destroy(journal_t *journal)
 			write_unlock(&journal->j_state_lock);
 
 			jbd2_mark_journal_empty(journal, REQ_PREFLUSH | REQ_FUA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_unlock(&journal->j_checkpoint_mutex);
 		} else
 			err = -EIO;
 		brelse(journal->j_sb_buffer);
 	}
 
-<<<<<<< HEAD
-	if (journal->j_proc_entry)
-		jbd2_stats_proc_exit(journal);
-	if (journal->j_inode)
-		iput(journal->j_inode);
-	if (journal->j_revoke)
-		jbd2_journal_destroy_revoke(journal);
-=======
 	if (journal->j_shrinker) {
 		percpu_counter_destroy(&journal->j_checkpoint_jh_count);
 		shrinker_free(journal->j_shrinker);
@@ -3036,7 +2196,6 @@ int jbd2_journal_destroy(journal_t *journal)
 	if (journal->j_chksum_driver)
 		crypto_free_shash(journal->j_chksum_driver);
 	kfree(journal->j_fc_wbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(journal->j_wbuf);
 	kfree(journal);
 
@@ -3045,11 +2204,7 @@ int jbd2_journal_destroy(journal_t *journal)
 
 
 /**
-<<<<<<< HEAD
- *int jbd2_journal_check_used_features () - Check if features specified are used.
-=======
  * jbd2_journal_check_used_features() - Check if features specified are used.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: Journal to check.
  * @compat: bitmask of compatible features
  * @ro: bitmask of features that force read-only mount
@@ -3059,26 +2214,14 @@ int jbd2_journal_destroy(journal_t *journal)
  * features.  Return true (non-zero) if it does.
  **/
 
-<<<<<<< HEAD
-int jbd2_journal_check_used_features (journal_t *journal, unsigned long compat,
-=======
 int jbd2_journal_check_used_features(journal_t *journal, unsigned long compat,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 unsigned long ro, unsigned long incompat)
 {
 	journal_superblock_t *sb;
 
 	if (!compat && !ro && !incompat)
 		return 1;
-<<<<<<< HEAD
-	/* Load journal superblock if it is not loaded yet. */
-	if (journal->j_format_version == 0 &&
-	    journal_get_superblock(journal) != 0)
-		return 0;
-	if (journal->j_format_version == 1)
-=======
 	if (!jbd2_format_support_feature(journal))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	sb = journal->j_superblock;
@@ -3092,11 +2235,7 @@ int jbd2_journal_check_used_features(journal_t *journal, unsigned long compat,
 }
 
 /**
-<<<<<<< HEAD
- * int jbd2_journal_check_available_features() - Check feature set in journalling layer
-=======
  * jbd2_journal_check_available_features() - Check feature set in journalling layer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: Journal to check.
  * @compat: bitmask of compatible features
  * @ro: bitmask of features that force read-only mount
@@ -3106,25 +2245,13 @@ int jbd2_journal_check_used_features(journal_t *journal, unsigned long compat,
  * all of a given set of features on this journal.  Return true
  * (non-zero) if it can. */
 
-<<<<<<< HEAD
-int jbd2_journal_check_available_features (journal_t *journal, unsigned long compat,
-=======
 int jbd2_journal_check_available_features(journal_t *journal, unsigned long compat,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      unsigned long ro, unsigned long incompat)
 {
 	if (!compat && !ro && !incompat)
 		return 1;
 
-<<<<<<< HEAD
-	/* We can support any known requested features iff the
-	 * superblock is in version 2.  Otherwise we fail to support any
-	 * extended sb features. */
-
-	if (journal->j_format_version != 2)
-=======
 	if (!jbd2_format_support_feature(journal))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if ((compat   & JBD2_KNOWN_COMPAT_FEATURES) == compat &&
@@ -3135,10 +2262,6 @@ int jbd2_journal_check_available_features(journal_t *journal, unsigned long comp
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
- * int jbd2_journal_set_features () - Mark a given journal feature in the superblock
-=======
 static int
 jbd2_journal_initialize_fast_commit(journal_t *journal)
 {
@@ -3170,7 +2293,6 @@ jbd2_journal_initialize_fast_commit(journal_t *journal)
 
 /**
  * jbd2_journal_set_features() - Mark a given journal feature in the superblock
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: Journal to act on.
  * @compat: bitmask of compatible features
  * @ro: bitmask of features that force read-only mount
@@ -3181,11 +2303,6 @@ jbd2_journal_initialize_fast_commit(journal_t *journal)
  *
  */
 
-<<<<<<< HEAD
-int jbd2_journal_set_features (journal_t *journal, unsigned long compat,
-			  unsigned long ro, unsigned long incompat)
-{
-=======
 int jbd2_journal_set_features(journal_t *journal, unsigned long compat,
 			  unsigned long ro, unsigned long incompat)
 {
@@ -3193,7 +2310,6 @@ int jbd2_journal_set_features(journal_t *journal, unsigned long compat,
 		((incompat & (f)) && !(sb->s_feature_incompat & cpu_to_be32(f)))
 #define COMPAT_FEATURE_ON(f) \
 		((compat & (f)) && !(sb->s_feature_compat & cpu_to_be32(f)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	journal_superblock_t *sb;
 
 	if (jbd2_journal_check_used_features(journal, compat, ro, incompat))
@@ -3202,9 +2318,6 @@ int jbd2_journal_set_features(journal_t *journal, unsigned long compat,
 	if (!jbd2_journal_check_available_features(journal, compat, ro, incompat))
 		return 0;
 
-<<<<<<< HEAD
-	jbd_debug(1, "Setting new features 0x%lx/0x%lx/0x%lx\n",
-=======
 	/* If enabling v2 checksums, turn on v3 instead */
 	if (incompat & JBD2_FEATURE_INCOMPAT_CSUM_V2) {
 		incompat &= ~JBD2_FEATURE_INCOMPAT_CSUM_V2;
@@ -3217,22 +2330,10 @@ int jbd2_journal_set_features(journal_t *journal, unsigned long compat,
 		compat &= ~JBD2_FEATURE_COMPAT_CHECKSUM;
 
 	jbd2_debug(1, "Setting new features 0x%lx/0x%lx/0x%lx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  compat, ro, incompat);
 
 	sb = journal->j_superblock;
 
-<<<<<<< HEAD
-	sb->s_feature_compat    |= cpu_to_be32(compat);
-	sb->s_feature_ro_compat |= cpu_to_be32(ro);
-	sb->s_feature_incompat  |= cpu_to_be32(incompat);
-
-	return 1;
-}
-
-/*
- * jbd2_journal_clear_features () - Clear a given journal feature in the
-=======
 	if (incompat & JBD2_FEATURE_INCOMPAT_FAST_COMMIT) {
 		if (jbd2_journal_initialize_fast_commit(journal)) {
 			pr_err("JBD2: Cannot enable fast commits.\n");
@@ -3283,7 +2384,6 @@ int jbd2_journal_set_features(journal_t *journal, unsigned long compat,
 
 /*
  * jbd2_journal_clear_features() - Clear a given journal feature in the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 				    superblock
  * @journal: Journal to act on.
  * @compat: bitmask of compatible features
@@ -3298,11 +2398,7 @@ void jbd2_journal_clear_features(journal_t *journal, unsigned long compat,
 {
 	journal_superblock_t *sb;
 
-<<<<<<< HEAD
-	jbd_debug(1, "Clear features 0x%lx/0x%lx/0x%lx\n",
-=======
 	jbd2_debug(1, "Clear features 0x%lx/0x%lx/0x%lx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  compat, ro, incompat);
 
 	sb = journal->j_superblock;
@@ -3310,26 +2406,12 @@ void jbd2_journal_clear_features(journal_t *journal, unsigned long compat,
 	sb->s_feature_compat    &= ~cpu_to_be32(compat);
 	sb->s_feature_ro_compat &= ~cpu_to_be32(ro);
 	sb->s_feature_incompat  &= ~cpu_to_be32(incompat);
-<<<<<<< HEAD
-=======
 	journal->j_revoke_records_per_block =
 				journal_revoke_records_per_block(journal);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(jbd2_journal_clear_features);
 
 /**
-<<<<<<< HEAD
- * int jbd2_journal_flush () - Flush journal
- * @journal: Journal to act on.
- *
- * Flush all data for a given journal to disk and empty the journal.
- * Filesystems can use this when remounting readonly to ensure that
- * recovery does not need to happen on remount.
- */
-
-int jbd2_journal_flush(journal_t *journal)
-=======
  * jbd2_journal_flush() - Flush journal
  * @journal: Journal to act on.
  * @flags: optional operation on the journal blocks after the flush (see below)
@@ -3344,7 +2426,6 @@ int jbd2_journal_flush(journal_t *journal)
  *	JBD2_JOURNAL_FLUSH_ZEROOUT: issues zeroouts for the journal blocks
  */
 int jbd2_journal_flush(journal_t *journal, unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	transaction_t *transaction = NULL;
@@ -3372,11 +2453,7 @@ int jbd2_journal_flush(journal_t *journal, unsigned int flags)
 	spin_lock(&journal->j_list_lock);
 	while (!err && journal->j_checkpoint_transactions != NULL) {
 		spin_unlock(&journal->j_list_lock);
-<<<<<<< HEAD
-		mutex_lock(&journal->j_checkpoint_mutex);
-=======
 		mutex_lock_io(&journal->j_checkpoint_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = jbd2_log_do_checkpoint(journal);
 		mutex_unlock(&journal->j_checkpoint_mutex);
 		spin_lock(&journal->j_list_lock);
@@ -3386,11 +2463,7 @@ int jbd2_journal_flush(journal_t *journal, unsigned int flags)
 	if (is_journal_aborted(journal))
 		return -EIO;
 
-<<<<<<< HEAD
-	mutex_lock(&journal->j_checkpoint_mutex);
-=======
 	mutex_lock_io(&journal->j_checkpoint_mutex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err) {
 		err = jbd2_cleanup_journal_tail(journal);
 		if (err < 0) {
@@ -3405,15 +2478,11 @@ int jbd2_journal_flush(journal_t *journal, unsigned int flags)
 	 * the magic code for a fully-recovered superblock.  Any future
 	 * commits of data to the journal will restore the current
 	 * s_start value. */
-<<<<<<< HEAD
-	jbd2_mark_journal_empty(journal);
-=======
 	jbd2_mark_journal_empty(journal, REQ_FUA);
 
 	if (flags)
 		err = __jbd2_journal_erase(journal, flags);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&journal->j_checkpoint_mutex);
 	write_lock(&journal->j_state_lock);
 	J_ASSERT(!journal->j_running_transaction);
@@ -3427,11 +2496,7 @@ out:
 }
 
 /**
-<<<<<<< HEAD
- * int jbd2_journal_wipe() - Wipe journal contents
-=======
  * jbd2_journal_wipe() - Wipe journal contents
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: Journal to act on.
  * @write: flag (see below)
  *
@@ -3445,25 +2510,12 @@ out:
 
 int jbd2_journal_wipe(journal_t *journal, int write)
 {
-<<<<<<< HEAD
-	int err = 0;
-
-	J_ASSERT (!(journal->j_flags & JBD2_LOADED));
-
-	err = load_superblock(journal);
-	if (err)
-		return err;
-
-	if (!journal->j_tail)
-		goto no_recovery;
-=======
 	int err;
 
 	J_ASSERT (!(journal->j_flags & JBD2_LOADED));
 
 	if (!journal->j_tail)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_WARNING "JBD2: %s recovery information on journal\n",
 		write ? "Clearing" : "Ignoring");
@@ -3471,70 +2523,6 @@ int jbd2_journal_wipe(journal_t *journal, int write)
 	err = jbd2_journal_skip_recovery(journal);
 	if (write) {
 		/* Lock to make assertions happy... */
-<<<<<<< HEAD
-		mutex_lock(&journal->j_checkpoint_mutex);
-		jbd2_mark_journal_empty(journal);
-		mutex_unlock(&journal->j_checkpoint_mutex);
-	}
-
- no_recovery:
-	return err;
-}
-
-/*
- * Journal abort has very specific semantics, which we describe
- * for journal abort.
- *
- * Two internal functions, which provide abort to the jbd layer
- * itself are here.
- */
-
-/*
- * Quick version for internal journal use (doesn't lock the journal).
- * Aborts hard --- we mark the abort as occurred, but do _nothing_ else,
- * and don't attempt to make any other journal updates.
- */
-void __jbd2_journal_abort_hard(journal_t *journal)
-{
-	transaction_t *transaction;
-
-	if (journal->j_flags & JBD2_ABORT)
-		return;
-
-	printk(KERN_ERR "Aborting journal on device %s.\n",
-	       journal->j_devname);
-
-	write_lock(&journal->j_state_lock);
-	journal->j_flags |= JBD2_ABORT;
-	transaction = journal->j_running_transaction;
-	if (transaction)
-		__jbd2_log_start_commit(journal, transaction->t_tid);
-	write_unlock(&journal->j_state_lock);
-}
-
-/* Soft abort: record the abort error status in the journal superblock,
- * but don't do any other IO. */
-static void __journal_abort_soft (journal_t *journal, int errno)
-{
-	if (journal->j_flags & JBD2_ABORT)
-		return;
-
-	if (!journal->j_errno)
-		journal->j_errno = errno;
-
-	__jbd2_journal_abort_hard(journal);
-
-	if (errno) {
-		jbd2_journal_update_sb_errno(journal);
-		write_lock(&journal->j_state_lock);
-		journal->j_flags |= JBD2_REC_ERR;
-		write_unlock(&journal->j_state_lock);
-	}
-}
-
-/**
- * void jbd2_journal_abort () - Shutdown the journal immediately.
-=======
 		mutex_lock_io(&journal->j_checkpoint_mutex);
 		jbd2_mark_journal_empty(journal, REQ_FUA);
 		mutex_unlock(&journal->j_checkpoint_mutex);
@@ -3545,7 +2533,6 @@ static void __journal_abort_soft (journal_t *journal, int errno)
 
 /**
  * jbd2_journal_abort () - Shutdown the journal immediately.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: the journal to shutdown.
  * @errno:   an error number to record in the journal indicating
  *           the reason for the shutdown.
@@ -3583,25 +2570,10 @@ static void __journal_abort_soft (journal_t *journal, int errno)
  * failure to disk.  ext3_error, for example, now uses this
  * functionality.
  *
-<<<<<<< HEAD
- * Errors which originate from within the journaling layer will NOT
- * supply an errno; a null errno implies that absolutely no further
- * writes are done to the journal (unless there are any already in
- * progress).
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 void jbd2_journal_abort(journal_t *journal, int errno)
 {
-<<<<<<< HEAD
-	__journal_abort_soft(journal, errno);
-}
-
-/**
- * int jbd2_journal_errno () - returns the journal's error state.
-=======
 	transaction_t *transaction;
 
 	/*
@@ -3652,7 +2624,6 @@ void jbd2_journal_abort(journal_t *journal, int errno)
 
 /**
  * jbd2_journal_errno() - returns the journal's error state.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: journal to examine.
  *
  * This is the errno number set with jbd2_journal_abort(), the last
@@ -3676,11 +2647,7 @@ int jbd2_journal_errno(journal_t *journal)
 }
 
 /**
-<<<<<<< HEAD
- * int jbd2_journal_clear_err () - clears the journal's error state
-=======
  * jbd2_journal_clear_err() - clears the journal's error state
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: journal to act on.
  *
  * An error must be cleared or acked to take a FS out of readonly
@@ -3700,11 +2667,7 @@ int jbd2_journal_clear_err(journal_t *journal)
 }
 
 /**
-<<<<<<< HEAD
- * void jbd2_journal_ack_err() - Ack journal err.
-=======
  * jbd2_journal_ack_err() - Ack journal err.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @journal: journal to act on.
  *
  * An error must be cleared or acked to take a FS out of readonly
@@ -3720,11 +2683,7 @@ void jbd2_journal_ack_err(journal_t *journal)
 
 int jbd2_journal_blocks_per_page(struct inode *inode)
 {
-<<<<<<< HEAD
-	return 1 << (PAGE_CACHE_SHIFT - inode->i_sb->s_blocksize_bits);
-=======
 	return 1 << (PAGE_SHIFT - inode->i_sb->s_blocksize_bits);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3732,12 +2691,6 @@ int jbd2_journal_blocks_per_page(struct inode *inode)
  */
 size_t journal_tag_bytes(journal_t *journal)
 {
-<<<<<<< HEAD
-	if (JBD2_HAS_INCOMPAT_FEATURE(journal, JBD2_FEATURE_INCOMPAT_64BIT))
-		return JBD2_TAG_SIZE64;
-	else
-		return JBD2_TAG_SIZE32;
-=======
 	size_t sz;
 
 	if (jbd2_has_feature_csum3(journal))
@@ -3752,7 +2705,6 @@ size_t journal_tag_bytes(journal_t *journal)
 		return sz;
 	else
 		return sz - sizeof(__u32);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3784,12 +2736,7 @@ static void jbd2_journal_destroy_slabs(void)
 	int i;
 
 	for (i = 0; i < JBD2_MAX_SLABS; i++) {
-<<<<<<< HEAD
-		if (jbd2_slab[i])
-			kmem_cache_destroy(jbd2_slab[i]);
-=======
 		kmem_cache_destroy(jbd2_slab[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jbd2_slab[i] = NULL;
 	}
 }
@@ -3842,25 +2789,10 @@ void *jbd2_alloc(size_t size, gfp_t flags)
 
 	BUG_ON(size & (size-1)); /* Must be a power of 2 */
 
-<<<<<<< HEAD
-	flags |= __GFP_REPEAT;
-	if (size == PAGE_SIZE)
-		ptr = (void *)__get_free_pages(flags, 0);
-	else if (size > PAGE_SIZE) {
-		int order = get_order(size);
-
-		if (order < 3)
-			ptr = (void *)__get_free_pages(flags, order);
-		else
-			ptr = vmalloc(size);
-	} else
-		ptr = kmem_cache_alloc(get_slab(size), flags);
-=======
 	if (size < PAGE_SIZE)
 		ptr = kmem_cache_alloc(get_slab(size), flags);
 	else
 		ptr = (void *)__get_free_pages(flags, get_order(size));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check alignment; SLUB has gotten this wrong in the past,
 	 * and this can lead to user data corruption! */
@@ -3871,27 +2803,10 @@ void *jbd2_alloc(size_t size, gfp_t flags)
 
 void jbd2_free(void *ptr, size_t size)
 {
-<<<<<<< HEAD
-	if (size == PAGE_SIZE) {
-		free_pages((unsigned long)ptr, 0);
-		return;
-	}
-	if (size > PAGE_SIZE) {
-		int order = get_order(size);
-
-		if (order < 3)
-			free_pages((unsigned long)ptr, order);
-		else
-			vfree(ptr);
-		return;
-	}
-	kmem_cache_free(get_slab(size), ptr);
-=======
 	if (size < PAGE_SIZE)
 		kmem_cache_free(get_slab(size), ptr);
 	else
 		free_pages((unsigned long)ptr, get_order(size));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -3902,24 +2817,6 @@ static struct kmem_cache *jbd2_journal_head_cache;
 static atomic_t nr_journal_heads = ATOMIC_INIT(0);
 #endif
 
-<<<<<<< HEAD
-static int jbd2_journal_init_journal_head_cache(void)
-{
-	int retval;
-
-	J_ASSERT(jbd2_journal_head_cache == NULL);
-	jbd2_journal_head_cache = kmem_cache_create("jbd2_journal_head",
-				sizeof(struct journal_head),
-				0,		/* offset */
-				SLAB_TEMPORARY,	/* flags */
-				NULL);		/* ctor */
-	retval = 0;
-	if (!jbd2_journal_head_cache) {
-		retval = -ENOMEM;
-		printk(KERN_EMERG "JBD2: no memory for journal_head cache\n");
-	}
-	return retval;
-=======
 static int __init jbd2_journal_init_journal_head_cache(void)
 {
 	J_ASSERT(!jbd2_journal_head_cache);
@@ -3933,20 +2830,12 @@ static int __init jbd2_journal_init_journal_head_cache(void)
 		return -ENOMEM;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void jbd2_journal_destroy_journal_head_cache(void)
 {
-<<<<<<< HEAD
-	if (jbd2_journal_head_cache) {
-		kmem_cache_destroy(jbd2_journal_head_cache);
-		jbd2_journal_head_cache = NULL;
-	}
-=======
 	kmem_cache_destroy(jbd2_journal_head_cache);
 	jbd2_journal_head_cache = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3959,17 +2848,6 @@ static struct journal_head *journal_alloc_journal_head(void)
 #ifdef CONFIG_JBD2_DEBUG
 	atomic_inc(&nr_journal_heads);
 #endif
-<<<<<<< HEAD
-	ret = kmem_cache_alloc(jbd2_journal_head_cache, GFP_NOFS);
-	if (!ret) {
-		jbd_debug(1, "out of memory for journal_head\n");
-		pr_notice_ratelimited("ENOMEM in %s, retrying.\n", __func__);
-		while (!ret) {
-			yield();
-			ret = kmem_cache_alloc(jbd2_journal_head_cache, GFP_NOFS);
-		}
-	}
-=======
 	ret = kmem_cache_zalloc(jbd2_journal_head_cache, GFP_NOFS);
 	if (!ret) {
 		jbd2_debug(1, "out of memory for journal_head\n");
@@ -3979,7 +2857,6 @@ static struct journal_head *journal_alloc_journal_head(void)
 	}
 	if (ret)
 		spin_lock_init(&ret->b_state_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -4039,15 +2916,8 @@ struct journal_head *jbd2_journal_add_journal_head(struct buffer_head *bh)
 	struct journal_head *new_jh = NULL;
 
 repeat:
-<<<<<<< HEAD
-	if (!buffer_jbd(bh)) {
-		new_jh = journal_alloc_journal_head();
-		memset(new_jh, 0, sizeof(*new_jh));
-	}
-=======
 	if (!buffer_jbd(bh))
 		new_jh = journal_alloc_journal_head();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jbd_lock_bh_journal_head(bh);
 	if (buffer_jbd(bh)) {
@@ -4055,11 +2925,7 @@ repeat:
 	} else {
 		J_ASSERT_BH(bh,
 			(atomic_read(&bh->b_count) > 0) ||
-<<<<<<< HEAD
-			(bh->b_page && bh->b_page->mapping));
-=======
 			(bh->b_folio && bh->b_folio->mapping));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!new_jh) {
 			jbd_unlock_bh_journal_head(bh);
@@ -4097,19 +2963,12 @@ struct journal_head *jbd2_journal_grab_journal_head(struct buffer_head *bh)
 	jbd_unlock_bh_journal_head(bh);
 	return jh;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(jbd2_journal_grab_journal_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __journal_remove_journal_head(struct buffer_head *bh)
 {
 	struct journal_head *jh = bh2jh(bh);
 
-<<<<<<< HEAD
-	J_ASSERT_JH(jh, jh->b_jcount >= 0);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	J_ASSERT_JH(jh, jh->b_transaction == NULL);
 	J_ASSERT_JH(jh, jh->b_next_transaction == NULL);
 	J_ASSERT_JH(jh, jh->b_cp_transaction == NULL);
@@ -4117,19 +2976,6 @@ static void __journal_remove_journal_head(struct buffer_head *bh)
 	J_ASSERT_BH(bh, buffer_jbd(bh));
 	J_ASSERT_BH(bh, jh2bh(jh) == bh);
 	BUFFER_TRACE(bh, "remove journal_head");
-<<<<<<< HEAD
-	if (jh->b_frozen_data) {
-		printk(KERN_WARNING "%s: freeing b_frozen_data\n", __func__);
-		jbd2_free(jh->b_frozen_data, bh->b_size);
-	}
-	if (jh->b_committed_data) {
-		printk(KERN_WARNING "%s: freeing b_committed_data\n", __func__);
-		jbd2_free(jh->b_committed_data, bh->b_size);
-	}
-	bh->b_private = NULL;
-	jh->b_bh = NULL;	/* debug, really */
-	clear_buffer_jbd(bh);
-=======
 
 	/* Unlink before dropping the lock */
 	bh->b_private = NULL;
@@ -4147,7 +2993,6 @@ static void journal_release_journal_head(struct journal_head *jh, size_t b_size)
 		printk(KERN_WARNING "%s: freeing b_committed_data\n", __func__);
 		jbd2_free(jh->b_committed_data, b_size);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	journal_free_journal_head(jh);
 }
 
@@ -4165,12 +3010,6 @@ void jbd2_journal_put_journal_head(struct journal_head *jh)
 	if (!jh->b_jcount) {
 		__journal_remove_journal_head(bh);
 		jbd_unlock_bh_journal_head(bh);
-<<<<<<< HEAD
-		__brelse(bh);
-	} else
-		jbd_unlock_bh_journal_head(bh);
-}
-=======
 		journal_release_journal_head(jh, bh->b_size);
 		__brelse(bh);
 	} else {
@@ -4178,7 +3017,6 @@ void jbd2_journal_put_journal_head(struct journal_head *jh)
 	}
 }
 EXPORT_SYMBOL(jbd2_journal_put_journal_head);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialize jbd inode head
@@ -4189,11 +3027,8 @@ void jbd2_journal_init_jbd_inode(struct jbd2_inode *jinode, struct inode *inode)
 	jinode->i_next_transaction = NULL;
 	jinode->i_vfs_inode = inode;
 	jinode->i_flags = 0;
-<<<<<<< HEAD
-=======
 	jinode->i_dirty_start = 0;
 	jinode->i_dirty_end = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&jinode->i_list);
 }
 
@@ -4210,16 +3045,6 @@ void jbd2_journal_release_jbd_inode(journal_t *journal,
 restart:
 	spin_lock(&journal->j_list_lock);
 	/* Is commit writing out inode - we have to wait */
-<<<<<<< HEAD
-	if (test_bit(__JI_COMMIT_RUNNING, &jinode->i_flags)) {
-		wait_queue_head_t *wq;
-		DEFINE_WAIT_BIT(wait, &jinode->i_flags, __JI_COMMIT_RUNNING);
-		wq = bit_waitqueue(&jinode->i_flags, __JI_COMMIT_RUNNING);
-		prepare_to_wait(wq, &wait.wait, TASK_UNINTERRUPTIBLE);
-		spin_unlock(&journal->j_list_lock);
-		schedule();
-		finish_wait(wq, &wait.wait);
-=======
 	if (jinode->i_flags & JI_COMMIT_RUNNING) {
 		wait_queue_head_t *wq;
 		DEFINE_WAIT_BIT(wait, &jinode->i_flags, __JI_COMMIT_RUNNING);
@@ -4228,7 +3053,6 @@ restart:
 		spin_unlock(&journal->j_list_lock);
 		schedule();
 		finish_wait(wq, &wait.wq_entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto restart;
 	}
 
@@ -4239,48 +3063,6 @@ restart:
 	spin_unlock(&journal->j_list_lock);
 }
 
-<<<<<<< HEAD
-/*
- * debugfs tunables
- */
-#ifdef CONFIG_JBD2_DEBUG
-u8 jbd2_journal_enable_debug __read_mostly;
-EXPORT_SYMBOL(jbd2_journal_enable_debug);
-
-#define JBD2_DEBUG_NAME "jbd2-debug"
-
-static struct dentry *jbd2_debugfs_dir;
-static struct dentry *jbd2_debug;
-
-static void __init jbd2_create_debugfs_entry(void)
-{
-	jbd2_debugfs_dir = debugfs_create_dir("jbd2", NULL);
-	if (jbd2_debugfs_dir)
-		jbd2_debug = debugfs_create_u8(JBD2_DEBUG_NAME,
-					       S_IRUGO | S_IWUSR,
-					       jbd2_debugfs_dir,
-					       &jbd2_journal_enable_debug);
-}
-
-static void __exit jbd2_remove_debugfs_entry(void)
-{
-	debugfs_remove(jbd2_debug);
-	debugfs_remove(jbd2_debugfs_dir);
-}
-
-#else
-
-static void __init jbd2_create_debugfs_entry(void)
-{
-}
-
-static void __exit jbd2_remove_debugfs_entry(void)
-{
-}
-
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PROC_FS
 
@@ -4306,40 +3088,17 @@ static void __exit jbd2_remove_jbd_stats_proc_entry(void)
 
 struct kmem_cache *jbd2_handle_cache, *jbd2_inode_cache;
 
-<<<<<<< HEAD
-static int __init jbd2_journal_init_handle_cache(void)
-{
-	jbd2_handle_cache = KMEM_CACHE(jbd2_journal_handle, SLAB_TEMPORARY);
-	if (jbd2_handle_cache == NULL) {
-		printk(KERN_EMERG "JBD2: failed to create handle cache\n");
-		return -ENOMEM;
-	}
-	jbd2_inode_cache = KMEM_CACHE(jbd2_inode, 0);
-	if (jbd2_inode_cache == NULL) {
-		printk(KERN_EMERG "JBD2: failed to create inode cache\n");
-		kmem_cache_destroy(jbd2_handle_cache);
-=======
 static int __init jbd2_journal_init_inode_cache(void)
 {
 	J_ASSERT(!jbd2_inode_cache);
 	jbd2_inode_cache = KMEM_CACHE(jbd2_inode, 0);
 	if (!jbd2_inode_cache) {
 		pr_emerg("JBD2: failed to create inode cache\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static void jbd2_journal_destroy_handle_cache(void)
-{
-	if (jbd2_handle_cache)
-		kmem_cache_destroy(jbd2_handle_cache);
-	if (jbd2_inode_cache)
-		kmem_cache_destroy(jbd2_inode_cache);
-
-=======
 static int __init jbd2_journal_init_handle_cache(void)
 {
 	J_ASSERT(!jbd2_handle_cache);
@@ -4361,7 +3120,6 @@ static void jbd2_journal_destroy_handle_cache(void)
 {
 	kmem_cache_destroy(jbd2_handle_cache);
 	jbd2_handle_cache = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4372,40 +3130,27 @@ static int __init journal_init_caches(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	ret = jbd2_journal_init_revoke_caches();
-=======
 	ret = jbd2_journal_init_revoke_record_cache();
 	if (ret == 0)
 		ret = jbd2_journal_init_revoke_table_cache();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == 0)
 		ret = jbd2_journal_init_journal_head_cache();
 	if (ret == 0)
 		ret = jbd2_journal_init_handle_cache();
 	if (ret == 0)
-<<<<<<< HEAD
-=======
 		ret = jbd2_journal_init_inode_cache();
 	if (ret == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = jbd2_journal_init_transaction_cache();
 	return ret;
 }
 
 static void jbd2_journal_destroy_caches(void)
 {
-<<<<<<< HEAD
-	jbd2_journal_destroy_revoke_caches();
-	jbd2_journal_destroy_journal_head_cache();
-	jbd2_journal_destroy_handle_cache();
-=======
 	jbd2_journal_destroy_revoke_record_cache();
 	jbd2_journal_destroy_revoke_table_cache();
 	jbd2_journal_destroy_journal_head_cache();
 	jbd2_journal_destroy_handle_cache();
 	jbd2_journal_destroy_inode_cache();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jbd2_journal_destroy_transaction_cache();
 	jbd2_journal_destroy_slabs();
 }
@@ -4418,10 +3163,6 @@ static int __init journal_init(void)
 
 	ret = journal_init_caches();
 	if (ret == 0) {
-<<<<<<< HEAD
-		jbd2_create_debugfs_entry();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jbd2_create_jbd_stats_proc_entry();
 	} else {
 		jbd2_journal_destroy_caches();
@@ -4434,14 +3175,8 @@ static void __exit journal_exit(void)
 #ifdef CONFIG_JBD2_DEBUG
 	int n = atomic_read(&nr_journal_heads);
 	if (n)
-<<<<<<< HEAD
-		printk(KERN_EMERG "JBD2: leaked %d journal_heads!\n", n);
-#endif
-	jbd2_remove_debugfs_entry();
-=======
 		printk(KERN_ERR "JBD2: leaked %d journal_heads!\n", n);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jbd2_remove_jbd_stats_proc_entry();
 	jbd2_journal_destroy_caches();
 }

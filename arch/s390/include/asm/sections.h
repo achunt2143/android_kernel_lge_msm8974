@@ -1,15 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _S390_SECTIONS_H
 #define _S390_SECTIONS_H
 
 #include <asm-generic/sections.h>
 
-<<<<<<< HEAD
-extern char _eshared[], _ehead[];
-=======
 /*
  * .boot.data section contains variables "shared" between the decompressor and
  * the decompressed kernel. The decompressor will store values in them, and
@@ -31,6 +25,5 @@ extern char _eshared[], _ehead[];
 
 extern char *__samode31, *__eamode31;
 extern char *__stext_amode31, *__etext_amode31;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

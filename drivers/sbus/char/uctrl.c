@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* uctrl.c: TS102 Microcontroller interface on Tadpole Sparcbook 3
  *
  * Copyright 1999 Derrick J Brashear (shadow@dementia.org)
@@ -15,29 +12,15 @@
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/ioport.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/miscdevice.h>
-#include <linux/mm.h>
-#include <linux/of.h>
-#include <linux/of_device.h>
-=======
 #include <linux/miscdevice.h>
 #include <linux/mm.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/openprom.h>
 #include <asm/oplib.h>
 #include <asm/irq.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-
-#define UCTRL_MINOR	174
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEBUG 1
 #ifdef DEBUG
@@ -361,11 +344,7 @@ static void uctrl_get_external_status(struct uctrl_driver *driver)
 	
 }
 
-<<<<<<< HEAD
-static int __devinit uctrl_probe(struct platform_device *op)
-=======
 static int uctrl_probe(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uctrl_driver *p;
 	int err = -ENOMEM;
@@ -398,13 +377,8 @@ static int uctrl_probe(struct platform_device *op)
 	}
 
 	sbus_writel(UCTRL_INTR_RXNE_REQ|UCTRL_INTR_RXNE_MSK, &p->regs->uctrl_intr);
-<<<<<<< HEAD
-	printk(KERN_INFO "%s: uctrl regs[0x%p] (irq %d)\n",
-	       op->dev.of_node->full_name, p->regs, p->irq);
-=======
 	printk(KERN_INFO "%pOF: uctrl regs[0x%p] (irq %d)\n",
 	       op->dev.of_node, p->regs, p->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uctrl_get_event_status(p);
 	uctrl_get_external_status(p);
 
@@ -425,11 +399,7 @@ out_free:
 	goto out;
 }
 
-<<<<<<< HEAD
-static int __devexit uctrl_remove(struct platform_device *op)
-=======
 static void uctrl_remove(struct platform_device *op)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uctrl_driver *p = dev_get_drvdata(&op->dev);
 
@@ -439,10 +409,6 @@ static void uctrl_remove(struct platform_device *op)
 		of_iounmap(&op->resource[0], p->regs, resource_size(&op->resource[0]));
 		kfree(p);
 	}
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id uctrl_match[] = {
@@ -456,18 +422,10 @@ MODULE_DEVICE_TABLE(of, uctrl_match);
 static struct platform_driver uctrl_driver = {
 	.driver = {
 		.name = "uctrl",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-		.of_match_table = uctrl_match,
-	},
-	.probe		= uctrl_probe,
-	.remove		= __devexit_p(uctrl_remove),
-=======
 		.of_match_table = uctrl_match,
 	},
 	.probe		= uctrl_probe,
 	.remove_new	= uctrl_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

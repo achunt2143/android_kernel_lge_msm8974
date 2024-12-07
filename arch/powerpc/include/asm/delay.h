@@ -1,29 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_DELAY_H
 #define _ASM_POWERPC_DELAY_H
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-=======
 #include <linux/processor.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/time.h>
 
 /*
  * Copyright 1996, Paul Mackerras.
  * Copyright (C) 2009 Freescale Semiconductor, Inc. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * PPC64 Support added by Dave Engebretsen, Todd Inglett, Mike Corrigan,
  * Anton Blanchard.
  */
@@ -68,14 +54,6 @@ extern void udelay(unsigned long usecs);
 ({                                                                             \
 	typeof(condition) __ret;                                               \
 	unsigned long __loops = tb_ticks_per_usec * timeout;                   \
-<<<<<<< HEAD
-	unsigned long __start = get_tbl();                                     \
-	while (!(__ret = (condition)) && (tb_ticks_since(__start) <= __loops)) \
-		if (delay)                                                     \
-			udelay(delay);                                         \
-		else                                                           \
-			cpu_relax();                                           \
-=======
 	unsigned long __start = mftb();                                     \
                                                                                \
 	if (delay) {                                                           \
@@ -89,7 +67,6 @@ extern void udelay(unsigned long usecs);
 			spin_cpu_relax();                                      \
 		spin_end();                                                    \
 	}                                                                      \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!__ret)                                                            \
 		__ret = (condition);                                           \
 	__ret;		                                                       \

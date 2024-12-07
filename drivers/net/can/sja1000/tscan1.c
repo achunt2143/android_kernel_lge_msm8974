@@ -1,38 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tscan1.c: driver for Technologic Systems TS-CAN1 PC104 boards
  *
  * Copyright 2010 Andre B. Oliveira
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * References:
- * - Getting started with TS-CAN1, Technologic Systems, Jun 2009
- *	http://www.embeddedarm.com/documentation/ts-can1-manual.pdf
-=======
  */
 
 /* References:
  * - Getting started with TS-CAN1, Technologic Systems, Feb 2022
  *	https://docs.embeddedts.com/TS-CAN1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -83,11 +58,7 @@ MODULE_LICENSE("GPL");
 #define TSCAN1_SJA1000_XTAL 16000000
 
 /* SJA1000 IO base addresses */
-<<<<<<< HEAD
-static const unsigned short tscan1_sja1000_addresses[] __devinitconst = {
-=======
 static const unsigned short tscan1_sja1000_addresses[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x100, 0x120, 0x180, 0x1a0, 0x200, 0x240, 0x280, 0x320
 };
 
@@ -104,11 +75,7 @@ static void tscan1_write(const struct sja1000_priv *priv, int reg, u8 val)
 }
 
 /* Probe for a TS-CAN1 board with JP2:JP1 jumper setting ID */
-<<<<<<< HEAD
-static int __devinit tscan1_probe(struct device *dev, unsigned id)
-=======
 static int tscan1_probe(struct device *dev, unsigned id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev;
 	struct sja1000_priv *priv;
@@ -191,11 +158,7 @@ static int tscan1_probe(struct device *dev, unsigned id)
 	return -ENXIO;
 }
 
-<<<<<<< HEAD
-static int __devexit tscan1_remove(struct device *dev, unsigned id /*unused*/)
-=======
 static void tscan1_remove(struct device *dev, unsigned id /*unused*/)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev;
 	struct sja1000_priv *priv;
@@ -215,37 +178,14 @@ static void tscan1_remove(struct device *dev, unsigned id /*unused*/)
 	release_region(pld_base, TSCAN1_PLD_SIZE);
 
 	free_sja1000dev(netdev);
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isa_driver tscan1_isa_driver = {
 	.probe = tscan1_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(tscan1_remove),
-=======
 	.remove = tscan1_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "tscan1",
 	},
 };
 
-<<<<<<< HEAD
-static int __init tscan1_init(void)
-{
-	return isa_register_driver(&tscan1_isa_driver, TSCAN1_MAXDEV);
-}
-module_init(tscan1_init);
-
-static void __exit tscan1_exit(void)
-{
-	isa_unregister_driver(&tscan1_isa_driver);
-}
-module_exit(tscan1_exit);
-=======
 module_isa_driver(tscan1_isa_driver, TSCAN1_MAXDEV);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

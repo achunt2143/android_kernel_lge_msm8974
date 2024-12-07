@@ -1,11 +1,4 @@
 /*
-<<<<<<< HEAD
- * bnx2fc_els.c: Broadcom NetXtreme II Linux FCoE offload driver.
- * This file contains helper routines that handle ELS requests
- * and responses.
- *
- * Copyright (c) 2008 - 2011 Broadcom Corporation
-=======
  * bnx2fc_els.c: QLogic Linux FCoE offload driver.
  * This file contains helper routines that handle ELS requests
  * and responses.
@@ -13,7 +6,6 @@
  * Copyright (c) 2008-2013 Broadcom Corporation
  * Copyright (c) 2014-2016 QLogic Corporation
  * Copyright (c) 2016-2017 Cavium Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,15 +62,6 @@ int bnx2fc_send_rrq(struct bnx2fc_cmd *aborted_io_req)
 
 	struct fc_els_rrq rrq;
 	struct bnx2fc_rport *tgt = aborted_io_req->tgt;
-<<<<<<< HEAD
-	struct fc_lport *lport = tgt->rdata->local_port;
-	struct bnx2fc_els_cb_arg *cb_arg = NULL;
-	u32 sid = tgt->sid;
-	u32 r_a_tov = lport->r_a_tov;
-	unsigned long start = jiffies;
-	int rc;
-
-=======
 	struct fc_lport *lport = NULL;
 	struct bnx2fc_els_cb_arg *cb_arg = NULL;
 	u32 sid = 0;
@@ -93,7 +76,6 @@ int bnx2fc_send_rrq(struct bnx2fc_cmd *aborted_io_req)
 	sid = tgt->sid;
 	r_a_tov = lport->r_a_tov;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BNX2FC_ELS_DBG("Sending RRQ orig_xid = 0x%x\n",
 		   aborted_io_req->xid);
 	memset(&rrq, 0, sizeof(rrq));
@@ -280,11 +262,7 @@ int bnx2fc_send_rls(struct bnx2fc_rport *tgt, struct fc_frame *fp)
 	return rc;
 }
 
-<<<<<<< HEAD
-void bnx2fc_srr_compl(struct bnx2fc_els_cb_arg *cb_arg)
-=======
 static void bnx2fc_srr_compl(struct bnx2fc_els_cb_arg *cb_arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2fc_mp_req *mp_req;
 	struct fc_frame_header *fc_hdr, *fh;
@@ -394,11 +372,7 @@ srr_compl_done:
 	kref_put(&orig_io_req->refcount, bnx2fc_cmd_release);
 }
 
-<<<<<<< HEAD
-void bnx2fc_rec_compl(struct bnx2fc_els_cb_arg *cb_arg)
-=======
 static void bnx2fc_rec_compl(struct bnx2fc_els_cb_arg *cb_arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnx2fc_cmd *orig_io_req, *new_io_req;
 	struct bnx2fc_cmd *rec_req;
@@ -514,13 +488,7 @@ static void bnx2fc_rec_compl(struct bnx2fc_els_cb_arg *cb_arg)
 			bnx2fc_initiate_cleanup(orig_io_req);
 			/* Post a new IO req with the same sc_cmd */
 			BNX2FC_IO_DBG(rec_req, "Post IO request again\n");
-<<<<<<< HEAD
-			spin_unlock_bh(&tgt->tgt_lock);
 			rc = bnx2fc_post_io_req(tgt, new_io_req);
-			spin_lock_bh(&tgt->tgt_lock);
-=======
-			rc = bnx2fc_post_io_req(tgt, new_io_req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!rc)
 				goto free_frame;
 			BNX2FC_IO_DBG(rec_req, "REC: io post err\n");
@@ -642,10 +610,6 @@ int bnx2fc_send_rec(struct bnx2fc_cmd *orig_io_req)
 	rc = bnx2fc_initiate_els(tgt, ELS_REC, &rec, sizeof(rec),
 				 bnx2fc_rec_compl, cb_arg,
 				 r_a_tov);
-<<<<<<< HEAD
-rec_err:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		BNX2FC_IO_DBG(orig_io_req, "REC failed - release\n");
 		spin_lock_bh(&tgt->tgt_lock);
@@ -653,10 +617,7 @@ rec_err:
 		spin_unlock_bh(&tgt->tgt_lock);
 		kfree(cb_arg);
 	}
-<<<<<<< HEAD
-=======
 rec_err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -693,10 +654,6 @@ int bnx2fc_send_srr(struct bnx2fc_cmd *orig_io_req, u32 offset, u8 r_ctl)
 	rc = bnx2fc_initiate_els(tgt, ELS_SRR, &srr, sizeof(srr),
 				 bnx2fc_srr_compl, cb_arg,
 				 r_a_tov);
-<<<<<<< HEAD
-srr_err:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		BNX2FC_IO_DBG(orig_io_req, "SRR failed - release\n");
 		spin_lock_bh(&tgt->tgt_lock);
@@ -706,10 +663,7 @@ srr_err:
 	} else
 		set_bit(BNX2FC_FLAG_SRR_SENT, &orig_io_req->req_flags);
 
-<<<<<<< HEAD
-=======
 srr_err:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -743,12 +697,7 @@ static int bnx2fc_initiate_els(struct bnx2fc_rport *tgt, unsigned int op,
 		rc = -EINVAL;
 		goto els_err;
 	}
-<<<<<<< HEAD
-	if (!(test_bit(BNX2FC_FLAG_SESSION_READY, &tgt->flags)) ||
-	     (test_bit(BNX2FC_FLAG_EXPL_LOGO, &tgt->flags))) {
-=======
 	if (!(test_bit(BNX2FC_FLAG_SESSION_READY, &tgt->flags))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR PFX "els 0x%x: tgt not ready\n", op);
 		rc = -EINVAL;
 		goto els_err;
@@ -765,10 +714,7 @@ static int bnx2fc_initiate_els(struct bnx2fc_rport *tgt, unsigned int op,
 	els_req->cb_func = cb_func;
 	cb_arg->io_req = els_req;
 	els_req->cb_arg = cb_arg;
-<<<<<<< HEAD
-=======
 	els_req->data_xfer_len = data_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mp_req = (struct bnx2fc_mp_req *)&(els_req->mp_req);
 	rc = bnx2fc_init_mp_req(els_req);
@@ -908,60 +854,25 @@ void bnx2fc_process_els_compl(struct bnx2fc_cmd *els_req,
 	kref_put(&els_req->refcount, bnx2fc_cmd_release);
 }
 
-<<<<<<< HEAD
-=======
 #define		BNX2FC_FCOE_MAC_METHOD_GRANGED_MAC	1
 #define		BNX2FC_FCOE_MAC_METHOD_FCF_MAP		2
 #define		BNX2FC_FCOE_MAC_METHOD_FCOE_SET_MAC	3
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bnx2fc_flogi_resp(struct fc_seq *seq, struct fc_frame *fp,
 			      void *arg)
 {
 	struct fcoe_ctlr *fip = arg;
 	struct fc_exch *exch = fc_seq_exch(seq);
 	struct fc_lport *lport = exch->lp;
-<<<<<<< HEAD
-	u8 *mac;
-	struct fc_frame_header *fh;
-	u8 op;
-=======
 
 	struct fc_frame_header *fh;
 	u8 *granted_mac;
 	u8 fcoe_mac[6];
 	u8 fc_map[3];
 	int method;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(fp))
 		goto done;
 
-<<<<<<< HEAD
-	mac = fr_cb(fp)->granted_mac;
-	if (is_zero_ether_addr(mac)) {
-		fh = fc_frame_header_get(fp);
-		if (fh->fh_type != FC_TYPE_ELS) {
-			printk(KERN_ERR PFX "bnx2fc_flogi_resp:"
-				"fh_type != FC_TYPE_ELS\n");
-			fc_frame_free(fp);
-			return;
-		}
-		op = fc_frame_payload_op(fp);
-		if (lport->vport) {
-			if (op == ELS_LS_RJT) {
-				printk(KERN_ERR PFX "bnx2fc_flogi_resp is LS_RJT\n");
-				fc_vport_terminate(lport->vport);
-				fc_frame_free(fp);
-				return;
-			}
-		}
-		if (fcoe_ctlr_recv_flogi(fip, lport, fp)) {
-			fc_frame_free(fp);
-			return;
-		}
-	}
-	fip->update_mac(lport, mac);
-=======
 	fh = fc_frame_header_get(fp);
 	granted_mac = fr_cb(fp)->granted_mac;
 
@@ -994,7 +905,6 @@ static void bnx2fc_flogi_resp(struct fc_seq *seq, struct fc_frame *fp,
 
 	BNX2FC_HBA_DBG(lport, "fcoe_mac=%pM method=%d\n", fcoe_mac, method);
 	fip->update_mac(lport, fcoe_mac);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	fc_lport_flogi_resp(seq, fp, lport);
 }
@@ -1021,11 +931,7 @@ struct fc_seq *bnx2fc_elsct_send(struct fc_lport *lport, u32 did,
 {
 	struct fcoe_port *port = lport_priv(lport);
 	struct bnx2fc_interface *interface = port->priv;
-<<<<<<< HEAD
-	struct fcoe_ctlr *fip = &interface->ctlr;
-=======
 	struct fcoe_ctlr *fip = bnx2fc_to_ctlr(interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_frame_header *fh = fc_frame_header_get(fp);
 
 	switch (op) {

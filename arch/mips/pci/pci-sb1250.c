@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001,2002,2003 Broadcom Corporation
- * Copyright (C) 2004 by Ralf Baechle (ralf@linux-mips.org)
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2001,2002,2003 Broadcom Corporation
  * Copyright (C) 2004 by Ralf Baechle (ralf@linux-mips.org)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -62,15 +42,9 @@
 
 static void *cfg_space;
 
-<<<<<<< HEAD
-#define PCI_BUS_ENABLED	1
-#define LDT_BUS_ENABLED	2
-#define PCI_DEVICE_MODE	4
-=======
 #define PCI_BUS_ENABLED 1
 #define LDT_BUS_ENABLED 2
 #define PCI_DEVICE_MODE 4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sb1250_bus_status;
 
@@ -252,11 +226,7 @@ static int __init sb1250_pcibios_init(void)
 			       PCI_COMMAND));
 		if (!(cmdreg & PCI_COMMAND_MASTER)) {
 			printk
-<<<<<<< HEAD
-			    ("PCI: Skipping PCI probe.  Bus is not initialized.\n");
-=======
 			    ("PCI: Skipping PCI probe.	Bus is not initialized.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iounmap(cfg_space);
 			return 0;
 		}
@@ -300,13 +270,9 @@ static int __init sb1250_pcibios_init(void)
 	register_pci_controller(&sb1250_controller);
 
 #ifdef CONFIG_VGA_CONSOLE
-<<<<<<< HEAD
-	take_over_console(&vga_con, 0, MAX_NR_CONSOLES - 1, 1);
-=======
 	console_lock();
 	do_take_over_console(&vga_con, 0, MAX_NR_CONSOLES - 1, 1);
 	console_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 }

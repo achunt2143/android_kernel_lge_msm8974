@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008-2009 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2008-2009 PetaLogix
  * Copyright (C) 2006 Atmark Techno, Inc.
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MICROBLAZE_PROCESSOR_H
@@ -29,11 +19,6 @@
 extern const struct seq_operations cpuinfo_op;
 
 # define cpu_relax()		barrier()
-<<<<<<< HEAD
-# define cpu_sleep()		do {} while (0)
-# define prepare_to_copy(tsk)	do {} while (0)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define task_pt_regs(tsk) \
 		(((struct pt_regs *)(THREAD_SIZE + task_stack_page(tsk))) - 1)
@@ -42,70 +27,10 @@ extern const struct seq_operations cpuinfo_op;
 void start_thread(struct pt_regs *regs, unsigned long pc, unsigned long usp);
 
 extern void ret_from_fork(void);
-<<<<<<< HEAD
-
-# endif /* __ASSEMBLY__ */
-
-# ifndef CONFIG_MMU
-/*
- * User space process size: memory size
- *
- * TASK_SIZE on MMU cpu is usually 1GB. However, on no-MMU arch, both
- * user processes and the kernel is on the same memory region. They
- * both share the memory space and that is limited by the amount of
- * physical memory. thus, we set TASK_SIZE == amount of total memory.
- */
-# define TASK_SIZE	(0x81000000 - 0x80000000)
-
-/*
- * Default implementation of macro that returns current
- * instruction pointer ("program counter").
- */
-# define current_text_addr() ({ __label__ _l; _l: &&_l; })
-
-/*
- * This decides where the kernel will search for a free chunk of vm
- * space during mmap's. We won't be using it
- */
-# define TASK_UNMAPPED_BASE	0
-
-/* definition in include/linux/sched.h */
-struct task_struct;
-
-/* thread_struct is gone. use thread_info instead. */
-struct thread_struct { };
-# define INIT_THREAD	{ }
-
-/* Free all resources held by a thread. */
-static inline void release_thread(struct task_struct *dead_task)
-{
-}
-
-/* Free all resources held by a thread. */
-static inline void exit_thread(void)
-{
-}
-
-extern unsigned long thread_saved_pc(struct task_struct *t);
-
-extern unsigned long get_wchan(struct task_struct *p);
-
-/*
- * create a kernel thread without removing it from tasklists
- */
-extern int kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
-
-# define KSTK_EIP(tsk)	(0)
-# define KSTK_ESP(tsk)	(0)
-
-# else /* CONFIG_MMU */
-
-=======
 extern void ret_from_kernel_thread(void);
 
 # endif /* __ASSEMBLY__ */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is used to define STACK_TOP, and with MMU it must be below
  * kernel base to select the correct PGD when handling MMU exceptions.
@@ -122,15 +47,6 @@ extern void ret_from_kernel_thread(void);
 
 #  ifndef __ASSEMBLY__
 
-<<<<<<< HEAD
-/*
- * Default implementation of macro that returns current
- * instruction pointer ("program counter").
- */
-#  define current_text_addr()	({ __label__ _l; _l: &&_l; })
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* If you change this, you must change the associated assembly-languages
  * constants defined below, THREAD_*.
  */
@@ -147,27 +63,7 @@ struct thread_struct {
 	.pgdir = swapper_pg_dir, \
 }
 
-<<<<<<< HEAD
-/* Free all resources held by a thread. */
-extern inline void release_thread(struct task_struct *dead_task)
-{
-}
-
-extern int kernel_thread(int (*fn)(void *), void *arg, unsigned long flags);
-
-/* Free current thread data structures etc.  */
-static inline void exit_thread(void)
-{
-}
-
-/* Return saved (kernel) PC of a blocked thread.  */
-#  define thread_saved_pc(tsk)	\
-	((tsk)->thread.regs ? (tsk)->thread.regs->r15 : 0)
-
-unsigned long get_wchan(struct task_struct *p);
-=======
 unsigned long __get_wchan(struct task_struct *p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The size allocated for kernel stacks. This _must_ be a power of two! */
 # define KERNEL_STACK_SIZE	0x2000
@@ -185,29 +81,12 @@ unsigned long __get_wchan(struct task_struct *p);
 #  define KSTK_EIP(task)	(task_pc(task))
 #  define KSTK_ESP(task)	(task_sp(task))
 
-<<<<<<< HEAD
-/* FIXME */
-#  define deactivate_mm(tsk, mm)	do { } while (0)
-
 #  define STACK_TOP	TASK_SIZE
 #  define STACK_TOP_MAX	STACK_TOP
 
-void disable_hlt(void);
-void enable_hlt(void);
-void default_idle(void);
-
-=======
-#  define STACK_TOP	TASK_SIZE
-#  define STACK_TOP_MAX	STACK_TOP
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_FS
 extern struct dentry *of_debugfs_root;
 #endif
 
 #  endif /* __ASSEMBLY__ */
-<<<<<<< HEAD
-# endif /* CONFIG_MMU */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_MICROBLAZE_PROCESSOR_H */

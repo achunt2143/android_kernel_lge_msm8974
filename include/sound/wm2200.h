@@ -1,28 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/sound/wm2200.h -- Platform data for WM2200
  *
  * Copyright 2012 Wolfson Microelectronics. PLC.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_SND_WM2200_H
 #define __LINUX_SND_WM2200_H
 
 #define WM2200_GPIO_SET 0x10000
-<<<<<<< HEAD
-=======
 #define WM2200_MAX_MICBIAS 2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum wm2200_in_mode {
 	WM2200_IN_SE = 0,
@@ -36,11 +23,6 @@ enum wm2200_dmic_sup {
 	WM2200_DMIC_SUP_MICBIAS2 = 2,
 };
 
-<<<<<<< HEAD
-struct wm2200_pdata {
-	int reset;      /** GPIO controlling /RESET, if any */
-	int ldo_ena;    /** GPIO controlling LODENA, if any */
-=======
 enum wm2200_mbias_lvl {
 	WM2200_MBIAS_LVL_1V5 = 1,
 	WM2200_MBIAS_LVL_1V8 = 2,
@@ -60,7 +42,6 @@ struct wm2200_micbias {
 };
 
 struct wm2200_pdata {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq_flags;
 
 	int gpio_defaults[4];
@@ -68,12 +49,8 @@ struct wm2200_pdata {
 	enum wm2200_in_mode in_mode[3];
 	enum wm2200_dmic_sup dmic_sup[3];
 
-<<<<<<< HEAD
-	int micbias_cfg[2];  /** Register value to configure MICBIAS */
-=======
 	/** MICBIAS configurations */
 	struct wm2200_micbias micbias[WM2200_MAX_MICBIAS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

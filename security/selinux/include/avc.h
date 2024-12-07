@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-/*
- * Access vector cache interface for object managers.
- *
- * Author : Stephen Smalley, <sds@epoch.ncsc.mil>
- */
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Access vector cache interface for object managers.
@@ -12,7 +5,6 @@
  * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
  */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SELINUX_AVC_H_
 #define _SELINUX_AVC_H_
 
@@ -29,15 +21,6 @@
 #include "av_permissions.h"
 #include "security.h"
 
-<<<<<<< HEAD
-#ifdef CONFIG_SECURITY_SELINUX_DEVELOP
-extern int selinux_enforcing;
-#else
-#define selinux_enforcing 1
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An entry in the AVC.
  */
@@ -62,11 +45,7 @@ struct avc_cache_stats {
 /*
  * We only need this data after we have decided to send an audit message.
  */
-<<<<<<< HEAD
-struct selinux_late_audit_data {
-=======
 struct selinux_audit_data {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ssid;
 	u32 tsid;
 	u16 tclass;
@@ -74,23 +53,7 @@ struct selinux_audit_data {
 	u32 audited;
 	u32 denied;
 	int result;
-<<<<<<< HEAD
-};
-
-/*
- * We collect this at the beginning or during an selinux security operation
- */
-struct selinux_audit_data {
-	/*
-	 * auditdeny is a bit tricky and unintuitive.  See the
-	 * comments in avc.c for it's meaning and usage.
-	 */
-	u32 auditdeny;
-	struct selinux_late_audit_data *slad;
-};
-=======
 } __randomize_layout;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * AVC operations
@@ -98,35 +61,6 @@ struct selinux_audit_data {
 
 void __init avc_init(void);
 
-<<<<<<< HEAD
-int avc_audit(u32 ssid, u32 tsid,
-	       u16 tclass, u32 requested,
-	       struct av_decision *avd,
-	       int result,
-	      struct common_audit_data *a, unsigned flags);
-
-#define AVC_STRICT 1 /* Ignore permissive mode. */
-#define AVC_EXTENDED_PERMS 2	/* update extended permissions */
-int avc_has_perm_noaudit(u32 ssid, u32 tsid,
-			 u16 tclass, u32 requested,
-			 unsigned flags,
-			 struct av_decision *avd);
-
-int avc_has_perm_flags(u32 ssid, u32 tsid,
-		       u16 tclass, u32 requested,
-		       struct common_audit_data *auditdata,
-		       unsigned);
-
-static inline int avc_has_perm(u32 ssid, u32 tsid,
-			       u16 tclass, u32 requested,
-			       struct common_audit_data *auditdata)
-{
-	return avc_has_perm_flags(ssid, tsid, tclass, requested, auditdata, 0);
-}
-
-int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
-		u8 driver, u8 perm, struct common_audit_data *ad);
-=======
 static inline u32 avc_audit_required(u32 requested, struct av_decision *avd,
 				     int result, u32 auditdeny, u32 *deniedp)
 {
@@ -204,7 +138,6 @@ int avc_has_perm(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 
 int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 			   u8 driver, u8 perm, struct common_audit_data *ad);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u32 avc_policy_seqno(void);
 
@@ -213,43 +146,20 @@ u32 avc_policy_seqno(void);
 #define AVC_CALLBACK_REVOKE		4
 #define AVC_CALLBACK_RESET		8
 #define AVC_CALLBACK_AUDITALLOW_ENABLE	16
-<<<<<<< HEAD
-#define AVC_CALLBACK_AUDITALLOW_DISABLE	32
-=======
 #define AVC_CALLBACK_AUDITALLOW_DISABLE 32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AVC_CALLBACK_AUDITDENY_ENABLE	64
 #define AVC_CALLBACK_AUDITDENY_DISABLE	128
 #define AVC_CALLBACK_ADD_XPERMS		256
 
-<<<<<<< HEAD
-int avc_add_callback(int (*callback)(u32 event, u32 ssid, u32 tsid,
-				     u16 tclass, u32 perms,
-				     u32 *out_retained),
-		     u32 events, u32 ssid, u32 tsid,
-		     u16 tclass, u32 perms);
-
-/* Exported to selinuxfs */
-int avc_get_hash_stats(char *page);
-extern unsigned int avc_cache_threshold;
-
-/* Attempt to free avc node cache */
-void avc_disable(void);
-=======
 int avc_add_callback(int (*callback)(u32 event), u32 events);
 
 /* Exported to selinuxfs */
 int avc_get_hash_stats(char *page);
 unsigned int avc_get_cache_threshold(void);
 void avc_set_cache_threshold(unsigned int cache_threshold);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SECURITY_SELINUX_AVC_STATS
 DECLARE_PER_CPU(struct avc_cache_stats, avc_cache_stats);
 #endif
 
 #endif /* _SELINUX_AVC_H_ */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

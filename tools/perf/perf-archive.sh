@@ -1,16 +1,9 @@
 #!/bin/bash
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # perf archive
 # Arnaldo Carvalho de Melo <acme@redhat.com>
 
 PERF_DATA=perf.data
-<<<<<<< HEAD
-if [ $# -ne 0 ] ; then
-	PERF_DATA=$1
-=======
 PERF_SYMBOLS=perf.symbols
 PERF_ALL=perf.all
 ALL=0
@@ -78,7 +71,6 @@ if [ $UNPACK -eq 1 ]; then
 		tar xvf $TARGET -C ~/.debug
 	fi
 	exit 0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fi
 
 #
@@ -93,20 +85,11 @@ else
 fi
 
 BUILDIDS=$(mktemp /tmp/perf-archive-buildids.XXXXXX)
-<<<<<<< HEAD
-NOBUILDID=0000000000000000000000000000000000000000
-
-perf buildid-list -i $PERF_DATA --with-hits | grep -v "^$NOBUILDID " > $BUILDIDS
-if [ ! -s $BUILDIDS ] ; then
-	echo "perf archive: no build-ids found"
-	rm -f $BUILDIDS
-=======
 
 perf buildid-list -i $PERF_DATA --with-hits | grep -v "^ " > $BUILDIDS
 if [ ! -s $BUILDIDS ] ; then
 	echo "perf archive: no build-ids found"
 	rm $BUILDIDS || true
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	exit 1
 fi
 
@@ -121,13 +104,6 @@ while read build_id ; do
 	echo ${filename#$PERF_BUILDID_LINKDIR} >> $MANIFEST
 done
 
-<<<<<<< HEAD
-tar cfj $PERF_DATA.tar.bz2 -C $PERF_BUILDID_DIR -T $MANIFEST
-rm -f $MANIFEST $BUILDIDS
-echo -e "Now please run:\n"
-echo -e "$ tar xvf $PERF_DATA.tar.bz2 -C ~/.debug\n"
-echo "wherever you need to run 'perf report' on."
-=======
 if [ $ALL -eq 1 ]; then						# pack perf.data file together with tar containing debug symbols
 	HOSTNAME=$(hostname)
 	DATE=$(date '+%Y%m%d-%H%M%S')
@@ -142,5 +118,4 @@ fi
 echo -e "Now please run:\n"
 echo -e "$ perf archive --unpack\n"
 echo "or unpack the tar manually wherever you need to run 'perf report' on."
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit 0

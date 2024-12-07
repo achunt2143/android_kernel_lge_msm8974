@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Procedures for creating, accessing and interpreting the device tree.
  *
@@ -12,25 +9,13 @@
  *    {engebret|bergner}@us.ibm.com 
  *
  *  Adapted for sparc32 by David S. Miller davem@davemloft.net
-<<<<<<< HEAD
- *
- *      This program is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU General Public License
- *      as published by the Free Software Foundation; either version
- *      2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/mm.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/prom.h>
 #include <asm/oplib.h>
@@ -43,15 +28,9 @@ void * __init prom_early_alloc(unsigned long size)
 {
 	void *ret;
 
-<<<<<<< HEAD
-	ret = __alloc_bootmem(size, SMP_CACHE_BYTES, 0UL);
-	if (ret != NULL)
-		memset(ret, 0, size);
-=======
 	ret = memblock_alloc(size, SMP_CACHE_BYTES);
 	if (!ret)
 		panic("%s: Failed to allocate %lu bytes\n", __func__, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prom_early_allocated += size;
 
@@ -77,10 +56,7 @@ void * __init prom_early_alloc(unsigned long size)
  */
 static void __init sparc32_path_component(struct device_node *dp, char *tmp_buf)
 {
-<<<<<<< HEAD
-=======
 	const char *name = of_get_property(dp, "name", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom_registers *regs;
 	struct property *rprop;
 
@@ -90,21 +66,14 @@ static void __init sparc32_path_component(struct device_node *dp, char *tmp_buf)
 
 	regs = rprop->value;
 	sprintf(tmp_buf, "%s@%x,%x",
-<<<<<<< HEAD
-		dp->name,
-=======
 		name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regs->which_io, regs->phys_addr);
 }
 
 /* "name@slot,offset"  */
 static void __init sbus_path_component(struct device_node *dp, char *tmp_buf)
 {
-<<<<<<< HEAD
-=======
 	const char *name = of_get_property(dp, "name", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom_registers *regs;
 	struct property *prop;
 
@@ -114,11 +83,7 @@ static void __init sbus_path_component(struct device_node *dp, char *tmp_buf)
 
 	regs = prop->value;
 	sprintf(tmp_buf, "%s@%x,%x",
-<<<<<<< HEAD
-		dp->name,
-=======
 		name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regs->which_io,
 		regs->phys_addr);
 }
@@ -126,10 +91,7 @@ static void __init sbus_path_component(struct device_node *dp, char *tmp_buf)
 /* "name@devnum[,func]" */
 static void __init pci_path_component(struct device_node *dp, char *tmp_buf)
 {
-<<<<<<< HEAD
-=======
 	const char *name = of_get_property(dp, "name", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom_pci_registers *regs;
 	struct property *prop;
 	unsigned int devfn;
@@ -142,20 +104,12 @@ static void __init pci_path_component(struct device_node *dp, char *tmp_buf)
 	devfn = (regs->phys_hi >> 8) & 0xff;
 	if (devfn & 0x07) {
 		sprintf(tmp_buf, "%s@%x,%x",
-<<<<<<< HEAD
-			dp->name,
-=======
 			name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			devfn >> 3,
 			devfn & 0x07);
 	} else {
 		sprintf(tmp_buf, "%s@%x",
-<<<<<<< HEAD
-			dp->name,
-=======
 			name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			devfn >> 3);
 	}
 }
@@ -163,10 +117,7 @@ static void __init pci_path_component(struct device_node *dp, char *tmp_buf)
 /* "name@addrhi,addrlo" */
 static void __init ebus_path_component(struct device_node *dp, char *tmp_buf)
 {
-<<<<<<< HEAD
-=======
 	const char *name = of_get_property(dp, "name", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom_registers *regs;
 	struct property *prop;
 
@@ -177,17 +128,6 @@ static void __init ebus_path_component(struct device_node *dp, char *tmp_buf)
 	regs = prop->value;
 
 	sprintf(tmp_buf, "%s@%x,%x",
-<<<<<<< HEAD
-		dp->name,
-		regs->which_io, regs->phys_addr);
-}
-
-/* "name:vendor:device@irq,addrlo" */
-static void __init ambapp_path_component(struct device_node *dp, char *tmp_buf)
-{
-	struct amba_prom_registers *regs;
-	unsigned int *intr, *device, *vendor, reg0;
-=======
 		name,
 		regs->which_io, regs->phys_addr);
 }
@@ -199,7 +139,6 @@ static void __init ambapp_path_component(struct device_node *dp, char *tmp_buf)
 	struct amba_prom_registers *regs;
 	unsigned int *intr;
 	unsigned int reg0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct property *prop;
 	int interrupt = 0;
 
@@ -221,22 +160,7 @@ static void __init ambapp_path_component(struct device_node *dp, char *tmp_buf)
 	else
 		intr = prop->value;
 
-<<<<<<< HEAD
-	prop = of_find_property(dp, "vendor", NULL);
-	if (!prop)
-		return;
-	vendor = prop->value;
-	prop = of_find_property(dp, "device", NULL);
-	if (!prop)
-		return;
-	device = prop->value;
-
-	sprintf(tmp_buf, "%s:%d:%d@%x,%x",
-		dp->name, *vendor, *device,
-		*intr, reg0);
-=======
 	sprintf(tmp_buf, "%s@%x,%x", name, *intr, reg0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init __build_path_component(struct device_node *dp, char *tmp_buf)
@@ -244,16 +168,6 @@ static void __init __build_path_component(struct device_node *dp, char *tmp_buf)
 	struct device_node *parent = dp->parent;
 
 	if (parent != NULL) {
-<<<<<<< HEAD
-		if (!strcmp(parent->type, "pci") ||
-		    !strcmp(parent->type, "pciex"))
-			return pci_path_component(dp, tmp_buf);
-		if (!strcmp(parent->type, "sbus"))
-			return sbus_path_component(dp, tmp_buf);
-		if (!strcmp(parent->type, "ebus"))
-			return ebus_path_component(dp, tmp_buf);
-		if (!strcmp(parent->type, "ambapp"))
-=======
 		if (of_node_is_type(parent, "pci") ||
 		    of_node_is_type(parent, "pciex"))
 			return pci_path_component(dp, tmp_buf);
@@ -262,7 +176,6 @@ static void __init __build_path_component(struct device_node *dp, char *tmp_buf)
 		if (of_node_is_type(parent, "ebus"))
 			return ebus_path_component(dp, tmp_buf);
 		if (of_node_is_type(parent, "ambapp"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ambapp_path_component(dp, tmp_buf);
 
 		/* "isa" is handled with platform naming */
@@ -274,20 +187,13 @@ static void __init __build_path_component(struct device_node *dp, char *tmp_buf)
 
 char * __init build_path_component(struct device_node *dp)
 {
-<<<<<<< HEAD
-=======
 	const char *name = of_get_property(dp, "name", NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char tmp_buf[64], *n;
 
 	tmp_buf[0] = '\0';
 	__build_path_component(dp, tmp_buf);
 	if (tmp_buf[0] == '\0')
-<<<<<<< HEAD
-		strcpy(tmp_buf, dp->name);
-=======
 		strcpy(tmp_buf, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	n = prom_early_alloc(strlen(tmp_buf) + 1);
 	strcpy(n, tmp_buf);
@@ -318,11 +224,7 @@ void __init of_console_init(void)
 
 		case PROMDEV_TTYB:
 			skip = 1;
-<<<<<<< HEAD
-			/* FALLTHRU */
-=======
 			fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case PROMDEV_TTYA:
 			type = "serial";
@@ -345,11 +247,7 @@ void __init of_console_init(void)
 		}
 		of_console_device = dp;
 
-<<<<<<< HEAD
-		strcpy(of_console_path, dp->full_name);
-=======
 		sprintf(of_console_path, "%pOF", dp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!strcmp(type, "serial")) {
 			strcat(of_console_path,
 			       (skip ? ":b" : ":a"));
@@ -372,21 +270,9 @@ void __init of_console_init(void)
 			prom_halt();
 		}
 		dp = of_find_node_by_phandle(node);
-<<<<<<< HEAD
-		type = of_get_property(dp, "device_type", NULL);
-
-		if (!type) {
-			prom_printf("Console stdout lacks "
-				    "device_type property.\n");
-			prom_halt();
-		}
-
-		if (strcmp(type, "display") && strcmp(type, "serial")) {
-=======
 
 		if (!of_node_is_type(dp, "display") &&
 		    !of_node_is_type(dp, "serial")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			prom_printf("Console device_type is neither display "
 				    "nor serial.\n");
 			prom_halt();
@@ -395,11 +281,7 @@ void __init of_console_init(void)
 		of_console_device = dp;
 
 		if (prom_vers == PROM_V2) {
-<<<<<<< HEAD
-			strcpy(of_console_path, dp->full_name);
-=======
 			sprintf(of_console_path, "%pOF", dp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (*romvec->pv_stdout) {
 			case PROMDEV_TTYA:
 				strcat(of_console_path, ":a");

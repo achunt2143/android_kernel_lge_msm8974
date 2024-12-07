@@ -9,19 +9,6 @@
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-#include <linux/signal.h>	/* for SIGBUS */
-#include <linux/sched.h>	/* schow_regs(), force_sig() */
-
-#include <asm/module.h>
-#include <asm/sn/addrs.h>
-#include <asm/sn/arch.h>
-#include <asm/sn/sn0/hub.h>
-#include <asm/tlbdebug.h>
-#include <asm/traps.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/signal.h>	/* for SIGBUS */
 #include <linux/sched.h>	/* schow_regs(), force_sig() */
 #include <linux/sched/debug.h>
@@ -36,7 +23,6 @@
 #include <linux/uaccess.h>
 
 #include "ip27-common.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dump_hub_information(unsigned long errst0, unsigned long errst1)
 {
@@ -46,34 +32,6 @@ static void dump_hub_information(unsigned long errst0, unsigned long errst1)
 		{ "WERR", "Uncached Partial Write", "PWERR", "Write Timeout",
 		  NULL, NULL, NULL, NULL }
 	};
-<<<<<<< HEAD
-	int wrb = errst1 & PI_ERR_ST1_WRBRRB_MASK;
-
-	if (!(errst0 & PI_ERR_ST0_VALID_MASK)) {
-		printk("Hub does not contain valid error information\n");
-		return;
-	}
-
-
-	printk("Hub has valid error information:\n");
-	if (errst0 & PI_ERR_ST0_OVERRUN_MASK)
-		printk("Overrun is set.  Error stack may contain additional "
-		       "information.\n");
-	printk("Hub error address is %08lx\n",
-	       (errst0 & PI_ERR_ST0_ADDR_MASK) >> (PI_ERR_ST0_ADDR_SHFT - 3));
-	printk("Incoming message command 0x%lx\n",
-	       (errst0 & PI_ERR_ST0_CMD_MASK) >> PI_ERR_ST0_CMD_SHFT);
-	printk("Supplemental field of incoming message is 0x%lx\n",
-	       (errst0 & PI_ERR_ST0_SUPPL_MASK) >> PI_ERR_ST0_SUPPL_SHFT);
-	printk("T5 Rn (for RRB only) is 0x%lx\n",
-	       (errst0 & PI_ERR_ST0_REQNUM_MASK) >> PI_ERR_ST0_REQNUM_SHFT);
-	printk("Error type is %s\n", err_type[wrb]
-	       [(errst0 & PI_ERR_ST0_TYPE_MASK) >> PI_ERR_ST0_TYPE_SHFT]
-		? : "invalid");
-}
-
-int ip27_be_handler(struct pt_regs *regs, int is_fixup)
-=======
 	union pi_err_stat0 st0;
 	union pi_err_stat1 st1;
 
@@ -102,7 +60,6 @@ int ip27_be_handler(struct pt_regs *regs, int is_fixup)
 }
 
 static int ip27_be_handler(struct pt_regs *regs, int is_fixup)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long errst0, errst1;
 	int data = regs->cp0_cause & 4;
@@ -121,11 +78,7 @@ static int ip27_be_handler(struct pt_regs *regs, int is_fixup)
 	show_regs(regs);
 	dump_tlb_all();
 	while(1);
-<<<<<<< HEAD
-	force_sig(SIGBUS, current);
-=======
 	force_sig(SIGBUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init ip27_be_init(void)
@@ -134,17 +87,10 @@ void __init ip27_be_init(void)
 	int cpu = LOCAL_HUB_L(PI_CPU_NUM);
 	int cpuoff = cpu << 8;
 
-<<<<<<< HEAD
-	board_be_handler = ip27_be_handler;
-
-	LOCAL_HUB_S(PI_ERR_INT_PEND,
-	            cpu ? PI_ERR_CLEAR_ALL_B : PI_ERR_CLEAR_ALL_A);
-=======
 	mips_set_be_handler(ip27_be_handler);
 
 	LOCAL_HUB_S(PI_ERR_INT_PEND,
 		    cpu ? PI_ERR_CLEAR_ALL_B : PI_ERR_CLEAR_ALL_A);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LOCAL_HUB_S(PI_ERR_INT_MASK_A + cpuoff, 0);
 	LOCAL_HUB_S(PI_ERR_STACK_ADDR_A + cpuoff, 0);
 	LOCAL_HUB_S(PI_ERR_STACK_SIZE, 0);	/* Disable error stack */

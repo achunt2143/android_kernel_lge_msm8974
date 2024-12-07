@@ -4,11 +4,7 @@
  * Arasan Compact Flash host controller source file
  *
  * Copyright (C) 2011 ST Microelectronics
-<<<<<<< HEAD
- * Viresh Kumar <viresh.kumar@st.com>
-=======
  * Viresh Kumar <vireshk@kernel.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -35,10 +31,7 @@
 #include <linux/kernel.h>
 #include <linux/libata.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pata_arasan_cf_data.h>
 #include <linux/platform_device.h>
 #include <linux/pm.h>
@@ -46,10 +39,7 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/workqueue.h>
-<<<<<<< HEAD
-=======
 #include <trace/events/libata.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME	"arasan_cf"
 #define TIMEOUT		msecs_to_jiffies(3000)
@@ -196,15 +186,8 @@
 struct arasan_cf_dev {
 	/* pointer to ata_host structure */
 	struct ata_host *host;
-<<<<<<< HEAD
-	/* clk structure, only if HAVE_CLK is defined */
-#ifdef CONFIG_HAVE_CLK
-	struct clk *clk;
-#endif
-=======
 	/* clk structure */
 	struct clk *clk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* physical base address of controller */
 	dma_addr_t pbase;
@@ -227,11 +210,6 @@ struct arasan_cf_dev {
 	struct dma_chan *dma_chan;
 	/* Mask for DMA transfers */
 	dma_cap_mask_t mask;
-<<<<<<< HEAD
-	/* dma channel private data */
-	void *dma_priv;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* DMA transfer work */
 	struct work_struct work;
 	/* DMA delayed finish work */
@@ -240,14 +218,8 @@ struct arasan_cf_dev {
 	struct ata_queued_cmd *qc;
 };
 
-<<<<<<< HEAD
-static struct scsi_host_template arasan_cf_sht = {
-	ATA_BASE_SHT(DRIVER_NAME),
-	.sg_tablesize = SG_NONE,
-=======
 static const struct scsi_host_template arasan_cf_sht = {
 	ATA_BASE_SHT(DRIVER_NAME),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dma_boundary = 0xFFFFFFFFUL,
 };
 
@@ -334,31 +306,15 @@ static void cf_card_detect(struct arasan_cf_dev *acdev, bool hotplugged)
 static int cf_init(struct arasan_cf_dev *acdev)
 {
 	struct arasan_cf_pdata *pdata = dev_get_platdata(acdev->host->dev);
-<<<<<<< HEAD
-	unsigned long flags;
-	int ret = 0;
-
-#ifdef CONFIG_HAVE_CLK
-	ret = clk_enable(acdev->clk);
-=======
 	unsigned int if_clk;
 	unsigned long flags;
 	int ret = 0;
 
 	ret = clk_prepare_enable(acdev->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_dbg(acdev->host->dev, "clock enable failed");
 		return ret;
 	}
-<<<<<<< HEAD
-#endif
-
-	spin_lock_irqsave(&acdev->host->lock, flags);
-	/* configure CF interface clock */
-	writel((pdata->cf_if_clk <= CF_IF_CLK_200M) ? pdata->cf_if_clk :
-			CF_IF_CLK_166M, acdev->vbase + CLK_CFG);
-=======
 
 	ret = clk_set_rate(acdev->clk, 166000000);
 	if (ret) {
@@ -375,7 +331,6 @@ static int cf_init(struct arasan_cf_dev *acdev)
 		if_clk = pdata->cf_if_clk;
 
 	writel(if_clk, acdev->vbase + CLK_CFG);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(TRUE_IDE_MODE | CFHOST_ENB, acdev->vbase + OP_MODE);
 	cf_interrupt_enable(acdev, CARD_DETECT_IRQ, 1);
@@ -396,35 +351,16 @@ static void cf_exit(struct arasan_cf_dev *acdev)
 	writel(readl(acdev->vbase + OP_MODE) & ~CFHOST_ENB,
 			acdev->vbase + OP_MODE);
 	spin_unlock_irqrestore(&acdev->host->lock, flags);
-<<<<<<< HEAD
-#ifdef CONFIG_HAVE_CLK
-	clk_disable(acdev->clk);
-#endif
-=======
 	clk_disable_unprepare(acdev->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dma_callback(void *dev)
 {
-<<<<<<< HEAD
-	struct arasan_cf_dev *acdev = (struct arasan_cf_dev *) dev;
-=======
 	struct arasan_cf_dev *acdev = dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	complete(&acdev->dma_completion);
 }
 
-<<<<<<< HEAD
-static bool filter(struct dma_chan *chan, void *slave)
-{
-	chan->private = slave;
-	return true;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void dma_complete(struct arasan_cf_dev *acdev)
 {
 	struct ata_queued_cmd *qc = acdev->qc;
@@ -461,12 +397,7 @@ dma_xfer(struct arasan_cf_dev *acdev, dma_addr_t src, dma_addr_t dest, u32 len)
 	struct dma_async_tx_descriptor *tx;
 	struct dma_chan *chan = acdev->dma_chan;
 	dma_cookie_t cookie;
-<<<<<<< HEAD
-	unsigned long flags = DMA_PREP_INTERRUPT | DMA_COMPL_SKIP_SRC_UNMAP |
-		DMA_COMPL_SKIP_DEST_UNMAP;
-=======
 	unsigned long flags = DMA_PREP_INTERRUPT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	tx = chan->device->device_prep_dma_memcpy(chan, dest, src, len, flags);
@@ -489,11 +420,7 @@ dma_xfer(struct arasan_cf_dev *acdev, dma_addr_t src, dma_addr_t dest, u32 len)
 
 	/* Wait for DMA to complete */
 	if (!wait_for_completion_timeout(&acdev->dma_completion, TIMEOUT)) {
-<<<<<<< HEAD
-		chan->device->device_control(chan, DMA_TERMINATE_ALL, 0);
-=======
 		dmaengine_terminate_all(chan);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(acdev->host->dev, "wait_for_completion_timeout\n");
 		return -ETIMEDOUT;
 	}
@@ -600,18 +527,11 @@ static void data_xfer(struct work_struct *work)
 
 	/* request dma channels */
 	/* dma_request_channel may sleep, so calling from process context */
-<<<<<<< HEAD
-	acdev->dma_chan = dma_request_channel(acdev->mask, filter,
-			acdev->dma_priv);
-	if (!acdev->dma_chan) {
-		dev_err(acdev->host->dev, "Unable to get dma_chan\n");
-=======
 	acdev->dma_chan = dma_request_chan(acdev->host->dev, "data");
 	if (IS_ERR(acdev->dma_chan)) {
 		dev_err_probe(acdev->host->dev, PTR_ERR(acdev->dma_chan),
 			      "Unable to get dma_chan\n");
 		acdev->dma_chan = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto chan_request_fail;
 	}
 
@@ -622,10 +542,7 @@ static void data_xfer(struct work_struct *work)
 	}
 
 	dma_release_channel(acdev->dma_chan);
-<<<<<<< HEAD
-=======
 	acdev->dma_chan = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* data xferred successfully */
 	if (!ret) {
@@ -651,11 +568,7 @@ chan_request_fail:
 	qc->ap->hsm_task_state = HSM_ST_ERR;
 
 	cf_ctrl_reset(acdev);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(qc->ap->lock, flags);
-=======
 	spin_unlock_irqrestore(&acdev->host->lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sff_intr:
 	dma_complete(acdev);
 }
@@ -744,11 +657,7 @@ static void arasan_cf_freeze(struct ata_port *ap)
 	ata_sff_freeze(ap);
 }
 
-<<<<<<< HEAD
-void arasan_cf_error_handler(struct ata_port *ap)
-=======
 static void arasan_cf_error_handler(struct ata_port *ap)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct arasan_cf_dev *acdev = ap->host->private_data;
 
@@ -764,33 +673,20 @@ static void arasan_cf_error_handler(struct ata_port *ap)
 
 static void arasan_cf_dma_start(struct arasan_cf_dev *acdev)
 {
-<<<<<<< HEAD
-	u32 xfer_ctr = readl(acdev->vbase + XFER_CTR) & ~XFER_DIR_MASK;
-	u32 write = acdev->qc->tf.flags & ATA_TFLAG_WRITE;
-=======
 	struct ata_queued_cmd *qc = acdev->qc;
 	struct ata_port *ap = qc->ap;
 	struct ata_taskfile *tf = &qc->tf;
 	u32 xfer_ctr = readl(acdev->vbase + XFER_CTR) & ~XFER_DIR_MASK;
 	u32 write = tf->flags & ATA_TFLAG_WRITE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xfer_ctr |= write ? XFER_WRITE : XFER_READ;
 	writel(xfer_ctr, acdev->vbase + XFER_CTR);
 
-<<<<<<< HEAD
-	acdev->qc->ap->ops->sff_exec_command(acdev->qc->ap, &acdev->qc->tf);
-	ata_sff_queue_work(&acdev->work);
-}
-
-unsigned int arasan_cf_qc_issue(struct ata_queued_cmd *qc)
-=======
 	ap->ops->sff_exec_command(ap, tf);
 	ata_sff_queue_work(&acdev->work);
 }
 
 static unsigned int arasan_cf_qc_issue(struct ata_queued_cmd *qc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = qc->ap;
 	struct arasan_cf_dev *acdev = ap->host->private_data;
@@ -809,17 +705,11 @@ static unsigned int arasan_cf_qc_issue(struct ata_queued_cmd *qc)
 	case ATA_PROT_DMA:
 		WARN_ON_ONCE(qc->tf.flags & ATA_TFLAG_POLLING);
 
-<<<<<<< HEAD
-		ap->ops->sff_tf_load(ap, &qc->tf);
-		acdev->dma_status = 0;
-		acdev->qc = qc;
-=======
 		trace_ata_tf_load(ap, &qc->tf);
 		ap->ops->sff_tf_load(ap, &qc->tf);
 		acdev->dma_status = 0;
 		acdev->qc = qc;
 		trace_ata_bmdma_start(ap, &qc->tf, qc->tag);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		arasan_cf_dma_start(acdev);
 		ap->hsm_task_state = HSM_ST_LAST;
 		break;
@@ -902,25 +792,16 @@ static struct ata_port_operations arasan_cf_ops = {
 	.set_dmamode = arasan_cf_set_dmamode,
 };
 
-<<<<<<< HEAD
-static int __devinit arasan_cf_probe(struct platform_device *pdev)
-=======
 static int arasan_cf_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct arasan_cf_dev *acdev;
 	struct arasan_cf_pdata *pdata = dev_get_platdata(&pdev->dev);
 	struct ata_host *host;
 	struct ata_port *ap;
 	struct resource *res;
-<<<<<<< HEAD
-	irq_handler_t irq_handler = NULL;
-	int ret = 0;
-=======
 	u32 quirk;
 	irq_handler_t irq_handler = NULL;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
@@ -933,22 +814,6 @@ static int arasan_cf_probe(struct platform_device *pdev)
 	}
 
 	acdev = devm_kzalloc(&pdev->dev, sizeof(*acdev), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!acdev) {
-		dev_warn(&pdev->dev, "kzalloc fail\n");
-		return -ENOMEM;
-	}
-
-	/* if irq is 0, support only PIO */
-	acdev->irq = platform_get_irq(pdev, 0);
-	if (acdev->irq)
-		irq_handler = arasan_cf_interrupt;
-	else
-		pdata->quirk |= CF_BROKEN_MWDMA | CF_BROKEN_UDMA;
-
-	acdev->pbase = res->start;
-	acdev->vbase = devm_ioremap_nocache(&pdev->dev, res->start,
-=======
 	if (!acdev)
 		return -ENOMEM;
 
@@ -973,39 +838,23 @@ static int arasan_cf_probe(struct platform_device *pdev)
 
 	acdev->pbase = res->start;
 	acdev->vbase = devm_ioremap(&pdev->dev, res->start,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			resource_size(res));
 	if (!acdev->vbase) {
 		dev_warn(&pdev->dev, "ioremap fail\n");
 		return -ENOMEM;
 	}
 
-<<<<<<< HEAD
-#ifdef CONFIG_HAVE_CLK
-	acdev->clk = clk_get(&pdev->dev, NULL);
-=======
 	acdev->clk = devm_clk_get(&pdev->dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(acdev->clk)) {
 		dev_warn(&pdev->dev, "Clock not found\n");
 		return PTR_ERR(acdev->clk);
 	}
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate host */
 	host = ata_host_alloc(&pdev->dev, 1);
 	if (!host) {
-<<<<<<< HEAD
-		ret = -ENOMEM;
-		dev_warn(&pdev->dev, "alloc host fail\n");
-		goto free_clk;
-=======
 		dev_warn(&pdev->dev, "alloc host fail\n");
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ap = host->ports[0];
@@ -1021,19 +870,6 @@ static int arasan_cf_probe(struct platform_device *pdev)
 	INIT_WORK(&acdev->work, data_xfer);
 	INIT_DELAYED_WORK(&acdev->dwork, delayed_finish);
 	dma_cap_set(DMA_MEMCPY, acdev->mask);
-<<<<<<< HEAD
-	acdev->dma_priv = pdata->dma_priv;
-
-	/* Handle platform specific quirks */
-	if (pdata->quirk) {
-		if (pdata->quirk & CF_BROKEN_PIO) {
-			ap->ops->set_piomode = NULL;
-			ap->pio_mask = 0;
-		}
-		if (pdata->quirk & CF_BROKEN_MWDMA)
-			ap->mwdma_mask = 0;
-		if (pdata->quirk & CF_BROKEN_UDMA)
-=======
 
 	/* Handle platform specific quirks */
 	if (quirk) {
@@ -1044,7 +880,6 @@ static int arasan_cf_probe(struct platform_device *pdev)
 		if (quirk & CF_BROKEN_MWDMA)
 			ap->mwdma_mask = 0;
 		if (quirk & CF_BROKEN_UDMA)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ap->udma_mask = 0;
 	}
 	ap->flags |= ATA_FLAG_PIO_POLLING | ATA_FLAG_NO_ATAPI;
@@ -1068,25 +903,6 @@ static int arasan_cf_probe(struct platform_device *pdev)
 
 	ret = cf_init(acdev);
 	if (ret)
-<<<<<<< HEAD
-		goto free_clk;
-
-	cf_card_detect(acdev, 0);
-
-	return ata_host_activate(host, acdev->irq, irq_handler, 0,
-			&arasan_cf_sht);
-
-free_clk:
-#ifdef CONFIG_HAVE_CLK
-	clk_put(acdev->clk);
-#endif
-	return ret;
-}
-
-static int __devexit arasan_cf_remove(struct platform_device *pdev)
-{
-	struct ata_host *host = dev_get_drvdata(&pdev->dev);
-=======
 		return ret;
 
 	cf_card_detect(acdev, 0);
@@ -1104,44 +920,24 @@ static int __devexit arasan_cf_remove(struct platform_device *pdev)
 static void arasan_cf_remove(struct platform_device *pdev)
 {
 	struct ata_host *host = platform_get_drvdata(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct arasan_cf_dev *acdev = host->ports[0]->private_data;
 
 	ata_host_detach(host);
 	cf_exit(acdev);
-<<<<<<< HEAD
-#ifdef CONFIG_HAVE_CLK
-	clk_put(acdev->clk);
-#endif
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int arasan_cf_suspend(struct device *dev)
 {
 	struct ata_host *host = dev_get_drvdata(dev);
 	struct arasan_cf_dev *acdev = host->ports[0]->private_data;
 
 	if (acdev->dma_chan)
-<<<<<<< HEAD
-		acdev->dma_chan->device->device_control(acdev->dma_chan,
-				DMA_TERMINATE_ALL, 0);
-
-	cf_exit(acdev);
-	return ata_host_suspend(host, PMSG_SUSPEND);
-=======
 		dmaengine_terminate_all(acdev->dma_chan);
 
 	cf_exit(acdev);
 	ata_host_suspend(host, PMSG_SUSPEND);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int arasan_cf_resume(struct device *dev)
@@ -1158,15 +954,6 @@ static int arasan_cf_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(arasan_cf_pm_ops, arasan_cf_suspend, arasan_cf_resume);
 
-<<<<<<< HEAD
-static struct platform_driver arasan_cf_driver = {
-	.probe		= arasan_cf_probe,
-	.remove		= __devexit_p(arasan_cf_remove),
-	.driver		= {
-		.name	= DRIVER_NAME,
-		.owner	= THIS_MODULE,
-		.pm	= &arasan_cf_pm_ops,
-=======
 #ifdef CONFIG_OF
 static const struct of_device_id arasan_cf_id_table[] = {
 	{ .compatible = "arasan,cf-spear1340" },
@@ -1182,17 +969,12 @@ static struct platform_driver arasan_cf_driver = {
 		.name	= DRIVER_NAME,
 		.pm	= &arasan_cf_pm_ops,
 		.of_match_table = of_match_ptr(arasan_cf_id_table),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 module_platform_driver(arasan_cf_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Viresh Kumar <viresh.kumar@st.com>");
-=======
 MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Arasan ATA Compact Flash driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:" DRIVER_NAME);

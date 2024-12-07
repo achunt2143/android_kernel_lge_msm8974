@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifdef CONFIG_X86_32
-# include "seccomp_32.h"
-#else
-# include "seccomp_64.h"
-#endif
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _ASM_X86_SECCOMP_H
 #define _ASM_X86_SECCOMP_H
@@ -46,4 +39,3 @@
 #include <asm-generic/seccomp.h>
 
 #endif /* _ASM_X86_SECCOMP_H */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

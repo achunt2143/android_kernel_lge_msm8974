@@ -1,41 +1,17 @@
-<<<<<<< HEAD
-/*
- * padata.c - generic interface to process data streams in parallel
- *
- * See Documentation/padata.txt for an api documentation.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * padata.c - generic interface to process data streams in parallel
  *
  * See Documentation/core-api/padata.rst for more information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2008, 2009 secunet Security Networks AG
  * Copyright (C) 2008, 2009 Steffen Klassert <steffen.klassert@secunet.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
-=======
  * Copyright (c) 2020 Oracle and/or its affiliates.
  * Author: Daniel Jordan <daniel.m.jordan@oracle.com>
  */
 
 #include <linux/completion.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/cpumask.h>
 #include <linux/err.h>
@@ -47,9 +23,6 @@
 #include <linux/sysfs.h>
 #include <linux/rcupdate.h>
 
-<<<<<<< HEAD
-#define MAX_OBJ_NUM 1000
-=======
 #define	PADATA_WORK_ONSTACK	1	/* Work's memory is on stack */
 
 struct padata_work {
@@ -73,7 +46,6 @@ struct padata_mt_job_state {
 
 static void padata_free_pd(struct parallel_data *pd);
 static void __init padata_mt_helper(struct work_struct *work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int padata_index_to_cpu(struct parallel_data *pd, int cpu_index)
 {
@@ -86,62 +58,17 @@ static int padata_index_to_cpu(struct parallel_data *pd, int cpu_index)
 	return target_cpu;
 }
 
-<<<<<<< HEAD
-static int padata_cpu_hash(struct parallel_data *pd)
-{
-	int cpu_index;
-
-=======
 static int padata_cpu_hash(struct parallel_data *pd, unsigned int seq_nr)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Hash the sequence numbers to the cpus by taking
 	 * seq_nr mod. number of cpus in use.
 	 */
-<<<<<<< HEAD
-
-	spin_lock(&pd->seq_lock);
-	cpu_index =  pd->seq_nr % cpumask_weight(pd->cpumask.pcpu);
-	pd->seq_nr++;
-	spin_unlock(&pd->seq_lock);
-=======
 	int cpu_index = seq_nr % cpumask_weight(pd->cpumask.pcpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return padata_index_to_cpu(pd, cpu_index);
 }
 
-<<<<<<< HEAD
-static void padata_parallel_worker(struct work_struct *parallel_work)
-{
-	struct padata_parallel_queue *pqueue;
-	struct parallel_data *pd;
-	struct padata_instance *pinst;
-	LIST_HEAD(local_list);
-
-	local_bh_disable();
-	pqueue = container_of(parallel_work,
-			      struct padata_parallel_queue, work);
-	pd = pqueue->pd;
-	pinst = pd->pinst;
-
-	spin_lock(&pqueue->parallel.lock);
-	list_replace_init(&pqueue->parallel.list, &local_list);
-	spin_unlock(&pqueue->parallel.lock);
-
-	while (!list_empty(&local_list)) {
-		struct padata_priv *padata;
-
-		padata = list_entry(local_list.next,
-				    struct padata_priv, list);
-
-		list_del_init(&padata->list);
-
-		padata->parallel(padata);
-	}
-
-=======
 static struct padata_work *padata_work_alloc(void)
 {
 	struct padata_work *pw;
@@ -226,43 +153,22 @@ static void padata_parallel_worker(struct work_struct *parallel_work)
 	spin_lock(&padata_works_lock);
 	padata_work_free(pw);
 	spin_unlock(&padata_works_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_bh_enable();
 }
 
 /**
  * padata_do_parallel - padata parallelization function
  *
-<<<<<<< HEAD
- * @pinst: padata instance
- * @padata: object to be parallelized
- * @cb_cpu: cpu the serialization callback function will run on,
- *          must be in the serial cpumask of padata(i.e. cpumask.cbcpu).
-=======
  * @ps: padatashell
  * @padata: object to be parallelized
  * @cb_cpu: pointer to the CPU that the serialization callback function should
  *          run on.  If it's not in the serial cpumask of @pinst
  *          (i.e. cpumask.cbcpu), this function selects a fallback CPU and if
  *          none found, returns -EINVAL.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The parallelization callback function will run with BHs off.
  * Note: Every object which is parallelized by padata_do_parallel
  * must be seen by padata_do_serial.
-<<<<<<< HEAD
- */
-int padata_do_parallel(struct padata_instance *pinst,
-		       struct padata_priv *padata, int cb_cpu)
-{
-	int target_cpu, err;
-	struct padata_parallel_queue *queue;
-	struct parallel_data *pd;
-
-	rcu_read_lock_bh();
-
-	pd = rcu_dereference(pinst->pd);
-=======
  *
  * Return: 0 on success or else negative error code.
  */
@@ -277,38 +183,11 @@ int padata_do_parallel(struct padata_shell *ps,
 	rcu_read_lock_bh();
 
 	pd = rcu_dereference_bh(ps->pd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -EINVAL;
 	if (!(pinst->flags & PADATA_INIT) || pinst->flags & PADATA_INVALID)
 		goto out;
 
-<<<<<<< HEAD
-	if (!cpumask_test_cpu(cb_cpu, pd->cpumask.cbcpu))
-		goto out;
-
-	err =  -EBUSY;
-	if ((pinst->flags & PADATA_RESET))
-		goto out;
-
-	if (atomic_read(&pd->refcnt) >= MAX_OBJ_NUM)
-		goto out;
-
-	err = 0;
-	atomic_inc(&pd->refcnt);
-	padata->pd = pd;
-	padata->cb_cpu = cb_cpu;
-
-	target_cpu = padata_cpu_hash(pd);
-	queue = per_cpu_ptr(pd->pqueue, target_cpu);
-
-	spin_lock(&queue->parallel.lock);
-	list_add_tail(&padata->list, &queue->parallel.list);
-	spin_unlock(&queue->parallel.lock);
-
-	queue_work_on(target_cpu, pinst->wq, &queue->work);
-
-=======
 	if (!cpumask_test_cpu(*cb_cpu, pd->cpumask.cbcpu)) {
 		if (cpumask_empty(pd->cpumask.cbcpu))
 			goto out;
@@ -349,7 +228,6 @@ int padata_do_parallel(struct padata_shell *ps,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	rcu_read_unlock_bh();
 
@@ -358,69 +236,6 @@ out:
 EXPORT_SYMBOL(padata_do_parallel);
 
 /*
-<<<<<<< HEAD
- * padata_get_next - Get the next object that needs serialization.
- *
- * Return values are:
- *
- * A pointer to the control struct of the next object that needs
- * serialization, if present in one of the percpu reorder queues.
- *
- * NULL, if all percpu reorder queues are empty.
- *
- * -EINPROGRESS, if the next object that needs serialization will
- *  be parallel processed by another cpu and is not yet present in
- *  the cpu's reorder queue.
- *
- * -ENODATA, if this cpu has to do the parallel processing for
- *  the next object.
- */
-static struct padata_priv *padata_get_next(struct parallel_data *pd)
-{
-	int cpu, num_cpus;
-	unsigned int next_nr, next_index;
-	struct padata_parallel_queue *queue, *next_queue;
-	struct padata_priv *padata;
-	struct padata_list *reorder;
-
-	num_cpus = cpumask_weight(pd->cpumask.pcpu);
-
-	/*
-	 * Calculate the percpu reorder queue and the sequence
-	 * number of the next object.
-	 */
-	next_nr = pd->processed;
-	next_index = next_nr % num_cpus;
-	cpu = padata_index_to_cpu(pd, next_index);
-	next_queue = per_cpu_ptr(pd->pqueue, cpu);
-
-	padata = NULL;
-
-	reorder = &next_queue->reorder;
-
-	if (!list_empty(&reorder->list)) {
-		padata = list_entry(reorder->list.next,
-				    struct padata_priv, list);
-
-		spin_lock(&reorder->lock);
-		list_del_init(&padata->list);
-		atomic_dec(&pd->reorder_objects);
-		spin_unlock(&reorder->lock);
-
-		pd->processed++;
-
-		goto out;
-	}
-
-	queue = per_cpu_ptr(pd->pqueue, smp_processor_id());
-	if (queue->cpu_index == next_queue->cpu_index) {
-		padata = ERR_PTR(-ENODATA);
-		goto out;
-	}
-
-	padata = ERR_PTR(-EINPROGRESS);
-out:
-=======
  * padata_find_next - Find the next object that needs serialization.
  *
  * Return:
@@ -463,24 +278,16 @@ static struct padata_priv *padata_find_next(struct parallel_data *pd,
 	}
 
 	spin_unlock(&reorder->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return padata;
 }
 
 static void padata_reorder(struct parallel_data *pd)
 {
-<<<<<<< HEAD
-	int cb_cpu;
-	struct padata_priv *padata;
-	struct padata_serial_queue *squeue;
-	struct padata_instance *pinst = pd->pinst;
-=======
 	struct padata_instance *pinst = pd->ps->pinst;
 	int cb_cpu;
 	struct padata_priv *padata;
 	struct padata_serial_queue *squeue;
 	struct padata_list *reorder;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We need to ensure that only one cpu can work on dequeueing of
@@ -496,30 +303,6 @@ static void padata_reorder(struct parallel_data *pd)
 		return;
 
 	while (1) {
-<<<<<<< HEAD
-		padata = padata_get_next(pd);
-
-		/*
-		 * All reorder queues are empty, or the next object that needs
-		 * serialization is parallel processed by another cpu and is
-		 * still on it's way to the cpu's reorder queue, nothing to
-		 * do for now.
-		 */
-		if (!padata || PTR_ERR(padata) == -EINPROGRESS)
-			break;
-
-		/*
-		 * This cpu has to do the parallel processing of the next
-		 * object. It's waiting in the cpu's parallelization queue,
-		 * so exit immediately.
-		 */
-		if (PTR_ERR(padata) == -ENODATA) {
-			del_timer(&pd->timer);
-			spin_unlock_bh(&pd->lock);
-			return;
-		}
-
-=======
 		padata = padata_find_next(pd, true);
 
 		/*
@@ -530,7 +313,6 @@ static void padata_reorder(struct parallel_data *pd)
 		if (!padata)
 			break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cb_cpu = padata->cb_cpu;
 		squeue = per_cpu_ptr(pd->squeue, cb_cpu);
 
@@ -538,36 +320,13 @@ static void padata_reorder(struct parallel_data *pd)
 		list_add_tail(&padata->list, &squeue->serial.list);
 		spin_unlock(&squeue->serial.lock);
 
-<<<<<<< HEAD
-		queue_work_on(cb_cpu, pinst->wq, &squeue->work);
-=======
 		queue_work_on(cb_cpu, pinst->serial_wq, &squeue->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_bh(&pd->lock);
 
 	/*
 	 * The next object that needs serialization might have arrived to
-<<<<<<< HEAD
-	 * the reorder queues in the meantime, we will be called again
-	 * from the timer function if no one else cares for it.
-	 */
-	if (atomic_read(&pd->reorder_objects)
-			&& !(pinst->flags & PADATA_RESET))
-		mod_timer(&pd->timer, jiffies + HZ);
-	else
-		del_timer(&pd->timer);
-
-	return;
-}
-
-static void padata_reorder_timer(unsigned long arg)
-{
-	struct parallel_data *pd = (struct parallel_data *)arg;
-
-	padata_reorder(pd);
-=======
 	 * the reorder queues in the meantime.
 	 *
 	 * Ensure reorder queue is read after pd->lock is dropped so we see
@@ -589,7 +348,6 @@ static void invoke_padata_reorder(struct work_struct *work)
 	pd = container_of(work, struct parallel_data, reorder_work);
 	padata_reorder(pd);
 	local_bh_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void padata_serial_worker(struct work_struct *serial_work)
@@ -597,10 +355,7 @@ static void padata_serial_worker(struct work_struct *serial_work)
 	struct padata_serial_queue *squeue;
 	struct parallel_data *pd;
 	LIST_HEAD(local_list);
-<<<<<<< HEAD
-=======
 	int cnt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_bh_disable();
 	squeue = container_of(serial_work, struct padata_serial_queue, work);
@@ -610,11 +365,8 @@ static void padata_serial_worker(struct work_struct *serial_work)
 	list_replace_init(&squeue->serial.list, &local_list);
 	spin_unlock(&squeue->serial.lock);
 
-<<<<<<< HEAD
-=======
 	cnt = 0;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!list_empty(&local_list)) {
 		struct padata_priv *padata;
 
@@ -624,18 +376,12 @@ static void padata_serial_worker(struct work_struct *serial_work)
 		list_del_init(&padata->list);
 
 		padata->serial(padata);
-<<<<<<< HEAD
-		atomic_dec(&pd->refcnt);
-	}
-	local_bh_enable();
-=======
 		cnt++;
 	}
 	local_bh_enable();
 
 	if (refcount_sub_and_test(cnt, &pd->refcnt))
 		padata_free_pd(pd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -648,23 +394,6 @@ static void padata_serial_worker(struct work_struct *serial_work)
  */
 void padata_do_serial(struct padata_priv *padata)
 {
-<<<<<<< HEAD
-	int cpu;
-	struct padata_parallel_queue *pqueue;
-	struct parallel_data *pd;
-
-	pd = padata->pd;
-
-	cpu = get_cpu();
-	pqueue = per_cpu_ptr(pd->pqueue, cpu);
-
-	spin_lock(&pqueue->reorder.lock);
-	atomic_inc(&pd->reorder_objects);
-	list_add_tail(&padata->list, &pqueue->reorder.list);
-	spin_unlock(&pqueue->reorder.lock);
-
-	put_cpu();
-=======
 	struct parallel_data *pd = padata->pd;
 	int hashed_cpu = padata_cpu_hash(pd, padata->seq_nr);
 	struct padata_list *reorder = per_cpu_ptr(pd->reorder_list, hashed_cpu);
@@ -687,29 +416,11 @@ void padata_do_serial(struct padata_priv *padata)
 	 * in padata_reorder.
 	 */
 	smp_mb();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	padata_reorder(pd);
 }
 EXPORT_SYMBOL(padata_do_serial);
 
-<<<<<<< HEAD
-static int padata_setup_cpumasks(struct parallel_data *pd,
-				 const struct cpumask *pcpumask,
-				 const struct cpumask *cbcpumask)
-{
-	if (!alloc_cpumask_var(&pd->cpumask.pcpu, GFP_KERNEL))
-		return -ENOMEM;
-
-	cpumask_and(pd->cpumask.pcpu, pcpumask, cpu_online_mask);
-	if (!alloc_cpumask_var(&pd->cpumask.cbcpu, GFP_KERNEL)) {
-		free_cpumask_var(pd->cpumask.cbcpu);
-		return -ENOMEM;
-	}
-
-	cpumask_and(pd->cpumask.cbcpu, cbcpumask, cpu_online_mask);
-	return 0;
-=======
 static int padata_setup_cpumasks(struct padata_instance *pinst)
 {
 	struct workqueue_attrs *attrs;
@@ -827,7 +538,6 @@ void __init padata_do_multithreaded(struct padata_mt_job *job)
 
 	destroy_work_on_stack(&my_work.pw_work);
 	padata_works_free(&works);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __padata_list_init(struct padata_list *pd_list)
@@ -850,25 +560,6 @@ static void padata_init_squeues(struct parallel_data *pd)
 	}
 }
 
-<<<<<<< HEAD
-/* Initialize all percpu queues used by parallel workers */
-static void padata_init_pqueues(struct parallel_data *pd)
-{
-	int cpu_index, cpu;
-	struct padata_parallel_queue *pqueue;
-
-	cpu_index = 0;
-	for_each_cpu(cpu, pd->cpumask.pcpu) {
-		pqueue = per_cpu_ptr(pd->pqueue, cpu);
-		pqueue->pd = pd;
-		pqueue->cpu_index = cpu_index;
-		cpu_index++;
-
-		__padata_list_init(&pqueue->reorder);
-		__padata_list_init(&pqueue->parallel);
-		INIT_WORK(&pqueue->work, padata_parallel_worker);
-		atomic_set(&pqueue->num_obj, 0);
-=======
 /* Initialize per-CPU reorder lists */
 static void padata_init_reorder_list(struct parallel_data *pd)
 {
@@ -878,59 +569,25 @@ static void padata_init_reorder_list(struct parallel_data *pd)
 	for_each_cpu(cpu, pd->cpumask.pcpu) {
 		list = per_cpu_ptr(pd->reorder_list, cpu);
 		__padata_list_init(list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* Allocate and initialize the internal cpumask dependend resources. */
-<<<<<<< HEAD
-static struct parallel_data *padata_alloc_pd(struct padata_instance *pinst,
-					     const struct cpumask *pcpumask,
-					     const struct cpumask *cbcpumask)
-{
-=======
 static struct parallel_data *padata_alloc_pd(struct padata_shell *ps)
 {
 	struct padata_instance *pinst = ps->pinst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct parallel_data *pd;
 
 	pd = kzalloc(sizeof(struct parallel_data), GFP_KERNEL);
 	if (!pd)
 		goto err;
 
-<<<<<<< HEAD
-	pd->pqueue = alloc_percpu(struct padata_parallel_queue);
-	if (!pd->pqueue)
-=======
 	pd->reorder_list = alloc_percpu(struct padata_list);
 	if (!pd->reorder_list)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_pd;
 
 	pd->squeue = alloc_percpu(struct padata_serial_queue);
 	if (!pd->squeue)
-<<<<<<< HEAD
-		goto err_free_pqueue;
-	if (padata_setup_cpumasks(pd, pcpumask, cbcpumask) < 0)
-		goto err_free_squeue;
-
-	padata_init_pqueues(pd);
-	padata_init_squeues(pd);
-	setup_timer(&pd->timer, padata_reorder_timer, (unsigned long)pd);
-	pd->seq_nr = 0;
-	atomic_set(&pd->reorder_objects, 0);
-	atomic_set(&pd->refcnt, 0);
-	pd->pinst = pinst;
-	spin_lock_init(&pd->lock);
-
-	return pd;
-
-err_free_squeue:
-	free_percpu(pd->squeue);
-err_free_pqueue:
-	free_percpu(pd->pqueue);
-=======
 		goto err_free_reorder_list;
 
 	pd->ps = ps;
@@ -959,7 +616,6 @@ err_free_squeue:
 	free_percpu(pd->squeue);
 err_free_reorder_list:
 	free_percpu(pd->reorder_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_pd:
 	kfree(pd);
 err:
@@ -970,43 +626,11 @@ static void padata_free_pd(struct parallel_data *pd)
 {
 	free_cpumask_var(pd->cpumask.pcpu);
 	free_cpumask_var(pd->cpumask.cbcpu);
-<<<<<<< HEAD
-	free_percpu(pd->pqueue);
-=======
 	free_percpu(pd->reorder_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_percpu(pd->squeue);
 	kfree(pd);
 }
 
-<<<<<<< HEAD
-/* Flush all objects out of the padata queues. */
-static void padata_flush_queues(struct parallel_data *pd)
-{
-	int cpu;
-	struct padata_parallel_queue *pqueue;
-	struct padata_serial_queue *squeue;
-
-	for_each_cpu(cpu, pd->cpumask.pcpu) {
-		pqueue = per_cpu_ptr(pd->pqueue, cpu);
-		flush_work(&pqueue->work);
-	}
-
-	del_timer_sync(&pd->timer);
-
-	if (atomic_read(&pd->reorder_objects))
-		padata_reorder(pd);
-
-	for_each_cpu(cpu, pd->cpumask.cbcpu) {
-		squeue = per_cpu_ptr(pd->squeue, cpu);
-		flush_work(&squeue->work);
-	}
-
-	BUG_ON(atomic_read(&pd->refcnt) != 0);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __padata_start(struct padata_instance *pinst)
 {
 	pinst->flags |= PADATA_INIT;
@@ -1020,74 +644,6 @@ static void __padata_stop(struct padata_instance *pinst)
 	pinst->flags &= ~PADATA_INIT;
 
 	synchronize_rcu();
-<<<<<<< HEAD
-
-	get_online_cpus();
-	padata_flush_queues(pinst->pd);
-	put_online_cpus();
-}
-
-/* Replace the internal control structure with a new one. */
-static void padata_replace(struct padata_instance *pinst,
-			   struct parallel_data *pd_new)
-{
-	struct parallel_data *pd_old = pinst->pd;
-	int notification_mask = 0;
-
-	pinst->flags |= PADATA_RESET;
-
-	rcu_assign_pointer(pinst->pd, pd_new);
-
-	synchronize_rcu();
-
-	if (!cpumask_equal(pd_old->cpumask.pcpu, pd_new->cpumask.pcpu))
-		notification_mask |= PADATA_CPU_PARALLEL;
-	if (!cpumask_equal(pd_old->cpumask.cbcpu, pd_new->cpumask.cbcpu))
-		notification_mask |= PADATA_CPU_SERIAL;
-
-	padata_flush_queues(pd_old);
-	padata_free_pd(pd_old);
-
-	if (notification_mask)
-		blocking_notifier_call_chain(&pinst->cpumask_change_notifier,
-					     notification_mask,
-					     &pd_new->cpumask);
-
-	pinst->flags &= ~PADATA_RESET;
-}
-
-/**
- * padata_register_cpumask_notifier - Registers a notifier that will be called
- *                             if either pcpu or cbcpu or both cpumasks change.
- *
- * @pinst: A poineter to padata instance
- * @nblock: A pointer to notifier block.
- */
-int padata_register_cpumask_notifier(struct padata_instance *pinst,
-				     struct notifier_block *nblock)
-{
-	return blocking_notifier_chain_register(&pinst->cpumask_change_notifier,
-						nblock);
-}
-EXPORT_SYMBOL(padata_register_cpumask_notifier);
-
-/**
- * padata_unregister_cpumask_notifier - Unregisters cpumask notifier
- *        registered earlier  using padata_register_cpumask_notifier
- *
- * @pinst: A pointer to data instance.
- * @nlock: A pointer to notifier block.
- */
-int padata_unregister_cpumask_notifier(struct padata_instance *pinst,
-				       struct notifier_block *nblock)
-{
-	return blocking_notifier_chain_unregister(
-		&pinst->cpumask_change_notifier,
-		nblock);
-}
-EXPORT_SYMBOL(padata_unregister_cpumask_notifier);
-
-=======
 }
 
 /* Replace the internal control structure with a new one. */
@@ -1128,7 +684,6 @@ static int padata_replace(struct padata_instance *pinst)
 
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* If cpumask contains no active cpu, we mark the instance as invalid. */
 static bool padata_validate_cpumask(struct padata_instance *pinst,
@@ -1148,11 +703,7 @@ static int __padata_set_cpumasks(struct padata_instance *pinst,
 				 cpumask_var_t cbcpumask)
 {
 	int valid;
-<<<<<<< HEAD
-	struct parallel_data *pd;
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	valid = padata_validate_cpumask(pinst, pcpumask);
 	if (!valid) {
@@ -1165,77 +716,26 @@ static int __padata_set_cpumasks(struct padata_instance *pinst,
 		__padata_stop(pinst);
 
 out_replace:
-<<<<<<< HEAD
-	pd = padata_alloc_pd(pinst, pcpumask, cbcpumask);
-	if (!pd)
-		return -ENOMEM;
-
-	cpumask_copy(pinst->cpumask.pcpu, pcpumask);
-	cpumask_copy(pinst->cpumask.cbcpu, cbcpumask);
-
-	padata_replace(pinst, pd);
-=======
 	cpumask_copy(pinst->cpumask.pcpu, pcpumask);
 	cpumask_copy(pinst->cpumask.cbcpu, cbcpumask);
 
 	err = padata_setup_cpumasks(pinst) ?: padata_replace(pinst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (valid)
 		__padata_start(pinst);
 
-<<<<<<< HEAD
-	return 0;
-}
-
-/**
- * padata_set_cpumasks - Set both parallel and serial cpumasks. The first
- *                       one is used by parallel workers and the second one
- *                       by the wokers doing serialization.
- *
- * @pinst: padata instance
- * @pcpumask: the cpumask to use for parallel workers
- * @cbcpumask: the cpumsak to use for serial workers
- */
-int padata_set_cpumasks(struct padata_instance *pinst, cpumask_var_t pcpumask,
-			cpumask_var_t cbcpumask)
-{
-	int err;
-
-	mutex_lock(&pinst->lock);
-	get_online_cpus();
-
-	err = __padata_set_cpumasks(pinst, pcpumask, cbcpumask);
-
-	put_online_cpus();
-	mutex_unlock(&pinst->lock);
-
-	return err;
-
-}
-EXPORT_SYMBOL(padata_set_cpumasks);
-
-/**
- * padata_set_cpumask: Sets specified by @cpumask_type cpumask to the value
- *                     equivalent to @cpumask.
- *
-=======
 	return err;
 }
 
 /**
  * padata_set_cpumask - Sets specified by @cpumask_type cpumask to the value
  *                      equivalent to @cpumask.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pinst: padata instance
  * @cpumask_type: PADATA_CPU_SERIAL or PADATA_CPU_PARALLEL corresponding
  *                to parallel and serial cpumasks respectively.
  * @cpumask: the cpumask to use
-<<<<<<< HEAD
-=======
  *
  * Return: 0 on success or negative error code
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
 		       cpumask_var_t cpumask)
@@ -1243,13 +743,8 @@ int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
 	struct cpumask *serial_mask, *parallel_mask;
 	int err = -EINVAL;
 
-<<<<<<< HEAD
-	mutex_lock(&pinst->lock);
-	get_online_cpus();
-=======
 	cpus_read_lock();
 	mutex_lock(&pinst->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cpumask_type) {
 	case PADATA_CPU_PARALLEL:
@@ -1267,31 +762,13 @@ int padata_set_cpumask(struct padata_instance *pinst, int cpumask_type,
 	err =  __padata_set_cpumasks(pinst, parallel_mask, serial_mask);
 
 out:
-<<<<<<< HEAD
-	put_online_cpus();
-	mutex_unlock(&pinst->lock);
-=======
 	mutex_unlock(&pinst->lock);
 	cpus_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 EXPORT_SYMBOL(padata_set_cpumask);
 
-<<<<<<< HEAD
-static int __padata_add_cpu(struct padata_instance *pinst, int cpu)
-{
-	struct parallel_data *pd;
-
-	if (cpumask_test_cpu(cpu, cpu_online_mask)) {
-		pd = padata_alloc_pd(pinst, pinst->cpumask.pcpu,
-				     pinst->cpumask.cbcpu);
-		if (!pd)
-			return -ENOMEM;
-
-		padata_replace(pinst, pd);
-=======
 #ifdef CONFIG_HOTPLUG_CPU
 
 static int __padata_add_cpu(struct padata_instance *pinst, int cpu)
@@ -1300,60 +777,12 @@ static int __padata_add_cpu(struct padata_instance *pinst, int cpu)
 
 	if (cpumask_test_cpu(cpu, cpu_online_mask)) {
 		err = padata_replace(pinst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (padata_validate_cpumask(pinst, pinst->cpumask.pcpu) &&
 		    padata_validate_cpumask(pinst, pinst->cpumask.cbcpu))
 			__padata_start(pinst);
 	}
 
-<<<<<<< HEAD
-	return 0;
-}
-
- /**
- * padata_add_cpu - add a cpu to one or both(parallel and serial)
- *                  padata cpumasks.
- *
- * @pinst: padata instance
- * @cpu: cpu to add
- * @mask: bitmask of flags specifying to which cpumask @cpu shuld be added.
- *        The @mask may be any combination of the following flags:
- *          PADATA_CPU_SERIAL   - serial cpumask
- *          PADATA_CPU_PARALLEL - parallel cpumask
- */
-
-int padata_add_cpu(struct padata_instance *pinst, int cpu, int mask)
-{
-	int err;
-
-	if (!(mask & (PADATA_CPU_SERIAL | PADATA_CPU_PARALLEL)))
-		return -EINVAL;
-
-	mutex_lock(&pinst->lock);
-
-	get_online_cpus();
-	if (mask & PADATA_CPU_SERIAL)
-		cpumask_set_cpu(cpu, pinst->cpumask.cbcpu);
-	if (mask & PADATA_CPU_PARALLEL)
-		cpumask_set_cpu(cpu, pinst->cpumask.pcpu);
-
-	err = __padata_add_cpu(pinst, cpu);
-	put_online_cpus();
-
-	mutex_unlock(&pinst->lock);
-
-	return err;
-}
-EXPORT_SYMBOL(padata_add_cpu);
-
-static int __padata_remove_cpu(struct padata_instance *pinst, int cpu)
-{
-	struct parallel_data *pd = NULL;
-
-	if (cpumask_test_cpu(cpu, cpu_online_mask)) {
-
-=======
 	return err;
 }
 
@@ -1362,104 +791,15 @@ static int __padata_remove_cpu(struct padata_instance *pinst, int cpu)
 	int err = 0;
 
 	if (!cpumask_test_cpu(cpu, cpu_online_mask)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!padata_validate_cpumask(pinst, pinst->cpumask.pcpu) ||
 		    !padata_validate_cpumask(pinst, pinst->cpumask.cbcpu))
 			__padata_stop(pinst);
 
-<<<<<<< HEAD
-		pd = padata_alloc_pd(pinst, pinst->cpumask.pcpu,
-				     pinst->cpumask.cbcpu);
-		if (!pd)
-			return -ENOMEM;
-
-		padata_replace(pinst, pd);
-
-		cpumask_clear_cpu(cpu, pd->cpumask.cbcpu);
-		cpumask_clear_cpu(cpu, pd->cpumask.pcpu);
-	}
-
-	return 0;
-}
-
- /**
- * padata_remove_cpu - remove a cpu from the one or both(serial and parallel)
- *                     padata cpumasks.
- *
- * @pinst: padata instance
- * @cpu: cpu to remove
- * @mask: bitmask specifying from which cpumask @cpu should be removed
- *        The @mask may be any combination of the following flags:
- *          PADATA_CPU_SERIAL   - serial cpumask
- *          PADATA_CPU_PARALLEL - parallel cpumask
- */
-int padata_remove_cpu(struct padata_instance *pinst, int cpu, int mask)
-{
-	int err;
-
-	if (!(mask & (PADATA_CPU_SERIAL | PADATA_CPU_PARALLEL)))
-		return -EINVAL;
-
-	mutex_lock(&pinst->lock);
-
-	get_online_cpus();
-	if (mask & PADATA_CPU_SERIAL)
-		cpumask_clear_cpu(cpu, pinst->cpumask.cbcpu);
-	if (mask & PADATA_CPU_PARALLEL)
-		cpumask_clear_cpu(cpu, pinst->cpumask.pcpu);
-
-	err = __padata_remove_cpu(pinst, cpu);
-	put_online_cpus();
-
-	mutex_unlock(&pinst->lock);
-
-	return err;
-}
-EXPORT_SYMBOL(padata_remove_cpu);
-
-/**
- * padata_start - start the parallel processing
- *
- * @pinst: padata instance to start
- */
-int padata_start(struct padata_instance *pinst)
-{
-	int err = 0;
-
-	mutex_lock(&pinst->lock);
-
-	if (pinst->flags & PADATA_INVALID)
-		err =-EINVAL;
-
-	 __padata_start(pinst);
-
-	mutex_unlock(&pinst->lock);
-
-	return err;
-}
-EXPORT_SYMBOL(padata_start);
-
-/**
- * padata_stop - stop the parallel processing
- *
- * @pinst: padata instance to stop
- */
-void padata_stop(struct padata_instance *pinst)
-{
-	mutex_lock(&pinst->lock);
-	__padata_stop(pinst);
-	mutex_unlock(&pinst->lock);
-}
-EXPORT_SYMBOL(padata_stop);
-
-#ifdef CONFIG_HOTPLUG_CPU
-=======
 		err = padata_replace(pinst);
 	}
 
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int pinst_has_cpu(struct padata_instance *pinst, int cpu)
 {
@@ -1467,60 +807,6 @@ static inline int pinst_has_cpu(struct padata_instance *pinst, int cpu)
 		cpumask_test_cpu(cpu, pinst->cpumask.cbcpu);
 }
 
-<<<<<<< HEAD
-
-static int padata_cpu_callback(struct notifier_block *nfb,
-			       unsigned long action, void *hcpu)
-{
-	int err;
-	struct padata_instance *pinst;
-	int cpu = (unsigned long)hcpu;
-
-	pinst = container_of(nfb, struct padata_instance, cpu_notifier);
-
-	switch (action) {
-	case CPU_ONLINE:
-	case CPU_ONLINE_FROZEN:
-		if (!pinst_has_cpu(pinst, cpu))
-			break;
-		mutex_lock(&pinst->lock);
-		err = __padata_add_cpu(pinst, cpu);
-		mutex_unlock(&pinst->lock);
-		if (err)
-			return notifier_from_errno(err);
-		break;
-
-	case CPU_DOWN_PREPARE:
-	case CPU_DOWN_PREPARE_FROZEN:
-		if (!pinst_has_cpu(pinst, cpu))
-			break;
-		mutex_lock(&pinst->lock);
-		err = __padata_remove_cpu(pinst, cpu);
-		mutex_unlock(&pinst->lock);
-		if (err)
-			return notifier_from_errno(err);
-		break;
-
-	case CPU_UP_CANCELED:
-	case CPU_UP_CANCELED_FROZEN:
-		if (!pinst_has_cpu(pinst, cpu))
-			break;
-		mutex_lock(&pinst->lock);
-		__padata_remove_cpu(pinst, cpu);
-		mutex_unlock(&pinst->lock);
-
-	case CPU_DOWN_FAILED:
-	case CPU_DOWN_FAILED_FROZEN:
-		if (!pinst_has_cpu(pinst, cpu))
-			break;
-		mutex_lock(&pinst->lock);
-		__padata_add_cpu(pinst, cpu);
-		mutex_unlock(&pinst->lock);
-	}
-
-	return NOTIFY_OK;
-}
-=======
 static int padata_cpu_online(unsigned int cpu, struct hlist_node *node)
 {
 	struct padata_instance *pinst;
@@ -1552,21 +838,11 @@ static int padata_cpu_dead(unsigned int cpu, struct hlist_node *node)
 }
 
 static enum cpuhp_state hp_online;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static void __padata_free(struct padata_instance *pinst)
 {
 #ifdef CONFIG_HOTPLUG_CPU
-<<<<<<< HEAD
-	unregister_hotcpu_notifier(&pinst->cpu_notifier);
-#endif
-
-	padata_stop(pinst);
-	padata_free_pd(pinst->pd);
-	free_cpumask_var(pinst->cpumask.pcpu);
-	free_cpumask_var(pinst->cpumask.cbcpu);
-=======
 	cpuhp_state_remove_instance_nocalls(CPUHP_PADATA_DEAD,
 					    &pinst->cpu_dead_node);
 	cpuhp_state_remove_instance_nocalls(hp_online, &pinst->cpu_online_node);
@@ -1578,7 +854,6 @@ static void __padata_free(struct padata_instance *pinst)
 	free_cpumask_var(pinst->cpumask.cbcpu);
 	destroy_workqueue(pinst->serial_wq);
 	destroy_workqueue(pinst->parallel_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(pinst);
 }
 
@@ -1612,22 +887,10 @@ static ssize_t show_cpumask(struct padata_instance *pinst,
 	else
 		cpumask = pinst->cpumask.pcpu;
 
-<<<<<<< HEAD
-	len = bitmap_scnprintf(buf, PAGE_SIZE, cpumask_bits(cpumask),
-			       nr_cpu_ids);
-	if (PAGE_SIZE - len < 2)
-		len = -EINVAL;
-	else
-		len += sprintf(buf + len, "\n");
-
-	mutex_unlock(&pinst->lock);
-	return len;
-=======
 	len = snprintf(buf, PAGE_SIZE, "%*pb\n",
 		       nr_cpu_ids, cpumask_bits(cpumask));
 	mutex_unlock(&pinst->lock);
 	return len < PAGE_SIZE ? len : -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t store_cpumask(struct padata_instance *pinst,
@@ -1677,10 +940,7 @@ static struct attribute *padata_default_attrs[] = {
 	&parallel_cpumask_attr.attr,
 	NULL,
 };
-<<<<<<< HEAD
-=======
 ATTRIBUTE_GROUPS(padata_default);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t padata_sysfs_show(struct kobject *kobj,
 				 struct attribute *attr, char *buf)
@@ -1717,47 +977,13 @@ static const struct sysfs_ops padata_sysfs_ops = {
 	.store = padata_sysfs_store,
 };
 
-<<<<<<< HEAD
-static struct kobj_type padata_attr_type = {
-	.sysfs_ops = &padata_sysfs_ops,
-	.default_attrs = padata_default_attrs,
-=======
 static const struct kobj_type padata_attr_type = {
 	.sysfs_ops = &padata_sysfs_ops,
 	.default_groups = padata_default_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release = padata_sysfs_release,
 };
 
 /**
-<<<<<<< HEAD
- * padata_alloc_possible - Allocate and initialize padata instance.
- *                         Use the cpu_possible_mask for serial and
- *                         parallel workers.
- *
- * @wq: workqueue to use for the allocated padata instance
- */
-struct padata_instance *padata_alloc_possible(struct workqueue_struct *wq)
-{
-	return padata_alloc(wq, cpu_possible_mask, cpu_possible_mask);
-}
-EXPORT_SYMBOL(padata_alloc_possible);
-
-/**
- * padata_alloc - allocate and initialize a padata instance and specify
- *                cpumasks for serial and parallel workers.
- *
- * @wq: workqueue to use for the allocated padata instance
- * @pcpumask: cpumask that will be used for padata parallelization
- * @cbcpumask: cpumask that will be used for padata serialization
- */
-struct padata_instance *padata_alloc(struct workqueue_struct *wq,
-				     const struct cpumask *pcpumask,
-				     const struct cpumask *cbcpumask)
-{
-	struct padata_instance *pinst;
-	struct parallel_data *pd = NULL;
-=======
  * padata_alloc - allocate and initialize a padata instance
  * @name: used to identify the instance
  *
@@ -1766,50 +992,11 @@ struct padata_instance *padata_alloc(struct workqueue_struct *wq,
 struct padata_instance *padata_alloc(const char *name)
 {
 	struct padata_instance *pinst;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pinst = kzalloc(sizeof(struct padata_instance), GFP_KERNEL);
 	if (!pinst)
 		goto err;
 
-<<<<<<< HEAD
-	get_online_cpus();
-	if (!alloc_cpumask_var(&pinst->cpumask.pcpu, GFP_KERNEL))
-		goto err_free_inst;
-	if (!alloc_cpumask_var(&pinst->cpumask.cbcpu, GFP_KERNEL)) {
-		free_cpumask_var(pinst->cpumask.pcpu);
-		goto err_free_inst;
-	}
-	if (!padata_validate_cpumask(pinst, pcpumask) ||
-	    !padata_validate_cpumask(pinst, cbcpumask))
-		goto err_free_masks;
-
-	pd = padata_alloc_pd(pinst, pcpumask, cbcpumask);
-	if (!pd)
-		goto err_free_masks;
-
-	rcu_assign_pointer(pinst->pd, pd);
-
-	pinst->wq = wq;
-
-	cpumask_copy(pinst->cpumask.pcpu, pcpumask);
-	cpumask_copy(pinst->cpumask.cbcpu, cbcpumask);
-
-	pinst->flags = 0;
-
-#ifdef CONFIG_HOTPLUG_CPU
-	pinst->cpu_notifier.notifier_call = padata_cpu_callback;
-	pinst->cpu_notifier.priority = 0;
-	register_hotcpu_notifier(&pinst->cpu_notifier);
-#endif
-
-	put_online_cpus();
-
-	BLOCKING_INIT_NOTIFIER_HEAD(&pinst->cpumask_change_notifier);
-	kobject_init(&pinst->kobj, &padata_attr_type);
-	mutex_init(&pinst->lock);
-
-=======
 	pinst->parallel_wq = alloc_workqueue("%s_parallel", WQ_UNBOUND, 0,
 					     name);
 	if (!pinst->parallel_wq)
@@ -1851,17 +1038,11 @@ struct padata_instance *padata_alloc(const char *name)
 
 	cpus_read_unlock();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pinst;
 
 err_free_masks:
 	free_cpumask_var(pinst->cpumask.pcpu);
 	free_cpumask_var(pinst->cpumask.cbcpu);
-<<<<<<< HEAD
-err_free_inst:
-	kfree(pinst);
-	put_online_cpus();
-=======
 err_free_serial_wq:
 	destroy_workqueue(pinst->serial_wq);
 err_put_cpus:
@@ -1869,7 +1050,6 @@ err_put_cpus:
 	destroy_workqueue(pinst->parallel_wq);
 err_free_inst:
 	kfree(pinst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	return NULL;
 }
@@ -1878,19 +1058,13 @@ EXPORT_SYMBOL(padata_alloc);
 /**
  * padata_free - free a padata instance
  *
-<<<<<<< HEAD
- * @padata_inst: padata instance to free
-=======
  * @pinst: padata instance to free
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void padata_free(struct padata_instance *pinst)
 {
 	kobject_put(&pinst->kobj);
 }
 EXPORT_SYMBOL(padata_free);
-<<<<<<< HEAD
-=======
 
 /**
  * padata_alloc_shell - Allocate and initialize padata shell.
@@ -1992,4 +1166,3 @@ err:
 #endif
 	pr_warn("padata: initialization failed\n");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

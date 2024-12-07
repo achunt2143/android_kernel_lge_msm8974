@@ -1,37 +1,15 @@
-<<<<<<< HEAD
-/**
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * OMAP1 Dual-Mode Timers - platform device registration
  *
  * Contains first level initialization routines which internally
  * generates timer device information and registers with linux
-<<<<<<< HEAD
- * device model. It also has low level function to chnage the timer
- * input clock source.
- *
- * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
- * Tarun Kanti DebBarma <tarun.kanti@ti.com>
- * Thara Gopinath <thara@ti.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-=======
  * device model. It also has a low level function to change the timer
  * input clock source.
  *
  * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
  * Tarun Kanti DebBarma <tarun.kanti@ti.com>
  * Thara Gopinath <thara@ti.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/clk.h>
@@ -39,19 +17,12 @@
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/platform_device.h>
-<<<<<<< HEAD
-
-#include <mach/irqs.h>
-
-#include <plat/dmtimer.h>
-=======
 #include <linux/platform_data/dmtimer-omap.h>
 #include <linux/soc/ti/omap1-io.h>
 
 #include <clocksource/timer-ti-dm.h>
 
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define OMAP1610_GPTIMER1_BASE		0xfffb1400
 #define OMAP1610_GPTIMER2_BASE		0xfffb1c00
@@ -77,12 +48,7 @@ static int omap1_dm_timer_set_src(struct platform_device *pdev,
 	return 0;
 }
 
-<<<<<<< HEAD
-
-int __init omap1_dm_timer_init(void)
-=======
 static int __init omap1_dm_timer_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	int ret;
@@ -161,22 +127,13 @@ static int __init omap1_dm_timer_init(void)
 
 		pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
 		if (!pdata) {
-<<<<<<< HEAD
-			dev_err(&pdev->dev, "%s: Failed to allocate pdata.\n",
-				__func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto err_free_pdata;
 		}
 
 		pdata->set_timer_src = omap1_dm_timer_set_src;
-<<<<<<< HEAD
-		pdata->needs_manual_reset = 1;
-=======
 		pdata->timer_capability = OMAP_TIMER_ALWON |
 				OMAP_TIMER_NEEDS_RESET | OMAP_TIMER_HAS_DSP_IRQ;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ret = platform_device_add_data(pdev, pdata, sizeof(*pdata));
 		if (ret) {
@@ -201,11 +158,7 @@ err_free_pdata:
 	kfree(pdata);
 
 err_free_pdev:
-<<<<<<< HEAD
-	platform_device_unregister(pdev);
-=======
 	platform_device_put(pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }

@@ -36,11 +36,7 @@
 #include <asm/txx9/pci.h>
 #include <asm/txx9/rbtx4927.h>
 
-<<<<<<< HEAD
-int __init rbtx4927_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-=======
 int rbtx4927_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char irq = pin;
 

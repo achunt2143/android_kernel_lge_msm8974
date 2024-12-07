@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/phy/qsemi.c
  *
@@ -10,15 +7,6 @@
  * Author: Andy Fleming
  *
  * Copyright (c) 2004 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -39,11 +27,7 @@
 
 #include <asm/io.h>
 #include <asm/irq.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------------------- */
 /* The Quality Semiconductor QS6612 is used on the RPX CLLF                  */
@@ -91,13 +75,10 @@ static int qs6612_ack_interrupt(struct phy_device *phydev)
 {
 	int err;
 
-<<<<<<< HEAD
-=======
 	/* The Interrupt Source register is not self-clearing, bits 4 and 5 are
 	 * cleared when MII_BMSR is read and bits 1 and 3 are cleared when
 	 * MII_EXPANSION is read
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = phy_read(phydev, MII_QS6612_ISR);
 
 	if (err < 0)
@@ -119,13 +100,6 @@ static int qs6612_ack_interrupt(struct phy_device *phydev)
 static int qs6612_config_intr(struct phy_device *phydev)
 {
 	int err;
-<<<<<<< HEAD
-	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-		err = phy_write(phydev, MII_QS6612_IMR,
-				MII_QS6612_IMR_INIT);
-	else
-		err = phy_write(phydev, MII_QS6612_IMR, 0);
-=======
 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
 		/* clear any interrupts before enabling them */
@@ -143,40 +117,11 @@ static int qs6612_config_intr(struct phy_device *phydev)
 		/* clear any leftover interrupts */
 		err = qs6612_ack_interrupt(phydev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 
 }
 
-<<<<<<< HEAD
-static struct phy_driver qs6612_driver = {
-	.phy_id		= 0x00181440,
-	.name		= "QS6612",
-	.phy_id_mask	= 0xfffffff0,
-	.features	= PHY_BASIC_FEATURES,
-	.flags		= PHY_HAS_INTERRUPT,
-	.config_init	= qs6612_config_init,
-	.config_aneg	= genphy_config_aneg,
-	.read_status	= genphy_read_status,
-	.ack_interrupt	= qs6612_ack_interrupt,
-	.config_intr	= qs6612_config_intr,
-	.driver 	= { .owner = THIS_MODULE,},
-};
-
-static int __init qs6612_init(void)
-{
-	return phy_driver_register(&qs6612_driver);
-}
-
-static void __exit qs6612_exit(void)
-{
-	phy_driver_unregister(&qs6612_driver);
-}
-
-module_init(qs6612_init);
-module_exit(qs6612_exit);
-=======
 static irqreturn_t qs6612_handle_interrupt(struct phy_device *phydev)
 {
 	int irq_status;
@@ -209,7 +154,6 @@ static struct phy_driver qs6612_driver[] = { {
 } };
 
 module_phy_driver(qs6612_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct mdio_device_id __maybe_unused qs6612_tbl[] = {
 	{ 0x00181440, 0xfffffff0 },

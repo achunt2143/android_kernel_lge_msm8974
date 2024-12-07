@@ -1,35 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
- */
-
-#include "linux/init.h"
-#include "linux/sched.h"
-#include "as-layout.h"
-#include "kern.h"
-#include "os.h"
-#include "skas.h"
-
-int new_mm(unsigned long stack)
-{
-	int fd, err;
-
-	fd = os_open_file("/proc/mm", of_cloexec(of_write(OPENFLAGS())), 0);
-	if (fd < 0)
-		return fd;
-
-	if (skas_needs_stub) {
-		err = map_stub_pages(fd, STUB_CODE, STUB_DATA, stack);
-		if (err) {
-			os_close_file(fd);
-			return err;
-		}
-	}
-
-	return fd;
-}
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
@@ -44,7 +12,6 @@ int new_mm(unsigned long stack)
 #include <kern.h>
 #include <os.h>
 #include <skas.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void start_kernel(void);
 
@@ -52,22 +19,12 @@ static int __init start_kernel_proc(void *unused)
 {
 	int pid;
 
-<<<<<<< HEAD
-	block_signals();
-=======
 	block_signals_trace();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pid = os_getpid();
 
 	cpu_tasks[0].pid = pid;
 	cpu_tasks[0].task = current;
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-	init_cpu_online(get_cpu_mask(0));
-#endif
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start_kernel();
 	return 0;
 }
@@ -80,17 +37,6 @@ int __init start_uml(void)
 {
 	stack_protections((unsigned long) &cpu0_irqstack);
 	set_sigstack(cpu0_irqstack, THREAD_SIZE);
-<<<<<<< HEAD
-	if (proc_mm) {
-		userspace_pid[0] = start_userspace(0);
-		if (userspace_pid[0] < 0) {
-			printf("start_uml - start_userspace returned %d\n",
-			       userspace_pid[0]);
-			exit(1);
-		}
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_new_thread_signals();
 

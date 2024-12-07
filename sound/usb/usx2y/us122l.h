@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef US122L_H
 #define US122L_H
 
@@ -14,21 +11,14 @@ struct us122l {
 
 	struct mutex		mutex;
 	struct file		*first;
-<<<<<<< HEAD
-	unsigned		second_periods_polled;
-=======
 	unsigned int		second_periods_polled;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct file		*master;
 	struct file		*slave;
 	struct list_head	midi_list;
 
 	atomic_t		mmap_count;
-<<<<<<< HEAD
-=======
 
 	bool			is_us144;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

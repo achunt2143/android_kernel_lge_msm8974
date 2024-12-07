@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_GENERIC_PERCPU_H_
 #define _ASM_GENERIC_PERCPU_H_
 
@@ -40,40 +37,6 @@ extern unsigned long __per_cpu_offset[NR_CPUS];
 #endif
 
 /*
-<<<<<<< HEAD
- * Add a offset to a pointer but keep the pointer as is.
- *
- * Only S390 provides its own means of moving the pointer.
- */
-#ifndef SHIFT_PERCPU_PTR
-/* Weird cast keeps both GCC and sparse happy. */
-#define SHIFT_PERCPU_PTR(__p, __offset)	({				\
-	__verify_pcpu_ptr((__p));					\
-	RELOC_HIDE((typeof(*(__p)) __kernel __force *)(__p), (__offset)); \
-})
-#endif
-
-/*
- * A percpu variable may point to a discarded regions. The following are
- * established ways to produce a usable pointer from the percpu variable
- * offset.
- */
-#define per_cpu(var, cpu) \
-	(*SHIFT_PERCPU_PTR(&(var), per_cpu_offset(cpu)))
-
-#ifndef __this_cpu_ptr
-#define __this_cpu_ptr(ptr) SHIFT_PERCPU_PTR(ptr, __my_cpu_offset)
-#endif
-#ifdef CONFIG_DEBUG_PREEMPT
-#define this_cpu_ptr(ptr) SHIFT_PERCPU_PTR(ptr, my_cpu_offset)
-#else
-#define this_cpu_ptr(ptr) __this_cpu_ptr(ptr)
-#endif
-
-#define __get_cpu_var(var) (*this_cpu_ptr(&(var)))
-#define __raw_get_cpu_var(var) (*__this_cpu_ptr(&(var)))
-
-=======
  * Arch may define arch_raw_cpu_ptr() to provide more efficient address
  * translations for raw_cpu_ptr().
  */
@@ -81,27 +44,10 @@ extern unsigned long __per_cpu_offset[NR_CPUS];
 #define arch_raw_cpu_ptr(ptr) SHIFT_PERCPU_PTR(ptr, __my_cpu_offset)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HAVE_SETUP_PER_CPU_AREA
 extern void setup_per_cpu_areas(void);
 #endif
 
-<<<<<<< HEAD
-#else /* ! SMP */
-
-#define VERIFY_PERCPU_PTR(__p) ({			\
-	__verify_pcpu_ptr((__p));			\
-	(typeof(*(__p)) __kernel __force *)(__p);	\
-})
-
-#define per_cpu(var, cpu)	(*((void)(cpu), VERIFY_PERCPU_PTR(&(var))))
-#define __get_cpu_var(var)	(*VERIFY_PERCPU_PTR(&(var)))
-#define __raw_get_cpu_var(var)	(*VERIFY_PERCPU_PTR(&(var)))
-#define this_cpu_ptr(ptr)	per_cpu_ptr(ptr, 0)
-#define __this_cpu_ptr(ptr)	this_cpu_ptr(ptr)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* SMP */
 
 #ifndef PER_CPU_BASE_SECTION
@@ -112,36 +58,10 @@ extern void setup_per_cpu_areas(void);
 #endif
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_SMP
-
-#ifdef MODULE
-#define PER_CPU_SHARED_ALIGNED_SECTION ""
-#define PER_CPU_ALIGNED_SECTION ""
-#else
-#define PER_CPU_SHARED_ALIGNED_SECTION "..shared_aligned"
-#define PER_CPU_ALIGNED_SECTION "..shared_aligned"
-#endif
-#define PER_CPU_FIRST_SECTION "..first"
-
-#else
-
-#define PER_CPU_SHARED_ALIGNED_SECTION ""
-#define PER_CPU_ALIGNED_SECTION "..shared_aligned"
-#define PER_CPU_FIRST_SECTION ""
-
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef PER_CPU_ATTRIBUTES
 #define PER_CPU_ATTRIBUTES
 #endif
 
-<<<<<<< HEAD
-#ifndef PER_CPU_DEF_ATTRIBUTES
-#define PER_CPU_DEF_ATTRIBUTES
-=======
 #define raw_cpu_generic_read(pcp)					\
 ({									\
 	*raw_cpu_ptr(&(pcp));						\
@@ -622,7 +542,6 @@ do {									\
 #ifndef this_cpu_cmpxchg128
 #define this_cpu_cmpxchg128(pcp, oval, nval) \
 	this_cpu_generic_cmpxchg(pcp, oval, nval)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* _ASM_GENERIC_PERCPU_H_ */

@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-mainmenu "User Mode Linux/$SUBARCH $KERNELVERSION Kernel Configuration"
-
-source "arch/um/Kconfig.common"
-
-menu "UML-specific options"
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 menu "Host processor type and features"
 
@@ -16,38 +8,6 @@ endmenu
 
 config UML_X86
 	def_bool y
-<<<<<<< HEAD
-	select GENERIC_FIND_FIRST_BIT
-
-config 64BIT
-	bool "64-bit kernel" if SUBARCH = "x86"
-	default SUBARCH != "i386"
-
-config X86_32
-	def_bool !64BIT
-	select HAVE_AOUT
-
-config X86_64
-	def_bool 64BIT
-
-config RWSEM_XCHGADD_ALGORITHM
-	def_bool X86_XADD && 64BIT
-
-config RWSEM_GENERIC_SPINLOCK
-	def_bool !RWSEM_XCHGADD_ALGORITHM
-
-config 3_LEVEL_PGTABLES
-	bool "Three-level pagetables (EXPERIMENTAL)" if !64BIT
-	default 64BIT
-	depends on EXPERIMENTAL
-	help
-	Three-level pagetables will let UML have more than 4G of physical
-	memory.  All the memory that can't be mapped directly will be treated
-	as high memory.
-
-	However, this it experimental on 32-bit architectures, so if unsure say
-	N (on x86-64 it's automatically enabled, instead, as it's safe there).
-=======
 	select ARCH_BINFMT_ELF_EXTRA_PHDRS if X86_32
 	select DCACHE_WORD_ACCESS
 
@@ -78,7 +38,6 @@ config 3_LEVEL_PGTABLES
 
 	  However, this it experimental on 32-bit architectures, so if unsure say
 	  N (on x86-64 it's automatically enabled, instead, as it's safe there).
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ARCH_HAS_SC_SIGNALS
 	def_bool !64BIT
@@ -88,12 +47,3 @@ config ARCH_REUSE_HOST_VSYSCALL_AREA
 
 config GENERIC_HWEIGHT
 	def_bool y
-<<<<<<< HEAD
-
-source "arch/um/Kconfig.um"
-
-endmenu
-
-source "arch/um/Kconfig.rest"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

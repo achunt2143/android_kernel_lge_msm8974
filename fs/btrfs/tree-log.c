@@ -1,38 +1,10 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2008 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License v2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 021110-1307, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2008 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include "ctree.h"
-#include "transaction.h"
-#include "disk-io.h"
-#include "locking.h"
-#include "print-tree.h"
-#include "compat.h"
-#include "tree-log.h"
-=======
 #include <linux/blkdev.h>
 #include <linux/list_sort.h>
 #include <linux/iversion.h>
@@ -58,7 +30,6 @@
 #include "tree-checker.h"
 
 #define MAX_CONFLICT_INODES 10
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* magic values for the inode_only field in btrfs_log_inode:
  *
@@ -66,15 +37,10 @@
  * LOG_INODE_EXISTS means to log just enough to recreate the inode
  * during log replay
  */
-<<<<<<< HEAD
-#define LOG_INODE_ALL 0
-#define LOG_INODE_EXISTS 1
-=======
 enum {
 	LOG_INODE_ALL,
 	LOG_INODE_EXISTS,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * directory trouble cases
@@ -128,15 +94,6 @@ enum {
  * The last stage is to deal with directories and links and extents
  * and all the other fun semantics
  */
-<<<<<<< HEAD
-#define LOG_WALK_PIN_ONLY 0
-#define LOG_WALK_REPLAY_INODES 1
-#define LOG_WALK_REPLAY_ALL 2
-
-static int btrfs_log_inode(struct btrfs_trans_handle *trans,
-			     struct btrfs_root *root, struct inode *inode,
-			     int inode_only);
-=======
 enum {
 	LOG_WALK_PIN_ONLY,
 	LOG_WALK_REPLAY_INODES,
@@ -148,7 +105,6 @@ static int btrfs_log_inode(struct btrfs_trans_handle *trans,
 			   struct btrfs_inode *inode,
 			   int inode_only,
 			   struct btrfs_log_ctx *ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int link_to_fixup_dir(struct btrfs_trans_handle *trans,
 			     struct btrfs_root *root,
 			     struct btrfs_path *path, u64 objectid);
@@ -157,10 +113,7 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
 				       struct btrfs_root *log,
 				       struct btrfs_path *path,
 				       u64 dirid, int del_all);
-<<<<<<< HEAD
-=======
 static void wait_log_commit(struct btrfs_root *root, int transid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * tree logging is a special write ahead log used to make sure that
@@ -191,45 +144,6 @@ static void wait_log_commit(struct btrfs_root *root, int transid);
  * syncing the tree wait for us to finish
  */
 static int start_log_trans(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-			   struct btrfs_root *root)
-{
-	int ret;
-	int err = 0;
-
-	mutex_lock(&root->log_mutex);
-	if (root->log_root) {
-		if (!root->log_start_pid) {
-			root->log_start_pid = current->pid;
-			root->log_multiple_pids = false;
-		} else if (root->log_start_pid != current->pid) {
-			root->log_multiple_pids = true;
-		}
-
-		root->log_batch++;
-		atomic_inc(&root->log_writers);
-		mutex_unlock(&root->log_mutex);
-		return 0;
-	}
-	root->log_multiple_pids = false;
-	root->log_start_pid = current->pid;
-	mutex_lock(&root->fs_info->tree_log_mutex);
-	if (!root->fs_info->log_root_tree) {
-		ret = btrfs_init_log_root_tree(trans, root->fs_info);
-		if (ret)
-			err = ret;
-	}
-	if (err == 0 && !root->log_root) {
-		ret = btrfs_add_log_tree(trans, root);
-		if (ret)
-			err = ret;
-	}
-	mutex_unlock(&root->fs_info->tree_log_mutex);
-	root->log_batch++;
-	atomic_inc(&root->log_writers);
-	mutex_unlock(&root->log_mutex);
-	return err;
-=======
 			   struct btrfs_root *root,
 			   struct btrfs_log_ctx *ctx)
 {
@@ -310,7 +224,6 @@ again:
 out:
 	mutex_unlock(&root->log_mutex);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -320,17 +233,6 @@ out:
  */
 static int join_running_log_trans(struct btrfs_root *root)
 {
-<<<<<<< HEAD
-	int ret = -ENOENT;
-
-	smp_mb();
-	if (!root->log_root)
-		return -ENOENT;
-
-	mutex_lock(&root->log_mutex);
-	if (root->log_root) {
-		ret = 0;
-=======
 	const bool zoned = btrfs_is_zoned(root->fs_info);
 	int ret = -ENOENT;
 
@@ -347,7 +249,6 @@ again:
 			wait_log_commit(root, root->log_transid - 1);
 			goto again;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&root->log_writers);
 	}
 	mutex_unlock(&root->log_mutex);
@@ -359,20 +260,9 @@ again:
  * until you call btrfs_end_log_trans() or it makes any future
  * log transactions wait until you call btrfs_end_log_trans()
  */
-<<<<<<< HEAD
-int btrfs_pin_log_trans(struct btrfs_root *root)
-{
-	int ret = -ENOENT;
-
-	mutex_lock(&root->log_mutex);
-	atomic_inc(&root->log_writers);
-	mutex_unlock(&root->log_mutex);
-	return ret;
-=======
 void btrfs_pin_log_trans(struct btrfs_root *root)
 {
 	atomic_inc(&root->log_writers);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -382,21 +272,11 @@ void btrfs_pin_log_trans(struct btrfs_root *root)
 void btrfs_end_log_trans(struct btrfs_root *root)
 {
 	if (atomic_dec_and_test(&root->log_writers)) {
-<<<<<<< HEAD
-		smp_mb();
-		if (waitqueue_active(&root->log_writer_wait))
-			wake_up(&root->log_writer_wait);
-	}
-}
-
-
-=======
 		/* atomic_dec_and_test implies a barrier */
 		cond_wake_up_nomb(&root->log_writer_wait);
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * the walk control struct is used to pass state down the chain when
  * processing the log tree.  The stage field tells us which part
@@ -409,19 +289,6 @@ struct walk_control {
 	 */
 	int free;
 
-<<<<<<< HEAD
-	/* should we write out the extent buffer?  This is used
-	 * while flushing the log tree to disk during a sync
-	 */
-	int write;
-
-	/* should we wait for the extent buffer io to finish?  Also used
-	 * while flushing the log tree to disk for a sync
-	 */
-	int wait;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* pin only walk, we record which extents on disk belong to the
 	 * log trees
 	 */
@@ -430,8 +297,6 @@ struct walk_control {
 	/* what stage of the replay code we're currently in */
 	int stage;
 
-<<<<<<< HEAD
-=======
 	/*
 	 * Ignore any items from the inode currently being processed. Needs
 	 * to be set every time we find a BTRFS_INODE_ITEM_KEY and we are in
@@ -439,7 +304,6 @@ struct walk_control {
 	 */
 	bool ignore_cur_inode;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the root we are currently replaying */
 	struct btrfs_root *replay_dest;
 
@@ -452,11 +316,7 @@ struct walk_control {
 	 * inside it
 	 */
 	int (*process_func)(struct btrfs_root *log, struct extent_buffer *eb,
-<<<<<<< HEAD
-			    struct walk_control *wc, u64 gen);
-=======
 			    struct walk_control *wc, u64 gen, int level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -464,22 +324,6 @@ struct walk_control {
  */
 static int process_one_buffer(struct btrfs_root *log,
 			      struct extent_buffer *eb,
-<<<<<<< HEAD
-			      struct walk_control *wc, u64 gen)
-{
-	if (wc->pin)
-		btrfs_pin_extent_for_log_replay(wc->trans,
-						log->fs_info->extent_root,
-						eb->start, eb->len);
-
-	if (btrfs_buffer_uptodate(eb, gen, 0)) {
-		if (wc->write)
-			btrfs_write_tree_block(eb);
-		if (wc->wait)
-			btrfs_wait_tree_block_writeback(eb);
-	}
-	return 0;
-=======
 			      struct walk_control *wc, u64 gen, int level)
 {
 	struct btrfs_fs_info *fs_info = log->fs_info;
@@ -510,7 +354,6 @@ static int process_one_buffer(struct btrfs_root *log,
 			ret = btrfs_exclude_logged_extents(eb);
 	}
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -527,19 +370,11 @@ static int process_one_buffer(struct btrfs_root *log,
  *
  * If the key isn't in the destination yet, a new item is inserted.
  */
-<<<<<<< HEAD
-static noinline int overwrite_item(struct btrfs_trans_handle *trans,
-				   struct btrfs_root *root,
-				   struct btrfs_path *path,
-				   struct extent_buffer *eb, int slot,
-				   struct btrfs_key *key)
-=======
 static int overwrite_item(struct btrfs_trans_handle *trans,
 			  struct btrfs_root *root,
 			  struct btrfs_path *path,
 			  struct extent_buffer *eb, int slot,
 			  struct btrfs_key *key)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	u32 item_size;
@@ -547,18 +382,6 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 	int save_old_i_size = 0;
 	unsigned long src_ptr;
 	unsigned long dst_ptr;
-<<<<<<< HEAD
-	int overwrite_root = 0;
-	bool inode_item = key->type == BTRFS_INODE_ITEM_KEY;
-
-	if (root->root_key.objectid != BTRFS_TREE_LOG_OBJECTID)
-		overwrite_root = 1;
-
-	item_size = btrfs_item_size_nr(eb, slot);
-	src_ptr = btrfs_item_ptr_offset(eb, slot);
-
-	/* look for the key in the destination tree */
-=======
 	bool inode_item = key->type == BTRFS_INODE_ITEM_KEY;
 
 	/*
@@ -574,7 +397,6 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 	src_ptr = btrfs_item_ptr_offset(eb, slot);
 
 	/* Look for the key in the destination tree. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = btrfs_search_slot(NULL, root, key, path, 0, 0);
 	if (ret < 0)
 		return ret;
@@ -582,11 +404,7 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 	if (ret == 0) {
 		char *src_copy;
 		char *dst_copy;
-<<<<<<< HEAD
-		u32 dst_size = btrfs_item_size_nr(path->nodes[0],
-=======
 		u32 dst_size = btrfs_item_size(path->nodes[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  path->slots[0]);
 		if (dst_size != item_size)
 			goto insert;
@@ -631,10 +449,7 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 		if (inode_item) {
 			struct btrfs_inode_item *item;
 			u64 nbytes;
-<<<<<<< HEAD
-=======
 			u32 mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			item = btrfs_item_ptr(path->nodes[0], path->slots[0],
 					      struct btrfs_inode_item);
@@ -642,11 +457,6 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 			item = btrfs_item_ptr(eb, slot,
 					      struct btrfs_inode_item);
 			btrfs_set_inode_nbytes(eb, item, nbytes);
-<<<<<<< HEAD
-		}
-	} else if (inode_item) {
-		struct btrfs_inode_item *item;
-=======
 
 			/*
 			 * If this is a directory we need to reset the i_size to
@@ -660,7 +470,6 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 	} else if (inode_item) {
 		struct btrfs_inode_item *item;
 		u32 mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * New inode, set nbytes to 0 so that the nbytes comes out
@@ -668,8 +477,6 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 		 */
 		item = btrfs_item_ptr(eb, slot, struct btrfs_inode_item);
 		btrfs_set_inode_nbytes(eb, item, 0);
-<<<<<<< HEAD
-=======
 
 		/*
 		 * If this is a directory we need to reset the i_size to 0 so
@@ -679,26 +486,10 @@ static int overwrite_item(struct btrfs_trans_handle *trans,
 		mode = btrfs_inode_mode(eb, item);
 		if (S_ISDIR(mode))
 			btrfs_set_inode_size(eb, item, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 insert:
 	btrfs_release_path(path);
 	/* try to insert the key into the destination tree */
-<<<<<<< HEAD
-	ret = btrfs_insert_empty_item(trans, root, path,
-				      key, item_size);
-
-	/* make sure any existing item is the correct size */
-	if (ret == -EEXIST) {
-		u32 found_size;
-		found_size = btrfs_item_size_nr(path->nodes[0],
-						path->slots[0]);
-		if (found_size > item_size)
-			btrfs_truncate_item(trans, root, path, item_size, 1);
-		else if (found_size < item_size)
-			btrfs_extend_item(trans, root, path,
-					  item_size - found_size);
-=======
 	path->skip_release_on_error = 1;
 	ret = btrfs_insert_empty_item(trans, root, path,
 				      key, item_size);
@@ -713,7 +504,6 @@ insert:
 			btrfs_truncate_item(trans, path, item_size, 1);
 		else if (found_size < item_size)
 			btrfs_extend_item(trans, path, item_size - found_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (ret) {
 		return ret;
 	}
@@ -736,13 +526,6 @@ insert:
 		src_item = (struct btrfs_inode_item *)src_ptr;
 		dst_item = (struct btrfs_inode_item *)dst_ptr;
 
-<<<<<<< HEAD
-		if (btrfs_inode_generation(eb, src_item) == 0)
-			goto no_copy;
-
-		if (overwrite_root &&
-		    S_ISDIR(btrfs_inode_mode(eb, src_item)) &&
-=======
 		if (btrfs_inode_generation(eb, src_item) == 0) {
 			struct extent_buffer *dst_eb = path->nodes[0];
 			const u64 ino_size = btrfs_inode_size(eb, src_item);
@@ -762,7 +545,6 @@ insert:
 		}
 
 		if (S_ISDIR(btrfs_inode_mode(eb, src_item)) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    S_ISDIR(btrfs_inode_mode(path->nodes[0], dst_item))) {
 			save_old_i_size = 1;
 			saved_i_size = btrfs_inode_size(path->nodes[0],
@@ -789,17 +571,11 @@ insert:
 		}
 	}
 no_copy:
-<<<<<<< HEAD
-	btrfs_mark_buffer_dirty(path->nodes[0]);
-=======
 	btrfs_mark_buffer_dirty(trans, path->nodes[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_release_path(path);
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int read_alloc_one_name(struct extent_buffer *eb, void *start, int len,
 			       struct fscrypt_str *name)
 {
@@ -815,7 +591,6 @@ static int read_alloc_one_name(struct extent_buffer *eb, void *start, int len,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * simple helper to read an inode off the disk from a given root
  * This can only be called for subvolume roots and not for the log
@@ -823,27 +598,11 @@ static int read_alloc_one_name(struct extent_buffer *eb, void *start, int len,
 static noinline struct inode *read_one_inode(struct btrfs_root *root,
 					     u64 objectid)
 {
-<<<<<<< HEAD
-	struct btrfs_key key;
-	struct inode *inode;
-
-	key.objectid = objectid;
-	key.type = BTRFS_INODE_ITEM_KEY;
-	key.offset = 0;
-	inode = btrfs_iget(root->fs_info->sb, &key, root, NULL);
-	if (IS_ERR(inode)) {
-		inode = NULL;
-	} else if (is_bad_inode(inode)) {
-		iput(inode);
-		inode = NULL;
-	}
-=======
 	struct inode *inode;
 
 	inode = btrfs_iget(root->fs_info->sb, objectid, root);
 	if (IS_ERR(inode))
 		inode = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return inode;
 }
 
@@ -865,17 +624,10 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 				      struct extent_buffer *eb, int slot,
 				      struct btrfs_key *key)
 {
-<<<<<<< HEAD
-	int found_type;
-	u64 mask = root->sectorsize - 1;
-	u64 extent_end;
-	u64 alloc_hint;
-=======
 	struct btrfs_drop_extents_args drop_args = { 0 };
 	struct btrfs_fs_info *fs_info = root->fs_info;
 	int found_type;
 	u64 extent_end;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 start = key->offset;
 	u64 nbytes = 0;
 	struct btrfs_file_extent_item *item;
@@ -898,16 +650,10 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 		if (btrfs_file_extent_disk_bytenr(eb, item) == 0)
 			nbytes = 0;
 	} else if (found_type == BTRFS_FILE_EXTENT_INLINE) {
-<<<<<<< HEAD
-		size = btrfs_file_extent_inline_len(eb, item);
-		nbytes = btrfs_file_extent_ram_bytes(eb, item);
-		extent_end = (start + size + mask) & ~mask;
-=======
 		size = btrfs_file_extent_ram_bytes(eb, item);
 		nbytes = btrfs_file_extent_ram_bytes(eb, item);
 		extent_end = ALIGN(start + size,
 				   fs_info->sectorsize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		ret = 0;
 		goto out;
@@ -924,13 +670,8 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 	 * file.  This must be done before the btrfs_drop_extents run
 	 * so we don't try to drop this extent.
 	 */
-<<<<<<< HEAD
-	ret = btrfs_lookup_file_extent(trans, root, path, btrfs_ino(inode),
-				       start, 0);
-=======
 	ret = btrfs_lookup_file_extent(trans, root, path,
 			btrfs_ino(BTRFS_I(inode)), start, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret == 0 &&
 	    (found_type == BTRFS_FILE_EXTENT_REG ||
@@ -961,18 +702,12 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 	btrfs_release_path(path);
 
 	/* drop any overlapping extents */
-<<<<<<< HEAD
-	ret = btrfs_drop_extents(trans, inode, start, extent_end,
-				 &alloc_hint, 1);
-	BUG_ON(ret);
-=======
 	drop_args.start = start;
 	drop_args.end = extent_end;
 	drop_args.drop_cache = true;
 	ret = btrfs_drop_extents(trans, root, BTRFS_I(inode), &drop_args);
 	if (ret)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (found_type == BTRFS_FILE_EXTENT_REG ||
 	    found_type == BTRFS_FILE_EXTENT_PREALLOC) {
@@ -980,11 +715,6 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 		unsigned long dest_offset;
 		struct btrfs_key ins;
 
-<<<<<<< HEAD
-		ret = btrfs_insert_empty_item(trans, root, path, key,
-					      sizeof(*item));
-		BUG_ON(ret);
-=======
 		if (btrfs_file_extent_disk_bytenr(eb, item) == 0 &&
 		    btrfs_fs_incompat(fs_info, NO_HOLES))
 			goto update_inode;
@@ -993,7 +723,6 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 					      sizeof(*item));
 		if (ret)
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dest_offset = btrfs_item_ptr_offset(path->nodes[0],
 						    path->slots[0]);
 		copy_extent_buffer(path->nodes[0], eb, dest_offset,
@@ -1004,12 +733,6 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 		ins.type = BTRFS_EXTENT_ITEM_KEY;
 		offset = key->offset - btrfs_file_extent_offset(eb, item);
 
-<<<<<<< HEAD
-		if (ins.objectid > 0) {
-			u64 csum_start;
-			u64 csum_end;
-			LIST_HEAD(ordered_sums);
-=======
 		/*
 		 * Manually record dirty extent, as here we did a shallow
 		 * file extent item copy and skip normal backref update,
@@ -1030,21 +753,10 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 			u64 csum_end;
 			LIST_HEAD(ordered_sums);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * is this extent already allocated in the extent
 			 * allocation tree?  If so, just add a reference
 			 */
-<<<<<<< HEAD
-			ret = btrfs_lookup_extent(root, ins.objectid,
-						ins.offset);
-			if (ret == 0) {
-				ret = btrfs_inc_extent_ref(trans, root,
-						ins.objectid, ins.offset,
-						0, root->root_key.objectid,
-						key->objectid, offset, 0);
-				BUG_ON(ret);
-=======
 			ret = btrfs_lookup_data_extent(fs_info, ins.objectid,
 						ins.offset);
 			if (ret < 0) {
@@ -1060,23 +772,16 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 				ret = btrfs_inc_extent_ref(trans, &ref);
 				if (ret)
 					goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				/*
 				 * insert the extent pointer in the extent
 				 * allocation tree
 				 */
 				ret = btrfs_alloc_logged_file_extent(trans,
-<<<<<<< HEAD
-						root, root->root_key.objectid,
-						key->objectid, offset, &ins);
-				BUG_ON(ret);
-=======
 						root->root_key.objectid,
 						key->objectid, offset, &ins);
 				if (ret)
 					goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			btrfs_release_path(path);
 
@@ -1090,24 +795,6 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 					btrfs_file_extent_num_bytes(eb, item);
 			}
 
-<<<<<<< HEAD
-			ret = btrfs_lookup_csums_range(root->log_root,
-						csum_start, csum_end - 1,
-						&ordered_sums, 0);
-			BUG_ON(ret);
-			while (!list_empty(&ordered_sums)) {
-				struct btrfs_ordered_sum *sums;
-				sums = list_entry(ordered_sums.next,
-						struct btrfs_ordered_sum,
-						list);
-				ret = btrfs_csum_file_blocks(trans,
-						root->fs_info->csum_root,
-						sums);
-				BUG_ON(ret);
-				list_del(&sums->list);
-				kfree(sums);
-			}
-=======
 			ret = btrfs_lookup_csums_list(root->log_root,
 						csum_start, csum_end - 1,
 						&ordered_sums, 0, false);
@@ -1184,26 +871,12 @@ static noinline int replay_one_extent(struct btrfs_trans_handle *trans,
 			}
 			if (ret)
 				goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			btrfs_release_path(path);
 		}
 	} else if (found_type == BTRFS_FILE_EXTENT_INLINE) {
 		/* inline extents are easy, we just overwrite them */
 		ret = overwrite_item(trans, root, path, eb, slot, key);
-<<<<<<< HEAD
-		BUG_ON(ret);
-	}
-
-	inode_add_bytes(inode, nbytes);
-	btrfs_update_inode(trans, root, inode);
-out:
-	if (inode)
-		iput(inode);
-	return ret;
-}
-
-=======
 		if (ret)
 			goto out;
 	}
@@ -1240,7 +913,6 @@ static int unlink_inode_for_log_replay(struct btrfs_trans_handle *trans,
 	return btrfs_run_delayed_items(trans);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * when cleaning up conflicts between the directory names in the
  * subvolume, directory names in the log and directory names in the
@@ -1250,16 +922,6 @@ static int unlink_inode_for_log_replay(struct btrfs_trans_handle *trans,
  * item
  */
 static noinline int drop_one_dir_item(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-				      struct btrfs_root *root,
-				      struct btrfs_path *path,
-				      struct inode *dir,
-				      struct btrfs_dir_item *di)
-{
-	struct inode *inode;
-	char *name;
-	int name_len;
-=======
 				      struct btrfs_path *path,
 				      struct btrfs_inode *dir,
 				      struct btrfs_dir_item *di)
@@ -1267,7 +929,6 @@ static noinline int drop_one_dir_item(struct btrfs_trans_handle *trans,
 	struct btrfs_root *root = dir->root;
 	struct inode *inode;
 	struct fscrypt_str name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct extent_buffer *leaf;
 	struct btrfs_key location;
 	int ret;
@@ -1275,39 +936,14 @@ static noinline int drop_one_dir_item(struct btrfs_trans_handle *trans,
 	leaf = path->nodes[0];
 
 	btrfs_dir_item_key_to_cpu(leaf, di, &location);
-<<<<<<< HEAD
-	name_len = btrfs_dir_name_len(leaf, di);
-	name = kmalloc(name_len, GFP_NOFS);
-	if (!name)
-		return -ENOMEM;
-
-	read_extent_buffer(leaf, name, (unsigned long)(di + 1), name_len);
-=======
 	ret = read_alloc_one_name(leaf, di + 1, btrfs_dir_name_len(leaf, di), &name);
 	if (ret)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_release_path(path);
 
 	inode = read_one_inode(root, location.objectid);
 	if (!inode) {
-<<<<<<< HEAD
-		kfree(name);
-		return -EIO;
-	}
-
-	ret = link_to_fixup_dir(trans, root, path, location.objectid);
-	BUG_ON(ret);
-
-	ret = btrfs_unlink_inode(trans, root, dir, inode, name, name_len);
-	BUG_ON(ret);
-	kfree(name);
-
-	iput(inode);
-
-	btrfs_run_delayed_items(trans, root);
-=======
 		ret = -EIO;
 		goto out;
 	}
@@ -1320,55 +956,19 @@ static noinline int drop_one_dir_item(struct btrfs_trans_handle *trans,
 out:
 	kfree(name.name);
 	iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
-<<<<<<< HEAD
- * helper function to see if a given name and sequence number found
- * in an inode back reference are already in a directory and correctly
- * point to this inode
-=======
  * See if a given name and sequence number found in an inode back reference are
  * already in a directory and correctly point to this inode.
  *
  * Returns: < 0 on error, 0 if the directory entry does not exists and 1 if it
  * exists.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static noinline int inode_in_dir(struct btrfs_root *root,
 				 struct btrfs_path *path,
 				 u64 dirid, u64 objectid, u64 index,
-<<<<<<< HEAD
-				 const char *name, int name_len)
-{
-	struct btrfs_dir_item *di;
-	struct btrfs_key location;
-	int match = 0;
-
-	di = btrfs_lookup_dir_index_item(NULL, root, path, dirid,
-					 index, name, name_len, 0);
-	if (di && !IS_ERR(di)) {
-		btrfs_dir_item_key_to_cpu(path->nodes[0], di, &location);
-		if (location.objectid != objectid)
-			goto out;
-	} else
-		goto out;
-	btrfs_release_path(path);
-
-	di = btrfs_lookup_dir_item(NULL, root, path, dirid, name, name_len, 0);
-	if (di && !IS_ERR(di)) {
-		btrfs_dir_item_key_to_cpu(path->nodes[0], di, &location);
-		if (location.objectid != objectid)
-			goto out;
-	} else
-		goto out;
-	match = 1;
-out:
-	btrfs_release_path(path);
-	return match;
-=======
 				 struct fscrypt_str *name)
 {
 	struct btrfs_dir_item *di;
@@ -1401,7 +1001,6 @@ out:
 out:
 	btrfs_release_path(path);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1416,58 +1015,17 @@ out:
  */
 static noinline int backref_in_log(struct btrfs_root *log,
 				   struct btrfs_key *key,
-<<<<<<< HEAD
-				   char *name, int namelen)
-{
-	struct btrfs_path *path;
-	struct btrfs_inode_ref *ref;
-	unsigned long ptr;
-	unsigned long ptr_end;
-	unsigned long name_ptr;
-	int found_name_len;
-	int item_size;
-	int ret;
-	int match = 0;
-=======
 				   u64 ref_objectid,
 				   const struct fscrypt_str *name)
 {
 	struct btrfs_path *path;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	path = btrfs_alloc_path();
 	if (!path)
 		return -ENOMEM;
 
 	ret = btrfs_search_slot(NULL, log, key, path, 0, 0);
-<<<<<<< HEAD
-	if (ret != 0)
-		goto out;
-
-	item_size = btrfs_item_size_nr(path->nodes[0], path->slots[0]);
-	ptr = btrfs_item_ptr_offset(path->nodes[0], path->slots[0]);
-	ptr_end = ptr + item_size;
-	while (ptr < ptr_end) {
-		ref = (struct btrfs_inode_ref *)ptr;
-		found_name_len = btrfs_inode_ref_name_len(path->nodes[0], ref);
-		if (found_name_len == namelen) {
-			name_ptr = (unsigned long)(ref + 1);
-			ret = memcmp_extent_buffer(path->nodes[0], name,
-						   name_ptr, namelen);
-			if (ret == 0) {
-				match = 1;
-				goto out;
-			}
-		}
-		ptr = (unsigned long)(ref + 1) + found_name_len;
-	}
-out:
-	btrfs_free_path(path);
-	return match;
-}
-
-=======
 	if (ret < 0) {
 		goto out;
 	} else if (ret == 1) {
@@ -1777,7 +1335,6 @@ again:
 	btrfs_release_path(path);
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * replay one inode back reference item found in the log tree.
@@ -1792,18 +1349,6 @@ static noinline int add_inode_ref(struct btrfs_trans_handle *trans,
 				  struct extent_buffer *eb, int slot,
 				  struct btrfs_key *key)
 {
-<<<<<<< HEAD
-	struct btrfs_inode_ref *ref;
-	struct btrfs_dir_item *di;
-	struct inode *dir;
-	struct inode *inode;
-	unsigned long ref_ptr;
-	unsigned long ref_end;
-	char *name;
-	int namelen;
-	int ret;
-	int search_done = 0;
-=======
 	struct inode *dir = NULL;
 	struct inode *inode = NULL;
 	unsigned long ref_ptr;
@@ -1831,7 +1376,6 @@ static noinline int add_inode_ref(struct btrfs_trans_handle *trans,
 		parent_objectid = key->offset;
 	}
 	inode_objectid = key->objectid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * it is possible that we didn't log all the parent directories
@@ -1839,176 +1383,6 @@ static noinline int add_inode_ref(struct btrfs_trans_handle *trans,
 	 * copy the back ref in.  The link count fixup code will take
 	 * care of the rest
 	 */
-<<<<<<< HEAD
-	dir = read_one_inode(root, key->offset);
-	if (!dir)
-		return -ENOENT;
-
-	inode = read_one_inode(root, key->objectid);
-	if (!inode) {
-		iput(dir);
-		return -EIO;
-	}
-
-	ref_ptr = btrfs_item_ptr_offset(eb, slot);
-	ref_end = ref_ptr + btrfs_item_size_nr(eb, slot);
-
-again:
-	ref = (struct btrfs_inode_ref *)ref_ptr;
-
-	namelen = btrfs_inode_ref_name_len(eb, ref);
-	name = kmalloc(namelen, GFP_NOFS);
-	BUG_ON(!name);
-
-	read_extent_buffer(eb, name, (unsigned long)(ref + 1), namelen);
-
-	/* if we already have a perfect match, we're done */
-	if (inode_in_dir(root, path, btrfs_ino(dir), btrfs_ino(inode),
-			 btrfs_inode_ref_index(eb, ref),
-			 name, namelen)) {
-		goto out;
-	}
-
-	/*
-	 * look for a conflicting back reference in the metadata.
-	 * if we find one we have to unlink that name of the file
-	 * before we add our new link.  Later on, we overwrite any
-	 * existing back reference, and we don't want to create
-	 * dangling pointers in the directory.
-	 */
-
-	if (search_done)
-		goto insert;
-
-	ret = btrfs_search_slot(NULL, root, key, path, 0, 0);
-	if (ret == 0) {
-		char *victim_name;
-		int victim_name_len;
-		struct btrfs_inode_ref *victim_ref;
-		unsigned long ptr;
-		unsigned long ptr_end;
-		struct extent_buffer *leaf = path->nodes[0];
-
-		/* are we trying to overwrite a back ref for the root directory
-		 * if so, just jump out, we're done
-		 */
-		if (key->objectid == key->offset)
-			goto out_nowrite;
-
-		/* check all the names in this back reference to see
-		 * if they are in the log.  if so, we allow them to stay
-		 * otherwise they must be unlinked as a conflict
-		 */
-		ptr = btrfs_item_ptr_offset(leaf, path->slots[0]);
-		ptr_end = ptr + btrfs_item_size_nr(leaf, path->slots[0]);
-		while (ptr < ptr_end) {
-			victim_ref = (struct btrfs_inode_ref *)ptr;
-			victim_name_len = btrfs_inode_ref_name_len(leaf,
-								   victim_ref);
-			victim_name = kmalloc(victim_name_len, GFP_NOFS);
-			BUG_ON(!victim_name);
-
-			read_extent_buffer(leaf, victim_name,
-					   (unsigned long)(victim_ref + 1),
-					   victim_name_len);
-
-			if (!backref_in_log(log, key, victim_name,
-					    victim_name_len)) {
-				btrfs_inc_nlink(inode);
-				btrfs_release_path(path);
-
-				ret = btrfs_unlink_inode(trans, root, dir,
-							 inode, victim_name,
-							 victim_name_len);
-				btrfs_run_delayed_items(trans, root);
-			}
-			kfree(victim_name);
-			ptr = (unsigned long)(victim_ref + 1) + victim_name_len;
-		}
-		BUG_ON(ret);
-
-		/*
-		 * NOTE: we have searched root tree and checked the
-		 * coresponding ref, it does not need to check again.
-		 */
-		search_done = 1;
-	}
-	btrfs_release_path(path);
-
-	/* look for a conflicting sequence number */
-	di = btrfs_lookup_dir_index_item(trans, root, path, btrfs_ino(dir),
-					 btrfs_inode_ref_index(eb, ref),
-					 name, namelen, 0);
-	if (di && !IS_ERR(di)) {
-		ret = drop_one_dir_item(trans, root, path, dir, di);
-		BUG_ON(ret);
-	}
-	btrfs_release_path(path);
-
-	/* look for a conflicing name */
-	di = btrfs_lookup_dir_item(trans, root, path, btrfs_ino(dir),
-				   name, namelen, 0);
-	if (di && !IS_ERR(di)) {
-		ret = drop_one_dir_item(trans, root, path, dir, di);
-		BUG_ON(ret);
-	}
-	btrfs_release_path(path);
-
-insert:
-	/* insert our name */
-	ret = btrfs_add_link(trans, dir, inode, name, namelen, 0,
-			     btrfs_inode_ref_index(eb, ref));
-	BUG_ON(ret);
-
-	btrfs_update_inode(trans, root, inode);
-
-out:
-	ref_ptr = (unsigned long)(ref + 1) + namelen;
-	kfree(name);
-	if (ref_ptr < ref_end)
-		goto again;
-
-	/* finally write the back reference in the inode */
-	ret = overwrite_item(trans, root, path, eb, slot, key);
-	BUG_ON(ret);
-
-out_nowrite:
-	btrfs_release_path(path);
-	iput(dir);
-	iput(inode);
-	return 0;
-}
-
-static int insert_orphan_item(struct btrfs_trans_handle *trans,
-			      struct btrfs_root *root, u64 offset)
-{
-	int ret;
-	ret = btrfs_find_orphan_item(root, offset);
-	if (ret > 0)
-		ret = btrfs_insert_orphan_item(trans, root, offset);
-	return ret;
-}
-
-
-/*
- * There are a few corners where the link count of the file can't
- * be properly maintained during replay.  So, instead of adding
- * lots of complexity to the log code, we just scan the backrefs
- * for any file that has been through replay.
- *
- * The scan will update the link count on the inode to reflect the
- * number of back refs found.  If it goes down to zero, the iput
- * will free the inode.
- */
-static noinline int fixup_inode_link_count(struct btrfs_trans_handle *trans,
-					   struct btrfs_root *root,
-					   struct inode *inode)
-{
-	struct btrfs_path *path;
-	int ret;
-	struct btrfs_key key;
-	u64 nlink = 0;
-=======
 	dir = read_one_inode(root, parent_objectid);
 	if (!dir) {
 		ret = -ENOENT;
@@ -2155,7 +1529,6 @@ static int count_inode_refs(struct btrfs_inode *inode, struct btrfs_path *path)
 	int ret;
 	struct btrfs_key key;
 	unsigned int nlink = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ptr;
 	unsigned long ptr_end;
 	int name_len;
@@ -2165,17 +1538,8 @@ static int count_inode_refs(struct btrfs_inode *inode, struct btrfs_path *path)
 	key.type = BTRFS_INODE_REF_KEY;
 	key.offset = (u64)-1;
 
-<<<<<<< HEAD
-	path = btrfs_alloc_path();
-	if (!path)
-		return -ENOMEM;
-
-	while (1) {
-		ret = btrfs_search_slot(NULL, root, &key, path, 0, 0);
-=======
 	while (1) {
 		ret = btrfs_search_slot(NULL, inode->root, &key, path, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			break;
 		if (ret > 0) {
@@ -2183,21 +1547,14 @@ static int count_inode_refs(struct btrfs_inode *inode, struct btrfs_path *path)
 				break;
 			path->slots[0]--;
 		}
-<<<<<<< HEAD
-=======
 process_slot:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		btrfs_item_key_to_cpu(path->nodes[0], &key,
 				      path->slots[0]);
 		if (key.objectid != ino ||
 		    key.type != BTRFS_INODE_REF_KEY)
 			break;
 		ptr = btrfs_item_ptr_offset(path->nodes[0], path->slots[0]);
-<<<<<<< HEAD
-		ptr_end = ptr + btrfs_item_size_nr(path->nodes[0],
-=======
 		ptr_end = ptr + btrfs_item_size(path->nodes[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   path->slots[0]);
 		while (ptr < ptr_end) {
 			struct btrfs_inode_ref *ref;
@@ -2211,22 +1568,14 @@ process_slot:
 
 		if (key.offset == 0)
 			break;
-<<<<<<< HEAD
-=======
 		if (path->slots[0] > 0) {
 			path->slots[0]--;
 			goto process_slot;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key.offset--;
 		btrfs_release_path(path);
 	}
 	btrfs_release_path(path);
-<<<<<<< HEAD
-	if (nlink != inode->i_nlink) {
-		set_nlink(inode, nlink);
-		btrfs_update_inode(trans, root, inode);
-=======
 
 	return nlink;
 }
@@ -2273,7 +1622,6 @@ static noinline int fixup_inode_link_count(struct btrfs_trans_handle *trans,
 		ret = btrfs_update_inode(trans, BTRFS_I(inode));
 		if (ret)
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	BTRFS_I(inode)->index_cnt = (u64)-1;
 
@@ -2281,16 +1629,6 @@ static noinline int fixup_inode_link_count(struct btrfs_trans_handle *trans,
 		if (S_ISDIR(inode->i_mode)) {
 			ret = replay_dir_deletes(trans, root, NULL, path,
 						 ino, 1);
-<<<<<<< HEAD
-			BUG_ON(ret);
-		}
-		ret = insert_orphan_item(trans, root, ino);
-		BUG_ON(ret);
-	}
-	btrfs_free_path(path);
-
-	return 0;
-=======
 			if (ret)
 				goto out;
 		}
@@ -2302,7 +1640,6 @@ static noinline int fixup_inode_link_count(struct btrfs_trans_handle *trans,
 out:
 	btrfs_free_path(path);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
@@ -2322,10 +1659,7 @@ static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
 			break;
 
 		if (ret == 1) {
-<<<<<<< HEAD
-=======
 			ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (path->slots[0] == 0)
 				break;
 			path->slots[0]--;
@@ -2338,19 +1672,6 @@ static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
 
 		ret = btrfs_del_item(trans, root, path);
 		if (ret)
-<<<<<<< HEAD
-			goto out;
-
-		btrfs_release_path(path);
-		inode = read_one_inode(root, key.offset);
-		if (!inode)
-			return -EIO;
-
-		ret = fixup_inode_link_count(trans, root, inode);
-		BUG_ON(ret);
-
-		iput(inode);
-=======
 			break;
 
 		btrfs_release_path(path);
@@ -2364,7 +1685,6 @@ static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
 		iput(inode);
 		if (ret)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * fixup on a directory may create new entries,
@@ -2373,11 +1693,6 @@ static noinline int fixup_inode_link_counts(struct btrfs_trans_handle *trans,
 		 */
 		key.offset = (u64)-1;
 	}
-<<<<<<< HEAD
-	ret = 0;
-out:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_release_path(path);
 	return ret;
 }
@@ -2402,25 +1717,13 @@ static noinline int link_to_fixup_dir(struct btrfs_trans_handle *trans,
 		return -EIO;
 
 	key.objectid = BTRFS_TREE_LOG_FIXUP_OBJECTID;
-<<<<<<< HEAD
-	btrfs_set_key_type(&key, BTRFS_ORPHAN_ITEM_KEY);
-=======
 	key.type = BTRFS_ORPHAN_ITEM_KEY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key.offset = objectid;
 
 	ret = btrfs_insert_empty_item(trans, root, path, &key, 0);
 
 	btrfs_release_path(path);
 	if (ret == 0) {
-<<<<<<< HEAD
-		btrfs_inc_nlink(inode);
-		btrfs_update_inode(trans, root, inode);
-	} else if (ret == -EEXIST) {
-		ret = 0;
-	} else {
-		BUG();
-=======
 		if (!inode->i_nlink)
 			set_nlink(inode, 1);
 		else
@@ -2428,7 +1731,6 @@ static noinline int link_to_fixup_dir(struct btrfs_trans_handle *trans,
 		ret = btrfs_update_inode(trans, BTRFS_I(inode));
 	} else if (ret == -EEXIST) {
 		ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	iput(inode);
 
@@ -2442,14 +1744,8 @@ static noinline int link_to_fixup_dir(struct btrfs_trans_handle *trans,
  */
 static noinline int insert_one_name(struct btrfs_trans_handle *trans,
 				    struct btrfs_root *root,
-<<<<<<< HEAD
-				    struct btrfs_path *path,
-				    u64 dirid, u64 index,
-				    char *name, int name_len, u8 type,
-=======
 				    u64 dirid, u64 index,
 				    const struct fscrypt_str *name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    struct btrfs_key *location)
 {
 	struct inode *inode;
@@ -2465,13 +1761,9 @@ static noinline int insert_one_name(struct btrfs_trans_handle *trans,
 		iput(inode);
 		return -EIO;
 	}
-<<<<<<< HEAD
-	ret = btrfs_add_link(trans, dir, inode, name, name_len, 1, index);
-=======
 
 	ret = btrfs_add_link(trans, BTRFS_I(dir), BTRFS_I(inode), name,
 			     1, index);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME, put inode into FIXUP list */
 
@@ -2480,8 +1772,6 @@ static noinline int insert_one_name(struct btrfs_trans_handle *trans,
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 static int delete_conflicting_dir_entry(struct btrfs_trans_handle *trans,
 					struct btrfs_inode *dir,
 					struct btrfs_path *path,
@@ -2510,7 +1800,6 @@ static int delete_conflicting_dir_entry(struct btrfs_trans_handle *trans,
 	return drop_one_dir_item(trans, path, dir, dst_di);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * take a single entry in a log directory item and replay it into
  * the subvolume.
@@ -2523,12 +1812,9 @@ static int delete_conflicting_dir_entry(struct btrfs_trans_handle *trans,
  * not exist in the FS, it is skipped.  fsyncs on directories
  * do not force down inodes inside that directory, just changes to the
  * names or unlinks in a directory.
-<<<<<<< HEAD
-=======
  *
  * Returns < 0 on error, 0 if the name wasn't replayed (dentry points to a
  * non-existing inode) and 1 if the name was replayed.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static noinline int replay_one_name(struct btrfs_trans_handle *trans,
 				    struct btrfs_root *root,
@@ -2537,17 +1823,6 @@ static noinline int replay_one_name(struct btrfs_trans_handle *trans,
 				    struct btrfs_dir_item *di,
 				    struct btrfs_key *key)
 {
-<<<<<<< HEAD
-	char *name;
-	int name_len;
-	struct btrfs_dir_item *dst_di;
-	struct btrfs_key found_key;
-	struct btrfs_key log_key;
-	struct inode *dir;
-	u8 log_type;
-	int exists;
-	int ret;
-=======
 	struct fscrypt_str name;
 	struct btrfs_dir_item *dir_dst_di;
 	struct btrfs_dir_item *index_dst_di;
@@ -2561,57 +1836,11 @@ static noinline int replay_one_name(struct btrfs_trans_handle *trans,
 	int ret;
 	bool update_size = true;
 	bool name_added = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dir = read_one_inode(root, key->objectid);
 	if (!dir)
 		return -EIO;
 
-<<<<<<< HEAD
-	name_len = btrfs_dir_name_len(eb, di);
-	name = kmalloc(name_len, GFP_NOFS);
-	if (!name)
-		return -ENOMEM;
-
-	log_type = btrfs_dir_type(eb, di);
-	read_extent_buffer(eb, name, (unsigned long)(di + 1),
-		   name_len);
-
-	btrfs_dir_item_key_to_cpu(eb, di, &log_key);
-	exists = btrfs_lookup_inode(trans, root, path, &log_key, 0);
-	if (exists == 0)
-		exists = 1;
-	else
-		exists = 0;
-	btrfs_release_path(path);
-
-	if (key->type == BTRFS_DIR_ITEM_KEY) {
-		dst_di = btrfs_lookup_dir_item(trans, root, path, key->objectid,
-				       name, name_len, 1);
-	} else if (key->type == BTRFS_DIR_INDEX_KEY) {
-		dst_di = btrfs_lookup_dir_index_item(trans, root, path,
-						     key->objectid,
-						     key->offset, name,
-						     name_len, 1);
-	} else {
-		BUG();
-	}
-	if (IS_ERR_OR_NULL(dst_di)) {
-		/* we need a sequence number to insert, so we only
-		 * do inserts for the BTRFS_DIR_INDEX_KEY types
-		 */
-		if (key->type != BTRFS_DIR_INDEX_KEY)
-			goto out;
-		goto insert;
-	}
-
-	btrfs_dir_item_key_to_cpu(path->nodes[0], dst_di, &found_key);
-	/* the existing item matches the logged item */
-	if (found_key.objectid == log_key.objectid &&
-	    found_key.type == log_key.type &&
-	    found_key.offset == log_key.offset &&
-	    btrfs_dir_type(path->nodes[0], dst_di) == log_type) {
-=======
 	ret = read_alloc_one_name(eb, di + 1, btrfs_dir_name_len(eb, di), &name);
 	if (ret)
 		goto out;
@@ -2661,45 +1890,10 @@ static noinline int replay_one_name(struct btrfs_trans_handle *trans,
 	if (dir_dst_matches && index_dst_matches) {
 		ret = 0;
 		update_size = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * don't drop the conflicting directory entry if the inode
-	 * for the new entry doesn't exist
-	 */
-	if (!exists)
-		goto out;
-
-	ret = drop_one_dir_item(trans, root, path, dir, dst_di);
-	BUG_ON(ret);
-
-	if (key->type == BTRFS_DIR_INDEX_KEY)
-		goto insert;
-out:
-	btrfs_release_path(path);
-	kfree(name);
-	iput(dir);
-	return 0;
-
-insert:
-	btrfs_release_path(path);
-	ret = insert_one_name(trans, root, path, key->objectid, key->offset,
-			      name, name_len, log_type, &log_key);
-
-	BUG_ON(ret && ret != -ENOENT);
-	goto out;
-}
-
-/*
- * find all the names in a directory item and reconcile them into
- * the subvolume.  Only BTRFS_DIR_ITEM_KEY types will have more than
- * one name in a directory item, but the same code gets used for
- * both directory index types
- */
-=======
 	 * Check if the inode reference exists in the log for the given name,
 	 * inode and parent inode
 	 */
@@ -2751,7 +1945,6 @@ out:
 }
 
 /* Replay one dir item from a BTRFS_DIR_INDEX_KEY key. */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static noinline int replay_one_dir_item(struct btrfs_trans_handle *trans,
 					struct btrfs_root *root,
 					struct btrfs_path *path,
@@ -2759,27 +1952,6 @@ static noinline int replay_one_dir_item(struct btrfs_trans_handle *trans,
 					struct btrfs_key *key)
 {
 	int ret;
-<<<<<<< HEAD
-	u32 item_size = btrfs_item_size_nr(eb, slot);
-	struct btrfs_dir_item *di;
-	int name_len;
-	unsigned long ptr;
-	unsigned long ptr_end;
-
-	ptr = btrfs_item_ptr_offset(eb, slot);
-	ptr_end = ptr + item_size;
-	while (ptr < ptr_end) {
-		di = (struct btrfs_dir_item *)ptr;
-		if (verify_dir_item(root, eb, di))
-			return -EIO;
-		name_len = btrfs_dir_name_len(eb, di);
-		ret = replay_one_name(trans, root, path, eb, di, key);
-		BUG_ON(ret);
-		ptr = (unsigned long)(di + 1);
-		ptr += name_len;
-	}
-	return 0;
-=======
 	struct btrfs_dir_item *di;
 
 	/* We only log dir index keys, which only contain a single dir item. */
@@ -2830,7 +2002,6 @@ static noinline int replay_one_dir_item(struct btrfs_trans_handle *trans,
 	}
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2846,11 +2017,7 @@ static noinline int replay_one_dir_item(struct btrfs_trans_handle *trans,
  */
 static noinline int find_dir_range(struct btrfs_root *root,
 				   struct btrfs_path *path,
-<<<<<<< HEAD
-				   u64 dirid, int key_type,
-=======
 				   u64 dirid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   u64 *start_ret, u64 *end_ret)
 {
 	struct btrfs_key key;
@@ -2863,11 +2030,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
 		return 1;
 
 	key.objectid = dirid;
-<<<<<<< HEAD
-	key.type = key_type;
-=======
 	key.type = BTRFS_DIR_LOG_INDEX_KEY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key.offset = *start_ret;
 
 	ret = btrfs_search_slot(NULL, root, &key, path, 0, 0);
@@ -2881,11 +2044,7 @@ static noinline int find_dir_range(struct btrfs_root *root,
 	if (ret != 0)
 		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
 
-<<<<<<< HEAD
-	if (key.type != key_type || key.objectid != dirid) {
-=======
 	if (key.type != BTRFS_DIR_LOG_INDEX_KEY || key.objectid != dirid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 1;
 		goto next;
 	}
@@ -2903,28 +2062,16 @@ static noinline int find_dir_range(struct btrfs_root *root,
 next:
 	/* check the next slot in the tree to see if it is a valid item */
 	nritems = btrfs_header_nritems(path->nodes[0]);
-<<<<<<< HEAD
-=======
 	path->slots[0]++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (path->slots[0] >= nritems) {
 		ret = btrfs_next_leaf(root, path);
 		if (ret)
 			goto out;
-<<<<<<< HEAD
-	} else {
-		path->slots[0]++;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
 
-<<<<<<< HEAD
-	if (key.type != key_type || key.objectid != dirid) {
-=======
 	if (key.type != BTRFS_DIR_LOG_INDEX_KEY || key.objectid != dirid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 1;
 		goto out;
 	}
@@ -2945,110 +2092,12 @@ out:
  * to is unlinked
  */
 static noinline int check_item_in_log(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-				      struct btrfs_root *root,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      struct btrfs_root *log,
 				      struct btrfs_path *path,
 				      struct btrfs_path *log_path,
 				      struct inode *dir,
 				      struct btrfs_key *dir_key)
 {
-<<<<<<< HEAD
-	int ret;
-	struct extent_buffer *eb;
-	int slot;
-	u32 item_size;
-	struct btrfs_dir_item *di;
-	struct btrfs_dir_item *log_di;
-	int name_len;
-	unsigned long ptr;
-	unsigned long ptr_end;
-	char *name;
-	struct inode *inode;
-	struct btrfs_key location;
-
-again:
-	eb = path->nodes[0];
-	slot = path->slots[0];
-	item_size = btrfs_item_size_nr(eb, slot);
-	ptr = btrfs_item_ptr_offset(eb, slot);
-	ptr_end = ptr + item_size;
-	while (ptr < ptr_end) {
-		di = (struct btrfs_dir_item *)ptr;
-		if (verify_dir_item(root, eb, di)) {
-			ret = -EIO;
-			goto out;
-		}
-
-		name_len = btrfs_dir_name_len(eb, di);
-		name = kmalloc(name_len, GFP_NOFS);
-		if (!name) {
-			ret = -ENOMEM;
-			goto out;
-		}
-		read_extent_buffer(eb, name, (unsigned long)(di + 1),
-				  name_len);
-		log_di = NULL;
-		if (log && dir_key->type == BTRFS_DIR_ITEM_KEY) {
-			log_di = btrfs_lookup_dir_item(trans, log, log_path,
-						       dir_key->objectid,
-						       name, name_len, 0);
-		} else if (log && dir_key->type == BTRFS_DIR_INDEX_KEY) {
-			log_di = btrfs_lookup_dir_index_item(trans, log,
-						     log_path,
-						     dir_key->objectid,
-						     dir_key->offset,
-						     name, name_len, 0);
-		}
-		if (IS_ERR_OR_NULL(log_di)) {
-			btrfs_dir_item_key_to_cpu(eb, di, &location);
-			btrfs_release_path(path);
-			btrfs_release_path(log_path);
-			inode = read_one_inode(root, location.objectid);
-			if (!inode) {
-				kfree(name);
-				return -EIO;
-			}
-
-			ret = link_to_fixup_dir(trans, root,
-						path, location.objectid);
-			BUG_ON(ret);
-			btrfs_inc_nlink(inode);
-			ret = btrfs_unlink_inode(trans, root, dir, inode,
-						 name, name_len);
-			BUG_ON(ret);
-
-			btrfs_run_delayed_items(trans, root);
-
-			kfree(name);
-			iput(inode);
-
-			/* there might still be more names under this key
-			 * check and repeat if required
-			 */
-			ret = btrfs_search_slot(NULL, root, dir_key, path,
-						0, 0);
-			if (ret == 0)
-				goto again;
-			ret = 0;
-			goto out;
-		}
-		btrfs_release_path(log_path);
-		kfree(name);
-
-		ptr = (unsigned long)(di + 1);
-		ptr += name_len;
-	}
-	ret = 0;
-out:
-	btrfs_release_path(path);
-	btrfs_release_path(log_path);
-	return ret;
-}
-
-=======
 	struct btrfs_root *root = BTRFS_I(dir)->root;
 	int ret;
 	struct extent_buffer *eb;
@@ -3216,7 +2265,6 @@ out:
 }
 
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * deletion replay happens before we copy any new directory items
  * out of the log or out of backreferences from inodes.  It
@@ -3235,10 +2283,6 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
 {
 	u64 range_start;
 	u64 range_end;
-<<<<<<< HEAD
-	int key_type = BTRFS_DIR_LOG_ITEM_KEY;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 	struct btrfs_key dir_key;
 	struct btrfs_key found_key;
@@ -3246,11 +2290,7 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
 	struct inode *dir;
 
 	dir_key.objectid = dirid;
-<<<<<<< HEAD
-	dir_key.type = BTRFS_DIR_ITEM_KEY;
-=======
 	dir_key.type = BTRFS_DIR_INDEX_KEY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	log_path = btrfs_alloc_path();
 	if (!log_path)
 		return -ENOMEM;
@@ -3264,28 +2304,18 @@ static noinline int replay_dir_deletes(struct btrfs_trans_handle *trans,
 		btrfs_free_path(log_path);
 		return 0;
 	}
-<<<<<<< HEAD
-again:
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	range_start = 0;
 	range_end = 0;
 	while (1) {
 		if (del_all)
 			range_end = (u64)-1;
 		else {
-<<<<<<< HEAD
-			ret = find_dir_range(log, path, dirid, key_type,
-					     &range_start, &range_end);
-			if (ret != 0)
-=======
 			ret = find_dir_range(log, path, dirid,
 					     &range_start, &range_end);
 			if (ret < 0)
 				goto out;
 			else if (ret > 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 
@@ -3300,44 +2330,27 @@ again:
 			nritems = btrfs_header_nritems(path->nodes[0]);
 			if (path->slots[0] >= nritems) {
 				ret = btrfs_next_leaf(root, path);
-<<<<<<< HEAD
-				if (ret)
-					break;
-=======
 				if (ret == 1)
 					break;
 				else if (ret < 0)
 					goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			btrfs_item_key_to_cpu(path->nodes[0], &found_key,
 					      path->slots[0]);
 			if (found_key.objectid != dirid ||
-<<<<<<< HEAD
-			    found_key.type != dir_key.type)
-				goto next_type;
-=======
 			    found_key.type != dir_key.type) {
 				ret = 0;
 				goto out;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (found_key.offset > range_end)
 				break;
 
-<<<<<<< HEAD
-			ret = check_item_in_log(trans, root, log, path,
-						log_path, dir,
-						&found_key);
-			BUG_ON(ret);
-=======
 			ret = check_item_in_log(trans, log, path,
 						log_path, dir,
 						&found_key);
 			if (ret)
 				goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (found_key.offset == (u64)-1)
 				break;
 			dir_key.offset = found_key.offset + 1;
@@ -3347,19 +2360,7 @@ again:
 			break;
 		range_start = range_end + 1;
 	}
-<<<<<<< HEAD
-
-next_type:
 	ret = 0;
-	if (key_type == BTRFS_DIR_LOG_ITEM_KEY) {
-		key_type = BTRFS_DIR_LOG_INDEX_KEY;
-		dir_key.type = BTRFS_DIR_INDEX_KEY;
-		btrfs_release_path(path);
-		goto again;
-	}
-=======
-	ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	btrfs_release_path(path);
 	btrfs_free_path(log_path);
@@ -3379,19 +2380,6 @@ out:
  * back refs).
  */
 static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
-<<<<<<< HEAD
-			     struct walk_control *wc, u64 gen)
-{
-	int nritems;
-	struct btrfs_path *path;
-	struct btrfs_root *root = wc->replay_dest;
-	struct btrfs_key key;
-	int level;
-	int i;
-	int ret;
-
-	btrfs_read_buffer(eb, gen);
-=======
 			     struct walk_control *wc, u64 gen, int level)
 {
 	int nritems;
@@ -3408,7 +2396,6 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
 	ret = btrfs_read_extent_buffer(eb, &check);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	level = btrfs_header_level(eb);
 
@@ -3431,8 +2418,6 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
 
 			inode_item = btrfs_item_ptr(eb, i,
 					    struct btrfs_inode_item);
-<<<<<<< HEAD
-=======
 			/*
 			 * If we have a tmpfile (O_TMPFILE) that got fsync'ed
 			 * and never got linked before the fsync, skip it, as
@@ -3451,27 +2436,10 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
 						   path, key.objectid);
 			if (ret)
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mode = btrfs_inode_mode(eb, inode_item);
 			if (S_ISDIR(mode)) {
 				ret = replay_dir_deletes(wc->trans,
 					 root, log, path, key.objectid, 0);
-<<<<<<< HEAD
-				BUG_ON(ret);
-			}
-			ret = overwrite_item(wc->trans, root, path,
-					     eb, i, &key);
-			BUG_ON(ret);
-
-			/* for regular files, make sure corresponding
-			 * orhpan item exist. extents past the new EOF
-			 * will be truncated later by orphan cleanup.
-			 */
-			if (S_ISREG(mode)) {
-				ret = insert_orphan_item(wc->trans, root,
-							 key.objectid);
-				BUG_ON(ret);
-=======
 				if (ret)
 					break;
 			}
@@ -3516,15 +2484,10 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
 				iput(inode);
 				if (ret)
 					break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			ret = link_to_fixup_dir(wc->trans, root,
 						path, key.objectid);
-<<<<<<< HEAD
-			BUG_ON(ret);
-		}
-=======
 			if (ret)
 				break;
 		}
@@ -3540,7 +2503,6 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
 				break;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (wc->stage < LOG_WALK_REPLAY_ALL)
 			continue;
 
@@ -3548,25 +2510,6 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
 		if (key.type == BTRFS_XATTR_ITEM_KEY) {
 			ret = overwrite_item(wc->trans, root, path,
 					     eb, i, &key);
-<<<<<<< HEAD
-			BUG_ON(ret);
-		} else if (key.type == BTRFS_INODE_REF_KEY) {
-			ret = add_inode_ref(wc->trans, root, log, path,
-					    eb, i, &key);
-			BUG_ON(ret && ret != -ENOENT);
-		} else if (key.type == BTRFS_EXTENT_DATA_KEY) {
-			ret = replay_one_extent(wc->trans, root, path,
-						eb, i, &key);
-			BUG_ON(ret);
-		} else if (key.type == BTRFS_DIR_ITEM_KEY ||
-			   key.type == BTRFS_DIR_INDEX_KEY) {
-			ret = replay_one_dir_item(wc->trans, root, path,
-						  eb, i, &key);
-			BUG_ON(ret);
-		}
-	}
-	btrfs_free_path(path);
-=======
 			if (ret)
 				break;
 		} else if (key.type == BTRFS_INODE_REF_KEY ||
@@ -3634,7 +2577,6 @@ static int clean_log_buffer(struct btrfs_trans_handle *trans,
 		unaccount_log_buffer(eb->fs_info, eb->start);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3643,31 +2585,11 @@ static noinline int walk_down_log_tree(struct btrfs_trans_handle *trans,
 				   struct btrfs_path *path, int *level,
 				   struct walk_control *wc)
 {
-<<<<<<< HEAD
-	u64 root_owner;
-=======
 	struct btrfs_fs_info *fs_info = root->fs_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 bytenr;
 	u64 ptr_gen;
 	struct extent_buffer *next;
 	struct extent_buffer *cur;
-<<<<<<< HEAD
-	struct extent_buffer *parent;
-	u32 blocksize;
-	int ret = 0;
-
-	WARN_ON(*level < 0);
-	WARN_ON(*level >= BTRFS_MAX_LEVEL);
-
-	while (*level > 0) {
-		WARN_ON(*level < 0);
-		WARN_ON(*level >= BTRFS_MAX_LEVEL);
-		cur = path->nodes[*level];
-
-		if (btrfs_header_level(cur) != *level)
-			WARN_ON(1);
-=======
 	int ret = 0;
 
 	while (*level > 0) {
@@ -3676,7 +2598,6 @@ static noinline int walk_down_log_tree(struct btrfs_trans_handle *trans,
 		cur = path->nodes[*level];
 
 		WARN_ON(btrfs_header_level(cur) != *level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (path->slots[*level] >=
 		    btrfs_header_nritems(cur))
@@ -3684,37 +2605,6 @@ static noinline int walk_down_log_tree(struct btrfs_trans_handle *trans,
 
 		bytenr = btrfs_node_blockptr(cur, path->slots[*level]);
 		ptr_gen = btrfs_node_ptr_generation(cur, path->slots[*level]);
-<<<<<<< HEAD
-		blocksize = btrfs_level_size(root, *level - 1);
-
-		parent = path->nodes[*level];
-		root_owner = btrfs_header_owner(parent);
-
-		next = btrfs_find_create_tree_block(root, bytenr, blocksize);
-		if (!next)
-			return -ENOMEM;
-
-		if (*level == 1) {
-			ret = wc->process_func(root, next, wc, ptr_gen);
-			if (ret)
-				return ret;
-
-			path->slots[*level]++;
-			if (wc->free) {
-				btrfs_read_buffer(next, ptr_gen);
-
-				btrfs_tree_lock(next);
-				btrfs_set_lock_blocking(next);
-				clean_tree_block(trans, root, next);
-				btrfs_wait_tree_block_writeback(next);
-				btrfs_tree_unlock(next);
-
-				WARN_ON(root_owner !=
-					BTRFS_TREE_LOG_OBJECTID);
-				ret = btrfs_free_and_pin_reserved_extent(root,
-							 bytenr, blocksize);
-				BUG_ON(ret); /* -ENOMEM or logic errors */
-=======
 		check.transid = ptr_gen;
 		check.level = *level - 1;
 		check.has_first_key = true;
@@ -3747,23 +2637,16 @@ static noinline int walk_down_log_tree(struct btrfs_trans_handle *trans,
 					free_extent_buffer(next);
 					return ret;
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			free_extent_buffer(next);
 			continue;
 		}
-<<<<<<< HEAD
-		btrfs_read_buffer(next, ptr_gen);
-
-		WARN_ON(*level <= 0);
-=======
 		ret = btrfs_read_extent_buffer(next, &check);
 		if (ret) {
 			free_extent_buffer(next);
 			return ret;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (path->nodes[*level-1])
 			free_extent_buffer(path->nodes[*level-1]);
 		path->nodes[*level-1] = next;
@@ -3771,12 +2654,6 @@ static noinline int walk_down_log_tree(struct btrfs_trans_handle *trans,
 		path->slots[*level] = 0;
 		cond_resched();
 	}
-<<<<<<< HEAD
-	WARN_ON(*level < 0);
-	WARN_ON(*level >= BTRFS_MAX_LEVEL);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	path->slots[*level] = btrfs_header_nritems(path->nodes[*level]);
 
 	cond_resched();
@@ -3788,10 +2665,6 @@ static noinline int walk_up_log_tree(struct btrfs_trans_handle *trans,
 				 struct btrfs_path *path, int *level,
 				 struct walk_control *wc)
 {
-<<<<<<< HEAD
-	u64 root_owner;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	int slot;
 	int ret;
@@ -3804,46 +2677,16 @@ static noinline int walk_up_log_tree(struct btrfs_trans_handle *trans,
 			WARN_ON(*level == 0);
 			return 0;
 		} else {
-<<<<<<< HEAD
-			struct extent_buffer *parent;
-			if (path->nodes[*level] == root->node)
-				parent = path->nodes[*level];
-			else
-				parent = path->nodes[*level + 1];
-
-			root_owner = btrfs_header_owner(parent);
-			ret = wc->process_func(root, path->nodes[*level], wc,
-				 btrfs_header_generation(path->nodes[*level]));
-=======
 			ret = wc->process_func(root, path->nodes[*level], wc,
 				 btrfs_header_generation(path->nodes[*level]),
 				 *level);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				return ret;
 
 			if (wc->free) {
-<<<<<<< HEAD
-				struct extent_buffer *next;
-
-				next = path->nodes[*level];
-
-				btrfs_tree_lock(next);
-				btrfs_set_lock_blocking(next);
-				clean_tree_block(trans, root, next);
-				btrfs_wait_tree_block_writeback(next);
-				btrfs_tree_unlock(next);
-
-				WARN_ON(root_owner != BTRFS_TREE_LOG_OBJECTID);
-				ret = btrfs_free_and_pin_reserved_extent(root,
-						path->nodes[*level]->start,
-						path->nodes[*level]->len);
-				BUG_ON(ret);
-=======
 				ret = clean_log_buffer(trans, path->nodes[*level]);
 				if (ret)
 					return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			free_extent_buffer(path->nodes[*level]);
 			path->nodes[*level] = NULL;
@@ -3865,10 +2708,6 @@ static int walk_log_tree(struct btrfs_trans_handle *trans,
 	int wret;
 	int level;
 	struct btrfs_path *path;
-<<<<<<< HEAD
-	int i;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int orig_level;
 
 	path = btrfs_alloc_path();
@@ -3878,11 +2717,7 @@ static int walk_log_tree(struct btrfs_trans_handle *trans,
 	level = btrfs_header_level(log->node);
 	orig_level = level;
 	path->nodes[level] = log->node;
-<<<<<<< HEAD
-	extent_buffer_get(log->node);
-=======
 	atomic_inc(&log->node->refs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	path->slots[level] = 0;
 
 	while (1) {
@@ -3906,37 +2741,6 @@ static int walk_log_tree(struct btrfs_trans_handle *trans,
 	/* was the root node processed? if not, catch it here */
 	if (path->nodes[orig_level]) {
 		ret = wc->process_func(log, path->nodes[orig_level], wc,
-<<<<<<< HEAD
-			 btrfs_header_generation(path->nodes[orig_level]));
-		if (ret)
-			goto out;
-		if (wc->free) {
-			struct extent_buffer *next;
-
-			next = path->nodes[orig_level];
-
-			btrfs_tree_lock(next);
-			btrfs_set_lock_blocking(next);
-			clean_tree_block(trans, log, next);
-			btrfs_wait_tree_block_writeback(next);
-			btrfs_tree_unlock(next);
-
-			WARN_ON(log->root_key.objectid !=
-				BTRFS_TREE_LOG_OBJECTID);
-			ret = btrfs_free_and_pin_reserved_extent(log, next->start,
-							 next->len);
-			BUG_ON(ret); /* -ENOMEM or logic errors */
-		}
-	}
-
-out:
-	for (i = 0; i <= orig_level; i++) {
-		if (path->nodes[i]) {
-			free_extent_buffer(path->nodes[i]);
-			path->nodes[i] = NULL;
-		}
-	}
-=======
 			 btrfs_header_generation(path->nodes[orig_level]),
 			 orig_level);
 		if (ret)
@@ -3946,7 +2750,6 @@ out:
 	}
 
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_free_path(path);
 	return ret;
 }
@@ -3956,42 +2759,24 @@ out:
  * in the tree of log roots
  */
 static int update_log_root(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-			   struct btrfs_root *log)
-{
-=======
 			   struct btrfs_root *log,
 			   struct btrfs_root_item *root_item)
 {
 	struct btrfs_fs_info *fs_info = log->fs_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (log->log_transid == 1) {
 		/* insert root item on the first sync */
-<<<<<<< HEAD
-		ret = btrfs_insert_root(trans, log->fs_info->log_root_tree,
-				&log->root_key, &log->root_item);
-	} else {
-		ret = btrfs_update_root(trans, log->fs_info->log_root_tree,
-				&log->root_key, &log->root_item);
-=======
 		ret = btrfs_insert_root(trans, fs_info->log_root_tree,
 				&log->root_key, root_item);
 	} else {
 		ret = btrfs_update_root(trans, fs_info->log_root_tree,
 				&log->root_key, root_item);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static int wait_log_commit(struct btrfs_trans_handle *trans,
-			   struct btrfs_root *root, unsigned long transid)
-=======
 static void wait_log_commit(struct btrfs_root *root, int transid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DEFINE_WAIT(wait);
 	int index = transid % 2;
@@ -4001,40 +2786,6 @@ static void wait_log_commit(struct btrfs_root *root, int transid)
 	 * so we know that if ours is more than 2 older than the
 	 * current transaction, we're done
 	 */
-<<<<<<< HEAD
-	do {
-		prepare_to_wait(&root->log_commit_wait[index],
-				&wait, TASK_UNINTERRUPTIBLE);
-		mutex_unlock(&root->log_mutex);
-
-		if (root->fs_info->last_trans_log_full_commit !=
-		    trans->transid && root->log_transid < transid + 2 &&
-		    atomic_read(&root->log_commit[index]))
-			schedule();
-
-		finish_wait(&root->log_commit_wait[index], &wait);
-		mutex_lock(&root->log_mutex);
-	} while (root->fs_info->last_trans_log_full_commit !=
-		 trans->transid && root->log_transid < transid + 2 &&
-		 atomic_read(&root->log_commit[index]));
-	return 0;
-}
-
-static void wait_for_writer(struct btrfs_trans_handle *trans,
-			    struct btrfs_root *root)
-{
-	DEFINE_WAIT(wait);
-	while (root->fs_info->last_trans_log_full_commit !=
-	       trans->transid && atomic_read(&root->log_writers)) {
-		prepare_to_wait(&root->log_writer_wait,
-				&wait, TASK_UNINTERRUPTIBLE);
-		mutex_unlock(&root->log_mutex);
-		if (root->fs_info->last_trans_log_full_commit !=
-		    trans->transid && atomic_read(&root->log_writers))
-			schedule();
-		mutex_lock(&root->log_mutex);
-		finish_wait(&root->log_writer_wait, &wait);
-=======
 	for (;;) {
 		prepare_to_wait(&root->log_commit_wait[index],
 				&wait, TASK_UNINTERRUPTIBLE);
@@ -4134,21 +2885,13 @@ static inline void btrfs_remove_all_log_ctxs(struct btrfs_root *root,
 	list_for_each_entry_safe(ctx, safe, &root->log_ctxs[index], list) {
 		list_del_init(&ctx->list);
 		ctx->log_ret = error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
-<<<<<<< HEAD
- * btrfs_sync_log does sends a given tree log down to the disk and
- * updates the super blocks to record it.  When this call is done,
- * you know that any inodes previously logged are safely on disk only
- * if it returns 0.
-=======
  * Sends a given tree log down to the disk and updates the super blocks to
  * record it.  When this call is done, you know that any inodes previously
  * logged are safely on disk only if it returns 0.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Any other return value means you need to call btrfs_commit_transaction.
  * Some of the edge cases for fsyncing directories that have had unlinks
@@ -4157,29 +2900,12 @@ static inline void btrfs_remove_all_log_ctxs(struct btrfs_root *root,
  * that has happened.
  */
 int btrfs_sync_log(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-		   struct btrfs_root *root)
-=======
 		   struct btrfs_root *root, struct btrfs_log_ctx *ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int index1;
 	int index2;
 	int mark;
 	int ret;
-<<<<<<< HEAD
-	struct btrfs_root *log = root->log_root;
-	struct btrfs_root *log_root_tree = root->fs_info->log_root_tree;
-	unsigned long log_transid = 0;
-
-	mutex_lock(&root->log_mutex);
-	index1 = root->log_transid % 2;
-	if (atomic_read(&root->log_commit[index1])) {
-		wait_log_commit(trans, root, root->log_transid);
-		mutex_unlock(&root->log_mutex);
-		return 0;
-	}
-=======
 	struct btrfs_fs_info *fs_info = root->fs_info;
 	struct btrfs_root *log = root->log_root;
 	struct btrfs_root *log_root_tree = fs_info->log_root_tree;
@@ -4204,18 +2930,10 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
 		return ctx->log_ret;
 	}
 	ASSERT(log_transid == root->log_transid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&root->log_commit[index1], 1);
 
 	/* wait for previous tree log sync to complete */
 	if (atomic_read(&root->log_commit[(index1 + 1) % 2]))
-<<<<<<< HEAD
-		wait_log_commit(trans, root, root->log_transid - 1);
-	while (1) {
-		unsigned long batch = root->log_batch;
-		/* when we're on an ssd, just kick the log commit out */
-		if (!btrfs_test_opt(root, SSD) && root->log_multiple_pids) {
-=======
 		wait_log_commit(root, log_transid - 1);
 
 	while (1) {
@@ -4223,37 +2941,22 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
 		/* when we're on an ssd, just kick the log commit out */
 		if (!btrfs_test_opt(fs_info, SSD) &&
 		    test_bit(BTRFS_ROOT_MULTI_LOG_TASKS, &root->state)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_unlock(&root->log_mutex);
 			schedule_timeout_uninterruptible(1);
 			mutex_lock(&root->log_mutex);
 		}
-<<<<<<< HEAD
-		wait_for_writer(trans, root);
-		if (batch == root->log_batch)
-=======
 		wait_for_writer(root);
 		if (batch == atomic_read(&root->log_batch))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
 	/* bail out if we need to do a full commit */
-<<<<<<< HEAD
-	if (root->fs_info->last_trans_log_full_commit == trans->transid) {
-		ret = -EAGAIN;
-=======
 	if (btrfs_need_log_full_commit(trans)) {
 		ret = BTRFS_LOG_FORCE_COMMIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&root->log_mutex);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	log_transid = root->log_transid;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (log_transid % 2 == 0)
 		mark = EXTENT_DIRTY;
 	else
@@ -4262,11 +2965,6 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
 	/* we start IO on  all the marked extents here, but we don't actually
 	 * wait for them until later.
 	 */
-<<<<<<< HEAD
-	ret = btrfs_write_marked_extents(log, &log->dirty_log_pages, mark);
-	if (ret) {
-		btrfs_abort_transaction(trans, root, ret);
-=======
 	blk_start_plug(&plug);
 	ret = btrfs_write_marked_extents(fs_info, &log->dirty_log_pages, mark);
 	/*
@@ -4283,20 +2981,10 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
 	if (ret) {
 		blk_finish_plug(&plug);
 		btrfs_set_log_full_commit(trans);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&root->log_mutex);
 		goto out;
 	}
 
-<<<<<<< HEAD
-	btrfs_set_root_node(&log->root_item, log->node);
-
-	root->log_batch = 0;
-	root->log_transid++;
-	log->log_transid = root->log_transid;
-	root->log_start_pid = 0;
-	smp_mb();
-=======
 	/*
 	 * We _must_ update under the root->log_mutex in order to make sure we
 	 * have a consistent view of the log root we are trying to commit at
@@ -4316,7 +3004,6 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
 	btrfs_set_root_log_transid(root, root->log_transid + 1);
 	log->log_transid = root->log_transid;
 	root->log_start_pid = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * IO has been started, blocks of the log tree have WRITTEN flag set
 	 * in their headers. new modifications of the log will be written to
@@ -4324,53 +3011,6 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
 	 */
 	mutex_unlock(&root->log_mutex);
 
-<<<<<<< HEAD
-	mutex_lock(&log_root_tree->log_mutex);
-	log_root_tree->log_batch++;
-	atomic_inc(&log_root_tree->log_writers);
-	mutex_unlock(&log_root_tree->log_mutex);
-
-	ret = update_log_root(trans, log);
-
-	mutex_lock(&log_root_tree->log_mutex);
-	if (atomic_dec_and_test(&log_root_tree->log_writers)) {
-		smp_mb();
-		if (waitqueue_active(&log_root_tree->log_writer_wait))
-			wake_up(&log_root_tree->log_writer_wait);
-	}
-
-	if (ret) {
-		if (ret != -ENOSPC) {
-			btrfs_abort_transaction(trans, root, ret);
-			mutex_unlock(&log_root_tree->log_mutex);
-			goto out;
-		}
-		root->fs_info->last_trans_log_full_commit = trans->transid;
-		btrfs_wait_marked_extents(log, &log->dirty_log_pages, mark);
-		mutex_unlock(&log_root_tree->log_mutex);
-		ret = -EAGAIN;
-		goto out;
-	}
-
-	index2 = log_root_tree->log_transid % 2;
-	if (atomic_read(&log_root_tree->log_commit[index2])) {
-		btrfs_wait_marked_extents(log, &log->dirty_log_pages, mark);
-		wait_log_commit(trans, log_root_tree,
-				log_root_tree->log_transid);
-		mutex_unlock(&log_root_tree->log_mutex);
-		ret = 0;
-		goto out;
-	}
-	atomic_set(&log_root_tree->log_commit[index2], 1);
-
-	if (atomic_read(&log_root_tree->log_commit[(index2 + 1) % 2])) {
-		wait_log_commit(trans, log_root_tree,
-				log_root_tree->log_transid - 1);
-	}
-
-	wait_for_writer(trans, log_root_tree);
-
-=======
 	if (btrfs_is_zoned(fs_info)) {
 		mutex_lock(&fs_info->tree_root->log_mutex);
 		if (!log_root_tree->node) {
@@ -4437,68 +3077,10 @@ int btrfs_sync_log(struct btrfs_trans_handle *trans,
 				root_log_ctx.log_transid - 1);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * now that we've moved on to the tree of log tree roots,
 	 * check the full commit flag again
 	 */
-<<<<<<< HEAD
-	if (root->fs_info->last_trans_log_full_commit == trans->transid) {
-		btrfs_wait_marked_extents(log, &log->dirty_log_pages, mark);
-		mutex_unlock(&log_root_tree->log_mutex);
-		ret = -EAGAIN;
-		goto out_wake_log_root;
-	}
-
-	ret = btrfs_write_and_wait_marked_extents(log_root_tree,
-				&log_root_tree->dirty_log_pages,
-				EXTENT_DIRTY | EXTENT_NEW);
-	if (ret) {
-		btrfs_abort_transaction(trans, root, ret);
-		mutex_unlock(&log_root_tree->log_mutex);
-		goto out_wake_log_root;
-	}
-	btrfs_wait_marked_extents(log, &log->dirty_log_pages, mark);
-
-	btrfs_set_super_log_root(root->fs_info->super_for_commit,
-				log_root_tree->node->start);
-	btrfs_set_super_log_root_level(root->fs_info->super_for_commit,
-				btrfs_header_level(log_root_tree->node));
-
-	log_root_tree->log_batch = 0;
-	log_root_tree->log_transid++;
-	smp_mb();
-
-	mutex_unlock(&log_root_tree->log_mutex);
-
-	/*
-	 * nobody else is going to jump in and write the the ctree
-	 * super here because the log_commit atomic below is protecting
-	 * us.  We must be called with a transaction handle pinning
-	 * the running transaction open, so a full commit can't hop
-	 * in and cause problems either.
-	 */
-	btrfs_scrub_pause_super(root);
-	write_ctree_super(trans, root->fs_info->tree_root, 1);
-	btrfs_scrub_continue_super(root);
-	ret = 0;
-
-	mutex_lock(&root->log_mutex);
-	if (root->last_log_commit < log_transid)
-		root->last_log_commit = log_transid;
-	mutex_unlock(&root->log_mutex);
-
-out_wake_log_root:
-	atomic_set(&log_root_tree->log_commit[index2], 0);
-	smp_mb();
-	if (waitqueue_active(&log_root_tree->log_commit_wait[index2]))
-		wake_up(&log_root_tree->log_commit_wait[index2]);
-out:
-	atomic_set(&root->log_commit[index1], 0);
-	smp_mb();
-	if (waitqueue_active(&root->log_commit_wait[index1]))
-		wake_up(&root->log_commit_wait[index1]);
-=======
 	if (btrfs_need_log_full_commit(trans)) {
 		blk_finish_plug(&plug);
 		btrfs_wait_tree_log_extents(log, mark);
@@ -4621,7 +3203,6 @@ out:
 	 * necessary, but proving that seems to be hard.
 	 */
 	cond_wake_up(&root->log_commit_wait[index1]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -4629,33 +3210,11 @@ static void free_log_tree(struct btrfs_trans_handle *trans,
 			  struct btrfs_root *log)
 {
 	int ret;
-<<<<<<< HEAD
-	u64 start;
-	u64 end;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct walk_control wc = {
 		.free = 1,
 		.process_func = process_one_buffer
 	};
 
-<<<<<<< HEAD
-	ret = walk_log_tree(trans, log, &wc);
-	BUG_ON(ret);
-
-	while (1) {
-		ret = find_first_extent_bit(&log->dirty_log_pages,
-				0, &start, &end, EXTENT_DIRTY | EXTENT_NEW);
-		if (ret)
-			break;
-
-		clear_extent_bits(&log->dirty_log_pages, start, end,
-				  EXTENT_DIRTY | EXTENT_NEW, GFP_NOFS);
-	}
-
-	free_extent_buffer(log->node);
-	kfree(log);
-=======
 	if (log->node) {
 		ret = walk_log_tree(trans, log, &wc);
 		if (ret) {
@@ -4693,7 +3252,6 @@ static void free_log_tree(struct btrfs_trans_handle *trans,
 	extent_io_tree_release(&log->log_csum_range);
 
 	btrfs_put_root(log);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4705,10 +3263,7 @@ int btrfs_free_log(struct btrfs_trans_handle *trans, struct btrfs_root *root)
 	if (root->log_root) {
 		free_log_tree(trans, root->log_root);
 		root->log_root = NULL;
-<<<<<<< HEAD
-=======
 		clear_bit(BTRFS_ROOT_HAS_LOG_TREE, &root->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -4719,17 +3274,12 @@ int btrfs_free_log_root_tree(struct btrfs_trans_handle *trans,
 	if (fs_info->log_root_tree) {
 		free_log_tree(trans, fs_info->log_root_tree);
 		fs_info->log_root_tree = NULL;
-<<<<<<< HEAD
-=======
 		clear_bit(BTRFS_ROOT_HAS_LOG_TREE, &fs_info->tree_root->state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Check if an inode was logged in the current transaction. This correctly deals
  * with the case where the inode was logged but has a logged_trans of 0, which
  * happens if the inode is evicted and loaded again, as logged_trans is an in
@@ -4883,7 +3433,6 @@ static int del_logged_dentry(struct btrfs_trans_handle *trans,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If both a file and directory are logged, and unlinks or renames are
  * mixed in, we have a few interesting corners:
  *
@@ -4904,114 +3453,6 @@ static int del_logged_dentry(struct btrfs_trans_handle *trans,
  * This optimizations allows us to avoid relogging the entire inode
  * or the entire directory.
  */
-<<<<<<< HEAD
-int btrfs_del_dir_entries_in_log(struct btrfs_trans_handle *trans,
-				 struct btrfs_root *root,
-				 const char *name, int name_len,
-				 struct inode *dir, u64 index)
-{
-	struct btrfs_root *log;
-	struct btrfs_dir_item *di;
-	struct btrfs_path *path;
-	int ret;
-	int err = 0;
-	int bytes_del = 0;
-	u64 dir_ino = btrfs_ino(dir);
-
-	if (BTRFS_I(dir)->logged_trans < trans->transid)
-		return 0;
-
-	ret = join_running_log_trans(root);
-	if (ret)
-		return 0;
-
-	mutex_lock(&BTRFS_I(dir)->log_mutex);
-
-	log = root->log_root;
-	path = btrfs_alloc_path();
-	if (!path) {
-		err = -ENOMEM;
-		goto out_unlock;
-	}
-
-	di = btrfs_lookup_dir_item(trans, log, path, dir_ino,
-				   name, name_len, -1);
-	if (IS_ERR(di)) {
-		err = PTR_ERR(di);
-		goto fail;
-	}
-	if (di) {
-		ret = btrfs_delete_one_dir_name(trans, log, path, di);
-		bytes_del += name_len;
-		BUG_ON(ret);
-	}
-	btrfs_release_path(path);
-	di = btrfs_lookup_dir_index_item(trans, log, path, dir_ino,
-					 index, name, name_len, -1);
-	if (IS_ERR(di)) {
-		err = PTR_ERR(di);
-		goto fail;
-	}
-	if (di) {
-		ret = btrfs_delete_one_dir_name(trans, log, path, di);
-		bytes_del += name_len;
-		BUG_ON(ret);
-	}
-
-	/* update the directory size in the log to reflect the names
-	 * we have removed
-	 */
-	if (bytes_del) {
-		struct btrfs_key key;
-
-		key.objectid = dir_ino;
-		key.offset = 0;
-		key.type = BTRFS_INODE_ITEM_KEY;
-		btrfs_release_path(path);
-
-		ret = btrfs_search_slot(trans, log, &key, path, 0, 1);
-		if (ret < 0) {
-			err = ret;
-			goto fail;
-		}
-		if (ret == 0) {
-			struct btrfs_inode_item *item;
-			u64 i_size;
-
-			item = btrfs_item_ptr(path->nodes[0], path->slots[0],
-					      struct btrfs_inode_item);
-			i_size = btrfs_inode_size(path->nodes[0], item);
-			if (i_size > bytes_del)
-				i_size -= bytes_del;
-			else
-				i_size = 0;
-			btrfs_set_inode_size(path->nodes[0], item, i_size);
-			btrfs_mark_buffer_dirty(path->nodes[0]);
-		} else
-			ret = 0;
-		btrfs_release_path(path);
-	}
-fail:
-	btrfs_free_path(path);
-out_unlock:
-	mutex_unlock(&BTRFS_I(dir)->log_mutex);
-	if (ret == -ENOSPC) {
-		root->fs_info->last_trans_log_full_commit = trans->transid;
-		ret = 0;
-	} else if (ret < 0)
-		btrfs_abort_transaction(trans, root, ret);
-
-	btrfs_end_log_trans(root);
-
-	return err;
-}
-
-/* see comments for btrfs_del_dir_entries_in_log */
-int btrfs_del_inode_ref_in_log(struct btrfs_trans_handle *trans,
-			       struct btrfs_root *root,
-			       const char *name, int name_len,
-			       struct inode *inode, u64 dirid)
-=======
 void btrfs_del_dir_entries_in_log(struct btrfs_trans_handle *trans,
 				  struct btrfs_root *root,
 				  const struct fscrypt_str *name,
@@ -5055,34 +3496,11 @@ void btrfs_del_inode_ref_in_log(struct btrfs_trans_handle *trans,
 				struct btrfs_root *root,
 				const struct fscrypt_str *name,
 				struct btrfs_inode *inode, u64 dirid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct btrfs_root *log;
 	u64 index;
 	int ret;
 
-<<<<<<< HEAD
-	if (BTRFS_I(inode)->logged_trans < trans->transid)
-		return 0;
-
-	ret = join_running_log_trans(root);
-	if (ret)
-		return 0;
-	log = root->log_root;
-	mutex_lock(&BTRFS_I(inode)->log_mutex);
-
-	ret = btrfs_del_inode_ref(trans, log, name, name_len, btrfs_ino(inode),
-				  dirid, &index);
-	mutex_unlock(&BTRFS_I(inode)->log_mutex);
-	if (ret == -ENOSPC) {
-		root->fs_info->last_trans_log_full_commit = trans->transid;
-		ret = 0;
-	} else if (ret < 0 && ret != -ENOENT)
-		btrfs_abort_transaction(trans, root, ret);
-	btrfs_end_log_trans(root);
-
-	return ret;
-=======
 	ret = inode_logged(trans, inode, NULL);
 	if (ret == 0)
 		return;
@@ -5103,7 +3521,6 @@ void btrfs_del_inode_ref_in_log(struct btrfs_trans_handle *trans,
 	if (ret < 0 && ret != -ENOENT)
 		btrfs_set_log_full_commit(trans);
 	btrfs_end_log_trans(root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -5114,11 +3531,7 @@ void btrfs_del_inode_ref_in_log(struct btrfs_trans_handle *trans,
 static noinline int insert_dir_log_key(struct btrfs_trans_handle *trans,
 				       struct btrfs_root *log,
 				       struct btrfs_path *path,
-<<<<<<< HEAD
-				       int key_type, u64 dirid,
-=======
 				       u64 dirid,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       u64 first_offset, u64 last_offset)
 {
 	int ret;
@@ -5127,14 +3540,6 @@ static noinline int insert_dir_log_key(struct btrfs_trans_handle *trans,
 
 	key.objectid = dirid;
 	key.offset = first_offset;
-<<<<<<< HEAD
-	if (key_type == BTRFS_DIR_ITEM_KEY)
-		key.type = BTRFS_DIR_LOG_ITEM_KEY;
-	else
-		key.type = BTRFS_DIR_LOG_INDEX_KEY;
-	ret = btrfs_insert_empty_item(trans, log, path, &key, sizeof(*item));
-	if (ret)
-=======
 	key.type = BTRFS_DIR_LOG_INDEX_KEY;
 	ret = btrfs_insert_empty_item(trans, log, path, &key, sizeof(*item));
 	/*
@@ -5145,15 +3550,10 @@ static noinline int insert_dir_log_key(struct btrfs_trans_handle *trans,
 	 * This results in logging the same dir index range key.
 	 */
 	if (ret && ret != -EEXIST)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 
 	item = btrfs_item_ptr(path->nodes[0], path->slots[0],
 			      struct btrfs_dir_log_item);
-<<<<<<< HEAD
-	btrfs_set_dir_log_end(path->nodes[0], item, last_offset);
-	btrfs_mark_buffer_dirty(path->nodes[0]);
-=======
 	if (ret == -EEXIST) {
 		const u64 curr_end = btrfs_dir_log_end(path->nodes[0], item);
 
@@ -5167,13 +3567,10 @@ static noinline int insert_dir_log_key(struct btrfs_trans_handle *trans,
 	}
 	btrfs_set_dir_log_end(path->nodes[0], item, last_offset);
 	btrfs_mark_buffer_dirty(trans, path->nodes[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_release_path(path);
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int flush_dir_items_batch(struct btrfs_trans_handle *trans,
 				 struct btrfs_inode *inode,
 				 struct extent_buffer *src,
@@ -5401,45 +3798,12 @@ static int process_dir_items_leaf(struct btrfs_trans_handle *trans,
 	return last_found ? 1 : 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * log all the items included in the current transaction for a given
  * directory.  This also creates the range items in the log tree required
  * to replay anything deleted before the fsync
  */
 static noinline int log_dir_items(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-			  struct btrfs_root *root, struct inode *inode,
-			  struct btrfs_path *path,
-			  struct btrfs_path *dst_path, int key_type,
-			  u64 min_offset, u64 *last_offset_ret)
-{
-	struct btrfs_key min_key;
-	struct btrfs_key max_key;
-	struct btrfs_root *log = root->log_root;
-	struct extent_buffer *src;
-	int err = 0;
-	int ret;
-	int i;
-	int nritems;
-	u64 first_offset = min_offset;
-	u64 last_offset = (u64)-1;
-	u64 ino = btrfs_ino(inode);
-
-	log = root->log_root;
-	max_key.objectid = ino;
-	max_key.offset = (u64)-1;
-	max_key.type = key_type;
-
-	min_key.objectid = ino;
-	min_key.type = key_type;
-	min_key.offset = min_offset;
-
-	path->keep_locks = 1;
-
-	ret = btrfs_search_forward(root, &min_key, &max_key,
-				   path, 0, trans->transid);
-=======
 			  struct btrfs_inode *inode,
 			  struct btrfs_path *path,
 			  struct btrfs_path *dst_path,
@@ -5459,22 +3823,15 @@ static noinline int log_dir_items(struct btrfs_trans_handle *trans,
 	min_key.offset = min_offset;
 
 	ret = btrfs_search_forward(root, &min_key, path, trans->transid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * we didn't find anything from this transaction, see if there
 	 * is anything at all
 	 */
-<<<<<<< HEAD
-	if (ret != 0 || min_key.objectid != ino || min_key.type != key_type) {
-		min_key.objectid = ino;
-		min_key.type = key_type;
-=======
 	if (ret != 0 || min_key.objectid != ino ||
 	    min_key.type != BTRFS_DIR_INDEX_KEY) {
 		min_key.objectid = ino;
 		min_key.type = BTRFS_DIR_INDEX_KEY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		min_key.offset = (u64)-1;
 		btrfs_release_path(path);
 		ret = btrfs_search_slot(NULL, root, &min_key, path, 0, 0);
@@ -5482,11 +3839,7 @@ static noinline int log_dir_items(struct btrfs_trans_handle *trans,
 			btrfs_release_path(path);
 			return ret;
 		}
-<<<<<<< HEAD
-		ret = btrfs_previous_item(root, path, ino, key_type);
-=======
 		ret = btrfs_previous_item(root, path, ino, BTRFS_DIR_INDEX_KEY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* if ret == 0 there are items for this type,
 		 * create a range to tell us the last key of this type.
@@ -5495,13 +3848,6 @@ static noinline int log_dir_items(struct btrfs_trans_handle *trans,
 		 */
 		if (ret == 0) {
 			struct btrfs_key tmp;
-<<<<<<< HEAD
-			btrfs_item_key_to_cpu(path->nodes[0], &tmp,
-					      path->slots[0]);
-			if (key_type == tmp.type)
-				first_offset = max(min_offset, tmp.offset) + 1;
-		}
-=======
 
 			btrfs_item_key_to_cpu(path->nodes[0], &tmp,
 					      path->slots[0]);
@@ -5511,37 +3857,10 @@ static noinline int log_dir_items(struct btrfs_trans_handle *trans,
 			ret = 0;
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
 	/* go backward to find any previous key */
-<<<<<<< HEAD
-	ret = btrfs_previous_item(root, path, ino, key_type);
-	if (ret == 0) {
-		struct btrfs_key tmp;
-		btrfs_item_key_to_cpu(path->nodes[0], &tmp, path->slots[0]);
-		if (key_type == tmp.type) {
-			first_offset = tmp.offset;
-			ret = overwrite_item(trans, log, dst_path,
-					     path->nodes[0], path->slots[0],
-					     &tmp);
-			if (ret) {
-				err = ret;
-				goto done;
-			}
-		}
-	}
-	btrfs_release_path(path);
-
-	/* find the first key from this transaction again */
-	ret = btrfs_search_slot(NULL, root, &min_key, path, 0, 0);
-	if (ret != 0) {
-		WARN_ON(1);
-		goto done;
-	}
-
-=======
 	ret = btrfs_previous_item(root, path, ino, BTRFS_DIR_INDEX_KEY);
 	if (ret == 0) {
 		struct btrfs_key tmp;
@@ -5590,30 +3909,11 @@ search:
 	if (ret < 0)
 		goto done;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * we have a block from this transaction, log every item in it
 	 * from our directory
 	 */
 	while (1) {
-<<<<<<< HEAD
-		struct btrfs_key tmp;
-		src = path->nodes[0];
-		nritems = btrfs_header_nritems(src);
-		for (i = path->slots[0]; i < nritems; i++) {
-			btrfs_item_key_to_cpu(src, &min_key, i);
-
-			if (min_key.objectid != ino || min_key.type != key_type)
-				goto done;
-			ret = overwrite_item(trans, log, dst_path, src, i,
-					     &min_key);
-			if (ret) {
-				err = ret;
-				goto done;
-			}
-		}
-		path->slots[0] = nritems;
-=======
 		ret = process_dir_items_leaf(trans, inode, path, dst_path, ctx,
 					     &last_old_dentry_offset);
 		if (ret != 0) {
@@ -5622,21 +3922,12 @@ search:
 			goto done;
 		}
 		path->slots[0] = btrfs_header_nritems(path->nodes[0]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * look ahead to the next item and see if it is also
 		 * from this directory and from this transaction
 		 */
 		ret = btrfs_next_leaf(root, path);
-<<<<<<< HEAD
-		if (ret == 1) {
-			last_offset = (u64)-1;
-			goto done;
-		}
-		btrfs_item_key_to_cpu(path->nodes[0], &tmp, path->slots[0]);
-		if (tmp.objectid != ino || tmp.type != key_type) {
-=======
 		if (ret) {
 			if (ret == 1) {
 				last_offset = (u64)-1;
@@ -5646,22 +3937,10 @@ search:
 		}
 		btrfs_item_key_to_cpu(path->nodes[0], &min_key, path->slots[0]);
 		if (min_key.objectid != ino || min_key.type != BTRFS_DIR_INDEX_KEY) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			last_offset = (u64)-1;
 			goto done;
 		}
 		if (btrfs_header_generation(path->nodes[0]) != trans->transid) {
-<<<<<<< HEAD
-			ret = overwrite_item(trans, log, dst_path,
-					     path->nodes[0], path->slots[0],
-					     &tmp);
-			if (ret)
-				err = ret;
-			else
-				last_offset = tmp.offset;
-			goto done;
-		}
-=======
 			/*
 			 * The next leaf was not changed in the current transaction
 			 * and has at least one dir index key.
@@ -5679,26 +3958,11 @@ search:
 			cond_resched();
 			goto search;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 done:
 	btrfs_release_path(path);
 	btrfs_release_path(dst_path);
 
-<<<<<<< HEAD
-	if (err == 0) {
-		*last_offset_ret = last_offset;
-		/*
-		 * insert the log range keys to indicate where the log
-		 * is valid
-		 */
-		ret = insert_dir_log_key(trans, log, path, key_type,
-					 ino, first_offset, last_offset);
-		if (ret)
-			err = ret;
-	}
-	return err;
-=======
 	if (ret == 0) {
 		*last_offset_ret = last_offset;
 		/*
@@ -5782,7 +4046,6 @@ out:
 	btrfs_release_path(path);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -5798,31 +4061,14 @@ out:
  * key logged by this transaction.
  */
 static noinline int log_directory_changes(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-			  struct btrfs_root *root, struct inode *inode,
-			  struct btrfs_path *path,
-			  struct btrfs_path *dst_path)
-=======
 			  struct btrfs_inode *inode,
 			  struct btrfs_path *path,
 			  struct btrfs_path *dst_path,
 			  struct btrfs_log_ctx *ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 min_key;
 	u64 max_key;
 	int ret;
-<<<<<<< HEAD
-	int key_type = BTRFS_DIR_ITEM_KEY;
-
-again:
-	min_key = 0;
-	max_key = 0;
-	while (1) {
-		ret = log_dir_items(trans, root, inode, path,
-				    dst_path, key_type, min_key,
-				    &max_key);
-=======
 
 	ret = update_last_dir_index_offset(inode, path, ctx);
 	if (ret)
@@ -5834,7 +4080,6 @@ again:
 	while (1) {
 		ret = log_dir_items(trans, inode, path, dst_path,
 				ctx, min_key, &max_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 		if (max_key == (u64)-1)
@@ -5842,13 +4087,6 @@ again:
 		min_key = max_key + 1;
 	}
 
-<<<<<<< HEAD
-	if (key_type == BTRFS_DIR_ITEM_KEY) {
-		key_type = BTRFS_DIR_INDEX_KEY;
-		goto again;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5858,53 +4096,23 @@ again:
  * This cannot be run for file data extents because it does not
  * free the extents they point to.
  */
-<<<<<<< HEAD
-static int drop_objectid_items(struct btrfs_trans_handle *trans,
-				  struct btrfs_root *log,
-				  struct btrfs_path *path,
-				  u64 objectid, int max_key_type)
-=======
 static int drop_inode_items(struct btrfs_trans_handle *trans,
 				  struct btrfs_root *log,
 				  struct btrfs_path *path,
 				  struct btrfs_inode *inode,
 				  int max_key_type)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct btrfs_key key;
 	struct btrfs_key found_key;
-<<<<<<< HEAD
-
-	key.objectid = objectid;
-=======
 	int start_slot;
 
 	key.objectid = btrfs_ino(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key.type = max_key_type;
 	key.offset = (u64)-1;
 
 	while (1) {
 		ret = btrfs_search_slot(trans, log, &key, path, -1, 1);
-<<<<<<< HEAD
-		BUG_ON(ret == 0);
-		if (ret < 0)
-			break;
-
-		if (path->slots[0] == 0)
-			break;
-
-		path->slots[0]--;
-		btrfs_item_key_to_cpu(path->nodes[0], &found_key,
-				      path->slots[0]);
-
-		if (found_key.objectid != objectid)
-			break;
-
-		ret = btrfs_del_item(trans, log, path);
-		if (ret)
-=======
 		if (ret < 0) {
 			break;
 		} else if (ret > 0) {
@@ -5932,13 +4140,10 @@ static int drop_inode_items(struct btrfs_trans_handle *trans,
 		 * found the last guy with the objectid in this tree.
 		 */
 		if (ret || start_slot != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		btrfs_release_path(path);
 	}
 	btrfs_release_path(path);
-<<<<<<< HEAD
-=======
 	if (ret > 0)
 		ret = 0;
 	return ret;
@@ -6111,30 +4316,10 @@ static int log_csums(struct btrfs_trans_handle *trans,
 	unlock_extent(&log_root->log_csum_range, sums->logical, lock_end,
 		      &cached_state);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static noinline int copy_items(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-			       struct btrfs_root *log,
-			       struct btrfs_path *dst_path,
-			       struct extent_buffer *src,
-			       int start_slot, int nr, int inode_only)
-{
-	unsigned long src_offset;
-	unsigned long dst_offset;
-	struct btrfs_file_extent_item *extent;
-	struct btrfs_inode_item *inode_item;
-	int ret;
-	struct btrfs_key *ins_keys;
-	u32 *ins_sizes;
-	char *ins_data;
-	int i;
-	struct list_head ordered_sums;
-
-	INIT_LIST_HEAD(&ordered_sums);
-=======
 			       struct btrfs_inode *inode,
 			       struct btrfs_path *dst_path,
 			       struct btrfs_path *src_path,
@@ -6186,7 +4371,6 @@ static noinline int copy_items(struct btrfs_trans_handle *trans,
 		return ret;
 
 	src = src_path->nodes[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ins_data = kmalloc(nr * sizeof(struct btrfs_key) +
 			   nr * sizeof(u32), GFP_NOFS);
@@ -6195,95 +4379,6 @@ static noinline int copy_items(struct btrfs_trans_handle *trans,
 
 	ins_sizes = (u32 *)ins_data;
 	ins_keys = (struct btrfs_key *)(ins_data + nr * sizeof(u32));
-<<<<<<< HEAD
-
-	for (i = 0; i < nr; i++) {
-		ins_sizes[i] = btrfs_item_size_nr(src, i + start_slot);
-		btrfs_item_key_to_cpu(src, ins_keys + i, i + start_slot);
-	}
-	ret = btrfs_insert_empty_items(trans, log, dst_path,
-				       ins_keys, ins_sizes, nr);
-	if (ret) {
-		kfree(ins_data);
-		return ret;
-	}
-
-	for (i = 0; i < nr; i++, dst_path->slots[0]++) {
-		dst_offset = btrfs_item_ptr_offset(dst_path->nodes[0],
-						   dst_path->slots[0]);
-
-		src_offset = btrfs_item_ptr_offset(src, start_slot + i);
-
-		copy_extent_buffer(dst_path->nodes[0], src, dst_offset,
-				   src_offset, ins_sizes[i]);
-
-		if (inode_only == LOG_INODE_EXISTS &&
-		    ins_keys[i].type == BTRFS_INODE_ITEM_KEY) {
-			inode_item = btrfs_item_ptr(dst_path->nodes[0],
-						    dst_path->slots[0],
-						    struct btrfs_inode_item);
-			btrfs_set_inode_size(dst_path->nodes[0], inode_item, 0);
-
-			/* set the generation to zero so the recover code
-			 * can tell the difference between an logging
-			 * just to say 'this inode exists' and a logging
-			 * to say 'update this inode with these values'
-			 */
-			btrfs_set_inode_generation(dst_path->nodes[0],
-						   inode_item, 0);
-		}
-		/* take a reference on file data extents so that truncates
-		 * or deletes of this inode don't have to relog the inode
-		 * again
-		 */
-		if (btrfs_key_type(ins_keys + i) == BTRFS_EXTENT_DATA_KEY) {
-			int found_type;
-			extent = btrfs_item_ptr(src, start_slot + i,
-						struct btrfs_file_extent_item);
-
-			if (btrfs_file_extent_generation(src, extent) < trans->transid)
-				continue;
-
-			found_type = btrfs_file_extent_type(src, extent);
-			if (found_type == BTRFS_FILE_EXTENT_REG ||
-			    found_type == BTRFS_FILE_EXTENT_PREALLOC) {
-				u64 ds, dl, cs, cl;
-				ds = btrfs_file_extent_disk_bytenr(src,
-								extent);
-				/* ds == 0 is a hole */
-				if (ds == 0)
-					continue;
-
-				dl = btrfs_file_extent_disk_num_bytes(src,
-								extent);
-				cs = btrfs_file_extent_offset(src, extent);
-				cl = btrfs_file_extent_num_bytes(src,
-								extent);
-				if (btrfs_file_extent_compression(src,
-								  extent)) {
-					cs = 0;
-					cl = dl;
-				}
-
-				ret = btrfs_lookup_csums_range(
-						log->fs_info->csum_root,
-						ds + cs, ds + cs + cl - 1,
-						&ordered_sums, 0);
-				BUG_ON(ret);
-			}
-		}
-	}
-
-	btrfs_mark_buffer_dirty(dst_path->nodes[0]);
-	btrfs_release_path(dst_path);
-	kfree(ins_data);
-
-	/*
-	 * we have to do this after the loop above to avoid changing the
-	 * log tree while trying to change the log tree.
-	 */
-	ret = 0;
-=======
 	batch.keys = ins_keys;
 	batch.data_sizes = ins_sizes;
 	batch.total_data_size = 0;
@@ -6564,18 +4659,11 @@ static int log_extent_csums(struct btrfs_trans_handle *trans,
 	if (ret)
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!list_empty(&ordered_sums)) {
 		struct btrfs_ordered_sum *sums = list_entry(ordered_sums.next,
 						   struct btrfs_ordered_sum,
 						   list);
 		if (!ret)
-<<<<<<< HEAD
-			ret = btrfs_csum_file_blocks(trans, log, sums);
-		list_del(&sums->list);
-		kfree(sums);
-	}
-=======
 			ret = log_csums(trans, inode, log_root, sums);
 		list_del(&sums->list);
 		kfree(sums);
@@ -8277,7 +6365,6 @@ static int log_new_delayed_dentries(struct btrfs_trans_handle *trans,
 	ctx->log_new_dentries = orig_log_new_dentries;
 	ctx->logging_new_delayed_dentries = false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -8296,31 +6383,14 @@ static int log_new_delayed_dentries(struct btrfs_trans_handle *trans,
  * This handles both files and directories.
  */
 static int btrfs_log_inode(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-			     struct btrfs_root *root, struct inode *inode,
-			     int inode_only)
-=======
 			   struct btrfs_inode *inode,
 			   int inode_only,
 			   struct btrfs_log_ctx *ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct btrfs_path *path;
 	struct btrfs_path *dst_path;
 	struct btrfs_key min_key;
 	struct btrfs_key max_key;
-<<<<<<< HEAD
-	struct btrfs_root *log = root->log_root;
-	struct extent_buffer *src = NULL;
-	int err = 0;
-	int ret;
-	int nritems;
-	int ins_start_slot = 0;
-	int ins_nr;
-	u64 ino = btrfs_ino(inode);
-
-	log = root->log_root;
-=======
 	struct btrfs_root *log = inode->root->log_root;
 	int ret;
 	bool fast_search = false;
@@ -8333,7 +6403,6 @@ static int btrfs_log_inode(struct btrfs_trans_handle *trans,
 	bool full_dir_logging = false;
 	LIST_HEAD(delayed_ins_list);
 	LIST_HEAD(delayed_del_list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	path = btrfs_alloc_path();
 	if (!path)
@@ -8350,35 +6419,17 @@ static int btrfs_log_inode(struct btrfs_trans_handle *trans,
 
 	max_key.objectid = ino;
 
-<<<<<<< HEAD
-	/* today the code can only do partial logging of directories */
-	if (!S_ISDIR(inode->i_mode))
-	    inode_only = LOG_INODE_ALL;
-
-	if (inode_only == LOG_INODE_EXISTS || S_ISDIR(inode->i_mode))
-=======
 
 	/* today the code can only do partial logging of directories */
 	if (S_ISDIR(inode->vfs_inode.i_mode) ||
 	    (!test_bit(BTRFS_INODE_NEEDS_FULL_SYNC,
 		       &inode->runtime_flags) &&
 	     inode_only >= LOG_INODE_EXISTS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		max_key.type = BTRFS_XATTR_ITEM_KEY;
 	else
 		max_key.type = (u8)-1;
 	max_key.offset = (u64)-1;
 
-<<<<<<< HEAD
-	ret = btrfs_commit_inode_delayed_items(trans, inode);
-	if (ret) {
-		btrfs_free_path(path);
-		btrfs_free_path(dst_path);
-		return ret;
-	}
-
-	mutex_lock(&BTRFS_I(inode)->log_mutex);
-=======
 	if (S_ISDIR(inode->vfs_inode.i_mode) && inode_only == LOG_INODE_ALL)
 		full_dir_logging = true;
 
@@ -8454,172 +6505,11 @@ static int btrfs_log_inode(struct btrfs_trans_handle *trans,
 		ret = BTRFS_LOG_FORCE_COMMIT;
 		goto out_unlock;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * a brute force approach to making sure we get the most uptodate
 	 * copies of everything.
 	 */
-<<<<<<< HEAD
-	if (S_ISDIR(inode->i_mode)) {
-		int max_key_type = BTRFS_DIR_LOG_INDEX_KEY;
-
-		if (inode_only == LOG_INODE_EXISTS)
-			max_key_type = BTRFS_XATTR_ITEM_KEY;
-		ret = drop_objectid_items(trans, log, path, ino, max_key_type);
-	} else {
-		ret = btrfs_truncate_inode_items(trans, log, inode, 0, 0);
-	}
-	if (ret) {
-		err = ret;
-		goto out_unlock;
-	}
-	path->keep_locks = 1;
-
-	while (1) {
-		ins_nr = 0;
-		ret = btrfs_search_forward(root, &min_key, &max_key,
-					   path, 0, trans->transid);
-		if (ret != 0)
-			break;
-again:
-		/* note, ins_nr might be > 0 here, cleanup outside the loop */
-		if (min_key.objectid != ino)
-			break;
-		if (min_key.type > max_key.type)
-			break;
-
-		src = path->nodes[0];
-		if (ins_nr && ins_start_slot + ins_nr == path->slots[0]) {
-			ins_nr++;
-			goto next_slot;
-		} else if (!ins_nr) {
-			ins_start_slot = path->slots[0];
-			ins_nr = 1;
-			goto next_slot;
-		}
-
-		ret = copy_items(trans, log, dst_path, src, ins_start_slot,
-				 ins_nr, inode_only);
-		if (ret) {
-			err = ret;
-			goto out_unlock;
-		}
-		ins_nr = 1;
-		ins_start_slot = path->slots[0];
-next_slot:
-
-		nritems = btrfs_header_nritems(path->nodes[0]);
-		path->slots[0]++;
-		if (path->slots[0] < nritems) {
-			btrfs_item_key_to_cpu(path->nodes[0], &min_key,
-					      path->slots[0]);
-			goto again;
-		}
-		if (ins_nr) {
-			ret = copy_items(trans, log, dst_path, src,
-					 ins_start_slot,
-					 ins_nr, inode_only);
-			if (ret) {
-				err = ret;
-				goto out_unlock;
-			}
-			ins_nr = 0;
-		}
-		btrfs_release_path(path);
-
-		if (min_key.offset < (u64)-1)
-			min_key.offset++;
-		else if (min_key.type < (u8)-1)
-			min_key.type++;
-		else if (min_key.objectid < (u64)-1)
-			min_key.objectid++;
-		else
-			break;
-	}
-	if (ins_nr) {
-		ret = copy_items(trans, log, dst_path, src,
-				 ins_start_slot,
-				 ins_nr, inode_only);
-		if (ret) {
-			err = ret;
-			goto out_unlock;
-		}
-		ins_nr = 0;
-	}
-	WARN_ON(ins_nr);
-	if (inode_only == LOG_INODE_ALL && S_ISDIR(inode->i_mode)) {
-		btrfs_release_path(path);
-		btrfs_release_path(dst_path);
-		ret = log_directory_changes(trans, root, inode, path, dst_path);
-		if (ret) {
-			err = ret;
-			goto out_unlock;
-		}
-	}
-	BTRFS_I(inode)->logged_trans = trans->transid;
-out_unlock:
-	mutex_unlock(&BTRFS_I(inode)->log_mutex);
-
-	btrfs_free_path(path);
-	btrfs_free_path(dst_path);
-	return err;
-}
-
-/*
- * follow the dentry parent pointers up the chain and see if any
- * of the directories in it require a full commit before they can
- * be logged.  Returns zero if nothing special needs to be done or 1 if
- * a full commit is required.
- */
-static noinline int check_parent_dirs_for_sync(struct btrfs_trans_handle *trans,
-					       struct inode *inode,
-					       struct dentry *parent,
-					       struct super_block *sb,
-					       u64 last_committed)
-{
-	int ret = 0;
-	struct btrfs_root *root;
-	struct dentry *old_parent = NULL;
-
-	/*
-	 * for regular files, if its inode is already on disk, we don't
-	 * have to worry about the parents at all.  This is because
-	 * we can use the last_unlink_trans field to record renames
-	 * and other fun in this file.
-	 */
-	if (S_ISREG(inode->i_mode) &&
-	    BTRFS_I(inode)->generation <= last_committed &&
-	    BTRFS_I(inode)->last_unlink_trans <= last_committed)
-			goto out;
-
-	if (!S_ISDIR(inode->i_mode)) {
-		if (!parent || !parent->d_inode || sb != parent->d_inode->i_sb)
-			goto out;
-		inode = parent->d_inode;
-	}
-
-	while (1) {
-		BTRFS_I(inode)->logged_trans = trans->transid;
-		smp_mb();
-
-		if (BTRFS_I(inode)->last_unlink_trans > last_committed) {
-			root = BTRFS_I(inode)->root;
-
-			/*
-			 * make sure any commits to the log are forced
-			 * to be full commits
-			 */
-			root->fs_info->last_trans_log_full_commit =
-				trans->transid;
-			ret = 1;
-			break;
-		}
-
-		if (!parent || !parent->d_inode || sb != parent->d_inode->i_sb)
-			break;
-
-=======
 	if (S_ISDIR(inode->vfs_inode.i_mode)) {
 		clear_bit(BTRFS_INODE_COPY_EVERYTHING, &inode->runtime_flags);
 		if (ctx->logged_before)
@@ -9039,38 +6929,12 @@ static int log_new_ancestors_fast(struct btrfs_trans_handle *trans,
 			if (ret)
 				break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ROOT(parent))
 			break;
 
 		parent = dget_parent(parent);
 		dput(old_parent);
 		old_parent = parent;
-<<<<<<< HEAD
-		inode = parent->d_inode;
-
-	}
-	dput(old_parent);
-out:
-	return ret;
-}
-
-static int inode_in_log(struct btrfs_trans_handle *trans,
-		 struct inode *inode)
-{
-	struct btrfs_root *root = BTRFS_I(inode)->root;
-	int ret = 0;
-
-	mutex_lock(&root->log_mutex);
-	if (BTRFS_I(inode)->logged_trans == trans->transid &&
-	    BTRFS_I(inode)->last_sub_trans <= root->last_log_commit)
-		ret = 1;
-	mutex_unlock(&root->log_mutex);
-	return ret;
-}
-
-
-=======
 	}
 	dput(old_parent);
 
@@ -9160,50 +7024,12 @@ out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * helper function around btrfs_log_inode to make sure newly created
  * parent directories also end up in the log.  A minimal inode and backref
  * only logging is done of any parent directories that are older than
  * the last committed transaction
  */
-<<<<<<< HEAD
-int btrfs_log_inode_parent(struct btrfs_trans_handle *trans,
-		    struct btrfs_root *root, struct inode *inode,
-		    struct dentry *parent, int exists_only)
-{
-	int inode_only = exists_only ? LOG_INODE_EXISTS : LOG_INODE_ALL;
-	struct super_block *sb;
-	struct dentry *old_parent = NULL;
-	int ret = 0;
-	u64 last_committed = root->fs_info->last_trans_committed;
-
-	sb = inode->i_sb;
-
-	if (btrfs_test_opt(root, NOTREELOG)) {
-		ret = 1;
-		goto end_no_trans;
-	}
-
-	if (root->fs_info->last_trans_log_full_commit >
-	    root->fs_info->last_trans_committed) {
-		ret = 1;
-		goto end_no_trans;
-	}
-
-	if (root != BTRFS_I(inode)->root ||
-	    btrfs_root_refs(&root->root_item) == 0) {
-		ret = 1;
-		goto end_no_trans;
-	}
-
-	ret = check_parent_dirs_for_sync(trans, inode, parent,
-					 sb, last_committed);
-	if (ret)
-		goto end_no_trans;
-
-	if (inode_in_log(trans, inode)) {
-=======
 static int btrfs_log_inode_parent(struct btrfs_trans_handle *trans,
 				  struct btrfs_inode *inode,
 				  struct dentry *parent,
@@ -9233,24 +7059,15 @@ static int btrfs_log_inode_parent(struct btrfs_trans_handle *trans,
 	if ((btrfs_inode_in_log(inode, trans->transid) &&
 	     list_empty(&ctx->ordered_extents)) ||
 	    inode->vfs_inode.i_nlink == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = BTRFS_NO_LOG_SYNC;
 		goto end_no_trans;
 	}
 
-<<<<<<< HEAD
-	ret = start_log_trans(trans, root);
-	if (ret)
-		goto end_trans;
-
-	ret = btrfs_log_inode(trans, root, inode, inode_only);
-=======
 	ret = start_log_trans(trans, root, ctx);
 	if (ret)
 		goto end_no_trans;
 
 	ret = btrfs_log_inode(trans, inode, inode_only, ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto end_trans;
 
@@ -9260,51 +7077,13 @@ static int btrfs_log_inode_parent(struct btrfs_trans_handle *trans,
 	 * we can use the last_unlink_trans field to record renames
 	 * and other fun in this file.
 	 */
-<<<<<<< HEAD
-	if (S_ISREG(inode->i_mode) &&
-	    BTRFS_I(inode)->generation <= last_committed &&
-	    BTRFS_I(inode)->last_unlink_trans <= last_committed) {
-=======
 	if (S_ISREG(inode->vfs_inode.i_mode) &&
 	    inode->generation < trans->transid &&
 	    inode->last_unlink_trans < trans->transid) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0;
 		goto end_trans;
 	}
 
-<<<<<<< HEAD
-	inode_only = LOG_INODE_EXISTS;
-	while (1) {
-		if (!parent || !parent->d_inode || sb != parent->d_inode->i_sb)
-			break;
-
-		inode = parent->d_inode;
-		if (root != BTRFS_I(inode)->root)
-			break;
-
-		if (BTRFS_I(inode)->generation >
-		    root->fs_info->last_trans_committed) {
-			ret = btrfs_log_inode(trans, root, inode, inode_only);
-			if (ret)
-				goto end_trans;
-		}
-		if (IS_ROOT(parent))
-			break;
-
-		parent = dget_parent(parent);
-		dput(old_parent);
-		old_parent = parent;
-	}
-	ret = 0;
-end_trans:
-	dput(old_parent);
-	if (ret < 0) {
-		BUG_ON(ret != -ENOSPC);
-		root->fs_info->last_trans_log_full_commit = trans->transid;
-		ret = 1;
-	}
-=======
 	if (S_ISDIR(inode->vfs_inode.i_mode) && ctx->log_new_dentries)
 		log_dentries = true;
 
@@ -9371,7 +7150,6 @@ end_trans:
 
 	if (ret)
 		btrfs_remove_log_ctx(root, ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_end_log_trans(root);
 end_no_trans:
 	return ret;
@@ -9384,22 +7162,14 @@ end_no_trans:
  * data on disk.
  */
 int btrfs_log_dentry_safe(struct btrfs_trans_handle *trans,
-<<<<<<< HEAD
-			  struct btrfs_root *root, struct dentry *dentry)
-=======
 			  struct dentry *dentry,
 			  struct btrfs_log_ctx *ctx)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dentry *parent = dget_parent(dentry);
 	int ret;
 
-<<<<<<< HEAD
-	ret = btrfs_log_inode_parent(trans, root, dentry->d_inode, parent, 0);
-=======
 	ret = btrfs_log_inode_parent(trans, BTRFS_I(d_inode(dentry)), parent,
 				     LOG_INODE_ALL, ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dput(parent);
 
 	return ret;
@@ -9416,30 +7186,18 @@ int btrfs_recover_log_trees(struct btrfs_root *log_root_tree)
 	struct btrfs_trans_handle *trans;
 	struct btrfs_key key;
 	struct btrfs_key found_key;
-<<<<<<< HEAD
-	struct btrfs_key tmp_key;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct btrfs_root *log;
 	struct btrfs_fs_info *fs_info = log_root_tree->fs_info;
 	struct walk_control wc = {
 		.process_func = process_one_buffer,
-<<<<<<< HEAD
-		.stage = 0,
-=======
 		.stage = LOG_WALK_PIN_ONLY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	path = btrfs_alloc_path();
 	if (!path)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	fs_info->log_root_recovering = 1;
-=======
 	set_bit(BTRFS_FS_LOG_RECOVERING, &fs_info->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trans = btrfs_start_transaction(fs_info->tree_root, 0);
 	if (IS_ERR(trans)) {
@@ -9452,34 +7210,20 @@ int btrfs_recover_log_trees(struct btrfs_root *log_root_tree)
 
 	ret = walk_log_tree(trans, log_root_tree, &wc);
 	if (ret) {
-<<<<<<< HEAD
-		btrfs_error(fs_info, ret, "Failed to pin buffers while "
-			    "recovering log root tree.");
-=======
 		btrfs_abort_transaction(trans, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
 again:
 	key.objectid = BTRFS_TREE_LOG_OBJECTID;
 	key.offset = (u64)-1;
-<<<<<<< HEAD
-	btrfs_set_key_type(&key, BTRFS_ROOT_ITEM_KEY);
-=======
 	key.type = BTRFS_ROOT_ITEM_KEY;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 		ret = btrfs_search_slot(NULL, log_root_tree, &key, path, 0, 0);
 
 		if (ret < 0) {
-<<<<<<< HEAD
-			btrfs_error(fs_info, ret,
-				    "Couldn't find tree log root.");
-=======
 			btrfs_abort_transaction(trans, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		}
 		if (ret > 0) {
@@ -9493,26 +7237,6 @@ again:
 		if (found_key.objectid != BTRFS_TREE_LOG_OBJECTID)
 			break;
 
-<<<<<<< HEAD
-		log = btrfs_read_fs_root_no_radix(log_root_tree,
-						  &found_key);
-		if (IS_ERR(log)) {
-			ret = PTR_ERR(log);
-			btrfs_error(fs_info, ret,
-				    "Couldn't read tree log root.");
-			goto error;
-		}
-
-		tmp_key.objectid = found_key.offset;
-		tmp_key.type = BTRFS_ROOT_ITEM_KEY;
-		tmp_key.offset = (u64)-1;
-
-		wc.replay_dest = btrfs_read_fs_root_no_name(fs_info, &tmp_key);
-		if (IS_ERR(wc.replay_dest)) {
-			ret = PTR_ERR(wc.replay_dest);
-			btrfs_error(fs_info, ret, "Couldn't read target root "
-				    "for tree log recovery.");
-=======
 		log = btrfs_read_tree_root(log_root_tree, &found_key);
 		if (IS_ERR(log)) {
 			ret = PTR_ERR(log);
@@ -9543,31 +7267,10 @@ again:
 			if (!ret)
 				goto next;
 			btrfs_abort_transaction(trans, ret);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		}
 
 		wc.replay_dest->log_root = log;
-<<<<<<< HEAD
-		btrfs_record_root_in_trans(trans, wc.replay_dest);
-		ret = walk_log_tree(trans, log, &wc);
-		BUG_ON(ret);
-
-		if (wc.stage == LOG_WALK_REPLAY_ALL) {
-			ret = fixup_inode_link_counts(trans, wc.replay_dest,
-						      path);
-			BUG_ON(ret);
-		}
-
-		key.offset = found_key.offset - 1;
-		wc.replay_dest->log_root = NULL;
-		free_extent_buffer(log->node);
-		free_extent_buffer(log->commit_root);
-		kfree(log);
-
-		if (found_key.offset == 0)
-			break;
-=======
 		ret = btrfs_record_root_in_trans(trans, wc.replay_dest);
 		if (ret)
 			/* The loop needs to continue due to the root refs */
@@ -9610,7 +7313,6 @@ next:
 		if (found_key.offset == 0)
 			break;
 		key.offset = found_key.offset - 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	btrfs_release_path(path);
 
@@ -9629,19 +7331,6 @@ next:
 
 	btrfs_free_path(path);
 
-<<<<<<< HEAD
-	free_extent_buffer(log_root_tree->node);
-	log_root_tree->log_root = NULL;
-	fs_info->log_root_recovering = 0;
-
-	/* step 4: commit the transaction, which also unpins the blocks */
-	btrfs_commit_transaction(trans, fs_info->tree_root);
-
-	kfree(log_root_tree);
-	return 0;
-
-error:
-=======
 	/* step 4: commit the transaction, which also unpins the blocks */
 	ret = btrfs_commit_transaction(trans);
 	if (ret)
@@ -9656,7 +7345,6 @@ error:
 	if (wc.trans)
 		btrfs_end_transaction(wc.trans);
 	clear_bit(BTRFS_FS_LOG_RECOVERING, &fs_info->flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	btrfs_free_path(path);
 	return ret;
 }
@@ -9668,12 +7356,6 @@ error:
  * They revolve around files there were unlinked from the directory, and
  * this function updates the parent directory so that a full commit is
  * properly done if it is fsync'd later after the unlinks are done.
-<<<<<<< HEAD
- */
-void btrfs_record_unlink_dir(struct btrfs_trans_handle *trans,
-			     struct inode *dir, struct inode *inode,
-			     int for_rename)
-=======
  *
  * Must be called before the unlink operations (updates to the subvolume tree,
  * inodes, etc) are done.
@@ -9681,7 +7363,6 @@ void btrfs_record_unlink_dir(struct btrfs_trans_handle *trans,
 void btrfs_record_unlink_dir(struct btrfs_trans_handle *trans,
 			     struct btrfs_inode *dir, struct btrfs_inode *inode,
 			     bool for_rename)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * when we're logging a file, if it hasn't been renamed
@@ -9693,24 +7374,6 @@ void btrfs_record_unlink_dir(struct btrfs_trans_handle *trans,
 	 * into the file.  When the file is logged we check it and
 	 * don't log the parents if the file is fully on disk.
 	 */
-<<<<<<< HEAD
-	if (S_ISREG(inode->i_mode))
-		BTRFS_I(inode)->last_unlink_trans = trans->transid;
-
-	/*
-	 * if this directory was already logged any new
-	 * names for this file/dir will get recorded
-	 */
-	smp_mb();
-	if (BTRFS_I(dir)->logged_trans == trans->transid)
-		return;
-
-	/*
-	 * if the inode we're about to unlink was logged,
-	 * the log will be properly updated for any new names
-	 */
-	if (BTRFS_I(inode)->logged_trans == trans->transid)
-=======
 	mutex_lock(&inode->log_mutex);
 	inode->last_unlink_trans = trans->transid;
 	mutex_unlock(&inode->log_mutex);
@@ -9734,7 +7397,6 @@ void btrfs_record_unlink_dir(struct btrfs_trans_handle *trans,
 	 * btrfs_del_inode_ref_in_log().
 	 */
 	if (inode_logged(trans, inode, NULL) == 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/*
@@ -9744,30 +7406,6 @@ void btrfs_record_unlink_dir(struct btrfs_trans_handle *trans,
 	 * properly.  So, we have to be conservative and force commits
 	 * so the new name gets discovered.
 	 */
-<<<<<<< HEAD
-	if (for_rename)
-		goto record;
-
-	/* we can safely do the unlink without any special recording */
-	return;
-
-record:
-	BTRFS_I(dir)->last_unlink_trans = trans->transid;
-}
-
-/*
- * Call this after adding a new name for a file and it will properly
- * update the log to reflect the new name.
- *
- * It will return zero if all goes well, and it will return 1 if a
- * full transaction commit is required.
- */
-int btrfs_log_new_name(struct btrfs_trans_handle *trans,
-			struct inode *inode, struct inode *old_dir,
-			struct dentry *parent)
-{
-	struct btrfs_root * root = BTRFS_I(inode)->root;
-=======
 	mutex_lock(&dir->log_mutex);
 	dir->last_unlink_trans = trans->transid;
 	mutex_unlock(&dir->log_mutex);
@@ -9819,33 +7457,18 @@ void btrfs_log_new_name(struct btrfs_trans_handle *trans,
 	struct btrfs_log_ctx ctx;
 	bool log_pinned = false;
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * this will force the logging code to walk the dentry chain
 	 * up for the file
 	 */
-<<<<<<< HEAD
-	if (S_ISREG(inode->i_mode))
-		BTRFS_I(inode)->last_unlink_trans = trans->transid;
-=======
 	if (!S_ISDIR(inode->vfs_inode.i_mode))
 		inode->last_unlink_trans = trans->transid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if this inode hasn't been logged and directory we're renaming it
 	 * from hasn't been logged, we don't need to log it
 	 */
-<<<<<<< HEAD
-	if (BTRFS_I(inode)->logged_trans <=
-	    root->fs_info->last_trans_committed &&
-	    (!old_dir || BTRFS_I(old_dir)->logged_trans <=
-		    root->fs_info->last_trans_committed))
-		return 0;
-
-	return btrfs_log_inode_parent(trans, root, inode, parent, 1);
-=======
 	ret = inode_logged(trans, inode, NULL);
 	if (ret < 0) {
 		goto out;
@@ -9964,6 +7587,5 @@ out:
 		btrfs_set_log_full_commit(trans);
 	if (log_pinned)
 		btrfs_end_log_trans(root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

@@ -20,8 +20,6 @@ OPTIONS
 --input=::
         Input file name. (default: perf.data unless stdin is a fifo)
 
-<<<<<<< HEAD
-=======
 -f::
 --force::
 	Don't complain, do it.
@@ -41,7 +39,6 @@ OPTIONS
 --trace-fields::
 	Show tracepoint field names.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SEE ALSO
 --------
 linkperf:perf-record[1], linkperf:perf-list[1],

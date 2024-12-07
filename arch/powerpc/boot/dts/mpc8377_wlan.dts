@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC8377E WLAN Device Tree Source
  *
  * Copyright 2007-2009 Freescale Semiconductor Inc.
  * Copyright 2009 MontaVista Software, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -142,11 +131,7 @@
 				dfsrr;
 
 				at24@50 {
-<<<<<<< HEAD
-					compatible = "at24,24c256";
-=======
 					compatible = "atmel,24c256";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					reg = <0x50>;
 				};
 
@@ -264,20 +249,12 @@
 					interrupt-parent = <&ipic>;
 					interrupts = <17 0x8>;
 					reg = <0x2>;
-<<<<<<< HEAD
-					device_type = "ethernet-phy";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				};
 
 				phy3: ethernet-phy@3 {
 					interrupt-parent = <&ipic>;
 					interrupts = <18 0x8>;
 					reg = <0x3>;
-<<<<<<< HEAD
-					device_type = "ethernet-phy";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				};
 
 				tbi0: tbi-phy@11 {

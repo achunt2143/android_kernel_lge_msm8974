@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/common/sa1111.c
  *
@@ -9,23 +6,13 @@
  *
  * Original code by John Dorsey
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains all generic SA1111 support.
  *
  * All initialization functions provided here are intended to be called
  * from machine specific code with proper arguments when required.
  */
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/gpio/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/kernel.h>
@@ -35,19 +22,6 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
-<<<<<<< HEAD
-#include <linux/dma-mapping.h>
-#include <linux/clk.h>
-#include <linux/io.h>
-
-#include <mach/hardware.h>
-#include <asm/mach/irq.h>
-#include <asm/mach-types.h>
-#include <asm/sizes.h>
-
-#include <asm/hardware/sa1111.h>
-
-=======
 #include <linux/dma-map-ops.h>
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -62,7 +36,6 @@
 #include <mach/hardware.h>
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SA1111 IRQs */
 #define IRQ_GPAIN0		(0)
 #define IRQ_GPAIN1		(1)
@@ -135,11 +108,8 @@ struct sa1111 {
 	spinlock_t	lock;
 	void __iomem	*base;
 	struct sa1111_platform_data *pdata;
-<<<<<<< HEAD
-=======
 	struct irq_domain *irqdomain;
 	struct gpio_chip gc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	void		*saved_state;
 #endif
@@ -156,11 +126,7 @@ struct sa1111_dev_info {
 	unsigned long	skpcr_mask;
 	bool		dma;
 	unsigned int	devid;
-<<<<<<< HEAD
-	unsigned int	irq[6];
-=======
 	unsigned int	hwirq[6];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct sa1111_dev_info sa1111_devices[] = {
@@ -169,11 +135,7 @@ static struct sa1111_dev_info sa1111_devices[] = {
 		.skpcr_mask	= SKPCR_UCLKEN,
 		.dma		= true,
 		.devid		= SA1111_DEVID_USB,
-<<<<<<< HEAD
-		.irq = {
-=======
 		.hwirq = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			IRQ_USBPWR,
 			IRQ_HCIM,
 			IRQ_HCIBUFFACC,
@@ -187,11 +149,7 @@ static struct sa1111_dev_info sa1111_devices[] = {
 		.skpcr_mask	= SKPCR_I2SCLKEN | SKPCR_L3CLKEN,
 		.dma		= true,
 		.devid		= SA1111_DEVID_SAC,
-<<<<<<< HEAD
-		.irq = {
-=======
 		.hwirq = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			AUDXMTDMADONEA,
 			AUDXMTDMADONEB,
 			AUDRCVDMADONEA,
@@ -207,11 +165,7 @@ static struct sa1111_dev_info sa1111_devices[] = {
 		.offset		= SA1111_KBD,
 		.skpcr_mask	= SKPCR_PTCLKEN,
 		.devid		= SA1111_DEVID_PS2_KBD,
-<<<<<<< HEAD
-		.irq = {
-=======
 		.hwirq = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			IRQ_TPRXINT,
 			IRQ_TPTXINT
 		},
@@ -220,11 +174,7 @@ static struct sa1111_dev_info sa1111_devices[] = {
 		.offset		= SA1111_MSE,
 		.skpcr_mask	= SKPCR_PMCLKEN,
 		.devid		= SA1111_DEVID_PS2_MSE,
-<<<<<<< HEAD
-		.irq = {
-=======
 		.hwirq = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			IRQ_MSRXINT,
 			IRQ_MSTXINT
 		},
@@ -233,11 +183,7 @@ static struct sa1111_dev_info sa1111_devices[] = {
 		.offset		= 0x1800,
 		.skpcr_mask	= 0,
 		.devid		= SA1111_DEVID_PCMCIA,
-<<<<<<< HEAD
-		.irq = {
-=======
 		.hwirq = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			IRQ_S0_READY_NINT,
 			IRQ_S0_CD_VALID,
 			IRQ_S0_BVD1_STSCHG,
@@ -248,49 +194,16 @@ static struct sa1111_dev_info sa1111_devices[] = {
 	},
 };
 
-<<<<<<< HEAD
-=======
 static int sa1111_map_irq(struct sa1111 *sachip, irq_hw_number_t hwirq)
 {
 	return irq_create_mapping(sachip->irqdomain, hwirq);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SA1111 interrupt support.  Since clearing an IRQ while there are
  * active IRQs causes the interrupt output to pulse, the upper levels
  * will call us again if there are more interrupts to process.
  */
-<<<<<<< HEAD
-static void
-sa1111_irq_handler(unsigned int irq, struct irq_desc *desc)
-{
-	unsigned int stat0, stat1, i;
-	struct sa1111 *sachip = irq_get_handler_data(irq);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-
-	stat0 = sa1111_readl(mapbase + SA1111_INTSTATCLR0);
-	stat1 = sa1111_readl(mapbase + SA1111_INTSTATCLR1);
-
-	sa1111_writel(stat0, mapbase + SA1111_INTSTATCLR0);
-
-	desc->irq_data.chip->irq_ack(&desc->irq_data);
-
-	sa1111_writel(stat1, mapbase + SA1111_INTSTATCLR1);
-
-	if (stat0 == 0 && stat1 == 0) {
-		do_bad_IRQ(irq, desc);
-		return;
-	}
-
-	for (i = 0; stat0; i++, stat0 >>= 1)
-		if (stat0 & 1)
-			generic_handle_irq(i + sachip->irq_base);
-
-	for (i = 32; stat1; i++, stat1 >>= 1)
-		if (stat1 & 1)
-			generic_handle_irq(i + sachip->irq_base);
-=======
 static void sa1111_irq_handler(struct irq_desc *desc)
 {
 	unsigned int stat0, stat1, i;
@@ -321,16 +234,11 @@ static void sa1111_irq_handler(struct irq_desc *desc)
 	for (i = 32; stat1; i++, stat1 >>= 1)
 		if (stat1 & 1)
 			generic_handle_domain_irq(irqdomain, i);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* For level-based interrupts */
 	desc->irq_data.chip->irq_unmask(&desc->irq_data);
 }
 
-<<<<<<< HEAD
-#define SA1111_IRQMASK_LO(x)	(1 << (x - sachip->irq_base))
-#define SA1111_IRQMASK_HI(x)	(1 << (x - sachip->irq_base - 32))
-=======
 static u32 sa1111_irqmask(struct irq_data *d)
 {
 	return BIT(irqd_to_hwirq(d) & 31);
@@ -340,34 +248,11 @@ static int sa1111_irqbank(struct irq_data *d)
 {
 	return (irqd_to_hwirq(d) / 32) * 4;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void sa1111_ack_irq(struct irq_data *d)
 {
 }
 
-<<<<<<< HEAD
-static void sa1111_mask_lowirq(struct irq_data *d)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned long ie0;
-
-	ie0 = sa1111_readl(mapbase + SA1111_INTEN0);
-	ie0 &= ~SA1111_IRQMASK_LO(d->irq);
-	writel(ie0, mapbase + SA1111_INTEN0);
-}
-
-static void sa1111_unmask_lowirq(struct irq_data *d)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned long ie0;
-
-	ie0 = sa1111_readl(mapbase + SA1111_INTEN0);
-	ie0 |= SA1111_IRQMASK_LO(d->irq);
-	sa1111_writel(ie0, mapbase + SA1111_INTEN0);
-=======
 static void sa1111_mask_irq(struct irq_data *d)
 {
 	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
@@ -388,7 +273,6 @@ static void sa1111_unmask_irq(struct irq_data *d)
 	ie = readl_relaxed(mapbase + SA1111_INTEN0);
 	ie |= sa1111_irqmask(d);
 	writel_relaxed(ie, mapbase + SA1111_INTEN0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -398,36 +282,6 @@ static void sa1111_unmask_irq(struct irq_data *d)
  * be triggered.  In fact, its very difficult, if not impossible to get
  * INTSET to re-trigger the interrupt.
  */
-<<<<<<< HEAD
-static int sa1111_retrigger_lowirq(struct irq_data *d)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned int mask = SA1111_IRQMASK_LO(d->irq);
-	unsigned long ip0;
-	int i;
-
-	ip0 = sa1111_readl(mapbase + SA1111_INTPOL0);
-	for (i = 0; i < 8; i++) {
-		sa1111_writel(ip0 ^ mask, mapbase + SA1111_INTPOL0);
-		sa1111_writel(ip0, mapbase + SA1111_INTPOL0);
-		if (sa1111_readl(mapbase + SA1111_INTSTATCLR0) & mask)
-			break;
-	}
-
-	if (i == 8)
-		printk(KERN_ERR "Danger Will Robinson: failed to "
-			"re-trigger IRQ%d\n", d->irq);
-	return i == 8 ? -1 : 0;
-}
-
-static int sa1111_type_lowirq(struct irq_data *d, unsigned int flags)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned int mask = SA1111_IRQMASK_LO(d->irq);
-	unsigned long ip0;
-=======
 static int sa1111_retrigger_irq(struct irq_data *d)
 {
 	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
@@ -457,7 +311,6 @@ static int sa1111_type_irq(struct irq_data *d, unsigned int flags)
 	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
 	void __iomem *mapbase = sachip->base + SA1111_INTC + sa1111_irqbank(d);
 	u32 ip, mask = sa1111_irqmask(d);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flags == IRQ_TYPE_PROBE)
 		return 0;
@@ -465,15 +318,6 @@ static int sa1111_type_irq(struct irq_data *d, unsigned int flags)
 	if ((!(flags & IRQ_TYPE_EDGE_RISING) ^ !(flags & IRQ_TYPE_EDGE_FALLING)) == 0)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	ip0 = sa1111_readl(mapbase + SA1111_INTPOL0);
-	if (flags & IRQ_TYPE_EDGE_RISING)
-		ip0 &= ~mask;
-	else
-		ip0 |= mask;
-	sa1111_writel(ip0, mapbase + SA1111_INTPOL0);
-	sa1111_writel(ip0, mapbase + SA1111_WAKEPOL0);
-=======
 	ip = readl_relaxed(mapbase + SA1111_INTPOL0);
 	if (flags & IRQ_TYPE_EDGE_RISING)
 		ip &= ~mask;
@@ -481,26 +325,10 @@ static int sa1111_type_irq(struct irq_data *d, unsigned int flags)
 		ip |= mask;
 	writel_relaxed(ip, mapbase + SA1111_INTPOL0);
 	writel_relaxed(ip, mapbase + SA1111_WAKEPOL0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sa1111_wake_lowirq(struct irq_data *d, unsigned int on)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned int mask = SA1111_IRQMASK_LO(d->irq);
-	unsigned long we0;
-
-	we0 = sa1111_readl(mapbase + SA1111_WAKEEN0);
-	if (on)
-		we0 |= mask;
-	else
-		we0 &= ~mask;
-	sa1111_writel(we0, mapbase + SA1111_WAKEEN0);
-=======
 static int sa1111_wake_irq(struct irq_data *d, unsigned int on)
 {
 	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
@@ -513,94 +341,10 @@ static int sa1111_wake_irq(struct irq_data *d, unsigned int on)
 	else
 		we &= ~mask;
 	writel_relaxed(we, mapbase + SA1111_WAKEEN0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct irq_chip sa1111_low_chip = {
-	.name		= "SA1111-l",
-	.irq_ack	= sa1111_ack_irq,
-	.irq_mask	= sa1111_mask_lowirq,
-	.irq_unmask	= sa1111_unmask_lowirq,
-	.irq_retrigger	= sa1111_retrigger_lowirq,
-	.irq_set_type	= sa1111_type_lowirq,
-	.irq_set_wake	= sa1111_wake_lowirq,
-};
-
-static void sa1111_mask_highirq(struct irq_data *d)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned long ie1;
-
-	ie1 = sa1111_readl(mapbase + SA1111_INTEN1);
-	ie1 &= ~SA1111_IRQMASK_HI(d->irq);
-	sa1111_writel(ie1, mapbase + SA1111_INTEN1);
-}
-
-static void sa1111_unmask_highirq(struct irq_data *d)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned long ie1;
-
-	ie1 = sa1111_readl(mapbase + SA1111_INTEN1);
-	ie1 |= SA1111_IRQMASK_HI(d->irq);
-	sa1111_writel(ie1, mapbase + SA1111_INTEN1);
-}
-
-/*
- * Attempt to re-trigger the interrupt.  The SA1111 contains a register
- * (INTSET) which claims to do this.  However, in practice no amount of
- * manipulation of INTEN and INTSET guarantees that the interrupt will
- * be triggered.  In fact, its very difficult, if not impossible to get
- * INTSET to re-trigger the interrupt.
- */
-static int sa1111_retrigger_highirq(struct irq_data *d)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned int mask = SA1111_IRQMASK_HI(d->irq);
-	unsigned long ip1;
-	int i;
-
-	ip1 = sa1111_readl(mapbase + SA1111_INTPOL1);
-	for (i = 0; i < 8; i++) {
-		sa1111_writel(ip1 ^ mask, mapbase + SA1111_INTPOL1);
-		sa1111_writel(ip1, mapbase + SA1111_INTPOL1);
-		if (sa1111_readl(mapbase + SA1111_INTSTATCLR1) & mask)
-			break;
-	}
-
-	if (i == 8)
-		printk(KERN_ERR "Danger Will Robinson: failed to "
-			"re-trigger IRQ%d\n", d->irq);
-	return i == 8 ? -1 : 0;
-}
-
-static int sa1111_type_highirq(struct irq_data *d, unsigned int flags)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned int mask = SA1111_IRQMASK_HI(d->irq);
-	unsigned long ip1;
-
-	if (flags == IRQ_TYPE_PROBE)
-		return 0;
-
-	if ((!(flags & IRQ_TYPE_EDGE_RISING) ^ !(flags & IRQ_TYPE_EDGE_FALLING)) == 0)
-		return -EINVAL;
-
-	ip1 = sa1111_readl(mapbase + SA1111_INTPOL1);
-	if (flags & IRQ_TYPE_EDGE_RISING)
-		ip1 &= ~mask;
-	else
-		ip1 |= mask;
-	sa1111_writel(ip1, mapbase + SA1111_INTPOL1);
-	sa1111_writel(ip1, mapbase + SA1111_WAKEPOL1);
-=======
 static struct irq_chip sa1111_irq_chip = {
 	.name		= "SA1111",
 	.irq_ack	= sa1111_ack_irq,
@@ -623,51 +367,18 @@ static int sa1111_irqdomain_map(struct irq_domain *d, unsigned int irq,
 	irq_set_chip_data(irq, sachip);
 	irq_set_chip_and_handler(irq, &sa1111_irq_chip, handle_edge_irq);
 	irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sa1111_wake_highirq(struct irq_data *d, unsigned int on)
-{
-	struct sa1111 *sachip = irq_data_get_irq_chip_data(d);
-	void __iomem *mapbase = sachip->base + SA1111_INTC;
-	unsigned int mask = SA1111_IRQMASK_HI(d->irq);
-	unsigned long we1;
-
-	we1 = sa1111_readl(mapbase + SA1111_WAKEEN1);
-	if (on)
-		we1 |= mask;
-	else
-		we1 &= ~mask;
-	sa1111_writel(we1, mapbase + SA1111_WAKEEN1);
-
-	return 0;
-}
-
-static struct irq_chip sa1111_high_chip = {
-	.name		= "SA1111-h",
-	.irq_ack	= sa1111_ack_irq,
-	.irq_mask	= sa1111_mask_highirq,
-	.irq_unmask	= sa1111_unmask_highirq,
-	.irq_retrigger	= sa1111_retrigger_highirq,
-	.irq_set_type	= sa1111_type_highirq,
-	.irq_set_wake	= sa1111_wake_highirq,
-=======
 static const struct irq_domain_ops sa1111_irqdomain_ops = {
 	.map = sa1111_irqdomain_map,
 	.xlate = irq_domain_xlate_twocell,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int sa1111_setup_irq(struct sa1111 *sachip, unsigned irq_base)
 {
 	void __iomem *irqbase = sachip->base + SA1111_INTC;
-<<<<<<< HEAD
-	unsigned i, irq;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
@@ -687,48 +398,15 @@ static int sa1111_setup_irq(struct sa1111 *sachip, unsigned irq_base)
 	sachip->irq_base = ret;
 
 	/* disable all IRQs */
-<<<<<<< HEAD
-	sa1111_writel(0, irqbase + SA1111_INTEN0);
-	sa1111_writel(0, irqbase + SA1111_INTEN1);
-	sa1111_writel(0, irqbase + SA1111_WAKEEN0);
-	sa1111_writel(0, irqbase + SA1111_WAKEEN1);
-=======
 	writel_relaxed(0, irqbase + SA1111_INTEN0);
 	writel_relaxed(0, irqbase + SA1111_INTEN1);
 	writel_relaxed(0, irqbase + SA1111_WAKEEN0);
 	writel_relaxed(0, irqbase + SA1111_WAKEEN1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * detect on rising edge.  Note: Feb 2001 Errata for SA1111
 	 * specifies that S0ReadyInt and S1ReadyInt should be '1'.
 	 */
-<<<<<<< HEAD
-	sa1111_writel(0, irqbase + SA1111_INTPOL0);
-	sa1111_writel(SA1111_IRQMASK_HI(IRQ_S0_READY_NINT) |
-		      SA1111_IRQMASK_HI(IRQ_S1_READY_NINT),
-		      irqbase + SA1111_INTPOL1);
-
-	/* clear all IRQs */
-	sa1111_writel(~0, irqbase + SA1111_INTSTATCLR0);
-	sa1111_writel(~0, irqbase + SA1111_INTSTATCLR1);
-
-	for (i = IRQ_GPAIN0; i <= SSPROR; i++) {
-		irq = sachip->irq_base + i;
-		irq_set_chip_and_handler(irq, &sa1111_low_chip,
-					 handle_edge_irq);
-		irq_set_chip_data(irq, sachip);
-		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
-	}
-
-	for (i = AUDXMTDMADONEA; i <= IRQ_S1_BVD1_STSCHG; i++) {
-		irq = sachip->irq_base + i;
-		irq_set_chip_and_handler(irq, &sa1111_high_chip,
-					 handle_edge_irq);
-		irq_set_chip_data(irq, sachip);
-		set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
-	}
-=======
 	writel_relaxed(0, irqbase + SA1111_INTPOL0);
 	writel_relaxed(BIT(IRQ_S0_READY_NINT & 31) |
 		       BIT(IRQ_S1_READY_NINT & 31),
@@ -753,19 +431,13 @@ static int sa1111_setup_irq(struct sa1111 *sachip, unsigned irq_base)
 				  sachip->irq_base + AUDXMTDMADONEA,
 				  AUDXMTDMADONEA,
 				  IRQ_S1_BVD1_STSCHG + 1 - AUDXMTDMADONEA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Register SA1111 interrupt
 	 */
 	irq_set_irq_type(sachip->irq, IRQ_TYPE_EDGE_RISING);
-<<<<<<< HEAD
-	irq_set_handler_data(sachip->irq, sachip);
-	irq_set_chained_handler(sachip->irq, sa1111_irq_handler);
-=======
 	irq_set_chained_handler_and_data(sachip->irq, sa1111_irq_handler,
 					 sachip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(sachip->dev, "Providing IRQ%u-%u\n",
 		sachip->irq_base, sachip->irq_base + SA1111_IRQ_NR - 1);
@@ -773,8 +445,6 @@ static int sa1111_setup_irq(struct sa1111 *sachip, unsigned irq_base)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void sa1111_remove_irq(struct sa1111 *sachip)
 {
 	struct irq_domain *domain = sachip->irqdomain;
@@ -952,7 +622,6 @@ static int sa1111_setup_gpios(struct sa1111 *sachip)
 	return devm_gpiochip_add_data(sachip->dev, &sachip->gc, sachip);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bring the SA1111 out of reset.  This requires a set procedure:
  *  1. nRESET asserted (by hardware)
@@ -978,19 +647,11 @@ static void sa1111_wake(struct sa1111 *sachip)
 	/*
 	 * Turn VCO on, and disable PLL Bypass.
 	 */
-<<<<<<< HEAD
-	r = sa1111_readl(sachip->base + SA1111_SKCR);
-	r &= ~SKCR_VCO_OFF;
-	sa1111_writel(r, sachip->base + SA1111_SKCR);
-	r |= SKCR_PLL_BYPASS | SKCR_OE_EN;
-	sa1111_writel(r, sachip->base + SA1111_SKCR);
-=======
 	r = readl_relaxed(sachip->base + SA1111_SKCR);
 	r &= ~SKCR_VCO_OFF;
 	writel_relaxed(r, sachip->base + SA1111_SKCR);
 	r |= SKCR_PLL_BYPASS | SKCR_OE_EN;
 	writel_relaxed(r, sachip->base + SA1111_SKCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Wait lock time.  SA1111 manual _doesn't_
@@ -1002,11 +663,7 @@ static void sa1111_wake(struct sa1111 *sachip)
 	 * Enable RCLK.  We also ensure that RDYEN is set.
 	 */
 	r |= SKCR_RCLKEN | SKCR_RDYEN;
-<<<<<<< HEAD
-	sa1111_writel(r, sachip->base + SA1111_SKCR);
-=======
 	writel_relaxed(r, sachip->base + SA1111_SKCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Wait 14 RCLK cycles for the chip to finish coming out
@@ -1017,11 +674,7 @@ static void sa1111_wake(struct sa1111 *sachip)
 	/*
 	 * Ensure all clocks are initially off.
 	 */
-<<<<<<< HEAD
-	sa1111_writel(0, sachip->base + SA1111_SKPCR);
-=======
 	writel_relaxed(0, sachip->base + SA1111_SKPCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&sachip->lock, flags);
 }
@@ -1042,11 +695,7 @@ static u32 sa1111_dma_mask[] = {
 /*
  * Configure the SA1111 shared memory controller.
  */
-<<<<<<< HEAD
-void
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sa1111_configure_smc(struct sa1111 *sachip, int sdram, unsigned int drac,
 		     unsigned int cas_latency)
 {
@@ -1055,11 +704,7 @@ sa1111_configure_smc(struct sa1111 *sachip, int sdram, unsigned int drac,
 	if (cas_latency == 3)
 		smcr |= SMCR_CLAT;
 
-<<<<<<< HEAD
-	sa1111_writel(smcr, sachip->base + SA1111_SMCR);
-=======
 	writel_relaxed(smcr, sachip->base + SA1111_SMCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now clear the bits in the DMA mask to work around the SA1111
@@ -1075,11 +720,7 @@ sa1111_configure_smc(struct sa1111 *sachip, int sdram, unsigned int drac,
 
 static void sa1111_dev_release(struct device *_dev)
 {
-<<<<<<< HEAD
-	struct sa1111_dev *dev = SA1111_DEV(_dev);
-=======
 	struct sa1111_dev *dev = to_sa1111_device(_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(dev);
 }
@@ -1111,13 +752,8 @@ sa1111_init_one_child(struct sa1111 *sachip, struct resource *parent,
 	dev->mapbase     = sachip->base + info->offset;
 	dev->skpcr_mask  = info->skpcr_mask;
 
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(info->irq); i++)
-		dev->irq[i] = sachip->irq_base + info->irq[i];
-=======
 	for (i = 0; i < ARRAY_SIZE(info->hwirq); i++)
 		dev->hwirq[i] = info->hwirq[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the parent device has a DMA mask associated with it, and
@@ -1149,25 +785,7 @@ sa1111_init_one_child(struct sa1111 *sachip, struct resource *parent,
 	return ret;
 }
 
-<<<<<<< HEAD
-/**
- *	sa1111_probe - probe for a single SA1111 chip.
- *	@phys_addr: physical address of device.
- *
- *	Probe for a SA1111 chip.  This must be called
- *	before any other SA1111-specific code.
- *
- *	Returns:
- *	%-ENODEV	device not found.
- *	%-EBUSY		physical address already marked in-use.
- *	%-EINVAL	no platform data passed
- *	%0		successful.
- */
-static int __devinit
-__sa1111_probe(struct device *me, struct resource *mem, int irq)
-=======
 static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa1111_platform_data *pd = me->platform_data;
 	struct sa1111 *sachip;
@@ -1178,21 +796,6 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 	if (!pd)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	sachip = kzalloc(sizeof(struct sa1111), GFP_KERNEL);
-	if (!sachip)
-		return -ENOMEM;
-
-	sachip->clk = clk_get(me, "SA1111_CLK");
-	if (IS_ERR(sachip->clk)) {
-		ret = PTR_ERR(sachip->clk);
-		goto err_free;
-	}
-
-	ret = clk_prepare(sachip->clk);
-	if (ret)
-		goto err_clkput;
-=======
 	sachip = devm_kzalloc(me, sizeof(struct sa1111), GFP_KERNEL);
 	if (!sachip)
 		return -ENOMEM;
@@ -1204,7 +807,6 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 	ret = clk_prepare(sachip->clk);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&sachip->lock);
 
@@ -1228,25 +830,15 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 	/*
 	 * Probe for the chip.  Only touch the SBI registers.
 	 */
-<<<<<<< HEAD
-	id = sa1111_readl(sachip->base + SA1111_SKID);
-=======
 	id = readl_relaxed(sachip->base + SA1111_SKID);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((id & SKID_ID_MASK) != SKID_SA1111_ID) {
 		printk(KERN_DEBUG "SA1111 not detected: ID = %08lx\n", id);
 		ret = -ENODEV;
 		goto err_unmap;
 	}
 
-<<<<<<< HEAD
-	printk(KERN_INFO "SA1111 Microprocessor Companion Chip: "
-		"silicon revision %lx, metal revision %lx\n",
-		(id & SKID_SIREV_MASK)>>4, (id & SKID_MTREV_MASK));
-=======
 	pr_info("SA1111 Microprocessor Companion Chip: silicon revision %lx, metal revision %lx\n",
 		(id & SKID_SIREV_MASK) >> 4, id & SKID_MTREV_MASK);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We found it.  Wake the chip up, and initialise.
@@ -1257,13 +849,6 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 	 * The interrupt controller must be initialised before any
 	 * other device to ensure that the interrupts are available.
 	 */
-<<<<<<< HEAD
-	if (sachip->irq != NO_IRQ) {
-		ret = sa1111_setup_irq(sachip, pd->irq_base);
-		if (ret)
-			goto err_unmap;
-	}
-=======
 	ret = sa1111_setup_irq(sachip, pd->irq_base);
 	if (ret)
 		goto err_clk;
@@ -1272,7 +857,6 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 	ret = sa1111_setup_gpios(sachip);
 	if (ret)
 		goto err_irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ARCH_SA1100
 	{
@@ -1294,13 +878,8 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 	 * DMA.  It can otherwise be held firmly in the off position.
 	 * (currently, we always enable it.)
 	 */
-<<<<<<< HEAD
-	val = sa1111_readl(sachip->base + SA1111_SKPCR);
-	sa1111_writel(val | SKPCR_DCLKEN, sachip->base + SA1111_SKPCR);
-=======
 	val = readl_relaxed(sachip->base + SA1111_SKPCR);
 	writel_relaxed(val | SKPCR_DCLKEN, sachip->base + SA1111_SKPCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Enable the SA1110 memory bus request and grant signals.
@@ -1321,36 +900,22 @@ static int __sa1111_probe(struct device *me, struct resource *mem, int irq)
 
 	return 0;
 
-<<<<<<< HEAD
-=======
  err_irq:
 	sa1111_remove_irq(sachip);
  err_clk:
 	clk_disable(sachip->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_unmap:
 	iounmap(sachip->base);
  err_clk_unprep:
 	clk_unprepare(sachip->clk);
-<<<<<<< HEAD
- err_clkput:
-	clk_put(sachip->clk);
- err_free:
-	kfree(sachip);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int sa1111_remove_one(struct device *dev, void *data)
 {
-<<<<<<< HEAD
-	struct sa1111_dev *sadev = SA1111_DEV(dev);
-=======
 	struct sa1111_dev *sadev = to_sa1111_device(dev);
 	if (dev->bus != &sa1111_bus_type)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_del(&sadev->dev);
 	release_resource(&sadev->res);
 	put_device(&sadev->dev);
@@ -1359,40 +924,14 @@ static int sa1111_remove_one(struct device *dev, void *data)
 
 static void __sa1111_remove(struct sa1111 *sachip)
 {
-<<<<<<< HEAD
-	void __iomem *irqbase = sachip->base + SA1111_INTC;
-
-	device_for_each_child(sachip->dev, NULL, sa1111_remove_one);
-
-	/* disable all IRQs */
-	sa1111_writel(0, irqbase + SA1111_INTEN0);
-	sa1111_writel(0, irqbase + SA1111_INTEN1);
-	sa1111_writel(0, irqbase + SA1111_WAKEEN0);
-	sa1111_writel(0, irqbase + SA1111_WAKEEN1);
-=======
 	device_for_each_child(sachip->dev, NULL, sa1111_remove_one);
 
 	sa1111_remove_irq(sachip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_disable(sachip->clk);
 	clk_unprepare(sachip->clk);
 
-<<<<<<< HEAD
-	if (sachip->irq != NO_IRQ) {
-		irq_set_chained_handler(sachip->irq, NULL);
-		irq_set_handler_data(sachip->irq, NULL);
-		irq_free_descs(sachip->irq_base, SA1111_IRQ_NR);
-
-		release_mem_region(sachip->phys + SA1111_INTC, 512);
-	}
-
 	iounmap(sachip->base);
-	clk_put(sachip->clk);
-	kfree(sachip);
-=======
-	iounmap(sachip->base);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct sa1111_save_data {
@@ -1418,15 +957,9 @@ struct sa1111_save_data {
 
 #ifdef CONFIG_PM
 
-<<<<<<< HEAD
-static int sa1111_suspend(struct platform_device *dev, pm_message_t state)
-{
-	struct sa1111 *sachip = platform_get_drvdata(dev);
-=======
 static int sa1111_suspend_noirq(struct device *dev)
 {
 	struct sa1111 *sachip = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sa1111_save_data *save;
 	unsigned long flags;
 	unsigned int val;
@@ -1443,27 +976,6 @@ static int sa1111_suspend_noirq(struct device *dev)
 	 * Save state.
 	 */
 	base = sachip->base;
-<<<<<<< HEAD
-	save->skcr     = sa1111_readl(base + SA1111_SKCR);
-	save->skpcr    = sa1111_readl(base + SA1111_SKPCR);
-	save->skcdr    = sa1111_readl(base + SA1111_SKCDR);
-	save->skaud    = sa1111_readl(base + SA1111_SKAUD);
-	save->skpwm0   = sa1111_readl(base + SA1111_SKPWM0);
-	save->skpwm1   = sa1111_readl(base + SA1111_SKPWM1);
-
-	sa1111_writel(0, sachip->base + SA1111_SKPWM0);
-	sa1111_writel(0, sachip->base + SA1111_SKPWM1);
-
-	base = sachip->base + SA1111_INTC;
-	save->intpol0  = sa1111_readl(base + SA1111_INTPOL0);
-	save->intpol1  = sa1111_readl(base + SA1111_INTPOL1);
-	save->inten0   = sa1111_readl(base + SA1111_INTEN0);
-	save->inten1   = sa1111_readl(base + SA1111_INTEN1);
-	save->wakepol0 = sa1111_readl(base + SA1111_WAKEPOL0);
-	save->wakepol1 = sa1111_readl(base + SA1111_WAKEPOL1);
-	save->wakeen0  = sa1111_readl(base + SA1111_WAKEEN0);
-	save->wakeen1  = sa1111_readl(base + SA1111_WAKEEN1);
-=======
 	save->skcr     = readl_relaxed(base + SA1111_SKCR);
 	save->skpcr    = readl_relaxed(base + SA1111_SKPCR);
 	save->skcdr    = readl_relaxed(base + SA1111_SKCDR);
@@ -1483,18 +995,12 @@ static int sa1111_suspend_noirq(struct device *dev)
 	save->wakepol1 = readl_relaxed(base + SA1111_WAKEPOL1);
 	save->wakeen0  = readl_relaxed(base + SA1111_WAKEEN0);
 	save->wakeen1  = readl_relaxed(base + SA1111_WAKEEN1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Disable.
 	 */
-<<<<<<< HEAD
-	val = sa1111_readl(sachip->base + SA1111_SKCR);
-	sa1111_writel(val | SKCR_SLEEP, sachip->base + SA1111_SKCR);
-=======
 	val = readl_relaxed(sachip->base + SA1111_SKCR);
 	writel_relaxed(val | SKCR_SLEEP, sachip->base + SA1111_SKCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_disable(sachip->clk);
 
@@ -1516,15 +1022,9 @@ static int sa1111_suspend_noirq(struct device *dev)
  *	restored by their respective drivers, and must be called
  *	via LDM after this function.
  */
-<<<<<<< HEAD
-static int sa1111_resume(struct platform_device *dev)
-{
-	struct sa1111 *sachip = platform_get_drvdata(dev);
-=======
 static int sa1111_resume_noirq(struct device *dev)
 {
 	struct sa1111 *sachip = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sa1111_save_data *save;
 	unsigned long flags, id;
 	void __iomem *base;
@@ -1537,17 +1037,10 @@ static int sa1111_resume_noirq(struct device *dev)
 	 * Ensure that the SA1111 is still here.
 	 * FIXME: shouldn't do this here.
 	 */
-<<<<<<< HEAD
-	id = sa1111_readl(sachip->base + SA1111_SKID);
-	if ((id & SKID_ID_MASK) != SKID_SA1111_ID) {
-		__sa1111_remove(sachip);
-		platform_set_drvdata(dev, NULL);
-=======
 	id = readl_relaxed(sachip->base + SA1111_SKID);
 	if ((id & SKID_ID_MASK) != SKID_SA1111_ID) {
 		__sa1111_remove(sachip);
 		dev_set_drvdata(dev, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(save);
 		return 0;
 	}
@@ -1568,28 +1061,6 @@ static int sa1111_resume_noirq(struct device *dev)
 	 */
 	spin_lock_irqsave(&sachip->lock, flags);
 
-<<<<<<< HEAD
-	sa1111_writel(0, sachip->base + SA1111_INTC + SA1111_INTEN0);
-	sa1111_writel(0, sachip->base + SA1111_INTC + SA1111_INTEN1);
-
-	base = sachip->base;
-	sa1111_writel(save->skcr,     base + SA1111_SKCR);
-	sa1111_writel(save->skpcr,    base + SA1111_SKPCR);
-	sa1111_writel(save->skcdr,    base + SA1111_SKCDR);
-	sa1111_writel(save->skaud,    base + SA1111_SKAUD);
-	sa1111_writel(save->skpwm0,   base + SA1111_SKPWM0);
-	sa1111_writel(save->skpwm1,   base + SA1111_SKPWM1);
-
-	base = sachip->base + SA1111_INTC;
-	sa1111_writel(save->intpol0,  base + SA1111_INTPOL0);
-	sa1111_writel(save->intpol1,  base + SA1111_INTPOL1);
-	sa1111_writel(save->inten0,   base + SA1111_INTEN0);
-	sa1111_writel(save->inten1,   base + SA1111_INTEN1);
-	sa1111_writel(save->wakepol0, base + SA1111_WAKEPOL0);
-	sa1111_writel(save->wakepol1, base + SA1111_WAKEPOL1);
-	sa1111_writel(save->wakeen0,  base + SA1111_WAKEEN0);
-	sa1111_writel(save->wakeen1,  base + SA1111_WAKEEN1);
-=======
 	writel_relaxed(0, sachip->base + SA1111_INTC + SA1111_INTEN0);
 	writel_relaxed(0, sachip->base + SA1111_INTC + SA1111_INTEN1);
 
@@ -1610,7 +1081,6 @@ static int sa1111_resume_noirq(struct device *dev)
 	writel_relaxed(save->wakepol1, base + SA1111_WAKEPOL1);
 	writel_relaxed(save->wakeen0,  base + SA1111_WAKEEN0);
 	writel_relaxed(save->wakeen1,  base + SA1111_WAKEEN1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&sachip->lock, flags);
 
@@ -1621,13 +1091,6 @@ static int sa1111_resume_noirq(struct device *dev)
 }
 
 #else
-<<<<<<< HEAD
-#define sa1111_suspend NULL
-#define sa1111_resume  NULL
-#endif
-
-static int __devinit sa1111_probe(struct platform_device *pdev)
-=======
 #define sa1111_suspend_noirq NULL
 #define sa1111_resume_noirq  NULL
 #endif
@@ -1647,7 +1110,6 @@ static int __devinit sa1111_probe(struct platform_device *pdev)
  *	* %0		- successful.
  */
 static int sa1111_probe(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *mem;
 	int irq;
@@ -1657,20 +1119,12 @@ static int sa1111_probe(struct platform_device *pdev)
 		return -EINVAL;
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
-<<<<<<< HEAD
-		return -ENXIO;
-=======
 		return irq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return __sa1111_probe(&pdev->dev, mem, irq);
 }
 
-<<<<<<< HEAD
-static int sa1111_remove(struct platform_device *pdev)
-=======
 static void sa1111_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa1111 *sachip = platform_get_drvdata(pdev);
 
@@ -1682,12 +1136,6 @@ static void sa1111_remove(struct platform_device *pdev)
 		__sa1111_remove(sachip);
 		platform_set_drvdata(pdev, NULL);
 	}
-<<<<<<< HEAD
-
-	return 0;
-}
-
-=======
 }
 
 static struct dev_pm_ops sa1111_pm_ops = {
@@ -1695,7 +1143,6 @@ static struct dev_pm_ops sa1111_pm_ops = {
 	.resume_noirq = sa1111_resume_noirq,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Not sure if this should be on the system bus or not yet.
  *	We really want some way to register a system device at
@@ -1707,19 +1154,10 @@ static struct dev_pm_ops sa1111_pm_ops = {
  */
 static struct platform_driver sa1111_device_driver = {
 	.probe		= sa1111_probe,
-<<<<<<< HEAD
-	.remove		= sa1111_remove,
-	.suspend	= sa1111_suspend,
-	.resume		= sa1111_resume,
-	.driver		= {
-		.name	= "sa1111",
-		.owner	= THIS_MODULE,
-=======
 	.remove_new	= sa1111_remove,
 	.driver		= {
 		.name	= "sa1111",
 		.pm	= &sa1111_pm_ops,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1741,11 +1179,7 @@ static unsigned int __sa1111_pll_clock(struct sa1111 *sachip)
 {
 	unsigned int skcdr, fbdiv, ipdiv, opdiv;
 
-<<<<<<< HEAD
-	skcdr = sa1111_readl(sachip->base + SA1111_SKCDR);
-=======
 	skcdr = readl_relaxed(sachip->base + SA1111_SKCDR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fbdiv = (skcdr & 0x007f) + 2;
 	ipdiv = ((skcdr & 0x0f80) >> 7) + 2;
@@ -1787,21 +1221,13 @@ void sa1111_select_audio_mode(struct sa1111_dev *sadev, int mode)
 
 	spin_lock_irqsave(&sachip->lock, flags);
 
-<<<<<<< HEAD
-	val = sa1111_readl(sachip->base + SA1111_SKCR);
-=======
 	val = readl_relaxed(sachip->base + SA1111_SKCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mode == SA1111_AUDIO_I2S) {
 		val &= ~SKCR_SELAC;
 	} else {
 		val |= SKCR_SELAC;
 	}
-<<<<<<< HEAD
-	sa1111_writel(val, sachip->base + SA1111_SKCR);
-=======
 	writel_relaxed(val, sachip->base + SA1111_SKCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&sachip->lock, flags);
 }
@@ -1826,11 +1252,7 @@ int sa1111_set_audio_rate(struct sa1111_dev *sadev, int rate)
 	if (div > 128)
 		div = 128;
 
-<<<<<<< HEAD
-	sa1111_writel(div - 1, sachip->base + SA1111_SKAUD);
-=======
 	writel_relaxed(div - 1, sachip->base + SA1111_SKAUD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1848,78 +1270,12 @@ int sa1111_get_audio_rate(struct sa1111_dev *sadev)
 	if (sadev->devid != SA1111_DEVID_SAC)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	div = sa1111_readl(sachip->base + SA1111_SKAUD) + 1;
-=======
 	div = readl_relaxed(sachip->base + SA1111_SKAUD) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return __sa1111_pll_clock(sachip) / (256 * div);
 }
 EXPORT_SYMBOL(sa1111_get_audio_rate);
 
-<<<<<<< HEAD
-void sa1111_set_io_dir(struct sa1111_dev *sadev,
-		       unsigned int bits, unsigned int dir,
-		       unsigned int sleep_dir)
-{
-	struct sa1111 *sachip = sa1111_chip_driver(sadev);
-	unsigned long flags;
-	unsigned int val;
-	void __iomem *gpio = sachip->base + SA1111_GPIO;
-
-#define MODIFY_BITS(port, mask, dir)		\
-	if (mask) {				\
-		val = sa1111_readl(port);	\
-		val &= ~(mask);			\
-		val |= (dir) & (mask);		\
-		sa1111_writel(val, port);	\
-	}
-
-	spin_lock_irqsave(&sachip->lock, flags);
-	MODIFY_BITS(gpio + SA1111_GPIO_PADDR, bits & 15, dir);
-	MODIFY_BITS(gpio + SA1111_GPIO_PBDDR, (bits >> 8) & 255, dir >> 8);
-	MODIFY_BITS(gpio + SA1111_GPIO_PCDDR, (bits >> 16) & 255, dir >> 16);
-
-	MODIFY_BITS(gpio + SA1111_GPIO_PASDR, bits & 15, sleep_dir);
-	MODIFY_BITS(gpio + SA1111_GPIO_PBSDR, (bits >> 8) & 255, sleep_dir >> 8);
-	MODIFY_BITS(gpio + SA1111_GPIO_PCSDR, (bits >> 16) & 255, sleep_dir >> 16);
-	spin_unlock_irqrestore(&sachip->lock, flags);
-}
-EXPORT_SYMBOL(sa1111_set_io_dir);
-
-void sa1111_set_io(struct sa1111_dev *sadev, unsigned int bits, unsigned int v)
-{
-	struct sa1111 *sachip = sa1111_chip_driver(sadev);
-	unsigned long flags;
-	unsigned int val;
-	void __iomem *gpio = sachip->base + SA1111_GPIO;
-
-	spin_lock_irqsave(&sachip->lock, flags);
-	MODIFY_BITS(gpio + SA1111_GPIO_PADWR, bits & 15, v);
-	MODIFY_BITS(gpio + SA1111_GPIO_PBDWR, (bits >> 8) & 255, v >> 8);
-	MODIFY_BITS(gpio + SA1111_GPIO_PCDWR, (bits >> 16) & 255, v >> 16);
-	spin_unlock_irqrestore(&sachip->lock, flags);
-}
-EXPORT_SYMBOL(sa1111_set_io);
-
-void sa1111_set_sleep_io(struct sa1111_dev *sadev, unsigned int bits, unsigned int v)
-{
-	struct sa1111 *sachip = sa1111_chip_driver(sadev);
-	unsigned long flags;
-	unsigned int val;
-	void __iomem *gpio = sachip->base + SA1111_GPIO;
-
-	spin_lock_irqsave(&sachip->lock, flags);
-	MODIFY_BITS(gpio + SA1111_GPIO_PASSR, bits & 15, v);
-	MODIFY_BITS(gpio + SA1111_GPIO_PBSSR, (bits >> 8) & 255, v >> 8);
-	MODIFY_BITS(gpio + SA1111_GPIO_PCSSR, (bits >> 16) & 255, v >> 16);
-	spin_unlock_irqrestore(&sachip->lock, flags);
-}
-EXPORT_SYMBOL(sa1111_set_sleep_io);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Individual device operations.
  */
@@ -1940,13 +1296,8 @@ int sa1111_enable_device(struct sa1111_dev *sadev)
 
 	if (ret == 0) {
 		spin_lock_irqsave(&sachip->lock, flags);
-<<<<<<< HEAD
-		val = sa1111_readl(sachip->base + SA1111_SKPCR);
-		sa1111_writel(val | sadev->skpcr_mask, sachip->base + SA1111_SKPCR);
-=======
 		val = readl_relaxed(sachip->base + SA1111_SKPCR);
 		writel_relaxed(val | sadev->skpcr_mask, sachip->base + SA1111_SKPCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&sachip->lock, flags);
 	}
 	return ret;
@@ -1964,13 +1315,8 @@ void sa1111_disable_device(struct sa1111_dev *sadev)
 	unsigned int val;
 
 	spin_lock_irqsave(&sachip->lock, flags);
-<<<<<<< HEAD
-	val = sa1111_readl(sachip->base + SA1111_SKPCR);
-	sa1111_writel(val & ~sadev->skpcr_mask, sachip->base + SA1111_SKPCR);
-=======
 	val = readl_relaxed(sachip->base + SA1111_SKPCR);
 	writel_relaxed(val & ~sadev->skpcr_mask, sachip->base + SA1111_SKPCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&sachip->lock, flags);
 
 	if (sachip->pdata && sachip->pdata->disable)
@@ -1978,8 +1324,6 @@ void sa1111_disable_device(struct sa1111_dev *sadev)
 }
 EXPORT_SYMBOL(sa1111_disable_device);
 
-<<<<<<< HEAD
-=======
 int sa1111_get_irq(struct sa1111_dev *sadev, unsigned num)
 {
 	struct sa1111 *sachip = sa1111_chip_driver(sadev);
@@ -1989,7 +1333,6 @@ int sa1111_get_irq(struct sa1111_dev *sadev, unsigned num)
 }
 EXPORT_SYMBOL_GPL(sa1111_get_irq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	SA1111 "Register Access Bus."
  *
@@ -1998,56 +1341,15 @@ EXPORT_SYMBOL_GPL(sa1111_get_irq);
  */
 static int sa1111_match(struct device *_dev, struct device_driver *_drv)
 {
-<<<<<<< HEAD
-	struct sa1111_dev *dev = SA1111_DEV(_dev);
-	struct sa1111_driver *drv = SA1111_DRV(_drv);
-
-	return dev->devid & drv->devid;
-}
-
-static int sa1111_bus_suspend(struct device *dev, pm_message_t state)
-{
-	struct sa1111_dev *sadev = SA1111_DEV(dev);
-	struct sa1111_driver *drv = SA1111_DRV(dev->driver);
-	int ret = 0;
-
-	if (drv && drv->suspend)
-		ret = drv->suspend(sadev, state);
-	return ret;
-}
-
-static int sa1111_bus_resume(struct device *dev)
-{
-	struct sa1111_dev *sadev = SA1111_DEV(dev);
-	struct sa1111_driver *drv = SA1111_DRV(dev->driver);
-	int ret = 0;
-
-	if (drv && drv->resume)
-		ret = drv->resume(sadev);
-	return ret;
-}
-
-static void sa1111_bus_shutdown(struct device *dev)
-{
-	struct sa1111_driver *drv = SA1111_DRV(dev->driver);
-
-	if (drv && drv->shutdown)
-		drv->shutdown(SA1111_DEV(dev));
-=======
 	struct sa1111_dev *dev = to_sa1111_device(_dev);
 	struct sa1111_driver *drv = SA1111_DRV(_drv);
 
 	return !!(dev->devid & drv->devid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sa1111_bus_probe(struct device *dev)
 {
-<<<<<<< HEAD
-	struct sa1111_dev *sadev = SA1111_DEV(dev);
-=======
 	struct sa1111_dev *sadev = to_sa1111_device(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sa1111_driver *drv = SA1111_DRV(dev->driver);
 	int ret = -ENODEV;
 
@@ -2056,17 +1358,6 @@ static int sa1111_bus_probe(struct device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-static int sa1111_bus_remove(struct device *dev)
-{
-	struct sa1111_dev *sadev = SA1111_DEV(dev);
-	struct sa1111_driver *drv = SA1111_DRV(dev->driver);
-	int ret = 0;
-
-	if (drv->remove)
-		ret = drv->remove(sadev);
-	return ret;
-=======
 static void sa1111_bus_remove(struct device *dev)
 {
 	struct sa1111_dev *sadev = to_sa1111_device(dev);
@@ -2074,7 +1365,6 @@ static void sa1111_bus_remove(struct device *dev)
 
 	if (drv->remove)
 		drv->remove(sadev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct bus_type sa1111_bus_type = {
@@ -2082,12 +1372,6 @@ struct bus_type sa1111_bus_type = {
 	.match		= sa1111_match,
 	.probe		= sa1111_bus_probe,
 	.remove		= sa1111_bus_remove,
-<<<<<<< HEAD
-	.suspend	= sa1111_bus_suspend,
-	.resume		= sa1111_bus_resume,
-	.shutdown	= sa1111_bus_shutdown,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(sa1111_bus_type);
 
@@ -2104,76 +1388,9 @@ void sa1111_driver_unregister(struct sa1111_driver *driver)
 }
 EXPORT_SYMBOL(sa1111_driver_unregister);
 
-<<<<<<< HEAD
-#ifdef CONFIG_DMABOUNCE
-/*
- * According to the "Intel StrongARM SA-1111 Microprocessor Companion
- * Chip Specification Update" (June 2000), erratum #7, there is a
- * significant bug in the SA1111 SDRAM shared memory controller.  If
- * an access to a region of memory above 1MB relative to the bank base,
- * it is important that address bit 10 _NOT_ be asserted. Depending
- * on the configuration of the RAM, bit 10 may correspond to one
- * of several different (processor-relative) address bits.
- *
- * This routine only identifies whether or not a given DMA address
- * is susceptible to the bug.
- *
- * This should only get called for sa1111_device types due to the
- * way we configure our device dma_masks.
- */
-static int sa1111_needs_bounce(struct device *dev, dma_addr_t addr, size_t size)
-{
-	/*
-	 * Section 4.6 of the "Intel StrongARM SA-1111 Development Module
-	 * User's Guide" mentions that jumpers R51 and R52 control the
-	 * target of SA-1111 DMA (either SDRAM bank 0 on Assabet, or
-	 * SDRAM bank 1 on Neponset). The default configuration selects
-	 * Assabet, so any address in bank 1 is necessarily invalid.
-	 */
-	return (machine_is_assabet() || machine_is_pfs168()) &&
-		(addr >= 0xc8000000 || (addr + size) >= 0xc8000000);
-}
-
-static int sa1111_notifier_call(struct notifier_block *n, unsigned long action,
-	void *data)
-{
-	struct sa1111_dev *dev = SA1111_DEV(data);
-
-	switch (action) {
-	case BUS_NOTIFY_ADD_DEVICE:
-		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL) {
-			int ret = dmabounce_register_dev(&dev->dev, 1024, 4096,
-					sa1111_needs_bounce);
-			if (ret)
-				dev_err(&dev->dev, "failed to register with dmabounce: %d\n", ret);
-		}
-		break;
-
-	case BUS_NOTIFY_DEL_DEVICE:
-		if (dev->dev.dma_mask && dev->dma_mask < 0xffffffffUL)
-			dmabounce_unregister_dev(&dev->dev);
-		break;
-	}
-	return NOTIFY_OK;
-}
-
-static struct notifier_block sa1111_bus_notifier = {
-	.notifier_call = sa1111_notifier_call,
-};
-#endif
-
 static int __init sa1111_init(void)
 {
 	int ret = bus_register(&sa1111_bus_type);
-#ifdef CONFIG_DMABOUNCE
-	if (ret == 0)
-		bus_register_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
-#endif
-=======
-static int __init sa1111_init(void)
-{
-	int ret = bus_register(&sa1111_bus_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == 0)
 		platform_driver_register(&sa1111_device_driver);
 	return ret;
@@ -2182,12 +1399,6 @@ static int __init sa1111_init(void)
 static void __exit sa1111_exit(void)
 {
 	platform_driver_unregister(&sa1111_device_driver);
-<<<<<<< HEAD
-#ifdef CONFIG_DMABOUNCE
-	bus_unregister_notifier(&sa1111_bus_type, &sa1111_bus_notifier);
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus_unregister(&sa1111_bus_type);
 }
 

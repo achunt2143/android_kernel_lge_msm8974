@@ -1,42 +1,27 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2011 Red Hat UK.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2011-2012 Red Hat UK.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is released under the GPL.
  */
 
 #include "dm-thin-metadata.h"
-<<<<<<< HEAD
-=======
 #include "dm-bio-prison-v1.h"
 #include "dm.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/device-mapper.h>
 #include <linux/dm-io.h>
 #include <linux/dm-kcopyd.h>
-<<<<<<< HEAD
-#include <linux/list.h>
-=======
 #include <linux/jiffies.h>
 #include <linux/log2.h>
 #include <linux/list.h>
 #include <linux/rculist.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
-<<<<<<< HEAD
-=======
 #include <linux/sort.h>
 #include <linux/rbtree.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	DM_MSG_PREFIX	"thin"
 
@@ -44,12 +29,6 @@
  * Tunable constants
  */
 #define ENDIO_HOOK_POOL_SIZE 1024
-<<<<<<< HEAD
-#define DEFERRED_SET_SIZE 64
-#define MAPPING_POOL_SIZE 1024
-#define PRISON_CELLS 1024
-#define COMMIT_PERIOD HZ
-=======
 #define MAPPING_POOL_SIZE 1024
 #define COMMIT_PERIOD HZ
 #define NO_SPACE_TIMEOUT_SECS 60
@@ -58,7 +37,6 @@ static unsigned int no_space_timeout_secs = NO_SPACE_TIMEOUT_SECS;
 
 DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(snapshot_copy_throttle,
 		"A percentage of time allocated for copy on write");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The block size of the device holding pool data must be
@@ -92,11 +70,7 @@ DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(snapshot_copy_throttle,
  * i) plug io further to this physical block. (see bio_prison code).
  *
  * ii) quiesce any read io to that shared data block.  Obviously
-<<<<<<< HEAD
- * including all devices that share this block.  (see deferred_set code)
-=======
  * including all devices that share this block.  (see dm_deferred_set code)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * iii) copy the data block to a newly allocate block.  This step can be
  * missed out if the io covers the block. (schedule_copy).
@@ -137,397 +111,6 @@ DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(snapshot_copy_throttle,
 /*----------------------------------------------------------------*/
 
 /*
-<<<<<<< HEAD
- * Sometimes we can't deal with a bio straight away.  We put them in prison
- * where they can't cause any mischief.  Bios are put in a cell identified
- * by a key, multiple bios can be in the same cell.  When the cell is
- * subsequently unlocked the bios become available.
- */
-struct bio_prison;
-
-struct cell_key {
-	int virtual;
-	dm_thin_id dev;
-	dm_block_t block;
-};
-
-struct cell {
-	struct hlist_node list;
-	struct bio_prison *prison;
-	struct cell_key key;
-	struct bio *holder;
-	struct bio_list bios;
-};
-
-struct bio_prison {
-	spinlock_t lock;
-	mempool_t *cell_pool;
-
-	unsigned nr_buckets;
-	unsigned hash_mask;
-	struct hlist_head *cells;
-};
-
-static uint32_t calc_nr_buckets(unsigned nr_cells)
-{
-	uint32_t n = 128;
-
-	nr_cells /= 4;
-	nr_cells = min(nr_cells, 8192u);
-
-	while (n < nr_cells)
-		n <<= 1;
-
-	return n;
-}
-
-/*
- * @nr_cells should be the number of cells you want in use _concurrently_.
- * Don't confuse it with the number of distinct keys.
- */
-static struct bio_prison *prison_create(unsigned nr_cells)
-{
-	unsigned i;
-	uint32_t nr_buckets = calc_nr_buckets(nr_cells);
-	struct bio_prison *prison = kmalloc(sizeof(*prison), GFP_KERNEL);
-
-	if (!prison)
-		return NULL;
-
-	spin_lock_init(&prison->lock);
-	prison->cell_pool = mempool_create_kmalloc_pool(nr_cells,
-							sizeof(struct cell));
-	if (!prison->cell_pool) {
-		kfree(prison);
-		return NULL;
-	}
-
-	prison->cells = vmalloc(sizeof(*prison->cells) * nr_buckets);
-	if (!prison->cells) {
-		mempool_destroy(prison->cell_pool);
-		kfree(prison);
-		return NULL;
-	}
-
-	prison->nr_buckets = nr_buckets;
-	prison->hash_mask = nr_buckets - 1;
-	for (i = 0; i < nr_buckets; i++)
-		INIT_HLIST_HEAD(prison->cells + i);
-
-	return prison;
-}
-
-static void prison_destroy(struct bio_prison *prison)
-{
-	vfree(prison->cells);
-	mempool_destroy(prison->cell_pool);
-	kfree(prison);
-}
-
-static uint32_t hash_key(struct bio_prison *prison, struct cell_key *key)
-{
-	const unsigned long BIG_PRIME = 4294967291UL;
-	uint64_t hash = key->block * BIG_PRIME;
-
-	return (uint32_t) (hash & prison->hash_mask);
-}
-
-static int keys_equal(struct cell_key *lhs, struct cell_key *rhs)
-{
-	       return (lhs->virtual == rhs->virtual) &&
-		       (lhs->dev == rhs->dev) &&
-		       (lhs->block == rhs->block);
-}
-
-static struct cell *__search_bucket(struct hlist_head *bucket,
-				    struct cell_key *key)
-{
-	struct cell *cell;
-	struct hlist_node *tmp;
-
-	hlist_for_each_entry(cell, tmp, bucket, list)
-		if (keys_equal(&cell->key, key))
-			return cell;
-
-	return NULL;
-}
-
-/*
- * This may block if a new cell needs allocating.  You must ensure that
- * cells will be unlocked even if the calling thread is blocked.
- *
- * Returns 1 if the cell was already held, 0 if @inmate is the new holder.
- */
-static int bio_detain(struct bio_prison *prison, struct cell_key *key,
-		      struct bio *inmate, struct cell **ref)
-{
-	int r = 1;
-	unsigned long flags;
-	uint32_t hash = hash_key(prison, key);
-	struct cell *cell, *cell2;
-
-	BUG_ON(hash > prison->nr_buckets);
-
-	spin_lock_irqsave(&prison->lock, flags);
-
-	cell = __search_bucket(prison->cells + hash, key);
-	if (cell) {
-		bio_list_add(&cell->bios, inmate);
-		goto out;
-	}
-
-	/*
-	 * Allocate a new cell
-	 */
-	spin_unlock_irqrestore(&prison->lock, flags);
-	cell2 = mempool_alloc(prison->cell_pool, GFP_NOIO);
-	spin_lock_irqsave(&prison->lock, flags);
-
-	/*
-	 * We've been unlocked, so we have to double check that
-	 * nobody else has inserted this cell in the meantime.
-	 */
-	cell = __search_bucket(prison->cells + hash, key);
-	if (cell) {
-		mempool_free(cell2, prison->cell_pool);
-		bio_list_add(&cell->bios, inmate);
-		goto out;
-	}
-
-	/*
-	 * Use new cell.
-	 */
-	cell = cell2;
-
-	cell->prison = prison;
-	memcpy(&cell->key, key, sizeof(cell->key));
-	cell->holder = inmate;
-	bio_list_init(&cell->bios);
-	hlist_add_head(&cell->list, prison->cells + hash);
-
-	r = 0;
-
-out:
-	spin_unlock_irqrestore(&prison->lock, flags);
-
-	*ref = cell;
-
-	return r;
-}
-
-/*
- * @inmates must have been initialised prior to this call
- */
-static void __cell_release(struct cell *cell, struct bio_list *inmates)
-{
-	struct bio_prison *prison = cell->prison;
-
-	hlist_del(&cell->list);
-
-	if (inmates) {
-		bio_list_add(inmates, cell->holder);
-		bio_list_merge(inmates, &cell->bios);
-	}
-
-	mempool_free(cell, prison->cell_pool);
-}
-
-static void cell_release(struct cell *cell, struct bio_list *bios)
-{
-	unsigned long flags;
-	struct bio_prison *prison = cell->prison;
-
-	spin_lock_irqsave(&prison->lock, flags);
-	__cell_release(cell, bios);
-	spin_unlock_irqrestore(&prison->lock, flags);
-}
-
-/*
- * There are a couple of places where we put a bio into a cell briefly
- * before taking it out again.  In these situations we know that no other
- * bio may be in the cell.  This function releases the cell, and also does
- * a sanity check.
- */
-static void __cell_release_singleton(struct cell *cell, struct bio *bio)
-{
-	BUG_ON(cell->holder != bio);
-	BUG_ON(!bio_list_empty(&cell->bios));
-
-	__cell_release(cell, NULL);
-}
-
-static void cell_release_singleton(struct cell *cell, struct bio *bio)
-{
-	unsigned long flags;
-	struct bio_prison *prison = cell->prison;
-
-	spin_lock_irqsave(&prison->lock, flags);
-	__cell_release_singleton(cell, bio);
-	spin_unlock_irqrestore(&prison->lock, flags);
-}
-
-/*
- * Sometimes we don't want the holder, just the additional bios.
- */
-static void __cell_release_no_holder(struct cell *cell, struct bio_list *inmates)
-{
-	struct bio_prison *prison = cell->prison;
-
-	hlist_del(&cell->list);
-	bio_list_merge(inmates, &cell->bios);
-
-	mempool_free(cell, prison->cell_pool);
-}
-
-static void cell_release_no_holder(struct cell *cell, struct bio_list *inmates)
-{
-	unsigned long flags;
-	struct bio_prison *prison = cell->prison;
-
-	spin_lock_irqsave(&prison->lock, flags);
-	__cell_release_no_holder(cell, inmates);
-	spin_unlock_irqrestore(&prison->lock, flags);
-}
-
-static void cell_error(struct cell *cell)
-{
-	struct bio_prison *prison = cell->prison;
-	struct bio_list bios;
-	struct bio *bio;
-	unsigned long flags;
-
-	bio_list_init(&bios);
-
-	spin_lock_irqsave(&prison->lock, flags);
-	__cell_release(cell, &bios);
-	spin_unlock_irqrestore(&prison->lock, flags);
-
-	while ((bio = bio_list_pop(&bios)))
-		bio_io_error(bio);
-}
-
-/*----------------------------------------------------------------*/
-
-/*
- * We use the deferred set to keep track of pending reads to shared blocks.
- * We do this to ensure the new mapping caused by a write isn't performed
- * until these prior reads have completed.  Otherwise the insertion of the
- * new mapping could free the old block that the read bios are mapped to.
- */
-
-struct deferred_set;
-struct deferred_entry {
-	struct deferred_set *ds;
-	unsigned count;
-	struct list_head work_items;
-};
-
-struct deferred_set {
-	spinlock_t lock;
-	unsigned current_entry;
-	unsigned sweeper;
-	struct deferred_entry entries[DEFERRED_SET_SIZE];
-};
-
-static void ds_init(struct deferred_set *ds)
-{
-	int i;
-
-	spin_lock_init(&ds->lock);
-	ds->current_entry = 0;
-	ds->sweeper = 0;
-	for (i = 0; i < DEFERRED_SET_SIZE; i++) {
-		ds->entries[i].ds = ds;
-		ds->entries[i].count = 0;
-		INIT_LIST_HEAD(&ds->entries[i].work_items);
-	}
-}
-
-static struct deferred_entry *ds_inc(struct deferred_set *ds)
-{
-	unsigned long flags;
-	struct deferred_entry *entry;
-
-	spin_lock_irqsave(&ds->lock, flags);
-	entry = ds->entries + ds->current_entry;
-	entry->count++;
-	spin_unlock_irqrestore(&ds->lock, flags);
-
-	return entry;
-}
-
-static unsigned ds_next(unsigned index)
-{
-	return (index + 1) % DEFERRED_SET_SIZE;
-}
-
-static void __sweep(struct deferred_set *ds, struct list_head *head)
-{
-	while ((ds->sweeper != ds->current_entry) &&
-	       !ds->entries[ds->sweeper].count) {
-		list_splice_init(&ds->entries[ds->sweeper].work_items, head);
-		ds->sweeper = ds_next(ds->sweeper);
-	}
-
-	if ((ds->sweeper == ds->current_entry) && !ds->entries[ds->sweeper].count)
-		list_splice_init(&ds->entries[ds->sweeper].work_items, head);
-}
-
-static void ds_dec(struct deferred_entry *entry, struct list_head *head)
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&entry->ds->lock, flags);
-	BUG_ON(!entry->count);
-	--entry->count;
-	__sweep(entry->ds, head);
-	spin_unlock_irqrestore(&entry->ds->lock, flags);
-}
-
-/*
- * Returns 1 if deferred or 0 if no pending items to delay job.
- */
-static int ds_add_work(struct deferred_set *ds, struct list_head *work)
-{
-	int r = 1;
-	unsigned long flags;
-	unsigned next_entry;
-
-	spin_lock_irqsave(&ds->lock, flags);
-	if ((ds->sweeper == ds->current_entry) &&
-	    !ds->entries[ds->current_entry].count)
-		r = 0;
-	else {
-		list_add(work, &ds->entries[ds->current_entry].work_items);
-		next_entry = ds_next(ds->current_entry);
-		if (!ds->entries[next_entry].count)
-			ds->current_entry = next_entry;
-	}
-	spin_unlock_irqrestore(&ds->lock, flags);
-
-	return r;
-}
-
-/*----------------------------------------------------------------*/
-
-/*
- * Key building.
- */
-static void build_data_key(struct dm_thin_device *td,
-			   dm_block_t b, struct cell_key *key)
-{
-	key->virtual = 0;
-	key->dev = dm_thin_dev_id(td);
-	key->block = b;
-}
-
-static void build_virtual_key(struct dm_thin_device *td, dm_block_t b,
-			      struct cell_key *key)
-{
-	key->virtual = 1;
-	key->dev = dm_thin_dev_id(td);
-	key->block = b;
-=======
  * Key building.
  */
 enum lock_space {
@@ -603,7 +186,6 @@ static void throttle_lock(struct throttle *t)
 static void throttle_unlock(struct throttle *t)
 {
 	up_read(&t->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------*/
@@ -613,16 +195,6 @@ static void throttle_unlock(struct throttle *t)
  * also provides the interface for creating and destroying internal
  * devices.
  */
-<<<<<<< HEAD
-struct new_mapping;
-
-struct pool_features {
-	unsigned zero_new_blocks:1;
-	unsigned discard_enabled:1;
-	unsigned discard_passdown:1;
-};
-
-=======
 struct dm_thin_new_mapping;
 
 /*
@@ -657,52 +229,11 @@ typedef void (*process_mapping_fn)(struct dm_thin_new_mapping *m);
 
 #define CELL_SORT_ARRAY_SIZE 8192
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pool {
 	struct list_head list;
 	struct dm_target *ti;	/* Only set if a pool target is bound */
 
 	struct mapped_device *pool_md;
-<<<<<<< HEAD
-	struct block_device *md_dev;
-	struct dm_pool_metadata *pmd;
-
-	uint32_t sectors_per_block;
-	unsigned block_shift;
-	dm_block_t offset_mask;
-	dm_block_t low_water_blocks;
-
-	struct pool_features pf;
-	unsigned low_water_triggered:1;	/* A dm event has been sent */
-	unsigned no_free_space:1;	/* A -ENOSPC warning has been issued */
-
-	struct bio_prison *prison;
-	struct dm_kcopyd_client *copier;
-
-	struct workqueue_struct *wq;
-	struct work_struct worker;
-	struct delayed_work waker;
-
-	unsigned ref_count;
-	unsigned long last_commit_jiffies;
-
-	spinlock_t lock;
-	struct bio_list deferred_bios;
-	struct bio_list deferred_flush_bios;
-	struct list_head prepared_mappings;
-	struct list_head prepared_discards;
-
-	struct bio_list retry_on_resume_list;
-
-	struct deferred_set shared_read_ds;
-	struct deferred_set all_io_ds;
-
-	struct new_mapping *next_mapping;
-	mempool_t *mapping_pool;
-	mempool_t *endio_hook_pool;
-};
-
-=======
 	struct block_device *data_dev;
 	struct block_device *md_dev;
 	struct dm_pool_metadata *pmd;
@@ -788,7 +319,6 @@ static void notify_of_pool_mode_change(struct pool *pool)
 	       descs[(int)mode], extra_desc ? : "");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Target context for a pool.
  */
@@ -797,38 +327,24 @@ struct pool_c {
 	struct pool *pool;
 	struct dm_dev *data_dev;
 	struct dm_dev *metadata_dev;
-<<<<<<< HEAD
-	struct dm_target_callbacks callbacks;
-
-	dm_block_t low_water_blocks;
-	struct pool_features pf;
-=======
 
 	dm_block_t low_water_blocks;
 	struct pool_features requested_pf; /* Features requested during table load */
 	struct pool_features adjusted_pf;  /* Features used after adjusting for constituent devices */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Target context for a thin.
  */
 struct thin_c {
-<<<<<<< HEAD
-	struct dm_dev *pool_dev;
-	struct dm_dev *origin_dev;
-=======
 	struct list_head list;
 	struct dm_dev *pool_dev;
 	struct dm_dev *origin_dev;
 	sector_t origin_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_thin_id dev_id;
 
 	struct pool *pool;
 	struct dm_thin_device *td;
-<<<<<<< HEAD
-=======
 	struct mapped_device *thin_md;
 
 	bool requeue_mode:1;
@@ -844,13 +360,10 @@ struct thin_c {
 	 */
 	refcount_t refcount;
 	struct completion can_destroy;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*----------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
 static bool block_size_is_power_of_two(struct pool *pool)
 {
 	return pool->sectors_per_block_shift >= 0;
@@ -1005,7 +518,6 @@ static void cell_requeue(struct pool *pool, struct dm_bio_prison_cell *cell)
 
 /*----------------------------------------------------------------*/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A global list of pools that uses a struct mapped_device as a key.
  */
@@ -1020,14 +532,11 @@ static void pool_table_init(void)
 	INIT_LIST_HEAD(&dm_thin_pool_table.pools);
 }
 
-<<<<<<< HEAD
-=======
 static void pool_table_exit(void)
 {
 	mutex_destroy(&dm_thin_pool_table.mutex);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __pool_table_insert(struct pool *pool)
 {
 	BUG_ON(!mutex_is_locked(&dm_thin_pool_table.mutex));
@@ -1074,31 +583,6 @@ static struct pool *__pool_table_lookup_metadata_dev(struct block_device *md_dev
 
 /*----------------------------------------------------------------*/
 
-<<<<<<< HEAD
-struct endio_hook {
-	struct thin_c *tc;
-	struct deferred_entry *shared_read_entry;
-	struct deferred_entry *all_io_entry;
-	struct new_mapping *overwrite_mapping;
-};
-
-static void __requeue_bio_list(struct thin_c *tc, struct bio_list *master)
-{
-	struct bio *bio;
-	struct bio_list bios;
-
-	bio_list_init(&bios);
-	bio_list_merge(&bios, master);
-	bio_list_init(master);
-
-	while ((bio = bio_list_pop(&bios))) {
-		struct endio_hook *h = dm_get_mapinfo(bio)->ptr;
-		if (h->tc == tc)
-			bio_endio(bio, DM_ENDIO_REQUEUE);
-		else
-			bio_list_add(master, bio);
-	}
-=======
 struct dm_thin_endio_hook {
 	struct thin_c *tc;
 	struct dm_deferred_entry *shared_read_entry;
@@ -1152,20 +636,10 @@ static void requeue_deferred_cells(struct thin_c *tc)
 
 	list_for_each_entry_safe(cell, tmp, &cells, user_list)
 		cell_requeue(pool, cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void requeue_io(struct thin_c *tc)
 {
-<<<<<<< HEAD
-	struct pool *pool = tc->pool;
-	unsigned long flags;
-
-	spin_lock_irqsave(&pool->lock, flags);
-	__requeue_bio_list(tc, &pool->deferred_bios);
-	__requeue_bio_list(tc, &pool->retry_on_resume_list);
-	spin_unlock_irqrestore(&pool->lock, flags);
-=======
 	struct bio_list bios;
 
 	bio_list_init(&bios);
@@ -1192,7 +666,6 @@ static void error_retry_list_with_code(struct pool *pool, blk_status_t error)
 static void error_retry_list(struct pool *pool)
 {
 	error_retry_list_with_code(pool, get_pool_io_error_code(pool));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1204,9 +677,6 @@ static void error_retry_list(struct pool *pool)
 
 static dm_block_t get_bio_block(struct thin_c *tc, struct bio *bio)
 {
-<<<<<<< HEAD
-	return bio->bi_sector >> tc->pool->block_shift;
-=======
 	struct pool *pool = tc->pool;
 	sector_t block_nr = bio->bi_iter.bi_sector;
 
@@ -1245,18 +715,11 @@ static void get_bio_block_range(struct thin_c *tc, struct bio *bio,
 
 	*begin = b;
 	*end = e;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remap(struct thin_c *tc, struct bio *bio, dm_block_t block)
 {
 	struct pool *pool = tc->pool;
-<<<<<<< HEAD
-
-	bio->bi_bdev = tc->pool_dev->bdev;
-	bio->bi_sector = (block << pool->block_shift) +
-		(bio->bi_sector & pool->offset_mask);
-=======
 	sector_t bi_sector = bio->bi_iter.bi_sector;
 
 	bio_set_dev(bio, tc->pool_dev->bdev);
@@ -1268,14 +731,10 @@ static void remap(struct thin_c *tc, struct bio *bio, dm_block_t block)
 		bio->bi_iter.bi_sector = (block * pool->sectors_per_block) +
 				 sector_div(bi_sector, pool->sectors_per_block);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remap_to_origin(struct thin_c *tc, struct bio *bio)
 {
-<<<<<<< HEAD
-	bio->bi_bdev = tc->origin_dev->bdev;
-=======
 	bio_set_dev(bio, tc->origin_dev->bdev);
 }
 
@@ -1294,26 +753,11 @@ static void inc_all_io_entry(struct pool *pool, struct bio *bio)
 
 	h = dm_per_bio_data(bio, sizeof(struct dm_thin_endio_hook));
 	h->all_io_entry = dm_deferred_entry_inc(pool->all_io_ds);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void issue(struct thin_c *tc, struct bio *bio)
 {
 	struct pool *pool = tc->pool;
-<<<<<<< HEAD
-	unsigned long flags;
-
-	/*
-	 * Batch together any FUA/FLUSH bios we find and then issue
-	 * a single commit for them in process_deferred_bios().
-	 */
-	if (bio->bi_rw & (REQ_FLUSH | REQ_FUA)) {
-		spin_lock_irqsave(&pool->lock, flags);
-		bio_list_add(&pool->deferred_flush_bios, bio);
-		spin_unlock_irqrestore(&pool->lock, flags);
-	} else
-		generic_make_request(bio);
-=======
 
 	if (!bio_triggers_commit(tc, bio)) {
 		dm_submit_bio_remap(bio, NULL);
@@ -1337,7 +781,6 @@ static void issue(struct thin_c *tc, struct bio *bio)
 	spin_lock_irq(&pool->lock);
 	bio_list_add(&pool->deferred_flush_bios, bio);
 	spin_unlock_irq(&pool->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remap_to_origin_and_issue(struct thin_c *tc, struct bio *bio)
@@ -1353,37 +796,11 @@ static void remap_and_issue(struct thin_c *tc, struct bio *bio,
 	issue(tc, bio);
 }
 
-<<<<<<< HEAD
-/*
- * wake_worker() is used when new work is queued and when pool_resume is
- * ready to continue deferred IO processing.
- */
-static void wake_worker(struct pool *pool)
-{
-	queue_work(pool->wq, &pool->worker);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*----------------------------------------------------------------*/
 
 /*
  * Bio endio functions.
  */
-<<<<<<< HEAD
-struct new_mapping {
-	struct list_head list;
-
-	unsigned quiesced:1;
-	unsigned prepared:1;
-	unsigned pass_discard:1;
-
-	struct thin_c *tc;
-	dm_block_t virt_block;
-	dm_block_t data_block;
-	struct cell *cell, *cell2;
-	int err;
-=======
 struct dm_thin_new_mapping {
 	struct list_head list;
 
@@ -1402,7 +819,6 @@ struct dm_thin_new_mapping {
 	dm_block_t virt_begin, virt_end;
 	dm_block_t data_block;
 	struct dm_bio_prison_cell *cell;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the bio covers the whole area of a block then we can avoid
@@ -1414,54 +830,16 @@ struct dm_thin_new_mapping {
 	bio_end_io_t *saved_bi_end_io;
 };
 
-<<<<<<< HEAD
-static void __maybe_add_mapping(struct new_mapping *m)
-{
-	struct pool *pool = m->tc->pool;
-
-	if (m->quiesced && m->prepared) {
-		list_add(&m->list, &pool->prepared_mappings);
-=======
 static void __complete_mapping_preparation(struct dm_thin_new_mapping *m)
 {
 	struct pool *pool = m->tc->pool;
 
 	if (atomic_dec_and_test(&m->prepare_actions)) {
 		list_add_tail(&m->list, &pool->prepared_mappings);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_worker(pool);
 	}
 }
 
-<<<<<<< HEAD
-static void copy_complete(int read_err, unsigned long write_err, void *context)
-{
-	unsigned long flags;
-	struct new_mapping *m = context;
-	struct pool *pool = m->tc->pool;
-
-	m->err = read_err || write_err ? -EIO : 0;
-
-	spin_lock_irqsave(&pool->lock, flags);
-	m->prepared = 1;
-	__maybe_add_mapping(m);
-	spin_unlock_irqrestore(&pool->lock, flags);
-}
-
-static void overwrite_endio(struct bio *bio, int err)
-{
-	unsigned long flags;
-	struct endio_hook *h = dm_get_mapinfo(bio)->ptr;
-	struct new_mapping *m = h->overwrite_mapping;
-	struct pool *pool = m->tc->pool;
-
-	m->err = err;
-
-	spin_lock_irqsave(&pool->lock, flags);
-	m->prepared = 1;
-	__maybe_add_mapping(m);
-	spin_unlock_irqrestore(&pool->lock, flags);
-=======
 static void complete_mapping_preparation(struct dm_thin_new_mapping *m)
 {
 	unsigned long flags;
@@ -1489,7 +867,6 @@ static void overwrite_endio(struct bio *bio)
 
 	m->status = bio->bi_status;
 	complete_mapping_preparation(m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------*/
@@ -1503,54 +880,6 @@ static void overwrite_endio(struct bio *bio)
  */
 
 /*
-<<<<<<< HEAD
- * This sends the bios in the cell back to the deferred_bios list.
- */
-static void cell_defer(struct thin_c *tc, struct cell *cell,
-		       dm_block_t data_block)
-{
-	struct pool *pool = tc->pool;
-	unsigned long flags;
-
-	spin_lock_irqsave(&pool->lock, flags);
-	cell_release(cell, &pool->deferred_bios);
-	spin_unlock_irqrestore(&tc->pool->lock, flags);
-
-	wake_worker(pool);
-}
-
-/*
- * Same as cell_defer above, except it omits one particular detainee,
- * a write bio that covers the block and has already been processed.
- */
-static void cell_defer_except(struct thin_c *tc, struct cell *cell)
-{
-	struct bio_list bios;
-	struct pool *pool = tc->pool;
-	unsigned long flags;
-
-	bio_list_init(&bios);
-
-	spin_lock_irqsave(&pool->lock, flags);
-	cell_release_no_holder(cell, &pool->deferred_bios);
-	spin_unlock_irqrestore(&pool->lock, flags);
-
-	wake_worker(pool);
-}
-
-static void process_prepared_mapping(struct new_mapping *m)
-{
-	struct thin_c *tc = m->tc;
-	struct bio *bio;
-	int r;
-
-	bio = m->bio;
-	if (bio)
-		bio->bi_end_io = m->saved_bi_end_io;
-
-	if (m->err) {
-		cell_error(m->cell);
-=======
  * This sends the bios in the cell, except the original holder, back
  * to the deferred_bios list.
  */
@@ -1675,7 +1004,6 @@ static void process_prepared_mapping(struct dm_thin_new_mapping *m)
 
 	if (m->status) {
 		cell_error(pool, m->cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1684,17 +1012,10 @@ static void process_prepared_mapping(struct dm_thin_new_mapping *m)
 	 * Any I/O for this block arriving after this point will get
 	 * remapped to it directly.
 	 */
-<<<<<<< HEAD
-	r = dm_thin_insert_block(tc->td, m->virt_block, m->data_block);
-	if (r) {
-		DMERR("dm_thin_insert_block() failed");
-		cell_error(m->cell);
-=======
 	r = dm_thin_insert_block(tc->td, m->virt_begin, m->data_block);
 	if (r) {
 		metadata_operation_failed(pool, "dm_thin_insert_block", r);
 		cell_error(pool, m->cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1705,19 +1026,6 @@ static void process_prepared_mapping(struct dm_thin_new_mapping *m)
 	 * the bios in the cell.
 	 */
 	if (bio) {
-<<<<<<< HEAD
-		cell_defer_except(tc, m->cell);
-		bio_endio(bio, 0);
-	} else
-		cell_defer(tc, m->cell, m->data_block);
-
-out:
-	list_del(&m->list);
-	mempool_free(m, tc->pool->mapping_pool);
-}
-
-static void process_prepared_discard(struct new_mapping *m)
-=======
 		inc_remap_and_issue_cell(tc, m->cell, m->data_block);
 		complete_overwrite_bio(tc, bio);
 	} else {
@@ -1755,44 +1063,10 @@ static void process_prepared_discard_success(struct dm_thin_new_mapping *m)
 }
 
 static void process_prepared_discard_no_passdown(struct dm_thin_new_mapping *m)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct thin_c *tc = m->tc;
 
-<<<<<<< HEAD
-	r = dm_thin_remove_block(tc->td, m->virt_block);
-	if (r)
-		DMERR("dm_thin_remove_block() failed");
-
-	/*
-	 * Pass the discard down to the underlying device?
-	 */
-	if (m->pass_discard)
-		remap_and_issue(tc, m->bio, m->data_block);
-	else
-		bio_endio(m->bio, 0);
-
-	cell_defer_except(tc, m->cell);
-	cell_defer_except(tc, m->cell2);
-	mempool_free(m, tc->pool->mapping_pool);
-}
-
-static void process_prepared(struct pool *pool, struct list_head *head,
-			     void (*fn)(struct new_mapping *))
-{
-	unsigned long flags;
-	struct list_head maps;
-	struct new_mapping *m, *tmp;
-
-	INIT_LIST_HEAD(&maps);
-	spin_lock_irqsave(&pool->lock, flags);
-	list_splice_init(head, &maps);
-	spin_unlock_irqrestore(&pool->lock, flags);
-
-	list_for_each_entry_safe(m, tmp, &maps, list)
-		fn(m);
-=======
 	r = dm_thin_remove_range(tc->td, m->cell->key.block_begin, m->cell->key.block_end);
 	if (r) {
 		metadata_operation_failed(tc->pool, "dm_thin_remove_range", r);
@@ -1960,7 +1234,6 @@ static void process_prepared(struct pool *pool, struct list_head *head,
 
 	list_for_each_entry_safe(m, tmp, &maps, list)
 		(*fn)(m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1968,14 +1241,8 @@ static void process_prepared(struct pool *pool, struct list_head *head,
  */
 static int io_overlaps_block(struct pool *pool, struct bio *bio)
 {
-<<<<<<< HEAD
-	return !(bio->bi_sector & pool->offset_mask) &&
-		(bio->bi_size == (pool->sectors_per_block << SECTOR_SHIFT));
-
-=======
 	return bio->bi_iter.bi_size ==
 		(pool->sectors_per_block << SECTOR_SHIFT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int io_overwrites_block(struct pool *pool, struct bio *bio)
@@ -1996,49 +1263,11 @@ static int ensure_next_mapping(struct pool *pool)
 	if (pool->next_mapping)
 		return 0;
 
-<<<<<<< HEAD
-	pool->next_mapping = mempool_alloc(pool->mapping_pool, GFP_ATOMIC);
-=======
 	pool->next_mapping = mempool_alloc(&pool->mapping_pool, GFP_ATOMIC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pool->next_mapping ? 0 : -ENOMEM;
 }
 
-<<<<<<< HEAD
-static struct new_mapping *get_next_mapping(struct pool *pool)
-{
-	struct new_mapping *r = pool->next_mapping;
-
-	BUG_ON(!pool->next_mapping);
-
-	pool->next_mapping = NULL;
-
-	return r;
-}
-
-static void schedule_copy(struct thin_c *tc, dm_block_t virt_block,
-			  struct dm_dev *origin, dm_block_t data_origin,
-			  dm_block_t data_dest,
-			  struct cell *cell, struct bio *bio)
-{
-	int r;
-	struct pool *pool = tc->pool;
-	struct new_mapping *m = get_next_mapping(pool);
-
-	INIT_LIST_HEAD(&m->list);
-	m->quiesced = 0;
-	m->prepared = 0;
-	m->tc = tc;
-	m->virt_block = virt_block;
-	m->data_block = data_dest;
-	m->cell = cell;
-	m->err = 0;
-	m->bio = NULL;
-
-	if (!ds_add_work(&pool->shared_read_ds, &m->list))
-		m->quiesced = 1;
-=======
 static struct dm_thin_new_mapping *get_next_mapping(struct pool *pool)
 {
 	struct dm_thin_new_mapping *m = pool->next_mapping;
@@ -2107,7 +1336,6 @@ static void schedule_copy(struct thin_c *tc, dm_block_t virt_block,
 
 	if (!dm_deferred_set_add_work(pool->shared_read_ds, &m->list))
 		complete_mapping_preparation(m); /* already quiesced */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * IO to pool_dev remaps to the pool target's data_dev.
@@ -2115,39 +1343,13 @@ static void schedule_copy(struct thin_c *tc, dm_block_t virt_block,
 	 * If the whole block of data is being overwritten, we can issue the
 	 * bio immediately. Otherwise we use kcopyd to clone the data first.
 	 */
-<<<<<<< HEAD
-	if (io_overwrites_block(pool, bio)) {
-		struct endio_hook *h = dm_get_mapinfo(bio)->ptr;
-		h->overwrite_mapping = m;
-		m->bio = bio;
-		save_and_set_endio(bio, &m->saved_bi_end_io, overwrite_endio);
-		remap_and_issue(tc, bio, data_dest);
-	} else {
-=======
 	if (io_overwrites_block(pool, bio))
 		remap_and_issue_overwrite(tc, bio, data_dest, m);
 	else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct dm_io_region from, to;
 
 		from.bdev = origin->bdev;
 		from.sector = data_origin * pool->sectors_per_block;
-<<<<<<< HEAD
-		from.count = pool->sectors_per_block;
-
-		to.bdev = tc->pool_dev->bdev;
-		to.sector = data_dest * pool->sectors_per_block;
-		to.count = pool->sectors_per_block;
-
-		r = dm_kcopyd_copy(pool->copier, &from, 1, &to,
-				   0, copy_complete, m);
-		if (r < 0) {
-			mempool_free(m, pool->mapping_pool);
-			DMERR("dm_kcopyd_copy() failed");
-			cell_error(cell);
-		}
-	}
-=======
 		from.count = len;
 
 		to.bdev = tc->pool_dev->bdev;
@@ -2169,43 +1371,10 @@ static void schedule_copy(struct thin_c *tc, dm_block_t virt_block,
 	}
 
 	complete_mapping_preparation(m); /* drop our ref */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void schedule_internal_copy(struct thin_c *tc, dm_block_t virt_block,
 				   dm_block_t data_origin, dm_block_t data_dest,
-<<<<<<< HEAD
-				   struct cell *cell, struct bio *bio)
-{
-	schedule_copy(tc, virt_block, tc->pool_dev,
-		      data_origin, data_dest, cell, bio);
-}
-
-static void schedule_external_copy(struct thin_c *tc, dm_block_t virt_block,
-				   dm_block_t data_dest,
-				   struct cell *cell, struct bio *bio)
-{
-	schedule_copy(tc, virt_block, tc->origin_dev,
-		      virt_block, data_dest, cell, bio);
-}
-
-static void schedule_zero(struct thin_c *tc, dm_block_t virt_block,
-			  dm_block_t data_block, struct cell *cell,
-			  struct bio *bio)
-{
-	struct pool *pool = tc->pool;
-	struct new_mapping *m = get_next_mapping(pool);
-
-	INIT_LIST_HEAD(&m->list);
-	m->quiesced = 1;
-	m->prepared = 0;
-	m->tc = tc;
-	m->virt_block = virt_block;
-	m->data_block = data_block;
-	m->cell = cell;
-	m->err = 0;
-	m->bio = NULL;
-=======
 				   struct dm_bio_prison_cell *cell, struct bio *bio)
 {
 	schedule_copy(tc, virt_block, tc->pool_dev,
@@ -2226,39 +1395,12 @@ static void schedule_zero(struct thin_c *tc, dm_block_t virt_block,
 	m->virt_end = virt_block + 1u;
 	m->data_block = data_block;
 	m->cell = cell;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the whole block of data is being overwritten or we are not
 	 * zeroing pre-existing data, we can issue the bio immediately.
 	 * Otherwise we use kcopyd to zero the data first.
 	 */
-<<<<<<< HEAD
-	if (!pool->pf.zero_new_blocks)
-		process_prepared_mapping(m);
-
-	else if (io_overwrites_block(pool, bio)) {
-		struct endio_hook *h = dm_get_mapinfo(bio)->ptr;
-		h->overwrite_mapping = m;
-		m->bio = bio;
-		save_and_set_endio(bio, &m->saved_bi_end_io, overwrite_endio);
-		remap_and_issue(tc, bio, data_block);
-
-	} else {
-		int r;
-		struct dm_io_region to;
-
-		to.bdev = tc->pool_dev->bdev;
-		to.sector = data_block * pool->sectors_per_block;
-		to.count = pool->sectors_per_block;
-
-		r = dm_kcopyd_zero(pool->copier, 1, &to, 0, copy_complete, m);
-		if (r < 0) {
-			mempool_free(m, pool->mapping_pool);
-			DMERR("dm_kcopyd_zero() failed");
-			cell_error(cell);
-		}
-=======
 	if (pool->pf.zero_new_blocks) {
 		if (io_overwrites_block(pool, bio))
 			remap_and_issue_overwrite(tc, bio, data_block, m);
@@ -2373,7 +1515,6 @@ static void check_low_water_mark(struct pool *pool, dm_block_t free_blocks)
 		pool->low_water_triggered = true;
 		spin_unlock_irq(&pool->lock);
 		dm_table_event(pool->ti->table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2381,55 +1522,6 @@ static int alloc_data_block(struct thin_c *tc, dm_block_t *result)
 {
 	int r;
 	dm_block_t free_blocks;
-<<<<<<< HEAD
-	unsigned long flags;
-	struct pool *pool = tc->pool;
-
-	r = dm_pool_get_free_block_count(pool->pmd, &free_blocks);
-	if (r)
-		return r;
-
-	if (free_blocks <= pool->low_water_blocks && !pool->low_water_triggered) {
-		DMWARN("%s: reached low water mark, sending event.",
-		       dm_device_name(pool->pool_md));
-		spin_lock_irqsave(&pool->lock, flags);
-		pool->low_water_triggered = 1;
-		spin_unlock_irqrestore(&pool->lock, flags);
-		dm_table_event(pool->ti->table);
-	}
-
-	if (!free_blocks) {
-		if (pool->no_free_space)
-			return -ENOSPC;
-		else {
-			/*
-			 * Try to commit to see if that will free up some
-			 * more space.
-			 */
-			r = dm_pool_commit_metadata(pool->pmd);
-			if (r) {
-				DMERR("%s: dm_pool_commit_metadata() failed, error = %d",
-				      __func__, r);
-				return r;
-			}
-
-			r = dm_pool_get_free_block_count(pool->pmd, &free_blocks);
-			if (r)
-				return r;
-
-			/*
-			 * If we still have no space we set a flag to avoid
-			 * doing all this checking and return -ENOSPC.
-			 */
-			if (!free_blocks) {
-				DMWARN("%s: no free space available.",
-				       dm_device_name(pool->pool_md));
-				spin_lock_irqsave(&pool->lock, flags);
-				pool->no_free_space = 1;
-				spin_unlock_irqrestore(&pool->lock, flags);
-				return -ENOSPC;
-			}
-=======
 	struct pool *pool = tc->pool;
 
 	if (WARN_ON(get_pool_mode(pool) != PM_WRITE))
@@ -2461,15 +1553,10 @@ static int alloc_data_block(struct thin_c *tc, dm_block_t *result)
 		if (!free_blocks) {
 			set_pool_mode(pool, PM_OUT_OF_DATA_SPACE);
 			return -ENOSPC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	r = dm_pool_alloc_data_block(pool->pmd, result);
-<<<<<<< HEAD
-	if (r)
-		return r;
-=======
 	if (r) {
 		if (r == -ENOSPC)
 			set_pool_mode(pool, PM_OUT_OF_DATA_SPACE);
@@ -2490,7 +1577,6 @@ static int alloc_data_block(struct thin_c *tc, dm_block_t *result)
 		if (r)
 			return r;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2501,25 +1587,6 @@ static int alloc_data_block(struct thin_c *tc, dm_block_t *result)
  */
 static void retry_on_resume(struct bio *bio)
 {
-<<<<<<< HEAD
-	struct endio_hook *h = dm_get_mapinfo(bio)->ptr;
-	struct thin_c *tc = h->tc;
-	struct pool *pool = tc->pool;
-	unsigned long flags;
-
-	spin_lock_irqsave(&pool->lock, flags);
-	bio_list_add(&pool->retry_on_resume_list, bio);
-	spin_unlock_irqrestore(&pool->lock, flags);
-}
-
-static void no_space(struct cell *cell)
-{
-	struct bio *bio;
-	struct bio_list bios;
-
-	bio_list_init(&bios);
-	cell_release(cell, &bios);
-=======
 	struct dm_thin_endio_hook *h = dm_per_bio_data(bio, sizeof(struct dm_thin_endio_hook));
 	struct thin_c *tc = h->tc;
 
@@ -2577,44 +1644,11 @@ static void retry_bios_on_resume(struct pool *pool, struct dm_bio_prison_cell *c
 
 	bio_list_init(&bios);
 	cell_release(pool, cell, &bios);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((bio = bio_list_pop(&bios)))
 		retry_on_resume(bio);
 }
 
-<<<<<<< HEAD
-static void process_discard(struct thin_c *tc, struct bio *bio)
-{
-	int r;
-	unsigned long flags;
-	struct pool *pool = tc->pool;
-	struct cell *cell, *cell2;
-	struct cell_key key, key2;
-	dm_block_t block = get_bio_block(tc, bio);
-	struct dm_thin_lookup_result lookup_result;
-	struct new_mapping *m;
-
-	build_virtual_key(tc->td, block, &key);
-	if (bio_detain(tc->pool->prison, &key, bio, &cell))
-		return;
-
-	r = dm_thin_find_block(tc->td, block, 1, &lookup_result);
-	switch (r) {
-	case 0:
-		/*
-		 * Check nobody is fiddling with this pool block.  This can
-		 * happen if someone's in the process of breaking sharing
-		 * on this block.
-		 */
-		build_data_key(tc->td, lookup_result.block, &key2);
-		if (bio_detain(tc->pool->prison, &key2, bio, &cell2)) {
-			cell_release_singleton(cell, bio);
-			break;
-		}
-
-		if (io_overlaps_block(pool, bio)) {
-=======
 static void process_discard_cell_no_passdown(struct thin_c *tc,
 					     struct dm_bio_prison_cell *virt_cell)
 {
@@ -2681,72 +1715,12 @@ static void break_up_discard_bio(struct thin_c *tc, dm_block_t begin, dm_block_t
 				continue;
 			}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * IO may still be going to the destination block.  We must
 			 * quiesce before we can do the removal.
 			 */
 			m = get_next_mapping(pool);
 			m->tc = tc;
-<<<<<<< HEAD
-			m->pass_discard = (!lookup_result.shared) & pool->pf.discard_passdown;
-			m->virt_block = block;
-			m->data_block = lookup_result.block;
-			m->cell = cell;
-			m->cell2 = cell2;
-			m->err = 0;
-			m->bio = bio;
-
-			if (!ds_add_work(&pool->all_io_ds, &m->list)) {
-				spin_lock_irqsave(&pool->lock, flags);
-				list_add(&m->list, &pool->prepared_discards);
-				spin_unlock_irqrestore(&pool->lock, flags);
-				wake_worker(pool);
-			}
-		} else {
-			/*
-			 * This path is hit if people are ignoring
-			 * limits->discard_granularity.  It ignores any
-			 * part of the discard that is in a subsequent
-			 * block.
-			 */
-			sector_t offset = bio->bi_sector - (block << pool->block_shift);
-			unsigned remaining = (pool->sectors_per_block - offset) << 9;
-			bio->bi_size = min(bio->bi_size, remaining);
-
-			cell_release_singleton(cell, bio);
-			cell_release_singleton(cell2, bio);
-			if ((!lookup_result.shared) && pool->pf.discard_passdown)
-				remap_and_issue(tc, bio, lookup_result.block);
-			else
-				bio_endio(bio, 0);
-		}
-		break;
-
-	case -ENODATA:
-		/*
-		 * It isn't provisioned, just forget it.
-		 */
-		cell_release_singleton(cell, bio);
-		bio_endio(bio, 0);
-		break;
-
-	default:
-		DMERR("discard: find block unexpectedly returned %d", r);
-		cell_release_singleton(cell, bio);
-		bio_io_error(bio);
-		break;
-	}
-}
-
-static void break_sharing(struct thin_c *tc, struct bio *bio, dm_block_t block,
-			  struct cell_key *key,
-			  struct dm_thin_lookup_result *lookup_result,
-			  struct cell *cell)
-{
-	int r;
-	dm_block_t data_block;
-=======
 			m->maybe_shared = maybe_shared;
 			m->virt_begin = virt_begin;
 			m->virt_end = virt_begin + len;
@@ -2838,7 +1812,6 @@ static void break_sharing(struct thin_c *tc, struct bio *bio, dm_block_t block,
 	int r;
 	dm_block_t data_block;
 	struct pool *pool = tc->pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = alloc_data_block(tc, &data_block);
 	switch (r) {
@@ -2848,14 +1821,6 @@ static void break_sharing(struct thin_c *tc, struct bio *bio, dm_block_t block,
 		break;
 
 	case -ENOSPC:
-<<<<<<< HEAD
-		no_space(cell);
-		break;
-
-	default:
-		DMERR("%s: alloc_data_block() failed, error = %d", __func__, r);
-		cell_error(cell);
-=======
 		retry_bios_on_resume(pool, cell);
 		break;
 
@@ -2863,20 +1828,10 @@ static void break_sharing(struct thin_c *tc, struct bio *bio, dm_block_t block,
 		DMERR_LIMIT("%s: alloc_data_block() failed: error = %d",
 			    __func__, r);
 		cell_error(pool, cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static void process_shared_bio(struct thin_c *tc, struct bio *bio,
-			       dm_block_t block,
-			       struct dm_thin_lookup_result *lookup_result)
-{
-	struct cell *cell;
-	struct pool *pool = tc->pool;
-	struct cell_key key;
-=======
 static void __remap_and_issue_shared_cell(void *context,
 					  struct dm_bio_prison_cell *cell)
 {
@@ -2926,27 +1881,12 @@ static void process_shared_bio(struct thin_c *tc, struct bio *bio,
 	struct dm_bio_prison_cell *data_cell;
 	struct pool *pool = tc->pool;
 	struct dm_cell_key key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If cell is already occupied, then sharing is already in the process
 	 * of being broken so we have nothing further to do here.
 	 */
 	build_data_key(tc->td, lookup_result->block, &key);
-<<<<<<< HEAD
-	if (bio_detain(pool->prison, &key, bio, &cell))
-		return;
-
-	if (bio_data_dir(bio) == WRITE)
-		break_sharing(tc, bio, block, &key, lookup_result, cell);
-	else {
-		struct endio_hook *h = dm_get_mapinfo(bio)->ptr;
-
-		h->shared_read_entry = ds_inc(&pool->shared_read_ds);
-
-		cell_release_singleton(cell, bio);
-		remap_and_issue(tc, bio, lookup_result->block);
-=======
 	if (bio_detain(pool, &key, bio, &data_cell)) {
 		cell_defer_no_holder(tc, virt_cell);
 		return;
@@ -2964,36 +1904,23 @@ static void process_shared_bio(struct thin_c *tc, struct bio *bio,
 
 		remap_and_issue_shared_cell(tc, data_cell, lookup_result->block);
 		remap_and_issue_shared_cell(tc, virt_cell, lookup_result->block);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void provision_block(struct thin_c *tc, struct bio *bio, dm_block_t block,
-<<<<<<< HEAD
-			    struct cell *cell)
-{
-	int r;
-	dm_block_t data_block;
-=======
 			    struct dm_bio_prison_cell *cell)
 {
 	int r;
 	dm_block_t data_block;
 	struct pool *pool = tc->pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Remap empty bios (flushes) immediately, without provisioning.
 	 */
-<<<<<<< HEAD
-	if (!bio->bi_size) {
-		cell_release_singleton(cell, bio);
-=======
 	if (!bio->bi_iter.bi_size) {
 		inc_all_io_entry(pool, bio);
 		cell_defer_no_holder(tc, cell);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		remap_and_issue(tc, bio, 0);
 		return;
 	}
@@ -3003,13 +1930,8 @@ static void provision_block(struct thin_c *tc, struct bio *bio, dm_block_t block
 	 */
 	if (bio_data_dir(bio) == READ) {
 		zero_fill_bio(bio);
-<<<<<<< HEAD
-		cell_release_singleton(cell, bio);
-		bio_endio(bio, 0);
-=======
 		cell_defer_no_holder(tc, cell);
 		bio_endio(bio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -3023,14 +1945,6 @@ static void provision_block(struct thin_c *tc, struct bio *bio, dm_block_t block
 		break;
 
 	case -ENOSPC:
-<<<<<<< HEAD
-		no_space(cell);
-		break;
-
-	default:
-		DMERR("%s: alloc_data_block() failed, error = %d", __func__, r);
-		cell_error(cell);
-=======
 		retry_bios_on_resume(pool, cell);
 		break;
 
@@ -3093,67 +2007,22 @@ static void process_cell(struct thin_c *tc, struct dm_bio_prison_cell *cell)
 			    __func__, r);
 		cell_defer_no_holder(tc, cell);
 		bio_io_error(bio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
 static void process_bio(struct thin_c *tc, struct bio *bio)
 {
-<<<<<<< HEAD
-	int r;
-	dm_block_t block = get_bio_block(tc, bio);
-	struct cell *cell;
-	struct cell_key key;
-	struct dm_thin_lookup_result lookup_result;
-=======
 	struct pool *pool = tc->pool;
 	dm_block_t block = get_bio_block(tc, bio);
 	struct dm_bio_prison_cell *cell;
 	struct dm_cell_key key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If cell is already occupied, then the block is already
 	 * being provisioned so we have nothing further to do here.
 	 */
 	build_virtual_key(tc->td, block, &key);
-<<<<<<< HEAD
-	if (bio_detain(tc->pool->prison, &key, bio, &cell))
-		return;
-
-	r = dm_thin_find_block(tc->td, block, 1, &lookup_result);
-	switch (r) {
-	case 0:
-		/*
-		 * We can release this cell now.  This thread is the only
-		 * one that puts bios into a cell, and we know there were
-		 * no preceding bios.
-		 */
-		/*
-		 * TODO: this will probably have to change when discard goes
-		 * back in.
-		 */
-		cell_release_singleton(cell, bio);
-
-		if (lookup_result.shared)
-			process_shared_bio(tc, bio, block, &lookup_result);
-		else
-			remap_and_issue(tc, bio, lookup_result.block);
-		break;
-
-	case -ENODATA:
-		if (bio_data_dir(bio) == READ && tc->origin_dev) {
-			cell_release_singleton(cell, bio);
-			remap_to_origin_and_issue(tc, bio);
-		} else
-			provision_block(tc, bio, block, cell);
-		break;
-
-	default:
-		DMERR("dm_thin_find_block() failed, error = %d", r);
-		cell_release_singleton(cell, bio);
-=======
 	if (bio_detain(pool, &key, bio, &cell))
 		return;
 
@@ -3206,38 +2075,11 @@ static void __process_bio_read_only(struct thin_c *tc, struct bio *bio,
 			    __func__, r);
 		if (cell)
 			cell_defer_no_holder(tc, cell);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bio_io_error(bio);
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static int need_commit_due_to_time(struct pool *pool)
-{
-	return jiffies < pool->last_commit_jiffies ||
-	       jiffies > pool->last_commit_jiffies + COMMIT_PERIOD;
-}
-
-static void process_deferred_bios(struct pool *pool)
-{
-	unsigned long flags;
-	struct bio *bio;
-	struct bio_list bios;
-	int r;
-
-	bio_list_init(&bios);
-
-	spin_lock_irqsave(&pool->lock, flags);
-	bio_list_merge(&bios, &pool->deferred_bios);
-	bio_list_init(&pool->deferred_bios);
-	spin_unlock_irqrestore(&pool->lock, flags);
-
-	while ((bio = bio_list_pop(&bios))) {
-		struct endio_hook *h = dm_get_mapinfo(bio)->ptr;
-		struct thin_c *tc = h->tc;
-
-=======
 static void process_bio_read_only(struct thin_c *tc, struct bio *bio)
 {
 	__process_bio_read_only(tc, bio, NULL);
@@ -3374,45 +2216,12 @@ static void process_thin_deferred_bios(struct thin_c *tc)
 
 	blk_start_plug(&plug);
 	while ((bio = bio_list_pop(&bios))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we've got no free new_mapping structs, and processing
 		 * this bio might require one, we pause until there are some
 		 * prepared mappings to process.
 		 */
 		if (ensure_next_mapping(pool)) {
-<<<<<<< HEAD
-			spin_lock_irqsave(&pool->lock, flags);
-			bio_list_add(&pool->deferred_bios, bio);
-			bio_list_merge(&pool->deferred_bios, &bios);
-			spin_unlock_irqrestore(&pool->lock, flags);
-			break;
-		}
-
-		if (bio->bi_rw & REQ_DISCARD)
-			process_discard(tc, bio);
-		else
-			process_bio(tc, bio);
-	}
-
-	/*
-	 * If there are any deferred flush bios, we must commit
-	 * the metadata before issuing them.
-	 */
-	bio_list_init(&bios);
-	spin_lock_irqsave(&pool->lock, flags);
-	bio_list_merge(&bios, &pool->deferred_flush_bios);
-	bio_list_init(&pool->deferred_flush_bios);
-	spin_unlock_irqrestore(&pool->lock, flags);
-
-	if (bio_list_empty(&bios) && !need_commit_due_to_time(pool))
-		return;
-
-	r = dm_pool_commit_metadata(pool->pmd);
-	if (r) {
-		DMERR("%s: dm_pool_commit_metadata() failed, error = %d",
-		      __func__, r);
-=======
 			spin_lock_irq(&tc->lock);
 			bio_list_add(&tc->deferred_bio_list, bio);
 			bio_list_merge(&tc->deferred_bio_list, &bios);
@@ -3590,17 +2399,12 @@ static void process_deferred_bios(struct pool *pool)
 	if (commit(pool)) {
 		bio_list_merge(&bios, &bio_completions);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((bio = bio_list_pop(&bios)))
 			bio_io_error(bio);
 		return;
 	}
 	pool->last_commit_jiffies = jiffies;
 
-<<<<<<< HEAD
-	while ((bio = bio_list_pop(&bios)))
-		generic_make_request(bio);
-=======
 	while ((bio = bio_list_pop(&bio_completions)))
 		bio_endio(bio);
 
@@ -3614,18 +2418,12 @@ static void process_deferred_bios(struct pool *pool)
 		else
 			dm_submit_bio_remap(bio, NULL);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void do_worker(struct work_struct *ws)
 {
 	struct pool *pool = container_of(ws, struct pool, worker);
 
-<<<<<<< HEAD
-	process_prepared(pool, &pool->prepared_mappings, process_prepared_mapping);
-	process_prepared(pool, &pool->prepared_discards, process_prepared_discard);
-	process_deferred_bios(pool);
-=======
 	throttle_work_start(&pool->throttle);
 	dm_pool_issue_prefetches(pool->pmd);
 	throttle_work_update(&pool->throttle);
@@ -3637,7 +2435,6 @@ static void do_worker(struct work_struct *ws)
 	throttle_work_update(&pool->throttle);
 	process_deferred_bios(pool);
 	throttle_work_complete(&pool->throttle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3647,16 +2444,11 @@ static void do_worker(struct work_struct *ws)
 static void do_waker(struct work_struct *ws)
 {
 	struct pool *pool = container_of(to_delayed_work(ws), struct pool, waker);
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_worker(pool);
 	queue_delayed_work(pool->wq, &pool->waker, COMMIT_PERIOD);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * We're holding onto IO to allow userland time to react.  After the
  * timeout either the pool will have been resized (and thus back in
@@ -3876,7 +2668,6 @@ static void metadata_operation_failed(struct pool *pool, const char *op, int r)
 	set_pool_mode(pool, PM_READ_ONLY);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*----------------------------------------------------------------*/
 
 /*
@@ -3888,37 +2679,15 @@ static void metadata_operation_failed(struct pool *pool, const char *op, int r)
  */
 static void thin_defer_bio(struct thin_c *tc, struct bio *bio)
 {
-<<<<<<< HEAD
-	unsigned long flags;
-	struct pool *pool = tc->pool;
-
-	spin_lock_irqsave(&pool->lock, flags);
-	bio_list_add(&pool->deferred_bios, bio);
-	spin_unlock_irqrestore(&pool->lock, flags);
-=======
 	struct pool *pool = tc->pool;
 
 	spin_lock_irq(&tc->lock);
 	bio_list_add(&tc->deferred_bio_list, bio);
 	spin_unlock_irq(&tc->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wake_worker(pool);
 }
 
-<<<<<<< HEAD
-static struct endio_hook *thin_hook_bio(struct thin_c *tc, struct bio *bio)
-{
-	struct pool *pool = tc->pool;
-	struct endio_hook *h = mempool_alloc(pool->endio_hook_pool, GFP_NOIO);
-
-	h->tc = tc;
-	h->shared_read_entry = NULL;
-	h->all_io_entry = bio->bi_rw & REQ_DISCARD ? NULL : ds_inc(&pool->all_io_ds);
-	h->overwrite_mapping = NULL;
-
-	return h;
-=======
 static void thin_defer_bio_with_throttle(struct thin_c *tc, struct bio *bio)
 {
 	struct pool *pool = tc->pool;
@@ -3950,33 +2719,18 @@ static void thin_hook_bio(struct thin_c *tc, struct bio *bio)
 	h->all_io_entry = NULL;
 	h->overwrite_mapping = NULL;
 	h->cell = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Non-blocking function called from the thin target's map function.
  */
-<<<<<<< HEAD
-static int thin_bio_map(struct dm_target *ti, struct bio *bio,
-			union map_info *map_context)
-=======
 static int thin_bio_map(struct dm_target *ti, struct bio *bio)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct thin_c *tc = ti->private;
 	dm_block_t block = get_bio_block(tc, bio);
 	struct dm_thin_device *td = tc->td;
 	struct dm_thin_lookup_result result;
-<<<<<<< HEAD
-
-	map_context->ptr = thin_hook_bio(tc, bio);
-	if (bio->bi_rw & (REQ_DISCARD | REQ_FLUSH | REQ_FUA)) {
-		thin_defer_bio(tc, bio);
-		return DM_MAPIO_SUBMITTED;
-	}
-
-=======
 	struct dm_bio_prison_cell *virt_cell, *data_cell;
 	struct dm_cell_key key;
 
@@ -4006,7 +2760,6 @@ static int thin_bio_map(struct dm_target *ti, struct bio *bio)
 	if (bio_detain(tc->pool, &key, bio, &virt_cell))
 		return DM_MAPIO_SUBMITTED;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = dm_thin_find_block(td, block, 0, &result);
 
 	/*
@@ -4029,57 +2782,6 @@ static int thin_bio_map(struct dm_target *ti, struct bio *bio)
 			 * More distant ancestors are irrelevant. The
 			 * shared flag will be set in their case.
 			 */
-<<<<<<< HEAD
-			thin_defer_bio(tc, bio);
-			r = DM_MAPIO_SUBMITTED;
-		} else {
-			remap(tc, bio, result.block);
-			r = DM_MAPIO_REMAPPED;
-		}
-		break;
-
-	case -ENODATA:
-		/*
-		 * In future, the failed dm_thin_find_block above could
-		 * provide the hint to load the metadata into cache.
-		 */
-	case -EWOULDBLOCK:
-		thin_defer_bio(tc, bio);
-		r = DM_MAPIO_SUBMITTED;
-		break;
-	}
-
-	return r;
-}
-
-static int pool_is_congested(struct dm_target_callbacks *cb, int bdi_bits)
-{
-	int r;
-	unsigned long flags;
-	struct pool_c *pt = container_of(cb, struct pool_c, callbacks);
-
-	spin_lock_irqsave(&pt->pool->lock, flags);
-	r = !bio_list_empty(&pt->pool->retry_on_resume_list);
-	spin_unlock_irqrestore(&pt->pool->lock, flags);
-
-	if (!r) {
-		struct request_queue *q = bdev_get_queue(pt->data_dev->bdev);
-		r = bdi_congested(&q->backing_dev_info, bdi_bits);
-	}
-
-	return r;
-}
-
-static void __requeue_bios(struct pool *pool)
-{
-	bio_list_merge(&pool->deferred_bios, &pool->retry_on_resume_list);
-	bio_list_init(&pool->retry_on_resume_list);
-}
-
-/*----------------------------------------------------------------
- * Binding of control targets to a pool object
- *--------------------------------------------------------------*/
-=======
 			thin_defer_cell(tc, virt_cell);
 			return DM_MAPIO_SUBMITTED;
 		}
@@ -4164,31 +2866,10 @@ static void disable_discard_passdown_if_not_supported(struct pool_c *pt)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bind_control_target(struct pool *pool, struct dm_target *ti)
 {
 	struct pool_c *pt = ti->private;
 
-<<<<<<< HEAD
-	pool->ti = ti;
-	pool->low_water_blocks = pt->low_water_blocks;
-	pool->pf = pt->pf;
-
-	/*
-	 * If discard_passdown was enabled verify that the data device
-	 * supports discards.  Disable discard_passdown if not; otherwise
-	 * -EOPNOTSUPP will be returned.
-	 */
-	if (pt->pf.discard_passdown) {
-		struct request_queue *q = bdev_get_queue(pt->data_dev->bdev);
-		if (!q || !blk_queue_discard(q)) {
-			char buf[BDEVNAME_SIZE];
-			DMWARN("Discard unsupported by data device (%s): Disabling discard passdown.",
-			       bdevname(pt->data_dev->bdev, buf));
-			pool->pf.discard_passdown = 0;
-		}
-	}
-=======
 	/*
 	 * We want to make sure that a pool in PM_FAIL mode is never upgraded.
 	 */
@@ -4207,7 +2888,6 @@ static int bind_control_target(struct pool *pool, struct dm_target *ti)
 	pool->low_water_blocks = pt->low_water_blocks;
 
 	set_pool_mode(pool, new_mode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -4218,17 +2898,6 @@ static void unbind_control_target(struct pool *pool, struct dm_target *ti)
 		pool->ti = NULL;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
- * Pool creation
- *--------------------------------------------------------------*/
-/* Initialize pool features. */
-static void pool_features_init(struct pool_features *pf)
-{
-	pf->zero_new_blocks = 1;
-	pf->discard_enabled = 1;
-	pf->discard_passdown = 1;
-=======
 /*
  *--------------------------------------------------------------
  * Pool creation
@@ -4242,21 +2911,12 @@ static void pool_features_init(struct pool_features *pf)
 	pf->discard_enabled = true;
 	pf->discard_passdown = true;
 	pf->error_if_no_space = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __pool_destroy(struct pool *pool)
 {
 	__pool_table_remove(pool);
 
-<<<<<<< HEAD
-	if (dm_pool_metadata_close(pool->pmd) < 0)
-		DMWARN("%s: dm_pool_metadata_close() failed.", __func__);
-
-	prison_destroy(pool->prison);
-	dm_kcopyd_client_destroy(pool->copier);
-
-=======
 	vfree(pool->cell_sort_array);
 	if (dm_pool_metadata_close(pool->pmd) < 0)
 		DMWARN("%s: dm_pool_metadata_close() failed.", __func__);
@@ -4266,22 +2926,10 @@ static void __pool_destroy(struct pool *pool)
 
 	cancel_delayed_work_sync(&pool->waker);
 	cancel_delayed_work_sync(&pool->no_space_timeout);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pool->wq)
 		destroy_workqueue(pool->wq);
 
 	if (pool->next_mapping)
-<<<<<<< HEAD
-		mempool_free(pool->next_mapping, pool->mapping_pool);
-	mempool_destroy(pool->mapping_pool);
-	mempool_destroy(pool->endio_hook_pool);
-	kfree(pool);
-}
-
-static struct pool *pool_create(struct mapped_device *pool_md,
-				struct block_device *metadata_dev,
-				unsigned long block_size, char **error)
-=======
 		mempool_free(pool->next_mapping, &pool->mapping_pool);
 	mempool_exit(&pool->mapping_pool);
 	dm_deferred_set_destroy(pool->shared_read_ds);
@@ -4296,30 +2944,20 @@ static struct pool *pool_create(struct mapped_device *pool_md,
 				struct block_device *data_dev,
 				unsigned long block_size,
 				int read_only, char **error)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	void *err_p;
 	struct pool *pool;
 	struct dm_pool_metadata *pmd;
-<<<<<<< HEAD
-
-	pmd = dm_pool_metadata_open(metadata_dev, block_size);
-=======
 	bool format_device = read_only ? false : true;
 
 	pmd = dm_pool_metadata_open(metadata_dev, block_size, format_device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pmd)) {
 		*error = "Error creating metadata object";
 		return (struct pool *)pmd;
 	}
 
-<<<<<<< HEAD
-	pool = kmalloc(sizeof(*pool), GFP_KERNEL);
-=======
 	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pool) {
 		*error = "Error allocating memory for pool";
 		err_p = ERR_PTR(-ENOMEM);
@@ -4328,13 +2966,6 @@ static struct pool *pool_create(struct mapped_device *pool_md,
 
 	pool->pmd = pmd;
 	pool->sectors_per_block = block_size;
-<<<<<<< HEAD
-	pool->block_shift = ffs(block_size) - 1;
-	pool->offset_mask = block_size - 1;
-	pool->low_water_blocks = 0;
-	pool_features_init(&pool->pf);
-	pool->prison = prison_create(PRISON_CELLS);
-=======
 	if (block_size & (block_size - 1))
 		pool->sectors_per_block_shift = -1;
 	else
@@ -4342,18 +2973,13 @@ static struct pool *pool_create(struct mapped_device *pool_md,
 	pool->low_water_blocks = 0;
 	pool_features_init(&pool->pf);
 	pool->prison = dm_bio_prison_create();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pool->prison) {
 		*error = "Error creating pool's bio prison";
 		err_p = ERR_PTR(-ENOMEM);
 		goto bad_prison;
 	}
 
-<<<<<<< HEAD
-	pool->copier = dm_kcopyd_client_create();
-=======
 	pool->copier = dm_kcopyd_client_create(&dm_kcopyd_throttle);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pool->copier)) {
 		r = PTR_ERR(pool->copier);
 		*error = "Error creating pool's kcopyd client";
@@ -4372,37 +2998,6 @@ static struct pool *pool_create(struct mapped_device *pool_md,
 		goto bad_wq;
 	}
 
-<<<<<<< HEAD
-	INIT_WORK(&pool->worker, do_worker);
-	INIT_DELAYED_WORK(&pool->waker, do_waker);
-	spin_lock_init(&pool->lock);
-	bio_list_init(&pool->deferred_bios);
-	bio_list_init(&pool->deferred_flush_bios);
-	INIT_LIST_HEAD(&pool->prepared_mappings);
-	INIT_LIST_HEAD(&pool->prepared_discards);
-	pool->low_water_triggered = 0;
-	pool->no_free_space = 0;
-	bio_list_init(&pool->retry_on_resume_list);
-	ds_init(&pool->shared_read_ds);
-	ds_init(&pool->all_io_ds);
-
-	pool->next_mapping = NULL;
-	pool->mapping_pool =
-		mempool_create_kmalloc_pool(MAPPING_POOL_SIZE, sizeof(struct new_mapping));
-	if (!pool->mapping_pool) {
-		*error = "Error creating pool's mapping mempool";
-		err_p = ERR_PTR(-ENOMEM);
-		goto bad_mapping_pool;
-	}
-
-	pool->endio_hook_pool =
-		mempool_create_kmalloc_pool(ENDIO_HOOK_POOL_SIZE, sizeof(struct endio_hook));
-	if (!pool->endio_hook_pool) {
-		*error = "Error creating pool's endio_hook mempool";
-		err_p = ERR_PTR(-ENOMEM);
-		goto bad_endio_hook_pool;
-	}
-=======
 	throttle_init(&pool->throttle);
 	INIT_WORK(&pool->worker, do_worker);
 	INIT_DELAYED_WORK(&pool->waker, do_waker);
@@ -4450,24 +3045,15 @@ static struct pool *pool_create(struct mapped_device *pool_md,
 		goto bad_sort_array;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pool->ref_count = 1;
 	pool->last_commit_jiffies = jiffies;
 	pool->pool_md = pool_md;
 	pool->md_dev = metadata_dev;
-<<<<<<< HEAD
-=======
 	pool->data_dev = data_dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__pool_table_insert(pool);
 
 	return pool;
 
-<<<<<<< HEAD
-bad_endio_hook_pool:
-	mempool_destroy(pool->mapping_pool);
-bad_mapping_pool:
-=======
 bad_sort_array:
 	mempool_exit(&pool->mapping_pool);
 bad_mapping_pool:
@@ -4475,16 +3061,11 @@ bad_mapping_pool:
 bad_all_io_ds:
 	dm_deferred_set_destroy(pool->shared_read_ds);
 bad_shared_read_ds:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(pool->wq);
 bad_wq:
 	dm_kcopyd_client_destroy(pool->copier);
 bad_kcopyd_client:
-<<<<<<< HEAD
-	prison_destroy(pool->prison);
-=======
 	dm_bio_prison_destroy(pool->prison);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bad_prison:
 	kfree(pool);
 bad_pool:
@@ -4510,22 +3091,13 @@ static void __pool_dec(struct pool *pool)
 
 static struct pool *__pool_find(struct mapped_device *pool_md,
 				struct block_device *metadata_dev,
-<<<<<<< HEAD
-				unsigned long block_size, char **error,
-				int *created)
-=======
 				struct block_device *data_dev,
 				unsigned long block_size, int read_only,
 				char **error, int *created)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pool *pool = __pool_table_lookup_metadata_dev(metadata_dev);
 
 	if (pool) {
-<<<<<<< HEAD
-		if (pool->pool_md != pool_md)
-			return ERR_PTR(-EBUSY);
-=======
 		if (pool->pool_md != pool_md) {
 			*error = "metadata device already in use by a pool";
 			return ERR_PTR(-EBUSY);
@@ -4534,20 +3106,11 @@ static struct pool *__pool_find(struct mapped_device *pool_md,
 			*error = "data device already in use by a pool";
 			return ERR_PTR(-EBUSY);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__pool_inc(pool);
 
 	} else {
 		pool = __pool_table_lookup(pool_md);
 		if (pool) {
-<<<<<<< HEAD
-			if (pool->md_dev != metadata_dev)
-				return ERR_PTR(-EINVAL);
-			__pool_inc(pool);
-
-		} else {
-			pool = pool_create(pool_md, metadata_dev, block_size, error);
-=======
 			if (pool->md_dev != metadata_dev || pool->data_dev != data_dev) {
 				*error = "different pool cannot replace a pool";
 				return ERR_PTR(-EINVAL);
@@ -4556,7 +3119,6 @@ static struct pool *__pool_find(struct mapped_device *pool_md,
 
 		} else {
 			pool = pool_create(pool_md, metadata_dev, data_dev, block_size, read_only, error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*created = 1;
 		}
 	}
@@ -4564,17 +3126,11 @@ static struct pool *__pool_find(struct mapped_device *pool_md,
 	return pool;
 }
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
- * Pool target methods
- *--------------------------------------------------------------*/
-=======
 /*
  *--------------------------------------------------------------
  * Pool target methods
  *--------------------------------------------------------------
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pool_dtr(struct dm_target *ti)
 {
 	struct pool_c *pt = ti->private;
@@ -4594,19 +3150,11 @@ static int parse_pool_features(struct dm_arg_set *as, struct pool_features *pf,
 			       struct dm_target *ti)
 {
 	int r;
-<<<<<<< HEAD
-	unsigned argc;
-	const char *arg_name;
-
-	static struct dm_arg _args[] = {
-		{0, 3, "Invalid number of pool feature arguments"},
-=======
 	unsigned int argc;
 	const char *arg_name;
 
 	static const struct dm_arg _args[] = {
 		{0, 4, "Invalid number of pool feature arguments"},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/*
@@ -4623,21 +3171,6 @@ static int parse_pool_features(struct dm_arg_set *as, struct pool_features *pf,
 		arg_name = dm_shift_arg(as);
 		argc--;
 
-<<<<<<< HEAD
-		if (!strcasecmp(arg_name, "skip_block_zeroing")) {
-			pf->zero_new_blocks = 0;
-			continue;
-		} else if (!strcasecmp(arg_name, "ignore_discard")) {
-			pf->discard_enabled = 0;
-			continue;
-		} else if (!strcasecmp(arg_name, "no_discard_passdown")) {
-			pf->discard_passdown = 0;
-			continue;
-		}
-
-		ti->error = "Unrecognised pool feature requested";
-		r = -EINVAL;
-=======
 		if (!strcasecmp(arg_name, "skip_block_zeroing"))
 			pf->zero_new_blocks = false;
 
@@ -4658,14 +3191,11 @@ static int parse_pool_features(struct dm_arg_set *as, struct pool_features *pf,
 			r = -EINVAL;
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 static void metadata_low_callback(void *context)
 {
 	struct pool *pool = context;
@@ -4745,7 +3275,6 @@ static dm_block_t calc_metadata_threshold(struct pool_c *pt)
 	return min((dm_block_t)1024ULL /* 4M */, quarter);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * thin-pool <metadata dev> <data dev>
  *	     <data block size (sectors)>
@@ -4756,15 +3285,10 @@ static dm_block_t calc_metadata_threshold(struct pool_c *pt)
  *	     skip_block_zeroing: skips the zeroing of newly-provisioned blocks.
  *	     ignore_discard: disable discard
  *	     no_discard_passdown: don't pass discards down to the data device
-<<<<<<< HEAD
- */
-static int pool_ctr(struct dm_target *ti, unsigned argc, char **argv)
-=======
  *	     read_only: Don't allow any changes to be made to the pool metadata.
  *	     error_if_no_space: error IOs, instead of queueing, if no space.
  */
 static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r, pool_created = 0;
 	struct pool_c *pt;
@@ -4775,12 +3299,7 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	unsigned long block_size;
 	dm_block_t low_water_blocks;
 	struct dm_dev *metadata_dev;
-<<<<<<< HEAD
-	sector_t metadata_dev_size;
-	char b[BDEVNAME_SIZE];
-=======
 	blk_mode_t metadata_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FIXME Remove validation from scope of lock.
@@ -4792,12 +3311,6 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		r = -EINVAL;
 		goto out_unlock;
 	}
-<<<<<<< HEAD
-	as.argc = argc;
-	as.argv = argv;
-
-	r = dm_get_device(ti, argv[0], FMODE_READ | FMODE_WRITE, &metadata_dev);
-=======
 
 	as.argc = argc;
 	as.argv = argv;
@@ -4822,24 +3335,13 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	metadata_mode = BLK_OPEN_READ |
 		((pf.mode == PM_READ_ONLY) ? 0 : BLK_OPEN_WRITE);
 	r = dm_get_device(ti, argv[0], metadata_mode, &metadata_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		ti->error = "Error opening metadata block device";
 		goto out_unlock;
 	}
-<<<<<<< HEAD
-
-	metadata_dev_size = i_size_read(metadata_dev->bdev->bd_inode) >> SECTOR_SHIFT;
-	if (metadata_dev_size > THIN_METADATA_MAX_SECTORS_WARNING)
-		DMWARN("Metadata device %s is larger than %u sectors: excess space will not be used.",
-		       bdevname(metadata_dev->bdev, b), THIN_METADATA_MAX_SECTORS);
-
-	r = dm_get_device(ti, argv[1], FMODE_READ | FMODE_WRITE, &data_dev);
-=======
 	warn_if_metadata_device_too_big(metadata_dev->bdev);
 
 	r = dm_get_device(ti, argv[1], BLK_OPEN_READ | BLK_OPEN_WRITE, &data_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		ti->error = "Error getting data device";
 		goto out_metadata;
@@ -4848,11 +3350,7 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	if (kstrtoul(argv[2], 10, &block_size) || !block_size ||
 	    block_size < DATA_DEV_BLOCK_SIZE_MIN_SECTORS ||
 	    block_size > DATA_DEV_BLOCK_SIZE_MAX_SECTORS ||
-<<<<<<< HEAD
-	    !is_power_of_2(block_size)) {
-=======
 	    block_size & (DATA_DEV_BLOCK_SIZE_MIN_SECTORS - 1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ti->error = "Invalid block size";
 		r = -EINVAL;
 		goto out;
@@ -4864,32 +3362,14 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto out;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Set default pool features.
-	 */
-	pool_features_init(&pf);
-
-	dm_consume_args(&as, 4);
-	r = parse_pool_features(&as, &pf, ti);
-	if (r)
-		goto out;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pt = kzalloc(sizeof(*pt), GFP_KERNEL);
 	if (!pt) {
 		r = -ENOMEM;
 		goto out;
 	}
 
-<<<<<<< HEAD
-	pool = __pool_find(dm_table_get_md(ti->table), metadata_dev->bdev,
-			   block_size, &ti->error, &pool_created);
-=======
 	pool = __pool_find(dm_table_get_md(ti->table), metadata_dev->bdev, data_dev->bdev,
 			   block_size, pf.mode == PM_READ_ONLY, &ti->error, &pool_created);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pool)) {
 		r = PTR_ERR(pool);
 		goto out_free_pt;
@@ -4912,40 +3392,22 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	pt->metadata_dev = metadata_dev;
 	pt->data_dev = data_dev;
 	pt->low_water_blocks = low_water_blocks;
-<<<<<<< HEAD
-	pt->pf = pf;
-	ti->num_flush_requests = 1;
-=======
 	pt->adjusted_pf = pt->requested_pf = pf;
 	ti->num_flush_bios = 1;
 	ti->limit_swap_bios = true;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Only need to enable discards if the pool should pass
 	 * them down to the data device.  The thin device's discard
 	 * processing will cause mappings to be removed from the btree.
 	 */
 	if (pf.discard_enabled && pf.discard_passdown) {
-<<<<<<< HEAD
-		ti->num_discard_requests = 1;
-=======
 		ti->num_discard_bios = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Setting 'discards_supported' circumvents the normal
 		 * stacking of discard limits (this keeps the pool and
 		 * thin devices' discard limits consistent).
 		 */
-<<<<<<< HEAD
-		ti->discards_supported = 1;
-		ti->discard_zeroes_data_unsupported = 1;
-	}
-	ti->private = pt;
-
-	pt->callbacks.congested_fn = pool_is_congested;
-	dm_table_add_target_callbacks(ti->table, &pt->callbacks);
-=======
 		ti->discards_supported = true;
 		ti->max_discard_granularity = true;
 	}
@@ -4962,7 +3424,6 @@ static int pool_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	dm_pool_register_pre_commit_callback(pool->pmd,
 					     metadata_pre_commit_callback, pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&dm_thin_pool_table.mutex);
 
@@ -4982,32 +3443,14 @@ out_unlock:
 	return r;
 }
 
-<<<<<<< HEAD
-static int pool_map(struct dm_target *ti, struct bio *bio,
-		    union map_info *map_context)
-{
-	int r;
-	struct pool_c *pt = ti->private;
-	struct pool *pool = pt->pool;
-	unsigned long flags;
-=======
 static int pool_map(struct dm_target *ti, struct bio *bio)
 {
 	struct pool_c *pt = ti->private;
 	struct pool *pool = pt->pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * As this is a singleton target, ti->begin is always zero.
 	 */
-<<<<<<< HEAD
-	spin_lock_irqsave(&pool->lock, flags);
-	bio->bi_bdev = pt->data_dev->bdev;
-	r = DM_MAPIO_REMAPPED;
-	spin_unlock_irqrestore(&pool->lock, flags);
-
-	return r;
-=======
 	spin_lock_irq(&pool->lock);
 	bio_set_dev(bio, pt->data_dev->bdev);
 	spin_unlock_irq(&pool->lock);
@@ -5112,7 +3555,6 @@ static int maybe_resize_metadata_dev(struct dm_target *ti, bool *need_commit)
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -5129,53 +3571,15 @@ static int maybe_resize_metadata_dev(struct dm_target *ti, bool *need_commit)
 static int pool_preresume(struct dm_target *ti)
 {
 	int r;
-<<<<<<< HEAD
-	struct pool_c *pt = ti->private;
-	struct pool *pool = pt->pool;
-	dm_block_t data_size, sb_data_size;
-=======
 	bool need_commit1, need_commit2;
 	struct pool_c *pt = ti->private;
 	struct pool *pool = pt->pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Take control of the pool object.
 	 */
 	r = bind_control_target(pool, ti);
 	if (r)
-<<<<<<< HEAD
-		return r;
-
-	data_size = ti->len >> pool->block_shift;
-	r = dm_pool_get_data_dev_size(pool->pmd, &sb_data_size);
-	if (r) {
-		DMERR("failed to retrieve data device size");
-		return r;
-	}
-
-	if (data_size < sb_data_size) {
-		DMERR("pool target too small, is %llu blocks (expected %llu)",
-		      data_size, sb_data_size);
-		return -EINVAL;
-
-	} else if (data_size > sb_data_size) {
-		r = dm_pool_resize_data_dev(pool->pmd, data_size);
-		if (r) {
-			DMERR("failed to resize data device");
-			return r;
-		}
-
-		r = dm_pool_commit_metadata(pool->pmd);
-		if (r) {
-			DMERR("%s: dm_pool_commit_metadata() failed, error = %d",
-			      __func__, r);
-			return r;
-		}
-	}
-
-	return 0;
-=======
 		goto out;
 
 	r = maybe_resize_data_dev(ti, &need_commit1);
@@ -5222,22 +3626,12 @@ static void pool_resume_active_thins(struct pool *pool)
 		dm_internal_resume(tc->thin_md);
 		tc = get_next_thin(pool, tc);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pool_resume(struct dm_target *ti)
 {
 	struct pool_c *pt = ti->private;
 	struct pool *pool = pt->pool;
-<<<<<<< HEAD
-	unsigned long flags;
-
-	spin_lock_irqsave(&pool->lock, flags);
-	pool->low_water_triggered = 0;
-	pool->no_free_space = 0;
-	__requeue_bios(pool);
-	spin_unlock_irqrestore(&pool->lock, flags);
-=======
 
 	/*
 	 * Must requeue active_thins' bios and then resume
@@ -5250,31 +3644,10 @@ static void pool_resume(struct dm_target *ti)
 	pool->low_water_triggered = false;
 	pool->suspended = false;
 	spin_unlock_irq(&pool->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do_waker(&pool->waker.work);
 }
 
-<<<<<<< HEAD
-static void pool_postsuspend(struct dm_target *ti)
-{
-	int r;
-	struct pool_c *pt = ti->private;
-	struct pool *pool = pt->pool;
-
-	cancel_delayed_work(&pool->waker);
-	flush_workqueue(pool->wq);
-
-	r = dm_pool_commit_metadata(pool->pmd);
-	if (r < 0) {
-		DMERR("%s: dm_pool_commit_metadata() failed, error = %d",
-		      __func__, r);
-		/* FIXME: invalidate device? error the next FUA or FLUSH bio ?*/
-	}
-}
-
-static int check_arg_count(unsigned argc, unsigned args_required)
-=======
 static void pool_presuspend(struct dm_target *ti)
 {
 	struct pool_c *pt = ti->private;
@@ -5311,7 +3684,6 @@ static void pool_postsuspend(struct dm_target *ti)
 }
 
 static int check_arg_count(unsigned int argc, unsigned int args_required)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (argc != args_required) {
 		DMWARN("Message received with %u arguments instead of %u.",
@@ -5334,11 +3706,7 @@ static int read_dev_id(char *arg, dm_thin_id *dev_id, int warning)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int process_create_thin_mesg(unsigned argc, char **argv, struct pool *pool)
-=======
 static int process_create_thin_mesg(unsigned int argc, char **argv, struct pool *pool)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dm_thin_id dev_id;
 	int r;
@@ -5361,11 +3729,7 @@ static int process_create_thin_mesg(unsigned int argc, char **argv, struct pool 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int process_create_snap_mesg(unsigned argc, char **argv, struct pool *pool)
-=======
 static int process_create_snap_mesg(unsigned int argc, char **argv, struct pool *pool)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dm_thin_id dev_id;
 	dm_thin_id origin_dev_id;
@@ -5393,11 +3757,7 @@ static int process_create_snap_mesg(unsigned int argc, char **argv, struct pool 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int process_delete_mesg(unsigned argc, char **argv, struct pool *pool)
-=======
 static int process_delete_mesg(unsigned int argc, char **argv, struct pool *pool)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dm_thin_id dev_id;
 	int r;
@@ -5417,11 +3777,7 @@ static int process_delete_mesg(unsigned int argc, char **argv, struct pool *pool
 	return r;
 }
 
-<<<<<<< HEAD
-static int process_set_transaction_id_mesg(unsigned argc, char **argv, struct pool *pool)
-=======
 static int process_set_transaction_id_mesg(unsigned int argc, char **argv, struct pool *pool)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dm_thin_id old_id, new_id;
 	int r;
@@ -5450,8 +3806,6 @@ static int process_set_transaction_id_mesg(unsigned int argc, char **argv, struc
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static int process_reserve_metadata_snap_mesg(unsigned int argc, char **argv, struct pool *pool)
 {
 	int r;
@@ -5484,39 +3838,28 @@ static int process_release_metadata_snap_mesg(unsigned int argc, char **argv, st
 	return r;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Messages supported:
  *   create_thin	<dev_id>
  *   create_snap	<dev_id> <origin_id>
  *   delete		<dev_id>
-<<<<<<< HEAD
- *   trim		<dev_id> <new_size_in_sectors>
- *   set_transaction_id <current_trans_id> <new_trans_id>
- */
-static int pool_message(struct dm_target *ti, unsigned argc, char **argv)
-=======
  *   set_transaction_id <current_trans_id> <new_trans_id>
  *   reserve_metadata_snap
  *   release_metadata_snap
  */
 static int pool_message(struct dm_target *ti, unsigned int argc, char **argv,
 			char *result, unsigned int maxlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = -EINVAL;
 	struct pool_c *pt = ti->private;
 	struct pool *pool = pt->pool;
 
-<<<<<<< HEAD
-=======
 	if (get_pool_mode(pool) >= PM_OUT_OF_METADATA_SPACE) {
 		DMERR("%s: unable to service pool target messages in READ_ONLY or FAIL mode",
 		      dm_device_name(pool->pool_md));
 		return -EOPNOTSUPP;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcasecmp(argv[0], "create_thin"))
 		r = process_create_thin_mesg(argc, argv, pool);
 
@@ -5529,17 +3872,6 @@ static int pool_message(struct dm_target *ti, unsigned int argc, char **argv,
 	else if (!strcasecmp(argv[0], "set_transaction_id"))
 		r = process_set_transaction_id_mesg(argc, argv, pool);
 
-<<<<<<< HEAD
-	else
-		DMWARN("Unrecognised thin pool target message received: %s", argv[0]);
-
-	if (!r) {
-		r = dm_pool_commit_metadata(pool->pmd);
-		if (r)
-			DMERR("%s message: dm_pool_commit_metadata() failed, error = %d",
-			      argv[0], r);
-	}
-=======
 	else if (!strcasecmp(argv[0], "reserve_metadata_snap"))
 		r = process_reserve_metadata_snap_mesg(argc, argv, pool);
 
@@ -5551,13 +3883,10 @@ static int pool_message(struct dm_target *ti, unsigned int argc, char **argv,
 
 	if (!r)
 		(void) commit(pool);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
-<<<<<<< HEAD
-=======
 static void emit_flags(struct pool_features *pf, char *result,
 		       unsigned int sz, unsigned int maxlen)
 {
@@ -5582,19 +3911,10 @@ static void emit_flags(struct pool_features *pf, char *result,
 		DMEMIT("error_if_no_space ");
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Status line is:
  *    <transaction id> <used metadata sectors>/<total metadata sectors>
  *    <used data sectors>/<total data sectors> <held metadata root>
-<<<<<<< HEAD
- */
-static void pool_status(struct dm_target *ti, status_type_t type,
-			char *result, unsigned maxlen)
-{
-	int r, count;
-	unsigned sz = 0;
-=======
  *    <pool mode> <discard config> <no space config> <needs_check>
  */
 static void pool_status(struct dm_target *ti, status_type_t type,
@@ -5602,17 +3922,13 @@ static void pool_status(struct dm_target *ti, status_type_t type,
 {
 	int r;
 	unsigned int sz = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t transaction_id;
 	dm_block_t nr_free_blocks_data;
 	dm_block_t nr_free_blocks_metadata;
 	dm_block_t nr_blocks_data;
 	dm_block_t nr_blocks_metadata;
 	dm_block_t held_root;
-<<<<<<< HEAD
-=======
 	enum pool_mode mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char buf[BDEVNAME_SIZE];
 	char buf2[BDEVNAME_SIZE];
 	struct pool_c *pt = ti->private;
@@ -5620,11 +3936,6 @@ static void pool_status(struct dm_target *ti, status_type_t type,
 
 	switch (type) {
 	case STATUSTYPE_INFO:
-<<<<<<< HEAD
-		r = dm_pool_get_metadata_transaction_id(pool->pmd, &transaction_id);
-		if (r) {
-			DMERR("dm_pool_get_metadata_transaction_id returned %d", r);
-=======
 		if (get_pool_mode(pool) == PM_FAIL) {
 			DMEMIT("Fail");
 			break;
@@ -5638,54 +3949,32 @@ static void pool_status(struct dm_target *ti, status_type_t type,
 		if (r) {
 			DMERR("%s: dm_pool_get_metadata_transaction_id returned %d",
 			      dm_device_name(pool->pool_md), r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
 		r = dm_pool_get_free_metadata_block_count(pool->pmd, &nr_free_blocks_metadata);
 		if (r) {
-<<<<<<< HEAD
-			DMERR("dm_pool_get_free_metadata_block_count returned %d", r);
-=======
 			DMERR("%s: dm_pool_get_free_metadata_block_count returned %d",
 			      dm_device_name(pool->pool_md), r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
 		r = dm_pool_get_metadata_dev_size(pool->pmd, &nr_blocks_metadata);
 		if (r) {
-<<<<<<< HEAD
-			DMERR("dm_pool_get_metadata_dev_size returned %d", r);
-=======
 			DMERR("%s: dm_pool_get_metadata_dev_size returned %d",
 			      dm_device_name(pool->pool_md), r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
 		r = dm_pool_get_free_block_count(pool->pmd, &nr_free_blocks_data);
 		if (r) {
-<<<<<<< HEAD
-			DMERR("dm_pool_get_free_block_count returned %d", r);
-=======
 			DMERR("%s: dm_pool_get_free_block_count returned %d",
 			      dm_device_name(pool->pool_md), r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
 		r = dm_pool_get_data_dev_size(pool->pmd, &nr_blocks_data);
 		if (r) {
-<<<<<<< HEAD
-			DMERR("dm_pool_get_data_dev_size returned %d", r);
-			goto err;
-		}
-
-		r = dm_pool_get_held_metadata_root(pool->pmd, &held_root);
-		if (r) {
-			DMERR("dm_pool_get_metadata_snap returned %d", r);
-=======
 			DMERR("%s: dm_pool_get_data_dev_size returned %d",
 			      dm_device_name(pool->pool_md), r);
 			goto err;
@@ -5695,7 +3984,6 @@ static void pool_status(struct dm_target *ti, status_type_t type,
 		if (r) {
 			DMERR("%s: dm_pool_get_metadata_snap returned %d",
 			      dm_device_name(pool->pool_md), r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
@@ -5707,11 +3995,6 @@ static void pool_status(struct dm_target *ti, status_type_t type,
 		       (unsigned long long)nr_blocks_data);
 
 		if (held_root)
-<<<<<<< HEAD
-			DMEMIT("%llu", held_root);
-		else
-			DMEMIT("-");
-=======
 			DMEMIT("%llu ", held_root);
 		else
 			DMEMIT("- ");
@@ -5742,7 +4025,6 @@ static void pool_status(struct dm_target *ti, status_type_t type,
 			DMEMIT("- ");
 
 		DMEMIT("%llu ", (unsigned long long)calc_metadata_threshold(pt));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 
@@ -5752,28 +4034,11 @@ static void pool_status(struct dm_target *ti, status_type_t type,
 		       format_dev_t(buf2, pt->data_dev->bdev->bd_dev),
 		       (unsigned long)pool->sectors_per_block,
 		       (unsigned long long)pt->low_water_blocks);
-<<<<<<< HEAD
-
-		count = !pool->pf.zero_new_blocks + !pool->pf.discard_enabled +
-			!pt->pf.discard_passdown;
-		DMEMIT("%u ", count);
-
-		if (!pool->pf.zero_new_blocks)
-			DMEMIT("skip_block_zeroing ");
-
-		if (!pool->pf.discard_enabled)
-			DMEMIT("ignore_discard ");
-
-		if (!pt->pf.discard_passdown)
-			DMEMIT("no_discard_passdown ");
-
-=======
 		emit_flags(&pt->requested_pf, result, sz, maxlen);
 		break;
 
 	case STATUSTYPE_IMA:
 		*result = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return;
@@ -5790,48 +4055,10 @@ static int pool_iterate_devices(struct dm_target *ti,
 	return fn(ti, pt->data_dev, 0, ti->len, data);
 }
 
-<<<<<<< HEAD
-static int pool_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
-		      struct bio_vec *biovec, int max_size)
-{
-	struct pool_c *pt = ti->private;
-	struct request_queue *q = bdev_get_queue(pt->data_dev->bdev);
-
-	if (!q->merge_bvec_fn)
-		return max_size;
-
-	bvm->bi_bdev = pt->data_dev->bdev;
-
-	return min(max_size, q->merge_bvec_fn(q, bvm, biovec));
-}
-
-static void set_discard_limits(struct pool *pool, struct queue_limits *limits)
-{
-	/*
-	 * FIXME: these limits may be incompatible with the pool's data device
-	 */
-	limits->max_discard_sectors = pool->sectors_per_block;
-
-	/*
-	 * This is just a hint, and not enforced.  We have to cope with
-	 * bios that overlap 2 blocks.
-	 */
-	limits->discard_granularity = pool->sectors_per_block << SECTOR_SHIFT;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pool_io_hints(struct dm_target *ti, struct queue_limits *limits)
 {
 	struct pool_c *pt = ti->private;
 	struct pool *pool = pt->pool;
-<<<<<<< HEAD
-
-	blk_limits_io_min(limits, 0);
-	blk_limits_io_opt(limits, pool->sectors_per_block << SECTOR_SHIFT);
-	if (pool->pf.discard_enabled)
-		set_discard_limits(pool, limits);
-=======
 	sector_t io_opt_sectors = limits->io_opt >> SECTOR_SHIFT;
 
 	/*
@@ -5885,45 +4112,28 @@ static void pool_io_hints(struct dm_target *ti, struct queue_limits *limits)
 		 */
 		limits->discard_granularity = 0;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct target_type pool_target = {
 	.name = "thin-pool",
 	.features = DM_TARGET_SINGLETON | DM_TARGET_ALWAYS_WRITEABLE |
 		    DM_TARGET_IMMUTABLE,
-<<<<<<< HEAD
-	.version = {1, 1, 1},
-=======
 	.version = {1, 23, 0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module = THIS_MODULE,
 	.ctr = pool_ctr,
 	.dtr = pool_dtr,
 	.map = pool_map,
-<<<<<<< HEAD
-=======
 	.presuspend = pool_presuspend,
 	.presuspend_undo = pool_presuspend_undo,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.postsuspend = pool_postsuspend,
 	.preresume = pool_preresume,
 	.resume = pool_resume,
 	.message = pool_message,
 	.status = pool_status,
-<<<<<<< HEAD
-	.merge = pool_merge,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iterate_devices = pool_iterate_devices,
 	.io_hints = pool_io_hints,
 };
 
-<<<<<<< HEAD
-/*----------------------------------------------------------------
- * Thin target methods
- *--------------------------------------------------------------*/
-=======
 /*
  *--------------------------------------------------------------
  * Thin target methods
@@ -5940,13 +4150,10 @@ static void thin_put(struct thin_c *tc)
 		complete(&tc->can_destroy);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void thin_dtr(struct dm_target *ti)
 {
 	struct thin_c *tc = ti->private;
 
-<<<<<<< HEAD
-=======
 	spin_lock_irq(&tc->pool->lock);
 	list_del_rcu(&tc->list);
 	spin_unlock_irq(&tc->pool->lock);
@@ -5955,7 +4162,6 @@ static void thin_dtr(struct dm_target *ti)
 	thin_put(tc);
 	wait_for_completion(&tc->can_destroy);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&dm_thin_pool_table.mutex);
 
 	__pool_dec(tc->pool);
@@ -5980,11 +4186,7 @@ static void thin_dtr(struct dm_target *ti)
  * If the pool device has discards disabled, they get disabled for the thin
  * device as well.
  */
-<<<<<<< HEAD
-static int thin_ctr(struct dm_target *ti, unsigned argc, char **argv)
-=======
 static int thin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct thin_c *tc;
@@ -6005,11 +4207,6 @@ static int thin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		r = -ENOMEM;
 		goto out_unlock;
 	}
-<<<<<<< HEAD
-
-	if (argc == 3) {
-		r = dm_get_device(ti, argv[2], FMODE_READ, &origin_dev);
-=======
 	tc->thin_md = dm_table_get_md(ti->table);
 	spin_lock_init(&tc->lock);
 	INIT_LIST_HEAD(&tc->deferred_cells);
@@ -6025,7 +4222,6 @@ static int thin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		}
 
 		r = dm_get_device(ti, argv[2], BLK_OPEN_READ, &origin_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			ti->error = "Error opening origin device";
 			goto bad_origin_dev;
@@ -6061,31 +4257,6 @@ static int thin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	}
 	__pool_inc(tc->pool);
 
-<<<<<<< HEAD
-	r = dm_pool_open_thin_device(tc->pool->pmd, tc->dev_id, &tc->td);
-	if (r) {
-		ti->error = "Couldn't open thin internal device";
-		goto bad_thin_open;
-	}
-
-	ti->split_io = tc->pool->sectors_per_block;
-	ti->num_flush_requests = 1;
-
-	/* In case the pool supports discards, pass them on. */
-	if (tc->pool->pf.discard_enabled) {
-		ti->discards_supported = 1;
-		ti->num_discard_requests = 1;
-		ti->discard_zeroes_data_unsupported = 1;
-	}
-
-	dm_put(pool_md);
-
-	mutex_unlock(&dm_thin_pool_table.mutex);
-
-	return 0;
-
-bad_thin_open:
-=======
 	if (get_pool_mode(tc->pool) == PM_FAIL) {
 		ti->error = "Couldn't open thin device, Pool is in fail mode";
 		r = -EINVAL;
@@ -6144,7 +4315,6 @@ bad_thin_open:
 bad:
 	dm_pool_close_thin_device(tc->td);
 bad_pool:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__pool_dec(tc->pool);
 bad_pool_lookup:
 	dm_put(pool_md);
@@ -6161,24 +4331,6 @@ out_unlock:
 	return r;
 }
 
-<<<<<<< HEAD
-static int thin_map(struct dm_target *ti, struct bio *bio,
-		    union map_info *map_context)
-{
-	bio->bi_sector = dm_target_offset(ti, bio->bi_sector);
-
-	return thin_bio_map(ti, bio, map_context);
-}
-
-static int thin_endio(struct dm_target *ti,
-		      struct bio *bio, int err,
-		      union map_info *map_context)
-{
-	unsigned long flags;
-	struct endio_hook *h = map_context->ptr;
-	struct list_head work;
-	struct new_mapping *m, *tmp;
-=======
 static int thin_map(struct dm_target *ti, struct bio *bio)
 {
 	bio->bi_iter.bi_sector = dm_target_offset(ti, bio->bi_iter.bi_sector);
@@ -6193,44 +4345,22 @@ static int thin_endio(struct dm_target *ti, struct bio *bio,
 	struct dm_thin_endio_hook *h = dm_per_bio_data(bio, sizeof(struct dm_thin_endio_hook));
 	struct list_head work;
 	struct dm_thin_new_mapping *m, *tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pool *pool = h->tc->pool;
 
 	if (h->shared_read_entry) {
 		INIT_LIST_HEAD(&work);
-<<<<<<< HEAD
-		ds_dec(h->shared_read_entry, &work);
-=======
 		dm_deferred_entry_dec(h->shared_read_entry, &work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock_irqsave(&pool->lock, flags);
 		list_for_each_entry_safe(m, tmp, &work, list) {
 			list_del(&m->list);
-<<<<<<< HEAD
-			m->quiesced = 1;
-			__maybe_add_mapping(m);
-=======
 			__complete_mapping_preparation(m);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		spin_unlock_irqrestore(&pool->lock, flags);
 	}
 
 	if (h->all_io_entry) {
 		INIT_LIST_HEAD(&work);
-<<<<<<< HEAD
-		ds_dec(h->all_io_entry, &work);
-		spin_lock_irqsave(&pool->lock, flags);
-		list_for_each_entry_safe(m, tmp, &work, list)
-			list_add(&m->list, &pool->prepared_discards);
-		spin_unlock_irqrestore(&pool->lock, flags);
-	}
-
-	mempool_free(h, pool->endio_hook_pool);
-
-	return 0;
-=======
 		dm_deferred_entry_dec(h->all_io_entry, &work);
 		if (!list_empty(&work)) {
 			spin_lock_irqsave(&pool->lock, flags);
@@ -6253,15 +4383,10 @@ static void thin_presuspend(struct dm_target *ti)
 
 	if (dm_noflush_suspending(ti))
 		noflush_work(tc, do_noflush_start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void thin_postsuspend(struct dm_target *ti)
 {
-<<<<<<< HEAD
-	if (dm_noflush_suspending(ti))
-		requeue_io((struct thin_c *)ti->private);
-=======
 	struct thin_c *tc = ti->private;
 
 	/*
@@ -6279,18 +4404,13 @@ static int thin_preresume(struct dm_target *ti)
 		tc->origin_size = get_dev_size(tc->origin_dev->bdev);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * <nr mapped sectors> <highest mapped sector>
  */
 static void thin_status(struct dm_target *ti, status_type_t type,
-<<<<<<< HEAD
-			char *result, unsigned maxlen)
-=======
 			unsigned int status_flags, char *result, unsigned int maxlen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	ssize_t sz = 0;
@@ -6298,14 +4418,11 @@ static void thin_status(struct dm_target *ti, status_type_t type,
 	char buf[BDEVNAME_SIZE];
 	struct thin_c *tc = ti->private;
 
-<<<<<<< HEAD
-=======
 	if (get_pool_mode(tc->pool) == PM_FAIL) {
 		DMEMIT("Fail");
 		return;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tc->td)
 		DMEMIT("-");
 	else {
@@ -6338,13 +4455,10 @@ static void thin_status(struct dm_target *ti, status_type_t type,
 			if (tc->origin_dev)
 				DMEMIT(" %s", format_dev_t(buf, tc->origin_dev->bdev->bd_dev));
 			break;
-<<<<<<< HEAD
-=======
 
 		case STATUSTYPE_IMA:
 			*result = '\0';
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -6357,27 +4471,14 @@ err:
 static int thin_iterate_devices(struct dm_target *ti,
 				iterate_devices_callout_fn fn, void *data)
 {
-<<<<<<< HEAD
-	dm_block_t blocks;
-	struct thin_c *tc = ti->private;
-=======
 	sector_t blocks;
 	struct thin_c *tc = ti->private;
 	struct pool *pool = tc->pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We can't call dm_pool_get_data_dev_size() since that blocks.  So
 	 * we follow a more convoluted path through to the pool's target.
 	 */
-<<<<<<< HEAD
-	if (!tc->pool->ti)
-		return 0;	/* nothing is bound */
-
-	blocks = tc->pool->ti->len >> tc->pool->block_shift;
-	if (blocks)
-		return fn(ti, tc->pool_dev, 0, tc->pool->sectors_per_block * blocks, data);
-=======
 	if (!pool->ti)
 		return 0;	/* nothing is bound */
 
@@ -6385,7 +4486,6 @@ static int thin_iterate_devices(struct dm_target *ti,
 	(void) sector_div(blocks, pool->sectors_per_block);
 	if (blocks)
 		return fn(ti, tc->pool_dev, 0, pool->sectors_per_block * blocks, data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -6395,35 +4495,22 @@ static void thin_io_hints(struct dm_target *ti, struct queue_limits *limits)
 	struct thin_c *tc = ti->private;
 	struct pool *pool = tc->pool;
 
-<<<<<<< HEAD
-	blk_limits_io_min(limits, 0);
-	blk_limits_io_opt(limits, pool->sectors_per_block << SECTOR_SHIFT);
-	set_discard_limits(pool, limits);
-=======
 	if (pool->pf.discard_enabled) {
 		limits->discard_granularity = pool->sectors_per_block << SECTOR_SHIFT;
 		limits->max_discard_sectors = pool->sectors_per_block * BIO_PRISON_MAX_RANGE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct target_type thin_target = {
 	.name = "thin",
-<<<<<<< HEAD
-	.version = {1, 1, 1},
-=======
 	.version = {1, 23, 0},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module	= THIS_MODULE,
 	.ctr = thin_ctr,
 	.dtr = thin_dtr,
 	.map = thin_map,
 	.end_io = thin_endio,
-<<<<<<< HEAD
-=======
 	.preresume = thin_preresume,
 	.presuspend = thin_presuspend,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.postsuspend = thin_postsuspend,
 	.status = thin_status,
 	.iterate_devices = thin_iterate_devices,
@@ -6434,19 +4521,6 @@ static struct target_type thin_target = {
 
 static int __init dm_thin_init(void)
 {
-<<<<<<< HEAD
-	int r;
-
-	pool_table_init();
-
-	r = dm_register_target(&thin_target);
-	if (r)
-		return r;
-
-	r = dm_register_target(&pool_target);
-	if (r)
-		dm_unregister_target(&thin_target);
-=======
 	int r = -ENOMEM;
 
 	pool_table_init();
@@ -6469,7 +4543,6 @@ bad_thin_target:
 	dm_unregister_target(&thin_target);
 bad_new_mapping_cache:
 	kmem_cache_destroy(_new_mapping_cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -6478,26 +4551,18 @@ static void dm_thin_exit(void)
 {
 	dm_unregister_target(&thin_target);
 	dm_unregister_target(&pool_target);
-<<<<<<< HEAD
-=======
 
 	kmem_cache_destroy(_new_mapping_cache);
 
 	pool_table_exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(dm_thin_init);
 module_exit(dm_thin_exit);
 
-<<<<<<< HEAD
-MODULE_DESCRIPTION(DM_NAME " thin provisioning target");
-MODULE_AUTHOR("Joe Thornber <dm-devel@redhat.com>");
-=======
 module_param_named(no_space_timeout, no_space_timeout_secs, uint, 0644);
 MODULE_PARM_DESC(no_space_timeout, "Out of data space queue IO timeout in seconds");
 
 MODULE_DESCRIPTION(DM_NAME " thin provisioning target");
 MODULE_AUTHOR("Joe Thornber <dm-devel@lists.linux.dev>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

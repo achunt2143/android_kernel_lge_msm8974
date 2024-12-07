@@ -1,40 +1,8 @@
-<<<<<<< HEAD
-/*******************************************************************************
-
-  Intel(R) Gigabit Ethernet Linux driver
-  Copyright(c) 2007-2012 Intel Corporation.
-
-  This program is free software; you can redistribute it and/or modify it
-  under the terms and conditions of the GNU General Public License,
-  version 2, as published by the Free Software Foundation.
-
-  This program is distributed in the hope it will be useful, but WITHOUT
-  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  more details.
-
-  You should have received a copy of the GNU General Public License along with
-  this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
-
-  The full GNU General Public License is included in this distribution in
-  the file called "COPYING".
-
-  Contact Information:
-  e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
-  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
-
-*******************************************************************************/
-
-#ifndef _E1000_HW_H_
-#define _E1000_HW_H_
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /* Copyright(c) 2007 - 2018 Intel Corporation. */
 
 #ifndef _E1000_IGB_HW_H_
 #define _E1000_IGB_HW_H_
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/types.h>
 #include <linux/delay.h>
@@ -46,33 +14,6 @@
 
 struct e1000_hw;
 
-<<<<<<< HEAD
-#define E1000_DEV_ID_82576                    0x10C9
-#define E1000_DEV_ID_82576_FIBER              0x10E6
-#define E1000_DEV_ID_82576_SERDES             0x10E7
-#define E1000_DEV_ID_82576_QUAD_COPPER        0x10E8
-#define E1000_DEV_ID_82576_QUAD_COPPER_ET2    0x1526
-#define E1000_DEV_ID_82576_NS                 0x150A
-#define E1000_DEV_ID_82576_NS_SERDES          0x1518
-#define E1000_DEV_ID_82576_SERDES_QUAD        0x150D
-#define E1000_DEV_ID_82575EB_COPPER           0x10A7
-#define E1000_DEV_ID_82575EB_FIBER_SERDES     0x10A9
-#define E1000_DEV_ID_82575GB_QUAD_COPPER      0x10D6
-#define E1000_DEV_ID_82580_COPPER             0x150E
-#define E1000_DEV_ID_82580_FIBER              0x150F
-#define E1000_DEV_ID_82580_SERDES             0x1510
-#define E1000_DEV_ID_82580_SGMII              0x1511
-#define E1000_DEV_ID_82580_COPPER_DUAL        0x1516
-#define E1000_DEV_ID_82580_QUAD_FIBER         0x1527
-#define E1000_DEV_ID_DH89XXCC_SGMII           0x0438
-#define E1000_DEV_ID_DH89XXCC_SERDES          0x043A
-#define E1000_DEV_ID_DH89XXCC_BACKPLANE       0x043C
-#define E1000_DEV_ID_DH89XXCC_SFP             0x0440
-#define E1000_DEV_ID_I350_COPPER              0x1521
-#define E1000_DEV_ID_I350_FIBER               0x1522
-#define E1000_DEV_ID_I350_SERDES              0x1523
-#define E1000_DEV_ID_I350_SGMII               0x1524
-=======
 #define E1000_DEV_ID_82576			0x10C9
 #define E1000_DEV_ID_82576_FIBER		0x10E6
 #define E1000_DEV_ID_82576_SERDES		0x10E7
@@ -108,7 +49,6 @@ struct e1000_hw;
 #define E1000_DEV_ID_I354_BACKPLANE_1GBPS	0x1F40
 #define E1000_DEV_ID_I354_SGMII			0x1F41
 #define E1000_DEV_ID_I354_BACKPLANE_2_5GBPS	0x1F45
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_REVISION_2 2
 #define E1000_REVISION_4 4
@@ -129,24 +69,17 @@ enum e1000_mac_type {
 	e1000_82576,
 	e1000_82580,
 	e1000_i350,
-<<<<<<< HEAD
-=======
 	e1000_i354,
 	e1000_i210,
 	e1000_i211,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e1000_num_macs  /* List is 1-based, so subtract 1 for true count. */
 };
 
 enum e1000_media_type {
 	e1000_media_type_unknown = 0,
 	e1000_media_type_copper = 1,
-<<<<<<< HEAD
-	e1000_media_type_internal_serdes = 2,
-=======
 	e1000_media_type_fiber = 2,
 	e1000_media_type_internal_serdes = 3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e1000_num_media_types
 };
 
@@ -155,10 +88,7 @@ enum e1000_nvm_type {
 	e1000_nvm_none,
 	e1000_nvm_eeprom_spi,
 	e1000_nvm_flash_hw,
-<<<<<<< HEAD
-=======
 	e1000_nvm_invm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e1000_nvm_flash_sw
 };
 
@@ -178,11 +108,8 @@ enum e1000_phy_type {
 	e1000_phy_igp_3,
 	e1000_phy_ife,
 	e1000_phy_82580,
-<<<<<<< HEAD
-=======
 	e1000_phy_i210,
 	e1000_phy_bcm54616,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum e1000_bus_type {
@@ -320,14 +247,6 @@ struct e1000_hw_stats {
 	u64 b2ogprc;
 };
 
-<<<<<<< HEAD
-struct e1000_phy_stats {
-	u32 idle_errors;
-	u32 receive_errors;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct e1000_host_mng_dhcp_cookie {
 	u32 signature;
 	u8  status;
@@ -374,41 +293,6 @@ struct e1000_host_mng_command_info {
 #include "e1000_mbx.h"
 
 struct e1000_mac_operations {
-<<<<<<< HEAD
-	s32  (*check_for_link)(struct e1000_hw *);
-	s32  (*reset_hw)(struct e1000_hw *);
-	s32  (*init_hw)(struct e1000_hw *);
-	bool (*check_mng_mode)(struct e1000_hw *);
-	s32  (*setup_physical_interface)(struct e1000_hw *);
-	void (*rar_set)(struct e1000_hw *, u8 *, u32);
-	s32  (*read_mac_addr)(struct e1000_hw *);
-	s32  (*get_speed_and_duplex)(struct e1000_hw *, u16 *, u16 *);
-};
-
-struct e1000_phy_operations {
-	s32  (*acquire)(struct e1000_hw *);
-	s32  (*check_polarity)(struct e1000_hw *);
-	s32  (*check_reset_block)(struct e1000_hw *);
-	s32  (*force_speed_duplex)(struct e1000_hw *);
-	s32  (*get_cfg_done)(struct e1000_hw *hw);
-	s32  (*get_cable_length)(struct e1000_hw *);
-	s32  (*get_phy_info)(struct e1000_hw *);
-	s32  (*read_reg)(struct e1000_hw *, u32, u16 *);
-	void (*release)(struct e1000_hw *);
-	s32  (*reset)(struct e1000_hw *);
-	s32  (*set_d0_lplu_state)(struct e1000_hw *, bool);
-	s32  (*set_d3_lplu_state)(struct e1000_hw *, bool);
-	s32  (*write_reg)(struct e1000_hw *, u32, u16);
-};
-
-struct e1000_nvm_operations {
-	s32  (*acquire)(struct e1000_hw *);
-	s32  (*read)(struct e1000_hw *, u16, u16, u16 *);
-	void (*release)(struct e1000_hw *);
-	s32  (*write)(struct e1000_hw *, u16, u16, u16 *);
-	s32  (*update)(struct e1000_hw *);
-	s32  (*validate)(struct e1000_hw *);
-=======
 	s32 (*check_for_link)(struct e1000_hw *);
 	s32 (*reset_hw)(struct e1000_hw *);
 	s32 (*init_hw)(struct e1000_hw *);
@@ -465,17 +349,12 @@ struct e1000_thermal_diode_data {
 
 struct e1000_thermal_sensor_data {
 	struct e1000_thermal_diode_data sensor[E1000_MAX_SENSORS];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_info {
 	s32 (*get_invariants)(struct e1000_hw *);
 	struct e1000_mac_operations *mac_ops;
-<<<<<<< HEAD
-	struct e1000_phy_operations *phy_ops;
-=======
 	const struct e1000_phy_operations *phy_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct e1000_nvm_operations *nvm_ops;
 };
 
@@ -517,10 +396,7 @@ struct e1000_mac_info {
 	bool report_tx_early;
 	bool serdes_has_link;
 	bool tx_pkt_filtering;
-<<<<<<< HEAD
-=======
 	struct e1000_thermal_sensor_data thermal_sensor_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_phy_info {
@@ -547,10 +423,7 @@ struct e1000_phy_info {
 	u16 cable_length;
 	u16 max_cable_length;
 	u16 min_cable_length;
-<<<<<<< HEAD
-=======
 	u16 pair_length[4];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 mdix;
 
@@ -600,15 +473,6 @@ struct e1000_fc_info {
 
 struct e1000_mbx_operations {
 	s32 (*init_params)(struct e1000_hw *hw);
-<<<<<<< HEAD
-	s32 (*read)(struct e1000_hw *, u32 *, u16,  u16);
-	s32 (*write)(struct e1000_hw *, u32 *, u16, u16);
-	s32 (*read_posted)(struct e1000_hw *, u32 *, u16,  u16);
-	s32 (*write_posted)(struct e1000_hw *, u32 *, u16, u16);
-	s32 (*check_for_msg)(struct e1000_hw *, u16);
-	s32 (*check_for_ack)(struct e1000_hw *, u16);
-	s32 (*check_for_rst)(struct e1000_hw *, u16);
-=======
 	s32 (*read)(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_id,
 		    bool unlock);
 	s32 (*write)(struct e1000_hw *hw, u32 *msg, u16 size, u16 mbx_id);
@@ -619,7 +483,6 @@ struct e1000_mbx_operations {
 	s32 (*check_for_ack)(struct e1000_hw *hw, u16 mbx_id);
 	s32 (*check_for_rst)(struct e1000_hw *hw, u16 mbx_id);
 	s32 (*unlock)(struct e1000_hw *hw, u16 mbx_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_mbx_stats {
@@ -643,15 +506,12 @@ struct e1000_dev_spec_82575 {
 	bool sgmii_active;
 	bool global_device_reset;
 	bool eee_disable;
-<<<<<<< HEAD
-=======
 	bool clear_semaphore_once;
 	struct e1000_sfp_flags eth_flags;
 	bool module_plugged;
 	u8 media_port;
 	bool media_changed;
 	bool mas_capable;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_hw {
@@ -681,24 +541,14 @@ struct e1000_hw {
 	u8  revision_id;
 };
 
-<<<<<<< HEAD
-extern struct net_device *igb_get_hw_dev(struct e1000_hw *hw);
-=======
 struct net_device *igb_get_hw_dev(struct e1000_hw *hw);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define hw_dbg(format, arg...) \
 	netdev_dbg(igb_get_hw_dev(hw), format, ##arg)
 
 /* These functions must be implemented by drivers */
-<<<<<<< HEAD
-s32  igb_read_pcie_cap_reg(struct e1000_hw *hw, u32 reg, u16 *value);
-s32  igb_write_pcie_cap_reg(struct e1000_hw *hw, u32 reg, u16 *value);
-#endif /* _E1000_HW_H_ */
-=======
 s32 igb_read_pcie_cap_reg(struct e1000_hw *hw, u32 reg, u16 *value);
 s32 igb_write_pcie_cap_reg(struct e1000_hw *hw, u32 reg, u16 *value);
 
 void igb_read_pci_cfg(struct e1000_hw *hw, u32 reg, u16 *value);
 void igb_write_pci_cfg(struct e1000_hw *hw, u32 reg, u16 *value);
 #endif /* _E1000_IGB_HW_H_ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

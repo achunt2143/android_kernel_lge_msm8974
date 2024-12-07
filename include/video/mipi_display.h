@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Defines for Mobile Industry Processor Interface (MIPI(R))
  * Display Working Group standards: DSI, DCS, DBI, DPI
@@ -9,13 +6,6 @@
  * Copyright (C) 2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
  * Copyright (C) 2006 Nokia Corporation
  * Author: Imre Deak <imre.deak@nokia.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef MIPI_DISPLAY_H
 #define MIPI_DISPLAY_H
@@ -27,12 +17,9 @@ enum {
 	MIPI_DSI_H_SYNC_START				= 0x21,
 	MIPI_DSI_H_SYNC_END				= 0x31,
 
-<<<<<<< HEAD
-=======
 	MIPI_DSI_COMPRESSION_MODE			= 0x07,
 	MIPI_DSI_END_OF_TRANSMISSION			= 0x08,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MIPI_DSI_COLOR_MODE_OFF				= 0x02,
 	MIPI_DSI_COLOR_MODE_ON				= 0x12,
 	MIPI_DSI_SHUTDOWN_PERIPHERAL			= 0x22,
@@ -50,29 +37,18 @@ enum {
 	MIPI_DSI_DCS_SHORT_WRITE_PARAM			= 0x15,
 
 	MIPI_DSI_DCS_READ				= 0x06,
-<<<<<<< HEAD
-
-	MIPI_DSI_SET_MAXIMUM_RETURN_PACKET_SIZE		= 0x37,
-
-	MIPI_DSI_END_OF_TRANSMISSION			= 0x08,
-
-=======
 	MIPI_DSI_EXECUTE_QUEUE				= 0x16,
 
 	MIPI_DSI_SET_MAXIMUM_RETURN_PACKET_SIZE		= 0x37,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MIPI_DSI_NULL_PACKET				= 0x09,
 	MIPI_DSI_BLANKING_PACKET			= 0x19,
 	MIPI_DSI_GENERIC_LONG_WRITE			= 0x29,
 	MIPI_DSI_DCS_LONG_WRITE				= 0x39,
 
-<<<<<<< HEAD
-=======
 	MIPI_DSI_PICTURE_PARAMETER_SET			= 0x0a,
 	MIPI_DSI_COMPRESSED_PIXEL_STREAM		= 0x0b,
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MIPI_DSI_LOOSELY_PACKED_PIXEL_STREAM_YCBCR20	= 0x0c,
 	MIPI_DSI_PACKED_PIXEL_STREAM_YCBCR24		= 0x1c,
 	MIPI_DSI_PACKED_PIXEL_STREAM_YCBCR16		= 0x2c,
@@ -103,13 +79,9 @@ enum {
 enum {
 	MIPI_DCS_NOP			= 0x00,
 	MIPI_DCS_SOFT_RESET		= 0x01,
-<<<<<<< HEAD
-	MIPI_DCS_GET_DISPLAY_ID		= 0x04,
-=======
 	MIPI_DCS_GET_COMPRESSION_MODE	= 0x03,
 	MIPI_DCS_GET_DISPLAY_ID		= 0x04,
 	MIPI_DCS_GET_ERROR_COUNT_ON_DSI	= 0x05,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MIPI_DCS_GET_RED_CHANNEL	= 0x06,
 	MIPI_DCS_GET_GREEN_CHANNEL	= 0x07,
 	MIPI_DCS_GET_BLUE_CHANNEL	= 0x08,
@@ -124,11 +96,8 @@ enum {
 	MIPI_DCS_EXIT_SLEEP_MODE	= 0x11,
 	MIPI_DCS_ENTER_PARTIAL_MODE	= 0x12,
 	MIPI_DCS_ENTER_NORMAL_MODE	= 0x13,
-<<<<<<< HEAD
-=======
 	MIPI_DCS_GET_IMAGE_CHECKSUM_RGB	= 0x14,
 	MIPI_DCS_GET_IMAGE_CHECKSUM_CT	= 0x15,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MIPI_DCS_EXIT_INVERT_MODE	= 0x20,
 	MIPI_DCS_ENTER_INVERT_MODE	= 0x21,
 	MIPI_DCS_SET_GAMMA_CURVE	= 0x26,
@@ -139,12 +108,8 @@ enum {
 	MIPI_DCS_WRITE_MEMORY_START	= 0x2C,
 	MIPI_DCS_WRITE_LUT		= 0x2D,
 	MIPI_DCS_READ_MEMORY_START	= 0x2E,
-<<<<<<< HEAD
-	MIPI_DCS_SET_PARTIAL_AREA	= 0x30,
-=======
 	MIPI_DCS_SET_PARTIAL_ROWS	= 0x30,		/* MIPI DCS 1.02 - MIPI_DCS_SET_PARTIAL_AREA before that */
 	MIPI_DCS_SET_PARTIAL_COLUMNS	= 0x31,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MIPI_DCS_SET_SCROLL_AREA	= 0x33,
 	MIPI_DCS_SET_TEAR_OFF		= 0x34,
 	MIPI_DCS_SET_TEAR_ON		= 0x35,
@@ -154,13 +119,6 @@ enum {
 	MIPI_DCS_ENTER_IDLE_MODE	= 0x39,
 	MIPI_DCS_SET_PIXEL_FORMAT	= 0x3A,
 	MIPI_DCS_WRITE_MEMORY_CONTINUE	= 0x3C,
-<<<<<<< HEAD
-	MIPI_DCS_READ_MEMORY_CONTINUE	= 0x3E,
-	MIPI_DCS_SET_TEAR_SCANLINE	= 0x44,
-	MIPI_DCS_GET_SCANLINE		= 0x45,
-	MIPI_DCS_READ_DDB_START		= 0xA1,
-	MIPI_DCS_READ_DDB_CONTINUE	= 0xA8,
-=======
 	MIPI_DCS_SET_3D_CONTROL		= 0x3D,
 	MIPI_DCS_READ_MEMORY_CONTINUE	= 0x3E,
 	MIPI_DCS_GET_3D_CONTROL		= 0x3F,
@@ -179,7 +137,6 @@ enum {
 	MIPI_DCS_READ_PPS_START		= 0xA2,
 	MIPI_DCS_READ_DDB_CONTINUE	= 0xA8,
 	MIPI_DCS_READ_PPS_CONTINUE	= 0xA9,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* MIPI DCS pixel formats */

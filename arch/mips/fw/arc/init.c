@@ -18,16 +18,11 @@
 
 /* Master romvec interface. */
 struct linux_romvec *romvec;
-<<<<<<< HEAD
-int prom_argc;
-LONG *_prom_argv, *_prom_envp;
-=======
 
 #if defined(CONFIG_64BIT) && defined(CONFIG_FW_ARC32)
 /* stack for calling 32bit ARC prom */
 u64 o32_stk[4096];
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init prom_init(void)
 {
@@ -35,13 +30,6 @@ void __init prom_init(void)
 
 	romvec = ROMVECTOR;
 
-<<<<<<< HEAD
-	prom_argc = fw_arg0;
-	_prom_argv = (LONG *) fw_arg1;
-	_prom_envp = (LONG *) fw_arg2;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pb->magic != 0x53435241) {
 		printk(KERN_CRIT "Aieee, bad prom vector magic %08lx\n",
 		       (unsigned long) pb->magic);
@@ -49,11 +37,7 @@ void __init prom_init(void)
 			;
 	}
 
-<<<<<<< HEAD
-	prom_init_cmdline();
-=======
 	prom_init_cmdline(fw_arg0, (LONG *)fw_arg1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prom_identify_arch();
 	printk(KERN_INFO "PROMLIB: ARC firmware Version %d Revision %d\n",
 	       pb->ver, pb->rev);
@@ -64,14 +48,4 @@ void __init prom_init(void)
 	ArcRead(0, &c, 1, &cnt);
 	ArcEnterInteractiveMode();
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_SGI_IP27
-	{
-		extern struct plat_smp_ops ip27_smp_ops;
-
-		register_smp_ops(&ip27_smp_ops);
-	}
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

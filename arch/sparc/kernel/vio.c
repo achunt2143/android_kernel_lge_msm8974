@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* vio.c: Virtual I/O channel devices probing infrastructure.
  *
  *    Copyright (c) 2003-2005 IBM Corp.
@@ -49,8 +46,6 @@ static const struct vio_device_id *vio_match_device(
 	return NULL;
 }
 
-<<<<<<< HEAD
-=======
 static int vio_hotplug(const struct device *dev, struct kobj_uevent_env *env)
 {
 	const struct vio_dev *vio_dev = to_vio_dev(dev);
@@ -59,7 +54,6 @@ static int vio_hotplug(const struct device *dev, struct kobj_uevent_env *env)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vio_bus_match(struct device *dev, struct device_driver *drv)
 {
 	struct vio_dev *vio_dev = to_vio_dev(dev);
@@ -77,20 +71,6 @@ static int vio_device_probe(struct device *dev)
 	struct vio_dev *vdev = to_vio_dev(dev);
 	struct vio_driver *drv = to_vio_driver(dev->driver);
 	const struct vio_device_id *id;
-<<<<<<< HEAD
-	int error = -ENODEV;
-
-	if (drv->probe) {
-		id = vio_match_device(drv->id_table, vdev);
-		if (id)
-			error = drv->probe(vdev, id);
-	}
-
-	return error;
-}
-
-static int vio_device_remove(struct device *dev)
-=======
 
 	if (!drv->probe)
 		return -ENODEV;
@@ -114,17 +94,10 @@ static int vio_device_remove(struct device *dev)
 }
 
 static void vio_device_remove(struct device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vio_dev *vdev = to_vio_dev(dev);
 	struct vio_driver *drv = to_vio_driver(dev->driver);
 
-<<<<<<< HEAD
-	if (drv->remove)
-		return drv->remove(vdev);
-
-	return 1;
-=======
 	if (drv->remove) {
 		/*
 		 * Ideally, we would remove/deallocate tx/rx virqs
@@ -134,7 +107,6 @@ static void vio_device_remove(struct device *dev)
 
 		drv->remove(vdev);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t devspec_show(struct device *dev,
@@ -150,10 +122,7 @@ static ssize_t devspec_show(struct device *dev,
 
 	return sprintf(buf, "%s\n", str);
 }
-<<<<<<< HEAD
-=======
 static DEVICE_ATTR_RO(devspec);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t type_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -161,18 +130,6 @@ static ssize_t type_show(struct device *dev,
 	struct vio_dev *vdev = to_vio_dev(dev);
 	return sprintf(buf, "%s\n", vdev->type);
 }
-<<<<<<< HEAD
-
-static struct device_attribute vio_dev_attrs[] = {
-	__ATTR_RO(devspec),
-	__ATTR_RO(type),
-	__ATTR_NULL
-};
-
-static struct bus_type vio_bus_type = {
-	.name		= "vio",
-	.dev_attrs	= vio_dev_attrs,
-=======
 static DEVICE_ATTR_RO(type);
 
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
@@ -196,7 +153,6 @@ static const struct bus_type vio_bus_type = {
 	.name		= "vio",
 	.dev_groups	= vio_dev_groups,
 	.uevent         = vio_hotplug,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match		= vio_bus_match,
 	.probe		= vio_device_probe,
 	.remove		= vio_device_remove,
@@ -235,11 +191,7 @@ show_pciobppath_attr(struct device *dev, struct device_attribute *attr,
 	vdev = to_vio_dev(dev);
 	dp = vdev->dp;
 
-<<<<<<< HEAD
-	return snprintf (buf, PAGE_SIZE, "%s\n", dp->full_name);
-=======
 	return scnprintf(buf, PAGE_SIZE, "%pOF\n", dp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(obppath, S_IRUSR | S_IRGRP | S_IROTH,
@@ -250,69 +202,12 @@ static struct device_node *cdev_node;
 static struct vio_dev *root_vdev;
 static u64 cdev_cfg_handle;
 
-<<<<<<< HEAD
-static void vio_fill_channel_info(struct mdesc_handle *hp, u64 mp,
-				  struct vio_dev *vdev)
-{
-	u64 a;
-
-	mdesc_for_each_arc(a, hp, mp, MDESC_ARC_TYPE_FWD) {
-		const u64 *chan_id;
-		const u64 *irq;
-		u64 target;
-
-		target = mdesc_arc_target(hp, a);
-
-		irq = mdesc_get_property(hp, target, "tx-ino", NULL);
-		if (irq)
-			vdev->tx_irq = sun4v_build_virq(cdev_cfg_handle, *irq);
-
-		irq = mdesc_get_property(hp, target, "rx-ino", NULL);
-		if (irq)
-			vdev->rx_irq = sun4v_build_virq(cdev_cfg_handle, *irq);
-
-		chan_id = mdesc_get_property(hp, target, "id", NULL);
-		if (chan_id)
-			vdev->channel_id = *chan_id;
-	}
-}
-
-static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
-				      struct device *parent)
-{
-	const char *type, *compat, *bus_id_name;
-	struct device_node *dp;
-	struct vio_dev *vdev;
-	int err, tlen, clen;
-	const u64 *id, *cfg_handle;
-	u64 a;
-
-	type = mdesc_get_property(hp, mp, "device-type", &tlen);
-	if (!type) {
-		type = mdesc_get_property(hp, mp, "name", &tlen);
-		if (!type) {
-			type = mdesc_node_name(hp, mp);
-			tlen = strlen(type) + 1;
-		}
-	}
-	if (tlen > VIO_MAX_TYPE_LEN) {
-		printk(KERN_ERR "VIO: Type string [%s] is too long.\n",
-		       type);
-		return NULL;
-	}
-
-	id = mdesc_get_property(hp, mp, "id", NULL);
-
-	cfg_handle = NULL;
-	mdesc_for_each_arc(a, hp, mp, MDESC_ARC_TYPE_BACK) {
-=======
 static const u64 *vio_cfg_handle(struct mdesc_handle *hp, u64 node)
 {
 	const u64 *cfg_handle = NULL;
 	u64 a;
 
 	mdesc_for_each_arc(a, hp, node, MDESC_ARC_TYPE_BACK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 target;
 
 		target = mdesc_arc_target(hp, a);
@@ -322,23 +217,6 @@ static const u64 *vio_cfg_handle(struct mdesc_handle *hp, u64 node)
 			break;
 	}
 
-<<<<<<< HEAD
-	bus_id_name = type;
-	if (!strcmp(type, "domain-services-port"))
-		bus_id_name = "ds";
-
-	/*
-	 * 20 char is the old driver-core name size limit, which is no more.
-	 * This check can probably be removed after review and possible
-	 * adaption of the vio users name length handling.
-	 */
-	if (strlen(bus_id_name) >= 20 - 4) {
-		printk(KERN_ERR "VIO: bus_id_name [%s] is too long.\n",
-		       bus_id_name);
-		return NULL;
-	}
-
-=======
 	return cfg_handle;
 }
 
@@ -437,7 +315,6 @@ static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 
 	cfg_handle = vio_cfg_handle(hp, mp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compat = mdesc_get_property(hp, mp, "device-type", &clen);
 	if (!compat) {
 		clen = 0;
@@ -461,30 +338,13 @@ static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 		memset(vdev->compat, 0, sizeof(vdev->compat));
 	vdev->compat_len = clen;
 
-<<<<<<< HEAD
-	vdev->channel_id = ~0UL;
-	vdev->tx_irq = ~0;
-	vdev->rx_irq = ~0;
-=======
 	vdev->port_id = ~0UL;
 	vdev->tx_irq = 0;
 	vdev->rx_irq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vio_fill_channel_info(hp, mp, vdev);
 
 	if (!id) {
-<<<<<<< HEAD
-		dev_set_name(&vdev->dev, "%s", bus_id_name);
-		vdev->dev_no = ~(u64)0;
-	} else if (!cfg_handle) {
-		dev_set_name(&vdev->dev, "%s-%llu", bus_id_name, *id);
-		vdev->dev_no = *id;
-	} else {
-		dev_set_name(&vdev->dev, "%s-%llu-%llu", bus_id_name,
-			     *cfg_handle, *id);
-		vdev->dev_no = *cfg_handle;
-=======
 		dev_set_name(&vdev->dev, "%s", type);
 		vdev->dev_no = ~(u64)0;
 	} else if (!cfg_handle) {
@@ -495,7 +355,6 @@ static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 			     *cfg_handle, *id);
 		vdev->dev_no = *cfg_handle;
 		vdev->port_id = *id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	vdev->dev.parent = parent;
@@ -505,27 +364,15 @@ static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 	if (parent == NULL) {
 		dp = cdev_node;
 	} else if (to_vio_dev(parent) == root_vdev) {
-<<<<<<< HEAD
-		dp = of_get_next_child(cdev_node, NULL);
-		while (dp) {
-			if (!strcmp(dp->type, type))
-				break;
-
-			dp = of_get_next_child(cdev_node, dp);
-=======
 		for_each_child_of_node(cdev_node, dp) {
 			if (of_node_is_type(dp, type))
 				break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		dp = to_vio_dev(parent)->dp;
 	}
 	vdev->dp = dp;
 
-<<<<<<< HEAD
-	printk(KERN_INFO "VIO: Adding device %s\n", dev_name(&vdev->dev));
-=======
 	/*
 	 * node_name is NULL for the parent/channel-devices node and
 	 * the parent doesn't require the MD node info.
@@ -546,17 +393,12 @@ static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 
 	pr_info("VIO: Adding device %s (tx_ino = %llx, rx_ino = %llx)\n",
 		dev_name(&vdev->dev), vdev->tx_ino, vdev->rx_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = device_register(&vdev->dev);
 	if (err) {
 		printk(KERN_ERR "VIO: Could not register device %s, err=%d\n",
 		       dev_name(&vdev->dev), err);
-<<<<<<< HEAD
-		kfree(vdev);
-=======
 		put_device(&vdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	if (vdev->dp)
@@ -566,28 +408,6 @@ static struct vio_dev *vio_create_one(struct mdesc_handle *hp, u64 mp,
 	return vdev;
 }
 
-<<<<<<< HEAD
-static void vio_add(struct mdesc_handle *hp, u64 node)
-{
-	(void) vio_create_one(hp, node, &root_vdev->dev);
-}
-
-static int vio_md_node_match(struct device *dev, void *arg)
-{
-	struct vio_dev *vdev = to_vio_dev(dev);
-
-	if (vdev->mp == (u64) arg)
-		return 1;
-
-	return 0;
-}
-
-static void vio_remove(struct mdesc_handle *hp, u64 node)
-{
-	struct device *dev;
-
-	dev = device_find_child(&root_vdev->dev, (void *) node,
-=======
 static void vio_add(struct mdesc_handle *hp, u64 node,
 		    const char *node_name)
 {
@@ -624,18 +444,14 @@ static void vio_remove(struct mdesc_handle *hp, u64 node, const char *node_name)
 	node_data.node = node;
 
 	dev = device_find_child(&root_vdev->dev, (void *)&node_data,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				vio_md_node_match);
 	if (dev) {
 		printk(KERN_INFO "VIO: Removing device %s\n", dev_name(dev));
 
 		device_unregister(dev);
-<<<<<<< HEAD
-=======
 		put_device(dev);
 	} else {
 		pr_err("VIO: %s node not found in MDESC\n", node_name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -650,12 +466,8 @@ static struct mdesc_notifier_client vio_device_notifier = {
  * under "openboot" that we should not mess with as aparently that is
  * reserved exclusively for OBP use.
  */
-<<<<<<< HEAD
-static void vio_add_ds(struct mdesc_handle *hp, u64 node)
-=======
 static void vio_add_ds(struct mdesc_handle *hp, u64 node,
 		       const char *node_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int found;
 	u64 a;
@@ -672,11 +484,7 @@ static void vio_add_ds(struct mdesc_handle *hp, u64 node,
 	}
 
 	if (found)
-<<<<<<< HEAD
-		(void) vio_create_one(hp, node, &root_vdev->dev);
-=======
 		(void) vio_create_one(hp, node, node_name, &root_vdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct mdesc_notifier_client vio_ds_notifier = {
@@ -743,17 +551,10 @@ static int __init vio_init(void)
 
 	cdev_cfg_handle = *cfg_handle;
 
-<<<<<<< HEAD
-	root_vdev = vio_create_one(hp, root, NULL);
-	err = -ENODEV;
-	if (!root_vdev) {
-		printk(KERN_ERR "VIO: Coult not create root device.\n");
-=======
 	root_vdev = vio_create_one(hp, root, NULL, NULL);
 	err = -ENODEV;
 	if (!root_vdev) {
 		printk(KERN_ERR "VIO: Could not create root device.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_release;
 	}
 

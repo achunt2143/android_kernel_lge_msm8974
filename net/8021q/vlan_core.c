@@ -1,35 +1,21 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 #include <linux/if_vlan.h>
 #include <linux/netpoll.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <net/gro.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "vlan.h"
 
 bool vlan_do_receive(struct sk_buff **skbp)
 {
 	struct sk_buff *skb = *skbp;
-<<<<<<< HEAD
-	u16 vlan_id = skb->vlan_tci & VLAN_VID_MASK;
-	struct net_device *vlan_dev;
-	struct vlan_pcpu_stats *rx_stats;
-
-	vlan_dev = vlan_find_dev(skb->dev, vlan_id);
-=======
 	__be16 vlan_proto = skb->vlan_proto;
 	u16 vlan_id = skb_vlan_tag_get_id(skb);
 	struct net_device *vlan_dev;
 	struct vlan_pcpu_stats *rx_stats;
 
 	vlan_dev = vlan_find_dev(skb->dev, vlan_proto, vlan_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vlan_dev)
 		return false;
 
@@ -37,19 +23,6 @@ bool vlan_do_receive(struct sk_buff **skbp)
 	if (unlikely(!skb))
 		return false;
 
-<<<<<<< HEAD
-	skb->dev = vlan_dev;
-	if (skb->pkt_type == PACKET_OTHERHOST) {
-		/* Our lower layer thinks this is not local, let's make sure.
-		 * This allows the VLAN to have a different MAC than the
-		 * underlying device, and still route correctly. */
-		if (!compare_ether_addr(eth_hdr(skb)->h_dest,
-					vlan_dev->dev_addr))
-			skb->pkt_type = PACKET_HOST;
-	}
-
-	if (!(vlan_dev_priv(vlan_dev)->flags & VLAN_FLAG_REORDER_HDR)) {
-=======
 	if (unlikely(!(vlan_dev->flags & IFF_UP))) {
 		kfree_skb(skb);
 		*skbp = NULL;
@@ -68,7 +41,6 @@ bool vlan_do_receive(struct sk_buff **skbp)
 	if (!(vlan_dev_priv(vlan_dev)->flags & VLAN_FLAG_REORDER_HDR) &&
 	    !netif_is_macvlan_port(vlan_dev) &&
 	    !netif_is_bridge_port(vlan_dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int offset = skb->data - skb_mac_header(skb);
 
 		/*
@@ -77,12 +49,8 @@ bool vlan_do_receive(struct sk_buff **skbp)
 		 * original position later
 		 */
 		skb_push(skb, offset);
-<<<<<<< HEAD
-		skb = *skbp = vlan_insert_tag(skb, skb->vlan_tci);
-=======
 		skb = *skbp = vlan_insert_inner_tag(skb, skb->vlan_proto,
 						    skb->vlan_tci, skb->mac_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!skb)
 			return false;
 		skb_pull(skb, offset + VLAN_HLEN);
@@ -90,48 +58,20 @@ bool vlan_do_receive(struct sk_buff **skbp)
 	}
 
 	skb->priority = vlan_get_ingress_priority(vlan_dev, skb->vlan_tci);
-<<<<<<< HEAD
-	skb->vlan_tci = 0;
-=======
 	__vlan_hwaccel_clear_tag(skb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rx_stats = this_cpu_ptr(vlan_dev_priv(vlan_dev)->vlan_pcpu_stats);
 
 	u64_stats_update_begin(&rx_stats->syncp);
-<<<<<<< HEAD
-	rx_stats->rx_packets++;
-	rx_stats->rx_bytes += skb->len;
-	if (skb->pkt_type == PACKET_MULTICAST)
-		rx_stats->rx_multicast++;
-=======
 	u64_stats_inc(&rx_stats->rx_packets);
 	u64_stats_add(&rx_stats->rx_bytes, skb->len);
 	if (skb->pkt_type == PACKET_MULTICAST)
 		u64_stats_inc(&rx_stats->rx_multicast);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64_stats_update_end(&rx_stats->syncp);
 
 	return true;
 }
 
-<<<<<<< HEAD
-/* Must be invoked with rcu_read_lock or with RTNL. */
-struct net_device *__vlan_find_dev_deep(struct net_device *real_dev,
-					u16 vlan_id)
-{
-	struct vlan_info *vlan_info = rcu_dereference_rtnl(real_dev->vlan_info);
-
-	if (vlan_info) {
-		return vlan_group_get_device(&vlan_info->grp, vlan_id);
-	} else {
-		/*
-		 * Bonding slaves do not have grp assigned to themselves.
-		 * Grp is assigned to bonding master instead.
-		 */
-		if (netif_is_bond_slave(real_dev))
-			return __vlan_find_dev_deep(real_dev->master, vlan_id);
-=======
 /* Must be invoked with rcu_read_lock. */
 struct net_device *__vlan_find_dev_deep_rcu(struct net_device *dev,
 					__be16 vlan_proto, u16 vlan_id)
@@ -153,18 +93,10 @@ struct net_device *__vlan_find_dev_deep_rcu(struct net_device *dev,
 		if (upper_dev)
 			return __vlan_find_dev_deep_rcu(upper_dev,
 						    vlan_proto, vlan_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NULL;
 }
-<<<<<<< HEAD
-EXPORT_SYMBOL(__vlan_find_dev_deep);
-
-struct net_device *vlan_dev_real_dev(const struct net_device *dev)
-{
-	return vlan_dev_priv(dev)->real_dev;
-=======
 EXPORT_SYMBOL(__vlan_find_dev_deep_rcu);
 
 struct net_device *vlan_dev_real_dev(const struct net_device *dev)
@@ -175,7 +107,6 @@ struct net_device *vlan_dev_real_dev(const struct net_device *dev)
 		ret = vlan_dev_priv(ret)->real_dev;
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(vlan_dev_real_dev);
 
@@ -185,65 +116,11 @@ u16 vlan_dev_vlan_id(const struct net_device *dev)
 }
 EXPORT_SYMBOL(vlan_dev_vlan_id);
 
-<<<<<<< HEAD
-static struct sk_buff *vlan_reorder_header(struct sk_buff *skb)
-{
-	if (skb_cow(skb, skb_headroom(skb)) < 0) {
-		kfree_skb(skb);
-		return NULL;
-	}
-
-	memmove(skb->data - ETH_HLEN, skb->data - VLAN_ETH_HLEN, 2 * ETH_ALEN);
-	skb->mac_header += VLAN_HLEN;
-	return skb;
-}
-
-struct sk_buff *vlan_untag(struct sk_buff *skb)
-{
-	struct vlan_hdr *vhdr;
-	u16 vlan_tci;
-
-	if (unlikely(vlan_tx_tag_present(skb))) {
-		/* vlan_tci is already set-up so leave this for another time */
-		return skb;
-	}
-
-	skb = skb_share_check(skb, GFP_ATOMIC);
-	if (unlikely(!skb))
-		goto err_free;
-
-	if (unlikely(!pskb_may_pull(skb, VLAN_HLEN)))
-		goto err_free;
-
-	vhdr = (struct vlan_hdr *) skb->data;
-	vlan_tci = ntohs(vhdr->h_vlan_TCI);
-	__vlan_hwaccel_put_tag(skb, vlan_tci);
-
-	skb_pull_rcsum(skb, VLAN_HLEN);
-	vlan_set_encap_proto(skb, vhdr);
-
-	skb = vlan_reorder_header(skb);
-	if (unlikely(!skb))
-		goto err_free;
-
-	skb_reset_network_header(skb);
-	skb_reset_transport_header(skb);
-	skb_reset_mac_len(skb);
-
-	return skb;
-
-err_free:
-	kfree_skb(skb);
-	return NULL;
-}
-
-=======
 __be16 vlan_dev_vlan_proto(const struct net_device *dev)
 {
 	return vlan_dev_priv(dev)->vlan_proto;
 }
 EXPORT_SYMBOL(vlan_dev_vlan_proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * vlan info and vid list
@@ -251,18 +128,11 @@ EXPORT_SYMBOL(vlan_dev_vlan_proto);
 
 static void vlan_group_free(struct vlan_group *grp)
 {
-<<<<<<< HEAD
-	int i;
-
-	for (i = 0; i < VLAN_GROUP_ARRAY_SPLIT_PARTS; i++)
-		kfree(grp->vlan_devices_arrays[i]);
-=======
 	int i, j;
 
 	for (i = 0; i < VLAN_PROTO_NUM; i++)
 		for (j = 0; j < VLAN_GROUP_ARRAY_SPLIT_PARTS; j++)
 			kfree(grp->vlan_devices_arrays[i][j]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vlan_info_free(struct vlan_info *vlan_info)
@@ -291,14 +161,6 @@ static struct vlan_info *vlan_info_alloc(struct net_device *dev)
 
 struct vlan_vid_info {
 	struct list_head list;
-<<<<<<< HEAD
-	unsigned short vid;
-	int refcount;
-};
-
-static struct vlan_vid_info *vlan_vid_info_get(struct vlan_info *vlan_info,
-					       unsigned short vid)
-=======
 	__be16 proto;
 	u16 vid;
 	int refcount;
@@ -317,63 +179,29 @@ static bool vlan_hw_filter_capable(const struct net_device *dev, __be16 proto)
 
 static struct vlan_vid_info *vlan_vid_info_get(struct vlan_info *vlan_info,
 					       __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vlan_vid_info *vid_info;
 
 	list_for_each_entry(vid_info, &vlan_info->vid_list, list) {
-<<<<<<< HEAD
-		if (vid_info->vid == vid)
-=======
 		if (vid_info->proto == proto && vid_info->vid == vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return vid_info;
 	}
 	return NULL;
 }
 
-<<<<<<< HEAD
-static struct vlan_vid_info *vlan_vid_info_alloc(unsigned short vid)
-=======
 static struct vlan_vid_info *vlan_vid_info_alloc(__be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vlan_vid_info *vid_info;
 
 	vid_info = kzalloc(sizeof(struct vlan_vid_info), GFP_KERNEL);
 	if (!vid_info)
 		return NULL;
-<<<<<<< HEAD
-=======
 	vid_info->proto = proto;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vid_info->vid = vid;
 
 	return vid_info;
 }
 
-<<<<<<< HEAD
-static int __vlan_vid_add(struct vlan_info *vlan_info, unsigned short vid,
-			  struct vlan_vid_info **pvid_info)
-{
-	struct net_device *dev = vlan_info->real_dev;
-	const struct net_device_ops *ops = dev->netdev_ops;
-	struct vlan_vid_info *vid_info;
-	int err;
-
-	vid_info = vlan_vid_info_alloc(vid);
-	if (!vid_info)
-		return -ENOMEM;
-
-	if ((dev->features & NETIF_F_HW_VLAN_FILTER) &&
-	    ops->ndo_vlan_rx_add_vid) {
-		err =  ops->ndo_vlan_rx_add_vid(dev, vid);
-		if (err) {
-			kfree(vid_info);
-			return err;
-		}
-	}
-=======
 static int vlan_add_rx_filter_info(struct net_device *dev, __be16 proto, u16 vid)
 {
 	if (!vlan_hw_filter_capable(dev, proto))
@@ -481,18 +309,13 @@ static int __vlan_vid_add(struct vlan_info *vlan_info, __be16 proto, u16 vid,
 		return err;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&vid_info->list, &vlan_info->vid_list);
 	vlan_info->nr_vids++;
 	*pvid_info = vid_info;
 	return 0;
 }
 
-<<<<<<< HEAD
-int vlan_vid_add(struct net_device *dev, unsigned short vid)
-=======
 int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vlan_info *vlan_info;
 	struct vlan_vid_info *vid_info;
@@ -508,15 +331,9 @@ int vlan_vid_add(struct net_device *dev, __be16 proto, u16 vid)
 			return -ENOMEM;
 		vlan_info_created = true;
 	}
-<<<<<<< HEAD
-	vid_info = vlan_vid_info_get(vlan_info, vid);
-	if (!vid_info) {
-		err = __vlan_vid_add(vlan_info, vid, &vid_info);
-=======
 	vid_info = vlan_vid_info_get(vlan_info, proto, vid);
 	if (!vid_info) {
 		err = __vlan_vid_add(vlan_info, proto, vid, &vid_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out_free_vlan_info;
 	}
@@ -538,20 +355,6 @@ static void __vlan_vid_del(struct vlan_info *vlan_info,
 			   struct vlan_vid_info *vid_info)
 {
 	struct net_device *dev = vlan_info->real_dev;
-<<<<<<< HEAD
-	const struct net_device_ops *ops = dev->netdev_ops;
-	unsigned short vid = vid_info->vid;
-	int err;
-
-	if ((dev->features & NETIF_F_HW_VLAN_FILTER) &&
-	     ops->ndo_vlan_rx_kill_vid) {
-		err = ops->ndo_vlan_rx_kill_vid(dev, vid);
-		if (err) {
-			pr_warn("failed to kill vid %d for device %s\n",
-				vid, dev->name);
-		}
-	}
-=======
 	__be16 proto = vid_info->proto;
 	u16 vid = vid_info->vid;
 	int err;
@@ -560,17 +363,12 @@ static void __vlan_vid_del(struct vlan_info *vlan_info,
 	if (err && dev->reg_state != NETREG_UNREGISTERING)
 		netdev_warn(dev, "failed to kill vid %04x/%d\n", proto, vid);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&vid_info->list);
 	kfree(vid_info);
 	vlan_info->nr_vids--;
 }
 
-<<<<<<< HEAD
-void vlan_vid_del(struct net_device *dev, unsigned short vid)
-=======
 void vlan_vid_del(struct net_device *dev, __be16 proto, u16 vid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vlan_info *vlan_info;
 	struct vlan_vid_info *vid_info;
@@ -581,11 +379,7 @@ void vlan_vid_del(struct net_device *dev, __be16 proto, u16 vid)
 	if (!vlan_info)
 		return;
 
-<<<<<<< HEAD
-	vid_info = vlan_vid_info_get(vlan_info, vid);
-=======
 	vid_info = vlan_vid_info_get(vlan_info, proto, vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vid_info)
 		return;
 	vid_info->refcount--;
@@ -613,13 +407,9 @@ int vlan_vids_add_by_dev(struct net_device *dev,
 		return 0;
 
 	list_for_each_entry(vid_info, &vlan_info->vid_list, list) {
-<<<<<<< HEAD
-		err = vlan_vid_add(dev, vid_info->vid);
-=======
 		if (!vlan_hw_filter_capable(by_dev, vid_info->proto))
 			continue;
 		err = vlan_vid_add(dev, vid_info->proto, vid_info->vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto unwind;
 	}
@@ -629,13 +419,9 @@ unwind:
 	list_for_each_entry_continue_reverse(vid_info,
 					     &vlan_info->vid_list,
 					     list) {
-<<<<<<< HEAD
-		vlan_vid_del(dev, vid_info->vid);
-=======
 		if (!vlan_hw_filter_capable(by_dev, vid_info->proto))
 			continue;
 		vlan_vid_del(dev, vid_info->proto, vid_info->vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -654,12 +440,6 @@ void vlan_vids_del_by_dev(struct net_device *dev,
 	if (!vlan_info)
 		return;
 
-<<<<<<< HEAD
-	list_for_each_entry(vid_info, &vlan_info->vid_list, list)
-		vlan_vid_del(dev, vid_info->vid);
-}
-EXPORT_SYMBOL(vlan_vids_del_by_dev);
-=======
 	list_for_each_entry(vid_info, &vlan_info->vid_list, list) {
 		if (!vlan_hw_filter_capable(by_dev, vid_info->proto))
 			continue;
@@ -778,4 +558,3 @@ static int __init vlan_offload_init(void)
 }
 
 fs_initcall(vlan_offload_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-OUTPUT_ARCH(powerpc:common)
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #include <asm-generic/vmlinux.lds.h>
 
@@ -9,7 +6,6 @@ OUTPUT_ARCH(powerpc:common64)
 #else
 OUTPUT_ARCH(powerpc:common)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENTRY(_zimage_start)
 EXTERN(_zimage_start)
 SECTIONS
@@ -27,13 +23,9 @@ SECTIONS
     *(.rodata*)
     *(.data*)
     *(.sdata*)
-<<<<<<< HEAD
-    *(.got2)
-=======
 #ifndef CONFIG_PPC64_BOOT_WRAPPER
     *(.got2)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   }
   .dynsym : { *(.dynsym) }
   .dynstr : { *(.dynstr) }
@@ -42,11 +34,6 @@ SECTIONS
     __dynamic_start = .;
     *(.dynamic)
   }
-<<<<<<< HEAD
-  .hash : { *(.hash) }
-  .interp : { *(.interp) }
-  .rela.dyn : { *(.rela*) }
-=======
 
 #ifdef CONFIG_PPC64_BOOT_WRAPPER
   .got : ALIGN(256)
@@ -64,7 +51,6 @@ SECTIONS
 #endif
     *(.rela*)
   }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   . = ALIGN(8);
   .kernel:dtb :
@@ -91,8 +77,6 @@ SECTIONS
   }
 
   . = ALIGN(4096);
-<<<<<<< HEAD
-=======
   .kernel:esm_blob :
   {
     _esm_blob_start =  .;
@@ -101,7 +85,6 @@ SECTIONS
   }
 
   . = ALIGN(4096);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   .bss       :
   {
     _edata  =  .;

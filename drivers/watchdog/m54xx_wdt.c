@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/watchdog/m54xx_wdt.c
  *
@@ -15,12 +12,6 @@
  *  Copyright 2004 (c) MontaVista, Software, Inc.
  *  Based on sa1100 driver, Copyright (C) 2000 Oleg Drokin <green@crimea.edu>
  *
-<<<<<<< HEAD
- * This file is licensed under  the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -36,10 +27,7 @@
 #include <linux/bitops.h>
 #include <linux/ioport.h>
 #include <linux/uaccess.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/coldfire.h>
 #include <asm/m54xxsim.h>
@@ -57,29 +45,17 @@ static void wdt_enable(void)
 	unsigned int gms0;
 
 	/* preserve GPIO usage, if any */
-<<<<<<< HEAD
-	gms0 = __raw_readl(MCF_MBAR + MCF_GPT_GMS0);
-=======
 	gms0 = __raw_readl(MCF_GPT_GMS0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (gms0 & MCF_GPT_GMS_TMS_GPIO)
 		gms0 &= (MCF_GPT_GMS_TMS_GPIO | MCF_GPT_GMS_GPIO_MASK
 							| MCF_GPT_GMS_OD);
 	else
 		gms0 = MCF_GPT_GMS_TMS_GPIO | MCF_GPT_GMS_OD;
-<<<<<<< HEAD
-	__raw_writel(gms0, MCF_MBAR + MCF_GPT_GMS0);
-	__raw_writel(MCF_GPT_GCIR_PRE(heartbeat*(MCF_BUSCLK/0xffff)) |
-			MCF_GPT_GCIR_CNT(0xffff), MCF_MBAR + MCF_GPT_GCIR0);
-	gms0 |= MCF_GPT_GMS_OCPW(0xA5) | MCF_GPT_GMS_WDEN | MCF_GPT_GMS_CE;
-	__raw_writel(gms0, MCF_MBAR + MCF_GPT_GMS0);
-=======
 	__raw_writel(gms0, MCF_GPT_GMS0);
 	__raw_writel(MCF_GPT_GCIR_PRE(heartbeat*(MCF_BUSCLK/0xffff)) |
 			MCF_GPT_GCIR_CNT(0xffff), MCF_GPT_GCIR0);
 	gms0 |= MCF_GPT_GMS_OCPW(0xA5) | MCF_GPT_GMS_WDEN | MCF_GPT_GMS_CE;
 	__raw_writel(gms0, MCF_GPT_GMS0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wdt_disable(void)
@@ -87,30 +63,18 @@ static void wdt_disable(void)
 	unsigned int gms0;
 
 	/* disable watchdog */
-<<<<<<< HEAD
-	gms0 = __raw_readl(MCF_MBAR + MCF_GPT_GMS0);
-	gms0 &= ~(MCF_GPT_GMS_WDEN | MCF_GPT_GMS_CE);
-	__raw_writel(gms0, MCF_MBAR + MCF_GPT_GMS0);
-=======
 	gms0 = __raw_readl(MCF_GPT_GMS0);
 	gms0 &= ~(MCF_GPT_GMS_WDEN | MCF_GPT_GMS_CE);
 	__raw_writel(gms0, MCF_GPT_GMS0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wdt_keepalive(void)
 {
 	unsigned int gms0;
 
-<<<<<<< HEAD
-	gms0 = __raw_readl(MCF_MBAR + MCF_GPT_GMS0);
-	gms0 |= MCF_GPT_GMS_OCPW(0xA5);
-	__raw_writel(gms0, MCF_MBAR + MCF_GPT_GMS0);
-=======
 	gms0 = __raw_readl(MCF_GPT_GMS0);
 	gms0 |= MCF_GPT_GMS_OCPW(0xA5);
 	__raw_writel(gms0, MCF_GPT_GMS0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int m54xx_wdt_open(struct inode *inode, struct file *file)
@@ -120,11 +84,7 @@ static int m54xx_wdt_open(struct inode *inode, struct file *file)
 
 	clear_bit(WDT_OK_TO_CLOSE, &wdt_status);
 	wdt_enable();
-<<<<<<< HEAD
-	return nonseekable_open(inode, file);
-=======
 	return stream_open(inode, file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t m54xx_wdt_write(struct file *file, const char *data,
@@ -193,11 +153,7 @@ static long m54xx_wdt_ioctl(struct file *file, unsigned int cmd,
 
 		heartbeat = time;
 		wdt_enable();
-<<<<<<< HEAD
-		/* Fall through */
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case WDIOC_GETTIMEOUT:
 		ret = put_user(heartbeat, (int *)arg);
@@ -226,10 +182,7 @@ static const struct file_operations m54xx_wdt_fops = {
 	.llseek		= no_llseek,
 	.write		= m54xx_wdt_write,
 	.unlocked_ioctl	= m54xx_wdt_ioctl,
-<<<<<<< HEAD
-=======
 	.compat_ioctl	= compat_ptr_ioctl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= m54xx_wdt_open,
 	.release	= m54xx_wdt_release,
 };
@@ -242,12 +195,7 @@ static struct miscdevice m54xx_wdt_miscdev = {
 
 static int __init m54xx_wdt_init(void)
 {
-<<<<<<< HEAD
-	if (!request_mem_region(MCF_MBAR + MCF_GPT_GCIR0, 4,
-						"Coldfire M54xx Watchdog")) {
-=======
 	if (!request_mem_region(MCF_GPT_GCIR0, 4, "Coldfire M54xx Watchdog")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_warn("I/O region busy\n");
 		return -EBUSY;
 	}
@@ -259,11 +207,7 @@ static int __init m54xx_wdt_init(void)
 static void __exit m54xx_wdt_exit(void)
 {
 	misc_deregister(&m54xx_wdt_miscdev);
-<<<<<<< HEAD
-	release_mem_region(MCF_MBAR + MCF_GPT_GCIR0, 4);
-=======
 	release_mem_region(MCF_GPT_GCIR0, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(m54xx_wdt_init);
@@ -279,7 +223,3 @@ module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started");
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,8 +1,4 @@
 /*
-<<<<<<< HEAD
- * linux/drivers/i2c/chips/twl4030-power.c
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Handle TWL4030 Power initialization
  *
@@ -29,24 +25,15 @@
 
 #include <linux/module.h>
 #include <linux/pm.h>
-<<<<<<< HEAD
-#include <linux/i2c/twl.h>
-#include <linux/platform_device.h>
-=======
 #include <linux/mfd/twl.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
 #include <linux/of.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-types.h>
 
 static u8 twl4030_start_script_address = 0x2b;
 
-<<<<<<< HEAD
-#define PWR_P1_SW_EVENTS	0x10
-#define PWR_DEVOFF		(1 << 0)
-=======
 /* Register bits for P1, P2 and P3_SW_EVENTS */
 #define PWR_STOPON_PRWON	BIT(6)
 #define PWR_STOPON_SYSEN	BIT(5)
@@ -65,7 +52,6 @@ static u8 twl4030_start_script_address = 0x2b;
 #define STARTON_CHG		BIT(1)	/* Start on charger */
 #define STARTON_PWON		BIT(0)	/* Start on PWRON button */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SEQ_OFFSYNC		(1 << 0)
 
 #define PHY_TO_OFF_PM_MASTER(p)		(p - 0x36)
@@ -82,13 +68,6 @@ static u8 twl4030_start_script_address = 0x2b;
 #define R_CFG_P2_TRANSITION	PHY_TO_OFF_PM_MASTER(0x37)
 #define R_CFG_P3_TRANSITION	PHY_TO_OFF_PM_MASTER(0x38)
 
-<<<<<<< HEAD
-#define LVL_WAKEUP	0x08
-
-#define ENABLE_WARMRESET (1<<4)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define END_OF_SCRIPT		0x3f
 
 #define R_SEQ_ADD_A2S		PHY_TO_OFF_PM_MASTER(0x55)
@@ -158,18 +137,6 @@ static u8 res_config_addrs[] = {
 	[RES_MAIN_REF]	= 0x94,
 };
 
-<<<<<<< HEAD
-static int __devinit twl4030_write_script_byte(u8 address, u8 byte)
-{
-	int err;
-
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, address,
-				R_MEMORY_ADDRESS);
-	if (err)
-		goto out;
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, byte,
-				R_MEMORY_DATA);
-=======
 /*
  * Usable values for .remap_sleep and .remap_off
  * Based on table "5.3.3 Resource Operating modes"
@@ -225,16 +192,11 @@ static int twl4030_write_script_byte(u8 address, u8 byte)
 	if (err)
 		goto out;
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, byte, R_MEMORY_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_write_script_ins(u8 address, u16 pmb_message,
-=======
 static int twl4030_write_script_ins(u8 address, u16 pmb_message,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   u8 delay, u8 next)
 {
 	int err;
@@ -254,17 +216,10 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_write_script(u8 address, struct twl4030_ins *script,
-				       int len)
-{
-	int err;
-=======
 static int twl4030_write_script(u8 address, struct twl4030_ins *script,
 				       int len)
 {
 	int err = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (; len; len--, address++, script++) {
 		if (len == 1) {
@@ -286,102 +241,41 @@ static int twl4030_write_script(u8 address, struct twl4030_ins *script,
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_config_wakeup3_sequence(u8 address)
-=======
 static int twl4030_config_wakeup3_sequence(u8 address)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	u8 data;
 
 	/* Set SLEEP to ACTIVE SEQ address for P3 */
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, address,
-				R_SEQ_ADD_S2A3);
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_S2A3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
 	/* P3 LVL_WAKEUP should be on LEVEL */
-<<<<<<< HEAD
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &data,
-				R_P3_SW_EVENTS);
-	if (err)
-		goto out;
-	data |= LVL_WAKEUP;
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, data,
-				R_P3_SW_EVENTS);
-=======
 	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &data, R_P3_SW_EVENTS);
 	if (err)
 		goto out;
 	data |= PWR_LVL_WAKEUP;
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, data, R_P3_SW_EVENTS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (err)
 		pr_err("TWL4030 wakeup sequence for P3 config error\n");
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_config_wakeup12_sequence(u8 address)
-=======
 static int
 twl4030_config_wakeup12_sequence(const struct twl4030_power_data *pdata,
 				 u8 address)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	u8 data;
 
 	/* Set SLEEP to ACTIVE SEQ address for P1 and P2 */
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, address,
-				R_SEQ_ADD_S2A12);
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_S2A12);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
 	/* P1/P2 LVL_WAKEUP should be on LEVEL */
-<<<<<<< HEAD
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &data,
-				R_P1_SW_EVENTS);
-	if (err)
-		goto out;
-
-	data |= LVL_WAKEUP;
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, data,
-				R_P1_SW_EVENTS);
-	if (err)
-		goto out;
-
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &data,
-				R_P2_SW_EVENTS);
-	if (err)
-		goto out;
-
-	data |= LVL_WAKEUP;
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, data,
-				R_P2_SW_EVENTS);
-	if (err)
-		goto out;
-
-	if (machine_is_omap_3430sdp() || machine_is_omap_ldp()) {
-		/* Disabling AC charger effect on sleep-active transitions */
-		err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &data,
-					R_CFG_P1_TRANSITION);
-		if (err)
-			goto out;
-		data &= ~(1<<1);
-		err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, data ,
-					R_CFG_P1_TRANSITION);
-=======
 	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &data, R_P1_SW_EVENTS);
 	if (err)
 		goto out;
@@ -410,7 +304,6 @@ twl4030_config_wakeup12_sequence(const struct twl4030_power_data *pdata,
 		data &= ~STARTON_CHG;
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, data,
 				       R_CFG_P1_TRANSITION);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 	}
@@ -422,21 +315,12 @@ out:
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_config_sleep_sequence(u8 address)
-=======
 static int twl4030_config_sleep_sequence(u8 address)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
 	/* Set ACTIVE to SLEEP SEQ address in T2 memory*/
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, address,
-				R_SEQ_ADD_A2S);
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_A2S);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err)
 		pr_err("TWL4030 sleep sequence config error\n");
@@ -444,58 +328,17 @@ static int twl4030_config_sleep_sequence(u8 address)
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_config_warmreset_sequence(u8 address)
-=======
 static int twl4030_config_warmreset_sequence(u8 address)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	u8 rd_data;
 
 	/* Set WARM RESET SEQ address for P1 */
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, address,
-				R_SEQ_ADD_WARM);
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, address, R_SEQ_ADD_WARM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
 	/* P1/P2/P3 enable WARMRESET */
-<<<<<<< HEAD
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &rd_data,
-				R_P1_SW_EVENTS);
-	if (err)
-		goto out;
-
-	rd_data |= ENABLE_WARMRESET;
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, rd_data,
-				R_P1_SW_EVENTS);
-	if (err)
-		goto out;
-
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &rd_data,
-				R_P2_SW_EVENTS);
-	if (err)
-		goto out;
-
-	rd_data |= ENABLE_WARMRESET;
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, rd_data,
-				R_P2_SW_EVENTS);
-	if (err)
-		goto out;
-
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &rd_data,
-				R_P3_SW_EVENTS);
-	if (err)
-		goto out;
-
-	rd_data |= ENABLE_WARMRESET;
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, rd_data,
-				R_P3_SW_EVENTS);
-=======
 	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &rd_data, R_P1_SW_EVENTS);
 	if (err)
 		goto out;
@@ -520,18 +363,13 @@ static int twl4030_config_warmreset_sequence(u8 address)
 
 	rd_data |= PWR_ENABLE_WARMRESET;
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, rd_data, R_P3_SW_EVENTS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (err)
 		pr_err("TWL4030 warmreset seq config error\n");
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devinit twl4030_configure_resource(struct twl4030_resconfig *rconfig)
-=======
 static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rconfig_addr;
 	int err;
@@ -548,11 +386,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 	rconfig_addr = res_config_addrs[rconfig->resource];
 
 	/* Set resource group */
-<<<<<<< HEAD
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_RECEIVER, &grp,
-=======
 	err = twl_i2c_read_u8(TWL_MODULE_PM_RECEIVER, &grp,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      rconfig_addr + DEV_GRP_OFFSET);
 	if (err) {
 		pr_err("TWL4030 Resource %d group could not be read\n",
@@ -563,11 +397,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 	if (rconfig->devgroup != TWL4030_RESCONFIG_UNDEF) {
 		grp &= ~DEV_GRP_MASK;
 		grp |= rconfig->devgroup << DEV_GRP_SHIFT;
-<<<<<<< HEAD
-		err = twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-=======
 		err = twl_i2c_write_u8(TWL_MODULE_PM_RECEIVER,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       grp, rconfig_addr + DEV_GRP_OFFSET);
 		if (err < 0) {
 			pr_err("TWL4030 failed to program devgroup\n");
@@ -576,11 +406,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 	}
 
 	/* Set resource types */
-<<<<<<< HEAD
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_RECEIVER, &type,
-=======
 	err = twl_i2c_read_u8(TWL_MODULE_PM_RECEIVER, &type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rconfig_addr + TYPE_OFFSET);
 	if (err < 0) {
 		pr_err("TWL4030 Resource %d type could not be read\n",
@@ -598,11 +424,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 		type |= rconfig->type2 << TYPE2_SHIFT;
 	}
 
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_RECEIVER,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				type, rconfig_addr + TYPE_OFFSET);
 	if (err < 0) {
 		pr_err("TWL4030 failed to program resource type\n");
@@ -610,11 +432,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 	}
 
 	/* Set remap states */
-<<<<<<< HEAD
-	err = twl_i2c_read_u8(TWL4030_MODULE_PM_RECEIVER, &remap,
-=======
 	err = twl_i2c_read_u8(TWL_MODULE_PM_RECEIVER, &remap,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      rconfig_addr + REMAP_OFFSET);
 	if (err < 0) {
 		pr_err("TWL4030 Resource %d remap could not be read\n",
@@ -632,11 +450,7 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 		remap |= rconfig->remap_sleep << SLEEP_STATE_SHIFT;
 	}
 
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_RECEIVER,
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_RECEIVER,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       remap,
 			       rconfig_addr + REMAP_OFFSET);
 	if (err < 0) {
@@ -647,14 +461,9 @@ static int twl4030_configure_resource(struct twl4030_resconfig *rconfig)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit load_twl4030_script(struct twl4030_script *tscript,
-	       u8 address)
-=======
 static int load_twl4030_script(const struct twl4030_power_data *pdata,
 			       struct twl4030_script *tscript,
 			       u8 address)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	static int order;
@@ -675,9 +484,6 @@ static int load_twl4030_script(const struct twl4030_power_data *pdata,
 			goto out;
 	}
 	if (tscript->flags & TWL4030_WAKEUP12_SCRIPT) {
-<<<<<<< HEAD
-		err = twl4030_config_wakeup12_sequence(address);
-=======
 		/* Reset any existing sleep script to avoid hangs on reboot */
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, END_OF_SCRIPT,
 				       R_SEQ_ADD_A2S);
@@ -685,7 +491,6 @@ static int load_twl4030_script(const struct twl4030_power_data *pdata,
 			goto out;
 
 		err = twl4030_config_wakeup12_sequence(pdata, address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 		order = 1;
@@ -697,13 +502,7 @@ static int load_twl4030_script(const struct twl4030_power_data *pdata,
 	}
 	if (tscript->flags & TWL4030_SLEEP_SCRIPT) {
 		if (!order)
-<<<<<<< HEAD
-			pr_warning("TWL4030: Bad order of scripts (sleep "\
-					"script before wakeup) Leads to boot"\
-					"failure on some boards\n");
-=======
 			pr_warn("TWL4030: Bad order of scripts (sleep script before wakeup) Leads to boot failure on some boards\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = twl4030_config_sleep_sequence(address);
 	}
 out:
@@ -714,92 +513,53 @@ int twl4030_remove_script(u8 flags)
 {
 	int err = 0;
 
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER,
-			TWL4030_PM_MASTER_KEY_CFG1,
-			TWL4030_PM_MASTER_PROTECT_KEY);
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, TWL4030_PM_MASTER_KEY_CFG1,
 			       TWL4030_PM_MASTER_PROTECT_KEY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		pr_err("twl4030: unable to unlock PROTECT_KEY\n");
 		return err;
 	}
 
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER,
-			TWL4030_PM_MASTER_KEY_CFG2,
-			TWL4030_PM_MASTER_PROTECT_KEY);
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, TWL4030_PM_MASTER_KEY_CFG2,
 			       TWL4030_PM_MASTER_PROTECT_KEY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		pr_err("twl4030: unable to unlock PROTECT_KEY\n");
 		return err;
 	}
 
 	if (flags & TWL4030_WRST_SCRIPT) {
-<<<<<<< HEAD
-		err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, END_OF_SCRIPT,
-				R_SEQ_ADD_WARM);
-=======
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, END_OF_SCRIPT,
 				       R_SEQ_ADD_WARM);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 	}
 	if (flags & TWL4030_WAKEUP12_SCRIPT) {
-<<<<<<< HEAD
-		err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, END_OF_SCRIPT,
-				R_SEQ_ADD_S2A12);
-=======
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, END_OF_SCRIPT,
 				       R_SEQ_ADD_S2A12);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 	}
 	if (flags & TWL4030_WAKEUP3_SCRIPT) {
-<<<<<<< HEAD
-		err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, END_OF_SCRIPT,
-				R_SEQ_ADD_S2A3);
-=======
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, END_OF_SCRIPT,
 				       R_SEQ_ADD_S2A3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 	}
 	if (flags & TWL4030_SLEEP_SCRIPT) {
-<<<<<<< HEAD
-		err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, END_OF_SCRIPT,
-				R_SEQ_ADD_A2S);
-=======
 		err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, END_OF_SCRIPT,
 				       R_SEQ_ADD_A2S);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 	}
 
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, 0,
-			TWL4030_PM_MASTER_PROTECT_KEY);
-=======
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, 0,
 			       TWL4030_PM_MASTER_PROTECT_KEY);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		pr_err("TWL4030 Unable to relock registers\n");
 
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int
 twl4030_power_configure_scripts(const struct twl4030_power_data *pdata)
 {
@@ -894,7 +654,6 @@ relock:
 				TWL4030_PM_MASTER_PROTECT_KEY);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * In master mode, start the power off sequence.
  * After a successful execution, TWL shuts down the power to the SoC
@@ -904,57 +663,17 @@ void twl4030_power_off(void)
 {
 	int err;
 
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, PWR_DEVOFF,
-=======
 	/* Disable start on charger or VBUS as it can break poweroff */
 	err = twl4030_starton_mask_and_set(STARTON_VBUS | STARTON_CHG, 0);
 	if (err)
 		pr_err("TWL4030 Unable to configure start-up\n");
 
 	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, PWR_DEVOFF,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       TWL4030_PM_MASTER_P1_SW_EVENTS);
 	if (err)
 		pr_err("TWL4030 Unable to power off\n");
 }
 
-<<<<<<< HEAD
-void __devinit twl4030_power_init(struct twl4030_power_data *twl4030_scripts)
-{
-	int err = 0;
-	int i;
-	struct twl4030_resconfig *resconfig;
-	u8 val, address = twl4030_start_script_address;
-
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER,
-			TWL4030_PM_MASTER_KEY_CFG1,
-			TWL4030_PM_MASTER_PROTECT_KEY);
-	if (err)
-		goto unlock;
-
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER,
-			TWL4030_PM_MASTER_KEY_CFG2,
-			TWL4030_PM_MASTER_PROTECT_KEY);
-	if (err)
-		goto unlock;
-
-	for (i = 0; i < twl4030_scripts->num; i++) {
-		err = load_twl4030_script(twl4030_scripts->scripts[i], address);
-		if (err)
-			goto load;
-		address += twl4030_scripts->scripts[i]->size;
-	}
-
-	resconfig = twl4030_scripts->resource_config;
-	if (resconfig) {
-		while (resconfig->resource) {
-			err = twl4030_configure_resource(resconfig);
-			if (err)
-				goto resource;
-			resconfig++;
-
-=======
 static bool twl4030_power_use_poweroff(const struct twl4030_power_data *pdata,
 					struct device_node *node)
 {
@@ -1200,23 +919,10 @@ static int twl4030_power_probe(struct platform_device *pdev)
 		if (err) {
 			pr_err("TWL4030 failed to configure resource\n");
 			goto relock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Board has to be wired properly to use this feature */
-<<<<<<< HEAD
-	if (twl4030_scripts->use_poweroff && !pm_power_off) {
-		/* Default for SEQ_OFFSYNC is set, lets ensure this */
-		err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &val,
-				      TWL4030_PM_MASTER_CFG_P123_TRANSITION);
-		if (err) {
-			pr_warning("TWL4030 Unable to read registers\n");
-
-		} else if (!(val & SEQ_OFFSYNC)) {
-			val |= SEQ_OFFSYNC;
-			err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, val,
-=======
 	if (twl4030_power_use_poweroff(pdata, node) && !pm_power_off) {
 		/* Default for SEQ_OFFSYNC is set, lets ensure this */
 		err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &val,
@@ -1226,7 +932,6 @@ static int twl4030_power_probe(struct platform_device *pdev)
 		} else if (!(val & SEQ_OFFSYNC)) {
 			val |= SEQ_OFFSYNC;
 			err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, val,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					TWL4030_PM_MASTER_CFG_P123_TRANSITION);
 			if (err) {
 				pr_err("TWL4030 Unable to setup SEQ_OFFSYNC\n");
@@ -1238,27 +943,6 @@ static int twl4030_power_probe(struct platform_device *pdev)
 	}
 
 relock:
-<<<<<<< HEAD
-	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, 0,
-			TWL4030_PM_MASTER_PROTECT_KEY);
-	if (err)
-		pr_err("TWL4030 Unable to relock registers\n");
-	return;
-
-unlock:
-	if (err)
-		pr_err("TWL4030 Unable to unlock registers\n");
-	return;
-load:
-	if (err)
-		pr_err("TWL4030 failed to load scripts\n");
-	return;
-resource:
-	if (err)
-		pr_err("TWL4030 failed to configure resource\n");
-	return;
-}
-=======
 	err2 = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, 0,
 			       TWL4030_PM_MASTER_PROTECT_KEY);
 	if (err2) {
@@ -1284,4 +968,3 @@ MODULE_AUTHOR("Texas Instruments, Inc.");
 MODULE_DESCRIPTION("Power management for TWL4030");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:twl4030_power");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

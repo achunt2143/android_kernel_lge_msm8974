@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-extern void	pstore_set_kmsg_bytes(int);
-extern void	pstore_get_records(int);
-extern int	pstore_mkfile(enum pstore_type_id, char *psname, u64 id,
-			      char *data, size_t size,
-			      struct timespec time, struct pstore_info *psi);
-extern int	pstore_is_mounted(void);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __PSTORE_INTERNAL_H__
 #define __PSTORE_INTERNAL_H__
@@ -58,4 +50,3 @@ int __init	pstore_init_fs(void);
 void __exit	pstore_exit_fs(void);
 
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

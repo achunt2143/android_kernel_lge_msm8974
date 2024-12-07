@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 	usa28msg.h
 

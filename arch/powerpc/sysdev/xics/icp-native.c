@@ -1,52 +1,28 @@
-<<<<<<< HEAD
-/*
- * Copyright 2011 IBM Corporation.
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2011 IBM Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/irq.h>
-<<<<<<< HEAD
-=======
 #include <linux/irqdomain.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smp.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/cpu.h>
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/spinlock.h>
-#include <linux/module.h>
-
-#include <asm/prom.h>
-=======
 #include <linux/of_address.h>
 #include <linux/spinlock.h>
 #include <linux/module.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/smp.h>
 #include <asm/irq.h>
 #include <asm/errno.h>
 #include <asm/xics.h>
 #include <asm/kvm_ppc.h>
-<<<<<<< HEAD
-=======
 #include <asm/dbell.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct icp_ipl {
 	union {
@@ -72,15 +48,12 @@ static struct icp_ipl __iomem *icp_native_regs[NR_CPUS];
 static inline unsigned int icp_native_get_xirr(void)
 {
 	int cpu = smp_processor_id();
-<<<<<<< HEAD
-=======
 	unsigned int xirr;
 
 	/* Handled an interrupt latched by KVM */
 	xirr = kvmppc_get_xics_latch();
 	if (xirr)
 		return xirr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return in_be32(&icp_native_regs[cpu]->xirr.word);
 }
@@ -111,11 +84,7 @@ static void icp_native_set_cpu_priority(unsigned char cppr)
 	iosync();
 }
 
-<<<<<<< HEAD
-static void icp_native_eoi(struct irq_data *d)
-=======
 void icp_native_eoi(struct irq_data *d)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int hw_irq = (unsigned int)irqd_to_hwirq(d);
 
@@ -151,17 +120,10 @@ static unsigned int icp_native_get_irq(void)
 	unsigned int irq;
 
 	if (vec == XICS_IRQ_SPURIOUS)
-<<<<<<< HEAD
-		return NO_IRQ;
-
-	irq = irq_radix_revmap_lookup(xics_host, vec);
-	if (likely(irq != NO_IRQ)) {
-=======
 		return 0;
 
 	irq = irq_find_mapping(xics_host, vec);
 	if (likely(irq)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xics_push_cppr(vec);
 		return irq;
 	}
@@ -172,22 +134,11 @@ static unsigned int icp_native_get_irq(void)
 	/* We might learn about it later, so EOI it */
 	icp_native_set_xirr(xirr);
 
-<<<<<<< HEAD
-	return NO_IRQ;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SMP
 
-<<<<<<< HEAD
-static void icp_native_cause_ipi(int cpu, unsigned long data)
-{
-	icp_native_set_qirr(cpu, IPI_PRIORITY);
-}
-
-=======
 static void icp_native_cause_ipi(int cpu)
 {
 	kvmppc_set_host_ipi(cpu);
@@ -240,7 +191,6 @@ void icp_native_flush_interrupt(void)
 	icp_native_set_xirr(xirr);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void xics_wake_cpu(int cpu)
 {
 	icp_native_set_qirr(cpu, IPI_PRIORITY);
@@ -251,10 +201,7 @@ static irqreturn_t icp_native_ipi_action(int irq, void *dev_id)
 {
 	int cpu = smp_processor_id();
 
-<<<<<<< HEAD
-=======
 	kvmppc_clear_host_ipi(cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	icp_native_set_qirr(cpu, 0xff);
 
 	return smp_ipi_demux();
@@ -289,32 +236,19 @@ static int __init icp_native_map_one_cpu(int hw_id, unsigned long addr,
 	rname = kasprintf(GFP_KERNEL, "CPU %d [0x%x] Interrupt Presentation",
 			  cpu, hw_id);
 
-<<<<<<< HEAD
-	if (!request_mem_region(addr, size, rname)) {
-		pr_warning("icp_native: Could not reserve ICP MMIO"
-			   " for CPU %d, interrupt server #0x%x\n",
-			   cpu, hw_id);
-=======
 	if (!rname)
 		return -ENOMEM;
 	if (!request_mem_region(addr, size, rname)) {
 		pr_warn("icp_native: Could not reserve ICP MMIO for CPU %d, interrupt server #0x%x\n",
 			cpu, hw_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
 	icp_native_regs[cpu] = ioremap(addr, size);
 	kvmppc_set_xics_phys(cpu, addr);
 	if (!icp_native_regs[cpu]) {
-<<<<<<< HEAD
-		pr_warning("icp_native: Failed ioremap for CPU %d, "
-			   "interrupt server #0x%x, addr %#lx\n",
-			   cpu, hw_id, addr);
-=======
 		pr_warn("icp_native: Failed ioremap for CPU %d, interrupt server #0x%x, addr %#lx\n",
 			cpu, hw_id, addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_mem_region(addr, size);
 		return -ENOMEM;
 	}
@@ -325,15 +259,9 @@ static int __init icp_native_init_one_node(struct device_node *np,
 					   unsigned int *indx)
 {
 	unsigned int ilen;
-<<<<<<< HEAD
-	const u32 *ireg;
-	int i;
-	int reg_tuple_size;
-=======
 	const __be32 *ireg;
 	int i;
 	int num_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int num_servers = 0;
 
 	/* This code does the theorically broken assumption that the interrupt
@@ -354,23 +282,6 @@ static int __init icp_native_init_one_node(struct device_node *np,
 			num_servers = of_read_number(ireg + 1, 1);
 	}
 
-<<<<<<< HEAD
-	ireg = of_get_property(np, "reg", &ilen);
-	if (!ireg) {
-		pr_err("icp_native: Can't find interrupt reg property");
-		return -1;
-	}
-
-	reg_tuple_size = (of_n_addr_cells(np) + of_n_size_cells(np)) * 4;
-	if (((ilen % reg_tuple_size) != 0)
-	    || (num_servers && (num_servers != (ilen / reg_tuple_size)))) {
-		pr_err("icp_native: ICP reg len (%d) != num servers (%d)",
-		       ilen / reg_tuple_size, num_servers);
-		return -1;
-	}
-
-	for (i = 0; i < (ilen / reg_tuple_size); i++) {
-=======
 	num_reg = of_address_count(np);
 	if (num_servers && (num_servers != num_reg)) {
 		pr_err("icp_native: ICP reg len (%d) != num servers (%d)",
@@ -379,7 +290,6 @@ static int __init icp_native_init_one_node(struct device_node *np,
 	}
 
 	for (i = 0; i < num_reg; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct resource r;
 		int err;
 

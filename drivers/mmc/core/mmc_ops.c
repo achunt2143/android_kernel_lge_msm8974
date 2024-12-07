@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/core/mmc_ops.h
  *
  *  Copyright 2006-2007 Pierre Ossman
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -26,18 +15,6 @@
 #include <linux/mmc/mmc.h>
 
 #include "core.h"
-<<<<<<< HEAD
-#include "mmc_ops.h"
-
-#define MMC_OPS_TIMEOUT_MS	(10 * 60 * 1000) /* 10 minute timeout */
-
-static int _mmc_select_card(struct mmc_host *host, struct mmc_card *card)
-{
-	int err;
-	struct mmc_command cmd = {0};
-
-	BUG_ON(!host);
-=======
 #include "card.h"
 #include "host.h"
 #include "mmc_ops.h"
@@ -122,7 +99,6 @@ EXPORT_SYMBOL_GPL(mmc_send_status);
 static int _mmc_select_card(struct mmc_host *host, struct mmc_card *card)
 {
 	struct mmc_command cmd = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.opcode = MMC_SELECT_CARD;
 
@@ -134,23 +110,11 @@ static int _mmc_select_card(struct mmc_host *host, struct mmc_card *card)
 		cmd.flags = MMC_RSP_NONE | MMC_CMD_AC;
 	}
 
-<<<<<<< HEAD
-	err = mmc_wait_for_cmd(host, &cmd, MMC_CMD_RETRIES);
-	if (err)
-		return err;
-
-	return 0;
-=======
 	return mmc_wait_for_cmd(host, &cmd, MMC_CMD_RETRIES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mmc_select_card(struct mmc_card *card)
 {
-<<<<<<< HEAD
-	BUG_ON(!card);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return _mmc_select_card(card->host, card);
 }
@@ -160,40 +124,6 @@ int mmc_deselect_cards(struct mmc_host *host)
 	return _mmc_select_card(host, NULL);
 }
 
-<<<<<<< HEAD
-int mmc_card_sleepawake(struct mmc_host *host, int sleep)
-{
-	struct mmc_command cmd = {0};
-	struct mmc_card *card = host->card;
-	int err;
-
-	if (sleep)
-		mmc_deselect_cards(host);
-
-	cmd.opcode = MMC_SLEEP_AWAKE;
-	cmd.arg = card->rca << 16;
-	if (sleep)
-		cmd.arg |= 1 << 15;
-
-	cmd.flags = MMC_RSP_R1B | MMC_CMD_AC;
-	err = mmc_wait_for_cmd(host, &cmd, 0);
-	if (err)
-		return err;
-
-	/*
-	 * If the host does not wait while the card signals busy, then we will
-	 * will have to wait the sleep/awake timeout.  Note, we cannot use the
-	 * SEND_STATUS command to poll the status because that command (and most
-	 * others) is invalid while the card sleeps.
-	 */
-	if (!(host->caps & MMC_CAP_WAIT_WHILE_BUSY))
-		mmc_delay(DIV_ROUND_UP(card->ext_csd.sa_timeout, 10000));
-
-	if (!sleep)
-		err = mmc_select_card(card);
-
-	return err;
-=======
 /*
  * Write the value specified in the device tree or board code into the optional
  * 16 bit Driver Stage Register. This can be used to tune raise/fall times and
@@ -212,17 +142,12 @@ int mmc_set_dsr(struct mmc_host *host)
 	cmd.flags = MMC_RSP_NONE | MMC_CMD_AC;
 
 	return mmc_wait_for_cmd(host, &cmd, MMC_CMD_RETRIES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mmc_go_idle(struct mmc_host *host)
 {
 	int err;
-<<<<<<< HEAD
-	struct mmc_command cmd = {0};
-=======
 	struct mmc_command cmd = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Non-SPI hosts need to prevent chipselect going active during
@@ -256,14 +181,6 @@ int mmc_go_idle(struct mmc_host *host)
 	return err;
 }
 
-<<<<<<< HEAD
-int mmc_send_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
-{
-	struct mmc_command cmd = {0};
-	int i, err = 0;
-
-	BUG_ON(!host);
-=======
 static int __mmc_send_op_cond_cb(void *cb_data, bool *busy)
 {
 	struct mmc_op_cond_busy_data *data = cb_data;
@@ -312,42 +229,16 @@ int mmc_send_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 		.ocr = ocr,
 		.cmd = &cmd
 	};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.opcode = MMC_SEND_OP_COND;
 	cmd.arg = mmc_host_is_spi(host) ? 0 : ocr;
 	cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
 
-<<<<<<< HEAD
-	for (i = 100; i; i--) {
-		err = mmc_wait_for_cmd(host, &cmd, 0);
-		if (err)
-			break;
-
-		/* if we're just probing, do a single pass */
-		if (ocr == 0)
-			break;
-
-		/* otherwise wait until reset completes */
-		if (mmc_host_is_spi(host)) {
-			if (!(cmd.resp[0] & R1_SPI_IDLE))
-				break;
-		} else {
-			if (cmd.resp[0] & MMC_CARD_BUSY)
-				break;
-		}
-
-		err = -ETIMEDOUT;
-
-		mmc_delay(10);
-	}
-=======
 	err = __mmc_poll_for_busy(host, MMC_OP_COND_PERIOD_US,
 				  MMC_OP_COND_TIMEOUT_MS,
 				  &__mmc_send_op_cond_cb, &cb_data);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rocr && !mmc_host_is_spi(host))
 		*rocr = cmd.resp[0];
@@ -355,68 +246,22 @@ int mmc_send_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 	return err;
 }
 
-<<<<<<< HEAD
-int mmc_all_send_cid(struct mmc_host *host, u32 *cid)
-{
-	int err;
-	struct mmc_command cmd = {0};
-
-	BUG_ON(!host);
-	BUG_ON(!cid);
-
-	cmd.opcode = MMC_ALL_SEND_CID;
-	cmd.arg = 0;
-	cmd.flags = MMC_RSP_R2 | MMC_CMD_BCR;
-
-	err = mmc_wait_for_cmd(host, &cmd, MMC_CMD_RETRIES);
-	if (err)
-		return err;
-
-	memcpy(cid, cmd.resp, sizeof(u32) * 4);
-
-	return 0;
-}
-
-int mmc_set_relative_addr(struct mmc_card *card)
-{
-	int err;
-	struct mmc_command cmd = {0};
-
-	BUG_ON(!card);
-	BUG_ON(!card->host);
-=======
 int mmc_set_relative_addr(struct mmc_card *card)
 {
 	struct mmc_command cmd = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.opcode = MMC_SET_RELATIVE_ADDR;
 	cmd.arg = card->rca << 16;
 	cmd.flags = MMC_RSP_R1 | MMC_CMD_AC;
 
-<<<<<<< HEAD
-	err = mmc_wait_for_cmd(card->host, &cmd, MMC_CMD_RETRIES);
-	if (err)
-		return err;
-
-	return 0;
-=======
 	return mmc_wait_for_cmd(card->host, &cmd, MMC_CMD_RETRIES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 mmc_send_cxd_native(struct mmc_host *host, u32 arg, u32 *cxd, int opcode)
 {
 	int err;
-<<<<<<< HEAD
-	struct mmc_command cmd = {0};
-
-	BUG_ON(!host);
-	BUG_ON(!cxd);
-=======
 	struct mmc_command cmd = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.opcode = opcode;
 	cmd.arg = arg;
@@ -431,24 +276,6 @@ mmc_send_cxd_native(struct mmc_host *host, u32 arg, u32 *cxd, int opcode)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int
-mmc_send_cxd_data(struct mmc_card *card, struct mmc_host *host,
-		u32 opcode, void *buf, unsigned len)
-{
-	struct mmc_request mrq = {NULL};
-	struct mmc_command cmd = {0};
-	struct mmc_data data = {0};
-	struct scatterlist sg;
-	void *data_buf;
-
-	/* dma onto stack is unsafe/nonportable, but callers to this
-	 * routine normally provide temporary on-stack buffers ...
-	 */
-	data_buf = kmalloc(len, GFP_KERNEL);
-	if (data_buf == NULL)
-		return -ENOMEM;
-=======
 /*
  * NOTE: void *buf, caller for the buf is required to use DMA-capable
  * buffer or on-stack buffer (with some overhead in callee).
@@ -460,17 +287,12 @@ int mmc_send_adtc_data(struct mmc_card *card, struct mmc_host *host, u32 opcode,
 	struct mmc_command cmd = {};
 	struct mmc_data data = {};
 	struct scatterlist sg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mrq.cmd = &cmd;
 	mrq.data = &data;
 
 	cmd.opcode = opcode;
-<<<<<<< HEAD
-	cmd.arg = 0;
-=======
 	cmd.arg = args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* NOTE HACK:  the MMC_RSP_SPI_R1 is always correct here, but we
 	 * rely on callers to never use this with "native" calls for reading
@@ -485,11 +307,7 @@ int mmc_send_adtc_data(struct mmc_card *card, struct mmc_host *host, u32 opcode,
 	data.sg = &sg;
 	data.sg_len = 1;
 
-<<<<<<< HEAD
-	sg_init_one(&sg, data_buf, len);
-=======
 	sg_init_one(&sg, buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (opcode == MMC_SEND_CSD || opcode == MMC_SEND_CID) {
 		/*
@@ -503,12 +321,6 @@ int mmc_send_adtc_data(struct mmc_card *card, struct mmc_host *host, u32 opcode,
 
 	mmc_wait_for_req(host, &mrq);
 
-<<<<<<< HEAD
-	memcpy(buf, data_buf, len);
-	kfree(data_buf);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd.error)
 		return cmd.error;
 	if (data.error)
@@ -517,24 +329,6 @@ int mmc_send_adtc_data(struct mmc_card *card, struct mmc_host *host, u32 opcode,
 	return 0;
 }
 
-<<<<<<< HEAD
-int mmc_send_csd(struct mmc_card *card, u32 *csd)
-{
-	int ret, i;
-
-	if (!mmc_host_is_spi(card->host))
-		return mmc_send_cxd_native(card->host, card->rca << 16,
-				csd, MMC_SEND_CSD);
-
-	ret = mmc_send_cxd_data(card, card->host, MMC_SEND_CSD, csd, 16);
-	if (ret)
-		return ret;
-
-	for (i = 0;i < 4;i++)
-		csd[i] = be32_to_cpu(csd[i]);
-
-	return 0;
-=======
 static int mmc_spi_send_cxd(struct mmc_host *host, u32 *cxd, u32 opcode)
 {
 	int ret, i;
@@ -563,42 +357,10 @@ int mmc_send_csd(struct mmc_card *card, u32 *csd)
 
 	return mmc_send_cxd_native(card->host, card->rca << 16,	csd,
 				MMC_SEND_CSD);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mmc_send_cid(struct mmc_host *host, u32 *cid)
 {
-<<<<<<< HEAD
-	int ret, i;
-
-	if (!mmc_host_is_spi(host)) {
-		if (!host->card)
-			return -EINVAL;
-		return mmc_send_cxd_native(host, host->card->rca << 16,
-				cid, MMC_SEND_CID);
-	}
-
-	ret = mmc_send_cxd_data(NULL, host, MMC_SEND_CID, cid, 16);
-	if (ret)
-		return ret;
-
-	for (i = 0;i < 4;i++)
-		cid[i] = be32_to_cpu(cid[i]);
-
-	return 0;
-}
-
-int mmc_send_ext_csd(struct mmc_card *card, u8 *ext_csd)
-{
-	return mmc_send_cxd_data(card, card->host, MMC_SEND_EXT_CSD,
-			ext_csd, 512);
-}
-EXPORT_SYMBOL_GPL(mmc_send_ext_csd);
-
-int mmc_spi_read_ocr(struct mmc_host *host, int highcap, u32 *ocrp)
-{
-	struct mmc_command cmd = {0};
-=======
 	if (mmc_host_is_spi(host))
 		return mmc_spi_send_cxd(host, cid, MMC_SEND_CID);
 
@@ -638,7 +400,6 @@ EXPORT_SYMBOL_GPL(mmc_get_ext_csd);
 int mmc_spi_read_ocr(struct mmc_host *host, int highcap, u32 *ocrp)
 {
 	struct mmc_command cmd = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	cmd.opcode = MMC_SPI_READ_OCR;
@@ -653,11 +414,7 @@ int mmc_spi_read_ocr(struct mmc_host *host, int highcap, u32 *ocrp)
 
 int mmc_spi_set_crc(struct mmc_host *host, int use_crc)
 {
-<<<<<<< HEAD
-	struct mmc_command cmd = {0};
-=======
 	struct mmc_command cmd = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	cmd.opcode = MMC_SPI_CRC_ON_OFF;
@@ -670,8 +427,6 @@ int mmc_spi_set_crc(struct mmc_host *host, int use_crc)
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 static int mmc_switch_status_error(struct mmc_host *host, u32 status)
 {
 	if (mmc_host_is_spi(host)) {
@@ -822,7 +577,6 @@ bool mmc_prepare_busy_cmd(struct mmc_host *host, struct mmc_command *cmd,
 }
 EXPORT_SYMBOL_GPL(mmc_prepare_busy_cmd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	__mmc_switch - modify EXT_CSD register
  *	@card: the MMC card associated with the data transfer
@@ -831,31 +585,14 @@ EXPORT_SYMBOL_GPL(mmc_prepare_busy_cmd);
  *	@value: value to program into EXT_CSD register
  *	@timeout_ms: timeout (ms) for operation performed by register write,
  *                   timeout of zero implies maximum possible timeout
-<<<<<<< HEAD
- *	@use_busy_signal: use the busy signal as response type
- *	@ignore_timeout: set this flag only for commands which can be HPIed
-=======
  *	@timing: new timing to change to
  *	@send_status: send status cmd to poll for busy
  *	@retry_crc_err: retry when CRC errors when polling with CMD13 for busy
  *	@retries: number of retries
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Modifies the EXT_CSD register for selected card.
  */
 int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
-<<<<<<< HEAD
-		 unsigned int timeout_ms, bool use_busy_signal,
-		 bool ignore_timeout)
-{
-	int err;
-	struct mmc_command cmd = {0};
-	unsigned long timeout;
-	u32 status;
-
-	BUG_ON(!card);
-	BUG_ON(!card->host);
-=======
 		unsigned int timeout_ms, unsigned char timing,
 		bool send_status, bool retry_crc_err, unsigned int retries)
 {
@@ -872,66 +609,12 @@ int __mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
 			mmc_hostname(host));
 		timeout_ms = card->ext_csd.generic_cmd6_time;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.opcode = MMC_SWITCH;
 	cmd.arg = (MMC_SWITCH_MODE_WRITE_BYTE << 24) |
 		  (index << 16) |
 		  (value << 8) |
 		  set;
-<<<<<<< HEAD
-	cmd.flags = MMC_CMD_AC;
-	if (use_busy_signal)
-		cmd.flags |= MMC_RSP_SPI_R1B | MMC_RSP_R1B;
-	else
-		cmd.flags |= MMC_RSP_SPI_R1 | MMC_RSP_R1;
-
-
-	cmd.cmd_timeout_ms = timeout_ms;
-	cmd.ignore_timeout = ignore_timeout;
-
-	err = mmc_wait_for_cmd(card->host, &cmd, MMC_CMD_RETRIES);
-	if (err)
-		return err;
-
-	/* No need to check card status in case of unblocking command */
-	if (!use_busy_signal)
-		return 0;
-
-	/* Must check status to be sure of no errors */
-	timeout = jiffies + msecs_to_jiffies(MMC_OPS_TIMEOUT_MS);
-	do {
-		err = mmc_send_status(card, &status);
-		if (err)
-			return err;
-		if (card->host->caps & MMC_CAP_WAIT_WHILE_BUSY)
-			break;
-		if (mmc_host_is_spi(card->host))
-			break;
-
-		/* Timeout if the device never leaves the program state. */
-		if (time_after(jiffies, timeout)) {
-			pr_err("%s: Card stuck in programming state! %s\n",
-				mmc_hostname(card->host), __func__);
-			return -ETIMEDOUT;
-		}
-	} while (R1_CURRENT_STATE(status) == R1_STATE_PRG);
-
-	if (mmc_host_is_spi(card->host)) {
-		if (status & R1_SPI_ILLEGAL_COMMAND)
-			return -EBADMSG;
-	} else {
-		if (status & 0xFDFFA000)
-			pr_warning("%s: unexpected status %#x after "
-			       "switch", mmc_hostname(card->host), status);
-		if (status & R1_SWITCH_ERROR)
-			return -EBADMSG;
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(__mmc_switch);
-=======
 	use_r1b_resp = mmc_prepare_busy_cmd(host, &cmd, timeout_ms);
 
 	err = mmc_wait_for_cmd(host, &cmd, retries);
@@ -973,49 +656,10 @@ out:
 
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int mmc_switch(struct mmc_card *card, u8 set, u8 index, u8 value,
 		unsigned int timeout_ms)
 {
-<<<<<<< HEAD
-	return __mmc_switch(card, set, index, value, timeout_ms, true, false);
-}
-EXPORT_SYMBOL_GPL(mmc_switch);
-
-int mmc_switch_ignore_timeout(struct mmc_card *card, u8 set, u8 index, u8 value,
-		unsigned int timeout_ms)
-{
-	return __mmc_switch(card, set, index, value, timeout_ms, true, true);
-}
-EXPORT_SYMBOL(mmc_switch_ignore_timeout);
-
-int mmc_send_status(struct mmc_card *card, u32 *status)
-{
-	int err;
-	struct mmc_command cmd = {0};
-
-	BUG_ON(!card);
-	BUG_ON(!card->host);
-
-	cmd.opcode = MMC_SEND_STATUS;
-	if (!mmc_host_is_spi(card->host))
-		cmd.arg = card->rca << 16;
-	cmd.flags = MMC_RSP_SPI_R2 | MMC_RSP_R1 | MMC_CMD_AC;
-
-	err = mmc_wait_for_cmd(card->host, &cmd, MMC_CMD_RETRIES);
-	if (err)
-		return err;
-
-	/* NOTE: callers are required to understand the difference
-	 * between "native" and SPI format status words!
-	 */
-	if (status)
-		*status = cmd.resp[0];
-
-	return 0;
-}
-=======
 	return __mmc_switch(card, set, index, value, timeout_ms, 0,
 			    true, false, MMC_CMD_RETRIES);
 }
@@ -1114,21 +758,14 @@ int mmc_send_abort_tuning(struct mmc_host *host, u32 opcode)
 	return mmc_wait_for_cmd(host, &cmd, 0);
 }
 EXPORT_SYMBOL_GPL(mmc_send_abort_tuning);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 mmc_send_bus_test(struct mmc_card *card, struct mmc_host *host, u8 opcode,
 		  u8 len)
 {
-<<<<<<< HEAD
-	struct mmc_request mrq = {NULL};
-	struct mmc_command cmd = {0};
-	struct mmc_data data = {0};
-=======
 	struct mmc_request mrq = {};
 	struct mmc_command cmd = {};
 	struct mmc_data data = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist sg;
 	u8 *data_buf;
 	u8 *test_buf;
@@ -1178,13 +815,7 @@ mmc_send_bus_test(struct mmc_card *card, struct mmc_host *host, u8 opcode,
 
 	data.sg = &sg;
 	data.sg_len = 1;
-<<<<<<< HEAD
-	data.timeout_ns = 1000000;
-	data.timeout_clks = 0;
-
-=======
 	mmc_set_data_timeout(&data, card);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg_init_one(&sg, data_buf, len);
 	mmc_wait_for_req(host, &mrq);
 	err = 0;
@@ -1207,11 +838,7 @@ mmc_send_bus_test(struct mmc_card *card, struct mmc_host *host, u8 opcode,
 
 int mmc_bus_test(struct mmc_card *card, u8 bus_width)
 {
-<<<<<<< HEAD
-	int err, width;
-=======
 	int width;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bus_width == MMC_BUS_WIDTH_8)
 		width = 8;
@@ -1227,45 +854,6 @@ int mmc_bus_test(struct mmc_card *card, u8 bus_width)
 	 * is a problem.  This improves chances that the test will work.
 	 */
 	mmc_send_bus_test(card, card->host, MMC_BUS_TEST_W, width);
-<<<<<<< HEAD
-	err = mmc_send_bus_test(card, card->host, MMC_BUS_TEST_R, width);
-	return err;
-}
-
-int mmc_send_hpi_cmd(struct mmc_card *card, u32 *status)
-{
-	struct mmc_command cmd = {0};
-	unsigned int opcode;
-	int err;
-
-	if (!card->ext_csd.hpi_en) {
-		pr_warning("%s: Card didn't support HPI command\n",
-			   mmc_hostname(card->host));
-		return -EINVAL;
-	}
-
-	opcode = card->ext_csd.hpi_cmd;
-	if (opcode == MMC_STOP_TRANSMISSION)
-		cmd.flags = MMC_RSP_R1B | MMC_CMD_AC;
-	else if (opcode == MMC_SEND_STATUS)
-		cmd.flags = MMC_RSP_R1 | MMC_CMD_AC;
-
-	cmd.opcode = opcode;
-	cmd.arg = card->rca << 16 | 1;
-
-	err = mmc_wait_for_cmd(card->host, &cmd, 0);
-	if (err) {
-		pr_debug("%s: error %d interrupting operation. "
-			"HPI command response %#x\n", mmc_hostname(card->host),
-			err, cmd.resp[0]);
-		return err;
-	}
-	if (status)
-		*status = cmd.resp[0];
-
-	return 0;
-}
-=======
 	return mmc_send_bus_test(card, card->host, MMC_BUS_TEST_R, width);
 }
 
@@ -1481,4 +1069,3 @@ int mmc_sanitize(struct mmc_card *card, unsigned int timeout_ms)
 	return err;
 }
 EXPORT_SYMBOL_GPL(mmc_sanitize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

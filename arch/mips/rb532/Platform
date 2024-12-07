@@ -1,10 +1,6 @@
 #
 # Routerboard 532
 #
-<<<<<<< HEAD
-platform-$(CONFIG_MIKROTIK_RB532)	+= rb532/
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cflags-$(CONFIG_MIKROTIK_RB532)		+=				\
 		-I$(srctree)/arch/mips/include/asm/mach-rc32434
 load-$(CONFIG_MIKROTIK_RB532)		+= 0xffffffff80101000

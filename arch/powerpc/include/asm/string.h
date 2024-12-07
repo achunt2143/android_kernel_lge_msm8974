@@ -1,25 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_STRING_H
 #define _ASM_POWERPC_STRING_H
 
 #ifdef __KERNEL__
 
-<<<<<<< HEAD
-#define __HAVE_ARCH_STRCPY
-#define __HAVE_ARCH_STRNCPY
-#define __HAVE_ARCH_STRLEN
-#define __HAVE_ARCH_STRCMP
-#define __HAVE_ARCH_STRNCMP
-#define __HAVE_ARCH_STRCAT
-#define __HAVE_ARCH_MEMSET
-#define __HAVE_ARCH_MEMCPY
-#define __HAVE_ARCH_MEMMOVE
-#define __HAVE_ARCH_MEMCMP
-#define __HAVE_ARCH_MEMCHR
-=======
 #ifndef CONFIG_KASAN
 #define __HAVE_ARCH_STRNCPY
 #define __HAVE_ARCH_STRNCMP
@@ -32,7 +16,6 @@
 #define __HAVE_ARCH_MEMCPY
 #define __HAVE_ARCH_MEMMOVE
 #define __HAVE_ARCH_MEMCPY_FLUSHCACHE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern char * strcpy(char *,const char *);
 extern char * strncpy(char *,const char *, __kernel_size_t);
@@ -45,9 +28,6 @@ extern void * memcpy(void *,const void *,__kernel_size_t);
 extern void * memmove(void *,const void *,__kernel_size_t);
 extern int memcmp(const void *,const void *,__kernel_size_t);
 extern void * memchr(const void *,int,__kernel_size_t);
-<<<<<<< HEAD
-
-=======
 void memcpy_flushcache(void *dest, const void *src, size_t size);
 
 #ifdef CONFIG_KASAN
@@ -107,7 +87,6 @@ static inline void *memset64(uint64_t *p, uint64_t v, __kernel_size_t n)
 
 extern void *memset16(uint16_t *, uint16_t, __kernel_size_t);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 
 #endif	/* _ASM_POWERPC_STRING_H */

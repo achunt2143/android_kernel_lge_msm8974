@@ -1,53 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: nssearch - Namespace search
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -72,11 +29,7 @@ acpi_ns_search_parent_tree(u32 target_name,
  *
  * PARAMETERS:  target_name     - Ascii ACPI name to search for
  *              parent_node     - Starting node where search will begin
-<<<<<<< HEAD
- *              Type            - Object type to match
-=======
  *              type            - Object type to match
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_node     - Where the matched Named obj is returned
  *
  * RETURN:      Status
@@ -116,11 +69,7 @@ acpi_ns_search_one_scope(u32 target_name,
 	if (ACPI_LV_NAMES & acpi_dbg_level) {
 		char *scope_name;
 
-<<<<<<< HEAD
-		scope_name = acpi_ns_get_external_pathname(parent_node);
-=======
 		scope_name = acpi_ns_get_normalized_pathname(parent_node, TRUE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (scope_name) {
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 					  "Searching %s (%p) For [%4.4s] (%s)\n",
@@ -190,13 +139,8 @@ acpi_ns_search_one_scope(u32 target_name,
  * FUNCTION:    acpi_ns_search_parent_tree
  *
  * PARAMETERS:  target_name     - Ascii ACPI name to search for
-<<<<<<< HEAD
- *              Node            - Starting node where search will begin
- *              Type            - Object type to match
-=======
  *              node            - Starting node where search will begin
  *              type            - Object type to match
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_node     - Where the matched Node is returned
  *
  * RETURN:      Status
@@ -284,19 +228,11 @@ acpi_ns_search_parent_tree(u32 target_name,
  *
  * PARAMETERS:  target_name         - Ascii ACPI name to search for (4 chars)
  *              walk_state          - Current state of the walk
-<<<<<<< HEAD
- *              Node                - Starting node where search will begin
- *              interpreter_mode    - Add names only in ACPI_MODE_LOAD_PASS_x.
- *                                    Otherwise,search only.
- *              Type                - Object type to match
- *              Flags               - Flags describing the search restrictions
-=======
  *              node                - Starting node where search will begin
  *              interpreter_mode    - Add names only in ACPI_MODE_LOAD_PASS_x.
  *                                    Otherwise,search only.
  *              type                - Object type to match
  *              flags               - Flags describing the search restrictions
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_node         - Where the Node is returned
  *
  * RETURN:      Status
@@ -342,26 +278,7 @@ acpi_ns_search_and_enter(u32 target_name,
 	 * this problem, and we want to be able to enable ACPI support for them,
 	 * even though there are a few bad names.
 	 */
-<<<<<<< HEAD
-	if (!acpi_ut_valid_acpi_name(target_name)) {
-		target_name =
-		    acpi_ut_repair_name(ACPI_CAST_PTR(char, &target_name));
-
-		/* Report warning only if in strict mode or debug mode */
-
-		if (!acpi_gbl_enable_interpreter_slack) {
-			ACPI_WARNING((AE_INFO,
-				      "Found bad character(s) in name, repaired: [%4.4s]\n",
-				      ACPI_CAST_PTR(char, &target_name)));
-		} else {
-			ACPI_DEBUG_PRINT((ACPI_DB_INFO,
-					  "Found bad character(s) in name, repaired: [%4.4s]\n",
-					  ACPI_CAST_PTR(char, &target_name)));
-		}
-	}
-=======
 	acpi_ut_repair_name(ACPI_CAST_PTR(char, &target_name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Try to find the name in the namespace level specified by the caller */
 
@@ -372,11 +289,6 @@ acpi_ns_search_and_enter(u32 target_name,
 		 * If we found it AND the request specifies that a find is an error,
 		 * return the error
 		 */
-<<<<<<< HEAD
-		if ((status == AE_OK) && (flags & ACPI_NS_ERROR_IF_FOUND)) {
-			status = AE_ALREADY_EXISTS;
-		}
-=======
 		if (status == AE_OK) {
 
 			/* The node was found in the namespace */
@@ -418,7 +330,6 @@ acpi_ns_search_and_enter(u32 target_name,
 			(*return_node)->flags |= ANOBJ_IS_EXTERNAL;
 		}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Either found it or there was an error: finished either way */
 
@@ -467,12 +378,8 @@ acpi_ns_search_and_enter(u32 target_name,
 
 	/* Node is an object defined by an External() statement */
 
-<<<<<<< HEAD
-	if (flags & ACPI_NS_EXTERNAL) {
-=======
 	if (flags & ACPI_NS_EXTERNAL ||
 	    (walk_state && walk_state->opcode == AML_SCOPE_OP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_node->flags |= ANOBJ_IS_EXTERNAL;
 	}
 #endif

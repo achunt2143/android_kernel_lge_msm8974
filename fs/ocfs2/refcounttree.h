@@ -1,26 +1,8 @@
-<<<<<<< HEAD
-/* -*- mode: c; c-basic-offset: 8; -*-
- * vim: noexpandtab sw=8 ts=8 sts=0:
- *
- * refcounttree.h
- *
- * Copyright (C) 2009 Oracle.  All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * refcounttree.h
  *
  * Copyright (C) 2009 Oracle.  All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef OCFS2_REFCOUNTTREE_H
 #define OCFS2_REFCOUNTTREE_H
@@ -61,11 +43,7 @@ int ocfs2_prepare_refcount_change_for_del(struct inode *inode,
 					  int *credits,
 					  int *ref_blocks);
 int ocfs2_refcount_cow(struct inode *inode,
-<<<<<<< HEAD
-		       struct file *filep, struct buffer_head *di_bh,
-=======
 		       struct buffer_head *di_bh,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       u32 cpos, u32 write_len, u32 max_cpos);
 
 typedef int (ocfs2_post_refcount_func)(struct inode *inode,
@@ -97,19 +75,11 @@ int ocfs2_refcount_cow_xattr(struct inode *inode,
 			     u32 cpos, u32 write_len,
 			     struct ocfs2_post_refcount *post);
 int ocfs2_duplicate_clusters_by_page(handle_t *handle,
-<<<<<<< HEAD
-				     struct file *file,
-				     u32 cpos, u32 old_cluster,
-				     u32 new_cluster, u32 new_len);
-int ocfs2_duplicate_clusters_by_jbd(handle_t *handle,
-				    struct file *file,
-=======
 				     struct inode *inode,
 				     u32 cpos, u32 old_cluster,
 				     u32 new_cluster, u32 new_len);
 int ocfs2_duplicate_clusters_by_jbd(handle_t *handle,
 				    struct inode *inode,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    u32 cpos, u32 old_cluster,
 				    u32 new_cluster, u32 new_len);
 int ocfs2_cow_sync_writeback(struct super_block *sb,
@@ -135,8 +105,6 @@ int ocfs2_reflink_ioctl(struct inode *inode,
 			const char __user *oldname,
 			const char __user *newname,
 			bool preserve);
-<<<<<<< HEAD
-=======
 loff_t ocfs2_reflink_remap_blocks(struct inode *s_inode,
 				  struct buffer_head *s_bh,
 				  loff_t pos_in,
@@ -156,5 +124,4 @@ int ocfs2_reflink_update_dest(struct inode *dest,
 			      struct buffer_head *d_bh,
 			      loff_t newlen);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* OCFS2_REFCOUNTTREE_H */

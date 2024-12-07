@@ -1,27 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -48,11 +29,7 @@
 #define RECV_BLK_SZ 512
 #define RECV_BLK_CNT 16
 #define RECV_BLK_TH RECV_BLK_CNT
-<<<<<<< HEAD
-#define MAX_RECVBUF_SZ (30720) /* 30K */
-=======
 #define MAX_RECVBUF_SZ 9100
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RECVBUFF_ALIGN_SZ 512
 #define RSVD_ROOM_SZ (0)
 /*These definition is used for Rx packet reordering.*/
@@ -61,49 +38,25 @@
 #define REORDER_WAIT_TIME	30 /* (ms)*/
 
 struct recv_stat {
-<<<<<<< HEAD
-	unsigned int rxdw0;
-	unsigned int rxdw1;
-	unsigned int rxdw2;
-	unsigned int rxdw3;
-	unsigned int rxdw4;
-	unsigned int rxdw5;
-=======
 	__le32 rxdw0;
 	__le32 rxdw1;
 	__le32 rxdw2;
 	__le32 rxdw3;
 	__le32 rxdw4;
 	__le32 rxdw5;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct phy_cck_rx_status {
 	/* For CCK rate descriptor. This is a unsigned 8:1 variable.
 	 * LSB bit present 0.5. And MSB 7 bts present a signed value.
-<<<<<<< HEAD
-	 * Range from -64~+63.5. */
-=======
 	 * Range from -64~+63.5.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	adc_pwdb_X[4];
 	u8	sq_rpt;
 	u8	cck_agc_rpt;
 };
 
 struct phy_stat {
-<<<<<<< HEAD
-	unsigned int phydw0;
-	unsigned int phydw1;
-	unsigned int phydw2;
-	unsigned int phydw3;
-	unsigned int phydw4;
-	unsigned int phydw5;
-	unsigned int phydw6;
-	unsigned int phydw7;
-};
-=======
 	__le32 phydw0;
 	__le32 phydw1;
 	__le32 phydw2;
@@ -114,7 +67,6 @@ struct phy_stat {
 	__le32 phydw7;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PHY_STAT_GAIN_TRSW_SHT 0
 #define PHY_STAT_PWDB_ALL_SHT 4
 #define PHY_STAT_CFOSHO_SHT 5
@@ -133,10 +85,6 @@ union recvstat {
 	unsigned int value[RXDESC_SIZE>>2];
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct recv_buf {
 	struct list_head list;
 	spinlock_t recvbuf_lock;
@@ -144,10 +92,6 @@ struct recv_buf {
 	struct _adapter  *adapter;
 	struct urb *purb;
 	_pkt *pskb;
-<<<<<<< HEAD
-	u8 reuse;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  irp_pending;
 	u32  transfer_len;
 	uint  len;
@@ -160,15 +104,6 @@ struct recv_buf {
 };
 
 /*
-<<<<<<< HEAD
-	head  ----->
-		data  ----->
-			payload
-		tail  ----->
-	end   ----->
-	len = (unsigned int )(tail - data);
-*/
-=======
  *	head  ----->
  *		data  ----->
  *			payload
@@ -176,7 +111,6 @@ struct recv_buf {
  *	end   ----->
  *	len = (unsigned int )(tail - data);
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct recv_frame_hdr {
 	struct list_head list;
 	_pkt	*pkt;
@@ -202,11 +136,7 @@ union recv_frame {
 	} u;
 };
 
-<<<<<<< HEAD
-int r8712_init_recvbuf(struct _adapter *padapter, struct recv_buf *precvbuf);
-=======
 void r8712_init_recvbuf(struct _adapter *padapter, struct recv_buf *precvbuf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void r8712_rxcmd_event_hdl(struct _adapter *padapter, void *prxcmdbuf);
 s32 r8712_signal_scale_mapping(s32 cur_sig);
 void r8712_reordering_ctrl_timeout_handler(void *pcontext);

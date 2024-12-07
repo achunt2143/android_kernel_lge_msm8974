@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#!/usr/bin/python2
-
-from distutils.core import setup, Extension
-from os import getenv
-
-from distutils.command.build_ext   import build_ext   as _build_ext
-from distutils.command.install_lib import install_lib as _install_lib
-=======
 from os import getenv, path
 from subprocess import Popen, PIPE
 from re import sub
@@ -54,7 +45,6 @@ from setuptools import setup, Extension
 
 from setuptools.command.build_ext   import build_ext   as _build_ext
 from setuptools.command.install_lib import install_lib as _install_lib
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 class build_ext(_build_ext):
     def finalize_options(self):
@@ -68,21 +58,6 @@ class install_lib(_install_lib):
         self.build_dir = build_lib
 
 
-<<<<<<< HEAD
-cflags = ['-fno-strict-aliasing', '-Wno-write-strings']
-cflags += getenv('CFLAGS', '').split()
-
-build_lib = getenv('PYTHON_EXTBUILD_LIB')
-build_tmp = getenv('PYTHON_EXTBUILD_TMP')
-
-ext_sources = [f.strip() for f in file('util/python-ext-sources')
-				if len(f.strip()) > 0 and f[0] != '#']
-
-perf = Extension('perf',
-		  sources = ext_sources,
-		  include_dirs = ['util/include'],
-		  extra_compile_args = cflags,
-=======
 cflags = getenv('CFLAGS', '').split()
 # switch off several checks (need to be at the end of cflags list)
 cflags += ['-fno-strict-aliasing', '-Wno-write-strings', '-Wno-unused-parameter', '-Wno-redundant-decls', '-DPYTHON_PERF' ]
@@ -127,7 +102,6 @@ perf = Extension('perf',
 		  extra_compile_args = cflags,
 		  extra_objects = [ x for x in [libtraceevent, libapikfs, libperf]
                                     if x is not None],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                  )
 
 setup(name='perf',

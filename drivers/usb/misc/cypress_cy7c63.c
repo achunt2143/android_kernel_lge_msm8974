@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 * cypress_cy7c63.c
 *
@@ -27,18 +24,8 @@
 *
 *	For up-to-date information please visit:
 *	http://www.obock.de/kernel/cypress
-<<<<<<< HEAD
-*
-*	This program is free software; you can redistribute it and/or
-*	modify it under the terms of the GNU General Public License as
-*	published by the Free Software Foundation, version 2.
 */
 
-#include <linux/init.h>
-=======
-*/
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -89,10 +76,6 @@ static int vendor_command(struct cypress *dev, unsigned char request,
 	/* allocate some memory for the i/o buffer*/
 	iobuf = kzalloc(CYPRESS_MAX_REQSIZE, GFP_KERNEL);
 	if (!iobuf) {
-<<<<<<< HEAD
-		dev_err(&dev->udev->dev, "Out of memory!\n");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENOMEM;
 		goto error;
 	}
@@ -161,11 +144,7 @@ error:
 }
 
 /* attribute callback handler (write) */
-<<<<<<< HEAD
-static ssize_t set_port0_handler(struct device *dev,
-=======
 static ssize_t port0_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct device_attribute *attr,
 				 const char *buf, size_t count)
 {
@@ -173,11 +152,7 @@ static ssize_t port0_store(struct device *dev,
 }
 
 /* attribute callback handler (write) */
-<<<<<<< HEAD
-static ssize_t set_port1_handler(struct device *dev,
-=======
 static ssize_t port1_store(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct device_attribute *attr,
 				 const char *buf, size_t count)
 {
@@ -203,36 +178,19 @@ static ssize_t read_port(struct device *dev, struct device_attribute *attr,
 }
 
 /* attribute callback handler (read) */
-<<<<<<< HEAD
-static ssize_t get_port0_handler(struct device *dev,
-=======
 static ssize_t port0_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct device_attribute *attr, char *buf)
 {
 	return read_port(dev, attr, buf, 0, CYPRESS_READ_PORT_ID0);
 }
-<<<<<<< HEAD
-
-/* attribute callback handler (read) */
-static ssize_t get_port1_handler(struct device *dev,
-=======
 static DEVICE_ATTR_RW(port0);
 
 /* attribute callback handler (read) */
 static ssize_t port1_show(struct device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct device_attribute *attr, char *buf)
 {
 	return read_port(dev, attr, buf, 1, CYPRESS_READ_PORT_ID1);
 }
-<<<<<<< HEAD
-
-static DEVICE_ATTR(port0, S_IRUGO | S_IWUSR, get_port0_handler, set_port0_handler);
-
-static DEVICE_ATTR(port1, S_IRUGO | S_IWUSR, get_port1_handler, set_port1_handler);
-
-=======
 static DEVICE_ATTR_RW(port1);
 
 static struct attribute *cypress_attrs[] = {
@@ -241,61 +199,28 @@ static struct attribute *cypress_attrs[] = {
 	NULL,
 };
 ATTRIBUTE_GROUPS(cypress);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int cypress_probe(struct usb_interface *interface,
 			 const struct usb_device_id *id)
 {
-<<<<<<< HEAD
-	struct cypress *dev = NULL;
-=======
 	struct cypress *dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval = -ENOMEM;
 
 	/* allocate memory for our device state and initialize it */
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-<<<<<<< HEAD
-	if (dev == NULL) {
-		dev_err(&interface->dev, "Out of memory!\n");
-		goto error_mem;
-	}
-=======
 	if (!dev)
 		goto error_mem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
 
 	/* save our data pointer in this interface device */
 	usb_set_intfdata(interface, dev);
 
-<<<<<<< HEAD
-	/* create device attribute files */
-	retval = device_create_file(&interface->dev, &dev_attr_port0);
-	if (retval)
-		goto error;
-	retval = device_create_file(&interface->dev, &dev_attr_port1);
-	if (retval)
-		goto error;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* let the user know that the device is now attached */
 	dev_info(&interface->dev,
 		 "Cypress CY7C63xxx device now attached\n");
 	return 0;
 
-<<<<<<< HEAD
-error:
-	device_remove_file(&interface->dev, &dev_attr_port0);
-	device_remove_file(&interface->dev, &dev_attr_port1);
-	usb_set_intfdata(interface, NULL);
-	usb_put_dev(dev->udev);
-	kfree(dev);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error_mem:
 	return retval;
 }
@@ -306,12 +231,6 @@ static void cypress_disconnect(struct usb_interface *interface)
 
 	dev = usb_get_intfdata(interface);
 
-<<<<<<< HEAD
-	/* remove device attribute files */
-	device_remove_file(&interface->dev, &dev_attr_port0);
-	device_remove_file(&interface->dev, &dev_attr_port1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the intfdata can be set to NULL only after the
 	 * device files have been removed */
 	usb_set_intfdata(interface, NULL);
@@ -329,10 +248,7 @@ static struct usb_driver cypress_driver = {
 	.probe = cypress_probe,
 	.disconnect = cypress_disconnect,
 	.id_table = cypress_table,
-<<<<<<< HEAD
-=======
 	.dev_groups = cypress_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(cypress_driver);

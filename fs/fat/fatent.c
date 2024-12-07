@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2004, OGAWA Hirofumi
- * Released under GPL v2.
- */
-
-#include <linux/module.h>
-#include <linux/fs.h>
-#include <linux/msdos_fs.h>
-#include <linux/blkdev.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2004, OGAWA Hirofumi
@@ -17,7 +6,6 @@
 #include <linux/blkdev.h>
 #include <linux/sched/signal.h>
 #include <linux/backing-dev-defs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fat.h"
 
 struct fatent_operations {
@@ -37,11 +25,7 @@ static void fat12_ent_blocknr(struct super_block *sb, int entry,
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	int bytes = entry + (entry >> 1);
-<<<<<<< HEAD
-	WARN_ON(entry < FAT_START_ENT || sbi->max_cluster <= entry);
-=======
 	WARN_ON(!fat_valid_entry(sbi, entry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*offset = bytes & (sb->s_blocksize - 1);
 	*blocknr = sbi->fat_start + (bytes >> sb->s_blocksize_bits);
 }
@@ -51,11 +35,7 @@ static void fat_ent_blocknr(struct super_block *sb, int entry,
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	int bytes = (entry << sbi->fatent_shift);
-<<<<<<< HEAD
-	WARN_ON(entry < FAT_START_ENT || sbi->max_cluster <= entry);
-=======
 	WARN_ON(!fat_valid_entry(sbi, entry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*offset = bytes & (sb->s_blocksize - 1);
 	*blocknr = sbi->fat_start + (bytes >> sb->s_blocksize_bits);
 }
@@ -114,35 +94,22 @@ static int fat12_ent_bread(struct super_block *sb, struct fat_entry *fatent,
 err_brelse:
 	brelse(bhs[0]);
 err:
-<<<<<<< HEAD
-	fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)", (llu)blocknr);
-=======
 	fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
 			  (llu)blocknr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
 static int fat_ent_bread(struct super_block *sb, struct fat_entry *fatent,
 			 int offset, sector_t blocknr)
 {
-<<<<<<< HEAD
-	struct fatent_operations *ops = MSDOS_SB(sb)->fatent_ops;
-=======
 	const struct fatent_operations *ops = MSDOS_SB(sb)->fatent_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ON(blocknr < MSDOS_SB(sb)->fat_start);
 	fatent->fat_inode = MSDOS_SB(sb)->fat_inode;
 	fatent->bhs[0] = sb_bread(sb, blocknr);
 	if (!fatent->bhs[0]) {
-<<<<<<< HEAD
-		fat_msg(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
-		       (llu)blocknr);
-=======
 		fat_msg_ratelimit(sb, KERN_ERR, "FAT read failed (blocknr %llu)",
 				  (llu)blocknr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	fatent->nr_bhs = 1;
@@ -219,12 +186,6 @@ static void fat16_ent_put(struct fat_entry *fatent, int new)
 
 static void fat32_ent_put(struct fat_entry *fatent, int new)
 {
-<<<<<<< HEAD
-	if (new == FAT_ENT_EOF)
-		new = EOF_FAT32;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(new & 0xf0000000);
 	new |= le32_to_cpu(*fatent->u.ent32_p) & ~0x0fffffff;
 	*fatent->u.ent32_p = cpu_to_le32(new);
@@ -239,27 +200,18 @@ static int fat12_ent_next(struct fat_entry *fatent)
 
 	fatent->entry++;
 	if (fatent->nr_bhs == 1) {
-<<<<<<< HEAD
-		WARN_ON(ent12_p[0] > (u8 *)(bhs[0]->b_data + (bhs[0]->b_size - 2)));
-		WARN_ON(ent12_p[1] > (u8 *)(bhs[0]->b_data + (bhs[0]->b_size - 1)));
-=======
 		WARN_ON(ent12_p[0] > (u8 *)(bhs[0]->b_data +
 							(bhs[0]->b_size - 2)));
 		WARN_ON(ent12_p[1] > (u8 *)(bhs[0]->b_data +
 							(bhs[0]->b_size - 1)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nextp < (u8 *)(bhs[0]->b_data + (bhs[0]->b_size - 1))) {
 			ent12_p[0] = nextp - 1;
 			ent12_p[1] = nextp;
 			return 1;
 		}
 	} else {
-<<<<<<< HEAD
-		WARN_ON(ent12_p[0] != (u8 *)(bhs[0]->b_data + (bhs[0]->b_size - 1)));
-=======
 		WARN_ON(ent12_p[0] != (u8 *)(bhs[0]->b_data +
 							(bhs[0]->b_size - 1)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		WARN_ON(ent12_p[1] != (u8 *)bhs[1]->b_data);
 		ent12_p[0] = nextp - 1;
 		ent12_p[1] = nextp;
@@ -297,11 +249,7 @@ static int fat32_ent_next(struct fat_entry *fatent)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct fatent_operations fat12_ops = {
-=======
 static const struct fatent_operations fat12_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ent_blocknr	= fat12_ent_blocknr,
 	.ent_set_ptr	= fat12_ent_set_ptr,
 	.ent_bread	= fat12_ent_bread,
@@ -310,11 +258,7 @@ static const struct fatent_operations fat12_ops = {
 	.ent_next	= fat12_ent_next,
 };
 
-<<<<<<< HEAD
-static struct fatent_operations fat16_ops = {
-=======
 static const struct fatent_operations fat16_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ent_blocknr	= fat_ent_blocknr,
 	.ent_set_ptr	= fat16_ent_set_ptr,
 	.ent_bread	= fat_ent_bread,
@@ -323,11 +267,7 @@ static const struct fatent_operations fat16_ops = {
 	.ent_next	= fat16_ent_next,
 };
 
-<<<<<<< HEAD
-static struct fatent_operations fat32_ops = {
-=======
 static const struct fatent_operations fat32_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ent_blocknr	= fat_ent_blocknr,
 	.ent_set_ptr	= fat32_ent_set_ptr,
 	.ent_bread	= fat_ent_bread,
@@ -352,24 +292,6 @@ void fat_ent_access_init(struct super_block *sb)
 
 	mutex_init(&sbi->fat_lock);
 
-<<<<<<< HEAD
-	switch (sbi->fat_bits) {
-	case 32:
-		sbi->fatent_shift = 2;
-		sbi->fatent_ops = &fat32_ops;
-		break;
-	case 16:
-		sbi->fatent_shift = 1;
-		sbi->fatent_ops = &fat16_ops;
-		break;
-	case 12:
-		sbi->fatent_shift = -1;
-		sbi->fatent_ops = &fat12_ops;
-		break;
-	}
-}
-
-=======
 	if (is_fat32(sbi)) {
 		sbi->fatent_shift = 2;
 		sbi->fatent_ops = &fat32_ops;
@@ -394,27 +316,18 @@ static void mark_fsinfo_dirty(struct super_block *sb)
 	__mark_inode_dirty(sbi->fsinfo_inode, I_DIRTY_SYNC);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int fat_ent_update_ptr(struct super_block *sb,
 				     struct fat_entry *fatent,
 				     int offset, sector_t blocknr)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
-<<<<<<< HEAD
-	struct fatent_operations *ops = sbi->fatent_ops;
-=======
 	const struct fatent_operations *ops = sbi->fatent_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head **bhs = fatent->bhs;
 
 	/* Is this fatent's blocks including this entry? */
 	if (!fatent->nr_bhs || bhs[0]->b_blocknr != blocknr)
 		return 0;
-<<<<<<< HEAD
-	if (sbi->fat_bits == 12) {
-=======
 	if (is_fat12(sbi)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((offset + 1) < sb->s_blocksize) {
 			/* This entry is on bhs[0]. */
 			if (fatent->nr_bhs == 2) {
@@ -437,19 +350,11 @@ int fat_ent_read(struct inode *inode, struct fat_entry *fatent, int entry)
 {
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(inode->i_sb);
-<<<<<<< HEAD
-	struct fatent_operations *ops = sbi->fatent_ops;
-	int err, offset;
-	sector_t blocknr;
-
-	if (entry < FAT_START_ENT || sbi->max_cluster <= entry) {
-=======
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	int err, offset;
 	sector_t blocknr;
 
 	if (!fat_valid_entry(sbi, entry)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fatent_brelse(fatent);
 		fat_fs_error(sb, "invalid access to FAT (entry 0x%08x)", entry);
 		return -EIO;
@@ -485,12 +390,6 @@ static int fat_mirror_bhs(struct super_block *sb, struct buffer_head **bhs,
 				err = -ENOMEM;
 				goto error;
 			}
-<<<<<<< HEAD
-			memcpy(c_bh->b_data, bhs[n]->b_data, sb->s_blocksize);
-			set_buffer_uptodate(c_bh);
-			mark_buffer_dirty_inode(c_bh, sbi->fat_inode);
-			if (sb->s_flags & MS_SYNCHRONOUS)
-=======
 			/* Avoid race with userspace read via bdev */
 			lock_buffer(c_bh);
 			memcpy(c_bh->b_data, bhs[n]->b_data, sb->s_blocksize);
@@ -498,7 +397,6 @@ static int fat_mirror_bhs(struct super_block *sb, struct buffer_head **bhs,
 			unlock_buffer(c_bh);
 			mark_buffer_dirty_inode(c_bh, sbi->fat_inode);
 			if (sb->s_flags & SB_SYNCHRONOUS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = sync_dirty_buffer(c_bh);
 			brelse(c_bh);
 			if (err)
@@ -513,11 +411,7 @@ int fat_ent_write(struct inode *inode, struct fat_entry *fatent,
 		  int new, int wait)
 {
 	struct super_block *sb = inode->i_sb;
-<<<<<<< HEAD
-	struct fatent_operations *ops = MSDOS_SB(sb)->fatent_ops;
-=======
 	const struct fatent_operations *ops = MSDOS_SB(sb)->fatent_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	ops->ent_put(fatent, new);
@@ -542,11 +436,7 @@ static inline int fat_ent_next(struct msdos_sb_info *sbi,
 static inline int fat_ent_read_block(struct super_block *sb,
 				     struct fat_entry *fatent)
 {
-<<<<<<< HEAD
-	struct fatent_operations *ops = MSDOS_SB(sb)->fatent_ops;
-=======
 	const struct fatent_operations *ops = MSDOS_SB(sb)->fatent_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t blocknr;
 	int offset;
 
@@ -577,11 +467,7 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 {
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
-<<<<<<< HEAD
-	struct fatent_operations *ops = sbi->fatent_ops;
-=======
 	const struct fatent_operations *ops = sbi->fatent_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fat_entry fatent, prev_ent;
 	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
 	int i, count, err, nr_bhs, idx_clus;
@@ -623,10 +509,6 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 				sbi->prev_free = entry;
 				if (sbi->free_clusters != -1)
 					sbi->free_clusters--;
-<<<<<<< HEAD
-				sb->s_dirt = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				cluster[idx_clus] = entry;
 				idx_clus++;
@@ -648,18 +530,11 @@ int fat_alloc_clusters(struct inode *inode, int *cluster, int nr_cluster)
 	/* Couldn't allocate the free entries */
 	sbi->free_clusters = 0;
 	sbi->free_clus_valid = 1;
-<<<<<<< HEAD
-	sb->s_dirt = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENOSPC;
 
 out:
 	unlock_fat(sbi);
-<<<<<<< HEAD
-=======
 	mark_fsinfo_dirty(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fatent_brelse(&fatent);
 	if (!err) {
 		if (inode_needs_sync(inode))
@@ -680,19 +555,11 @@ int fat_free_clusters(struct inode *inode, int cluster)
 {
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
-<<<<<<< HEAD
-	struct fatent_operations *ops = sbi->fatent_ops;
-	struct fat_entry fatent;
-	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
-	int i, err, nr_bhs;
-	int first_cl = cluster;
-=======
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	struct fat_entry fatent;
 	struct buffer_head *bhs[MAX_BUF_PER_PAGE];
 	int i, err, nr_bhs;
 	int first_cl = cluster, dirty_fsinfo = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nr_bhs = 0;
 	fatent_init(&fatent);
@@ -730,19 +597,11 @@ int fat_free_clusters(struct inode *inode, int cluster)
 		ops->ent_put(&fatent, FAT_ENT_FREE);
 		if (sbi->free_clusters != -1) {
 			sbi->free_clusters++;
-<<<<<<< HEAD
-			sb->s_dirt = 1;
-		}
-
-		if (nr_bhs + fatent.nr_bhs > MAX_BUF_PER_PAGE) {
-			if (sb->s_flags & MS_SYNCHRONOUS) {
-=======
 			dirty_fsinfo = 1;
 		}
 
 		if (nr_bhs + fatent.nr_bhs > MAX_BUF_PER_PAGE) {
 			if (sb->s_flags & SB_SYNCHRONOUS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = fat_sync_bhs(bhs, nr_bhs);
 				if (err)
 					goto error;
@@ -757,11 +616,7 @@ int fat_free_clusters(struct inode *inode, int cluster)
 		fat_collect_bhs(bhs, &nr_bhs, &fatent);
 	} while (cluster != FAT_ENT_EOF);
 
-<<<<<<< HEAD
-	if (sb->s_flags & MS_SYNCHRONOUS) {
-=======
 	if (sb->s_flags & SB_SYNCHRONOUS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = fat_sync_bhs(bhs, nr_bhs);
 		if (err)
 			goto error;
@@ -772,28 +627,6 @@ error:
 	for (i = 0; i < nr_bhs; i++)
 		brelse(bhs[i]);
 	unlock_fat(sbi);
-<<<<<<< HEAD
-
-	return err;
-}
-
-EXPORT_SYMBOL_GPL(fat_free_clusters);
-
-/* 128kb is the whole sectors for FAT12 and FAT16 */
-#define FAT_READA_SIZE		(128 * 1024)
-
-static void fat_ent_reada(struct super_block *sb, struct fat_entry *fatent,
-			  unsigned long reada_blocks)
-{
-	struct fatent_operations *ops = MSDOS_SB(sb)->fatent_ops;
-	sector_t blocknr;
-	int i, offset;
-
-	ops->ent_blocknr(sb, fatent->entry, &offset, &blocknr);
-
-	for (i = 0; i < reada_blocks; i++)
-		sb_breadahead(sb, blocknr + i);
-=======
 	if (dirty_fsinfo)
 		mark_fsinfo_dirty(sb);
 
@@ -878,43 +711,20 @@ static void fat_ent_reada(struct super_block *sb, struct fatent_ra *ra,
 				      ra->ra_blocks, ra->limit - ra->ra_limit);
 	}
 	ra->cur++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fat_count_free_clusters(struct super_block *sb)
 {
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
-<<<<<<< HEAD
-	struct fatent_operations *ops = sbi->fatent_ops;
-	struct fat_entry fatent;
-	unsigned long reada_blocks, reada_mask, cur_block;
-=======
 	const struct fatent_operations *ops = sbi->fatent_ops;
 	struct fat_entry fatent;
 	struct fatent_ra fatent_ra;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0, free;
 
 	lock_fat(sbi);
 	if (sbi->free_clusters != -1 && sbi->free_clus_valid)
 		goto out;
 
-<<<<<<< HEAD
-	reada_blocks = FAT_READA_SIZE >> sb->s_blocksize_bits;
-	reada_mask = reada_blocks - 1;
-	cur_block = 0;
-
-	free = 0;
-	fatent_init(&fatent);
-	fatent_set_entry(&fatent, FAT_START_ENT);
-	while (fatent.entry < sbi->max_cluster) {
-		/* readahead of fat blocks */
-		if ((cur_block & reada_mask) == 0) {
-			unsigned long rest = sbi->fat_length - cur_block;
-			fat_ent_reada(sb, &fatent, min(reada_blocks, rest));
-		}
-		cur_block++;
-=======
 	free = 0;
 	fatent_init(&fatent);
 	fatent_set_entry(&fatent, FAT_START_ENT);
@@ -922,7 +732,6 @@ int fat_count_free_clusters(struct super_block *sb)
 	while (fatent.entry < sbi->max_cluster) {
 		/* readahead of fat blocks */
 		fat_ent_reada(sb, &fatent_ra, &fatent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = fat_ent_read_block(sb, &fatent);
 		if (err)
@@ -932,25 +741,16 @@ int fat_count_free_clusters(struct super_block *sb)
 			if (ops->ent_get(&fatent) == FAT_ENT_FREE)
 				free++;
 		} while (fat_ent_next(sbi, &fatent));
-<<<<<<< HEAD
-	}
-	sbi->free_clusters = free;
-	sbi->free_clus_valid = 1;
-	sb->s_dirt = 1;
-=======
 		cond_resched();
 	}
 	sbi->free_clusters = free;
 	sbi->free_clus_valid = 1;
 	mark_fsinfo_dirty(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fatent_brelse(&fatent);
 out:
 	unlock_fat(sbi);
 	return err;
 }
-<<<<<<< HEAD
-=======
 
 static int fat_trim_clusters(struct super_block *sb, u32 clus, u32 nr_clus)
 {
@@ -1046,4 +846,3 @@ error:
 
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

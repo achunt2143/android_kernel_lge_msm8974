@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * HTC Shift touchscreen driver
  *
  * Copyright (C) 2008 Pau Oliva Fora <pof@eslack.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -109,11 +99,7 @@ static void htcpen_close(struct input_dev *dev)
 	synchronize_irq(HTCPEN_IRQ);
 }
 
-<<<<<<< HEAD
-static int __devinit htcpen_isa_probe(struct device *dev, unsigned int id)
-=======
 static int htcpen_isa_probe(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *htcpen_dev;
 	int err = -EBUSY;
@@ -185,11 +171,7 @@ static int htcpen_isa_probe(struct device *dev, unsigned int id)
 	return err;
 }
 
-<<<<<<< HEAD
-static int __devexit htcpen_isa_remove(struct device *dev, unsigned int id)
-=======
 static void htcpen_isa_remove(struct device *dev, unsigned int id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *htcpen_dev = dev_get_drvdata(dev);
 
@@ -200,13 +182,6 @@ static void htcpen_isa_remove(struct device *dev, unsigned int id)
 	release_region(HTCPEN_PORT_INDEX, 2);
 	release_region(HTCPEN_PORT_INIT, 1);
 	release_region(HTCPEN_PORT_IRQ_CLEAR, 1);
-<<<<<<< HEAD
-
-	dev_set_drvdata(dev, NULL);
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -228,11 +203,7 @@ static int htcpen_isa_resume(struct device *dev, unsigned int n)
 
 static struct isa_driver htcpen_isa_driver = {
 	.probe		= htcpen_isa_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(htcpen_isa_remove),
-=======
 	.remove		= htcpen_isa_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= htcpen_isa_suspend,
 	.resume		= htcpen_isa_resume,
@@ -243,11 +214,7 @@ static struct isa_driver htcpen_isa_driver = {
 	}
 };
 
-<<<<<<< HEAD
-static struct dmi_system_id __initdata htcshift_dmi_table[] = {
-=======
 static const struct dmi_system_id htcshift_dmi_table[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "Shift",
 		.matches = {

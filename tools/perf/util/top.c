@@ -1,31 +1,17 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
  *
  * Refactored from builtin-top.c, see that files for further copyright notes.
-<<<<<<< HEAD
- *
- * Released under the GPL v2. (and only v2, not any later version)
  */
 
-#include "cpumap.h"
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "event.h"
 #include "evlist.h"
 #include "evsel.h"
 #include "parse-events.h"
 #include "symbol.h"
 #include "top.h"
-<<<<<<< HEAD
-=======
 #include "util.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <inttypes.h>
 
 #define SNPRINTF(buf, size, fmt, args...) \
@@ -36,20 +22,6 @@
 
 size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size)
 {
-<<<<<<< HEAD
-	float samples_per_sec = top->samples / top->delay_secs;
-	float ksamples_per_sec = top->kernel_samples / top->delay_secs;
-	float esamples_percent = (100.0 * top->exact_samples) / top->samples;
-	size_t ret = 0;
-
-	if (!perf_guest) {
-		ret = SNPRINTF(bf, size,
-			       "   PerfTop:%8.0f irqs/sec  kernel:%4.1f%%"
-			       "  exact: %4.1f%% [", samples_per_sec,
-			       100.0 - (100.0 * ((samples_per_sec - ksamples_per_sec) /
-					samples_per_sec)),
-				esamples_percent);
-=======
 	float samples_per_sec;
 	float ksamples_per_sec;
 	float esamples_percent;
@@ -77,7 +49,6 @@ size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size)
 			       "  exact: %4.1f%% lost: %" PRIu64 "/%" PRIu64 " drop: %" PRIu64 "/%" PRIu64 " [",
 			       samples_per_sec, ksamples_percent, esamples_percent,
 			       top->lost, top->lost_total, top->drop, top->drop_total);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		float us_samples_per_sec = top->us_samples / top->delay_secs;
 		float guest_kernel_samples_per_sec = top->guest_kernel_samples / top->delay_secs;
@@ -100,44 +71,6 @@ size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size)
 			       esamples_percent);
 	}
 
-<<<<<<< HEAD
-	if (top->evlist->nr_entries == 1) {
-		struct perf_evsel *first;
-		first = list_entry(top->evlist->entries.next, struct perf_evsel, node);
-		ret += SNPRINTF(bf + ret, size - ret, "%" PRIu64 "%s ",
-				(uint64_t)first->attr.sample_period,
-				top->freq ? "Hz" : "");
-	}
-
-	ret += SNPRINTF(bf + ret, size - ret, "%s", event_name(top->sym_evsel));
-
-	ret += SNPRINTF(bf + ret, size - ret, "], ");
-
-	if (top->target_pid)
-		ret += SNPRINTF(bf + ret, size - ret, " (target_pid: %s",
-				top->target_pid);
-	else if (top->target_tid)
-		ret += SNPRINTF(bf + ret, size - ret, " (target_tid: %s",
-				top->target_tid);
-	else if (top->uid_str != NULL)
-		ret += SNPRINTF(bf + ret, size - ret, " (uid: %s",
-				top->uid_str);
-	else
-		ret += SNPRINTF(bf + ret, size - ret, " (all");
-
-	if (top->cpu_list)
-		ret += SNPRINTF(bf + ret, size - ret, ", CPU%s: %s)",
-				top->evlist->cpus->nr > 1 ? "s" : "", top->cpu_list);
-	else {
-		if (top->target_tid)
-			ret += SNPRINTF(bf + ret, size - ret, ")");
-		else
-			ret += SNPRINTF(bf + ret, size - ret, ", %d CPU%s)",
-					top->evlist->cpus->nr,
-					top->evlist->cpus->nr > 1 ? "s" : "");
-	}
-
-=======
 	if (top->evlist->core.nr_entries == 1) {
 		struct evsel *first = evlist__first(top->evlist);
 		ret += SNPRINTF(bf + ret, size - ret, "%" PRIu64 "%s ",
@@ -175,7 +108,6 @@ size_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size)
 	}
 
 	perf_top__reset_sample_counters(top);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -183,9 +115,5 @@ void perf_top__reset_sample_counters(struct perf_top *top)
 {
 	top->samples = top->us_samples = top->kernel_samples =
 	top->exact_samples = top->guest_kernel_samples =
-<<<<<<< HEAD
-	top->guest_us_samples = 0;
-=======
 	top->guest_us_samples = top->lost = top->drop = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,26 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale Lite5200 board support
  *
  * Written by: Grant Likely <grant.likely@secretlab.ca>
  *
  * Copyright (C) Secret Lab Technologies Ltd. 2006. All rights reserved.
-<<<<<<< HEAD
- * Copyright (C) Freescale Semicondutor, Inc. 2006. All rights reserved.
- *
- * Description:
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
  * Copyright 2006 Freescale Semiconductor, Inc. All rights reserved.
  *
  * Description:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -34,10 +21,6 @@
 #include <asm/time.h>
 #include <asm/io.h>
 #include <asm/machdep.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mpc52xx.h>
 
 /* ************************************************************************
@@ -47,21 +30,13 @@
  */
 
 /* mpc5200 device tree match tables */
-<<<<<<< HEAD
-static struct of_device_id mpc5200_cdm_ids[] __initdata = {
-=======
 static const struct of_device_id mpc5200_cdm_ids[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200-cdm", },
 	{ .compatible = "mpc5200-cdm", },
 	{}
 };
 
-<<<<<<< HEAD
-static struct of_device_id mpc5200_gpio_ids[] __initdata = {
-=======
 static const struct of_device_id mpc5200_gpio_ids[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200-gpio", },
 	{ .compatible = "mpc5200-gpio", },
 	{}
@@ -189,48 +164,21 @@ static void __init lite5200_setup_arch(void)
 	mpc52xx_suspend.board_resume_finish = lite5200_resume_finish;
 	lite5200_pm_init();
 #endif
-<<<<<<< HEAD
-
-	mpc52xx_setup_pci();
-}
-
-static const char *board[] __initdata = {
-=======
 }
 
 static const char * const board[] __initconst = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"fsl,lite5200",
 	"fsl,lite5200b",
 	NULL,
 };
 
-<<<<<<< HEAD
-/*
- * Called very early, MMU is off, device-tree isn't unflattened
- */
-static int __init lite5200_probe(void)
-{
-	return of_flat_dt_match(of_get_flat_dt_root(), board);
-}
-
-define_machine(lite5200) {
-	.name 		= "lite5200",
-	.probe 		= lite5200_probe,
-	.setup_arch 	= lite5200_setup_arch,
-=======
 define_machine(lite5200) {
 	.name 		= "lite5200",
 	.compatibles	= board,
 	.setup_arch 	= lite5200_setup_arch,
 	.discover_phbs	= mpc52xx_setup_pci,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		= mpc52xx_declare_of_platform_devices,
 	.init_IRQ 	= mpc52xx_init_irq,
 	.get_irq 	= mpc52xx_get_irq,
 	.restart	= mpc52xx_restart,
-<<<<<<< HEAD
-	.calibrate_decr	= generic_calibrate_decr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

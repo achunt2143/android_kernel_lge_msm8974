@@ -42,43 +42,14 @@
 #define  MACH_DS5900		10	/* DECsystem 5900		*/
 
 /*
-<<<<<<< HEAD
- * Valid machtype for group PMC-MSP
- */
-#define MACH_MSP4200_EVAL       0	/* PMC-Sierra MSP4200 Evaluation */
-#define MACH_MSP4200_GW         1	/* PMC-Sierra MSP4200 Gateway demo */
-#define MACH_MSP4200_FPGA       2	/* PMC-Sierra MSP4200 Emulation */
-#define MACH_MSP7120_EVAL       3	/* PMC-Sierra MSP7120 Evaluation */
-#define MACH_MSP7120_GW         4	/* PMC-Sierra MSP7120 Residential GW */
-#define MACH_MSP7120_FPGA       5	/* PMC-Sierra MSP7120 Emulation */
-#define MACH_MSP_OTHER        255	/* PMC-Sierra unknown board type */
-
-/*
- * Valid machtype for group Mikrotik
- */
-#define	MACH_MIKROTIK_RB532	0	/* Mikrotik RouterBoard 532 	*/
-#define MACH_MIKROTIK_RB532A	1	/* Mikrotik RouterBoard 532A 	*/
-=======
  * Valid machtype for group Mikrotik
  */
 #define MACH_MIKROTIK_RB532	0	/* Mikrotik RouterBoard 532	*/
 #define MACH_MIKROTIK_RB532A	1	/* Mikrotik RouterBoard 532A	*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Valid machtype for Loongson family
  */
-<<<<<<< HEAD
-#define MACH_LOONGSON_UNKNOWN  0
-#define MACH_LEMOTE_FL2E       1
-#define MACH_LEMOTE_FL2F       2
-#define MACH_LEMOTE_ML2F7      3
-#define MACH_LEMOTE_YL2F89     4
-#define MACH_DEXXON_GDIUM2F10  5
-#define MACH_LEMOTE_NAS        6
-#define MACH_LEMOTE_LL2F       7
-#define MACH_LOONGSON_END      8
-=======
 enum loongson2ef_machine_type {
 	MACH_LOONGSON_UNKNOWN,
 	MACH_LEMOTE_FL2E,
@@ -90,15 +61,10 @@ enum loongson2ef_machine_type {
 	MACH_LEMOTE_LL2F,
 	MACH_LOONGSON_END
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Valid machtype for group INGENIC
  */
-<<<<<<< HEAD
-#define  MACH_INGENIC_JZ4730	0	/* JZ4730 SOC		*/
-#define  MACH_INGENIC_JZ4740	1	/* JZ4740 SOC		*/
-=======
 enum ingenic_machine_type {
 	MACH_INGENIC_UNKNOWN,
 	MACH_INGENIC_JZ4720,
@@ -121,69 +87,29 @@ enum ingenic_machine_type {
 	MACH_INGENIC_X2000H,
 	MACH_INGENIC_X2100,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern char *system_type;
 const char *get_system_type(void);
 
 extern unsigned long mips_machtype;
 
-<<<<<<< HEAD
-#define BOOT_MEM_MAP_MAX	32
-#define BOOT_MEM_RAM		1
-#define BOOT_MEM_ROM_DATA	2
-#define BOOT_MEM_RESERVED	3
-#define BOOT_MEM_INIT_RAM	4
-
-/*
- * A memory map that's built upon what was determined
- * or specified on the command line.
- */
-struct boot_mem_map {
-	int nr_map;
-	struct boot_mem_map_entry {
-		phys_t addr;	/* start of memory segment */
-		phys_t size;	/* size of memory segment */
-		long type;		/* type of memory segment */
-	} map[BOOT_MEM_MAP_MAX];
-};
-
-extern struct boot_mem_map boot_mem_map;
-
-extern void add_memory_region(phys_t start, phys_t size, long type);
-
-extern void prom_init(void);
-extern void prom_free_prom_memory(void);
-=======
 extern void detect_memory_region(phys_addr_t start, phys_addr_t sz_min,  phys_addr_t sz_max);
 
 extern void prom_init(void);
 extern void prom_free_prom_memory(void);
 extern void prom_cleanup(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void free_init_pages(const char *what,
 			    unsigned long begin, unsigned long end);
 
-<<<<<<< HEAD
-=======
 extern void (*free_init_pages_eva)(void *begin, void *end);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Initial kernel command line, usually setup by prom_init()
  */
 extern char arcs_cmdline[COMMAND_LINE_SIZE];
 
 /*
-<<<<<<< HEAD
- * Registers a0, a1, a3 and a4 as passed to the kernel entry by firmware
- */
-extern unsigned long fw_arg0, fw_arg1, fw_arg2, fw_arg3;
-
-/*
- * Platform memory detection hook called by setup_arch
-=======
  * Registers a0, a1, a2 and a3 as passed to the kernel entry by firmware
  */
 extern unsigned long fw_arg0, fw_arg1, fw_arg2, fw_arg3;
@@ -214,7 +140,6 @@ static inline void *get_fdt(void)
 
 /*
  * Platform memory detection hook called by arch_mem_init()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 extern void plat_mem_setup(void);
 
@@ -230,8 +155,6 @@ static inline void plat_swiotlb_setup(void) {}
 
 #endif /* CONFIG_SWIOTLB */
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_USE_OF
 /**
  * plat_get_fdt() - Return a pointer to the platform's device tree blob
@@ -263,5 +186,4 @@ void plat_fdt_relocated(void *new_location);
 #endif /* CONFIG_RELOCATABLE */
 #endif /* CONFIG_USE_OF */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_BOOTINFO_H */

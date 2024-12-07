@@ -1,27 +1,7 @@
-<<<<<<< HEAD
-/*
- * Functions for the OPL4 proc file
- * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Functions for the OPL4 proc file
  * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "opl4_local.h"
@@ -29,11 +9,6 @@
 #include <linux/export.h>
 #include <sound/info.h>
 
-<<<<<<< HEAD
-#ifdef CONFIG_PROC_FS
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_opl4_mem_proc_open(struct snd_info_entry *entry,
 				  unsigned short mode, void **file_private_data)
 {
@@ -101,11 +76,7 @@ static ssize_t snd_opl4_mem_proc_write(struct snd_info_entry *entry,
 	return count;
 }
 
-<<<<<<< HEAD
-static struct snd_info_entry_ops snd_opl4_mem_proc_ops = {
-=======
 static const struct snd_info_entry_ops snd_opl4_mem_proc_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = snd_opl4_mem_proc_open,
 	.release = snd_opl4_mem_proc_release,
 	.read = snd_opl4_mem_proc_read,
@@ -120,11 +91,7 @@ int snd_opl4_create_proc(struct snd_opl4 *opl4)
 	if (entry) {
 		if (opl4->hardware < OPL3_HW_OPL4_ML) {
 			/* OPL4 can access 4 MB external ROM/SRAM */
-<<<<<<< HEAD
-			entry->mode |= S_IWUSR;
-=======
 			entry->mode |= 0200;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			entry->size = 4 * 1024 * 1024;
 		} else {
 			/* OPL4-ML has 1 MB internal ROM */
@@ -134,13 +101,6 @@ int snd_opl4_create_proc(struct snd_opl4 *opl4)
 		entry->c.ops = &snd_opl4_mem_proc_ops;
 		entry->module = THIS_MODULE;
 		entry->private_data = opl4;
-<<<<<<< HEAD
-		if (snd_info_register(entry) < 0) {
-			snd_info_free_entry(entry);
-			entry = NULL;
-		}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	opl4->proc_entry = entry;
 	return 0;
@@ -150,8 +110,3 @@ void snd_opl4_free_proc(struct snd_opl4 *opl4)
 {
 	snd_info_free_entry(opl4->proc_entry);
 }
-<<<<<<< HEAD
-
-#endif /* CONFIG_PROC_FS */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

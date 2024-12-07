@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
  *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
  *
-<<<<<<< HEAD
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -133,11 +122,7 @@ struct s_rmt {
 	u_char timer1_exp ;		/* flag : timer 1 expired */
 	u_char timer2_exp ;		/* flag : timer 2 expired */
 
-<<<<<<< HEAD
-	u_char rm_pad1[1] ;
-=======
 	u_char rm_pad1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ;
 
 /*
@@ -243,11 +228,7 @@ struct s_phy {
 	u_char timer1_exp ;
 	u_char timer2_exp ;
 	u_char pcm_pad1[1] ;
-<<<<<<< HEAD
-	int	cem_pst ;	/* CEM privae state; used for dual homing */
-=======
 	int	cem_pst ;	/* CEM private state; used for dual homing */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lem_counter lem ;
 #ifdef	AMDPLC
 	struct s_plc	plc ;
@@ -484,22 +465,6 @@ struct s_smc {
 
 extern const struct fddi_addr fddi_broadcast;
 
-<<<<<<< HEAD
-extern void all_selection_criteria(struct s_smc *smc);
-extern void card_stop(struct s_smc *smc);
-extern void init_board(struct s_smc *smc, u_char *mac_addr);
-extern int init_fplus(struct s_smc *smc);
-extern void init_plc(struct s_smc *smc);
-extern int init_smt(struct s_smc *smc, u_char * mac_addr);
-extern void mac1_irq(struct s_smc *smc, u_short stu, u_short stl);
-extern void mac2_irq(struct s_smc *smc, u_short code_s2u, u_short code_s2l);
-extern void mac3_irq(struct s_smc *smc, u_short code_s3u, u_short code_s3l);
-extern int pcm_status_twisted(struct s_smc *smc);
-extern void plc1_irq(struct s_smc *smc);
-extern void plc2_irq(struct s_smc *smc);
-extern void read_address(struct s_smc *smc, u_char * mac_addr);
-extern void timer_irq(struct s_smc *smc);
-=======
 void all_selection_criteria(struct s_smc *smc);
 void card_stop(struct s_smc *smc);
 void init_board(struct s_smc *smc, u_char *mac_addr);
@@ -514,7 +479,6 @@ void plc1_irq(struct s_smc *smc);
 void plc2_irq(struct s_smc *smc);
 void read_address(struct s_smc *smc, u_char *mac_addr);
 void timer_irq(struct s_smc *smc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _SCMECM_ */
 

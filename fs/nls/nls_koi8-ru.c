@@ -55,10 +55,6 @@ static struct nls_table table = {
 	.charset	= "koi8-ru",
 	.uni2char	= uni2char,
 	.char2uni	= char2uni,
-<<<<<<< HEAD
-	.owner		= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init init_nls_koi8_ru(void)

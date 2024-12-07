@@ -1,32 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * leds-bd2802.c - RGB LED Driver
  *
  * Copyright (C) 2009 Samsung Electronics
  * Kim Kyuwon <q1.kim@samsung.com>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
  * Datasheet: http://www.rohm.com/products/databook/driver/pdf/bd2802gu-e.pdf
- *
-=======
- * Datasheet: http://www.rohm.com/products/databook/driver/pdf/bd2802gu-e.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/i2c.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
 #include <linux/gpio/consumer.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/leds.h>
 #include <linux/leds-bd2802.h>
@@ -38,13 +22,8 @@
 #define BD2802_LED_OFFSET		0xa
 #define BD2802_COLOR_OFFSET		0x3
 
-<<<<<<< HEAD
-#define BD2802_REG_CLKSETUP 		0x00
-#define BD2802_REG_CONTROL 		0x01
-=======
 #define BD2802_REG_CLKSETUP		0x00
 #define BD2802_REG_CONTROL		0x01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BD2802_REG_HOURSETUP		0x02
 #define BD2802_REG_CURRENT1SETUP	0x03
 #define BD2802_REG_CURRENT2SETUP	0x04
@@ -88,13 +67,8 @@ struct led_state {
 struct bd2802_led {
 	struct bd2802_led_platform_data	*pdata;
 	struct i2c_client		*client;
-<<<<<<< HEAD
-	struct rw_semaphore		rwsem;
-	struct work_struct		work;
-=======
 	struct gpio_desc		*reset;
 	struct rw_semaphore		rwsem;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct led_state		led[2];
 
@@ -115,11 +89,7 @@ struct bd2802_led {
 	 * In ADF mode, user can set registers of BD2802GU directly,
 	 * therefore BD2802GU doesn't enter reset state.
 	 */
-<<<<<<< HEAD
-	int 				adf_on;
-=======
 	int				adf_on;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enum led_ids			led_id;
 	enum led_colors			color;
@@ -231,11 +201,7 @@ static void bd2802_update_state(struct bd2802_led *led, enum led_ids id,
 		return;
 
 	if (bd2802_is_all_off(led) && !led->adf_on) {
-<<<<<<< HEAD
-		gpio_set_value(led->pdata->reset_gpio, 0);
-=======
 		gpiod_set_value(led->reset, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -261,11 +227,7 @@ static void bd2802_configure(struct bd2802_led *led)
 
 static void bd2802_reset_cancel(struct bd2802_led *led)
 {
-<<<<<<< HEAD
-	gpio_set_value(led->pdata->reset_gpio, 1);
-=======
 	gpiod_set_value(led->reset, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(100);
 	bd2802_configure(led);
 }
@@ -362,11 +324,7 @@ static ssize_t bd2802_store_reg##reg_addr(struct device *dev,		\
 	int ret;							\
 	if (!count)							\
 		return -EINVAL;						\
-<<<<<<< HEAD
-	ret = strict_strtoul(buf, 16, &val);				\
-=======
 	ret = kstrtoul(buf, 16, &val);					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)							\
 		return ret;						\
 	down_write(&led->rwsem);					\
@@ -463,11 +421,7 @@ static void bd2802_disable_adv_conf(struct bd2802_led *led)
 						bd2802_addr_attributes[i]);
 
 	if (bd2802_is_all_off(led))
-<<<<<<< HEAD
-		gpio_set_value(led->pdata->reset_gpio, 0);
-=======
 		gpiod_set_value(led->reset, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	led->adf_on = 0;
 }
@@ -534,11 +488,7 @@ static ssize_t bd2802_store_##attr_name(struct device *dev,		\
 	int ret;							\
 	if (!count)							\
 		return -EINVAL;						\
-<<<<<<< HEAD
-	ret = strict_strtoul(buf, 16, &val);				\
-=======
 	ret = kstrtoul(buf, 16, &val);					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)							\
 		return ret;						\
 	down_write(&led->rwsem);					\
@@ -564,36 +514,14 @@ static struct device_attribute *bd2802_attributes[] = {
 	&bd2802_rgb_current_attr,
 };
 
-<<<<<<< HEAD
-static void bd2802_led_work(struct work_struct *work)
-{
-	struct bd2802_led *led = container_of(work, struct bd2802_led, work);
-
-	if (led->state)
-		bd2802_turn_on(led, led->led_id, led->color, led->state);
-	else
-		bd2802_turn_off(led, led->led_id, led->color);
-}
-
-#define BD2802_CONTROL_RGBS(name, id, clr)				\
-static void bd2802_set_##name##_brightness(struct led_classdev *led_cdev,\
-=======
 #define BD2802_CONTROL_RGBS(name, id, clr)				\
 static int bd2802_set_##name##_brightness(struct led_classdev *led_cdev,\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					enum led_brightness value)	\
 {									\
 	struct bd2802_led *led =					\
 		container_of(led_cdev, struct bd2802_led, cdev_##name);	\
 	led->led_id = id;						\
 	led->color = clr;						\
-<<<<<<< HEAD
-	if (value == LED_OFF)						\
-		led->state = BD2802_OFF;				\
-	else								\
-		led->state = BD2802_ON;					\
-	schedule_work(&led->work);					\
-=======
 	if (value == LED_OFF) {						\
 		led->state = BD2802_OFF;				\
 		bd2802_turn_off(led, led->led_id, led->color);		\
@@ -602,7 +530,6 @@ static int bd2802_set_##name##_brightness(struct led_classdev *led_cdev,\
 		bd2802_turn_on(led, led->led_id, led->color, BD2802_ON);\
 	}								\
 	return 0;							\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }									\
 static int bd2802_set_##name##_blink(struct led_classdev *led_cdev,	\
 		unsigned long *delay_on, unsigned long *delay_off)	\
@@ -614,11 +541,7 @@ static int bd2802_set_##name##_blink(struct led_classdev *led_cdev,	\
 	led->led_id = id;						\
 	led->color = clr;						\
 	led->state = BD2802_BLINK;					\
-<<<<<<< HEAD
-	schedule_work(&led->work);					\
-=======
 	bd2802_turn_on(led, led->led_id, led->color, BD2802_BLINK);	\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;							\
 }
 
@@ -633,17 +556,9 @@ static int bd2802_register_led_classdev(struct bd2802_led *led)
 {
 	int ret;
 
-<<<<<<< HEAD
-	INIT_WORK(&led->work, bd2802_led_work);
-
-	led->cdev_led1r.name = "led1_R";
-	led->cdev_led1r.brightness = LED_OFF;
-	led->cdev_led1r.brightness_set = bd2802_set_led1r_brightness;
-=======
 	led->cdev_led1r.name = "led1_R";
 	led->cdev_led1r.brightness = LED_OFF;
 	led->cdev_led1r.brightness_set_blocking = bd2802_set_led1r_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev_led1r.blink_set = bd2802_set_led1r_blink;
 
 	ret = led_classdev_register(&led->client->dev, &led->cdev_led1r);
@@ -655,11 +570,7 @@ static int bd2802_register_led_classdev(struct bd2802_led *led)
 
 	led->cdev_led1g.name = "led1_G";
 	led->cdev_led1g.brightness = LED_OFF;
-<<<<<<< HEAD
-	led->cdev_led1g.brightness_set = bd2802_set_led1g_brightness;
-=======
 	led->cdev_led1g.brightness_set_blocking = bd2802_set_led1g_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev_led1g.blink_set = bd2802_set_led1g_blink;
 
 	ret = led_classdev_register(&led->client->dev, &led->cdev_led1g);
@@ -671,11 +582,7 @@ static int bd2802_register_led_classdev(struct bd2802_led *led)
 
 	led->cdev_led1b.name = "led1_B";
 	led->cdev_led1b.brightness = LED_OFF;
-<<<<<<< HEAD
-	led->cdev_led1b.brightness_set = bd2802_set_led1b_brightness;
-=======
 	led->cdev_led1b.brightness_set_blocking = bd2802_set_led1b_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev_led1b.blink_set = bd2802_set_led1b_blink;
 
 	ret = led_classdev_register(&led->client->dev, &led->cdev_led1b);
@@ -687,11 +594,7 @@ static int bd2802_register_led_classdev(struct bd2802_led *led)
 
 	led->cdev_led2r.name = "led2_R";
 	led->cdev_led2r.brightness = LED_OFF;
-<<<<<<< HEAD
-	led->cdev_led2r.brightness_set = bd2802_set_led2r_brightness;
-=======
 	led->cdev_led2r.brightness_set_blocking = bd2802_set_led2r_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev_led2r.blink_set = bd2802_set_led2r_blink;
 
 	ret = led_classdev_register(&led->client->dev, &led->cdev_led2r);
@@ -703,11 +606,7 @@ static int bd2802_register_led_classdev(struct bd2802_led *led)
 
 	led->cdev_led2g.name = "led2_G";
 	led->cdev_led2g.brightness = LED_OFF;
-<<<<<<< HEAD
-	led->cdev_led2g.brightness_set = bd2802_set_led2g_brightness;
-=======
 	led->cdev_led2g.brightness_set_blocking = bd2802_set_led2g_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev_led2g.blink_set = bd2802_set_led2g_blink;
 
 	ret = led_classdev_register(&led->client->dev, &led->cdev_led2g);
@@ -719,11 +618,7 @@ static int bd2802_register_led_classdev(struct bd2802_led *led)
 
 	led->cdev_led2b.name = "led2_B";
 	led->cdev_led2b.brightness = LED_OFF;
-<<<<<<< HEAD
-	led->cdev_led2b.brightness_set = bd2802_set_led2b_brightness;
-=======
 	led->cdev_led2b.brightness_set_blocking = bd2802_set_led2b_brightness;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev_led2b.blink_set = bd2802_set_led2b_blink;
 	led->cdev_led2b.flags |= LED_CORE_SUSPENDRESUME;
 
@@ -753,10 +648,6 @@ failed_unregister_led1_R:
 
 static void bd2802_unregister_led_classdev(struct bd2802_led *led)
 {
-<<<<<<< HEAD
-	cancel_work_sync(&led->work);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led_classdev_unregister(&led->cdev_led2b);
 	led_classdev_unregister(&led->cdev_led2g);
 	led_classdev_unregister(&led->cdev_led2r);
@@ -765,27 +656,6 @@ static void bd2802_unregister_led_classdev(struct bd2802_led *led)
 	led_classdev_unregister(&led->cdev_led1r);
 }
 
-<<<<<<< HEAD
-static int __devinit bd2802_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
-{
-	struct bd2802_led *led;
-	struct bd2802_led_platform_data *pdata;
-	int ret, i;
-
-	led = kzalloc(sizeof(struct bd2802_led), GFP_KERNEL);
-	if (!led) {
-		dev_err(&client->dev, "failed to allocate driver data\n");
-		return -ENOMEM;
-	}
-
-	led->client = client;
-	pdata = led->pdata = client->dev.platform_data;
-	i2c_set_clientdata(client, led);
-
-	/* Configure RESET GPIO (L: RESET, H: RESET cancel) */
-	gpio_request_one(pdata->reset_gpio, GPIOF_OUT_INIT_HIGH, "RGB_RESETB");
-=======
 static int bd2802_probe(struct i2c_client *client)
 {
 	struct bd2802_led *led;
@@ -808,7 +678,6 @@ static int bd2802_probe(struct i2c_client *client)
 	led->reset = devm_gpiod_get(&client->dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(led->reset))
 		return PTR_ERR(led->reset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Tacss = min 0.1ms */
 	udelay(100);
@@ -817,20 +686,12 @@ static int bd2802_probe(struct i2c_client *client)
 	ret = bd2802_write_byte(client, BD2802_REG_CLKSETUP, 0x00);
 	if (ret < 0) {
 		dev_err(&client->dev, "failed to detect device\n");
-<<<<<<< HEAD
-		goto failed_free;
-=======
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		dev_info(&client->dev, "return 0x%02x\n", ret);
 
 	/* To save the power, reset BD2802 after detecting */
-<<<<<<< HEAD
-	gpio_set_value(led->pdata->reset_gpio, 0);
-=======
 	gpiod_set_value(led->reset, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Default attributes */
 	led->wave_pattern = BD2802_PATTERN_HALF;
@@ -857,47 +718,23 @@ static int bd2802_probe(struct i2c_client *client)
 failed_unregister_dev_file:
 	for (i--; i >= 0; i--)
 		device_remove_file(&led->client->dev, bd2802_attributes[i]);
-<<<<<<< HEAD
-failed_free:
-	kfree(led);
-
-	return ret;
-}
-
-static int __exit bd2802_remove(struct i2c_client *client)
-=======
 	return ret;
 }
 
 static void bd2802_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bd2802_led *led = i2c_get_clientdata(client);
 	int i;
 
-<<<<<<< HEAD
-	gpio_set_value(led->pdata->reset_gpio, 0);
-=======
 	gpiod_set_value(led->reset, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bd2802_unregister_led_classdev(led);
 	if (led->adf_on)
 		bd2802_disable_adv_conf(led);
 	for (i = 0; i < ARRAY_SIZE(bd2802_attributes); i++)
 		device_remove_file(&led->client->dev, bd2802_attributes[i]);
-<<<<<<< HEAD
-	kfree(led);
-
-	return 0;
-}
-
-#ifdef CONFIG_PM
-
-=======
 }
 
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bd2802_restore_state(struct bd2802_led *led)
 {
 	int i;
@@ -917,11 +754,7 @@ static int bd2802_suspend(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct bd2802_led *led = i2c_get_clientdata(client);
 
-<<<<<<< HEAD
-	gpio_set_value(led->pdata->reset_gpio, 0);
-=======
 	gpiod_set_value(led->reset, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -938,18 +771,9 @@ static int bd2802_resume(struct device *dev)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-static SIMPLE_DEV_PM_OPS(bd2802_pm, bd2802_suspend, bd2802_resume);
-#define BD2802_PM (&bd2802_pm)
-#else		/* CONFIG_PM */
-#define BD2802_PM NULL
-#endif
-=======
 #endif
 
 static SIMPLE_DEV_PM_OPS(bd2802_pm, bd2802_suspend, bd2802_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id bd2802_id[] = {
 	{ "BD2802", 0 },
@@ -960,17 +784,10 @@ MODULE_DEVICE_TABLE(i2c, bd2802_id);
 static struct i2c_driver bd2802_i2c_driver = {
 	.driver	= {
 		.name	= "BD2802",
-<<<<<<< HEAD
-		.pm	= BD2802_PM,
-	},
-	.probe		= bd2802_probe,
-	.remove		= __exit_p(bd2802_remove),
-=======
 		.pm	= &bd2802_pm,
 	},
 	.probe		= bd2802_probe,
 	.remove		= bd2802_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= bd2802_id,
 };
 

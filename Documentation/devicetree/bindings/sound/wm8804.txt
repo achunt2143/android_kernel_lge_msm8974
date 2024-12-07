@@ -10,11 +10,6 @@ Required properties:
   - reg : the I2C address of the device for I2C, the chip select
           number for SPI.
 
-<<<<<<< HEAD
-Example:
-
-codec: wm8804@1a {
-=======
   - PVDD-supply, DVDD-supply : Power supplies for the device, as covered
     in Documentation/devicetree/bindings/regulator/regulator.txt
 
@@ -25,7 +20,6 @@ Optional properties:
 Example:
 
 wm8804: codec@1a {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compatible = "wlf,wm8804";
 	reg = <0x1a>;
 };

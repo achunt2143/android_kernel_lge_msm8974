@@ -1,33 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell 88SE94xx hardware specific head file
  *
  * Copyright 2007 Red Hat, Inc.
  * Copyright 2008 Marvell. <kewei@marvell.com>
  * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
-<<<<<<< HEAD
- *
- * This file is licensed under GPLv2.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of the
- * License.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #ifndef _MVS94XX_REG_H_
@@ -45,13 +22,10 @@ enum VANIR_REVISION_ID {
 	VANIR_C2_REV		= 0xC2,
 };
 
-<<<<<<< HEAD
-=======
 enum host_registers {
 	MVS_HST_CHIP_CONFIG	= 0x10104,	/* chip configuration */
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum hw_registers {
 	MVS_GBL_CTL		= 0x04,  /* global control */
 	MVS_GBL_INT_STAT	= 0x00,  /* global irq status */
@@ -164,37 +138,6 @@ enum chip_register_bits {
 
 enum pci_interrupt_cause {
 	/*  MAIN_IRQ_CAUSE (R10200) Bits*/
-<<<<<<< HEAD
-	IRQ_COM_IN_I2O_IOP0            = (1 << 0),
-	IRQ_COM_IN_I2O_IOP1            = (1 << 1),
-	IRQ_COM_IN_I2O_IOP2            = (1 << 2),
-	IRQ_COM_IN_I2O_IOP3            = (1 << 3),
-	IRQ_COM_OUT_I2O_HOS0           = (1 << 4),
-	IRQ_COM_OUT_I2O_HOS1           = (1 << 5),
-	IRQ_COM_OUT_I2O_HOS2           = (1 << 6),
-	IRQ_COM_OUT_I2O_HOS3           = (1 << 7),
-	IRQ_PCIF_TO_CPU_DRBL0          = (1 << 8),
-	IRQ_PCIF_TO_CPU_DRBL1          = (1 << 9),
-	IRQ_PCIF_TO_CPU_DRBL2          = (1 << 10),
-	IRQ_PCIF_TO_CPU_DRBL3          = (1 << 11),
-	IRQ_PCIF_DRBL0                 = (1 << 12),
-	IRQ_PCIF_DRBL1                 = (1 << 13),
-	IRQ_PCIF_DRBL2                 = (1 << 14),
-	IRQ_PCIF_DRBL3                 = (1 << 15),
-	IRQ_XOR_A                      = (1 << 16),
-	IRQ_XOR_B                      = (1 << 17),
-	IRQ_SAS_A                      = (1 << 18),
-	IRQ_SAS_B                      = (1 << 19),
-	IRQ_CPU_CNTRL                  = (1 << 20),
-	IRQ_GPIO                       = (1 << 21),
-	IRQ_UART                       = (1 << 22),
-	IRQ_SPI                        = (1 << 23),
-	IRQ_I2C                        = (1 << 24),
-	IRQ_SGPIO                      = (1 << 25),
-	IRQ_COM_ERR                    = (1 << 29),
-	IRQ_I2O_ERR                    = (1 << 30),
-	IRQ_PCIE_ERR                   = (1 << 31),
-=======
 	MVS_IRQ_COM_IN_I2O_IOP0        = (1 << 0),
 	MVS_IRQ_COM_IN_I2O_IOP1        = (1 << 1),
 	MVS_IRQ_COM_IN_I2O_IOP2        = (1 << 2),
@@ -224,7 +167,6 @@ enum pci_interrupt_cause {
 	MVS_IRQ_COM_ERR                = (1 << 29),
 	MVS_IRQ_I2O_ERR                = (1 << 30),
 	MVS_IRQ_PCIE_ERR               = (1 << 31),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union reg_phy_cfg {
@@ -285,8 +227,6 @@ struct mvs_prd {
 	__le32			im_len;
 } __attribute__ ((packed));
 
-<<<<<<< HEAD
-=======
 enum sgpio_registers {
 	MVS_SGPIO_HOST_OFFSET	= 0x100,	/* offset between hosts */
 
@@ -354,7 +294,6 @@ enum sgpio_led_status {
 			(LED_BLINKA_SOF << \
 				MVS_SGPIO_DCTRL_ACT_SHIFT) << (8 * 0))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * these registers are accessed through port vendor
  * specific address/data registers

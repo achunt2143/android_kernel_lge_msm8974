@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _BBC_I2C_H
 #define _BBC_I2C_H
 
 #include <linux/of.h>
-<<<<<<< HEAD
-#include <linux/of_device.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 
 struct bbc_i2c_client {
@@ -89,10 +82,7 @@ extern int bbc_i2c_readb(struct bbc_i2c_client *, unsigned char *byte, int off);
 extern int bbc_i2c_write_buf(struct bbc_i2c_client *, char *buf, int len, int off);
 extern int bbc_i2c_read_buf(struct bbc_i2c_client *, char *buf, int len, int off);
 
-<<<<<<< HEAD
-=======
 extern int bbc_envctrl_init(struct bbc_i2c_bus *bp);
 extern void bbc_envctrl_cleanup(struct bbc_i2c_bus *bp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _BBC_I2C_H */

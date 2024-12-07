@@ -1,25 +1,14 @@
-<<<<<<< HEAD
-#ifndef __ASM_SH_BITOPS_H
-#define __ASM_SH_BITOPS_H
-
-#ifdef __KERNEL__
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __ASM_SH_BITOPS_H
 #define __ASM_SH_BITOPS_H
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_BITOPS_H
 #error only <linux/bitops.h> can be included directly
 #endif
 
 /* For __swab32 */
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-=======
 #include <asm/barrier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_GUSA_RB
 #include <asm/bitops-grb.h>
@@ -28,26 +17,13 @@
 #include <asm/bitops-op32.h>
 #elif defined(CONFIG_CPU_SH4A)
 #include <asm/bitops-llsc.h>
-<<<<<<< HEAD
-=======
 #elif defined(CONFIG_CPU_J2) && defined(CONFIG_SMP)
 #include <asm/bitops-cas.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #include <asm-generic/bitops/atomic.h>
 #include <asm-generic/bitops/non-atomic.h>
 #endif
 
-<<<<<<< HEAD
-/*
- * clear_bit() doesn't provide any barrier for the compiler.
- */
-#define smp_mb__before_clear_bit()	smp_mb()
-#define smp_mb__after_clear_bit()	smp_mb()
-
-#ifdef CONFIG_SUPERH32
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned long ffz(unsigned long word)
 {
 	unsigned long result;
@@ -81,54 +57,16 @@ static inline unsigned long __ffs(unsigned long word)
 		: "t");
 	return result;
 }
-<<<<<<< HEAD
-#else
-static inline unsigned long ffz(unsigned long word)
-{
-	unsigned long result, __d2, __d3;
 
-        __asm__("gettr  tr0, %2\n\t"
-                "pta    $+32, tr0\n\t"
-                "andi   %1, 1, %3\n\t"
-                "beq    %3, r63, tr0\n\t"
-                "pta    $+4, tr0\n"
-                "0:\n\t"
-                "shlri.l        %1, 1, %1\n\t"
-                "addi   %0, 1, %0\n\t"
-                "andi   %1, 1, %3\n\t"
-                "beqi   %3, 1, tr0\n"
-                "1:\n\t"
-                "ptabs  %2, tr0\n\t"
-                : "=r" (result), "=r" (word), "=r" (__d2), "=r" (__d3)
-                : "0" (0L), "1" (word));
-
-	return result;
-}
-
-#include <asm-generic/bitops/__ffs.h>
-#endif
-
-#include <asm-generic/bitops/find.h>
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/ffs.h>
 #include <asm-generic/bitops/hweight.h>
 #include <asm-generic/bitops/lock.h>
 #include <asm-generic/bitops/sched.h>
-<<<<<<< HEAD
-#include <asm-generic/bitops/le.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/ext2-atomic.h>
 #include <asm-generic/bitops/fls.h>
 #include <asm-generic/bitops/__fls.h>
 #include <asm-generic/bitops/fls64.h>
 
-<<<<<<< HEAD
-#endif /* __KERNEL__ */
-=======
 #include <asm-generic/bitops/le.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_BITOPS_H */

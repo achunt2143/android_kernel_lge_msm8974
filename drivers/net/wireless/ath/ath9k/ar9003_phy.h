@@ -32,10 +32,7 @@
 #define AR_PHY_SPUR_REG     (AR_CHAN_BASE + 0x1c)
 #define AR_PHY_RX_IQCAL_CORR_B0    (AR_CHAN_BASE + 0xdc)
 #define AR_PHY_TX_IQCAL_CONTROL_3  (AR_CHAN_BASE + 0xb0)
-<<<<<<< HEAD
-=======
 #define AR_PHY_TIMING_CONTROL4_DO_GAIN_DC_IQ_CAL_SHIFT 16
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR_PHY_TIMING11_SPUR_FREQ_SD    0x3FF00000
 #define AR_PHY_TIMING11_SPUR_FREQ_SD_S  20
@@ -151,11 +148,8 @@
 #define AR_PHY_SFCORR_SPUR_SUBCHNL_SD_S   28
 #define AR_PHY_EXT_CCA_THRESH62 0x007F0000
 #define AR_PHY_EXT_CCA_THRESH62_S       16
-<<<<<<< HEAD
-=======
 #define AR_PHY_EXTCHN_PWRTHR1_ANT_DIV_ALT_ANT_MINGAINIDX    0x0000FF00
 #define AR_PHY_EXTCHN_PWRTHR1_ANT_DIV_ALT_ANT_MINGAINIDX_S  8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_EXT_MINCCA_PWR   0x01FF0000
 #define AR_PHY_EXT_MINCCA_PWR_S 16
 #define AR_PHY_EXT_CYCPWR_THR1 0x0000FE00L
@@ -232,12 +226,6 @@
 #define AR_PHY_ML_CNTL_2       (AR_MRC_BASE + 0x1c)
 #define AR_PHY_TST_ADC         (AR_MRC_BASE + 0x20)
 
-<<<<<<< HEAD
-#define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_IDX_A              0x00000FE0
-#define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_IDX_A_S    5
-#define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_A                  0x1F
-#define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_A_S                0
-=======
 #define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_IDX_A      0x00000FE0
 #define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_IDX_A_S    5
 #define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_A          0x1F
@@ -246,20 +234,16 @@
 #define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_IDX_B_S    17
 #define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_B          0x0001F000
 #define AR_PHY_PILOT_SPUR_MASK_CF_PILOT_MASK_B_S        12
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_IDX_A        0x00000FE0
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_IDX_A_S      5
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_A            0x1F
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_A_S		0
-<<<<<<< HEAD
-=======
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_IDX_B	0x00FE0000
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_IDX_B_S	17
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_B		0x0001F000
 #define AR_PHY_CHAN_SPUR_MASK_CF_CHAN_MASK_B_S		12
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MRC Feild Definitions
@@ -286,11 +270,7 @@
 #define AR_PHY_AGC              (AR_AGC_BASE + 0x14)
 #define AR_PHY_EXT_ATTEN_CTL_0  (AR_AGC_BASE + 0x18)
 #define AR_PHY_CCA_0            (AR_AGC_BASE + 0x1c)
-<<<<<<< HEAD
-#define AR_PHY_EXT_CCA0         (AR_AGC_BASE + 0x20)
-=======
 #define AR_PHY_CCA_CTRL_0       (AR_AGC_BASE + 0x20)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_RESTART          (AR_AGC_BASE + 0x24)
 
 /*
@@ -303,25 +283,6 @@
 #define AR_ANT_DIV_ENABLE_S	24
 
 
-<<<<<<< HEAD
-#define AR_PHY_9485_ANT_FAST_DIV_BIAS			0x00007e00
-#define AR_PHY_9485_ANT_FAST_DIV_BIAS_S                  9
-#define AR_PHY_9485_ANT_DIV_LNADIV			0x01000000
-#define AR_PHY_9485_ANT_DIV_LNADIV_S			24
-#define AR_PHY_9485_ANT_DIV_ALT_LNACONF			0x06000000
-#define AR_PHY_9485_ANT_DIV_ALT_LNACONF_S		25
-#define AR_PHY_9485_ANT_DIV_MAIN_LNACONF		0x18000000
-#define AR_PHY_9485_ANT_DIV_MAIN_LNACONF_S		27
-#define AR_PHY_9485_ANT_DIV_ALT_GAINTB			0x20000000
-#define AR_PHY_9485_ANT_DIV_ALT_GAINTB_S		29
-#define AR_PHY_9485_ANT_DIV_MAIN_GAINTB			0x40000000
-#define AR_PHY_9485_ANT_DIV_MAIN_GAINTB_S		30
-
-#define AR_PHY_9485_ANT_DIV_LNA1_MINUS_LNA2		0x0
-#define AR_PHY_9485_ANT_DIV_LNA2			0x1
-#define AR_PHY_9485_ANT_DIV_LNA1			0x2
-#define AR_PHY_9485_ANT_DIV_LNA1_PLUS_LNA2		0x3
-=======
 #define AR_PHY_ANT_FAST_DIV_BIAS                0x00007e00
 #define AR_PHY_ANT_FAST_DIV_BIAS_S              9
 #define AR_PHY_ANT_SW_RX_PROT                   0x00800000
@@ -336,7 +297,6 @@
 #define AR_PHY_ANT_DIV_ALT_GAINTB_S             29
 #define AR_PHY_ANT_DIV_MAIN_GAINTB              0x40000000
 #define AR_PHY_ANT_DIV_MAIN_GAINTB_S            30
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR_PHY_EXTCHN_PWRTHR1   (AR_AGC_BASE + 0x2c)
 #define AR_PHY_EXT_CHN_WIN      (AR_AGC_BASE + 0x30)
@@ -378,15 +338,6 @@
 #define AR_PHY_CCA_NOM_VAL_9300_5GHZ          -115
 #define AR_PHY_CCA_MIN_GOOD_VAL_9300_2GHZ     -125
 #define AR_PHY_CCA_MIN_GOOD_VAL_9300_5GHZ     -125
-<<<<<<< HEAD
-#define AR_PHY_CCA_MAX_GOOD_VAL_9300_2GHZ     -95
-#define AR_PHY_CCA_MAX_GOOD_VAL_9300_5GHZ     -100
-
-#define AR_PHY_CCA_NOM_VAL_9462_2GHZ          -127
-#define AR_PHY_CCA_MIN_GOOD_VAL_9462_2GHZ     -127
-#define AR_PHY_CCA_NOM_VAL_9462_5GHZ          -127
-#define AR_PHY_CCA_MIN_GOOD_VAL_9462_5GHZ     -127
-=======
 #define AR_PHY_CCA_MAX_GOOD_VAL_9300_2GHZ     -60
 #define AR_PHY_CCA_MAX_GOOD_VAL_9300_5GHZ     -60
 #define AR_PHY_CCA_MAX_GOOD_VAL_9300_FCC_2GHZ -95
@@ -398,7 +349,6 @@
 #define AR_PHY_CCA_NOM_VAL_9462_5GHZ          -127
 #define AR_PHY_CCA_MIN_GOOD_VAL_9462_5GHZ     -127
 #define AR_PHY_CCA_MAX_GOOD_VAL_9462_5GHZ     -60
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR_PHY_CCA_NOM_VAL_9330_2GHZ          -118
 
@@ -447,11 +397,8 @@
 #define AR9280_PHY_CCA_THRESH62_S   12
 #define AR_PHY_EXT_CCA0_THRESH62    0x000000FF
 #define AR_PHY_EXT_CCA0_THRESH62_S  0
-<<<<<<< HEAD
-=======
 #define AR_PHY_EXT_CCA0_THRESH62_1    0x000001FF
 #define AR_PHY_EXT_CCA0_THRESH62_1_S  0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_CCK_DETECT_WEAK_SIG_THR_CCK          0x0000003F
 #define AR_PHY_CCK_DETECT_WEAK_SIG_THR_CCK_S        0
 #define AR_PHY_CCK_DETECT_ANT_SWITCH_TIME           0x00001FC0
@@ -483,11 +430,8 @@
 #define AR_PHY_FIND_SIG_RELSTEP        0x1f
 #define AR_PHY_FIND_SIG_RELSTEP_S         0
 #define AR_PHY_FIND_SIG_RELSTEP_SIGN_BIT  5
-<<<<<<< HEAD
-=======
 #define AR_PHY_RESTART_ENABLE_DIV_M2FLAG 0x00200000
 #define AR_PHY_RESTART_ENABLE_DIV_M2FLAG_S 21
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_RESTART_DIV_GC   0x001C0000
 #define AR_PHY_RESTART_DIV_GC_S 18
 #define AR_PHY_RESTART_ENA      0x01
@@ -510,13 +454,8 @@
 #define AR_PHY_GEN_CTRL          (AR_SM_BASE + 0x4)
 #define AR_PHY_MODE              (AR_SM_BASE + 0x8)
 #define AR_PHY_ACTIVE            (AR_SM_BASE + 0xc)
-<<<<<<< HEAD
-#define AR_PHY_SPUR_MASK_A       (AR_SM_BASE + 0x20)
-#define AR_PHY_SPUR_MASK_B       (AR_SM_BASE + 0x24)
-=======
 #define AR_PHY_SPUR_MASK_A(_ah)  (AR_SM_BASE + (AR_SREV_9561(_ah) ? 0x18 : 0x20))
 #define AR_PHY_SPUR_MASK_B(_ah)  (AR_SM_BASE + (AR_SREV_9561(_ah) ? 0x1c : 0x24))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_SPECTRAL_SCAN     (AR_SM_BASE + 0x28)
 #define AR_PHY_RADAR_BW_FILTER   (AR_SM_BASE + 0x2c)
 #define AR_PHY_SEARCH_START_DELAY (AR_SM_BASE + 0x30)
@@ -548,25 +487,18 @@
 #define AR_PHY_ADDAC_PARA_CTL    (AR_SM_BASE + 0x150)
 #define AR_PHY_XPA_CFG           (AR_SM_BASE + 0x158)
 
-<<<<<<< HEAD
-=======
 #define AR_PHY_FLC_PWR_THRESH		7
 #define AR_PHY_FLC_PWR_THRESH_S		0
 
 #define AR_PHY_FRAME_CTL_CF_OVERLAP_WINDOW  3
 #define AR_PHY_FRAME_CTL_CF_OVERLAP_WINDOW_S    0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_SPUR_MASK_A_CF_PUNC_MASK_IDX_A           0x0001FC00
 #define AR_PHY_SPUR_MASK_A_CF_PUNC_MASK_IDX_A_S         10
 #define AR_PHY_SPUR_MASK_A_CF_PUNC_MASK_A                       0x3FF
 #define AR_PHY_SPUR_MASK_A_CF_PUNC_MASK_A_S                     0
 
-<<<<<<< HEAD
-#define AR_PHY_TEST              (AR_SM_BASE + 0x160)
-=======
 #define AR_PHY_TEST(_ah)         (AR_SM_BASE + (AR_SREV_9561(_ah) ? 0x15c : 0x160))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR_PHY_TEST_BBB_OBS_SEL       0x780000
 #define AR_PHY_TEST_BBB_OBS_SEL_S     19
@@ -577,11 +509,7 @@
 #define AR_PHY_TEST_CHAIN_SEL      0xC0000000
 #define AR_PHY_TEST_CHAIN_SEL_S    30
 
-<<<<<<< HEAD
-#define AR_PHY_TEST_CTL_STATUS   (AR_SM_BASE + 0x164)
-=======
 #define AR_PHY_TEST_CTL_STATUS(_ah) (AR_SM_BASE + (AR_SREV_9561(_ah) ? 0x160 : 0x164))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_TEST_CTL_TSTDAC_EN         0x1
 #define AR_PHY_TEST_CTL_TSTDAC_EN_S       0
 #define AR_PHY_TEST_CTL_TX_OBS_SEL        0x1C
@@ -596,26 +524,6 @@
 #define AR_PHY_TEST_CTL_DEBUGPORT_SEL_S	  29
 
 
-<<<<<<< HEAD
-#define AR_PHY_TSTDAC            (AR_SM_BASE + 0x168)
-
-#define AR_PHY_CHAN_STATUS       (AR_SM_BASE + 0x16c)
-
-#define AR_PHY_CHAN_INFO_MEMORY				(AR_SM_BASE + 0x170)
-#define AR_PHY_CHAN_INFO_MEMORY_CHANINFOMEM_S2_READ	0x00000008
-#define AR_PHY_CHAN_INFO_MEMORY_CHANINFOMEM_S2_READ_S	3
-
-#define AR_PHY_CHNINFO_NOISEPWR  (AR_SM_BASE + 0x174)
-#define AR_PHY_CHNINFO_GAINDIFF  (AR_SM_BASE + 0x178)
-#define AR_PHY_CHNINFO_FINETIM   (AR_SM_BASE + 0x17c)
-#define AR_PHY_CHAN_INFO_GAIN_0  (AR_SM_BASE + 0x180)
-#define AR_PHY_SCRAMBLER_SEED    (AR_SM_BASE + 0x190)
-#define AR_PHY_CCK_TX_CTRL       (AR_SM_BASE + 0x194)
-
-#define AR_PHY_HEAVYCLIP_CTL     (AR_SM_BASE + 0x1a4)
-#define AR_PHY_HEAVYCLIP_20      (AR_SM_BASE + 0x1a8)
-#define AR_PHY_HEAVYCLIP_40      (AR_SM_BASE + 0x1ac)
-=======
 #define AR_PHY_TSTDAC(_ah)       (AR_SM_BASE + (AR_SREV_9561(_ah) ? 0x164 : 0x168))
 
 #define AR_PHY_CHAN_STATUS(_ah)  (AR_SM_BASE + (AR_SREV_9561(_ah) ? 0x168 : 0x16c))
@@ -639,7 +547,6 @@
 #define AR_PHY_HEAVYCLIP_3	 (AR_SM_BASE + 0x1a4)
 #define AR_PHY_HEAVYCLIP_4	 (AR_SM_BASE + 0x1a8)
 #define AR_PHY_HEAVYCLIP_5	 (AR_SM_BASE + 0x1ac)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_ILLEGAL_TXRATE    (AR_SM_BASE + 0x1b0)
 
 #define AR_PHY_POWER_TX_RATE(_d) (AR_SM_BASE + 0x1c0 + ((_d) << 2))
@@ -704,18 +611,6 @@
 
 #define AR_PHY_TXGAIN_TABLE      (AR_SM_BASE + 0x300)
 
-<<<<<<< HEAD
-#define AR_PHY_TX_IQCAL_CONTROL_0   (AR_SM_BASE + (AR_SREV_9485(ah) ? \
-						 0x3c4 : 0x444))
-#define AR_PHY_TX_IQCAL_CONTROL_1   (AR_SM_BASE + (AR_SREV_9485(ah) ? \
-						 0x3c8 : 0x448))
-#define AR_PHY_TX_IQCAL_START       (AR_SM_BASE + (AR_SREV_9485(ah) ? \
-						 0x3c4 : 0x440))
-#define AR_PHY_TX_IQCAL_STATUS_B0   (AR_SM_BASE + (AR_SREV_9485(ah) ? \
-						 0x3f0 : 0x48c))
-#define AR_PHY_TX_IQCAL_CORR_COEFF_B0(_i)    (AR_SM_BASE + \
-					     (AR_SREV_9485(ah) ? \
-=======
 #define AR_PHY_TX_IQCAL_CONTROL_0(_ah)   (AR_SM_BASE + (AR_SREV_9485(_ah) ? \
 						 0x3c4 : 0x444))
 #define AR_PHY_TX_IQCAL_CONTROL_1(_ah)   (AR_SM_BASE + (AR_SREV_9485(_ah) ? \
@@ -726,7 +621,6 @@
 						 0x3f0 : 0x48c))
 #define AR_PHY_TX_IQCAL_CORR_COEFF_B0(_ah, _i)    (AR_SM_BASE + \
 					     (AR_SREV_9485(_ah) ? \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      0x3d0 : 0x450) + ((_i) << 2))
 #define AR_PHY_RTT_CTRL			(AR_SM_BASE + 0x380)
 
@@ -742,53 +636,18 @@
 #define AR_PHY_BB_THERM_ADC_1_INIT_THERM		0x000000ff
 #define AR_PHY_BB_THERM_ADC_1_INIT_THERM_S		0
 
-<<<<<<< HEAD
-=======
 #define AR_PHY_BB_THERM_ADC_3				(AR_SM_BASE + 0x250)
 #define AR_PHY_BB_THERM_ADC_3_THERM_ADC_SCALE_GAIN	0x0001ff00
 #define AR_PHY_BB_THERM_ADC_3_THERM_ADC_SCALE_GAIN_S	8
 #define AR_PHY_BB_THERM_ADC_3_THERM_ADC_OFFSET		0x000000ff
 #define AR_PHY_BB_THERM_ADC_3_THERM_ADC_OFFSET_S	0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_BB_THERM_ADC_4				(AR_SM_BASE + 0x254)
 #define AR_PHY_BB_THERM_ADC_4_LATEST_THERM_VALUE	0x000000ff
 #define AR_PHY_BB_THERM_ADC_4_LATEST_THERM_VALUE_S	0
 #define AR_PHY_BB_THERM_ADC_4_LATEST_VOLT_VALUE		0x0000ff00
 #define AR_PHY_BB_THERM_ADC_4_LATEST_VOLT_VALUE_S	8
 
-<<<<<<< HEAD
-/* AIC Registers */
-#define AR_PHY_AIC_CTRL_0_B0	(AR_SM_BASE + 0x4b0)
-#define AR_PHY_AIC_CTRL_1_B0	(AR_SM_BASE + 0x4b4)
-#define AR_PHY_AIC_CTRL_2_B0	(AR_SM_BASE + 0x4b8)
-#define AR_PHY_AIC_CTRL_3_B0	(AR_SM_BASE + 0x4bc)
-#define AR_PHY_AIC_STAT_0_B0	(AR_SM_BASE + 0x4c4))
-#define AR_PHY_AIC_STAT_1_B0	(AR_SM_BASE + 0x4c8))
-#define AR_PHY_AIC_CTRL_4_B0	(AR_SM_BASE + 0x4c0)
-#define AR_PHY_AIC_STAT_2_B0	(AR_SM_BASE + 0x4cc)
-
-#define AR_PHY_65NM_CH0_SYNTH4      0x1608c
-#define AR_PHY_SYNTH4_LONG_SHIFT_SELECT   (AR_SREV_9462(ah) ? 0x00000001 : 0x00000002)
-#define AR_PHY_SYNTH4_LONG_SHIFT_SELECT_S (AR_SREV_9462(ah) ? 0 : 1)
-#define AR_PHY_65NM_CH0_SYNTH7      0x16098
-#define AR_PHY_65NM_CH0_BIAS1       0x160c0
-#define AR_PHY_65NM_CH0_BIAS2       0x160c4
-#define AR_PHY_65NM_CH0_BIAS4       0x160cc
-#define AR_PHY_65NM_CH0_RXTX4       0x1610c
-
-#define AR_CH0_TOP	(AR_SREV_9300(ah) ? 0x16288 : \
-				((AR_SREV_9462(ah) ? 0x1628c : 0x16280)))
-#define AR_CH0_TOP_XPABIASLVL (0x300)
-#define AR_CH0_TOP_XPABIASLVL_S (8)
-
-#define AR_CH0_THERM	(AR_SREV_9300(ah) ? 0x16290 : \
-				((AR_SREV_9485(ah) ? 0x1628c : 0x16294)))
-#define AR_CH0_THERM_XPABIASLVL_MSB 0x3
-#define AR_CH0_THERM_XPABIASLVL_MSB_S 0
-#define AR_CH0_THERM_XPASHORT2GND 0x4
-#define AR_CH0_THERM_XPASHORT2GND_S 2
-=======
 #define AR_PHY_65NM_CH0_TXRF3       0x16048
 #define AR_PHY_65NM_CH0_TXRF3_CAPDIV2G		0x0000001e
 #define AR_PHY_65NM_CH0_TXRF3_CAPDIV2G_S	1
@@ -829,17 +688,13 @@
 			 (((AR_SREV_9462(_ah) || AR_SREV_9565(_ah)) ? 0x1628c : 0x16280)))
 #define AR_CH0_TOP_XPABIASLVL (AR_SREV_9550(ah) ? 0x3c0 : 0x300)
 #define AR_CH0_TOP_XPABIASLVL_S (AR_SREV_9550(ah) ? 6 : 8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AR_SWITCH_TABLE_COM_ALL (0xffff)
 #define AR_SWITCH_TABLE_COM_ALL_S (0)
 #define AR_SWITCH_TABLE_COM_AR9462_ALL (0xffffff)
 #define AR_SWITCH_TABLE_COM_AR9462_ALL_S (0)
-<<<<<<< HEAD
-=======
 #define AR_SWITCH_TABLE_COM_AR9550_ALL (0xffffff)
 #define AR_SWITCH_TABLE_COM_AR9550_ALL_S (0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_SWITCH_TABLE_COM_SPDT (0x00f00000)
 #define AR_SWITCH_TABLE_COM_SPDT_ALL (0x0000fff0)
 #define AR_SWITCH_TABLE_COM_SPDT_ALL_S (4)
@@ -850,32 +705,6 @@
 #define AR_SWITCH_TABLE_ALL (0xfff)
 #define AR_SWITCH_TABLE_ALL_S (0)
 
-<<<<<<< HEAD
-#define AR_PHY_65NM_CH0_THERM       (AR_SREV_9300(ah) ? 0x16290 :\
-					(AR_SREV_9462(ah) ? 0x16294 : 0x1628c))
-
-#define AR_PHY_65NM_CH0_THERM_LOCAL   0x80000000
-#define AR_PHY_65NM_CH0_THERM_LOCAL_S 31
-#define AR_PHY_65NM_CH0_THERM_START   0x20000000
-#define AR_PHY_65NM_CH0_THERM_START_S 29
-#define AR_PHY_65NM_CH0_THERM_SAR_ADC_OUT   0x0000ff00
-#define AR_PHY_65NM_CH0_THERM_SAR_ADC_OUT_S 8
-
-#define AR_PHY_65NM_CH0_RXTX1       0x16100
-#define AR_PHY_65NM_CH0_RXTX2       0x16104
-#define AR_PHY_65NM_CH1_RXTX1       0x16500
-#define AR_PHY_65NM_CH1_RXTX2       0x16504
-#define AR_PHY_65NM_CH2_RXTX1       0x16900
-#define AR_PHY_65NM_CH2_RXTX2       0x16904
-
-#define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
-					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
-#define AR_CH0_TOP2_XPABIASLVL		0xf000
-#define AR_CH0_TOP2_XPABIASLVL_S	12
-
-#define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
-					(AR_SREV_9462(ah) ? 0x16298 : 0x16290))
-=======
 #define AR_CH0_THERM(_ah)  (AR_SREV_9300(_ah) ? 0x16290 :\
 			    ((AR_SREV_9462(_ah) || AR_SREV_9565(_ah)) ? 0x16294 : 0x1628c))
 #define AR_CH0_THERM_XPABIASLVL_MSB 0x3
@@ -896,19 +725,11 @@
 #define AR_CH0_XTAL(_ah)	(AR_SREV_9300(_ah) ? 0x16294 : \
 				 ((AR_SREV_9462(_ah) || AR_SREV_9565(_ah)) ? 0x16298 : \
 				  (AR_SREV_9561(_ah) ? 0x162c0 : 0x16290)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_CH0_XTAL_CAPINDAC	0x7f000000
 #define AR_CH0_XTAL_CAPINDAC_S	24
 #define AR_CH0_XTAL_CAPOUTDAC	0x00fe0000
 #define AR_CH0_XTAL_CAPOUTDAC_S	17
 
-<<<<<<< HEAD
-#define AR_PHY_PMU1		(AR_SREV_9462(ah) ? 0x16340 : 0x16c40)
-#define AR_PHY_PMU1_PWD		0x1
-#define AR_PHY_PMU1_PWD_S	0
-
-#define AR_PHY_PMU2		(AR_SREV_9462(ah) ? 0x16344 : 0x16c44)
-=======
 #define AR_PHY_PMU1(_ah)	((AR_SREV_9462(_ah) || AR_SREV_9565(_ah)) ? 0x16340 : \
 				 (AR_SREV_9561(_ah) ? 0x16cc0 : 0x16c40))
 #define AR_PHY_PMU1_PWD		0x1
@@ -916,7 +737,6 @@
 
 #define AR_PHY_PMU2(_ah)	((AR_SREV_9462(_ah) || AR_SREV_9565(_ah)) ? 0x16344 : \
 				 (AR_SREV_9561(_ah) ? 0x16cc4 : 0x16c44))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_PMU2_PGM		0x00200000
 #define AR_PHY_PMU2_PGM_S	21
 
@@ -1031,11 +851,6 @@
 #define AR_PHY_TXGAIN_FORCED_TXBB1DBGAIN  0x0000000e
 #define AR_PHY_TXGAIN_FORCED_TXBB1DBGAIN_S 1
 
-<<<<<<< HEAD
-#define AR_PHY_POWER_TX_RATE1   0x9934
-#define AR_PHY_POWER_TX_RATE2   0x9938
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_POWER_TX_RATE_MAX    0x993c
 #define AR_PHY_POWER_TX_RATE_MAX_TPC_ENABLE 0x00000040
 #define PHY_AGC_CLR             0x10000000
@@ -1046,20 +861,6 @@
 #define AR_PHY_CHAN_INFO_MEMORY_CAPTURE_MASK         0x0001
 #define AR_PHY_RX_DELAY_DELAY   0x00003FFF
 #define AR_PHY_CCK_TX_CTRL_JAPAN    0x00000010
-<<<<<<< HEAD
-#define AR_PHY_SPECTRAL_SCAN_ENABLE         0x00000001
-#define AR_PHY_SPECTRAL_SCAN_ENABLE_S       0
-#define AR_PHY_SPECTRAL_SCAN_ACTIVE         0x00000002
-#define AR_PHY_SPECTRAL_SCAN_ACTIVE_S       1
-#define AR_PHY_SPECTRAL_SCAN_FFT_PERIOD     0x000000F0
-#define AR_PHY_SPECTRAL_SCAN_FFT_PERIOD_S   4
-#define AR_PHY_SPECTRAL_SCAN_PERIOD         0x0000FF00
-#define AR_PHY_SPECTRAL_SCAN_PERIOD_S       8
-#define AR_PHY_SPECTRAL_SCAN_COUNT          0x00FF0000
-#define AR_PHY_SPECTRAL_SCAN_COUNT_S        16
-#define AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT   0x01000000
-#define AR_PHY_SPECTRAL_SCAN_SHORT_REPEAT_S 24
-=======
 
 #define AR_PHY_SPECTRAL_SCAN_ENABLE           0x00000001
 #define AR_PHY_SPECTRAL_SCAN_ENABLE_S         0
@@ -1080,7 +881,6 @@
 #define AR_PHY_SPECTRAL_SCAN_COMPRESSED_RPT   0x80000000
 #define AR_PHY_SPECTRAL_SCAN_COMPRESSED_RPT_S 31
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_CHANNEL_STATUS_RX_CLEAR      0x00000004
 #define AR_PHY_RTT_CTRL_ENA_RADIO_RETENTION     0x00000001
 #define AR_PHY_RTT_CTRL_ENA_RADIO_RETENTION_S   0
@@ -1114,14 +914,11 @@
 
 #define AR_PHY_65NM_CH0_RXTX4_THERM_ON          0x10000000
 #define AR_PHY_65NM_CH0_RXTX4_THERM_ON_S        28
-<<<<<<< HEAD
-=======
 #define AR_PHY_65NM_CH0_RXTX4_THERM_ON_OVR      0x20000000
 #define AR_PHY_65NM_CH0_RXTX4_THERM_ON_OVR_S    29
 
 #define AR_PHY_65NM_RXTX4_XLNA_BIAS		0xC0000000
 #define AR_PHY_65NM_RXTX4_XLNA_BIAS_S		30
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Channel 1 Register Map
@@ -1175,11 +972,7 @@
 #define AR_PHY_TPC_5_B1         (AR_SM1_BASE + 0x208)
 #define AR_PHY_TPC_6_B1         (AR_SM1_BASE + 0x20c)
 #define AR_PHY_TPC_11_B1        (AR_SM1_BASE + 0x220)
-<<<<<<< HEAD
-#define AR_PHY_PDADC_TAB_1	(AR_SM1_BASE + (AR_SREV_AR9462(ah) ? \
-=======
 #define AR_PHY_PDADC_TAB_1(_ah)	(AR_SM1_BASE + (AR_SREV_9462_20_OR_LATER(_ah) ? \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					0x280 : 0x240))
 #define AR_PHY_TPC_19_B1	(AR_SM1_BASE + 0x240)
 #define AR_PHY_TPC_19_B1_ALPHA_THERM		0xff
@@ -1187,24 +980,6 @@
 #define AR_PHY_TX_IQCAL_STATUS_B1   (AR_SM1_BASE + 0x48c)
 #define AR_PHY_TX_IQCAL_CORR_COEFF_B1(_i)    (AR_SM1_BASE + 0x450 + ((_i) << 2))
 
-<<<<<<< HEAD
-/* SM 1 AIC Registers */
-
-#define AR_PHY_AIC_CTRL_0_B1	(AR_SM1_BASE + 0x4b0)
-#define AR_PHY_AIC_CTRL_1_B1	(AR_SM1_BASE + 0x4b4)
-#define AR_PHY_AIC_CTRL_2_B1	(AR_SM1_BASE + 0x4b8)
-#define AR_PHY_AIC_STAT_0_B1	(AR_SM1_BASE + (AR_SREV_9462_10(ah) ? \
-					0x4c0 : 0x4c4))
-#define AR_PHY_AIC_STAT_1_B1	(AR_SM1_BASE + (AR_SREV_9462_10(ah) ? \
-					0x4c4 : 0x4c8))
-#define AR_PHY_AIC_CTRL_4_B1	(AR_SM1_BASE + 0x4c0)
-#define AR_PHY_AIC_STAT_2_B1	(AR_SM1_BASE + 0x4cc)
-
-#define AR_PHY_AIC_SRAM_ADDR_B1	(AR_SM1_BASE + 0x5f0)
-#define AR_PHY_AIC_SRAM_DATA_B1	(AR_SM1_BASE + 0x5f4)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_RTT_TABLE_SW_INTF_B(i)	(0x384 + ((i) ? \
 					AR_SM1_BASE : AR_SM_BASE))
 #define AR_PHY_RTT_TABLE_SW_INTF_1_B(i)	(0x388 + ((i) ? \
@@ -1258,36 +1033,18 @@
 #define AR_PHY_TPC_5_B2          (AR_SM2_BASE + 0x208)
 #define AR_PHY_TPC_6_B2          (AR_SM2_BASE + 0x20c)
 #define AR_PHY_TPC_11_B2         (AR_SM2_BASE + 0x220)
-<<<<<<< HEAD
-#define AR_PHY_PDADC_TAB_2       (AR_SM2_BASE + 0x240)
-=======
 #define AR_PHY_TPC_19_B2         (AR_SM2_BASE + 0x240)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_TX_IQCAL_STATUS_B2   (AR_SM2_BASE + 0x48c)
 #define AR_PHY_TX_IQCAL_CORR_COEFF_B2(_i)    (AR_SM2_BASE + 0x450 + ((_i) << 2))
 
 #define AR_PHY_TX_IQCAL_STATUS_B2_FAILED    0x00000001
 
-<<<<<<< HEAD
-/*
- * AGC 3 Register Map
- */
-#define AR_AGC3_BASE	0xce00
-
-#define AR_PHY_RSSI_3            (AR_AGC3_BASE + 0x180)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* GLB Registers */
 #define AR_GLB_BASE	0x20000
 #define AR_GLB_GPIO_CONTROL	(AR_GLB_BASE)
 #define AR_PHY_GLB_CONTROL	(AR_GLB_BASE + 0x44)
 #define AR_GLB_SCRATCH(_ah)	(AR_GLB_BASE + \
-<<<<<<< HEAD
-					(AR_SREV_9462_20(_ah) ? 0x4c : 0x50))
-=======
 					(AR_SREV_9462_20_OR_LATER(_ah) ? 0x4c : 0x50))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_GLB_STATUS		(AR_GLB_BASE + 0x48)
 
 /*
@@ -1386,14 +1143,8 @@
 #define AR_PHY_PAPRD_CTRL1_PAPRD_MAG_SCALE_FACT		0x0ffe0000
 #define AR_PHY_PAPRD_CTRL1_PAPRD_MAG_SCALE_FACT_S	17
 
-<<<<<<< HEAD
-#define AR_PHY_PAPRD_TRAINER_CNTL1				(AR_SM_BASE + \
-								 (AR_SREV_9485(ah) ? \
-								  0x580 : 0x490))
-=======
 #define AR_PHY_PAPRD_TRAINER_CNTL1(_ah) (AR_SM_BASE + (AR_SREV_9485(_ah) ? 0x580 : 0x490))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_PAPRD_TRAINER_CNTL1_CF_CF_PAPRD_TRAIN_ENABLE	0x00000001
 #define AR_PHY_PAPRD_TRAINER_CNTL1_CF_CF_PAPRD_TRAIN_ENABLE_S	0
 #define AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_AGC2_SETTLING	0x0000007e
@@ -1409,17 +1160,6 @@
 #define AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_LB_SKIP		0x0003f000
 #define AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_LB_SKIP_S		12
 
-<<<<<<< HEAD
-#define AR_PHY_PAPRD_TRAINER_CNTL2				(AR_SM_BASE + \
-								 (AR_SREV_9485(ah) ? \
-								  0x584 : 0x494))
-#define AR_PHY_PAPRD_TRAINER_CNTL2_CF_PAPRD_INIT_RX_BB_GAIN	0xFFFFFFFF
-#define AR_PHY_PAPRD_TRAINER_CNTL2_CF_PAPRD_INIT_RX_BB_GAIN_S	0
-
-#define AR_PHY_PAPRD_TRAINER_CNTL3				(AR_SM_BASE + \
-								 (AR_SREV_9485(ah) ? \
-								  0x588 : 0x498))
-=======
 #define AR_PHY_PAPRD_TRAINER_CNTL2(_ah) (AR_SM_BASE + (AR_SREV_9485(_ah) ? 0x584 : 0x494))
 
 #define AR_PHY_PAPRD_TRAINER_CNTL2_CF_PAPRD_INIT_RX_BB_GAIN	0xFFFFFFFF
@@ -1427,7 +1167,6 @@
 
 #define AR_PHY_PAPRD_TRAINER_CNTL3(_ah) (AR_SM_BASE + (AR_SREV_9485(_ah) ? 0x588 : 0x498))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_ADC_DESIRED_SIZE	0x0000003f
 #define AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_ADC_DESIRED_SIZE_S	0
 #define AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_QUICK_DROP		0x00000fc0
@@ -1443,14 +1182,8 @@
 #define AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_BBTXMIX_DISABLE	0x20000000
 #define AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_BBTXMIX_DISABLE_S	29
 
-<<<<<<< HEAD
-#define AR_PHY_PAPRD_TRAINER_CNTL4				(AR_SM_BASE + \
-								 (AR_SREV_9485(ah) ? \
-								  0x58c : 0x49c))
-=======
 #define AR_PHY_PAPRD_TRAINER_CNTL4(_ah) (AR_SM_BASE + (AR_SREV_9485(_ah) ? 0x58c : 0x49c))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_PAPRD_TRAINER_CNTL4_CF_PAPRD_NUM_TRAIN_SAMPLES	0x03ff0000
 #define AR_PHY_PAPRD_TRAINER_CNTL4_CF_PAPRD_NUM_TRAIN_SAMPLES_S	16
 #define AR_PHY_PAPRD_TRAINER_CNTL4_CF_PAPRD_SAFETY_DELTA	0x0000f000
@@ -1469,12 +1202,8 @@
 #define AR_PHY_PAPRD_PRE_POST_SCALING				0x3FFFF
 #define AR_PHY_PAPRD_PRE_POST_SCALING_S				0
 
-<<<<<<< HEAD
-#define AR_PHY_PAPRD_TRAINER_STAT1				(AR_SM_BASE + 0x4a0)
-=======
 #define AR_PHY_PAPRD_TRAINER_STAT1(_ah) (AR_SM_BASE + (AR_SREV_9485(_ah) ? 0x590 : 0x4a0))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE		0x00000001
 #define AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE_S		0
 #define AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_INCOMPLETE	0x00000002
@@ -1488,12 +1217,8 @@
 #define AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_AGC2_PWR		0x0001fe00
 #define AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_AGC2_PWR_S		9
 
-<<<<<<< HEAD
-#define AR_PHY_PAPRD_TRAINER_STAT2				(AR_SM_BASE + 0x4a4)
-=======
 #define AR_PHY_PAPRD_TRAINER_STAT2(_ah) (AR_SM_BASE + (AR_SREV_9485(_ah) ? 0x594 : 0x4a4))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_PAPRD_TRAINER_STAT2_PAPRD_FINE_VAL		0x0000ffff
 #define AR_PHY_PAPRD_TRAINER_STAT2_PAPRD_FINE_VAL_S		0
 #define AR_PHY_PAPRD_TRAINER_STAT2_PAPRD_COARSE_IDX		0x001f0000
@@ -1501,12 +1226,8 @@
 #define AR_PHY_PAPRD_TRAINER_STAT2_PAPRD_FINE_IDX		0x00600000
 #define AR_PHY_PAPRD_TRAINER_STAT2_PAPRD_FINE_IDX_S		21
 
-<<<<<<< HEAD
-#define AR_PHY_PAPRD_TRAINER_STAT3				(AR_SM_BASE + 0x4a8)
-=======
 #define AR_PHY_PAPRD_TRAINER_STAT3(_ah) (AR_SM_BASE + (AR_SREV_9485(_ah) ? 0x598 : 0x4a8))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_PHY_PAPRD_TRAINER_STAT3_PAPRD_TRAIN_SAMPLES_CNT	0x000fffff
 #define AR_PHY_PAPRD_TRAINER_STAT3_PAPRD_TRAIN_SAMPLES_CNT_S	0
 
@@ -1535,8 +1256,6 @@
 #define AR_PHY_CL_TAB_CL_GAIN_MOD		0x1f
 #define AR_PHY_CL_TAB_CL_GAIN_MOD_S		0
 
-<<<<<<< HEAD
-=======
 #define AR_BTCOEX_WL_LNADIV                                0x1a64
 #define AR_BTCOEX_WL_LNADIV_PREDICTED_PERIOD               0x00003FFF
 #define AR_BTCOEX_WL_LNADIV_PREDICTED_PERIOD_S             0
@@ -1598,5 +1317,4 @@
 
 #define AR9300_DFS_FIRPWR -28
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* AR9003_PHY_H */

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/user-return-notifier.h>
 #include <linux/percpu.h>
@@ -18,11 +15,7 @@ static DEFINE_PER_CPU(struct hlist_head, return_notifier_list);
 void user_return_notifier_register(struct user_return_notifier *urn)
 {
 	set_tsk_thread_flag(current, TIF_USER_RETURN_NOTIFY);
-<<<<<<< HEAD
-	hlist_add_head(&urn->link, &__get_cpu_var(return_notifier_list));
-=======
 	hlist_add_head(&urn->link, this_cpu_ptr(&return_notifier_list));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(user_return_notifier_register);
 
@@ -33,11 +26,7 @@ EXPORT_SYMBOL_GPL(user_return_notifier_register);
 void user_return_notifier_unregister(struct user_return_notifier *urn)
 {
 	hlist_del(&urn->link);
-<<<<<<< HEAD
-	if (hlist_empty(&__get_cpu_var(return_notifier_list)))
-=======
 	if (hlist_empty(this_cpu_ptr(&return_notifier_list)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_tsk_thread_flag(current, TIF_USER_RETURN_NOTIFY);
 }
 EXPORT_SYMBOL_GPL(user_return_notifier_unregister);
@@ -46,19 +35,11 @@ EXPORT_SYMBOL_GPL(user_return_notifier_unregister);
 void fire_user_return_notifiers(void)
 {
 	struct user_return_notifier *urn;
-<<<<<<< HEAD
-	struct hlist_node *tmp1, *tmp2;
-	struct hlist_head *head;
-
-	head = &get_cpu_var(return_notifier_list);
-	hlist_for_each_entry_safe(urn, tmp1, tmp2, head, link)
-=======
 	struct hlist_node *tmp2;
 	struct hlist_head *head;
 
 	head = &get_cpu_var(return_notifier_list);
 	hlist_for_each_entry_safe(urn, tmp2, head, link)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		urn->on_user_return(urn);
 	put_cpu_var(return_notifier_list);
 }

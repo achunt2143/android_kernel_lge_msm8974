@@ -8,16 +8,10 @@
  * By Greg Banks <gnb@melbourne.sgi.com>
  * Copyright (c) 2008 Silicon Graphics Inc.  All Rights Reserved.
  * Copyright (C) 2011 Bart Van Assche.  All Rights Reserved.
-<<<<<<< HEAD
- */
-
-#define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
-=======
  * Copyright (C) 2013 Du, Changbin <changbin.du@gmail.com>
  */
 
 #define pr_fmt(fmt) "dyndbg: " fmt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,11 +25,8 @@
 #include <linux/sysctl.h>
 #include <linux/ctype.h>
 #include <linux/string.h>
-<<<<<<< HEAD
-=======
 #include <linux/parser.h>
 #include <linux/string_helpers.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uaccess.h>
 #include <linux/dynamic_debug.h>
 #include <linux/debugfs.h>
@@ -46,14 +37,6 @@
 #include <linux/device.h>
 #include <linux/netdevice.h>
 
-<<<<<<< HEAD
-extern struct _ddebug __start___verbose[];
-extern struct _ddebug __stop___verbose[];
-
-struct ddebug_table {
-	struct list_head link;
-	char *mod_name;
-=======
 #include <rdma/ib_verbs.h>
 
 extern struct _ddebug __start___dyndbg[];
@@ -64,7 +47,6 @@ extern struct ddebug_class_map __stop___dyndbg_classes[];
 struct ddebug_table {
 	struct list_head link, maps;
 	const char *mod_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int num_ddebugs;
 	struct _ddebug *ddebugs;
 };
@@ -74,45 +56,26 @@ struct ddebug_query {
 	const char *module;
 	const char *function;
 	const char *format;
-<<<<<<< HEAD
-=======
 	const char *class_string;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int first_lineno, last_lineno;
 };
 
 struct ddebug_iter {
 	struct ddebug_table *table;
-<<<<<<< HEAD
-	unsigned int idx;
-=======
 	int idx;
 };
 
 struct flag_settings {
 	unsigned int flags;
 	unsigned int mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_MUTEX(ddebug_lock);
 static LIST_HEAD(ddebug_tables);
-<<<<<<< HEAD
-static int verbose = 0;
-module_param(verbose, int, 0644);
-
-/* Return the last part of a pathname */
-static inline const char *basename(const char *path)
-{
-	const char *tail = strrchr(path, '/');
-	return tail ? tail+1 : path;
-}
-=======
 static int verbose;
 module_param(verbose, int, 0644);
 MODULE_PARM_DESC(verbose, " dynamic_debug/control processing "
 		 "( 0 = off (default), 1 = module add/rm, 2 = >control summary, 3 = parsing, 4 = per-site changes)");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Return the path relative to source root */
 static inline const char *trim_prefix(const char *path)
@@ -125,59 +88,16 @@ static inline const char *trim_prefix(const char *path)
 	return path + skip;
 }
 
-<<<<<<< HEAD
-static struct { unsigned flag:8; char opt_char; } opt_array[] = {
-	{ _DPRINTK_FLAGS_PRINT, 'p' },
-	{ _DPRINTK_FLAGS_INCL_MODNAME, 'm' },
-	{ _DPRINTK_FLAGS_INCL_FUNCNAME, 'f' },
-=======
 static const struct { unsigned flag:8; char opt_char; } opt_array[] = {
 	{ _DPRINTK_FLAGS_PRINT, 'p' },
 	{ _DPRINTK_FLAGS_INCL_MODNAME, 'm' },
 	{ _DPRINTK_FLAGS_INCL_FUNCNAME, 'f' },
 	{ _DPRINTK_FLAGS_INCL_SOURCENAME, 's' },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ _DPRINTK_FLAGS_INCL_LINENO, 'l' },
 	{ _DPRINTK_FLAGS_INCL_TID, 't' },
 	{ _DPRINTK_FLAGS_NONE, '_' },
 };
 
-<<<<<<< HEAD
-/* format a string into buf[] which describes the _ddebug's flags */
-static char *ddebug_describe_flags(struct _ddebug *dp, char *buf,
-				    size_t maxlen)
-{
-	char *p = buf;
-	int i;
-
-	BUG_ON(maxlen < 6);
-	for (i = 0; i < ARRAY_SIZE(opt_array); ++i)
-		if (dp->flags & opt_array[i].flag)
-			*p++ = opt_array[i].opt_char;
-	if (p == buf)
-		*p++ = '_';
-	*p = '\0';
-
-	return buf;
-}
-
-#define vpr_info_dq(q, msg)						\
-do {									\
-	if (verbose)							\
-		/* trim last char off format print */			\
-		pr_info("%s: func=\"%s\" file=\"%s\" "			\
-			"module=\"%s\" format=\"%.*s\" "		\
-			"lineno=%u-%u",					\
-			msg,						\
-			q->function ? q->function : "",			\
-			q->filename ? q->filename : "",			\
-			q->module ? q->module : "",			\
-			(int)(q->format ? strlen(q->format) - 1 : 0),	\
-			q->format ? q->format : "",			\
-			q->first_lineno, q->last_lineno);		\
-} while (0)
-
-=======
 struct flagsbuf { char buf[ARRAY_SIZE(opt_array)+1]; };
 
 /* format a string into buf[] which describes the _ddebug's flags */
@@ -245,7 +165,6 @@ static struct ddebug_class_map *ddebug_find_valid_class(struct ddebug_table cons
 }
 
 #define __outvar /* filled by callee */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Search the tables for _ddebug's which match the given `query' and
  * apply the `flags' and `mask' to them.  Returns number of matching
@@ -253,42 +172,21 @@ static struct ddebug_class_map *ddebug_find_valid_class(struct ddebug_table cons
  * logs the changes.  Takes ddebug_lock.
  */
 static int ddebug_change(const struct ddebug_query *query,
-<<<<<<< HEAD
-			unsigned int flags, unsigned int mask)
-=======
 			 struct flag_settings *modifiers)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct ddebug_table *dt;
 	unsigned int newflags;
 	unsigned int nfound = 0;
-<<<<<<< HEAD
-	char flagbuf[10];
-=======
 	struct flagsbuf fbuf, nbuf;
 	struct ddebug_class_map *map = NULL;
 	int __outvar valid_class;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* search for matching ddebugs */
 	mutex_lock(&ddebug_lock);
 	list_for_each_entry(dt, &ddebug_tables, link) {
 
 		/* match against the module name */
-<<<<<<< HEAD
-		if (query->module && strcmp(query->module, dt->mod_name))
-			continue;
-
-		for (i = 0 ; i < dt->num_ddebugs ; i++) {
-			struct _ddebug *dp = &dt->ddebugs[i];
-
-			/* match against the source filename */
-			if (query->filename &&
-			    strcmp(query->filename, dp->filename) &&
-			    strcmp(query->filename, basename(dp->filename)) &&
-			    strcmp(query->filename, trim_prefix(dp->filename)))
-=======
 		if (query->module &&
 		    !match_wildcard(query->module, dt->mod_name))
 			continue;
@@ -316,20 +214,10 @@ static int ddebug_change(const struct ddebug_query *query,
 					   kbasename(dp->filename)) &&
 			    !match_wildcard(query->filename,
 					   trim_prefix(dp->filename)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 
 			/* match against the function */
 			if (query->function &&
-<<<<<<< HEAD
-			    strcmp(query->function, dp->function))
-				continue;
-
-			/* match against the format */
-			if (query->format &&
-			    !strstr(dp->format, query->format))
-				continue;
-=======
 			    !match_wildcard(query->function, dp->function))
 				continue;
 
@@ -344,7 +232,6 @@ static int ddebug_change(const struct ddebug_query *query,
 				} else if (!strstr(dp->format, query->format))
 					continue;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* match against the line number range */
 			if (query->first_lineno &&
@@ -356,18 +243,6 @@ static int ddebug_change(const struct ddebug_query *query,
 
 			nfound++;
 
-<<<<<<< HEAD
-			newflags = (dp->flags & mask) | flags;
-			if (newflags == dp->flags)
-				continue;
-			dp->flags = newflags;
-			if (verbose)
-				pr_info("changed %s:%d [%s]%s =%s\n",
-					trim_prefix(dp->filename), dp->lineno,
-					dt->mod_name, dp->function,
-					ddebug_describe_flags(dp, flagbuf,
-							sizeof(flagbuf)));
-=======
 			newflags = (dp->flags & modifiers->mask) | modifiers->flags;
 			if (newflags == dp->flags)
 				continue;
@@ -385,7 +260,6 @@ static int ddebug_change(const struct ddebug_query *query,
 				  ddebug_describe_flags(dp->flags, &fbuf),
 				  ddebug_describe_flags(newflags, &nbuf));
 			dp->flags = newflags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	mutex_unlock(&ddebug_lock);
@@ -419,21 +293,6 @@ static int ddebug_tokenize(char *buf, char *words[], int maxwords)
 		/* find `end' of word, whitespace separated or quoted */
 		if (*buf == '"' || *buf == '\'') {
 			int quote = *buf++;
-<<<<<<< HEAD
-			for (end = buf ; *end && *end != quote ; end++)
-				;
-			if (!*end)
-				return -EINVAL;	/* unclosed quote */
-		} else {
-			for (end = buf ; *end && !isspace(*end) ; end++)
-				;
-			BUG_ON(end == buf);
-		}
-
-		/* `buf' is start of word, `end' is one past its end */
-		if (nwords == maxwords)
-			return -EINVAL;	/* ran out of words[] before bytes */
-=======
 			for (end = buf; *end && *end != quote; end++)
 				;
 			if (!*end) {
@@ -455,24 +314,16 @@ static int ddebug_tokenize(char *buf, char *words[], int maxwords)
 			pr_err("too many words, legal max <=%d\n", maxwords);
 			return -EINVAL;	/* ran out of words[] before bytes */
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*end)
 			*end++ = '\0';	/* terminate the word */
 		words[nwords++] = buf;
 		buf = end;
 	}
 
-<<<<<<< HEAD
-	if (verbose) {
-		int i;
-		pr_info("split into words:");
-		for (i = 0 ; i < nwords ; i++)
-=======
 	if (verbose >= 3) {
 		int i;
 		pr_info("split into words:");
 		for (i = 0; i < nwords; i++)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_cont(" \"%s\"", words[i]);
 		pr_cont("\n");
 	}
@@ -487,61 +338,11 @@ static int ddebug_tokenize(char *buf, char *words[], int maxwords)
  */
 static inline int parse_lineno(const char *str, unsigned int *val)
 {
-<<<<<<< HEAD
-	char *end = NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(str == NULL);
 	if (*str == '\0') {
 		*val = 0;
 		return 0;
 	}
-<<<<<<< HEAD
-	*val = simple_strtoul(str, &end, 10);
-	return end == NULL || end == str || *end != '\0' ? -EINVAL : 0;
-}
-
-/*
- * Undo octal escaping in a string, inplace.  This is useful to
- * allow the user to express a query which matches a format
- * containing embedded spaces.
- */
-#define isodigit(c)		((c) >= '0' && (c) <= '7')
-static char *unescape(char *str)
-{
-	char *in = str;
-	char *out = str;
-
-	while (*in) {
-		if (*in == '\\') {
-			if (in[1] == '\\') {
-				*out++ = '\\';
-				in += 2;
-				continue;
-			} else if (in[1] == 't') {
-				*out++ = '\t';
-				in += 2;
-				continue;
-			} else if (in[1] == 'n') {
-				*out++ = '\n';
-				in += 2;
-				continue;
-			} else if (isodigit(in[1]) &&
-			         isodigit(in[2]) &&
-			         isodigit(in[3])) {
-				*out++ = ((in[1] - '0')<<6) |
-				          ((in[2] - '0')<<3) |
-				          (in[3] - '0');
-				in += 4;
-				continue;
-			}
-		}
-		*out++ = *in++;
-	}
-	*out = '\0';
-
-	return str;
-=======
 	if (kstrtouint(str, 10, val) < 0) {
 		pr_err("bad line-number: %s\n", str);
 		return -EINVAL;
@@ -582,7 +383,6 @@ static int parse_linerange(struct ddebug_query *query, const char *first)
 	v3pr_info("parsed line %d-%d\n", query->first_lineno,
 		 query->last_lineno);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int check_set(const char **dest, char *src, char *name)
@@ -591,13 +391,8 @@ static int check_set(const char **dest, char *src, char *name)
 
 	if (*dest) {
 		rc = -EINVAL;
-<<<<<<< HEAD
-		pr_err("match-spec:%s val:%s overridden by %s",
-			name, *dest, src);
-=======
 		pr_err("match-spec:%s val:%s overridden by %s\n",
 		       name, *dest, src);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	*dest = src;
 	return rc;
@@ -619,51 +414,6 @@ static int check_set(const char **dest, char *src, char *name)
  * Returns 0 on success, <0 on error.
  */
 static int ddebug_parse_query(char *words[], int nwords,
-<<<<<<< HEAD
-			       struct ddebug_query *query)
-{
-	unsigned int i;
-	int rc;
-
-	/* check we have an even number of words */
-	if (nwords % 2 != 0)
-		return -EINVAL;
-	memset(query, 0, sizeof(*query));
-
-	for (i = 0 ; i < nwords ; i += 2) {
-		if (!strcmp(words[i], "func"))
-			rc = check_set(&query->function, words[i+1], "func");
-		else if (!strcmp(words[i], "file"))
-			rc = check_set(&query->filename, words[i+1], "file");
-		else if (!strcmp(words[i], "module"))
-			rc = check_set(&query->module, words[i+1], "module");
-		else if (!strcmp(words[i], "format"))
-			rc = check_set(&query->format, unescape(words[i+1]),
-				"format");
-		else if (!strcmp(words[i], "line")) {
-			char *first = words[i+1];
-			char *last = strchr(first, '-');
-			if (query->first_lineno || query->last_lineno) {
-				pr_err("match-spec:line given 2 times\n");
-				return -EINVAL;
-			}
-			if (last)
-				*last++ = '\0';
-			if (parse_lineno(first, &query->first_lineno) < 0)
-				return -EINVAL;
-			if (last) {
-				/* range <first>-<last> */
-				if (parse_lineno(last, &query->last_lineno)
-				    < query->first_lineno) {
-					pr_err("last-line < 1st-line\n");
-					return -EINVAL;
-				}
-			} else {
-				query->last_lineno = query->first_lineno;
-			}
-		} else {
-			pr_err("unknown keyword \"%s\"\n", words[i]);
-=======
 			struct ddebug_query *query, const char *modname)
 {
 	unsigned int i;
@@ -713,14 +463,11 @@ static int ddebug_parse_query(char *words[], int nwords,
 			rc = check_set(&query->class_string, arg, "class");
 		} else {
 			pr_err("unknown keyword \"%s\"\n", keyword);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		if (rc)
 			return rc;
 	}
-<<<<<<< HEAD
-=======
 	if (!query->module && modname)
 		/*
 		 * support $modname.dyndbg=<multiple queries>, when
@@ -728,7 +475,6 @@ static int ddebug_parse_query(char *words[], int nwords,
 		 */
 		query->module = modname;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vpr_info_dq(query, "parsed");
 	return 0;
 }
@@ -739,17 +485,9 @@ static int ddebug_parse_query(char *words[], int nwords,
  * flags fields of matched _ddebug's.  Returns 0 on success
  * or <0 on error.
  */
-<<<<<<< HEAD
-static int ddebug_parse_flags(const char *str, unsigned int *flagsp,
-			       unsigned int *maskp)
-{
-	unsigned flags = 0;
-	int op = '=', i;
-=======
 static int ddebug_parse_flags(const char *str, struct flag_settings *modifiers)
 {
 	int op, i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (*str) {
 	case '+':
@@ -758,50 +496,6 @@ static int ddebug_parse_flags(const char *str, struct flag_settings *modifiers)
 		op = *str++;
 		break;
 	default:
-<<<<<<< HEAD
-		return -EINVAL;
-	}
-	if (verbose)
-		pr_info("op='%c'\n", op);
-
-	for ( ; *str ; ++str) {
-		for (i = ARRAY_SIZE(opt_array) - 1; i >= 0; i--) {
-			if (*str == opt_array[i].opt_char) {
-				flags |= opt_array[i].flag;
-				break;
-			}
-		}
-		if (i < 0)
-			return -EINVAL;
-	}
-	if (verbose)
-		pr_info("flags=0x%x\n", flags);
-
-	/* calculate final *flagsp, *maskp according to mask and op */
-	switch (op) {
-	case '=':
-		*maskp = 0;
-		*flagsp = flags;
-		break;
-	case '+':
-		*maskp = ~0U;
-		*flagsp = flags;
-		break;
-	case '-':
-		*maskp = ~flags;
-		*flagsp = 0;
-		break;
-	}
-	if (verbose)
-		pr_info("*flagsp=0x%x *maskp=0x%x\n", *flagsp, *maskp);
-	return 0;
-}
-
-static int ddebug_exec_query(char *query_string)
-{
-	unsigned int flags = 0, mask = 0;
-	struct ddebug_query query;
-=======
 		pr_err("bad flag-op %c, at start of %s\n", *str, str);
 		return -EINVAL;
 	}
@@ -844,24 +538,11 @@ static int ddebug_exec_query(char *query_string, const char *modname)
 {
 	struct flag_settings modifiers = {};
 	struct ddebug_query query = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAXWORDS 9
 	int nwords, nfound;
 	char *words[MAXWORDS];
 
 	nwords = ddebug_tokenize(query_string, words, MAXWORDS);
-<<<<<<< HEAD
-	if (nwords <= 0)
-		return -EINVAL;
-	if (ddebug_parse_query(words, nwords-1, &query))
-		return -EINVAL;
-	if (ddebug_parse_flags(words[nwords-1], &flags, &mask))
-		return -EINVAL;
-
-	/* actually go and implement the change */
-	nfound = ddebug_change(&query, flags, mask);
-	vpr_info_dq((&query), (nfound) ? "applied" : "no-match");
-=======
 	if (nwords <= 0) {
 		pr_err("tokenize failed\n");
 		return -EINVAL;
@@ -878,7 +559,6 @@ static int ddebug_exec_query(char *query_string, const char *modname)
 	/* actually go and implement the change */
 	nfound = ddebug_change(&query, &modifiers);
 	vpr_info_dq(&query, nfound ? "applied" : "no-match");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return nfound;
 }
@@ -887,11 +567,7 @@ static int ddebug_exec_query(char *query_string, const char *modname)
    last error or number of matching callsites.  Module name is either
    in param (for boot arg) or perhaps in query string.
 */
-<<<<<<< HEAD
-static int ddebug_exec_queries(char *query)
-=======
 static int ddebug_exec_queries(char *query, const char *modname)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *split;
 	int i, errs = 0, exitcode = 0, rc, nfound = 0;
@@ -905,21 +581,6 @@ static int ddebug_exec_queries(char *query, const char *modname)
 		if (!query || !*query || *query == '#')
 			continue;
 
-<<<<<<< HEAD
-		if (verbose)
-			pr_info("query %d: \"%s\"\n", i, query);
-
-		rc = ddebug_exec_query(query);
-		if (rc < 0) {
-			errs++;
-			exitcode = rc;
-		} else
-			nfound += rc;
-		i++;
-	}
-	pr_info("processed %d queries, with %d matches, %d errs\n",
-		 i, nfound, errs);
-=======
 		vpr_info("query %d: \"%s\" mod:%s\n", i, query, modname ?: "*");
 
 		rc = ddebug_exec_query(query, modname);
@@ -934,16 +595,12 @@ static int ddebug_exec_queries(char *query, const char *modname)
 	if (i)
 		v2pr_info("processed %d queries, with %d matches, %d errs\n",
 			 i, nfound, errs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (exitcode)
 		return exitcode;
 	return nfound;
 }
 
-<<<<<<< HEAD
-#define PREFIX_SIZE 64
-=======
 /* apply a new bitmap to the sys-knob's current bit-state */
 static int ddebug_apply_class_bitmap(const struct ddebug_class_param *dcp,
 				     unsigned long *new_bits, unsigned long *old_bits)
@@ -1156,7 +813,6 @@ const struct kernel_param_ops param_ops_dyndbg_classes = {
 EXPORT_SYMBOL(param_ops_dyndbg_classes);
 
 #define PREFIX_SIZE 128
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int remaining(int wrote)
 {
@@ -1165,45 +821,21 @@ static int remaining(int wrote)
 	return 0;
 }
 
-<<<<<<< HEAD
-static char *dynamic_emit_prefix(const struct _ddebug *desc, char *buf)
-=======
 static char *__dynamic_emit_prefix(const struct _ddebug *desc, char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pos_after_tid;
 	int pos = 0;
 
-<<<<<<< HEAD
-	pos += snprintf(buf + pos, remaining(pos), "%s", KERN_DEBUG);
-	if (desc->flags & _DPRINTK_FLAGS_INCL_TID) {
-		if (in_interrupt())
-			pos += snprintf(buf + pos, remaining(pos), "%s ",
-						"<intr>");
-		else
-			pos += snprintf(buf + pos, remaining(pos), "[%d] ",
-						task_pid_vnr(current));
-=======
 	if (desc->flags & _DPRINTK_FLAGS_INCL_TID) {
 		if (in_interrupt())
 			pos += snprintf(buf + pos, remaining(pos), "<intr> ");
 		else
 			pos += snprintf(buf + pos, remaining(pos), "[%d] ",
 					task_pid_vnr(current));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pos_after_tid = pos;
 	if (desc->flags & _DPRINTK_FLAGS_INCL_MODNAME)
 		pos += snprintf(buf + pos, remaining(pos), "%s:",
-<<<<<<< HEAD
-					desc->modname);
-	if (desc->flags & _DPRINTK_FLAGS_INCL_FUNCNAME)
-		pos += snprintf(buf + pos, remaining(pos), "%s:",
-					desc->function);
-	if (desc->flags & _DPRINTK_FLAGS_INCL_LINENO)
-		pos += snprintf(buf + pos, remaining(pos), "%d:",
-					desc->lineno);
-=======
 				desc->modname);
 	if (desc->flags & _DPRINTK_FLAGS_INCL_FUNCNAME)
 		pos += snprintf(buf + pos, remaining(pos), "%s:",
@@ -1214,7 +846,6 @@ static char *__dynamic_emit_prefix(const struct _ddebug *desc, char *buf)
 	if (desc->flags & _DPRINTK_FLAGS_INCL_LINENO)
 		pos += snprintf(buf + pos, remaining(pos), "%d:",
 				desc->lineno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pos - pos_after_tid)
 		pos += snprintf(buf + pos, remaining(pos), " ");
 	if (pos >= PREFIX_SIZE)
@@ -1223,14 +854,6 @@ static char *__dynamic_emit_prefix(const struct _ddebug *desc, char *buf)
 	return buf;
 }
 
-<<<<<<< HEAD
-int __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
-{
-	va_list args;
-	int res;
-	struct va_format vaf;
-	char buf[PREFIX_SIZE];
-=======
 static inline char *dynamic_emit_prefix(struct _ddebug *desc, char *buf)
 {
 	if (unlikely(desc->flags & _DPRINTK_FLAGS_INCL_ANY))
@@ -1243,24 +866,11 @@ void __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
 	va_list args;
 	struct va_format vaf;
 	char buf[PREFIX_SIZE] = "";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!descriptor);
 	BUG_ON(!fmt);
 
 	va_start(args, fmt);
-<<<<<<< HEAD
-	vaf.fmt = fmt;
-	vaf.va = &args;
-	res = printk("%s%pV", dynamic_emit_prefix(descriptor, buf), &vaf);
-	va_end(args);
-
-	return res;
-}
-EXPORT_SYMBOL(__dynamic_pr_debug);
-
-int __dynamic_dev_dbg(struct _ddebug *descriptor,
-=======
 
 	vaf.fmt = fmt;
 	vaf.va = &args;
@@ -1272,29 +882,15 @@ int __dynamic_dev_dbg(struct _ddebug *descriptor,
 EXPORT_SYMBOL(__dynamic_pr_debug);
 
 void __dynamic_dev_dbg(struct _ddebug *descriptor,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      const struct device *dev, const char *fmt, ...)
 {
 	struct va_format vaf;
 	va_list args;
-<<<<<<< HEAD
-	int res;
-	char buf[PREFIX_SIZE];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!descriptor);
 	BUG_ON(!fmt);
 
 	va_start(args, fmt);
-<<<<<<< HEAD
-	vaf.fmt = fmt;
-	vaf.va = &args;
-	res = __dev_printk(dynamic_emit_prefix(descriptor, buf), dev, &vaf);
-	va_end(args);
-
-	return res;
-=======
 
 	vaf.fmt = fmt;
 	vaf.va = &args;
@@ -1311,40 +907,21 @@ void __dynamic_dev_dbg(struct _ddebug *descriptor,
 	}
 
 	va_end(args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__dynamic_dev_dbg);
 
 #ifdef CONFIG_NET
 
-<<<<<<< HEAD
-int __dynamic_netdev_dbg(struct _ddebug *descriptor,
-		      const struct net_device *dev, const char *fmt, ...)
-{
-	struct va_format vaf;
-	va_list args;
-	int res;
-	char buf[PREFIX_SIZE];
-=======
 void __dynamic_netdev_dbg(struct _ddebug *descriptor,
 			  const struct net_device *dev, const char *fmt, ...)
 {
 	struct va_format vaf;
 	va_list args;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!descriptor);
 	BUG_ON(!fmt);
 
 	va_start(args, fmt);
-<<<<<<< HEAD
-	vaf.fmt = fmt;
-	vaf.va = &args;
-	res = __netdev_printk(dynamic_emit_prefix(descriptor, buf), dev, &vaf);
-	va_end(args);
-
-	return res;
-=======
 
 	vaf.fmt = fmt;
 	vaf.va = &args;
@@ -1367,31 +944,11 @@ void __dynamic_netdev_dbg(struct _ddebug *descriptor,
 	}
 
 	va_end(args);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__dynamic_netdev_dbg);
 
 #endif
 
-<<<<<<< HEAD
-#define DDEBUG_STRING_SIZE 1024
-static __initdata char ddebug_setup_string[DDEBUG_STRING_SIZE];
-
-static __init int ddebug_setup_query(char *str)
-{
-	if (strlen(str) >= DDEBUG_STRING_SIZE) {
-		pr_warn("ddebug boot param string too large\n");
-		return 0;
-	}
-	strlcpy(ddebug_setup_string, str, DDEBUG_STRING_SIZE);
-	return 1;
-}
-
-__setup("ddebug_query=", ddebug_setup_query);
-
-/*
- * File_ops->write method for <debugfs>/dynamic_debug/conrol.  Gathers the
-=======
 #if IS_ENABLED(CONFIG_INFINIBAND)
 
 void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
@@ -1441,7 +998,6 @@ __setup("dyndbg=", dyndbg_setup);
 
 /*
  * File_ops->write method for <debugfs>/dynamic_debug/control.  Gathers the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * command text from userspace, parses and executes it.
  */
 #define USER_BUF_PAGE 4096
@@ -1457,27 +1013,12 @@ static ssize_t ddebug_proc_write(struct file *file, const char __user *ubuf,
 		pr_warn("expected <%d bytes into control\n", USER_BUF_PAGE);
 		return -E2BIG;
 	}
-<<<<<<< HEAD
-	tmpbuf = kmalloc(len + 1, GFP_KERNEL);
-	if (!tmpbuf)
-		return -ENOMEM;
-	if (copy_from_user(tmpbuf, ubuf, len)) {
-		kfree(tmpbuf);
-		return -EFAULT;
-	}
-	tmpbuf[len] = '\0';
-	if (verbose)
-		pr_info("read %d bytes from userspace\n", (int)len);
-
-	ret = ddebug_exec_queries(tmpbuf);
-=======
 	tmpbuf = memdup_user_nul(ubuf, len);
 	if (IS_ERR(tmpbuf))
 		return PTR_ERR(tmpbuf);
 	v2pr_info("read %zu bytes from userspace\n", len);
 
 	ret = ddebug_exec_queries(tmpbuf, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(tmpbuf);
 	if (ret < 0)
 		return ret;
@@ -1495,21 +1036,12 @@ static struct _ddebug *ddebug_iter_first(struct ddebug_iter *iter)
 {
 	if (list_empty(&ddebug_tables)) {
 		iter->table = NULL;
-<<<<<<< HEAD
-		iter->idx = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	iter->table = list_entry(ddebug_tables.next,
 				 struct ddebug_table, link);
-<<<<<<< HEAD
-	iter->idx = 0;
-	return &iter->table->ddebugs[iter->idx];
-=======
 	iter->idx = iter->table->num_ddebugs;
 	return &iter->table->ddebugs[--iter->idx];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1522,25 +1054,16 @@ static struct _ddebug *ddebug_iter_next(struct ddebug_iter *iter)
 {
 	if (iter->table == NULL)
 		return NULL;
-<<<<<<< HEAD
-	if (++iter->idx == iter->table->num_ddebugs) {
-		/* iterate to next table */
-		iter->idx = 0;
-=======
 	if (--iter->idx < 0) {
 		/* iterate to next table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (list_is_last(&iter->table->link, &ddebug_tables)) {
 			iter->table = NULL;
 			return NULL;
 		}
 		iter->table = list_entry(iter->table->link.next,
 					 struct ddebug_table, link);
-<<<<<<< HEAD
-=======
 		iter->idx = iter->table->num_ddebugs;
 		--iter->idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return &iter->table->ddebugs[iter->idx];
 }
@@ -1556,12 +1079,6 @@ static void *ddebug_proc_start(struct seq_file *m, loff_t *pos)
 	struct _ddebug *dp;
 	int n = *pos;
 
-<<<<<<< HEAD
-	if (verbose)
-		pr_info("called m=%p *pos=%lld\n", m, (unsigned long long)*pos);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&ddebug_lock);
 
 	if (!n)
@@ -1584,13 +1101,6 @@ static void *ddebug_proc_next(struct seq_file *m, void *p, loff_t *pos)
 	struct ddebug_iter *iter = m->private;
 	struct _ddebug *dp;
 
-<<<<<<< HEAD
-	if (verbose)
-		pr_info("called m=%p p=%p *pos=%lld\n",
-			m, p, (unsigned long long)*pos);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == SEQ_START_TOKEN)
 		dp = ddebug_iter_first(iter);
 	else
@@ -1599,8 +1109,6 @@ static void *ddebug_proc_next(struct seq_file *m, void *p, loff_t *pos)
 	return dp;
 }
 
-<<<<<<< HEAD
-=======
 #define class_in_range(class_id, map)					\
 	(class_id >= map->base && class_id < map->base + map->length)
 
@@ -1615,7 +1123,6 @@ static const char *ddebug_class_name(struct ddebug_iter *iter, struct _ddebug *d
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Seq_ops show method.  Called several times within a read()
  * call from userspace, with ddebug_lock held.  Formats the
@@ -1626,34 +1133,16 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
 {
 	struct ddebug_iter *iter = m->private;
 	struct _ddebug *dp = p;
-<<<<<<< HEAD
-	char flagsbuf[10];
-
-	if (verbose)
-		pr_info("called m=%p p=%p\n", m, p);
-
-	if (p == SEQ_START_TOKEN) {
-		seq_puts(m,
-			"# filename:lineno [module]function flags format\n");
-=======
 	struct flagsbuf flags;
 	char const *class;
 
 	if (p == SEQ_START_TOKEN) {
 		seq_puts(m,
 			 "# filename:lineno [module]function flags format\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	seq_printf(m, "%s:%u [%s]%s =%s \"",
-<<<<<<< HEAD
-		trim_prefix(dp->filename), dp->lineno,
-		iter->table->mod_name, dp->function,
-		ddebug_describe_flags(dp, flagsbuf, sizeof(flagsbuf)));
-	seq_escape(m, dp->format, "\t\r\n\"");
-	seq_puts(m, "\"\n");
-=======
 		   trim_prefix(dp->filename), dp->lineno,
 		   iter->table->mod_name, dp->function,
 		   ddebug_describe_flags(dp->flags, &flags));
@@ -1668,7 +1157,6 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
 			seq_printf(m, " class unknown, _id:%d", dp->class_id);
 	}
 	seq_puts(m, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1679,11 +1167,6 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
  */
 static void ddebug_proc_stop(struct seq_file *m, void *p)
 {
-<<<<<<< HEAD
-	if (verbose)
-		pr_info("called m=%p p=%p\n", m, p);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ddebug_lock);
 }
 
@@ -1694,39 +1177,10 @@ static const struct seq_operations ddebug_proc_seqops = {
 	.stop = ddebug_proc_stop
 };
 
-<<<<<<< HEAD
-/*
- * File_ops->open method for <debugfs>/dynamic_debug/control.  Does
- * the seq_file setup dance, and also creates an iterator to walk the
- * _ddebugs.  Note that we create a seq_file always, even for O_WRONLY
- * files where it's not needed, as doing so simplifies the ->release
- * method.
- */
-static int ddebug_proc_open(struct inode *inode, struct file *file)
-{
-	struct ddebug_iter *iter;
-	int err;
-
-	if (verbose)
-		pr_info("called\n");
-
-	iter = kzalloc(sizeof(*iter), GFP_KERNEL);
-	if (iter == NULL)
-		return -ENOMEM;
-
-	err = seq_open(file, &ddebug_proc_seqops);
-	if (err) {
-		kfree(iter);
-		return err;
-	}
-	((struct seq_file *) file->private_data)->private = iter;
-	return 0;
-=======
 static int ddebug_proc_open(struct inode *inode, struct file *file)
 {
 	return seq_open_private(file, &ddebug_proc_seqops,
 				sizeof(struct ddebug_iter));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations ddebug_proc_fops = {
@@ -1738,8 +1192,6 @@ static const struct file_operations ddebug_proc_fops = {
 	.write = ddebug_proc_write
 };
 
-<<<<<<< HEAD
-=======
 static const struct proc_ops proc_fops = {
 	.proc_open = ddebug_proc_open,
 	.proc_read = seq_read,
@@ -1774,30 +1226,10 @@ static void ddebug_attach_module_classes(struct ddebug_table *dt,
 		vpr_info("module:%s attached %d classes\n", dt->mod_name, ct);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocate a new ddebug_table for the given module
  * and add it to the global list.
  */
-<<<<<<< HEAD
-int ddebug_add_module(struct _ddebug *tab, unsigned int n,
-			     const char *name)
-{
-	struct ddebug_table *dt;
-	char *new_name;
-
-	dt = kzalloc(sizeof(*dt), GFP_KERNEL);
-	if (dt == NULL)
-		return -ENOMEM;
-	new_name = kstrdup(name, GFP_KERNEL);
-	if (new_name == NULL) {
-		kfree(dt);
-		return -ENOMEM;
-	}
-	dt->mod_name = new_name;
-	dt->num_ddebugs = n;
-	dt->ddebugs = tab;
-=======
 static int ddebug_add_module(struct _ddebug_info *di, const char *modname)
 {
 	struct ddebug_table *dt;
@@ -1828,19 +1260,11 @@ static int ddebug_add_module(struct _ddebug_info *di, const char *modname)
 
 	if (di->classes && di->num_classes)
 		ddebug_attach_module_classes(dt, di->classes, di->num_classes);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&ddebug_lock);
 	list_add_tail(&dt->link, &ddebug_tables);
 	mutex_unlock(&ddebug_lock);
 
-<<<<<<< HEAD
-	if (verbose)
-		pr_info("%u debug prints in module %s\n", n, dt->mod_name);
-	return 0;
-}
-EXPORT_SYMBOL_GPL(ddebug_add_module);
-=======
 	vpr_info("%3u debug prints in module %s\n", di->num_descs, modname);
 	return 0;
 }
@@ -1884,52 +1308,24 @@ int ddebug_dyndbg_module_param_cb(char *param, char *val, const char *module)
 	vpr_info("module: %s %s=\"%s\"\n", module, param, val);
 	return ddebug_dyndbg_param_cb(param, val, module, -ENOENT);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ddebug_table_free(struct ddebug_table *dt)
 {
 	list_del_init(&dt->link);
-<<<<<<< HEAD
-	kfree(dt->mod_name);
-	kfree(dt);
-}
-
-=======
 	kfree(dt);
 }
 
 #ifdef CONFIG_MODULES
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called in response to a module being unloaded.  Removes
  * any ddebug_table's which point at the module.
  */
-<<<<<<< HEAD
-int ddebug_remove_module(const char *mod_name)
-=======
 static int ddebug_remove_module(const char *mod_name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ddebug_table *dt, *nextdt;
 	int ret = -ENOENT;
 
-<<<<<<< HEAD
-	if (verbose)
-		pr_info("removing module \"%s\"\n", mod_name);
-
-	mutex_lock(&ddebug_lock);
-	list_for_each_entry_safe(dt, nextdt, &ddebug_tables, link) {
-		if (!strcmp(dt->mod_name, mod_name)) {
-			ddebug_table_free(dt);
-			ret = 0;
-		}
-	}
-	mutex_unlock(&ddebug_lock);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(ddebug_remove_module);
-=======
 	mutex_lock(&ddebug_lock);
 	list_for_each_entry_safe(dt, nextdt, &ddebug_tables, link) {
 		if (dt->mod_name == mod_name) {
@@ -1970,7 +1366,6 @@ static struct notifier_block ddebug_module_nb = {
 };
 
 #endif /* CONFIG_MODULES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ddebug_remove_all_tables(void)
 {
@@ -1986,31 +1381,14 @@ static void ddebug_remove_all_tables(void)
 
 static __initdata int ddebug_init_success;
 
-<<<<<<< HEAD
-static int __init dynamic_debug_init_debugfs(void)
-{
-	struct dentry *dir, *file;
-=======
 static int __init dynamic_debug_init_control(void)
 {
 	struct proc_dir_entry *procfs_dir;
 	struct dentry *debugfs_dir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ddebug_init_success)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	dir = debugfs_create_dir("dynamic_debug", NULL);
-	if (!dir)
-		return -ENOMEM;
-	file = debugfs_create_file("control", 0644, dir, NULL,
-					&ddebug_proc_fops);
-	if (!file) {
-		debugfs_remove(dir);
-		return -ENOMEM;
-	}
-=======
 	/* Create the control file in debugfs if it is enabled */
 	if (debugfs_initialized()) {
 		debugfs_dir = debugfs_create_dir("dynamic_debug", NULL);
@@ -2023,66 +1401,11 @@ static int __init dynamic_debug_init_control(void)
 	if (procfs_dir)
 		proc_create("control", 0644, procfs_dir, &proc_fops);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int __init dynamic_debug_init(void)
 {
-<<<<<<< HEAD
-	struct _ddebug *iter, *iter_start;
-	const char *modname = NULL;
-	int ret = 0;
-	int n = 0;
-
-	if (__start___verbose == __stop___verbose) {
-		pr_warn("_ddebug table is empty in a "
-			"CONFIG_DYNAMIC_DEBUG build");
-		return 1;
-	}
-	iter = __start___verbose;
-	modname = iter->modname;
-	iter_start = iter;
-	for (; iter < __stop___verbose; iter++) {
-		if (strcmp(modname, iter->modname)) {
-			ret = ddebug_add_module(iter_start, n, modname);
-			if (ret)
-				goto out_free;
-			n = 0;
-			modname = iter->modname;
-			iter_start = iter;
-		}
-		n++;
-	}
-	ret = ddebug_add_module(iter_start, n, modname);
-	if (ret)
-		goto out_free;
-
-	/* ddebug_query boot param got passed -> set it up */
-	if (ddebug_setup_string[0] != '\0') {
-		ret = ddebug_exec_queries(ddebug_setup_string);
-		if (ret < 0)
-			pr_warn("Invalid ddebug boot param %s",
-				ddebug_setup_string);
-		else
-			pr_info("%d changes by ddebug_query\n", ret);
-
-		/* keep tables even on ddebug_query parse error */
-		ret = 0;
-	}
-
-out_free:
-	if (ret)
-		ddebug_remove_all_tables();
-	else
-		ddebug_init_success = 1;
-	return 0;
-}
-/* Allow early initialization for boot messages via boot param */
-arch_initcall(dynamic_debug_init);
-/* Debugfs setup must be done later */
-module_init(dynamic_debug_init_debugfs);
-=======
 	struct _ddebug *iter, *iter_mod_start;
 	int ret, i, mod_sites, mod_ct;
 	const char *modname;
@@ -2169,4 +1492,3 @@ early_initcall(dynamic_debug_init);
 
 /* Debugfs setup must be done later */
 fs_initcall(dynamic_debug_init_control);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

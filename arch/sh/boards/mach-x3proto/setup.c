@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boards/mach-x3proto/setup.c
  *
  * Renesas SH-X3 Prototype Board Support.
  *
  * Copyright (C) 2007 - 2010  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -26,11 +16,7 @@
 #include <linux/input.h>
 #include <linux/usb/r8a66597.h>
 #include <linux/usb/m66592.h>
-<<<<<<< HEAD
-#include <linux/gpio.h>
-=======
 #include <linux/gpio/driver.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gpio_keys.h>
 #include <mach/ilsel.h>
 #include <mach/hardware.h>

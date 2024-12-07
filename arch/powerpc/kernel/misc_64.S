@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains miscellaneous low-level functions.
  *    Copyright (C) 1995-1996 Gary Thomas (gdt@linuxppc.org)
@@ -10,21 +7,10 @@
  * and Paul Mackerras.
  * Adapted for iSeries by Mike Corrigan (mikejc@us.ibm.com)
  * PPC64 updates by Dave Engebretsen (engebret@us.ibm.com)
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
- *
- */
-
-=======
  */
 
 #include <linux/export.h>
 #include <linux/linkage.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sys.h>
 #include <asm/unistd.h>
 #include <asm/errno.h>
@@ -37,218 +23,6 @@
 #include <asm/thread_info.h>
 #include <asm/kexec.h>
 #include <asm/ptrace.h>
-<<<<<<< HEAD
-
-	.text
-
-_GLOBAL(call_do_softirq)
-	mflr	r0
-	std	r0,16(r1)
-	stdu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r3)
-	mr	r1,r3
-	bl	.__do_softirq
-	ld	r1,0(r1)
-	ld	r0,16(r1)
-	mtlr	r0
-	blr
-
-_GLOBAL(call_handle_irq)
-	ld	r8,0(r6)
-	mflr	r0
-	std	r0,16(r1)
-	mtctr	r8
-	stdu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r5)
-	mr	r1,r5
-	bctrl
-	ld	r1,0(r1)
-	ld	r0,16(r1)
-	mtlr	r0
-	blr
-
-	.section	".toc","aw"
-PPC64_CACHES:
-	.tc		ppc64_caches[TC],ppc64_caches
-	.section	".text"
-
-/*
- * Write any modified data cache blocks out to memory
- * and invalidate the corresponding instruction cache blocks.
- *
- * flush_icache_range(unsigned long start, unsigned long stop)
- *
- *   flush all bytes from start through stop-1 inclusive
- */
-
-_KPROBE(__flush_icache_range)
-
-/*
- * Flush the data cache to memory 
- * 
- * Different systems have different cache line sizes
- * and in some cases i-cache and d-cache line sizes differ from
- * each other.
- */
- 	ld	r10,PPC64_CACHES@toc(r2)
-	lwz	r7,DCACHEL1LINESIZE(r10)/* Get cache line size */
-	addi	r5,r7,-1
-	andc	r6,r3,r5		/* round low to line bdy */
-	subf	r8,r6,r4		/* compute length */
-	add	r8,r8,r5		/* ensure we get enough */
-	lwz	r9,DCACHEL1LOGLINESIZE(r10)	/* Get log-2 of cache line size */
-	srw.	r8,r8,r9		/* compute line count */
-	beqlr				/* nothing to do? */
-	mtctr	r8
-1:	dcbst	0,r6
-	add	r6,r6,r7
-	bdnz	1b
-	sync
-
-/* Now invalidate the instruction cache */
-	
-	lwz	r7,ICACHEL1LINESIZE(r10)	/* Get Icache line size */
-	addi	r5,r7,-1
-	andc	r6,r3,r5		/* round low to line bdy */
-	subf	r8,r6,r4		/* compute length */
-	add	r8,r8,r5
-	lwz	r9,ICACHEL1LOGLINESIZE(r10)	/* Get log-2 of Icache line size */
-	srw.	r8,r8,r9		/* compute line count */
-	beqlr				/* nothing to do? */
-	mtctr	r8
-2:	icbi	0,r6
-	add	r6,r6,r7
-	bdnz	2b
-	isync
-	blr
-	.previous .text
-/*
- * Like above, but only do the D-cache.
- *
- * flush_dcache_range(unsigned long start, unsigned long stop)
- *
- *    flush all bytes from start to stop-1 inclusive
- */
-_GLOBAL(flush_dcache_range)
-
-/*
- * Flush the data cache to memory 
- * 
- * Different systems have different cache line sizes
- */
- 	ld	r10,PPC64_CACHES@toc(r2)
-	lwz	r7,DCACHEL1LINESIZE(r10)	/* Get dcache line size */
-	addi	r5,r7,-1
-	andc	r6,r3,r5		/* round low to line bdy */
-	subf	r8,r6,r4		/* compute length */
-	add	r8,r8,r5		/* ensure we get enough */
-	lwz	r9,DCACHEL1LOGLINESIZE(r10)	/* Get log-2 of dcache line size */
-	srw.	r8,r8,r9		/* compute line count */
-	beqlr				/* nothing to do? */
-	mtctr	r8
-0:	dcbst	0,r6
-	add	r6,r6,r7
-	bdnz	0b
-	sync
-	blr
-
-/*
- * Like above, but works on non-mapped physical addresses.
- * Use only for non-LPAR setups ! It also assumes real mode
- * is cacheable. Used for flushing out the DART before using
- * it as uncacheable memory 
- *
- * flush_dcache_phys_range(unsigned long start, unsigned long stop)
- *
- *    flush all bytes from start to stop-1 inclusive
- */
-_GLOBAL(flush_dcache_phys_range)
- 	ld	r10,PPC64_CACHES@toc(r2)
-	lwz	r7,DCACHEL1LINESIZE(r10)	/* Get dcache line size */
-	addi	r5,r7,-1
-	andc	r6,r3,r5		/* round low to line bdy */
-	subf	r8,r6,r4		/* compute length */
-	add	r8,r8,r5		/* ensure we get enough */
-	lwz	r9,DCACHEL1LOGLINESIZE(r10)	/* Get log-2 of dcache line size */
-	srw.	r8,r8,r9		/* compute line count */
-	beqlr				/* nothing to do? */
-	mfmsr	r5			/* Disable MMU Data Relocation */
-	ori	r0,r5,MSR_DR
-	xori	r0,r0,MSR_DR
-	sync
-	mtmsr	r0
-	sync
-	isync
-	mtctr	r8
-0:	dcbst	0,r6
-	add	r6,r6,r7
-	bdnz	0b
-	sync
-	isync
-	mtmsr	r5			/* Re-enable MMU Data Relocation */
-	sync
-	isync
-	blr
-
-_GLOBAL(flush_inval_dcache_range)
- 	ld	r10,PPC64_CACHES@toc(r2)
-	lwz	r7,DCACHEL1LINESIZE(r10)	/* Get dcache line size */
-	addi	r5,r7,-1
-	andc	r6,r3,r5		/* round low to line bdy */
-	subf	r8,r6,r4		/* compute length */
-	add	r8,r8,r5		/* ensure we get enough */
-	lwz	r9,DCACHEL1LOGLINESIZE(r10)/* Get log-2 of dcache line size */
-	srw.	r8,r8,r9		/* compute line count */
-	beqlr				/* nothing to do? */
-	sync
-	isync
-	mtctr	r8
-0:	dcbf	0,r6
-	add	r6,r6,r7
-	bdnz	0b
-	sync
-	isync
-	blr
-
-
-/*
- * Flush a particular page from the data cache to RAM.
- * Note: this is necessary because the instruction cache does *not*
- * snoop from the data cache.
- *
- *	void __flush_dcache_icache(void *page)
- */
-_GLOBAL(__flush_dcache_icache)
-/*
- * Flush the data cache to memory 
- * 
- * Different systems have different cache line sizes
- */
-
-/* Flush the dcache */
- 	ld	r7,PPC64_CACHES@toc(r2)
-	clrrdi	r3,r3,PAGE_SHIFT           	    /* Page align */
-	lwz	r4,DCACHEL1LINESPERPAGE(r7)	/* Get # dcache lines per page */
-	lwz	r5,DCACHEL1LINESIZE(r7)		/* Get dcache line size */
-	mr	r6,r3
-	mtctr	r4
-0:	dcbst	0,r6
-	add	r6,r6,r5
-	bdnz	0b
-	sync
-
-/* Now invalidate the icache */	
-
-	lwz	r4,ICACHEL1LINESPERPAGE(r7)	/* Get # icache lines per page */
-	lwz	r5,ICACHEL1LINESIZE(r7)		/* Get icache line size */
-	mtctr	r4
-1:	icbi	0,r3
-	add	r3,r3,r5
-	bdnz	1b
-	isync
-	blr
-
-
-#if defined(CONFIG_PPC_PMAC) || defined(CONFIG_PPC_MAPLE)
-=======
 #include <asm/mmu.h>
 #include <asm/feature-fixups.h>
 
@@ -302,7 +76,6 @@ _GLOBAL(rmci_off)
 
 #if defined(CONFIG_PPC_PMAC) || defined(CONFIG_PPC_MAPLE)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Do an IO access in real mode
  */
@@ -368,14 +141,6 @@ _GLOBAL(real_writeb)
 
 #ifdef CONFIG_PPC_PASEMI
 
-<<<<<<< HEAD
-/* No support in all binutils for these yet, so use defines */
-#define LBZCIX(RT,RA,RB)  .long (0x7c0006aa|(RT<<21)|(RA<<16)|(RB << 11))
-#define STBCIX(RS,RA,RB)  .long (0x7c0007aa|(RS<<21)|(RA<<16)|(RB << 11))
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 _GLOBAL(real_205_readb)
 	mfmsr	r7
 	ori	r0,r7,MSR_DR
@@ -384,11 +149,7 @@ _GLOBAL(real_205_readb)
 	mtmsrd	r0
 	sync
 	isync
-<<<<<<< HEAD
-	LBZCIX(r3,0,r3)
-=======
 	LBZCIX(R3,R0,R3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isync
 	mtmsrd	r7
 	sync
@@ -403,11 +164,7 @@ _GLOBAL(real_205_writeb)
 	mtmsrd	r0
 	sync
 	isync
-<<<<<<< HEAD
-	STBCIX(r3,0,r4)
-=======
 	STBCIX(R3,R0,R4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isync
 	mtmsrd	r7
 	sync
@@ -488,56 +245,6 @@ _GLOBAL(scom970_write)
 	blr
 #endif /* CONFIG_CPU_FREQ_PMAC64 || CONFIG_CPU_FREQ_MAPLE */
 
-<<<<<<< HEAD
-
-/*
- * Create a kernel thread
- *   kernel_thread(fn, arg, flags)
- */
-_GLOBAL(kernel_thread)
-	std	r29,-24(r1)
-	std	r30,-16(r1)
-	stdu	r1,-STACK_FRAME_OVERHEAD(r1)
-	mr	r29,r3
-	mr	r30,r4
-	ori	r3,r5,CLONE_VM	/* flags */
-	oris	r3,r3,(CLONE_UNTRACED>>16)
-	li	r4,0		/* new sp (unused) */
-	li	r0,__NR_clone
-	sc
-	bns+	1f		/* did system call indicate error? */
-	neg	r3,r3		/* if so, make return code negative */
-1:	cmpdi	0,r3,0		/* parent or child? */
-	bne	2f		/* return if parent */
-	li	r0,0
-	stdu	r0,-STACK_FRAME_OVERHEAD(r1)
-	ld	r2,8(r29)
-	ld	r29,0(r29)
-	mtlr	r29              /* fn addr in lr */
-	mr	r3,r30	        /* load arg and call fn */
-	blrl
-	li	r0,__NR_exit	/* exit after child exits */
-        li	r3,0
-	sc
-2:	addi	r1,r1,STACK_FRAME_OVERHEAD
-	ld	r29,-24(r1)
-	ld	r30,-16(r1)
-	blr
-
-/*
- * disable_kernel_fp()
- * Disable the FPU.
- */
-_GLOBAL(disable_kernel_fp)
-	mfmsr	r3
-	rldicl	r0,r3,(63-MSR_FP_LG),1
-	rldicl	r3,r0,(MSR_FP_LG+1),0
-	mtmsrd	r3			/* disable use of fpu now */
-	isync
-	blr
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* kexec_wait(phys_cpu)
  *
  * wait for the flag to change, indicating this kernel is going away but
@@ -549,23 +256,11 @@ _GLOBAL(disable_kernel_fp)
  * Physical (hardware) cpu id should be in r3.
  */
 _GLOBAL(kexec_wait)
-<<<<<<< HEAD
-	bl	1f
-=======
 	bcl	20,31,$+4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	mflr	r5
 	addi	r5,r5,kexec_flag-1b
 
 99:	HMT_LOW
-<<<<<<< HEAD
-#ifdef CONFIG_KEXEC		/* use no memory without kexec */
-	lwz	r4,0(r5)
-	cmpwi	0,r4,0
-	bnea	0x60
-#endif
-	b	99b
-=======
 #ifdef CONFIG_KEXEC_CORE	/* use no memory without kexec */
 	lwz	r4,0(r5)
 	cmpwi	0,r4,0
@@ -583,7 +278,6 @@ _GLOBAL(kexec_wait)
 	ba	0x60
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* this can be in text because we won't change it until we are
  * running in real anyways
@@ -592,9 +286,6 @@ kexec_flag:
 	.long	0
 
 
-<<<<<<< HEAD
-#ifdef CONFIG_KEXEC
-=======
 #ifdef CONFIG_KEXEC_CORE
 #ifdef CONFIG_PPC_BOOK3E_64
 /*
@@ -636,7 +327,6 @@ kexec_create_tlb:
 	isync
 	blr
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* kexec_smp_wait(void)
  *
@@ -654,14 +344,8 @@ _GLOBAL(kexec_smp_wait)
 
 	li	r4,KEXEC_STATE_REAL_MODE
 	stb	r4,PACAKEXECSTATE(r13)
-<<<<<<< HEAD
-	SYNC
-
-	b	.kexec_wait
-=======
 
 	b	kexec_wait
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * switch to real mode (turn mmu off)
@@ -670,15 +354,11 @@ _GLOBAL(kexec_smp_wait)
  *
  * don't overwrite r3 here, it is live for kexec_wait above.
  */
-<<<<<<< HEAD
-real_mode:	/* assume normal blr return */
-=======
 SYM_FUNC_START_LOCAL(real_mode)	/* assume normal blr return */
 #ifdef CONFIG_PPC_BOOK3E_64
 	/* Create an identity mapping. */
 	b	kexec_create_tlb
 #else
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	li	r9,MSR_RI
 	li	r10,MSR_DR|MSR_IR
 	mflr	r11		/* return address to SRR0 */
@@ -690,19 +370,12 @@ SYM_FUNC_START_LOCAL(real_mode)	/* assume normal blr return */
 	mtspr	SPRN_SRR1,r10
 	mtspr	SPRN_SRR0,r11
 	rfid
-<<<<<<< HEAD
-
-
-/*
- * kexec_sequence(newstack, start, image, control, clear_all())
-=======
 #endif
 SYM_FUNC_END(real_mode)
 
 /*
  * kexec_sequence(newstack, start, image, control, clear_all(),
 	          copy_with_mmu_off)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * does the grungy work with stack switching and real mode switches
  * also does simple calls to other code
@@ -713,11 +386,7 @@ _GLOBAL(kexec_sequence)
 	std	r0,16(r1)
 
 	/* switch stacks to newstack -- &kexec_stack.stack */
-<<<<<<< HEAD
-	stdu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r3)
-=======
 	stdu	r1,THREAD_SIZE-STACK_FRAME_MIN_SIZE(r3)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mr	r1,r3
 
 	li	r0,0
@@ -734,11 +403,7 @@ _GLOBAL(kexec_sequence)
 	std	r26,-48(r1)
 	std	r25,-56(r1)
 
-<<<<<<< HEAD
-	stdu	r1,-STACK_FRAME_OVERHEAD-64(r1)
-=======
 	stdu	r1,-STACK_FRAME_MIN_SIZE-64(r1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* save args into preserved regs */
 	mr	r31,r3			/* newstack (both) */
@@ -746,29 +411,6 @@ _GLOBAL(kexec_sequence)
 	mr	r29,r5			/* image (virt) */
 	mr	r28,r6			/* control, unused */
 	mr	r27,r7			/* clear_all() fn desc */
-<<<<<<< HEAD
-	mr	r26,r8			/* spare */
-	lhz	r25,PACAHWCPUID(r13)	/* get our phys cpu from paca */
-
-	/* disable interrupts, we are overwriting kernel data next */
-	mfmsr	r3
-	rlwinm	r3,r3,0,17,15
-	mtmsrd	r3,1
-
-	/* copy dest pages, flush whole dest image */
-	mr	r3,r29
-	bl	.kexec_copy_flush	/* (image) */
-
-	/* turn off mmu */
-	bl	real_mode
-
-	/* copy  0x100 bytes starting at start to 0 */
-	li	r3,0
-	mr	r4,r30		/* start, aka phys mem offset */
-	li	r5,0x100
-	li	r6,0
-	bl	.copy_and_flush	/* (dest, src, copy limit, start offset) */
-=======
 	mr	r26,r8			/* copy_with_mmu_off */
 	lhz	r25,PACAHWCPUID(r13)	/* get our phys cpu from paca */
 
@@ -803,7 +445,6 @@ _GLOBAL(kexec_sequence)
 	li	r5,0x100
 	li	r6,0
 	bl	copy_and_flush	/* (dest, src, copy limit, start offset) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	/* assume normal blr return */
 
 	/* release other cpus to the new kernel secondary start at 0x60 */
@@ -811,12 +452,6 @@ _GLOBAL(kexec_sequence)
 	li	r6,1
 	stw	r6,kexec_flag-1b(5)
 
-<<<<<<< HEAD
-	/* clear out hardware hash page table and tlb */
-	ld	r5,0(r27)		/* deref function descriptor */
-	mtctr	r5
-	bctrl				/* ppc_md.hpte_clear_all(void); */
-=======
 	cmpdi	r27,0
 	beq	1f
 
@@ -828,7 +463,6 @@ _GLOBAL(kexec_sequence)
 #endif
 	mtctr	r12
 	bctrl				/* mmu_hash_ops.hpte_clear_all(void); */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *   kexec image calling is:
@@ -855,17 +489,9 @@ _GLOBAL(kexec_sequence)
  *    are the boot cpu ?????
  *    other device tree differences (prop sizes, va vs pa, etc)...
  */
-<<<<<<< HEAD
-	mr	r3,r25	# my phys cpu
-=======
 1:	mr	r3,r25	# my phys cpu
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mr	r4,r30	# start, aka phys mem offset
 	mtlr	4
 	li	r5,0
 	blr	/* image->start(physid, image->start, 0); */
-<<<<<<< HEAD
-#endif /* CONFIG_KEXEC */
-=======
 #endif /* CONFIG_KEXEC_CORE */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

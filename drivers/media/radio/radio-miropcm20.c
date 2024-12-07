@@ -1,23 +1,12 @@
-<<<<<<< HEAD
-/* Miro PCM20 radio driver for Linux radio support
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Miro PCM20 radio driver for Linux radio support
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (c) 1998 Ruurd Reitsma <R.A.Reitsma@wbmt.tudelft.nl>
  * Thanks to Norberto Pellici for the ACI device interface specification
  * The API part is based on the radiotrack driver by M. Kirkwood
  * This driver relies on the aci mixer provided by the snd-miro
  * ALSA driver.
  * Look there for further info...
-<<<<<<< HEAD
- */
-
-/* What ever you think about the ACI, version 0x07 is not very well!
- * I can't get frequency, 'tuner status', 'tuner flags' or mute/mono
- * conditions...                Robert
-=======
  *
  * From the original miro RDS sources:
  *
@@ -35,18 +24,10 @@
  * the new V4L2 RDS API by:
  *
  * Hans Verkuil <hans.verkuil@cisco.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/videodev2.h>
-#include <media/v4l2-device.h>
-#include <media/v4l2-ioctl.h>
-#include <sound/aci.h>
-
-=======
 #include <linux/io.h>
 #include <linux/delay.h>
 #include <linux/videodev2.h>
@@ -74,22 +55,10 @@
 #define RDS_RESET       0x08
 #define RDS_RXVALUE     0x09
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int radio_nr = -1;
 module_param(radio_nr, int, 0);
 MODULE_PARM_DESC(radio_nr, "Set radio device number (/dev/radioX).  Default: -1 (autodetect)");
 
-<<<<<<< HEAD
-static bool mono;
-module_param(mono, bool, 0);
-MODULE_PARM_DESC(mono, "Force tuner into mono mode.");
-
-struct pcm20 {
-	struct v4l2_device v4l2_dev;
-	struct video_device vdev;
-	unsigned long freq;
-	int muted;
-=======
 struct pcm20 {
 	struct v4l2_device v4l2_dev;
 	struct video_device vdev;
@@ -104,27 +73,11 @@ struct pcm20 {
 	struct task_struct *kthread;
 	unsigned long freq;
 	u32 audmode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_miro_aci *aci;
 	struct mutex lock;
 };
 
 static struct pcm20 pcm20_card = {
-<<<<<<< HEAD
-	.freq   = 87*16000,
-	.muted  = 1,
-};
-
-static int pcm20_mute(struct pcm20 *dev, unsigned char mute)
-{
-	dev->muted = mute;
-	return snd_aci_cmd(dev->aci, ACI_SET_TUNERMUTE, mute, -1);
-}
-
-static int pcm20_stereo(struct pcm20 *dev, unsigned char stereo)
-{
-	return snd_aci_cmd(dev->aci, ACI_SET_TUNERMONO, !stereo, -1);
-=======
 	.freq = 87 * 16000,
 	.audmode = V4L2_TUNER_MODE_STEREO,
 };
@@ -224,7 +177,6 @@ static int rds_cmd(struct snd_miro_aci *aci, u8 cmd, u8 databuffer[], u8 datasiz
 		databuffer[i / 8] |= RDS_DATA(j) << (7 - (i % 8));
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcm20_setfreq(struct pcm20 *dev, unsigned long freq)
@@ -233,11 +185,6 @@ static int pcm20_setfreq(struct pcm20 *dev, unsigned long freq)
 	unsigned char freqh;
 	struct snd_miro_aci *aci = dev->aci;
 
-<<<<<<< HEAD
-	dev->freq = freq;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	freq /= 160;
 	if (!(aci->aci_version == 0x07 || aci->aci_version >= 0xb0))
 		freq /= 10;  /* I don't know exactly which version
@@ -245,41 +192,6 @@ static int pcm20_setfreq(struct pcm20 *dev, unsigned long freq)
 	freql = freq & 0xff;
 	freqh = freq >> 8;
 
-<<<<<<< HEAD
-	pcm20_stereo(dev, !mono);
-	return snd_aci_cmd(aci, ACI_WRITE_TUNE, freql, freqh);
-}
-
-static const struct v4l2_file_operations pcm20_fops = {
-	.owner		= THIS_MODULE,
-	.unlocked_ioctl	= video_ioctl2,
-};
-
-static int vidioc_querycap(struct file *file, void *priv,
-				struct v4l2_capability *v)
-{
-	strlcpy(v->driver, "Miro PCM20", sizeof(v->driver));
-	strlcpy(v->card, "Miro PCM20", sizeof(v->card));
-	strlcpy(v->bus_info, "ISA", sizeof(v->bus_info));
-	v->version = 0x1;
-	v->capabilities = V4L2_CAP_TUNER | V4L2_CAP_RADIO;
-	return 0;
-}
-
-static int vidioc_g_tuner(struct file *file, void *priv,
-				struct v4l2_tuner *v)
-{
-	if (v->index)	/* Only 1 tuner */
-		return -EINVAL;
-	strlcpy(v->name, "FM", sizeof(v->name));
-	v->type = V4L2_TUNER_RADIO;
-	v->rangelow = 87*16000;
-	v->rangehigh = 108*16000;
-	v->signal = 0xffff;
-	v->rxsubchans = V4L2_TUNER_SUB_MONO | V4L2_TUNER_SUB_STEREO;
-	v->capability = V4L2_TUNER_CAP_LOW;
-	v->audmode = V4L2_TUNER_MODE_MONO;
-=======
 	rds_cmd(aci, RDS_RESET, NULL, 0);
 	return snd_aci_cmd(aci, ACI_WRITE_TUNE, freql, freqh);
 }
@@ -333,16 +245,10 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	res = rds_cmd(dev->aci, RDS_RXVALUE, &buf, 1);
 	if (res >= 0 && buf)
 		v->rxsubchans |= V4L2_TUNER_SUB_RDS;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int vidioc_s_tuner(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_tuner *v)
-{
-	return v->index ? -EINVAL : 0;
-=======
 				const struct v4l2_tuner *v)
 {
 	struct pcm20 *dev = video_drvdata(file);
@@ -356,7 +262,6 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 	snd_aci_cmd(dev->aci, ACI_SET_TUNERMONO,
 			dev->audmode == V4L2_TUNER_MODE_MONO, -1);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vidioc_g_frequency(struct file *file, void *priv,
@@ -374,30 +279,13 @@ static int vidioc_g_frequency(struct file *file, void *priv,
 
 
 static int vidioc_s_frequency(struct file *file, void *priv,
-<<<<<<< HEAD
-				struct v4l2_frequency *f)
-=======
 				const struct v4l2_frequency *f)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcm20 *dev = video_drvdata(file);
 
 	if (f->tuner != 0 || f->type != V4L2_TUNER_RADIO)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	dev->freq = f->frequency;
-	pcm20_setfreq(dev, f->frequency);
-	return 0;
-}
-
-static int vidioc_queryctrl(struct file *file, void *priv,
-				struct v4l2_queryctrl *qc)
-{
-	switch (qc->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		return v4l2_ctrl_query_fill(qc, 0, 1, 1, 1);
-=======
 	dev->freq = clamp_t(u32, f->frequency, 87 * 16000U, 108 * 16000U);
 	pcm20_setfreq(dev, dev->freq);
 	return 0;
@@ -411,24 +299,10 @@ static int pcm20_s_ctrl(struct v4l2_ctrl *ctrl)
 	case V4L2_CID_AUDIO_MUTE:
 		snd_aci_cmd(dev->aci, ACI_SET_TUNERMUTE, ctrl->val, -1);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static int vidioc_g_ctrl(struct file *file, void *priv,
-				struct v4l2_control *ctrl)
-{
-	struct pcm20 *dev = video_drvdata(file);
-
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		ctrl->value = dev->muted;
-		break;
-	default:
-		return -EINVAL;
-=======
 static int pcm20_thread(void *data)
 {
 	struct pcm20 *dev = data;
@@ -497,53 +371,10 @@ static int pcm20_thread(void *data)
 			if (!res && sanitize(text_buffer + 1, 64))
 				v4l2_ctrl_s_ctrl_string(dev->rds_radio_test, text_buffer + 1);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static int vidioc_s_ctrl(struct file *file, void *priv,
-				struct v4l2_control *ctrl)
-{
-	struct pcm20 *dev = video_drvdata(file);
-
-	switch (ctrl->id) {
-	case V4L2_CID_AUDIO_MUTE:
-		pcm20_mute(dev, ctrl->value);
-		break;
-	default:
-		return -EINVAL;
-	}
-	return 0;
-}
-
-static int vidioc_g_input(struct file *filp, void *priv, unsigned int *i)
-{
-	*i = 0;
-	return 0;
-}
-
-static int vidioc_s_input(struct file *filp, void *priv, unsigned int i)
-{
-	return i ? -EINVAL : 0;
-}
-
-static int vidioc_g_audio(struct file *file, void *priv,
-				struct v4l2_audio *a)
-{
-	a->index = 0;
-	strlcpy(a->name, "Radio", sizeof(a->name));
-	a->capability = V4L2_AUDCAP_STEREO;
-	return 0;
-}
-
-static int vidioc_s_audio(struct file *file, void *priv,
-				struct v4l2_audio *a)
-{
-	return a->index ? -EINVAL : 0;
-}
-=======
 static int pcm20_open(struct file *file)
 {
 	struct pcm20 *dev = video_drvdata(file);
@@ -580,7 +411,6 @@ static const struct v4l2_file_operations pcm20_fops = {
 	.release	= pcm20_release,
 	.unlocked_ioctl	= video_ioctl2,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct v4l2_ioctl_ops pcm20_ioctl_ops = {
 	.vidioc_querycap    = vidioc_querycap,
@@ -588,15 +418,6 @@ static const struct v4l2_ioctl_ops pcm20_ioctl_ops = {
 	.vidioc_s_tuner     = vidioc_s_tuner,
 	.vidioc_g_frequency = vidioc_g_frequency,
 	.vidioc_s_frequency = vidioc_s_frequency,
-<<<<<<< HEAD
-	.vidioc_queryctrl   = vidioc_queryctrl,
-	.vidioc_g_ctrl      = vidioc_g_ctrl,
-	.vidioc_s_ctrl      = vidioc_s_ctrl,
-	.vidioc_g_audio     = vidioc_g_audio,
-	.vidioc_s_audio     = vidioc_s_audio,
-	.vidioc_g_input     = vidioc_g_input,
-	.vidioc_s_input     = vidioc_s_input,
-=======
 	.vidioc_log_status  = v4l2_ctrl_log_status,
 	.vidioc_subscribe_event = v4l2_ctrl_subscribe_event,
 	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
@@ -604,17 +425,13 @@ static const struct v4l2_ioctl_ops pcm20_ioctl_ops = {
 
 static const struct v4l2_ctrl_ops pcm20_ctrl_ops = {
 	.s_ctrl = pcm20_s_ctrl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pcm20_init(void)
 {
 	struct pcm20 *dev = &pcm20_card;
 	struct v4l2_device *v4l2_dev = &dev->v4l2_dev;
-<<<<<<< HEAD
-=======
 	struct v4l2_ctrl_handler *hdl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	dev->aci = snd_aci_get_aci();
@@ -623,11 +440,7 @@ static int __init pcm20_init(void)
 			 "you must load the snd-miro driver first!\n");
 		return -ENODEV;
 	}
-<<<<<<< HEAD
-	strlcpy(v4l2_dev->name, "miropcm20", sizeof(v4l2_dev->name));
-=======
 	strscpy(v4l2_dev->name, "radio-miropcm20", sizeof(v4l2_dev->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&dev->lock);
 
 	res = v4l2_device_register(NULL, v4l2_dev);
@@ -636,9 +449,6 @@ static int __init pcm20_init(void)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	strlcpy(dev->vdev.name, v4l2_dev->name, sizeof(dev->vdev.name));
-=======
 	hdl = &dev->ctrl_handler;
 	v4l2_ctrl_handler_init(hdl, 7);
 	v4l2_ctrl_new_std(hdl, &pcm20_ctrl_ops,
@@ -662,22 +472,11 @@ static int __init pcm20_init(void)
 		goto err_hdl;
 	}
 	strscpy(dev->vdev.name, v4l2_dev->name, sizeof(dev->vdev.name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->vdev.v4l2_dev = v4l2_dev;
 	dev->vdev.fops = &pcm20_fops;
 	dev->vdev.ioctl_ops = &pcm20_ioctl_ops;
 	dev->vdev.release = video_device_release_empty;
 	dev->vdev.lock = &dev->lock;
-<<<<<<< HEAD
-	video_set_drvdata(&dev->vdev, dev);
-
-	if (video_register_device(&dev->vdev, VFL_TYPE_RADIO, radio_nr) < 0)
-		goto fail;
-
-	v4l2_info(v4l2_dev, "Mirosound PCM20 Radio tuner\n");
-	return 0;
-fail:
-=======
 	dev->vdev.device_caps = V4L2_CAP_TUNER | V4L2_CAP_RADIO |
 				V4L2_CAP_RDS_CAPTURE;
 	video_set_drvdata(&dev->vdev, dev);
@@ -692,7 +491,6 @@ fail:
 	return 0;
 err_hdl:
 	v4l2_ctrl_handler_free(hdl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v4l2_device_unregister(v4l2_dev);
 	return -EINVAL;
 }
@@ -706,11 +504,8 @@ static void __exit pcm20_cleanup(void)
 	struct pcm20 *dev = &pcm20_card;
 
 	video_unregister_device(&dev->vdev);
-<<<<<<< HEAD
-=======
 	snd_aci_cmd(dev->aci, ACI_SET_TUNERMUTE, 1, -1);
 	v4l2_ctrl_handler_free(&dev->ctrl_handler);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v4l2_device_unregister(&dev->v4l2_dev);
 }
 

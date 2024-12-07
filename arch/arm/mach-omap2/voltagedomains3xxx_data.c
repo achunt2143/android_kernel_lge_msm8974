@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3 voltage domain data
  *
@@ -13,26 +10,13 @@
  * Copyright (C) 2008, 2011 Nokia Corporation
  * Kalle Jokiniemi
  * Paul Walmsley
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/err.h>
 #include <linux/init.h>
 
-<<<<<<< HEAD
-#include "common.h"
-#include <plat/cpu.h>
-
-=======
 #include "soc.h"
 #include "common.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "prm-regbits-34xx.h"
 #include "omap_opp_data.h"
 #include "voltage.h"
@@ -108,11 +92,7 @@ static struct voltagedomain *voltagedomains_am35xx[] __initdata = {
 };
 
 
-<<<<<<< HEAD
-static const char *sys_clk_name __initdata = "sys_ck";
-=======
 static const char *const sys_clk_name __initconst = "sys_ck";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init omap3xxx_voltagedomains_init(void)
 {
@@ -134,16 +114,12 @@ void __init omap3xxx_voltagedomains_init(void)
 	}
 #endif
 
-<<<<<<< HEAD
-	if (cpu_is_omap3517() || cpu_is_omap3505())
-=======
 	omap3_voltdm_mpu.vp_param = &omap3_mpu_vp_data;
 	omap3_voltdm_core.vp_param = &omap3_core_vp_data;
 	omap3_voltdm_mpu.vc_param = &omap3_mpu_vc_data;
 	omap3_voltdm_core.vc_param = &omap3_core_vc_data;
 
 	if (soc_is_am35xx())
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		voltdms = voltagedomains_am35xx;
 	else
 		voltdms = voltagedomains_omap3;

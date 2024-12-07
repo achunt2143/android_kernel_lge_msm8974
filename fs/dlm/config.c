@@ -1,29 +1,16 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
 **  Copyright (C) 2004-2011 Red Hat, Inc.  All rights reserved.
 **
-<<<<<<< HEAD
-**  This copyrighted material is made available to anyone wishing to use,
-**  modify, copy, or redistribute it subject to the terms and conditions
-**  of the GNU General Public License v.2.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/init.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/configfs.h>
 #include <linux/slab.h>
 #include <linux/in.h>
@@ -33,10 +20,7 @@
 #include <net/sock.h>
 
 #include "config.h"
-<<<<<<< HEAD
-=======
 #include "midcomms.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lowcomms.h"
 
 /*
@@ -76,64 +60,18 @@ static struct config_item *make_node(struct config_group *, const char *);
 static void drop_node(struct config_group *, struct config_item *);
 static void release_node(struct config_item *);
 
-<<<<<<< HEAD
-static ssize_t show_cluster(struct config_item *i, struct configfs_attribute *a,
-			    char *buf);
-static ssize_t store_cluster(struct config_item *i,
-			     struct configfs_attribute *a,
-			     const char *buf, size_t len);
-static ssize_t show_comm(struct config_item *i, struct configfs_attribute *a,
-			 char *buf);
-static ssize_t store_comm(struct config_item *i, struct configfs_attribute *a,
-			  const char *buf, size_t len);
-static ssize_t show_node(struct config_item *i, struct configfs_attribute *a,
-			 char *buf);
-static ssize_t store_node(struct config_item *i, struct configfs_attribute *a,
-			  const char *buf, size_t len);
-
-static ssize_t comm_nodeid_read(struct dlm_comm *cm, char *buf);
-static ssize_t comm_nodeid_write(struct dlm_comm *cm, const char *buf,
-				size_t len);
-static ssize_t comm_local_read(struct dlm_comm *cm, char *buf);
-static ssize_t comm_local_write(struct dlm_comm *cm, const char *buf,
-				size_t len);
-static ssize_t comm_addr_write(struct dlm_comm *cm, const char *buf,
-				size_t len);
-static ssize_t comm_addr_list_read(struct dlm_comm *cm, char *buf);
-static ssize_t node_nodeid_read(struct dlm_node *nd, char *buf);
-static ssize_t node_nodeid_write(struct dlm_node *nd, const char *buf,
-				size_t len);
-static ssize_t node_weight_read(struct dlm_node *nd, char *buf);
-static ssize_t node_weight_write(struct dlm_node *nd, const char *buf,
-				size_t len);
-=======
 static struct configfs_attribute *comm_attrs[];
 static struct configfs_attribute *node_attrs[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct dlm_cluster {
 	struct config_group group;
 	unsigned int cl_tcp_port;
 	unsigned int cl_buffer_size;
 	unsigned int cl_rsbtbl_size;
-<<<<<<< HEAD
-	unsigned int cl_dirtbl_size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cl_recover_timer;
 	unsigned int cl_toss_secs;
 	unsigned int cl_scan_secs;
 	unsigned int cl_log_debug;
-<<<<<<< HEAD
-	unsigned int cl_protocol;
-	unsigned int cl_timewarn_cs;
-	unsigned int cl_waitwarn_us;
-	unsigned int cl_new_rsb_count;
-	unsigned int cl_recover_callbacks;
-	char cl_cluster_name[DLM_LOCKSPACE_LEN];
-};
-
-=======
 	unsigned int cl_log_info;
 	unsigned int cl_protocol;
 	unsigned int cl_mark;
@@ -151,75 +89,22 @@ static struct dlm_cluster *config_item_to_cluster(struct config_item *i)
 		   NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	CLUSTER_ATTR_TCP_PORT = 0,
 	CLUSTER_ATTR_BUFFER_SIZE,
 	CLUSTER_ATTR_RSBTBL_SIZE,
-<<<<<<< HEAD
-	CLUSTER_ATTR_DIRTBL_SIZE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CLUSTER_ATTR_RECOVER_TIMER,
 	CLUSTER_ATTR_TOSS_SECS,
 	CLUSTER_ATTR_SCAN_SECS,
 	CLUSTER_ATTR_LOG_DEBUG,
-<<<<<<< HEAD
-	CLUSTER_ATTR_PROTOCOL,
-	CLUSTER_ATTR_TIMEWARN_CS,
-	CLUSTER_ATTR_WAITWARN_US,
-=======
 	CLUSTER_ATTR_LOG_INFO,
 	CLUSTER_ATTR_PROTOCOL,
 	CLUSTER_ATTR_MARK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CLUSTER_ATTR_NEW_RSB_COUNT,
 	CLUSTER_ATTR_RECOVER_CALLBACKS,
 	CLUSTER_ATTR_CLUSTER_NAME,
 };
 
-<<<<<<< HEAD
-struct cluster_attribute {
-	struct configfs_attribute attr;
-	ssize_t (*show)(struct dlm_cluster *, char *);
-	ssize_t (*store)(struct dlm_cluster *, const char *, size_t);
-};
-
-static ssize_t cluster_cluster_name_read(struct dlm_cluster *cl, char *buf)
-{
-	return sprintf(buf, "%s\n", cl->cl_cluster_name);
-}
-
-static ssize_t cluster_cluster_name_write(struct dlm_cluster *cl,
-					  const char *buf, size_t len)
-{
-	strncpy(dlm_config.ci_cluster_name, buf, DLM_LOCKSPACE_LEN);
-	strncpy(cl->cl_cluster_name, buf, DLM_LOCKSPACE_LEN);
-	return len;
-}
-
-static struct cluster_attribute cluster_attr_cluster_name = {
-	.attr   = { .ca_owner = THIS_MODULE,
-                    .ca_name = "cluster_name",
-                    .ca_mode = S_IRUGO | S_IWUSR },
-	.show   = cluster_cluster_name_read,
-	.store  = cluster_cluster_name_write,
-};
-
-static ssize_t cluster_set(struct dlm_cluster *cl, unsigned int *cl_field,
-			   int *info_field, int check_zero,
-			   const char *buf, size_t len)
-{
-	unsigned int x;
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-
-	x = simple_strtoul(buf, NULL, 0);
-
-	if (check_zero && !x)
-		return -EINVAL;
-=======
 static ssize_t cluster_cluster_name_show(struct config_item *item, char *buf)
 {
 	struct dlm_cluster *cl = config_item_to_cluster(item);
@@ -257,7 +142,6 @@ static ssize_t cluster_set(struct dlm_cluster *cl, unsigned int *cl_field,
 		if (rc)
 			return rc;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*cl_field = x;
 	*info_field = x;
@@ -265,50 +149,6 @@ static ssize_t cluster_set(struct dlm_cluster *cl, unsigned int *cl_field,
 	return len;
 }
 
-<<<<<<< HEAD
-#define CLUSTER_ATTR(name, check_zero)                                        \
-static ssize_t name##_write(struct dlm_cluster *cl, const char *buf, size_t len) \
-{                                                                             \
-	return cluster_set(cl, &cl->cl_##name, &dlm_config.ci_##name,         \
-			   check_zero, buf, len);                             \
-}                                                                             \
-static ssize_t name##_read(struct dlm_cluster *cl, char *buf)                 \
-{                                                                             \
-	return snprintf(buf, PAGE_SIZE, "%u\n", cl->cl_##name);               \
-}                                                                             \
-static struct cluster_attribute cluster_attr_##name =                         \
-__CONFIGFS_ATTR(name, 0644, name##_read, name##_write)
-
-CLUSTER_ATTR(tcp_port, 1);
-CLUSTER_ATTR(buffer_size, 1);
-CLUSTER_ATTR(rsbtbl_size, 1);
-CLUSTER_ATTR(dirtbl_size, 1);
-CLUSTER_ATTR(recover_timer, 1);
-CLUSTER_ATTR(toss_secs, 1);
-CLUSTER_ATTR(scan_secs, 1);
-CLUSTER_ATTR(log_debug, 0);
-CLUSTER_ATTR(protocol, 0);
-CLUSTER_ATTR(timewarn_cs, 1);
-CLUSTER_ATTR(waitwarn_us, 0);
-CLUSTER_ATTR(new_rsb_count, 0);
-CLUSTER_ATTR(recover_callbacks, 0);
-
-static struct configfs_attribute *cluster_attrs[] = {
-	[CLUSTER_ATTR_TCP_PORT] = &cluster_attr_tcp_port.attr,
-	[CLUSTER_ATTR_BUFFER_SIZE] = &cluster_attr_buffer_size.attr,
-	[CLUSTER_ATTR_RSBTBL_SIZE] = &cluster_attr_rsbtbl_size.attr,
-	[CLUSTER_ATTR_DIRTBL_SIZE] = &cluster_attr_dirtbl_size.attr,
-	[CLUSTER_ATTR_RECOVER_TIMER] = &cluster_attr_recover_timer.attr,
-	[CLUSTER_ATTR_TOSS_SECS] = &cluster_attr_toss_secs.attr,
-	[CLUSTER_ATTR_SCAN_SECS] = &cluster_attr_scan_secs.attr,
-	[CLUSTER_ATTR_LOG_DEBUG] = &cluster_attr_log_debug.attr,
-	[CLUSTER_ATTR_PROTOCOL] = &cluster_attr_protocol.attr,
-	[CLUSTER_ATTR_TIMEWARN_CS] = &cluster_attr_timewarn_cs.attr,
-	[CLUSTER_ATTR_WAITWARN_US] = &cluster_attr_waitwarn_us.attr,
-	[CLUSTER_ATTR_NEW_RSB_COUNT] = &cluster_attr_new_rsb_count.attr,
-	[CLUSTER_ATTR_RECOVER_CALLBACKS] = &cluster_attr_recover_callbacks.attr,
-	[CLUSTER_ATTR_CLUSTER_NAME] = &cluster_attr_cluster_name.attr,
-=======
 #define CLUSTER_ATTR(name, check_cb)                                          \
 static ssize_t cluster_##name##_store(struct config_item *item, \
 		const char *buf, size_t len) \
@@ -397,7 +237,6 @@ static struct configfs_attribute *cluster_attrs[] = {
 	[CLUSTER_ATTR_NEW_RSB_COUNT] = &cluster_attr_new_rsb_count,
 	[CLUSTER_ATTR_RECOVER_CALLBACKS] = &cluster_attr_recover_callbacks,
 	[CLUSTER_ATTR_CLUSTER_NAME] = &cluster_attr_cluster_name,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
@@ -406,54 +245,7 @@ enum {
 	COMM_ATTR_LOCAL,
 	COMM_ATTR_ADDR,
 	COMM_ATTR_ADDR_LIST,
-<<<<<<< HEAD
-};
-
-struct comm_attribute {
-	struct configfs_attribute attr;
-	ssize_t (*show)(struct dlm_comm *, char *);
-	ssize_t (*store)(struct dlm_comm *, const char *, size_t);
-};
-
-static struct comm_attribute comm_attr_nodeid = {
-	.attr   = { .ca_owner = THIS_MODULE,
-                    .ca_name = "nodeid",
-                    .ca_mode = S_IRUGO | S_IWUSR },
-	.show   = comm_nodeid_read,
-	.store  = comm_nodeid_write,
-};
-
-static struct comm_attribute comm_attr_local = {
-	.attr   = { .ca_owner = THIS_MODULE,
-                    .ca_name = "local",
-                    .ca_mode = S_IRUGO | S_IWUSR },
-	.show   = comm_local_read,
-	.store  = comm_local_write,
-};
-
-static struct comm_attribute comm_attr_addr = {
-	.attr   = { .ca_owner = THIS_MODULE,
-                    .ca_name = "addr",
-                    .ca_mode = S_IWUSR },
-	.store  = comm_addr_write,
-};
-
-static struct comm_attribute comm_attr_addr_list = {
-	.attr   = { .ca_owner = THIS_MODULE,
-                    .ca_name = "addr_list",
-                    .ca_mode = S_IRUGO },
-	.show   = comm_addr_list_read,
-};
-
-static struct configfs_attribute *comm_attrs[] = {
-	[COMM_ATTR_NODEID] = &comm_attr_nodeid.attr,
-	[COMM_ATTR_LOCAL] = &comm_attr_local.attr,
-	[COMM_ATTR_ADDR] = &comm_attr_addr.attr,
-	[COMM_ATTR_ADDR_LIST] = &comm_attr_addr_list.attr,
-	NULL,
-=======
 	COMM_ATTR_MARK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -461,37 +253,6 @@ enum {
 	NODE_ATTR_WEIGHT,
 };
 
-<<<<<<< HEAD
-struct node_attribute {
-	struct configfs_attribute attr;
-	ssize_t (*show)(struct dlm_node *, char *);
-	ssize_t (*store)(struct dlm_node *, const char *, size_t);
-};
-
-static struct node_attribute node_attr_nodeid = {
-	.attr   = { .ca_owner = THIS_MODULE,
-                    .ca_name = "nodeid",
-                    .ca_mode = S_IRUGO | S_IWUSR },
-	.show   = node_nodeid_read,
-	.store  = node_nodeid_write,
-};
-
-static struct node_attribute node_attr_weight = {
-	.attr   = { .ca_owner = THIS_MODULE,
-                    .ca_name = "weight",
-                    .ca_mode = S_IRUGO | S_IWUSR },
-	.show   = node_weight_read,
-	.store  = node_weight_write,
-};
-
-static struct configfs_attribute *node_attrs[] = {
-	[NODE_ATTR_NODEID] = &node_attr_nodeid.attr,
-	[NODE_ATTR_WEIGHT] = &node_attr_weight.attr,
-	NULL,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dlm_clusters {
 	struct configfs_subsystem subsys;
 };
@@ -505,10 +266,7 @@ struct dlm_space {
 	struct list_head members;
 	struct mutex members_lock;
 	int members_count;
-<<<<<<< HEAD
-=======
 	struct dlm_nodes *nds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dlm_comms {
@@ -521,10 +279,7 @@ struct dlm_comm {
 	int nodeid;
 	int local;
 	int addr_count;
-<<<<<<< HEAD
-=======
 	unsigned int mark;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr_storage *addr[DLM_MAX_ADDR_COUNT];
 };
 
@@ -548,11 +303,6 @@ static struct configfs_group_operations clusters_ops = {
 
 static struct configfs_item_operations cluster_ops = {
 	.release = release_cluster,
-<<<<<<< HEAD
-	.show_attribute = show_cluster,
-	.store_attribute = store_cluster,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct configfs_group_operations spaces_ops = {
@@ -571,11 +321,6 @@ static struct configfs_group_operations comms_ops = {
 
 static struct configfs_item_operations comm_ops = {
 	.release = release_comm,
-<<<<<<< HEAD
-	.show_attribute = show_comm,
-	.store_attribute = store_comm,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct configfs_group_operations nodes_ops = {
@@ -585,96 +330,51 @@ static struct configfs_group_operations nodes_ops = {
 
 static struct configfs_item_operations node_ops = {
 	.release = release_node,
-<<<<<<< HEAD
-	.show_attribute = show_node,
-	.store_attribute = store_node,
-};
-
-static struct config_item_type clusters_type = {
-=======
 };
 
 static const struct config_item_type clusters_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_group_ops = &clusters_ops,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct config_item_type cluster_type = {
-=======
 static const struct config_item_type cluster_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_item_ops = &cluster_ops,
 	.ct_attrs = cluster_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct config_item_type spaces_type = {
-=======
 static const struct config_item_type spaces_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_group_ops = &spaces_ops,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct config_item_type space_type = {
-=======
 static const struct config_item_type space_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_item_ops = &space_ops,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct config_item_type comms_type = {
-=======
 static const struct config_item_type comms_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_group_ops = &comms_ops,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct config_item_type comm_type = {
-=======
 static const struct config_item_type comm_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_item_ops = &comm_ops,
 	.ct_attrs = comm_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct config_item_type nodes_type = {
-=======
 static const struct config_item_type nodes_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_group_ops = &nodes_ops,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct config_item_type node_type = {
-=======
 static const struct config_item_type node_type = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ct_item_ops = &node_ops,
 	.ct_attrs = node_attrs,
 	.ct_owner = THIS_MODULE,
 };
 
-<<<<<<< HEAD
-static struct dlm_cluster *config_item_to_cluster(struct config_item *i)
-{
-	return i ? container_of(to_config_group(i), struct dlm_cluster, group) :
-		   NULL;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dlm_space *config_item_to_space(struct config_item *i)
 {
 	return i ? container_of(to_config_group(i), struct dlm_space, group) :
@@ -697,18 +397,6 @@ static struct config_group *make_cluster(struct config_group *g,
 	struct dlm_cluster *cl = NULL;
 	struct dlm_spaces *sps = NULL;
 	struct dlm_comms *cms = NULL;
-<<<<<<< HEAD
-	void *gps = NULL;
-
-	cl = kzalloc(sizeof(struct dlm_cluster), GFP_NOFS);
-	gps = kcalloc(3, sizeof(struct config_group *), GFP_NOFS);
-	sps = kzalloc(sizeof(struct dlm_spaces), GFP_NOFS);
-	cms = kzalloc(sizeof(struct dlm_comms), GFP_NOFS);
-
-	if (!cl || !gps || !sps || !cms)
-		goto fail;
-
-=======
 
 	cl = kzalloc(sizeof(struct dlm_cluster), GFP_NOFS);
 	sps = kzalloc(sizeof(struct dlm_spaces), GFP_NOFS);
@@ -720,40 +408,22 @@ static struct config_group *make_cluster(struct config_group *g,
 	cl->sps = sps;
 	cl->cms = cms;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	config_group_init_type_name(&cl->group, name, &cluster_type);
 	config_group_init_type_name(&sps->ss_group, "spaces", &spaces_type);
 	config_group_init_type_name(&cms->cs_group, "comms", &comms_type);
 
-<<<<<<< HEAD
-	cl->group.default_groups = gps;
-	cl->group.default_groups[0] = &sps->ss_group;
-	cl->group.default_groups[1] = &cms->cs_group;
-	cl->group.default_groups[2] = NULL;
-=======
 	configfs_add_default_group(&sps->ss_group, &cl->group);
 	configfs_add_default_group(&cms->cs_group, &cl->group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cl->cl_tcp_port = dlm_config.ci_tcp_port;
 	cl->cl_buffer_size = dlm_config.ci_buffer_size;
 	cl->cl_rsbtbl_size = dlm_config.ci_rsbtbl_size;
-<<<<<<< HEAD
-	cl->cl_dirtbl_size = dlm_config.ci_dirtbl_size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cl->cl_recover_timer = dlm_config.ci_recover_timer;
 	cl->cl_toss_secs = dlm_config.ci_toss_secs;
 	cl->cl_scan_secs = dlm_config.ci_scan_secs;
 	cl->cl_log_debug = dlm_config.ci_log_debug;
-<<<<<<< HEAD
-	cl->cl_protocol = dlm_config.ci_protocol;
-	cl->cl_timewarn_cs = dlm_config.ci_timewarn_cs;
-	cl->cl_waitwarn_us = dlm_config.ci_waitwarn_us;
-=======
 	cl->cl_log_info = dlm_config.ci_log_info;
 	cl->cl_protocol = dlm_config.ci_protocol;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cl->cl_new_rsb_count = dlm_config.ci_new_rsb_count;
 	cl->cl_recover_callbacks = dlm_config.ci_recover_callbacks;
 	memcpy(cl->cl_cluster_name, dlm_config.ci_cluster_name,
@@ -765,10 +435,6 @@ static struct config_group *make_cluster(struct config_group *g,
 
  fail:
 	kfree(cl);
-<<<<<<< HEAD
-	kfree(gps);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sps);
 	kfree(cms);
 	return ERR_PTR(-ENOMEM);
@@ -777,19 +443,8 @@ static struct config_group *make_cluster(struct config_group *g,
 static void drop_cluster(struct config_group *g, struct config_item *i)
 {
 	struct dlm_cluster *cl = config_item_to_cluster(i);
-<<<<<<< HEAD
-	struct config_item *tmp;
-	int j;
-
-	for (j = 0; cl->group.default_groups[j]; j++) {
-		tmp = &cl->group.default_groups[j]->cg_item;
-		cl->group.default_groups[j] = NULL;
-		config_item_put(tmp);
-	}
-=======
 
 	configfs_remove_default_groups(&cl->group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	space_list = NULL;
 	comm_list = NULL;
@@ -800,13 +455,9 @@ static void drop_cluster(struct config_group *g, struct config_item *i)
 static void release_cluster(struct config_item *i)
 {
 	struct dlm_cluster *cl = config_item_to_cluster(i);
-<<<<<<< HEAD
-	kfree(cl->group.default_groups);
-=======
 
 	kfree(cl->sps);
 	kfree(cl->cms);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(cl);
 }
 
@@ -814,23 +465,6 @@ static struct config_group *make_space(struct config_group *g, const char *name)
 {
 	struct dlm_space *sp = NULL;
 	struct dlm_nodes *nds = NULL;
-<<<<<<< HEAD
-	void *gps = NULL;
-
-	sp = kzalloc(sizeof(struct dlm_space), GFP_NOFS);
-	gps = kcalloc(2, sizeof(struct config_group *), GFP_NOFS);
-	nds = kzalloc(sizeof(struct dlm_nodes), GFP_NOFS);
-
-	if (!sp || !gps || !nds)
-		goto fail;
-
-	config_group_init_type_name(&sp->group, name, &space_type);
-	config_group_init_type_name(&nds->ns_group, "nodes", &nodes_type);
-
-	sp->group.default_groups = gps;
-	sp->group.default_groups[0] = &nds->ns_group;
-	sp->group.default_groups[1] = NULL;
-=======
 
 	sp = kzalloc(sizeof(struct dlm_space), GFP_NOFS);
 	nds = kzalloc(sizeof(struct dlm_nodes), GFP_NOFS);
@@ -842,23 +476,15 @@ static struct config_group *make_space(struct config_group *g, const char *name)
 
 	config_group_init_type_name(&nds->ns_group, "nodes", &nodes_type);
 	configfs_add_default_group(&nds->ns_group, &sp->group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&sp->members);
 	mutex_init(&sp->members_lock);
 	sp->members_count = 0;
-<<<<<<< HEAD
-=======
 	sp->nds = nds;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &sp->group;
 
  fail:
 	kfree(sp);
-<<<<<<< HEAD
-	kfree(gps);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(nds);
 	return ERR_PTR(-ENOMEM);
 }
@@ -866,35 +492,17 @@ static struct config_group *make_space(struct config_group *g, const char *name)
 static void drop_space(struct config_group *g, struct config_item *i)
 {
 	struct dlm_space *sp = config_item_to_space(i);
-<<<<<<< HEAD
-	struct config_item *tmp;
-	int j;
-
-	/* assert list_empty(&sp->members) */
-
-	for (j = 0; sp->group.default_groups[j]; j++) {
-		tmp = &sp->group.default_groups[j]->cg_item;
-		sp->group.default_groups[j] = NULL;
-		config_item_put(tmp);
-	}
-
-=======
 
 	/* assert list_empty(&sp->members) */
 
 	configfs_remove_default_groups(&sp->group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	config_item_put(i);
 }
 
 static void release_space(struct config_item *i)
 {
 	struct dlm_space *sp = config_item_to_space(i);
-<<<<<<< HEAD
-	kfree(sp->group.default_groups);
-=======
 	kfree(sp->nds);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sp);
 }
 
@@ -915,10 +523,7 @@ static struct config_item *make_comm(struct config_group *g, const char *name)
 	cm->nodeid = -1;
 	cm->local = 0;
 	cm->addr_count = 0;
-<<<<<<< HEAD
-=======
 	cm->mark = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &cm->item;
 }
 
@@ -927,11 +532,7 @@ static void drop_comm(struct config_group *g, struct config_item *i)
 	struct dlm_comm *cm = config_item_to_comm(i);
 	if (local_comm == cm)
 		local_comm = NULL;
-<<<<<<< HEAD
-	dlm_lowcomms_close(cm->nodeid);
-=======
 	dlm_midcomms_close(cm->nodeid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (cm->addr_count--)
 		kfree(cm->addr[cm->addr_count]);
 	config_item_put(i);
@@ -1011,66 +612,6 @@ void dlm_config_exit(void)
  * Functions for user space to read/write attributes
  */
 
-<<<<<<< HEAD
-static ssize_t show_cluster(struct config_item *i, struct configfs_attribute *a,
-			    char *buf)
-{
-	struct dlm_cluster *cl = config_item_to_cluster(i);
-	struct cluster_attribute *cla =
-			container_of(a, struct cluster_attribute, attr);
-	return cla->show ? cla->show(cl, buf) : 0;
-}
-
-static ssize_t store_cluster(struct config_item *i,
-			     struct configfs_attribute *a,
-			     const char *buf, size_t len)
-{
-	struct dlm_cluster *cl = config_item_to_cluster(i);
-	struct cluster_attribute *cla =
-		container_of(a, struct cluster_attribute, attr);
-	return cla->store ? cla->store(cl, buf, len) : -EINVAL;
-}
-
-static ssize_t show_comm(struct config_item *i, struct configfs_attribute *a,
-			 char *buf)
-{
-	struct dlm_comm *cm = config_item_to_comm(i);
-	struct comm_attribute *cma =
-			container_of(a, struct comm_attribute, attr);
-	return cma->show ? cma->show(cm, buf) : 0;
-}
-
-static ssize_t store_comm(struct config_item *i, struct configfs_attribute *a,
-			  const char *buf, size_t len)
-{
-	struct dlm_comm *cm = config_item_to_comm(i);
-	struct comm_attribute *cma =
-		container_of(a, struct comm_attribute, attr);
-	return cma->store ? cma->store(cm, buf, len) : -EINVAL;
-}
-
-static ssize_t comm_nodeid_read(struct dlm_comm *cm, char *buf)
-{
-	return sprintf(buf, "%d\n", cm->nodeid);
-}
-
-static ssize_t comm_nodeid_write(struct dlm_comm *cm, const char *buf,
-				 size_t len)
-{
-	cm->nodeid = simple_strtol(buf, NULL, 0);
-	return len;
-}
-
-static ssize_t comm_local_read(struct dlm_comm *cm, char *buf)
-{
-	return sprintf(buf, "%d\n", cm->local);
-}
-
-static ssize_t comm_local_write(struct dlm_comm *cm, const char *buf,
-				size_t len)
-{
-	cm->local= simple_strtol(buf, NULL, 0);
-=======
 static ssize_t comm_nodeid_show(struct config_item *item, char *buf)
 {
 	return sprintf(buf, "%d\n", config_item_to_comm(item)->nodeid);
@@ -1099,24 +640,17 @@ static ssize_t comm_local_store(struct config_item *item, const char *buf,
 
 	if (rc)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cm->local && !local_comm)
 		local_comm = cm;
 	return len;
 }
 
-<<<<<<< HEAD
-static ssize_t comm_addr_write(struct dlm_comm *cm, const char *buf, size_t len)
-{
-	struct sockaddr_storage *addr;
-=======
 static ssize_t comm_addr_store(struct config_item *item, const char *buf,
 		size_t len)
 {
 	struct dlm_comm *cm = config_item_to_comm(item);
 	struct sockaddr_storage *addr;
 	int rv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len != sizeof(struct sockaddr_storage))
 		return -EINVAL;
@@ -1129,8 +663,6 @@ static ssize_t comm_addr_store(struct config_item *item, const char *buf,
 		return -ENOMEM;
 
 	memcpy(addr, buf, len);
-<<<<<<< HEAD
-=======
 
 	rv = dlm_midcomms_addr(cm->nodeid, addr, len);
 	if (rv) {
@@ -1138,19 +670,13 @@ static ssize_t comm_addr_store(struct config_item *item, const char *buf,
 		return rv;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm->addr[cm->addr_count++] = addr;
 	return len;
 }
 
-<<<<<<< HEAD
-static ssize_t comm_addr_list_read(struct dlm_comm *cm, char *buf)
-{
-=======
 static ssize_t comm_addr_list_show(struct config_item *item, char *buf)
 {
 	struct dlm_comm *cm = config_item_to_comm(item);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t s;
 	ssize_t allowance;
 	int i;
@@ -1193,36 +719,6 @@ static ssize_t comm_addr_list_show(struct config_item *item, char *buf)
 	return 4096 - allowance;
 }
 
-<<<<<<< HEAD
-static ssize_t show_node(struct config_item *i, struct configfs_attribute *a,
-			 char *buf)
-{
-	struct dlm_node *nd = config_item_to_node(i);
-	struct node_attribute *nda =
-			container_of(a, struct node_attribute, attr);
-	return nda->show ? nda->show(nd, buf) : 0;
-}
-
-static ssize_t store_node(struct config_item *i, struct configfs_attribute *a,
-			  const char *buf, size_t len)
-{
-	struct dlm_node *nd = config_item_to_node(i);
-	struct node_attribute *nda =
-		container_of(a, struct node_attribute, attr);
-	return nda->store ? nda->store(nd, buf, len) : -EINVAL;
-}
-
-static ssize_t node_nodeid_read(struct dlm_node *nd, char *buf)
-{
-	return sprintf(buf, "%d\n", nd->nodeid);
-}
-
-static ssize_t node_nodeid_write(struct dlm_node *nd, const char *buf,
-				 size_t len)
-{
-	uint32_t seq = 0;
-	nd->nodeid = simple_strtol(buf, NULL, 0);
-=======
 static ssize_t comm_mark_show(struct config_item *item, char *buf)
 {
 	return sprintf(buf, "%u\n", config_item_to_comm(item)->mark);
@@ -1280,26 +776,11 @@ static ssize_t node_nodeid_store(struct config_item *item, const char *buf,
 
 	if (rc)
 		return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_comm_seq(nd->nodeid, &seq);
 	nd->comm_seq = seq;
 	return len;
 }
 
-<<<<<<< HEAD
-static ssize_t node_weight_read(struct dlm_node *nd, char *buf)
-{
-	return sprintf(buf, "%d\n", nd->weight);
-}
-
-static ssize_t node_weight_write(struct dlm_node *nd, const char *buf,
-				 size_t len)
-{
-	nd->weight = simple_strtol(buf, NULL, 0);
-	return len;
-}
-
-=======
 static ssize_t node_weight_show(struct config_item *item, char *buf)
 {
 	return sprintf(buf, "%d\n", config_item_to_node(item)->weight);
@@ -1324,7 +805,6 @@ static struct configfs_attribute *node_attrs[] = {
 	NULL,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions for the dlm to get the info that's been configured
  */
@@ -1348,38 +828,7 @@ static void put_space(struct dlm_space *sp)
 	config_item_put(&sp->group.cg_item);
 }
 
-<<<<<<< HEAD
-static int addr_compare(struct sockaddr_storage *x, struct sockaddr_storage *y)
-{
-	switch (x->ss_family) {
-	case AF_INET: {
-		struct sockaddr_in *sinx = (struct sockaddr_in *)x;
-		struct sockaddr_in *siny = (struct sockaddr_in *)y;
-		if (sinx->sin_addr.s_addr != siny->sin_addr.s_addr)
-			return 0;
-		if (sinx->sin_port != siny->sin_port)
-			return 0;
-		break;
-	}
-	case AF_INET6: {
-		struct sockaddr_in6 *sinx = (struct sockaddr_in6 *)x;
-		struct sockaddr_in6 *siny = (struct sockaddr_in6 *)y;
-		if (!ipv6_addr_equal(&sinx->sin6_addr, &siny->sin6_addr))
-			return 0;
-		if (sinx->sin6_port != siny->sin6_port)
-			return 0;
-		break;
-	}
-	default:
-		return 0;
-	}
-	return 1;
-}
-
-static struct dlm_comm *get_comm(int nodeid, struct sockaddr_storage *addr)
-=======
 static struct dlm_comm *get_comm(int nodeid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct config_item *i;
 	struct dlm_comm *cm = NULL;
@@ -1393,27 +842,11 @@ static struct dlm_comm *get_comm(int nodeid)
 	list_for_each_entry(i, &comm_list->cg_children, ci_entry) {
 		cm = config_item_to_comm(i);
 
-<<<<<<< HEAD
-		if (nodeid) {
-			if (cm->nodeid != nodeid)
-				continue;
-			found = 1;
-			config_item_get(i);
-			break;
-		} else {
-			if (!cm->addr_count || !addr_compare(cm->addr[0], addr))
-				continue;
-			found = 1;
-			config_item_get(i);
-			break;
-		}
-=======
 		if (cm->nodeid != nodeid)
 			continue;
 		found = 1;
 		config_item_get(i);
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&clusters_root.subsys.su_mutex);
 
@@ -1477,11 +910,7 @@ int dlm_config_nodes(char *lsname, struct dlm_config_node **nodes_out,
 
 int dlm_comm_seq(int nodeid, uint32_t *seq)
 {
-<<<<<<< HEAD
-	struct dlm_comm *cm = get_comm(nodeid, NULL);
-=======
 	struct dlm_comm *cm = get_comm(nodeid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cm)
 		return -EEXIST;
 	*seq = cm->seq;
@@ -1489,31 +918,6 @@ int dlm_comm_seq(int nodeid, uint32_t *seq)
 	return 0;
 }
 
-<<<<<<< HEAD
-int dlm_nodeid_to_addr(int nodeid, struct sockaddr_storage *addr)
-{
-	struct dlm_comm *cm = get_comm(nodeid, NULL);
-	if (!cm)
-		return -EEXIST;
-	if (!cm->addr_count)
-		return -ENOENT;
-	memcpy(addr, cm->addr[0], sizeof(*addr));
-	put_comm(cm);
-	return 0;
-}
-
-int dlm_addr_to_nodeid(struct sockaddr_storage *addr, int *nodeid)
-{
-	struct dlm_comm *cm = get_comm(0, addr);
-	if (!cm)
-		return -EEXIST;
-	*nodeid = cm->nodeid;
-	put_comm(cm);
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int dlm_our_nodeid(void)
 {
 	return local_comm ? local_comm->nodeid : 0;
@@ -1532,53 +936,29 @@ int dlm_our_addr(struct sockaddr_storage *addr, int num)
 
 /* Config file defaults */
 #define DEFAULT_TCP_PORT       21064
-<<<<<<< HEAD
-#define DEFAULT_BUFFER_SIZE     4096
 #define DEFAULT_RSBTBL_SIZE     1024
-#define DEFAULT_DIRTBL_SIZE     1024
-=======
-#define DEFAULT_RSBTBL_SIZE     1024
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_RECOVER_TIMER      5
 #define DEFAULT_TOSS_SECS         10
 #define DEFAULT_SCAN_SECS          5
 #define DEFAULT_LOG_DEBUG          0
-<<<<<<< HEAD
-#define DEFAULT_PROTOCOL           0
-#define DEFAULT_TIMEWARN_CS      500 /* 5 sec = 500 centiseconds */
-#define DEFAULT_WAITWARN_US	   0
-=======
 #define DEFAULT_LOG_INFO           1
 #define DEFAULT_PROTOCOL           DLM_PROTO_TCP
 #define DEFAULT_MARK               0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_NEW_RSB_COUNT    128
 #define DEFAULT_RECOVER_CALLBACKS  0
 #define DEFAULT_CLUSTER_NAME      ""
 
 struct dlm_config_info dlm_config = {
 	.ci_tcp_port = DEFAULT_TCP_PORT,
-<<<<<<< HEAD
-	.ci_buffer_size = DEFAULT_BUFFER_SIZE,
-	.ci_rsbtbl_size = DEFAULT_RSBTBL_SIZE,
-	.ci_dirtbl_size = DEFAULT_DIRTBL_SIZE,
-=======
 	.ci_buffer_size = DLM_MAX_SOCKET_BUFSIZE,
 	.ci_rsbtbl_size = DEFAULT_RSBTBL_SIZE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ci_recover_timer = DEFAULT_RECOVER_TIMER,
 	.ci_toss_secs = DEFAULT_TOSS_SECS,
 	.ci_scan_secs = DEFAULT_SCAN_SECS,
 	.ci_log_debug = DEFAULT_LOG_DEBUG,
-<<<<<<< HEAD
-	.ci_protocol = DEFAULT_PROTOCOL,
-	.ci_timewarn_cs = DEFAULT_TIMEWARN_CS,
-	.ci_waitwarn_us = DEFAULT_WAITWARN_US,
-=======
 	.ci_log_info = DEFAULT_LOG_INFO,
 	.ci_protocol = DEFAULT_PROTOCOL,
 	.ci_mark = DEFAULT_MARK,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ci_new_rsb_count = DEFAULT_NEW_RSB_COUNT,
 	.ci_recover_callbacks = DEFAULT_RECOVER_CALLBACKS,
 	.ci_cluster_name = DEFAULT_CLUSTER_NAME

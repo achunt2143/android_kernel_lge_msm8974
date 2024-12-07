@@ -1,40 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AD5933 AD5934 Impedance Converter, Network Analyzer
  *
  * Copyright 2011 Analog Devices Inc.
-<<<<<<< HEAD
- *
- * Licensed under the GPL-2.
- */
-
-#include <linux/interrupt.h>
-#include <linux/device.h>
-#include <linux/kernel.h>
-#include <linux/sysfs.h>
-#include <linux/i2c.h>
-#include <linux/regulator/consumer.h>
-#include <linux/slab.h>
-#include <linux/types.h>
-#include <linux/err.h>
-#include <linux/delay.h>
-#include <linux/module.h>
-#include <asm/div64.h>
-
-#include "../iio.h"
-#include "../sysfs.h"
-#include "../buffer.h"
-#include "../ring_sw.h"
-
-#include "ad5933.h"
-
-/* AD5933/AD5934 Registers */
-#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 2 bytes */
-#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 2 bytes */
-=======
  */
 
 #include <linux/clk.h>
@@ -57,7 +25,6 @@
 /* AD5933/AD5934 Registers */
 #define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
 #define AD5933_REG_CONTROL_LB		0x81	/* R/W, 1 byte */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AD5933_REG_FREQ_START		0x82	/* R/W, 3 bytes */
 #define AD5933_REG_FREQ_INC		0x85	/* R/W, 3 bytes */
 #define AD5933_REG_INC_NUM		0x88	/* R/W, 2 bytes, 9 bit */
@@ -118,70 +85,6 @@
 struct ad5933_state {
 	struct i2c_client		*client;
 	struct regulator		*reg;
-<<<<<<< HEAD
-	struct ad5933_platform_data	*pdata;
-	struct delayed_work		work;
-	unsigned long			mclk_hz;
-	unsigned char			ctrl_hb;
-	unsigned char			ctrl_lb;
-	unsigned			range_avail[4];
-	unsigned short			vref_mv;
-	unsigned short			settling_cycles;
-	unsigned short			freq_points;
-	unsigned			freq_start;
-	unsigned			freq_inc;
-	unsigned			state;
-	unsigned			poll_time_jiffies;
-};
-
-static struct ad5933_platform_data ad5933_default_pdata  = {
-	.vref_mv = 3300,
-};
-
-static struct iio_chan_spec ad5933_channels[] = {
-	{
-		.type = IIO_TEMP,
-		.indexed = 1,
-		.processed_val = 1,
-		.channel = 0,
-		.address = AD5933_REG_TEMP_DATA,
-		.scan_type = {
-			.sign = 's',
-			.realbits = 14,
-			.storagebits = 16,
-		},
-	}, { /* Ring Channels */
-		.type = IIO_VOLTAGE,
-		.indexed = 1,
-		.channel = 0,
-		.extend_name = "real",
-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-		.address = AD5933_REG_REAL_DATA,
-		.scan_index = 0,
-		.scan_type = {
-			.sign = 's',
-			.realbits = 16,
-			.storagebits = 16,
-		},
-	}, {
-		.type = IIO_VOLTAGE,
-		.indexed = 1,
-		.channel = 0,
-		.extend_name = "imag",
-		.info_mask = IIO_CHAN_INFO_SCALE_SEPARATE_BIT,
-		.address = AD5933_REG_IMAG_DATA,
-		.scan_index = 1,
-		.scan_type = {
-			.sign = 's',
-			.realbits = 16,
-			.storagebits = 16,
-		},
-	},
-};
-
-static int ad5933_i2c_write(struct i2c_client *client,
-			      u8 reg, u8 len, u8 *data)
-=======
 	struct clk			*mclk;
 	struct delayed_work		work;
 	struct mutex			lock; /* Protect sensor state */
@@ -221,7 +124,6 @@ static const struct iio_chan_spec ad5933_channels[] = {
 };
 
 static int ad5933_i2c_write(struct i2c_client *client, u8 reg, u8 len, u8 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -235,12 +137,7 @@ static int ad5933_i2c_write(struct i2c_client *client, u8 reg, u8 len, u8 *data)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ad5933_i2c_read(struct i2c_client *client,
-			      u8 reg, u8 len, u8 *data)
-=======
 static int ad5933_i2c_read(struct i2c_client *client, u8 reg, u8 len, u8 *data)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -266,10 +163,7 @@ static int ad5933_cmd(struct ad5933_state *st, unsigned char cmd)
 static int ad5933_reset(struct ad5933_state *st)
 {
 	unsigned char dat = st->ctrl_lb | AD5933_CTRL_RESET;
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ad5933_i2c_write(st->client,
 			AD5933_REG_CONTROL_LB, 1, &dat);
 }
@@ -293,17 +187,6 @@ static int ad5933_wait_busy(struct ad5933_state *st, unsigned char event)
 }
 
 static int ad5933_set_freq(struct ad5933_state *st,
-<<<<<<< HEAD
-			   unsigned reg, unsigned long freq)
-{
-	unsigned long long freqreg;
-	union {
-		u32 d32;
-		u8 d8[4];
-	} dat;
-
-	freqreg = (u64) freq * (u64) (1 << 27);
-=======
 			   unsigned int reg, unsigned long freq)
 {
 	unsigned long long freqreg;
@@ -313,7 +196,6 @@ static int ad5933_set_freq(struct ad5933_state *st,
 	} dat;
 
 	freqreg = (u64)freq * (u64)(1 << 27);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_div(freqreg, st->mclk_hz / 4);
 
 	switch (reg) {
@@ -333,11 +215,7 @@ static int ad5933_set_freq(struct ad5933_state *st,
 
 static int ad5933_setup(struct ad5933_state *st)
 {
-<<<<<<< HEAD
-	unsigned short dat;
-=======
 	__be16 dat;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = ad5933_reset(st);
@@ -356,12 +234,8 @@ static int ad5933_setup(struct ad5933_state *st)
 	dat = cpu_to_be16(st->settling_cycles);
 
 	ret = ad5933_i2c_write(st->client,
-<<<<<<< HEAD
-			AD5933_REG_SETTLING_CYCLES, 2, (u8 *)&dat);
-=======
 			       AD5933_REG_SETTLING_CYCLES,
 			       2, (u8 *)&dat);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -374,18 +248,10 @@ static int ad5933_setup(struct ad5933_state *st)
 static void ad5933_calc_out_ranges(struct ad5933_state *st)
 {
 	int i;
-<<<<<<< HEAD
-	unsigned normalized_3v3[4] = {1980, 198, 383, 970};
-
-	for (i = 0; i < 4; i++)
-		st->range_avail[i] = normalized_3v3[i] * st->vref_mv / 3300;
-
-=======
 	unsigned int normalized_3v3[4] = {1980, 198, 383, 970};
 
 	for (i = 0; i < 4; i++)
 		st->range_avail[i] = normalized_3v3[i] * st->vref_mv / 3300;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -393,31 +259,15 @@ static void ad5933_calc_out_ranges(struct ad5933_state *st)
  */
 
 static ssize_t ad5933_show_frequency(struct device *dev,
-<<<<<<< HEAD
-					struct device_attribute *attr,
-					char *buf)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 				     struct device_attribute *attr,
 				     char *buf)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad5933_state *st = iio_priv(indio_dev);
 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
 	int ret;
 	unsigned long long freqreg;
 	union {
-<<<<<<< HEAD
-		u32 d32;
-		u8 d8[4];
-	} dat;
-
-	mutex_lock(&indio_dev->mlock);
-	ret = ad5933_i2c_read(st->client, this_attr->address, 3, &dat.d8[1]);
-	mutex_unlock(&indio_dev->mlock);
-=======
 		__be32 d32;
 		u8 d8[4];
 	} dat;
@@ -427,32 +277,11 @@ static ssize_t ad5933_show_frequency(struct device *dev,
 		return ret;
 	ret = ad5933_i2c_read(st->client, this_attr->address, 3, &dat.d8[1]);
 	iio_device_release_direct_mode(indio_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
 	freqreg = be32_to_cpu(dat.d32) & 0xFFFFFF;
 
-<<<<<<< HEAD
-	freqreg = (u64) freqreg * (u64) (st->mclk_hz / 4);
-	do_div(freqreg, 1 << 27);
-
-	return sprintf(buf, "%d\n", (int) freqreg);
-}
-
-static ssize_t ad5933_store_frequency(struct device *dev,
-					 struct device_attribute *attr,
-					 const char *buf,
-					 size_t len)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-	struct ad5933_state *st = iio_priv(indio_dev);
-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-	long val;
-	int ret;
-
-	ret = strict_strtoul(buf, 10, &val);
-=======
 	freqreg = (u64)freqreg * (u64)(st->mclk_hz / 4);
 	do_div(freqreg, BIT(27));
 
@@ -471,72 +300,40 @@ static ssize_t ad5933_store_frequency(struct device *dev,
 	int ret;
 
 	ret = kstrtoul(buf, 10, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
 	if (val > AD5933_MAX_OUTPUT_FREQ_Hz)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	mutex_lock(&indio_dev->mlock);
-	ret = ad5933_set_freq(st, this_attr->address, val);
-	mutex_unlock(&indio_dev->mlock);
-=======
 	ret = iio_device_claim_direct_mode(indio_dev);
 	if (ret)
 		return ret;
 	ret = ad5933_set_freq(st, this_attr->address, val);
 	iio_device_release_direct_mode(indio_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret ? ret : len;
 }
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(out_voltage0_freq_start, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(out_altvoltage0_frequency_start, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show_frequency,
 			ad5933_store_frequency,
 			AD5933_REG_FREQ_START);
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(out_voltage0_freq_increment, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(out_altvoltage0_frequency_increment, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show_frequency,
 			ad5933_store_frequency,
 			AD5933_REG_FREQ_INC);
 
 static ssize_t ad5933_show(struct device *dev,
-<<<<<<< HEAD
-					struct device_attribute *attr,
-					char *buf)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-=======
 			   struct device_attribute *attr,
 			   char *buf)
 {
 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ad5933_state *st = iio_priv(indio_dev);
 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
 	int ret = 0, len = 0;
 
-<<<<<<< HEAD
-	mutex_lock(&indio_dev->mlock);
-	switch ((u32) this_attr->address) {
-	case AD5933_OUT_RANGE:
-		len = sprintf(buf, "%d\n",
-			      st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
-		break;
-	case AD5933_OUT_RANGE_AVAIL:
-		len = sprintf(buf, "%d %d %d %d\n", st->range_avail[0],
-=======
 	mutex_lock(&st->lock);
 	switch ((u32)this_attr->address) {
 	case AD5933_OUT_RANGE:
@@ -545,7 +342,6 @@ static ssize_t ad5933_show(struct device *dev,
 		break;
 	case AD5933_OUT_RANGE_AVAIL:
 		len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      st->range_avail[3], st->range_avail[2],
 			      st->range_avail[1]);
 		break;
@@ -567,30 +363,11 @@ static ssize_t ad5933_show(struct device *dev,
 		ret = -EINVAL;
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&indio_dev->mlock);
-=======
 	mutex_unlock(&st->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret ? ret : len;
 }
 
 static ssize_t ad5933_store(struct device *dev,
-<<<<<<< HEAD
-					 struct device_attribute *attr,
-					 const char *buf,
-					 size_t len)
-{
-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-	struct ad5933_state *st = iio_priv(indio_dev);
-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-	long val;
-	int i, ret = 0;
-	unsigned short dat;
-
-	if (this_attr->address != AD5933_IN_PGA_GAIN) {
-		ret = strict_strtol(buf, 10, &val);
-=======
 			    struct device_attribute *attr,
 			    const char *buf,
 			    size_t len)
@@ -604,16 +381,10 @@ static ssize_t ad5933_store(struct device *dev,
 
 	if (this_attr->address != AD5933_IN_PGA_GAIN) {
 		ret = kstrtou16(buf, 10, &val);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
 
-<<<<<<< HEAD
-	mutex_lock(&indio_dev->mlock);
-	switch ((u32) this_attr->address) {
-	case AD5933_OUT_RANGE:
-=======
 	ret = iio_device_claim_direct_mode(indio_dev);
 	if (ret)
 		return ret;
@@ -621,7 +392,6 @@ static ssize_t ad5933_store(struct device *dev,
 	switch ((u32)this_attr->address) {
 	case AD5933_OUT_RANGE:
 		ret = -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < 4; i++)
 			if (val == st->range_avail[i]) {
 				st->ctrl_hb &= ~AD5933_CTRL_RANGE(0x3);
@@ -629,10 +399,6 @@ static ssize_t ad5933_store(struct device *dev,
 				ret = ad5933_cmd(st, 0);
 				break;
 			}
-<<<<<<< HEAD
-		ret = -EINVAL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case AD5933_IN_PGA_GAIN:
 		if (sysfs_streq(buf, "1")) {
@@ -646,23 +412,6 @@ static ssize_t ad5933_store(struct device *dev,
 		ret = ad5933_cmd(st, 0);
 		break;
 	case AD5933_OUT_SETTLING_CYCLES:
-<<<<<<< HEAD
-		val = clamp(val, 0L, 0x7FFL);
-		st->settling_cycles = val;
-
-		/* 2x, 4x handling, see datasheet */
-		if (val > 511)
-			val = (val >> 1) | (1 << 9);
-		else if (val > 1022)
-			val = (val >> 2) | (3 << 9);
-
-		dat = cpu_to_be16(val);
-		ret = ad5933_i2c_write(st->client,
-				AD5933_REG_SETTLING_CYCLES, 2, (u8 *)&dat);
-		break;
-	case AD5933_FREQ_POINTS:
-		val = clamp(val, 0L, 511L);
-=======
 		val = clamp(val, (u16)0, (u16)0x7FF);
 		st->settling_cycles = val;
 
@@ -679,7 +428,6 @@ static ssize_t ad5933_store(struct device *dev,
 		break;
 	case AD5933_FREQ_POINTS:
 		val = clamp(val, (u16)0, (u16)511);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		st->freq_points = val;
 
 		dat = cpu_to_be16(val);
@@ -690,95 +438,54 @@ static ssize_t ad5933_store(struct device *dev,
 		ret = -EINVAL;
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&indio_dev->mlock);
-	return ret ? ret : len;
-}
-
-static IIO_DEVICE_ATTR(out_voltage0_scale, S_IRUGO | S_IWUSR,
-=======
 	mutex_unlock(&st->lock);
 	iio_device_release_direct_mode(indio_dev);
 	return ret ? ret : len;
 }
 
 static IIO_DEVICE_ATTR(out_altvoltage0_raw, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show,
 			ad5933_store,
 			AD5933_OUT_RANGE);
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(out_voltage0_scale_available, S_IRUGO,
-=======
 static IIO_DEVICE_ATTR(out_altvoltage0_scale_available, 0444,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show,
 			NULL,
 			AD5933_OUT_RANGE_AVAIL);
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(in_voltage0_scale, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(in_voltage0_scale, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show,
 			ad5933_store,
 			AD5933_IN_PGA_GAIN);
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(in_voltage0_scale_available, S_IRUGO,
-=======
 static IIO_DEVICE_ATTR(in_voltage0_scale_available, 0444,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show,
 			NULL,
 			AD5933_IN_PGA_GAIN_AVAIL);
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(out_voltage0_freq_points, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(out_altvoltage0_frequency_points, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show,
 			ad5933_store,
 			AD5933_FREQ_POINTS);
 
-<<<<<<< HEAD
-static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, S_IRUGO | S_IWUSR,
-=======
 static IIO_DEVICE_ATTR(out_altvoltage0_settling_cycles, 0644,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ad5933_show,
 			ad5933_store,
 			AD5933_OUT_SETTLING_CYCLES);
 
-<<<<<<< HEAD
-/* note:
-=======
 /*
  * note:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ideally we would handle the scale attributes via the iio_info
  * (read|write)_raw methods, however this part is a untypical since we
  * don't create dedicated sysfs channel attributes for out0 and in0.
  */
 static struct attribute *ad5933_attributes[] = {
-<<<<<<< HEAD
-	&iio_dev_attr_out_voltage0_scale.dev_attr.attr,
-	&iio_dev_attr_out_voltage0_scale_available.dev_attr.attr,
-	&iio_dev_attr_out_voltage0_freq_start.dev_attr.attr,
-	&iio_dev_attr_out_voltage0_freq_increment.dev_attr.attr,
-	&iio_dev_attr_out_voltage0_freq_points.dev_attr.attr,
-	&iio_dev_attr_out_voltage0_settling_cycles.dev_attr.attr,
-=======
 	&iio_dev_attr_out_altvoltage0_raw.dev_attr.attr,
 	&iio_dev_attr_out_altvoltage0_scale_available.dev_attr.attr,
 	&iio_dev_attr_out_altvoltage0_frequency_start.dev_attr.attr,
 	&iio_dev_attr_out_altvoltage0_frequency_increment.dev_attr.attr,
 	&iio_dev_attr_out_altvoltage0_frequency_points.dev_attr.attr,
 	&iio_dev_attr_out_altvoltage0_settling_cycles.dev_attr.attr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&iio_dev_attr_in_voltage0_scale.dev_attr.attr,
 	&iio_dev_attr_in_voltage0_scale_available.dev_attr.attr,
 	NULL
@@ -795,18 +502,6 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
 			   long m)
 {
 	struct ad5933_state *st = iio_priv(indio_dev);
-<<<<<<< HEAD
-	unsigned short dat;
-	int ret = -EINVAL;
-
-	mutex_lock(&indio_dev->mlock);
-	switch (m) {
-	case 0:
-		if (iio_buffer_enabled(indio_dev)) {
-			ret = -EBUSY;
-			goto out;
-		}
-=======
 	__be16 dat;
 	int ret;
 
@@ -815,7 +510,6 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
 		ret = iio_device_claim_direct_mode(indio_dev);
 		if (ret)
 			return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ad5933_cmd(st, AD5933_CTRL_MEASURE_TEMP);
 		if (ret < 0)
 			goto out;
@@ -824,25 +518,6 @@ static int ad5933_read_raw(struct iio_dev *indio_dev,
 			goto out;
 
 		ret = ad5933_i2c_read(st->client,
-<<<<<<< HEAD
-				AD5933_REG_TEMP_DATA, 2,
-				(u8 *)&dat);
-		if (ret < 0)
-			goto out;
-		mutex_unlock(&indio_dev->mlock);
-		ret = be16_to_cpu(dat);
-		/* Temp in Milli degrees Celsius */
-		if (ret < 8192)
-			*val = ret * 1000 / 32;
-		else
-			*val = (ret - 16384) * 1000 / 32;
-
-		return IIO_VAL_INT;
-	}
-
-out:
-	mutex_unlock(&indio_dev->mlock);
-=======
 				      AD5933_REG_TEMP_DATA,
 				      2, (u8 *)&dat);
 		if (ret < 0)
@@ -860,44 +535,22 @@ out:
 	return -EINVAL;
 out:
 	iio_device_release_direct_mode(indio_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static const struct iio_info ad5933_info = {
-<<<<<<< HEAD
-	.read_raw = &ad5933_read_raw,
-	.attrs = &ad5933_attribute_group,
-	.driver_module = THIS_MODULE,
-=======
 	.read_raw = ad5933_read_raw,
 	.attrs = &ad5933_attribute_group,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ad5933_ring_preenable(struct iio_dev *indio_dev)
 {
 	struct ad5933_state *st = iio_priv(indio_dev);
-<<<<<<< HEAD
-	size_t d_size;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
 		return -EINVAL;
 
-<<<<<<< HEAD
-	d_size = bitmap_weight(indio_dev->active_scan_mask,
-			       indio_dev->masklength) *
-		 ad5933_channels[1].scan_type.storagebits / 8;
-
-	if (indio_dev->buffer->access->set_bytes_per_datum)
-		indio_dev->buffer->access->
-			set_bytes_per_datum(indio_dev->buffer, d_size);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ad5933_reset(st);
 	if (ret < 0)
 		return ret;
@@ -919,12 +572,8 @@ static int ad5933_ring_postenable(struct iio_dev *indio_dev)
 {
 	struct ad5933_state *st = iio_priv(indio_dev);
 
-<<<<<<< HEAD
-	/* AD5933_CTRL_INIT_START_FREQ:
-=======
 	/*
 	 * AD5933_CTRL_INIT_START_FREQ:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * High Q complex circuits require a long time to reach steady state.
 	 * To facilitate the measurement of such impedances, this mode allows
 	 * the user full control of the settling time requirement before
@@ -948,93 +597,36 @@ static int ad5933_ring_postdisable(struct iio_dev *indio_dev)
 }
 
 static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
-<<<<<<< HEAD
-	.preenable = &ad5933_ring_preenable,
-	.postenable = &ad5933_ring_postenable,
-	.postdisable = &ad5933_ring_postdisable,
-};
-
-static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-{
-	indio_dev->buffer = iio_sw_rb_allocate(indio_dev);
-	if (!indio_dev->buffer)
-		return -ENOMEM;
-
-	/* Ring buffer functions - here trigger setup related */
-	indio_dev->setup_ops = &ad5933_ring_setup_ops;
-
-	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
-
-	return 0;
-}
-
-=======
 	.preenable = ad5933_ring_preenable,
 	.postenable = ad5933_ring_postenable,
 	.postdisable = ad5933_ring_postdisable,
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ad5933_work(struct work_struct *work)
 {
 	struct ad5933_state *st = container_of(work,
 		struct ad5933_state, work.work);
 	struct iio_dev *indio_dev = i2c_get_clientdata(st->client);
-<<<<<<< HEAD
-	struct iio_buffer *ring = indio_dev->buffer;
-	signed short buf[2];
-	unsigned char status;
-
-	mutex_lock(&indio_dev->mlock);
-=======
 	__be16 buf[2];
 	u16 val[2];
 	unsigned char status;
 	int ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
 		/* start sweep */
 		ad5933_cmd(st, AD5933_CTRL_START_SWEEP);
 		st->state = AD5933_CTRL_START_SWEEP;
 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
-<<<<<<< HEAD
-		mutex_unlock(&indio_dev->mlock);
-		return;
-	}
-
-	ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
-=======
 		return;
 	}
 
 	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
 	if (ret)
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status & AD5933_STAT_DATA_VALID) {
 		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
 					       indio_dev->masklength);
-<<<<<<< HEAD
-		ad5933_i2c_read(st->client,
-				test_bit(1, indio_dev->active_scan_mask) ?
-				AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
-				scan_count * 2, (u8 *)buf);
-
-		if (scan_count == 2) {
-			buf[0] = be16_to_cpu(buf[0]);
-			buf[1] = be16_to_cpu(buf[1]);
-		} else {
-			buf[0] = be16_to_cpu(buf[0]);
-		}
-		/* save datum to the ring */
-		ring->access->store_to(ring, (u8 *)buf, iio_get_time_ns());
-	} else {
-		/* no data available - try again later */
-		schedule_delayed_work(&st->work, st->poll_time_jiffies);
-		mutex_unlock(&indio_dev->mlock);
-=======
 		ret = ad5933_i2c_read(st->client,
 				test_bit(1, indio_dev->active_scan_mask) ?
 				AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
@@ -1052,40 +644,20 @@ static void ad5933_work(struct work_struct *work)
 	} else {
 		/* no data available - try again later */
 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (status & AD5933_STAT_SWEEP_DONE) {
-<<<<<<< HEAD
-		/* last sample received - power down do nothing until
-		 * the ring enable is toggled */
-=======
 		/*
 		 * last sample received - power down do
 		 * nothing until the ring enable is toggled
 		 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
 	} else {
 		/* we just received a valid datum, move on to the next */
 		ad5933_cmd(st, AD5933_CTRL_INC_FREQ);
 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
 	}
-<<<<<<< HEAD
-
-	mutex_unlock(&indio_dev->mlock);
-}
-
-static int __devinit ad5933_probe(struct i2c_client *client,
-				   const struct i2c_device_id *id)
-{
-	int ret, voltage_uv = 0;
-	struct ad5933_platform_data *pdata = client->dev.platform_data;
-	struct ad5933_state *st;
-	struct iio_dev *indio_dev = iio_allocate_device(sizeof(*st));
-	if (indio_dev == NULL)
-=======
 }
 
 static void ad5933_reg_disable(void *data)
@@ -1105,35 +677,12 @@ static int ad5933_probe(struct i2c_client *client)
 
 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
 	if (!indio_dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	st = iio_priv(indio_dev);
 	i2c_set_clientdata(client, indio_dev);
 	st->client = client;
 
-<<<<<<< HEAD
-	if (!pdata)
-		st->pdata = &ad5933_default_pdata;
-	else
-		st->pdata = pdata;
-
-	st->reg = regulator_get(&client->dev, "vcc");
-	if (!IS_ERR(st->reg)) {
-		ret = regulator_enable(st->reg);
-		if (ret)
-			goto error_put_reg;
-		voltage_uv = regulator_get_voltage(st->reg);
-	}
-
-	if (voltage_uv)
-		st->vref_mv = voltage_uv / 1000;
-	else
-		st->vref_mv = st->pdata->vref_mv;
-
-	if (st->pdata->ext_clk_Hz) {
-		st->mclk_hz = st->pdata->ext_clk_Hz;
-=======
 	mutex_init(&st->lock);
 
 	st->reg = devm_regulator_get(&client->dev, "vdd");
@@ -1165,7 +714,6 @@ static int ad5933_probe(struct i2c_client *client)
 
 	if (ext_clk_hz) {
 		st->mclk_hz = ext_clk_hz;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		st->ctrl_lb = AD5933_CTRL_EXT_SYSCLK;
 	} else {
 		st->mclk_hz = AD5933_INT_OSC_FREQ_Hz;
@@ -1176,72 +724,10 @@ static int ad5933_probe(struct i2c_client *client)
 	INIT_DELAYED_WORK(&st->work, ad5933_work);
 	st->poll_time_jiffies = msecs_to_jiffies(AD5933_POLL_TIME_ms);
 
-<<<<<<< HEAD
-	indio_dev->dev.parent = &client->dev;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	indio_dev->info = &ad5933_info;
 	indio_dev->name = id->name;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 	indio_dev->channels = ad5933_channels;
-<<<<<<< HEAD
-	indio_dev->num_channels = 1; /* only register temp0_input */
-
-	ret = ad5933_register_ring_funcs_and_init(indio_dev);
-	if (ret)
-		goto error_disable_reg;
-
-	/* skip temp0_input, register in0_(real|imag)_raw */
-	ret = iio_buffer_register(indio_dev, &ad5933_channels[1], 2);
-	if (ret)
-		goto error_unreg_ring;
-
-	/* enable both REAL and IMAG channels by default */
-	iio_scan_mask_set(indio_dev, indio_dev->buffer, 0);
-	iio_scan_mask_set(indio_dev, indio_dev->buffer, 1);
-
-	ret = ad5933_setup(st);
-	if (ret)
-		goto error_uninitialize_ring;
-
-	ret = iio_device_register(indio_dev);
-	if (ret)
-		goto error_uninitialize_ring;
-
-	return 0;
-
-error_uninitialize_ring:
-	iio_buffer_unregister(indio_dev);
-error_unreg_ring:
-	iio_sw_rb_free(indio_dev->buffer);
-error_disable_reg:
-	if (!IS_ERR(st->reg))
-		regulator_disable(st->reg);
-error_put_reg:
-	if (!IS_ERR(st->reg))
-		regulator_put(st->reg);
-
-	iio_free_device(indio_dev);
-
-	return ret;
-}
-
-static __devexit int ad5933_remove(struct i2c_client *client)
-{
-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-	struct ad5933_state *st = iio_priv(indio_dev);
-
-	iio_device_unregister(indio_dev);
-	iio_buffer_unregister(indio_dev);
-	iio_sw_rb_free(indio_dev->buffer);
-	if (!IS_ERR(st->reg)) {
-		regulator_disable(st->reg);
-		regulator_put(st->reg);
-	}
-	iio_free_device(indio_dev);
-
-	return 0;
-=======
 	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
 
 	ret = devm_iio_kfifo_buffer_setup(&client->dev, indio_dev,
@@ -1254,7 +740,6 @@ static __devexit int ad5933_remove(struct i2c_client *client)
 		return ret;
 
 	return devm_iio_device_register(&client->dev, indio_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id ad5933_id[] = {
@@ -1265,14 +750,6 @@ static const struct i2c_device_id ad5933_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, ad5933_id);
 
-<<<<<<< HEAD
-static struct i2c_driver ad5933_driver = {
-	.driver = {
-		.name = "ad5933",
-	},
-	.probe = ad5933_probe,
-	.remove = __devexit_p(ad5933_remove),
-=======
 static const struct of_device_id ad5933_of_match[] = {
 	{ .compatible = "adi,ad5933" },
 	{ .compatible = "adi,ad5934" },
@@ -1287,15 +764,10 @@ static struct i2c_driver ad5933_driver = {
 		.of_match_table = ad5933_of_match,
 	},
 	.probe = ad5933_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ad5933_id,
 };
 module_i2c_driver(ad5933_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
-=======
 MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Analog Devices AD5933 Impedance Conv. Network Analyzer");
 MODULE_LICENSE("GPL v2");

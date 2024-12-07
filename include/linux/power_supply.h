@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Universal power supply monitor class
  *
@@ -10,37 +7,16 @@
  *  Copyright © 2003  Ian Molton <spyro@f2s.com>
  *
  *  Modified: 2004, Oct     Szabolcs Gyurko
-<<<<<<< HEAD
- *
- *  You may use this code as per GPL version 2
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_POWER_SUPPLY_H__
 #define __LINUX_POWER_SUPPLY_H__
 
-<<<<<<< HEAD
-#include <linux/wakelock.h>
-#include <linux/workqueue.h>
-#include <linux/leds.h>
-
-#ifdef CONFIG_LGE_CHARGER_TEMP_SCENARIO
-#ifdef CONFIG_LGE_PM_CHARGING_TEMP_SCENARIO_V1_7
-#include <mach/lge_charging_scenario_v1_7.h>
-#else
-#include <mach/lge_charging_scenario.h>
-#endif
-#endif
-
-struct device;
-=======
 #include <linux/device.h>
 #include <linux/workqueue.h>
 #include <linux/leds.h>
 #include <linux/spinlock.h>
 #include <linux/notifier.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * All voltages, currents, charges, energies, time and temperatures in uV,
@@ -63,14 +39,6 @@ enum {
 	POWER_SUPPLY_STATUS_FULL,
 };
 
-<<<<<<< HEAD
-enum {
-	POWER_SUPPLY_CHARGE_TYPE_UNKNOWN = 0,
-	POWER_SUPPLY_CHARGE_TYPE_NONE,
-	POWER_SUPPLY_CHARGE_TYPE_TRICKLE,
-	POWER_SUPPLY_CHARGE_TYPE_FAST,
-	POWER_SUPPLY_CHARGE_TYPE_TAPER,
-=======
 /* What algorithm is the charger using? */
 enum {
 	POWER_SUPPLY_CHARGE_TYPE_UNKNOWN = 0,
@@ -82,24 +50,16 @@ enum {
 	POWER_SUPPLY_CHARGE_TYPE_CUSTOM,	/* use CHARGE_CONTROL_* props */
 	POWER_SUPPLY_CHARGE_TYPE_LONGLIFE,	/* slow speed, longer life */
 	POWER_SUPPLY_CHARGE_TYPE_BYPASS,	/* bypassing the charger */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
 	POWER_SUPPLY_HEALTH_UNKNOWN = 0,
 	POWER_SUPPLY_HEALTH_GOOD,
 	POWER_SUPPLY_HEALTH_OVERHEAT,
-<<<<<<< HEAD
-	POWER_SUPPLY_HEALTH_WARM,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	POWER_SUPPLY_HEALTH_DEAD,
 	POWER_SUPPLY_HEALTH_OVERVOLTAGE,
 	POWER_SUPPLY_HEALTH_UNSPEC_FAILURE,
 	POWER_SUPPLY_HEALTH_COLD,
-<<<<<<< HEAD
-	POWER_SUPPLY_HEALTH_COOL,
-=======
 	POWER_SUPPLY_HEALTH_WATCHDOG_TIMER_EXPIRE,
 	POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE,
 	POWER_SUPPLY_HEALTH_OVERCURRENT,
@@ -108,7 +68,6 @@ enum {
 	POWER_SUPPLY_HEALTH_COOL,
 	POWER_SUPPLY_HEALTH_HOT,
 	POWER_SUPPLY_HEALTH_NO_BATTERY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -143,11 +102,7 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_HEALTH,
 	POWER_SUPPLY_PROP_PRESENT,
 	POWER_SUPPLY_PROP_ONLINE,
-<<<<<<< HEAD
-	POWER_SUPPLY_PROP_CHARGING_ENABLED,
-=======
 	POWER_SUPPLY_PROP_AUTHENTIC,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	POWER_SUPPLY_PROP_TECHNOLOGY,
 	POWER_SUPPLY_PROP_CYCLE_COUNT,
 	POWER_SUPPLY_PROP_VOLTAGE_MAX,
@@ -156,24 +111,12 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_VOLTAGE_AVG,
-<<<<<<< HEAD
-	POWER_SUPPLY_PROP_INPUT_VOLTAGE_REGULATION,
-	POWER_SUPPLY_PROP_VOLTAGE_OCV,
-	POWER_SUPPLY_PROP_CURRENT_MAX,
-	POWER_SUPPLY_PROP_INPUT_CURRENT_MAX,
-	POWER_SUPPLY_PROP_INPUT_CURRENT_TRIM,
-	POWER_SUPPLY_PROP_INPUT_CURRENT_SETTLED,
-	POWER_SUPPLY_PROP_VCHG_LOOP_DBC_BYPASS,
-	POWER_SUPPLY_PROP_CURRENT_NOW,
-	POWER_SUPPLY_PROP_CURRENT_AVG,
-=======
 	POWER_SUPPLY_PROP_VOLTAGE_OCV,
 	POWER_SUPPLY_PROP_VOLTAGE_BOOT,
 	POWER_SUPPLY_PROP_CURRENT_MAX,
 	POWER_SUPPLY_PROP_CURRENT_NOW,
 	POWER_SUPPLY_PROP_CURRENT_AVG,
 	POWER_SUPPLY_PROP_CURRENT_BOOT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	POWER_SUPPLY_PROP_POWER_NOW,
 	POWER_SUPPLY_PROP_POWER_AVG,
 	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
@@ -183,9 +126,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_CHARGE_NOW,
 	POWER_SUPPLY_PROP_CHARGE_AVG,
 	POWER_SUPPLY_PROP_CHARGE_COUNTER,
-<<<<<<< HEAD
-	POWER_SUPPLY_PROP_CHARGE_COUNTER_SHADOW,
-=======
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT,
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE,
@@ -198,7 +138,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
 	POWER_SUPPLY_PROP_INPUT_VOLTAGE_LIMIT,
 	POWER_SUPPLY_PROP_INPUT_POWER_LIMIT,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	POWER_SUPPLY_PROP_ENERGY_FULL_DESIGN,
 	POWER_SUPPLY_PROP_ENERGY_EMPTY_DESIGN,
 	POWER_SUPPLY_PROP_ENERGY_FULL,
@@ -206,13 +145,6 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_ENERGY_NOW,
 	POWER_SUPPLY_PROP_ENERGY_AVG,
 	POWER_SUPPLY_PROP_CAPACITY, /* in percents! */
-<<<<<<< HEAD
-	POWER_SUPPLY_PROP_CAPACITY_LEVEL,
-	POWER_SUPPLY_PROP_TEMP,
-	POWER_SUPPLY_PROP_COOL_TEMP,
-	POWER_SUPPLY_PROP_WARM_TEMP,
-	POWER_SUPPLY_PROP_TEMP_AMBIENT,
-=======
 	POWER_SUPPLY_PROP_CAPACITY_ALERT_MIN, /* in percents! */
 	POWER_SUPPLY_PROP_CAPACITY_ALERT_MAX, /* in percents! */
 	POWER_SUPPLY_PROP_CAPACITY_ERROR_MARGIN, /* in percents! */
@@ -225,54 +157,11 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_TEMP_AMBIENT,
 	POWER_SUPPLY_PROP_TEMP_AMBIENT_ALERT_MIN,
 	POWER_SUPPLY_PROP_TEMP_AMBIENT_ALERT_MAX,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_NOW,
 	POWER_SUPPLY_PROP_TIME_TO_EMPTY_AVG,
 	POWER_SUPPLY_PROP_TIME_TO_FULL_NOW,
 	POWER_SUPPLY_PROP_TIME_TO_FULL_AVG,
 	POWER_SUPPLY_PROP_TYPE, /* use power_supply.type instead */
-<<<<<<< HEAD
-	POWER_SUPPLY_PROP_SCOPE,
-	POWER_SUPPLY_PROP_SYSTEM_TEMP_LEVEL,
-	POWER_SUPPLY_PROP_RESISTANCE,
-#if defined(CONFIG_LGE_PM_BATTERY_ID_CHECKER)
-	POWER_SUPPLY_PROP_BATTERY_ID_CHECKER,
-#endif
-#ifdef CONFIG_LGE_PM
-	POWER_SUPPLY_PROP_PSEUDO_BATT,
-	POWER_SUPPLY_PROP_EXT_PWR_CHECK,
-	POWER_SUPPLY_PROP_BAT_REMOVED,
-#endif
-#if defined(CONFIG_VZW_POWER_REQ) || defined(CONFIG_SMB349_VZW_FAST_CHG)
-	POWER_SUPPLY_PROP_VZW_CHG,
-#endif
-#if defined(CONFIG_CHARGER_MAX77819) || defined(CONFIG_CHARGER_MAX8971) || \
-    defined(CONFIG_BQ24296_CHARGER) || defined(CONFIG_SMB349_CHARGER)
-	POWER_SUPPLY_PROP_SAFTETY_CHARGER_TIMER,
-	POWER_SUPPLY_PROP_CHARGING_COMPLETE,
-#endif
-#ifdef CONFIG_FTT_CHARGER_V3
-	POWER_SUPPLY_PROP_FTT_ANNTENA_LEVEL,
-#endif
-#ifdef CONFIG_MAX17050_FUELGAUGE
-	POWER_SUPPLY_PROP_BATTERY_CONDITION,
-	POWER_SUPPLY_PROP_BATTERY_AGE,
-#endif
-#if defined(CONFIG_CHARGER_UNIFIED_WLC)
-	POWER_SUPPLY_PROP_WIRELESS_CHARGER_SWITCH,
-#ifdef CONFIG_CHARGER_UNIFIED_WLC_ALIGNMENT
-	POWER_SUPPLY_PROP_ALIGNMENT,
-#if defined(CONFIG_CHARGER_UNIFIED_WLC_ALIGNMENT_IDT9025A) && defined(CONFIG_CHARGER_FACTORY_MODE)
-	POWER_SUPPLY_PROP_FREQUENCY,
-#elif defined(CONFIG_CHARGER_UNIFIED_WLC_ALIGNMENT_BQ5102X) && defined(CONFIG_CHARGER_FACTORY_MODE)
-	POWER_SUPPLY_PROP_VRECT,
-#endif
-#endif
-#endif
-#if defined(CONFIG_LGE_PM_LLK_MODE)
-	POWER_SUPPLY_PROP_STORE_DEMO_ENABLED,
-#endif
-=======
 	POWER_SUPPLY_PROP_USB_TYPE,
 	POWER_SUPPLY_PROP_SCOPE,
 	POWER_SUPPLY_PROP_PRECHARGE_CURRENT,
@@ -281,57 +170,17 @@ enum power_supply_property {
 	POWER_SUPPLY_PROP_MANUFACTURE_YEAR,
 	POWER_SUPPLY_PROP_MANUFACTURE_MONTH,
 	POWER_SUPPLY_PROP_MANUFACTURE_DAY,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Properties of type `const char *' */
 	POWER_SUPPLY_PROP_MODEL_NAME,
 	POWER_SUPPLY_PROP_MANUFACTURER,
 	POWER_SUPPLY_PROP_SERIAL_NUMBER,
 };
 
-<<<<<<< HEAD
-enum power_supply_event_type {
-	POWER_SUPPLY_PROP_UNKNOWN,
-#if defined(CONFIG_CHARGER_UNIFIED_WLC)
-	POWER_SUPPLY_PROP_WIRELESS_DCIN_PRESENT,
-	POWER_SUPPLY_PROP_WIRELESS_USB_PRESENT,
-	POWER_SUPPLY_PROP_WIRELESS_CHARGE_ENABLED,
-	POWER_SUPPLY_PROP_WIRELESS_CHARGE_COMPLETED,
-	POWER_SUPPLY_PROP_WIRELESS_ONLINE,
-	POWER_SUPPLY_PROP_WIRELESS_ONLINE_OTG,
-	POWER_SUPPLY_PROP_WIRELESS_FAKE_OTG,
-#ifdef CONFIG_LGE_THERMALE_CHG_CONTROL_FOR_WLC
-	POWER_SUPPLY_PROP_WIRELESS_THERMAL_MITIGATION,
-#endif
-#endif
-	POWER_SUPPLY_PROP_ABNORMAL_TA,
-#if defined(CONFIG_LGE_SMART_CHARGING)
-	POWER_SUPPLY_PROP_SMART_CHARGING_ENABLE,
-	POWER_SUPPLY_PROP_SMART_CHARGING_CHG_CURRENT,
-	POWER_SUPPLY_PROP_SMART_CHARGING_FORCE_UPDATE,
-#endif
-#ifdef CONFIG_LGE_PM
-	POWER_SUPPLY_PROP_FLOATED_CHARGER,
-	POWER_SUPPLY_PROP_DRIVER_UNINSTALL,
-#endif
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum power_supply_type {
 	POWER_SUPPLY_TYPE_UNKNOWN = 0,
 	POWER_SUPPLY_TYPE_BATTERY,
 	POWER_SUPPLY_TYPE_UPS,
 	POWER_SUPPLY_TYPE_MAINS,
-<<<<<<< HEAD
-	POWER_SUPPLY_TYPE_USB,		/* Standard Downstream Port */
-	POWER_SUPPLY_TYPE_USB_DCP,	/* Dedicated Charging Port */
-	POWER_SUPPLY_TYPE_USB_CDP,	/* Charging Downstream Port */
-	POWER_SUPPLY_TYPE_USB_ACA,	/* Accessory Charger Adapters */
-#if defined(CONFIG_CHARGER_UNIFIED_WLC) || defined(CONFIG_WIRELESS_CHARGER)
-	POWER_SUPPLY_TYPE_WIRELESS,
-#endif
-	POWER_SUPPLY_TYPE_BMS,		/* Battery Monitor System */
-=======
 	POWER_SUPPLY_TYPE_USB,			/* Standard Downstream Port */
 	POWER_SUPPLY_TYPE_USB_DCP,		/* Dedicated Charging Port */
 	POWER_SUPPLY_TYPE_USB_CDP,		/* Charging Downstream Port */
@@ -364,7 +213,6 @@ enum power_supply_charge_behaviour {
 
 enum power_supply_notifier_events {
 	PSY_EVENT_PROP_CHANGED,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union power_supply_propval {
@@ -372,17 +220,6 @@ union power_supply_propval {
 	const char *strval;
 };
 
-<<<<<<< HEAD
-struct power_supply {
-	const char *name;
-	enum power_supply_type type;
-	enum power_supply_property *properties;
-	size_t num_properties;
-
-	char **supplied_to;
-	size_t num_supplicants;
-
-=======
 struct device_node;
 struct power_supply;
 
@@ -417,43 +254,22 @@ struct power_supply_desc {
 	 * this power supply. Instead use power_supply_*() functions (for
 	 * example power_supply_get_property()).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*get_property)(struct power_supply *psy,
 			    enum power_supply_property psp,
 			    union power_supply_propval *val);
 	int (*set_property)(struct power_supply *psy,
 			    enum power_supply_property psp,
 			    const union power_supply_propval *val);
-<<<<<<< HEAD
-	int (*get_event_property)(struct power_supply *psy,
-			enum power_supply_event_type psp,
-			union power_supply_propval *val);
-	int (*set_event_property)(struct power_supply *psy,
-			enum power_supply_event_type psp,
-			    const union power_supply_propval *val);
-=======
 	/*
 	 * property_is_writeable() will be called during registration
 	 * of power supply. If this happens during device probe then it must
 	 * not access internal data of device (because probe did not end).
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*property_is_writeable)(struct power_supply *psy,
 				     enum power_supply_property psp);
 	void (*external_power_changed)(struct power_supply *psy);
 	void (*set_charged)(struct power_supply *psy);
 
-<<<<<<< HEAD
-	/* For APM emulation, think legacy userspace. */
-	int use_for_apm;
-
-	/* private */
-	struct device *dev;
-	struct work_struct changed_work;
-	spinlock_t changed_lock;
-	bool changed;
-	struct wake_lock work_wake_lock;
-=======
 	/*
 	 * Set if thermal zone should not be created for this power supply.
 	 * For example for virtual supplies forwarding calls to actual
@@ -491,7 +307,6 @@ struct power_supply {
 	struct thermal_zone_device *tzd;
 	struct thermal_cooling_device *tcd;
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_LEDS_TRIGGERS
 	struct led_trigger *charging_full_trig;
@@ -505,13 +320,6 @@ struct power_supply {
 	struct led_trigger *charging_blink_full_solid_trig;
 	char *charging_blink_full_solid_trig_name;
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_LGE_PM
-	int is_floated_charger;
-	int is_usb_driver_uninstall;
-#endif
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -533,75 +341,6 @@ struct power_supply_info {
 	int use_for_apm;
 };
 
-<<<<<<< HEAD
-#if defined(CONFIG_POWER_SUPPLY) || defined(CONFIG_POWER_SUPPLY_MODULE)
-#ifdef CONFIG_LGE_PM
-int power_supply_set_floated_charger(struct power_supply *psy, int is_float);
-int power_supply_set_usb_driver_uninstall(struct power_supply *psy, int is_float);
-#endif
-extern struct power_supply *power_supply_get_by_name(char *name);
-extern void power_supply_changed(struct power_supply *psy);
-extern int power_supply_am_i_supplied(struct power_supply *psy);
-extern int power_supply_set_battery_charged(struct power_supply *psy);
-extern int power_supply_set_current_limit(struct power_supply *psy, int limit);
-extern int power_supply_set_voltage_limit(struct power_supply *psy, int limit);
-extern int power_supply_set_online(struct power_supply *psy, bool enable);
-extern int power_supply_set_health_state(struct power_supply *psy, int health);
-extern int power_supply_set_present(struct power_supply *psy, bool enable);
-extern int power_supply_set_scope(struct power_supply *psy, int scope);
-extern int power_supply_set_charge_type(struct power_supply *psy, int type);
-extern int power_supply_set_supply_type(struct power_supply *psy,
-					enum power_supply_type supply_type);
-extern int power_supply_is_system_supplied(void);
-extern int power_supply_register(struct device *parent,
-				 struct power_supply *psy);
-extern void power_supply_unregister(struct power_supply *psy);
-extern int power_supply_powers(struct power_supply *psy, struct device *dev);
-#else
-static inline struct power_supply *power_supply_get_by_name(char *name)
-							{ return NULL; }
-static inline void power_supply_changed(struct power_supply *psy) { }
-static inline int power_supply_am_i_supplied(struct power_supply *psy)
-							{ return -ENOSYS; }
-static inline int power_supply_set_battery_charged(struct power_supply *psy)
-							{ return -ENOSYS; }
-static inline int power_supply_set_voltage_limit(struct power_supply *psy,
-							int limit)
-							{ return -ENOSYS; }
-static inline int power_supply_set_current_limit(struct power_supply *psy,
-							int limit)
-							{ return -ENOSYS; }
-static inline int power_supply_set_online(struct power_supply *psy,
-							bool enable)
-							{ return -ENOSYS; }
-static inline int power_supply_set_health_state(struct power_supply *psy,
-							int health)
-							{ return -ENOSYS; }
-static inline int power_supply_set_present(struct power_supply *psy,
-							bool enable)
-							{ return -ENOSYS; }
-static inline int power_supply_set_scope(struct power_supply *psy,
-							int scope)
-							{ return -ENOSYS; }
-static inline int power_supply_set_charge_type(struct power_supply *psy,
-							int type)
-							{ return -ENOSYS; }
-static inline int power_supply_set_supply_type(struct power_supply *psy,
-					enum power_supply_type supply_type)
-							{ return -ENOSYS; }
-static inline int power_supply_is_system_supplied(void) { return -ENOSYS; }
-static inline int power_supply_register(struct device *parent,
-					struct power_supply *psy)
-							{ return -ENOSYS; }
-static inline void power_supply_unregister(struct power_supply *psy) { }
-static inline int power_supply_powers(struct power_supply *psy,
-				      struct device *dev)
-							{ return -ENOSYS; }
-#endif
-
-/* For APM emulation, think legacy userspace. */
-extern struct class *power_supply_class;
-=======
 struct power_supply_battery_ocv_table {
 	int ocv;	/* microVolts */
 	int capacity;	/* percent */
@@ -1157,7 +896,6 @@ extern int power_supply_powers(struct power_supply *psy, struct device *dev);
 
 extern void *power_supply_get_drvdata(struct power_supply *psy);
 extern int power_supply_for_each_device(void *data, int (*fn)(struct device *dev, void *data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool power_supply_is_amp_property(enum power_supply_property psp)
 {
@@ -1169,14 +907,6 @@ static inline bool power_supply_is_amp_property(enum power_supply_property psp)
 	case POWER_SUPPLY_PROP_CHARGE_NOW:
 	case POWER_SUPPLY_PROP_CHARGE_AVG:
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
-<<<<<<< HEAD
-	case POWER_SUPPLY_PROP_CHARGE_COUNTER_SHADOW:
-	case POWER_SUPPLY_PROP_CURRENT_MAX:
-	case POWER_SUPPLY_PROP_INPUT_CURRENT_MAX:
-	case POWER_SUPPLY_PROP_CURRENT_NOW:
-	case POWER_SUPPLY_PROP_CURRENT_AVG:
-		return 1;
-=======
 	case POWER_SUPPLY_PROP_PRECHARGE_CURRENT:
 	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
@@ -1186,16 +916,11 @@ static inline bool power_supply_is_amp_property(enum power_supply_property psp)
 	case POWER_SUPPLY_PROP_CURRENT_AVG:
 	case POWER_SUPPLY_PROP_CURRENT_BOOT:
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool power_supply_is_watt_property(enum power_supply_property psp)
@@ -1214,25 +939,15 @@ static inline bool power_supply_is_watt_property(enum power_supply_property psp)
 	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
 	case POWER_SUPPLY_PROP_VOLTAGE_AVG:
 	case POWER_SUPPLY_PROP_VOLTAGE_OCV:
-<<<<<<< HEAD
-	case POWER_SUPPLY_PROP_POWER_NOW:
-		return 1;
-=======
 	case POWER_SUPPLY_PROP_VOLTAGE_BOOT:
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
 	case POWER_SUPPLY_PROP_POWER_NOW:
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
-<<<<<<< HEAD
-	return 0;
-}
-
-=======
 	return false;
 }
 
@@ -1273,5 +988,4 @@ static inline int power_supply_charge_behaviour_parse(unsigned int available_beh
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_POWER_SUPPLY_H__ */

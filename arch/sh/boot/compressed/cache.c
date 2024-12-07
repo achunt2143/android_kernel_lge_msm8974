@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cache_control(unsigned int command)
 {
 	volatile unsigned int *p = (volatile unsigned int *) 0x80000000;

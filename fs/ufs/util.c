@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ufs/util.c
  *
@@ -30,12 +27,7 @@ struct ufs_buffer_head * _ubh_bread_ (struct ufs_sb_private_info * uspi,
 	count = size >> uspi->s_fshift;
 	if (count > UFS_MAXFRAG)
 		return NULL;
-<<<<<<< HEAD
-	ubh = (struct ufs_buffer_head *)
-		kmalloc (sizeof (struct ufs_buffer_head), GFP_NOFS);
-=======
 	ubh = kmalloc (sizeof (struct ufs_buffer_head), GFP_NOFS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ubh)
 		return NULL;
 	ubh->fragment = fragment;
@@ -127,11 +119,7 @@ void ubh_sync_block(struct ufs_buffer_head *ubh)
 		unsigned i;
 
 		for (i = 0; i < ubh->count; i++)
-<<<<<<< HEAD
-			write_dirty_buffer(ubh->bh[i], WRITE);
-=======
 			write_dirty_buffer(ubh->bh[i], 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < ubh->count; i++)
 			wait_on_buffer(ubh->bh[i]);
@@ -242,66 +230,16 @@ ufs_set_inode_dev(struct super_block *sb, struct ufs_inode_info *ufsi, dev_t dev
 }
 
 /**
-<<<<<<< HEAD
- * ufs_get_locked_page() - locate, pin and lock a pagecache page, if not exist
-=======
  * ufs_get_locked_folio() - locate, pin and lock a pagecache folio, if not exist
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * read it from disk.
  * @mapping: the address_space to search
  * @index: the page index
  *
-<<<<<<< HEAD
- * Locates the desired pagecache page, if not exist we'll read it,
-=======
  * Locates the desired pagecache folio, if not exist we'll read it,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * locks it, increments its reference
  * count and returns its address.
  *
  */
-<<<<<<< HEAD
-
-struct page *ufs_get_locked_page(struct address_space *mapping,
-				 pgoff_t index)
-{
-	struct page *page;
-
-	page = find_lock_page(mapping, index);
-	if (!page) {
-		page = read_mapping_page(mapping, index, NULL);
-
-		if (IS_ERR(page)) {
-			printk(KERN_ERR "ufs_change_blocknr: "
-			       "read_mapping_page error: ino %lu, index: %lu\n",
-			       mapping->host->i_ino, index);
-			goto out;
-		}
-
-		lock_page(page);
-
-		if (unlikely(page->mapping == NULL)) {
-			/* Truncate got there first */
-			unlock_page(page);
-			page_cache_release(page);
-			page = NULL;
-			goto out;
-		}
-
-		if (!PageUptodate(page) || PageError(page)) {
-			unlock_page(page);
-			page_cache_release(page);
-
-			printk(KERN_ERR "ufs_change_blocknr: "
-			       "can not read page: ino %lu, index: %lu\n",
-			       mapping->host->i_ino, index);
-
-			page = ERR_PTR(-EIO);
-		}
-	}
-out:
-	return page;
-=======
 struct folio *ufs_get_locked_folio(struct address_space *mapping,
 				 pgoff_t index)
 {
@@ -328,5 +266,4 @@ struct folio *ufs_get_locked_folio(struct address_space *mapping,
 	if (!folio_buffers(folio))
 		create_empty_buffers(folio, 1 << inode->i_blkbits, 0);
 	return folio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

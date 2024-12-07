@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver model AC97 bus interface
  *
  * Author:	Nicolas Pitre
  * Created:	Jan 14, 2005
  * Copyright:	(C) MontaVista Software Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -25,46 +14,6 @@
 #include <sound/ac97_codec.h>
 
 /*
-<<<<<<< HEAD
- * Let drivers decide whether they want to support given codec from their
- * probe method. Drivers have direct access to the struct snd_ac97
- * structure and may  decide based on the id field amongst other things.
- */
-static int ac97_bus_match(struct device *dev, struct device_driver *drv)
-{
-	return 1;
-}
-
-#ifdef CONFIG_PM
-static int ac97_bus_suspend(struct device *dev, pm_message_t state)
-{
-	int ret = 0;
-
-	if (dev->driver && dev->driver->suspend)
-		ret = dev->driver->suspend(dev, state);
-
-	return ret;
-}
-
-static int ac97_bus_resume(struct device *dev)
-{
-	int ret = 0;
-
-	if (dev->driver && dev->driver->resume)
-		ret = dev->driver->resume(dev);
-
-	return ret;
-}
-#endif /* CONFIG_PM */
-
-struct bus_type ac97_bus_type = {
-	.name		= "ac97",
-	.match		= ac97_bus_match,
-#ifdef CONFIG_PM
-	.suspend	= ac97_bus_suspend,
-	.resume		= ac97_bus_resume,
-#endif /* CONFIG_PM */
-=======
  * snd_ac97_check_id() - Reads and checks the vendor ID of the device
  * @ac97: The AC97 device to check
  * @id: The ID to compare to
@@ -128,7 +77,6 @@ EXPORT_SYMBOL_GPL(snd_ac97_reset);
 
 const struct bus_type ac97_bus_type = {
 	.name		= "ac97",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ac97_bus_init(void)

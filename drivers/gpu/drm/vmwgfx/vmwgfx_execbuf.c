@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-/**************************************************************************
- *
- * Copyright © 2009 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
-=======
 // SPDX-License-Identifier: GPL-2.0 OR MIT
 /**************************************************************************
  *
  * Copyright 2009 - 2023 VMware, Inc., Palo Alto, CA., USA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -31,13 +24,6 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  **************************************************************************/
-<<<<<<< HEAD
-
-#include "vmwgfx_drv.h"
-#include "vmwgfx_reg.h"
-#include "ttm/ttm_bo_api.h"
-#include "ttm/ttm_placement.h"
-=======
 #include "vmwgfx_binding.h"
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
@@ -580,17 +566,12 @@ static void vmw_resource_relocations_apply(uint32_t *cb,
 		}
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int vmw_cmd_invalid(struct vmw_private *dev_priv,
 			   struct vmw_sw_context *sw_context,
 			   SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	return capable(CAP_SYS_ADMIN) ? : -EINVAL;
-=======
 	return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vmw_cmd_ok(struct vmw_private *dev_priv,
@@ -600,63 +581,6 @@ static int vmw_cmd_ok(struct vmw_private *dev_priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-static void vmw_resource_to_validate_list(struct vmw_sw_context *sw_context,
-					  struct vmw_resource **p_res)
-{
-	struct vmw_resource *res = *p_res;
-
-	if (list_empty(&res->validate_head)) {
-		list_add_tail(&res->validate_head, &sw_context->resource_list);
-		*p_res = NULL;
-	} else
-		vmw_resource_unreference(p_res);
-}
-
-/**
- * vmw_bo_to_validate_list - add a bo to a validate list
- *
- * @sw_context: The software context used for this command submission batch.
- * @bo: The buffer object to add.
- * @fence_flags: Fence flags to be or'ed with any other fence flags for
- * this buffer on this submission batch.
- * @p_val_node: If non-NULL Will be updated with the validate node number
- * on return.
- *
- * Returns -EINVAL if the limit of number of buffer objects per command
- * submission is reached.
- */
-static int vmw_bo_to_validate_list(struct vmw_sw_context *sw_context,
-				   struct ttm_buffer_object *bo,
-				   uint32_t fence_flags,
-				   uint32_t *p_val_node)
-{
-	uint32_t val_node;
-	struct ttm_validate_buffer *val_buf;
-
-	val_node = vmw_dmabuf_validate_node(bo, sw_context->cur_val_buf);
-
-	if (unlikely(val_node >= VMWGFX_MAX_VALIDATIONS)) {
-		DRM_ERROR("Max number of DMA buffers per submission"
-			  " exceeded.\n");
-		return -EINVAL;
-	}
-
-	val_buf = &sw_context->val_bufs[val_node];
-	if (unlikely(val_node == sw_context->cur_val_buf)) {
-		val_buf->new_sync_obj_arg = NULL;
-		val_buf->bo = ttm_bo_reference(bo);
-		list_add_tail(&val_buf->head, &sw_context->validate_nodes);
-		++sw_context->cur_val_buf;
-	}
-
-	val_buf->new_sync_obj_arg = (void *)
-		((unsigned long) val_buf->new_sync_obj_arg | fence_flags);
-	sw_context->fence_flags |= fence_flags;
-
-	if (p_val_node)
-		*p_val_node = val_node;
-=======
 /**
  * vmw_resources_reserve - Reserve all resources on the sw_context's resource
  * list.
@@ -802,13 +726,10 @@ static int vmw_rebind_all_dx_query(struct vmw_resource *ctx_res)
 	vmw_cmd_commit(dev_priv, sizeof(*cmd));
 
 	vmw_context_bind_dx_query(ctx_res, dx_query_mob);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * vmw_rebind_contexts - Rebind all resources previously bound to referenced
  * contexts.
@@ -899,89 +820,10 @@ static int vmw_view_bindings_add(struct vmw_sw_context *sw_context,
  * Convenience function: Call vmw_cmd_res_check with the user-space context
  * handle embedded in @header.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmw_cmd_cid_check(struct vmw_private *dev_priv,
 			     struct vmw_sw_context *sw_context,
 			     SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_resource *ctx;
-
-	struct vmw_cid_cmd {
-		SVGA3dCmdHeader header;
-		__le32 cid;
-	} *cmd;
-	int ret;
-
-	cmd = container_of(header, struct vmw_cid_cmd, header);
-	if (likely(sw_context->cid_valid && cmd->cid == sw_context->last_cid))
-		return 0;
-
-	ret = vmw_context_check(dev_priv, sw_context->tfile, cmd->cid,
-				&ctx);
-	if (unlikely(ret != 0)) {
-		DRM_ERROR("Could not find or use context %u\n",
-			  (unsigned) cmd->cid);
-		return ret;
-	}
-
-	sw_context->last_cid = cmd->cid;
-	sw_context->cid_valid = true;
-	sw_context->cur_ctx = ctx;
-	vmw_resource_to_validate_list(sw_context, &ctx);
-
-	return 0;
-}
-
-static int vmw_cmd_sid_check(struct vmw_private *dev_priv,
-			     struct vmw_sw_context *sw_context,
-			     uint32_t *sid)
-{
-	struct vmw_surface *srf;
-	int ret;
-	struct vmw_resource *res;
-
-	if (*sid == SVGA3D_INVALID_ID)
-		return 0;
-
-	if (likely((sw_context->sid_valid  &&
-		      *sid == sw_context->last_sid))) {
-		*sid = sw_context->sid_translation;
-		return 0;
-	}
-
-	ret = vmw_user_surface_lookup_handle(dev_priv,
-					     sw_context->tfile,
-					     *sid, &srf);
-	if (unlikely(ret != 0)) {
-		DRM_ERROR("Could ot find or use surface 0x%08x "
-			  "address 0x%08lx\n",
-			  (unsigned int) *sid,
-			  (unsigned long) sid);
-		return ret;
-	}
-
-	ret = vmw_surface_validate(dev_priv, srf);
-	if (unlikely(ret != 0)) {
-		if (ret != -ERESTARTSYS)
-			DRM_ERROR("Could not validate surface.\n");
-		vmw_surface_unreference(&srf);
-		return ret;
-	}
-
-	sw_context->last_sid = *sid;
-	sw_context->sid_valid = true;
-	sw_context->sid_translation = srf->res.id;
-	*sid = sw_context->sid_translation;
-
-	res = &srf->res;
-	vmw_resource_to_validate_list(sw_context, &res);
-
-	return 0;
-}
-
-
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, uint32_t) =
 		container_of(header, typeof(*cmd), header);
 
@@ -1018,26 +860,10 @@ vmw_execbuf_info_from_res(struct vmw_sw_context *sw_context,
 	return NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmw_cmd_set_render_target_check(struct vmw_private *dev_priv,
 					   struct vmw_sw_context *sw_context,
 					   SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_sid_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdSetRenderTarget body;
-	} *cmd;
-	int ret;
-
-	ret = vmw_cmd_cid_check(dev_priv, sw_context, header);
-	if (unlikely(ret != 0))
-		return ret;
-
-	cmd = container_of(header, struct vmw_sid_cmd, header);
-	ret = vmw_cmd_sid_check(dev_priv, sw_context, &cmd->body.target.sid);
-	return ret;
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdSetRenderTarget);
 	struct vmw_resource *ctx;
 	struct vmw_resource *res;
@@ -1079,26 +905,12 @@ static int vmw_cmd_set_render_target_check(struct vmw_private *dev_priv,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vmw_cmd_surface_copy_check(struct vmw_private *dev_priv,
 				      struct vmw_sw_context *sw_context,
 				      SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_sid_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdSurfaceCopy body;
-	} *cmd;
-	int ret;
-
-	cmd = container_of(header, struct vmw_sid_cmd, header);
-	ret = vmw_cmd_sid_check(dev_priv, sw_context, &cmd->body.src.sid);
-	if (unlikely(ret != 0))
-		return ret;
-	return vmw_cmd_sid_check(dev_priv, sw_context, &cmd->body.dest.sid);
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdSurfaceCopy);
 	int ret;
 
@@ -1151,26 +963,12 @@ static int vmw_cmd_pred_copy_check(struct vmw_private *dev_priv,
 	return vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
 				 VMW_RES_DIRTY_SET, user_surface_converter,
 				 &cmd->body.dstSid, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vmw_cmd_stretch_blt_check(struct vmw_private *dev_priv,
 				     struct vmw_sw_context *sw_context,
 				     SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_sid_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdSurfaceStretchBlt body;
-	} *cmd;
-	int ret;
-
-	cmd = container_of(header, struct vmw_sid_cmd, header);
-	ret = vmw_cmd_sid_check(dev_priv, sw_context, &cmd->body.src.sid);
-	if (unlikely(ret != 0))
-		return ret;
-	return vmw_cmd_sid_check(dev_priv, sw_context, &cmd->body.dest.sid);
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdSurfaceStretchBlt);
 	int ret;
 
@@ -1184,97 +982,36 @@ static int vmw_cmd_stretch_blt_check(struct vmw_private *dev_priv,
 	return vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
 				 VMW_RES_DIRTY_SET, user_surface_converter,
 				 &cmd->body.dest.sid, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vmw_cmd_blt_surf_screen_check(struct vmw_private *dev_priv,
 					 struct vmw_sw_context *sw_context,
 					 SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_sid_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdBlitSurfaceToScreen body;
-	} *cmd;
-
-	cmd = container_of(header, struct vmw_sid_cmd, header);
-
-	if (unlikely(!sw_context->kernel)) {
-		DRM_ERROR("Kernel only SVGA3d command: %u.\n", cmd->header.id);
-		return -EPERM;
-	}
-
-	return vmw_cmd_sid_check(dev_priv, sw_context, &cmd->body.srcImage.sid);
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdBlitSurfaceToScreen) =
 		container_of(header, typeof(*cmd), header);
 
 	return vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
 				 VMW_RES_DIRTY_NONE, user_surface_converter,
 				 &cmd->body.srcImage.sid, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vmw_cmd_present_check(struct vmw_private *dev_priv,
 				 struct vmw_sw_context *sw_context,
 				 SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_sid_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdPresent body;
-	} *cmd;
-
-
-	cmd = container_of(header, struct vmw_sid_cmd, header);
-
-	if (unlikely(!sw_context->kernel)) {
-		DRM_ERROR("Kernel only SVGA3d command: %u.\n", cmd->header.id);
-		return -EPERM;
-	}
-
-	return vmw_cmd_sid_check(dev_priv, sw_context, &cmd->body.sid);
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdPresent) =
 		container_of(header, typeof(*cmd), header);
 
 	return vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
 				 VMW_RES_DIRTY_NONE, user_surface_converter,
 				 &cmd->body.sid, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * vmw_query_bo_switch_prepare - Prepare to switch pinned buffer for queries.
  *
  * @dev_priv: The device private structure.
-<<<<<<< HEAD
- * @cid: The hardware context for the next query.
- * @new_query_bo: The new buffer holding query results.
- * @sw_context: The software context used for this command submission.
- *
- * This function checks whether @new_query_bo is suitable for holding
- * query results, and if another buffer currently is pinned for query
- * results. If so, the function prepares the state of @sw_context for
- * switching pinned buffers after successful submission of the current
- * command batch. It also checks whether we're using a new query context.
- * In that case, it makes sure we emit a query barrier for the old
- * context before the current query buffer is fenced.
- */
-static int vmw_query_bo_switch_prepare(struct vmw_private *dev_priv,
-				       uint32_t cid,
-				       struct ttm_buffer_object *new_query_bo,
-				       struct vmw_sw_context *sw_context)
-{
-	int ret;
-	bool add_cid = false;
-	uint32_t cid_to_add;
-
-	if (unlikely(new_query_bo != sw_context->cur_query_bo)) {
-
-		if (unlikely(new_query_bo->num_pages > 4)) {
-			DRM_ERROR("Query buffer too large.\n");
-=======
  * @new_query_bo: The new buffer holding query results.
  * @sw_context: The software context used for this command submission.
  *
@@ -1298,67 +1035,19 @@ static int vmw_query_bo_switch_prepare(struct vmw_private *dev_priv,
 
 		if (unlikely(PFN_UP(new_query_bo->tbo.resource->size) > 4)) {
 			VMW_DEBUG_USER("Query buffer too large.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
 		if (unlikely(sw_context->cur_query_bo != NULL)) {
-<<<<<<< HEAD
-			BUG_ON(!sw_context->query_cid_valid);
-			add_cid = true;
-			cid_to_add = sw_context->cur_query_cid;
-			ret = vmw_bo_to_validate_list(sw_context,
-						      sw_context->cur_query_bo,
-						      DRM_VMW_FENCE_FLAG_EXEC,
-						      NULL);
-=======
 			sw_context->needs_post_query_barrier = true;
 			vmw_bo_placement_set_default_accelerated(sw_context->cur_query_bo);
 			ret = vmw_validation_add_bo(sw_context->ctx,
 						    sw_context->cur_query_bo);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(ret != 0))
 				return ret;
 		}
 		sw_context->cur_query_bo = new_query_bo;
 
-<<<<<<< HEAD
-		ret = vmw_bo_to_validate_list(sw_context,
-					      dev_priv->dummy_query_bo,
-					      DRM_VMW_FENCE_FLAG_EXEC,
-					      NULL);
-		if (unlikely(ret != 0))
-			return ret;
-
-	}
-
-	if (unlikely(cid != sw_context->cur_query_cid &&
-		     sw_context->query_cid_valid)) {
-		add_cid = true;
-		cid_to_add = sw_context->cur_query_cid;
-	}
-
-	sw_context->cur_query_cid = cid;
-	sw_context->query_cid_valid = true;
-
-	if (add_cid) {
-		struct vmw_resource *ctx = sw_context->cur_ctx;
-
-		if (list_empty(&ctx->query_head))
-			list_add_tail(&ctx->query_head,
-				      &sw_context->query_list);
-		ret = vmw_bo_to_validate_list(sw_context,
-					      dev_priv->dummy_query_bo,
-					      DRM_VMW_FENCE_FLAG_EXEC,
-					      NULL);
-		if (unlikely(ret != 0))
-			return ret;
-	}
-	return 0;
-}
-
-
-=======
 		vmw_bo_placement_set_default_accelerated(dev_priv->dummy_query_bo);
 		ret = vmw_validation_add_bo(sw_context->ctx,
 					    dev_priv->dummy_query_bo);
@@ -1369,7 +1058,6 @@ static int vmw_query_bo_switch_prepare(struct vmw_private *dev_priv,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * vmw_query_bo_switch_commit - Finalize switching pinned query buffer
  *
@@ -1377,22 +1065,12 @@ static int vmw_query_bo_switch_prepare(struct vmw_private *dev_priv,
  * @sw_context: The software context used for this command submission batch.
  *
  * This function will check if we're switching query buffers, and will then,
-<<<<<<< HEAD
- * if no other query waits are issued this command submission batch,
- * issue a dummy occlusion query wait used as a query barrier. When the fence
- * object following that query wait has signaled, we are sure that all
- * preseding queries have finished, and the old query buffer can be unpinned.
- * However, since both the new query buffer and the old one are fenced with
- * that fence, we can do an asynchronus unpin now, and be sure that the
- * old query buffer won't be moved until the fence has signaled.
-=======
  * issue a dummy occlusion query wait used as a query barrier. When the fence
  * object following that query wait has signaled, we are sure that all preceding
  * queries have finished, and the old query buffer can be unpinned. However,
  * since both the new query buffer and the old one are fenced with that fence,
  * we can do an asynchronus unpin now, and be sure that the old query buffer
  * won't be moved until the fence has signaled.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * As mentioned above, both the new - and old query buffers need to be fenced
  * using a sequence emitted *after* calling this function.
@@ -1400,30 +1078,10 @@ static int vmw_query_bo_switch_prepare(struct vmw_private *dev_priv,
 static void vmw_query_bo_switch_commit(struct vmw_private *dev_priv,
 				     struct vmw_sw_context *sw_context)
 {
-<<<<<<< HEAD
-
-	struct vmw_resource *ctx, *next_ctx;
-	int ret;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The validate list should still hold references to all
 	 * contexts here.
 	 */
-<<<<<<< HEAD
-
-	list_for_each_entry_safe(ctx, next_ctx, &sw_context->query_list,
-				 query_head) {
-		list_del_init(&ctx->query_head);
-
-		BUG_ON(list_empty(&ctx->validate_head));
-
-		ret = vmw_fifo_emit_dummy_query(dev_priv, ctx->id);
-
-		if (unlikely(ret != 0))
-			DRM_ERROR("Out of fifo space for dummy query.\n");
-=======
 	if (sw_context->needs_post_query_barrier) {
 		struct vmw_res_cache_entry *ctx_entry =
 			&sw_context->res_cache[vmw_res_context];
@@ -1437,31 +1095,10 @@ static void vmw_query_bo_switch_commit(struct vmw_private *dev_priv,
 
 		if (unlikely(ret != 0))
 			VMW_DEBUG_USER("Out of fifo space for dummy query.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dev_priv->pinned_bo != sw_context->cur_query_bo) {
 		if (dev_priv->pinned_bo) {
-<<<<<<< HEAD
-			vmw_bo_pin(dev_priv->pinned_bo, false);
-			ttm_bo_unref(&dev_priv->pinned_bo);
-		}
-
-		vmw_bo_pin(sw_context->cur_query_bo, true);
-
-		/*
-		 * We pin also the dummy_query_bo buffer so that we
-		 * don't need to validate it when emitting
-		 * dummy queries in context destroy paths.
-		 */
-
-		vmw_bo_pin(dev_priv->dummy_query_bo, true);
-		dev_priv->dummy_query_bo_pinned = true;
-
-		dev_priv->query_cid = sw_context->cur_query_cid;
-		dev_priv->pinned_bo =
-			ttm_bo_reference(sw_context->cur_query_bo);
-=======
 			vmw_bo_pin_reserved(dev_priv->pinned_bo, false);
 			vmw_bo_unreference(&dev_priv->pinned_bo);
 		}
@@ -1486,36 +1123,10 @@ static void vmw_query_bo_switch_commit(struct vmw_private *dev_priv,
 			dev_priv->pinned_bo =
 				vmw_bo_reference(sw_context->cur_query_bo);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /**
-<<<<<<< HEAD
- * vmw_query_switch_backoff - clear query barrier list
- * @sw_context: The sw context used for this submission batch.
- *
- * This function is used as part of an error path, where a previously
- * set up list of query barriers needs to be cleared.
- *
- */
-static void vmw_query_switch_backoff(struct vmw_sw_context *sw_context)
-{
-	struct list_head *list, *next;
-
-	list_for_each_safe(list, next, &sw_context->query_list) {
-		list_del_init(list);
-	}
-}
-
-static int vmw_translate_guest_ptr(struct vmw_private *dev_priv,
-				   struct vmw_sw_context *sw_context,
-				   SVGAGuestPtr *ptr,
-				   struct vmw_dma_buffer **vmw_bo_p)
-{
-	struct vmw_dma_buffer *vmw_bo = NULL;
-	struct ttm_buffer_object *bo;
-=======
  * vmw_translate_mob_ptr - Prepare to translate a user-space buffer handle
  * to a MOB id.
  *
@@ -1597,44 +1208,10 @@ static int vmw_translate_guest_ptr(struct vmw_private *dev_priv,
 				   struct vmw_bo **vmw_bo_p)
 {
 	struct vmw_bo *vmw_bo, *tmp_bo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t handle = ptr->gmrId;
 	struct vmw_relocation *reloc;
 	int ret;
 
-<<<<<<< HEAD
-	ret = vmw_user_dmabuf_lookup(sw_context->tfile, handle, &vmw_bo);
-	if (unlikely(ret != 0)) {
-		DRM_ERROR("Could not find or use GMR region.\n");
-		return -EINVAL;
-	}
-	bo = &vmw_bo->base;
-
-	if (unlikely(sw_context->cur_reloc >= VMWGFX_MAX_RELOCATIONS)) {
-		DRM_ERROR("Max number relocations per submission"
-			  " exceeded\n");
-		ret = -EINVAL;
-		goto out_no_reloc;
-	}
-
-	reloc = &sw_context->relocs[sw_context->cur_reloc++];
-	reloc->location = ptr;
-
-	ret = vmw_bo_to_validate_list(sw_context, bo, DRM_VMW_FENCE_FLAG_EXEC,
-				      &reloc->index);
-	if (unlikely(ret != 0))
-		goto out_no_reloc;
-
-	*vmw_bo_p = vmw_bo;
-	return 0;
-
-out_no_reloc:
-	vmw_dmabuf_unreference(&vmw_bo);
-	vmw_bo_p = NULL;
-	return ret;
-}
-
-=======
 	vmw_validation_preload_bo(sw_context->ctx);
 	ret = vmw_user_bo_lookup(sw_context->filp, handle, &vmw_bo);
 	if (ret != 0) {
@@ -1821,21 +1398,10 @@ static int vmw_cmd_end_gb_query(struct vmw_private *dev_priv,
  * @sw_context: The software context used for this command submission.
  * @header: Pointer to the command header in the command stream.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmw_cmd_end_query(struct vmw_private *dev_priv,
 			     struct vmw_sw_context *sw_context,
 			     SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_dma_buffer *vmw_bo;
-	struct vmw_query_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdEndQuery q;
-	} *cmd;
-	int ret;
-
-	cmd = container_of(header, struct vmw_query_cmd, header);
-=======
 	struct vmw_bo *vmw_bo;
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdEndQuery);
 	int ret;
@@ -1857,26 +1423,11 @@ static int vmw_cmd_end_query(struct vmw_private *dev_priv,
 		return vmw_cmd_end_gb_query(dev_priv, sw_context, header);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = vmw_cmd_cid_check(dev_priv, sw_context, header);
 	if (unlikely(ret != 0))
 		return ret;
 
 	ret = vmw_translate_guest_ptr(dev_priv, sw_context,
-<<<<<<< HEAD
-				      &cmd->q.guestResult,
-				      &vmw_bo);
-	if (unlikely(ret != 0))
-		return ret;
-
-	ret = vmw_query_bo_switch_prepare(dev_priv, cmd->q.cid,
-					  &vmw_bo->base, sw_context);
-
-	vmw_dmabuf_unreference(&vmw_bo);
-	return ret;
-}
-
-=======
 				      &cmd->body.guestResult, &vmw_bo);
 	if (unlikely(ret != 0))
 		return ret;
@@ -1921,22 +1472,10 @@ static int vmw_cmd_wait_gb_query(struct vmw_private *dev_priv,
  * @sw_context: The software context used for this command submission.
  * @header: Pointer to the command header in the command stream.
  */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmw_cmd_wait_query(struct vmw_private *dev_priv,
 			      struct vmw_sw_context *sw_context,
 			      SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_dma_buffer *vmw_bo;
-	struct vmw_query_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdWaitForQuery q;
-	} *cmd;
-	int ret;
-	struct vmw_resource *ctx;
-
-	cmd = container_of(header, struct vmw_query_cmd, header);
-=======
 	struct vmw_bo *vmw_bo;
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdWaitForQuery);
 	int ret;
@@ -1958,35 +1497,15 @@ static int vmw_cmd_wait_query(struct vmw_private *dev_priv,
 		return vmw_cmd_wait_gb_query(dev_priv, sw_context, header);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = vmw_cmd_cid_check(dev_priv, sw_context, header);
 	if (unlikely(ret != 0))
 		return ret;
 
 	ret = vmw_translate_guest_ptr(dev_priv, sw_context,
-<<<<<<< HEAD
-				      &cmd->q.guestResult,
-				      &vmw_bo);
-	if (unlikely(ret != 0))
-		return ret;
-
-	vmw_dmabuf_unreference(&vmw_bo);
-
-	/*
-	 * This wait will act as a barrier for previous waits for this
-	 * context.
-	 */
-
-	ctx = sw_context->cur_ctx;
-	if (!list_empty(&ctx->query_head))
-		list_del_init(&ctx->query_head);
-
-=======
 				      &cmd->body.guestResult, &vmw_bo);
 	if (unlikely(ret != 0))
 		return ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1994,58 +1513,6 @@ static int vmw_cmd_dma(struct vmw_private *dev_priv,
 		       struct vmw_sw_context *sw_context,
 		       SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_dma_buffer *vmw_bo = NULL;
-	struct ttm_buffer_object *bo;
-	struct vmw_surface *srf = NULL;
-	struct vmw_dma_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdSurfaceDMA dma;
-	} *cmd;
-	int ret;
-	struct vmw_resource *res;
-
-	cmd = container_of(header, struct vmw_dma_cmd, header);
-	ret = vmw_translate_guest_ptr(dev_priv, sw_context,
-				      &cmd->dma.guest.ptr,
-				      &vmw_bo);
-	if (unlikely(ret != 0))
-		return ret;
-
-	bo = &vmw_bo->base;
-	ret = vmw_user_surface_lookup_handle(dev_priv, sw_context->tfile,
-					     cmd->dma.host.sid, &srf);
-	if (ret) {
-		DRM_ERROR("could not find surface\n");
-		goto out_no_reloc;
-	}
-
-	ret = vmw_surface_validate(dev_priv, srf);
-	if (unlikely(ret != 0)) {
-		if (ret != -ERESTARTSYS)
-			DRM_ERROR("Culd not validate surface.\n");
-		goto out_no_validate;
-	}
-
-	/*
-	 * Patch command stream with device SID.
-	 */
-	cmd->dma.host.sid = srf->res.id;
-	vmw_kms_cursor_snoop(srf, sw_context->tfile, bo, header);
-
-	vmw_dmabuf_unreference(&vmw_bo);
-
-	res = &srf->res;
-	vmw_resource_to_validate_list(sw_context, &res);
-
-	return 0;
-
-out_no_validate:
-	vmw_surface_unreference(&srf);
-out_no_reloc:
-	vmw_dmabuf_unreference(&vmw_bo);
-	return ret;
-=======
 	struct vmw_bo *vmw_bo = NULL;
 	struct vmw_surface *srf = NULL;
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdSurfaceDMA);
@@ -2096,21 +1563,13 @@ out_no_reloc:
 	vmw_kms_cursor_snoop(srf, sw_context->fp->tfile, &vmw_bo->tbo, header);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vmw_cmd_draw(struct vmw_private *dev_priv,
 			struct vmw_sw_context *sw_context,
 			SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_draw_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdDrawPrimitives body;
-	} *cmd;
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdDrawPrimitives);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SVGA3dVertexDecl *decl = (SVGA3dVertexDecl *)(
 		(unsigned long)header + sizeof(*cmd));
 	SVGA3dPrimitiveRange *range;
@@ -2122,32 +1581,19 @@ static int vmw_cmd_draw(struct vmw_private *dev_priv,
 	if (unlikely(ret != 0))
 		return ret;
 
-<<<<<<< HEAD
-	cmd = container_of(header, struct vmw_draw_cmd, header);
-	maxnum = (header->size - sizeof(cmd->body)) / sizeof(*decl);
-
-	if (unlikely(cmd->body.numVertexDecls > maxnum)) {
-		DRM_ERROR("Illegal number of vertex declarations.\n");
-=======
 	cmd = container_of(header, typeof(*cmd), header);
 	maxnum = (header->size - sizeof(cmd->body)) / sizeof(*decl);
 
 	if (unlikely(cmd->body.numVertexDecls > maxnum)) {
 		VMW_DEBUG_USER("Illegal number of vertex declarations.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	for (i = 0; i < cmd->body.numVertexDecls; ++i, ++decl) {
-<<<<<<< HEAD
-		ret = vmw_cmd_sid_check(dev_priv, sw_context,
-					&decl->array.surfaceId);
-=======
 		ret = vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
 					VMW_RES_DIRTY_NONE,
 					user_surface_converter,
 					&decl->array.surfaceId, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(ret != 0))
 			return ret;
 	}
@@ -2155,53 +1601,26 @@ static int vmw_cmd_draw(struct vmw_private *dev_priv,
 	maxnum = (header->size - sizeof(cmd->body) -
 		  cmd->body.numVertexDecls * sizeof(*decl)) / sizeof(*range);
 	if (unlikely(cmd->body.numRanges > maxnum)) {
-<<<<<<< HEAD
-		DRM_ERROR("Illegal number of index ranges.\n");
-=======
 		VMW_DEBUG_USER("Illegal number of index ranges.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	range = (SVGA3dPrimitiveRange *) decl;
 	for (i = 0; i < cmd->body.numRanges; ++i, ++range) {
-<<<<<<< HEAD
-		ret = vmw_cmd_sid_check(dev_priv, sw_context,
-					&range->indexArray.surfaceId);
-=======
 		ret = vmw_cmd_res_check(dev_priv, sw_context, vmw_res_surface,
 					VMW_RES_DIRTY_NONE,
 					user_surface_converter,
 					&range->indexArray.surfaceId, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(ret != 0))
 			return ret;
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmw_cmd_tex_state(struct vmw_private *dev_priv,
 			     struct vmw_sw_context *sw_context,
 			     SVGA3dCmdHeader *header)
 {
-<<<<<<< HEAD
-	struct vmw_tex_state_cmd {
-		SVGA3dCmdHeader header;
-		SVGA3dCmdSetTextureState state;
-	};
-
-	SVGA3dTextureState *last_state = (SVGA3dTextureState *)
-	  ((unsigned long) header + header->size + sizeof(header));
-	SVGA3dTextureState *cur_state = (SVGA3dTextureState *)
-		((unsigned long) header + sizeof(struct vmw_tex_state_cmd));
-	int ret;
-
-	ret = vmw_cmd_cid_check(dev_priv, sw_context, header);
-=======
 	VMW_DECLARE_CMD_VAR(*cmd, SVGA3dCmdSetTextureState);
 	SVGA3dTextureState *last_state = (SVGA3dTextureState *)
 	  ((unsigned long) header + header->size + sizeof(*header));
@@ -2216,7 +1635,6 @@ static int vmw_cmd_tex_state(struct vmw_private *dev_priv,
 	ret = vmw_cmd_res_check(dev_priv, sw_context, vmw_res_context,
 				VMW_RES_DIRTY_SET, user_context_converter,
 				&cmd->body.cid, &ctx);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(ret != 0))
 		return ret;
 
@@ -2224,12 +1642,6 @@ static int vmw_cmd_tex_state(struct vmw_private *dev_priv,
 		if (likely(cur_state->name != SVGA3D_TS_BIND_TEXTURE))
 			continue;
 
-<<<<<<< HEAD
-		ret = vmw_cmd_sid_check(dev_priv, sw_context,
-					&cur_state->value);
-		if (unlikely(ret != 0))
-			return ret;
-=======
 		if (cur_state->stage >= SVGA3D_NUM_TEXTURE_UNITS) {
 			VMW_DEBUG_USER("Illegal texture/sampler unit %u.\n",
 				       (unsigned int) cur_state->stage);
@@ -2258,7 +1670,6 @@ static int vmw_cmd_tex_state(struct vmw_private *dev_priv,
 			vmw_binding_add(node->staged, &binding.bi, 0,
 					binding.texture_stage);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -2268,27 +1679,13 @@ static int vmw_cmd_check_define_gmrfb(struct vmw_private *dev_priv,
 				      struct vmw_sw_context *sw_context,
 				      void *buf)
 {
-<<<<<<< HEAD
-	struct vmw_dma_buffer *vmw_bo;
-	int ret;
-=======
 	struct vmw_bo *vmw_bo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct {
 		uint32_t header;
 		SVGAFifoCmdDefineGMRFB body;
 	} *cmd = buf;
 
-<<<<<<< HEAD
-	ret = vmw_translate_guest_ptr(dev_priv, sw_context,
-				      &cmd->body.ptr,
-				      &vmw_bo);
-	if (unlikely(ret != 0))
-		return ret;
-
-	vmw_dmabuf_unreference(&vmw_bo);
-=======
 	return vmw_translate_guest_ptr(dev_priv, sw_context, &cmd->body.ptr,
 				       &vmw_bo);
 }
@@ -3180,13 +2577,10 @@ static int vmw_cmd_dx_so_define(struct vmw_private *dev_priv,
 		return res ? PTR_ERR(res) : -EINVAL;
 	cmd = container_of(header, typeof(*cmd), header);
 	ret = vmw_cotable_notify(res, cmd->defined_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-=======
 /**
  * vmw_cmd_dx_check_subresource - Validate SVGA_3D_CMD_DX_[X]_SUBRESOURCE
  * command
@@ -3817,7 +3211,6 @@ static int vmw_cmd_dispatch_indirect(struct vmw_private *dev_priv,
 				 &cmd->body.argsBufferSid, NULL);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmw_cmd_check_not_3d(struct vmw_private *dev_priv,
 				struct vmw_sw_context *sw_context,
 				void *buf, uint32_t *size)
@@ -3825,11 +3218,7 @@ static int vmw_cmd_check_not_3d(struct vmw_private *dev_priv,
 	uint32_t size_remaining = *size;
 	uint32_t cmd_id;
 
-<<<<<<< HEAD
-	cmd_id = le32_to_cpu(((uint32_t *)buf)[0]);
-=======
 	cmd_id = ((uint32_t *)buf)[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd_id) {
 	case SVGA_CMD_UPDATE:
 		*size = sizeof(uint32_t) + sizeof(SVGAFifoCmdUpdate);
@@ -3844,31 +3233,18 @@ static int vmw_cmd_check_not_3d(struct vmw_private *dev_priv,
 		*size = sizeof(uint32_t) + sizeof(SVGAFifoCmdBlitGMRFBToScreen);
 		break;
 	default:
-<<<<<<< HEAD
-		DRM_ERROR("Unsupported SVGA command: %u.\n", cmd_id);
-=======
 		VMW_DEBUG_USER("Unsupported SVGA command: %u.\n", cmd_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (*size > size_remaining) {
-<<<<<<< HEAD
-		DRM_ERROR("Invalid SVGA command (size mismatch):"
-			  " %u.\n", cmd_id);
-=======
 		VMW_DEBUG_USER("Invalid SVGA command (size mismatch): %u.\n",
 			       cmd_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (unlikely(!sw_context->kernel)) {
-<<<<<<< HEAD
-		DRM_ERROR("Kernel only SVGA command: %u.\n", cmd_id);
-=======
 		VMW_DEBUG_USER("Kernel only SVGA command: %u.\n", cmd_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	}
 
@@ -3878,53 +3254,6 @@ static int vmw_cmd_check_not_3d(struct vmw_private *dev_priv,
 	return 0;
 }
 
-<<<<<<< HEAD
-typedef int (*vmw_cmd_func) (struct vmw_private *,
-			     struct vmw_sw_context *,
-			     SVGA3dCmdHeader *);
-
-#define VMW_CMD_DEF(cmd, func) \
-	[cmd - SVGA_3D_CMD_BASE] = func
-
-static vmw_cmd_func vmw_cmd_funcs[SVGA_3D_CMD_MAX] = {
-	VMW_CMD_DEF(SVGA_3D_CMD_SURFACE_DEFINE, &vmw_cmd_invalid),
-	VMW_CMD_DEF(SVGA_3D_CMD_SURFACE_DESTROY, &vmw_cmd_invalid),
-	VMW_CMD_DEF(SVGA_3D_CMD_SURFACE_COPY, &vmw_cmd_surface_copy_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SURFACE_STRETCHBLT, &vmw_cmd_stretch_blt_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SURFACE_DMA, &vmw_cmd_dma),
-	VMW_CMD_DEF(SVGA_3D_CMD_CONTEXT_DEFINE, &vmw_cmd_invalid),
-	VMW_CMD_DEF(SVGA_3D_CMD_CONTEXT_DESTROY, &vmw_cmd_invalid),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETTRANSFORM, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETZRANGE, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETRENDERSTATE, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETRENDERTARGET,
-		    &vmw_cmd_set_render_target_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETTEXTURESTATE, &vmw_cmd_tex_state),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETMATERIAL, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETLIGHTDATA, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETLIGHTENABLED, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETVIEWPORT, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETCLIPPLANE, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_CLEAR, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_PRESENT, &vmw_cmd_present_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SHADER_DEFINE, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SHADER_DESTROY, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SET_SHADER, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_SET_SHADER_CONST, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_DRAW_PRIMITIVES, &vmw_cmd_draw),
-	VMW_CMD_DEF(SVGA_3D_CMD_SETSCISSORRECT, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_BEGIN_QUERY, &vmw_cmd_cid_check),
-	VMW_CMD_DEF(SVGA_3D_CMD_END_QUERY, &vmw_cmd_end_query),
-	VMW_CMD_DEF(SVGA_3D_CMD_WAIT_FOR_QUERY, &vmw_cmd_wait_query),
-	VMW_CMD_DEF(SVGA_3D_CMD_PRESENT_READBACK, &vmw_cmd_ok),
-	VMW_CMD_DEF(SVGA_3D_CMD_BLIT_SURFACE_TO_SCREEN,
-		    &vmw_cmd_blt_surf_screen_check)
-};
-
-static int vmw_cmd_check(struct vmw_private *dev_priv,
-			 struct vmw_sw_context *sw_context,
-			 void *buf, uint32_t *size)
-=======
 static const struct vmw_cmd_entry vmw_cmd_entries[SVGA_3D_CMD_MAX] = {
 	VMW_CMD_DEF(SVGA_3D_CMD_SURFACE_DEFINE, &vmw_cmd_invalid,
 		    false, false, false),
@@ -4334,46 +3663,20 @@ bool vmw_cmd_describe(const void *buf, u32 *size, char const **cmd)
 static int vmw_cmd_check(struct vmw_private *dev_priv,
 			 struct vmw_sw_context *sw_context, void *buf,
 			 uint32_t *size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t cmd_id;
 	uint32_t size_remaining = *size;
 	SVGA3dCmdHeader *header = (SVGA3dCmdHeader *) buf;
 	int ret;
-<<<<<<< HEAD
-
-	cmd_id = le32_to_cpu(((uint32_t *)buf)[0]);
-=======
 	const struct vmw_cmd_entry *entry;
 	bool gb = dev_priv->capabilities & SVGA_CAP_GBOBJECTS;
 
 	cmd_id = ((uint32_t *)buf)[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Handle any none 3D commands */
 	if (unlikely(cmd_id < SVGA_CMD_MAX))
 		return vmw_cmd_check_not_3d(dev_priv, sw_context, buf, size);
 
 
-<<<<<<< HEAD
-	cmd_id = le32_to_cpu(header->id);
-	*size = le32_to_cpu(header->size) + sizeof(SVGA3dCmdHeader);
-
-	cmd_id -= SVGA_3D_CMD_BASE;
-	if (unlikely(*size > size_remaining))
-		goto out_err;
-
-	if (unlikely(cmd_id >= SVGA_3D_CMD_MAX - SVGA_3D_CMD_BASE))
-		goto out_err;
-
-	ret = vmw_cmd_funcs[cmd_id](dev_priv, sw_context, header);
-	if (unlikely(ret != 0))
-		goto out_err;
-
-	return 0;
-out_err:
-	DRM_ERROR("Illegal / Invalid SVGA3D command: %d\n",
-		  cmd_id + SVGA_3D_CMD_BASE);
-=======
 	cmd_id = header->id;
 	*size = header->size + sizeof(SVGA3dCmdHeader);
 
@@ -4420,27 +3723,18 @@ out_old:
 out_new:
 	VMW_DEBUG_USER("SVGA3D command: %d not supported by virtual device.\n",
 		       cmd_id + SVGA_3D_CMD_BASE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
 static int vmw_cmd_check_all(struct vmw_private *dev_priv,
-<<<<<<< HEAD
-			     struct vmw_sw_context *sw_context,
-			     void *buf,
-=======
 			     struct vmw_sw_context *sw_context, void *buf,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     uint32_t size)
 {
 	int32_t cur_size = size;
 	int ret;
 
-<<<<<<< HEAD
-=======
 	sw_context->buf_start = buf;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (cur_size > 0) {
 		size = cur_size;
 		ret = vmw_cmd_check(dev_priv, sw_context, buf, &size);
@@ -4451,11 +3745,7 @@ static int vmw_cmd_check_all(struct vmw_private *dev_priv,
 	}
 
 	if (unlikely(cur_size != 0)) {
-<<<<<<< HEAD
-		DRM_ERROR("Command verifier out of sync.\n");
-=======
 		VMW_DEBUG_USER("Command verifier out of sync.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -4464,32 +3754,12 @@ static int vmw_cmd_check_all(struct vmw_private *dev_priv,
 
 static void vmw_free_relocations(struct vmw_sw_context *sw_context)
 {
-<<<<<<< HEAD
-	sw_context->cur_reloc = 0;
-=======
 	/* Memory is validation context memory, so no need to free it */
 	INIT_LIST_HEAD(&sw_context->bo_relocations);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vmw_apply_relocations(struct vmw_sw_context *sw_context)
 {
-<<<<<<< HEAD
-	uint32_t i;
-	struct vmw_relocation *reloc;
-	struct ttm_validate_buffer *validate;
-	struct ttm_buffer_object *bo;
-
-	for (i = 0; i < sw_context->cur_reloc; ++i) {
-		reloc = &sw_context->relocs[i];
-		validate = &sw_context->val_bufs[reloc->index];
-		bo = validate->bo;
-		if (bo->mem.mem_type == TTM_PL_VRAM) {
-			reloc->location->offset += bo->offset;
-			reloc->location->gmrId = SVGA_GMR_FRAMEBUFFER;
-		} else
-			reloc->location->gmrId = bo->mem.start;
-=======
 	struct vmw_relocation *reloc;
 	struct ttm_buffer_object *bo;
 
@@ -4509,93 +3779,10 @@ static void vmw_apply_relocations(struct vmw_sw_context *sw_context)
 		default:
 			BUG();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	vmw_free_relocations(sw_context);
 }
 
-<<<<<<< HEAD
-static void vmw_clear_validations(struct vmw_sw_context *sw_context)
-{
-	struct ttm_validate_buffer *entry, *next;
-	struct vmw_resource *res, *res_next;
-
-	/*
-	 * Drop references to DMA buffers held during command submission.
-	 */
-	list_for_each_entry_safe(entry, next, &sw_context->validate_nodes,
-				 head) {
-		list_del(&entry->head);
-		vmw_dmabuf_validate_clear(entry->bo);
-		ttm_bo_unref(&entry->bo);
-		sw_context->cur_val_buf--;
-	}
-	BUG_ON(sw_context->cur_val_buf != 0);
-
-	/*
-	 * Drop references to resources held during command submission.
-	 */
-	vmw_resource_unreserve(&sw_context->resource_list);
-	list_for_each_entry_safe(res, res_next, &sw_context->resource_list,
-				 validate_head) {
-		list_del_init(&res->validate_head);
-		vmw_resource_unreference(&res);
-	}
-}
-
-static int vmw_validate_single_buffer(struct vmw_private *dev_priv,
-				      struct ttm_buffer_object *bo)
-{
-	int ret;
-
-
-	/*
-	 * Don't validate pinned buffers.
-	 */
-
-	if (bo == dev_priv->pinned_bo ||
-	    (bo == dev_priv->dummy_query_bo &&
-	     dev_priv->dummy_query_bo_pinned))
-		return 0;
-
-	/**
-	 * Put BO in VRAM if there is space, otherwise as a GMR.
-	 * If there is no space in VRAM and GMR ids are all used up,
-	 * start evicting GMRs to make room. If the DMA buffer can't be
-	 * used as a GMR, this will return -ENOMEM.
-	 */
-
-	ret = ttm_bo_validate(bo, &vmw_vram_gmr_placement, true, false, false);
-	if (likely(ret == 0 || ret == -ERESTARTSYS))
-		return ret;
-
-	/**
-	 * If that failed, try VRAM again, this time evicting
-	 * previous contents.
-	 */
-
-	DRM_INFO("Falling through to VRAM.\n");
-	ret = ttm_bo_validate(bo, &vmw_vram_placement, true, false, false);
-	return ret;
-}
-
-
-static int vmw_validate_buffers(struct vmw_private *dev_priv,
-				struct vmw_sw_context *sw_context)
-{
-	struct ttm_validate_buffer *entry;
-	int ret;
-
-	list_for_each_entry(entry, &sw_context->validate_nodes, head) {
-		ret = vmw_validate_single_buffer(dev_priv, entry->bo);
-		if (unlikely(ret != 0))
-			return ret;
-	}
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmw_resize_cmd_bounce(struct vmw_sw_context *sw_context,
 				 uint32_t size)
 {
@@ -4611,21 +3798,11 @@ static int vmw_resize_cmd_bounce(struct vmw_sw_context *sw_context,
 				   (sw_context->cmd_bounce_size >> 1));
 	}
 
-<<<<<<< HEAD
-	if (sw_context->cmd_bounce != NULL)
-		vfree(sw_context->cmd_bounce);
-
-	sw_context->cmd_bounce = vmalloc(sw_context->cmd_bounce_size);
-
-	if (sw_context->cmd_bounce == NULL) {
-		DRM_ERROR("Failed to allocate command bounce buffer.\n");
-=======
 	vfree(sw_context->cmd_bounce);
 	sw_context->cmd_bounce = vmalloc(sw_context->cmd_bounce_size);
 
 	if (sw_context->cmd_bounce == NULL) {
 		VMW_DEBUG_USER("Failed to allocate command bounce buffer.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sw_context->cmd_bounce_size = 0;
 		return -ENOMEM;
 	}
@@ -4633,24 +3810,15 @@ static int vmw_resize_cmd_bounce(struct vmw_sw_context *sw_context,
 	return 0;
 }
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vmw_execbuf_fence_commands - create and submit a command stream fence
  *
  * Creates a fence object and submits a command stream marker.
  * If this fails for some reason, We sync the fifo and return NULL.
  * It is then safe to fence buffers with a NULL pointer.
  *
-<<<<<<< HEAD
- * If @p_handle is not NULL @file_priv must also not be NULL. Creates
- * a userspace handle if @p_handle is not NULL, otherwise not.
-=======
  * If @p_handle is not NULL @file_priv must also not be NULL. Creates a
  * userspace handle if @p_handle is not NULL, otherwise not.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 int vmw_execbuf_fence_commands(struct drm_file *file_priv,
@@ -4665,43 +3833,14 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
 	/* p_handle implies file_priv. */
 	BUG_ON(p_handle != NULL && file_priv == NULL);
 
-<<<<<<< HEAD
-	ret = vmw_fifo_send_fence(dev_priv, &sequence);
-	if (unlikely(ret != 0)) {
-		DRM_ERROR("Fence submission error. Syncing.\n");
-=======
 	ret = vmw_cmd_send_fence(dev_priv, &sequence);
 	if (unlikely(ret != 0)) {
 		VMW_DEBUG_USER("Fence submission error. Syncing.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		synced = true;
 	}
 
 	if (p_handle != NULL)
 		ret = vmw_user_fence_create(file_priv, dev_priv->fman,
-<<<<<<< HEAD
-					    sequence,
-					    DRM_VMW_FENCE_FLAG_EXEC,
-					    p_fence, p_handle);
-	else
-		ret = vmw_fence_create(dev_priv->fman, sequence,
-				       DRM_VMW_FENCE_FLAG_EXEC,
-				       p_fence);
-
-	if (unlikely(ret != 0 && !synced)) {
-		(void) vmw_fallback_wait(dev_priv, false, false,
-					 sequence, false,
-					 VMW_FENCE_WAIT_TIMEOUT);
-		*p_fence = NULL;
-	}
-
-	return 0;
-}
-
-/**
- * vmw_execbuf_copy_fence_user - copy fence object information to
- * user-space.
-=======
 					    sequence, p_fence, p_handle);
 	else
 		ret = vmw_fence_create(dev_priv->fman, sequence, p_fence);
@@ -4717,33 +3856,10 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
 
 /**
  * vmw_execbuf_copy_fence_user - copy fence object information to user-space.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @dev_priv: Pointer to a vmw_private struct.
  * @vmw_fp: Pointer to the struct vmw_fpriv representing the calling file.
  * @ret: Return value from fence object creation.
-<<<<<<< HEAD
- * @user_fence_rep: User space address of a struct drm_vmw_fence_rep to
- * which the information should be copied.
- * @fence: Pointer to the fenc object.
- * @fence_handle: User-space fence handle.
- *
- * This function copies fence information to user-space. If copying fails,
- * The user-space struct drm_vmw_fence_rep::error member is hopefully
- * left untouched, and if it's preloaded with an -EFAULT by user-space,
- * the error will hopefully be detected.
- * Also if copying fails, user-space will be unable to signal the fence
- * object so we wait for it immediately, and then unreference the
- * user-space reference.
- */
-void
-vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
-			    struct vmw_fpriv *vmw_fp,
-			    int ret,
-			    struct drm_vmw_fence_rep __user *user_fence_rep,
-			    struct vmw_fence_obj *fence,
-			    uint32_t fence_handle)
-=======
  * @user_fence_rep: User space address of a struct drm_vmw_fence_rep to which
  * the information should be copied.
  * @fence: Pointer to the fenc object.
@@ -4764,66 +3880,34 @@ vmw_execbuf_copy_fence_user(struct vmw_private *dev_priv,
 			    struct drm_vmw_fence_rep __user *user_fence_rep,
 			    struct vmw_fence_obj *fence, uint32_t fence_handle,
 			    int32_t out_fence_fd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct drm_vmw_fence_rep fence_rep;
 
 	if (user_fence_rep == NULL)
-<<<<<<< HEAD
-		return;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&fence_rep, 0, sizeof(fence_rep));
 
 	fence_rep.error = ret;
-<<<<<<< HEAD
-=======
 	fence_rep.fd = out_fence_fd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == 0) {
 		BUG_ON(fence == NULL);
 
 		fence_rep.handle = fence_handle;
-<<<<<<< HEAD
-		fence_rep.seqno = fence->seqno;
-		vmw_update_seqno(dev_priv, &dev_priv->fifo);
-=======
 		fence_rep.seqno = fence->base.seqno;
 		vmw_update_seqno(dev_priv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fence_rep.passed_seqno = dev_priv->last_read_seqno;
 	}
 
 	/*
-<<<<<<< HEAD
-	 * copy_to_user errors will be detected by user space not
-	 * seeing fence_rep::error filled in. Typically
-	 * user-space would have pre-set that member to -EFAULT.
-=======
 	 * copy_to_user errors will be detected by user space not seeing
 	 * fence_rep::error filled in. Typically user-space would have pre-set
 	 * that member to -EFAULT.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	ret = copy_to_user(user_fence_rep, &fence_rep,
 			   sizeof(fence_rep));
 
 	/*
-<<<<<<< HEAD
-	 * User-space lost the fence object. We need to sync
-	 * and unreference the handle.
-	 */
-	if (unlikely(ret != 0) && (fence_rep.error == 0)) {
-		ttm_ref_object_base_unref(vmw_fp->tfile,
-					  fence_handle, TTM_REF_USAGE);
-		DRM_ERROR("Fence copy error. Syncing.\n");
-		(void) vmw_fence_obj_wait(fence, fence->signal_mask,
-					  false, false,
-					  VMW_FENCE_WAIT_TIMEOUT);
-	}
-=======
 	 * User-space lost the fence object. We need to sync and unreference the
 	 * handle.
 	 */
@@ -4999,33 +4083,10 @@ static int vmw_execbuf_tie_context(struct vmw_private *dev_priv,
 
 	vmw_resource_unreference(&res);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int vmw_execbuf_process(struct drm_file *file_priv,
 			struct vmw_private *dev_priv,
-<<<<<<< HEAD
-			void __user *user_commands,
-			void *kernel_commands,
-			uint32_t command_size,
-			uint64_t throttle_us,
-			struct drm_vmw_fence_rep __user *user_fence_rep,
-			struct vmw_fence_obj **out_fence)
-{
-	struct vmw_sw_context *sw_context = &dev_priv->ctx;
-	struct vmw_fence_obj *fence = NULL;
-	uint32_t handle;
-	void *cmd;
-	int ret;
-
-	ret = mutex_lock_interruptible(&dev_priv->cmdbuf_mutex);
-	if (unlikely(ret != 0))
-		return -ERESTARTSYS;
-
-	if (kernel_commands == NULL) {
-		sw_context->kernel = false;
-
-=======
 			void __user *user_commands, void *kernel_commands,
 			uint32_t command_size, uint64_t throttle_us,
 			uint32_t dx_context_handle,
@@ -5069,39 +4130,10 @@ int vmw_execbuf_process(struct drm_file *file_priv,
 
 	sw_context->kernel = false;
 	if (kernel_commands == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = vmw_resize_cmd_bounce(sw_context, command_size);
 		if (unlikely(ret != 0))
 			goto out_unlock;
 
-<<<<<<< HEAD
-
-		ret = copy_from_user(sw_context->cmd_bounce,
-				     user_commands, command_size);
-
-		if (unlikely(ret != 0)) {
-			ret = -EFAULT;
-			DRM_ERROR("Failed copying commands.\n");
-			goto out_unlock;
-		}
-		kernel_commands = sw_context->cmd_bounce;
-	} else
-		sw_context->kernel = true;
-
-	sw_context->tfile = vmw_fpriv(file_priv)->tfile;
-	sw_context->cid_valid = false;
-	sw_context->sid_valid = false;
-	sw_context->cur_reloc = 0;
-	sw_context->cur_val_buf = 0;
-	sw_context->fence_flags = 0;
-	INIT_LIST_HEAD(&sw_context->query_list);
-	INIT_LIST_HEAD(&sw_context->resource_list);
-	sw_context->cur_query_bo = dev_priv->pinned_bo;
-	sw_context->cur_query_cid = dev_priv->query_cid;
-	sw_context->query_cid_valid = (dev_priv->pinned_bo != NULL);
-
-	INIT_LIST_HEAD(&sw_context->validate_nodes);
-=======
 		ret = copy_from_user(sw_context->cmd_bounce, user_commands,
 				     command_size);
 		if (unlikely(ret != 0)) {
@@ -5136,46 +4168,10 @@ int vmw_execbuf_process(struct drm_file *file_priv,
 	ret = vmw_execbuf_tie_context(dev_priv, sw_context, dx_context_handle);
 	if (unlikely(ret != 0))
 		goto out_err_nores;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = vmw_cmd_check_all(dev_priv, sw_context, kernel_commands,
 				command_size);
 	if (unlikely(ret != 0))
-<<<<<<< HEAD
-		goto out_err;
-
-	ret = ttm_eu_reserve_buffers(&sw_context->validate_nodes);
-	if (unlikely(ret != 0))
-		goto out_err;
-
-	ret = vmw_validate_buffers(dev_priv, sw_context);
-	if (unlikely(ret != 0))
-		goto out_err;
-
-	vmw_apply_relocations(sw_context);
-
-	if (throttle_us) {
-		ret = vmw_wait_lag(dev_priv, &dev_priv->fifo.marker_queue,
-				   throttle_us);
-
-		if (unlikely(ret != 0))
-			goto out_throttle;
-	}
-
-	cmd = vmw_fifo_reserve(dev_priv, command_size);
-	if (unlikely(cmd == NULL)) {
-		DRM_ERROR("Failed reserving fifo space for commands.\n");
-		ret = -ENOMEM;
-		goto out_throttle;
-	}
-
-	memcpy(cmd, kernel_commands, command_size);
-	vmw_fifo_commit(dev_priv, command_size);
-
-	vmw_query_bo_switch_commit(dev_priv, sw_context);
-	ret = vmw_execbuf_fence_commands(file_priv, dev_priv,
-					 &fence,
-=======
 		goto out_err_nores;
 
 	ret = vmw_resources_reserve(sw_context);
@@ -5222,25 +4218,12 @@ int vmw_execbuf_process(struct drm_file *file_priv,
 
 	vmw_query_bo_switch_commit(dev_priv, sw_context);
 	ret = vmw_execbuf_fence_commands(file_priv, dev_priv, &fence,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 (user_fence_rep) ? &handle : NULL);
 	/*
 	 * This error is harmless, because if fence submission fails,
 	 * vmw_fifo_send_fence will sync. The error will be propagated to
 	 * user-space in @fence_rep
 	 */
-<<<<<<< HEAD
-
-	if (ret != 0)
-		DRM_ERROR("Fence submission error. Syncing.\n");
-
-	ttm_eu_fence_buffer_objects(&sw_context->validate_nodes,
-				    (void *) fence);
-
-	vmw_clear_validations(sw_context);
-	vmw_execbuf_copy_fence_user(dev_priv, vmw_fpriv(file_priv), ret,
-				    user_fence_rep, fence, handle);
-=======
 	if (ret != 0)
 		VMW_DEBUG_USER("Fence submission error. Syncing.\n");
 
@@ -5284,7 +4267,6 @@ int vmw_execbuf_process(struct drm_file *file_priv,
 			fd_install(out_fence_fd, sync_file->file);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Don't unreference when handing fence out */
 	if (unlikely(out_fence != NULL)) {
@@ -5294,19 +4276,6 @@ int vmw_execbuf_process(struct drm_file *file_priv,
 		vmw_fence_obj_unreference(&fence);
 	}
 
-<<<<<<< HEAD
-	mutex_unlock(&dev_priv->cmdbuf_mutex);
-	return 0;
-
-out_err:
-	vmw_free_relocations(sw_context);
-out_throttle:
-	vmw_query_switch_backoff(sw_context);
-	ttm_eu_backoff_reservation(&sw_context->validate_nodes);
-	vmw_clear_validations(sw_context);
-out_unlock:
-	mutex_unlock(&dev_priv->cmdbuf_mutex);
-=======
 	vmw_cmdbuf_res_commit(&sw_context->staged_cmd_res);
 	mutex_unlock(&dev_priv->cmdbuf_mutex);
 
@@ -5347,7 +4316,6 @@ out_free_fence_fd:
 	if (out_fence_fd >= 0)
 		put_unused_fd(out_fence_fd);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -5356,20 +4324,6 @@ out_free_fence_fd:
  *
  * @dev_priv: The device private structure.
  *
-<<<<<<< HEAD
- * This function is called to idle the fifo and unpin the query buffer
- * if the normal way to do this hits an error, which should typically be
- * extremely rare.
- */
-static void vmw_execbuf_unpin_panic(struct vmw_private *dev_priv)
-{
-	DRM_ERROR("Can't unpin query buffer. Trying to recover.\n");
-
-	(void) vmw_fallback_wait(dev_priv, false, true, 0, false, 10*HZ);
-	vmw_bo_pin(dev_priv->pinned_bo, false);
-	vmw_bo_pin(dev_priv->dummy_query_bo, false);
-	dev_priv->dummy_query_bo_pinned = false;
-=======
  * This function is called to idle the fifo and unpin the query buffer if the
  * normal way to do this hits an error, which should typically be extremely
  * rare.
@@ -5384,42 +4338,10 @@ static void vmw_execbuf_unpin_panic(struct vmw_private *dev_priv)
 		vmw_bo_pin_reserved(dev_priv->dummy_query_bo, false);
 		dev_priv->dummy_query_bo_pinned = false;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
-<<<<<<< HEAD
- * vmw_execbuf_release_pinned_bo - Flush queries and unpin the pinned
- * query bo.
- *
- * @dev_priv: The device private structure.
- * @only_on_cid_match: Only flush and unpin if the current active query cid
- * matches @cid.
- * @cid: Optional context id to match.
- *
- * This function should be used to unpin the pinned query bo, or
- * as a query barrier when we need to make sure that all queries have
- * finished before the next fifo command. (For example on hardware
- * context destructions where the hardware may otherwise leak unfinished
- * queries).
- *
- * This function does not return any failure codes, but make attempts
- * to do safe unpinning in case of errors.
- *
- * The function will synchronize on the previous query barrier, and will
- * thus not finish until that barrier has executed.
- */
-void vmw_execbuf_release_pinned_bo(struct vmw_private *dev_priv,
-				   bool only_on_cid_match, uint32_t cid)
-{
-	int ret = 0;
-	struct list_head validate_list;
-	struct ttm_validate_buffer pinned_val, query_val;
-	struct vmw_fence_obj *fence;
-
-	mutex_lock(&dev_priv->cmdbuf_mutex);
-=======
  * __vmw_execbuf_release_pinned_bo - Flush queries and unpin the pinned query
  * bo.
  *
@@ -5448,66 +4370,10 @@ void __vmw_execbuf_release_pinned_bo(struct vmw_private *dev_priv,
 	int ret = 0;
 	struct vmw_fence_obj *lfence = NULL;
 	DECLARE_VAL_CONTEXT(val_ctx, NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev_priv->pinned_bo == NULL)
 		goto out_unlock;
 
-<<<<<<< HEAD
-	if (only_on_cid_match && cid != dev_priv->query_cid)
-		goto out_unlock;
-
-	INIT_LIST_HEAD(&validate_list);
-
-	pinned_val.new_sync_obj_arg = (void *)(unsigned long)
-		DRM_VMW_FENCE_FLAG_EXEC;
-	pinned_val.bo = ttm_bo_reference(dev_priv->pinned_bo);
-	list_add_tail(&pinned_val.head, &validate_list);
-
-	query_val.new_sync_obj_arg = pinned_val.new_sync_obj_arg;
-	query_val.bo = ttm_bo_reference(dev_priv->dummy_query_bo);
-	list_add_tail(&query_val.head, &validate_list);
-
-	do {
-		ret = ttm_eu_reserve_buffers(&validate_list);
-	} while (ret == -ERESTARTSYS);
-
-	if (unlikely(ret != 0)) {
-		vmw_execbuf_unpin_panic(dev_priv);
-		goto out_no_reserve;
-	}
-
-	ret = vmw_fifo_emit_dummy_query(dev_priv, dev_priv->query_cid);
-	if (unlikely(ret != 0)) {
-		vmw_execbuf_unpin_panic(dev_priv);
-		goto out_no_emit;
-	}
-
-	vmw_bo_pin(dev_priv->pinned_bo, false);
-	vmw_bo_pin(dev_priv->dummy_query_bo, false);
-	dev_priv->dummy_query_bo_pinned = false;
-
-	(void) vmw_execbuf_fence_commands(NULL, dev_priv, &fence, NULL);
-	ttm_eu_fence_buffer_objects(&validate_list, (void *) fence);
-
-	ttm_bo_unref(&query_val.bo);
-	ttm_bo_unref(&pinned_val.bo);
-	ttm_bo_unref(&dev_priv->pinned_bo);
-
-out_unlock:
-	mutex_unlock(&dev_priv->cmdbuf_mutex);
-	return;
-
-out_no_emit:
-	ttm_eu_backoff_reservation(&validate_list);
-out_no_reserve:
-	ttm_bo_unref(&query_val.bo);
-	ttm_bo_unref(&pinned_val.bo);
-	ttm_bo_unref(&dev_priv->pinned_bo);
-	mutex_unlock(&dev_priv->cmdbuf_mutex);
-}
-
-=======
 	vmw_bo_placement_set(dev_priv->pinned_bo,
 			     VMW_BO_DOMAIN_GMR | VMW_BO_DOMAIN_VRAM,
 			     VMW_BO_DOMAIN_GMR | VMW_BO_DOMAIN_VRAM);
@@ -5584,35 +4450,11 @@ void vmw_execbuf_release_pinned_bo(struct vmw_private *dev_priv)
 		__vmw_execbuf_release_pinned_bo(dev_priv, NULL);
 	mutex_unlock(&dev_priv->cmdbuf_mutex);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int vmw_execbuf_ioctl(struct drm_device *dev, void *data,
 		      struct drm_file *file_priv)
 {
 	struct vmw_private *dev_priv = vmw_priv(dev);
-<<<<<<< HEAD
-	struct drm_vmw_execbuf_arg *arg = (struct drm_vmw_execbuf_arg *)data;
-	struct vmw_master *vmaster = vmw_master(file_priv->master);
-	int ret;
-
-	/*
-	 * This will allow us to extend the ioctl argument while
-	 * maintaining backwards compatibility:
-	 * We take different code paths depending on the value of
-	 * arg->version.
-	 */
-
-	if (unlikely(arg->version != DRM_VMW_EXECBUF_VERSION)) {
-		DRM_ERROR("Incorrect execbuf version.\n");
-		DRM_ERROR("You're running outdated experimental "
-			  "vmwgfx user-space drivers.");
-		return -EINVAL;
-	}
-
-	ret = ttm_read_lock(&vmaster->lock, true);
-	if (unlikely(ret != 0))
-		return ret;
-=======
 	struct drm_vmw_execbuf_arg *arg = data;
 	int ret;
 	struct dma_fence *in_fence = NULL;
@@ -5658,23 +4500,10 @@ int vmw_execbuf_ioctl(struct drm_device *dev, void *data,
 		if (ret)
 			goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = vmw_execbuf_process(file_priv, dev_priv,
 				  (void __user *)(unsigned long)arg->commands,
 				  NULL, arg->command_size, arg->throttle_us,
-<<<<<<< HEAD
-				  (void __user *)(unsigned long)arg->fence_rep,
-				  NULL);
-
-	if (unlikely(ret != 0))
-		goto out_unlock;
-
-	vmw_kms_cursor_post_execbuf(dev_priv);
-
-out_unlock:
-	ttm_read_unlock(&vmaster->lock);
-=======
 				  arg->context_handle,
 				  (void __user *)(unsigned long)arg->fence_rep,
 				  NULL, arg->flags);
@@ -5690,6 +4519,5 @@ out:
 
 mksstats_out:
 	MKS_STAT_TIME_POP(MKSSTAT_KERN_EXECBUF);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }

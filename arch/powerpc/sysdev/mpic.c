@@ -2,19 +2,11 @@
  *  arch/powerpc/kernel/mpic.c
  *
  *  Driver for interrupt controllers following the OpenPIC standard, the
-<<<<<<< HEAD
- *  common implementation beeing IBM's MPIC. This driver also can deal
- *  with various broken implementations of this HW.
- *
- *  Copyright (C) 2004 Benjamin Herrenschmidt, IBM Corp.
- *  Copyright 2010-2011 Freescale Semiconductor, Inc.
-=======
  *  common implementation being IBM's MPIC. This driver also can deal
  *  with various broken implementations of this HW.
  *
  *  Copyright (C) 2004 Benjamin Herrenschmidt, IBM Corp.
  *  Copyright 2010-2012 Freescale Semiconductor, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  This file is subject to the terms and conditions of the GNU General Public
  *  License.  See the file COPYING in the main directory of this archive
@@ -32,29 +24,18 @@
 #include <linux/irq.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
-<<<<<<< HEAD
-#include <linux/bootmem.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include <linux/syscore_ops.h>
 #include <linux/ratelimit.h>
-<<<<<<< HEAD
-=======
 #include <linux/pgtable.h>
 #include <linux/of_address.h>
 #include <linux/of_irq.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ptrace.h>
 #include <asm/signal.h>
 #include <asm/io.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/machdep.h>
 #include <asm/mpic.h>
@@ -68,15 +49,12 @@
 #define DBG(fmt...)
 #endif
 
-<<<<<<< HEAD
-=======
 const struct bus_type mpic_subsys = {
 	.name = "mpic",
 	.dev_name = "mpic",
 };
 EXPORT_SYMBOL_GPL(mpic_subsys);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mpic *mpics;
 static struct mpic *mpic_primary;
 static DEFINE_RAW_SPINLOCK(mpic_lock);
@@ -250,15 +228,6 @@ static inline void _mpic_ipi_write(struct mpic *mpic, unsigned int ipi, u32 valu
 	_mpic_write(mpic->reg_type, &mpic->gregs, offset, value);
 }
 
-<<<<<<< HEAD
-static inline u32 _mpic_tm_read(struct mpic *mpic, unsigned int tm)
-{
-	unsigned int offset = MPIC_INFO(TIMER_VECTOR_PRI) +
-			      ((tm & 3) * MPIC_INFO(TIMER_STRIDE));
-
-	if (tm >= 4)
-		offset += 0x1000 / 4;
-=======
 static inline unsigned int mpic_tm_offset(struct mpic *mpic, unsigned int tm)
 {
 	return (tm >> 2) * MPIC_TIMER_GROUP_STRIDE +
@@ -269,23 +238,14 @@ static inline u32 _mpic_tm_read(struct mpic *mpic, unsigned int tm)
 {
 	unsigned int offset = mpic_tm_offset(mpic, tm) +
 			      MPIC_INFO(TIMER_VECTOR_PRI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return _mpic_read(mpic->reg_type, &mpic->tmregs, offset);
 }
 
 static inline void _mpic_tm_write(struct mpic *mpic, unsigned int tm, u32 value)
 {
-<<<<<<< HEAD
-	unsigned int offset = MPIC_INFO(TIMER_VECTOR_PRI) +
-			      ((tm & 3) * MPIC_INFO(TIMER_STRIDE));
-
-	if (tm >= 4)
-		offset += 0x1000 / 4;
-=======
 	unsigned int offset = mpic_tm_offset(mpic, tm) +
 			      MPIC_INFO(TIMER_VECTOR_PRI);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_mpic_write(mpic->reg_type, &mpic->tmregs, offset, value);
 }
@@ -395,11 +355,7 @@ static void __init mpic_test_broken_ipi(struct mpic *mpic)
 	mpic_write(mpic->gregs, MPIC_INFO(GREG_IPI_VECTOR_PRI_0), MPIC_VECPRI_MASK);
 	r = mpic_read(mpic->gregs, MPIC_INFO(GREG_IPI_VECTOR_PRI_0));
 
-<<<<<<< HEAD
-	if (r == le32_to_cpu(MPIC_VECPRI_MASK)) {
-=======
 	if (r == swab32(MPIC_VECPRI_MASK)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_INFO "mpic: Detected reversed IPI registers\n");
 		mpic->flags |= MPIC_BROKEN_IPI;
 	}
@@ -580,11 +536,7 @@ static void __init mpic_scan_ht_pic(struct mpic *mpic, u8 __iomem *devbase,
 		mpic->fixups[irq].data = readl(base + 4) | 0x80000000;
 	}
 }
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init mpic_scan_ht_pics(struct mpic *mpic)
 {
@@ -594,11 +546,7 @@ static void __init mpic_scan_ht_pics(struct mpic *mpic)
 	printk(KERN_INFO "mpic: Setting up HT PICs workarounds for U3/U4\n");
 
 	/* Allocate fixups array */
-<<<<<<< HEAD
-	mpic->fixups = kzalloc(128 * sizeof(*mpic->fixups), GFP_KERNEL);
-=======
 	mpic->fixups = kcalloc(128, sizeof(*mpic->fixups), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(mpic->fixups == NULL);
 
 	/* Init spinlock */
@@ -656,11 +604,7 @@ static void __init mpic_scan_ht_pics(struct mpic *mpic)
 /* Find an mpic associated with a given linux interrupt */
 static struct mpic *mpic_find(unsigned int irq)
 {
-<<<<<<< HEAD
-	if (irq < NUM_ISA_INTERRUPTS)
-=======
 	if (irq < NR_IRQS_LEGACY)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	return irq_get_chip_data(irq);
@@ -684,11 +628,7 @@ static inline u32 mpic_physmask(u32 cpumask)
 	int i;
 	u32 mask = 0;
 
-<<<<<<< HEAD
-	for (i = 0; i < min(32, NR_CPUS); ++i, cpumask >>= 1)
-=======
 	for (i = 0; i < min(32, NR_CPUS) && cpu_possible(i); ++i, cpumask >>= 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mask |= (cpumask & 1) << get_hard_smp_processor_id(i);
 	return mask;
 }
@@ -717,10 +657,6 @@ static inline struct mpic * mpic_from_irq_data(struct irq_data *d)
 static inline void mpic_eoi(struct mpic *mpic)
 {
 	mpic_cpu_write(MPIC_INFO(CPU_EOI), 0);
-<<<<<<< HEAD
-	(void)mpic_cpu_read(MPIC_INFO(CPU_WHOAMI));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -906,11 +842,7 @@ int mpic_set_affinity(struct irq_data *d, const struct cpumask *cpumask,
 			       mpic_physmask(mask));
 	}
 
-<<<<<<< HEAD
-	return 0;
-=======
 	return IRQ_SET_MASK_OK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int mpic_type_to_vecpri(struct mpic *mpic, unsigned int type)
@@ -954,27 +886,6 @@ int mpic_set_irq_type(struct irq_data *d, unsigned int flow_type)
 
 	/* Default: read HW settings */
 	if (flow_type == IRQ_TYPE_DEFAULT) {
-<<<<<<< HEAD
-		switch(vold & (MPIC_INFO(VECPRI_POLARITY_MASK) |
-			       MPIC_INFO(VECPRI_SENSE_MASK))) {
-			case MPIC_INFO(VECPRI_SENSE_EDGE) |
-			     MPIC_INFO(VECPRI_POLARITY_POSITIVE):
-				flow_type = IRQ_TYPE_EDGE_RISING;
-				break;
-			case MPIC_INFO(VECPRI_SENSE_EDGE) |
-			     MPIC_INFO(VECPRI_POLARITY_NEGATIVE):
-				flow_type = IRQ_TYPE_EDGE_FALLING;
-				break;
-			case MPIC_INFO(VECPRI_SENSE_LEVEL) |
-			     MPIC_INFO(VECPRI_POLARITY_POSITIVE):
-				flow_type = IRQ_TYPE_LEVEL_HIGH;
-				break;
-			case MPIC_INFO(VECPRI_SENSE_LEVEL) |
-			     MPIC_INFO(VECPRI_POLARITY_NEGATIVE):
-				flow_type = IRQ_TYPE_LEVEL_LOW;
-				break;
-		}
-=======
 		int vold_ps;
 
 		vold_ps = vold & (MPIC_INFO(VECPRI_POLARITY_MASK) |
@@ -994,7 +905,6 @@ int mpic_set_irq_type(struct irq_data *d, unsigned int flow_type)
 			flow_type = IRQ_TYPE_LEVEL_LOW;
 		else
 			WARN_ONCE(1, "mpic: unknown IRQ type %d\n", vold);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Apply to irq desc */
@@ -1034,11 +944,7 @@ void mpic_set_vector(unsigned int virq, unsigned int vector)
 	mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI), vecpri);
 }
 
-<<<<<<< HEAD
-void mpic_set_destination(unsigned int virq, unsigned int cpuid)
-=======
 static void mpic_set_destination(unsigned int virq, unsigned int cpuid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpic *mpic = mpic_from_irq(virq);
 	unsigned int src = virq_to_hw(virq);
@@ -1060,11 +966,7 @@ static struct irq_chip mpic_irq_chip = {
 };
 
 #ifdef CONFIG_SMP
-<<<<<<< HEAD
-static struct irq_chip mpic_ipi_chip = {
-=======
 static const struct irq_chip mpic_ipi_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq_mask	= mpic_mask_ipi,
 	.irq_unmask	= mpic_unmask_ipi,
 	.irq_eoi	= mpic_end_ipi,
@@ -1078,11 +980,7 @@ static struct irq_chip mpic_tm_chip = {
 };
 
 #ifdef CONFIG_MPIC_U3_HT_IRQS
-<<<<<<< HEAD
-static struct irq_chip mpic_irq_ht_chip = {
-=======
 static const struct irq_chip mpic_irq_ht_chip = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq_startup	= mpic_startup_ht_irq,
 	.irq_shutdown	= mpic_shutdown_ht_irq,
 	.irq_mask	= mpic_mask_irq,
@@ -1093,19 +991,12 @@ static const struct irq_chip mpic_irq_ht_chip = {
 #endif /* CONFIG_MPIC_U3_HT_IRQS */
 
 
-<<<<<<< HEAD
-static int mpic_host_match(struct irq_domain *h, struct device_node *node)
-{
-	/* Exact match, unless mpic node is NULL */
-	return h->of_node == NULL || h->of_node == node;
-=======
 static int mpic_host_match(struct irq_domain *h, struct device_node *node,
 			   enum irq_domain_bus_token bus_token)
 {
 	/* Exact match, unless mpic node is NULL */
 	struct device_node *of_node = irq_domain_get_of_node(h);
 	return of_node == NULL || of_node == node;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mpic_host_map(struct irq_domain *h, unsigned int virq,
@@ -1118,16 +1009,11 @@ static int mpic_host_map(struct irq_domain *h, unsigned int virq,
 
 	if (hw == mpic->spurious_vec)
 		return -EINVAL;
-<<<<<<< HEAD
-	if (mpic->protected && test_bit(hw, mpic->protected))
-		return -EINVAL;
-=======
 	if (mpic->protected && test_bit(hw, mpic->protected)) {
 		pr_warn("mpic: Mapping of source 0x%x failed, source protected by firmware !\n",
 			(unsigned int)hw);
 		return -EPERM;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 	else if (hw >= mpic->ipi_vecs[0]) {
@@ -1151,10 +1037,6 @@ static int mpic_host_map(struct irq_domain *h, unsigned int virq,
 		return 0;
 	}
 
-<<<<<<< HEAD
-	if (hw >= mpic->num_sources)
-		return -EINVAL;
-=======
 	if (mpic_map_error_int(mpic, virq, hw))
 		return 0;
 
@@ -1163,7 +1045,6 @@ static int mpic_host_map(struct irq_domain *h, unsigned int virq,
 			(unsigned int)hw);
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpic_msi_reserve_hwirq(mpic, hw);
 
@@ -1189,10 +1070,6 @@ static int mpic_host_map(struct irq_domain *h, unsigned int virq,
 	 * is done here.
 	 */
 	if (!mpic_is_ipi(mpic, hw) && (mpic->flags & MPIC_NO_RESET)) {
-<<<<<<< HEAD
-		mpic_set_vector(virq, hw);
-		mpic_set_destination(virq, mpic_processor_id(mpic));
-=======
 		int cpu;
 
 		preempt_disable();
@@ -1201,7 +1078,6 @@ static int mpic_host_map(struct irq_domain *h, unsigned int virq,
 
 		mpic_set_vector(virq, hw);
 		mpic_set_destination(virq, cpu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mpic_irq_set_priority(virq, 8);
 	}
 
@@ -1232,9 +1108,6 @@ static int mpic_host_xlate(struct irq_domain *h, struct device_node *ct,
 		 */
 		switch (intspec[2]) {
 		case 0:
-<<<<<<< HEAD
-		case 1: /* no EISR/EIMR support for now, treat as shared IRQ */
-=======
 			break;
 		case 1:
 			if (!(mpic->flags & MPIC_FSL_HAS_EIMR))
@@ -1245,7 +1118,6 @@ static int mpic_host_xlate(struct irq_domain *h, struct device_node *ct,
 
 			*out_hwirq = mpic->err_int_vecs[intspec[3]];
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 2:
 			if (intspec[0] >= ARRAY_SIZE(mpic->ipi_vecs))
@@ -1292,11 +1164,7 @@ static int mpic_host_xlate(struct irq_domain *h, struct device_node *ct,
 }
 
 /* IRQ handler for a secondary MPIC cascaded from another IRQ controller */
-<<<<<<< HEAD
-static void mpic_cascade(unsigned int irq, struct irq_desc *desc)
-=======
 static void mpic_cascade(struct irq_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct mpic *mpic = irq_desc_get_handler_data(desc);
@@ -1311,18 +1179,12 @@ static void mpic_cascade(struct irq_desc *desc)
 	chip->irq_eoi(&desc->irq_data);
 }
 
-<<<<<<< HEAD
-static struct irq_domain_ops mpic_host_ops = {
-=======
 static const struct irq_domain_ops mpic_host_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match = mpic_host_match,
 	.map = mpic_host_map,
 	.xlate = mpic_host_xlate,
 };
 
-<<<<<<< HEAD
-=======
 static u32 fsl_mpic_get_version(struct mpic *mpic)
 {
 	u32 brr1;
@@ -1336,13 +1198,10 @@ static u32 fsl_mpic_get_version(struct mpic *mpic)
 	return brr1 & MPIC_FSL_BRR1_VER;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Exported functions
  */
 
-<<<<<<< HEAD
-=======
 u32 fsl_mpic_primary_get_version(void)
 {
 	struct mpic *mpic = mpic_primary;
@@ -1353,7 +1212,6 @@ u32 fsl_mpic_primary_get_version(void)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mpic * __init mpic_alloc(struct device_node *node,
 				phys_addr_t phys_addr,
 				unsigned int flags,
@@ -1367,10 +1225,7 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	const char *vers;
 	const u32 *psrc;
 	u32 last_irq;
-<<<<<<< HEAD
-=======
 	u32 fsl_version = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Default MPIC search parameters */
 	static const struct of_device_id __initconst mpic_device_id[] = {
@@ -1394,11 +1249,7 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	/* Pick the physical address from the device tree if unspecified */
 	if (!phys_addr) {
 		/* Check if it is DCR-based */
-<<<<<<< HEAD
-		if (of_get_property(node, "dcr-reg", NULL)) {
-=======
 		if (of_property_read_bool(node, "dcr-reg")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flags |= MPIC_USES_DCR;
 		} else {
 			struct resource r;
@@ -1409,16 +1260,6 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	}
 
 	/* Read extra device-tree properties into the flags variable */
-<<<<<<< HEAD
-	if (of_get_property(node, "big-endian", NULL))
-		flags |= MPIC_BIG_ENDIAN;
-	if (of_get_property(node, "pic-no-reset", NULL))
-		flags |= MPIC_NO_RESET;
-	if (of_get_property(node, "single-cpu-affinity", NULL))
-		flags |= MPIC_SINGLE_DEST_CPU;
-	if (of_device_is_compatible(node, "fsl,mpic"))
-		flags |= MPIC_FSL;
-=======
 	if (of_property_read_bool(node, "big-endian"))
 		flags |= MPIC_BIG_ENDIAN;
 	if (of_property_read_bool(node, "pic-no-reset"))
@@ -1430,7 +1271,6 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 		mpic_irq_chip.flags |= IRQCHIP_SKIP_SET_WAKE;
 		mpic_tm_chip.flags |= IRQCHIP_SKIP_SET_WAKE;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpic = kzalloc(sizeof(struct mpic), GFP_KERNEL);
 	if (mpic == NULL)
@@ -1485,12 +1325,7 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	psrc = of_get_property(mpic->node, "protected-sources", &psize);
 	if (psrc) {
 		/* Allocate a bitmap with one bit per interrupt */
-<<<<<<< HEAD
-		unsigned int mapsize = BITS_TO_LONGS(intvec_top + 1);
-		mpic->protected = kzalloc(mapsize*sizeof(long), GFP_KERNEL);
-=======
 		mpic->protected = bitmap_zalloc(intvec_top + 1, GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(mpic->protected == NULL);
 		for (i = 0; i < psize/sizeof(u32); i++) {
 			if (psrc[i] > intvec_top)
@@ -1524,8 +1359,6 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	mpic_map(mpic, mpic->paddr, &mpic->gregs, MPIC_INFO(GREG_BASE), 0x1000);
 	mpic_map(mpic, mpic->paddr, &mpic->tmregs, MPIC_INFO(TIMER_BASE), 0x1000);
 
-<<<<<<< HEAD
-=======
 	if (mpic->flags & MPIC_FSL) {
 		int ret;
 
@@ -1576,7 +1409,6 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	if (fsl_version < 0x400 && (flags & MPIC_ENABLE_COREINT))
 		ppc_md.get_irq = mpic_get_irq;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset */
 
 	/* When using a device-node, reset requests are only honored if the MPIC
@@ -1631,11 +1463,7 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	 * as a default instead of the value read from the HW.
 	 */
 	last_irq = (greg_feature & MPIC_GREG_FEATURE_LAST_SRC_MASK)
-<<<<<<< HEAD
-				>> MPIC_GREG_FEATURE_LAST_SRC_SHIFT;	
-=======
 				>> MPIC_GREG_FEATURE_LAST_SRC_SHIFT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (isu_size)
 		last_irq = isu_size  * MPIC_MAX_ISU - 1;
 	of_property_read_u32(mpic->node, "last-interrupt-source", &last_irq);
@@ -1656,11 +1484,7 @@ struct mpic * __init mpic_alloc(struct device_node *node,
 	mpic->isu_mask = (1 << mpic->isu_shift) - 1;
 
 	mpic->irqhost = irq_domain_add_linear(mpic->node,
-<<<<<<< HEAD
-				       last_irq + 1,
-=======
 				       intvec_top,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       &mpic_host_ops, mpic);
 
 	/*
@@ -1724,10 +1548,7 @@ void __init mpic_assign_isu(struct mpic *mpic, unsigned int isu_num,
 void __init mpic_init(struct mpic *mpic)
 {
 	int i, cpu;
-<<<<<<< HEAD
-=======
 	int num_timers = 4;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(mpic->num_sources == 0);
 
@@ -1736,17 +1557,6 @@ void __init mpic_init(struct mpic *mpic)
 	/* Set current processor priority to max */
 	mpic_cpu_write(MPIC_INFO(CPU_CURRENT_TASK_PRI), 0xf);
 
-<<<<<<< HEAD
-	/* Initialize timers to our reserved vectors and mask them for now */
-	for (i = 0; i < 4; i++) {
-		mpic_write(mpic->tmregs,
-			   i * MPIC_INFO(TIMER_STRIDE) +
-			   MPIC_INFO(TIMER_DESTINATION),
-			   1 << hard_smp_processor_id());
-		mpic_write(mpic->tmregs,
-			   i * MPIC_INFO(TIMER_STRIDE) +
-			   MPIC_INFO(TIMER_VECTOR_PRI),
-=======
 	if (mpic->flags & MPIC_FSL) {
 		u32 version = fsl_mpic_get_version(mpic);
 
@@ -1769,7 +1579,6 @@ void __init mpic_init(struct mpic *mpic)
 			   1 << hard_smp_processor_id());
 		mpic_write(mpic->tmregs,
 			   offset + MPIC_INFO(TIMER_VECTOR_PRI),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   MPIC_VECPRI_MASK |
 			   (9 << MPIC_VECPRI_PRIORITY_SHIFT) |
 			   (mpic->timer_vecs[0] + i));
@@ -1800,11 +1609,7 @@ void __init mpic_init(struct mpic *mpic)
 			/* start with vector = source number, and masked */
 			u32 vecpri = MPIC_VECPRI_MASK | i |
 				(8 << MPIC_VECPRI_PRIORITY_SHIFT);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* check if protected */
 			if (mpic->protected && test_bit(i, mpic->protected))
 				continue;
@@ -1813,11 +1618,7 @@ void __init mpic_init(struct mpic *mpic)
 			mpic_irq_write(i, MPIC_INFO(IRQ_DESTINATION), 1 << cpu);
 		}
 	}
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Init spurious vector */
 	mpic_write(mpic->gregs, MPIC_INFO(GREG_SPURIOUS), mpic->spurious_vec);
 
@@ -1837,65 +1638,26 @@ void __init mpic_init(struct mpic *mpic)
 
 #ifdef CONFIG_PM
 	/* allocate memory to save mpic state */
-<<<<<<< HEAD
-	mpic->save_data = kmalloc(mpic->num_sources * sizeof(*mpic->save_data),
-				  GFP_KERNEL);
-=======
 	mpic->save_data = kmalloc_array(mpic->num_sources,
 				        sizeof(*mpic->save_data),
 				        GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(mpic->save_data == NULL);
 #endif
 
 	/* Check if this MPIC is chained from a parent interrupt controller */
 	if (mpic->flags & MPIC_SECONDARY) {
 		int virq = irq_of_parse_and_map(mpic->node, 0);
-<<<<<<< HEAD
-		if (virq != NO_IRQ) {
-			printk(KERN_INFO "%s: hooking up to IRQ %d\n",
-					mpic->node->full_name, virq);
-=======
 		if (virq) {
 			printk(KERN_INFO "%pOF: hooking up to IRQ %d\n",
 					mpic->node, virq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			irq_set_handler_data(virq, mpic);
 			irq_set_chained_handler(virq, &mpic_cascade);
 		}
 	}
-<<<<<<< HEAD
-}
-
-void __init mpic_set_clk_ratio(struct mpic *mpic, u32 clock_ratio)
-{
-	u32 v;
-
-	v = mpic_read(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1);
-	v &= ~MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO_MASK;
-	v |= MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO(clock_ratio);
-	mpic_write(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1, v);
-}
-
-void __init mpic_set_serial_int(struct mpic *mpic, int enable)
-{
-	unsigned long flags;
-	u32 v;
-
-	raw_spin_lock_irqsave(&mpic_lock, flags);
-	v = mpic_read(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1);
-	if (enable)
-		v |= MPIC_GREG_GLOBAL_CONF_1_SIE;
-	else
-		v &= ~MPIC_GREG_GLOBAL_CONF_1_SIE;
-	mpic_write(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1, v);
-	raw_spin_unlock_irqrestore(&mpic_lock, flags);
-=======
 
 	/* FSL mpic error interrupt initialization */
 	if (mpic->flags & MPIC_FSL_HAS_EIMR)
 		mpic_err_int_init(mpic, MPIC_FSL_ERR_INT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mpic_irq_set_priority(unsigned int irq, unsigned int pri)
@@ -1947,11 +1709,7 @@ void mpic_setup_this_cpu(void)
 	 * it differently, then we should make sure we also change the default
 	 * values of irq_desc[].affinity in irq.c.
  	 */
-<<<<<<< HEAD
-	if (distribute_irqs) {
-=======
 	if (distribute_irqs && !(mpic->flags & MPIC_SINGLE_DEST_CPU)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 	for (i = 0; i < mpic->num_sources ; i++)
 			mpic_irq_write(i, MPIC_INFO(IRQ_DESTINATION),
 				mpic_irq_read(i, MPIC_INFO(IRQ_DESTINATION)) | msk);
@@ -2018,21 +1776,13 @@ static unsigned int _mpic_get_one_irq(struct mpic *mpic, int reg)
 	if (unlikely(src == mpic->spurious_vec)) {
 		if (mpic->flags & MPIC_SPV_EOI)
 			mpic_eoi(mpic);
-<<<<<<< HEAD
-		return NO_IRQ;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (unlikely(mpic->protected && test_bit(src, mpic->protected))) {
 		printk_ratelimited(KERN_WARNING "%s: Got protected source %d !\n",
 				   mpic->name, (int)src);
 		mpic_eoi(mpic);
-<<<<<<< HEAD
-		return NO_IRQ;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return irq_linear_revmap(mpic->irqhost, src);
@@ -2065,29 +1815,17 @@ unsigned int mpic_get_coreint_irq(void)
 	if (unlikely(src == mpic->spurious_vec)) {
 		if (mpic->flags & MPIC_SPV_EOI)
 			mpic_eoi(mpic);
-<<<<<<< HEAD
-		return NO_IRQ;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (unlikely(mpic->protected && test_bit(src, mpic->protected))) {
 		printk_ratelimited(KERN_WARNING "%s: Got protected source %d !\n",
 				   mpic->name, (int)src);
-<<<<<<< HEAD
-		return NO_IRQ;
-=======
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return irq_linear_revmap(mpic->irqhost, src);
 #else
-<<<<<<< HEAD
-	return NO_IRQ;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -2101,11 +1839,7 @@ unsigned int mpic_get_mcirq(void)
 }
 
 #ifdef CONFIG_SMP
-<<<<<<< HEAD
-void mpic_request_ipis(void)
-=======
 void __init mpic_request_ipis(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpic *mpic = mpic_primary;
 	int i;
@@ -2116,11 +1850,7 @@ void __init mpic_request_ipis(void)
 	for (i = 0; i < 4; i++) {
 		unsigned int vipi = irq_create_mapping(mpic->irqhost,
 						       mpic->ipi_vecs[0] + i);
-<<<<<<< HEAD
-		if (vipi == NO_IRQ) {
-=======
 		if (!vipi) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR "Failed to map %s\n", smp_ipi_name[i]);
 			continue;
 		}
@@ -2152,37 +1882,21 @@ void smp_mpic_message_pass(int cpu, int msg)
 		       msg * MPIC_INFO(CPU_IPI_DISPATCH_STRIDE), physmask);
 }
 
-<<<<<<< HEAD
-int __init smp_mpic_probe(void)
-=======
 void __init smp_mpic_probe(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr_cpus;
 
 	DBG("smp_mpic_probe()...\n");
 
-<<<<<<< HEAD
-	nr_cpus = cpumask_weight(cpu_possible_mask);
-=======
 	nr_cpus = num_possible_cpus();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBG("nr_cpus: %d\n", nr_cpus);
 
 	if (nr_cpus > 1)
 		mpic_request_ipis();
-<<<<<<< HEAD
-
-	return nr_cpus;
-}
-
-void __devinit smp_mpic_setup_cpu(int cpu)
-=======
 }
 
 void smp_mpic_setup_cpu(int cpu)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mpic_setup_this_cpu();
 }
@@ -2288,9 +2002,6 @@ static struct syscore_ops mpic_syscore_ops = {
 
 static int mpic_init_sys(void)
 {
-<<<<<<< HEAD
-	register_syscore_ops(&mpic_syscore_ops);
-=======
 	int rc;
 
 	register_syscore_ops(&mpic_syscore_ops);
@@ -2301,7 +2012,6 @@ static int mpic_init_sys(void)
 		return rc;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

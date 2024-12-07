@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for GreenAsia (Product ID 0x12) based devices
  *
  *  The devices are distributed under various names and the same USB device ID
  *  can be used in many game controllers.
  *
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  0e8f:0012 "GreenAsia Inc.    USB Joystick     "
  *   - tested with MANTA Warior MM816 and SpeedLink Strike2 SL-6635.
  *
@@ -19,39 +12,15 @@
  */
 
 /*
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/usb.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hid.h>
 #include <linux/module.h>
 #include "hid-ids.h"
 
 #ifdef CONFIG_GREENASIA_FF
-<<<<<<< HEAD
-#include "usbhid/usbhid.h"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gaff_device {
 	struct hid_report *report;
@@ -79,22 +48,14 @@ static int hid_gaff_play(struct input_dev *dev, void *data,
 	gaff->report->field[0]->value[4] = left;
 	gaff->report->field[0]->value[5] = 0;
 	dbg_hid("running with 0x%02x 0x%02x", left, right);
-<<<<<<< HEAD
-	usbhid_submit_report(hid, gaff->report, USB_DIR_OUT);
-=======
 	hid_hw_request(hid, gaff->report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gaff->report->field[0]->value[0] = 0xfa;
 	gaff->report->field[0]->value[1] = 0xfe;
 	gaff->report->field[0]->value[2] = 0x0;
 	gaff->report->field[0]->value[4] = 0x0;
 
-<<<<<<< HEAD
-	usbhid_submit_report(hid, gaff->report, USB_DIR_OUT);
-=======
 	hid_hw_request(hid, gaff->report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -103,16 +64,6 @@ static int gaff_init(struct hid_device *hid)
 {
 	struct gaff_device *gaff;
 	struct hid_report *report;
-<<<<<<< HEAD
-	struct hid_input *hidinput = list_entry(hid->inputs.next,
-						struct hid_input, list);
-	struct list_head *report_list =
-			&hid->report_enum[HID_OUTPUT_REPORT].report_list;
-	struct list_head *report_ptr = report_list;
-	struct input_dev *dev = hidinput->input;
-	int error;
-
-=======
 	struct hid_input *hidinput;
 	struct list_head *report_list =
 			&hid->report_enum[HID_OUTPUT_REPORT].report_list;
@@ -127,7 +78,6 @@ static int gaff_init(struct hid_device *hid)
 	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
 	dev = hidinput->input;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(report_list)) {
 		hid_err(hid, "no output reports found\n");
 		return -ENODEV;
@@ -163,20 +113,12 @@ static int gaff_init(struct hid_device *hid)
 	gaff->report->field[0]->value[1] = 0x00;
 	gaff->report->field[0]->value[2] = 0x00;
 	gaff->report->field[0]->value[3] = 0x00;
-<<<<<<< HEAD
-	usbhid_submit_report(hid, gaff->report, USB_DIR_OUT);
-=======
 	hid_hw_request(hid, gaff->report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gaff->report->field[0]->value[0] = 0xfa;
 	gaff->report->field[0]->value[1] = 0xfe;
 
-<<<<<<< HEAD
-	usbhid_submit_report(hid, gaff->report, USB_DIR_OUT);
-=======
 	hid_hw_request(hid, gaff->report, HID_REQ_SET_REPORT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hid_info(hid, "Force Feedback for GreenAsia 0x12 devices by Lukasz Lubojanski <lukasz@lubojanski.info>\n");
 
@@ -225,22 +167,6 @@ static struct hid_driver ga_driver = {
 	.id_table = ga_devices,
 	.probe = ga_probe,
 };
-<<<<<<< HEAD
-
-static int __init ga_init(void)
-{
-	return hid_register_driver(&ga_driver);
-}
-
-static void __exit ga_exit(void)
-{
-	hid_unregister_driver(&ga_driver);
-}
-
-module_init(ga_init);
-module_exit(ga_exit);
-=======
 module_hid_driver(ga_driver);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

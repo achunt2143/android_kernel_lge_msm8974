@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NETLINK      Netlink attributes
  *
@@ -13,16 +10,6 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/jiffies.h>
-<<<<<<< HEAD
-#include <linux/netdevice.h>
-#include <linux/skbuff.h>
-#include <linux/string.h>
-#include <linux/types.h>
-#include <linux/ratelimit.h>
-#include <net/netlink.h>
-
-static const u16 nla_attr_minlen[NLA_TYPE_MAX+1] = {
-=======
 #include <linux/nospec.h>
 #include <linux/skbuff.h>
 #include <linux/string.h>
@@ -48,22 +35,12 @@ static const u8 nla_attr_len[NLA_TYPE_MAX+1] = {
 };
 
 static const u8 nla_attr_minlen[NLA_TYPE_MAX+1] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[NLA_U8]	= sizeof(u8),
 	[NLA_U16]	= sizeof(u16),
 	[NLA_U32]	= sizeof(u32),
 	[NLA_U64]	= sizeof(u64),
 	[NLA_MSECS]	= sizeof(u64),
 	[NLA_NESTED]	= NLA_HDRLEN,
-<<<<<<< HEAD
-};
-
-static int validate_nla(const struct nlattr *nla, int maxtype,
-			const struct nla_policy *policy)
-{
-	const struct nla_policy *pt;
-	int minlen = 0, attrlen = nla_len(nla), type = nla_type(nla);
-=======
 	[NLA_S8]	= sizeof(s8),
 	[NLA_S16]	= sizeof(s16),
 	[NLA_S32]	= sizeof(s32),
@@ -424,25 +401,15 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
 
 	if (strict_start_type && type >= strict_start_type)
 		validate |= NL_VALIDATE_STRICT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (type <= 0 || type > maxtype)
 		return 0;
 
-<<<<<<< HEAD
-=======
 	type = array_index_nospec(type, maxtype + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pt = &policy[type];
 
 	BUG_ON(pt->type > NLA_TYPE_MAX);
 
-<<<<<<< HEAD
-	switch (pt->type) {
-	case NLA_FLAG:
-		if (attrlen > 0)
-			return -ERANGE;
-=======
 	if (nla_attr_len[pt->type] && attrlen != nla_attr_len[pt->type]) {
 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
 				    current->comm, type);
@@ -499,7 +466,6 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
 		err = validate_nla_bitfield32(nla, pt->bitfield32_valid);
 		if (err)
 			goto out_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case NLA_NUL_STRING:
@@ -508,15 +474,6 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
 		else
 			minlen = attrlen;
 
-<<<<<<< HEAD
-		if (!minlen || memchr(nla_data(nla), '\0', minlen) == NULL)
-			return -EINVAL;
-		/* fall through */
-
-	case NLA_STRING:
-		if (attrlen < 1)
-			return -ERANGE;
-=======
 		if (!minlen || memchr(nla_data(nla), '\0', minlen) == NULL) {
 			err = -EINVAL;
 			goto out_err;
@@ -526,7 +483,6 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
 	case NLA_STRING:
 		if (attrlen < 1)
 			goto out_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pt->len) {
 			char *buf = nla_data(nla);
@@ -535,52 +491,21 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
 				attrlen--;
 
 			if (attrlen > pt->len)
-<<<<<<< HEAD
-				return -ERANGE;
-=======
 				goto out_err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case NLA_BINARY:
 		if (pt->len && attrlen > pt->len)
-<<<<<<< HEAD
-			return -ERANGE;
-		break;
-
-	case NLA_NESTED_COMPAT:
-		if (attrlen < pt->len)
-			return -ERANGE;
-		if (attrlen < NLA_ALIGN(pt->len))
-			break;
-		if (attrlen < NLA_ALIGN(pt->len) + NLA_HDRLEN)
-			return -ERANGE;
-		nla = nla_data(nla) + NLA_ALIGN(pt->len);
-		if (attrlen < NLA_ALIGN(pt->len) + NLA_HDRLEN + nla_len(nla))
-			return -ERANGE;
-		break;
-=======
 			goto out_err;
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NLA_NESTED:
 		/* a nested attributes is allowed to be empty; if its not,
 		 * it must have a size of at least NLA_HDRLEN.
 		 */
 		if (attrlen == 0)
 			break;
-<<<<<<< HEAD
-	default:
-		if (pt->len)
-			minlen = pt->len;
-		else if (pt->type != NLA_UNSPEC)
-			minlen = nla_attr_minlen[pt->type];
-
-		if (attrlen < minlen)
-			return -ERANGE;
-=======
 		if (attrlen < NLA_HDRLEN)
 			goto out_err;
 		if (pt->nested_policy) {
@@ -724,51 +649,17 @@ static int __nla_validate_parse(const struct nlattr *head, int len, int maxtype,
 		NL_SET_ERR_MSG(extack, "bytes leftover after parsing attributes");
 		if (validate & NL_VALIDATE_TRAILING)
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
 /**
-<<<<<<< HEAD
- * nla_validate - Validate a stream of attributes
-=======
  * __nla_validate - Validate a stream of attributes
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @head: head of attribute stream
  * @len: length of attribute stream
  * @maxtype: maximum attribute type to be expected
  * @policy: validation policy
-<<<<<<< HEAD
- *
- * Validates all attributes in the specified attribute stream against the
- * specified policy. Attributes with a type exceeding maxtype will be
- * ignored. See documenation of struct nla_policy for more details.
- *
- * Returns 0 on success or a negative error code.
- */
-int nla_validate(const struct nlattr *head, int len, int maxtype,
-		 const struct nla_policy *policy)
-{
-	const struct nlattr *nla;
-	int rem, err;
-
-	nla_for_each_attr(nla, head, len, rem) {
-		err = validate_nla(nla, maxtype, policy);
-		if (err < 0)
-			goto errout;
-	}
-
-	err = 0;
-errout:
-	return err;
-}
-
-/**
- * nla_policy_len - Determin the max. length of a policy
- * @policy: policy to use
-=======
  * @validate: validation strictness
  * @extack: extended ACK report struct
  *
@@ -791,7 +682,6 @@ EXPORT_SYMBOL(__nla_validate);
 /**
  * nla_policy_len - Determine the max. length of a policy
  * @p: policy to use
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @n: number of policies
  *
  * Determines the max. length of the policy.  It is currently used
@@ -808,72 +698,23 @@ nla_policy_len(const struct nla_policy *p, int n)
 	for (i = 0; i < n; i++, p++) {
 		if (p->len)
 			len += nla_total_size(p->len);
-<<<<<<< HEAD
-=======
 		else if (nla_attr_len[p->type])
 			len += nla_total_size(nla_attr_len[p->type]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (nla_attr_minlen[p->type])
 			len += nla_total_size(nla_attr_minlen[p->type]);
 	}
 
 	return len;
 }
-<<<<<<< HEAD
-
-/**
- * nla_parse - Parse a stream of attributes into a tb buffer
-=======
 EXPORT_SYMBOL(nla_policy_len);
 
 /**
  * __nla_parse - Parse a stream of attributes into a tb buffer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tb: destination array with maxtype+1 elements
  * @maxtype: maximum attribute type to be expected
  * @head: head of attribute stream
  * @len: length of attribute stream
  * @policy: validation policy
-<<<<<<< HEAD
- *
- * Parses a stream of attributes and stores a pointer to each attribute in
- * the tb array accessible via the attribute type. Attributes with a type
- * exceeding maxtype will be silently ignored for backwards compatibility
- * reasons. policy may be set to NULL if no validation is required.
- *
- * Returns 0 on success or a negative error code.
- */
-int nla_parse(struct nlattr **tb, int maxtype, const struct nlattr *head,
-	      int len, const struct nla_policy *policy)
-{
-	const struct nlattr *nla;
-	int rem, err;
-
-	memset(tb, 0, sizeof(struct nlattr *) * (maxtype + 1));
-
-	nla_for_each_attr(nla, head, len, rem) {
-		u16 type = nla_type(nla);
-
-		if (type > 0 && type <= maxtype) {
-			if (policy) {
-				err = validate_nla(nla, maxtype, policy);
-				if (err < 0)
-					goto errout;
-			}
-
-			tb[type] = (struct nlattr *)nla;
-		}
-	}
-
-	if (unlikely(rem > 0))
-		pr_warn_ratelimited("netlink: %d bytes leftover after parsing attributes in process `%s'.\n",
-				    rem, current->comm);
-
-	err = 0;
-errout:
-	return err;
-}
-=======
  * @validate: validation strictness
  * @extack: extended ACK pointer
  *
@@ -892,7 +733,6 @@ int __nla_parse(struct nlattr **tb, int maxtype,
 				    extack, tb, 0);
 }
 EXPORT_SYMBOL(__nla_parse);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nla_find - Find a specific attribute in a stream of attributes
@@ -913,25 +753,6 @@ struct nlattr *nla_find(const struct nlattr *head, int len, int attrtype)
 
 	return NULL;
 }
-<<<<<<< HEAD
-
-/**
- * nla_strlcpy - Copy string attribute payload into a sized buffer
- * @dst: where to copy the string to
- * @nla: attribute to copy the string from
- * @dstsize: size of destination buffer
- *
- * Copies at most dstsize - 1 bytes into the destination buffer.
- * The result is always a valid NUL-terminated string. Unlike
- * strlcpy the destination buffer is always padded out.
- *
- * Returns the length of the source buffer.
- */
-size_t nla_strlcpy(char *dst, const struct nlattr *nla, size_t dstsize)
-{
-	size_t srclen = nla_len(nla);
-	char *src = nla_data(nla);
-=======
 EXPORT_SYMBOL(nla_find);
 
 /**
@@ -957,22 +778,10 @@ ssize_t nla_strscpy(char *dst, const struct nlattr *nla, size_t dstsize)
 
 	if (dstsize == 0 || WARN_ON_ONCE(dstsize > U16_MAX))
 		return -E2BIG;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (srclen > 0 && src[srclen - 1] == '\0')
 		srclen--;
 
-<<<<<<< HEAD
-	if (dstsize > 0) {
-		size_t len = (srclen >= dstsize) ? dstsize - 1 : srclen;
-
-		memset(dst, 0, dstsize);
-		memcpy(dst, src, len);
-	}
-
-	return srclen;
-}
-=======
 	if (srclen >= dstsize) {
 		len = dstsize - 1;
 		ret = -E2BIG;
@@ -1012,7 +821,6 @@ char *nla_strdup(const struct nlattr *nla, gfp_t flags)
 	return dst;
 }
 EXPORT_SYMBOL(nla_strdup);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nla_memcpy - Copy a netlink attribute into another memory area
@@ -1030,18 +838,12 @@ int nla_memcpy(void *dest, const struct nlattr *src, int count)
 	int minlen = min_t(int, count, nla_len(src));
 
 	memcpy(dest, nla_data(src), minlen);
-<<<<<<< HEAD
-
-	return minlen;
-}
-=======
 	if (count > minlen)
 		memset(dest + minlen, 0, count - minlen);
 
 	return minlen;
 }
 EXPORT_SYMBOL(nla_memcpy);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nla_memcmp - Compare an attribute with sized memory area
@@ -1059,10 +861,7 @@ int nla_memcmp(const struct nlattr *nla, const void *data,
 
 	return d;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(nla_memcmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nla_strcmp - Compare a string attribute against a string
@@ -1076,11 +875,7 @@ int nla_strcmp(const struct nlattr *nla, const char *str)
 	int attrlen = nla_len(nla);
 	int d;
 
-<<<<<<< HEAD
-	if (attrlen > 0 && buf[attrlen - 1] == '\0')
-=======
 	while (attrlen > 0 && buf[attrlen - 1] == '\0')
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		attrlen--;
 
 	d = attrlen - len;
@@ -1089,10 +884,7 @@ int nla_strcmp(const struct nlattr *nla, const char *str)
 
 	return d;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(nla_strcmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_NET
 /**
@@ -1111,11 +903,7 @@ struct nlattr *__nla_reserve(struct sk_buff *skb, int attrtype, int attrlen)
 {
 	struct nlattr *nla;
 
-<<<<<<< HEAD
-	nla = (struct nlattr *) skb_put(skb, nla_total_size(attrlen));
-=======
 	nla = skb_put(skb, nla_total_size(attrlen));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nla->nla_type = attrtype;
 	nla->nla_len = nla_attr_size(attrlen);
 
@@ -1126,8 +914,6 @@ struct nlattr *__nla_reserve(struct sk_buff *skb, int attrtype, int attrlen)
 EXPORT_SYMBOL(__nla_reserve);
 
 /**
-<<<<<<< HEAD
-=======
  * __nla_reserve_64bit - reserve room for attribute on the skb and align it
  * @skb: socket buffer to reserve room on
  * @attrtype: attribute type
@@ -1151,7 +937,6 @@ struct nlattr *__nla_reserve_64bit(struct sk_buff *skb, int attrtype,
 EXPORT_SYMBOL(__nla_reserve_64bit);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * __nla_reserve_nohdr - reserve room for attribute without header
  * @skb: socket buffer to reserve room on
  * @attrlen: length of attribute payload
@@ -1163,16 +948,7 @@ EXPORT_SYMBOL(__nla_reserve_64bit);
  */
 void *__nla_reserve_nohdr(struct sk_buff *skb, int attrlen)
 {
-<<<<<<< HEAD
-	void *start;
-
-	start = skb_put(skb, NLA_ALIGN(attrlen));
-	memset(start, 0, NLA_ALIGN(attrlen));
-
-	return start;
-=======
 	return skb_put_zero(skb, NLA_ALIGN(attrlen));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__nla_reserve_nohdr);
 
@@ -1198,8 +974,6 @@ struct nlattr *nla_reserve(struct sk_buff *skb, int attrtype, int attrlen)
 EXPORT_SYMBOL(nla_reserve);
 
 /**
-<<<<<<< HEAD
-=======
  * nla_reserve_64bit - reserve room for attribute on the skb and align it
  * @skb: socket buffer to reserve room on
  * @attrtype: attribute type
@@ -1230,7 +1004,6 @@ struct nlattr *nla_reserve_64bit(struct sk_buff *skb, int attrtype, int attrlen,
 EXPORT_SYMBOL(nla_reserve_64bit);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nla_reserve_nohdr - reserve room for attribute without header
  * @skb: socket buffer to reserve room on
  * @attrlen: length of attribute payload
@@ -1270,8 +1043,6 @@ void __nla_put(struct sk_buff *skb, int attrtype, int attrlen,
 EXPORT_SYMBOL(__nla_put);
 
 /**
-<<<<<<< HEAD
-=======
  * __nla_put_64bit - Add a netlink attribute to a socket buffer and align it
  * @skb: socket buffer to add attribute to
  * @attrtype: attribute type
@@ -1293,7 +1064,6 @@ void __nla_put_64bit(struct sk_buff *skb, int attrtype, int attrlen,
 EXPORT_SYMBOL(__nla_put_64bit);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * __nla_put_nohdr - Add a netlink attribute without header
  * @skb: socket buffer to add attribute to
  * @attrlen: length of attribute payload
@@ -1332,8 +1102,6 @@ int nla_put(struct sk_buff *skb, int attrtype, int attrlen, const void *data)
 EXPORT_SYMBOL(nla_put);
 
 /**
-<<<<<<< HEAD
-=======
  * nla_put_64bit - Add a netlink attribute to a socket buffer and align it
  * @skb: socket buffer to add attribute to
  * @attrtype: attribute type
@@ -1362,7 +1130,6 @@ int nla_put_64bit(struct sk_buff *skb, int attrtype, int attrlen,
 EXPORT_SYMBOL(nla_put_64bit);
 
 /**
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * nla_put_nohdr - Add a netlink attribute without header
  * @skb: socket buffer to add attribute to
  * @attrlen: length of attribute payload
@@ -1395,24 +1162,8 @@ int nla_append(struct sk_buff *skb, int attrlen, const void *data)
 	if (unlikely(skb_tailroom(skb) < NLA_ALIGN(attrlen)))
 		return -EMSGSIZE;
 
-<<<<<<< HEAD
-	memcpy(skb_put(skb, attrlen), data, attrlen);
-=======
 	skb_put_data(skb, data, attrlen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(nla_append);
 #endif
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(nla_validate);
-EXPORT_SYMBOL(nla_policy_len);
-EXPORT_SYMBOL(nla_parse);
-EXPORT_SYMBOL(nla_find);
-EXPORT_SYMBOL(nla_strlcpy);
-EXPORT_SYMBOL(nla_memcpy);
-EXPORT_SYMBOL(nla_memcmp);
-EXPORT_SYMBOL(nla_strcmp);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

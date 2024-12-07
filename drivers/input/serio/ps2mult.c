@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TQC PS/2 Multiplexer driver
  *
  * Copyright (C) 2010 Dmitry Eremin-Solenikov
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -141,11 +131,7 @@ static int ps2mult_create_port(struct ps2mult *psm, int i)
 	if (!serio)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	strlcpy(serio->name, "TQC PS/2 Multiplexer", sizeof(serio->name));
-=======
 	strscpy(serio->name, "TQC PS/2 Multiplexer", sizeof(serio->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(serio->phys, sizeof(serio->phys),
 		 "%s/port%d", mx_serio->phys, i);
 	serio->id.type = SERIO_8042;
@@ -315,19 +301,4 @@ static struct serio_driver ps2mult_drv = {
 	.reconnect	= ps2mult_reconnect,
 };
 
-<<<<<<< HEAD
-static int __init ps2mult_init(void)
-{
-	return serio_register_driver(&ps2mult_drv);
-}
-
-static void __exit ps2mult_exit(void)
-{
-	serio_unregister_driver(&ps2mult_drv);
-}
-
-module_init(ps2mult_init);
-module_exit(ps2mult_exit);
-=======
 module_serio_driver(ps2mult_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

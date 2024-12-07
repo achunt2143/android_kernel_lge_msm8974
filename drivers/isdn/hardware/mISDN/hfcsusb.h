@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hfcsusb.h, HFC-S USB mISDN driver
  */
@@ -176,13 +173,8 @@ symbolic(struct hfcusb_symbolic_list list[], const int num)
 
 
 /*
-<<<<<<< HEAD
- * List of all supported enpoints configiration sets, used to find the
- * best matching endpoint configuration within a devices' USB descriptor.
-=======
  * List of all supported endpoint configuration sets, used to find the
  * best matching endpoint configuration within a device's USB descriptor.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We need at least 3 RX endpoints, and 3 TX endpoints, either
  * INT-in and ISO-out, or ISO-in and ISO-out)
  * with 4 RX endpoints even E-Channel logging is possible
@@ -346,11 +338,7 @@ static const char *HFC_NT_LAYER1_STATES[HFC_MAX_NT_LAYER1_STATE + 1] = {
 };
 
 /* supported devices */
-<<<<<<< HEAD
-static struct usb_device_id hfcsusb_idtab[] = {
-=======
 static const struct usb_device_id hfcsusb_idtab[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		USB_DEVICE(0x0959, 0x2bd0),
 		.driver_info = (unsigned long) &((struct hfcsusb_vdata)
@@ -423,15 +411,12 @@ static const struct usb_device_id hfcsusb_idtab[] = {
 			{LED_SCHEME1, {0x88, -64, -32, -16},
 					"ZyXEL OMNI.NET USB II"}),
 	},
-<<<<<<< HEAD
-=======
 	{
 		USB_DEVICE(0x1ae7, 0x0525),
 		.driver_info = (unsigned long) &((struct hfcsusb_vdata)
 			{LED_SCHEME1, {0x88, -64, -32, -16},
 					"X-Tensions USB ISDN TA XC-525"}),
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 

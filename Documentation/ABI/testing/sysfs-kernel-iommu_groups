@@ -12,8 +12,6 @@ Description:	/sys/kernel/iommu_groups/ contains a number of sub-
 		file if the IOMMU driver has chosen to register a more
 		common name for the group.
 Users:
-<<<<<<< HEAD
-=======
 
 What:		/sys/kernel/iommu_groups/reserved_regions
 Date: 		January 2017
@@ -64,4 +62,3 @@ Description:	/sys/kernel/iommu_groups/<grp_id>/type shows the type of default
 		system could lead to catastrophic effects (the users might
 		need to reboot the machine to get it to normal state). So, it's
 		expected that the users understand what they're doing.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BRIEF MODULE DESCRIPTION
  *	MyCable XXS1500 board support
  *
  * Copyright 2003, 2008 MontaVista Software Inc.
  * Author: MontaVista Software, Inc. <source@mvista.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -36,13 +16,9 @@
 #include <linux/pm.h>
 #include <asm/bootinfo.h>
 #include <asm/reboot.h>
-<<<<<<< HEAD
-#include <asm/mach-au1x00/au1000.h>
-=======
 #include <asm/setup.h>
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/mach-au1x00/gpio-au1000.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <prom.h>
 
 const char *get_system_type(void)
@@ -50,29 +26,7 @@ const char *get_system_type(void)
 	return "XXS1500";
 }
 
-<<<<<<< HEAD
-void __init prom_init(void)
-{
-	unsigned char *memsize_str;
-	unsigned long memsize;
-
-	prom_argc = fw_arg0;
-	prom_argv = (char **)fw_arg1;
-	prom_envp = (char **)fw_arg2;
-
-	prom_init_cmdline();
-
-	memsize_str = prom_getenv("memsize");
-	if (!memsize_str || strict_strtoul(memsize_str, 0, &memsize))
-		memsize = 0x04000000;
-
-	add_memory_region(0, memsize, BOOT_MEM_RAM);
-}
-
-void prom_putchar(unsigned char c)
-=======
 void prom_putchar(char c)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	alchemy_uart_putchar(AU1000_UART0_PHYS_ADDR, c);
 }
@@ -104,15 +58,9 @@ void __init board_setup(void)
 	alchemy_gpio2_enable();
 
 	/* Set multiple use pins (UART3/GPIO) to UART (it's used as UART too) */
-<<<<<<< HEAD
-	pin_func  = au_readl(SYS_PINFUNC) & ~SYS_PF_UR3;
-	pin_func |= SYS_PF_UR3;
-	au_writel(pin_func, SYS_PINFUNC);
-=======
 	pin_func  = alchemy_rdsys(AU1000_SYS_PINFUNC) & ~SYS_PF_UR3;
 	pin_func |= SYS_PF_UR3;
 	alchemy_wrsys(pin_func, AU1000_SYS_PINFUNC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable UART */
 	alchemy_uart_enable(AU1000_UART3_PHYS_ADDR);

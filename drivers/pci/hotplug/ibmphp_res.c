@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IBM Hot Plug Controller Driver
  *
@@ -12,24 +9,6 @@
  *
  * All rights reserved.
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or (at
- * your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <gregkh@us.ibm.com>
  *
  */
@@ -43,24 +22,6 @@
 
 static int flags = 0;		/* for testing */
 
-<<<<<<< HEAD
-static void update_resources (struct bus_node *bus_cur, int type, int rangeno);
-static int once_over (void);
-static int remove_ranges (struct bus_node *, struct bus_node *);
-static int update_bridge_ranges (struct bus_node **);
-static int add_bus_range (int type, struct range_node *, struct bus_node *);
-static void fix_resources (struct bus_node *);
-static struct bus_node *find_bus_wprev (u8, struct bus_node **, u8);
-
-static LIST_HEAD(gbuses);
-
-static struct bus_node * __init alloc_error_bus (struct ebda_pci_rsrc * curr, u8 busno, int flag)
-{
-	struct bus_node * newbus;
-
-	if (!(curr) && !(flag)) {
-		err ("NULL pointer passed\n");
-=======
 static void update_resources(struct bus_node *bus_cur, int type, int rangeno);
 static int once_over(void);
 static int remove_ranges(struct bus_node *, struct bus_node *);
@@ -77,37 +38,17 @@ static struct bus_node * __init alloc_error_bus(struct ebda_pci_rsrc *curr, u8 b
 
 	if (!(curr) && !(flag)) {
 		err("NULL pointer passed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
 	newbus = kzalloc(sizeof(struct bus_node), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!newbus) {
-		err ("out of system memory\n");
-		return NULL;
-	}
-=======
 	if (!newbus)
 		return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flag)
 		newbus->busno = busno;
 	else
 		newbus->busno = curr->bus_num;
-<<<<<<< HEAD
-	list_add_tail (&newbus->bus_list, &gbuses);
-	return newbus;
-}
-
-static struct resource_node * __init alloc_resources (struct ebda_pci_rsrc * curr)
-{
-	struct resource_node *rs;
-	
-	if (!curr) {
-		err ("NULL passed to allocate\n");
-=======
 	list_add_tail(&newbus->bus_list, &gbuses);
 	return newbus;
 }
@@ -118,21 +59,13 @@ static struct resource_node * __init alloc_resources(struct ebda_pci_rsrc *curr)
 
 	if (!curr) {
 		err("NULL passed to allocate\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
 	rs = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!rs) {
-		err ("out of system memory\n");
-		return NULL;
-	}
-=======
 	if (!rs)
 		return NULL;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rs->busno = curr->bus_num;
 	rs->devfunc = curr->dev_fun;
 	rs->start = curr->start_addr;
@@ -141,30 +74,17 @@ static struct resource_node * __init alloc_resources(struct ebda_pci_rsrc *curr)
 	return rs;
 }
 
-<<<<<<< HEAD
-static int __init alloc_bus_range (struct bus_node **new_bus, struct range_node **new_range, struct ebda_pci_rsrc *curr, int flag, u8 first_bus)
-{
-	struct bus_node * newbus;
-=======
 static int __init alloc_bus_range(struct bus_node **new_bus, struct range_node **new_range, struct ebda_pci_rsrc *curr, int flag, u8 first_bus)
 {
 	struct bus_node *newbus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct range_node *newrange;
 	u8 num_ranges = 0;
 
 	if (first_bus) {
 		newbus = kzalloc(sizeof(struct bus_node), GFP_KERNEL);
-<<<<<<< HEAD
-		if (!newbus) {
-			err ("out of system memory.\n");
-			return -ENOMEM;
-		}
-=======
 		if (!newbus)
 			return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		newbus->busno = curr->bus_num;
 	} else {
 		newbus = *new_bus;
@@ -184,32 +104,18 @@ static int __init alloc_bus_range(struct bus_node **new_bus, struct range_node *
 	newrange = kzalloc(sizeof(struct range_node), GFP_KERNEL);
 	if (!newrange) {
 		if (first_bus)
-<<<<<<< HEAD
-			kfree (newbus);
-		err ("out of system memory\n");
-=======
 			kfree(newbus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	newrange->start = curr->start_addr;
 	newrange->end = curr->end_addr;
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (first_bus || (!num_ranges))
 		newrange->rangeno = 1;
 	else {
 		/* need to insert our range */
-<<<<<<< HEAD
-		add_bus_range (flag, newrange, newbus);
-		debug ("%d resource Primary Bus inserted on bus %x [%x - %x]\n", flag, newbus->busno, newrange->start, newrange->end);
-=======
 		add_bus_range(flag, newrange, newbus);
 		debug("%d resource Primary Bus inserted on bus %x [%x - %x]\n", flag, newbus->busno, newrange->start, newrange->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (flag) {
@@ -218,15 +124,9 @@ static int __init alloc_bus_range(struct bus_node **new_bus, struct range_node *
 			if (first_bus)
 				newbus->noMemRanges = 1;
 			else {
-<<<<<<< HEAD
-				debug ("First Memory Primary on bus %x, [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-				++newbus->noMemRanges;
-				fix_resources (newbus);
-=======
 				debug("First Memory Primary on bus %x, [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
 				++newbus->noMemRanges;
 				fix_resources(newbus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case IO:
@@ -234,32 +134,19 @@ static int __init alloc_bus_range(struct bus_node **new_bus, struct range_node *
 			if (first_bus)
 				newbus->noIORanges = 1;
 			else {
-<<<<<<< HEAD
-				debug ("First IO Primary on bus %x, [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-				++newbus->noIORanges;
-				fix_resources (newbus);
-=======
 				debug("First IO Primary on bus %x, [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
 				++newbus->noIORanges;
 				fix_resources(newbus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case PFMEM:
 			newbus->rangePFMem = newrange;
 			if (first_bus)
 				newbus->noPFMemRanges = 1;
-<<<<<<< HEAD
-			else {	
-				debug ("1st PFMemory Primary on Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-				++newbus->noPFMemRanges;
-				fix_resources (newbus);
-=======
 			else {
 				debug("1st PFMemory Primary on Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
 				++newbus->noPFMemRanges;
 				fix_resources(newbus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			break;
@@ -277,62 +164,36 @@ static int __init alloc_bus_range(struct bus_node **new_bus, struct range_node *
  * 2. If cannot allocate out of PFMem range, allocate from Mem ranges.  PFmemFromMem
  * are not sorted. (no need since use mem node). To not change the entire code, we
  * also add mem node whenever this case happens so as not to change
-<<<<<<< HEAD
- * ibmphp_check_mem_resource etc (and since it really is taking Mem resource)
-=======
  * ibmphp_check_mem_resource etc(and since it really is taking Mem resource)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*****************************************************************************
  * This is the Resource Management initialization function.  It will go through
  * the Resource list taken from EBDA and fill in this module's data structures
  *
-<<<<<<< HEAD
- * THIS IS NOT TAKING INTO CONSIDERATION IO RESTRICTIONS OF PRIMARY BUSES, 
-=======
  * THIS IS NOT TAKING INTO CONSIDERATION IO RESTRICTIONS OF PRIMARY BUSES,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SINCE WE'RE GOING TO ASSUME FOR NOW WE DON'T HAVE THOSE ON OUR BUSES FOR NOW
  *
  * Input: ptr to the head of the resource list from EBDA
  * Output: 0, -1 or error codes
  ***************************************************************************/
-<<<<<<< HEAD
-int __init ibmphp_rsrc_init (void)
-=======
 int __init ibmphp_rsrc_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ebda_pci_rsrc *curr;
 	struct range_node *newrange = NULL;
 	struct bus_node *newbus = NULL;
 	struct bus_node *bus_cur;
 	struct bus_node *bus_prev;
-<<<<<<< HEAD
-	struct list_head *tmp;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource_node *new_io = NULL;
 	struct resource_node *new_mem = NULL;
 	struct resource_node *new_pfmem = NULL;
 	int rc;
-<<<<<<< HEAD
-	struct list_head *tmp_ebda;
-
-	list_for_each (tmp_ebda, &ibmphp_ebda_pci_rsrc_head) {
-		curr = list_entry (tmp_ebda, struct ebda_pci_rsrc, ebda_pci_rsrc_list);
-		if (!(curr->rsrc_type & PCIDEVMASK)) {
-			/* EBDA still lists non PCI devices, so ignore... */
-			debug ("this is not a PCI DEVICE in rsrc_init, please take care\n");
-=======
 
 	list_for_each_entry(curr, &ibmphp_ebda_pci_rsrc_head,
 			    ebda_pci_rsrc_list) {
 		if (!(curr->rsrc_type & PCIDEVMASK)) {
 			/* EBDA still lists non PCI devices, so ignore... */
 			debug("this is not a PCI DEVICE in rsrc_init, please take care\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			// continue;
 		}
 
@@ -341,18 +202,6 @@ int __init ibmphp_rsrc_init(void)
 			/* memory */
 			if ((curr->rsrc_type & RESTYPE) == MMASK) {
 				/* no bus structure exists in place yet */
-<<<<<<< HEAD
-				if (list_empty (&gbuses)) {
-					if ((rc = alloc_bus_range (&newbus, &newrange, curr, MEM, 1)))
-						return rc;
-					list_add_tail (&newbus->bus_list, &gbuses);
-					debug ("gbuses = NULL, Memory Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-				} else {
-					bus_cur = find_bus_wprev (curr->bus_num, &bus_prev, 1);
-					/* found our bus */
-					if (bus_cur) {
-						rc = alloc_bus_range (&bus_cur, &newrange, curr, MEM, 0);
-=======
 				if (list_empty(&gbuses)) {
 					rc = alloc_bus_range(&newbus, &newrange, curr, MEM, 1);
 					if (rc)
@@ -364,42 +213,20 @@ int __init ibmphp_rsrc_init(void)
 					/* found our bus */
 					if (bus_cur) {
 						rc = alloc_bus_range(&bus_cur, &newrange, curr, MEM, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						if (rc)
 							return rc;
 					} else {
 						/* went through all the buses and didn't find ours, need to create a new bus node */
-<<<<<<< HEAD
-						if ((rc = alloc_bus_range (&newbus, &newrange, curr, MEM, 1)))
-							return rc;
-
-						list_add_tail (&newbus->bus_list, &gbuses);
-						debug ("New Bus, Memory Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-=======
 						rc = alloc_bus_range(&newbus, &newrange, curr, MEM, 1);
 						if (rc)
 							return rc;
 
 						list_add_tail(&newbus->bus_list, &gbuses);
 						debug("New Bus, Memory Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 				}
 			} else if ((curr->rsrc_type & RESTYPE) == PFMASK) {
 				/* prefetchable memory */
-<<<<<<< HEAD
-				if (list_empty (&gbuses)) {
-					/* no bus structure exists in place yet */
-					if ((rc = alloc_bus_range (&newbus, &newrange, curr, PFMEM, 1)))
-						return rc;
-					list_add_tail (&newbus->bus_list, &gbuses);
-					debug ("gbuses = NULL, PFMemory Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-				} else {
-					bus_cur = find_bus_wprev (curr->bus_num, &bus_prev, 1);
-					if (bus_cur) {
-						/* found our bus */
-						rc = alloc_bus_range (&bus_cur, &newrange, curr, PFMEM, 0);
-=======
 				if (list_empty(&gbuses)) {
 					/* no bus structure exists in place yet */
 					rc = alloc_bus_range(&newbus, &newrange, curr, PFMEM, 1);
@@ -412,39 +239,19 @@ int __init ibmphp_rsrc_init(void)
 					if (bus_cur) {
 						/* found our bus */
 						rc = alloc_bus_range(&bus_cur, &newrange, curr, PFMEM, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						if (rc)
 							return rc;
 					} else {
 						/* went through all the buses and didn't find ours, need to create a new bus node */
-<<<<<<< HEAD
-						if ((rc = alloc_bus_range (&newbus, &newrange, curr, PFMEM, 1)))
-							return rc;
-						list_add_tail (&newbus->bus_list, &gbuses);
-						debug ("1st Bus, PFMemory Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-=======
 						rc = alloc_bus_range(&newbus, &newrange, curr, PFMEM, 1);
 						if (rc)
 							return rc;
 						list_add_tail(&newbus->bus_list, &gbuses);
 						debug("1st Bus, PFMemory Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 				}
 			} else if ((curr->rsrc_type & RESTYPE) == IOMASK) {
 				/* IO */
-<<<<<<< HEAD
-				if (list_empty (&gbuses)) {
-					/* no bus structure exists in place yet */
-					if ((rc = alloc_bus_range (&newbus, &newrange, curr, IO, 1)))
-						return rc;
-					list_add_tail (&newbus->bus_list, &gbuses);
-					debug ("gbuses = NULL, IO Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-				} else {
-					bus_cur = find_bus_wprev (curr->bus_num, &bus_prev, 1);
-					if (bus_cur) {
-						rc = alloc_bus_range (&bus_cur, &newrange, curr, IO, 0);
-=======
 				if (list_empty(&gbuses)) {
 					/* no bus structure exists in place yet */
 					rc = alloc_bus_range(&newbus, &newrange, curr, IO, 1);
@@ -456,23 +263,15 @@ int __init ibmphp_rsrc_init(void)
 					bus_cur = find_bus_wprev(curr->bus_num, &bus_prev, 1);
 					if (bus_cur) {
 						rc = alloc_bus_range(&bus_cur, &newrange, curr, IO, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						if (rc)
 							return rc;
 					} else {
 						/* went through all the buses and didn't find ours, need to create a new bus node */
-<<<<<<< HEAD
-						if ((rc = alloc_bus_range (&newbus, &newrange, curr, IO, 1)))
-							return rc;
-						list_add_tail (&newbus->bus_list, &gbuses);
-						debug ("1st Bus, IO Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
-=======
 						rc = alloc_bus_range(&newbus, &newrange, curr, IO, 1);
 						if (rc)
 							return rc;
 						list_add_tail(&newbus->bus_list, &gbuses);
 						debug("1st Bus, IO Primary Bus %x [%x - %x]\n", newbus->busno, newrange->start, newrange->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 				}
 
@@ -484,11 +283,7 @@ int __init ibmphp_rsrc_init(void)
 			/* regular pci device resource */
 			if ((curr->rsrc_type & RESTYPE) == MMASK) {
 				/* Memory resource */
-<<<<<<< HEAD
-				new_mem = alloc_resources (curr);
-=======
 				new_mem = alloc_resources(curr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!new_mem)
 					return -ENOMEM;
 				new_mem->type = MEM;
@@ -499,43 +294,25 @@ int __init ibmphp_rsrc_init(void)
 				 * assign a -1 and then update once the range
 				 * actually appears...
 				 */
-<<<<<<< HEAD
-				if (ibmphp_add_resource (new_mem) < 0) {
-					newbus = alloc_error_bus (curr, 0, 0);
-=======
 				if (ibmphp_add_resource(new_mem) < 0) {
 					newbus = alloc_error_bus(curr, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!newbus)
 						return -ENOMEM;
 					newbus->firstMem = new_mem;
 					++newbus->needMemUpdate;
 					new_mem->rangeno = -1;
 				}
-<<<<<<< HEAD
-				debug ("Memory resource for device %x, bus %x, [%x - %x]\n", new_mem->devfunc, new_mem->busno, new_mem->start, new_mem->end);
-
-			} else if ((curr->rsrc_type & RESTYPE) == PFMASK) {
-				/* PFMemory resource */
-				new_pfmem = alloc_resources (curr);
-=======
 				debug("Memory resource for device %x, bus %x, [%x - %x]\n", new_mem->devfunc, new_mem->busno, new_mem->start, new_mem->end);
 
 			} else if ((curr->rsrc_type & RESTYPE) == PFMASK) {
 				/* PFMemory resource */
 				new_pfmem = alloc_resources(curr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!new_pfmem)
 					return -ENOMEM;
 				new_pfmem->type = PFMEM;
 				new_pfmem->fromMem = 0;
-<<<<<<< HEAD
-				if (ibmphp_add_resource (new_pfmem) < 0) {
-					newbus = alloc_error_bus (curr, 0, 0);
-=======
 				if (ibmphp_add_resource(new_pfmem) < 0) {
 					newbus = alloc_error_bus(curr, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!newbus)
 						return -ENOMEM;
 					newbus->firstPFMem = new_pfmem;
@@ -543,17 +320,10 @@ int __init ibmphp_rsrc_init(void)
 					new_pfmem->rangeno = -1;
 				}
 
-<<<<<<< HEAD
-				debug ("PFMemory resource for device %x, bus %x, [%x - %x]\n", new_pfmem->devfunc, new_pfmem->busno, new_pfmem->start, new_pfmem->end);
-			} else if ((curr->rsrc_type & RESTYPE) == IOMASK) {
-				/* IO resource */
-				new_io = alloc_resources (curr);
-=======
 				debug("PFMemory resource for device %x, bus %x, [%x - %x]\n", new_pfmem->devfunc, new_pfmem->busno, new_pfmem->start, new_pfmem->end);
 			} else if ((curr->rsrc_type & RESTYPE) == IOMASK) {
 				/* IO resource */
 				new_io = alloc_resources(curr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!new_io)
 					return -ENOMEM;
 				new_io->type = IO;
@@ -565,41 +335,19 @@ int __init ibmphp_rsrc_init(void)
 				 * Can assign a -1 and then update once the
 				 * range actually appears...
 				 */
-<<<<<<< HEAD
-				if (ibmphp_add_resource (new_io) < 0) {
-					newbus = alloc_error_bus (curr, 0, 0);
-=======
 				if (ibmphp_add_resource(new_io) < 0) {
 					newbus = alloc_error_bus(curr, 0, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!newbus)
 						return -ENOMEM;
 					newbus->firstIO = new_io;
 					++newbus->needIOUpdate;
 					new_io->rangeno = -1;
 				}
-<<<<<<< HEAD
-				debug ("IO resource for device %x, bus %x, [%x - %x]\n", new_io->devfunc, new_io->busno, new_io->start, new_io->end);
-=======
 				debug("IO resource for device %x, bus %x, [%x - %x]\n", new_io->devfunc, new_io->busno, new_io->start, new_io->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
-<<<<<<< HEAD
-	list_for_each (tmp, &gbuses) {
-		bus_cur = list_entry (tmp, struct bus_node, bus_list);
-		/* This is to get info about PPB resources, since EBDA doesn't put this info into the primary bus info */
-		rc = update_bridge_ranges (&bus_cur);
-		if (rc)
-			return rc;
-	}
-	rc = once_over ();  /* This is to align ranges (so no -1) */
-	if (rc)
-		return rc;
-	return 0;
-=======
 	list_for_each_entry(bus_cur, &gbuses, bus_list) {
 		/* This is to get info about PPB resources, since EBDA doesn't put this info into the primary bus info */
 		rc = update_bridge_ranges(&bus_cur);
@@ -607,7 +355,6 @@ int __init ibmphp_rsrc_init(void)
 			return rc;
 	}
 	return once_over();	/* This is to align ranges (so no -1) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /********************************************************************************
@@ -616,15 +363,9 @@ int __init ibmphp_rsrc_init(void)
  * pci devices' resources for the appropriate resource
  *
  * Input: type of the resource, range to add, current bus
-<<<<<<< HEAD
- * Output: 0 or -1, bus and range ptrs 
- ********************************************************************************/
-static int add_bus_range (int type, struct range_node *range, struct bus_node *bus_cur)
-=======
  * Output: 0 or -1, bus and range ptrs
  ********************************************************************************/
 static int add_bus_range(int type, struct range_node *range, struct bus_node *bus_cur)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct range_node *range_cur = NULL;
 	struct range_node *range_prev;
@@ -689,11 +430,7 @@ static int add_bus_range(int type, struct range_node *range, struct bus_node *bu
 		range_cur = range_cur->next;
 	}
 
-<<<<<<< HEAD
-	update_resources (bus_cur, type, i_init + 1);
-=======
 	update_resources(bus_cur, type, i_init + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -703,22 +440,14 @@ static int add_bus_range(int type, struct range_node *range, struct bus_node *bu
  *
  * Input: bus, type of the resource, the rangeno starting from which to update
  ******************************************************************************/
-<<<<<<< HEAD
-static void update_resources (struct bus_node *bus_cur, int type, int rangeno)
-=======
 static void update_resources(struct bus_node *bus_cur, int type, int rangeno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource_node *res = NULL;
 	u8 eol = 0;	/* end of list indicator */
 
 	switch (type) {
 		case MEM:
-<<<<<<< HEAD
-			if (bus_cur->firstMem) 
-=======
 			if (bus_cur->firstMem)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				res = bus_cur->firstMem;
 			break;
 		case PFMEM:
@@ -755,15 +484,9 @@ static void update_resources(struct bus_node *bus_cur, int type, int rangeno)
 	}
 }
 
-<<<<<<< HEAD
-static void fix_me (struct resource_node *res, struct bus_node *bus_cur, struct range_node *range)
-{
-	char * str = "";
-=======
 static void fix_me(struct resource_node *res, struct bus_node *bus_cur, struct range_node *range)
 {
 	char *str = "";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (res->type) {
 		case IO:
 			str = "io";
@@ -781,11 +504,7 @@ static void fix_me(struct resource_node *res, struct bus_node *bus_cur, struct r
 			while (range) {
 				if ((res->start >= range->start) && (res->end <= range->end)) {
 					res->rangeno = range->rangeno;
-<<<<<<< HEAD
-					debug ("%s->rangeno in fix_resources is %d\n", str, res->rangeno);
-=======
 					debug("%s->rangeno in fix_resources is %d\n", str, res->rangeno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					switch (res->type) {
 						case IO:
 							--bus_cur->needIOUpdate;
@@ -820,56 +539,32 @@ static void fix_me(struct resource_node *res, struct bus_node *bus_cur, struct r
  * Input: current bus
  * Output: none, list of resources for that bus are fixed if can be
  *******************************************************************************/
-<<<<<<< HEAD
-static void fix_resources (struct bus_node *bus_cur)
-=======
 static void fix_resources(struct bus_node *bus_cur)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct range_node *range;
 	struct resource_node *res;
 
-<<<<<<< HEAD
-	debug ("%s - bus_cur->busno = %d\n", __func__, bus_cur->busno);
-=======
 	debug("%s - bus_cur->busno = %d\n", __func__, bus_cur->busno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bus_cur->needIOUpdate) {
 		res = bus_cur->firstIO;
 		range = bus_cur->rangeIO;
-<<<<<<< HEAD
-		fix_me (res, bus_cur, range);
-=======
 		fix_me(res, bus_cur, range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (bus_cur->needMemUpdate) {
 		res = bus_cur->firstMem;
 		range = bus_cur->rangeMem;
-<<<<<<< HEAD
-		fix_me (res, bus_cur, range);
-=======
 		fix_me(res, bus_cur, range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (bus_cur->needPFMemUpdate) {
 		res = bus_cur->firstPFMem;
 		range = bus_cur->rangePFMem;
-<<<<<<< HEAD
-		fix_me (res, bus_cur, range);
-=======
 		fix_me(res, bus_cur, range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*******************************************************************************
-<<<<<<< HEAD
- * This routine adds a resource to the list of resources to the appropriate bus 
-=======
  * This routine adds a resource to the list of resources to the appropriate bus
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * based on their resource type and sorted by their starting addresses.  It assigns
  * the ptrs to next and nextRange if needed.
  *
@@ -877,11 +572,7 @@ static void fix_resources(struct bus_node *bus_cur)
  * Output: ptrs assigned (to the node)
  * 0 or -1
  *******************************************************************************/
-<<<<<<< HEAD
-int ibmphp_add_resource (struct resource_node *res)
-=======
 int ibmphp_add_resource(struct resource_node *res)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource_node *res_cur;
 	struct resource_node *res_prev;
@@ -889,20 +580,6 @@ int ibmphp_add_resource(struct resource_node *res)
 	struct range_node *range_cur = NULL;
 	struct resource_node *res_start = NULL;
 
-<<<<<<< HEAD
-	debug ("%s - enter\n", __func__);
-
-	if (!res) {
-		err ("NULL passed to add\n");
-		return -ENODEV;
-	}
-	
-	bus_cur = find_bus_wprev (res->busno, NULL, 0);
-	
-	if (!bus_cur) {
-		/* didn't find a bus, smth's wrong!!! */
-		debug ("no bus in the system, either pci_dev's wrong or allocation failed\n");
-=======
 	debug("%s - enter\n", __func__);
 
 	if (!res) {
@@ -915,7 +592,6 @@ int ibmphp_add_resource(struct resource_node *res)
 	if (!bus_cur) {
 		/* didn't find a bus, something's wrong!!! */
 		debug("no bus in the system, either pci_dev's wrong or allocation failed\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -934,11 +610,7 @@ int ibmphp_add_resource(struct resource_node *res)
 			res_start = bus_cur->firstPFMem;
 			break;
 		default:
-<<<<<<< HEAD
-			err ("cannot read the type of the resource to add... problem\n");
-=======
 			err("cannot read the type of the resource to add... problem\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	}
 	while (range_cur) {
@@ -957,11 +629,7 @@ int ibmphp_add_resource(struct resource_node *res)
 	if (!range_cur) {
 		switch (res->type) {
 			case IO:
-<<<<<<< HEAD
-				++bus_cur->needIOUpdate;					
-=======
 				++bus_cur->needIOUpdate;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case MEM:
 				++bus_cur->needMemUpdate;
@@ -972,22 +640,13 @@ int ibmphp_add_resource(struct resource_node *res)
 		}
 		res->rangeno = -1;
 	}
-<<<<<<< HEAD
-	
-	debug ("The range is %d\n", res->rangeno);
-=======
 
 	debug("The range is %d\n", res->rangeno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!res_start) {
 		/* no first{IO,Mem,Pfmem} on the bus, 1st IO/Mem/Pfmem resource ever */
 		switch (res->type) {
 			case IO:
-<<<<<<< HEAD
-				bus_cur->firstIO = res;					
-=======
 				bus_cur->firstIO = res;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			case MEM:
 				bus_cur->firstMem = res;
@@ -995,22 +654,14 @@ int ibmphp_add_resource(struct resource_node *res)
 			case PFMEM:
 				bus_cur->firstPFMem = res;
 				break;
-<<<<<<< HEAD
-		}	
-=======
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res->next = NULL;
 		res->nextRange = NULL;
 	} else {
 		res_cur = res_start;
 		res_prev = NULL;
 
-<<<<<<< HEAD
-		debug ("res_cur->rangeno is %d\n", res_cur->rangeno);
-=======
 		debug("res_cur->rangeno is %d\n", res_cur->rangeno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (res_cur) {
 			if (res_cur->rangeno >= res->rangeno)
@@ -1024,11 +675,7 @@ int ibmphp_add_resource(struct resource_node *res)
 
 		if (!res_cur) {
 			/* at the end of the resource list */
-<<<<<<< HEAD
-			debug ("i should be here, [%x - %x]\n", res->start, res->end);
-=======
 			debug("i should be here, [%x - %x]\n", res->start, res->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res_prev->nextRange = res;
 			res->next = NULL;
 			res->nextRange = NULL;
@@ -1096,11 +743,7 @@ int ibmphp_add_resource(struct resource_node *res)
 		}
 	}
 
-<<<<<<< HEAD
-	debug ("%s - exit\n", __func__);
-=======
 	debug("%s - exit\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1108,36 +751,15 @@ int ibmphp_add_resource(struct resource_node *res)
  * This routine will remove the resource from the list of resources
  *
  * Input: io, mem, and/or pfmem resource to be deleted
-<<<<<<< HEAD
- * Ouput: modified resource list
- *        0 or error code
- ****************************************************************************/
-int ibmphp_remove_resource (struct resource_node *res)
-=======
  * Output: modified resource list
  *        0 or error code
  ****************************************************************************/
 int ibmphp_remove_resource(struct resource_node *res)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bus_node *bus_cur;
 	struct resource_node *res_cur = NULL;
 	struct resource_node *res_prev;
 	struct resource_node *mem_cur;
-<<<<<<< HEAD
-	char * type = "";
-
-	if (!res)  {
-		err ("resource to remove is NULL\n");
-		return -ENODEV;
-	}
-
-	bus_cur = find_bus_wprev (res->busno, NULL, 0);
-
-	if (!bus_cur) {
-		err ("cannot find corresponding bus of the io resource to remove  "
-			"bailing out...\n");
-=======
 	char *type = "";
 
 	if (!res)  {
@@ -1149,7 +771,6 @@ int ibmphp_remove_resource(struct resource_node *res)
 
 	if (!bus_cur) {
 		err("cannot find corresponding bus of the io resource to remove  bailing out...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1167,11 +788,7 @@ int ibmphp_remove_resource(struct resource_node *res)
 			type = "pfmem";
 			break;
 		default:
-<<<<<<< HEAD
-			err ("unknown type for resource to remove\n");
-=======
 			err("unknown type for resource to remove\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	}
 	res_prev = NULL;
@@ -1188,11 +805,7 @@ int ibmphp_remove_resource(struct resource_node *res)
 
 	if (!res_cur) {
 		if (res->type == PFMEM) {
-<<<<<<< HEAD
-			/* 
-=======
 			/*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * case where pfmem might be in the PFMemFromMem list
 			 * so will also need to remove the corresponding mem
 			 * entry
@@ -1213,28 +826,16 @@ int ibmphp_remove_resource(struct resource_node *res)
 							mem_cur = mem_cur->nextRange;
 					}
 					if (!mem_cur) {
-<<<<<<< HEAD
-						err ("cannot find corresponding mem node for pfmem...\n");
-						return -EINVAL;
-					}
-
-					ibmphp_remove_resource (mem_cur);
-=======
 						err("cannot find corresponding mem node for pfmem...\n");
 						return -EINVAL;
 					}
 
 					ibmphp_remove_resource(mem_cur);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!res_prev)
 						bus_cur->firstPFMemFromMem = res_cur->next;
 					else
 						res_prev->next = res_cur->next;
-<<<<<<< HEAD
-					kfree (res_cur);
-=======
 					kfree(res_cur);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return 0;
 				}
 				res_prev = res_cur;
@@ -1244,19 +845,11 @@ int ibmphp_remove_resource(struct resource_node *res)
 					res_cur = res_cur->nextRange;
 			}
 			if (!res_cur) {
-<<<<<<< HEAD
-				err ("cannot find pfmem to delete...\n");
-				return -EINVAL;
-			}
-		} else {
-			err ("the %s resource is not in the list to be deleted...\n", type);
-=======
 				err("cannot find pfmem to delete...\n");
 				return -EINVAL;
 			}
 		} else {
 			err("the %s resource is not in the list to be deleted...\n", type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -1299,11 +892,7 @@ int ibmphp_remove_resource(struct resource_node *res)
 					break;
 			}
 		}
-<<<<<<< HEAD
-		kfree (res_cur);
-=======
 		kfree(res_cur);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	} else {
 		if (res_cur->next) {
@@ -1318,26 +907,16 @@ int ibmphp_remove_resource(struct resource_node *res)
 			res_prev->next = NULL;
 			res_prev->nextRange = NULL;
 		}
-<<<<<<< HEAD
-		kfree (res_cur);
-=======
 		kfree(res_cur);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct range_node * find_range (struct bus_node *bus_cur, struct resource_node * res)
-{
-	struct range_node * range = NULL;
-=======
 static struct range_node *find_range(struct bus_node *bus_cur, struct resource_node *res)
 {
 	struct range_node *range = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (res->type) {
 		case IO:
@@ -1350,11 +929,7 @@ static struct range_node *find_range(struct bus_node *bus_cur, struct resource_n
 			range = bus_cur->rangePFMem;
 			break;
 		default:
-<<<<<<< HEAD
-			err ("cannot read resource type in find_range\n");
-=======
 			err("cannot read resource type in find_range\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	while (range) {
@@ -1366,26 +941,15 @@ static struct range_node *find_range(struct bus_node *bus_cur, struct resource_n
 }
 
 /*****************************************************************************
-<<<<<<< HEAD
- * This routine will check to make sure the io/mem/pfmem->len that the device asked for 
-=======
  * This routine will check to make sure the io/mem/pfmem->len that the device asked for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * can fit w/i our list of available IO/MEM/PFMEM resources.  If cannot, returns -EINVAL,
  * otherwise, returns 0
  *
  * Input: resource
-<<<<<<< HEAD
- * Ouput: the correct start and end address are inputted into the resource node,
- *        0 or -EINVAL
- *****************************************************************************/
-int ibmphp_check_resource (struct resource_node *res, u8 bridge)
-=======
  * Output: the correct start and end address are inputted into the resource node,
  *        0 or -EINVAL
  *****************************************************************************/
 int ibmphp_check_resource(struct resource_node *res, u8 bridge)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bus_node *bus_cur;
 	struct range_node *range = NULL;
@@ -1409,18 +973,6 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 	} else
 		tmp_divide = res->len;
 
-<<<<<<< HEAD
-	bus_cur = find_bus_wprev (res->busno, NULL, 0);
-
-	if (!bus_cur) {
-		/* didn't find a bus, smth's wrong!!! */
-		debug ("no bus in the system, either pci_dev's wrong or allocation failed\n");
-		return -EINVAL;
-	}
-
-	debug ("%s - enter\n", __func__);
-	debug ("bus_cur->busno is %d\n", bus_cur->busno);
-=======
 	bus_cur = find_bus_wprev(res->busno, NULL, 0);
 
 	if (!bus_cur) {
@@ -1431,7 +983,6 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 
 	debug("%s - enter\n", __func__);
 	debug("bus_cur->busno is %d\n", bus_cur->busno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is a quick fix to not mess up with the code very much.  i.e.,
 	 * 2000-2fff, len = 1000, but when we compare, we need it to be fff */
@@ -1451,44 +1002,27 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 			noranges = bus_cur->noPFMemRanges;
 			break;
 		default:
-<<<<<<< HEAD
-			err ("wrong type of resource to check\n");
-=======
 			err("wrong type of resource to check\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	}
 	res_prev = NULL;
 
 	while (res_cur) {
-<<<<<<< HEAD
-		range = find_range (bus_cur, res_cur);
-		debug ("%s - rangeno = %d\n", __func__, res_cur->rangeno);
-
-		if (!range) {
-			err ("no range for the device exists... bailing out...\n");
-=======
 		range = find_range(bus_cur, res_cur);
 		debug("%s - rangeno = %d\n", __func__, res_cur->rangeno);
 
 		if (!range) {
 			err("no range for the device exists... bailing out...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
 		/* found our range */
 		if (!res_prev) {
 			/* first time in the loop */
-<<<<<<< HEAD
-			if ((res_cur->start != range->start) && ((len_tmp = res_cur->start - 1 - range->start) >= res->len)) {
-				debug ("len_tmp = %x\n", len_tmp);
-=======
 			len_tmp = res_cur->start - 1 - range->start;
 
 			if ((res_cur->start != range->start) && (len_tmp >= res->len)) {
 				debug("len_tmp = %x\n", len_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if ((len_tmp < len_cur) || (len_cur == 0)) {
 
@@ -1514,15 +1048,9 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 								break;
 						}
 					}
-<<<<<<< HEAD
-			
-					if (flag && len_cur == res->len) {
-						debug ("but we are not here, right?\n");
-=======
 
 					if (flag && len_cur == res->len) {
 						debug("but we are not here, right?\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						res->start = start_cur;
 						res->len += 1; /* To restore the balance */
 						res->end = res->start + res->len - 1;
@@ -1533,15 +1061,10 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 		}
 		if (!res_cur->next) {
 			/* last device on the range */
-<<<<<<< HEAD
-			if ((range->end != res_cur->end) && ((len_tmp = range->end - (res_cur->end + 1)) >= res->len)) {
-				debug ("len_tmp = %x\n", len_tmp);
-=======
 			len_tmp = range->end - (res_cur->end + 1);
 
 			if ((range->end != res_cur->end) && (len_tmp >= res->len)) {
 				debug("len_tmp = %x\n", len_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((len_tmp < len_cur) || (len_cur == 0)) {
 
 					if (((res_cur->end + 1) % tmp_divide) == 0) {
@@ -1579,18 +1102,11 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 		if (res_prev) {
 			if (res_prev->rangeno != res_cur->rangeno) {
 				/* 1st device on this range */
-<<<<<<< HEAD
-				if ((res_cur->start != range->start) && 
-					((len_tmp = res_cur->start - 1 - range->start) >= res->len)) {
-					if ((len_tmp < len_cur) || (len_cur == 0)) {
-						if ((range->start % tmp_divide) == 0) {	
-=======
 				len_tmp = res_cur->start - 1 - range->start;
 
 				if ((res_cur->start != range->start) &&	(len_tmp >= res->len)) {
 					if ((len_tmp < len_cur) || (len_cur == 0)) {
 						if ((range->start % tmp_divide) == 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							/* just perfect, starting address is divisible by length */
 							flag = 1;
 							len_cur = len_tmp;
@@ -1623,13 +1139,9 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 				}
 			} else {
 				/* in the same range */
-<<<<<<< HEAD
-				if ((len_tmp = res_cur->start - 1 - res_prev->end - 1) >= res->len) {
-=======
 				len_tmp = res_cur->start - 1 - res_prev->end - 1;
 
 				if (len_tmp >= res->len) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if ((len_tmp < len_cur) || (len_cur == 0)) {
 						if (((res_prev->end + 1) % tmp_divide) == 0) {
 							/* just perfect, starting address's divisible by length */
@@ -1688,13 +1200,9 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 				break;
 		}
 		while (range) {
-<<<<<<< HEAD
-			if ((len_tmp = range->end - range->start) >= res->len) {
-=======
 			len_tmp = range->end - range->start;
 
 			if (len_tmp >= res->len) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((len_tmp < len_cur) || (len_cur == 0)) {
 					if ((range->start % tmp_divide) == 0) {
 						/* just perfect, starting address's divisible by length */
@@ -1732,11 +1240,7 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 
 		if ((!range) && (len_cur == 0)) {
 			/* have gone through the list of devices and ranges and haven't found n.e.thing */
-<<<<<<< HEAD
-			err ("no appropriate range.. bailing out...\n");
-=======
 			err("no appropriate range.. bailing out...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		} else if (len_cur) {
 			res->start = start_cur;
@@ -1747,11 +1251,7 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 	}
 
 	if (!res_cur) {
-<<<<<<< HEAD
-		debug ("prev->rangeno = %d, noranges = %d\n", res_prev->rangeno, noranges);
-=======
 		debug("prev->rangeno = %d, noranges = %d\n", res_prev->rangeno, noranges);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res_prev->rangeno < noranges) {
 			/* if there're more ranges out there to check */
 			switch (res->type) {
@@ -1766,13 +1266,9 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 					break;
 			}
 			while (range) {
-<<<<<<< HEAD
-				if ((len_tmp = range->end - range->start) >= res->len) {
-=======
 				len_tmp = range->end - range->start;
 
 				if (len_tmp >= res->len) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if ((len_tmp < len_cur) || (len_cur == 0)) {
 						if ((range->start % tmp_divide) == 0) {
 							/* just perfect, starting address's divisible by length */
@@ -1810,11 +1306,7 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 
 			if ((!range) && (len_cur == 0)) {
 				/* have gone through the list of devices and ranges and haven't found n.e.thing */
-<<<<<<< HEAD
-				err ("no appropriate range.. bailing out...\n");
-=======
 				err("no appropriate range.. bailing out...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			} else if (len_cur) {
 				res->start = start_cur;
@@ -1831,19 +1323,11 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
 				return 0;
 			} else {
 				/* have gone through the list of devices and haven't found n.e.thing */
-<<<<<<< HEAD
-				err ("no appropriate range.. bailing out...\n");
-				return -EINVAL;
-			}
-		}
-	}	/* end if(!res_cur) */
-=======
 				err("no appropriate range.. bailing out...\n");
 				return -EINVAL;
 			}
 		}
 	}	/* end if (!res_cur) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -1851,33 +1335,15 @@ int ibmphp_check_resource(struct resource_node *res, u8 bridge)
  * This routine is called from remove_card if the card contained PPB.
  * It will remove all the resources on the bus as well as the bus itself
  * Input: Bus
-<<<<<<< HEAD
- * Ouput: 0, -ENODEV
- ********************************************************************************/
-int ibmphp_remove_bus (struct bus_node *bus, u8 parent_busno)
-=======
  * Output: 0, -ENODEV
  ********************************************************************************/
 int ibmphp_remove_bus(struct bus_node *bus, u8 parent_busno)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource_node *res_cur;
 	struct resource_node *res_tmp;
 	struct bus_node *prev_bus;
 	int rc;
 
-<<<<<<< HEAD
-	prev_bus = find_bus_wprev (parent_busno, NULL, 0);	
-
-	if (!prev_bus) {
-		debug ("something terribly wrong. Cannot find parent bus to the one to remove\n");
-		return -ENODEV;
-	}
-
-	debug ("In ibmphp_remove_bus... prev_bus->busno is %x\n", prev_bus->busno);
-
-	rc = remove_ranges (bus, prev_bus);
-=======
 	prev_bus = find_bus_wprev(parent_busno, NULL, 0);
 
 	if (!prev_bus) {
@@ -1888,7 +1354,6 @@ int ibmphp_remove_bus(struct bus_node *bus, u8 parent_busno)
 	debug("In ibmphp_remove_bus... prev_bus->busno is %x\n", prev_bus->busno);
 
 	rc = remove_ranges(bus, prev_bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -1900,11 +1365,7 @@ int ibmphp_remove_bus(struct bus_node *bus, u8 parent_busno)
 				res_cur = res_cur->next;
 			else
 				res_cur = res_cur->nextRange;
-<<<<<<< HEAD
-			kfree (res_tmp);
-=======
 			kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res_tmp = NULL;
 		}
 		bus->firstIO = NULL;
@@ -1917,11 +1378,7 @@ int ibmphp_remove_bus(struct bus_node *bus, u8 parent_busno)
 				res_cur = res_cur->next;
 			else
 				res_cur = res_cur->nextRange;
-<<<<<<< HEAD
-			kfree (res_tmp);
-=======
 			kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res_tmp = NULL;
 		}
 		bus->firstMem = NULL;
@@ -1934,11 +1391,7 @@ int ibmphp_remove_bus(struct bus_node *bus, u8 parent_busno)
 				res_cur = res_cur->next;
 			else
 				res_cur = res_cur->nextRange;
-<<<<<<< HEAD
-			kfree (res_tmp);
-=======
 			kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res_tmp = NULL;
 		}
 		bus->firstPFMem = NULL;
@@ -1950,41 +1403,24 @@ int ibmphp_remove_bus(struct bus_node *bus, u8 parent_busno)
 			res_tmp = res_cur;
 			res_cur = res_cur->next;
 
-<<<<<<< HEAD
-			kfree (res_tmp);
-=======
 			kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res_tmp = NULL;
 		}
 		bus->firstPFMemFromMem = NULL;
 	}
 
-<<<<<<< HEAD
-	list_del (&bus->bus_list);
-	kfree (bus);
-=======
 	list_del(&bus->bus_list);
 	kfree(bus);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /******************************************************************************
-<<<<<<< HEAD
- * This routine deletes the ranges from a given bus, and the entries from the 
-=======
  * This routine deletes the ranges from a given bus, and the entries from the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * parent's bus in the resources
  * Input: current bus, previous bus
  * Output: 0, -EINVAL
  ******************************************************************************/
-<<<<<<< HEAD
-static int remove_ranges (struct bus_node *bus_cur, struct bus_node *bus_prev)
-=======
 static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct range_node *range_cur;
 	struct range_node *range_tmp;
@@ -1994,15 +1430,6 @@ static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
 	if (bus_cur->noIORanges) {
 		range_cur = bus_cur->rangeIO;
 		for (i = 0; i < bus_cur->noIORanges; i++) {
-<<<<<<< HEAD
-			if (ibmphp_find_resource (bus_prev, range_cur->start, &res, IO) < 0)
-				return -EINVAL;
-			ibmphp_remove_resource (res);
-
-			range_tmp = range_cur;
-			range_cur = range_cur->next;
-			kfree (range_tmp);
-=======
 			if (ibmphp_find_resource(bus_prev, range_cur->start, &res, IO) < 0)
 				return -EINVAL;
 			ibmphp_remove_resource(res);
@@ -2010,7 +1437,6 @@ static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
 			range_tmp = range_cur;
 			range_cur = range_cur->next;
 			kfree(range_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			range_tmp = NULL;
 		}
 		bus_cur->rangeIO = NULL;
@@ -2018,15 +1444,6 @@ static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
 	if (bus_cur->noMemRanges) {
 		range_cur = bus_cur->rangeMem;
 		for (i = 0; i < bus_cur->noMemRanges; i++) {
-<<<<<<< HEAD
-			if (ibmphp_find_resource (bus_prev, range_cur->start, &res, MEM) < 0) 
-				return -EINVAL;
-
-			ibmphp_remove_resource (res);
-			range_tmp = range_cur;
-			range_cur = range_cur->next;
-			kfree (range_tmp);
-=======
 			if (ibmphp_find_resource(bus_prev, range_cur->start, &res, MEM) < 0)
 				return -EINVAL;
 
@@ -2034,7 +1451,6 @@ static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
 			range_tmp = range_cur;
 			range_cur = range_cur->next;
 			kfree(range_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			range_tmp = NULL;
 		}
 		bus_cur->rangeMem = NULL;
@@ -2042,15 +1458,6 @@ static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
 	if (bus_cur->noPFMemRanges) {
 		range_cur = bus_cur->rangePFMem;
 		for (i = 0; i < bus_cur->noPFMemRanges; i++) {
-<<<<<<< HEAD
-			if (ibmphp_find_resource (bus_prev, range_cur->start, &res, PFMEM) < 0) 
-				return -EINVAL;
-
-			ibmphp_remove_resource (res);
-			range_tmp = range_cur;
-			range_cur = range_cur->next;
-			kfree (range_tmp);
-=======
 			if (ibmphp_find_resource(bus_prev, range_cur->start, &res, PFMEM) < 0)
 				return -EINVAL;
 
@@ -2058,7 +1465,6 @@ static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
 			range_tmp = range_cur;
 			range_cur = range_cur->next;
 			kfree(range_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			range_tmp = NULL;
 		}
 		bus_cur->rangePFMem = NULL;
@@ -2067,18 +1473,6 @@ static int remove_ranges(struct bus_node *bus_cur, struct bus_node *bus_prev)
 }
 
 /*
-<<<<<<< HEAD
- * find the resource node in the bus 
- * Input: Resource needed, start address of the resource, type of resource
- */
-int ibmphp_find_resource (struct bus_node *bus, u32 start_address, struct resource_node **res, int flag)
-{
-	struct resource_node *res_cur = NULL;
-	char * type = "";
-
-	if (!bus) {
-		err ("The bus passed in NULL to find resource\n");
-=======
  * find the resource node in the bus
  * Input: Resource needed, start address of the resource, type of resource
  */
@@ -2089,7 +1483,6 @@ int ibmphp_find_resource(struct bus_node *bus, u32 start_address, struct resourc
 
 	if (!bus) {
 		err("The bus passed in NULL to find resource\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -2107,17 +1500,10 @@ int ibmphp_find_resource(struct bus_node *bus, u32 start_address, struct resourc
 			type = "pfmem";
 			break;
 		default:
-<<<<<<< HEAD
-			err ("wrong type of flag\n");
-			return -EINVAL;
-	}
-	
-=======
 			err("wrong type of flag\n");
 			return -EINVAL;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (res_cur) {
 		if (res_cur->start == start_address) {
 			*res = res_cur;
@@ -2140,29 +1526,17 @@ int ibmphp_find_resource(struct bus_node *bus, u32 start_address, struct resourc
 				res_cur = res_cur->next;
 			}
 			if (!res_cur) {
-<<<<<<< HEAD
-				debug ("SOS...cannot find %s resource in the bus.\n", type);
-				return -EINVAL;
-			}
-		} else {
-			debug ("SOS... cannot find %s resource in the bus.\n", type);
-=======
 				debug("SOS...cannot find %s resource in the bus.\n", type);
 				return -EINVAL;
 			}
 		} else {
 			debug("SOS... cannot find %s resource in the bus.\n", type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
 
 	if (*res)
-<<<<<<< HEAD
-		debug ("*res->start = %x\n", (*res)->start);
-=======
 		debug("*res->start = %x\n", (*res)->start);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2173,34 +1547,18 @@ int ibmphp_find_resource(struct bus_node *bus, u32 start_address, struct resourc
  * Parameters: none
  * Returns: none
  ***********************************************************************/
-<<<<<<< HEAD
-void ibmphp_free_resources (void)
-{
-	struct bus_node *bus_cur = NULL;
-=======
 void ibmphp_free_resources(void)
 {
 	struct bus_node *bus_cur = NULL, *next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bus_node *bus_tmp;
 	struct range_node *range_cur;
 	struct range_node *range_tmp;
 	struct resource_node *res_cur;
 	struct resource_node *res_tmp;
-<<<<<<< HEAD
-	struct list_head *tmp;
-	struct list_head *next;
-	int i = 0;
-	flags = 1;
-
-	list_for_each_safe (tmp, next, &gbuses) {
-		bus_cur = list_entry (tmp, struct bus_node, bus_list);
-=======
 	int i = 0;
 	flags = 1;
 
 	list_for_each_entry_safe(bus_cur, next, &gbuses, bus_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bus_cur->noIORanges) {
 			range_cur = bus_cur->rangeIO;
 			for (i = 0; i < bus_cur->noIORanges; i++) {
@@ -2208,11 +1566,7 @@ void ibmphp_free_resources(void)
 					break;
 				range_tmp = range_cur;
 				range_cur = range_cur->next;
-<<<<<<< HEAD
-				kfree (range_tmp);
-=======
 				kfree(range_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				range_tmp = NULL;
 			}
 		}
@@ -2223,11 +1577,7 @@ void ibmphp_free_resources(void)
 					break;
 				range_tmp = range_cur;
 				range_cur = range_cur->next;
-<<<<<<< HEAD
-				kfree (range_tmp);
-=======
 				kfree(range_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				range_tmp = NULL;
 			}
 		}
@@ -2238,11 +1588,7 @@ void ibmphp_free_resources(void)
 					break;
 				range_tmp = range_cur;
 				range_cur = range_cur->next;
-<<<<<<< HEAD
-				kfree (range_tmp);
-=======
 				kfree(range_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				range_tmp = NULL;
 			}
 		}
@@ -2255,11 +1601,7 @@ void ibmphp_free_resources(void)
 					res_cur = res_cur->next;
 				else
 					res_cur = res_cur->nextRange;
-<<<<<<< HEAD
-				kfree (res_tmp);
-=======
 				kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				res_tmp = NULL;
 			}
 			bus_cur->firstIO = NULL;
@@ -2272,11 +1614,7 @@ void ibmphp_free_resources(void)
 					res_cur = res_cur->next;
 				else
 					res_cur = res_cur->nextRange;
-<<<<<<< HEAD
-				kfree (res_tmp);
-=======
 				kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				res_tmp = NULL;
 			}
 			bus_cur->firstMem = NULL;
@@ -2289,11 +1627,7 @@ void ibmphp_free_resources(void)
 					res_cur = res_cur->next;
 				else
 					res_cur = res_cur->nextRange;
-<<<<<<< HEAD
-				kfree (res_tmp);
-=======
 				kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				res_tmp = NULL;
 			}
 			bus_cur->firstPFMem = NULL;
@@ -2305,24 +1639,15 @@ void ibmphp_free_resources(void)
 				res_tmp = res_cur;
 				res_cur = res_cur->next;
 
-<<<<<<< HEAD
-				kfree (res_tmp);
-=======
 				kfree(res_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				res_tmp = NULL;
 			}
 			bus_cur->firstPFMemFromMem = NULL;
 		}
 
 		bus_tmp = bus_cur;
-<<<<<<< HEAD
-		list_del (&bus_cur->bus_list);
-		kfree (bus_tmp);
-=======
 		list_del(&bus_cur->bus_list);
 		kfree(bus_tmp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bus_tmp = NULL;
 	}
 }
@@ -2335,25 +1660,14 @@ void ibmphp_free_resources(void)
  * a new Mem node
  * This routine is called right after initialization
  *******************************************************************************/
-<<<<<<< HEAD
-static int __init once_over (void)
-=======
 static int __init once_over(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource_node *pfmem_cur;
 	struct resource_node *pfmem_prev;
 	struct resource_node *mem;
 	struct bus_node *bus_cur;
-<<<<<<< HEAD
-	struct list_head *tmp;
-
-	list_for_each (tmp, &gbuses) {
-		bus_cur = list_entry (tmp, struct bus_node, bus_list);
-=======
 
 	list_for_each_entry(bus_cur, &gbuses, bus_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((!bus_cur->rangePFMem) && (bus_cur->firstPFMem)) {
 			for (pfmem_cur = bus_cur->firstPFMem, pfmem_prev = NULL; pfmem_cur; pfmem_prev = pfmem_cur, pfmem_cur = pfmem_cur->next) {
 				pfmem_cur->fromMem = 1;
@@ -2374,44 +1688,21 @@ static int __init once_over(void)
 				bus_cur->firstPFMemFromMem = pfmem_cur;
 
 				mem = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
-<<<<<<< HEAD
-				if (!mem) {
-					err ("out of system memory\n");
-					return -ENOMEM;
-				}
-=======
 				if (!mem)
 					return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mem->type = MEM;
 				mem->busno = pfmem_cur->busno;
 				mem->devfunc = pfmem_cur->devfunc;
 				mem->start = pfmem_cur->start;
 				mem->end = pfmem_cur->end;
 				mem->len = pfmem_cur->len;
-<<<<<<< HEAD
-				if (ibmphp_add_resource (mem) < 0)
-					err ("Trouble...trouble... EBDA allocated pfmem from mem, but system doesn't display it has this space... unless not PCI device...\n");
-=======
 				if (ibmphp_add_resource(mem) < 0)
 					err("Trouble...trouble... EBDA allocated pfmem from mem, but system doesn't display it has this space... unless not PCI device...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pfmem_cur->rangeno = mem->rangeno;
 			}	/* end for pfmem */
 		}	/* end if */
 	}	/* end list_for_each bus */
-<<<<<<< HEAD
-	return 0; 
-}
-
-int ibmphp_add_pfmem_from_mem (struct resource_node *pfmem)
-{
-	struct bus_node *bus_cur = find_bus_wprev (pfmem->busno, NULL, 0);
-
-	if (!bus_cur) {
-		err ("cannot find bus of pfmem to add...\n");
-=======
 	return 0;
 }
 
@@ -2421,7 +1712,6 @@ int ibmphp_add_pfmem_from_mem(struct resource_node *pfmem)
 
 	if (!bus_cur) {
 		err("cannot find bus of pfmem to add...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -2441,25 +1731,6 @@ int ibmphp_add_pfmem_from_mem(struct resource_node *pfmem)
  * Parameters: bus_number
  * Returns: Bus pointer or NULL
  */
-<<<<<<< HEAD
-struct bus_node *ibmphp_find_res_bus (u8 bus_number)
-{
-	return find_bus_wprev (bus_number, NULL, 0);
-}
-
-static struct bus_node *find_bus_wprev (u8 bus_number, struct bus_node **prev, u8 flag)
-{
-	struct bus_node *bus_cur;
-	struct list_head *tmp;
-	struct list_head *tmp_prev;
-
-	list_for_each (tmp, &gbuses) {
-		tmp_prev = tmp->prev;
-		bus_cur = list_entry (tmp, struct bus_node, bus_list);
-		if (flag) 
-			*prev = list_entry (tmp_prev, struct bus_node, bus_list);
-		if (bus_cur->busno == bus_number) 
-=======
 struct bus_node *ibmphp_find_res_bus(u8 bus_number)
 {
 	return find_bus_wprev(bus_number, NULL, 0);
@@ -2473,36 +1744,18 @@ static struct bus_node *find_bus_wprev(u8 bus_number, struct bus_node **prev, u8
 		if (flag)
 			*prev = list_prev_entry(bus_cur, bus_list);
 		if (bus_cur->busno == bus_number)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return bus_cur;
 	}
 
 	return NULL;
 }
 
-<<<<<<< HEAD
-void ibmphp_print_test (void)
-=======
 void ibmphp_print_test(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = 0;
 	struct bus_node *bus_cur = NULL;
 	struct range_node *range;
 	struct resource_node *res;
-<<<<<<< HEAD
-	struct list_head *tmp;
-	
-	debug_pci ("*****************START**********************\n");
-
-	if ((!list_empty(&gbuses)) && flags) {
-		err ("The GBUSES is not NULL?!?!?!?!?\n");
-		return;
-	}
-
-	list_for_each (tmp, &gbuses) {
-		bus_cur = list_entry (tmp, struct bus_node, bus_list);
-=======
 
 	debug_pci("*****************START**********************\n");
 
@@ -2512,7 +1765,6 @@ void ibmphp_print_test(void)
 	}
 
 	list_for_each_entry(bus_cur, &gbuses, bus_list) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		debug_pci ("This is bus # %d.  There are\n", bus_cur->busno);
 		debug_pci ("IORanges = %d\t", bus_cur->noIORanges);
 		debug_pci ("MemRanges = %d\t", bus_cur->noMemRanges);
@@ -2521,67 +1773,33 @@ void ibmphp_print_test(void)
 		if (bus_cur->rangeIO) {
 			range = bus_cur->rangeIO;
 			for (i = 0; i < bus_cur->noIORanges; i++) {
-<<<<<<< HEAD
-				debug_pci ("rangeno is %d\n", range->rangeno);
-				debug_pci ("[%x - %x]\n", range->start, range->end);
-=======
 				debug_pci("rangeno is %d\n", range->rangeno);
 				debug_pci("[%x - %x]\n", range->start, range->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				range = range->next;
 			}
 		}
 
-<<<<<<< HEAD
-		debug_pci ("The Mem Ranges are as follows:\n");
-		if (bus_cur->rangeMem) {
-			range = bus_cur->rangeMem;
-			for (i = 0; i < bus_cur->noMemRanges; i++) {
-				debug_pci ("rangeno is %d\n", range->rangeno);
-				debug_pci ("[%x - %x]\n", range->start, range->end);
-=======
 		debug_pci("The Mem Ranges are as follows:\n");
 		if (bus_cur->rangeMem) {
 			range = bus_cur->rangeMem;
 			for (i = 0; i < bus_cur->noMemRanges; i++) {
 				debug_pci("rangeno is %d\n", range->rangeno);
 				debug_pci("[%x - %x]\n", range->start, range->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				range = range->next;
 			}
 		}
 
-<<<<<<< HEAD
-		debug_pci ("The PFMem Ranges are as follows:\n");
-=======
 		debug_pci("The PFMem Ranges are as follows:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (bus_cur->rangePFMem) {
 			range = bus_cur->rangePFMem;
 			for (i = 0; i < bus_cur->noPFMemRanges; i++) {
-<<<<<<< HEAD
-				debug_pci ("rangeno is %d\n", range->rangeno);
-				debug_pci ("[%x - %x]\n", range->start, range->end);
-=======
 				debug_pci("rangeno is %d\n", range->rangeno);
 				debug_pci("[%x - %x]\n", range->start, range->end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				range = range->next;
 			}
 		}
 
-<<<<<<< HEAD
-		debug_pci ("The resources on this bus are as follows\n");
-
-		debug_pci ("IO...\n");
-		if (bus_cur->firstIO) {
-			res = bus_cur->firstIO;
-			while (res) {
-				debug_pci ("The range # is %d\n", res->rangeno);
-				debug_pci ("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
-				debug_pci ("[%x - %x], len=%x\n", res->start, res->end, res->len);
-=======
 		debug_pci("The resources on this bus are as follows\n");
 
 		debug_pci("IO...\n");
@@ -2591,7 +1809,6 @@ void ibmphp_print_test(void)
 				debug_pci("The range # is %d\n", res->rangeno);
 				debug_pci("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
 				debug_pci("[%x - %x], len=%x\n", res->start, res->end, res->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (res->next)
 					res = res->next;
 				else if (res->nextRange)
@@ -2600,15 +1817,6 @@ void ibmphp_print_test(void)
 					break;
 			}
 		}
-<<<<<<< HEAD
-		debug_pci ("Mem...\n");
-		if (bus_cur->firstMem) {
-			res = bus_cur->firstMem;
-			while (res) {
-				debug_pci ("The range # is %d\n", res->rangeno);
-				debug_pci ("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
-				debug_pci ("[%x - %x], len=%x\n", res->start, res->end, res->len);
-=======
 		debug_pci("Mem...\n");
 		if (bus_cur->firstMem) {
 			res = bus_cur->firstMem;
@@ -2616,7 +1824,6 @@ void ibmphp_print_test(void)
 				debug_pci("The range # is %d\n", res->rangeno);
 				debug_pci("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
 				debug_pci("[%x - %x], len=%x\n", res->start, res->end, res->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (res->next)
 					res = res->next;
 				else if (res->nextRange)
@@ -2625,15 +1832,6 @@ void ibmphp_print_test(void)
 					break;
 			}
 		}
-<<<<<<< HEAD
-		debug_pci ("PFMem...\n");
-		if (bus_cur->firstPFMem) {
-			res = bus_cur->firstPFMem;
-			while (res) {
-				debug_pci ("The range # is %d\n", res->rangeno);
-				debug_pci ("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
-				debug_pci ("[%x - %x], len=%x\n", res->start, res->end, res->len);
-=======
 		debug_pci("PFMem...\n");
 		if (bus_cur->firstPFMem) {
 			res = bus_cur->firstPFMem;
@@ -2641,7 +1839,6 @@ void ibmphp_print_test(void)
 				debug_pci("The range # is %d\n", res->rangeno);
 				debug_pci("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
 				debug_pci("[%x - %x], len=%x\n", res->start, res->end, res->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (res->next)
 					res = res->next;
 				else if (res->nextRange)
@@ -2651,15 +1848,6 @@ void ibmphp_print_test(void)
 			}
 		}
 
-<<<<<<< HEAD
-		debug_pci ("PFMemFromMem...\n");
-		if (bus_cur->firstPFMemFromMem) {
-			res = bus_cur->firstPFMemFromMem;
-			while (res) {
-				debug_pci ("The range # is %d\n", res->rangeno);
-				debug_pci ("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
-				debug_pci ("[%x - %x], len=%x\n", res->start, res->end, res->len);
-=======
 		debug_pci("PFMemFromMem...\n");
 		if (bus_cur->firstPFMemFromMem) {
 			res = bus_cur->firstPFMemFromMem;
@@ -2667,26 +1855,16 @@ void ibmphp_print_test(void)
 				debug_pci("The range # is %d\n", res->rangeno);
 				debug_pci("The bus, devfnc is %d, %x\n", res->busno, res->devfunc);
 				debug_pci("[%x - %x], len=%x\n", res->start, res->end, res->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				res = res->next;
 			}
 		}
 	}
-<<<<<<< HEAD
-	debug_pci ("***********************END***********************\n");
-}
-
-static int range_exists_already (struct range_node * range, struct bus_node * bus_cur, u8 type)
-{
-	struct range_node * range_cur = NULL;
-=======
 	debug_pci("***********************END***********************\n");
 }
 
 static int range_exists_already(struct range_node *range, struct bus_node *bus_cur, u8 type)
 {
 	struct range_node *range_cur = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (type) {
 		case IO:
 			range_cur = bus_cur->rangeIO;
@@ -2698,11 +1876,7 @@ static int range_exists_already(struct range_node *range, struct bus_node *bus_c
 			range_cur = bus_cur->rangePFMem;
 			break;
 		default:
-<<<<<<< HEAD
-			err ("wrong type passed to find out if range already exists\n");
-=======
 			err("wrong type passed to find out if range already exists\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 	}
 
@@ -2711,11 +1885,7 @@ static int range_exists_already(struct range_node *range, struct bus_node *bus_c
 			return 1;
 		range_cur = range_cur->next;
 	}
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2729,19 +1899,11 @@ static int range_exists_already(struct range_node *range, struct bus_node *bus_c
  * Returns: none
  * Note: this function doesn't take into account IO restrictions etc,
  *	 so will only work for bridges with no video/ISA devices behind them It
-<<<<<<< HEAD
- *	 also will not work for onboard PPB's that can have more than 1 *bus
- *	 behind them All these are TO DO.
- *	 Also need to add more error checkings... (from fnc returns etc)
- */
-static int __init update_bridge_ranges (struct bus_node **bus)
-=======
  *	 also will not work for onboard PPBs that can have more than 1 *bus
  *	 behind them All these are TO DO.
  *	 Also need to add more error checkings... (from fnc returns etc)
  */
 static int __init update_bridge_ranges(struct bus_node **bus)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 sec_busno, device, function, hdr_type, start_io_address, end_io_address;
 	u16 vendor_id, upper_io_start, upper_io_end, start_mem_address, end_mem_address;
@@ -2759,30 +1921,17 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 		return -ENODEV;
 	ibmphp_pci_bus->number = bus_cur->busno;
 
-<<<<<<< HEAD
-	debug ("inside %s\n", __func__);
-	debug ("bus_cur->busno = %x\n", bus_cur->busno);
-=======
 	debug("inside %s\n", __func__);
 	debug("bus_cur->busno = %x\n", bus_cur->busno);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (device = 0; device < 32; device++) {
 		for (function = 0x00; function < 0x08; function++) {
 			devfn = PCI_DEVFN(device, function);
-<<<<<<< HEAD
-			pci_bus_read_config_word (ibmphp_pci_bus, devfn, PCI_VENDOR_ID, &vendor_id);
-
-			if (vendor_id != PCI_VENDOR_ID_NOTVALID) {
-				/* found correct device!!! */
-				pci_bus_read_config_byte (ibmphp_pci_bus, devfn, PCI_HEADER_TYPE, &hdr_type);
-=======
 			pci_bus_read_config_word(ibmphp_pci_bus, devfn, PCI_VENDOR_ID, &vendor_id);
 
 			if (vendor_id != PCI_VENDOR_ID_NOTVALID) {
 				/* found correct device!!! */
 				pci_bus_read_config_byte(ibmphp_pci_bus, devfn, PCI_HEADER_TYPE, &hdr_type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				switch (hdr_type) {
 					case PCI_HEADER_TYPE_NORMAL:
@@ -2792,14 +1941,9 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 						break;
 					case PCI_HEADER_TYPE_BRIDGE:
 						function = 0x8;
-<<<<<<< HEAD
-					case PCI_HEADER_TYPE_MULTIBRIDGE:
-						/* We assume here that only 1 bus behind the bridge 
-=======
 						fallthrough;
 					case PCI_HEADER_TYPE_MULTIBRIDGE:
 						/* We assume here that only 1 bus behind the bridge
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   TO DO: add functionality for several:
 						   temp = secondary;
 						   while (temp < subordinate) {
@@ -2807,20 +1951,6 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 						   temp++;
 						   }
 						 */
-<<<<<<< HEAD
-						pci_bus_read_config_byte (ibmphp_pci_bus, devfn, PCI_SECONDARY_BUS, &sec_busno);
-						bus_sec = find_bus_wprev (sec_busno, NULL, 0); 
-						/* this bus structure doesn't exist yet, PPB was configured during previous loading of ibmphp */
-						if (!bus_sec) {
-							bus_sec = alloc_error_bus (NULL, sec_busno, 1);
-							/* the rest will be populated during NVRAM call */
-							return 0;
-						}
-						pci_bus_read_config_byte (ibmphp_pci_bus, devfn, PCI_IO_BASE, &start_io_address);
-						pci_bus_read_config_byte (ibmphp_pci_bus, devfn, PCI_IO_LIMIT, &end_io_address);
-						pci_bus_read_config_word (ibmphp_pci_bus, devfn, PCI_IO_BASE_UPPER16, &upper_io_start);
-						pci_bus_read_config_word (ibmphp_pci_bus, devfn, PCI_IO_LIMIT_UPPER16, &upper_io_end);
-=======
 						pci_bus_read_config_byte(ibmphp_pci_bus, devfn, PCI_SECONDARY_BUS, &sec_busno);
 						bus_sec = find_bus_wprev(sec_busno, NULL, 0);
 						/* this bus structure doesn't exist yet, PPB was configured during previous loading of ibmphp */
@@ -2833,7 +1963,6 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 						pci_bus_read_config_byte(ibmphp_pci_bus, devfn, PCI_IO_LIMIT, &end_io_address);
 						pci_bus_read_config_word(ibmphp_pci_bus, devfn, PCI_IO_BASE_UPPER16, &upper_io_start);
 						pci_bus_read_config_word(ibmphp_pci_bus, devfn, PCI_IO_LIMIT_UPPER16, &upper_io_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						start_address = (start_io_address & PCI_IO_RANGE_MASK) << 8;
 						start_address |= (upper_io_start << 16);
 						end_address = (end_io_address & PCI_IO_RANGE_MASK) << 8;
@@ -2841,33 +1970,18 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 
 						if ((start_address) && (start_address <= end_address)) {
 							range = kzalloc(sizeof(struct range_node), GFP_KERNEL);
-<<<<<<< HEAD
-							if (!range) {
-								err ("out of system memory\n");
-								return -ENOMEM;
-							}
-=======
 							if (!range)
 								return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							range->start = start_address;
 							range->end = end_address + 0xfff;
 
 							if (bus_sec->noIORanges > 0) {
-<<<<<<< HEAD
-								if (!range_exists_already (range, bus_sec, IO)) {
-									add_bus_range (IO, range, bus_sec);
-									++bus_sec->noIORanges;
-								} else {
-									kfree (range);
-=======
 								if (!range_exists_already(range, bus_sec, IO)) {
 									add_bus_range(IO, range, bus_sec);
 									++bus_sec->noIORanges;
 								} else {
 									kfree(range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									range = NULL;
 								}
 							} else {
@@ -2876,22 +1990,12 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 								bus_sec->rangeIO = range;
 								++bus_sec->noIORanges;
 							}
-<<<<<<< HEAD
-							fix_resources (bus_sec);
-
-							if (ibmphp_find_resource (bus_cur, start_address, &io, IO)) {
-								io = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
-								if (!io) {
-									kfree (range);
-									err ("out of system memory\n");
-=======
 							fix_resources(bus_sec);
 
 							if (ibmphp_find_resource(bus_cur, start_address, &io, IO)) {
 								io = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
 								if (!io) {
 									kfree(range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									return -ENOMEM;
 								}
 								io->type = IO;
@@ -2900,21 +2004,12 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 								io->start = start_address;
 								io->end = end_address + 0xfff;
 								io->len = io->end - io->start + 1;
-<<<<<<< HEAD
-								ibmphp_add_resource (io);
-							}
-						}	
-
-						pci_bus_read_config_word (ibmphp_pci_bus, devfn, PCI_MEMORY_BASE, &start_mem_address);
-						pci_bus_read_config_word (ibmphp_pci_bus, devfn, PCI_MEMORY_LIMIT, &end_mem_address);
-=======
 								ibmphp_add_resource(io);
 							}
 						}
 
 						pci_bus_read_config_word(ibmphp_pci_bus, devfn, PCI_MEMORY_BASE, &start_mem_address);
 						pci_bus_read_config_word(ibmphp_pci_bus, devfn, PCI_MEMORY_LIMIT, &end_mem_address);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 						start_address = 0x00000000 | (start_mem_address & PCI_MEMORY_RANGE_MASK) << 16;
 						end_address = 0x00000000 | (end_mem_address & PCI_MEMORY_RANGE_MASK) << 16;
@@ -2922,33 +2017,18 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 						if ((start_address) && (start_address <= end_address)) {
 
 							range = kzalloc(sizeof(struct range_node), GFP_KERNEL);
-<<<<<<< HEAD
-							if (!range) {
-								err ("out of system memory\n");
-								return -ENOMEM;
-							}
-=======
 							if (!range)
 								return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							range->start = start_address;
 							range->end = end_address + 0xfffff;
 
 							if (bus_sec->noMemRanges > 0) {
-<<<<<<< HEAD
-								if (!range_exists_already (range, bus_sec, MEM)) {
-									add_bus_range (MEM, range, bus_sec);
-									++bus_sec->noMemRanges;
-								} else {
-									kfree (range);
-=======
 								if (!range_exists_already(range, bus_sec, MEM)) {
 									add_bus_range(MEM, range, bus_sec);
 									++bus_sec->noMemRanges;
 								} else {
 									kfree(range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									range = NULL;
 								}
 							} else {
@@ -2958,22 +2038,12 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 								++bus_sec->noMemRanges;
 							}
 
-<<<<<<< HEAD
-							fix_resources (bus_sec);
-
-							if (ibmphp_find_resource (bus_cur, start_address, &mem, MEM)) {
-								mem = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
-								if (!mem) {
-									kfree (range);
-									err ("out of system memory\n");
-=======
 							fix_resources(bus_sec);
 
 							if (ibmphp_find_resource(bus_cur, start_address, &mem, MEM)) {
 								mem = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
 								if (!mem) {
 									kfree(range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									return -ENOMEM;
 								}
 								mem->type = MEM;
@@ -2982,15 +2052,6 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 								mem->start = start_address;
 								mem->end = end_address + 0xfffff;
 								mem->len = mem->end - mem->start + 1;
-<<<<<<< HEAD
-								ibmphp_add_resource (mem);
-							}
-						}
-						pci_bus_read_config_word (ibmphp_pci_bus, devfn, PCI_PREF_MEMORY_BASE, &start_mem_address);
-						pci_bus_read_config_word (ibmphp_pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, &end_mem_address);
-						pci_bus_read_config_dword (ibmphp_pci_bus, devfn, PCI_PREF_BASE_UPPER32, &upper_start);
-						pci_bus_read_config_dword (ibmphp_pci_bus, devfn, PCI_PREF_LIMIT_UPPER32, &upper_end);
-=======
 								ibmphp_add_resource(mem);
 							}
 						}
@@ -2998,7 +2059,6 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 						pci_bus_read_config_word(ibmphp_pci_bus, devfn, PCI_PREF_MEMORY_LIMIT, &end_mem_address);
 						pci_bus_read_config_dword(ibmphp_pci_bus, devfn, PCI_PREF_BASE_UPPER32, &upper_start);
 						pci_bus_read_config_dword(ibmphp_pci_bus, devfn, PCI_PREF_LIMIT_UPPER32, &upper_end);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						start_address = 0x00000000 | (start_mem_address & PCI_MEMORY_RANGE_MASK) << 16;
 						end_address = 0x00000000 | (end_mem_address & PCI_MEMORY_RANGE_MASK) << 16;
 #if BITS_PER_LONG == 64
@@ -3009,33 +2069,18 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 						if ((start_address) && (start_address <= end_address)) {
 
 							range = kzalloc(sizeof(struct range_node), GFP_KERNEL);
-<<<<<<< HEAD
-							if (!range) {
-								err ("out of system memory\n");
-								return -ENOMEM;
-							}
-=======
 							if (!range)
 								return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							range->start = start_address;
 							range->end = end_address + 0xfffff;
 
 							if (bus_sec->noPFMemRanges > 0) {
-<<<<<<< HEAD
-								if (!range_exists_already (range, bus_sec, PFMEM)) {
-									add_bus_range (PFMEM, range, bus_sec);
-									++bus_sec->noPFMemRanges;
-								} else {
-									kfree (range);
-=======
 								if (!range_exists_already(range, bus_sec, PFMEM)) {
 									add_bus_range(PFMEM, range, bus_sec);
 									++bus_sec->noPFMemRanges;
 								} else {
 									kfree(range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									range = NULL;
 								}
 							} else {
@@ -3045,20 +2090,11 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 								++bus_sec->noPFMemRanges;
 							}
 
-<<<<<<< HEAD
-							fix_resources (bus_sec);
-							if (ibmphp_find_resource (bus_cur, start_address, &pfmem, PFMEM)) {
-								pfmem = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
-								if (!pfmem) {
-									kfree (range);
-									err ("out of system memory\n");
-=======
 							fix_resources(bus_sec);
 							if (ibmphp_find_resource(bus_cur, start_address, &pfmem, PFMEM)) {
 								pfmem = kzalloc(sizeof(struct resource_node), GFP_KERNEL);
 								if (!pfmem) {
 									kfree(range);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									return -ENOMEM;
 								}
 								pfmem->type = PFMEM;
@@ -3069,11 +2105,7 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 								pfmem->len = pfmem->end - pfmem->start + 1;
 								pfmem->fromMem = 0;
 
-<<<<<<< HEAD
-								ibmphp_add_resource (pfmem);
-=======
 								ibmphp_add_resource(pfmem);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							}
 						}
 						break;
@@ -3082,9 +2114,5 @@ static int __init update_bridge_ranges(struct bus_node **bus)
 		}	/* end for function */
 	}	/* end for device */
 
-<<<<<<< HEAD
-	bus = &bus_cur;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

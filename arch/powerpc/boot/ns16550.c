@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 16550 serial console support.
  *
@@ -18,10 +15,7 @@
 #include "stdio.h"
 #include "io.h"
 #include "ops.h"
-<<<<<<< HEAD
-=======
 #include "of.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UART_DLL	0	/* Out: Divisor Latch Low */
 #define UART_DLM	1	/* Out: Divisor Latch High */
@@ -65,14 +59,6 @@ int ns16550_console_init(void *devp, struct serial_console_data *scdp)
 	int n;
 	u32 reg_offset;
 
-<<<<<<< HEAD
-	if (dt_get_virtual_reg(devp, (void **)&reg_base, 1) < 1)
-		return -1;
-
-	n = getprop(devp, "reg-offset", &reg_offset, sizeof(reg_offset));
-	if (n == sizeof(reg_offset))
-		reg_base += reg_offset;
-=======
 	if (dt_get_virtual_reg(devp, (void **)&reg_base, 1) < 1) {
 		printf("virt reg parse fail...\r\n");
 		return -1;
@@ -81,16 +67,12 @@ int ns16550_console_init(void *devp, struct serial_console_data *scdp)
 	n = getprop(devp, "reg-offset", &reg_offset, sizeof(reg_offset));
 	if (n == sizeof(reg_offset))
 		reg_base += be32_to_cpu(reg_offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	n = getprop(devp, "reg-shift", &reg_shift, sizeof(reg_shift));
 	if (n != sizeof(reg_shift))
 		reg_shift = 0;
-<<<<<<< HEAD
-=======
 	else
 		reg_shift = be32_to_cpu(reg_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scdp->open = ns16550_open;
 	scdp->putc = ns16550_putc;

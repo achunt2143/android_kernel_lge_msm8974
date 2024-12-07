@@ -19,18 +19,12 @@
 /*
  * zsmalloc mapping modes
  *
-<<<<<<< HEAD
- * NOTE: These only make a difference when a mapped object spans pages
-=======
  * NOTE: These only make a difference when a mapped object spans pages.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum zs_mapmode {
 	ZS_MM_RW, /* normal read-write mapping */
 	ZS_MM_RO, /* read-only (no copy-out at unmap time) */
 	ZS_MM_WO /* write-only (no copy-in at map time) */
-<<<<<<< HEAD
-=======
 	/*
 	 * NOTE: ZS_MM_WO should only be used for initializing new
 	 * (uninitialized) allocations.  Partial writes to already
@@ -42,19 +36,10 @@ enum zs_mapmode {
 struct zs_pool_stats {
 	/* How many pages were migrated (freed) */
 	atomic_long_t pages_compacted;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct zs_pool;
 
-<<<<<<< HEAD
-struct zs_pool *zs_create_pool(gfp_t flags);
-void zs_destroy_pool(struct zs_pool *pool);
-
-unsigned long zs_malloc(struct zs_pool *pool, size_t size);
-void zs_free(struct zs_pool *pool, unsigned long obj);
-
-=======
 struct zs_pool *zs_create_pool(const char *name);
 void zs_destroy_pool(struct zs_pool *pool);
 
@@ -63,20 +48,14 @@ void zs_free(struct zs_pool *pool, unsigned long obj);
 
 size_t zs_huge_class_size(struct zs_pool *pool);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *zs_map_object(struct zs_pool *pool, unsigned long handle,
 			enum zs_mapmode mm);
 void zs_unmap_object(struct zs_pool *pool, unsigned long handle);
 
-<<<<<<< HEAD
-u64 zs_get_total_size_bytes(struct zs_pool *pool);
-
-=======
 unsigned long zs_get_total_pages(struct zs_pool *pool);
 unsigned long zs_compact(struct zs_pool *pool);
 
 unsigned int zs_lookup_class_index(struct zs_pool *pool, unsigned int size);
 
 void zs_pool_stats(struct zs_pool *pool, struct zs_pool_stats *stats);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

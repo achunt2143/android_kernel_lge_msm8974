@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Derived from many drivers using generic_serial interface,
  * especially serial_tx3912.c by Steven J. Hill and r39xx_serial.c
@@ -12,23 +9,9 @@
  *  Copyright (C) 2001 Steven J. Hill (sjhill@realitydiluted.com)
  *  Copyright (C) 2000-2002 Toshiba Corporation
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
  *  Serial driver for TX3927/TX4927/TX4925/TX4938 internal SIO controller
  */
 
-#if defined(CONFIG_SERIAL_TXX9_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
-#define SUPPORT_SYSRQ
-#endif
-
-=======
- *  Serial driver for TX3927/TX4927/TX4925/TX4938 internal SIO controller
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/ioport.h>
 #include <linux/init.h>
@@ -40,17 +23,9 @@
 #include <linux/serial.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
-<<<<<<< HEAD
-
-#include <asm/io.h>
-
-static char *serial_version = "1.11";
-static char *serial_name = "TX39/49 Serial driver";
-=======
 #include <linux/io.h>
 
 #include <asm/txx9/generic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PASS_LIMIT	256
 
@@ -80,14 +55,6 @@ static char *serial_name = "TX39/49 Serial driver";
  */
 #define UART_NR  CONFIG_SERIAL_TXX9_NR_UARTS
 
-<<<<<<< HEAD
-struct uart_txx9_port {
-	struct uart_port	port;
-	/* No additional info for now */
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TXX9_REGION_SIZE	0x24
 
 /* TXX9 Serial Registers */
@@ -161,10 +128,6 @@ struct uart_txx9_port {
 #define TXX9_SIFCR_RDIL_12	0x00000180
 #define TXX9_SIFCR_RDIL_MAX	0x00000180
 #define TXX9_SIFCR_TDIL_MASK	0x00000018
-<<<<<<< HEAD
-#define TXX9_SIFCR_TDIL_MASK	0x00000018
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TXX9_SIFCR_TDIL_1	0x00000000
 #define TXX9_SIFCR_TDIL_4	0x00000001
 #define TXX9_SIFCR_TDIL_8	0x00000010
@@ -193,15 +156,6 @@ struct uart_txx9_port {
 #define TXX9_SIBGR_BCLK_T6	0x00000300
 #define TXX9_SIBGR_BRD_MASK	0x000000ff
 
-<<<<<<< HEAD
-static inline unsigned int sio_in(struct uart_txx9_port *up, int offset)
-{
-	switch (up->port.iotype) {
-	default:
-		return __raw_readl(up->port.membase + offset);
-	case UPIO_PORT:
-		return inl(up->port.iobase + offset);
-=======
 static inline unsigned int sio_in(struct uart_port *up, int offset)
 {
 	switch (up->iotype) {
@@ -209,21 +163,10 @@ static inline unsigned int sio_in(struct uart_port *up, int offset)
 		return __raw_readl(up->membase + offset);
 	case UPIO_PORT:
 		return inl(up->iobase + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static inline void
-<<<<<<< HEAD
-sio_out(struct uart_txx9_port *up, int offset, int value)
-{
-	switch (up->port.iotype) {
-	default:
-		__raw_writel(value, up->port.membase + offset);
-		break;
-	case UPIO_PORT:
-		outl(value, up->port.iobase + offset);
-=======
 sio_out(struct uart_port *up, int offset, int value)
 {
 	switch (up->iotype) {
@@ -232,36 +175,23 @@ sio_out(struct uart_port *up, int offset, int value)
 		break;
 	case UPIO_PORT:
 		outl(value, up->iobase + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
 static inline void
-<<<<<<< HEAD
-sio_mask(struct uart_txx9_port *up, int offset, unsigned int value)
-=======
 sio_mask(struct uart_port *up, int offset, unsigned int value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sio_out(up, offset, sio_in(up, offset) & ~value);
 }
 static inline void
-<<<<<<< HEAD
-sio_set(struct uart_txx9_port *up, int offset, unsigned int value)
-=======
 sio_set(struct uart_port *up, int offset, unsigned int value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sio_out(up, offset, sio_in(up, offset) | value);
 }
 
 static inline void
-<<<<<<< HEAD
-sio_quot_set(struct uart_txx9_port *up, int quot)
-=======
 sio_quot_set(struct uart_port *up, int quot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	quot >>= 1;
 	if (quot < 256)
@@ -276,39 +206,6 @@ sio_quot_set(struct uart_port *up, int quot)
 		sio_out(up, TXX9_SIBGR, 0xff | TXX9_SIBGR_BCLK_T6);
 }
 
-<<<<<<< HEAD
-static struct uart_txx9_port *to_uart_txx9_port(struct uart_port *port)
-{
-	return container_of(port, struct uart_txx9_port, port);
-}
-
-static void serial_txx9_stop_tx(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-	sio_mask(up, TXX9_SIDICR, TXX9_SIDICR_TIE);
-}
-
-static void serial_txx9_start_tx(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-	sio_set(up, TXX9_SIDICR, TXX9_SIDICR_TIE);
-}
-
-static void serial_txx9_stop_rx(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-	up->port.read_status_mask &= ~TXX9_SIDISR_RDIS;
-}
-
-static void serial_txx9_enable_ms(struct uart_port *port)
-{
-	/* TXX9-SIO can not control DTR... */
-}
-
-static void serial_txx9_initialize(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static void serial_txx9_stop_tx(struct uart_port *up)
 {
 	sio_mask(up, TXX9_SIDICR, TXX9_SIDICR_TIE);
@@ -326,16 +223,11 @@ static void serial_txx9_stop_rx(struct uart_port *up)
 
 static void serial_txx9_initialize(struct uart_port *up)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int tmout = 10000;
 
 	sio_out(up, TXX9_SIFCR, TXX9_SIFCR_SWRST);
 	/* TX4925 BUG WORKAROUND.  Accessing SIOC register
 	 * immediately after soft reset causes bus error. */
-<<<<<<< HEAD
-	mmiowb();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(1);
 	while ((sio_in(up, TXX9_SIFCR) & TXX9_SIFCR_SWRST) && --tmout)
 		udelay(1);
@@ -345,54 +237,29 @@ static void serial_txx9_initialize(struct uart_port *up)
 	/* initial settings */
 	sio_out(up, TXX9_SILCR,
 		TXX9_SILCR_UMODE_8BIT | TXX9_SILCR_USBL_1BIT |
-<<<<<<< HEAD
-		((up->port.flags & UPF_TXX9_USE_SCLK) ?
-		 TXX9_SILCR_SCS_SCLK_BG : TXX9_SILCR_SCS_IMCLK_BG));
-	sio_quot_set(up, uart_get_divisor(port, 9600));
-=======
 		((up->flags & UPF_TXX9_USE_SCLK) ?
 		 TXX9_SILCR_SCS_SCLK_BG : TXX9_SILCR_SCS_IMCLK_BG));
 	sio_quot_set(up, uart_get_divisor(up, 9600));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sio_out(up, TXX9_SIFLCR, TXX9_SIFLCR_RTSTL_MAX /* 15 */);
 	sio_out(up, TXX9_SIDICR, 0);
 }
 
 static inline void
-<<<<<<< HEAD
-receive_chars(struct uart_txx9_port *up, unsigned int *status)
-{
-	struct tty_struct *tty = up->port.state->port.tty;
-	unsigned char ch;
-	unsigned int disr = *status;
-	int max_count = 256;
-	char flag;
-	unsigned int next_ignore_status_mask;
-=======
 receive_chars(struct uart_port *up, unsigned int *status)
 {
 	unsigned int disr = *status;
 	int max_count = 256;
 	unsigned int next_ignore_status_mask;
 	u8 ch, flag;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		ch = sio_in(up, TXX9_SIRFIFO);
 		flag = TTY_NORMAL;
-<<<<<<< HEAD
-		up->port.icount.rx++;
-
-		/* mask out RFDN_MASK bit added by previous overrun */
-		next_ignore_status_mask =
-			up->port.ignore_status_mask & ~TXX9_SIDISR_RFDN_MASK;
-=======
 		up->icount.rx++;
 
 		/* mask out RFDN_MASK bit added by previous overrun */
 		next_ignore_status_mask =
 			up->ignore_status_mask & ~TXX9_SIDISR_RFDN_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(disr & (TXX9_SIDISR_UBRK | TXX9_SIDISR_UPER |
 				     TXX9_SIDISR_UFER | TXX9_SIDISR_UOER))) {
 			/*
@@ -400,27 +267,13 @@ receive_chars(struct uart_port *up, unsigned int *status)
 			 */
 			if (disr & TXX9_SIDISR_UBRK) {
 				disr &= ~(TXX9_SIDISR_UFER | TXX9_SIDISR_UPER);
-<<<<<<< HEAD
-				up->port.icount.brk++;
-=======
 				up->icount.brk++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * We do the SysRQ and SAK checking
 				 * here because otherwise the break
 				 * may get masked by ignore_status_mask
 				 * or read_status_mask.
 				 */
-<<<<<<< HEAD
-				if (uart_handle_break(&up->port))
-					goto ignore_char;
-			} else if (disr & TXX9_SIDISR_UPER)
-				up->port.icount.parity++;
-			else if (disr & TXX9_SIDISR_UFER)
-				up->port.icount.frame++;
-			if (disr & TXX9_SIDISR_UOER) {
-				up->port.icount.overrun++;
-=======
 				if (uart_handle_break(up))
 					goto ignore_char;
 			} else if (disr & TXX9_SIDISR_UPER)
@@ -429,7 +282,6 @@ receive_chars(struct uart_port *up, unsigned int *status)
 				up->icount.frame++;
 			if (disr & TXX9_SIDISR_UOER) {
 				up->icount.overrun++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * The receiver read buffer still hold
 				 * a char which caused overrun.
@@ -443,11 +295,7 @@ receive_chars(struct uart_port *up, unsigned int *status)
 			/*
 			 * Mask off conditions which should be ingored.
 			 */
-<<<<<<< HEAD
-			disr &= up->port.read_status_mask;
-=======
 			disr &= up->read_status_mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (disr & TXX9_SIDISR_UBRK) {
 				flag = TTY_BREAK;
@@ -456,53 +304,6 @@ receive_chars(struct uart_port *up, unsigned int *status)
 			else if (disr & TXX9_SIDISR_UFER)
 				flag = TTY_FRAME;
 		}
-<<<<<<< HEAD
-		if (uart_handle_sysrq_char(&up->port, ch))
-			goto ignore_char;
-
-		uart_insert_char(&up->port, disr, TXX9_SIDISR_UOER, ch, flag);
-
-	ignore_char:
-		up->port.ignore_status_mask = next_ignore_status_mask;
-		disr = sio_in(up, TXX9_SIDISR);
-	} while (!(disr & TXX9_SIDISR_UVALID) && (max_count-- > 0));
-	spin_unlock(&up->port.lock);
-	tty_flip_buffer_push(tty);
-	spin_lock(&up->port.lock);
-	*status = disr;
-}
-
-static inline void transmit_chars(struct uart_txx9_port *up)
-{
-	struct circ_buf *xmit = &up->port.state->xmit;
-	int count;
-
-	if (up->port.x_char) {
-		sio_out(up, TXX9_SITFIFO, up->port.x_char);
-		up->port.icount.tx++;
-		up->port.x_char = 0;
-		return;
-	}
-	if (uart_circ_empty(xmit) || uart_tx_stopped(&up->port)) {
-		serial_txx9_stop_tx(&up->port);
-		return;
-	}
-
-	count = TXX9_SIO_TX_FIFO;
-	do {
-		sio_out(up, TXX9_SITFIFO, xmit->buf[xmit->tail]);
-		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
-		up->port.icount.tx++;
-		if (uart_circ_empty(xmit))
-			break;
-	} while (--count > 0);
-
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-		uart_write_wakeup(&up->port);
-
-	if (uart_circ_empty(xmit))
-		serial_txx9_stop_tx(&up->port);
-=======
 		if (uart_handle_sysrq_char(up, ch))
 			goto ignore_char;
 
@@ -526,35 +327,22 @@ static inline void transmit_chars(struct uart_port *up)
 		true,
 		sio_out(up, TXX9_SITFIFO, ch),
 		({}));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t serial_txx9_interrupt(int irq, void *dev_id)
 {
 	int pass_counter = 0;
-<<<<<<< HEAD
-	struct uart_txx9_port *up = dev_id;
-	unsigned int status;
-
-	while (1) {
-		spin_lock(&up->port.lock);
-=======
 	struct uart_port *up = dev_id;
 	unsigned int status;
 
 	while (1) {
 		uart_port_lock(up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = sio_in(up, TXX9_SIDISR);
 		if (!(sio_in(up, TXX9_SIDICR) & TXX9_SIDICR_TIE))
 			status &= ~TXX9_SIDISR_TDIS;
 		if (!(status & (TXX9_SIDISR_TDIS | TXX9_SIDISR_RDIS |
 				TXX9_SIDISR_TOUT))) {
-<<<<<<< HEAD
-			spin_unlock(&up->port.lock);
-=======
 			uart_port_unlock(up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -566,11 +354,7 @@ static irqreturn_t serial_txx9_interrupt(int irq, void *dev_id)
 		sio_mask(up, TXX9_SIDISR,
 			 TXX9_SIDISR_TDIS | TXX9_SIDISR_RDIS |
 			 TXX9_SIDISR_TOUT);
-<<<<<<< HEAD
-		spin_unlock(&up->port.lock);
-=======
 		uart_port_unlock(up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pass_counter++ > PASS_LIMIT)
 			break;
@@ -579,17 +363,6 @@ static irqreturn_t serial_txx9_interrupt(int irq, void *dev_id)
 	return pass_counter ? IRQ_HANDLED : IRQ_NONE;
 }
 
-<<<<<<< HEAD
-static unsigned int serial_txx9_tx_empty(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-	unsigned long flags;
-	unsigned int ret;
-
-	spin_lock_irqsave(&up->port.lock, flags);
-	ret = (sio_in(up, TXX9_SICISR) & TXX9_SICISR_TXALS) ? TIOCSER_TEMT : 0;
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 static unsigned int serial_txx9_tx_empty(struct uart_port *up)
 {
 	unsigned long flags;
@@ -598,19 +371,12 @@ static unsigned int serial_txx9_tx_empty(struct uart_port *up)
 	uart_port_lock_irqsave(up, &flags);
 	ret = (sio_in(up, TXX9_SICISR) & TXX9_SICISR_TXALS) ? TIOCSER_TEMT : 0;
 	uart_port_unlock_irqrestore(up, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static unsigned int serial_txx9_get_mctrl(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static unsigned int serial_txx9_get_mctrl(struct uart_port *up)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ret;
 
 	/* no modem control lines */
@@ -621,14 +387,8 @@ static unsigned int serial_txx9_get_mctrl(struct uart_port *up)
 	return ret;
 }
 
-<<<<<<< HEAD
-static void serial_txx9_set_mctrl(struct uart_port *port, unsigned int mctrl)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static void serial_txx9_set_mctrl(struct uart_port *up, unsigned int mctrl)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mctrl & TIOCM_RTS)
 		sio_mask(up, TXX9_SIFLCR, TXX9_SIFLCR_RTSSC);
@@ -636,34 +396,15 @@ static void serial_txx9_set_mctrl(struct uart_port *up, unsigned int mctrl)
 		sio_set(up, TXX9_SIFLCR, TXX9_SIFLCR_RTSSC);
 }
 
-<<<<<<< HEAD
-static void serial_txx9_break_ctl(struct uart_port *port, int break_state)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-	unsigned long flags;
-
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 static void serial_txx9_break_ctl(struct uart_port *up, int break_state)
 {
 	unsigned long flags;
 
 	uart_port_lock_irqsave(up, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (break_state == -1)
 		sio_set(up, TXX9_SIFLCR, TXX9_SIFLCR_TBRK);
 	else
 		sio_mask(up, TXX9_SIFLCR, TXX9_SIFLCR_TBRK);
-<<<<<<< HEAD
-	spin_unlock_irqrestore(&up->port.lock, flags);
-}
-
-#if defined(CONFIG_SERIAL_TXX9_CONSOLE) || (CONFIG_CONSOLE_POLL)
-/*
- *	Wait for transmitter & holding register to empty
- */
-static void wait_for_xmitr(struct uart_txx9_port *up)
-=======
 	uart_port_unlock_irqrestore(up, flags);
 }
 
@@ -672,7 +413,6 @@ static void wait_for_xmitr(struct uart_txx9_port *up)
  *	Wait for transmitter & holding register to empty
  */
 static void wait_for_xmitr(struct uart_port *up)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int tmout = 10000;
 
@@ -682,11 +422,7 @@ static void wait_for_xmitr(struct uart_port *up)
 		udelay(1);
 
 	/* Wait up to 1s for flow control if necessary */
-<<<<<<< HEAD
-	if (up->port.flags & UPF_CONS_FLOW) {
-=======
 	if (up->flags & UPF_CONS_FLOW) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmout = 1000000;
 		while (--tmout &&
 		       (sio_in(up, TXX9_SICISR) & TXX9_SICISR_CTSS))
@@ -701,18 +437,10 @@ static void wait_for_xmitr(struct uart_port *up)
  * in an interrupt or debug context.
  */
 
-<<<<<<< HEAD
-static int serial_txx9_get_poll_char(struct uart_port *port)
-{
-	unsigned int ier;
-	unsigned char c;
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static int serial_txx9_get_poll_char(struct uart_port *up)
 {
 	unsigned int ier;
 	unsigned char c;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	First save the IER then disable the interrupts
@@ -735,16 +463,9 @@ static int serial_txx9_get_poll_char(struct uart_port *up)
 }
 
 
-<<<<<<< HEAD
-static void serial_txx9_put_poll_char(struct uart_port *port, unsigned char c)
-{
-	unsigned int ier;
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static void serial_txx9_put_poll_char(struct uart_port *up, unsigned char c)
 {
 	unsigned int ier;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	First save the IER then disable the interrupts
@@ -755,18 +476,8 @@ static void serial_txx9_put_poll_char(struct uart_port *up, unsigned char c)
 	wait_for_xmitr(up);
 	/*
 	 *	Send the character out.
-<<<<<<< HEAD
-	 *	If a LF, also do CR...
 	 */
 	sio_out(up, TXX9_SITFIFO, c);
-	if (c == 10) {
-		wait_for_xmitr(up);
-		sio_out(up, TXX9_SITFIFO, 13);
-	}
-=======
-	 */
-	sio_out(up, TXX9_SITFIFO, c);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Finally, wait for transmitter to become empty
@@ -778,14 +489,8 @@ static void serial_txx9_put_poll_char(struct uart_port *up, unsigned char c)
 
 #endif /* CONFIG_CONSOLE_POLL */
 
-<<<<<<< HEAD
-static int serial_txx9_startup(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static int serial_txx9_startup(struct uart_port *up)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int retval;
 
@@ -805,11 +510,7 @@ static int serial_txx9_startup(struct uart_port *up)
 	 */
 	sio_out(up, TXX9_SIDISR, 0);
 
-<<<<<<< HEAD
-	retval = request_irq(up->port.irq, serial_txx9_interrupt,
-=======
 	retval = request_irq(up->irq, serial_txx9_interrupt,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     IRQF_SHARED, "serial_txx9", up);
 	if (retval)
 		return retval;
@@ -817,15 +518,9 @@ static int serial_txx9_startup(struct uart_port *up)
 	/*
 	 * Now, initialize the UART
 	 */
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-	serial_txx9_set_mctrl(&up->port, up->port.mctrl);
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(up, &flags);
 	serial_txx9_set_mctrl(up, up->mctrl);
 	uart_port_unlock_irqrestore(up, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable RX/TX */
 	sio_mask(up, TXX9_SIFLCR, TXX9_SIFLCR_RSDE | TXX9_SIFLCR_TSDE);
@@ -838,14 +533,8 @@ static int serial_txx9_startup(struct uart_port *up)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void serial_txx9_shutdown(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static void serial_txx9_shutdown(struct uart_port *up)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	/*
@@ -853,15 +542,9 @@ static void serial_txx9_shutdown(struct uart_port *up)
 	 */
 	sio_out(up, TXX9_SIDICR, 0);	/* disable all intrs */
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-	serial_txx9_set_mctrl(&up->port, up->port.mctrl);
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(up, &flags);
 	serial_txx9_set_mctrl(up, up->mctrl);
 	uart_port_unlock_irqrestore(up, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Disable break condition
@@ -869,13 +552,8 @@ static void serial_txx9_shutdown(struct uart_port *up)
 	sio_mask(up, TXX9_SIFLCR, TXX9_SIFLCR_TBRK);
 
 #ifdef CONFIG_SERIAL_TXX9_CONSOLE
-<<<<<<< HEAD
-	if (up->port.cons && up->port.line == up->port.cons->index) {
-		free_irq(up->port.irq, up);
-=======
 	if (up->cons && up->line == up->cons->index) {
 		free_irq(up->irq, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 #endif
@@ -889,16 +567,6 @@ static void serial_txx9_shutdown(struct uart_port *up)
 	/* Disable RX/TX */
 	sio_set(up, TXX9_SIFLCR, TXX9_SIFLCR_RSDE | TXX9_SIFLCR_TSDE);
 
-<<<<<<< HEAD
-	free_irq(up->port.irq, up);
-}
-
-static void
-serial_txx9_set_termios(struct uart_port *port, struct ktermios *termios,
-		       struct ktermios *old)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 	free_irq(up->irq, up);
 }
 
@@ -906,7 +574,6 @@ static void
 serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
 			const struct ktermios *old)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cval, fcr = 0;
 	unsigned long flags;
 	unsigned int baud, quot;
@@ -929,11 +596,8 @@ serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
 	case CS6:	/* not supported */
 	case CS8:
 		cval |= TXX9_SILCR_UMODE_8BIT;
-<<<<<<< HEAD
-=======
 		termios->c_cflag &= ~CSIZE;
 		termios->c_cflag |= CS8;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -951,13 +615,8 @@ serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
 	/*
 	 * Ask the core to calculate the divisor for us.
 	 */
-<<<<<<< HEAD
-	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16/2);
-	quot = uart_get_divisor(port, baud);
-=======
 	baud = uart_get_baud_rate(up, termios, old, 0, up->uartclk/16/2);
 	quot = uart_get_divisor(up, baud);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up FIFOs */
 	/* TX Int by FIFO Empty, RX Int by Receiving 1 char. */
@@ -967,25 +626,11 @@ serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
 	 * Ok, we're now changing the port state.  Do it with
 	 * interrupts disabled.
 	 */
-<<<<<<< HEAD
-	spin_lock_irqsave(&up->port.lock, flags);
-=======
 	uart_port_lock_irqsave(up, &flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the per-port timeout.
 	 */
-<<<<<<< HEAD
-	uart_update_timeout(port, termios->c_cflag, baud);
-
-	up->port.read_status_mask = TXX9_SIDISR_UOER |
-		TXX9_SIDISR_TDIS | TXX9_SIDISR_RDIS;
-	if (termios->c_iflag & INPCK)
-		up->port.read_status_mask |= TXX9_SIDISR_UFER | TXX9_SIDISR_UPER;
-	if (termios->c_iflag & (BRKINT | PARMRK))
-		up->port.read_status_mask |= TXX9_SIDISR_UBRK;
-=======
 	uart_update_timeout(up, termios->c_cflag, baud);
 
 	up->read_status_mask = TXX9_SIDISR_UOER |
@@ -994,53 +639,32 @@ serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
 		up->read_status_mask |= TXX9_SIDISR_UFER | TXX9_SIDISR_UPER;
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		up->read_status_mask |= TXX9_SIDISR_UBRK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Characteres to ignore
 	 */
-<<<<<<< HEAD
-	up->port.ignore_status_mask = 0;
-	if (termios->c_iflag & IGNPAR)
-		up->port.ignore_status_mask |= TXX9_SIDISR_UPER | TXX9_SIDISR_UFER;
-	if (termios->c_iflag & IGNBRK) {
-		up->port.ignore_status_mask |= TXX9_SIDISR_UBRK;
-=======
 	up->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		up->ignore_status_mask |= TXX9_SIDISR_UPER | TXX9_SIDISR_UFER;
 	if (termios->c_iflag & IGNBRK) {
 		up->ignore_status_mask |= TXX9_SIDISR_UBRK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we're ignoring parity and break indicators,
 		 * ignore overruns too (for real raw support).
 		 */
 		if (termios->c_iflag & IGNPAR)
-<<<<<<< HEAD
-			up->port.ignore_status_mask |= TXX9_SIDISR_UOER;
-=======
 			up->ignore_status_mask |= TXX9_SIDISR_UOER;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * ignore all characters if CREAD is not set
 	 */
 	if ((termios->c_cflag & CREAD) == 0)
-<<<<<<< HEAD
-		up->port.ignore_status_mask |= TXX9_SIDISR_RDIS;
-
-	/* CTS flow control flag */
-	if ((termios->c_cflag & CRTSCTS) &&
-	    (up->port.flags & UPF_TXX9_HAVE_CTS_LINE)) {
-=======
 		up->ignore_status_mask |= TXX9_SIDISR_RDIS;
 
 	/* CTS flow control flag */
 	if ((termios->c_cflag & CRTSCTS) &&
 	    (up->flags & UPF_TXX9_HAVE_CTS_LINE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sio_set(up, TXX9_SIFLCR,
 			TXX9_SIFLCR_RCS | TXX9_SIFLCR_TES);
 	} else {
@@ -1052,13 +676,8 @@ serial_txx9_set_termios(struct uart_port *up, struct ktermios *termios,
 	sio_quot_set(up, quot);
 	sio_out(up, TXX9_SIFCR, fcr);
 
-<<<<<<< HEAD
-	serial_txx9_set_mctrl(&up->port, up->port.mctrl);
-	spin_unlock_irqrestore(&up->port.lock, flags);
-=======
 	serial_txx9_set_mctrl(up, up->mctrl);
 	uart_port_unlock_irqrestore(up, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1077,83 +696,38 @@ serial_txx9_pm(struct uart_port *port, unsigned int state,
 		serial_txx9_initialize(port);
 }
 
-<<<<<<< HEAD
-static int serial_txx9_request_resource(struct uart_txx9_port *up)
-=======
 static int serial_txx9_request_resource(struct uart_port *up)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int size = TXX9_REGION_SIZE;
 	int ret = 0;
 
-<<<<<<< HEAD
-	switch (up->port.iotype) {
-	default:
-		if (!up->port.mapbase)
-			break;
-
-		if (!request_mem_region(up->port.mapbase, size, "serial_txx9")) {
-=======
 	switch (up->iotype) {
 	default:
 		if (!up->mapbase)
 			break;
 
 		if (!request_mem_region(up->mapbase, size, "serial_txx9")) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EBUSY;
 			break;
 		}
 
-<<<<<<< HEAD
-		if (up->port.flags & UPF_IOREMAP) {
-			up->port.membase = ioremap(up->port.mapbase, size);
-			if (!up->port.membase) {
-				release_mem_region(up->port.mapbase, size);
-=======
 		if (up->flags & UPF_IOREMAP) {
 			up->membase = ioremap(up->mapbase, size);
 			if (!up->membase) {
 				release_mem_region(up->mapbase, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 			}
 		}
 		break;
 
 	case UPIO_PORT:
-<<<<<<< HEAD
-		if (!request_region(up->port.iobase, size, "serial_txx9"))
-=======
 		if (!request_region(up->iobase, size, "serial_txx9"))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EBUSY;
 		break;
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-static void serial_txx9_release_resource(struct uart_txx9_port *up)
-{
-	unsigned int size = TXX9_REGION_SIZE;
-
-	switch (up->port.iotype) {
-	default:
-		if (!up->port.mapbase)
-			break;
-
-		if (up->port.flags & UPF_IOREMAP) {
-			iounmap(up->port.membase);
-			up->port.membase = NULL;
-		}
-
-		release_mem_region(up->port.mapbase, size);
-		break;
-
-	case UPIO_PORT:
-		release_region(up->port.iobase, size);
-=======
 static void serial_txx9_release_resource(struct uart_port *up)
 {
 	unsigned int size = TXX9_REGION_SIZE;
@@ -1173,28 +747,10 @@ static void serial_txx9_release_resource(struct uart_port *up)
 
 	case UPIO_PORT:
 		release_region(up->iobase, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
-<<<<<<< HEAD
-static void serial_txx9_release_port(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-	serial_txx9_release_resource(up);
-}
-
-static int serial_txx9_request_port(struct uart_port *port)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-	return serial_txx9_request_resource(up);
-}
-
-static void serial_txx9_config_port(struct uart_port *port, int uflags)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-=======
 static void serial_txx9_release_port(struct uart_port *up)
 {
 	serial_txx9_release_resource(up);
@@ -1207,7 +763,6 @@ static int serial_txx9_request_port(struct uart_port *up)
 
 static void serial_txx9_config_port(struct uart_port *up, int uflags)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
@@ -1217,16 +772,6 @@ static void serial_txx9_config_port(struct uart_port *up, int uflags)
 	ret = serial_txx9_request_resource(up);
 	if (ret < 0)
 		return;
-<<<<<<< HEAD
-	port->type = PORT_TXX9;
-	up->port.fifosize = TXX9_SIO_TX_FIFO;
-
-#ifdef CONFIG_SERIAL_TXX9_CONSOLE
-	if (up->port.line == up->port.cons->index)
-		return;
-#endif
-	serial_txx9_initialize(port);
-=======
 	up->type = PORT_TXX9;
 	up->fifosize = TXX9_SIO_TX_FIFO;
 
@@ -1235,7 +780,6 @@ static void serial_txx9_config_port(struct uart_port *up, int uflags)
 		return;
 #endif
 	serial_txx9_initialize(up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *
@@ -1244,21 +788,13 @@ serial_txx9_type(struct uart_port *port)
 	return "txx9";
 }
 
-<<<<<<< HEAD
-static struct uart_ops serial_txx9_pops = {
-=======
 static const struct uart_ops serial_txx9_pops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= serial_txx9_tx_empty,
 	.set_mctrl	= serial_txx9_set_mctrl,
 	.get_mctrl	= serial_txx9_get_mctrl,
 	.stop_tx	= serial_txx9_stop_tx,
 	.start_tx	= serial_txx9_start_tx,
 	.stop_rx	= serial_txx9_stop_rx,
-<<<<<<< HEAD
-	.enable_ms	= serial_txx9_enable_ms,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl	= serial_txx9_break_ctl,
 	.startup	= serial_txx9_startup,
 	.shutdown	= serial_txx9_shutdown,
@@ -1274,11 +810,7 @@ static const struct uart_ops serial_txx9_pops = {
 #endif
 };
 
-<<<<<<< HEAD
-static struct uart_txx9_port serial_txx9_ports[UART_NR];
-=======
 static struct uart_port serial_txx9_ports[UART_NR];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init serial_txx9_register_ports(struct uart_driver *drv,
 					      struct device *dev)
@@ -1286,15 +818,6 @@ static void __init serial_txx9_register_ports(struct uart_driver *drv,
 	int i;
 
 	for (i = 0; i < UART_NR; i++) {
-<<<<<<< HEAD
-		struct uart_txx9_port *up = &serial_txx9_ports[i];
-
-		up->port.line = i;
-		up->port.ops = &serial_txx9_pops;
-		up->port.dev = dev;
-		if (up->port.iobase || up->port.mapbase)
-			uart_add_one_port(drv, &up->port);
-=======
 		struct uart_port *up = &serial_txx9_ports[i];
 
 		up->line = i;
@@ -1302,21 +825,13 @@ static void __init serial_txx9_register_ports(struct uart_driver *drv,
 		up->dev = dev;
 		if (up->iobase || up->mapbase)
 			uart_add_one_port(drv, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 #ifdef CONFIG_SERIAL_TXX9_CONSOLE
 
-<<<<<<< HEAD
-static void serial_txx9_console_putchar(struct uart_port *port, int ch)
-{
-	struct uart_txx9_port *up = to_uart_txx9_port(port);
-
-=======
 static void serial_txx9_console_putchar(struct uart_port *up, unsigned char ch)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_for_xmitr(up);
 	sio_out(up, TXX9_SITFIFO, ch);
 }
@@ -1330,11 +845,7 @@ static void serial_txx9_console_putchar(struct uart_port *up, unsigned char ch)
 static void
 serial_txx9_console_write(struct console *co, const char *s, unsigned int count)
 {
-<<<<<<< HEAD
-	struct uart_txx9_port *up = &serial_txx9_ports[co->index];
-=======
 	struct uart_port *up = &serial_txx9_ports[co->index];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ier, flcr;
 
 	/*
@@ -1346,17 +857,10 @@ serial_txx9_console_write(struct console *co, const char *s, unsigned int count)
 	 *	Disable flow-control if enabled (and unnecessary)
 	 */
 	flcr = sio_in(up, TXX9_SIFLCR);
-<<<<<<< HEAD
-	if (!(up->port.flags & UPF_CONS_FLOW) && (flcr & TXX9_SIFLCR_TES))
-		sio_out(up, TXX9_SIFLCR, flcr & ~TXX9_SIFLCR_TES);
-
-	uart_console_write(&up->port, s, count, serial_txx9_console_putchar);
-=======
 	if (!(up->flags & UPF_CONS_FLOW) && (flcr & TXX9_SIFLCR_TES))
 		sio_out(up, TXX9_SIFLCR, flcr & ~TXX9_SIFLCR_TES);
 
 	uart_console_write(up, s, count, serial_txx9_console_putchar);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Finally, wait for transmitter to become empty
@@ -1369,12 +873,7 @@ serial_txx9_console_write(struct console *co, const char *s, unsigned int count)
 
 static int __init serial_txx9_console_setup(struct console *co, char *options)
 {
-<<<<<<< HEAD
-	struct uart_port *port;
-	struct uart_txx9_port *up;
-=======
 	struct uart_port *up;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int baud = 9600;
 	int bits = 8;
 	int parity = 'n';
@@ -1388,27 +887,15 @@ static int __init serial_txx9_console_setup(struct console *co, char *options)
 	if (co->index >= UART_NR)
 		co->index = 0;
 	up = &serial_txx9_ports[co->index];
-<<<<<<< HEAD
-	port = &up->port;
-	if (!port->ops)
-		return -ENODEV;
-
-	serial_txx9_initialize(&up->port);
-=======
 	if (!up->ops)
 		return -ENODEV;
 
 	serial_txx9_initialize(up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (options)
 		uart_parse_options(options, &baud, &parity, &bits, &flow);
 
-<<<<<<< HEAD
-	return uart_set_options(port, co, baud, parity, bits, flow);
-=======
 	return uart_set_options(up, co, baud, parity, bits, flow);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct uart_driver serial_txx9_reg;
@@ -1449,15 +936,9 @@ int __init early_serial_txx9_setup(struct uart_port *port)
 	if (port->line >= ARRAY_SIZE(serial_txx9_ports))
 		return -ENODEV;
 
-<<<<<<< HEAD
-	serial_txx9_ports[port->line].port = *port;
-	serial_txx9_ports[port->line].port.ops = &serial_txx9_pops;
-	serial_txx9_ports[port->line].port.flags |=
-=======
 	serial_txx9_ports[port->line] = *port;
 	serial_txx9_ports[port->line].ops = &serial_txx9_pops;
 	serial_txx9_ports[port->line].flags |=
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
 	return 0;
 }
@@ -1475,29 +956,17 @@ static DEFINE_MUTEX(serial_txx9_mutex);
  *
  *	On success the port is ready to use and the line number is returned.
  */
-<<<<<<< HEAD
-static int __devinit serial_txx9_register_port(struct uart_port *port)
-{
-	int i;
-	struct uart_txx9_port *uart;
-=======
 static int serial_txx9_register_port(struct uart_port *port)
 {
 	int i;
 	struct uart_port *uart;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -ENOSPC;
 
 	mutex_lock(&serial_txx9_mutex);
 	for (i = 0; i < UART_NR; i++) {
 		uart = &serial_txx9_ports[i];
-<<<<<<< HEAD
-		if (uart_match_port(&uart->port, port)) {
-			uart_remove_one_port(&serial_txx9_reg, &uart->port);
-=======
 		if (uart_match_port(uart, port)) {
 			uart_remove_one_port(&serial_txx9_reg, uart);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -1505,30 +974,11 @@ static int serial_txx9_register_port(struct uart_port *port)
 		/* Find unused port */
 		for (i = 0; i < UART_NR; i++) {
 			uart = &serial_txx9_ports[i];
-<<<<<<< HEAD
-			if (!(uart->port.iobase || uart->port.mapbase))
-=======
 			if (!(uart->iobase || uart->mapbase))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 	}
 	if (i < UART_NR) {
-<<<<<<< HEAD
-		uart->port.iobase = port->iobase;
-		uart->port.membase = port->membase;
-		uart->port.irq      = port->irq;
-		uart->port.uartclk  = port->uartclk;
-		uart->port.iotype   = port->iotype;
-		uart->port.flags    = port->flags
-			| UPF_BOOT_AUTOCONF | UPF_FIXED_PORT;
-		uart->port.mapbase  = port->mapbase;
-		if (port->dev)
-			uart->port.dev = port->dev;
-		ret = uart_add_one_port(&serial_txx9_reg, &uart->port);
-		if (ret == 0)
-			ret = uart->port.line;
-=======
 		uart->iobase = port->iobase;
 		uart->membase = port->membase;
 		uart->irq      = port->irq;
@@ -1542,7 +992,6 @@ static int serial_txx9_register_port(struct uart_port *port)
 		ret = uart_add_one_port(&serial_txx9_reg, uart);
 		if (ret == 0)
 			ret = uart->line;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&serial_txx9_mutex);
 	return ret;
@@ -1555,20 +1004,6 @@ static int serial_txx9_register_port(struct uart_port *port)
  *	Remove one serial port.  This may not be called from interrupt
  *	context.  We hand the port back to the our control.
  */
-<<<<<<< HEAD
-static void __devexit serial_txx9_unregister_port(int line)
-{
-	struct uart_txx9_port *uart = &serial_txx9_ports[line];
-
-	mutex_lock(&serial_txx9_mutex);
-	uart_remove_one_port(&serial_txx9_reg, &uart->port);
-	uart->port.flags = 0;
-	uart->port.type = PORT_UNKNOWN;
-	uart->port.iobase = 0;
-	uart->port.mapbase = 0;
-	uart->port.membase = NULL;
-	uart->port.dev = NULL;
-=======
 static void serial_txx9_unregister_port(int line)
 {
 	struct uart_port *uart = &serial_txx9_ports[line];
@@ -1581,22 +1016,15 @@ static void serial_txx9_unregister_port(int line)
 	uart->mapbase = 0;
 	uart->membase = NULL;
 	uart->dev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&serial_txx9_mutex);
 }
 
 /*
  * Register a set of serial devices attached to a platform device.
  */
-<<<<<<< HEAD
-static int __devinit serial_txx9_probe(struct platform_device *dev)
-{
-	struct uart_port *p = dev->dev.platform_data;
-=======
 static int serial_txx9_probe(struct platform_device *dev)
 {
 	struct uart_port *p = dev_get_platdata(&dev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct uart_port port;
 	int ret, i;
 
@@ -1610,10 +1038,7 @@ static int serial_txx9_probe(struct platform_device *dev)
 		port.flags	= p->flags;
 		port.mapbase	= p->mapbase;
 		port.dev	= &dev->dev;
-<<<<<<< HEAD
-=======
 		port.has_sysrq	= IS_ENABLED(CONFIG_SERIAL_TXX9_CONSOLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = serial_txx9_register_port(&port);
 		if (ret < 0) {
 			dev_err(&dev->dev, "unable to register port at index %d "
@@ -1628,29 +1053,16 @@ static int serial_txx9_probe(struct platform_device *dev)
 /*
  * Remove serial ports registered against a platform device.
  */
-<<<<<<< HEAD
-static int __devexit serial_txx9_remove(struct platform_device *dev)
-=======
 static void serial_txx9_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	for (i = 0; i < UART_NR; i++) {
-<<<<<<< HEAD
-		struct uart_txx9_port *up = &serial_txx9_ports[i];
-
-		if (up->port.dev == &dev->dev)
-			serial_txx9_unregister_port(i);
-	}
-	return 0;
-=======
 		struct uart_port *up = &serial_txx9_ports[i];
 
 		if (up->dev == &dev->dev)
 			serial_txx9_unregister_port(i);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -1659,17 +1071,10 @@ static int serial_txx9_suspend(struct platform_device *dev, pm_message_t state)
 	int i;
 
 	for (i = 0; i < UART_NR; i++) {
-<<<<<<< HEAD
-		struct uart_txx9_port *up = &serial_txx9_ports[i];
-
-		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
-			uart_suspend_port(&serial_txx9_reg, &up->port);
-=======
 		struct uart_port *up = &serial_txx9_ports[i];
 
 		if (up->type != PORT_UNKNOWN && up->dev == &dev->dev)
 			uart_suspend_port(&serial_txx9_reg, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1680,17 +1085,10 @@ static int serial_txx9_resume(struct platform_device *dev)
 	int i;
 
 	for (i = 0; i < UART_NR; i++) {
-<<<<<<< HEAD
-		struct uart_txx9_port *up = &serial_txx9_ports[i];
-
-		if (up->port.type != PORT_UNKNOWN && up->port.dev == &dev->dev)
-			uart_resume_port(&serial_txx9_reg, &up->port);
-=======
 		struct uart_port *up = &serial_txx9_ports[i];
 
 		if (up->type != PORT_UNKNOWN && up->dev == &dev->dev)
 			uart_resume_port(&serial_txx9_reg, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1699,21 +1097,13 @@ static int serial_txx9_resume(struct platform_device *dev)
 
 static struct platform_driver serial_txx9_plat_driver = {
 	.probe		= serial_txx9_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(serial_txx9_remove),
-=======
 	.remove_new	= serial_txx9_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= serial_txx9_suspend,
 	.resume		= serial_txx9_resume,
 #endif
 	.driver		= {
 		.name	= "serial_txx9",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1722,11 +1112,7 @@ static struct platform_driver serial_txx9_plat_driver = {
  * Probe one serial board.  Unfortunately, there is no rhyme nor reason
  * to the arrangement of serial ports on a PCI card.
  */
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pciserial_txx9_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 {
 	struct uart_port port;
@@ -1756,23 +1142,12 @@ pciserial_txx9_init_one(struct pci_dev *dev, const struct pci_device_id *ent)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void __devexit pciserial_txx9_remove_one(struct pci_dev *dev)
-{
-	struct uart_txx9_port *up = pci_get_drvdata(dev);
-
-	pci_set_drvdata(dev, NULL);
-
-	if (up) {
-		serial_txx9_unregister_port(up->port.line);
-=======
 static void pciserial_txx9_remove_one(struct pci_dev *dev)
 {
 	struct uart_port *up = pci_get_drvdata(dev);
 
 	if (up) {
 		serial_txx9_unregister_port(up->line);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_disable_device(dev);
 	}
 }
@@ -1780,17 +1155,10 @@ static void pciserial_txx9_remove_one(struct pci_dev *dev)
 #ifdef CONFIG_PM
 static int pciserial_txx9_suspend_one(struct pci_dev *dev, pm_message_t state)
 {
-<<<<<<< HEAD
-	struct uart_txx9_port *up = pci_get_drvdata(dev);
-
-	if (up)
-		uart_suspend_port(&serial_txx9_reg, &up->port);
-=======
 	struct uart_port *up = pci_get_drvdata(dev);
 
 	if (up)
 		uart_suspend_port(&serial_txx9_reg, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_save_state(dev);
 	pci_set_power_state(dev, pci_choose_state(dev, state));
 	return 0;
@@ -1798,20 +1166,12 @@ static int pciserial_txx9_suspend_one(struct pci_dev *dev, pm_message_t state)
 
 static int pciserial_txx9_resume_one(struct pci_dev *dev)
 {
-<<<<<<< HEAD
-	struct uart_txx9_port *up = pci_get_drvdata(dev);
-=======
 	struct uart_port *up = pci_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_power_state(dev, PCI_D0);
 	pci_restore_state(dev);
 	if (up)
-<<<<<<< HEAD
-		uart_resume_port(&serial_txx9_reg, &up->port);
-=======
 		uart_resume_port(&serial_txx9_reg, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif
@@ -1824,11 +1184,7 @@ static const struct pci_device_id serial_txx9_pci_tbl[] = {
 static struct pci_driver serial_txx9_pci_driver = {
 	.name		= "serial_txx9",
 	.probe		= pciserial_txx9_init_one,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pciserial_txx9_remove_one),
-=======
 	.remove		= pciserial_txx9_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= pciserial_txx9_suspend_one,
 	.resume		= pciserial_txx9_resume_one,
@@ -1845,11 +1201,6 @@ static int __init serial_txx9_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
- 	printk(KERN_INFO "%s version %s\n", serial_name, serial_version);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = uart_register_driver(&serial_txx9_reg);
 	if (ret)
 		goto out;
@@ -1873,12 +1224,9 @@ static int __init serial_txx9_init(void)
 
 #ifdef ENABLE_SERIAL_TXX9_PCI
 	ret = pci_register_driver(&serial_txx9_pci_driver);
-<<<<<<< HEAD
-=======
 	if (ret) {
 		platform_driver_unregister(&serial_txx9_plat_driver);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	if (ret == 0)
 		goto out;
@@ -1903,15 +1251,9 @@ static void __exit serial_txx9_exit(void)
 	platform_driver_unregister(&serial_txx9_plat_driver);
 	platform_device_unregister(serial_txx9_plat_devs);
 	for (i = 0; i < UART_NR; i++) {
-<<<<<<< HEAD
-		struct uart_txx9_port *up = &serial_txx9_ports[i];
-		if (up->port.iobase || up->port.mapbase)
-			uart_remove_one_port(&serial_txx9_reg, &up->port);
-=======
 		struct uart_port *up = &serial_txx9_ports[i];
 		if (up->iobase || up->mapbase)
 			uart_remove_one_port(&serial_txx9_reg, up);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	uart_unregister_driver(&serial_txx9_reg);

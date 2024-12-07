@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/srmcons.c
  *
@@ -22,11 +19,7 @@
 #include <linux/tty_flip.h>
 
 #include <asm/console.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static DEFINE_SPINLOCK(srmcons_callback_lock);
@@ -52,11 +45,7 @@ typedef union _srmcons_result {
 
 /* called with callback_lock held */
 static int
-<<<<<<< HEAD
-srmcons_do_receive_chars(struct tty_struct *tty)
-=======
 srmcons_do_receive_chars(struct tty_port *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	srmcons_result result;
 	int count = 0, loops = 0;
@@ -64,46 +53,28 @@ srmcons_do_receive_chars(struct tty_port *port)
 	do {
 		result.as_long = callback_getc(0);
 		if (result.bits.status < 2) {
-<<<<<<< HEAD
-			tty_insert_flip_char(tty, (char)result.bits.c, 0);
-=======
 			tty_insert_flip_char(port, (u8)result.bits.c, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			count++;
 		}
 	} while((result.bits.status & 1) && (++loops < 10));
 
 	if (count)
-<<<<<<< HEAD
-		tty_schedule_flip(tty);
-=======
 		tty_flip_buffer_push(port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
 
 static void
-<<<<<<< HEAD
-srmcons_receive_chars(unsigned long data)
-{
-	struct srmcons_private *srmconsp = (struct srmcons_private *)data;
-=======
 srmcons_receive_chars(struct timer_list *t)
 {
 	struct srmcons_private *srmconsp = from_timer(srmconsp, t, timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tty_port *port = &srmconsp->port;
 	unsigned long flags;
 	int incr = 10;
 
 	local_irq_save(flags);
 	if (spin_trylock(&srmcons_callback_lock)) {
-<<<<<<< HEAD
-		if (!srmcons_do_receive_chars(port->tty))
-=======
 		if (!srmcons_do_receive_chars(port))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			incr = 100;
 		spin_unlock(&srmcons_callback_lock);
 	} 
@@ -117,19 +88,6 @@ srmcons_receive_chars(struct timer_list *t)
 }
 
 /* called with callback_lock held */
-<<<<<<< HEAD
-static int
-srmcons_do_write(struct tty_struct *tty, const char *buf, int count)
-{
-	static char str_cr[1] = "\r";
-	long c, remaining = count;
-	srmcons_result result;
-	char *cur;
-	int need_cr;
-
-	for (cur = (char *)buf; remaining > 0; ) {
-		need_cr = 0;
-=======
 static void
 srmcons_do_write(struct tty_port *port, const u8 *buf, size_t count)
 {
@@ -138,42 +96,10 @@ srmcons_do_write(struct tty_port *port, const u8 *buf, size_t count)
 
 	while (count > 0) {
 		bool need_cr = false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* 
 		 * Break it up into reasonable size chunks to allow a chance
 		 * for input to get in
 		 */
-<<<<<<< HEAD
-		for (c = 0; c < min_t(long, 128L, remaining) && !need_cr; c++)
-			if (cur[c] == '\n')
-				need_cr = 1;
-		
-		while (c > 0) {
-			result.as_long = callback_puts(0, cur, c);
-			c -= result.bits.c;
-			remaining -= result.bits.c;
-			cur += result.bits.c;
-
-			/*
-			 * Check for pending input iff a tty was provided
-			 */
-			if (tty)
-				srmcons_do_receive_chars(tty);
-		}
-
-		while (need_cr) {
-			result.as_long = callback_puts(0, str_cr, 1);
-			if (result.bits.c > 0)
-				need_cr = 0;
-		}
-	}
-	return count;
-}
-
-static int
-srmcons_write(struct tty_struct *tty,
-	      const unsigned char *buf, int count)
-=======
 		for (c = 0; c < min_t(size_t, 128U, count) && !need_cr; c++)
 			if (buf[c] == '\n')
 				need_cr = true;
@@ -201,41 +127,23 @@ srmcons_write(struct tty_struct *tty,
 
 static ssize_t
 srmcons_write(struct tty_struct *tty, const u8 *buf, size_t count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(&srmcons_callback_lock, flags);
-<<<<<<< HEAD
-	srmcons_do_write(tty, (const char *) buf, count);
-=======
 	srmcons_do_write(tty->port, buf, count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&srmcons_callback_lock, flags);
 
 	return count;
 }
 
-<<<<<<< HEAD
-static int
-=======
 static unsigned int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 srmcons_write_room(struct tty_struct *tty)
 {
 	return 512;
 }
 
 static int
-<<<<<<< HEAD
-srmcons_chars_in_buffer(struct tty_struct *tty)
-{
-	return 0;
-}
-
-static int
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 srmcons_open(struct tty_struct *tty, struct file *filp)
 {
 	struct srmcons_private *srmconsp = &srmcons_singleton;
@@ -281,38 +189,22 @@ static const struct tty_operations srmcons_ops = {
 	.close		= srmcons_close,
 	.write		= srmcons_write,
 	.write_room	= srmcons_write_room,
-<<<<<<< HEAD
-	.chars_in_buffer= srmcons_chars_in_buffer,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init
 srmcons_init(void)
 {
-<<<<<<< HEAD
-	tty_port_init(&srmcons_singleton.port);
-	setup_timer(&srmcons_singleton.timer, srmcons_receive_chars,
-			(unsigned long)&srmcons_singleton);
-=======
 	timer_setup(&srmcons_singleton.timer, srmcons_receive_chars, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (srm_is_registered_console) {
 		struct tty_driver *driver;
 		int err;
 
-<<<<<<< HEAD
-		driver = alloc_tty_driver(MAX_SRM_CONSOLE_DEVICES);
-		if (!driver)
-			return -ENOMEM;
-=======
 		driver = tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
 		if (IS_ERR(driver))
 			return PTR_ERR(driver);
 
 		tty_port_init(&srmcons_singleton.port);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		driver->driver_name = "srm";
 		driver->name = "srm";
 		driver->major = 0; 	/* dynamic */
@@ -321,17 +213,11 @@ srmcons_init(void)
 		driver->subtype = SYSTEM_TYPE_SYSCONS;
 		driver->init_termios = tty_std_termios;
 		tty_set_operations(driver, &srmcons_ops);
-<<<<<<< HEAD
-		err = tty_register_driver(driver);
-		if (err) {
-			put_tty_driver(driver);
-=======
 		tty_port_link_device(&srmcons_singleton.port, driver, 0);
 		err = tty_register_driver(driver);
 		if (err) {
 			tty_driver_kref_put(driver);
 			tty_port_destroy(&srmcons_singleton.port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 		srmcons_driver = driver;
@@ -339,12 +225,7 @@ srmcons_init(void)
 
 	return -ENODEV;
 }
-<<<<<<< HEAD
-
-module_init(srmcons_init);
-=======
 device_initcall(srmcons_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*

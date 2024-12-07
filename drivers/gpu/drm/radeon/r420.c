@@ -25,18 +25,6 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
-<<<<<<< HEAD
-#include <linux/seq_file.h>
-#include <linux/slab.h>
-#include "drmP.h"
-#include "radeon_reg.h"
-#include "radeon.h"
-#include "radeon_asic.h"
-#include "atom.h"
-#include "r100d.h"
-#include "r420d.h"
-#include "r420_reg_safe.h"
-=======
 
 #include <linux/pci.h>
 #include <linux/seq_file.h>
@@ -52,7 +40,6 @@
 #include "radeon.h"
 #include "radeon_asic.h"
 #include "radeon_reg.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void r420_pm_init_profile(struct radeon_device *rdev)
 {
@@ -110,12 +97,7 @@ void r420_pipes_init(struct radeon_device *rdev)
 	       (1 << 2) | (1 << 3));
 	/* add idle wait as per freedesktop.org bug 24041 */
 	if (r100_gui_wait_for_idle(rdev)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Failed to wait GUI idle while "
-		       "programming pipes. Bad things might happen.\n");
-=======
 		pr_warn("Failed to wait GUI idle while programming pipes. Bad things might happen.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* get max number of pipes */
 	gb_pipe_select = RREG32(R400_GB_PIPE_SELECT);
@@ -132,10 +114,7 @@ void r420_pipes_init(struct radeon_device *rdev)
 	default:
 		/* force to 1 pipe */
 		num_pipes = 1;
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		tmp = (0 << 1);
 		break;
@@ -154,12 +133,7 @@ void r420_pipes_init(struct radeon_device *rdev)
 	tmp |= R300_TILE_SIZE_16 | R300_ENABLE_TILING;
 	WREG32(R300_GB_TILE_CONFIG, tmp);
 	if (r100_gui_wait_for_idle(rdev)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Failed to wait GUI idle while "
-		       "programming pipes. Bad things might happen.\n");
-=======
 		pr_warn("Failed to wait GUI idle while programming pipes. Bad things might happen.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tmp = RREG32(R300_DST_PIPE_CONFIG);
@@ -171,12 +145,7 @@ void r420_pipes_init(struct radeon_device *rdev)
 	       R300_DC_DC_DISABLE_IGNORE_PE);
 
 	if (r100_gui_wait_for_idle(rdev)) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "Failed to wait GUI idle while "
-		       "programming pipes. Bad things might happen.\n");
-=======
 		pr_warn("Failed to wait GUI idle while programming pipes. Bad things might happen.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rdev->family == CHIP_RV530) {
@@ -194,12 +163,6 @@ void r420_pipes_init(struct radeon_device *rdev)
 
 u32 r420_mc_rreg(struct radeon_device *rdev, u32 reg)
 {
-<<<<<<< HEAD
-	u32 r;
-
-	WREG32(R_0001F8_MC_IND_INDEX, S_0001F8_MC_IND_ADDR(reg));
-	r = RREG32(R_0001FC_MC_IND_DATA);
-=======
 	unsigned long flags;
 	u32 r;
 
@@ -207,17 +170,11 @@ u32 r420_mc_rreg(struct radeon_device *rdev, u32 reg)
 	WREG32(R_0001F8_MC_IND_INDEX, S_0001F8_MC_IND_ADDR(reg));
 	r = RREG32(R_0001FC_MC_IND_DATA);
 	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 void r420_mc_wreg(struct radeon_device *rdev, u32 reg, u32 v)
 {
-<<<<<<< HEAD
-	WREG32(R_0001F8_MC_IND_INDEX, S_0001F8_MC_IND_ADDR(reg) |
-		S_0001F8_MC_IND_WR_EN(1));
-	WREG32(R_0001FC_MC_IND_DATA, v);
-=======
 	unsigned long flags;
 
 	spin_lock_irqsave(&rdev->mc_idx_lock, flags);
@@ -225,22 +182,12 @@ void r420_mc_wreg(struct radeon_device *rdev, u32 reg, u32 v)
 		S_0001F8_MC_IND_WR_EN(1));
 	WREG32(R_0001FC_MC_IND_DATA, v);
 	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r420_debugfs(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	if (r100_debugfs_rbbm_init(rdev)) {
-		DRM_ERROR("Failed to register debugfs file for RBBM !\n");
-	}
-	if (r420_debugfs_pipes_info_init(rdev)) {
-		DRM_ERROR("Failed to register debugfs file for pipes !\n");
-	}
-=======
 	r100_debugfs_rbbm_init(rdev);
 	r420_debugfs_pipes_info_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r420_clock_resume(struct radeon_device *rdev)
@@ -258,10 +205,7 @@ static void r420_clock_resume(struct radeon_device *rdev)
 
 static void r420_cp_errata_init(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-=======
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
 
 	/* RV410 and R420 can lock up if CP DMA to host memory happens
@@ -271,45 +215,27 @@ static void r420_cp_errata_init(struct radeon_device *rdev)
 	 * of the CP init, apparently.
 	 */
 	radeon_scratch_get(rdev, &rdev->config.r300.resync_scratch);
-<<<<<<< HEAD
-	radeon_ring_lock(rdev, ring, 8);
-	radeon_ring_write(ring, PACKET0(R300_CP_RESYNC_ADDR, 1));
-	radeon_ring_write(ring, rdev->config.r300.resync_scratch);
-	radeon_ring_write(ring, 0xDEADBEEF);
-	radeon_ring_unlock_commit(rdev, ring);
-=======
 	r = radeon_ring_lock(rdev, ring, 8);
 	WARN_ON(r);
 	radeon_ring_write(ring, PACKET0(R300_CP_RESYNC_ADDR, 1));
 	radeon_ring_write(ring, rdev->config.r300.resync_scratch);
 	radeon_ring_write(ring, 0xDEADBEEF);
 	radeon_ring_unlock_commit(rdev, ring, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void r420_cp_errata_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-=======
 	int r;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
 
 	/* Catch the RESYNC we dispatched all the way back,
 	 * at the very beginning of the CP init.
 	 */
-<<<<<<< HEAD
-	radeon_ring_lock(rdev, ring, 8);
-	radeon_ring_write(ring, PACKET0(R300_RB3D_DSTCACHE_CTLSTAT, 0));
-	radeon_ring_write(ring, R300_RB3D_DC_FINISH);
-	radeon_ring_unlock_commit(rdev, ring);
-=======
 	r = radeon_ring_lock(rdev, ring, 8);
 	WARN_ON(r);
 	radeon_ring_write(ring, PACKET0(R300_RB3D_DSTCACHE_CTLSTAT, 0));
 	radeon_ring_write(ring, R300_RB3D_DC_FINISH);
 	radeon_ring_unlock_commit(rdev, ring, false);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_scratch_free(rdev, rdev->config.r300.resync_scratch);
 }
 
@@ -365,20 +291,9 @@ static int r420_startup(struct radeon_device *rdev)
 	}
 	r420_cp_errata_init(rdev);
 
-<<<<<<< HEAD
-	r = radeon_ib_pool_start(rdev);
-	if (r)
-		return r;
-
-	r = radeon_ib_test(rdev, RADEON_RING_TYPE_GFX_INDEX, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX]);
-	if (r) {
-		dev_err(rdev->dev, "failed testing IB (%d).\n", r);
-		rdev->accel_working = false;
-=======
 	r = radeon_ib_pool_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -423,11 +338,7 @@ int r420_resume(struct radeon_device *rdev)
 
 int r420_suspend(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	radeon_ib_pool_suspend(rdev);
-=======
 	radeon_pm_suspend(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r420_cp_errata_fini(rdev);
 	r100_cp_disable(rdev);
 	radeon_wb_disable(rdev);
@@ -441,16 +352,10 @@ int r420_suspend(struct radeon_device *rdev)
 
 void r420_fini(struct radeon_device *rdev)
 {
-<<<<<<< HEAD
-	r100_cp_fini(rdev);
-	radeon_wb_fini(rdev);
-	r100_ib_fini(rdev);
-=======
 	radeon_pm_fini(rdev);
 	r100_cp_fini(rdev);
 	radeon_wb_fini(rdev);
 	radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_gem_fini(rdev);
 	if (rdev->flags & RADEON_IS_PCIE)
 		rv370_pcie_gart_fini(rdev);
@@ -520,14 +425,7 @@ int r420_init(struct radeon_device *rdev)
 	r300_mc_init(rdev);
 	r420_debugfs(rdev);
 	/* Fence driver */
-<<<<<<< HEAD
-	r = radeon_fence_driver_init(rdev);
-	if (r) {
-		return r;
-	}
-=======
 	radeon_fence_driver_init(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory manager */
 	r = radeon_bo_init(rdev);
 	if (r) {
@@ -548,31 +446,17 @@ int r420_init(struct radeon_device *rdev)
 	}
 	r420_set_reg_safe(rdev);
 
-<<<<<<< HEAD
-	r = radeon_ib_pool_init(rdev);
-	rdev->accel_working = true;
-	if (r) {
-		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
-		rdev->accel_working = false;
-	}
-
-=======
 	/* Initialize power management */
 	radeon_pm_init(rdev);
 
 	rdev->accel_working = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = r420_startup(rdev);
 	if (r) {
 		/* Somethings want wront with the accel init stop accel */
 		dev_err(rdev->dev, "Disabling GPU acceleration\n");
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
-<<<<<<< HEAD
-		r100_ib_fini(rdev);
-=======
 		radeon_ib_pool_fini(rdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_irq_kms_fini(rdev);
 		if (rdev->flags & RADEON_IS_PCIE)
 			rv370_pcie_gart_fini(rdev);
@@ -588,17 +472,9 @@ int r420_init(struct radeon_device *rdev)
  * Debugfs info
  */
 #if defined(CONFIG_DEBUG_FS)
-<<<<<<< HEAD
-static int r420_debugfs_pipes_info(struct seq_file *m, void *data)
-{
-	struct drm_info_node *node = (struct drm_info_node *) m->private;
-	struct drm_device *dev = node->minor->dev;
-	struct radeon_device *rdev = dev->dev_private;
-=======
 static int r420_debugfs_pipes_info_show(struct seq_file *m, void *unused)
 {
 	struct radeon_device *rdev = m->private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t tmp;
 
 	tmp = RREG32(R400_GB_PIPE_SELECT);
@@ -610,19 +486,6 @@ static int r420_debugfs_pipes_info_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct drm_info_list r420_pipes_info_list[] = {
-	{"r420_pipes_info", r420_debugfs_pipes_info, 0, NULL},
-};
-#endif
-
-int r420_debugfs_pipes_info_init(struct radeon_device *rdev)
-{
-#if defined(CONFIG_DEBUG_FS)
-	return radeon_debugfs_add_files(rdev, r420_pipes_info_list, 1);
-#else
-	return 0;
-=======
 DEFINE_SHOW_ATTRIBUTE(r420_debugfs_pipes_info);
 #endif
 
@@ -633,6 +496,5 @@ void r420_debugfs_pipes_info_init(struct radeon_device *rdev)
 
 	debugfs_create_file("r420_pipes_info", 0444, root, rdev,
 			    &r420_debugfs_pipes_info_fops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }

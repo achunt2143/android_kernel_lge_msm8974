@@ -1,51 +1,21 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Additional mixer mapping
  *
  *   Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
-<<<<<<< HEAD
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
-
-struct usbmix_dB_map {
-	u32 min;
-	u32 max;
-=======
  */
 
 struct usbmix_dB_map {
 	int min;
 	int max;
 	bool min_mute;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct usbmix_name_map {
 	int id;
 	const char *name;
 	int control;
-<<<<<<< HEAD
-	struct usbmix_dB_map *dB;
-=======
 	const struct usbmix_dB_map *dB;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct usbmix_selector_map {
@@ -58,11 +28,7 @@ struct usbmix_ctl_map {
 	u32 id;
 	const struct usbmix_name_map *map;
 	const struct usbmix_selector_map *selector_map;
-<<<<<<< HEAD
-	int ignore_ctl_error;
-=======
 	const struct usbmix_connector_map *connector_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -87,11 +53,7 @@ Mic-IN[9] --+->FU[10]----------------------------+                  |
            ++--+->SU[11]-->FU[12] --------------------------------------------------------------------------------------> USB_OUT[13]
 */
 
-<<<<<<< HEAD
-static struct usbmix_name_map extigy_map[] = {
-=======
 static const struct usbmix_name_map extigy_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT pcm */
 	{ 2, "PCM Playback" }, /* FU */
 	/* 3: IT pcm */
@@ -132,19 +94,12 @@ static const struct usbmix_name_map extigy_map[] = {
  * e.g. no Master and fake PCM volume
  *			Pavel Mihaylov <bin@bash.info>
  */
-<<<<<<< HEAD
-static struct usbmix_dB_map mp3plus_dB_1 = {-4781, 0};	/* just guess */
-static struct usbmix_dB_map mp3plus_dB_2 = {-1781, 618}; /* just guess */
-
-static struct usbmix_name_map mp3plus_map[] = {
-=======
 static const struct usbmix_dB_map mp3plus_dB_1 = {.min = -4781, .max = 0};
 						/* just guess */
 static const struct usbmix_dB_map mp3plus_dB_2 = {.min = -1781, .max = 618};
 						/* just guess */
 
 static const struct usbmix_name_map mp3plus_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT pcm */
 	/* 2: IT mic */
 	/* 3: IT line */
@@ -185,11 +140,7 @@ Lin_IN[7]-+--->FU[8]---+              +->EU[23]->FU[28]------------->Spk_OUT[19]
             |                                              ^
             +->FU[13]--------------------------------------+
 */
-<<<<<<< HEAD
-static struct usbmix_name_map audigy2nx_map[] = {
-=======
 static const struct usbmix_name_map audigy2nx_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT pcm playback */
 	/* 4: IT digital in */
 	{ 6, "Digital In Playback" }, /* FU */
@@ -217,9 +168,6 @@ static const struct usbmix_name_map audigy2nx_map[] = {
 	{ 0 } /* terminator */
 };
 
-<<<<<<< HEAD
-static struct usbmix_selector_map audigy2nx_selectors[] = {
-=======
 static const struct usbmix_name_map mbox1_map[] = {
 	{ 1, "Clock" },
 	{ 0 } /* terminator */
@@ -235,7 +183,6 @@ static const struct usbmix_selector_map c400_selectors[] = {
 };
 
 static const struct usbmix_selector_map audigy2nx_selectors[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id = 14, /* Capture Source */
 		.count = 3,
@@ -255,33 +202,21 @@ static const struct usbmix_selector_map audigy2nx_selectors[] = {
 };
 
 /* Creative SoundBlaster Live! 24-bit External */
-<<<<<<< HEAD
-static struct usbmix_name_map live24ext_map[] = {
-=======
 static const struct usbmix_name_map live24ext_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 2: PCM Playback Volume */
 	{ 5, "Mic Capture" }, /* FU, default PCM Capture Volume */
 	{ 0 } /* terminator */
 };
 
 /* LineX FM Transmitter entry - needed to bypass controls bug */
-<<<<<<< HEAD
-static struct usbmix_name_map linex_map[] = {
-=======
 static const struct usbmix_name_map linex_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT pcm */
 	/* 2: OT Speaker */ 
 	{ 3, "Master" }, /* FU: master volume - left / right / mute */
 	{ 0 } /* terminator */
 };
 
-<<<<<<< HEAD
-static struct usbmix_name_map maya44_map[] = {
-=======
 static const struct usbmix_name_map maya44_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT line */
 	{ 2, "Line Playback" }, /* FU */
 	/* 3: IT line */
@@ -298,21 +233,13 @@ static const struct usbmix_name_map maya44_map[] = {
 };
 
 /* Section "justlink_map" below added by James Courtier-Dutton <James@superbug.demon.co.uk>
-<<<<<<< HEAD
- * sourced from Maplin Electronics (http://www.maplin.co.uk), part number A56AK
-=======
  * sourced from Maplin Electronics (https://www.maplin.co.uk), part number A56AK
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Part has 2 connectors that act as a single output. (TOSLINK Optical for digital out, and 3.5mm Jack for Analogue out.)
  * The USB Mixer publishes a Microphone and extra Volume controls for it, but none exist on the device,
  * so this map removes all unwanted sliders from alsamixer
  */
 
-<<<<<<< HEAD
-static struct usbmix_name_map justlink_map[] = {
-=======
 static const struct usbmix_name_map justlink_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT pcm playback */
 	/* 2: Not present */
 	{ 3, NULL}, /* IT mic (No mic input on device) */
@@ -329,11 +256,7 @@ static const struct usbmix_name_map justlink_map[] = {
 };
 
 /* TerraTec Aureon 5.1 MkII USB */
-<<<<<<< HEAD
-static struct usbmix_name_map aureon_51_2_map[] = {
-=======
 static const struct usbmix_name_map aureon_51_2_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT USB */
 	/* 2: IT Mic */
 	/* 3: IT Line */
@@ -352,11 +275,7 @@ static const struct usbmix_name_map aureon_51_2_map[] = {
 	{} /* terminator */
 };
 
-<<<<<<< HEAD
-static struct usbmix_name_map scratch_live_map[] = {
-=======
 static const struct usbmix_name_map scratch_live_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 1: IT Line 1 (USB streaming) */
 	/* 2: OT Line 1 (Speaker) */
 	/* 3: IT Line 1 (Line connector) */
@@ -372,8 +291,6 @@ static const struct usbmix_name_map scratch_live_map[] = {
 	{ 0 } /* terminator */
 };
 
-<<<<<<< HEAD
-=======
 static const struct usbmix_name_map ebox44_map[] = {
 	{ 4, NULL }, /* FU */
 	{ 6, NULL }, /* MU */
@@ -383,18 +300,13 @@ static const struct usbmix_name_map ebox44_map[] = {
 	{ 0 }
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* "Gamesurround Muse Pocket LT" looks same like "Sound Blaster MP3+"
  *  most importand difference is SU[8], it should be set to "Capture Source"
  *  to make alsamixer and PA working properly.
  *  FIXME: or mp3plus_map should use "Capture Source" too,
  *  so this maps can be merget
  */
-<<<<<<< HEAD
-static struct usbmix_name_map hercules_usb51_map[] = {
-=======
 static const struct usbmix_name_map hercules_usb51_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 8, "Capture Source" },	/* SU, default "PCM Capture Source" */
 	{ 9, "Master Playback" },	/* FU, default "Speaker Playback" */
 	{ 10, "Mic Boost", 7 },		/* FU, default "Auto Gain Input" */
@@ -404,15 +316,12 @@ static const struct usbmix_name_map hercules_usb51_map[] = {
 	{ 0 }				/* terminator */
 };
 
-<<<<<<< HEAD
-=======
 /* Plantronics Gamecom 780 has a broken volume control, better to disable it */
 static const struct usbmix_name_map gamecom780_map[] = {
 	{ 9, NULL }, /* FU, speaker out */
 	{}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* some (all?) SCMS USB3318 devices are affected by a firmware lock up
  * when anything attempts to access FU 10 (control)
  */
@@ -422,19 +331,12 @@ static const struct usbmix_name_map scms_usb3318_map[] = {
 };
 
 /* Bose companion 5, the dB conversion factor is 16 instead of 256 */
-<<<<<<< HEAD
-static struct usbmix_dB_map bose_companion5_dB = {-5006, -6};
-static struct usbmix_name_map bose_companion5_map[] = {
-=======
 static const struct usbmix_dB_map bose_companion5_dB = {-5006, -6};
 static const struct usbmix_name_map bose_companion5_map[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 3, NULL, .dB = &bose_companion5_dB },
 	{ 0 }	/* terminator */
 };
 
-<<<<<<< HEAD
-=======
 /* Bose Revolve+ SoundLink, correction of dB maps */
 static const struct usbmix_dB_map bose_soundlink_dB = {-8283, -0, true};
 static const struct usbmix_name_map bose_soundlink_map[] = {
@@ -586,23 +488,14 @@ static const struct usbmix_connector_map gigabyte_b450_connector_map[] = {
 	{}
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Control map entries
  */
 
-<<<<<<< HEAD
-static struct usbmix_ctl_map usbmix_ctl_maps[] = {
-	{
-		.id = USB_ID(0x041e, 0x3000),
-		.map = extigy_map,
-		.ignore_ctl_error = 1,
-=======
 static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
 	{
 		.id = USB_ID(0x041e, 0x3000),
 		.map = extigy_map,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.id = USB_ID(0x041e, 0x3010),
@@ -622,21 +515,9 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.map = audigy2nx_map,
 		.selector_map = audigy2nx_selectors,
 	},
-<<<<<<< HEAD
-	{
-		/* Hercules DJ Console (Windows Edition) */
-		.id = USB_ID(0x06f8, 0xb000),
-		.ignore_ctl_error = 1,
-	},
-	{
-		/* Hercules DJ Console (Macintosh Edition) */
-		.id = USB_ID(0x06f8, 0xd002),
-		.ignore_ctl_error = 1,
-=======
 	{	/* Plantronics GameCom 780 */
 		.id = USB_ID(0x047f, 0xc010),
 		.map = gamecom780_map,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		/* Hercules Gamesurround Muse Pocket LT
@@ -646,11 +527,6 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.map = hercules_usb51_map,
 	},
 	{
-<<<<<<< HEAD
-		.id = USB_ID(0x08bb, 0x2702),
-		.map = linex_map,
-		.ignore_ctl_error = 1,
-=======
 		.id = USB_ID(0x0763, 0x2030),
 		.selector_map = c400_selectors,
 	},
@@ -661,7 +537,6 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
 	{
 		.id = USB_ID(0x08bb, 0x2702),
 		.map = linex_map,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.id = USB_ID(0x0a92, 0x0091),
@@ -676,11 +551,6 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.map = aureon_51_2_map,
 	},
 	{
-<<<<<<< HEAD
-		.id = USB_ID(0x13e5, 0x0001),
-		.map = scratch_live_map,
-		.ignore_ctl_error = 1,
-=======
 		.id = USB_ID(0x0bda, 0x4014),
 		.map = dell_alc4020_map,
 	},
@@ -695,7 +565,6 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
 	{
 		.id = USB_ID(0x200c, 0x1018),
 		.map = ebox44_map,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		/* MAYA44 USB+ */
@@ -717,11 +586,6 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
 		.id = USB_ID(0x05a7, 0x1020),
 		.map = bose_companion5_map,
 	},
-<<<<<<< HEAD
-	{ 0 } /* terminator */
-};
-
-=======
 	{
 		/* Bose Revolve+ SoundLink */
 		.id = USB_ID(0x05a7, 0x40fa),
@@ -886,4 +750,3 @@ static const struct usbmix_ctl_map uac3_badd_usbmix_ctl_maps[] = {
 	},
 	{ 0 } /* terminator */
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

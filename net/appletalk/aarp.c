@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	AARP:		An implementation of the AppleTalk AARP protocol for
  *			Ethernet 'ELAP'.
@@ -17,15 +14,6 @@
  *		Use neighbour discovery code.
  *		Token Ring Support.
  *
-<<<<<<< HEAD
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
- *
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	References:
  *		Inside AppleTalk (2nd Ed).
  *	Fixes:
@@ -33,10 +21,6 @@
  *		Rob Newberry	-	Added proxy AARP and AARP proc fs,
  *					moved probing from DDP module.
  *		Arnaldo C. Melo -	don't mangle rx packets
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/if_arp.h>
@@ -50,10 +34,7 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-=======
 #include <linux/etherdevice.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sysctl_aarp_expiry_time = AARP_EXPIRY_TIME;
 int sysctl_aarp_tick_time = AARP_TICK_TIME;
@@ -63,17 +44,6 @@ int sysctl_aarp_resolve_time = AARP_RESOLVE_TIME;
 /* Lists of aarp entries */
 /**
  *	struct aarp_entry - AARP entry
-<<<<<<< HEAD
- *	@last_sent - Last time we xmitted the aarp request
- *	@packet_queue - Queue of frames wait for resolution
- *	@status - Used for proxy AARP
- *	expires_at - Entry expiry time
- *	target_addr - DDP Address
- *	dev - Device to use
- *	hwaddr - Physical i/f address of target/router
- *	xmit_count - When this hits 10 we give up
- *	next - Next entry in chain
-=======
  *	@last_sent: Last time we xmitted the aarp request
  *	@packet_queue: Queue of frames wait for resolution
  *	@status: Used for proxy AARP
@@ -83,7 +53,6 @@ int sysctl_aarp_resolve_time = AARP_RESOLVE_TIME;
  *	@hwaddr:  Physical i/f address of target/router
  *	@xmit_count:  When this hits 10 we give up
  *	@next: Next entry in chain
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct aarp_entry {
 	/* These first two are only used for unresolved entries */
@@ -93,11 +62,7 @@ struct aarp_entry {
 	unsigned long		expires_at;
 	struct atalk_addr	target_addr;
 	struct net_device	*dev;
-<<<<<<< HEAD
-	char			hwaddr[6];
-=======
 	char			hwaddr[ETH_ALEN];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short		xmit_count;
 	struct aarp_entry	*next;
 };
@@ -164,21 +129,13 @@ static void __aarp_send_query(struct aarp_entry *a)
 	eah->pa_len	 = AARP_PA_ALEN;
 	eah->function	 = htons(AARP_REQUEST);
 
-<<<<<<< HEAD
-	memcpy(eah->hw_src, dev->dev_addr, ETH_ALEN);
-=======
 	ether_addr_copy(eah->hw_src, dev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eah->pa_src_zero = 0;
 	eah->pa_src_net	 = sat->s_net;
 	eah->pa_src_node = sat->s_node;
 
-<<<<<<< HEAD
-	memset(eah->hw_dst, '\0', ETH_ALEN);
-=======
 	eth_zero_addr(eah->hw_dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eah->pa_dst_zero = 0;
 	eah->pa_dst_net	 = a->target_addr.s_net;
@@ -219,26 +176,16 @@ static void aarp_send_reply(struct net_device *dev, struct atalk_addr *us,
 	eah->pa_len	 = AARP_PA_ALEN;
 	eah->function	 = htons(AARP_REPLY);
 
-<<<<<<< HEAD
-	memcpy(eah->hw_src, dev->dev_addr, ETH_ALEN);
-=======
 	ether_addr_copy(eah->hw_src, dev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eah->pa_src_zero = 0;
 	eah->pa_src_net	 = us->s_net;
 	eah->pa_src_node = us->s_node;
 
 	if (!sha)
-<<<<<<< HEAD
-		memset(eah->hw_dst, '\0', ETH_ALEN);
-	else
-		memcpy(eah->hw_dst, sha, ETH_ALEN);
-=======
 		eth_zero_addr(eah->hw_dst);
 	else
 		ether_addr_copy(eah->hw_dst, sha);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eah->pa_dst_zero = 0;
 	eah->pa_dst_net	 = them->s_net;
@@ -280,21 +227,13 @@ static void aarp_send_probe(struct net_device *dev, struct atalk_addr *us)
 	eah->pa_len	 = AARP_PA_ALEN;
 	eah->function	 = htons(AARP_PROBE);
 
-<<<<<<< HEAD
-	memcpy(eah->hw_src, dev->dev_addr, ETH_ALEN);
-=======
 	ether_addr_copy(eah->hw_src, dev->dev_addr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eah->pa_src_zero = 0;
 	eah->pa_src_net	 = us->s_net;
 	eah->pa_src_node = us->s_node;
 
-<<<<<<< HEAD
-	memset(eah->hw_dst, '\0', ETH_ALEN);
-=======
 	eth_zero_addr(eah->hw_dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eah->pa_dst_zero = 0;
 	eah->pa_dst_net	 = us->s_net;
@@ -365,11 +304,7 @@ static void __aarp_expire_device(struct aarp_entry **n, struct net_device *dev)
 }
 
 /* Handle the timer event */
-<<<<<<< HEAD
-static void aarp_expire_timeout(unsigned long unused)
-=======
 static void aarp_expire_timeout(struct timer_list *unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ct;
 
@@ -392,11 +327,7 @@ static void aarp_expire_timeout(struct timer_list *unused)
 static int aarp_device_event(struct notifier_block *this, unsigned long event,
 			     void *ptr)
 {
-<<<<<<< HEAD
-	struct net_device *dev = ptr;
-=======
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ct;
 
 	if (!net_eq(dev_net(dev), &init_net))
@@ -733,11 +664,7 @@ out_unlock:
 
 sendit:
 	if (skb->sk)
-<<<<<<< HEAD
-		skb->priority = skb->sk->sk_priority;
-=======
 		skb->priority = READ_ONCE(skb->sk->sk_priority);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev_queue_xmit(skb))
 		goto drop;
 sent:
@@ -841,11 +768,7 @@ static int aarp_rcv(struct sk_buff *skb, struct net_device *dev,
 	if (a && a->status & ATIF_PROBE) {
 		a->status |= ATIF_PROBE_FAIL;
 		/*
-<<<<<<< HEAD
-		 * we do not respond to probe or request packets for
-=======
 		 * we do not respond to probe or request packets of
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * this address while we are probing this address
 		 */
 		goto unlock;
@@ -862,11 +785,7 @@ static int aarp_rcv(struct sk_buff *skb, struct net_device *dev,
 			break;
 
 		/* We can fill one in - this is good. */
-<<<<<<< HEAD
-		memcpy(a->hwaddr, ea->hw_src, ETH_ALEN);
-=======
 		ether_addr_copy(a->hwaddr, ea->hw_src);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__aarp_resolved(&unresolved[hash], a, hash);
 		if (!unresolved_count)
 			mod_timer(&aarp_timer,
@@ -954,17 +873,6 @@ static struct notifier_block aarp_notifier = {
 
 static unsigned char aarp_snap_id[] = { 0x00, 0x00, 0x00, 0x80, 0xF3 };
 
-<<<<<<< HEAD
-void __init aarp_proto_init(void)
-{
-	aarp_dl = register_snap_client(aarp_snap_id, aarp_rcv);
-	if (!aarp_dl)
-		printk(KERN_CRIT "Unable to register AARP with SNAP.\n");
-	setup_timer(&aarp_timer, aarp_expire_timeout, 0);
-	aarp_timer.expires  = jiffies + sysctl_aarp_expiry_time;
-	add_timer(&aarp_timer);
-	register_netdevice_notifier(&aarp_notifier);
-=======
 int __init aarp_proto_init(void)
 {
 	int rc;
@@ -983,7 +891,6 @@ int __init aarp_proto_init(void)
 		unregister_snap_client(aarp_dl);
 	}
 	return rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Remove the AARP entries associated with a device. */
@@ -1003,14 +910,6 @@ void aarp_device_down(struct net_device *dev)
 }
 
 #ifdef CONFIG_PROC_FS
-<<<<<<< HEAD
-struct aarp_iter_state {
-	int bucket;
-	struct aarp_entry **table;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Get the aarp entry that is in the chain described
  * by the iterator.
@@ -1025,11 +924,7 @@ static struct aarp_entry *iter_next(struct aarp_iter_state *iter, loff_t *pos)
 	struct aarp_entry *entry;
 
  rescan:
-<<<<<<< HEAD
-	while(ct < AARP_HASH_SIZE) {
-=======
 	while (ct < AARP_HASH_SIZE) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (entry = table[ct]; entry; entry = entry->next) {
 			if (!pos || ++off == *pos) {
 				iter->table = table;
@@ -1098,11 +993,7 @@ static const char *dt2str(unsigned long ticks)
 {
 	static char buf[32];
 
-<<<<<<< HEAD
-	sprintf(buf, "%ld.%02ld", ticks / HZ, ((ticks % HZ) * 100 ) / HZ);
-=======
 	sprintf(buf, "%ld.%02ld", ticks / HZ, ((ticks % HZ) * 100) / HZ);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return buf;
 }
@@ -1140,33 +1031,12 @@ static int aarp_seq_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
-<<<<<<< HEAD
-static const struct seq_operations aarp_seq_ops = {
-=======
 const struct seq_operations aarp_seq_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start  = aarp_seq_start,
 	.next   = aarp_seq_next,
 	.stop   = aarp_seq_stop,
 	.show   = aarp_seq_show,
 };
-<<<<<<< HEAD
-
-static int aarp_seq_open(struct inode *inode, struct file *file)
-{
-	return seq_open_private(file, &aarp_seq_ops,
-			sizeof(struct aarp_iter_state));
-}
-
-const struct file_operations atalk_seq_arp_fops = {
-	.owner		= THIS_MODULE,
-	.open           = aarp_seq_open,
-	.read           = seq_read,
-	.llseek         = seq_lseek,
-	.release	= seq_release_private,
-};
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* General module cleanup. Called from cleanup_module() in ddp.c. */

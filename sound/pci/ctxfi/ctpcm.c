@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/**
- * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
- *
- * This source file is released under GPL v2 license (no other versions).
- * See the COPYING file included in the main directory of this source
- * distribution for the license terms and conditions.
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctpcm.c
  *
  * @Brief
@@ -19,10 +9,6 @@
  *
  * @Author	Liu Chun
  * @Date 	Apr 2 2008
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ctpcm.h"
@@ -31,11 +17,7 @@
 #include <sound/pcm.h>
 
 /* Hardware descriptions for playback */
-<<<<<<< HEAD
-static struct snd_pcm_hardware ct_pcm_playback_hw = {
-=======
 static const struct snd_pcm_hardware ct_pcm_playback_hw = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= (SNDRV_PCM_INFO_MMAP |
 				   SNDRV_PCM_INFO_INTERLEAVED |
 				   SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -60,11 +42,7 @@ static const struct snd_pcm_hardware ct_pcm_playback_hw = {
 	.fifo_size		= 0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware ct_spdif_passthru_playback_hw = {
-=======
 static const struct snd_pcm_hardware ct_spdif_passthru_playback_hw = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= (SNDRV_PCM_INFO_MMAP |
 				   SNDRV_PCM_INFO_INTERLEAVED |
 				   SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -87,11 +65,7 @@ static const struct snd_pcm_hardware ct_spdif_passthru_playback_hw = {
 };
 
 /* Hardware descriptions for capture */
-<<<<<<< HEAD
-static struct snd_pcm_hardware ct_pcm_capture_hw = {
-=======
 static const struct snd_pcm_hardware ct_pcm_capture_hw = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= (SNDRV_PCM_INFO_MMAP |
 				   SNDRV_PCM_INFO_INTERLEAVED |
 				   SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -162,24 +136,6 @@ static int ct_pcm_playback_open(struct snd_pcm_substream *substream)
 
 	err = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
-<<<<<<< HEAD
-	if (err < 0) {
-		kfree(apcm);
-		return err;
-	}
-	err = snd_pcm_hw_constraint_minmax(runtime,
-					   SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
-					   1024, UINT_MAX);
-	if (err < 0) {
-		kfree(apcm);
-		return err;
-	}
-
-	apcm->timer = ct_timer_instance_new(atc->timer, apcm);
-	if (!apcm->timer) {
-		kfree(apcm);
-		return -ENOMEM;
-=======
 	if (err < 0)
 		goto free_pcm;
 
@@ -193,19 +149,15 @@ static int ct_pcm_playback_open(struct snd_pcm_substream *substream)
 	if (!apcm->timer) {
 		err = -ENOMEM;
 		goto free_pcm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	runtime->private_data = apcm;
 	runtime->private_free = ct_atc_pcm_free_substream;
 
 	return 0;
-<<<<<<< HEAD
-=======
 
 free_pcm:
 	kfree(apcm);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ct_pcm_playback_close(struct snd_pcm_substream *substream)
@@ -226,22 +178,10 @@ static int ct_pcm_hw_params(struct snd_pcm_substream *substream,
 {
 	struct ct_atc *atc = snd_pcm_substream_chip(substream);
 	struct ct_atc_pcm *apcm = substream->runtime->private_data;
-<<<<<<< HEAD
-	int err;
-
-	err = snd_pcm_lib_malloc_pages(substream,
-					params_buffer_bytes(hw_params));
-	if (err < 0)
-		return err;
-	/* clear previous resources */
-	atc->pcm_release_resources(atc, apcm);
-	return err;
-=======
 
 	/* clear previous resources */
 	atc->pcm_release_resources(atc, apcm);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ct_pcm_hw_free(struct snd_pcm_substream *substream)
@@ -251,12 +191,7 @@ static int ct_pcm_hw_free(struct snd_pcm_substream *substream)
 
 	/* clear previous resources */
 	atc->pcm_release_resources(atc, apcm);
-<<<<<<< HEAD
-	/* Free snd-allocated pages */
-	return snd_pcm_lib_free_pages(substream);
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -273,12 +208,8 @@ static int ct_pcm_playback_prepare(struct snd_pcm_substream *substream)
 		err = atc->pcm_playback_prepare(atc, apcm);
 
 	if (err < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR "ctxfi: Preparing pcm playback failed!!!\n");
-=======
 		dev_err(atc->card->dev,
 			"Preparing pcm playback failed!!!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -346,24 +277,6 @@ static int ct_pcm_capture_open(struct snd_pcm_substream *substream)
 
 	err = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
-<<<<<<< HEAD
-	if (err < 0) {
-		kfree(apcm);
-		return err;
-	}
-	err = snd_pcm_hw_constraint_minmax(runtime,
-					   SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
-					   1024, UINT_MAX);
-	if (err < 0) {
-		kfree(apcm);
-		return err;
-	}
-
-	apcm->timer = ct_timer_instance_new(atc->timer, apcm);
-	if (!apcm->timer) {
-		kfree(apcm);
-		return -ENOMEM;
-=======
 	if (err < 0)
 		goto free_pcm;
 
@@ -377,19 +290,15 @@ static int ct_pcm_capture_open(struct snd_pcm_substream *substream)
 	if (!apcm->timer) {
 		err = -ENOMEM;
 		goto free_pcm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	runtime->private_data = apcm;
 	runtime->private_free = ct_atc_pcm_free_substream;
 
 	return 0;
-<<<<<<< HEAD
-=======
 
 free_pcm:
 	kfree(apcm);
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ct_pcm_capture_close(struct snd_pcm_substream *substream)
@@ -408,12 +317,8 @@ static int ct_pcm_capture_prepare(struct snd_pcm_substream *substream)
 
 	err = atc->pcm_capture_prepare(atc, apcm);
 	if (err < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR "ctxfi: Preparing pcm capture failed!!!\n");
-=======
 		dev_err(atc->card->dev,
 			"Preparing pcm capture failed!!!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -459,46 +364,25 @@ ct_pcm_capture_pointer(struct snd_pcm_substream *substream)
 }
 
 /* PCM operators for playback */
-<<<<<<< HEAD
-static struct snd_pcm_ops ct_pcm_playback_ops = {
-	.open	 	= ct_pcm_playback_open,
-	.close		= ct_pcm_playback_close,
-	.ioctl		= snd_pcm_lib_ioctl,
-=======
 static const struct snd_pcm_ops ct_pcm_playback_ops = {
 	.open	 	= ct_pcm_playback_open,
 	.close		= ct_pcm_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params	= ct_pcm_hw_params,
 	.hw_free	= ct_pcm_hw_free,
 	.prepare	= ct_pcm_playback_prepare,
 	.trigger	= ct_pcm_playback_trigger,
 	.pointer	= ct_pcm_playback_pointer,
-<<<<<<< HEAD
-	.page		= snd_pcm_sgbuf_ops_page,
-};
-
-/* PCM operators for capture */
-static struct snd_pcm_ops ct_pcm_capture_ops = {
-	.open	 	= ct_pcm_capture_open,
-	.close		= ct_pcm_capture_close,
-	.ioctl		= snd_pcm_lib_ioctl,
-=======
 };
 
 /* PCM operators for capture */
 static const struct snd_pcm_ops ct_pcm_capture_ops = {
 	.open	 	= ct_pcm_capture_open,
 	.close		= ct_pcm_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params	= ct_pcm_hw_params,
 	.hw_free	= ct_pcm_hw_free,
 	.prepare	= ct_pcm_capture_prepare,
 	.trigger	= ct_pcm_capture_trigger,
 	.pointer	= ct_pcm_capture_pointer,
-<<<<<<< HEAD
-	.page		= snd_pcm_sgbuf_ops_page,
-=======
 };
 
 static const struct snd_pcm_chmap_elem surround_map[] = {
@@ -523,7 +407,6 @@ static const struct snd_pcm_chmap_elem side_map[] = {
 	{ .channels = 2,
 	  .map = { SNDRV_CHMAP_SL, SNDRV_CHMAP_SR } },
 	{ }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Create ALSA pcm device */
@@ -532,11 +415,8 @@ int ct_alsa_pcm_create(struct ct_atc *atc,
 		       const char *device_name)
 {
 	struct snd_pcm *pcm;
-<<<<<<< HEAD
-=======
 	const struct snd_pcm_chmap_elem *map;
 	int chs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	int playback_count, capture_count;
 
@@ -545,23 +425,15 @@ int ct_alsa_pcm_create(struct ct_atc *atc,
 	err = snd_pcm_new(atc->card, "ctxfi", device,
 			  playback_count, capture_count, &pcm);
 	if (err < 0) {
-<<<<<<< HEAD
-		printk(KERN_ERR "ctxfi: snd_pcm_new failed!! Err=%d\n", err);
-=======
 		dev_err(atc->card->dev, "snd_pcm_new failed!! Err=%d\n",
 			err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	pcm->private_data = atc;
 	pcm->info_flags = 0;
 	pcm->dev_subclass = SNDRV_PCM_SUBCLASS_GENERIC_MIX;
-<<<<<<< HEAD
-	strlcpy(pcm->name, device_name, sizeof(pcm->name));
-=======
 	strscpy(pcm->name, device_name, sizeof(pcm->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &ct_pcm_playback_ops);
 
@@ -569,12 +441,6 @@ int ct_alsa_pcm_create(struct ct_atc *atc,
 		snd_pcm_set_ops(pcm,
 				SNDRV_PCM_STREAM_CAPTURE, &ct_pcm_capture_ops);
 
-<<<<<<< HEAD
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
-			snd_dma_pci_data(atc->pci), 128*1024, 128*1024);
-
-#ifdef CONFIG_PM
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 				       &atc->pci->dev, 128*1024, 128*1024);
 
@@ -603,7 +469,6 @@ int ct_alsa_pcm_create(struct ct_atc *atc,
 		return err;
 
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atc->pcms[device] = pcm;
 #endif
 

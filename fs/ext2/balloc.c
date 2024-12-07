@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext2/balloc.c
  *
@@ -19,10 +16,7 @@
 #include <linux/quotaops.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/cred.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/buffer_head.h>
 #include <linux/capability.h>
 
@@ -42,11 +36,6 @@
  */
 
 
-<<<<<<< HEAD
-#define in_range(b, first, len)	((b) >= (first) && (b) <= (first) + (len) - 1)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ext2_group_desc * ext2_get_group_desc(struct super_block * sb,
 					     unsigned int block_group,
 					     struct buffer_head ** bh)
@@ -57,16 +46,9 @@ struct ext2_group_desc * ext2_get_group_desc(struct super_block * sb,
 	struct ext2_sb_info *sbi = EXT2_SB(sb);
 
 	if (block_group >= sbi->s_groups_count) {
-<<<<<<< HEAD
-		ext2_error (sb, "ext2_get_group_desc",
-			    "block_group >= groups_count - "
-			    "block_group = %d, groups_count = %lu",
-			    block_group, sbi->s_groups_count);
-=======
 		WARN(1, "block_group >= groups_count - "
 		     "block_group = %d, groups_count = %lu",
 		     block_group, sbi->s_groups_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return NULL;
 	}
@@ -74,16 +56,9 @@ struct ext2_group_desc * ext2_get_group_desc(struct super_block * sb,
 	group_desc = block_group >> EXT2_DESC_PER_BLOCK_BITS(sb);
 	offset = block_group & (EXT2_DESC_PER_BLOCK(sb) - 1);
 	if (!sbi->s_group_desc[group_desc]) {
-<<<<<<< HEAD
-		ext2_error (sb, "ext2_get_group_desc",
-			    "Group descriptor not loaded - "
-			    "block_group = %d, group_desc = %lu, desc = %lu",
-			     block_group, group_desc, offset);
-=======
 		WARN(1, "Group descriptor not loaded - "
 		     "block_group = %d, group_desc = %lu, desc = %lu",
 		      block_group, group_desc, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -149,10 +124,7 @@ read_block_bitmap(struct super_block *sb, unsigned int block_group)
 	struct ext2_group_desc * desc;
 	struct buffer_head * bh = NULL;
 	ext2_fsblk_t bitmap_blk;
-<<<<<<< HEAD
-=======
 	int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	desc = ext2_get_group_desc(sb, block_group, NULL);
 	if (!desc)
@@ -166,17 +138,10 @@ read_block_bitmap(struct super_block *sb, unsigned int block_group)
 			    block_group, le32_to_cpu(desc->bg_block_bitmap));
 		return NULL;
 	}
-<<<<<<< HEAD
-	if (likely(bh_uptodate_or_lock(bh)))
-		return bh;
-
-	if (bh_submit_read(bh) < 0) {
-=======
 	ret = bh_read(bh, 0);
 	if (ret > 0)
 		return bh;
 	if (ret < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh);
 		ext2_error(sb, __func__,
 			    "Cannot read block bitmap - "
@@ -193,19 +158,6 @@ read_block_bitmap(struct super_block *sb, unsigned int block_group)
 	return bh;
 }
 
-<<<<<<< HEAD
-static void release_blocks(struct super_block *sb, int count)
-{
-	if (count) {
-		struct ext2_sb_info *sbi = EXT2_SB(sb);
-
-		percpu_counter_add(&sbi->s_freeblocks_counter, count);
-		sb->s_dirt = 1;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void group_adjust_blocks(struct super_block *sb, int group_no,
 	struct ext2_group_desc *desc, struct buffer_head *bh, int count)
 {
@@ -217,10 +169,6 @@ static void group_adjust_blocks(struct super_block *sb, int group_no,
 		free_blocks = le16_to_cpu(desc->bg_free_blocks_count);
 		desc->bg_free_blocks_count = cpu_to_le16(free_blocks + count);
 		spin_unlock(sb_bgl_lock(sbi, group_no));
-<<<<<<< HEAD
-		sb->s_dirt = 1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mark_buffer_dirty(bh);
 	}
 }
@@ -238,11 +186,7 @@ static void group_adjust_blocks(struct super_block *sb, int group_no,
 
 /**
  * __rsv_window_dump() -- Dump the filesystem block allocation reservation map
-<<<<<<< HEAD
- * @rb_root:		root of per-filesystem reservation rb tree
-=======
  * @root:		root of per-filesystem reservation rb tree
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @verbose:		verbose mode
  * @fn:			function which wishes to dump the reservation map
  *
@@ -322,11 +266,7 @@ goal_in_my_reservation(struct ext2_reserve_window *rsv, ext2_grpblk_t grp_goal,
 	ext2_fsblk_t group_first_block, group_last_block;
 
 	group_first_block = ext2_group_first_block_no(sb, group);
-<<<<<<< HEAD
-	group_last_block = group_first_block + EXT2_BLOCKS_PER_GROUP(sb) - 1;
-=======
 	group_last_block = ext2_group_last_block_no(sb, group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rsv->_rsv_start > group_last_block) ||
 	    (rsv->_rsv_end < group_first_block))
@@ -339,11 +279,7 @@ goal_in_my_reservation(struct ext2_reserve_window *rsv, ext2_grpblk_t grp_goal,
 
 /**
  * search_reserve_window()
-<<<<<<< HEAD
- * @rb_root:		root of reservation tree
-=======
  * @root:		root of reservation tree
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @goal:		target allocation block
  *
  * Find the reserved window which includes the goal, or the previous one
@@ -476,11 +412,7 @@ void ext2_init_block_alloc_info(struct inode *inode)
 	struct ext2_block_alloc_info *block_i;
 	struct super_block *sb = inode->i_sb;
 
-<<<<<<< HEAD
-	block_i = kmalloc(sizeof(*block_i), GFP_NOFS);
-=======
 	block_i = kmalloc(sizeof(*block_i), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (block_i) {
 		struct ext2_reserve_window_node *rsv = &block_i->rsv_window_node;
 
@@ -535,15 +467,6 @@ void ext2_discard_reservation(struct inode *inode)
 }
 
 /**
-<<<<<<< HEAD
- * ext2_free_blocks_sb() -- Free given blocks and update quota and i_blocks
- * @inode:		inode
- * @block:		start physcial block to free
- * @count:		number of blocks to free
- */
-void ext2_free_blocks (struct inode * inode, unsigned long block,
-		       unsigned long count)
-=======
  * ext2_free_blocks() -- Free given blocks and update quota and i_blocks
  * @inode:		inode
  * @block:		start physical block to free
@@ -551,7 +474,6 @@ void ext2_free_blocks (struct inode * inode, unsigned long block,
  */
 void ext2_free_blocks(struct inode * inode, ext2_fsblk_t block,
 		      unsigned long count)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct buffer_head *bitmap_bh = NULL;
 	struct buffer_head * bh2;
@@ -565,13 +487,7 @@ void ext2_free_blocks(struct inode * inode, ext2_fsblk_t block,
 	struct ext2_super_block * es = sbi->s_es;
 	unsigned freed = 0, group_freed;
 
-<<<<<<< HEAD
-	if (block < le32_to_cpu(es->s_first_data_block) ||
-	    block + count < block ||
-	    block + count > le32_to_cpu(es->s_blocks_count)) {
-=======
 	if (!ext2_data_block_valid(sbi, block, count)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext2_error (sb, "ext2_free_blocks",
 			    "Freeing blocks not in datazone - "
 			    "block = %lu, count = %lu", block, count);
@@ -627,11 +543,7 @@ do_more:
 	}
 
 	mark_buffer_dirty(bitmap_bh);
-<<<<<<< HEAD
-	if (sb->s_flags & MS_SYNCHRONOUS)
-=======
 	if (sb->s_flags & SB_SYNCHRONOUS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sync_dirty_buffer(bitmap_bh);
 
 	group_adjust_blocks(sb, block_group, desc, bh2, group_freed);
@@ -644,16 +556,11 @@ do_more:
 	}
 error_return:
 	brelse(bitmap_bh);
-<<<<<<< HEAD
-	release_blocks(sb, freed);
-	dquot_free_block_nodirty(inode, freed);
-=======
 	if (freed) {
 		percpu_counter_add(&sbi->s_freeblocks_counter, freed);
 		dquot_free_block_nodirty(inode, freed);
 		mark_inode_dirty(inode);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -756,39 +663,6 @@ ext2_try_to_allocate(struct super_block *sb, int group,
 			unsigned long *count,
 			struct ext2_reserve_window *my_rsv)
 {
-<<<<<<< HEAD
-	ext2_fsblk_t group_first_block;
-       	ext2_grpblk_t start, end;
-	unsigned long num = 0;
-
-	/* we do allocation within the reservation window if we have a window */
-	if (my_rsv) {
-		group_first_block = ext2_group_first_block_no(sb, group);
-		if (my_rsv->_rsv_start >= group_first_block)
-			start = my_rsv->_rsv_start - group_first_block;
-		else
-			/* reservation window cross group boundary */
-			start = 0;
-		end = my_rsv->_rsv_end - group_first_block + 1;
-		if (end > EXT2_BLOCKS_PER_GROUP(sb))
-			/* reservation window crosses group boundary */
-			end = EXT2_BLOCKS_PER_GROUP(sb);
-		if ((start <= grp_goal) && (grp_goal < end))
-			start = grp_goal;
-		else
-			grp_goal = -1;
-	} else {
-		if (grp_goal > 0)
-			start = grp_goal;
-		else
-			start = 0;
-		end = EXT2_BLOCKS_PER_GROUP(sb);
-	}
-
-	BUG_ON(start > EXT2_BLOCKS_PER_GROUP(sb));
-
-repeat:
-=======
 	ext2_fsblk_t group_first_block = ext2_group_first_block_no(sb, group);
 	ext2_fsblk_t group_last_block = ext2_group_last_block_no(sb, group);
 	ext2_grpblk_t start, end;
@@ -807,7 +681,6 @@ repeat:
 	}
 	BUG_ON(start > EXT2_BLOCKS_PER_GROUP(sb));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (grp_goal < 0) {
 		grp_goal = find_next_usable_block(start, bitmap_bh, end);
 		if (grp_goal < 0)
@@ -822,34 +695,6 @@ repeat:
 				;
 		}
 	}
-<<<<<<< HEAD
-	start = grp_goal;
-
-	if (ext2_set_bit_atomic(sb_bgl_lock(EXT2_SB(sb), group), grp_goal,
-			       				bitmap_bh->b_data)) {
-		/*
-		 * The block was allocated by another thread, or it was
-		 * allocated and then freed by another thread
-		 */
-		start++;
-		grp_goal++;
-		if (start >= end)
-			goto fail_access;
-		goto repeat;
-	}
-	num++;
-	grp_goal++;
-	while (num < *count && grp_goal < end
-		&& !ext2_set_bit_atomic(sb_bgl_lock(EXT2_SB(sb), group),
-					grp_goal, bitmap_bh->b_data)) {
-		num++;
-		grp_goal++;
-	}
-	*count = num;
-	return grp_goal - num;
-fail_access:
-	*count = num;
-=======
 
 	for (; num < *count && grp_goal < end; grp_goal++) {
 		if (ext2_set_bit_atomic(sb_bgl_lock(EXT2_SB(sb), group),
@@ -867,44 +712,10 @@ fail_access:
 	*count = num;
 	return grp_goal - num;
 fail_access:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
 /**
-<<<<<<< HEAD
- * 	find_next_reservable_window():
- *		find a reservable space within the given range.
- *		It does not allocate the reservation window for now:
- *		alloc_new_reservation() will do the work later.
- *
- * 	@search_head: the head of the searching list;
- *		This is not necessarily the list head of the whole filesystem
- *
- *		We have both head and start_block to assist the search
- *		for the reservable space. The list starts from head,
- *		but we will shift to the place where start_block is,
- *		then start from there, when looking for a reservable space.
- *
- * 	@size: the target new reservation window size
- *
- * 	@group_first_block: the first block we consider to start
- *			the real search from
- *
- * 	@last_block:
- *		the maximum block number that our goal reservable space
- *		could start from. This is normally the last block in this
- *		group. The search will end when we found the start of next
- *		possible reservable space is out of this boundary.
- *		This could handle the cross boundary reservation window
- *		request.
- *
- * 	basically we search from the given range, rather than the whole
- * 	reservation double linked list, (start_block, last_block)
- * 	to find a free region that is of my size and has not
- * 	been reserved.
- *
-=======
  * find_next_reservable_window - Find a reservable space within the given range.
  * @search_head: The list to search.
  * @my_rsv: The reservation we're currently using.
@@ -933,7 +744,6 @@ fail_access:
  *
  * Return: -1 if we could not find a range of sufficient size.  If we could,
  * return 0 and fill in @my_rsv with the range information.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int find_next_reservable_window(
 				struct ext2_reserve_window_node *search_head,
@@ -1021,43 +831,6 @@ static int find_next_reservable_window(
 }
 
 /**
-<<<<<<< HEAD
- * 	alloc_new_reservation()--allocate a new reservation window
- *
- *		To make a new reservation, we search part of the filesystem
- *		reservation list (the list that inside the group). We try to
- *		allocate a new reservation window near the allocation goal,
- *		or the beginning of the group, if there is no goal.
- *
- *		We first find a reservable space after the goal, then from
- *		there, we check the bitmap for the first free block after
- *		it. If there is no free block until the end of group, then the
- *		whole group is full, we failed. Otherwise, check if the free
- *		block is inside the expected reservable space, if so, we
- *		succeed.
- *		If the first free block is outside the reservable space, then
- *		start from the first free block, we search for next available
- *		space, and go on.
- *
- *	on succeed, a new reservation will be found and inserted into the list
- *	It contains at least one free block, and it does not overlap with other
- *	reservation windows.
- *
- *	failed: we failed to find a reservation window in this group
- *
- *	@rsv: the reservation
- *
- *	@grp_goal: The goal (group-relative).  It is where the search for a
- *		free reservable space should start from.
- *		if we have a goal(goal >0 ), then start from there,
- *		no goal(goal = -1), we start from the first block
- *		of the group.
- *
- *	@sb: the super block
- *	@group: the group we are trying to allocate in
- *	@bitmap_bh: the block group block bitmap
- *
-=======
  * alloc_new_reservation - Allocate a new reservation window.
  * @my_rsv: The reservation we're currently using.
  * @grp_goal: The goal block relative to the start of the group.
@@ -1086,7 +859,6 @@ static int find_next_reservable_window(
  *
  * Return: 0 on success, -1 if we failed to find a reservation window
  * in this group
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int alloc_new_reservation(struct ext2_reserve_window_node *my_rsv,
 		ext2_grpblk_t grp_goal, struct super_block *sb,
@@ -1101,11 +873,7 @@ static int alloc_new_reservation(struct ext2_reserve_window_node *my_rsv,
 	spinlock_t *rsv_lock = &EXT2_SB(sb)->s_rsv_window_lock;
 
 	group_first_block = ext2_group_first_block_no(sb, group);
-<<<<<<< HEAD
-	group_end_block = group_first_block + (EXT2_BLOCKS_PER_GROUP(sb) - 1);
-=======
 	group_end_block = ext2_group_last_block_no(sb, group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (grp_goal < 0)
 		start_block = group_first_block;
@@ -1312,11 +1080,7 @@ ext2_try_to_allocate_with_rsv(struct super_block *sb, unsigned int group,
 	 * first block is the block number of the first block in this group
 	 */
 	group_first_block = ext2_group_first_block_no(sb, group);
-<<<<<<< HEAD
-	group_last_block = group_first_block + (EXT2_BLOCKS_PER_GROUP(sb) - 1);
-=======
 	group_last_block = ext2_group_last_block_no(sb, group);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Basically we will allocate a new block from inode's reservation
@@ -1358,10 +1122,6 @@ ext2_try_to_allocate_with_rsv(struct super_block *sb, unsigned int group,
 
 		if ((my_rsv->rsv_start > group_last_block) ||
 				(my_rsv->rsv_end < group_first_block)) {
-<<<<<<< HEAD
-			rsv_window_dump(&EXT2_SB(sb)->s_rsv_window_root, 1);
-			BUG();
-=======
 			ext2_error(sb, __func__,
 				   "Reservation out of group %u range goal %d fsb[%lu,%lu] rsv[%lu, %lu]",
 				   group, grp_goal, group_first_block,
@@ -1369,7 +1129,6 @@ ext2_try_to_allocate_with_rsv(struct super_block *sb, unsigned int group,
 				   my_rsv->rsv_end);
 			rsv_window_dump(&EXT2_SB(sb)->s_rsv_window_root, 1);
 			return -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ret = ext2_try_to_allocate(sb, group, bitmap_bh, grp_goal,
 					   &num, &my_rsv->rsv_window);
@@ -1396,22 +1155,15 @@ static int ext2_has_free_blocks(struct ext2_sb_info *sbi)
 	free_blocks = percpu_counter_read_positive(&sbi->s_freeblocks_counter);
 	root_blocks = le32_to_cpu(sbi->s_es->s_r_blocks_count);
 	if (free_blocks < root_blocks + 1 && !capable(CAP_SYS_RESOURCE) &&
-<<<<<<< HEAD
-		sbi->s_resuid != current_fsuid() &&
-		(sbi->s_resgid == 0 || !in_group_p (sbi->s_resgid))) {
-=======
 		!uid_eq(sbi->s_resuid, current_fsuid()) &&
 		(gid_eq(sbi->s_resgid, GLOBAL_ROOT_GID) ||
 		 !in_group_p (sbi->s_resgid))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return 1;
 }
 
 /*
-<<<<<<< HEAD
-=======
  * Returns 1 if the passed-in block region is valid; 0 if some part overlaps
  * with filesystem metadata blocks.
  */
@@ -1432,16 +1184,12 @@ int ext2_data_block_valid(struct ext2_sb_info *sbi, ext2_fsblk_t start_blk,
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ext2_new_blocks() -- core block(s) allocation function
  * @inode:		file inode
  * @goal:		given target block(filesystem wide)
  * @count:		target number of blocks to allocate
  * @errp:		error code
-<<<<<<< HEAD
-=======
  * @flags:		allocate flags
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * ext2_new_blocks uses a goal block to assist allocation.  If the goal is
  * free, or there is a free block within 32 blocks of the goal, that block
@@ -1451,11 +1199,7 @@ int ext2_data_block_valid(struct ext2_sb_info *sbi, ext2_fsblk_t start_blk,
  * This function also updates quota and i_blocks field.
  */
 ext2_fsblk_t ext2_new_blocks(struct inode *inode, ext2_fsblk_t goal,
-<<<<<<< HEAD
-		    unsigned long *count, int *errp)
-=======
 		    unsigned long *count, int *errp, unsigned int flags)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct buffer_head *bitmap_bh = NULL;
 	struct buffer_head *gdp_bh;
@@ -1480,13 +1224,6 @@ ext2_fsblk_t ext2_new_blocks(struct inode *inode, ext2_fsblk_t goal,
 
 	*errp = -ENOSPC;
 	sb = inode->i_sb;
-<<<<<<< HEAD
-	if (!sb) {
-		printk("ext2_new_blocks: nonexistent device");
-		return 0;
-	}
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check quota for allocation of this block.
@@ -1501,17 +1238,6 @@ ext2_fsblk_t ext2_new_blocks(struct inode *inode, ext2_fsblk_t goal,
 	es = EXT2_SB(sb)->s_es;
 	ext2_debug("goal=%lu.\n", goal);
 	/*
-<<<<<<< HEAD
-	 * Allocate a block from reservation only when
-	 * filesystem is mounted with reservation(default,-o reservation), and
-	 * it's a regular file, and
-	 * the desired window size is greater than 0 (One could use ioctl
-	 * command EXT2_IOC_SETRSVSZ to set the window size to 0 to turn off
-	 * reservation on that particular file)
-	 */
-	block_i = EXT2_I(inode)->i_block_alloc_info;
-	if (block_i) {
-=======
 	 * Allocate a block from reservation only when the filesystem is
 	 * mounted with reservation(default,-o reservation), and it's a regular
 	 * file, and the desired window size is greater than 0 (One could use
@@ -1521,7 +1247,6 @@ ext2_fsblk_t ext2_new_blocks(struct inode *inode, ext2_fsblk_t goal,
 	 */
 	block_i = EXT2_I(inode)->i_block_alloc_info;
 	if (!(flags & EXT2_ALLOC_NORESERVE) && block_i) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		windowsz = block_i->rsv_window_node.rsv_goal_size;
 		if (windowsz > 0)
 			my_rsv = &block_i->rsv_window_node;
@@ -1559,8 +1284,6 @@ retry_alloc:
 	if (free_blocks > 0) {
 		grp_target_blk = ((goal - le32_to_cpu(es->s_first_data_block)) %
 				EXT2_BLOCKS_PER_GROUP(sb));
-<<<<<<< HEAD
-=======
 		/*
 		 * In case we retry allocation (due to fs reservation not
 		 * working out or fs corruption), the bitmap_bh is non-null
@@ -1568,7 +1291,6 @@ retry_alloc:
 		 * read_block_bitmap().
 		 */
 		brelse(bitmap_bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bitmap_bh = read_block_bitmap(sb, group_no);
 		if (!bitmap_bh)
 			goto io_error;
@@ -1660,10 +1382,7 @@ allocated:
 		 * use.  So we may want to selectively mark some of the blocks
 		 * as free
 		 */
-<<<<<<< HEAD
-=======
 		num = *count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto retry_alloc;
 	}
 
@@ -1681,26 +1400,16 @@ allocated:
 	percpu_counter_sub(&sbi->s_freeblocks_counter, num);
 
 	mark_buffer_dirty(bitmap_bh);
-<<<<<<< HEAD
-	if (sb->s_flags & MS_SYNCHRONOUS)
-=======
 	if (sb->s_flags & SB_SYNCHRONOUS)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sync_dirty_buffer(bitmap_bh);
 
 	*errp = 0;
 	brelse(bitmap_bh);
-<<<<<<< HEAD
-	dquot_free_block_nodirty(inode, *count-num);
-	mark_inode_dirty(inode);
-	*count = num;
-=======
 	if (num < *count) {
 		dquot_free_block_nodirty(inode, *count-num);
 		mark_inode_dirty(inode);
 		*count = num;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_block;
 
 io_error:
@@ -1717,36 +1426,11 @@ out:
 	return 0;
 }
 
-<<<<<<< HEAD
-ext2_fsblk_t ext2_new_block(struct inode *inode, unsigned long goal, int *errp)
-{
-	unsigned long count = 1;
-
-	return ext2_new_blocks(inode, goal, &count, errp);
-}
-
-#ifdef EXT2FS_DEBUG
-
-static const int nibblemap[] = {4, 3, 3, 2, 3, 2, 2, 1, 3, 2, 2, 1, 2, 1, 1, 0};
-
-unsigned long ext2_count_free (struct buffer_head * map, unsigned int numchars)
-{
-	unsigned int i;
-	unsigned long sum = 0;
-
-	if (!map)
-		return (0);
-	for (i = 0; i < numchars; i++)
-		sum += nibblemap[map->b_data[i] & 0xf] +
-			nibblemap[(map->b_data[i] >> 4) & 0xf];
-	return (sum);
-=======
 #ifdef EXT2FS_DEBUG
 
 unsigned long ext2_count_free(struct buffer_head *map, unsigned int numchars)
 {
 	return numchars * BITS_PER_BYTE - memweight(map->b_data, numchars);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif  /*  EXT2FS_DEBUG  */
@@ -1785,19 +1469,11 @@ unsigned long ext2_count_free_blocks (struct super_block * sb)
 		desc_count, bitmap_count);
 	return bitmap_count;
 #else
-<<<<<<< HEAD
-        for (i = 0; i < EXT2_SB(sb)->s_groups_count; i++) {
-                desc = ext2_get_group_desc (sb, i, NULL);
-                if (!desc)
-                        continue;
-                desc_count += le16_to_cpu(desc->bg_free_blocks_count);
-=======
 	for (i = 0; i < EXT2_SB(sb)->s_groups_count; i++) {
 		desc = ext2_get_group_desc(sb, i, NULL);
 		if (!desc)
 			continue;
 		desc_count += le16_to_cpu(desc->bg_free_blocks_count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return desc_count;
 #endif

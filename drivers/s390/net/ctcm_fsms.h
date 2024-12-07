@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * drivers/s390/net/ctcm_fsms.h
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright IBM Corp. 2001, 2007
  * Authors: 	Fritz Elfert (felfert@millenux.com)
  * 		Peter Tiedemann (ptiedem@de.ibm.com)
@@ -165,10 +159,6 @@ extern const char *ctc_ch_state_names[];
 
 void ctcm_ccw_check_rc(struct channel *ch, int rc, char *msg);
 void ctcm_purge_skb_queue(struct sk_buff_head *q);
-<<<<<<< HEAD
-void fsm_action_nop(fsm_instance *fi, int event, void *arg);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ----- non-static actions for ctcm channel statemachine -----

@@ -1,25 +1,3 @@
-<<<<<<< HEAD
-/*
- * dir.c - NILFS directory entry operations
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- * Modified for NILFS by Amagai Yoshiji <amagai@osrg.net>
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /*
  * NILFS directory entry operations
@@ -27,7 +5,6 @@
  * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
  *
  * Modified for NILFS by Amagai Yoshiji.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  *  linux/fs/ext2/dir.c
@@ -56,8 +33,6 @@
 #include "nilfs.h"
 #include "page.h"
 
-<<<<<<< HEAD
-=======
 static inline unsigned int nilfs_rec_len_from_disk(__le16 dlen)
 {
 	unsigned int len = le16_to_cpu(dlen);
@@ -80,68 +55,19 @@ static inline __le16 nilfs_rec_len_to_disk(unsigned int len)
 	return cpu_to_le16(len);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * nilfs uses block-sized chunks. Arguably, sector-sized ones would be
  * more robust, but we have what we have
  */
-<<<<<<< HEAD
-static inline unsigned nilfs_chunk_size(struct inode *inode)
-=======
 static inline unsigned int nilfs_chunk_size(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return inode->i_sb->s_blocksize;
 }
 
-<<<<<<< HEAD
-static inline void nilfs_put_page(struct page *page)
-{
-	kunmap(page);
-	page_cache_release(page);
-}
-
-static inline unsigned long dir_pages(struct inode *inode)
-{
-	return (inode->i_size+PAGE_CACHE_SIZE-1)>>PAGE_CACHE_SHIFT;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return the offset into page `page_nr' of the last valid
  * byte in that page, plus one.
  */
-<<<<<<< HEAD
-static unsigned nilfs_last_byte(struct inode *inode, unsigned long page_nr)
-{
-	unsigned last_byte = inode->i_size;
-
-	last_byte -= page_nr << PAGE_CACHE_SHIFT;
-	if (last_byte > PAGE_CACHE_SIZE)
-		last_byte = PAGE_CACHE_SIZE;
-	return last_byte;
-}
-
-static int nilfs_prepare_chunk(struct page *page, unsigned from, unsigned to)
-{
-	loff_t pos = page_offset(page) + from;
-	return __block_write_begin(page, pos, to - from, nilfs_get_block);
-}
-
-static void nilfs_commit_chunk(struct page *page,
-			       struct address_space *mapping,
-			       unsigned from, unsigned to)
-{
-	struct inode *dir = mapping->host;
-	loff_t pos = page_offset(page) + from;
-	unsigned len = to - from;
-	unsigned nr_dirty, copied;
-	int err;
-
-	nr_dirty = nilfs_page_count_clean_buffers(page, from, to);
-	copied = block_write_end(NULL, mapping, pos, len, len, page, NULL);
-=======
 static unsigned int nilfs_last_byte(struct inode *inode, unsigned long page_nr)
 {
 	unsigned int last_byte = inode->i_size;
@@ -171,31 +97,12 @@ static void nilfs_commit_chunk(struct folio *folio,
 
 	nr_dirty = nilfs_page_count_clean_buffers(&folio->page, from, to);
 	copied = block_write_end(NULL, mapping, pos, len, len, &folio->page, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pos + copied > dir->i_size)
 		i_size_write(dir, pos + copied);
 	if (IS_DIRSYNC(dir))
 		nilfs_set_transaction_flag(NILFS_TI_SYNC);
 	err = nilfs_set_file_dirty(dir, nr_dirty);
 	WARN_ON(err); /* do not happen */
-<<<<<<< HEAD
-	unlock_page(page);
-}
-
-static void nilfs_check_page(struct page *page)
-{
-	struct inode *dir = page->mapping->host;
-	struct super_block *sb = dir->i_sb;
-	unsigned chunk_size = nilfs_chunk_size(dir);
-	char *kaddr = page_address(page);
-	unsigned offs, rec_len;
-	unsigned limit = PAGE_CACHE_SIZE;
-	struct nilfs_dir_entry *p;
-	char *error;
-
-	if ((dir->i_size >> PAGE_CACHE_SHIFT) == page->index) {
-		limit = dir->i_size & ~PAGE_CACHE_MASK;
-=======
 	folio_unlock(folio);
 }
 
@@ -211,7 +118,6 @@ static bool nilfs_check_folio(struct folio *folio, char *kaddr)
 
 	if (dir->i_size < folio_pos(folio) + limit) {
 		limit = dir->i_size - folio_pos(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (limit & (chunk_size - 1))
 			goto Ebadsize;
 		if (!limit)
@@ -233,27 +139,15 @@ static bool nilfs_check_folio(struct folio *folio, char *kaddr)
 	if (offs != limit)
 		goto Eend;
 out:
-<<<<<<< HEAD
-	SetPageChecked(page);
-	return;
-=======
 	folio_set_checked(folio);
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Too bad, we had an error */
 
 Ebadsize:
-<<<<<<< HEAD
-	nilfs_error(sb, "nilfs_check_page",
-		    "size of directory #%lu is not a multiple of chunk size",
-		    dir->i_ino
-	);
-=======
 	nilfs_error(sb,
 		    "size of directory #%lu is not a multiple of chunk size",
 		    dir->i_ino);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto fail;
 Eshort:
 	error = "rec_len is smaller than minimal";
@@ -267,49 +161,14 @@ Enamelen:
 Espan:
 	error = "directory entry across blocks";
 bad_entry:
-<<<<<<< HEAD
-	nilfs_error(sb, "nilfs_check_page", "bad entry in directory #%lu: %s - "
-		    "offset=%lu, inode=%lu, rec_len=%d, name_len=%d",
-		    dir->i_ino, error, (page->index<<PAGE_CACHE_SHIFT)+offs,
-		    (unsigned long) le64_to_cpu(p->inode),
-=======
 	nilfs_error(sb,
 		    "bad entry in directory #%lu: %s - offset=%lu, inode=%lu, rec_len=%zd, name_len=%d",
 		    dir->i_ino, error, (folio->index << PAGE_SHIFT) + offs,
 		    (unsigned long)le64_to_cpu(p->inode),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    rec_len, p->name_len);
 	goto fail;
 Eend:
 	p = (struct nilfs_dir_entry *)(kaddr + offs);
-<<<<<<< HEAD
-	nilfs_error(sb, "nilfs_check_page",
-		    "entry in directory #%lu spans the page boundary"
-		    "offset=%lu, inode=%lu",
-		    dir->i_ino, (page->index<<PAGE_CACHE_SHIFT)+offs,
-		    (unsigned long) le64_to_cpu(p->inode));
-fail:
-	SetPageChecked(page);
-	SetPageError(page);
-}
-
-static struct page *nilfs_get_page(struct inode *dir, unsigned long n)
-{
-	struct address_space *mapping = dir->i_mapping;
-	struct page *page = read_mapping_page(mapping, n, NULL);
-
-	if (!IS_ERR(page)) {
-		kmap(page);
-		if (!PageChecked(page))
-			nilfs_check_page(page);
-		if (PageError(page))
-			goto fail;
-	}
-	return page;
-
-fail:
-	nilfs_put_page(page);
-=======
 	nilfs_error(sb,
 		    "entry in directory #%lu spans the page boundary offset=%lu, inode=%lu",
 		    dir->i_ino, (folio->index << PAGE_SHIFT) + offs,
@@ -340,7 +199,6 @@ static void *nilfs_get_folio(struct inode *dir, unsigned long n,
 
 fail:
 	folio_release_kmap(folio, kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ERR_PTR(-EIO);
 }
 
@@ -382,11 +240,7 @@ nilfs_filetype_table[NILFS_FT_MAX] = {
 
 #define S_SHIFT 12
 static unsigned char
-<<<<<<< HEAD
-nilfs_type_by_mode[S_IFMT >> S_SHIFT] = {
-=======
 nilfs_type_by_mode[(S_IFMT >> S_SHIFT) + 1] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[S_IFREG >> S_SHIFT]	= NILFS_FT_REG_FILE,
 	[S_IFDIR >> S_SHIFT]	= NILFS_FT_DIR,
 	[S_IFCHR >> S_SHIFT]	= NILFS_FT_CHRDEV,
@@ -403,24 +257,6 @@ static void nilfs_set_de_type(struct nilfs_dir_entry *de, struct inode *inode)
 	de->file_type = nilfs_type_by_mode[(mode & S_IFMT)>>S_SHIFT];
 }
 
-<<<<<<< HEAD
-static int nilfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
-{
-	loff_t pos = filp->f_pos;
-	struct inode *inode = filp->f_dentry->d_inode;
-	struct super_block *sb = inode->i_sb;
-	unsigned int offset = pos & ~PAGE_CACHE_MASK;
-	unsigned long n = pos >> PAGE_CACHE_SHIFT;
-	unsigned long npages = dir_pages(inode);
-/*	unsigned chunk_mask = ~(nilfs_chunk_size(inode)-1); */
-	unsigned char *types = NULL;
-	int ret;
-
-	if (pos > inode->i_size - NILFS_DIR_REC_LEN(1))
-		goto success;
-
-	types = nilfs_filetype_table;
-=======
 static int nilfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	loff_t pos = ctx->pos;
@@ -432,23 +268,10 @@ static int nilfs_readdir(struct file *file, struct dir_context *ctx)
 
 	if (pos > inode->i_size - NILFS_DIR_REC_LEN(1))
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for ( ; n < npages; n++, offset = 0) {
 		char *kaddr, *limit;
 		struct nilfs_dir_entry *de;
-<<<<<<< HEAD
-		struct page *page = nilfs_get_page(inode, n);
-
-		if (IS_ERR(page)) {
-			nilfs_error(sb, __func__, "bad page in #%lu",
-				    inode->i_ino);
-			filp->f_pos += PAGE_CACHE_SIZE - offset;
-			ret = -EIO;
-			goto done;
-		}
-		kaddr = page_address(page);
-=======
 		struct folio *folio;
 
 		kaddr = nilfs_get_folio(inode, n, &folio);
@@ -457,65 +280,11 @@ static int nilfs_readdir(struct file *file, struct dir_context *ctx)
 			ctx->pos += PAGE_SIZE - offset;
 			return -EIO;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		de = (struct nilfs_dir_entry *)(kaddr + offset);
 		limit = kaddr + nilfs_last_byte(inode, n) -
 			NILFS_DIR_REC_LEN(1);
 		for ( ; (char *)de <= limit; de = nilfs_next_entry(de)) {
 			if (de->rec_len == 0) {
-<<<<<<< HEAD
-				nilfs_error(sb, __func__,
-					    "zero-length directory entry");
-				ret = -EIO;
-				nilfs_put_page(page);
-				goto done;
-			}
-			if (de->inode) {
-				int over;
-				unsigned char d_type = DT_UNKNOWN;
-
-				if (types && de->file_type < NILFS_FT_MAX)
-					d_type = types[de->file_type];
-
-				offset = (char *)de - kaddr;
-				over = filldir(dirent, de->name, de->name_len,
-						(n<<PAGE_CACHE_SHIFT) | offset,
-						le64_to_cpu(de->inode), d_type);
-				if (over) {
-					nilfs_put_page(page);
-					goto success;
-				}
-			}
-			filp->f_pos += nilfs_rec_len_from_disk(de->rec_len);
-		}
-		nilfs_put_page(page);
-	}
-
-success:
-	ret = 0;
-done:
-	return ret;
-}
-
-/*
- *	nilfs_find_entry()
- *
- * finds an entry in the specified directory with the wanted name. It
- * returns the page in which the entry was found, and the entry itself
- * (as a parameter - res_dir). Page is returned mapped and unlocked.
- * Entry is guaranteed to be valid.
- */
-struct nilfs_dir_entry *
-nilfs_find_entry(struct inode *dir, const struct qstr *qstr,
-		 struct page **res_page)
-{
-	const unsigned char *name = qstr->name;
-	int namelen = qstr->len;
-	unsigned reclen = NILFS_DIR_REC_LEN(namelen);
-	unsigned long start, n;
-	unsigned long npages = dir_pages(dir);
-	struct page *page = NULL;
-=======
 				nilfs_error(sb, "zero-length directory entry");
 				folio_release_kmap(folio, kaddr);
 				return -EIO;
@@ -559,62 +328,33 @@ struct nilfs_dir_entry *nilfs_find_entry(struct inode *dir,
 	unsigned int reclen = NILFS_DIR_REC_LEN(namelen);
 	unsigned long start, n;
 	unsigned long npages = dir_pages(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nilfs_inode_info *ei = NILFS_I(dir);
 	struct nilfs_dir_entry *de;
 
 	if (npages == 0)
 		goto out;
 
-<<<<<<< HEAD
-	/* OFFSET_CACHE */
-	*res_page = NULL;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start = ei->i_dir_start_lookup;
 	if (start >= npages)
 		start = 0;
 	n = start;
 	do {
-<<<<<<< HEAD
-		char *kaddr;
-		page = nilfs_get_page(dir, n);
-		if (!IS_ERR(page)) {
-			kaddr = page_address(page);
-=======
 		char *kaddr = nilfs_get_folio(dir, n, foliop);
 
 		if (!IS_ERR(kaddr)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			de = (struct nilfs_dir_entry *)kaddr;
 			kaddr += nilfs_last_byte(dir, n) - reclen;
 			while ((char *) de <= kaddr) {
 				if (de->rec_len == 0) {
-<<<<<<< HEAD
-					nilfs_error(dir->i_sb, __func__,
-						"zero-length directory entry");
-					nilfs_put_page(page);
-=======
 					nilfs_error(dir->i_sb,
 						"zero-length directory entry");
 					folio_release_kmap(*foliop, kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto out;
 				}
 				if (nilfs_match(namelen, name, de))
 					goto found;
 				de = nilfs_next_entry(de);
 			}
-<<<<<<< HEAD
-			nilfs_put_page(page);
-		}
-		if (++n >= npages)
-			n = 0;
-		/* next page is past the blocks we've got */
-		if (unlikely(n > (dir->i_blocks >> (PAGE_CACHE_SHIFT - 9)))) {
-			nilfs_error(dir->i_sb, __func__,
-=======
 			folio_release_kmap(*foliop, kaddr);
 		}
 		if (++n >= npages)
@@ -622,7 +362,6 @@ struct nilfs_dir_entry *nilfs_find_entry(struct inode *dir,
 		/* next folio is past the blocks we've got */
 		if (unlikely(n > (dir->i_blocks >> (PAGE_SHIFT - 9)))) {
 			nilfs_error(dir->i_sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "dir %lu size %lld exceeds block count %llu",
 			       dir->i_ino, dir->i_size,
 			       (unsigned long long)dir->i_blocks);
@@ -633,27 +372,10 @@ out:
 	return NULL;
 
 found:
-<<<<<<< HEAD
-	*res_page = page;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei->i_dir_start_lookup = n;
 	return de;
 }
 
-<<<<<<< HEAD
-struct nilfs_dir_entry *nilfs_dotdot(struct inode *dir, struct page **p)
-{
-	struct page *page = nilfs_get_page(dir, 0);
-	struct nilfs_dir_entry *de = NULL;
-
-	if (!IS_ERR(page)) {
-		de = nilfs_next_entry(
-			(struct nilfs_dir_entry *)page_address(page));
-		*p = page;
-	}
-	return de;
-=======
 struct nilfs_dir_entry *nilfs_dotdot(struct inode *dir, struct folio **foliop)
 {
 	struct nilfs_dir_entry *de = nilfs_get_folio(dir, 0, foliop);
@@ -661,52 +383,22 @@ struct nilfs_dir_entry *nilfs_dotdot(struct inode *dir, struct folio **foliop)
 	if (IS_ERR(de))
 		return NULL;
 	return nilfs_next_entry(de);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 ino_t nilfs_inode_by_name(struct inode *dir, const struct qstr *qstr)
 {
 	ino_t res = 0;
 	struct nilfs_dir_entry *de;
-<<<<<<< HEAD
-	struct page *page;
-
-	de = nilfs_find_entry(dir, qstr, &page);
-	if (de) {
-		res = le64_to_cpu(de->inode);
-		kunmap(page);
-		page_cache_release(page);
-=======
 	struct folio *folio;
 
 	de = nilfs_find_entry(dir, qstr, &folio);
 	if (de) {
 		res = le64_to_cpu(de->inode);
 		folio_release_kmap(folio, de);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 }
 
-<<<<<<< HEAD
-/* Releases the page */
-void nilfs_set_link(struct inode *dir, struct nilfs_dir_entry *de,
-		    struct page *page, struct inode *inode)
-{
-	unsigned from = (char *) de - (char *) page_address(page);
-	unsigned to = from + nilfs_rec_len_from_disk(de->rec_len);
-	struct address_space *mapping = page->mapping;
-	int err;
-
-	lock_page(page);
-	err = nilfs_prepare_chunk(page, from, to);
-	BUG_ON(err);
-	de->inode = cpu_to_le64(inode->i_ino);
-	nilfs_set_de_type(de, inode);
-	nilfs_commit_chunk(page, mapping, from, to);
-	nilfs_put_page(page);
-	dir->i_mtime = dir->i_ctime = CURRENT_TIME;
-=======
 void nilfs_set_link(struct inode *dir, struct nilfs_dir_entry *de,
 		    struct folio *folio, struct inode *inode)
 {
@@ -722,7 +414,6 @@ void nilfs_set_link(struct inode *dir, struct nilfs_dir_entry *de,
 	nilfs_set_de_type(de, inode);
 	nilfs_commit_chunk(folio, mapping, from, to);
 	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -730,20 +421,6 @@ void nilfs_set_link(struct inode *dir, struct nilfs_dir_entry *de,
  */
 int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 {
-<<<<<<< HEAD
-	struct inode *dir = dentry->d_parent->d_inode;
-	const unsigned char *name = dentry->d_name.name;
-	int namelen = dentry->d_name.len;
-	unsigned chunk_size = nilfs_chunk_size(dir);
-	unsigned reclen = NILFS_DIR_REC_LEN(namelen);
-	unsigned short rec_len, name_len;
-	struct page *page = NULL;
-	struct nilfs_dir_entry *de;
-	unsigned long npages = dir_pages(dir);
-	unsigned long n;
-	char *kaddr;
-	unsigned from, to;
-=======
 	struct inode *dir = d_inode(dentry->d_parent);
 	const unsigned char *name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
@@ -755,28 +432,10 @@ int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 	unsigned long npages = dir_pages(dir);
 	unsigned long n;
 	size_t from, to;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	/*
 	 * We take care of directory expansion in the same loop.
-<<<<<<< HEAD
-	 * This code plays outside i_size, so it locks the page
-	 * to protect that region.
-	 */
-	for (n = 0; n <= npages; n++) {
-		char *dir_end;
-
-		page = nilfs_get_page(dir, n);
-		err = PTR_ERR(page);
-		if (IS_ERR(page))
-			goto out;
-		lock_page(page);
-		kaddr = page_address(page);
-		dir_end = kaddr + nilfs_last_byte(dir, n);
-		de = (struct nilfs_dir_entry *)kaddr;
-		kaddr += PAGE_CACHE_SIZE - reclen;
-=======
 	 * This code plays outside i_size, so it locks the folio
 	 * to protect that region.
 	 */
@@ -790,7 +449,6 @@ int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 		dir_end = kaddr + nilfs_last_byte(dir, n);
 		de = (struct nilfs_dir_entry *)kaddr;
 		kaddr += folio_size(folio) - reclen;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((char *)de <= kaddr) {
 			if ((char *)de == dir_end) {
 				/* We hit i_size */
@@ -801,11 +459,7 @@ int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 				goto got_it;
 			}
 			if (de->rec_len == 0) {
-<<<<<<< HEAD
-				nilfs_error(dir->i_sb, __func__,
-=======
 				nilfs_error(dir->i_sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    "zero-length directory entry");
 				err = -EIO;
 				goto out_unlock;
@@ -821,27 +475,16 @@ int nilfs_add_link(struct dentry *dentry, struct inode *inode)
 				goto got_it;
 			de = (struct nilfs_dir_entry *)((char *)de + rec_len);
 		}
-<<<<<<< HEAD
-		unlock_page(page);
-		nilfs_put_page(page);
-=======
 		folio_unlock(folio);
 		folio_release_kmap(folio, kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	BUG();
 	return -EINVAL;
 
 got_it:
-<<<<<<< HEAD
-	from = (char *)de - (char *)page_address(page);
-	to = from + rec_len;
-	err = nilfs_prepare_chunk(page, from, to);
-=======
 	from = offset_in_folio(folio, de);
 	to = from + rec_len;
 	err = nilfs_prepare_chunk(folio, from, to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_unlock;
 	if (de->inode) {
@@ -856,18 +499,6 @@ got_it:
 	memcpy(de->name, name, namelen);
 	de->inode = cpu_to_le64(inode->i_ino);
 	nilfs_set_de_type(de, inode);
-<<<<<<< HEAD
-	nilfs_commit_chunk(page, page->mapping, from, to);
-	dir->i_mtime = dir->i_ctime = CURRENT_TIME;
-	nilfs_mark_inode_dirty(dir);
-	/* OFFSET_CACHE */
-out_put:
-	nilfs_put_page(page);
-out:
-	return err;
-out_unlock:
-	unlock_page(page);
-=======
 	nilfs_commit_chunk(folio, folio->mapping, from, to);
 	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
 	nilfs_mark_inode_dirty(dir);
@@ -877,31 +508,11 @@ out_put:
 	return err;
 out_unlock:
 	folio_unlock(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out_put;
 }
 
 /*
  * nilfs_delete_entry deletes a directory entry by merging it with the
-<<<<<<< HEAD
- * previous entry. Page is up-to-date. Releases the page.
- */
-int nilfs_delete_entry(struct nilfs_dir_entry *dir, struct page *page)
-{
-	struct address_space *mapping = page->mapping;
-	struct inode *inode = mapping->host;
-	char *kaddr = page_address(page);
-	unsigned from = ((char *)dir - kaddr) & ~(nilfs_chunk_size(inode) - 1);
-	unsigned to = ((char *)dir - kaddr) +
-		nilfs_rec_len_from_disk(dir->rec_len);
-	struct nilfs_dir_entry *pde = NULL;
-	struct nilfs_dir_entry *de = (struct nilfs_dir_entry *)(kaddr + from);
-	int err;
-
-	while ((char *)de < (char *)dir) {
-		if (de->rec_len == 0) {
-			nilfs_error(inode->i_sb, __func__,
-=======
  * previous entry. Folio is up-to-date.
  */
 int nilfs_delete_entry(struct nilfs_dir_entry *dir, struct folio *folio)
@@ -920,7 +531,6 @@ int nilfs_delete_entry(struct nilfs_dir_entry *dir, struct folio *folio)
 	while ((char *)de < (char *)dir) {
 		if (de->rec_len == 0) {
 			nilfs_error(inode->i_sb,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    "zero-length directory entry");
 			err = -EIO;
 			goto out;
@@ -929,29 +539,16 @@ int nilfs_delete_entry(struct nilfs_dir_entry *dir, struct folio *folio)
 		de = nilfs_next_entry(de);
 	}
 	if (pde)
-<<<<<<< HEAD
-		from = (char *)pde - (char *)page_address(page);
-	lock_page(page);
-	err = nilfs_prepare_chunk(page, from, to);
-=======
 		from = (char *)pde - kaddr;
 	folio_lock(folio);
 	err = nilfs_prepare_chunk(folio, from, to);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(err);
 	if (pde)
 		pde->rec_len = nilfs_rec_len_to_disk(to - from);
 	dir->inode = 0;
-<<<<<<< HEAD
-	nilfs_commit_chunk(page, mapping, from, to);
-	inode->i_ctime = inode->i_mtime = CURRENT_TIME;
-out:
-	nilfs_put_page(page);
-=======
 	nilfs_commit_chunk(folio, mapping, from, to);
 	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -961,28 +558,12 @@ out:
 int nilfs_make_empty(struct inode *inode, struct inode *parent)
 {
 	struct address_space *mapping = inode->i_mapping;
-<<<<<<< HEAD
-	struct page *page = grab_cache_page(mapping, 0);
-	unsigned chunk_size = nilfs_chunk_size(inode);
-=======
 	struct folio *folio = filemap_grab_folio(mapping, 0);
 	unsigned int chunk_size = nilfs_chunk_size(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nilfs_dir_entry *de;
 	int err;
 	void *kaddr;
 
-<<<<<<< HEAD
-	if (!page)
-		return -ENOMEM;
-
-	err = nilfs_prepare_chunk(page, 0, chunk_size);
-	if (unlikely(err)) {
-		unlock_page(page);
-		goto fail;
-	}
-	kaddr = kmap_atomic(page);
-=======
 	if (IS_ERR(folio))
 		return PTR_ERR(folio);
 
@@ -992,7 +573,6 @@ int nilfs_make_empty(struct inode *inode, struct inode *parent)
 		goto fail;
 	}
 	kaddr = kmap_local_folio(folio, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(kaddr, 0, chunk_size);
 	de = (struct nilfs_dir_entry *)kaddr;
 	de->name_len = 1;
@@ -1007,17 +587,10 @@ int nilfs_make_empty(struct inode *inode, struct inode *parent)
 	de->inode = cpu_to_le64(parent->i_ino);
 	memcpy(de->name, "..\0", 4);
 	nilfs_set_de_type(de, inode);
-<<<<<<< HEAD
-	kunmap_atomic(kaddr);
-	nilfs_commit_chunk(page, mapping, 0, chunk_size);
-fail:
-	page_cache_release(page);
-=======
 	kunmap_local(kaddr);
 	nilfs_commit_chunk(folio, mapping, 0, chunk_size);
 fail:
 	folio_put(folio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1026,20 +599,6 @@ fail:
  */
 int nilfs_empty_dir(struct inode *inode)
 {
-<<<<<<< HEAD
-	struct page *page = NULL;
-	unsigned long i, npages = dir_pages(inode);
-
-	for (i = 0; i < npages; i++) {
-		char *kaddr;
-		struct nilfs_dir_entry *de;
-
-		page = nilfs_get_page(inode, i);
-		if (IS_ERR(page))
-			continue;
-
-		kaddr = page_address(page);
-=======
 	struct folio *folio = NULL;
 	char *kaddr;
 	unsigned long i, npages = dir_pages(inode);
@@ -1051,21 +610,14 @@ int nilfs_empty_dir(struct inode *inode)
 		if (IS_ERR(kaddr))
 			continue;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		de = (struct nilfs_dir_entry *)kaddr;
 		kaddr += nilfs_last_byte(inode, i) - NILFS_DIR_REC_LEN(1);
 
 		while ((char *)de <= kaddr) {
 			if (de->rec_len == 0) {
-<<<<<<< HEAD
-				nilfs_error(inode->i_sb, __func__,
-					    "zero-length directory entry "
-					    "(kaddr=%p, de=%p)\n", kaddr, de);
-=======
 				nilfs_error(inode->i_sb,
 					    "zero-length directory entry (kaddr=%p, de=%p)",
 					    kaddr, de);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto not_empty;
 			}
 			if (de->inode != 0) {
@@ -1083,31 +635,19 @@ int nilfs_empty_dir(struct inode *inode)
 			}
 			de = nilfs_next_entry(de);
 		}
-<<<<<<< HEAD
-		nilfs_put_page(page);
-=======
 		folio_release_kmap(folio, kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 
 not_empty:
-<<<<<<< HEAD
-	nilfs_put_page(page);
-=======
 	folio_release_kmap(folio, kaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 const struct file_operations nilfs_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
-<<<<<<< HEAD
-	.readdir	= nilfs_readdir,
-=======
 	.iterate_shared	= nilfs_readdir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	= nilfs_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= nilfs_compat_ioctl,

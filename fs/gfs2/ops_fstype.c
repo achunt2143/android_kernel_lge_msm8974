@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2008 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
- */
-
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
@@ -17,7 +6,6 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -30,14 +18,10 @@
 #include <linux/mount.h>
 #include <linux/gfs2_ondisk.h>
 #include <linux/quotaops.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/lockdep.h>
 #include <linux/module.h>
 #include <linux/backing-dev.h>
 #include <linux/fs_parser.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
@@ -53,13 +37,9 @@
 #include "log.h"
 #include "quota.h"
 #include "dir.h"
-<<<<<<< HEAD
-#include "trace_gfs2.h"
-=======
 #include "meta_io.h"
 #include "trace_gfs2.h"
 #include "lops.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DO 0
 #define UNDO 1
@@ -74,23 +54,10 @@ static void gfs2_tune_init(struct gfs2_tune *gt)
 {
 	spin_lock_init(&gt->gt_spin);
 
-<<<<<<< HEAD
-	gt->gt_quota_simul_sync = 64;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gt->gt_quota_warn_period = 10;
 	gt->gt_quota_scale_num = 1;
 	gt->gt_quota_scale_den = 1;
 	gt->gt_new_files_jdata = 0;
-<<<<<<< HEAD
-	gt->gt_max_readahead = 1 << 18;
-	gt->gt_complain_secs = 10;
-}
-
-static struct gfs2_sbd *init_sbd(struct super_block *sb)
-{
-	struct gfs2_sbd *sdp;
-=======
 	gt->gt_max_readahead = BIT(18);
 	gt->gt_complain_secs = 10;
 }
@@ -106,42 +73,25 @@ static struct gfs2_sbd *init_sbd(struct super_block *sb)
 {
 	struct gfs2_sbd *sdp;
 	struct address_space *mapping;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sdp = kzalloc(sizeof(struct gfs2_sbd), GFP_KERNEL);
 	if (!sdp)
 		return NULL;
 
-<<<<<<< HEAD
-	sb->s_fs_info = sdp;
-	sdp->sd_vfs = sb;
-	sdp->sd_lkstats = alloc_percpu(struct gfs2_pcpu_lkstats);
-	if (!sdp->sd_lkstats) {
-		kfree(sdp);
-		return NULL;
-	}
-=======
 	sdp->sd_vfs = sb;
 	sdp->sd_lkstats = alloc_percpu(struct gfs2_pcpu_lkstats);
 	if (!sdp->sd_lkstats)
 		goto fail;
 	sb->s_fs_info = sdp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(SDF_NOJOURNALID, &sdp->sd_flags);
 	gfs2_tune_init(&sdp->sd_tune);
 
-<<<<<<< HEAD
-	init_waitqueue_head(&sdp->sd_glock_wait);
-	atomic_set(&sdp->sd_glock_disposal, 0);
-	init_completion(&sdp->sd_locking_init);
-=======
 	init_waitqueue_head(&sdp->sd_kill_wait);
 	init_waitqueue_head(&sdp->sd_async_glock_wait);
 	atomic_set(&sdp->sd_glock_disposal, 0);
 	init_completion(&sdp->sd_locking_init);
 	init_completion(&sdp->sd_wdack);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&sdp->sd_statfs_spin);
 
 	spin_lock_init(&sdp->sd_rindex_spin);
@@ -150,22 +100,6 @@ static struct gfs2_sbd *init_sbd(struct super_block *sb)
 	INIT_LIST_HEAD(&sdp->sd_jindex_list);
 	spin_lock_init(&sdp->sd_jindex_spin);
 	mutex_init(&sdp->sd_jindex_mutex);
-<<<<<<< HEAD
-
-	INIT_LIST_HEAD(&sdp->sd_quota_list);
-	mutex_init(&sdp->sd_quota_mutex);
-	init_waitqueue_head(&sdp->sd_quota_wait);
-	INIT_LIST_HEAD(&sdp->sd_trunc_list);
-	spin_lock_init(&sdp->sd_trunc_lock);
-
-	spin_lock_init(&sdp->sd_log_lock);
-	atomic_set(&sdp->sd_log_pinned, 0);
-	INIT_LIST_HEAD(&sdp->sd_log_le_buf);
-	INIT_LIST_HEAD(&sdp->sd_log_le_revoke);
-	INIT_LIST_HEAD(&sdp->sd_log_le_rg);
-	INIT_LIST_HEAD(&sdp->sd_log_le_databuf);
-	INIT_LIST_HEAD(&sdp->sd_log_le_ordered);
-=======
 	init_completion(&sdp->sd_journal_ready);
 
 	INIT_LIST_HEAD(&sdp->sd_quota_list);
@@ -191,7 +125,6 @@ static struct gfs2_sbd *init_sbd(struct super_block *sb)
 	INIT_LIST_HEAD(&sdp->sd_log_revokes);
 	INIT_LIST_HEAD(&sdp->sd_log_ordered);
 	spin_lock_init(&sdp->sd_ordered_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_waitqueue_head(&sdp->sd_log_waitq);
 	init_waitqueue_head(&sdp->sd_logd_waitq);
@@ -202,16 +135,6 @@ static struct gfs2_sbd *init_sbd(struct super_block *sb)
 	init_rwsem(&sdp->sd_log_flush_lock);
 	atomic_set(&sdp->sd_log_in_flight, 0);
 	init_waitqueue_head(&sdp->sd_log_flush_wait);
-<<<<<<< HEAD
-
-	INIT_LIST_HEAD(&sdp->sd_revoke_list);
-
-	mutex_init(&sdp->sd_freeze_lock);
-
-	return sdp;
-}
-
-=======
 	mutex_init(&sdp->sd_freeze_mutex);
 
 	return sdp;
@@ -220,15 +143,10 @@ fail:
 	free_sbd(sdp);
 	return NULL;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * gfs2_check_sb - Check superblock
  * @sdp: the filesystem
-<<<<<<< HEAD
- * @sb: The superblock
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @silent: Don't print a message if the check fails
  *
  * Checks the version code of the FS is one that we understand how to
@@ -243,31 +161,6 @@ static int gfs2_check_sb(struct gfs2_sbd *sdp, int silent)
 	if (sb->sb_magic != GFS2_MAGIC ||
 	    sb->sb_type != GFS2_METATYPE_SB) {
 		if (!silent)
-<<<<<<< HEAD
-			printk(KERN_WARNING "GFS2: not a GFS2 filesystem\n");
-		return -EINVAL;
-	}
-
-	/*  If format numbers match exactly, we're done.  */
-
-	if (sb->sb_fs_format == GFS2_FORMAT_FS &&
-	    sb->sb_multihost_format == GFS2_FORMAT_MULTI)
-		return 0;
-
-	fs_warn(sdp, "Unknown on-disk format, unable to mount\n");
-
-	return -EINVAL;
-}
-
-static void end_bio_io_page(struct bio *bio, int error)
-{
-	struct page *page = bio->bi_private;
-
-	if (!error)
-		SetPageUptodate(page);
-	else
-		printk(KERN_WARNING "gfs2: error %d reading superblock\n", error);
-=======
 			pr_warn("not a GFS2 filesystem\n");
 		return -EINVAL;
 	}
@@ -299,7 +192,6 @@ static void end_bio_io_page(struct bio *bio)
 		SetPageUptodate(page);
 	else
 		pr_warn("error %d reading superblock\n", bio->bi_status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 }
 
@@ -311,10 +203,6 @@ static void gfs2_sb_in(struct gfs2_sbd *sdp, const void *buf)
 
 	sb->sb_magic = be32_to_cpu(str->sb_header.mh_magic);
 	sb->sb_type = be32_to_cpu(str->sb_header.mh_type);
-<<<<<<< HEAD
-	sb->sb_format = be32_to_cpu(str->sb_header.mh_format);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->sb_fs_format = be32_to_cpu(str->sb_fs_format);
 	sb->sb_multihost_format = be32_to_cpu(str->sb_multihost_format);
 	sb->sb_bsize = be32_to_cpu(str->sb_bsize);
@@ -326,22 +214,14 @@ static void gfs2_sb_in(struct gfs2_sbd *sdp, const void *buf)
 
 	memcpy(sb->sb_lockproto, str->sb_lockproto, GFS2_LOCKNAME_LEN);
 	memcpy(sb->sb_locktable, str->sb_locktable, GFS2_LOCKNAME_LEN);
-<<<<<<< HEAD
-	memcpy(s->s_uuid, str->sb_uuid, 16);
-=======
 	super_set_uuid(s, str->sb_uuid, 16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * gfs2_read_super - Read the gfs2 super block from disk
  * @sdp: The GFS2 super block
  * @sector: The location of the super block
-<<<<<<< HEAD
- * @error: The error code to return
-=======
  * @silent: Don't print a message if the check fails
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This uses the bio functions to read the super block from disk
  * because we want to be 100% sure that we never read cached data.
@@ -365,26 +245,12 @@ static int gfs2_read_super(struct gfs2_sbd *sdp, sector_t sector, int silent)
 
 	page = alloc_page(GFP_NOFS);
 	if (unlikely(!page))
-<<<<<<< HEAD
-		return -ENOBUFS;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ClearPageUptodate(page);
 	ClearPageDirty(page);
 	lock_page(page);
 
-<<<<<<< HEAD
-	bio = bio_alloc(GFP_NOFS, 1);
-	bio->bi_sector = sector * (sb->s_blocksize >> 9);
-	bio->bi_bdev = sb->s_bdev;
-	bio_add_page(bio, page, PAGE_SIZE, 0);
-
-	bio->bi_end_io = end_bio_io_page;
-	bio->bi_private = page;
-	submit_bio(READ_SYNC | REQ_META, bio);
-=======
 	bio = bio_alloc(sb->s_bdev, 1, REQ_OP_READ | REQ_META, GFP_NOFS);
 	bio->bi_iter.bi_sector = sector * (sb->s_blocksize >> 9);
 	__bio_add_page(bio, page, PAGE_SIZE, 0);
@@ -392,7 +258,6 @@ static int gfs2_read_super(struct gfs2_sbd *sdp, sector_t sector, int silent)
 	bio->bi_end_io = end_bio_io_page;
 	bio->bi_private = page;
 	submit_bio(bio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_on_page_locked(page);
 	bio_put(bio);
 	if (!PageUptodate(page)) {
@@ -427,23 +292,14 @@ static int gfs2_read_sb(struct gfs2_sbd *sdp, int silent)
 		return error;
 	}
 
-<<<<<<< HEAD
-	sdp->sd_fsb2bb_shift = sdp->sd_sb.sb_bsize_shift -
-			       GFS2_BASIC_BLOCK_SHIFT;
-	sdp->sd_fsb2bb = 1 << sdp->sd_fsb2bb_shift;
-=======
 	sdp->sd_fsb2bb_shift = sdp->sd_sb.sb_bsize_shift - 9;
 	sdp->sd_fsb2bb = BIT(sdp->sd_fsb2bb_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdp->sd_diptrs = (sdp->sd_sb.sb_bsize -
 			  sizeof(struct gfs2_dinode)) / sizeof(u64);
 	sdp->sd_inptrs = (sdp->sd_sb.sb_bsize -
 			  sizeof(struct gfs2_meta_header)) / sizeof(u64);
-<<<<<<< HEAD
-=======
 	sdp->sd_ldptrs = (sdp->sd_sb.sb_bsize -
 			  sizeof(struct gfs2_log_descriptor)) / sizeof(u64);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdp->sd_jbsize = sdp->sd_sb.sb_bsize - sizeof(struct gfs2_meta_header);
 	sdp->sd_hash_bsize = sdp->sd_sb.sb_bsize / 2;
 	sdp->sd_hash_bsize_shift = sdp->sd_sb.sb_bsize_shift - 1;
@@ -451,12 +307,6 @@ static int gfs2_read_sb(struct gfs2_sbd *sdp, int silent)
 	sdp->sd_qc_per_block = (sdp->sd_sb.sb_bsize -
 				sizeof(struct gfs2_meta_header)) /
 			        sizeof(struct gfs2_quota_change);
-<<<<<<< HEAD
-
-	/* Compute maximum reservation required to add a entry to a directory */
-
-	hash_blocks = DIV_ROUND_UP(sizeof(u64) * (1 << GFS2_DIR_MAX_DEPTH),
-=======
 	sdp->sd_blocks_per_bitmap = (sdp->sd_sb.sb_bsize -
 				     sizeof(struct gfs2_meta_header))
 		* GFS2_NBBY; /* not the rgrp bitmap, subsequent bitmaps only */
@@ -471,7 +321,6 @@ static int gfs2_read_sb(struct gfs2_sbd *sdp, int silent)
 	/* Compute maximum reservation required to add a entry to a directory */
 
 	hash_blocks = DIV_ROUND_UP(sizeof(u64) * BIT(GFS2_DIR_MAX_DEPTH),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     sdp->sd_jbsize);
 
 	ind_blocks = 0;
@@ -503,31 +352,9 @@ static int gfs2_read_sb(struct gfs2_sbd *sdp, int silent)
 	sdp->sd_heightsize[x] = ~0;
 	gfs2_assert(sdp, sdp->sd_max_height <= GFS2_MAX_META_HEIGHT);
 
-<<<<<<< HEAD
-	sdp->sd_jheightsize[0] = sdp->sd_sb.sb_bsize -
-				 sizeof(struct gfs2_dinode);
-	sdp->sd_jheightsize[1] = sdp->sd_jbsize * sdp->sd_diptrs;
-	for (x = 2;; x++) {
-		u64 space, d;
-		u32 m;
-
-		space = sdp->sd_jheightsize[x - 1] * sdp->sd_inptrs;
-		d = space;
-		m = do_div(d, sdp->sd_inptrs);
-
-		if (d != sdp->sd_jheightsize[x - 1] || m)
-			break;
-		sdp->sd_jheightsize[x] = space;
-	}
-	sdp->sd_max_jheight = x;
-	sdp->sd_jheightsize[x] = ~0;
-	gfs2_assert(sdp, sdp->sd_max_jheight <= GFS2_MAX_META_HEIGHT);
-
-=======
 	sdp->sd_max_dents_per_leaf = (sdp->sd_sb.sb_bsize -
 				      sizeof(struct gfs2_leaf)) /
 				     GFS2_MIN_DIRENT_SIZE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -555,15 +382,10 @@ static int init_names(struct gfs2_sbd *sdp, int silent)
 	if (!table[0])
 		table = sdp->sd_vfs->s_id;
 
-<<<<<<< HEAD
-	strlcpy(sdp->sd_proto_name, proto, GFS2_FSNAME_LEN);
-	strlcpy(sdp->sd_table_name, table, GFS2_FSNAME_LEN);
-=======
 	BUILD_BUG_ON(GFS2_LOCKNAME_LEN > GFS2_FSNAME_LEN);
 
 	strscpy(sdp->sd_proto_name, proto, GFS2_LOCKNAME_LEN);
 	strscpy(sdp->sd_table_name, table, GFS2_LOCKNAME_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	table = sdp->sd_table_name;
 	while ((table = strchr(table, '/')))
@@ -582,12 +404,8 @@ static int init_locking(struct gfs2_sbd *sdp, struct gfs2_holder *mount_gh,
 
 	error = gfs2_glock_nq_num(sdp,
 				  GFS2_MOUNT_LOCK, &gfs2_nondisk_glops,
-<<<<<<< HEAD
-				  LM_ST_EXCLUSIVE, LM_FLAG_NOEXP | GL_NOCACHE,
-=======
 				  LM_ST_EXCLUSIVE,
 				  LM_FLAG_NOEXP | GL_NOCACHE | GL_NOPID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  mount_gh);
 	if (error) {
 		fs_err(sdp, "can't acquire mount glock: %d\n", error);
@@ -597,11 +415,7 @@ static int init_locking(struct gfs2_sbd *sdp, struct gfs2_holder *mount_gh,
 	error = gfs2_glock_nq_num(sdp,
 				  GFS2_LIVE_LOCK, &gfs2_nondisk_glops,
 				  LM_ST_SHARED,
-<<<<<<< HEAD
-				  LM_FLAG_NOEXP | GL_EXACT,
-=======
 				  LM_FLAG_NOEXP | GL_EXACT | GL_NOPID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  &sdp->sd_live_gh);
 	if (error) {
 		fs_err(sdp, "can't acquire live glock: %d\n", error);
@@ -615,28 +429,17 @@ static int init_locking(struct gfs2_sbd *sdp, struct gfs2_holder *mount_gh,
 		goto fail_live;
 	}
 
-<<<<<<< HEAD
-	error = gfs2_glock_get(sdp, GFS2_TRANS_LOCK, &gfs2_trans_glops,
-			       CREATE, &sdp->sd_trans_gl);
-	if (error) {
-		fs_err(sdp, "can't create transaction glock: %d\n", error);
-=======
 	error = gfs2_glock_get(sdp, GFS2_FREEZE_LOCK, &gfs2_freeze_glops,
 			       CREATE, &sdp->sd_freeze_gl);
 	if (error) {
 		fs_err(sdp, "can't create freeze glock: %d\n", error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_rename;
 	}
 
 	return 0;
 
 fail_trans:
-<<<<<<< HEAD
-	gfs2_glock_put(sdp->sd_trans_gl);
-=======
 	gfs2_glock_put(sdp->sd_freeze_gl);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_rename:
 	gfs2_glock_put(sdp->sd_rename_gl);
 fail_live:
@@ -654,12 +457,8 @@ static int gfs2_lookup_root(struct super_block *sb, struct dentry **dptr,
 	struct dentry *dentry;
 	struct inode *inode;
 
-<<<<<<< HEAD
-	inode = gfs2_inode_lookup(sb, DT_DIR, no_addr, 0, 0);
-=======
 	inode = gfs2_inode_lookup(sb, DT_DIR, no_addr, 0,
 				  GFS2_BLKST_FREE /* ignore */);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(inode)) {
 		fs_err(sdp, "can't read in %s inode: %ld\n", name, PTR_ERR(inode));
 		return PTR_ERR(inode);
@@ -693,8 +492,6 @@ static int init_sb(struct gfs2_sbd *sdp, int silent)
 		goto out;
 	}
 
-<<<<<<< HEAD
-=======
 	switch(sdp->sd_sb.sb_fs_format) {
 	case GFS2_FS_FORMAT_MAX:
 		sb->s_xattr = gfs2_xattr_handlers_max;
@@ -708,7 +505,6 @@ static int init_sb(struct gfs2_sbd *sdp, int silent)
 		BUG();
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set up the buffer cache and SB for real */
 	if (sdp->sd_sb.sb_bsize < bdev_logical_block_size(sb->s_bdev)) {
 		ret = -EINVAL;
@@ -745,70 +541,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-/**
- * map_journal_extents - create a reusable "extent" mapping from all logical
- * blocks to all physical blocks for the given journal.  This will save
- * us time when writing journal blocks.  Most journals will have only one
- * extent that maps all their logical blocks.  That's because gfs2.mkfs
- * arranges the journal blocks sequentially to maximize performance.
- * So the extent would map the first block for the entire file length.
- * However, gfs2_jadd can happen while file activity is happening, so
- * those journals may not be sequential.  Less likely is the case where
- * the users created their own journals by mounting the metafs and
- * laying it out.  But it's still possible.  These journals might have
- * several extents.
- *
- * TODO: This should be done in bigger chunks rather than one block at a time,
- *       but since it's only done at mount time, I'm not worried about the
- *       time it takes.
- */
-static int map_journal_extents(struct gfs2_sbd *sdp)
-{
-	struct gfs2_jdesc *jd = sdp->sd_jdesc;
-	unsigned int lb;
-	u64 db, prev_db; /* logical block, disk block, prev disk block */
-	struct gfs2_inode *ip = GFS2_I(jd->jd_inode);
-	struct gfs2_journal_extent *jext = NULL;
-	struct buffer_head bh;
-	int rc = 0;
-
-	prev_db = 0;
-
-	for (lb = 0; lb < i_size_read(jd->jd_inode) >> sdp->sd_sb.sb_bsize_shift; lb++) {
-		bh.b_state = 0;
-		bh.b_blocknr = 0;
-		bh.b_size = 1 << ip->i_inode.i_blkbits;
-		rc = gfs2_block_map(jd->jd_inode, lb, &bh, 0);
-		db = bh.b_blocknr;
-		if (rc || !db) {
-			printk(KERN_INFO "GFS2 journal mapping error %d: lb="
-			       "%u db=%llu\n", rc, lb, (unsigned long long)db);
-			break;
-		}
-		if (!prev_db || db != prev_db + 1) {
-			jext = kzalloc(sizeof(struct gfs2_journal_extent),
-				       GFP_KERNEL);
-			if (!jext) {
-				printk(KERN_INFO "GFS2 error: out of memory "
-				       "mapping journal extents.\n");
-				rc = -ENOMEM;
-				break;
-			}
-			jext->dblock = db;
-			jext->lblock = lb;
-			jext->blocks = 1;
-			list_add_tail(&jext->extent_list, &jd->extent_list);
-		} else {
-			jext->blocks++;
-		}
-		prev_db = db;
-	}
-	return rc;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void gfs2_others_may_mount(struct gfs2_sbd *sdp)
 {
 	char *message = "FIRSTMOUNT=Done";
@@ -843,11 +575,8 @@ static int gfs2_jindex_hold(struct gfs2_sbd *sdp, struct gfs2_holder *ji_gh)
 	mutex_lock(&sdp->sd_jindex_mutex);
 
 	for (;;) {
-<<<<<<< HEAD
-=======
 		struct gfs2_inode *jip;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = gfs2_glock_nq_init(dip->i_gl, LM_ST_SHARED, 0, ji_gh);
 		if (error)
 			break;
@@ -872,17 +601,11 @@ static int gfs2_jindex_hold(struct gfs2_sbd *sdp, struct gfs2_holder *ji_gh)
 			break;
 
 		INIT_LIST_HEAD(&jd->extent_list);
-<<<<<<< HEAD
-		INIT_WORK(&jd->jd_work, gfs2_recover_func);
-		jd->jd_inode = gfs2_lookupi(sdp->sd_jindex, &name, 1);
-		if (!jd->jd_inode || IS_ERR(jd->jd_inode)) {
-=======
 		INIT_LIST_HEAD(&jd->jd_revoke_list);
 
 		INIT_WORK(&jd->jd_work, gfs2_recover_func);
 		jd->jd_inode = gfs2_lookupi(sdp->sd_jindex, &name, 1);
 		if (IS_ERR_OR_NULL(jd->jd_inode)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!jd->jd_inode)
 				error = -ENOENT;
 			else
@@ -891,16 +614,11 @@ static int gfs2_jindex_hold(struct gfs2_sbd *sdp, struct gfs2_holder *ji_gh)
 			break;
 		}
 
-<<<<<<< HEAD
-		spin_lock(&sdp->sd_jindex_spin);
-		jd->jd_jid = sdp->sd_journals++;
-=======
 		d_mark_dontcache(jd->jd_inode);
 		spin_lock(&sdp->sd_jindex_spin);
 		jd->jd_jid = sdp->sd_journals++;
 		jip = GFS2_I(jd->jd_inode);
 		jd->jd_no_addr = jip->i_no_addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&jd->jd_list, &sdp->sd_jindex_list);
 		spin_unlock(&sdp->sd_jindex_spin);
 	}
@@ -910,22 +628,6 @@ static int gfs2_jindex_hold(struct gfs2_sbd *sdp, struct gfs2_holder *ji_gh)
 	return error;
 }
 
-<<<<<<< HEAD
-static int init_journal(struct gfs2_sbd *sdp, int undo)
-{
-	struct inode *master = sdp->sd_master_dir->d_inode;
-	struct gfs2_holder ji_gh;
-	struct gfs2_inode *ip;
-	int jindex = 1;
-	int error = 0;
-
-	if (undo) {
-		jindex = 0;
-		goto fail_jinode_gh;
-	}
-
-	sdp->sd_jindex = gfs2_lookup_simple(master, "jindex");
-=======
 /**
  * init_statfs - look up and initialize master and local (per node) statfs inodes
  * @sdp: The GFS2 superblock
@@ -1037,7 +739,6 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 		goto fail_statfs;
 
 	sdp->sd_jindex = gfs2_lookup_meta(master, "jindex");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(sdp->sd_jindex)) {
 		fs_err(sdp, "can't lookup journal index: %d\n", error);
 		return PTR_ERR(sdp->sd_jindex);
@@ -1057,10 +758,7 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 		goto fail_jindex;
 	}
 
-<<<<<<< HEAD
-=======
 	atomic_set(&sdp->sd_log_blks_needed, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sdp->sd_args.ar_spectator) {
 		sdp->sd_jdesc = gfs2_jdesc_find(sdp, 0);
 		atomic_set(&sdp->sd_log_blks_free, sdp->sd_jdesc->jd_blocks);
@@ -1079,12 +777,8 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 
 		error = gfs2_glock_nq_num(sdp, sdp->sd_lockstruct.ls_jid,
 					  &gfs2_journal_glops,
-<<<<<<< HEAD
-					  LM_ST_EXCLUSIVE, LM_FLAG_NOEXP,
-=======
 					  LM_ST_EXCLUSIVE,
 					  LM_FLAG_NOEXP | GL_NOCACHE | GL_NOPID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  &sdp->sd_journal_gh);
 		if (error) {
 			fs_err(sdp, "can't acquire journal glock: %d\n", error);
@@ -1092,15 +786,10 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 		}
 
 		ip = GFS2_I(sdp->sd_jdesc->jd_inode);
-<<<<<<< HEAD
-		error = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED,
-					   LM_FLAG_NOEXP | GL_EXACT | GL_NOCACHE,
-=======
 		sdp->sd_jinode_gl = ip->i_gl;
 		error = gfs2_glock_nq_init(ip->i_gl, LM_ST_SHARED,
 					   LM_FLAG_NOEXP | GL_EXACT |
 					   GL_NOCACHE | GL_NOPID,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   &sdp->sd_jinode_gh);
 		if (error) {
 			fs_err(sdp, "can't acquire journal inode glock: %d\n",
@@ -1119,21 +808,6 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 		atomic_set(&sdp->sd_log_thresh2, 4*sdp->sd_jdesc->jd_blocks/5);
 
 		/* Map the extents for this journal's blocks */
-<<<<<<< HEAD
-		map_journal_extents(sdp);
-	}
-	trace_gfs2_log_blocks(sdp, atomic_read(&sdp->sd_log_blks_free));
-
-	if (sdp->sd_lockstruct.ls_first) {
-		unsigned int x;
-		for (x = 0; x < sdp->sd_journals; x++) {
-			error = gfs2_recover_journal(gfs2_jdesc_find(sdp, x),
-						     true);
-			if (error) {
-				fs_err(sdp, "error recovering journal %u: %d\n",
-				       x, error);
-				goto fail_jinode_gh;
-=======
 		gfs2_map_journal_extents(sdp, sdp->sd_jdesc);
 	}
 	trace_gfs2_log_blocks(sdp, atomic_read(&sdp->sd_log_blks_free));
@@ -1159,7 +833,6 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 				fs_err(sdp, "error recovering journal %u: %d\n",
 				       x, error);
 				goto fail_statfs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -1168,27 +841,6 @@ static int init_journal(struct gfs2_sbd *sdp, int undo)
 		error = gfs2_recover_journal(sdp->sd_jdesc, true);
 		if (error) {
 			fs_err(sdp, "error recovering my journal: %d\n", error);
-<<<<<<< HEAD
-			goto fail_jinode_gh;
-		}
-	}
-
-	set_bit(SDF_JOURNAL_CHECKED, &sdp->sd_flags);
-	gfs2_glock_dq_uninit(&ji_gh);
-	jindex = 0;
-
-	return 0;
-
-fail_jinode_gh:
-	if (!sdp->sd_args.ar_spectator)
-		gfs2_glock_dq_uninit(&sdp->sd_jinode_gh);
-fail_journal_gh:
-	if (!sdp->sd_args.ar_spectator)
-		gfs2_glock_dq_uninit(&sdp->sd_journal_gh);
-fail_jindex:
-	gfs2_jindex_free(sdp);
-	if (jindex)
-=======
 			goto fail_statfs;
 		}
 	}
@@ -1213,50 +865,23 @@ fail_journal_gh:
 fail_jindex:
 	gfs2_jindex_free(sdp);
 	if (gfs2_holder_initialized(&ji_gh))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfs2_glock_dq_uninit(&ji_gh);
 fail:
 	iput(sdp->sd_jindex);
 	return error;
 }
 
-<<<<<<< HEAD
-=======
 static struct lock_class_key gfs2_quota_imutex_key;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int init_inodes(struct gfs2_sbd *sdp, int undo)
 {
 	int error = 0;
-<<<<<<< HEAD
-	struct inode *master = sdp->sd_master_dir->d_inode;
-=======
 	struct inode *master = d_inode(sdp->sd_master_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (undo)
 		goto fail_qinode;
 
 	error = init_journal(sdp, undo);
-<<<<<<< HEAD
-	if (error)
-		goto fail;
-
-	/* Read in the master statfs inode */
-	sdp->sd_statfs_inode = gfs2_lookup_simple(master, "statfs");
-	if (IS_ERR(sdp->sd_statfs_inode)) {
-		error = PTR_ERR(sdp->sd_statfs_inode);
-		fs_err(sdp, "can't read in statfs inode: %d\n", error);
-		goto fail_journal;
-	}
-
-	/* Read in the resource index inode */
-	sdp->sd_rindex = gfs2_lookup_simple(master, "rindex");
-	if (IS_ERR(sdp->sd_rindex)) {
-		error = PTR_ERR(sdp->sd_rindex);
-		fs_err(sdp, "can't get resource index inode: %d\n", error);
-		goto fail_statfs;
-=======
 	complete_all(&sdp->sd_journal_ready);
 	if (error)
 		goto fail;
@@ -1267,30 +892,22 @@ static int init_inodes(struct gfs2_sbd *sdp, int undo)
 		error = PTR_ERR(sdp->sd_rindex);
 		fs_err(sdp, "can't get resource index inode: %d\n", error);
 		goto fail_journal;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sdp->sd_rindex_uptodate = 0;
 
 	/* Read in the quota inode */
-<<<<<<< HEAD
-	sdp->sd_quota_inode = gfs2_lookup_simple(master, "quota");
-=======
 	sdp->sd_quota_inode = gfs2_lookup_meta(master, "quota");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(sdp->sd_quota_inode)) {
 		error = PTR_ERR(sdp->sd_quota_inode);
 		fs_err(sdp, "can't get quota file inode: %d\n", error);
 		goto fail_rindex;
 	}
-<<<<<<< HEAD
-=======
 	/*
 	 * i_rwsem on quota files is special. Since this inode is hidden system
 	 * file, we are safe to define locking ourselves.
 	 */
 	lockdep_set_class(&sdp->sd_quota_inode->i_rwsem,
 			  &gfs2_quota_imutex_key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = gfs2_rindex_update(sdp);
 	if (error)
@@ -1303,11 +920,6 @@ fail_qinode:
 fail_rindex:
 	gfs2_clear_rgrpd(sdp);
 	iput(sdp->sd_rindex);
-<<<<<<< HEAD
-fail_statfs:
-	iput(sdp->sd_statfs_inode);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_journal:
 	init_journal(sdp, UNDO);
 fail:
@@ -1320,11 +932,7 @@ static int init_per_node(struct gfs2_sbd *sdp, int undo)
 	char buf[30];
 	int error = 0;
 	struct gfs2_inode *ip;
-<<<<<<< HEAD
-	struct inode *master = sdp->sd_master_dir->d_inode;
-=======
 	struct inode *master = d_inode(sdp->sd_master_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sdp->sd_args.ar_spectator)
 		return 0;
@@ -1332,32 +940,15 @@ static int init_per_node(struct gfs2_sbd *sdp, int undo)
 	if (undo)
 		goto fail_qc_gh;
 
-<<<<<<< HEAD
-	pn = gfs2_lookup_simple(master, "per_node");
-=======
 	pn = gfs2_lookup_meta(master, "per_node");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pn)) {
 		error = PTR_ERR(pn);
 		fs_err(sdp, "can't find per_node directory: %d\n", error);
 		return error;
 	}
 
-<<<<<<< HEAD
-	sprintf(buf, "statfs_change%u", sdp->sd_jdesc->jd_jid);
-	sdp->sd_sc_inode = gfs2_lookup_simple(pn, buf);
-	if (IS_ERR(sdp->sd_sc_inode)) {
-		error = PTR_ERR(sdp->sd_sc_inode);
-		fs_err(sdp, "can't find local \"sc\" file: %d\n", error);
-		goto fail;
-	}
-
-	sprintf(buf, "quota_change%u", sdp->sd_jdesc->jd_jid);
-	sdp->sd_qc_inode = gfs2_lookup_simple(pn, buf);
-=======
 	sprintf(buf, "quota_change%u", sdp->sd_jdesc->jd_jid);
 	sdp->sd_qc_inode = gfs2_lookup_meta(pn, buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(sdp->sd_qc_inode)) {
 		error = PTR_ERR(sdp->sd_qc_inode);
 		fs_err(sdp, "can't find local \"qc\" file: %d\n", error);
@@ -1367,94 +958,27 @@ static int init_per_node(struct gfs2_sbd *sdp, int undo)
 	iput(pn);
 	pn = NULL;
 
-<<<<<<< HEAD
-	ip = GFS2_I(sdp->sd_sc_inode);
-	error = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, 0,
-				   &sdp->sd_sc_gh);
-	if (error) {
-		fs_err(sdp, "can't lock local \"sc\" file: %d\n", error);
-		goto fail_qc_i;
-	}
-
-	ip = GFS2_I(sdp->sd_qc_inode);
-	error = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, 0,
-				   &sdp->sd_qc_gh);
-	if (error) {
-		fs_err(sdp, "can't lock local \"qc\" file: %d\n", error);
-		goto fail_ut_gh;
-=======
 	ip = GFS2_I(sdp->sd_qc_inode);
 	error = gfs2_glock_nq_init(ip->i_gl, LM_ST_EXCLUSIVE, GL_NOPID,
 				   &sdp->sd_qc_gh);
 	if (error) {
 		fs_err(sdp, "can't lock local \"qc\" file: %d\n", error);
 		goto fail_qc_i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
 fail_qc_gh:
 	gfs2_glock_dq_uninit(&sdp->sd_qc_gh);
-<<<<<<< HEAD
-fail_ut_gh:
-	gfs2_glock_dq_uninit(&sdp->sd_sc_gh);
-fail_qc_i:
-	iput(sdp->sd_qc_inode);
-fail_ut_i:
-	iput(sdp->sd_sc_inode);
-fail:
-	if (pn)
-		iput(pn);
-	return error;
-}
-
-static int init_threads(struct gfs2_sbd *sdp, int undo)
-{
-	struct task_struct *p;
-	int error = 0;
-
-	if (undo)
-		goto fail_quotad;
-
-	p = kthread_run(gfs2_logd, sdp, "gfs2_logd");
-	error = IS_ERR(p);
-	if (error) {
-		fs_err(sdp, "can't start logd thread: %d\n", error);
-		return error;
-	}
-	sdp->sd_logd_process = p;
-
-	p = kthread_run(gfs2_quotad, sdp, "gfs2_quotad");
-	error = IS_ERR(p);
-	if (error) {
-		fs_err(sdp, "can't start quotad thread: %d\n", error);
-		goto fail;
-	}
-	sdp->sd_quotad_process = p;
-
-	return 0;
-
-
-fail_quotad:
-	kthread_stop(sdp->sd_quotad_process);
-fail:
-	kthread_stop(sdp->sd_logd_process);
-=======
 fail_qc_i:
 	iput(sdp->sd_qc_inode);
 fail_ut_i:
 	iput(pn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 static const match_table_t nolock_tokens = {
-<<<<<<< HEAD
-	{ Opt_jid, "jid=%d\n", },
-=======
 	{ Opt_jid, "jid=%d", },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ Opt_err, NULL },
 };
 
@@ -1467,10 +991,6 @@ static const struct lm_lockops nolock_ops = {
 /**
  * gfs2_lm_mount - mount a locking protocol
  * @sdp: the filesystem
-<<<<<<< HEAD
- * @args: mount arguments
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @silent: if 1, don't complain if the FS isn't a GFS2 fs
  *
  * Returns: errno
@@ -1494,11 +1014,7 @@ static int gfs2_lm_mount(struct gfs2_sbd *sdp, int silent)
 		lm = &gfs2_dlm_ops;
 #endif
 	} else {
-<<<<<<< HEAD
-		printk(KERN_INFO "GFS2: can't find protocol %s\n", proto);
-=======
 		pr_info("can't find protocol %s\n", proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
@@ -1524,10 +1040,7 @@ static int gfs2_lm_mount(struct gfs2_sbd *sdp, int silent)
 				ls->ls_jid = option;
 			break;
 		case Opt_id:
-<<<<<<< HEAD
-=======
 		case Opt_nodir:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Obsolete, but left for backward compat purposes */
 			break;
 		case Opt_first:
@@ -1536,15 +1049,6 @@ static int gfs2_lm_mount(struct gfs2_sbd *sdp, int silent)
 				goto hostdata_error;
 			ls->ls_first = option;
 			break;
-<<<<<<< HEAD
-		case Opt_nodir:
-			ret = match_int(&tmp[0], &option);
-			if (ret || (option != 0 && option != 1))
-				goto hostdata_error;
-			ls->ls_nodir = option;
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case Opt_err:
 		default:
 hostdata_error:
@@ -1554,22 +1058,14 @@ hostdata_error:
 	}
 
 	if (lm->lm_mount == NULL) {
-<<<<<<< HEAD
-		fs_info(sdp, "Now mounting FS...\n");
-=======
 		fs_info(sdp, "Now mounting FS (format %u)...\n", sdp->sd_sb.sb_fs_format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		complete_all(&sdp->sd_locking_init);
 		return 0;
 	}
 	ret = lm->lm_mount(sdp, table);
 	if (ret == 0)
-<<<<<<< HEAD
-		fs_info(sdp, "Joined cluster. Now mounting FS...\n");
-=======
 		fs_info(sdp, "Joined cluster. Now mounting FS (format %u)...\n",
 		        sdp->sd_sb.sb_fs_format);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	complete_all(&sdp->sd_locking_init);
 	return ret;
 }
@@ -1577,37 +1073,17 @@ hostdata_error:
 void gfs2_lm_unmount(struct gfs2_sbd *sdp)
 {
 	const struct lm_lockops *lm = sdp->sd_lockstruct.ls_ops;
-<<<<<<< HEAD
-	if (likely(!test_bit(SDF_SHUTDOWN, &sdp->sd_flags)) &&
-	    lm->lm_unmount)
-		lm->lm_unmount(sdp);
-}
-
-static int gfs2_journalid_wait(void *word)
-{
-	if (signal_pending(current))
-		return -EINTR;
-	schedule();
-	return 0;
-}
-
-=======
 	if (!gfs2_withdrawing_or_withdrawn(sdp) && lm->lm_unmount)
 		lm->lm_unmount(sdp);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wait_on_journal(struct gfs2_sbd *sdp)
 {
 	if (sdp->sd_lockstruct.ls_ops->lm_mount == NULL)
 		return 0;
 
-<<<<<<< HEAD
-	return wait_on_bit(&sdp->sd_flags, SDF_NOJOURNALID, gfs2_journalid_wait, TASK_INTERRUPTIBLE);
-=======
 	return wait_on_bit(&sdp->sd_flags, SDF_NOJOURNALID, TASK_INTERRUPTIBLE)
 		? -EINTR : 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void gfs2_online_uevent(struct gfs2_sbd *sdp)
@@ -1616,28 +1092,11 @@ void gfs2_online_uevent(struct gfs2_sbd *sdp)
 	char ro[20];
 	char spectator[20];
 	char *envp[] = { ro, spectator, NULL };
-<<<<<<< HEAD
-	sprintf(ro, "RDONLY=%d", (sb->s_flags & MS_RDONLY) ? 1 : 0);
-=======
 	sprintf(ro, "RDONLY=%d", sb_rdonly(sb));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sprintf(spectator, "SPECTATOR=%d", sdp->sd_args.ar_spectator ? 1 : 0);
 	kobject_uevent_env(&sdp->sd_kobj, KOBJ_ONLINE, envp);
 }
 
-<<<<<<< HEAD
-/**
- * fill_super - Read in superblock
- * @sb: The VFS superblock
- * @data: Mount options
- * @silent: Don't complain if it's not a GFS2 filesystem
- *
- * Returns: errno
- */
-
-static int fill_super(struct super_block *sb, struct gfs2_args *args, int silent)
-{
-=======
 static int init_threads(struct gfs2_sbd *sdp)
 {
 	struct task_struct *p;
@@ -1694,34 +1153,18 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 {
 	struct gfs2_args *args = fc->fs_private;
 	int silent = fc->sb_flags & SB_SILENT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gfs2_sbd *sdp;
 	struct gfs2_holder mount_gh;
 	int error;
 
 	sdp = init_sbd(sb);
 	if (!sdp) {
-<<<<<<< HEAD
-		printk(KERN_WARNING "GFS2: can't alloc struct gfs2_sbd\n");
-=======
 		pr_warn("can't alloc struct gfs2_sbd\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	sdp->sd_args = *args;
 
 	if (sdp->sd_args.ar_spectator) {
-<<<<<<< HEAD
-                sb->s_flags |= MS_RDONLY;
-		set_bit(SDF_RORECOVERY, &sdp->sd_flags);
-	}
-	if (sdp->sd_args.ar_posix_acl)
-		sb->s_flags |= MS_POSIXACL;
-	if (sdp->sd_args.ar_nobarrier)
-		set_bit(SDF_NOBARRIERS, &sdp->sd_flags);
-
-	sb->s_flags |= MS_NOSEC;
-=======
                 sb->s_flags |= SB_RDONLY;
 		set_bit(SDF_RORECOVERY, &sdp->sd_flags);
 	}
@@ -1731,36 +1174,22 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 		set_bit(SDF_NOBARRIERS, &sdp->sd_flags);
 
 	sb->s_flags |= SB_NOSEC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_magic = GFS2_MAGIC;
 	sb->s_op = &gfs2_super_ops;
 	sb->s_d_op = &gfs2_dops;
 	sb->s_export_op = &gfs2_export_ops;
-<<<<<<< HEAD
-	sb->s_xattr = gfs2_xattr_handlers;
-	sb->s_qcop = &gfs2_quotactl_ops;
-=======
 	sb->s_qcop = &gfs2_quotactl_ops;
 	sb->s_quota_types = QTYPE_MASK_USR | QTYPE_MASK_GRP;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb_dqopt(sb)->flags |= DQUOT_QUOTA_SYS_FILE;
 	sb->s_time_gran = 1;
 	sb->s_maxbytes = MAX_LFS_FILESIZE;
 
 	/* Set up the buffer cache and fill in some fake block size values
 	   to allow us to read-in the on-disk superblock. */
-<<<<<<< HEAD
-	sdp->sd_sb.sb_bsize = sb_min_blocksize(sb, GFS2_BASIC_BLOCK);
-	sdp->sd_sb.sb_bsize_shift = sb->s_blocksize_bits;
-	sdp->sd_fsb2bb_shift = sdp->sd_sb.sb_bsize_shift -
-                               GFS2_BASIC_BLOCK_SHIFT;
-	sdp->sd_fsb2bb = 1 << sdp->sd_fsb2bb_shift;
-=======
 	sdp->sd_sb.sb_bsize = sb_min_blocksize(sb, 512);
 	sdp->sd_sb.sb_bsize_shift = sb->s_blocksize_bits;
 	sdp->sd_fsb2bb_shift = sdp->sd_sb.sb_bsize_shift - 9;
 	sdp->sd_fsb2bb = BIT(sdp->sd_fsb2bb_shift);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sdp->sd_tune.gt_logd_secs = sdp->sd_args.ar_commit;
 	sdp->sd_tune.gt_quota_quantum = sdp->sd_args.ar_quota_quantum;
@@ -1774,21 +1203,6 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 
 	error = init_names(sdp, silent);
 	if (error)
-<<<<<<< HEAD
-		goto fail;
-
-	snprintf(sdp->sd_fsname, GFS2_FSNAME_LEN, "%s", sdp->sd_table_name);
-
-	gfs2_create_debugfs_file(sdp);
-
-	error = gfs2_sys_fs_add(sdp);
-	if (error)
-		goto fail;
-
-	error = gfs2_lm_mount(sdp, silent);
-	if (error)
-		goto fail_sys;
-=======
 		goto fail_free;
 
 	snprintf(sdp->sd_fsname, sizeof(sdp->sd_fsname), "%s", sdp->sd_table_name);
@@ -1808,7 +1222,6 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 	error = gfs2_lm_mount(sdp, silent);
 	if (error)
 		goto fail_debug;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = init_locking(sdp, &mount_gh, DO);
 	if (error)
@@ -1818,13 +1231,10 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 	if (error)
 		goto fail_locking;
 
-<<<<<<< HEAD
-=======
 	/* Turn rgrplvb on by default if fs format is recent enough */
 	if (!sdp->sd_args.ar_got_rgrplvb && sdp->sd_sb.sb_fs_format > 1801)
 		sdp->sd_args.ar_rgrplvb = 1;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = wait_on_journal(sdp);
 	if (error)
 		goto fail_sb;
@@ -1844,17 +1254,10 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 	}
 
 	if (sdp->sd_args.ar_spectator)
-<<<<<<< HEAD
-		snprintf(sdp->sd_fsname, GFS2_FSNAME_LEN, "%s.s",
-			 sdp->sd_table_name);
-	else
-		snprintf(sdp->sd_fsname, GFS2_FSNAME_LEN, "%s.%u",
-=======
 		snprintf(sdp->sd_fsname, sizeof(sdp->sd_fsname), "%s.s",
 			 sdp->sd_table_name);
 	else
 		snprintf(sdp->sd_fsname, sizeof(sdp->sd_fsname), "%s.%u",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 sdp->sd_table_name, sdp->sd_lockstruct.ls_jid);
 
 	error = init_inodes(sdp, DO);
@@ -1871,20 +1274,6 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 		goto fail_per_node;
 	}
 
-<<<<<<< HEAD
-	error = init_threads(sdp, DO);
-	if (error)
-		goto fail_per_node;
-
-	if (!(sb->s_flags & MS_RDONLY)) {
-		error = gfs2_make_fs_rw(sdp);
-		if (error) {
-			fs_err(sdp, "can't make FS RW: %d\n", error);
-			goto fail_threads;
-		}
-	}
-
-=======
 	if (!sb_rdonly(sb)) {
 		error = init_threads(sdp);
 		if (error)
@@ -1904,16 +1293,10 @@ static int gfs2_fill_super(struct super_block *sb, struct fs_context *fc)
 		fs_err(sdp, "can't make FS RW: %d\n", error);
 		goto fail_per_node;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfs2_glock_dq_uninit(&mount_gh);
 	gfs2_online_uevent(sdp);
 	return 0;
 
-<<<<<<< HEAD
-fail_threads:
-	init_threads(sdp, UNDO);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_per_node:
 	init_per_node(sdp, UNDO);
 fail_inodes:
@@ -1929,16 +1312,6 @@ fail_sb:
 fail_locking:
 	init_locking(sdp, &mount_gh, UNDO);
 fail_lm:
-<<<<<<< HEAD
-	gfs2_gl_hash_clear(sdp);
-	gfs2_lm_unmount(sdp);
-fail_sys:
-	gfs2_sys_fs_del(sdp);
-fail:
-	gfs2_delete_debugfs_file(sdp);
-	free_percpu(sdp->sd_lkstats);
-	kfree(sdp);
-=======
 	complete_all(&sdp->sd_journal_ready);
 	gfs2_gl_hash_clear(sdp);
 	gfs2_lm_unmount(sdp);
@@ -1949,140 +1322,10 @@ fail_delete_wq:
 	destroy_workqueue(sdp->sd_delete_wq);
 fail_free:
 	free_sbd(sdp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_fs_info = NULL;
 	return error;
 }
 
-<<<<<<< HEAD
-static int set_gfs2_super(struct super_block *s, void *data)
-{
-	s->s_bdev = data;
-	s->s_dev = s->s_bdev->bd_dev;
-
-	/*
-	 * We set the bdi here to the queue backing, file systems can
-	 * overwrite this in ->fill_super()
-	 */
-	s->s_bdi = &bdev_get_queue(s->s_bdev)->backing_dev_info;
-	return 0;
-}
-
-static int test_gfs2_super(struct super_block *s, void *ptr)
-{
-	struct block_device *bdev = ptr;
-	return (bdev == s->s_bdev);
-}
-
-/**
- * gfs2_mount - Get the GFS2 superblock
- * @fs_type: The GFS2 filesystem type
- * @flags: Mount flags
- * @dev_name: The name of the device
- * @data: The mount arguments
- *
- * Q. Why not use get_sb_bdev() ?
- * A. We need to select one of two root directories to mount, independent
- *    of whether this is the initial, or subsequent, mount of this sb
- *
- * Returns: 0 or -ve on error
- */
-
-static struct dentry *gfs2_mount(struct file_system_type *fs_type, int flags,
-		       const char *dev_name, void *data)
-{
-	struct block_device *bdev;
-	struct super_block *s;
-	fmode_t mode = FMODE_READ | FMODE_EXCL;
-	int error;
-	struct gfs2_args args;
-	struct gfs2_sbd *sdp;
-
-	if (!(flags & MS_RDONLY))
-		mode |= FMODE_WRITE;
-
-	bdev = blkdev_get_by_path(dev_name, mode, fs_type);
-	if (IS_ERR(bdev))
-		return ERR_CAST(bdev);
-
-	/*
-	 * once the super is inserted into the list by sget, s_umount
-	 * will protect the lockfs code from trying to start a snapshot
-	 * while we are mounting
-	 */
-	mutex_lock(&bdev->bd_fsfreeze_mutex);
-	if (bdev->bd_fsfreeze_count > 0) {
-		mutex_unlock(&bdev->bd_fsfreeze_mutex);
-		error = -EBUSY;
-		goto error_bdev;
-	}
-	s = sget(fs_type, test_gfs2_super, set_gfs2_super, bdev);
-	mutex_unlock(&bdev->bd_fsfreeze_mutex);
-	error = PTR_ERR(s);
-	if (IS_ERR(s))
-		goto error_bdev;
-
-	if (s->s_root) {
-		/*
-		 * s_umount nests inside bd_mutex during
-		 * __invalidate_device().  blkdev_put() acquires
-		 * bd_mutex and can't be called under s_umount.  Drop
-		 * s_umount temporarily.  This is safe as we're
-		 * holding an active reference.
-		 */
-		up_write(&s->s_umount);
-		blkdev_put(bdev, mode);
-		down_write(&s->s_umount);
-	}
-
-	memset(&args, 0, sizeof(args));
-	args.ar_quota = GFS2_QUOTA_DEFAULT;
-	args.ar_data = GFS2_DATA_DEFAULT;
-	args.ar_commit = 30;
-	args.ar_statfs_quantum = 30;
-	args.ar_quota_quantum = 60;
-	args.ar_errors = GFS2_ERRORS_DEFAULT;
-
-	error = gfs2_mount_args(&args, data);
-	if (error) {
-		printk(KERN_WARNING "GFS2: can't parse mount arguments\n");
-		goto error_super;
-	}
-
-	if (s->s_root) {
-		error = -EBUSY;
-		if ((flags ^ s->s_flags) & MS_RDONLY)
-			goto error_super;
-	} else {
-		char b[BDEVNAME_SIZE];
-
-		s->s_flags = flags;
-		s->s_mode = mode;
-		strlcpy(s->s_id, bdevname(bdev, b), sizeof(s->s_id));
-		sb_set_blocksize(s, block_size(bdev));
-		error = fill_super(s, &args, flags & MS_SILENT ? 1 : 0);
-		if (error)
-			goto error_super;
-		s->s_flags |= MS_ACTIVE;
-		bdev->bd_super = s;
-	}
-
-	sdp = s->s_fs_info;
-	if (args.ar_meta)
-		return dget(sdp->sd_master_dir);
-	else
-		return dget(sdp->sd_root_dir);
-
-error_super:
-	deactivate_locked_super(s);
-	return ERR_PTR(error);
-error_bdev:
-	blkdev_put(bdev, mode);
-	return ERR_PTR(error);
-}
-
-static int set_meta_super(struct super_block *s, void *ptr)
-=======
 /**
  * gfs2_get_tree - Get the GFS2 superblock and root directory
  * @fc: The filesystem context
@@ -2424,49 +1667,22 @@ static int gfs2_init_fs_context(struct fs_context *fc)
 }
 
 static int set_meta_super(struct super_block *s, struct fs_context *fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-static struct dentry *gfs2_mount_meta(struct file_system_type *fs_type,
-			int flags, const char *dev_name, void *data)
-=======
 static int test_meta_super(struct super_block *s, struct fs_context *fc)
 {
 	return (fc->sget_key == s->s_bdev);
 }
 
 static int gfs2_meta_get_tree(struct fs_context *fc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *s;
 	struct gfs2_sbd *sdp;
 	struct path path;
 	int error;
 
-<<<<<<< HEAD
-	error = kern_path(dev_name, LOOKUP_FOLLOW, &path);
-	if (error) {
-		printk(KERN_WARNING "GFS2: path_lookup on %s returned error %d\n",
-		       dev_name, error);
-		return ERR_PTR(error);
-	}
-	s = sget(&gfs2_fs_type, test_gfs2_super, set_meta_super,
-		 path.dentry->d_inode->i_sb->s_bdev);
-	path_put(&path);
-	if (IS_ERR(s)) {
-		printk(KERN_WARNING "GFS2: gfs2 mount does not exist\n");
-		return ERR_CAST(s);
-	}
-	if ((flags ^ s->s_flags) & MS_RDONLY) {
-		deactivate_locked_super(s);
-		return ERR_PTR(-EBUSY);
-	}
-	sdp = s->s_fs_info;
-	return dget(sdp->sd_master_dir);
-=======
 	if (!fc->source || !*fc->source)
 		return -EINVAL;
 
@@ -2556,7 +1772,6 @@ static void gfs2_evict_inodes(struct super_block *sb)
 	}
 	spin_unlock(&sb->s_inode_list_lock);
 	iput(toput_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gfs2_kill_sb(struct super_block *sb)
@@ -2568,22 +1783,12 @@ static void gfs2_kill_sb(struct super_block *sb)
 		return;
 	}
 
-<<<<<<< HEAD
-	gfs2_meta_syncfs(sdp);
-=======
 	gfs2_log_flush(sdp, NULL, GFS2_LOG_HEAD_FLUSH_SYNC | GFS2_LFC_KILL_SB);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dput(sdp->sd_root_dir);
 	dput(sdp->sd_master_dir);
 	sdp->sd_root_dir = NULL;
 	sdp->sd_master_dir = NULL;
 	shrink_dcache_sb(sb);
-<<<<<<< HEAD
-	kill_block_super(sb);
-	gfs2_delete_debugfs_file(sdp);
-	free_percpu(sdp->sd_lkstats);
-	kfree(sdp);
-=======
 
 	gfs2_evict_inodes(sb);
 
@@ -2597,18 +1802,13 @@ static void gfs2_kill_sb(struct super_block *sb)
 	destroy_workqueue(sdp->sd_delete_wq);
 
 	kill_block_super(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct file_system_type gfs2_fs_type = {
 	.name = "gfs2",
 	.fs_flags = FS_REQUIRES_DEV,
-<<<<<<< HEAD
-	.mount = gfs2_mount,
-=======
 	.init_fs_context = gfs2_init_fs_context,
 	.parameters = gfs2_fs_parameters,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb = gfs2_kill_sb,
 	.owner = THIS_MODULE,
 };
@@ -2617,11 +1817,7 @@ MODULE_ALIAS_FS("gfs2");
 struct file_system_type gfs2meta_fs_type = {
 	.name = "gfs2meta",
 	.fs_flags = FS_REQUIRES_DEV,
-<<<<<<< HEAD
-	.mount = gfs2_mount_meta,
-=======
 	.init_fs_context = gfs2_meta_init_fs_context,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner = THIS_MODULE,
 };
 MODULE_ALIAS_FS("gfs2meta");

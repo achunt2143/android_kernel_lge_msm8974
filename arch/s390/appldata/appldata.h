@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-/*
- * arch/s390/appldata/appldata.h
- *
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Definitions and interface for Linux - z/VM Monitor Stream.
  *
  * Copyright IBM Corp. 2003, 2008

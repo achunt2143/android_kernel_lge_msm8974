@@ -1,29 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_xmit.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -37,19 +18,11 @@
 
 #include "osdep_service.h"
 #include "drv_types.h"
-<<<<<<< HEAD
-#include "rtl871x_byteorder.h"
-#include "wifi.h"
-#include "osdep_intf.h"
-#include "usb_ops.h"
-
-=======
 #include "osdep_intf.h"
 #include "usb_ops.h"
 
 #include <linux/usb.h>
 #include <linux/ieee80211.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const u8 P802_1H_OUI[P80211_OUI_LEN] = {0x00, 0x00, 0xf8};
 static const u8 RFC1042_OUI[P80211_OUI_LEN] = {0x00, 0x00, 0x00};
@@ -59,11 +32,7 @@ static void free_hwxmits(struct _adapter *padapter);
 
 static void _init_txservq(struct tx_servq *ptxservq)
 {
-<<<<<<< HEAD
-	_init_listhead(&ptxservq->tx_pending);
-=======
 	INIT_LIST_HEAD(&ptxservq->tx_pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_init_queue(&ptxservq->sta_pending);
 	ptxservq->qcnt = 0;
 }
@@ -77,40 +46,23 @@ void _r8712_init_sta_xmit_priv(struct sta_xmit_priv *psta_xmitpriv)
 	_init_txservq(&psta_xmitpriv->bk_q);
 	_init_txservq(&psta_xmitpriv->vi_q);
 	_init_txservq(&psta_xmitpriv->vo_q);
-<<<<<<< HEAD
-	_init_listhead(&psta_xmitpriv->legacy_dz);
-	_init_listhead(&psta_xmitpriv->apsd);
-}
-
-sint _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
-			   struct _adapter *padapter)
-=======
 	INIT_LIST_HEAD(&psta_xmitpriv->legacy_dz);
 	INIT_LIST_HEAD(&psta_xmitpriv->apsd);
 }
 
 int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 			  struct _adapter *padapter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sint i;
 	struct xmit_buf *pxmitbuf;
 	struct xmit_frame *pxframe;
-<<<<<<< HEAD
-=======
 	int j;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset((unsigned char *)pxmitpriv, 0, sizeof(struct xmit_priv));
 	spin_lock_init(&pxmitpriv->lock);
 	/*
-<<<<<<< HEAD
-	Please insert all the queue initializaiton using _init_queue below
-	*/
-=======
 	 *Please insert all the queue initialization using _init_queue below
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pxmitpriv->adapter = padapter;
 	_init_queue(&pxmitpriv->be_pending);
 	_init_queue(&pxmitpriv->bk_pending);
@@ -121,17 +73,6 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 	_init_queue(&pxmitpriv->apsd_queue);
 	_init_queue(&pxmitpriv->free_xmit_queue);
 	/*
-<<<<<<< HEAD
-	Please allocate memory with the sz = (struct xmit_frame) * NR_XMITFRAME,
-	and initialize free_xmit_frame below.
-	Please also apply  free_txobj to link_up all the xmit_frames...
-	*/
-	pxmitpriv->pallocated_frame_buf = _malloc(NR_XMITFRAME *
-					  sizeof(struct xmit_frame) + 4);
-	if (pxmitpriv->pallocated_frame_buf == NULL) {
-		pxmitpriv->pxmit_frame_buf = NULL;
-		return _FAIL;
-=======
 	 * Please allocate memory with sz = (struct xmit_frame) * NR_XMITFRAME,
 	 * and initialize free_xmit_frame below.
 	 * Please also apply  free_txobj to link_up all the xmit_frames...
@@ -142,39 +83,25 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 	if (!pxmitpriv->pallocated_frame_buf) {
 		pxmitpriv->pxmit_frame_buf = NULL;
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pxmitpriv->pxmit_frame_buf = pxmitpriv->pallocated_frame_buf + 4 -
 			((addr_t) (pxmitpriv->pallocated_frame_buf) & 3);
 	pxframe = (struct xmit_frame *) pxmitpriv->pxmit_frame_buf;
 	for (i = 0; i < NR_XMITFRAME; i++) {
-<<<<<<< HEAD
-		_init_listhead(&(pxframe->list));
-=======
 		INIT_LIST_HEAD(&(pxframe->list));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pxframe->padapter = padapter;
 		pxframe->frame_tag = DATA_FRAMETAG;
 		pxframe->pkt = NULL;
 		pxframe->buf_addr = NULL;
 		pxframe->pxmitbuf = NULL;
-<<<<<<< HEAD
-		list_insert_tail(&(pxframe->list),
-=======
 		list_add_tail(&(pxframe->list),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 &(pxmitpriv->free_xmit_queue.queue));
 		pxframe++;
 	}
 	pxmitpriv->free_xmitframe_cnt = NR_XMITFRAME;
 	/*
-<<<<<<< HEAD
-		init xmit hw_txqueue
-	*/
-=======
 	 * init xmit hw_txqueue
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_r8712_init_hw_txqueue(&pxmitpriv->be_txqueue, BE_QUEUE_INX);
 	_r8712_init_hw_txqueue(&pxmitpriv->bk_txqueue, BK_QUEUE_INX);
 	_r8712_init_hw_txqueue(&pxmitpriv->vi_txqueue, VI_QUEUE_INX);
@@ -190,33 +117,14 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 	/*init xmit_buf*/
 	_init_queue(&pxmitpriv->free_xmitbuf_queue);
 	_init_queue(&pxmitpriv->pending_xmitbuf_queue);
-<<<<<<< HEAD
-	pxmitpriv->pallocated_xmitbuf = _malloc(NR_XMITBUFF *
-					sizeof(struct xmit_buf) + 4);
-	if (pxmitpriv->pallocated_xmitbuf  == NULL)
-		return _FAIL;
-=======
 	pxmitpriv->pallocated_xmitbuf =
 		kmalloc(NR_XMITBUFF * sizeof(struct xmit_buf) + 4, GFP_ATOMIC);
 	if (!pxmitpriv->pallocated_xmitbuf)
 		goto clean_up_frame_buf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pxmitpriv->pxmitbuf = pxmitpriv->pallocated_xmitbuf + 4 -
 			      ((addr_t)(pxmitpriv->pallocated_xmitbuf) & 3);
 	pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmitbuf;
 	for (i = 0; i < NR_XMITBUFF; i++) {
-<<<<<<< HEAD
-		_init_listhead(&pxmitbuf->list);
-		pxmitbuf->pallocated_buf = _malloc(MAX_XMITBUF_SZ +
-					   XMITBUF_ALIGN_SZ);
-		if (pxmitbuf->pallocated_buf == NULL)
-			return _FAIL;
-		pxmitbuf->pbuf = pxmitbuf->pallocated_buf + XMITBUF_ALIGN_SZ -
-				 ((addr_t) (pxmitbuf->pallocated_buf) &
-				 (XMITBUF_ALIGN_SZ - 1));
-		r8712_xmit_resource_alloc(padapter, pxmitbuf);
-		list_insert_tail(&pxmitbuf->list,
-=======
 		INIT_LIST_HEAD(&pxmitbuf->list);
 		pxmitbuf->pallocated_buf =
 			kmalloc(MAX_XMITBUF_SZ + XMITBUF_ALIGN_SZ, GFP_ATOMIC);
@@ -232,20 +140,10 @@ int _r8712_init_xmit_priv(struct xmit_priv *pxmitpriv,
 			goto clean_up_alloc_buf;
 		}
 		list_add_tail(&pxmitbuf->list,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 &(pxmitpriv->free_xmitbuf_queue.queue));
 		pxmitbuf++;
 	}
 	pxmitpriv->free_xmitbuf_cnt = NR_XMITBUFF;
-<<<<<<< HEAD
-	_init_workitem(&padapter->wkFilterRxFF0, r8712_SetFilter, padapter);
-	alloc_hwxmits(padapter);
-	init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
-	tasklet_init(&pxmitpriv->xmit_tasklet,
-		(void(*)(unsigned long))r8712_xmit_bh,
-		(unsigned long)padapter);
-	return _SUCCESS;
-=======
 	INIT_WORK(&padapter->wk_filter_rx_ff0, r8712_SetFilter);
 	alloc_hwxmits(padapter);
 	init_hwxmits(pxmitpriv->hwxmits, pxmitpriv->hwxmit_entry);
@@ -273,7 +171,6 @@ clean_up_frame_buf:
 	kfree(pxmitpriv->pallocated_frame_buf);
 	pxmitpriv->pallocated_frame_buf = NULL;
 	return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void _free_xmit_priv(struct xmit_priv *pxmitpriv)
@@ -284,11 +181,7 @@ void _free_xmit_priv(struct xmit_priv *pxmitpriv)
 					pxmitpriv->pxmit_frame_buf;
 	struct xmit_buf *pxmitbuf = (struct xmit_buf *)pxmitpriv->pxmitbuf;
 
-<<<<<<< HEAD
-	if (pxmitpriv->pxmit_frame_buf == NULL)
-=======
 	if (!pxmitpriv->pxmit_frame_buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	for (i = 0; i < NR_XMITFRAME; i++) {
 		r8712_xmit_complete(padapter, pxmitframe);
@@ -304,27 +197,16 @@ void _free_xmit_priv(struct xmit_priv *pxmitpriv)
 	free_hwxmits(padapter);
 }
 
-<<<<<<< HEAD
-sint r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
-		   struct pkt_attrib *pattrib)
-{
-	uint i;
-=======
 int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 			struct pkt_attrib *pattrib)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pkt_file pktfile;
 	struct sta_info *psta = NULL;
 	struct ethhdr etherhdr;
 
 	struct tx_cmd txdesc;
 
-<<<<<<< HEAD
-	sint bmcast;
-=======
 	bool bmcast;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sta_priv		*pstapriv = &padapter->stapriv;
 	struct security_priv	*psecuritypriv = &padapter->securitypriv;
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
@@ -332,30 +214,6 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 
 	_r8712_open_pktfile(pkt, &pktfile);
 
-<<<<<<< HEAD
-	i = _r8712_pktfile_read(&pktfile, (unsigned char *)&etherhdr, ETH_HLEN);
-
-	pattrib->ether_type = ntohs(etherhdr.h_proto);
-
-{
-	u8 bool;
-	/*If driver xmit ARP packet, driver can set ps mode to initial
-	 * setting. It stands for getting DHCP or fix IP.*/
-	if (pattrib->ether_type == 0x0806) {
-		if (padapter->pwrctrlpriv.pwr_mode !=
-		    padapter->registrypriv.power_mgnt) {
-			_cancel_timer(&(pmlmepriv->dhcp_timer), &bool);
-			r8712_set_ps_mode(padapter, padapter->registrypriv.
-				power_mgnt, padapter->registrypriv.smart_ps);
-		}
-	}
-}
-	memcpy(pattrib->dst, &etherhdr.h_dest, ETH_ALEN);
-	memcpy(pattrib->src, &etherhdr.h_source, ETH_ALEN);
-	pattrib->pctrl = 0;
-	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) ||
-	    (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true)) {
-=======
 	_r8712_pktfile_read(&pktfile, (unsigned char *)&etherhdr, ETH_HLEN);
 
 	pattrib->ether_type = ntohs(etherhdr.h_proto);
@@ -379,7 +237,6 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	pattrib->pctrl = 0;
 	if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) ||
 	    check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 	} else if (check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
@@ -388,16 +245,6 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, get_bssid(pmlmepriv), ETH_ALEN);
-<<<<<<< HEAD
-	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
-		/*firstly, filter packet not belongs to mp*/
-		if (pattrib->ether_type != 0x8712)
-			return _FAIL;
-		/* for mp storing the txcmd per packet,
-		 * according to the info of txcmd to update pattrib */
-		/*get MP_TXDESC_SIZE bytes txcmd per packet*/
-		i = _r8712_pktfile_read(&pktfile, (u8 *)&txdesc, TXDESC_SIZE);
-=======
 	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
 		/*firstly, filter packet not belongs to mp*/
 		if (pattrib->ether_type != 0x8712)
@@ -407,24 +254,12 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		 */
 		/*get MP_TXDESC_SIZE bytes txcmd per packet*/
 		_r8712_pktfile_read(&pktfile, (u8 *)&txdesc, TXDESC_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 		pattrib->pctrl = 1;
 	}
 	/* r8712_xmitframe_coalesce() overwrite this!*/
 	pattrib->pktlen = pktfile.pkt_len;
-<<<<<<< HEAD
-	if (ETH_P_IP == pattrib->ether_type) {
-		/* The following is for DHCP and ARP packet, we use cck1M to
-		 * tx these packets and let LPS awake some time
-		 * to prevent DHCP protocol fail */
-		u8 tmp[24];
-		_r8712_pktfile_read(&pktfile, &tmp[0], 24);
-		pattrib->dhcp_pkt = 0;
-		if (pktfile.pkt_len > 282) {/*MINIMUM_DHCP_PACKET_SIZE)*/
-			if (ETH_P_IP == pattrib->ether_type) {/* IP header*/
-=======
 	if (pattrib->ether_type == ETH_P_IP) {
 		/* The following is for DHCP and ARP packet, we use cck1M to
 		 * tx these packets and let LPS awake some time
@@ -436,49 +271,31 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		pattrib->dhcp_pkt = 0;
 		if (pktfile.pkt_len > 282) {/*MINIMUM_DHCP_PACKET_SIZE)*/
 			if (pattrib->ether_type == ETH_P_IP) {/* IP header*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (((tmp[21] == 68) && (tmp[23] == 67)) ||
 					((tmp[21] == 67) && (tmp[23] == 68))) {
 					/* 68 : UDP BOOTP client
 					 * 67 : UDP BOOTP server
-<<<<<<< HEAD
-					 * Use low rate to send DHCP packet.*/
-=======
 					 * Use low rate to send DHCP packet.
 					 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					pattrib->dhcp_pkt = 1;
 				}
 			}
 		}
 	}
-<<<<<<< HEAD
-	bmcast = IS_MCAST(pattrib->ra);
-=======
 	bmcast = is_multicast_ether_addr(pattrib->ra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* get sta_info*/
 	if (bmcast) {
 		psta = r8712_get_bcmc_stainfo(padapter);
 		pattrib->mac_id = 4;
 	} else {
-<<<<<<< HEAD
-		if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
-=======
 		if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psta = r8712_get_stainfo(pstapriv,
 						 get_bssid(pmlmepriv));
 			pattrib->mac_id = 5;
 		} else {
 			psta = r8712_get_stainfo(pstapriv, pattrib->ra);
-<<<<<<< HEAD
-			if (psta == NULL)  /* drop the pkt */
-				return _FAIL;
-=======
 			if (!psta)  /* drop the pkt */
 				return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (check_fwstate(pmlmepriv, WIFI_STATION_STATE))
 				pattrib->mac_id = 5;
 			else
@@ -490,33 +307,13 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		pattrib->psta = psta;
 	} else {
 		/* if we cannot get psta => drrp the pkt */
-<<<<<<< HEAD
-		return _FAIL;
-=======
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pattrib->ack_policy = 0;
 	/* get ether_hdr_len */
 	pattrib->pkt_hdrlen = ETH_HLEN;
 
-<<<<<<< HEAD
-	if (pqospriv->qos_option)
-		r8712_set_qos(&pktfile, pattrib);
-	else {
-		pattrib->hdrlen = WLAN_HDR_A3_LEN;
-		pattrib->subtype = WIFI_DATA_TYPE;
-		pattrib->priority = 0;
-	}
-	if (psta->ieee8021x_blocked == true) {
-		pattrib->encrypt = 0;
-		if ((pattrib->ether_type != 0x888e) &&
-		    (check_fwstate(pmlmepriv, WIFI_MP_STATE) == false))
-			return _FAIL;
-	} else
-		GET_ENCRY_ALGO(psecuritypriv, psta, pattrib->encrypt, bmcast);
-=======
 	if (pqospriv->qos_option) {
 		r8712_set_qos(&pktfile, pattrib);
 	} else {
@@ -532,7 +329,6 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	} else {
 		GET_ENCRY_ALGO(psecuritypriv, psta, pattrib->encrypt, bmcast);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (pattrib->encrypt) {
 	case _WEP40_:
 	case _WEP104_:
@@ -543,11 +339,7 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 		pattrib->iv_len = 8;
 		pattrib->icv_len = 4;
 		if (padapter->securitypriv.busetkipkey == _FAIL)
-<<<<<<< HEAD
-			return _FAIL;
-=======
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case _AES_:
 		pattrib->iv_len = 8;
@@ -560,29 +352,12 @@ int r8712_update_attrib(struct _adapter *padapter, _pkt *pkt,
 	}
 
 	if (pattrib->encrypt &&
-<<<<<<< HEAD
-	    ((padapter->securitypriv.sw_encrypt == true) ||
-	     (psecuritypriv->hw_decrypted == false)))
-=======
 	    (padapter->securitypriv.sw_encrypt ||
 	    !psecuritypriv->hw_decrypted))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pattrib->bswenc = true;
 	else
 		pattrib->bswenc = false;
 	/* if in MP_STATE, update pkt_attrib from mp_txcmd, and overwrite
-<<<<<<< HEAD
-	 * some settings above.*/
-	if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)
-		pattrib->priority = (txdesc.txdw1 >> QSEL_SHT) & 0x1f;
-	return _SUCCESS;
-}
-
-static sint xmitframe_addmic(struct _adapter *padapter,
-			     struct xmit_frame *pxmitframe)
-{
-	u32	curfragnum, length, datalen;
-=======
 	 * some settings above.
 	 */
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
@@ -595,23 +370,15 @@ static int xmitframe_addmic(struct _adapter *padapter,
 			    struct xmit_frame *pxmitframe)
 {
 	u32	curfragnum, length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	*pframe, *payload, mic[8];
 	struct	mic_data micdata;
 	struct	sta_info *stainfo;
 	struct	qos_priv *pqospriv = &(padapter->mlmepriv.qospriv);
 	struct	pkt_attrib  *pattrib = &pxmitframe->attrib;
-<<<<<<< HEAD
-	struct	security_priv *psecuritypriv = &padapter->securitypriv;
-	struct	xmit_priv *pxmitpriv = &padapter->xmitpriv;
-	u8 priority[4] = {0x0, 0x0, 0x0, 0x0};
-	sint bmcst = IS_MCAST(pattrib->ra);
-=======
 	struct	security_priv *psecpriv = &padapter->securitypriv;
 	struct	xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	u8 priority[4] = {};
 	bool bmcst = is_multicast_ether_addr(pattrib->ra);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pattrib->psta)
 		stainfo = pattrib->psta;
@@ -620,28 +387,6 @@ static int xmitframe_addmic(struct _adapter *padapter,
 					    &pattrib->ra[0]);
 	if (pattrib->encrypt == _TKIP_) {
 		/*encode mic code*/
-<<<<<<< HEAD
-		if (stainfo != NULL) {
-			u8 null_key[16] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-					   0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-					   0x0, 0x0};
-			datalen = pattrib->pktlen - pattrib->hdrlen;
-			pframe = pxmitframe->buf_addr + TXDESC_OFFSET;
-			if (bmcst) {
-				if (!memcmp(psecuritypriv->XGrptxmickey
-				   [psecuritypriv->XGrpKeyid].skey,
-				   null_key, 16))
-					return _FAIL;
-				/*start to calculate the mic code*/
-				r8712_secmicsetkey(&micdata,
-					 psecuritypriv->
-					 XGrptxmickey[psecuritypriv->
-					XGrpKeyid].skey);
-			} else {
-				if (!memcmp(&stainfo->tkiptxmickey.skey[0],
-					    null_key, 16))
-					return _FAIL;
-=======
 		if (stainfo) {
 			u8 null_key[16] = {};
 
@@ -659,7 +404,6 @@ static int xmitframe_addmic(struct _adapter *padapter,
 				if (!memcmp(&stainfo->tkiptxmickey.skey[0],
 					    null_key, 16))
 					return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* start to calculate the mic code */
 				r8712_secmicsetkey(&micdata,
 					     &stainfo->tkiptxmickey.skey[0]);
@@ -667,11 +411,7 @@ static int xmitframe_addmic(struct _adapter *padapter,
 			if (pframe[1] & 1) {   /* ToDS==1 */
 				r8712_secmicappend(&micdata,
 						   &pframe[16], 6); /*DA*/
-<<<<<<< HEAD
-				if (pframe[1]&2)  /* From Ds==1 */
-=======
 				if (pframe[1] & 2)  /* From Ds==1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					r8712_secmicappend(&micdata,
 							   &pframe[24], 6);
 				else
@@ -680,11 +420,7 @@ static int xmitframe_addmic(struct _adapter *padapter,
 			} else {	/* ToDS==0 */
 				r8712_secmicappend(&micdata,
 						   &pframe[4], 6); /* DA */
-<<<<<<< HEAD
-				if (pframe[1]&2)  /* From Ds==1 */
-=======
 				if (pframe[1] & 2)  /* From Ds==1 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					r8712_secmicappend(&micdata,
 							   &pframe[16], 6);
 				else
@@ -692,38 +428,17 @@ static int xmitframe_addmic(struct _adapter *padapter,
 							   &pframe[10], 6);
 			}
 			if (pqospriv->qos_option == 1)
-<<<<<<< HEAD
-					priority[0] = (u8)pxmitframe->
-						      attrib.priority;
-=======
 				priority[0] = (u8)pxmitframe->attrib.priority;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r8712_secmicappend(&micdata, &priority[0], 4);
 			payload = pframe;
 			for (curfragnum = 0; curfragnum < pattrib->nr_frags;
 			     curfragnum++) {
 				payload = (u8 *)RND4((addr_t)(payload));
-<<<<<<< HEAD
-				payload = payload+pattrib->
-					  hdrlen+pattrib->iv_len;
-=======
 				payload += pattrib->hdrlen + pattrib->iv_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((curfragnum + 1) == pattrib->nr_frags) {
 					length = pattrib->last_txcmdsz -
 						  pattrib->hdrlen -
 						  pattrib->iv_len -
-<<<<<<< HEAD
-						  ((psecuritypriv->sw_encrypt)
-						  ? pattrib->icv_len : 0);
-					r8712_secmicappend(&micdata, payload,
-							   length);
-					payload = payload+length;
-				} else{
-					length = pxmitpriv->frag_len -
-					    pattrib->hdrlen-pattrib->iv_len -
-					    ((psecuritypriv->sw_encrypt) ?
-=======
 						  ((psecpriv->sw_encrypt)
 						  ? pattrib->icv_len : 0);
 					r8712_secmicappend(&micdata, payload,
@@ -733,7 +448,6 @@ static int xmitframe_addmic(struct _adapter *padapter,
 					length = pxmitpriv->frag_len -
 					    pattrib->hdrlen - pattrib->iv_len -
 					    ((psecpriv->sw_encrypt) ?
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    pattrib->icv_len : 0);
 					r8712_secmicappend(&micdata, payload,
 							   length);
@@ -743,15 +457,6 @@ static int xmitframe_addmic(struct _adapter *padapter,
 			}
 			r8712_secgetmic(&micdata, &(mic[0]));
 			/* add mic code  and add the mic code length in
-<<<<<<< HEAD
-			 * last_txcmdsz */
-			memcpy(payload, &(mic[0]), 8);
-			pattrib->last_txcmdsz += 8;
-			payload = payload-pattrib->last_txcmdsz + 8;
-		}
-	}
-	return _SUCCESS;
-=======
 			 * last_txcmdsz
 			 */
 			memcpy(payload, &(mic[0]), 8);
@@ -760,7 +465,6 @@ static int xmitframe_addmic(struct _adapter *padapter,
 		}
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static sint xmitframe_swencrypt(struct _adapter *padapter,
@@ -787,90 +491,14 @@ static sint xmitframe_swencrypt(struct _adapter *padapter,
 	return _SUCCESS;
 }
 
-<<<<<<< HEAD
-static sint make_wlanhdr(struct _adapter *padapter , u8 *hdr,
-			 struct pkt_attrib *pattrib)
-=======
 static int make_wlanhdr(struct _adapter *padapter, u8 *hdr,
 			struct pkt_attrib *pattrib)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 *qc;
 
 	struct ieee80211_hdr *pwlanhdr = (struct ieee80211_hdr *)hdr;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct qos_priv *pqospriv = &pmlmepriv->qospriv;
-<<<<<<< HEAD
-	u16 *fctrl = &pwlanhdr->frame_ctl;
-	memset(hdr, 0, WLANHDR_OFFSET);
-	SetFrameSubType(fctrl, pattrib->subtype);
-	if (pattrib->subtype & WIFI_DATA_TYPE) {
-		if ((check_fwstate(pmlmepriv,  WIFI_STATION_STATE) == true)) {
-			/* to_ds = 1, fr_ds = 0; */
-			SetToDs(fctrl);
-			memcpy(pwlanhdr->addr1, get_bssid(pmlmepriv),
-				ETH_ALEN);
-			memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
-			memcpy(pwlanhdr->addr3, pattrib->dst, ETH_ALEN);
-		} else if ((check_fwstate(pmlmepriv, WIFI_AP_STATE) == true)) {
-			/* to_ds = 0, fr_ds = 1; */
-			SetFrDs(fctrl);
-			memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
-			memcpy(pwlanhdr->addr2, get_bssid(pmlmepriv),
-				ETH_ALEN);
-			memcpy(pwlanhdr->addr3, pattrib->src, ETH_ALEN);
-		} else if ((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true)
-			   || (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)
-			   == true)) {
-			memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
-			memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
-			memcpy(pwlanhdr->addr3, get_bssid(pmlmepriv),
-				ETH_ALEN);
-		} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
-			memcpy(pwlanhdr->addr1, pattrib->dst, ETH_ALEN);
-			memcpy(pwlanhdr->addr2, pattrib->src, ETH_ALEN);
-			memcpy(pwlanhdr->addr3, get_bssid(pmlmepriv),
-				ETH_ALEN);
-		} else
-			return _FAIL;
-
-		if (pattrib->encrypt)
-			SetPrivacy(fctrl);
-		if (pqospriv->qos_option) {
-			qc = (unsigned short *)(hdr + pattrib->hdrlen - 2);
-			if (pattrib->priority)
-				SetPriority(qc, pattrib->priority);
-			SetAckpolicy(qc, pattrib->ack_policy);
-		}
-		/* TODO: fill HT Control Field */
-		/* Update Seq Num will be handled by f/w */
-		{
-			struct sta_info *psta;
-
-			sint bmcst = IS_MCAST(pattrib->ra);
-			if (pattrib->psta)
-				psta = pattrib->psta;
-			else {
-				if (bmcst)
-					psta = r8712_get_bcmc_stainfo(padapter);
-				else
-					psta =
-					 r8712_get_stainfo(&padapter->stapriv,
-					 pattrib->ra);
-			}
-			if (psta) {
-				psta->sta_xmitpriv.txseq_tid
-						  [pattrib->priority]++;
-				psta->sta_xmitpriv.txseq_tid[pattrib->priority]
-						   &= 0xFFF;
-				pattrib->seqnum = psta->sta_xmitpriv.
-						  txseq_tid[pattrib->priority];
-				SetSeqNum(hdr, pattrib->seqnum);
-			}
-		}
-	}
-	return _SUCCESS;
-=======
 	__le16 *fctrl = &pwlanhdr->frame_control;
 	u8 *bssid;
 
@@ -939,7 +567,6 @@ static int make_wlanhdr(struct _adapter *padapter, u8 *hdr,
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static sint r8712_put_snap(u8 *data, u16 h_proto)
@@ -958,11 +585,7 @@ static sint r8712_put_snap(u8 *data, u16 h_proto)
 	snap->oui[0] = oui[0];
 	snap->oui[1] = oui[1];
 	snap->oui[2] = oui[2];
-<<<<<<< HEAD
-	*(u16 *)(data + SNAP_SIZE) = htons(h_proto);
-=======
 	*(__be16 *)(data + SNAP_SIZE) = htons(h_proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SNAP_SIZE + sizeof(u16);
 }
 
@@ -986,47 +609,26 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 	addr_t addr;
 	u8 *pframe, *mem_start, *ptxdesc;
 	struct sta_info		*psta;
-<<<<<<< HEAD
-	struct security_priv	*psecuritypriv = &padapter->securitypriv;
-=======
 	struct security_priv	*psecpriv = &padapter->securitypriv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 	struct xmit_priv	*pxmitpriv = &padapter->xmitpriv;
 	struct pkt_attrib	*pattrib = &pxmitframe->attrib;
 	u8 *pbuf_start;
-<<<<<<< HEAD
-	sint bmcst = IS_MCAST(pattrib->ra);
-
-	if (pattrib->psta == NULL)
-		return _FAIL;
-	psta = pattrib->psta;
-	if (pxmitframe->buf_addr == NULL)
-=======
 	bool bmcst = is_multicast_ether_addr(pattrib->ra);
 
 	if (!pattrib->psta)
 		return _FAIL;
 	psta = pattrib->psta;
 	if (!pxmitframe->buf_addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return _FAIL;
 	pbuf_start = pxmitframe->buf_addr;
 	ptxdesc = pbuf_start;
 	mem_start = pbuf_start + TXDESC_OFFSET;
-<<<<<<< HEAD
-	if (make_wlanhdr(padapter, mem_start, pattrib) == _FAIL)
-		return _FAIL;
-	_r8712_open_pktfile(pkt, &pktfile);
-	_r8712_pktfile_read(&pktfile, NULL, (uint) pattrib->pkt_hdrlen);
-	if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
-=======
 	if (make_wlanhdr(padapter, mem_start, pattrib))
 		return _FAIL;
 	_r8712_open_pktfile(pkt, &pktfile);
 	_r8712_pktfile_read(&pktfile, NULL, (uint) pattrib->pkt_hdrlen);
 	if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* truncate TXDESC_SIZE bytes txcmd if at mp mode for 871x */
 		if (pattrib->ether_type == 0x8712) {
 			/* take care -  update_txdesc overwrite this */
@@ -1045,32 +647,18 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 		mpdu_len -= pattrib->hdrlen;
 		/* adding icv, if necessary...*/
 		if (pattrib->iv_len) {
-<<<<<<< HEAD
-			if (psta != NULL) {
-=======
 			if (psta) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				switch (pattrib->encrypt) {
 				case _WEP40_:
 				case _WEP104_:
 					WEP_IV(pattrib->iv, psta->txpn,
-<<<<<<< HEAD
-					       (u8)psecuritypriv->
-					       PrivacyKeyIndex);
-=======
 					       (u8)psecpriv->PrivacyKeyIndex);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				case _TKIP_:
 					if (bmcst)
 						TKIP_IV(pattrib->iv,
 						    psta->txpn,
-<<<<<<< HEAD
-						    (u8)psecuritypriv->
-						    XGrpKeyid);
-=======
 						    (u8)psecpriv->XGrpKeyid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					else
 						TKIP_IV(pattrib->iv, psta->txpn,
 							0);
@@ -1078,12 +666,7 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 				case _AES_:
 					if (bmcst)
 						AES_IV(pattrib->iv, psta->txpn,
-<<<<<<< HEAD
-						    (u8)psecuritypriv->
-						    XGrpKeyid);
-=======
 						    (u8)psecpriv->XGrpKeyid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					else
 						AES_IV(pattrib->iv, psta->txpn,
 						       0);
@@ -1113,11 +696,7 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 			pframe += pattrib->icv_len;
 		}
 		frg_inx++;
-<<<<<<< HEAD
-		if (bmcst || (r8712_endofpktfile(&pktfile) == true)) {
-=======
 		if (bmcst || r8712_endofpktfile(&pktfile)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pattrib->nr_frags = frg_inx;
 			pattrib->last_txcmdsz = pattrib->hdrlen +
 						pattrib->iv_len +
@@ -1133,11 +712,7 @@ sint r8712_xmitframe_coalesce(struct _adapter *padapter, _pkt *pkt,
 		memcpy(mem_start, pbuf_start + TXDESC_OFFSET, pattrib->hdrlen);
 	}
 
-<<<<<<< HEAD
-	if (xmitframe_addmic(padapter, pxmitframe) == _FAIL)
-=======
 	if (xmitframe_addmic(padapter, pxmitframe))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return _FAIL;
 	xmitframe_swencrypt(padapter, pxmitframe);
 	return _SUCCESS;
@@ -1147,11 +722,7 @@ void r8712_update_protection(struct _adapter *padapter, u8 *ie, uint ie_len)
 {
 	uint	protection;
 	u8	*perp;
-<<<<<<< HEAD
-	sint	 erp_len;
-=======
 	uint	erp_len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct	xmit_priv *pxmitpriv = &padapter->xmitpriv;
 	struct	registry_priv *pregistrypriv = &padapter->registrypriv;
 
@@ -1163,31 +734,19 @@ void r8712_update_protection(struct _adapter *padapter, u8 *ie, uint ie_len)
 		break;
 	case AUTO_VCS:
 	default:
-<<<<<<< HEAD
-		perp = r8712_get_ie(ie, _ERPINFO_IE_, &erp_len, ie_len);
-		if (perp == NULL)
-			pxmitpriv->vcs = NONE_VCS;
-		else {
-=======
 		perp = r8712_get_ie(ie, WLAN_EID_ERP_INFO, &erp_len, ie_len);
 		if (!perp) {
 			pxmitpriv->vcs = NONE_VCS;
 		} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			protection = (*(perp + 2)) & BIT(1);
 			if (protection) {
 				if (pregistrypriv->vcs_type == RTS_CTS)
 					pxmitpriv->vcs = RTS_CTS;
 				else
 					pxmitpriv->vcs = CTS_TO_SELF;
-<<<<<<< HEAD
-			} else
-				pxmitpriv->vcs = NONE_VCS;
-=======
 			} else {
 				pxmitpriv->vcs = NONE_VCS;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
@@ -1196,23 +755,6 @@ void r8712_update_protection(struct _adapter *padapter, u8 *ie, uint ie_len)
 struct xmit_buf *r8712_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 {
 	unsigned long irqL;
-<<<<<<< HEAD
-	struct xmit_buf *pxmitbuf =  NULL;
-	struct list_head *plist, *phead;
-	struct  __queue *pfree_xmitbuf_queue = &pxmitpriv->free_xmitbuf_queue;
-
-	spin_lock_irqsave(&pfree_xmitbuf_queue->lock, irqL);
-	if (_queue_empty(pfree_xmitbuf_queue) == true)
-		pxmitbuf = NULL;
-	else {
-		phead = get_list_head(pfree_xmitbuf_queue);
-		plist = get_next(phead);
-		pxmitbuf = LIST_CONTAINOR(plist, struct xmit_buf, list);
-		list_delete(&(pxmitbuf->list));
-	}
-	if (pxmitbuf !=  NULL)
-		pxmitpriv->free_xmitbuf_cnt--;
-=======
 	struct xmit_buf *pxmitbuf;
 	struct  __queue *pfree_xmitbuf_queue = &pxmitpriv->free_xmitbuf_queue;
 
@@ -1223,66 +765,15 @@ struct xmit_buf *r8712_alloc_xmitbuf(struct xmit_priv *pxmitpriv)
 		list_del_init(&pxmitbuf->list);
 		pxmitpriv->free_xmitbuf_cnt--;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&pfree_xmitbuf_queue->lock, irqL);
 	return pxmitbuf;
 }
 
-<<<<<<< HEAD
-int r8712_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
-=======
 void r8712_free_xmitbuf(struct xmit_priv *pxmitpriv, struct xmit_buf *pxmitbuf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long irqL;
 	struct  __queue *pfree_xmitbuf_queue = &pxmitpriv->free_xmitbuf_queue;
 
-<<<<<<< HEAD
-	if (pxmitbuf == NULL)
-		return _FAIL;
-	spin_lock_irqsave(&pfree_xmitbuf_queue->lock, irqL);
-	list_delete(&pxmitbuf->list);
-	list_insert_tail(&(pxmitbuf->list), get_list_head(pfree_xmitbuf_queue));
-	pxmitpriv->free_xmitbuf_cnt++;
-	spin_unlock_irqrestore(&pfree_xmitbuf_queue->lock, irqL);
-	return _SUCCESS;
-}
-
-/*
-Calling context:
-1. OS_TXENTRY
-2. RXENTRY (rx_thread or RX_ISR/RX_CallBack)
-
-If we turn on USE_RXTHREAD, then, no need for critical section.
-Otherwise, we must use _enter/_exit critical to protect free_xmit_queue...
-
-Must be very very cautious...
-
-*/
-
-struct xmit_frame *r8712_alloc_xmitframe(struct xmit_priv *pxmitpriv)
-{
-	/*
-		Please remember to use all the osdep_service api,
-		and lock/unlock or _enter/_exit critical to protect
-		pfree_xmit_queue
-	*/
-	unsigned long irqL;
-	struct xmit_frame *pxframe = NULL;
-	struct list_head *plist, *phead;
-	struct  __queue *pfree_xmit_queue = &pxmitpriv->free_xmit_queue;
-
-	spin_lock_irqsave(&pfree_xmit_queue->lock, irqL);
-	if (_queue_empty(pfree_xmit_queue) == true)
-		pxframe =  NULL;
-	else {
-		phead = get_list_head(pfree_xmit_queue);
-		plist = get_next(phead);
-		pxframe = LIST_CONTAINOR(plist, struct xmit_frame, list);
-		list_delete(&(pxframe->list));
-	}
-	if (pxframe !=  NULL) {
-=======
 	if (!pxmitbuf)
 		return;
 	spin_lock_irqsave(&pfree_xmitbuf_queue->lock, irqL);
@@ -1319,7 +810,6 @@ struct xmit_frame *r8712_alloc_xmitframe(struct xmit_priv *pxmitpriv)
 					   struct xmit_frame, list);
 	if (pxframe) {
 		list_del_init(&pxframe->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pxmitpriv->free_xmitframe_cnt--;
 		pxframe->buf_addr = NULL;
 		pxframe->pxmitbuf = NULL;
@@ -1336,19 +826,6 @@ void r8712_free_xmitframe(struct xmit_priv *pxmitpriv,
 	unsigned long irqL;
 	struct  __queue *pfree_xmit_queue = &pxmitpriv->free_xmit_queue;
 	struct _adapter *padapter = pxmitpriv->adapter;
-<<<<<<< HEAD
-	struct sk_buff *pndis_pkt = NULL;
-
-	if (pxmitframe == NULL)
-		return;
-	spin_lock_irqsave(&pfree_xmit_queue->lock, irqL);
-	list_delete(&pxmitframe->list);
-	if (pxmitframe->pkt) {
-		pndis_pkt = pxmitframe->pkt;
-		pxmitframe->pkt = NULL;
-	}
-	list_insert_tail(&pxmitframe->list, get_list_head(pfree_xmit_queue));
-=======
 
 	if (!pxmitframe)
 		return;
@@ -1357,7 +834,6 @@ void r8712_free_xmitframe(struct xmit_priv *pxmitpriv,
 	if (pxmitframe->pkt)
 		pxmitframe->pkt = NULL;
 	list_add_tail(&pxmitframe->list, &pfree_xmit_queue->queue);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pxmitpriv->free_xmitframe_cnt++;
 	spin_unlock_irqrestore(&pfree_xmit_queue->lock, irqL);
 	if (netif_queue_stopped(padapter->pnetdev))
@@ -1367,11 +843,7 @@ void r8712_free_xmitframe(struct xmit_priv *pxmitpriv,
 void r8712_free_xmitframe_ex(struct xmit_priv *pxmitpriv,
 		      struct xmit_frame *pxmitframe)
 {
-<<<<<<< HEAD
-	if (pxmitframe == NULL)
-=======
 	if (!pxmitframe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (pxmitframe->frame_tag == DATA_FRAMETAG)
 		r8712_free_xmitframe(pxmitpriv, pxmitframe);
@@ -1385,19 +857,11 @@ void r8712_free_xmitframe_queue(struct xmit_priv *pxmitpriv,
 	struct	xmit_frame	*pxmitframe;
 
 	spin_lock_irqsave(&(pframequeue->lock), irqL);
-<<<<<<< HEAD
-	phead = get_list_head(pframequeue);
-	plist = get_next(phead);
-	while (end_of_queue_search(phead, plist) == false) {
-		pxmitframe = LIST_CONTAINOR(plist, struct xmit_frame, list);
-		plist = get_next(plist);
-=======
 	phead = &pframequeue->queue;
 	plist = phead->next;
 	while (!end_of_queue_search(phead, plist)) {
 		pxmitframe = container_of(plist, struct xmit_frame, list);
 		plist = plist->next;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_free_xmitframe(pxmitpriv, pxmitframe);
 	}
 	spin_unlock_irqrestore(&(pframequeue->lock), irqL);
@@ -1407,10 +871,6 @@ static inline struct tx_servq *get_sta_pending(struct _adapter *padapter,
 					       struct  __queue **ppstapending,
 					       struct sta_info *psta, sint up)
 {
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tx_servq *ptxservq;
 	struct hw_xmit *phwxmits =  padapter->xmitpriv.hwxmits;
 
@@ -1419,31 +879,19 @@ static inline struct tx_servq *get_sta_pending(struct _adapter *padapter,
 	case 2:
 		ptxservq = &(psta->sta_xmitpriv.bk_q);
 		*ppstapending = &padapter->xmitpriv.bk_pending;
-<<<<<<< HEAD
-		(phwxmits+3)->accnt++;
-=======
 		(phwxmits + 3)->accnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 4:
 	case 5:
 		ptxservq = &(psta->sta_xmitpriv.vi_q);
 		*ppstapending = &padapter->xmitpriv.vi_pending;
-<<<<<<< HEAD
-		(phwxmits+1)->accnt++;
-=======
 		(phwxmits + 1)->accnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 6:
 	case 7:
 		ptxservq = &(psta->sta_xmitpriv.vo_q);
 		*ppstapending = &padapter->xmitpriv.vo_pending;
-<<<<<<< HEAD
-		(phwxmits+0)->accnt++;
-=======
 		(phwxmits + 0)->accnt++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 0:
 	case 3:
@@ -1460,13 +908,8 @@ static inline struct tx_servq *get_sta_pending(struct _adapter *padapter,
  * Will enqueue pxmitframe to the proper queue, and indicate it
  * to xx_pending list.....
  */
-<<<<<<< HEAD
-sint r8712_xmit_classifier(struct _adapter *padapter,
-			   struct xmit_frame *pxmitframe)
-=======
 int r8712_xmit_classifier(struct _adapter *padapter,
 			  struct xmit_frame *pxmitframe)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long irqL0;
 	struct  __queue *pstapending;
@@ -1475,17 +918,6 @@ int r8712_xmit_classifier(struct _adapter *padapter,
 	struct pkt_attrib *pattrib = &pxmitframe->attrib;
 	struct sta_priv *pstapriv = &padapter->stapriv;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-<<<<<<< HEAD
-	sint bmcst = IS_MCAST(pattrib->ra);
-
-	if (pattrib->psta)
-		psta = pattrib->psta;
-	else {
-		if (bmcst)
-			psta = r8712_get_bcmc_stainfo(padapter);
-		else {
-			if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)
-=======
 	bool bmcst = is_multicast_ether_addr(pattrib->ra);
 
 	if (pattrib->psta) {
@@ -1495,28 +927,12 @@ int r8712_xmit_classifier(struct _adapter *padapter,
 			psta = r8712_get_bcmc_stainfo(padapter);
 		} else {
 			if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				psta = r8712_get_stainfo(pstapriv,
 				       get_bssid(pmlmepriv));
 			else
 				psta = r8712_get_stainfo(pstapriv, pattrib->ra);
 		}
 	}
-<<<<<<< HEAD
-	if (psta == NULL)
-		return _FAIL;
-	ptxservq = get_sta_pending(padapter, &pstapending,
-		   psta, pattrib->priority);
-	spin_lock_irqsave(&pstapending->lock, irqL0);
-	if (is_list_empty(&ptxservq->tx_pending))
-		list_insert_tail(&ptxservq->tx_pending,
-				 get_list_head(pstapending));
-	list_insert_tail(&pxmitframe->list,
-			 get_list_head(&ptxservq->sta_pending));
-	ptxservq->qcnt++;
-	spin_unlock_irqrestore(&pstapending->lock, irqL0);
-	return _SUCCESS;
-=======
 	if (!psta)
 		return -EINVAL;
 	ptxservq = get_sta_pending(padapter, &pstapending,
@@ -1528,7 +944,6 @@ int r8712_xmit_classifier(struct _adapter *padapter,
 	ptxservq->qcnt++;
 	spin_unlock_irqrestore(&pstapending->lock, irqL0);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void alloc_hwxmits(struct _adapter *padapter)
@@ -1537,15 +952,9 @@ static void alloc_hwxmits(struct _adapter *padapter)
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
 
 	pxmitpriv->hwxmit_entry = HWXMIT_ENTRY;
-<<<<<<< HEAD
-	pxmitpriv->hwxmits = (struct hw_xmit *)_malloc(sizeof(struct hw_xmit) *
-			     pxmitpriv->hwxmit_entry);
-	if (pxmitpriv->hwxmits == NULL)
-=======
 	pxmitpriv->hwxmits = kmalloc_array(pxmitpriv->hwxmit_entry,
 				sizeof(struct hw_xmit), GFP_ATOMIC);
 	if (!pxmitpriv->hwxmits)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	hwxmits = pxmitpriv->hwxmits;
 	if (pxmitpriv->hwxmit_entry == 5) {
@@ -1555,11 +964,7 @@ static void alloc_hwxmits(struct _adapter *padapter)
 		pxmitpriv->vo_txqueue.head = 0;
 		hwxmits[1] .phwtxqueue = &pxmitpriv->vo_txqueue;
 		hwxmits[1] .sta_queue = &pxmitpriv->vo_pending;
-<<<<<<< HEAD
-	pxmitpriv->vi_txqueue.head = 0;
-=======
 		pxmitpriv->vi_txqueue.head = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hwxmits[2] .phwtxqueue = &pxmitpriv->vi_txqueue;
 		hwxmits[2] .sta_queue = &pxmitpriv->vi_pending;
 		pxmitpriv->bk_txqueue.head = 0;
@@ -1597,11 +1002,7 @@ static void init_hwxmits(struct hw_xmit *phwxmit, sint entry)
 
 	for (i = 0; i < entry; i++, phwxmit++) {
 		spin_lock_init(&phwxmit->xmit_lock);
-<<<<<<< HEAD
-		_init_listhead(&phwxmit->pending);
-=======
 		INIT_LIST_HEAD(&phwxmit->pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phwxmit->txcmdcnt = 0;
 		phwxmit->accnt = 0;
 	}
@@ -1644,11 +1045,7 @@ int r8712_pre_xmit(struct _adapter *padapter, struct xmit_frame *pxmitframe)
 		return ret;
 	}
 	pxmitbuf = r8712_alloc_xmitbuf(pxmitpriv);
-<<<<<<< HEAD
-	if (pxmitbuf == NULL) { /*enqueue packet*/
-=======
 	if (!pxmitbuf) { /*enqueue packet*/
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = false;
 		r8712_xmit_enqueue(padapter, pxmitframe);
 		spin_unlock_irqrestore(&pxmitpriv->lock, irqL);

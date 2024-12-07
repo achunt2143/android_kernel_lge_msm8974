@@ -9,11 +9,8 @@
 #define _ASM_ASMMACRO_H
 
 #include <asm/hazards.h>
-<<<<<<< HEAD
-=======
 #include <asm/asm-offsets.h>
 #include <asm/msa.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_32BIT
 #include <asm/asmmacro-32.h>
@@ -21,29 +18,6 @@
 #ifdef CONFIG_64BIT
 #include <asm/asmmacro-64.h>
 #endif
-<<<<<<< HEAD
-#ifdef CONFIG_MIPS_MT_SMTC
-#include <asm/mipsmtregs.h>
-#endif
-
-#ifdef CONFIG_MIPS_MT_SMTC
-	.macro	local_irq_enable reg=t0
-	mfc0	\reg, CP0_TCSTATUS
-	ori	\reg, \reg, TCSTATUS_IXMT
-	xori	\reg, \reg, TCSTATUS_IXMT
-	mtc0	\reg, CP0_TCSTATUS
-	_ehb
-	.endm
-
-	.macro	local_irq_disable reg=t0
-	mfc0	\reg, CP0_TCSTATUS
-	ori	\reg, \reg, TCSTATUS_IXMT
-	mtc0	\reg, CP0_TCSTATUS
-	_ehb
-	.endm
-#elif defined(CONFIG_CPU_MIPSR2)
-	.macro	local_irq_enable reg=t0
-=======
 
 /* preprocessor replaces the fp in ".set fp=64" with $30 otherwise */
 #undef fp
@@ -72,24 +46,15 @@
 
 #ifdef CONFIG_CPU_HAS_DIEI
 	.macro	local_irq_enable
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei
 	irq_enable_hazard
 	.endm
 
-<<<<<<< HEAD
-	.macro	local_irq_disable reg=t0
-	di
-	irq_disable_hazard
-	.endm
-#else
-=======
 	.macro	local_irq_disable
 	di
 	irq_disable_hazard
 	.endm
 #else /* !CONFIG_CPU_MIPSR2 && !CONFIG_CPU_MIPSR5 && !CONFIG_CPU_MIPSR6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.macro	local_irq_enable reg=t0
 	mfc0	\reg, CP0_STATUS
 	ori	\reg, \reg, 1
@@ -98,23 +63,16 @@
 	.endm
 
 	.macro	local_irq_disable reg=t0
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PREEMPTION
 	lw      \reg, TI_PRE_COUNT($28)
 	addi    \reg, \reg, 1
 	sw      \reg, TI_PRE_COUNT($28)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfc0	\reg, CP0_STATUS
 	ori	\reg, \reg, 1
 	xori	\reg, \reg, 1
 	mtc0	\reg, CP0_STATUS
 	irq_disable_hazard
-<<<<<<< HEAD
-	.endm
-#endif /* CONFIG_MIPS_MT_SMTC */
-=======
 #ifdef CONFIG_PREEMPTION
 	lw      \reg, TI_PRE_COUNT($28)
 	addi    \reg, \reg, -1
@@ -253,35 +211,11 @@
 	andi	\rd, \rd, (1 << \s) - 1
 	.endm
 #endif /* !CONFIG_CPU_MIPSR2 && !CONFIG_CPU_MIPSR5 && !CONFIG_CPU_MIPSR6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Temporary until all gas have MT ASE support
  */
 	.macro	DMT	reg=0
-<<<<<<< HEAD
-	.word	0x41600bc1 | (\reg << 16)
-	.endm
-
-	.macro	EMT	reg=0
-	.word	0x41600be1 | (\reg << 16)
-	.endm
-
-	.macro	DVPE	reg=0
-	.word	0x41600001 | (\reg << 16)
-	.endm
-
-	.macro	EVPE	reg=0
-	.word	0x41600021 | (\reg << 16)
-	.endm
-
-	.macro	MFTR	rt=0, rd=0, u=0, sel=0
-	 .word	0x41000000 | (\rt << 16) | (\rd << 11) | (\u << 5) | (\sel)
-	.endm
-
-	.macro	MTTR	rt=0, rd=0, u=0, sel=0
-	 .word	0x41800000 | (\rt << 16) | (\rd << 11) | (\u << 5) | (\sel)
-=======
 	insn_if_mips	0x41600bc1 | (\reg << 16)
 	insn32_if_mm    0x0000057C | (\reg << 21)
 	.endm
@@ -725,7 +659,6 @@
 	msa_init_upper	30
 	msa_init_upper	31
 	.set	pop
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 #endif /* _ASM_ASMMACRO_H */

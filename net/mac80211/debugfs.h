@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#ifndef __MAC80211_DEBUGFS_H
-#define __MAC80211_DEBUGFS_H
-
-#ifdef CONFIG_MAC80211_DEBUGFS
-extern void debugfs_hw_add(struct ieee80211_local *local);
-extern int mac80211_format_buffer(char __user *userbuf, size_t count,
-				  loff_t *ppos, char *fmt, ...);
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef __MAC80211_DEBUGFS_H
 #define __MAC80211_DEBUGFS_H
@@ -17,7 +8,6 @@ extern int mac80211_format_buffer(char __user *userbuf, size_t count,
 void debugfs_hw_add(struct ieee80211_local *local);
 int __printf(4, 5) mac80211_format_buffer(char __user *userbuf, size_t count,
 					  loff_t *ppos, char *fmt, ...);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void debugfs_hw_add(struct ieee80211_local *local)
 {

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_USER_H
 #define _ASM_POWERPC_USER_H
 
@@ -34,11 +31,7 @@
  *	to write an integer number of pages.
  */
 struct user {
-<<<<<<< HEAD
-	struct pt_regs	regs;			/* entire machine state */
-=======
 	struct user_pt_regs regs;		/* entire machine state */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t		u_tsize;		/* text size (pages) */
 	size_t		u_dsize;		/* data size (pages) */
 	size_t		u_ssize;		/* stack size (pages) */
@@ -51,12 +44,4 @@ struct user {
 	char		u_comm[32];		/* user command name */
 };
 
-<<<<<<< HEAD
-#define NBPG			PAGE_SIZE
-#define UPAGES			1
-#define HOST_TEXT_START_ADDR	(u.start_code)
-#define HOST_DATA_START_ADDR	(u.start_data)
-#define HOST_STACK_END_ADDR	(u.start_stack + u.u_ssize * NBPG)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _ASM_POWERPC_USER_H */

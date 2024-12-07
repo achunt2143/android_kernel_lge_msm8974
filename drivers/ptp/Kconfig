@@ -1,29 +1,16 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # PTP clock support configuration
 #
 
 menu "PTP clock support"
 
-<<<<<<< HEAD
-comment "Enable Device Drivers -> PPS to see the PTP clock options."
-	depends on PPS=n
-
-config PTP_1588_CLOCK
-	tristate "PTP clock support"
-	depends on EXPERIMENTAL
-	depends on PPS
-=======
 config PTP_1588_CLOCK
 	tristate "PTP clock support"
 	depends on NET && POSIX_TIMERS
 	default ETHERNET
 	select PPS
 	select NET_PTP_CLASSIFY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The IEEE 1588 standard defines a method to precisely
 	  synchronize distributed clocks over Ethernet networks. The
@@ -40,43 +27,6 @@ config PTP_1588_CLOCK
 	  To compile this driver as a module, choose M here: the module
 	  will be called ptp.
 
-<<<<<<< HEAD
-config PTP_1588_CLOCK_GIANFAR
-	tristate "Freescale eTSEC as PTP clock"
-	depends on PTP_1588_CLOCK
-	depends on GIANFAR
-	help
-	  This driver adds support for using the eTSEC as a PTP
-	  clock. This clock is only useful if your PTP programs are
-	  getting hardware time stamps on the PTP Ethernet packets
-	  using the SO_TIMESTAMPING API.
-
-	  To compile this driver as a module, choose M here: the module
-	  will be called gianfar_ptp.
-
-config PTP_1588_CLOCK_IXP46X
-	tristate "Intel IXP46x as PTP clock"
-	depends on PTP_1588_CLOCK
-	depends on IXP4XX_ETH
-	help
-	  This driver adds support for using the IXP46X as a PTP
-	  clock. This clock is only useful if your PTP programs are
-	  getting hardware time stamps on the PTP Ethernet packets
-	  using the SO_TIMESTAMPING API.
-
-	  To compile this driver as a module, choose M here: the module
-	  will be called ptp_ixp46x.
-
-comment "Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks."
-	depends on PTP_1588_CLOCK && (PHYLIB=n || NETWORK_PHY_TIMESTAMPING=n)
-
-config DP83640_PHY
-	tristate "Driver for the National Semiconductor DP83640 PHYTER"
-	depends on PTP_1588_CLOCK
-	depends on NETWORK_PHY_TIMESTAMPING
-	depends on PHYLIB
-	---help---
-=======
 config PTP_1588_CLOCK_OPTIONAL
 	tristate
 	default y if PTP_1588_CLOCK=n
@@ -129,7 +79,6 @@ config DP83640_PHY
 	depends on PTP_1588_CLOCK
 	select CRC32
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Supports the DP83640 PHYTER with IEEE 1588 features.
 
 	  This driver adds support for using the DP83640 as a PTP
@@ -138,19 +87,6 @@ config DP83640_PHY
 	  using the SO_TIMESTAMPING API.
 
 	  In order for this to work, your MAC driver must also
-<<<<<<< HEAD
-	  implement the skb_tx_timetamp() function.
-
-config PTP_1588_CLOCK_PCH
-	tristate "Intel PCH EG20T as PTP clock"
-	depends on PTP_1588_CLOCK
-	depends on PCH_GBE
-	help
-	  This driver adds support for using the PCH EG20T as a PTP
-	  clock. This clock is only useful if your PTP programs are
-	  getting hardware time stamps on the PTP Ethernet packets
-	  using the SO_TIMESTAMPING API.
-=======
 	  implement the skb_tx_timestamp() function.
 
 config PTP_1588_CLOCK_INES
@@ -179,13 +115,10 @@ config PTP_1588_CLOCK_PCH
 	  This clock is only useful if your PTP programs are getting
 	  hardware time stamps on the PTP Ethernet packets using the
 	  SO_TIMESTAMPING API.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called ptp_pch.
 
-<<<<<<< HEAD
-=======
 config PTP_1588_CLOCK_KVM
 	tristate "KVM virtual PTP clock"
 	depends on PTP_1588_CLOCK
@@ -291,5 +224,4 @@ config PTP_DFL_TOD
 	  To compile this driver as a module, choose M here: the module
 	  will be called ptp_dfl_tod.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endmenu

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/pcmcia/sa1111_generic.c
  *
@@ -20,13 +17,8 @@
 
 #include <pcmcia/ss.h>
 
-<<<<<<< HEAD
-#include <mach/hardware.h>
-#include <asm/hardware/sa1111.h>
-=======
 #include <asm/hardware/sa1111.h>
 #include <asm/mach-types.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 
 #include "sa1111_generic.h"
@@ -71,19 +63,12 @@
 #define IDX_IRQ_S1_READY_NINT	(3)
 #define IDX_IRQ_S1_CD_VALID	(4)
 #define IDX_IRQ_S1_BVD1_STSCHG	(5)
-<<<<<<< HEAD
-=======
 #define NUM_IRQS		(6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void sa1111_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_state *state)
 {
 	struct sa1111_pcmcia_socket *s = to_skt(skt);
-<<<<<<< HEAD
-	unsigned long status = sa1111_readl(s->dev->mapbase + PCSR);
-=======
 	u32 status = readl_relaxed(s->dev->mapbase + PCSR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (skt->nr) {
 	case 0:
@@ -111,11 +96,7 @@ void sa1111_pcmcia_socket_state(struct soc_pcmcia_socket *skt, struct pcmcia_sta
 int sa1111_pcmcia_configure_socket(struct soc_pcmcia_socket *skt, const socket_state_t *state)
 {
 	struct sa1111_pcmcia_socket *s = to_skt(skt);
-<<<<<<< HEAD
-	unsigned int pccr_skt_mask, pccr_set_mask, val;
-=======
 	u32 pccr_skt_mask, pccr_set_mask, val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	switch (skt->nr) {
@@ -143,17 +124,10 @@ int sa1111_pcmcia_configure_socket(struct soc_pcmcia_socket *skt, const socket_s
 		pccr_set_mask |= PCCR_S0_FLT|PCCR_S1_FLT;
 
 	local_irq_save(flags);
-<<<<<<< HEAD
-	val = sa1111_readl(s->dev->mapbase + PCCR);
-	val &= ~pccr_skt_mask;
-	val |= pccr_set_mask & pccr_skt_mask;
-	sa1111_writel(val, s->dev->mapbase + PCCR);
-=======
 	val = readl_relaxed(s->dev->mapbase + PCCR);
 	val &= ~pccr_skt_mask;
 	val |= pccr_set_mask & pccr_skt_mask;
 	writel_relaxed(val, s->dev->mapbase + PCCR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	return 0;
@@ -163,9 +137,6 @@ int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 	int (*add)(struct soc_pcmcia_socket *))
 {
 	struct sa1111_pcmcia_socket *s;
-<<<<<<< HEAD
-	int i, ret = 0;
-=======
 	struct clk *clk;
 	int i, ret = 0, irqs[NUM_IRQS];
 
@@ -178,7 +149,6 @@ int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 		if (irqs[i] <= 0)
 			return irqs[i] ? : -ENXIO;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ops->socket_state = sa1111_pcmcia_socket_state;
 
@@ -188,21 +158,6 @@ int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 			return -ENOMEM;
 
 		s->soc.nr = ops->first + i;
-<<<<<<< HEAD
-		soc_pcmcia_init_one(&s->soc, ops, &dev->dev);
-		s->dev = dev;
-		if (s->soc.nr) {
-			s->soc.socket.pci_irq = dev->irq[IDX_IRQ_S1_READY_NINT];
-			s->soc.stat[SOC_STAT_CD].irq = dev->irq[IDX_IRQ_S1_CD_VALID];
-			s->soc.stat[SOC_STAT_CD].name = "SA1111 CF card detect";
-			s->soc.stat[SOC_STAT_BVD1].irq = dev->irq[IDX_IRQ_S1_BVD1_STSCHG];
-			s->soc.stat[SOC_STAT_BVD1].name = "SA1111 CF BVD1";
-		} else {
-			s->soc.socket.pci_irq = dev->irq[IDX_IRQ_S0_READY_NINT];
-			s->soc.stat[SOC_STAT_CD].irq = dev->irq[IDX_IRQ_S0_CD_VALID];
-			s->soc.stat[SOC_STAT_CD].name = "SA1111 PCMCIA card detect";
-			s->soc.stat[SOC_STAT_BVD1].irq = dev->irq[IDX_IRQ_S0_BVD1_STSCHG];
-=======
 		s->soc.clk = clk;
 
 		soc_pcmcia_init_one(&s->soc, ops, &dev->dev);
@@ -218,7 +173,6 @@ int sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,
 			s->soc.stat[SOC_STAT_CD].irq = irqs[IDX_IRQ_S0_CD_VALID];
 			s->soc.stat[SOC_STAT_CD].name = "SA1111 PCMCIA card detect";
 			s->soc.stat[SOC_STAT_BVD1].irq = irqs[IDX_IRQ_S0_BVD1_STSCHG];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			s->soc.stat[SOC_STAT_BVD1].name = "SA1111 PCMCIA BVD1";
 		}
 
@@ -254,27 +208,6 @@ static int pcmcia_probe(struct sa1111_dev *dev)
 	/*
 	 * Initialise the suspend state.
 	 */
-<<<<<<< HEAD
-	sa1111_writel(PCSSR_S0_SLEEP | PCSSR_S1_SLEEP, base + PCSSR);
-	sa1111_writel(PCCR_S0_FLT | PCCR_S1_FLT, base + PCCR);
-
-#ifdef CONFIG_SA1100_BADGE4
-	pcmcia_badge4_init(&dev->dev);
-#endif
-#ifdef CONFIG_SA1100_JORNADA720
-	pcmcia_jornada720_init(&dev->dev);
-#endif
-#ifdef CONFIG_ARCH_LUBBOCK
-	pcmcia_lubbock_init(dev);
-#endif
-#ifdef CONFIG_ASSABET_NEPONSET
-	pcmcia_neponset_init(dev);
-#endif
-	return 0;
-}
-
-static int __devexit pcmcia_remove(struct sa1111_dev *dev)
-=======
 	writel_relaxed(PCSSR_S0_SLEEP | PCSSR_S1_SLEEP, base + PCSSR);
 	writel_relaxed(PCCR_S0_FLT | PCCR_S1_FLT, base + PCCR);
 
@@ -297,7 +230,6 @@ static int __devexit pcmcia_remove(struct sa1111_dev *dev)
 }
 
 static void pcmcia_remove(struct sa1111_dev *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sa1111_pcmcia_socket *next, *s = dev_get_drvdata(&dev->dev);
 
@@ -311,10 +243,6 @@ static void pcmcia_remove(struct sa1111_dev *dev)
 
 	release_mem_region(dev->res.start, 512);
 	sa1111_disable_device(dev);
-<<<<<<< HEAD
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sa1111_driver pcmcia_driver = {
@@ -323,11 +251,7 @@ static struct sa1111_driver pcmcia_driver = {
 	},
 	.devid		= SA1111_DEVID_PCMCIA,
 	.probe		= pcmcia_probe,
-<<<<<<< HEAD
-	.remove		= __devexit_p(pcmcia_remove),
-=======
 	.remove		= pcmcia_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sa1111_drv_pcmcia_init(void)

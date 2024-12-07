@@ -1,13 +1,9 @@
 /*
  *    Disk Array driver for HP Smart Array SAS controllers
-<<<<<<< HEAD
- *    Copyright 2000, 2009 Hewlett-Packard Development Company, L.P.
-=======
  *    Copyright (c) 2019-2020 Microchip Technology Inc. and its subsidiaries
  *    Copyright 2016 Microsemi Corporation
  *    Copyright 2014-2015 PMC-Sierra, Inc.
  *    Copyright 2000,2009-2015 Hewlett-Packard Development Company, L.P.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -18,15 +14,7 @@
  *    MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
  *    NON INFRINGEMENT.  See the GNU General Public License for more details.
  *
-<<<<<<< HEAD
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *    Questions/Comments/Bugfixes to iss_storagedev@hp.com
-=======
  *    Questions/Comments/Bugfixes to esc.storagedev@microsemi.com
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 #ifndef HPSA_H
@@ -43,25 +31,6 @@ struct access_method {
 	void (*submit_command)(struct ctlr_info *h,
 		struct CommandList *c);
 	void (*set_intr_mask)(struct ctlr_info *h, unsigned long val);
-<<<<<<< HEAD
-	unsigned long (*fifo_full)(struct ctlr_info *h);
-	bool (*intr_pending)(struct ctlr_info *h);
-	unsigned long (*command_completed)(struct ctlr_info *h);
-};
-
-struct hpsa_scsi_dev_t {
-	int devtype;
-	int bus, target, lun;		/* as presented to the OS */
-	unsigned char scsi3addr[8];	/* as presented to the HW */
-#define RAID_CTLR_LUNID "\0\0\0\0\0\0\0\0"
-	unsigned char device_id[16];    /* from inquiry pg. 0x83 */
-	unsigned char vendor[8];        /* bytes 8-15 of inquiry data */
-	unsigned char model[16];        /* bytes 16-31 of inquiry data */
-	unsigned char raid_level;	/* from inquiry page 0xC1 */
-};
-
-struct ctlr_info {
-=======
 	bool (*intr_pending)(struct ctlr_info *h);
 	unsigned long (*command_completed)(struct ctlr_info *h, u8 q);
 };
@@ -194,24 +163,11 @@ struct bmic_controller_parameters {
 
 struct ctlr_info {
 	unsigned int *reply_map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	ctlr;
 	char	devname[8];
 	char    *product_name;
 	struct pci_dev *pdev;
 	u32	board_id;
-<<<<<<< HEAD
-	void __iomem *vaddr;
-	unsigned long paddr;
-	int 	nr_cmds; /* Number of commands allowed on this controller */
-	struct CfgTable __iomem *cfgtable;
-	int	interrupts_enabled;
-	int	major;
-	int 	max_commands;
-	int	commands_outstanding;
-	int 	max_outstanding; /* Debug */
-	int	usage_count;  /* number of opens all all minor devices */
-=======
 	u64	sas_address;
 	void __iomem *vaddr;
 	unsigned long paddr;
@@ -223,52 +179,27 @@ struct ctlr_info {
 	int 	max_commands;
 	int	last_collision_tag; /* tags are global */
 	atomic_t commands_outstanding;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #	define PERF_MODE_INT	0
 #	define DOORBELL_INT	1
 #	define SIMPLE_MODE_INT	2
 #	define MEMQ_MODE_INT	3
-<<<<<<< HEAD
-	unsigned int intr[4];
-	unsigned int msix_vector;
-	unsigned int msi_vector;
-=======
 	unsigned int msix_vectors;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int intr_mode; /* either PERF_MODE_INT or SIMPLE_MODE_INT */
 	struct access_method access;
 
 	/* queue and queue Info */
-<<<<<<< HEAD
-	struct list_head reqQ;
-	struct list_head cmpQ;
 	unsigned int Qdepth;
-	unsigned int maxQsinceinit;
-=======
-	unsigned int Qdepth;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int maxSG;
 	spinlock_t lock;
 	int maxsgentries;
 	u8 max_cmd_sg_entries;
 	int chainsize;
 	struct SGDescriptor **cmd_sg_list;
-<<<<<<< HEAD
-=======
 	struct ioaccel2_sg_element **ioaccel2_cmd_sg_list;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pointers to command and error info pool */
 	struct CommandList 	*cmd_pool;
 	dma_addr_t		cmd_pool_dhandle;
-<<<<<<< HEAD
-	struct ErrorInfo 	*errinfo_pool;
-	dma_addr_t		errinfo_pool_dhandle;
-	unsigned long  		*cmd_pool_bits;
-	int			nr_allocs;
-	int			nr_frees;
-	int			scan_finished;
-=======
 	struct io_accel1_cmd	*ioaccel_cmd_pool;
 	dma_addr_t		ioaccel_cmd_pool_dhandle;
 	struct io_accel2_cmd	*ioaccel2_cmd_pool;
@@ -278,7 +209,6 @@ struct ctlr_info {
 	unsigned long  		*cmd_pool_bits;
 	int			scan_finished;
 	u8			scan_waiting : 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t		scan_lock;
 	wait_queue_head_t	scan_wait_queue;
 
@@ -291,21 +221,6 @@ struct ctlr_info {
 	 */
 	u32 trans_support;
 	u32 trans_offset;
-<<<<<<< HEAD
-	struct TransTable_struct *transtable;
-	unsigned long transMethod;
-
-	/*
-	 * Performant mode completion buffer
-	 */
-	u64 *reply_pool;
-	dma_addr_t reply_pool_dhandle;
-	u64 *reply_pool_head;
-	size_t reply_pool_size;
-	unsigned char reply_pool_wraparound;
-	u32 *blockFetchTable;
-	unsigned char *hba_inquiry_data;
-=======
 	struct TransTable_struct __iomem *transtable;
 	unsigned long transMethod;
 
@@ -328,17 +243,11 @@ struct ctlr_info {
 	u32 fw_support;
 	int ioaccel_support;
 	int ioaccel_maxsg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 last_intr_timestamp;
 	u32 last_heartbeat;
 	u64 last_heartbeat_timestamp;
 	u32 heartbeat_sample_interval;
 	atomic_t firmware_flash_in_progress;
-<<<<<<< HEAD
-	u32 lockup_detected;
-	struct list_head lockup_list;
-};
-=======
 	u32 __percpu *lockup_detected;
 	struct delayed_work monitor_ctlr_work;
 	struct delayed_work rescan_ctlr_work;
@@ -409,18 +318,12 @@ struct offline_device_entry {
 	struct list_head offline_list;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPSA_ABORT_MSG 0
 #define HPSA_DEVICE_RESET_MSG 1
 #define HPSA_RESET_TYPE_CONTROLLER 0x00
 #define HPSA_RESET_TYPE_BUS 0x01
-<<<<<<< HEAD
-#define HPSA_RESET_TYPE_TARGET 0x03
-#define HPSA_RESET_TYPE_LUN 0x04
-=======
 #define HPSA_RESET_TYPE_LUN 0x04
 #define HPSA_PHYS_TARGET_RESET 0x99 /* not defined by cciss spec */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HPSA_MSG_SEND_RETRY_LIMIT 10
 #define HPSA_MSG_SEND_RETRY_INTERVAL_MSECS (10000)
 
@@ -466,11 +369,8 @@ struct offline_device_entry {
  */
 #define SA5_DOORBELL	0x20
 #define SA5_REQUEST_PORT_OFFSET	0x40
-<<<<<<< HEAD
-=======
 #define SA5_REQUEST_PORT64_LO_OFFSET 0xC0
 #define SA5_REQUEST_PORT64_HI_OFFSET 0xC4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SA5_REPLY_INTR_MASK_OFFSET	0x34
 #define SA5_REPLY_PORT_OFFSET		0x44
 #define SA5_INTR_STATUS		0x30
@@ -500,8 +400,6 @@ struct offline_device_entry {
 
 #define HPSA_INTR_ON 	1
 #define HPSA_INTR_OFF	0
-<<<<<<< HEAD
-=======
 
 /*
  * Inbound Post Queue offsets for IO Accelerator Mode 2
@@ -516,22 +414,12 @@ struct offline_device_entry {
 #define HPSA_HBA_BUS			0
 #define HPSA_LEGACY_HBA_BUS		3
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 	Send the command to the hardware
 */
 static void SA5_submit_command(struct ctlr_info *h,
 	struct CommandList *c)
 {
-<<<<<<< HEAD
-	dev_dbg(&h->pdev->dev, "Sending %x, tag = %x\n", c->busaddr,
-		c->Header.Tag.lower);
-	writel(c->busaddr, h->vaddr + SA5_REQUEST_PORT_OFFSET);
-	(void) readl(h->vaddr + SA5_SCRATCHPAD_OFFSET);
-	h->commands_outstanding++;
-	if (h->commands_outstanding > h->max_outstanding)
-		h->max_outstanding = h->commands_outstanding;
-=======
 	writel(c->busaddr, h->vaddr + SA5_REQUEST_PORT_OFFSET);
 	(void) readl(h->vaddr + SA5_SCRATCHPAD_OFFSET);
 }
@@ -546,7 +434,6 @@ static void SA5_submit_command_ioaccel2(struct ctlr_info *h,
 	struct CommandList *c)
 {
 	writel(c->busaddr, h->vaddr + SA5_REQUEST_PORT_OFFSET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -568,8 +455,6 @@ static void SA5_intr_mask(struct ctlr_info *h, unsigned long val)
 	}
 }
 
-<<<<<<< HEAD
-=======
 /*
  *  Variant of the above; 0x04 turns interrupts off...
  */
@@ -587,7 +472,6 @@ static void SA5B_intr_mask(struct ctlr_info *h, unsigned long val)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void SA5_performant_intr_mask(struct ctlr_info *h, unsigned long val)
 {
 	if (val) { /* turn on interrupts */
@@ -602,18 +486,6 @@ static void SA5_performant_intr_mask(struct ctlr_info *h, unsigned long val)
 	}
 }
 
-<<<<<<< HEAD
-static unsigned long SA5_performant_completed(struct ctlr_info *h)
-{
-	unsigned long register_value = FIFO_EMPTY;
-
-	/* flush the controller write of the reply queue by reading
-	 * outbound doorbell status register.
-	 */
-	register_value = readl(h->vaddr + SA5_OUTDB_STATUS);
-	/* msi auto clears the interrupt pending bit. */
-	if (!(h->msi_vector || h->msix_vector)) {
-=======
 static unsigned long SA5_performant_completed(struct ctlr_info *h, u8 q)
 {
 	struct reply_queue_buffer *rq = &h->reply_queue[q];
@@ -625,20 +497,10 @@ static unsigned long SA5_performant_completed(struct ctlr_info *h, u8 q)
 		 * outbound doorbell status register.
 		 */
 		(void) readl(h->vaddr + SA5_OUTDB_STATUS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(SA5_OUTDB_CLEAR_PERF_BIT, h->vaddr + SA5_OUTDB_CLEAR);
 		/* Do a read in order to flush the write to the controller
 		 * (as per spec.)
 		 */
-<<<<<<< HEAD
-		register_value = readl(h->vaddr + SA5_OUTDB_STATUS);
-	}
-
-	if ((*(h->reply_pool_head) & 1) == (h->reply_pool_wraparound)) {
-		register_value = *(h->reply_pool_head);
-		(h->reply_pool_head)++;
-		h->commands_outstanding--;
-=======
 		(void) readl(h->vaddr + SA5_OUTDB_STATUS);
 	}
 
@@ -646,61 +508,29 @@ static unsigned long SA5_performant_completed(struct ctlr_info *h, u8 q)
 		register_value = rq->head[rq->current_entry];
 		rq->current_entry++;
 		atomic_dec(&h->commands_outstanding);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		register_value = FIFO_EMPTY;
 	}
 	/* Check for wraparound */
-<<<<<<< HEAD
-	if (h->reply_pool_head == (h->reply_pool + h->max_commands)) {
-		h->reply_pool_head = h->reply_pool;
-		h->reply_pool_wraparound ^= 1;
-	}
-
-=======
 	if (rq->current_entry == h->max_commands) {
 		rq->current_entry = 0;
 		rq->wraparound ^= 1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return register_value;
 }
 
 /*
-<<<<<<< HEAD
- *  Returns true if fifo is full.
- *
- */
-static unsigned long SA5_fifo_full(struct ctlr_info *h)
-{
-	if (h->commands_outstanding >= h->max_commands)
-		return 1;
-	else
-		return 0;
-
-}
-/*
- *   returns value read from hardware.
- *     returns FIFO_EMPTY if there is nothing to read
- */
-static unsigned long SA5_completed(struct ctlr_info *h)
-=======
  *   returns value read from hardware.
  *     returns FIFO_EMPTY if there is nothing to read
  */
 static unsigned long SA5_completed(struct ctlr_info *h,
 	__attribute__((unused)) u8 q)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long register_value
 		= readl(h->vaddr + SA5_REPLY_PORT_OFFSET);
 
 	if (register_value != FIFO_EMPTY)
-<<<<<<< HEAD
-		h->commands_outstanding--;
-=======
 		atomic_dec(&h->commands_outstanding);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef HPSA_DEBUG
 	if (register_value != FIFO_EMPTY)
@@ -719,10 +549,6 @@ static bool SA5_intr_pending(struct ctlr_info *h)
 {
 	unsigned long register_value  =
 		readl(h->vaddr + SA5_INTR_STATUS);
-<<<<<<< HEAD
-	dev_dbg(&h->pdev->dev, "intr_pending %lx\n", register_value);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return register_value & SA5_INTR_PENDING;
 }
 
@@ -733,33 +559,11 @@ static bool SA5_performant_intr_pending(struct ctlr_info *h)
 	if (!register_value)
 		return false;
 
-<<<<<<< HEAD
-	if (h->msi_vector || h->msix_vector)
-		return true;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read outbound doorbell to flush */
 	register_value = readl(h->vaddr + SA5_OUTDB_STATUS);
 	return register_value & SA5_OUTDB_STATUS_PERF_BIT;
 }
 
-<<<<<<< HEAD
-static struct access_method SA5_access = {
-	SA5_submit_command,
-	SA5_intr_mask,
-	SA5_fifo_full,
-	SA5_intr_pending,
-	SA5_completed,
-};
-
-static struct access_method SA5_performant_access = {
-	SA5_submit_command,
-	SA5_performant_intr_mask,
-	SA5_fifo_full,
-	SA5_performant_intr_pending,
-	SA5_performant_completed,
-=======
 #define SA5_IOACCEL_MODE1_INTR_STATUS_CMP_BIT    0x100
 
 static bool SA5_ioaccel_mode1_intr_pending(struct ctlr_info *h)
@@ -857,7 +661,6 @@ static struct access_method SA5_performant_access_no_read = {
 	.set_intr_mask =	SA5_performant_intr_mask,
 	.intr_pending =		SA5_performant_intr_pending,
 	.command_completed =	SA5_performant_completed,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct board_type {

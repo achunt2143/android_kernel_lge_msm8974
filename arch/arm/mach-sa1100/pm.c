@@ -23,28 +23,18 @@
  * 				Storage is local on the stack now.
  */
 #include <linux/init.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/suspend.h>
 #include <linux/errno.h>
 #include <linux/time.h>
 
 #include <mach/hardware.h>
-<<<<<<< HEAD
-#include <asm/memory.h>
-#include <asm/suspend.h>
-#include <asm/mach/time.h>
-
-=======
 #include <asm/page.h>
 #include <asm/suspend.h>
 #include <asm/mach/time.h>
 
 #include "generic.h"
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int sa1100_finish_suspend(unsigned long);
 
 #define SAVE(x)		sleep_save[SLEEP_SAVE_##x] = x
@@ -85,11 +75,7 @@ static int sa11x0_pm_enter(suspend_state_t state)
 	RCSR = RCSR_HWR | RCSR_SWR | RCSR_WDR | RCSR_SMR;
 
 	/* set resume return address */
-<<<<<<< HEAD
-	PSPR = virt_to_phys(cpu_resume);
-=======
 	PSPR = __pa_symbol(cpu_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* go zzz */
 	cpu_suspend(0, sa1100_finish_suspend);
@@ -135,17 +121,8 @@ static const struct platform_suspend_ops sa11x0_pm_ops = {
 	.valid		= suspend_valid_only_mem,
 };
 
-<<<<<<< HEAD
-static int __init sa11x0_pm_init(void)
-=======
 int __init sa11x0_pm_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	suspend_set_ops(&sa11x0_pm_ops);
 	return 0;
 }
-<<<<<<< HEAD
-
-late_initcall(sa11x0_pm_init);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

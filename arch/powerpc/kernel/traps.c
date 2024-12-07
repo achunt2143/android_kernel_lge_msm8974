@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1995-1996  Gary Thomas (gdt@linuxppc.org)
  *  Copyright 2007-2010 Freescale Semiconductor, Inc.
  *
-<<<<<<< HEAD
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version
- *  2 of the License, or (at your option) any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Modified by Cort Dougan (cort@cs.nmt.edu)
  *  and Paul Mackerras (paulus@samba.org)
  */
@@ -24,27 +13,18 @@
 
 #include <linux/errno.h>
 #include <linux/sched.h>
-<<<<<<< HEAD
-#include <linux/kernel.h>
-#include <linux/mm.h>
-=======
 #include <linux/sched/debug.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/pkeys.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stddef.h>
 #include <linux/unistd.h>
 #include <linux/ptrace.h>
 #include <linux/user.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-#include <linux/module.h>
-=======
 #include <linux/extable.h>
 #include <linux/module.h>	/* print_modules */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/prctl.h>
 #include <linux/delay.h>
 #include <linux/kprobes.h>
@@ -52,14 +32,6 @@
 #include <linux/backlight.h>
 #include <linux/bug.h>
 #include <linux/kdebug.h>
-<<<<<<< HEAD
-#include <linux/debugfs.h>
-#include <linux/ratelimit.h>
-
-#include <asm/emulated_ops.h>
-#include <asm/pgtable.h>
-#include <asm/uaccess.h>
-=======
 #include <linux/ratelimit.h>
 #include <linux/context_tracking.h>
 #include <linux/smp.h>
@@ -70,18 +42,11 @@
 #include <asm/emulated_ops.h>
 #include <linux/uaccess.h>
 #include <asm/interrupt.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/machdep.h>
 #include <asm/rtas.h>
 #include <asm/pmc.h>
-<<<<<<< HEAD
-#ifdef CONFIG_PPC32
 #include <asm/reg.h>
-#endif
-=======
-#include <asm/reg.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PMAC_BACKLIGHT
 #include <asm/backlight.h>
 #endif
@@ -94,11 +59,6 @@
 #include <asm/rio.h>
 #include <asm/fadump.h>
 #include <asm/switch_to.h>
-<<<<<<< HEAD
-#include <asm/debug.h>
-
-#if defined(CONFIG_DEBUGGER) || defined(CONFIG_KEXEC)
-=======
 #include <asm/tm.h>
 #include <asm/debug.h>
 #include <asm/asm-prototypes.h>
@@ -111,17 +71,12 @@
 #include <asm/udbg.h>
 
 #if defined(CONFIG_DEBUGGER) || defined(CONFIG_KEXEC_CORE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int (*__debugger)(struct pt_regs *regs) __read_mostly;
 int (*__debugger_ipi)(struct pt_regs *regs) __read_mostly;
 int (*__debugger_bpt)(struct pt_regs *regs) __read_mostly;
 int (*__debugger_sstep)(struct pt_regs *regs) __read_mostly;
 int (*__debugger_iabr_match)(struct pt_regs *regs) __read_mostly;
-<<<<<<< HEAD
-int (*__debugger_dabr_match)(struct pt_regs *regs) __read_mostly;
-=======
 int (*__debugger_break_match)(struct pt_regs *regs) __read_mostly;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int (*__debugger_fault_handler)(struct pt_regs *regs) __read_mostly;
 
 EXPORT_SYMBOL(__debugger);
@@ -129,12 +84,6 @@ EXPORT_SYMBOL(__debugger_ipi);
 EXPORT_SYMBOL(__debugger_bpt);
 EXPORT_SYMBOL(__debugger_sstep);
 EXPORT_SYMBOL(__debugger_iabr_match);
-<<<<<<< HEAD
-EXPORT_SYMBOL(__debugger_dabr_match);
-EXPORT_SYMBOL(__debugger_fault_handler);
-#endif
-
-=======
 EXPORT_SYMBOL(__debugger_break_match);
 EXPORT_SYMBOL(__debugger_fault_handler);
 #endif
@@ -159,7 +108,6 @@ static const char *signame(int signr)
 	return "unknown signal";
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Trap & Exception support
  */
@@ -182,8 +130,6 @@ static void pmac_backlight_unblank(void)
 static inline void pmac_backlight_unblank(void) { }
 #endif
 
-<<<<<<< HEAD
-=======
 /*
  * If oops/die is expected to crash the machine, return true here.
  *
@@ -206,15 +152,11 @@ bool die_will_crash(void)
 	return false;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static arch_spinlock_t die_lock = __ARCH_SPIN_LOCK_UNLOCKED;
 static int die_owner = -1;
 static unsigned int die_nest_count;
 static int die_counter;
 
-<<<<<<< HEAD
-static unsigned __kprobes long oops_begin(struct pt_regs *regs)
-=======
 void panic_flush_kmsg_start(void)
 {
 	/*
@@ -237,17 +179,10 @@ void panic_flush_kmsg_end(void)
 }
 
 static unsigned long oops_begin(struct pt_regs *regs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	if (debugger(regs))
-		return 1;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oops_enter();
 
 	/* racy, but better than risking deadlock. */
@@ -267,40 +202,6 @@ static unsigned long oops_begin(struct pt_regs *regs)
 		pmac_backlight_unblank();
 	return flags;
 }
-<<<<<<< HEAD
-
-static void __kprobes oops_end(unsigned long flags, struct pt_regs *regs,
-			       int signr)
-{
-	bust_spinlocks(0);
-	die_owner = -1;
-	add_taint(TAINT_DIE);
-	die_nest_count--;
-	oops_exit();
-	printk("\n");
-	if (!die_nest_count)
-		/* Nest count reaches zero, release the lock. */
-		arch_spin_unlock(&die_lock);
-	raw_local_irq_restore(flags);
-
-	crash_fadump(regs, "die oops");
-
-	/*
-	 * A system reset (0x100) is a request to dump, so we always send
-	 * it through the crashdump code.
-	 */
-	if (kexec_should_crash(current) || (TRAP(regs) == 0x100)) {
-		crash_kexec(regs);
-
-		/*
-		 * We aren't the primary crash CPU. We need to send it
-		 * to a holding pattern to avoid it ending up in the panic
-		 * code.
-		 */
-		crash_kexec_secondary(regs);
-	}
-
-=======
 NOKPROBE_SYMBOL(oops_begin);
 
 static void oops_end(unsigned long flags, struct pt_regs *regs,
@@ -329,7 +230,6 @@ static void oops_end(unsigned long flags, struct pt_regs *regs,
 	if (kexec_should_crash(current))
 		crash_kexec(regs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!signr)
 		return;
 
@@ -344,31 +244,6 @@ static void oops_end(unsigned long flags, struct pt_regs *regs,
 		mdelay(MSEC_PER_SEC);
 	}
 
-<<<<<<< HEAD
-	if (in_interrupt())
-		panic("Fatal exception in interrupt");
-	if (panic_on_oops)
-		panic("Fatal exception");
-	do_exit(signr);
-}
-
-static int __kprobes __die(const char *str, struct pt_regs *regs, long err)
-{
-	printk("Oops: %s, sig: %ld [#%d]\n", str, err, ++die_counter);
-#ifdef CONFIG_PREEMPT
-	printk("PREEMPT ");
-#endif
-#ifdef CONFIG_SMP
-	printk("SMP NR_CPUS=%d ", NR_CPUS);
-#endif
-#ifdef CONFIG_DEBUG_PAGEALLOC
-	printk("DEBUG_PAGEALLOC ");
-#endif
-#ifdef CONFIG_NUMA
-	printk("NUMA ");
-#endif
-	printk("%s\n", ppc_md.name ? ppc_md.name : "");
-=======
 	if (panic_on_oops)
 		panic("Fatal exception");
 	make_task_dead(signr);
@@ -397,7 +272,6 @@ static int __die(const char *str, struct pt_regs *regs, long err)
 	       debug_pagealloc_enabled() ? " DEBUG_PAGEALLOC" : "",
 	       IS_ENABLED(CONFIG_NUMA) ? " NUMA" : "",
 	       ppc_md.name ? ppc_md.name : "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (notify_die(DIE_OOPS, str, regs, err, 255, SIGSEGV) == NOTIFY_STOP)
 		return 1;
@@ -407,13 +281,6 @@ static int __die(const char *str, struct pt_regs *regs, long err)
 
 	return 0;
 }
-<<<<<<< HEAD
-
-void die(const char *str, struct pt_regs *regs, long err)
-{
-	unsigned long flags = oops_begin(regs);
-
-=======
 NOKPROBE_SYMBOL(__die);
 
 void die(const char *str, struct pt_regs *regs, long err)
@@ -429,21 +296,10 @@ void die(const char *str, struct pt_regs *regs, long err)
 	}
 
 	flags = oops_begin(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (__die(str, regs, err))
 		err = 0;
 	oops_end(flags, regs, err);
 }
-<<<<<<< HEAD
-
-void user_single_step_siginfo(struct task_struct *tsk,
-				struct pt_regs *regs, siginfo_t *info)
-{
-	memset(info, 0, sizeof(*info));
-	info->si_signo = SIGTRAP;
-	info->si_code = TRAP_TRACE;
-	info->si_addr = (void __user *)regs->nip;
-=======
 NOKPROBE_SYMBOL(die);
 
 void user_single_step_report(struct pt_regs *regs)
@@ -507,58 +363,10 @@ void _exception_pkey(struct pt_regs *regs, unsigned long addr, int key)
 		return;
 
 	force_sig_pkuerr((void __user *) addr, key);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void _exception(int signr, struct pt_regs *regs, int code, unsigned long addr)
 {
-<<<<<<< HEAD
-	siginfo_t info;
-	const char fmt32[] = KERN_INFO "%s[%d]: unhandled signal %d " \
-			"at %08lx nip %08lx lr %08lx code %x\n";
-	const char fmt64[] = KERN_INFO "%s[%d]: unhandled signal %d " \
-			"at %016lx nip %016lx lr %016lx code %x\n";
-
-	if (!user_mode(regs)) {
-		die("Exception in kernel mode", regs, signr);
-		return;
-	}
-
-	if (show_unhandled_signals && unhandled_signal(current, signr)) {
-		printk_ratelimited(regs->msr & MSR_64BIT ? fmt64 : fmt32,
-				   current->comm, current->pid, signr,
-				   addr, regs->nip, regs->link, code);
-	}
-
-	if (arch_irqs_disabled() && !arch_irq_disabled_regs(regs))
-		local_irq_enable();
-
-	memset(&info, 0, sizeof(info));
-	info.si_signo = signr;
-	info.si_code = code;
-	info.si_addr = (void __user *) addr;
-	force_sig_info(signr, &info, current);
-}
-
-#ifdef CONFIG_PPC64
-void system_reset_exception(struct pt_regs *regs)
-{
-	/* See if any machine dependent calls */
-	if (ppc_md.system_reset_exception) {
-		if (ppc_md.system_reset_exception(regs))
-			return;
-	}
-
-	die("System Reset", regs, SIGABRT);
-
-	/* Must die if the interrupt is not recoverable */
-	if (!(regs->msr & MSR_RI))
-		panic("Unrecoverable System Reset");
-
-	/* What should we do here? We could issue a shutdown or hard reset. */
-}
-#endif
-=======
 	if (!exception_common(signr, regs, code, addr))
 		return;
 
@@ -713,19 +521,12 @@ out:
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * I/O accesses can cause machine checks on powermacs.
  * Check if the NIP corresponds to the address of a sync
  * instruction for which there is an entry in the exception
  * table.
-<<<<<<< HEAD
- * Note that the 601 only takes a machine check on TEA
- * (transfer error ack) signal assertion, and does not
- * set any of the top 16 bits of SRR1.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  -- paulus.
  */
 static inline int check_io_access(struct pt_regs *regs)
@@ -745,20 +546,11 @@ static inline int check_io_access(struct pt_regs *regs)
 		 * For the debug message, we look at the preceding
 		 * load or store.
 		 */
-<<<<<<< HEAD
-		if (*nip == 0x60000000)		/* nop */
-			nip -= 2;
-		else if (*nip == 0x4c00012c)	/* isync */
-			--nip;
-		if (*nip == 0x7c0004ac || (*nip >> 26) == 3) {
-			/* sync or twi */
-=======
 		if (*nip == PPC_RAW_NOP())
 			nip -= 2;
 		else if (*nip == PPC_RAW_ISYNC())
 			--nip;
 		if (*nip == PPC_RAW_SYNC() || get_op(*nip) == OP_TRAP) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int rb;
 
 			--nip;
@@ -766,13 +558,8 @@ static inline int check_io_access(struct pt_regs *regs)
 			printk(KERN_DEBUG "%s bad port %lx at %p\n",
 			       (*nip & 0x100)? "OUT to": "IN from",
 			       regs->gpr[rb] - _IO_BASE, nip);
-<<<<<<< HEAD
-			regs->msr |= MSR_RI;
-			regs->nip = entry->fixup;
-=======
 			regs_set_recoverable(regs);
 			regs_set_return_ip(regs, extable_fixup(entry));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 	}
@@ -783,27 +570,11 @@ static inline int check_io_access(struct pt_regs *regs)
 #ifdef CONFIG_PPC_ADV_DEBUG_REGS
 /* On 4xx, the reason for the machine check or program exception
    is in the ESR. */
-<<<<<<< HEAD
-#define get_reason(regs)	((regs)->dsisr)
-#ifndef CONFIG_FSL_BOOKE
-#define get_mc_reason(regs)	((regs)->dsisr)
-#else
-#define get_mc_reason(regs)	(mfspr(SPRN_MCSR))
-#endif
-=======
 #define get_reason(regs)	((regs)->esr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REASON_FP		ESR_FP
 #define REASON_ILLEGAL		(ESR_PIL | ESR_PUO)
 #define REASON_PRIVILEGED	ESR_PPR
 #define REASON_TRAP		ESR_PTR
-<<<<<<< HEAD
-
-/* single-step stuff */
-#define single_stepping(regs)	(current->thread.dbcr0 & DBCR0_IC)
-#define clear_single_step(regs)	(current->thread.dbcr0 &= ~DBCR0_IC)
-
-=======
 #define REASON_PREFIXED		0
 #define REASON_BOUNDARY		0
 
@@ -811,117 +582,10 @@ static inline int check_io_access(struct pt_regs *regs)
 #define single_stepping(regs)	(current->thread.debug.dbcr0 & DBCR0_IC)
 #define clear_single_step(regs)	(current->thread.debug.dbcr0 &= ~DBCR0_IC)
 #define clear_br_trace(regs)	do {} while(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 /* On non-4xx, the reason for the machine check or program
    exception is in the MSR. */
 #define get_reason(regs)	((regs)->msr)
-<<<<<<< HEAD
-#define get_mc_reason(regs)	((regs)->msr)
-#define REASON_FP		0x100000
-#define REASON_ILLEGAL		0x80000
-#define REASON_PRIVILEGED	0x40000
-#define REASON_TRAP		0x20000
-
-#define single_stepping(regs)	((regs)->msr & MSR_SE)
-#define clear_single_step(regs)	((regs)->msr &= ~MSR_SE)
-#endif
-
-#if defined(CONFIG_4xx)
-int machine_check_4xx(struct pt_regs *regs)
-{
-	unsigned long reason = get_mc_reason(regs);
-
-	if (reason & ESR_IMCP) {
-		printk("Instruction");
-		mtspr(SPRN_ESR, reason & ~ESR_IMCP);
-	} else
-		printk("Data");
-	printk(" machine check in kernel mode.\n");
-
-	return 0;
-}
-
-int machine_check_440A(struct pt_regs *regs)
-{
-	unsigned long reason = get_mc_reason(regs);
-
-	printk("Machine check in kernel mode.\n");
-	if (reason & ESR_IMCP){
-		printk("Instruction Synchronous Machine Check exception\n");
-		mtspr(SPRN_ESR, reason & ~ESR_IMCP);
-	}
-	else {
-		u32 mcsr = mfspr(SPRN_MCSR);
-		if (mcsr & MCSR_IB)
-			printk("Instruction Read PLB Error\n");
-		if (mcsr & MCSR_DRB)
-			printk("Data Read PLB Error\n");
-		if (mcsr & MCSR_DWB)
-			printk("Data Write PLB Error\n");
-		if (mcsr & MCSR_TLBP)
-			printk("TLB Parity Error\n");
-		if (mcsr & MCSR_ICP){
-			flush_instruction_cache();
-			printk("I-Cache Parity Error\n");
-		}
-		if (mcsr & MCSR_DCSP)
-			printk("D-Cache Search Parity Error\n");
-		if (mcsr & MCSR_DCFP)
-			printk("D-Cache Flush Parity Error\n");
-		if (mcsr & MCSR_IMPE)
-			printk("Machine Check exception is imprecise\n");
-
-		/* Clear MCSR */
-		mtspr(SPRN_MCSR, mcsr);
-	}
-	return 0;
-}
-
-int machine_check_47x(struct pt_regs *regs)
-{
-	unsigned long reason = get_mc_reason(regs);
-	u32 mcsr;
-
-	printk(KERN_ERR "Machine check in kernel mode.\n");
-	if (reason & ESR_IMCP) {
-		printk(KERN_ERR
-		       "Instruction Synchronous Machine Check exception\n");
-		mtspr(SPRN_ESR, reason & ~ESR_IMCP);
-		return 0;
-	}
-	mcsr = mfspr(SPRN_MCSR);
-	if (mcsr & MCSR_IB)
-		printk(KERN_ERR "Instruction Read PLB Error\n");
-	if (mcsr & MCSR_DRB)
-		printk(KERN_ERR "Data Read PLB Error\n");
-	if (mcsr & MCSR_DWB)
-		printk(KERN_ERR "Data Write PLB Error\n");
-	if (mcsr & MCSR_TLBP)
-		printk(KERN_ERR "TLB Parity Error\n");
-	if (mcsr & MCSR_ICP) {
-		flush_instruction_cache();
-		printk(KERN_ERR "I-Cache Parity Error\n");
-	}
-	if (mcsr & MCSR_DCSP)
-		printk(KERN_ERR "D-Cache Search Parity Error\n");
-	if (mcsr & PPC47x_MCSR_GPR)
-		printk(KERN_ERR "GPR Parity Error\n");
-	if (mcsr & PPC47x_MCSR_FPR)
-		printk(KERN_ERR "FPR Parity Error\n");
-	if (mcsr & PPC47x_MCSR_IPR)
-		printk(KERN_ERR "Machine Check exception is imprecise\n");
-
-	/* Clear MCSR */
-	mtspr(SPRN_MCSR, mcsr);
-
-	return 0;
-}
-#elif defined(CONFIG_E500)
-int machine_check_e500mc(struct pt_regs *regs)
-{
-	unsigned long mcsr = mfspr(SPRN_MCSR);
-=======
 #define REASON_TM		SRR1_PROGTM
 #define REASON_FP		SRR1_PROGFPE
 #define REASON_ILLEGAL		SRR1_PROGILL
@@ -942,7 +606,6 @@ int machine_check_e500mc(struct pt_regs *regs)
 {
 	unsigned long mcsr = mfspr(SPRN_MCSR);
 	unsigned long pvr = mfspr(SPRN_PVR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long reason = mcsr;
 	int recoverable = 1;
 
@@ -956,17 +619,10 @@ int machine_check_e500mc(struct pt_regs *regs)
 	printk("Caused by (from MCSR=%lx): ", reason);
 
 	if (reason & MCSR_MCP)
-<<<<<<< HEAD
-		printk("Machine Check Signal\n");
-
-	if (reason & MCSR_ICPERR) {
-		printk("Instruction Cache Parity Error\n");
-=======
 		pr_cont("Machine Check Signal\n");
 
 	if (reason & MCSR_ICPERR) {
 		pr_cont("Instruction Cache Parity Error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * This is recoverable by invalidating the i-cache.
@@ -984,25 +640,13 @@ int machine_check_e500mc(struct pt_regs *regs)
 	}
 
 	if (reason & MCSR_DCPERR_MC) {
-<<<<<<< HEAD
-		printk("Data Cache Parity Error\n");
-=======
 		pr_cont("Data Cache Parity Error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * In write shadow mode we auto-recover from the error, but it
 		 * may still get logged and cause a machine check.  We should
 		 * only treat the non-write shadow case as non-recoverable.
 		 */
-<<<<<<< HEAD
-		if (!(mfspr(SPRN_L1CSR2) & L1CSR2_DCWS))
-			recoverable = 0;
-	}
-
-	if (reason & MCSR_L2MMU_MHIT) {
-		printk("Hit on multiple TLB entries\n");
-=======
 		/* On e6500 core, L1 DCWS (Data cache write shadow mode) bit
 		 * is not implemented but L1 data cache always runs in write
 		 * shadow mode. Hence on data cache parity errors HW will
@@ -1016,64 +660,37 @@ int machine_check_e500mc(struct pt_regs *regs)
 
 	if (reason & MCSR_L2MMU_MHIT) {
 		pr_cont("Hit on multiple TLB entries\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recoverable = 0;
 	}
 
 	if (reason & MCSR_NMI)
-<<<<<<< HEAD
-		printk("Non-maskable interrupt\n");
-
-	if (reason & MCSR_IF) {
-		printk("Instruction Fetch Error Report\n");
-=======
 		pr_cont("Non-maskable interrupt\n");
 
 	if (reason & MCSR_IF) {
 		pr_cont("Instruction Fetch Error Report\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recoverable = 0;
 	}
 
 	if (reason & MCSR_LD) {
-<<<<<<< HEAD
-		printk("Load Error Report\n");
-=======
 		pr_cont("Load Error Report\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recoverable = 0;
 	}
 
 	if (reason & MCSR_ST) {
-<<<<<<< HEAD
-		printk("Store Error Report\n");
-=======
 		pr_cont("Store Error Report\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recoverable = 0;
 	}
 
 	if (reason & MCSR_LDG) {
-<<<<<<< HEAD
-		printk("Guarded Load Error Report\n");
-=======
 		pr_cont("Guarded Load Error Report\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recoverable = 0;
 	}
 
 	if (reason & MCSR_TLBSYNC)
-<<<<<<< HEAD
-		printk("Simultaneous tlbsync operations\n");
-
-	if (reason & MCSR_BSL2_ERR) {
-		printk("Level 2 Cache Error\n");
-=======
 		pr_cont("Simultaneous tlbsync operations\n");
 
 	if (reason & MCSR_BSL2_ERR) {
 		pr_cont("Level 2 Cache Error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recoverable = 0;
 	}
 
@@ -1083,11 +700,7 @@ int machine_check_e500mc(struct pt_regs *regs)
 		addr = mfspr(SPRN_MCAR);
 		addr |= (u64)mfspr(SPRN_MCARU) << 32;
 
-<<<<<<< HEAD
-		printk("Machine Check %s Address: %#llx\n",
-=======
 		pr_cont("Machine Check %s Address: %#llx\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       reason & MCSR_MEA ? "Effective" : "Physical", addr);
 	}
 
@@ -1098,51 +711,19 @@ silent_out:
 
 int machine_check_e500(struct pt_regs *regs)
 {
-<<<<<<< HEAD
-	unsigned long reason = get_mc_reason(regs);
-=======
 	unsigned long reason = mfspr(SPRN_MCSR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reason & MCSR_BUS_RBERR) {
 		if (fsl_rio_mcheck_exception(regs))
 			return 1;
-<<<<<<< HEAD
-=======
 		if (fsl_pci_mcheck_exception(regs))
 			return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk("Machine check in kernel mode.\n");
 	printk("Caused by (from MCSR=%lx): ", reason);
 
 	if (reason & MCSR_MCP)
-<<<<<<< HEAD
-		printk("Machine Check Signal\n");
-	if (reason & MCSR_ICPERR)
-		printk("Instruction Cache Parity Error\n");
-	if (reason & MCSR_DCP_PERR)
-		printk("Data Cache Push Parity Error\n");
-	if (reason & MCSR_DCPERR)
-		printk("Data Cache Parity Error\n");
-	if (reason & MCSR_BUS_IAERR)
-		printk("Bus - Instruction Address Error\n");
-	if (reason & MCSR_BUS_RAERR)
-		printk("Bus - Read Address Error\n");
-	if (reason & MCSR_BUS_WAERR)
-		printk("Bus - Write Address Error\n");
-	if (reason & MCSR_BUS_IBERR)
-		printk("Bus - Instruction Data Error\n");
-	if (reason & MCSR_BUS_RBERR)
-		printk("Bus - Read Data Bus Error\n");
-	if (reason & MCSR_BUS_WBERR)
-		printk("Bus - Read Data Bus Error\n");
-	if (reason & MCSR_BUS_IPERR)
-		printk("Bus - Instruction Parity Error\n");
-	if (reason & MCSR_BUS_RPERR)
-		printk("Bus - Read Parity Error\n");
-=======
 		pr_cont("Machine Check Signal\n");
 	if (reason & MCSR_ICPERR)
 		pr_cont("Instruction Cache Parity Error\n");
@@ -1166,7 +747,6 @@ int machine_check_e500(struct pt_regs *regs)
 		pr_cont("Bus - Instruction Parity Error\n");
 	if (reason & MCSR_BUS_RPERR)
 		pr_cont("Bus - Read Parity Error\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1175,73 +755,15 @@ int machine_check_generic(struct pt_regs *regs)
 {
 	return 0;
 }
-<<<<<<< HEAD
-#elif defined(CONFIG_E200)
-int machine_check_e200(struct pt_regs *regs)
-{
-	unsigned long reason = get_mc_reason(regs);
-
-	printk("Machine check in kernel mode.\n");
-	printk("Caused by (from MCSR=%lx): ", reason);
-
-	if (reason & MCSR_MCP)
-		printk("Machine Check Signal\n");
-	if (reason & MCSR_CP_PERR)
-		printk("Cache Push Parity Error\n");
-	if (reason & MCSR_CPERR)
-		printk("Cache Parity Error\n");
-	if (reason & MCSR_EXCP_ERR)
-		printk("ISI, ITLB, or Bus Error on first instruction fetch for an exception handler\n");
-	if (reason & MCSR_BUS_IRERR)
-		printk("Bus - Read Bus Error on instruction fetch\n");
-	if (reason & MCSR_BUS_DRERR)
-		printk("Bus - Read Bus Error on data load\n");
-	if (reason & MCSR_BUS_WRERR)
-		printk("Bus - Write Bus Error on buffered store or cache line push\n");
-
-	return 0;
-}
-#else
-int machine_check_generic(struct pt_regs *regs)
-{
-	unsigned long reason = get_mc_reason(regs);
-=======
 #elif defined(CONFIG_PPC32)
 int machine_check_generic(struct pt_regs *regs)
 {
 	unsigned long reason = regs->msr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("Machine check in kernel mode.\n");
 	printk("Caused by (from SRR1=%lx): ", reason);
 	switch (reason & 0x601F0000) {
 	case 0x80000:
-<<<<<<< HEAD
-		printk("Machine check signal\n");
-		break;
-	case 0:		/* for 601 */
-	case 0x40000:
-	case 0x140000:	/* 7450 MSS error and TEA */
-		printk("Transfer error ack signal\n");
-		break;
-	case 0x20000:
-		printk("Data parity error signal\n");
-		break;
-	case 0x10000:
-		printk("Address parity error signal\n");
-		break;
-	case 0x20000000:
-		printk("L1 Data Cache error\n");
-		break;
-	case 0x40000000:
-		printk("L1 Instruction Cache error\n");
-		break;
-	case 0x00100000:
-		printk("L2 data cache parity error\n");
-		break;
-	default:
-		printk("Unknown values in msr\n");
-=======
 		pr_cont("Machine check signal\n");
 		break;
 	case 0x40000:
@@ -1265,19 +787,11 @@ int machine_check_generic(struct pt_regs *regs)
 		break;
 	default:
 		pr_cont("Unknown values in msr\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 #endif /* everything else */
 
-<<<<<<< HEAD
-void machine_check_exception(struct pt_regs *regs)
-{
-	int recover = 0;
-
-	__get_cpu_var(irq_stat).mce_exceptions++;
-=======
 void die_mce(const char *str, struct pt_regs *regs, long err)
 {
 	/*
@@ -1307,7 +821,6 @@ static void __machine_check_exception(struct pt_regs *regs)
 	__this_cpu_inc(irq_stat.mce_exceptions);
 
 	add_taint(TAINT_MACHINE_CHECK, LOCKDEP_NOW_UNRELIABLE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* See if any machine dependent calls. In theory, we would want
 	 * to call the CPU first, and call the ppc_md. one if the CPU
@@ -1321,35 +834,6 @@ static void __machine_check_exception(struct pt_regs *regs)
 		recover = cur_cpu_spec->machine_check(regs);
 
 	if (recover > 0)
-<<<<<<< HEAD
-		return;
-
-#if defined(CONFIG_8xx) && defined(CONFIG_PCI)
-	/* the qspan pci read routines can cause machine checks -- Cort
-	 *
-	 * yuck !!! that totally needs to go away ! There are better ways
-	 * to deal with that than having a wart in the mcheck handler.
-	 * -- BenH
-	 */
-	bad_page_fault(regs, regs->dar, SIGBUS);
-	return;
-#endif
-
-	if (debugger_fault_handler(regs))
-		return;
-
-	if (check_io_access(regs))
-		return;
-
-	die("Machine check", regs, SIGBUS);
-
-	/* Must die if the interrupt is not recoverable */
-	if (!(regs->msr & MSR_RI))
-		panic("Unrecoverable Machine check");
-}
-
-void SMIException(struct pt_regs *regs)
-=======
 		goto bail;
 
 	if (debugger_fault_handler(regs))
@@ -1393,14 +877,10 @@ DEFINE_INTERRUPT_HANDLER_NMI(machine_check_exception)
 }
 
 DEFINE_INTERRUPT_HANDLER(SMIException) /* async? */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	die("System Management Interrupt", regs, SIGABRT);
 }
 
-<<<<<<< HEAD
-void unknown_exception(struct pt_regs *regs)
-=======
 #ifdef CONFIG_VSX
 static void p9_hmi_special_emu(struct pt_regs *regs)
 {
@@ -1610,17 +1090,10 @@ DEFINE_INTERRUPT_HANDLER_ASYNC(handle_hmi_exception)
 }
 
 DEFINE_INTERRUPT_HANDLER(unknown_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk("Bad trap at PC: %lx, SR: %lx, vector=%lx\n",
 	       regs->nip, regs->msr, regs->trap);
 
-<<<<<<< HEAD
-	_exception(SIGTRAP, regs, 0, 0);
-}
-
-void instruction_breakpoint_exception(struct pt_regs *regs)
-=======
 	_exception(SIGTRAP, regs, TRAP_UNK, 0);
 }
 
@@ -1643,7 +1116,6 @@ DEFINE_INTERRUPT_HANDLER_NMI(unknown_nmi_exception)
 }
 
 DEFINE_INTERRUPT_HANDLER(instruction_breakpoint_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (notify_die(DIE_IABR_MATCH, "iabr_match", regs, 5,
 					5, SIGTRAP) == NOTIFY_STOP)
@@ -1653,16 +1125,6 @@ DEFINE_INTERRUPT_HANDLER(instruction_breakpoint_exception)
 	_exception(SIGTRAP, regs, TRAP_BRKPT, regs->nip);
 }
 
-<<<<<<< HEAD
-void RunModeException(struct pt_regs *regs)
-{
-	_exception(SIGTRAP, regs, 0, 0);
-}
-
-void __kprobes single_step_exception(struct pt_regs *regs)
-{
-	clear_single_step(regs);
-=======
 DEFINE_INTERRUPT_HANDLER(RunModeException)
 {
 	_exception(SIGTRAP, regs, TRAP_UNK, 0);
@@ -1675,7 +1137,6 @@ static void __single_step_exception(struct pt_regs *regs)
 
 	if (kprobe_post_handler(regs))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (notify_die(DIE_SSTEP, "single_step", regs, 5,
 					5, SIGTRAP) == NOTIFY_STOP)
@@ -1686,31 +1147,17 @@ static void __single_step_exception(struct pt_regs *regs)
 	_exception(SIGTRAP, regs, TRAP_TRACE, regs->nip);
 }
 
-<<<<<<< HEAD
-=======
 DEFINE_INTERRUPT_HANDLER(single_step_exception)
 {
 	__single_step_exception(regs);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * After we have successfully emulated an instruction, we have to
  * check if the instruction was being single-stepped, and if so,
  * pretend we got a single-step exception.  This was pointed out
  * by Kumar Gala.  -- paulus
  */
-<<<<<<< HEAD
-static void emulate_single_step(struct pt_regs *regs)
-{
-	if (single_stepping(regs))
-		single_step_exception(regs);
-}
-
-static inline int __parse_fpscr(unsigned long fpscr)
-{
-	int ret = 0;
-=======
 void emulate_single_step(struct pt_regs *regs)
 {
 	if (single_stepping(regs))
@@ -1721,7 +1168,6 @@ void emulate_single_step(struct pt_regs *regs)
 static inline int __parse_fpscr(unsigned long fpscr)
 {
 	int ret = FPE_FLTUNK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Invalid operation */
 	if ((fpscr & FPSCR_VE) && (fpscr & FPSCR_VX))
@@ -1745,10 +1191,7 @@ static inline int __parse_fpscr(unsigned long fpscr)
 
 	return ret;
 }
-<<<<<<< HEAD
-=======
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void parse_fpe(struct pt_regs *regs)
 {
@@ -1756,13 +1199,9 @@ static void parse_fpe(struct pt_regs *regs)
 
 	flush_fp_to_thread(current);
 
-<<<<<<< HEAD
-	code = __parse_fpscr(current->thread.fpscr.val);
-=======
 #ifdef CONFIG_PPC_FPU_REGS
 	code = __parse_fpscr(current->thread.fp_state.fpscr);
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_exception(SIGFPE, regs, code, regs->nip);
 }
@@ -1813,13 +1252,10 @@ static int emulate_string_inst(struct pt_regs *regs, u32 instword)
 		u8 val;
 		u32 shift = 8 * (3 - (pos & 0x3));
 
-<<<<<<< HEAD
-=======
 		/* if process is 32-bit, clear upper 32 bits of EA */
 		if ((regs->msr & MSR_64BIT) == 0)
 			EA &= 0xFFFFFFFF;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch ((instword & PPC_INST_STRING_MASK)) {
 			case PPC_INST_LSWX:
 			case PPC_INST_LSWI:
@@ -1887,8 +1323,6 @@ static int emulate_isel(struct pt_regs *regs, u32 instword)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC_TRANSACTIONAL_MEM
 static inline bool tm_abort_check(struct pt_regs *regs, int cause)
 {
@@ -1911,20 +1345,13 @@ static inline bool tm_abort_check(struct pt_regs *regs, int reason)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int emulate_instruction(struct pt_regs *regs)
 {
 	u32 instword;
 	u32 rd;
 
-<<<<<<< HEAD
-	if (!user_mode(regs) || (regs->msr & MSR_LE))
-		return -EINVAL;
-	CHECK_FULL_REGS(regs);
-=======
 	if (!user_mode(regs))
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (get_user(instword, (u32 __user *)(regs->nip)))
 		return -EFAULT;
@@ -1956,12 +1383,9 @@ static int emulate_instruction(struct pt_regs *regs)
 
 	/* Emulate load/store string insn. */
 	if ((instword & PPC_INST_STRING_GEN_MASK) == PPC_INST_STRING) {
-<<<<<<< HEAD
-=======
 		if (tm_abort_check(regs,
 				   TM_CAUSE_EMULATE | TM_CAUSE_PERSISTENT))
 			return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PPC_WARN_EMULATED(string, regs);
 		return emulate_string_inst(regs, instword);
 	}
@@ -1978,8 +1402,6 @@ static int emulate_instruction(struct pt_regs *regs)
 		return emulate_isel(regs, instword);
 	}
 
-<<<<<<< HEAD
-=======
 	/* Emulate sync instruction variants */
 	if ((instword & PPC_INST_SYNC_MASK) == PPC_INST_SYNC) {
 		PPC_WARN_EMULATED(sync, regs);
@@ -1987,7 +1409,6 @@ static int emulate_instruction(struct pt_regs *regs)
 		return 0;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC64
 	/* Emulate the mfspr rD, DSCR. */
 	if ((((instword & PPC_INST_MFSPR_DSCR_USER_MASK) ==
@@ -2018,21 +1439,11 @@ static int emulate_instruction(struct pt_regs *regs)
 	return -EINVAL;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_GENERIC_BUG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int is_valid_bugaddr(unsigned long addr)
 {
 	return is_kernel_addr(addr);
 }
-<<<<<<< HEAD
-
-void __kprobes program_check_exception(struct pt_regs *regs)
-{
-	unsigned int reason = get_reason(regs);
-	extern int do_mathemu(struct pt_regs *regs);
-=======
 #endif
 
 #ifdef CONFIG_MATH_EMULATION
@@ -2068,7 +1479,6 @@ static inline int emulate_math(struct pt_regs *regs) { return -1; }
 static void do_program_check(struct pt_regs *regs)
 {
 	unsigned int reason = get_reason(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We can now get here via a FP Unavailable exception if the core
 	 * has no FPU, in that case the reason flags will be 0 */
@@ -2079,33 +1489,20 @@ static void do_program_check(struct pt_regs *regs)
 		return;
 	}
 	if (reason & REASON_TRAP) {
-<<<<<<< HEAD
-=======
 		unsigned long bugaddr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Debugger is first in line to stop recursive faults in
 		 * rcu_lock, notify_die, or atomic_notifier_call_chain */
 		if (debugger_bpt(regs))
 			return;
 
-<<<<<<< HEAD
-=======
 		if (kprobe_handler(regs))
 			return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* trap exception */
 		if (notify_die(DIE_BPT, "breakpoint", regs, 5, 5, SIGTRAP)
 				== NOTIFY_STOP)
 			return;
 
-<<<<<<< HEAD
-		if (!(regs->msr & MSR_PR) &&  /* not user-mode */
-		    report_bug(regs->nip, regs) == BUG_TRAP_TYPE_WARN) {
-			regs->nip += 4;
-			return;
-		}
-=======
 		bugaddr = regs->nip;
 		/*
 		 * Fixup bugaddr for BUG_ON() in real mode
@@ -2190,59 +1587,26 @@ static void do_program_check(struct pt_regs *regs)
 			}
 		}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_exception(SIGTRAP, regs, TRAP_BRKPT, regs->nip);
 		return;
 	}
 
-<<<<<<< HEAD
-	/* We restore the interrupt state now */
-	if (!arch_irq_disabled_regs(regs))
-		local_irq_enable();
-
-#ifdef CONFIG_MATH_EMULATION
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* (reason & REASON_ILLEGAL) would be the obvious thing here,
 	 * but there seems to be a hardware bug on the 405GP (RevD)
 	 * that means ESR is sometimes set incorrectly - either to
 	 * ESR_DST (!?) or 0.  In the process of chasing this with the
 	 * hardware people - not sure if it can happen on any illegal
 	 * instruction or only on FP instructions, whether there is a
-<<<<<<< HEAD
-	 * pattern to occurrences etc. -dgibson 31/Mar/2003 */
-	switch (do_mathemu(regs)) {
-	case 0:
-		emulate_single_step(regs);
-		return;
-	case 1: {
-			int code = 0;
-			code = __parse_fpscr(current->thread.fpscr.val);
-			_exception(SIGFPE, regs, code, regs->nip);
-			return;
-		}
-	case -EFAULT:
-		_exception(SIGSEGV, regs, SEGV_MAPERR, regs->nip);
-		return;
-	}
-	/* fall through on any other errors */
-#endif /* CONFIG_MATH_EMULATION */
-=======
 	 * pattern to occurrences etc. -dgibson 31/Mar/2003
 	 */
 	if (!emulate_math(regs))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Try to emulate it if we should. */
 	if (reason & (REASON_ILLEGAL | REASON_PRIVILEGED)) {
 		switch (emulate_instruction(regs)) {
 		case 0:
-<<<<<<< HEAD
-			regs->nip += 4;
-=======
 			regs_add_return_ip(regs, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			emulate_single_step(regs);
 			return;
 		case -EFAULT:
@@ -2251,44 +1615,23 @@ static void do_program_check(struct pt_regs *regs)
 		}
 	}
 
-<<<<<<< HEAD
-=======
 sigill:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reason & REASON_PRIVILEGED)
 		_exception(SIGILL, regs, ILL_PRVOPC, regs->nip);
 	else
 		_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
-<<<<<<< HEAD
-=======
 
 }
 
 DEFINE_INTERRUPT_HANDLER(program_check_exception)
 {
 	do_program_check(regs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This occurs when running in hypervisor mode on POWER6 or later
  * and an illegal instruction is encountered.
  */
-<<<<<<< HEAD
-void __kprobes emulation_assist_interrupt(struct pt_regs *regs)
-{
-	regs->msr |= REASON_ILLEGAL;
-	program_check_exception(regs);
-}
-
-void alignment_exception(struct pt_regs *regs)
-{
-	int sig, code, fixed = 0;
-
-	/* We restore the interrupt state now */
-	if (!arch_irq_disabled_regs(regs))
-		local_irq_enable();
-=======
 DEFINE_INTERRUPT_HANDLER(emulation_assist_interrupt)
 {
 	regs_set_return_msr(regs, regs->msr | REASON_ILLEGAL);
@@ -2311,19 +1654,14 @@ DEFINE_INTERRUPT_HANDLER(alignment_exception)
 
 	if (tm_abort_check(regs, TM_CAUSE_ALIGNMENT | TM_CAUSE_PERSISTENT))
 		return;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we don't implement logging of alignment exceptions */
 	if (!(current->thread.align_ctl & PR_UNALIGN_SIGBUS))
 		fixed = fix_alignment(regs);
 
 	if (fixed == 1) {
-<<<<<<< HEAD
-		regs->nip += 4;	/* skip over emulated instruction */
-=======
 		/* skip over emulated instruction */
 		regs_add_return_ip(regs, inst_length(reason));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		emulate_single_step(regs);
 		return;
 	}
@@ -2336,39 +1674,6 @@ DEFINE_INTERRUPT_HANDLER(alignment_exception)
 		sig = SIGBUS;
 		code = BUS_ADRALN;
 	}
-<<<<<<< HEAD
-	if (user_mode(regs))
-		_exception(sig, regs, code, regs->dar);
-	else
-		bad_page_fault(regs, regs->dar, sig);
-}
-
-void StackOverflow(struct pt_regs *regs)
-{
-	printk(KERN_CRIT "Kernel stack overflow in process %p, r1=%lx\n",
-	       current, regs->gpr[1]);
-	debugger(regs);
-	show_regs(regs);
-	panic("kernel stack overflow");
-}
-
-void nonrecoverable_exception(struct pt_regs *regs)
-{
-	printk(KERN_ERR "Non-recoverable exception at PC=%lx MSR=%lx\n",
-	       regs->nip, regs->msr);
-	debugger(regs);
-	die("nonrecoverable exception", regs, SIGKILL);
-}
-
-void trace_syscall(struct pt_regs *regs)
-{
-	printk("Task: %p(%d), PC: %08lX/%08lX, Syscall: %3ld, Result: %s%ld    %s\n",
-	       current, task_pid_nr(current), regs->nip, regs->link, regs->gpr[0],
-	       regs->ccr&0x10000000?"Error=":"", regs->gpr[3], print_tainted());
-}
-
-void kernel_fp_unavailable_exception(struct pt_regs *regs)
-=======
 bad:
 	if (user_mode(regs))
 		_exception(sig, regs, code, regs->dar);
@@ -2382,18 +1687,13 @@ DEFINE_INTERRUPT_HANDLER(stack_overflow_exception)
 }
 
 DEFINE_INTERRUPT_HANDLER(kernel_fp_unavailable_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_EMERG "Unrecoverable FP Unavailable Exception "
 			  "%lx at %lx\n", regs->trap, regs->nip);
 	die("Unrecoverable FP Unavailable Exception", regs, SIGABRT);
 }
 
-<<<<<<< HEAD
-void altivec_unavailable_exception(struct pt_regs *regs)
-=======
 DEFINE_INTERRUPT_HANDLER(altivec_unavailable_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (user_mode(regs)) {
 		/* A user program has executed an altivec instruction,
@@ -2407,11 +1707,7 @@ DEFINE_INTERRUPT_HANDLER(altivec_unavailable_exception)
 	die("Unrecoverable VMX/Altivec Unavailable Exception", regs, SIGABRT);
 }
 
-<<<<<<< HEAD
-void vsx_unavailable_exception(struct pt_regs *regs)
-=======
 DEFINE_INTERRUPT_HANDLER(vsx_unavailable_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (user_mode(regs)) {
 		/* A user program has executed an vsx instruction,
@@ -2425,11 +1721,6 @@ DEFINE_INTERRUPT_HANDLER(vsx_unavailable_exception)
 	die("Unrecoverable VSX Unavailable Exception", regs, SIGABRT);
 }
 
-<<<<<<< HEAD
-void performance_monitor_exception(struct pt_regs *regs)
-{
-	__get_cpu_var(irq_stat).pmu_irqs++;
-=======
 #ifdef CONFIG_PPC_BOOK3S_64
 static void tm_unavailable(struct pt_regs *regs)
 {
@@ -2654,73 +1945,10 @@ DECLARE_INTERRUPT_HANDLER_ASYNC(performance_monitor_exception_async);
 DEFINE_INTERRUPT_HANDLER_ASYNC(performance_monitor_exception_async)
 {
 	__this_cpu_inc(irq_stat.pmu_irqs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	perf_irq(regs);
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_8xx
-void SoftwareEmulation(struct pt_regs *regs)
-{
-	extern int do_mathemu(struct pt_regs *);
-	extern int Soft_emulate_8xx(struct pt_regs *);
-#if defined(CONFIG_MATH_EMULATION) || defined(CONFIG_8XX_MINIMAL_FPEMU)
-	int errcode;
-#endif
-
-	CHECK_FULL_REGS(regs);
-
-	if (!user_mode(regs)) {
-		debugger(regs);
-		die("Kernel Mode Software FPU Emulation", regs, SIGFPE);
-	}
-
-#ifdef CONFIG_MATH_EMULATION
-	errcode = do_mathemu(regs);
-	if (errcode >= 0)
-		PPC_WARN_EMULATED(math, regs);
-
-	switch (errcode) {
-	case 0:
-		emulate_single_step(regs);
-		return;
-	case 1: {
-			int code = 0;
-			code = __parse_fpscr(current->thread.fpscr.val);
-			_exception(SIGFPE, regs, code, regs->nip);
-			return;
-		}
-	case -EFAULT:
-		_exception(SIGSEGV, regs, SEGV_MAPERR, regs->nip);
-		return;
-	default:
-		_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
-		return;
-	}
-
-#elif defined(CONFIG_8XX_MINIMAL_FPEMU)
-	errcode = Soft_emulate_8xx(regs);
-	if (errcode >= 0)
-		PPC_WARN_EMULATED(8xx, regs);
-
-	switch (errcode) {
-	case 0:
-		emulate_single_step(regs);
-		return;
-	case 1:
-		_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
-		return;
-	case -EFAULT:
-		_exception(SIGSEGV, regs, SEGV_MAPERR, regs->nip);
-		return;
-	}
-#else
-	_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
-#endif
-}
-#endif /* CONFIG_8xx */
-=======
 DEFINE_INTERRUPT_HANDLER_RAW(performance_monitor_exception)
 {
 	/*
@@ -2736,7 +1964,6 @@ DEFINE_INTERRUPT_HANDLER_RAW(performance_monitor_exception)
 
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PPC_ADV_DEBUG_REGS
 static void handle_debug(struct pt_regs *regs, unsigned long debug_status)
@@ -2749,44 +1976,13 @@ static void handle_debug(struct pt_regs *regs, unsigned long debug_status)
 	if (debug_status & (DBSR_DAC1R | DBSR_DAC1W)) {
 		dbcr_dac(current) &= ~(DBCR_DAC1R | DBCR_DAC1W);
 #ifdef CONFIG_PPC_ADV_DEBUG_DAC_RANGE
-<<<<<<< HEAD
-		current->thread.dbcr2 &= ~DBCR2_DAC12MODE;
-#endif
-		do_send_trap(regs, mfspr(SPRN_DAC1), debug_status, TRAP_HWBKPT,
-=======
 		current->thread.debug.dbcr2 &= ~DBCR2_DAC12MODE;
 #endif
 		do_send_trap(regs, mfspr(SPRN_DAC1), debug_status,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     5);
 		changed |= 0x01;
 	}  else if (debug_status & (DBSR_DAC2R | DBSR_DAC2W)) {
 		dbcr_dac(current) &= ~(DBCR_DAC2R | DBCR_DAC2W);
-<<<<<<< HEAD
-		do_send_trap(regs, mfspr(SPRN_DAC2), debug_status, TRAP_HWBKPT,
-			     6);
-		changed |= 0x01;
-	}  else if (debug_status & DBSR_IAC1) {
-		current->thread.dbcr0 &= ~DBCR0_IAC1;
-		dbcr_iac_range(current) &= ~DBCR_IAC12MODE;
-		do_send_trap(regs, mfspr(SPRN_IAC1), debug_status, TRAP_HWBKPT,
-			     1);
-		changed |= 0x01;
-	}  else if (debug_status & DBSR_IAC2) {
-		current->thread.dbcr0 &= ~DBCR0_IAC2;
-		do_send_trap(regs, mfspr(SPRN_IAC2), debug_status, TRAP_HWBKPT,
-			     2);
-		changed |= 0x01;
-	}  else if (debug_status & DBSR_IAC3) {
-		current->thread.dbcr0 &= ~DBCR0_IAC3;
-		dbcr_iac_range(current) &= ~DBCR_IAC34MODE;
-		do_send_trap(regs, mfspr(SPRN_IAC3), debug_status, TRAP_HWBKPT,
-			     3);
-		changed |= 0x01;
-	}  else if (debug_status & DBSR_IAC4) {
-		current->thread.dbcr0 &= ~DBCR0_IAC4;
-		do_send_trap(regs, mfspr(SPRN_IAC4), debug_status, TRAP_HWBKPT,
-=======
 		do_send_trap(regs, mfspr(SPRN_DAC2), debug_status,
 			     6);
 		changed |= 0x01;
@@ -2810,7 +2006,6 @@ static void handle_debug(struct pt_regs *regs, unsigned long debug_status)
 	}  else if (debug_status & DBSR_IAC4) {
 		current->thread.debug.dbcr0 &= ~DBCR0_IAC4;
 		do_send_trap(regs, mfspr(SPRN_IAC4), debug_status,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     4);
 		changed |= 0x01;
 	}
@@ -2819,21 +2014,6 @@ static void handle_debug(struct pt_regs *regs, unsigned long debug_status)
 	 * Check all other debug flags and see if that bit needs to be turned
 	 * back on or not.
 	 */
-<<<<<<< HEAD
-	if (DBCR_ACTIVE_EVENTS(current->thread.dbcr0, current->thread.dbcr1))
-		regs->msr |= MSR_DE;
-	else
-		/* Make sure the IDM flag is off */
-		current->thread.dbcr0 &= ~DBCR0_IDM;
-
-	if (changed & 0x01)
-		mtspr(SPRN_DBCR0, current->thread.dbcr0);
-}
-
-void __kprobes DebugException(struct pt_regs *regs, unsigned long debug_status)
-{
-	current->thread.dbsr = debug_status;
-=======
 	if (DBCR_ACTIVE_EVENTS(current->thread.debug.dbcr0,
 			       current->thread.debug.dbcr1))
 		regs_set_return_msr(regs, regs->msr | MSR_DE);
@@ -2850,7 +2030,6 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 	unsigned long debug_status = regs->dsisr;
 
 	current->thread.debug.dbsr = debug_status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Hack alert: On BookE, Branch Taken stops on the branch itself, while
 	 * on server, it stops on the target of the branch. In order to simulate
@@ -2858,11 +2037,7 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 	 * instead of stopping here when hitting a BT
 	 */
 	if (debug_status & DBSR_BT) {
-<<<<<<< HEAD
-		regs->msr &= ~MSR_DE;
-=======
 		regs_set_return_msr(regs, regs->msr & ~MSR_DE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Disable BT */
 		mtspr(SPRN_DBCR0, mfspr(SPRN_DBCR0) & ~DBCR0_BT);
@@ -2871,14 +2046,6 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 
 		/* Do the single step trick only when coming from userspace */
 		if (user_mode(regs)) {
-<<<<<<< HEAD
-			current->thread.dbcr0 &= ~DBCR0_BT;
-			current->thread.dbcr0 |= DBCR0_IDM | DBCR0_IC;
-			regs->msr |= MSR_DE;
-			return;
-		}
-
-=======
 			current->thread.debug.dbcr0 &= ~DBCR0_BT;
 			current->thread.debug.dbcr0 |= DBCR0_IDM | DBCR0_IC;
 			regs_set_return_msr(regs, regs->msr | MSR_DE);
@@ -2888,7 +2055,6 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 		if (kprobe_post_handler(regs))
 			return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (notify_die(DIE_SSTEP, "block_step", regs, 5,
 			       5, SIGTRAP) == NOTIFY_STOP) {
 			return;
@@ -2896,23 +2062,16 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 		if (debugger_sstep(regs))
 			return;
 	} else if (debug_status & DBSR_IC) { 	/* Instruction complete */
-<<<<<<< HEAD
-		regs->msr &= ~MSR_DE;
-=======
 		regs_set_return_msr(regs, regs->msr & ~MSR_DE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Disable instruction completion */
 		mtspr(SPRN_DBCR0, mfspr(SPRN_DBCR0) & ~DBCR0_IC);
 		/* Clear the instruction completion event */
 		mtspr(SPRN_DBSR, DBSR_IC);
 
-<<<<<<< HEAD
-=======
 		if (kprobe_post_handler(regs))
 			return;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (notify_die(DIE_SSTEP, "single_step", regs, 5,
 			       5, SIGTRAP) == NOTIFY_STOP) {
 			return;
@@ -2922,15 +2081,6 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 			return;
 
 		if (user_mode(regs)) {
-<<<<<<< HEAD
-			current->thread.dbcr0 &= ~DBCR0_IC;
-			if (DBCR_ACTIVE_EVENTS(current->thread.dbcr0,
-					       current->thread.dbcr1))
-				regs->msr |= MSR_DE;
-			else
-				/* Make sure the IDM bit is off */
-				current->thread.dbcr0 &= ~DBCR0_IDM;
-=======
 			current->thread.debug.dbcr0 &= ~DBCR0_IC;
 			if (DBCR_ACTIVE_EVENTS(current->thread.debug.dbcr0,
 					       current->thread.debug.dbcr1))
@@ -2938,7 +2088,6 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 			else
 				/* Make sure the IDM bit is off */
 				current->thread.debug.dbcr0 &= ~DBCR0_IDM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		_exception(SIGTRAP, regs, TRAP_TRACE, regs->nip);
@@ -2947,21 +2096,8 @@ DEFINE_INTERRUPT_HANDLER(DebugException)
 }
 #endif /* CONFIG_PPC_ADV_DEBUG_REGS */
 
-<<<<<<< HEAD
-#if !defined(CONFIG_TAU_INT)
-void TAUException(struct pt_regs *regs)
-{
-	printk("TAU trap at PC: %lx, MSR: %lx, vector=%lx    %s\n",
-	       regs->nip, regs->msr, regs->trap, print_tainted());
-}
-#endif /* CONFIG_INT_TAU */
-
-#ifdef CONFIG_ALTIVEC
-void altivec_assist_exception(struct pt_regs *regs)
-=======
 #ifdef CONFIG_ALTIVEC
 DEFINE_INTERRUPT_HANDLER(altivec_assist_exception)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -2976,11 +2112,7 @@ DEFINE_INTERRUPT_HANDLER(altivec_assist_exception)
 	PPC_WARN_EMULATED(altivec, regs);
 	err = emulate_altivec(regs);
 	if (err == 0) {
-<<<<<<< HEAD
-		regs->nip += 4;		/* skip emulated instruction */
-=======
 		regs_add_return_ip(regs, 4); /* skip emulated instruction */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		emulate_single_step(regs);
 		return;
 	}
@@ -2993,42 +2125,16 @@ DEFINE_INTERRUPT_HANDLER(altivec_assist_exception)
 		/* XXX quick hack for now: set the non-Java bit in the VSCR */
 		printk_ratelimited(KERN_ERR "Unrecognized altivec instruction "
 				   "in %s at %lx\n", current->comm, regs->nip);
-<<<<<<< HEAD
-		current->thread.vscr.u[3] |= 0x10000;
-=======
 		current->thread.vr_state.vscr.u[3] |= 0x10000;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #endif /* CONFIG_ALTIVEC */
 
-<<<<<<< HEAD
-#ifdef CONFIG_VSX
-void vsx_assist_exception(struct pt_regs *regs)
-{
-	if (!user_mode(regs)) {
-		printk(KERN_EMERG "VSX assist exception in kernel mode"
-		       " at %lx\n", regs->nip);
-		die("Kernel VSX assist exception", regs, SIGILL);
-	}
-
-	flush_vsx_to_thread(current);
-	printk(KERN_INFO "VSX assist not supported at %lx\n", regs->nip);
-	_exception(SIGILL, regs, ILL_ILLOPC, regs->nip);
-}
-#endif /* CONFIG_VSX */
-
-#ifdef CONFIG_FSL_BOOKE
-void CacheLockingException(struct pt_regs *regs, unsigned long address,
-			   unsigned long error_code)
-{
-=======
 #ifdef CONFIG_PPC_85xx
 DEFINE_INTERRUPT_HANDLER(CacheLockingException)
 {
 	unsigned long error_code = regs->dsisr;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We treat cache locking instructions from the user
 	 * as priv ops, in the future we could try to do
 	 * something smarter
@@ -3037,19 +2143,6 @@ DEFINE_INTERRUPT_HANDLER(CacheLockingException)
 		_exception(SIGILL, regs, ILL_PRVOPC, regs->nip);
 	return;
 }
-<<<<<<< HEAD
-#endif /* CONFIG_FSL_BOOKE */
-
-#ifdef CONFIG_SPE
-void SPEFloatingPointException(struct pt_regs *regs)
-{
-	extern int do_spe_mathemu(struct pt_regs *regs);
-	unsigned long spefscr;
-	int fpexc_mode;
-	int code = 0;
-	int err;
-
-=======
 #endif /* CONFIG_PPC_85xx */
 
 #ifdef CONFIG_SPE
@@ -3062,7 +2155,6 @@ DEFINE_INTERRUPT_HANDLER(SPEFloatingPointException)
 
 	interrupt_cond_local_irq_enable(regs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_spe_to_thread(current);
 
 	spefscr = current->thread.spefscr;
@@ -3084,11 +2176,7 @@ DEFINE_INTERRUPT_HANDLER(SPEFloatingPointException)
 
 	err = do_spe_mathemu(regs);
 	if (err == 0) {
-<<<<<<< HEAD
-		regs->nip += 4;		/* skip emulated instruction */
-=======
 		regs_add_return_ip(regs, 4); /* skip emulated instruction */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		emulate_single_step(regs);
 		return;
 	}
@@ -3107,36 +2195,21 @@ DEFINE_INTERRUPT_HANDLER(SPEFloatingPointException)
 	return;
 }
 
-<<<<<<< HEAD
-void SPEFloatingPointRoundException(struct pt_regs *regs)
-{
-	extern int speround_handler(struct pt_regs *regs);
-	int err;
-
-=======
 DEFINE_INTERRUPT_HANDLER(SPEFloatingPointRoundException)
 {
 	int err;
 
 	interrupt_cond_local_irq_enable(regs);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_disable();
 	if (regs->msr & MSR_SPE)
 		giveup_spe(current);
 	preempt_enable();
 
-<<<<<<< HEAD
-	regs->nip -= 4;
-	err = speround_handler(regs);
-	if (err == 0) {
-		regs->nip += 4;		/* skip emulated instruction */
-=======
 	regs_add_return_ip(regs, -4);
 	err = speround_handler(regs);
 	if (err == 0) {
 		regs_add_return_ip(regs, 4); /* skip emulated instruction */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		emulate_single_step(regs);
 		return;
 	}
@@ -3149,11 +2222,7 @@ DEFINE_INTERRUPT_HANDLER(SPEFloatingPointRoundException)
 		printk(KERN_ERR "unrecognized spe instruction "
 		       "in %s at %lx\n", current->comm, regs->nip);
 	} else {
-<<<<<<< HEAD
-		_exception(SIGFPE, regs, 0, regs->nip);
-=======
 		_exception(SIGFPE, regs, FPE_FLTUNK, regs->nip);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 }
@@ -3165,31 +2234,6 @@ DEFINE_INTERRUPT_HANDLER(SPEFloatingPointRoundException)
  * in the MSR is 0.  This indicates that SRR0/1 are live, and that
  * we therefore lost state by taking this exception.
  */
-<<<<<<< HEAD
-void unrecoverable_exception(struct pt_regs *regs)
-{
-	printk(KERN_EMERG "Unrecoverable exception %lx at %lx\n",
-	       regs->trap, regs->nip);
-	die("Unrecoverable exception", regs, SIGABRT);
-}
-
-#ifdef CONFIG_BOOKE_WDT
-/*
- * Default handler for a Watchdog exception,
- * spins until a reboot occurs
- */
-void __attribute__ ((weak)) WatchdogHandler(struct pt_regs *regs)
-{
-	/* Generic WatchdogHandler, implement your own */
-	mtspr(SPRN_TCR, mfspr(SPRN_TCR)&(~TCR_WIE));
-	return;
-}
-
-void WatchdogException(struct pt_regs *regs)
-{
-	printk (KERN_EMERG "PowerPC Book-E Watchdog Exception\n");
-	WatchdogHandler(regs);
-=======
 void __noreturn unrecoverable_exception(struct pt_regs *regs)
 {
 	pr_emerg("Unrecoverable exception %lx at %lx (msr=%lx)\n",
@@ -3206,7 +2250,6 @@ DEFINE_INTERRUPT_HANDLER_NMI(WatchdogException)
 	printk (KERN_EMERG "PowerPC Book-E Watchdog Exception\n");
 	mtspr(SPRN_TCR, mfspr(SPRN_TCR) & ~TCR_WIE);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -3214,25 +2257,13 @@ DEFINE_INTERRUPT_HANDLER_NMI(WatchdogException)
  * We enter here if we discover during exception entry that we are
  * running in supervisor mode with a userspace value in the stack pointer.
  */
-<<<<<<< HEAD
-void kernel_bad_stack(struct pt_regs *regs)
-=======
 DEFINE_INTERRUPT_HANDLER(kernel_bad_stack)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_EMERG "Bad kernel stack pointer %lx at %lx\n",
 	       regs->gpr[1], regs->nip);
 	die("Bad kernel stack pointer", regs, SIGABRT);
 }
 
-<<<<<<< HEAD
-void __init trap_init(void)
-{
-}
-
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC_EMULATED_STATS
 
 #define WARN_EMULATED_SETUP(type)	.type = { .name = #type }
@@ -3251,18 +2282,10 @@ struct ppc_emulated ppc_emulated = {
 	WARN_EMULATED_SETUP(popcntb),
 	WARN_EMULATED_SETUP(spe),
 	WARN_EMULATED_SETUP(string),
-<<<<<<< HEAD
-	WARN_EMULATED_SETUP(unaligned),
-#ifdef CONFIG_MATH_EMULATION
-	WARN_EMULATED_SETUP(math),
-#elif defined(CONFIG_8XX_MINIMAL_FPEMU)
-	WARN_EMULATED_SETUP(8xx),
-=======
 	WARN_EMULATED_SETUP(sync),
 	WARN_EMULATED_SETUP(unaligned),
 #ifdef CONFIG_MATH_EMULATION
 	WARN_EMULATED_SETUP(math),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef CONFIG_VSX
 	WARN_EMULATED_SETUP(vsx),
@@ -3270,14 +2293,11 @@ struct ppc_emulated ppc_emulated = {
 #ifdef CONFIG_PPC64
 	WARN_EMULATED_SETUP(mfdscr),
 	WARN_EMULATED_SETUP(mtdscr),
-<<<<<<< HEAD
-=======
 	WARN_EMULATED_SETUP(lq_stq),
 	WARN_EMULATED_SETUP(lxvw4x),
 	WARN_EMULATED_SETUP(lxvh8x),
 	WARN_EMULATED_SETUP(lxvd2x),
 	WARN_EMULATED_SETUP(lxvb16x),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -3291,37 +2311,6 @@ void ppc_warn_emulated_print(const char *type)
 
 static int __init ppc_warn_emulated_init(void)
 {
-<<<<<<< HEAD
-	struct dentry *dir, *d;
-	unsigned int i;
-	struct ppc_emulated_entry *entries = (void *)&ppc_emulated;
-
-	if (!powerpc_debugfs_root)
-		return -ENODEV;
-
-	dir = debugfs_create_dir("emulated_instructions",
-				 powerpc_debugfs_root);
-	if (!dir)
-		return -ENOMEM;
-
-	d = debugfs_create_u32("do_warn", S_IRUGO | S_IWUSR, dir,
-			       &ppc_warn_emulated);
-	if (!d)
-		goto fail;
-
-	for (i = 0; i < sizeof(ppc_emulated)/sizeof(*entries); i++) {
-		d = debugfs_create_u32(entries[i].name, S_IRUGO | S_IWUSR, dir,
-				       (u32 *)&entries[i].val.counter);
-		if (!d)
-			goto fail;
-	}
-
-	return 0;
-
-fail:
-	debugfs_remove_recursive(dir);
-	return -ENOMEM;
-=======
 	struct dentry *dir;
 	unsigned int i;
 	struct ppc_emulated_entry *entries = (void *)&ppc_emulated;
@@ -3336,7 +2325,6 @@ fail:
 				   (u32 *)&entries[i].val.counter);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 device_initcall(ppc_warn_emulated_init);

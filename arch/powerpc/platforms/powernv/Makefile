@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-obj-y			+= setup.o opal-takeover.o opal-wrappers.o opal.o
-obj-y			+= opal-rtc.o opal-nvram.o
-
-obj-$(CONFIG_SMP)	+= smp.o
-obj-$(CONFIG_PCI)	+= pci.o pci-p5ioc2.o pci-ioda.o
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 # nothing that deals with real mode is safe to KASAN
@@ -38,4 +31,3 @@ obj-$(CONFIG_PPC_VAS)	+= vas.o vas-window.o vas-debug.o vas-fault.o
 obj-$(CONFIG_OCXL_BASE)	+= ocxl.o
 obj-$(CONFIG_SCOM_DEBUGFS) += opal-xscom.o
 obj-$(CONFIG_PPC_SECURE_BOOT) += opal-secvar.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

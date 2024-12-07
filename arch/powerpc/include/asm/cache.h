@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_CACHE_H
 #define _ASM_POWERPC_CACHE_H
 
@@ -9,16 +6,6 @@
 
 
 /* bytes per L1 cache line */
-<<<<<<< HEAD
-#if defined(CONFIG_8xx) || defined(CONFIG_403GCX)
-#define L1_CACHE_SHIFT		4
-#define MAX_COPY_PREFETCH	1
-#elif defined(CONFIG_PPC_E500MC)
-#define L1_CACHE_SHIFT		6
-#define MAX_COPY_PREFETCH	4
-#elif defined(CONFIG_PPC32)
-#define MAX_COPY_PREFETCH	4
-=======
 #if defined(CONFIG_PPC_8xx)
 #define L1_CACHE_SHIFT		4
 #define MAX_COPY_PREFETCH	1
@@ -30,7 +17,6 @@
 #elif defined(CONFIG_PPC32)
 #define MAX_COPY_PREFETCH	4
 #define IFETCH_ALIGN_SHIFT	3	/* 603 fetches 2 insn at a time */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_PPC_47x)
 #define L1_CACHE_SHIFT		7
 #else
@@ -38,38 +24,13 @@
 #endif
 #else /* CONFIG_PPC64 */
 #define L1_CACHE_SHIFT		7
-<<<<<<< HEAD
-=======
 #define IFETCH_ALIGN_SHIFT	4 /* POWER8,9 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define	L1_CACHE_BYTES		(1 << L1_CACHE_SHIFT)
 
 #define	SMP_CACHE_BYTES		L1_CACHE_BYTES
 
-<<<<<<< HEAD
-#if defined(__powerpc64__) && !defined(__ASSEMBLY__)
-struct ppc64_caches {
-	u32	dsize;			/* L1 d-cache size */
-	u32	dline_size;		/* L1 d-cache line size	*/
-	u32	log_dline_size;
-	u32	dlines_per_page;
-	u32	isize;			/* L1 i-cache size */
-	u32	iline_size;		/* L1 i-cache line size	*/
-	u32	log_iline_size;
-	u32	ilines_per_page;
-};
-
-extern struct ppc64_caches ppc64_caches;
-#endif /* __powerpc64__ && ! __ASSEMBLY__ */
-
-#if !defined(__ASSEMBLY__)
-
-#define __read_mostly __attribute__((__section__(".data..read_mostly")))
-
-#ifdef CONFIG_6xx
-=======
 #define IFETCH_ALIGN_BYTES	(1 << IFETCH_ALIGN_SHIFT)
 
 #ifdef CONFIG_NOT_COHERENT_CACHE
@@ -143,7 +104,6 @@ static inline u32 l1_icache_bytes(void)
 #define __read_mostly __section(".data..read_mostly")
 
 #ifdef CONFIG_PPC_BOOK3S_32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern long _get_L2CR(void);
 extern long _get_L3CR(void);
 extern void _set_L2CR(unsigned long);
@@ -155,10 +115,6 @@ extern void _set_L3CR(unsigned long);
 #define _set_L3CR(val)	do { } while(0)
 #endif
 
-<<<<<<< HEAD
-extern void cacheable_memzero(void *p, unsigned int nb);
-extern void *cacheable_memcpy(void *, const void *, unsigned int);
-=======
 static inline void dcbz(void *addr)
 {
 	__asm__ __volatile__ ("dcbz 0, %0" : : "r"(addr) : "memory");
@@ -188,7 +144,6 @@ static inline void iccci(void *addr)
 {
 	asm volatile ("iccci 0, %0" : : "r"(addr) : "memory");
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !__ASSEMBLY__ */
 #endif /* __KERNEL__ */

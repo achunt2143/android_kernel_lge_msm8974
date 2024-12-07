@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_CMPXCHG_H_
 #define _ASM_POWERPC_CMPXCHG_H_
 
 #ifdef __KERNEL__
 #include <linux/compiler.h>
 #include <asm/synch.h>
-<<<<<<< HEAD
-#include <asm/asm-compat.h>
-=======
 #include <linux/bug.h>
 
 #ifdef __BIG_ENDIAN
@@ -75,18 +69,10 @@ u32 __cmpxchg_##type##sfx(volatile void *p, u32 old, u32 new)	\
 								\
 	return prev >> bitoff;					\
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Atomic exchange
  *
-<<<<<<< HEAD
- * Changes the memory location '*ptr' to be val and returns
- * the previous value stored there.
- */
-static __always_inline unsigned long
-__xchg_u32(volatile void *p, unsigned long val)
-=======
  * Changes the memory location '*p' to be val and returns
  * the previous value stored there.
  */
@@ -99,39 +85,20 @@ XCHG_GEN(u16, _relaxed, "cc");
 #else
 static __always_inline unsigned long
 __xchg_u8_local(volatile void *p, unsigned long val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long prev;
 
 	__asm__ __volatile__(
-<<<<<<< HEAD
-	PPC_RELEASE_BARRIER
-"1:	lwarx	%0,0,%2 \n"
-	PPC405_ERR77(0,%2)
-"	stwcx.	%3,0,%2 \n\
-	bne-	1b"
-	PPC_ACQUIRE_BARRIER
-	: "=&r" (prev), "+m" (*(volatile unsigned int *)p)
-=======
 "1:	lbarx	%0,0,%2		# __xchg_u8_local\n"
 "	stbcx.	%3,0,%2 \n"
 "	bne-	1b"
 	: "=&r" (prev), "+m" (*(volatile unsigned char *)p)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "r" (p), "r" (val)
 	: "cc", "memory");
 
 	return prev;
 }
 
-<<<<<<< HEAD
-/*
- * Atomic exchange
- *
- * Changes the memory location '*ptr' to be val and returns
- * the previous value stored there.
- */
-=======
 static __always_inline unsigned long
 __xchg_u8_relaxed(u8 *p, unsigned long val)
 {
@@ -181,7 +148,6 @@ __xchg_u16_relaxed(u16 *p, unsigned long val)
 }
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __always_inline unsigned long
 __xchg_u32_local(volatile void *p, unsigned long val)
 {
@@ -189,10 +155,6 @@ __xchg_u32_local(volatile void *p, unsigned long val)
 
 	__asm__ __volatile__(
 "1:	lwarx	%0,0,%2 \n"
-<<<<<<< HEAD
-	PPC405_ERR77(0,%2)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "	stwcx.	%3,0,%2 \n\
 	bne-	1b"
 	: "=&r" (prev), "+m" (*(volatile unsigned int *)p)
@@ -202,44 +164,23 @@ __xchg_u32_local(volatile void *p, unsigned long val)
 	return prev;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC64
-static __always_inline unsigned long
-__xchg_u64(volatile void *p, unsigned long val)
-=======
 static __always_inline unsigned long
 __xchg_u32_relaxed(u32 *p, unsigned long val)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long prev;
 
 	__asm__ __volatile__(
-<<<<<<< HEAD
-	PPC_RELEASE_BARRIER
-"1:	ldarx	%0,0,%2 \n"
-	PPC405_ERR77(0,%2)
-"	stdcx.	%3,0,%2 \n\
-	bne-	1b"
-	PPC_ACQUIRE_BARRIER
-	: "=&r" (prev), "+m" (*(volatile unsigned long *)p)
-	: "r" (p), "r" (val)
-	: "cc", "memory");
-=======
 "1:	lwarx	%0,0,%2\n"
 "	stwcx.	%3,0,%2\n"
 "	bne-	1b"
 	: "=&r" (prev), "+m" (*p)
 	: "r" (p), "r" (val)
 	: "cc");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return prev;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_PPC64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __always_inline unsigned long
 __xchg_u64_local(volatile void *p, unsigned long val)
 {
@@ -247,10 +188,6 @@ __xchg_u64_local(volatile void *p, unsigned long val)
 
 	__asm__ __volatile__(
 "1:	ldarx	%0,0,%2 \n"
-<<<<<<< HEAD
-	PPC405_ERR77(0,%2)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "	stdcx.	%3,0,%2 \n\
 	bne-	1b"
 	: "=&r" (prev), "+m" (*(volatile unsigned long *)p)
@@ -259,35 +196,6 @@ __xchg_u64_local(volatile void *p, unsigned long val)
 
 	return prev;
 }
-<<<<<<< HEAD
-#endif
-
-/*
- * This function doesn't exist, so you'll get a linker error
- * if something tries to do an invalid xchg().
- */
-extern void __xchg_called_with_bad_pointer(void);
-
-static __always_inline unsigned long
-__xchg(volatile void *ptr, unsigned long x, unsigned int size)
-{
-	switch (size) {
-	case 4:
-		return __xchg_u32(ptr, x);
-#ifdef CONFIG_PPC64
-	case 8:
-		return __xchg_u64(ptr, x);
-#endif
-	}
-	__xchg_called_with_bad_pointer();
-	return x;
-}
-
-static __always_inline unsigned long
-__xchg_local(volatile void *ptr, unsigned long x, unsigned int size)
-{
-	switch (size) {
-=======
 
 static __always_inline unsigned long
 __xchg_u64_relaxed(u64 *p, unsigned long val)
@@ -314,7 +222,6 @@ __xchg_local(void *ptr, unsigned long x, unsigned int size)
 		return __xchg_u8_local(ptr, x);
 	case 2:
 		return __xchg_u16_local(ptr, x);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4:
 		return __xchg_u32_local(ptr, x);
 #ifdef CONFIG_PPC64
@@ -322,18 +229,6 @@ __xchg_local(void *ptr, unsigned long x, unsigned int size)
 		return __xchg_u64_local(ptr, x);
 #endif
 	}
-<<<<<<< HEAD
-	__xchg_called_with_bad_pointer();
-	return x;
-}
-#define xchg(ptr,x)							     \
-  ({									     \
-     __typeof__(*(ptr)) _x_ = (x);					     \
-     (__typeof__(*(ptr))) __xchg((ptr), (unsigned long)_x_, sizeof(*(ptr))); \
-  })
-
-#define xchg_local(ptr,x)						     \
-=======
 	BUILD_BUG_ON_MSG(1, "Unsupported size for __xchg_local");
 	return x;
 }
@@ -357,15 +252,12 @@ __xchg_relaxed(void *ptr, unsigned long x, unsigned int size)
 	return x;
 }
 #define arch_xchg_local(ptr,x)						     \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ({									     \
      __typeof__(*(ptr)) _x_ = (x);					     \
      (__typeof__(*(ptr))) __xchg_local((ptr),				     \
      		(unsigned long)_x_, sizeof(*(ptr))); 			     \
   })
 
-<<<<<<< HEAD
-=======
 #define arch_xchg_relaxed(ptr, x)					\
 ({									\
 	__typeof__(*(ptr)) _x_ = (x);					\
@@ -373,14 +265,10 @@ __xchg_relaxed(void *ptr, unsigned long x, unsigned int size)
 			(unsigned long)_x_, sizeof(*(ptr)));		\
 })
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Compare and exchange - if *p == old, set it to new,
  * and return the old value of *p.
  */
-<<<<<<< HEAD
-#define __HAVE_ARCH_CMPXCHG	1
-=======
 #ifndef CONFIG_PPC_HAS_LBARX_LHARX
 CMPXCHG_GEN(u8, , PPC_ATOMIC_ENTRY_BARRIER, PPC_ATOMIC_EXIT_BARRIER, "memory");
 CMPXCHG_GEN(u8, _local, , , "memory");
@@ -552,7 +440,6 @@ __cmpxchg_u16_acquire(u16 *p, unsigned long old, unsigned long new)
 	return prev;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static __always_inline unsigned long
 __cmpxchg_u32(volatile unsigned int *p, unsigned long old, unsigned long new)
@@ -560,16 +447,6 @@ __cmpxchg_u32(volatile unsigned int *p, unsigned long old, unsigned long new)
 	unsigned int prev;
 
 	__asm__ __volatile__ (
-<<<<<<< HEAD
-	PPC_RELEASE_BARRIER
-"1:	lwarx	%0,0,%2		# __cmpxchg_u32\n\
-	cmpw	0,%0,%3\n\
-	bne-	2f\n"
-	PPC405_ERR77(0,%2)
-"	stwcx.	%4,0,%2\n\
-	bne-	1b"
-	PPC_ACQUIRE_BARRIER
-=======
 	PPC_ATOMIC_ENTRY_BARRIER
 "1:	lwarx	%0,0,%2		# __cmpxchg_u32\n\
 	cmpw	0,%0,%3\n\
@@ -577,7 +454,6 @@ __cmpxchg_u32(volatile unsigned int *p, unsigned long old, unsigned long new)
 "	stwcx.	%4,0,%2\n\
 	bne-	1b"
 	PPC_ATOMIC_EXIT_BARRIER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"\n\
 2:"
 	: "=&r" (prev), "+m" (*p)
@@ -597,10 +473,6 @@ __cmpxchg_u32_local(volatile unsigned int *p, unsigned long old,
 "1:	lwarx	%0,0,%2		# __cmpxchg_u32\n\
 	cmpw	0,%0,%3\n\
 	bne-	2f\n"
-<<<<<<< HEAD
-	PPC405_ERR77(0,%2)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "	stwcx.	%4,0,%2\n\
 	bne-	1b"
 	"\n\
@@ -612,8 +484,6 @@ __cmpxchg_u32_local(volatile unsigned int *p, unsigned long old,
 	return prev;
 }
 
-<<<<<<< HEAD
-=======
 static __always_inline unsigned long
 __cmpxchg_u32_relaxed(u32 *p, unsigned long old, unsigned long new)
 {
@@ -662,7 +532,6 @@ __cmpxchg_u32_acquire(u32 *p, unsigned long old, unsigned long new)
 	return prev;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC64
 static __always_inline unsigned long
 __cmpxchg_u64(volatile unsigned long *p, unsigned long old, unsigned long new)
@@ -670,21 +539,13 @@ __cmpxchg_u64(volatile unsigned long *p, unsigned long old, unsigned long new)
 	unsigned long prev;
 
 	__asm__ __volatile__ (
-<<<<<<< HEAD
-	PPC_RELEASE_BARRIER
-=======
 	PPC_ATOMIC_ENTRY_BARRIER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "1:	ldarx	%0,0,%2		# __cmpxchg_u64\n\
 	cmpd	0,%0,%3\n\
 	bne-	2f\n\
 	stdcx.	%4,0,%2\n\
 	bne-	1b"
-<<<<<<< HEAD
-	PPC_ACQUIRE_BARRIER
-=======
 	PPC_ATOMIC_EXIT_BARRIER
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"\n\
 2:"
 	: "=&r" (prev), "+m" (*p)
@@ -714,13 +575,6 @@ __cmpxchg_u64_local(volatile unsigned long *p, unsigned long old,
 
 	return prev;
 }
-<<<<<<< HEAD
-#endif
-
-/* This function doesn't exist, so you'll get a linker error
-   if something tries to do an invalid cmpxchg().  */
-extern void __cmpxchg_called_with_bad_pointer(void);
-=======
 
 static __always_inline unsigned long
 __cmpxchg_u64_relaxed(u64 *p, unsigned long old, unsigned long new)
@@ -762,20 +616,16 @@ __cmpxchg_u64_acquire(u64 *p, unsigned long old, unsigned long new)
 	return prev;
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static __always_inline unsigned long
 __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new,
 	  unsigned int size)
 {
 	switch (size) {
-<<<<<<< HEAD
-=======
 	case 1:
 		return __cmpxchg_u8(ptr, old, new);
 	case 2:
 		return __cmpxchg_u16(ptr, old, new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4:
 		return __cmpxchg_u32(ptr, old, new);
 #ifdef CONFIG_PPC64
@@ -783,21 +633,11 @@ __cmpxchg(volatile void *ptr, unsigned long old, unsigned long new,
 		return __cmpxchg_u64(ptr, old, new);
 #endif
 	}
-<<<<<<< HEAD
-	__cmpxchg_called_with_bad_pointer();
-=======
 	BUILD_BUG_ON_MSG(1, "Unsupported size for __cmpxchg");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return old;
 }
 
 static __always_inline unsigned long
-<<<<<<< HEAD
-__cmpxchg_local(volatile void *ptr, unsigned long old, unsigned long new,
-	  unsigned int size)
-{
-	switch (size) {
-=======
 __cmpxchg_local(void *ptr, unsigned long old, unsigned long new,
 	  unsigned int size)
 {
@@ -806,7 +646,6 @@ __cmpxchg_local(void *ptr, unsigned long old, unsigned long new,
 		return __cmpxchg_u8_local(ptr, old, new);
 	case 2:
 		return __cmpxchg_u16_local(ptr, old, new);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4:
 		return __cmpxchg_u32_local(ptr, old, new);
 #ifdef CONFIG_PPC64
@@ -814,13 +653,6 @@ __cmpxchg_local(void *ptr, unsigned long old, unsigned long new,
 		return __cmpxchg_u64_local(ptr, old, new);
 #endif
 	}
-<<<<<<< HEAD
-	__cmpxchg_called_with_bad_pointer();
-	return old;
-}
-
-#define cmpxchg(ptr, o, n)						 \
-=======
 	BUILD_BUG_ON_MSG(1, "Unsupported size for __cmpxchg_local");
 	return old;
 }
@@ -865,7 +697,6 @@ __cmpxchg_acquire(void *ptr, unsigned long old, unsigned long new,
 	return old;
 }
 #define arch_cmpxchg(ptr, o, n)						 \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ({									 \
      __typeof__(*(ptr)) _o_ = (o);					 \
      __typeof__(*(ptr)) _n_ = (n);					 \
@@ -874,11 +705,7 @@ __cmpxchg_acquire(void *ptr, unsigned long old, unsigned long new,
   })
 
 
-<<<<<<< HEAD
-#define cmpxchg_local(ptr, o, n)					 \
-=======
 #define arch_cmpxchg_local(ptr, o, n)					 \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   ({									 \
      __typeof__(*(ptr)) _o_ = (o);					 \
      __typeof__(*(ptr)) _n_ = (n);					 \
@@ -886,22 +713,6 @@ __cmpxchg_acquire(void *ptr, unsigned long old, unsigned long new,
 				    (unsigned long)_n_, sizeof(*(ptr))); \
   })
 
-<<<<<<< HEAD
-#ifdef CONFIG_PPC64
-#define cmpxchg64(ptr, o, n)						\
-  ({									\
-	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
-	cmpxchg((ptr), (o), (n));					\
-  })
-#define cmpxchg64_local(ptr, o, n)					\
-  ({									\
-	BUILD_BUG_ON(sizeof(*(ptr)) != 8);				\
-	cmpxchg_local((ptr), (o), (n));					\
-  })
-#else
-#include <asm-generic/cmpxchg-local.h>
-#define cmpxchg64_local(ptr, o, n) __cmpxchg64_local_generic((ptr), (o), (n))
-=======
 #define arch_cmpxchg_relaxed(ptr, o, n)					\
 ({									\
 	__typeof__(*(ptr)) _o_ = (o);					\
@@ -943,7 +754,6 @@ __cmpxchg_acquire(void *ptr, unsigned long old, unsigned long new,
 #else
 #include <asm-generic/cmpxchg-local.h>
 #define arch_cmpxchg64_local(ptr, o, n) __generic_cmpxchg64_local((ptr), (o), (n))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __KERNEL__ */

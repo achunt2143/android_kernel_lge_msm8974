@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-/* String matching match for iptables
- *
- * (C) 2005 Pablo Neira Ayuso <pablo@eurodev.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /* String matching match for iptables
  *
  * (C) 2005 Pablo Neira Ayuso <pablo@eurodev.net>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/gfp.h>
@@ -28,32 +18,18 @@ MODULE_DESCRIPTION("Xtables: string-based matching");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_string");
 MODULE_ALIAS("ip6t_string");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS("ebt_string");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool
 string_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_string_info *conf = par->matchinfo;
-<<<<<<< HEAD
-	struct ts_state state;
-	bool invert;
-
-	memset(&state, 0, sizeof(struct ts_state));
-	invert = conf->u.v1.flags & XT_STRING_FLAG_INVERT;
-
-	return (skb_find_text((struct sk_buff *)skb, conf->from_offset,
-			     conf->to_offset, conf->config, &state)
-=======
 	bool invert;
 
 	invert = conf->u.v1.flags & XT_STRING_FLAG_INVERT;
 
 	return (skb_find_text((struct sk_buff *)skb, conf->from_offset,
 			     conf->to_offset, conf->config)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     != UINT_MAX) ^ invert;
 }
 
@@ -99,10 +75,7 @@ static struct xt_match xt_string_mt_reg __read_mostly = {
 	.match      = string_mt,
 	.destroy    = string_mt_destroy,
 	.matchsize  = sizeof(struct xt_string_info),
-<<<<<<< HEAD
-=======
 	.usersize   = offsetof(struct xt_string_info, config),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.me         = THIS_MODULE,
 };
 

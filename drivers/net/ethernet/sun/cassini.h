@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0+ */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: cassini.h,v 1.16 2004/08/17 21:15:16 zaumen Exp $
  * cassini.h: Definitions for Sun Microsystems Cassini(+) ethernet driver.
  *
  * Copyright (C) 2004 Sun Microsystems Inc.
  * Copyright (c) 2003 Adrian Sun (asun@darksunrising.com)
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
- * 02111-1307, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vendor id: 0x108E (Sun Microsystems, Inc.)
  * device id: 0xabba (Cassini)
  * revision ids: 0x01 = Cassini
@@ -785,11 +764,7 @@
  * PAUSE thresholds defined in terms of FIFO occupancy and may be translated
  * into FIFO vacancy using RX_FIFO_SIZE. setting ON will trigger XON frames
  * when FIFO reaches 0. OFF threshold should not be > size of RX FIFO. max
-<<<<<<< HEAD
- * value is is 0x6F.
-=======
  * value is 0x6F.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * DEFAULT: 0x00078
  */
 #define  REG_RX_PAUSE_THRESH               0x4020  /* RX pause thresholds */

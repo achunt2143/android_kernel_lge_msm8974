@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mbus.h:  Various defines for MBUS modules.
  *
@@ -12,20 +9,10 @@
 #define _SPARC_MBUS_H
 
 #include <asm/ross.h>    /* HyperSparc stuff */
-<<<<<<< HEAD
-#include <asm/cypress.h> /* Cypress Chips */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/viking.h>  /* Ugh, bug city... */
 
 enum mbus_module {
 	HyperSparc        = 0,
-<<<<<<< HEAD
-	Cypress           = 1,
-	Cypress_vE        = 2,
-	Cypress_vD        = 3,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Swift_ok          = 4,
 	Swift_bad_c       = 5,
 	Swift_lots_o_bugs = 6,

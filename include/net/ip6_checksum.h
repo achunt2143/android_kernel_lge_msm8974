@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -13,14 +10,6 @@
  *		Arnt Gulbrandsen, <agulbra@nvg.unit.no>
  *		Borrows very liberally from tcp.c and ip.c, see those
  *		files for more names.
-<<<<<<< HEAD
- *
- *		This program is free software; you can redistribute it and/or
- *		modify it under the terms of the GNU General Public License
- *		as published by the Free Software Foundation; either version
- *		2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -38,68 +27,6 @@
 #include <net/ip.h>
 #include <asm/checksum.h>
 #include <linux/in6.h>
-<<<<<<< HEAD
-
-#ifndef _HAVE_ARCH_IPV6_CSUM
-
-static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
-					  const struct in6_addr *daddr,
-					  __u32 len, unsigned short proto,
-					  __wsum csum)
-{
-
-	int carry;
-	__u32 ulen;
-	__u32 uproto;
-	__u32 sum = (__force u32)csum;
-
-	sum += (__force u32)saddr->s6_addr32[0];
-	carry = (sum < (__force u32)saddr->s6_addr32[0]);
-	sum += carry;
-
-	sum += (__force u32)saddr->s6_addr32[1];
-	carry = (sum < (__force u32)saddr->s6_addr32[1]);
-	sum += carry;
-
-	sum += (__force u32)saddr->s6_addr32[2];
-	carry = (sum < (__force u32)saddr->s6_addr32[2]);
-	sum += carry;
-
-	sum += (__force u32)saddr->s6_addr32[3];
-	carry = (sum < (__force u32)saddr->s6_addr32[3]);
-	sum += carry;
-
-	sum += (__force u32)daddr->s6_addr32[0];
-	carry = (sum < (__force u32)daddr->s6_addr32[0]);
-	sum += carry;
-
-	sum += (__force u32)daddr->s6_addr32[1];
-	carry = (sum < (__force u32)daddr->s6_addr32[1]);
-	sum += carry;
-
-	sum += (__force u32)daddr->s6_addr32[2];
-	carry = (sum < (__force u32)daddr->s6_addr32[2]);
-	sum += carry;
-
-	sum += (__force u32)daddr->s6_addr32[3];
-	carry = (sum < (__force u32)daddr->s6_addr32[3]);
-	sum += carry;
-
-	ulen = (__force u32)htonl((__u32) len);
-	sum += ulen;
-	carry = (sum < ulen);
-	sum += carry;
-
-	uproto = (__force u32)htonl(proto);
-	sum += uproto;
-	carry = (sum < uproto);
-	sum += carry;
-
-	return csum_fold((__force __wsum)sum);
-}
-
-#endif
-=======
 #include <linux/tcp.h>
 #include <linux/ipv6.h>
 
@@ -157,5 +84,4 @@ void udp6_set_csum(bool nocheck, struct sk_buff *skb,
 		   const struct in6_addr *daddr, int len);
 
 int udp6_csum_init(struct sk_buff *skb, struct udphdr *uh, int proto);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

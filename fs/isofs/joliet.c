@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/isofs/joliet.c
  *
@@ -44,23 +41,12 @@ uni16_to_x8(unsigned char *ascii, __be16 *uni, int len, struct nls_table *nls)
 int
 get_joliet_filename(struct iso_directory_record * de, unsigned char *outname, struct inode * inode)
 {
-<<<<<<< HEAD
-	unsigned char utf8;
-	struct nls_table *nls;
-	unsigned char len = 0;
-
-	utf8 = ISOFS_SB(inode->i_sb)->s_utf8;
-	nls = ISOFS_SB(inode->i_sb)->s_nls_iocharset;
-
-	if (utf8) {
-=======
 	struct nls_table *nls;
 	unsigned char len = 0;
 
 	nls = ISOFS_SB(inode->i_sb)->s_nls_iocharset;
 
 	if (!nls) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = utf16s_to_utf8s((const wchar_t *) de->name,
 				de->name_len[0] >> 1, UTF16_BIG_ENDIAN,
 				outname, PAGE_SIZE);

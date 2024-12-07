@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Adaptec AAC series RAID controller driver
  *	(c) Copyright 2001 Red Hat Inc.
@@ -10,24 +7,6 @@
  * Adaptec aacraid device driver for Linux.
  *
  * Copyright (c) 2000-2010 Adaptec, Inc.
-<<<<<<< HEAD
- *               2010 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING.  If not, write to
- * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
-=======
  *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
  *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
  *
@@ -35,7 +14,6 @@
  *  aachba.c
  *
  * Abstract: Contains Interfaces to manage IOs.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -46,18 +24,11 @@
 #include <linux/slab.h>
 #include <linux/completion.h>
 #include <linux/blkdev.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <linux/highmem.h> /* For flush_kernel_dcache_page */
-#include <linux/module.h>
-
-=======
 #include <linux/uaccess.h>
 #include <linux/module.h>
 
 #include <asm/unaligned.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
@@ -84,10 +55,7 @@
 #define SENCODE_END_OF_DATA			0x00
 #define SENCODE_BECOMING_READY			0x04
 #define SENCODE_INIT_CMD_REQUIRED		0x04
-<<<<<<< HEAD
-=======
 #define SENCODE_UNRECOVERED_READ_ERROR		0x11
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SENCODE_PARAM_LIST_LENGTH_ERROR		0x1A
 #define SENCODE_INVALID_COMMAND			0x20
 #define SENCODE_LBA_OUT_OF_RANGE		0x21
@@ -137,8 +105,6 @@
 #define BYTE2(x) (unsigned char)((x) >> 16)
 #define BYTE3(x) (unsigned char)((x) >> 24)
 
-<<<<<<< HEAD
-=======
 /* MODE_SENSE data format */
 typedef struct {
 	struct {
@@ -174,7 +140,6 @@ typedef struct {
 		u8	mpc_buf[3];
 } __attribute__((packed)) aac_modep10_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*------------------------------------------------------------------------------
  *              S T R U C T S / T Y P E D E F S
  *----------------------------------------------------------------------------*/
@@ -192,8 +157,6 @@ struct inquiry_data {
 	u8 inqd_prl[4];	/* Product Revision Level */
 };
 
-<<<<<<< HEAD
-=======
 /* Added for VPD 0x83 */
 struct  tvpd_id_descriptor_type_1 {
 	u8 codeset:4;		/* VPD_CODE_SET */
@@ -246,17 +209,10 @@ struct tvpd_page83 {
 	struct tvpd_id_descriptor_type_3 type3;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *              M O D U L E   G L O B A L S
  */
 
-<<<<<<< HEAD
-static unsigned long aac_build_sg(struct scsi_cmnd* scsicmd, struct sgmap* sgmap);
-static unsigned long aac_build_sg64(struct scsi_cmnd* scsicmd, struct sgmap64* psg);
-static unsigned long aac_build_sgraw(struct scsi_cmnd* scsicmd, struct sgmapraw* psg);
-static int aac_send_srb_fib(struct scsi_cmnd* scsicmd);
-=======
 static long aac_build_sg(struct scsi_cmnd *scsicmd, struct sgmap *sgmap);
 static long aac_build_sg64(struct scsi_cmnd *scsicmd, struct sgmap64 *psg);
 static long aac_build_sgraw(struct scsi_cmnd *scsicmd, struct sgmapraw *psg);
@@ -270,7 +226,6 @@ static int aac_convert_sgraw2(struct aac_raw_io2 *rio2,
 static void aac_probe_container_scsi_done(struct scsi_cmnd *scsi_cmnd);
 static int aac_send_srb_fib(struct scsi_cmnd* scsicmd);
 static int aac_send_hba_fib(struct scsi_cmnd *scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef AAC_DETAILED_STATUS_INFO
 static char *aac_get_status_string(u32 status);
 #endif
@@ -287,20 +242,14 @@ int aac_commit = -1;
 int startup_timeout = 180;
 int aif_timeout = 120;
 int aac_sync_mode;  /* Only Sync. transfer - disabled */
-<<<<<<< HEAD
-=======
 static int aac_convert_sgl = 1;	/* convert non-conformable s/g list - enabled */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(aac_sync_mode, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(aac_sync_mode, "Force sync. transfer mode"
 	" 0=off, 1=on");
-<<<<<<< HEAD
-=======
 module_param(aac_convert_sgl, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(aac_convert_sgl, "Convert non-conformable s/g list"
 	" 0=off, 1=on");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(nondasd, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(nondasd, "Control scanning of hba for nondasd devices."
 	" 0=off, 1=on");
@@ -319,17 +268,10 @@ MODULE_PARM_DESC(commit, "Control whether a COMMIT_CONFIG is issued to the"
 	" 0=off, 1=on");
 module_param_named(msi, aac_msi, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(msi, "IRQ handling."
-<<<<<<< HEAD
-	" 0=PIC(default), 1=MSI, 2=MSI-X(unsupported, uses MSI)");
-module_param(startup_timeout, int, S_IRUGO|S_IWUSR);
-MODULE_PARM_DESC(startup_timeout, "The duration of time in seconds to wait for"
-	" adapter to have it's kernel up and\n"
-=======
 	" 0=PIC(default), 1=MSI, 2=MSI-X)");
 module_param(startup_timeout, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(startup_timeout, "The duration of time in seconds to wait for"
 	" adapter to have its kernel up and\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"running. This is typically adjusted for large systems that do not"
 	" have a BIOS.");
 module_param(aif_timeout, int, S_IRUGO|S_IWUSR);
@@ -338,24 +280,17 @@ MODULE_PARM_DESC(aif_timeout, "The duration of time in seconds to wait for"
 	"deregistering them. This is typically adjusted for heavily burdened"
 	" systems.");
 
-<<<<<<< HEAD
-=======
 int aac_fib_dump;
 module_param(aac_fib_dump, int, 0644);
 MODULE_PARM_DESC(aac_fib_dump, "Dump controller fibs prior to IOP_RESET 0=off, 1=on");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int numacb = -1;
 module_param(numacb, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(numacb, "Request a limit to the number of adapter control"
 	" blocks (FIB) allocated. Valid values are 512 and down. Default is"
 	" to use suggestion from Firmware.");
 
-<<<<<<< HEAD
-int acbsize = -1;
-=======
 static int acbsize = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(acbsize, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(acbsize, "Request a specific adapter control block (FIB)"
 	" size. Valid values are 512, 2048, 4096 and 8192. Default is to use"
@@ -366,11 +301,7 @@ module_param(update_interval, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(update_interval, "Interval in seconds between time sync"
 	" updates issued to adapter.");
 
-<<<<<<< HEAD
-int check_interval = 24 * 60 * 60;
-=======
 int check_interval = 60;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(check_interval, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(check_interval, "Interval in seconds between adapter health"
 	" checks.");
@@ -390,11 +321,7 @@ int aac_reset_devices;
 module_param_named(reset_devices, aac_reset_devices, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(reset_devices, "Force an adapter reset at initialization.");
 
-<<<<<<< HEAD
-int aac_wwn = 1;
-=======
 static int aac_wwn = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(wwn, aac_wwn, int, S_IRUGO|S_IWUSR);
 MODULE_PARM_DESC(wwn, "Select a WWN type for the arrays:\n"
 	"\t0 - Disable\n"
@@ -406,20 +333,6 @@ static inline int aac_valid_context(struct scsi_cmnd *scsicmd,
 		struct fib *fibptr) {
 	struct scsi_device *device;
 
-<<<<<<< HEAD
-	if (unlikely(!scsicmd || !scsicmd->scsi_done)) {
-		dprintk((KERN_WARNING "aac_valid_context: scsi command corrupt\n"));
-		aac_fib_complete(fibptr);
-		aac_fib_free(fibptr);
-		return 0;
-	}
-	scsicmd->SCp.phase = AAC_OWNER_MIDLEVEL;
-	device = scsicmd->device;
-	if (unlikely(!device || !scsi_device_online(device))) {
-		dprintk((KERN_WARNING "aac_valid_context: scsi device corrupt\n"));
-		aac_fib_complete(fibptr);
-		aac_fib_free(fibptr);
-=======
 	if (unlikely(!scsicmd)) {
 		dprintk((KERN_WARNING "aac_valid_context: scsi command corrupt\n"));
 		aac_fib_complete(fibptr);
@@ -430,7 +343,6 @@ static inline int aac_valid_context(struct scsi_cmnd *scsicmd,
 	if (unlikely(!device)) {
 		dprintk((KERN_WARNING "aac_valid_context: scsi device corrupt\n"));
 		aac_fib_complete(fibptr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return 1;
@@ -438,12 +350,8 @@ static inline int aac_valid_context(struct scsi_cmnd *scsicmd,
 
 /**
  *	aac_get_config_status	-	check the adapter configuration
-<<<<<<< HEAD
- *	@common: adapter to query
-=======
  *	@dev: aac driver data
  *	@commit_flag: force sending CT_COMMIT_CONFIG
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Query config status, and commit the configuration if needed.
  */
@@ -535,11 +443,7 @@ static void aac_expose_phy_device(struct scsi_cmnd *scsicmd)
 
 /**
  *	aac_get_containers	-	list containers
-<<<<<<< HEAD
- *	@common: adapter to probe
-=======
  *	@dev: aac driver data
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Make a list of all containers on this controller
  */
@@ -570,14 +474,11 @@ int aac_get_containers(struct aac_dev *dev)
 	if (status >= 0) {
 		dresp = (struct aac_get_container_count_resp *)fib_data(fibptr);
 		maximum_num_containers = le32_to_cpu(dresp->ContainerSwitchEntries);
-<<<<<<< HEAD
-=======
 		if (fibptr->dev->supplement_adapter_info.supported_options2 &
 		    AAC_OPTION_SUPPORTED_240_VOLUMES) {
 			maximum_num_containers =
 				le32_to_cpu(dresp->MaxSimpleVolumes);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aac_fib_complete(fibptr);
 	}
 	/* FIB should be freed only after getting the response from the F/W */
@@ -586,18 +487,6 @@ int aac_get_containers(struct aac_dev *dev)
 
 	if (maximum_num_containers < MAXIMUM_NUM_CONTAINERS)
 		maximum_num_containers = MAXIMUM_NUM_CONTAINERS;
-<<<<<<< HEAD
-	fsa_dev_ptr = kzalloc(sizeof(*fsa_dev_ptr) * maximum_num_containers,
-			GFP_KERNEL);
-	if (!fsa_dev_ptr)
-		return -ENOMEM;
-
-	dev->fsa_dev = fsa_dev_ptr;
-	dev->maximum_num_containers = maximum_num_containers;
-
-	for (index = 0; index < dev->maximum_num_containers; ) {
-		fsa_dev_ptr[index].devname[0] = '\0';
-=======
 	if (dev->fsa_dev == NULL ||
 		dev->maximum_num_containers != maximum_num_containers) {
 
@@ -618,7 +507,6 @@ int aac_get_containers(struct aac_dev *dev)
 	for (index = 0; index < dev->maximum_num_containers; index++) {
 		dev->fsa_dev[index].devname[0] = '\0';
 		dev->fsa_dev[index].valid = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = aac_probe_container(dev, index);
 
@@ -626,21 +514,10 @@ int aac_get_containers(struct aac_dev *dev)
 			printk(KERN_WARNING "aac_get_containers: SendFIB failed.\n");
 			break;
 		}
-<<<<<<< HEAD
-
-		/*
-		 *	If there are no more containers, then stop asking.
-		 */
-		if (++index >= status)
-			break;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
 
-<<<<<<< HEAD
-=======
 static void aac_scsi_done(struct scsi_cmnd *scmd)
 {
 	if (scmd->device->request_queue) {
@@ -652,7 +529,6 @@ static void aac_scsi_done(struct scsi_cmnd *scmd)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void get_container_name_callback(void *context, struct fib * fibptr)
 {
 	struct aac_get_name_resp * get_name_reply;
@@ -671,13 +547,9 @@ static void get_container_name_callback(void *context, struct fib * fibptr)
 	if ((le32_to_cpu(get_name_reply->status) == CT_OK)
 	 && (get_name_reply->data[0] != '\0')) {
 		char *sp = get_name_reply->data;
-<<<<<<< HEAD
-		sp[sizeof(((struct aac_get_name_resp *)NULL)->data)-1] = '\0';
-=======
 		int data_size = sizeof_field(struct aac_get_name_resp, data);
 
 		sp[data_size - 1] = '\0';
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (*sp == ' ')
 			++sp;
 		if (*sp) {
@@ -695,16 +567,6 @@ static void get_container_name_callback(void *context, struct fib * fibptr)
 		}
 	}
 
-<<<<<<< HEAD
-	scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-
-	aac_fib_complete(fibptr);
-	aac_fib_free(fibptr);
-	scsicmd->scsi_done(scsicmd);
-}
-
-/**
-=======
 	scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 
 	aac_fib_complete(fibptr);
@@ -712,29 +574,18 @@ static void get_container_name_callback(void *context, struct fib * fibptr)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	aac_get_container_name	-	get container name, none blocking.
  */
 static int aac_get_container_name(struct scsi_cmnd * scsicmd)
 {
 	int status;
-<<<<<<< HEAD
-=======
 	int data_size;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct aac_get_name *dinfo;
 	struct fib * cmd_fibcontext;
 	struct aac_dev * dev;
 
 	dev = (struct aac_dev *)scsicmd->device->host->hostdata;
 
-<<<<<<< HEAD
-	if (!(cmd_fibcontext = aac_fib_alloc(dev)))
-		return -ENOMEM;
-
-	aac_fib_init(cmd_fibcontext);
-	dinfo = (struct aac_get_name *) fib_data(cmd_fibcontext);
-=======
 	data_size = sizeof_field(struct aac_get_name_resp, data);
 
 	cmd_fibcontext = aac_fib_alloc_tag(dev, scsicmd);
@@ -742,24 +593,15 @@ static int aac_get_container_name(struct scsi_cmnd * scsicmd)
 	aac_fib_init(cmd_fibcontext);
 	dinfo = (struct aac_get_name *) fib_data(cmd_fibcontext);
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dinfo->command = cpu_to_le32(VM_ContainerConfig);
 	dinfo->type = cpu_to_le32(CT_READ_NAME);
 	dinfo->cid = cpu_to_le32(scmd_id(scsicmd));
-<<<<<<< HEAD
-	dinfo->count = cpu_to_le32(sizeof(((struct aac_get_name_resp *)NULL)->data));
-
-	status = aac_fib_send(ContainerCommand,
-		  cmd_fibcontext,
-		  sizeof (struct aac_get_name),
-=======
 	dinfo->count = cpu_to_le32(data_size - 1);
 
 	status = aac_fib_send(ContainerCommand,
 		  cmd_fibcontext,
 		  sizeof(struct aac_get_name_resp),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  FsaNormal,
 		  0, 1,
 		  (fib_callback)get_container_name_callback,
@@ -768,22 +610,11 @@ static int aac_get_container_name(struct scsi_cmnd * scsicmd)
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS) {
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-		return 0;
-	}
-
-	printk(KERN_WARNING "aac_get_container_name: aac_fib_send failed with status: %d.\n", status);
-	aac_fib_complete(cmd_fibcontext);
-	aac_fib_free(cmd_fibcontext);
-=======
 	if (status == -EINPROGRESS)
 		return 0;
 
 	printk(KERN_WARNING "aac_get_container_name: aac_fib_send failed with status: %d.\n", status);
 	aac_fib_complete(cmd_fibcontext);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -795,11 +626,7 @@ static int aac_probe_container_callback2(struct scsi_cmnd * scsicmd)
 		return aac_scsi_cmd(scsicmd);
 
 	scsicmd->result = DID_NO_CONNECT << 16;
-<<<<<<< HEAD
-	scsicmd->scsi_done(scsicmd);
-=======
 	aac_scsi_done(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -807,25 +634,14 @@ static void _aac_probe_container2(void * context, struct fib * fibptr)
 {
 	struct fsa_dev_info *fsa_dev_ptr;
 	int (*callback)(struct scsi_cmnd *);
-<<<<<<< HEAD
-	struct scsi_cmnd * scsicmd = (struct scsi_cmnd *)context;
-=======
 	struct scsi_cmnd *scsicmd = context;
 	struct aac_cmd_priv *cmd_priv = aac_priv(scsicmd);
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	if (!aac_valid_context(scsicmd, fibptr))
 		return;
 
-<<<<<<< HEAD
-	scsicmd->SCp.Status = 0;
-	fsa_dev_ptr = fibptr->dev->fsa_dev;
-	if (fsa_dev_ptr) {
-		struct aac_mount * dresp = (struct aac_mount *) fib_data(fibptr);
-		fsa_dev_ptr += scmd_id(scsicmd);
-=======
 	cmd_priv->status = 0;
 	fsa_dev_ptr = fibptr->dev->fsa_dev;
 	if (fsa_dev_ptr) {
@@ -835,13 +651,10 @@ static void _aac_probe_container2(void * context, struct fib * fibptr)
 		fsa_dev_ptr += scmd_id(scsicmd);
 		sup_options2 =
 			fibptr->dev->supplement_adapter_info.supported_options2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((le32_to_cpu(dresp->status) == ST_OK) &&
 		    (le32_to_cpu(dresp->mnt[0].vol) != CT_NONE) &&
 		    (le32_to_cpu(dresp->mnt[0].state) != FSCS_HIDDEN)) {
-<<<<<<< HEAD
-=======
 			if (!(sup_options2 & AAC_OPTION_VARIABLE_BLOCK_SIZE)) {
 				dresp->mnt[0].fileinfo.bdevinfo.block_size = 0x200;
 				fsa_dev_ptr->block_size = 0x200;
@@ -853,7 +666,6 @@ static void _aac_probe_container2(void * context, struct fib * fibptr)
 				fsa_dev_ptr->identifier[i] =
 					dresp->mnt[0].fileinfo.bdevinfo
 								.identifier[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fsa_dev_ptr->valid = 1;
 			/* sense_key holds the current state of the spin-up */
 			if (dresp->mnt[0].state & cpu_to_le32(FSCS_NOT_READY))
@@ -868,21 +680,12 @@ static void _aac_probe_container2(void * context, struct fib * fibptr)
 		}
 		if ((fsa_dev_ptr->valid & 1) == 0)
 			fsa_dev_ptr->valid = 0;
-<<<<<<< HEAD
-		scsicmd->SCp.Status = le32_to_cpu(dresp->count);
-	}
-	aac_fib_complete(fibptr);
-	aac_fib_free(fibptr);
-	callback = (int (*)(struct scsi_cmnd *))(scsicmd->SCp.ptr);
-	scsicmd->SCp.ptr = NULL;
-=======
 		cmd_priv->status = le32_to_cpu(dresp->count);
 	}
 	aac_fib_complete(fibptr);
 	aac_fib_free(fibptr);
 	callback = cmd_priv->callback;
 	cmd_priv->callback = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(*callback)(scsicmd);
 	return;
 }
@@ -895,13 +698,6 @@ static void _aac_probe_container1(void * context, struct fib * fibptr)
 	int status;
 
 	dresp = (struct aac_mount *) fib_data(fibptr);
-<<<<<<< HEAD
-	dresp->mnt[0].capacityhigh = 0;
-	if ((le32_to_cpu(dresp->status) != ST_OK) ||
-	    (le32_to_cpu(dresp->mnt[0].vol) != CT_NONE)) {
-		_aac_probe_container2(context, fibptr);
-		return;
-=======
 	if (!aac_supports_2T(fibptr->dev)) {
 		dresp->mnt[0].capacityhigh = 0;
 		if ((le32_to_cpu(dresp->status) == ST_OK) &&
@@ -909,7 +705,6 @@ static void _aac_probe_container1(void * context, struct fib * fibptr)
 			_aac_probe_container2(context, fibptr);
 			return;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	scsicmd = (struct scsi_cmnd *) context;
 
@@ -920,11 +715,6 @@ static void _aac_probe_container1(void * context, struct fib * fibptr)
 
 	dinfo = (struct aac_query_mount *)fib_data(fibptr);
 
-<<<<<<< HEAD
-	dinfo->command = cpu_to_le32(VM_NameServe64);
-	dinfo->count = cpu_to_le32(scmd_id(scsicmd));
-	dinfo->type = cpu_to_le32(FT_FILESYS);
-=======
 	if (fibptr->dev->supplement_adapter_info.supported_options2 &
 	    AAC_OPTION_VARIABLE_BLOCK_SIZE)
 		dinfo->command = cpu_to_le32(VM_NameServeAllBlk);
@@ -934,7 +724,6 @@ static void _aac_probe_container1(void * context, struct fib * fibptr)
 	dinfo->count = cpu_to_le32(scmd_id(scsicmd));
 	dinfo->type = cpu_to_le32(FT_FILESYS);
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = aac_fib_send(ContainerCommand,
 			  fibptr,
@@ -946,13 +735,7 @@ static void _aac_probe_container1(void * context, struct fib * fibptr)
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS)
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-	else if (status < 0) {
-=======
 	if (status < 0 && status != -EINPROGRESS) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Inherit results from VM_NameServe, if any */
 		dresp->status = cpu_to_le32(ST_OK);
 		_aac_probe_container2(context, fibptr);
@@ -961,10 +744,7 @@ static void _aac_probe_container1(void * context, struct fib * fibptr)
 
 static int _aac_probe_container(struct scsi_cmnd * scsicmd, int (*callback)(struct scsi_cmnd *))
 {
-<<<<<<< HEAD
-=======
 	struct aac_cmd_priv *cmd_priv = aac_priv(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fib * fibptr;
 	int status = -ENOMEM;
 
@@ -975,12 +755,6 @@ static int _aac_probe_container(struct scsi_cmnd * scsicmd, int (*callback)(stru
 
 		dinfo = (struct aac_query_mount *)fib_data(fibptr);
 
-<<<<<<< HEAD
-		dinfo->command = cpu_to_le32(VM_NameServe);
-		dinfo->count = cpu_to_le32(scmd_id(scsicmd));
-		dinfo->type = cpu_to_le32(FT_FILESYS);
-		scsicmd->SCp.ptr = (char *)callback;
-=======
 		if (fibptr->dev->supplement_adapter_info.supported_options2 &
 		    AAC_OPTION_VARIABLE_BLOCK_SIZE)
 			dinfo->command = cpu_to_le32(VM_NameServeAllBlk);
@@ -991,7 +765,6 @@ static int _aac_probe_container(struct scsi_cmnd * scsicmd, int (*callback)(stru
 		dinfo->type = cpu_to_le32(FT_FILESYS);
 		cmd_priv->callback = callback;
 		cmd_priv->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = aac_fib_send(ContainerCommand,
 			  fibptr,
@@ -1003,20 +776,11 @@ static int _aac_probe_container(struct scsi_cmnd * scsicmd, int (*callback)(stru
 		/*
 		 *	Check that the command queued to the controller
 		 */
-<<<<<<< HEAD
-		if (status == -EINPROGRESS) {
-			scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-			return 0;
-		}
-		if (status < 0) {
-			scsicmd->SCp.ptr = NULL;
-=======
 		if (status == -EINPROGRESS)
 			return 0;
 
 		if (status < 0) {
 			cmd_priv->callback = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			aac_fib_complete(fibptr);
 			aac_fib_free(fibptr);
 		}
@@ -1035,14 +799,8 @@ static int _aac_probe_container(struct scsi_cmnd * scsicmd, int (*callback)(stru
 }
 
 /**
-<<<<<<< HEAD
- *	aac_probe_container		-	query a logical volume
- *	@dev: device to query
- *	@cid: container identifier
-=======
  *	aac_probe_container_callback1	-	query a logical volume
  *	@scsicmd: the scsi command block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Queries the controller about the given volume. The volume information
  *	is updated in the struct fsa_dev_info structure rather than returned.
@@ -1053,12 +811,6 @@ static int aac_probe_container_callback1(struct scsi_cmnd * scsicmd)
 	return 0;
 }
 
-<<<<<<< HEAD
-int aac_probe_container(struct aac_dev *dev, int cid)
-{
-	struct scsi_cmnd *scsicmd = kmalloc(sizeof(*scsicmd), GFP_KERNEL);
-	struct scsi_device *scsidev = kmalloc(sizeof(*scsidev), GFP_KERNEL);
-=======
 static void aac_probe_container_scsi_done(struct scsi_cmnd *scsi_cmnd)
 {
 	aac_probe_container_callback1(scsi_cmnd);
@@ -1069,7 +821,6 @@ int aac_probe_container(struct aac_dev *dev, int cid)
 	struct aac_cmd_priv *cmd_priv;
 	struct scsi_cmnd *scsicmd = kzalloc(sizeof(*scsicmd) + sizeof(*cmd_priv), GFP_KERNEL);
 	struct scsi_device *scsidev = kzalloc(sizeof(*scsidev), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	if (!scsicmd || !scsidev) {
@@ -1077,11 +828,6 @@ int aac_probe_container(struct aac_dev *dev, int cid)
 		kfree(scsidev);
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-	scsicmd->list.next = NULL;
-	scsicmd->scsi_done = (void (*)(struct scsi_cmnd*))aac_probe_container_callback1;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scsicmd->device = scsidev;
 	scsidev->sdev_state = 0;
@@ -1092,12 +838,8 @@ int aac_probe_container(struct aac_dev *dev, int cid)
 		while (scsicmd->device == scsidev)
 			schedule();
 	kfree(scsidev);
-<<<<<<< HEAD
-	status = scsicmd->SCp.Status;
-=======
 	cmd_priv = aac_priv(scsicmd);
 	status = cmd_priv->status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(scsicmd);
 	return status;
 }
@@ -1110,11 +852,7 @@ struct scsi_inq {
 };
 
 /**
-<<<<<<< HEAD
- *	InqStrCopy	-	string merge
-=======
  *	inqstrcpy	-	string merge
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@a:	string to copy from
  *	@b:	string to copy to
  *
@@ -1172,15 +910,6 @@ char * get_container_type(unsigned tindex)
 static void setinqstr(struct aac_dev *dev, void *data, int tindex)
 {
 	struct scsi_inq *str;
-<<<<<<< HEAD
-
-	str = (struct scsi_inq *)(data); /* cast data to scsi inq block */
-	memset(str, ' ', sizeof(*str));
-
-	if (dev->supplement_adapter_info.AdapterTypeText[0]) {
-		char * cp = dev->supplement_adapter_info.AdapterTypeText;
-		int c;
-=======
 	struct aac_supplement_adapter_info *sup_adap_info;
 
 	sup_adap_info = &dev->supplement_adapter_info;
@@ -1197,7 +926,6 @@ static void setinqstr(struct aac_dev *dev, void *data, int tindex)
 			return;
 
 		cp = cname;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((cp[0] == 'A') && (cp[1] == 'O') && (cp[2] == 'C'))
 			inqstrcpy("SMC", str->vid);
 		else {
@@ -1206,12 +934,7 @@ static void setinqstr(struct aac_dev *dev, void *data, int tindex)
 				++cp;
 			c = *cp;
 			*cp = '\0';
-<<<<<<< HEAD
-			inqstrcpy (dev->supplement_adapter_info.AdapterTypeText,
-				   str->vid);
-=======
 			inqstrcpy(cname, str->vid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*cp = c;
 			while (*cp && *cp != ' ')
 				++cp;
@@ -1219,22 +942,11 @@ static void setinqstr(struct aac_dev *dev, void *data, int tindex)
 		while (*cp == ' ')
 			++cp;
 		/* last six chars reserved for vol type */
-<<<<<<< HEAD
-		c = 0;
-		if (strlen(cp) > sizeof(str->pid)) {
-			c = cp[sizeof(str->pid)];
-			cp[sizeof(str->pid)] = '\0';
-		}
-		inqstrcpy (cp, str->pid);
-		if (c)
-			cp[sizeof(str->pid)] = c;
-=======
 		if (strlen(cp) > sizeof(str->pid))
 			cp[sizeof(str->pid)] = '\0';
 		inqstrcpy (cp, str->pid);
 
 		kfree(cname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct aac_driver_ident *mp = aac_get_driver_ident(dev->cardtype);
 
@@ -1257,8 +969,6 @@ static void setinqstr(struct aac_dev *dev, void *data, int tindex)
 	inqstrcpy ("V1.0", str->prl);
 }
 
-<<<<<<< HEAD
-=======
 static void build_vpd83_type3(struct tvpd_page83 *vpdpage83data,
 		struct aac_dev *dev, struct scsi_cmnd *scsicmd)
 {
@@ -1281,7 +991,6 @@ static void build_vpd83_type3(struct tvpd_page83 *vpdpage83data,
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void get_container_serial_callback(void *context, struct fib * fibptr)
 {
 	struct aac_get_serial_resp * get_serial_reply;
@@ -1296,26 +1005,6 @@ static void get_container_serial_callback(void *context, struct fib * fibptr)
 	get_serial_reply = (struct aac_get_serial_resp *) fib_data(fibptr);
 	/* Failure is irrelevant, using default value instead */
 	if (le32_to_cpu(get_serial_reply->status) == CT_OK) {
-<<<<<<< HEAD
-		char sp[13];
-		/* EVPD bit set */
-		sp[0] = INQD_PDT_DA;
-		sp[1] = scsicmd->cmnd[2];
-		sp[2] = 0;
-		sp[3] = snprintf(sp+4, sizeof(sp)-4, "%08X",
-		  le32_to_cpu(get_serial_reply->uid));
-		scsi_sg_copy_from_buffer(scsicmd, sp, sizeof(sp));
-	}
-
-	scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-
-	aac_fib_complete(fibptr);
-	aac_fib_free(fibptr);
-	scsicmd->scsi_done(scsicmd);
-}
-
-/**
-=======
 		/*Check to see if it's for VPD 0x83 or 0x80 */
 		if (scsicmd->cmnd[2] == 0x83) {
 			/* vpd page 0x83 - Device Identification Page */
@@ -1424,7 +1113,6 @@ static void get_container_serial_callback(void *context, struct fib * fibptr)
 }
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	aac_get_container_serial - get container serial, none blocking.
  */
 static int aac_get_container_serial(struct scsi_cmnd * scsicmd)
@@ -1436,12 +1124,7 @@ static int aac_get_container_serial(struct scsi_cmnd * scsicmd)
 
 	dev = (struct aac_dev *)scsicmd->device->host->hostdata;
 
-<<<<<<< HEAD
-	if (!(cmd_fibcontext = aac_fib_alloc(dev)))
-		return -ENOMEM;
-=======
 	cmd_fibcontext = aac_fib_alloc_tag(dev, scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_fib_init(cmd_fibcontext);
 	dinfo = (struct aac_get_serial *) fib_data(cmd_fibcontext);
@@ -1449,18 +1132,11 @@ static int aac_get_container_serial(struct scsi_cmnd * scsicmd)
 	dinfo->command = cpu_to_le32(VM_ContainerConfig);
 	dinfo->type = cpu_to_le32(CT_CID_TO_32BITS_UID);
 	dinfo->cid = cpu_to_le32(scmd_id(scsicmd));
-<<<<<<< HEAD
-
-	status = aac_fib_send(ContainerCommand,
-		  cmd_fibcontext,
-		  sizeof (struct aac_get_serial),
-=======
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
 
 	status = aac_fib_send(ContainerCommand,
 		  cmd_fibcontext,
 		  sizeof(struct aac_get_serial_resp),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  FsaNormal,
 		  0, 1,
 		  (fib_callback) get_container_serial_callback,
@@ -1469,22 +1145,11 @@ static int aac_get_container_serial(struct scsi_cmnd * scsicmd)
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS) {
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-		return 0;
-	}
-
-	printk(KERN_WARNING "aac_get_container_serial: aac_fib_send failed with status: %d.\n", status);
-	aac_fib_complete(cmd_fibcontext);
-	aac_fib_free(cmd_fibcontext);
-=======
 	if (status == -EINPROGRESS)
 		return 0;
 
 	printk(KERN_WARNING "aac_get_container_serial: aac_fib_send failed with status: %d.\n", status);
 	aac_fib_complete(cmd_fibcontext);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -1504,13 +1169,8 @@ static int setinqserial(struct aac_dev *dev, void *data, int cid)
 	/*
 	 *	This breaks array migration.
 	 */
-<<<<<<< HEAD
-	return snprintf((char *)(data), sizeof(struct scsi_inq) - 4, "%08X%02X",
-			le32_to_cpu(dev->adapter_info.serial[0]), cid);
-=======
 	return scnprintf((char *)(data), sizeof(struct scsi_inq) - 4, "%08X%02X",
 			 le32_to_cpu(dev->adapter_info.serial[0]), cid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void set_sense(struct sense_data *sense_data, u8 sense_key,
@@ -1545,23 +1205,14 @@ static int aac_bounds_32(struct aac_dev * dev, struct scsi_cmnd * cmd, u64 lba)
 	if (lba & 0xffffffff00000000LL) {
 		int cid = scmd_id(cmd);
 		dprintk((KERN_DEBUG "aacraid: Illegal lba\n"));
-<<<<<<< HEAD
-		cmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-			SAM_STAT_CHECK_CONDITION;
-=======
 		cmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_sense(&dev->fsa_dev[cid].sense_data,
 		  HARDWARE_ERROR, SENCODE_INTERNAL_TARGET_FAILURE,
 		  ASENCODE_INTERNAL_TARGET_FAILURE, 0, 0);
 		memcpy(cmd->sense_buffer, &dev->fsa_dev[cid].sense_data,
 		       min_t(size_t, sizeof(dev->fsa_dev[cid].sense_data),
 			     SCSI_SENSE_BUFFERSIZE));
-<<<<<<< HEAD
-		cmd->scsi_done(cmd);
-=======
 		aac_scsi_done(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
@@ -1576,22 +1227,6 @@ static void io_callback(void *context, struct fib * fibptr);
 
 static int aac_read_raw_io(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u32 count)
 {
-<<<<<<< HEAD
-	u16 fibsize;
-	struct aac_raw_io *readcmd;
-	aac_fib_init(fib);
-	readcmd = (struct aac_raw_io *) fib_data(fib);
-	readcmd->block[0] = cpu_to_le32((u32)(lba&0xffffffff));
-	readcmd->block[1] = cpu_to_le32((u32)((lba&0xffffffff00000000LL)>>32));
-	readcmd->count = cpu_to_le32(count<<9);
-	readcmd->cid = cpu_to_le16(scmd_id(cmd));
-	readcmd->flags = cpu_to_le16(IO_TYPE_READ);
-	readcmd->bpTotal = 0;
-	readcmd->bpComplete = 0;
-
-	aac_build_sgraw(cmd, &readcmd->sg);
-	fibsize = sizeof(struct aac_raw_io) + ((le32_to_cpu(readcmd->sg.count) - 1) * sizeof (struct sgentryraw));
-=======
 	struct aac_dev *dev = fib->dev;
 	u16 fibsize, command;
 	long ret;
@@ -1635,16 +1270,11 @@ static int aac_read_raw_io(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u3
 			((le32_to_cpu(readcmd->sg.count)-1) * sizeof(struct sgentryraw));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(fibsize > (fib->dev->max_fib_size - sizeof(struct aac_fibhdr)));
 	/*
 	 *	Now send the Fib to the adapter
 	 */
-<<<<<<< HEAD
-	return aac_fib_send(ContainerRawIo,
-=======
 	return aac_fib_send(command,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  fib,
 			  fibsize,
 			  FsaNormal,
@@ -1657,11 +1287,8 @@ static int aac_read_block64(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u
 {
 	u16 fibsize;
 	struct aac_read64 *readcmd;
-<<<<<<< HEAD
-=======
 	long ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac_fib_init(fib);
 	readcmd = (struct aac_read64 *) fib_data(fib);
 	readcmd->command = cpu_to_le32(VM_CtHostRead64);
@@ -1671,13 +1298,9 @@ static int aac_read_block64(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u
 	readcmd->pad   = 0;
 	readcmd->flags = 0;
 
-<<<<<<< HEAD
-	aac_build_sg64(cmd, &readcmd->sg);
-=======
 	ret = aac_build_sg64(cmd, &readcmd->sg);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fibsize = sizeof(struct aac_read64) +
 		((le32_to_cpu(readcmd->sg.count) - 1) *
 		 sizeof (struct sgentry64));
@@ -1699,29 +1322,20 @@ static int aac_read_block(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u32
 {
 	u16 fibsize;
 	struct aac_read *readcmd;
-<<<<<<< HEAD
-=======
 	struct aac_dev *dev = fib->dev;
 	long ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac_fib_init(fib);
 	readcmd = (struct aac_read *) fib_data(fib);
 	readcmd->command = cpu_to_le32(VM_CtBlockRead);
 	readcmd->cid = cpu_to_le32(scmd_id(cmd));
 	readcmd->block = cpu_to_le32((u32)(lba&0xffffffff));
-<<<<<<< HEAD
-	readcmd->count = cpu_to_le32(count * 512);
-
-	aac_build_sg(cmd, &readcmd->sg);
-=======
 	readcmd->count = cpu_to_le32(count *
 		dev->fsa_dev[scmd_id(cmd)].block_size);
 
 	ret = aac_build_sg(cmd, &readcmd->sg);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fibsize = sizeof(struct aac_read) +
 			((le32_to_cpu(readcmd->sg.count) - 1) *
 			 sizeof (struct sgentry));
@@ -1741,25 +1355,6 @@ static int aac_read_block(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u32
 
 static int aac_write_raw_io(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u32 count, int fua)
 {
-<<<<<<< HEAD
-	u16 fibsize;
-	struct aac_raw_io *writecmd;
-	aac_fib_init(fib);
-	writecmd = (struct aac_raw_io *) fib_data(fib);
-	writecmd->block[0] = cpu_to_le32((u32)(lba&0xffffffff));
-	writecmd->block[1] = cpu_to_le32((u32)((lba&0xffffffff00000000LL)>>32));
-	writecmd->count = cpu_to_le32(count<<9);
-	writecmd->cid = cpu_to_le16(scmd_id(cmd));
-	writecmd->flags = (fua && ((aac_cache & 5) != 1) &&
-	  (((aac_cache & 5) != 5) || !fib->dev->cache_protected)) ?
-		cpu_to_le16(IO_TYPE_WRITE|IO_SUREWRITE) :
-		cpu_to_le16(IO_TYPE_WRITE);
-	writecmd->bpTotal = 0;
-	writecmd->bpComplete = 0;
-
-	aac_build_sgraw(cmd, &writecmd->sg);
-	fibsize = sizeof(struct aac_raw_io) + ((le32_to_cpu(writecmd->sg.count) - 1) * sizeof (struct sgentryraw));
-=======
 	struct aac_dev *dev = fib->dev;
 	u16 fibsize, command;
 	long ret;
@@ -1809,16 +1404,11 @@ static int aac_write_raw_io(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u
 			((le32_to_cpu(writecmd->sg.count)-1) * sizeof (struct sgentryraw));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(fibsize > (fib->dev->max_fib_size - sizeof(struct aac_fibhdr)));
 	/*
 	 *	Now send the Fib to the adapter
 	 */
-<<<<<<< HEAD
-	return aac_fib_send(ContainerRawIo,
-=======
 	return aac_fib_send(command,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  fib,
 			  fibsize,
 			  FsaNormal,
@@ -1831,11 +1421,8 @@ static int aac_write_block64(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, 
 {
 	u16 fibsize;
 	struct aac_write64 *writecmd;
-<<<<<<< HEAD
-=======
 	long ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac_fib_init(fib);
 	writecmd = (struct aac_write64 *) fib_data(fib);
 	writecmd->command = cpu_to_le32(VM_CtHostWrite64);
@@ -1845,13 +1432,9 @@ static int aac_write_block64(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, 
 	writecmd->pad	= 0;
 	writecmd->flags	= 0;
 
-<<<<<<< HEAD
-	aac_build_sg64(cmd, &writecmd->sg);
-=======
 	ret = aac_build_sg64(cmd, &writecmd->sg);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fibsize = sizeof(struct aac_write64) +
 		((le32_to_cpu(writecmd->sg.count) - 1) *
 		 sizeof (struct sgentry64));
@@ -1873,24 +1456,14 @@ static int aac_write_block(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u3
 {
 	u16 fibsize;
 	struct aac_write *writecmd;
-<<<<<<< HEAD
-=======
 	struct aac_dev *dev = fib->dev;
 	long ret;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac_fib_init(fib);
 	writecmd = (struct aac_write *) fib_data(fib);
 	writecmd->command = cpu_to_le32(VM_CtBlockWrite);
 	writecmd->cid = cpu_to_le32(scmd_id(cmd));
 	writecmd->block = cpu_to_le32((u32)(lba&0xffffffff));
-<<<<<<< HEAD
-	writecmd->count = cpu_to_le32(count * 512);
-	writecmd->sg.count = cpu_to_le32(1);
-	/* ->stable is not used - it did mean which type of write */
-
-	aac_build_sg(cmd, &writecmd->sg);
-=======
 	writecmd->count = cpu_to_le32(count *
 		dev->fsa_dev[scmd_id(cmd)].block_size);
 	writecmd->sg.count = cpu_to_le32(1);
@@ -1899,7 +1472,6 @@ static int aac_write_block(struct fib * fib, struct scsi_cmnd * cmd, u64 lba, u3
 	ret = aac_build_sg(cmd, &writecmd->sg);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fibsize = sizeof(struct aac_write) +
 		((le32_to_cpu(writecmd->sg.count) - 1) *
 		 sizeof (struct sgentry));
@@ -1922,10 +1494,7 @@ static struct aac_srb * aac_scsi_common(struct fib * fib, struct scsi_cmnd * cmd
 	struct aac_srb * srbcmd;
 	u32 flag;
 	u32 timeout;
-<<<<<<< HEAD
-=======
 	struct aac_dev *dev = fib->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_fib_init(fib);
 	switch(cmd->sc_data_direction){
@@ -1950,23 +1519,15 @@ static struct aac_srb * aac_scsi_common(struct fib * fib, struct scsi_cmnd * cmd
 	srbcmd->id       = cpu_to_le32(scmd_id(cmd));
 	srbcmd->lun      = cpu_to_le32(cmd->device->lun);
 	srbcmd->flags    = cpu_to_le32(flag);
-<<<<<<< HEAD
-	timeout = cmd->request->timeout/HZ;
-	if (timeout == 0)
-		timeout = 1;
-=======
 	timeout = scsi_cmd_to_rq(cmd)->timeout / HZ;
 	if (timeout == 0)
 		timeout = (dev->sa_firmware ? AAC_SA_TIMEOUT : AAC_ARC_TIMEOUT);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srbcmd->timeout  = cpu_to_le32(timeout);  // timeout in seconds
 	srbcmd->retry_limit = 0; /* Obsolete parameter */
 	srbcmd->cdb_size = cpu_to_le32(cmd->cmd_len);
 	return srbcmd;
 }
 
-<<<<<<< HEAD
-=======
 static struct aac_hba_cmd_req *aac_construct_hbacmd(struct fib *fib,
 							struct scsi_cmnd *cmd)
 {
@@ -2013,23 +1574,17 @@ static struct aac_hba_cmd_req *aac_construct_hbacmd(struct fib *fib,
 	return hbacmd;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void aac_srb_callback(void *context, struct fib * fibptr);
 
 static int aac_scsi_64(struct fib * fib, struct scsi_cmnd * cmd)
 {
 	u16 fibsize;
 	struct aac_srb * srbcmd = aac_scsi_common(fib, cmd);
-<<<<<<< HEAD
-
-	aac_build_sg64(cmd, (struct sgmap64*) &srbcmd->sg);
-=======
 	long ret;
 
 	ret = aac_build_sg64(cmd, (struct sgmap64 *) &srbcmd->sg);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srbcmd->count = cpu_to_le32(scsi_bufflen(cmd));
 
 	memset(srbcmd->cdb, 0, sizeof(srbcmd->cdb));
@@ -2056,16 +1611,11 @@ static int aac_scsi_32(struct fib * fib, struct scsi_cmnd * cmd)
 {
 	u16 fibsize;
 	struct aac_srb * srbcmd = aac_scsi_common(fib, cmd);
-<<<<<<< HEAD
-
-	aac_build_sg(cmd, (struct sgmap*)&srbcmd->sg);
-=======
 	long ret;
 
 	ret = aac_build_sg(cmd, (struct sgmap *)&srbcmd->sg);
 	if (ret < 0)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srbcmd->count = cpu_to_le32(scsi_bufflen(cmd));
 
 	memset(srbcmd->cdb, 0, sizeof(srbcmd->cdb));
@@ -2094,8 +1644,6 @@ static int aac_scsi_32_64(struct fib * fib, struct scsi_cmnd * cmd)
 	return aac_scsi_32(fib, cmd);
 }
 
-<<<<<<< HEAD
-=======
 static int aac_adapter_hba(struct fib *fib, struct scsi_cmnd *cmd)
 {
 	struct aac_hba_cmd_req *hbacmd = aac_construct_hbacmd(fib, cmd);
@@ -2488,16 +2036,11 @@ int aac_setup_safw_adapter(struct aac_dev *dev)
 	return aac_setup_safw_targets(dev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int aac_get_adapter_info(struct aac_dev* dev)
 {
 	struct fib* fibptr;
 	int rcode;
-<<<<<<< HEAD
-	u32 tmp;
-=======
 	u32 tmp, bus, target;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct aac_adapter_info *info;
 	struct aac_bus_info *command;
 	struct aac_bus_info_response *bus_info;
@@ -2528,10 +2071,7 @@ int aac_get_adapter_info(struct aac_dev* dev)
 	}
 	memcpy(&dev->adapter_info, info, sizeof(*info));
 
-<<<<<<< HEAD
-=======
 	dev->supplement_adapter_info.virt_device_bus = 0xffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->adapter_info.options & AAC_OPT_SUPPLEMENT_ADAPTER_INFO) {
 		struct aac_supplement_adapter_info * sinfo;
 
@@ -2559,8 +2099,6 @@ int aac_get_adapter_info(struct aac_dev* dev)
 
 	}
 
-<<<<<<< HEAD
-=======
 	/* reset all previous mapped devices (i.e. for init. after IOP_RESET) */
 	for (bus = 0; bus < AAC_MAX_BUSES; bus++) {
 		for (target = 0; target < AAC_MAX_TARGETS; target++) {
@@ -2568,7 +2106,6 @@ int aac_get_adapter_info(struct aac_dev* dev)
 			dev->hba_map[bus][target].qd_limit = 0;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * GetBusInfo
@@ -2611,13 +2148,8 @@ int aac_get_adapter_info(struct aac_dev* dev)
 			(tmp>>16)&0xff,
 			tmp&0xff,
 			le32_to_cpu(dev->adapter_info.kernelbuild),
-<<<<<<< HEAD
-			(int)sizeof(dev->supplement_adapter_info.BuildDate),
-			dev->supplement_adapter_info.BuildDate);
-=======
 			(int)sizeof(dev->supplement_adapter_info.build_date),
 			dev->supplement_adapter_info.build_date);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = le32_to_cpu(dev->adapter_info.monitorrev);
 		printk(KERN_INFO "%s%d: monitor %d.%d-%d[%d]\n",
 			dev->name, dev->id,
@@ -2633,16 +2165,6 @@ int aac_get_adapter_info(struct aac_dev* dev)
 		  shost_to_class(dev->scsi_host_ptr), buffer))
 			printk(KERN_INFO "%s%d: serial %s",
 			  dev->name, dev->id, buffer);
-<<<<<<< HEAD
-		if (dev->supplement_adapter_info.VpdInfo.Tsid[0]) {
-			printk(KERN_INFO "%s%d: TSID %.*s\n",
-			  dev->name, dev->id,
-			  (int)sizeof(dev->supplement_adapter_info.VpdInfo.Tsid),
-			  dev->supplement_adapter_info.VpdInfo.Tsid);
-		}
-		if (!aac_check_reset || ((aac_check_reset == 1) &&
-		  (dev->supplement_adapter_info.SupportedOptions2 &
-=======
 		if (dev->supplement_adapter_info.vpd_info.tsid[0]) {
 			printk(KERN_INFO "%s%d: TSID %.*s\n",
 			  dev->name, dev->id,
@@ -2652,7 +2174,6 @@ int aac_get_adapter_info(struct aac_dev* dev)
 		}
 		if (!aac_check_reset || ((aac_check_reset == 1) &&
 		  (dev->supplement_adapter_info.supported_options2 &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  AAC_OPTION_IGNORE_RESET))) {
 			printk(KERN_INFO "%s%d: Reset Adapter Ignored\n",
 			  dev->name, dev->id);
@@ -2660,11 +2181,7 @@ int aac_get_adapter_info(struct aac_dev* dev)
 	}
 
 	dev->cache_protected = 0;
-<<<<<<< HEAD
-	dev->jbod = ((dev->supplement_adapter_info.FeatureBits &
-=======
 	dev->jbod = ((dev->supplement_adapter_info.feature_bits &
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		AAC_FEATURE_JBOD) != 0);
 	dev->nondasd_support = 0;
 	dev->raid_scsi_mode = 0;
@@ -2719,22 +2236,6 @@ int aac_get_adapter_info(struct aac_dev* dev)
 		expose_physicals = 0;
 	}
 
-<<<<<<< HEAD
-	if(dev->dac_support != 0) {
-		if (!pci_set_dma_mask(dev->pdev, DMA_BIT_MASK(64)) &&
-			!pci_set_consistent_dma_mask(dev->pdev, DMA_BIT_MASK(64))) {
-			if (!dev->in_reset)
-				printk(KERN_INFO"%s%d: 64 Bit DAC enabled\n",
-					dev->name, dev->id);
-		} else if (!pci_set_dma_mask(dev->pdev, DMA_BIT_MASK(32)) &&
-			!pci_set_consistent_dma_mask(dev->pdev, DMA_BIT_MASK(32))) {
-			printk(KERN_INFO"%s%d: DMA mask set failed, 64 Bit DAC disabled\n",
-				dev->name, dev->id);
-			dev->dac_support = 0;
-		} else {
-			printk(KERN_WARNING"%s%d: No suitable DMA available.\n",
-				dev->name, dev->id);
-=======
 	if (dev->dac_support) {
 		if (!dma_set_mask(&dev->pdev->dev, DMA_BIT_MASK(64))) {
 			if (!dev->in_reset)
@@ -2744,7 +2245,6 @@ int aac_get_adapter_info(struct aac_dev* dev)
 			dev->dac_support = 0;
 		} else {
 			dev_info(&dev->pdev->dev, "No suitable DMA available\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rcode = -ENOMEM;
 		}
 	}
@@ -2786,11 +2286,6 @@ int aac_get_adapter_info(struct aac_dev* dev)
 			dev->a_ops.adapter_write = aac_write_block;
 		}
 		dev->scsi_host_ptr->max_sectors = AAC_MAX_32BIT_SGBCOUNT;
-<<<<<<< HEAD
-		if (dev->adapter_info.options & AAC_OPT_NEW_COMM_TYPE1)
-			dev->adapter_info.options |= AAC_OPT_NEW_COMM;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(dev->adapter_info.options & AAC_OPT_NEW_COMM)) {
 			/*
 			 * Worst case size that could cause sg overflow when
@@ -2805,14 +2300,11 @@ int aac_get_adapter_info(struct aac_dev* dev)
 			  (dev->scsi_host_ptr->sg_tablesize * 8) + 112;
 		}
 	}
-<<<<<<< HEAD
-=======
 	if (!dev->sync_mode && dev->sa_firmware &&
 		dev->scsi_host_ptr->sg_tablesize > HBA_MAX_SG_SEPARATE)
 		dev->scsi_host_ptr->sg_tablesize = dev->sg_tablesize =
 			HBA_MAX_SG_SEPARATE;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIB should be freed only after getting the response from the F/W */
 	if (rcode != -ERESTARTSYS) {
 		aac_fib_complete(fibptr);
@@ -2880,29 +2372,17 @@ static void io_callback(void *context, struct fib * fibptr)
 	readreply = (struct aac_read_reply *)fib_data(fibptr);
 	switch (le32_to_cpu(readreply->status)) {
 	case ST_OK:
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-			SAM_STAT_GOOD;
-		dev->fsa_dev[cid].sense_data.sense_key = NO_SENSE;
-		break;
-	case ST_NOT_READY:
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-			SAM_STAT_CHECK_CONDITION;
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 		dev->fsa_dev[cid].sense_data.sense_key = NO_SENSE;
 		break;
 	case ST_NOT_READY:
 		scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_sense(&dev->fsa_dev[cid].sense_data, NOT_READY,
 		  SENCODE_BECOMING_READY, ASENCODE_BECOMING_READY, 0, 0);
 		memcpy(scsicmd->sense_buffer, &dev->fsa_dev[cid].sense_data,
 		       min_t(size_t, sizeof(dev->fsa_dev[cid].sense_data),
 			     SCSI_SENSE_BUFFERSIZE));
 		break;
-<<<<<<< HEAD
-=======
 	case ST_MEDERR:
 		scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
 		set_sense(&dev->fsa_dev[cid].sense_data, MEDIUM_ERROR,
@@ -2911,18 +2391,12 @@ static void io_callback(void *context, struct fib * fibptr)
 		       min_t(size_t, sizeof(dev->fsa_dev[cid].sense_data),
 			     SCSI_SENSE_BUFFERSIZE));
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 #ifdef AAC_DETAILED_STATUS_INFO
 		printk(KERN_WARNING "io_callback: io failed, status = %d\n",
 		  le32_to_cpu(readreply->status));
 #endif
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-			SAM_STAT_CHECK_CONDITION;
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_sense(&dev->fsa_dev[cid].sense_data,
 		  HARDWARE_ERROR, SENCODE_INTERNAL_TARGET_FAILURE,
 		  ASENCODE_INTERNAL_TARGET_FAILURE, 0, 0);
@@ -2932,14 +2406,8 @@ static void io_callback(void *context, struct fib * fibptr)
 		break;
 	}
 	aac_fib_complete(fibptr);
-<<<<<<< HEAD
-	aac_fib_free(fibptr);
-
-	scsicmd->scsi_done(scsicmd);
-=======
 
 	aac_scsi_done(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int aac_read(struct scsi_cmnd * scsicmd)
@@ -3003,27 +2471,15 @@ static int aac_read(struct scsi_cmnd * scsicmd)
 	if ((lba + count) > (dev->fsa_dev[scmd_id(scsicmd)].size)) {
 		cid = scmd_id(scsicmd);
 		dprintk((KERN_DEBUG "aacraid: Illegal lba\n"));
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-			SAM_STAT_CHECK_CONDITION;
-		set_sense(&dev->fsa_dev[cid].sense_data,
-			  HARDWARE_ERROR, SENCODE_INTERNAL_TARGET_FAILURE,
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
 		set_sense(&dev->fsa_dev[cid].sense_data,
 			  ILLEGAL_REQUEST, SENCODE_LBA_OUT_OF_RANGE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ASENCODE_INTERNAL_TARGET_FAILURE, 0, 0);
 		memcpy(scsicmd->sense_buffer, &dev->fsa_dev[cid].sense_data,
 		       min_t(size_t, sizeof(dev->fsa_dev[cid].sense_data),
 			     SCSI_SENSE_BUFFERSIZE));
-<<<<<<< HEAD
-		scsicmd->scsi_done(scsicmd);
-		return 1;
-=======
 		aac_scsi_done(scsicmd);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dprintk((KERN_DEBUG "aac_read[cpu %d]: lba = %llu, t = %ld.\n",
@@ -3033,42 +2489,22 @@ static int aac_read(struct scsi_cmnd * scsicmd)
 	/*
 	 *	Alocate and initialize a Fib
 	 */
-<<<<<<< HEAD
-	if (!(cmd_fibcontext = aac_fib_alloc(dev))) {
-		printk(KERN_WARNING "aac_read: fib allocation failed\n");
-		return -1;
-	}
-
-=======
 	cmd_fibcontext = aac_fib_alloc_tag(dev, scsicmd);
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = aac_adapter_read(cmd_fibcontext, scsicmd, lba, count);
 
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS) {
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-		return 0;
-	}
-=======
 	if (status == -EINPROGRESS)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_WARNING "aac_read: aac_fib_send failed with status: %d.\n", status);
 	/*
 	 *	For some reason, the Fib didn't queue, return QUEUE_FULL
 	 */
-<<<<<<< HEAD
-	scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_TASK_SET_FULL;
-	scsicmd->scsi_done(scsicmd);
-=======
 	scsicmd->result = DID_OK << 16 | SAM_STAT_TASK_SET_FULL;
 	aac_scsi_done(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac_fib_complete(cmd_fibcontext);
 	aac_fib_free(cmd_fibcontext);
 	return 0;
@@ -3126,27 +2562,15 @@ static int aac_write(struct scsi_cmnd * scsicmd)
 	if ((lba + count) > (dev->fsa_dev[scmd_id(scsicmd)].size)) {
 		cid = scmd_id(scsicmd);
 		dprintk((KERN_DEBUG "aacraid: Illegal lba\n"));
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-			SAM_STAT_CHECK_CONDITION;
-		set_sense(&dev->fsa_dev[cid].sense_data,
-			  HARDWARE_ERROR, SENCODE_INTERNAL_TARGET_FAILURE,
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
 		set_sense(&dev->fsa_dev[cid].sense_data,
 			  ILLEGAL_REQUEST, SENCODE_LBA_OUT_OF_RANGE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ASENCODE_INTERNAL_TARGET_FAILURE, 0, 0);
 		memcpy(scsicmd->sense_buffer, &dev->fsa_dev[cid].sense_data,
 		       min_t(size_t, sizeof(dev->fsa_dev[cid].sense_data),
 			     SCSI_SENSE_BUFFERSIZE));
-<<<<<<< HEAD
-		scsicmd->scsi_done(scsicmd);
-		return 1;
-=======
 		aac_scsi_done(scsicmd);
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dprintk((KERN_DEBUG "aac_write[cpu %d]: lba = %llu, t = %ld.\n",
@@ -3156,48 +2580,22 @@ static int aac_write(struct scsi_cmnd * scsicmd)
 	/*
 	 *	Allocate and initialize a Fib then setup a BlockWrite command
 	 */
-<<<<<<< HEAD
-	if (!(cmd_fibcontext = aac_fib_alloc(dev))) {
-		/* FIB temporarily unavailable,not catastrophic failure */
-
-		/* scsicmd->result = DID_ERROR << 16;
-		 * scsicmd->scsi_done(scsicmd);
-		 * return 0;
-		 */
-		printk(KERN_WARNING "aac_write: fib allocation failed\n");
-		return -1;
-	}
-
-=======
 	cmd_fibcontext = aac_fib_alloc_tag(dev, scsicmd);
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = aac_adapter_write(cmd_fibcontext, scsicmd, lba, count, fua);
 
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS) {
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-		return 0;
-	}
-=======
 	if (status == -EINPROGRESS)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_WARNING "aac_write: aac_fib_send failed with status: %d\n", status);
 	/*
 	 *	For some reason, the Fib didn't queue, return QUEUE_FULL
 	 */
-<<<<<<< HEAD
-	scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_TASK_SET_FULL;
-	scsicmd->scsi_done(scsicmd);
-=======
 	scsicmd->result = DID_OK << 16 | SAM_STAT_TASK_SET_FULL;
 	aac_scsi_done(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_fib_complete(cmd_fibcontext);
 	aac_fib_free(cmd_fibcontext);
@@ -3207,13 +2605,7 @@ static int aac_write(struct scsi_cmnd * scsicmd)
 static void synchronize_callback(void *context, struct fib *fibptr)
 {
 	struct aac_synchronize_reply *synchronizereply;
-<<<<<<< HEAD
-	struct scsi_cmnd *cmd;
-
-	cmd = context;
-=======
 	struct scsi_cmnd *cmd = context;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!aac_valid_context(cmd, fibptr))
 		return;
@@ -3225,12 +2617,7 @@ static void synchronize_callback(void *context, struct fib *fibptr)
 
 	synchronizereply = fib_data(fibptr);
 	if (le32_to_cpu(synchronizereply->status) == CT_OK)
-<<<<<<< HEAD
-		cmd->result = DID_OK << 16 |
-			COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-=======
 		cmd->result = DID_OK << 16 | SAM_STAT_GOOD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		struct scsi_device *sdev = cmd->device;
 		struct aac_dev *dev = fibptr->dev;
@@ -3238,12 +2625,7 @@ static void synchronize_callback(void *context, struct fib *fibptr)
 		printk(KERN_WARNING
 		     "synchronize_callback: synchronize failed, status = %d\n",
 		     le32_to_cpu(synchronizereply->status));
-<<<<<<< HEAD
-		cmd->result = DID_OK << 16 |
-			COMMAND_COMPLETE << 8 | SAM_STAT_CHECK_CONDITION;
-=======
 		cmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_sense(&dev->fsa_dev[cid].sense_data,
 		  HARDWARE_ERROR, SENCODE_INTERNAL_TARGET_FAILURE,
 		  ASENCODE_INTERNAL_TARGET_FAILURE, 0, 0);
@@ -3254,11 +2636,7 @@ static void synchronize_callback(void *context, struct fib *fibptr)
 
 	aac_fib_complete(fibptr);
 	aac_fib_free(fibptr);
-<<<<<<< HEAD
-	cmd->scsi_done(cmd);
-=======
 	aac_scsi_done(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int aac_synchronize(struct scsi_cmnd *scsicmd)
@@ -3266,82 +2644,8 @@ static int aac_synchronize(struct scsi_cmnd *scsicmd)
 	int status;
 	struct fib *cmd_fibcontext;
 	struct aac_synchronize *synchronizecmd;
-<<<<<<< HEAD
-	struct scsi_cmnd *cmd;
-	struct scsi_device *sdev = scsicmd->device;
-	int active = 0;
-	struct aac_dev *aac;
-	u64 lba = ((u64)scsicmd->cmnd[2] << 24) | (scsicmd->cmnd[3] << 16) |
-		(scsicmd->cmnd[4] << 8) | scsicmd->cmnd[5];
-	u32 count = (scsicmd->cmnd[7] << 8) | scsicmd->cmnd[8];
-	unsigned long flags;
-
-	/*
-	 * Wait for all outstanding queued commands to complete to this
-	 * specific target (block).
-	 */
-	spin_lock_irqsave(&sdev->list_lock, flags);
-	list_for_each_entry(cmd, &sdev->cmd_list, list)
-		if (cmd->SCp.phase == AAC_OWNER_FIRMWARE) {
-			u64 cmnd_lba;
-			u32 cmnd_count;
-
-			if (cmd->cmnd[0] == WRITE_6) {
-				cmnd_lba = ((cmd->cmnd[1] & 0x1F) << 16) |
-					(cmd->cmnd[2] << 8) |
-					cmd->cmnd[3];
-				cmnd_count = cmd->cmnd[4];
-				if (cmnd_count == 0)
-					cmnd_count = 256;
-			} else if (cmd->cmnd[0] == WRITE_16) {
-				cmnd_lba = ((u64)cmd->cmnd[2] << 56) |
-					((u64)cmd->cmnd[3] << 48) |
-					((u64)cmd->cmnd[4] << 40) |
-					((u64)cmd->cmnd[5] << 32) |
-					((u64)cmd->cmnd[6] << 24) |
-					(cmd->cmnd[7] << 16) |
-					(cmd->cmnd[8] << 8) |
-					cmd->cmnd[9];
-				cmnd_count = (cmd->cmnd[10] << 24) |
-					(cmd->cmnd[11] << 16) |
-					(cmd->cmnd[12] << 8) |
-					cmd->cmnd[13];
-			} else if (cmd->cmnd[0] == WRITE_12) {
-				cmnd_lba = ((u64)cmd->cmnd[2] << 24) |
-					(cmd->cmnd[3] << 16) |
-					(cmd->cmnd[4] << 8) |
-					cmd->cmnd[5];
-				cmnd_count = (cmd->cmnd[6] << 24) |
-					(cmd->cmnd[7] << 16) |
-					(cmd->cmnd[8] << 8) |
-					cmd->cmnd[9];
-			} else if (cmd->cmnd[0] == WRITE_10) {
-				cmnd_lba = ((u64)cmd->cmnd[2] << 24) |
-					(cmd->cmnd[3] << 16) |
-					(cmd->cmnd[4] << 8) |
-					cmd->cmnd[5];
-				cmnd_count = (cmd->cmnd[7] << 8) |
-					cmd->cmnd[8];
-			} else
-				continue;
-			if (((cmnd_lba + cmnd_count) < lba) ||
-			  (count && ((lba + count) < cmnd_lba)))
-				continue;
-			++active;
-			break;
-		}
-
-	spin_unlock_irqrestore(&sdev->list_lock, flags);
-
-	/*
-	 *	Yield the processor (requeue for later)
-	 */
-	if (active)
-		return SCSI_MLQUEUE_DEVICE_BUSY;
-=======
 	struct scsi_device *sdev = scsicmd->device;
 	struct aac_dev *aac;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac = (struct aac_dev *)sdev->host->hostdata;
 	if (aac->in_reset)
@@ -3350,12 +2654,7 @@ static int aac_synchronize(struct scsi_cmnd *scsicmd)
 	/*
 	 *	Allocate and initialize a Fib
 	 */
-<<<<<<< HEAD
-	if (!(cmd_fibcontext = aac_fib_alloc(aac)))
-		return SCSI_MLQUEUE_HOST_BUSY;
-=======
 	cmd_fibcontext = aac_fib_alloc_tag(aac, scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_fib_init(cmd_fibcontext);
 
@@ -3365,10 +2664,7 @@ static int aac_synchronize(struct scsi_cmnd *scsicmd)
 	synchronizecmd->cid = cpu_to_le32(scmd_id(scsicmd));
 	synchronizecmd->count =
 	     cpu_to_le32(sizeof(((struct aac_synchronize_reply *)NULL)->data));
-<<<<<<< HEAD
-=======
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Now send the Fib to the adapter
@@ -3384,15 +2680,8 @@ static int aac_synchronize(struct scsi_cmnd *scsicmd)
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS) {
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-		return 0;
-	}
-=======
 	if (status == -EINPROGRESS)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_WARNING
 		"aac_synchronize: aac_fib_send failed with status: %d.\n", status);
@@ -3410,19 +2699,11 @@ static void aac_start_stop_callback(void *context, struct fib *fibptr)
 
 	BUG_ON(fibptr == NULL);
 
-<<<<<<< HEAD
-	scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-
-	aac_fib_complete(fibptr);
-	aac_fib_free(fibptr);
-	scsicmd->scsi_done(scsicmd);
-=======
 	scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 
 	aac_fib_complete(fibptr);
 	aac_fib_free(fibptr);
 	aac_scsi_done(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int aac_start_stop(struct scsi_cmnd *scsicmd)
@@ -3433,18 +2714,10 @@ static int aac_start_stop(struct scsi_cmnd *scsicmd)
 	struct scsi_device *sdev = scsicmd->device;
 	struct aac_dev *aac = (struct aac_dev *)sdev->host->hostdata;
 
-<<<<<<< HEAD
-	if (!(aac->supplement_adapter_info.SupportedOptions2 &
-	      AAC_OPTION_POWER_MANAGEMENT)) {
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-				  SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-=======
 	if (!(aac->supplement_adapter_info.supported_options2 &
 	      AAC_OPTION_POWER_MANAGEMENT)) {
 		scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 		aac_scsi_done(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -3454,13 +2727,7 @@ static int aac_start_stop(struct scsi_cmnd *scsicmd)
 	/*
 	 *	Allocate and initialize a Fib
 	 */
-<<<<<<< HEAD
-	cmd_fibcontext = aac_fib_alloc(aac);
-	if (!cmd_fibcontext)
-		return SCSI_MLQUEUE_HOST_BUSY;
-=======
 	cmd_fibcontext = aac_fib_alloc_tag(aac, scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_fib_init(cmd_fibcontext);
 
@@ -3473,10 +2740,7 @@ static int aac_start_stop(struct scsi_cmnd *scsicmd)
 	pmcmd->cid = cpu_to_le32(sdev_id(sdev));
 	pmcmd->parm = (scsicmd->cmnd[1] & 1) ?
 		cpu_to_le32(CT_PM_UNIT_IMMEDIATE) : 0;
-<<<<<<< HEAD
-=======
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Now send the Fib to the adapter
@@ -3492,15 +2756,8 @@ static int aac_start_stop(struct scsi_cmnd *scsicmd)
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS) {
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-		return 0;
-	}
-=======
 	if (status == -EINPROGRESS)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	aac_fib_complete(cmd_fibcontext);
 	aac_fib_free(cmd_fibcontext);
@@ -3517,11 +2774,7 @@ static int aac_start_stop(struct scsi_cmnd *scsicmd)
 
 int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 {
-<<<<<<< HEAD
-	u32 cid;
-=======
 	u32 cid, bus;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host = scsicmd->device->host;
 	struct aac_dev *dev = (struct aac_dev *)host->hostdata;
 	struct fsa_dev_info *fsa_dev_ptr = dev->fsa_dev;
@@ -3539,12 +2792,7 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 			if((cid >= dev->maximum_num_containers) ||
 					(scsicmd->device->lun != 0)) {
 				scsicmd->result = DID_NO_CONNECT << 16;
-<<<<<<< HEAD
-				scsicmd->scsi_done(scsicmd);
-				return 0;
-=======
 				goto scsi_done_ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/*
@@ -3555,19 +2803,12 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 			  (fsa_dev_ptr[cid].sense_data.sense_key ==
 			   NOT_READY)) {
 				switch (scsicmd->cmnd[0]) {
-<<<<<<< HEAD
-				case SERVICE_ACTION_IN:
-=======
 				case SERVICE_ACTION_IN_16:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (!(dev->raw_io_interface) ||
 					    !(dev->raw_io_64) ||
 					    ((scsicmd->cmnd[1] & 0x1f) != SAI_READ_CAPACITY_16))
 						break;
-<<<<<<< HEAD
-=======
 					fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				case INQUIRY:
 				case READ_CAPACITY:
 				case TEST_UNIT_READY:
@@ -3580,10 +2821,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 				}
 			}
 		} else {  /* check for physical non-dasd devices */
-<<<<<<< HEAD
-			if (dev->nondasd_support || expose_physicals ||
-					dev->jbod) {
-=======
 			bus = aac_logical_to_phys(scmd_channel(scsicmd));
 
 			if (bus < AAC_MAX_BUSES && cid < AAC_MAX_TARGETS &&
@@ -3594,18 +2831,12 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 				return aac_send_hba_fib(scsicmd);
 			} else if (dev->nondasd_support || expose_physicals ||
 				dev->jbod) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (dev->in_reset)
 					return -1;
 				return aac_send_srb_fib(scsicmd);
 			} else {
 				scsicmd->result = DID_NO_CONNECT << 16;
-<<<<<<< HEAD
-				scsicmd->scsi_done(scsicmd);
-				return 0;
-=======
 				goto scsi_done_ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -3616,26 +2847,13 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		(scsicmd->cmnd[0] != TEST_UNIT_READY))
 	{
 		dprintk((KERN_WARNING "Only INQUIRY & TUR command supported for controller, rcvd = 0x%x.\n", scsicmd->cmnd[0]));
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_CHECK_CONDITION;
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_sense(&dev->fsa_dev[cid].sense_data,
 		  ILLEGAL_REQUEST, SENCODE_INVALID_COMMAND,
 		  ASENCODE_INVALID_COMMAND, 0, 0);
 		memcpy(scsicmd->sense_buffer, &dev->fsa_dev[cid].sense_data,
 		       min_t(size_t, sizeof(dev->fsa_dev[cid].sense_data),
 			     SCSI_SENSE_BUFFERSIZE));
-<<<<<<< HEAD
-		scsicmd->scsi_done(scsicmd);
-		return 0;
-	}
-
-
-	/* Handle commands here that don't really require going out to the adapter */
-	switch (scsicmd->cmnd[0]) {
-=======
 		goto scsi_done_ret;
 	}
 
@@ -3665,7 +2883,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		if ((aac_cache & 6) != 2)
 			return aac_synchronize(scsicmd);
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case INQUIRY:
 	{
 		struct inquiry_data inq_data;
@@ -3681,16 +2898,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 			  INQD_PDT_PROC : INQD_PDT_DA;
 			if (scsicmd->cmnd[2] == 0) {
 				/* supported vital product data pages */
-<<<<<<< HEAD
-				arr[3] = 2;
-				arr[4] = 0x0;
-				arr[5] = 0x80;
-				arr[1] = scsicmd->cmnd[2];
-				scsi_sg_copy_from_buffer(scsicmd, &inq_data,
-							 sizeof(inq_data));
-				scsicmd->result = DID_OK << 16 |
-				  COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-=======
 				arr[3] = 3;
 				arr[4] = 0x0;
 				arr[5] = 0x80;
@@ -3699,7 +2906,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 				scsi_sg_copy_from_buffer(scsicmd, &inq_data,
 							 sizeof(inq_data));
 				scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if (scsicmd->cmnd[2] == 0x80) {
 				/* unit serial number page */
 				arr[3] = setinqserial(dev, &arr[4],
@@ -3710,16 +2916,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 				if (aac_wwn != 2)
 					return aac_get_container_serial(
 						scsicmd);
-<<<<<<< HEAD
-				/* SLES 10 SP1 special */
-				scsicmd->result = DID_OK << 16 |
-				  COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-			} else {
-				/* vpd page not implemented */
-				scsicmd->result = DID_OK << 16 |
-				  COMMAND_COMPLETE << 8 |
-				  SAM_STAT_CHECK_CONDITION;
-=======
 				scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 			} else if (scsicmd->cmnd[2] == 0x83) {
 				/* vpd page 0x83 - Device Identification Page */
@@ -3733,7 +2929,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 			} else {
 				/* vpd page not implemented */
 				scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				set_sense(&dev->fsa_dev[cid].sense_data,
 				  ILLEGAL_REQUEST, SENCODE_INVALID_CDB_FIELD,
 				  ASENCODE_NO_SENSE, 7, 2);
@@ -3743,12 +2938,7 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 					sizeof(dev->fsa_dev[cid].sense_data),
 					SCSI_SENSE_BUFFERSIZE));
 			}
-<<<<<<< HEAD
-			scsicmd->scsi_done(scsicmd);
-			return 0;
-=======
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		inq_data.inqd_ver = 2;	/* claim compliance to SCSI-2 */
 		inq_data.inqd_rdf = 2;	/* A response data format value of two indicates that the data shall be in the format specified in SCSI-2 */
@@ -3764,14 +2954,8 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 			inq_data.inqd_pdt = INQD_PDT_PROC;	/* Processor device */
 			scsi_sg_copy_from_buffer(scsicmd, &inq_data,
 						 sizeof(inq_data));
-<<<<<<< HEAD
-			scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-			scsicmd->scsi_done(scsicmd);
-			return 0;
-=======
 			scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (dev->in_reset)
 			return -1;
@@ -3780,11 +2964,7 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		scsi_sg_copy_from_buffer(scsicmd, &inq_data, sizeof(inq_data));
 		return aac_get_container_name(scsicmd);
 	}
-<<<<<<< HEAD
-	case SERVICE_ACTION_IN:
-=======
 	case SERVICE_ACTION_IN_16:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(dev->raw_io_interface) ||
 		    !(dev->raw_io_64) ||
 		    ((scsicmd->cmnd[1] & 0x1f) != SAI_READ_CAPACITY_16))
@@ -3804,17 +2984,10 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		cp[5] = (capacity >> 16) & 0xff;
 		cp[6] = (capacity >> 8) & 0xff;
 		cp[7] = (capacity >> 0) & 0xff;
-<<<<<<< HEAD
-		cp[8] = 0;
-		cp[9] = 0;
-		cp[10] = 2;
-		cp[11] = 0;
-=======
 		cp[8] = (fsa_dev_ptr[cid].block_size >> 24) & 0xff;
 		cp[9] = (fsa_dev_ptr[cid].block_size >> 16) & 0xff;
 		cp[10] = (fsa_dev_ptr[cid].block_size >> 8) & 0xff;
 		cp[11] = (fsa_dev_ptr[cid].block_size) & 0xff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cp[12] = 0;
 
 		alloc_len = ((scsicmd->cmnd[10] << 24)
@@ -3830,15 +3003,8 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		/* Do not cache partition table for arrays */
 		scsicmd->device->removable = 1;
 
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-
-		return 0;
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	case READ_CAPACITY:
@@ -3856,20 +3022,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		cp[1] = (capacity >> 16) & 0xff;
 		cp[2] = (capacity >> 8) & 0xff;
 		cp[3] = (capacity >> 0) & 0xff;
-<<<<<<< HEAD
-		cp[4] = 0;
-		cp[5] = 0;
-		cp[6] = 2;
-		cp[7] = 0;
-		scsi_sg_copy_from_buffer(scsicmd, cp, sizeof(cp));
-		/* Do not cache partition table for arrays */
-		scsicmd->device->removable = 1;
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-		  SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-
-		return 0;
-=======
 		cp[4] = (fsa_dev_ptr[cid].block_size >> 24) & 0xff;
 		cp[5] = (fsa_dev_ptr[cid].block_size >> 16) & 0xff;
 		cp[6] = (fsa_dev_ptr[cid].block_size >> 8) & 0xff;
@@ -3879,85 +3031,10 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		scsicmd->device->removable = 1;
 		scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	case MODE_SENSE:
 	{
-<<<<<<< HEAD
-		char mode_buf[7];
-		int mode_buf_length = 4;
-
-		dprintk((KERN_DEBUG "MODE SENSE command.\n"));
-		mode_buf[0] = 3;	/* Mode data length */
-		mode_buf[1] = 0;	/* Medium type - default */
-		mode_buf[2] = 0;	/* Device-specific param,
-					   bit 8: 0/1 = write enabled/protected
-					   bit 4: 0/1 = FUA enabled */
-		if (dev->raw_io_interface && ((aac_cache & 5) != 1))
-			mode_buf[2] = 0x10;
-		mode_buf[3] = 0;	/* Block descriptor length */
-		if (((scsicmd->cmnd[2] & 0x3f) == 8) ||
-		  ((scsicmd->cmnd[2] & 0x3f) == 0x3f)) {
-			mode_buf[0] = 6;
-			mode_buf[4] = 8;
-			mode_buf[5] = 1;
-			mode_buf[6] = ((aac_cache & 6) == 2)
-				? 0 : 0x04; /* WCE */
-			mode_buf_length = 7;
-			if (mode_buf_length > scsicmd->cmnd[4])
-				mode_buf_length = scsicmd->cmnd[4];
-		}
-		scsi_sg_copy_from_buffer(scsicmd, mode_buf, mode_buf_length);
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-
-		return 0;
-	}
-	case MODE_SENSE_10:
-	{
-		char mode_buf[11];
-		int mode_buf_length = 8;
-
-		dprintk((KERN_DEBUG "MODE SENSE 10 byte command.\n"));
-		mode_buf[0] = 0;	/* Mode data length (MSB) */
-		mode_buf[1] = 6;	/* Mode data length (LSB) */
-		mode_buf[2] = 0;	/* Medium type - default */
-		mode_buf[3] = 0;	/* Device-specific param,
-					   bit 8: 0/1 = write enabled/protected
-					   bit 4: 0/1 = FUA enabled */
-		if (dev->raw_io_interface && ((aac_cache & 5) != 1))
-			mode_buf[3] = 0x10;
-		mode_buf[4] = 0;	/* reserved */
-		mode_buf[5] = 0;	/* reserved */
-		mode_buf[6] = 0;	/* Block descriptor length (MSB) */
-		mode_buf[7] = 0;	/* Block descriptor length (LSB) */
-		if (((scsicmd->cmnd[2] & 0x3f) == 8) ||
-		  ((scsicmd->cmnd[2] & 0x3f) == 0x3f)) {
-			mode_buf[1] = 9;
-			mode_buf[8] = 8;
-			mode_buf[9] = 1;
-			mode_buf[10] = ((aac_cache & 6) == 2)
-				? 0 : 0x04; /* WCE */
-			mode_buf_length = 11;
-			if (mode_buf_length > scsicmd->cmnd[8])
-				mode_buf_length = scsicmd->cmnd[8];
-		}
-		scsi_sg_copy_from_buffer(scsicmd, mode_buf, mode_buf_length);
-
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-
-		return 0;
-	}
-	case REQUEST_SENSE:
-		dprintk((KERN_DEBUG "REQUEST SENSE command.\n"));
-		memcpy(scsicmd->sense_buffer, &dev->fsa_dev[cid].sense_data, sizeof (struct sense_data));
-		memset(&dev->fsa_dev[cid].sense_data, 0, sizeof (struct sense_data));
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-		return 0;
-=======
 		int mode_buf_length = 4;
 		u32 capacity;
 		aac_modep_data mpd;
@@ -4119,7 +3196,6 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 				sizeof(struct sense_data));
 		scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case ALLOW_MEDIUM_REMOVAL:
 		dprintk((KERN_DEBUG "LOCK command.\n"));
@@ -4128,25 +3204,14 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 		else
 			fsa_dev_ptr[cid].locked = 0;
 
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-		return 0;
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	These commands are all No-Ops
 	 */
 	case TEST_UNIT_READY:
 		if (fsa_dev_ptr[cid].sense_data.sense_key == NOT_READY) {
-<<<<<<< HEAD
-			scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 |
-				SAM_STAT_CHECK_CONDITION;
-=======
 			scsicmd->result = DID_OK << 16 | SAM_STAT_CHECK_CONDITION;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_sense(&dev->fsa_dev[cid].sense_data,
 				  NOT_READY, SENCODE_BECOMING_READY,
 				  ASENCODE_BECOMING_READY, 0, 0);
@@ -4155,88 +3220,14 @@ int aac_scsi_cmd(struct scsi_cmnd * scsicmd)
 			       min_t(size_t,
 				     sizeof(dev->fsa_dev[cid].sense_data),
 				     SCSI_SENSE_BUFFERSIZE));
-<<<<<<< HEAD
-			scsicmd->scsi_done(scsicmd);
-			return 0;
-		}
-		/* FALLTHRU */
-=======
 			break;
 		}
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RESERVE:
 	case RELEASE:
 	case REZERO_UNIT:
 	case REASSIGN_BLOCKS:
 	case SEEK_10:
-<<<<<<< HEAD
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-		scsicmd->scsi_done(scsicmd);
-		return 0;
-
-	case START_STOP:
-		return aac_start_stop(scsicmd);
-	}
-
-	switch (scsicmd->cmnd[0])
-	{
-		case READ_6:
-		case READ_10:
-		case READ_12:
-		case READ_16:
-			if (dev->in_reset)
-				return -1;
-			/*
-			 *	Hack to keep track of ordinal number of the device that
-			 *	corresponds to a container. Needed to convert
-			 *	containers to /dev/sd device names
-			 */
-
-			if (scsicmd->request->rq_disk)
-				strlcpy(fsa_dev_ptr[cid].devname,
-				scsicmd->request->rq_disk->disk_name,
-				min(sizeof(fsa_dev_ptr[cid].devname),
-				sizeof(scsicmd->request->rq_disk->disk_name) + 1));
-
-			return aac_read(scsicmd);
-
-		case WRITE_6:
-		case WRITE_10:
-		case WRITE_12:
-		case WRITE_16:
-			if (dev->in_reset)
-				return -1;
-			return aac_write(scsicmd);
-
-		case SYNCHRONIZE_CACHE:
-			if (((aac_cache & 6) == 6) && dev->cache_protected) {
-				scsicmd->result = DID_OK << 16 |
-					COMMAND_COMPLETE << 8 | SAM_STAT_GOOD;
-				scsicmd->scsi_done(scsicmd);
-				return 0;
-			}
-			/* Issue FIB to tell Firmware to flush it's cache */
-			if ((aac_cache & 6) != 2)
-				return aac_synchronize(scsicmd);
-			/* FALLTHRU */
-		default:
-			/*
-			 *	Unhandled commands
-			 */
-			dprintk((KERN_WARNING "Unhandled SCSI Command: 0x%x.\n", scsicmd->cmnd[0]));
-			scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_CHECK_CONDITION;
-			set_sense(&dev->fsa_dev[cid].sense_data,
-			  ILLEGAL_REQUEST, SENCODE_INVALID_COMMAND,
-			  ASENCODE_INVALID_COMMAND, 0, 0);
-			memcpy(scsicmd->sense_buffer, &dev->fsa_dev[cid].sense_data,
-				min_t(size_t,
-				      sizeof(dev->fsa_dev[cid].sense_data),
-				      SCSI_SENSE_BUFFERSIZE));
-			scsicmd->scsi_done(scsicmd);
-			return 0;
-	}
-=======
 		scsicmd->result = DID_OK << 16 | SAM_STAT_GOOD;
 		break;
 
@@ -4263,7 +3254,6 @@ scsi_done_ret:
 
 	aac_scsi_done(scsicmd);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int query_disk(struct aac_dev *dev, void __user *arg)
@@ -4276,18 +3266,11 @@ static int query_disk(struct aac_dev *dev, void __user *arg)
 		return -EBUSY;
 	if (copy_from_user(&qd, arg, sizeof (struct aac_query_disk)))
 		return -EFAULT;
-<<<<<<< HEAD
-	if (qd.cnum == -1)
-		qd.cnum = qd.id;
-	else if ((qd.bus == -1) && (qd.id == -1) && (qd.lun == -1))
-	{
-=======
 	if (qd.cnum == -1) {
 		if (qd.id < 0 || qd.id >= dev->maximum_num_containers)
 			return -EINVAL;
 		qd.cnum = qd.id;
 	} else if ((qd.bus == -1) && (qd.id == -1) && (qd.lun == -1)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (qd.cnum < 0 || qd.cnum >= dev->maximum_num_containers)
 			return -EINVAL;
 		qd.instance = dev->scsi_host_ptr->host_no;
@@ -4306,11 +3289,7 @@ static int query_disk(struct aac_dev *dev, void __user *arg)
 	else
 		qd.unmapped = 0;
 
-<<<<<<< HEAD
-	strlcpy(qd.name, fsa_dev_ptr[qd.cnum].devname,
-=======
 	strscpy(qd.name, fsa_dev_ptr[qd.cnum].devname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  min(sizeof(qd.name), sizeof(fsa_dev_ptr[qd.cnum].devname) + 1));
 
 	if (copy_to_user(arg, &qd, sizeof (struct aac_query_disk)))
@@ -4372,11 +3351,7 @@ static int delete_disk(struct aac_dev *dev, void __user *arg)
 	}
 }
 
-<<<<<<< HEAD
-int aac_dev_ioctl(struct aac_dev *dev, int cmd, void __user *arg)
-=======
 int aac_dev_ioctl(struct aac_dev *dev, unsigned int cmd, void __user *arg)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (cmd) {
 	case FSACTL_QUERY_DISK:
@@ -4393,27 +3368,14 @@ int aac_dev_ioctl(struct aac_dev *dev, unsigned int cmd, void __user *arg)
 }
 
 /**
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * aac_srb_callback
  * @context: the context set in the fib - here it is scsi cmd
  * @fibptr: pointer to the fib
  *
  * Handles the completion of a scsi command to a non dasd device
-<<<<<<< HEAD
- *
- */
-
-static void aac_srb_callback(void *context, struct fib * fibptr)
-{
-	struct aac_dev *dev;
-=======
  */
 static void aac_srb_callback(void *context, struct fib * fibptr)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct aac_srb_reply *srbreply;
 	struct scsi_cmnd *scsicmd;
 
@@ -4424,19 +3386,6 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 
 	BUG_ON(fibptr == NULL);
 
-<<<<<<< HEAD
-	dev = fibptr->dev;
-
-	srbreply = (struct aac_srb_reply *) fib_data(fibptr);
-
-	scsicmd->sense_buffer[0] = '\0';  /* Initialize sense valid flag to false */
-	/*
-	 *	Calculate resid for sg
-	 */
-
-	scsi_set_resid(scsicmd, scsi_bufflen(scsicmd)
-		       - le32_to_cpu(srbreply->data_xfer_length));
-=======
 	srbreply = (struct aac_srb_reply *) fib_data(fibptr);
 
 	scsicmd->sense_buffer[0] = '\0';  /* Initialize sense valid flag to false */
@@ -4453,7 +3402,6 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 				   - le32_to_cpu(srbreply->data_xfer_length));
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scsi_dma_unmap(scsicmd);
 
@@ -4466,15 +3414,6 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 	 * First check the fib status
 	 */
 
-<<<<<<< HEAD
-	if (le32_to_cpu(srbreply->status) != ST_OK){
-		int len;
-		printk(KERN_WARNING "aac_srb_callback: srb failed, status = %d\n", le32_to_cpu(srbreply->status));
-		len = min_t(u32, le32_to_cpu(srbreply->sense_data_size),
-			    SCSI_SENSE_BUFFERSIZE);
-		scsicmd->result = DID_ERROR << 16 | COMMAND_COMPLETE << 8 | SAM_STAT_CHECK_CONDITION;
-		memcpy(scsicmd->sense_buffer, srbreply->sense_data, len);
-=======
 	if (le32_to_cpu(srbreply->status) != ST_OK) {
 		int len;
 
@@ -4485,22 +3424,11 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 		scsicmd->result = DID_ERROR << 16 | SAM_STAT_CHECK_CONDITION;
 		memcpy(scsicmd->sense_buffer,
 				srbreply->sense_data, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Next check the srb status
 	 */
-<<<<<<< HEAD
-	switch( (le32_to_cpu(srbreply->srb_status))&0x3f){
-	case SRB_STATUS_ERROR_RECOVERY:
-	case SRB_STATUS_PENDING:
-	case SRB_STATUS_SUCCESS:
-		scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8;
-		break;
-	case SRB_STATUS_DATA_OVERRUN:
-		switch(scsicmd->cmnd[0]){
-=======
 	switch ((le32_to_cpu(srbreply->srb_status))&0x3f) {
 	case SRB_STATUS_ERROR_RECOVERY:
 	case SRB_STATUS_PENDING:
@@ -4509,7 +3437,6 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 		break;
 	case SRB_STATUS_DATA_OVERRUN:
 		switch (scsicmd->cmnd[0]) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case  READ_6:
 		case  WRITE_6:
 		case  READ_10:
@@ -4518,21 +3445,6 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 		case  WRITE_12:
 		case  READ_16:
 		case  WRITE_16:
-<<<<<<< HEAD
-			if (le32_to_cpu(srbreply->data_xfer_length) < scsicmd->underflow) {
-				printk(KERN_WARNING"aacraid: SCSI CMD underflow\n");
-			} else {
-				printk(KERN_WARNING"aacraid: SCSI CMD Data Overrun\n");
-			}
-			scsicmd->result = DID_ERROR << 16 | COMMAND_COMPLETE << 8;
-			break;
-		case INQUIRY: {
-			scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8;
-			break;
-		}
-		default:
-			scsicmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8;
-=======
 			if (le32_to_cpu(srbreply->data_xfer_length)
 						< scsicmd->underflow)
 				pr_warn("aacraid: SCSI CMD underflow\n");
@@ -4545,21 +3457,10 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 			break;
 		default:
 			scsicmd->result = DID_OK << 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		break;
 	case SRB_STATUS_ABORTED:
-<<<<<<< HEAD
-		scsicmd->result = DID_ABORT << 16 | ABORT << 8;
-		break;
-	case SRB_STATUS_ABORT_FAILED:
-		// Not sure about this one - but assuming the hba was trying to abort for some reason
-		scsicmd->result = DID_ERROR << 16 | ABORT << 8;
-		break;
-	case SRB_STATUS_PARITY_ERROR:
-		scsicmd->result = DID_PARITY << 16 | MSG_PARITY_ERROR << 8;
-=======
 		scsicmd->result = DID_ABORT << 16;
 		break;
 	case SRB_STATUS_ABORT_FAILED:
@@ -4571,37 +3472,17 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 		break;
 	case SRB_STATUS_PARITY_ERROR:
 		scsicmd->result = DID_PARITY << 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SRB_STATUS_NO_DEVICE:
 	case SRB_STATUS_INVALID_PATH_ID:
 	case SRB_STATUS_INVALID_TARGET_ID:
 	case SRB_STATUS_INVALID_LUN:
 	case SRB_STATUS_SELECTION_TIMEOUT:
-<<<<<<< HEAD
-		scsicmd->result = DID_NO_CONNECT << 16 | COMMAND_COMPLETE << 8;
-=======
 		scsicmd->result = DID_NO_CONNECT << 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SRB_STATUS_COMMAND_TIMEOUT:
 	case SRB_STATUS_TIMEOUT:
-<<<<<<< HEAD
-		scsicmd->result = DID_TIME_OUT << 16 | COMMAND_COMPLETE << 8;
-		break;
-
-	case SRB_STATUS_BUSY:
-		scsicmd->result = DID_BUS_BUSY << 16 | COMMAND_COMPLETE << 8;
-		break;
-
-	case SRB_STATUS_BUS_RESET:
-		scsicmd->result = DID_RESET << 16 | COMMAND_COMPLETE << 8;
-		break;
-
-	case SRB_STATUS_MESSAGE_REJECTED:
-		scsicmd->result = DID_ERROR << 16 | MESSAGE_REJECT << 8;
-=======
 		scsicmd->result = DID_TIME_OUT << 16;
 		break;
 
@@ -4615,7 +3496,6 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 
 	case SRB_STATUS_MESSAGE_REJECTED:
 		scsicmd->result = DID_ERROR << 16;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SRB_STATUS_REQUEST_FLUSHED:
 	case SRB_STATUS_ERROR:
@@ -4633,38 +3513,13 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 	case SRB_STATUS_DOMAIN_VALIDATION_FAIL:
 	default:
 #ifdef AAC_DETAILED_STATUS_INFO
-<<<<<<< HEAD
-		printk("aacraid: SRB ERROR(%u) %s scsi cmd 0x%x - scsi status 0x%x\n",
-=======
 		pr_info("aacraid: SRB ERROR(%u) %s scsi cmd 0x%x -scsi status 0x%x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			le32_to_cpu(srbreply->srb_status) & 0x3F,
 			aac_get_status_string(
 				le32_to_cpu(srbreply->srb_status) & 0x3F),
 			scsicmd->cmnd[0],
 			le32_to_cpu(srbreply->scsi_status));
 #endif
-<<<<<<< HEAD
-		if ((scsicmd->cmnd[0] == ATA_12)
-		  || (scsicmd->cmnd[0] == ATA_16)) {
-			if (scsicmd->cmnd[2] & (0x01 << 5)) {
-				scsicmd->result = DID_OK << 16
-						| COMMAND_COMPLETE << 8;
-				break;
-			} else {
-				scsicmd->result = DID_ERROR << 16
-						| COMMAND_COMPLETE << 8;
-				break;
-			}
-		} else {
-			scsicmd->result = DID_ERROR << 16
-					| COMMAND_COMPLETE << 8;
-			break;
-		}
-	}
-	if (le32_to_cpu(srbreply->scsi_status) == SAM_STAT_CHECK_CONDITION) {
-		int len;
-=======
 		/*
 		 * When the CC bit is SET by the host in ATA pass thru CDB,
 		 *  driver is supposed to return DID_OK
@@ -4689,18 +3544,10 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 			== SAM_STAT_CHECK_CONDITION) {
 		int len;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scsicmd->result |= SAM_STAT_CHECK_CONDITION;
 		len = min_t(u32, le32_to_cpu(srbreply->sense_data_size),
 			    SCSI_SENSE_BUFFERSIZE);
 #ifdef AAC_DETAILED_STATUS_INFO
-<<<<<<< HEAD
-		printk(KERN_WARNING "aac_srb_callback: check condition, status = %d len=%d\n",
-					le32_to_cpu(srbreply->status), len);
-#endif
-		memcpy(scsicmd->sense_buffer, srbreply->sense_data, len);
-	}
-=======
 		pr_warn("aac_srb_callback: check condition, status = %d len=%d\n",
 					le32_to_cpu(srbreply->status), len);
 #endif
@@ -4708,22 +3555,12 @@ static void aac_srb_callback(void *context, struct fib * fibptr)
 				srbreply->sense_data, len);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * OR in the scsi status (already shifted up a bit)
 	 */
 	scsicmd->result |= le32_to_cpu(srbreply->scsi_status);
 
 	aac_fib_complete(fibptr);
-<<<<<<< HEAD
-	aac_fib_free(fibptr);
-	scsicmd->scsi_done(scsicmd);
-}
-
-/**
- *
- * aac_send_scb_fib
-=======
 	aac_scsi_done(scsicmd);
 }
 
@@ -4869,16 +3706,11 @@ out:
 
 /**
  * aac_send_srb_fib
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @scsicmd: the scsi command block
  *
  * This routine will form a FIB and fill in the aac_srb from the
  * scsicmd passed in.
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int aac_send_srb_fib(struct scsi_cmnd* scsicmd)
 {
 	struct fib* cmd_fibcontext;
@@ -4889,39 +3721,22 @@ static int aac_send_srb_fib(struct scsi_cmnd* scsicmd)
 	if (scmd_id(scsicmd) >= dev->maximum_num_physicals ||
 			scsicmd->device->lun > 7) {
 		scsicmd->result = DID_NO_CONNECT << 16;
-<<<<<<< HEAD
-		scsicmd->scsi_done(scsicmd);
-=======
 		aac_scsi_done(scsicmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	/*
 	 *	Allocate and initialize a Fib then setup a BlockWrite command
 	 */
-<<<<<<< HEAD
-	if (!(cmd_fibcontext = aac_fib_alloc(dev))) {
-		return -1;
-	}
-=======
 	cmd_fibcontext = aac_fib_alloc_tag(dev, scsicmd);
 	aac_priv(scsicmd)->owner = AAC_OWNER_FIRMWARE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = aac_adapter_scsi(cmd_fibcontext, scsicmd);
 
 	/*
 	 *	Check that the command queued to the controller
 	 */
-<<<<<<< HEAD
-	if (status == -EINPROGRESS) {
-		scsicmd->SCp.phase = AAC_OWNER_FIRMWARE;
-		return 0;
-	}
-=======
 	if (status == -EINPROGRESS)
 		return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_WARNING "aac_srb: aac_fib_send failed with status: %d\n", status);
 	aac_fib_complete(cmd_fibcontext);
@@ -4930,15 +3745,6 @@ static int aac_send_srb_fib(struct scsi_cmnd* scsicmd)
 	return -1;
 }
 
-<<<<<<< HEAD
-static unsigned long aac_build_sg(struct scsi_cmnd* scsicmd, struct sgmap* psg)
-{
-	struct aac_dev *dev;
-	unsigned long byte_count = 0;
-	int nseg;
-
-	dev = (struct aac_dev *)scsicmd->device->host->hostdata;
-=======
 /**
  * aac_send_hba_fib
  * @scsicmd: the scsi command block
@@ -4992,40 +3798,12 @@ static long aac_build_sg(struct scsi_cmnd *scsicmd, struct sgmap *psg)
 	struct scatterlist *sg;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// Get rid of old data
 	psg->count = 0;
 	psg->sg[0].addr = 0;
 	psg->sg[0].count = 0;
 
 	nseg = scsi_dma_map(scsicmd);
-<<<<<<< HEAD
-	BUG_ON(nseg < 0);
-	if (nseg) {
-		struct scatterlist *sg;
-		int i;
-
-		psg->count = cpu_to_le32(nseg);
-
-		scsi_for_each_sg(scsicmd, sg, nseg, i) {
-			psg->sg[i].addr = cpu_to_le32(sg_dma_address(sg));
-			psg->sg[i].count = cpu_to_le32(sg_dma_len(sg));
-			byte_count += sg_dma_len(sg);
-		}
-		/* hba wants the size to be exact */
-		if (byte_count > scsi_bufflen(scsicmd)) {
-			u32 temp = le32_to_cpu(psg->sg[i-1].count) -
-				(byte_count - scsi_bufflen(scsicmd));
-			psg->sg[i-1].count = cpu_to_le32(temp);
-			byte_count = scsi_bufflen(scsicmd);
-		}
-		/* Check for command underflow */
-		if(scsicmd->underflow && (byte_count < scsicmd->underflow)){
-			printk(KERN_WARNING"aacraid: cmd len %08lX cmd underflow %08X\n",
-					byte_count, scsicmd->underflow);
-		}
-	}
-=======
 	if (nseg <= 0)
 		return nseg;
 
@@ -5049,21 +3827,10 @@ static long aac_build_sg(struct scsi_cmnd *scsicmd, struct sgmap *psg)
 		       byte_count, scsicmd->underflow);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return byte_count;
 }
 
 
-<<<<<<< HEAD
-static unsigned long aac_build_sg64(struct scsi_cmnd* scsicmd, struct sgmap64* psg)
-{
-	struct aac_dev *dev;
-	unsigned long byte_count = 0;
-	u64 addr;
-	int nseg;
-
-	dev = (struct aac_dev *)scsicmd->device->host->hostdata;
-=======
 static long aac_build_sg64(struct scsi_cmnd *scsicmd, struct sgmap64 *psg)
 {
 	unsigned long byte_count = 0;
@@ -5072,7 +3839,6 @@ static long aac_build_sg64(struct scsi_cmnd *scsicmd, struct sgmap64 *psg)
 	struct scatterlist *sg;
 	int i;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// Get rid of old data
 	psg->count = 0;
 	psg->sg[0].addr[0] = 0;
@@ -5080,42 +3846,6 @@ static long aac_build_sg64(struct scsi_cmnd *scsicmd, struct sgmap64 *psg)
 	psg->sg[0].count = 0;
 
 	nseg = scsi_dma_map(scsicmd);
-<<<<<<< HEAD
-	BUG_ON(nseg < 0);
-	if (nseg) {
-		struct scatterlist *sg;
-		int i;
-
-		scsi_for_each_sg(scsicmd, sg, nseg, i) {
-			int count = sg_dma_len(sg);
-			addr = sg_dma_address(sg);
-			psg->sg[i].addr[0] = cpu_to_le32(addr & 0xffffffff);
-			psg->sg[i].addr[1] = cpu_to_le32(addr>>32);
-			psg->sg[i].count = cpu_to_le32(count);
-			byte_count += count;
-		}
-		psg->count = cpu_to_le32(nseg);
-		/* hba wants the size to be exact */
-		if (byte_count > scsi_bufflen(scsicmd)) {
-			u32 temp = le32_to_cpu(psg->sg[i-1].count) -
-				(byte_count - scsi_bufflen(scsicmd));
-			psg->sg[i-1].count = cpu_to_le32(temp);
-			byte_count = scsi_bufflen(scsicmd);
-		}
-		/* Check for command underflow */
-		if(scsicmd->underflow && (byte_count < scsicmd->underflow)){
-			printk(KERN_WARNING"aacraid: cmd len %08lX cmd underflow %08X\n",
-					byte_count, scsicmd->underflow);
-		}
-	}
-	return byte_count;
-}
-
-static unsigned long aac_build_sgraw(struct scsi_cmnd* scsicmd, struct sgmapraw* psg)
-{
-	unsigned long byte_count = 0;
-	int nseg;
-=======
 	if (nseg <= 0)
 		return nseg;
 
@@ -5150,7 +3880,6 @@ static long aac_build_sgraw(struct scsi_cmnd *scsicmd, struct sgmapraw *psg)
 	int nseg;
 	struct scatterlist *sg;
 	int i;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	// Get rid of old data
 	psg->count = 0;
@@ -5162,38 +3891,6 @@ static long aac_build_sgraw(struct scsi_cmnd *scsicmd, struct sgmapraw *psg)
 	psg->sg[0].flags = 0;
 
 	nseg = scsi_dma_map(scsicmd);
-<<<<<<< HEAD
-	BUG_ON(nseg < 0);
-	if (nseg) {
-		struct scatterlist *sg;
-		int i;
-
-		scsi_for_each_sg(scsicmd, sg, nseg, i) {
-			int count = sg_dma_len(sg);
-			u64 addr = sg_dma_address(sg);
-			psg->sg[i].next = 0;
-			psg->sg[i].prev = 0;
-			psg->sg[i].addr[1] = cpu_to_le32((u32)(addr>>32));
-			psg->sg[i].addr[0] = cpu_to_le32((u32)(addr & 0xffffffff));
-			psg->sg[i].count = cpu_to_le32(count);
-			psg->sg[i].flags = 0;
-			byte_count += count;
-		}
-		psg->count = cpu_to_le32(nseg);
-		/* hba wants the size to be exact */
-		if (byte_count > scsi_bufflen(scsicmd)) {
-			u32 temp = le32_to_cpu(psg->sg[i-1].count) -
-				(byte_count - scsi_bufflen(scsicmd));
-			psg->sg[i-1].count = cpu_to_le32(temp);
-			byte_count = scsi_bufflen(scsicmd);
-		}
-		/* Check for command underflow */
-		if(scsicmd->underflow && (byte_count < scsicmd->underflow)){
-			printk(KERN_WARNING"aacraid: cmd len %08lX cmd underflow %08X\n",
-					byte_count, scsicmd->underflow);
-		}
-	}
-=======
 	if (nseg <= 0)
 		return nseg;
 
@@ -5407,7 +4104,6 @@ static long aac_build_sghba(struct scsi_cmnd *scsicmd,
 				byte_count, scsicmd->underflow);
 	}
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return byte_count;
 }
 

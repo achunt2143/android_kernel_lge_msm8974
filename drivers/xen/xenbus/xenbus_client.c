@@ -30,21 +30,14 @@
  * IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #include <linux/mm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/types.h>
 #include <linux/spinlock.h>
 #include <linux/vmalloc.h>
 #include <linux/export.h>
 #include <asm/xen/hypervisor.h>
-<<<<<<< HEAD
-#include <asm/xen/page.h>
-=======
 #include <xen/page.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <xen/interface/xen.h>
 #include <xen/interface/event_channel.h>
 #include <xen/balloon.h>
@@ -52,10 +45,6 @@
 #include <xen/grant_table.h>
 #include <xen/xenbus.h>
 #include <xen/xen.h>
-<<<<<<< HEAD
-
-#include "xenbus_probe.h"
-=======
 #include <xen/features.h>
 
 #include "xenbus.h"
@@ -63,17 +52,10 @@
 #define XENBUS_PAGES(_grants)	(DIV_ROUND_UP(_grants, XEN_PFN_PER_PAGE))
 
 #define XENBUS_MAX_RING_PAGES	(XENBUS_PAGES(XENBUS_MAX_RING_GRANTS))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xenbus_map_node {
 	struct list_head next;
 	union {
-<<<<<<< HEAD
-		struct vm_struct *area; /* PV */
-		struct page *page;     /* HVM */
-	};
-	grant_handle_t handle;
-=======
 		struct {
 			struct vm_struct *area;
 		} pv;
@@ -98,20 +80,15 @@ struct map_ring_valloc {
 	struct gnttab_unmap_grant_ref unmap[XENBUS_MAX_RING_GRANTS];
 
 	unsigned int idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_SPINLOCK(xenbus_valloc_lock);
 static LIST_HEAD(xenbus_valloc_pages);
 
 struct xenbus_ring_ops {
-<<<<<<< HEAD
-	int (*map)(struct xenbus_device *dev, int gnt, void **vaddr);
-=======
 	int (*map)(struct xenbus_device *dev, struct map_ring_valloc *info,
 		   grant_ref_t *gnt_refs, unsigned int nr_grefs,
 		   void **vaddr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*unmap)(struct xenbus_device *dev, void *vaddr);
 };
 
@@ -139,21 +116,6 @@ EXPORT_SYMBOL_GPL(xenbus_strstate);
  * @dev: xenbus device
  * @path: path to watch
  * @watch: watch to register
-<<<<<<< HEAD
- * @callback: callback to register
- *
- * Register a @watch on the given path, using the given xenbus_watch structure
- * for storage, and the given @callback function as the callback.  Return 0 on
- * success, or -errno on error.  On success, the given @path will be saved as
- * @watch->node, and remains the caller's to free.  On error, @watch->node will
- * be NULL, the device will switch to %XenbusStateClosing, and the error will
- * be saved in the store.
- */
-int xenbus_watch_path(struct xenbus_device *dev, const char *path,
-		      struct xenbus_watch *watch,
-		      void (*callback)(struct xenbus_watch *,
-				       const char **, unsigned int))
-=======
  * @will_handle: events queuing determine callback
  * @callback: callback to register
  *
@@ -172,25 +134,18 @@ int xenbus_watch_path(struct xenbus_device *dev, const char *path,
 					  const char *, const char *),
 		      void (*callback)(struct xenbus_watch *,
 				       const char *, const char *))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
 	watch->node = path;
-<<<<<<< HEAD
-=======
 	watch->will_handle = will_handle;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	watch->callback = callback;
 
 	err = register_xenbus_watch(watch);
 
 	if (err) {
 		watch->node = NULL;
-<<<<<<< HEAD
-=======
 		watch->will_handle = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		watch->callback = NULL;
 		xenbus_dev_fatal(dev, err, "adding watch on %s", path);
 	}
@@ -204,27 +159,11 @@ EXPORT_SYMBOL_GPL(xenbus_watch_path);
  * xenbus_watch_pathfmt - register a watch on a sprintf-formatted path
  * @dev: xenbus device
  * @watch: watch to register
-<<<<<<< HEAD
-=======
  * @will_handle: events queuing determine callback
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @callback: callback to register
  * @pathfmt: format of path to watch
  *
  * Register a watch on the given @path, using the given xenbus_watch
-<<<<<<< HEAD
- * structure for storage, and the given @callback function as the callback.
- * Return 0 on success, or -errno on error.  On success, the watched path
- * (@path/@path2) will be saved as @watch->node, and becomes the caller's to
- * kfree().  On error, watch->node will be NULL, so the caller has nothing to
- * free, the device will switch to %XenbusStateClosing, and the error will be
- * saved in the store.
- */
-int xenbus_watch_pathfmt(struct xenbus_device *dev,
-			 struct xenbus_watch *watch,
-			 void (*callback)(struct xenbus_watch *,
-					const char **, unsigned int),
-=======
  * structure for storage, @will_handle function as the callback to determine if
  * each event need to be queued, and the given @callback function as the
  * callback.  On success, the watched path (@path/@path2) will be saved
@@ -241,7 +180,6 @@ int xenbus_watch_pathfmt(struct xenbus_device *dev,
 					const char *, const char *),
 			 void (*callback)(struct xenbus_watch *,
 					  const char *, const char *),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 const char *pathfmt, ...)
 {
 	int err;
@@ -256,11 +194,7 @@ int xenbus_watch_pathfmt(struct xenbus_device *dev,
 		xenbus_dev_fatal(dev, -ENOMEM, "allocating path for watch");
 		return -ENOMEM;
 	}
-<<<<<<< HEAD
-	err = xenbus_watch_path(dev, path, watch, callback);
-=======
 	err = xenbus_watch_path(dev, path, watch, will_handle, callback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err)
 		kfree(path);
@@ -328,24 +262,15 @@ abort:
 }
 
 /**
-<<<<<<< HEAD
- * xenbus_switch_state
-=======
  * xenbus_switch_state - save the new state of a driver
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: xenbus device
  * @state: new state
  *
  * Advertise in the store a change of the given driver to the given new_state.
-<<<<<<< HEAD
- * Return 0 on success, or -errno on error.  On error, the device will switch
- * to XenbusStateClosing, and the error will be saved in the store.
-=======
  * On error, the device will switch to XenbusStateClosing, and the error
  * will be saved in the store.
  *
  * Returns: %0 on success or -errno on error
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int xenbus_switch_state(struct xenbus_device *dev, enum xenbus_state state)
 {
@@ -362,53 +287,6 @@ int xenbus_frontend_closed(struct xenbus_device *dev)
 }
 EXPORT_SYMBOL_GPL(xenbus_frontend_closed);
 
-<<<<<<< HEAD
-/**
- * Return the path to the error node for the given device, or NULL on failure.
- * If the value returned is non-NULL, then it is the caller's to kfree.
- */
-static char *error_path(struct xenbus_device *dev)
-{
-	return kasprintf(GFP_KERNEL, "error/%s", dev->nodename);
-}
-
-
-static void xenbus_va_dev_error(struct xenbus_device *dev, int err,
-				const char *fmt, va_list ap)
-{
-	int ret;
-	unsigned int len;
-	char *printf_buffer = NULL;
-	char *path_buffer = NULL;
-
-#define PRINTF_BUFFER_SIZE 4096
-	printf_buffer = kmalloc(PRINTF_BUFFER_SIZE, GFP_KERNEL);
-	if (printf_buffer == NULL)
-		goto fail;
-
-	len = sprintf(printf_buffer, "%i ", -err);
-	ret = vsnprintf(printf_buffer+len, PRINTF_BUFFER_SIZE-len, fmt, ap);
-
-	BUG_ON(len + ret > PRINTF_BUFFER_SIZE-1);
-
-	dev_err(&dev->dev, "%s\n", printf_buffer);
-
-	path_buffer = error_path(dev);
-
-	if (path_buffer == NULL) {
-		dev_err(&dev->dev, "failed to write error node for %s (%s)\n",
-		       dev->nodename, printf_buffer);
-		goto fail;
-	}
-
-	if (xenbus_write(XBT_NIL, path_buffer, "error", printf_buffer) != 0) {
-		dev_err(&dev->dev, "failed to write error node for %s (%s)\n",
-		       dev->nodename, printf_buffer);
-		goto fail;
-	}
-
-fail:
-=======
 static void xenbus_va_dev_error(struct xenbus_device *dev, int err,
 				const char *fmt, va_list ap)
 {
@@ -431,19 +309,12 @@ static void xenbus_va_dev_error(struct xenbus_device *dev, int err,
 	if (path_buffer)
 		xenbus_write(XBT_NIL, path_buffer, "error", printf_buffer);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(printf_buffer);
 	kfree(path_buffer);
 }
 
-<<<<<<< HEAD
-
-/**
- * xenbus_dev_error
-=======
 /**
  * xenbus_dev_error - place an error message into the store
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: xenbus device
  * @err: error to report
  * @fmt: error message format
@@ -462,11 +333,7 @@ void xenbus_dev_error(struct xenbus_device *dev, int err, const char *fmt, ...)
 EXPORT_SYMBOL_GPL(xenbus_dev_error);
 
 /**
-<<<<<<< HEAD
- * xenbus_dev_fatal
-=======
  * xenbus_dev_fatal - put an error messages into the store and then shutdown
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: xenbus device
  * @err: error to report
  * @fmt: error message format
@@ -488,11 +355,7 @@ void xenbus_dev_fatal(struct xenbus_device *dev, int err, const char *fmt, ...)
 }
 EXPORT_SYMBOL_GPL(xenbus_dev_fatal);
 
-<<<<<<< HEAD
-/**
-=======
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Equivalent to xenbus_dev_fatal(dev, err, fmt, args), but helps
  * avoiding recursion within xenbus_switch_state.
  */
@@ -509,28 +372,6 @@ static void xenbus_switch_fatal(struct xenbus_device *dev, int depth, int err,
 		__xenbus_switch_state(dev, XenbusStateClosing, 1);
 }
 
-<<<<<<< HEAD
-/**
- * xenbus_grant_ring
- * @dev: xenbus device
- * @ring_mfn: mfn of ring to grant
-
- * Grant access to the given @ring_mfn to the peer of the given device.  Return
- * 0 on success, or -errno on error.  On error, the device will switch to
- * XenbusStateClosing, and the error will be saved in the store.
- */
-int xenbus_grant_ring(struct xenbus_device *dev, unsigned long ring_mfn)
-{
-	int err = gnttab_grant_foreign_access(dev->otherend_id, ring_mfn, 0);
-	if (err < 0)
-		xenbus_dev_fatal(dev, err, "granting access to ring page");
-	return err;
-}
-EXPORT_SYMBOL_GPL(xenbus_grant_ring);
-
-
-/**
-=======
 /*
  * xenbus_setup_ring
  * @dev: xenbus device
@@ -622,17 +463,12 @@ void xenbus_teardown_ring(void **vaddr, unsigned int nr_pages,
 EXPORT_SYMBOL_GPL(xenbus_teardown_ring);
 
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Allocate an event channel for the given xenbus_device, assigning the newly
  * created local port to *port.  Return 0 on success, or -errno on error.  On
  * error, the device will switch to XenbusStateClosing, and the error will be
  * saved in the store.
  */
-<<<<<<< HEAD
-int xenbus_alloc_evtchn(struct xenbus_device *dev, int *port)
-=======
 int xenbus_alloc_evtchn(struct xenbus_device *dev, evtchn_port_t *port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct evtchn_alloc_unbound alloc_unbound;
 	int err;
@@ -652,44 +488,10 @@ int xenbus_alloc_evtchn(struct xenbus_device *dev, evtchn_port_t *port)
 EXPORT_SYMBOL_GPL(xenbus_alloc_evtchn);
 
 
-<<<<<<< HEAD
-/**
- * Bind to an existing interdomain event channel in another domain. Returns 0
- * on success and stores the local port in *port. On error, returns -errno,
- * switches the device to XenbusStateClosing, and saves the error in XenStore.
- */
-int xenbus_bind_evtchn(struct xenbus_device *dev, int remote_port, int *port)
-{
-	struct evtchn_bind_interdomain bind_interdomain;
-	int err;
-
-	bind_interdomain.remote_dom = dev->otherend_id;
-	bind_interdomain.remote_port = remote_port;
-
-	err = HYPERVISOR_event_channel_op(EVTCHNOP_bind_interdomain,
-					  &bind_interdomain);
-	if (err)
-		xenbus_dev_fatal(dev, err,
-				 "binding to event channel %d from domain %d",
-				 remote_port, dev->otherend_id);
-	else
-		*port = bind_interdomain.local_port;
-
-	return err;
-}
-EXPORT_SYMBOL_GPL(xenbus_bind_evtchn);
-
-
-/**
- * Free an existing event channel. Returns 0 on success or -errno on error.
- */
-int xenbus_free_evtchn(struct xenbus_device *dev, int port)
-=======
 /*
  * Free an existing event channel. Returns 0 on success or -errno on error.
  */
 int xenbus_free_evtchn(struct xenbus_device *dev, evtchn_port_t port)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct evtchn_close close;
 	int err;
@@ -698,11 +500,7 @@ int xenbus_free_evtchn(struct xenbus_device *dev, evtchn_port_t port)
 
 	err = HYPERVISOR_event_channel_op(EVTCHNOP_close, &close);
 	if (err)
-<<<<<<< HEAD
-		xenbus_dev_error(dev, err, "freeing event channel %d", port);
-=======
 		xenbus_dev_error(dev, err, "freeing event channel %u", port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -710,98 +508,6 @@ EXPORT_SYMBOL_GPL(xenbus_free_evtchn);
 
 
 /**
-<<<<<<< HEAD
- * xenbus_map_ring_valloc
- * @dev: xenbus device
- * @gnt_ref: grant reference
- * @vaddr: pointer to address to be filled out by mapping
- *
- * Based on Rusty Russell's skeleton driver's map_page.
- * Map a page of memory into this domain from another domain's grant table.
- * xenbus_map_ring_valloc allocates a page of virtual address space, maps the
- * page to that address, and sets *vaddr to that address.
- * Returns 0 on success, and GNTST_* (see xen/include/interface/grant_table.h)
- * or -ENOMEM on error. If an error is returned, device will switch to
- * XenbusStateClosing and the error message will be saved in XenStore.
- */
-int xenbus_map_ring_valloc(struct xenbus_device *dev, int gnt_ref, void **vaddr)
-{
-	return ring_ops->map(dev, gnt_ref, vaddr);
-}
-EXPORT_SYMBOL_GPL(xenbus_map_ring_valloc);
-
-static int xenbus_map_ring_valloc_pv(struct xenbus_device *dev,
-				     int gnt_ref, void **vaddr)
-{
-	struct gnttab_map_grant_ref op = {
-		.flags = GNTMAP_host_map | GNTMAP_contains_pte,
-		.ref   = gnt_ref,
-		.dom   = dev->otherend_id,
-	};
-	struct xenbus_map_node *node;
-	struct vm_struct *area;
-	pte_t *pte;
-
-	*vaddr = NULL;
-
-	node = kzalloc(sizeof(*node), GFP_KERNEL);
-	if (!node)
-		return -ENOMEM;
-
-	area = alloc_vm_area(PAGE_SIZE, &pte);
-	if (!area) {
-		kfree(node);
-		return -ENOMEM;
-	}
-
-	op.host_addr = arbitrary_virt_to_machine(pte).maddr;
-
-	if (HYPERVISOR_grant_table_op(GNTTABOP_map_grant_ref, &op, 1))
-		BUG();
-
-	if (op.status != GNTST_okay) {
-		free_vm_area(area);
-		kfree(node);
-		xenbus_dev_fatal(dev, op.status,
-				 "mapping in shared page %d from domain %d",
-				 gnt_ref, dev->otherend_id);
-		return op.status;
-	}
-
-	node->handle = op.handle;
-	node->area = area;
-
-	spin_lock(&xenbus_valloc_lock);
-	list_add(&node->next, &xenbus_valloc_pages);
-	spin_unlock(&xenbus_valloc_lock);
-
-	*vaddr = area->addr;
-	return 0;
-}
-
-static int xenbus_map_ring_valloc_hvm(struct xenbus_device *dev,
-				      int gnt_ref, void **vaddr)
-{
-	struct xenbus_map_node *node;
-	int err;
-	void *addr;
-
-	*vaddr = NULL;
-
-	node = kzalloc(sizeof(*node), GFP_KERNEL);
-	if (!node)
-		return -ENOMEM;
-
-	err = alloc_xenballooned_pages(1, &node->page, false /* lowmem */);
-	if (err)
-		goto out_err;
-
-	addr = pfn_to_kaddr(page_to_pfn(node->page));
-
-	err = xenbus_map_ring(dev, gnt_ref, &node->handle, addr);
-	if (err)
-		goto out_err;
-=======
  * xenbus_map_ring_valloc - allocate & map pages of VA space
  * @dev: xenbus device
  * @gnt_refs: grant reference array
@@ -993,63 +699,12 @@ static int xenbus_map_ring_hvm(struct xenbus_device *dev,
 	}
 
 	node->hvm.addr = addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&xenbus_valloc_lock);
 	list_add(&node->next, &xenbus_valloc_pages);
 	spin_unlock(&xenbus_valloc_lock);
 
 	*vaddr = addr;
-<<<<<<< HEAD
-	return 0;
-
- out_err:
-	free_xenballooned_pages(1, &node->page);
-	kfree(node);
-	return err;
-}
-
-
-/**
- * xenbus_map_ring
- * @dev: xenbus device
- * @gnt_ref: grant reference
- * @handle: pointer to grant handle to be filled
- * @vaddr: address to be mapped to
- *
- * Map a page of memory into this domain from another domain's grant table.
- * xenbus_map_ring does not allocate the virtual address space (you must do
- * this yourself!). It only maps in the page to the specified address.
- * Returns 0 on success, and GNTST_* (see xen/include/interface/grant_table.h)
- * or -ENOMEM on error. If an error is returned, device will switch to
- * XenbusStateClosing and the error message will be saved in XenStore.
- */
-int xenbus_map_ring(struct xenbus_device *dev, int gnt_ref,
-		    grant_handle_t *handle, void *vaddr)
-{
-	struct gnttab_map_grant_ref op;
-
-	gnttab_set_map_op(&op, (unsigned long)vaddr, GNTMAP_host_map, gnt_ref,
-			  dev->otherend_id);
-
-	if (HYPERVISOR_grant_table_op(GNTTABOP_map_grant_ref, &op, 1))
-		BUG();
-
-	if (op.status != GNTST_okay) {
-		xenbus_dev_fatal(dev, op.status,
-				 "mapping in shared page %d from domain %d",
-				 gnt_ref, dev->otherend_id);
-	} else
-		*handle = op.handle;
-
-	return op.status;
-}
-EXPORT_SYMBOL_GPL(xenbus_map_ring);
-
-
-/**
- * xenbus_unmap_ring_vfree
-=======
 	info->node = NULL;
 
 	return 0;
@@ -1069,7 +724,6 @@ EXPORT_SYMBOL_GPL(xenbus_map_ring);
 
 /**
  * xenbus_unmap_ring_vfree - unmap a page of memory from another domain
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: xenbus device
  * @vaddr: addr to unmap
  *
@@ -1077,12 +731,8 @@ EXPORT_SYMBOL_GPL(xenbus_map_ring);
  * Unmap a page of memory in this domain that was imported from another domain.
  * Use xenbus_unmap_ring_vfree if you mapped in your memory with
  * xenbus_map_ring_valloc (it will free the virtual address space).
-<<<<<<< HEAD
- * Returns 0 on success and returns GNTST_* on error
-=======
  *
  * Returns: %0 on success or GNTST_* on error
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (see xen/include/interface/grant_table.h).
  */
 int xenbus_unmap_ring_vfree(struct xenbus_device *dev, void *vaddr)
@@ -1091,19 +741,6 @@ int xenbus_unmap_ring_vfree(struct xenbus_device *dev, void *vaddr)
 }
 EXPORT_SYMBOL_GPL(xenbus_unmap_ring_vfree);
 
-<<<<<<< HEAD
-static int xenbus_unmap_ring_vfree_pv(struct xenbus_device *dev, void *vaddr)
-{
-	struct xenbus_map_node *node;
-	struct gnttab_unmap_grant_ref op = {
-		.host_addr = (unsigned long)vaddr,
-	};
-	unsigned int level;
-
-	spin_lock(&xenbus_valloc_lock);
-	list_for_each_entry(node, &xenbus_valloc_pages, next) {
-		if (node->area->addr == vaddr) {
-=======
 #ifdef CONFIG_XEN_PV
 static int map_ring_apply(pte_t *pte, unsigned long addr, void *data)
 {
@@ -1169,7 +806,6 @@ static int xenbus_unmap_ring_pv(struct xenbus_device *dev, void *vaddr)
 	spin_lock(&xenbus_valloc_lock);
 	list_for_each_entry(node, &xenbus_valloc_pages, next) {
 		if (node->pv.area->addr == vaddr) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_del(&node->next);
 			goto found;
 		}
@@ -1184,27 +820,6 @@ static int xenbus_unmap_ring_pv(struct xenbus_device *dev, void *vaddr)
 		return GNTST_bad_virt_addr;
 	}
 
-<<<<<<< HEAD
-	op.handle = node->handle;
-	op.host_addr = arbitrary_virt_to_machine(
-		lookup_address((unsigned long)vaddr, &level)).maddr;
-
-	if (HYPERVISOR_grant_table_op(GNTTABOP_unmap_grant_ref, &op, 1))
-		BUG();
-
-	if (op.status == GNTST_okay)
-		free_vm_area(node->area);
-	else
-		xenbus_dev_error(dev, op.status,
-				 "unmapping page at handle %d error %d",
-				 node->handle, op.status);
-
-	kfree(node);
-	return op.status;
-}
-
-static int xenbus_unmap_ring_vfree_hvm(struct xenbus_device *dev, void *vaddr)
-=======
 	for (i = 0; i < node->nr_handles; i++) {
 		unsigned long addr;
 
@@ -1266,17 +881,10 @@ static void xenbus_unmap_ring_setup_grant_hvm(unsigned long gfn,
 }
 
 static int xenbus_unmap_ring_hvm(struct xenbus_device *dev, void *vaddr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rv;
 	struct xenbus_map_node *node;
 	void *addr;
-<<<<<<< HEAD
-
-	spin_lock(&xenbus_valloc_lock);
-	list_for_each_entry(node, &xenbus_valloc_pages, next) {
-		addr = pfn_to_kaddr(page_to_pfn(node->page));
-=======
 	struct unmap_ring_hvm info = {
 		.idx = 0,
 	};
@@ -1285,7 +893,6 @@ static int xenbus_unmap_ring_hvm(struct xenbus_device *dev, void *vaddr)
 	spin_lock(&xenbus_valloc_lock);
 	list_for_each_entry(node, &xenbus_valloc_pages, next) {
 		addr = node->hvm.addr;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (addr == vaddr) {
 			list_del(&node->next);
 			goto found;
@@ -1301,14 +908,6 @@ static int xenbus_unmap_ring_hvm(struct xenbus_device *dev, void *vaddr)
 		return GNTST_bad_virt_addr;
 	}
 
-<<<<<<< HEAD
-	rv = xenbus_unmap_ring(dev, node->handle, addr);
-
-	if (!rv)
-		free_xenballooned_pages(1, &node->page);
-	else
-		WARN(1, "Leaking %p\n", vaddr);
-=======
 	nr_pages = XENBUS_PAGES(node->nr_handles);
 
 	gnttab_foreach_grant(node->hvm.pages, node->nr_handles,
@@ -1323,54 +922,16 @@ static int xenbus_unmap_ring_hvm(struct xenbus_device *dev, void *vaddr)
 	}
 	else
 		WARN(1, "Leaking %p, size %u page(s)\n", vaddr, nr_pages);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(node);
 	return rv;
 }
 
 /**
-<<<<<<< HEAD
- * xenbus_unmap_ring
- * @dev: xenbus device
- * @handle: grant handle
- * @vaddr: addr to unmap
- *
- * Unmap a page of memory in this domain that was imported from another domain.
- * Returns 0 on success and returns GNTST_* on error
- * (see xen/include/interface/grant_table.h).
- */
-int xenbus_unmap_ring(struct xenbus_device *dev,
-		      grant_handle_t handle, void *vaddr)
-{
-	struct gnttab_unmap_grant_ref op;
-
-	gnttab_set_unmap_op(&op, (unsigned long)vaddr, GNTMAP_host_map, handle);
-
-	if (HYPERVISOR_grant_table_op(GNTTABOP_unmap_grant_ref, &op, 1))
-		BUG();
-
-	if (op.status != GNTST_okay)
-		xenbus_dev_error(dev, op.status,
-				 "unmapping page at handle %d error %d",
-				 handle, op.status);
-
-	return op.status;
-}
-EXPORT_SYMBOL_GPL(xenbus_unmap_ring);
-
-
-/**
- * xenbus_read_driver_state
- * @path: path for driver
- *
- * Return the state of the driver rooted at the given store path, or
-=======
  * xenbus_read_driver_state - read state from a store path
  * @path: path for driver
  *
  * Returns: the state of the driver rooted at the given store path, or
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XenbusStateUnknown if no state can be read.
  */
 enum xenbus_state xenbus_read_driver_state(const char *path)
@@ -1384,34 +945,17 @@ enum xenbus_state xenbus_read_driver_state(const char *path)
 }
 EXPORT_SYMBOL_GPL(xenbus_read_driver_state);
 
-<<<<<<< HEAD
-static const struct xenbus_ring_ops ring_ops_pv = {
-	.map = xenbus_map_ring_valloc_pv,
-	.unmap = xenbus_unmap_ring_vfree_pv,
-};
-
-static const struct xenbus_ring_ops ring_ops_hvm = {
-	.map = xenbus_map_ring_valloc_hvm,
-	.unmap = xenbus_unmap_ring_vfree_hvm,
-=======
 static const struct xenbus_ring_ops ring_ops_hvm = {
 	.map = xenbus_map_ring_hvm,
 	.unmap = xenbus_unmap_ring_hvm,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init xenbus_ring_ops_init(void)
 {
-<<<<<<< HEAD
-	if (xen_pv_domain())
-		ring_ops = &ring_ops_pv;
-	else
-=======
 #ifdef CONFIG_XEN_PV
 	if (!xen_feature(XENFEAT_auto_translated_physmap))
 		ring_ops = &ring_ops_pv;
 	else
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ring_ops = &ring_ops_hvm;
 }

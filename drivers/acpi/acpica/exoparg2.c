@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2012, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -134,11 +89,7 @@ acpi_status acpi_ex_opcode_2A_0T_0R(struct acpi_walk_state *walk_state)
 		/*
 		 * Dispatch the notify to the appropriate handler
 		 * NOTE: the request is queued for execution after this method
-<<<<<<< HEAD
-		 * completes.  The notify handlers are NOT invoked synchronously
-=======
 		 * completes. The notify handlers are NOT invoked synchronously
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * from this thread -- because handlers may in turn run other
 		 * control methods.
 		 */
@@ -214,10 +165,7 @@ acpi_status acpi_ex_opcode_2A_2T_1R(struct acpi_walk_state *walk_state)
 
 		ACPI_ERROR((AE_INFO, "Unknown AML opcode 0x%X",
 			    walk_state->opcode));
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_AML_BAD_OPCODE;
 		goto cleanup;
 	}
@@ -234,11 +182,7 @@ acpi_status acpi_ex_opcode_2A_2T_1R(struct acpi_walk_state *walk_state)
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-      cleanup:
-=======
 cleanup:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Since the remainder is not returned indirectly, remove a reference to
 	 * it. Only the quotient is returned indirectly.
@@ -280,11 +224,7 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 	union acpi_operand_object *return_desc = NULL;
 	u64 index;
 	acpi_status status = AE_OK;
-<<<<<<< HEAD
-	acpi_size length;
-=======
 	acpi_size length = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE_STR(ex_opcode_2A_1T_1R,
 				acpi_ps_get_opcode_name(walk_state->opcode));
@@ -324,16 +264,6 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 					NULL, &return_desc->integer.value);
 		break;
 
-<<<<<<< HEAD
-	case AML_CONCAT_OP:	/* Concatenate (Data1, Data2, Result) */
-
-		status = acpi_ex_do_concatenate(operand[0], operand[1],
-						&return_desc, walk_state);
-		break;
-
-	case AML_TO_STRING_OP:	/* to_string (Buffer, Length, Result) (ACPI 2.0) */
-
-=======
 	case AML_CONCATENATE_OP:	/* Concatenate (Data1, Data2, Result) */
 
 		status =
@@ -342,7 +272,6 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 		break;
 
 	case AML_TO_STRING_OP:	/* to_string (Buffer, Length, Result) (ACPI 2.0) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Input object is guaranteed to be a buffer at this point (it may have
 		 * been converted.)  Copy the raw buffer data to a new object of
@@ -358,16 +287,9 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 		 * NOTE: A length of zero is ok, and will create a zero-length, null
 		 *       terminated string.
 		 */
-<<<<<<< HEAD
-		length = 0;
-		while ((length < operand[0]->buffer.length) &&
-		       (length < operand[1]->integer.value) &&
-		       (operand[0]->buffer.pointer[length])) {
-=======
 		while ((length < operand[0]->buffer.length) &&	/* Length of input buffer */
 		       (length < operand[1]->integer.value) &&	/* Length operand */
 		       (operand[0]->buffer.pointer[length])) {	/* Null terminator */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			length++;
 		}
 
@@ -383,18 +305,6 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 		 * Copy the raw buffer data with no transform.
 		 * (NULL terminated already)
 		 */
-<<<<<<< HEAD
-		ACPI_MEMCPY(return_desc->string.pointer,
-			    operand[0]->buffer.pointer, length);
-		break;
-
-	case AML_CONCAT_RES_OP:
-
-		/* concatenate_res_template (Buffer, Buffer, Result) (ACPI 2.0) */
-
-		status = acpi_ex_concat_template(operand[0], operand[1],
-						 &return_desc, walk_state);
-=======
 		memcpy(return_desc->string.pointer,
 		       operand[0]->buffer.pointer, length);
 		break;
@@ -406,7 +316,6 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 		status =
 		    acpi_ex_concat_template(operand[0], operand[1],
 					    &return_desc, walk_state);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case AML_INDEX_OP:	/* Index (Source Index Result) */
@@ -434,48 +343,33 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 		case ACPI_TYPE_STRING:
 
 			if (index >= operand[0]->string.length) {
-<<<<<<< HEAD
-=======
 				length = operand[0]->string.length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status = AE_AML_STRING_LIMIT;
 			}
 
 			return_desc->reference.target_type =
 			    ACPI_TYPE_BUFFER_FIELD;
-<<<<<<< HEAD
-=======
 			return_desc->reference.index_pointer =
 			    &(operand[0]->buffer.pointer[index]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_TYPE_BUFFER:
 
 			if (index >= operand[0]->buffer.length) {
-<<<<<<< HEAD
-=======
 				length = operand[0]->buffer.length;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status = AE_AML_BUFFER_LIMIT;
 			}
 
 			return_desc->reference.target_type =
 			    ACPI_TYPE_BUFFER_FIELD;
-<<<<<<< HEAD
-=======
 			return_desc->reference.index_pointer =
 			    &(operand[0]->buffer.pointer[index]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_TYPE_PACKAGE:
 
 			if (index >= operand[0]->package.count) {
-<<<<<<< HEAD
-=======
 				length = operand[0]->package.count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status = AE_AML_PACKAGE_LIMIT;
 			}
 
@@ -486,12 +380,9 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 
 		default:
 
-<<<<<<< HEAD
-=======
 			ACPI_ERROR((AE_INFO,
 				    "Invalid object type: %X",
 				    (operand[0])->common.type));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_AML_INTERNAL;
 			goto cleanup;
 		}
@@ -499,16 +390,10 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 		/* Failure means that the Index was beyond the end of the object */
 
 		if (ACPI_FAILURE(status)) {
-<<<<<<< HEAD
-			ACPI_EXCEPTION((AE_INFO, status,
-					"Index (0x%8.8X%8.8X) is beyond end of object",
-					ACPI_FORMAT_UINT64(index)));
-=======
 			ACPI_BIOS_EXCEPTION((AE_INFO, status,
 					     "Index (0x%X%8.8X) is beyond end of object (length 0x%X)",
 					     ACPI_FORMAT_UINT64(index),
 					     (u32)length));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto cleanup;
 		}
 
@@ -536,11 +421,7 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 		break;
 	}
 
-<<<<<<< HEAD
-      store_result_to_target:
-=======
 store_result_to_target:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ACPI_SUCCESS(status)) {
 		/*
@@ -557,11 +438,7 @@ store_result_to_target:
 		}
 	}
 
-<<<<<<< HEAD
-      cleanup:
-=======
 cleanup:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Delete return object on error */
 
@@ -648,19 +525,12 @@ acpi_status acpi_ex_opcode_2A_0T_1R(struct acpi_walk_state *walk_state)
 
 		ACPI_ERROR((AE_INFO, "Unknown AML opcode 0x%X",
 			    walk_state->opcode));
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_AML_BAD_OPCODE;
 		goto cleanup;
 	}
 
-<<<<<<< HEAD
-      store_logical_result:
-=======
 store_logical_result:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Set return value to according to logical_result. logical TRUE (all ones)
 	 * Default is FALSE (zero)
@@ -669,11 +539,7 @@ store_logical_result:
 		return_desc->integer.value = ACPI_UINT64_MAX;
 	}
 
-<<<<<<< HEAD
-      cleanup:
-=======
 cleanup:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Delete return object on error */
 

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generate definitions needed by assembly language modules.
  * This code generates raw asm output which is post-processed to extract
@@ -15,20 +12,13 @@
 #include <linux/kbuild.h>
 #include <asm/io.h>
 
-<<<<<<< HEAD
-void foo(void)
-=======
 static void __used foo(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DEFINE(TI_TASK, offsetof(struct thread_info, task));
 	DEFINE(TI_FLAGS, offsetof(struct thread_info, flags));
 	DEFINE(TI_CPU, offsetof(struct thread_info, cpu));
-<<<<<<< HEAD
-=======
 	DEFINE(TI_FP, offsetof(struct thread_info, fp));
 	DEFINE(TI_STATUS, offsetof(struct thread_info, status));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BLANK();
 
         DEFINE(TASK_BLOCKED, offsetof(struct task_struct, blocked));

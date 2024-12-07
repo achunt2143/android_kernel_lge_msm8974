@@ -8,15 +8,6 @@
 #ifndef _ASM_COMPILER_H
 #define _ASM_COMPILER_H
 
-<<<<<<< HEAD
-#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
-#define GCC_IMM_ASM() "n"
-#define GCC_REG_ACCUM "$0"
-#else
-#define GCC_IMM_ASM() "rn"
-#define GCC_REG_ACCUM "accum"
-#endif
-=======
 /*
  * With GCC 4.5 onwards we can use __builtin_unreachable to indicate to the
  * compiler that a particular code path will never be hit. This allows it to be
@@ -71,6 +62,5 @@
 #define MIPS_ISA_LEVEL_RAW mips64r2
 #define MIPS_ISA_ARCH_LEVEL_RAW MIPS_ISA_LEVEL_RAW
 #endif /* CONFIG_CPU_MIPSR6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_COMPILER_H */

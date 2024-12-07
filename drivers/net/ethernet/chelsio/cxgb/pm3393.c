@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *                                                                           *
  * File: pm3393.c                                                            *
@@ -11,20 +8,6 @@
  *  PMC/SIERRA (pm3393) MAC-PHY functionality.                               *
  *  part of the Chelsio 10Gb Ethernet Driver.                                *
  *                                                                           *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify      *
- * it under the terms of the GNU General Public License, version 2, as       *
- * published by the Free Software Foundation.                                *
- *                                                                           *
- * You should have received a copy of the GNU General Public License along   *
- * with this program; if not, write to the Free Software Foundation, Inc.,   *
- * 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                 *
- *                                                                           *
- * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
- * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.                     *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                           *
  * http://www.chelsio.com                                                    *
  *                                                                           *
@@ -55,12 +38,6 @@
 
 #define OFFSET(REG_ADDR)    ((REG_ADDR) << 2)
 
-<<<<<<< HEAD
-/* Max frame size PM3393 can handle. Includes Ethernet header and CRC. */
-#define MAX_FRAME_SIZE  9600
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPG 12
 #define TXXG_CONF1_VAL ((IPG << SUNI1x10GEXP_BITOFF_TXXG_IPGT) | \
 	SUNI1x10GEXP_BITMSK_TXXG_32BIT_ALIGN | SUNI1x10GEXP_BITMSK_TXXG_CRCEN | \
@@ -342,14 +319,7 @@ static int pm3393_set_mtu(struct cmac *cmac, int mtu)
 {
 	int enabled = cmac->instance->enabled;
 
-<<<<<<< HEAD
-	/* MAX_FRAME_SIZE includes header + FCS, mtu doesn't */
-	mtu += 14 + 4;
-	if (mtu > MAX_FRAME_SIZE)
-		return -EINVAL;
-=======
 	mtu += ETH_HLEN + ETH_FCS_LEN;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable Rx/Tx MAC before configuring it. */
 	if (enabled)
@@ -513,19 +483,11 @@ static const struct cmac_statistics *pm3393_update_statistics(struct cmac *mac,
 
 static int pm3393_macaddress_get(struct cmac *cmac, u8 mac_addr[6])
 {
-<<<<<<< HEAD
-	memcpy(mac_addr, cmac->instance->mac_addr, 6);
-	return 0;
-}
-
-static int pm3393_macaddress_set(struct cmac *cmac, u8 ma[6])
-=======
 	memcpy(mac_addr, cmac->instance->mac_addr, ETH_ALEN);
 	return 0;
 }
 
 static int pm3393_macaddress_set(struct cmac *cmac, const u8 ma[6])
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val, lo, mid, hi, enabled = cmac->instance->enabled;
 
@@ -548,11 +510,7 @@ static int pm3393_macaddress_set(struct cmac *cmac, const u8 ma[6])
 	 */
 
 	/* Store local copy */
-<<<<<<< HEAD
-	memcpy(cmac->instance->mac_addr, ma, 6);
-=======
 	memcpy(cmac->instance->mac_addr, ma, ETH_ALEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lo  = ((u32) ma[1] << 8) | (u32) ma[0];
 	mid = ((u32) ma[3] << 8) | (u32) ma[2];
@@ -597,11 +555,7 @@ static void pm3393_destroy(struct cmac *cmac)
 	kfree(cmac);
 }
 
-<<<<<<< HEAD
-static struct cmac_ops pm3393_ops = {
-=======
 static const struct cmac_ops pm3393_ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy                 = pm3393_destroy,
 	.reset                   = pm3393_reset,
 	.interrupt_enable        = pm3393_interrupt_enable,

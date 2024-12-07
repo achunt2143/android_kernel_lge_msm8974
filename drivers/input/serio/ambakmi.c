@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/input/serio/ambakmi.c
  *
  *  Copyright (C) 2000-2003 Deep Blue Solutions Ltd.
  *  Copyright (C) 2002 Russell King.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
  */
 #include <linux/module.h>
-#include <linux/init.h>
-=======
- */
-#include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serio.h>
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -81,11 +67,7 @@ static int amba_kmi_open(struct serio *io)
 	unsigned int divisor;
 	int ret;
 
-<<<<<<< HEAD
-	ret = clk_enable(kmi->clk);
-=======
 	ret = clk_prepare_enable(kmi->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -93,12 +75,8 @@ static int amba_kmi_open(struct serio *io)
 	writeb(divisor, KMICLKDIV);
 	writeb(KMICR_EN, KMICR);
 
-<<<<<<< HEAD
-	ret = request_irq(kmi->irq, amba_kmi_int, 0, "kmi-pl050", kmi);
-=======
 	ret = request_irq(kmi->irq, amba_kmi_int, IRQF_SHARED, "kmi-pl050",
 			  kmi);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		printk(KERN_ERR "kmi: failed to claim IRQ%d\n", kmi->irq);
 		writeb(0, KMICR);
@@ -110,11 +88,7 @@ static int amba_kmi_open(struct serio *io)
 	return 0;
 
  clk_disable:
-<<<<<<< HEAD
-	clk_disable(kmi->clk);
-=======
 	clk_disable_unprepare(kmi->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return ret;
 }
@@ -126,17 +100,10 @@ static void amba_kmi_close(struct serio *io)
 	writeb(0, KMICR);
 
 	free_irq(kmi->irq, kmi);
-<<<<<<< HEAD
-	clk_disable(kmi->clk);
-}
-
-static int __devinit amba_kmi_probe(struct amba_device *dev,
-=======
 	clk_disable_unprepare(kmi->clk);
 }
 
 static int amba_kmi_probe(struct amba_device *dev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct amba_id *id)
 {
 	struct amba_kmi_port *kmi;
@@ -159,13 +126,8 @@ static int amba_kmi_probe(struct amba_device *dev,
 	io->write	= amba_kmi_write;
 	io->open	= amba_kmi_open;
 	io->close	= amba_kmi_close;
-<<<<<<< HEAD
-	strlcpy(io->name, dev_name(&dev->dev), sizeof(io->name));
-	strlcpy(io->phys, dev_name(&dev->dev), sizeof(io->phys));
-=======
 	strscpy(io->name, dev_name(&dev->dev), sizeof(io->name));
 	strscpy(io->phys, dev_name(&dev->dev), sizeof(io->phys));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	io->port_data	= kmi;
 	io->dev.parent	= &dev->dev;
 
@@ -197,38 +159,20 @@ static int amba_kmi_probe(struct amba_device *dev,
 	return ret;
 }
 
-<<<<<<< HEAD
-static int __devexit amba_kmi_remove(struct amba_device *dev)
-{
-	struct amba_kmi_port *kmi = amba_get_drvdata(dev);
-
-	amba_set_drvdata(dev, NULL);
-
-=======
 static void amba_kmi_remove(struct amba_device *dev)
 {
 	struct amba_kmi_port *kmi = amba_get_drvdata(dev);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio_unregister_port(kmi->io);
 	clk_put(kmi->clk);
 	iounmap(kmi->base);
 	kfree(kmi);
 	amba_release_regions(dev);
-<<<<<<< HEAD
-	return 0;
-}
-
-static int amba_kmi_resume(struct amba_device *dev)
-{
-	struct amba_kmi_port *kmi = amba_get_drvdata(dev);
-=======
 }
 
 static int amba_kmi_resume(struct device *dev)
 {
 	struct amba_kmi_port *kmi = dev_get_drvdata(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* kick the serio layer to rescan this port */
 	serio_reconnect(kmi->io);
@@ -236,13 +180,9 @@ static int amba_kmi_resume(struct device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct amba_id amba_kmi_idtable[] = {
-=======
 static DEFINE_SIMPLE_DEV_PM_OPS(amba_kmi_dev_pm_ops, NULL, amba_kmi_resume);
 
 static const struct amba_id amba_kmi_idtable[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id	= 0x00041050,
 		.mask	= 0x000fffff,
@@ -256,19 +196,11 @@ static struct amba_driver ambakmi_driver = {
 	.drv		= {
 		.name	= "kmi-pl050",
 		.owner	= THIS_MODULE,
-<<<<<<< HEAD
-	},
-	.id_table	= amba_kmi_idtable,
-	.probe		= amba_kmi_probe,
-	.remove		= __devexit_p(amba_kmi_remove),
-	.resume		= amba_kmi_resume,
-=======
 		.pm	= pm_sleep_ptr(&amba_kmi_dev_pm_ops),
 	},
 	.id_table	= amba_kmi_idtable,
 	.probe		= amba_kmi_probe,
 	.remove		= amba_kmi_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_amba_driver(ambakmi_driver);

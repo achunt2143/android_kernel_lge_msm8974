@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  The NFC Controller Interface is the communication protocol between an
  *  NFC Controller (NFCC) and a Device Host (DH).
@@ -13,23 +10,6 @@
  *  Acknowledgements:
  *  This file is based on hci_event.c, which was written
  *  by Maxim Krasnyansky.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 2
- *  as published by the Free Software Foundation
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
@@ -45,27 +25,6 @@
 
 /* Handle NCI Response packets */
 
-<<<<<<< HEAD
-static void nci_core_reset_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-{
-	struct nci_core_reset_rsp *rsp = (void *) skb->data;
-
-	pr_debug("status 0x%x\n", rsp->status);
-
-	if (rsp->status == NCI_STATUS_OK) {
-		ndev->nci_ver = rsp->nci_ver;
-		pr_debug("nci_ver 0x%x, config_status 0x%x\n",
-			 rsp->nci_ver, rsp->config_status);
-	}
-
-	nci_req_complete(ndev, rsp->status);
-}
-
-static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-{
-	struct nci_core_init_rsp_1 *rsp_1 = (void *) skb->data;
-	struct nci_core_init_rsp_2 *rsp_2;
-=======
 static void nci_core_reset_rsp_packet(struct nci_dev *ndev,
 				      const struct sk_buff *skb)
 {
@@ -90,31 +49,18 @@ static u8 nci_core_init_rsp_packet_v1(struct nci_dev *ndev,
 {
 	const struct nci_core_init_rsp_1 *rsp_1 = (void *)skb->data;
 	const struct nci_core_init_rsp_2 *rsp_2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("status 0x%x\n", rsp_1->status);
 
 	if (rsp_1->status != NCI_STATUS_OK)
-<<<<<<< HEAD
-		goto exit;
-=======
 		return rsp_1->status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ndev->nfcc_features = __le32_to_cpu(rsp_1->nfcc_features);
 	ndev->num_supported_rf_interfaces = rsp_1->num_supported_rf_interfaces;
 
-<<<<<<< HEAD
-	if (ndev->num_supported_rf_interfaces >
-	    NCI_MAX_SUPPORTED_RF_INTERFACES) {
-		ndev->num_supported_rf_interfaces =
-			NCI_MAX_SUPPORTED_RF_INTERFACES;
-	}
-=======
 	ndev->num_supported_rf_interfaces =
 		min((int)ndev->num_supported_rf_interfaces,
 		    NCI_MAX_SUPPORTED_RF_INTERFACES);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(ndev->supported_rf_interfaces,
 	       rsp_1->supported_rf_interfaces,
@@ -134,8 +80,6 @@ static u8 nci_core_init_rsp_packet_v1(struct nci_dev *ndev,
 	ndev->manufact_specific_info =
 		__le32_to_cpu(rsp_2->manufact_specific_info);
 
-<<<<<<< HEAD
-=======
 	return NCI_STATUS_OK;
 }
 
@@ -189,7 +133,6 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, const struct sk_buff 
 	if (status != NCI_STATUS_OK)
 		goto exit;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("nfcc_features 0x%x\n",
 		 ndev->nfcc_features);
 	pr_debug("num_supported_rf_interfaces %d\n",
@@ -216,13 +159,6 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, const struct sk_buff 
 		 ndev->manufact_specific_info);
 
 exit:
-<<<<<<< HEAD
-	nci_req_complete(ndev, rsp_1->status);
-}
-
-static void nci_rf_disc_map_rsp_packet(struct nci_dev *ndev,
-				       struct sk_buff *skb)
-=======
 	nci_req_complete(ndev, status);
 }
 
@@ -238,7 +174,6 @@ static void nci_core_set_config_rsp_packet(struct nci_dev *ndev,
 
 static void nci_rf_disc_map_rsp_packet(struct nci_dev *ndev,
 				       const struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 status = skb->data[0];
 
@@ -247,24 +182,14 @@ static void nci_rf_disc_map_rsp_packet(struct nci_dev *ndev,
 	nci_req_complete(ndev, status);
 }
 
-<<<<<<< HEAD
-static void nci_rf_disc_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
-{
-=======
 static void nci_rf_disc_rsp_packet(struct nci_dev *ndev,
 				   const struct sk_buff *skb)
 {
 	struct nci_conn_info *conn_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 status = skb->data[0];
 
 	pr_debug("status 0x%x\n", status);
 
-<<<<<<< HEAD
-	if (status == NCI_STATUS_OK)
-		atomic_set(&ndev->state, NCI_DISCOVERY);
-
-=======
 	if (status == NCI_STATUS_OK) {
 		atomic_set(&ndev->state, NCI_DISCOVERY);
 
@@ -285,16 +210,11 @@ static void nci_rf_disc_rsp_packet(struct nci_dev *ndev,
 	}
 
 exit:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nci_req_complete(ndev, status);
 }
 
 static void nci_rf_disc_select_rsp_packet(struct nci_dev *ndev,
-<<<<<<< HEAD
-					  struct sk_buff *skb)
-=======
 					  const struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 status = skb->data[0];
 
@@ -306,11 +226,7 @@ static void nci_rf_disc_select_rsp_packet(struct nci_dev *ndev,
 }
 
 static void nci_rf_deactivate_rsp_packet(struct nci_dev *ndev,
-<<<<<<< HEAD
-					 struct sk_buff *skb)
-=======
 					 const struct sk_buff *skb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 status = skb->data[0];
 
@@ -325,8 +241,6 @@ static void nci_rf_deactivate_rsp_packet(struct nci_dev *ndev,
 	}
 }
 
-<<<<<<< HEAD
-=======
 static void nci_nfcee_discover_rsp_packet(struct nci_dev *ndev,
 					  const struct sk_buff *skb)
 {
@@ -428,7 +342,6 @@ static void nci_core_conn_close_rsp_packet(struct nci_dev *ndev,
 	nci_req_complete(ndev, status);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	__u16 rsp_opcode = nci_opcode(skb->data);
@@ -445,8 +358,6 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 	/* strip the nci control header */
 	skb_pull(skb, NCI_CTRL_HDR_SIZE);
 
-<<<<<<< HEAD
-=======
 	if (nci_opcode_gid(rsp_opcode) == NCI_GID_PROPRIETARY) {
 		if (nci_prop_rsp_packet(ndev, rsp_opcode, skb) == -ENOTSUPP) {
 			pr_err("unsupported rsp opcode 0x%x\n",
@@ -456,7 +367,6 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		goto end;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (rsp_opcode) {
 	case NCI_OP_CORE_RESET_RSP:
 		nci_core_reset_rsp_packet(ndev, skb);
@@ -466,8 +376,6 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_core_init_rsp_packet(ndev, skb);
 		break;
 
-<<<<<<< HEAD
-=======
 	case NCI_OP_CORE_SET_CONFIG_RSP:
 		nci_core_set_config_rsp_packet(ndev, skb);
 		break;
@@ -480,7 +388,6 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_core_conn_close_rsp_packet(ndev, skb);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NCI_OP_RF_DISCOVER_MAP_RSP:
 		nci_rf_disc_map_rsp_packet(ndev, skb);
 		break;
@@ -497,8 +404,6 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_rf_deactivate_rsp_packet(ndev, skb);
 		break;
 
-<<<<<<< HEAD
-=======
 	case NCI_OP_NFCEE_DISCOVER_RSP:
 		nci_nfcee_discover_rsp_packet(ndev, skb);
 		break;
@@ -507,17 +412,13 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_nfcee_mode_set_rsp_packet(ndev, skb);
 		break;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_err("unknown rsp opcode 0x%x\n", rsp_opcode);
 		break;
 	}
 
-<<<<<<< HEAD
-=======
 	nci_core_rsp_packet(ndev, rsp_opcode, skb);
 end:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree_skb(skb);
 
 	/* trigger the next cmd */

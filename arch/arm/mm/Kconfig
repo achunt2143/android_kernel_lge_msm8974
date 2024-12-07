@@ -1,40 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 comment "Processor Type"
 
 # Select CPU types depending on the architecture selected.  This selects
 # which CPUs we support in the kernel image, and the compiler instruction
 # optimiser behaviour.
 
-<<<<<<< HEAD
-# ARM610
-config CPU_ARM610
-	bool "Support ARM610 processor" if ARCH_RPC
-	select CPU_32v3
-	select CPU_CACHE_V3
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V3 if MMU
-	select CPU_TLB_V3 if MMU
-	select CPU_PABRT_LEGACY
-	help
-	  The ARM610 is the successor to the ARM3 processor
-	  and was produced by VLSI Technology Inc.
-
-	  Say Y if you want support for the ARM610 processor.
-	  Otherwise, say N.
-
-# ARM7TDMI
-config CPU_ARM7TDMI
-	bool "Support ARM7TDMI processor"
-	depends on !MMU
-	select CPU_32v4T
-	select CPU_ABRT_LV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4
-=======
 # ARM7TDMI
 config CPU_ARM7TDMI
 	bool
@@ -43,7 +13,6 @@ config CPU_ARM7TDMI
 	select CPU_ABRT_LV4T
 	select CPU_CACHE_V4
 	select CPU_PABRT_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  A 32-bit RISC microprocessor based on the ARM7 processor core
 	  which has no memory control unit and cache.
@@ -51,37 +20,6 @@ config CPU_ARM7TDMI
 	  Say Y if you want support for the ARM7TDMI processor.
 	  Otherwise, say N.
 
-<<<<<<< HEAD
-# ARM710
-config CPU_ARM710
-	bool "Support ARM710 processor" if ARCH_RPC
-	select CPU_32v3
-	select CPU_CACHE_V3
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V3 if MMU
-	select CPU_TLB_V3 if MMU
-	select CPU_PABRT_LEGACY
-	help
-	  A 32-bit RISC microprocessor based on the ARM7 processor core
-	  designed by Advanced RISC Machines Ltd. The ARM710 is the
-	  successor to the ARM610 processor. It was released in
-	  July 1994 by VLSI Technology Inc.
-
-	  Say Y if you want support for the ARM710 processor.
-	  Otherwise, say N.
-
-# ARM720T
-config CPU_ARM720T
-	bool "Support ARM720T processor" if ARCH_INTEGRATOR
-	select CPU_32v4T
-	select CPU_ABRT_LV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WT if MMU
-=======
 # ARM720T
 config CPU_ARM720T
 	bool
@@ -93,7 +31,6 @@ config CPU_ARM720T
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WT if MMU
 	help
 	  A 32-bit RISC processor with 8kByte Cache, Write Buffer and
@@ -104,15 +41,6 @@ config CPU_ARM720T
 
 # ARM740T
 config CPU_ARM740T
-<<<<<<< HEAD
-	bool "Support ARM740T processor" if ARCH_INTEGRATOR
-	depends on !MMU
-	select CPU_32v4T
-	select CPU_ABRT_LV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V3	# although the core is v4t
-	select CPU_CP15_MPU
-=======
 	bool
 	depends on !MMU
 	select CPU_32v4T
@@ -121,7 +49,6 @@ config CPU_ARM740T
 	select CPU_CP15_MPU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  A 32-bit RISC processor with 8KB cache or 4KB variants,
 	  write buffer and MPU(Protection Unit) built around
@@ -132,21 +59,12 @@ config CPU_ARM740T
 
 # ARM9TDMI
 config CPU_ARM9TDMI
-<<<<<<< HEAD
-	bool "Support ARM9TDMI processor"
-	depends on !MMU
-	select CPU_32v4T
-	select CPU_ABRT_NOMMU
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4
-=======
 	bool
 	depends on !MMU
 	select CPU_32v4T
 	select CPU_ABRT_NOMMU
 	select CPU_CACHE_V4
 	select CPU_PABRT_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  A 32-bit RISC microprocessor based on the ARM9 processor core
 	  which has no memory control unit and cache.
@@ -156,16 +74,6 @@ config CPU_ARM9TDMI
 
 # ARM920T
 config CPU_ARM920T
-<<<<<<< HEAD
-	bool "Support ARM920T processor" if ARCH_INTEGRATOR
-	select CPU_32v4T
-	select CPU_ABRT_EV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4WT
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU
-=======
 	bool
 	select CPU_32v4T
 	select CPU_ABRT_EV4T
@@ -175,7 +83,6 @@ config CPU_ARM920T
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 	help
 	  The ARM920T is licensed to be produced by numerous vendors,
@@ -186,16 +93,6 @@ config CPU_ARM920T
 
 # ARM922T
 config CPU_ARM922T
-<<<<<<< HEAD
-	bool "Support ARM922T processor" if ARCH_INTEGRATOR
-	select CPU_32v4T
-	select CPU_ABRT_EV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4WT
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU
-=======
 	bool
 	select CPU_32v4T
 	select CPU_ABRT_EV4T
@@ -205,32 +102,17 @@ config CPU_ARM922T
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 	help
 	  The ARM922T is a version of the ARM920T, but with smaller
 	  instruction and data caches. It is used in Altera's
-<<<<<<< HEAD
-	  Excalibur XA device family and Micrel's KS8695 Centaur.
-=======
 	  Excalibur XA device family and the ARM Integrator.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Say Y if you want support for the ARM922T processor.
 	  Otherwise, say N.
 
 # ARM925T
 config CPU_ARM925T
-<<<<<<< HEAD
- 	bool "Support ARM925T processor" if ARCH_OMAP1
-	select CPU_32v4T
-	select CPU_ABRT_EV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4WT
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU
-=======
 	bool
 	select CPU_32v4T
 	select CPU_ABRT_EV4T
@@ -240,7 +122,6 @@ config CPU_ARM925T
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
  	help
  	  The ARM925T is a mix between the ARM920T and ARM926T, but with
@@ -252,15 +133,6 @@ config CPU_ARM925T
 
 # ARM926T
 config CPU_ARM926T
-<<<<<<< HEAD
-	bool "Support ARM926T processor" if ARCH_INTEGRATOR || MACH_REALVIEW_EB
-	select CPU_32v5
-	select CPU_ABRT_EV5TJ
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU
-=======
 	bool
 	select CPU_32v5
 	select CPU_ABRT_EV5TJ
@@ -269,7 +141,6 @@ config CPU_ARM926T
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 	help
 	  This is a variant of the ARM920.  It has slightly different
@@ -284,19 +155,11 @@ config CPU_FA526
 	bool
 	select CPU_32v4
 	select CPU_ABRT_EV4
-<<<<<<< HEAD
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_CACHE_FA
-	select CPU_COPY_FA if MMU
-=======
 	select CPU_CACHE_FA
 	select CPU_CACHE_VIVT
 	select CPU_COPY_FA if MMU
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_FA if MMU
 	help
 	  The FA526 is a version of the ARMv4 compatible processor with
@@ -307,15 +170,6 @@ config CPU_FA526
 
 # ARM940T
 config CPU_ARM940T
-<<<<<<< HEAD
-	bool "Support ARM940T processor" if ARCH_INTEGRATOR
-	depends on !MMU
-	select CPU_32v4T
-	select CPU_ABRT_NOMMU
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MPU
-=======
 	bool
 	depends on !MMU
 	select CPU_32v4T
@@ -324,7 +178,6 @@ config CPU_ARM940T
 	select CPU_CP15_MPU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  ARM940T is a member of the ARM9TDMI family of general-
 	  purpose microprocessors with MPU and separate 4KB
@@ -336,15 +189,6 @@ config CPU_ARM940T
 
 # ARM946E-S
 config CPU_ARM946E
-<<<<<<< HEAD
-	bool "Support ARM946E-S processor" if ARCH_INTEGRATOR
-	depends on !MMU
-	select CPU_32v5
-	select CPU_ABRT_NOMMU
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MPU
-=======
 	bool
 	depends on !MMU
 	select CPU_32v5
@@ -353,7 +197,6 @@ config CPU_ARM946E
 	select CPU_CP15_MPU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  ARM946E-S is a member of the ARM9E-S family of high-
 	  performance, 32-bit system-on-chip processor solutions.
@@ -364,16 +207,6 @@ config CPU_ARM946E
 
 # ARM1020 - needs validating
 config CPU_ARM1020
-<<<<<<< HEAD
-	bool "Support ARM1020T (rev 0) processor" if ARCH_INTEGRATOR
-	select CPU_32v5
-	select CPU_ABRT_EV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4WT
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU
-=======
 	bool
 	select CPU_32v5
 	select CPU_ABRT_EV4T
@@ -383,7 +216,6 @@ config CPU_ARM1020
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 	help
 	  The ARM1020 is the 32K cached version of the ARM10 processor,
@@ -394,28 +226,6 @@ config CPU_ARM1020
 
 # ARM1020E - needs validating
 config CPU_ARM1020E
-<<<<<<< HEAD
-	bool "Support ARM1020E processor" if ARCH_INTEGRATOR
-	select CPU_32v5
-	select CPU_ABRT_EV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4WT
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU
-	select CPU_TLB_V4WBI if MMU
-	depends on n
-
-# ARM1022E
-config CPU_ARM1022
-	bool "Support ARM1022E processor" if ARCH_INTEGRATOR
-	select CPU_32v5
-	select CPU_ABRT_EV4T
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU # can probably do better
-=======
 	bool
 	depends on n
 	select CPU_32v5
@@ -438,7 +248,6 @@ config CPU_ARM1022
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 	help
 	  The ARM1022E is an implementation of the ARMv5TE architecture
@@ -450,15 +259,6 @@ config CPU_ARM1022
 
 # ARM1026EJ-S
 config CPU_ARM1026
-<<<<<<< HEAD
-	bool "Support ARM1026EJ-S processor" if ARCH_INTEGRATOR
-	select CPU_32v5
-	select CPU_ABRT_EV5T # But need Jazelle, but EV5TJ ignores bit 10
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU # can probably do better
-=======
 	bool
 	select CPU_32v5
 	select CPU_ABRT_EV5T # But need Jazelle, but EV5TJ ignores bit 10
@@ -467,7 +267,6 @@ config CPU_ARM1026
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 	help
 	  The ARM1026EJ-S is an implementation of the ARMv5TEJ architecture
@@ -478,17 +277,6 @@ config CPU_ARM1026
 
 # SA110
 config CPU_SA110
-<<<<<<< HEAD
-	bool "Support StrongARM(R) SA-110 processor" if ARCH_RPC
-	select CPU_32v3 if ARCH_RPC
-	select CPU_32v4 if !ARCH_RPC
-	select CPU_ABRT_EV4
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4WB
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_V4WB if MMU
-=======
 	bool
 	select CPU_32v3 if ARCH_RPC
 	select CPU_32v4 if !ARCH_RPC
@@ -498,7 +286,6 @@ config CPU_SA110
 	select CPU_COPY_V4WB if MMU
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WB if MMU
 	help
 	  The Intel StrongARM(R) SA-110 is a 32-bit microprocessor and
@@ -514,17 +301,10 @@ config CPU_SA1100
 	bool
 	select CPU_32v4
 	select CPU_ABRT_EV4
-<<<<<<< HEAD
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_V4WB
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-=======
 	select CPU_CACHE_V4WB
 	select CPU_CACHE_VIVT
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WB if MMU
 
 # XScale
@@ -532,16 +312,10 @@ config CPU_XSCALE
 	bool
 	select CPU_32v5
 	select CPU_ABRT_EV5T
-<<<<<<< HEAD
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-=======
 	select CPU_CACHE_VIVT
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 
 # XScale Core Version 3
@@ -549,16 +323,10 @@ config CPU_XSC3
 	bool
 	select CPU_32v5
 	select CPU_ABRT_EV5T
-<<<<<<< HEAD
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-=======
 	select CPU_CACHE_VIVT
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_V4WBI if MMU
 	select IO_36
 
@@ -567,38 +335,23 @@ config CPU_MOHAWK
 	bool
 	select CPU_32v5
 	select CPU_ABRT_EV5T
-<<<<<<< HEAD
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_TLB_V4WBI if MMU
-	select CPU_COPY_V4WB if MMU
-=======
 	select CPU_CACHE_VIVT
 	select CPU_COPY_V4WB if MMU
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
 	select CPU_TLB_V4WBI if MMU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Feroceon
 config CPU_FEROCEON
 	bool
 	select CPU_32v5
 	select CPU_ABRT_EV5T
-<<<<<<< HEAD
-	select CPU_PABRT_LEGACY
-	select CPU_CACHE_VIVT
-	select CPU_CP15_MMU
-	select CPU_COPY_FEROCEON if MMU
-=======
 	select CPU_CACHE_VIVT
 	select CPU_COPY_FEROCEON if MMU
 	select CPU_CP15_MMU
 	select CPU_PABRT_LEGACY
 	select CPU_THUMB_CAPABLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CPU_TLB_FEROCEON if MMU
 
 config CPU_FEROCEON_OLD_ID
@@ -613,52 +366,6 @@ config CPU_FEROCEON_OLD_ID
 # Marvell PJ4
 config CPU_PJ4
 	bool
-<<<<<<< HEAD
-	select CPU_V7
-	select ARM_THUMBEE
-
-# ARMv6
-config CPU_V6
-	bool "Support ARM V6 processor" if ARCH_INTEGRATOR || MACH_REALVIEW_EB || MACH_REALVIEW_PBX
-	select CPU_32v6
-	select CPU_ABRT_EV6
-	select CPU_PABRT_V6
-	select CPU_CACHE_V6
-	select CPU_CACHE_VIPT
-	select CPU_CP15_MMU
-	select CPU_HAS_ASID if MMU
-	select CPU_COPY_V6 if MMU
-	select CPU_TLB_V6 if MMU
-
-# ARMv6k
-config CPU_V6K
-	bool "Support ARM V6K processor" if ARCH_INTEGRATOR || MACH_REALVIEW_EB || MACH_REALVIEW_PBX
-	select CPU_32v6
-	select CPU_32v6K
-	select CPU_ABRT_EV6
-	select CPU_PABRT_V6
-	select CPU_CACHE_V6
-	select CPU_CACHE_VIPT
-	select CPU_CP15_MMU
-	select CPU_HAS_ASID if MMU
-	select CPU_COPY_V6 if MMU
-	select CPU_TLB_V6 if MMU
-
-# ARMv7
-config CPU_V7
-	bool "Support ARM V7 processor" if ARCH_INTEGRATOR || MACH_REALVIEW_EB || MACH_REALVIEW_PBX
-	select CPU_32v6K
-	select CPU_32v7
-	select CPU_ABRT_EV7
-	select CPU_PABRT_V7
-	select CPU_CACHE_V7
-	select CPU_CACHE_VIPT
-	select CPU_CP15_MMU
-	select CPU_HAS_ASID if MMU
-	select CPU_COPY_V6 if MMU
-	select CPU_TLB_V7 if MMU
-
-=======
 	select ARM_THUMBEE
 	select CPU_V7
 
@@ -736,38 +443,10 @@ config CPU_THUMB_CAPABLE
 	help
 	  Select this if your CPU can support Thumb mode.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Figure out what processor architecture version we should be using.
 # This defines the compiler instruction set which depends on the machine type.
 config CPU_32v3
 	bool
-<<<<<<< HEAD
-	select TLS_REG_EMUL if SMP || !MMU
-	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
-	select CPU_USE_DOMAINS if MMU
-	select NEED_KUSER_HELPERS
-
-config CPU_32v4
-	bool
-	select TLS_REG_EMUL if SMP || !MMU
-	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
-	select CPU_USE_DOMAINS if MMU
-	select NEED_KUSER_HELPERS
-
-config CPU_32v4T
-	bool
-	select TLS_REG_EMUL if SMP || !MMU
-	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
-	select CPU_USE_DOMAINS if MMU
-	select NEED_KUSER_HELPERS
-
-config CPU_32v5
-	bool
-	select TLS_REG_EMUL if SMP || !MMU
-	select NEEDS_SYSCALL_FOR_CMPXCHG if SMP
-	select CPU_USE_DOMAINS if MMU
-	select NEED_KUSER_HELPERS
-=======
 	select CPU_USE_DOMAINS if MMU
 	select NEED_KUSER_HELPERS
 	select TLS_REG_EMUL if SMP || !MMU
@@ -792,15 +471,10 @@ config CPU_32v5
 	select CPU_USE_DOMAINS if MMU
 	select NEED_KUSER_HELPERS
 	select TLS_REG_EMUL if SMP || !MMU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CPU_32v6
 	bool
 	select TLS_REG_EMUL if !CPU_32v6K && !MMU
-<<<<<<< HEAD
-	select CPU_USE_DOMAINS if CPU_V6 && MMU
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CPU_32v6K
 	bool
@@ -808,12 +482,9 @@ config CPU_32v6K
 config CPU_32v7
 	bool
 
-<<<<<<< HEAD
-=======
 config CPU_32v7M
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # The abort model
 config CPU_ABRT_NOMMU
 	bool
@@ -849,12 +520,6 @@ config CPU_PABRT_V7
 	bool
 
 # The cache model
-<<<<<<< HEAD
-config CPU_CACHE_V3
-	bool
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CPU_CACHE_V4
 	bool
 
@@ -870,12 +535,9 @@ config CPU_CACHE_V6
 config CPU_CACHE_V7
 	bool
 
-<<<<<<< HEAD
-=======
 config CPU_CACHE_NOP
 	bool
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CPU_CACHE_VIVT
 	bool
 
@@ -885,19 +547,11 @@ config CPU_CACHE_VIPT
 config CPU_CACHE_FA
 	bool
 
-<<<<<<< HEAD
-if MMU
-# The copy-page model
-config CPU_COPY_V3
-	bool
-
-=======
 config CPU_CACHE_V7M
 	bool
 
 if MMU
 # The copy-page model
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CPU_COPY_V4WT
 	bool
 
@@ -914,14 +568,6 @@ config CPU_COPY_V6
 	bool
 
 # This selects the TLB model
-<<<<<<< HEAD
-config CPU_TLB_V3
-	bool
-	help
-	  ARM Architecture Version 3 TLB.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CPU_TLB_V4WT
 	bool
 	help
@@ -956,11 +602,6 @@ config CPU_TLB_V6
 config CPU_TLB_V7
 	bool
 
-<<<<<<< HEAD
-config VERIFY_PERMISSION_FAULT
-	bool
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif
 
 config CPU_HAS_ASID
@@ -990,9 +631,6 @@ config CPU_USE_DOMAINS
 	bool
 	help
 	  This option enables or disables the use of domain switching
-<<<<<<< HEAD
-	  via the set_fs() function.
-=======
 	  using the DACR (domain access control register) to protect memory
 	  domains from each other. In Linux we use three domains: kernel, user
 	  and IO. The domains are used to protect userspace from kernelspace
@@ -1013,7 +651,6 @@ config CPU_V7M_NUM_IRQ
 	  interrupts supported by the NVIC on Cortex-M family.
 
 	  If unsure, keep default value.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # CPU supports 36-bit I/O
@@ -1027,11 +664,8 @@ config ARM_LPAE
 	bool "Support for the Large Physical Address Extension"
 	depends on MMU && CPU_32v7 && !CPU_32v6 && !CPU_32v5 && \
 		!CPU_32v4 && !CPU_32v3
-<<<<<<< HEAD
-=======
 	select PHYS_ADDR_T_64BIT
 	select SWIOTLB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y if you have an ARMv7 processor supporting the LPAE page
 	  table format and you would like to access memory beyond the
@@ -1040,17 +674,6 @@ config ARM_LPAE
 
 	  If unsure, say N.
 
-<<<<<<< HEAD
-config ARCH_PHYS_ADDR_T_64BIT
-	def_bool ARM_LPAE
-
-config ARCH_DMA_ADDR_T_64BIT
-	bool
-
-config ARM_THUMB
-	bool "Support Thumb user binaries"
-	depends on CPU_ARM720T || CPU_ARM740T || CPU_ARM920T || CPU_ARM922T || CPU_ARM925T || CPU_ARM926T || CPU_ARM940T || CPU_ARM946E || CPU_ARM1020 || CPU_ARM1020E || CPU_ARM1022 || CPU_ARM1026 || CPU_XSCALE || CPU_XSC3 || CPU_MOHAWK || CPU_V6 || CPU_V6K || CPU_V7 || CPU_FEROCEON
-=======
 config ARM_PV_FIXUP
 	def_bool y
 	depends on ARM_LPAE && ARM_PATCH_PHYS_VIRT && ARCH_KEYSTONE
@@ -1058,7 +681,6 @@ config ARM_PV_FIXUP
 config ARM_THUMB
 	bool "Support Thumb user binaries" if !CPU_THUMBONLY && EXPERT
 	depends on CPU_THUMB_CAPABLE && !CPU_32v4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  Say Y if you want to include kernel support for running user space
@@ -1068,13 +690,10 @@ config ARM_THUMB
 	  instruction set resulting in smaller binaries at the expense of
 	  slightly less efficient code.
 
-<<<<<<< HEAD
-=======
 	  If this option is disabled, and you run userspace that switches to
 	  Thumb mode, signal handling will not work correctly, resulting in
 	  segmentation faults or illegal instruction aborts.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you don't know what this all is, saying Y is a safe choice.
 
 config ARM_THUMBEE
@@ -1084,13 +703,6 @@ config ARM_THUMBEE
 	  Say Y here if you have a CPU with the ThumbEE extension and code to
 	  make use of it. Say N for code that can run on CPUs without ThumbEE.
 
-<<<<<<< HEAD
-config SWP_EMULATE
-	bool "Emulate SWP/SWPB instructions"
-	depends on !CPU_USE_DOMAINS && CPU_V7
-	select HAVE_PROC_CPU if PROC_FS
-	default y if SMP
-=======
 config ARM_VIRT_EXT
 	bool
 	default y if CPU_V7
@@ -1108,7 +720,6 @@ config SWP_EMULATE
 	depends on CPU_V7
 	default y if SMP
 	select HAVE_PROC_CPU if PROC_FS
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  ARMv6 architecture deprecates use of the SWP/SWPB instructions.
 	  ARMv7 multiprocessing extensions introduce the ability to disable
@@ -1131,16 +742,6 @@ config SWP_EMULATE
 
 	  If unsure, say Y.
 
-<<<<<<< HEAD
-config CPU_BIG_ENDIAN
-	bool "Build big-endian kernel"
-	depends on ARCH_SUPPORTS_BIG_ENDIAN
-	help
-	  Say Y if you plan on running a kernel in big-endian mode.
-	  Note that your board must be properly built and your board
-	  port must properly enable any big-endian related features
-	  of your chipset/board/processor.
-=======
 choice
 	prompt "CPU Endianness"
 	default CPU_LITTLE_ENDIAN
@@ -1164,16 +765,11 @@ config CPU_BIG_ENDIAN
 	  Intel IXP4xx.
 
 endchoice
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CPU_ENDIAN_BE8
 	bool
 	depends on CPU_BIG_ENDIAN
-<<<<<<< HEAD
-	default CPU_V6 || CPU_V6K || CPU_V7
-=======
 	default CPU_V6 || CPU_V6K || CPU_V7 || CPU_V7M
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support for the BE-8 (big-endian) mode on ARMv6 and ARMv7 processors.
 
@@ -1197,20 +793,11 @@ config CPU_HIGH_VECTOR
 
 config CPU_ICACHE_DISABLE
 	bool "Disable I-Cache (I-bit)"
-<<<<<<< HEAD
-	depends on CPU_CP15 && !(CPU_ARM610 || CPU_ARM710 || CPU_ARM720T || CPU_ARM740T || CPU_XSCALE || CPU_XSC3)
-=======
 	depends on (CPU_CP15 && !(CPU_ARM720T || CPU_ARM740T || CPU_XSCALE || CPU_XSC3)) || CPU_V7M
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to disable the processor instruction cache. Unless
 	  you have a reason not to or are unsure, say N.
 
-<<<<<<< HEAD
-config CPU_DCACHE_DISABLE
-	bool "Disable D-Cache (C-bit)"
-	depends on CPU_CP15
-=======
 config CPU_ICACHE_MISMATCH_WORKAROUND
 	bool "Workaround for I-Cache line size mismatch between CPU cores"
 	depends on SMP && CPU_V7
@@ -1222,7 +809,6 @@ config CPU_ICACHE_MISMATCH_WORKAROUND
 config CPU_DCACHE_DISABLE
 	bool "Disable D-Cache (C-bit)"
 	depends on (CPU_CP15 && !SMP) || CPU_V7M
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to disable the processor data cache. Unless
 	  you have a reason not to or are unsure, say N.
@@ -1240,22 +826,6 @@ config CPU_DCACHE_SIZE
 	  If your SoC is configured to have a different size, define the value
 	  here with proper conditions.
 
-<<<<<<< HEAD
-config CPU_CACHE_ERR_REPORT
-	bool "Report errors in the L1 and L2 caches"
-	depends on ARCH_MSM_SCORPION
-	default n
-	help
-	  The Scorpion processor supports reporting L2 errors, L1 icache parity
-	  errors, and L1 dcache parity errors as imprecise external aborts. If
-	  this option is not enabled these errors will go unreported and data
-	  corruption will occur.
-
-	  Say Y here to have errors in the L1 and L2 caches reported as
-	  imprecise data aborts.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CPU_DCACHE_WRITETHROUGH
 	bool "Force write through D-cache"
 	depends on (CPU_ARM740T || CPU_ARM920T || CPU_ARM922T || CPU_ARM925T || CPU_ARM926T || CPU_ARM940T || CPU_ARM946E || CPU_ARM1020 || CPU_FA526) && !CPU_DCACHE_DISABLE
@@ -1273,12 +843,6 @@ config CPU_CACHE_ROUND_ROBIN
 
 config CPU_BPREDICT_DISABLE
 	bool "Disable branch prediction"
-<<<<<<< HEAD
-	depends on CPU_ARM1020 || CPU_V6 || CPU_V6K || CPU_MOHAWK || CPU_XSC3 || CPU_V7 || CPU_FA526
-	help
-	  Say Y here to disable branch prediction.  If unsure, say N.
-
-=======
 	depends on CPU_ARM1020 || CPU_V6 || CPU_V6K || CPU_MOHAWK || CPU_XSC3 || CPU_V7 || CPU_FA526 || CPU_V7M
 	help
 	  Say Y here to disable branch prediction.  If unsure, say N.
@@ -1316,7 +880,6 @@ config HARDEN_BRANCH_HISTORY
 	  taking an exception, a sequence of branches overwrites the branch
 	  history, or branch history is invalidated.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config TLS_REG_EMUL
 	bool
 	select NEED_KUSER_HELPERS
@@ -1325,26 +888,12 @@ config TLS_REG_EMUL
 	  a few prototypes like that in existence) and therefore access to
 	  that required register must be emulated.
 
-<<<<<<< HEAD
-config NEEDS_SYSCALL_FOR_CMPXCHG
-	bool
-	select NEED_KUSER_HELPERS
-	help
-	  SMP on a pre-ARMv6 processor?  Well OK then.
-	  Forget about fast user space cmpxchg support.
-	  It is just not possible.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config NEED_KUSER_HELPERS
 	bool
 
 config KUSER_HELPERS
 	bool "Enable kuser helpers in vector page" if !NEED_KUSER_HELPERS
-<<<<<<< HEAD
-=======
 	depends on MMU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	help
 	  Warning: disabling this option may break user programs.
@@ -1355,11 +904,7 @@ config KUSER_HELPERS
 	  the CPU type fitted to the system.  This permits binaries to be
 	  run on ARMv4 through to ARMv7 without modification.
 
-<<<<<<< HEAD
-	  See Documentation/arm/kernel_user_helpers.txt for details.
-=======
 	  See Documentation/arch/arm/kernel_user_helpers.rst for details.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  However, the fixed address nature of these helpers can be used
 	  by ROP (return orientated programming) authors when creating
@@ -1375,26 +920,6 @@ config KUSER_HELPERS
 	  Say N here only if you are absolutely certain that you do not
 	  need these helpers; otherwise, the safe option is to say Y.
 
-<<<<<<< HEAD
-config DMA_CACHE_RWFO
-	bool "Enable read/write for ownership DMA cache maintenance"
-	depends on CPU_V6K && SMP
-	default y
-	help
-	  The Snoop Control Unit on ARM11MPCore does not detect the
-	  cache maintenance operations and the dma_{map,unmap}_area()
-	  functions may leave stale cache entries on other CPUs. By
-	  enabling this option, Read or Write For Ownership in the ARMv6
-	  DMA cache maintenance functions is performed. These LDR/STR
-	  instructions change the cache line state to shared or modified
-	  so that the cache operation has the desired effect.
-
-	  Note that the workaround is only valid on processors that do
-	  not perform speculative loads into the D-cache. For such
-	  processors, if cache maintenance operations are not broadcast
-	  in hardware, other workarounds are needed (e.g. cache
-	  maintenance broadcasting in software via FIQ).
-=======
 config VDSO
 	bool "Enable VDSO for acceleration of some system calls"
 	depends on AEABI && MMU && CPU_V7
@@ -1412,26 +937,17 @@ config VDSO
 	  You must have glibc 2.22 or later for programs to seamlessly
 	  take advantage of this.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config OUTER_CACHE
 	bool
 
 config OUTER_CACHE_SYNC
 	bool
-<<<<<<< HEAD
-=======
 	select ARM_HEAVY_MB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The outer cache has a outer_cache_fns.sync function pointer
 	  that can be used to drain the write buffer of the outer cache.
 
-<<<<<<< HEAD
-config CACHE_FEROCEON_L2
-	bool "Enable the Feroceon L2 cache controller"
-	depends on ARCH_KIRKWOOD || ARCH_MV78XX0
-=======
 config CACHE_B15_RAC
 	bool "Enable the Broadcom Brahma-B15 read-ahead cache controller"
 	depends on ARCH_BRCMSTB
@@ -1443,7 +959,6 @@ config CACHE_B15_RAC
 config CACHE_FEROCEON_L2
 	bool "Enable the Feroceon L2 cache controller"
 	depends on ARCH_MV78XX0 || ARCH_MVEBU
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	select OUTER_CACHE
 	help
@@ -1478,29 +993,6 @@ config CACHE_L2X0
 	help
 	  This option enables the L2x0 PrimeCell.
 
-<<<<<<< HEAD
-config CACHE_PL310
-	bool
-	depends on CACHE_L2X0
-	default y if CPU_V7 && !(CPU_V6 || CPU_V6K)
-	help
-	  This option enables optimisations for the PL310 cache
-	  controller.
-
-config CACHE_PL310_ERP
-	tristate "PL310 CACHE Error Reporting"
-	depends on CACHE_PL310
-	help
-	  Say 'Y' here to enable reporting of external L2 cache errors.
-	  This feature can be used as a system debugging technique if cache
-	  corruption is suspected.
-	  Cache error statistics will also be reported in sysfs
-	  /sys/devices/platform/pl310_erp/cache_erp
-
-config CACHE_TAUROS2
-	bool "Enable the Tauros2 L2 cache controller"
-	depends on (ARCH_DOVE || ARCH_MMP || CPU_PJ4)
-=======
 config CACHE_L2X0_PMU
 	bool "L2x0 performance monitor support" if CACHE_L2X0
 	depends on PERF_EVENTS
@@ -1563,15 +1055,12 @@ endif
 config CACHE_TAUROS2
 	bool "Enable the Tauros2 L2 cache controller"
 	depends on (CPU_MOHAWK || CPU_PJ4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 	select OUTER_CACHE
 	help
 	  This option enables the Tauros2 L2 cache controller (as
 	  found on PJ1/PJ4).
 
-<<<<<<< HEAD
-=======
 config CACHE_UNIPHIER
 	bool "Enable the UniPhier outer cache controller"
 	depends on ARCH_UNIPHIER
@@ -1582,7 +1071,6 @@ config CACHE_UNIPHIER
 	  This option enables the UniPhier outer cache (system cache)
 	  controller.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CACHE_XSC3L2
 	bool "Enable the L2 cache on XScale3"
 	depends on CPU_XSC3
@@ -1597,10 +1085,6 @@ config ARM_L1_CACHE_SHIFT_6
 	help
 	  Setting ARM L1 cache line size to 64 Bytes.
 
-<<<<<<< HEAD
-config ARM_L1_CACHE_SHIFT
-	int
-=======
 config ARM_L1_CACHE_SHIFT_7
 	bool
 	help
@@ -1609,20 +1093,12 @@ config ARM_L1_CACHE_SHIFT_7
 config ARM_L1_CACHE_SHIFT
 	int
 	default 7 if ARM_L1_CACHE_SHIFT_7
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default 6 if ARM_L1_CACHE_SHIFT_6
 	default 5
 
 config ARM_DMA_MEM_BUFFERABLE
-<<<<<<< HEAD
-	bool "Use non-cacheable memory for DMA" if (CPU_V6 || CPU_V6K) && !CPU_V7
-	depends on !(MACH_REALVIEW_PB1176 || REALVIEW_EB_ARM11MP || \
-		     MACH_REALVIEW_PB11MP)
-	default y if CPU_V6 || CPU_V6K || CPU_V7
-=======
 	bool "Use non-cacheable memory for DMA" if (CPU_V6 || CPU_V6K || CPU_V7M) && !CPU_V7
 	default y if CPU_V6 || CPU_V6K || CPU_V7 || CPU_V7M
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Historically, the kernel has used strongly ordered mappings to
 	  provide DMA coherent memory.  With the advent of ARMv7, mapping
@@ -1637,27 +1113,6 @@ config ARM_DMA_MEM_BUFFERABLE
 	  and therefore turning this on may result in unpredictable driver
 	  behaviour.  Therefore, we offer this as an option.
 
-<<<<<<< HEAD
-	  You are recommended say 'Y' here and debug any affected drivers.
-
-config ARCH_HAS_BARRIERS
-	bool
-	help
-	  This option allows the use of custom mandatory barriers
-	  included via the mach/barriers.h file.
-
-config STRICT_MEMORY_RWX
-	bool "restrict kernel memory permissions as much as possible"
-	default n
-	help
-	  If this is set, kernel text will be made RX, kernel data and stack
-	  RW, rodata R (otherwise all of the kernel 1-to-1 mapping is
-	  made RWX).
-	  The tradeoff is that several sections are padded to
-	  1M boundaries (because their permissions are different and
-	  splitting the 1M pages into 4K ones causes TLB performance
-	  problems), wasting memory.
-=======
 	  On some of the beefier ARMv7-M machines (with DMA and write
 	  buffers) you likely want this enabled, while those that
 	  didn't need it until now also won't need it in the future.
@@ -1678,4 +1133,3 @@ config DEBUG_ALIGN_RODATA
 	  additional section-aligned split of rodata from kernel text so it
 	  can be made explicitly non-executable. This padding may waste memory
 	  space to gain the additional protection.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

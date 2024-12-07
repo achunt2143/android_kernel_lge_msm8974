@@ -1,34 +1,11 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * probe-event.c : perf-probe definition to probe_events format converter
  *
  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *
- */
-
-=======
  */
 
 #include <inttypes.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -42,34 +19,6 @@
 #include <limits.h>
 #include <elf.h>
 
-<<<<<<< HEAD
-#include "util.h"
-#include "event.h"
-#include "strlist.h"
-#include "debug.h"
-#include "cache.h"
-#include "color.h"
-#include "symbol.h"
-#include "thread.h"
-#include "debugfs.h"
-#include "trace-event.h"	/* For __unused */
-#include "probe-event.h"
-#include "probe-finder.h"
-
-#define MAX_CMDLEN 256
-#define MAX_PROBE_ARGS 128
-#define PERFPROBE_GROUP "probe"
-
-bool probe_event_dry_run;	/* Dry run flag */
-
-#define semantic_error(msg ...) pr_err("Semantic error :" msg)
-
-/* If there is no space to write, returns -E2BIG. */
-static int e_snprintf(char *str, size_t size, const char *format, ...)
-	__attribute__((format(printf, 3, 4)));
-
-static int e_snprintf(char *str, size_t size, const char *format, ...)
-=======
 #include "build-id.h"
 #include "event.h"
 #include "namespaces.h"
@@ -109,7 +58,6 @@ static char *synthesize_perf_probe_point(struct perf_probe_point *pp);
 #define semantic_error(msg ...) pr_err("Semantic error :" msg)
 
 int e_snprintf(char *str, size_t size, const char *format, ...)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	va_list ap;
@@ -121,22 +69,6 @@ int e_snprintf(char *str, size_t size, const char *format, ...)
 	return ret;
 }
 
-<<<<<<< HEAD
-static char *synthesize_perf_probe_point(struct perf_probe_point *pp);
-static struct machine machine;
-
-/* Initialize symbol maps and path of vmlinux/modules */
-static int init_vmlinux(void)
-{
-	int ret;
-
-	symbol_conf.sort_by_name = true;
-	if (symbol_conf.vmlinux_name == NULL)
-		symbol_conf.try_vmlinux_path = true;
-	else
-		pr_debug("Use vmlinux: %s\n", symbol_conf.vmlinux_name);
-	ret = symbol__init();
-=======
 static struct machine *host_machine;
 
 /* Initialize symbol maps and path of vmlinux/modules */
@@ -146,21 +78,11 @@ int init_probe_symbol_maps(bool user_only)
 
 	symbol_conf.allow_aliases = true;
 	ret = symbol__init(NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		pr_debug("Failed to init symbol map.\n");
 		goto out;
 	}
 
-<<<<<<< HEAD
-	ret = machine__init(&machine, "", HOST_KERNEL_ID);
-	if (ret < 0)
-		goto out;
-
-	if (machine__create_kernel_maps(&machine) < 0) {
-		pr_debug("machine__create_kernel_maps() failed.\n");
-		goto out;
-=======
 	if (host_machine || user_only)	/* already initialized */
 		return 0;
 
@@ -172,7 +94,6 @@ int init_probe_symbol_maps(bool user_only)
 		pr_debug("machine__new_host() failed.\n");
 		symbol__exit();
 		ret = -1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	if (ret < 0)
@@ -180,13 +101,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct symbol *__find_kernel_function_by_name(const char *name,
-						     struct map **mapp)
-{
-	return machine__find_kernel_function_by_name(&machine, name, mapp,
-						     NULL);
-=======
 void exit_probe_symbol_maps(void)
 {
 	machine__delete(host_machine);
@@ -253,34 +167,10 @@ static int kernel_get_module_map_cb(struct map *map, void *data)
 		return 1;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct map *kernel_get_module_map(const char *module)
 {
-<<<<<<< HEAD
-	struct rb_node *nd;
-	struct map_groups *grp = &machine.kmaps;
-
-	/* A file path -- this is an offline module */
-	if (module && strchr(module, '/'))
-		return machine__new_module(&machine, 0, module);
-
-	if (!module)
-		module = "kernel";
-
-	for (nd = rb_first(&grp->maps[MAP__FUNCTION]); nd; nd = rb_next(nd)) {
-		struct map *pos = rb_entry(nd, struct map, rb_node);
-		if (strncmp(pos->dso->short_name + 1, module,
-			    pos->dso->short_name_len - 2) == 0) {
-			return pos;
-		}
-	}
-	return NULL;
-}
-
-static struct dso *kernel_get_module_dso(const char *module)
-=======
 	struct kernel_get_module_map_cb_args args = {
 		.module = module,
 		.result = NULL,
@@ -455,66 +345,10 @@ elf_err:
 #ifdef HAVE_DWARF_SUPPORT
 
 static int kernel_get_module_dso(const char *module, struct dso **pdso)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dso *dso;
 	struct map *map;
 	const char *vmlinux_name;
-<<<<<<< HEAD
-
-	if (module) {
-		list_for_each_entry(dso, &machine.kernel_dsos, node) {
-			if (strncmp(dso->short_name + 1, module,
-				    dso->short_name_len - 2) == 0)
-				goto found;
-		}
-		pr_debug("Failed to find module %s.\n", module);
-		return NULL;
-	}
-
-	map = machine.vmlinux_maps[MAP__FUNCTION];
-	dso = map->dso;
-
-	vmlinux_name = symbol_conf.vmlinux_name;
-	if (vmlinux_name) {
-		if (dso__load_vmlinux(dso, map, vmlinux_name, NULL) <= 0)
-			return NULL;
-	} else {
-		if (dso__load_vmlinux_path(dso, map, NULL) <= 0) {
-			pr_debug("Failed to load kernel map.\n");
-			return NULL;
-		}
-	}
-found:
-	return dso;
-}
-
-const char *kernel_get_module_path(const char *module)
-{
-	struct dso *dso = kernel_get_module_dso(module);
-	return (dso) ? dso->long_name : NULL;
-}
-
-#ifdef DWARF_SUPPORT
-/* Open new debuginfo of given module */
-static struct debuginfo *open_debuginfo(const char *module)
-{
-	const char *path;
-
-	/* A file path -- this is an offline module */
-	if (module && strchr(module, '/'))
-		path = module;
-	else {
-		path = kernel_get_module_path(module);
-
-		if (!path) {
-			pr_err("Failed to find path of %s module.\n",
-			       module ?: "kernel");
-			return NULL;
-		}
-	}
-	return debuginfo__new(path);
-=======
 	int ret = 0;
 
 	if (module) {
@@ -814,50 +648,10 @@ out_close:
 	close(fd);
 
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Convert trace point to probe point with debuginfo
-<<<<<<< HEAD
- * Currently only handles kprobes.
- */
-static int kprobe_convert_to_perf_probe(struct probe_trace_point *tp,
-					struct perf_probe_point *pp)
-{
-	struct symbol *sym;
-	struct map *map;
-	u64 addr;
-	int ret = -ENOENT;
-	struct debuginfo *dinfo;
-
-	sym = __find_kernel_function_by_name(tp->symbol, &map);
-	if (sym) {
-		addr = map->unmap_ip(map, sym->start + tp->offset);
-		pr_debug("try to find %s+%ld@%" PRIx64 "\n", tp->symbol,
-			 tp->offset, addr);
-
-		dinfo = debuginfo__new_online_kernel(addr);
-		if (dinfo) {
-			ret = debuginfo__find_probe_point(dinfo,
-						 (unsigned long)addr, pp);
-			debuginfo__delete(dinfo);
-		} else {
-			pr_debug("Failed to open debuginfo at 0x%" PRIx64 "\n",
-				 addr);
-			ret = -ENOENT;
-		}
-	}
-	if (ret <= 0) {
-		pr_debug("Failed to find corresponding probes from "
-			 "debuginfo. Use kprobe event information.\n");
-		pp->function = strdup(tp->symbol);
-		if (pp->function == NULL)
-			return -ENOMEM;
-		pp->offset = tp->offset;
-	}
-	pp->retprobe = tp->retprobe;
-=======
  */
 static int find_perf_probe_point_from_dwarf(struct probe_trace_point *tp,
 					    struct perf_probe_point *pp,
@@ -933,18 +727,10 @@ static int post_process_probe_trace_point(struct probe_trace_point *tp,
 	}
 	tp->offset = addr - sym->start;
 	tp->address -= offs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int add_module_to_probe_trace_events(struct probe_trace_event *tevs,
-					    int ntevs, const char *module)
-{
-	int i, ret = 0;
-	char *tmp;
-=======
 /*
  * Rename DWARF symbols to ELF symbols -- gcc sometimes optimizes functions
  * and generate new symbols with suffixes such as .constprop.N or .isra.N
@@ -1016,27 +802,10 @@ post_process_module_probe_trace_events(struct probe_trace_event *tevs,
 	int i, ret = 0;
 	char *mod_name = NULL;
 	struct map *map;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!module)
 		return 0;
 
-<<<<<<< HEAD
-	tmp = strrchr(module, '/');
-	if (tmp) {
-		/* This is a module path -- get the module name */
-		module = strdup(tmp + 1);
-		if (!module)
-			return -ENOMEM;
-		tmp = strchr(module, '.');
-		if (tmp)
-			*tmp = '\0';
-		tmp = (char *)module;	/* For free() */
-	}
-
-	for (i = 0; i < ntevs; i++) {
-		tevs[i].point.module = strdup(module);
-=======
 	map = get_target_map(module, NULL, false);
 	if (!map || debuginfo__get_text_offset(dinfo, &text_offs, true) < 0) {
 		pr_warning("Failed to get ELF symbols for %s\n", module);
@@ -1051,17 +820,12 @@ post_process_module_probe_trace_events(struct probe_trace_event *tevs,
 			break;
 		tevs[i].point.module =
 			strdup(mod_name ? mod_name : module);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tevs[i].point.module) {
 			ret = -ENOMEM;
 			break;
 		}
 	}
 
-<<<<<<< HEAD
-	if (tmp)
-		free(tmp);
-=======
 	free(mod_name);
 	map__put(map);
 
@@ -1149,27 +913,12 @@ static int post_process_probe_trace_events(struct perf_probe_event *pev,
 
 	if (ret >= 0)
 		arch__post_process_probe_trace_events(pev, ntevs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 /* Try to find perf_probe_event with debuginfo */
 static int try_to_find_probe_trace_events(struct perf_probe_event *pev,
-<<<<<<< HEAD
-					  struct probe_trace_event **tevs,
-					  int max_tevs, const char *target)
-{
-	bool need_dwarf = perf_probe_event_need_dwarf(pev);
-	struct debuginfo *dinfo = open_debuginfo(target);
-	int ntevs, ret = 0;
-
-	if (!dinfo) {
-		if (need_dwarf) {
-			pr_warning("Failed to open debuginfo file.\n");
-			return -ENOENT;
-		}
-=======
 					  struct probe_trace_event **tevs)
 {
 	bool need_dwarf = perf_probe_event_need_dwarf(pev);
@@ -1191,36 +940,10 @@ static int try_to_find_probe_trace_events(struct perf_probe_event *pev,
 	if (!dinfo) {
 		if (need_dwarf)
 			return -ENODATA;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("Could not open debuginfo. Try to use symbols.\n");
 		return 0;
 	}
 
-<<<<<<< HEAD
-	/* Searching trace events corresponding to a probe event */
-	ntevs = debuginfo__find_trace_events(dinfo, pev, tevs, max_tevs);
-
-	debuginfo__delete(dinfo);
-
-	if (ntevs > 0) {	/* Succeeded to find trace events */
-		pr_debug("find %d probe_trace_events.\n", ntevs);
-		if (target)
-			ret = add_module_to_probe_trace_events(*tevs, ntevs,
-							       target);
-		return ret < 0 ? ret : ntevs;
-	}
-
-	if (ntevs == 0)	{	/* No error but failed to find probe point. */
-		pr_warning("Probe point '%s' not found.\n",
-			   synthesize_perf_probe_point(&pev->point));
-		return -ENOENT;
-	}
-	/* Error path : ntevs < 0 */
-	pr_debug("An error occurred in debuginfo analysis (%d).\n", ntevs);
-	if (ntevs == -EBADF) {
-		pr_warning("Warning: No dwarf info found in the vmlinux - "
-			"please rebuild kernel with CONFIG_DEBUG_INFO=y.\n");
-=======
 	pr_debug("Try to find probe point from debuginfo.\n");
 	/* Searching trace events corresponding to a probe event */
 	ntevs = debuginfo__find_trace_events(dinfo, pev, tevs);
@@ -1263,7 +986,6 @@ static int try_to_find_probe_trace_events(struct perf_probe_event *pev,
 		if (ntevs == -EBADF)
 			pr_warning("Warning: No dwarf info found in the vmlinux - "
 				"please rebuild kernel with CONFIG_DEBUG_INFO=y.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!need_dwarf) {
 			pr_debug("Trying to use symbols.\n");
 			return 0;
@@ -1272,78 +994,12 @@ static int try_to_find_probe_trace_events(struct perf_probe_event *pev,
 	return ntevs;
 }
 
-<<<<<<< HEAD
-/*
- * Find a src file from a DWARF tag path. Prepend optional source path prefix
- * and chop off leading directories that do not exist. Result is passed back as
- * a newly allocated path on success.
- * Return 0 if file was found and readable, -errno otherwise.
- */
-static int get_real_path(const char *raw_path, const char *comp_dir,
-			 char **new_path)
-{
-	const char *prefix = symbol_conf.source_prefix;
-
-	if (!prefix) {
-		if (raw_path[0] != '/' && comp_dir)
-			/* If not an absolute path, try to use comp_dir */
-			prefix = comp_dir;
-		else {
-			if (access(raw_path, R_OK) == 0) {
-				*new_path = strdup(raw_path);
-				return 0;
-			} else
-				return -errno;
-		}
-	}
-
-	*new_path = malloc((strlen(prefix) + strlen(raw_path) + 2));
-	if (!*new_path)
-		return -ENOMEM;
-
-	for (;;) {
-		sprintf(*new_path, "%s/%s", prefix, raw_path);
-
-		if (access(*new_path, R_OK) == 0)
-			return 0;
-
-		if (!symbol_conf.source_prefix)
-			/* In case of searching comp_dir, don't retry */
-			return -errno;
-
-		switch (errno) {
-		case ENAMETOOLONG:
-		case ENOENT:
-		case EROFS:
-		case EFAULT:
-			raw_path = strchr(++raw_path, '/');
-			if (!raw_path) {
-				free(*new_path);
-				*new_path = NULL;
-				return -ENOENT;
-			}
-			continue;
-
-		default:
-			free(*new_path);
-			*new_path = NULL;
-			return -errno;
-		}
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LINEBUF_SIZE 256
 #define NR_ADDITIONAL_LINES 2
 
 static int __show_one_line(FILE *fp, int l, bool skip, bool show_num)
 {
-<<<<<<< HEAD
-	char buf[LINEBUF_SIZE];
-=======
 	char buf[LINEBUF_SIZE], sbuf[STRERR_BUFSIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *color = show_num ? "" : PERF_COLOR_BLUE;
 	const char *prefix = NULL;
 
@@ -1363,12 +1019,8 @@ static int __show_one_line(FILE *fp, int l, bool skip, bool show_num)
 	return 1;
 error:
 	if (ferror(fp)) {
-<<<<<<< HEAD
-		pr_warning("File read error: %s\n", strerror(errno));
-=======
 		pr_warning("File read error: %s\n",
 			   str_error_r(errno, sbuf, sizeof(sbuf)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 	return 0;
@@ -1393,44 +1045,16 @@ static int _show_one_line(FILE *fp, int l, bool skip, bool show_num)
  * Show line-range always requires debuginfo to find source file and
  * line number.
  */
-<<<<<<< HEAD
-int show_line_range(struct line_range *lr, const char *module)
-{
-	int l = 1;
-	struct line_node *ln;
-=======
 static int __show_line_range(struct line_range *lr, const char *module,
 			     bool user)
 {
 	struct build_id bid;
 	int l = 1;
 	struct int_node *ln;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct debuginfo *dinfo;
 	FILE *fp;
 	int ret;
 	char *tmp;
-<<<<<<< HEAD
-
-	/* Search a line range */
-	ret = init_vmlinux();
-	if (ret < 0)
-		return ret;
-
-	dinfo = open_debuginfo(module);
-	if (!dinfo) {
-		pr_warning("Failed to open debuginfo file.\n");
-		return -ENOENT;
-	}
-
-	ret = debuginfo__find_line_range(dinfo, lr);
-	debuginfo__delete(dinfo);
-	if (ret == 0) {
-		pr_warning("Specified source line is not found.\n");
-		return -ENOENT;
-	} else if (ret < 0) {
-		pr_warning("Debuginfo analysis failed. (%d)\n", ret);
-=======
 	char sbuf[STRERR_BUFSIZE];
 	char sbuild_id[SBUILD_ID_SIZE] = "";
 
@@ -1455,18 +1079,11 @@ static int __show_line_range(struct line_range *lr, const char *module,
 		return -ENOENT;
 	} else if (ret < 0) {
 		pr_warning("Debuginfo analysis failed.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	/* Convert source file path */
 	tmp = lr->path;
-<<<<<<< HEAD
-	ret = get_real_path(tmp, lr->comp_dir, &lr->path);
-	free(tmp);	/* Free old path */
-	if (ret < 0) {
-		pr_warning("Failed to find source file. (%d)\n", ret);
-=======
 	ret = find_source_path(tmp, sbuild_id, lr->comp_dir, &lr->path);
 
 	/* Free old path when new path is assigned */
@@ -1475,7 +1092,6 @@ static int __show_line_range(struct line_range *lr, const char *module,
 
 	if (ret < 0) {
 		pr_warning("Failed to find source file path.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -1490,11 +1106,7 @@ static int __show_line_range(struct line_range *lr, const char *module,
 	fp = fopen(lr->path, "r");
 	if (fp == NULL) {
 		pr_warning("Failed to open %s: %s\n", lr->path,
-<<<<<<< HEAD
-			   strerror(errno));
-=======
 			   str_error_r(errno, sbuf, sizeof(sbuf)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -errno;
 	}
 	/* Skip to starting line number */
@@ -1504,13 +1116,8 @@ static int __show_line_range(struct line_range *lr, const char *module,
 			goto end;
 	}
 
-<<<<<<< HEAD
-	list_for_each_entry(ln, &lr->line_list, list) {
-		for (; ln->line > l; l++) {
-=======
 	intlist__for_each_entry(ln, lr->line_list) {
 		for (; ln->i > (unsigned long)l; l++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = show_one_line(fp, l - lr->offset);
 			if (ret < 0)
 				goto end;
@@ -1532,12 +1139,6 @@ end:
 	return ret;
 }
 
-<<<<<<< HEAD
-static int show_available_vars_at(struct debuginfo *dinfo,
-				  struct perf_probe_event *pev,
-				  int max_vls, struct strfilter *_filter,
-				  bool externs)
-=======
 int show_line_range(struct line_range *lr, const char *module,
 		    struct nsinfo *nsi, bool user)
 {
@@ -1558,16 +1159,12 @@ int show_line_range(struct line_range *lr, const char *module,
 static int show_available_vars_at(struct debuginfo *dinfo,
 				  struct perf_probe_event *pev,
 				  struct strfilter *_filter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *buf;
 	int ret, i, nvars;
 	struct str_node *node;
 	struct variable_list *vls = NULL, *vl;
-<<<<<<< HEAD
-=======
 	struct perf_probe_point tmp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *var;
 
 	buf = synthesize_perf_probe_point(&pev->point);
@@ -1575,14 +1172,6 @@ static int show_available_vars_at(struct debuginfo *dinfo,
 		return -EINVAL;
 	pr_debug("Searching variables at %s\n", buf);
 
-<<<<<<< HEAD
-	ret = debuginfo__find_available_vars_at(dinfo, pev, &vls,
-						max_vls, externs);
-	if (ret <= 0) {
-		pr_err("Failed to find variables at %s (%d)\n", buf, ret);
-		goto end;
-	}
-=======
 	ret = debuginfo__find_available_vars_at(dinfo, pev, &vls);
 	if (!ret) {  /* Not found, retry with an alternative */
 		ret = get_alternative_probe_event(dinfo, pev, &tmp);
@@ -1602,7 +1191,6 @@ static int show_available_vars_at(struct debuginfo *dinfo,
 		goto end;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Some variables are found */
 	fprintf(stdout, "Available variables at %s\n", buf);
 	for (i = 0; i < ret; i++) {
@@ -1613,17 +1201,10 @@ static int show_available_vars_at(struct debuginfo *dinfo,
 		 */
 		fprintf(stdout, "\t@<%s+%lu>\n", vl->point.symbol,
 			vl->point.offset);
-<<<<<<< HEAD
-		free(vl->point.symbol);
-		nvars = 0;
-		if (vl->vars) {
-			strlist__for_each(node, vl->vars) {
-=======
 		zfree(&vl->point.symbol);
 		nvars = 0;
 		if (vl->vars) {
 			strlist__for_each_entry(node, vl->vars) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				var = strchr(node->s, '\t') + 1;
 				if (strfilter__compare(_filter, var)) {
 					fprintf(stdout, "\t\t%s\n", node->s);
@@ -1643,26 +1224,11 @@ end:
 
 /* Show available variables on given probe point */
 int show_available_vars(struct perf_probe_event *pevs, int npevs,
-<<<<<<< HEAD
-			int max_vls, const char *module,
-			struct strfilter *_filter, bool externs)
-=======
 			struct strfilter *_filter)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ret = 0;
 	struct debuginfo *dinfo;
 
-<<<<<<< HEAD
-	ret = init_vmlinux();
-	if (ret < 0)
-		return ret;
-
-	dinfo = open_debuginfo(module);
-	if (!dinfo) {
-		pr_warning("Failed to open debuginfo file.\n");
-		return -ENOENT;
-=======
 	ret = init_probe_symbol_maps(pevs->uprobes);
 	if (ret < 0)
 		return ret;
@@ -1671,45 +1237,11 @@ int show_available_vars(struct perf_probe_event *pevs, int npevs,
 	if (!dinfo) {
 		ret = -ENOENT;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	setup_pager();
 
 	for (i = 0; i < npevs && ret >= 0; i++)
-<<<<<<< HEAD
-		ret = show_available_vars_at(dinfo, &pevs[i], max_vls, _filter,
-					     externs);
-
-	debuginfo__delete(dinfo);
-	return ret;
-}
-
-#else	/* !DWARF_SUPPORT */
-
-static int kprobe_convert_to_perf_probe(struct probe_trace_point *tp,
-					struct perf_probe_point *pp)
-{
-	struct symbol *sym;
-
-	sym = __find_kernel_function_by_name(tp->symbol, NULL);
-	if (!sym) {
-		pr_err("Failed to find symbol %s in kernel.\n", tp->symbol);
-		return -ENOENT;
-	}
-	pp->function = strdup(tp->symbol);
-	if (pp->function == NULL)
-		return -ENOMEM;
-	pp->offset = tp->offset;
-	pp->retprobe = tp->retprobe;
-
-	return 0;
-}
-
-static int try_to_find_probe_trace_events(struct perf_probe_event *pev,
-				struct probe_trace_event **tevs __unused,
-				int max_tevs __unused, const char *mod __unused)
-=======
 		ret = show_available_vars_at(dinfo, &pevs[i], _filter);
 
 	debuginfo__delete(dinfo);
@@ -1734,18 +1266,11 @@ find_perf_probe_point_from_dwarf(struct probe_trace_point *tp __maybe_unused,
 
 static int try_to_find_probe_trace_events(struct perf_probe_event *pev,
 				struct probe_trace_event **tevs __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (perf_probe_event_need_dwarf(pev)) {
 		pr_warning("Debuginfo-analysis is not supported.\n");
 		return -ENOSYS;
 	}
-<<<<<<< HEAD
-	return 0;
-}
-
-int show_line_range(struct line_range *lr __unused, const char *module __unused)
-=======
 
 	return 0;
 }
@@ -1754,31 +1279,20 @@ int show_line_range(struct line_range *lr __maybe_unused,
 		    const char *module __maybe_unused,
 		    struct nsinfo *nsi __maybe_unused,
 		    bool user __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pr_warning("Debuginfo-analysis is not supported.\n");
 	return -ENOSYS;
 }
 
-<<<<<<< HEAD
-int show_available_vars(struct perf_probe_event *pevs __unused,
-			int npevs __unused, int max_vls __unused,
-			const char *module __unused,
-			struct strfilter *filter __unused,
-			bool externs __unused)
-=======
 int show_available_vars(struct perf_probe_event *pevs __maybe_unused,
 			int npevs __maybe_unused,
 			struct strfilter *filter __maybe_unused)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pr_warning("Debuginfo-analysis is not supported.\n");
 	return -ENOSYS;
 }
 #endif
 
-<<<<<<< HEAD
-=======
 void line_range__clear(struct line_range *lr)
 {
 	zfree(&lr->function);
@@ -1798,7 +1312,6 @@ int line_range__init(struct line_range *lr)
 		return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int parse_line_num(char **ptr, int *val, const char *what)
 {
 	const char *start = *ptr;
@@ -1812,8 +1325,6 @@ static int parse_line_num(char **ptr, int *val, const char *what)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 /* Check the name is good for event, group or function */
 static bool is_c_func_name(const char *name)
 {
@@ -1826,7 +1337,6 @@ static bool is_c_func_name(const char *name)
 	return true;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Stuff 'lr' according to the line range described by 'arg'.
  * The line range syntax is described by:
@@ -1865,11 +1375,7 @@ int parse_line_range_desc(const char *arg, struct line_range *lr)
 				/*
 				 * Adjust the number of lines here.
 				 * If the number of lines == 1, the
-<<<<<<< HEAD
-				 * the end of line should be equal to
-=======
 				 * end of line should be equal to
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 * the start of line.
 				 */
 				lr->end--;
@@ -1899,12 +1405,6 @@ int parse_line_range_desc(const char *arg, struct line_range *lr)
 			goto err;
 		}
 		lr->function = name;
-<<<<<<< HEAD
-	} else if (strchr(name, '.'))
-		lr->file = name;
-	else
-		lr->function = name;
-=======
 	} else if (strchr(name, '/') || strchr(name, '.'))
 		lr->file = name;
 	else if (is_c_func_name(name))/* We reuse it for checking funcname */
@@ -1914,7 +1414,6 @@ int parse_line_range_desc(const char *arg, struct line_range *lr)
 		err = -EINVAL;
 		goto err;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 err:
@@ -1922,18 +1421,6 @@ err:
 	return err;
 }
 
-<<<<<<< HEAD
-/* Check the name is good for event/group */
-static bool check_event_name(const char *name)
-{
-	if (!isalpha(*name) && *name != '_')
-		return false;
-	while (*++name != '\0') {
-		if (!isalpha(*name) && !isdigit(*name) && *name != '_')
-			return false;
-	}
-	return true;
-=======
 static int parse_perf_probe_event_name(char **arg, struct perf_probe_event *pev)
 {
 	char *ptr;
@@ -1963,7 +1450,6 @@ ng_name:
 		return -EINVAL;
 	}
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Parse probepoint definition. */
@@ -1972,37 +1458,6 @@ static int parse_perf_probe_point(char *arg, struct perf_probe_event *pev)
 	struct perf_probe_point *pp = &pev->point;
 	char *ptr, *tmp;
 	char c, nc = 0;
-<<<<<<< HEAD
-	/*
-	 * <Syntax>
-	 * perf probe [EVENT=]SRC[:LN|;PTN]
-	 * perf probe [EVENT=]FUNC[@SRC][+OFFS|%return|:LN|;PAT]
-	 *
-	 * TODO:Group name support
-	 */
-
-	ptr = strpbrk(arg, ";=@+%");
-	if (ptr && *ptr == '=') {	/* Event name */
-		*ptr = '\0';
-		tmp = ptr + 1;
-		if (strchr(arg, ':')) {
-			semantic_error("Group name is not supported yet.\n");
-			return -ENOTSUP;
-		}
-		if (!check_event_name(arg)) {
-			semantic_error("%s is bad for event name -it must "
-				       "follow C symbol-naming rule.\n", arg);
-			return -EINVAL;
-		}
-		pev->event = strdup(arg);
-		if (pev->event == NULL)
-			return -ENOMEM;
-		pev->group = NULL;
-		arg = tmp;
-	}
-
-	ptr = strpbrk(arg, ";:+@%");
-=======
 	bool file_spec = false;
 	int ret;
 
@@ -2077,24 +1532,11 @@ static int parse_perf_probe_point(char *arg, struct perf_probe_event *pev)
 	}
 
 	ptr = strpbrk_esc(arg, ";:+@%");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ptr) {
 		nc = *ptr;
 		*ptr++ = '\0';
 	}
 
-<<<<<<< HEAD
-	tmp = strdup(arg);
-	if (tmp == NULL)
-		return -ENOMEM;
-
-	/* Check arg is function or file and copy it */
-	if (strchr(tmp, '.'))	/* File */
-		pp->file = tmp;
-	else			/* Function */
-		pp->function = tmp;
-
-=======
 	if (arg[0] == '\0')
 		tmp = NULL;
 	else {
@@ -2126,26 +1568,17 @@ static int parse_perf_probe_point(char *arg, struct perf_probe_event *pev)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Parse other options */
 	while (ptr) {
 		arg = ptr;
 		c = nc;
 		if (c == ';') {	/* Lazy pattern must be the last part */
-<<<<<<< HEAD
-			pp->lazy_line = strdup(arg);
-=======
 			pp->lazy_line = strdup(arg); /* let leave escapes */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pp->lazy_line == NULL)
 				return -ENOMEM;
 			break;
 		}
-<<<<<<< HEAD
-		ptr = strpbrk(arg, ";:+@%");
-=======
 		ptr = strpbrk_esc(arg, ";:+@%");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ptr) {
 			nc = *ptr;
 			*ptr++ = '\0';
@@ -2172,11 +1605,7 @@ static int parse_perf_probe_point(char *arg, struct perf_probe_event *pev)
 				semantic_error("SRC@SRC is not allowed.\n");
 				return -EINVAL;
 			}
-<<<<<<< HEAD
-			pp->file = strdup(arg);
-=======
 			pp->file = strdup_esc(arg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (pp->file == NULL)
 				return -ENOMEM;
 			break;
@@ -2224,14 +1653,6 @@ static int parse_perf_probe_point(char *arg, struct perf_probe_event *pev)
 		return -EINVAL;
 	}
 
-<<<<<<< HEAD
-	if (pp->retprobe && !pp->function) {
-		semantic_error("Return probe requires an entry function.\n");
-		return -EINVAL;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((pp->offset || pp->line || pp->lazy_line) && pp->retprobe) {
 		semantic_error("Offset/Line/Lazy pattern can't be used with "
 			       "return probe.\n");
@@ -2261,8 +1682,6 @@ static int parse_perf_probe_arg(char *str, struct perf_probe_arg *arg)
 		str = tmp + 1;
 	}
 
-<<<<<<< HEAD
-=======
 	tmp = strchr(str, '@');
 	if (tmp && tmp != str && !strcmp(tmp + 1, "user")) { /* user attr */
 		if (!user_access_is_supported()) {
@@ -2274,7 +1693,6 @@ static int parse_perf_probe_arg(char *str, struct perf_probe_arg *arg)
 		pr_debug("user_access ");
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp = strchr(str, ':');
 	if (tmp) {	/* Type setting */
 		*tmp = '\0';
@@ -2379,8 +1797,6 @@ int parse_perf_probe_command(const char *cmd, struct perf_probe_event *pev)
 	if (ret < 0)
 		goto out;
 
-<<<<<<< HEAD
-=======
 	/* Generate event name if needed */
 	if (!pev->event && pev->point.function && pev->point.line
 			&& !pev->point.lazy_line && !pev->point.offset) {
@@ -2391,7 +1807,6 @@ int parse_perf_probe_command(const char *cmd, struct perf_probe_event *pev)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Copy arguments and ensure return probe has no C argument */
 	pev->nargs = argc - 1;
 	pev->args = zalloc(sizeof(struct perf_probe_arg) * pev->nargs);
@@ -2414,19 +1829,6 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Return true if this perf_probe_event requires debuginfo */
-bool perf_probe_event_need_dwarf(struct perf_probe_event *pev)
-{
-	int i;
-
-	if (pev->point.file || pev->point.line || pev->point.lazy_line)
-		return true;
-
-	for (i = 0; i < pev->nargs; i++)
-		if (is_c_varname(pev->args[i].var))
-			return true;
-=======
 /* Returns true if *any* ARG is either C variable, $params or $vars. */
 bool perf_probe_with_var(struct perf_probe_event *pev)
 {
@@ -2448,26 +1850,17 @@ bool perf_probe_event_need_dwarf(struct perf_probe_event *pev)
 
 	if (perf_probe_with_var(pev))
 		return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return false;
 }
 
 /* Parse probe_events event into struct probe_point */
-<<<<<<< HEAD
-static int parse_probe_trace_command(const char *cmd,
-				     struct probe_trace_event *tev)
-=======
 int parse_probe_trace_command(const char *cmd, struct probe_trace_event *tev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct probe_trace_point *tp = &tev->point;
 	char pr;
 	char *p;
-<<<<<<< HEAD
-=======
 	char *argv0_str = NULL, *fmt, *fmt1_str, *fmt2_str, *fmt3_str;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, i, argc;
 	char **argv;
 
@@ -2484,12 +1877,6 @@ int parse_probe_trace_command(const char *cmd, struct probe_trace_event *tev)
 	}
 
 	/* Scan event and group name. */
-<<<<<<< HEAD
-	ret = sscanf(argv[0], "%c:%a[^/ \t]/%a[^ \t]",
-		     &pr, (float *)(void *)&tev->group,
-		     (float *)(void *)&tev->event);
-	if (ret != 3) {
-=======
 	argv0_str = strdup(argv[0]);
 	if (argv0_str == NULL) {
 		ret = -ENOMEM;
@@ -2499,13 +1886,10 @@ int parse_probe_trace_command(const char *cmd, struct probe_trace_event *tev)
 	fmt2_str = strtok_r(NULL, "/", &fmt);
 	fmt3_str = strtok_r(NULL, " \t", &fmt);
 	if (fmt1_str == NULL || fmt2_str == NULL || fmt3_str == NULL) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		semantic_error("Failed to parse event name: %s\n", argv[0]);
 		ret = -EINVAL;
 		goto out;
 	}
-<<<<<<< HEAD
-=======
 	pr = fmt1_str[0];
 	tev->group = strdup(fmt2_str);
 	tev->event = strdup(fmt3_str);
@@ -2513,7 +1897,6 @@ int parse_probe_trace_command(const char *cmd, struct probe_trace_event *tev)
 		ret = -ENOMEM;
 		goto out;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("Group:%s Event:%s probe:%c\n", tev->group, tev->event, pr);
 
 	tp->retprobe = (pr == 'r');
@@ -2522,15 +1905,6 @@ int parse_probe_trace_command(const char *cmd, struct probe_trace_event *tev)
 	p = strchr(argv[1], ':');
 	if (p) {
 		tp->module = strndup(argv[1], p - argv[1]);
-<<<<<<< HEAD
-		p++;
-	} else
-		p = argv[1];
-	ret = sscanf(p, "%a[^+]+%lu", (float *)(void *)&tp->symbol,
-		     &tp->offset);
-	if (ret == 1)
-		tp->offset = 0;
-=======
 		if (!tp->module) {
 			ret = -ENOMEM;
 			goto out;
@@ -2583,7 +1957,6 @@ int parse_probe_trace_command(const char *cmd, struct probe_trace_event *tev)
 		if (fmt2_str)
 			tp->ref_ctr_offset = strtoul(fmt2_str + 1, NULL, 0);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tev->nargs = argc - 2;
 	tev->args = zalloc(sizeof(struct probe_trace_arg) * tev->nargs);
@@ -2607,57 +1980,12 @@ int parse_probe_trace_command(const char *cmd, struct probe_trace_event *tev)
 	}
 	ret = 0;
 out:
-<<<<<<< HEAD
-=======
 	free(argv0_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	argv_free(argv);
 	return ret;
 }
 
 /* Compose only probe arg */
-<<<<<<< HEAD
-int synthesize_perf_probe_arg(struct perf_probe_arg *pa, char *buf, size_t len)
-{
-	struct perf_probe_arg_field *field = pa->field;
-	int ret;
-	char *tmp = buf;
-
-	if (pa->name && pa->var)
-		ret = e_snprintf(tmp, len, "%s=%s", pa->name, pa->var);
-	else
-		ret = e_snprintf(tmp, len, "%s", pa->name ? pa->name : pa->var);
-	if (ret <= 0)
-		goto error;
-	tmp += ret;
-	len -= ret;
-
-	while (field) {
-		if (field->name[0] == '[')
-			ret = e_snprintf(tmp, len, "%s", field->name);
-		else
-			ret = e_snprintf(tmp, len, "%s%s",
-					 field->ref ? "->" : ".", field->name);
-		if (ret <= 0)
-			goto error;
-		tmp += ret;
-		len -= ret;
-		field = field->next;
-	}
-
-	if (pa->type) {
-		ret = e_snprintf(tmp, len, ":%s", pa->type);
-		if (ret <= 0)
-			goto error;
-		tmp += ret;
-		len -= ret;
-	}
-
-	return tmp - buf;
-error:
-	pr_debug("Failed to synthesize perf probe argument: %s\n",
-		 strerror(-ret));
-=======
 char *synthesize_perf_probe_arg(struct perf_probe_arg *pa)
 {
 	struct perf_probe_arg_field *field = pa->field;
@@ -2693,33 +2021,12 @@ char *synthesize_perf_probe_arg(struct perf_probe_arg *pa)
 	ret = strbuf_detach(&buf, NULL);
 out:
 	strbuf_release(&buf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* Compose only probe point (not argument) */
 static char *synthesize_perf_probe_point(struct perf_probe_point *pp)
 {
-<<<<<<< HEAD
-	char *buf, *tmp;
-	char offs[32] = "", line[32] = "", file[32] = "";
-	int ret, len;
-
-	buf = zalloc(MAX_CMDLEN);
-	if (buf == NULL) {
-		ret = -ENOMEM;
-		goto error;
-	}
-	if (pp->offset) {
-		ret = e_snprintf(offs, 32, "+%lu", pp->offset);
-		if (ret <= 0)
-			goto error;
-	}
-	if (pp->line) {
-		ret = e_snprintf(line, 32, ":%d", pp->line);
-		if (ret <= 0)
-			goto error;
-=======
 	struct strbuf buf;
 	char *tmp, *ret = NULL;
 	int len, err = 0;
@@ -2738,7 +2045,6 @@ static char *synthesize_perf_probe_point(struct perf_probe_point *pp)
 			err = strbuf_addstr(&buf, "%return");
 		if (err)
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (pp->file) {
 		tmp = pp->file;
@@ -2747,96 +2053,6 @@ static char *synthesize_perf_probe_point(struct perf_probe_point *pp)
 			tmp = strchr(pp->file + len - 30, '/');
 			tmp = tmp ? tmp + 1 : pp->file + len - 30;
 		}
-<<<<<<< HEAD
-		ret = e_snprintf(file, 32, "@%s", tmp);
-		if (ret <= 0)
-			goto error;
-	}
-
-	if (pp->function)
-		ret = e_snprintf(buf, MAX_CMDLEN, "%s%s%s%s%s", pp->function,
-				 offs, pp->retprobe ? "%return" : "", line,
-				 file);
-	else
-		ret = e_snprintf(buf, MAX_CMDLEN, "%s%s", file, line);
-	if (ret <= 0)
-		goto error;
-
-	return buf;
-error:
-	pr_debug("Failed to synthesize perf probe point: %s\n",
-		 strerror(-ret));
-	if (buf)
-		free(buf);
-	return NULL;
-}
-
-#if 0
-char *synthesize_perf_probe_command(struct perf_probe_event *pev)
-{
-	char *buf;
-	int i, len, ret;
-
-	buf = synthesize_perf_probe_point(&pev->point);
-	if (!buf)
-		return NULL;
-
-	len = strlen(buf);
-	for (i = 0; i < pev->nargs; i++) {
-		ret = e_snprintf(&buf[len], MAX_CMDLEN - len, " %s",
-				 pev->args[i].name);
-		if (ret <= 0) {
-			free(buf);
-			return NULL;
-		}
-		len += ret;
-	}
-
-	return buf;
-}
-#endif
-
-static int __synthesize_probe_trace_arg_ref(struct probe_trace_arg_ref *ref,
-					     char **buf, size_t *buflen,
-					     int depth)
-{
-	int ret;
-	if (ref->next) {
-		depth = __synthesize_probe_trace_arg_ref(ref->next, buf,
-							 buflen, depth + 1);
-		if (depth < 0)
-			goto out;
-	}
-
-	ret = e_snprintf(*buf, *buflen, "%+ld(", ref->offset);
-	if (ret < 0)
-		depth = ret;
-	else {
-		*buf += ret;
-		*buflen -= ret;
-	}
-out:
-	return depth;
-
-}
-
-static int synthesize_probe_trace_arg(struct probe_trace_arg *arg,
-				       char *buf, size_t buflen)
-{
-	struct probe_trace_arg_ref *ref = arg->ref;
-	int ret, depth = 0;
-	char *tmp = buf;
-
-	/* Argument name or separator */
-	if (arg->name)
-		ret = e_snprintf(buf, buflen, " %s=", arg->name);
-	else
-		ret = e_snprintf(buf, buflen, " ");
-	if (ret < 0)
-		return ret;
-	buf += ret;
-	buflen -= ret;
-=======
 		err = strbuf_addf(&buf, "@%s", tmp);
 		if (!err && !pp->function && pp->line)
 			err = strbuf_addf(&buf, ":%d", pp->line);
@@ -2913,7 +2129,6 @@ static int synthesize_probe_trace_arg(struct probe_trace_arg *arg,
 		err = strbuf_addch(buf, ' ');
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Special case: @XXX */
 	if (arg->value[0] == '@' && arg->ref)
@@ -2921,46 +2136,13 @@ static int synthesize_probe_trace_arg(struct probe_trace_arg *arg,
 
 	/* Dereferencing arguments */
 	if (ref) {
-<<<<<<< HEAD
-		depth = __synthesize_probe_trace_arg_ref(ref, &buf,
-							  &buflen, 1);
-=======
 		depth = __synthesize_probe_trace_arg_ref(ref, buf, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (depth < 0)
 			return depth;
 	}
 
 	/* Print argument value */
 	if (arg->value[0] == '@' && arg->ref)
-<<<<<<< HEAD
-		ret = e_snprintf(buf, buflen, "%s%+ld", arg->value,
-				 arg->ref->offset);
-	else
-		ret = e_snprintf(buf, buflen, "%s", arg->value);
-	if (ret < 0)
-		return ret;
-	buf += ret;
-	buflen -= ret;
-
-	/* Closing */
-	while (depth--) {
-		ret = e_snprintf(buf, buflen, ")");
-		if (ret < 0)
-			return ret;
-		buf += ret;
-		buflen -= ret;
-	}
-	/* Print argument type */
-	if (arg->type) {
-		ret = e_snprintf(buf, buflen, ":%s", arg->type);
-		if (ret <= 0)
-			return ret;
-		buf += ret;
-	}
-
-	return buf - tmp;
-=======
 		err = strbuf_addf(buf, "%s%+ld", arg->value, arg->ref->offset);
 	else
 		err = strbuf_addstr(buf, arg->value);
@@ -3026,47 +2208,11 @@ synthesize_kprobe_trace_def(struct probe_trace_point *tp, struct strbuf *buf)
 		return strbuf_addf(buf, "%s%s%s+%lu", tp->module ?: "",
 				tp->module ? ":" : "", tp->symbol, tp->offset);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 char *synthesize_probe_trace_command(struct probe_trace_event *tev)
 {
 	struct probe_trace_point *tp = &tev->point;
-<<<<<<< HEAD
-	char *buf;
-	int i, len, ret;
-
-	buf = zalloc(MAX_CMDLEN);
-	if (buf == NULL)
-		return NULL;
-
-	len = e_snprintf(buf, MAX_CMDLEN, "%c:%s/%s %s%s%s+%lu",
-			 tp->retprobe ? 'r' : 'p',
-			 tev->group, tev->event,
-			 tp->module ?: "", tp->module ? ":" : "",
-			 tp->symbol, tp->offset);
-	if (len <= 0)
-		goto error;
-
-	for (i = 0; i < tev->nargs; i++) {
-		ret = synthesize_probe_trace_arg(&tev->args[i], buf + len,
-						  MAX_CMDLEN - len);
-		if (ret <= 0)
-			goto error;
-		len += ret;
-	}
-
-	return buf;
-error:
-	free(buf);
-	return NULL;
-}
-
-static int convert_to_perf_probe_event(struct probe_trace_event *tev,
-				       struct perf_probe_event *pev)
-{
-	char buf[64] = "";
-=======
 	struct strbuf buf;
 	char *ret = NULL;
 	int err;
@@ -3171,7 +2317,6 @@ static int convert_to_perf_probe_event(struct probe_trace_event *tev,
 			       struct perf_probe_event *pev, bool is_kprobe)
 {
 	struct strbuf buf = STRBUF_INIT;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, ret;
 
 	/* Convert event/group name */
@@ -3181,11 +2326,7 @@ static int convert_to_perf_probe_event(struct probe_trace_event *tev,
 		return -ENOMEM;
 
 	/* Convert trace_point to probe_point */
-<<<<<<< HEAD
-	ret = kprobe_convert_to_perf_probe(&tev->point, &pev->point);
-=======
 	ret = convert_to_perf_probe_point(&tev->point, &pev->point, is_kprobe);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -3198,25 +2339,15 @@ static int convert_to_perf_probe_event(struct probe_trace_event *tev,
 		if (tev->args[i].name)
 			pev->args[i].name = strdup(tev->args[i].name);
 		else {
-<<<<<<< HEAD
-			ret = synthesize_probe_trace_arg(&tev->args[i],
-							  buf, 64);
-			pev->args[i].name = strdup(buf);
-=======
 			if ((ret = strbuf_init(&buf, 32)) < 0)
 				goto error;
 			ret = synthesize_probe_trace_arg(&tev->args[i], &buf);
 			pev->args[i].name = strbuf_detach(&buf, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (pev->args[i].name == NULL && ret >= 0)
 			ret = -ENOMEM;
 	}
-<<<<<<< HEAD
-
-=======
 error:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		clear_perf_probe_event(pev);
 
@@ -3225,34 +2356,6 @@ error:
 
 void clear_perf_probe_event(struct perf_probe_event *pev)
 {
-<<<<<<< HEAD
-	struct perf_probe_point *pp = &pev->point;
-	struct perf_probe_arg_field *field, *next;
-	int i;
-
-	if (pev->event)
-		free(pev->event);
-	if (pev->group)
-		free(pev->group);
-	if (pp->file)
-		free(pp->file);
-	if (pp->function)
-		free(pp->function);
-	if (pp->lazy_line)
-		free(pp->lazy_line);
-	for (i = 0; i < pev->nargs; i++) {
-		if (pev->args[i].name)
-			free(pev->args[i].name);
-		if (pev->args[i].var)
-			free(pev->args[i].var);
-		if (pev->args[i].type)
-			free(pev->args[i].type);
-		field = pev->args[i].field;
-		while (field) {
-			next = field->next;
-			if (field->name)
-				free(field->name);
-=======
 	struct perf_probe_arg_field *field, *next;
 	int i;
 
@@ -3269,19 +2372,10 @@ void clear_perf_probe_event(struct perf_probe_event *pev)
 		while (field) {
 			next = field->next;
 			zfree(&field->name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free(field);
 			field = next;
 		}
 	}
-<<<<<<< HEAD
-	if (pev->args)
-		free(pev->args);
-	memset(pev, 0, sizeof(*pev));
-}
-
-static void clear_probe_trace_event(struct probe_trace_event *tev)
-=======
 	pev->nargs = 0;
 	zfree(&pev->args);
 }
@@ -3360,28 +2454,10 @@ out_err:
 }
 
 void clear_probe_trace_event(struct probe_trace_event *tev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct probe_trace_arg_ref *ref, *next;
 	int i;
 
-<<<<<<< HEAD
-	if (tev->event)
-		free(tev->event);
-	if (tev->group)
-		free(tev->group);
-	if (tev->point.symbol)
-		free(tev->point.symbol);
-	if (tev->point.module)
-		free(tev->point.module);
-	for (i = 0; i < tev->nargs; i++) {
-		if (tev->args[i].name)
-			free(tev->args[i].name);
-		if (tev->args[i].value)
-			free(tev->args[i].value);
-		if (tev->args[i].type)
-			free(tev->args[i].type);
-=======
 	zfree(&tev->event);
 	zfree(&tev->group);
 	zfree(&tev->point.symbol);
@@ -3391,7 +2467,6 @@ void clear_probe_trace_event(struct probe_trace_event *tev)
 		zfree(&tev->args[i].name);
 		zfree(&tev->args[i].value);
 		zfree(&tev->args[i].type);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ref = tev->args[i].ref;
 		while (ref) {
 			next = ref->next;
@@ -3399,114 +2474,6 @@ void clear_probe_trace_event(struct probe_trace_event *tev)
 			ref = next;
 		}
 	}
-<<<<<<< HEAD
-	if (tev->args)
-		free(tev->args);
-	memset(tev, 0, sizeof(*tev));
-}
-
-static int open_kprobe_events(bool readwrite)
-{
-	char buf[PATH_MAX];
-	const char *__debugfs;
-	int ret;
-
-	__debugfs = debugfs_find_mountpoint();
-	if (__debugfs == NULL) {
-		pr_warning("Debugfs is not mounted.\n");
-		return -ENOENT;
-	}
-
-	ret = e_snprintf(buf, PATH_MAX, "%stracing/kprobe_events", __debugfs);
-	if (ret >= 0) {
-		pr_debug("Opening %s write=%d\n", buf, readwrite);
-		if (readwrite && !probe_event_dry_run)
-			ret = open(buf, O_RDWR, O_APPEND);
-		else
-			ret = open(buf, O_RDONLY, 0);
-	}
-
-	if (ret < 0) {
-		if (errno == ENOENT)
-			pr_warning("kprobe_events file does not exist - please"
-				 " rebuild kernel with CONFIG_KPROBE_EVENT.\n");
-		else
-			pr_warning("Failed to open kprobe_events file: %s\n",
-				   strerror(errno));
-	}
-	return ret;
-}
-
-/* Get raw string list of current kprobe_events */
-static struct strlist *get_probe_trace_command_rawlist(int fd)
-{
-	int ret, idx;
-	FILE *fp;
-	char buf[MAX_CMDLEN];
-	char *p;
-	struct strlist *sl;
-
-	sl = strlist__new(true, NULL);
-
-	fp = fdopen(dup(fd), "r");
-	while (!feof(fp)) {
-		p = fgets(buf, MAX_CMDLEN, fp);
-		if (!p)
-			break;
-
-		idx = strlen(p) - 1;
-		if (p[idx] == '\n')
-			p[idx] = '\0';
-		ret = strlist__add(sl, buf);
-		if (ret < 0) {
-			pr_debug("strlist__add failed: %s\n", strerror(-ret));
-			strlist__delete(sl);
-			return NULL;
-		}
-	}
-	fclose(fp);
-
-	return sl;
-}
-
-/* Show an event */
-static int show_perf_probe_event(struct perf_probe_event *pev)
-{
-	int i, ret;
-	char buf[128];
-	char *place;
-
-	/* Synthesize only event probe point */
-	place = synthesize_perf_probe_point(&pev->point);
-	if (!place)
-		return -EINVAL;
-
-	ret = e_snprintf(buf, 128, "%s:%s", pev->group, pev->event);
-	if (ret < 0)
-		return ret;
-
-	printf("  %-20s (on %s", buf, place);
-
-	if (pev->nargs > 0) {
-		printf(" with");
-		for (i = 0; i < pev->nargs; i++) {
-			ret = synthesize_perf_probe_arg(&pev->args[i],
-							buf, 128);
-			if (ret < 0)
-				break;
-			printf(" %s", buf);
-		}
-	}
-	printf(")\n");
-	free(place);
-	return ret;
-}
-
-/* List up current perf-probe events */
-int show_perf_probe_events(void)
-{
-	int fd, ret;
-=======
 	zfree(&tev->args);
 	tev->nargs = 0;
 }
@@ -3700,38 +2667,11 @@ static int __show_perf_probe_events(int fd, bool is_kprobe,
 				    struct strfilter *filter)
 {
 	int ret = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct probe_trace_event tev;
 	struct perf_probe_event pev;
 	struct strlist *rawlist;
 	struct str_node *ent;
 
-<<<<<<< HEAD
-	setup_pager();
-	ret = init_vmlinux();
-	if (ret < 0)
-		return ret;
-
-	memset(&tev, 0, sizeof(tev));
-	memset(&pev, 0, sizeof(pev));
-
-	fd = open_kprobe_events(false);
-	if (fd < 0)
-		return fd;
-
-	rawlist = get_probe_trace_command_rawlist(fd);
-	close(fd);
-	if (!rawlist)
-		return -ENOENT;
-
-	strlist__for_each(ent, rawlist) {
-		ret = parse_probe_trace_command(ent->s, &tev);
-		if (ret >= 0) {
-			ret = convert_to_perf_probe_event(&tev, &pev);
-			if (ret >= 0)
-				ret = show_perf_probe_event(&pev);
-		}
-=======
 	memset(&tev, 0, sizeof(tev));
 	memset(&pev, 0, sizeof(pev));
 
@@ -3753,78 +2693,18 @@ static int __show_perf_probe_events(int fd, bool is_kprobe,
 						    true);
 		}
 next:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_perf_probe_event(&pev);
 		clear_probe_trace_event(&tev);
 		if (ret < 0)
 			break;
 	}
 	strlist__delete(rawlist);
-<<<<<<< HEAD
-=======
 	/* Cleanup cached debuginfo if needed */
 	debuginfo_cache__exit();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-/* Get current perf-probe event names */
-static struct strlist *get_probe_trace_event_names(int fd, bool include_group)
-{
-	char buf[128];
-	struct strlist *sl, *rawlist;
-	struct str_node *ent;
-	struct probe_trace_event tev;
-	int ret = 0;
-
-	memset(&tev, 0, sizeof(tev));
-	rawlist = get_probe_trace_command_rawlist(fd);
-	sl = strlist__new(true, NULL);
-	strlist__for_each(ent, rawlist) {
-		ret = parse_probe_trace_command(ent->s, &tev);
-		if (ret < 0)
-			break;
-		if (include_group) {
-			ret = e_snprintf(buf, 128, "%s:%s", tev.group,
-					tev.event);
-			if (ret >= 0)
-				ret = strlist__add(sl, buf);
-		} else
-			ret = strlist__add(sl, tev.event);
-		clear_probe_trace_event(&tev);
-		if (ret < 0)
-			break;
-	}
-	strlist__delete(rawlist);
-
-	if (ret < 0) {
-		strlist__delete(sl);
-		return NULL;
-	}
-	return sl;
-}
-
-static int write_probe_trace_event(int fd, struct probe_trace_event *tev)
-{
-	int ret = 0;
-	char *buf = synthesize_probe_trace_command(tev);
-
-	if (!buf) {
-		pr_debug("Failed to synthesize probe trace event.\n");
-		return -EINVAL;
-	}
-
-	pr_debug("Writing event: %s\n", buf);
-	if (!probe_event_dry_run) {
-		ret = write(fd, buf, strlen(buf));
-		if (ret <= 0)
-			pr_warning("Failed to write event: %s\n",
-				   strerror(errno));
-	}
-	free(buf);
-=======
 /* List up current perf-probe events */
 int show_perf_probe_events(struct strfilter *filter)
 {
@@ -3853,30 +2733,10 @@ int show_perf_probe_events(struct strfilter *filter)
 		close(up_fd);
 	exit_probe_symbol_maps();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int get_new_event_name(char *buf, size_t len, const char *base,
-<<<<<<< HEAD
-			      struct strlist *namelist, bool allow_suffix)
-{
-	int i, ret;
-
-	/* Try no suffix */
-	ret = e_snprintf(buf, len, "%s", base);
-	if (ret < 0) {
-		pr_debug("snprintf() failed: %s\n", strerror(-ret));
-		return ret;
-	}
-	if (!strlist__has_entry(namelist, buf))
-		return 0;
-
-	if (!allow_suffix) {
-		pr_warning("Error: event \"%s\" already exists. "
-			   "(Use -f to force duplicates.)\n", base);
-		return -EEXIST;
-=======
 			      struct strlist *namelist, bool ret_event,
 			      bool allow_suffix)
 {
@@ -3911,22 +2771,14 @@ static int get_new_event_name(char *buf, size_t len, const char *base,
 			   buf);
 		ret = -EEXIST;
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Try to add suffix */
 	for (i = 1; i < MAX_EVENT_INDEX; i++) {
-<<<<<<< HEAD
-		ret = e_snprintf(buf, len, "%s_%d", base, i);
-		if (ret < 0) {
-			pr_debug("snprintf() failed: %s\n", strerror(-ret));
-			return ret;
-=======
 		ret = e_snprintf(buf, len, "%s_%d", nbase, i);
 		if (ret < 0) {
 			pr_debug("snprintf() failed: %d\n", ret);
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!strlist__has_entry(namelist, buf))
 			break;
@@ -3936,11 +2788,6 @@ static int get_new_event_name(char *buf, size_t len, const char *base,
 		ret = -ERANGE;
 	}
 
-<<<<<<< HEAD
-	return ret;
-}
-
-=======
 out:
 	free(nbase);
 
@@ -4060,73 +2907,10 @@ static int __open_probe_file_and_namelist(bool uprobe,
 	return fd;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __add_probe_trace_events(struct perf_probe_event *pev,
 				     struct probe_trace_event *tevs,
 				     int ntevs, bool allow_suffix)
 {
-<<<<<<< HEAD
-	int i, fd, ret;
-	struct probe_trace_event *tev = NULL;
-	char buf[64];
-	const char *event, *group;
-	struct strlist *namelist;
-
-	fd = open_kprobe_events(true);
-	if (fd < 0)
-		return fd;
-	/* Get current event names */
-	namelist = get_probe_trace_event_names(fd, false);
-	if (!namelist) {
-		pr_debug("Failed to get current event list.\n");
-		return -EIO;
-	}
-
-	ret = 0;
-	printf("Added new event%s\n", (ntevs > 1) ? "s:" : ":");
-	for (i = 0; i < ntevs; i++) {
-		tev = &tevs[i];
-		if (pev->event)
-			event = pev->event;
-		else
-			if (pev->point.function)
-				event = pev->point.function;
-			else
-				event = tev->point.symbol;
-		if (pev->group)
-			group = pev->group;
-		else
-			group = PERFPROBE_GROUP;
-
-		/* Get an unused new event name */
-		ret = get_new_event_name(buf, 64, event,
-					 namelist, allow_suffix);
-		if (ret < 0)
-			break;
-		event = buf;
-
-		tev->event = strdup(event);
-		tev->group = strdup(group);
-		if (tev->event == NULL || tev->group == NULL) {
-			ret = -ENOMEM;
-			break;
-		}
-		ret = write_probe_trace_event(fd, tev);
-		if (ret < 0)
-			break;
-		/* Add added event name to namelist */
-		strlist__add(namelist, event);
-
-		/* Trick here - save current event/group */
-		event = pev->event;
-		group = pev->group;
-		pev->event = tev->event;
-		pev->group = tev->group;
-		show_perf_probe_event(pev);
-		/* Trick here - restore current event/group */
-		pev->event = (char *)event;
-		pev->group = (char *)group;
-=======
 	int i, fd[2] = {-1, -1}, up, ret;
 	struct probe_trace_event *tev = NULL;
 	struct probe_cache *cache = NULL;
@@ -4163,7 +2947,6 @@ static int __add_probe_trace_events(struct perf_probe_event *pev,
 		nsinfo__mountns_exit(&nsc);
 		if (ret < 0)
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Probes after the first probe which comes from same
@@ -4173,18 +2956,6 @@ static int __add_probe_trace_events(struct perf_probe_event *pev,
 		 */
 		allow_suffix = true;
 	}
-<<<<<<< HEAD
-
-	if (ret >= 0) {
-		/* Show how to use the event. */
-		printf("\nYou can now use it in all perf tools, such as:\n\n");
-		printf("\tperf record -e %s:%s -aR sleep 1\n\n", tev->group,
-			 tev->event);
-	}
-
-	strlist__delete(namelist);
-	close(fd);
-=======
 	if (ret == -EINVAL && pev->uprobes)
 		warn_uprobe_event_compat(tev);
 	if (ret == 0 && probe_conf.cache) {
@@ -4725,312 +3496,10 @@ static int find_probe_trace_events_from_cache(struct perf_probe_event *pev,
 
 out:
 	probe_cache__delete(cache);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int convert_to_probe_trace_events(struct perf_probe_event *pev,
-<<<<<<< HEAD
-					  struct probe_trace_event **tevs,
-					  int max_tevs, const char *target)
-{
-	struct symbol *sym;
-	int ret = 0, i;
-	struct probe_trace_event *tev;
-
-	/* Convert perf_probe_event with debuginfo */
-	ret = try_to_find_probe_trace_events(pev, tevs, max_tevs, target);
-	if (ret != 0)
-		return ret;	/* Found in debuginfo or got an error */
-
-	/* Allocate trace event buffer */
-	tev = *tevs = zalloc(sizeof(struct probe_trace_event));
-	if (tev == NULL)
-		return -ENOMEM;
-
-	/* Copy parameters */
-	tev->point.symbol = strdup(pev->point.function);
-	if (tev->point.symbol == NULL) {
-		ret = -ENOMEM;
-		goto error;
-	}
-
-	if (target) {
-		tev->point.module = strdup(target);
-		if (tev->point.module == NULL) {
-			ret = -ENOMEM;
-			goto error;
-		}
-	}
-
-	tev->point.offset = pev->point.offset;
-	tev->point.retprobe = pev->point.retprobe;
-	tev->nargs = pev->nargs;
-	if (tev->nargs) {
-		tev->args = zalloc(sizeof(struct probe_trace_arg)
-				   * tev->nargs);
-		if (tev->args == NULL) {
-			ret = -ENOMEM;
-			goto error;
-		}
-		for (i = 0; i < tev->nargs; i++) {
-			if (pev->args[i].name) {
-				tev->args[i].name = strdup(pev->args[i].name);
-				if (tev->args[i].name == NULL) {
-					ret = -ENOMEM;
-					goto error;
-				}
-			}
-			tev->args[i].value = strdup(pev->args[i].var);
-			if (tev->args[i].value == NULL) {
-				ret = -ENOMEM;
-				goto error;
-			}
-			if (pev->args[i].type) {
-				tev->args[i].type = strdup(pev->args[i].type);
-				if (tev->args[i].type == NULL) {
-					ret = -ENOMEM;
-					goto error;
-				}
-			}
-		}
-	}
-
-	/* Currently just checking function name from symbol map */
-	sym = __find_kernel_function_by_name(tev->point.symbol, NULL);
-	if (!sym) {
-		pr_warning("Kernel symbol \'%s\' not found.\n",
-			   tev->point.symbol);
-		ret = -ENOENT;
-		goto error;
-	} else if (tev->point.offset > sym->end - sym->start) {
-		pr_warning("Offset specified is greater than size of %s\n",
-			   tev->point.symbol);
-		ret = -ENOENT;
-		goto error;
-
-	}
-
-	return 1;
-error:
-	clear_probe_trace_event(tev);
-	free(tev);
-	*tevs = NULL;
-	return ret;
-}
-
-struct __event_package {
-	struct perf_probe_event		*pev;
-	struct probe_trace_event	*tevs;
-	int				ntevs;
-};
-
-int add_perf_probe_events(struct perf_probe_event *pevs, int npevs,
-			  int max_tevs, const char *target, bool force_add)
-{
-	int i, j, ret;
-	struct __event_package *pkgs;
-
-	pkgs = zalloc(sizeof(struct __event_package) * npevs);
-	if (pkgs == NULL)
-		return -ENOMEM;
-
-	/* Init vmlinux path */
-	ret = init_vmlinux();
-	if (ret < 0) {
-		free(pkgs);
-		return ret;
-	}
-
-	/* Loop 1: convert all events */
-	for (i = 0; i < npevs; i++) {
-		pkgs[i].pev = &pevs[i];
-		/* Convert with or without debuginfo */
-		ret  = convert_to_probe_trace_events(pkgs[i].pev,
-						     &pkgs[i].tevs,
-						     max_tevs,
-						     target);
-		if (ret < 0)
-			goto end;
-		pkgs[i].ntevs = ret;
-	}
-
-	/* Loop 2: add all events */
-	for (i = 0; i < npevs; i++) {
-		ret = __add_probe_trace_events(pkgs[i].pev, pkgs[i].tevs,
-						pkgs[i].ntevs, force_add);
-		if (ret < 0)
-			break;
-	}
-end:
-	/* Loop 3: cleanup and free trace events  */
-	for (i = 0; i < npevs; i++) {
-		for (j = 0; j < pkgs[i].ntevs; j++)
-			clear_probe_trace_event(&pkgs[i].tevs[j]);
-		free(pkgs[i].tevs);
-	}
-	free(pkgs);
-
-	return ret;
-}
-
-static int __del_trace_probe_event(int fd, struct str_node *ent)
-{
-	char *p;
-	char buf[128];
-	int ret;
-
-	/* Convert from perf-probe event to trace-probe event */
-	ret = e_snprintf(buf, 128, "-:%s", ent->s);
-	if (ret < 0)
-		goto error;
-
-	p = strchr(buf + 2, ':');
-	if (!p) {
-		pr_debug("Internal error: %s should have ':' but not.\n",
-			 ent->s);
-		ret = -ENOTSUP;
-		goto error;
-	}
-	*p = '/';
-
-	pr_debug("Writing event: %s\n", buf);
-	ret = write(fd, buf, strlen(buf));
-	if (ret < 0) {
-		ret = -errno;
-		goto error;
-	}
-
-	printf("Removed event: %s\n", ent->s);
-	return 0;
-error:
-	pr_warning("Failed to delete event: %s\n", strerror(-ret));
-	return ret;
-}
-
-static int del_trace_probe_event(int fd, const char *group,
-				  const char *event, struct strlist *namelist)
-{
-	char buf[128];
-	struct str_node *ent, *n;
-	int found = 0, ret = 0;
-
-	ret = e_snprintf(buf, 128, "%s:%s", group, event);
-	if (ret < 0) {
-		pr_err("Failed to copy event.\n");
-		return ret;
-	}
-
-	if (strpbrk(buf, "*?")) { /* Glob-exp */
-		strlist__for_each_safe(ent, n, namelist)
-			if (strglobmatch(ent->s, buf)) {
-				found++;
-				ret = __del_trace_probe_event(fd, ent);
-				if (ret < 0)
-					break;
-				strlist__remove(namelist, ent);
-			}
-	} else {
-		ent = strlist__find(namelist, buf);
-		if (ent) {
-			found++;
-			ret = __del_trace_probe_event(fd, ent);
-			if (ret >= 0)
-				strlist__remove(namelist, ent);
-		}
-	}
-	if (found == 0 && ret >= 0)
-		pr_info("Info: Event \"%s\" does not exist.\n", buf);
-
-	return ret;
-}
-
-int del_perf_probe_events(struct strlist *dellist)
-{
-	int fd, ret = 0;
-	const char *group, *event;
-	char *p, *str;
-	struct str_node *ent;
-	struct strlist *namelist;
-
-	fd = open_kprobe_events(true);
-	if (fd < 0)
-		return fd;
-
-	/* Get current event names */
-	namelist = get_probe_trace_event_names(fd, true);
-	if (namelist == NULL)
-		return -EINVAL;
-
-	strlist__for_each(ent, dellist) {
-		str = strdup(ent->s);
-		if (str == NULL) {
-			ret = -ENOMEM;
-			break;
-		}
-		pr_debug("Parsing: %s\n", str);
-		p = strchr(str, ':');
-		if (p) {
-			group = str;
-			*p = '\0';
-			event = p + 1;
-		} else {
-			group = "*";
-			event = str;
-		}
-		pr_debug("Group: %s, Event: %s\n", group, event);
-		ret = del_trace_probe_event(fd, group, event, namelist);
-		free(str);
-		if (ret < 0)
-			break;
-	}
-	strlist__delete(namelist);
-	close(fd);
-
-	return ret;
-}
-/* TODO: don't use a global variable for filter ... */
-static struct strfilter *available_func_filter;
-
-/*
- * If a symbol corresponds to a function with global binding and
- * matches filter return 0. For all others return 1.
- */
-static int filter_available_functions(struct map *map __unused,
-				      struct symbol *sym)
-{
-	if (sym->binding == STB_GLOBAL &&
-	    strfilter__compare(available_func_filter, sym->name))
-		return 0;
-	return 1;
-}
-
-int show_available_funcs(const char *target, struct strfilter *_filter)
-{
-	struct map *map;
-	int ret;
-
-	setup_pager();
-
-	ret = init_vmlinux();
-	if (ret < 0)
-		return ret;
-
-	map = kernel_get_module_map(target);
-	if (!map) {
-		pr_err("Failed to find %s map.\n", (target) ? : "kernel");
-		return -EINVAL;
-	}
-	available_func_filter = _filter;
-	if (map__load(map, filter_available_functions)) {
-		pr_err("Failed to load map.\n");
-		return -EINVAL;
-	}
-	if (!dso__sorted_by_name(map->dso, map->type))
-		dso__sort_by_name(map->dso, map->type);
-
-	dso__fprintf_symbols_by_name(map->dso, map->type, stdout);
-=======
 					 struct probe_trace_event **tevs)
 {
 	int ret;
@@ -5355,6 +3824,5 @@ int copy_to_probe_trace_arg(struct probe_trace_arg *tvar,
 			return -ENOMEM;
 	} else
 		tvar->name = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

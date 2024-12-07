@@ -1,57 +1,12 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: actbl.h - Basic ACPI Table Definitions
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2011, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACTBL_H__
 #define __ACTBL_H__
 
@@ -76,20 +31,14 @@
 #define ACPI_SIG_DSDT           "DSDT"	/* Differentiated System Description Table */
 #define ACPI_SIG_FADT           "FACP"	/* Fixed ACPI Description Table */
 #define ACPI_SIG_FACS           "FACS"	/* Firmware ACPI Control Structure */
-<<<<<<< HEAD
-=======
 #define ACPI_SIG_OSDT           "OSDT"	/* Override System Description Table */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_SIG_PSDT           "PSDT"	/* Persistent System Description Table */
 #define ACPI_SIG_RSDP           "RSD PTR "	/* Root System Description Pointer */
 #define ACPI_SIG_RSDT           "RSDT"	/* Root System Description Table */
 #define ACPI_SIG_XSDT           "XSDT"	/* Extended  System Description Table */
 #define ACPI_SIG_SSDT           "SSDT"	/* Secondary System Description Table */
 #define ACPI_RSDP_NAME          "RSDP"	/* Short name for RSDP, not signature */
-<<<<<<< HEAD
-=======
 #define ACPI_OEM_NAME           "OEM"	/* Short name for OEM, not signature */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * All tables and structures must be byte-packed to match the ACPI
@@ -98,11 +47,6 @@
 #pragma pack(1)
 
 /*
-<<<<<<< HEAD
- * Note about bitfields: The u8 type is used for bitfields in ACPI tables.
- * This is the only type that is even remotely portable. Anything else is not
- * portable, so do not use any other bitfield types.
-=======
  * Note: C bitfields are not used for this reason:
  *
  * "Bitfields are great and easy to read, but unfortunately the C language
@@ -112,7 +56,6 @@
  * this decision was a design error in C. Ritchie could have picked an order
  * and stuck with it." Norman Ramsey.
  * See http://stackoverflow.com/a/1053662/41661
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*******************************************************************************
@@ -123,24 +66,14 @@
  ******************************************************************************/
 
 struct acpi_table_header {
-<<<<<<< HEAD
-	char signature[ACPI_NAME_SIZE];	/* ASCII table signature */
-	u32 length;		/* Length of table in bytes, including this header */
-	u8 revision;		/* ACPI Specification minor version # */
-=======
 	char signature[ACPI_NAMESEG_SIZE];	/* ASCII table signature */
 	u32 length;		/* Length of table in bytes, including this header */
 	u8 revision;		/* ACPI Specification minor version number */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 checksum;		/* To make sum of entire table == 0 */
 	char oem_id[ACPI_OEM_ID_SIZE];	/* ASCII OEM identification */
 	char oem_table_id[ACPI_OEM_TABLE_ID_SIZE];	/* ASCII OEM table identification */
 	u32 oem_revision;	/* OEM revision number */
-<<<<<<< HEAD
-	char asl_compiler_id[ACPI_NAME_SIZE];	/* ASCII ASL compiler vendor ID */
-=======
 	char asl_compiler_id[ACPI_NAMESEG_SIZE];	/* ASCII ASL compiler vendor ID */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 asl_compiler_revision;	/* ASL compiler version */
 };
 
@@ -149,11 +82,7 @@ struct acpi_table_header {
  * GAS - Generic Address Structure (ACPI 2.0+)
  *
  * Note: Since this structure is used in the ACPI tables, it is byte aligned.
-<<<<<<< HEAD
- * If misaliged access is not supported by the hardware, accesses to the
-=======
  * If misaligned access is not supported by the hardware, accesses to the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 64-bit Address field must be performed with care.
  *
  ******************************************************************************/
@@ -185,9 +114,6 @@ struct acpi_table_rsdp {
 	u8 reserved[3];		/* Reserved, must be zero */
 };
 
-<<<<<<< HEAD
-#define ACPI_RSDP_REV0_SIZE     20	/* Size of original ACPI 1.0 RSDP */
-=======
 /* Standalone struct for the ACPI 1.0 RSDP */
 
 struct acpi_rsdp_common {
@@ -206,7 +132,6 @@ struct acpi_rsdp_extension {
 	u8 extended_checksum;
 	u8 reserved[3];
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
@@ -225,12 +150,9 @@ struct acpi_table_xsdt {
 	u64 table_offset_entry[1];	/* Array of pointers to ACPI tables */
 };
 
-<<<<<<< HEAD
-=======
 #define ACPI_RSDT_ENTRY_SIZE        (sizeof (u32))
 #define ACPI_XSDT_ENTRY_SIZE        (sizeof (u64))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FACS - Firmware ACPI Control Structure (FACS)
@@ -268,11 +190,7 @@ struct acpi_table_facs {
 /*******************************************************************************
  *
  * FADT - Fixed ACPI Description Table (Signature "FACP")
-<<<<<<< HEAD
- *        Version 4
-=======
  *        Version 6
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -286,20 +204,6 @@ struct acpi_table_fadt {
 	u8 preferred_profile;	/* Conveys preferred power management profile to OSPM. */
 	u16 sci_interrupt;	/* System vector of SCI interrupt */
 	u32 smi_command;	/* 32-bit Port address of SMI command port */
-<<<<<<< HEAD
-	u8 acpi_enable;		/* Value to write to smi_cmd to enable ACPI */
-	u8 acpi_disable;	/* Value to write to smi_cmd to disable ACPI */
-	u8 S4bios_request;	/* Value to write to SMI CMD to enter S4BIOS state */
-	u8 pstate_control;	/* Processor performance state control */
-	u32 pm1a_event_block;	/* 32-bit Port address of Power Mgt 1a Event Reg Blk */
-	u32 pm1b_event_block;	/* 32-bit Port address of Power Mgt 1b Event Reg Blk */
-	u32 pm1a_control_block;	/* 32-bit Port address of Power Mgt 1a Control Reg Blk */
-	u32 pm1b_control_block;	/* 32-bit Port address of Power Mgt 1b Control Reg Blk */
-	u32 pm2_control_block;	/* 32-bit Port address of Power Mgt 2 Control Reg Blk */
-	u32 pm_timer_block;	/* 32-bit Port address of Power Mgt Timer Ctrl Reg Blk */
-	u32 gpe0_block;		/* 32-bit Port address of General Purpose Event 0 Reg Blk */
-	u32 gpe1_block;		/* 32-bit Port address of General Purpose Event 1 Reg Blk */
-=======
 	u8 acpi_enable;		/* Value to write to SMI_CMD to enable ACPI */
 	u8 acpi_disable;	/* Value to write to SMI_CMD to disable ACPI */
 	u8 s4_bios_request;	/* Value to write to SMI_CMD to enter S4BIOS state */
@@ -312,7 +216,6 @@ struct acpi_table_fadt {
 	u32 pm_timer_block;	/* 32-bit port address of Power Mgt Timer Ctrl Reg Blk */
 	u32 gpe0_block;		/* 32-bit port address of General Purpose Event 0 Reg Blk */
 	u32 gpe1_block;		/* 32-bit port address of General Purpose Event 1 Reg Blk */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 pm1_event_length;	/* Byte Length of ports at pm1x_event_block */
 	u8 pm1_control_length;	/* Byte Length of ports at pm1x_control_block */
 	u8 pm2_control_length;	/* Byte Length of ports at pm2_control_block */
@@ -320,21 +223,12 @@ struct acpi_table_fadt {
 	u8 gpe0_block_length;	/* Byte Length of ports at gpe0_block */
 	u8 gpe1_block_length;	/* Byte Length of ports at gpe1_block */
 	u8 gpe1_base;		/* Offset in GPE number space where GPE1 events start */
-<<<<<<< HEAD
-	u8 cst_control;		/* Support for the _CST object and C States change notification */
-	u16 C2latency;		/* Worst case HW latency to enter/exit C2 state */
-	u16 C3latency;		/* Worst case HW latency to enter/exit C3 state */
-	u16 flush_size;		/* Processor's memory cache line width, in bytes */
-	u16 flush_stride;	/* Number of flush strides that need to be read */
-	u8 duty_offset;		/* Processor duty cycle index in processor's P_CNT reg */
-=======
 	u8 cst_control;		/* Support for the _CST object and C-States change notification */
 	u16 c2_latency;		/* Worst case HW latency to enter/exit C2 state */
 	u16 c3_latency;		/* Worst case HW latency to enter/exit C3 state */
 	u16 flush_size;		/* Processor memory cache line width, in bytes */
 	u16 flush_stride;	/* Number of flush strides that need to be read */
 	u8 duty_offset;		/* Processor duty cycle index in processor P_CNT reg */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 duty_width;		/* Processor duty cycle value bit width in P_CNT register */
 	u8 day_alarm;		/* Index to day-of-month alarm in RTC CMOS RAM */
 	u8 month_alarm;		/* Index to month-of-year alarm in RTC CMOS RAM */
@@ -344,12 +238,8 @@ struct acpi_table_fadt {
 	u32 flags;		/* Miscellaneous flag bits (see below for individual flags) */
 	struct acpi_generic_address reset_register;	/* 64-bit address of the Reset register */
 	u8 reset_value;		/* Value to write to the reset_register port to reset the system */
-<<<<<<< HEAD
-	u8 reserved4[3];	/* Reserved, must be zero */
-=======
 	u16 arm_boot_flags;	/* ARM-Specific Boot Flags (see below for individual flags) (ACPI 5.1) */
 	u8 minor_revision;	/* FADT Minor Revision (ACPI 5.1) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 Xfacs;		/* 64-bit physical address of FACS */
 	u64 Xdsdt;		/* 64-bit physical address of DSDT */
 	struct acpi_generic_address xpm1a_event_block;	/* 64-bit Extended Power Mgt 1a Event Reg Blk address */
@@ -360,20 +250,12 @@ struct acpi_table_fadt {
 	struct acpi_generic_address xpm_timer_block;	/* 64-bit Extended Power Mgt Timer Ctrl Reg Blk address */
 	struct acpi_generic_address xgpe0_block;	/* 64-bit Extended General Purpose Event 0 Reg Blk address */
 	struct acpi_generic_address xgpe1_block;	/* 64-bit Extended General Purpose Event 1 Reg Blk address */
-<<<<<<< HEAD
-	struct acpi_generic_address sleep_control;	/* 64-bit Sleep Control register */
-	struct acpi_generic_address sleep_status;	/* 64-bit Sleep Status register */
-};
-
-/* Masks for FADT Boot Architecture Flags (boot_flags) */
-=======
 	struct acpi_generic_address sleep_control;	/* 64-bit Sleep Control register (ACPI 5.0) */
 	struct acpi_generic_address sleep_status;	/* 64-bit Sleep Status register (ACPI 5.0) */
 	u64 hypervisor_id;	/* Hypervisor Vendor ID (ACPI 6.0) */
 };
 
 /* Masks for FADT IA-PC Boot Architecture Flags (boot_flags) [Vx]=Introduced in this FADT revision */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_FADT_LEGACY_DEVICES    (1)  	/* 00: [V2] System has LPC or ISA bus devices */
 #define ACPI_FADT_8042              (1<<1)	/* 01: [V3] System has an 8042 controller on port 60/64 */
@@ -384,12 +266,6 @@ struct acpi_table_fadt {
 
 #define FADT2_REVISION_ID               3
 
-<<<<<<< HEAD
-/* Masks for FADT flags */
-
-#define ACPI_FADT_WBINVD            (1)	/* 00: [V1] The wbinvd instruction works properly */
-#define ACPI_FADT_WBINVD_FLUSH      (1<<1)	/* 01: [V1] wbinvd flushes but does not invalidate caches */
-=======
 /* Masks for FADT ARM Boot Architecture Flags (arm_boot_flags) ACPI 5.1 */
 
 #define ACPI_FADT_PSCI_COMPLIANT    (1)	/* 00: [V5+] PSCI 0.2+ is implemented */
@@ -399,16 +275,11 @@ struct acpi_table_fadt {
 
 #define ACPI_FADT_WBINVD            (1)	/* 00: [V1] The WBINVD instruction works properly */
 #define ACPI_FADT_WBINVD_FLUSH      (1<<1)	/* 01: [V1] WBINVD flushes but does not invalidate caches */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_FADT_C1_SUPPORTED      (1<<2)	/* 02: [V1] All processors support C1 state */
 #define ACPI_FADT_C2_MP_SUPPORTED   (1<<3)	/* 03: [V1] C2 state works on MP system */
 #define ACPI_FADT_POWER_BUTTON      (1<<4)	/* 04: [V1] Power button is handled as a control method device */
 #define ACPI_FADT_SLEEP_BUTTON      (1<<5)	/* 05: [V1] Sleep button is handled as a control method device */
-<<<<<<< HEAD
-#define ACPI_FADT_FIXED_RTC         (1<<6)	/* 06: [V1] RTC wakeup status not in fixed register space */
-=======
 #define ACPI_FADT_FIXED_RTC         (1<<6)	/* 06: [V1] RTC wakeup status is not in fixed register space */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_FADT_S4_RTC_WAKE       (1<<7)	/* 07: [V1] RTC alarm can wake system from S4 */
 #define ACPI_FADT_32BIT_TIMER       (1<<8)	/* 08: [V1] ACPI timer width is 32-bit (0=24-bit) */
 #define ACPI_FADT_DOCKING_SUPPORTED (1<<9)	/* 09: [V1] Docking supported */
@@ -421,21 +292,13 @@ struct acpi_table_fadt {
 #define ACPI_FADT_S4_RTC_VALID      (1<<16)	/* 16: [V4] Contents of RTC_STS valid after S4 wake (ACPI 3.0) */
 #define ACPI_FADT_REMOTE_POWER_ON   (1<<17)	/* 17: [V4] System is compatible with remote power on (ACPI 3.0) */
 #define ACPI_FADT_APIC_CLUSTER      (1<<18)	/* 18: [V4] All local APICs must use cluster model (ACPI 3.0) */
-<<<<<<< HEAD
-#define ACPI_FADT_APIC_PHYSICAL     (1<<19)	/* 19: [V4] All local x_aPICs must use physical dest mode (ACPI 3.0) */
-=======
 #define ACPI_FADT_APIC_PHYSICAL     (1<<19)	/* 19: [V4] All local xAPICs must use physical dest mode (ACPI 3.0) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_FADT_HW_REDUCED        (1<<20)	/* 20: [V5] ACPI hardware is not implemented (ACPI 5.0) */
 #define ACPI_FADT_LOW_POWER_S0      (1<<21)	/* 21: [V5] S0 power savings are equal or better than S3 (ACPI 5.0) */
 
 /* Values for preferred_profile (Preferred Power Management Profiles) */
 
-<<<<<<< HEAD
-enum acpi_prefered_pm_profiles {
-=======
 enum acpi_preferred_pm_profiles {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PM_UNSPECIFIED = 0,
 	PM_DESKTOP = 1,
 	PM_MOBILE = 2,
@@ -444,18 +307,11 @@ enum acpi_preferred_pm_profiles {
 	PM_SOHO_SERVER = 5,
 	PM_APPLIANCE_PC = 6,
 	PM_PERFORMANCE_SERVER = 7,
-<<<<<<< HEAD
-	PM_TABLET = 8
-};
-
-/* Values for sleep_status and sleep_control registers (V5 FADT) */
-=======
 	PM_TABLET = 8,
 	NR_PM_PROFILES = 9
 };
 
 /* Values for sleep_status and sleep_control registers (V5+ FADT) */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_X_WAKE_STATUS          0x80
 #define ACPI_X_SLEEP_TYPE_MASK      0x1C
@@ -466,11 +322,6 @@ enum acpi_preferred_pm_profiles {
 
 #pragma pack()
 
-<<<<<<< HEAD
-#define ACPI_FADT_OFFSET(f)             (u16) ACPI_OFFSET (struct acpi_table_fadt, f)
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Internal table-related structures
  */
@@ -484,22 +335,6 @@ union acpi_name_union {
 struct acpi_table_desc {
 	acpi_physical_address address;
 	struct acpi_table_header *pointer;
-<<<<<<< HEAD
-	u32 length;		/* Length fixed at 32 bits */
-	union acpi_name_union signature;
-	acpi_owner_id owner_id;
-	u8 flags;
-};
-
-/* Masks for Flags field above */
-
-#define ACPI_TABLE_ORIGIN_UNKNOWN       (0)
-#define ACPI_TABLE_ORIGIN_MAPPED        (1)
-#define ACPI_TABLE_ORIGIN_ALLOCATED     (2)
-#define ACPI_TABLE_ORIGIN_OVERRIDE      (4)
-#define ACPI_TABLE_ORIGIN_MASK          (7)
-#define ACPI_TABLE_IS_LOADED            (8)
-=======
 	u32 length;		/* Length fixed at 32 bits (fixed in table header) */
 	union acpi_name_union signature;
 	acpi_owner_id owner_id;
@@ -529,26 +364,18 @@ struct acpi_table_desc {
 #define ACPI_TABLE_ORIGIN_MASK              (3)
 #define ACPI_TABLE_IS_VERIFIED              (4)
 #define ACPI_TABLE_IS_LOADED                (8)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Get the remaining ACPI tables
  */
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/actbl1.h>
 #include <acpi/actbl2.h>
 #include <acpi/actbl3.h>
 
-<<<<<<< HEAD
-=======
 /* Macros used to generate offsets to specific table fields */
 
 #define ACPI_FADT_OFFSET(f)             (u16) ACPI_OFFSET (struct acpi_table_fadt, f)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sizes of the various flavors of FADT. We need to look closely
  * at the FADT length because the version number essentially tells
@@ -557,18 +384,6 @@ struct acpi_table_desc {
  * FADT is the bottom line as to what the version really is.
  *
  * For reference, the values below are as follows:
-<<<<<<< HEAD
- *     FADT V1  size: 0x074
- *     FADT V2  size: 0x084
- *     FADT V3  size: 0x0F4
- *     FADT V4  size: 0x0F4
- *     FADT V5  size: 0x10C
- */
-#define ACPI_FADT_V1_SIZE       (u32) (ACPI_FADT_OFFSET (flags) + 4)
-#define ACPI_FADT_V2_SIZE       (u32) (ACPI_FADT_OFFSET (reserved4[0]) + 3)
-#define ACPI_FADT_V3_SIZE       (u32) (ACPI_FADT_OFFSET (sleep_control))
-#define ACPI_FADT_V5_SIZE       (u32) (sizeof (struct acpi_table_fadt))
-=======
  *     FADT V1 size: 0x074
  *     FADT V2 size: 0x084
  *     FADT V3 size: 0x0F4
@@ -583,6 +398,5 @@ struct acpi_table_desc {
 #define ACPI_FADT_V6_SIZE       (u32) (sizeof (struct acpi_table_fadt))
 
 #define ACPI_FADT_CONFORMANCE   "ACPI 6.1 (FADT version 6)"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* __ACTBL_H__ */

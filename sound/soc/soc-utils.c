@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-/*
- * soc-util.c  --  ALSA SoC Audio Layer utility functions
- *
- * Copyright 2009 Wolfson Microelectronics PLC.
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *         Liam Girdwood <lrg@slimlogic.co.uk>
- *         
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- */
-
-#include <linux/platform_device.h>
-#include <linux/export.h>
-=======
 // SPDX-License-Identifier: GPL-2.0+
 //
 // soc-util.c  --  ALSA SoC Audio Layer utility functions
@@ -29,7 +10,6 @@
 #include <linux/platform_device.h>
 #include <linux/export.h>
 #include <linux/math.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -73,13 +53,6 @@ int snd_soc_params_to_bclk(struct snd_pcm_hw_params *params)
 }
 EXPORT_SYMBOL_GPL(snd_soc_params_to_bclk);
 
-<<<<<<< HEAD
-static const struct snd_pcm_hardware dummy_dma_hardware = {
-	.formats		= 0xffffffff,
-	.channels_min		= 1,
-	.channels_max		= UINT_MAX,
-
-=======
 /**
  * snd_soc_tdm_params_to_bclk - calculate bclk from params and tdm slot info.
  *
@@ -126,7 +99,6 @@ int snd_soc_tdm_params_to_bclk(struct snd_pcm_hw_params *params,
 EXPORT_SYMBOL_GPL(snd_soc_tdm_params_to_bclk);
 
 static const struct snd_pcm_hardware dummy_dma_hardware = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Random values to keep userspace happy when checking constraints */
 	.info			= SNDRV_PCM_INFO_INTERLEAVED |
 				  SNDRV_PCM_INFO_BLOCK_TRANSFER,
@@ -137,11 +109,6 @@ static const struct snd_pcm_hardware dummy_dma_hardware = {
 	.periods_max		= 128,
 };
 
-<<<<<<< HEAD
-static int dummy_dma_open(struct snd_pcm_substream *substream)
-{
-	snd_soc_set_runtime_hwparams(substream, &dummy_dma_hardware);
-=======
 
 static const struct snd_soc_component_driver dummy_platform;
 
@@ -163,40 +130,10 @@ static int dummy_dma_open(struct snd_soc_component *component,
 	/* BE's dont need dummy params */
 	if (!rtd->dai_link->no_pcm)
 		snd_soc_set_runtime_hwparams(substream, &dummy_dma_hardware);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops dummy_dma_ops = {
-	.open		= dummy_dma_open,
-	.ioctl		= snd_pcm_lib_ioctl,
-};
-
-static struct snd_soc_platform_driver dummy_platform = {
-	.ops = &dummy_dma_ops,
-};
-
-static struct snd_soc_codec_driver dummy_codec;
-static struct snd_soc_dai_driver dummy_dai = {
-	.name = "snd-soc-dummy-dai",
-};
-
-static __devinit int snd_soc_dummy_probe(struct platform_device *pdev)
-{
-	int ret;
-
-	ret = snd_soc_register_codec(&pdev->dev, &dummy_codec, &dummy_dai, 1);
-	if (ret < 0)
-		return ret;
-
-	ret = snd_soc_register_platform(&pdev->dev, &dummy_platform);
-	if (ret < 0) {
-		snd_soc_unregister_codec(&pdev->dev);
-		return ret;
-	}
-=======
 static const struct snd_soc_component_driver dummy_platform = {
 	.open		= dummy_dma_open,
 };
@@ -306,34 +243,15 @@ static int snd_soc_dummy_probe(struct platform_device *pdev)
 
 	ret = devm_snd_soc_register_component(&pdev->dev, &dummy_platform,
 					      NULL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
-<<<<<<< HEAD
-static __devexit int snd_soc_dummy_remove(struct platform_device *pdev)
-{
-	snd_soc_unregister_platform(&pdev->dev);
-	snd_soc_unregister_codec(&pdev->dev);
-
-	return 0;
-}
-
-static struct platform_driver soc_dummy_driver = {
-	.driver = {
-		.name = "snd-soc-dummy",
-		.owner = THIS_MODULE,
-	},
-	.probe = snd_soc_dummy_probe,
-	.remove = __devexit_p(snd_soc_dummy_remove),
-=======
 static struct platform_driver soc_dummy_driver = {
 	.driver = {
 		.name = "snd-soc-dummy",
 	},
 	.probe = snd_soc_dummy_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device *soc_dummy_dev;
@@ -342,22 +260,10 @@ int __init snd_soc_util_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	soc_dummy_dev = platform_device_alloc("snd-soc-dummy", -1);
-	if (!soc_dummy_dev)
-		return -ENOMEM;
-
-	ret = platform_device_add(soc_dummy_dev);
-	if (ret != 0) {
-		platform_device_put(soc_dummy_dev);
-		return ret;
-	}
-=======
 	soc_dummy_dev =
 		platform_device_register_simple("snd-soc-dummy", -1, NULL, 0);
 	if (IS_ERR(soc_dummy_dev))
 		return PTR_ERR(soc_dummy_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = platform_driver_register(&soc_dummy_driver);
 	if (ret != 0)
@@ -366,15 +272,8 @@ int __init snd_soc_util_init(void)
 	return ret;
 }
 
-<<<<<<< HEAD
-void __exit snd_soc_util_exit(void)
-{
-	platform_device_unregister(soc_dummy_dev);
-	platform_driver_unregister(&soc_dummy_driver);
-=======
 void snd_soc_util_exit(void)
 {
 	platform_driver_unregister(&soc_dummy_driver);
 	platform_device_unregister(soc_dummy_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

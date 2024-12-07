@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext4/namei.c
  *
@@ -30,10 +27,6 @@
 
 #include <linux/fs.h>
 #include <linux/pagemap.h>
-<<<<<<< HEAD
-#include <linux/jbd2.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/time.h>
 #include <linux/fcntl.h>
 #include <linux/stat.h>
@@ -41,11 +34,8 @@
 #include <linux/quotaops.h>
 #include <linux/buffer_head.h>
 #include <linux/bio.h>
-<<<<<<< HEAD
-=======
 #include <linux/iversion.h>
 #include <linux/unicode.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ext4.h"
 #include "ext4_jbd2.h"
 
@@ -59,26 +49,6 @@
 #define NAMEI_RA_CHUNKS  2
 #define NAMEI_RA_BLOCKS  4
 #define NAMEI_RA_SIZE	     (NAMEI_RA_CHUNKS * NAMEI_RA_BLOCKS)
-<<<<<<< HEAD
-#define NAMEI_RA_INDEX(c,b)  (((c) * NAMEI_RA_BLOCKS) + (b))
-
-static struct buffer_head *ext4_append(handle_t *handle,
-					struct inode *inode,
-					ext4_lblk_t *block, int *err)
-{
-	struct buffer_head *bh;
-
-	*block = inode->i_size >> inode->i_sb->s_blocksize_bits;
-
-	bh = ext4_bread(handle, inode, *block, 1, err);
-	if (bh) {
-		inode->i_size += inode->i_sb->s_blocksize;
-		EXT4_I(inode)->i_disksize = inode->i_size;
-		*err = ext4_journal_get_write_access(handle, bh);
-		if (*err) {
-			brelse(bh);
-			bh = NULL;
-=======
 
 static struct buffer_head *ext4_append(handle_t *handle,
 					struct inode *inode,
@@ -236,19 +206,11 @@ static struct buffer_head *__ext4_read_dirblock(struct inode *inode,
 					     "Directory block failed checksum");
 			brelse(bh);
 			return ERR_PTR(-EFSBADCRC);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return bh;
 }
 
-<<<<<<< HEAD
-#ifndef assert
-#define assert(test) J_ASSERT(test)
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DX_DEBUG
 #define dxtrace(command) command
 #else
@@ -296,21 +258,13 @@ struct dx_root
 		u8 unused_flags;
 	}
 	info;
-<<<<<<< HEAD
-	struct dx_entry	entries[0];
-=======
 	struct dx_entry	entries[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dx_node
 {
 	struct fake_dirent fake;
-<<<<<<< HEAD
-	struct dx_entry	entries[0];
-=======
 	struct dx_entry	entries[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -346,20 +300,6 @@ static void dx_set_count(struct dx_entry *entries, unsigned value);
 static void dx_set_limit(struct dx_entry *entries, unsigned value);
 static unsigned dx_root_limit(struct inode *dir, unsigned infosize);
 static unsigned dx_node_limit(struct inode *dir);
-<<<<<<< HEAD
-static struct dx_frame *dx_probe(const struct qstr *d_name,
-				 struct inode *dir,
-				 struct dx_hash_info *hinfo,
-				 struct dx_frame *frame,
-				 int *err);
-static void dx_release(struct dx_frame *frames);
-static int dx_make_map(struct ext4_dir_entry_2 *de, unsigned blocksize,
-		       struct dx_hash_info *hinfo, struct dx_map_entry map[]);
-static void dx_sort_map(struct dx_map_entry *map, unsigned count);
-static struct ext4_dir_entry_2 *dx_move_dirents(char *from, char *to,
-		struct dx_map_entry *offsets, int count, unsigned blocksize);
-static struct ext4_dir_entry_2* dx_pack_dirents(char *base, unsigned blocksize);
-=======
 static struct dx_frame *dx_probe(struct ext4_filename *fname,
 				 struct inode *dir,
 				 struct dx_hash_info *hinfo,
@@ -374,7 +314,6 @@ static struct ext4_dir_entry_2 *dx_move_dirents(struct inode *dir, char *from,
 					int count, unsigned int blocksize);
 static struct ext4_dir_entry_2 *dx_pack_dirents(struct inode *dir, char *base,
 						unsigned int blocksize);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dx_insert_block(struct dx_frame *frame,
 					u32 hash, ext4_lblk_t block);
 static int ext4_htree_next_block(struct inode *dir, __u32 hash,
@@ -382,13 +321,6 @@ static int ext4_htree_next_block(struct inode *dir, __u32 hash,
 				 struct dx_frame *frames,
 				 __u32 *start_hash);
 static struct buffer_head * ext4_dx_find_entry(struct inode *dir,
-<<<<<<< HEAD
-		const struct qstr *d_name,
-		struct ext4_dir_entry_2 **res_dir,
-		int *err);
-static int ext4_dx_add_entry(handle_t *handle, struct dentry *dentry,
-			     struct inode *inode);
-=======
 		struct ext4_filename *fname,
 		struct ext4_dir_entry_2 **res_dir);
 static int ext4_dx_add_entry(handle_t *handle, struct ext4_filename *fname,
@@ -617,7 +549,6 @@ static inline int ext4_handle_dirty_dx_node(handle_t *handle,
 	ext4_dx_csum_set(inode, (struct ext4_dir_entry *)bh->b_data);
 	return ext4_handle_dirty_metadata(handle, inode, bh);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * p is at least 6 bytes before the end of page
@@ -636,11 +567,7 @@ ext4_next_entry(struct ext4_dir_entry_2 *p, unsigned long blocksize)
 
 static inline ext4_lblk_t dx_get_block(struct dx_entry *entry)
 {
-<<<<<<< HEAD
-	return le32_to_cpu(entry->block) & 0x00ffffff;
-=======
 	return le32_to_cpu(entry->block) & 0x0fffffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void dx_set_block(struct dx_entry *entry, ext4_lblk_t value)
@@ -680,31 +607,22 @@ static inline void dx_set_limit(struct dx_entry *entries, unsigned value)
 
 static inline unsigned dx_root_limit(struct inode *dir, unsigned infosize)
 {
-<<<<<<< HEAD
-	unsigned entry_space = dir->i_sb->s_blocksize - EXT4_DIR_REC_LEN(1) -
-		EXT4_DIR_REC_LEN(2) - infosize;
-=======
 	unsigned int entry_space = dir->i_sb->s_blocksize -
 			ext4_dir_rec_len(1, NULL) -
 			ext4_dir_rec_len(2, NULL) - infosize;
 
 	if (ext4_has_metadata_csum(dir->i_sb))
 		entry_space -= sizeof(struct dx_tail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return entry_space / sizeof(struct dx_entry);
 }
 
 static inline unsigned dx_node_limit(struct inode *dir)
 {
-<<<<<<< HEAD
-	unsigned entry_space = dir->i_sb->s_blocksize - EXT4_DIR_REC_LEN(0);
-=======
 	unsigned int entry_space = dir->i_sb->s_blocksize -
 			ext4_dir_rec_len(0, dir);
 
 	if (ext4_has_metadata_csum(dir->i_sb))
 		entry_space -= sizeof(struct dx_tail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return entry_space / sizeof(struct dx_entry);
 }
 
@@ -715,14 +633,6 @@ static inline unsigned dx_node_limit(struct inode *dir)
 static void dx_show_index(char * label, struct dx_entry *entries)
 {
 	int i, n = dx_get_count (entries);
-<<<<<<< HEAD
-	printk(KERN_DEBUG "%s index ", label);
-	for (i = 0; i < n; i++) {
-		printk("%x->%lu ", i ? dx_get_hash(entries + i) :
-				0, (unsigned long)dx_get_block(entries + i));
-	}
-	printk("\n");
-=======
 	printk(KERN_DEBUG "%s index", label);
 	for (i = 0; i < n; i++) {
 		printk(KERN_CONT " %x->%lu",
@@ -730,7 +640,6 @@ static void dx_show_index(char * label, struct dx_entry *entries)
 		       (unsigned long)dx_get_block(entries + i));
 	}
 	printk(KERN_CONT "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct stats
@@ -740,15 +649,10 @@ struct stats
 	unsigned bcount;
 };
 
-<<<<<<< HEAD
-static struct stats dx_show_leaf(struct dx_hash_info *hinfo, struct ext4_dir_entry_2 *de,
-				 int size, int show_names)
-=======
 static struct stats dx_show_leaf(struct inode *dir,
 				struct dx_hash_info *hinfo,
 				struct ext4_dir_entry_2 *de,
 				int size, int show_names)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned names = 0, space = 0;
 	char *base = (char *) de;
@@ -761,16 +665,6 @@ static struct stats dx_show_leaf(struct inode *dir,
 		{
 			if (show_names)
 			{
-<<<<<<< HEAD
-				int len = de->name_len;
-				char *name = de->name;
-				while (len--) printk("%c", *name++);
-				ext4fs_dirhash(de->name, de->name_len, &h);
-				printk(":%x.%u ", h.hash,
-				       (unsigned) ((char *) de - base));
-			}
-			space += EXT4_DIR_REC_LEN(de->name_len);
-=======
 #ifdef CONFIG_FS_ENCRYPTION
 				int len;
 				char *name;
@@ -836,16 +730,11 @@ static struct stats dx_show_leaf(struct inode *dir,
 #endif
 			}
 			space += ext4_dir_rec_len(de->name_len, dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			names++;
 		}
 		de = ext4_next_entry(de, size);
 	}
-<<<<<<< HEAD
-	printk("(%i)\n", names);
-=======
 	printk(KERN_CONT "(%i)\n", names);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (struct stats) { names, space, 1 };
 }
 
@@ -856,10 +745,6 @@ struct stats dx_show_entries(struct dx_hash_info *hinfo, struct inode *dir,
 	unsigned count = dx_get_count(entries), names = 0, space = 0, i;
 	unsigned bcount = 0;
 	struct buffer_head *bh;
-<<<<<<< HEAD
-	int err;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("%i indexed blocks...\n", count);
 	for (i = 0; i < count; i++, entries++)
 	{
@@ -868,12 +753,6 @@ struct stats dx_show_entries(struct dx_hash_info *hinfo, struct inode *dir,
 		u32 range = i < count - 1? (dx_get_hash(entries + 1) - hash): ~hash;
 		struct stats stats;
 		printk("%s%3u:%03u hash %8x/%8x ",levels?"":"   ", i, block, hash, range);
-<<<<<<< HEAD
-		if (!(bh = ext4_bread (NULL,dir, block, 0,&err))) continue;
-		stats = levels?
-		   dx_show_entries(hinfo, dir, ((struct dx_node *) bh->b_data)->entries, levels - 1):
-		   dx_show_leaf(hinfo, (struct ext4_dir_entry_2 *) bh->b_data, blocksize, 0);
-=======
 		bh = ext4_bread(NULL,dir, block, 0);
 		if (!bh || IS_ERR(bh))
 			continue;
@@ -881,7 +760,6 @@ struct stats dx_show_entries(struct dx_hash_info *hinfo, struct inode *dir,
 		   dx_show_entries(hinfo, dir, ((struct dx_node *) bh->b_data)->entries, levels - 1):
 		   dx_show_leaf(dir, hinfo, (struct ext4_dir_entry_2 *)
 			bh->b_data, blocksize, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		names += stats.names;
 		space += stats.space;
 		bcount += stats.bcount;
@@ -893,8 +771,6 @@ struct stats dx_show_entries(struct dx_hash_info *hinfo, struct inode *dir,
 		       (space/bcount)*100/blocksize);
 	return (struct stats) { names, space, bcount};
 }
-<<<<<<< HEAD
-=======
 
 /*
  * Linear search cross check
@@ -918,7 +794,6 @@ static inline void htree_rep_invariant_check(struct dx_entry *at,
 					     u32 hash, unsigned int n)
 {
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* DX_DEBUG */
 
 /*
@@ -931,31 +806,6 @@ static inline void htree_rep_invariant_check(struct dx_entry *at,
  * back to userspace.
  */
 static struct dx_frame *
-<<<<<<< HEAD
-dx_probe(const struct qstr *d_name, struct inode *dir,
-	 struct dx_hash_info *hinfo, struct dx_frame *frame_in, int *err)
-{
-	unsigned count, indirect;
-	struct dx_entry *at, *entries, *p, *q, *m;
-	struct dx_root *root;
-	struct buffer_head *bh;
-	struct dx_frame *frame = frame_in;
-	u32 hash;
-
-	frame->bh = NULL;
-	if (!(bh = ext4_bread (NULL,dir, 0, 0, err)))
-		goto fail;
-	root = (struct dx_root *) bh->b_data;
-	if (root->info.hash_version != DX_HASH_TEA &&
-	    root->info.hash_version != DX_HASH_HALF_MD4 &&
-	    root->info.hash_version != DX_HASH_LEGACY) {
-		ext4_warning(dir->i_sb, "Unrecognised inode hash code %d",
-			     root->info.hash_version);
-		brelse(bh);
-		*err = ERR_BAD_DX_DIR;
-		goto fail;
-	}
-=======
 dx_probe(struct ext4_filename *fname, struct inode *dir,
 	 struct dx_hash_info *hinfo, struct dx_frame *frame_in)
 {
@@ -997,41 +847,10 @@ dx_probe(struct ext4_filename *fname, struct inode *dir,
 	}
 	if (fname)
 		hinfo = &fname->hinfo;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hinfo->hash_version = root->info.hash_version;
 	if (hinfo->hash_version <= DX_HASH_TEA)
 		hinfo->hash_version += EXT4_SB(dir->i_sb)->s_hash_unsigned;
 	hinfo->seed = EXT4_SB(dir->i_sb)->s_hash_seed;
-<<<<<<< HEAD
-	if (d_name)
-		ext4fs_dirhash(d_name->name, d_name->len, hinfo);
-	hash = hinfo->hash;
-
-	if (root->info.unused_flags & 1) {
-		ext4_warning(dir->i_sb, "Unimplemented inode hash flags: %#06x",
-			     root->info.unused_flags);
-		brelse(bh);
-		*err = ERR_BAD_DX_DIR;
-		goto fail;
-	}
-
-	if ((indirect = root->info.indirect_levels) > 1) {
-		ext4_warning(dir->i_sb, "Unimplemented inode hash depth: %#06x",
-			     root->info.indirect_levels);
-		brelse(bh);
-		*err = ERR_BAD_DX_DIR;
-		goto fail;
-	}
-
-	entries = (struct dx_entry *) (((char *)&root->info) +
-				       root->info.info_length);
-
-	if (dx_get_limit(entries) != dx_root_limit(dir,
-						   root->info.info_length)) {
-		ext4_warning(dir->i_sb, "dx entry: limit != root limit");
-		brelse(bh);
-		*err = ERR_BAD_DX_DIR;
-=======
 	/* hash is already computed for encrypted casefolded directory */
 	if (fname && fname_name(fname) &&
 	    !(IS_ENCRYPTED(dir) && IS_CASEFOLDED(dir))) {
@@ -1071,22 +890,10 @@ dx_probe(struct ext4_filename *fname, struct inode *dir,
 		ext4_warning_inode(dir, "dx entry: limit %u != root limit %u",
 				   dx_get_limit(entries),
 				   dx_root_limit(dir, root->info.info_length));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
 	dxtrace(printk("Look up %x", hash));
-<<<<<<< HEAD
-	while (1)
-	{
-		count = dx_get_count(entries);
-		if (!count || count > dx_get_limit(entries)) {
-			ext4_warning(dir->i_sb,
-				     "dx entry: no count or count > limit");
-			brelse(bh);
-			*err = ERR_BAD_DX_DIR;
-			goto fail2;
-=======
 	level = 0;
 	blocks[0] = 0;
 	while (1) {
@@ -1096,65 +903,19 @@ dx_probe(struct ext4_filename *fname, struct inode *dir,
 					   "dx entry: count %u beyond limit %u",
 					   count, dx_get_limit(entries));
 			goto fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		p = entries + 1;
 		q = entries + count - 1;
-<<<<<<< HEAD
-		while (p <= q)
-		{
-			m = p + (q - p)/2;
-			dxtrace(printk("."));
-=======
 		while (p <= q) {
 			m = p + (q - p) / 2;
 			dxtrace(printk(KERN_CONT "."));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (dx_get_hash(m) > hash)
 				q = m - 1;
 			else
 				p = m + 1;
 		}
 
-<<<<<<< HEAD
-		if (0) // linear search cross check
-		{
-			unsigned n = count - 1;
-			at = entries;
-			while (n--)
-			{
-				dxtrace(printk(","));
-				if (dx_get_hash(++at) > hash)
-				{
-					at--;
-					break;
-				}
-			}
-			assert (at == p - 1);
-		}
-
-		at = p - 1;
-		dxtrace(printk(" %x->%u\n", at == entries? 0: dx_get_hash(at), dx_get_block(at)));
-		frame->bh = bh;
-		frame->entries = entries;
-		frame->at = at;
-		if (!indirect--) return frame;
-		if (!(bh = ext4_bread (NULL,dir, dx_get_block(at), 0, err)))
-			goto fail2;
-		at = entries = ((struct dx_node *) bh->b_data)->entries;
-		if (dx_get_limit(entries) != dx_node_limit (dir)) {
-			ext4_warning(dir->i_sb,
-				     "dx entry: limit != node limit");
-			brelse(bh);
-			*err = ERR_BAD_DX_DIR;
-			goto fail2;
-		}
-		frame++;
-		frame->bh = NULL;
-	}
-fail2:
-=======
 		htree_rep_invariant_check(entries, p, hash, count - 1);
 
 		at = p - 1;
@@ -1194,29 +955,10 @@ fail2:
 		}
 	}
 fail:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (frame >= frame_in) {
 		brelse(frame->bh);
 		frame--;
 	}
-<<<<<<< HEAD
-fail:
-	if (*err == ERR_BAD_DX_DIR)
-		ext4_warning(dir->i_sb,
-			     "Corrupt dir inode %lu, running e2fsck is "
-			     "recommended.", dir->i_ino);
-	return NULL;
-}
-
-static void dx_release (struct dx_frame *frames)
-{
-	if (frames[0].bh == NULL)
-		return;
-
-	if (((struct dx_root *) frames[0].bh->b_data)->info.indirect_levels)
-		brelse(frames[1].bh);
-	brelse(frames[0].bh);
-=======
 
 	if (ret_err == ERR_PTR(ERR_BAD_DX_DIR))
 		ext4_warning_inode(dir,
@@ -1242,7 +984,6 @@ static void dx_release(struct dx_frame *frames)
 		brelse(frames[i].bh);
 		frames[i].bh = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1269,11 +1010,7 @@ static int ext4_htree_next_block(struct inode *dir, __u32 hash,
 {
 	struct dx_frame *p;
 	struct buffer_head *bh;
-<<<<<<< HEAD
-	int err, num_frames = 0;
-=======
 	int num_frames = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u32 bhash;
 
 	p = frame;
@@ -1297,11 +1034,7 @@ static int ext4_htree_next_block(struct inode *dir, __u32 hash,
 	 * If the hash is 1, then continue only if the next page has a
 	 * continuation hash of any value.  This is used for readdir
 	 * handling.  Otherwise, check to see if the hash matches the
-<<<<<<< HEAD
-	 * desired contiuation hash.  If it doesn't, return since
-=======
 	 * desired continuation hash.  If it doesn't, return since
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * there's no point to read in the successive index pages.
 	 */
 	bhash = dx_get_hash(p->at);
@@ -1316,15 +1049,9 @@ static int ext4_htree_next_block(struct inode *dir, __u32 hash,
 	 * block so no check is necessary
 	 */
 	while (num_frames--) {
-<<<<<<< HEAD
-		if (!(bh = ext4_bread(NULL, dir, dx_get_block(p->at),
-				      0, &err)))
-			return err; /* Failure */
-=======
 		bh = ext4_read_dirblock(dir, dx_get_block(p->at), INDEX);
 		if (IS_ERR(bh))
 			return PTR_ERR(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p++;
 		brelse(p->bh);
 		p->bh = bh;
@@ -1346,21 +1073,6 @@ static int htree_dirblock_to_tree(struct file *dir_file,
 {
 	struct buffer_head *bh;
 	struct ext4_dir_entry_2 *de, *top;
-<<<<<<< HEAD
-	int err, count = 0;
-
-	dxtrace(printk(KERN_INFO "In htree dirblock_to_tree: block %lu\n",
-							(unsigned long)block));
-	if (!(bh = ext4_bread (NULL, dir, block, 0, &err)))
-		return err;
-
-	de = (struct ext4_dir_entry_2 *) bh->b_data;
-	top = (struct ext4_dir_entry_2 *) ((char *) de +
-					   dir->i_sb->s_blocksize -
-					   EXT4_DIR_REC_LEN(0));
-	for (; de < top; de = ext4_next_entry(de, dir->i_sb->s_blocksize)) {
-		if (ext4_check_dir_entry(dir, NULL, de, bh,
-=======
 	int err = 0, count = 0;
 	struct fscrypt_str fname_crypto_str = FSTR_INIT(NULL, 0), tmp_str;
 	int csum = ext4_has_metadata_csum(dir->i_sb);
@@ -1395,15 +1107,11 @@ static int htree_dirblock_to_tree(struct file *dir_file,
 	for (; de < top; de = ext4_next_entry(de, dir->i_sb->s_blocksize)) {
 		if (ext4_check_dir_entry(dir, NULL, de, bh,
 				bh->b_data, bh->b_size,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(block<<EXT4_BLOCK_SIZE_BITS(dir->i_sb))
 					 + ((char *)de - bh->b_data))) {
 			/* silently ignore the rest of the block */
 			break;
 		}
-<<<<<<< HEAD
-		ext4fs_dirhash(de->name, de->name_len, hinfo);
-=======
 		if (ext4_hash_in_dirent(dir)) {
 			if (de->name_len && de->inode) {
 				hinfo->hash = EXT4_DIRENT_HASH(de);
@@ -1420,23 +1128,12 @@ static int htree_dirblock_to_tree(struct file *dir_file,
 				goto errout;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((hinfo->hash < start_hash) ||
 		    ((hinfo->hash == start_hash) &&
 		     (hinfo->minor_hash < start_minor_hash)))
 			continue;
 		if (de->inode == 0)
 			continue;
-<<<<<<< HEAD
-		if ((err = ext4_htree_store_dirent(dir_file,
-				   hinfo->hash, hinfo->minor_hash, de)) != 0) {
-			brelse(bh);
-			return err;
-		}
-		count++;
-	}
-	brelse(bh);
-=======
 		if (!IS_ENCRYPTED(dir)) {
 			tmp_str.name = de->name;
 			tmp_str.len = de->name_len;
@@ -1470,7 +1167,6 @@ static int htree_dirblock_to_tree(struct file *dir_file,
 errout:
 	brelse(bh);
 	fscrypt_fname_free_buffer(&fname_crypto_str);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 
@@ -1488,24 +1184,12 @@ int ext4_htree_fill_tree(struct file *dir_file, __u32 start_hash,
 {
 	struct dx_hash_info hinfo;
 	struct ext4_dir_entry_2 *de;
-<<<<<<< HEAD
-	struct dx_frame frames[2], *frame;
-=======
 	struct dx_frame frames[EXT4_HTREE_LEVEL], *frame;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *dir;
 	ext4_lblk_t block;
 	int count = 0;
 	int ret, err;
 	__u32 hashval;
-<<<<<<< HEAD
-
-	dxtrace(printk(KERN_DEBUG "In htree_fill_tree, start hash: %x:%x\n",
-		       start_hash, start_minor_hash));
-	dir = dir_file->f_path.dentry->d_inode;
-	if (!(ext4_test_inode_flag(dir, EXT4_INODE_INDEX))) {
-		hinfo.hash_version = EXT4_SB(dir->i_sb)->s_def_hash_version;
-=======
 	struct fscrypt_str tmp_str;
 
 	dxtrace(printk(KERN_DEBUG "In htree_fill_tree, start hash: %x:%x\n",
@@ -1517,13 +1201,10 @@ int ext4_htree_fill_tree(struct file *dir_file, __u32 start_hash,
 		else
 			hinfo.hash_version =
 					EXT4_SB(dir->i_sb)->s_def_hash_version;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (hinfo.hash_version <= DX_HASH_TEA)
 			hinfo.hash_version +=
 				EXT4_SB(dir->i_sb)->s_hash_unsigned;
 		hinfo.seed = EXT4_SB(dir->i_sb)->s_hash_seed;
-<<<<<<< HEAD
-=======
 		if (ext4_has_inline_data(dir)) {
 			int has_inline_data = 1;
 			count = ext4_inlinedir_to_tree(dir_file, dir, 0,
@@ -1535,7 +1216,6 @@ int ext4_htree_fill_tree(struct file *dir_file, __u32 start_hash,
 				return count;
 			}
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = htree_dirblock_to_tree(dir_file, dir, 0, &hinfo,
 					       start_hash, start_minor_hash);
 		*next_hash = ~0;
@@ -1543,56 +1223,39 @@ int ext4_htree_fill_tree(struct file *dir_file, __u32 start_hash,
 	}
 	hinfo.hash = start_hash;
 	hinfo.minor_hash = 0;
-<<<<<<< HEAD
-	frame = dx_probe(NULL, dir, &hinfo, frames, &err);
-	if (!frame)
-		return err;
-=======
 	frame = dx_probe(NULL, dir, &hinfo, frames);
 	if (IS_ERR(frame))
 		return PTR_ERR(frame);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add '.' and '..' from the htree header */
 	if (!start_hash && !start_minor_hash) {
 		de = (struct ext4_dir_entry_2 *) frames[0].bh->b_data;
-<<<<<<< HEAD
-		if ((err = ext4_htree_store_dirent(dir_file, 0, 0, de)) != 0)
-=======
 		tmp_str.name = de->name;
 		tmp_str.len = de->name_len;
 		err = ext4_htree_store_dirent(dir_file, 0, 0,
 					      de, &tmp_str);
 		if (err != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto errout;
 		count++;
 	}
 	if (start_hash < 2 || (start_hash ==2 && start_minor_hash==0)) {
 		de = (struct ext4_dir_entry_2 *) frames[0].bh->b_data;
 		de = ext4_next_entry(de, dir->i_sb->s_blocksize);
-<<<<<<< HEAD
-		if ((err = ext4_htree_store_dirent(dir_file, 2, 0, de)) != 0)
-=======
 		tmp_str.name = de->name;
 		tmp_str.len = de->name_len;
 		err = ext4_htree_store_dirent(dir_file, 2, 0,
 					      de, &tmp_str);
 		if (err != 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto errout;
 		count++;
 	}
 
 	while (1) {
-<<<<<<< HEAD
-=======
 		if (fatal_signal_pending(current)) {
 			err = -ERESTARTSYS;
 			goto errout;
 		}
 		cond_resched();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		block = dx_get_block(frame->at);
 		ret = htree_dirblock_to_tree(dir_file, dir, block, &hinfo,
 					     start_hash, start_minor_hash);
@@ -1627,8 +1290,6 @@ errout:
 	return (err);
 }
 
-<<<<<<< HEAD
-=======
 static inline int search_dirblock(struct buffer_head *bh,
 				  struct inode *dir,
 				  struct ext4_filename *fname,
@@ -1638,7 +1299,6 @@ static inline int search_dirblock(struct buffer_head *bh,
 	return ext4_search_dir(bh, bh->b_data, dir->i_sb->s_blocksize, dir,
 			       fname, offset, res_dir);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Directory block splitting, compacting
@@ -1648,31 +1308,11 @@ static inline int search_dirblock(struct buffer_head *bh,
  * Create map of hash values, offsets, and sizes, stored at end of block.
  * Returns number of entries mapped.
  */
-<<<<<<< HEAD
-static int dx_make_map(struct ext4_dir_entry_2 *de, unsigned blocksize,
-=======
 static int dx_make_map(struct inode *dir, struct buffer_head *bh,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct dx_hash_info *hinfo,
 		       struct dx_map_entry *map_tail)
 {
 	int count = 0;
-<<<<<<< HEAD
-	char *base = (char *) de;
-	struct dx_hash_info h = *hinfo;
-
-	while ((char *) de < base + blocksize) {
-		if (de->name_len && de->inode) {
-			ext4fs_dirhash(de->name, de->name_len, &h);
-			map_tail--;
-			map_tail->hash = h.hash;
-			map_tail->offs = ((char *) de - base)>>2;
-			map_tail->size = le16_to_cpu(de->rec_len);
-			count++;
-			cond_resched();
-		}
-		/* XXX: do we need to check rec_len == 0 case? -Chris */
-=======
 	struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)bh->b_data;
 	unsigned int buflen = bh->b_size;
 	char *base = bh->b_data;
@@ -1703,7 +1343,6 @@ static int dx_make_map(struct inode *dir, struct buffer_head *bh,
 			count++;
 			cond_resched();
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		de = ext4_next_entry(de, blocksize);
 	}
 	return count;
@@ -1742,42 +1381,14 @@ static void dx_insert_block(struct dx_frame *frame, u32 hash, ext4_lblk_t block)
 	struct dx_entry *old = frame->at, *new = old + 1;
 	int count = dx_get_count(entries);
 
-<<<<<<< HEAD
-	assert(count < dx_get_limit(entries));
-	assert(old < entries + count);
-=======
 	ASSERT(count < dx_get_limit(entries));
 	ASSERT(old < entries + count);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memmove(new + 1, new, (char *)(entries + count) - (char *)(new));
 	dx_set_hash(new, hash);
 	dx_set_block(new, block);
 	dx_set_count(entries, count + 1);
 }
 
-<<<<<<< HEAD
-static void ext4_update_dx_flag(struct inode *inode)
-{
-	if (!EXT4_HAS_COMPAT_FEATURE(inode->i_sb,
-				     EXT4_FEATURE_COMPAT_DIR_INDEX))
-		ext4_clear_inode_flag(inode, EXT4_INODE_INDEX);
-}
-
-/*
- * NOTE! unlike strncmp, ext4_match returns 1 for success, 0 for failure.
- *
- * `len <= EXT4_NAME_LEN' is guaranteed by caller.
- * `de != NULL' is guaranteed by caller.
- */
-static inline int ext4_match (int len, const char * const name,
-			      struct ext4_dir_entry_2 * de)
-{
-	if (len != de->name_len)
-		return 0;
-	if (!de->inode)
-		return 0;
-	return !memcmp(name, de->name, len);
-=======
 #if IS_ENABLED(CONFIG_UNICODE)
 /*
  * Test whether a case-insensitive directory entry matches the filename
@@ -1911,42 +1522,18 @@ static bool ext4_match(struct inode *parent,
 #endif
 
 	return fscrypt_match_name(&f, de->name, de->name_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Returns 0 if not found, -1 on failure, and 1 on success
  */
-<<<<<<< HEAD
-static inline int search_dirblock(struct buffer_head *bh,
-				  struct inode *dir,
-				  const struct qstr *d_name,
-				  unsigned int offset,
-				  struct ext4_dir_entry_2 ** res_dir)
-=======
 int ext4_search_dir(struct buffer_head *bh, char *search_buf, int buf_size,
 		    struct inode *dir, struct ext4_filename *fname,
 		    unsigned int offset, struct ext4_dir_entry_2 **res_dir)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext4_dir_entry_2 * de;
 	char * dlimit;
 	int de_len;
-<<<<<<< HEAD
-	const char *name = d_name->name;
-	int namelen = d_name->len;
-
-	de = (struct ext4_dir_entry_2 *) bh->b_data;
-	dlimit = bh->b_data + dir->i_sb->s_blocksize;
-	while ((char *) de < dlimit) {
-		/* this code is executed quadratically often */
-		/* do minimal checking `by hand' */
-
-		if ((char *) de + namelen <= dlimit &&
-		    ext4_match (namelen, name, de)) {
-			/* found a match - just to be sure, do a full check */
-			if (ext4_check_dir_entry(dir, NULL, de, bh, offset))
-=======
 
 	de = (struct ext4_dir_entry_2 *)search_buf;
 	dlimit = search_buf + buf_size;
@@ -1959,7 +1546,6 @@ int ext4_search_dir(struct buffer_head *bh, char *search_buf, int buf_size,
 			 * a full check */
 			if (ext4_check_dir_entry(dir, NULL, de, bh, search_buf,
 						 buf_size, offset))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -1;
 			*res_dir = de;
 			return 1;
@@ -1975,11 +1561,6 @@ int ext4_search_dir(struct buffer_head *bh, char *search_buf, int buf_size,
 	return 0;
 }
 
-<<<<<<< HEAD
-
-/*
- *	ext4_find_entry()
-=======
 static int is_dx_internal_node(struct inode *dir, ext4_lblk_t block,
 			       struct ext4_dir_entry *de)
 {
@@ -1998,7 +1579,6 @@ static int is_dx_internal_node(struct inode *dir, ext4_lblk_t block,
 
 /*
  *	__ext4_find_entry()
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * finds an entry in the specified directory with the wanted name. It
  * returns the cache buffer in which the entry was found, and the entry
@@ -2008,38 +1588,14 @@ static int is_dx_internal_node(struct inode *dir, ext4_lblk_t block,
  * The returned buffer_head has ->b_count elevated.  The caller is expected
  * to brelse() it when appropriate.
  */
-<<<<<<< HEAD
-static struct buffer_head * ext4_find_entry (struct inode *dir,
-					const struct qstr *d_name,
-					struct ext4_dir_entry_2 ** res_dir)
-=======
 static struct buffer_head *__ext4_find_entry(struct inode *dir,
 					     struct ext4_filename *fname,
 					     struct ext4_dir_entry_2 **res_dir,
 					     int *inlined)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb;
 	struct buffer_head *bh_use[NAMEI_RA_SIZE];
 	struct buffer_head *bh, *ret = NULL;
-<<<<<<< HEAD
-	ext4_lblk_t start, block, b;
-	const u8 *name = d_name->name;
-	int ra_max = 0;		/* Number of bh's in the readahead
-				   buffer, bh_use[] */
-	int ra_ptr = 0;		/* Current index into readahead
-				   buffer */
-	int num = 0;
-	ext4_lblk_t  nblocks;
-	int i, err = 0;
-	int namelen;
-
-	*res_dir = NULL;
-	sb = dir->i_sb;
-	namelen = d_name->len;
-	if (namelen > EXT4_NAME_LEN)
-		return NULL;
-=======
 	ext4_lblk_t start, block;
 	const u8 *name = fname->usr_fname->name;
 	size_t ra_max = 0;	/* Number of bh's in the readahead
@@ -2065,7 +1621,6 @@ static struct buffer_head *__ext4_find_entry(struct inode *dir,
 			goto cleanup_and_exit;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((namelen <= 2) && (name[0] == '.') &&
 	    (name[1] == '.' || name[1] == '\0')) {
 		/*
@@ -2077,28 +1632,12 @@ static struct buffer_head *__ext4_find_entry(struct inode *dir,
 		goto restart;
 	}
 	if (is_dx(dir)) {
-<<<<<<< HEAD
-		bh = ext4_dx_find_entry(dir, d_name, res_dir, &err);
-=======
 		ret = ext4_dx_find_entry(dir, fname, res_dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * On success, or if the error was file not found,
 		 * return.  Otherwise, fall back to doing a search the
 		 * old fashioned way.
 		 */
-<<<<<<< HEAD
-		if (err == -ENOENT)
-			return NULL;
-		if (err && err != ERR_BAD_DX_DIR)
-			return ERR_PTR(err);
-		if (bh)
-			return bh;
-		dxtrace(printk(KERN_DEBUG "ext4_find_entry: dx failed, "
-			       "falling back\n"));
-	}
-	nblocks = dir->i_size >> EXT4_BLOCK_SIZE_BITS(sb);
-=======
 		if (!IS_ERR(ret) || PTR_ERR(ret) != ERR_BAD_DX_DIR)
 			goto cleanup_and_exit;
 		dxtrace(printk(KERN_DEBUG "ext4_find_entry: dx failed, "
@@ -2110,7 +1649,6 @@ static struct buffer_head *__ext4_find_entry(struct inode *dir,
 		ret = NULL;
 		goto cleanup_and_exit;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start = EXT4_I(dir)->i_dir_start_lookup;
 	if (start >= nblocks)
 		start = 0;
@@ -2120,33 +1658,6 @@ restart:
 		/*
 		 * We deal with the read-ahead logic here.
 		 */
-<<<<<<< HEAD
-		if (ra_ptr >= ra_max) {
-			/* Refill the readahead buffer */
-			ra_ptr = 0;
-			b = block;
-			for (ra_max = 0; ra_max < NAMEI_RA_SIZE; ra_max++) {
-				/*
-				 * Terminate if we reach the end of the
-				 * directory and must wrap, or if our
-				 * search has finished at this block.
-				 */
-				if (b >= nblocks || (num && block == start)) {
-					bh_use[ra_max] = NULL;
-					break;
-				}
-				num++;
-				bh = ext4_getblk(NULL, dir, b++, 0, &err);
-				if (unlikely(err)) {
-					if (ra_max == 0)
-						return ERR_PTR(err);
-					break;
-				}
-				bh_use[ra_max] = bh;
-				if (bh)
-					ll_rw_block(READ | REQ_META | REQ_PRIO,
-						    1, &bh);
-=======
 		cond_resched();
 		if (ra_ptr >= ra_max) {
 			/* Refill the readahead buffer */
@@ -2162,22 +1673,12 @@ restart:
 				ret = ERR_PTR(retval);
 				ra_max = 0;
 				goto cleanup_and_exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		if ((bh = bh_use[ra_ptr++]) == NULL)
 			goto next;
 		wait_on_buffer(bh);
 		if (!buffer_uptodate(bh)) {
-<<<<<<< HEAD
-			/* read error, skip block & hope for the best */
-			EXT4_ERROR_INODE(dir, "reading directory lblock %lu",
-					 (unsigned long) block);
-			brelse(bh);
-			goto next;
-		}
-		i = search_dirblock(bh, dir, d_name,
-=======
 			EXT4_ERROR_INODE_ERR(dir, EIO,
 					     "reading directory lblock %lu",
 					     (unsigned long) block);
@@ -2198,7 +1699,6 @@ restart:
 		}
 		set_buffer_verified(bh);
 		i = search_dirblock(bh, dir, fname,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    block << EXT4_BLOCK_SIZE_BITS(sb), res_dir);
 		if (i == 1) {
 			EXT4_I(dir)->i_dir_start_lookup = block;
@@ -2232,14 +1732,6 @@ cleanup_and_exit:
 	return ret;
 }
 
-<<<<<<< HEAD
-static struct buffer_head * ext4_dx_find_entry(struct inode *dir, const struct qstr *d_name,
-		       struct ext4_dir_entry_2 **res_dir, int *err)
-{
-	struct super_block * sb = dir->i_sb;
-	struct dx_hash_info	hinfo;
-	struct dx_frame frames[2], *frame;
-=======
 static struct buffer_head *ext4_find_entry(struct inode *dir,
 					   const struct qstr *d_name,
 					   struct ext4_dir_entry_2 **res_dir,
@@ -2287,30 +1779,10 @@ static struct buffer_head * ext4_dx_find_entry(struct inode *dir,
 {
 	struct super_block * sb = dir->i_sb;
 	struct dx_frame frames[EXT4_HTREE_LEVEL], *frame;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh;
 	ext4_lblk_t block;
 	int retval;
 
-<<<<<<< HEAD
-	if (!(frame = dx_probe(d_name, dir, &hinfo, frames, err)))
-		return NULL;
-	do {
-		block = dx_get_block(frame->at);
-		if (!(bh = ext4_bread(NULL, dir, block, 0, err)))
-			goto errout;
-
-		retval = search_dirblock(bh, dir, d_name,
-					 block << EXT4_BLOCK_SIZE_BITS(sb),
-					 res_dir);
-		if (retval == 1) { 	/* Success! */
-			dx_release(frames);
-			return bh;
-		}
-		brelse(bh);
-		if (retval == -1) {
-			*err = ERR_BAD_DX_DIR;
-=======
 #ifdef CONFIG_FS_ENCRYPTION
 	*res_dir = NULL;
 #endif
@@ -2331,20 +1803,10 @@ static struct buffer_head * ext4_dx_find_entry(struct inode *dir,
 		brelse(bh);
 		if (retval == -1) {
 			bh = ERR_PTR(ERR_BAD_DX_DIR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto errout;
 		}
 
 		/* Check to see if we should continue to search */
-<<<<<<< HEAD
-		retval = ext4_htree_next_block(dir, hinfo.hash, frame,
-					       frames, NULL);
-		if (retval < 0) {
-			ext4_warning(sb,
-			     "error reading index page in directory #%lu",
-			     dir->i_ino);
-			*err = retval;
-=======
 		retval = ext4_htree_next_block(dir, fname->hinfo.hash, frame,
 					       frames, NULL);
 		if (retval < 0) {
@@ -2352,25 +1814,16 @@ static struct buffer_head * ext4_dx_find_entry(struct inode *dir,
 				"error %d reading directory index block",
 				retval);
 			bh = ERR_PTR(retval);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto errout;
 		}
 	} while (retval == 1);
 
-<<<<<<< HEAD
-	*err = -ENOENT;
-errout:
-	dxtrace(printk(KERN_DEBUG "%s not found\n", d_name->name));
-	dx_release (frames);
-	return NULL;
-=======
 	bh = NULL;
 errout:
 	dxtrace(printk(KERN_DEBUG "%s not found\n", fname->usr_fname->name));
 success:
 	dx_release(frames);
 	return bh;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
@@ -2382,32 +1835,15 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 	if (dentry->d_name.len > EXT4_NAME_LEN)
 		return ERR_PTR(-ENAMETOOLONG);
 
-<<<<<<< HEAD
-	bh = ext4_find_entry(dir, &dentry->d_name, &de);
-	if (IS_ERR(bh))
-		return (struct dentry *) bh;
-=======
 	bh = ext4_lookup_entry(dir, dentry, &de);
 	if (IS_ERR(bh))
 		return ERR_CAST(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode = NULL;
 	if (bh) {
 		__u32 ino = le32_to_cpu(de->inode);
 		brelse(bh);
 		if (!ext4_valid_inum(dir->i_sb, ino)) {
 			EXT4_ERROR_INODE(dir, "bad inode number: %u", ino);
-<<<<<<< HEAD
-			return ERR_PTR(-EIO);
-		}
-		if (unlikely(ino == dir->i_ino)) {
-			EXT4_ERROR_INODE(dir, "'%.*s' linked to parent dir",
-					 dentry->d_name.len,
-					 dentry->d_name.name);
-			return ERR_PTR(-EIO);
-		}
-		inode = ext4_iget_normal(dir->i_sb, ino);
-=======
 			return ERR_PTR(-EFSCORRUPTED);
 		}
 		if (unlikely(ino == dir->i_ino)) {
@@ -2416,16 +1852,10 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 			return ERR_PTR(-EFSCORRUPTED);
 		}
 		inode = ext4_iget(dir->i_sb, ino, EXT4_IGET_NORMAL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (inode == ERR_PTR(-ESTALE)) {
 			EXT4_ERROR_INODE(dir,
 					 "deleted inode referenced: %u",
 					 ino);
-<<<<<<< HEAD
-			return ERR_PTR(-EIO);
-		}
-	}
-=======
 			return ERR_PTR(-EFSCORRUPTED);
 		}
 		if (!IS_ERR(inode) && IS_ENCRYPTED(dir) &&
@@ -2449,7 +1879,6 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 		return NULL;
 	}
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return d_splice_alias(inode, dentry);
 }
 
@@ -2457,54 +1886,17 @@ static struct dentry *ext4_lookup(struct inode *dir, struct dentry *dentry, unsi
 struct dentry *ext4_get_parent(struct dentry *child)
 {
 	__u32 ino;
-<<<<<<< HEAD
-	static const struct qstr dotdot = QSTR_INIT("..", 2);
-	struct ext4_dir_entry_2 * de;
-	struct buffer_head *bh;
-
-	bh = ext4_find_entry(child->d_inode, &dotdot, &de);
-	if (IS_ERR(bh))
-		return (struct dentry *) bh;
-=======
 	struct ext4_dir_entry_2 * de;
 	struct buffer_head *bh;
 
 	bh = ext4_find_entry(d_inode(child), &dotdot_name, &de, NULL);
 	if (IS_ERR(bh))
 		return ERR_CAST(bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bh)
 		return ERR_PTR(-ENOENT);
 	ino = le32_to_cpu(de->inode);
 	brelse(bh);
 
-<<<<<<< HEAD
-	if (!ext4_valid_inum(child->d_inode->i_sb, ino)) {
-		EXT4_ERROR_INODE(child->d_inode,
-				 "bad parent inode number: %u", ino);
-		return ERR_PTR(-EIO);
-	}
-
-	return d_obtain_alias(ext4_iget_normal(child->d_inode->i_sb, ino));
-}
-
-#define S_SHIFT 12
-static unsigned char ext4_type_by_mode[S_IFMT >> S_SHIFT] = {
-	[S_IFREG >> S_SHIFT]	= EXT4_FT_REG_FILE,
-	[S_IFDIR >> S_SHIFT]	= EXT4_FT_DIR,
-	[S_IFCHR >> S_SHIFT]	= EXT4_FT_CHRDEV,
-	[S_IFBLK >> S_SHIFT]	= EXT4_FT_BLKDEV,
-	[S_IFIFO >> S_SHIFT]	= EXT4_FT_FIFO,
-	[S_IFSOCK >> S_SHIFT]	= EXT4_FT_SOCK,
-	[S_IFLNK >> S_SHIFT]	= EXT4_FT_SYMLINK,
-};
-
-static inline void ext4_set_de_type(struct super_block *sb,
-				struct ext4_dir_entry_2 *de,
-				umode_t mode) {
-	if (EXT4_HAS_INCOMPAT_FEATURE(sb, EXT4_FEATURE_INCOMPAT_FILETYPE))
-		de->file_type = ext4_type_by_mode[(mode & S_IFMT)>>S_SHIFT];
-=======
 	if (!ext4_valid_inum(child->d_sb, ino)) {
 		EXT4_ERROR_INODE(d_inode(child),
 				 "bad parent inode number: %u", ino);
@@ -2512,7 +1904,6 @@ static inline void ext4_set_de_type(struct super_block *sb,
 	}
 
 	return d_obtain_alias(ext4_iget(child->d_sb, ino, EXT4_IGET_NORMAL));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2520,12 +1911,8 @@ static inline void ext4_set_de_type(struct super_block *sb,
  * Returns pointer to last entry moved.
  */
 static struct ext4_dir_entry_2 *
-<<<<<<< HEAD
-dx_move_dirents(char *from, char *to, struct dx_map_entry *map, int count,
-=======
 dx_move_dirents(struct inode *dir, char *from, char *to,
 		struct dx_map_entry *map, int count,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned blocksize)
 {
 	unsigned rec_len = 0;
@@ -2533,13 +1920,6 @@ dx_move_dirents(struct inode *dir, char *from, char *to,
 	while (count--) {
 		struct ext4_dir_entry_2 *de = (struct ext4_dir_entry_2 *)
 						(from + (map->offs<<2));
-<<<<<<< HEAD
-		rec_len = EXT4_DIR_REC_LEN(de->name_len);
-		memcpy (to, de, rec_len);
-		((struct ext4_dir_entry_2 *) to)->rec_len =
-				ext4_rec_len_to_disk(rec_len, blocksize);
-		de->inode = 0;
-=======
 		rec_len = ext4_dir_rec_len(de->name_len, dir);
 
 		memcpy (to, de, rec_len);
@@ -2553,7 +1933,6 @@ dx_move_dirents(struct inode *dir, char *from, char *to,
 					 offsetof(struct ext4_dir_entry_2,
 								name_len));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		map++;
 		to += rec_len;
 	}
@@ -2564,12 +1943,8 @@ dx_move_dirents(struct inode *dir, char *from, char *to,
  * Compact each dir entry in the range to the minimal rec_len.
  * Returns pointer to last entry in range.
  */
-<<<<<<< HEAD
-static struct ext4_dir_entry_2* dx_pack_dirents(char *base, unsigned blocksize)
-=======
 static struct ext4_dir_entry_2 *dx_pack_dirents(struct inode *dir, char *base,
 							unsigned int blocksize)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext4_dir_entry_2 *next, *to, *prev, *de = (struct ext4_dir_entry_2 *) base;
 	unsigned rec_len = 0;
@@ -2578,11 +1953,7 @@ static struct ext4_dir_entry_2 *dx_pack_dirents(struct inode *dir, char *base,
 	while ((char*)de < base + blocksize) {
 		next = ext4_next_entry(de, blocksize);
 		if (de->inode && de->name_len) {
-<<<<<<< HEAD
-			rec_len = EXT4_DIR_REC_LEN(de->name_len);
-=======
 			rec_len = ext4_dir_rec_len(de->name_len, dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (de > to)
 				memmove(to, de, rec_len);
 			to->rec_len = ext4_rec_len_to_disk(rec_len, blocksize);
@@ -2601,18 +1972,11 @@ static struct ext4_dir_entry_2 *dx_pack_dirents(struct inode *dir, char *base,
  */
 static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 			struct buffer_head **bh,struct dx_frame *frame,
-<<<<<<< HEAD
-			struct dx_hash_info *hinfo, int *error)
-{
-	unsigned blocksize = dir->i_sb->s_blocksize;
-	unsigned count, continued;
-=======
 			struct dx_hash_info *hinfo)
 {
 	unsigned blocksize = dir->i_sb->s_blocksize;
 	unsigned continued;
 	int count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh2;
 	ext4_lblk_t newblock;
 	u32 hash2;
@@ -2620,19 +1984,6 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 	char *data1 = (*bh)->b_data, *data2;
 	unsigned split, move, size;
 	struct ext4_dir_entry_2 *de = NULL, *de2;
-<<<<<<< HEAD
-	int	err = 0, i;
-
-	bh2 = ext4_append (handle, dir, &newblock, &err);
-	if (!(bh2)) {
-		brelse(*bh);
-		*bh = NULL;
-		goto errout;
-	}
-
-	BUFFER_TRACE(*bh, "get_write_access");
-	err = ext4_journal_get_write_access(handle, *bh);
-=======
 	int	csum_size = 0;
 	int	err = 0, i;
 
@@ -2649,17 +2000,12 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 	BUFFER_TRACE(*bh, "get_write_access");
 	err = ext4_journal_get_write_access(handle, dir->i_sb, *bh,
 					    EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto journal_error;
 
 	BUFFER_TRACE(frame->bh, "get_write_access");
-<<<<<<< HEAD
-	err = ext4_journal_get_write_access(handle, frame->bh);
-=======
 	err = ext4_journal_get_write_access(handle, dir->i_sb, frame->bh,
 					    EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto journal_error;
 
@@ -2667,13 +2013,6 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 
 	/* create map in the end of data2 block */
 	map = (struct dx_map_entry *) (data2 + blocksize);
-<<<<<<< HEAD
-	count = dx_make_map((struct ext4_dir_entry_2 *) data1,
-			     blocksize, hinfo, map);
-	map -= count;
-	dx_sort_map(map, count);
-	/* Split the existing block in the middle, size-wise */
-=======
 	count = dx_make_map(dir, *bh, hinfo, map);
 	if (count < 0) {
 		err = count;
@@ -2682,7 +2021,6 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 	map -= count;
 	dx_sort_map(map, count);
 	/* Ensure that neither split block is over half full */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size = 0;
 	move = 0;
 	for (i = count-1; i >= 0; i--) {
@@ -2692,10 +2030,6 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 		size += map[i].size;
 		move++;
 	}
-<<<<<<< HEAD
-	/* map index at which we will split */
-	split = count - move;
-=======
 	/*
 	 * map index at which we will split
 	 *
@@ -2708,7 +2042,6 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 	else
 		split = count/2;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hash2 = map[split].hash;
 	continued = hash2 == map[split - 1].hash;
 	dxtrace(printk(KERN_INFO "Split block %lu at %x, %i/%i\n",
@@ -2716,20 +2049,6 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 					hash2, split, count-split));
 
 	/* Fancy dance to stay within two buffers */
-<<<<<<< HEAD
-	de2 = dx_move_dirents(data1, data2, map + split, count - split, blocksize);
-	de = dx_pack_dirents(data1, blocksize);
-	de->rec_len = ext4_rec_len_to_disk(data1 + blocksize - (char *) de,
-					   blocksize);
-	de2->rec_len = ext4_rec_len_to_disk(data2 + blocksize - (char *) de2,
-					    blocksize);
-	dxtrace(dx_show_leaf (hinfo, (struct ext4_dir_entry_2 *) data1, blocksize, 1));
-	dxtrace(dx_show_leaf (hinfo, (struct ext4_dir_entry_2 *) data2, blocksize, 1));
-
-	/* Which block gets the new entry? */
-	if (hinfo->hash >= hash2)
-	{
-=======
 	de2 = dx_move_dirents(dir, data1, data2, map + split, count - split,
 			      blocksize);
 	de = dx_pack_dirents(dir, data1, blocksize);
@@ -2751,22 +2070,14 @@ static struct ext4_dir_entry_2 *do_split(handle_t *handle, struct inode *dir,
 
 	/* Which block gets the new entry? */
 	if (hinfo->hash >= hash2) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		swap(*bh, bh2);
 		de = de2;
 	}
 	dx_insert_block(frame, hash2 + continued, newblock);
-<<<<<<< HEAD
-	err = ext4_handle_dirty_metadata(handle, dir, bh2);
-	if (err)
-		goto journal_error;
-	err = ext4_handle_dirty_metadata(handle, dir, frame->bh);
-=======
 	err = ext4_handle_dirty_dirblock(handle, dir, bh2);
 	if (err)
 		goto journal_error;
 	err = ext4_handle_dirty_dx_node(handle, dir, frame->bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto journal_error;
 	brelse(bh2);
@@ -2778,11 +2089,6 @@ journal_error:
 	brelse(bh2);
 	*bh = NULL;
 	ext4_std_error(dir->i_sb, err);
-<<<<<<< HEAD
-errout:
-	*error = err;
-	return NULL;
-=======
 	return ERR_PTR(err);
 }
 
@@ -2850,7 +2156,6 @@ void ext4_insert_dentry(struct inode *dir,
 		EXT4_DIRENT_HASHES(de)->minor_hash =
 						cpu_to_le32(hinfo->minor_hash);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2861,42 +2166,6 @@ void ext4_insert_dentry(struct inode *dir,
  * space.  It will return -ENOSPC if no space is available, and -EIO
  * and -EEXIST if directory entry already exists.
  */
-<<<<<<< HEAD
-static int add_dirent_to_buf(handle_t *handle, struct dentry *dentry,
-			     struct inode *inode, struct ext4_dir_entry_2 *de,
-			     struct buffer_head *bh)
-{
-	struct inode	*dir = dentry->d_parent->d_inode;
-	const char	*name = dentry->d_name.name;
-	int		namelen = dentry->d_name.len;
-	unsigned int	offset = 0;
-	unsigned int	blocksize = dir->i_sb->s_blocksize;
-	unsigned short	reclen;
-	int		nlen, rlen, err;
-	char		*top;
-
-	reclen = EXT4_DIR_REC_LEN(namelen);
-	if (!de) {
-		de = (struct ext4_dir_entry_2 *)bh->b_data;
-		top = bh->b_data + blocksize - reclen;
-		while ((char *) de <= top) {
-			if (ext4_check_dir_entry(dir, NULL, de, bh, offset))
-				return -EIO;
-			if (ext4_match(namelen, name, de))
-				return -EEXIST;
-			nlen = EXT4_DIR_REC_LEN(de->name_len);
-			rlen = ext4_rec_len_from_disk(de->rec_len, blocksize);
-			if ((de->inode? rlen - nlen: rlen) >= reclen)
-				break;
-			de = (struct ext4_dir_entry_2 *)((char *)de + rlen);
-			offset += rlen;
-		}
-		if ((char *) de > top)
-			return -ENOSPC;
-	}
-	BUFFER_TRACE(bh, "get_write_access");
-	err = ext4_journal_get_write_access(handle, bh);
-=======
 static int add_dirent_to_buf(handle_t *handle, struct ext4_filename *fname,
 			     struct inode *dir,
 			     struct inode *inode, struct ext4_dir_entry_2 *de,
@@ -2918,34 +2187,14 @@ static int add_dirent_to_buf(handle_t *handle, struct ext4_filename *fname,
 	BUFFER_TRACE(bh, "get_write_access");
 	err = ext4_journal_get_write_access(handle, dir->i_sb, bh,
 					    EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		ext4_std_error(dir->i_sb, err);
 		return err;
 	}
 
 	/* By now the buffer is marked for journaling */
-<<<<<<< HEAD
-	nlen = EXT4_DIR_REC_LEN(de->name_len);
-	rlen = ext4_rec_len_from_disk(de->rec_len, blocksize);
-	if (de->inode) {
-		struct ext4_dir_entry_2 *de1 = (struct ext4_dir_entry_2 *)((char *)de + nlen);
-		de1->rec_len = ext4_rec_len_to_disk(rlen - nlen, blocksize);
-		de->rec_len = ext4_rec_len_to_disk(nlen, blocksize);
-		de = de1;
-	}
-	de->file_type = EXT4_FT_UNKNOWN;
-	if (inode) {
-		de->inode = cpu_to_le32(inode->i_ino);
-		ext4_set_de_type(dir->i_sb, de, inode->i_mode);
-	} else
-		de->inode = 0;
-	de->name_len = namelen;
-	memcpy(de->name, name, namelen);
-=======
 	ext4_insert_dentry(dir, inode, de, blocksize, fname);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * XXX shouldn't update any times until successful
 	 * completion of syscall, but too many callers depend
@@ -2957,17 +2206,6 @@ static int add_dirent_to_buf(handle_t *handle, struct ext4_filename *fname,
 	 * happen is that the times are slightly out of date
 	 * and/or different from the directory change time.
 	 */
-<<<<<<< HEAD
-	dir->i_mtime = dir->i_ctime = ext4_current_time(dir);
-	ext4_update_dx_flag(dir);
-	dir->i_version++;
-	ext4_mark_inode_dirty(handle, dir);
-	BUFFER_TRACE(bh, "call ext4_handle_dirty_metadata");
-	err = ext4_handle_dirty_metadata(handle, dir, bh);
-	if (err)
-		ext4_std_error(dir->i_sb, err);
-	return 0;
-=======
 	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
 	ext4_update_dx_flag(dir);
 	inode_inc_iversion(dir);
@@ -2977,37 +2215,12 @@ static int add_dirent_to_buf(handle_t *handle, struct ext4_filename *fname,
 	if (err)
 		ext4_std_error(dir->i_sb, err);
 	return err ? err : err2;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This converts a one block unindexed directory to a 3 block indexed
  * directory, and adds the dentry to the indexed directory.
  */
-<<<<<<< HEAD
-static int make_indexed_dir(handle_t *handle, struct dentry *dentry,
-			    struct inode *inode, struct buffer_head *bh)
-{
-	struct inode	*dir = dentry->d_parent->d_inode;
-	const char	*name = dentry->d_name.name;
-	int		namelen = dentry->d_name.len;
-	struct buffer_head *bh2;
-	struct dx_root	*root;
-	struct dx_frame	frames[2], *frame;
-	struct dx_entry *entries;
-	struct ext4_dir_entry_2	*de, *de2;
-	char		*data1, *top;
-	unsigned	len;
-	int		retval;
-	unsigned	blocksize;
-	struct dx_hash_info hinfo;
-	ext4_lblk_t  block;
-	struct fake_dirent *fde;
-
-	blocksize =  dir->i_sb->s_blocksize;
-	dxtrace(printk(KERN_DEBUG "Creating index: inode %lu\n", dir->i_ino));
-	retval = ext4_journal_get_write_access(handle, bh);
-=======
 static int make_indexed_dir(handle_t *handle, struct ext4_filename *fname,
 			    struct inode *dir,
 			    struct inode *inode, struct buffer_head *bh)
@@ -3033,7 +2246,6 @@ static int make_indexed_dir(handle_t *handle, struct ext4_filename *fname,
 	BUFFER_TRACE(bh, "get_write_access");
 	retval = ext4_journal_get_write_access(handle, dir->i_sb, bh,
 					       EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		ext4_std_error(dir->i_sb, retval);
 		brelse(bh);
@@ -3048,35 +2260,6 @@ static int make_indexed_dir(handle_t *handle, struct ext4_filename *fname,
 	if ((char *) de >= (((char *) root) + blocksize)) {
 		EXT4_ERROR_INODE(dir, "invalid rec_len for '..'");
 		brelse(bh);
-<<<<<<< HEAD
-		return -EIO;
-	}
-	len = ((char *) root) + blocksize - (char *) de;
-
-	/* Allocate new block for the 0th block's dirents */
-	bh2 = ext4_append(handle, dir, &block, &retval);
-	if (!(bh2)) {
-		brelse(bh);
-		return retval;
-	}
-	ext4_set_inode_flag(dir, EXT4_INODE_INDEX);
-	data1 = bh2->b_data;
-
-	memcpy (data1, de, len);
-	de = (struct ext4_dir_entry_2 *) data1;
-	top = data1 + len;
-	while ((char *)(de2 = ext4_next_entry(de, blocksize)) < top)
-		de = de2;
-	de->rec_len = ext4_rec_len_to_disk(data1 + blocksize - (char *) de,
-					   blocksize);
-	/* Initialize the root; the dot dirents already exist */
-	de = (struct ext4_dir_entry_2 *) (&root->dotdot);
-	de->rec_len = ext4_rec_len_to_disk(blocksize - EXT4_DIR_REC_LEN(2),
-					   blocksize);
-	memset (&root->info, 0, sizeof(root->info));
-	root->info.info_length = sizeof(root->info);
-	root->info.hash_version = EXT4_SB(dir->i_sb)->s_def_hash_version;
-=======
 		return -EFSCORRUPTED;
 	}
 	len = ((char *) root) + (blocksize - csum_size) - (char *) de;
@@ -3121,20 +2304,12 @@ static int make_indexed_dir(handle_t *handle, struct ext4_filename *fname,
 		root->info.hash_version =
 				EXT4_SB(dir->i_sb)->s_def_hash_version;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entries = root->entries;
 	dx_set_block(entries, 1);
 	dx_set_count(entries, 1);
 	dx_set_limit(entries, dx_root_limit(dir, sizeof(root->info)));
 
 	/* Initialize as for dx_probe */
-<<<<<<< HEAD
-	hinfo.hash_version = root->info.hash_version;
-	if (hinfo.hash_version <= DX_HASH_TEA)
-		hinfo.hash_version += EXT4_SB(dir->i_sb)->s_hash_unsigned;
-	hinfo.seed = EXT4_SB(dir->i_sb)->s_hash_seed;
-	ext4fs_dirhash(name, namelen, &hinfo);
-=======
 	fname->hinfo.hash_version = root->info.hash_version;
 	if (fname->hinfo.hash_version <= DX_HASH_TEA)
 		fname->hinfo.hash_version += EXT4_SB(dir->i_sb)->s_hash_unsigned;
@@ -3150,32 +2325,11 @@ static int make_indexed_dir(handle_t *handle, struct ext4_filename *fname,
 			return err;
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(frames, 0, sizeof(frames));
 	frame = frames;
 	frame->entries = entries;
 	frame->at = entries;
 	frame->bh = bh;
-<<<<<<< HEAD
-	bh = bh2;
-
-	retval = ext4_handle_dirty_metadata(handle, dir, frame->bh);
-	if (retval)
-		goto out_frames;
-	retval = ext4_handle_dirty_metadata(handle, dir, bh);
-	if (retval)
-		goto out_frames;
-
-	de = do_split(handle,dir, &bh, frame, &hinfo, &retval);
-	if (!de) {
-		goto out_frames;
-	}
-	dx_release(frames);
-
-	retval = add_dirent_to_buf(handle, dentry, inode, de, bh);
-	brelse(bh);
-	return retval;
-=======
 
 	retval = ext4_handle_dirty_dx_node(handle, dir, frame->bh);
 	if (retval)
@@ -3191,22 +2345,16 @@ static int make_indexed_dir(handle_t *handle, struct ext4_filename *fname,
 	}
 
 	retval = add_dirent_to_buf(handle, fname, dir, inode, de, bh2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_frames:
 	/*
 	 * Even if the block split failed, we have to properly write
 	 * out all the changes we did so far. Otherwise we can end up
 	 * with corrupted filesystem.
 	 */
-<<<<<<< HEAD
-	ext4_mark_inode_dirty(handle, dir);
-	dx_release(frames);
-=======
 	if (retval)
 		ext4_mark_inode_dirty(handle, dir);
 	dx_release(frames);
 	brelse(bh2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -3223,43 +2371,15 @@ out_frames:
 static int ext4_add_entry(handle_t *handle, struct dentry *dentry,
 			  struct inode *inode)
 {
-<<<<<<< HEAD
-	struct inode *dir = dentry->d_parent->d_inode;
-	struct buffer_head *bh = NULL;
-	struct ext4_dir_entry_2 *de;
-	struct super_block *sb;
-=======
 	struct inode *dir = d_inode(dentry->d_parent);
 	struct buffer_head *bh = NULL;
 	struct ext4_dir_entry_2 *de;
 	struct super_block *sb;
 	struct ext4_filename fname;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	retval;
 	int	dx_fallback=0;
 	unsigned blocksize;
 	ext4_lblk_t block, blocks;
-<<<<<<< HEAD
-
-	sb = dir->i_sb;
-	blocksize = sb->s_blocksize;
-	if (!dentry->d_name.len)
-		return -EINVAL;
-	if (is_dx(dir)) {
-		retval = ext4_dx_add_entry(handle, dentry, inode);
-		if (!retval || (retval != ERR_BAD_DX_DIR))
-			goto out;
-		ext4_clear_inode_flag(dir, EXT4_INODE_INDEX);
-		dx_fallback++;
-		ext4_mark_inode_dirty(handle, dir);
-	}
-	blocks = dir->i_size >> sb->s_blocksize_bits;
-	for (block = 0; block < blocks; block++) {
-		bh = ext4_bread(handle, dir, block, 0, &retval);
-		if(!bh)
-			return retval;
-		retval = add_dirent_to_buf(handle, dentry, inode, NULL, bh);
-=======
 	int	csum_size = 0;
 
 	if (ext4_has_metadata_csum(inode->i_sb))
@@ -3323,34 +2443,18 @@ static int ext4_add_entry(handle_t *handle, struct dentry *dentry,
 		}
 		retval = add_dirent_to_buf(handle, &fname, dir, inode,
 					   NULL, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval != -ENOSPC)
 			goto out;
 
 		if (blocks == 1 && !dx_fallback &&
-<<<<<<< HEAD
-		    EXT4_HAS_COMPAT_FEATURE(sb, EXT4_FEATURE_COMPAT_DIR_INDEX)) {
-			retval = make_indexed_dir(handle, dentry, inode, bh);
-=======
 		    ext4_has_feature_dir_index(sb)) {
 			retval = make_indexed_dir(handle, &fname, dir,
 						  inode, bh);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bh = NULL; /* make_indexed_dir releases bh */
 			goto out;
 		}
 		brelse(bh);
 	}
-<<<<<<< HEAD
-	bh = ext4_append(handle, dir, &block, &retval);
-	if (!bh)
-		return retval;
-	de = (struct ext4_dir_entry_2 *) bh->b_data;
-	de->inode = 0;
-	de->rec_len = ext4_rec_len_to_disk(blocksize, blocksize);
-	retval = add_dirent_to_buf(handle, dentry, inode, de, bh);
-out:
-=======
 	bh = ext4_append(handle, dir, &block);
 add_to_new_block:
 	if (IS_ERR(bh)) {
@@ -3368,7 +2472,6 @@ add_to_new_block:
 	retval = add_dirent_to_buf(handle, &fname, dir, inode, de, bh);
 out:
 	ext4_fname_free_filename(&fname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 	if (retval == 0)
 		ext4_set_inode_state(inode, EXT4_STATE_NEWENTRY);
@@ -3378,38 +2481,6 @@ out:
 /*
  * Returns 0 for success, or a negative error value
  */
-<<<<<<< HEAD
-static int ext4_dx_add_entry(handle_t *handle, struct dentry *dentry,
-			     struct inode *inode)
-{
-	struct dx_frame frames[2], *frame;
-	struct dx_entry *entries, *at;
-	struct dx_hash_info hinfo;
-	struct buffer_head *bh;
-	struct inode *dir = dentry->d_parent->d_inode;
-	struct super_block *sb = dir->i_sb;
-	struct ext4_dir_entry_2 *de;
-	int err;
-
-	frame = dx_probe(&dentry->d_name, dir, &hinfo, frames, &err);
-	if (!frame)
-		return err;
-	entries = frame->entries;
-	at = frame->at;
-
-	if (!(bh = ext4_bread(handle,dir, dx_get_block(frame->at), 0, &err)))
-		goto cleanup;
-
-	BUFFER_TRACE(bh, "get_write_access");
-	err = ext4_journal_get_write_access(handle, bh);
-	if (err)
-		goto journal_error;
-
-	err = add_dirent_to_buf(handle, dentry, inode, NULL, bh);
-	if (err != -ENOSPC)
-		goto cleanup;
-
-=======
 static int ext4_dx_add_entry(handle_t *handle, struct ext4_filename *fname,
 			     struct inode *dir, struct inode *inode)
 {
@@ -3445,36 +2516,19 @@ again:
 		goto cleanup;
 
 	err = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Block full, should compress but for now just split */
 	dxtrace(printk(KERN_DEBUG "using %u of %u node entries\n",
 		       dx_get_count(entries), dx_get_limit(entries)));
 	/* Need to split index? */
 	if (dx_get_count(entries) == dx_get_limit(entries)) {
 		ext4_lblk_t newblock;
-<<<<<<< HEAD
-		unsigned icount = dx_get_count(entries);
-		int levels = frame - frames;
-=======
 		int levels = frame - frames + 1;
 		unsigned int icount;
 		int add_level = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct dx_entry *entries2;
 		struct dx_node *node2;
 		struct buffer_head *bh2;
 
-<<<<<<< HEAD
-		if (levels && (dx_get_count(frames->entries) ==
-			       dx_get_limit(frames->entries))) {
-			ext4_warning(sb, "Directory index full!");
-			err = -ENOSPC;
-			goto cleanup;
-		}
-		bh2 = ext4_append (handle, dir, &newblock, &err);
-		if (!(bh2))
-			goto cleanup;
-=======
 		while (frame > frames) {
 			if (dx_get_count((frame - 1)->entries) <
 			    dx_get_limit((frame - 1)->entries)) {
@@ -3504,39 +2558,26 @@ again:
 			err = PTR_ERR(bh2);
 			goto cleanup;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		node2 = (struct dx_node *)(bh2->b_data);
 		entries2 = node2->entries;
 		memset(&node2->fake, 0, sizeof(struct fake_dirent));
 		node2->fake.rec_len = ext4_rec_len_to_disk(sb->s_blocksize,
 							   sb->s_blocksize);
 		BUFFER_TRACE(frame->bh, "get_write_access");
-<<<<<<< HEAD
-		err = ext4_journal_get_write_access(handle, frame->bh);
-		if (err)
-			goto journal_error;
-		if (levels) {
-=======
 		err = ext4_journal_get_write_access(handle, sb, frame->bh,
 						    EXT4_JTR_NONE);
 		if (err)
 			goto journal_error;
 		if (!add_level) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned icount1 = icount/2, icount2 = icount - icount1;
 			unsigned hash2 = dx_get_hash(entries + icount1);
 			dxtrace(printk(KERN_DEBUG "Split index %i/%i\n",
 				       icount1, icount2));
 
 			BUFFER_TRACE(frame->bh, "get_write_access"); /* index root */
-<<<<<<< HEAD
-			err = ext4_journal_get_write_access(handle,
-							     frames[0].bh);
-=======
 			err = ext4_journal_get_write_access(handle, sb,
 							    (frame - 1)->bh,
 							    EXT4_JTR_NONE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				goto journal_error;
 
@@ -3548,23 +2589,6 @@ again:
 
 			/* Which index block gets the new entry? */
 			if (at - entries >= icount1) {
-<<<<<<< HEAD
-				frame->at = at = at - entries - icount1 + entries2;
-				frame->entries = entries = entries2;
-				swap(frame->bh, bh2);
-			}
-			dx_insert_block(frames + 0, hash2, newblock);
-			dxtrace(dx_show_index("node", frames[1].entries));
-			dxtrace(dx_show_index("node",
-			       ((struct dx_node *) bh2->b_data)->entries));
-			err = ext4_handle_dirty_metadata(handle, dir, bh2);
-			if (err)
-				goto journal_error;
-			brelse (bh2);
-		} else {
-			dxtrace(printk(KERN_DEBUG
-				       "Creating second level index...\n"));
-=======
 				frame->at = at - entries - icount1 + entries2;
 				frame->entries = entries = entries2;
 				swap(frame->bh, bh2);
@@ -3587,7 +2611,6 @@ again:
 				goto journal_error;
 		} else {
 			struct dx_root *dxroot;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy((char *) entries2, (char *) entries,
 			       icount * sizeof(struct dx_entry));
 			dx_set_limit(entries2, dx_node_limit(dir));
@@ -3595,38 +2618,6 @@ again:
 			/* Set up root */
 			dx_set_count(entries, 1);
 			dx_set_block(entries + 0, newblock);
-<<<<<<< HEAD
-			((struct dx_root *) frames[0].bh->b_data)->info.indirect_levels = 1;
-
-			/* Add new access path frame */
-			frame = frames + 1;
-			frame->at = at = at - entries + entries2;
-			frame->entries = entries = entries2;
-			frame->bh = bh2;
-			err = ext4_journal_get_write_access(handle,
-							     frame->bh);
-			if (err)
-				goto journal_error;
-		}
-		err = ext4_handle_dirty_metadata(handle, dir, frames[0].bh);
-		if (err) {
-			ext4_std_error(inode->i_sb, err);
-			goto cleanup;
-		}
-	}
-	de = do_split(handle, dir, &bh, frame, &hinfo, &err);
-	if (!de)
-		goto cleanup;
-	err = add_dirent_to_buf(handle, dentry, inode, de, bh);
-	goto cleanup;
-
-journal_error:
-	ext4_std_error(dir->i_sb, err);
-cleanup:
-	if (bh)
-		brelse(bh);
-	dx_release(frames);
-=======
 			dxroot = (struct dx_root *)frames[0].bh->b_data;
 			dxroot->info.indirect_levels += 1;
 			dxtrace(printk(KERN_DEBUG
@@ -3659,39 +2650,10 @@ cleanup:
 	 */
 	if (restart && err == 0)
 		goto again;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 /*
-<<<<<<< HEAD
- * ext4_delete_entry deletes a directory entry by merging it with the
- * previous entry
- */
-static int ext4_delete_entry(handle_t *handle,
-			     struct inode *dir,
-			     struct ext4_dir_entry_2 *de_del,
-			     struct buffer_head *bh)
-{
-	struct ext4_dir_entry_2 *de, *pde;
-	unsigned int blocksize = dir->i_sb->s_blocksize;
-	int i, err;
-
-	i = 0;
-	pde = NULL;
-	de = (struct ext4_dir_entry_2 *) bh->b_data;
-	while (i < bh->b_size) {
-		if (ext4_check_dir_entry(dir, NULL, de, bh, i))
-			return -EIO;
-		if (de == de_del)  {
-			BUFFER_TRACE(bh, "get_write_access");
-			err = ext4_journal_get_write_access(handle, bh);
-			if (unlikely(err)) {
-				ext4_std_error(dir->i_sb, err);
-				return err;
-			}
-			if (pde)
-=======
  * ext4_generic_delete_entry deletes a directory entry by merging it
  * with the previous entry
  */
@@ -3715,24 +2677,12 @@ int ext4_generic_delete_entry(struct inode *dir,
 			return -EFSCORRUPTED;
 		if (de == de_del)  {
 			if (pde) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pde->rec_len = ext4_rec_len_to_disk(
 					ext4_rec_len_from_disk(pde->rec_len,
 							       blocksize) +
 					ext4_rec_len_from_disk(de->rec_len,
 							       blocksize),
 					blocksize);
-<<<<<<< HEAD
-			else
-				de->inode = 0;
-			dir->i_version++;
-			BUFFER_TRACE(bh, "call ext4_handle_dirty_metadata");
-			err = ext4_handle_dirty_metadata(handle, dir, bh);
-			if (unlikely(err)) {
-				ext4_std_error(dir->i_sb, err);
-				return err;
-			}
-=======
 
 				/* wipe entire dir_entry */
 				memset(de, 0, ext4_rec_len_from_disk(de->rec_len,
@@ -3748,7 +2698,6 @@ int ext4_generic_delete_entry(struct inode *dir,
 			}
 
 			inode_inc_iversion(dir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		i += ext4_rec_len_from_disk(de->rec_len, blocksize);
@@ -3758,23 +2707,6 @@ int ext4_generic_delete_entry(struct inode *dir,
 	return -ENOENT;
 }
 
-<<<<<<< HEAD
-/*
- * DIR_NLINK feature is set if 1) nlinks > EXT4_LINK_MAX or 2) nlinks == 2,
- * since this indicates that nlinks count was previously 1.
- */
-static void ext4_inc_count(handle_t *handle, struct inode *inode)
-{
-	inc_nlink(inode);
-	if (is_dx(inode) && inode->i_nlink > 1) {
-		/* limit is 16-bit i_links_count */
-		if (inode->i_nlink >= EXT4_LINK_MAX || inode->i_nlink == 2) {
-			set_nlink(inode, 1);
-			EXT4_SET_RO_COMPAT_FEATURE(inode->i_sb,
-					      EXT4_FEATURE_RO_COMPAT_DIR_NLINK);
-		}
-	}
-=======
 static int ext4_delete_entry(handle_t *handle,
 			     struct inode *dir,
 			     struct ext4_dir_entry_2 *de_del,
@@ -3833,39 +2765,19 @@ static void ext4_inc_count(struct inode *inode)
 	if (is_dx(inode) &&
 	    (inode->i_nlink > EXT4_LINK_MAX || inode->i_nlink == 2))
 		set_nlink(inode, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * If a directory had nlink == 1, then we should let it be 1. This indicates
  * directory has >EXT4_LINK_MAX subdirs.
  */
-<<<<<<< HEAD
-static void ext4_dec_count(handle_t *handle, struct inode *inode)
-=======
 static void ext4_dec_count(struct inode *inode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!S_ISDIR(inode->i_mode) || inode->i_nlink > 2)
 		drop_nlink(inode);
 }
 
 
-<<<<<<< HEAD
-static int ext4_add_nondir(handle_t *handle,
-		struct dentry *dentry, struct inode *inode)
-{
-	int err = ext4_add_entry(handle, dentry, inode);
-	if (!err) {
-		ext4_mark_inode_dirty(handle, inode);
-		d_instantiate(dentry, inode);
-		unlock_new_inode(inode);
-		return 0;
-	}
-	drop_nlink(inode);
-	unlock_new_inode(inode);
-	iput(inode);
-=======
 /*
  * Add non-directory inode to a directory. On success, the inode reference is
  * consumed by dentry is instantiation. This is also indicated by clearing of
@@ -3890,7 +2802,6 @@ static int ext4_add_nondir(handle_t *handle,
 	ext4_mark_inode_dirty(handle, inode);
 	ext4_orphan_add(handle, inode);
 	unlock_new_inode(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -3902,28 +2813,6 @@ static int ext4_add_nondir(handle_t *handle,
  * If the create succeeds, we fill in the inode information
  * with d_instantiate().
  */
-<<<<<<< HEAD
-static int ext4_create(struct inode *dir, struct dentry *dentry, umode_t mode,
-		       bool excl)
-{
-	handle_t *handle;
-	struct inode *inode;
-	int err, retries = 0;
-
-	dquot_initialize(dir);
-
-retry:
-	handle = ext4_journal_start(dir, EXT4_DATA_TRANS_BLOCKS(dir->i_sb) +
-					EXT4_INDEX_EXTRA_TRANS_BLOCKS + 3 +
-					EXT4_MAXQUOTAS_INIT_BLOCKS(dir->i_sb));
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-
-	if (IS_DIRSYNC(dir))
-		ext4_handle_sync(handle);
-
-	inode = ext4_new_inode(handle, dir, mode, &dentry->d_name, 0, NULL);
-=======
 static int ext4_create(struct mnt_idmap *idmap, struct inode *dir,
 		       struct dentry *dentry, umode_t mode, bool excl)
 {
@@ -3941,17 +2830,11 @@ retry:
 	inode = ext4_new_inode_start_handle(idmap, dir, mode, &dentry->d_name,
 					    0, NULL, EXT4_HT_DIR, credits);
 	handle = ext4_journal_current_handle();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = PTR_ERR(inode);
 	if (!IS_ERR(inode)) {
 		inode->i_op = &ext4_file_inode_operations;
 		inode->i_fop = &ext4_file_operations;
 		ext4_set_aops(inode);
-<<<<<<< HEAD
-		err = ext4_add_nondir(handle, dentry, inode);
-	}
-	ext4_journal_stop(handle);
-=======
 		err = ext4_add_nondir(handle, dentry, &inode);
 		if (!err)
 			ext4_fc_track_create(handle, dentry);
@@ -3960,37 +2843,11 @@ retry:
 		ext4_journal_stop(handle);
 	if (!IS_ERR_OR_NULL(inode))
 		iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err == -ENOSPC && ext4_should_retry_alloc(dir->i_sb, &retries))
 		goto retry;
 	return err;
 }
 
-<<<<<<< HEAD
-static int ext4_mknod(struct inode *dir, struct dentry *dentry,
-		      umode_t mode, dev_t rdev)
-{
-	handle_t *handle;
-	struct inode *inode;
-	int err, retries = 0;
-
-	if (!new_valid_dev(rdev))
-		return -EINVAL;
-
-	dquot_initialize(dir);
-
-retry:
-	handle = ext4_journal_start(dir, EXT4_DATA_TRANS_BLOCKS(dir->i_sb) +
-					EXT4_INDEX_EXTRA_TRANS_BLOCKS + 3 +
-					EXT4_MAXQUOTAS_INIT_BLOCKS(dir->i_sb));
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-
-	if (IS_DIRSYNC(dir))
-		ext4_handle_sync(handle);
-
-	inode = ext4_new_inode(handle, dir, mode, &dentry->d_name, 0, NULL);
-=======
 static int ext4_mknod(struct mnt_idmap *idmap, struct inode *dir,
 		      struct dentry *dentry, umode_t mode, dev_t rdev)
 {
@@ -4008,16 +2865,10 @@ retry:
 	inode = ext4_new_inode_start_handle(idmap, dir, mode, &dentry->d_name,
 					    0, NULL, EXT4_HT_DIR, credits);
 	handle = ext4_journal_current_handle();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = PTR_ERR(inode);
 	if (!IS_ERR(inode)) {
 		init_special_inode(inode, inode->i_mode, rdev);
 		inode->i_op = &ext4_special_inode_operations;
-<<<<<<< HEAD
-		err = ext4_add_nondir(handle, dentry, inode);
-	}
-	ext4_journal_stop(handle);
-=======
 		err = ext4_add_nondir(handle, dentry, &inode);
 		if (!err)
 			ext4_fc_track_create(handle, dentry);
@@ -4026,37 +2877,18 @@ retry:
 		ext4_journal_stop(handle);
 	if (!IS_ERR_OR_NULL(inode))
 		iput(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err == -ENOSPC && ext4_should_retry_alloc(dir->i_sb, &retries))
 		goto retry;
 	return err;
 }
 
-<<<<<<< HEAD
-static int ext4_tmpfile(struct inode *dir, struct dentry *dentry, umode_t mode)
-=======
 static int ext4_tmpfile(struct mnt_idmap *idmap, struct inode *dir,
 			struct file *file, umode_t mode)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	handle_t *handle;
 	struct inode *inode;
 	int err, retries = 0;
 
-<<<<<<< HEAD
-	dquot_initialize(dir);
-
-retry:
-	handle = ext4_journal_start(dir, EXT4_MAXQUOTAS_INIT_BLOCKS(dir->i_sb) +
-			  4 + EXT4_XATTR_TRANS_BLOCKS);
-
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-	if (IS_DIRSYNC(dir))
-		ext4_handle_sync(handle);
-
-	inode = ext4_new_inode(handle, dir, mode, NULL, 0, NULL);
-=======
 	err = dquot_initialize(dir);
 	if (err)
 		return err;
@@ -4068,17 +2900,12 @@ retry:
 			EXT4_MAXQUOTAS_INIT_BLOCKS(dir->i_sb) +
 			  4 + EXT4_XATTR_TRANS_BLOCKS);
 	handle = ext4_journal_current_handle();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = PTR_ERR(inode);
 	if (!IS_ERR(inode)) {
 		inode->i_op = &ext4_file_inode_operations;
 		inode->i_fop = &ext4_file_operations;
 		ext4_set_aops(inode);
-<<<<<<< HEAD
-		d_tmpfile(dentry, inode);
-=======
 		d_tmpfile(file, inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = ext4_orphan_add(handle, inode);
 		if (err)
 			goto err_unlock_inode;
@@ -4089,27 +2916,13 @@ retry:
 		ext4_journal_stop(handle);
 	if (err == -ENOSPC && ext4_should_retry_alloc(dir->i_sb, &retries))
 		goto retry;
-<<<<<<< HEAD
-	return err;
-=======
 	return finish_open_simple(file, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_unlock_inode:
 	ext4_journal_stop(handle);
 	unlock_new_inode(inode);
 	return err;
 }
 
-<<<<<<< HEAD
-static int ext4_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
-{
-	handle_t *handle;
-	struct inode *inode;
-	struct buffer_head *dir_block = NULL;
-	struct ext4_dir_entry_2 *de;
-	unsigned int blocksize = dir->i_sb->s_blocksize;
-	int err, retries = 0;
-=======
 struct ext4_dir_entry_2 *ext4_init_dot_dotdot(struct inode *inode,
 			  struct ext4_dir_entry_2 *de,
 			  int blocksize, int csum_size,
@@ -4186,27 +2999,10 @@ static int ext4_mkdir(struct mnt_idmap *idmap, struct inode *dir,
 	handle_t *handle;
 	struct inode *inode;
 	int err, err2 = 0, credits, retries = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (EXT4_DIR_LINK_MAX(dir))
 		return -EMLINK;
 
-<<<<<<< HEAD
-	dquot_initialize(dir);
-
-retry:
-	handle = ext4_journal_start(dir, EXT4_DATA_TRANS_BLOCKS(dir->i_sb) +
-					EXT4_INDEX_EXTRA_TRANS_BLOCKS + 3 +
-					EXT4_MAXQUOTAS_INIT_BLOCKS(dir->i_sb));
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-
-	if (IS_DIRSYNC(dir))
-		ext4_handle_sync(handle);
-
-	inode = ext4_new_inode(handle, dir, S_IFDIR | mode,
-			       &dentry->d_name, 0, NULL);
-=======
 	err = dquot_initialize(dir);
 	if (err)
 		return err;
@@ -4218,42 +3014,13 @@ retry:
 					    &dentry->d_name,
 					    0, NULL, EXT4_HT_DIR, credits);
 	handle = ext4_journal_current_handle();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = PTR_ERR(inode);
 	if (IS_ERR(inode))
 		goto out_stop;
 
 	inode->i_op = &ext4_dir_inode_operations;
 	inode->i_fop = &ext4_dir_operations;
-<<<<<<< HEAD
-	inode->i_size = EXT4_I(inode)->i_disksize = inode->i_sb->s_blocksize;
-	dir_block = ext4_bread(handle, inode, 0, 1, &err);
-	if (!dir_block)
-		goto out_clear_inode;
-	BUFFER_TRACE(dir_block, "get_write_access");
-	err = ext4_journal_get_write_access(handle, dir_block);
-	if (err)
-		goto out_clear_inode;
-	de = (struct ext4_dir_entry_2 *) dir_block->b_data;
-	de->inode = cpu_to_le32(inode->i_ino);
-	de->name_len = 1;
-	de->rec_len = ext4_rec_len_to_disk(EXT4_DIR_REC_LEN(de->name_len),
-					   blocksize);
-	strcpy(de->name, ".");
-	ext4_set_de_type(dir->i_sb, de, S_IFDIR);
-	de = ext4_next_entry(de, blocksize);
-	de->inode = cpu_to_le32(dir->i_ino);
-	de->rec_len = ext4_rec_len_to_disk(blocksize - EXT4_DIR_REC_LEN(1),
-					   blocksize);
-	de->name_len = 2;
-	strcpy(de->name, "..");
-	ext4_set_de_type(dir->i_sb, de, S_IFDIR);
-	set_nlink(inode, 2);
-	BUFFER_TRACE(dir_block, "call ext4_handle_dirty_metadata");
-	err = ext4_handle_dirty_metadata(handle, inode, dir_block);
-=======
 	err = ext4_init_new_dir(handle, dir, inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_clear_inode;
 	err = ext4_mark_inode_dirty(handle, inode);
@@ -4262,14 +3029,6 @@ retry:
 	if (err) {
 out_clear_inode:
 		clear_nlink(inode);
-<<<<<<< HEAD
-		unlock_new_inode(inode);
-		ext4_mark_inode_dirty(handle, inode);
-		iput(inode);
-		goto out_stop;
-	}
-	ext4_inc_count(handle, dir);
-=======
 		ext4_orphan_add(handle, inode);
 		unlock_new_inode(inode);
 		err2 = ext4_mark_inode_dirty(handle, inode);
@@ -4281,18 +3040,10 @@ out_clear_inode:
 	}
 	ext4_inc_count(dir);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ext4_update_dx_flag(dir);
 	err = ext4_mark_inode_dirty(handle, dir);
 	if (err)
 		goto out_clear_inode;
-<<<<<<< HEAD
-	d_instantiate(dentry, inode);
-	unlock_new_inode(inode);
-out_stop:
-	brelse(dir_block);
-	ext4_journal_stop(handle);
-=======
 	d_instantiate_new(dentry, inode);
 	ext4_fc_track_create(handle, dentry);
 	if (IS_DIRSYNC(dir))
@@ -4302,7 +3053,6 @@ out_stop:
 	if (handle)
 		ext4_journal_stop(handle);
 out_retry:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err == -ENOSPC && ext4_should_retry_alloc(dir->i_sb, &retries))
 		goto retry;
 	return err;
@@ -4311,228 +3061,6 @@ out_retry:
 /*
  * routine to check that the specified directory is empty (for rmdir)
  */
-<<<<<<< HEAD
-static int empty_dir(struct inode *inode)
-{
-	unsigned int offset;
-	struct buffer_head *bh;
-	struct ext4_dir_entry_2 *de, *de1;
-	struct super_block *sb;
-	int err = 0;
-
-	sb = inode->i_sb;
-	if (inode->i_size < EXT4_DIR_REC_LEN(1) + EXT4_DIR_REC_LEN(2) ||
-	    !(bh = ext4_bread(NULL, inode, 0, 0, &err))) {
-		if (err)
-			EXT4_ERROR_INODE(inode,
-				"error %d reading directory lblock 0", err);
-		else
-			ext4_warning(inode->i_sb,
-				     "bad directory (dir #%lu) - no data block",
-				     inode->i_ino);
-		return 1;
-	}
-	de = (struct ext4_dir_entry_2 *) bh->b_data;
-	de1 = ext4_next_entry(de, sb->s_blocksize);
-	if (le32_to_cpu(de->inode) != inode->i_ino ||
-			!le32_to_cpu(de1->inode) ||
-			strcmp(".", de->name) ||
-			strcmp("..", de1->name)) {
-		ext4_warning(inode->i_sb,
-			     "bad directory (dir #%lu) - no `.' or `..'",
-			     inode->i_ino);
-		brelse(bh);
-		return 1;
-	}
-	offset = ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize) +
-		 ext4_rec_len_from_disk(de1->rec_len, sb->s_blocksize);
-	de = ext4_next_entry(de1, sb->s_blocksize);
-	while (offset < inode->i_size) {
-		if (!bh ||
-		    (void *) de >= (void *) (bh->b_data+sb->s_blocksize)) {
-			unsigned int lblock;
-			err = 0;
-			brelse(bh);
-			lblock = offset >> EXT4_BLOCK_SIZE_BITS(sb);
-			bh = ext4_bread(NULL, inode, lblock, 0, &err);
-			if (!bh) {
-				if (err)
-					EXT4_ERROR_INODE(inode,
-						"error %d reading directory "
-						"lblock %u", err, lblock);
-				offset += sb->s_blocksize;
-				continue;
-			}
-			de = (struct ext4_dir_entry_2 *) bh->b_data;
-		}
-		if (ext4_check_dir_entry(inode, NULL, de, bh, offset)) {
-			de = (struct ext4_dir_entry_2 *)(bh->b_data +
-							 sb->s_blocksize);
-			offset = (offset | (sb->s_blocksize - 1)) + 1;
-			continue;
-		}
-		if (le32_to_cpu(de->inode)) {
-			brelse(bh);
-			return 0;
-		}
-		offset += ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
-		de = ext4_next_entry(de, sb->s_blocksize);
-	}
-	brelse(bh);
-	return 1;
-}
-
-/* ext4_orphan_add() links an unlinked or truncated inode into a list of
- * such inodes, starting at the superblock, in case we crash before the
- * file is closed/deleted, or in case the inode truncate spans multiple
- * transactions and the last transaction is not recovered after a crash.
- *
- * At filesystem recovery time, we walk this list deleting unlinked
- * inodes and truncating linked inodes in ext4_orphan_cleanup().
- */
-int ext4_orphan_add(handle_t *handle, struct inode *inode)
-{
-	struct super_block *sb = inode->i_sb;
-	struct ext4_iloc iloc;
-	int err = 0, rc;
-
-	if (!EXT4_SB(sb)->s_journal || is_bad_inode(inode))
-		return 0;
-
-	mutex_lock(&EXT4_SB(sb)->s_orphan_lock);
-	if (!list_empty(&EXT4_I(inode)->i_orphan))
-		goto out_unlock;
-
-	/*
-	 * Orphan handling is only valid for files with data blocks
-	 * being truncated, or files being unlinked. Note that we either
-	 * hold i_mutex, or the inode can not be referenced from outside,
-	 * so i_nlink should not be bumped due to race
-	 */
-	J_ASSERT((S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) ||
-		  S_ISLNK(inode->i_mode)) || inode->i_nlink == 0);
-
-	BUFFER_TRACE(EXT4_SB(sb)->s_sbh, "get_write_access");
-	err = ext4_journal_get_write_access(handle, EXT4_SB(sb)->s_sbh);
-	if (err)
-		goto out_unlock;
-
-	err = ext4_reserve_inode_write(handle, inode, &iloc);
-	if (err)
-		goto out_unlock;
-	/*
-	 * Due to previous errors inode may be already a part of on-disk
-	 * orphan list. If so skip on-disk list modification.
-	 */
-	if (NEXT_ORPHAN(inode) && NEXT_ORPHAN(inode) <=
-		(le32_to_cpu(EXT4_SB(sb)->s_es->s_inodes_count)))
-			goto mem_insert;
-
-	/* Insert this inode at the head of the on-disk orphan list... */
-	NEXT_ORPHAN(inode) = le32_to_cpu(EXT4_SB(sb)->s_es->s_last_orphan);
-	EXT4_SB(sb)->s_es->s_last_orphan = cpu_to_le32(inode->i_ino);
-	err = ext4_handle_dirty_super_now(handle, sb);
-	rc = ext4_mark_iloc_dirty(handle, inode, &iloc);
-	if (!err)
-		err = rc;
-
-	/* Only add to the head of the in-memory list if all the
-	 * previous operations succeeded.  If the orphan_add is going to
-	 * fail (possibly taking the journal offline), we can't risk
-	 * leaving the inode on the orphan list: stray orphan-list
-	 * entries can cause panics at unmount time.
-	 *
-	 * This is safe: on error we're going to ignore the orphan list
-	 * anyway on the next recovery. */
-mem_insert:
-	if (!err)
-		list_add(&EXT4_I(inode)->i_orphan, &EXT4_SB(sb)->s_orphan);
-
-	jbd_debug(4, "superblock will point to %lu\n", inode->i_ino);
-	jbd_debug(4, "orphan inode %lu will point to %d\n",
-			inode->i_ino, NEXT_ORPHAN(inode));
-out_unlock:
-	mutex_unlock(&EXT4_SB(sb)->s_orphan_lock);
-	ext4_std_error(inode->i_sb, err);
-	return err;
-}
-
-/*
- * ext4_orphan_del() removes an unlinked or truncated inode from the list
- * of such inodes stored on disk, because it is finally being cleaned up.
- */
-int ext4_orphan_del(handle_t *handle, struct inode *inode)
-{
-	struct list_head *prev;
-	struct ext4_inode_info *ei = EXT4_I(inode);
-	struct ext4_sb_info *sbi;
-	__u32 ino_next;
-	struct ext4_iloc iloc;
-	int err = 0;
-
-	if (!EXT4_SB(inode->i_sb)->s_journal &&
-	    !(EXT4_SB(inode->i_sb)->s_mount_state & EXT4_ORPHAN_FS))
-		return 0;
-
-	mutex_lock(&EXT4_SB(inode->i_sb)->s_orphan_lock);
-	if (list_empty(&ei->i_orphan))
-		goto out;
-
-	ino_next = NEXT_ORPHAN(inode);
-	prev = ei->i_orphan.prev;
-	sbi = EXT4_SB(inode->i_sb);
-
-	jbd_debug(4, "remove inode %lu from orphan list\n", inode->i_ino);
-
-	list_del_init(&ei->i_orphan);
-
-	/* If we're on an error path, we may not have a valid
-	 * transaction handle with which to update the orphan list on
-	 * disk, but we still need to remove the inode from the linked
-	 * list in memory. */
-	if (!handle)
-		goto out;
-
-	err = ext4_reserve_inode_write(handle, inode, &iloc);
-	if (err)
-		goto out_err;
-
-	if (prev == &sbi->s_orphan) {
-		jbd_debug(4, "superblock will point to %u\n", ino_next);
-		BUFFER_TRACE(sbi->s_sbh, "get_write_access");
-		err = ext4_journal_get_write_access(handle, sbi->s_sbh);
-		if (err)
-			goto out_brelse;
-		sbi->s_es->s_last_orphan = cpu_to_le32(ino_next);
-		err = ext4_handle_dirty_super_now(handle, inode->i_sb);
-	} else {
-		struct ext4_iloc iloc2;
-		struct inode *i_prev =
-			&list_entry(prev, struct ext4_inode_info, i_orphan)->vfs_inode;
-
-		jbd_debug(4, "orphan inode %lu will point to %u\n",
-			  i_prev->i_ino, ino_next);
-		err = ext4_reserve_inode_write(handle, i_prev, &iloc2);
-		if (err)
-			goto out_brelse;
-		NEXT_ORPHAN(i_prev) = ino_next;
-		err = ext4_mark_iloc_dirty(handle, i_prev, &iloc2);
-	}
-	if (err)
-		goto out_brelse;
-	NEXT_ORPHAN(inode) = 0;
-	err = ext4_mark_iloc_dirty(handle, inode, &iloc);
-
-out_err:
-	ext4_std_error(inode->i_sb, err);
-out:
-	mutex_unlock(&EXT4_SB(inode->i_sb)->s_orphan_lock);
-	return err;
-
-out_brelse:
-	brelse(iloc.bh);
-	goto out_err;
-=======
 bool ext4_empty_dir(struct inode *inode)
 {
 	unsigned int offset;
@@ -4605,7 +3133,6 @@ bool ext4_empty_dir(struct inode *inode)
 	}
 	brelse(bh);
 	return true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ext4_rmdir(struct inode *dir, struct dentry *dentry)
@@ -4614,21 +3141,6 @@ static int ext4_rmdir(struct inode *dir, struct dentry *dentry)
 	struct inode *inode;
 	struct buffer_head *bh;
 	struct ext4_dir_entry_2 *de;
-<<<<<<< HEAD
-	handle_t *handle;
-
-	/* Initialize quotas before so that eventual writes go in
-	 * separate transaction */
-	dquot_initialize(dir);
-	dquot_initialize(dentry->d_inode);
-
-	handle = ext4_journal_start(dir, EXT4_DELETE_TRANS_BLOCKS(dir->i_sb));
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-
-	retval = -ENOENT;
-	bh = ext4_find_entry(dir, &dentry->d_name, &de);
-=======
 	handle_t *handle = NULL;
 
 	if (unlikely(ext4_forced_shutdown(dir->i_sb)))
@@ -4645,33 +3157,18 @@ static int ext4_rmdir(struct inode *dir, struct dentry *dentry)
 
 	retval = -ENOENT;
 	bh = ext4_find_entry(dir, &dentry->d_name, &de, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(bh))
 		return PTR_ERR(bh);
 	if (!bh)
 		goto end_rmdir;
 
-<<<<<<< HEAD
-	if (IS_DIRSYNC(dir))
-		ext4_handle_sync(handle);
-
-	inode = dentry->d_inode;
-
-	retval = -EIO;
-=======
 	inode = d_inode(dentry);
 
 	retval = -EFSCORRUPTED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (le32_to_cpu(de->inode) != inode->i_ino)
 		goto end_rmdir;
 
 	retval = -ENOTEMPTY;
-<<<<<<< HEAD
-	if (!empty_dir(inode))
-		goto end_rmdir;
-
-=======
 	if (!ext4_empty_dir(inode))
 		goto end_rmdir;
 
@@ -4686,39 +3183,21 @@ static int ext4_rmdir(struct inode *dir, struct dentry *dentry)
 	if (IS_DIRSYNC(dir))
 		ext4_handle_sync(handle);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = ext4_delete_entry(handle, dir, de, bh);
 	if (retval)
 		goto end_rmdir;
 	if (!EXT4_DIR_LINK_EMPTY(inode))
-<<<<<<< HEAD
-		ext4_warning(inode->i_sb,
-			     "empty directory has too many links (%d)",
-			     inode->i_nlink);
-	inode->i_version++;
-=======
 		ext4_warning_inode(inode,
 			     "empty directory '%.*s' has too many links (%u)",
 			     dentry->d_name.len, dentry->d_name.name,
 			     inode->i_nlink);
 	inode_inc_iversion(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_nlink(inode);
 	/* There's no need to set i_disksize: the fact that i_nlink is
 	 * zero will ensure that the right thing happens during any
 	 * recovery. */
 	inode->i_size = 0;
 	ext4_orphan_add(handle, inode);
-<<<<<<< HEAD
-	inode->i_ctime = dir->i_ctime = dir->i_mtime = ext4_current_time(inode);
-	ext4_mark_inode_dirty(handle, inode);
-	ext4_dec_count(handle, dir);
-	ext4_update_dx_flag(dir);
-	ext4_mark_inode_dirty(handle, dir);
-
-end_rmdir:
-	ext4_journal_stop(handle);
-=======
 	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
 	inode_set_ctime_current(inode);
 	retval = ext4_mark_inode_dirty(handle, inode);
@@ -4816,7 +3295,6 @@ int __ext4_unlink(struct inode *dir, const struct qstr *d_name,
 out_handle:
 	ext4_journal_stop(handle);
 out_bh:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 	return retval;
 }
@@ -4824,61 +3302,6 @@ out_bh:
 static int ext4_unlink(struct inode *dir, struct dentry *dentry)
 {
 	int retval;
-<<<<<<< HEAD
-	struct inode *inode;
-	struct buffer_head *bh;
-	struct ext4_dir_entry_2 *de;
-	handle_t *handle;
-
-	trace_ext4_unlink_enter(dir, dentry);
-	/* Initialize quotas before so that eventual writes go
-	 * in separate transaction */
-	dquot_initialize(dir);
-	dquot_initialize(dentry->d_inode);
-
-	handle = ext4_journal_start(dir, EXT4_DELETE_TRANS_BLOCKS(dir->i_sb));
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-
-	if (IS_DIRSYNC(dir))
-		ext4_handle_sync(handle);
-
-	retval = -ENOENT;
-	bh = ext4_find_entry(dir, &dentry->d_name, &de);
-	if (IS_ERR(bh))
-		return PTR_ERR(bh);
-	if (!bh)
-		goto end_unlink;
-
-	inode = dentry->d_inode;
-
-	retval = -EIO;
-	if (le32_to_cpu(de->inode) != inode->i_ino)
-		goto end_unlink;
-
-	if (!inode->i_nlink) {
-		ext4_warning(inode->i_sb,
-			     "Deleting nonexistent file (%lu), %d",
-			     inode->i_ino, inode->i_nlink);
-		set_nlink(inode, 1);
-	}
-	retval = ext4_delete_entry(handle, dir, de, bh);
-	if (retval)
-		goto end_unlink;
-	dir->i_ctime = dir->i_mtime = ext4_current_time(dir);
-	ext4_update_dx_flag(dir);
-	ext4_mark_inode_dirty(handle, dir);
-	drop_nlink(inode);
-	if (!inode->i_nlink)
-		ext4_orphan_add(handle, inode);
-	inode->i_ctime = ext4_current_time(inode);
-	ext4_mark_inode_dirty(handle, inode);
-	retval = 0;
-
-end_unlink:
-	ext4_journal_stop(handle);
-	brelse(bh);
-=======
 
 	if (unlikely(ext4_forced_shutdown(dir->i_sb)))
 		return -EIO;
@@ -4908,14 +3331,10 @@ end_unlink:
 #endif
 
 out_trace:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trace_ext4_unlink_exit(dentry, retval);
 	return retval;
 }
 
-<<<<<<< HEAD
-static int ext4_symlink(struct inode *dir,
-=======
 static int ext4_init_symlink_block(handle_t *handle, struct inode *inode,
 				   struct fscrypt_str *disk_link)
 {
@@ -4943,130 +3362,10 @@ out:
 }
 
 static int ext4_symlink(struct mnt_idmap *idmap, struct inode *dir,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct dentry *dentry, const char *symname)
 {
 	handle_t *handle;
 	struct inode *inode;
-<<<<<<< HEAD
-	int l, err, retries = 0;
-	int credits;
-
-	l = strlen(symname)+1;
-	if (l > dir->i_sb->s_blocksize)
-		return -ENAMETOOLONG;
-
-	dquot_initialize(dir);
-
-	if (l > EXT4_N_BLOCKS * 4) {
-		/*
-		 * For non-fast symlinks, we just allocate inode and put it on
-		 * orphan list in the first transaction => we need bitmap,
-		 * group descriptor, sb, inode block, quota blocks, and
-		 * possibly selinux xattr blocks.
-		 */
-		credits = 4 + EXT4_MAXQUOTAS_INIT_BLOCKS(dir->i_sb) +
-			  EXT4_XATTR_TRANS_BLOCKS;
-	} else {
-		/*
-		 * Fast symlink. We have to add entry to directory
-		 * (EXT4_DATA_TRANS_BLOCKS + EXT4_INDEX_EXTRA_TRANS_BLOCKS),
-		 * allocate new inode (bitmap, group descriptor, inode block,
-		 * quota blocks, sb is already counted in previous macros).
-		 */
-		credits = EXT4_DATA_TRANS_BLOCKS(dir->i_sb) +
-			  EXT4_INDEX_EXTRA_TRANS_BLOCKS + 3 +
-			  EXT4_MAXQUOTAS_INIT_BLOCKS(dir->i_sb);
-	}
-retry:
-	handle = ext4_journal_start(dir, credits);
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-
-	if (IS_DIRSYNC(dir))
-		ext4_handle_sync(handle);
-
-	inode = ext4_new_inode(handle, dir, S_IFLNK|S_IRWXUGO,
-			       &dentry->d_name, 0, NULL);
-	err = PTR_ERR(inode);
-	if (IS_ERR(inode))
-		goto out_stop;
-
-	if (l > EXT4_N_BLOCKS * 4) {
-		inode->i_op = &ext4_symlink_inode_operations;
-		ext4_set_aops(inode);
-		/*
-		 * We cannot call page_symlink() with transaction started
-		 * because it calls into ext4_write_begin() which can wait
-		 * for transaction commit if we are running out of space
-		 * and thus we deadlock. So we have to stop transaction now
-		 * and restart it when symlink contents is written.
-		 * 
-		 * To keep fs consistent in case of crash, we have to put inode
-		 * to orphan list in the mean time.
-		 */
-		drop_nlink(inode);
-		err = ext4_orphan_add(handle, inode);
-		ext4_journal_stop(handle);
-		if (err)
-			goto err_drop_inode;
-		err = __page_symlink(inode, symname, l, 1);
-		if (err)
-			goto err_drop_inode;
-		/*
-		 * Now inode is being linked into dir (EXT4_DATA_TRANS_BLOCKS
-		 * + EXT4_INDEX_EXTRA_TRANS_BLOCKS), inode is also modified
-		 */
-		handle = ext4_journal_start(dir,
-				EXT4_DATA_TRANS_BLOCKS(dir->i_sb) +
-				EXT4_INDEX_EXTRA_TRANS_BLOCKS + 1);
-		if (IS_ERR(handle)) {
-			err = PTR_ERR(handle);
-			goto err_drop_inode;
-		}
-		set_nlink(inode, 1);
-		err = ext4_orphan_del(handle, inode);
-		if (err) {
-			ext4_journal_stop(handle);
-			clear_nlink(inode);
-			goto err_drop_inode;
-		}
-	} else {
-		/* clear the extent format for fast symlink */
-		ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS);
-		inode->i_op = &ext4_fast_symlink_inode_operations;
-		memcpy((char *)&EXT4_I(inode)->i_data, symname, l);
-		inode->i_size = l-1;
-	}
-	EXT4_I(inode)->i_disksize = inode->i_size;
-	err = ext4_add_nondir(handle, dentry, inode);
-out_stop:
-	ext4_journal_stop(handle);
-	if (err == -ENOSPC && ext4_should_retry_alloc(dir->i_sb, &retries))
-		goto retry;
-	return err;
-err_drop_inode:
-	unlock_new_inode(inode);
-	iput(inode);
-	return err;
-}
-
-static int ext4_link(struct dentry *old_dentry,
-		     struct inode *dir, struct dentry *dentry)
-{
-	handle_t *handle;
-	struct inode *inode = old_dentry->d_inode;
-	int err, retries = 0;
-
-	if (inode->i_nlink >= EXT4_LINK_MAX)
-		return -EMLINK;
-
-	dquot_initialize(dir);
-
-retry:
-	handle = ext4_journal_start(dir, EXT4_DATA_TRANS_BLOCKS(dir->i_sb) +
-					EXT4_INDEX_EXTRA_TRANS_BLOCKS + 1);
-=======
 	int err, len = strlen(symname);
 	int credits;
 	struct fscrypt_str disk_link;
@@ -5161,39 +3460,26 @@ retry:
 	handle = ext4_journal_start(dir, EXT4_HT_DIR,
 		(EXT4_DATA_TRANS_BLOCKS(dir->i_sb) +
 		 EXT4_INDEX_EXTRA_TRANS_BLOCKS) + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(handle))
 		return PTR_ERR(handle);
 
 	if (IS_DIRSYNC(dir))
 		ext4_handle_sync(handle);
 
-<<<<<<< HEAD
-	inode->i_ctime = ext4_current_time(inode);
-	ext4_inc_count(handle, inode);
-=======
 	inode_set_ctime_current(inode);
 	ext4_inc_count(inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ihold(inode);
 
 	err = ext4_add_entry(handle, dentry, inode);
 	if (!err) {
-<<<<<<< HEAD
-		ext4_mark_inode_dirty(handle, inode);
-=======
 		err = ext4_mark_inode_dirty(handle, inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* this can happen only for tmpfile being
 		 * linked the first time
 		 */
 		if (inode->i_nlink == 1)
 			ext4_orphan_del(handle, inode);
 		d_instantiate(dentry, inode);
-<<<<<<< HEAD
-=======
 		ext4_fc_track_link(handle, dentry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		drop_nlink(inode);
 		iput(inode);
@@ -5204,10 +3490,6 @@ retry:
 	return err;
 }
 
-<<<<<<< HEAD
-#define PARENT_INO(buffer, size) \
-	(ext4_next_entry((struct ext4_dir_entry_2 *)(buffer), size)->inode)
-=======
 static int ext4_link(struct dentry *old_dentry,
 		     struct inode *dir, struct dentry *dentry)
 {
@@ -5502,44 +3784,10 @@ retry:
 	}
 	return wh;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Anybody can rename anything with this: the permission checks are left to the
  * higher-level routines.
-<<<<<<< HEAD
- */
-static int ext4_rename(struct inode *old_dir, struct dentry *old_dentry,
-		       struct inode *new_dir, struct dentry *new_dentry)
-{
-	handle_t *handle;
-	struct inode *old_inode, *new_inode;
-	struct buffer_head *old_bh, *new_bh, *dir_bh;
-	struct ext4_dir_entry_2 *old_de, *new_de;
-	int retval, force_da_alloc = 0;
-
-	dquot_initialize(old_dir);
-	dquot_initialize(new_dir);
-
-	old_bh = new_bh = dir_bh = NULL;
-
-	/* Initialize quotas before so that eventual writes go
-	 * in separate transaction */
-	if (new_dentry->d_inode)
-		dquot_initialize(new_dentry->d_inode);
-	handle = ext4_journal_start(old_dir, 2 *
-					EXT4_DATA_TRANS_BLOCKS(old_dir->i_sb) +
-					EXT4_INDEX_EXTRA_TRANS_BLOCKS + 2);
-	if (IS_ERR(handle))
-		return PTR_ERR(handle);
-
-	if (IS_DIRSYNC(old_dir) || IS_DIRSYNC(new_dir))
-		ext4_handle_sync(handle);
-
-	old_bh = ext4_find_entry(old_dir, &old_dentry->d_name, &old_de);
-	if (IS_ERR(old_bh))
-		return PTR_ERR(old_bh);
-=======
  *
  * n.b.  old_{dentry,inode) refers to the source dentry/inode
  * while new_{dentry,inode) refers to the destination dentry/inode
@@ -5600,81 +3848,12 @@ static int ext4_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	if (IS_ERR(old.bh))
 		return PTR_ERR(old.bh);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *  Check for inode number is _not_ due to possible IO errors.
 	 *  We might rmdir the source, keep it as pwd of some process
 	 *  and merrily kill the link to whatever was created under the
 	 *  same name. Goodbye sticky bit ;-<
 	 */
-<<<<<<< HEAD
-	old_inode = old_dentry->d_inode;
-	retval = -ENOENT;
-	if (!old_bh || le32_to_cpu(old_de->inode) != old_inode->i_ino)
-		goto end_rename;
-
-	new_inode = new_dentry->d_inode;
-	new_bh = ext4_find_entry(new_dir, &new_dentry->d_name, &new_de);
-	if (IS_ERR(new_bh)) {
-		retval = PTR_ERR(new_bh);
-		new_bh = NULL;
-		goto end_rename;
-	}
-	if (new_bh) {
-		if (!new_inode) {
-			brelse(new_bh);
-			new_bh = NULL;
-		}
-	}
-	if (S_ISDIR(old_inode->i_mode)) {
-		if (new_inode) {
-			retval = -ENOTEMPTY;
-			if (!empty_dir(new_inode))
-				goto end_rename;
-		}
-		retval = -EIO;
-		dir_bh = ext4_bread(handle, old_inode, 0, 0, &retval);
-		if (!dir_bh)
-			goto end_rename;
-		if (le32_to_cpu(PARENT_INO(dir_bh->b_data,
-				old_dir->i_sb->s_blocksize)) != old_dir->i_ino)
-			goto end_rename;
-		retval = -EMLINK;
-		if (!new_inode && new_dir != old_dir &&
-		    EXT4_DIR_LINK_MAX(new_dir))
-			goto end_rename;
-		BUFFER_TRACE(dir_bh, "get_write_access");
-		retval = ext4_journal_get_write_access(handle, dir_bh);
-		if (retval)
-			goto end_rename;
-	}
-	if (!new_bh) {
-		retval = ext4_add_entry(handle, new_dentry, old_inode);
-		if (retval)
-			goto end_rename;
-	} else {
-		BUFFER_TRACE(new_bh, "get write access");
-		retval = ext4_journal_get_write_access(handle, new_bh);
-		if (retval)
-			goto end_rename;
-		new_de->inode = cpu_to_le32(old_inode->i_ino);
-		if (EXT4_HAS_INCOMPAT_FEATURE(new_dir->i_sb,
-					      EXT4_FEATURE_INCOMPAT_FILETYPE))
-			new_de->file_type = old_de->file_type;
-		new_dir->i_version++;
-		new_dir->i_ctime = new_dir->i_mtime =
-					ext4_current_time(new_dir);
-		ext4_mark_inode_dirty(handle, new_dir);
-		BUFFER_TRACE(new_bh, "call ext4_handle_dirty_metadata");
-		retval = ext4_handle_dirty_metadata(handle, new_dir, new_bh);
-		if (unlikely(retval)) {
-			ext4_std_error(new_dir->i_sb, retval);
-			goto end_rename;
-		}
-		brelse(new_bh);
-		new_bh = NULL;
-	}
-=======
 	retval = -ENOENT;
 	if (!old.bh || le32_to_cpu(old.de->inode) != old.inode->i_ino)
 		goto release_bh;
@@ -5766,80 +3945,11 @@ static int ext4_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 	if (force_reread)
 		force_reread = !ext4_test_inode_flag(new.dir,
 						     EXT4_INODE_INLINE_DATA);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Like most other Unix systems, set the ctime for inodes on a
 	 * rename.
 	 */
-<<<<<<< HEAD
-	old_inode->i_ctime = ext4_current_time(old_inode);
-	ext4_mark_inode_dirty(handle, old_inode);
-
-	/*
-	 * ok, that's it
-	 */
-	if (le32_to_cpu(old_de->inode) != old_inode->i_ino ||
-	    old_de->name_len != old_dentry->d_name.len ||
-	    strncmp(old_de->name, old_dentry->d_name.name, old_de->name_len) ||
-	    (retval = ext4_delete_entry(handle, old_dir,
-					old_de, old_bh)) == -ENOENT) {
-		/* old_de could have moved from under us during htree split, so
-		 * make sure that we are deleting the right entry.  We might
-		 * also be pointing to a stale entry in the unused part of
-		 * old_bh so just checking inum and the name isn't enough. */
-		struct buffer_head *old_bh2;
-		struct ext4_dir_entry_2 *old_de2;
-
-		old_bh2 = ext4_find_entry(old_dir, &old_dentry->d_name, &old_de2);
-		if (IS_ERR(old_bh2)) {
-			retval = PTR_ERR(old_bh2);
-		} else if (old_bh2) {
-			retval = ext4_delete_entry(handle, old_dir,
-						   old_de2, old_bh2);
-			brelse(old_bh2);
-		}
-	}
-	if (retval) {
-		ext4_warning(old_dir->i_sb,
-				"Deleting old file (%lu), %d, error=%d",
-				old_dir->i_ino, old_dir->i_nlink, retval);
-	}
-
-	if (new_inode) {
-		ext4_dec_count(handle, new_inode);
-		new_inode->i_ctime = ext4_current_time(new_inode);
-	}
-	old_dir->i_ctime = old_dir->i_mtime = ext4_current_time(old_dir);
-	ext4_update_dx_flag(old_dir);
-	if (dir_bh) {
-		PARENT_INO(dir_bh->b_data, new_dir->i_sb->s_blocksize) =
-						cpu_to_le32(new_dir->i_ino);
-		BUFFER_TRACE(dir_bh, "call ext4_handle_dirty_metadata");
-		retval = ext4_handle_dirty_metadata(handle, old_inode, dir_bh);
-		if (retval) {
-			ext4_std_error(old_dir->i_sb, retval);
-			goto end_rename;
-		}
-		ext4_dec_count(handle, old_dir);
-		if (new_inode) {
-			/* checked empty_dir above, can't have another parent,
-			 * ext4_dec_count() won't work for many-linked dirs */
-			clear_nlink(new_inode);
-		} else {
-			ext4_inc_count(handle, new_dir);
-			ext4_update_dx_flag(new_dir);
-			ext4_mark_inode_dirty(handle, new_dir);
-		}
-	}
-	ext4_mark_inode_dirty(handle, old_dir);
-	if (new_inode) {
-		ext4_mark_inode_dirty(handle, new_inode);
-		if (!new_inode->i_nlink)
-			ext4_orphan_add(handle, new_inode);
-		if (!test_opt(new_dir->i_sb, NO_AUTO_DA_ALLOC))
-			force_da_alloc = 1;
-=======
 	inode_set_ctime_current(old.inode);
 	retval = ext4_mark_inode_dirty(handle, old.inode);
 	if (unlikely(retval))
@@ -5911,22 +4021,10 @@ static int ext4_rename(struct mnt_idmap *idmap, struct inode *old_dir,
 			goto end_rename;
 		if (!new.inode->i_nlink)
 			ext4_orphan_add(handle, new.inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	retval = 0;
 
 end_rename:
-<<<<<<< HEAD
-	brelse(dir_bh);
-	brelse(old_bh);
-	brelse(new_bh);
-	ext4_journal_stop(handle);
-	if (retval == 0 && force_da_alloc)
-		ext4_alloc_da_blocks(old_inode);
-	return retval;
-}
-
-=======
 	if (whiteout) {
 		if (retval) {
 			ext4_resetent(handle, &old,
@@ -6116,7 +4214,6 @@ static int ext4_rename2(struct mnt_idmap *idmap,
 	return ext4_rename(idmap, old_dir, old_dentry, new_dir, new_dentry, flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * directories can handle most operations...
  */
@@ -6130,18 +4227,6 @@ const struct inode_operations ext4_dir_inode_operations = {
 	.rmdir		= ext4_rmdir,
 	.mknod		= ext4_mknod,
 	.tmpfile	= ext4_tmpfile,
-<<<<<<< HEAD
-	.rename		= ext4_rename,
-	.setattr	= ext4_setattr,
-#ifdef CONFIG_EXT4_FS_XATTR
-	.setxattr	= generic_setxattr,
-	.getxattr	= generic_getxattr,
-	.listxattr	= ext4_listxattr,
-	.removexattr	= generic_removexattr,
-#endif
-	.get_acl	= ext4_get_acl,
-	.fiemap         = ext4_fiemap,
-=======
 	.rename		= ext4_rename2,
 	.setattr	= ext4_setattr,
 	.getattr	= ext4_getattr,
@@ -6151,23 +4236,12 @@ const struct inode_operations ext4_dir_inode_operations = {
 	.fiemap         = ext4_fiemap,
 	.fileattr_get	= ext4_fileattr_get,
 	.fileattr_set	= ext4_fileattr_set,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct inode_operations ext4_special_inode_operations = {
 	.setattr	= ext4_setattr,
-<<<<<<< HEAD
-#ifdef CONFIG_EXT4_FS_XATTR
-	.setxattr	= generic_setxattr,
-	.getxattr	= generic_getxattr,
-	.listxattr	= ext4_listxattr,
-	.removexattr	= generic_removexattr,
-#endif
-	.get_acl	= ext4_get_acl,
-=======
 	.getattr	= ext4_getattr,
 	.listxattr	= ext4_listxattr,
 	.get_inode_acl	= ext4_get_acl,
 	.set_acl	= ext4_set_acl,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

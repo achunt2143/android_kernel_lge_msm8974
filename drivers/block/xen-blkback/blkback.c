@@ -34,38 +34,13 @@
  * IN THE SOFTWARE.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) "xen-blkback: " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/kthread.h>
 #include <linux/list.h>
 #include <linux/delay.h>
 #include <linux/freezer.h>
-<<<<<<< HEAD
-
-#include <xen/events.h>
-#include <xen/page.h>
-#include <asm/xen/hypervisor.h>
-#include <asm/xen/hypercall.h>
-#include "common.h"
-
-/*
- * These are rather arbitrary. They are fairly large because adjacent requests
- * pulled from a communication ring are quite likely to end up being part of
- * the same scatter/gather request at the disc.
- *
- * ** TRY INCREASING 'xen_blkif_reqs' IF WRITE SPEEDS SEEM TOO LOW **
- *
- * This will increase the chances of being able to write whole tracks.
- * 64 should be enough to keep us competitive with Linux.
- */
-static int xen_blkif_reqs = 64;
-module_param_named(reqs, xen_blkif_reqs, int, 0);
-MODULE_PARM_DESC(reqs, "Number of blkback requests to allocate");
-=======
 #include <linux/bitmap.h>
 
 #include <xen/events.h>
@@ -150,82 +125,11 @@ MODULE_PARM_DESC(max_ring_page_order, "Maximum order of pages to be used for the
  * execution.
  */
 #define LRU_PERCENT_CLEAN 5
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Run-time switchable: /sys/module/blkback/parameters/ */
 static unsigned int log_stats;
 module_param(log_stats, int, 0644);
 
-<<<<<<< HEAD
-/*
- * Each outstanding request that we've passed to the lower device layers has a
- * 'pending_req' allocated to it. Each buffer_head that completes decrements
- * the pendcnt towards zero. When it hits zero, the specified domain has a
- * response queued for it, with the saved 'id' passed back.
- */
-struct pending_req {
-	struct xen_blkif	*blkif;
-	u64			id;
-	int			nr_pages;
-	atomic_t		pendcnt;
-	unsigned short		operation;
-	int			status;
-	struct list_head	free_list;
-};
-
-#define BLKBACK_INVALID_HANDLE (~0)
-
-struct xen_blkbk {
-	struct pending_req	*pending_reqs;
-	/* List of all 'pending_req' available */
-	struct list_head	pending_free;
-	/* And its spinlock. */
-	spinlock_t		pending_free_lock;
-	wait_queue_head_t	pending_free_wq;
-	/* The list of all pages that are available. */
-	struct page		**pending_pages;
-	/* And the grant handles that are available. */
-	grant_handle_t		*pending_grant_handles;
-};
-
-static struct xen_blkbk *blkbk;
-
-/*
- * Little helpful macro to figure out the index and virtual address of the
- * pending_pages[..]. For each 'pending_req' we have have up to
- * BLKIF_MAX_SEGMENTS_PER_REQUEST (11) pages. The seg would be from 0 through
- * 10 and would index in the pending_pages[..].
- */
-static inline int vaddr_pagenr(struct pending_req *req, int seg)
-{
-	return (req - blkbk->pending_reqs) *
-		BLKIF_MAX_SEGMENTS_PER_REQUEST + seg;
-}
-
-#define pending_page(req, seg) pending_pages[vaddr_pagenr(req, seg)]
-
-static inline unsigned long vaddr(struct pending_req *req, int seg)
-{
-	unsigned long pfn = page_to_pfn(blkbk->pending_page(req, seg));
-	return (unsigned long)pfn_to_kaddr(pfn);
-}
-
-#define pending_handle(_req, _seg) \
-	(blkbk->pending_grant_handles[vaddr_pagenr(_req, _seg)])
-
-
-static int do_block_io_op(struct xen_blkif *blkif);
-static int dispatch_rw_block_io(struct xen_blkif *blkif,
-				struct blkif_request *req,
-				struct pending_req *pending_req);
-static void make_response(struct xen_blkif *blkif, u64 id,
-			  unsigned short op, int st);
-
-/*
- * Retrieve from the 'pending_reqs' a free pending_req structure to be used.
- */
-static struct pending_req *alloc_req(void)
-=======
 #define BLKBACK_INVALID_HANDLE (~0)
 
 static inline bool persistent_gnt_timeout(struct persistent_gnt *persistent_gnt)
@@ -508,20 +412,10 @@ out:
  * Retrieve from the 'pending_reqs' a free pending_req structure to be used.
  */
 static struct pending_req *alloc_req(struct xen_blkif_ring *ring)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pending_req *req = NULL;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&blkbk->pending_free_lock, flags);
-	if (!list_empty(&blkbk->pending_free)) {
-		req = list_entry(blkbk->pending_free.next, struct pending_req,
-				 free_list);
-		list_del(&req->free_list);
-	}
-	spin_unlock_irqrestore(&blkbk->pending_free_lock, flags);
-=======
 	spin_lock_irqsave(&ring->pending_free_lock, flags);
 	if (!list_empty(&ring->pending_free)) {
 		req = list_entry(ring->pending_free.next, struct pending_req,
@@ -529,7 +423,6 @@ static struct pending_req *alloc_req(struct xen_blkif_ring *ring)
 		list_del(&req->free_list);
 	}
 	spin_unlock_irqrestore(&ring->pending_free_lock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return req;
 }
 
@@ -537,50 +430,29 @@ static struct pending_req *alloc_req(struct xen_blkif_ring *ring)
  * Return the 'pending_req' structure back to the freepool. We also
  * wake up the thread if it was waiting for a free page.
  */
-<<<<<<< HEAD
-static void free_req(struct pending_req *req)
-=======
 static void free_req(struct xen_blkif_ring *ring, struct pending_req *req)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int was_empty;
 
-<<<<<<< HEAD
-	spin_lock_irqsave(&blkbk->pending_free_lock, flags);
-	was_empty = list_empty(&blkbk->pending_free);
-	list_add(&req->free_list, &blkbk->pending_free);
-	spin_unlock_irqrestore(&blkbk->pending_free_lock, flags);
-	if (was_empty)
-		wake_up(&blkbk->pending_free_wq);
-=======
 	spin_lock_irqsave(&ring->pending_free_lock, flags);
 	was_empty = list_empty(&ring->pending_free);
 	list_add(&req->free_list, &ring->pending_free);
 	spin_unlock_irqrestore(&ring->pending_free_lock, flags);
 	if (was_empty)
 		wake_up(&ring->pending_free_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Routines for managing virtual block devices (vbds).
  */
 static int xen_vbd_translate(struct phys_req *req, struct xen_blkif *blkif,
-<<<<<<< HEAD
-			     int operation)
-=======
 			     enum req_op operation)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xen_vbd *vbd = &blkif->vbd;
 	int rc = -EACCES;
 
-<<<<<<< HEAD
-	if ((operation != READ) && vbd->readonly)
-=======
 	if ((operation != REQ_OP_READ) && vbd->readonly)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	if (likely(req->nr_sects)) {
@@ -593,11 +465,7 @@ static int xen_vbd_translate(struct phys_req *req, struct xen_blkif *blkif,
 	}
 
 	req->dev  = vbd->pdevice;
-<<<<<<< HEAD
-	req->bdev = vbd->bdev;
-=======
 	req->bdev = file_bdev(vbd->bdev_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = 0;
 
  out:
@@ -612,34 +480,20 @@ static void xen_vbd_resize(struct xen_blkif *blkif)
 	struct xenbus_device *dev = xen_blkbk_xenbus(blkif->be);
 	unsigned long long new_size = vbd_sz(vbd);
 
-<<<<<<< HEAD
-	pr_info(DRV_PFX "VBD Resize: Domid: %d, Device: (%d, %d)\n",
-		blkif->domid, MAJOR(vbd->pdevice), MINOR(vbd->pdevice));
-	pr_info(DRV_PFX "VBD Resize: new size %llu\n", new_size);
-=======
 	pr_info("VBD Resize: Domid: %d, Device: (%d, %d)\n",
 		blkif->domid, MAJOR(vbd->pdevice), MINOR(vbd->pdevice));
 	pr_info("VBD Resize: new size %llu\n", new_size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vbd->size = new_size;
 again:
 	err = xenbus_transaction_start(&xbt);
 	if (err) {
-<<<<<<< HEAD
-		pr_warn(DRV_PFX "Error starting transaction");
-=======
 		pr_warn("Error starting transaction\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	err = xenbus_printf(xbt, dev->nodename, "sectors", "%llu",
 			    (unsigned long long)vbd_sz(vbd));
 	if (err) {
-<<<<<<< HEAD
-		pr_warn(DRV_PFX "Error writing new size");
-=======
 		pr_warn("Error writing new size\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto abort;
 	}
 	/*
@@ -649,11 +503,7 @@ again:
 	 */
 	err = xenbus_printf(xbt, dev->nodename, "state", "%d", dev->state);
 	if (err) {
-<<<<<<< HEAD
-		pr_warn(DRV_PFX "Error writing the state");
-=======
 		pr_warn("Error writing the state\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto abort;
 	}
 
@@ -661,11 +511,7 @@ again:
 	if (err == -EAGAIN)
 		goto again;
 	if (err)
-<<<<<<< HEAD
-		pr_warn(DRV_PFX "Error ending transaction");
-=======
 		pr_warn("Error ending transaction\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 abort:
 	xenbus_transaction_end(xbt, 1);
@@ -674,17 +520,10 @@ abort:
 /*
  * Notification from the guest OS.
  */
-<<<<<<< HEAD
-static void blkif_notify_work(struct xen_blkif *blkif)
-{
-	blkif->waiting_reqs = 1;
-	wake_up(&blkif->wq);
-=======
 static void blkif_notify_work(struct xen_blkif_ring *ring)
 {
 	ring->waiting_reqs = 1;
 	wake_up(&ring->wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 irqreturn_t xen_blkif_be_int(int irq, void *dev_id)
@@ -697,20 +536,6 @@ irqreturn_t xen_blkif_be_int(int irq, void *dev_id)
  * SCHEDULER FUNCTIONS
  */
 
-<<<<<<< HEAD
-static void print_stats(struct xen_blkif *blkif)
-{
-	pr_info("xen-blkback (%s): oo %3d  |  rd %4d  |  wr %4d  |  f %4d"
-		 "  |  ds %4d\n",
-		 current->comm, blkif->st_oo_req,
-		 blkif->st_rd_req, blkif->st_wr_req,
-		 blkif->st_f_req, blkif->st_ds_req);
-	blkif->st_print = jiffies + msecs_to_jiffies(10 * 1000);
-	blkif->st_rd_req = 0;
-	blkif->st_wr_req = 0;
-	blkif->st_oo_req = 0;
-	blkif->st_ds_req = 0;
-=======
 static void print_stats(struct xen_blkif_ring *ring)
 {
 	pr_info("(%s): oo %3llu  |  rd %4llu  |  wr %4llu  |  f %4llu"
@@ -724,19 +549,10 @@ static void print_stats(struct xen_blkif_ring *ring)
 	ring->st_wr_req = 0;
 	ring->st_oo_req = 0;
 	ring->st_ds_req = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int xen_blkif_schedule(void *arg)
 {
-<<<<<<< HEAD
-	struct xen_blkif *blkif = arg;
-	struct xen_vbd *vbd = &blkif->vbd;
-	int ret;
-
-	xen_blkif_get(blkif);
-
-=======
 	struct xen_blkif_ring *ring = arg;
 	struct xen_blkif *blkif = ring->blkif;
 	struct xen_vbd *vbd = &blkif->vbd;
@@ -746,42 +562,12 @@ int xen_blkif_schedule(void *arg)
 	unsigned int eoi_flags = XEN_EOI_FLAG_SPURIOUS;
 
 	set_freezable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!kthread_should_stop()) {
 		if (try_to_freeze())
 			continue;
 		if (unlikely(vbd->size != vbd_sz(vbd)))
 			xen_vbd_resize(blkif);
 
-<<<<<<< HEAD
-		wait_event_interruptible(
-			blkif->wq,
-			blkif->waiting_reqs || kthread_should_stop());
-		wait_event_interruptible(
-			blkbk->pending_free_wq,
-			!list_empty(&blkbk->pending_free) ||
-			kthread_should_stop());
-
-		blkif->waiting_reqs = 0;
-		smp_mb(); /* clear flag *before* checking for work */
-
-		ret = do_block_io_op(blkif);
-		if (ret > 0)
-			blkif->waiting_reqs = 1;
-		if (ret == -EACCES)
-			wait_event_interruptible(blkif->shutdown_wq,
-						 kthread_should_stop());
-
-		if (log_stats && time_after(jiffies, blkif->st_print))
-			print_stats(blkif);
-	}
-
-	if (log_stats)
-		print_stats(blkif);
-
-	blkif->xenblkd = NULL;
-	xen_blkif_put(blkif);
-=======
 		timeout = msecs_to_jiffies(LRU_INTERVAL);
 
 		timeout = wait_event_interruptible_timeout(
@@ -840,52 +626,10 @@ purge_gnt_list:
 		print_stats(ring);
 
 	ring->xenblkd = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-struct seg_buf {
-	unsigned long buf;
-	unsigned int nsec;
-};
-/*
- * Unmap the grant references, and also remove the M2P over-rides
- * used in the 'pending_req'.
- */
-static void xen_blkbk_unmap(struct pending_req *req)
-{
-	struct gnttab_unmap_grant_ref unmap[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-	struct page *pages[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-	unsigned int i, invcount = 0;
-	grant_handle_t handle;
-	int ret;
-
-	for (i = 0; i < req->nr_pages; i++) {
-		handle = pending_handle(req, i);
-		if (handle == BLKBACK_INVALID_HANDLE)
-			continue;
-		gnttab_set_unmap_op(&unmap[invcount], vaddr(req, i),
-				    GNTMAP_host_map, handle);
-		pending_handle(req, i) = BLKBACK_INVALID_HANDLE;
-		pages[invcount] = virt_to_page(vaddr(req, i));
-		invcount++;
-	}
-
-	ret = gnttab_unmap_refs(unmap, NULL, pages, invcount);
-	BUG_ON(ret);
-}
-
-static int xen_blkbk_map(struct blkif_request *req,
-			 struct pending_req *pending_req,
-			 struct seg_buf seg[])
-{
-	struct gnttab_map_grant_ref map[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-	int i;
-	int nseg = req->u.rw.nr_segments;
-	int ret = 0;
-=======
 /*
  * Remove persistent grants and empty the pool of free pages
  */
@@ -1025,28 +769,12 @@ static int xen_blkbk_map(struct xen_blkif_ring *ring,
 	struct xen_blkif *blkif = ring->blkif;
 
 	use_persistent_gnts = (blkif->vbd.feature_gnt_persistent);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fill out preq.nr_sects with proper amount of sectors, and setup
 	 * assign map[..] with the PFN of the page in our domain with the
 	 * corresponding grant reference for each page.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < nseg; i++) {
-		uint32_t flags;
-
-		flags = GNTMAP_host_map;
-		if (pending_req->operation != BLKIF_OP_READ)
-			flags |= GNTMAP_readonly;
-		gnttab_set_map_op(&map[i], vaddr(pending_req, i), flags,
-				  req->u.rw.seg[i].gref,
-				  pending_req->blkif->domid);
-	}
-
-	ret = gnttab_map_refs(map, NULL, &blkbk->pending_page(pending_req, 0), nseg);
-	BUG_ON(ret);
-=======
 again:
 	for (i = map_until; i < num; i++) {
 		uint32_t flags;
@@ -1090,34 +818,12 @@ again:
 
 	if (segs_to_map)
 		ret = gnttab_map_refs(map, NULL, pages_to_gnt, segs_to_map);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now swizzle the MFN in our domain with the MFN from the other domain
 	 * so that when we access vaddr(pending_req,i) it has the contents of
 	 * the page from the other domain.
 	 */
-<<<<<<< HEAD
-	for (i = 0; i < nseg; i++) {
-		if (unlikely(map[i].status != 0)) {
-			pr_debug(DRV_PFX "invalid buffer -- could not remap it\n");
-			map[i].handle = BLKBACK_INVALID_HANDLE;
-			ret |= 1;
-		}
-
-		pending_handle(pending_req, i) = map[i].handle;
-
-		if (ret)
-			continue;
-
-		seg[i].buf  = map[i].dev_bus_addr |
-			(req->u.rw.seg[i].first_sect << 9);
-	}
-	return ret;
-}
-
-static int dispatch_discard_io(struct xen_blkif *blkif,
-=======
 	for (seg_idx = last_map, new_map_idx = 0; seg_idx < map_until; seg_idx++) {
 		if (!pages[seg_idx]->persistent_gnt) {
 			/* This is a newly mapped grant */
@@ -1258,18 +964,12 @@ unmap:
 }
 
 static int dispatch_discard_io(struct xen_blkif_ring *ring,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct blkif_request *req)
 {
 	int err = 0;
 	int status = BLKIF_RSP_OKAY;
-<<<<<<< HEAD
-	struct block_device *bdev = blkif->vbd.bdev;
-	unsigned long secure;
-=======
 	struct xen_blkif *blkif = ring->blkif;
 	struct block_device *bdev = file_bdev(blkif->vbd.bdev_file);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct phys_req preq;
 
 	xen_blkif_get(blkif);
@@ -1277,33 +977,13 @@ static int dispatch_discard_io(struct xen_blkif_ring *ring,
 	preq.sector_number = req->u.discard.sector_number;
 	preq.nr_sects      = req->u.discard.nr_sectors;
 
-<<<<<<< HEAD
-	err = xen_vbd_translate(&preq, blkif, WRITE);
-	if (err) {
-		pr_warn(DRV_PFX "access denied: DISCARD [%llu->%llu] on dev=%04x\n",
-=======
 	err = xen_vbd_translate(&preq, blkif, REQ_OP_WRITE);
 	if (err) {
 		pr_warn("access denied: DISCARD [%llu->%llu] on dev=%04x\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			preq.sector_number,
 			preq.sector_number + preq.nr_sects, blkif->vbd.pdevice);
 		goto fail_response;
 	}
-<<<<<<< HEAD
-	blkif->st_ds_req++;
-
-	secure = (blkif->vbd.discard_secure &&
-		 (req->u.discard.flag & BLKIF_DISCARD_SECURE)) ?
-		 BLKDEV_DISCARD_SECURE : 0;
-
-	err = blkdev_issue_discard(bdev, req->u.discard.sector_number,
-				   req->u.discard.nr_sectors,
-				   GFP_KERNEL, secure);
-fail_response:
-	if (err == -EOPNOTSUPP) {
-		pr_debug(DRV_PFX "discard op failed, not supported\n");
-=======
 	ring->st_ds_req++;
 
 	if (blkif->vbd.discard_secure &&
@@ -1318,48 +998,25 @@ fail_response:
 fail_response:
 	if (err == -EOPNOTSUPP) {
 		pr_debug("discard op failed, not supported\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = BLKIF_RSP_EOPNOTSUPP;
 	} else if (err)
 		status = BLKIF_RSP_ERROR;
 
-<<<<<<< HEAD
-	make_response(blkif, req->u.discard.id, req->operation, status);
-=======
 	make_response(ring, req->u.discard.id, req->operation, status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xen_blkif_put(blkif);
 	return err;
 }
 
-<<<<<<< HEAD
-static int dispatch_other_io(struct xen_blkif *blkif,
-			     struct blkif_request *req,
-			     struct pending_req *pending_req)
-{
-	free_req(pending_req);
-	make_response(blkif, req->u.other.id, req->operation,
-=======
 static int dispatch_other_io(struct xen_blkif_ring *ring,
 			     struct blkif_request *req,
 			     struct pending_req *pending_req)
 {
 	free_req(ring, pending_req);
 	make_response(ring, req->u.other.id, req->operation,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      BLKIF_RSP_EOPNOTSUPP);
 	return -EIO;
 }
 
-<<<<<<< HEAD
-static void xen_blk_drain_io(struct xen_blkif *blkif)
-{
-	atomic_set(&blkif->drain, 1);
-	do {
-		/* The initial value is one, and one refcnt taken at the
-		 * start of the xen_blkif_schedule thread. */
-		if (atomic_read(&blkif->refcnt) <= 2)
-=======
 static void xen_blk_drain_io(struct xen_blkif_ring *ring)
 {
 	struct xen_blkif *blkif = ring->blkif;
@@ -1367,7 +1024,6 @@ static void xen_blk_drain_io(struct xen_blkif_ring *ring)
 	atomic_set(&blkif->drain, 1);
 	do {
 		if (atomic_read(&ring->inflight) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		wait_for_completion_interruptible_timeout(
 				&blkif->drain_complete, HZ);
@@ -1378,27 +1034,6 @@ static void xen_blk_drain_io(struct xen_blkif_ring *ring)
 	atomic_set(&blkif->drain, 0);
 }
 
-<<<<<<< HEAD
-/*
- * Completion callback on the bio's. Called as bh->b_end_io()
- */
-
-static void __end_block_io_op(struct pending_req *pending_req, int error)
-{
-	/* An error fails the entire request. */
-	if ((pending_req->operation == BLKIF_OP_FLUSH_DISKCACHE) &&
-	    (error == -EOPNOTSUPP)) {
-		pr_debug(DRV_PFX "flush diskcache op failed, not supported\n");
-		xen_blkbk_flush_diskcache(XBT_NIL, pending_req->blkif->be, 0);
-		pending_req->status = BLKIF_RSP_EOPNOTSUPP;
-	} else if ((pending_req->operation == BLKIF_OP_WRITE_BARRIER) &&
-		    (error == -EOPNOTSUPP)) {
-		pr_debug(DRV_PFX "write barrier op failed, not supported\n");
-		xen_blkbk_barrier(XBT_NIL, pending_req->blkif->be, 0);
-		pending_req->status = BLKIF_RSP_EOPNOTSUPP;
-	} else if (error) {
-		pr_debug(DRV_PFX "Buffer not up-to-date at end of operation,"
-=======
 static void __end_block_io_op(struct pending_req *pending_req,
 		blk_status_t error)
 {
@@ -1415,7 +1050,6 @@ static void __end_block_io_op(struct pending_req *pending_req,
 		pending_req->status = BLKIF_RSP_EOPNOTSUPP;
 	} else if (error) {
 		pr_debug("Buffer not up-to-date at end of operation,"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 " error=%d\n", error);
 		pending_req->status = BLKIF_RSP_ERROR;
 	}
@@ -1425,36 +1059,13 @@ static void __end_block_io_op(struct pending_req *pending_req,
 	 * the grant references associated with 'request' and provide
 	 * the proper response on the ring.
 	 */
-<<<<<<< HEAD
-	if (atomic_dec_and_test(&pending_req->pendcnt)) {
-		xen_blkbk_unmap(pending_req);
-		make_response(pending_req->blkif, pending_req->id,
-			      pending_req->operation, pending_req->status);
-		xen_blkif_put(pending_req->blkif);
-		if (atomic_read(&pending_req->blkif->refcnt) <= 2) {
-			if (atomic_read(&pending_req->blkif->drain))
-				complete(&pending_req->blkif->drain_complete);
-		}
-		free_req(pending_req);
-	}
-=======
 	if (atomic_dec_and_test(&pending_req->pendcnt))
 		xen_blkbk_unmap_and_respond(pending_req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * bio callback.
  */
-<<<<<<< HEAD
-static void end_block_io_op(struct bio *bio, int error)
-{
-	__end_block_io_op(bio->bi_private, error);
-	bio_put(bio);
-}
-
-
-=======
 static void end_block_io_op(struct bio *bio)
 {
 	__end_block_io_op(bio->bi_private, bio->bi_status);
@@ -1566,7 +1177,6 @@ static void blkif_get_x86_64_req(struct blkif_request *dst,
 		break;
 	}
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function to copy the from the ring buffer the 'struct blkif_request'
@@ -1574,15 +1184,9 @@ static void blkif_get_x86_64_req(struct blkif_request *dst,
  * and transmute  it to the block API to hand it over to the proper block disk.
  */
 static int
-<<<<<<< HEAD
-__do_block_io_op(struct xen_blkif *blkif)
-{
-	union blkif_back_rings *blk_rings = &blkif->blk_rings;
-=======
 __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 {
 	union blkif_back_rings *blk_rings = &ring->blk_rings;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct blkif_request req;
 	struct pending_req *pending_req;
 	RING_IDX rc, rp;
@@ -1594,13 +1198,8 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 
 	if (RING_REQUEST_PROD_OVERFLOW(&blk_rings->common, rp)) {
 		rc = blk_rings->common.rsp_prod_pvt;
-<<<<<<< HEAD
-		pr_warn(DRV_PFX "Frontend provided bogus ring requests (%d - %d = %d). Halting ring processing on dev=%04x\n",
-			rp, rc, rp - rc, blkif->vbd.pdevice);
-=======
 		pr_warn("Frontend provided bogus ring requests (%d - %d = %d). Halting ring processing on dev=%04x\n",
 			rp, rc, rp - rc, ring->blkif->vbd.pdevice);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EACCES;
 	}
 	while (rc != rp) {
@@ -1608,35 +1207,22 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 		if (RING_REQUEST_CONS_OVERFLOW(&blk_rings->common, rc))
 			break;
 
-<<<<<<< HEAD
-=======
 		/* We've seen a request, so clear spurious eoi flag. */
 		*eoi_flags &= ~XEN_EOI_FLAG_SPURIOUS;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (kthread_should_stop()) {
 			more_to_do = 1;
 			break;
 		}
 
-<<<<<<< HEAD
-		pending_req = alloc_req();
-		if (NULL == pending_req) {
-			blkif->st_oo_req++;
-=======
 		pending_req = alloc_req(ring);
 		if (NULL == pending_req) {
 			ring->st_oo_req++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			more_to_do = 1;
 			break;
 		}
 
-<<<<<<< HEAD
-		switch (blkif->blk_protocol) {
-=======
 		switch (ring->blkif->blk_protocol) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case BLKIF_PROTOCOL_NATIVE:
 			memcpy(&req, RING_GET_REQUEST(&blk_rings->native, rc), sizeof(req));
 			break;
@@ -1659,18 +1245,6 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 		case BLKIF_OP_WRITE:
 		case BLKIF_OP_WRITE_BARRIER:
 		case BLKIF_OP_FLUSH_DISKCACHE:
-<<<<<<< HEAD
-			if (dispatch_rw_block_io(blkif, &req, pending_req))
-				goto done;
-			break;
-		case BLKIF_OP_DISCARD:
-			free_req(pending_req);
-			if (dispatch_discard_io(blkif, &req))
-				goto done;
-			break;
-		default:
-			if (dispatch_other_io(blkif, &req, pending_req))
-=======
 		case BLKIF_OP_INDIRECT:
 			if (dispatch_rw_block_io(ring, &req, pending_req))
 				goto done;
@@ -1682,7 +1256,6 @@ __do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 			break;
 		default:
 			if (dispatch_other_io(ring, &req, pending_req))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto done;
 			break;
 		}
@@ -1695,15 +1268,6 @@ done:
 }
 
 static int
-<<<<<<< HEAD
-do_block_io_op(struct xen_blkif *blkif)
-{
-	union blkif_back_rings *blk_rings = &blkif->blk_rings;
-	int more_to_do;
-
-	do {
-		more_to_do = __do_block_io_op(blkif);
-=======
 do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 {
 	union blkif_back_rings *blk_rings = &ring->blk_rings;
@@ -1711,7 +1275,6 @@ do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
 
 	do {
 		more_to_do = __do_block_io_op(ring, eoi_flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (more_to_do)
 			break;
 
@@ -1724,40 +1287,11 @@ do_block_io_op(struct xen_blkif_ring *ring, unsigned int *eoi_flags)
  * Transmutation of the 'struct blkif_request' to a proper 'struct bio'
  * and call the 'submit_bio' to pass it to the underlying storage.
  */
-<<<<<<< HEAD
-static int dispatch_rw_block_io(struct xen_blkif *blkif,
-=======
 static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct blkif_request *req,
 				struct pending_req *pending_req)
 {
 	struct phys_req preq;
-<<<<<<< HEAD
-	struct seg_buf seg[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-	unsigned int nseg;
-	struct bio *bio = NULL;
-	struct bio *biolist[BLKIF_MAX_SEGMENTS_PER_REQUEST];
-	int i, nbio = 0;
-	int operation;
-	struct blk_plug plug;
-	bool drain = false;
-
-	switch (req->operation) {
-	case BLKIF_OP_READ:
-		blkif->st_rd_req++;
-		operation = READ;
-		break;
-	case BLKIF_OP_WRITE:
-		blkif->st_wr_req++;
-		operation = WRITE_ODIRECT;
-		break;
-	case BLKIF_OP_WRITE_BARRIER:
-		drain = true;
-	case BLKIF_OP_FLUSH_DISKCACHE:
-		blkif->st_f_req++;
-		operation = WRITE_FLUSH;
-=======
 	struct seg_buf *seg = pending_req->seg;
 	unsigned int nseg;
 	struct bio *bio = NULL;
@@ -1797,7 +1331,6 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 		ring->st_f_req++;
 		operation = REQ_OP_WRITE;
 		operation_flags = REQ_PREFLUSH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		operation = 0; /* make gcc happy */
@@ -1806,14 +1339,6 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	}
 
 	/* Check that the number of segments is sane. */
-<<<<<<< HEAD
-	nseg = req->u.rw.nr_segments;
-
-	if (unlikely(nseg == 0 && operation != WRITE_FLUSH) ||
-	    unlikely(nseg > BLKIF_MAX_SEGMENTS_PER_REQUEST)) {
-		pr_debug(DRV_PFX "Bad number of segments in request (%d)\n",
-			 nseg);
-=======
 	nseg = req->operation == BLKIF_OP_INDIRECT ?
 	       req->u.indirect.nr_segments : req->u.rw.nr_segments;
 
@@ -1823,38 +1348,10 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	    unlikely((req->operation == BLKIF_OP_INDIRECT) &&
 		     (nseg > MAX_INDIRECT_SEGMENTS))) {
 		pr_debug("Bad number of segments in request (%d)\n", nseg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Haven't submitted any bio's yet. */
 		goto fail_response;
 	}
 
-<<<<<<< HEAD
-	preq.dev           = req->u.rw.handle;
-	preq.sector_number = req->u.rw.sector_number;
-	preq.nr_sects      = 0;
-
-	pending_req->blkif     = blkif;
-	pending_req->id        = req->u.rw.id;
-	pending_req->operation = req->operation;
-	pending_req->status    = BLKIF_RSP_OKAY;
-	pending_req->nr_pages  = nseg;
-
-	for (i = 0; i < nseg; i++) {
-		seg[i].nsec = req->u.rw.seg[i].last_sect -
-			req->u.rw.seg[i].first_sect + 1;
-		if ((req->u.rw.seg[i].last_sect >= (PAGE_SIZE >> 9)) ||
-		    (req->u.rw.seg[i].last_sect < req->u.rw.seg[i].first_sect))
-			goto fail_response;
-		preq.nr_sects += seg[i].nsec;
-
-	}
-
-	if (xen_vbd_translate(&preq, blkif, operation) != 0) {
-		pr_debug(DRV_PFX "access denied: %s of [%llu,%llu] on dev=%04x\n",
-			 operation == READ ? "read" : "write",
-			 preq.sector_number,
-			 preq.sector_number + preq.nr_sects, preq.dev);
-=======
 	preq.nr_sects      = 0;
 
 	pending_req->ring      = ring;
@@ -1890,7 +1387,6 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 			 preq.sector_number,
 			 preq.sector_number + preq.nr_sects,
 			 ring->blkif->vbd.pdevice);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_response;
 	}
 
@@ -1901,29 +1397,17 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	for (i = 0; i < nseg; i++) {
 		if (((int)preq.sector_number|(int)seg[i].nsec) &
 		    ((bdev_logical_block_size(preq.bdev) >> 9) - 1)) {
-<<<<<<< HEAD
-			pr_debug(DRV_PFX "Misaligned I/O request from domain %d",
-				 blkif->domid);
-=======
 			pr_debug("Misaligned I/O request from domain %d\n",
 				 ring->blkif->domid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail_response;
 		}
 	}
 
 	/* Wait on all outstanding I/O's and once that has been completed
-<<<<<<< HEAD
-	 * issue the WRITE_FLUSH.
-	 */
-	if (drain)
-		xen_blk_drain_io(pending_req->blkif);
-=======
 	 * issue the flush.
 	 */
 	if (drain)
 		xen_blk_drain_io(pending_req->ring);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we have failed at this point, we need to undo the M2P override,
@@ -1931,42 +1415,19 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	 * the hypercall to unmap the grants - that is all done in
 	 * xen_blkbk_unmap.
 	 */
-<<<<<<< HEAD
-	if (xen_blkbk_map(req, pending_req, seg))
-=======
 	if (xen_blkbk_map_seg(pending_req))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_flush;
 
 	/*
 	 * This corresponding xen_blkif_put is done in __end_block_io_op, or
 	 * below (in "!bio") if we are handling a BLKIF_OP_DISCARD.
 	 */
-<<<<<<< HEAD
-	xen_blkif_get(blkif);
-=======
 	xen_blkif_get(ring->blkif);
 	atomic_inc(&ring->inflight);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < nseg; i++) {
 		while ((bio == NULL) ||
 		       (bio_add_page(bio,
-<<<<<<< HEAD
-				     blkbk->pending_page(pending_req, i),
-				     seg[i].nsec << 9,
-				     seg[i].buf & ~PAGE_MASK) == 0)) {
-
-			bio = bio_alloc(GFP_KERNEL, nseg-i);
-			if (unlikely(bio == NULL))
-				goto fail_put_bio;
-
-			biolist[nbio++] = bio;
-			bio->bi_bdev    = preq.bdev;
-			bio->bi_private = pending_req;
-			bio->bi_end_io  = end_block_io_op;
-			bio->bi_sector  = preq.sector_number;
-=======
 				     pages[i]->page,
 				     seg[i].nsec << 9,
 				     seg[i].offset) == 0)) {
@@ -1977,7 +1438,6 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 			bio->bi_private = pending_req;
 			bio->bi_end_io  = end_block_io_op;
 			bio->bi_iter.bi_sector  = preq.sector_number;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		preq.sector_number += seg[i].nsec;
@@ -1985,22 +1445,11 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 
 	/* This will be hit if the operation was a flush or discard. */
 	if (!bio) {
-<<<<<<< HEAD
-		BUG_ON(operation != WRITE_FLUSH);
-
-		bio = bio_alloc(GFP_KERNEL, 0);
-		if (unlikely(bio == NULL))
-			goto fail_put_bio;
-
-		biolist[nbio++] = bio;
-		bio->bi_bdev    = preq.bdev;
-=======
 		BUG_ON(operation_flags != REQ_PREFLUSH);
 
 		bio = bio_alloc(preq.bdev, 0, operation | operation_flags,
 				GFP_KERNEL);
 		biolist[nbio++] = bio;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bio->bi_private = pending_req;
 		bio->bi_end_io  = end_block_io_op;
 	}
@@ -2009,52 +1458,25 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 	blk_start_plug(&plug);
 
 	for (i = 0; i < nbio; i++)
-<<<<<<< HEAD
-		submit_bio(operation, biolist[i]);
-=======
 		submit_bio(biolist[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Let the I/Os go.. */
 	blk_finish_plug(&plug);
 
-<<<<<<< HEAD
-	if (operation == READ)
-		blkif->st_rd_sect += preq.nr_sects;
-	else if (operation & WRITE)
-		blkif->st_wr_sect += preq.nr_sects;
-=======
 	if (operation == REQ_OP_READ)
 		ring->st_rd_sect += preq.nr_sects;
 	else if (operation == REQ_OP_WRITE)
 		ring->st_wr_sect += preq.nr_sects;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  fail_flush:
-<<<<<<< HEAD
-	xen_blkbk_unmap(pending_req);
- fail_response:
-	/* Haven't submitted any bio's yet. */
-	make_response(blkif, req->u.rw.id, req->operation, BLKIF_RSP_ERROR);
-	free_req(pending_req);
-	msleep(1); /* back off a bit */
-	return -EIO;
-
- fail_put_bio:
-	for (i = 0; i < nbio; i++)
-		bio_put(biolist[i]);
-	atomic_set(&pending_req->pendcnt, 1);
-	__end_block_io_op(pending_req, -EINVAL);
-=======
 	xen_blkbk_unmap(ring, pending_req->segments,
 	                pending_req->nr_segs);
  fail_response:
 	/* Haven't submitted any bio's yet. */
 	make_response(ring, req->u.rw.id, req_operation, BLKIF_RSP_ERROR);
 	free_req(ring, pending_req);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msleep(1); /* back off a bit */
 	return -EIO;
 }
@@ -2064,34 +1486,6 @@ static int dispatch_rw_block_io(struct xen_blkif_ring *ring,
 /*
  * Put a response on the ring on how the operation fared.
  */
-<<<<<<< HEAD
-static void make_response(struct xen_blkif *blkif, u64 id,
-			  unsigned short op, int st)
-{
-	struct blkif_response  resp;
-	unsigned long     flags;
-	union blkif_back_rings *blk_rings = &blkif->blk_rings;
-	int notify;
-
-	resp.id        = id;
-	resp.operation = op;
-	resp.status    = st;
-
-	spin_lock_irqsave(&blkif->blk_ring_lock, flags);
-	/* Place on the response ring for the relevant domain. */
-	switch (blkif->blk_protocol) {
-	case BLKIF_PROTOCOL_NATIVE:
-		memcpy(RING_GET_RESPONSE(&blk_rings->native, blk_rings->native.rsp_prod_pvt),
-		       &resp, sizeof(resp));
-		break;
-	case BLKIF_PROTOCOL_X86_32:
-		memcpy(RING_GET_RESPONSE(&blk_rings->x86_32, blk_rings->x86_32.rsp_prod_pvt),
-		       &resp, sizeof(resp));
-		break;
-	case BLKIF_PROTOCOL_X86_64:
-		memcpy(RING_GET_RESPONSE(&blk_rings->x86_64, blk_rings->x86_64.rsp_prod_pvt),
-		       &resp, sizeof(resp));
-=======
 static void make_response(struct xen_blkif_ring *ring, u64 id,
 			  unsigned short op, int st)
 {
@@ -2115,18 +1509,10 @@ static void make_response(struct xen_blkif_ring *ring, u64 id,
 	case BLKIF_PROTOCOL_X86_64:
 		resp = RING_GET_RESPONSE(&blk_rings->x86_64,
 					 blk_rings->x86_64.rsp_prod_pvt);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
 	}
-<<<<<<< HEAD
-	blk_rings->common.rsp_prod_pvt++;
-	RING_PUSH_RESPONSES_AND_CHECK_NOTIFY(&blk_rings->common, notify);
-	spin_unlock_irqrestore(&blkif->blk_ring_lock, flags);
-	if (notify)
-		notify_remote_via_irq(blkif->irq);
-=======
 
 	resp->id        = id;
 	resp->operation = op;
@@ -2137,51 +1523,15 @@ static void make_response(struct xen_blkif_ring *ring, u64 id,
 	spin_unlock_irqrestore(&ring->blk_ring_lock, flags);
 	if (notify)
 		notify_remote_via_irq(ring->irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init xen_blkif_init(void)
 {
-<<<<<<< HEAD
-	int i, mmap_pages;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	if (!xen_domain())
 		return -ENODEV;
 
-<<<<<<< HEAD
-	blkbk = kzalloc(sizeof(struct xen_blkbk), GFP_KERNEL);
-	if (!blkbk) {
-		pr_alert(DRV_PFX "%s: out of memory!\n", __func__);
-		return -ENOMEM;
-	}
-
-	mmap_pages = xen_blkif_reqs * BLKIF_MAX_SEGMENTS_PER_REQUEST;
-
-	blkbk->pending_reqs          = kzalloc(sizeof(blkbk->pending_reqs[0]) *
-					xen_blkif_reqs, GFP_KERNEL);
-	blkbk->pending_grant_handles = kmalloc(sizeof(blkbk->pending_grant_handles[0]) *
-					mmap_pages, GFP_KERNEL);
-	blkbk->pending_pages         = kzalloc(sizeof(blkbk->pending_pages[0]) *
-					mmap_pages, GFP_KERNEL);
-
-	if (!blkbk->pending_reqs || !blkbk->pending_grant_handles ||
-	    !blkbk->pending_pages) {
-		rc = -ENOMEM;
-		goto out_of_memory;
-	}
-
-	for (i = 0; i < mmap_pages; i++) {
-		blkbk->pending_grant_handles[i] = BLKBACK_INVALID_HANDLE;
-		blkbk->pending_pages[i] = alloc_page(GFP_KERNEL);
-		if (blkbk->pending_pages[i] == NULL) {
-			rc = -ENOMEM;
-			goto out_of_memory;
-		}
-	}
-=======
 	if (xen_blkif_max_ring_order > XENBUS_MAX_RING_GRANT_ORDER) {
 		pr_info("Invalid max_ring_order (%d), will use default max: %d.\n",
 			xen_blkif_max_ring_order, XENBUS_MAX_RING_GRANT_ORDER);
@@ -2191,53 +1541,20 @@ static int __init xen_blkif_init(void)
 	if (xenblk_max_queues == 0)
 		xenblk_max_queues = num_online_cpus();
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = xen_blkif_interface_init();
 	if (rc)
 		goto failed_init;
 
-<<<<<<< HEAD
-	INIT_LIST_HEAD(&blkbk->pending_free);
-	spin_lock_init(&blkbk->pending_free_lock);
-	init_waitqueue_head(&blkbk->pending_free_wq);
-
-	for (i = 0; i < xen_blkif_reqs; i++)
-		list_add_tail(&blkbk->pending_reqs[i].free_list,
-			      &blkbk->pending_free);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = xen_blkif_xenbus_init();
 	if (rc)
 		goto failed_init;
 
-<<<<<<< HEAD
-	return 0;
-
- out_of_memory:
-	pr_alert(DRV_PFX "%s: out of memory\n", __func__);
  failed_init:
-	kfree(blkbk->pending_reqs);
-	kfree(blkbk->pending_grant_handles);
-	if (blkbk->pending_pages) {
-		for (i = 0; i < mmap_pages; i++) {
-			if (blkbk->pending_pages[i])
-				__free_page(blkbk->pending_pages[i]);
-		}
-		kfree(blkbk->pending_pages);
-	}
-	kfree(blkbk);
-	blkbk = NULL;
-=======
- failed_init:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 module_init(xen_blkif_init);
 
-<<<<<<< HEAD
-=======
 static void __exit xen_blkif_fini(void)
 {
 	xen_blkif_xenbus_fini();
@@ -2246,6 +1563,5 @@ static void __exit xen_blkif_fini(void)
 
 module_exit(xen_blkif_fini);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_ALIAS("xen-backend:vbd");

@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 
 asflags-y := -ansi
-<<<<<<< HEAD
-ccflags-y := -Werror
-
-extra-y     := head_$(BITS).o
-extra-y     += init_task.o
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Undefine sparc when processing vmlinux.lds - it is used
 # And teach CPP we are doing $(BITS) builds (for this case)
@@ -29,11 +19,8 @@ CFLAGS_REMOVE_perf_event.o := -pg
 CFLAGS_REMOVE_pcr.o := -pg
 endif
 
-<<<<<<< HEAD
-=======
 obj-y                   := head_$(BITS).o
 obj-$(CONFIG_SPARC64)   += urtt_fill.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SPARC32)   += entry.o wof.o wuf.o
 obj-$(CONFIG_SPARC32)   += etrap_32.o
 obj-$(CONFIG_SPARC32)   += rtrap_32.o
@@ -41,16 +28,10 @@ obj-y                   += traps_$(BITS).o
 
 # IRQ
 obj-y                   += irq_$(BITS).o
-<<<<<<< HEAD
-obj-$(CONFIG_SPARC32)   += sun4m_irq.o sun4c_irq.o sun4d_irq.o
-
-obj-y                   += process_$(BITS).o
-=======
 obj-$(CONFIG_SPARC32)   += sun4m_irq.o sun4d_irq.o
 
 obj-y                   += process_$(BITS).o
 obj-y                   += process.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-y                   += signal_$(BITS).o
 obj-y                   += sigutil_$(BITS).o
 obj-$(CONFIG_SPARC32)   += ioport.o
@@ -61,41 +42,23 @@ obj-$(CONFIG_SPARC32)   += systbls_32.o
 obj-y                   += time_$(BITS).o
 obj-$(CONFIG_SPARC32)   += windows.o
 obj-y                   += cpu.o
-<<<<<<< HEAD
-obj-$(CONFIG_SPARC32)   += devices.o
-obj-$(CONFIG_SPARC32)   += tadpole.o
-obj-y                   += ptrace_$(BITS).o
-obj-y                   += unaligned_$(BITS).o
-obj-y                   += una_asm_$(BITS).o
-obj-$(CONFIG_SPARC32)   += muldiv.o
-=======
 obj-$(CONFIG_SPARC64)	+= vdso.o
 obj-$(CONFIG_SPARC32)   += devices.o
 obj-y                   += ptrace_$(BITS).o
 obj-y                   += unaligned_$(BITS).o
 obj-y                   += una_asm_$(BITS).o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-y                   += prom_common.o
 obj-y                   += prom_$(BITS).o
 obj-y                   += of_device_common.o
 obj-y                   += of_device_$(BITS).o
 obj-$(CONFIG_SPARC64)   += prom_irqtrans.o
 
-<<<<<<< HEAD
-obj-$(CONFIG_SPARC_LEON)+= leon_kernel.o
-obj-$(CONFIG_SPARC_LEON)+= leon_pmc.o
-
-obj-$(CONFIG_SPARC64)   += reboot.o
-obj-$(CONFIG_SPARC64)   += sysfs.o
-obj-$(CONFIG_SPARC64)   += iommu.o
-=======
 obj-$(CONFIG_SPARC32)   += leon_kernel.o
 obj-$(CONFIG_SPARC32)   += leon_pmc.o
 
 obj-$(CONFIG_SPARC64)   += reboot.o
 obj-$(CONFIG_SPARC64)   += sysfs.o
 obj-$(CONFIG_SPARC64)   += iommu.o iommu-common.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SPARC64)   += central.o
 obj-$(CONFIG_SPARC64)   += starfire.o
 obj-$(CONFIG_SPARC64)   += power.o
@@ -105,26 +68,15 @@ obj-$(CONFIG_SPARC64)   += visemul.o
 obj-$(CONFIG_SPARC64)   += hvapi.o
 obj-$(CONFIG_SPARC64)   += sstate.o
 obj-$(CONFIG_SPARC64)   += mdesc.o
-<<<<<<< HEAD
-=======
 obj-$(CONFIG_SPARC64)   += adi_64.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_SPARC64)	+= pcr.o
 obj-$(CONFIG_SPARC64)	+= nmi.o
 obj-$(CONFIG_SPARC64_SMP) += cpumap.o
 
-<<<<<<< HEAD
-obj-y                     += dma.o
-
-obj-$(CONFIG_PCIC_PCI)    += pcic.o
-obj-$(CONFIG_LEON_PCI)    += leon_pci.o
-obj-$(CONFIG_GRPCI2)      += leon_pci_grpci2.o
-=======
 obj-$(CONFIG_PCIC_PCI)    += pcic.o
 obj-$(CONFIG_LEON_PCI)    += leon_pci.o
 obj-$(CONFIG_SPARC_GRPCI2)+= leon_pci_grpci2.o
 obj-$(CONFIG_SPARC_GRPCI1)+= leon_pci_grpci1.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_SMP)         += trampoline_$(BITS).o smp_$(BITS).o
 obj-$(CONFIG_SPARC32_SMP) += sun4m_smp.o sun4d_smp.o leon_smp.o
@@ -133,14 +85,6 @@ obj-$(CONFIG_SPARC64_SMP) += hvtramp.o
 obj-y                     += auxio_$(BITS).o
 obj-$(CONFIG_SUN_PM)      += apc.o pmc.o
 
-<<<<<<< HEAD
-obj-$(CONFIG_MODULES)     += module.o
-obj-$(CONFIG_MODULES)     += sparc_ksyms_$(BITS).o
-obj-$(CONFIG_SPARC_LED)   += led.o
-obj-$(CONFIG_KGDB)        += kgdb_$(BITS).o
-
-
-=======
 obj-y                     += termios.o
 
 obj-$(CONFIG_MODULES)     += module.o
@@ -148,7 +92,6 @@ obj-$(CONFIG_MODULES)     += sparc_ksyms.o
 obj-$(CONFIG_SPARC_LED)   += led.o
 obj-$(CONFIG_KGDB)        += kgdb_$(BITS).o
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_DYNAMIC_FTRACE) += ftrace.o
 obj-$(CONFIG_FUNCTION_GRAPH_TRACER) += ftrace.o
 
@@ -158,21 +101,11 @@ obj-$(CONFIG_STACKTRACE)     += stacktrace.o
 obj-$(CONFIG_SPARC64_PCI)    += pci.o pci_common.o psycho_common.o
 obj-$(CONFIG_SPARC64_PCI)    += pci_psycho.o pci_sabre.o pci_schizo.o
 obj-$(CONFIG_SPARC64_PCI)    += pci_sun4v.o pci_sun4v_asm.o pci_fire.o
-<<<<<<< HEAD
-obj-$(CONFIG_PCI_MSI)        += pci_msi.o
-
-obj-$(CONFIG_COMPAT)         += sys32.o sys_sparc32.o signal32.o
-
-# sparc64 cpufreq
-obj-$(CONFIG_US3_FREQ)  += us3_cpufreq.o
-obj-$(CONFIG_US2E_FREQ) += us2e_cpufreq.o
-=======
 obj-$(CONFIG_SPARC64_PCI_MSI) += pci_msi.o
 
 
 obj-$(CONFIG_COMPAT)         += sys32.o sys_sparc32.o signal32.o
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_US3_MC)    += chmc.o
 
 obj-$(CONFIG_KPROBES)   += kprobes.o
@@ -185,9 +118,5 @@ obj-$(CONFIG_COMPAT)    += $(audit--y)
 pc--$(CONFIG_PERF_EVENTS) := perf_event.o
 obj-$(CONFIG_SPARC64)	+= $(pc--y)
 
-<<<<<<< HEAD
-obj-$(CONFIG_SPARC64)	+= jump_label.o
-=======
 obj-$(CONFIG_UPROBES)	+= uprobes.o
 obj-$(CONFIG_JUMP_LABEL) += jump_label.o
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

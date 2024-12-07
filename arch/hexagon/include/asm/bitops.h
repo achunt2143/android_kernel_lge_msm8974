@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bit operations for the Hexagon architecture
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
-<<<<<<< HEAD
- *
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_BITOPS_H
@@ -32,19 +11,10 @@
 #include <linux/compiler.h>
 #include <asm/byteorder.h>
 #include <asm/atomic.h>
-<<<<<<< HEAD
-
-#ifdef __KERNEL__
-
-#define smp_mb__before_clear_bit()	barrier()
-#define smp_mb__after_clear_bit()	barrier()
-
-=======
 #include <asm/barrier.h>
 
 #ifdef __KERNEL__
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The offset calculations for these are based on BITS_PER_LONG == 32
  * (i.e. I get to shift by #5-2 (32 bits per long, 4 bytes per access),
@@ -68,11 +38,7 @@ static inline int test_and_clear_bit(int nr, volatile void *addr)
 	"1:	R12 = memw_locked(R10);\n"
 	"	{ P0 = tstbit(R12,R11); R12 = clrbit(R12,R11); }\n"
 	"	memw_locked(R10,P1) = R12;\n"
-<<<<<<< HEAD
-	"	{if !P1 jump 1b; %0 = mux(P0,#1,#0);}\n"
-=======
 	"	{if (!P1) jump 1b; %0 = mux(P0,#1,#0);}\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=&r" (oldval)
 	: "r" (addr), "r" (nr)
 	: "r10", "r11", "r12", "p0", "p1", "memory"
@@ -96,11 +62,7 @@ static inline int test_and_set_bit(int nr, volatile void *addr)
 	"1:	R12 = memw_locked(R10);\n"
 	"	{ P0 = tstbit(R12,R11); R12 = setbit(R12,R11); }\n"
 	"	memw_locked(R10,P1) = R12;\n"
-<<<<<<< HEAD
-	"	{if !P1 jump 1b; %0 = mux(P0,#1,#0);}\n"
-=======
 	"	{if (!P1) jump 1b; %0 = mux(P0,#1,#0);}\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=&r" (oldval)
 	: "r" (addr), "r" (nr)
 	: "r10", "r11", "r12", "p0", "p1", "memory"
@@ -126,11 +88,7 @@ static inline int test_and_change_bit(int nr, volatile void *addr)
 	"1:	R12 = memw_locked(R10);\n"
 	"	{ P0 = tstbit(R12,R11); R12 = togglebit(R12,R11); }\n"
 	"	memw_locked(R10,P1) = R12;\n"
-<<<<<<< HEAD
-	"	{if !P1 jump 1b; %0 = mux(P0,#1,#0);}\n"
-=======
 	"	{if (!P1) jump 1b; %0 = mux(P0,#1,#0);}\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=&r" (oldval)
 	: "r" (addr), "r" (nr)
 	: "r10", "r11", "r12", "p0", "p1", "memory"
@@ -169,73 +127,45 @@ static inline void change_bit(int nr, volatile void *addr)
  * be atomic, particularly for things like slab_lock and slab_unlock.
  *
  */
-<<<<<<< HEAD
-static inline void __clear_bit(int nr, volatile unsigned long *addr)
-=======
 static __always_inline void
 arch___clear_bit(unsigned long nr, volatile unsigned long *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	test_and_clear_bit(nr, addr);
 }
 
-<<<<<<< HEAD
-static inline void __set_bit(int nr, volatile unsigned long *addr)
-=======
 static __always_inline void
 arch___set_bit(unsigned long nr, volatile unsigned long *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	test_and_set_bit(nr, addr);
 }
 
-<<<<<<< HEAD
-static inline void __change_bit(int nr, volatile unsigned long *addr)
-=======
 static __always_inline void
 arch___change_bit(unsigned long nr, volatile unsigned long *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	test_and_change_bit(nr, addr);
 }
 
 /*  Apparently, at least some of these are allowed to be non-atomic  */
-<<<<<<< HEAD
-static inline int __test_and_clear_bit(int nr, volatile unsigned long *addr)
-=======
 static __always_inline bool
 arch___test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return test_and_clear_bit(nr, addr);
 }
 
-<<<<<<< HEAD
-static inline int __test_and_set_bit(int nr, volatile unsigned long *addr)
-=======
 static __always_inline bool
 arch___test_and_set_bit(unsigned long nr, volatile unsigned long *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return test_and_set_bit(nr, addr);
 }
 
-<<<<<<< HEAD
-static inline int __test_and_change_bit(int nr, volatile unsigned long *addr)
-=======
 static __always_inline bool
 arch___test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return test_and_change_bit(nr, addr);
 }
 
-<<<<<<< HEAD
-static inline int __test_bit(int nr, const volatile unsigned long *addr)
-=======
 static __always_inline bool
 arch_test_bit(unsigned long nr, const volatile unsigned long *addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 
@@ -249,9 +179,6 @@ arch_test_bit(unsigned long nr, const volatile unsigned long *addr)
 	return retval;
 }
 
-<<<<<<< HEAD
-#define test_bit(nr, addr) __test_bit(nr, addr)
-=======
 static __always_inline bool
 arch_test_bit_acquire(unsigned long nr, const volatile unsigned long *addr)
 {
@@ -266,7 +193,6 @@ arch_test_bit_acquire(unsigned long nr, const volatile unsigned long *addr)
 
 	return retval;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ffz - find first zero in word.
@@ -291,11 +217,7 @@ static inline long ffz(int x)
  * This is defined the same way as ffs.
  * Note fls(0) = 0, fls(1) = 1, fls(0x80000000) = 32.
  */
-<<<<<<< HEAD
-static inline long fls(int x)
-=======
 static inline int fls(unsigned int x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 
@@ -316,20 +238,12 @@ static inline int fls(unsigned int x)
  * the libc and compiler builtin ffs routines, therefore
  * differs in spirit from the above ffz (man ffs).
  */
-<<<<<<< HEAD
-static inline long ffs(int x)
-=======
 static inline int ffs(int x)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 
 	asm("{ P0 = cmp.eq(%1,#0); %0 = ct0(%1);}\n"
-<<<<<<< HEAD
-		"{ if P0 %0 = #0; if !P0 %0 = add(%0,#1);}\n"
-=======
 		"{ if (P0) %0 = #0; if (!P0) %0 = add(%0,#1);}\n"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=&r" (r)
 		: "r" (x)
 		: "p0");
@@ -377,11 +291,7 @@ static inline unsigned long __fls(unsigned long word)
 }
 
 #include <asm-generic/bitops/lock.h>
-<<<<<<< HEAD
-#include <asm-generic/bitops/find.h>
-=======
 #include <asm-generic/bitops/non-instrumented-non-atomic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm-generic/bitops/fls64.h>
 #include <asm-generic/bitops/sched.h>

@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-/*
- *  linux/drivers/acorn/char/i2c.c
- *
- *  Copyright (C) 2000 Russell King
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- *  ARM IOC/IOMD i2c driver.
- *
- *  On Acorn machines, the following i2c devices are on the bus:
- *	- PCF8583 real time clock & static RAM
- */
-#include <linux/init.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  *  ARM IOC/IOMD i2c driver.
@@ -25,7 +8,6 @@
  *	- PCF8583 real time clock & static RAM
  */
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/i2c-algo-bit.h>
 #include <linux/io.h>
@@ -96,10 +78,7 @@ static struct i2c_algo_bit_data ioc_data = {
 
 static struct i2c_adapter ioc_ops = {
 	.nr			= 0,
-<<<<<<< HEAD
-=======
 	.name			= "ioc",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.algo_data		= &ioc_data,
 };
 
@@ -111,10 +90,7 @@ static int __init i2c_ioc_init(void)
 }
 
 module_init(i2c_ioc_init);
-<<<<<<< HEAD
-=======
 
 MODULE_AUTHOR("Russell King <linux@armlinux.org.uk>");
 MODULE_DESCRIPTION("ARM IOC/IOMD i2c driver");
 MODULE_LICENSE("GPL v2");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

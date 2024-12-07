@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/nfs/callback_xdr.c
  *
@@ -20,16 +17,6 @@
 #include "nfs4_fs.h"
 #include "callback.h"
 #include "internal.h"
-<<<<<<< HEAD
-
-#define CB_OP_TAGLEN_MAXSZ	(512)
-#define CB_OP_HDR_RES_MAXSZ	(2 + CB_OP_TAGLEN_MAXSZ)
-#define CB_OP_GETATTR_BITMAP_MAXSZ	(4)
-#define CB_OP_GETATTR_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ + \
-				CB_OP_GETATTR_BITMAP_MAXSZ + \
-				2 + 2 + 3 + 3)
-#define CB_OP_RECALL_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
-=======
 #include "nfs4session.h"
 #include "nfs4trace.h"
 
@@ -41,18 +28,11 @@
 					 /* change, size, ctime, mtime */\
 					 (2 + 2 + 3 + 3) * 4)
 #define CB_OP_RECALL_RES_MAXSZ		(CB_OP_HDR_RES_MAXSZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_NFS_V4_1)
 #define CB_OP_LAYOUTRECALL_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
 #define CB_OP_DEVICENOTIFY_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
 #define CB_OP_SEQUENCE_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ + \
-<<<<<<< HEAD
-					4 + 1 + 3)
-#define CB_OP_RECALLANY_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
-#define CB_OP_RECALLSLOT_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
-#endif /* CONFIG_NFS_V4_1 */
-=======
 					 NFS4_MAX_SESSIONID_LEN + \
 					 (1 + 3) * 4) // seqid, 3 slotids
 #define CB_OP_RECALLANY_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
@@ -62,84 +42,27 @@
 #ifdef CONFIG_NFS_V4_2
 #define CB_OP_OFFLOAD_RES_MAXSZ		(CB_OP_HDR_RES_MAXSZ)
 #endif /* CONFIG_NFS_V4_2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSDBG_FACILITY NFSDBG_CALLBACK
 
 /* Internal error code */
 #define NFS4ERR_RESOURCE_HDR	11050
 
-<<<<<<< HEAD
-typedef __be32 (*callback_process_op_t)(void *, void *,
-					struct cb_process_state *);
-typedef __be32 (*callback_decode_arg_t)(struct svc_rqst *, struct xdr_stream *, void *);
-typedef __be32 (*callback_encode_res_t)(struct svc_rqst *, struct xdr_stream *, void *);
-
-
-struct callback_op {
-	callback_process_op_t process_op;
-	callback_decode_arg_t decode_args;
-	callback_encode_res_t encode_res;
-=======
 struct callback_op {
 	__be32 (*process_op)(void *, void *, struct cb_process_state *);
 	__be32 (*decode_args)(struct svc_rqst *, struct xdr_stream *, void *);
 	__be32 (*encode_res)(struct svc_rqst *, struct xdr_stream *,
 			const void *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long res_maxsize;
 };
 
 static struct callback_op callback_ops[];
 
-<<<<<<< HEAD
-static __be32 nfs4_callback_null(struct svc_rqst *rqstp, void *argp, void *resp)
-=======
 static __be32 nfs4_callback_null(struct svc_rqst *rqstp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return htonl(NFS4_OK);
 }
 
-<<<<<<< HEAD
-static int nfs4_decode_void(struct svc_rqst *rqstp, __be32 *p, void *dummy)
-{
-	return xdr_argsize_check(rqstp, p);
-}
-
-static int nfs4_encode_void(struct svc_rqst *rqstp, __be32 *p, void *dummy)
-{
-	return xdr_ressize_check(rqstp, p);
-}
-
-static __be32 *read_buf(struct xdr_stream *xdr, int nbytes)
-{
-	__be32 *p;
-
-	p = xdr_inline_decode(xdr, nbytes);
-	if (unlikely(p == NULL))
-		printk(KERN_WARNING "NFS: NFSv4 callback reply buffer overflowed!\n");
-	return p;
-}
-
-static __be32 decode_string(struct xdr_stream *xdr, unsigned int *len, const char **str)
-{
-	__be32 *p;
-
-	p = read_buf(xdr, 4);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_RESOURCE);
-	*len = ntohl(*p);
-
-	if (*len != 0) {
-		p = read_buf(xdr, *len);
-		if (unlikely(p == NULL))
-			return htonl(NFS4ERR_RESOURCE);
-		*str = (const char *)p;
-	} else
-		*str = NULL;
-
-=======
 /*
  * svc_process_common() looks for an XDR encoder to know when
  * not to drop a Reply.
@@ -158,7 +81,6 @@ static __be32 decode_string(struct xdr_stream *xdr, unsigned int *len,
 	if (err < 0)
 		return cpu_to_be32(NFS4ERR_RESOURCE);
 	*len = err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -166,21 +88,13 @@ static __be32 decode_fh(struct xdr_stream *xdr, struct nfs_fh *fh)
 {
 	__be32 *p;
 
-<<<<<<< HEAD
-	p = read_buf(xdr, 4);
-=======
 	p = xdr_inline_decode(xdr, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
 	fh->size = ntohl(*p);
 	if (fh->size > NFS4_FHSIZE)
 		return htonl(NFS4ERR_BADHANDLE);
-<<<<<<< HEAD
-	p = read_buf(xdr, fh->size);
-=======
 	p = xdr_inline_decode(xdr, fh->size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
 	memcpy(&fh->data[0], p, fh->size);
@@ -193,19 +107,11 @@ static __be32 decode_bitmap(struct xdr_stream *xdr, uint32_t *bitmap)
 	__be32 *p;
 	unsigned int attrlen;
 
-<<<<<<< HEAD
-	p = read_buf(xdr, 4);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_RESOURCE);
-	attrlen = ntohl(*p);
-	p = read_buf(xdr, attrlen << 2);
-=======
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
 	attrlen = ntohl(*p);
 	p = xdr_inline_decode(xdr, attrlen << 2);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
 	if (likely(attrlen > 0))
@@ -219,15 +125,6 @@ static __be32 decode_stateid(struct xdr_stream *xdr, nfs4_stateid *stateid)
 {
 	__be32 *p;
 
-<<<<<<< HEAD
-	p = read_buf(xdr, NFS4_STATEID_SIZE);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_RESOURCE);
-	memcpy(stateid, p, NFS4_STATEID_SIZE);
-	return 0;
-}
-
-=======
 	p = xdr_inline_decode(xdr, NFS4_STATEID_SIZE);
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
@@ -241,30 +138,11 @@ static __be32 decode_delegation_stateid(struct xdr_stream *xdr, nfs4_stateid *st
 	return decode_stateid(xdr, stateid);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __be32 decode_compound_hdr_arg(struct xdr_stream *xdr, struct cb_compound_hdr_arg *hdr)
 {
 	__be32 *p;
 	__be32 status;
 
-<<<<<<< HEAD
-	status = decode_string(xdr, &hdr->taglen, &hdr->tag);
-	if (unlikely(status != 0))
-		return status;
-	/* We do not like overly long tags! */
-	if (hdr->taglen > CB_OP_TAGLEN_MAXSZ - 12) {
-		printk("NFS: NFSv4 CALLBACK %s: client sent tag of length %u\n",
-				__func__, hdr->taglen);
-		return htonl(NFS4ERR_RESOURCE);
-	}
-	p = read_buf(xdr, 12);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_RESOURCE);
-	hdr->minorversion = ntohl(*p++);
-	/* Check minor version is zero or one. */
-	if (hdr->minorversion <= 1) {
-		hdr->cb_ident = ntohl(*p++); /* ignored by v4.1 */
-=======
 	status = decode_string(xdr, &hdr->taglen, &hdr->tag, CB_OP_TAGLEN_MAXSZ);
 	if (unlikely(status != 0))
 		return status;
@@ -275,7 +153,6 @@ static __be32 decode_compound_hdr_arg(struct xdr_stream *xdr, struct cb_compound
 	/* Check for minor version support */
 	if (hdr->minorversion <= NFS4_MAX_MINOR_VERSION) {
 		hdr->cb_ident = ntohl(*p++); /* ignored by v4.1 and v4.2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pr_warn_ratelimited("NFS: %s: NFSv4 server callback with "
 			"illegal minor version %u!\n",
@@ -283,78 +160,27 @@ static __be32 decode_compound_hdr_arg(struct xdr_stream *xdr, struct cb_compound
 		return htonl(NFS4ERR_MINOR_VERS_MISMATCH);
 	}
 	hdr->nops = ntohl(*p);
-<<<<<<< HEAD
-	dprintk("%s: minorversion %d nops %d\n", __func__,
-		hdr->minorversion, hdr->nops);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static __be32 decode_op_hdr(struct xdr_stream *xdr, unsigned int *op)
 {
 	__be32 *p;
-<<<<<<< HEAD
-	p = read_buf(xdr, 4);
-=======
 	p = xdr_inline_decode(xdr, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE_HDR);
 	*op = ntohl(*p);
 	return 0;
 }
 
-<<<<<<< HEAD
-static __be32 decode_getattr_args(struct svc_rqst *rqstp, struct xdr_stream *xdr, struct cb_getattrargs *args)
-{
-=======
 static __be32 decode_getattr_args(struct svc_rqst *rqstp,
 		struct xdr_stream *xdr, void *argp)
 {
 	struct cb_getattrargs *args = argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 status;
 
 	status = decode_fh(xdr, &args->fh);
 	if (unlikely(status != 0))
-<<<<<<< HEAD
-		goto out;
-	args->addr = svc_addr(rqstp);
-	status = decode_bitmap(xdr, args->bitmap);
-out:
-	dprintk("%s: exit with status = %d\n", __func__, ntohl(status));
-	return status;
-}
-
-static __be32 decode_recall_args(struct svc_rqst *rqstp, struct xdr_stream *xdr, struct cb_recallargs *args)
-{
-	__be32 *p;
-	__be32 status;
-
-	args->addr = svc_addr(rqstp);
-	status = decode_stateid(xdr, &args->stateid);
-	if (unlikely(status != 0))
-		goto out;
-	p = read_buf(xdr, 4);
-	if (unlikely(p == NULL)) {
-		status = htonl(NFS4ERR_RESOURCE);
-		goto out;
-	}
-	args->truncate = ntohl(*p);
-	status = decode_fh(xdr, &args->fh);
-out:
-	dprintk("%s: exit with status = %d\n", __func__, ntohl(status));
-	return status;
-}
-
-#if defined(CONFIG_NFS_V4_1)
-
-static __be32 decode_layoutrecall_args(struct svc_rqst *rqstp,
-				       struct xdr_stream *xdr,
-				       struct cb_layoutrecallargs *args)
-{
-=======
 		return status;
 	return decode_bitmap(xdr, args->bitmap);
 }
@@ -387,23 +213,13 @@ static __be32 decode_layoutrecall_args(struct svc_rqst *rqstp,
 				       struct xdr_stream *xdr, void *argp)
 {
 	struct cb_layoutrecallargs *args = argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 *p;
 	__be32 status = 0;
 	uint32_t iomode;
 
-<<<<<<< HEAD
-	args->cbl_addr = svc_addr(rqstp);
-	p = read_buf(xdr, 4 * sizeof(uint32_t));
-	if (unlikely(p == NULL)) {
-		status = htonl(NFS4ERR_BADXDR);
-		goto out;
-	}
-=======
 	p = xdr_inline_decode(xdr, 4 * sizeof(uint32_t));
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_BADXDR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	args->cbl_layout_type = ntohl(*p++);
 	/* Depite the spec's xdr, iomode really belongs in the FILE switch,
@@ -417,39 +233,6 @@ static __be32 decode_layoutrecall_args(struct svc_rqst *rqstp,
 		args->cbl_range.iomode = iomode;
 		status = decode_fh(xdr, &args->cbl_fh);
 		if (unlikely(status != 0))
-<<<<<<< HEAD
-			goto out;
-
-		p = read_buf(xdr, 2 * sizeof(uint64_t));
-		if (unlikely(p == NULL)) {
-			status = htonl(NFS4ERR_BADXDR);
-			goto out;
-		}
-		p = xdr_decode_hyper(p, &args->cbl_range.offset);
-		p = xdr_decode_hyper(p, &args->cbl_range.length);
-		status = decode_stateid(xdr, &args->cbl_stateid);
-		if (unlikely(status != 0))
-			goto out;
-	} else if (args->cbl_recall_type == RETURN_FSID) {
-		p = read_buf(xdr, 2 * sizeof(uint64_t));
-		if (unlikely(p == NULL)) {
-			status = htonl(NFS4ERR_BADXDR);
-			goto out;
-		}
-		p = xdr_decode_hyper(p, &args->cbl_fsid.major);
-		p = xdr_decode_hyper(p, &args->cbl_fsid.minor);
-	} else if (args->cbl_recall_type != RETURN_ALL) {
-		status = htonl(NFS4ERR_BADXDR);
-		goto out;
-	}
-	dprintk("%s: ltype 0x%x iomode %d changed %d recall_type %d\n",
-		__func__,
-		args->cbl_layout_type, iomode,
-		args->cbl_layoutchanged, args->cbl_recall_type);
-out:
-	dprintk("%s: exit with status = %d\n", __func__, ntohl(status));
-	return status;
-=======
 			return status;
 
 		p = xdr_inline_decode(xdr, 2 * sizeof(uint64_t));
@@ -467,24 +250,11 @@ out:
 	} else if (args->cbl_recall_type != RETURN_ALL)
 		return htonl(NFS4ERR_BADXDR);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static
 __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 				struct xdr_stream *xdr,
-<<<<<<< HEAD
-				struct cb_devicenotifyargs *args)
-{
-	__be32 *p;
-	__be32 status = 0;
-	u32 tmp;
-	int n, i;
-	args->ndevs = 0;
-
-	/* Num of device notifications */
-	p = read_buf(xdr, sizeof(uint32_t));
-=======
 				void *argp)
 {
 	struct cb_devicenotifyargs *args = argp;
@@ -494,27 +264,15 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 
 	/* Num of device notifications */
 	p = xdr_inline_decode(xdr, sizeof(uint32_t));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(p == NULL)) {
 		status = htonl(NFS4ERR_BADXDR);
 		goto out;
 	}
 	n = ntohl(*p++);
-<<<<<<< HEAD
-	if (n <= 0)
-		goto out;
-	if (n > ULONG_MAX / sizeof(*args->devs)) {
-		status = htonl(NFS4ERR_BADXDR);
-		goto out;
-	}
-
-	args->devs = kmalloc(n * sizeof(*args->devs), GFP_KERNEL);
-=======
 	if (n == 0)
 		goto out;
 
 	args->devs = kmalloc_array(n, sizeof(*args->devs), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!args->devs) {
 		status = htonl(NFS4ERR_DELAY);
 		goto out;
@@ -524,12 +282,8 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 	for (i = 0; i < n; i++) {
 		struct cb_devicenotifyitem *dev = &args->devs[i];
 
-<<<<<<< HEAD
-		p = read_buf(xdr, (4 * sizeof(uint32_t)) + NFS4_DEVICEID4_SIZE);
-=======
 		p = xdr_inline_decode(xdr, (4 * sizeof(uint32_t)) +
 				      NFS4_DEVICEID4_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(p == NULL)) {
 			status = htonl(NFS4ERR_BADXDR);
 			goto err;
@@ -560,11 +314,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 		p += XDR_QUADLEN(NFS4_DEVICEID4_SIZE);
 
 		if (dev->cbd_layout_type == NOTIFY_DEVICEID4_CHANGE) {
-<<<<<<< HEAD
-			p = read_buf(xdr, sizeof(uint32_t));
-=======
 			p = xdr_inline_decode(xdr, sizeof(uint32_t));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(p == NULL)) {
 				status = htonl(NFS4ERR_BADXDR);
 				goto err;
@@ -574,24 +324,10 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 			dev->cbd_immediate = 0;
 		}
 
-<<<<<<< HEAD
-		args->ndevs++;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk("%s: type %d layout 0x%x immediate %d\n",
 			__func__, dev->cbd_notify_type, dev->cbd_layout_type,
 			dev->cbd_immediate);
 	}
-<<<<<<< HEAD
-out:
-	dprintk("%s: status %d ndevs %d\n",
-		__func__, ntohl(status), args->ndevs);
-	return status;
-err:
-	kfree(args->devs);
-	goto out;
-=======
 	args->ndevs = n;
 	dprintk("%s: ndevs %d\n", __func__, args->ndevs);
 	return 0;
@@ -603,29 +339,18 @@ out:
 	dprintk("%s: status %d ndevs %d\n",
 		__func__, ntohl(status), args->ndevs);
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __be32 decode_sessionid(struct xdr_stream *xdr,
 				 struct nfs4_sessionid *sid)
 {
 	__be32 *p;
-<<<<<<< HEAD
-	int len = NFS4_MAX_SESSIONID_LEN;
-
-	p = read_buf(xdr, len);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_RESOURCE);
-
-	memcpy(sid->data, p, len);
-=======
 
 	p = xdr_inline_decode(xdr, NFS4_MAX_SESSIONID_LEN);
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
 
 	memcpy(sid->data, p, NFS4_MAX_SESSIONID_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -641,29 +366,17 @@ static __be32 decode_rc_list(struct xdr_stream *xdr,
 		goto out;
 
 	status = htonl(NFS4ERR_RESOURCE);
-<<<<<<< HEAD
-	p = read_buf(xdr, sizeof(uint32_t));
-=======
 	p = xdr_inline_decode(xdr, sizeof(uint32_t));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(p == NULL))
 		goto out;
 
 	rc_list->rcl_nrefcalls = ntohl(*p++);
 	if (rc_list->rcl_nrefcalls) {
-<<<<<<< HEAD
-		p = read_buf(xdr,
-			     rc_list->rcl_nrefcalls * 2 * sizeof(uint32_t));
-		if (unlikely(p == NULL))
-			goto out;
-		rc_list->rcl_refcalls = kmalloc(rc_list->rcl_nrefcalls *
-=======
 		p = xdr_inline_decode(xdr,
 			     rc_list->rcl_nrefcalls * 2 * sizeof(uint32_t));
 		if (unlikely(p == NULL))
 			goto out;
 		rc_list->rcl_refcalls = kmalloc_array(rc_list->rcl_nrefcalls,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						sizeof(*rc_list->rcl_refcalls),
 						GFP_KERNEL);
 		if (unlikely(rc_list->rcl_refcalls == NULL))
@@ -681,34 +394,20 @@ out:
 
 static __be32 decode_cb_sequence_args(struct svc_rqst *rqstp,
 					struct xdr_stream *xdr,
-<<<<<<< HEAD
-					struct cb_sequenceargs *args)
-{
-=======
 					void *argp)
 {
 	struct cb_sequenceargs *args = argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 *p;
 	int i;
 	__be32 status;
 
 	status = decode_sessionid(xdr, &args->csa_sessionid);
 	if (status)
-<<<<<<< HEAD
-		goto out;
-
-	status = htonl(NFS4ERR_RESOURCE);
-	p = read_buf(xdr, 5 * sizeof(uint32_t));
-	if (unlikely(p == NULL))
-		goto out;
-=======
 		return status;
 
 	p = xdr_inline_decode(xdr, 5 * sizeof(uint32_t));
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	args->csa_addr = svc_addr(rqstp);
 	args->csa_sequenceid = ntohl(*p++);
@@ -722,11 +421,7 @@ static __be32 decode_cb_sequence_args(struct svc_rqst *rqstp,
 						  sizeof(*args->csa_rclists),
 						  GFP_KERNEL);
 		if (unlikely(args->csa_rclists == NULL))
-<<<<<<< HEAD
-			goto out;
-=======
 			return htonl(NFS4ERR_RESOURCE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < args->csa_nrclists; i++) {
 			status = decode_rc_list(xdr, &args->csa_rclists[i]);
@@ -736,48 +431,17 @@ static __be32 decode_cb_sequence_args(struct svc_rqst *rqstp,
 			}
 		}
 	}
-<<<<<<< HEAD
-	status = 0;
-
-	dprintk("%s: sessionid %x:%x:%x:%x sequenceid %u slotid %u "
-		"highestslotid %u cachethis %d nrclists %u\n",
-		__func__,
-		((u32 *)&args->csa_sessionid)[0],
-		((u32 *)&args->csa_sessionid)[1],
-		((u32 *)&args->csa_sessionid)[2],
-		((u32 *)&args->csa_sessionid)[3],
-		args->csa_sequenceid, args->csa_slotid,
-		args->csa_highestslotid, args->csa_cachethis,
-		args->csa_nrclists);
-out:
-	dprintk("%s: exit with status = %d\n", __func__, ntohl(status));
-	return status;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_free:
 	for (i = 0; i < args->csa_nrclists; i++)
 		kfree(args->csa_rclists[i].rcl_refcalls);
 	kfree(args->csa_rclists);
-<<<<<<< HEAD
-	goto out;
-=======
 	return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __be32 decode_recallany_args(struct svc_rqst *rqstp,
 				      struct xdr_stream *xdr,
-<<<<<<< HEAD
-				      struct cb_recallanyargs *args)
-{
-	uint32_t bitmap[2];
-	__be32 *p, status;
-
-	args->craa_addr = svc_addr(rqstp);
-	p = read_buf(xdr, 4);
-=======
 				      void *argp)
 {
 	struct cb_recallanyargs *args = argp;
@@ -785,7 +449,6 @@ static __be32 decode_recallany_args(struct svc_rqst *rqstp,
 	__be32 *p, status;
 
 	p = xdr_inline_decode(xdr, 4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_BADXDR);
 	args->craa_objs_to_keep = ntohl(*p++);
@@ -799,62 +462,6 @@ static __be32 decode_recallany_args(struct svc_rqst *rqstp,
 
 static __be32 decode_recallslot_args(struct svc_rqst *rqstp,
 					struct xdr_stream *xdr,
-<<<<<<< HEAD
-					struct cb_recallslotargs *args)
-{
-	__be32 *p;
-
-	args->crsa_addr = svc_addr(rqstp);
-	p = read_buf(xdr, 4);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_BADXDR);
-	args->crsa_target_max_slots = ntohl(*p++);
-	return 0;
-}
-
-#endif /* CONFIG_NFS_V4_1 */
-
-static __be32 encode_string(struct xdr_stream *xdr, unsigned int len, const char *str)
-{
-	__be32 *p;
-
-	p = xdr_reserve_space(xdr, 4 + len);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_RESOURCE);
-	xdr_encode_opaque(p, str, len);
-	return 0;
-}
-
-#define CB_SUPPORTED_ATTR0 (FATTR4_WORD0_CHANGE|FATTR4_WORD0_SIZE)
-#define CB_SUPPORTED_ATTR1 (FATTR4_WORD1_TIME_METADATA|FATTR4_WORD1_TIME_MODIFY)
-static __be32 encode_attr_bitmap(struct xdr_stream *xdr, const uint32_t *bitmap, __be32 **savep)
-{
-	__be32 bm[2];
-	__be32 *p;
-
-	bm[0] = htonl(bitmap[0] & CB_SUPPORTED_ATTR0);
-	bm[1] = htonl(bitmap[1] & CB_SUPPORTED_ATTR1);
-	if (bm[1] != 0) {
-		p = xdr_reserve_space(xdr, 16);
-		if (unlikely(p == NULL))
-			return htonl(NFS4ERR_RESOURCE);
-		*p++ = htonl(2);
-		*p++ = bm[0];
-		*p++ = bm[1];
-	} else if (bm[0] != 0) {
-		p = xdr_reserve_space(xdr, 12);
-		if (unlikely(p == NULL))
-			return htonl(NFS4ERR_RESOURCE);
-		*p++ = htonl(1);
-		*p++ = bm[0];
-	} else {
-		p = xdr_reserve_space(xdr, 8);
-		if (unlikely(p == NULL))
-			return htonl(NFS4ERR_RESOURCE);
-		*p++ = htonl(0);
-	}
-	*savep = p;
-=======
 					void *argp)
 {
 	struct cb_recallslotargs *args = argp;
@@ -987,7 +594,6 @@ static __be32 encode_attr_bitmap(struct xdr_stream *xdr, const uint32_t *bitmap,
 {
 	if (xdr_stream_encode_uint32_array(xdr, bitmap, sz) < 0)
 		return cpu_to_be32(NFS4ERR_RESOURCE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1017,11 +623,7 @@ static __be32 encode_attr_size(struct xdr_stream *xdr, const uint32_t *bitmap, u
 	return 0;
 }
 
-<<<<<<< HEAD
-static __be32 encode_attr_time(struct xdr_stream *xdr, const struct timespec *time)
-=======
 static __be32 encode_attr_time(struct xdr_stream *xdr, const struct timespec64 *time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 
@@ -1033,22 +635,14 @@ static __be32 encode_attr_time(struct xdr_stream *xdr, const struct timespec64 *
 	return 0;
 }
 
-<<<<<<< HEAD
-static __be32 encode_attr_ctime(struct xdr_stream *xdr, const uint32_t *bitmap, const struct timespec *time)
-=======
 static __be32 encode_attr_ctime(struct xdr_stream *xdr, const uint32_t *bitmap, const struct timespec64 *time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!(bitmap[1] & FATTR4_WORD1_TIME_METADATA))
 		return 0;
 	return encode_attr_time(xdr,time);
 }
 
-<<<<<<< HEAD
-static __be32 encode_attr_mtime(struct xdr_stream *xdr, const uint32_t *bitmap, const struct timespec *time)
-=======
 static __be32 encode_attr_mtime(struct xdr_stream *xdr, const uint32_t *bitmap, const struct timespec64 *time)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!(bitmap[1] & FATTR4_WORD1_TIME_MODIFY))
 		return 0;
@@ -1083,25 +677,15 @@ static __be32 encode_op_hdr(struct xdr_stream *xdr, uint32_t op, __be32 res)
 	return 0;
 }
 
-<<<<<<< HEAD
-static __be32 encode_getattr_res(struct svc_rqst *rqstp, struct xdr_stream *xdr, const struct cb_getattrres *res)
-{
-=======
 static __be32 encode_getattr_res(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 		const void *resp)
 {
 	const struct cb_getattrres *res = resp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 *savep = NULL;
 	__be32 status = res->status;
 	
 	if (unlikely(status != 0))
 		goto out;
-<<<<<<< HEAD
-	status = encode_attr_bitmap(xdr, res->bitmap, &savep);
-	if (unlikely(status != 0))
-		goto out;
-=======
 	status = encode_attr_bitmap(xdr, res->bitmap, ARRAY_SIZE(res->bitmap));
 	if (unlikely(status != 0))
 		goto out;
@@ -1109,7 +693,6 @@ static __be32 encode_getattr_res(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	savep = xdr_reserve_space(xdr, sizeof(*savep));
 	if (unlikely(!savep))
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = encode_attr_change(xdr, res->bitmap, res->change_attr);
 	if (unlikely(status != 0))
 		goto out;
@@ -1122,10 +705,6 @@ static __be32 encode_getattr_res(struct svc_rqst *rqstp, struct xdr_stream *xdr,
 	status = encode_attr_mtime(xdr, res->bitmap, &res->mtime);
 	*savep = htonl((unsigned int)((char *)xdr->p - (char *)(savep+1)));
 out:
-<<<<<<< HEAD
-	dprintk("%s: exit with status = %d\n", __func__, ntohl(status));
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -1135,38 +714,17 @@ static __be32 encode_sessionid(struct xdr_stream *xdr,
 				 const struct nfs4_sessionid *sid)
 {
 	__be32 *p;
-<<<<<<< HEAD
-	int len = NFS4_MAX_SESSIONID_LEN;
-
-	p = xdr_reserve_space(xdr, len);
-	if (unlikely(p == NULL))
-		return htonl(NFS4ERR_RESOURCE);
-
-	memcpy(p, sid, len);
-=======
 
 	p = xdr_reserve_space(xdr, NFS4_MAX_SESSIONID_LEN);
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
 
 	memcpy(p, sid, NFS4_MAX_SESSIONID_LEN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static __be32 encode_cb_sequence_res(struct svc_rqst *rqstp,
 				       struct xdr_stream *xdr,
-<<<<<<< HEAD
-				       const struct cb_sequenceres *res)
-{
-	__be32 *p;
-	unsigned status = res->csr_status;
-
-	if (unlikely(status != 0))
-		goto out;
-
-	encode_sessionid(xdr, &res->csr_sessionid);
-=======
 				       const void *resp)
 {
 	const struct cb_sequenceres *res = resp;
@@ -1179,7 +737,6 @@ static __be32 encode_cb_sequence_res(struct svc_rqst *rqstp,
 	status = encode_sessionid(xdr, &res->csr_sessionid);
 	if (status)
 		return status;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = xdr_reserve_space(xdr, 4 * sizeof(uint32_t));
 	if (unlikely(p == NULL))
@@ -1189,13 +746,7 @@ static __be32 encode_cb_sequence_res(struct svc_rqst *rqstp,
 	*p++ = htonl(res->csr_slotid);
 	*p++ = htonl(res->csr_highestslotid);
 	*p++ = htonl(res->csr_target_highestslotid);
-<<<<<<< HEAD
-out:
-	dprintk("%s: exit with status = %d\n", __func__, ntohl(status));
-	return status;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __be32
@@ -1217,10 +768,7 @@ preprocess_nfs41_op(int nop, unsigned int op_nr, struct callback_op **op)
 	case OP_CB_RECALL_SLOT:
 	case OP_CB_LAYOUTRECALL:
 	case OP_CB_NOTIFY_DEVICEID:
-<<<<<<< HEAD
-=======
 	case OP_CB_NOTIFY_LOCK:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*op = &callback_ops[op_nr];
 		break;
 
@@ -1228,10 +776,6 @@ preprocess_nfs41_op(int nop, unsigned int op_nr, struct callback_op **op)
 	case OP_CB_PUSH_DELEG:
 	case OP_CB_RECALLABLE_OBJ_AVAIL:
 	case OP_CB_WANTS_CANCELLED:
-<<<<<<< HEAD
-	case OP_CB_NOTIFY_LOCK:
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return htonl(NFS4ERR_NOTSUPP);
 
 	default:
@@ -1241,12 +785,8 @@ preprocess_nfs41_op(int nop, unsigned int op_nr, struct callback_op **op)
 	return htonl(NFS_OK);
 }
 
-<<<<<<< HEAD
-static void nfs4_callback_free_slot(struct nfs4_session *session)
-=======
 static void nfs4_callback_free_slot(struct nfs4_session *session,
 		struct nfs4_slot *slot)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs4_slot_table *tbl = &session->bc_slot_table;
 
@@ -1255,26 +795,16 @@ static void nfs4_callback_free_slot(struct nfs4_session *session,
 	 * Let the state manager know callback processing done.
 	 * A single slot, so highest used slotid is either 0 or -1
 	 */
-<<<<<<< HEAD
-	tbl->highest_used_slotid = NFS4_NO_SLOT;
-	nfs4_check_drain_bc_complete(session);
-=======
 	nfs4_free_slot(tbl, slot);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&tbl->slot_tbl_lock);
 }
 
 static void nfs4_cb_free_slot(struct cb_process_state *cps)
 {
-<<<<<<< HEAD
-	if (cps->slotid != NFS4_NO_SLOT)
-		nfs4_callback_free_slot(cps->clp->cl_session);
-=======
 	if (cps->slot) {
 		nfs4_callback_free_slot(cps->clp->cl_session, cps->slot);
 		cps->slot = NULL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else /* CONFIG_NFS_V4_1 */
@@ -1290,8 +820,6 @@ static void nfs4_cb_free_slot(struct cb_process_state *cps)
 }
 #endif /* CONFIG_NFS_V4_1 */
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_NFS_V4_2
 static __be32
 preprocess_nfs42_op(int nop, unsigned int op_nr, struct callback_op **op)
@@ -1315,7 +843,6 @@ preprocess_nfs42_op(int nop, unsigned int op_nr, struct callback_op **op)
 }
 #endif /* CONFIG_NFS_V4_2 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __be32
 preprocess_nfs4_op(unsigned int op_nr, struct callback_op **op)
 {
@@ -1331,37 +858,16 @@ preprocess_nfs4_op(unsigned int op_nr, struct callback_op **op)
 	return htonl(NFS_OK);
 }
 
-<<<<<<< HEAD
-static __be32 process_op(uint32_t minorversion, int nop,
-		struct svc_rqst *rqstp,
-		struct xdr_stream *xdr_in, void *argp,
-		struct xdr_stream *xdr_out, void *resp,
-		struct cb_process_state *cps)
-{
-=======
 static __be32 process_op(int nop, struct svc_rqst *rqstp,
 			 struct cb_process_state *cps)
 {
 	struct xdr_stream *xdr_out = &rqstp->rq_res_stream;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct callback_op *op = &callback_ops[0];
 	unsigned int op_nr;
 	__be32 status;
 	long maxlen;
 	__be32 res;
 
-<<<<<<< HEAD
-	dprintk("%s: start\n", __func__);
-	status = decode_op_hdr(xdr_in, &op_nr);
-	if (unlikely(status))
-		return status;
-
-	dprintk("%s: minorversion=%d nop=%d op_nr=%u\n",
-		__func__, minorversion, nop, op_nr);
-
-	status = minorversion ? preprocess_nfs41_op(nop, op_nr, &op) :
-				preprocess_nfs4_op(op_nr, &op);
-=======
 	status = decode_op_hdr(&rqstp->rq_arg_stream, &op_nr);
 	if (unlikely(status))
 		return status;
@@ -1380,7 +886,6 @@ static __be32 process_op(int nop, struct svc_rqst *rqstp,
 		status = htonl(NFS4ERR_MINOR_VERS_MISMATCH);
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status == htonl(NFS4ERR_OP_ILLEGAL))
 		op_nr = OP_CB_ILLEGAL;
 	if (status)
@@ -1393,17 +898,11 @@ static __be32 process_op(int nop, struct svc_rqst *rqstp,
 
 	maxlen = xdr_out->end - xdr_out->p;
 	if (maxlen > 0 && maxlen < PAGE_SIZE) {
-<<<<<<< HEAD
-		status = op->decode_args(rqstp, xdr_in, argp);
-		if (likely(status == 0))
-			status = op->process_op(argp, resp, cps);
-=======
 		status = op->decode_args(rqstp, &rqstp->rq_arg_stream,
 					 rqstp->rq_argp);
 		if (likely(status == 0))
 			status = op->process_op(rqstp->rq_argp, rqstp->rq_resp,
 						cps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		status = htonl(NFS4ERR_RESOURCE);
 
@@ -1412,59 +911,13 @@ encode_hdr:
 	if (unlikely(res))
 		return res;
 	if (op->encode_res != NULL && status == 0)
-<<<<<<< HEAD
-		status = op->encode_res(rqstp, xdr_out, resp);
-	dprintk("%s: done, status = %d\n", __func__, ntohl(status));
-=======
 		status = op->encode_res(rqstp, xdr_out, rqstp->rq_resp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
 /*
  * Decode, process and encode a COMPOUND
  */
-<<<<<<< HEAD
-static __be32 nfs4_callback_compound(struct svc_rqst *rqstp, void *argp, void *resp)
-{
-	struct cb_compound_hdr_arg hdr_arg = { 0 };
-	struct cb_compound_hdr_res hdr_res = { NULL };
-	struct xdr_stream xdr_in, xdr_out;
-	__be32 *p, status;
-	struct cb_process_state cps = {
-		.drc_status = 0,
-		.clp = NULL,
-		.slotid = NFS4_NO_SLOT,
-		.net = rqstp->rq_xprt->xpt_net,
-	};
-	unsigned int nops = 0;
-
-	dprintk("%s: start\n", __func__);
-
-	xdr_init_decode(&xdr_in, &rqstp->rq_arg, rqstp->rq_arg.head[0].iov_base);
-
-	p = (__be32*)((char *)rqstp->rq_res.head[0].iov_base + rqstp->rq_res.head[0].iov_len);
-	xdr_init_encode(&xdr_out, &rqstp->rq_res, p);
-
-	status = decode_compound_hdr_arg(&xdr_in, &hdr_arg);
-	if (status == __constant_htonl(NFS4ERR_RESOURCE))
-		return rpc_garbage_args;
-
-	if (hdr_arg.minorversion == 0) {
-		cps.clp = nfs4_find_client_ident(rqstp->rq_xprt->xpt_net, hdr_arg.cb_ident);
-		if (!cps.clp || !check_gss_callback_principal(cps.clp, rqstp))
-			return rpc_drop_reply;
-	}
-
-	hdr_res.taglen = hdr_arg.taglen;
-	hdr_res.tag = hdr_arg.tag;
-	if (encode_compound_hdr_res(&xdr_out, &hdr_res) != 0)
-		return rpc_system_err;
-
-	while (status == 0 && nops != hdr_arg.nops) {
-		status = process_op(hdr_arg.minorversion, nops, rqstp,
-				    &xdr_in, argp, &xdr_out, resp, &cps);
-=======
 static __be32 nfs4_callback_compound(struct svc_rqst *rqstp)
 {
 	struct cb_compound_hdr_arg hdr_arg = { 0 };
@@ -1504,7 +957,6 @@ static __be32 nfs4_callback_compound(struct svc_rqst *rqstp)
 	}
 	while (status == 0 && nops != hdr_arg.nops) {
 		status = process_op(nops, rqstp, &cps);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nops++;
 	}
 
@@ -1515,22 +967,15 @@ static __be32 nfs4_callback_compound(struct svc_rqst *rqstp)
 		nops--;
 	}
 
-<<<<<<< HEAD
-=======
 	if (svc_is_backchannel(rqstp) && cps.clp) {
 		rqstp->bc_to_initval = cps.clp->cl_rpcclient->cl_timeout->to_initval;
 		rqstp->bc_to_retries = cps.clp->cl_rpcclient->cl_timeout->to_retries;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*hdr_res.status = status;
 	*hdr_res.nops = htonl(nops);
 	nfs4_cb_free_slot(&cps);
 	nfs_put_client(cps.clp);
-<<<<<<< HEAD
-	dprintk("%s: done, status = %u\n", __func__, ntohl(status));
-	return rpc_success;
-=======
 	return rpc_success;
 
 out_invalidcred:
@@ -1546,7 +991,6 @@ nfs_callback_dispatch(struct svc_rqst *rqstp)
 
 	*rqstp->rq_accept_statp = procp->pc_func(rqstp);
 	return 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1557,16 +1001,6 @@ static struct callback_op callback_ops[] = {
 		.res_maxsize = CB_OP_HDR_RES_MAXSZ,
 	},
 	[OP_CB_GETATTR] = {
-<<<<<<< HEAD
-		.process_op = (callback_process_op_t)nfs4_callback_getattr,
-		.decode_args = (callback_decode_arg_t)decode_getattr_args,
-		.encode_res = (callback_encode_res_t)encode_getattr_res,
-		.res_maxsize = CB_OP_GETATTR_RES_MAXSZ,
-	},
-	[OP_CB_RECALL] = {
-		.process_op = (callback_process_op_t)nfs4_callback_recall,
-		.decode_args = (callback_decode_arg_t)decode_recall_args,
-=======
 		.process_op = nfs4_callback_getattr,
 		.decode_args = decode_getattr_args,
 		.encode_res = encode_getattr_res,
@@ -1575,41 +1009,10 @@ static struct callback_op callback_ops[] = {
 	[OP_CB_RECALL] = {
 		.process_op = nfs4_callback_recall,
 		.decode_args = decode_recall_args,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.res_maxsize = CB_OP_RECALL_RES_MAXSZ,
 	},
 #if defined(CONFIG_NFS_V4_1)
 	[OP_CB_LAYOUTRECALL] = {
-<<<<<<< HEAD
-		.process_op = (callback_process_op_t)nfs4_callback_layoutrecall,
-		.decode_args =
-			(callback_decode_arg_t)decode_layoutrecall_args,
-		.res_maxsize = CB_OP_LAYOUTRECALL_RES_MAXSZ,
-	},
-	[OP_CB_NOTIFY_DEVICEID] = {
-		.process_op = (callback_process_op_t)nfs4_callback_devicenotify,
-		.decode_args =
-			(callback_decode_arg_t)decode_devicenotify_args,
-		.res_maxsize = CB_OP_DEVICENOTIFY_RES_MAXSZ,
-	},
-	[OP_CB_SEQUENCE] = {
-		.process_op = (callback_process_op_t)nfs4_callback_sequence,
-		.decode_args = (callback_decode_arg_t)decode_cb_sequence_args,
-		.encode_res = (callback_encode_res_t)encode_cb_sequence_res,
-		.res_maxsize = CB_OP_SEQUENCE_RES_MAXSZ,
-	},
-	[OP_CB_RECALL_ANY] = {
-		.process_op = (callback_process_op_t)nfs4_callback_recallany,
-		.decode_args = (callback_decode_arg_t)decode_recallany_args,
-		.res_maxsize = CB_OP_RECALLANY_RES_MAXSZ,
-	},
-	[OP_CB_RECALL_SLOT] = {
-		.process_op = (callback_process_op_t)nfs4_callback_recallslot,
-		.decode_args = (callback_decode_arg_t)decode_recallslot_args,
-		.res_maxsize = CB_OP_RECALLSLOT_RES_MAXSZ,
-	},
-#endif /* CONFIG_NFS_V4_1 */
-=======
 		.process_op = nfs4_callback_layoutrecall,
 		.decode_args = decode_layoutrecall_args,
 		.res_maxsize = CB_OP_LAYOUTRECALL_RES_MAXSZ,
@@ -1648,46 +1051,11 @@ static struct callback_op callback_ops[] = {
 		.res_maxsize = CB_OP_OFFLOAD_RES_MAXSZ,
 	},
 #endif /* CONFIG_NFS_V4_2 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Define NFS4 callback procedures
  */
-<<<<<<< HEAD
-static struct svc_procedure nfs4_callback_procedures1[] = {
-	[CB_NULL] = {
-		.pc_func = nfs4_callback_null,
-		.pc_decode = (kxdrproc_t)nfs4_decode_void,
-		.pc_encode = (kxdrproc_t)nfs4_encode_void,
-		.pc_xdrressize = 1,
-	},
-	[CB_COMPOUND] = {
-		.pc_func = nfs4_callback_compound,
-		.pc_encode = (kxdrproc_t)nfs4_encode_void,
-		.pc_argsize = 256,
-		.pc_ressize = 256,
-		.pc_xdrressize = NFS4_CALLBACK_BUFSIZE,
-	}
-};
-
-struct svc_version nfs4_callback_version1 = {
-	.vs_vers = 1,
-	.vs_nproc = ARRAY_SIZE(nfs4_callback_procedures1),
-	.vs_proc = nfs4_callback_procedures1,
-	.vs_xdrsize = NFS4_CALLBACK_XDRSIZE,
-	.vs_dispatch = NULL,
-	.vs_hidden = 1,
-};
-
-struct svc_version nfs4_callback_version4 = {
-	.vs_vers = 4,
-	.vs_nproc = ARRAY_SIZE(nfs4_callback_procedures1),
-	.vs_proc = nfs4_callback_procedures1,
-	.vs_xdrsize = NFS4_CALLBACK_XDRSIZE,
-	.vs_dispatch = NULL,
-	.vs_hidden = 1,
-=======
 static const struct svc_procedure nfs4_callback_procedures1[] = {
 	[CB_NULL] = {
 		.pc_func = nfs4_callback_null,
@@ -1730,5 +1098,4 @@ const struct svc_version nfs4_callback_version4 = {
 	.vs_dispatch = nfs_callback_dispatch,
 	.vs_hidden = true,
 	.vs_need_cong_ctrl = true,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

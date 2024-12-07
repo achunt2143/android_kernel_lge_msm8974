@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/file_table.c
  *
@@ -16,13 +13,9 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/security.h>
-=======
 #include <linux/filelock.h>
 #include <linux/security.h>
 #include <linux/cred.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/eventpoll.h>
 #include <linux/rcupdate.h>
 #include <linux/mount.h>
@@ -30,52 +23,22 @@
 #include <linux/cdev.h>
 #include <linux/fsnotify.h>
 #include <linux/sysctl.h>
-<<<<<<< HEAD
-#include <linux/lglock.h>
-#include <linux/percpu_counter.h>
-#include <linux/percpu.h>
-#include <linux/ima.h>
-=======
 #include <linux/percpu_counter.h>
 #include <linux/percpu.h>
 #include <linux/task_work.h>
 #include <linux/swap.h>
 #include <linux/kmemleak.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atomic.h>
 
 #include "internal.h"
 
 /* sysctl tunables... */
-<<<<<<< HEAD
-struct files_stat_struct files_stat = {
-=======
 static struct files_stat_struct files_stat = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.max_files = NR_FILE
 };
 
 /* SLAB cache for file structures */
-<<<<<<< HEAD
-static struct kmem_cache *filp_cachep __read_mostly;
-
-static struct percpu_counter nr_files __cacheline_aligned_in_smp;
-
-static inline void file_free_rcu(struct rcu_head *head)
-{
-	struct file *f = container_of(head, struct file, f_u.fu_rcuhead);
-
-	put_cred(f->f_cred);
-	kmem_cache_free(filp_cachep, f);
-}
-
-static inline void file_free(struct file *f)
-{
-	percpu_counter_dec(&nr_files);
-	file_check_state(f);
-	call_rcu(&f->f_u.fu_rcuhead, file_free_rcu);
-=======
 static struct kmem_cache *filp_cachep __ro_after_init;
 
 static struct percpu_counter nr_files __cacheline_aligned_in_smp;
@@ -109,7 +72,6 @@ static inline void file_free(struct file *f)
 	} else {
 		kmem_cache_free(filp_cachep, f);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -129,14 +91,6 @@ unsigned long get_max_files(void)
 }
 EXPORT_SYMBOL_GPL(get_max_files);
 
-<<<<<<< HEAD
-/*
- * Handle nr_files sysctl
- */
-#if defined(CONFIG_SYSCTL) && defined(CONFIG_PROC_FS)
-int proc_nr_files(ctl_table *table, int write,
-                     void __user *buffer, size_t *lenp, loff_t *ppos)
-=======
 #if defined(CONFIG_SYSCTL) && defined(CONFIG_PROC_FS)
 
 /*
@@ -144,24 +98,10 @@ int proc_nr_files(ctl_table *table, int write,
  */
 static int proc_nr_files(struct ctl_table *table, int write, void *buffer,
 			 size_t *lenp, loff_t *ppos)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	files_stat.nr_files = get_nr_files();
 	return proc_doulongvec_minmax(table, write, buffer, lenp, ppos);
 }
-<<<<<<< HEAD
-#else
-int proc_nr_files(ctl_table *table, int write,
-                     void __user *buffer, size_t *lenp, loff_t *ppos)
-{
-	return -ENOSYS;
-}
-#endif
-
-/* Find an unused file structure and return a pointer to it.
- * Returns NULL, if there are no more free file structures or
- * we run out of memory.
-=======
 
 static struct ctl_table fs_stat_sysctls[] = {
 	{
@@ -234,7 +174,6 @@ static int init_file(struct file *f, int flags, const struct cred *cred)
 /* Find an unused file structure and return a pointer to it.
  * Returns an error pointer if some error happend e.g. we over file
  * structures limit, run out of memory or operation is not permitted.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Be very careful using this.  You are responsible for
  * getting write access to any mount that you might assign
@@ -242,19 +181,11 @@ static int init_file(struct file *f, int flags, const struct cred *cred)
  * done, you will imbalance int the mount's writer count
  * and a warning at __fput() time.
  */
-<<<<<<< HEAD
-struct file *get_empty_filp(void)
-{
-	const struct cred *cred = current_cred();
-	static long old_max;
-	struct file * f;
-=======
 struct file *alloc_empty_file(int flags, const struct cred *cred)
 {
 	static long old_max;
 	struct file *f;
 	int error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Privileged users can go above max_files
@@ -269,21 +200,6 @@ struct file *alloc_empty_file(int flags, const struct cred *cred)
 	}
 
 	f = kmem_cache_zalloc(filp_cachep, GFP_KERNEL);
-<<<<<<< HEAD
-	if (f == NULL)
-		goto fail;
-
-	percpu_counter_inc(&nr_files);
-	f->f_cred = get_cred(cred);
-	if (security_file_alloc(f))
-		goto fail_sec;
-
-	atomic_long_set(&f->f_count, 1);
-	rwlock_init(&f->f_owner.lock);
-	spin_lock_init(&f->f_lock);
-	eventpoll_init_file(f);
-	/* f->f_version: 0 */
-=======
 	if (unlikely(!f))
 		return ERR_PTR(-ENOMEM);
 
@@ -295,7 +211,6 @@ struct file *alloc_empty_file(int flags, const struct cred *cred)
 
 	percpu_counter_inc(&nr_files);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return f;
 
 over:
@@ -304,14 +219,6 @@ over:
 		pr_info("VFS: file-max limit %lu reached\n", get_max_files());
 		old_max = get_nr_files();
 	}
-<<<<<<< HEAD
-	goto fail;
-
-fail_sec:
-	file_free(f);
-fail:
-	return NULL;
-=======
 	return ERR_PTR(-ENFILE);
 }
 
@@ -395,87 +302,20 @@ static void file_init_path(struct file *file, const struct path *path,
 	file->f_op = fop;
 	if ((file->f_mode & (FMODE_READ | FMODE_WRITE)) == FMODE_READ)
 		i_readcount_inc(path->dentry->d_inode);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * alloc_file - allocate and initialize a 'struct file'
-<<<<<<< HEAD
- * @mnt: the vfsmount on which the file will reside
- * @dentry: the dentry representing the new file
- * @mode: the mode with which the new file will be opened
- * @fop: the 'struct file_operations' for the new file
- *
- * Use this instead of get_empty_filp() to get a new
- * 'struct file'.  Do so because of the same initialization
- * pitfalls reasons listed for init_file().  This is a
- * preferred interface to using init_file().
- *
- * If all the callers of init_file() are eliminated, its
- * code should be moved into this function.
- */
-struct file *alloc_file(struct path *path, fmode_t mode,
-=======
  *
  * @path: the (dentry, vfsmount) pair for the new file
  * @flags: O_... flags with which the new file will be opened
  * @fop: the 'struct file_operations' for the new file
  */
 static struct file *alloc_file(const struct path *path, int flags,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct file_operations *fop)
 {
 	struct file *file;
 
-<<<<<<< HEAD
-	file = get_empty_filp();
-	if (!file)
-		return NULL;
-
-	file->f_path = *path;
-	file->f_mapping = path->dentry->d_inode->i_mapping;
-	file->f_mode = mode;
-	file->f_op = fop;
-
-	/*
-	 * These mounts don't really matter in practice
-	 * for r/o bind mounts.  They aren't userspace-
-	 * visible.  We do this for consistency, and so
-	 * that we can do debugging checks at __fput()
-	 */
-	if ((mode & FMODE_WRITE) && !special_file(path->dentry->d_inode->i_mode)) {
-		file_take_write(file);
-		WARN_ON(mnt_clone_write(path->mnt));
-	}
-	if ((mode & (FMODE_READ | FMODE_WRITE)) == FMODE_READ)
-		i_readcount_inc(path->dentry->d_inode);
-	return file;
-}
-EXPORT_SYMBOL(alloc_file);
-
-/**
- * drop_file_write_access - give up ability to write to a file
- * @file: the file to which we will stop writing
- *
- * This is a central place which will give up the ability
- * to write to @file, along with access to write through
- * its vfsmount.
- */
-static void drop_file_write_access(struct file *file)
-{
-	struct vfsmount *mnt = file->f_path.mnt;
-	struct dentry *dentry = file->f_path.dentry;
-	struct inode *inode = dentry->d_inode;
-
-	put_write_access(inode);
-
-	if (special_file(inode->i_mode))
-		return;
-	if (file_check_writeable(file) != 0)
-		return;
-	mnt_drop_write(mnt);
-	file_release_write(file);
-=======
 	file = alloc_empty_file(flags, current_cred());
 	if (!IS_ERR(file))
 		file_init_path(file, path, fop);
@@ -549,7 +389,6 @@ struct file *alloc_file_clone(struct file *base, int flags,
 		f->f_mapping = base->f_mapping;
 	}
 	return f;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* the real guts of fput() - releasing the last reference to file
@@ -558,15 +397,11 @@ static void __fput(struct file *file)
 {
 	struct dentry *dentry = file->f_path.dentry;
 	struct vfsmount *mnt = file->f_path.mnt;
-<<<<<<< HEAD
-	struct inode *inode = dentry->d_inode;
-=======
 	struct inode *inode = file->f_inode;
 	fmode_t mode = file->f_mode;
 
 	if (unlikely(!(file->f_mode & FMODE_OPENED)))
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	might_sleep();
 
@@ -578,18 +413,6 @@ static void __fput(struct file *file)
 	eventpoll_release(file);
 	locks_remove_file(file);
 
-<<<<<<< HEAD
-	if (unlikely(file->f_flags & FASYNC)) {
-		if (file->f_op && file->f_op->fasync)
-			file->f_op->fasync(-1, file, 0);
-	}
-	if (file->f_op && file->f_op->release)
-		file->f_op->release(inode, file);
-	security_file_free(file);
-	ima_file_free(file);
-	if (unlikely(S_ISCHR(inode->i_mode) && inode->i_cdev != NULL &&
-		     !(file->f_mode & FMODE_PATH))) {
-=======
 	security_file_release(file);
 	if (unlikely(file->f_flags & FASYNC)) {
 		if (file->f_op->fasync)
@@ -599,26 +422,10 @@ static void __fput(struct file *file)
 		file->f_op->release(inode, file);
 	if (unlikely(S_ISCHR(inode->i_mode) && inode->i_cdev != NULL &&
 		     !(mode & FMODE_PATH))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cdev_put(inode->i_cdev);
 	}
 	fops_put(file->f_op);
 	put_pid(file->f_owner.pid);
-<<<<<<< HEAD
-	if ((file->f_mode & (FMODE_READ | FMODE_WRITE)) == FMODE_READ)
-		i_readcount_dec(inode);
-	if (file->f_mode & FMODE_WRITE)
-		drop_file_write_access(file);
-	file->f_path.dentry = NULL;
-	file->f_path.mnt = NULL;
-	file_free(file);
-	dput(dentry);
-	mntput(mnt);
-}
-
-void fput(struct file *file)
-{
-=======
 	put_file_access(file);
 	dput(dentry);
 	if (unlikely(mode & FMODE_NEED_UNMOUNT))
@@ -696,146 +503,11 @@ void fput(struct file *file)
  */
 void __fput_sync(struct file *file)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (atomic_long_dec_and_test(&file->f_count))
 		__fput(file);
 }
 
 EXPORT_SYMBOL(fput);
-<<<<<<< HEAD
-
-struct file *fget(unsigned int fd)
-{
-	struct file *file;
-	struct files_struct *files = current->files;
-
-	rcu_read_lock();
-	file = fcheck_files(files, fd);
-	if (file) {
-		/* File object ref couldn't be taken */
-		if (file->f_mode & FMODE_PATH ||
-		    !atomic_long_inc_not_zero(&file->f_count))
-			file = NULL;
-	}
-	rcu_read_unlock();
-
-	return file;
-}
-
-EXPORT_SYMBOL(fget);
-
-struct file *fget_raw(unsigned int fd)
-{
-	struct file *file;
-	struct files_struct *files = current->files;
-
-	rcu_read_lock();
-	file = fcheck_files(files, fd);
-	if (file) {
-		/* File object ref couldn't be taken */
-		if (!atomic_long_inc_not_zero(&file->f_count))
-			file = NULL;
-	}
-	rcu_read_unlock();
-
-	return file;
-}
-
-EXPORT_SYMBOL(fget_raw);
-
-/*
- * Lightweight file lookup - no refcnt increment if fd table isn't shared.
- *
- * You can use this instead of fget if you satisfy all of the following
- * conditions:
- * 1) You must call fput_light before exiting the syscall and returning control
- *    to userspace (i.e. you cannot remember the returned struct file * after
- *    returning to userspace).
- * 2) You must not call filp_close on the returned struct file * in between
- *    calls to fget_light and fput_light.
- * 3) You must not clone the current task in between the calls to fget_light
- *    and fput_light.
- *
- * The fput_needed flag returned by fget_light should be passed to the
- * corresponding fput_light.
- */
-struct file *fget_light(unsigned int fd, int *fput_needed)
-{
-	struct file *file;
-	struct files_struct *files = current->files;
-
-	*fput_needed = 0;
-	if (atomic_read(&files->count) == 1) {
-		file = fcheck_files(files, fd);
-		if (file && (file->f_mode & FMODE_PATH))
-			file = NULL;
-	} else {
-		rcu_read_lock();
-		file = fcheck_files(files, fd);
-		if (file) {
-			if (!(file->f_mode & FMODE_PATH) &&
-			    atomic_long_inc_not_zero(&file->f_count))
-				*fput_needed = 1;
-			else
-				/* Didn't get the reference, someone's freed */
-				file = NULL;
-		}
-		rcu_read_unlock();
-	}
-
-	return file;
-}
-
-struct file *fget_raw_light(unsigned int fd, int *fput_needed)
-{
-	struct file *file;
-	struct files_struct *files = current->files;
-
-	*fput_needed = 0;
-	if (atomic_read(&files->count) == 1) {
-		file = fcheck_files(files, fd);
-	} else {
-		rcu_read_lock();
-		file = fcheck_files(files, fd);
-		if (file) {
-			if (atomic_long_inc_not_zero(&file->f_count))
-				*fput_needed = 1;
-			else
-				/* Didn't get the reference, someone's freed */
-				file = NULL;
-		}
-		rcu_read_unlock();
-	}
-
-	return file;
-}
-
-void put_filp(struct file *file)
-{
-	if (atomic_long_dec_and_test(&file->f_count)) {
-		security_file_free(file);
-		file_free(file);
-	}
-}
-
-void __init files_init(unsigned long mempages)
-{ 
-	unsigned long n;
-
-	filp_cachep = kmem_cache_create("filp", sizeof(struct file), 0,
-			SLAB_HWCACHE_ALIGN | SLAB_PANIC, NULL);
-
-	/*
-	 * One file with associated inode and dcache is very roughly 1K.
-	 * Per default don't use more than 10% of our memory for files. 
-	 */ 
-
-	n = (mempages * (PAGE_SIZE / 1024)) / 10;
-	files_stat.max_files = max_t(unsigned long, n, NR_FILE);
-	files_defer_init();
-	percpu_counter_init(&nr_files, 0);
-} 
-=======
 EXPORT_SYMBOL(__fput_sync);
 
 void __init files_init(void)
@@ -861,4 +533,3 @@ void __init files_maxfiles_init(void)
 
 	files_stat.max_files = max_t(unsigned long, n, NR_FILE);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,34 +1,8 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for building the SELinux module as part of the kernel tree.
 #
 
-<<<<<<< HEAD
-obj-$(CONFIG_SECURITY_SELINUX) := selinux.o
-
-selinux-y := avc.o hooks.o selinuxfs.o netlink.o nlmsgtab.o netif.o \
-	     netnode.o netport.o exports.o \
-	     ss/ebitmap.o ss/hashtab.o ss/symtab.o ss/sidtab.o ss/avtab.o \
-	     ss/policydb.o ss/services.o ss/conditional.o ss/mls.o ss/status.o
-
-selinux-$(CONFIG_SECURITY_NETWORK_XFRM) += xfrm.o
-
-selinux-$(CONFIG_NETLABEL) += netlabel.o
-
-ccflags-y := -Isecurity/selinux -Isecurity/selinux/include
-
-$(addprefix $(obj)/,$(selinux-y)): $(obj)/flask.h
-
-quiet_cmd_flask = GEN     $(obj)/flask.h $(obj)/av_permissions.h
-      cmd_flask = scripts/selinux/genheaders/genheaders $(obj)/flask.h $(obj)/av_permissions.h
-
-targets += flask.h av_permissions.h
-$(obj)/flask.h: $(src)/include/classmap.h FORCE
-	$(call if_changed,flask)
-=======
 # NOTE: There are a number of improvements that can be made to this Makefile
 # once the kernel requires make v4.3 or greater; the most important feature
 # lacking in older versions of make is support for grouped targets.  These
@@ -66,4 +40,3 @@ quiet_cmd_genhdrs = GEN     $(addprefix $(obj)/,$(genhdrs))
 targets += flask.h
 $(obj)/flask.h: scripts/selinux/genheaders/genheaders FORCE
 	$(call if_changed,genhdrs)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

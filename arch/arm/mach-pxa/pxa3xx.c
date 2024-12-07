@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-pxa/pxa3xx.c
  *
@@ -11,37 +8,6 @@
  *
  * 2007-09-02: eric miao <eric.miao@marvell.com>
  *             initial version
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
-#include <linux/module.h>
-#include <linux/kernel.h>
-#include <linux/init.h>
-#include <linux/pm.h>
-#include <linux/platform_device.h>
-#include <linux/irq.h>
-#include <linux/io.h>
-#include <linux/syscore_ops.h>
-#include <linux/i2c/pxa-i2c.h>
-
-#include <asm/mach/map.h>
-#include <asm/suspend.h>
-#include <mach/hardware.h>
-#include <mach/pxa3xx-regs.h>
-#include <mach/reset.h>
-#include <mach/ohci.h>
-#include <mach/pm.h>
-#include <mach/dma.h>
-#include <mach/smemc.h>
-#include <mach/irqs.h>
-
-#include "generic.h"
-#include "devices.h"
-#include "clock.h"
-=======
  */
 #include <linux/dmaengine.h>
 #include <linux/dma/pxa-dma.h>
@@ -73,65 +39,10 @@
 
 #include "generic.h"
 #include "devices.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PECR_IE(n)	((1 << ((n) * 2)) << 28)
 #define PECR_IS(n)	((1 << ((n) * 2)) << 29)
 
-<<<<<<< HEAD
-static DEFINE_PXA3_CKEN(pxa3xx_ffuart, FFUART, 14857000, 1);
-static DEFINE_PXA3_CKEN(pxa3xx_btuart, BTUART, 14857000, 1);
-static DEFINE_PXA3_CKEN(pxa3xx_stuart, STUART, 14857000, 1);
-static DEFINE_PXA3_CKEN(pxa3xx_i2c, I2C, 32842000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_udc, UDC, 48000000, 5);
-static DEFINE_PXA3_CKEN(pxa3xx_usbh, USBH, 48000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_u2d, USB2, 48000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_keypad, KEYPAD, 32768, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_ssp1, SSP1, 13000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_ssp2, SSP2, 13000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_ssp3, SSP3, 13000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_ssp4, SSP4, 13000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_pwm0, PWM0, 13000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_pwm1, PWM1, 13000000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_mmc1, MMC1, 19500000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_mmc2, MMC2, 19500000, 0);
-static DEFINE_PXA3_CKEN(pxa3xx_gpio, GPIO, 13000000, 0);
-
-static DEFINE_CK(pxa3xx_lcd, LCD, &clk_pxa3xx_hsio_ops);
-static DEFINE_CK(pxa3xx_smemc, SMC, &clk_pxa3xx_smemc_ops);
-static DEFINE_CK(pxa3xx_camera, CAMERA, &clk_pxa3xx_hsio_ops);
-static DEFINE_CK(pxa3xx_ac97, AC97, &clk_pxa3xx_ac97_ops);
-static DEFINE_CLK(pxa3xx_pout, &clk_pxa3xx_pout_ops, 13000000, 70);
-
-static struct clk_lookup pxa3xx_clkregs[] = {
-	INIT_CLKREG(&clk_pxa3xx_pout, NULL, "CLK_POUT"),
-	/* Power I2C clock is always on */
-	INIT_CLKREG(&clk_dummy, "pxa3xx-pwri2c.1", NULL),
-	INIT_CLKREG(&clk_pxa3xx_lcd, "pxa2xx-fb", NULL),
-	INIT_CLKREG(&clk_pxa3xx_camera, NULL, "CAMCLK"),
-	INIT_CLKREG(&clk_pxa3xx_ac97, NULL, "AC97CLK"),
-	INIT_CLKREG(&clk_pxa3xx_ffuart, "pxa2xx-uart.0", NULL),
-	INIT_CLKREG(&clk_pxa3xx_btuart, "pxa2xx-uart.1", NULL),
-	INIT_CLKREG(&clk_pxa3xx_stuart, "pxa2xx-uart.2", NULL),
-	INIT_CLKREG(&clk_pxa3xx_stuart, "pxa2xx-ir", "UARTCLK"),
-	INIT_CLKREG(&clk_pxa3xx_i2c, "pxa2xx-i2c.0", NULL),
-	INIT_CLKREG(&clk_pxa3xx_udc, "pxa27x-udc", NULL),
-	INIT_CLKREG(&clk_pxa3xx_usbh, "pxa27x-ohci", NULL),
-	INIT_CLKREG(&clk_pxa3xx_u2d, "pxa3xx-u2d", NULL),
-	INIT_CLKREG(&clk_pxa3xx_keypad, "pxa27x-keypad", NULL),
-	INIT_CLKREG(&clk_pxa3xx_ssp1, "pxa27x-ssp.0", NULL),
-	INIT_CLKREG(&clk_pxa3xx_ssp2, "pxa27x-ssp.1", NULL),
-	INIT_CLKREG(&clk_pxa3xx_ssp3, "pxa27x-ssp.2", NULL),
-	INIT_CLKREG(&clk_pxa3xx_ssp4, "pxa27x-ssp.3", NULL),
-	INIT_CLKREG(&clk_pxa3xx_pwm0, "pxa27x-pwm.0", NULL),
-	INIT_CLKREG(&clk_pxa3xx_pwm1, "pxa27x-pwm.1", NULL),
-	INIT_CLKREG(&clk_pxa3xx_mmc1, "pxa2xx-mci.0", NULL),
-	INIT_CLKREG(&clk_pxa3xx_mmc2, "pxa2xx-mci.1", NULL),
-	INIT_CLKREG(&clk_pxa3xx_smemc, "pxa2xx-pcmcia", NULL),
-	INIT_CLKREG(&clk_pxa3xx_gpio, "pxa-gpio", NULL),
-	INIT_CLKREG(&clk_dummy, "sa1100-rtc", NULL),
-};
-=======
 extern void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int));
 
 /*
@@ -144,7 +55,6 @@ extern void __init pxa_dt_irq_init(int (*fn)(struct irq_data *, unsigned int));
 #define CKEN_BOOT  		11      /* < Boot rom clock enable */
 #define CKEN_TPM   		19      /* < TPM clock enable */
 #define CKEN_HSIO2 		41      /* < HSIO2 clock enable */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 
@@ -164,10 +74,6 @@ static unsigned long wakeup_src;
  */
 static void pxa3xx_cpu_standby(unsigned int pwrmode)
 {
-<<<<<<< HEAD
-	extern const char pm_enter_standby_start[], pm_enter_standby_end[];
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*fn)(unsigned int) = (void __force *)(sram + 0x8000);
 
 	memcpy_toio(sram + 0x8000, pm_enter_standby_start,
@@ -202,12 +108,6 @@ static void pxa3xx_cpu_pm_suspend(void)
 #ifndef CONFIG_IWMMXT
 	u64 acc0;
 
-<<<<<<< HEAD
-	asm volatile("mra %Q0, %R0, acc0" : "=r" (acc0));
-#endif
-
-	extern int pxa3xx_finish_suspend(unsigned long);
-=======
 #ifdef CONFIG_CC_IS_GCC
 	asm volatile(".arch_extension xscale\n\t"
 		     "mra %Q0, %R0, acc0" : "=r" (acc0));
@@ -215,7 +115,6 @@ static void pxa3xx_cpu_pm_suspend(void)
 	asm volatile("mrrc p0, 0, %Q0, %R0, c0" : "=r" (acc0));
 #endif
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* resuming from D2 requires the HSIO2/BOOT/TPM clocks enabled */
 	CKENA |= (1 << CKEN_BOOT) | (1 << CKEN_TPM);
@@ -233,11 +132,7 @@ static void pxa3xx_cpu_pm_suspend(void)
 	PSPR = 0x5c014000;
 
 	/* overwrite with the resume address */
-<<<<<<< HEAD
-	*p = virt_to_phys(cpu_resume);
-=======
 	*p = __pa_symbol(cpu_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cpu_suspend(0, pxa3xx_finish_suspend);
 
@@ -246,16 +141,12 @@ static void pxa3xx_cpu_pm_suspend(void)
 	AD3ER = 0;
 
 #ifndef CONFIG_IWMMXT
-<<<<<<< HEAD
-	asm volatile("mar acc0, %Q0, %R0" : "=r" (acc0));
-=======
 #ifndef CONFIG_AS_IS_LLVM
 	asm volatile(".arch_extension xscale\n\t"
 		     "mar acc0, %Q0, %R0" : "=r" (acc0));
 #else
 	asm volatile("mcrr p0, 0, %Q0, %R0, c0" :: "r" (acc0));
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -455,21 +346,13 @@ static void __init pxa_init_ext_wakeup_irq(int (*fn)(struct irq_data *,
 	for (irq = IRQ_WAKEUP0; irq <= IRQ_WAKEUP1; irq++) {
 		irq_set_chip_and_handler(irq, &pxa_ext_wakeup_chip,
 					 handle_edge_irq);
-<<<<<<< HEAD
-		set_irq_flags(irq, IRQF_VALID);
-=======
 		irq_clear_status_flags(irq, IRQ_NOREQUEST);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pxa_ext_wakeup_chip.irq_set_wake = fn;
 }
 
-<<<<<<< HEAD
-void __init pxa3xx_init_irq(void)
-=======
 static void __init __pxa3xx_init_irq(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* enable CP6 access */
 	u32 value;
@@ -477,12 +360,6 @@ static void __init __pxa3xx_init_irq(void)
 	value |= (1 << 6);
 	__asm__ __volatile__("mcr p15, 0, %0, c15, c1, 0\n": :"r"(value));
 
-<<<<<<< HEAD
-	pxa_init_irq(56, pxa3xx_set_wake);
-	pxa_init_ext_wakeup_irq(pxa3xx_set_wake);
-}
-
-=======
 	pxa_init_ext_wakeup_irq(pxa3xx_set_wake);
 }
 
@@ -497,16 +374,10 @@ pxa3xx_dt_init_irq(struct device_node *node, struct device_node *parent)
 }
 IRQCHIP_DECLARE(pxa3xx_intc, "marvell,pxa-intc", pxa3xx_dt_init_irq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct map_desc pxa3xx_io_desc[] __initdata = {
 	{	/* Mem Ctl */
 		.virtual	= (unsigned long)SMEMC_VIRT,
 		.pfn		= __phys_to_pfn(PXA3XX_SMEMC_BASE),
-<<<<<<< HEAD
-		.length		= 0x00200000,
-		.type		= MT_DEVICE
-	}
-=======
 		.length		= SMEMC_SIZE,
 		.type		= MT_DEVICE
 	}, {
@@ -515,7 +386,6 @@ static struct map_desc pxa3xx_io_desc[] __initdata = {
 		.length		= NAND_SIZE,
 		.type		= MT_DEVICE
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init pxa3xx_map_io(void)
@@ -525,49 +395,13 @@ void __init pxa3xx_map_io(void)
 	pxa3xx_get_clk_frequency_khz(1);
 }
 
-<<<<<<< HEAD
-/*
- * device registration specific to PXA3xx.
- */
-
-void __init pxa3xx_set_i2c_power_info(struct i2c_pxa_platform_data *info)
-{
-	pxa_register_device(&pxa3xx_device_i2c_power, info);
-}
-
-static struct platform_device *devices[] __initdata = {
-	&pxa_device_gpio,
-	&pxa27x_device_udc,
-	&pxa_device_pmu,
-	&pxa_device_i2s,
-	&pxa_device_asoc_ssp1,
-	&pxa_device_asoc_ssp2,
-	&pxa_device_asoc_ssp3,
-	&pxa_device_asoc_ssp4,
-	&pxa_device_asoc_platform,
-	&sa1100_device_rtc,
-	&pxa_device_rtc,
-	&pxa27x_device_ssp1,
-	&pxa27x_device_ssp2,
-	&pxa27x_device_ssp3,
-	&pxa3xx_device_ssp4,
-	&pxa27x_device_pwm0,
-	&pxa27x_device_pwm1,
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init pxa3xx_init(void)
 {
 	int ret = 0;
 
 	if (cpu_is_pxa3xx()) {
 
-<<<<<<< HEAD
-		reset_status = ARSR;
-=======
 		pxa_register_wdt(ARSR);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * clear RDH bit every time after reset
@@ -577,20 +411,6 @@ static int __init pxa3xx_init(void)
 		 */
 		ASCR &= ~(ASCR_RDH | ASCR_D1S | ASCR_D2S | ASCR_D3S);
 
-<<<<<<< HEAD
-		clkdev_add_table(pxa3xx_clkregs, ARRAY_SIZE(pxa3xx_clkregs));
-
-		if ((ret = pxa_init_dma(IRQ_DMA, 32)))
-			return ret;
-
-		pxa3xx_init_pm();
-
-		register_syscore_ops(&pxa_irq_syscore_ops);
-		register_syscore_ops(&pxa3xx_mfp_syscore_ops);
-		register_syscore_ops(&pxa3xx_clock_syscore_ops);
-
-		ret = platform_add_devices(devices, ARRAY_SIZE(devices));
-=======
 		/*
 		 * Disable DFI bus arbitration, to prevent a system bus lock if
 		 * somebody disables the NAND clock (unused clock) while this
@@ -606,7 +426,6 @@ static int __init pxa3xx_init(void)
 
 		register_syscore_ops(&pxa_irq_syscore_ops);
 		register_syscore_ops(&pxa3xx_mfp_syscore_ops);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;

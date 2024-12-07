@@ -1,19 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- * Licensed under the GPL
- */
-
-#include "linux/irqreturn.h"
-#include "linux/kd.h"
-#include "linux/sched.h"
-#include "linux/slab.h"
-#include "chan.h"
-#include "irq_kern.h"
-#include "irq_user.h"
-#include "kern_util.h"
-#include "os.h"
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
@@ -29,7 +13,6 @@
 #include <irq_user.h>
 #include <kern_util.h>
 #include <os.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define LINE_BUFSIZE 4096
 
@@ -39,12 +22,8 @@ static irqreturn_t line_interrupt(int irq, void *data)
 	struct line *line = chan->line;
 
 	if (line)
-<<<<<<< HEAD
-		chan_interrupt(line, line->tty, irq);
-=======
 		chan_interrupt(line, irq);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -53,11 +32,7 @@ static irqreturn_t line_interrupt(int irq, void *data)
  *
  * Should be called while holding line->lock (this does not modify data).
  */
-<<<<<<< HEAD
-static int write_room(struct line *line)
-=======
 static unsigned int write_room(struct line *line)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n;
 
@@ -72,19 +47,11 @@ static unsigned int write_room(struct line *line)
 	return n - 1;
 }
 
-<<<<<<< HEAD
-int line_write_room(struct tty_struct *tty)
-{
-	struct line *line = tty->driver_data;
-	unsigned long flags;
-	int room;
-=======
 unsigned int line_write_room(struct tty_struct *tty)
 {
 	struct line *line = tty->driver_data;
 	unsigned long flags;
 	unsigned int room;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&line->lock, flags);
 	room = write_room(line);
@@ -93,19 +60,11 @@ unsigned int line_write_room(struct tty_struct *tty)
 	return room;
 }
 
-<<<<<<< HEAD
-int line_chars_in_buffer(struct tty_struct *tty)
-{
-	struct line *line = tty->driver_data;
-	unsigned long flags;
-	int ret;
-=======
 unsigned int line_chars_in_buffer(struct tty_struct *tty)
 {
 	struct line *line = tty->driver_data;
 	unsigned long flags;
 	unsigned int ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&line->lock, flags);
 	/* write_room subtracts 1 for the needed NULL, so we readd it.*/
@@ -124,11 +83,7 @@ unsigned int line_chars_in_buffer(struct tty_struct *tty)
  *
  * Must be called while holding line->lock!
  */
-<<<<<<< HEAD
-static int buffer_data(struct line *line, const char *buf, int len)
-=======
 static int buffer_data(struct line *line, const u8 *buf, size_t len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int end, room;
 
@@ -184,11 +139,7 @@ static int flush_buffer(struct line *line)
 		count = line->buffer + LINE_BUFSIZE - line->head;
 
 		n = write_chan(line->chan_out, line->head, count,
-<<<<<<< HEAD
-			       line->driver->write_irq);
-=======
 			       line->write_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (n < 0)
 			return n;
 		if (n == count) {
@@ -205,11 +156,7 @@ static int flush_buffer(struct line *line)
 
 	count = line->tail - line->head;
 	n = write_chan(line->chan_out, line->head, count,
-<<<<<<< HEAD
-		       line->driver->write_irq);
-=======
 		       line->write_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (n < 0)
 		return n;
@@ -237,16 +184,7 @@ void line_flush_chars(struct tty_struct *tty)
 	line_flush_buffer(tty);
 }
 
-<<<<<<< HEAD
-int line_put_char(struct tty_struct *tty, unsigned char ch)
-{
-	return line_write(tty, &ch, sizeof(ch));
-}
-
-int line_write(struct tty_struct *tty, const unsigned char *buf, int len)
-=======
 ssize_t line_write(struct tty_struct *tty, const u8 *buf, size_t len)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct line *line = tty->driver_data;
 	unsigned long flags;
@@ -257,11 +195,7 @@ ssize_t line_write(struct tty_struct *tty, const u8 *buf, size_t len)
 		ret = buffer_data(line, buf, len);
 	else {
 		n = write_chan(line->chan_out, buf, len,
-<<<<<<< HEAD
-			       line->driver->write_irq);
-=======
 			       line->write_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (n < 0) {
 			ret = n;
 			goto out_up;
@@ -277,109 +211,11 @@ out_up:
 	return ret;
 }
 
-<<<<<<< HEAD
-void line_set_termios(struct tty_struct *tty, struct ktermios * old)
-{
-	/* nothing */
-}
-
-static const struct {
-	int  cmd;
-	char *level;
-	char *name;
-} tty_ioctls[] = {
-	/* don't print these, they flood the log ... */
-	{ TCGETS,      NULL,       "TCGETS"      },
-	{ TCSETS,      NULL,       "TCSETS"      },
-	{ TCSETSW,     NULL,       "TCSETSW"     },
-	{ TCFLSH,      NULL,       "TCFLSH"      },
-	{ TCSBRK,      NULL,       "TCSBRK"      },
-
-	/* general tty stuff */
-	{ TCSETSF,     KERN_DEBUG, "TCSETSF"     },
-	{ TCGETA,      KERN_DEBUG, "TCGETA"      },
-	{ TIOCMGET,    KERN_DEBUG, "TIOCMGET"    },
-	{ TCSBRKP,     KERN_DEBUG, "TCSBRKP"     },
-	{ TIOCMSET,    KERN_DEBUG, "TIOCMSET"    },
-
-	/* linux-specific ones */
-	{ TIOCLINUX,   KERN_INFO,  "TIOCLINUX"   },
-	{ KDGKBMODE,   KERN_INFO,  "KDGKBMODE"   },
-	{ KDGKBTYPE,   KERN_INFO,  "KDGKBTYPE"   },
-	{ KDSIGACCEPT, KERN_INFO,  "KDSIGACCEPT" },
-};
-
-int line_ioctl(struct tty_struct *tty, unsigned int cmd,
-				unsigned long arg)
-{
-	int ret;
-	int i;
-
-	ret = 0;
-	switch(cmd) {
-#ifdef TIOCGETP
-	case TIOCGETP:
-	case TIOCSETP:
-	case TIOCSETN:
-#endif
-#ifdef TIOCGETC
-	case TIOCGETC:
-	case TIOCSETC:
-#endif
-#ifdef TIOCGLTC
-	case TIOCGLTC:
-	case TIOCSLTC:
-#endif
-	/* Note: these are out of date as we now have TCGETS2 etc but this
-	   whole lot should probably go away */
-	case TCGETS:
-	case TCSETSF:
-	case TCSETSW:
-	case TCSETS:
-	case TCGETA:
-	case TCSETAF:
-	case TCSETAW:
-	case TCSETA:
-	case TCXONC:
-	case TCFLSH:
-	case TIOCOUTQ:
-	case TIOCINQ:
-	case TIOCGLCKTRMIOS:
-	case TIOCSLCKTRMIOS:
-	case TIOCPKT:
-	case TIOCGSOFTCAR:
-	case TIOCSSOFTCAR:
-		return -ENOIOCTLCMD;
-#if 0
-	case TCwhatever:
-		/* do something */
-		break;
-#endif
-	default:
-		for (i = 0; i < ARRAY_SIZE(tty_ioctls); i++)
-			if (cmd == tty_ioctls[i].cmd)
-				break;
-		if (i == ARRAY_SIZE(tty_ioctls)) {
-			printk(KERN_ERR "%s: %s: unknown ioctl: 0x%x\n",
-			       __func__, tty->name, cmd);
-		}
-		ret = -ENOIOCTLCMD;
-		break;
-	}
-	return ret;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void line_throttle(struct tty_struct *tty)
 {
 	struct line *line = tty->driver_data;
 
-<<<<<<< HEAD
-	deactivate_chan(line->chan_in, line->driver->read_irq);
-=======
 	deactivate_chan(line->chan_in, line->read_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	line->throttled = 1;
 }
 
@@ -388,29 +224,13 @@ void line_unthrottle(struct tty_struct *tty)
 	struct line *line = tty->driver_data;
 
 	line->throttled = 0;
-<<<<<<< HEAD
-	chan_interrupt(line, tty, line->driver->read_irq);
-
-	/*
-	 * Maybe there is enough stuff pending that calling the interrupt
-	 * throttles us again.  In this case, line->throttled will be 1
-	 * again and we shouldn't turn the interrupt back on.
-	 */
-	if (!line->throttled)
-		reactivate_chan(line->chan_in, line->driver->read_irq);
-=======
 	chan_interrupt(line, line->read_irq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t line_write_interrupt(int irq, void *data)
 {
 	struct chan *chan = data;
 	struct line *line = chan->line;
-<<<<<<< HEAD
-	struct tty_struct *tty = line->tty;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	/*
@@ -423,88 +243,20 @@ static irqreturn_t line_write_interrupt(int irq, void *data)
 	if (err == 0) {
 		spin_unlock(&line->lock);
 		return IRQ_NONE;
-<<<<<<< HEAD
-	} else if (err < 0) {
-=======
 	} else if ((err < 0) && (err != -EAGAIN)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		line->head = line->buffer;
 		line->tail = line->buffer;
 	}
 	spin_unlock(&line->lock);
 
-<<<<<<< HEAD
-	if (tty == NULL)
-		return IRQ_NONE;
-
-	tty_wakeup(tty);
-=======
 	tty_port_tty_wakeup(&line->port);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
 int line_setup_irq(int fd, int input, int output, struct line *line, void *data)
 {
 	const struct line_driver *driver = line->driver;
-<<<<<<< HEAD
-	int err = 0, flags = IRQF_SHARED | IRQF_SAMPLE_RANDOM;
-
-	if (input)
-		err = um_request_irq(driver->read_irq, fd, IRQ_READ,
-				       line_interrupt, flags,
-				       driver->read_irq_name, data);
-	if (err)
-		return err;
-	if (output)
-		err = um_request_irq(driver->write_irq, fd, IRQ_WRITE,
-					line_write_interrupt, flags,
-					driver->write_irq_name, data);
-	return err;
-}
-
-/*
- * Normally, a driver like this can rely mostly on the tty layer
- * locking, particularly when it comes to the driver structure.
- * However, in this case, mconsole requests can come in "from the
- * side", and race with opens and closes.
- *
- * mconsole config requests will want to be sure the device isn't in
- * use, and get_config, open, and close will want a stable
- * configuration.  The checking and modification of the configuration
- * is done under a spinlock.  Checking whether the device is in use is
- * line->tty->count > 1, also under the spinlock.
- *
- * line->count serves to decide whether the device should be enabled or
- * disabled on the host.  If it's equal to 0, then we are doing the
- * first open or last close.  Otherwise, open and close just return.
- */
-
-int line_open(struct line *lines, struct tty_struct *tty)
-{
-	struct line *line = &lines[tty->index];
-	int err = -ENODEV;
-
-	mutex_lock(&line->count_lock);
-	if (!line->valid)
-		goto out_unlock;
-
-	err = 0;
-	if (line->count++)
-		goto out_unlock;
-
-	BUG_ON(tty->driver_data);
-	tty->driver_data = line;
-	line->tty = tty;
-
-	err = enable_chan(line);
-	if (err) /* line_close() will be called by our caller */
-		goto out_unlock;
-
-	if (!line->sigio) {
-		chan_enable_winch(line->chan_out, tty);
-=======
 	int err;
 
 	if (input) {
@@ -541,65 +293,26 @@ static int line_activate(struct tty_port *port, struct tty_struct *tty)
 
 	if (!line->sigio) {
 		chan_enable_winch(line->chan_out, port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		line->sigio = 1;
 	}
 
 	chan_window_size(line, &tty->winsize.ws_row,
-<<<<<<< HEAD
-			 &tty->winsize.ws_col);
-out_unlock:
-	mutex_unlock(&line->count_lock);
-	return err;
-=======
 		&tty->winsize.ws_col);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void unregister_winch(struct tty_struct *tty);
 
-<<<<<<< HEAD
-void line_close(struct tty_struct *tty, struct file * filp)
-{
-	struct line *line = tty->driver_data;
-
-	/*
-	 * If line_open fails (and tty->driver_data is never set),
-	 * tty_open will call line_close.  So just return in this case.
-	 */
-	if (line == NULL)
-		return;
-
-	/* We ignore the error anyway! */
-	flush_buffer(line);
-
-	mutex_lock(&line->count_lock);
-	BUG_ON(!line->valid);
-
-	if (--line->count)
-		goto out_unlock;
-
-	line->tty = NULL;
-	tty->driver_data = NULL;
-
-=======
 static void line_destruct(struct tty_port *port)
 {
 	struct tty_struct *tty = tty_port_tty_get(port);
 	struct line *line = tty->driver_data;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (line->sigio) {
 		unregister_winch(tty);
 		line->sigio = 0;
 	}
-<<<<<<< HEAD
-
-out_unlock:
-	mutex_unlock(&line->count_lock);
-=======
 }
 
 static const struct tty_port_operations line_port_ops = {
@@ -640,7 +353,6 @@ void line_hangup(struct tty_struct *tty)
 	struct line *line = tty->driver_data;
 
 	tty_port_hangup(&line->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void close_lines(struct line *lines, int nlines)
@@ -658,13 +370,7 @@ int setup_one_line(struct line *lines, int n, char *init,
 	struct tty_driver *driver = line->driver->driver;
 	int err = -EINVAL;
 
-<<<<<<< HEAD
-	mutex_lock(&line->count_lock);
-
-	if (line->count) {
-=======
 	if (line->port.count) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*error_out = "Device is already open";
 		goto out;
 	}
@@ -691,12 +397,8 @@ int setup_one_line(struct line *lines, int n, char *init,
 		line->valid = 1;
 		err = parse_chan_pair(new, line, n, opts, error_out);
 		if (!err) {
-<<<<<<< HEAD
-			struct device *d = tty_register_device(driver, n, NULL);
-=======
 			struct device *d = tty_port_register_device(&line->port,
 					driver, n, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(d)) {
 				*error_out = "Failed to register device";
 				err = PTR_ERR(d);
@@ -710,10 +412,6 @@ int setup_one_line(struct line *lines, int n, char *init,
 		}
 	}
 out:
-<<<<<<< HEAD
-	mutex_unlock(&line->count_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -801,15 +499,6 @@ int line_get_config(char *name, struct line *lines, unsigned int num, char *str,
 
 	line = &lines[dev];
 
-<<<<<<< HEAD
-	mutex_lock(&line->count_lock);
-	if (!line->valid)
-		CONFIG_CHUNK(str, size, n, "none", 1);
-	else if (line->tty == NULL)
-		CONFIG_CHUNK(str, size, n, line->init_str, 1);
-	else n = chan_config_string(line, str, size, error_out);
-	mutex_unlock(&line->count_lock);
-=======
 	if (!line->valid)
 		CONFIG_CHUNK(str, size, n, "none", 1);
 	else {
@@ -821,7 +510,6 @@ int line_get_config(char *name, struct line *lines, unsigned int num, char *str,
 			tty_kref_put(tty);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return n;
 }
@@ -854,14 +542,6 @@ int register_lines(struct line_driver *line_driver,
 		   const struct tty_operations *ops,
 		   struct line *lines, int nlines)
 {
-<<<<<<< HEAD
-	struct tty_driver *driver = alloc_tty_driver(nlines);
-	int err;
-	int i;
-
-	if (!driver)
-		return -ENOMEM;
-=======
 	struct tty_driver *driver;
 	int err;
 	int i;
@@ -870,7 +550,6 @@ int register_lines(struct line_driver *line_driver,
 			TTY_DRIVER_DYNAMIC_DEV);
 	if (IS_ERR(driver))
 		return PTR_ERR(driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	driver->driver_name = line_driver->name;
 	driver->name = line_driver->device_name;
@@ -878,21 +557,12 @@ int register_lines(struct line_driver *line_driver,
 	driver->minor_start = line_driver->minor_start;
 	driver->type = line_driver->type;
 	driver->subtype = line_driver->subtype;
-<<<<<<< HEAD
-	driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
-	driver->init_termios = tty_std_termios;
-	
-	for (i = 0; i < nlines; i++) {
-		spin_lock_init(&lines[i].lock);
-		mutex_init(&lines[i].count_lock);
-=======
 	driver->init_termios = tty_std_termios;
 
 	for (i = 0; i < nlines; i++) {
 		tty_port_init(&lines[i].port);
 		lines[i].port.ops = &line_port_ops;
 		spin_lock_init(&lines[i].lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lines[i].driver = line_driver;
 		INIT_LIST_HEAD(&lines[i].chan_list);
 	}
@@ -902,13 +572,9 @@ int register_lines(struct line_driver *line_driver,
 	if (err) {
 		printk(KERN_ERR "register_lines : can't register %s driver\n",
 		       line_driver->name);
-<<<<<<< HEAD
-		put_tty_driver(driver);
-=======
 		tty_driver_kref_put(driver);
 		for (i = 0; i < nlines; i++)
 			tty_port_destroy(&lines[i].port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -925,11 +591,7 @@ struct winch {
 	int fd;
 	int tty_fd;
 	int pid;
-<<<<<<< HEAD
-	struct tty_struct *tty;
-=======
 	struct tty_port *port;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long stack;
 	struct work_struct work;
 };
@@ -937,11 +599,7 @@ struct winch {
 static void __free_winch(struct work_struct *work)
 {
 	struct winch *winch = container_of(work, struct winch, work);
-<<<<<<< HEAD
-	free_irq(WINCH_IRQ, winch);
-=======
 	um_free_irq(WINCH_IRQ, winch);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (winch->pid != -1)
 		os_kill_process(winch->pid, 1);
@@ -956,10 +614,6 @@ static void free_winch(struct winch *winch)
 	winch->fd = -1;
 	if (fd != -1)
 		os_close_file(fd);
-<<<<<<< HEAD
-	list_del(&winch->list);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__free_winch(&winch->work);
 }
 
@@ -971,36 +625,22 @@ static irqreturn_t winch_interrupt(int irq, void *data)
 	int fd = winch->fd;
 	int err;
 	char c;
-<<<<<<< HEAD
-
-	if (fd != -1) {
-		err = generic_read(fd, &c, NULL);
-		if (err < 0) {
-=======
 	struct pid *pgrp;
 
 	if (fd != -1) {
 		err = generic_read(fd, &c, NULL);
 		/* A read of 2 means the winch thread failed and has warned */
 		if (err < 0 || (err == 1 && c == 2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err != -EAGAIN) {
 				winch->fd = -1;
 				list_del(&winch->list);
 				os_close_file(fd);
-<<<<<<< HEAD
-				printk(KERN_ERR "winch_interrupt : "
-				       "read failed, errno = %d\n", -err);
-				printk(KERN_ERR "fd %d is losing SIGWINCH "
-				       "support\n", winch->tty_fd);
-=======
 				if (err < 0) {
 					printk(KERN_ERR "winch_interrupt : read failed, errno = %d\n",
 					       -err);
 					printk(KERN_ERR "fd %d is losing SIGWINCH support\n",
 					       winch->tty_fd);
 				}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				INIT_WORK(&winch->work, __free_winch);
 				schedule_work(&winch->work);
 				return IRQ_HANDLED;
@@ -1008,28 +648,12 @@ static irqreturn_t winch_interrupt(int irq, void *data)
 			goto out;
 		}
 	}
-<<<<<<< HEAD
-	tty = winch->tty;
-=======
 	tty = tty_port_tty_get(winch->port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tty != NULL) {
 		line = tty->driver_data;
 		if (line != NULL) {
 			chan_window_size(line, &tty->winsize.ws_row,
 					 &tty->winsize.ws_col);
-<<<<<<< HEAD
-			kill_pgrp(tty->pgrp, SIGWINCH, 1);
-		}
-	}
- out:
-	if (winch->fd != -1)
-		reactivate_fd(winch->fd, WINCH_IRQ);
-	return IRQ_HANDLED;
-}
-
-void register_winch_irq(int fd, int tty_fd, int pid, struct tty_struct *tty,
-=======
 			pgrp = tty_get_pgrp(tty);
 			if (pgrp)
 				kill_pgrp(pgrp, SIGWINCH, 1);
@@ -1042,7 +666,6 @@ void register_winch_irq(int fd, int tty_fd, int pid, struct tty_struct *tty,
 }
 
 void register_winch_irq(int fd, int tty_fd, int pid, struct tty_port *port,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long stack)
 {
 	struct winch *winch;
@@ -1057,20 +680,11 @@ void register_winch_irq(int fd, int tty_fd, int pid, struct tty_port *port,
 				   .fd  	= fd,
 				   .tty_fd 	= tty_fd,
 				   .pid  	= pid,
-<<<<<<< HEAD
-				   .tty 	= tty,
-				   .stack	= stack });
-
-	if (um_request_irq(WINCH_IRQ, fd, IRQ_READ, winch_interrupt,
-			   IRQF_SHARED | IRQF_SAMPLE_RANDOM,
-			   "winch", winch) < 0) {
-=======
 				   .port 	= port,
 				   .stack	= stack });
 
 	if (um_request_irq(WINCH_IRQ, fd, IRQ_READ, winch_interrupt,
 			   IRQF_SHARED, "winch", winch) < 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "register_winch_irq - failed to register "
 		       "IRQ\n");
 		goto out_free;
@@ -1095,21 +709,12 @@ static void unregister_winch(struct tty_struct *tty)
 {
 	struct list_head *ele, *next;
 	struct winch *winch;
-<<<<<<< HEAD
-=======
 	struct tty_struct *wtty;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&winch_handler_lock);
 
 	list_for_each_safe(ele, next, &winch_handlers) {
 		winch = list_entry(ele, struct winch, list);
-<<<<<<< HEAD
-		if (winch->tty == tty) {
-			free_winch(winch);
-			break;
-		}
-=======
 		wtty = tty_port_tty_get(winch->port);
 		if (wtty == tty) {
 			list_del(&winch->list);
@@ -1118,23 +723,12 @@ static void unregister_winch(struct tty_struct *tty)
 			break;
 		}
 		tty_kref_put(wtty);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&winch_handler_lock);
 }
 
 static void winch_cleanup(void)
 {
-<<<<<<< HEAD
-	struct list_head *ele, *next;
-	struct winch *winch;
-
-	spin_lock(&winch_handler_lock);
-
-	list_for_each_safe(ele, next, &winch_handlers) {
-		winch = list_entry(ele, struct winch, list);
-		free_winch(winch);
-=======
 	struct winch *winch;
 
 	spin_lock(&winch_handler_lock);
@@ -1146,7 +740,6 @@ static void winch_cleanup(void)
 		free_winch(winch);
 
 		spin_lock(&winch_handler_lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock(&winch_handler_lock);

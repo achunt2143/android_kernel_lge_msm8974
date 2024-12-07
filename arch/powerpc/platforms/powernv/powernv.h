@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#ifndef _POWERNV_H
-#define _POWERNV_H
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef _POWERNV_H
 #define _POWERNV_H
@@ -14,21 +9,12 @@
  */
 #include <asm/powernv.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SMP
 extern void pnv_smp_init(void);
 #else
 static inline void pnv_smp_init(void) { }
 #endif
 
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-extern void pnv_pci_init(void);
-#else
-static inline void pnv_pci_init(void) { }
-#endif
-
-=======
 extern void pnv_platform_error_reboot(struct pt_regs *regs, const char *msg) __noreturn;
 
 struct pci_dev;
@@ -58,5 +44,4 @@ struct memcons *__init memcons_init(struct device_node *node, const char *mc_pro
 
 void pnv_rng_init(void);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _POWERNV_H */

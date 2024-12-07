@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-config FANOTIFY
-	bool "Filesystem wide access notification"
-	select FSNOTIFY
-	select ANON_INODES
-	default n
-	---help---
-	   Say Y here to enable fanotify suport.  fanotify is a file access
-=======
 # SPDX-License-Identifier: GPL-2.0-only
 config FANOTIFY
 	bool "Filesystem wide access notification"
@@ -15,7 +6,6 @@ config FANOTIFY
 	default n
 	help
 	   Say Y here to enable fanotify support.  fanotify is a file access
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   notification system which differs from inotify in that it sends
 	   an open file descriptor to the userspace listener along with
 	   the event.
@@ -27,19 +17,11 @@ config FANOTIFY_ACCESS_PERMISSIONS
 	depends on FANOTIFY
 	depends on SECURITY
 	default n
-<<<<<<< HEAD
-	---help---
-=======
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   Say Y here is you want fanotify listeners to be able to make permissions
 	   decisions concerning filesystem events.  This is used by some fanotify
 	   listeners which need to scan files before allowing the system access to
 	   use those files.  This is used by some anti-malware vendors and by some
-<<<<<<< HEAD
-	   hierarchical storage managent systems.
-=======
 	   hierarchical storage management systems.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	   If unsure, say N.

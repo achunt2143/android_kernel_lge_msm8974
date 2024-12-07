@@ -43,17 +43,10 @@
  */
 
 #include <asm/byteorder.h>
-<<<<<<< HEAD
-#include <linux/bitops.h>
-#include <linux/init.h>
-#include <linux/module.h>
-#include <linux/crypto.h>
-=======
 #include <crypto/algapi.h>
 #include <linux/bitops.h>
 #include <linux/init.h>
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ROUNDS 16
 
@@ -70,14 +63,7 @@ do {								\
 } while (0)
 
 /* Rotate right one 64 bit number as a 56 bit number */
-<<<<<<< HEAD
-#define ror56_64(k, n)						\
-do {								\
-	k = (k >> n) | ((k & ((1 << n) - 1)) << (56 - n));	\
-} while (0)
-=======
 #define ror56_64(k, n) (k = (k >> n) | ((k & ((1 << n) - 1)) << (56 - n)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Sboxes for Feistel network derived from
@@ -121,11 +107,7 @@ static const __be32 sbox0[256] = {
 };
 
 #undef Z
-<<<<<<< HEAD
-#define Z(x) cpu_to_be32((x << 27) | (x >> 5))
-=======
 #define Z(x) cpu_to_be32(((x & 0x1f) << 27) | (x >> 5))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const __be32 sbox1[256] = {
 	Z(0x77), Z(0x14), Z(0xa6), Z(0xfe), Z(0xb2), Z(0x5e), Z(0x8c), Z(0x3e),
 	Z(0x67), Z(0x6c), Z(0xa1), Z(0x0d), Z(0xc2), Z(0xa2), Z(0xc1), Z(0x85),
@@ -406,19 +388,11 @@ static int fcrypt_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int key
 
 static struct crypto_alg fcrypt_alg = {
 	.cra_name		=	"fcrypt",
-<<<<<<< HEAD
-=======
 	.cra_driver_name	=	"fcrypt-generic",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		=	8,
 	.cra_ctxsize		=	sizeof(struct fcrypt_ctx),
 	.cra_module		=	THIS_MODULE,
-<<<<<<< HEAD
-	.cra_alignmask		=	3,
-	.cra_list		=	LIST_HEAD_INIT(fcrypt_alg.cra_list),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{ .cipher = {
 	.cia_min_keysize	=	8,
 	.cia_max_keysize	=	8,
@@ -437,17 +411,10 @@ static void __exit fcrypt_mod_fini(void)
 	crypto_unregister_alg(&fcrypt_alg);
 }
 
-<<<<<<< HEAD
-module_init(fcrypt_mod_init);
-=======
 subsys_initcall(fcrypt_mod_init);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(fcrypt_mod_fini);
 
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_DESCRIPTION("FCrypt Cipher Algorithm");
 MODULE_AUTHOR("David Howells <dhowells@redhat.com>");
-<<<<<<< HEAD
-=======
 MODULE_ALIAS_CRYPTO("fcrypt");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

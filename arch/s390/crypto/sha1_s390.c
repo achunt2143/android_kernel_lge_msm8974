@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0+
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API.
  *
@@ -12,11 +9,7 @@
  * implementation written by Steve Reid.
  *
  * s390 Version:
-<<<<<<< HEAD
- *   Copyright IBM Corp. 2003,2007
-=======
  *   Copyright IBM Corp. 2003, 2007
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   Author(s): Thomas Spatzier
  *		Jan Glauber (jan.glauber@de.ibm.com)
  *
@@ -24,27 +17,10 @@
  *   Copyright (c) Alan Smithee.
  *   Copyright (c) Andrew McDonald <andrew@mcdonald.org.uk>
  *   Copyright (c) Jean-Francois Dive <jef@linuxbe.org>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <crypto/internal/hash.h>
 #include <linux/init.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <crypto/sha.h>
-
-#include "crypt_s390.h"
-#include "sha.h"
-
-static int sha1_init(struct shash_desc *desc)
-=======
 #include <linux/cpufeature.h>
 #include <crypto/sha1.h>
 #include <asm/cpacf.h>
@@ -52,7 +28,6 @@ static int sha1_init(struct shash_desc *desc)
 #include "sha.h"
 
 static int s390_sha1_init(struct shash_desc *desc)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct s390_sha_ctx *sctx = shash_desc_ctx(desc);
 
@@ -62,20 +37,12 @@ static int s390_sha1_init(struct shash_desc *desc)
 	sctx->state[3] = SHA1_H3;
 	sctx->state[4] = SHA1_H4;
 	sctx->count = 0;
-<<<<<<< HEAD
-	sctx->func = KIMD_SHA_1;
-=======
 	sctx->func = CPACF_KIMD_SHA_1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sha1_export(struct shash_desc *desc, void *out)
-=======
 static int s390_sha1_export(struct shash_desc *desc, void *out)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct s390_sha_ctx *sctx = shash_desc_ctx(desc);
 	struct sha1_state *octx = out;
@@ -86,11 +53,7 @@ static int s390_sha1_export(struct shash_desc *desc, void *out)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int sha1_import(struct shash_desc *desc, const void *in)
-=======
 static int s390_sha1_import(struct shash_desc *desc, const void *in)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct s390_sha_ctx *sctx = shash_desc_ctx(desc);
 	const struct sha1_state *ictx = in;
@@ -98,40 +61,23 @@ static int s390_sha1_import(struct shash_desc *desc, const void *in)
 	sctx->count = ictx->count;
 	memcpy(sctx->state, ictx->state, sizeof(ictx->state));
 	memcpy(sctx->buf, ictx->buffer, sizeof(ictx->buffer));
-<<<<<<< HEAD
-	sctx->func = KIMD_SHA_1;
-=======
 	sctx->func = CPACF_KIMD_SHA_1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct shash_alg alg = {
 	.digestsize	=	SHA1_DIGEST_SIZE,
-<<<<<<< HEAD
-	.init		=	sha1_init,
-	.update		=	s390_sha_update,
-	.final		=	s390_sha_final,
-	.export		=	sha1_export,
-	.import		=	sha1_import,
-=======
 	.init		=	s390_sha1_init,
 	.update		=	s390_sha_update,
 	.final		=	s390_sha_final,
 	.export		=	s390_sha1_export,
 	.import		=	s390_sha1_import,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.descsize	=	sizeof(struct s390_sha_ctx),
 	.statesize	=	sizeof(struct sha1_state),
 	.base		=	{
 		.cra_name	=	"sha1",
 		.cra_driver_name=	"sha1-s390",
-<<<<<<< HEAD
-		.cra_priority	=	CRYPT_S390_PRIORITY,
-		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
-=======
 		.cra_priority	=	300,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.cra_blocksize	=	SHA1_BLOCK_SIZE,
 		.cra_module	=	THIS_MODULE,
 	}
@@ -139,13 +85,8 @@ static struct shash_alg alg = {
 
 static int __init sha1_s390_init(void)
 {
-<<<<<<< HEAD
-	if (!crypt_s390_func_available(KIMD_SHA_1, CRYPT_S390_MSA))
-		return -EOPNOTSUPP;
-=======
 	if (!cpacf_query_func(CPACF_KIMD, CPACF_KIMD_SHA_1))
 		return -ENODEV;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return crypto_register_shash(&alg);
 }
 
@@ -154,16 +95,9 @@ static void __exit sha1_s390_fini(void)
 	crypto_unregister_shash(&alg);
 }
 
-<<<<<<< HEAD
-module_init(sha1_s390_init);
-module_exit(sha1_s390_fini);
-
-MODULE_ALIAS("sha1");
-=======
 module_cpu_feature_match(S390_CPU_FEATURE_MSA, sha1_s390_init);
 module_exit(sha1_s390_fini);
 
 MODULE_ALIAS_CRYPTO("sha1");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("SHA1 Secure Hash Algorithm");

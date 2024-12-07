@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 Chris Dearman (chris@mips.com),
  */
@@ -10,24 +7,15 @@
 #include <linux/sched.h>
 #include <linux/mm.h>
 
-<<<<<<< HEAD
-=======
 #include <asm/cpu-type.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mipsregs.h>
 #include <asm/bcache.h>
 #include <asm/cacheops.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <asm/pgtable.h>
-#include <asm/mmu_context.h>
-#include <asm/r4kcache.h>
-=======
 #include <asm/mmu_context.h>
 #include <asm/r4kcache.h>
 #include <asm/mips-cps.h>
 #include <asm/bootinfo.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MIPS32/MIPS64 L2 cache handling
@@ -64,8 +52,6 @@ static void mips_sc_disable(void)
 	/* L2 cache is permanently enabled */
 }
 
-<<<<<<< HEAD
-=======
 static void mips_sc_prefetch_enable(void)
 {
 	unsigned long pftctl;
@@ -112,19 +98,14 @@ static bool mips_sc_prefetch_is_enabled(void)
 	return !!(pftctl & CM_GCR_L2_PFT_CONTROL_PFTEN);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct bcache_ops mips_sc_ops = {
 	.bc_enable = mips_sc_enable,
 	.bc_disable = mips_sc_disable,
 	.bc_wback_inv = mips_sc_wback_inv,
-<<<<<<< HEAD
-	.bc_inv = mips_sc_inv
-=======
 	.bc_inv = mips_sc_inv,
 	.bc_prefetch_enable = mips_sc_prefetch_enable,
 	.bc_prefetch_disable = mips_sc_prefetch_disable,
 	.bc_prefetch_is_enabled = mips_sc_prefetch_is_enabled,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -142,13 +123,6 @@ static inline int mips_sc_is_activated(struct cpuinfo_mips *c)
 	unsigned int tmp;
 
 	/* Check the bypass bit (L2B) */
-<<<<<<< HEAD
-	switch (c->cputype) {
-	case CPU_34K:
-	case CPU_74K:
-	case CPU_1004K:
-	case CPU_BMIPS5000:
-=======
 	switch (current_cpu_type()) {
 	case CPU_34K:
 	case CPU_74K:
@@ -160,7 +134,6 @@ static inline int mips_sc_is_activated(struct cpuinfo_mips *c)
 	case CPU_BMIPS5000:
 	case CPU_QEMU_GENERIC:
 	case CPU_P6600:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (config2 & (1 << 12))
 			return 0;
 	}
@@ -173,9 +146,6 @@ static inline int mips_sc_is_activated(struct cpuinfo_mips *c)
 	return 1;
 }
 
-<<<<<<< HEAD
-static inline int __init mips_sc_probe(void)
-=======
 static int mips_sc_probe_cm3(void)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
@@ -211,7 +181,6 @@ static int mips_sc_probe_cm3(void)
 }
 
 static inline int mips_sc_probe(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
 	unsigned int config1, config2;
@@ -220,13 +189,6 @@ static inline int mips_sc_probe(void)
 	/* Mark as not present until probe completed */
 	c->scache.flags |= MIPS_CACHE_NOT_PRESENT;
 
-<<<<<<< HEAD
-	/* Ignore anything but MIPSxx processors */
-	if (c->isa_level != MIPS_CPU_ISA_M32R1 &&
-	    c->isa_level != MIPS_CPU_ISA_M32R2 &&
-	    c->isa_level != MIPS_CPU_ISA_M64R1 &&
-	    c->isa_level != MIPS_CPU_ISA_M64R2)
-=======
 	if (mips_cm_revision() >= CM_REV_CM3)
 		return mips_sc_probe_cm3();
 
@@ -235,7 +197,6 @@ static inline int mips_sc_probe(void)
 			      MIPS_CPU_ISA_M32R2 | MIPS_CPU_ISA_M64R2 |
 			      MIPS_CPU_ISA_M32R5 | MIPS_CPU_ISA_M64R5 |
 			      MIPS_CPU_ISA_M32R6 | MIPS_CPU_ISA_M64R6)))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* Does this MIPS32/MIPS64 CPU have a config2 register? */
@@ -249,27 +210,17 @@ static inline int mips_sc_probe(void)
 		return 0;
 
 	tmp = (config2 >> 8) & 0x0f;
-<<<<<<< HEAD
-	if (0 <= tmp && tmp <= 7)
-=======
 	if (tmp <= 7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->scache.sets = 64 << tmp;
 	else
 		return 0;
 
 	tmp = (config2 >> 0) & 0x0f;
-<<<<<<< HEAD
-	if (0 <= tmp && tmp <= 7)
-=======
 	if (tmp <= 7)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->scache.ways = tmp + 1;
 	else
 		return 0;
 
-<<<<<<< HEAD
-=======
 	if (current_cpu_type() == CPU_XBURST) {
 		switch (mips_machtype) {
 		/*
@@ -293,7 +244,6 @@ static inline int mips_sc_probe(void)
 		}
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->scache.waysize = c->scache.sets * c->scache.linesz;
 	c->scache.waybit = __ffs(c->scache.waysize);
 
@@ -302,19 +252,12 @@ static inline int mips_sc_probe(void)
 	return 1;
 }
 
-<<<<<<< HEAD
-int __cpuinit mips_sc_init(void)
-=======
 int mips_sc_init(void)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int found = mips_sc_probe();
 	if (found) {
 		mips_sc_enable();
-<<<<<<< HEAD
-=======
 		mips_sc_prefetch_enable();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bcops = &mips_sc_ops;
 	}
 	return found;

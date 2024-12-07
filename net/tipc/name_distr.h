@@ -39,13 +39,6 @@
 
 #include "name_table.h"
 
-<<<<<<< HEAD
-void tipc_named_publish(struct publication *publ);
-void tipc_named_withdraw(struct publication *publ);
-void tipc_named_node_up(unsigned long node);
-void tipc_named_recv(struct sk_buff *buf);
-void tipc_named_reinit(void);
-=======
 #define ITEM_SIZE sizeof(struct distr_item)
 
 /**
@@ -82,6 +75,5 @@ void tipc_named_rcv(struct net *net, struct sk_buff_head *namedq,
 void tipc_named_reinit(struct net *net);
 void tipc_publ_notify(struct net *net, struct list_head *nsub_list,
 		      u32 addr, u16 capabilities);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

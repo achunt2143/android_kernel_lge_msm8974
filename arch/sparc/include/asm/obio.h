@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * obio.h:  Some useful locations in 0xFXXXXXXXX PA obio space on sun4d.
  *
@@ -121,15 +118,9 @@ static inline void bw_clear_intr_mask(int sbus_level, int mask)
 			      "i" (ASI_M_CTL));
 }
 
-<<<<<<< HEAD
-static inline unsigned bw_get_prof_limit(int cpu)
-{
-	unsigned limit;
-=======
 static inline unsigned int bw_get_prof_limit(int cpu)
 {
 	unsigned int limit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	__asm__ __volatile__ ("lda [%1] %2, %0" :
 			      "=r" (limit) :
@@ -138,11 +129,7 @@ static inline unsigned int bw_get_prof_limit(int cpu)
 	return limit;
 }
 
-<<<<<<< HEAD
-static inline void bw_set_prof_limit(int cpu, unsigned limit)
-=======
 static inline void bw_set_prof_limit(int cpu, unsigned int limit)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ ("sta %0, [%1] %2" : :
 			      "r" (limit),
@@ -150,15 +137,9 @@ static inline void bw_set_prof_limit(int cpu, unsigned int limit)
 			      "i" (ASI_M_CTL));
 }
 
-<<<<<<< HEAD
-static inline unsigned bw_get_ctrl(int cpu)
-{
-	unsigned ctrl;
-=======
 static inline unsigned int bw_get_ctrl(int cpu)
 {
 	unsigned int ctrl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	__asm__ __volatile__ ("lda [%1] %2, %0" :
 			      "=r" (ctrl) :
@@ -167,11 +148,7 @@ static inline unsigned int bw_get_ctrl(int cpu)
 	return ctrl;
 }
 
-<<<<<<< HEAD
-static inline void bw_set_ctrl(int cpu, unsigned ctrl)
-=======
 static inline void bw_set_ctrl(int cpu, unsigned int ctrl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ ("sta %0, [%1] %2" : :
 			      "r" (ctrl),
@@ -179,15 +156,9 @@ static inline void bw_set_ctrl(int cpu, unsigned int ctrl)
 			      "i" (ASI_M_CTL));
 }
 
-<<<<<<< HEAD
-static inline unsigned cc_get_ipen(void)
-{
-	unsigned pending;
-=======
 static inline unsigned int cc_get_ipen(void)
 {
 	unsigned int pending;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	__asm__ __volatile__ ("lduha [%1] %2, %0" :
 			      "=r" (pending) :
@@ -196,11 +167,7 @@ static inline unsigned int cc_get_ipen(void)
 	return pending;
 }
 
-<<<<<<< HEAD
-static inline void cc_set_iclr(unsigned clear)
-=======
 static inline void cc_set_iclr(unsigned int clear)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ ("stha %0, [%1] %2" : :
 			      "r" (clear),
@@ -208,15 +175,9 @@ static inline void cc_set_iclr(unsigned int clear)
 			      "i" (ASI_M_MXCC));
 }
 
-<<<<<<< HEAD
-static inline unsigned cc_get_imsk(void)
-{
-	unsigned mask;
-=======
 static inline unsigned int cc_get_imsk(void)
 {
 	unsigned int mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	__asm__ __volatile__ ("lduha [%1] %2, %0" :
 			      "=r" (mask) :
@@ -225,11 +186,7 @@ static inline unsigned int cc_get_imsk(void)
 	return mask;
 }
 
-<<<<<<< HEAD
-static inline void cc_set_imsk(unsigned mask)
-=======
 static inline void cc_set_imsk(unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ ("stha %0, [%1] %2" : :
 			      "r" (mask),
@@ -237,15 +194,9 @@ static inline void cc_set_imsk(unsigned int mask)
 			      "i" (ASI_M_MXCC));
 }
 
-<<<<<<< HEAD
-static inline unsigned cc_get_imsk_other(int cpuid)
-{
-	unsigned mask;
-=======
 static inline unsigned int cc_get_imsk_other(int cpuid)
 {
 	unsigned int mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	__asm__ __volatile__ ("lduha [%1] %2, %0" :
 			      "=r" (mask) :
@@ -254,11 +205,7 @@ static inline unsigned int cc_get_imsk_other(int cpuid)
 	return mask;
 }
 
-<<<<<<< HEAD
-static inline void cc_set_imsk_other(int cpuid, unsigned mask)
-=======
 static inline void cc_set_imsk_other(int cpuid, unsigned int mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ ("stha %0, [%1] %2" : :
 			      "r" (mask),
@@ -266,11 +213,7 @@ static inline void cc_set_imsk_other(int cpuid, unsigned int mask)
 			      "i" (ASI_M_CTL));
 }
 
-<<<<<<< HEAD
-static inline void cc_set_igen(unsigned gen)
-=======
 static inline void cc_set_igen(unsigned int gen)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__asm__ __volatile__ ("sta %0, [%1] %2" : :
 			      "r" (gen),
@@ -278,22 +221,6 @@ static inline void cc_set_igen(unsigned int gen)
 			      "i" (ASI_M_MXCC));
 }
 
-<<<<<<< HEAD
-/* +-------+-------------+-----------+------------------------------------+
- * | bcast |  devid      |   sid     |              levels mask           |
- * +-------+-------------+-----------+------------------------------------+
- *  31      30         23 22       15 14                                 0
- */
-#define IGEN_MESSAGE(bcast, devid, sid, levels) \
-	(((bcast) << 31) | ((devid) << 23) | ((sid) << 15) | (levels))
-            
-static inline void sun4d_send_ipi(int cpu, int level)
-{
-	cc_set_igen(IGEN_MESSAGE(0, cpu << 3, 6 + ((level >> 1) & 7), 1 << (level - 1)));
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !__ASSEMBLY__ */
 
 #endif /* !(_SPARC_OBIO_H) */

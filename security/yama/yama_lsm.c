@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Yama Linux Security Module
  *
@@ -9,28 +6,13 @@
  *
  * Copyright (C) 2010 Canonical, Ltd.
  * Copyright (C) 2011 The Chromium OS Authors.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2, as
- * published by the Free Software Foundation.
- *
- */
-
-#include <linux/security.h>
-=======
  */
 
 #include <linux/lsm_hooks.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sysctl.h>
 #include <linux/ptrace.h>
 #include <linux/prctl.h>
 #include <linux/ratelimit.h>
-<<<<<<< HEAD
-
-static int ptrace_scope = 1;
-=======
 #include <linux/workqueue.h>
 #include <linux/string_helpers.h>
 #include <linux/task_work.h>
@@ -44,26 +26,19 @@ static int ptrace_scope = 1;
 #define YAMA_SCOPE_NO_ATTACH	3
 
 static int ptrace_scope = YAMA_SCOPE_RELATIONAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* describe a ptrace relationship for potential exception */
 struct ptrace_relation {
 	struct task_struct *tracer;
 	struct task_struct *tracee;
-<<<<<<< HEAD
-	struct list_head node;
-=======
 	bool invalid;
 	struct list_head node;
 	struct rcu_head rcu;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static LIST_HEAD(ptracer_relations);
 static DEFINE_SPINLOCK(ptracer_relations_lock);
 
-<<<<<<< HEAD
-=======
 static void yama_relation_cleanup(struct work_struct *work);
 static DECLARE_WORK(yama_relation_work, yama_relation_cleanup);
 
@@ -154,7 +129,6 @@ static void yama_relation_cleanup(struct work_struct *work)
 	spin_unlock(&ptracer_relations_lock);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * yama_ptracer_add - add/replace an exception for this tracer/tracee pair
  * @tracer: the task_struct of the process doing the ptrace
@@ -168,38 +142,12 @@ static void yama_relation_cleanup(struct work_struct *work)
 static int yama_ptracer_add(struct task_struct *tracer,
 			    struct task_struct *tracee)
 {
-<<<<<<< HEAD
-	int rc = 0;
-	struct ptrace_relation *added;
-	struct ptrace_relation *entry, *relation = NULL;
-=======
 	struct ptrace_relation *relation, *added;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	added = kmalloc(sizeof(*added), GFP_KERNEL);
 	if (!added)
 		return -ENOMEM;
 
-<<<<<<< HEAD
-	spin_lock_bh(&ptracer_relations_lock);
-	list_for_each_entry(entry, &ptracer_relations, node)
-		if (entry->tracee == tracee) {
-			relation = entry;
-			break;
-		}
-	if (!relation) {
-		relation = added;
-		relation->tracee = tracee;
-		list_add(&relation->node, &ptracer_relations);
-	}
-	relation->tracer = tracer;
-
-	spin_unlock_bh(&ptracer_relations_lock);
-	if (added != relation)
-		kfree(added);
-
-	return rc;
-=======
 	added->tracee = tracee;
 	added->tracer = tracer;
 	added->invalid = false;
@@ -222,7 +170,6 @@ out:
 	rcu_read_unlock();
 	spin_unlock(&ptracer_relations_lock);
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -233,18 +180,6 @@ out:
 static void yama_ptracer_del(struct task_struct *tracer,
 			     struct task_struct *tracee)
 {
-<<<<<<< HEAD
-	struct ptrace_relation *relation, *safe;
-
-	spin_lock_bh(&ptracer_relations_lock);
-	list_for_each_entry_safe(relation, safe, &ptracer_relations, node)
-		if (relation->tracee == tracee ||
-		    (tracer && relation->tracer == tracer)) {
-			list_del(&relation->node);
-			kfree(relation);
-		}
-	spin_unlock_bh(&ptracer_relations_lock);
-=======
 	struct ptrace_relation *relation;
 	bool marked = false;
 
@@ -262,7 +197,6 @@ static void yama_ptracer_del(struct task_struct *tracer,
 
 	if (marked)
 		schedule_work(&yama_relation_work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -288,19 +222,9 @@ static void yama_task_free(struct task_struct *task)
 static int yama_task_prctl(int option, unsigned long arg2, unsigned long arg3,
 			   unsigned long arg4, unsigned long arg5)
 {
-<<<<<<< HEAD
-	int rc;
-	struct task_struct *myself = current;
-
-	rc = cap_task_prctl(option, arg2, arg3, arg4, arg5);
-	if (rc != -ENOSYS)
-		return rc;
-
-=======
 	int rc = -ENOSYS;
 	struct task_struct *myself = current;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (option) {
 	case PR_SET_PTRACER:
 		/* Since a thread can call prctl(), find the group leader
@@ -323,22 +247,10 @@ static int yama_task_prctl(int option, unsigned long arg2, unsigned long arg3,
 		} else {
 			struct task_struct *tracer;
 
-<<<<<<< HEAD
-			rcu_read_lock();
-			tracer = find_task_by_vpid(arg2);
-			if (tracer)
-				get_task_struct(tracer);
-			else
-				rc = -EINVAL;
-			rcu_read_unlock();
-
-			if (tracer) {
-=======
 			tracer = find_get_task_by_vpid(arg2);
 			if (!tracer) {
 				rc = -EINVAL;
 			} else {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rc = yama_ptracer_add(tracer, myself);
 				put_task_struct(tracer);
 			}
@@ -389,11 +301,7 @@ static int task_is_descendant(struct task_struct *parent,
  * @tracer: the task_struct of the process attempting ptrace
  * @tracee: the task_struct of the process to be ptraced
  *
-<<<<<<< HEAD
- * Returns 1 if tracer has is ptracer exception ancestor for tracee.
-=======
  * Returns 1 if tracer has a ptracer exception ancestor for tracee.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ptracer_exception_found(struct task_struct *tracer,
 				   struct task_struct *tracee)
@@ -403,13 +311,6 @@ static int ptracer_exception_found(struct task_struct *tracer,
 	struct task_struct *parent = NULL;
 	bool found = false;
 
-<<<<<<< HEAD
-	spin_lock_bh(&ptracer_relations_lock);
-	rcu_read_lock();
-	if (!thread_group_leader(tracee))
-		tracee = rcu_dereference(tracee->group_leader);
-	list_for_each_entry(relation, &ptracer_relations, node)
-=======
 	rcu_read_lock();
 
 	/*
@@ -428,19 +329,11 @@ static int ptracer_exception_found(struct task_struct *tracer,
 	list_for_each_entry_rcu(relation, &ptracer_relations, node) {
 		if (relation->invalid)
 			continue;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (relation->tracee == tracee) {
 			parent = relation->tracer;
 			found = true;
 			break;
 		}
-<<<<<<< HEAD
-
-	if (found && (parent == NULL || task_is_descendant(parent, tracer)))
-		rc = 1;
-	rcu_read_unlock();
-	spin_unlock_bh(&ptracer_relations_lock);
-=======
 	}
 
 	if (found && (parent == NULL || task_is_descendant(parent, tracer)))
@@ -448,7 +341,6 @@ static int ptracer_exception_found(struct task_struct *tracer,
 
 unlock:
 	rcu_read_unlock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -463,32 +355,6 @@ unlock:
 static int yama_ptrace_access_check(struct task_struct *child,
 				    unsigned int mode)
 {
-<<<<<<< HEAD
-	int rc;
-
-	/* If standard caps disallows it, so does Yama.  We should
-	 * only tighten restrictions further.
-	 */
-	rc = cap_ptrace_access_check(child, mode);
-	if (rc)
-		return rc;
-
-	/* require ptrace target be a child of ptracer on attach */
-	if (mode == PTRACE_MODE_ATTACH &&
-	    ptrace_scope &&
-	    !task_is_descendant(current, child) &&
-	    !ptracer_exception_found(current, child) &&
-	    !capable(CAP_SYS_PTRACE))
-		rc = -EPERM;
-
-	if (rc) {
-		char name[sizeof(current->comm)];
-		printk_ratelimited(KERN_NOTICE "ptrace of non-child"
-			" pid %d was attempted by: %s (pid %d)\n",
-			child->pid,
-			get_task_comm(name, current),
-			current->pid);
-=======
 	int rc = 0;
 
 	/* require ptrace target be a child of ptracer on attach */
@@ -551,31 +417,11 @@ static int yama_ptrace_traceme(struct task_struct *parent)
 		task_lock(current);
 		report_access("traceme", current, parent);
 		task_unlock(current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
 }
 
-<<<<<<< HEAD
-static struct security_operations yama_ops = {
-	.name =			"yama",
-
-	.ptrace_access_check =	yama_ptrace_access_check,
-	.task_prctl =		yama_task_prctl,
-	.task_free =		yama_task_free,
-};
-
-#ifdef CONFIG_SYSCTL
-static int zero;
-static int one = 1;
-
-struct ctl_path yama_sysctl_path[] = {
-	{ .procname = "kernel", },
-	{ .procname = "yama", },
-	{ }
-};
-=======
 static const struct lsm_id yama_lsmid = {
 	.name = "yama",
 	.id = LSM_ID_YAMA,
@@ -606,7 +452,6 @@ static int yama_dointvec_minmax(struct ctl_table *table, int write,
 }
 
 static int max_scope = YAMA_SCOPE_NO_ATTACH;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ctl_table yama_sysctl_table[] = {
 	{
@@ -614,35 +459,6 @@ static struct ctl_table yama_sysctl_table[] = {
 		.data           = &ptrace_scope,
 		.maxlen         = sizeof(int),
 		.mode           = 0644,
-<<<<<<< HEAD
-		.proc_handler   = proc_dointvec_minmax,
-		.extra1         = &zero,
-		.extra2         = &one,
-	},
-	{ }
-};
-#endif /* CONFIG_SYSCTL */
-
-static __init int yama_init(void)
-{
-	if (!security_module_enable(&yama_ops))
-		return 0;
-
-	printk(KERN_INFO "Yama: becoming mindful.\n");
-
-	if (register_security(&yama_ops))
-		panic("Yama: kernel registration failed.\n");
-
-#ifdef CONFIG_SYSCTL
-	if (!register_sysctl_paths(yama_sysctl_path, yama_sysctl_table))
-		panic("Yama: sysctl registration failed.\n");
-#endif
-
-	return 0;
-}
-
-security_initcall(yama_init);
-=======
 		.proc_handler   = yama_dointvec_minmax,
 		.extra1         = SYSCTL_ZERO,
 		.extra2         = &max_scope,
@@ -670,4 +486,3 @@ DEFINE_LSM(yama) = {
 	.name = "yama",
 	.init = yama_init,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

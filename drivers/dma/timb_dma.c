@@ -1,26 +1,7 @@
-<<<<<<< HEAD
-/*
- * timb_dma.c timberdale FPGA DMA driver
- * Copyright (c) 2010 Intel Corporation
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * timb_dma.c timberdale FPGA DMA driver
  * Copyright (c) 2010 Intel Corporation
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Supports:
@@ -107,11 +88,7 @@ struct timb_dma {
 	struct dma_device	dma;
 	void __iomem		*membase;
 	struct tasklet_struct	tasklet;
-<<<<<<< HEAD
-	struct timb_dma_chan	channels[0];
-=======
 	struct timb_dma_chan	channels[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct device *chan2dev(struct dma_chan *chan)
@@ -165,41 +142,6 @@ static bool __td_dma_done_ack(struct timb_dma_chan *td_chan)
 	return done;
 }
 
-<<<<<<< HEAD
-static void __td_unmap_desc(struct timb_dma_chan *td_chan, const u8 *dma_desc,
-	bool single)
-{
-	dma_addr_t addr;
-	int len;
-
-	addr = (dma_desc[7] << 24) | (dma_desc[6] << 16) | (dma_desc[5] << 8) |
-		dma_desc[4];
-
-	len = (dma_desc[3] << 8) | dma_desc[2];
-
-	if (single)
-		dma_unmap_single(chan2dev(&td_chan->chan), addr, len,
-			DMA_TO_DEVICE);
-	else
-		dma_unmap_page(chan2dev(&td_chan->chan), addr, len,
-			DMA_TO_DEVICE);
-}
-
-static void __td_unmap_descs(struct timb_dma_desc *td_desc, bool single)
-{
-	struct timb_dma_chan *td_chan = container_of(td_desc->txd.chan,
-		struct timb_dma_chan, chan);
-	u8 *descs;
-
-	for (descs = td_desc->desc_list; ; descs += TIMB_DMA_DESC_SIZE) {
-		__td_unmap_desc(td_chan, descs, single);
-		if (descs[0] & 0x02)
-			break;
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int td_fill_desc(struct timb_dma_chan *td_chan, u8 *dma_desc,
 	struct scatterlist *sg, bool last)
 {
@@ -276,12 +218,7 @@ static void __td_start_dma(struct timb_dma_chan *td_chan)
 
 static void __td_finish(struct timb_dma_chan *td_chan)
 {
-<<<<<<< HEAD
-	dma_async_tx_callback		callback;
-	void				*param;
-=======
 	struct dmaengine_desc_callback	cb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_async_tx_descriptor	*txd;
 	struct timb_dma_desc		*td_desc;
 
@@ -306,33 +243,16 @@ static void __td_finish(struct timb_dma_chan *td_chan)
 	dma_cookie_complete(txd);
 	td_chan->ongoing = false;
 
-<<<<<<< HEAD
-	callback = txd->callback;
-	param = txd->callback_param;
-
-	list_move(&td_desc->desc_node, &td_chan->free_list);
-
-	if (!(txd->flags & DMA_COMPL_SKIP_SRC_UNMAP))
-		__td_unmap_descs(td_desc,
-			txd->flags & DMA_COMPL_SRC_UNMAP_SINGLE);
-
-=======
 	dmaengine_desc_get_callback(txd, &cb);
 
 	list_move(&td_desc->desc_node, &td_chan->free_list);
 
 	dma_descriptor_unmap(txd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The API requires that no submissions are done from a
 	 * callback, so we don't need to drop the lock here
 	 */
-<<<<<<< HEAD
-	if (callback)
-		callback(param);
-=======
 	dmaengine_desc_callback_invoke(&cb, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 __td_ier_mask(struct timb_dma *td)
@@ -406,28 +326,14 @@ static struct timb_dma_desc *td_alloc_init_desc(struct timb_dma_chan *td_chan)
 	int err;
 
 	td_desc = kzalloc(sizeof(struct timb_dma_desc), GFP_KERNEL);
-<<<<<<< HEAD
-	if (!td_desc) {
-		dev_err(chan2dev(chan), "Failed to alloc descriptor\n");
-		goto out;
-	}
-=======
 	if (!td_desc)
 		goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	td_desc->desc_list_len = td_chan->desc_elems * TIMB_DMA_DESC_SIZE;
 
 	td_desc->desc_list = kzalloc(td_desc->desc_list_len, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!td_desc->desc_list) {
-		dev_err(chan2dev(chan), "Failed to alloc descriptor\n");
-		goto err;
-	}
-=======
 	if (!td_desc->desc_list)
 		goto err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_async_tx_descriptor_init(&td_desc->txd, chan);
 	td_desc->txd.tx_submit = td_tx_submit;
@@ -508,11 +414,7 @@ static int td_alloc_chan_resources(struct dma_chan *chan)
 				break;
 			else {
 				dev_err(chan2dev(chan),
-<<<<<<< HEAD
-					"Couldnt allocate any descriptors\n");
-=======
 					"Couldn't allocate any descriptors\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOMEM;
 			}
 		}
@@ -635,21 +537,12 @@ static struct dma_async_tx_descriptor *td_prep_slave_sg(struct dma_chan *chan,
 	}
 
 	dma_sync_single_for_device(chan2dmadev(chan), td_desc->txd.phys,
-<<<<<<< HEAD
-		td_desc->desc_list_len, DMA_MEM_TO_DEV);
-=======
 		td_desc->desc_list_len, DMA_TO_DEVICE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &td_desc->txd;
 }
 
-<<<<<<< HEAD
-static int td_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
-		      unsigned long arg)
-=======
 static int td_terminate_all(struct dma_chan *chan)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct timb_dma_chan *td_chan =
 		container_of(chan, struct timb_dma_chan, chan);
@@ -657,12 +550,6 @@ static int td_terminate_all(struct dma_chan *chan)
 
 	dev_dbg(chan2dev(chan), "%s: Entry\n", __func__);
 
-<<<<<<< HEAD
-	if (cmd != DMA_TERMINATE_ALL)
-		return -ENXIO;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* first the easy part, put the queue into the free list */
 	spin_lock_bh(&td_chan->lock);
 	list_for_each_entry_safe(td_desc, _td_desc, &td_chan->queue,
@@ -676,15 +563,9 @@ static int td_terminate_all(struct dma_chan *chan)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void td_tasklet(unsigned long data)
-{
-	struct timb_dma *td = (struct timb_dma *)data;
-=======
 static void td_tasklet(struct tasklet_struct *t)
 {
 	struct timb_dma *td = from_tasklet(td, t, tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 isr;
 	u32 ipr;
 	u32 ier;
@@ -728,15 +609,9 @@ static irqreturn_t td_irq(int irq, void *devid)
 }
 
 
-<<<<<<< HEAD
-static int __devinit td_probe(struct platform_device *pdev)
-{
-	struct timb_dma_platform_data *pdata = pdev->dev.platform_data;
-=======
 static int td_probe(struct platform_device *pdev)
 {
 	struct timb_dma_platform_data *pdata = dev_get_platdata(&pdev->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct timb_dma *td;
 	struct resource *iomem;
 	int irq;
@@ -760,13 +635,8 @@ static int td_probe(struct platform_device *pdev)
 		DRIVER_NAME))
 		return -EBUSY;
 
-<<<<<<< HEAD
-	td  = kzalloc(sizeof(struct timb_dma) +
-		sizeof(struct timb_dma_chan) * pdata->nr_channels, GFP_KERNEL);
-=======
 	td  = kzalloc(struct_size(td, channels, pdata->nr_channels),
 		      GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!td) {
 		err = -ENOMEM;
 		goto err_release_region;
@@ -788,11 +658,7 @@ static int td_probe(struct platform_device *pdev)
 	iowrite32(0x0, td->membase + TIMBDMA_IER);
 	iowrite32(0xFFFFFFFF, td->membase + TIMBDMA_ISR);
 
-<<<<<<< HEAD
-	tasklet_init(&td->tasklet, td_tasklet, (unsigned long)td);
-=======
 	tasklet_setup(&td->tasklet, td_tasklet);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = request_irq(irq, td_irq, IRQF_SHARED, DRIVER_NAME, td);
 	if (err) {
@@ -808,11 +674,7 @@ static int td_probe(struct platform_device *pdev)
 	dma_cap_set(DMA_SLAVE, td->dma.cap_mask);
 	dma_cap_set(DMA_PRIVATE, td->dma.cap_mask);
 	td->dma.device_prep_slave_sg = td_prep_slave_sg;
-<<<<<<< HEAD
-	td->dma.device_control = td_control;
-=======
 	td->dma.device_terminate_all = td_terminate_all;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	td->dma.dev = &pdev->dev;
 
@@ -878,11 +740,7 @@ err_release_region:
 
 }
 
-<<<<<<< HEAD
-static int __devexit td_remove(struct platform_device *pdev)
-=======
 static void td_remove(struct platform_device *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct timb_dma *td = platform_get_drvdata(pdev);
 	struct resource *iomem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -895,29 +753,15 @@ static void td_remove(struct platform_device *pdev)
 	kfree(td);
 	release_mem_region(iomem->start, resource_size(iomem));
 
-<<<<<<< HEAD
-	platform_set_drvdata(pdev, NULL);
-
 	dev_dbg(&pdev->dev, "Removed...\n");
-	return 0;
-=======
-	dev_dbg(&pdev->dev, "Removed...\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver td_driver = {
 	.driver = {
 		.name	= DRIVER_NAME,
-<<<<<<< HEAD
-		.owner  = THIS_MODULE,
-	},
-	.probe	= td_probe,
-	.remove	= __exit_p(td_remove),
-=======
 	},
 	.probe	= td_probe,
 	.remove_new = td_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(td_driver);

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for Sharp SL-Cxx00 Series of PDAs
  * Models: SL-C3000 (Spitz), SL-C1000 (Akita) and SL-C3100 (Borzoi)
@@ -9,14 +6,6 @@
  * Copyright (c) 2005 Richard Purdie
  *
  * Based on Sharp's 2.4 kernel patches/lubbock.c
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,37 +13,23 @@
 #include <linux/delay.h>
 #include <linux/gpio_keys.h>
 #include <linux/gpio.h>
-<<<<<<< HEAD
-#include <linux/leds.h>
-#include <linux/i2c.h>
-#include <linux/i2c/pxa-i2c.h>
-#include <linux/i2c/pca953x.h>
-=======
 #include <linux/gpio/machine.h>
 #include <linux/leds.h>
 #include <linux/i2c.h>
 #include <linux/platform_data/i2c-pxa.h>
 #include <linux/platform_data/pca953x.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
 #include <linux/spi/corgi_lcd.h>
 #include <linux/spi/pxa2xx_spi.h>
 #include <linux/mtd/sharpsl.h>
 #include <linux/mtd/physmap.h>
-<<<<<<< HEAD
-#include <linux/input/matrix_keypad.h>
-#include <linux/regulator/machine.h>
-#include <linux/io.h>
-#include <linux/module.h>
-=======
 #include <linux/input-event-codes.h>
 #include <linux/input/matrix_keypad.h>
 #include <linux/regulator/machine.h>
 #include <linux/io.h>
 #include <linux/reboot.h>
 #include <linux/memblock.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/setup.h>
 #include <asm/mach-types.h>
@@ -62,18 +37,6 @@
 #include <asm/mach/sharpsl_param.h>
 #include <asm/hardware/scoop.h>
 
-<<<<<<< HEAD
-#include <mach/pxa27x.h>
-#include <mach/pxa27x-udc.h>
-#include <mach/reset.h>
-#include <mach/irda.h>
-#include <mach/mmc.h>
-#include <mach/ohci.h>
-#include <mach/pxafb.h>
-#include <mach/spitz.h>
-#include <mach/sharpsl_pm.h>
-#include <mach/smemc.h>
-=======
 #include "pxa27x.h"
 #include "pxa27x-udc.h"
 #include "reset.h"
@@ -83,7 +46,6 @@
 #include "spitz.h"
 #include "sharpsl_pm.h"
 #include "smemc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "generic.h"
 #include "devices.h"
@@ -235,11 +197,7 @@ static void __init spitz_scoop_init(void)
 }
 
 /* Power control is shared with between one of the CF slots and SD */
-<<<<<<< HEAD
-static void spitz_card_pwr_ctrl(uint8_t enable, uint8_t new_cpr)
-=======
 static void __maybe_unused spitz_card_pwr_ctrl(uint8_t enable, uint8_t new_cpr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned short cpr;
 	unsigned long flags;
@@ -502,11 +460,7 @@ static struct gpio_led spitz_gpio_leds[] = {
 	},
 	{
 		.name			= "spitz:green:hddactivity",
-<<<<<<< HEAD
-		.default_trigger	= "ide-disk",
-=======
 		.default_trigger	= "disk-activity",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.gpio			= SPITZ_GPIO_LED_GREEN,
 	},
 };
@@ -551,26 +505,6 @@ static struct ads7846_platform_data spitz_ads7846_info = {
 	.x_plate_ohms		= 419,
 	.y_plate_ohms		= 486,
 	.pressure_max		= 1024,
-<<<<<<< HEAD
-	.gpio_pendown		= SPITZ_GPIO_TP_INT,
-	.wait_for_sync		= spitz_ads7846_wait_for_hsync,
-};
-
-static struct pxa2xx_spi_chip spitz_ads7846_chip = {
-	.gpio_cs		= SPITZ_GPIO_ADS7846_CS,
-};
-
-static void spitz_bl_kick_battery(void)
-{
-	void (*kick_batt)(void);
-
-	kick_batt = symbol_get(sharpsl_battery_kick);
-	if (kick_batt) {
-		kick_batt();
-		symbol_put(sharpsl_battery_kick);
-	}
-}
-=======
 	.wait_for_sync		= spitz_ads7846_wait_for_hsync,
 };
 
@@ -604,28 +538,13 @@ static struct gpiod_lookup_table akita_lcdcon_gpio_table = {
 		{ },
 	},
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct corgi_lcd_platform_data spitz_lcdcon_info = {
 	.init_mode		= CORGI_LCD_MODE_VGA,
 	.max_intensity		= 0x2f,
 	.default_intensity	= 0x1f,
 	.limit_mask		= 0x0b,
-<<<<<<< HEAD
-	.gpio_backlight_cont	= SPITZ_GPIO_BACKLIGHT_CONT,
-	.gpio_backlight_on	= SPITZ_GPIO_BACKLIGHT_ON,
-	.kick_battery		= spitz_bl_kick_battery,
-};
-
-static struct pxa2xx_spi_chip spitz_lcdcon_chip = {
-	.gpio_cs	= SPITZ_GPIO_LCDCON_CS,
-};
-
-static struct pxa2xx_spi_chip spitz_max1111_chip = {
-	.gpio_cs	= SPITZ_GPIO_MAX1111_CS,
-=======
 	.kick_battery		= sharpsl_battery_kick,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct spi_board_info spitz_spi_devices[] = {
@@ -635,10 +554,6 @@ static struct spi_board_info spitz_spi_devices[] = {
 		.bus_num		= 2,
 		.chip_select		= 0,
 		.platform_data		= &spitz_ads7846_info,
-<<<<<<< HEAD
-		.controller_data	= &spitz_ads7846_chip,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.irq			= PXA_GPIO_TO_IRQ(SPITZ_GPIO_TP_INT),
 	}, {
 		.modalias		= "corgi-lcd",
@@ -646,34 +561,11 @@ static struct spi_board_info spitz_spi_devices[] = {
 		.bus_num		= 2,
 		.chip_select		= 1,
 		.platform_data		= &spitz_lcdcon_info,
-<<<<<<< HEAD
-		.controller_data	= &spitz_lcdcon_chip,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, {
 		.modalias		= "max1111",
 		.max_speed_hz		= 450000,
 		.bus_num		= 2,
 		.chip_select		= 2,
-<<<<<<< HEAD
-		.controller_data	= &spitz_max1111_chip,
-	},
-};
-
-static struct pxa2xx_spi_master spitz_spi_info = {
-	.num_chipselect	= 3,
-};
-
-static void __init spitz_spi_init(void)
-{
-	struct corgi_lcd_platform_data *lcd_data = &spitz_lcdcon_info;
-
-	if (machine_is_akita()) {
-		lcd_data->gpio_backlight_cont = AKITA_GPIO_BACKLIGHT_CONT;
-		lcd_data->gpio_backlight_on = AKITA_GPIO_BACKLIGHT_ON;
-	}
-
-=======
 	},
 };
 
@@ -700,7 +592,6 @@ static void __init spitz_spi_init(void)
 
 	gpiod_add_lookup_table(&spitz_ads7846_gpio_table);
 	gpiod_add_lookup_table(&spitz_spi_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pxa2xx_set_spi_info(2, &spitz_spi_info);
 	spi_register_board_info(ARRAY_AND_SIZE(spitz_spi_devices));
 }
@@ -716,11 +607,7 @@ static inline void spitz_spi_init(void) {}
  * NOTE: The card detect interrupt isn't debounced so we delay it by 250ms to
  * give the card a chance to fully insert/eject.
  */
-<<<<<<< HEAD
-static void spitz_mci_setpower(struct device *dev, unsigned int vdd)
-=======
 static int spitz_mci_setpower(struct device *dev, unsigned int vdd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pxamci_platform_data* p_d = dev->platform_data;
 
@@ -728,22 +615,14 @@ static int spitz_mci_setpower(struct device *dev, unsigned int vdd)
 		spitz_card_pwr_ctrl(SCOOP_CPR_SD_3V, SCOOP_CPR_SD_3V);
 	else
 		spitz_card_pwr_ctrl(SCOOP_CPR_SD_3V, 0x0);
-<<<<<<< HEAD
-=======
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pxamci_platform_data spitz_mci_platform_data = {
 	.detect_delay_ms	= 250,
 	.ocr_mask		= MMC_VDD_32_33|MMC_VDD_33_34,
 	.setpower		= spitz_mci_setpower,
-<<<<<<< HEAD
-	.gpio_card_detect	= SPITZ_GPIO_nSD_DETECT,
-	.gpio_card_ro		= SPITZ_GPIO_nSD_WP,
-	.gpio_power		= -1,
-=======
 };
 
 static struct gpiod_lookup_table spitz_mci_gpio_table = {
@@ -755,15 +634,11 @@ static struct gpiod_lookup_table spitz_mci_gpio_table = {
 			    "wp", GPIO_ACTIVE_LOW),
 		{ },
 	},
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init spitz_mmc_init(void)
 {
-<<<<<<< HEAD
-=======
 	gpiod_add_lookup_table(&spitz_mci_gpio_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pxa_set_mci_info(&spitz_mci_platform_data);
 }
 #else
@@ -810,30 +685,6 @@ static inline void spitz_uhc_init(void) {}
 #endif
 
 /******************************************************************************
-<<<<<<< HEAD
- * IrDA
- ******************************************************************************/
-#if defined(CONFIG_PXA_FICP) || defined(CONFIG_PXA_FICP_MODULE)
-static struct pxaficp_platform_data spitz_ficp_platform_data = {
-	.transceiver_cap	= IR_SIRMODE | IR_OFF,
-};
-
-static void __init spitz_irda_init(void)
-{
-	if (machine_is_akita())
-		spitz_ficp_platform_data.gpio_pwdown = AKITA_GPIO_IR_ON;
-	else
-		spitz_ficp_platform_data.gpio_pwdown = SPITZ_GPIO_IR_ON;
-
-	pxa_set_ficp_info(&spitz_ficp_platform_data);
-}
-#else
-static inline void spitz_irda_init(void) {}
-#endif
-
-/******************************************************************************
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Framebuffer
  ******************************************************************************/
 #if defined(CONFIG_FB_PXA) || defined(CONFIG_FB_PXA_MODULE)
@@ -881,30 +732,9 @@ static inline void spitz_lcd_init(void) {}
 #endif
 
 /******************************************************************************
-<<<<<<< HEAD
- * Framebuffer
- ******************************************************************************/
-#if defined(CONFIG_MTD_NAND_SHARPSL) || defined(CONFIG_MTD_NAND_SHARPSL_MODULE)
-static struct mtd_partition spitz_nand_partitions[] = {
-	{
-		.name = "System Area",
-		.offset = 0,
-		.size = 7 * 1024 * 1024,
-	}, {
-		.name = "Root Filesystem",
-		.offset = 7 * 1024 * 1024,
-	}, {
-		.name = "Home Filesystem",
-		.offset = MTDPART_OFS_APPEND,
-		.size = MTDPART_SIZ_FULL,
-	},
-};
-
-=======
  * NAND Flash
  ******************************************************************************/
 #if defined(CONFIG_MTD_NAND_SHARPSL) || defined(CONFIG_MTD_NAND_SHARPSL_MODULE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint8_t scan_ff_pattern[] = { 0xff, 0xff };
 
 static struct nand_bbt_descr spitz_nand_bbt = {
@@ -914,16 +744,6 @@ static struct nand_bbt_descr spitz_nand_bbt = {
 	.pattern	= scan_ff_pattern
 };
 
-<<<<<<< HEAD
-static struct nand_ecclayout akita_oobinfo = {
-	.oobfree	= { {0x08, 0x09} },
-	.eccbytes	= 24,
-	.eccpos		= {
-			0x05, 0x01, 0x02, 0x03, 0x06, 0x07, 0x15, 0x11,
-			0x12, 0x13, 0x16, 0x17, 0x25, 0x21, 0x22, 0x23,
-			0x26, 0x27, 0x35, 0x31, 0x32, 0x33, 0x36, 0x37,
-	},
-=======
 static int akita_ooblayout_ecc(struct mtd_info *mtd, int section,
 			       struct mtd_oob_region *oobregion)
 {
@@ -974,17 +794,11 @@ static const char * const probes[] = {
 	"ofpart",
 	"sharpslpart",
 	NULL,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct sharpsl_nand_platform_data spitz_nand_pdata = {
 	.badblock_pattern	= &spitz_nand_bbt,
-<<<<<<< HEAD
-	.partitions		= spitz_nand_partitions,
-	.nr_partitions		= ARRAY_SIZE(spitz_nand_partitions),
-=======
 	.part_parsers		= probes,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource spitz_nand_resources[] = {
@@ -1007,22 +821,9 @@ static struct platform_device spitz_nand_device = {
 
 static void __init spitz_nand_init(void)
 {
-<<<<<<< HEAD
-	if (machine_is_spitz()) {
-		spitz_nand_partitions[1].size = 5 * 1024 * 1024;
-	} else if (machine_is_akita()) {
-		spitz_nand_partitions[1].size = 58 * 1024 * 1024;
-		spitz_nand_bbt.len = 1;
-		spitz_nand_pdata.ecc_layout = &akita_oobinfo;
-	} else if (machine_is_borzoi()) {
-		spitz_nand_partitions[1].size = 32 * 1024 * 1024;
-		spitz_nand_bbt.len = 1;
-		spitz_nand_pdata.ecc_layout = &akita_oobinfo;
-=======
 	if (machine_is_akita() || machine_is_borzoi()) {
 		spitz_nand_bbt.len = 1;
 		spitz_nand_pdata.ecc_layout = &akita_ooblayout_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_device_register(&spitz_nand_device);
@@ -1076,11 +877,7 @@ static inline void spitz_nor_init(void) {}
 #endif
 
 /******************************************************************************
-<<<<<<< HEAD
- * GPIO expander
-=======
  * I2C devices
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ******************************************************************************/
 #if defined(CONFIG_I2C_PXA) || defined(CONFIG_I2C_PXA_MODULE)
 static struct pca953x_platform_data akita_pca953x_pdata = {
@@ -1099,13 +896,7 @@ static struct i2c_board_info spitz_i2c_devs[] = {
 };
 
 static struct regulator_consumer_supply isl6271a_consumers[] = {
-<<<<<<< HEAD
-	{
-		.supply	= "vcc_core",
-	}
-=======
 	REGULATOR_SUPPLY("vcc_core", NULL),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct regulator_init_data isl6271a_info[] = {
@@ -1147,8 +938,6 @@ static void __init spitz_i2c_init(void)
 static inline void spitz_i2c_init(void) {}
 #endif
 
-<<<<<<< HEAD
-=======
 static struct gpiod_lookup_table spitz_audio_gpio_table = {
 	.dev_id = "spitz-audio",
 	.table = {
@@ -1188,23 +977,15 @@ static inline void spitz_audio_init(void)
 	platform_device_register_simple("spitz-audio", -1, NULL, 0);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * Machine init
  ******************************************************************************/
 static void spitz_poweroff(void)
 {
-<<<<<<< HEAD
-	pxa_restart('g', NULL);
-}
-
-static void spitz_restart(char mode, const char *cmd)
-=======
 	pxa_restart(REBOOT_GPIO, NULL);
 }
 
 static void spitz_restart(enum reboot_mode mode, const char *cmd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t msc0 = __raw_readl(MSC0);
 	/* Bootloader magic for a reboot */
@@ -1237,101 +1018,54 @@ static void __init spitz_init(void)
 	spitz_leds_init();
 	spitz_mmc_init();
 	spitz_pcmcia_init();
-<<<<<<< HEAD
-	spitz_irda_init();
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spitz_uhc_init();
 	spitz_lcd_init();
 	spitz_nor_init();
 	spitz_nand_init();
 	spitz_i2c_init();
-<<<<<<< HEAD
-=======
 	spitz_audio_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regulator_has_full_constraints();
 }
 
-<<<<<<< HEAD
-static void __init spitz_fixup(struct tag *tags, char **cmdline,
-			       struct meminfo *mi)
-{
-	sharpsl_save_param();
-	mi->nr_banks = 1;
-	mi->bank[0].start = 0xa0000000;
-	mi->bank[0].size = (64*1024*1024);
-=======
 static void __init spitz_fixup(struct tag *tags, char **cmdline)
 {
 	sharpsl_save_param();
 	memblock_add(0xa0000000, SZ_64M);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_MACH_SPITZ
 MACHINE_START(SPITZ, "SHARP Spitz")
-<<<<<<< HEAD
-	.restart_mode	= 'g',
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= spitz_fixup,
 	.map_io		= pxa27x_map_io,
 	.nr_irqs	= PXA_NR_IRQS,
 	.init_irq	= pxa27x_init_irq,
-<<<<<<< HEAD
-	.handle_irq	= pxa27x_handle_irq,
-	.init_machine	= spitz_init,
-	.timer		= &pxa_timer,
-=======
 	.init_machine	= spitz_init,
 	.init_time	= pxa_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= spitz_restart,
 MACHINE_END
 #endif
 
 #ifdef CONFIG_MACH_BORZOI
 MACHINE_START(BORZOI, "SHARP Borzoi")
-<<<<<<< HEAD
-	.restart_mode	= 'g',
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= spitz_fixup,
 	.map_io		= pxa27x_map_io,
 	.nr_irqs	= PXA_NR_IRQS,
 	.init_irq	= pxa27x_init_irq,
-<<<<<<< HEAD
-	.handle_irq	= pxa27x_handle_irq,
-	.init_machine	= spitz_init,
-	.timer		= &pxa_timer,
-=======
 	.init_machine	= spitz_init,
 	.init_time	= pxa_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= spitz_restart,
 MACHINE_END
 #endif
 
 #ifdef CONFIG_MACH_AKITA
 MACHINE_START(AKITA, "SHARP Akita")
-<<<<<<< HEAD
-	.restart_mode	= 'g',
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= spitz_fixup,
 	.map_io		= pxa27x_map_io,
 	.nr_irqs	= PXA_NR_IRQS,
 	.init_irq	= pxa27x_init_irq,
-<<<<<<< HEAD
-	.handle_irq	= pxa27x_handle_irq,
-	.init_machine	= spitz_init,
-	.timer		= &pxa_timer,
-=======
 	.init_machine	= spitz_init,
 	.init_time	= pxa_timer_init,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= spitz_restart,
 MACHINE_END
 #endif

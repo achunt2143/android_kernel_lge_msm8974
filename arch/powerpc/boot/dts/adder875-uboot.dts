@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device Tree Source for MPC885 ADS running U-Boot
  *
  * Copyright 2006 MontaVista Software, Inc.
  * Copyright 2007 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -93,18 +82,10 @@
 
 			PHY0: ethernet-phy@0 {
 				reg = <0>;
-<<<<<<< HEAD
-				device_type = "ethernet-phy";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			};
 
 			PHY1: ethernet-phy@1 {
 				reg = <1>;
-<<<<<<< HEAD
-				device_type = "ethernet-phy";
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			};
 		};
 
@@ -192,10 +173,6 @@
 	};
 
 	chosen {
-<<<<<<< HEAD
-		linux,stdout-path = &console;
-=======
 		stdout-path = &console;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

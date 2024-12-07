@@ -1,66 +1,32 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PC Speaker beeper driver for Linux
  *
  *  Copyright (c) 2002 Vojtech Pavlik
  *  Copyright (c) 1992 Orest Zborowski
-<<<<<<< HEAD
- *
  */
 
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation
- */
-=======
- */
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i8253.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-#include <linux/input.h>
-#include <linux/platform_device.h>
-#include <linux/timex.h>
-#include <asm/io.h>
-=======
 #include <linux/input.h>
 #include <linux/platform_device.h>
 #include <linux/timex.h>
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION("PC Speaker beeper driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:pcspkr");
 
-<<<<<<< HEAD
-static int pcspkr_event(struct input_dev *dev, unsigned int type, unsigned int code, int value)
-=======
 static int pcspkr_event(struct input_dev *dev, unsigned int type,
 			unsigned int code, int value)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int count = 0;
 	unsigned long flags;
 
 	if (type != EV_SND)
-<<<<<<< HEAD
-		return -1;
-
-	switch (code) {
-		case SND_BELL: if (value) value = 1000;
-		case SND_TONE: break;
-		default: return -1;
-=======
 		return -EINVAL;
 
 	switch (code) {
@@ -72,7 +38,6 @@ static int pcspkr_event(struct input_dev *dev, unsigned int type,
 		break;
 	default:
 		return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (value > 20 && value < 32767)
@@ -98,11 +63,7 @@ static int pcspkr_event(struct input_dev *dev, unsigned int type,
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit pcspkr_probe(struct platform_device *dev)
-=======
 static int pcspkr_probe(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *pcspkr_dev;
 	int err;
@@ -134,25 +95,13 @@ static int pcspkr_probe(struct platform_device *dev)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devexit pcspkr_remove(struct platform_device *dev)
-=======
 static void pcspkr_remove(struct platform_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *pcspkr_dev = platform_get_drvdata(dev);
 
 	input_unregister_device(pcspkr_dev);
-<<<<<<< HEAD
-	platform_set_drvdata(dev, NULL);
 	/* turn off the speaker */
 	pcspkr_event(NULL, EV_SND, SND_BELL, 0);
-
-	return 0;
-=======
-	/* turn off the speaker */
-	pcspkr_event(NULL, EV_SND, SND_BELL, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcspkr_suspend(struct device *dev)
@@ -175,18 +124,10 @@ static const struct dev_pm_ops pcspkr_pm_ops = {
 static struct platform_driver pcspkr_platform_driver = {
 	.driver		= {
 		.name	= "pcspkr",
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-		.pm	= &pcspkr_pm_ops,
-	},
-	.probe		= pcspkr_probe,
-	.remove		= __devexit_p(pcspkr_remove),
-=======
 		.pm	= &pcspkr_pm_ops,
 	},
 	.probe		= pcspkr_probe,
 	.remove_new	= pcspkr_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= pcspkr_shutdown,
 };
 module_platform_driver(pcspkr_platform_driver);

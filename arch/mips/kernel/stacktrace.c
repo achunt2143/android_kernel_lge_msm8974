@@ -1,18 +1,12 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Stack trace management functions
  *
  *  Copyright (C) 2006 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
  */
 #include <linux/sched.h>
-<<<<<<< HEAD
-=======
 #include <linux/sched/debug.h>
 #include <linux/sched/task_stack.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stacktrace.h>
 #include <linux/export.h>
 #include <asm/stacktrace.h>
@@ -21,23 +15,15 @@
  * Save stack-backtrace addresses into a stack_trace buffer:
  */
 static void save_raw_context_stack(struct stack_trace *trace,
-<<<<<<< HEAD
-	unsigned long reg29)
-=======
 	unsigned long reg29, int savesched)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long *sp = (unsigned long *)reg29;
 	unsigned long addr;
 
 	while (!kstack_end(sp)) {
 		addr = *sp++;
-<<<<<<< HEAD
-		if (__kernel_text_address(addr)) {
-=======
 		if (__kernel_text_address(addr) &&
 		    (savesched || !in_sched_functions(addr))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (trace->skip > 0)
 				trace->skip--;
 			else
@@ -49,11 +35,7 @@ static void save_raw_context_stack(struct stack_trace *trace,
 }
 
 static void save_context_stack(struct stack_trace *trace,
-<<<<<<< HEAD
-	struct task_struct *tsk, struct pt_regs *regs)
-=======
 	struct task_struct *tsk, struct pt_regs *regs, int savesched)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sp = regs->regs[29];
 #ifdef CONFIG_KALLSYMS
@@ -65,22 +47,6 @@ static void save_context_stack(struct stack_trace *trace,
 			(unsigned long)task_stack_page(tsk);
 		if (stack_page && sp >= stack_page &&
 		    sp <= stack_page + THREAD_SIZE - 32)
-<<<<<<< HEAD
-			save_raw_context_stack(trace, sp);
-		return;
-	}
-	do {
-		if (trace->skip > 0)
-			trace->skip--;
-		else
-			trace->entries[trace->nr_entries++] = pc;
-		if (trace->nr_entries >= trace->max_entries)
-			break;
-		pc = unwind_stack(tsk, &sp, pc, &ra);
-	} while (pc);
-#else
-	save_raw_context_stack(trace, sp);
-=======
 			save_raw_context_stack(trace, sp, savesched);
 		return;
 	}
@@ -97,7 +63,6 @@ static void save_context_stack(struct stack_trace *trace,
 	} while (pc);
 #else
 	save_raw_context_stack(trace, sp, savesched);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -123,10 +88,6 @@ void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
 		regs->cp0_epc = tsk->thread.reg31;
 	} else
 		prepare_frametrace(regs);
-<<<<<<< HEAD
-	save_context_stack(trace, tsk, regs);
-=======
 	save_context_stack(trace, tsk, regs, tsk == current);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(save_stack_trace_tsk);

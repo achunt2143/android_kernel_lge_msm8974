@@ -1,16 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright 2007, Michael Ellerman, IBM Corporation.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2007, Michael Ellerman, IBM Corporation.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -20,16 +10,6 @@
 #include <linux/pci.h>
 #include <linux/msi.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-#include <linux/debugfs.h>
-#include <linux/slab.h>
-
-#include <asm/dcr.h>
-#include <asm/machdep.h>
-#include <asm/prom.h>
-
-=======
 #include <linux/slab.h>
 #include <linux/debugfs.h>
 #include <linux/of.h>
@@ -40,7 +20,6 @@
 #include <asm/machdep.h>
 
 #include "cell.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * MSIC registers, specified as offsets from dcr_base
@@ -111,17 +90,10 @@ static void msic_dcr_write(struct axon_msic *msic, unsigned int dcr_n, u32 val)
 	dcr_write(msic->dcr_host, dcr_n, val);
 }
 
-<<<<<<< HEAD
-static void axon_msi_cascade(unsigned int irq, struct irq_desc *desc)
-{
-	struct irq_chip *chip = irq_desc_get_chip(desc);
-	struct axon_msic *msic = irq_get_handler_data(irq);
-=======
 static void axon_msi_cascade(struct irq_desc *desc)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	struct axon_msic *msic = irq_desc_get_handler_data(desc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 write_offset, msi;
 	int idx;
 	int retry = 0;
@@ -212,13 +184,8 @@ static struct axon_msic *find_msi_translator(struct pci_dev *dev)
 
 	irq_domain = irq_find_host(dn);
 	if (!irq_domain) {
-<<<<<<< HEAD
-		dev_dbg(&dev->dev, "axon_msi: no irq_domain found for node %s\n",
-			dn->full_name);
-=======
 		dev_dbg(&dev->dev, "axon_msi: no irq_domain found for node %pOF\n",
 			dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_error;
 	}
 
@@ -230,24 +197,9 @@ out_error:
 	return msic;
 }
 
-<<<<<<< HEAD
-static int axon_msi_check_device(struct pci_dev *dev, int nvec, int type)
-{
-	if (!find_msi_translator(dev))
-		return -ENODEV;
-
-	return 0;
-}
-
 static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
 {
 	struct device_node *dn;
-	struct msi_desc *entry;
-=======
-static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
-{
-	struct device_node *dn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int len;
 	const u32 *prop;
 
@@ -257,15 +209,8 @@ static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	entry = list_first_entry(&dev->msi_list, struct msi_desc, list);
-
-	for (; dn; dn = of_get_next_parent(dn)) {
-		if (entry->msi_attrib.is_64) {
-=======
 	for (; dn; dn = of_get_next_parent(dn)) {
 		if (!dev->no_64bit_msi) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			prop = of_get_property(dn, "msi-address-64", &len);
 			if (prop)
 				break;
@@ -279,10 +224,7 @@ static int setup_msi_msg_address(struct pci_dev *dev, struct msi_msg *msg)
 	if (!prop) {
 		dev_dbg(&dev->dev,
 			"axon_msi: no msi-address-(32|64) properties found\n");
-<<<<<<< HEAD
-=======
 		of_node_put(dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
@@ -322,15 +264,9 @@ static int axon_msi_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	list_for_each_entry(entry, &dev->msi_list, list) {
-		virq = irq_create_direct_mapping(msic->irq_domain);
-		if (virq == NO_IRQ) {
-=======
 	msi_for_each_desc(entry, &dev->dev, MSI_DESC_NOTASSOCIATED) {
 		virq = irq_create_direct_mapping(msic->irq_domain);
 		if (!virq) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_warn(&dev->dev,
 				 "axon_msi: virq allocation failed!\n");
 			return -1;
@@ -339,11 +275,7 @@ static int axon_msi_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 
 		irq_set_msi_desc(virq, entry);
 		msg.data = virq;
-<<<<<<< HEAD
-		write_msi_msg(virq, &msg);
-=======
 		pci_write_msi_msg(virq, &msg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -355,32 +287,17 @@ static void axon_msi_teardown_msi_irqs(struct pci_dev *dev)
 
 	dev_dbg(&dev->dev, "axon_msi: tearing down msi irqs\n");
 
-<<<<<<< HEAD
-	list_for_each_entry(entry, &dev->msi_list, list) {
-		if (entry->irq == NO_IRQ)
-			continue;
-
-		irq_set_msi_desc(entry->irq, NULL);
-		irq_dispose_mapping(entry->irq);
-=======
 	msi_for_each_desc(entry, &dev->dev, MSI_DESC_ASSOCIATED) {
 		irq_set_msi_desc(entry->irq, NULL);
 		irq_dispose_mapping(entry->irq);
 		entry->irq = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static struct irq_chip msic_irq_chip = {
-<<<<<<< HEAD
-	.irq_mask	= mask_msi_irq,
-	.irq_unmask	= unmask_msi_irq,
-	.irq_shutdown	= mask_msi_irq,
-=======
 	.irq_mask	= pci_msi_mask_irq,
 	.irq_unmask	= pci_msi_unmask_irq,
 	.irq_shutdown	= pci_msi_mask_irq,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "AXON-MSI",
 };
 
@@ -402,13 +319,8 @@ static void axon_msi_shutdown(struct platform_device *device)
 	struct axon_msic *msic = dev_get_drvdata(&device->dev);
 	u32 tmp;
 
-<<<<<<< HEAD
-	pr_devel("axon_msi: disabling %s\n",
-		  msic->irq_domain->of_node->full_name);
-=======
 	pr_devel("axon_msi: disabling %pOF\n",
 		 irq_domain_get_of_node(msic->irq_domain));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp  = dcr_read(msic->dcr_host, MSIC_CTRL_REG);
 	tmp &= ~MSIC_CTRL_ENABLE & ~MSIC_CTRL_IRQ_ENABLE;
 	msic_dcr_write(msic, MSIC_CTRL_REG, tmp);
@@ -421,21 +333,12 @@ static int axon_msi_probe(struct platform_device *device)
 	unsigned int virq;
 	int dcr_base, dcr_len;
 
-<<<<<<< HEAD
-	pr_devel("axon_msi: setting up dn %s\n", dn->full_name);
-
-	msic = kzalloc(sizeof(struct axon_msic), GFP_KERNEL);
-	if (!msic) {
-		printk(KERN_ERR "axon_msi: couldn't allocate msic for %s\n",
-		       dn->full_name);
-=======
 	pr_devel("axon_msi: setting up dn %pOF\n", dn);
 
 	msic = kzalloc(sizeof(*msic), GFP_KERNEL);
 	if (!msic) {
 		printk(KERN_ERR "axon_msi: couldn't allocate msic for %pOF\n",
 		       dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -444,51 +347,30 @@ static int axon_msi_probe(struct platform_device *device)
 
 	if (dcr_base == 0 || dcr_len == 0) {
 		printk(KERN_ERR
-<<<<<<< HEAD
-		       "axon_msi: couldn't parse dcr properties on %s\n",
-			dn->full_name);
-=======
 		       "axon_msi: couldn't parse dcr properties on %pOF\n",
 			dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_msic;
 	}
 
 	msic->dcr_host = dcr_map(dn, dcr_base, dcr_len);
 	if (!DCR_MAP_OK(msic->dcr_host)) {
-<<<<<<< HEAD
-		printk(KERN_ERR "axon_msi: dcr_map failed for %s\n",
-		       dn->full_name);
-=======
 		printk(KERN_ERR "axon_msi: dcr_map failed for %pOF\n",
 		       dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_msic;
 	}
 
 	msic->fifo_virt = dma_alloc_coherent(&device->dev, MSIC_FIFO_SIZE_BYTES,
 					     &msic->fifo_phys, GFP_KERNEL);
 	if (!msic->fifo_virt) {
-<<<<<<< HEAD
-		printk(KERN_ERR "axon_msi: couldn't allocate fifo for %s\n",
-		       dn->full_name);
-=======
 		printk(KERN_ERR "axon_msi: couldn't allocate fifo for %pOF\n",
 		       dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_msic;
 	}
 
 	virq = irq_of_parse_and_map(dn, 0);
-<<<<<<< HEAD
-	if (virq == NO_IRQ) {
-		printk(KERN_ERR "axon_msi: irq parse and map failed for %s\n",
-		       dn->full_name);
-=======
 	if (!virq) {
 		printk(KERN_ERR "axon_msi: irq parse and map failed for %pOF\n",
 		       dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_fifo;
 	}
 	memset(msic->fifo_virt, 0xff, MSIC_FIFO_SIZE_BYTES);
@@ -496,13 +378,8 @@ static int axon_msi_probe(struct platform_device *device)
 	/* We rely on being able to stash a virq in a u16, so limit irqs to < 65536 */
 	msic->irq_domain = irq_domain_add_nomap(dn, 65536, &msic_host_ops, msic);
 	if (!msic->irq_domain) {
-<<<<<<< HEAD
-		printk(KERN_ERR "axon_msi: couldn't allocate irq_domain for %s\n",
-		       dn->full_name);
-=======
 		printk(KERN_ERR "axon_msi: couldn't allocate irq_domain for %pOF\n",
 		       dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_fifo;
 	}
 
@@ -523,22 +400,12 @@ static int axon_msi_probe(struct platform_device *device)
 
 	dev_set_drvdata(&device->dev, msic);
 
-<<<<<<< HEAD
-	ppc_md.setup_msi_irqs = axon_msi_setup_msi_irqs;
-	ppc_md.teardown_msi_irqs = axon_msi_teardown_msi_irqs;
-	ppc_md.msi_check_device = axon_msi_check_device;
-
-	axon_msi_debug_setup(dn, msic);
-
-	printk(KERN_DEBUG "axon_msi: setup MSIC on %s\n", dn->full_name);
-=======
 	cell_pci_controller_ops.setup_msi_irqs = axon_msi_setup_msi_irqs;
 	cell_pci_controller_ops.teardown_msi_irqs = axon_msi_teardown_msi_irqs;
 
 	axon_msi_debug_setup(dn, msic);
 
 	printk(KERN_DEBUG "axon_msi: setup MSIC on %pOF\n", dn);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -564,10 +431,6 @@ static struct platform_driver axon_msi_driver = {
 	.shutdown	= axon_msi_shutdown,
 	.driver = {
 		.name = "axon-msi",
-<<<<<<< HEAD
-		.owner = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = axon_msi_device_id,
 	},
 };
@@ -598,17 +461,6 @@ DEFINE_SIMPLE_ATTRIBUTE(fops_msic, msic_get, msic_set, "%llu\n");
 void axon_msi_debug_setup(struct device_node *dn, struct axon_msic *msic)
 {
 	char name[8];
-<<<<<<< HEAD
-	u64 addr;
-
-	addr = of_translate_address(dn, of_get_property(dn, "reg", NULL));
-	if (addr == OF_BAD_ADDR) {
-		pr_devel("axon_msi: couldn't translate reg property\n");
-		return;
-	}
-
-	msic->trigger = ioremap(addr, 0x4);
-=======
 	struct resource res;
 
 	if (of_address_to_resource(dn, 0, &res)) {
@@ -617,7 +469,6 @@ void axon_msi_debug_setup(struct device_node *dn, struct axon_msic *msic)
 	}
 
 	msic->trigger = ioremap(res.start, 0x4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!msic->trigger) {
 		pr_devel("axon_msi: ioremap failed\n");
 		return;
@@ -625,14 +476,6 @@ void axon_msi_debug_setup(struct device_node *dn, struct axon_msic *msic)
 
 	snprintf(name, sizeof(name), "msic_%d", of_node_to_nid(dn));
 
-<<<<<<< HEAD
-	if (!debugfs_create_file(name, 0600, powerpc_debugfs_root,
-				 msic, &fops_msic)) {
-		pr_devel("axon_msi: debugfs_create_file failed!\n");
-		return;
-	}
-=======
 	debugfs_create_file(name, 0600, arch_debugfs_dir, msic, &fops_msic);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* DEBUG */

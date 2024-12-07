@@ -1,39 +1,15 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2007 Atheros Corporation. All rights reserved.
  * Copyright(c) 2007 xiong huang <xiong.huang@atheros.com>
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59
- * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ATL1E_H_
 #define _ATL1E_H_
 
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -453,10 +429,6 @@ struct atl1e_adapter {
 	u16 link_duplex;
 
 	spinlock_t mdio_lock;
-<<<<<<< HEAD
-	spinlock_t tx_lock;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t irq_sem;
 
 	struct work_struct reset_task;
@@ -510,16 +482,6 @@ struct atl1e_adapter {
 		readl(((a)->hw_addr + reg) + ((offset) << 2)))
 
 extern char atl1e_driver_name[];
-<<<<<<< HEAD
-extern char atl1e_driver_version[];
-
-extern void atl1e_check_options(struct atl1e_adapter *adapter);
-extern int atl1e_up(struct atl1e_adapter *adapter);
-extern void atl1e_down(struct atl1e_adapter *adapter);
-extern void atl1e_reinit_locked(struct atl1e_adapter *adapter);
-extern s32 atl1e_reset_hw(struct atl1e_hw *hw);
-extern void atl1e_set_ethtool_ops(struct net_device *netdev);
-=======
 
 void atl1e_check_options(struct atl1e_adapter *adapter);
 int atl1e_up(struct atl1e_adapter *adapter);
@@ -527,5 +489,4 @@ void atl1e_down(struct atl1e_adapter *adapter);
 void atl1e_reinit_locked(struct atl1e_adapter *adapter);
 s32 atl1e_reset_hw(struct atl1e_hw *hw);
 void atl1e_set_ethtool_ops(struct net_device *netdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ATL1_E_H_ */

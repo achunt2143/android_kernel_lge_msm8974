@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/super.c
  *
@@ -26,10 +23,6 @@
 
 #include <linux/export.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/acct.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/mount.h>
 #include <linux/security.h>
@@ -38,15 +31,6 @@
 #include <linux/mutex.h>
 #include <linux/backing-dev.h>
 #include <linux/rculist_bl.h>
-<<<<<<< HEAD
-#include <linux/cleancache.h>
-#include <linux/fsnotify.h>
-#include "internal.h"
-
-
-LIST_HEAD(super_blocks);
-DEFINE_SPINLOCK(sb_lock);
-=======
 #include <linux/fscrypt.h>
 #include <linux/fsnotify.h>
 #include <linux/lockdep.h>
@@ -182,24 +166,11 @@ static void super_wake(struct super_block *sb, unsigned int flag)
 	smp_mb();
 	wake_up_var(&sb->s_flags);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * One thing we have to be careful of with a per-sb shrinker is that we don't
  * drop the last active reference to the superblock from within the shrinker.
  * If that happens we could trigger unregistering the shrinker from within the
-<<<<<<< HEAD
- * shrinker path and that leads to deadlock on the shrinker_rwsem. Hence we
- * take a passive reference to the superblock to avoid this from occurring.
- */
-static int prune_super(struct shrinker *shrink, struct shrink_control *sc)
-{
-	struct super_block *sb;
-	int	fs_objects = 0;
-	int	total_objects;
-
-	sb = container_of(shrink, struct super_block, s_shrink);
-=======
  * shrinker path and that leads to deadlock on the shrinker_mutex. Hence we
  * take a passive reference to the superblock to avoid this from occurring.
  */
@@ -214,63 +185,11 @@ static unsigned long super_cache_scan(struct shrinker *shrink,
 	long	inodes;
 
 	sb = shrink->private_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Deadlock avoidance.  We may hold various FS locks, and we don't want
 	 * to recurse into the FS that called us in clear_inode() and friends..
 	 */
-<<<<<<< HEAD
-	if (sc->nr_to_scan && !(sc->gfp_mask & __GFP_FS))
-		return -1;
-
-	if (!grab_super_passive(sb))
-		return !sc->nr_to_scan ? 0 : -1;
-
-	if (sb->s_op && sb->s_op->nr_cached_objects)
-		fs_objects = sb->s_op->nr_cached_objects(sb);
-
-	total_objects = sb->s_nr_dentry_unused +
-			sb->s_nr_inodes_unused + fs_objects + 1;
-	if (!total_objects)
-		total_objects = 1;
-
-	if (sc->nr_to_scan) {
-		int	dentries;
-		int	inodes;
-
-		/* proportion the scan between the caches */
-		dentries = (sc->nr_to_scan * sb->s_nr_dentry_unused) /
-							total_objects;
-		inodes = (sc->nr_to_scan * sb->s_nr_inodes_unused) /
-							total_objects;
-		if (fs_objects)
-			fs_objects = (sc->nr_to_scan * fs_objects) /
-							total_objects;
-		/*
-		 * prune the dcache first as the icache is pinned by it, then
-		 * prune the icache, followed by the filesystem specific caches
-		 */
-		prune_dcache_sb(sb, dentries);
-		prune_icache_sb(sb, inodes);
-
-		if (fs_objects && sb->s_op->free_cached_objects) {
-			sb->s_op->free_cached_objects(sb, fs_objects);
-			fs_objects = sb->s_op->nr_cached_objects(sb);
-		}
-		total_objects = sb->s_nr_dentry_unused +
-				sb->s_nr_inodes_unused + fs_objects;
-	}
-
-	total_objects = (total_objects / 100) * sysctl_vfs_cache_pressure;
-	drop_super(sb);
-	return total_objects;
-}
-
-/**
- *	alloc_super	-	create new superblock
- *	@type:	filesystem type superblock should belong to
-=======
 	if (!(sc->gfp_mask & __GFP_FS))
 		return SHRINK_STOP;
 
@@ -388,92 +307,10 @@ static void destroy_unused_super(struct super_block *s)
  *	@type:	filesystem type superblock should belong to
  *	@flags: the mount flags
  *	@user_ns: User namespace for the super_block
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Allocates and initializes a new &struct super_block.  alloc_super()
  *	returns a pointer new superblock or %NULL if allocation had failed.
  */
-<<<<<<< HEAD
-static struct super_block *alloc_super(struct file_system_type *type)
-{
-	struct super_block *s = kzalloc(sizeof(struct super_block),  GFP_USER);
-	static const struct super_operations default_op;
-
-	if (s) {
-		if (security_sb_alloc(s)) {
-			kfree(s);
-			s = NULL;
-			goto out;
-		}
-
-		s->s_bdi = &default_backing_dev_info;
-		INIT_HLIST_NODE(&s->s_instances);
-		INIT_HLIST_BL_HEAD(&s->s_anon);
-		INIT_LIST_HEAD(&s->s_inodes);
-		INIT_LIST_HEAD(&s->s_dentry_lru);
-		INIT_LIST_HEAD(&s->s_inode_lru);
-		spin_lock_init(&s->s_inode_lru_lock);
-		INIT_LIST_HEAD(&s->s_mounts);
-		init_rwsem(&s->s_umount);
-		mutex_init(&s->s_lock);
-		lockdep_set_class(&s->s_umount, &type->s_umount_key);
-		/*
-		 * The locking rules for s_lock are up to the
-		 * filesystem. For example ext3fs has different
-		 * lock ordering than usbfs:
-		 */
-		lockdep_set_class(&s->s_lock, &type->s_lock_key);
-		/*
-		 * sget() can have s_umount recursion.
-		 *
-		 * When it cannot find a suitable sb, it allocates a new
-		 * one (this one), and tries again to find a suitable old
-		 * one.
-		 *
-		 * In case that succeeds, it will acquire the s_umount
-		 * lock of the old one. Since these are clearly distrinct
-		 * locks, and this object isn't exposed yet, there's no
-		 * risk of deadlocks.
-		 *
-		 * Annotate this by putting this lock in a different
-		 * subclass.
-		 */
-		down_write_nested(&s->s_umount, SINGLE_DEPTH_NESTING);
-		s->s_count = 1;
-		atomic_set(&s->s_active, 1);
-		mutex_init(&s->s_vfs_rename_mutex);
-		lockdep_set_class(&s->s_vfs_rename_mutex, &type->s_vfs_rename_key);
-		mutex_init(&s->s_dquot.dqio_mutex);
-		mutex_init(&s->s_dquot.dqonoff_mutex);
-		init_rwsem(&s->s_dquot.dqptr_sem);
-		init_waitqueue_head(&s->s_wait_unfrozen);
-		s->s_maxbytes = MAX_NON_LFS;
-		s->s_op = &default_op;
-		s->s_time_gran = 1000000000;
-		s->cleancache_poolid = -1;
-
-		s->s_shrink.seeks = DEFAULT_SEEKS;
-		s->s_shrink.shrink = prune_super;
-		s->s_shrink.batch = 1024;
-	}
-out:
-	return s;
-}
-
-/**
- *	destroy_super	-	frees a superblock
- *	@s: superblock to free
- *
- *	Frees a superblock.
- */
-static inline void destroy_super(struct super_block *s)
-{
-	security_sb_free(s);
-	WARN_ON(!list_empty(&s->s_mounts));
-	kfree(s->s_subtype);
-	kfree(s->s_options);
-	kfree(s);
-=======
 static struct super_block *alloc_super(struct file_system_type *type, int flags,
 				       struct user_namespace *user_ns)
 {
@@ -556,7 +393,6 @@ static struct super_block *alloc_super(struct file_system_type *type, int flags,
 fail:
 	destroy_unused_super(s);
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Superblock refcounting  */
@@ -564,13 +400,6 @@ fail:
 /*
  * Drop a superblock's refcount.  The caller must hold sb_lock.
  */
-<<<<<<< HEAD
-static void __put_super(struct super_block *sb)
-{
-	if (!--sb->s_count) {
-		list_del_init(&sb->s_list);
-		destroy_super(sb);
-=======
 static void __put_super(struct super_block *s)
 {
 	if (!--s->s_count) {
@@ -579,7 +408,6 @@ static void __put_super(struct super_block *s)
 		WARN_ON(s->s_inode_lru.node);
 		WARN_ON(!list_empty(&s->s_mounts));
 		call_rcu(&s->rcu, destroy_super_rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -590,19 +418,13 @@ static void __put_super(struct super_block *s)
  *	Drops a temporary reference, frees superblock if there's no
  *	references left.
  */
-<<<<<<< HEAD
-static void put_super(struct super_block *sb)
-=======
 void put_super(struct super_block *sb)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock(&sb_lock);
 	__put_super(sb);
 	spin_unlock(&sb_lock);
 }
 
-<<<<<<< HEAD
-=======
 static void kill_super_notify(struct super_block *sb)
 {
 	lockdep_assert_not_held(&sb->s_umount);
@@ -630,17 +452,12 @@ static void kill_super_notify(struct super_block *sb)
 	 */
 	super_wake(sb, SB_DEAD);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	deactivate_locked_super	-	drop an active reference to superblock
  *	@s: superblock to deactivate
  *
-<<<<<<< HEAD
- *	Drops an active reference to superblock, converting it into a temprory
-=======
  *	Drops an active reference to superblock, converting it into a temporary
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	one if there is no other active references left.  In that case we
  *	tell fs driver to shut it down and drop the temporary reference we
  *	had just acquired.
@@ -651,17 +468,6 @@ void deactivate_locked_super(struct super_block *s)
 {
 	struct file_system_type *fs = s->s_type;
 	if (atomic_dec_and_test(&s->s_active)) {
-<<<<<<< HEAD
-		cleancache_invalidate_fs(s);
-		fs->kill_sb(s);
-
-		/* caches are now gone, we can safely kill the shrinker now */
-		unregister_shrinker(&s->s_shrink);
-		put_filesystem(fs);
-		put_super(s);
-	} else {
-		up_write(&s->s_umount);
-=======
 		shrinker_free(s->s_shrink);
 		fs->kill_sb(s);
 
@@ -679,7 +485,6 @@ void deactivate_locked_super(struct super_block *s)
 		put_super(s);
 	} else {
 		super_unlock_excl(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -695,13 +500,8 @@ EXPORT_SYMBOL(deactivate_locked_super);
  */
 void deactivate_super(struct super_block *s)
 {
-<<<<<<< HEAD
-        if (!atomic_add_unless(&s->s_active, -1, 1)) {
-		down_write(&s->s_umount);
-=======
 	if (!atomic_add_unless(&s->s_active, -1, 1)) {
 		__super_lock_excl(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		deactivate_locked_super(s);
 	}
 }
@@ -709,63 +509,6 @@ void deactivate_super(struct super_block *s)
 EXPORT_SYMBOL(deactivate_super);
 
 /**
-<<<<<<< HEAD
- *	grab_super - acquire an active reference
- *	@s: reference we are trying to make active
- *
- *	Tries to acquire an active reference.  grab_super() is used when we
- * 	had just found a superblock in super_blocks or fs_type->fs_supers
- *	and want to turn it into a full-blown active reference.  grab_super()
- *	is called with sb_lock held and drops it.  Returns 1 in case of
- *	success, 0 if we had failed (superblock contents was already dead or
- *	dying when grab_super() had been called).  Note that this is only
- *	called for superblocks not in rundown mode (== ones still on ->fs_supers
- *	of their type), so increment of ->s_count is OK here.
- */
-static int grab_super(struct super_block *s) __releases(sb_lock)
-{
-	s->s_count++;
-	spin_unlock(&sb_lock);
-	down_write(&s->s_umount);
-	if ((s->s_flags & MS_BORN) && atomic_inc_not_zero(&s->s_active)) {
-		put_super(s);
-		return 1;
-	}
-	up_write(&s->s_umount);
-	put_super(s);
-	return 0;
-}
-
-/*
- *	grab_super_passive - acquire a passive reference
- *	@s: reference we are trying to grab
- *
- *	Tries to acquire a passive reference. This is used in places where we
- *	cannot take an active reference but we need to ensure that the
- *	superblock does not go away while we are working on it. It returns
- *	false if a reference was not gained, and returns true with the s_umount
- *	lock held in read mode if a reference is gained. On successful return,
- *	the caller must drop the s_umount lock and the passive reference when
- *	done.
- */
-bool grab_super_passive(struct super_block *sb)
-{
-	spin_lock(&sb_lock);
-	if (hlist_unhashed(&sb->s_instances)) {
-		spin_unlock(&sb_lock);
-		return false;
-	}
-
-	sb->s_count++;
-	spin_unlock(&sb_lock);
-
-	if (down_read_trylock(&sb->s_umount)) {
-		if (sb->s_root && (sb->s_flags & MS_BORN))
-			return true;
-		up_read(&sb->s_umount);
-	}
-
-=======
  * grab_super - acquire an active reference to a superblock
  * @sb: superblock to acquire
  *
@@ -792,28 +535,11 @@ static bool grab_super(struct super_block *sb)
 		super_unlock_excl(sb);
 	}
 	wait_var_event(&sb->s_flags, super_flags(sb, SB_DEAD));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_super(sb);
 	return false;
 }
 
 /*
-<<<<<<< HEAD
- * Superblock locking.  We really ought to get rid of these two.
- */
-void lock_super(struct super_block * sb)
-{
-	mutex_lock(&sb->s_lock);
-}
-
-void unlock_super(struct super_block * sb)
-{
-	mutex_unlock(&sb->s_lock);
-}
-
-EXPORT_SYMBOL(lock_super);
-EXPORT_SYMBOL(unlock_super);
-=======
  *	super_trylock_shared - try to grab ->s_umount shared
  *	@sb: reference we are trying to grab
  *
@@ -870,7 +596,6 @@ void retire_super(struct super_block *sb)
 	super_unlock_excl(sb);
 }
 EXPORT_SYMBOL(retire_super);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	generic_shutdown_super	-	common helper for ->kill_sb()
@@ -893,28 +618,6 @@ void generic_shutdown_super(struct super_block *sb)
 	if (sb->s_root) {
 		shrink_dcache_for_umount(sb);
 		sync_filesystem(sb);
-<<<<<<< HEAD
-		sb->s_flags &= ~MS_ACTIVE;
-
-		fsnotify_unmount_inodes(&sb->s_inodes);
-
-		evict_inodes(sb);
-
-		if (sop->put_super)
-			sop->put_super(sb);
-
-		if (!list_empty(&sb->s_inodes)) {
-			printk("VFS: Busy inodes after unmount of %s. "
-			   "Self-destruct in 5 seconds.  Have a nice day...\n",
-			   sb->s_id);
-		}
-	}
-	spin_lock(&sb_lock);
-	/* should be initialized for __put_super_and_need_restart() */
-	hlist_del_init(&sb->s_instances);
-	spin_unlock(&sb_lock);
-	up_write(&sb->s_umount);
-=======
 		sb->s_flags &= ~SB_ACTIVE;
 
 		cgroup_writeback_umount();
@@ -979,28 +682,10 @@ void generic_shutdown_super(struct super_block *sb)
 		bdi_put(sb->s_bdi);
 		sb->s_bdi = &noop_backing_dev_info;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(generic_shutdown_super);
 
-<<<<<<< HEAD
-/**
- *	sget	-	find or create a superblock
- *	@type:	filesystem type superblock should belong to
- *	@test:	comparison callback
- *	@set:	setup callback
- *	@data:	argument to each of them
- */
-struct super_block *sget(struct file_system_type *type,
-			int (*test)(struct super_block *,void *),
-			int (*set)(struct super_block *,void *),
-			void *data)
-{
-	struct super_block *s = NULL;
-	struct hlist_node *node;
-	struct super_block *old;
-=======
 bool mount_capable(struct fs_context *fc)
 {
 	if (!(fc->fs_type->fs_flags & FS_USERNS_MOUNT))
@@ -1048,24 +733,11 @@ struct super_block *sget_fc(struct fs_context *fc,
 	struct super_block *s = NULL;
 	struct super_block *old;
 	struct user_namespace *user_ns = fc->global ? &init_user_ns : fc->user_ns;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 retry:
 	spin_lock(&sb_lock);
 	if (test) {
-<<<<<<< HEAD
-		hlist_for_each_entry(old, node, &type->fs_supers, s_instances) {
-			if (!test(old, data))
-				continue;
-			if (!grab_super(old))
-				goto retry;
-			if (s) {
-				up_write(&s->s_umount);
-				destroy_super(s);
-				s = NULL;
-			}
-=======
 		hlist_for_each_entry(old, &fc->fs_type->fs_supers, s_instances) {
 			if (test(old, fc))
 				goto share_extant_sb;
@@ -1160,33 +832,16 @@ retry:
 			if (!grab_super(old))
 				goto retry;
 			destroy_unused_super(s);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return old;
 		}
 	}
 	if (!s) {
 		spin_unlock(&sb_lock);
-<<<<<<< HEAD
-		s = alloc_super(type);
-=======
 		s = alloc_super(type, (flags & ~SB_SUBMOUNT), user_ns);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!s)
 			return ERR_PTR(-ENOMEM);
 		goto retry;
 	}
-<<<<<<< HEAD
-		
-	err = set(s, data);
-	if (err) {
-		spin_unlock(&sb_lock);
-		up_write(&s->s_umount);
-		destroy_super(s);
-		return ERR_PTR(err);
-	}
-	s->s_type = type;
-	strlcpy(s->s_id, type->name, sizeof(s->s_id));
-=======
 
 	err = set(s, data);
 	if (err) {
@@ -1196,50 +851,23 @@ retry:
 	}
 	s->s_type = type;
 	strscpy(s->s_id, type->name, sizeof(s->s_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add_tail(&s->s_list, &super_blocks);
 	hlist_add_head(&s->s_instances, &type->fs_supers);
 	spin_unlock(&sb_lock);
 	get_filesystem(type);
-<<<<<<< HEAD
-	register_shrinker(&s->s_shrink);
-	return s;
-}
-
-=======
 	shrinker_register(s->s_shrink);
 	return s;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(sget);
 
 void drop_super(struct super_block *sb)
 {
-<<<<<<< HEAD
-	up_read(&sb->s_umount);
-=======
 	super_unlock_shared(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_super(sb);
 }
 
 EXPORT_SYMBOL(drop_super);
 
-<<<<<<< HEAD
-/**
- * sync_supers - helper for periodic superblock writeback
- *
- * Call the write_super method if present on all dirty superblocks in
- * the system.  This is for the periodic writeback used by most older
- * filesystems.  For data integrity superblock writeback use
- * sync_filesystems() instead.
- *
- * Note: check the dirty flag before waiting, so we don't
- * hold up the sync while mounting a device. (The newly
- * mounted device won't need syncing.)
- */
-void sync_supers(void)
-=======
 void drop_super_exclusive(struct super_block *sb)
 {
 	super_unlock_excl(sb);
@@ -1248,30 +876,11 @@ void drop_super_exclusive(struct super_block *sb)
 EXPORT_SYMBOL(drop_super_exclusive);
 
 static void __iterate_supers(void (*f)(struct super_block *))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb, *p = NULL;
 
 	spin_lock(&sb_lock);
 	list_for_each_entry(sb, &super_blocks, s_list) {
-<<<<<<< HEAD
-		if (hlist_unhashed(&sb->s_instances))
-			continue;
-		if (sb->s_op->write_super && sb->s_dirt) {
-			sb->s_count++;
-			spin_unlock(&sb_lock);
-
-			down_read(&sb->s_umount);
-			if (sb->s_root && sb->s_dirt && (sb->s_flags & MS_BORN))
-				sb->s_op->write_super(sb);
-			up_read(&sb->s_umount);
-
-			spin_lock(&sb_lock);
-			if (p)
-				__put_super(p);
-			p = sb;
-		}
-=======
 		if (super_flags(sb, SB_DYING))
 			continue;
 		sb->s_count++;
@@ -1283,16 +892,11 @@ static void __iterate_supers(void (*f)(struct super_block *))
 		if (p)
 			__put_super(p);
 		p = sb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (p)
 		__put_super(p);
 	spin_unlock(&sb_lock);
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	iterate_supers - call function for all active superblocks
  *	@f: function to call
@@ -1307,17 +911,6 @@ void iterate_supers(void (*f)(struct super_block *, void *), void *arg)
 
 	spin_lock(&sb_lock);
 	list_for_each_entry(sb, &super_blocks, s_list) {
-<<<<<<< HEAD
-		if (hlist_unhashed(&sb->s_instances))
-			continue;
-		sb->s_count++;
-		spin_unlock(&sb_lock);
-
-		down_read(&sb->s_umount);
-		if (sb->s_root && (sb->s_flags & MS_BORN))
-			f(sb, arg);
-		up_read(&sb->s_umount);
-=======
 		bool locked;
 
 		sb->s_count++;
@@ -1329,7 +922,6 @@ void iterate_supers(void (*f)(struct super_block *, void *), void *arg)
 				f(sb, arg);
 			super_unlock_shared(sb);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock(&sb_lock);
 		if (p)
@@ -1354,19 +946,6 @@ void iterate_supers_type(struct file_system_type *type,
 	void (*f)(struct super_block *, void *), void *arg)
 {
 	struct super_block *sb, *p = NULL;
-<<<<<<< HEAD
-	struct hlist_node *node;
-
-	spin_lock(&sb_lock);
-	hlist_for_each_entry(sb, node, &type->fs_supers, s_instances) {
-		sb->s_count++;
-		spin_unlock(&sb_lock);
-
-		down_read(&sb->s_umount);
-		if (sb->s_root && (sb->s_flags & MS_BORN))
-			f(sb, arg);
-		up_read(&sb->s_umount);
-=======
 
 	spin_lock(&sb_lock);
 	hlist_for_each_entry(sb, &type->fs_supers, s_instances) {
@@ -1381,7 +960,6 @@ void iterate_supers_type(struct file_system_type *type,
 				f(sb, arg);
 			super_unlock_shared(sb);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock(&sb_lock);
 		if (p)
@@ -1395,126 +973,11 @@ void iterate_supers_type(struct file_system_type *type,
 
 EXPORT_SYMBOL(iterate_supers_type);
 
-<<<<<<< HEAD
-/**
- *	get_super - get the superblock of a device
- *	@bdev: device to get the superblock for
- *	
- *	Scans the superblock list and finds the superblock of the file system
- *	mounted on the device given. %NULL is returned if no match is found.
- */
-
-struct super_block *get_super(struct block_device *bdev)
-{
-	struct super_block *sb;
-
-	if (!bdev)
-		return NULL;
-
-	spin_lock(&sb_lock);
-rescan:
-	list_for_each_entry(sb, &super_blocks, s_list) {
-		if (hlist_unhashed(&sb->s_instances))
-			continue;
-		if (sb->s_bdev == bdev) {
-			sb->s_count++;
-			spin_unlock(&sb_lock);
-			down_read(&sb->s_umount);
-			/* still alive? */
-			if (sb->s_root && (sb->s_flags & MS_BORN))
-				return sb;
-			up_read(&sb->s_umount);
-			/* nope, got unmounted */
-			spin_lock(&sb_lock);
-			__put_super(sb);
-			goto rescan;
-		}
-	}
-	spin_unlock(&sb_lock);
-	return NULL;
-}
-
-EXPORT_SYMBOL(get_super);
-
-/**
- *	get_super_thawed - get thawed superblock of a device
- *	@bdev: device to get the superblock for
- *
- *	Scans the superblock list and finds the superblock of the file system
- *	mounted on the device. The superblock is returned once it is thawed
- *	(or immediately if it was not frozen). %NULL is returned if no match
- *	is found.
- */
-struct super_block *get_super_thawed(struct block_device *bdev)
-{
-	while (1) {
-		struct super_block *s = get_super(bdev);
-		if (!s || s->s_frozen == SB_UNFROZEN)
-			return s;
-		up_read(&s->s_umount);
-		vfs_check_frozen(s, SB_FREEZE_WRITE);
-		put_super(s);
-	}
-}
-EXPORT_SYMBOL(get_super_thawed);
-
-/**
- * get_active_super - get an active reference to the superblock of a device
- * @bdev: device to get the superblock for
- *
- * Scans the superblock list and finds the superblock of the file system
- * mounted on the device given.  Returns the superblock with an active
- * reference or %NULL if none was found.
- */
-struct super_block *get_active_super(struct block_device *bdev)
-{
-	struct super_block *sb;
-
-	if (!bdev)
-		return NULL;
-
-restart:
-	spin_lock(&sb_lock);
-	list_for_each_entry(sb, &super_blocks, s_list) {
-		if (hlist_unhashed(&sb->s_instances))
-			continue;
-		if (sb->s_bdev == bdev) {
-			if (!grab_super(sb))
-				goto restart;
-			up_write(&sb->s_umount);
-			return sb;
-		}
-	}
-	spin_unlock(&sb_lock);
-	return NULL;
-}
- 
-struct super_block *user_get_super(dev_t dev)
-=======
 struct super_block *user_get_super(dev_t dev, bool excl)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb;
 
 	spin_lock(&sb_lock);
-<<<<<<< HEAD
-rescan:
-	list_for_each_entry(sb, &super_blocks, s_list) {
-		if (hlist_unhashed(&sb->s_instances))
-			continue;
-		if (sb->s_dev ==  dev) {
-			sb->s_count++;
-			spin_unlock(&sb_lock);
-			down_read(&sb->s_umount);
-			/* still alive? */
-			if (sb->s_root && (sb->s_flags & MS_BORN))
-				return sb;
-			up_read(&sb->s_umount);
-			/* nope, got unmounted */
-			spin_lock(&sb_lock);
-			__put_super(sb);
-			goto rescan;
-=======
 	list_for_each_entry(sb, &super_blocks, s_list) {
 		if (sb->s_dev ==  dev) {
 			bool locked;
@@ -1532,7 +995,6 @@ rescan:
 			spin_lock(&sb_lock);
 			__put_super(sb);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock(&sb_lock);
@@ -1540,43 +1002,6 @@ rescan:
 }
 
 /**
-<<<<<<< HEAD
- *	do_remount_sb2 - asks filesystem to change mount options.
- *	@mnt:   mount we are looking at
- *	@sb:	superblock in question
- *	@flags:	numeric part of options
- *	@data:	the rest of options
- *      @force: whether or not to force the change
- *
- *	Alters the mount options of a mounted file system.
- */
-int do_remount_sb2(struct vfsmount *mnt, struct super_block *sb, int flags, void *data, int force)
-{
-	int retval;
-	int remount_ro;
-
-	if (sb->s_frozen != SB_UNFROZEN)
-		return -EBUSY;
-
-#ifdef CONFIG_BLOCK
-	if (!(flags & MS_RDONLY) && bdev_read_only(sb->s_bdev))
-		return -EACCES;
-#endif
-
-	if (flags & MS_RDONLY)
-		acct_auto_close(sb);
-	shrink_dcache_sb(sb);
-	sync_filesystem(sb);
-
-	remount_ro = (flags & MS_RDONLY) && !(sb->s_flags & MS_RDONLY);
-
-	/* If we are remounting RDONLY and current sb is read/write,
-	   make sure there are no rw files opened */
-	if (remount_ro) {
-		if (force) {
-			sb->s_readonly_remount = 1;
-			smp_wmb();
-=======
  * reconfigure_super - asks filesystem to change superblock parameters
  * @fc: The superblock and configuration
  *
@@ -1629,27 +1054,11 @@ int reconfigure_super(struct fs_context *fc)
 	if (remount_ro) {
 		if (force) {
 			sb_start_ro_state_change(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			retval = sb_prepare_remount_readonly(sb);
 			if (retval)
 				return retval;
 		}
-<<<<<<< HEAD
-	}
-
-	if (mnt && sb->s_op->remount_fs2) {
-		retval = sb->s_op->remount_fs2(mnt, sb, &flags, data);
-		if (retval) {
-			if (!force)
-				goto cancel_readonly;
-			/* If forced remount, go ahead despite any errors */
-			WARN(1, "forced remount of a %s fs returned %i\n",
-			     sb->s_type->name, retval);
-		}
-	} else if (sb->s_op->remount_fs) {
-		retval = sb->s_op->remount_fs(sb, &flags, data);
-=======
 	} else if (remount_rw) {
 		/*
 		 * Protect filesystem's reconfigure code from writes from
@@ -1660,7 +1069,6 @@ int reconfigure_super(struct fs_context *fc)
 
 	if (fc->ops->reconfigure) {
 		retval = fc->ops->reconfigure(fc);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval) {
 			if (!force)
 				goto cancel_readonly;
@@ -1669,17 +1077,10 @@ int reconfigure_super(struct fs_context *fc)
 			     sb->s_type->name, retval);
 		}
 	}
-<<<<<<< HEAD
-	sb->s_flags = (sb->s_flags & ~MS_RMT_MASK) | (flags & MS_RMT_MASK);
-	/* Needs to be ordered wrt mnt_is_readonly() */
-	smp_wmb();
-	sb->s_readonly_remount = 0;
-=======
 
 	WRITE_ONCE(sb->s_flags, ((sb->s_flags & ~fc->sb_flags_mask) |
 				 (fc->sb_flags & fc->sb_flags_mask)));
 	sb_end_ro_state_change(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some filesystems modify their metadata via some other path than the
@@ -1694,46 +1095,6 @@ int reconfigure_super(struct fs_context *fc)
 	return 0;
 
 cancel_readonly:
-<<<<<<< HEAD
-	sb->s_readonly_remount = 0;
-	return retval;
-}
-
-int do_remount_sb(struct super_block *sb, int flags, void *data, int force)
-{
-	return do_remount_sb2(NULL, sb, flags, data, force);
-}
-
-extern int get_partition_num_by_name(char *name);
-
-static void do_emergency_remount(struct work_struct *work)
-{
-	struct super_block *sb, *p = NULL;
-
-	spin_lock(&sb_lock);
-	list_for_each_entry_reverse(sb, &super_blocks, s_list) {
-		if (hlist_unhashed(&sb->s_instances))
-			continue;
-		sb->s_count++;
-		spin_unlock(&sb_lock);
-		down_write(&sb->s_umount);
-		if (sb->s_root && sb->s_bdev && (sb->s_flags & MS_BORN) &&
-		    !(sb->s_flags & MS_RDONLY)) {
-			/*
-			 * What lock protects sb->s_flags??
-			 */
-			do_remount_sb(sb, MS_RDONLY, NULL, 1);
-		}
-		up_write(&sb->s_umount);
-		spin_lock(&sb_lock);
-		if (p)
-			__put_super(p);
-		p = sb;
-	}
-	if (p)
-		__put_super(p);
-	spin_unlock(&sb_lock);
-=======
 	sb_end_ro_state_change(sb);
 	return retval;
 }
@@ -1760,7 +1121,6 @@ static void do_emergency_remount_callback(struct super_block *sb)
 static void do_emergency_remount(struct work_struct *work)
 {
 	__iterate_supers(do_emergency_remount_callback);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(work);
 	printk("Emergency Remount complete\n");
 }
@@ -1776,45 +1136,6 @@ void emergency_remount(void)
 	}
 }
 
-<<<<<<< HEAD
-/*
- * Unnamed block devices are dummy devices used by virtual
- * filesystems which don't use real block-devices.  -- jrs
- */
-
-static DEFINE_IDA(unnamed_dev_ida);
-static DEFINE_SPINLOCK(unnamed_dev_lock);/* protects the above */
-static int unnamed_dev_start = 0; /* don't bother trying below it */
-
-int get_anon_bdev(dev_t *p)
-{
-	int dev;
-	int error;
-
- retry:
-	if (ida_pre_get(&unnamed_dev_ida, GFP_ATOMIC) == 0)
-		return -ENOMEM;
-	spin_lock(&unnamed_dev_lock);
-	error = ida_get_new_above(&unnamed_dev_ida, unnamed_dev_start, &dev);
-	if (!error)
-		unnamed_dev_start = dev + 1;
-	spin_unlock(&unnamed_dev_lock);
-	if (error == -EAGAIN)
-		/* We raced and lost with another CPU. */
-		goto retry;
-	else if (error)
-		return -EAGAIN;
-
-	if ((dev & MAX_ID_MASK) == (1 << MINORBITS)) {
-		spin_lock(&unnamed_dev_lock);
-		ida_remove(&unnamed_dev_ida, dev);
-		if (unnamed_dev_start > dev)
-			unnamed_dev_start = dev;
-		spin_unlock(&unnamed_dev_lock);
-		return -EMFILE;
-	}
-	*p = MKDEV(0, dev & MINORMASK);
-=======
 static void do_thaw_all_callback(struct super_block *sb)
 {
 	bool locked = super_lock_excl(sb);
@@ -1882,54 +1203,29 @@ int get_anon_bdev(dev_t *p)
 		return dev;
 
 	*p = MKDEV(0, dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(get_anon_bdev);
 
 void free_anon_bdev(dev_t dev)
 {
-<<<<<<< HEAD
-	int slot = MINOR(dev);
-	spin_lock(&unnamed_dev_lock);
-	ida_remove(&unnamed_dev_ida, slot);
-	if (slot < unnamed_dev_start)
-		unnamed_dev_start = slot;
-	spin_unlock(&unnamed_dev_lock);
-=======
 	ida_free(&unnamed_dev_ida, MINOR(dev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(free_anon_bdev);
 
 int set_anon_super(struct super_block *s, void *data)
 {
-<<<<<<< HEAD
-	int error = get_anon_bdev(&s->s_dev);
-	if (!error)
-		s->s_bdi = &noop_backing_dev_info;
-	return error;
-}
-
-=======
 	return get_anon_bdev(&s->s_dev);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(set_anon_super);
 
 void kill_anon_super(struct super_block *sb)
 {
 	dev_t dev = sb->s_dev;
 	generic_shutdown_super(sb);
-<<<<<<< HEAD
-	free_anon_bdev(dev);
-}
-
-=======
 	kill_super_notify(sb);
 	free_anon_bdev(dev);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(kill_anon_super);
 
 void kill_litter_super(struct super_block *sb)
@@ -1938,65 +1234,6 @@ void kill_litter_super(struct super_block *sb)
 		d_genocide(sb->s_root);
 	kill_anon_super(sb);
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(kill_litter_super);
-
-static int ns_test_super(struct super_block *sb, void *data)
-{
-	return sb->s_fs_info == data;
-}
-
-static int ns_set_super(struct super_block *sb, void *data)
-{
-	sb->s_fs_info = data;
-	return set_anon_super(sb, NULL);
-}
-
-struct dentry *mount_ns(struct file_system_type *fs_type, int flags,
-	void *data, int (*fill_super)(struct super_block *, void *, int))
-{
-	struct super_block *sb;
-
-	sb = sget(fs_type, ns_test_super, ns_set_super, data);
-	if (IS_ERR(sb))
-		return ERR_CAST(sb);
-
-	if (!sb->s_root) {
-		int err;
-		sb->s_flags = flags;
-		err = fill_super(sb, data, flags & MS_SILENT ? 1 : 0);
-		if (err) {
-			deactivate_locked_super(sb);
-			return ERR_PTR(err);
-		}
-
-		sb->s_flags |= MS_ACTIVE;
-	}
-
-	return dget(sb->s_root);
-}
-
-EXPORT_SYMBOL(mount_ns);
-
-#ifdef CONFIG_BLOCK
-static int set_bdev_super(struct super_block *s, void *data)
-{
-	s->s_bdev = data;
-	s->s_dev = s->s_bdev->bd_dev;
-
-	/*
-	 * We set the bdi here to the queue backing, file systems can
-	 * overwrite this in ->fill_super()
-	 */
-	s->s_bdi = &bdev_get_queue(s->s_bdev)->backing_dev_info;
-	return 0;
-}
-
-static int test_bdev_super(struct super_block *s, void *data)
-{
-	return (void *)s->s_bdev == data;
-=======
 EXPORT_SYMBOL(kill_litter_super);
 
 int set_anon_super_fc(struct super_block *sb, struct fs_context *fc)
@@ -2391,85 +1628,12 @@ EXPORT_SYMBOL(get_tree_bdev);
 static int test_bdev_super(struct super_block *s, void *data)
 {
 	return !(s->s_iflags & SB_I_RETIRED) && s->s_dev == *(dev_t *)data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct dentry *mount_bdev(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data,
 	int (*fill_super)(struct super_block *, void *, int))
 {
-<<<<<<< HEAD
-	struct block_device *bdev;
-	struct super_block *s;
-	fmode_t mode = FMODE_READ | FMODE_EXCL;
-	int error = 0;
-
-	if (!(flags & MS_RDONLY))
-		mode |= FMODE_WRITE;
-
-	bdev = blkdev_get_by_path(dev_name, mode, fs_type);
-	if (IS_ERR(bdev))
-		return ERR_CAST(bdev);
-
-	/*
-	 * once the super is inserted into the list by sget, s_umount
-	 * will protect the lockfs code from trying to start a snapshot
-	 * while we are mounting
-	 */
-	mutex_lock(&bdev->bd_fsfreeze_mutex);
-	if (bdev->bd_fsfreeze_count > 0) {
-		mutex_unlock(&bdev->bd_fsfreeze_mutex);
-		error = -EBUSY;
-		goto error_bdev;
-	}
-	s = sget(fs_type, test_bdev_super, set_bdev_super, bdev);
-	mutex_unlock(&bdev->bd_fsfreeze_mutex);
-	if (IS_ERR(s))
-		goto error_s;
-
-	if (s->s_root) {
-		if ((flags ^ s->s_flags) & MS_RDONLY) {
-			deactivate_locked_super(s);
-			error = -EBUSY;
-			goto error_bdev;
-		}
-
-		/*
-		 * s_umount nests inside bd_mutex during
-		 * __invalidate_device().  blkdev_put() acquires
-		 * bd_mutex and can't be called under s_umount.  Drop
-		 * s_umount temporarily.  This is safe as we're
-		 * holding an active reference.
-		 */
-		up_write(&s->s_umount);
-		blkdev_put(bdev, mode);
-		down_write(&s->s_umount);
-	} else {
-		char b[BDEVNAME_SIZE];
-
-		s->s_flags = flags | MS_NOSEC;
-		s->s_mode = mode;
-		strlcpy(s->s_id, bdevname(bdev, b), sizeof(s->s_id));
-		sb_set_blocksize(s, block_size(bdev));
-		error = fill_super(s, data, flags & MS_SILENT ? 1 : 0);
-		if (error) {
-			deactivate_locked_super(s);
-			goto error;
-		}
-
-		s->s_flags |= MS_ACTIVE;
-		bdev->bd_super = s;
-	}
-
-	return dget(s->s_root);
-
-error_s:
-	error = PTR_ERR(s);
-error_bdev:
-	blkdev_put(bdev, mode);
-error:
-	return ERR_PTR(error);
-=======
 	struct super_block *s;
 	int error;
 	dev_t dev;
@@ -2501,29 +1665,18 @@ error:
 	}
 
 	return dget(s->s_root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mount_bdev);
 
 void kill_block_super(struct super_block *sb)
 {
 	struct block_device *bdev = sb->s_bdev;
-<<<<<<< HEAD
-	fmode_t mode = sb->s_mode;
-
-	bdev->bd_super = NULL;
-	generic_shutdown_super(sb);
-	sync_blockdev(bdev);
-	WARN_ON_ONCE(!(mode & FMODE_EXCL));
-	blkdev_put(bdev, mode | FMODE_EXCL);
-=======
 
 	generic_shutdown_super(sb);
 	if (bdev) {
 		sync_blockdev(bdev);
 		bdev_fput(sb->s_bdev_file);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(kill_block_super);
@@ -2534,37 +1687,21 @@ struct dentry *mount_nodev(struct file_system_type *fs_type,
 	int (*fill_super)(struct super_block *, void *, int))
 {
 	int error;
-<<<<<<< HEAD
-	struct super_block *s = sget(fs_type, NULL, set_anon_super, NULL);
-=======
 	struct super_block *s = sget(fs_type, NULL, set_anon_super, flags, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(s))
 		return ERR_CAST(s);
 
-<<<<<<< HEAD
-	s->s_flags = flags;
-
-	error = fill_super(s, data, flags & MS_SILENT ? 1 : 0);
-=======
 	error = fill_super(s, data, flags & SB_SILENT ? 1 : 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error) {
 		deactivate_locked_super(s);
 		return ERR_PTR(error);
 	}
-<<<<<<< HEAD
-	s->s_flags |= MS_ACTIVE;
-=======
 	s->s_flags |= SB_ACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dget(s->s_root);
 }
 EXPORT_SYMBOL(mount_nodev);
 
-<<<<<<< HEAD
-=======
 int reconfigure_single(struct super_block *s,
 		       int flags, void *data)
 {
@@ -2590,7 +1727,6 @@ out:
 	return ret;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int compare_single(struct super_block *s, void *p)
 {
 	return 1;
@@ -2603,21 +1739,6 @@ struct dentry *mount_single(struct file_system_type *fs_type,
 	struct super_block *s;
 	int error;
 
-<<<<<<< HEAD
-	s = sget(fs_type, compare_single, set_anon_super, NULL);
-	if (IS_ERR(s))
-		return ERR_CAST(s);
-	if (!s->s_root) {
-		s->s_flags = flags;
-		error = fill_super(s, data, flags & MS_SILENT ? 1 : 0);
-		if (error) {
-			deactivate_locked_super(s);
-			return ERR_PTR(error);
-		}
-		s->s_flags |= MS_ACTIVE;
-	} else {
-		do_remount_sb(s, flags, data, 0);
-=======
 	s = sget(fs_type, compare_single, set_anon_super, flags, NULL);
 	if (IS_ERR(s))
 		return ERR_CAST(s);
@@ -2631,49 +1752,11 @@ struct dentry *mount_single(struct file_system_type *fs_type,
 	if (unlikely(error)) {
 		deactivate_locked_super(s);
 		return ERR_PTR(error);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return dget(s->s_root);
 }
 EXPORT_SYMBOL(mount_single);
 
-<<<<<<< HEAD
-struct dentry *
-mount_fs(struct file_system_type *type, int flags, const char *name, struct vfsmount *mnt, void *data)
-{
-	struct dentry *root;
-	struct super_block *sb;
-	char *secdata = NULL;
-	int error = -ENOMEM;
-
-	if (data && !(type->fs_flags & FS_BINARY_MOUNTDATA)) {
-		secdata = alloc_secdata();
-		if (!secdata)
-			goto out;
-
-		error = security_sb_copy_data(data, secdata);
-		if (error)
-			goto out_free_secdata;
-	}
-
-	if (type->mount2)
-		root = type->mount2(mnt, type, flags, name, data);
-	else
-		root = type->mount(type, flags, name, data);
-	if (IS_ERR(root)) {
-		error = PTR_ERR(root);
-		goto out_free_secdata;
-	}
-	sb = root->d_sb;
-	BUG_ON(!sb);
-	WARN_ON(!sb->s_bdi);
-	WARN_ON(sb->s_bdi == &default_backing_dev_info);
-	sb->s_flags |= MS_BORN;
-
-	error = security_sb_kern_mount(sb, flags, secdata);
-	if (error)
-		goto out_sb;
-=======
 /**
  * vfs_get_tree - Get the mountable root
  * @fc: The superblock configuration context.
@@ -2723,7 +1806,6 @@ int vfs_get_tree(struct fs_context *fc)
 		fc_drop_locked(fc);
 		return error;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * filesystems should never set s_maxbytes larger than MAX_LFS_FILESIZE
@@ -2732,20 +1814,6 @@ int vfs_get_tree(struct fs_context *fc)
 	 * violate this rule.
 	 */
 	WARN((sb->s_maxbytes < 0), "%s set sb->s_maxbytes to "
-<<<<<<< HEAD
-		"negative value (%lld)\n", type->name, sb->s_maxbytes);
-
-	up_write(&sb->s_umount);
-	free_secdata(secdata);
-	return root;
-out_sb:
-	dput(root);
-	deactivate_locked_super(sb);
-out_free_secdata:
-	free_secdata(secdata);
-out:
-	return ERR_PTR(error);
-=======
 		"negative value (%lld)\n", fc->fs_type->name, sb->s_maxbytes);
 
 	return 0;
@@ -2893,51 +1961,11 @@ static inline bool may_freeze(struct super_block *sb, enum freeze_holder who)
 		return (who & FREEZE_MAY_NEST) ||
 		       sb->s_writers.freeze_ucount == 0;
 	return false;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * freeze_super - lock the filesystem and force it into a consistent state
  * @sb: the super to lock
-<<<<<<< HEAD
- *
- * Syncs the super to make sure the filesystem is consistent and calls the fs's
- * freeze_fs.  Subsequent calls to this without first thawing the fs will return
- * -EBUSY.
- */
-int freeze_super(struct super_block *sb)
-{
-	int ret;
-
-	atomic_inc(&sb->s_active);
-	down_write(&sb->s_umount);
-	if (sb->s_frozen) {
-		deactivate_locked_super(sb);
-		return -EBUSY;
-	}
-
-	if (!(sb->s_flags & MS_BORN)) {
-		up_write(&sb->s_umount);
-		return 0;	/* sic - it's "nothing to do" */
-	}
-
-	if (sb->s_flags & MS_RDONLY) {
-		sb->s_frozen = SB_FREEZE_TRANS;
-		smp_wmb();
-		up_write(&sb->s_umount);
-		return 0;
-	}
-
-	sb->s_frozen = SB_FREEZE_WRITE;
-	smp_wmb();
-
-	sync_filesystem(sb);
-
-	sb->s_frozen = SB_FREEZE_TRANS;
-	smp_wmb();
-
-	sync_blockdev(sb->s_bdev);
-=======
  * @who: context that wants to freeze
  *
  * Syncs the super to make sure the filesystem is consistent and calls the fs's
@@ -3054,28 +2082,18 @@ retry:
 	sb->s_writers.frozen = SB_FREEZE_FS;
 	sb_wait_write(sb, SB_FREEZE_FS);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sb->s_op->freeze_fs) {
 		ret = sb->s_op->freeze_fs(sb);
 		if (ret) {
 			printk(KERN_ERR
 				"VFS:Filesystem freeze failed\n");
-<<<<<<< HEAD
-			sb->s_frozen = SB_UNFROZEN;
-			smp_wmb();
-			wake_up(&sb->s_wait_unfrozen);
-=======
 			sb->s_writers.frozen = SB_UNFROZEN;
 			sb_freeze_unlock(sb, SB_FREEZE_FS);
 			wake_up_var(&sb->s_writers.frozen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			deactivate_locked_super(sb);
 			return ret;
 		}
 	}
-<<<<<<< HEAD
-	up_write(&sb->s_umount);
-=======
 	/*
 	 * For debugging purposes so that fs can warn if it sees write activity
 	 * when frozen is set to SB_FREEZE_COMPLETE, and for thaw_super().
@@ -3085,31 +2103,10 @@ retry:
 	wake_up_var(&sb->s_writers.frozen);
 	lockdep_sb_freeze_release(sb);
 	super_unlock_excl(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(freeze_super);
 
-<<<<<<< HEAD
-/**
- * thaw_super -- unlock filesystem
- * @sb: the super to thaw
- *
- * Unlocks the filesystem and marks it writeable again after freeze_super().
- */
-int thaw_super(struct super_block *sb)
-{
-	int error;
-
-	down_write(&sb->s_umount);
-	if (sb->s_frozen == SB_UNFROZEN) {
-		up_write(&sb->s_umount);
-		return -EINVAL;
-	}
-
-	if (sb->s_flags & MS_RDONLY)
-		goto out;
-=======
 /*
  * Undoes the effect of a freeze_super_locked call.  If the filesystem is
  * frozen both by userspace and the kernel, a thaw call from either source
@@ -3137,30 +2134,10 @@ static int thaw_super_locked(struct super_block *sb, enum freeze_holder who)
 	}
 
 	lockdep_sb_freeze_acquire(sb);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sb->s_op->unfreeze_fs) {
 		error = sb->s_op->unfreeze_fs(sb);
 		if (error) {
-<<<<<<< HEAD
-			printk(KERN_ERR
-				"VFS:Filesystem thaw failed\n");
-			sb->s_frozen = SB_FREEZE_TRANS;
-			up_write(&sb->s_umount);
-			return error;
-		}
-	}
-
-out:
-	sb->s_frozen = SB_UNFROZEN;
-	smp_wmb();
-	wake_up(&sb->s_wait_unfrozen);
-	deactivate_locked_super(sb);
-
-	return 0;
-}
-EXPORT_SYMBOL(thaw_super);
-=======
 			pr_err("VFS: Filesystem thaw failed\n");
 			freeze_inc(sb, who);
 			lockdep_sb_freeze_release(sb);
@@ -3231,4 +2208,3 @@ int sb_init_dio_done_wq(struct super_block *sb)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(sb_init_dio_done_wq);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

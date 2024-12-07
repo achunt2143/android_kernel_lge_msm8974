@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2006-2010, 2012 Freescale Semicondutor, Inc.
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2006-2010, 2012-2013 Freescale Semiconductor, Inc.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * All rights reserved.
  *
  * Author: Andy Fleming <afleming@freescale.com>
@@ -16,14 +11,6 @@
  *
  * Description:
  * MPC85xx MDS board specific routines.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute  it and/or modify it
- * under  the terms of  the GNU General  Public License as published by the
- * Free Software Foundation;  either version 2 of the  License, or (at your
- * option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -39,18 +26,11 @@
 #include <linux/seq_file.h>
 #include <linux/initrd.h>
 #include <linux/fsl_devices.h>
-<<<<<<< HEAD
-#include <linux/of_platform.h>
-#include <linux/of_device.h>
-#include <linux/phy.h>
-#include <linux/memblock.h>
-=======
 #include <linux/of.h>
 #include <linux/of_address.h>
 #include <linux/phy.h>
 #include <linux/memblock.h>
 #include <linux/fsl/guts.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/atomic.h>
 #include <asm/time.h>
@@ -59,39 +39,17 @@
 #include <asm/pci-bridge.h>
 #include <asm/irq.h>
 #include <mm/mmu_decl.h>
-<<<<<<< HEAD
-#include <asm/prom.h>
-#include <asm/udbg.h>
-#include <sysdev/fsl_soc.h>
-#include <sysdev/fsl_pci.h>
-#include <sysdev/simple_gpio.h>
-#include <asm/qe.h>
-#include <asm/qe_ic.h>
-#include <asm/mpic.h>
-#include <asm/swiotlb.h>
-#include <asm/fsl_guts.h>
-=======
 #include <asm/udbg.h>
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 #include <soc/fsl/qe/qe.h>
 #include <asm/mpic.h>
 #include <asm/swiotlb.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "smp.h"
 
 #include "mpc85xx.h"
 
-<<<<<<< HEAD
-#undef DEBUG
-#ifdef DEBUG
-#define DBG(fmt...) udbg_printf(fmt)
-#else
-#define DBG(fmt...)
-#endif
-=======
 #if IS_BUILTIN(CONFIG_PHYLIB)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MV88E1111_SCR	0x10
 #define MV88E1111_SCR_125CLK	0x0010
@@ -182,11 +140,8 @@ static int mpc8568_mds_phy_fixups(struct phy_device *phydev)
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ************************************************************************
  *
  * Setup the architecture
@@ -241,13 +196,7 @@ static void __init mpc85xx_mds_reset_ucc_phys(void)
 		setbits8(&bcsr_regs[7], BCSR7_UCC12_GETHnRST);
 		clrbits8(&bcsr_regs[8], BCSR8_UEM_MARVELL_RST);
 
-<<<<<<< HEAD
-		for (np = NULL; (np = of_find_compatible_node(np,
-						"network",
-						"ucc_geth")) != NULL;) {
-=======
 		for_each_compatible_node(np, "network", "ucc_geth") {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			const unsigned int *prop;
 			int ucc_num;
 
@@ -279,36 +228,7 @@ static void __init mpc85xx_mds_qe_init(void)
 {
 	struct device_node *np;
 
-<<<<<<< HEAD
-	np = of_find_compatible_node(NULL, NULL, "fsl,qe");
-	if (!np) {
-		np = of_find_node_by_name(NULL, "qe");
-		if (!np)
-			return;
-	}
-
-	if (!of_device_is_available(np)) {
-		of_node_put(np);
-		return;
-	}
-
-	qe_reset();
-	of_node_put(np);
-
-	np = of_find_node_by_name(NULL, "par_io");
-	if (np) {
-		struct device_node *ucc;
-
-		par_io_init(np);
-		of_node_put(np);
-
-		for_each_node_by_name(ucc, "ucc")
-			par_io_of_config(ucc);
-	}
-
-=======
 	mpc85xx_qe_par_io_init();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpc85xx_mds_reset_ucc_phys();
 
 	if (machine_is(p1021_mds)) {
@@ -339,97 +259,25 @@ static void __init mpc85xx_mds_qe_init(void)
 	}
 }
 
-<<<<<<< HEAD
-static void __init mpc85xx_mds_qeic_init(void)
-{
-	struct device_node *np;
-
-	np = of_find_compatible_node(NULL, NULL, "fsl,qe");
-	if (!of_device_is_available(np)) {
-		of_node_put(np);
-		return;
-	}
-
-	np = of_find_compatible_node(NULL, NULL, "fsl,qe-ic");
-	if (!np) {
-		np = of_find_node_by_type(NULL, "qeic");
-		if (!np)
-			return;
-	}
-
-	if (machine_is(p1021_mds))
-		qe_ic_init(np, 0, qe_ic_cascade_low_mpic,
-				qe_ic_cascade_high_mpic);
-	else
-		qe_ic_init(np, 0, qe_ic_cascade_muxed_mpic, NULL);
-	of_node_put(np);
-}
 #else
 static void __init mpc85xx_mds_qe_init(void) { }
-static void __init mpc85xx_mds_qeic_init(void) { }
-=======
-#else
-static void __init mpc85xx_mds_qe_init(void) { }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* CONFIG_QUICC_ENGINE */
 
 static void __init mpc85xx_mds_setup_arch(void)
 {
-<<<<<<< HEAD
-#ifdef CONFIG_PCI
-	struct pci_controller *hose;
-	struct device_node *np;
-#endif
-	dma_addr_t max = 0xffffffff;
-
 	if (ppc_md.progress)
 		ppc_md.progress("mpc85xx_mds_setup_arch()", 0);
 
-#ifdef CONFIG_PCI
-	for_each_node_by_type(np, "pci") {
-		if (of_device_is_compatible(np, "fsl,mpc8540-pci") ||
-		    of_device_is_compatible(np, "fsl,mpc8548-pcie")) {
-			struct resource rsrc;
-			of_address_to_resource(np, 0, &rsrc);
-			if ((rsrc.start & 0xfffff) == 0x8000)
-				fsl_add_bridge(np, 1);
-			else
-				fsl_add_bridge(np, 0);
-
-			hose = pci_find_hose_for_OF_device(np);
-			max = min(max, hose->dma_window_base_cur +
-					hose->dma_window_size);
-		}
-	}
-#endif
-
-=======
-	if (ppc_md.progress)
-		ppc_md.progress("mpc85xx_mds_setup_arch()", 0);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpc85xx_smp_init();
 
 	mpc85xx_mds_qe_init();
 
-<<<<<<< HEAD
-#ifdef CONFIG_SWIOTLB
-	if (memblock_end_of_DRAM() > max) {
-		ppc_swiotlb_enable = 1;
-		set_pci_dma_ops(&swiotlb_dma_ops);
-		ppc_md.pci_dma_dev_setup = pci_dma_dev_setup_swiotlb;
-	}
-#endif
-}
-
-=======
 	fsl_pci_assign_primary();
 
 	swiotlb_detect_4g();
 }
 
 #if IS_BUILTIN(CONFIG_PHYLIB)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init board_fixups(void)
 {
@@ -459,28 +307,6 @@ static int __init board_fixups(void)
 
 	return 0;
 }
-<<<<<<< HEAD
-machine_arch_initcall(mpc8568_mds, board_fixups);
-machine_arch_initcall(mpc8569_mds, board_fixups);
-
-static int __init mpc85xx_publish_devices(void)
-{
-	if (machine_is(mpc8568_mds))
-		simple_gpiochip_init("fsl,mpc8568mds-bcsr-gpio");
-	if (machine_is(mpc8569_mds))
-		simple_gpiochip_init("fsl,mpc8569mds-bcsr-gpio");
-
-	return mpc85xx_common_publish_devices();
-}
-
-machine_device_initcall(mpc8568_mds, mpc85xx_publish_devices);
-machine_device_initcall(mpc8569_mds, mpc85xx_publish_devices);
-machine_device_initcall(p1021_mds, mpc85xx_common_publish_devices);
-
-machine_arch_initcall(mpc8568_mds, swiotlb_setup_bus_notifier);
-machine_arch_initcall(mpc8569_mds, swiotlb_setup_bus_notifier);
-machine_arch_initcall(p1021_mds, swiotlb_setup_bus_notifier);
-=======
 
 machine_arch_initcall(mpc8568_mds, board_fixups);
 machine_arch_initcall(mpc8569_mds, board_fixups);
@@ -495,7 +321,6 @@ static int __init mpc85xx_publish_devices(void)
 machine_arch_initcall(mpc8568_mds, mpc85xx_publish_devices);
 machine_arch_initcall(mpc8569_mds, mpc85xx_publish_devices);
 machine_arch_initcall(p1021_mds, mpc85xx_common_publish_devices);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init mpc85xx_mds_pic_init(void)
 {
@@ -505,78 +330,10 @@ static void __init mpc85xx_mds_pic_init(void)
 	BUG_ON(mpic == NULL);
 
 	mpic_init(mpic);
-<<<<<<< HEAD
-	mpc85xx_mds_qeic_init();
-}
-
-static int __init mpc85xx_mds_probe(void)
-{
-        unsigned long root = of_get_flat_dt_root();
-
-        return of_flat_dt_is_compatible(root, "MPC85xxMDS");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 define_machine(mpc8568_mds) {
 	.name		= "MPC8568 MDS",
-<<<<<<< HEAD
-	.probe		= mpc85xx_mds_probe,
-	.setup_arch	= mpc85xx_mds_setup_arch,
-	.init_IRQ	= mpc85xx_mds_pic_init,
-	.get_irq	= mpic_get_irq,
-	.restart	= fsl_rstcr_restart,
-	.calibrate_decr	= generic_calibrate_decr,
-	.progress	= udbg_progress,
-#ifdef CONFIG_PCI
-	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
-#endif
-};
-
-static int __init mpc8569_mds_probe(void)
-{
-	unsigned long root = of_get_flat_dt_root();
-
-	return of_flat_dt_is_compatible(root, "fsl,MPC8569EMDS");
-}
-
-define_machine(mpc8569_mds) {
-	.name		= "MPC8569 MDS",
-	.probe		= mpc8569_mds_probe,
-	.setup_arch	= mpc85xx_mds_setup_arch,
-	.init_IRQ	= mpc85xx_mds_pic_init,
-	.get_irq	= mpic_get_irq,
-	.restart	= fsl_rstcr_restart,
-	.calibrate_decr	= generic_calibrate_decr,
-	.progress	= udbg_progress,
-#ifdef CONFIG_PCI
-	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
-#endif
-};
-
-static int __init p1021_mds_probe(void)
-{
-	unsigned long root = of_get_flat_dt_root();
-
-	return of_flat_dt_is_compatible(root, "fsl,P1021MDS");
-
-}
-
-define_machine(p1021_mds) {
-	.name		= "P1021 MDS",
-	.probe		= p1021_mds_probe,
-	.setup_arch	= mpc85xx_mds_setup_arch,
-	.init_IRQ	= mpc85xx_mds_pic_init,
-	.get_irq	= mpic_get_irq,
-	.restart	= fsl_rstcr_restart,
-	.calibrate_decr	= generic_calibrate_decr,
-	.progress	= udbg_progress,
-#ifdef CONFIG_PCI
-	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
-#endif
-};
-
-=======
 	.compatible	= "MPC85xxMDS",
 	.setup_arch	= mpc85xx_mds_setup_arch,
 	.init_IRQ	= mpc85xx_mds_pic_init,
@@ -613,4 +370,3 @@ define_machine(p1021_mds) {
 	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
 #endif
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

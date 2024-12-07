@@ -1,31 +1,16 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) 2011 Richard Weinberger <richrd@nod.at>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2011 Richard Weinberger <richrd@nod.at>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <asm/page.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-
-unsigned int __read_mostly vdso_enabled = 1;
-=======
 #include <asm/elf.h>
 #include <linux/init.h>
 
 static unsigned int __read_mostly vdso_enabled = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long um_vdso_addr;
 
 extern unsigned long task_size;
@@ -73,23 +58,15 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
 	if (!vdso_enabled)
 		return 0;
 
-<<<<<<< HEAD
-	down_write(&mm->mmap_sem);
-=======
 	if (mmap_write_lock_killable(mm))
 		return -EINTR;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = install_special_mapping(mm, um_vdso_addr, PAGE_SIZE,
 		VM_READ|VM_EXEC|
 		VM_MAYREAD|VM_MAYWRITE|VM_MAYEXEC,
 		vdsop);
 
-<<<<<<< HEAD
-	up_write(&mm->mmap_sem);
-=======
 	mmap_write_unlock(mm);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }

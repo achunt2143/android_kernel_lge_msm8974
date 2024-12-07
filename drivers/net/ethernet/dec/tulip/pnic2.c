@@ -76,17 +76,10 @@
 #include <linux/delay.h>
 
 
-<<<<<<< HEAD
-void pnic2_timer(unsigned long data)
-{
-	struct net_device *dev = (struct net_device *)data;
-	struct tulip_private *tp = netdev_priv(dev);
-=======
 void pnic2_timer(struct timer_list *t)
 {
 	struct tulip_private *tp = from_timer(tp, t, timer);
 	struct net_device *dev = tp->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = tp->base_addr;
 	int next_tick = 60*HZ;
 
@@ -358,11 +351,7 @@ void pnic2_lnk_change(struct net_device *dev, int csr5)
 			del_timer_sync(&tp->timer);
 			pnic2_start_nway(dev);
 			tp->timer.expires = RUN_AT(3*HZ);
-<<<<<<< HEAD
-       			add_timer(&tp->timer);
-=======
 			add_timer(&tp->timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 }
 
                 return;
@@ -386,11 +375,7 @@ void pnic2_lnk_change(struct net_device *dev, int csr5)
 			del_timer_sync(&tp->timer);
 			pnic2_start_nway(dev);
 			tp->timer.expires = RUN_AT(3*HZ);
-<<<<<<< HEAD
-       			add_timer(&tp->timer);
-=======
 			add_timer(&tp->timer);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 }
 
                 return;

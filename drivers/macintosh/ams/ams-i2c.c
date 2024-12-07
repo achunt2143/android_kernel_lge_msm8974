@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Motion Sensor driver (I2C variant)
  *
@@ -11,14 +8,6 @@
  * Clean room implementation based on the reverse engineered Mac OS X driver by
  * Johannes Berg <johannes@sipsolutions.net>, documentation available at
  * http://johannes.sipsolutions.net/PowerBook/Apple_Motion_Sensor_Specification
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -67,20 +56,11 @@ enum ams_i2c_cmd {
 	AMS_CMD_START,
 };
 
-<<<<<<< HEAD
-static int ams_i2c_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id);
-static int ams_i2c_remove(struct i2c_client *client);
-
-static const struct i2c_device_id ams_id[] = {
-	{ "ams", 0 },
-=======
 static int ams_i2c_probe(struct i2c_client *client);
 static void ams_i2c_remove(struct i2c_client *client);
 
 static const struct i2c_device_id ams_id[] = {
 	{ "MAC,accelerometer_1", 0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, ams_id);
@@ -88,10 +68,6 @@ MODULE_DEVICE_TABLE(i2c, ams_id);
 static struct i2c_driver ams_i2c_driver = {
 	.driver = {
 		.name   = "ams",
-<<<<<<< HEAD
-		.owner  = THIS_MODULE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe          = ams_i2c_probe,
 	.remove         = ams_i2c_remove,
@@ -178,12 +154,7 @@ static void ams_i2c_get_xyz(s8 *x, s8 *y, s8 *z)
 	*z = ams_i2c_read(AMS_DATAZ);
 }
 
-<<<<<<< HEAD
-static int ams_i2c_probe(struct i2c_client *client,
-			 const struct i2c_device_id *id)
-=======
 static int ams_i2c_probe(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int vmaj, vmin;
 	int result;
@@ -257,11 +228,7 @@ static int ams_i2c_probe(struct i2c_client *client)
 	return 0;
 }
 
-<<<<<<< HEAD
-static int ams_i2c_remove(struct i2c_client *client)
-=======
 static void ams_i2c_remove(struct i2c_client *client)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ams_info.has_device) {
 		ams_sensor_detach();
@@ -276,11 +243,6 @@ static void ams_i2c_remove(struct i2c_client *client)
 
 		ams_info.has_device = 0;
 	}
-<<<<<<< HEAD
-
-	return 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ams_i2c_exit(void)
@@ -290,11 +252,6 @@ static void ams_i2c_exit(void)
 
 int __init ams_i2c_init(struct device_node *np)
 {
-<<<<<<< HEAD
-	int result;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set implementation stuff */
 	ams_info.of_node = np;
 	ams_info.exit = ams_i2c_exit;
@@ -303,11 +260,5 @@ int __init ams_i2c_init(struct device_node *np)
 	ams_info.clear_irq = ams_i2c_clear_irq;
 	ams_info.bustype = BUS_I2C;
 
-<<<<<<< HEAD
-	result = i2c_add_driver(&ams_i2c_driver);
-
-	return result;
-=======
 	return i2c_add_driver(&ams_i2c_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

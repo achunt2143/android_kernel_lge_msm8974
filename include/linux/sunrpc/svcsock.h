@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/sunrpc/svcsock.h
  *
@@ -26,35 +23,6 @@ struct svc_sock {
 
 	/* We keep the old state_change and data_ready CB's here */
 	void			(*sk_ostate)(struct sock *);
-<<<<<<< HEAD
-	void			(*sk_odata)(struct sock *, int bytes);
-	void			(*sk_owspace)(struct sock *);
-
-	/* private TCP part */
-	u32			sk_reclen;	/* length of record */
-	u32			sk_tcplen;	/* current read length */
-	struct page *		sk_pages[RPCSVC_MAXPAGES];	/* received data */
-};
-
-/*
- * Function prototypes.
- */
-void		svc_close_net(struct svc_serv *, struct net *);
-int		svc_recv(struct svc_rqst *, long);
-int		svc_send(struct svc_rqst *);
-void		svc_drop(struct svc_rqst *);
-void		svc_sock_update_bufs(struct svc_serv *serv);
-int		svc_sock_names(struct svc_serv *serv, char *buf,
-					const size_t buflen,
-					const char *toclose);
-bool		svc_alien_sock(struct net *net, int fd);
-int		svc_addsock(struct svc_serv *serv, const int fd,
-					char *name_return, const size_t len);
-void		svc_init_xprt_sock(void);
-void		svc_cleanup_xprt_sock(void);
-struct svc_xprt *svc_sock_create(struct svc_serv *serv, int prot);
-void		svc_sock_destroy(struct svc_xprt *);
-=======
 	void			(*sk_odata)(struct sock *);
 	void			(*sk_owspace)(struct sock *);
 
@@ -97,7 +65,6 @@ int		svc_addsock(struct svc_serv *serv, struct net *net,
 			    const struct cred *cred);
 void		svc_init_xprt_sock(void);
 void		svc_cleanup_xprt_sock(void);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * svc_makesock socket characteristics

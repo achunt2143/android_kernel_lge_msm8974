@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- *
- * This copyrighted material is made available to anyone wishing to use,
- * modify, copy, or redistribute it subject to the terms and conditions
- * of the GNU General Public License version 2.
- */
-
-#include <linux/sched.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
@@ -20,21 +8,14 @@
 
 #include <linux/sched.h>
 #include <linux/cred.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/completion.h>
 #include <linux/buffer_head.h>
 #include <linux/module.h>
 #include <linux/kobject.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-#include <linux/gfs2_ondisk.h>
-#include <linux/genhd.h>
-=======
 #include <linux/uaccess.h>
 #include <linux/gfs2_ondisk.h>
 #include <linux/blkdev.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "gfs2.h"
 #include "incore.h"
@@ -82,8 +63,6 @@ static ssize_t id_show(struct gfs2_sbd *sdp, char *buf)
 			MAJOR(sdp->sd_vfs->s_dev), MINOR(sdp->sd_vfs->s_dev));
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t status_show(struct gfs2_sbd *sdp, char *buf)
 {
 	unsigned long f = sdp->sd_flags;
@@ -159,33 +138,11 @@ static ssize_t status_show(struct gfs2_sbd *sdp, char *buf)
 	return s;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t fsname_show(struct gfs2_sbd *sdp, char *buf)
 {
 	return snprintf(buf, PAGE_SIZE, "%s\n", sdp->sd_fsname);
 }
 
-<<<<<<< HEAD
-static int gfs2_uuid_valid(const u8 *uuid)
-{
-	int i;
-
-	for (i = 0; i < 16; i++) {
-		if (uuid[i])
-			return 1;
-	}
-	return 0;
-}
-
-static ssize_t uuid_show(struct gfs2_sbd *sdp, char *buf)
-{
-	struct super_block *s = sdp->sd_vfs;
-	const u8 *uuid = s->s_uuid;
-	buf[0] = '\0';
-	if (!gfs2_uuid_valid(uuid))
-		return 0;
-	return snprintf(buf, PAGE_SIZE, "%pUB\n", uuid);
-=======
 static ssize_t uuid_show(struct gfs2_sbd *sdp, char *buf)
 {
 	struct super_block *s = sdp->sd_vfs;
@@ -194,53 +151,18 @@ static ssize_t uuid_show(struct gfs2_sbd *sdp, char *buf)
 	if (uuid_is_null(&s->s_uuid))
 		return 0;
 	return snprintf(buf, PAGE_SIZE, "%pUB\n", &s->s_uuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t freeze_show(struct gfs2_sbd *sdp, char *buf)
 {
-<<<<<<< HEAD
-	unsigned int count;
-
-	mutex_lock(&sdp->sd_freeze_lock);
-	count = sdp->sd_freeze_count;
-	mutex_unlock(&sdp->sd_freeze_lock);
-
-	return snprintf(buf, PAGE_SIZE, "%u\n", count);
-=======
 	struct super_block *sb = sdp->sd_vfs;
 	int frozen = (sb->s_writers.frozen == SB_UNFROZEN) ? 0 : 1;
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", frozen);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t freeze_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	ssize_t ret = len;
-	int error = 0;
-	int n = simple_strtol(buf, NULL, 0);
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-
-	switch (n) {
-	case 0:
-		gfs2_unfreeze_fs(sdp);
-		break;
-	case 1:
-		error = gfs2_freeze_fs(sdp);
-		break;
-	default:
-		ret = -EINVAL;
-	}
-
-	if (error)
-		fs_warn(sdp, "freeze %d error %d", n, error);
-
-	return ret;
-=======
 	int error, n;
 
 	error = kstrtoint(buf, 0, &n);
@@ -267,32 +189,16 @@ static ssize_t freeze_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 	}
 
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t withdraw_show(struct gfs2_sbd *sdp, char *buf)
 {
-<<<<<<< HEAD
-	unsigned int b = test_bit(SDF_SHUTDOWN, &sdp->sd_flags);
-=======
 	unsigned int b = gfs2_withdrawing_or_withdrawn(sdp);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return snprintf(buf, PAGE_SIZE, "%u\n", b);
 }
 
 static ssize_t withdraw_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-
-	if (simple_strtol(buf, NULL, 0) != 1)
-		return -EINVAL;
-
-	gfs2_lm_withdraw(sdp,
-		"GFS2: fsid=%s: withdrawing from cluster at user's request\n",
-		sdp->sd_fsname);
-=======
 	int error, val;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -308,19 +214,12 @@ static ssize_t withdraw_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 	gfs2_lm(sdp, "withdrawing from cluster at user's request\n");
 	gfs2_withdraw(sdp);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
 static ssize_t statfs_sync_store(struct gfs2_sbd *sdp, const char *buf,
 				 size_t len)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-
-	if (simple_strtol(buf, NULL, 0) != 1)
-=======
 	int error, val;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -331,7 +230,6 @@ static ssize_t statfs_sync_store(struct gfs2_sbd *sdp, const char *buf,
 		return error;
 
 	if (val != 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	gfs2_statfs_sync(sdp->sd_vfs, 0);
@@ -341,15 +239,6 @@ static ssize_t statfs_sync_store(struct gfs2_sbd *sdp, const char *buf,
 static ssize_t quota_sync_store(struct gfs2_sbd *sdp, const char *buf,
 				size_t len)
 {
-<<<<<<< HEAD
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-
-	if (simple_strtol(buf, NULL, 0) != 1)
-		return -EINVAL;
-
-	gfs2_quota_sync(sdp->sd_vfs, 0, 1);
-=======
 	int error, val;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -363,28 +252,17 @@ static ssize_t quota_sync_store(struct gfs2_sbd *sdp, const char *buf,
 		return -EINVAL;
 
 	gfs2_quota_sync(sdp->sd_vfs, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
 static ssize_t quota_refresh_user_store(struct gfs2_sbd *sdp, const char *buf,
 					size_t len)
 {
-<<<<<<< HEAD
-=======
 	struct kqid qid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 	u32 id;
 
 	if (!capable(CAP_SYS_ADMIN))
-<<<<<<< HEAD
-		return -EACCES;
-
-	id = simple_strtoul(buf, NULL, 0);
-
-	error = gfs2_quota_refresh(sdp, 1, id);
-=======
 		return -EPERM;
 
 	error = kstrtou32(buf, 0, &id);
@@ -396,28 +274,17 @@ static ssize_t quota_refresh_user_store(struct gfs2_sbd *sdp, const char *buf,
 		return -EINVAL;
 
 	error = gfs2_quota_refresh(sdp, qid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error ? error : len;
 }
 
 static ssize_t quota_refresh_group_store(struct gfs2_sbd *sdp, const char *buf,
 					 size_t len)
 {
-<<<<<<< HEAD
-=======
 	struct kqid qid;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 	u32 id;
 
 	if (!capable(CAP_SYS_ADMIN))
-<<<<<<< HEAD
-		return -EACCES;
-
-	id = simple_strtoul(buf, NULL, 0);
-
-	error = gfs2_quota_refresh(sdp, 0, id);
-=======
 		return -EPERM;
 
 	error = kstrtou32(buf, 0, &id);
@@ -429,7 +296,6 @@ static ssize_t quota_refresh_group_store(struct gfs2_sbd *sdp, const char *buf,
 		return -EINVAL;
 
 	error = gfs2_quota_refresh(sdp, qid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error ? error : len;
 }
 
@@ -444,11 +310,7 @@ static ssize_t demote_rq_store(struct gfs2_sbd *sdp, const char *buf, size_t len
 	int rv;
 
 	if (!capable(CAP_SYS_ADMIN))
-<<<<<<< HEAD
-		return -EACCES;
-=======
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rv = sscanf(buf, "%u:%llu %15s", &gltype, &glnum,
 		    mode);
@@ -466,13 +328,8 @@ static ssize_t demote_rq_store(struct gfs2_sbd *sdp, const char *buf, size_t len
 
 	if (gltype > LM_TYPE_JOURNAL)
 		return -EINVAL;
-<<<<<<< HEAD
-	if (gltype == LM_TYPE_NONDISK && glnum == GFS2_TRANS_LOCK)
-		glops = &gfs2_trans_glops;
-=======
 	if (gltype == LM_TYPE_NONDISK && glnum == GFS2_FREEZE_LOCK)
 		glops = &gfs2_freeze_glops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		glops = gfs2_glops_list[gltype];
 	if (glops == NULL)
@@ -501,10 +358,7 @@ GFS2_ATTR(quota_sync,          0200, NULL,          quota_sync_store);
 GFS2_ATTR(quota_refresh_user,  0200, NULL,          quota_refresh_user_store);
 GFS2_ATTR(quota_refresh_group, 0200, NULL,          quota_refresh_group_store);
 GFS2_ATTR(demote_rq,           0200, NULL,	    demote_rq_store);
-<<<<<<< HEAD
-=======
 GFS2_ATTR(status,              0400, status_show,   NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *gfs2_attrs[] = {
 	&gfs2_attr_id.attr,
@@ -517,13 +371,6 @@ static struct attribute *gfs2_attrs[] = {
 	&gfs2_attr_quota_refresh_user.attr,
 	&gfs2_attr_quota_refresh_group.attr,
 	&gfs2_attr_demote_rq.attr,
-<<<<<<< HEAD
-	NULL,
-};
-
-static struct kobj_type gfs2_ktype = {
-	.default_attrs = gfs2_attrs,
-=======
 	&gfs2_attr_status.attr,
 	NULL,
 };
@@ -539,7 +386,6 @@ static void gfs2_sbd_release(struct kobject *kobj)
 static struct kobj_type gfs2_ktype = {
 	.release = gfs2_sbd_release,
 	.default_groups = gfs2_groups,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysfs_ops     = &gfs2_attr_ops,
 };
 
@@ -569,31 +415,16 @@ static ssize_t block_show(struct gfs2_sbd *sdp, char *buf)
 static ssize_t block_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 {
 	struct lm_lockstruct *ls = &sdp->sd_lockstruct;
-<<<<<<< HEAD
-	ssize_t ret = len;
-	int val;
-
-	val = simple_strtol(buf, NULL, 0);
-=======
 	int ret, val;
 
 	ret = kstrtoint(buf, 0, &val);
 	if (ret)
 		return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (val == 1)
 		set_bit(DFL_BLOCK_LOCKS, &ls->ls_recover_flags);
 	else if (val == 0) {
 		clear_bit(DFL_BLOCK_LOCKS, &ls->ls_recover_flags);
-<<<<<<< HEAD
-		smp_mb__after_clear_bit();
-		gfs2_glock_thaw(sdp);
-	} else {
-		ret = -EINVAL;
-	}
-	return ret;
-=======
 		smp_mb__after_atomic();
 		gfs2_glock_thaw(sdp);
 	} else {
@@ -623,7 +454,6 @@ static ssize_t wdack_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 	else
 		return -EINVAL;
 	return len;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t lkfirst_show(struct gfs2_sbd *sdp, char *buf)
@@ -670,18 +500,6 @@ int gfs2_recover_set(struct gfs2_sbd *sdp, unsigned jid)
 	struct gfs2_jdesc *jd;
 	int rv;
 
-<<<<<<< HEAD
-	rv = -ESHUTDOWN;
-	spin_lock(&sdp->sd_jindex_spin);
-	if (test_bit(SDF_NORECOVERY, &sdp->sd_flags))
-		goto out;
-	rv = -EBUSY;
-	if (sdp->sd_jdesc->jd_jid == jid)
-		goto out;
-	rv = -ENOENT;
-	list_for_each_entry(jd, &sdp->sd_jindex_list, jd_list) {
-		if (jd->jd_jid != jid)
-=======
 	/* Wait for our primary journal to be initialized */
 	wait_for_completion(&sdp->sd_journal_ready);
 
@@ -701,7 +519,6 @@ int gfs2_recover_set(struct gfs2_sbd *sdp, unsigned jid)
 	rv = -ENOENT;
 	list_for_each_entry(jd, &sdp->sd_jindex_list, jd_list) {
 		if (jd->jd_jid != jid && !sdp->sd_args.ar_spectator)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		rv = gfs2_recover_journal(jd, false);
 		break;
@@ -720,10 +537,6 @@ static ssize_t recover_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 	if (rv != 1)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	rv = gfs2_recover_set(sdp, jid);
-
-=======
 	if (test_bit(SDF_NORECOVERY, &sdp->sd_flags)) {
 		rv = -ESHUTDOWN;
 		goto out;
@@ -731,7 +544,6 @@ static ssize_t recover_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 
 	rv = gfs2_recover_set(sdp, jid);
 out:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rv ? rv : len;
 }
 
@@ -775,11 +587,7 @@ static ssize_t jid_store(struct gfs2_sbd *sdp, const char *buf, size_t len)
 		rv = jid = -EINVAL;
 	sdp->sd_lockstruct.ls_jid = jid;
 	clear_bit(SDF_NOJOURNALID, &sdp->sd_flags);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_bit(&sdp->sd_flags, SDF_NOJOURNALID);
 out:
 	spin_unlock(&sdp->sd_jindex_spin);
@@ -791,11 +599,7 @@ static struct gfs2_attr gdlm_attr_##_name = __ATTR(_name,_mode,_show,_store)
 
 GDLM_ATTR(proto_name,		0444, proto_name_show,		NULL);
 GDLM_ATTR(block,		0644, block_show,		block_store);
-<<<<<<< HEAD
-GDLM_ATTR(withdraw,		0644, withdraw_show,		withdraw_store);
-=======
 GDLM_ATTR(withdraw,		0644, wdack_show,		wdack_store);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 GDLM_ATTR(jid,			0644, jid_show,			jid_store);
 GDLM_ATTR(first,		0644, lkfirst_show,		lkfirst_store);
 GDLM_ATTR(first_done,		0444, first_done_show,		NULL);
@@ -834,11 +638,7 @@ static ssize_t quota_scale_store(struct gfs2_sbd *sdp, const char *buf,
 	unsigned int x, y;
 
 	if (!capable(CAP_SYS_ADMIN))
-<<<<<<< HEAD
-		return -EACCES;
-=======
 		return -EPERM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sscanf(buf, "%u %u", &x, &y) != 2 || !y)
 		return -EINVAL;
@@ -855,13 +655,6 @@ static ssize_t tune_set(struct gfs2_sbd *sdp, unsigned int *field,
 {
 	struct gfs2_tune *gt = &sdp->sd_tune;
 	unsigned int x;
-<<<<<<< HEAD
-
-	if (!capable(CAP_SYS_ADMIN))
-		return -EACCES;
-
-	x = simple_strtoul(buf, NULL, 0);
-=======
 	int error;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -870,7 +663,6 @@ static ssize_t tune_set(struct gfs2_sbd *sdp, unsigned int *field,
 	error = kstrtouint(buf, 0, &x);
 	if (error)
 		return error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (check_zero && !x)
 		return -EINVAL;
@@ -904,10 +696,6 @@ TUNE_ATTR(max_readahead, 0);
 TUNE_ATTR(complain_secs, 0);
 TUNE_ATTR(statfs_slow, 0);
 TUNE_ATTR(new_files_jdata, 0);
-<<<<<<< HEAD
-TUNE_ATTR(quota_simul_sync, 1);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TUNE_ATTR(statfs_quantum, 1);
 TUNE_ATTR_3(quota_scale, quota_scale_show, quota_scale_store);
 
@@ -917,30 +705,18 @@ static struct attribute *tune_attrs[] = {
 	&tune_attr_max_readahead.attr,
 	&tune_attr_complain_secs.attr,
 	&tune_attr_statfs_slow.attr,
-<<<<<<< HEAD
-	&tune_attr_quota_simul_sync.attr,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&tune_attr_statfs_quantum.attr,
 	&tune_attr_quota_scale.attr,
 	&tune_attr_new_files_jdata.attr,
 	NULL,
 };
 
-<<<<<<< HEAD
-static struct attribute_group tune_group = {
-=======
 static const struct attribute_group tune_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "tune",
 	.attrs = tune_attrs,
 };
 
-<<<<<<< HEAD
-static struct attribute_group lock_module_group = {
-=======
 static const struct attribute_group lock_module_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "lock_module",
 	.attrs = lock_module_attrs,
 };
@@ -953,25 +729,15 @@ int gfs2_sys_fs_add(struct gfs2_sbd *sdp)
 	char spectator[20];
 	char *envp[] = { ro, spectator, NULL };
 
-<<<<<<< HEAD
-	sprintf(ro, "RDONLY=%d", (sb->s_flags & MS_RDONLY) ? 1 : 0);
-	sprintf(spectator, "SPECTATOR=%d", sdp->sd_args.ar_spectator ? 1 : 0);
-
-=======
 	sprintf(ro, "RDONLY=%d", sb_rdonly(sb));
 	sprintf(spectator, "SPECTATOR=%d", sdp->sd_args.ar_spectator ? 1 : 0);
 
 	init_completion(&sdp->sd_kobj_unregister);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdp->sd_kobj.kset = gfs2_kset;
 	error = kobject_init_and_add(&sdp->sd_kobj, &gfs2_ktype, NULL,
 				     "%s", sdp->sd_table_name);
 	if (error)
-<<<<<<< HEAD
-		goto fail;
-=======
 		goto fail_reg;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = sysfs_create_group(&sdp->sd_kobj, &tune_group);
 	if (error)
@@ -995,16 +761,10 @@ fail_lock_module:
 fail_tune:
 	sysfs_remove_group(&sdp->sd_kobj, &tune_group);
 fail_reg:
-<<<<<<< HEAD
-	kobject_put(&sdp->sd_kobj);
-fail:
-	fs_err(sdp, "error %d adding sysfs files", error);
-=======
 	fs_err(sdp, "error %d adding sysfs files\n", error);
 	kobject_put(&sdp->sd_kobj);
 	wait_for_completion(&sdp->sd_kobj_unregister);
 	sb->s_fs_info = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -1014,16 +774,6 @@ void gfs2_sys_fs_del(struct gfs2_sbd *sdp)
 	sysfs_remove_group(&sdp->sd_kobj, &tune_group);
 	sysfs_remove_group(&sdp->sd_kobj, &lock_module_group);
 	kobject_put(&sdp->sd_kobj);
-<<<<<<< HEAD
-}
-
-static int gfs2_uevent(struct kset *kset, struct kobject *kobj,
-		       struct kobj_uevent_env *env)
-{
-	struct gfs2_sbd *sdp = container_of(kobj, struct gfs2_sbd, sd_kobj);
-	struct super_block *s = sdp->sd_vfs;
-	const u8 *uuid = s->s_uuid;
-=======
 	wait_for_completion(&sdp->sd_kobj_unregister);
 }
 
@@ -1031,19 +781,13 @@ static int gfs2_uevent(const struct kobject *kobj, struct kobj_uevent_env *env)
 {
 	const struct gfs2_sbd *sdp = container_of(kobj, struct gfs2_sbd, sd_kobj);
 	const struct super_block *s = sdp->sd_vfs;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	add_uevent_var(env, "LOCKTABLE=%s", sdp->sd_table_name);
 	add_uevent_var(env, "LOCKPROTO=%s", sdp->sd_proto_name);
 	if (!test_bit(SDF_NOJOURNALID, &sdp->sd_flags))
 		add_uevent_var(env, "JOURNALID=%d", sdp->sd_lockstruct.ls_jid);
-<<<<<<< HEAD
-	if (gfs2_uuid_valid(uuid))
-		add_uevent_var(env, "UUID=%pUB", uuid);
-=======
 	if (!uuid_is_null(&s->s_uuid))
 		add_uevent_var(env, "UUID=%pUB", &s->s_uuid);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

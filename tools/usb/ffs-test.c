@@ -1,51 +1,22 @@
-<<<<<<< HEAD
-/*
- * ffs-test.c.c -- user mode filesystem api for usb composite function
- *
- * Copyright (C) 2010 Samsung Electronics
- *                    Author: Michal Nazarewicz <mina86@mina86.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * ffs-test.c -- user mode filesystem api for usb composite function
  *
  * Copyright (C) 2010 Samsung Electronics
  *                    Author: Michal Nazarewicz <mina86@mina86.com>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* $(CROSS_COMPILE)cc -Wall -Wextra -g -o ffs-test ffs-test.c -lpthread */
 
 
-<<<<<<< HEAD
-#define _BSD_SOURCE /* for endian.h */
-=======
 #define _DEFAULT_SOURCE /* for endian.h */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <endian.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
 #include <stdarg.h>
-<<<<<<< HEAD
-=======
 #include <stdbool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,23 +26,11 @@
 #include <unistd.h>
 #include <tools/le_byteshift.h>
 
-<<<<<<< HEAD
-#include "../../include/linux/usb/functionfs.h"
-=======
 #include "../../include/uapi/linux/usb/functionfs.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /******************** Little Endian Handling ********************************/
 
-<<<<<<< HEAD
-#define cpu_to_le16(x)  htole16(x)
-#define cpu_to_le32(x)  htole32(x)
-#define le32_to_cpu(x)  le32toh(x)
-#define le16_to_cpu(x)  le16toh(x)
-
-
-=======
 /*
  * cpu_to_le16/32 are used when initializing structures, a context where a
  * function call is not allowed. To solve this, we code cpu_to_le16/32 in a way
@@ -91,7 +50,6 @@
 #define le32_to_cpu(x)  le32toh(x)
 #define le16_to_cpu(x)  le16toh(x)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************** Messages and Errors ***********************************/
 
 static const char argv0[] = "ffs-test";
@@ -149,28 +107,15 @@ static void _msg(unsigned level, const char *fmt, ...)
 /******************** Descriptors and Strings *******************************/
 
 static const struct {
-<<<<<<< HEAD
-	struct usb_functionfs_descs_head header;
-=======
 	struct usb_functionfs_descs_head_v2 header;
 	__le32 fs_count;
 	__le32 hs_count;
 	__le32 ss_count;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		struct usb_interface_descriptor intf;
 		struct usb_endpoint_descriptor_no_audio sink;
 		struct usb_endpoint_descriptor_no_audio source;
 	} __attribute__((packed)) fs_descs, hs_descs;
-<<<<<<< HEAD
-} __attribute__((packed)) descriptors = {
-	.header = {
-		.magic = cpu_to_le32(FUNCTIONFS_DESCRIPTORS_MAGIC),
-		.length = cpu_to_le32(sizeof descriptors),
-		.fs_count = cpu_to_le32(3),
-		.hs_count = cpu_to_le32(3),
-	},
-=======
 	struct {
 		struct usb_interface_descriptor intf;
 		struct usb_endpoint_descriptor_no_audio sink;
@@ -187,7 +132,6 @@ static const struct {
 		.length = cpu_to_le32(sizeof descriptors),
 	},
 	.fs_count = cpu_to_le32(3),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fs_descs = {
 		.intf = {
 			.bLength = sizeof descriptors.fs_descs.intf,
@@ -211,10 +155,7 @@ static const struct {
 			/* .wMaxPacketSize = autoconfiguration (kernel) */
 		},
 	},
-<<<<<<< HEAD
-=======
 	.hs_count = cpu_to_le32(3),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hs_descs = {
 		.intf = {
 			.bLength = sizeof descriptors.fs_descs.intf,
@@ -239,10 +180,6 @@ static const struct {
 			.bInterval = 1, /* NAK every 1 uframe */
 		},
 	},
-<<<<<<< HEAD
-};
-
-=======
 	.ss_count = cpu_to_le32(5),
 	.ss_descs = {
 		.intf = {
@@ -367,7 +304,6 @@ static size_t descs_to_legacy(void **legacy, const void *descriptors_v2)
 	return length;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define STR_INTERFACE_ "Source/Sink"
 
@@ -687,14 +623,6 @@ ep0_consume(struct thread *ignore, const void *buf, size_t nbytes)
 	return nbytes;
 }
 
-<<<<<<< HEAD
-static void ep0_init(struct thread *t)
-{
-	ssize_t ret;
-
-	info("%s: writing descriptors\n", t->filename);
-	ret = write(t->fd, &descriptors, sizeof descriptors);
-=======
 static void ep0_init(struct thread *t, bool legacy_descriptors)
 {
 	void *legacy;
@@ -718,7 +646,6 @@ legacy:
 			free(legacy);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	die_on(ret < 0, "%s: write: descriptors", t->filename);
 
 	info("%s: writing strings\n", t->filename);
@@ -729,16 +656,6 @@ legacy:
 
 /******************** Main **************************************************/
 
-<<<<<<< HEAD
-int main(void)
-{
-	unsigned i;
-
-	/* XXX TODO: Argument parsing missing */
-
-	init_thread(threads);
-	ep0_init(threads);
-=======
 int main(int argc, char **argv)
 {
 	bool legacy_descriptors;
@@ -748,7 +665,6 @@ int main(int argc, char **argv)
 
 	init_thread(threads);
 	ep0_init(threads, legacy_descriptors);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 1; i < sizeof threads / sizeof *threads; ++i)
 		init_thread(threads + i);

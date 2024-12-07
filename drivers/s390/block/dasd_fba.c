@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-/*
- * File...........: linux/drivers/s390/block/dasd_fba.c
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s)......: Holger Smolinski <Holger.Smolinski@de.ibm.com>
  * Bugreports.to..: <Linux390@de.ibm.com>
  * Copyright IBM Corp. 1999, 2009
@@ -21,30 +16,16 @@
 #include <linux/bio.h>
 #include <linux/module.h>
 #include <linux/init.h>
-<<<<<<< HEAD
-
-#include <asm/idals.h>
-#include <asm/ebcdic.h>
-#include <asm/io.h>
-=======
 #include <linux/io.h>
 
 #include <asm/idals.h>
 #include <asm/ebcdic.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ccwdev.h>
 
 #include "dasd_int.h"
 #include "dasd_fba.h"
 
-<<<<<<< HEAD
-#ifdef PRINTK_HEADER
-#undef PRINTK_HEADER
-#endif				/* PRINTK_HEADER */
-#define PRINTK_HEADER "dasd(fba):"
-=======
 #define FBA_DEFAULT_RETRIES 32
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DASD_FBA_CCW_WRITE 0x41
 #define DASD_FBA_CCW_READ 0x42
@@ -54,10 +35,7 @@
 MODULE_LICENSE("GPL");
 
 static struct dasd_discipline dasd_fba_discipline;
-<<<<<<< HEAD
-=======
 static void *dasd_fba_zero_page;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct dasd_fba_private {
 	struct dasd_fba_characteristics rdc_data;
@@ -71,16 +49,6 @@ static struct ccw_device_id dasd_fba_ids[] = {
 
 MODULE_DEVICE_TABLE(ccw, dasd_fba_ids);
 
-<<<<<<< HEAD
-static struct ccw_driver dasd_fba_driver; /* see below */
-static int
-dasd_fba_probe(struct ccw_device *cdev)
-{
-	return dasd_generic_probe(cdev, &dasd_fba_discipline);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 dasd_fba_set_online(struct ccw_device *cdev)
 {
@@ -91,29 +59,16 @@ static struct ccw_driver dasd_fba_driver = {
 	.driver = {
 		.name	= "dasd-fba",
 		.owner	= THIS_MODULE,
-<<<<<<< HEAD
-	},
-	.ids         = dasd_fba_ids,
-	.probe       = dasd_fba_probe,
-=======
 		.dev_groups = dasd_dev_groups,
 	},
 	.ids         = dasd_fba_ids,
 	.probe       = dasd_generic_probe,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.remove      = dasd_generic_remove,
 	.set_offline = dasd_generic_set_offline,
 	.set_online  = dasd_fba_set_online,
 	.notify      = dasd_generic_notify,
 	.path_event  = dasd_generic_path_event,
-<<<<<<< HEAD
-	.freeze      = dasd_generic_pm_freeze,
-	.thaw	     = dasd_generic_restore_device,
-	.restore     = dasd_generic_restore_device,
-	.int_class   = IOINT_DAS,
-=======
 	.int_class   = IRQIO_DAS,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void
@@ -123,11 +78,7 @@ define_extent(struct ccw1 * ccw, struct DE_fba_data *data, int rw,
 	ccw->cmd_code = DASD_FBA_CCW_DEFINE_EXTENT;
 	ccw->flags = 0;
 	ccw->count = 16;
-<<<<<<< HEAD
-	ccw->cda = (__u32) __pa(data);
-=======
 	ccw->cda = virt_to_dma32(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(data, 0, sizeof (struct DE_fba_data));
 	if (rw == WRITE)
 		(data->mask).perm = 0x0;
@@ -147,11 +98,7 @@ locate_record(struct ccw1 * ccw, struct LO_fba_data *data, int rw,
 	ccw->cmd_code = DASD_FBA_CCW_LOCATE;
 	ccw->flags = 0;
 	ccw->count = 8;
-<<<<<<< HEAD
-	ccw->cda = (__u32) __pa(data);
-=======
 	ccw->cda = virt_to_dma32(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(data, 0, sizeof (struct LO_fba_data));
 	if (rw == WRITE)
 		data->operation.cmd = 0x5;
@@ -166,21 +113,11 @@ locate_record(struct ccw1 * ccw, struct LO_fba_data *data, int rw,
 static int
 dasd_fba_check_characteristics(struct dasd_device *device)
 {
-<<<<<<< HEAD
-	struct dasd_block *block;
-	struct dasd_fba_private *private;
-	struct ccw_device *cdev = device->cdev;
-	int rc;
-	int readonly;
-
-	private = (struct dasd_fba_private *) device->private;
-=======
 	struct dasd_fba_private *private = device->private;
 	struct ccw_device *cdev = device->cdev;
 	struct dasd_block *block;
 	int readonly, rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!private) {
 		private = kzalloc(sizeof(*private), GFP_KERNEL | GFP_DMA);
 		if (!private) {
@@ -189,11 +126,7 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 				 "data failed\n");
 			return -ENOMEM;
 		}
-<<<<<<< HEAD
-		device->private = (void *) private;
-=======
 		device->private = private;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		memset(private, 0, sizeof(*private));
 	}
@@ -222,23 +155,16 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 	}
 
 	device->default_expires = DASD_EXPIRES;
-<<<<<<< HEAD
-	device->path_data.opm = LPM_ANYPATH;
-=======
 	device->default_retries = FBA_DEFAULT_RETRIES;
 	dasd_path_set_opm(device, LPM_ANYPATH);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	readonly = dasd_device_is_ro(device);
 	if (readonly)
 		set_bit(DASD_FLAG_DEVICE_RO, &device->flags);
 
-<<<<<<< HEAD
-=======
 	/* FBA supports discard, set the according feature bit */
 	dasd_set_feature(cdev, DASD_FEATURE_DISCARD, 1);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&device->cdev->dev,
 		 "New FBA DASD %04X/%02X (CU %04X/%02X) with %d MB "
 		 "and %d B/blk%s\n",
@@ -255,16 +181,9 @@ dasd_fba_check_characteristics(struct dasd_device *device)
 
 static int dasd_fba_do_analysis(struct dasd_block *block)
 {
-<<<<<<< HEAD
-	struct dasd_fba_private *private;
-	int sb, rc;
-
-	private = (struct dasd_fba_private *) block->base->private;
-=======
 	struct dasd_fba_private *private = block->base->private;
 	int sb, rc;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = dasd_check_blocksize(private->rdc_data.blk_size);
 	if (rc) {
 		DBF_DEV_EVENT(DBF_WARNING, block->base, "unknown blocksize %d",
@@ -319,14 +238,6 @@ static void dasd_fba_check_for_device_change(struct dasd_device *device,
 		dasd_generic_handle_state_change(device);
 };
 
-<<<<<<< HEAD
-static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device * memdev,
-					      struct dasd_block *block,
-					      struct request *req)
-{
-	struct dasd_fba_private *private;
-	unsigned long *idaws;
-=======
 
 /*
  * Builds a CCW with no data payload
@@ -517,26 +428,17 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 {
 	struct dasd_fba_private *private = block->base->private;
 	dma64_t *idaws;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct LO_fba_data *LO_data;
 	struct dasd_ccw_req *cqr;
 	struct ccw1 *ccw;
 	struct req_iterator iter;
-<<<<<<< HEAD
-	struct bio_vec *bv;
-=======
 	struct bio_vec bv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dst;
 	int count, cidaw, cplength, datasize;
 	sector_t recid, first_rec, last_rec;
 	unsigned int blksize, off;
 	unsigned char cmd;
 
-<<<<<<< HEAD
-	private = (struct dasd_fba_private *) block->base->private;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rq_data_dir(req) == READ) {
 		cmd = DASD_FBA_CCW_READ;
 	} else if (rq_data_dir(req) == WRITE) {
@@ -552,23 +454,12 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 	count = 0;
 	cidaw = 0;
 	rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-		if (bv->bv_len & (blksize - 1))
-			/* Fba can only do full blocks. */
-			return ERR_PTR(-EINVAL);
-		count += bv->bv_len >> (block->s2b_shift + 9);
-#if defined(CONFIG_64BIT)
-		if (idal_is_needed (page_address(bv->bv_page), bv->bv_len))
-			cidaw += bv->bv_len / blksize;
-#endif
-=======
 		if (bv.bv_len & (blksize - 1))
 			/* Fba can only do full blocks. */
 			return ERR_PTR(-EINVAL);
 		count += bv.bv_len >> (block->s2b_shift + 9);
 		if (idal_is_needed (page_address(bv.bv_page), bv.bv_len))
 			cidaw += bv.bv_len / blksize;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Paranoia. */
 	if (count != last_rec - first_rec + 1)
@@ -587,12 +478,8 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 		datasize += (count - 1)*sizeof(struct LO_fba_data);
 	}
 	/* Allocate the ccw request. */
-<<<<<<< HEAD
-	cqr = dasd_smalloc_request(DASD_FBA_MAGIC, cplength, datasize, memdev);
-=======
 	cqr = dasd_smalloc_request(DASD_FBA_MAGIC, cplength, datasize, memdev,
 				   blk_mq_rq_to_pdu(req));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(cqr))
 		return cqr;
 	ccw = cqr->cpaddr;
@@ -600,11 +487,7 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 	define_extent(ccw++, cqr->data, rq_data_dir(req),
 		      block->bp_block, blk_rq_pos(req), blk_rq_sectors(req));
 	/* Build locate_record + read/write ccws. */
-<<<<<<< HEAD
-	idaws = (unsigned long *) (cqr->data + sizeof(struct DE_fba_data));
-=======
 	idaws = (dma64_t *)(cqr->data + sizeof(struct DE_fba_data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LO_data = (struct LO_fba_data *) (idaws + cidaw);
 	/* Locate record for all blocks for smart devices. */
 	if (private->rdc_data.mode.bits.data_chain != 0) {
@@ -613,28 +496,16 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 	}
 	recid = first_rec;
 	rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-		dst = page_address(bv->bv_page) + bv->bv_offset;
-=======
 		dst = bvec_virt(&bv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dasd_page_cache) {
 			char *copy = kmem_cache_alloc(dasd_page_cache,
 						      GFP_DMA | __GFP_NOWARN);
 			if (copy && rq_data_dir(req) == WRITE)
-<<<<<<< HEAD
-				memcpy(copy + bv->bv_offset, dst, bv->bv_len);
-			if (copy)
-				dst = copy + bv->bv_offset;
-		}
-		for (off = 0; off < bv->bv_len; off += blksize) {
-=======
 				memcpy(copy + bv.bv_offset, dst, bv.bv_len);
 			if (copy)
 				dst = copy + bv.bv_offset;
 		}
 		for (off = 0; off < bv.bv_len; off += blksize) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Locate record for stupid devices. */
 			if (private->rdc_data.mode.bits.data_chain == 0) {
 				ccw[-1].flags |= CCW_FLAG_CC;
@@ -652,19 +523,11 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 			ccw->cmd_code = cmd;
 			ccw->count = block->bp_block;
 			if (idal_is_needed(dst, blksize)) {
-<<<<<<< HEAD
-				ccw->cda = (__u32)(addr_t) idaws;
-				ccw->flags = CCW_FLAG_IDA;
-				idaws = idal_create_words(idaws, dst, blksize);
-			} else {
-				ccw->cda = (__u32)(addr_t) dst;
-=======
 				ccw->cda = virt_to_dma32(idaws);
 				ccw->flags = CCW_FLAG_IDA;
 				idaws = idal_create_words(idaws, dst, blksize);
 			} else {
 				ccw->cda = virt_to_dma32(dst);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ccw->flags = 0;
 			}
 			ccw++;
@@ -679,26 +542,12 @@ static struct dasd_ccw_req *dasd_fba_build_cp_regular(
 	cqr->memdev = memdev;
 	cqr->block = block;
 	cqr->expires = memdev->default_expires * HZ;	/* default 5 minutes */
-<<<<<<< HEAD
-	cqr->retries = 32;
-	cqr->buildclk = get_clock();
-=======
 	cqr->retries = memdev->default_retries;
 	cqr->buildclk = get_tod_clock();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cqr->status = DASD_CQR_FILLED;
 	return cqr;
 }
 
-<<<<<<< HEAD
-static int
-dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
-{
-	struct dasd_fba_private *private;
-	struct ccw1 *ccw;
-	struct req_iterator iter;
-	struct bio_vec *bv;
-=======
 static struct dasd_ccw_req *dasd_fba_build_cp(struct dasd_device *memdev,
 					      struct dasd_block *block,
 					      struct request *req)
@@ -716,17 +565,12 @@ dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 	struct ccw1 *ccw;
 	struct req_iterator iter;
 	struct bio_vec bv;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dst, *cda;
 	unsigned int blksize, off;
 	int status;
 
 	if (!dasd_page_cache)
 		goto out;
-<<<<<<< HEAD
-	private = (struct dasd_fba_private *) cqr->block->base->private;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blksize = cqr->block->bp_block;
 	ccw = cqr->cpaddr;
 	/* Skip over define extent & locate record. */
@@ -734,33 +578,19 @@ dasd_fba_free_cp(struct dasd_ccw_req *cqr, struct request *req)
 	if (private->rdc_data.mode.bits.data_chain != 0)
 		ccw++;
 	rq_for_each_segment(bv, req, iter) {
-<<<<<<< HEAD
-		dst = page_address(bv->bv_page) + bv->bv_offset;
-		for (off = 0; off < bv->bv_len; off += blksize) {
-=======
 		dst = bvec_virt(&bv);
 		for (off = 0; off < bv.bv_len; off += blksize) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Skip locate record. */
 			if (private->rdc_data.mode.bits.data_chain == 0)
 				ccw++;
 			if (dst) {
 				if (ccw->flags & CCW_FLAG_IDA)
-<<<<<<< HEAD
-					cda = *((char **)((addr_t) ccw->cda));
-				else
-					cda = (char *)((addr_t) ccw->cda);
-				if (dst != cda) {
-					if (rq_data_dir(req) == READ)
-						memcpy(dst, cda, bv->bv_len);
-=======
 					cda = *((char **)dma32_to_virt(ccw->cda));
 				else
 					cda = dma32_to_virt(ccw->cda);
 				if (dst != cda) {
 					if (rq_data_dir(req) == READ)
 						memcpy(dst, cda, bv.bv_len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					kmem_cache_free(dasd_page_cache,
 					    (void *)((addr_t)cda & PAGE_MASK));
 				}
@@ -777,29 +607,16 @@ out:
 
 static void dasd_fba_handle_terminated_request(struct dasd_ccw_req *cqr)
 {
-<<<<<<< HEAD
-	cqr->status = DASD_CQR_FILLED;
-=======
 	if (cqr->retries < 0)
 		cqr->status = DASD_CQR_FAILED;
 	else
 		cqr->status = DASD_CQR_FILLED;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int
 dasd_fba_fill_info(struct dasd_device * device,
 		   struct dasd_information2_t * info)
 {
-<<<<<<< HEAD
-	info->label_block = 1;
-	info->FBA_layout = 1;
-	info->format = DASD_FORMAT_LDL;
-	info->characteristics_size = sizeof(struct dasd_fba_characteristics);
-	memcpy(info->characteristics,
-	       &((struct dasd_fba_private *) device->private)->rdc_data,
-	       sizeof (struct dasd_fba_characteristics));
-=======
 	struct dasd_fba_private *private = device->private;
 
 	info->label_block = 1;
@@ -808,7 +625,6 @@ dasd_fba_fill_info(struct dasd_device * device,
 	info->characteristics_size = sizeof(private->rdc_data);
 	memcpy(info->characteristics, &private->rdc_data,
 	       sizeof(private->rdc_data));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->confdata_size = 0;
 	return 0;
 }
@@ -839,41 +655,16 @@ static void
 dasd_fba_dump_sense(struct dasd_device *device, struct dasd_ccw_req * req,
 		    struct irb *irb)
 {
-<<<<<<< HEAD
-	char *page;
-	struct ccw1 *act, *end, *last;
-	int len, sl, sct, count;
-=======
 	struct ccw1 *act, *end, *last;
 	int len, sl, sct, count;
 	struct device *dev;
 	char *page;
 
 	dev = &device->cdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	page = (char *) get_zeroed_page(GFP_ATOMIC);
 	if (page == NULL) {
 		DBF_DEV_EVENT(DBF_WARNING, device, "%s",
-<<<<<<< HEAD
-			    "No memory to dump sense data");
-		return;
-	}
-	len = sprintf(page, KERN_ERR PRINTK_HEADER
-		      " I/O status report for device %s:\n",
-		      dev_name(&device->cdev->dev));
-	len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-		       " in req: %p CS: 0x%02X DS: 0x%02X\n", req,
-		       irb->scsw.cmd.cstat, irb->scsw.cmd.dstat);
-	len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-		       " device %s: Failing CCW: %p\n",
-		       dev_name(&device->cdev->dev),
-		       (void *) (addr_t) irb->scsw.cmd.cpa);
-	if (irb->esw.esw0.erw.cons) {
-		for (sl = 0; sl < 4; sl++) {
-			len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-				       " Sense(hex) %2d-%2d:",
-=======
 			      "No memory to dump sense data");
 		return;
 	}
@@ -885,7 +676,6 @@ dasd_fba_dump_sense(struct dasd_device *device, struct dasd_ccw_req * req,
 	if (irb->esw.esw0.erw.cons) {
 		for (sl = 0; sl < 4; sl++) {
 			len += sprintf(page + len, "Sense(hex) %2d-%2d:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       (8 * sl), ((8 * sl) + 7));
 
 			for (sct = 0; sct < 8; sct++) {
@@ -895,63 +685,27 @@ dasd_fba_dump_sense(struct dasd_device *device, struct dasd_ccw_req * req,
 			len += sprintf(page + len, "\n");
 		}
 	} else {
-<<<<<<< HEAD
-	        len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " SORRY - NO VALID SENSE AVAILABLE\n");
-	}
-	printk(KERN_ERR "%s", page);
-=======
 		len += sprintf(page + len, "SORRY - NO VALID SENSE AVAILABLE\n");
 	}
 	dev_err(dev, "%s", page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* dump the Channel Program */
 	/* print first CCWs (maximum 8) */
 	act = req->cpaddr;
-<<<<<<< HEAD
-        for (last = act; last->flags & (CCW_FLAG_CC | CCW_FLAG_DC); last++);
-	end = min(act + 8, last);
-	len = sprintf(page, KERN_ERR PRINTK_HEADER
-		      " Related CP in req: %p\n", req);
-	while (act <= end) {
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " CCW %p: %08X %08X DAT:",
-=======
 	for (last = act; last->flags & (CCW_FLAG_CC | CCW_FLAG_DC); last++);
 	end = min(act + 8, last);
 	len = sprintf(page, "Related CP in req: %px\n", req);
 	while (act <= end) {
 		len += sprintf(page + len, "CCW %px: %08X %08X DAT:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       act, ((int *) act)[0], ((int *) act)[1]);
 		for (count = 0; count < 32 && count < act->count;
 		     count += sizeof(int))
 			len += sprintf(page + len, " %08X",
-<<<<<<< HEAD
-				       ((int *) (addr_t) act->cda)
-=======
 				       ((int *)dma32_to_virt(act->cda))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       [(count>>2)]);
 		len += sprintf(page + len, "\n");
 		act++;
 	}
-<<<<<<< HEAD
-	printk(KERN_ERR "%s", page);
-
-
-	/* print failing CCW area */
-	len = 0;
-	if (act <  ((struct ccw1 *)(addr_t) irb->scsw.cmd.cpa) - 2) {
-		act = ((struct ccw1 *)(addr_t) irb->scsw.cmd.cpa) - 2;
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER "......\n");
-	}
-	end = min((struct ccw1 *)(addr_t) irb->scsw.cmd.cpa + 2, last);
-	while (act <= end) {
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " CCW %p: %08X %08X DAT:",
-=======
 	dev_err(dev, "%s", page);
 
 	/* print failing CCW area */
@@ -963,16 +717,11 @@ dasd_fba_dump_sense(struct dasd_device *device, struct dasd_ccw_req * req,
 	end = min((struct ccw1 *)dma32_to_virt(irb->scsw.cmd.cpa) + 2, last);
 	while (act <= end) {
 		len += sprintf(page + len, "CCW %px: %08X %08X DAT:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       act, ((int *) act)[0], ((int *) act)[1]);
 		for (count = 0; count < 32 && count < act->count;
 		     count += sizeof(int))
 			len += sprintf(page + len, " %08X",
-<<<<<<< HEAD
-				       ((int *) (addr_t) act->cda)
-=======
 				       ((int *)dma32_to_virt(act->cda))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       [(count>>2)]);
 		len += sprintf(page + len, "\n");
 		act++;
@@ -981,52 +730,20 @@ dasd_fba_dump_sense(struct dasd_device *device, struct dasd_ccw_req * req,
 	/* print last CCWs */
 	if (act <  last - 2) {
 		act = last - 2;
-<<<<<<< HEAD
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER "......\n");
-	}
-	while (act <= last) {
-		len += sprintf(page + len, KERN_ERR PRINTK_HEADER
-			       " CCW %p: %08X %08X DAT:",
-=======
 		len += sprintf(page + len, "......\n");
 	}
 	while (act <= last) {
 		len += sprintf(page + len, "CCW %px: %08X %08X DAT:",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       act, ((int *) act)[0], ((int *) act)[1]);
 		for (count = 0; count < 32 && count < act->count;
 		     count += sizeof(int))
 			len += sprintf(page + len, " %08X",
-<<<<<<< HEAD
-				       ((int *) (addr_t) act->cda)
-=======
 				       ((int *)dma32_to_virt(act->cda))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       [(count>>2)]);
 		len += sprintf(page + len, "\n");
 		act++;
 	}
 	if (len > 0)
-<<<<<<< HEAD
-		printk(KERN_ERR "%s", page);
-	free_page((unsigned long) page);
-}
-
-/*
- * max_blocks is dependent on the amount of storage that is available
- * in the static io buffer for each device. Currently each device has
- * 8192 bytes (=2 pages). For 64 bit one dasd_mchunkt_t structure has
- * 24 bytes, the struct dasd_ccw_req has 136 bytes and each block can use
- * up to 16 bytes (8 for the ccw and 8 for the idal pointer). In
- * addition we have one define extent ccw + 16 bytes of data and a
- * locate record ccw for each block (stupid devices!) + 16 bytes of data.
- * That makes:
- * (8192 - 24 - 136 - 8 - 16) / 40 = 200.2 blocks at maximum.
- * We want to fit two into the available memory so that we can immediately
- * start the next request if one finishes off. That makes 100.1 blocks
- * for one request. Give a little safety and the result is 96.
- */
-=======
 		dev_err(dev, "%s", page);
 	free_page((unsigned long) page);
 }
@@ -1042,23 +759,15 @@ static int dasd_fba_pe_handler(struct dasd_device *device,
 	return dasd_generic_verify_path(device, tbvpm);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dasd_discipline dasd_fba_discipline = {
 	.owner = THIS_MODULE,
 	.name = "FBA ",
 	.ebcname = "FBA ",
-<<<<<<< HEAD
-	.max_blocks = 96,
-	.check_device = dasd_fba_check_characteristics,
-	.do_analysis = dasd_fba_do_analysis,
-	.verify_path = dasd_generic_verify_path,
-=======
 	.has_discard = true,
 	.check_device = dasd_fba_check_characteristics,
 	.do_analysis = dasd_fba_do_analysis,
 	.pe_handler = dasd_fba_pe_handler,
 	.max_sectors = dasd_fba_max_sectors,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fill_geometry = dasd_fba_fill_geometry,
 	.start_IO = dasd_start_IO,
 	.term_IO = dasd_term_IO,
@@ -1079,14 +788,11 @@ dasd_fba_init(void)
 	int ret;
 
 	ASCEBC(dasd_fba_discipline.ebcname, 4);
-<<<<<<< HEAD
-=======
 
 	dasd_fba_zero_page = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA);
 	if (!dasd_fba_zero_page)
 		return -ENOMEM;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ccw_driver_register(&dasd_fba_driver);
 	if (!ret)
 		wait_for_device_probe();
@@ -1098,10 +804,7 @@ static void __exit
 dasd_fba_cleanup(void)
 {
 	ccw_driver_unregister(&dasd_fba_driver);
-<<<<<<< HEAD
-=======
 	free_page((unsigned long)dasd_fba_zero_page);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(dasd_fba_init);

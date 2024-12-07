@@ -1,19 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -22,10 +13,7 @@
 
 #include "boot.h"
 #include <linux/edd.h>
-<<<<<<< HEAD
-=======
 #include "string.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_EDD) || defined(CONFIG_EDD_MODULE)
 
@@ -86,11 +74,7 @@ static int get_edd_info(u8 devno, struct edd_info *ei)
 {
 	struct biosregs ireg, oreg;
 
-<<<<<<< HEAD
-	memset(ei, 0, sizeof *ei);
-=======
 	memset(ei, 0, sizeof(*ei));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check Extensions Present */
 
@@ -147,11 +131,7 @@ void query_edd(void)
 	struct edd_info ei, *edp;
 	u32 *mbrptr;
 
-<<<<<<< HEAD
-	if (cmdline_find_option("edd", eddarg, sizeof eddarg) > 0) {
-=======
 	if (cmdline_find_option("edd", eddarg, sizeof(eddarg)) > 0) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!strcmp(eddarg, "skipmbr") || !strcmp(eddarg, "skip")) {
 			do_edd = 1;
 			do_mbr = 0;
@@ -184,11 +164,7 @@ void query_edd(void)
 		 */
 		if (!get_edd_info(devno, &ei)
 		    && boot_params.eddbuf_entries < EDDMAXNR) {
-<<<<<<< HEAD
-			memcpy(edp, &ei, sizeof ei);
-=======
 			memcpy(edp, &ei, sizeof(ei));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			edp++;
 			boot_params.eddbuf_entries++;
 		}

@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-#ifndef SOUND_FIREWIRE_FCP_H_INCLUDED
-#define SOUND_FIREWIRE_FCP_H_INCLUDED
-
-struct fw_unit;
-
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
 #ifndef SOUND_FIREWIRE_FCP_H_INCLUDED
 #define SOUND_FIREWIRE_FCP_H_INCLUDED
@@ -32,7 +25,6 @@ int avc_general_get_plug_info(struct fw_unit *unit, unsigned int subunit_type,
 			      unsigned int subunit_id, unsigned int subfunction,
 			      u8 info[AVC_PLUG_INFO_BUF_BYTES]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fcp_avc_transaction(struct fw_unit *unit,
 			const void *command, unsigned int command_size,
 			void *response, unsigned int response_size,

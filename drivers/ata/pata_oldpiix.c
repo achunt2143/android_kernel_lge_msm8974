@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    pata_oldpiix.c - Intel PATA/SATA controllers
  *
@@ -20,10 +17,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -211,11 +204,7 @@ static unsigned int oldpiix_qc_issue(struct ata_queued_cmd *qc)
 }
 
 
-<<<<<<< HEAD
-static struct scsi_host_template oldpiix_sht = {
-=======
 static const struct scsi_host_template oldpiix_sht = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -270,39 +259,16 @@ static struct pci_driver oldpiix_pci_driver = {
 	.id_table		= oldpiix_pci_tbl,
 	.probe			= oldpiix_init_one,
 	.remove			= ata_pci_remove_one,
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-=======
 #ifdef CONFIG_PM_SLEEP
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
-<<<<<<< HEAD
-static int __init oldpiix_init(void)
-{
-	return pci_register_driver(&oldpiix_pci_driver);
-}
-
-static void __exit oldpiix_exit(void)
-{
-	pci_unregister_driver(&oldpiix_pci_driver);
-}
-
-module_init(oldpiix_init);
-module_exit(oldpiix_exit);
-=======
 module_pci_driver(oldpiix_pci_driver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for early PIIX series controllers");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, oldpiix_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

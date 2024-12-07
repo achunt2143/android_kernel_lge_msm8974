@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* xfrm4_tunnel.c: Generic IP tunnel transformer.
  *
  * Copyright (C) 2003 David S. Miller (davem@redhat.com)
@@ -11,13 +8,7 @@
 
 #include <linux/skbuff.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-#include <linux/mutex.h>
 #include <net/xfrm.h>
-#include <net/ip.h>
-=======
-#include <net/xfrm.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/protocol.h>
 
 static int ipip_output(struct xfrm_state *x, struct sk_buff *skb)
@@ -31,15 +22,6 @@ static int ipip_xfrm_rcv(struct xfrm_state *x, struct sk_buff *skb)
 	return ip_hdr(skb)->protocol;
 }
 
-<<<<<<< HEAD
-static int ipip_init_state(struct xfrm_state *x)
-{
-	if (x->props.mode != XFRM_MODE_TUNNEL)
-		return -EINVAL;
-
-	if (x->encap)
-		return -EINVAL;
-=======
 static int ipip_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 {
 	if (x->props.mode != XFRM_MODE_TUNNEL) {
@@ -51,7 +33,6 @@ static int ipip_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 		NL_SET_ERR_MSG(extack, "IPv4 tunnel is not compatible with encapsulation");
 		return -EINVAL;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x->props.header_len = sizeof(struct iphdr);
 
@@ -63,10 +44,6 @@ static void ipip_destroy(struct xfrm_state *x)
 }
 
 static const struct xfrm_type ipip_type = {
-<<<<<<< HEAD
-	.description	= "IPIP",
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner		= THIS_MODULE,
 	.proto	     	= IPPROTO_IPIP,
 	.init_state	= ipip_init_state,
@@ -88,22 +65,14 @@ static int xfrm_tunnel_err(struct sk_buff *skb, u32 info)
 static struct xfrm_tunnel xfrm_tunnel_handler __read_mostly = {
 	.handler	=	xfrm_tunnel_rcv,
 	.err_handler	=	xfrm_tunnel_err,
-<<<<<<< HEAD
-	.priority	=	2,
-=======
 	.priority	=	4,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #if IS_ENABLED(CONFIG_IPV6)
 static struct xfrm_tunnel xfrm64_tunnel_handler __read_mostly = {
 	.handler	=	xfrm_tunnel_rcv,
 	.err_handler	=	xfrm_tunnel_err,
-<<<<<<< HEAD
-	.priority	=	2,
-=======
 	.priority	=	3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 
@@ -140,19 +109,11 @@ static void __exit ipip_fini(void)
 	if (xfrm4_tunnel_deregister(&xfrm_tunnel_handler, AF_INET))
 		pr_info("%s: can't remove xfrm handler for AF_INET\n",
 			__func__);
-<<<<<<< HEAD
-	if (xfrm_unregister_type(&ipip_type, AF_INET) < 0)
-		pr_info("%s: can't remove xfrm type\n", __func__);
-=======
 	xfrm_unregister_type(&ipip_type, AF_INET);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ipip_init);
 module_exit(ipip_fini);
-<<<<<<< HEAD
-=======
 MODULE_DESCRIPTION("IPv4 XFRM tunnel driver");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_XFRM_TYPE(AF_INET, XFRM_PROTO_IPIP);

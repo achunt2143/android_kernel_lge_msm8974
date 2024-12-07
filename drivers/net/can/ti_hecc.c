@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TI HECC (CAN) device driver
  *
@@ -9,72 +6,26 @@
  * specs for the same is available at <http://www.ti.com>
  *
  * Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed as is WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
-
-/*
- * Your platform definitions should specify module ram offsets and interrupt
- * number to use as follows:
- *
- * static struct ti_hecc_platform_data am3517_evm_hecc_pdata = {
- *         .scc_hecc_offset        = 0,
- *         .scc_ram_offset         = 0x3000,
- *         .hecc_ram_offset        = 0x3000,
- *         .mbx_offset             = 0x2000,
- *         .int_line               = 0,
- *         .revision               = 1,
- *         .transceiver_switch     = hecc_phy_control,
- * };
- *
- * Please see include/linux/can/platform/ti_hecc.h for description of
- * above fields.
- *
- */
-
-#include <linux/module.h>
-#include <linux/init.h>
-=======
  * Copyright (C) 2019 Jeroen Hofstee <jhofstee@victronenergy.com>
  */
 
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/interrupt.h>
 #include <linux/errno.h>
-<<<<<<< HEAD
-=======
 #include <linux/ethtool.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
 #include <linux/platform_device.h>
 #include <linux/clk.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <linux/can/dev.h>
-#include <linux/can/error.h>
-#include <linux/can/platform/ti_hecc.h>
-=======
 #include <linux/of.h>
 #include <linux/regulator/consumer.h>
 
 #include <linux/can/dev.h>
 #include <linux/can/error.h>
 #include <linux/can/rx-offload.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME "ti_hecc"
 #define HECC_MODULE_VERSION     "0.7"
@@ -85,12 +36,7 @@ MODULE_VERSION(HECC_MODULE_VERSION);
 #define HECC_MAX_MAILBOXES	32	/* hardware mailboxes - do not change */
 #define MAX_TX_PRIO		0x3F	/* hardware value - do not change */
 
-<<<<<<< HEAD
-/*
- * Important Note: TX mailbox configuration
-=======
 /* Important Note: TX mailbox configuration
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TX mailboxes should be restricted to the number of SKB buffers to avoid
  * maintaining SKB buffers separately. TX mailboxes should be a power of 2
  * for the mailbox logic to work.  Top mailbox numbers are reserved for RX
@@ -108,31 +54,6 @@ MODULE_VERSION(HECC_MODULE_VERSION);
 #define HECC_TX_PRIO_MASK	(MAX_TX_PRIO << HECC_MB_TX_SHIFT)
 #define HECC_TX_MB_MASK		(HECC_MAX_TX_MBOX - 1)
 #define HECC_TX_MASK		((HECC_MAX_TX_MBOX - 1) | HECC_TX_PRIO_MASK)
-<<<<<<< HEAD
-#define HECC_TX_MBOX_MASK	(~(BIT(HECC_MAX_TX_MBOX) - 1))
-#define HECC_DEF_NAPI_WEIGHT	HECC_MAX_RX_MBOX
-
-/*
- * Important Note: RX mailbox configuration
- * RX mailboxes are further logically split into two - main and buffer
- * mailboxes. The goal is to get all packets into main mailboxes as
- * driven by mailbox number and receive priority (higher to lower) and
- * buffer mailboxes are used to receive pkts while main mailboxes are being
- * processed. This ensures in-order packet reception.
- *
- * Here are the recommended values for buffer mailbox. Note that RX mailboxes
- * start after TX mailboxes:
- *
- * HECC_MAX_RX_MBOX		HECC_RX_BUFFER_MBOX	No of buffer mailboxes
- * 28				12			8
- * 16				20			4
- */
-
-#define HECC_MAX_RX_MBOX	(HECC_MAX_MAILBOXES - HECC_MAX_TX_MBOX)
-#define HECC_RX_BUFFER_MBOX	12 /* as per table above */
-#define HECC_RX_FIRST_MBOX	(HECC_MAX_MAILBOXES - 1)
-#define HECC_RX_HIGH_MBOX_MASK	(~(BIT(HECC_RX_BUFFER_MBOX) - 1))
-=======
 
 /* RX mailbox configuration
  *
@@ -143,7 +64,6 @@ MODULE_VERSION(HECC_MODULE_VERSION);
 #define HECC_MAX_RX_MBOX	(HECC_MAX_MAILBOXES - HECC_MAX_TX_MBOX)
 #define HECC_RX_FIRST_MBOX	(HECC_MAX_MAILBOXES - 1)
 #define HECC_RX_LAST_MBOX	(HECC_MAX_TX_MBOX)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* TI HECC module registers */
 #define HECC_CANME		0x0	/* Mailbox enable */
@@ -153,11 +73,7 @@ MODULE_VERSION(HECC_MODULE_VERSION);
 #define HECC_CANTA		0x10	/* Transmission acknowledge */
 #define HECC_CANAA		0x14	/* Abort acknowledge */
 #define HECC_CANRMP		0x18	/* Receive message pending */
-<<<<<<< HEAD
-#define HECC_CANRML		0x1C	/* Remote message lost */
-=======
 #define HECC_CANRML		0x1C	/* Receive message lost */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HECC_CANRFP		0x20	/* Remote frame pending */
 #define HECC_CANGAM		0x24	/* SECC only:Global acceptance mask */
 #define HECC_CANMC		0x28	/* Master control */
@@ -179,12 +95,9 @@ MODULE_VERSION(HECC_MODULE_VERSION);
 #define HECC_CANTIOCE		0x68	/* SCC only:Enhanced TX I/O control */
 #define HECC_CANRIOCE		0x6C	/* SCC only:Enhanced RX I/O control */
 
-<<<<<<< HEAD
-=======
 /* TI HECC RAM registers */
 #define HECC_CANMOTS		0x80	/* Message object time stamp */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Mailbox registers */
 #define HECC_CANMID		0x0
 #define HECC_CANMCF		0x4
@@ -227,11 +140,8 @@ MODULE_VERSION(HECC_MODULE_VERSION);
 #define HECC_BUS_ERROR		(HECC_CANES_FE | HECC_CANES_BE |\
 				HECC_CANES_CRCE | HECC_CANES_SE |\
 				HECC_CANES_ACKE)
-<<<<<<< HEAD
-=======
 #define HECC_CANES_FLAGS	(HECC_BUS_ERROR | HECC_CANES_BO |\
 				HECC_CANES_EP | HECC_CANES_EW)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HECC_CANMCF_RTR		BIT(4)	/* Remote transmit request */
 
@@ -252,11 +162,7 @@ MODULE_VERSION(HECC_MODULE_VERSION);
 #define HECC_CANGIM_SIL		BIT(2)	/* system interrupts to int line 1 */
 
 /* CAN Bittiming constants as per HECC specs */
-<<<<<<< HEAD
-static struct can_bittiming_const ti_hecc_bittiming_const = {
-=======
 static const struct can_bittiming_const ti_hecc_bittiming_const = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = DRV_NAME,
 	.tseg1_min = 1,
 	.tseg1_max = 16,
@@ -270,21 +176,6 @@ static const struct can_bittiming_const ti_hecc_bittiming_const = {
 
 struct ti_hecc_priv {
 	struct can_priv can;	/* MUST be first member/field */
-<<<<<<< HEAD
-	struct napi_struct napi;
-	struct net_device *ndev;
-	struct clk *clk;
-	void __iomem *base;
-	u32 scc_ram_offset;
-	u32 hecc_ram_offset;
-	u32 mbx_offset;
-	u32 int_line;
-	spinlock_t mbx_lock; /* CANME register needs protection */
-	u32 tx_head;
-	u32 tx_tail;
-	u32 rx_next;
-	void (*transceiver_switch)(int);
-=======
 	struct can_rx_offload offload;
 	struct net_device *ndev;
 	struct clk *clk;
@@ -296,7 +187,6 @@ struct ti_hecc_priv {
 	u32 tx_head;
 	u32 tx_tail;
 	struct regulator *reg_xceiver;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int get_tx_head_mb(struct ti_hecc_priv *priv)
@@ -316,16 +206,6 @@ static inline int get_tx_head_prio(struct ti_hecc_priv *priv)
 
 static inline void hecc_write_lam(struct ti_hecc_priv *priv, u32 mbxno, u32 val)
 {
-<<<<<<< HEAD
-	__raw_writel(val, priv->base + priv->hecc_ram_offset + mbxno * 4);
-}
-
-static inline void hecc_write_mbx(struct ti_hecc_priv *priv, u32 mbxno,
-	u32 reg, u32 val)
-{
-	__raw_writel(val, priv->base + priv->mbx_offset + mbxno * 0x10 +
-			reg);
-=======
 	__raw_writel(val, priv->hecc_ram + mbxno * 4);
 }
 
@@ -338,17 +218,11 @@ static inline void hecc_write_mbx(struct ti_hecc_priv *priv, u32 mbxno,
 				  u32 reg, u32 val)
 {
 	__raw_writel(val, priv->mbx + mbxno * 0x10 + reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 hecc_read_mbx(struct ti_hecc_priv *priv, u32 mbxno, u32 reg)
 {
-<<<<<<< HEAD
-	return __raw_readl(priv->base + priv->mbx_offset + mbxno * 0x10 +
-			reg);
-=======
 	return __raw_readl(priv->mbx + mbxno * 0x10 + reg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hecc_write(struct ti_hecc_priv *priv, u32 reg, u32 val)
@@ -362,21 +236,13 @@ static inline u32 hecc_read(struct ti_hecc_priv *priv, int reg)
 }
 
 static inline void hecc_set_bit(struct ti_hecc_priv *priv, int reg,
-<<<<<<< HEAD
-	u32 bit_mask)
-=======
 				u32 bit_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	hecc_write(priv, reg, hecc_read(priv, reg) | bit_mask);
 }
 
 static inline void hecc_clear_bit(struct ti_hecc_priv *priv, int reg,
-<<<<<<< HEAD
-	u32 bit_mask)
-=======
 				  u32 bit_mask)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	hecc_write(priv, reg, hecc_read(priv, reg) & ~bit_mask);
 }
@@ -386,18 +252,6 @@ static inline u32 hecc_get_bit(struct ti_hecc_priv *priv, int reg, u32 bit_mask)
 	return (hecc_read(priv, reg) & bit_mask) ? 1 : 0;
 }
 
-<<<<<<< HEAD
-static int ti_hecc_get_state(const struct net_device *ndev,
-	enum can_state *state)
-{
-	struct ti_hecc_priv *priv = netdev_priv(ndev);
-
-	*state = priv->can.state;
-	return 0;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ti_hecc_set_btc(struct ti_hecc_priv *priv)
 {
 	struct can_bittiming *bit_timing = &priv->can.bittiming;
@@ -410,13 +264,8 @@ static int ti_hecc_set_btc(struct ti_hecc_priv *priv)
 		if (bit_timing->brp > 4)
 			can_btc |= HECC_CANBTC_SAM;
 		else
-<<<<<<< HEAD
-			netdev_warn(priv->ndev, "WARN: Triple"
-				"sampling not set due to h/w limitations");
-=======
 			netdev_warn(priv->ndev,
 				    "WARN: Triple sampling not set due to h/w limitations");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	can_btc |= ((bit_timing->sjw - 1) & 0x3) << 8;
 	can_btc |= ((bit_timing->brp - 1) & 0xFF) << 16;
@@ -429,13 +278,6 @@ static int ti_hecc_set_btc(struct ti_hecc_priv *priv)
 	return 0;
 }
 
-<<<<<<< HEAD
-static void ti_hecc_transceiver_switch(const struct ti_hecc_priv *priv,
-					int on)
-{
-	if (priv->transceiver_switch)
-		priv->transceiver_switch(on);
-=======
 static int ti_hecc_transceiver_switch(const struct ti_hecc_priv *priv,
 				      int on)
 {
@@ -446,7 +288,6 @@ static int ti_hecc_transceiver_switch(const struct ti_hecc_priv *priv,
 		return regulator_enable(priv->reg_xceiver);
 	else
 		return regulator_disable(priv->reg_xceiver);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ti_hecc_reset(struct net_device *ndev)
@@ -460,12 +301,7 @@ static void ti_hecc_reset(struct net_device *ndev)
 	/* Set change control request and wait till enabled */
 	hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
 
-<<<<<<< HEAD
-	/*
-	 * INFO: It has been observed that at times CCE bit may not be
-=======
 	/* INFO: It has been observed that at times CCE bit may not be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * set and hw seems to be ok even if this bit is not set so
 	 * timing out with a timing of 1ms to respect the specs
 	 */
@@ -475,12 +311,7 @@ static void ti_hecc_reset(struct net_device *ndev)
 		udelay(10);
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Note: On HECC, BTC can be programmed only in initialization mode, so
-=======
 	/* Note: On HECC, BTC can be programmed only in initialization mode, so
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * it is expected that the can bittiming parameters are set via ip
 	 * utility before the device is opened
 	 */
@@ -489,21 +320,11 @@ static void ti_hecc_reset(struct net_device *ndev)
 	/* Clear CCR (and CANMC register) and wait for CCE = 0 enable */
 	hecc_write(priv, HECC_CANMC, 0);
 
-<<<<<<< HEAD
-	/*
-	 * INFO: CAN net stack handles bus off and hence disabling auto-bus-on
-	 * hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_ABO);
-	 */
-
-	/*
-	 * INFO: It has been observed that at times CCE bit may not be
-=======
 	/* INFO: CAN net stack handles bus off and hence disabling auto-bus-on
 	 * hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_ABO);
 	 */
 
 	/* INFO: It has been observed that at times CCE bit may not be
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * set and hw seems to be ok even if this bit is not set so
 	 */
 	cnt = HECC_CCE_WAIT_COUNT;
@@ -536,13 +357,8 @@ static void ti_hecc_start(struct net_device *ndev)
 	/* put HECC in initialization mode and set btc */
 	ti_hecc_reset(ndev);
 
-<<<<<<< HEAD
-	priv->tx_head = priv->tx_tail = HECC_TX_MASK;
-	priv->rx_next = HECC_RX_FIRST_MBOX;
-=======
 	priv->tx_head = HECC_TX_MASK;
 	priv->tx_tail = HECC_TX_MASK;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable local and global acceptance mask registers */
 	hecc_write(priv, HECC_CANGAM, HECC_SET_REG);
@@ -559,11 +375,6 @@ static void ti_hecc_start(struct net_device *ndev)
 		hecc_set_bit(priv, HECC_CANMIM, mbx_mask);
 	}
 
-<<<<<<< HEAD
-	/* Prevent message over-write & Enable interrupts */
-	hecc_write(priv, HECC_CANOPC, HECC_SET_REG);
-	if (priv->int_line) {
-=======
 	/* Enable tx interrupts */
 	hecc_set_bit(priv, HECC_CANMIM, BIT(HECC_MAX_TX_MBOX) - 1);
 
@@ -577,18 +388,13 @@ static void ti_hecc_start(struct net_device *ndev)
 
 	/* Enable interrupts */
 	if (priv->use_hecc1int) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hecc_write(priv, HECC_CANMIL, HECC_SET_REG);
 		hecc_write(priv, HECC_CANGIM, HECC_CANGIM_DEF_MASK |
 			HECC_CANGIM_I1EN | HECC_CANGIM_SIL);
 	} else {
 		hecc_write(priv, HECC_CANMIL, 0);
 		hecc_write(priv, HECC_CANGIM,
-<<<<<<< HEAD
-			HECC_CANGIM_DEF_MASK | HECC_CANGIM_I0EN);
-=======
 			   HECC_CANGIM_DEF_MASK | HECC_CANGIM_I0EN);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
 }
@@ -597,12 +403,9 @@ static void ti_hecc_stop(struct net_device *ndev)
 {
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 
-<<<<<<< HEAD
-=======
 	/* Disable the CPK; stop sending, erroring and acking */
 	hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable interrupts and disable mailboxes */
 	hecc_write(priv, HECC_CANGIM, 0);
 	hecc_write(priv, HECC_CANMIM, 0);
@@ -628,11 +431,7 @@ static int ti_hecc_do_set_mode(struct net_device *ndev, enum can_mode mode)
 }
 
 static int ti_hecc_get_berr_counter(const struct net_device *ndev,
-<<<<<<< HEAD
-					struct can_berr_counter *bec)
-=======
 				    struct can_berr_counter *bec)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 
@@ -642,18 +441,10 @@ static int ti_hecc_get_berr_counter(const struct net_device *ndev,
 	return 0;
 }
 
-<<<<<<< HEAD
-/*
- * ti_hecc_xmit: HECC Transmit
- *
- * The transmit mailboxes start from 0 to HECC_MAX_TX_MBOX. In HECC the
- * priority of the mailbox for tranmission is dependent upon priority setting
-=======
 /* ti_hecc_xmit: HECC Transmit
  *
  * The transmit mailboxes start from 0 to HECC_MAX_TX_MBOX. In HECC the
  * priority of the mailbox for transmission is dependent upon priority setting
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * field in mailbox registers. The mailbox with highest value in priority field
  * is transmitted first. Only when two mailboxes have the same value in
  * priority field the highest numbered mailbox is transmitted first.
@@ -678,11 +469,7 @@ static netdev_tx_t ti_hecc_xmit(struct sk_buff *skb, struct net_device *ndev)
 	u32 mbxno, mbx_mask, data;
 	unsigned long flags;
 
-<<<<<<< HEAD
-	if (can_dropped_invalid_skb(ndev, skb))
-=======
 	if (can_dev_dropped_skb(ndev, skb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 
 	mbxno = get_tx_head_mb(priv);
@@ -692,23 +479,14 @@ static netdev_tx_t ti_hecc_xmit(struct sk_buff *skb, struct net_device *ndev)
 		spin_unlock_irqrestore(&priv->mbx_lock, flags);
 		netif_stop_queue(ndev);
 		netdev_err(priv->ndev,
-<<<<<<< HEAD
-			"BUG: TX mbx not ready tx_head=%08X, tx_tail=%08X\n",
-			priv->tx_head, priv->tx_tail);
-=======
 			   "BUG: TX mbx not ready tx_head=%08X, tx_tail=%08X\n",
 			   priv->tx_head, priv->tx_tail);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_BUSY;
 	}
 	spin_unlock_irqrestore(&priv->mbx_lock, flags);
 
 	/* Prepare mailbox for transmission */
-<<<<<<< HEAD
-	data = cf->can_dlc | (get_tx_head_prio(priv) << 8);
-=======
 	data = cf->len | (get_tx_head_prio(priv) << 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cf->can_id & CAN_RTR_FLAG) /* Remote transmission request */
 		data |= HECC_CANMCF_RTR;
 	hecc_write_mbx(priv, mbxno, HECC_CANMCF, data);
@@ -719,15 +497,6 @@ static netdev_tx_t ti_hecc_xmit(struct sk_buff *skb, struct net_device *ndev)
 		data = (cf->can_id & CAN_SFF_MASK) << 18;
 	hecc_write_mbx(priv, mbxno, HECC_CANMID, data);
 	hecc_write_mbx(priv, mbxno, HECC_CANMDL,
-<<<<<<< HEAD
-		be32_to_cpu(*(u32 *)(cf->data)));
-	if (cf->can_dlc > 4)
-		hecc_write_mbx(priv, mbxno, HECC_CANMDH,
-			be32_to_cpu(*(u32 *)(cf->data + 4)));
-	else
-		*(u32 *)(cf->data + 4) = 0;
-	can_put_echo_skb(skb, ndev, mbxno);
-=======
 		       be32_to_cpu(*(__be32 *)(cf->data)));
 	if (cf->len > 4)
 		hecc_write_mbx(priv, mbxno, HECC_CANMDH,
@@ -735,50 +504,21 @@ static netdev_tx_t ti_hecc_xmit(struct sk_buff *skb, struct net_device *ndev)
 	else
 		*(u32 *)(cf->data + 4) = 0;
 	can_put_echo_skb(skb, ndev, mbxno, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&priv->mbx_lock, flags);
 	--priv->tx_head;
 	if ((hecc_read(priv, HECC_CANME) & BIT(get_tx_head_mb(priv))) ||
-<<<<<<< HEAD
-		(priv->tx_head & HECC_TX_MASK) == HECC_TX_MASK) {
-=======
 	    (priv->tx_head & HECC_TX_MASK) == HECC_TX_MASK) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_stop_queue(ndev);
 	}
 	hecc_set_bit(priv, HECC_CANME, mbx_mask);
 	spin_unlock_irqrestore(&priv->mbx_lock, flags);
 
-<<<<<<< HEAD
-	hecc_clear_bit(priv, HECC_CANMD, mbx_mask);
-	hecc_set_bit(priv, HECC_CANMIM, mbx_mask);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hecc_write(priv, HECC_CANTRS, mbx_mask);
 
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-static int ti_hecc_rx_pkt(struct ti_hecc_priv *priv, int mbxno)
-{
-	struct net_device_stats *stats = &priv->ndev->stats;
-	struct can_frame *cf;
-	struct sk_buff *skb;
-	u32 data, mbx_mask;
-	unsigned long flags;
-
-	skb = alloc_can_skb(priv->ndev, &cf);
-	if (!skb) {
-		if (printk_ratelimit())
-			netdev_err(priv->ndev,
-				"ti_hecc_rx_pkt: alloc_can_skb() failed\n");
-		return -ENOMEM;
-	}
-
-	mbx_mask = BIT(mbxno);
-=======
 static inline
 struct ti_hecc_priv *rx_offload_to_priv(struct can_rx_offload *offload)
 {
@@ -807,201 +547,11 @@ static struct sk_buff *ti_hecc_mailbox_read(struct can_rx_offload *offload,
 		goto mark_as_read;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = hecc_read_mbx(priv, mbxno, HECC_CANMID);
 	if (data & HECC_CANMID_IDE)
 		cf->can_id = (data & CAN_EFF_MASK) | CAN_EFF_FLAG;
 	else
 		cf->can_id = (data >> 18) & CAN_SFF_MASK;
-<<<<<<< HEAD
-	data = hecc_read_mbx(priv, mbxno, HECC_CANMCF);
-	if (data & HECC_CANMCF_RTR)
-		cf->can_id |= CAN_RTR_FLAG;
-	cf->can_dlc = get_can_dlc(data & 0xF);
-	data = hecc_read_mbx(priv, mbxno, HECC_CANMDL);
-	*(u32 *)(cf->data) = cpu_to_be32(data);
-	if (cf->can_dlc > 4) {
-		data = hecc_read_mbx(priv, mbxno, HECC_CANMDH);
-		*(u32 *)(cf->data + 4) = cpu_to_be32(data);
-	} else {
-		*(u32 *)(cf->data + 4) = 0;
-	}
-	spin_lock_irqsave(&priv->mbx_lock, flags);
-	hecc_clear_bit(priv, HECC_CANME, mbx_mask);
-	hecc_write(priv, HECC_CANRMP, mbx_mask);
-	/* enable mailbox only if it is part of rx buffer mailboxes */
-	if (priv->rx_next < HECC_RX_BUFFER_MBOX)
-		hecc_set_bit(priv, HECC_CANME, mbx_mask);
-	spin_unlock_irqrestore(&priv->mbx_lock, flags);
-
-	stats->rx_bytes += cf->can_dlc;
-	netif_receive_skb(skb);
-	stats->rx_packets++;
-
-	return 0;
-}
-
-/*
- * ti_hecc_rx_poll - HECC receive pkts
- *
- * The receive mailboxes start from highest numbered mailbox till last xmit
- * mailbox. On CAN frame reception the hardware places the data into highest
- * numbered mailbox that matches the CAN ID filter. Since all receive mailboxes
- * have same filtering (ALL CAN frames) packets will arrive in the highest
- * available RX mailbox and we need to ensure in-order packet reception.
- *
- * To ensure the packets are received in the right order we logically divide
- * the RX mailboxes into main and buffer mailboxes. Packets are received as per
- * mailbox priotity (higher to lower) in the main bank and once it is full we
- * disable further reception into main mailboxes. While the main mailboxes are
- * processed in NAPI, further packets are received in buffer mailboxes.
- *
- * We maintain a RX next mailbox counter to process packets and once all main
- * mailboxe packets are passed to the upper stack we enable all of them but
- * continue to process packets received in buffer mailboxes. With each packet
- * received from buffer mailbox we enable it immediately so as to handle the
- * overflow from higher mailboxes.
- */
-static int ti_hecc_rx_poll(struct napi_struct *napi, int quota)
-{
-	struct net_device *ndev = napi->dev;
-	struct ti_hecc_priv *priv = netdev_priv(ndev);
-	u32 num_pkts = 0;
-	u32 mbx_mask;
-	unsigned long pending_pkts, flags;
-
-	if (!netif_running(ndev))
-		return 0;
-
-	while ((pending_pkts = hecc_read(priv, HECC_CANRMP)) &&
-		num_pkts < quota) {
-		mbx_mask = BIT(priv->rx_next); /* next rx mailbox to process */
-		if (mbx_mask & pending_pkts) {
-			if (ti_hecc_rx_pkt(priv, priv->rx_next) < 0)
-				return num_pkts;
-			++num_pkts;
-		} else if (priv->rx_next > HECC_RX_BUFFER_MBOX) {
-			break; /* pkt not received yet */
-		}
-		--priv->rx_next;
-		if (priv->rx_next == HECC_RX_BUFFER_MBOX) {
-			/* enable high bank mailboxes */
-			spin_lock_irqsave(&priv->mbx_lock, flags);
-			mbx_mask = hecc_read(priv, HECC_CANME);
-			mbx_mask |= HECC_RX_HIGH_MBOX_MASK;
-			hecc_write(priv, HECC_CANME, mbx_mask);
-			spin_unlock_irqrestore(&priv->mbx_lock, flags);
-		} else if (priv->rx_next == HECC_MAX_TX_MBOX - 1) {
-			priv->rx_next = HECC_RX_FIRST_MBOX;
-			break;
-		}
-	}
-
-	/* Enable packet interrupt if all pkts are handled */
-	if (hecc_read(priv, HECC_CANRMP) == 0) {
-		napi_complete(napi);
-		/* Re-enable RX mailbox interrupts */
-		mbx_mask = hecc_read(priv, HECC_CANMIM);
-		mbx_mask |= HECC_TX_MBOX_MASK;
-		hecc_write(priv, HECC_CANMIM, mbx_mask);
-	}
-
-	return num_pkts;
-}
-
-static int ti_hecc_error(struct net_device *ndev, int int_status,
-	int err_status)
-{
-	struct ti_hecc_priv *priv = netdev_priv(ndev);
-	struct net_device_stats *stats = &ndev->stats;
-	struct can_frame *cf;
-	struct sk_buff *skb;
-
-	/* propagate the error condition to the can stack */
-	skb = alloc_can_err_skb(ndev, &cf);
-	if (!skb) {
-		if (printk_ratelimit())
-			netdev_err(priv->ndev,
-				"ti_hecc_error: alloc_can_err_skb() failed\n");
-		return -ENOMEM;
-	}
-
-	if (int_status & HECC_CANGIF_WLIF) { /* warning level int */
-		if ((int_status & HECC_CANGIF_BOIF) == 0) {
-			priv->can.state = CAN_STATE_ERROR_WARNING;
-			++priv->can.can_stats.error_warning;
-			cf->can_id |= CAN_ERR_CRTL;
-			if (hecc_read(priv, HECC_CANTEC) > 96)
-				cf->data[1] |= CAN_ERR_CRTL_TX_WARNING;
-			if (hecc_read(priv, HECC_CANREC) > 96)
-				cf->data[1] |= CAN_ERR_CRTL_RX_WARNING;
-		}
-		hecc_set_bit(priv, HECC_CANES, HECC_CANES_EW);
-		netdev_dbg(priv->ndev, "Error Warning interrupt\n");
-		hecc_clear_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
-	}
-
-	if (int_status & HECC_CANGIF_EPIF) { /* error passive int */
-		if ((int_status & HECC_CANGIF_BOIF) == 0) {
-			priv->can.state = CAN_STATE_ERROR_PASSIVE;
-			++priv->can.can_stats.error_passive;
-			cf->can_id |= CAN_ERR_CRTL;
-			if (hecc_read(priv, HECC_CANTEC) > 127)
-				cf->data[1] |= CAN_ERR_CRTL_TX_PASSIVE;
-			if (hecc_read(priv, HECC_CANREC) > 127)
-				cf->data[1] |= CAN_ERR_CRTL_RX_PASSIVE;
-		}
-		hecc_set_bit(priv, HECC_CANES, HECC_CANES_EP);
-		netdev_dbg(priv->ndev, "Error passive interrupt\n");
-		hecc_clear_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
-	}
-
-	/*
-	 * Need to check busoff condition in error status register too to
-	 * ensure warning interrupts don't hog the system
-	 */
-	if ((int_status & HECC_CANGIF_BOIF) || (err_status & HECC_CANES_BO)) {
-		priv->can.state = CAN_STATE_BUS_OFF;
-		cf->can_id |= CAN_ERR_BUSOFF;
-		hecc_set_bit(priv, HECC_CANES, HECC_CANES_BO);
-		hecc_clear_bit(priv, HECC_CANMC, HECC_CANMC_CCR);
-		/* Disable all interrupts in bus-off to avoid int hog */
-		hecc_write(priv, HECC_CANGIM, 0);
-		can_bus_off(ndev);
-	}
-
-	if (err_status & HECC_BUS_ERROR) {
-		++priv->can.can_stats.bus_error;
-		cf->can_id |= CAN_ERR_BUSERROR | CAN_ERR_PROT;
-		cf->data[2] |= CAN_ERR_PROT_UNSPEC;
-		if (err_status & HECC_CANES_FE) {
-			hecc_set_bit(priv, HECC_CANES, HECC_CANES_FE);
-			cf->data[2] |= CAN_ERR_PROT_FORM;
-		}
-		if (err_status & HECC_CANES_BE) {
-			hecc_set_bit(priv, HECC_CANES, HECC_CANES_BE);
-			cf->data[2] |= CAN_ERR_PROT_BIT;
-		}
-		if (err_status & HECC_CANES_SE) {
-			hecc_set_bit(priv, HECC_CANES, HECC_CANES_SE);
-			cf->data[2] |= CAN_ERR_PROT_STUFF;
-		}
-		if (err_status & HECC_CANES_CRCE) {
-			hecc_set_bit(priv, HECC_CANES, HECC_CANES_CRCE);
-			cf->data[3] |= CAN_ERR_PROT_LOC_CRC_SEQ |
-					CAN_ERR_PROT_LOC_CRC_DEL;
-		}
-		if (err_status & HECC_CANES_ACKE) {
-			hecc_set_bit(priv, HECC_CANES, HECC_CANES_ACKE);
-			cf->data[3] |= CAN_ERR_PROT_LOC_ACK |
-					CAN_ERR_PROT_LOC_ACK_DEL;
-		}
-	}
-
-	netif_rx(skb);
-	stats->rx_packets++;
-	stats->rx_bytes += cf->can_dlc;
-=======
 
 	data = hecc_read_mbx(priv, mbxno, HECC_CANMCF);
 	if (data & HECC_CANMCF_RTR)
@@ -1080,13 +630,10 @@ static int ti_hecc_error(struct net_device *ndev, int int_status,
 	}
 
 	hecc_write(priv, HECC_CANES, HECC_CANES_FLAGS);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 static void ti_hecc_change_state(struct net_device *ndev,
 				 enum can_state rx_state,
 				 enum can_state tx_state)
@@ -1117,19 +664,11 @@ static void ti_hecc_change_state(struct net_device *ndev,
 		ndev->stats.rx_fifo_errors++;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t ti_hecc_interrupt(int irq, void *dev_id)
 {
 	struct net_device *ndev = (struct net_device *)dev_id;
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 	struct net_device_stats *stats = &ndev->stats;
-<<<<<<< HEAD
-	u32 mbxno, mbx_mask, int_status, err_status;
-	unsigned long ack, flags;
-
-	int_status = hecc_read(priv,
-		(priv->int_line) ? HECC_CANGIF1 : HECC_CANGIF0);
-=======
 	u32 mbxno, mbx_mask, int_status, err_status, stamp;
 	unsigned long flags, rx_pending;
 	u32 handled = 0;
@@ -1137,17 +676,11 @@ static irqreturn_t ti_hecc_interrupt(int irq, void *dev_id)
 	int_status = hecc_read(priv,
 			       priv->use_hecc1int ?
 			       HECC_CANGIF1 : HECC_CANGIF0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!int_status)
 		return IRQ_NONE;
 
 	err_status = hecc_read(priv, HECC_CANES);
-<<<<<<< HEAD
-	if (err_status & (HECC_BUS_ERROR | HECC_CANES_BO |
-		HECC_CANES_EP | HECC_CANES_EW))
-			ti_hecc_error(ndev, int_status, err_status);
-=======
 	if (unlikely(err_status & HECC_CANES_FLAGS))
 		ti_hecc_error(ndev, int_status, err_status);
 
@@ -1201,7 +734,6 @@ static irqreturn_t ti_hecc_interrupt(int irq, void *dev_id)
 			ti_hecc_change_state(ndev, rx_state, tx_state);
 		}
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (int_status & HECC_CANGIF_GMIF) {
 		while (priv->tx_tail - priv->tx_head > 0) {
@@ -1209,44 +741,19 @@ static irqreturn_t ti_hecc_interrupt(int irq, void *dev_id)
 			mbx_mask = BIT(mbxno);
 			if (!(mbx_mask & hecc_read(priv, HECC_CANTA)))
 				break;
-<<<<<<< HEAD
-			hecc_clear_bit(priv, HECC_CANMIM, mbx_mask);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hecc_write(priv, HECC_CANTA, mbx_mask);
 			spin_lock_irqsave(&priv->mbx_lock, flags);
 			hecc_clear_bit(priv, HECC_CANME, mbx_mask);
 			spin_unlock_irqrestore(&priv->mbx_lock, flags);
-<<<<<<< HEAD
-			stats->tx_bytes += hecc_read_mbx(priv, mbxno,
-						HECC_CANMCF) & 0xF;
-			stats->tx_packets++;
-			can_get_echo_skb(ndev, mbxno);
-=======
 			stamp = hecc_read_stamp(priv, mbxno);
 			stats->tx_bytes +=
 				can_rx_offload_get_echo_skb_queue_timestamp(&priv->offload,
 									    mbxno, stamp, NULL);
 			stats->tx_packets++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			--priv->tx_tail;
 		}
 
 		/* restart queue if wrap-up or if queue stalled on last pkt */
-<<<<<<< HEAD
-		if (((priv->tx_head == priv->tx_tail) &&
-		((priv->tx_head & HECC_TX_MASK) != HECC_TX_MASK)) ||
-		(((priv->tx_tail & HECC_TX_MASK) == HECC_TX_MASK) &&
-		((priv->tx_head & HECC_TX_MASK) == HECC_TX_MASK)))
-			netif_wake_queue(ndev);
-
-		/* Disable RX mailbox interrupts and let NAPI reenable them */
-		if (hecc_read(priv, HECC_CANRMP)) {
-			ack = hecc_read(priv, HECC_CANMIM);
-			ack &= BIT(HECC_MAX_TX_MBOX) - 1;
-			hecc_write(priv, HECC_CANMIM, ack);
-			napi_schedule(&priv->napi);
-=======
 		if ((priv->tx_head == priv->tx_tail &&
 		     ((priv->tx_head & HECC_TX_MASK) != HECC_TX_MASK)) ||
 		    (((priv->tx_tail & HECC_TX_MASK) == HECC_TX_MASK) &&
@@ -1257,21 +764,10 @@ static irqreturn_t ti_hecc_interrupt(int irq, void *dev_id)
 		while ((rx_pending = hecc_read(priv, HECC_CANRMP))) {
 			can_rx_offload_irq_offload_timestamp(&priv->offload,
 							     rx_pending);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* clear all interrupt conditions - read back to avoid spurious ints */
-<<<<<<< HEAD
-	if (priv->int_line) {
-		hecc_write(priv, HECC_CANGIF1, HECC_SET_REG);
-		int_status = hecc_read(priv, HECC_CANGIF1);
-	} else {
-		hecc_write(priv, HECC_CANGIF0, HECC_SET_REG);
-		int_status = hecc_read(priv, HECC_CANGIF0);
-	}
-
-=======
 	if (priv->use_hecc1int) {
 		hecc_write(priv, HECC_CANGIF1, handled);
 		int_status = hecc_read(priv, HECC_CANGIF1);
@@ -1282,7 +778,6 @@ static irqreturn_t ti_hecc_interrupt(int irq, void *dev_id)
 
 	can_rx_offload_irq_finish(&priv->offload);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -1292,11 +787,7 @@ static int ti_hecc_open(struct net_device *ndev)
 	int err;
 
 	err = request_irq(ndev->irq, ti_hecc_interrupt, IRQF_SHARED,
-<<<<<<< HEAD
-			ndev->name, ndev);
-=======
 			  ndev->name, ndev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		netdev_err(ndev, "error requesting interrupt\n");
 		return err;
@@ -1314,11 +805,7 @@ static int ti_hecc_open(struct net_device *ndev)
 	}
 
 	ti_hecc_start(ndev);
-<<<<<<< HEAD
-	napi_enable(&priv->napi);
-=======
 	can_rx_offload_enable(&priv->offload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(ndev);
 
 	return 0;
@@ -1329,11 +816,7 @@ static int ti_hecc_close(struct net_device *ndev)
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 
 	netif_stop_queue(ndev);
-<<<<<<< HEAD
-	napi_disable(&priv->napi);
-=======
 	can_rx_offload_disable(&priv->offload);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ti_hecc_stop(ndev);
 	free_irq(ndev->irq, ndev);
 	close_candev(ndev);
@@ -1346,10 +829,6 @@ static const struct net_device_ops ti_hecc_netdev_ops = {
 	.ndo_open		= ti_hecc_open,
 	.ndo_stop		= ti_hecc_close,
 	.ndo_start_xmit		= ti_hecc_xmit,
-<<<<<<< HEAD
-};
-
-=======
 	.ndo_change_mtu		= can_change_mtu,
 };
 
@@ -1365,45 +844,10 @@ static const struct of_device_id ti_hecc_dt_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, ti_hecc_dt_ids);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ti_hecc_probe(struct platform_device *pdev)
 {
 	struct net_device *ndev = (struct net_device *)0;
 	struct ti_hecc_priv *priv;
-<<<<<<< HEAD
-	struct ti_hecc_platform_data *pdata;
-	struct resource *mem, *irq;
-	void __iomem *addr;
-	int err = -ENODEV;
-
-	pdata = pdev->dev.platform_data;
-	if (!pdata) {
-		dev_err(&pdev->dev, "No platform data\n");
-		goto probe_exit;
-	}
-
-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	if (!mem) {
-		dev_err(&pdev->dev, "No mem resources\n");
-		goto probe_exit;
-	}
-	irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-	if (!irq) {
-		dev_err(&pdev->dev, "No irq resource\n");
-		goto probe_exit;
-	}
-	if (!request_mem_region(mem->start, resource_size(mem), pdev->name)) {
-		dev_err(&pdev->dev, "HECC region already claimed\n");
-		err = -EBUSY;
-		goto probe_exit;
-	}
-	addr = ioremap(mem->start, resource_size(mem));
-	if (!addr) {
-		dev_err(&pdev->dev, "ioremap failed\n");
-		err = -ENOMEM;
-		goto probe_exit_free_region;
-	}
-=======
 	struct device_node *np = pdev->dev.of_node;
 	struct regulator *reg_xceiver;
 	int err = -ENODEV;
@@ -1416,29 +860,10 @@ static int ti_hecc_probe(struct platform_device *pdev)
 		return -EPROBE_DEFER;
 	else if (IS_ERR(reg_xceiver))
 		reg_xceiver = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ndev = alloc_candev(sizeof(struct ti_hecc_priv), HECC_MAX_TX_MBOX);
 	if (!ndev) {
 		dev_err(&pdev->dev, "alloc_candev failed\n");
-<<<<<<< HEAD
-		err = -ENOMEM;
-		goto probe_exit_iounmap;
-	}
-
-	priv = netdev_priv(ndev);
-	priv->ndev = ndev;
-	priv->base = addr;
-	priv->scc_ram_offset = pdata->scc_ram_offset;
-	priv->hecc_ram_offset = pdata->hecc_ram_offset;
-	priv->mbx_offset = pdata->mbx_offset;
-	priv->int_line = pdata->int_line;
-	priv->transceiver_switch = pdata->transceiver_switch;
-
-	priv->can.bittiming_const = &ti_hecc_bittiming_const;
-	priv->can.do_set_mode = ti_hecc_do_set_mode;
-	priv->can.do_get_state = ti_hecc_get_state;
-=======
 		return -ENOMEM;
 	}
 	priv = netdev_priv(ndev);
@@ -1480,23 +905,15 @@ static int ti_hecc_probe(struct platform_device *pdev)
 
 	priv->can.bittiming_const = &ti_hecc_bittiming_const;
 	priv->can.do_set_mode = ti_hecc_do_set_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->can.do_get_berr_counter = ti_hecc_get_berr_counter;
 	priv->can.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES;
 
 	spin_lock_init(&priv->mbx_lock);
-<<<<<<< HEAD
-	ndev->irq = irq->start;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndev->flags |= IFF_ECHO;
 	platform_set_drvdata(pdev, ndev);
 	SET_NETDEV_DEV(ndev, &pdev->dev);
 	ndev->netdev_ops = &ti_hecc_netdev_ops;
-<<<<<<< HEAD
-=======
 	ndev->ethtool_ops = &ti_hecc_ethtool_ops;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->clk = clk_get(&pdev->dev, "hecc_ck");
 	if (IS_ERR(priv->clk)) {
@@ -1506,37 +923,6 @@ static int ti_hecc_probe(struct platform_device *pdev)
 		goto probe_exit_candev;
 	}
 	priv->can.clock.freq = clk_get_rate(priv->clk);
-<<<<<<< HEAD
-	netif_napi_add(ndev, &priv->napi, ti_hecc_rx_poll,
-		HECC_DEF_NAPI_WEIGHT);
-
-	clk_enable(priv->clk);
-	err = register_candev(ndev);
-	if (err) {
-		dev_err(&pdev->dev, "register_candev() failed\n");
-		goto probe_exit_clk;
-	}
-	dev_info(&pdev->dev, "device registered (reg_base=%p, irq=%u)\n",
-		priv->base, (u32) ndev->irq);
-
-	return 0;
-
-probe_exit_clk:
-	clk_put(priv->clk);
-probe_exit_candev:
-	free_candev(ndev);
-probe_exit_iounmap:
-	iounmap(addr);
-probe_exit_free_region:
-	release_mem_region(mem->start, resource_size(mem));
-probe_exit:
-	return err;
-}
-
-static int __devexit ti_hecc_remove(struct platform_device *pdev)
-{
-	struct resource *res;
-=======
 
 	err = clk_prepare_enable(priv->clk);
 	if (err) {
@@ -1578,32 +964,16 @@ probe_exit_candev:
 
 static void ti_hecc_remove(struct platform_device *pdev)
 {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *ndev = platform_get_drvdata(pdev);
 	struct ti_hecc_priv *priv = netdev_priv(ndev);
 
 	unregister_candev(ndev);
-<<<<<<< HEAD
-	clk_disable(priv->clk);
-	clk_put(priv->clk);
-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	iounmap(priv->base);
-	release_mem_region(res->start, resource_size(res));
-	free_candev(ndev);
-	platform_set_drvdata(pdev, NULL);
-
-	return 0;
-}
-
-
-=======
 	clk_disable_unprepare(priv->clk);
 	clk_put(priv->clk);
 	can_rx_offload_del(&priv->offload);
 	free_candev(ndev);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int ti_hecc_suspend(struct platform_device *pdev, pm_message_t state)
 {
@@ -1618,11 +988,7 @@ static int ti_hecc_suspend(struct platform_device *pdev, pm_message_t state)
 	hecc_set_bit(priv, HECC_CANMC, HECC_CANMC_PDR);
 	priv->can.state = CAN_STATE_SLEEPING;
 
-<<<<<<< HEAD
-	clk_disable(priv->clk);
-=======
 	clk_disable_unprepare(priv->clk);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1631,16 +997,11 @@ static int ti_hecc_resume(struct platform_device *pdev)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct ti_hecc_priv *priv = netdev_priv(dev);
-<<<<<<< HEAD
-
-	clk_enable(priv->clk);
-=======
 	int err;
 
 	err = clk_prepare_enable(priv->clk);
 	if (err)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hecc_clear_bit(priv, HECC_CANMC, HECC_CANMC_PDR);
 	priv->can.state = CAN_STATE_ERROR_ACTIVE;
@@ -1661,17 +1022,10 @@ static int ti_hecc_resume(struct platform_device *pdev)
 static struct platform_driver ti_hecc_driver = {
 	.driver = {
 		.name    = DRV_NAME,
-<<<<<<< HEAD
-		.owner   = THIS_MODULE,
-	},
-	.probe = ti_hecc_probe,
-	.remove = __devexit_p(ti_hecc_remove),
-=======
 		.of_match_table = ti_hecc_dt_ids,
 	},
 	.probe = ti_hecc_probe,
 	.remove_new = ti_hecc_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend = ti_hecc_suspend,
 	.resume = ti_hecc_resume,
 };
@@ -1681,7 +1035,4 @@ module_platform_driver(ti_hecc_driver);
 MODULE_AUTHOR("Anant Gole <anantgole@ti.com>");
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION(DRV_DESC);
-<<<<<<< HEAD
-=======
 MODULE_ALIAS("platform:" DRV_NAME);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

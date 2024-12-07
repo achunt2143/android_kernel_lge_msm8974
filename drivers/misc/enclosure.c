@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Enclosure Services
  *
@@ -9,21 +6,6 @@
  *
 **-----------------------------------------------------------------------------
 **
-<<<<<<< HEAD
-**  This program is free software; you can redistribute it and/or
-**  modify it under the terms of the GNU General Public License
-**  version 2 as published by the Free Software Foundation.
-**
-**  This program is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**  GNU General Public License for more details.
-**
-**  You should have received a copy of the GNU General Public License
-**  along with this program; if not, write to the Free Software
-**  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 **-----------------------------------------------------------------------------
 */
@@ -50,11 +32,7 @@ static struct class enclosure_class;
  * found. @start can be used as a starting point to obtain multiple
  * enclosures per parent (should begin with NULL and then be set to
  * each returned enclosure device). Obtains a reference to the
-<<<<<<< HEAD
- * enclosure class device which must be released with device_put().
-=======
  * enclosure class device which must be released with put_device().
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * If @start is not NULL, a reference must be taken on it which is
  * released before returning (this allows a loop through all
  * enclosures to exit with only the reference on the enclosure of
@@ -125,13 +103,9 @@ EXPORT_SYMBOL_GPL(enclosure_for_each_device);
  * enclosure_register - register device as an enclosure
  *
  * @dev:	device containing the enclosure
-<<<<<<< HEAD
- * @components:	number of components in the enclosure
-=======
  * @name:	chosen device name
  * @components:	number of components in the enclosure
  * @cb:         platform call-backs
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This sets up the device for being an enclosure.  Note that @dev does
  * not have to be a dedicated enclosure device.  It may be some other type
@@ -142,13 +116,7 @@ enclosure_register(struct device *dev, const char *name, int components,
 		   struct enclosure_component_callbacks *cb)
 {
 	struct enclosure_device *edev =
-<<<<<<< HEAD
-		kzalloc(sizeof(struct enclosure_device) +
-			sizeof(struct enclosure_component)*components,
-			GFP_KERNEL);
-=======
 		kzalloc(struct_size(edev, component, components), GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err, i;
 
 	BUG_ON(!cb);
@@ -166,16 +134,11 @@ enclosure_register(struct device *dev, const char *name, int components,
 	if (err)
 		goto err;
 
-<<<<<<< HEAD
-	for (i = 0; i < components; i++)
-		edev->component[i].number = -1;
-=======
 	for (i = 0; i < components; i++) {
 		edev->component[i].number = -1;
 		edev->component[i].slot = -1;
 		edev->component[i].power_status = -1;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&container_list_lock);
 	list_add_tail(&edev->node, &container_list);
@@ -216,10 +179,7 @@ void enclosure_unregister(struct enclosure_device *edev)
 EXPORT_SYMBOL_GPL(enclosure_unregister);
 
 #define ENCLOSURE_NAME_SIZE	64
-<<<<<<< HEAD
-=======
 #define COMPONENT_NAME_SIZE	64
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void enclosure_link_name(struct enclosure_component *cdev, char *name)
 {
@@ -231,29 +191,17 @@ static void enclosure_remove_links(struct enclosure_component *cdev)
 {
 	char name[ENCLOSURE_NAME_SIZE];
 
-<<<<<<< HEAD
-=======
 	enclosure_link_name(cdev, name);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * In odd circumstances, like multipath devices, something else may
 	 * already have removed the links, so check for this condition first.
 	 */
-<<<<<<< HEAD
-	if (!cdev->dev->kobj.sd)
-		return;
-
-	enclosure_link_name(cdev, name);
-	sysfs_remove_link(&cdev->dev->kobj, name);
-	sysfs_remove_link(&cdev->cdev.kobj, "device");
-=======
 	if (cdev->dev->kobj.sd)
 		sysfs_remove_link(&cdev->dev->kobj, name);
 
 	if (cdev->cdev.kobj.sd)
 		sysfs_remove_link(&cdev->cdev.kobj, "device");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int enclosure_add_links(struct enclosure_component *cdev)
@@ -292,20 +240,6 @@ static void enclosure_component_release(struct device *dev)
 	put_device(dev->parent);
 }
 
-<<<<<<< HEAD
-static const struct attribute_group *enclosure_groups[];
-
-/**
- * enclosure_component_register - add a particular component to an enclosure
- * @edev:	the enclosure to add the component
- * @num:	the device number
- * @type:	the type of component being added
- * @name:	an optional name to appear in sysfs (leave NULL if none)
- *
- * Registers the component.  The name is optional for enclosures that
- * give their components a unique name.  If not, leave the field NULL
- * and a name will be assigned.
-=======
 static struct enclosure_component *
 enclosure_component_find_by_name(struct enclosure_device *edev,
 				const char *name)
@@ -340,21 +274,10 @@ static const struct attribute_group *enclosure_component_groups[];
  *
  * The name is optional for enclosures that give their components a unique
  * name.  If not, leave the field NULL and a name will be assigned.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns a pointer to the enclosure component or an error.
  */
 struct enclosure_component *
-<<<<<<< HEAD
-enclosure_component_register(struct enclosure_device *edev,
-			     unsigned int number,
-			     enum enclosure_component_type type,
-			     const char *name)
-{
-	struct enclosure_component *ecomp;
-	struct device *cdev;
-	int err;
-=======
 enclosure_component_alloc(struct enclosure_device *edev,
 			  unsigned int number,
 			  enum enclosure_component_type type,
@@ -364,7 +287,6 @@ enclosure_component_alloc(struct enclosure_device *edev,
 	struct device *cdev;
 	int i;
 	char newname[COMPONENT_NAME_SIZE];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (number >= edev->components)
 		return ERR_PTR(-EINVAL);
@@ -378,16 +300,6 @@ enclosure_component_alloc(struct enclosure_device *edev,
 	ecomp->number = number;
 	cdev = &ecomp->cdev;
 	cdev->parent = get_device(&edev->edev);
-<<<<<<< HEAD
-	if (name && name[0])
-		dev_set_name(cdev, "%s", name);
-	else
-		dev_set_name(cdev, "%u", number);
-
-	cdev->release = enclosure_component_release;
-	cdev->groups = enclosure_groups;
-
-=======
 
 	if (name && name[0]) {
 		/* Some hardware (e.g. enclosure in RX300 S6) has components
@@ -423,33 +335,21 @@ int enclosure_component_register(struct enclosure_component *ecomp)
 	int err;
 
 	cdev = &ecomp->cdev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = device_register(cdev);
 	if (err) {
 		ecomp->number = -1;
 		put_device(cdev);
-<<<<<<< HEAD
-		return ERR_PTR(err);
-	}
-
-	return ecomp;
-=======
 		return err;
 	}
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(enclosure_component_register);
 
 /**
  * enclosure_add_device - add a device as being part of an enclosure
  * @edev:	the enclosure device being added to.
-<<<<<<< HEAD
- * @num:	the number of the component
-=======
  * @component:	the number of the component
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev:	the device being added
  *
  * Declares a real device to reside in slot (or identifier) @num of an
@@ -464,10 +364,7 @@ int enclosure_add_device(struct enclosure_device *edev, int component,
 			 struct device *dev)
 {
 	struct enclosure_component *cdev;
-<<<<<<< HEAD
-=======
 	int err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!edev || component >= edev->components)
 		return -EINVAL;
@@ -477,14 +374,6 @@ int enclosure_add_device(struct enclosure_device *edev, int component,
 	if (cdev->dev == dev)
 		return -EEXIST;
 
-<<<<<<< HEAD
-	if (cdev->dev)
-		enclosure_remove_links(cdev);
-
-	put_device(cdev->dev);
-	cdev->dev = get_device(dev);
-	return enclosure_add_links(cdev);
-=======
 	if (cdev->dev) {
 		enclosure_remove_links(cdev);
 		put_device(cdev->dev);
@@ -496,18 +385,13 @@ int enclosure_add_device(struct enclosure_device *edev, int component,
 		cdev->dev = NULL;
 	}
 	return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(enclosure_add_device);
 
 /**
  * enclosure_remove_device - remove a device from an enclosure
  * @edev:	the enclosure device
-<<<<<<< HEAD
- * @num:	the number of the component to remove
-=======
  * @dev:	device to remove/put
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns zero on success or an error.
  *
@@ -524,16 +408,9 @@ int enclosure_remove_device(struct enclosure_device *edev, struct device *dev)
 		cdev = &edev->component[i];
 		if (cdev->dev == dev) {
 			enclosure_remove_links(cdev);
-<<<<<<< HEAD
-			device_del(&cdev->cdev);
-			put_device(dev);
-			cdev->dev = NULL;
-			return device_add(&cdev->cdev);
-=======
 			put_device(dev);
 			cdev->dev = NULL;
 			return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return -ENODEV;
@@ -544,30 +421,6 @@ EXPORT_SYMBOL_GPL(enclosure_remove_device);
  * sysfs pieces below
  */
 
-<<<<<<< HEAD
-static ssize_t enclosure_show_components(struct device *cdev,
-					 struct device_attribute *attr,
-					 char *buf)
-{
-	struct enclosure_device *edev = to_enclosure_device(cdev);
-
-	return snprintf(buf, 40, "%d\n", edev->components);
-}
-
-static struct device_attribute enclosure_attrs[] = {
-	__ATTR(components, S_IRUGO, enclosure_show_components, NULL),
-	__ATTR_NULL
-};
-
-static struct class enclosure_class = {
-	.name			= "enclosure",
-	.owner			= THIS_MODULE,
-	.dev_release		= enclosure_release,
-	.dev_attrs		= enclosure_attrs,
-};
-
-static const char *const enclosure_status [] = {
-=======
 static ssize_t components_show(struct device *cdev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -603,7 +456,6 @@ static struct class enclosure_class = {
 };
 
 static const char *const enclosure_status[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ENCLOSURE_STATUS_UNSUPPORTED] = "unsupported",
 	[ENCLOSURE_STATUS_OK] = "OK",
 	[ENCLOSURE_STATUS_CRITICAL] = "critical",
@@ -615,11 +467,7 @@ static const char *const enclosure_status[] = {
 	[ENCLOSURE_STATUS_MAX] = NULL,
 };
 
-<<<<<<< HEAD
-static const char *const enclosure_type [] = {
-=======
 static const char *const enclosure_type[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ENCLOSURE_COMPONENT_DEVICE] = "device",
 	[ENCLOSURE_COMPONENT_ARRAY_DEVICE] = "array device",
 };
@@ -632,11 +480,7 @@ static ssize_t get_component_fault(struct device *cdev,
 
 	if (edev->cb->get_fault)
 		edev->cb->get_fault(edev, ecomp);
-<<<<<<< HEAD
-	return snprintf(buf, 40, "%d\n", ecomp->fault);
-=======
 	return sysfs_emit(buf, "%d\n", ecomp->fault);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t set_component_fault(struct device *cdev,
@@ -660,11 +504,7 @@ static ssize_t get_component_status(struct device *cdev,
 
 	if (edev->cb->get_status)
 		edev->cb->get_status(edev, ecomp);
-<<<<<<< HEAD
-	return snprintf(buf, 40, "%s\n", enclosure_status[ecomp->status]);
-=======
 	return sysfs_emit(buf, "%s\n", enclosure_status[ecomp->status]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t set_component_status(struct device *cdev,
@@ -698,11 +538,7 @@ static ssize_t get_component_active(struct device *cdev,
 
 	if (edev->cb->get_active)
 		edev->cb->get_active(edev, ecomp);
-<<<<<<< HEAD
-	return snprintf(buf, 40, "%d\n", ecomp->active);
-=======
 	return sysfs_emit(buf, "%d\n", ecomp->active);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t set_component_active(struct device *cdev,
@@ -726,11 +562,7 @@ static ssize_t get_component_locate(struct device *cdev,
 
 	if (edev->cb->get_locate)
 		edev->cb->get_locate(edev, ecomp);
-<<<<<<< HEAD
-	return snprintf(buf, 40, "%d\n", ecomp->locate);
-=======
 	return sysfs_emit(buf, "%d\n", ecomp->locate);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t set_component_locate(struct device *cdev,
@@ -746,8 +578,6 @@ static ssize_t set_component_locate(struct device *cdev,
 	return count;
 }
 
-<<<<<<< HEAD
-=======
 static ssize_t get_component_power_status(struct device *cdev,
 					  struct device_attribute *attr,
 					  char *buf)
@@ -787,17 +617,11 @@ static ssize_t set_component_power_status(struct device *cdev,
 	return count;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t get_component_type(struct device *cdev,
 				  struct device_attribute *attr, char *buf)
 {
 	struct enclosure_component *ecomp = to_enclosure_component(cdev);
 
-<<<<<<< HEAD
-	return snprintf(buf, 40, "%s\n", enclosure_type[ecomp->type]);
-}
-
-=======
 	return sysfs_emit(buf, "%s\n", enclosure_type[ecomp->type]);
 }
 
@@ -815,7 +639,6 @@ static ssize_t get_component_slot(struct device *cdev,
 
 	return sysfs_emit(buf, "%d\n", slot);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEVICE_ATTR(fault, S_IRUGO | S_IWUSR, get_component_fault,
 		    set_component_fault);
@@ -825,44 +648,16 @@ static DEVICE_ATTR(active, S_IRUGO | S_IWUSR, get_component_active,
 		   set_component_active);
 static DEVICE_ATTR(locate, S_IRUGO | S_IWUSR, get_component_locate,
 		   set_component_locate);
-<<<<<<< HEAD
-static DEVICE_ATTR(type, S_IRUGO, get_component_type, NULL);
-=======
 static DEVICE_ATTR(power_status, S_IRUGO | S_IWUSR, get_component_power_status,
 		   set_component_power_status);
 static DEVICE_ATTR(type, S_IRUGO, get_component_type, NULL);
 static DEVICE_ATTR(slot, S_IRUGO, get_component_slot, NULL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *enclosure_component_attrs[] = {
 	&dev_attr_fault.attr,
 	&dev_attr_status.attr,
 	&dev_attr_active.attr,
 	&dev_attr_locate.attr,
-<<<<<<< HEAD
-	&dev_attr_type.attr,
-	NULL
-};
-
-static struct attribute_group enclosure_group = {
-	.attrs = enclosure_component_attrs,
-};
-
-static const struct attribute_group *enclosure_groups[] = {
-	&enclosure_group,
-	NULL
-};
-
-static int __init enclosure_init(void)
-{
-	int err;
-
-	err = class_register(&enclosure_class);
-	if (err)
-		return err;
-
-	return 0;
-=======
 	&dev_attr_power_status.attr,
 	&dev_attr_type.attr,
 	&dev_attr_slot.attr,
@@ -873,7 +668,6 @@ ATTRIBUTE_GROUPS(enclosure_component);
 static int __init enclosure_init(void)
 {
 	return class_register(&enclosure_class);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit enclosure_exit(void)

@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-/*
- * Copyright IBM Corp. 2004,2010
-=======
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright IBM Corp. 2004, 2010
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Interface implementation for communication with the z/VM control program
  *
  * Author(s): Christian Borntraeger <borntraeger@de.ibm.com>
@@ -23,17 +18,6 @@
 #include <linux/kernel.h>
 #include <linux/miscdevice.h>
 #include <linux/slab.h>
-<<<<<<< HEAD
-#include <linux/export.h>
-#include <asm/compat.h>
-#include <asm/cpcmd.h>
-#include <asm/debug.h>
-#include <asm/uaccess.h>
-#include "vmcp.h"
-
-static debug_info_t *vmcp_debug;
-
-=======
 #include <linux/uaccess.h>
 #include <linux/export.h>
 #include <linux/mutex.h>
@@ -114,7 +98,6 @@ static void vmcp_response_free(struct vmcp_session *session)
 	session->response = NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vmcp_open(struct inode *inode, struct file *file)
 {
 	struct vmcp_session *session;
@@ -140,11 +123,7 @@ static int vmcp_release(struct inode *inode, struct file *file)
 
 	session = file->private_data;
 	file->private_data = NULL;
-<<<<<<< HEAD
-	free_pages((unsigned long)session->response, get_order(session->bufsize));
-=======
 	vmcp_response_free(session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(session);
 	return 0;
 }
@@ -181,33 +160,16 @@ vmcp_write(struct file *file, const char __user *buff, size_t count,
 
 	if (count > 240)
 		return -EINVAL;
-<<<<<<< HEAD
-	cmd = kmalloc(count + 1, GFP_KERNEL);
-	if (!cmd)
-		return -ENOMEM;
-	if (copy_from_user(cmd, buff, count)) {
-		kfree(cmd);
-		return -EFAULT;
-	}
-	cmd[count] = '\0';
-=======
 	cmd = memdup_user_nul(buff, count);
 	if (IS_ERR(cmd))
 		return PTR_ERR(cmd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	session = file->private_data;
 	if (mutex_lock_interruptible(&session->mutex)) {
 		kfree(cmd);
 		return -ERESTARTSYS;
 	}
 	if (!session->response)
-<<<<<<< HEAD
-		session->response = (char *)__get_free_pages(GFP_KERNEL
-						| __GFP_REPEAT | GFP_DMA,
-						get_order(session->bufsize));
-=======
 		vmcp_response_alloc(session);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!session->response) {
 		mutex_unlock(&session->mutex);
 		kfree(cmd);
@@ -238,13 +200,8 @@ vmcp_write(struct file *file, const char __user *buff, size_t count,
 static long vmcp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct vmcp_session *session;
-<<<<<<< HEAD
-	int __user *argp;
-	int temp;
-=======
 	int ret = -ENOTTY;
 	int __user *argp;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	session = file->private_data;
 	if (is_compat_task())
@@ -255,30 +212,6 @@ static long vmcp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return -ERESTARTSYS;
 	switch (cmd) {
 	case VMCP_GETCODE:
-<<<<<<< HEAD
-		temp = session->resp_code;
-		mutex_unlock(&session->mutex);
-		return put_user(temp, argp);
-	case VMCP_SETBUF:
-		free_pages((unsigned long)session->response,
-				get_order(session->bufsize));
-		session->response=NULL;
-		temp = get_user(session->bufsize, argp);
-		if (get_order(session->bufsize) > 8) {
-			session->bufsize = PAGE_SIZE;
-			temp = -EINVAL;
-		}
-		mutex_unlock(&session->mutex);
-		return temp;
-	case VMCP_GETSIZE:
-		temp = session->resp_size;
-		mutex_unlock(&session->mutex);
-		return put_user(temp, argp);
-	default:
-		mutex_unlock(&session->mutex);
-		return -ENOIOCTLCMD;
-	}
-=======
 		ret = put_user(session->resp_code, argp);
 		break;
 	case VMCP_SETBUF:
@@ -299,7 +232,6 @@ static long vmcp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	}
 	mutex_unlock(&session->mutex);
 	return ret;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations vmcp_fops = {

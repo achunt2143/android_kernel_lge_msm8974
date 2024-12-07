@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-config USB_DWC3
-	tristate "DesignWare USB3 DRD Core Support"
-	depends on (USB || USB_GADGET)
-	select USB_OTG_UTILS
-	select USB_XHCI_PLATFORM if USB_SUPPORT && USB_XHCI_HCD
-=======
 # SPDX-License-Identifier: GPL-2.0
 
 config USB_DWC3
@@ -13,45 +6,15 @@ config USB_DWC3
 	depends on (EXTCON || EXTCON=n)
 	select USB_XHCI_PLATFORM if USB_XHCI_HCD
 	select USB_ROLE_SWITCH if USB_DWC3_DUAL_ROLE
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y or M here if your system has a Dual Role SuperSpeed
 	  USB controller based on the DesignWare USB3 IP Core.
 
-<<<<<<< HEAD
-	  If you choose to build this driver is a dynamically linked
-=======
 	  If you choose to build this driver as a dynamically linked
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  module, the module will be called dwc3.ko.
 
 if USB_DWC3
 
-<<<<<<< HEAD
-config USB_DWC3_DEBUG
-	bool "Enable Debugging Messages"
-	help
-	  Say Y here to enable debugging messages on DWC3 Driver.
-
-config USB_DWC3_VERBOSE
-	bool "Enable Verbose Debugging Messages"
-	depends on USB_DWC3_DEBUG
-	help
-	  Say Y here to enable verbose debugging messages on DWC3 Driver.
-
-#CONFIG_USB_LGE_USB3_REDRIVER
-config USB_LGE_USB3_REDRIVER
-	bool "LGE specific USB3 Redriver feature"
-	help
-	 Say Y to enalbe LGE specific USB3 Redriver feature.
-	default n
-config USB_DWC3_LGE_SINGLE_PSY
-	bool "Use only usb psy"
-	help
-	  Say y if not ac psy used, but use usb psy only.
-
-	default n
-=======
 config USB_DWC3_ULPI
 	bool "Register ULPI PHY Interface"
 	depends on USB_ULPI_BUS=y || USB_ULPI_BUS=USB_DWC3
@@ -226,5 +189,4 @@ config USB_DWC3_RTK
 	  or dual-role mode.
 	  Say 'Y' or 'M' if you have such device.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

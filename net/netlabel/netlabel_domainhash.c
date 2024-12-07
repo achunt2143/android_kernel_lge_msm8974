@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel Domain Hash Table
  *
@@ -11,32 +8,10 @@
  * as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
-<<<<<<< HEAD
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006, 2008
-<<<<<<< HEAD
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -48,18 +23,12 @@
 #include <linux/slab.h>
 #include <net/netlabel.h>
 #include <net/cipso_ipv4.h>
-<<<<<<< HEAD
-=======
 #include <net/calipso.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bug.h>
 
 #include "netlabel_mgmt.h"
 #include "netlabel_addrlist.h"
-<<<<<<< HEAD
-=======
 #include "netlabel_calipso.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "netlabel_domainhash.h"
 #include "netlabel_user.h"
 
@@ -74,14 +43,9 @@ struct netlbl_domhsh_tbl {
 static DEFINE_SPINLOCK(netlbl_domhsh_lock);
 #define netlbl_domhsh_rcu_deref(p) \
 	rcu_dereference_check(p, lockdep_is_held(&netlbl_domhsh_lock))
-<<<<<<< HEAD
-static struct netlbl_domhsh_tbl *netlbl_domhsh = NULL;
-static struct netlbl_dom_map *netlbl_domhsh_def = NULL;
-=======
 static struct netlbl_domhsh_tbl __rcu *netlbl_domhsh;
 static struct netlbl_dom_map __rcu *netlbl_domhsh_def_ipv4;
 static struct netlbl_dom_map __rcu *netlbl_domhsh_def_ipv6;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Domain Hash Table Helper Functions
@@ -108,33 +72,20 @@ static void netlbl_domhsh_free_entry(struct rcu_head *entry)
 #endif /* IPv6 */
 
 	ptr = container_of(entry, struct netlbl_dom_map, rcu);
-<<<<<<< HEAD
-	if (ptr->type == NETLBL_NLTYPE_ADDRSELECT) {
-		netlbl_af4list_foreach_safe(iter4, tmp4,
-					    &ptr->type_def.addrsel->list4) {
-=======
 	if (ptr->def.type == NETLBL_NLTYPE_ADDRSELECT) {
 		netlbl_af4list_foreach_safe(iter4, tmp4,
 					    &ptr->def.addrsel->list4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netlbl_af4list_remove_entry(iter4);
 			kfree(netlbl_domhsh_addr4_entry(iter4));
 		}
 #if IS_ENABLED(CONFIG_IPV6)
 		netlbl_af6list_foreach_safe(iter6, tmp6,
-<<<<<<< HEAD
-					    &ptr->type_def.addrsel->list6) {
-=======
 					    &ptr->def.addrsel->list6) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netlbl_af6list_remove_entry(iter6);
 			kfree(netlbl_domhsh_addr6_entry(iter6));
 		}
 #endif /* IPv6 */
-<<<<<<< HEAD
-=======
 		kfree(ptr->def.addrsel);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(ptr->domain);
 	kfree(ptr);
@@ -142,11 +93,7 @@ static void netlbl_domhsh_free_entry(struct rcu_head *entry)
 
 /**
  * netlbl_domhsh_hash - Hashing function for the domain hash table
-<<<<<<< HEAD
- * @domain: the domain name to hash
-=======
  * @key: the domain name to hash
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  * This is the hashing function for the domain hash table, it returns the
@@ -169,15 +116,6 @@ static u32 netlbl_domhsh_hash(const char *key)
 	return val & (netlbl_domhsh_rcu_deref(netlbl_domhsh)->size - 1);
 }
 
-<<<<<<< HEAD
-/**
- * netlbl_domhsh_search - Search for a domain entry
- * @domain: the domain
- *
- * Description:
- * Searches the domain hash table and returns a pointer to the hash table
- * entry if found, otherwise NULL is returned.  The caller is responsible for
-=======
 static bool netlbl_family_match(u16 f1, u16 f2)
 {
 	return (f1 == f2) || (f1 == AF_UNSPEC) || (f2 == AF_UNSPEC);
@@ -192,17 +130,12 @@ static bool netlbl_family_match(u16 f1, u16 f2)
  * Searches the domain hash table and returns a pointer to the hash table
  * entry if found, otherwise NULL is returned.  @family may be %AF_UNSPEC
  * which matches any address family entries.  The caller is responsible for
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ensuring that the hash table is protected with either a RCU read lock or the
  * hash table lock.
  *
  */
-<<<<<<< HEAD
-static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain)
-=======
 static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain,
 						   u16 family)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 bkt;
 	struct list_head *bkt_list;
@@ -211,16 +144,11 @@ static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain,
 	if (domain != NULL) {
 		bkt = netlbl_domhsh_hash(domain);
 		bkt_list = &netlbl_domhsh_rcu_deref(netlbl_domhsh)->tbl[bkt];
-<<<<<<< HEAD
-		list_for_each_entry_rcu(iter, bkt_list, list)
-			if (iter->valid && strcmp(iter->domain, domain) == 0)
-=======
 		list_for_each_entry_rcu(iter, bkt_list, list,
 					lockdep_is_held(&netlbl_domhsh_lock))
 			if (iter->valid &&
 			    netlbl_family_match(iter->family, family) &&
 			    strcmp(iter->domain, domain) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return iter;
 	}
 
@@ -230,34 +158,12 @@ static struct netlbl_dom_map *netlbl_domhsh_search(const char *domain,
 /**
  * netlbl_domhsh_search_def - Search for a domain entry
  * @domain: the domain
-<<<<<<< HEAD
- * @def: return default if no match is found
-=======
  * @family: the address family
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  * Searches the domain hash table and returns a pointer to the hash table
  * entry if an exact match is found, if an exact match is not present in the
  * hash table then the default entry is returned if valid otherwise NULL is
-<<<<<<< HEAD
- * returned.  The caller is responsible ensuring that the hash table is
- * protected with either a RCU read lock or the hash table lock.
- *
- */
-static struct netlbl_dom_map *netlbl_domhsh_search_def(const char *domain)
-{
-	struct netlbl_dom_map *entry;
-
-	entry = netlbl_domhsh_search(domain);
-	if (entry == NULL) {
-		entry = netlbl_domhsh_rcu_deref(netlbl_domhsh_def);
-		if (entry != NULL && !entry->valid)
-			entry = NULL;
-	}
-
-	return entry;
-=======
  * returned.  @family may be %AF_UNSPEC which matches any address family
  * entries.  The caller is responsible ensuring that the hash table is
  * protected with either a RCU read lock or the hash table lock.
@@ -283,7 +189,6 @@ static struct netlbl_dom_map *netlbl_domhsh_search_def(const char *domain,
 	}
 
 	return NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -308,10 +213,7 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 {
 	struct audit_buffer *audit_buf;
 	struct cipso_v4_doi *cipsov4 = NULL;
-<<<<<<< HEAD
-=======
 	struct calipso_doi *calipso = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 type;
 
 	audit_buf = netlbl_audit_start_common(AUDIT_MAC_MAP_ADD, audit_info);
@@ -321,37 +223,23 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 		if (addr4 != NULL) {
 			struct netlbl_domaddr4_map *map4;
 			map4 = netlbl_domhsh_addr4_entry(addr4);
-<<<<<<< HEAD
-			type = map4->type;
-			cipsov4 = map4->type_def.cipsov4;
-=======
 			type = map4->def.type;
 			cipsov4 = map4->def.cipso;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netlbl_af4list_audit_addr(audit_buf, 0, NULL,
 						  addr4->addr, addr4->mask);
 #if IS_ENABLED(CONFIG_IPV6)
 		} else if (addr6 != NULL) {
 			struct netlbl_domaddr6_map *map6;
 			map6 = netlbl_domhsh_addr6_entry(addr6);
-<<<<<<< HEAD
-			type = map6->type;
-=======
 			type = map6->def.type;
 			calipso = map6->def.calipso;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netlbl_af6list_audit_addr(audit_buf, 0, NULL,
 						  &addr6->addr, &addr6->mask);
 #endif /* IPv6 */
 		} else {
-<<<<<<< HEAD
-			type = entry->type;
-			cipsov4 = entry->type_def.cipsov4;
-=======
 			type = entry->def.type;
 			cipsov4 = entry->def.cipso;
 			calipso = entry->def.calipso;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		switch (type) {
 		case NETLBL_NLTYPE_UNLABELED:
@@ -363,15 +251,12 @@ static void netlbl_domhsh_audit_add(struct netlbl_dom_map *entry,
 					 " nlbl_protocol=cipsov4 cipso_doi=%u",
 					 cipsov4->doi);
 			break;
-<<<<<<< HEAD
-=======
 		case NETLBL_NLTYPE_CALIPSO:
 			BUG_ON(calipso == NULL);
 			audit_log_format(audit_buf,
 					 " nlbl_protocol=calipso calipso_doi=%u",
 					 calipso->doi);
 			break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		audit_log_format(audit_buf, " res=%u", result == 0 ? 1 : 0);
 		audit_log_end(audit_buf);
@@ -398,28 +283,6 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 	if (entry == NULL)
 		return -EINVAL;
 
-<<<<<<< HEAD
-	switch (entry->type) {
-	case NETLBL_NLTYPE_UNLABELED:
-		if (entry->type_def.cipsov4 != NULL ||
-		    entry->type_def.addrsel != NULL)
-			return -EINVAL;
-		break;
-	case NETLBL_NLTYPE_CIPSOV4:
-		if (entry->type_def.cipsov4 == NULL)
-			return -EINVAL;
-		break;
-	case NETLBL_NLTYPE_ADDRSELECT:
-		netlbl_af4list_foreach(iter4, &entry->type_def.addrsel->list4) {
-			map4 = netlbl_domhsh_addr4_entry(iter4);
-			switch (map4->type) {
-			case NETLBL_NLTYPE_UNLABELED:
-				if (map4->type_def.cipsov4 != NULL)
-					return -EINVAL;
-				break;
-			case NETLBL_NLTYPE_CIPSOV4:
-				if (map4->type_def.cipsov4 == NULL)
-=======
 	if (entry->family != AF_INET && entry->family != AF_INET6 &&
 	    (entry->family != AF_UNSPEC ||
 	     entry->def.type != NETLBL_NLTYPE_UNLABELED))
@@ -451,7 +314,6 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 				break;
 			case NETLBL_NLTYPE_CIPSOV4:
 				if (map4->def.cipso == NULL)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return -EINVAL;
 				break;
 			default:
@@ -459,12 +321,6 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 			}
 		}
 #if IS_ENABLED(CONFIG_IPV6)
-<<<<<<< HEAD
-		netlbl_af6list_foreach(iter6, &entry->type_def.addrsel->list6) {
-			map6 = netlbl_domhsh_addr6_entry(iter6);
-			switch (map6->type) {
-			case NETLBL_NLTYPE_UNLABELED:
-=======
 		netlbl_af6list_foreach(iter6, &entry->def.addrsel->list6) {
 			map6 = netlbl_domhsh_addr6_entry(iter6);
 			switch (map6->def.type) {
@@ -475,7 +331,6 @@ static int netlbl_domhsh_validate(const struct netlbl_dom_map *entry)
 			case NETLBL_NLTYPE_CALIPSO:
 				if (map6->def.calipso == NULL)
 					return -EINVAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			default:
 				return -EINVAL;
@@ -540,27 +395,18 @@ int __init netlbl_domhsh_init(u32 size)
  *
  * Description:
  * Adds a new entry to the domain hash table and handles any updates to the
-<<<<<<< HEAD
- * lower level protocol handler (i.e. CIPSO).  Returns zero on success,
- * negative on failure.
-=======
  * lower level protocol handler (i.e. CIPSO).  @entry->family may be set to
  * %AF_UNSPEC which will add an entry that matches all address families.  This
  * is only useful for the unlabelled type and will only succeed if there is no
  * existing entry for any address family with the same domain.  Returns zero
  * on success, negative on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		      struct netlbl_audit *audit_info)
 {
 	int ret_val = 0;
-<<<<<<< HEAD
-	struct netlbl_dom_map *entry_old;
-=======
 	struct netlbl_dom_map *entry_old, *entry_b;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netlbl_af4list *iter4;
 	struct netlbl_af4list *tmp4;
 #if IS_ENABLED(CONFIG_IPV6)
@@ -579,16 +425,10 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 	rcu_read_lock();
 	spin_lock(&netlbl_domhsh_lock);
 	if (entry->domain != NULL)
-<<<<<<< HEAD
-		entry_old = netlbl_domhsh_search(entry->domain);
-	else
-		entry_old = netlbl_domhsh_search_def(entry->domain);
-=======
 		entry_old = netlbl_domhsh_search(entry->domain, entry->family);
 	else
 		entry_old = netlbl_domhsh_search_def(entry->domain,
 						     entry->family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (entry_old == NULL) {
 		entry->valid = 1;
 
@@ -598,14 +438,6 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 				    &rcu_dereference(netlbl_domhsh)->tbl[bkt]);
 		} else {
 			INIT_LIST_HEAD(&entry->list);
-<<<<<<< HEAD
-			rcu_assign_pointer(netlbl_domhsh_def, entry);
-		}
-
-		if (entry->type == NETLBL_NLTYPE_ADDRSELECT) {
-			netlbl_af4list_foreach_rcu(iter4,
-					       &entry->type_def.addrsel->list4)
-=======
 			switch (entry->family) {
 			case AF_INET:
 				rcu_assign_pointer(netlbl_domhsh_def_ipv4,
@@ -646,36 +478,17 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		if (entry->def.type == NETLBL_NLTYPE_ADDRSELECT) {
 			netlbl_af4list_foreach_rcu(iter4,
 						   &entry->def.addrsel->list4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				netlbl_domhsh_audit_add(entry, iter4, NULL,
 							ret_val, audit_info);
 #if IS_ENABLED(CONFIG_IPV6)
 			netlbl_af6list_foreach_rcu(iter6,
-<<<<<<< HEAD
-					       &entry->type_def.addrsel->list6)
-=======
 						   &entry->def.addrsel->list6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				netlbl_domhsh_audit_add(entry, NULL, iter6,
 							ret_val, audit_info);
 #endif /* IPv6 */
 		} else
 			netlbl_domhsh_audit_add(entry, NULL, NULL,
 						ret_val, audit_info);
-<<<<<<< HEAD
-	} else if (entry_old->type == NETLBL_NLTYPE_ADDRSELECT &&
-		   entry->type == NETLBL_NLTYPE_ADDRSELECT) {
-		struct list_head *old_list4;
-		struct list_head *old_list6;
-
-		old_list4 = &entry_old->type_def.addrsel->list4;
-		old_list6 = &entry_old->type_def.addrsel->list6;
-
-		/* we only allow the addition of address selectors if all of
-		 * the selectors do not exist in the existing domain map */
-		netlbl_af4list_foreach_rcu(iter4,
-					   &entry->type_def.addrsel->list4)
-=======
 	} else if (entry_old->def.type == NETLBL_NLTYPE_ADDRSELECT &&
 		   entry->def.type == NETLBL_NLTYPE_ADDRSELECT) {
 		struct list_head *old_list4;
@@ -687,7 +500,6 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		/* we only allow the addition of address selectors if all of
 		 * the selectors do not exist in the existing domain map */
 		netlbl_af4list_foreach_rcu(iter4, &entry->def.addrsel->list4)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (netlbl_af4list_search_exact(iter4->addr,
 							iter4->mask,
 							old_list4)) {
@@ -695,12 +507,7 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 				goto add_return;
 			}
 #if IS_ENABLED(CONFIG_IPV6)
-<<<<<<< HEAD
-		netlbl_af6list_foreach_rcu(iter6,
-					   &entry->type_def.addrsel->list6)
-=======
 		netlbl_af6list_foreach_rcu(iter6, &entry->def.addrsel->list6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (netlbl_af6list_search_exact(&iter6->addr,
 							&iter6->mask,
 							old_list6)) {
@@ -710,11 +517,7 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 #endif /* IPv6 */
 
 		netlbl_af4list_foreach_safe(iter4, tmp4,
-<<<<<<< HEAD
-					    &entry->type_def.addrsel->list4) {
-=======
 					    &entry->def.addrsel->list4) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netlbl_af4list_remove_entry(iter4);
 			iter4->valid = 1;
 			ret_val = netlbl_af4list_add(iter4, old_list4);
@@ -725,11 +528,7 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		}
 #if IS_ENABLED(CONFIG_IPV6)
 		netlbl_af6list_foreach_safe(iter6, tmp6,
-<<<<<<< HEAD
-					    &entry->type_def.addrsel->list6) {
-=======
 					    &entry->def.addrsel->list6) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netlbl_af6list_remove_entry(iter6);
 			iter6->valid = 1;
 			ret_val = netlbl_af6list_add(iter6, old_list6);
@@ -739,11 +538,8 @@ int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 				goto add_return;
 		}
 #endif /* IPv6 */
-<<<<<<< HEAD
-=======
 		/* cleanup the new entry since we've moved everything over */
 		netlbl_domhsh_free_entry(&entry->rcu);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ret_val = -EINVAL;
 
@@ -787,15 +583,12 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 {
 	int ret_val = 0;
 	struct audit_buffer *audit_buf;
-<<<<<<< HEAD
-=======
 	struct netlbl_af4list *iter4;
 	struct netlbl_domaddr4_map *map4;
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
 	struct netlbl_domaddr6_map *map6;
 #endif /* IPv6 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (entry == NULL)
 		return -ENOENT;
@@ -803,54 +596,16 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 	spin_lock(&netlbl_domhsh_lock);
 	if (entry->valid) {
 		entry->valid = 0;
-<<<<<<< HEAD
-		if (entry != rcu_dereference(netlbl_domhsh_def))
-			list_del_rcu(&entry->list);
-		else
-			RCU_INIT_POINTER(netlbl_domhsh_def, NULL);
-=======
 		if (entry == rcu_dereference(netlbl_domhsh_def_ipv4))
 			RCU_INIT_POINTER(netlbl_domhsh_def_ipv4, NULL);
 		else if (entry == rcu_dereference(netlbl_domhsh_def_ipv6))
 			RCU_INIT_POINTER(netlbl_domhsh_def_ipv6, NULL);
 		else
 			list_del_rcu(&entry->list);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ret_val = -ENOENT;
 	spin_unlock(&netlbl_domhsh_lock);
 
-<<<<<<< HEAD
-	audit_buf = netlbl_audit_start_common(AUDIT_MAC_MAP_DEL, audit_info);
-	if (audit_buf != NULL) {
-		audit_log_format(audit_buf,
-				 " nlbl_domain=%s res=%u",
-				 entry->domain ? entry->domain : "(default)",
-				 ret_val == 0 ? 1 : 0);
-		audit_log_end(audit_buf);
-	}
-
-	if (ret_val == 0) {
-		struct netlbl_af4list *iter4;
-		struct netlbl_domaddr4_map *map4;
-
-		switch (entry->type) {
-		case NETLBL_NLTYPE_ADDRSELECT:
-			netlbl_af4list_foreach_rcu(iter4,
-					     &entry->type_def.addrsel->list4) {
-				map4 = netlbl_domhsh_addr4_entry(iter4);
-				cipso_v4_doi_putdef(map4->type_def.cipsov4);
-			}
-			/* no need to check the IPv6 list since we currently
-			 * support only unlabeled protocols for IPv6 */
-			break;
-		case NETLBL_NLTYPE_CIPSOV4:
-			cipso_v4_doi_putdef(entry->type_def.cipsov4);
-			break;
-		}
-		call_rcu(&entry->rcu, netlbl_domhsh_free_entry);
-	}
-=======
 	if (ret_val)
 		return ret_val;
 
@@ -885,7 +640,6 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
 #endif /* IPv6 */
 	}
 	call_rcu(&entry->rcu, netlbl_domhsh_free_entry);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret_val;
 }
@@ -919,42 +673,24 @@ int netlbl_domhsh_remove_af4(const char *domain,
 	rcu_read_lock();
 
 	if (domain)
-<<<<<<< HEAD
-		entry_map = netlbl_domhsh_search(domain);
-	else
-		entry_map = netlbl_domhsh_search_def(domain);
-	if (entry_map == NULL || entry_map->type != NETLBL_NLTYPE_ADDRSELECT)
-=======
 		entry_map = netlbl_domhsh_search(domain, AF_INET);
 	else
 		entry_map = netlbl_domhsh_search_def(domain, AF_INET);
 	if (entry_map == NULL ||
 	    entry_map->def.type != NETLBL_NLTYPE_ADDRSELECT)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto remove_af4_failure;
 
 	spin_lock(&netlbl_domhsh_lock);
 	entry_addr = netlbl_af4list_remove(addr->s_addr, mask->s_addr,
-<<<<<<< HEAD
-					   &entry_map->type_def.addrsel->list4);
-=======
 					   &entry_map->def.addrsel->list4);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&netlbl_domhsh_lock);
 
 	if (entry_addr == NULL)
 		goto remove_af4_failure;
-<<<<<<< HEAD
-	netlbl_af4list_foreach_rcu(iter4, &entry_map->type_def.addrsel->list4)
-		goto remove_af4_single_addr;
-#if IS_ENABLED(CONFIG_IPV6)
-	netlbl_af6list_foreach_rcu(iter6, &entry_map->type_def.addrsel->list6)
-=======
 	netlbl_af4list_foreach_rcu(iter4, &entry_map->def.addrsel->list4)
 		goto remove_af4_single_addr;
 #if IS_ENABLED(CONFIG_IPV6)
 	netlbl_af6list_foreach_rcu(iter6, &entry_map->def.addrsel->list6)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto remove_af4_single_addr;
 #endif /* IPv6 */
 	/* the domain mapping is empty so remove it from the mapping table */
@@ -967,11 +703,7 @@ remove_af4_single_addr:
 	 * shouldn't be a problem */
 	synchronize_rcu();
 	entry = netlbl_domhsh_addr4_entry(entry_addr);
-<<<<<<< HEAD
-	cipso_v4_doi_putdef(entry->type_def.cipsov4);
-=======
 	cipso_v4_doi_putdef(entry->def.cipso);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(entry);
 	return 0;
 
@@ -980,11 +712,6 @@ remove_af4_failure:
 	return -ENOENT;
 }
 
-<<<<<<< HEAD
-/**
- * netlbl_domhsh_remove - Removes an entry from the domain hash table
- * @domain: the domain to remove
-=======
 #if IS_ENABLED(CONFIG_IPV6)
 /**
  * netlbl_domhsh_remove_af6 - Removes an address selector entry
@@ -1055,28 +782,10 @@ remove_af6_failure:
  * netlbl_domhsh_remove - Removes an entry from the domain hash table
  * @domain: the domain to remove
  * @family: address family
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @audit_info: NetLabel audit information
  *
  * Description:
  * Removes an entry from the domain hash table and handles any updates to the
-<<<<<<< HEAD
- * lower level protocol handler (i.e. CIPSO).  Returns zero on success,
- * negative on failure.
- *
- */
-int netlbl_domhsh_remove(const char *domain, struct netlbl_audit *audit_info)
-{
-	int ret_val;
-	struct netlbl_dom_map *entry;
-
-	rcu_read_lock();
-	if (domain)
-		entry = netlbl_domhsh_search(domain);
-	else
-		entry = netlbl_domhsh_search_def(domain);
-	ret_val = netlbl_domhsh_remove_entry(entry, audit_info);
-=======
  * lower level protocol handler (i.e. CIPSO).  @family may be %AF_UNSPEC which
  * removes all address family entries.  Returns zero on success, negative on
  * failure.
@@ -1111,7 +820,6 @@ int netlbl_domhsh_remove(const char *domain, u16 family,
 			ret_val = ret_val2;
 	}
 done:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	return ret_val;
@@ -1119,19 +827,6 @@ done:
 
 /**
  * netlbl_domhsh_remove_default - Removes the default entry from the table
-<<<<<<< HEAD
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes/resets the default entry for the domain hash table and handles any
- * updates to the lower level protocol handler (i.e. CIPSO).  Returns zero on
- * success, non-zero on failure.
- *
- */
-int netlbl_domhsh_remove_default(struct netlbl_audit *audit_info)
-{
-	return netlbl_domhsh_remove(NULL, audit_info);
-=======
  * @family: address family
  * @audit_info: NetLabel audit information
  *
@@ -1145,24 +840,11 @@ int netlbl_domhsh_remove_default(struct netlbl_audit *audit_info)
 int netlbl_domhsh_remove_default(u16 family, struct netlbl_audit *audit_info)
 {
 	return netlbl_domhsh_remove(NULL, family, audit_info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * netlbl_domhsh_getentry - Get an entry from the domain hash table
  * @domain: the domain name to search for
-<<<<<<< HEAD
- *
- * Description:
- * Look through the domain hash table searching for an entry to match @domain,
- * return a pointer to a copy of the entry or NULL.  The caller is responsible
- * for ensuring that rcu_read_[un]lock() is called.
- *
- */
-struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain)
-{
-	return netlbl_domhsh_search_def(domain);
-=======
  * @family: address family
  *
  * Description:
@@ -1177,7 +859,6 @@ struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain, u16 family)
 	if (family == AF_UNSPEC)
 		return NULL;
 	return netlbl_domhsh_search_def(domain, family);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1191,31 +872,12 @@ struct netlbl_dom_map *netlbl_domhsh_getentry(const char *domain, u16 family)
  * responsible for ensuring that rcu_read_[un]lock() is called.
  *
  */
-<<<<<<< HEAD
-struct netlbl_domaddr4_map *netlbl_domhsh_getentry_af4(const char *domain,
-						       __be32 addr)
-=======
 struct netlbl_dommap_def *netlbl_domhsh_getentry_af4(const char *domain,
 						     __be32 addr)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netlbl_dom_map *dom_iter;
 	struct netlbl_af4list *addr_iter;
 
-<<<<<<< HEAD
-	dom_iter = netlbl_domhsh_search_def(domain);
-	if (dom_iter == NULL)
-		return NULL;
-	if (dom_iter->type != NETLBL_NLTYPE_ADDRSELECT)
-		return NULL;
-
-	addr_iter = netlbl_af4list_search(addr,
-					  &dom_iter->type_def.addrsel->list4);
-	if (addr_iter == NULL)
-		return NULL;
-
-	return netlbl_domhsh_addr4_entry(addr_iter);
-=======
 	dom_iter = netlbl_domhsh_search_def(domain, AF_INET);
 	if (dom_iter == NULL)
 		return NULL;
@@ -1226,7 +888,6 @@ struct netlbl_dommap_def *netlbl_domhsh_getentry_af4(const char *domain,
 	if (addr_iter == NULL)
 		return NULL;
 	return &(netlbl_domhsh_addr4_entry(addr_iter)->def);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
@@ -1241,30 +902,12 @@ struct netlbl_dommap_def *netlbl_domhsh_getentry_af4(const char *domain,
  * responsible for ensuring that rcu_read_[un]lock() is called.
  *
  */
-<<<<<<< HEAD
-struct netlbl_domaddr6_map *netlbl_domhsh_getentry_af6(const char *domain,
-=======
 struct netlbl_dommap_def *netlbl_domhsh_getentry_af6(const char *domain,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   const struct in6_addr *addr)
 {
 	struct netlbl_dom_map *dom_iter;
 	struct netlbl_af6list *addr_iter;
 
-<<<<<<< HEAD
-	dom_iter = netlbl_domhsh_search_def(domain);
-	if (dom_iter == NULL)
-		return NULL;
-	if (dom_iter->type != NETLBL_NLTYPE_ADDRSELECT)
-		return NULL;
-
-	addr_iter = netlbl_af6list_search(addr,
-					  &dom_iter->type_def.addrsel->list6);
-	if (addr_iter == NULL)
-		return NULL;
-
-	return netlbl_domhsh_addr6_entry(addr_iter);
-=======
 	dom_iter = netlbl_domhsh_search_def(domain, AF_INET6);
 	if (dom_iter == NULL)
 		return NULL;
@@ -1275,7 +918,6 @@ struct netlbl_dommap_def *netlbl_domhsh_getentry_af6(const char *domain,
 	if (addr_iter == NULL)
 		return NULL;
 	return &(netlbl_domhsh_addr6_entry(addr_iter)->def);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* IPv6 */
 
@@ -1287,11 +929,7 @@ struct netlbl_dommap_def *netlbl_domhsh_getentry_af6(const char *domain,
  * @cb_arg: argument for the callback function
  *
  * Description:
-<<<<<<< HEAD
- * Interate over the domain mapping hash table, skipping the first @skip_bkt
-=======
  * Iterate over the domain mapping hash table, skipping the first @skip_bkt
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * buckets and @skip_chain entries.  For each entry in the table call
  * @callback, if @callback returns a negative value stop 'walking' through the
  * table and return.  Updates the values in @skip_bkt and @skip_chain on

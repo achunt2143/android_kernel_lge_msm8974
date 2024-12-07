@@ -26,34 +26,6 @@
 
 #ifndef __NOUVEAU_CONNECTOR_H__
 #define __NOUVEAU_CONNECTOR_H__
-<<<<<<< HEAD
-
-#include "drm_edid.h"
-#include "nouveau_i2c.h"
-
-enum nouveau_underscan_type {
-	UNDERSCAN_OFF,
-	UNDERSCAN_ON,
-	UNDERSCAN_AUTO,
-};
-
-/* the enum values specifically defined here match nv50/nvd0 hw values, and
- * the code relies on this
- */
-enum nouveau_dithering_mode {
-	DITHERING_MODE_OFF = 0x00,
-	DITHERING_MODE_ON = 0x01,
-	DITHERING_MODE_DYNAMIC2X2 = 0x10 | DITHERING_MODE_ON,
-	DITHERING_MODE_STATIC2X2 = 0x18 | DITHERING_MODE_ON,
-	DITHERING_MODE_TEMPORAL = 0x20 | DITHERING_MODE_ON,
-	DITHERING_MODE_AUTO
-};
-
-enum nouveau_dithering_depth {
-	DITHERING_DEPTH_6BPC = 0x00,
-	DITHERING_DEPTH_8BPC = 0x02,
-	DITHERING_DEPTH_AUTO
-=======
 #include <nvif/conn.h>
 #include <nvif/event.h>
 
@@ -143,24 +115,12 @@ struct nouveau_conn_atom {
 		};
 		u8 mask;
 	} set;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nouveau_connector {
 	struct drm_connector base;
 	enum dcb_connector_type type;
 	u8 index;
-<<<<<<< HEAD
-	u8 *dcb;
-	u8 hpd;
-
-	int dithering_mode;
-	int dithering_depth;
-	int scaling_mode;
-	enum nouveau_underscan_type underscan;
-	u32 underscan_hborder;
-	u32 underscan_vborder;
-=======
 
 	struct nvif_conn conn;
 	u64 hpd_pending;
@@ -175,13 +135,10 @@ struct nouveau_connector {
 
 	int dithering_mode;
 	int scaling_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct nouveau_encoder *detected_encoder;
 	struct edid *edid;
 	struct drm_display_mode *native_mode;
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_DRM_NOUVEAU_BACKLIGHT
 	struct nouveau_backlight *backlight;
 #endif
@@ -191,7 +148,6 @@ struct nouveau_connector {
 	 * version gets used in the non atomic modeset case.
 	 */
 	struct nouveau_conn_atom properties_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct nouveau_connector *nouveau_connector(
@@ -200,13 +156,6 @@ static inline struct nouveau_connector *nouveau_connector(
 	return container_of(con, struct nouveau_connector, base);
 }
 
-<<<<<<< HEAD
-struct drm_connector *
-nouveau_connector_create(struct drm_device *, int index);
-
-int
-nouveau_connector_bpp(struct drm_connector *);
-=======
 static inline bool
 nouveau_connector_is_mst(struct drm_connector *connector)
 {
@@ -301,6 +250,5 @@ static inline void
 nouveau_backlight_dtor(void) {
 }
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __NOUVEAU_CONNECTOR_H__ */

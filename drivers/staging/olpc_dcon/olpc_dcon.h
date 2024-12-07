@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef OLPC_DCON_H_
 #define OLPC_DCON_H_
 
@@ -13,30 +10,6 @@
 #define DCON_REG_ID		 0
 #define DCON_REG_MODE		 1
 
-<<<<<<< HEAD
-#define MODE_PASSTHRU	(1<<0)
-#define MODE_SLEEP	(1<<1)
-#define MODE_SLEEP_AUTO	(1<<2)
-#define MODE_BL_ENABLE	(1<<3)
-#define MODE_BLANK	(1<<4)
-#define MODE_CSWIZZLE	(1<<5)
-#define MODE_COL_AA	(1<<6)
-#define MODE_MONO_LUMA	(1<<7)
-#define MODE_SCAN_INT	(1<<8)
-#define MODE_CLOCKDIV	(1<<9)
-#define MODE_DEBUG	(1<<14)
-#define MODE_SELFTEST	(1<<15)
-
-#define DCON_REG_HRES		2
-#define DCON_REG_HTOTAL		3
-#define DCON_REG_HSYNC_WIDTH	4
-#define DCON_REG_VRES		5
-#define DCON_REG_VTOTAL		6
-#define DCON_REG_VSYNC_WIDTH	7
-#define DCON_REG_TIMEOUT	8
-#define DCON_REG_SCAN_INT	9
-#define DCON_REG_BRIGHT		10
-=======
 #define MODE_PASSTHRU	BIT(0)
 #define MODE_SLEEP	BIT(1)
 #define MODE_SLEEP_AUTO	BIT(2)
@@ -68,7 +41,6 @@
 #define MEM_POWER_DOWN		BIT(8)
 /* Memory controller software reset */
 #define MEM_SOFT_RESET		BIT(0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Status values */
 
@@ -90,15 +62,9 @@ struct dcon_priv {
 	struct fb_info *fbinfo;
 	struct backlight_device *bl_dev;
 
-<<<<<<< HEAD
-	struct work_struct switch_source;
-	struct notifier_block reboot_nb;
-	struct notifier_block fbevent_nb;
-=======
 	wait_queue_head_t waitq;
 	struct work_struct switch_source;
 	struct notifier_block reboot_nb;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Shadow register for the DCON_REG_MODE register */
 	u8 disp_mode;
@@ -114,13 +80,8 @@ struct dcon_priv {
 
 	/* Variables used during switches */
 	bool switched;
-<<<<<<< HEAD
-	struct timespec irq_time;
-	struct timespec load_time;
-=======
 	ktime_t irq_time;
 	ktime_t load_time;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Current output type; true == mono, false == color */
 	bool mono;
@@ -130,12 +91,6 @@ struct dcon_priv {
 };
 
 struct dcon_platform_data {
-<<<<<<< HEAD
-	int (*init)(struct dcon_priv *);
-	void (*bus_stabilize_wiggle)(void);
-	void (*set_dconload)(int);
-	int (*read_status)(u8 *);
-=======
 	int (*init)(struct dcon_priv *dcon);
 	void (*bus_stabilize_wiggle)(void);
 	void (*set_dconload)(int load);
@@ -145,26 +100,13 @@ struct dcon_platform_data {
 struct dcon_gpio {
 	const char *name;
 	unsigned long flags;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #include <linux/interrupt.h>
 
-<<<<<<< HEAD
-extern irqreturn_t dcon_interrupt(int irq, void *id);
-
-#ifdef CONFIG_FB_OLPC_DCON_1
-extern struct dcon_platform_data dcon_pdata_xo_1;
-#endif
-
-#ifdef CONFIG_FB_OLPC_DCON_1_5
-extern struct dcon_platform_data dcon_pdata_xo_1_5;
-#endif
-=======
 irqreturn_t dcon_interrupt(int irq, void *id);
 
 extern struct dcon_platform_data dcon_pdata_xo_1;
 extern struct dcon_platform_data dcon_pdata_xo_1_5;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

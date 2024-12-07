@@ -1,29 +1,8 @@
-<<<<<<< HEAD
-/*
- * Memory layout definitions for the Hexagon architecture
- *
- * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * Memory layout definitions for the Hexagon architecture
  *
  * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_HEXAGON_MEM_LAYOUT_H
@@ -40,17 +19,6 @@
 #define PAGE_OFFSET			_AC(0xc0000000, UL)
 
 /*
-<<<<<<< HEAD
- * LOAD_ADDRESS is the physical/linear address of where in memory
- * the kernel gets loaded. The 12 least significant bits must be zero (0)
- * due to limitations on setting the EVB
- *
- */
-
-#ifndef LOAD_ADDRESS
-#define LOAD_ADDRESS			0x00000000
-#endif
-=======
  * Compiling for a platform that needs a crazy physical offset
  * (like if the memory starts at 1GB and up) means we need
  * an actual PHYS_OFFSET.  Should be set up in head.S.
@@ -69,7 +37,6 @@ extern unsigned long	__phys_offset;
 
 #define PHYS_PFN_OFFSET	(PHYS_OFFSET >> PAGE_SHIFT)
 #define ARCH_PFN_OFFSET	PHYS_PFN_OFFSET
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TASK_SIZE			(PAGE_OFFSET)
 
@@ -84,11 +51,7 @@ enum fixed_addresses {
 	__end_of_fixed_addresses
 };
 
-<<<<<<< HEAD
-#define MIN_KERNEL_SEG 0x300   /* From 0xc0000000 */
-=======
 #define MIN_KERNEL_SEG (PAGE_OFFSET >> PGDIR_SHIFT)   /* L1 shift is 22 bits */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int max_kernel_seg;
 
 /*
@@ -96,12 +59,7 @@ extern int max_kernel_seg;
  * supposed to be based on the amount of physical memory available
  */
 
-<<<<<<< HEAD
-#define VMALLOC_START (PAGE_OFFSET + VMALLOC_OFFSET + \
-	(unsigned long)high_memory)
-=======
 #define VMALLOC_START ((unsigned long) __va(high_memory + VMALLOC_OFFSET))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Gap between physical ram and vmalloc space for guard purposes. */
 #define VMALLOC_OFFSET PAGE_SIZE

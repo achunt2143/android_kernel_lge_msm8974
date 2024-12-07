@@ -1,62 +1,23 @@
-<<<<<<< HEAD
-=======
 # SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # PCI Hotplug support
 #
 
 menuconfig HOTPLUG_PCI
-<<<<<<< HEAD
-	tristate "Support for PCI Hotplug"
-	depends on PCI && HOTPLUG && SYSFS
-	---help---
-=======
 	bool "Support for PCI Hotplug"
 	depends on PCI && SYSFS
 	default y if USB4
 	help
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you have a motherboard with a PCI Hotplug controller.
 	  This allows you to add and remove PCI cards while the machine is
 	  powered up and running.
 
-<<<<<<< HEAD
-	  To compile this driver as a module, choose M here: the
-	  module will be called pci_hotplug.
-=======
 	  Thunderbolt/USB4 PCIe tunneling depends on native PCIe hotplug.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  When in doubt, say N.
 
 if HOTPLUG_PCI
 
-<<<<<<< HEAD
-config HOTPLUG_PCI_FAKE
-	tristate "Fake PCI Hotplug driver"
-	help
-	  Say Y here if you want to use the fake PCI hotplug driver. It can
-	  be used to simulate PCI hotplug events if even if your system is
-	  not PCI hotplug capable.
-
-	  This driver will "emulate" removing PCI devices from the system.
-	  If the "power" file is written to with "0" then the specified PCI
-	  device will be completely removed from the kernel.
-
-	  WARNING, this does NOT turn off the power to the PCI device.
-	  This is a "logical" removal, not a physical or electrical
-	  removal.
-
-	  Use this module at your own risk.  You have been warned!
-
-	  To compile this driver as a module, choose M here: the
-	  module will be called fakephp.
-
-	  When in doubt, say N.
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config HOTPLUG_PCI_COMPAQ
 	tristate "Compaq PCI Hotplug driver"
 	depends on X86 && PCI_BIOS
@@ -92,21 +53,12 @@ config HOTPLUG_PCI_IBM
 	  When in doubt, say N.
 
 config HOTPLUG_PCI_ACPI
-<<<<<<< HEAD
-	tristate "ACPI PCI Hotplug driver"
-	depends on (!ACPI_DOCK && ACPI) || (ACPI_DOCK)
-=======
 	bool "ACPI PCI Hotplug driver"
 	depends on HOTPLUG_PCI=y && ((!ACPI_DOCK && ACPI) || (ACPI_DOCK))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have a system that supports PCI Hotplug using
 	  ACPI.
 
-<<<<<<< HEAD
-	  To compile this driver as a module, choose M here: the
-	  module will be called acpiphp.
-=======
 	  When in doubt, say N.
 
 config HOTPLUG_PCI_ACPI_AMPERE_ALTRA
@@ -118,7 +70,6 @@ config HOTPLUG_PCI_ACPI_AMPERE_ALTRA
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called acpiphp_ampere_altra.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  When in doubt, say N.
 
@@ -147,11 +98,7 @@ config HOTPLUG_PCI_CPCI_ZT5550
 	depends on HOTPLUG_PCI_CPCI && X86
 	help
 	  Say Y here if you have an Performance Technologies (formerly Intel,
-<<<<<<< HEAD
-          formerly just Ziatech) Ziatech ZT5550 CompactPCI system card.
-=======
 	  formerly just Ziatech) Ziatech ZT5550 CompactPCI system card.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called cpcihp_zt5550.
@@ -172,19 +119,11 @@ config HOTPLUG_PCI_CPCI_GENERIC
 	  When in doubt, say N.
 
 config HOTPLUG_PCI_SHPC
-<<<<<<< HEAD
-	tristate "SHPC PCI Hotplug driver"
-=======
 	bool "SHPC PCI Hotplug driver"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have a motherboard with a SHPC PCI Hotplug
 	  controller.
 
-<<<<<<< HEAD
-	  To compile this driver as a module, choose M here: the
-	  module will be called shpchp.
-=======
 	  When in doubt, say N.
 
 config HOTPLUG_PCI_POWERNV
@@ -197,17 +136,12 @@ config HOTPLUG_PCI_POWERNV
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called pnv-php.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  When in doubt, say N.
 
 config HOTPLUG_PCI_RPA
 	tristate "RPA PCI Hotplug driver"
-<<<<<<< HEAD
-	depends on PPC_PSERIES && EEH && !HOTPLUG_PCI_FAKE
-=======
 	depends on PPC_PSERIES && EEH
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you have a RPA system that supports PCI Hotplug.
 
@@ -225,20 +159,6 @@ config HOTPLUG_PCI_RPA_DLPAR
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called rpadlpar_io.
-<<<<<<< HEAD
- 
- 	  When in doubt, say N.
-
-config HOTPLUG_PCI_SGI
-	tristate "SGI PCI Hotplug Support"
-	depends on IA64_SGI_SN2 || IA64_GENERIC
-	help
-	  Say Y here if you want to use the SGI Altix Hotplug
-	  Driver for PCI devices.
-
-	  When in doubt, say N.
-
-=======
 
 	  When in doubt, say N.
 
@@ -253,5 +173,4 @@ config HOTPLUG_PCI_S390
 
 	  When in doubt, say Y.
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # HOTPLUG_PCI

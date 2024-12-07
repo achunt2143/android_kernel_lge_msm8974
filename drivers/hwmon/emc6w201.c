@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-/*
- * emc6w201.c - Hardware monitoring driver for the SMSC EMC6W201
- * Copyright (C) 2011  Jean Delvare <khali@linux-fr.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- */
-
-#include <linux/module.h>
-#include <linux/delay.h>
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * emc6w201.c - Hardware monitoring driver for the SMSC EMC6W201
@@ -28,7 +5,6 @@
  */
 
 #include <linux/module.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/jiffies.h>
@@ -60,26 +36,16 @@ static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, I2C_CLIENT_END };
 #define EMC6W201_REG_TEMP_HIGH(nr)	(0x57 + (nr) * 2)
 #define EMC6W201_REG_FAN_MIN(nr)	(0x62 + (nr) * 2)
 
-<<<<<<< HEAD
-enum { input, min, max } subfeature;
-=======
 enum subfeature { input, min, max };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Per-device data
  */
 
 struct emc6w201_data {
-<<<<<<< HEAD
-	struct device *hwmon_dev;
-	struct mutex update_lock;
-	char valid; /* zero until following fields are valid */
-=======
 	struct i2c_client *client;
 	struct mutex update_lock;
 	bool valid; /* false until following fields are valid */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated; /* in jiffies */
 
 	/* registers values */
@@ -155,13 +121,8 @@ static int emc6w201_write8(struct i2c_client *client, u8 reg, u8 val)
 
 static struct emc6w201_data *emc6w201_update_device(struct device *dev)
 {
-<<<<<<< HEAD
-	struct i2c_client *client = to_i2c_client(dev);
-	struct emc6w201_data *data = i2c_get_clientdata(client);
-=======
 	struct emc6w201_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nr;
 
 	mutex_lock(&data->update_lock);
@@ -201,11 +162,7 @@ static struct emc6w201_data *emc6w201_update_device(struct device *dev)
 		}
 
 		data->last_updated = jiffies;
-<<<<<<< HEAD
-		data->valid = 1;
-=======
 		data->valid = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -217,17 +174,10 @@ static struct emc6w201_data *emc6w201_update_device(struct device *dev)
  * Sysfs callback functions
  */
 
-<<<<<<< HEAD
-static const u16 nominal_mv[6] = { 2500, 1500, 3300, 5000, 1500, 1500 };
-
-static ssize_t show_in(struct device *dev, struct device_attribute *devattr,
-	char *buf)
-=======
 static const s16 nominal_mv[6] = { 2500, 1500, 3300, 5000, 1500, 1500 };
 
 static ssize_t in_show(struct device *dev, struct device_attribute *devattr,
 		       char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emc6w201_data *data = emc6w201_update_device(dev);
 	int sf = to_sensor_dev_attr_2(devattr)->index;
@@ -237,19 +187,11 @@ static ssize_t in_show(struct device *dev, struct device_attribute *devattr,
 		       (unsigned)data->in[sf][nr] * nominal_mv[nr] / 0xC0);
 }
 
-<<<<<<< HEAD
-static ssize_t set_in(struct device *dev, struct device_attribute *devattr,
-		      const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct emc6w201_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t in_store(struct device *dev, struct device_attribute *devattr,
 			const char *buf, size_t count)
 {
 	struct emc6w201_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sf = to_sensor_dev_attr_2(devattr)->index;
 	int nr = to_sensor_dev_attr_2(devattr)->nr;
 	int err;
@@ -260,34 +202,21 @@ static ssize_t in_store(struct device *dev, struct device_attribute *devattr,
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	val = DIV_ROUND_CLOSEST(val * 0xC0, nominal_mv[nr]);
-=======
 	val = clamp_val(val, 0, 255 * nominal_mv[nr] / 192);
 	val = DIV_ROUND_CLOSEST(val * 192, nominal_mv[nr]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = (sf == min) ? EMC6W201_REG_IN_LOW(nr)
 			  : EMC6W201_REG_IN_HIGH(nr);
 
 	mutex_lock(&data->update_lock);
-<<<<<<< HEAD
-	data->in[sf][nr] = SENSORS_LIMIT(val, 0, 255);
-=======
 	data->in[sf][nr] = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = emc6w201_write8(client, reg, data->in[sf][nr]);
 	mutex_unlock(&data->update_lock);
 
 	return err < 0 ? err : count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_temp(struct device *dev, struct device_attribute *devattr,
-	char *buf)
-=======
 static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
 			 char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emc6w201_data *data = emc6w201_update_device(dev);
 	int sf = to_sensor_dev_attr_2(devattr)->index;
@@ -296,20 +225,12 @@ static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%d\n", (int)data->temp[sf][nr] * 1000);
 }
 
-<<<<<<< HEAD
-static ssize_t set_temp(struct device *dev, struct device_attribute *devattr,
-			const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct emc6w201_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t temp_store(struct device *dev,
 			  struct device_attribute *devattr, const char *buf,
 			  size_t count)
 {
 	struct emc6w201_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sf = to_sensor_dev_attr_2(devattr)->index;
 	int nr = to_sensor_dev_attr_2(devattr)->nr;
 	int err;
@@ -320,34 +241,21 @@ static ssize_t temp_store(struct device *dev,
 	if (err < 0)
 		return err;
 
-<<<<<<< HEAD
-	val /= 1000;
-=======
 	val = clamp_val(val, -127000, 127000);
 	val = DIV_ROUND_CLOSEST(val, 1000);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg = (sf == min) ? EMC6W201_REG_TEMP_LOW(nr)
 			  : EMC6W201_REG_TEMP_HIGH(nr);
 
 	mutex_lock(&data->update_lock);
-<<<<<<< HEAD
-	data->temp[sf][nr] = SENSORS_LIMIT(val, -127, 128);
-=======
 	data->temp[sf][nr] = val;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = emc6w201_write8(client, reg, data->temp[sf][nr]);
 	mutex_unlock(&data->update_lock);
 
 	return err < 0 ? err : count;
 }
 
-<<<<<<< HEAD
-static ssize_t show_fan(struct device *dev, struct device_attribute *devattr,
-	char *buf)
-=======
 static ssize_t fan_show(struct device *dev, struct device_attribute *devattr,
 			char *buf)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emc6w201_data *data = emc6w201_update_device(dev);
 	int sf = to_sensor_dev_attr_2(devattr)->index;
@@ -362,19 +270,11 @@ static ssize_t fan_show(struct device *dev, struct device_attribute *devattr,
 	return sprintf(buf, "%u\n", rpm);
 }
 
-<<<<<<< HEAD
-static ssize_t set_fan(struct device *dev, struct device_attribute *devattr,
-		       const char *buf, size_t count)
-{
-	struct i2c_client *client = to_i2c_client(dev);
-	struct emc6w201_data *data = i2c_get_clientdata(client);
-=======
 static ssize_t fan_store(struct device *dev, struct device_attribute *devattr,
 			 const char *buf, size_t count)
 {
 	struct emc6w201_data *data = dev_get_drvdata(dev);
 	struct i2c_client *client = data->client;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sf = to_sensor_dev_attr_2(devattr)->index;
 	int nr = to_sensor_dev_attr_2(devattr)->nr;
 	int err;
@@ -388,11 +288,7 @@ static ssize_t fan_store(struct device *dev, struct device_attribute *devattr,
 		val = 0xFFFF;
 	} else {
 		val = DIV_ROUND_CLOSEST(5400000U, val);
-<<<<<<< HEAD
-		val = SENSORS_LIMIT(val, 0, 0xFFFE);
-=======
 		val = clamp_val(val, 0, 0xFFFE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_lock(&data->update_lock);
@@ -404,87 +300,6 @@ static ssize_t fan_store(struct device *dev, struct device_attribute *devattr,
 	return err < 0 ? err : count;
 }
 
-<<<<<<< HEAD
-static SENSOR_DEVICE_ATTR_2(in0_input, S_IRUGO, show_in, NULL, 0, input);
-static SENSOR_DEVICE_ATTR_2(in0_min, S_IRUGO | S_IWUSR, show_in, set_in,
-			    0, min);
-static SENSOR_DEVICE_ATTR_2(in0_max, S_IRUGO | S_IWUSR, show_in, set_in,
-			    0, max);
-static SENSOR_DEVICE_ATTR_2(in1_input, S_IRUGO, show_in, NULL, 1, input);
-static SENSOR_DEVICE_ATTR_2(in1_min, S_IRUGO | S_IWUSR, show_in, set_in,
-			    1, min);
-static SENSOR_DEVICE_ATTR_2(in1_max, S_IRUGO | S_IWUSR, show_in, set_in,
-			    1, max);
-static SENSOR_DEVICE_ATTR_2(in2_input, S_IRUGO, show_in, NULL, 2, input);
-static SENSOR_DEVICE_ATTR_2(in2_min, S_IRUGO | S_IWUSR, show_in, set_in,
-			    2, min);
-static SENSOR_DEVICE_ATTR_2(in2_max, S_IRUGO | S_IWUSR, show_in, set_in,
-			    2, max);
-static SENSOR_DEVICE_ATTR_2(in3_input, S_IRUGO, show_in, NULL, 3, input);
-static SENSOR_DEVICE_ATTR_2(in3_min, S_IRUGO | S_IWUSR, show_in, set_in,
-			    3, min);
-static SENSOR_DEVICE_ATTR_2(in3_max, S_IRUGO | S_IWUSR, show_in, set_in,
-			    3, max);
-static SENSOR_DEVICE_ATTR_2(in4_input, S_IRUGO, show_in, NULL, 4, input);
-static SENSOR_DEVICE_ATTR_2(in4_min, S_IRUGO | S_IWUSR, show_in, set_in,
-			    4, min);
-static SENSOR_DEVICE_ATTR_2(in4_max, S_IRUGO | S_IWUSR, show_in, set_in,
-			    4, max);
-static SENSOR_DEVICE_ATTR_2(in5_input, S_IRUGO, show_in, NULL, 5, input);
-static SENSOR_DEVICE_ATTR_2(in5_min, S_IRUGO | S_IWUSR, show_in, set_in,
-			    5, min);
-static SENSOR_DEVICE_ATTR_2(in5_max, S_IRUGO | S_IWUSR, show_in, set_in,
-			    5, max);
-
-static SENSOR_DEVICE_ATTR_2(temp1_input, S_IRUGO, show_temp, NULL, 0, input);
-static SENSOR_DEVICE_ATTR_2(temp1_min, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    0, min);
-static SENSOR_DEVICE_ATTR_2(temp1_max, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    0, max);
-static SENSOR_DEVICE_ATTR_2(temp2_input, S_IRUGO, show_temp, NULL, 1, input);
-static SENSOR_DEVICE_ATTR_2(temp2_min, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    1, min);
-static SENSOR_DEVICE_ATTR_2(temp2_max, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    1, max);
-static SENSOR_DEVICE_ATTR_2(temp3_input, S_IRUGO, show_temp, NULL, 2, input);
-static SENSOR_DEVICE_ATTR_2(temp3_min, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    2, min);
-static SENSOR_DEVICE_ATTR_2(temp3_max, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    2, max);
-static SENSOR_DEVICE_ATTR_2(temp4_input, S_IRUGO, show_temp, NULL, 3, input);
-static SENSOR_DEVICE_ATTR_2(temp4_min, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    3, min);
-static SENSOR_DEVICE_ATTR_2(temp4_max, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    3, max);
-static SENSOR_DEVICE_ATTR_2(temp5_input, S_IRUGO, show_temp, NULL, 4, input);
-static SENSOR_DEVICE_ATTR_2(temp5_min, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    4, min);
-static SENSOR_DEVICE_ATTR_2(temp5_max, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    4, max);
-static SENSOR_DEVICE_ATTR_2(temp6_input, S_IRUGO, show_temp, NULL, 5, input);
-static SENSOR_DEVICE_ATTR_2(temp6_min, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    5, min);
-static SENSOR_DEVICE_ATTR_2(temp6_max, S_IRUGO | S_IWUSR, show_temp, set_temp,
-			    5, max);
-
-static SENSOR_DEVICE_ATTR_2(fan1_input, S_IRUGO, show_fan, NULL, 0, input);
-static SENSOR_DEVICE_ATTR_2(fan1_min, S_IRUGO | S_IWUSR, show_fan, set_fan,
-			    0, min);
-static SENSOR_DEVICE_ATTR_2(fan2_input, S_IRUGO, show_fan, NULL, 1, input);
-static SENSOR_DEVICE_ATTR_2(fan2_min, S_IRUGO | S_IWUSR, show_fan, set_fan,
-			    1, min);
-static SENSOR_DEVICE_ATTR_2(fan3_input, S_IRUGO, show_fan, NULL, 2, input);
-static SENSOR_DEVICE_ATTR_2(fan3_min, S_IRUGO | S_IWUSR, show_fan, set_fan,
-			    2, min);
-static SENSOR_DEVICE_ATTR_2(fan4_input, S_IRUGO, show_fan, NULL, 3, input);
-static SENSOR_DEVICE_ATTR_2(fan4_min, S_IRUGO | S_IWUSR, show_fan, set_fan,
-			    3, min);
-static SENSOR_DEVICE_ATTR_2(fan5_input, S_IRUGO, show_fan, NULL, 4, input);
-static SENSOR_DEVICE_ATTR_2(fan5_min, S_IRUGO | S_IWUSR, show_fan, set_fan,
-			    4, min);
-
-static struct attribute *emc6w201_attributes[] = {
-=======
 static SENSOR_DEVICE_ATTR_2_RO(in0_input, in, 0, input);
 static SENSOR_DEVICE_ATTR_2_RW(in0_min, in, 0, min);
 static SENSOR_DEVICE_ATTR_2_RW(in0_max, in, 0, max);
@@ -535,7 +350,6 @@ static SENSOR_DEVICE_ATTR_2_RO(fan5_input, fan, 4, input);
 static SENSOR_DEVICE_ATTR_2_RW(fan5_min, fan, 4, min);
 
 static struct attribute *emc6w201_attrs[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in0_min.dev_attr.attr,
 	&sensor_dev_attr_in0_max.dev_attr.attr,
@@ -587,13 +401,7 @@ static struct attribute *emc6w201_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static const struct attribute_group emc6w201_group = {
-	.attrs = emc6w201_attributes,
-};
-=======
 ATTRIBUTE_GROUPS(emc6w201);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Driver interface
@@ -617,11 +425,7 @@ static int emc6w201_detect(struct i2c_client *client,
 	if (verstep < 0 || (verstep & 0xF0) != 0xB0)
 		return -ENODEV;
 	if ((verstep & 0x0F) > 2) {
-<<<<<<< HEAD
-		dev_dbg(&client->dev, "Unknwown EMC6W201 stepping %d\n",
-=======
 		dev_dbg(&client->dev, "Unknown EMC6W201 stepping %d\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			verstep & 0x0F);
 		return -ENODEV;
 	}
@@ -635,63 +439,11 @@ static int emc6w201_detect(struct i2c_client *client,
 		return -ENODEV;
 	}
 
-<<<<<<< HEAD
-	strlcpy(info->type, "emc6w201", I2C_NAME_SIZE);
-=======
 	strscpy(info->type, "emc6w201", I2C_NAME_SIZE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int emc6w201_probe(struct i2c_client *client,
-			  const struct i2c_device_id *id)
-{
-	struct emc6w201_data *data;
-	int err;
-
-	data = kzalloc(sizeof(struct emc6w201_data), GFP_KERNEL);
-	if (!data) {
-		err = -ENOMEM;
-		goto exit;
-	}
-
-	i2c_set_clientdata(client, data);
-	mutex_init(&data->update_lock);
-
-	/* Create sysfs attribute */
-	err = sysfs_create_group(&client->dev.kobj, &emc6w201_group);
-	if (err)
-		goto exit_free;
-
-	/* Expose as a hwmon device */
-	data->hwmon_dev = hwmon_device_register(&client->dev);
-	if (IS_ERR(data->hwmon_dev)) {
-		err = PTR_ERR(data->hwmon_dev);
-		goto exit_remove;
-	}
-
-	return 0;
-
- exit_remove:
-	sysfs_remove_group(&client->dev.kobj, &emc6w201_group);
- exit_free:
-	kfree(data);
- exit:
-	return err;
-}
-
-static int emc6w201_remove(struct i2c_client *client)
-{
-	struct emc6w201_data *data = i2c_get_clientdata(client);
-
-	hwmon_device_unregister(data->hwmon_dev);
-	sysfs_remove_group(&client->dev.kobj, &emc6w201_group);
-	kfree(data);
-
-	return 0;
-=======
 static int emc6w201_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
@@ -709,7 +461,6 @@ static int emc6w201_probe(struct i2c_client *client)
 							   data,
 							   emc6w201_groups);
 	return PTR_ERR_OR_ZERO(hwmon_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id emc6w201_id[] = {
@@ -724,10 +475,6 @@ static struct i2c_driver emc6w201_driver = {
 		.name	= "emc6w201",
 	},
 	.probe		= emc6w201_probe,
-<<<<<<< HEAD
-	.remove		= emc6w201_remove,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= emc6w201_id,
 	.detect		= emc6w201_detect,
 	.address_list	= normal_i2c,
@@ -735,10 +482,6 @@ static struct i2c_driver emc6w201_driver = {
 
 module_i2c_driver(emc6w201_driver);
 
-<<<<<<< HEAD
-MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
-=======
 MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SMSC EMC6W201 hardware monitoring driver");
 MODULE_LICENSE("GPL");

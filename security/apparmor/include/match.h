@@ -1,56 +1,27 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AppArmor security module
  *
  * This file contains AppArmor policy dfa matching engine definitions.
  *
  * Copyright (C) 1998-2008 Novell/SUSE
-<<<<<<< HEAD
- * Copyright 2009-2010 Canonical Ltd.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, version 2 of the
- * License.
-=======
  * Copyright 2009-2012 Canonical Ltd.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __AA_MATCH_H
 #define __AA_MATCH_H
 
 #include <linux/kref.h>
-<<<<<<< HEAD
-#include <linux/workqueue.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DFA_NOMATCH			0
 #define DFA_START			1
 
-<<<<<<< HEAD
-#define DFA_VALID_PERM_MASK		0xffffffff
-#define DFA_VALID_PERM2_MASK		0xffffffff
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * The format used for transition tables is based on the GNU flex table
  * file format (--tables-file option; see Table File Format in the flex
  * info pages and the flex sources for documentation). The magic number
  * used in the header is 0x1B5E783D instead of 0xF13C57B1 though, because
-<<<<<<< HEAD
- * the YY_ID_CHK (check) and YY_ID_DEF (default) tables are used
- * slightly differently (see the apparmor-parser package).
- */
-
-#define YYTH_MAGIC	0x1B5E783D
-#define YYTH_DEF_RECURSE 0x1			/* DEF Table is recursive */
-=======
  * new tables have been defined and others YY_ID_CHK (check) and YY_ID_DEF
  * (default) tables are used slightly differently (see the apparmor-parser
  * package).
@@ -70,7 +41,6 @@
 #define YYTH_FLAGS (YYTH_FLAG_DIFF_ENCODE | YYTH_FLAG_OOB_TRANS)
 
 #define MAX_OOB_SUPPORTED	1
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct table_set_header {
 	u32 th_magic;		/* YYTH_MAGIC */
@@ -93,21 +63,14 @@ struct table_set_header {
 #define YYTD_ID_ACCEPT2 6
 #define YYTD_ID_NXT	7
 #define YYTD_ID_TSIZE	8
-<<<<<<< HEAD
-=======
 #define YYTD_ID_MAX	8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define YYTD_DATA8	1
 #define YYTD_DATA16	2
 #define YYTD_DATA32	4
 #define YYTD_DATA64	8
 
-<<<<<<< HEAD
-/* Each ACCEPT2 table gets 6 dedicated flags, YYTD_DATAX define the
-=======
 /* ACCEPT & ACCEPT2 tables gets 6 dedicated flags, YYTD_DATAX define the
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * first flags
  */
 #define ACCEPT1_FLAGS(X) ((X) & 0x3f)
@@ -135,28 +98,17 @@ struct table_header {
 struct aa_dfa {
 	struct kref count;
 	u16 flags;
-<<<<<<< HEAD
-=======
 	u32 max_oob;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct table_header *tables[YYTD_ID_TSIZE];
 };
 
 #define byte_to_byte(X) (X)
 
-<<<<<<< HEAD
-#define UNPACK_ARRAY(TABLE, BLOB, LEN, TYPE, NTOHX) \
-	do { \
-		typeof(LEN) __i; \
-		TYPE *__t = (TYPE *) TABLE; \
-		TYPE *__b = (TYPE *) BLOB; \
-=======
 #define UNPACK_ARRAY(TABLE, BLOB, LEN, TTYPE, BTYPE, NTOHX)	\
 	do { \
 		typeof(LEN) __i; \
 		TTYPE *__t = (TTYPE *) TABLE; \
 		BTYPE *__b = (BTYPE *) BLOB; \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (__i = 0; __i < LEN; __i++) { \
 			__t[__i] = NTOHX(__b[__i]); \
 		} \
@@ -167,18 +119,6 @@ static inline size_t table_size(size_t len, size_t el_size)
 	return ALIGN(sizeof(struct table_header) + len * el_size, 8);
 }
 
-<<<<<<< HEAD
-struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags);
-unsigned int aa_dfa_match_len(struct aa_dfa *dfa, unsigned int start,
-			      const char *str, int len);
-unsigned int aa_dfa_match(struct aa_dfa *dfa, unsigned int start,
-			  const char *str);
-unsigned int aa_dfa_next(struct aa_dfa *dfa, unsigned int state,
-			 const char c);
-
-void aa_dfa_free_kref(struct kref *kref);
-
-=======
 #define aa_state_t unsigned int
 
 struct aa_dfa *aa_dfa_unpack(void *blob, size_t size, int flags);
@@ -228,7 +168,6 @@ static inline struct aa_dfa *aa_get_dfa(struct aa_dfa *dfa)
 	return dfa;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * aa_put_dfa - put a dfa refcount
  * @dfa: dfa to put refcount   (MAYBE NULL)
@@ -241,8 +180,6 @@ static inline void aa_put_dfa(struct aa_dfa *dfa)
 		kref_put(&dfa->count, aa_dfa_free_kref);
 }
 
-<<<<<<< HEAD
-=======
 #define MATCH_FLAG_DIFF_ENCODE 0x80000000
 #define MARK_DIFF_ENCODE 0x40000000
 #define MATCH_FLAG_OOB_TRANSITION 0x20000000
@@ -250,5 +187,4 @@ static inline void aa_put_dfa(struct aa_dfa *dfa)
 #define MATCH_FLAGS_VALID (MATCH_FLAG_DIFF_ENCODE | MATCH_FLAG_OOB_TRANSITION)
 #define MATCH_FLAGS_INVALID (MATCH_FLAGS_MASK & ~MATCH_FLAGS_VALID)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __AA_MATCH_H */

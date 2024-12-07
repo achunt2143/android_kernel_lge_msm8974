@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-/*
- * OMAP2/3 System Control Module register access
- *
- * Copyright (C) 2007 Texas Instruments, Inc.
- * Copyright (C) 2007 Nokia Corporation
- *
- * Written by Paul Walmsley
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
-=======
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * OMAP2/3 System Control Module register access
@@ -19,54 +6,34 @@
  * Copyright (C) 2007 Nokia Corporation
  *
  * Written by Paul Walmsley
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #undef DEBUG
 
 #include <linux/kernel.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-
-#include <plat/hardware.h>
-#include <plat/sdrc.h>
-
-=======
 #include <linux/of_address.h>
 #include <linux/regmap.h>
 #include <linux/mfd/syscon.h>
 #include <linux/cpu_pm.h>
 
 #include "soc.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iomap.h"
 #include "common.h"
 #include "cm-regbits-34xx.h"
 #include "prm-regbits-34xx.h"
-<<<<<<< HEAD
-#include "prm2xxx_3xxx.h"
-#include "cm2xxx_3xxx.h"
-#include "sdrc.h"
-#include "pm.h"
-#include "control.h"
-=======
 #include "prm3xxx.h"
 #include "cm3xxx.h"
 #include "sdrc.h"
 #include "pm.h"
 #include "control.h"
 #include "clock.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Used by omap3_ctrl_save_padconf() */
 #define START_PADCONF_SAVE		0x2
 #define PADCONF_SAVE_DONE		0x1
 
 static void __iomem *omap2_ctrl_base;
-<<<<<<< HEAD
-static void __iomem *omap4_ctrl_pad_base;
-=======
 static s16 omap2_ctrl_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_ARCH_OMAP3) && defined(CONFIG_PM)
 struct omap3_scratchpad {
@@ -79,24 +46,8 @@ struct omap3_scratchpad {
 };
 
 struct omap3_scratchpad_prcm_block {
-<<<<<<< HEAD
-	u32 prm_clksrc_ctrl;
-	u32 prm_clksel;
-	u32 cm_clksel_core;
-	u32 cm_clksel_wkup;
-	u32 cm_clken_pll;
-	u32 cm_autoidle_pll;
-	u32 cm_clksel1_pll;
-	u32 cm_clksel2_pll;
-	u32 cm_clksel3_pll;
-	u32 cm_clken_pll_mpu;
-	u32 cm_autoidle_pll_mpu;
-	u32 cm_clksel1_pll_mpu;
-	u32 cm_clksel2_pll_mpu;
-=======
 	u32 prm_contents[2];
 	u32 cm_contents[11];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 prcm_block_size;
 };
 
@@ -158,10 +109,7 @@ struct omap3_control_regs {
 	u32 csirxfe;
 	u32 iva2_bootaddr;
 	u32 iva2_bootmod;
-<<<<<<< HEAD
-=======
 	u32 wkup_ctrl;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 debobs_0;
 	u32 debobs_1;
 	u32 debobs_2;
@@ -188,28 +136,6 @@ struct omap3_control_regs {
 static struct omap3_control_regs control_context;
 #endif /* CONFIG_ARCH_OMAP3 && CONFIG_PM */
 
-<<<<<<< HEAD
-#define OMAP_CTRL_REGADDR(reg)		(omap2_ctrl_base + (reg))
-#define OMAP4_CTRL_PAD_REGADDR(reg)	(omap4_ctrl_pad_base + (reg))
-
-void __init omap2_set_globals_control(struct omap_globals *omap2_globals)
-{
-	if (omap2_globals->ctrl)
-		omap2_ctrl_base = omap2_globals->ctrl;
-
-	if (omap2_globals->ctrl_pad)
-		omap4_ctrl_pad_base = omap2_globals->ctrl_pad;
-}
-
-void __iomem *omap_ctrl_base_get(void)
-{
-	return omap2_ctrl_base;
-}
-
-u8 omap_ctrl_readb(u16 offset)
-{
-	return __raw_readb(OMAP_CTRL_REGADDR(offset));
-=======
 u8 omap_ctrl_readb(u16 offset)
 {
 	u32 val;
@@ -218,39 +144,27 @@ u8 omap_ctrl_readb(u16 offset)
 	val = omap_ctrl_readl(offset);
 
 	return (val >> (byte_offset * 8)) & 0xff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u16 omap_ctrl_readw(u16 offset)
 {
-<<<<<<< HEAD
-	return __raw_readw(OMAP_CTRL_REGADDR(offset));
-=======
 	u32 val;
 	u16 byte_offset = offset & 0x2;
 
 	val = omap_ctrl_readl(offset);
 
 	return (val >> (byte_offset * 8)) & 0xffff;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 omap_ctrl_readl(u16 offset)
 {
-<<<<<<< HEAD
-	return __raw_readl(OMAP_CTRL_REGADDR(offset));
-=======
 	offset &= 0xfffc;
 
 	return readl_relaxed(omap2_ctrl_base + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omap_ctrl_writeb(u8 val, u16 offset)
 {
-<<<<<<< HEAD
-	__raw_writeb(val, OMAP_CTRL_REGADDR(offset));
-=======
 	u32 tmp;
 	u8 byte_offset = offset & 0x3;
 
@@ -260,14 +174,10 @@ void omap_ctrl_writeb(u8 val, u16 offset)
 	tmp |= val << (byte_offset * 8);
 
 	omap_ctrl_writel(tmp, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omap_ctrl_writew(u16 val, u16 offset)
 {
-<<<<<<< HEAD
-	__raw_writew(val, OMAP_CTRL_REGADDR(offset));
-=======
 	u32 tmp;
 	u8 byte_offset = offset & 0x2;
 
@@ -277,34 +187,12 @@ void omap_ctrl_writew(u16 val, u16 offset)
 	tmp |= val << (byte_offset * 8);
 
 	omap_ctrl_writel(tmp, offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omap_ctrl_writel(u32 val, u16 offset)
 {
-<<<<<<< HEAD
-	__raw_writel(val, OMAP_CTRL_REGADDR(offset));
-}
-
-/*
- * On OMAP4 control pad are not addressable from control
- * core base. So the common omap_ctrl_read/write APIs breaks
- * Hence export separate APIs to manage the omap4 pad control
- * registers. This APIs will work only for OMAP4
- */
-
-u32 omap4_ctrl_pad_readl(u16 offset)
-{
-	return __raw_readl(OMAP4_CTRL_PAD_REGADDR(offset));
-}
-
-void omap4_ctrl_pad_writel(u32 val, u16 offset)
-{
-	__raw_writel(val, OMAP4_CTRL_PAD_REGADDR(offset));
-=======
 	offset &= 0xfffc;
 	writel_relaxed(val, omap2_ctrl_base + offset);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_ARCH_OMAP3
@@ -333,39 +221,12 @@ void omap3_ctrl_write_boot_mode(u8 bootmode)
 	 *
 	 * XXX This should use some omap_ctrl_writel()-type function
 	 */
-<<<<<<< HEAD
-	__raw_writel(l, OMAP2_L4_IO_ADDRESS(OMAP343X_SCRATCHPAD + 4));
-=======
 	writel_relaxed(l, OMAP2_L4_IO_ADDRESS(OMAP343X_SCRATCHPAD + 4));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif
 
 #if defined(CONFIG_ARCH_OMAP3) && defined(CONFIG_PM)
-<<<<<<< HEAD
-/*
- * Clears the scratchpad contents in case of cold boot-
- * called during bootup
- */
-void omap3_clear_scratchpad_contents(void)
-{
-	u32 max_offset = OMAP343X_SCRATCHPAD_ROM_OFFSET;
-	void __iomem *v_addr;
-	u32 offset = 0;
-	v_addr = OMAP2_L4_IO_ADDRESS(OMAP343X_SCRATCHPAD_ROM);
-	if (omap2_prm_read_mod_reg(OMAP3430_GR_MOD, OMAP3_PRM_RSTST_OFFSET) &
-	    OMAP3430_GLOBAL_COLD_RST_MASK) {
-		for ( ; offset <= max_offset; offset += 0x4)
-			__raw_writel(0x0, (v_addr + offset));
-		omap2_prm_set_mod_reg_bits(OMAP3430_GLOBAL_COLD_RST_MASK,
-					   OMAP3430_GR_MOD,
-					   OMAP3_PRM_RSTST_OFFSET);
-	}
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Populate the scratchpad structure with restore structure */
 void omap3_save_scratchpad_contents(void)
 {
@@ -386,16 +247,6 @@ void omap3_save_scratchpad_contents(void)
 	scratchpad_contents.boot_config_ptr = 0x0;
 	if (cpu_is_omap3630())
 		scratchpad_contents.public_restore_ptr =
-<<<<<<< HEAD
-			virt_to_phys(omap3_restore_3630);
-	else if (omap_rev() != OMAP3430_REV_ES3_0 &&
-					omap_rev() != OMAP3430_REV_ES3_1)
-		scratchpad_contents.public_restore_ptr =
-			virt_to_phys(omap3_restore);
-	else
-		scratchpad_contents.public_restore_ptr =
-			virt_to_phys(omap3_restore_es3);
-=======
 			__pa_symbol(omap3_restore_3630);
 	else if (omap_rev() != OMAP3430_REV_ES3_0 &&
 					omap_rev() != OMAP3430_REV_ES3_1 &&
@@ -405,7 +256,6 @@ void omap3_save_scratchpad_contents(void)
 	else
 		scratchpad_contents.public_restore_ptr =
 			__pa_symbol(omap3_restore_es3);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (omap_type() == OMAP2_DEVICE_TYPE_GP)
 		scratchpad_contents.secure_ram_restore_ptr = 0x0;
@@ -417,46 +267,9 @@ void omap3_save_scratchpad_contents(void)
 	scratchpad_contents.sdrc_block_offset = 0x64;
 
 	/* Populate the PRCM block contents */
-<<<<<<< HEAD
-	prcm_block_contents.prm_clksrc_ctrl =
-		omap2_prm_read_mod_reg(OMAP3430_GR_MOD,
-				       OMAP3_PRM_CLKSRC_CTRL_OFFSET);
-	prcm_block_contents.prm_clksel =
-		omap2_prm_read_mod_reg(OMAP3430_CCR_MOD,
-				       OMAP3_PRM_CLKSEL_OFFSET);
-	prcm_block_contents.cm_clksel_core =
-			omap2_cm_read_mod_reg(CORE_MOD, CM_CLKSEL);
-	prcm_block_contents.cm_clksel_wkup =
-			omap2_cm_read_mod_reg(WKUP_MOD, CM_CLKSEL);
-	prcm_block_contents.cm_clken_pll =
-			omap2_cm_read_mod_reg(PLL_MOD, CM_CLKEN);
-	/*
-	 * As per erratum i671, ROM code does not respect the PER DPLL
-	 * programming scheme if CM_AUTOIDLE_PLL..AUTO_PERIPH_DPLL == 1.
-	 * Then,  in anycase, clear these bits to avoid extra latencies.
-	 */
-	prcm_block_contents.cm_autoidle_pll =
-			omap2_cm_read_mod_reg(PLL_MOD, CM_AUTOIDLE) &
-			~OMAP3430_AUTO_PERIPH_DPLL_MASK;
-	prcm_block_contents.cm_clksel1_pll =
-			omap2_cm_read_mod_reg(PLL_MOD, OMAP3430_CM_CLKSEL1_PLL);
-	prcm_block_contents.cm_clksel2_pll =
-			omap2_cm_read_mod_reg(PLL_MOD, OMAP3430_CM_CLKSEL2_PLL);
-	prcm_block_contents.cm_clksel3_pll =
-			omap2_cm_read_mod_reg(PLL_MOD, OMAP3430_CM_CLKSEL3);
-	prcm_block_contents.cm_clken_pll_mpu =
-			omap2_cm_read_mod_reg(MPU_MOD, OMAP3430_CM_CLKEN_PLL);
-	prcm_block_contents.cm_autoidle_pll_mpu =
-			omap2_cm_read_mod_reg(MPU_MOD, OMAP3430_CM_AUTOIDLE_PLL);
-	prcm_block_contents.cm_clksel1_pll_mpu =
-			omap2_cm_read_mod_reg(MPU_MOD, OMAP3430_CM_CLKSEL1_PLL);
-	prcm_block_contents.cm_clksel2_pll_mpu =
-			omap2_cm_read_mod_reg(MPU_MOD, OMAP3430_CM_CLKSEL2_PLL);
-=======
 	omap3_prm_save_scratchpad_contents(prcm_block_contents.prm_contents);
 	omap3_cm_save_scratchpad_contents(prcm_block_contents.cm_contents);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prcm_block_contents.prcm_block_size = 0x0;
 
 	/* Populate the SDRC block contents */
@@ -514,11 +327,7 @@ void omap3_save_scratchpad_contents(void)
 	sdrc_block_contents.flags = 0x0;
 	sdrc_block_contents.block_size = 0x0;
 
-<<<<<<< HEAD
-	arm_context_addr = virt_to_phys(omap3_arm_context);
-=======
 	arm_context_addr = __pa_symbol(omap3_arm_context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy all the contents to the scratchpad location */
 	scratchpad_address = OMAP2_L4_IO_ADDRESS(OMAP343X_SCRATCHPAD);
@@ -567,10 +376,7 @@ void omap3_control_save_context(void)
 			omap_ctrl_readl(OMAP343X_CONTROL_IVA2_BOOTADDR);
 	control_context.iva2_bootmod =
 			omap_ctrl_readl(OMAP343X_CONTROL_IVA2_BOOTMOD);
-<<<<<<< HEAD
-=======
 	control_context.wkup_ctrl = omap_ctrl_readl(OMAP34XX_CONTROL_WKUP_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	control_context.debobs_0 = omap_ctrl_readl(OMAP343X_CONTROL_DEBOBS(0));
 	control_context.debobs_1 = omap_ctrl_readl(OMAP343X_CONTROL_DEBOBS(1));
 	control_context.debobs_2 = omap_ctrl_readl(OMAP343X_CONTROL_DEBOBS(2));
@@ -599,10 +405,6 @@ void omap3_control_save_context(void)
 	control_context.csi = omap_ctrl_readl(OMAP343X_CONTROL_CSI);
 	control_context.padconf_sys_nirq =
 		omap_ctrl_readl(OMAP343X_CONTROL_PADCONF_SYSNIRQ);
-<<<<<<< HEAD
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omap3_control_restore_context(void)
@@ -632,10 +434,7 @@ void omap3_control_restore_context(void)
 					OMAP343X_CONTROL_IVA2_BOOTADDR);
 	omap_ctrl_writel(control_context.iva2_bootmod,
 					OMAP343X_CONTROL_IVA2_BOOTMOD);
-<<<<<<< HEAD
-=======
 	omap_ctrl_writel(control_context.wkup_ctrl, OMAP34XX_CONTROL_WKUP_CTRL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap_ctrl_writel(control_context.debobs_0, OMAP343X_CONTROL_DEBOBS(0));
 	omap_ctrl_writel(control_context.debobs_1, OMAP343X_CONTROL_DEBOBS(1));
 	omap_ctrl_writel(control_context.debobs_2, OMAP343X_CONTROL_DEBOBS(2));
@@ -664,10 +463,6 @@ void omap3_control_restore_context(void)
 	omap_ctrl_writel(control_context.csi, OMAP343X_CONTROL_CSI);
 	omap_ctrl_writel(control_context.padconf_sys_nirq,
 			 OMAP343X_CONTROL_PADCONF_SYSNIRQ);
-<<<<<<< HEAD
-	return;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omap3630_ctrl_disable_rta(void)
@@ -704,9 +499,6 @@ int omap3_ctrl_save_padconf(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-#endif /* CONFIG_ARCH_OMAP3 && CONFIG_PM */
-=======
 /**
  * omap3_ctrl_set_iva_bootmode_idle - sets the IVA2 bootmode to idle
  *
@@ -993,4 +785,3 @@ of_node_put:
 	return ret;
 
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

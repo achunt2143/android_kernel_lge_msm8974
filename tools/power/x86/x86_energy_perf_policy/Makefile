@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-x86_energy_perf_policy : x86_energy_perf_policy.c
-
-clean :
-	rm -f x86_energy_perf_policy
-
-install :
-	install x86_energy_perf_policy /usr/bin/
-	install x86_energy_perf_policy.8 /usr/share/man/man8/
-=======
 # SPDX-License-Identifier: GPL-2.0
 CC		= $(CROSS_COMPILE)gcc
 BUILD_OUTPUT    := $(CURDIR)
@@ -37,4 +27,3 @@ install : x86_energy_perf_policy
 	install -d  $(DESTDIR)$(PREFIX)/share/man/man8
 	install -m 644 x86_energy_perf_policy.8 $(DESTDIR)$(PREFIX)/share/man/man8
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

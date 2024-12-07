@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 flash memory os area.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -36,11 +17,6 @@
 #include <linux/of.h>
 #include <linux/slab.h>
 
-<<<<<<< HEAD
-#include <asm/prom.h>
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "platform.h"
 
 enum {
@@ -204,14 +180,6 @@ static const struct os_area_db_id os_area_db_id_rtc_diff = {
 	.key = OS_AREA_DB_KEY_RTC_DIFF
 };
 
-<<<<<<< HEAD
-static const struct os_area_db_id os_area_db_id_video_mode = {
-	.owner = OS_AREA_DB_OWNER_LINUX,
-	.key = OS_AREA_DB_KEY_VIDEO_MODE
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SECONDS_FROM_1970_TO_2000 946684800LL
 
 /**
@@ -223,19 +191,11 @@ static const struct os_area_db_id os_area_db_id_video_mode = {
  *  3) The number of seconds from 1970 to 2000.
  */
 
-<<<<<<< HEAD
-struct saved_params {
-	unsigned int valid;
-	s64 rtc_diff;
-	unsigned int av_multi_out;
-} static saved_params;
-=======
 static struct saved_params {
 	unsigned int valid;
 	s64 rtc_diff;
 	unsigned int av_multi_out;
 } saved_params;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct property property_rtc_diff = {
 	.name = "linux,rtc_diff",
@@ -301,15 +261,6 @@ static void os_area_set_property(struct device_node *node,
 
 	if (tmp) {
 		pr_debug("%s:%d found %s\n", __func__, __LINE__, prop->name);
-<<<<<<< HEAD
-		prom_remove_property(node, tmp);
-	}
-
-	result = prom_add_property(node, prop);
-
-	if (result)
-		pr_debug("%s:%d prom_set_property failed\n", __func__,
-=======
 		of_remove_property(node, tmp);
 	}
 
@@ -317,7 +268,6 @@ static void os_area_set_property(struct device_node *node,
 
 	if (result)
 		pr_debug("%s:%d of_set_property failed\n", __func__,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__LINE__);
 }
 
@@ -549,11 +499,7 @@ static int db_set_64(struct os_area_db *db, const struct os_area_db_id *id,
 	return -1;
 }
 
-<<<<<<< HEAD
-static int db_get_64(const struct os_area_db *db,
-=======
 static int __init db_get_64(const struct os_area_db *db,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct os_area_db_id *id, uint64_t *value)
 {
 	struct db_iterator i;
@@ -569,11 +515,7 @@ static int __init db_get_64(const struct os_area_db *db,
 	return -1;
 }
 
-<<<<<<< HEAD
-static int db_get_rtc_diff(const struct os_area_db *db, int64_t *rtc_diff)
-=======
 static int __init db_get_rtc_diff(const struct os_area_db *db, int64_t *rtc_diff)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return db_get_64(db, &os_area_db_id_rtc_diff, (uint64_t*)rtc_diff);
 }
@@ -669,15 +611,8 @@ static int update_flash_db(void)
 	/* Read in header and db from flash. */
 
 	header = kmalloc(buf_len, GFP_KERNEL);
-<<<<<<< HEAD
-	if (!header) {
-		pr_debug("%s: kmalloc failed\n", __func__);
-		return -ENOMEM;
-	}
-=======
 	if (!header)
 		return -ENOMEM;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	count = os_area_flash_read(header, buf_len, 0);
 	if (count < 0) {
@@ -713,11 +648,7 @@ static int update_flash_db(void)
 	db_set_64(db, &os_area_db_id_rtc_diff, saved_params.rtc_diff);
 
 	count = os_area_flash_write(db, sizeof(struct os_area_db), pos);
-<<<<<<< HEAD
-	if (count < sizeof(struct os_area_db)) {
-=======
 	if (count < 0 || count < sizeof(struct os_area_db)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("%s: os_area_flash_write failed %zd\n", __func__,
 			 count);
 		error = count < 0 ? count : -EIO;
@@ -752,11 +683,7 @@ static void os_area_queue_work_handler(struct work_struct *work)
 
 	error = update_flash_db();
 	if (error)
-<<<<<<< HEAD
-		pr_warning("%s: Could not update FLASH ROM\n", __func__);
-=======
 		pr_warn("%s: Could not update FLASH ROM\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug(" <- %s:%d\n", __func__, __LINE__);
 }

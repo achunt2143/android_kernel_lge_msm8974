@@ -1,21 +1,11 @@
-<<<<<<< HEAD
-/*
-=======
 /* SPDX-License-Identifier: GPL-2.0
  *
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * relocate_kernel.S - put the kernel image in place to boot
  * 2005.9.17 kogiidena@eggplant.ddo.jp
  *
  * LANDISK/sh4 is supported. Maybe, SH archtecture works well.
  *
  * 2009-03-18 Magnus Damm - Added Kexec Jump support
-<<<<<<< HEAD
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2.  See the file COPYING for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/addrspace.h>

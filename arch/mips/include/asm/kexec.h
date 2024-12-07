@@ -1,34 +1,12 @@
-<<<<<<< HEAD
-/*
- * kexec.h for kexec
- * Created by <nschichan@corp.free.fr> on Thu Oct 12 14:59:34 2006
- *
- * This source code is licensed under the GNU General Public License,
- * Version 2.  See the file COPYING for more details.
-=======
 /* SPDX-License-Identifier: GPL-2.0-only */
 /*
  * kexec.h for kexec
  * Created by <nschichan@corp.free.fr> on Thu Oct 12 14:59:34 2006
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _MIPS_KEXEC
 # define _MIPS_KEXEC
 
-<<<<<<< HEAD
-/* Maximum physical address we can use pages from */
-#define KEXEC_SOURCE_MEMORY_LIMIT (0x20000000)
-/* Maximum address we can reach in physical address mode */
-#define KEXEC_DESTINATION_MEMORY_LIMIT (0x20000000)
- /* Maximum address we can use for the control code buffer */
-#define KEXEC_CONTROL_MEMORY_LIMIT (0x20000000)
-
-#define KEXEC_CONTROL_PAGE_SIZE 4096
-
-/* The native architecture */
-#define KEXEC_ARCH KEXEC_ARCH_MIPS
-=======
 #include <asm/stacktrace.h>
 
 /* Maximum physical address we can use pages from */
@@ -43,16 +21,10 @@
 /* The native architecture */
 #define KEXEC_ARCH KEXEC_ARCH_MIPS
 #define MAX_NOTE_BYTES 1024
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void crash_setup_regs(struct pt_regs *newregs,
 				    struct pt_regs *oldregs)
 {
-<<<<<<< HEAD
-	/* Dummy implementation for now */
-}
-
-=======
 	if (oldregs)
 		memcpy(newregs, oldregs, sizeof(*newregs));
 	else
@@ -76,5 +48,4 @@ extern void (*_crash_smp_send_stop)(void);
 #endif
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !_MIPS_KEXEC */

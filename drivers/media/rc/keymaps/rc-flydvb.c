@@ -1,23 +1,9 @@
-<<<<<<< HEAD
-/* flydvb.h - Keytable for flydvb Remote Controller
- *
- * keymap imported from ir-keymaps.c
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- */
-=======
 // SPDX-License-Identifier: GPL-2.0+
 // flydvb.h - Keytable for flydvb Remote Controller
 //
 // keymap imported from ir-keymaps.c
 //
 // Copyright (c) 2010 by Mauro Carvalho Chehab
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -26,19 +12,6 @@ static struct rc_map_table flydvb[] = {
 	{ 0x01, KEY_ZOOM },		/* Full Screen */
 	{ 0x00, KEY_POWER },		/* Power */
 
-<<<<<<< HEAD
-	{ 0x03, KEY_1 },
-	{ 0x04, KEY_2 },
-	{ 0x05, KEY_3 },
-	{ 0x07, KEY_4 },
-	{ 0x08, KEY_5 },
-	{ 0x09, KEY_6 },
-	{ 0x0b, KEY_7 },
-	{ 0x0c, KEY_8 },
-	{ 0x0d, KEY_9 },
-	{ 0x06, KEY_AGAIN },		/* Recall */
-	{ 0x0f, KEY_0 },
-=======
 	{ 0x03, KEY_NUMERIC_1 },
 	{ 0x04, KEY_NUMERIC_2 },
 	{ 0x05, KEY_NUMERIC_3 },
@@ -50,7 +23,6 @@ static struct rc_map_table flydvb[] = {
 	{ 0x0d, KEY_NUMERIC_9 },
 	{ 0x06, KEY_AGAIN },		/* Recall */
 	{ 0x0f, KEY_NUMERIC_0 },
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10, KEY_MUTE },		/* Mute */
 	{ 0x02, KEY_RADIO },		/* TV/Radio */
 	{ 0x1b, KEY_LANGUAGE },		/* SAP (Second Audio Program) */
@@ -77,17 +49,10 @@ static struct rc_map_table flydvb[] = {
 
 static struct rc_map_list flydvb_map = {
 	.map = {
-<<<<<<< HEAD
-		.scan    = flydvb,
-		.size    = ARRAY_SIZE(flydvb),
-		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
-		.name    = RC_MAP_FLYDVB,
-=======
 		.scan     = flydvb,
 		.size     = ARRAY_SIZE(flydvb),
 		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
 		.name     = RC_MAP_FLYDVB,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -105,9 +70,5 @@ module_init(init_rc_map_flydvb)
 module_exit(exit_rc_map_flydvb)
 
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
-=======
 MODULE_AUTHOR("Mauro Carvalho Chehab");
 MODULE_DESCRIPTION("flydvb remote controller keytable");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

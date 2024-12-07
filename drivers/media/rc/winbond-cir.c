@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  winbond-cir.c - Driver for the Consumer IR functionality of Winbond
  *                  SuperI/O chips.
@@ -11,10 +8,7 @@
  *  with minor modifications.
  *
  *  Original Author: David Härdeman <david@hardeman.nu>
-<<<<<<< HEAD
-=======
  *     Copyright (C) 2012 Sean Young <sean@mess.org>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     Copyright (C) 2009 - 2011 David Härdeman <david@hardeman.nu>
  *
  *  Dedicated to my daughter Matilda, without whose loving attention this
@@ -30,27 +24,7 @@
  *    o IR Receive
  *    o IR Transmit
  *    o Wake-On-CIR functionality
-<<<<<<< HEAD
- *
- *  To do:
- *    o Learning
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-=======
  *    o Carrier detection
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -161,8 +135,6 @@
 #define WBCIR_REGSEL_MASK	0x20
 /* Starting address of selected register in WBCIR_REG_WCEIR_INDEX */
 #define WBCIR_REG_ADDR0		0x00
-<<<<<<< HEAD
-=======
 /* Enable carrier counter */
 #define WBCIR_CNTR_EN		0x01
 /* Reset carrier counter */
@@ -171,7 +143,6 @@
 #define WBCIR_IRTX_INV		0x04
 /* Receiver oversampling */
 #define WBCIR_RX_T_OV		0x40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Valid banks for the SP3 UART */
 enum wbcir_bank {
@@ -203,10 +174,6 @@ enum wbcir_rxstate {
 enum wbcir_txstate {
 	WBCIR_TXSTATE_INACTIVE = 0,
 	WBCIR_TXSTATE_ACTIVE,
-<<<<<<< HEAD
-	WBCIR_TXSTATE_DONE,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WBCIR_TXSTATE_ERROR
 };
 
@@ -214,10 +181,6 @@ enum wbcir_txstate {
 #define WBCIR_NAME	"Winbond CIR"
 #define WBCIR_ID_FAMILY          0xF1 /* Family ID for the WPCD376I	*/
 #define	WBCIR_ID_CHIP            0x04 /* Chip ID for the WPCD376I	*/
-<<<<<<< HEAD
-#define INVALID_SCANCODE   0x7FFFFFFF /* Invalid with all protos	*/
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WAKEUP_IOMEM_LEN         0x10 /* Wake-Up I/O Reg Len		*/
 #define EHFUNC_IOMEM_LEN         0x10 /* Enhanced Func I/O Reg Len	*/
 #define SP_IOMEM_LEN             0x08 /* Serial Port 3 (IR) Reg Len	*/
@@ -236,18 +199,6 @@ struct wbcir_data {
 
 	/* RX state */
 	enum wbcir_rxstate rxstate;
-<<<<<<< HEAD
-	struct led_trigger *rxtrigger;
-	struct ir_raw_event rxev;
-
-	/* TX state */
-	enum wbcir_txstate txstate;
-	struct led_trigger *txtrigger;
-	u32 txlen;
-	u32 txoff;
-	u32 *txbuf;
-	wait_queue_head_t txwaitq;
-=======
 	int carrier_report_enabled;
 	u32 pulse_duration;
 
@@ -256,40 +207,17 @@ struct wbcir_data {
 	u32 txlen;
 	u32 txoff;
 	u32 *txbuf;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 txmask;
 	u32 txcarrier;
 };
 
-<<<<<<< HEAD
-static enum wbcir_protocol protocol = IR_PROTOCOL_RC6;
-module_param(protocol, uint, 0444);
-MODULE_PARM_DESC(protocol, "IR protocol to use for the power-on command "
-		 "(0 = RC5, 1 = NEC, 2 = RC6A, default)");
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool invert; /* default = 0 */
 module_param(invert, bool, 0444);
 MODULE_PARM_DESC(invert, "Invert the signal from the IR receiver");
 
 static bool txandrx; /* default = 0 */
 module_param(txandrx, bool, 0444);
-<<<<<<< HEAD
-MODULE_PARM_DESC(invert, "Allow simultaneous TX and RX");
-
-static unsigned int wake_sc = 0x800F040C;
-module_param(wake_sc, uint, 0644);
-MODULE_PARM_DESC(wake_sc, "Scancode of the power-on IR command");
-
-static unsigned int wake_rc6mode = 6;
-module_param(wake_rc6mode, uint, 0644);
-MODULE_PARM_DESC(wake_rc6mode, "RC6 mode for the power-on command "
-		 "(0 = 0, 6 = 6A, default)");
-
-=======
 MODULE_PARM_DESC(txandrx, "Allow simultaneous TX and RX");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*****************************************************************************
@@ -379,8 +307,6 @@ wbcir_to_rc6cells(u8 val)
  *****************************************************************************/
 
 static void
-<<<<<<< HEAD
-=======
 wbcir_carrier_report(struct wbcir_data *data)
 {
 	unsigned counter = inb(data->ebase + WBCIR_REG_ECEIR_CNT_LO) |
@@ -405,21 +331,10 @@ wbcir_carrier_report(struct wbcir_data *data)
 }
 
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wbcir_idle_rx(struct rc_dev *dev, bool idle)
 {
 	struct wbcir_data *data = dev->priv;
 
-<<<<<<< HEAD
-	if (!idle && data->rxstate == WBCIR_RXSTATE_INACTIVE) {
-		data->rxstate = WBCIR_RXSTATE_ACTIVE;
-		led_trigger_event(data->rxtrigger, LED_FULL);
-	}
-
-	if (idle && data->rxstate != WBCIR_RXSTATE_INACTIVE)
-		/* Tell hardware to go idle by setting RXINACTIVE */
-		outb(WBCIR_RX_DISABLE, data->sbase + WBCIR_REG_SP3_ASCR);
-=======
 	if (!idle && data->rxstate == WBCIR_RXSTATE_INACTIVE)
 		data->rxstate = WBCIR_RXSTATE_ACTIVE;
 
@@ -432,35 +347,19 @@ wbcir_idle_rx(struct rc_dev *dev, bool idle)
 		/* Tell hardware to go idle by setting RXINACTIVE */
 		outb(WBCIR_RX_DISABLE, data->sbase + WBCIR_REG_SP3_ASCR);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 wbcir_irq_rx(struct wbcir_data *data, struct pnp_dev *device)
 {
 	u8 irdata;
-<<<<<<< HEAD
-	DEFINE_IR_RAW_EVENT(rawir);
-=======
 	struct ir_raw_event rawir = {};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Since RXHDLEV is set, at least 8 bytes are in the FIFO */
 	while (inb(data->sbase + WBCIR_REG_SP3_LSR) & WBCIR_RX_AVAIL) {
 		irdata = inb(data->sbase + WBCIR_REG_SP3_RXDATA);
 		if (data->rxstate == WBCIR_RXSTATE_ERROR)
 			continue;
-<<<<<<< HEAD
-		rawir.pulse = irdata & 0x80 ? false : true;
-		rawir.duration = US_TO_NS((irdata & 0x7F) * 10);
-		ir_raw_event_store_with_filter(data->dev, &rawir);
-	}
-
-	/* Check if we should go idle */
-	if (data->dev->idle) {
-		led_trigger_event(data->rxtrigger, LED_OFF);
-		data->rxstate = WBCIR_RXSTATE_INACTIVE;
-=======
 
 		rawir.duration = ((irdata & 0x7F) + 1) *
 			(data->carrier_report_enabled ? 2 : 10);
@@ -470,7 +369,6 @@ wbcir_irq_rx(struct wbcir_data *data, struct pnp_dev *device)
 			data->pulse_duration += rawir.duration;
 
 		ir_raw_event_store_with_filter(data->dev, &rawir);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ir_raw_event_handle(data->dev);
@@ -491,10 +389,6 @@ wbcir_irq_tx(struct wbcir_data *data)
 	case WBCIR_TXSTATE_INACTIVE:
 		/* TX FIFO empty */
 		space = 16;
-<<<<<<< HEAD
-		led_trigger_event(data->txtrigger, LED_FULL);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case WBCIR_TXSTATE_ACTIVE:
 		/* TX FIFO low (3 bytes or less) */
@@ -524,11 +418,7 @@ wbcir_irq_tx(struct wbcir_data *data)
 		bytes[used] = byte;
 	}
 
-<<<<<<< HEAD
-	while (data->txbuf[data->txoff] == 0 && data->txoff != data->txlen)
-=======
 	while (data->txoff != data->txlen && data->txbuf[data->txoff] == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->txoff++;
 
 	if (used == 0) {
@@ -536,18 +426,10 @@ wbcir_irq_tx(struct wbcir_data *data)
 		if (data->txstate == WBCIR_TXSTATE_ERROR)
 			/* Clear TX underrun bit */
 			outb(WBCIR_TX_UNDERRUN, data->sbase + WBCIR_REG_SP3_ASCR);
-<<<<<<< HEAD
-		else
-			data->txstate = WBCIR_TXSTATE_DONE;
-		wbcir_set_irqmask(data, WBCIR_IRQ_RX | WBCIR_IRQ_ERR);
-		led_trigger_event(data->txtrigger, LED_OFF);
-		wake_up(&data->txwaitq);
-=======
 		wbcir_set_irqmask(data, WBCIR_IRQ_RX | WBCIR_IRQ_ERR);
 		kfree(data->txbuf);
 		data->txbuf = NULL;
 		data->txstate = WBCIR_TXSTATE_INACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (data->txoff == data->txlen) {
 		/* At the end of transmission, tell the hw before last byte */
 		outsb(data->sbase + WBCIR_REG_SP3_TXDATA, bytes, used - 1);
@@ -588,11 +470,7 @@ wbcir_irq_handler(int irqno, void *cookie)
 		/* RX overflow? (read clears bit) */
 		if (inb(data->sbase + WBCIR_REG_SP3_LSR) & WBCIR_RX_OVERRUN) {
 			data->rxstate = WBCIR_RXSTATE_ERROR;
-<<<<<<< HEAD
-			ir_raw_event_reset(data->dev);
-=======
 			ir_raw_event_overflow(data->dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* TX underflow? */
@@ -617,8 +495,6 @@ wbcir_irq_handler(int irqno, void *cookie)
  *****************************************************************************/
 
 static int
-<<<<<<< HEAD
-=======
 wbcir_set_carrier_report(struct rc_dev *dev, int enable)
 {
 	struct wbcir_data *data = dev->priv;
@@ -657,7 +533,6 @@ wbcir_set_carrier_report(struct rc_dev *dev, int enable)
 }
 
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wbcir_txcarrier(struct rc_dev *dev, u32 carrier)
 {
 	struct wbcir_data *data = dev->priv;
@@ -709,13 +584,10 @@ wbcir_txmask(struct rc_dev *dev, u32 mask)
 	unsigned long flags;
 	u8 val;
 
-<<<<<<< HEAD
-=======
 	/* return the number of transmitters */
 	if (mask > 15)
 		return 4;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Four outputs, only one output can be enabled at a time */
 	switch (mask) {
 	case 0x1:
@@ -750,14 +622,6 @@ wbcir_txmask(struct rc_dev *dev, u32 mask)
 }
 
 static int
-<<<<<<< HEAD
-wbcir_tx(struct rc_dev *dev, unsigned *buf, unsigned count)
-{
-	struct wbcir_data *data = dev->priv;
-	unsigned i;
-	unsigned long flags;
-
-=======
 wbcir_tx(struct rc_dev *dev, unsigned *b, unsigned count)
 {
 	struct wbcir_data *data = dev->priv;
@@ -773,50 +637,22 @@ wbcir_tx(struct rc_dev *dev, unsigned *b, unsigned count)
 	for (i = 0; i < count; i++)
 		buf[i] = DIV_ROUND_CLOSEST(b[i], 10);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Not sure if this is possible, but better safe than sorry */
 	spin_lock_irqsave(&data->spinlock, flags);
 	if (data->txstate != WBCIR_TXSTATE_INACTIVE) {
 		spin_unlock_irqrestore(&data->spinlock, flags);
-<<<<<<< HEAD
-		return -EBUSY;
-	}
-
-	/* Convert values to multiples of 10us */
-	for (i = 0; i < count; i++)
-		buf[i] = DIV_ROUND_CLOSEST(buf[i], 10);
-
-=======
 		kfree(buf);
 		return -EBUSY;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fill the TX fifo once, the irq handler will do the rest */
 	data->txbuf = buf;
 	data->txlen = count;
 	data->txoff = 0;
 	wbcir_irq_tx(data);
 
-<<<<<<< HEAD
-	/* Wait for the TX to complete */
-	while (data->txstate == WBCIR_TXSTATE_ACTIVE) {
-		spin_unlock_irqrestore(&data->spinlock, flags);
-		wait_event(data->txwaitq, data->txstate != WBCIR_TXSTATE_ACTIVE);
-		spin_lock_irqsave(&data->spinlock, flags);
-	}
-
-	/* We're done */
-	if (data->txstate == WBCIR_TXSTATE_ERROR)
-		count = -EAGAIN;
-	data->txstate = WBCIR_TXSTATE_INACTIVE;
-	data->txbuf = NULL;
-	spin_unlock_irqrestore(&data->spinlock, flags);
-
-=======
 	/* We're done */
 	spin_unlock_irqrestore(&data->spinlock, flags);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 
@@ -831,154 +667,24 @@ wbcir_shutdown(struct pnp_dev *device)
 {
 	struct device *dev = &device->dev;
 	struct wbcir_data *data = pnp_get_drvdata(device);
-<<<<<<< HEAD
-=======
 	struct rc_dev *rc = data->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool do_wake = true;
 	u8 match[11];
 	u8 mask[11];
 	u8 rc6_csl = 0;
-<<<<<<< HEAD
-=======
 	u8 proto;
 	u32 wake_sc = rc->scancode_wakeup_filter.data;
 	u32 mask_sc = rc->scancode_wakeup_filter.mask;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	memset(match, 0, sizeof(match));
 	memset(mask, 0, sizeof(mask));
 
-<<<<<<< HEAD
-	if (wake_sc == INVALID_SCANCODE || !device_may_wakeup(dev)) {
-=======
 	if (!mask_sc || !device_may_wakeup(dev)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		do_wake = false;
 		goto finish;
 	}
 
-<<<<<<< HEAD
-	switch (protocol) {
-	case IR_PROTOCOL_RC5:
-		if (wake_sc > 0xFFF) {
-			do_wake = false;
-			dev_err(dev, "RC5 - Invalid wake scancode\n");
-			break;
-		}
-
-		/* Mask = 13 bits, ex toggle */
-		mask[0] = 0xFF;
-		mask[1] = 0x17;
-
-		match[0]  = (wake_sc & 0x003F);      /* 6 command bits */
-		match[0] |= (wake_sc & 0x0180) >> 1; /* 2 address bits */
-		match[1]  = (wake_sc & 0x0E00) >> 9; /* 3 address bits */
-		if (!(wake_sc & 0x0040))             /* 2nd start bit  */
-			match[1] |= 0x10;
-
-		break;
-
-	case IR_PROTOCOL_NEC:
-		if (wake_sc > 0xFFFFFF) {
-			do_wake = false;
-			dev_err(dev, "NEC - Invalid wake scancode\n");
-			break;
-		}
-
-		mask[0] = mask[1] = mask[2] = mask[3] = 0xFF;
-
-		match[1] = bitrev8((wake_sc & 0xFF));
-		match[0] = ~match[1];
-
-		match[3] = bitrev8((wake_sc & 0xFF00) >> 8);
-		if (wake_sc > 0xFFFF)
-			match[2] = bitrev8((wake_sc & 0xFF0000) >> 16);
-		else
-			match[2] = ~match[3];
-
-		break;
-
-	case IR_PROTOCOL_RC6:
-
-		if (wake_rc6mode == 0) {
-			if (wake_sc > 0xFFFF) {
-				do_wake = false;
-				dev_err(dev, "RC6 - Invalid wake scancode\n");
-				break;
-			}
-
-			/* Command */
-			match[0] = wbcir_to_rc6cells(wake_sc >>  0);
-			mask[0]  = 0xFF;
-			match[1] = wbcir_to_rc6cells(wake_sc >>  4);
-			mask[1]  = 0xFF;
-
-			/* Address */
-			match[2] = wbcir_to_rc6cells(wake_sc >>  8);
-			mask[2]  = 0xFF;
-			match[3] = wbcir_to_rc6cells(wake_sc >> 12);
-			mask[3]  = 0xFF;
-
-			/* Header */
-			match[4] = 0x50; /* mode1 = mode0 = 0, ignore toggle */
-			mask[4]  = 0xF0;
-			match[5] = 0x09; /* start bit = 1, mode2 = 0 */
-			mask[5]  = 0x0F;
-
-			rc6_csl = 44;
-
-		} else if (wake_rc6mode == 6) {
-			i = 0;
-
-			/* Command */
-			match[i]  = wbcir_to_rc6cells(wake_sc >>  0);
-			mask[i++] = 0xFF;
-			match[i]  = wbcir_to_rc6cells(wake_sc >>  4);
-			mask[i++] = 0xFF;
-
-			/* Address + Toggle */
-			match[i]  = wbcir_to_rc6cells(wake_sc >>  8);
-			mask[i++] = 0xFF;
-			match[i]  = wbcir_to_rc6cells(wake_sc >> 12);
-			mask[i++] = 0x3F;
-
-			/* Customer bits 7 - 0 */
-			match[i]  = wbcir_to_rc6cells(wake_sc >> 16);
-			mask[i++] = 0xFF;
-			match[i]  = wbcir_to_rc6cells(wake_sc >> 20);
-			mask[i++] = 0xFF;
-
-			if (wake_sc & 0x80000000) {
-				/* Customer range bit and bits 15 - 8 */
-				match[i]  = wbcir_to_rc6cells(wake_sc >> 24);
-				mask[i++] = 0xFF;
-				match[i]  = wbcir_to_rc6cells(wake_sc >> 28);
-				mask[i++] = 0xFF;
-				rc6_csl = 76;
-			} else if (wake_sc <= 0x007FFFFF) {
-				rc6_csl = 60;
-			} else {
-				do_wake = false;
-				dev_err(dev, "RC6 - Invalid wake scancode\n");
-				break;
-			}
-
-			/* Header */
-			match[i]  = 0x93; /* mode1 = mode0 = 1, submode = 0 */
-			mask[i++] = 0xFF;
-			match[i]  = 0x0A; /* start bit = 1, mode2 = 1 */
-			mask[i++] = 0x0F;
-
-		} else {
-			do_wake = false;
-			dev_err(dev, "RC6 - Invalid wake mode\n");
-		}
-
-		break;
-
-=======
 	switch (rc->wakeup_protocol) {
 	case RC_PROTO_RC5:
 		/* Mask = 13 bits, ex toggle */
@@ -1108,7 +814,6 @@ wbcir_shutdown(struct pnp_dev *device)
 		mask[i++] = 0x0F;
 		proto = IR_PROTOCOL_RC6;
 		break;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		do_wake = false;
 		break;
@@ -1136,12 +841,8 @@ finish:
 		wbcir_set_bits(data->wbase + WBCIR_REG_WCEIR_EV_EN, 0x01, 0x07);
 
 		/* Set CEIR_EN */
-<<<<<<< HEAD
-		wbcir_set_bits(data->wbase + WBCIR_REG_WCEIR_CTL, 0x01, 0x01);
-=======
 		wbcir_set_bits(data->wbase + WBCIR_REG_WCEIR_CTL,
 			       (proto << 4) | 0x01, 0x31);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else {
 		/* Clear BUFF_EN, Clear END_EN, Clear MATCH_EN */
@@ -1159,12 +860,6 @@ finish:
 	 */
 	wbcir_set_irqmask(data, WBCIR_IRQ_NONE);
 	disable_irq(data->irq);
-<<<<<<< HEAD
-
-	/* Disable LED */
-	led_trigger_event(data->rxtrigger, LED_OFF);
-	led_trigger_event(data->txtrigger, LED_OFF);
-=======
 }
 
 /*
@@ -1174,17 +869,13 @@ static int
 wbcir_set_wakeup_filter(struct rc_dev *rc, struct rc_scancode_filter *filter)
 {
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 wbcir_suspend(struct pnp_dev *device, pm_message_t state)
 {
-<<<<<<< HEAD
-=======
 	struct wbcir_data *data = pnp_get_drvdata(device);
 	led_classdev_suspend(&data->led);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wbcir_shutdown(device);
 	return 0;
 }
@@ -1192,24 +883,11 @@ wbcir_suspend(struct pnp_dev *device, pm_message_t state)
 static void
 wbcir_init_hw(struct wbcir_data *data)
 {
-<<<<<<< HEAD
-	u8 tmp;
-
-	/* Disable interrupts */
-	wbcir_set_irqmask(data, WBCIR_IRQ_NONE);
-
-	/* Set PROT_SEL, RX_INV, Clear CEIR_EN (needed for the led) */
-	tmp = protocol << 4;
-	if (invert)
-		tmp |= 0x08;
-	outb(tmp, data->wbase + WBCIR_REG_WCEIR_CTL);
-=======
 	/* Disable interrupts */
 	wbcir_set_irqmask(data, WBCIR_IRQ_NONE);
 
 	/* Set RX_INV, Clear CEIR_EN (needed for the led) */
 	wbcir_set_bits(data->wbase + WBCIR_REG_WCEIR_CTL, invert ? 8 : 0, 0x09);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear status bits NEC_REP, BUFF, MSG_END, MATCH */
 	wbcir_set_bits(data->wbase + WBCIR_REG_WCEIR_STS, 0x17, 0x17);
@@ -1222,11 +900,7 @@ wbcir_init_hw(struct wbcir_data *data)
 
 	/* Set IRTX_INV */
 	if (invert)
-<<<<<<< HEAD
-		outb(0x04, data->ebase + WBCIR_REG_ECEIR_CCTL);
-=======
 		outb(WBCIR_IRTX_INV, data->ebase + WBCIR_REG_ECEIR_CCTL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		outb(0x00, data->ebase + WBCIR_REG_ECEIR_CCTL);
 
@@ -1256,11 +930,7 @@ wbcir_init_hw(struct wbcir_data *data)
 	outb(0x30, data->sbase + WBCIR_REG_SP3_EXCR2);
 
 	/* Set baud divisor to sample every 10 us */
-<<<<<<< HEAD
-	outb(0x0F, data->sbase + WBCIR_REG_SP3_BGDL);
-=======
 	outb(0x0f, data->sbase + WBCIR_REG_SP3_BGDL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(0x00, data->sbase + WBCIR_REG_SP3_BGDH);
 
 	/* Set CEIR mode */
@@ -1308,19 +978,6 @@ wbcir_init_hw(struct wbcir_data *data)
 
 	/* Clear RX state */
 	data->rxstate = WBCIR_RXSTATE_INACTIVE;
-<<<<<<< HEAD
-	data->rxev.duration = 0;
-	ir_raw_event_reset(data->dev);
-	ir_raw_event_handle(data->dev);
-
-	/*
-	 * Check TX state, if we did a suspend/resume cycle while TX was
-	 * active, we will have a process waiting in txwaitq.
-	 */
-	if (data->txstate == WBCIR_TXSTATE_ACTIVE) {
-		data->txstate = WBCIR_TXSTATE_ERROR;
-		wake_up(&data->txwaitq);
-=======
 	wbcir_idle_rx(data->dev, true);
 
 	/* Clear TX state */
@@ -1328,7 +985,6 @@ wbcir_init_hw(struct wbcir_data *data)
 		kfree(data->txbuf);
 		data->txbuf = NULL;
 		data->txstate = WBCIR_TXSTATE_INACTIVE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Enable interrupts */
@@ -1342,19 +998,12 @@ wbcir_resume(struct pnp_dev *device)
 
 	wbcir_init_hw(data);
 	enable_irq(data->irq);
-<<<<<<< HEAD
-=======
 	led_classdev_resume(&data->led);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static int __devinit
-=======
 static int
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
 {
 	struct device *dev = &device->dev;
@@ -1377,78 +1026,37 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
 	pnp_set_drvdata(device, data);
 
 	spin_lock_init(&data->spinlock);
-<<<<<<< HEAD
-	init_waitqueue_head(&data->txwaitq);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->ebase = pnp_port_start(device, 0);
 	data->wbase = pnp_port_start(device, 1);
 	data->sbase = pnp_port_start(device, 2);
 	data->irq = pnp_irq(device, 0);
 
 	if (data->wbase == 0 || data->ebase == 0 ||
-<<<<<<< HEAD
-	    data->sbase == 0 || data->irq == 0) {
-=======
 	    data->sbase == 0 || data->irq == -1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		dev_err(dev, "Invalid resources\n");
 		goto exit_free_data;
 	}
 
-<<<<<<< HEAD
-	dev_dbg(&device->dev, "Found device "
-		"(w: 0x%lX, e: 0x%lX, s: 0x%lX, i: %u)\n",
-		data->wbase, data->ebase, data->sbase, data->irq);
-
-	led_trigger_register_simple("cir-tx", &data->txtrigger);
-	if (!data->txtrigger) {
-		err = -ENOMEM;
-		goto exit_free_data;
-	}
-
-	led_trigger_register_simple("cir-rx", &data->rxtrigger);
-	if (!data->rxtrigger) {
-		err = -ENOMEM;
-		goto exit_unregister_txtrigger;
-	}
-
-	data->led.name = "cir::activity";
-	data->led.default_trigger = "cir-rx";
-=======
 	dev_dbg(&device->dev, "Found device (w: 0x%lX, e: 0x%lX, s: 0x%lX, i: %u)\n",
 		data->wbase, data->ebase, data->sbase, data->irq);
 
 	data->led.name = "cir::activity";
 	data->led.default_trigger = "rc-feedback";
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->led.brightness_set = wbcir_led_brightness_set;
 	data->led.brightness_get = wbcir_led_brightness_get;
 	err = led_classdev_register(&device->dev, &data->led);
 	if (err)
-<<<<<<< HEAD
-		goto exit_unregister_rxtrigger;
-
-	data->dev = rc_allocate_device();
-=======
 		goto exit_free_data;
 
 	data->dev = rc_allocate_device(RC_DRIVER_IR_RAW);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data->dev) {
 		err = -ENOMEM;
 		goto exit_unregister_led;
 	}
 
-<<<<<<< HEAD
-	data->dev->driver_type = RC_DRIVER_IR_RAW;
-	data->dev->driver_name = WBCIR_NAME;
-	data->dev->input_name = WBCIR_NAME;
-=======
 	data->dev->driver_name = DRVNAME;
 	data->dev->device_name = WBCIR_NAME;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->dev->input_phys = "wbcir/cir0";
 	data->dev->input_id.bustype = BUS_HOST;
 	data->dev->input_id.vendor = PCI_VENDOR_ID_WINBOND;
@@ -1456,17 +1064,12 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
 	data->dev->input_id.version = WBCIR_ID_CHIP;
 	data->dev->map_name = RC_MAP_RC6_MCE;
 	data->dev->s_idle = wbcir_idle_rx;
-<<<<<<< HEAD
-=======
 	data->dev->s_carrier_report = wbcir_set_carrier_report;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->dev->s_tx_mask = wbcir_txmask;
 	data->dev->s_tx_carrier = wbcir_txcarrier;
 	data->dev->tx_ir = wbcir_tx;
 	data->dev->priv = data;
 	data->dev->dev.parent = &device->dev;
-<<<<<<< HEAD
-=======
 	data->dev->min_timeout = 1;
 	data->dev->timeout = IR_DEFAULT_TIMEOUT;
 	data->dev->max_timeout = 10 * IR_DEFAULT_TIMEOUT;
@@ -1485,17 +1088,12 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
 	err = rc_register_device(data->dev);
 	if (err)
 		goto exit_free_rc;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!request_region(data->wbase, WAKEUP_IOMEM_LEN, DRVNAME)) {
 		dev_err(dev, "Region 0x%lx-0x%lx already in use!\n",
 			data->wbase, data->wbase + WAKEUP_IOMEM_LEN - 1);
 		err = -EBUSY;
-<<<<<<< HEAD
-		goto exit_free_rc;
-=======
 		goto exit_unregister_device;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!request_region(data->ebase, EHFUNC_IOMEM_LEN, DRVNAME)) {
@@ -1513,58 +1111,32 @@ wbcir_probe(struct pnp_dev *device, const struct pnp_device_id *dev_id)
 	}
 
 	err = request_irq(data->irq, wbcir_irq_handler,
-<<<<<<< HEAD
-			  IRQF_DISABLED, DRVNAME, device);
-=======
 			  0, DRVNAME, device);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		dev_err(dev, "Failed to claim IRQ %u\n", data->irq);
 		err = -EBUSY;
 		goto exit_release_sbase;
 	}
 
-<<<<<<< HEAD
-	err = rc_register_device(data->dev);
-	if (err)
-		goto exit_free_irq;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_init_wakeup(&device->dev, 1);
 
 	wbcir_init_hw(data);
 
 	return 0;
 
-<<<<<<< HEAD
-exit_free_irq:
-	free_irq(data->irq, device);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit_release_sbase:
 	release_region(data->sbase, SP_IOMEM_LEN);
 exit_release_ebase:
 	release_region(data->ebase, EHFUNC_IOMEM_LEN);
 exit_release_wbase:
 	release_region(data->wbase, WAKEUP_IOMEM_LEN);
-<<<<<<< HEAD
-=======
 exit_unregister_device:
 	rc_unregister_device(data->dev);
 	data->dev = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit_free_rc:
 	rc_free_device(data->dev);
 exit_unregister_led:
 	led_classdev_unregister(&data->led);
-<<<<<<< HEAD
-exit_unregister_rxtrigger:
-	led_trigger_unregister_simple(data->rxtrigger);
-exit_unregister_txtrigger:
-	led_trigger_unregister_simple(data->txtrigger);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit_free_data:
 	kfree(data);
 	pnp_set_drvdata(device, NULL);
@@ -1572,11 +1144,7 @@ exit:
 	return err;
 }
 
-<<<<<<< HEAD
-static void __devexit
-=======
 static void
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wbcir_remove(struct pnp_dev *device)
 {
 	struct wbcir_data *data = pnp_get_drvdata(device);
@@ -1596,11 +1164,6 @@ wbcir_remove(struct pnp_dev *device)
 
 	rc_unregister_device(data->dev);
 
-<<<<<<< HEAD
-	led_trigger_unregister_simple(data->rxtrigger);
-	led_trigger_unregister_simple(data->txtrigger);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led_classdev_unregister(&data->led);
 
 	/* This is ok since &data->led isn't actually used */
@@ -1622,17 +1185,10 @@ static const struct pnp_device_id wbcir_ids[] = {
 MODULE_DEVICE_TABLE(pnp, wbcir_ids);
 
 static struct pnp_driver wbcir_driver = {
-<<<<<<< HEAD
-	.name     = WBCIR_NAME,
-	.id_table = wbcir_ids,
-	.probe    = wbcir_probe,
-	.remove   = __devexit_p(wbcir_remove),
-=======
 	.name     = DRVNAME,
 	.id_table = wbcir_ids,
 	.probe    = wbcir_probe,
 	.remove   = wbcir_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend  = wbcir_suspend,
 	.resume   = wbcir_resume,
 	.shutdown = wbcir_shutdown
@@ -1643,18 +1199,6 @@ wbcir_init(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-	switch (protocol) {
-	case IR_PROTOCOL_RC5:
-	case IR_PROTOCOL_NEC:
-	case IR_PROTOCOL_RC6:
-		break;
-	default:
-		pr_err("Invalid power-on protocol\n");
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = pnp_register_driver(&wbcir_driver);
 	if (ret)
 		pr_err("Unable to register driver\n");

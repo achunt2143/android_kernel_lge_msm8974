@@ -1,31 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bt87x.c - Brooktree Bt878/Bt879 driver for ALSA
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
  *
  * based on btaudio.c by Gerd Knorr <kraxel@bytesex.org>
-<<<<<<< HEAD
- *
- *
- *  This driver is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This driver is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -34,11 +13,7 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/bitops.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -48,21 +23,12 @@
 MODULE_AUTHOR("Clemens Ladisch <clemens@ladisch.de>");
 MODULE_DESCRIPTION("Brooktree Bt87x audio driver");
 MODULE_LICENSE("GPL");
-<<<<<<< HEAD
-MODULE_SUPPORTED_DEVICE("{{Brooktree,Bt878},"
-		"{Brooktree,Bt879}}");
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = -2}; /* Exclude the first card */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
 static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable this card */
 static int digital_rate[SNDRV_CARDS];	/* digital input rate */
-<<<<<<< HEAD
-static bool load_all;	/* allow to load the non-whitelisted cards */
-=======
 static bool load_all;	/* allow to load cards not the allowlist */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for Bt87x soundcard");
@@ -73,11 +39,7 @@ MODULE_PARM_DESC(enable, "Enable Bt87x soundcard");
 module_param_array(digital_rate, int, NULL, 0444);
 MODULE_PARM_DESC(digital_rate, "Digital input rate for Bt87x soundcard");
 module_param(load_all, bool, 0444);
-<<<<<<< HEAD
-MODULE_PARM_DESC(load_all, "Allow to load the non-whitelisted cards");
-=======
 MODULE_PARM_DESC(load_all, "Allow to load cards not on the allowlist");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* register offsets */
@@ -186,11 +148,7 @@ struct snd_bt87x_board {
 	unsigned no_digital:1;	/* No digital input */
 };
 
-<<<<<<< HEAD
-static __devinitdata struct snd_bt87x_board snd_bt87x_boards[] = {
-=======
 static const struct snd_bt87x_board snd_bt87x_boards[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[SND_BT87X_BOARD_UNKNOWN] = {
 		.dig_rate = 32000, /* just a guess */
 	},
@@ -254,16 +212,6 @@ static int snd_bt87x_create_risc(struct snd_bt87x *chip, struct snd_pcm_substrea
 			       	 unsigned int periods, unsigned int period_bytes)
 {
 	unsigned int i, offset;
-<<<<<<< HEAD
-	u32 *risc;
-
-	if (chip->dma_risc.area == NULL) {
-		if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(chip->pci),
-					PAGE_ALIGN(MAX_RISC_SIZE), &chip->dma_risc) < 0)
-			return -ENOMEM;
-	}
-	risc = (u32 *)chip->dma_risc.area;
-=======
 	__le32 *risc;
 
 	if (chip->dma_risc.area == NULL) {
@@ -272,7 +220,6 @@ static int snd_bt87x_create_risc(struct snd_bt87x *chip, struct snd_pcm_substrea
 			return -ENOMEM;
 	}
 	risc = (__le32 *)chip->dma_risc.area;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	offset = 0;
 	*risc++ = cpu_to_le32(RISC_SYNC | RISC_SYNC_FM1);
 	*risc++ = cpu_to_le32(0);
@@ -322,27 +269,6 @@ static void snd_bt87x_free_risc(struct snd_bt87x *chip)
 
 static void snd_bt87x_pci_error(struct snd_bt87x *chip, unsigned int status)
 {
-<<<<<<< HEAD
-	u16 pci_status;
-
-	pci_read_config_word(chip->pci, PCI_STATUS, &pci_status);
-	pci_status &= PCI_STATUS_PARITY | PCI_STATUS_SIG_TARGET_ABORT |
-		PCI_STATUS_REC_TARGET_ABORT | PCI_STATUS_REC_MASTER_ABORT |
-		PCI_STATUS_SIG_SYSTEM_ERROR | PCI_STATUS_DETECTED_PARITY;
-	pci_write_config_word(chip->pci, PCI_STATUS, pci_status);
-	if (pci_status != PCI_STATUS_DETECTED_PARITY)
-		snd_printk(KERN_ERR "Aieee - PCI error! status %#08x, PCI status %#04x\n",
-			   status & ERROR_INTERRUPTS, pci_status);
-	else {
-		snd_printk(KERN_ERR "Aieee - PCI parity error detected!\n");
-		/* error 'handling' similar to aic7xxx_pci.c: */
-		chip->pci_parity_errors++;
-		if (chip->pci_parity_errors > 20) {
-			snd_printk(KERN_ERR "Too many PCI parity errors observed.\n");
-			snd_printk(KERN_ERR "Some device on this bus is generating bad parity.\n");
-			snd_printk(KERN_ERR "This is an error *observed by*, not *generated by*, this card.\n");
-			snd_printk(KERN_ERR "PCI parity error checking has been disabled.\n");
-=======
 	int pci_status = pci_status_get_and_clear_errors(chip->pci);
 
 	if (pci_status != PCI_STATUS_DETECTED_PARITY)
@@ -363,7 +289,6 @@ static void snd_bt87x_pci_error(struct snd_bt87x *chip, unsigned int status)
 				"This is an error *observed by*, not *generated by*, this card.\n");
 			dev_err(chip->card->dev,
 				"PCI parity error checking has been disabled.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chip->interrupt_mask &= ~(INT_PPERR | INT_RIPERR);
 			snd_bt87x_writel(chip, REG_INT_MASK, chip->interrupt_mask);
 		}
@@ -383,17 +308,11 @@ static irqreturn_t snd_bt87x_interrupt(int irq, void *dev_id)
 
 	if (irq_status & ERROR_INTERRUPTS) {
 		if (irq_status & (INT_FBUS | INT_FTRGT))
-<<<<<<< HEAD
-			snd_printk(KERN_WARNING "FIFO overrun, status %#08x\n", status);
-		if (irq_status & INT_OCERR)
-			snd_printk(KERN_ERR "internal RISC error, status %#08x\n", status);
-=======
 			dev_warn(chip->card->dev,
 				 "FIFO overrun, status %#08x\n", status);
 		if (irq_status & INT_OCERR)
 			dev_err(chip->card->dev,
 				"internal RISC error, status %#08x\n", status);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (irq_status & (INT_PPERR | INT_RIPERR | INT_PABORT))
 			snd_bt87x_pci_error(chip, irq_status);
 	}
@@ -406,23 +325,15 @@ static irqreturn_t snd_bt87x_interrupt(int irq, void *dev_id)
 		current_block = chip->current_line * 16 / chip->lines;
 		irq_block = status >> INT_RISCS_SHIFT;
 		if (current_block != irq_block)
-<<<<<<< HEAD
-			chip->current_line = (irq_block * chip->lines + 15) / 16;
-=======
 			chip->current_line = DIV_ROUND_UP(irq_block * chip->lines,
 							  16);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snd_pcm_period_elapsed(chip->substream);
 	}
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_bt87x_digital_hw = {
-=======
 static const struct snd_pcm_hardware snd_bt87x_digital_hw = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = SNDRV_PCM_INFO_MMAP |
 		SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -439,11 +350,7 @@ static const struct snd_pcm_hardware snd_bt87x_digital_hw = {
 	.periods_max = 255,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_bt87x_analog_hw = {
-=======
 static const struct snd_pcm_hardware snd_bt87x_analog_hw = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = SNDRV_PCM_INFO_MMAP |
 		SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -474,21 +381,13 @@ static int snd_bt87x_set_digital_hw(struct snd_bt87x *chip, struct snd_pcm_runti
 
 static int snd_bt87x_set_analog_hw(struct snd_bt87x *chip, struct snd_pcm_runtime *runtime)
 {
-<<<<<<< HEAD
-	static struct snd_ratnum analog_clock = {
-=======
 	static const struct snd_ratnum analog_clock = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.num = ANALOG_CLOCK,
 		.den_min = CLOCK_DIV_MIN,
 		.den_max = CLOCK_DIV_MAX,
 		.den_step = 1
 	};
-<<<<<<< HEAD
-	static struct snd_pcm_hw_constraint_ratnums constraint_rates = {
-=======
 	static const struct snd_pcm_hw_constraint_ratnums constraint_rates = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.nrats = 1,
 		.rats = &analog_clock
 	};
@@ -524,11 +423,7 @@ static int snd_bt87x_pcm_open(struct snd_pcm_substream *substream)
 
 _error:
 	clear_bit(0, &chip->opened);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -543,11 +438,7 @@ static int snd_bt87x_close(struct snd_pcm_substream *substream)
 
 	chip->substream = NULL;
 	clear_bit(0, &chip->opened);
-<<<<<<< HEAD
-	smp_mb__after_clear_bit();
-=======
 	smp_mb__after_atomic();
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -555,16 +446,7 @@ static int snd_bt87x_hw_params(struct snd_pcm_substream *substream,
 			       struct snd_pcm_hw_params *hw_params)
 {
 	struct snd_bt87x *chip = snd_pcm_substream_chip(substream);
-<<<<<<< HEAD
-	int err;
 
-	err = snd_pcm_lib_malloc_pages(substream,
-				       params_buffer_bytes(hw_params));
-	if (err < 0)
-		return err;
-=======
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return snd_bt87x_create_risc(chip, substream,
 				     params_periods(hw_params),
 				     params_period_bytes(hw_params));
@@ -575,10 +457,6 @@ static int snd_bt87x_hw_free(struct snd_pcm_substream *substream)
 	struct snd_bt87x *chip = snd_pcm_substream_chip(substream);
 
 	snd_bt87x_free_risc(chip);
-<<<<<<< HEAD
-	snd_pcm_lib_free_pages(substream);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -646,25 +524,14 @@ static snd_pcm_uframes_t snd_bt87x_pointer(struct snd_pcm_substream *substream)
 	return (snd_pcm_uframes_t)bytes_to_frames(runtime, chip->current_line * chip->line_bytes);
 }
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_bt87x_pcm_ops = {
-	.open = snd_bt87x_pcm_open,
-	.close = snd_bt87x_close,
-	.ioctl = snd_pcm_lib_ioctl,
-=======
 static const struct snd_pcm_ops snd_bt87x_pcm_ops = {
 	.open = snd_bt87x_pcm_open,
 	.close = snd_bt87x_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params = snd_bt87x_hw_params,
 	.hw_free = snd_bt87x_hw_free,
 	.prepare = snd_bt87x_prepare,
 	.trigger = snd_bt87x_trigger,
 	.pointer = snd_bt87x_pointer,
-<<<<<<< HEAD
-	.page = snd_pcm_sgbuf_ops_page,
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int snd_bt87x_capture_volume_info(struct snd_kcontrol *kcontrol,
@@ -703,11 +570,7 @@ static int snd_bt87x_capture_volume_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_bt87x_capture_volume = {
-=======
 static const struct snd_kcontrol_new snd_bt87x_capture_volume = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Capture Volume",
 	.info = snd_bt87x_capture_volume_info,
@@ -743,11 +606,7 @@ static int snd_bt87x_capture_boost_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_bt87x_capture_boost = {
-=======
 static const struct snd_kcontrol_new snd_bt87x_capture_boost = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Capture Boost",
 	.info = snd_bt87x_capture_boost_info,
@@ -789,11 +648,7 @@ static int snd_bt87x_capture_source_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_bt87x_capture_source = {
-=======
 static const struct snd_kcontrol_new snd_bt87x_capture_source = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Capture Source",
 	.info = snd_bt87x_capture_source_info,
@@ -801,29 +656,6 @@ static const struct snd_kcontrol_new snd_bt87x_capture_source = {
 	.put = snd_bt87x_capture_source_put,
 };
 
-<<<<<<< HEAD
-static int snd_bt87x_free(struct snd_bt87x *chip)
-{
-	if (chip->mmio)
-		snd_bt87x_stop(chip);
-	if (chip->irq >= 0)
-		free_irq(chip->irq, chip);
-	if (chip->mmio)
-		iounmap(chip->mmio);
-	pci_release_regions(chip->pci);
-	pci_disable_device(chip->pci);
-	kfree(chip);
-	return 0;
-}
-
-static int snd_bt87x_dev_free(struct snd_device *device)
-{
-	struct snd_bt87x *chip = device->device_data;
-	return snd_bt87x_free(chip);
-}
-
-static int __devinit snd_bt87x_pcm(struct snd_bt87x *chip, int device, char *name)
-=======
 static void snd_bt87x_free(struct snd_card *card)
 {
 	struct snd_bt87x *chip = card->private_data;
@@ -832,7 +664,6 @@ static void snd_bt87x_free(struct snd_card *card)
 }
 
 static int snd_bt87x_pcm(struct snd_bt87x *chip, int device, char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct snd_pcm *pcm;
@@ -843,36 +674,6 @@ static int snd_bt87x_pcm(struct snd_bt87x *chip, int device, char *name)
 	pcm->private_data = chip;
 	strcpy(pcm->name, name);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_bt87x_pcm_ops);
-<<<<<<< HEAD
-	return snd_pcm_lib_preallocate_pages_for_all(pcm,
-						     SNDRV_DMA_TYPE_DEV_SG,
-						     snd_dma_pci_data(chip->pci),
-							128 * 1024,
-							ALIGN(255 * 4092, 1024));
-}
-
-static int __devinit snd_bt87x_create(struct snd_card *card,
-				      struct pci_dev *pci,
-				      struct snd_bt87x **rchip)
-{
-	struct snd_bt87x *chip;
-	int err;
-	static struct snd_device_ops ops = {
-		.dev_free = snd_bt87x_dev_free
-	};
-
-	*rchip = NULL;
-
-	err = pci_enable_device(pci);
-	if (err < 0)
-		return err;
-
-	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
-	if (!chip) {
-		pci_disable_device(pci);
-		return -ENOMEM;
-	}
-=======
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 				       &chip->pci->dev,
 				       128 * 1024,
@@ -890,30 +691,15 @@ static int snd_bt87x_create(struct snd_card *card,
 	if (err < 0)
 		return err;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
 	spin_lock_init(&chip->reg_lock);
 
-<<<<<<< HEAD
-	if ((err = pci_request_regions(pci, "Bt87x audio")) < 0) {
-		kfree(chip);
-		pci_disable_device(pci);
-		return err;
-	}
-	chip->mmio = pci_ioremap_bar(pci, 0);
-	if (!chip->mmio) {
-		snd_printk(KERN_ERR "cannot remap io memory\n");
-		err = -ENOMEM;
-		goto fail;
-	}
-=======
 	err = pcim_iomap_regions(pci, 1 << 0, "Bt87x audio");
 	if (err < 0)
 		return err;
 	chip->mmio = pcim_iomap_table(pci)[0];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->reg_control = CTL_A_PWRDN | CTL_DA_ES2 |
 			    CTL_PKTP_16 | (15 << CTL_DA_SDR_SHIFT);
@@ -922,29 +708,6 @@ static int snd_bt87x_create(struct snd_card *card,
 	snd_bt87x_writel(chip, REG_INT_MASK, 0);
 	snd_bt87x_writel(chip, REG_INT_STAT, MY_INTERRUPTS);
 
-<<<<<<< HEAD
-	err = request_irq(pci->irq, snd_bt87x_interrupt, IRQF_SHARED,
-			  KBUILD_MODNAME, chip);
-	if (err < 0) {
-		snd_printk(KERN_ERR "cannot grab irq %d\n", pci->irq);
-		goto fail;
-	}
-	chip->irq = pci->irq;
-	pci_set_master(pci);
-	synchronize_irq(chip->irq);
-
-	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
-	if (err < 0)
-		goto fail;
-
-	snd_card_set_dev(card, &pci->dev);
-	*rchip = chip;
-	return 0;
-
-fail:
-	snd_bt87x_free(chip);
-	return err;
-=======
 	err = devm_request_irq(&pci->dev, pci->irq, snd_bt87x_interrupt,
 			       IRQF_SHARED, KBUILD_MODNAME, chip);
 	if (err < 0) {
@@ -957,7 +720,6 @@ fail:
 	pci_set_master(pci);
 
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define BT_DEVICE(chip, subvend, subdev, id) \
@@ -967,11 +729,7 @@ fail:
 	  .driver_data = SND_BT87X_BOARD_ ## id }
 /* driver_data is the card id for that device */
 
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_bt87x_ids) = {
-=======
 static const struct pci_device_id snd_bt87x_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Hauppauge WinTV series */
 	BT_DEVICE(PCI_DEVICE_ID_BROOKTREE_878, 0x0070, 0x13eb, GENERIC),
 	/* Hauppauge WinTV series */
@@ -1004,11 +762,7 @@ MODULE_DEVICE_TABLE(pci, snd_bt87x_ids);
  * (DVB cards use the audio function to transfer MPEG data) */
 static struct {
 	unsigned short subvendor, subdevice;
-<<<<<<< HEAD
-} blacklist[] __devinitdata = {
-=======
 } denylist[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x0071, 0x0101}, /* Nebula Electronics DigiTV */
 	{0x11bd, 0x001c}, /* Pinnacle PCTV Sat */
 	{0x11bd, 0x0026}, /* Pinnacle PCTV SAT CI */
@@ -1024,13 +778,8 @@ static struct {
 
 static struct pci_driver driver;
 
-<<<<<<< HEAD
-/* return the id of the card, or a negative value if it's blacklisted */
-static int __devinit snd_bt87x_detect_card(struct pci_dev *pci)
-=======
 /* return the id of the card, or a negative value if it's on the denylist */
 static int snd_bt87x_detect_card(struct pci_dev *pci)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	const struct pci_device_id *supported;
@@ -1039,43 +788,25 @@ static int snd_bt87x_detect_card(struct pci_dev *pci)
 	if (supported && supported->driver_data > 0)
 		return supported->driver_data;
 
-<<<<<<< HEAD
-	for (i = 0; i < ARRAY_SIZE(blacklist); ++i)
-		if (blacklist[i].subvendor == pci->subsystem_vendor &&
-		    blacklist[i].subdevice == pci->subsystem_device) {
-			snd_printdd(KERN_INFO "card %#04x-%#04x:%#04x has no audio\n",
-=======
 	for (i = 0; i < ARRAY_SIZE(denylist); ++i)
 		if (denylist[i].subvendor == pci->subsystem_vendor &&
 		    denylist[i].subdevice == pci->subsystem_device) {
 			dev_dbg(&pci->dev,
 				"card %#04x-%#04x:%#04x has no audio\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    pci->device, pci->subsystem_vendor, pci->subsystem_device);
 			return -EBUSY;
 		}
 
-<<<<<<< HEAD
-	snd_printk(KERN_INFO "unknown card %#04x-%#04x:%#04x\n",
-		   pci->device, pci->subsystem_vendor, pci->subsystem_device);
-	snd_printk(KERN_DEBUG "please mail id, board name, and, "
-=======
 	dev_info(&pci->dev, "unknown card %#04x-%#04x:%#04x\n",
 		   pci->device, pci->subsystem_vendor, pci->subsystem_device);
 	dev_info(&pci->dev, "please mail id, board name, and, "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   "if it works, the correct digital_rate option to "
 		   "<alsa-devel@alsa-project.org>\n");
 	return SND_BT87X_BOARD_UNKNOWN;
 }
 
-<<<<<<< HEAD
-static int __devinit snd_bt87x_probe(struct pci_dev *pci,
-				     const struct pci_device_id *pci_id)
-=======
 static int __snd_bt87x_probe(struct pci_dev *pci,
 			     const struct pci_device_id *pci_id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -1098,15 +829,6 @@ static int __snd_bt87x_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
-	if (err < 0)
-		return err;
-
-	err = snd_bt87x_create(card, pci, &chip);
-	if (err < 0)
-		goto _error;
-=======
 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
 				sizeof(*chip), &card);
 	if (err < 0)
@@ -1116,7 +838,6 @@ static int __snd_bt87x_probe(struct pci_dev *pci,
 	err = snd_bt87x_create(card, pci);
 	if (err < 0)
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&chip->board, &snd_bt87x_boards[boardid], sizeof(chip->board));
 
@@ -1128,32 +849,11 @@ static int __snd_bt87x_probe(struct pci_dev *pci,
 
 		err = snd_bt87x_pcm(chip, DEVICE_DIGITAL, "Bt87x Digital");
 		if (err < 0)
-<<<<<<< HEAD
-			goto _error;
-=======
 			return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!chip->board.no_analog) {
 		err = snd_bt87x_pcm(chip, DEVICE_ANALOG, "Bt87x Analog");
 		if (err < 0)
-<<<<<<< HEAD
-			goto _error;
-		err = snd_ctl_add(card, snd_ctl_new1(
-				  &snd_bt87x_capture_volume, chip));
-		if (err < 0)
-			goto _error;
-		err = snd_ctl_add(card, snd_ctl_new1(
-				  &snd_bt87x_capture_boost, chip));
-		if (err < 0)
-			goto _error;
-		err = snd_ctl_add(card, snd_ctl_new1(
-				  &snd_bt87x_capture_source, chip));
-		if (err < 0)
-			goto _error;
-	}
-	snd_printk(KERN_INFO "bt87x%d: Using board %d, %sanalog, %sdigital "
-=======
 			return err;
 		err = snd_ctl_add(card, snd_ctl_new1(
 				  &snd_bt87x_capture_volume, chip));
@@ -1169,7 +869,6 @@ static int __snd_bt87x_probe(struct pci_dev *pci,
 			return err;
 	}
 	dev_info(card->dev, "bt87x%d: Using board %d, %sanalog, %sdigital "
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   "(rate %d Hz)\n", dev, boardid,
 		   chip->board.no_analog ? "no " : "",
 		   chip->board.no_digital ? "no " : "", chip->board.dig_rate);
@@ -1183,43 +882,22 @@ static int __snd_bt87x_probe(struct pci_dev *pci,
 
 	err = snd_card_register(card);
 	if (err < 0)
-<<<<<<< HEAD
-		goto _error;
-=======
 		return err;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 	++dev;
 	return 0;
-<<<<<<< HEAD
-
-_error:
-	snd_card_free(card);
-	return err;
-}
-
-static void __devexit snd_bt87x_remove(struct pci_dev *pci)
-{
-	snd_card_free(pci_get_drvdata(pci));
-	pci_set_drvdata(pci, NULL);
-=======
 }
 
 static int snd_bt87x_probe(struct pci_dev *pci,
 			   const struct pci_device_id *pci_id)
 {
 	return snd_card_free_on_error(&pci->dev, __snd_bt87x_probe(pci, pci_id));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* default entries for all Bt87x cards - it's not exported */
 /* driver_data is set to 0 to call detection */
-<<<<<<< HEAD
-static DEFINE_PCI_DEVICE_TABLE(snd_bt87x_default_ids) = {
-=======
 static const struct pci_device_id snd_bt87x_default_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BT_DEVICE(PCI_DEVICE_ID_BROOKTREE_878, PCI_ANY_ID, PCI_ANY_ID, UNKNOWN),
 	BT_DEVICE(PCI_DEVICE_ID_BROOKTREE_879, PCI_ANY_ID, PCI_ANY_ID, UNKNOWN),
 	{ }
@@ -1229,10 +907,6 @@ static struct pci_driver driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_bt87x_ids,
 	.probe = snd_bt87x_probe,
-<<<<<<< HEAD
-	.remove = __devexit_p(snd_bt87x_remove),
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init alsa_card_bt87x_init(void)

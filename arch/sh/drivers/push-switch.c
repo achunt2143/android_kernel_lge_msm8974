@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic push-switch framework
  *
  * Copyright (C) 2006  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -31,19 +21,11 @@ static ssize_t switch_show(struct device *dev,
 	struct push_switch_platform_info *psw_info = dev->platform_data;
 	return sprintf(buf, "%s\n", psw_info->name);
 }
-<<<<<<< HEAD
-static DEVICE_ATTR(switch, S_IRUGO, switch_show, NULL);
-
-static void switch_timer(unsigned long data)
-{
-	struct push_switch *psw = (struct push_switch *)data;
-=======
 static DEVICE_ATTR_RO(switch);
 
 static void switch_timer(struct timer_list *t)
 {
 	struct push_switch *psw = from_timer(psw, t, debounce);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_work(&psw->work);
 }
@@ -93,14 +75,7 @@ static int switch_drv_probe(struct platform_device *pdev)
 	}
 
 	INIT_WORK(&psw->work, switch_work_handler);
-<<<<<<< HEAD
-	init_timer(&psw->debounce);
-
-	psw->debounce.function = switch_timer;
-	psw->debounce.data = (unsigned long)psw;
-=======
 	timer_setup(&psw->debounce, switch_timer, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Workqueue API brain-damage */
 	psw->pdev = pdev;
@@ -126,13 +101,8 @@ static int switch_drv_remove(struct platform_device *pdev)
 		device_remove_file(&pdev->dev, &dev_attr_switch);
 
 	platform_set_drvdata(pdev, NULL);
-<<<<<<< HEAD
-	flush_work_sync(&psw->work);
-	del_timer_sync(&psw->debounce);
-=======
 	timer_shutdown_sync(&psw->debounce);
 	flush_work(&psw->work);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_irq(irq, pdev);
 
 	kfree(psw);

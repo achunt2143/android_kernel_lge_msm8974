@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for rfkill on some Fujitsu-Siemens Amilo laptops.
  * Copyright 2011 Ben Hutchings.
@@ -10,14 +7,6 @@
  * Copyright 2005 Alejandro Vidal Mata & Javier Vidal Mata.
  * and on the fsaa1655g driver, which is:
  * Copyright 2006 Martin Večeřa.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -81,11 +70,7 @@ static const struct rfkill_ops amilo_m7440_rfkill_ops = {
 	.set_block = amilo_m7440_rfkill_set_block
 };
 
-<<<<<<< HEAD
-static const struct dmi_system_id __devinitdata amilo_rfkill_id_table[] = {
-=======
 static const struct dmi_system_id amilo_rfkill_id_table[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
@@ -96,8 +81,6 @@ static const struct dmi_system_id amilo_rfkill_id_table[] = {
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
-<<<<<<< HEAD
-=======
 			DMI_MATCH(DMI_BOARD_NAME, "AMILO L1310"),
 		},
 		.driver_data = (void *)&amilo_a1655_rfkill_ops
@@ -105,7 +88,6 @@ static const struct dmi_system_id amilo_rfkill_id_table[] = {
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU SIEMENS"),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DMI_MATCH(DMI_BOARD_NAME, "AMILO M7440"),
 		},
 		.driver_data = (void *)&amilo_m7440_rfkill_ops
@@ -116,11 +98,7 @@ static const struct dmi_system_id amilo_rfkill_id_table[] = {
 static struct platform_device *amilo_rfkill_pdev;
 static struct rfkill *amilo_rfkill_dev;
 
-<<<<<<< HEAD
-static int __devinit amilo_rfkill_probe(struct platform_device *device)
-=======
 static int amilo_rfkill_probe(struct platform_device *device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	const struct dmi_system_id *system_id =
@@ -146,33 +124,18 @@ fail:
 	return rc;
 }
 
-<<<<<<< HEAD
-static int amilo_rfkill_remove(struct platform_device *device)
-{
-	rfkill_unregister(amilo_rfkill_dev);
-	rfkill_destroy(amilo_rfkill_dev);
-	return 0;
-=======
 static void amilo_rfkill_remove(struct platform_device *device)
 {
 	rfkill_unregister(amilo_rfkill_dev);
 	rfkill_destroy(amilo_rfkill_dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver amilo_rfkill_driver = {
 	.driver = {
 		.name	= KBUILD_MODNAME,
-<<<<<<< HEAD
-		.owner	= THIS_MODULE,
-	},
-	.probe	= amilo_rfkill_probe,
-	.remove	= amilo_rfkill_remove,
-=======
 	},
 	.probe	= amilo_rfkill_probe,
 	.remove_new = amilo_rfkill_remove,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init amilo_rfkill_init(void)
@@ -186,12 +149,8 @@ static int __init amilo_rfkill_init(void)
 	if (rc)
 		return rc;
 
-<<<<<<< HEAD
-	amilo_rfkill_pdev = platform_device_register_simple(KBUILD_MODNAME, -1,
-=======
 	amilo_rfkill_pdev = platform_device_register_simple(KBUILD_MODNAME,
 							    PLATFORM_DEVID_NONE,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							    NULL, 0);
 	if (IS_ERR(amilo_rfkill_pdev)) {
 		rc = PTR_ERR(amilo_rfkill_pdev);

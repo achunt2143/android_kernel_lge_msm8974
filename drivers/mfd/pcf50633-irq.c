@@ -1,27 +1,13 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NXP PCF50633 Power Management Unit (PMU) driver
  *
  * (C) 2006-2008 by Openmoko, Inc.
  * Author: Harald Welte <laforge@openmoko.org>
  * 	   Balaji Rao <balajirrao@openmoko.org>
  * All rights reserved.
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
- *
- */
-
-=======
  */
 
 #include <linux/i2c.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
 #include <linux/mutex.h>
@@ -65,11 +51,7 @@ EXPORT_SYMBOL_GPL(pcf50633_free_irq);
 static int __pcf50633_irq_mask_set(struct pcf50633 *pcf, int irq, u8 mask)
 {
 	u8 reg, bit;
-<<<<<<< HEAD
-	int ret = 0, idx;
-=======
 	int idx;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	idx = irq >> 3;
 	reg = PCF50633_REG_INT1M + idx;
@@ -86,11 +68,7 @@ static int __pcf50633_irq_mask_set(struct pcf50633 *pcf, int irq, u8 mask)
 
 	mutex_unlock(&pcf->lock);
 
-<<<<<<< HEAD
-	return ret;
-=======
 	return 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int pcf50633_irq_mask(struct pcf50633 *pcf, int irq)
@@ -241,17 +219,10 @@ out:
 	return IRQ_HANDLED;
 }
 
-<<<<<<< HEAD
-#ifdef CONFIG_PM
-
-int pcf50633_irq_suspend(struct pcf50633 *pcf)
-{
-=======
 static int pcf50633_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct pcf50633 *pcf = i2c_get_clientdata(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	int i;
 	u8 res[5];
@@ -287,15 +258,10 @@ out:
 	return ret;
 }
 
-<<<<<<< HEAD
-int pcf50633_irq_resume(struct pcf50633 *pcf)
-{
-=======
 static int pcf50633_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct pcf50633 *pcf = i2c_get_clientdata(client);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* Write the saved mask registers */
@@ -310,11 +276,7 @@ static int pcf50633_resume(struct device *dev)
 	return ret;
 }
 
-<<<<<<< HEAD
-#endif
-=======
 EXPORT_GPL_SIMPLE_DEV_PM_OPS(pcf50633_pm, pcf50633_suspend, pcf50633_resume);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int pcf50633_irq_init(struct pcf50633 *pcf, int irq)
 {

@@ -1,29 +1,7 @@
-<<<<<<< HEAD
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Routines for control of ESS ES1688/688/488 chip
- *
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Routines for control of ESS ES1688/688/488 chip
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -32,18 +10,11 @@
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
-<<<<<<< HEAD
-=======
 #include <linux/io.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/es1688.h>
 #include <sound/initval.h>
 
-<<<<<<< HEAD
-#include <asm/io.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
@@ -135,11 +106,7 @@ EXPORT_SYMBOL(snd_es1688_reset);
 static int snd_es1688_probe(struct snd_es1688 *chip)
 {
 	unsigned long flags;
-<<<<<<< HEAD
-	unsigned short major, minor, hw;
-=======
 	unsigned short major, minor;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/*
@@ -184,20 +151,12 @@ static int snd_es1688_probe(struct snd_es1688 *chip)
 	if (!chip->version)
 		return -ENODEV;	/* probably SB */
 
-<<<<<<< HEAD
-	hw = ES1688_HW_AUTO;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (chip->version & 0xfff0) {
 	case 0x4880:
 		snd_printk(KERN_ERR "[0x%lx] ESS: AudioDrive ES488 detected, "
 			   "but driver is in another place\n", chip->port);
 		return -ENODEV;
 	case 0x6880:
-<<<<<<< HEAD
-		hw = (chip->version & 0x0f) >= 8 ? ES1688_HW_1688 : ES1688_HW_688;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		snd_printk(KERN_ERR "[0x%lx] ESS: unknown AudioDrive chip "
@@ -221,11 +180,7 @@ static int snd_es1688_probe(struct snd_es1688 *chip)
 
 static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 {
-<<<<<<< HEAD
-	static int irqs[16] = {-1, -1, 0, -1, -1, 1, -1, 2, -1, 0, 3, -1, -1, -1, -1, -1};
-=======
 	static const int irqs[16] = {-1, -1, 0, -1, -1, 1, -1, 2, -1, 0, 3, -1, -1, -1, -1, -1};
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int cfg, irq_bits, dma, dma_bits, tmp, tmp1;
 
@@ -318,11 +273,7 @@ static int snd_es1688_init(struct snd_es1688 * chip, int enable)
 
  */
 
-<<<<<<< HEAD
-static struct snd_ratnum clocks[2] = {
-=======
 static const struct snd_ratnum clocks[2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.num = 795444,
 		.den_min = 1,
@@ -337,11 +288,7 @@ static const struct snd_ratnum clocks[2] = {
 	}
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hw_constraint_ratnums hw_constraints_clocks  = {
-=======
 static const struct snd_pcm_hw_constraint_ratnums hw_constraints_clocks  = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nrats = 2,
 	.rats = clocks,
 };
@@ -362,15 +309,6 @@ static void snd_es1688_set_rate(struct snd_es1688 *chip, struct snd_pcm_substrea
 	snd_es1688_write(chip, 0xa2, divider);
 }
 
-<<<<<<< HEAD
-static int snd_es1688_ioctl(struct snd_pcm_substream *substream,
-			    unsigned int cmd, void *arg)
-{
-	return snd_pcm_lib_ioctl(substream, cmd, arg);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_es1688_trigger(struct snd_es1688 *chip, int cmd, unsigned char value)
 {
 	int val;
@@ -397,20 +335,6 @@ static int snd_es1688_trigger(struct snd_es1688 *chip, int cmd, unsigned char va
 	return 0;
 }
 
-<<<<<<< HEAD
-static int snd_es1688_hw_params(struct snd_pcm_substream *substream,
-				struct snd_pcm_hw_params *hw_params)
-{
-	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
-}
-
-static int snd_es1688_hw_free(struct snd_pcm_substream *substream)
-{
-	return snd_pcm_lib_free_pages(substream);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_es1688_playback_prepare(struct snd_pcm_substream *substream)
 {
 	unsigned long flags;
@@ -568,11 +492,7 @@ static snd_pcm_uframes_t snd_es1688_capture_pointer(struct snd_pcm_substream *su
 
  */
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_es1688_playback =
-=======
 static const struct snd_pcm_hardware snd_es1688_playback =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -590,11 +510,7 @@ static const struct snd_pcm_hardware snd_es1688_playback =
 	.fifo_size =		0,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_hardware snd_es1688_capture =
-=======
 static const struct snd_pcm_hardware snd_es1688_capture =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -662,16 +578,9 @@ static int snd_es1688_capture_close(struct snd_pcm_substream *substream)
 
 static int snd_es1688_free(struct snd_es1688 *chip)
 {
-<<<<<<< HEAD
-	if (chip->res_port) {
-		snd_es1688_init(chip, 0);
-		release_and_free_resource(chip->res_port);
-	}
-=======
 	if (chip->hardware != ES1688_HW_UNDEF)
 		snd_es1688_init(chip, 0);
 	release_and_free_resource(chip->res_port);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->irq >= 0)
 		free_irq(chip->irq, (void *) chip);
 	if (chip->dma8 >= 0) {
@@ -703,11 +612,7 @@ int snd_es1688_create(struct snd_card *card,
 		      int dma8,
 		      unsigned short hardware)
 {
-<<<<<<< HEAD
-	static struct snd_device_ops ops = {
-=======
 	static const struct snd_device_ops ops = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free =	snd_es1688_dev_free,
 	};
                                 
@@ -717,21 +622,6 @@ int snd_es1688_create(struct snd_card *card,
 		return -ENOMEM;
 	chip->irq = -1;
 	chip->dma8 = -1;
-<<<<<<< HEAD
-	
-	if ((chip->res_port = request_region(port + 4, 12, "ES1688")) == NULL) {
-		snd_printk(KERN_ERR "es1688: can't grab port 0x%lx\n", port + 4);
-		return -EBUSY;
-	}
-	if (request_irq(irq, snd_es1688_interrupt, 0, "ES1688", (void *) chip)) {
-		snd_printk(KERN_ERR "es1688: can't grab IRQ %d\n", irq);
-		return -EBUSY;
-	}
-	chip->irq = irq;
-	if (request_dma(dma8, "ES1688")) {
-		snd_printk(KERN_ERR "es1688: can't grab DMA8 %d\n", dma8);
-		return -EBUSY;
-=======
 	chip->hardware = ES1688_HW_UNDEF;
 	
 	chip->res_port = request_region(port + 4, 12, "ES1688");
@@ -754,7 +644,6 @@ int snd_es1688_create(struct snd_card *card,
 	if (err < 0) {
 		snd_printk(KERN_ERR "es1688: can't grab DMA8 %d\n", dma8);
 		goto exit;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	chip->dma8 = dma8;
 
@@ -770,24 +659,6 @@ int snd_es1688_create(struct snd_card *card,
 
 	err = snd_es1688_probe(chip);
 	if (err < 0)
-<<<<<<< HEAD
-		return err;
-
-	err = snd_es1688_init(chip, 1);
-	if (err < 0)
-		return err;
-
-	/* Register device */
-	return snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
-}
-
-static struct snd_pcm_ops snd_es1688_playback_ops = {
-	.open =			snd_es1688_playback_open,
-	.close =		snd_es1688_playback_close,
-	.ioctl =		snd_es1688_ioctl,
-	.hw_params =		snd_es1688_hw_params,
-	.hw_free =		snd_es1688_hw_free,
-=======
 		goto exit;
 
 	err = snd_es1688_init(chip, 1);
@@ -805,35 +676,20 @@ exit:
 static const struct snd_pcm_ops snd_es1688_playback_ops = {
 	.open =			snd_es1688_playback_open,
 	.close =		snd_es1688_playback_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =		snd_es1688_playback_prepare,
 	.trigger =		snd_es1688_playback_trigger,
 	.pointer =		snd_es1688_playback_pointer,
 };
 
-<<<<<<< HEAD
-static struct snd_pcm_ops snd_es1688_capture_ops = {
-	.open =			snd_es1688_capture_open,
-	.close =		snd_es1688_capture_close,
-	.ioctl =		snd_es1688_ioctl,
-	.hw_params =		snd_es1688_hw_params,
-	.hw_free =		snd_es1688_hw_free,
-=======
 static const struct snd_pcm_ops snd_es1688_capture_ops = {
 	.open =			snd_es1688_capture_open,
 	.close =		snd_es1688_capture_close,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =		snd_es1688_capture_prepare,
 	.trigger =		snd_es1688_capture_trigger,
 	.pointer =		snd_es1688_capture_pointer,
 };
 
-<<<<<<< HEAD
-int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip,
-		   int device, struct snd_pcm **rpcm)
-=======
 int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -847,23 +703,11 @@ int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device)
 
 	pcm->private_data = chip;
 	pcm->info_flags = SNDRV_PCM_INFO_HALF_DUPLEX;
-<<<<<<< HEAD
-	sprintf(pcm->name, snd_es1688_chip_id(chip));
-	chip->pcm = pcm;
-
-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
-					      snd_dma_isa_data(),
-					      64*1024, 64*1024);
-
-	if (rpcm)
-		*rpcm = pcm;
-=======
 	strcpy(pcm->name, snd_es1688_chip_id(chip));
 	chip->pcm = pcm;
 
 	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, card->dev,
 				       64*1024, 64*1024);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -873,26 +717,12 @@ int snd_es1688_pcm(struct snd_card *card, struct snd_es1688 *chip, int device)
 
 static int snd_es1688_info_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_info *uinfo)
 {
-<<<<<<< HEAD
-	static char *texts[9] = {
-=======
 	static const char * const texts[8] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Mic", "Mic Master", "CD", "AOUT",
 		"Mic1", "Mix", "Line", "Master"
 	};
 
-<<<<<<< HEAD
-	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
-	uinfo->count = 1;
-	uinfo->value.enumerated.items = 8;
-	if (uinfo->value.enumerated.item > 7)
-		uinfo->value.enumerated.item = 7;
-	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
-	return 0;
-=======
 	return snd_ctl_enum_info(uinfo, 1, 8, texts);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_es1688_get_mux(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1094,11 +924,7 @@ static int snd_es1688_put_double(struct snd_kcontrol *kcontrol, struct snd_ctl_e
 	return change;
 }
 
-<<<<<<< HEAD
-static struct snd_kcontrol_new snd_es1688_controls[] = {
-=======
 static const struct snd_kcontrol_new snd_es1688_controls[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ES1688_DOUBLE("Master Playback Volume", 0, ES1688_MASTER_DEV, ES1688_MASTER_DEV, 4, 0, 15, 0),
 ES1688_DOUBLE("PCM Playback Volume", 0, ES1688_PCM_DEV, ES1688_PCM_DEV, 4, 0, 15, 0),
 ES1688_DOUBLE("Line Playback Volume", 0, ES1688_LINE_DEV, ES1688_LINE_DEV, 4, 0, 15, 0),
@@ -1120,11 +946,7 @@ ES1688_SINGLE("Capture Switch", 0, ES1688_REC_DEV, 4, 1, 1),
 
 #define ES1688_INIT_TABLE_SIZE (sizeof(snd_es1688_init_table)/2)
 
-<<<<<<< HEAD
-static unsigned char snd_es1688_init_table[][2] = {
-=======
 static const unsigned char snd_es1688_init_table[][2] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ES1688_MASTER_DEV, 0 },
 	{ ES1688_PCM_DEV, 0 },
 	{ ES1688_LINE_DEV, 0 },
@@ -1149,12 +971,8 @@ int snd_es1688_mixer(struct snd_card *card, struct snd_es1688 *chip)
 	strcpy(card->mixername, snd_es1688_chip_id(chip));
 
 	for (idx = 0; idx < ARRAY_SIZE(snd_es1688_controls); idx++) {
-<<<<<<< HEAD
-		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_es1688_controls[idx], chip))) < 0)
-=======
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_es1688_controls[idx], chip));
 		if (err < 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	for (idx = 0; idx < ES1688_INIT_TABLE_SIZE; idx++) {
@@ -1172,22 +990,3 @@ EXPORT_SYMBOL(snd_es1688_mixer_write);
 EXPORT_SYMBOL(snd_es1688_create);
 EXPORT_SYMBOL(snd_es1688_pcm);
 EXPORT_SYMBOL(snd_es1688_mixer);
-<<<<<<< HEAD
-
-/*
- *  INIT part
- */
-
-static int __init alsa_es1688_init(void)
-{
-	return 0;
-}
-
-static void __exit alsa_es1688_exit(void)
-{
-}
-
-module_init(alsa_es1688_init)
-module_exit(alsa_es1688_exit)
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

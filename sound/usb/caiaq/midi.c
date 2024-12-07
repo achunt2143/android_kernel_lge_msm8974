@@ -1,30 +1,9 @@
-<<<<<<< HEAD
-/*
- *   Copyright (c) 2006,2007 Daniel Mack
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-*/
-
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *   Copyright (c) 2006,2007 Daniel Mack
 */
 
 #include <linux/device.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 #include <linux/gfp.h>
 #include <sound/rawmidi.h>
@@ -46,21 +25,12 @@ static int snd_usb_caiaq_midi_input_close(struct snd_rawmidi_substream *substrea
 
 static void snd_usb_caiaq_midi_input_trigger(struct snd_rawmidi_substream *substream, int up)
 {
-<<<<<<< HEAD
-	struct snd_usb_caiaqdev *dev = substream->rmidi->private_data;
-
-	if (!dev)
-		return;
-
-	dev->midi_receive_substream = up ? substream : NULL;
-=======
 	struct snd_usb_caiaqdev *cdev = substream->rmidi->private_data;
 
 	if (!cdev)
 		return;
 
 	cdev->midi_receive_substream = up ? substream : NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -71,31 +41,14 @@ static int snd_usb_caiaq_midi_output_open(struct snd_rawmidi_substream *substrea
 
 static int snd_usb_caiaq_midi_output_close(struct snd_rawmidi_substream *substream)
 {
-<<<<<<< HEAD
-	struct snd_usb_caiaqdev *dev = substream->rmidi->private_data;
-	if (dev->midi_out_active) {
-		usb_kill_urb(&dev->midi_out_urb);
-		dev->midi_out_active = 0;
-=======
 	struct snd_usb_caiaqdev *cdev = substream->rmidi->private_data;
 	if (cdev->midi_out_active) {
 		usb_kill_urb(&cdev->midi_out_urb);
 		cdev->midi_out_active = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
-<<<<<<< HEAD
-static void snd_usb_caiaq_midi_send(struct snd_usb_caiaqdev *dev,
-				    struct snd_rawmidi_substream *substream)
-{
-	int len, ret;
-
-	dev->midi_out_buf[0] = EP1_CMD_MIDI_WRITE;
-	dev->midi_out_buf[1] = 0; /* port */
-	len = snd_rawmidi_transmit(substream, dev->midi_out_buf + 3,
-=======
 static void snd_usb_caiaq_midi_send(struct snd_usb_caiaqdev *cdev,
 				    struct snd_rawmidi_substream *substream)
 {
@@ -105,24 +58,11 @@ static void snd_usb_caiaq_midi_send(struct snd_usb_caiaqdev *cdev,
 	cdev->midi_out_buf[0] = EP1_CMD_MIDI_WRITE;
 	cdev->midi_out_buf[1] = 0; /* port */
 	len = snd_rawmidi_transmit(substream, cdev->midi_out_buf + 3,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   EP1_BUFSIZE - 3);
 
 	if (len <= 0)
 		return;
 
-<<<<<<< HEAD
-	dev->midi_out_buf[2] = len;
-	dev->midi_out_urb.transfer_buffer_length = len+3;
-
-	ret = usb_submit_urb(&dev->midi_out_urb, GFP_ATOMIC);
-	if (ret < 0)
-		log("snd_usb_caiaq_midi_send(%p): usb_submit_urb() failed,"
-		    "ret=%d, len=%d\n",
-		    substream, ret, len);
-	else
-		dev->midi_out_active = 1;
-=======
 	cdev->midi_out_buf[2] = len;
 	cdev->midi_out_urb.transfer_buffer_length = len+3;
 
@@ -133,21 +73,10 @@ static void snd_usb_caiaq_midi_send(struct snd_usb_caiaqdev *cdev,
 			"ret=%d, len=%d\n", substream, ret, len);
 	else
 		cdev->midi_out_active = 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_usb_caiaq_midi_output_trigger(struct snd_rawmidi_substream *substream, int up)
 {
-<<<<<<< HEAD
-	struct snd_usb_caiaqdev *dev = substream->rmidi->private_data;
-
-	if (up) {
-		dev->midi_out_substream = substream;
-		if (!dev->midi_out_active)
-			snd_usb_caiaq_midi_send(dev, substream);
-	} else {
-		dev->midi_out_substream = NULL;
-=======
 	struct snd_usb_caiaqdev *cdev = substream->rmidi->private_data;
 
 	if (up) {
@@ -156,42 +85,24 @@ static void snd_usb_caiaq_midi_output_trigger(struct snd_rawmidi_substream *subs
 			snd_usb_caiaq_midi_send(cdev, substream);
 	} else {
 		cdev->midi_out_substream = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_usb_caiaq_midi_output =
-=======
 static const struct snd_rawmidi_ops snd_usb_caiaq_midi_output =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_usb_caiaq_midi_output_open,
 	.close =	snd_usb_caiaq_midi_output_close,
 	.trigger =      snd_usb_caiaq_midi_output_trigger,
 };
 
-<<<<<<< HEAD
-static struct snd_rawmidi_ops snd_usb_caiaq_midi_input =
-=======
 static const struct snd_rawmidi_ops snd_usb_caiaq_midi_input =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_usb_caiaq_midi_input_open,
 	.close =	snd_usb_caiaq_midi_input_close,
 	.trigger =      snd_usb_caiaq_midi_input_trigger,
 };
 
-<<<<<<< HEAD
-void snd_usb_caiaq_midi_handle_input(struct snd_usb_caiaqdev *dev,
-				     int port, const char *buf, int len)
-{
-	if (!dev->midi_receive_substream)
-		return;
-
-	snd_rawmidi_receive(dev->midi_receive_substream, buf, len);
-=======
 void snd_usb_caiaq_midi_handle_input(struct snd_usb_caiaqdev *cdev,
 				     int port, const char *buf, int len)
 {
@@ -199,7 +110,6 @@ void snd_usb_caiaq_midi_handle_input(struct snd_usb_caiaqdev *cdev,
 		return;
 
 	snd_rawmidi_receive(cdev->midi_receive_substream, buf, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int snd_usb_caiaq_midi_init(struct snd_usb_caiaqdev *device)
@@ -215,11 +125,7 @@ int snd_usb_caiaq_midi_init(struct snd_usb_caiaqdev *device)
 	if (ret < 0)
 		return ret;
 
-<<<<<<< HEAD
-	strlcpy(rmidi->name, device->product_name, sizeof(rmidi->name));
-=======
 	strscpy(rmidi->name, device->product_name, sizeof(rmidi->name));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rmidi->info_flags = SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = device;
@@ -243,20 +149,6 @@ int snd_usb_caiaq_midi_init(struct snd_usb_caiaqdev *device)
 
 void snd_usb_caiaq_midi_output_done(struct urb* urb)
 {
-<<<<<<< HEAD
-	struct snd_usb_caiaqdev *dev = urb->context;
-
-	dev->midi_out_active = 0;
-	if (urb->status != 0)
-		return;
-
-	if (!dev->midi_out_substream)
-		return;
-
-	snd_usb_caiaq_midi_send(dev, dev->midi_out_substream);
-}
-
-=======
 	struct snd_usb_caiaqdev *cdev = urb->context;
 
 	cdev->midi_out_active = 0;
@@ -268,4 +160,3 @@ void snd_usb_caiaq_midi_output_done(struct urb* urb)
 
 	snd_usb_caiaq_midi_send(cdev, cdev->midi_out_substream);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

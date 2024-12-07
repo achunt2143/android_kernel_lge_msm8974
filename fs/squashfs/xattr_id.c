@@ -1,30 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
  * Copyright (c) 2010
  * Phillip Lougher <phillip@squashfs.org.uk>
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2,
- * or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * xattr_id.c
  */
 
@@ -51,12 +31,6 @@ int squashfs_xattr_lookup(struct super_block *sb, unsigned int index,
 	struct squashfs_sb_info *msblk = sb->s_fs_info;
 	int block = SQUASHFS_XATTR_BLOCK(index);
 	int offset = SQUASHFS_XATTR_BLOCK_OFFSET(index);
-<<<<<<< HEAD
-	u64 start_block = le64_to_cpu(msblk->xattr_id_table[block]);
-	struct squashfs_xattr_id id;
-	int err;
-
-=======
 	u64 start_block;
 	struct squashfs_xattr_id id;
 	int err;
@@ -66,7 +40,6 @@ int squashfs_xattr_lookup(struct super_block *sb, unsigned int index,
 
 	start_block = le64_to_cpu(msblk->xattr_id_table[block]);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = squashfs_read_metadata(sb, &id, &start_block, &offset,
 							sizeof(id));
 	if (err < 0)
@@ -82,15 +55,6 @@ int squashfs_xattr_lookup(struct super_block *sb, unsigned int index,
 /*
  * Read uncompressed xattr id lookup table indexes from disk into memory
  */
-<<<<<<< HEAD
-__le64 *squashfs_read_xattr_id_table(struct super_block *sb, u64 start,
-		u64 *xattr_table_start, int *xattr_ids)
-{
-	unsigned int len;
-	struct squashfs_xattr_id_table *id_table;
-
-	id_table = squashfs_read_table(sb, start, sizeof(*id_table));
-=======
 __le64 *squashfs_read_xattr_id_table(struct super_block *sb, u64 table_start,
 		u64 *xattr_table_start, unsigned int *xattr_ids)
 {
@@ -102,7 +66,6 @@ __le64 *squashfs_read_xattr_id_table(struct super_block *sb, u64 table_start,
 	int n;
 
 	id_table = squashfs_read_table(sb, table_start, sizeof(*id_table));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(id_table))
 		return (__le64 *) id_table;
 
@@ -116,17 +79,6 @@ __le64 *squashfs_read_xattr_id_table(struct super_block *sb, u64 table_start,
 	if (*xattr_ids == 0)
 		return ERR_PTR(-EINVAL);
 
-<<<<<<< HEAD
-	/* xattr_table should be less than start */
-	if (*xattr_table_start >= start)
-		return ERR_PTR(-EINVAL);
-
-	len = SQUASHFS_XATTR_BLOCK_BYTES(*xattr_ids);
-
-	TRACE("In read_xattr_index_table, length %d\n", len);
-
-	return squashfs_read_table(sb, start + sizeof(*id_table), len);
-=======
 	len = SQUASHFS_XATTR_BLOCK_BYTES(*xattr_ids);
 	indexes = SQUASHFS_XATTR_BLOCKS(*xattr_ids);
 
@@ -177,5 +129,4 @@ __le64 *squashfs_read_xattr_id_table(struct super_block *sb, u64 table_start,
 	}
 
 	return table;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

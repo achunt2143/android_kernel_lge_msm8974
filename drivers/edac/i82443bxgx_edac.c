@@ -12,11 +12,7 @@
  * 440GX fix by Jason Uhlenkott <juhlenko@akamai.com>.
  *
  * Written with reference to 82443BX Host Bridge Datasheet:
-<<<<<<< HEAD
- * http://download.intel.com/design/chipsets/datashts/29063301.pdf 
-=======
  * http://download.intel.com/design/chipsets/datashts/29063301.pdf
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * references to this document given in [].
  *
  * This module doesn't support the 440LX, but it may be possible to
@@ -33,13 +29,7 @@
 
 
 #include <linux/edac.h>
-<<<<<<< HEAD
-#include "edac_core.h"
-
-#define I82443_REVISION	"0.1"
-=======
 #include "edac_module.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EDAC_MOD_STR    "i82443bxgx_edac"
 
@@ -132,11 +122,7 @@ static void i82443bxgx_edacmc_get_error_info(struct mem_ctl_info *mci,
 				*info)
 {
 	struct pci_dev *pdev;
-<<<<<<< HEAD
-	pdev = to_pci_dev(mci->dev);
-=======
 	pdev = to_pci_dev(mci->pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_dword(pdev, I82443BXGX_EAP, &info->eap);
 	if (info->eap & I82443BXGX_EAP_OFFSET_SBE)
 		/* Clear error to allow next error to be reported [p.61] */
@@ -168,33 +154,19 @@ static int i82443bxgx_edacmc_process_error_info(struct mem_ctl_info *mci,
 	if (info->eap & I82443BXGX_EAP_OFFSET_SBE) {
 		error_found = 1;
 		if (handle_errors)
-<<<<<<< HEAD
-			edac_mc_handle_ce(mci, page, pageoffset,
-				/* 440BX/GX don't make syndrome information
-				 * available */
-				0, edac_mc_find_csrow_by_page(mci, page), 0,
-				mci->ctl_name);
-=======
 			edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
 					     page, pageoffset, 0,
 					     edac_mc_find_csrow_by_page(mci, page),
 					     0, -1, mci->ctl_name, "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (info->eap & I82443BXGX_EAP_OFFSET_MBE) {
 		error_found = 1;
 		if (handle_errors)
-<<<<<<< HEAD
-			edac_mc_handle_ue(mci, page, pageoffset,
-					edac_mc_find_csrow_by_page(mci, page),
-					mci->ctl_name);
-=======
 			edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
 					     page, pageoffset, 0,
 					     edac_mc_find_csrow_by_page(mci, page),
 					     0, -1, mci->ctl_name, "");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return error_found;
@@ -204,10 +176,6 @@ static void i82443bxgx_edacmc_check(struct mem_ctl_info *mci)
 {
 	struct i82443bxgx_edacmc_error_info info;
 
-<<<<<<< HEAD
-	debugf1("MC%d: %s: %s()\n", mci->mc_idx, __FILE__, __func__);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i82443bxgx_edacmc_get_error_info(mci, &info);
 	i82443bxgx_edacmc_process_error_info(mci, &info, 1);
 }
@@ -218,10 +186,7 @@ static void i82443bxgx_init_csrows(struct mem_ctl_info *mci,
 				enum mem_type mtype)
 {
 	struct csrow_info *csrow;
-<<<<<<< HEAD
-=======
 	struct dimm_info *dimm;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int index;
 	u8 drbar, dramc;
 	u32 row_base, row_high_limit, row_high_limit_last;
@@ -229,18 +194,6 @@ static void i82443bxgx_init_csrows(struct mem_ctl_info *mci,
 	pci_read_config_byte(pdev, I82443BXGX_DRAMC, &dramc);
 	row_high_limit_last = 0;
 	for (index = 0; index < mci->nr_csrows; index++) {
-<<<<<<< HEAD
-		csrow = &mci->csrows[index];
-		pci_read_config_byte(pdev, I82443BXGX_DRB + index, &drbar);
-		debugf1("MC%d: %s: %s() Row=%d DRB = %#0x\n",
-			mci->mc_idx, __FILE__, __func__, index, drbar);
-		row_high_limit = ((u32) drbar << 23);
-		/* find the DRAM Chip Select Base address and mask */
-		debugf1("MC%d: %s: %s() Row=%d, "
-			"Boundary Address=%#0x, Last = %#0x\n",
-			mci->mc_idx, __FILE__, __func__, index, row_high_limit,
-			row_high_limit_last);
-=======
 		csrow = mci->csrows[index];
 		dimm = csrow->channels[0]->dimm;
 
@@ -252,7 +205,6 @@ static void i82443bxgx_init_csrows(struct mem_ctl_info *mci,
 		edac_dbg(1, "MC%d: Row=%d, Boundary Address=%#0x, Last = %#0x\n",
 			 mci->mc_idx, index, row_high_limit,
 			 row_high_limit_last);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* 440GX goes to 2GB, represented with a DRB of 0. */
 		if (row_high_limit_last && !row_high_limit)
@@ -264,16 +216,6 @@ static void i82443bxgx_init_csrows(struct mem_ctl_info *mci,
 		row_base = row_high_limit_last;
 		csrow->first_page = row_base >> PAGE_SHIFT;
 		csrow->last_page = (row_high_limit >> PAGE_SHIFT) - 1;
-<<<<<<< HEAD
-		csrow->nr_pages = csrow->last_page - csrow->first_page + 1;
-		/* EAP reports in 4kilobyte granularity [61] */
-		csrow->grain = 1 << 12;
-		csrow->mtype = mtype;
-		/* I don't think 440BX can tell you device type? FIXME? */
-		csrow->dtype = DEV_UNKNOWN;
-		/* Mode is global to all rows on 440BX */
-		csrow->edac_mode = edac_mode;
-=======
 		dimm->nr_pages = csrow->last_page - csrow->first_page + 1;
 		/* EAP reports in 4kilobyte granularity [61] */
 		dimm->grain = 1 << 12;
@@ -282,7 +224,6 @@ static void i82443bxgx_init_csrows(struct mem_ctl_info *mci,
 		dimm->dtype = DEV_UNKNOWN;
 		/* Mode is global to all rows on 440BX */
 		dimm->edac_mode = edac_mode;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		row_high_limit_last = row_high_limit;
 	}
 }
@@ -290,20 +231,13 @@ static void i82443bxgx_init_csrows(struct mem_ctl_info *mci,
 static int i82443bxgx_edacmc_probe1(struct pci_dev *pdev, int dev_idx)
 {
 	struct mem_ctl_info *mci;
-<<<<<<< HEAD
-=======
 	struct edac_mc_layer layers[2];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 dramc;
 	u32 nbxcfg, ecc_mode;
 	enum mem_type mtype;
 	enum edac_type edac_mode;
 
-<<<<<<< HEAD
-	debugf0("MC: %s: %s()\n", __FILE__, __func__);
-=======
 	edac_dbg(0, "MC:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Something is really hosed if PCI config space reads from
 	 * the MC aren't working.
@@ -311,15 +245,6 @@ static int i82443bxgx_edacmc_probe1(struct pci_dev *pdev, int dev_idx)
 	if (pci_read_config_dword(pdev, I82443BXGX_NBXCFG, &nbxcfg))
 		return -EIO;
 
-<<<<<<< HEAD
-	mci = edac_mc_alloc(0, I82443BXGX_NR_CSROWS, I82443BXGX_NR_CHANS, 0);
-
-	if (mci == NULL)
-		return -ENOMEM;
-
-	debugf0("MC: %s: %s(): mci = %p\n", __FILE__, __func__, mci);
-	mci->dev = &pdev->dev;
-=======
 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
 	layers[0].size = I82443BXGX_NR_CSROWS;
 	layers[0].is_virt_csrow = true;
@@ -332,7 +257,6 @@ static int i82443bxgx_edacmc_probe1(struct pci_dev *pdev, int dev_idx)
 
 	edac_dbg(0, "MC: mci = %p\n", mci);
 	mci->pdev = &pdev->dev;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->mtype_cap = MEM_FLAG_EDO | MEM_FLAG_SDR | MEM_FLAG_RDR;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_EC | EDAC_FLAG_SECDED;
 	pci_read_config_byte(pdev, I82443BXGX_DRAMC, &dramc);
@@ -347,12 +271,7 @@ static int i82443bxgx_edacmc_probe1(struct pci_dev *pdev, int dev_idx)
 		mtype = MEM_RDR;
 		break;
 	default:
-<<<<<<< HEAD
-		debugf0("Unknown/reserved DRAM type value "
-			"in DRAMC register!\n");
-=======
 		edac_dbg(0, "Unknown/reserved DRAM type value in DRAMC register!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mtype = -MEM_UNKNOWN;
 	}
 
@@ -381,12 +300,7 @@ static int i82443bxgx_edacmc_probe1(struct pci_dev *pdev, int dev_idx)
 		edac_mode = EDAC_SECDED;
 		break;
 	default:
-<<<<<<< HEAD
-		debugf0("%s(): Unknown/reserved ECC state "
-			"in NBXCFG register!\n", __func__);
-=======
 		edac_dbg(0, "Unknown/reserved ECC state in NBXCFG register!\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		edac_mode = EDAC_UNKNOWN;
 		break;
 	}
@@ -403,21 +317,13 @@ static int i82443bxgx_edacmc_probe1(struct pci_dev *pdev, int dev_idx)
 				I82443BXGX_EAP_OFFSET_MBE));
 
 	mci->mod_name = EDAC_MOD_STR;
-<<<<<<< HEAD
-	mci->mod_ver = I82443_REVISION;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->ctl_name = "I82443BXGX";
 	mci->dev_name = pci_name(pdev);
 	mci->edac_check = i82443bxgx_edacmc_check;
 	mci->ctl_page_to_phys = NULL;
 
 	if (edac_mc_add_mc(mci)) {
-<<<<<<< HEAD
-		debugf3("%s(): failed edac_mc_add_mc()\n", __func__);
-=======
 		edac_dbg(3, "failed edac_mc_add_mc()\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail;
 	}
 
@@ -432,11 +338,7 @@ static int i82443bxgx_edacmc_probe1(struct pci_dev *pdev, int dev_idx)
 			__func__);
 	}
 
-<<<<<<< HEAD
-	debugf3("MC: %s: %s(): success\n", __FILE__, __func__);
-=======
 	edac_dbg(3, "MC: success\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail:
@@ -444,17 +346,6 @@ fail:
 	return -ENODEV;
 }
 
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(i82443bxgx_edacmc_probe1);
-
-/* returns count (>= 0), or negative on error */
-static int __devinit i82443bxgx_edacmc_init_one(struct pci_dev *pdev,
-						const struct pci_device_id *ent)
-{
-	int rc;
-
-	debugf0("MC: %s: %s()\n", __FILE__, __func__);
-=======
 /* returns count (>= 0), or negative on error */
 static int i82443bxgx_edacmc_init_one(struct pci_dev *pdev,
 				      const struct pci_device_id *ent)
@@ -462,7 +353,6 @@ static int i82443bxgx_edacmc_init_one(struct pci_dev *pdev,
 	int rc;
 
 	edac_dbg(0, "MC:\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* don't need to call pci_enable_device() */
 	rc = i82443bxgx_edacmc_probe1(pdev, ent->driver_data);
@@ -473,19 +363,11 @@ static int i82443bxgx_edacmc_init_one(struct pci_dev *pdev,
 	return rc;
 }
 
-<<<<<<< HEAD
-static void __devexit i82443bxgx_edacmc_remove_one(struct pci_dev *pdev)
-{
-	struct mem_ctl_info *mci;
-
-	debugf0("%s: %s()\n", __FILE__, __func__);
-=======
 static void i82443bxgx_edacmc_remove_one(struct pci_dev *pdev)
 {
 	struct mem_ctl_info *mci;
 
 	edac_dbg(0, "\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i82443bxgx_pci)
 		edac_pci_release_generic_ctl(i82443bxgx_pci);
@@ -496,13 +378,7 @@ static void i82443bxgx_edacmc_remove_one(struct pci_dev *pdev)
 	edac_mc_free(mci);
 }
 
-<<<<<<< HEAD
-EXPORT_SYMBOL_GPL(i82443bxgx_edacmc_remove_one);
-
-static DEFINE_PCI_DEVICE_TABLE(i82443bxgx_pci_tbl) = {
-=======
 static const struct pci_device_id i82443bxgx_pci_tbl[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443BX_0)},
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443BX_2)},
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443GX_0)},
@@ -515,11 +391,7 @@ MODULE_DEVICE_TABLE(pci, i82443bxgx_pci_tbl);
 static struct pci_driver i82443bxgx_edacmc_driver = {
 	.name = EDAC_MOD_STR,
 	.probe = i82443bxgx_edacmc_init_one,
-<<<<<<< HEAD
-	.remove = __devexit_p(i82443bxgx_edacmc_remove_one),
-=======
 	.remove = i82443bxgx_edacmc_remove_one,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = i82443bxgx_pci_tbl,
 };
 
@@ -545,11 +417,7 @@ static int __init i82443bxgx_edacmc_init(void)
 			id = &i82443bxgx_pci_tbl[i];
 		}
 		if (!mci_pdev) {
-<<<<<<< HEAD
-			debugf0("i82443bxgx pci_get_device fail\n");
-=======
 			edac_dbg(0, "i82443bxgx pci_get_device fail\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
@@ -557,11 +425,7 @@ static int __init i82443bxgx_edacmc_init(void)
 		pci_rc = i82443bxgx_edacmc_init_one(mci_pdev, i82443bxgx_pci_tbl);
 
 		if (pci_rc < 0) {
-<<<<<<< HEAD
-			debugf0("i82443bxgx init fail\n");
-=======
 			edac_dbg(0, "i82443bxgx init fail\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
@@ -573,13 +437,7 @@ fail1:
 	pci_unregister_driver(&i82443bxgx_edacmc_driver);
 
 fail0:
-<<<<<<< HEAD
-	if (mci_pdev != NULL)
-		pci_dev_put(mci_pdev);
-
-=======
 	pci_dev_put(mci_pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pci_rc;
 }
 
@@ -590,12 +448,7 @@ static void __exit i82443bxgx_edacmc_exit(void)
 	if (!i82443bxgx_registered)
 		i82443bxgx_edacmc_remove_one(mci_pdev);
 
-<<<<<<< HEAD
-	if (mci_pdev)
-		pci_dev_put(mci_pdev);
-=======
 	pci_dev_put(mci_pdev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(i82443bxgx_edacmc_init);

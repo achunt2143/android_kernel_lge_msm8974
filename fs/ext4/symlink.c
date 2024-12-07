@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext4/symlink.c
  *
@@ -22,46 +19,10 @@
  */
 
 #include <linux/fs.h>
-<<<<<<< HEAD
-#include <linux/jbd2.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/namei.h>
 #include "ext4.h"
 #include "xattr.h"
 
-<<<<<<< HEAD
-static void *ext4_follow_link(struct dentry *dentry, struct nameidata *nd)
-{
-	struct ext4_inode_info *ei = EXT4_I(dentry->d_inode);
-	nd_set_link(nd, (char *) ei->i_data);
-	return NULL;
-}
-
-const struct inode_operations ext4_symlink_inode_operations = {
-	.readlink	= generic_readlink,
-	.follow_link	= page_follow_link_light,
-	.put_link	= page_put_link,
-	.setattr	= ext4_setattr,
-#ifdef CONFIG_EXT4_FS_XATTR
-	.setxattr	= generic_setxattr,
-	.getxattr	= generic_getxattr,
-	.listxattr	= ext4_listxattr,
-	.removexattr	= generic_removexattr,
-#endif
-};
-
-const struct inode_operations ext4_fast_symlink_inode_operations = {
-	.readlink	= generic_readlink,
-	.follow_link	= ext4_follow_link,
-	.setattr	= ext4_setattr,
-#ifdef CONFIG_EXT4_FS_XATTR
-	.setxattr	= generic_setxattr,
-	.getxattr	= generic_getxattr,
-	.listxattr	= ext4_listxattr,
-	.removexattr	= generic_removexattr,
-#endif
-=======
 static const char *ext4_encrypted_get_link(struct dentry *dentry,
 					   struct inode *inode,
 					   struct delayed_call *done)
@@ -172,5 +133,4 @@ const struct inode_operations ext4_fast_symlink_inode_operations = {
 	.setattr	= ext4_setattr,
 	.getattr	= ext4_getattr,
 	.listxattr	= ext4_listxattr,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

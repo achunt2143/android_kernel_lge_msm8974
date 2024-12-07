@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAN bus driver for the alone generic (as possible as) MSCAN controller.
  *
@@ -9,22 +6,6 @@
  *                         Varma Electronics Oy
  * Copyright (C) 2008-2009 Wolfgang Grandegger <wg@grandegger.com>
  * Copyright (C) 2008-2009 Pengutronix <kernel@pengutronix.de>
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the version 2 of the GNU General Public License
- * as published by the Free Software Foundation
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -41,11 +22,7 @@
 
 #include "mscan.h"
 
-<<<<<<< HEAD
-static struct can_bittiming_const mscan_bittiming_const = {
-=======
 static const struct can_bittiming_const mscan_bittiming_const = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "mscan",
 	.tseg1_min = 4,
 	.tseg1_max = 16,
@@ -214,11 +191,7 @@ static netdev_tx_t mscan_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	int i, rtr, buf_id;
 	u32 can_id;
 
-<<<<<<< HEAD
-	if (can_dropped_invalid_skb(dev, skb))
-=======
 	if (can_dev_dropped_skb(dev, skb))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 
 	out_8(&regs->cantier, 0);
@@ -236,10 +209,7 @@ static netdev_tx_t mscan_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		 * since buffer with lower id have higher priority (hell..)
 		 */
 		netif_stop_queue(dev);
-<<<<<<< HEAD
-=======
 		fallthrough;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		if (buf_id < priv->prev_buf_id) {
 			priv->cur_pri++;
@@ -280,47 +250,27 @@ static netdev_tx_t mscan_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		void __iomem *data = &regs->tx.dsr1_0;
 		u16 *payload = (u16 *)frame->data;
 
-<<<<<<< HEAD
-		for (i = 0; i < frame->can_dlc / 2; i++) {
-=======
 		for (i = 0; i < frame->len / 2; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			out_be16(data, *payload++);
 			data += 2 + _MSCAN_RESERVED_DSR_SIZE;
 		}
 		/* write remaining byte if necessary */
-<<<<<<< HEAD
-		if (frame->can_dlc & 1)
-			out_8(data, frame->data[frame->can_dlc - 1]);
-	}
-
-	out_8(&regs->tx.dlr, frame->can_dlc);
-=======
 		if (frame->len & 1)
 			out_8(data, frame->data[frame->len - 1]);
 	}
 
 	out_8(&regs->tx.dlr, frame->len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_8(&regs->tx.tbpr, priv->cur_pri);
 
 	/* Start transmission. */
 	out_8(&regs->cantflg, 1 << buf_id);
 
 	if (!test_bit(F_TX_PROGRESS, &priv->flags))
-<<<<<<< HEAD
-		dev->trans_start = jiffies;
-
-	list_add_tail(&priv->tx_queue[buf_id].list, &priv->tx_head);
-
-	can_put_echo_skb(skb, dev, buf_id);
-=======
 		netif_trans_update(dev);
 
 	list_add_tail(&priv->tx_queue[buf_id].list, &priv->tx_head);
 
 	can_put_echo_skb(skb, dev, buf_id, 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable interrupt. */
 	priv->tx_active |= 1 << buf_id;
@@ -329,20 +279,6 @@ static netdev_tx_t mscan_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
-<<<<<<< HEAD
-/* This function returns the old state to see where we came from */
-static enum can_state check_set_state(struct net_device *dev, u8 canrflg)
-{
-	struct mscan_priv *priv = netdev_priv(dev);
-	enum can_state state, old_state = priv->can.state;
-
-	if (canrflg & MSCAN_CSCIF && old_state <= CAN_STATE_BUS_OFF) {
-		state = state_map[max(MSCAN_STATE_RX(canrflg),
-				      MSCAN_STATE_TX(canrflg))];
-		priv->can.state = state;
-	}
-	return old_state;
-=======
 static enum can_state get_new_state(struct net_device *dev, u8 canrflg)
 {
 	struct mscan_priv *priv = netdev_priv(dev);
@@ -352,7 +288,6 @@ static enum can_state get_new_state(struct net_device *dev, u8 canrflg)
 				 MSCAN_STATE_TX(canrflg))];
 
 	return priv->can.state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mscan_get_rx_frame(struct net_device *dev, struct can_frame *frame)
@@ -377,32 +312,19 @@ static void mscan_get_rx_frame(struct net_device *dev, struct can_frame *frame)
 	if (can_id & 1)
 		frame->can_id |= CAN_RTR_FLAG;
 
-<<<<<<< HEAD
-	frame->can_dlc = get_can_dlc(in_8(&regs->rx.dlr) & 0xf);
-=======
 	frame->len = can_cc_dlc2len(in_8(&regs->rx.dlr) & 0xf);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(frame->can_id & CAN_RTR_FLAG)) {
 		void __iomem *data = &regs->rx.dsr1_0;
 		u16 *payload = (u16 *)frame->data;
 
-<<<<<<< HEAD
-		for (i = 0; i < frame->can_dlc / 2; i++) {
-=======
 		for (i = 0; i < frame->len / 2; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*payload++ = in_be16(data);
 			data += 2 + _MSCAN_RESERVED_DSR_SIZE;
 		}
 		/* read remaining byte if necessary */
-<<<<<<< HEAD
-		if (frame->can_dlc & 1)
-			frame->data[frame->can_dlc - 1] = in_8(data);
-=======
 		if (frame->len & 1)
 			frame->data[frame->len - 1] = in_8(data);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	out_8(&regs->canrflg, MSCAN_RXF);
@@ -414,11 +336,7 @@ static void mscan_get_err_frame(struct net_device *dev, struct can_frame *frame,
 	struct mscan_priv *priv = netdev_priv(dev);
 	struct mscan_regs __iomem *regs = priv->reg_base;
 	struct net_device_stats *stats = &dev->stats;
-<<<<<<< HEAD
-	enum can_state old_state;
-=======
 	enum can_state new_state;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_dbg(dev, "error interrupt (canrflg=%#x)\n", canrflg);
 	frame->can_id = CAN_ERR_FLAG;
@@ -432,29 +350,6 @@ static void mscan_get_err_frame(struct net_device *dev, struct can_frame *frame,
 		frame->data[1] = 0;
 	}
 
-<<<<<<< HEAD
-	old_state = check_set_state(dev, canrflg);
-	/* State changed */
-	if (old_state != priv->can.state) {
-		switch (priv->can.state) {
-		case CAN_STATE_ERROR_WARNING:
-			frame->can_id |= CAN_ERR_CRTL;
-			priv->can.can_stats.error_warning++;
-			if ((priv->shadow_statflg & MSCAN_RSTAT_MSK) <
-			    (canrflg & MSCAN_RSTAT_MSK))
-				frame->data[1] |= CAN_ERR_CRTL_RX_WARNING;
-			if ((priv->shadow_statflg & MSCAN_TSTAT_MSK) <
-			    (canrflg & MSCAN_TSTAT_MSK))
-				frame->data[1] |= CAN_ERR_CRTL_TX_WARNING;
-			break;
-		case CAN_STATE_ERROR_PASSIVE:
-			frame->can_id |= CAN_ERR_CRTL;
-			priv->can.can_stats.error_passive++;
-			frame->data[1] |= CAN_ERR_CRTL_RX_PASSIVE;
-			break;
-		case CAN_STATE_BUS_OFF:
-			frame->can_id |= CAN_ERR_BUSOFF;
-=======
 	new_state = get_new_state(dev, canrflg);
 	if (new_state != priv->can.state) {
 		can_change_state(dev, frame,
@@ -462,7 +357,6 @@ static void mscan_get_err_frame(struct net_device *dev, struct can_frame *frame,
 				 state_map[MSCAN_STATE_RX(canrflg)]);
 
 		if (priv->can.state == CAN_STATE_BUS_OFF) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * The MSCAN on the MPC5200 does recover from bus-off
 			 * automatically. To avoid that we stop the chip doing
@@ -475,20 +369,10 @@ static void mscan_get_err_frame(struct net_device *dev, struct can_frame *frame,
 					 MSCAN_SLPRQ | MSCAN_INITRQ);
 			}
 			can_bus_off(dev);
-<<<<<<< HEAD
-			break;
-		default:
-			break;
-		}
-	}
-	priv->shadow_statflg = canrflg & MSCAN_STAT_MSK;
-	frame->can_dlc = CAN_ERR_DLC;
-=======
 		}
 	}
 	priv->shadow_statflg = canrflg & MSCAN_STAT_MSK;
 	frame->len = CAN_ERR_DLC;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_8(&regs->canrflg, MSCAN_ERR_IF);
 }
 
@@ -498,21 +382,12 @@ static int mscan_rx_poll(struct napi_struct *napi, int quota)
 	struct net_device *dev = napi->dev;
 	struct mscan_regs __iomem *regs = priv->reg_base;
 	struct net_device_stats *stats = &dev->stats;
-<<<<<<< HEAD
-	int npackets = 0;
-	int ret = 1;
-=======
 	int work_done = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	struct can_frame *frame;
 	u8 canrflg;
 
-<<<<<<< HEAD
-	while (npackets < quota) {
-=======
 	while (work_done < quota) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		canrflg = in_8(&regs->canrflg);
 		if (!(canrflg & (MSCAN_RXF | MSCAN_ERR_IF)))
 			break;
@@ -526,27 +401,6 @@ static int mscan_rx_poll(struct napi_struct *napi, int quota)
 			continue;
 		}
 
-<<<<<<< HEAD
-		if (canrflg & MSCAN_RXF)
-			mscan_get_rx_frame(dev, frame);
-		else if (canrflg & MSCAN_ERR_IF)
-			mscan_get_err_frame(dev, frame, canrflg);
-
-		stats->rx_packets++;
-		stats->rx_bytes += frame->can_dlc;
-		npackets++;
-		netif_receive_skb(skb);
-	}
-
-	if (!(in_8(&regs->canrflg) & (MSCAN_RXF | MSCAN_ERR_IF))) {
-		napi_complete(&priv->napi);
-		clear_bit(F_RX_PROGRESS, &priv->flags);
-		if (priv->can.state < CAN_STATE_BUS_OFF)
-			out_8(&regs->canrier, priv->shadow_canrier);
-		ret = 0;
-	}
-	return ret;
-=======
 		if (canrflg & MSCAN_RXF) {
 			mscan_get_rx_frame(dev, frame);
 			stats->rx_packets++;
@@ -568,7 +422,6 @@ static int mscan_rx_poll(struct napi_struct *napi, int quota)
 		}
 	}
 	return work_done;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t mscan_isr(int irq, void *dev_id)
@@ -595,15 +448,9 @@ static irqreturn_t mscan_isr(int irq, void *dev_id)
 				continue;
 
 			out_8(&regs->cantbsel, mask);
-<<<<<<< HEAD
-			stats->tx_bytes += in_8(&regs->tx.dlr);
-			stats->tx_packets++;
-			can_get_echo_skb(dev, entry->id);
-=======
 			stats->tx_bytes += can_get_echo_skb(dev, entry->id,
 							    NULL);
 			stats->tx_packets++;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->tx_active &= ~mask;
 			list_del(pos);
 		}
@@ -613,11 +460,7 @@ static irqreturn_t mscan_isr(int irq, void *dev_id)
 			clear_bit(F_TX_PROGRESS, &priv->flags);
 			priv->cur_pri = 0;
 		} else {
-<<<<<<< HEAD
-			dev->trans_start = jiffies;
-=======
 			netif_trans_update(dev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!test_bit(F_TX_WAIT_ALL, &priv->flags))
@@ -644,17 +487,8 @@ static irqreturn_t mscan_isr(int irq, void *dev_id)
 
 static int mscan_do_set_mode(struct net_device *dev, enum can_mode mode)
 {
-<<<<<<< HEAD
-	struct mscan_priv *priv = netdev_priv(dev);
 	int ret = 0;
 
-	if (!priv->open_time)
-		return -EINVAL;
-
-=======
-	int ret = 0;
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mode) {
 	case CAN_MODE_START:
 		ret = mscan_restart(dev);
@@ -709,12 +543,6 @@ static int mscan_open(struct net_device *dev)
 	struct mscan_priv *priv = netdev_priv(dev);
 	struct mscan_regs __iomem *regs = priv->reg_base;
 
-<<<<<<< HEAD
-	/* common open */
-	ret = open_candev(dev);
-	if (ret)
-		return ret;
-=======
 	ret = clk_prepare_enable(priv->clk_ipg);
 	if (ret)
 		goto exit_retcode;
@@ -726,7 +554,6 @@ static int mscan_open(struct net_device *dev)
 	ret = open_candev(dev);
 	if (ret)
 		goto exit_dis_can_clock;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	napi_enable(&priv->napi);
 
@@ -736,11 +563,6 @@ static int mscan_open(struct net_device *dev)
 		goto exit_napi_disable;
 	}
 
-<<<<<<< HEAD
-	priv->open_time = jiffies;
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
 		setbits8(&regs->canctl1, MSCAN_LISTEN);
 	else
@@ -755,22 +577,15 @@ static int mscan_open(struct net_device *dev)
 	return 0;
 
 exit_free_irq:
-<<<<<<< HEAD
-	priv->open_time = 0;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_irq(dev->irq, dev);
 exit_napi_disable:
 	napi_disable(&priv->napi);
 	close_candev(dev);
-<<<<<<< HEAD
-=======
 exit_dis_can_clock:
 	clk_disable_unprepare(priv->clk_can);
 exit_dis_ipg_clock:
 	clk_disable_unprepare(priv->clk_ipg);
 exit_retcode:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -787,23 +602,14 @@ static int mscan_close(struct net_device *dev)
 	mscan_set_mode(dev, MSCAN_INIT_MODE);
 	close_candev(dev);
 	free_irq(dev->irq, dev);
-<<<<<<< HEAD
-	priv->open_time = 0;
-=======
 
 	clk_disable_unprepare(priv->clk_can);
 	clk_disable_unprepare(priv->clk_ipg);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static const struct net_device_ops mscan_netdev_ops = {
-<<<<<<< HEAD
-       .ndo_open               = mscan_open,
-       .ndo_stop               = mscan_close,
-       .ndo_start_xmit         = mscan_start_xmit,
-=======
 	.ndo_open	= mscan_open,
 	.ndo_stop	= mscan_close,
 	.ndo_start_xmit	= mscan_start_xmit,
@@ -812,7 +618,6 @@ static const struct net_device_ops mscan_netdev_ops = {
 
 static const struct ethtool_ops mscan_ethtool_ops = {
 	.get_ts_info = ethtool_op_get_ts_info,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int register_mscandev(struct net_device *dev, int mscan_clksrc)
@@ -875,18 +680,11 @@ struct net_device *alloc_mscandev(void)
 	priv = netdev_priv(dev);
 
 	dev->netdev_ops = &mscan_netdev_ops;
-<<<<<<< HEAD
-
-	dev->flags |= IFF_ECHO;	/* we support local echo */
-
-	netif_napi_add(dev, &priv->napi, mscan_rx_poll, 8);
-=======
 	dev->ethtool_ops = &mscan_ethtool_ops;
 
 	dev->flags |= IFF_ECHO;	/* we support local echo */
 
 	netif_napi_add_weight(dev, &priv->napi, mscan_rx_poll, 8);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->can.bittiming_const = &mscan_bittiming_const;
 	priv->can.do_set_bittiming = mscan_do_set_bittiming;

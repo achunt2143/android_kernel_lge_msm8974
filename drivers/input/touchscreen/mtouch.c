@@ -1,21 +1,10 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MicroTouch (3M) serial touchscreen driver
  *
  * Copyright (c) 2004 Vojtech Pavlik
  */
 
-<<<<<<< HEAD
-/*
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- */
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 2005/02/19 Dan Streetman <ddstreet@ieee.org>
@@ -28,10 +17,6 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
-<<<<<<< HEAD
-#include <linux/init.h>
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"MicroTouch serial touchscreen driver"
 
@@ -101,11 +86,7 @@ static void mtouch_process_response(struct mtouch *mtouch)
 static irqreturn_t mtouch_interrupt(struct serio *serio,
 		unsigned char data, unsigned int flags)
 {
-<<<<<<< HEAD
-	struct mtouch* mtouch = serio_get_drvdata(serio);
-=======
 	struct mtouch *mtouch = serio_get_drvdata(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mtouch->data[mtouch->idx] = data;
 
@@ -125,11 +106,7 @@ static irqreturn_t mtouch_interrupt(struct serio *serio,
 
 static void mtouch_disconnect(struct serio *serio)
 {
-<<<<<<< HEAD
-	struct mtouch* mtouch = serio_get_drvdata(serio);
-=======
 	struct mtouch *mtouch = serio_get_drvdata(serio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_get_device(mtouch->dev);
 	input_unregister_device(mtouch->dev);
@@ -197,11 +174,7 @@ static int mtouch_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
-<<<<<<< HEAD
-static struct serio_device_id mtouch_serio_ids[] = {
-=======
 static const struct serio_device_id mtouch_serio_ids[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_MICROTOUCH,
@@ -224,23 +197,4 @@ static struct serio_driver mtouch_drv = {
 	.disconnect	= mtouch_disconnect,
 };
 
-<<<<<<< HEAD
-/*
- * The functions for inserting/removing us as a module.
- */
-
-static int __init mtouch_init(void)
-{
-	return serio_register_driver(&mtouch_drv);
-}
-
-static void __exit mtouch_exit(void)
-{
-	serio_unregister_driver(&mtouch_drv);
-}
-
-module_init(mtouch_init);
-module_exit(mtouch_exit);
-=======
 module_serio_driver(mtouch_drv);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,36 +1,20 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALPHAPROJECT AP-SH4AD-0A Support.
  *
  * Copyright (C) 2010 ALPHAPROJECT Co.,Ltd.
  * Copyright (C) 2010  Matt Fleming
  * Copyright (C) 2010  Paul Mundt
-<<<<<<< HEAD
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
-<<<<<<< HEAD
-=======
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/machine.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smsc911x.h>
 #include <linux/irq.h>
 #include <linux/clk.h>
 #include <asm/machvec.h>
-<<<<<<< HEAD
-#include <asm/sizes.h>
-=======
 #include <linux/sizes.h>
 
 /* Dummy supplies, where voltage doesn't matter */
@@ -38,7 +22,6 @@ static struct regulator_consumer_supply dummy_supplies[] = {
 	REGULATOR_SUPPLY("vddvario", "smsc911x"),
 	REGULATOR_SUPPLY("vdd33a", "smsc911x"),
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct resource smsc911x_resources[] = {
 	[0] = {
@@ -78,11 +61,8 @@ static struct platform_device *apsh4ad0a_devices[] __initdata = {
 
 static int __init apsh4ad0a_devices_setup(void)
 {
-<<<<<<< HEAD
-=======
 	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(apsh4ad0a_devices,
 				    ARRAY_SIZE(apsh4ad0a_devices));
 }

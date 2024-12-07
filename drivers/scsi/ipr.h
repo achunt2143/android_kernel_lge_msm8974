@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0-or-later */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipr.h -- driver for IBM Power Linux RAID adapters
  *
@@ -9,23 +6,6 @@
  *
  * Copyright (C) 2003, 2004 IBM Corporation
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Alan Cox <alan@lxorguk.ukuu.org.uk> - Removed several careless u32/dma_addr_t errors
  *				that broke 64bit platforms.
  */
@@ -36,28 +16,17 @@
 #include <asm/unaligned.h>
 #include <linux/types.h>
 #include <linux/completion.h>
-<<<<<<< HEAD
-#include <linux/libata.h>
-#include <linux/list.h>
-#include <linux/kref.h>
-=======
 #include <linux/list.h>
 #include <linux/kref.h>
 #include <linux/irq_poll.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 
 /*
  * Literals
  */
-<<<<<<< HEAD
-#define IPR_DRIVER_VERSION "2.5.3"
-#define IPR_DRIVER_DATE "(March 10, 2012)"
-=======
 #define IPR_DRIVER_VERSION "2.6.4"
 #define IPR_DRIVER_DATE "(March 14, 2017)"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IPR_MAX_CMD_PER_LUN: This defines the maximum number of outstanding
@@ -65,10 +34,6 @@
  *	This can be adjusted at runtime through sysfs device attributes.
  */
 #define IPR_MAX_CMD_PER_LUN				6
-<<<<<<< HEAD
-#define IPR_MAX_CMD_PER_ATA_LUN			1
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IPR_NUM_BASE_CMD_BLKS: This defines the maximum number of
@@ -80,10 +45,7 @@
 
 #define PCI_DEVICE_ID_IBM_CROC_FPGA_E2          0x033D
 #define PCI_DEVICE_ID_IBM_CROCODILE             0x034A
-<<<<<<< HEAD
-=======
 #define PCI_DEVICE_ID_IBM_RATTLESNAKE		0x04DA
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPR_SUBS_DEV_ID_2780	0x0264
 #define IPR_SUBS_DEV_ID_5702	0x0266
@@ -107,10 +69,7 @@
 
 #define IPR_SUBS_DEV_ID_57B4    0x033B
 #define IPR_SUBS_DEV_ID_57B2    0x035F
-<<<<<<< HEAD
-=======
 #define IPR_SUBS_DEV_ID_57C0    0x0352
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_SUBS_DEV_ID_57C3    0x0353
 #define IPR_SUBS_DEV_ID_57C4    0x0354
 #define IPR_SUBS_DEV_ID_57C6    0x0357
@@ -123,8 +82,6 @@
 #define IPR_SUBS_DEV_ID_574D    0x0356
 #define IPR_SUBS_DEV_ID_57C8    0x035D
 
-<<<<<<< HEAD
-=======
 #define IPR_SUBS_DEV_ID_57D5    0x03FB
 #define IPR_SUBS_DEV_ID_57D6    0x03FC
 #define IPR_SUBS_DEV_ID_57D7    0x03FF
@@ -142,7 +99,6 @@
 #define IPR_SUBS_DEV_ID_2CCD	0x04C9
 #define IPR_SUBS_DEV_ID_580A	0x04FC
 #define IPR_SUBS_DEV_ID_580B	0x04FB
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_NAME				"ipr"
 
 /*
@@ -162,10 +118,7 @@
 #define IPR_IOASC_HW_DEV_BUS_STATUS			0x04448500
 #define	IPR_IOASC_IOASC_MASK			0xFFFFFF00
 #define	IPR_IOASC_SCSI_STATUS_MASK		0x000000FF
-<<<<<<< HEAD
-=======
 #define IPR_IOASC_HW_CMD_FAILED			0x046E0000
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_IOASC_IR_INVALID_REQ_TYPE_OR_PKT	0x05240000
 #define IPR_IOASC_IR_RESOURCE_HANDLE		0x05250000
 #define IPR_IOASC_IR_NO_CMDS_TO_2ND_IOA		0x05258100
@@ -173,10 +126,7 @@
 #define IPR_IOASC_BUS_WAS_RESET			0x06290000
 #define IPR_IOASC_BUS_WAS_RESET_BY_OTHER		0x06298000
 #define IPR_IOASC_ABORTED_CMD_TERM_BY_HOST	0x0B5A0000
-<<<<<<< HEAD
-=======
 #define IPR_IOASC_IR_NON_OPTIMIZED		0x05258200
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPR_FIRST_DRIVER_IOASC			0x10000000
 #define IPR_IOASC_IOA_WAS_RESET			0x10000001
@@ -189,32 +139,20 @@
 #define IPR_DEFAULT_MAX_ERROR_DUMP			984
 #define IPR_NUM_LOG_HCAMS				2
 #define IPR_NUM_CFG_CHG_HCAMS				2
-<<<<<<< HEAD
-#define IPR_NUM_HCAMS	(IPR_NUM_LOG_HCAMS + IPR_NUM_CFG_CHG_HCAMS)
-=======
 #define IPR_NUM_HCAM_QUEUE				12
 #define IPR_NUM_HCAMS	(IPR_NUM_LOG_HCAMS + IPR_NUM_CFG_CHG_HCAMS)
 #define IPR_MAX_HCAMS	(IPR_NUM_HCAMS + IPR_NUM_HCAM_QUEUE)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPR_MAX_SIS64_TARGETS_PER_BUS			1024
 #define IPR_MAX_SIS64_LUNS_PER_TARGET			0xffffffff
 
 #define IPR_MAX_NUM_TARGETS_PER_BUS			256
 #define IPR_MAX_NUM_LUNS_PER_TARGET			256
-<<<<<<< HEAD
-#define IPR_MAX_NUM_VSET_LUNS_PER_TARGET	8
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_VSET_BUS					0xff
 #define IPR_IOA_BUS						0xff
 #define IPR_IOA_TARGET					0xff
 #define IPR_IOA_LUN						0xff
 #define IPR_MAX_NUM_BUSES				16
-<<<<<<< HEAD
-#define IPR_MAX_BUS_TO_SCAN				IPR_MAX_NUM_BUSES
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPR_NUM_RESET_RELOAD_RETRIES		3
 
@@ -249,21 +187,14 @@
 /*
  * Adapter Commands
  */
-<<<<<<< HEAD
-=======
 #define IPR_CANCEL_REQUEST				0xC0
 #define	IPR_CANCEL_64BIT_IOARCB			0x01
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_QUERY_RSRC_STATE				0xC2
 #define IPR_RESET_DEVICE				0xC3
 #define	IPR_RESET_TYPE_SELECT				0x80
 #define	IPR_LUN_RESET					0x40
 #define	IPR_TARGET_RESET					0x20
 #define	IPR_BUS_RESET					0x10
-<<<<<<< HEAD
-#define	IPR_ATA_PHY_RESET					0x80
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_ID_HOST_RR_Q				0xC4
 #define IPR_QUERY_IOA_CONFIG				0xC5
 #define IPR_CANCEL_ALL_REQUESTS			0xCE
@@ -274,13 +205,10 @@
 #define IPR_SET_ALL_SUPPORTED_DEVICES			0x80
 #define IPR_IOA_SHUTDOWN				0xF7
 #define	IPR_WR_BUF_DOWNLOAD_AND_SAVE			0x05
-<<<<<<< HEAD
-=======
 #define IPR_IOA_SERVICE_ACTION				0xD2
 
 /* IOA Service Actions */
 #define IPR_IOA_SA_CHANGE_CACHE_PARAMS			0x14
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Timeouts
@@ -290,10 +218,7 @@
 #define IPR_ABBREV_SHUTDOWN_TIMEOUT		(10 * HZ)
 #define IPR_DUAL_IOA_ABBR_SHUTDOWN_TO	(2 * 60 * HZ)
 #define IPR_DEVICE_RESET_TIMEOUT		(ipr_fastfail ? 10 * HZ : 30 * HZ)
-<<<<<<< HEAD
-=======
 #define IPR_CANCEL_TIMEOUT			(ipr_fastfail ? 10 * HZ : 30 * HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_CANCEL_ALL_TIMEOUT		(ipr_fastfail ? 10 * HZ : 30 * HZ)
 #define IPR_ABORT_TASK_TIMEOUT		(ipr_fastfail ? 10 * HZ : 30 * HZ)
 #define IPR_INTERNAL_TIMEOUT			(ipr_fastfail ? 10 * HZ : 30 * HZ)
@@ -305,10 +230,7 @@
 #define IPR_WAIT_FOR_RESET_TIMEOUT		(2 * HZ)
 #define IPR_CHECK_FOR_RESET_TIMEOUT		(HZ / 10)
 #define IPR_WAIT_FOR_BIST_TIMEOUT		(2 * HZ)
-<<<<<<< HEAD
-=======
 #define IPR_PCI_ERROR_RECOVERY_TIMEOUT	(120 * HZ)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_PCI_RESET_TIMEOUT			(HZ / 2)
 #define IPR_SIS32_DUMP_TIMEOUT			(15 * HZ)
 #define IPR_SIS64_DUMP_TIMEOUT			(40 * HZ)
@@ -350,12 +272,9 @@
 #define IPR_IPL_INIT_STAGE_TIME_MASK			0x0000ffff
 #define IPR_PCII_IPL_STAGE_CHANGE			(0x80000000 >> 0)
 
-<<<<<<< HEAD
-=======
 #define IPR_PCII_MAILBOX_STABLE				(0x80000000 >> 4)
 #define IPR_WAIT_FOR_MAILBOX				(2 * HZ)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_PCII_IOA_TRANS_TO_OPER			(0x80000000 >> 0)
 #define IPR_PCII_IOARCB_XFER_FAILED			(0x80000000 >> 3)
 #define IPR_PCII_IOA_UNIT_CHECKED			(0x80000000 >> 4)
@@ -386,11 +305,7 @@ IPR_PCII_NO_HOST_RRQ | IPR_PCII_IOARRIN_LOST | IPR_PCII_MMIO_ERROR)
  * Dump literals
  */
 #define IPR_FMT2_MAX_IOA_DUMP_SIZE			(4 * 1024 * 1024)
-<<<<<<< HEAD
-#define IPR_FMT3_MAX_IOA_DUMP_SIZE			(32 * 1024 * 1024)
-=======
 #define IPR_FMT3_MAX_IOA_DUMP_SIZE			(80 * 1024 * 1024)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_FMT2_NUM_SDT_ENTRIES			511
 #define IPR_FMT3_NUM_SDT_ENTRIES			0xFFF
 #define IPR_FMT2_MAX_NUM_DUMP_PAGES	((IPR_FMT2_MAX_IOA_DUMP_SIZE / PAGE_SIZE) + 1)
@@ -400,12 +315,9 @@ IPR_PCII_NO_HOST_RRQ | IPR_PCII_IOARRIN_LOST | IPR_PCII_MMIO_ERROR)
  * Misc literals
  */
 #define IPR_NUM_IOADL_ENTRIES			IPR_MAX_SGLIST
-<<<<<<< HEAD
-=======
 #define IPR_MAX_MSIX_VECTORS		0x10
 #define IPR_MAX_HRRQ_NUM		0x10
 #define IPR_INIT_HRRQ			0x0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Adapter interface types
@@ -512,12 +424,8 @@ struct ipr_config_table_entry64 {
 	__be64 dev_id;
 	__be64 lun;
 	__be64 lun_wwn[2];
-<<<<<<< HEAD
-#define IPR_MAX_RES_PATH_LENGTH		24
-=======
 #define IPR_MAX_RES_PATH_LENGTH		48
 #define IPR_RES_PATH_BYTES		8
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be64 res_path;
 	struct ipr_std_inq_data std_inq_data;
 	u8 reserved2[4];
@@ -541,20 +449,12 @@ struct ipr_config_table_hdr64 {
 
 struct ipr_config_table {
 	struct ipr_config_table_hdr hdr;
-<<<<<<< HEAD
-	struct ipr_config_table_entry dev[0];
-=======
 	struct ipr_config_table_entry dev[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }__attribute__((packed, aligned (4)));
 
 struct ipr_config_table64 {
 	struct ipr_config_table_hdr64 hdr64;
-<<<<<<< HEAD
-	struct ipr_config_table_entry64 dev[0];
-=======
 	struct ipr_config_table_entry64 dev[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }__attribute__((packed, aligned (8)));
 
 struct ipr_config_table_entry_wrapper {
@@ -580,11 +480,6 @@ struct ipr_supported_device {
 	u8 reserved2[16];
 }__attribute__((packed, aligned (4)));
 
-<<<<<<< HEAD
-/* Command packet structure */
-struct ipr_cmd_pkt {
-	__be16 reserved;		/* Reserved by IOA */
-=======
 struct ipr_hrr_queue {
 	struct ipr_ioa_cfg *ioa_cfg;
 	__be32 *host_rrq;
@@ -619,16 +514,11 @@ struct ipr_hrr_queue {
 struct ipr_cmd_pkt {
 	u8 reserved;		/* Reserved by IOA */
 	u8 hrrq_id;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 request_type;
 #define IPR_RQTYPE_SCSICDB		0x00
 #define IPR_RQTYPE_IOACMD		0x01
 #define IPR_RQTYPE_HCAM			0x02
-<<<<<<< HEAD
-#define IPR_RQTYPE_ATA_PASSTHRU	0x04
-=======
 #define IPR_RQTYPE_PIPE			0x05
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 reserved2;
 
@@ -652,33 +542,6 @@ struct ipr_cmd_pkt {
 	__be16 timeout;
 }__attribute__ ((packed, aligned(4)));
 
-<<<<<<< HEAD
-struct ipr_ioarcb_ata_regs {	/* 22 bytes */
-	u8 flags;
-#define IPR_ATA_FLAG_PACKET_CMD			0x80
-#define IPR_ATA_FLAG_XFER_TYPE_DMA			0x40
-#define IPR_ATA_FLAG_STATUS_ON_GOOD_COMPLETION	0x20
-	u8 reserved[3];
-
-	__be16 data;
-	u8 feature;
-	u8 nsect;
-	u8 lbal;
-	u8 lbam;
-	u8 lbah;
-	u8 device;
-	u8 command;
-	u8 reserved2[3];
-	u8 hob_feature;
-	u8 hob_nsect;
-	u8 hob_lbal;
-	u8 hob_lbam;
-	u8 hob_lbah;
-	u8 ctl;
-}__attribute__ ((packed, aligned(4)));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ipr_ioadl_desc {
 	__be32 flags_and_data_len;
 #define IPR_IOADL_FLAGS_MASK		0xff000000
@@ -700,20 +563,8 @@ struct ipr_ioadl64_desc {
 	__be64 address;
 }__attribute__((packed, aligned (16)));
 
-<<<<<<< HEAD
-struct ipr_ata64_ioadl {
-	struct ipr_ioarcb_ata_regs regs;
-	u16 reserved[5];
-	struct ipr_ioadl64_desc ioadl64[IPR_NUM_IOADL_ENTRIES];
-}__attribute__((packed, aligned (16)));
-
 struct ipr_ioarcb_add_data {
 	union {
-		struct ipr_ioarcb_ata_regs regs;
-=======
-struct ipr_ioarcb_add_data {
-	union {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ipr_ioadl_desc ioadl[5];
 		__be32 add_cmd_parms[10];
 	} u;
@@ -779,24 +630,6 @@ struct ipr_ioasa_gpdd {
 	__be32 ioa_data[2];
 }__attribute__((packed, aligned (4)));
 
-<<<<<<< HEAD
-struct ipr_ioasa_gata {
-	u8 error;
-	u8 nsect;		/* Interrupt reason */
-	u8 lbal;
-	u8 lbam;
-	u8 lbah;
-	u8 device;
-	u8 status;
-	u8 alt_status;	/* ATA CTL */
-	u8 hob_nsect;
-	u8 hob_lbal;
-	u8 hob_lbam;
-	u8 hob_lbah;
-}__attribute__((packed, aligned (4)));
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ipr_auto_sense {
 	__be16 auto_sense_len;
 	__be16 ioa_data_len;
@@ -830,10 +663,6 @@ struct ipr_ioasa_hdr {
 	__be32 ioasc_specific;	/* status code specific field */
 #define IPR_ADDITIONAL_STATUS_FMT		0x80000000
 #define IPR_AUTOSENSE_VALID			0x40000000
-<<<<<<< HEAD
-#define IPR_ATA_DEVICE_WAS_RESET		0x20000000
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_IOASC_SPECIFIC_MASK		0x00ffffff
 #define IPR_FIELD_POINTER_VALID		(0x80000000 >> 8)
 #define IPR_FIELD_POINTER_MASK		0x0000ffff
@@ -847,10 +676,6 @@ struct ipr_ioasa {
 		struct ipr_ioasa_vset vset;
 		struct ipr_ioasa_af_dasd dasd;
 		struct ipr_ioasa_gpdd gpdd;
-<<<<<<< HEAD
-		struct ipr_ioasa_gata gata;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 
 	struct ipr_auto_sense auto_sense;
@@ -864,10 +689,6 @@ struct ipr_ioasa64 {
 		struct ipr_ioasa_vset vset;
 		struct ipr_ioasa_af_dasd dasd;
 		struct ipr_ioasa_gpdd gpdd;
-<<<<<<< HEAD
-		struct ipr_ioasa_gata gata;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 
 	struct ipr_auto_sense auto_sense;
@@ -919,11 +740,7 @@ struct ipr_mode_page28 {
 	struct ipr_mode_page_hdr hdr;
 	u8 num_entries;
 	u8 entry_length;
-<<<<<<< HEAD
-	struct ipr_dev_bus_entry bus[0];
-=======
 	struct ipr_dev_bus_entry bus[];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }__attribute__((packed));
 
 struct ipr_mode_page24 {
@@ -976,8 +793,6 @@ struct ipr_inquiry_page0 {
 	u8 page[IPR_INQUIRY_PAGE0_ENTRIES];
 }__attribute__((packed));
 
-<<<<<<< HEAD
-=======
 struct ipr_inquiry_pageC4 {
 	u8 peri_qual_dev_type;
 	u8 page_code;
@@ -988,7 +803,6 @@ struct ipr_inquiry_pageC4 {
 	u8 reserved2[20];
 } __packed;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ipr_hostrcb_device_data_entry {
 	struct ipr_vpd vpd;
 	struct ipr_res_addr dev_res_addr;
@@ -1049,8 +863,6 @@ struct ipr_hostrcb_type_01_error {
 	__be32 ioa_data[236];
 }__attribute__((packed, aligned (4)));
 
-<<<<<<< HEAD
-=======
 struct ipr_hostrcb_type_21_error {
 	__be32 wwn[4];
 	u8 res_path[8];
@@ -1063,7 +875,6 @@ struct ipr_hostrcb_type_21_error {
 	__be32 ioa_data[236];
 }__attribute__((packed, aligned (4)));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ipr_hostrcb_type_02_error {
 	struct ipr_vpd ioa_vpd;
 	struct ipr_vpd cfc_vpd;
@@ -1151,21 +962,13 @@ struct ipr_hostrcb_type_24_error {
 struct ipr_hostrcb_type_07_error {
 	u8 failure_reason[64];
 	struct ipr_vpd vpd;
-<<<<<<< HEAD
-	u32 data[222];
-=======
 	__be32 data[222];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }__attribute__((packed, aligned (4)));
 
 struct ipr_hostrcb_type_17_error {
 	u8 failure_reason[64];
 	struct ipr_ext_vpd vpd;
-<<<<<<< HEAD
-	u32 data[476];
-=======
 	__be32 data[476];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }__attribute__((packed, aligned (4)));
 
 struct ipr_hostrcb_config_element {
@@ -1244,13 +1047,10 @@ struct ipr_hostrcb64_fabric_desc {
 	struct ipr_hostrcb64_config_element elem[1];
 }__attribute__((packed, aligned (8)));
 
-<<<<<<< HEAD
-=======
 #define for_each_hrrq(hrrq, ioa_cfg) \
 		for (hrrq = (ioa_cfg)->hrrq; \
 			hrrq < ((ioa_cfg)->hrrq + (ioa_cfg)->hrrq_num); hrrq++)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define for_each_fabric_cfg(fabric, cfg) \
 		for (cfg = (fabric)->elem; \
 			cfg < ((fabric)->elem + be16_to_cpu((fabric)->num_entries)); \
@@ -1270,14 +1070,11 @@ struct ipr_hostrcb_type_30_error {
 	struct ipr_hostrcb64_fabric_desc desc[1];
 }__attribute__((packed, aligned (4)));
 
-<<<<<<< HEAD
-=======
 struct ipr_hostrcb_type_41_error {
 	u8 failure_reason[64];
 	 __be32 data[200];
 }__attribute__((packed, aligned (4)));
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ipr_hostrcb_error {
 	__be32 fd_ioasc;
 	struct ipr_res_addr fd_res_addr;
@@ -1312,17 +1109,11 @@ struct ipr_hostrcb64_error {
 		struct ipr_hostrcb_type_ff_error type_ff_error;
 		struct ipr_hostrcb_type_12_error type_12_error;
 		struct ipr_hostrcb_type_17_error type_17_error;
-<<<<<<< HEAD
-		struct ipr_hostrcb_type_23_error type_23_error;
-		struct ipr_hostrcb_type_24_error type_24_error;
-		struct ipr_hostrcb_type_30_error type_30_error;
-=======
 		struct ipr_hostrcb_type_21_error type_21_error;
 		struct ipr_hostrcb_type_23_error type_23_error;
 		struct ipr_hostrcb_type_24_error type_24_error;
 		struct ipr_hostrcb_type_30_error type_30_error;
 		struct ipr_hostrcb_type_41_error type_41_error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 }__attribute__((packed, aligned (8)));
 
@@ -1363,18 +1154,12 @@ struct ipr_hcam {
 #define IPR_HOST_RCB_OVERLAY_ID_16				0x16
 #define IPR_HOST_RCB_OVERLAY_ID_17				0x17
 #define IPR_HOST_RCB_OVERLAY_ID_20				0x20
-<<<<<<< HEAD
-=======
 #define IPR_HOST_RCB_OVERLAY_ID_21				0x21
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_HOST_RCB_OVERLAY_ID_23				0x23
 #define IPR_HOST_RCB_OVERLAY_ID_24				0x24
 #define IPR_HOST_RCB_OVERLAY_ID_26				0x26
 #define IPR_HOST_RCB_OVERLAY_ID_30				0x30
-<<<<<<< HEAD
-=======
 #define IPR_HOST_RCB_OVERLAY_ID_41				0x41
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_HOST_RCB_OVERLAY_ID_DEFAULT				0xFF
 
 	u8 reserved1[3];
@@ -1441,27 +1226,14 @@ struct ipr_bus_attributes {
 	u32 max_xfer_rate;
 };
 
-<<<<<<< HEAD
-struct ipr_sata_port {
-	struct ipr_ioa_cfg *ioa_cfg;
-	struct ata_port *ap;
-	struct ipr_resource_entry *res;
-	struct ipr_ioasa_gata ioasa;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ipr_resource_entry {
 	u8 needs_sync_complete:1;
 	u8 in_erp:1;
 	u8 add_to_ml:1;
 	u8 del_from_ml:1;
 	u8 resetting_device:1;
-<<<<<<< HEAD
-=======
 	u8 reset_occurred:1;
 	u8 raw_mode:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32 bus;		/* AKA channel */
 	u32 target;		/* AKA id */
@@ -1469,48 +1241,28 @@ struct ipr_resource_entry {
 #define IPR_ARRAY_VIRTUAL_BUS			0x1
 #define IPR_VSET_VIRTUAL_BUS			0x2
 #define IPR_IOAFP_VIRTUAL_BUS			0x3
-<<<<<<< HEAD
-=======
 #define IPR_MAX_SIS64_BUSES			0x4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IPR_GET_RES_PHYS_LOC(res) \
 	(((res)->bus << 24) | ((res)->target << 8) | (res)->lun)
 
 	u8 ata_class;
-<<<<<<< HEAD
-
-	u8 flags;
-	__be16 res_flags;
-
-	u8 type;
-
-=======
 	u8 type;
 
 	u16 flags;
 	u16 res_flags;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 qmodel;
 	struct ipr_std_inq_data std_inq_data;
 
 	__be32 res_handle;
 	__be64 dev_id;
-<<<<<<< HEAD
-	__be64 lun_wwn;
-=======
 	u64 lun_wwn;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_lun dev_lun;
 	u8 res_path[8];
 
 	struct ipr_ioa_cfg *ioa_cfg;
 	struct scsi_device *sdev;
-<<<<<<< HEAD
-	struct ipr_sata_port *sata_port;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head queue;
 }; /* struct ipr_resource_entry */
 
@@ -1524,10 +1276,7 @@ struct ipr_misc_cbs {
 	struct ipr_inquiry_page0 page0_data;
 	struct ipr_inquiry_page3 page3_data;
 	struct ipr_inquiry_cap cap;
-<<<<<<< HEAD
-=======
 	struct ipr_inquiry_pageC4 pageC4_data;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipr_mode_pages mode_pages;
 	struct ipr_supported_device supp_dev;
 };
@@ -1592,23 +1341,14 @@ struct ipr_chip_cfg_t {
 	u16 max_cmds;
 	u8 cache_line_size;
 	u8 clear_isr;
-<<<<<<< HEAD
-=======
 	u32 iopoll_weight;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipr_interrupt_offsets regs;
 };
 
 struct ipr_chip_t {
 	u16 vendor;
 	u16 device;
-<<<<<<< HEAD
-	u16 intr_type;
-#define IPR_USE_LSI			0x00
-#define IPR_USE_MSI			0x01
-=======
 	bool has_msi;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 sis_type;
 #define IPR_SIS32			0x00
 #define IPR_SIS64			0x01
@@ -1622,12 +1362,8 @@ enum ipr_shutdown_type {
 	IPR_SHUTDOWN_NORMAL = 0x00,
 	IPR_SHUTDOWN_PREPARE_FOR_NORMAL = 0x40,
 	IPR_SHUTDOWN_ABBREV = 0x80,
-<<<<<<< HEAD
-	IPR_SHUTDOWN_NONE = 0x100
-=======
 	IPR_SHUTDOWN_NONE = 0x100,
 	IPR_SHUTDOWN_QUIESCE = 0x101,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ipr_trace_entry {
@@ -1653,11 +1389,7 @@ struct ipr_sglist {
 	u32 num_sg;
 	u32 num_dma_sg;
 	u32 buffer_len;
-<<<<<<< HEAD
-	struct scatterlist scatterlist[1];
-=======
 	struct scatterlist *scatterlist;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ipr_sdt_state {
@@ -1676,23 +1408,12 @@ struct ipr_ioa_cfg {
 
 	struct list_head queue;
 
-<<<<<<< HEAD
-	u8 allow_interrupts:1;
-	u8 in_reset_reload:1;
-	u8 in_ioa_bringdown:1;
-	u8 ioa_unit_checked:1;
-	u8 ioa_is_dead:1;
-	u8 dump_taken:1;
-	u8 allow_cmds:1;
-	u8 allow_ml_add_del:1;
-=======
 	u8 in_reset_reload:1;
 	u8 in_ioa_bringdown:1;
 	u8 ioa_unit_checked:1;
 	u8 dump_taken:1;
 	u8 scan_enabled:1;
 	u8 scan_done:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 needs_hard_reset:1;
 	u8 dual_raid:1;
 	u8 needs_warm_reset:1;
@@ -1701,67 +1422,34 @@ struct ipr_ioa_cfg {
 	u8 dump_timeout:1;
 	u8 cfg_locked:1;
 	u8 clear_isr:1;
-<<<<<<< HEAD
-=======
 	u8 probe_done:1;
 	u8 scsi_unblock:1;
 	u8 scsi_blocked:1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 revid;
 
 	/*
 	 * Bitmaps for SIS64 generated target values
 	 */
-<<<<<<< HEAD
-	unsigned long *target_ids;
-	unsigned long *array_ids;
-	unsigned long *vset_ids;
-=======
 	unsigned long target_ids[BITS_TO_LONGS(IPR_MAX_SIS64_DEVS)];
 	unsigned long array_ids[BITS_TO_LONGS(IPR_MAX_SIS64_DEVS)];
 	unsigned long vset_ids[BITS_TO_LONGS(IPR_MAX_SIS64_DEVS)];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u16 type; /* CCIN of the card */
 
 	u8 log_level;
 #define IPR_MAX_LOG_LEVEL			4
 #define IPR_DEFAULT_LOG_LEVEL		2
-<<<<<<< HEAD
-
-#define IPR_NUM_TRACE_INDEX_BITS	8
-#define IPR_NUM_TRACE_ENTRIES		(1 << IPR_NUM_TRACE_INDEX_BITS)
-=======
 #define IPR_DEBUG_LOG_LEVEL		3
 
 #define IPR_NUM_TRACE_INDEX_BITS	8
 #define IPR_NUM_TRACE_ENTRIES		(1 << IPR_NUM_TRACE_INDEX_BITS)
 #define IPR_TRACE_INDEX_MASK		(IPR_NUM_TRACE_ENTRIES - 1)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IPR_TRACE_SIZE	(sizeof(struct ipr_trace_entry) * IPR_NUM_TRACE_ENTRIES)
 	char trace_start[8];
 #define IPR_TRACE_START_LABEL			"trace"
 	struct ipr_trace_entry *trace;
-<<<<<<< HEAD
-	u32 trace_index:IPR_NUM_TRACE_INDEX_BITS;
-
-	/*
-	 * Queue for free command blocks
-	 */
-	char ipr_free_label[8];
-#define IPR_FREEQ_LABEL			"free-q"
-	struct list_head free_q;
-
-	/*
-	 * Queue for command blocks outstanding to the adapter
-	 */
-	char ipr_pending_label[8];
-#define IPR_PENDQ_LABEL			"pend-q"
-	struct list_head pending_q;
-=======
 	atomic_t trace_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	char cfg_table_start[8];
 #define IPR_CFG_TBL_START		"cfg"
@@ -1781,23 +1469,6 @@ struct ipr_ioa_cfg {
 
 	char ipr_hcam_label[8];
 #define IPR_HCAM_LABEL			"hcams"
-<<<<<<< HEAD
-	struct ipr_hostrcb *hostrcb[IPR_NUM_HCAMS];
-	dma_addr_t hostrcb_dma[IPR_NUM_HCAMS];
-	struct list_head hostrcb_free_q;
-	struct list_head hostrcb_pending_q;
-
-	__be32 *host_rrq;
-	dma_addr_t host_rrq_dma;
-#define IPR_HRRQ_REQ_RESP_HANDLE_MASK	0xfffffffc
-#define IPR_HRRQ_RESP_BIT_SET			0x00000002
-#define IPR_HRRQ_TOGGLE_BIT				0x00000001
-#define IPR_HRRQ_REQ_RESP_HANDLE_SHIFT	2
-	volatile __be32 *hrrq_start;
-	volatile __be32 *hrrq_end;
-	volatile __be32 *hrrq_curr;
-	volatile u32 toggle_bit;
-=======
 	struct ipr_hostrcb *hostrcb[IPR_MAX_HCAMS];
 	dma_addr_t hostrcb_dma[IPR_MAX_HCAMS];
 	struct list_head hostrcb_free_q;
@@ -1808,7 +1479,6 @@ struct ipr_ioa_cfg {
 	u32 hrrq_num;
 	atomic_t  hrrq_index;
 	u16 identify_hrrq_index;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ipr_bus_attributes bus_attr[IPR_MAX_NUM_BUSES];
 
@@ -1833,18 +1503,12 @@ struct ipr_ioa_cfg {
 	u8 saved_mode_page_len;
 
 	struct work_struct work_q;
-<<<<<<< HEAD
-
-	wait_queue_head_t reset_wait_q;
-	wait_queue_head_t msi_wait_q;
-=======
 	struct work_struct scsi_add_work_q;
 	struct workqueue_struct *reset_work_q;
 
 	wait_queue_head_t reset_wait_q;
 	wait_queue_head_t msi_wait_q;
 	wait_queue_head_t eeh_wait_q;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ipr_dump *dump;
 	enum ipr_sdt_state sdt_state;
@@ -1852,26 +1516,16 @@ struct ipr_ioa_cfg {
 	struct ipr_misc_cbs *vpd_cbs;
 	dma_addr_t vpd_cbs_dma;
 
-<<<<<<< HEAD
-	struct pci_pool *ipr_cmd_pool;
-=======
 	struct dma_pool *ipr_cmd_pool;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct ipr_cmnd *reset_cmd;
 	int (*reset) (struct ipr_cmnd *);
 
-<<<<<<< HEAD
-	struct ata_host ata_host;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char ipr_cmd_label[8];
 #define IPR_CMD_LABEL		"ipr_cmd"
 	u32 max_cmds;
 	struct ipr_cmnd **ipr_cmnd_list;
 	dma_addr_t *ipr_cmnd_list_dma;
-<<<<<<< HEAD
-=======
 
 	unsigned int nvectors;
 
@@ -1881,7 +1535,6 @@ struct ipr_ioa_cfg {
 
 	u32 iopoll_weight;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }; /* struct ipr_ioa_cfg */
 
 struct ipr_cmnd {
@@ -1889,10 +1542,6 @@ struct ipr_cmnd {
 	union {
 		struct ipr_ioadl_desc ioadl[IPR_NUM_IOADL_ENTRIES];
 		struct ipr_ioadl64_desc ioadl64[IPR_NUM_IOADL_ENTRIES];
-<<<<<<< HEAD
-		struct ipr_ata64_ioadl ata_ioadl;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} i;
 	union {
 		struct ipr_ioasa ioasa;
@@ -1900,16 +1549,10 @@ struct ipr_cmnd {
 	} s;
 	struct list_head queue;
 	struct scsi_cmnd *scsi_cmd;
-<<<<<<< HEAD
-	struct ata_queued_cmd *qc;
-	struct completion completion;
-	struct timer_list timer;
-=======
 	struct completion completion;
 	struct timer_list timer;
 	struct work_struct work;
 	void (*fast_done) (struct ipr_cmnd *);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*done) (struct ipr_cmnd *);
 	int (*job_step) (struct ipr_cmnd *);
 	int (*job_step_failed) (struct ipr_cmnd *);
@@ -1928,11 +1571,8 @@ struct ipr_cmnd {
 		struct scsi_device *sdev;
 	} u;
 
-<<<<<<< HEAD
-=======
 	struct completion *eh_comp;
 	struct ipr_hrr_queue *hrrq;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipr_ioa_cfg *ioa_cfg;
 };
 
@@ -1981,11 +1621,7 @@ struct ipr_dump_entry_header {
 struct ipr_dump_location_entry {
 	struct ipr_dump_entry_header hdr;
 	u8 location[20];
-<<<<<<< HEAD
-}__attribute__((packed));
-=======
 }__attribute__((packed, aligned (4)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ipr_dump_trace_entry {
 	struct ipr_dump_entry_header hdr;
@@ -2009,11 +1645,7 @@ struct ipr_driver_dump {
 	struct ipr_dump_location_entry location_entry;
 	struct ipr_dump_ioa_type_entry ioa_type_entry;
 	struct ipr_dump_trace_entry trace_entry;
-<<<<<<< HEAD
-}__attribute__((packed));
-=======
 }__attribute__((packed, aligned (4)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ipr_ioa_dump {
 	struct ipr_dump_entry_header hdr;
@@ -2114,12 +1746,8 @@ struct ipr_ucode_image_header {
 	if (ipr_is_device(hostrcb)) {					\
 		if ((hostrcb)->ioa_cfg->sis64) {			\
 			printk(KERN_ERR IPR_NAME ": %s: " fmt, 		\
-<<<<<<< HEAD
-				ipr_format_res_path(hostrcb->hcam.u.error64.fd_res_path, \
-=======
 				ipr_format_res_path(hostrcb->ioa_cfg,	\
 					hostrcb->hcam.u.error64.fd_res_path, \
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hostrcb->rp_buffer,		\
 					sizeof(hostrcb->rp_buffer)),	\
 				__VA_ARGS__);				\

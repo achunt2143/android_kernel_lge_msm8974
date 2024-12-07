@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/kernel/resource.c
  *
@@ -11,11 +8,8 @@
  * Arbitrary resource management.
  */
 
-<<<<<<< HEAD
-=======
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/errno.h>
 #include <linux/ioport.h>
@@ -24,23 +18,17 @@
 #include <linux/spinlock.h>
 #include <linux/fs.h>
 #include <linux/proc_fs.h>
-<<<<<<< HEAD
-=======
 #include <linux/pseudo_fs.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/seq_file.h>
 #include <linux/device.h>
 #include <linux/pfn.h>
-<<<<<<< HEAD
-=======
 #include <linux/mm.h>
 #include <linux/mount.h>
 #include <linux/resource_ext.h>
 #include <uapi/linux/magic.h>
 #include <linux/string.h>
 #include <linux/vmalloc.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 
@@ -70,29 +58,18 @@ struct resource_constraint {
 
 static DEFINE_RWLOCK(resource_lock);
 
-<<<<<<< HEAD
-static void *r_next(struct seq_file *m, void *v, loff_t *pos)
-{
-	struct resource *p = v;
-	(*pos)++;
-	if (p->child)
-=======
 static struct resource *next_resource(struct resource *p, bool skip_children)
 {
 	if (!skip_children && p->child)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return p->child;
 	while (!p->sibling && p->parent)
 		p = p->parent;
 	return p->sibling;
 }
 
-<<<<<<< HEAD
-=======
 #define for_each_resource(_root, _p, _skip_children) \
 	for ((_p) = (_root)->child; (_p); (_p) = next_resource(_p, _skip_children))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_FS
 
 enum { MAX_IORES_LEVEL = 5 };
@@ -100,16 +77,6 @@ enum { MAX_IORES_LEVEL = 5 };
 static void *r_start(struct seq_file *m, loff_t *pos)
 	__acquires(resource_lock)
 {
-<<<<<<< HEAD
-	struct resource *p = m->private;
-	loff_t l = 0;
-	read_lock(&resource_lock);
-	for (p = p->child; p && l < *pos; p = r_next(m, p, &l))
-		;
-	return p;
-}
-
-=======
 	struct resource *root = pde_data(file_inode(m->file));
 	struct resource *p;
 	loff_t l = *pos;
@@ -132,7 +99,6 @@ static void *r_next(struct seq_file *m, void *v, loff_t *pos)
 	return (void *)next_resource(p, false);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void r_stop(struct seq_file *m, void *v)
 	__releases(resource_lock)
 {
@@ -141,11 +107,7 @@ static void r_stop(struct seq_file *m, void *v)
 
 static int r_show(struct seq_file *m, void *v)
 {
-<<<<<<< HEAD
-	struct resource *root = m->private;
-=======
 	struct resource *root = pde_data(file_inode(m->file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *r = v, *p;
 	unsigned long long start, end;
 	int width = root->end < 0x10000 ? 4 : 8;
@@ -155,11 +117,7 @@ static int r_show(struct seq_file *m, void *v)
 		if (p->parent == root)
 			break;
 
-<<<<<<< HEAD
-	if (capable(CAP_SYS_ADMIN)) {
-=======
 	if (file_ns_capable(m->file, &init_user_ns, CAP_SYS_ADMIN)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start = r->start;
 		end = r->end;
 	} else {
@@ -181,60 +139,17 @@ static const struct seq_operations resource_op = {
 	.show	= r_show,
 };
 
-<<<<<<< HEAD
-static int ioports_open(struct inode *inode, struct file *file)
-{
-	int res = seq_open(file, &resource_op);
-	if (!res) {
-		struct seq_file *m = file->private_data;
-		m->private = &ioport_resource;
-	}
-	return res;
-}
-
-static int iomem_open(struct inode *inode, struct file *file)
-{
-	int res = seq_open(file, &resource_op);
-	if (!res) {
-		struct seq_file *m = file->private_data;
-		m->private = &iomem_resource;
-	}
-	return res;
-}
-
-static const struct file_operations proc_ioports_operations = {
-	.open		= ioports_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-static const struct file_operations proc_iomem_operations = {
-	.open		= iomem_open,
-	.read		= seq_read,
-	.llseek		= seq_lseek,
-	.release	= seq_release,
-};
-
-static int __init ioresources_init(void)
-{
-	proc_create("ioports", 0, NULL, &proc_ioports_operations);
-	proc_create("iomem", S_IRUSR, NULL, &proc_iomem_operations);
-=======
 static int __init ioresources_init(void)
 {
 	proc_create_seq_data("ioports", 0, NULL, &resource_op,
 			&ioport_resource);
 	proc_create_seq_data("iomem", 0, NULL, &resource_op, &iomem_resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 __initcall(ioresources_init);
 
 #endif /* CONFIG_PROC_FS */
 
-<<<<<<< HEAD
-=======
 static void free_resource(struct resource *res)
 {
 	/**
@@ -252,7 +167,6 @@ static struct resource *alloc_resource(gfp_t flags)
 	return kzalloc(sizeof(struct resource), flags);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Return the conflict entry if you can't request it */
 static struct resource * __request_resource(struct resource *root, struct resource *new)
 {
@@ -282,15 +196,9 @@ static struct resource * __request_resource(struct resource *root, struct resour
 	}
 }
 
-<<<<<<< HEAD
-static int __release_resource(struct resource *old)
-{
-	struct resource *tmp, **p;
-=======
 static int __release_resource(struct resource *old, bool release_child)
 {
 	struct resource *tmp, **p, *chd;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = &old->parent->child;
 	for (;;) {
@@ -298,9 +206,6 @@ static int __release_resource(struct resource *old, bool release_child)
 		if (!tmp)
 			break;
 		if (tmp == old) {
-<<<<<<< HEAD
-			*p = tmp->sibling;
-=======
 			if (release_child || !(tmp->child)) {
 				*p = tmp->sibling;
 			} else {
@@ -312,7 +217,6 @@ static int __release_resource(struct resource *old, bool release_child)
 				*p = tmp->child;
 				chd->sibling = tmp->sibling;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			old->parent = NULL;
 			return 0;
 		}
@@ -386,27 +290,6 @@ int request_resource(struct resource *root, struct resource *new)
 EXPORT_SYMBOL(request_resource);
 
 /**
-<<<<<<< HEAD
- * locate_resource - locate an already reserved I/O or memory resource
- * @root: root resource descriptor
- * @search: resource descriptor to be located
- *
- * Returns pointer to desired resource or NULL if not found.
- */
-struct resource *locate_resource(struct resource *root, struct resource *search)
-{
-	struct resource *found;
-
-	write_lock(&resource_lock);
-	found = __request_resource(root, search);
-	write_unlock(&resource_lock);
-	return found;
-}
-EXPORT_SYMBOL(locate_resource);
-
-/**
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * release_resource - release a previously reserved resource
  * @old: resource pointer
  */
@@ -415,43 +298,13 @@ int release_resource(struct resource *old)
 	int retval;
 
 	write_lock(&resource_lock);
-<<<<<<< HEAD
-	retval = __release_resource(old);
-=======
 	retval = __release_resource(old, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_unlock(&resource_lock);
 	return retval;
 }
 
 EXPORT_SYMBOL(release_resource);
 
-<<<<<<< HEAD
-#if !defined(CONFIG_ARCH_HAS_WALK_MEMORY)
-/*
- * Finds the lowest memory reosurce exists within [res->start.res->end)
- * the caller must specify res->start, res->end, res->flags and "name".
- * If found, returns 0, res is overwritten, if not found, returns -1.
- */
-static int find_next_system_ram(struct resource *res, char *name)
-{
-	resource_size_t start, end;
-	struct resource *p;
-
-	BUG_ON(!res);
-
-	start = res->start;
-	end = res->end;
-	BUG_ON(start >= end);
-
-	read_lock(&resource_lock);
-	for (p = iomem_resource.child; p ; p = p->sibling) {
-		/* system ram is just marked as IORESOURCE_MEM */
-		if (p->flags != res->flags)
-			continue;
-		if (name && strcmp(p->name, name))
-			continue;
-=======
 /**
  * find_next_iomem_res - Finds the lowest iomem resource that covers part of
  *			 [@start..@end].
@@ -485,51 +338,10 @@ static int find_next_iomem_res(resource_size_t start, resource_size_t end,
 
 	for_each_resource(&iomem_resource, p, false) {
 		/* If we passed the resource we are looking for, stop */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (p->start > end) {
 			p = NULL;
 			break;
 		}
-<<<<<<< HEAD
-		if ((p->end >= start) && (p->start < end))
-			break;
-	}
-	read_unlock(&resource_lock);
-	if (!p)
-		return -1;
-	/* copy data */
-	if (res->start < p->start)
-		res->start = p->start;
-	if (res->end > p->end)
-		res->end = p->end;
-	return 0;
-}
-
-/*
- * This function calls callback against all memory range of "System RAM"
- * which are marked as IORESOURCE_MEM and IORESOUCE_BUSY.
- * Now, this function is only for "System RAM".
- */
-int walk_system_ram_range(unsigned long start_pfn, unsigned long nr_pages,
-		void *arg, int (*func)(unsigned long, unsigned long, void *))
-{
-	struct resource res;
-	unsigned long pfn, end_pfn;
-	u64 orig_end;
-	int ret = -1;
-
-	res.start = (u64) start_pfn << PAGE_SHIFT;
-	res.end = ((u64)(start_pfn + nr_pages) << PAGE_SHIFT) - 1;
-	res.flags = IORESOURCE_MEM | IORESOURCE_BUSY;
-	orig_end = res.end;
-	while ((res.start < res.end) &&
-		(find_next_system_ram(&res, "System RAM") >= 0)) {
-		pfn = (res.start + PAGE_SIZE - 1) >> PAGE_SHIFT;
-		if (res.end + 1 <= 0)
-			end_pfn = res.end >> PAGE_SHIFT;
-		else
-			end_pfn = (res.end + 1) >> PAGE_SHIFT;
-=======
 
 		/* Skip until we find a range that matches what we look for */
 		if (p->end < start)
@@ -708,50 +520,28 @@ int walk_system_ram_range(unsigned long start_pfn, unsigned long nr_pages,
 	       !find_next_iomem_res(start, end, flags, IORES_DESC_NONE, &res)) {
 		pfn = PFN_UP(res.start);
 		end_pfn = PFN_DOWN(res.end + 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (end_pfn > pfn)
 			ret = (*func)(pfn, end_pfn - pfn, arg);
 		if (ret)
 			break;
-<<<<<<< HEAD
-		if (res.end + 1 > res.start)
-			res.start = res.end + 1;
-		else
-			res.start = res.end;
-		res.end = orig_end;
-=======
 		start = res.end + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
-<<<<<<< HEAD
-#endif
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __is_ram(unsigned long pfn, unsigned long nr_pages, void *arg)
 {
 	return 1;
 }
-<<<<<<< HEAD
-/*
- * This generic page_is_ram() returns true if specified address is
- * registered as "System RAM" in iomem_resource list.
-=======
 
 /*
  * This generic page_is_ram() returns true if specified address is
  * registered as System RAM in iomem_resource list.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int __weak page_is_ram(unsigned long pfn)
 {
 	return walk_system_ram_range(pfn, 1, NULL, __is_ram) == 1;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(page_is_ram);
 
 static int __region_intersects(struct resource *parent, resource_size_t start,
@@ -815,7 +605,6 @@ int region_intersects(resource_size_t start, size_t size, unsigned long flags,
 	return ret;
 }
 EXPORT_SYMBOL_GPL(region_intersects);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __weak arch_remove_reservations(struct resource *avail)
 {
@@ -838,14 +627,6 @@ static void resource_clip(struct resource *res, resource_size_t min,
 		res->end = max;
 }
 
-<<<<<<< HEAD
-static bool resource_contains(struct resource *res1, struct resource *res2)
-{
-	return res1->start <= res2->start && res1->end >= res2->end;
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Find empty slot in the resource tree with the given range and
  * alignment constraints
@@ -858,10 +639,6 @@ static int __find_resource(struct resource *root, struct resource *old,
 	struct resource *this = root->child;
 	struct resource tmp = *new, avail, alloc;
 
-<<<<<<< HEAD
-	tmp.flags = new->flags;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.start = root->start;
 	/*
 	 * Skip past an allocated resource that starts at 0, since the assignment
@@ -884,16 +661,6 @@ static int __find_resource(struct resource *root, struct resource *old,
 		arch_remove_reservations(&tmp);
 
 		/* Check for overflow after ALIGN() */
-<<<<<<< HEAD
-		avail = *new;
-		avail.start = ALIGN(tmp.start, constraint->align);
-		avail.end = tmp.end;
-		if (avail.start >= tmp.start) {
-			alloc.start = constraint->alignf(constraint->alignf_data, &avail,
-					size, constraint->align);
-			alloc.end = alloc.start + size - 1;
-			if (resource_contains(&avail, &alloc)) {
-=======
 		avail.start = ALIGN(tmp.start, constraint->align);
 		avail.end = tmp.end;
 		avail.flags = new->flags & ~IORESOURCE_UNSET;
@@ -904,7 +671,6 @@ static int __find_resource(struct resource *root, struct resource *old,
 			alloc.end = alloc.start + size - 1;
 			if (alloc.start <= alloc.end &&
 			    resource_contains(&avail, &alloc)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				new->start = alloc.start;
 				new->end = alloc.end;
 				return 0;
@@ -941,15 +707,9 @@ static int find_resource(struct resource *root, struct resource *new,
  * @newsize: new size of the resource descriptor
  * @constraint: the size and alignment constraints to be met.
  */
-<<<<<<< HEAD
-int reallocate_resource(struct resource *root, struct resource *old,
-			resource_size_t newsize,
-			struct resource_constraint  *constraint)
-=======
 static int reallocate_resource(struct resource *root, struct resource *old,
 			       resource_size_t newsize,
 			       struct resource_constraint *constraint)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err=0;
 	struct resource new = *old;
@@ -975,11 +735,7 @@ static int reallocate_resource(struct resource *root, struct resource *old,
 		old->start = new.start;
 		old->end = new.end;
 	} else {
-<<<<<<< HEAD
-		__release_resource(old);
-=======
 		__release_resource(old, true);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*old = new;
 		conflict = __request_resource(root, old);
 		BUG_ON(conflict);
@@ -996,13 +752,8 @@ out:
  * @root: root resource descriptor
  * @new: resource descriptor desired by caller
  * @size: requested resource region size
-<<<<<<< HEAD
- * @min: minimum size to allocate
- * @max: maximum size to allocate
-=======
  * @min: minimum boundary to allocate
  * @max: maximum boundary to allocate
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @align: alignment requested, in bytes
  * @alignf: alignment function, optional, called if not NULL
  * @alignf_data: arbitrary data to pass to the @alignf function
@@ -1130,12 +881,9 @@ static struct resource * __insert_resource(struct resource *parent, struct resou
  * entirely fit within the range of the new resource, then the new
  * resource is inserted and the conflicting resources become children of
  * the new resource.
-<<<<<<< HEAD
-=======
  *
  * This function is intended for producers of resources, such as FW modules
  * and bus drivers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct resource *insert_resource_conflict(struct resource *parent, struct resource *new)
 {
@@ -1153,12 +901,9 @@ struct resource *insert_resource_conflict(struct resource *parent, struct resour
  * @new: new resource to insert
  *
  * Returns 0 on success, -EBUSY if the resource can't be inserted.
-<<<<<<< HEAD
-=======
  *
  * This function is intended for producers of resources, such as FW modules
  * and bus drivers.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int insert_resource(struct resource *parent, struct resource *new)
 {
@@ -1167,10 +912,7 @@ int insert_resource(struct resource *parent, struct resource *new)
 	conflict = insert_resource_conflict(parent, new);
 	return conflict ? -EBUSY : 0;
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL_GPL(insert_resource);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * insert_resource_expand_to_fit - Insert a resource into the resource tree
@@ -1201,24 +943,6 @@ void insert_resource_expand_to_fit(struct resource *root, struct resource *new)
 		if (conflict->end > new->end)
 			new->end = conflict->end;
 
-<<<<<<< HEAD
-		printk("Expanded resource %s due to conflict with %s\n", new->name, conflict->name);
-	}
-	write_unlock(&resource_lock);
-}
-
-/**
- * adjust_resource - modify a resource's start and size
- * @res: resource to modify
- * @start: new start value
- * @size: new size
- *
- * Given an existing resource, change its start and size to match the
- * arguments.  Returns 0 on success, -EBUSY if it can't fit.
- * Existing children of the resource are assumed to be immutable.
- */
-int adjust_resource(struct resource *res, resource_size_t start, resource_size_t size)
-=======
 		pr_info("Expanded resource %s due to conflict with %s\n", new->name, conflict->name);
 	}
 	write_unlock(&resource_lock);
@@ -1259,30 +983,17 @@ EXPORT_SYMBOL_GPL(remove_resource);
 
 static int __adjust_resource(struct resource *res, resource_size_t start,
 				resource_size_t size)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *tmp, *parent = res->parent;
 	resource_size_t end = start + size - 1;
 	int result = -EBUSY;
 
-<<<<<<< HEAD
-	write_lock(&resource_lock);
-=======
 	if (!parent)
 		goto skip;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((start < parent->start) || (end > parent->end))
 		goto out;
 
-<<<<<<< HEAD
-	for (tmp = res->child; tmp; tmp = tmp->sibling) {
-		if ((tmp->start < start) || (tmp->end > end))
-			goto out;
-	}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res->sibling && (res->sibling->start <= end))
 		goto out;
 
@@ -1294,21 +1005,16 @@ static int __adjust_resource(struct resource *res, resource_size_t start,
 			goto out;
 	}
 
-<<<<<<< HEAD
-=======
 skip:
 	for (tmp = res->child; tmp; tmp = tmp->sibling)
 		if ((tmp->start < start) || (tmp->end > end))
 			goto out;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res->start = start;
 	res->end = end;
 	result = 0;
 
  out:
-<<<<<<< HEAD
-=======
 	return result;
 }
 
@@ -1329,22 +1035,11 @@ int adjust_resource(struct resource *res, resource_size_t start,
 
 	write_lock(&resource_lock);
 	result = __adjust_resource(res, start, size);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_unlock(&resource_lock);
 	return result;
 }
 EXPORT_SYMBOL(adjust_resource);
 
-<<<<<<< HEAD
-static void __init __reserve_region_with_split(struct resource *root,
-		resource_size_t start, resource_size_t end,
-		const char *name)
-{
-	struct resource *parent = root;
-	struct resource *conflict;
-	struct resource *res = kzalloc(sizeof(*res), GFP_ATOMIC);
-	struct resource *next_res = NULL;
-=======
 static void __init
 __reserve_region_with_split(struct resource *root, resource_size_t start,
 			    resource_size_t end, const char *name)
@@ -1354,7 +1049,6 @@ __reserve_region_with_split(struct resource *root, resource_size_t start,
 	struct resource *res = alloc_resource(GFP_ATOMIC);
 	struct resource *next_res = NULL;
 	int type = resource_type(root);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!res)
 		return;
@@ -1362,12 +1056,8 @@ __reserve_region_with_split(struct resource *root, resource_size_t start,
 	res->name = name;
 	res->start = start;
 	res->end = end;
-<<<<<<< HEAD
-	res->flags = IORESOURCE_BUSY;
-=======
 	res->flags = type | IORESOURCE_BUSY;
 	res->desc = IORES_DESC_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 
@@ -1383,11 +1073,7 @@ __reserve_region_with_split(struct resource *root, resource_size_t start,
 		/* conflict covered whole area */
 		if (conflict->start <= res->start &&
 				conflict->end >= res->end) {
-<<<<<<< HEAD
-			kfree(res);
-=======
 			free_resource(res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			WARN_ON(next_res);
 			break;
 		}
@@ -1397,27 +1083,16 @@ __reserve_region_with_split(struct resource *root, resource_size_t start,
 			end = res->end;
 			res->end = conflict->start - 1;
 			if (conflict->end < end) {
-<<<<<<< HEAD
-				next_res = kzalloc(sizeof(*next_res),
-						GFP_ATOMIC);
-				if (!next_res) {
-					kfree(res);
-=======
 				next_res = alloc_resource(GFP_ATOMIC);
 				if (!next_res) {
 					free_resource(res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 				next_res->name = name;
 				next_res->start = conflict->end + 1;
 				next_res->end = end;
-<<<<<<< HEAD
-				next_res->flags = IORESOURCE_BUSY;
-=======
 				next_res->flags = type | IORESOURCE_BUSY;
 				next_res->desc = IORES_DESC_NONE;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			res->start = conflict->end + 1;
@@ -1426,14 +1101,6 @@ __reserve_region_with_split(struct resource *root, resource_size_t start,
 
 }
 
-<<<<<<< HEAD
-void __init reserve_region_with_split(struct resource *root,
-		resource_size_t start, resource_size_t end,
-		const char *name)
-{
-	write_lock(&resource_lock);
-	__reserve_region_with_split(root, start, end, name);
-=======
 void __init
 reserve_region_with_split(struct resource *root, resource_size_t start,
 			  resource_size_t end, const char *name)
@@ -1460,7 +1127,6 @@ reserve_region_with_split(struct resource *root, resource_size_t start,
 	}
 	if (!abort)
 		__reserve_region_with_split(root, start, end, name);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_unlock(&resource_lock);
 }
 
@@ -1490,27 +1156,11 @@ resource_size_t resource_alignment(struct resource *res)
  *
  * request_region creates a new busy region.
  *
-<<<<<<< HEAD
- * check_region returns non-zero if the area is already busy.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * release_region releases a matching busy region.
  */
 
 static DECLARE_WAIT_QUEUE_HEAD(muxed_resource_wait);
 
-<<<<<<< HEAD
-/**
- * __request_region - create a new busy resource region
- * @parent: parent resource descriptor
- * @start: resource start address
- * @n: resource region size
- * @name: reserving caller's ID string
- * @flags: IO resource flags
- */
-struct resource * __request_region(struct resource *parent,
-=======
 static struct inode *iomem_inode;
 
 #ifdef CONFIG_IO_STRICT_DEVMEM
@@ -1561,42 +1211,18 @@ struct address_space *iomem_get_mapping(void)
 }
 
 static int __request_region_locked(struct resource *res, struct resource *parent,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   resource_size_t start, resource_size_t n,
 				   const char *name, int flags)
 {
 	DECLARE_WAITQUEUE(wait, current);
-<<<<<<< HEAD
-	struct resource *res = kzalloc(sizeof(*res), GFP_KERNEL);
-
-	if (!res)
-		return NULL;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res->name = name;
 	res->start = start;
 	res->end = start + n - 1;
-<<<<<<< HEAD
-	res->flags = IORESOURCE_BUSY;
-	res->flags |= flags;
-
-	write_lock(&resource_lock);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (;;) {
 		struct resource *conflict;
 
-<<<<<<< HEAD
-		conflict = __request_resource(parent, res);
-		if (!conflict)
-			break;
-		if (conflict != parent) {
-			parent = conflict;
-			if (!(conflict->flags & IORESOURCE_BUSY))
-				continue;
-=======
 		res->flags = resource_type(parent) | resource_ext_type(parent);
 		res->flags |= IORESOURCE_BUSY | flags;
 		res->desc = parent->desc;
@@ -1618,7 +1244,6 @@ static int __request_region_locked(struct resource *res, struct resource *parent
 				parent = conflict;
 				continue;
 			}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (conflict->flags & flags & IORESOURCE_MUXED) {
 			add_wait_queue(&muxed_resource_wait, &wait);
@@ -1630,46 +1255,6 @@ static int __request_region_locked(struct resource *res, struct resource *parent
 			continue;
 		}
 		/* Uhhuh, that didn't work out.. */
-<<<<<<< HEAD
-		kfree(res);
-		res = NULL;
-		break;
-	}
-	write_unlock(&resource_lock);
-	return res;
-}
-EXPORT_SYMBOL(__request_region);
-
-/**
- * __check_region - check if a resource region is busy or free
- * @parent: parent resource descriptor
- * @start: resource start address
- * @n: resource region size
- *
- * Returns 0 if the region is free at the moment it is checked,
- * returns %-EBUSY if the region is busy.
- *
- * NOTE:
- * This function is deprecated because its use is racy.
- * Even if it returns 0, a subsequent call to request_region()
- * may fail because another driver etc. just allocated the region.
- * Do NOT use it.  It will be removed from the kernel.
- */
-int __check_region(struct resource *parent, resource_size_t start,
-			resource_size_t n)
-{
-	struct resource * res;
-
-	res = __request_region(parent, start, n, "check-region", 0);
-	if (!res)
-		return -EBUSY;
-
-	release_resource(res);
-	kfree(res);
-	return 0;
-}
-EXPORT_SYMBOL(__check_region);
-=======
 		return -EBUSY;
 	}
 
@@ -1709,7 +1294,6 @@ struct resource *__request_region(struct resource *parent,
 	return res;
 }
 EXPORT_SYMBOL(__request_region);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * __release_region - release a previously reserved resource region
@@ -1720,11 +1304,7 @@ EXPORT_SYMBOL(__request_region);
  * The described resource region must match a currently busy region.
  */
 void __release_region(struct resource *parent, resource_size_t start,
-<<<<<<< HEAD
-			resource_size_t n)
-=======
 		      resource_size_t n)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource **p;
 	resource_size_t end;
@@ -1750,11 +1330,7 @@ void __release_region(struct resource *parent, resource_size_t start,
 			write_unlock(&resource_lock);
 			if (res->flags & IORESOURCE_MUXED)
 				wake_up(&muxed_resource_wait);
-<<<<<<< HEAD
-			kfree(res);
-=======
 			free_resource(res);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		p = &res->sibling;
@@ -1762,17 +1338,6 @@ void __release_region(struct resource *parent, resource_size_t start,
 
 	write_unlock(&resource_lock);
 
-<<<<<<< HEAD
-	printk(KERN_WARNING "Trying to free nonexistent resource "
-		"<%016llx-%016llx>\n", (unsigned long long)start,
-		(unsigned long long)end);
-}
-EXPORT_SYMBOL(__release_region);
-
-/*
- * Managed region resource
- */
-=======
 	pr_warn("Trying to free nonexistent resource <%pa-%pa>\n", &start, &end);
 }
 EXPORT_SYMBOL(__release_region);
@@ -2021,7 +1586,6 @@ void devm_release_resource(struct device *dev, struct resource *new)
 }
 EXPORT_SYMBOL(devm_release_resource);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct region_devres {
 	struct resource *parent;
 	resource_size_t start;
@@ -2043,15 +1607,9 @@ static int devm_region_match(struct device *dev, void *res, void *match_data)
 		this->start == match->start && this->n == match->n;
 }
 
-<<<<<<< HEAD
-struct resource * __devm_request_region(struct device *dev,
-				struct resource *parent, resource_size_t start,
-				resource_size_t n, const char *name)
-=======
 struct resource *
 __devm_request_region(struct device *dev, struct resource *parent,
 		      resource_size_t start, resource_size_t n, const char *name)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct region_devres *dr = NULL;
 	struct resource *res;
@@ -2087,11 +1645,7 @@ void __devm_release_region(struct device *dev, struct resource *parent,
 EXPORT_SYMBOL(__devm_release_region);
 
 /*
-<<<<<<< HEAD
- * Called from init/main.c to reserve IO ports.
-=======
  * Reserve I/O ports or memory based on "reserve=" kernel parameter.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define MAXRESERVE 4
 static int __init reserve_setup(char *str)
@@ -2102,21 +1656,6 @@ static int __init reserve_setup(char *str)
 	for (;;) {
 		unsigned int io_start, io_num;
 		int x = reserved;
-<<<<<<< HEAD
-
-		if (get_option (&str, &io_start) != 2)
-			break;
-		if (get_option (&str, &io_num)   == 0)
-			break;
-		if (x < MAXRESERVE) {
-			struct resource *res = reserve + x;
-			res->name = "reserved";
-			res->start = io_start;
-			res->end = io_start + io_num - 1;
-			res->flags = IORESOURCE_BUSY;
-			res->child = NULL;
-			if (request_resource(res->start >= 0x10000 ? &iomem_resource : &ioport_resource, res) == 0)
-=======
 		struct resource *parent;
 
 		if (get_option(&str, &io_start) != 2)
@@ -2144,16 +1683,11 @@ static int __init reserve_setup(char *str)
 			res->desc = IORES_DESC_NONE;
 			res->child = NULL;
 			if (request_resource(parent, res) == 0)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				reserved = x+1;
 		}
 	}
 	return 1;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __setup("reserve=", reserve_setup);
 
 /*
@@ -2162,39 +1696,22 @@ __setup("reserve=", reserve_setup);
  */
 int iomem_map_sanity_check(resource_size_t addr, unsigned long size)
 {
-<<<<<<< HEAD
-	struct resource *p = &iomem_resource;
-	int err = 0;
-	loff_t l;
-
-	read_lock(&resource_lock);
-	for (p = p->child; p ; p = r_next(NULL, p, &l)) {
-=======
 	resource_size_t end = addr + size - 1;
 	struct resource *p;
 	int err = 0;
 
 	read_lock(&resource_lock);
 	for_each_resource(&iomem_resource, p, false) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We can probably skip the resources without
 		 * IORESOURCE_IO attribute?
 		 */
-<<<<<<< HEAD
-		if (p->start >= addr + size)
-=======
 		if (p->start > end)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (p->end < addr)
 			continue;
 		if (PFN_DOWN(p->start) <= PFN_DOWN(addr) &&
-<<<<<<< HEAD
-		    PFN_DOWN(p->end) >= PFN_DOWN(addr + size - 1))
-=======
 		    PFN_DOWN(p->end) >= PFN_DOWN(end))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		/*
 		 * if a resource is "BUSY", it's not a hardware resource
@@ -2205,18 +1722,8 @@ int iomem_map_sanity_check(resource_size_t addr, unsigned long size)
 		if (p->flags & IORESOURCE_BUSY)
 			continue;
 
-<<<<<<< HEAD
-		printk(KERN_WARNING "resource map sanity check conflict: "
-		       "0x%llx 0x%llx 0x%llx 0x%llx %s\n",
-		       (unsigned long long)addr,
-		       (unsigned long long)(addr + size - 1),
-		       (unsigned long long)p->start,
-		       (unsigned long long)p->end,
-		       p->name);
-=======
 		pr_warn("resource sanity check: requesting [mem %pa-%pa], which spans more than %s %pR\n",
 			&addr, &end, p->name, p);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -1;
 		break;
 	}
@@ -2232,36 +1739,6 @@ static int strict_iomem_checks;
 #endif
 
 /*
-<<<<<<< HEAD
- * check if an address is reserved in the iomem resource tree
- * returns 1 if reserved, 0 if not reserved.
- */
-int iomem_is_exclusive(u64 addr)
-{
-	struct resource *p = &iomem_resource;
-	int err = 0;
-	loff_t l;
-	int size = PAGE_SIZE;
-
-	if (!strict_iomem_checks)
-		return 0;
-
-	addr = addr & PAGE_MASK;
-
-	read_lock(&resource_lock);
-	for (p = p->child; p ; p = r_next(NULL, p, &l)) {
-		/*
-		 * We can probably skip the resources without
-		 * IORESOURCE_IO attribute?
-		 */
-		if (p->start >= addr + size)
-			break;
-		if (p->end < addr)
-			continue;
-		if (p->flags & IORESOURCE_BUSY &&
-		     p->flags & IORESOURCE_EXCLUSIVE) {
-			err = 1;
-=======
  * Check if an address is exclusive to the kernel and must not be mapped to
  * user space, for example, via /dev/mem.
  *
@@ -2306,7 +1783,6 @@ bool resource_is_exclusive(struct resource *root, u64 addr, resource_size_t size
 		if (IS_ENABLED(CONFIG_IO_STRICT_DEVMEM)
 				|| p->flags & IORESOURCE_EXCLUSIVE) {
 			err = true;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -2315,8 +1791,6 @@ bool resource_is_exclusive(struct resource *root, u64 addr, resource_size_t size
 	return err;
 }
 
-<<<<<<< HEAD
-=======
 bool iomem_is_exclusive(u64 addr)
 {
 	return resource_is_exclusive(&iomem_resource, addr & PAGE_MASK,
@@ -2541,7 +2015,6 @@ struct resource *alloc_free_mem_region(struct resource *base,
 EXPORT_SYMBOL_NS_GPL(alloc_free_mem_region, CXL);
 #endif /* CONFIG_GET_FREE_REGION */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init strict_iomem(char *str)
 {
 	if (strstr(str, "relaxed"))
@@ -2551,8 +2024,6 @@ static int __init strict_iomem(char *str)
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
 static int iomem_fs_init_fs_context(struct fs_context *fc)
 {
 	return init_pseudo(fc, DEVMEM_MAGIC) ? 0 : -ENOMEM;
@@ -2597,5 +2068,4 @@ static int __init iomem_init_inode(void)
 
 fs_initcall(iomem_init_inode);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __setup("iomem=", strict_iomem);

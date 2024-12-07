@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-#include <linux/export.h>
-#include <linux/types.h>
-#include <linux/io.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <linux/export.h>
 #include <linux/types.h>
@@ -42,7 +37,6 @@ void atomic_io_modify(void __iomem *reg, u32 mask, u32 set)
 	raw_spin_unlock_irqrestore(&__io_lock, flags);
 }
 EXPORT_SYMBOL(atomic_io_modify);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Copy data from IO memory space to "real" memory space.
@@ -58,10 +52,7 @@ void _memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
 		from++;
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(_memcpy_fromio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Copy data from "real" memory space to IO memory space.
@@ -77,10 +68,7 @@ void _memcpy_toio(volatile void __iomem *to, const void *from, size_t count)
 		to++;
 	}
 }
-<<<<<<< HEAD
-=======
 EXPORT_SYMBOL(_memcpy_toio);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * "memset" on IO memory space.
@@ -94,10 +82,4 @@ void _memset_io(volatile void __iomem *dst, int c, size_t count)
 		dst++;
 	}
 }
-<<<<<<< HEAD
-
-EXPORT_SYMBOL(_memcpy_fromio);
-EXPORT_SYMBOL(_memcpy_toio);
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(_memset_io);

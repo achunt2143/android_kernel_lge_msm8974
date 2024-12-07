@@ -23,10 +23,6 @@
  * Authors: Dave Airlie
  *          Alex Deucher
  */
-<<<<<<< HEAD
-#include "drmP.h"
-#include "radeon_drm.h"
-=======
 
 #include <linux/pci.h>
 
@@ -34,47 +30,13 @@
 #include <drm/drm_edid.h>
 #include <drm/radeon_drm.h>
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "radeon.h"
 
 #include "atom.h"
 #include "atom-bits.h"
-<<<<<<< HEAD
-
-/* from radeon_encoder.c */
-extern uint32_t
-radeon_get_encoder_enum(struct drm_device *dev, uint32_t supported_device,
-			uint8_t dac);
-extern void radeon_link_encoder_connector(struct drm_device *dev);
-extern void
-radeon_add_atom_encoder(struct drm_device *dev, uint32_t encoder_enum,
-			uint32_t supported_device, u16 caps);
-
-/* from radeon_connector.c */
-extern void
-radeon_add_atom_connector(struct drm_device *dev,
-			  uint32_t connector_id,
-			  uint32_t supported_device,
-			  int connector_type,
-			  struct radeon_i2c_bus_rec *i2c_bus,
-			  uint32_t igp_lane_info,
-			  uint16_t connector_object_id,
-			  struct radeon_hpd *hpd,
-			  struct radeon_router *router);
-
-/* from radeon_legacy_encoder.c */
-extern void
-radeon_add_legacy_encoder(struct drm_device *dev, uint32_t encoder_enum,
-			  uint32_t supported_device);
-
-/* local */
-static int radeon_atom_get_max_vddc(struct radeon_device *rdev, u8 voltage_type,
-				    u16 voltage_id, u16 *voltage);
-=======
 #include "radeon_asic.h"
 #include "radeon_atombios.h"
 #include "radeon_legacy_encoders.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 union atom_supported_devices {
 	struct _ATOM_SUPPORTED_DEVICES_INFO info;
@@ -183,13 +145,8 @@ static struct radeon_i2c_bus_rec radeon_lookup_i2c_gpio(struct radeon_device *rd
 		num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 			sizeof(ATOM_GPIO_I2C_ASSIGMENT);
 
-<<<<<<< HEAD
-		for (i = 0; i < num_indices; i++) {
-			gpio = &i2c_info->asGPIO_Info[i];
-=======
 		gpio = &i2c_info->asGPIO_Info[0];
 		for (i = 0; i < num_indices; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			radeon_lookup_i2c_gpio_quirks(rdev, gpio, i);
 
@@ -197,11 +154,8 @@ static struct radeon_i2c_bus_rec radeon_lookup_i2c_gpio(struct radeon_device *rd
 				i2c = radeon_get_bus_rec_for_i2c_gpio(gpio);
 				break;
 			}
-<<<<<<< HEAD
-=======
 			gpio = (ATOM_GPIO_I2C_ASSIGMENT *)
 				((u8 *)gpio + sizeof(ATOM_GPIO_I2C_ASSIGMENT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -225,14 +179,8 @@ void radeon_atombios_i2c_init(struct radeon_device *rdev)
 		num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 			sizeof(ATOM_GPIO_I2C_ASSIGMENT);
 
-<<<<<<< HEAD
-		for (i = 0; i < num_indices; i++) {
-			gpio = &i2c_info->asGPIO_Info[i];
-
-=======
 		gpio = &i2c_info->asGPIO_Info[0];
 		for (i = 0; i < num_indices; i++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radeon_lookup_i2c_gpio_quirks(rdev, gpio, i);
 
 			i2c = radeon_get_bus_rec_for_i2c_gpio(gpio);
@@ -241,22 +189,14 @@ void radeon_atombios_i2c_init(struct radeon_device *rdev)
 				sprintf(stmp, "0x%x", i2c.i2c_id);
 				rdev->i2c_bus[i] = radeon_i2c_create(rdev->ddev, &i2c, stmp);
 			}
-<<<<<<< HEAD
-=======
 			gpio = (ATOM_GPIO_I2C_ASSIGMENT *)
 				((u8 *)gpio + sizeof(ATOM_GPIO_I2C_ASSIGMENT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-static struct radeon_gpio_rec radeon_lookup_gpio(struct radeon_device *rdev,
-							u8 id)
-=======
 struct radeon_gpio_rec radeon_atombios_lookup_gpio(struct radeon_device *rdev,
 						   u8 id)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atom_context *ctx = rdev->mode_info.atom_context;
 	struct radeon_gpio_rec gpio;
@@ -275,29 +215,18 @@ struct radeon_gpio_rec radeon_atombios_lookup_gpio(struct radeon_device *rdev,
 		num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 			sizeof(ATOM_GPIO_PIN_ASSIGNMENT);
 
-<<<<<<< HEAD
-		for (i = 0; i < num_indices; i++) {
-			pin = &gpio_info->asGPIO_Pin[i];
-			if (id == pin->ucGPIO_ID) {
-				gpio.id = pin->ucGPIO_ID;
-				gpio.reg = le16_to_cpu(pin->usGpioPin_AIndex) * 4;
-=======
 		pin = gpio_info->asGPIO_Pin;
 		for (i = 0; i < num_indices; i++) {
 			if (id == pin->ucGPIO_ID) {
 				gpio.id = pin->ucGPIO_ID;
 				gpio.reg = le16_to_cpu(pin->usGpioPin_AIndex) * 4;
 				gpio.shift = pin->ucGpioPinBitShift;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				gpio.mask = (1 << pin->ucGpioPinBitShift);
 				gpio.valid = true;
 				break;
 			}
-<<<<<<< HEAD
-=======
 			pin = (ATOM_GPIO_PIN_ASSIGNMENT *)
 				((u8 *)pin + sizeof(ATOM_GPIO_PIN_ASSIGNMENT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -356,79 +285,47 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 				     uint16_t *line_mux,
 				     struct radeon_hpd *hpd)
 {
-<<<<<<< HEAD
-
-	/* Asus M2A-VM HDMI board lists the DVI port as HDMI */
-	if ((dev->pdev->device == 0x791e) &&
-	    (dev->pdev->subsystem_vendor == 0x1043) &&
-	    (dev->pdev->subsystem_device == 0x826d)) {
-=======
 	struct pci_dev *pdev = to_pci_dev(dev->dev);
 
 	/* Asus M2A-VM HDMI board lists the DVI port as HDMI */
 	if ((pdev->device == 0x791e) &&
 	    (pdev->subsystem_vendor == 0x1043) &&
 	    (pdev->subsystem_device == 0x826d)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((*connector_type == DRM_MODE_CONNECTOR_HDMIA) &&
 		    (supported_device == ATOM_DEVICE_DFP3_SUPPORT))
 			*connector_type = DRM_MODE_CONNECTOR_DVID;
 	}
 
 	/* Asrock RS600 board lists the DVI port as HDMI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x7941) &&
-	    (dev->pdev->subsystem_vendor == 0x1849) &&
-	    (dev->pdev->subsystem_device == 0x7941)) {
-=======
 	if ((pdev->device == 0x7941) &&
 	    (pdev->subsystem_vendor == 0x1849) &&
 	    (pdev->subsystem_device == 0x7941)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((*connector_type == DRM_MODE_CONNECTOR_HDMIA) &&
 		    (supported_device == ATOM_DEVICE_DFP3_SUPPORT))
 			*connector_type = DRM_MODE_CONNECTOR_DVID;
 	}
 
 	/* MSI K9A2GM V2/V3 board has no HDMI or DVI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x796e) &&
-	    (dev->pdev->subsystem_vendor == 0x1462) &&
-	    (dev->pdev->subsystem_device == 0x7302)) {
-=======
 	if ((pdev->device == 0x796e) &&
 	    (pdev->subsystem_vendor == 0x1462) &&
 	    (pdev->subsystem_device == 0x7302)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((supported_device == ATOM_DEVICE_DFP2_SUPPORT) ||
 		    (supported_device == ATOM_DEVICE_DFP3_SUPPORT))
 			return false;
 	}
 
 	/* a-bit f-i90hd - ciaranm on #radeonhd - this board has no DVI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x7941) &&
-	    (dev->pdev->subsystem_vendor == 0x147b) &&
-	    (dev->pdev->subsystem_device == 0x2412)) {
-=======
 	if ((pdev->device == 0x7941) &&
 	    (pdev->subsystem_vendor == 0x147b) &&
 	    (pdev->subsystem_device == 0x2412)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*connector_type == DRM_MODE_CONNECTOR_DVII)
 			return false;
 	}
 
 	/* Falcon NW laptop lists vga ddc line for LVDS */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x5653) &&
-	    (dev->pdev->subsystem_vendor == 0x1462) &&
-	    (dev->pdev->subsystem_device == 0x0291)) {
-=======
 	if ((pdev->device == 0x5653) &&
 	    (pdev->subsystem_vendor == 0x1462) &&
 	    (pdev->subsystem_device == 0x0291)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*connector_type == DRM_MODE_CONNECTOR_LVDS) {
 			i2c_bus->valid = false;
 			*line_mux = 53;
@@ -436,44 +333,26 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 	}
 
 	/* HIS X1300 is DVI+VGA, not DVI+DVI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x7146) &&
-	    (dev->pdev->subsystem_vendor == 0x17af) &&
-	    (dev->pdev->subsystem_device == 0x2058)) {
-=======
 	if ((pdev->device == 0x7146) &&
 	    (pdev->subsystem_vendor == 0x17af) &&
 	    (pdev->subsystem_device == 0x2058)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (supported_device == ATOM_DEVICE_DFP1_SUPPORT)
 			return false;
 	}
 
 	/* Gigabyte X1300 is DVI+VGA, not DVI+DVI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x7142) &&
-	    (dev->pdev->subsystem_vendor == 0x1458) &&
-	    (dev->pdev->subsystem_device == 0x2134)) {
-=======
 	if ((pdev->device == 0x7142) &&
 	    (pdev->subsystem_vendor == 0x1458) &&
 	    (pdev->subsystem_device == 0x2134)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (supported_device == ATOM_DEVICE_DFP1_SUPPORT)
 			return false;
 	}
 
 
 	/* Funky macbooks */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x71C5) &&
-	    (dev->pdev->subsystem_vendor == 0x106b) &&
-	    (dev->pdev->subsystem_device == 0x0080)) {
-=======
 	if ((pdev->device == 0x71C5) &&
 	    (pdev->subsystem_vendor == 0x106b) &&
 	    (pdev->subsystem_device == 0x0080)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((supported_device == ATOM_DEVICE_CRT1_SUPPORT) ||
 		    (supported_device == ATOM_DEVICE_DFP2_SUPPORT))
 			return false;
@@ -489,45 +368,27 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 	}
 
 	/* ASUS HD 3600 XT board lists the DVI port as HDMI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x9598) &&
-	    (dev->pdev->subsystem_vendor == 0x1043) &&
-	    (dev->pdev->subsystem_device == 0x01da)) {
-=======
 	if ((pdev->device == 0x9598) &&
 	    (pdev->subsystem_vendor == 0x1043) &&
 	    (pdev->subsystem_device == 0x01da)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*connector_type == DRM_MODE_CONNECTOR_HDMIA) {
 			*connector_type = DRM_MODE_CONNECTOR_DVII;
 		}
 	}
 
 	/* ASUS HD 3600 board lists the DVI port as HDMI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x9598) &&
-	    (dev->pdev->subsystem_vendor == 0x1043) &&
-	    (dev->pdev->subsystem_device == 0x01e4)) {
-=======
 	if ((pdev->device == 0x9598) &&
 	    (pdev->subsystem_vendor == 0x1043) &&
 	    (pdev->subsystem_device == 0x01e4)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*connector_type == DRM_MODE_CONNECTOR_HDMIA) {
 			*connector_type = DRM_MODE_CONNECTOR_DVII;
 		}
 	}
 
 	/* ASUS HD 3450 board lists the DVI port as HDMI */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x95C5) &&
-	    (dev->pdev->subsystem_vendor == 0x1043) &&
-	    (dev->pdev->subsystem_device == 0x01e2)) {
-=======
 	if ((pdev->device == 0x95C5) &&
 	    (pdev->subsystem_vendor == 0x1043) &&
 	    (pdev->subsystem_device == 0x01e2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*connector_type == DRM_MODE_CONNECTOR_HDMIA) {
 			*connector_type = DRM_MODE_CONNECTOR_DVII;
 		}
@@ -552,15 +413,9 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 	 * with different crtcs which isn't possible on the hardware
 	 * side and leaves no crtcs for LVDS or VGA.
 	 */
-<<<<<<< HEAD
-	if (((dev->pdev->device == 0x95c4) || (dev->pdev->device == 0x9591)) &&
-	    (dev->pdev->subsystem_vendor == 0x1025) &&
-	    (dev->pdev->subsystem_device == 0x013c)) {
-=======
 	if (((pdev->device == 0x95c4) || (pdev->device == 0x9591)) &&
 	    (pdev->subsystem_vendor == 0x1025) &&
 	    (pdev->subsystem_device == 0x013c)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((*connector_type == DRM_MODE_CONNECTOR_DVII) &&
 		    (supported_device == ATOM_DEVICE_DFP1_SUPPORT)) {
 			/* actually it's a DVI-D port not DVI-I */
@@ -572,15 +427,9 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 	/* XFX Pine Group device rv730 reports no VGA DDC lines
 	 * even though they are wired up to record 0x93
 	 */
-<<<<<<< HEAD
-	if ((dev->pdev->device == 0x9498) &&
-	    (dev->pdev->subsystem_vendor == 0x1682) &&
-	    (dev->pdev->subsystem_device == 0x2452) &&
-=======
 	if ((pdev->device == 0x9498) &&
 	    (pdev->subsystem_vendor == 0x1682) &&
 	    (pdev->subsystem_device == 0x2452) &&
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (i2c_bus->valid == false) &&
 	    !(supported_device & (ATOM_DEVICE_TV_SUPPORT | ATOM_DEVICE_CV_SUPPORT))) {
 		struct radeon_device *rdev = dev->dev_private;
@@ -588,17 +437,11 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 	}
 
 	/* Fujitsu D3003-S2 board lists DVI-I as DVI-D and VGA */
-<<<<<<< HEAD
-	if (((dev->pdev->device == 0x9802) || (dev->pdev->device == 0x9806)) &&
-	    (dev->pdev->subsystem_vendor == 0x1734) &&
-	    (dev->pdev->subsystem_device == 0x11bd)) {
-=======
 	if (((pdev->device == 0x9802) ||
 	     (pdev->device == 0x9805) ||
 	     (pdev->device == 0x9806)) &&
 	    (pdev->subsystem_vendor == 0x1734) &&
 	    (pdev->subsystem_device == 0x11bd)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*connector_type == DRM_MODE_CONNECTOR_VGA) {
 			*connector_type = DRM_MODE_CONNECTOR_DVII;
 			*line_mux = 0x3103;
@@ -607,25 +450,10 @@ static bool radeon_atom_apply_quirks(struct drm_device *dev,
 		}
 	}
 
-<<<<<<< HEAD
-	/* Fujitsu D3003-S2 board lists DVI-I as DVI-I and VGA */
-	if ((dev->pdev->device == 0x9805) &&
-	    (dev->pdev->subsystem_vendor == 0x1734) &&
-	    (dev->pdev->subsystem_device == 0x11bd)) {
-		if (*connector_type == DRM_MODE_CONNECTOR_VGA)
-			return false;
-	}
-
-	return true;
-}
-
-const int supported_devices_connector_convert[] = {
-=======
 	return true;
 }
 
 static const int supported_devices_connector_convert[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DRM_MODE_CONNECTOR_Unknown,
 	DRM_MODE_CONNECTOR_VGA,
 	DRM_MODE_CONNECTOR_DVII,
@@ -644,11 +472,7 @@ static const int supported_devices_connector_convert[] = {
 	DRM_MODE_CONNECTOR_DisplayPort
 };
 
-<<<<<<< HEAD
-const uint16_t supported_devices_connector_object_id_convert[] = {
-=======
 static const uint16_t supported_devices_connector_object_id_convert[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CONNECTOR_OBJECT_ID_NONE,
 	CONNECTOR_OBJECT_ID_VGA,
 	CONNECTOR_OBJECT_ID_DUAL_LINK_DVI_I, /* not all boards support DL */
@@ -665,11 +489,7 @@ static const uint16_t supported_devices_connector_object_id_convert[] = {
 	CONNECTOR_OBJECT_ID_SVIDEO
 };
 
-<<<<<<< HEAD
-const int object_connector_convert[] = {
-=======
 static const int object_connector_convert[] = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DRM_MODE_CONNECTOR_Unknown,
 	DRM_MODE_CONNECTOR_DVII,
 	DRM_MODE_CONNECTOR_DVII,
@@ -745,11 +565,7 @@ bool radeon_get_atom_connector_info_from_object_table(struct drm_device *dev)
 		path_size += le16_to_cpu(path->usSize);
 
 		if (device_support & le16_to_cpu(path->usDeviceTag)) {
-<<<<<<< HEAD
-			uint8_t con_obj_id, con_obj_num, con_obj_type;
-=======
 			uint8_t con_obj_id, con_obj_num;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			con_obj_id =
 			    (le16_to_cpu(path->usConnObjectId) & OBJECT_ID_MASK)
@@ -757,12 +573,6 @@ bool radeon_get_atom_connector_info_from_object_table(struct drm_device *dev)
 			con_obj_num =
 			    (le16_to_cpu(path->usConnObjectId) & ENUM_ID_MASK)
 			    >> ENUM_ID_SHIFT;
-<<<<<<< HEAD
-			con_obj_type =
-			    (le16_to_cpu(path->usConnObjectId) &
-			     OBJECT_TYPE_MASK) >> OBJECT_TYPE_SHIFT;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* TODO CV support */
 			if (le16_to_cpu(path->usDeviceTag) ==
@@ -830,19 +640,7 @@ bool radeon_get_atom_connector_info_from_object_table(struct drm_device *dev)
 			router.ddc_valid = false;
 			router.cd_valid = false;
 			for (j = 0; j < ((le16_to_cpu(path->usSize) - 8) / 2); j++) {
-<<<<<<< HEAD
-				uint8_t grph_obj_id, grph_obj_num, grph_obj_type;
-
-				grph_obj_id =
-				    (le16_to_cpu(path->usGraphicObjIds[j]) &
-				     OBJECT_ID_MASK) >> OBJECT_ID_SHIFT;
-				grph_obj_num =
-				    (le16_to_cpu(path->usGraphicObjIds[j]) &
-				     ENUM_ID_MASK) >> ENUM_ID_SHIFT;
-				grph_obj_type =
-=======
 				uint8_t grph_obj_type =
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (le16_to_cpu(path->usGraphicObjIds[j]) &
 				     OBJECT_TYPE_MASK) >> OBJECT_TYPE_SHIFT;
 
@@ -987,11 +785,7 @@ bool radeon_get_atom_connector_info_from_object_table(struct drm_device *dev)
 								hpd_record =
 									(ATOM_HPD_INT_RECORD *)
 									record;
-<<<<<<< HEAD
-								gpio = radeon_lookup_gpio(rdev,
-=======
 								gpio = radeon_atombios_lookup_gpio(rdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 											  hpd_record->ucHPDIntGPIOID);
 								hpd = radeon_atom_get_hpd_info_from_gpio(rdev, &gpio);
 								hpd.plugged_state = hpd_record->ucPlugged_PinState;
@@ -1033,10 +827,6 @@ bool radeon_get_atom_connector_info_from_object_table(struct drm_device *dev)
 	}
 
 	radeon_link_encoder_connector(dev);
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -1133,17 +923,12 @@ bool radeon_get_atom_connector_info_from_supported_devices_table(struct
 		max_device = ATOM_MAX_SUPPORTED_DEVICE_INFO;
 
 	for (i = 0; i < max_device; i++) {
-<<<<<<< HEAD
-		ATOM_CONNECTOR_INFO_I2C ci =
-		    supported_devices->info.asConnInfo[i];
-=======
 		ATOM_CONNECTOR_INFO_I2C ci;
 
 		if (frev > 1)
 			ci = supported_devices->info_2d1.asConnInfo[i];
 		else
 			ci = supported_devices->info.asConnInfo[i];
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		bios_connectors[i].valid = false;
 
@@ -1312,8 +1097,6 @@ union firmware_info {
 	ATOM_FIRMWARE_INFO_V2_2 info_22;
 };
 
-<<<<<<< HEAD
-=======
 union igp_info {
 	struct _ATOM_INTEGRATED_SYSTEM_INFO info;
 	struct _ATOM_INTEGRATED_SYSTEM_INFO_V2 info_2;
@@ -1339,7 +1122,6 @@ static void radeon_atombios_get_dentist_vco_freq(struct radeon_device *rdev)
 	}
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool radeon_atom_get_clock_info(struct drm_device *dev)
 {
 	struct radeon_device *rdev = dev->dev_private;
@@ -1364,11 +1146,7 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 		    le16_to_cpu(firmware_info->info.usReferenceClock);
 		p1pll->reference_div = 0;
 
-<<<<<<< HEAD
-		if (crev < 2)
-=======
 		if ((frev < 2) && (crev < 2))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p1pll->pll_out_min =
 				le16_to_cpu(firmware_info->info.usMinPixelClockPLL_Output);
 		else
@@ -1377,11 +1155,7 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 		p1pll->pll_out_max =
 		    le32_to_cpu(firmware_info->info.ulMaxPixelClockPLL_Output);
 
-<<<<<<< HEAD
-		if (crev >= 4) {
-=======
 		if (((frev < 2) && (crev >= 4)) || (frev >= 2)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p1pll->lcd_pll_out_min =
 				le16_to_cpu(firmware_info->info_14.usLcdMinPixelClockPLL_Output) * 100;
 			if (p1pll->lcd_pll_out_min == 0)
@@ -1472,21 +1246,13 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 			rdev->clock.default_dispclk =
 				le32_to_cpu(firmware_info->info_21.ulDefaultDispEngineClkFreq);
 			if (rdev->clock.default_dispclk == 0) {
-<<<<<<< HEAD
-				if (ASIC_IS_DCE5(rdev))
-=======
 				if (ASIC_IS_DCE6(rdev))
 					rdev->clock.default_dispclk = 60000; /* 600 Mhz */
 				else if (ASIC_IS_DCE5(rdev))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rdev->clock.default_dispclk = 54000; /* 540 Mhz */
 				else
 					rdev->clock.default_dispclk = 60000; /* 600 Mhz */
 			}
-<<<<<<< HEAD
-			rdev->clock.dp_extclk =
-				le16_to_cpu(firmware_info->info_21.usUniphyDPModeExtClkFreq);
-=======
 			/* set a reasonable default for DP */
 			if (ASIC_IS_DCE6(rdev) && (rdev->clock.default_dispclk < 53900)) {
 				DRM_INFO("Changing default dispclk from %dMhz to 600Mhz\n",
@@ -1496,7 +1262,6 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 			rdev->clock.dp_extclk =
 				le16_to_cpu(firmware_info->info_21.usUniphyDPModeExtClkFreq);
 			rdev->clock.current_dispclk = rdev->clock.default_dispclk;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		*dcpll = *p1pll;
 
@@ -1504,8 +1269,6 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 		if (rdev->clock.max_pixel_clock == 0)
 			rdev->clock.max_pixel_clock = 40000;
 
-<<<<<<< HEAD
-=======
 		/* not technically a clock, but... */
 		rdev->mode_info.firmware_flags =
 			le16_to_cpu(firmware_info->info.usFirmwareCapability.susAccess);
@@ -1523,21 +1286,12 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
 		if (rdev->clock.vco_freq == 0)
 			rdev->clock.vco_freq = 360000;	/* 3.6 GHz */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return true;
 	}
 
 	return false;
 }
 
-<<<<<<< HEAD
-union igp_info {
-	struct _ATOM_INTEGRATED_SYSTEM_INFO info;
-	struct _ATOM_INTEGRATED_SYSTEM_INFO_V2 info_2;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool radeon_atombios_sideport_present(struct radeon_device *rdev)
 {
 	struct radeon_mode_info *mode_info = &rdev->mode_info;
@@ -1628,10 +1382,7 @@ bool radeon_atombios_get_ppll_ss_info(struct radeon_device *rdev,
 	int index = GetIndexIntoMasterTable(DATA, PPLL_SS_Info);
 	uint16_t data_offset, size;
 	struct _ATOM_SPREAD_SPECTRUM_INFO *ss_info;
-<<<<<<< HEAD
-=======
 	struct _ATOM_SPREAD_SPECTRUM_ASSIGNMENT *ss_assign;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t frev, crev;
 	int i, num_indices;
 
@@ -1643,20 +1394,6 @@ bool radeon_atombios_get_ppll_ss_info(struct radeon_device *rdev,
 
 		num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 			sizeof(ATOM_SPREAD_SPECTRUM_ASSIGNMENT);
-<<<<<<< HEAD
-
-		for (i = 0; i < num_indices; i++) {
-			if (ss_info->asSS_Info[i].ucSS_Id == id) {
-				ss->percentage =
-					le16_to_cpu(ss_info->asSS_Info[i].usSpreadSpectrumPercentage);
-				ss->type = ss_info->asSS_Info[i].ucSpreadSpectrumType;
-				ss->step = ss_info->asSS_Info[i].ucSS_Step;
-				ss->delay = ss_info->asSS_Info[i].ucSS_Delay;
-				ss->range = ss_info->asSS_Info[i].ucSS_Range;
-				ss->refdiv = ss_info->asSS_Info[i].ucRecommendedRef_Div;
-				return true;
-			}
-=======
 		ss_assign = (struct _ATOM_SPREAD_SPECTRUM_ASSIGNMENT *)
 			((u8 *)&ss_info->asSS_Info[0]);
 		for (i = 0; i < num_indices; i++) {
@@ -1672,7 +1409,6 @@ bool radeon_atombios_get_ppll_ss_info(struct radeon_device *rdev,
 			}
 			ss_assign = (struct _ATOM_SPREAD_SPECTRUM_ASSIGNMENT *)
 				((u8 *)ss_assign + sizeof(struct _ATOM_SPREAD_SPECTRUM_ASSIGNMENT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return false;
@@ -1685,33 +1421,13 @@ static void radeon_atombios_get_igp_ss_overrides(struct radeon_device *rdev,
 	struct radeon_mode_info *mode_info = &rdev->mode_info;
 	int index = GetIndexIntoMasterTable(DATA, IntegratedSystemInfo);
 	u16 data_offset, size;
-<<<<<<< HEAD
-	struct _ATOM_INTEGRATED_SYSTEM_INFO_V6 *igp_info;
-=======
 	union igp_info *igp_info;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 frev, crev;
 	u16 percentage = 0, rate = 0;
 
 	/* get any igp specific overrides */
 	if (atom_parse_data_header(mode_info->atom_context, index, &size,
 				   &frev, &crev, &data_offset)) {
-<<<<<<< HEAD
-		igp_info = (struct _ATOM_INTEGRATED_SYSTEM_INFO_V6 *)
-			(mode_info->atom_context->bios + data_offset);
-		switch (id) {
-		case ASIC_INTERNAL_SS_ON_TMDS:
-			percentage = le16_to_cpu(igp_info->usDVISSPercentage);
-			rate = le16_to_cpu(igp_info->usDVISSpreadRateIn10Hz);
-			break;
-		case ASIC_INTERNAL_SS_ON_HDMI:
-			percentage = le16_to_cpu(igp_info->usHDMISSPercentage);
-			rate = le16_to_cpu(igp_info->usHDMISSpreadRateIn10Hz);
-			break;
-		case ASIC_INTERNAL_SS_ON_LVDS:
-			percentage = le16_to_cpu(igp_info->usLvdsSSPercentage);
-			rate = le16_to_cpu(igp_info->usLvdsSSpreadRateIn10Hz);
-=======
 		igp_info = (union igp_info *)
 			(mode_info->atom_context->bios + data_offset);
 		switch (crev) {
@@ -1765,7 +1481,6 @@ static void radeon_atombios_get_igp_ss_overrides(struct radeon_device *rdev,
 			break;
 		default:
 			DRM_ERROR("Unsupported IGP table: %d %d\n", frev, crev);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		if (percentage)
@@ -1781,15 +1496,12 @@ union asic_ss_info {
 	struct _ATOM_ASIC_INTERNAL_SS_INFO_V3 info_3;
 };
 
-<<<<<<< HEAD
-=======
 union asic_ss_assignment {
 	struct _ATOM_ASIC_SS_ASSIGNMENT v1;
 	struct _ATOM_ASIC_SS_ASSIGNMENT_V2 v2;
 	struct _ATOM_ASIC_SS_ASSIGNMENT_V3 v3;
 };
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 				      struct radeon_atom_ss *ss,
 				      int id, u32 clock)
@@ -1798,11 +1510,6 @@ bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 	int index = GetIndexIntoMasterTable(DATA, ASIC_InternalSS_Info);
 	uint16_t data_offset, size;
 	union asic_ss_info *ss_info;
-<<<<<<< HEAD
-	uint8_t frev, crev;
-	int i, num_indices;
-
-=======
 	union asic_ss_assignment *ss_assign;
 	uint8_t frev, crev;
 	int i, num_indices;
@@ -1816,7 +1523,6 @@ bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 			return false;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(ss, 0, sizeof(struct radeon_atom_ss));
 	if (atom_parse_data_header(mode_info->atom_context, index, &size,
 				   &frev, &crev, &data_offset)) {
@@ -1829,17 +1535,6 @@ bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 			num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 				sizeof(ATOM_ASIC_SS_ASSIGNMENT);
 
-<<<<<<< HEAD
-			for (i = 0; i < num_indices; i++) {
-				if ((ss_info->info.asSpreadSpectrum[i].ucClockIndication == id) &&
-				    (clock <= le32_to_cpu(ss_info->info.asSpreadSpectrum[i].ulTargetClockRange))) {
-					ss->percentage =
-						le16_to_cpu(ss_info->info.asSpreadSpectrum[i].usSpreadSpectrumPercentage);
-					ss->type = ss_info->info.asSpreadSpectrum[i].ucSpreadSpectrumMode;
-					ss->rate = le16_to_cpu(ss_info->info.asSpreadSpectrum[i].usSpreadRateInKhz);
-					return true;
-				}
-=======
 			ss_assign = (union asic_ss_assignment *)((u8 *)&ss_info->info.asSpreadSpectrum[0]);
 			for (i = 0; i < num_indices; i++) {
 				if ((ss_assign->v1.ucClockIndication == id) &&
@@ -1853,23 +1548,11 @@ bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 				}
 				ss_assign = (union asic_ss_assignment *)
 					((u8 *)ss_assign + sizeof(ATOM_ASIC_SS_ASSIGNMENT));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case 2:
 			num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 				sizeof(ATOM_ASIC_SS_ASSIGNMENT_V2);
-<<<<<<< HEAD
-			for (i = 0; i < num_indices; i++) {
-				if ((ss_info->info_2.asSpreadSpectrum[i].ucClockIndication == id) &&
-				    (clock <= le32_to_cpu(ss_info->info_2.asSpreadSpectrum[i].ulTargetClockRange))) {
-					ss->percentage =
-						le16_to_cpu(ss_info->info_2.asSpreadSpectrum[i].usSpreadSpectrumPercentage);
-					ss->type = ss_info->info_2.asSpreadSpectrum[i].ucSpreadSpectrumMode;
-					ss->rate = le16_to_cpu(ss_info->info_2.asSpreadSpectrum[i].usSpreadRateIn10Hz);
-					return true;
-				}
-=======
 			ss_assign = (union asic_ss_assignment *)((u8 *)&ss_info->info_2.asSpreadSpectrum[0]);
 			for (i = 0; i < num_indices; i++) {
 				if ((ss_assign->v2.ucClockIndication == id) &&
@@ -1887,21 +1570,11 @@ bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 				}
 				ss_assign = (union asic_ss_assignment *)
 					((u8 *)ss_assign + sizeof(ATOM_ASIC_SS_ASSIGNMENT_V2));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		case 3:
 			num_indices = (size - sizeof(ATOM_COMMON_TABLE_HEADER)) /
 				sizeof(ATOM_ASIC_SS_ASSIGNMENT_V3);
-<<<<<<< HEAD
-			for (i = 0; i < num_indices; i++) {
-				if ((ss_info->info_3.asSpreadSpectrum[i].ucClockIndication == id) &&
-				    (clock <= le32_to_cpu(ss_info->info_3.asSpreadSpectrum[i].ulTargetClockRange))) {
-					ss->percentage =
-						le16_to_cpu(ss_info->info_3.asSpreadSpectrum[i].usSpreadSpectrumPercentage);
-					ss->type = ss_info->info_3.asSpreadSpectrum[i].ucSpreadSpectrumMode;
-					ss->rate = le16_to_cpu(ss_info->info_3.asSpreadSpectrum[i].usSpreadRateIn10Hz);
-=======
 			ss_assign = (union asic_ss_assignment *)((u8 *)&ss_info->info_3.asSpreadSpectrum[0]);
 			for (i = 0; i < num_indices; i++) {
 				if ((ss_assign->v3.ucClockIndication == id) &&
@@ -1918,16 +1591,12 @@ bool radeon_atombios_get_asic_ss_info(struct radeon_device *rdev,
 					if ((id == ASIC_INTERNAL_ENGINE_SS) ||
 					    (id == ASIC_INTERNAL_MEMORY_SS))
 						ss->rate /= 100;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (rdev->flags & RADEON_IS_IGP)
 						radeon_atombios_get_igp_ss_overrides(rdev, ss, id);
 					return true;
 				}
-<<<<<<< HEAD
-=======
 				ss_assign = (union asic_ss_assignment *)
 					((u8 *)ss_assign + sizeof(ATOM_ASIC_SS_ASSIGNMENT_V3));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			break;
 		default:
@@ -2063,16 +1732,11 @@ struct radeon_encoder_atom_dig *radeon_atombios_get_lvds_info(struct
 						}
 					}
 					record += fake_edid_record->ucFakeEDIDLength ?
-<<<<<<< HEAD
-						fake_edid_record->ucFakeEDIDLength + 2 :
-						sizeof(ATOM_FAKE_EDID_PATCH_RECORD);
-=======
 						  struct_size(fake_edid_record,
 							      ucFakeEDIDString,
 							      fake_edid_record->ucFakeEDIDLength) :
 						  /* empty fake edid record must be 3 bytes long */
 						  sizeof(ATOM_FAKE_EDID_PATCH_RECORD) + 1;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				case LCD_PANEL_RESOLUTION_RECORD_TYPE:
 					panel_res_record = (ATOM_PANEL_RESOLUTION_PATCH_RECORD *)record;
@@ -2170,12 +1834,8 @@ bool radeon_atom_get_tv_timings(struct radeon_device *rdev, int index,
 		if (misc & ATOM_DOUBLE_CLOCK_MODE)
 			mode->flags |= DRM_MODE_FLAG_DBLSCAN;
 
-<<<<<<< HEAD
-		mode->clock = le16_to_cpu(tv_info->aModeTimings[index].usPixelClock) * 10;
-=======
 		mode->crtc_clock = mode->clock =
 			le16_to_cpu(tv_info->aModeTimings[index].usPixelClock) * 10;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (index == 1) {
 			/* PAL timings appear to have wrong values for totals */
@@ -2218,12 +1878,8 @@ bool radeon_atom_get_tv_timings(struct radeon_device *rdev, int index,
 		if (misc & ATOM_DOUBLE_CLOCK_MODE)
 			mode->flags |= DRM_MODE_FLAG_DBLSCAN;
 
-<<<<<<< HEAD
-		mode->clock = le16_to_cpu(dtd_timings->usPixClk) * 10;
-=======
 		mode->crtc_clock = mode->clock =
 			le16_to_cpu(dtd_timings->usPixClk) * 10;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return true;
@@ -2334,11 +1990,7 @@ static const char *thermal_controller_names[] = {
 	"adm1032",
 	"adm1030",
 	"max6649",
-<<<<<<< HEAD
-	"lm64",
-=======
 	"lm63", /* lm64 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"f75375",
 	"asc7xxx",
 };
@@ -2349,11 +2001,7 @@ static const char *pp_lib_thermal_controller_names[] = {
 	"adm1032",
 	"adm1030",
 	"max6649",
-<<<<<<< HEAD
-	"lm64",
-=======
 	"lm63", /* lm64 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"f75375",
 	"RV6xx",
 	"RV770",
@@ -2366,10 +2014,7 @@ static const char *pp_lib_thermal_controller_names[] = {
 	"Northern Islands",
 	"Southern Islands",
 	"lm96163",
-<<<<<<< HEAD
-=======
 	"Sea Islands",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union power_info {
@@ -2387,10 +2032,7 @@ union pplib_clock_info {
 	struct _ATOM_PPLIB_EVERGREEN_CLOCK_INFO evergreen;
 	struct _ATOM_PPLIB_SUMO_CLOCK_INFO sumo;
 	struct _ATOM_PPLIB_SI_CLOCK_INFO si;
-<<<<<<< HEAD
-=======
 	struct _ATOM_PPLIB_CI_CLOCK_INFO ci;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union pplib_power_state {
@@ -2447,11 +2089,7 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 	struct radeon_i2c_bus_rec i2c_bus;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
-<<<<<<< HEAD
-        u16 data_offset;
-=======
 	u16 data_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 frev, crev;
 
 	if (!atom_parse_data_header(mode_info->atom_context, index, NULL,
@@ -2460,12 +2098,8 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 	power_info = (union power_info *)(mode_info->atom_context->bios + data_offset);
 
 	/* add the i2c bus for thermal/fan chip */
-<<<<<<< HEAD
-	if (power_info->info.ucOverdriveThermalController > 0) {
-=======
 	if ((power_info->info.ucOverdriveThermalController > 0) &&
 	    (power_info->info.ucOverdriveThermalController < ARRAY_SIZE(thermal_controller_names))) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DRM_INFO("Possible %s thermal controller at 0x%02x\n",
 			 thermal_controller_names[power_info->info.ucOverdriveThermalController],
 			 power_info->info.ucOverdriveControllerAddress >> 1);
@@ -2476,13 +2110,8 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 			const char *name = thermal_controller_names[power_info->info.
 								    ucOverdriveThermalController];
 			info.addr = power_info->info.ucOverdriveControllerAddress >> 1;
-<<<<<<< HEAD
-			strlcpy(info.type, name, sizeof(info.type));
-			i2c_new_device(&rdev->pm.i2c_bus->adapter, &info);
-=======
 			strscpy(info.type, name, sizeof(info.type));
 			i2c_new_client_device(&rdev->pm.i2c_bus->adapter, &info);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	num_modes = power_info->info.ucNumOfPowerModeEntries;
@@ -2490,23 +2119,13 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 		num_modes = ATOM_MAX_NUMBEROF_POWER_BLOCK;
 	if (num_modes == 0)
 		return state_index;
-<<<<<<< HEAD
-	rdev->pm.power_state = kzalloc(sizeof(struct radeon_power_state) * num_modes, GFP_KERNEL);
-=======
 	rdev->pm.power_state = kcalloc(num_modes,
 				       sizeof(struct radeon_power_state),
 				       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdev->pm.power_state)
 		return state_index;
 	/* last mode is usually default, array is low to high */
 	for (i = 0; i < num_modes; i++) {
-<<<<<<< HEAD
-		rdev->pm.power_state[state_index].clock_info =
-			kzalloc(sizeof(struct radeon_pm_clock_info) * 1, GFP_KERNEL);
-		if (!rdev->pm.power_state[state_index].clock_info)
-			return state_index;
-=======
 		/* avoid memory leaks from invalid modes or unknown frev. */
 		if (!rdev->pm.power_state[state_index].clock_info) {
 			rdev->pm.power_state[state_index].clock_info =
@@ -2515,7 +2134,6 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 		}
 		if (!rdev->pm.power_state[state_index].clock_info)
 			goto out;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdev->pm.power_state[state_index].num_clock_modes = 1;
 		rdev->pm.power_state[state_index].clock_info[0].voltage.type = VOLTAGE_NONE;
 		switch (frev) {
@@ -2536,11 +2154,7 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 				rdev->pm.power_state[state_index].clock_info[0].voltage.type =
 					VOLTAGE_GPIO;
 				rdev->pm.power_state[state_index].clock_info[0].voltage.gpio =
-<<<<<<< HEAD
-					radeon_lookup_gpio(rdev,
-=======
 					radeon_atombios_lookup_gpio(rdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   power_info->info.asPowerPlayInfo[i].ucVoltageDropIndex);
 				if (misc & ATOM_PM_MISCINFO_VOLTAGE_DROP_ACTIVE_HIGH)
 					rdev->pm.power_state[state_index].clock_info[0].voltage.active_high =
@@ -2576,11 +2190,7 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 				rdev->pm.power_state[state_index].clock_info[0].voltage.type =
 					VOLTAGE_GPIO;
 				rdev->pm.power_state[state_index].clock_info[0].voltage.gpio =
-<<<<<<< HEAD
-					radeon_lookup_gpio(rdev,
-=======
 					radeon_atombios_lookup_gpio(rdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   power_info->info_2.asPowerPlayInfo[i].ucVoltageDropIndex);
 				if (misc & ATOM_PM_MISCINFO_VOLTAGE_DROP_ACTIVE_HIGH)
 					rdev->pm.power_state[state_index].clock_info[0].voltage.active_high =
@@ -2616,11 +2226,7 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 				rdev->pm.power_state[state_index].clock_info[0].voltage.type =
 					VOLTAGE_GPIO;
 				rdev->pm.power_state[state_index].clock_info[0].voltage.gpio =
-<<<<<<< HEAD
-					radeon_lookup_gpio(rdev,
-=======
 					radeon_atombios_lookup_gpio(rdev,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							   power_info->info_3.asPowerPlayInfo[i].ucVoltageDropIndex);
 				if (misc & ATOM_PM_MISCINFO_VOLTAGE_DROP_ACTIVE_HIGH)
 					rdev->pm.power_state[state_index].clock_info[0].voltage.active_high =
@@ -2646,10 +2252,6 @@ static int radeon_atombios_parse_power_table_1_3(struct radeon_device *rdev)
 			break;
 		}
 	}
-<<<<<<< HEAD
-	/* last mode is usually default */
-	if (rdev->pm.default_power_state_index == -1) {
-=======
 out:
 	/* free any unused clock_info allocation. */
 	if (state_index && state_index < num_modes) {
@@ -2659,23 +2261,15 @@ out:
 
 	/* last mode is usually default */
 	if (state_index && rdev->pm.default_power_state_index == -1) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdev->pm.power_state[state_index - 1].type =
 			POWER_STATE_TYPE_DEFAULT;
 		rdev->pm.default_power_state_index = state_index - 1;
 		rdev->pm.power_state[state_index - 1].default_clock_mode =
 			&rdev->pm.power_state[state_index - 1].clock_info[0];
-<<<<<<< HEAD
-		rdev->pm.power_state[state_index].flags &=
-			~RADEON_PM_STATE_SINGLE_DISPLAY_ONLY;
-		rdev->pm.power_state[state_index].misc = 0;
-		rdev->pm.power_state[state_index].misc2 = 0;
-=======
 		rdev->pm.power_state[state_index - 1].flags &=
 			~RADEON_PM_STATE_SINGLE_DISPLAY_ONLY;
 		rdev->pm.power_state[state_index - 1].misc = 0;
 		rdev->pm.power_state[state_index - 1].misc2 = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return state_index;
 }
@@ -2687,8 +2281,6 @@ static void radeon_atombios_add_pplib_thermal_controller(struct radeon_device *r
 
 	/* add the i2c bus for thermal/fan chip */
 	if (controller->ucType > 0) {
-<<<<<<< HEAD
-=======
 		if (controller->ucFanParameters & ATOM_PP_FANPARAMETERS_NOFAN)
 			rdev->pm.no_fan = true;
 		rdev->pm.fan_pulses_per_revolution =
@@ -2697,7 +2289,6 @@ static void radeon_atombios_add_pplib_thermal_controller(struct radeon_device *r
 			rdev->pm.fan_min_rpm = controller->ucFanMinRPM;
 			rdev->pm.fan_max_rpm = controller->ucFanMaxRPM;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (controller->ucType == ATOM_PP_THERMALCONTROLLER_RV6xx) {
 			DRM_INFO("Internal thermal controller %s fan control\n",
 				 (controller->ucFanParameters &
@@ -2728,16 +2319,6 @@ static void radeon_atombios_add_pplib_thermal_controller(struct radeon_device *r
 				 (controller->ucFanParameters &
 				  ATOM_PP_FANPARAMETERS_NOFAN) ? "without" : "with");
 			rdev->pm.int_thermal_type = THERMAL_TYPE_SI;
-<<<<<<< HEAD
-		} else if ((controller->ucType ==
-			    ATOM_PP_THERMALCONTROLLER_EXTERNAL_GPIO) ||
-			   (controller->ucType ==
-			    ATOM_PP_THERMALCONTROLLER_ADT7473_WITH_INTERNAL) ||
-			   (controller->ucType ==
-			    ATOM_PP_THERMALCONTROLLER_EMC2103_WITH_INTERNAL)) {
-			DRM_INFO("Special thermal controller config\n");
-		} else {
-=======
 		} else if (controller->ucType == ATOM_PP_THERMALCONTROLLER_CISLANDS) {
 			DRM_INFO("Internal thermal controller %s fan control\n",
 				 (controller->ucFanParameters &
@@ -2767,27 +2348,18 @@ static void radeon_atombios_add_pplib_thermal_controller(struct radeon_device *r
 				  ATOM_PP_FANPARAMETERS_NOFAN) ? "without" : "with");
 			rdev->pm.int_thermal_type = THERMAL_TYPE_EMC2103_WITH_INTERNAL;
 		} else if (controller->ucType < ARRAY_SIZE(pp_lib_thermal_controller_names)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DRM_INFO("Possible %s thermal controller at 0x%02x %s fan control\n",
 				 pp_lib_thermal_controller_names[controller->ucType],
 				 controller->ucI2cAddress >> 1,
 				 (controller->ucFanParameters &
 				  ATOM_PP_FANPARAMETERS_NOFAN) ? "without" : "with");
-<<<<<<< HEAD
-=======
 			rdev->pm.int_thermal_type = THERMAL_TYPE_EXTERNAL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i2c_bus = radeon_lookup_i2c_gpio(rdev, controller->ucI2cLine);
 			rdev->pm.i2c_bus = radeon_i2c_lookup(rdev, &i2c_bus);
 			if (rdev->pm.i2c_bus) {
 				struct i2c_board_info info = { };
 				const char *name = pp_lib_thermal_controller_names[controller->ucType];
 				info.addr = controller->ucI2cAddress >> 1;
-<<<<<<< HEAD
-				strlcpy(info.type, name, sizeof(info.type));
-				i2c_new_device(&rdev->pm.i2c_bus->adapter, &info);
-			}
-=======
 				strscpy(info.type, name, sizeof(info.type));
 				i2c_new_client_device(&rdev->pm.i2c_bus->adapter, &info);
 			}
@@ -2797,18 +2369,12 @@ static void radeon_atombios_add_pplib_thermal_controller(struct radeon_device *r
 				 controller->ucI2cAddress >> 1,
 				 (controller->ucFanParameters &
 				  ATOM_PP_FANPARAMETERS_NOFAN) ? "without" : "with");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
-<<<<<<< HEAD
-static void radeon_atombios_get_default_voltages(struct radeon_device *rdev,
-						 u16 *vddc, u16 *vddci)
-=======
 void radeon_atombios_get_default_voltages(struct radeon_device *rdev,
 					  u16 *vddc, u16 *vddci, u16 *mvdd)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct radeon_mode_info *mode_info = &rdev->mode_info;
 	int index = GetIndexIntoMasterTable(DATA, FirmwareInfo);
@@ -2818,10 +2384,7 @@ void radeon_atombios_get_default_voltages(struct radeon_device *rdev,
 
 	*vddc = 0;
 	*vddci = 0;
-<<<<<<< HEAD
-=======
 	*mvdd = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atom_parse_data_header(mode_info->atom_context, index, NULL,
 				   &frev, &crev, &data_offset)) {
@@ -2829,15 +2392,10 @@ void radeon_atombios_get_default_voltages(struct radeon_device *rdev,
 			(union firmware_info *)(mode_info->atom_context->bios +
 						data_offset);
 		*vddc = le16_to_cpu(firmware_info->info_14.usBootUpVDDCVoltage);
-<<<<<<< HEAD
-		if ((frev == 2) && (crev >= 2))
-			*vddci = le16_to_cpu(firmware_info->info_22.usBootUpVDDCIVoltage);
-=======
 		if ((frev == 2) && (crev >= 2)) {
 			*vddci = le16_to_cpu(firmware_info->info_22.usBootUpVDDCIVoltage);
 			*mvdd = le16_to_cpu(firmware_info->info_22.usBootUpMVDDCVoltage);
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2848,15 +2406,9 @@ static void radeon_atombios_parse_pplib_non_clock_info(struct radeon_device *rde
 	int j;
 	u32 misc = le32_to_cpu(non_clock_info->ulCapsAndSettings);
 	u32 misc2 = le16_to_cpu(non_clock_info->usClassification);
-<<<<<<< HEAD
-	u16 vddc, vddci;
-
-	radeon_atombios_get_default_voltages(rdev, &vddc, &vddci);
-=======
 	u16 vddc, vddci, mvdd;
 
 	radeon_atombios_get_default_voltages(rdev, &vddc, &vddci, &mvdd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rdev->pm.power_state[state_index].misc = misc;
 	rdev->pm.power_state[state_index].misc2 = misc2;
@@ -2892,20 +2444,13 @@ static void radeon_atombios_parse_pplib_non_clock_info(struct radeon_device *rde
 		rdev->pm.default_power_state_index = state_index;
 		rdev->pm.power_state[state_index].default_clock_mode =
 			&rdev->pm.power_state[state_index].clock_info[mode_index - 1];
-<<<<<<< HEAD
-		if (ASIC_IS_DCE5(rdev) && !(rdev->flags & RADEON_IS_IGP)) {
-=======
 		if ((rdev->family >= CHIP_BARTS) && !(rdev->flags & RADEON_IS_IGP)) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* NI chips post without MC ucode, so default clocks are strobe mode only */
 			rdev->pm.default_sclk = rdev->pm.power_state[state_index].clock_info[0].sclk;
 			rdev->pm.default_mclk = rdev->pm.power_state[state_index].clock_info[0].mclk;
 			rdev->pm.default_vddc = rdev->pm.power_state[state_index].clock_info[0].voltage.voltage;
 			rdev->pm.default_vddci = rdev->pm.power_state[state_index].clock_info[0].voltage.vddci;
 		} else {
-<<<<<<< HEAD
-			/* patch the table values with the default slck/mclk from firmware info */
-=======
 			u16 max_vddci = 0;
 
 			if (ASIC_IS_DCE4(rdev))
@@ -2913,7 +2458,6 @@ static void radeon_atombios_parse_pplib_non_clock_info(struct radeon_device *rde
 							    SET_VOLTAGE_TYPE_ASIC_VDDCI,
 							    &max_vddci);
 			/* patch the table values with the default sclk/mclk from firmware info */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = 0; j < mode_index; j++) {
 				rdev->pm.power_state[state_index].clock_info[j].mclk =
 					rdev->clock.default_mclk;
@@ -2922,12 +2466,9 @@ static void radeon_atombios_parse_pplib_non_clock_info(struct radeon_device *rde
 				if (vddc)
 					rdev->pm.power_state[state_index].clock_info[j].voltage.voltage =
 						vddc;
-<<<<<<< HEAD
-=======
 				if (max_vddci)
 					rdev->pm.power_state[state_index].clock_info[j].voltage.vddci =
 						max_vddci;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -2950,9 +2491,6 @@ static bool radeon_atombios_parse_pplib_clock_info(struct radeon_device *rdev,
 			sclk |= clock_info->rs780.ucLowEngineClockHigh << 16;
 			rdev->pm.power_state[state_index].clock_info[mode_index].sclk = sclk;
 		}
-<<<<<<< HEAD
-	} else if (ASIC_IS_DCE6(rdev)) {
-=======
 	} else if (rdev->family >= CHIP_BONAIRE) {
 		sclk = le16_to_cpu(clock_info->ci.usEngineClockLow);
 		sclk |= clock_info->ci.ucEngineClockHigh << 16;
@@ -2963,7 +2501,6 @@ static bool radeon_atombios_parse_pplib_clock_info(struct radeon_device *rdev,
 		rdev->pm.power_state[state_index].clock_info[mode_index].voltage.type =
 			VOLTAGE_NONE;
 	} else if (rdev->family >= CHIP_TAHITI) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sclk = le16_to_cpu(clock_info->si.usEngineClockLow);
 		sclk |= clock_info->si.ucEngineClockHigh << 16;
 		mclk = le16_to_cpu(clock_info->si.usMemoryClockLow);
@@ -2976,11 +2513,7 @@ static bool radeon_atombios_parse_pplib_clock_info(struct radeon_device *rdev,
 			le16_to_cpu(clock_info->si.usVDDC);
 		rdev->pm.power_state[state_index].clock_info[mode_index].voltage.vddci =
 			le16_to_cpu(clock_info->si.usVDDCI);
-<<<<<<< HEAD
-	} else if (ASIC_IS_DCE4(rdev)) {
-=======
 	} else if (rdev->family >= CHIP_CEDAR) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sclk = le16_to_cpu(clock_info->evergreen.usEngineClockLow);
 		sclk |= clock_info->evergreen.ucEngineClockHigh << 16;
 		mclk = le16_to_cpu(clock_info->evergreen.usMemoryClockLow);
@@ -3012,13 +2545,10 @@ static bool radeon_atombios_parse_pplib_clock_info(struct radeon_device *rdev,
 	case ATOM_VIRTUAL_VOLTAGE_ID1:
 	case ATOM_VIRTUAL_VOLTAGE_ID2:
 	case ATOM_VIRTUAL_VOLTAGE_ID3:
-<<<<<<< HEAD
-=======
 	case ATOM_VIRTUAL_VOLTAGE_ID4:
 	case ATOM_VIRTUAL_VOLTAGE_ID5:
 	case ATOM_VIRTUAL_VOLTAGE_ID6:
 	case ATOM_VIRTUAL_VOLTAGE_ID7:
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (radeon_atom_get_max_vddc(rdev, VOLTAGE_TYPE_VDDC,
 					     rdev->pm.power_state[state_index].clock_info[mode_index].voltage.voltage,
 					     &vddc) == 0)
@@ -3052,11 +2582,7 @@ static int radeon_atombios_parse_power_table_4_5(struct radeon_device *rdev)
 	bool valid;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
-<<<<<<< HEAD
-        u16 data_offset;
-=======
 	u16 data_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 frev, crev;
 
 	if (!atom_parse_data_header(mode_info->atom_context, index, NULL,
@@ -3067,14 +2593,9 @@ static int radeon_atombios_parse_power_table_4_5(struct radeon_device *rdev)
 	radeon_atombios_add_pplib_thermal_controller(rdev, &power_info->pplib.sThermalController);
 	if (power_info->pplib.ucNumStates == 0)
 		return state_index;
-<<<<<<< HEAD
-	rdev->pm.power_state = kzalloc(sizeof(struct radeon_power_state) *
-				       power_info->pplib.ucNumStates, GFP_KERNEL);
-=======
 	rdev->pm.power_state = kcalloc(power_info->pplib.ucNumStates,
 				       sizeof(struct radeon_power_state),
 				       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdev->pm.power_state)
 		return state_index;
 	/* first mode is usually default, followed by low to high */
@@ -3089,18 +2610,11 @@ static int radeon_atombios_parse_power_table_4_5(struct radeon_device *rdev)
 			 le16_to_cpu(power_info->pplib.usNonClockInfoArrayOffset) +
 			 (power_state->v1.ucNonClockStateIndex *
 			  power_info->pplib.ucNonClockSize));
-<<<<<<< HEAD
-		rdev->pm.power_state[i].clock_info = kzalloc(sizeof(struct radeon_pm_clock_info) *
-							     ((power_info->pplib.ucStateEntrySize - 1) ?
-							      (power_info->pplib.ucStateEntrySize - 1) : 1),
-							     GFP_KERNEL);
-=======
 		rdev->pm.power_state[i].clock_info =
 			kcalloc((power_info->pplib.ucStateEntrySize - 1) ?
 				(power_info->pplib.ucStateEntrySize - 1) : 1,
 				sizeof(struct radeon_pm_clock_info),
 				GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rdev->pm.power_state[i].clock_info)
 			return state_index;
 		if (power_info->pplib.ucStateEntrySize - 1) {
@@ -3161,11 +2675,7 @@ static int radeon_atombios_parse_power_table_6(struct radeon_device *rdev)
 	bool valid;
 	union power_info *power_info;
 	int index = GetIndexIntoMasterTable(DATA, PowerPlayInfo);
-<<<<<<< HEAD
-        u16 data_offset;
-=======
 	u16 data_offset;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 frev, crev;
 	u8 *power_state_offset;
 
@@ -3186,14 +2696,9 @@ static int radeon_atombios_parse_power_table_6(struct radeon_device *rdev)
 		 le16_to_cpu(power_info->pplib.usNonClockInfoArrayOffset));
 	if (state_array->ucNumEntries == 0)
 		return state_index;
-<<<<<<< HEAD
-	rdev->pm.power_state = kzalloc(sizeof(struct radeon_power_state) *
-				       state_array->ucNumEntries, GFP_KERNEL);
-=======
 	rdev->pm.power_state = kcalloc(state_array->ucNumEntries,
 				       sizeof(struct radeon_power_state),
 				       GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdev->pm.power_state)
 		return state_index;
 	power_state_offset = (u8 *)state_array->states;
@@ -3203,18 +2708,11 @@ static int radeon_atombios_parse_power_table_6(struct radeon_device *rdev)
 		non_clock_array_index = power_state->v2.nonClockInfoIndex;
 		non_clock_info = (struct _ATOM_PPLIB_NONCLOCK_INFO *)
 			&non_clock_info_array->nonClockInfo[non_clock_array_index];
-<<<<<<< HEAD
-		rdev->pm.power_state[i].clock_info = kzalloc(sizeof(struct radeon_pm_clock_info) *
-							     (power_state->v2.ucNumDPMLevels ?
-							      power_state->v2.ucNumDPMLevels : 1),
-							     GFP_KERNEL);
-=======
 		rdev->pm.power_state[i].clock_info =
 			kcalloc(power_state->v2.ucNumDPMLevels ?
 				power_state->v2.ucNumDPMLevels : 1,
 				sizeof(struct radeon_pm_clock_info),
 				GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rdev->pm.power_state[i].clock_info)
 			return state_index;
 		if (power_state->v2.ucNumDPMLevels) {
@@ -3294,13 +2792,9 @@ void radeon_atombios_get_power_modes(struct radeon_device *rdev)
 		rdev->pm.power_state = kzalloc(sizeof(struct radeon_power_state), GFP_KERNEL);
 		if (rdev->pm.power_state) {
 			rdev->pm.power_state[0].clock_info =
-<<<<<<< HEAD
-				kzalloc(sizeof(struct radeon_pm_clock_info) * 1, GFP_KERNEL);
-=======
 				kcalloc(1,
 				        sizeof(struct radeon_pm_clock_info),
 				        GFP_KERNEL);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rdev->pm.power_state[0].clock_info) {
 				/* add the default mode */
 				rdev->pm.power_state[state_index].type =
@@ -3330,8 +2824,6 @@ void radeon_atombios_get_power_modes(struct radeon_device *rdev)
 		rdev->pm.current_vddc = 0;
 }
 
-<<<<<<< HEAD
-=======
 union get_clock_dividers {
 	struct _COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS v1;
 	struct _COMPUTE_MEMORY_ENGINE_PLL_PARAMETERS_V2 v2;
@@ -3510,7 +3002,6 @@ int radeon_atom_get_memory_pll_dividers(struct radeon_device *rdev,
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_atom_set_clock_gating(struct radeon_device *rdev, int enable)
 {
 	DYNAMIC_CLOCK_GATING_PS_ALLOCATION args;
@@ -3518,11 +3009,7 @@ void radeon_atom_set_clock_gating(struct radeon_device *rdev, int enable)
 
 	args.ucEnable = enable;
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint32_t radeon_atom_get_engine_clock(struct radeon_device *rdev)
@@ -3530,11 +3017,7 @@ uint32_t radeon_atom_get_engine_clock(struct radeon_device *rdev)
 	GET_ENGINE_CLOCK_PS_ALLOCATION args;
 	int index = GetIndexIntoMasterTable(COMMAND, GetEngineClock);
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return le32_to_cpu(args.ulReturnEngineClock);
 }
 
@@ -3543,11 +3026,7 @@ uint32_t radeon_atom_get_memory_clock(struct radeon_device *rdev)
 	GET_MEMORY_CLOCK_PS_ALLOCATION args;
 	int index = GetIndexIntoMasterTable(COMMAND, GetMemoryClock);
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return le32_to_cpu(args.ulReturnMemoryClock);
 }
 
@@ -3559,11 +3038,7 @@ void radeon_atom_set_engine_clock(struct radeon_device *rdev,
 
 	args.ulTargetEngineClock = cpu_to_le32(eng_clock);	/* 10 khz */
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void radeon_atom_set_memory_clock(struct radeon_device *rdev,
@@ -3577,9 +3052,6 @@ void radeon_atom_set_memory_clock(struct radeon_device *rdev,
 
 	args.ulTargetMemoryClock = cpu_to_le32(mem_clock);	/* 10 khz */
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 }
 
@@ -3623,7 +3095,6 @@ void radeon_atom_set_ac_timing(struct radeon_device *rdev,
 	args.ulTargetMemoryClock = cpu_to_le32(tmp);	/* 10 khz */
 
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 union set_voltage {
@@ -3667,19 +3138,11 @@ void radeon_atom_set_voltage(struct radeon_device *rdev, u16 voltage_level, u8 v
 		return;
 	}
 
-<<<<<<< HEAD
-	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-}
-
-static int radeon_atom_get_max_vddc(struct radeon_device *rdev, u8 voltage_type,
-				    u16 voltage_id, u16 *voltage)
-=======
 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
 }
 
 int radeon_atom_get_max_vddc(struct radeon_device *rdev, u8 voltage_type,
 			     u16 voltage_id, u16 *voltage)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union set_voltage args;
 	int index = GetIndexIntoMasterTable(COMMAND, SetVoltage);
@@ -3696,11 +3159,7 @@ int radeon_atom_get_max_vddc(struct radeon_device *rdev, u8 voltage_type,
 		args.v2.ucVoltageMode = 0;
 		args.v2.usVoltageLevel = 0;
 
-<<<<<<< HEAD
-		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*voltage = le16_to_cpu(args.v2.usVoltageLevel);
 		break;
@@ -3709,11 +3168,7 @@ int radeon_atom_get_max_vddc(struct radeon_device *rdev, u8 voltage_type,
 		args.v3.ucVoltageMode = ATOM_GET_VOLTAGE_LEVEL;
 		args.v3.usVoltageLevel = cpu_to_le16(voltage_id);
 
-<<<<<<< HEAD
-		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
-=======
 		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args, sizeof(args));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*voltage = le16_to_cpu(args.v3.usVoltageLevel);
 		break;
@@ -3725,8 +3180,6 @@ int radeon_atom_get_max_vddc(struct radeon_device *rdev, u8 voltage_type,
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 int radeon_atom_get_leakage_vddc_based_on_leakage_idx(struct radeon_device *rdev,
 						      u16 *voltage,
 						      u16 leakage_idx)
@@ -4620,7 +4073,6 @@ int radeon_atom_init_mc_reg_table(struct radeon_device *rdev,
 	return -EINVAL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_atom_initialize_bios_scratch_regs(struct drm_device *dev)
 {
 	struct radeon_device *rdev = dev->dev_private;

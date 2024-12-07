@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/random.h>
@@ -44,12 +41,6 @@ EXPORT_SYMBOL_GPL(setup_fault_attr);
 
 static void fail_dump(struct fault_attr *attr)
 {
-<<<<<<< HEAD
-	if (attr->verbose > 0)
-		printk(KERN_NOTICE "FAULT_INJECTION: forcing a failure\n");
-	if (attr->verbose > 1)
-		dump_stack();
-=======
 	if (attr->verbose > 0 && __ratelimit(&attr->ratelimit_state)) {
 		printk(KERN_NOTICE "FAULT_INJECTION: forcing a failure.\n"
 		       "name %pd, interval %lu, probability %lu, "
@@ -60,18 +51,13 @@ static void fail_dump(struct fault_attr *attr)
 		if (attr->verbose > 1)
 			dump_stack();
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define atomic_dec_not_zero(v)		atomic_add_unless((v), -1, 0)
 
 static bool fail_task(struct fault_attr *attr, struct task_struct *task)
 {
-<<<<<<< HEAD
-	return !in_interrupt() && task->make_it_fail;
-=======
 	return in_task() && task->make_it_fail;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MAX_STACK_TRACE_DEPTH 32
@@ -80,24 +66,6 @@ static bool fail_task(struct fault_attr *attr, struct task_struct *task)
 
 static bool fail_stacktrace(struct fault_attr *attr)
 {
-<<<<<<< HEAD
-	struct stack_trace trace;
-	int depth = attr->stacktrace_depth;
-	unsigned long entries[MAX_STACK_TRACE_DEPTH];
-	int n;
-	bool found = (attr->require_start == 0 && attr->require_end == ULONG_MAX);
-
-	if (depth == 0)
-		return found;
-
-	trace.nr_entries = 0;
-	trace.entries = entries;
-	trace.max_entries = depth;
-	trace.skip = 1;
-
-	save_stack_trace(&trace);
-	for (n = 0; n < trace.nr_entries; n++) {
-=======
 	int depth = attr->stacktrace_depth;
 	unsigned long entries[MAX_STACK_TRACE_DEPTH];
 	int n, nr_entries;
@@ -108,7 +76,6 @@ static bool fail_stacktrace(struct fault_attr *attr)
 
 	nr_entries = stack_trace_save(entries, depth, 1);
 	for (n = 0; n < nr_entries; n++) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (attr->reject_start <= entries[n] &&
 			       entries[n] < attr->reject_end)
 			return false;
@@ -133,10 +100,6 @@ static inline bool fail_stacktrace(struct fault_attr *attr)
  * http://www.nongnu.org/failmalloc/
  */
 
-<<<<<<< HEAD
-bool should_fail(struct fault_attr *attr, ssize_t size)
-{
-=======
 bool should_fail_ex(struct fault_attr *attr, ssize_t size, int flags)
 {
 	bool stack_checked = false;
@@ -162,19 +125,15 @@ bool should_fail_ex(struct fault_attr *attr, ssize_t size, int flags)
 	if (attr->probability == 0)
 		return false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (attr->task_filter && !fail_task(attr, current))
 		return false;
 
 	if (atomic_read(&attr->times) == 0)
 		return false;
 
-<<<<<<< HEAD
-=======
 	if (!stack_checked && !fail_stacktrace(attr))
 		return false;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (atomic_read(&attr->space) > size) {
 		atomic_sub(size, &attr->space);
 		return false;
@@ -186,36 +145,23 @@ bool should_fail_ex(struct fault_attr *attr, ssize_t size, int flags)
 			return false;
 	}
 
-<<<<<<< HEAD
-	if (attr->probability <= random32() % 100)
-		return false;
-
-	if (!fail_stacktrace(attr))
-		return false;
-
-	fail_dump(attr);
-=======
 	if (attr->probability <= get_random_u32_below(100))
 		return false;
 
 fail:
 	if (!(flags & FAULT_NOWARN))
 		fail_dump(attr);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&attr->times) != -1)
 		atomic_dec_not_zero(&attr->times);
 
 	return true;
 }
-<<<<<<< HEAD
-=======
 
 bool should_fail(struct fault_attr *attr, ssize_t size)
 {
 	return should_fail_ex(attr, size, 0);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(should_fail);
 
 #ifdef CONFIG_FAULT_INJECTION_DEBUG_FS
@@ -234,17 +180,10 @@ static int debugfs_ul_get(void *data, u64 *val)
 
 DEFINE_SIMPLE_ATTRIBUTE(fops_ul, debugfs_ul_get, debugfs_ul_set, "%llu\n");
 
-<<<<<<< HEAD
-static struct dentry *debugfs_create_ul(const char *name, umode_t mode,
-				struct dentry *parent, unsigned long *value)
-{
-	return debugfs_create_file(name, mode, parent, value, &fops_ul);
-=======
 static void debugfs_create_ul(const char *name, umode_t mode,
 			      struct dentry *parent, unsigned long *value)
 {
 	debugfs_create_file(name, mode, parent, value, &fops_ul);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_FAULT_INJECTION_STACKTRACE_FILTER
@@ -260,48 +199,15 @@ static int debugfs_stacktrace_depth_set(void *data, u64 val)
 DEFINE_SIMPLE_ATTRIBUTE(fops_stacktrace_depth, debugfs_ul_get,
 			debugfs_stacktrace_depth_set, "%llu\n");
 
-<<<<<<< HEAD
-static struct dentry *debugfs_create_stacktrace_depth(
-	const char *name, umode_t mode,
-	struct dentry *parent, unsigned long *value)
-{
-	return debugfs_create_file(name, mode, parent, value,
-				   &fops_stacktrace_depth);
-=======
 static void debugfs_create_stacktrace_depth(const char *name, umode_t mode,
 					    struct dentry *parent,
 					    unsigned long *value)
 {
 	debugfs_create_file(name, mode, parent, value, &fops_stacktrace_depth);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
 
-<<<<<<< HEAD
-static int debugfs_atomic_t_set(void *data, u64 val)
-{
-	atomic_set((atomic_t *)data, val);
-	return 0;
-}
-
-static int debugfs_atomic_t_get(void *data, u64 *val)
-{
-	*val = atomic_read((atomic_t *)data);
-	return 0;
-}
-
-DEFINE_SIMPLE_ATTRIBUTE(fops_atomic_t, debugfs_atomic_t_get,
-			debugfs_atomic_t_set, "%lld\n");
-
-static struct dentry *debugfs_create_atomic_t(const char *name, umode_t mode,
-				struct dentry *parent, atomic_t *value)
-{
-	return debugfs_create_file(name, mode, parent, value, &fops_atomic_t);
-}
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dentry *fault_create_debugfs_attr(const char *name,
 			struct dentry *parent, struct fault_attr *attr)
 {
@@ -309,46 +215,6 @@ struct dentry *fault_create_debugfs_attr(const char *name,
 	struct dentry *dir;
 
 	dir = debugfs_create_dir(name, parent);
-<<<<<<< HEAD
-	if (!dir)
-		return ERR_PTR(-ENOMEM);
-
-	if (!debugfs_create_ul("probability", mode, dir, &attr->probability))
-		goto fail;
-	if (!debugfs_create_ul("interval", mode, dir, &attr->interval))
-		goto fail;
-	if (!debugfs_create_atomic_t("times", mode, dir, &attr->times))
-		goto fail;
-	if (!debugfs_create_atomic_t("space", mode, dir, &attr->space))
-		goto fail;
-	if (!debugfs_create_ul("verbose", mode, dir, &attr->verbose))
-		goto fail;
-	if (!debugfs_create_bool("task-filter", mode, dir, &attr->task_filter))
-		goto fail;
-
-#ifdef CONFIG_FAULT_INJECTION_STACKTRACE_FILTER
-
-	if (!debugfs_create_stacktrace_depth("stacktrace-depth", mode, dir,
-				&attr->stacktrace_depth))
-		goto fail;
-	if (!debugfs_create_ul("require-start", mode, dir,
-				&attr->require_start))
-		goto fail;
-	if (!debugfs_create_ul("require-end", mode, dir, &attr->require_end))
-		goto fail;
-	if (!debugfs_create_ul("reject-start", mode, dir, &attr->reject_start))
-		goto fail;
-	if (!debugfs_create_ul("reject-end", mode, dir, &attr->reject_end))
-		goto fail;
-
-#endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
-
-	return dir;
-fail:
-	debugfs_remove_recursive(dir);
-
-	return ERR_PTR(-ENOMEM);
-=======
 	if (IS_ERR(dir))
 		return dir;
 
@@ -374,13 +240,10 @@ fail:
 
 	attr->dname = dget(dir);
 	return dir;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(fault_create_debugfs_attr);
 
 #endif /* CONFIG_FAULT_INJECTION_DEBUG_FS */
-<<<<<<< HEAD
-=======
 
 #ifdef CONFIG_FAULT_INJECTION_CONFIGFS
 
@@ -572,4 +435,3 @@ void fault_config_init(struct fault_config *config, const char *name)
 EXPORT_SYMBOL_GPL(fault_config_init);
 
 #endif /* CONFIG_FAULT_INJECTION_CONFIGFS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

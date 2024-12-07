@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-/*
- * Copyright 2012 Linaro Ltd.
- *
- * The code contained herein is licensed under the GNU General Public
- * License. You may obtain a copy of the GNU General Public License
- * Version 2 or later at the following locations:
- *
- * http://www.opensource.org/licenses/gpl-license.html
- * http://www.gnu.org/copyleft/gpl.html
- */
-
-#include <linux/cpuidle.h>
-#include <asm/proc-fns.h>
-
-int arm_cpuidle_simple_enter(struct cpuidle_device *dev,
-		struct cpuidle_driver *drv, int index)
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright 2012 Linaro Ltd.
@@ -45,14 +27,11 @@ static struct cpuidle_ops cpuidle_ops[NR_CPUS] __ro_after_init;
  */
 __cpuidle int arm_cpuidle_simple_enter(struct cpuidle_device *dev, struct
 				       cpuidle_driver *drv, int index)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cpu_do_idle();
 
 	return index;
 }
-<<<<<<< HEAD
-=======
 
 /**
  * arm_cpuidle_suspend() - function to enter low power idle states
@@ -167,4 +146,3 @@ int __init arm_cpuidle_init(int cpu)
 
 	return ret;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

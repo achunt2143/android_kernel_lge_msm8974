@@ -1,16 +1,6 @@
-<<<<<<< HEAD
-/* Siemens ID Mouse driver v0.6
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License as
-  published by the Free Software Foundation; either version 2 of
-  the License, or (at your option) any later version.
-
-=======
 // SPDX-License-Identifier: GPL-2.0+
 /* Siemens ID Mouse driver v0.6
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   Copyright (C) 2004-5 by Florian 'Floe' Echtler  <echtler@fs.tum.de>
                       and Andreas  'ad'  Deresch <aderesch@fs.tum.de>
 
@@ -23,24 +13,14 @@
 */
 
 #include <linux/kernel.h>
-<<<<<<< HEAD
-#include <linux/errno.h>
-#include <linux/delay.h>
-#include <linux/init.h>
-=======
 #include <linux/sched/signal.h>
 #include <linux/errno.h>
 #include <linux/delay.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/completion.h>
 #include <linux/mutex.h>
-<<<<<<< HEAD
-#include <asm/uaccess.h>
-=======
 #include <linux/uaccess.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 
 /* image constants */
@@ -49,11 +29,6 @@
 #define HEADER "P5 225 289 255 "
 #define IMGSIZE ((WIDTH * HEIGHT) + sizeof(HEADER)-1)
 
-<<<<<<< HEAD
-/* version information */
-#define DRIVER_VERSION "0.6"
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_SHORT   "idmouse"
 #define DRIVER_AUTHOR  "Florian 'Floe' Echtler <echtler@fs.tum.de>"
 #define DRIVER_DESC    "Siemens ID Mouse FingerTIP Sensor Driver"
@@ -81,18 +56,10 @@ static const struct usb_device_id idmouse_table[] = {
 #define FTIP_SCROLL  0x24
 
 #define ftip_command(dev, command, value, index) \
-<<<<<<< HEAD
-	usb_control_msg (dev->udev, usb_sndctrlpipe (dev->udev, 0), command, \
-	USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT, value, index, NULL, 0, 1000)
-
-MODULE_DEVICE_TABLE(usb, idmouse_table);
-static DEFINE_MUTEX(open_disc_mutex);
-=======
 	usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0), command, \
 	USB_TYPE_VENDOR | USB_RECIP_ENDPOINT | USB_DIR_OUT, value, index, NULL, 0, 1000)
 
 MODULE_DEVICE_TABLE(usb, idmouse_table);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* structure to hold all of our device specific stuff */
 struct usb_idmouse {
@@ -190,13 +157,8 @@ static int idmouse_create_image(struct usb_idmouse *dev)
 
 	/* loop over a blocking bulk read to get data from the device */
 	while (bytes_read < IMGSIZE) {
-<<<<<<< HEAD
-		result = usb_bulk_msg (dev->udev,
-				usb_rcvbulkpipe (dev->udev, dev->bulk_in_endpointAddr),
-=======
 		result = usb_bulk_msg(dev->udev,
 				usb_rcvbulkpipe(dev->udev, dev->bulk_in_endpointAddr),
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->bulk_in_buffer + bytes_read,
 				dev->bulk_in_size, &bulk_read, 5000);
 		if (result < 0) {
@@ -215,13 +177,6 @@ static int idmouse_create_image(struct usb_idmouse *dev)
 		bytes_read += bulk_read;
 	}
 
-<<<<<<< HEAD
-	/* reset the device */
-reset:
-	ftip_command(dev, FTIP_RELEASE, 0, 0);
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check for valid image */
 	/* right border should be black (0x00) */
 	for (bytes_read = sizeof(HEADER)-1 + WIDTH-1; bytes_read < IMGSIZE; bytes_read += WIDTH)
@@ -233,10 +188,6 @@ reset:
 		if (dev->bulk_in_buffer[bytes_read] != 0xFF)
 			return -EAGAIN;
 
-<<<<<<< HEAD
-	/* should be IMGSIZE == 65040 */
-	dbg("read %d bytes fingerprint data", bytes_read);
-=======
 	/* reset the device */
 reset:
 	ftip_command(dev, FTIP_RELEASE, 0, 0);
@@ -244,7 +195,6 @@ reset:
 	/* should be IMGSIZE == 65040 */
 	dev_dbg(&dev->interface->dev, "read %d bytes fingerprint data\n",
 		bytes_read);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -272,23 +222,6 @@ static int idmouse_open(struct inode *inode, struct file *file)
 	int result;
 
 	/* get the interface from minor number and driver information */
-<<<<<<< HEAD
-	interface = usb_find_interface (&idmouse_driver, iminor (inode));
-	if (!interface)
-		return -ENODEV;
-
-	mutex_lock(&open_disc_mutex);
-	/* get the device information block from the interface */
-	dev = usb_get_intfdata(interface);
-	if (!dev) {
-		mutex_unlock(&open_disc_mutex);
-		return -ENODEV;
-	}
-
-	/* lock this device */
-	mutex_lock(&dev->lock);
-	mutex_unlock(&open_disc_mutex);
-=======
 	interface = usb_find_interface(&idmouse_driver, iminor(inode));
 	if (!interface)
 		return -ENODEV;
@@ -300,7 +233,6 @@ static int idmouse_open(struct inode *inode, struct file *file)
 
 	/* lock this device */
 	mutex_lock(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check if already open */
 	if (dev->open) {
@@ -314,17 +246,10 @@ static int idmouse_open(struct inode *inode, struct file *file)
 		result = usb_autopm_get_interface(interface);
 		if (result)
 			goto error;
-<<<<<<< HEAD
-		result = idmouse_create_image (dev);
-		if (result)
-			goto error;
-		usb_autopm_put_interface(interface);
-=======
 		result = idmouse_create_image(dev);
 		usb_autopm_put_interface(interface);
 		if (result)
 			goto error;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* increment our usage count for the driver */
 		++dev->open;
@@ -350,39 +275,17 @@ static int idmouse_release(struct inode *inode, struct file *file)
 	if (dev == NULL)
 		return -ENODEV;
 
-<<<<<<< HEAD
-	mutex_lock(&open_disc_mutex);
 	/* lock our device */
 	mutex_lock(&dev->lock);
 
-	/* are we really open? */
-	if (dev->open <= 0) {
-		mutex_unlock(&dev->lock);
-		mutex_unlock(&open_disc_mutex);
-		return -ENODEV;
-	}
-
-=======
-	/* lock our device */
-	mutex_lock(&dev->lock);
-
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	--dev->open;
 
 	if (!dev->present) {
 		/* the device was unplugged before the file was released */
 		mutex_unlock(&dev->lock);
-<<<<<<< HEAD
-		mutex_unlock(&open_disc_mutex);
 		idmouse_delete(dev);
 	} else {
 		mutex_unlock(&dev->lock);
-		mutex_unlock(&open_disc_mutex);
-=======
-		idmouse_delete(dev);
-	} else {
-		mutex_unlock(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -419,12 +322,6 @@ static int idmouse_probe(struct usb_interface *interface,
 	int result;
 
 	/* check if we have gotten the data or the hid interface */
-<<<<<<< HEAD
-	iface_desc = &interface->altsetting[0];
-	if (iface_desc->desc.bInterfaceClass != 0x0A)
-		return -ENODEV;
-
-=======
 	iface_desc = interface->cur_altsetting;
 	if (iface_desc->desc.bInterfaceClass != 0x0A)
 		return -ENODEV;
@@ -432,7 +329,6 @@ static int idmouse_probe(struct usb_interface *interface,
 	if (iface_desc->desc.bNumEndpoints < 1)
 		return -ENODEV;
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* allocate memory for our device state and initialize it */
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (dev == NULL)
@@ -443,29 +339,6 @@ static int idmouse_probe(struct usb_interface *interface,
 	dev->interface = interface;
 
 	/* set up the endpoint information - use only the first bulk-in endpoint */
-<<<<<<< HEAD
-	endpoint = &iface_desc->endpoint[0].desc;
-	if (!dev->bulk_in_endpointAddr && usb_endpoint_is_bulk_in(endpoint)) {
-		/* we found a bulk in endpoint */
-		dev->orig_bi_size = usb_endpoint_maxp(endpoint);
-		dev->bulk_in_size = 0x200; /* works _much_ faster */
-		dev->bulk_in_endpointAddr = endpoint->bEndpointAddress;
-		dev->bulk_in_buffer =
-			kmalloc(IMGSIZE + dev->bulk_in_size, GFP_KERNEL);
-
-		if (!dev->bulk_in_buffer) {
-			err("Unable to allocate input buffer.");
-			idmouse_delete(dev);
-			return -ENOMEM;
-		}
-	}
-
-	if (!(dev->bulk_in_endpointAddr)) {
-		err("Unable to find bulk-in endpoint.");
-		idmouse_delete(dev);
-		return -ENODEV;
-	}
-=======
 	result = usb_find_bulk_in_endpoint(iface_desc, &endpoint);
 	if (result) {
 		dev_err(&interface->dev, "Unable to find bulk-in endpoint.\n");
@@ -482,7 +355,6 @@ static int idmouse_probe(struct usb_interface *interface,
 		return -ENOMEM;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* allow device read, write and ioctl */
 	dev->present = 1;
 
@@ -491,12 +363,7 @@ static int idmouse_probe(struct usb_interface *interface,
 	result = usb_register_dev(interface, &idmouse_class);
 	if (result) {
 		/* something prevented us from registering this device */
-<<<<<<< HEAD
-		err("Unble to allocate minor number.");
-		usb_set_intfdata(interface, NULL);
-=======
 		dev_err(&interface->dev, "Unable to allocate minor number.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idmouse_delete(dev);
 		return result;
 	}
@@ -509,28 +376,13 @@ static int idmouse_probe(struct usb_interface *interface,
 
 static void idmouse_disconnect(struct usb_interface *interface)
 {
-<<<<<<< HEAD
-	struct usb_idmouse *dev;
-
-	/* get device structure */
-	dev = usb_get_intfdata(interface);
-=======
 	struct usb_idmouse *dev = usb_get_intfdata(interface);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* give back our minor */
 	usb_deregister_dev(interface, &idmouse_class);
 
-<<<<<<< HEAD
-	mutex_lock(&open_disc_mutex);
-	usb_set_intfdata(interface, NULL);
 	/* lock the device */
 	mutex_lock(&dev->lock);
-	mutex_unlock(&open_disc_mutex);
-=======
-	/* lock the device */
-	mutex_lock(&dev->lock);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* prevent device read, write and ioctl */
 	dev->present = 0;

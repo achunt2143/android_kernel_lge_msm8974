@@ -1,28 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Xenbus code for blkif backend
     Copyright (C) 2005 Rusty Russell <rusty@rustcorp.com.au>
     Copyright (C) 2005 XenSource Ltd
 
-<<<<<<< HEAD
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-*/
-
-#include <stdarg.h>
-#include <linux/module.h>
-#include <linux/kthread.h>
-=======
 
 */
 
@@ -31,17 +11,13 @@
 #include <linux/module.h>
 #include <linux/kthread.h>
 #include <linux/pagemap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <xen/events.h>
 #include <xen/grant_table.h>
 #include "common.h"
 
-<<<<<<< HEAD
-=======
 /* On the XenBus the max length of 'ring-ref%u'. */
 #define RINGREF_NAME_LEN (20)
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct backend_info {
 	struct xenbus_device	*dev;
 	struct xen_blkif	*blkif;
@@ -54,23 +30,16 @@ struct backend_info {
 static struct kmem_cache *xen_blkif_cachep;
 static void connect(struct backend_info *);
 static int connect_ring(struct backend_info *);
-<<<<<<< HEAD
-static void backend_changed(struct xenbus_watch *, const char **,
-			    unsigned int);
-=======
 static void backend_changed(struct xenbus_watch *, const char *,
 			    const char *);
 static void xen_blkif_free(struct xen_blkif *blkif);
 static void xen_vbd_free(struct xen_vbd *vbd);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xenbus_device *xen_blkbk_xenbus(struct backend_info *be)
 {
 	return be->dev;
 }
 
-<<<<<<< HEAD
-=======
 /*
  * The last request could free the device from softirq context and
  * xen_blkif_free() can sleep.
@@ -83,7 +52,6 @@ static void xen_blkif_deferred_free(struct work_struct *work)
 	xen_blkif_free(blkif);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int blkback_name(struct xen_blkif *blkif, char *buf)
 {
 	char *devpath, *devname;
@@ -99,11 +67,7 @@ static int blkback_name(struct xen_blkif *blkif, char *buf)
 	else
 		devname  = devpath;
 
-<<<<<<< HEAD
-	snprintf(buf, TASK_COMM_LEN, "blkback.%d.%s", blkif->domid, devname);
-=======
 	snprintf(buf, TASK_COMM_LEN, "%d.%s", blkif->domid, devname);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(devpath);
 
 	return 0;
@@ -113,17 +77,11 @@ static void xen_update_blkif_status(struct xen_blkif *blkif)
 {
 	int err;
 	char name[TASK_COMM_LEN];
-<<<<<<< HEAD
-
-	/* Not ready to connect? */
-	if (!blkif->irq || !blkif->vbd.bdev)
-=======
 	struct xen_blkif_ring *ring;
 	int i;
 
 	/* Not ready to connect? */
 	if (!blkif->rings || !blkif->rings[0].irq || !blkif->vbd.bdev_file)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* Already connected? */
@@ -141,27 +99,11 @@ static void xen_update_blkif_status(struct xen_blkif *blkif)
 		return;
 	}
 
-<<<<<<< HEAD
-	err = filemap_write_and_wait(blkif->vbd.bdev->bd_inode->i_mapping);
-=======
 	err = sync_blockdev(file_bdev(blkif->vbd.bdev_file));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		xenbus_dev_error(blkif->be->dev, err, "block flush");
 		return;
 	}
-<<<<<<< HEAD
-	invalidate_inode_pages2(blkif->vbd.bdev->bd_inode->i_mapping);
-
-	blkif->xenblkd = kthread_run(xen_blkif_schedule, blkif, name);
-	if (IS_ERR(blkif->xenblkd)) {
-		err = PTR_ERR(blkif->xenblkd);
-		blkif->xenblkd = NULL;
-		xenbus_dev_error(blkif->be->dev, err, "start xenblkd");
-	}
-}
-
-=======
 	invalidate_inode_pages2(blkif->vbd.bdev_file->f_mapping);
 
 	for (i = 0; i < blkif->nr_rings; i++) {
@@ -220,27 +162,10 @@ static bool feature_persistent = true;
 module_param(feature_persistent, bool, 0644);
 MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xen_blkif *xen_blkif_alloc(domid_t domid)
 {
 	struct xen_blkif *blkif;
 
-<<<<<<< HEAD
-	blkif = kmem_cache_alloc(xen_blkif_cachep, GFP_KERNEL);
-	if (!blkif)
-		return ERR_PTR(-ENOMEM);
-
-	memset(blkif, 0, sizeof(*blkif));
-	blkif->domid = domid;
-	spin_lock_init(&blkif->blk_ring_lock);
-	atomic_set(&blkif->refcnt, 1);
-	init_waitqueue_head(&blkif->wq);
-	init_completion(&blkif->drain_complete);
-	atomic_set(&blkif->drain, 0);
-	blkif->st_print = jiffies;
-	init_waitqueue_head(&blkif->waiting_to_free);
-	init_waitqueue_head(&blkif->shutdown_wq);
-=======
 	BUILD_BUG_ON(MAX_INDIRECT_PAGES > BLKIF_MAX_INDIRECT_PAGES_PER_REQUEST);
 
 	blkif = kmem_cache_zalloc(xen_blkif_cachep, GFP_KERNEL);
@@ -260,32 +185,10 @@ static struct xen_blkif *xen_blkif_alloc(domid_t domid)
 	 */
 	__module_get(THIS_MODULE);
 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return blkif;
 }
 
-<<<<<<< HEAD
-static int xen_blkif_map(struct xen_blkif *blkif, unsigned long shared_page,
-			 unsigned int evtchn)
-{
-	int err;
-
-	/* Already connected through? */
-	if (blkif->irq)
-		return 0;
-
-	err = xenbus_map_ring_valloc(blkif->be->dev, shared_page, &blkif->blk_ring);
-	if (err < 0)
-		return err;
-
-	switch (blkif->blk_protocol) {
-	case BLKIF_PROTOCOL_NATIVE:
-	{
-		struct blkif_sring *sring;
-		sring = (struct blkif_sring *)blkif->blk_ring;
-		BACK_RING_INIT(&blkif->blk_rings.native, sring, PAGE_SIZE);
-=======
 static int xen_blkif_map(struct xen_blkif_ring *ring, grant_ref_t *gref,
 			 unsigned int nr_grefs, unsigned int evtchn)
 {
@@ -317,56 +220,32 @@ static int xen_blkif_map(struct xen_blkif_ring *ring, grant_ref_t *gref,
 		BACK_RING_ATTACH(&ring->blk_rings.native, sring_native,
 				 rsp_prod, XEN_PAGE_SIZE * nr_grefs);
 		size = __RING_SIZE(sring_native, XEN_PAGE_SIZE * nr_grefs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case BLKIF_PROTOCOL_X86_32:
 	{
-<<<<<<< HEAD
-		struct blkif_x86_32_sring *sring_x86_32;
-		sring_x86_32 = (struct blkif_x86_32_sring *)blkif->blk_ring;
-		BACK_RING_INIT(&blkif->blk_rings.x86_32, sring_x86_32, PAGE_SIZE);
-=======
 		struct blkif_x86_32_sring *sring_x86_32 =
 			(struct blkif_x86_32_sring *)ring->blk_ring;
 
 		BACK_RING_ATTACH(&ring->blk_rings.x86_32, sring_x86_32,
 				 rsp_prod, XEN_PAGE_SIZE * nr_grefs);
 		size = __RING_SIZE(sring_x86_32, XEN_PAGE_SIZE * nr_grefs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	case BLKIF_PROTOCOL_X86_64:
 	{
-<<<<<<< HEAD
-		struct blkif_x86_64_sring *sring_x86_64;
-		sring_x86_64 = (struct blkif_x86_64_sring *)blkif->blk_ring;
-		BACK_RING_INIT(&blkif->blk_rings.x86_64, sring_x86_64, PAGE_SIZE);
-=======
 		struct blkif_x86_64_sring *sring_x86_64 =
 			(struct blkif_x86_64_sring *)ring->blk_ring;
 
 		BACK_RING_ATTACH(&ring->blk_rings.x86_64, sring_x86_64,
 				 rsp_prod, XEN_PAGE_SIZE * nr_grefs);
 		size = __RING_SIZE(sring_x86_64, XEN_PAGE_SIZE * nr_grefs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
 		BUG();
 	}
 
-<<<<<<< HEAD
-	err = bind_interdomain_evtchn_to_irqhandler(blkif->domid, evtchn,
-						    xen_blkif_be_int, 0,
-						    "blkif-backend", blkif);
-	if (err < 0) {
-		xenbus_unmap_ring_vfree(blkif->be->dev, blkif->blk_ring);
-		blkif->blk_rings.common.sring = NULL;
-		return err;
-	}
-	blkif->irq = err;
-=======
 	err = -EIO;
 	if (req_prod - rsp_prod > size)
 		goto fail;
@@ -459,41 +338,10 @@ static int xen_blkif_disconnect(struct xen_blkif *blkif)
 	kfree(blkif->rings);
 	blkif->rings = NULL;
 	blkif->nr_rings = 0;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
-<<<<<<< HEAD
-static void xen_blkif_disconnect(struct xen_blkif *blkif)
-{
-	if (blkif->xenblkd) {
-		kthread_stop(blkif->xenblkd);
-		wake_up(&blkif->shutdown_wq);
-		blkif->xenblkd = NULL;
-	}
-
-	atomic_dec(&blkif->refcnt);
-	wait_event(blkif->waiting_to_free, atomic_read(&blkif->refcnt) == 0);
-	atomic_inc(&blkif->refcnt);
-
-	if (blkif->irq) {
-		unbind_from_irqhandler(blkif->irq, blkif);
-		blkif->irq = 0;
-	}
-
-	if (blkif->blk_rings.common.sring) {
-		xenbus_unmap_ring_vfree(blkif->be->dev, blkif->blk_ring);
-		blkif->blk_rings.common.sring = NULL;
-	}
-}
-
-void xen_blkif_free(struct xen_blkif *blkif)
-{
-	if (!atomic_dec_and_test(&blkif->refcnt))
-		BUG();
-	kmem_cache_free(xen_blkif_cachep, blkif);
-=======
 static void xen_blkif_free(struct xen_blkif *blkif)
 {
 	WARN_ON(xen_blkif_disconnect(blkif));
@@ -504,7 +352,6 @@ static void xen_blkif_free(struct xen_blkif *blkif)
 	/* Make sure everything is drained before shutting down */
 	kmem_cache_free(xen_blkif_cachep, blkif);
 	module_put(THIS_MODULE);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init xen_blkif_interface_init(void)
@@ -518,44 +365,23 @@ int __init xen_blkif_interface_init(void)
 	return 0;
 }
 
-<<<<<<< HEAD
-=======
 void xen_blkif_interface_fini(void)
 {
 	kmem_cache_destroy(xen_blkif_cachep);
 	xen_blkif_cachep = NULL;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sysfs interface for VBD I/O requests
  */
 
-<<<<<<< HEAD
-#define VBD_SHOW(name, format, args...)					\
-=======
 #define VBD_SHOW_ALLRING(name, format)					\
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static ssize_t show_##name(struct device *_dev,			\
 				   struct device_attribute *attr,	\
 				   char *buf)				\
 	{								\
 		struct xenbus_device *dev = to_xenbus_device(_dev);	\
 		struct backend_info *be = dev_get_drvdata(&dev->dev);	\
-<<<<<<< HEAD
-									\
-		return sprintf(buf, format, ##args);			\
-	}								\
-	static DEVICE_ATTR(name, S_IRUGO, show_##name, NULL)
-
-VBD_SHOW(oo_req,  "%d\n", be->blkif->st_oo_req);
-VBD_SHOW(rd_req,  "%d\n", be->blkif->st_rd_req);
-VBD_SHOW(wr_req,  "%d\n", be->blkif->st_wr_req);
-VBD_SHOW(f_req,  "%d\n", be->blkif->st_f_req);
-VBD_SHOW(ds_req,  "%d\n", be->blkif->st_ds_req);
-VBD_SHOW(rd_sect, "%d\n", be->blkif->st_rd_sect);
-VBD_SHOW(wr_sect, "%d\n", be->blkif->st_wr_sect);
-=======
 		struct xen_blkif *blkif = be->blkif;			\
 		unsigned int i;						\
 		unsigned long long result = 0;				\
@@ -581,7 +407,6 @@ VBD_SHOW_ALLRING(f_req,  "%llu\n");
 VBD_SHOW_ALLRING(ds_req,  "%llu\n");
 VBD_SHOW_ALLRING(rd_sect, "%llu\n");
 VBD_SHOW_ALLRING(wr_sect, "%llu\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *xen_vbdstat_attrs[] = {
 	&dev_attr_oo_req.attr,
@@ -594,21 +419,11 @@ static struct attribute *xen_vbdstat_attrs[] = {
 	NULL
 };
 
-<<<<<<< HEAD
-static struct attribute_group xen_vbdstat_group = {
-=======
 static const struct attribute_group xen_vbdstat_group = {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "statistics",
 	.attrs = xen_vbdstat_attrs,
 };
 
-<<<<<<< HEAD
-VBD_SHOW(physical_device, "%x:%x\n", be->major, be->minor);
-VBD_SHOW(mode, "%s\n", be->mode);
-
-int xenvbd_sysfs_addif(struct xenbus_device *dev)
-=======
 #define VBD_SHOW(name, format, args...)					\
 	static ssize_t show_##name(struct device *_dev,			\
 				   struct device_attribute *attr,	\
@@ -625,7 +440,6 @@ VBD_SHOW(physical_device, "%x:%x\n", be->major, be->minor);
 VBD_SHOW(mode, "%s\n", be->mode);
 
 static int xenvbd_sysfs_addif(struct xenbus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -649,31 +463,18 @@ fail1:	device_remove_file(&dev->dev, &dev_attr_physical_device);
 	return error;
 }
 
-<<<<<<< HEAD
-void xenvbd_sysfs_delif(struct xenbus_device *dev)
-=======
 static void xenvbd_sysfs_delif(struct xenbus_device *dev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sysfs_remove_group(&dev->dev.kobj, &xen_vbdstat_group);
 	device_remove_file(&dev->dev, &dev_attr_mode);
 	device_remove_file(&dev->dev, &dev_attr_physical_device);
 }
 
-<<<<<<< HEAD
-
-static void xen_vbd_free(struct xen_vbd *vbd)
-{
-	if (vbd->bdev)
-		blkdev_put(vbd->bdev, vbd->readonly ? FMODE_READ : FMODE_WRITE);
-	vbd->bdev = NULL;
-=======
 static void xen_vbd_free(struct xen_vbd *vbd)
 {
 	if (vbd->bdev_file)
 		fput(vbd->bdev_file);
 	vbd->bdev_file = NULL;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
@@ -681,12 +482,7 @@ static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
 			  int cdrom)
 {
 	struct xen_vbd *vbd;
-<<<<<<< HEAD
-	struct block_device *bdev;
-	struct request_queue *q;
-=======
 	struct file *bdev_file;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vbd = &blkif->vbd;
 	vbd->handle   = handle;
@@ -695,61 +491,24 @@ static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
 
 	vbd->pdevice  = MKDEV(major, minor);
 
-<<<<<<< HEAD
-	bdev = blkdev_get_by_dev(vbd->pdevice, vbd->readonly ?
-				 FMODE_READ : FMODE_WRITE, NULL);
-
-	if (IS_ERR(bdev)) {
-		DPRINTK("xen_vbd_create: device %08x could not be opened.\n",
-=======
 	bdev_file = bdev_file_open_by_dev(vbd->pdevice, vbd->readonly ?
 				 BLK_OPEN_READ : BLK_OPEN_WRITE, NULL, NULL);
 
 	if (IS_ERR(bdev_file)) {
 		pr_warn("xen_vbd_create: device %08x could not be opened\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbd->pdevice);
 		return -ENOENT;
 	}
 
-<<<<<<< HEAD
-	vbd->bdev = bdev;
-	if (vbd->bdev->bd_disk == NULL) {
-		DPRINTK("xen_vbd_create: device %08x doesn't exist.\n",
-=======
 	vbd->bdev_file = bdev_file;
 	if (file_bdev(vbd->bdev_file)->bd_disk == NULL) {
 		pr_warn("xen_vbd_create: device %08x doesn't exist\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vbd->pdevice);
 		xen_vbd_free(vbd);
 		return -ENOENT;
 	}
 	vbd->size = vbd_sz(vbd);
 
-<<<<<<< HEAD
-	if (vbd->bdev->bd_disk->flags & GENHD_FL_CD || cdrom)
-		vbd->type |= VDISK_CDROM;
-	if (vbd->bdev->bd_disk->flags & GENHD_FL_REMOVABLE)
-		vbd->type |= VDISK_REMOVABLE;
-
-	q = bdev_get_queue(bdev);
-	if (q && q->flush_flags)
-		vbd->flush_support = true;
-
-	if (q && blk_queue_secdiscard(q))
-		vbd->discard_secure = true;
-
-	DPRINTK("Successful creation of handle=%04x (dom=%u)\n",
-		handle, blkif->domid);
-	return 0;
-}
-static int xen_blkbk_remove(struct xenbus_device *dev)
-{
-	struct backend_info *be = dev_get_drvdata(&dev->dev);
-
-	DPRINTK("");
-=======
 	if (cdrom || disk_to_cdi(file_bdev(vbd->bdev_file)->bd_disk))
 		vbd->type |= VDISK_CDROM;
 	if (file_bdev(vbd->bdev_file)->bd_disk->flags & GENHD_FL_REMOVABLE)
@@ -770,7 +529,6 @@ static void xen_blkbk_remove(struct xenbus_device *dev)
 	struct backend_info *be = dev_get_drvdata(&dev->dev);
 
 	pr_debug("%s %p %d\n", __func__, dev, dev->otherend_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (be->major || be->minor)
 		xenvbd_sysfs_delif(dev);
@@ -781,19 +539,6 @@ static void xen_blkbk_remove(struct xenbus_device *dev)
 		be->backend_watch.node = NULL;
 	}
 
-<<<<<<< HEAD
-	if (be->blkif) {
-		xen_blkif_disconnect(be->blkif);
-		xen_vbd_free(&be->blkif->vbd);
-		xen_blkif_free(be->blkif);
-		be->blkif = NULL;
-	}
-
-	kfree(be->mode);
-	kfree(be);
-	dev_set_drvdata(&dev->dev, NULL);
-	return 0;
-=======
 	dev_set_drvdata(&dev->dev, NULL);
 
 	if (be->blkif) {
@@ -802,7 +547,6 @@ static void xen_blkbk_remove(struct xenbus_device *dev)
 		/* Put the reference we set in xen_blkif_alloc(). */
 		xen_blkif_put(be->blkif);
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int xen_blkbk_flush_diskcache(struct xenbus_transaction xbt,
@@ -825,15 +569,6 @@ static void xen_blkbk_discard(struct xenbus_transaction xbt, struct backend_info
 	struct xen_blkif *blkif = be->blkif;
 	int err;
 	int state = 0;
-<<<<<<< HEAD
-	struct block_device *bdev = be->blkif->vbd.bdev;
-	struct request_queue *q = bdev_get_queue(bdev);
-
-	if (blk_queue_discard(q)) {
-		err = xenbus_printf(xbt, dev->nodename,
-			"discard-granularity", "%u",
-			q->limits.discard_granularity);
-=======
 	struct block_device *bdev = file_bdev(be->blkif->vbd.bdev_file);
 
 	if (!xenbus_read_unsigned(dev->nodename, "discard-enable", 1))
@@ -843,18 +578,13 @@ static void xen_blkbk_discard(struct xenbus_transaction xbt, struct backend_info
 		err = xenbus_printf(xbt, dev->nodename,
 			"discard-granularity", "%u",
 			bdev_discard_granularity(bdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			dev_warn(&dev->dev, "writing discard-granularity (%d)", err);
 			return;
 		}
 		err = xenbus_printf(xbt, dev->nodename,
 			"discard-alignment", "%u",
-<<<<<<< HEAD
-			q->limits.discard_alignment);
-=======
 			bdev_discard_alignment(bdev));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			dev_warn(&dev->dev, "writing discard-alignment (%d)", err);
 			return;
@@ -874,10 +604,7 @@ static void xen_blkbk_discard(struct xenbus_transaction xbt, struct backend_info
 	if (err)
 		dev_warn(&dev->dev, "writing feature-discard (%d)", err);
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xen_blkbk_barrier(struct xenbus_transaction xbt,
 		      struct backend_info *be, int state)
 {
@@ -903,13 +630,10 @@ static int xen_blkbk_probe(struct xenbus_device *dev,
 	int err;
 	struct backend_info *be = kzalloc(sizeof(struct backend_info),
 					  GFP_KERNEL);
-<<<<<<< HEAD
-=======
 
 	/* match the pr_debug in xen_blkbk_remove */
 	pr_debug("%s %p %d\n", __func__, dev, dev->otherend_id);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!be) {
 		xenbus_dev_fatal(dev, -ENOMEM,
 				 "allocating backend structure");
@@ -926,12 +650,6 @@ static int xen_blkbk_probe(struct xenbus_device *dev,
 		goto fail;
 	}
 
-<<<<<<< HEAD
-	/* setup back pointer */
-	be->blkif->be = be;
-
-	err = xenbus_watch_pathfmt(dev, &be->backend_watch, backend_changed,
-=======
 	err = xenbus_printf(XBT_NIL, dev->nodename,
 			    "feature-max-indirect-segments", "%u",
 			    MAX_INDIRECT_SEGMENTS);
@@ -951,19 +669,15 @@ static int xen_blkbk_probe(struct xenbus_device *dev,
 
 	err = xenbus_watch_pathfmt(dev, &be->backend_watch, NULL,
 				   backend_changed,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   "%s/%s", dev->nodename, "physical-device");
 	if (err)
 		goto fail;
 
-<<<<<<< HEAD
-=======
 	err = xenbus_printf(XBT_NIL, dev->nodename, "max-ring-page-order", "%u",
 			    xen_blkif_max_ring_order);
 	if (err)
 		pr_warn("%s write out 'max-ring-page-order' failed\n", __func__);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = xenbus_switch_state(dev, XenbusStateInitWait);
 	if (err)
 		goto fail;
@@ -971,30 +685,18 @@ static int xen_blkbk_probe(struct xenbus_device *dev,
 	return 0;
 
 fail:
-<<<<<<< HEAD
-	DPRINTK("failed");
-=======
 	pr_warn("%s failed\n", __func__);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xen_blkbk_remove(dev);
 	return err;
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Callback received when the hotplug scripts have placed the physical-device
  * node.  Read it and the mode node, and create a vbd.  If the frontend is
  * ready, connect.
  */
 static void backend_changed(struct xenbus_watch *watch,
-<<<<<<< HEAD
-			    const char **vec, unsigned int len)
-=======
 			    const char *path, const char *token)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	unsigned major;
@@ -1006,11 +708,7 @@ static void backend_changed(struct xenbus_watch *watch,
 	unsigned long handle;
 	char *device_type;
 
-<<<<<<< HEAD
-	DPRINTK("");
-=======
 	pr_debug("%s %p %d\n", __func__, dev, dev->otherend_id);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = xenbus_scanf(XBT_NIL, dev->nodename, "physical-device", "%x:%x",
 			   &major, &minor);
@@ -1029,11 +727,7 @@ static void backend_changed(struct xenbus_watch *watch,
 
 	if (be->major | be->minor) {
 		if (be->major != major || be->minor != minor)
-<<<<<<< HEAD
-			pr_warn(DRV_PFX "changing physical device (from %x:%x to %x:%x) not supported.\n",
-=======
 			pr_warn("changing physical device (from %x:%x to %x:%x) not supported.\n",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				be->major, be->minor, major, minor);
 		return;
 	}
@@ -1053,18 +747,12 @@ static void backend_changed(struct xenbus_watch *watch,
 	}
 
 	/* Front end dir is a number, which is used as the handle. */
-<<<<<<< HEAD
-	err = strict_strtoul(strrchr(dev->otherend, '/') + 1, 0, &handle);
-	if (err)
-		return;
-=======
 	err = kstrtoul(strrchr(dev->otherend, '/') + 1, 0, &handle);
 	if (err) {
 		kfree(be->mode);
 		be->mode = NULL;
 		return;
 	}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	be->major = major;
 	be->minor = minor;
@@ -1093,10 +781,6 @@ static void backend_changed(struct xenbus_watch *watch,
 	}
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Callback received when the frontend's state changes.
  */
@@ -1106,21 +790,12 @@ static void frontend_changed(struct xenbus_device *dev,
 	struct backend_info *be = dev_get_drvdata(&dev->dev);
 	int err;
 
-<<<<<<< HEAD
-	DPRINTK("%s", xenbus_strstate(frontend_state));
-=======
 	pr_debug("%s %p %s\n", __func__, dev, xenbus_strstate(frontend_state));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (frontend_state) {
 	case XenbusStateInitialising:
 		if (dev->state == XenbusStateClosed) {
-<<<<<<< HEAD
-			pr_info(DRV_PFX "%s: prepare for reconnect\n",
-				dev->nodename);
-=======
 			pr_info("%s: prepare for reconnect\n", dev->nodename);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xenbus_switch_state(dev, XenbusStateInitWait);
 		}
 		break;
@@ -1139,13 +814,6 @@ static void frontend_changed(struct xenbus_device *dev,
 		 * Enforce precondition before potential leak point.
 		 * xen_blkif_disconnect() is idempotent.
 		 */
-<<<<<<< HEAD
-		xen_blkif_disconnect(be->blkif);
-
-		err = connect_ring(be);
-		if (err)
-			break;
-=======
 		err = xen_blkif_disconnect(be->blkif);
 		if (err) {
 			xenbus_dev_fatal(dev, err, "pending I/O");
@@ -1161,7 +829,6 @@ static void frontend_changed(struct xenbus_device *dev,
 			xen_blkif_disconnect(be->blkif);
 			break;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xen_update_blkif_status(be->blkif);
 		break;
 
@@ -1174,12 +841,8 @@ static void frontend_changed(struct xenbus_device *dev,
 		xenbus_switch_state(dev, XenbusStateClosed);
 		if (xenbus_dev_is_online(dev))
 			break;
-<<<<<<< HEAD
-		/* fall through if not online */
-=======
 		fallthrough;
 		/* if not online */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case XenbusStateUnknown:
 		/* implies xen_blkif_disconnect() via xen_blkbk_remove() */
 		device_unregister(&dev->dev);
@@ -1192,12 +855,6 @@ static void frontend_changed(struct xenbus_device *dev,
 	}
 }
 
-<<<<<<< HEAD
-
-/* ** Connection ** */
-
-
-=======
 /* Once a memory pressure is detected, squeeze free page pools for a while. */
 static unsigned int buffer_squeeze_duration_ms = 10;
 module_param_named(buffer_squeeze_duration_ms,
@@ -1220,7 +877,6 @@ static void reclaim_memory(struct xenbus_device *dev)
 
 /* ** Connection ** */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Write the physical details regarding the block device to the store, and
  * switch to Connected state.
@@ -1231,11 +887,7 @@ static void connect(struct backend_info *be)
 	int err;
 	struct xenbus_device *dev = be->dev;
 
-<<<<<<< HEAD
-	DPRINTK("%s", dev->otherend);
-=======
 	pr_debug("%s %s\n", __func__, dev->otherend);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Supply the information about the device the frontend needs */
 again:
@@ -1252,8 +904,6 @@ again:
 
 	xen_blkbk_barrier(xbt, be, be->blkif->vbd.flush_support);
 
-<<<<<<< HEAD
-=======
 	err = xenbus_printf(xbt, dev->nodename, "feature-persistent", "%u",
 			be->blkif->vbd.feature_gnt_persistent_parm);
 	if (err) {
@@ -1262,7 +912,6 @@ again:
 		goto abort;
 	}
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = xenbus_printf(xbt, dev->nodename, "sectors", "%llu",
 			    (unsigned long long)vbd_sz(&be->blkif->vbd));
 	if (err) {
@@ -1281,27 +930,19 @@ again:
 		goto abort;
 	}
 	err = xenbus_printf(xbt, dev->nodename, "sector-size", "%lu",
-<<<<<<< HEAD
-			    (unsigned long)
-			    bdev_logical_block_size(be->blkif->vbd.bdev));
-=======
 			    (unsigned long)bdev_logical_block_size(
 					file_bdev(be->blkif->vbd.bdev_file)));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		xenbus_dev_fatal(dev, err, "writing %s/sector-size",
 				 dev->nodename);
 		goto abort;
 	}
-<<<<<<< HEAD
-=======
 	err = xenbus_printf(xbt, dev->nodename, "physical-sector-size", "%u",
 			    bdev_physical_block_size(
 					file_bdev(be->blkif->vbd.bdev_file)));
 	if (err)
 		xenbus_dev_error(dev, err, "writing %s/physical-sector-size",
 				 dev->nodename);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = xenbus_transaction_end(xbt, 0);
 	if (err == -EAGAIN)
@@ -1319,8 +960,6 @@ again:
 	xenbus_transaction_end(xbt, 1);
 }
 
-<<<<<<< HEAD
-=======
 /*
  * Each ring may have multi pages, depends on "ring-page-order".
  */
@@ -1414,62 +1053,10 @@ fail:
 	}
 	return err;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int connect_ring(struct backend_info *be)
 {
 	struct xenbus_device *dev = be->dev;
-<<<<<<< HEAD
-	unsigned long ring_ref;
-	unsigned int evtchn;
-	char protocol[64] = "";
-	int err;
-
-	DPRINTK("%s", dev->otherend);
-
-	err = xenbus_gather(XBT_NIL, dev->otherend, "ring-ref", "%lu",
-			    &ring_ref, "event-channel", "%u", &evtchn, NULL);
-	if (err) {
-		xenbus_dev_fatal(dev, err,
-				 "reading %s/ring-ref and event-channel",
-				 dev->otherend);
-		return err;
-	}
-
-	be->blkif->blk_protocol = BLKIF_PROTOCOL_NATIVE;
-	err = xenbus_gather(XBT_NIL, dev->otherend, "protocol",
-			    "%63s", protocol, NULL);
-	if (err)
-		strcpy(protocol, "unspecified, assuming native");
-	else if (0 == strcmp(protocol, XEN_IO_PROTO_ABI_NATIVE))
-		be->blkif->blk_protocol = BLKIF_PROTOCOL_NATIVE;
-	else if (0 == strcmp(protocol, XEN_IO_PROTO_ABI_X86_32))
-		be->blkif->blk_protocol = BLKIF_PROTOCOL_X86_32;
-	else if (0 == strcmp(protocol, XEN_IO_PROTO_ABI_X86_64))
-		be->blkif->blk_protocol = BLKIF_PROTOCOL_X86_64;
-	else {
-		xenbus_dev_fatal(dev, err, "unknown fe protocol %s", protocol);
-		return -1;
-	}
-	pr_info(DRV_PFX "ring-ref %ld, event-channel %d, protocol %d (%s)\n",
-		ring_ref, evtchn, be->blkif->blk_protocol, protocol);
-
-	/* Map the shared frame, irq etc. */
-	err = xen_blkif_map(be->blkif, ring_ref, evtchn);
-	if (err) {
-		xenbus_dev_fatal(dev, err, "mapping ring-ref %lu port %u",
-				 ring_ref, evtchn);
-		return err;
-	}
-
-	return 0;
-}
-
-
-/* ** Driver Registration ** */
-
-
-=======
 	struct xen_blkif *blkif = be->blkif;
 	char protocol[64] = "";
 	int err, i;
@@ -1567,21 +1154,11 @@ static int connect_ring(struct backend_info *be)
 	return 0;
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct xenbus_device_id xen_blkbk_ids[] = {
 	{ "vbd" },
 	{ "" }
 };
 
-<<<<<<< HEAD
-
-static DEFINE_XENBUS_DRIVER(xen_blkbk, ,
-	.probe = xen_blkbk_probe,
-	.remove = xen_blkbk_remove,
-	.otherend_changed = frontend_changed
-);
-
-=======
 static struct xenbus_driver xen_blkbk_driver = {
 	.ids  = xen_blkbk_ids,
 	.probe = xen_blkbk_probe,
@@ -1590,17 +1167,13 @@ static struct xenbus_driver xen_blkbk_driver = {
 	.allow_rebind = true,
 	.reclaim_memory = reclaim_memory,
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int xen_blkif_xenbus_init(void)
 {
 	return xenbus_register_backend(&xen_blkbk_driver);
 }
-<<<<<<< HEAD
-=======
 
 void xen_blkif_xenbus_fini(void)
 {
 	xenbus_unregister_driver(&xen_blkbk_driver);
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

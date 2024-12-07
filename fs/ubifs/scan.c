@@ -1,28 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-only
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation
  *
-<<<<<<< HEAD
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 51
- * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Adrian Hunter
  *          Artem Bityutskiy (Битюцкий Артём)
  */
@@ -82,11 +63,7 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
 	magic = le32_to_cpu(ch->magic);
 
 	if (magic == 0xFFFFFFFF) {
-<<<<<<< HEAD
-		dbg_scan("hit empty space");
-=======
 		dbg_scan("hit empty space at LEB %d:%d", lnum, offs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCANNED_EMPTY_SPACE;
 	}
 
@@ -96,16 +73,10 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
 	if (len < UBIFS_CH_SZ)
 		return SCANNED_GARBAGE;
 
-<<<<<<< HEAD
-	dbg_scan("scanning %s", dbg_ntype(ch->node_type));
-
-	if (ubifs_check_node(c, buf, lnum, offs, quiet, 1))
-=======
 	dbg_scan("scanning %s at LEB %d:%d",
 		 dbg_ntype(ch->node_type), lnum, offs);
 
 	if (ubifs_check_node(c, buf, len, lnum, offs, quiet, 1))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCANNED_A_CORRUPT_NODE;
 
 	if (ch->node_type == UBIFS_PAD_NODE) {
@@ -117,15 +88,9 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
 		if (pad_len < 0 ||
 		    offs + node_len + pad_len > c->leb_size) {
 			if (!quiet) {
-<<<<<<< HEAD
-				ubifs_err("bad pad node at LEB %d:%d",
-					  lnum, offs);
-				dbg_dump_node(c, pad);
-=======
 				ubifs_err(c, "bad pad node at LEB %d:%d",
 					  lnum, offs);
 				ubifs_dump_node(c, pad, len);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			return SCANNED_A_BAD_PAD_NODE;
 		}
@@ -133,15 +98,6 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
 		/* Make the node pads to 8-byte boundary */
 		if ((node_len + pad_len) & 7) {
 			if (!quiet)
-<<<<<<< HEAD
-				dbg_err("bad padding length %d - %d",
-					offs, offs + node_len + pad_len);
-			return SCANNED_A_BAD_PAD_NODE;
-		}
-
-		dbg_scan("%d bytes padded, offset now %d",
-			 pad_len, ALIGN(offs + node_len + pad_len, 8));
-=======
 				ubifs_err(c, "bad padding length %d - %d",
 					  offs, offs + node_len + pad_len);
 			return SCANNED_A_BAD_PAD_NODE;
@@ -149,7 +105,6 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
 
 		dbg_scan("%d bytes padded at LEB %d:%d, offset now %d", pad_len,
 			 lnum, offs, ALIGN(offs + node_len + pad_len, 8));
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return node_len + pad_len;
 	}
@@ -164,12 +119,8 @@ int ubifs_scan_a_node(const struct ubifs_info *c, void *buf, int len, int lnum,
  * @offs: offset to start at (usually zero)
  * @sbuf: scan buffer (must be c->leb_size)
  *
-<<<<<<< HEAD
- * This function returns %0 on success and a negative error code on failure.
-=======
  * This function returns the scanned information on success and a negative error
  * code on failure.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubifs_scan_leb *ubifs_start_scan(const struct ubifs_info *c, int lnum,
 					int offs, void *sbuf)
@@ -189,27 +140,16 @@ struct ubifs_scan_leb *ubifs_start_scan(const struct ubifs_info *c, int lnum,
 
 	err = ubifs_leb_read(c, lnum, sbuf + offs, offs, c->leb_size - offs, 0);
 	if (err && err != -EBADMSG) {
-<<<<<<< HEAD
-		ubifs_err("cannot read %d bytes from LEB %d:%d,"
-			  " error %d", c->leb_size - offs, lnum, offs, err);
-=======
 		ubifs_err(c, "cannot read %d bytes from LEB %d:%d, error %d",
 			  c->leb_size - offs, lnum, offs, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(sleb);
 		return ERR_PTR(err);
 	}
 
-<<<<<<< HEAD
-	if (err == -EBADMSG)
-		sleb->ecc = 1;
-
-=======
 	/*
 	 * Note, we ignore integrity errors (EBASMSG) because all the nodes are
 	 * protected by CRC checksums.
 	 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sleb;
 }
 
@@ -219,23 +159,12 @@ struct ubifs_scan_leb *ubifs_start_scan(const struct ubifs_info *c, int lnum,
  * @sleb: scanning information
  * @lnum: logical eraseblock number
  * @offs: offset to start at (usually zero)
-<<<<<<< HEAD
- *
- * This function returns %0 on success and a negative error code on failure.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void ubifs_end_scan(const struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 		    int lnum, int offs)
 {
-<<<<<<< HEAD
-	lnum = lnum;
-	dbg_scan("stop scanning LEB %d at offset %d", lnum, offs);
-	ubifs_assert(offs % c->min_io_size == 0);
-=======
 	dbg_scan("stop scanning LEB %d at offset %d", lnum, offs);
 	ubifs_assert(c, offs % c->min_io_size == 0);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sleb->endpt = ALIGN(offs, c->min_io_size);
 }
@@ -298,21 +227,11 @@ void ubifs_scanned_corruption(const struct ubifs_info *c, int lnum, int offs,
 {
 	int len;
 
-<<<<<<< HEAD
-	ubifs_err("corruption at LEB %d:%d", lnum, offs);
-	if (dbg_is_tst_rcvry(c))
-		return;
-	len = c->leb_size - offs;
-	if (len > 8192)
-		len = 8192;
-	dbg_err("first %d bytes from LEB %d:%d", len, lnum, offs);
-=======
 	ubifs_err(c, "corruption at LEB %d:%d", lnum, offs);
 	len = c->leb_size - offs;
 	if (len > 8192)
 		len = 8192;
 	ubifs_err(c, "first %d bytes from LEB %d:%d", len, lnum, offs);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	print_hex_dump(KERN_DEBUG, "", DUMP_PREFIX_OFFSET, 32, 4, buf, len, 1);
 }
 
@@ -325,11 +244,7 @@ void ubifs_scanned_corruption(const struct ubifs_info *c, int lnum, int offs,
  * @quiet: print no messages
  *
  * This function scans LEB number @lnum and returns complete information about
-<<<<<<< HEAD
- * its contents. Returns the scaned information in case of success and,
-=======
  * its contents. Returns the scanned information in case of success and,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * %-EUCLEAN if the LEB neads recovery, and other negative error codes in case
  * of failure.
  *
@@ -371,27 +286,16 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 
 		switch (ret) {
 		case SCANNED_GARBAGE:
-<<<<<<< HEAD
-			dbg_err("garbage");
-=======
 			ubifs_err(c, "garbage");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto corrupted;
 		case SCANNED_A_NODE:
 			break;
 		case SCANNED_A_CORRUPT_NODE:
 		case SCANNED_A_BAD_PAD_NODE:
-<<<<<<< HEAD
-			dbg_err("bad node");
-			goto corrupted;
-		default:
-			dbg_err("unknown");
-=======
 			ubifs_err(c, "bad node");
 			goto corrupted;
 		default:
 			ubifs_err(c, "unknown");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			goto error;
 		}
@@ -408,11 +312,7 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 
 	if (offs % c->min_io_size) {
 		if (!quiet)
-<<<<<<< HEAD
-			ubifs_err("empty space starts at non-aligned offset %d",
-=======
 			ubifs_err(c, "empty space starts at non-aligned offset %d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  offs);
 		goto corrupted;
 	}
@@ -425,11 +325,7 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 	for (; len; offs++, buf++, len--)
 		if (*(uint8_t *)buf != 0xff) {
 			if (!quiet)
-<<<<<<< HEAD
-				ubifs_err("corrupt empty space at LEB %d:%d",
-=======
 				ubifs_err(c, "corrupt empty space at LEB %d:%d",
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  lnum, offs);
 			goto corrupted;
 		}
@@ -439,22 +335,14 @@ struct ubifs_scan_leb *ubifs_scan(const struct ubifs_info *c, int lnum,
 corrupted:
 	if (!quiet) {
 		ubifs_scanned_corruption(c, lnum, offs, buf);
-<<<<<<< HEAD
-		ubifs_err("LEB %d scanning failed", lnum);
-=======
 		ubifs_err(c, "LEB %d scanning failed", lnum);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	err = -EUCLEAN;
 	ubifs_scan_destroy(sleb);
 	return ERR_PTR(err);
 
 error:
-<<<<<<< HEAD
-	ubifs_err("LEB %d scanning failed, error %d", lnum, err);
-=======
 	ubifs_err(c, "LEB %d scanning failed, error %d", lnum, err);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubifs_scan_destroy(sleb);
 	return ERR_PTR(err);
 }

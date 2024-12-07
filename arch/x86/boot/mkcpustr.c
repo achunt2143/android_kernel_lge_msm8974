@@ -1,18 +1,8 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----------------------------------------------------------------------- *
  *
  *   Copyright 2008 rPath, Inc. - All Rights Reserved
  *
-<<<<<<< HEAD
- *   This file is part of the Linux kernel, and is made available under
- *   the terms of the GNU General Public License version 2 or (at your
- *   option) any later version; incorporated herein by reference.
- *
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -22,13 +12,10 @@
 
 #include <stdio.h>
 
-<<<<<<< HEAD
-=======
 #include "../include/asm/required-features.h"
 #include "../include/asm/disabled-features.h"
 #include "../include/asm/cpufeatures.h"
 #include "../include/asm/vmxfeatures.h"
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../kernel/cpu/capflags.c"
 
 int main(void)

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * __put_user functions.
  *
@@ -14,21 +11,12 @@
  * return an error value in addition to the "real"
  * return value.
  */
-<<<<<<< HEAD
-#include <linux/linkage.h>
-#include <asm/dwarf2.h>
-#include <asm/thread_info.h>
-#include <asm/errno.h>
-#include <asm/asm.h>
-
-=======
 #include <linux/export.h>
 #include <linux/linkage.h>
 #include <asm/thread_info.h>
 #include <asm/errno.h>
 #include <asm/asm.h>
 #include <asm/smap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * __put_user_X
@@ -36,86 +24,14 @@
  * Inputs:	%eax[:%edx] contains the data
  *		%ecx contains the address
  *
-<<<<<<< HEAD
- * Outputs:	%eax is error code (0 or -EFAULT)
-=======
  * Outputs:	%ecx is error code (0 or -EFAULT)
  *
  * Clobbers:	%ebx needed for task pointer
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * These functions should not modify any other registers,
  * as they get called from within inline assembly.
  */
 
-<<<<<<< HEAD
-#define ENTER	CFI_STARTPROC ; \
-		GET_THREAD_INFO(%_ASM_BX)
-#define EXIT	ret ; \
-		CFI_ENDPROC
-
-.text
-ENTRY(__put_user_1)
-	ENTER
-	cmp TI_addr_limit(%_ASM_BX),%_ASM_CX
-	jae bad_put_user
-1:	movb %al,(%_ASM_CX)
-	xor %eax,%eax
-	EXIT
-ENDPROC(__put_user_1)
-
-ENTRY(__put_user_2)
-	ENTER
-	mov TI_addr_limit(%_ASM_BX),%_ASM_BX
-	sub $1,%_ASM_BX
-	cmp %_ASM_BX,%_ASM_CX
-	jae bad_put_user
-2:	movw %ax,(%_ASM_CX)
-	xor %eax,%eax
-	EXIT
-ENDPROC(__put_user_2)
-
-ENTRY(__put_user_4)
-	ENTER
-	mov TI_addr_limit(%_ASM_BX),%_ASM_BX
-	sub $3,%_ASM_BX
-	cmp %_ASM_BX,%_ASM_CX
-	jae bad_put_user
-3:	movl %eax,(%_ASM_CX)
-	xor %eax,%eax
-	EXIT
-ENDPROC(__put_user_4)
-
-ENTRY(__put_user_8)
-	ENTER
-	mov TI_addr_limit(%_ASM_BX),%_ASM_BX
-	sub $7,%_ASM_BX
-	cmp %_ASM_BX,%_ASM_CX
-	jae bad_put_user
-4:	mov %_ASM_AX,(%_ASM_CX)
-#ifdef CONFIG_X86_32
-5:	movl %edx,4(%_ASM_CX)
-#endif
-	xor %eax,%eax
-	EXIT
-ENDPROC(__put_user_8)
-
-bad_put_user:
-	CFI_STARTPROC
-	movl $-EFAULT,%eax
-	EXIT
-END(bad_put_user)
-
-.section __ex_table,"a"
-	_ASM_PTR 1b,bad_put_user
-	_ASM_PTR 2b,bad_put_user
-	_ASM_PTR 3b,bad_put_user
-	_ASM_PTR 4b,bad_put_user
-#ifdef CONFIG_X86_32
-	_ASM_PTR 5b,bad_put_user
-#endif
-.previous
-=======
 .macro check_range size:req
 .if IS_ENABLED(CONFIG_X86_64)
 	mov %rcx, %rbx
@@ -229,4 +145,3 @@ SYM_CODE_END(__put_user_handle_exception)
 	_ASM_EXTABLE_UA(8b, __put_user_handle_exception)
 	_ASM_EXTABLE_UA(10b, __put_user_handle_exception)
 #endif
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

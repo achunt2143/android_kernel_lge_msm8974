@@ -1,99 +1,36 @@
-<<<<<<< HEAD
-=======
 /* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: actypes.h - Common data types for the entire ACPI subsystem
  *
-<<<<<<< HEAD
- *****************************************************************************/
-
-/*
- * Copyright (C) 2000 - 2011, Intel Corp.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions, and the following disclaimer,
- *    without modification.
- * 2. Redistributions in binary form must reproduce at minimum a disclaimer
- *    substantially similar to the "NO WARRANTY" disclaimer below
- *    ("Disclaimer") and any redistribution must be conditioned upon
- *    including a substantially similar Disclaimer requirement for further
- *    binary redistribution.
- * 3. Neither the names of the above-listed copyright holders nor the names
- *    of any contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * NO WARRANTY
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDERS OR CONTRIBUTORS BE LIABLE FOR SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGES.
- */
-
-=======
  * Copyright (C) 2000 - 2023, Intel Corp.
  *
  *****************************************************************************/
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ACTYPES_H__
 #define __ACTYPES_H__
 
 /* acpisrc:struct_defs -- for acpisrc conversion */
 
 /*
-<<<<<<< HEAD
- * ACPI_MACHINE_WIDTH must be specified in an OS- or compiler-dependent header
- * and must be either 32 or 64. 16-bit ACPICA is no longer supported, as of
- * 12/2006.
-=======
  * ACPI_MACHINE_WIDTH must be specified in an OS- or compiler-dependent
  * header and must be either 32 or 64. 16-bit ACPICA is no longer
  * supported, as of 12/2006.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef ACPI_MACHINE_WIDTH
 #error ACPI_MACHINE_WIDTH not defined
 #endif
 
-<<<<<<< HEAD
-/*! [Begin] no source code translation */
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Data type ranges
  * Note: These macros are designed to be compiler independent as well as
  * working around problems that some 32-bit compilers have with 64-bit
  * constants.
  */
-<<<<<<< HEAD
-#define ACPI_UINT8_MAX                  (UINT8) (~((UINT8)  0))	/* 0xFF               */
-#define ACPI_UINT16_MAX                 (UINT16)(~((UINT16) 0))	/* 0xFFFF             */
-#define ACPI_UINT32_MAX                 (UINT32)(~((UINT32) 0))	/* 0xFFFFFFFF         */
-#define ACPI_UINT64_MAX                 (UINT64)(~((UINT64) 0))	/* 0xFFFFFFFFFFFFFFFF */
-=======
 #define ACPI_UINT8_MAX                  (u8) (~((u8)  0))	/* 0xFF               */
 #define ACPI_UINT16_MAX                 (u16)(~((u16) 0))	/* 0xFFFF             */
 #define ACPI_UINT32_MAX                 (u32)(~((u32) 0))	/* 0xFFFFFFFF         */
 #define ACPI_UINT64_MAX                 (u64)(~((u64) 0))	/* 0xFFFFFFFFFFFFFFFF */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_ASCII_MAX                  0x7F
 
 /*
@@ -104,23 +41,6 @@
  *
  * 1) The following types are of fixed size for all targets (16/32/64):
  *
-<<<<<<< HEAD
- * BOOLEAN      Logical boolean
- *
- * UINT8        8-bit  (1 byte) unsigned value
- * UINT16       16-bit (2 byte) unsigned value
- * UINT32       32-bit (4 byte) unsigned value
- * UINT64       64-bit (8 byte) unsigned value
- *
- * INT16        16-bit (2 byte) signed value
- * INT32        32-bit (4 byte) signed value
- * INT64        64-bit (8 byte) signed value
- *
- * COMPILER_DEPENDENT_UINT64/INT64 - These types are defined in the
- * compiler-dependent header(s) and were introduced because there is no common
- * 64-bit integer type across the various compilation models, as shown in
- * the table below.
-=======
  * u8           Logical boolean
  *
  * u8           8-bit  (1 byte) unsigned value
@@ -136,7 +56,6 @@
  * compiler-dependent header(s) and were introduced because there is no
  * common 64-bit integer type across the various compilation models, as
  * shown in the table below.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Datatype  LP64 ILP64 LLP64 ILP32 LP32 16bit
  * char      8    8     8     8     8    8
@@ -153,15 +72,6 @@
  * 2) These types represent the native word size of the target mode of the
  * processor, and may be 16-bit, 32-bit, or 64-bit as required. They are
  * usually used for memory allocation, efficient loop counters, and array
-<<<<<<< HEAD
- * indexes. The types are similar to the size_t type in the C library and are
- * required because there is no C type that consistently represents the native
- * data width. ACPI_SIZE is needed because there is no guarantee that a
- * kernel-level C library is present.
- *
- * ACPI_SIZE        16/32/64-bit unsigned value
- * ACPI_NATIVE_INT  16/32/64-bit signed value
-=======
  * indexes. The types are similar to the size_t type in the C library and
  * are required because there is no C type that consistently represents the
  * native data width. acpi_size is needed because there is no guarantee
@@ -169,7 +79,6 @@
  *
  * acpi_size        16/32/64-bit unsigned value
  * acpi_native_int  16/32/64-bit signed value
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*******************************************************************************
@@ -178,15 +87,6 @@
  *
  ******************************************************************************/
 
-<<<<<<< HEAD
-typedef unsigned char BOOLEAN;
-typedef unsigned char UINT8;
-typedef unsigned short UINT16;
-typedef COMPILER_DEPENDENT_UINT64 UINT64;
-typedef COMPILER_DEPENDENT_INT64 INT64;
-
-/*! [End] no source code translation !*/
-=======
 #ifndef ACPI_USE_SYSTEM_INTTYPES
 
 typedef unsigned char u8;
@@ -196,7 +96,6 @@ typedef COMPILER_DEPENDENT_UINT64 u64;
 typedef COMPILER_DEPENDENT_INT64 s64;
 
 #endif				/* ACPI_USE_SYSTEM_INTTYPES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Value returned by acpi_os_get_thread_id. There is no standard "thread_id"
@@ -216,21 +115,12 @@ typedef COMPILER_DEPENDENT_INT64 s64;
 
 #if ACPI_MACHINE_WIDTH == 64
 
-<<<<<<< HEAD
-/*! [Begin] no source code translation (keep the typedefs as-is) */
-
-typedef unsigned int UINT32;
-typedef int INT32;
-
-/*! [End] no source code translation !*/
-=======
 #ifndef ACPI_USE_SYSTEM_INTTYPES
 
 typedef unsigned int u32;
 typedef int s32;
 
 #endif				/* ACPI_USE_SYSTEM_INTTYPES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef s64 acpi_native_int;
 
@@ -242,16 +132,6 @@ typedef u64 acpi_physical_address;
 #define ACPI_SIZE_MAX                   ACPI_UINT64_MAX
 
 #define ACPI_USE_NATIVE_DIVIDE	/* Has native 64-bit integer support */
-<<<<<<< HEAD
-
-/*
- * In the case of the Itanium Processor Family (IPF), the hardware does not
- * support misaligned memory transfers. Set the MISALIGNMENT_NOT_SUPPORTED flag
- * to indicate that special precautions must be taken to avoid alignment faults.
- * (IA64 or ia64 is currently used by existing compilers to indicate IPF.)
- *
- * Note: Em64_t and other X86-64 processors support misaligned transfers,
-=======
 #define ACPI_USE_NATIVE_MATH64	/* Has native 64-bit integer support */
 
 /*
@@ -262,7 +142,6 @@ typedef u64 acpi_physical_address;
  * IPF.)
  *
  * Note: EM64T and other X86-64 processors support misaligned transfers,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * so there is no need to define this flag.
  */
 #if defined (__IA64__) || defined (__ia64__)
@@ -277,21 +156,12 @@ typedef u64 acpi_physical_address;
 
 #elif ACPI_MACHINE_WIDTH == 32
 
-<<<<<<< HEAD
-/*! [Begin] no source code translation (keep the typedefs as-is) */
-
-typedef unsigned int UINT32;
-typedef int INT32;
-
-/*! [End] no source code translation !*/
-=======
 #ifndef ACPI_USE_SYSTEM_INTTYPES
 
 typedef unsigned int u32;
 typedef int s32;
 
 #endif				/* ACPI_USE_SYSTEM_INTTYPES */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef s32 acpi_native_int;
 
@@ -375,13 +245,10 @@ typedef u64 acpi_physical_address;
 #define acpi_spinlock                   void *
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef acpi_raw_spinlock
 #define acpi_raw_spinlock		acpi_spinlock
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef acpi_semaphore
 #define acpi_semaphore                  void *
 #endif
@@ -414,13 +281,8 @@ typedef u64 acpi_physical_address;
 #endif
 
 /*
-<<<<<<< HEAD
- * Some compilers complain about unused variables. Sometimes we don't want to
- * use all the variables (for example, _acpi_module_name). This allows us
-=======
  * Some compilers complain about unused variables. Sometimes we don't want
  * to use all the variables (for example, _acpi_module_name). This allows us
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to tell the compiler in a per-variable manner that a variable
  * is unused
  */
@@ -429,11 +291,6 @@ typedef u64 acpi_physical_address;
 #endif
 
 /*
-<<<<<<< HEAD
- * All ACPICA functions that are available to the rest of the kernel are
- * tagged with this macro which can be defined as appropriate for the host.
- */
-=======
  * All ACPICA external functions that are available to the rest of the
  * kernel are tagged with these macros which can be defined as appropriate
  * for the host.
@@ -447,16 +304,10 @@ typedef u64 acpi_physical_address;
 #define ACPI_EXPORT_SYMBOL_INIT(symbol)
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ACPI_EXPORT_SYMBOL
 #define ACPI_EXPORT_SYMBOL(symbol)
 #endif
 
-<<<<<<< HEAD
-/******************************************************************************
- *
- * ACPI Specification constants (Do not change unless the specification changes)
-=======
 /*
  * Compiler/Clibrary-dependent debug initialization. Used for ACPICA
  * utilities only.
@@ -507,7 +358,6 @@ typedef u64 acpi_physical_address;
  *
  * ACPI Specification constants (Do not change unless the specification
  * changes)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *****************************************************************************/
 
@@ -521,18 +371,11 @@ typedef u64 acpi_physical_address;
 #define ACPI_PM1_REGISTER_WIDTH         16
 #define ACPI_PM2_REGISTER_WIDTH         8
 #define ACPI_PM_TIMER_WIDTH             32
-<<<<<<< HEAD
-
-/* Names within the namespace are 4 bytes long */
-
-#define ACPI_NAME_SIZE                  4
-=======
 #define ACPI_RESET_REGISTER_WIDTH       8
 
 /* Names within the namespace are 4 bytes long */
 
 #define ACPI_NAMESEG_SIZE               4	/* Fixed by ACPI spec */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_PATH_SEGMENT_LENGTH        5	/* 4 chars for name + 1 char for separator */
 #define ACPI_PATH_SEPARATOR             '.'
 
@@ -548,11 +391,7 @@ typedef u64 acpi_physical_address;
 
 /* PM Timer ticks per second (HZ) */
 
-<<<<<<< HEAD
-#define PM_TIMER_FREQUENCY              3579545
-=======
 #define ACPI_PM_TIMER_FREQUENCY         3579545
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
@@ -584,20 +423,6 @@ typedef u32 acpi_name;		/* 4-byte ACPI name */
 typedef char *acpi_string;	/* Null terminated ASCII string */
 typedef void *acpi_handle;	/* Actually a ptr to a NS Node */
 
-<<<<<<< HEAD
-/* Owner IDs are used to track namespace nodes for selective deletion */
-
-typedef u8 acpi_owner_id;
-#define ACPI_OWNER_ID_MAX               0xFF
-
-#define ACPI_INTEGER_BIT_SIZE           64
-#define ACPI_MAX_DECIMAL_DIGITS         20	/* 2^64 = 18,446,744,073,709,551,616 */
-
-#if ACPI_MACHINE_WIDTH == 64
-#define ACPI_USE_NATIVE_DIVIDE	/* Use compiler native 64-bit divide */
-#endif
-
-=======
 /* Time constants for timer calculations */
 
 #define ACPI_MSEC_PER_SEC               1000L
@@ -622,42 +447,23 @@ typedef u16 acpi_owner_id;
 
 #define ACPI_INTEGER_BIT_SIZE           64
 #define ACPI_MAX_DECIMAL_DIGITS         20	/* 2^64 = 18,446,744,073,709,551,616 */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_MAX64_DECIMAL_DIGITS       20
 #define ACPI_MAX32_DECIMAL_DIGITS       10
 #define ACPI_MAX16_DECIMAL_DIGITS        5
 #define ACPI_MAX8_DECIMAL_DIGITS         3
 
-<<<<<<< HEAD
-/* PM Timer ticks per second (HZ) */
-
-#define PM_TIMER_FREQUENCY  3579545
-
-/*
- * Constants with special meanings
- */
-#define ACPI_ROOT_OBJECT                ACPI_ADD_PTR (acpi_handle, NULL, ACPI_MAX_PTR)
-=======
 /*
  * Constants with special meanings
  */
 #define ACPI_ROOT_OBJECT                ((acpi_handle) ACPI_TO_POINTER (ACPI_MAX_PTR))
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_WAIT_FOREVER               0xFFFF	/* u16, as per ACPI spec */
 #define ACPI_DO_NOT_WAIT                0
 
 /*
-<<<<<<< HEAD
- * Obsolete: Acpi integer width. In ACPI version 1 (1996), integers are 32 bits.
- * In ACPI version 2 (2000) and later, integers are 64 bits. Note that this
- * pertains to the ACPI integer type only, not to other integers used in the
- * implementation of the ACPICA subsystem.
-=======
  * Obsolete: Acpi integer width. In ACPI version 1 (1996), integers are
  * 32 bits. In ACPI version 2 (2000) and later, integers are max 64 bits.
  * Note that this pertains to the ACPI integer type only, not to other
  * integers used in the implementation of the ACPICA subsystem.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 01/2010: This type is obsolete and has been removed from the entire ACPICA
  * code base. It remains here for compatibility with device drivers that use
@@ -695,24 +501,6 @@ typedef u64 acpi_integer;
 #define ACPI_CAST_PTR(t, p)             ((t *) (acpi_uintptr_t) (p))
 #define ACPI_CAST_INDIRECT_PTR(t, p)    ((t **) (acpi_uintptr_t) (p))
 #define ACPI_ADD_PTR(t, a, b)           ACPI_CAST_PTR (t, (ACPI_CAST_PTR (u8, (a)) + (acpi_size)(b)))
-<<<<<<< HEAD
-#define ACPI_PTR_DIFF(a, b)             (acpi_size) (ACPI_CAST_PTR (u8, (a)) - ACPI_CAST_PTR (u8, (b)))
-
-/* Pointer/Integer type conversions */
-
-#define ACPI_TO_POINTER(i)              ACPI_ADD_PTR (void, (void *) NULL,(acpi_size) i)
-#define ACPI_TO_INTEGER(p)              ACPI_PTR_DIFF (p, (void *) NULL)
-#define ACPI_OFFSET(d, f)               (acpi_size) ACPI_PTR_DIFF (&(((d *)0)->f), (void *) NULL)
-#define ACPI_PHYSADDR_TO_PTR(i)         ACPI_TO_POINTER(i)
-#define ACPI_PTR_TO_PHYSADDR(i)         ACPI_TO_INTEGER(i)
-
-#ifndef ACPI_MISALIGNMENT_NOT_SUPPORTED
-#define ACPI_COMPARE_NAME(a,b)          (*ACPI_CAST_PTR (u32, (a)) == *ACPI_CAST_PTR (u32, (b)))
-#else
-#define ACPI_COMPARE_NAME(a,b)          (!ACPI_STRNCMP (ACPI_CAST_PTR (char, (a)), ACPI_CAST_PTR (char, (b)), ACPI_NAME_SIZE))
-#endif
-
-=======
 #define ACPI_SUB_PTR(t, a, b)           ACPI_CAST_PTR (t, (ACPI_CAST_PTR (u8, (a)) - (acpi_size)(b)))
 #define ACPI_PTR_DIFF(a, b)             ((acpi_size) (ACPI_CAST_PTR (u8, (a)) - ACPI_CAST_PTR (u8, (b))))
 
@@ -760,7 +548,6 @@ typedef u64 acpi_integer;
 #define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
 #define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Miscellaneous constants
@@ -768,18 +555,6 @@ typedef u64 acpi_integer;
  ******************************************************************************/
 
 /*
-<<<<<<< HEAD
- * Initialization sequence
- */
-#define ACPI_FULL_INITIALIZATION        0x00
-#define ACPI_NO_ADDRESS_SPACE_INIT      0x01
-#define ACPI_NO_EVENT_INIT              0x04
-#define ACPI_NO_HANDLER_INIT            0x08
-#define ACPI_NO_ACPI_ENABLE             0x10
-#define ACPI_NO_DEVICE_INIT             0x20
-#define ACPI_NO_OBJECT_INIT             0x40
-#define ACPI_NO_FACS_INIT               0x80
-=======
  * Initialization sequence options
  */
 #define ACPI_FULL_INITIALIZATION        0x0000
@@ -791,7 +566,6 @@ typedef u64 acpi_integer;
 #define ACPI_NO_OBJECT_INIT             0x0020
 #define ACPI_NO_DEVICE_INIT             0x0040
 #define ACPI_NO_ADDRESS_SPACE_INIT      0x0080
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialization state
@@ -836,16 +610,6 @@ typedef u64 acpi_integer;
 #define ACPI_SLEEP_TYPE_INVALID         0xFF
 
 /*
-<<<<<<< HEAD
- * Sleep/Wake flags
- */
-#define ACPI_NO_OPTIONAL_METHODS        0x00	/* Do not execute any optional methods */
-#define ACPI_EXECUTE_GTS                0x01	/* For enter sleep interface */
-#define ACPI_EXECUTE_BFS                0x02	/* For leave sleep prep interface */
-
-/*
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Standard notify values
  */
 #define ACPI_NOTIFY_BUS_CHECK           (u8) 0x00
@@ -861,17 +625,12 @@ typedef u64 acpi_integer;
 #define ACPI_NOTIFY_RESERVED            (u8) 0x0A
 #define ACPI_NOTIFY_LOCALITY_UPDATE     (u8) 0x0B
 #define ACPI_NOTIFY_SHUTDOWN_REQUEST    (u8) 0x0C
-<<<<<<< HEAD
-
-#define ACPI_NOTIFY_MAX                 0x0C
-=======
 #define ACPI_NOTIFY_AFFINITY_UPDATE     (u8) 0x0D
 #define ACPI_NOTIFY_MEMORY_UPDATE       (u8) 0x0E
 #define ACPI_NOTIFY_DISCONNECT_RECOVER  (u8) 0x0F
 
 #define ACPI_GENERIC_NOTIFY_MAX         0x0F
 #define ACPI_SPECIFIC_NOTIFY_MAX        0x84
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Types associated with ACPI names and objects. The first group of
@@ -903,15 +662,6 @@ typedef u32 acpi_object_type;
 #define ACPI_TYPE_DEBUG_OBJECT          0x10
 
 #define ACPI_TYPE_EXTERNAL_MAX          0x10
-<<<<<<< HEAD
-
-/*
- * These are object types that do not map directly to the ACPI
- * object_type() operator. They are used for various internal purposes only.
- * If new predefined ACPI_TYPEs are added (via the ACPI specification), these
- * internal types must move upwards. (There is code that depends on these
- * values being contiguous with the external types above.)
-=======
 #define ACPI_NUM_TYPES                  (ACPI_TYPE_EXTERNAL_MAX + 1)
 
 /*
@@ -921,7 +671,6 @@ typedef u32 acpi_object_type;
  * specification), these internal types must move upwards. (There
  * is code that depends on these values being contiguous with the
  * external types above.)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ACPI_TYPE_LOCAL_REGION_FIELD    0x11
 #define ACPI_TYPE_LOCAL_BANK_FIELD      0x12
@@ -936,18 +685,11 @@ typedef u32 acpi_object_type;
 #define ACPI_TYPE_LOCAL_SCOPE           0x1B	/* 1 Name, multiple object_list Nodes */
 
 #define ACPI_TYPE_NS_NODE_MAX           0x1B	/* Last typecode used within a NS Node */
-<<<<<<< HEAD
-
-/*
- * These are special object types that never appear in
- * a Namespace node, only in a union acpi_operand_object
-=======
 #define ACPI_TOTAL_TYPES                (ACPI_TYPE_NS_NODE_MAX + 1)
 
 /*
  * These are special object types that never appear in
  * a Namespace node, only in an object of union acpi_operand_object
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ACPI_TYPE_LOCAL_EXTRA           0x1C
 #define ACPI_TYPE_LOCAL_DATA            0x1D
@@ -985,25 +727,11 @@ typedef u32 acpi_event_type;
 #define ACPI_NUM_FIXED_EVENTS           ACPI_EVENT_MAX + 1
 
 /*
-<<<<<<< HEAD
- * Event Status - Per event
-=======
  * Event status - Per event
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * -------------
  * The encoding of acpi_event_status is illustrated below.
  * Note that a set bit (1) indicates the property is TRUE
  * (e.g. if bit 0 is set then the event is enabled).
-<<<<<<< HEAD
- * +-------------+-+-+-+
- * |   Bits 31:3 |2|1|0|
- * +-------------+-+-+-+
- *          |     | | |
- *          |     | | +- Enabled?
- *          |     | +--- Enabled for wake?
- *          |     +----- Set?
- *          +----------- <Reserved>
-=======
  * +-------------+-+-+-+-+-+-+
  * |   Bits 31:6 |5|4|3|2|1|0|
  * +-------------+-+-+-+-+-+-+
@@ -1015,26 +743,12 @@ typedef u32 acpi_event_type;
  *          |     | +--------- Has a handler?
  *          |     +----------- Masked?
  *          +----------------- <Reserved>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 typedef u32 acpi_event_status;
 
 #define ACPI_EVENT_FLAG_DISABLED        (acpi_event_status) 0x00
 #define ACPI_EVENT_FLAG_ENABLED         (acpi_event_status) 0x01
 #define ACPI_EVENT_FLAG_WAKE_ENABLED    (acpi_event_status) 0x02
-<<<<<<< HEAD
-#define ACPI_EVENT_FLAG_SET             (acpi_event_status) 0x04
-#define ACPI_EVENT_FLAG_HANDLE		(acpi_event_status) 0x08
-
-/*
- * General Purpose Events (GPE)
- */
-#define ACPI_GPE_INVALID                0xFF
-#define ACPI_GPE_MAX                    0xFF
-#define ACPI_NUM_GPE                    256
-
-/* Actions for acpi_set_gpe_wake_mask, acpi_hw_low_set_gpe */
-=======
 #define ACPI_EVENT_FLAG_STATUS_SET      (acpi_event_status) 0x04
 #define ACPI_EVENT_FLAG_ENABLE_SET      (acpi_event_status) 0x08
 #define ACPI_EVENT_FLAG_HAS_HANDLER     (acpi_event_status) 0x10
@@ -1042,7 +756,6 @@ typedef u32 acpi_event_status;
 #define ACPI_EVENT_FLAG_SET             ACPI_EVENT_FLAG_STATUS_SET
 
 /* Actions for acpi_set_gpe, acpi_gpe_wakeup, acpi_hw_low_set_gpe */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_GPE_ENABLE                 0
 #define ACPI_GPE_DISABLE                1
@@ -1050,16 +763,6 @@ typedef u32 acpi_event_status;
 
 /*
  * GPE info flags - Per GPE
-<<<<<<< HEAD
- * +-------+-+-+---+
- * |  7:4  |3|2|1:0|
- * +-------+-+-+---+
- *     |    | |  |
- *     |    | |  +-- Type of dispatch:to method, handler, notify, or none
- *     |    | +----- Interrupt type: edge or level triggered
- *     |    +------- Is a Wake GPE
- *     +------------ <Reserved>
-=======
  * +---+-+-+-+---+
  * |7:6|5|4|3|2:0|
  * +---+-+-+-+---+
@@ -1069,21 +772,11 @@ typedef u32 acpi_event_status;
  *   |  | +------- Is a Wake GPE
  *   |  +--------- Has been enabled automatically at init time
  *   +------------ <Reserved>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ACPI_GPE_DISPATCH_NONE          (u8) 0x00
 #define ACPI_GPE_DISPATCH_METHOD        (u8) 0x01
 #define ACPI_GPE_DISPATCH_HANDLER       (u8) 0x02
 #define ACPI_GPE_DISPATCH_NOTIFY        (u8) 0x03
-<<<<<<< HEAD
-#define ACPI_GPE_DISPATCH_MASK          (u8) 0x03
-
-#define ACPI_GPE_LEVEL_TRIGGERED        (u8) 0x04
-#define ACPI_GPE_EDGE_TRIGGERED         (u8) 0x00
-#define ACPI_GPE_XRUPT_TYPE_MASK        (u8) 0x04
-
-#define ACPI_GPE_CAN_WAKE               (u8) 0x08
-=======
 #define ACPI_GPE_DISPATCH_RAW_HANDLER   (u8) 0x04
 #define ACPI_GPE_DISPATCH_MASK          (u8) 0x07
 #define ACPI_GPE_DISPATCH_TYPE(flags)   ((u8) ((flags) & ACPI_GPE_DISPATCH_MASK))
@@ -1095,7 +788,6 @@ typedef u32 acpi_event_status;
 #define ACPI_GPE_CAN_WAKE               (u8) 0x10
 #define ACPI_GPE_AUTO_ENABLED           (u8) 0x20
 #define ACPI_GPE_INITIALIZED            (u8) 0x40
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Flags for GPE and Lock interfaces
@@ -1109,20 +801,14 @@ typedef u32 acpi_event_status;
 #define ACPI_DEVICE_NOTIFY              0x2
 #define ACPI_ALL_NOTIFY                 (ACPI_SYSTEM_NOTIFY | ACPI_DEVICE_NOTIFY)
 #define ACPI_MAX_NOTIFY_HANDLER_TYPE    0x3
-<<<<<<< HEAD
-=======
 #define ACPI_NUM_NOTIFY_TYPES           2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_MAX_SYS_NOTIFY             0x7F
 #define ACPI_MAX_DEVICE_SPECIFIC_NOTIFY 0xBF
 
-<<<<<<< HEAD
-=======
 #define ACPI_SYSTEM_HANDLER_LIST        0	/* Used as index, must be SYSTEM_NOTIFY -1 */
 #define ACPI_DEVICE_HANDLER_LIST        1	/* Used as index, must be DEVICE_NOTIFY -1 */
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Address Space (Operation Region) Types */
 
 typedef u8 acpi_adr_space_type;
@@ -1137,26 +823,17 @@ typedef u8 acpi_adr_space_type;
 #define ACPI_ADR_SPACE_IPMI             (acpi_adr_space_type) 7
 #define ACPI_ADR_SPACE_GPIO             (acpi_adr_space_type) 8
 #define ACPI_ADR_SPACE_GSBUS            (acpi_adr_space_type) 9
-<<<<<<< HEAD
-
-#define ACPI_NUM_PREDEFINED_REGIONS     10
-=======
 #define ACPI_ADR_SPACE_PLATFORM_COMM    (acpi_adr_space_type) 10
 #define ACPI_ADR_SPACE_PLATFORM_RT      (acpi_adr_space_type) 11
 
 #define ACPI_NUM_PREDEFINED_REGIONS     12
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Special Address Spaces
  *
  * Note: A Data Table region is a special type of operation region
  * that has its own AML opcode. However, internally, the AML
-<<<<<<< HEAD
- * interpreter simply creates an operation region with an an address
-=======
  * interpreter simply creates an operation region with an address
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * space type of ACPI_ADR_SPACE_DATA_TABLE.
  */
 #define ACPI_ADR_SPACE_DATA_TABLE       (acpi_adr_space_type) 0x7E	/* Internal to ACPICA only */
@@ -1220,30 +897,13 @@ typedef u8 acpi_adr_space_type;
 #define ACPI_ENABLE_EVENT                       1
 #define ACPI_DISABLE_EVENT                      0
 
-<<<<<<< HEAD
-/* Sleep function dispatch */
-
-typedef acpi_status(*ACPI_SLEEP_FUNCTION) (u8 sleep_state, u8 flags);
-
-struct acpi_sleep_functions {
-	ACPI_SLEEP_FUNCTION legacy_function;
-	ACPI_SLEEP_FUNCTION extended_function;
-};
-
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * External ACPI object definition
  */
 
 /*
-<<<<<<< HEAD
- * Note: Type == ACPI_TYPE_ANY (0) is used to indicate a NULL package element
- * or an unresolved named reference.
-=======
  * Note: Type == ACPI_TYPE_ANY (0) is used to indicate a NULL package
  * element or an unresolved named reference.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 union acpi_object {
 	acpi_object_type type;	/* See definition of acpi_ns_type for values */
@@ -1302,10 +962,6 @@ struct acpi_object_list {
  * Miscellaneous common Data Structures used by the interfaces
  */
 #define ACPI_NO_BUFFER              0
-<<<<<<< HEAD
-#define ACPI_ALLOCATE_BUFFER        (acpi_size) (-1)
-#define ACPI_ALLOCATE_LOCAL_BUFFER  (acpi_size) (-2)
-=======
 
 #ifdef ACPI_NO_MEM_ALLOCATIONS
 
@@ -1318,7 +974,6 @@ struct acpi_object_list {
 #define ACPI_ALLOCATE_LOCAL_BUFFER  (acpi_size) (-2)	/* For internal use only (enables tracking) */
 
 #endif				/* ACPI_NO_MEM_ALLOCATIONS */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct acpi_buffer {
 	acpi_size length;	/* Length in bytes of the buffer */
@@ -1330,22 +985,14 @@ struct acpi_buffer {
  */
 #define ACPI_FULL_PATHNAME              0
 #define ACPI_SINGLE_NAME                1
-<<<<<<< HEAD
-#define ACPI_NAME_TYPE_MAX              1
-=======
 #define ACPI_FULL_PATHNAME_NO_TRAILING  2
 #define ACPI_NAME_TYPE_MAX              2
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Predefined Namespace items
  */
 struct acpi_predefined_names {
-<<<<<<< HEAD
-	char *name;
-=======
 	const char *name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 type;
 	char *val;
 };
@@ -1371,13 +1018,6 @@ struct acpi_system_info {
 	u32 debug_layer;
 };
 
-<<<<<<< HEAD
-/* Table Event Types */
-
-#define ACPI_TABLE_EVENT_LOAD           0x0
-#define ACPI_TABLE_EVENT_UNLOAD         0x1
-#define ACPI_NUM_TABLE_EVENTS           2
-=======
 /*
  * System statistics returned by acpi_get_statistics()
  */
@@ -1387,17 +1027,12 @@ struct acpi_statistics {
 	u32 fixed_event_count[ACPI_NUM_FIXED_EVENTS];
 	u32 method_count;
 };
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Types specific to the OS service interfaces
  */
-<<<<<<< HEAD
-typedef u32(ACPI_SYSTEM_XFACE * acpi_osd_handler) (void *context);
-=======
 typedef u32
  (ACPI_SYSTEM_XFACE * acpi_osd_handler) (void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef void
  (ACPI_SYSTEM_XFACE * acpi_osd_exec_callback) (void *context);
@@ -1406,26 +1041,18 @@ typedef void
  * Various handlers and callback procedures
  */
 typedef
-<<<<<<< HEAD
-void (*ACPI_GBL_EVENT_HANDLER) (u32 event_type,
-=======
 u32 (*acpi_sci_handler) (void *context);
 
 typedef
 void (*acpi_gbl_event_handler) (u32 event_type,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       acpi_handle device,
 			       u32 event_number, void *context);
 
 #define ACPI_EVENT_TYPE_GPE         0
 #define ACPI_EVENT_TYPE_FIXED       1
 
-<<<<<<< HEAD
-typedef u32(*acpi_event_handler) (void *context);
-=======
 typedef
 u32(*acpi_event_handler) (void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef
 u32 (*acpi_gpe_handler) (acpi_handle gpe_device, u32 gpe_number, void *context);
@@ -1436,34 +1063,20 @@ void (*acpi_notify_handler) (acpi_handle device, u32 value, void *context);
 typedef
 void (*acpi_object_handler) (acpi_handle object, void *data);
 
-<<<<<<< HEAD
-typedef acpi_status(*acpi_init_handler) (acpi_handle object, u32 function);
-=======
 typedef
 acpi_status (*acpi_init_handler) (acpi_handle object, u32 function);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_INIT_DEVICE_INI        1
 
 typedef
-<<<<<<< HEAD
-acpi_status(*acpi_exception_handler) (acpi_status aml_status,
-				      acpi_name name,
-				      u16 opcode,
-				      u32 aml_offset, void *context);
-=======
 acpi_status (*acpi_exception_handler) (acpi_status aml_status,
 				       acpi_name name,
 				       u16 opcode,
 				       u32 aml_offset, void *context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Table Event handler (Load, load_table, etc.) and types */
 
 typedef
-<<<<<<< HEAD
-acpi_status(*acpi_tbl_handler) (u32 event, void *table, void *context);
-=======
 acpi_status (*acpi_table_handler) (u32 event, void *table, void *context);
 
 /* Table Event Types */
@@ -1473,26 +1086,16 @@ acpi_status (*acpi_table_handler) (u32 event, void *table, void *context);
 #define ACPI_TABLE_EVENT_INSTALL        0x2
 #define ACPI_TABLE_EVENT_UNINSTALL      0x3
 #define ACPI_NUM_TABLE_EVENTS           4
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Address Spaces (For Operation Regions) */
 
 typedef
-<<<<<<< HEAD
-acpi_status(*acpi_adr_space_handler) (u32 function,
-				      acpi_physical_address address,
-				      u32 bit_width,
-				      u64 *value,
-				      void *handler_context,
-				      void *region_context);
-=======
 acpi_status (*acpi_adr_space_handler) (u32 function,
 				       acpi_physical_address address,
 				       u32 bit_width,
 				       u64 *value,
 				       void *handler_context,
 				       void *region_context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_DEFAULT_HANDLER            NULL
 
@@ -1504,13 +1107,6 @@ struct acpi_connection_info {
 	u8 access_length;
 };
 
-<<<<<<< HEAD
-typedef
-acpi_status(*acpi_adr_space_setup) (acpi_handle region_handle,
-				    u32 function,
-				    void *handler_context,
-				    void **region_context);
-=======
 /* Special Context data for PCC Opregion (ACPI 6.3) */
 
 struct acpi_pcc_info {
@@ -1531,21 +1127,14 @@ acpi_status (*acpi_adr_space_setup) (acpi_handle region_handle,
 				     u32 function,
 				     void *handler_context,
 				     void **region_context);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_REGION_ACTIVATE    0
 #define ACPI_REGION_DEACTIVATE  1
 
 typedef
-<<<<<<< HEAD
-acpi_status(*acpi_walk_callback) (acpi_handle object,
-				  u32 nesting_level,
-				  void *context, void **return_value);
-=======
 acpi_status (*acpi_walk_callback) (acpi_handle object,
 				   u32 nesting_level,
 				   void *context, void **return_value);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef
 u32 (*acpi_interface_handler) (acpi_string interface_name, u32 supported);
@@ -1567,11 +1156,6 @@ u32 (*acpi_interface_handler) (acpi_string interface_name, u32 supported);
 
 #define ACPI_UUID_LENGTH                16
 
-<<<<<<< HEAD
-/* Structures used for device/processor HID, UID, CID */
-
-struct acpica_device_id {
-=======
 /* Length of 3-byte PCI class code values when converted back to a string */
 
 #define ACPI_PCICLS_STRING_SIZE         7	/* Includes null terminator */
@@ -1579,48 +1163,25 @@ struct acpica_device_id {
 /* Structures used for device/processor HID, UID, CID */
 
 struct acpi_pnp_device_id {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 length;		/* Length of string + null */
 	char *string;
 };
 
-<<<<<<< HEAD
-struct acpica_device_id_list {
-	u32 count;		/* Number of IDs in Ids array */
-	u32 list_size;		/* Size of list, including ID strings */
-	struct acpica_device_id ids[1];	/* ID array */
-=======
 struct acpi_pnp_device_id_list {
 	u32 count;		/* Number of IDs in Ids array */
 	u32 list_size;		/* Size of list, including ID strings */
 	struct acpi_pnp_device_id ids[];	/* ID array */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Structure returned from acpi_get_object_info.
-<<<<<<< HEAD
- * Optimized for both 32- and 64-bit builds
-=======
  * Optimized for both 32-bit and 64-bit builds.
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct acpi_device_info {
 	u32 info_size;		/* Size of info, including ID strings */
 	u32 name;		/* ACPI object Name */
 	acpi_object_type type;	/* ACPI object Type */
 	u8 param_count;		/* If a method, required parameter count */
-<<<<<<< HEAD
-	u8 valid;		/* Indicates which optional fields are valid */
-	u8 flags;		/* Miscellaneous info */
-	u8 highest_dstates[4];	/* _sx_d values: 0xFF indicates not valid */
-	u8 lowest_dstates[5];	/* _sx_w values: 0xFF indicates not valid */
-	u32 current_status;	/* _STA value */
-	u64 address;	/* _ADR value */
-	struct acpica_device_id hardware_id;	/* _HID value */
-	struct acpica_device_id unique_id;	/* _UID value */
-	struct acpica_device_id_list compatible_id_list;	/* _CID list <must be last> */
-=======
 	u16 valid;		/* Indicates which optional fields are valid */
 	u8 flags;		/* Miscellaneous info */
 	u8 highest_dstates[4];	/* _sx_d values: 0xFF indicates not valid */
@@ -1630,7 +1191,6 @@ struct acpi_device_info {
 	struct acpi_pnp_device_id unique_id;	/* _UID value */
 	struct acpi_pnp_device_id class_code;	/* _CLS value */
 	struct acpi_pnp_device_id_list compatible_id_list;	/* _CID list <must be last> */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Values for Flags field above (acpi_get_object_info) */
@@ -1639,15 +1199,6 @@ struct acpi_device_info {
 
 /* Flags for Valid field above (acpi_get_object_info) */
 
-<<<<<<< HEAD
-#define ACPI_VALID_STA                  0x01
-#define ACPI_VALID_ADR                  0x02
-#define ACPI_VALID_HID                  0x04
-#define ACPI_VALID_UID                  0x08
-#define ACPI_VALID_CID                  0x10
-#define ACPI_VALID_SXDS                 0x20
-#define ACPI_VALID_SXWS                 0x40
-=======
 #define ACPI_VALID_ADR                  0x0002
 #define ACPI_VALID_HID                  0x0004
 #define ACPI_VALID_UID                  0x0008
@@ -1655,7 +1206,6 @@ struct acpi_device_info {
 #define ACPI_VALID_CLS                  0x0040
 #define ACPI_VALID_SXDS                 0x0100
 #define ACPI_VALID_SXWS                 0x0200
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags for _STA method */
 
@@ -1675,14 +1225,6 @@ struct acpi_pci_id {
 	u16 function;
 };
 
-<<<<<<< HEAD
-struct acpi_mem_space_context {
-	u32 length;
-	acpi_physical_address address;
-	acpi_physical_address mapped_physical_address;
-	u8 *mapped_logical_address;
-	acpi_size mapped_length;
-=======
 struct acpi_mem_mapping {
 	acpi_physical_address physical_address;
 	u8 *logical_address;
@@ -1699,26 +1241,17 @@ struct acpi_mem_space_context {
 
 struct acpi_data_table_mapping {
 	void *pointer;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * struct acpi_memory_list is used only if the ACPICA local cache is enabled
  */
 struct acpi_memory_list {
-<<<<<<< HEAD
-	char *list_name;
-=======
 	const char *list_name;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *list_head;
 	u16 object_size;
 	u16 max_depth;
 	u16 current_depth;
-<<<<<<< HEAD
-	u16 link_offset;
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ACPI_DBG_TRACK_ALLOCATIONS
 
@@ -1734,8 +1267,6 @@ struct acpi_memory_list {
 #endif
 };
 
-<<<<<<< HEAD
-=======
 /* Definitions of trace event types */
 
 typedef enum {
@@ -1795,5 +1326,4 @@ typedef enum {
 #define ACPI_FLEX_ARRAY(TYPE, NAME)     TYPE NAME[0]
 #endif
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* __ACTYPES_H__ */

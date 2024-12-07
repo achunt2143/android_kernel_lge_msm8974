@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-#include <dirent.h>
-=======
 // SPDX-License-Identifier: GPL-2.0
 #include <dirent.h>
 #include <errno.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -12,11 +8,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-<<<<<<< HEAD
-#include "strlist.h"
-#include <string.h>
-#include "thread_map.h"
-=======
 #include "string2.h"
 #include "strlist.h"
 #include <string.h>
@@ -28,7 +19,6 @@
 #include "debug.h"
 #include "event.h"
 #include <internal/threadmap.h>
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Skip "." and ".." directories */
 static int filter(const struct dirent *dir)
@@ -39,17 +29,11 @@ static int filter(const struct dirent *dir)
 		return 1;
 }
 
-<<<<<<< HEAD
-struct thread_map *thread_map__new_by_pid(pid_t pid)
-{
-	struct thread_map *threads;
-=======
 #define thread_map__alloc(__nr) perf_thread_map__realloc(NULL, __nr)
 
 struct perf_thread_map *thread_map__new_by_pid(pid_t pid)
 {
 	struct perf_thread_map *threads;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char name[256];
 	int items;
 	struct dirent **namelist = NULL;
@@ -60,17 +44,6 @@ struct perf_thread_map *thread_map__new_by_pid(pid_t pid)
 	if (items <= 0)
 		return NULL;
 
-<<<<<<< HEAD
-	threads = malloc(sizeof(*threads) + sizeof(pid_t) * items);
-	if (threads != NULL) {
-		for (i = 0; i < items; i++)
-			threads->map[i] = atoi(namelist[i]->d_name);
-		threads->nr = items;
-	}
-
-	for (i=0; i<items; i++)
-		free(namelist[i]);
-=======
 	threads = thread_map__alloc(items);
 	if (threads != NULL) {
 		for (i = 0; i < items; i++)
@@ -81,21 +54,11 @@ struct perf_thread_map *thread_map__new_by_pid(pid_t pid)
 
 	for (i=0; i<items; i++)
 		zfree(&namelist[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free(namelist);
 
 	return threads;
 }
 
-<<<<<<< HEAD
-struct thread_map *thread_map__new_by_tid(pid_t tid)
-{
-	struct thread_map *threads = malloc(sizeof(*threads) + sizeof(pid_t));
-
-	if (threads != NULL) {
-		threads->map[0] = tid;
-		threads->nr	= 1;
-=======
 struct perf_thread_map *thread_map__new_by_tid(pid_t tid)
 {
 	struct perf_thread_map *threads = thread_map__alloc(1);
@@ -104,22 +67,11 @@ struct perf_thread_map *thread_map__new_by_tid(pid_t tid)
 		perf_thread_map__set_pid(threads, 0, tid);
 		threads->nr = 1;
 		refcount_set(&threads->refcnt, 1);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return threads;
 }
 
-<<<<<<< HEAD
-struct thread_map *thread_map__new_by_uid(uid_t uid)
-{
-	DIR *proc;
-	int max_threads = 32, items, i;
-	char path[256];
-	struct dirent dirent, *next, **namelist = NULL;
-	struct thread_map *threads = malloc(sizeof(*threads) +
-					    max_threads * sizeof(pid_t));
-=======
 static struct perf_thread_map *__thread_map__new_all_cpus(uid_t uid)
 {
 	DIR *proc;
@@ -128,7 +80,6 @@ static struct perf_thread_map *__thread_map__new_all_cpus(uid_t uid)
 	struct dirent *dirent, **namelist = NULL;
 	struct perf_thread_map *threads = thread_map__alloc(max_threads);
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (threads == NULL)
 		goto out;
 
@@ -137,40 +88,16 @@ static struct perf_thread_map *__thread_map__new_all_cpus(uid_t uid)
 		goto out_free_threads;
 
 	threads->nr = 0;
-<<<<<<< HEAD
-
-	while (!readdir_r(proc, &dirent, &next) && next) {
-		char *end;
-		bool grow = false;
-		struct stat st;
-		pid_t pid = strtol(dirent.d_name, &end, 10);
-=======
 	refcount_set(&threads->refcnt, 1);
 
 	while ((dirent = readdir(proc)) != NULL) {
 		char *end;
 		bool grow = false;
 		pid_t pid = strtol(dirent->d_name, &end, 10);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (*end) /* only interested in proper numerical dirents */
 			continue;
 
-<<<<<<< HEAD
-		snprintf(path, sizeof(path), "/proc/%s", dirent.d_name);
-
-		if (stat(path, &st) != 0)
-			continue;
-
-		if (st.st_uid != uid)
-			continue;
-
-		snprintf(path, sizeof(path), "/proc/%d/task", pid);
-		items = scandir(path, &namelist, filter, NULL);
-		if (items <= 0)
-			goto out_free_closedir;
-
-=======
 		snprintf(path, sizeof(path), "/proc/%s", dirent->d_name);
 
 		if (uid != UINT_MAX) {
@@ -186,36 +113,21 @@ static struct perf_thread_map *__thread_map__new_all_cpus(uid_t uid)
 			pr_debug("scandir for %d returned empty, skipping\n", pid);
 			continue;
 		}
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (threads->nr + items >= max_threads) {
 			max_threads *= 2;
 			grow = true;
 		}
 
 		if (grow) {
-<<<<<<< HEAD
-			struct thread_map *tmp;
-
-			tmp = realloc(threads, (sizeof(*threads) +
-						max_threads * sizeof(pid_t)));
-=======
 			struct perf_thread_map *tmp;
 
 			tmp = perf_thread_map__realloc(threads, max_threads);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (tmp == NULL)
 				goto out_free_namelist;
 
 			threads = tmp;
 		}
 
-<<<<<<< HEAD
-		for (i = 0; i < items; i++)
-			threads->map[threads->nr + i] = atoi(namelist[i]->d_name);
-
-		for (i = 0; i < items; i++)
-			free(namelist[i]);
-=======
 		for (i = 0; i < items; i++) {
 			perf_thread_map__set_pid(threads, threads->nr + i,
 						    atoi(namelist[i]->d_name));
@@ -223,7 +135,6 @@ static struct perf_thread_map *__thread_map__new_all_cpus(uid_t uid)
 
 		for (i = 0; i < items; i++)
 			zfree(&namelist[i]);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free(namelist);
 
 		threads->nr += items;
@@ -240,18 +151,6 @@ out_free_threads:
 
 out_free_namelist:
 	for (i = 0; i < items; i++)
-<<<<<<< HEAD
-		free(namelist[i]);
-	free(namelist);
-
-out_free_closedir:
-	free(threads);
-	threads = NULL;
-	goto out_closedir;
-}
-
-struct thread_map *thread_map__new(pid_t pid, pid_t tid, uid_t uid)
-=======
 		zfree(&namelist[i]);
 	free(namelist);
 	zfree(&threads);
@@ -269,7 +168,6 @@ struct perf_thread_map *thread_map__new_by_uid(uid_t uid)
 }
 
 struct perf_thread_map *thread_map__new(pid_t pid, pid_t tid, uid_t uid)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pid != -1)
 		return thread_map__new_by_pid(pid);
@@ -280,15 +178,9 @@ struct perf_thread_map *thread_map__new(pid_t pid, pid_t tid, uid_t uid)
 	return thread_map__new_by_tid(tid);
 }
 
-<<<<<<< HEAD
-static struct thread_map *thread_map__new_by_pid_str(const char *pid_str)
-{
-	struct thread_map *threads = NULL, *nt;
-=======
 static struct perf_thread_map *thread_map__new_by_pid_str(const char *pid_str)
 {
 	struct perf_thread_map *threads = NULL, *nt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char name[256];
 	int items, total_tasks = 0;
 	struct dirent **namelist = NULL;
@@ -296,21 +188,13 @@ static struct perf_thread_map *thread_map__new_by_pid_str(const char *pid_str)
 	pid_t pid, prev_pid = INT_MAX;
 	char *end_ptr;
 	struct str_node *pos;
-<<<<<<< HEAD
-	struct strlist *slist = strlist__new(false, pid_str);
-=======
 	struct strlist_config slist_config = { .dont_dupstr = true, };
 	struct strlist *slist = strlist__new(pid_str, &slist_config);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!slist)
 		return NULL;
 
-<<<<<<< HEAD
-	strlist__for_each(pos, slist) {
-=======
 	strlist__for_each_entry(pos, slist) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pid = strtol(pos->s, &end_ptr, 10);
 
 		if (pid == INT_MIN || pid == INT_MAX ||
@@ -326,27 +210,6 @@ static struct perf_thread_map *thread_map__new_by_pid_str(const char *pid_str)
 			goto out_free_threads;
 
 		total_tasks += items;
-<<<<<<< HEAD
-		nt = realloc(threads, (sizeof(*threads) +
-				       sizeof(pid_t) * total_tasks));
-		if (nt == NULL)
-			goto out_free_threads;
-
-		threads = nt;
-
-		if (threads) {
-			for (i = 0; i < items; i++)
-				threads->map[j++] = atoi(namelist[i]->d_name);
-			threads->nr = total_tasks;
-		}
-
-		for (i = 0; i < items; i++)
-			free(namelist[i]);
-		free(namelist);
-
-		if (!threads)
-			break;
-=======
 		nt = perf_thread_map__realloc(threads, total_tasks);
 		if (nt == NULL)
 			goto out_free_namelist;
@@ -359,24 +222,10 @@ static struct perf_thread_map *thread_map__new_by_pid_str(const char *pid_str)
 		}
 		threads->nr = total_tasks;
 		free(namelist);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
 	strlist__delete(slist);
-<<<<<<< HEAD
-	return threads;
-
-out_free_threads:
-	free(threads);
-	threads = NULL;
-	goto out;
-}
-
-static struct thread_map *thread_map__new_by_tid_str(const char *tid_str)
-{
-	struct thread_map *threads = NULL, *nt;
-=======
 	if (threads)
 		refcount_set(&threads->refcnt, 1);
 	return threads;
@@ -394,30 +243,10 @@ out_free_threads:
 struct perf_thread_map *thread_map__new_by_tid_str(const char *tid_str)
 {
 	struct perf_thread_map *threads = NULL, *nt;
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ntasks = 0;
 	pid_t tid, prev_tid = INT_MAX;
 	char *end_ptr;
 	struct str_node *pos;
-<<<<<<< HEAD
-	struct strlist *slist;
-
-	/* perf-stat expects threads to be generated even if tid not given */
-	if (!tid_str) {
-		threads = malloc(sizeof(*threads) + sizeof(pid_t));
-		if (threads != NULL) {
-			threads->map[0] = -1;
-			threads->nr	= 1;
-		}
-		return threads;
-	}
-
-	slist = strlist__new(false, tid_str);
-	if (!slist)
-		return NULL;
-
-	strlist__for_each(pos, slist) {
-=======
 	struct strlist_config slist_config = { .dont_dupstr = true, };
 	struct strlist *slist;
 
@@ -430,7 +259,6 @@ struct perf_thread_map *thread_map__new_by_tid_str(const char *tid_str)
 		return NULL;
 
 	strlist__for_each_entry(pos, slist) {
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tid = strtol(pos->s, &end_ptr, 10);
 
 		if (tid == INT_MIN || tid == INT_MAX ||
@@ -441,32 +269,12 @@ struct perf_thread_map *thread_map__new_by_tid_str(const char *tid_str)
 			continue;
 
 		ntasks++;
-<<<<<<< HEAD
-		nt = realloc(threads, sizeof(*threads) + sizeof(pid_t) * ntasks);
-=======
 		nt = perf_thread_map__realloc(threads, ntasks);
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (nt == NULL)
 			goto out_free_threads;
 
 		threads = nt;
-<<<<<<< HEAD
-		threads->map[ntasks - 1] = tid;
-		threads->nr		 = ntasks;
-	}
-out:
-	return threads;
-
-out_free_threads:
-	free(threads);
-	threads = NULL;
-	goto out;
-}
-
-struct thread_map *thread_map__new_str(const char *pid, const char *tid,
-				       uid_t uid)
-=======
 		perf_thread_map__set_pid(threads, ntasks - 1, tid);
 		threads->nr = ntasks;
 	}
@@ -483,7 +291,6 @@ out_free_threads:
 
 struct perf_thread_map *thread_map__new_str(const char *pid, const char *tid,
 				       uid_t uid, bool all_threads)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pid)
 		return thread_map__new_by_pid_str(pid);
@@ -491,17 +298,6 @@ struct perf_thread_map *thread_map__new_str(const char *pid, const char *tid,
 	if (!tid && uid != UINT_MAX)
 		return thread_map__new_by_uid(uid);
 
-<<<<<<< HEAD
-	return thread_map__new_by_tid_str(tid);
-}
-
-void thread_map__delete(struct thread_map *threads)
-{
-	free(threads);
-}
-
-size_t thread_map__fprintf(struct thread_map *threads, FILE *fp)
-=======
 	if (all_threads)
 		return thread_map__new_all_cpus();
 
@@ -509,18 +305,11 @@ size_t thread_map__fprintf(struct thread_map *threads, FILE *fp)
 }
 
 size_t thread_map__fprintf(struct perf_thread_map *threads, FILE *fp)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	size_t printed = fprintf(fp, "%d thread%s: ",
 				 threads->nr, threads->nr > 1 ? "s" : "");
 	for (i = 0; i < threads->nr; ++i)
-<<<<<<< HEAD
-		printed += fprintf(fp, "%s%d", i ? ", " : "", threads->map[i]);
-
-	return printed + fprintf(fp, "\n");
-}
-=======
 		printed += fprintf(fp, "%s%d", i ? ", " : "", perf_thread_map__pid(threads, i));
 
 	return printed + fprintf(fp, "\n");
@@ -638,4 +427,3 @@ int thread_map__remove(struct perf_thread_map *threads, int idx)
 	threads->nr--;
 	return 0;
 }
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

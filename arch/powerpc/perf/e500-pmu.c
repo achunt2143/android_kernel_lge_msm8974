@@ -1,20 +1,9 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance counter support for e500 family processors.
  *
  * Copyright 2008-2009 Paul Mackerras, IBM Corporation.
  * Copyright 2010 Freescale Semiconductor, Inc.
-<<<<<<< HEAD
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version
- * 2 of the License, or (at your option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/string.h>
 #include <linux/perf_event.h>
@@ -31,11 +20,8 @@ static int e500_generic_events[] = {
 	[PERF_COUNT_HW_CACHE_MISSES] = 41, /* Data L1 cache reloads */
 	[PERF_COUNT_HW_BRANCH_INSTRUCTIONS] = 12,
 	[PERF_COUNT_HW_BRANCH_MISSES] = 15,
-<<<<<<< HEAD
-=======
 	[PERF_COUNT_HW_STALLED_CYCLES_FRONTEND] = 18,
 	[PERF_COUNT_HW_STALLED_CYCLES_BACKEND] = 19,
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define C(x)	PERF_COUNT_HW_CACHE_##x
@@ -132,14 +118,6 @@ static struct fsl_emb_pmu e500_pmu = {
 
 static int init_e500_pmu(void)
 {
-<<<<<<< HEAD
-	if (!cur_cpu_spec->oprofile_cpu_type)
-		return -ENODEV;
-
-	if (!strcmp(cur_cpu_spec->oprofile_cpu_type, "ppc/e500mc"))
-		num_events = 256;
-	else if (strcmp(cur_cpu_spec->oprofile_cpu_type, "ppc/e500"))
-=======
 	unsigned int pvr = mfspr(SPRN_PVR);
 
 	/* ec500mc */
@@ -147,7 +125,6 @@ static int init_e500_pmu(void)
 		num_events = 256;
 	/* e500 */
 	else if (PVR_VER(pvr) != PVR_VER_E500V1 && PVR_VER(pvr) != PVR_VER_E500V2)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	return register_fsl_emb_pmu(&e500_pmu);

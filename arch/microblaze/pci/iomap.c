@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ppc64 "iomap" interface implementation.
  *
@@ -11,11 +8,6 @@
 #include <linux/pci.h>
 #include <linux/mm.h>
 #include <linux/export.h>
-<<<<<<< HEAD
-#include <asm/io.h>
-#include <asm/pci-bridge.h>
-
-=======
 #include <linux/io.h>
 #include <asm/pci-bridge.h>
 
@@ -55,7 +47,6 @@ int pci_proc_domain(struct pci_bus *bus)
 	return pci_domain_nr(bus);
 }
 
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void pci_iounmap(struct pci_dev *dev, void __iomem *addr)
 {
 	if (isa_vaddr_is_ioport(addr))

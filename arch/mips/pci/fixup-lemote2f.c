@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // SPDX-License-Identifier: GPL-2.0-or-later
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008 Lemote Technology
  * Copyright (C) 2004 ICT CAS
@@ -9,14 +6,6 @@
  *
  * Copyright (C) 2007 Lemote, Inc.
  * Author: Fuxin Zhang, zhangfx@lemote.com
-<<<<<<< HEAD
- *
- *  This program is free software; you can redistribute  it and/or modify it
- *  under  the terms of  the GNU General  Public License as published by the
- *  Free Software Foundation;  either version 2 of the  License, or (at your
- *  option) any later version.
-=======
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/pci.h>
@@ -37,13 +26,8 @@
 #define PCID		7
 
 /* all the pci device has the PCIA pin, check the datasheet. */
-<<<<<<< HEAD
-static char irq_tab[][5] __initdata = {
-	/*      INTA    INTB    INTC    INTD */
-=======
 static char irq_tab[][5] = {
 	/*	INTA	INTB	INTC	INTD */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0, 0, 0, 0, 0},	/*  11: Unused */
 	{0, 0, 0, 0, 0},	/*  12: Unused */
 	{0, 0, 0, 0, 0},	/*  13: Unused */
@@ -63,11 +47,7 @@ static char irq_tab[][5] = {
 	{0, 0, 0, 0, 0},	/*  27: Unused */
 };
 
-<<<<<<< HEAD
-int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-=======
 int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int virq;
 
@@ -85,17 +65,6 @@ int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 		case 2:
 			pci_write_config_byte(dev, PCI_INTERRUPT_LINE,
 					      CS5536_IDE_INTR);
-<<<<<<< HEAD
-			return CS5536_IDE_INTR;	/*  for IDE */
-		case 3:
-			pci_write_config_byte(dev, PCI_INTERRUPT_LINE,
-					      CS5536_ACC_INTR);
-			return CS5536_ACC_INTR;	/*  for AUDIO */
-		case 4:	/*  for OHCI */
-		case 5:	/*  for EHCI */
-		case 6:	/*  for UDC */
-		case 7:	/*  for OTG */
-=======
 			return CS5536_IDE_INTR; /*  for IDE */
 		case 3:
 			pci_write_config_byte(dev, PCI_INTERRUPT_LINE,
@@ -105,18 +74,13 @@ int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 		case 5: /*  for EHCI */
 		case 6: /*  for UDC */
 		case 7: /*  for OTG */
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_write_config_byte(dev, PCI_INTERRUPT_LINE,
 					      CS5536_USB_INTR);
 			return CS5536_USB_INTR;
 		}
 		return dev->irq;
 	} else {
-<<<<<<< HEAD
-		printk(KERN_INFO " strange pci slot number.\n");
-=======
 		printk(KERN_INFO "strange PCI slot number.\n");
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 }
@@ -128,33 +92,21 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
 }
 
 /* CS5536 SPEC. fixup */
-<<<<<<< HEAD
-static void __init loongson_cs5536_isa_fixup(struct pci_dev *pdev)
-=======
 static void loongson_cs5536_isa_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* the uart1 and uart2 interrupt in PIC is enabled as default */
 	pci_write_config_dword(pdev, PCI_UART1_INT_REG, 1);
 	pci_write_config_dword(pdev, PCI_UART2_INT_REG, 1);
 }
 
-<<<<<<< HEAD
-static void __init loongson_cs5536_ide_fixup(struct pci_dev *pdev)
-=======
 static void loongson_cs5536_ide_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* setting the mutex pin as IDE function */
 	pci_write_config_dword(pdev, PCI_IDE_CFG_REG,
 			       CS5536_IDE_FLASH_SIGNATURE);
 }
 
-<<<<<<< HEAD
-static void __init loongson_cs5536_acc_fixup(struct pci_dev *pdev)
-=======
 static void loongson_cs5536_acc_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* enable the AUDIO interrupt in PIC  */
 	pci_write_config_dword(pdev, PCI_ACC_INT_REG, 1);
@@ -162,22 +114,14 @@ static void loongson_cs5536_acc_fixup(struct pci_dev *pdev)
 	pci_write_config_byte(pdev, PCI_LATENCY_TIMER, 0xc0);
 }
 
-<<<<<<< HEAD
-static void __init loongson_cs5536_ohci_fixup(struct pci_dev *pdev)
-=======
 static void loongson_cs5536_ohci_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* enable the OHCI interrupt in PIC */
 	/* THE OHCI, EHCI, UDC, OTG are shared with interrupt in PIC */
 	pci_write_config_dword(pdev, PCI_OHCI_INT_REG, 1);
 }
 
-<<<<<<< HEAD
-static void __init loongson_cs5536_ehci_fixup(struct pci_dev *pdev)
-=======
 static void loongson_cs5536_ehci_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 hi, lo;
 
@@ -189,11 +133,7 @@ static void loongson_cs5536_ehci_fixup(struct pci_dev *pdev)
 	pci_write_config_dword(pdev, PCI_EHCI_FLADJ_REG, 0x2000);
 }
 
-<<<<<<< HEAD
-static void __init loongson_nec_fixup(struct pci_dev *pdev)
-=======
 static void loongson_nec_fixup(struct pci_dev *pdev)
->>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val;
 
